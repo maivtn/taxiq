@@ -93,7 +93,7 @@
 
     .kpi-label {
       color: var(--nexora-subtle);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 900;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -147,7 +147,7 @@
     }
 
     .overview-kpis .kpi-label {
-      font-size: 9px;
+      font-size: 11px;
       line-height: 1.1;
     }
 
@@ -158,7 +158,7 @@
 
     .overview-kpis .kpi-trend {
       margin-top: 2px;
-      font-size: 10px;
+      font-size: 11px;
       line-height: 1.1;
     }
 
@@ -230,7 +230,7 @@
       }
 
       .overview-kpis .kpi-label {
-        font-size: 8px;
+        font-size: 10.5px;
       }
 
       .overview-kpis .kpi-value {
@@ -262,7 +262,7 @@
 
     .card-meta {
       color: var(--nexora-subtle);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -284,7 +284,7 @@
       background: var(--nexora-canvas);
       color: var(--nexora-muted);
       text-align: left;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 900;
       letter-spacing: 0.08em;
       text-transform: uppercase;
@@ -308,7 +308,7 @@
       gap: 5px;
       border-radius: 999px;
       padding: 4px 9px;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 900;
       text-transform: uppercase;
     }
@@ -470,6 +470,14 @@
       display: grid;
       grid-template-columns: 1fr;
       gap: 16px;
+    }
+
+    /* Without min-width: 0, a grid item won't shrink below its content's intrinsic width — so the
+       Appointments Overview table (.booking-table min-width: 1040px) was forcing the whole card,
+       including its header toolbar, wider than the viewport instead of just scrolling internally
+       via .booking-table-wrap's own overflow-x. */
+    .booking-grid > .overview-card {
+      min-width: 0;
     }
 
     .booking-appointment-layout {
@@ -853,7 +861,7 @@
     .booking-create-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
     .booking-create-field { display: grid; min-width: 0; gap: 6px; }
     .booking-create-field.is-full { grid-column: 1 / -1; }
-    .booking-create-label { color: var(--nexora-subtle); font-size: 10px; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; }
+    .booking-create-label { color: var(--nexora-subtle); font-size: 11px; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; }
     .booking-create-field textarea.booking-input { height: 78px; padding: 10px 11px; resize: vertical; }
     .booking-service-picker { display: grid; gap: 8px; }
     .booking-service-search-shell { position: relative; display: flex; align-items: center; }
@@ -866,8 +874,8 @@
     .booking-service-category-head::-webkit-details-marker { display: none; }
     .booking-service-category-head::after { content: '⌄'; color: var(--nexora-subtle); font-size: 14px; font-weight: 900; line-height: 1; transition: transform .2s ease; }
     .booking-service-category:not([open]) .booking-service-category-head::after { transform: rotate(-90deg); }
-    .booking-service-category-name { color: var(--nexora-text); font-size: 10px; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; }
-    .booking-service-category-count { flex-shrink: 0; border-radius: 999px; background: #e9edff; padding: 2px 7px; color: var(--nexora-brand); font-size: 10px; font-weight: 800; }
+    .booking-service-category-name { color: var(--nexora-text); font-size: 11px; font-weight: 900; letter-spacing: .05em; text-transform: uppercase; }
+    .booking-service-category-count { flex-shrink: 0; border-radius: 999px; background: #e9edff; padding: 2px 7px; color: var(--nexora-brand); font-size: 11px; font-weight: 800; }
     .booking-service-category-options { display: grid; gap: 6px; padding: 8px; }
     .booking-service-chips { display: grid; max-height: 160px; gap: 6px; overflow-y: auto; }
     .booking-service-chip-button { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid var(--nexora-border); border-radius: 8px; background: #fff; padding: 8px 9px; color: var(--nexora-muted); font-size: 12px; font-weight: 700; line-height: 1.25; text-align: left; transition: background 0.2s, border-color 0.2s, color 0.2s; }
@@ -875,12 +883,12 @@
     .booking-service-chip-button.is-selected { border-color: transparent; background: var(--nexora-brand); color: #fff; }
     .booking-service-chip-button[hidden] { display: none; }
     .booking-service-option-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
-    .booking-service-option-meta { flex-shrink: 0; color: var(--nexora-subtle); font-size: 10px; font-weight: 700; white-space: nowrap; }
+    .booking-service-option-meta { flex-shrink: 0; color: var(--nexora-subtle); font-size: 11px; font-weight: 700; white-space: nowrap; }
     .booking-service-chip-button.is-selected .booking-service-option-meta { color: rgba(255, 255, 255, .82); }
     .booking-service-empty { padding: 12px; color: var(--nexora-subtle); font-size: 11px; font-weight: 700; text-align: center; }
     .booking-ticket-builder-grid { display: grid; grid-template-columns: 1fr; gap: 8px; align-items: end; }
     .booking-ticket-field { position: relative; display: grid; gap: 5px; min-width: 0; }
-    .booking-ticket-field > label { color: var(--nexora-muted); font-size: 10px; font-weight: 800; }
+    .booking-ticket-field > label { color: var(--nexora-muted); font-size: 11px; font-weight: 800; }
     .booking-ticket-dropdown { position: absolute; z-index: 12; top: calc(100% + 4px); left: 0; right: 0; display: grid; max-height: 220px; gap: 4px; overflow-y: auto; border: 1px solid var(--nexora-border); border-radius: 10px; background: #fff; padding: 6px; box-shadow: 0 12px 28px rgba(38, 43, 89, .14); }
     .booking-ticket-dropdown[hidden] { display: none; }
     .booking-ticket-dropdown button { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid transparent; border-radius: 7px; background: #fff; padding: 8px; color: var(--nexora-muted); font-size: 11px; font-weight: 700; text-align: left; }
@@ -891,11 +899,11 @@
     .booking-ticket-row { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; align-items: center; gap: 8px; border: 1px solid var(--nexora-border); border-radius: 9px; background: #fbfcff; padding: 8px 9px; }
     .booking-ticket-row-main { display: grid; gap: 2px; min-width: 0; }
     .booking-ticket-row-main strong { overflow: hidden; color: var(--nexora-text); font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
-    .booking-ticket-row-main span, .booking-ticket-row-meta { color: var(--nexora-muted); font-size: 10px; font-weight: 700; }
+    .booking-ticket-row-main span, .booking-ticket-row-meta { color: var(--nexora-muted); font-size: 11px; font-weight: 700; }
     .booking-ticket-row-meta { white-space: nowrap; }
     .booking-ticket-remove { display: inline-grid; width: 24px; height: 24px; place-items: center; border: 0; border-radius: 6px; background: transparent; color: var(--nexora-subtle); }
     .booking-ticket-remove:hover { background: #fff0f3; color: #d33d67; }
-    .booking-ticket-empty { border: 1px dashed var(--nexora-border); border-radius: 9px; padding: 10px; color: var(--nexora-subtle); font-size: 10px; font-weight: 700; text-align: center; }
+    .booking-ticket-empty { border: 1px dashed var(--nexora-border); border-radius: 9px; padding: 10px; color: var(--nexora-subtle); font-size: 11px; font-weight: 700; text-align: center; }
     @media (max-width: 520px) { .booking-ticket-builder-grid { grid-template-columns: 1fr; } .booking-ticket-add { width: 100%; } }
     .booking-service-duration { font-weight: 400; }
     .booking-service-summary,
@@ -906,7 +914,7 @@
     .appointment-service-summary-label { color: inherit; }
     .booking-service-summary-value,
     .appointment-service-summary-value { color: var(--nexora-text); font-size: 12px; font-weight: 800; white-space: nowrap; }
-    .booking-create-hint { color: var(--nexora-muted); font-size: 10px; font-weight: 600; letter-spacing: 0; text-transform: none; }
+    .booking-create-hint { color: var(--nexora-muted); font-size: 11px; font-weight: 600; letter-spacing: 0; text-transform: none; }
     .booking-create-error { min-height: 18px; border-radius: 8px; color: #b91c1c; font-size: 11px; font-weight: 700; line-height: 1.5; }
     .booking-create-actions .booking-primary-button,
     .booking-create-actions .booking-secondary-button { min-height: 38px; }
@@ -955,7 +963,7 @@
 
     .booking-panel-meta { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin: 8px 0 2px; }
     .booking-panel-meta-item { display: flex; align-items: center; gap: 5px; min-width: 0; }
-    .booking-panel-meta-label { color: var(--nexora-subtle); font-size: 10px; font-weight: 900; white-space: nowrap; }
+    .booking-panel-meta-label { color: var(--nexora-subtle); font-size: 11px; font-weight: 900; white-space: nowrap; }
     .booking-panel-chip { display: inline-flex; min-width: 0; align-items: center; overflow: hidden; border-radius: 999px; padding: 5px 10px; font-size: 12px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
     .booking-panel-chip-status { background: #eaf0ff; color: var(--nexora-brand); }
     .booking-panel-source-list { min-width: 0; }
@@ -1182,7 +1190,7 @@
       background: #fff;
       padding: 0 4px;
       color: var(--nexora-subtle);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.05em;
       line-height: 1.2;
@@ -1275,7 +1283,7 @@
       background: var(--nexora-canvas);
       color: var(--nexora-muted);
       text-align: left;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.05em;
       text-transform: uppercase;
@@ -1631,7 +1639,7 @@
 
     .booking-detail-label {
       color: var(--nexora-subtle);
-      font-size: 9px;
+      font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.05em;
       text-transform: uppercase;
@@ -2192,7 +2200,7 @@
       align-items: center;
       border-radius: 999px;
       padding: 4px 9px;
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 900;
       letter-spacing: 0.02em;
     }
@@ -2361,7 +2369,7 @@
 
     .booking-card-label {
       color: var(--nexora-subtle);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
       letter-spacing: 0.04em;
       text-transform: uppercase;
@@ -2605,7 +2613,7 @@
 
     .tech-stat span {
       color: var(--nexora-muted);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
       line-height: 1;
       white-space: nowrap;
@@ -2859,7 +2867,7 @@
     .tech-choice-meta {
       margin-top: 2px;
       color: var(--nexora-muted);
-      font-size: 10.5px;
+      font-size: 11.5px;
       font-weight: 500;
     }
 
@@ -2992,7 +3000,7 @@
 
     .tech-schedule-time span {
       color: var(--nexora-muted);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
       text-transform: uppercase;
     }
@@ -3097,7 +3105,7 @@
       background: transparent;
       padding: 8px 4px;
       color: var(--nexora-muted);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
     }
 
@@ -3227,11 +3235,6 @@
       .page-title {
         font-size: 30px;
         line-height: 36px;
-      }
-
-      .page-description {
-        font-size: 16px;
-        line-height: 24px;
       }
 
       .voice-kpis {
@@ -3429,7 +3432,7 @@
         display: inline-flex;
         gap: 5px;
         padding: 4px 7px;
-        font-size: 8px;
+        font-size: 11px;
         line-height: 1;
         vertical-align: middle;
       }
@@ -3540,7 +3543,7 @@
 
       .booking-table td::before {
         color: var(--nexora-subtle);
-        font-size: 9px;
+        font-size: 11px;
         font-weight: 800;
         letter-spacing: 0.04em;
         line-height: 1.4;

@@ -136,18 +136,18 @@
     /* ── form ── */
     .pos-input { height: 40px; border: 1px solid var(--nexora-border); border-radius: 10px; padding: 0 12px; font-size: 13px; font-weight: 600; color: var(--nexora-text); background: #fff; }
     .pos-input:focus { outline: 0; border-color: var(--nexora-brand); box-shadow: 0 0 0 2px rgba(70, 72, 216, .16); }
-    .pos-mini { height: 32px; width: 66px; border: 1px solid var(--nexora-border); border-radius: 8px; padding: 0 8px; font-size: 12.5px; font-weight: 700; color: var(--nexora-text); background: #fff; }
+    .pos-mini { height: 32px; width: 66px; border: 1px solid var(--nexora-border); border-radius: 8px; padding: 0 8px; font-size: 13px; font-weight: 700; color: var(--nexora-text); background: #fff; }
     .pos-mini:focus { outline: 0; border-color: var(--nexora-brand); box-shadow: 0 0 0 2px rgba(70, 72, 216, .16); }
     .pos-mini.text { width: 100%; min-width: 170px; font-weight: 600; }
     .pos-inline { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
-    .pos-inline-lbl { font-size: 11.5px; font-weight: 700; color: var(--nexora-muted); display: inline-flex; align-items: center; gap: 6px; }
+    .pos-inline-lbl { font-size: 12px; font-weight: 700; color: var(--nexora-muted); display: inline-flex; align-items: center; gap: 6px; }
 
     /* ── key/value line ── */
     .pos-line { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 0; border-bottom: 1px dashed var(--nexora-rule); }
     .pos-line:last-child { border-bottom: 0; }
     .pos-line .pos-line-key { color: var(--nexora-muted); font-size: 13px; font-weight: 600; }
     .pos-line .pos-line-val { font-weight: 800; }
-    .pos-hint { color: var(--nexora-subtle); font-size: 11.5px; font-weight: 600; line-height: 1.6; margin-top: 8px; }
+    .pos-hint { color: var(--nexora-subtle); font-size: 12px; font-weight: 600; line-height: 1.6; margin-top: 8px; }
 
     .pos-meter { height: 8px; border-radius: 999px; background: var(--nexora-surface-muted); overflow: hidden; }
     .pos-meter > span { display: block; height: 100%; border-radius: 999px; background: linear-gradient(90deg, var(--nexora-electric), var(--nexora-violet)); }
@@ -175,7 +175,7 @@
     .cust-note-levels { display: flex; flex-direction: column; gap: 4px; margin-top: 6px; min-width: 200px; }
 
     /* ── permission matrix ── */
-    .perm-cell { display: inline-flex; align-items: center; justify-content: center; min-width: 78px; padding: 6px 8px; border-radius: 8px; font-size: 11px; font-weight: 800; border: 0; }
+    .perm-cell { display: inline-flex; align-items: center; justify-content: center; min-width: 78px; padding: 6px 8px; border-radius: 8px; font-size: 12px; font-weight: 800; border: 0; }
     .perm-cell[data-state="2"] { background: #e7f8f0; color: var(--nexora-success); }
     .perm-cell[data-state="1"] { background: #fff4e2; color: var(--nexora-warning); }
     .perm-cell[data-state="0"] { background: #eef1f6; color: var(--nexora-subtle); }
@@ -183,8 +183,8 @@
 
     /* ── revenue bars ── */
     .rev-bars { display: flex; align-items: flex-end; gap: 8px; height: 132px; padding-top: 8px; }
-    .rev-bar { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 5px; font-size: 10.5px; font-weight: 800; color: var(--nexora-subtle); }
-    .rev-bar .rv { font-size: 10px; color: var(--nexora-muted); }
+    .rev-bar { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: flex-end; gap: 5px; font-size: 12px; font-weight: 800; color: var(--nexora-subtle); }
+    .rev-bar .rv { font-size: 12px; color: var(--nexora-muted); }
     .rev-bar .bar { width: 100%; border-radius: 6px 6px 0 0; background: #dfe6f5; }
     .rev-bar.today .bar { background: linear-gradient(180deg, var(--nexora-electric), var(--nexora-violet)); }
     .rev-bar.today { color: var(--nexora-brand); }
@@ -195,7 +195,7 @@
     .disp-stat::before { content: ""; position: absolute; inset: 0 0 auto 0; height: 3px; background: var(--accent, var(--nexora-brand)); opacity: .85; }
     .disp-stat:hover { transform: translateY(-2px); box-shadow: var(--nexora-soft-shadow); }
     .disp-num { font-size: 20px; font-weight: 900; color: var(--nexora-text); }
-    .disp-lbl { display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 10.5px; font-weight: 800; color: var(--nexora-muted); margin-top: 2px; }
+    .disp-lbl { display: flex; align-items: center; justify-content: center; gap: 4px; font-size: 12px; font-weight: 800; color: var(--nexora-muted); margin-top: 2px; }
     .disp-lbl i { font-size: 12px; line-height: 1; color: var(--accent, var(--nexora-brand)); }
     .disp-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr)); gap: 14px; align-items: start; }
     .disp-grid > * { min-width: 0; }
@@ -229,6 +229,9 @@
     [data-eta-list]:has(> .queue-card) { display: flex; flex-wrap: wrap; gap: 12px; }
     [data-eta-list] > .queue-card { flex: 0 0 calc(25% - 9px); max-width: calc(25% - 9px); min-width: 0; margin-bottom: 0; }
     [data-eta-list] > .booking-table-wrap { flex: 1 1 100%; max-width: 100%; width: 100%; }
+    [data-tech-roster-table]:has(> .queue-card) { display: flex; flex-wrap: wrap; gap: 12px; }
+    [data-tech-roster-table] > .queue-card { flex: 0 0 calc(50% - 6px); max-width: calc(50% - 6px); min-width: 0; margin-bottom: 0; }
+    [data-tech-roster-table] > .tech-roster-table-wrap { flex: 1 1 100%; max-width: 100%; width: 100%; }
     @media (max-width: 1199px) {
       [data-wait-list] > .wl-card { flex-basis: calc(33.333% - 8px); max-width: calc(33.333% - 8px); }
       [data-ciq-list] > .queue-card { flex-basis: calc(33.333% - 8px); max-width: calc(33.333% - 8px); }
@@ -240,6 +243,7 @@
       [data-ciq-list] > .queue-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); }
       [data-arq-list] > .queue-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); }
       [data-eta-list] > .queue-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); }
+      [data-tech-roster-table] > .queue-card { flex-basis: 100%; max-width: 100%; }
     }
 
     /* ── single ticket card: a flex column of full-width rows (Bootstrap-style row/col via
@@ -266,16 +270,16 @@
 
     /* row 2 — service (a step below the guest name in the hierarchy) + tech/time meta */
     .queue-card-service { min-width: 0; }
-    .queue-card-service strong { display: block; overflow-wrap: anywhere; font-size: 13.5px; font-weight: 700; color: var(--nexora-text); }
-    .queue-card-sub { display: block; margin-top: 2px; font-size: 11px; font-weight: 600; color: var(--nexora-muted); }
-    .queue-card-tech-value { overflow-wrap: anywhere; font-size: 12.5px; font-weight: 700; color: var(--nexora-text); }
+    .queue-card-service strong { display: block; overflow-wrap: anywhere; font-size: 14px; font-weight: 700; color: var(--nexora-text); }
+    .queue-card-sub { display: block; margin-top: 2px; font-size: 12px; font-weight: 600; color: var(--nexora-muted); }
+    .queue-card-tech-value { overflow-wrap: anywhere; font-size: 13px; font-weight: 700; color: var(--nexora-text); }
     .queue-card-tech-value.is-requested { color: var(--nexora-warning); }
     .queue-card-meta { display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; width: 100%; margin-top: 6px; flex-wrap: wrap; }
-    .queue-card-tech, .queue-card-booking { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; min-width: 0; overflow-wrap: anywhere; font-size: 11.5px; font-weight: 600; color: var(--nexora-muted); }
+    .queue-card-tech, .queue-card-booking { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; min-width: 0; overflow-wrap: anywhere; font-size: 12px; font-weight: 600; color: var(--nexora-muted); }
     .queue-card-tech i, .queue-card-booking i { font-size: 11px; }
 
     /* row 3 — note, set apart as a muted annotation chip instead of plain text */
-    .queue-card-note { align-self: flex-start; width: fit-content; max-width: 100%; overflow-wrap: anywhere; display: flex; align-items: center; gap: 5px; padding: 5px 9px; border-radius: 8px; background: var(--nexora-surface-muted); font-size: 11.5px; font-weight: 600; color: var(--nexora-muted); }
+    .queue-card-note { align-self: flex-start; width: fit-content; max-width: 100%; overflow-wrap: anywhere; display: flex; align-items: center; gap: 5px; padding: 5px 9px; border-radius: 8px; background: var(--nexora-surface-muted); font-size: 12px; font-weight: 600; color: var(--nexora-muted); }
     .queue-card-note span { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; }
 
     /* row 4 — actions, always full-width with no divider — no special-casing by button count */
@@ -295,8 +299,8 @@
     .queue-action-danger { border-color: rgba(239, 68, 68, .22); background: #fff5f5; color: var(--nexora-danger); }
     .queue-action-danger:hover { border-color: rgba(239, 68, 68, .42); background: #fee2e2; color: #dc2626; }
 
-    .wl-wait { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 700; color: var(--nexora-muted); white-space: nowrap; }
-    .wl-wait i { font-size: 11px; }
+    .wl-wait { display: inline-flex; align-items: center; gap: 4px; font-size: 12px; font-weight: 700; color: var(--nexora-muted); white-space: nowrap; }
+    .wl-wait i { font-size: 12px; }
     .wl-wait.bad { color: var(--nexora-danger); }
 
     .wl-info { flex: 1; min-width: 190px; }
@@ -309,20 +313,20 @@
     .wl-group-tickets { display: flex; flex-direction: column; gap: 6px; width: 100%; margin-top: 6px; }
     .wl-ticket-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 7px 10px; border: 1px solid var(--nexora-border); border-radius: 9px; background: var(--nexora-panel, #f8f9fc); flex-wrap: wrap; }
     .wl-ticket-row.is-sel { border-color: var(--nexora-brand); box-shadow: 0 0 0 3px rgba(70, 72, 216, .14); }
-    .wl-ticket-svc { font-size: 12.5px; font-weight: 700; color: var(--nexora-text); }
+    .wl-ticket-svc { font-size: 13px; font-weight: 700; color: var(--nexora-text); }
     .wl-ticket-actions { display: inline-flex; gap: 6px; align-items: center; flex-shrink: 0; }
     .wl-group-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; width: 100%; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--nexora-border); }
-    .wl-group-total { font-size: 12.5px; font-weight: 800; color: var(--nexora-muted); }
+    .wl-group-total { font-size: 13px; font-weight: 800; color: var(--nexora-muted); }
     .x-btn { display: inline-flex; align-items: center; justify-content: center; width: 30px; height: 30px; border: 1px solid var(--nexora-border); border-radius: 8px; background: #fff; color: var(--nexora-subtle); font-size: 13px; transition: border-color .18s, background .18s, color .18s, box-shadow .18s, transform .18s; }
     .x-btn:hover { color: var(--nexora-danger); border-color: var(--nexora-danger); transform: translateY(-1px); }
     .x-btn.queue-action-danger-icon { border-color: rgba(239, 68, 68, .18); background: #fff7f7; color: var(--nexora-danger); }
     .x-btn.queue-action-danger-icon:hover { border-color: rgba(239, 68, 68, .48); background: #fee2e2; color: #dc2626; box-shadow: 0 6px 14px rgba(239, 68, 68, .12); }
 
-    .cust-usual { font-size: 11px; font-weight: 600; color: var(--nexora-electric); margin-top: 3px; line-height: 1.6; }
-    .cust-pkg { font-size: 11px; font-weight: 700; color: var(--nexora-violet); margin-top: 3px; }
+    .cust-usual { font-size: 12px; font-weight: 600; color: var(--nexora-electric); margin-top: 3px; line-height: 1.6; }
+    .cust-pkg { font-size: 12px; font-weight: 700; color: var(--nexora-violet); margin-top: 3px; }
     .cust-tags { display: flex; gap: 4px; flex-wrap: wrap; margin-top: 4px; }
-    .cust-tag { font-size: 10px; font-weight: 700; padding: 2px 7px; border-radius: 8px; background: #f3ecff; color: var(--nexora-violet); border: 1px solid rgba(142, 77, 248, .3); }
-    .cust-note { font-size: 11px; font-weight: 600; color: var(--nexora-warning); margin-top: 3px; }
+    .cust-tag { font-size: 12px; font-weight: 700; padding: 2px 7px; border-radius: 8px; background: #f3ecff; color: var(--nexora-violet); border: 1px solid rgba(142, 77, 248, .3); }
+    .cust-note { font-size: 12px; font-weight: 600; color: var(--nexora-warning); margin-top: 3px; }
     .cust-section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; color: var(--nexora-subtle); margin-bottom: 6px; }
     /* Customer profile modal layout (#pos-nail-salon-ops) */
     .cust-profile-head { display: flex; align-items: flex-start; gap: 12px; margin-bottom: 14px; }
@@ -334,25 +338,25 @@
     .cust-profile-stat { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 1px; padding: 9px 6px; text-align: center; border-right: 1px solid var(--nexora-border); }
     .cust-profile-stat:last-child { border-right: 0; }
     .cust-profile-stat-value { font-size: 15px; font-weight: 900; color: var(--nexora-brand); }
-    .cust-profile-stat-value.is-text { font-size: 11.5px; font-weight: 800; }
-    .cust-profile-stat-label { font-size: 10px; font-weight: 600; color: var(--nexora-muted); }
+    .cust-profile-stat-value.is-text { font-size: 12px; font-weight: 800; }
+    .cust-profile-stat-label { font-size: 11px; font-weight: 600; color: var(--nexora-muted); }
     .cust-upcoming-card { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; background: var(--nexora-surface-muted); border: 1px solid var(--nexora-border); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
     .cust-upcoming-icon { width: 40px; height: 40px; flex-shrink: 0; border-radius: 50%; background: #efeafe; color: var(--nexora-brand); display: flex; align-items: center; justify-content: center; font-size: 17px; }
     .cust-upcoming-text { flex: 1; min-width: 0; }
-    .cust-upcoming-title { font-weight: 800; color: var(--nexora-brand); font-size: 13.5px; }
+    .cust-upcoming-title { font-weight: 800; color: var(--nexora-brand); font-size: 14px; }
     .cust-upcoming-meta { font-size: 13px; color: var(--nexora-text); font-weight: 600; margin-top: 2px; }
-    .cust-upcoming-detail { font-size: 11.5px; color: var(--nexora-muted); font-weight: 600; margin-top: 4px; }
+    .cust-upcoming-detail { font-size: 12px; color: var(--nexora-muted); font-weight: 600; margin-top: 4px; }
     .cust-upcoming-actions { display: flex; align-items: center; justify-content: flex-end; flex-wrap: wrap; gap: 6px; flex-shrink: 0; margin-left: auto; }
-    .cust-upcoming-more { font-size: 11.5px; color: var(--nexora-muted); font-weight: 700; white-space: nowrap; }
+    .cust-upcoming-more { font-size: 12px; color: var(--nexora-muted); font-weight: 700; white-space: nowrap; }
     .cust-upcoming-chevron { color: var(--nexora-subtle); }
     .cust-upcoming-collapse { flex: 1 0 100%; min-width: 0; border-top: 1px solid var(--nexora-border); padding-top: 12px; }
     .cust-upcoming-collapse[hidden] { display: none; }
     .cust-upcoming-detail-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px 12px; }
     .cust-upcoming-detail-item { min-width: 0; }
-    .cust-upcoming-detail-label { color: var(--nexora-muted); font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
+    .cust-upcoming-detail-label { color: var(--nexora-muted); font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: .04em; }
     .cust-upcoming-detail-value { margin-top: 3px; color: var(--nexora-text); font-size: 12px; font-weight: 700; overflow-wrap: anywhere; }
     .cust-upcoming-detail-services { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 4px; }
-    .cust-upcoming-detail-note { margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--nexora-border); color: var(--nexora-muted); font-size: 11.5px; line-height: 1.5; }
+    .cust-upcoming-detail-note { margin-top: 10px; padding-top: 9px; border-top: 1px solid var(--nexora-border); color: var(--nexora-muted); font-size: 12px; line-height: 1.5; }
     .cust-upcoming-detail-actions { display: flex; justify-content: flex-end; margin-top: 10px; }
     @media (max-width: 600px) { .cust-upcoming-detail-grid { grid-template-columns: 1fr; } }
     .cust-insights-card, .cust-prefs-card { border: 1px solid var(--nexora-border); border-radius: 14px; padding: 14px 16px; margin-bottom: 14px; }
@@ -360,30 +364,38 @@
     .cust-insights-row-last { border-bottom: 0; margin-bottom: 0; padding-bottom: 0; }
     .cust-insight-item { flex: 1; min-width: 0; display: flex; align-items: center; gap: 10px; }
     .cust-insight-icon { width: 34px; height: 34px; flex-shrink: 0; border-radius: 9px; background: #efeafe; color: var(--nexora-brand); display: flex; align-items: center; justify-content: center; }
-    .cust-insight-label { font-size: 11.5px; color: var(--nexora-muted); font-weight: 600; }
+    .cust-insight-label { font-size: 12px; color: var(--nexora-muted); font-weight: 600; }
     .cust-insight-value { font-size: 14px; font-weight: 800; color: var(--nexora-text); }
     .cust-insight-value select.pos-input { border: 0; background: none; padding: 0; height: auto; font-size: 14px; font-weight: 800; color: var(--nexora-text); }
-    .cust-pref-tag { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--nexora-border); font-size: 11px; font-weight: 400; background: #fff; color: var(--nexora-muted); }
+    /* Customer chip family (regular-tech / frequent-tech / preference tags) synced to one
+       readable size — was a scatter of 10-11px chips that read too small against 12px meta text. */
+    .cust-pref-tag { display: inline-flex; align-items: center; gap: 6px; padding: 7px 12px; border-radius: 999px; border: 1px solid var(--nexora-border); font-size: 12px; font-weight: 400; background: #fff; color: var(--nexora-muted); }
     .cust-pref-tag.is-on { background: #f3ecff; border-color: rgba(142, 77, 248, .35); color: var(--nexora-violet); }
     .cust-tech-chip-row { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 5px; }
     .cust-pref-tech-list { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; }
-    .cust-pref-tech-chip { display: inline-flex; align-items: center; gap: 4px; padding: 5px 8px; border-radius: 999px; border: 1px solid var(--nexora-border); font-size: 10.5px; font-weight: 400; background: #fff; color: var(--nexora-muted); cursor: default; }
+    .cust-pref-tech-chip { display: inline-flex; align-items: center; gap: 4px; padding: 5px 8px; border-radius: 999px; border: 1px solid var(--nexora-border); font-size: 12px; font-weight: 400; background: #fff; color: var(--nexora-muted); cursor: default; }
     .cust-pref-tech-chip.is-on { background: #f3ecff; border-color: rgba(142, 77, 248, .35); color: var(--nexora-violet); }
     .cust-tag-chip-row { display: inline-flex; flex-wrap: wrap; align-items: center; gap: 5px; }
-    .cust-tag-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 999px; border: 1px solid var(--nexora-border); font-size: 10px; font-weight: 400; background: #fff; color: var(--nexora-muted); }
+    .cust-tag-chip { display: inline-flex; align-items: center; gap: 4px; padding: 4px 8px; border-radius: 999px; border: 1px solid var(--nexora-border); font-size: 12px; font-weight: 400; background: #fff; color: var(--nexora-muted); }
     .cust-tag-chip.is-on { background: #f3ecff; border-color: rgba(142, 77, 248, .35); color: var(--nexora-violet); }
     /* Customers table (7-col) sub-lines, and the Card-mode flat layout it collapses to on narrow widths. */
-    .cust-table-sub { font-size: 11px; color: var(--nexora-muted); font-weight: 600; margin-top: 2px; }
+    .cust-table-sub { font-size: 12px; color: var(--nexora-muted); font-weight: 600; margin-top: 2px; }
+    /* Card mode is a 3-up contact-card grid (Bootstrap-style flex row/col, not CSS grid) — kept
+       visually distinct from the check-in/queue ticket rows (.wl-card used as a full-width list). */
+    [data-cust-results]:has(> .cust-card) { display: flex; flex-wrap: wrap; gap: 12px; }
+    [data-cust-results] > .cust-card { flex: 0 0 calc(33.333% - 8px); max-width: calc(33.333% - 8px); min-width: 0; margin-bottom: 0; }
+    @media (max-width: 1099px) { [data-cust-results] > .cust-card { flex-basis: calc(50% - 6px); max-width: calc(50% - 6px); } }
+    @media (max-width: 640px) { [data-cust-results] > .cust-card { flex-basis: 100%; max-width: 100%; } }
     .cust-card { flex-direction: column; align-items: stretch; gap: 2px; }
-    .cust-card-head { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; }
-    .cust-card-name { background: none; border: 0; padding: 0; cursor: pointer; text-align: left; font: inherit; font-size: 14px; font-weight: 800; color: var(--nexora-text); }
-    .cust-card-actions { margin-left: auto; }
+    .cust-card-head { display: flex; align-items: center; gap: 8px; flex-wrap: nowrap; }
+    .cust-card-name { flex: 1 1 auto; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; background: none; border: 0; padding: 0; cursor: pointer; text-align: left; font: inherit; font-size: 14px; font-weight: 800; color: var(--nexora-text); }
+    .cust-card-badges { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 6px; }
     .cust-card-meta { font-size: 12px; color: var(--nexora-muted); font-weight: 600; margin-top: 3px; }
     /* Compact history tables (Visit history / Payment history) — full width, columns auto-size to
        their content instead of the wide booking-table's fixed min-width. */
     .cust-history-table-wrap { overflow-x: auto; border: 1px solid var(--nexora-border); border-radius: 10px; margin-top: 2px; }
     .cust-history-table { width: 100%; border-collapse: collapse; font-size: 12px; table-layout: auto; }
-    .cust-history-table th { padding: 8px 10px; background: var(--nexora-surface-muted); color: var(--nexora-muted); text-align: left; font-size: 10px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; white-space: nowrap; width: 1%; }
+    .cust-history-table th { padding: 8px 10px; background: var(--nexora-surface-muted); color: var(--nexora-muted); text-align: left; font-size: 11px; font-weight: 800; letter-spacing: .03em; text-transform: uppercase; white-space: nowrap; width: 1%; }
     .cust-history-table th:last-child, .cust-history-table td:last-child { width: auto; }
     .cust-history-table td { padding: 8px 10px; border-top: 1px solid var(--nexora-border); color: var(--nexora-text); font-weight: 600; white-space: nowrap; }
     @media (max-width: 640px) { .cust-insights-row { flex-direction: column; gap: 12px; } }
@@ -391,12 +403,12 @@
     .tech-row.pickable { border-color: var(--nexora-brand); background: #f2f3ff; cursor: pointer; }
     .tech-row.dim { opacity: .5; }
     .tech-busy { background: var(--nexora-warning); }
-    .next-chip { font-size: 10px; font-weight: 800; color: var(--nexora-success); background: #e7f8f0; border-radius: 6px; padding: 2px 7px; white-space: nowrap; }
+    .next-chip { font-size: 12px; font-weight: 800; color: var(--nexora-success); background: #e7f8f0; border-radius: 6px; padding: 2px 7px; white-space: nowrap; }
     .pick-arrow { font-size: 12px; font-weight: 800; color: var(--nexora-brand); white-space: nowrap; }
     .match-badge { font-size: 12px; font-weight: 800; margin-left: auto; white-space: nowrap; }
     .sel-hint { font-size: 12px; font-weight: 700; color: var(--nexora-brand); background: #f2f3ff; border: 1px dashed rgba(70, 72, 216, .4); border-radius: 8px; padding: 8px 10px; margin-bottom: 10px; }
-    .warn-row { font-size: 11.5px; font-weight: 600; color: #9a6608; background: #fff9ee; border: 1px solid rgba(245, 158, 11, .4); border-radius: 8px; padding: 7px 10px; margin: -4px 0 8px; line-height: 1.6; }
-    .live-map { height: 44px; border-radius: 10px; background: linear-gradient(135deg, #dce9ff, #edf1ff); display: flex; align-items: center; justify-content: center; color: #6f7d96; font-size: 11.5px; font-weight: 700; margin-top: 6px; flex-basis: 100%; }
+    .warn-row { font-size: 12px; font-weight: 600; color: #9a6608; background: #fff9ee; border: 1px solid rgba(245, 158, 11, .4); border-radius: 8px; padding: 7px 10px; margin: -4px 0 8px; line-height: 1.6; }
+    .live-map { height: 44px; border-radius: 10px; background: linear-gradient(135deg, #dce9ff, #edf1ff); display: flex; align-items: center; justify-content: center; color: #6f7d96; font-size: 12px; font-weight: 700; margin-top: 6px; flex-basis: 100%; }
 
     /* ── time clock ── */
     .clk-qr-card { display: flex; gap: 18px; align-items: center; flex-wrap: wrap; }
@@ -406,12 +418,12 @@
     .clk-countdown > span { transition: width 1s linear; }
     .tech-roster-table-wrap { overflow-x: auto; border: 1px solid var(--nexora-border); border-radius: 12px; background: #fff; }
     .tech-roster-table { width: 100%; min-width: 860px; border-collapse: collapse; font-size: 12px; }
-    .tech-roster-table th { padding: 9px 10px; background: var(--nexora-surface-muted); color: var(--nexora-muted); text-align: left; font-size: 10px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
+    .tech-roster-table th { padding: 9px 10px; background: var(--nexora-surface-muted); color: var(--nexora-muted); text-align: left; font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; white-space: nowrap; }
     .tech-roster-table td { padding: 9px 10px; border-top: 1px solid var(--nexora-rule); color: var(--nexora-text); vertical-align: middle; }
     .tech-roster-table tbody tr:hover { background: #fbfcff; }
     .tech-roster-person { display: flex; align-items: center; gap: 8px; min-width: 150px; }
     .tech-roster-person-name { font-weight: 800; white-space: nowrap; }
-    .tech-roster-person-role { margin-top: 2px; color: var(--nexora-subtle); font-size: 10.5px; font-weight: 600; }
+    .tech-roster-person-role { margin-top: 2px; color: var(--nexora-subtle); font-size: 12px; font-weight: 600; }
     .tech-roster-shift, .tech-roster-ticket, .tech-roster-turns { white-space: nowrap; }
     .tech-roster-ticket { font-weight: 700; }
     .tech-roster-ticket.is-free { color: var(--nexora-success); }
@@ -439,7 +451,7 @@
     .camp-desc { margin-top: 5px; font-size: 12px; font-weight: 500; color: var(--nexora-muted); line-height: 1.6; min-height: 38px; }
     .camp-meta { display: flex; align-items: flex-end; justify-content: space-between; gap: 8px; margin-top: 12px; padding-top: 12px; border-top: 1px dashed var(--nexora-rule); }
     .camp-count { font-size: 22px; font-weight: 900; color: var(--nexora-text); line-height: 1; }
-    .camp-count-lbl { font-size: 10.5px; font-weight: 700; color: var(--nexora-subtle); margin-top: 3px; }
+    .camp-count-lbl { font-size: 12px; font-weight: 700; color: var(--nexora-subtle); margin-top: 3px; }
 
     .sms-modal { display: none; position: fixed; inset: 0; z-index: 60; background: rgba(8, 16, 34, .5); padding: 24px 16px; overflow-y: auto; }
     .sms-modal.open { display: block; }
@@ -466,16 +478,16 @@
     .service-editor-preview-icon { display: inline-flex; width: 38px; height: 38px; flex: 0 0 38px; align-items: center; justify-content: center; border-radius: 12px; background: #eaf0ff; color: var(--nexora-brand); font-size: 16px; }
     .service-editor-preview-copy { min-width: 0; }
     .service-editor-preview-name { overflow: hidden; color: var(--nexora-text); font-size: 16px; font-weight: 900; line-height: 1.25; text-overflow: ellipsis; white-space: nowrap; }
-    .service-editor-preview-category { margin-top: 3px; color: var(--nexora-muted); font-size: 11.5px; font-weight: 700; }
+    .service-editor-preview-category { margin-top: 3px; color: var(--nexora-muted); font-size: 12px; font-weight: 700; }
     .service-editor-summary-grid { display: grid; gap: 8px; margin-top: 12px; }
-    .service-editor-summary-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px dashed var(--nexora-rule); padding-top: 8px; color: var(--nexora-muted); font-size: 11.5px; font-weight: 700; }
+    .service-editor-summary-item { display: flex; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px dashed var(--nexora-rule); padding-top: 8px; color: var(--nexora-muted); font-size: 12px; font-weight: 700; }
     .service-editor-summary-item strong { color: var(--nexora-text); font-size: 12px; font-weight: 900; text-align: right; }
     .service-editor-form { min-width: 0; }
     .service-detail-view { display: grid; grid-column: 1 / -1; min-width: 0; gap: 14px; }
     .service-detail-view[hidden] { display: none; }
     .service-detail-hero { border: 1px solid var(--nexora-border); border-left: 4px solid var(--nexora-brand); border-radius: 14px; background: #fff; padding: 16px; }
     .service-detail-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
-    .service-detail-kicker { color: var(--nexora-muted); font-size: 11.5px; font-weight: 800; }
+    .service-detail-kicker { color: var(--nexora-muted); font-size: 12px; font-weight: 800; }
     .service-detail-name { margin: 6px 0 0; color: var(--nexora-text); font-size: 22px; font-weight: 900; line-height: 1.2; overflow-wrap: anywhere; }
     .service-detail-meta { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 12px; }
     .service-detail-stat { display: inline-flex; min-height: 30px; align-items: center; gap: 6px; border: 1px solid var(--nexora-border); border-radius: 999px; background: var(--nexora-surface-muted); padding: 5px 10px; color: var(--nexora-text); font-size: 12px; font-weight: 800; }
@@ -488,15 +500,15 @@
     .service-detail-pills { display: flex; flex-wrap: wrap; gap: 6px; }
     .service-detail-kv-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 10px; }
     .service-detail-kv { display: grid; min-width: 0; gap: 4px; border: 1px solid var(--nexora-rule); border-radius: 10px; background: var(--nexora-surface-muted); padding: 10px; }
-    .service-detail-kv span { color: var(--nexora-muted); font-size: 11px; font-weight: 800; }
-    .service-detail-kv strong { color: var(--nexora-text); font-size: 12.5px; font-weight: 900; line-height: 1.35; overflow-wrap: anywhere; }
+    .service-detail-kv span { color: var(--nexora-muted); font-size: 12px; font-weight: 800; }
+    .service-detail-kv strong { color: var(--nexora-text); font-size: 13px; font-weight: 900; line-height: 1.35; overflow-wrap: anywhere; }
     .service-editor-section { border: 1px solid var(--nexora-border); border-radius: 14px; background: #fff; padding: 14px; }
     .service-editor-section + .service-editor-section { margin-top: 12px; }
     .service-editor-section-title { display: flex; align-items: center; gap: 7px; margin-bottom: 12px; color: var(--nexora-text); font-size: 12px; font-weight: 900; text-transform: uppercase; letter-spacing: .04em; }
     .service-editor-grid { display: grid; gap: 12px; }
     .service-editor-grid-main { grid-template-columns: minmax(0, 1.35fr) minmax(0, .95fr); }
     .service-editor-grid-three { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-    .service-editor-field { display: grid; min-width: 0; gap: 6px; color: var(--nexora-muted); font-size: 11.5px; font-weight: 800; }
+    .service-editor-field { display: grid; min-width: 0; gap: 6px; color: var(--nexora-muted); font-size: 12px; font-weight: 800; }
     .service-editor-field .pos-input { width: 100%; min-width: 0; }
     .service-editor-field textarea.pos-input { height: auto; min-height: 104px; padding-top: 10px; line-height: 1.55; resize: vertical; }
     .service-editor-actions { justify-content: space-between; }
@@ -532,7 +544,7 @@
     .swap-tech-option:hover, .swap-tech-option:focus-visible { border-color: var(--nexora-brand); background: #f2f3ff; box-shadow: 0 0 0 3px rgba(70, 72, 216, .12); outline: 0; }
     .swap-tech-option-main { display: flex; min-width: 0; flex: 1; flex-direction: column; }
     .swap-tech-option-name { overflow: hidden; font-size: 13px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
-    .swap-tech-option-meta { margin-top: 3px; color: var(--nexora-muted); font-size: 11px; font-weight: 600; }
+    .swap-tech-option-meta { margin-top: 3px; color: var(--nexora-muted); font-size: 12px; font-weight: 600; }
     .swap-tech-option .pos-chip, .swap-tech-option .match-badge { flex-shrink: 0; }
     .swap-tech-option .match-badge { margin-left: 0; }
     .swap-tech-empty { border: 1px dashed var(--nexora-border); border-radius: 10px; padding: 14px; color: var(--nexora-muted); font-size: 12px; font-weight: 700; text-align: center; }
@@ -546,37 +558,37 @@
     .pos-mode-role-card.is-selected { border-color: var(--nexora-brand); background: #f2f3ff; box-shadow: 0 0 0 2px rgba(70, 72, 216, .12); }
     .pos-mode-role-avatar { display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; border-radius: 999px; background: var(--nexora-surface-muted); font-size: 14px; font-weight: 800; }
     .pos-mode-role-name { overflow: hidden; max-width: 100%; font-size: 13px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
-    .pos-mode-role-label { color: var(--nexora-subtle); font-size: 11px; font-weight: 600; }
+    .pos-mode-role-label { color: var(--nexora-subtle); font-size: 12px; font-weight: 600; }
     .pos-mode-pin { width: 100%; margin-top: 6px; }
     .pos-mode-error { margin-top: 8px; border: 1px solid rgba(239, 68, 68, .25); border-radius: 9px; background: #fff1f1; padding: 8px 10px; color: var(--nexora-danger); font-size: 12px; font-weight: 700; }
     @media (max-width: 480px) { .pos-mode-roles { grid-template-columns: 1fr; } .pos-mode-role-card { flex-direction: row; justify-content: flex-start; padding: 10px 12px; text-align: left; } .pos-mode-role-avatar { width: 36px; height: 36px; font-size: 14px; } }
 
     .sms-step { margin-bottom: 18px; }
-    .sms-step > .sms-step-lbl { display: block; margin-bottom: 8px; font-size: 11px; font-weight: 800; color: var(--nexora-muted); text-transform: uppercase; letter-spacing: .04em; }
+    .sms-step > .sms-step-lbl { display: block; margin-bottom: 8px; font-size: 12px; font-weight: 800; color: var(--nexora-muted); text-transform: uppercase; letter-spacing: .04em; }
 
     .seg-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(120px, 1fr)); gap: 8px; }
     .seg-btn { display: flex; flex-direction: column; align-items: center; gap: 3px; border: 1px solid var(--nexora-border); border-radius: 10px; background: #fff; padding: 10px 6px; }
     .seg-btn-icon { font-size: 16px; }
     .seg-btn-name { font-size: 12px; font-weight: 800; color: var(--nexora-text); }
-    .seg-btn-count { font-size: 10.5px; font-weight: 600; color: var(--nexora-subtle); }
+    .seg-btn-count { font-size: 12px; font-weight: 600; color: var(--nexora-subtle); }
     .seg-btn.is-on { border-color: var(--nexora-brand); background: #f2f3ff; box-shadow: 0 0 0 2px rgba(70, 72, 216, .12); }
 
     .tpl-list { display: grid; gap: 8px; }
     .tpl-item { border: 1px solid var(--nexora-border); border-radius: 10px; background: #fff; padding: 10px 12px; text-align: left; }
     .tpl-item:hover { border-color: var(--nexora-brand); background: #f7f8ff; }
-    .tpl-title { font-size: 12.5px; font-weight: 800; color: var(--nexora-text); }
-    .tpl-text { margin-top: 4px; font-size: 11.5px; font-weight: 500; color: var(--nexora-muted); line-height: 1.6; }
+    .tpl-title { font-size: 13px; font-weight: 800; color: var(--nexora-text); }
+    .tpl-text { margin-top: 4px; font-size: 12px; font-weight: 500; color: var(--nexora-muted); line-height: 1.6; }
 
     .sms-composer { border: 1px solid var(--nexora-border); border-radius: 12px; overflow: hidden; background: #fff; }
     .sms-toolbar { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; padding: 8px 10px; background: var(--nexora-surface-muted); border-bottom: 1px solid var(--nexora-border); }
-    .tag-btn { border: 1px solid var(--nexora-border); border-radius: 999px; background: #fff; padding: 4px 10px; font-size: 11px; font-weight: 700; color: var(--nexora-muted); }
+    .tag-btn { border: 1px solid var(--nexora-border); border-radius: 999px; background: #fff; padding: 4px 10px; font-size: 12px; font-weight: 700; color: var(--nexora-muted); }
     .tag-btn:hover { border-color: var(--nexora-brand); color: var(--nexora-brand); }
     .sms-textarea { width: 100%; min-height: 108px; border: 0; padding: 12px; font-size: 13px; font-weight: 500; line-height: 1.7; color: var(--nexora-text); resize: vertical; display: block; }
     .sms-textarea:focus { outline: 0; }
-    .sms-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px; border-top: 1px solid var(--nexora-rule); font-size: 11px; font-weight: 600; color: var(--nexora-subtle); }
+    .sms-foot { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 8px 12px; border-top: 1px solid var(--nexora-rule); font-size: 12px; font-weight: 600; color: var(--nexora-subtle); }
     .char-count.multi { color: var(--nexora-warning); font-weight: 800; }
     .sms-preview { margin-top: 12px; }
-    .sms-preview-lbl { font-size: 11px; font-weight: 800; color: var(--nexora-muted); margin-bottom: 6px; }
+    .sms-preview-lbl { font-size: 12px; font-weight: 800; color: var(--nexora-muted); margin-bottom: 6px; }
     .sms-bubble { border-radius: 14px 14px 14px 4px; background: #eaf0ff; border: 1px solid #d9e2ff; padding: 12px 14px; font-size: 13px; font-weight: 500; line-height: 1.7; color: var(--nexora-text); max-width: 420px; }
     .sms-bubble .lnk { color: var(--nexora-brand); text-decoration: underline; }
     .sms-bubble-empty { color: var(--nexora-subtle); font-style: italic; }
@@ -590,12 +602,12 @@
 
     .confirm-box { display: none; border: 1px solid rgba(245, 158, 11, .4); background: #fff9ee; border-radius: 12px; padding: 12px 14px; }
     .confirm-box.show { display: block; animation: posFade .2s ease; }
-    .confirm-title { font-size: 12.5px; font-weight: 800; color: #9a6608; margin-bottom: 6px; }
+    .confirm-title { font-size: 13px; font-weight: 800; color: #9a6608; margin-bottom: 6px; }
     .confirm-detail { font-size: 12px; font-weight: 500; color: var(--nexora-muted); line-height: 1.9; }
 
     .cost-box { border: 1px solid var(--nexora-border); border-radius: 10px; background: #fff; padding: 8px 12px; }
     .cost-box.warn { border-color: rgba(239, 68, 68, .5); background: #fdecec; }
-    .cost-lbl { font-size: 10.5px; font-weight: 700; color: var(--nexora-subtle); }
+    .cost-lbl { font-size: 12px; font-weight: 700; color: var(--nexora-subtle); }
     .cost-amt { font-size: 13px; font-weight: 800; color: var(--nexora-text); margin-top: 2px; }
     .cost-box.warn .cost-lbl, .cost-box.warn .cost-amt { color: var(--nexora-danger); }
 
@@ -863,7 +875,13 @@
               <div class="pos-card">
                 <div class="pos-card-head">
                   <h3><i class="bi bi-people-fill" aria-hidden="true"></i> Today's shift — turn order follows clock-in time</h3>
-                  <span class="pos-chip pos-chip-green" data-clk-oncount>0 on shift</span>
+                  <div class="pos-inline">
+                    <span class="pos-chip pos-chip-green" data-clk-oncount>0 on shift</span>
+                    <div class="booking-view-switch" role="group" aria-label="Tech roster view mode">
+                      <button class="booking-view-button" type="button" data-tech-roster-view-target="table" aria-pressed="false"><i class="bi bi-table" aria-hidden="true"></i>Table</button>
+                      <button class="booking-view-button" type="button" data-tech-roster-view-target="card" aria-pressed="false"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>
+                    </div>
+                  </div>
                 </div>
                 <div data-tech-roster-table></div>
                 <div class="pos-hint">One roster table combines clock status, station, current ticket, turns, beeper, and actions. Station # is editable inline.</div>
@@ -1037,7 +1055,7 @@
                   <span class="sms-step-lbl">Bước 3 — Soạn nội dung SMS</span>
                   <div class="sms-composer">
                     <div class="sms-toolbar" data-tag-toolbar>
-                      <span style="font-size:11px;font-weight:700;color:var(--nexora-subtle)">Chèn:</span>
+                      <span style="font-size:12px;font-weight:700;color:var(--nexora-subtle)">Chèn:</span>
                       <button class="tag-btn" type="button" data-tag="{TenKhach}"><i class="bi bi-person" aria-hidden="true"></i> Tên khách</button>
                       <button class="tag-btn" type="button" data-tag="{TenTiem}"><i class="bi bi-brush" aria-hidden="true"></i> Tên tiệm</button>
                       <button class="tag-btn" type="button" data-tag="{Link}"><i class="bi bi-link-45deg" aria-hidden="true"></i> Link offer</button>
@@ -2912,19 +2930,21 @@
         var sourceBadge = custSrcBadgeHtml(c);
         var inactiveBadge = custStatusOf(c) === 'inactive' ? ' <span class="pos-chip pos-chip-gray">Inactive</span>' : '';
         var tagsHtml = custTagsSummaryHtml(c);
+        var badgesHtml = segBadge + sourceBadge + inactiveBadge;
         return '<div class="wl-card cust-card">' +
           '<div class="cust-card-head">' +
+            '<span class="pos-avatar">' + esc(initials(c.name)) + '</span>' +
             '<button class="cust-card-name" type="button" data-cust-pick="' + esc(c.name) + '">' + esc(c.name) + '</button>' +
-            segBadge + sourceBadge + inactiveBadge +
-            '<div class="wl-actions cust-card-actions">' +
-              '<button class="pos-btn pos-btn-sm" type="button" data-cust-pick="' + esc(c.name) + '" title="View profile"><i class="bi bi-person-vcard" aria-hidden="true"></i></button>' +
-              '<button class="pos-btn pos-btn-sm" type="button" data-cust-edit="' + ci + '" title="Edit"><i class="bi bi-pencil" aria-hidden="true"></i></button>' +
-            '</div>' +
           '</div>' +
+          (badgesHtml ? '<div class="cust-card-badges">' + badgesHtml + '</div>' : '') +
           '<div class="cust-card-meta">' + esc(c.phone || 'No phone on file') + '</div>' +
           '<div class="cust-card-meta">' + (c.visits || 0) + ' visits · Last visit ' + custLastVisitLabel(c) + '</div>' +
           '<div class="cust-card-meta">Regular tech: ' + custTechSummaryHtml(c) + '</div>' +
           (tagsHtml !== '—' ? '<div class="pill-row" style="margin-top:6px">' + tagsHtml + '</div>' : '') +
+          '<div class="queue-card-actions">' +
+            '<button class="pos-btn pos-btn-sm" type="button" data-cust-pick="' + esc(c.name) + '" title="View profile"><i class="bi bi-person-vcard" aria-hidden="true"></i> View</button>' +
+            '<button class="pos-btn pos-btn-sm" type="button" data-cust-edit="' + ci + '" title="Edit"><i class="bi bi-pencil" aria-hidden="true"></i> Edit</button>' +
+          '</div>' +
         '</div>';
       }
       // Table mode — columns ported from the AI Hub Customers workspace (Customer/Phone/Group/Source/Visits/Last Visit/Action)
@@ -2969,7 +2989,7 @@
       function custNoteLevelsHtml(c, ci) {
         return '<div class="cust-note-levels">' + NOTE_LEVELS.map(function (l) {
           return '<div class="pos-inline" style="gap:6px;margin:3px 0;flex-wrap:nowrap">' +
-            '<span style="font-size:10px;font-weight:800;color:' + l[2] + ';white-space:nowrap;width:120px">' + l[1] + '</span>' +
+            '<span style="font-size:12px;font-weight:800;color:' + l[2] + ';white-space:nowrap;width:120px">' + l[1] + '</span>' +
             '<input class="pos-mini text" data-mg-note="' + ci + '|' + l[0] + '" value="' + esc((c.notes && c.notes[l[0]]) || '') + '" placeholder="—"></div>';
         }).join('') + '</div>';
       }
@@ -3017,7 +3037,7 @@
         if (!tags.length) return '—';
         var visible = tags.slice(0, 3), extra = tags.length - visible.length;
         return '<span class="cust-tag-chip-row">' + visible.map(function (t) { return '<span class="cust-tag-chip is-on">' + esc(t) + '</span>'; }).join('') +
-          (extra > 0 ? '<span class="pos-muted" style="font-size:11px;font-weight:700">+' + extra + '</span>' : '') + '</span>';
+          (extra > 0 ? '<span class="pos-muted" style="font-size:12px;font-weight:700">+' + extra + '</span>' : '') + '</span>';
       }
       // Table mode: 7 columns instead of 11 — Customer/Status/Source/Activity/Technician/Tags/Action —
       // so the table stays usable on an iPad landscape width instead of forcing horizontal scroll.
@@ -3043,7 +3063,7 @@
       function renderCustomersTable(rows) {
         if (!rows.length) return '<div class="wl-empty">No customers match.</div>';
         return '<div class="booking-table-wrap"><table class="booking-table"><thead><tr>' +
-          '<th scope="col">Customer</th><th scope="col">Status</th><th scope="col">Source</th><th scope="col">Activity</th><th scope="col">regular tech (thợ ruột)</th>' +
+          '<th scope="col">Customer</th><th scope="col">Status</th><th scope="col">Source</th><th scope="col">Activity</th><th scope="col">Regular tech</th>' +
           '<th scope="col">Tags</th><th scope="col">Action</th>' +
           '</tr></thead><tbody>' + rows.map(custTableRowHtml).join('') + '</tbody></table></div>';
       }
@@ -3258,7 +3278,7 @@
       var ciqViewMode = 'card'; // 'card' | 'table'
       function ciqActionsHtml(r) {
         return '<button class="pos-btn pos-btn-success pos-btn-sm queue-action-approve" data-ciq-ok="' + r.id + '"><i class="bi bi-check-lg" aria-hidden="true"></i> Accept</button>' +
-          '<button class="x-btn queue-action-danger-icon" data-ciq-no="' + r.id + '" title="Decline"><i class="bi bi-x-lg" aria-hidden="true"></i></button>';
+          '<button class="pos-btn pos-btn-sm queue-action-danger" data-ciq-no="' + r.id + '" title="Decline"><i class="bi bi-x-lg" aria-hidden="true"></i> Decline</button>';
       }
       function ciqCardHtml(r) {
         var tech = r.reqTech ? '<span class="queue-card-tech-value is-requested">' + esc(techName(r.reqTech)) + '</span>' : '<span class="pos-muted">Anyone</span>';
@@ -3297,7 +3317,7 @@
       var arqViewMode = 'card'; // 'card' | 'table'
       function arqActionsHtml(r, t) {
         return '<button class="pos-btn pos-btn-success pos-btn-sm queue-action-approve" data-arq-ok="' + r.id + '"><i class="bi bi-check-lg" aria-hidden="true"></i> Give to ' + esc(t.name) + '</button>' +
-          '<button class="x-btn queue-action-danger-icon" data-arq-no="' + r.id + '" title="Decline"><i class="bi bi-x-lg" aria-hidden="true"></i></button>';
+          '<button class="pos-btn pos-btn-sm queue-action-danger" data-arq-no="' + r.id + '" title="Decline"><i class="bi bi-x-lg" aria-hidden="true"></i> Decline</button>';
       }
       function arqSkillHtml(req, ok) {
         return req ? esc(req) + ': ' + (ok ? '<span class="pos-good-text">Eligible ✓</span>' : '<span class="pos-danger-text">Missing ⚠</span>') : '—';
@@ -3494,7 +3514,7 @@
               : w.status === 'ready' ? (w.readyAtMs ? Math.max(0, Math.floor((now - w.readyAtMs) / 60000)) + "' to pay" : '—')
               : '—';
             return '<tr class="booking-table-row"><td><div class="booking-customer-name">' + esc(w.name) +
-              (r.g.tickets.length > 1 ? ' <span class="pos-muted" style="font-size:11px;font-weight:600">· ' + r.g.tickets.length + ' svc</span>' : '') + '</div>' +
+              (r.g.tickets.length > 1 ? ' <span class="pos-muted" style="font-size:12px;font-weight:600">· ' + r.g.tickets.length + ' svc</span>' : '') + '</div>' +
               '</td>' +
               '<td>' + esc(w.phone || '—') + '</td>' +
               '<td>' + esc(w.bookingTime || w.at || '—') + '</td>' +
@@ -3512,16 +3532,16 @@
         if (w.status === 'waiting') {
           var auto = fAutoTech(w);
           return '<button class="pos-btn pos-btn-primary pos-btn-sm queue-action-primary" data-wstart="' + w.id + '"' + (auto ? '' : ' disabled') + '><i class="bi bi-play-fill" aria-hidden="true"></i> ' + (auto ? esc(auto.name) : 'No tech') + '</button>' +
-            '<button class="x-btn queue-action-danger-icon" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button>';
+            '<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button>';
         }
         if (w.status === 'service') {
-          return '<button class="pos-btn pos-btn-sm queue-action-muted" data-wswap="' + w.id + '" title="Swap tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i></button>' +
+          return '<button class="pos-btn pos-btn-sm queue-action-muted" data-wswap="' + w.id + '" title="Swap tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i> Swap</button>' +
             '<button class="pos-btn pos-btn-sm queue-action-progress" data-wdone="' + w.id + '" title="Tech finished — guest waits to pay"><i class="bi bi-check2" aria-hidden="true"></i> Done</button>' +
-            '<button class="x-btn queue-action-danger-icon" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button>';
+            '<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button>';
         }
         if (w.status === 'ready') {
           return '<span class="pos-chip pos-chip-green"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Ready</span>' +
-            '<button class="x-btn queue-action-danger-icon" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i></button>';
+            '<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button>';
         }
         // completed/cancelled tickets only show up here via the Tickets status-chip filter — read-only
         return ticketStatusBadge(w.status);
@@ -3571,7 +3591,7 @@
             ticketQueueCardNoteHtml(w) +
             '<div class="queue-card-actions">' +
             '<button class="pos-btn pos-btn-primary pos-btn-sm queue-action-primary" data-wstart="' + w.id + '"' + (auto ? '' : ' disabled') + '><i class="bi bi-play-fill" aria-hidden="true"></i> ' + (auto ? esc(auto.name) : 'No tech') + '</button>' +
-            '<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i> Close</button></div></div>';
+            '<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button></div></div>';
         }
         if (w.status === 'ready') {
           var rdyMin = w.readyAtMs ? Math.max(0, Math.floor((now - w.readyAtMs) / 60000)) : 0;
@@ -3580,7 +3600,7 @@
             ticketQueueCardDetailsHtml(w) +
             ticketQueueCardNoteHtml(w) +
             '<div class="queue-card-actions"><button class="pos-btn pos-btn-success pos-btn-sm queue-action-pay" data-wpay="' + esc(w.orderId) + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Charge</button>' +
-            '<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i> Close</button></div></div>';
+            '<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button></div></div>';
         }
         if (w.status === 'service') {
           var svcMin = w.svcAtMs ? Math.max(0, Math.floor((now - w.svcAtMs) / 60000)) : 0;
@@ -3589,10 +3609,10 @@
             ticketQueueCardDetailsHtml(w) +
             ticketQueueCardNoteHtml(w) +
             '<div class="queue-card-actions">' +
-            '<button class="pos-btn pos-btn-sm queue-action-muted" data-wswap="' + w.id + '" title="Swap tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i></button>' +
+            '<button class="pos-btn pos-btn-sm queue-action-muted" data-wswap="' + w.id + '" title="Swap tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i> Swap</button>' +
             '<button class="pos-btn pos-btn-sm queue-action-progress" data-wdone="' + w.id + '" title="Tech finished — guest waits to pay"><i class="bi bi-check2" aria-hidden="true"></i> Done</button>' +
             '<button class="pos-btn pos-btn-success pos-btn-sm queue-action-pay" data-wpay="' + esc(w.orderId) + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Charge</button>' +
-            '<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel="' + w.id + '" title="Remove"><i class="bi bi-x-lg" aria-hidden="true"></i> Close</button></div></div>';
+            '<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button></div></div>';
         }
         // completed/cancelled — only reachable via the Tickets status-chip filter; read-only
         return '<div class="wl-card queue-card">' +
@@ -3832,6 +3852,13 @@
             b.setAttribute('aria-pressed', String(active));
           });
           renderArq();
+          return;
+        }
+        /* Tech roster: card/table view switch */
+        var rosterView = e.target.closest('[data-tech-roster-view-target]');
+        if (rosterView) {
+          techRosterViewMode = rosterView.getAttribute('data-tech-roster-view-target');
+          renderTechRosterTable();
           return;
         }
 
@@ -4185,13 +4212,15 @@
         if (bar) bar.style.width = Math.round(left / 15 * 100) + '%';
       }
 
+      var techRosterViewMode = 'table'; // 'table' | 'card'
       function renderTechRosterTable() {
         var selW = fSel ? WAITLIST.find(function (x) { return x.id === fSel; }) : null;
         if (!selW) fSel = null;
         var ord = turnOrder();
         var next = nextTech();
         var roster = STAFF.filter(function (s) { return s.role !== 'owner'; });
-        var rows = roster.map(function (s) {
+        var rowsHtml = '', cardsHtml = '';
+        roster.forEach(function (s) {
           var ses = CLOCK[s.id] || (CLOCK[s.id] = []);
           var open = ses.find(function (x) { return !x.out; });
           var t = techById(s.id);
@@ -4200,32 +4229,50 @@
           var match = selW && t ? matchScore(t, selW) : null;
           var pickable = !!(selW && t && !busy && t.id !== selW.techId);
           var shiftLabel = open ? '<i class="bi bi-record-fill" style="color:var(--nexora-success)" aria-hidden="true"></i> In since ' + timeFmt(open.in) : (ses.length ? 'Clocked out' : 'Not in');
-          var shiftCell = '<span class="tech-roster-shift">' + shiftLabel + '</span><div class="pos-muted" style="font-size:11px;margin-top:3px">' + clockHours(s.id).toFixed(1) + 'h today</div>';
+          var shiftCell = '<span class="tech-roster-shift">' + shiftLabel + '</span><div class="pos-muted" style="font-size:12px;margin-top:3px">' + clockHours(s.id).toFixed(1) + 'h today</div>';
           var ticketCell = !t ? '<span class="pos-muted">—</span>' : busy
             ? '<span class="tech-roster-ticket is-busy"><i class="bi bi-brush" aria-hidden="true"></i> ' + esc(busy) + '</span>'
             : '<span class="tech-roster-ticket is-free">Free</span>';
-          if (match) ticketCell += '<div class="pos-muted" style="font-size:11px;margin-top:3px">Match <span class="match-badge" style="color:' + (match.sc >= 75 ? 'var(--nexora-success)' : match.sc >= 50 ? 'var(--nexora-warning)' : 'var(--nexora-danger)') + '">' + match.sc + '%' + (match.okSkill ? '' : ' ⚠') + '</span></div>';
+          if (match) ticketCell += '<div class="pos-muted" style="font-size:12px;margin-top:3px">Match <span class="match-badge" style="color:' + (match.sc >= 75 ? 'var(--nexora-success)' : match.sc >= 50 ? 'var(--nexora-warning)' : 'var(--nexora-danger)') + '">' + match.sc + '%' + (match.okSkill ? '' : ' ⚠') + '</span></div>';
           var turnsCell = t ? '<span class="tech-roster-turns">' + t.turns + ' turns' + (pos ? ' · #' + pos : '') + '</span>' + (!busy && next && next.id === t.id ? '<div class="next-chip"><i class="bi bi-bullseye" aria-hidden="true"></i> Next up</div>' : '') : '<span class="pos-muted">—</span>';
           var beepCell = t && BEEP[t.id] ? '<span class="pos-chip pos-chip-violet"><i class="bi bi-phone-vibrate-fill" aria-hidden="true"></i> #' + BEEP[t.id] + '</span>' : '<span class="pos-muted">—</span>';
+          var stationCell = t ? '<input class="clk-station" id="clk-station-' + esc(s.id) + '" data-clk-bnum="' + esc(s.id) + '" aria-label="Station" value="' + esc(t.bnum) + '">' : '<span class="pos-muted">—</span>';
           var actions = '<button class="pos-btn ' + (open ? '' : 'pos-btn-primary ') + 'pos-btn-sm" data-clk="' + esc(s.id) + '">' + (open ? '<i class="bi bi-stop-circle" aria-hidden="true"></i> Clock out' : '<i class="bi bi-camera" aria-hidden="true"></i> Clock in') + '</button>';
           if (t) actions += '<button class="pos-btn pos-btn-sm" data-fpage="' + esc(t.id) + '" title="Beep this tech"><i class="bi bi-phone-vibrate-fill" aria-hidden="true"></i> Beep</button>';
           if (pickable) actions += '<button class="pos-btn pos-btn-primary pos-btn-sm" data-fassign="' + esc(t.id) + '"><i class="bi bi-person-check" aria-hidden="true"></i> Assign</button>';
-          var row = '<tr class="tech-roster-row' + (selW && !pickable ? ' dim' : '') + '">' +
+          var warnHtml = (match && !match.okSkill && fWarn && fWarn.tid === t.id && selW && fWarn.wid === selW.id)
+            ? '⚠ ' + esc(t.name) + ' has no <b>' + esc(match.req) + '</b> skill for "' + esc(posServiceDisplayName(selW.svc || '')) + '" — click Assign again to override (logged).'
+            : '';
+          rowsHtml += '<tr class="tech-roster-row' + (selW && !pickable ? ' dim' : '') + '">' +
             '<td><div class="tech-roster-person"><span class="pos-avatar' + (t ? '' : ' plain') + '">' + esc(initials(s.name)) + '</span><div><div class="tech-roster-person-name">' + esc(s.name) + '</div><div class="tech-roster-person-role">' + ROLE_LBL[s.role] + '</div></div></div></td>' +
             '<td>' + shiftCell + '</td>' +
-            '<td>' + (t ? '<input class="clk-station" id="clk-station-' + esc(s.id) + '" data-clk-bnum="' + esc(s.id) + '" aria-label="Station" value="' + esc(t.bnum) + '">' : '<span class="pos-muted">—</span>') + '</td>' +
+            '<td>' + stationCell + '</td>' +
             '<td>' + ticketCell + '</td>' +
             '<td>' + turnsCell + '</td>' +
             '<td>' + beepCell + '</td>' +
             '<td><div class="tech-roster-actions">' + actions + '</div></td>' +
             '</tr>';
-          if (match && !match.okSkill && fWarn && fWarn.tid === t.id && selW && fWarn.wid === selW.id) {
-            row += '<tr><td colspan="7" class="warn-row">⚠ ' + esc(t.name) + ' has no <b>' + esc(match.req) + '</b> skill for "' + esc(posServiceDisplayName(selW.svc || '')) + '" — click Assign again to override (logged).</td></tr>';
-          }
-          return row;
-        }).join('');
+          if (warnHtml) rowsHtml += '<tr><td colspan="7" class="warn-row">' + warnHtml + '</td></tr>';
+
+          cardsHtml += '<article class="queue-card' + (selW && !pickable ? ' dim' : '') + '">' +
+            '<div class="queue-card-head">' +
+              '<div class="queue-card-identity"><span class="pos-people"><span class="pos-avatar' + (t ? '' : ' plain') + '">' + esc(initials(s.name)) + '</span> <span><span class="pos-strong">' + esc(s.name) + '</span><div class="pos-muted" style="font-size:12px">' + ROLE_LBL[s.role] + '</div></span></span></div>' +
+              '<div class="queue-card-status">' + shiftCell + '</div>' +
+            '</div>' +
+            '<div class="pos-inline" style="flex-wrap:wrap;gap:8px;margin-top:4px">' + ticketCell + turnsCell + beepCell + '</div>' +
+            (t ? '<div class="queue-card-meta"><span class="pos-muted" style="font-size:12px">Station</span>' + stationCell + '</div>' : '') +
+            (warnHtml ? '<div class="queue-card-note" style="color:var(--nexora-danger)"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i> <span>' + warnHtml + '</span></div>' : '') +
+            '<div class="queue-card-actions">' + actions + '</div>' +
+            '</article>';
+        });
         var hint = selW ? '<div class="sel-hint"><i class="bi bi-hand-index" aria-hidden="true"></i> Select Assign for a free tech to ' + (selW.status === 'service' ? 'reassign' : 'assign') + ' <b>' + esc(selW.name) + '</b>.</div>' : '';
-        html('[data-tech-roster-table]', hint + '<div class="tech-roster-table-wrap"><table class="tech-roster-table"><thead><tr><th scope="col">Technician</th><th scope="col">Shift</th><th scope="col">Station</th><th scope="col">Current ticket</th><th scope="col">Turns today</th><th scope="col">Beeper</th><th scope="col">Actions</th></tr></thead><tbody>' + rows + '</tbody></table></div>');
+        var tableBodyHtml = '<div class="tech-roster-table-wrap"><table class="tech-roster-table"><thead><tr><th scope="col">Technician</th><th scope="col">Shift</th><th scope="col">Station</th><th scope="col">Current ticket</th><th scope="col">Turns today</th><th scope="col">Beeper</th><th scope="col">Actions</th></tr></thead><tbody>' + rowsHtml + '</tbody></table></div>';
+        html('[data-tech-roster-table]', hint + (techRosterViewMode === 'card' ? cardsHtml : tableBodyHtml));
+        document.querySelectorAll('[data-tech-roster-view-target]').forEach(function (b) {
+          var active = b.getAttribute('data-tech-roster-view-target') === techRosterViewMode;
+          b.classList.toggle('is-active', active);
+          b.setAttribute('aria-pressed', String(active));
+        });
       }
 
       function renderClock() {
@@ -4305,11 +4352,9 @@
           '</div>';
       }
 
+      var mgPayrollViewMode = 'table';
       function mgPayrollHtml(ps) {
-        return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3><i class="bi bi-people-fill" aria-hidden="true"></i> Techs &amp; pay — today</h3>' +
-          '<button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-addtech><i class="bi bi-person-plus"></i> Add tech</button></div>' +
-          '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr>' +
+        var tableHtml = '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr>' +
           '<th>Tech</th><th>Turns</th><th><i class="bi bi-clock" aria-hidden="true"></i> Hours</th><th>Service $</th><th>Comm %</th><th>Commission</th><th>Tip</th><th>Tech takes</th><th>Weekly guarantee</th><th></th>' +
           '</tr></thead><tbody>' +
           TECHS.map(function (t) {
@@ -4330,7 +4375,32 @@
               '<td><button class="pos-btn pos-btn-danger pos-btn-sm" data-mg-fire="' + t.id + '">Deactivate</button></td>' +
               '</tr>';
           }).join('') +
-          '</tbody></table></div>' +
+          '</tbody></table></div>';
+        var cardsHtml = '<div data-mg-payroll-list>' + TECHS.map(function (t) {
+          var p = ps[t.id] || { svc: 0, tip: 0 };
+          var comm = p.svc * t.comm;
+          var hrs = clockHours(t.id);
+          var onShift = isOnShift(t.id);
+          return '<article class="queue-card">' +
+            '<div class="queue-card-head"><div class="queue-card-identity"><span class="pos-people"><span class="pos-avatar">' + initials(t.name) + '</span> <span class="pos-strong">' + esc(t.name) + '</span></span></div>' +
+            '<div class="queue-card-status">' + (hrs ? hrs.toFixed(1) + 'h' : '<span class="pos-warn-text">not in</span>') + (onShift ? ' <span class="pos-good-text">●</span>' : '') + '</div></div>' +
+            '<div class="pos-inline" style="flex-wrap:wrap;gap:8px"><span class="pos-chip pos-chip-gray">' + t.turns + ' turns</span><span class="pos-chip pos-chip-gray">' + money(p.svc) + ' service</span><span class="pos-chip pos-chip-green">' + money(p.tip) + ' tip</span></div>' +
+            '<div class="queue-card-meta"><span class="pos-muted" style="font-size:12px">Comm %</span><input class="pos-mini" data-mg-comm="' + t.id + '" value="' + Math.round(t.comm * 100) + '" style="width:52px"></div>' +
+            '<div class="queue-card-meta"><span class="pos-muted" style="font-size:12px">Weekly guarantee</span><input class="pos-mini" data-mg-guar="' + t.id + '" value="' + (t.guar || 0) + '" style="width:72px"></div>' +
+            '<div class="pos-strong" style="font-size:13px">Tech takes ' + money(comm + p.tip) + '</div>' +
+            '<div class="queue-card-actions"><button class="pos-btn pos-btn-danger pos-btn-sm" data-mg-fire="' + t.id + '">Deactivate</button></div>' +
+            '</article>';
+        }).join('') + '</div>';
+        return '<div class="pos-card">' +
+          '<div class="pos-card-head"><h3><i class="bi bi-people-fill" aria-hidden="true"></i> Techs &amp; pay — today</h3>' +
+          '<div class="pos-inline">' +
+            '<div class="booking-view-switch" role="group" aria-label="Techs and pay view mode">' +
+              '<button class="booking-view-button' + (mgPayrollViewMode === 'table' ? ' is-active' : '') + '" type="button" data-mg-payroll-view-target="table" aria-pressed="' + (mgPayrollViewMode === 'table' ? 'true' : 'false') + '"><i class="bi bi-table" aria-hidden="true"></i>Table</button>' +
+              '<button class="booking-view-button' + (mgPayrollViewMode === 'card' ? ' is-active' : '') + '" type="button" data-mg-payroll-view-target="card" aria-pressed="' + (mgPayrollViewMode === 'card' ? 'true' : 'false') + '"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>' +
+            '</div>' +
+            '<button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-addtech><i class="bi bi-person-plus"></i> Add tech</button>' +
+          '</div></div>' +
+          (mgPayrollViewMode === 'card' ? cardsHtml : tableHtml) +
           '<div data-mg-addform></div>' +
           '<div class="pos-hint">Edit commission % or the weekly guarantee: type a number then click away. "Deactivate" keeps payroll and tax history — nothing is deleted.</div>' +
           '</div>';
@@ -4373,7 +4443,7 @@
                   : el.length ? el.map(function (t) { return esc(t.name) + ((t.exp || []).indexOf(req) !== -1 ? ' ★' : ''); }).join(', ')
                   : '<span class="pos-danger-text">⚠ No tech has this skill — guests will get stuck</span>';
                 return '<tr><td class="pos-strong">' + esc(c.label) + '</td>' +
-                  '<td><select class="pos-input" data-mg-svcreq="' + c.id + '" style="height:32px;font-size:12.5px">' +
+                  '<td><select class="pos-input" data-mg-svcreq="' + c.id + '" style="height:32px;font-size:13px">' +
                   '<option value="">— none required —</option>' +
                   SKILLS.map(function (s) { return '<option value="' + s + '"' + (req === s ? ' selected' : '') + '>' + s + '</option>'; }).join('') +
                   '</select></td><td class="wrap">' + elTxt + '</td></tr>';
@@ -4385,7 +4455,7 @@
           mrInp('wSkill', '✓ Has the skill (base)') + mrInp('wMiss', '⚠ Missing the skill') + mrInp('wExp', '★ Expert +') +
           mrInp('wTurn', '⚖️ Fairness max +') + mrInp('wReq', '<i class="bi bi-person" aria-hidden="true"></i> Guest requested +') + mrInp('wPref', '🏷️ Regular tech +') + mrInp('wFit', '🤝 Customer fit +') +
           '<label class="pos-inline-lbl"><input type="checkbox" data-mg-mruse' + (MATCH_RULES.useTurn ? ' checked' : '') + ' style="accent-color:var(--nexora-brand);width:16px;height:16px"> ⚖️ Count turn fairness</label>' +
-          '<label class="pos-inline-lbl">Wrong-skill override:<select class="pos-input" data-mg-mrovr style="height:32px;font-size:12.5px">' +
+          '<label class="pos-inline-lbl">Wrong-skill override:<select class="pos-input" data-mg-mrovr style="height:32px;font-size:13px">' +
           ['manager|Manager PIN required', 'reason|Reason required (text)', 'free|Two taps, log only'].map(function (o) {
             var p = o.split('|');
             return '<option value="' + p[0] + '"' + (MATCH_RULES.override === p[0] ? ' selected' : '') + '>' + p[1] + '</option>';
@@ -4394,6 +4464,7 @@
           '</div>';
       }
 
+      var mgPerfViewMode = 'table';
       function mgPerfHtml(ps) {
         var rows = TECHS.map(function (t) {
           var pf = TECH_PERF[t.id] || { wtd: 0, rating: null, rev: 0, bills: 0, upsBills: 0 };
@@ -4416,33 +4487,59 @@
           };
         }).sort(function (a, b) { return b.gap - a.gap; });
 
-        return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3><i class="bi bi-bullseye" aria-hidden="true"></i> Guarantee &amp; performance — this week (day ' + AD_DAYS_DONE + '/' + AD_DAYS_WEEK + ')</h3><span class="pos-muted">techs needing attention first</span></div>' +
-          '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr>' +
+        var perfRowHtml = function (r) {
+          var p = r.target ? Math.min(100, Math.round(r.done / r.target * 100)) : 100;
+          var status = r.gap > 0
+            ? '<span class="pos-warn-text">🔻 Salon tops up ~' + money0(r.gap) + '</span><div class="pos-muted" style="font-size:12px;font-weight:600">→ needs ' + money0(r.needDay) + '/day for the last ' + (AD_DAYS_WEEK - AD_DAYS_DONE) + ' day(s)</div>'
+            : '<span class="pos-good-text">✅ Over the guarantee — salon nets ~' + money0(-r.gap) + '</span>';
+          var rating = r.pf.rating == null ? '<span class="pos-muted">none yet</span>'
+            : '<span class="' + (r.pf.rating < 4.5 ? 'pos-danger-text' : '') + '">' + r.pf.rating.toFixed(1) + '</span> <span class="pos-muted" style="font-size:12px">(' + r.pf.rev + ')</span>' +
+              (r.pf.rating < 4.5 ? '<div class="pos-warn-text" style="font-size:12px">→ read the reviews, coach</div>' : '');
+          var upsTxt = '<span class="' + (r.ups < 0.15 ? 'pos-danger-text' : '') + '">' + pct(r.ups) + '</span> <span class="pos-muted" style="font-size:12px">/' + r.billsTot + ' bills</span>' +
+            (r.ups < 0.15 ? '<div class="pos-warn-text" style="font-size:12px">→ push gel upgrade, design</div>' : '');
+          return { p: p, status: status, rating: rating, upsTxt: upsTxt };
+        };
+        var tableHtml = '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr>' +
           '<th>Tech</th><th>Guarantee</th><th>Needs /week</th><th>/day</th><th>Done this week</th><th>Projected</th><th>Guarantee vs earnings</th><th><i class="bi bi-star-fill" aria-hidden="true"></i> Rating</th><th>Upsell</th><th><i class="bi bi-arrow-repeat" aria-hidden="true"></i> Rebook</th><th><i class="bi bi-wrench" aria-hidden="true"></i> Rework</th>' +
           '</tr></thead><tbody>' +
           rows.map(function (r) {
-            var p = r.target ? Math.min(100, Math.round(r.done / r.target * 100)) : 100;
-            var status = r.gap > 0
-              ? '<span class="pos-warn-text">🔻 Salon tops up ~' + money0(r.gap) + '</span><div class="pos-muted" style="font-size:11px;font-weight:600">→ needs ' + money0(r.needDay) + '/day for the last ' + (AD_DAYS_WEEK - AD_DAYS_DONE) + ' day(s)</div>'
-              : '<span class="pos-good-text">✅ Over the guarantee — salon nets ~' + money0(-r.gap) + '</span>';
-            var rating = r.pf.rating == null ? '<span class="pos-muted">none yet</span>'
-              : '<span class="' + (r.pf.rating < 4.5 ? 'pos-danger-text' : '') + '">' + r.pf.rating.toFixed(1) + '</span> <span class="pos-muted" style="font-size:11px">(' + r.pf.rev + ')</span>' +
-                (r.pf.rating < 4.5 ? '<div class="pos-warn-text" style="font-size:10.5px">→ read the reviews, coach</div>' : '');
-            var upsTxt = '<span class="' + (r.ups < 0.15 ? 'pos-danger-text' : '') + '">' + pct(r.ups) + '</span> <span class="pos-muted" style="font-size:11px">/' + r.billsTot + ' bills</span>' +
-              (r.ups < 0.15 ? '<div class="pos-warn-text" style="font-size:10.5px">→ push gel upgrade, design</div>' : '');
+            var x = perfRowHtml(r);
             return '<tr>' +
               '<td><span class="pos-people"><span class="pos-avatar">' + initials(r.t.name) + '</span> <span class="pos-strong">' + esc(r.t.name) + '</span></span></td>' +
               '<td>' + money0(r.t.guar || 0) + '</td><td class="pos-strong">' + money0(r.target) + '</td><td>' + money0(r.daily) + '</td>' +
-              '<td style="min-width:130px">' + money0(r.done) + ' <span class="pos-muted" style="font-size:11px">(' + p + '%)</span>' +
-              '<div class="pos-meter ' + (r.gap > 0 ? 'warn' : 'good') + '" style="margin-top:5px"><span style="width:' + p + '%"></span></div></td>' +
-              '<td>' + money0(r.proj) + '</td><td class="wrap">' + status + '</td><td>' + rating + '</td><td>' + upsTxt + '</td>' +
-              '<td><span class="' + (r.rbRate < 0.45 ? 'pos-danger-text' : '') + '">' + pct(r.rbRate) + '</span> <span class="pos-muted" style="font-size:11px">' + r.rbk.rb + '/' + r.rbk.elig + '</span>' +
-              (r.rbRate < 0.45 ? '<div class="pos-warn-text" style="font-size:10.5px">→ invite rebooking at the desk</div>' : '') + '</td>' +
-              '<td><span class="' + (r.rework > 2 ? 'pos-danger-text' : '') + '">' + r.rework + '</span>' + (r.rework > 2 ? '<div class="pos-warn-text" style="font-size:10.5px">→ quality check</div>' : '') + '</td>' +
+              '<td style="min-width:130px">' + money0(r.done) + ' <span class="pos-muted" style="font-size:12px">(' + x.p + '%)</span>' +
+              '<div class="pos-meter ' + (r.gap > 0 ? 'warn' : 'good') + '" style="margin-top:5px"><span style="width:' + x.p + '%"></span></div></td>' +
+              '<td>' + money0(r.proj) + '</td><td class="wrap">' + x.status + '</td><td>' + x.rating + '</td><td>' + x.upsTxt + '</td>' +
+              '<td><span class="' + (r.rbRate < 0.45 ? 'pos-danger-text' : '') + '">' + pct(r.rbRate) + '</span> <span class="pos-muted" style="font-size:12px">' + r.rbk.rb + '/' + r.rbk.elig + '</span>' +
+              (r.rbRate < 0.45 ? '<div class="pos-warn-text" style="font-size:12px">→ invite rebooking at the desk</div>' : '') + '</td>' +
+              '<td><span class="' + (r.rework > 2 ? 'pos-danger-text' : '') + '">' + r.rework + '</span>' + (r.rework > 2 ? '<div class="pos-warn-text" style="font-size:12px">→ quality check</div>' : '') + '</td>' +
               '</tr>';
           }).join('') +
-          '</tbody></table></div>' +
+          '</tbody></table></div>';
+        var cardsHtml = '<div data-mg-perf-list>' + rows.map(function (r) {
+          var x = perfRowHtml(r);
+          return '<article class="queue-card">' +
+            '<div class="queue-card-head"><div class="queue-card-identity"><span class="pos-people"><span class="pos-avatar">' + initials(r.t.name) + '</span> <span class="pos-strong">' + esc(r.t.name) + '</span></span></div>' +
+            '<div class="queue-card-status">' + x.status + '</div></div>' +
+            '<div style="min-width:0">' + money0(r.done) + ' <span class="pos-muted" style="font-size:12px">of ' + money0(r.target) + ' (' + x.p + '%)</span>' +
+            '<div class="pos-meter ' + (r.gap > 0 ? 'warn' : 'good') + '" style="margin-top:5px"><span style="width:' + x.p + '%"></span></div></div>' +
+            '<div class="pos-inline" style="flex-wrap:wrap;gap:8px"><span class="pos-chip pos-chip-gray">Guarantee ' + money0(r.t.guar || 0) + '</span><span class="pos-chip pos-chip-gray">/day ' + money0(r.daily) + '</span><span class="pos-chip pos-chip-gray">Projected ' + money0(r.proj) + '</span></div>' +
+            '<div class="queue-card-meta"><span class="pos-muted" style="font-size:12px"><i class="bi bi-star-fill" aria-hidden="true"></i> Rating</span><span>' + x.rating + '</span></div>' +
+            '<div class="queue-card-meta"><span class="pos-muted" style="font-size:12px">Upsell</span><span>' + x.upsTxt + '</span></div>' +
+            '<div class="queue-card-meta"><span class="pos-muted" style="font-size:12px"><i class="bi bi-arrow-repeat" aria-hidden="true"></i> Rebook</span><span class="' + (r.rbRate < 0.45 ? 'pos-danger-text' : '') + '">' + pct(r.rbRate) + ' <span class="pos-muted" style="font-size:12px">' + r.rbk.rb + '/' + r.rbk.elig + '</span></span></div>' +
+            '<div class="queue-card-meta"><span class="pos-muted" style="font-size:12px"><i class="bi bi-wrench" aria-hidden="true"></i> Rework</span><span class="' + (r.rework > 2 ? 'pos-danger-text' : '') + '">' + r.rework + '</span></div>' +
+            '</article>';
+        }).join('') + '</div>';
+        return '<div class="pos-card">' +
+          '<div class="pos-card-head"><h3><i class="bi bi-bullseye" aria-hidden="true"></i> Guarantee &amp; performance — this week (day ' + AD_DAYS_DONE + '/' + AD_DAYS_WEEK + ')</h3>' +
+          '<div class="pos-inline">' +
+            '<span class="pos-muted">techs needing attention first</span>' +
+            '<div class="booking-view-switch" role="group" aria-label="Guarantee and performance view mode">' +
+              '<button class="booking-view-button' + (mgPerfViewMode === 'table' ? ' is-active' : '') + '" type="button" data-mg-perf-view-target="table" aria-pressed="' + (mgPerfViewMode === 'table' ? 'true' : 'false') + '"><i class="bi bi-table" aria-hidden="true"></i>Table</button>' +
+              '<button class="booking-view-button' + (mgPerfViewMode === 'card' ? ' is-active' : '') + '" type="button" data-mg-perf-view-target="card" aria-pressed="' + (mgPerfViewMode === 'card' ? 'true' : 'false') + '"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>' +
+            '</div>' +
+          '</div></div>' +
+          (mgPerfViewMode === 'card' ? cardsHtml : tableHtml) +
           '<div class="pos-hint">Needs /week = guarantee ÷ commission % (a $900 guarantee at 60% means the tech must produce $1,500 of service before the salon breaks even on the guarantee). Ratings come from the post-ticket SMS review. Upsell = share of bills carrying an add-on item. Rebook and rework are fed by checkout flags.</div>' +
           '</div>';
       }
@@ -4468,7 +4565,7 @@
           '</tr></thead><tbody>' +
           rows.map(function (r) {
             var t = r.t;
-            var modelSel = '<select class="pos-input" data-mg-model="' + t.id + '" style="height:32px;font-size:12.5px">' +
+            var modelSel = '<select class="pos-input" data-mg-model="' + t.id + '" style="height:32px;font-size:13px">' +
               Object.keys(PAY_MODELS).map(function (k) { return '<option value="' + k + '"' + (r.m === k ? ' selected' : '') + '>' + PAY_MODELS[k] + '</option>'; }).join('') + '</select>';
             var splitInp = r.m === 'baoshare'
               ? '<input class="pos-mini" data-mg-split="' + t.id + '" value="' + Math.round((t.baoSplit || t.comm) * 100) + '" style="width:52px"> %'
@@ -4481,7 +4578,7 @@
               var head = r.own < 0
                 ? '<div class="pos-danger-text">🔴 Right now the salon is ~' + money0(-r.own) + ' out of pocket (produced ' + money0(r.done) + ' &lt; guarantee ' + money0(t.guar || 0) + ').</div>'
                 : '<div class="pos-warn-text">🟠 Below the target — the salon keeps ' + pct(r.ownPct) + ' instead of ' + pct(r.stdPct) + '.</div>';
-              act = head + '<div class="pos-muted" style="font-size:11px;font-weight:600">Needs <b>' + money0(need) + '</b> more service (≈' + money0(daysLeft ? need / daysLeft : need) + '/day, ' + daysLeft + ' day(s) left) to clear ' + money0(r.T) + '. → Give them the walk-ins, push upsell/design. Run-rate projection: ' + money0(r.proj) + (r.proj < (t.guar || 0) ? ' — still short; two weeks in a row means revisiting the guarantee or the schedule' : '') + '.</div>';
+              act = head + '<div class="pos-muted" style="font-size:12px;font-weight:600">Needs <b>' + money0(need) + '</b> more service (≈' + money0(daysLeft ? need / daysLeft : need) + '/day, ' + daysLeft + ' day(s) left) to clear ' + money0(r.T) + '. → Give them the walk-ins, push upsell/design. Run-rate projection: ' + money0(r.proj) + (r.proj < (t.guar || 0) ? ' — still short; two weeks in a row means revisiting the guarantee or the schedule' : '') + '.</div>';
             }
             var pctCls = r.ownPct < 0 ? 'pos-danger-text' : r.ownPct < r.stdPct - 0.05 ? 'pos-warn-text' : 'pos-good-text';
             return '<tr>' +
@@ -4514,7 +4611,7 @@
             return '<tr>' +
               '<td><span class="pos-people"><span class="pos-avatar">' + initials(t.name) + '</span> <span class="pos-strong">' + esc(t.name) + '</span></span></td>' +
               '<td>' + Math.round(t.comm * 100) + '%</td>' +
-              '<td class="wrap">' + (sb.list.length ? sb.list.map(function (x) { return '<span class="pos-good-text" style="font-size:11.5px">' + x[0] + ' +' + x[1] + '%</span>'; }).join(' · ') : '<span class="pos-muted">no thresholds met</span>') + '</td>' +
+              '<td class="wrap">' + (sb.list.length ? sb.list.map(function (x) { return '<span class="pos-good-text" style="font-size:12px">' + x[0] + ' +' + x[1] + '%</span>'; }).join(' · ') : '<span class="pos-muted">no thresholds met</span>') + '</td>' +
               '<td><b class="' + (SMART.on && sb.tot ? 'pos-good-text' : '') + '">' + Math.round(effComm(t) * 100) + '%</b>' + (sb.tot >= SMART.cap ? ' 🧢' : '') + '</td>' +
               '<td>' + (SMART.on ? (delta ? '+' + money(delta) : '—') : '<span class="pos-muted">off</span>') + '</td>' +
               '</tr>';
@@ -4539,10 +4636,10 @@
         return '<div class="pos-card">' +
           '<div class="pos-card-head"><h3><i class="bi bi-wallet2" aria-hidden="true"></i> Payout Center — weekly run (amount from 💼 pay model + 100% of tips)</h3></div>' +
           '<div class="pos-grid pos-g4" style="margin-bottom:14px">' +
-          '<div class="pos-card soft"><div class="pos-kpi-label">⏳ Unpaid</div><div class="pos-kpi-value">' + money0(pendTot) + '</div><div class="pos-muted" style="font-size:11.5px">pay + tips still owed</div></div>' +
-          '<div class="pos-card soft"><div class="pos-kpi-label"><i class="bi bi-heart-fill" aria-hidden="true"></i> Tips today</div><div class="pos-kpi-value">' + money0(tipTot) + '</div><div class="pos-muted" style="font-size:11.5px">100% to techs, paid with payroll</div></div>' +
-          '<div class="pos-card soft"><div class="pos-kpi-label"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Ready to pay</div><div class="pos-kpi-value">' + readyN + '</div><div class="pos-muted" style="font-size:11.5px">amount locked, waiting on a tap</div></div>' +
-          '<div class="pos-card soft"><div class="pos-kpi-label"><i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i> Missing method</div><div class="pos-kpi-value ' + (missN ? 'pos-warn-text' : '') + '">' + missN + '</div><div class="pos-muted" style="font-size:11.5px">no payout destination — held</div></div>' +
+          '<div class="pos-card soft"><div class="pos-kpi-label">⏳ Unpaid</div><div class="pos-kpi-value">' + money0(pendTot) + '</div><div class="pos-muted" style="font-size:12px">pay + tips still owed</div></div>' +
+          '<div class="pos-card soft"><div class="pos-kpi-label"><i class="bi bi-heart-fill" aria-hidden="true"></i> Tips today</div><div class="pos-kpi-value">' + money0(tipTot) + '</div><div class="pos-muted" style="font-size:12px">100% to techs, paid with payroll</div></div>' +
+          '<div class="pos-card soft"><div class="pos-kpi-label"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Ready to pay</div><div class="pos-kpi-value">' + readyN + '</div><div class="pos-muted" style="font-size:12px">amount locked, waiting on a tap</div></div>' +
+          '<div class="pos-card soft"><div class="pos-kpi-label"><i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i> Missing method</div><div class="pos-kpi-value ' + (missN ? 'pos-warn-text' : '') + '">' + missN + '</div><div class="pos-muted" style="font-size:12px">no payout destination — held</div></div>' +
           '</div>' +
           '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr><th>Tech</th><th>Weekly pay (<i class="bi bi-briefcase" aria-hidden="true"></i>)</th><th>Tips today</th><th>Total</th><th>Method</th><th>Status</th><th></th></tr></thead><tbody>' +
           rows.map(function (r) {
@@ -5322,7 +5419,7 @@
               group.services.map(function (service) {
                 var description = (service.description || '').trim();
                 return '<article class="queue-card">' +
-                  '<div class="cust-card-head"><div><div class="pos-strong">' + esc(service.name) + '</div><div class="pos-muted" style="font-size:11.5px;margin-top:3px">' + esc(serviceCategoryLabel(service)) + '</div></div>' + serviceStatusChip(service) + '</div>' +
+                  '<div class="cust-card-head"><div><div class="pos-strong">' + esc(service.name) + '</div><div class="pos-muted" style="font-size:12px;margin-top:3px">' + esc(serviceCategoryLabel(service)) + '</div></div>' + serviceStatusChip(service) + '</div>' +
                   '<div class="pos-inline" style="margin-top:8px"><span class="pos-chip pos-chip-gray">' + (service.price == null ? 'No price' : money(service.price)) + '</span><span class="pos-chip pos-chip-gray">' + (service.durationMin || '—') + ' min</span><span class="pos-chip pos-chip-gray">' + esc(service.requiredSkill || 'No skill') + '</span></div>' +
                   (description ? '<div class="pos-muted wrap" style="font-size:12px;margin-top:8px">' + esc(description) + '</div>' : '') +
                   '<div class="pill-row" style="margin-top:8px">' + serviceIncludesHtml(service) + '</div>' +
@@ -5355,7 +5452,7 @@
           STAFF.map(function (s) {
             var roleCell = s.role === 'owner'
               ? '<span class="pos-chip pos-chip-gold">👑 Owner</span>'
-              : '<select class="pos-input" data-mg-strole="' + s.id + '" style="height:32px;font-size:12.5px">' +
+              : '<select class="pos-input" data-mg-strole="' + s.id + '" style="height:32px;font-size:13px">' +
                 ['manager', 'frontdesk', 'tech'].map(function (r) { return '<option value="' + r + '"' + (s.role === r ? ' selected' : '') + '>' + ROLE_LBL[r] + '</option>'; }).join('') +
                 '</select>';
             return '<tr>' +
@@ -5368,7 +5465,7 @@
           '<div class="pos-inline" style="margin-top:12px">' +
           '<input class="pos-input" data-mg-stname placeholder="New employee name" style="width:220px">' +
           '<select class="pos-input" data-mg-strolenew style="width:150px"><option value="manager">Manager</option><option value="frontdesk" selected>Front Desk</option></select>' +
-          '<span class="pos-muted" style="font-size:11.5px">Techs (with pay and turns) are added from ➕ Add tech in the pay table above.</span>' +
+          '<span class="pos-muted" style="font-size:12px">Techs (with pay and turns) are added from ➕ Add tech in the pay table above.</span>' +
           '<button class="pos-btn pos-btn-primary pos-btn-sm" data-mg-stadd><i class="bi bi-plus-lg"></i> Create account</button>' +
           '</div>' +
           '</div>';
