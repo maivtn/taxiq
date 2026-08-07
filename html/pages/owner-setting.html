@@ -1409,14 +1409,83 @@
         display: none;
       }
 
-      .table-responsive .owner-table {
-        width: max-content;
-        min-width: 100%;
+      .table-responsive {
+        overflow-x: visible;
+        border: 0;
+        background: transparent;
       }
 
-      .table-responsive .owner-table th,
+      .table-responsive .owner-table {
+        display: block;
+        width: 100%;
+        min-width: 0;
+        border-collapse: separate;
+        border-spacing: 0 10px;
+      }
+
+      .table-responsive .owner-table thead {
+        display: none;
+      }
+
+      .table-responsive .owner-table tbody,
+      .table-responsive .owner-table tr,
       .table-responsive .owner-table td {
-        white-space: nowrap;
+        display: block;
+        width: 100%;
+      }
+
+      .table-responsive .owner-table tbody {
+        border: 0;
+      }
+
+      .table-responsive .owner-table tr {
+        margin-bottom: 10px;
+        border: 1px solid var(--nexora-rule);
+        border-radius: 8px;
+        background: #fff;
+        overflow: hidden;
+      }
+
+      .table-responsive .owner-table tr:last-child {
+        margin-bottom: 0;
+      }
+
+      .table-responsive .owner-table td {
+        position: relative;
+        border-bottom: 1px solid var(--nexora-rule);
+        padding: 10px 12px 10px 128px;
+        min-height: 40px;
+        white-space: normal;
+      }
+
+      .table-responsive .owner-table tr:last-child td {
+        border-bottom: 1px solid var(--nexora-rule);
+      }
+
+      .table-responsive .owner-table td::before {
+        content: attr(data-label) ":";
+        position: absolute;
+        top: 10px;
+        left: 12px;
+        width: 104px;
+        display: block;
+        color: var(--nexora-muted);
+        font-size: 11px;
+        font-weight: 900;
+        line-height: 16px;
+        text-transform: uppercase;
+      }
+
+      .table-responsive .owner-table td:last-child {
+        border-bottom: 0;
+      }
+
+      .table-responsive .owner-table tr:last-child td:last-child {
+        border-bottom: 0;
+      }
+
+      .table-responsive .owner-table .table-actions {
+        justify-content: flex-start;
       }
     }
 
@@ -1567,25 +1636,25 @@
                       <thead><tr><th>Account</th><th>Role</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead>
                       <tbody>
                         <tr>
-                          <td><div class="cell-title">mai@nexoratouch.com</div><div class="cell-meta">Mai Tran</div><div class="cell-meta">+1 832 555 0182</div></td>
-                          <td><span class="role-badge">Owner Manager</span></td>
-                          <td><span class="status-pill">Active</span></td>
-                          <td><span class="credits-history-date">Aug 07, 2026<small>9:42 AM</small></span></td>
-                          <td><div class="table-actions"><button class="icon-action" type="button" aria-label="View mai@nexoratouch.com" data-open-modal="sub-account-detail-modal" aria-controls="sub-account-detail-modal"><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button><button class="icon-action" type="button" aria-label="Edit mai@nexoratouch.com" data-open-modal="edit-sub-account-modal" aria-controls="edit-sub-account-modal" data-account-id="b7210960-ecab9-461f-9afb-82b64b9835dd" data-account-email="mai@nexoratouch.com" data-account-name="Mai Tran" data-account-phone="832 555 0182" data-account-role="Owner Manager" data-account-status="Active"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button><button class="icon-action" type="button" aria-label="Deactivate mai@nexoratouch.com" data-open-deactivate-modal data-account-email="mai@nexoratouch.com" data-account-name="Mai Tran"><i data-lucide="user-x" aria-hidden="true"></i><span>Deactivate</span></button><button class="icon-action" type="button" aria-label="Reset password for mai@nexoratouch.com" data-open-reset-password-modal data-account-email="mai@nexoratouch.com" data-account-name="Mai Tran"><i data-lucide="key-round" aria-hidden="true"></i><span>Reset password</span></button><button class="icon-action" type="button" aria-label="Resend login email to mai@nexoratouch.com" data-open-resend-email-modal data-account-email="mai@nexoratouch.com" data-account-name="Mai Tran"><i data-lucide="mail" aria-hidden="true"></i><span>Resend email</span></button></div></td>
+                          <td data-label="Account"><div class="cell-title">mai@nexoratouch.com</div><div class="cell-meta">Mai Tran</div><div class="cell-meta">+1 832 555 0182</div></td>
+                          <td data-label="Role"><span class="role-badge">Owner Manager</span></td>
+                          <td data-label="Status"><span class="status-pill">Active</span></td>
+                          <td data-label="Last Login"><span class="credits-history-date">Aug 07, 2026<small>9:42 AM</small></span></td>
+                          <td data-label="Actions"><div class="table-actions"><button class="icon-action" type="button" aria-label="View mai@nexoratouch.com" data-open-modal="sub-account-detail-modal" aria-controls="sub-account-detail-modal"><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button><button class="icon-action" type="button" aria-label="Edit mai@nexoratouch.com" data-open-modal="edit-sub-account-modal" aria-controls="edit-sub-account-modal" data-account-id="b7210960-ecab9-461f-9afb-82b64b9835dd" data-account-email="mai@nexoratouch.com" data-account-name="Mai Tran" data-account-phone="832 555 0182" data-account-role="Owner Manager" data-account-status="Active"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button><button class="icon-action" type="button" aria-label="Deactivate mai@nexoratouch.com" data-open-deactivate-modal data-account-email="mai@nexoratouch.com" data-account-name="Mai Tran"><i data-lucide="user-x" aria-hidden="true"></i><span>Deactivate</span></button><button class="icon-action" type="button" aria-label="Reset password for mai@nexoratouch.com" data-open-reset-password-modal data-account-email="mai@nexoratouch.com" data-account-name="Mai Tran"><i data-lucide="key-round" aria-hidden="true"></i><span>Reset password</span></button><button class="icon-action" type="button" aria-label="Resend login email to mai@nexoratouch.com" data-open-resend-email-modal data-account-email="mai@nexoratouch.com" data-account-name="Mai Tran"><i data-lucide="mail" aria-hidden="true"></i><span>Resend email</span></button></div></td>
                         </tr>
                         <tr>
-                          <td><div class="cell-title">amy.le@nexoratouch.com</div><div class="cell-meta">Amy Le</div><div class="cell-meta">+1 713 555 0144</div></td>
-                          <td><span class="role-badge">Front Desk</span></td>
-                          <td><span class="status-pill is-pending">Pending</span></td>
-                          <td><div class="cell-title">Never</div></td>
-                          <td><div class="table-actions"><button class="icon-action" type="button" aria-label="View amy.le@nexoratouch.com" data-open-modal="sub-account-detail-modal" aria-controls="sub-account-detail-modal"><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button><button class="icon-action" type="button" aria-label="Edit amy.le@nexoratouch.com" data-open-modal="edit-sub-account-modal" aria-controls="edit-sub-account-modal" data-account-id="c143b217-4c48-47ef-b1a7-7fb1ce86a011" data-account-email="amy.le@nexoratouch.com" data-account-name="Amy Le" data-account-phone="713 555 0144" data-account-role="Front Desk" data-account-status="Pending"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button><button class="icon-action" type="button" aria-label="Deactivate amy.le@nexoratouch.com" data-open-deactivate-modal data-account-email="amy.le@nexoratouch.com" data-account-name="Amy Le"><i data-lucide="user-x" aria-hidden="true"></i><span>Deactivate</span></button><button class="icon-action" type="button" aria-label="Reset password for amy.le@nexoratouch.com" data-open-reset-password-modal data-account-email="amy.le@nexoratouch.com" data-account-name="Amy Le"><i data-lucide="key-round" aria-hidden="true"></i><span>Reset password</span></button><button class="icon-action" type="button" aria-label="Resend login email to amy.le@nexoratouch.com" data-open-resend-email-modal data-account-email="amy.le@nexoratouch.com" data-account-name="Amy Le"><i data-lucide="mail" aria-hidden="true"></i><span>Resend email</span></button></div></td>
+                          <td data-label="Account"><div class="cell-title">amy.le@nexoratouch.com</div><div class="cell-meta">Amy Le</div><div class="cell-meta">+1 713 555 0144</div></td>
+                          <td data-label="Role"><span class="role-badge">Front Desk</span></td>
+                          <td data-label="Status"><span class="status-pill is-pending">Pending</span></td>
+                          <td data-label="Last Login"><div class="cell-title">Never</div></td>
+                          <td data-label="Actions"><div class="table-actions"><button class="icon-action" type="button" aria-label="View amy.le@nexoratouch.com" data-open-modal="sub-account-detail-modal" aria-controls="sub-account-detail-modal"><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button><button class="icon-action" type="button" aria-label="Edit amy.le@nexoratouch.com" data-open-modal="edit-sub-account-modal" aria-controls="edit-sub-account-modal" data-account-id="c143b217-4c48-47ef-b1a7-7fb1ce86a011" data-account-email="amy.le@nexoratouch.com" data-account-name="Amy Le" data-account-phone="713 555 0144" data-account-role="Front Desk" data-account-status="Pending"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button><button class="icon-action" type="button" aria-label="Deactivate amy.le@nexoratouch.com" data-open-deactivate-modal data-account-email="amy.le@nexoratouch.com" data-account-name="Amy Le"><i data-lucide="user-x" aria-hidden="true"></i><span>Deactivate</span></button><button class="icon-action" type="button" aria-label="Reset password for amy.le@nexoratouch.com" data-open-reset-password-modal data-account-email="amy.le@nexoratouch.com" data-account-name="Amy Le"><i data-lucide="key-round" aria-hidden="true"></i><span>Reset password</span></button><button class="icon-action" type="button" aria-label="Resend login email to amy.le@nexoratouch.com" data-open-resend-email-modal data-account-email="amy.le@nexoratouch.com" data-account-name="Amy Le"><i data-lucide="mail" aria-hidden="true"></i><span>Resend email</span></button></div></td>
                         </tr>
                         <tr>
-                          <td><div class="cell-title">jordan.reyes@nexoratouch.com</div><div class="cell-meta">Jordan Reyes</div><div class="cell-meta">+1 281 555 0129</div></td>
-                          <td><span class="role-badge">Technician Lead</span></td>
-                          <td><span class="status-pill is-disabled">Disabled</span></td>
-                          <td><span class="credits-history-date">Aug 05, 2026<small>5:12 PM</small></span></td>
-                          <td><div class="table-actions"><button class="icon-action" type="button" aria-label="View jordan.reyes@nexoratouch.com" data-open-modal="sub-account-detail-modal" aria-controls="sub-account-detail-modal"><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button><button class="icon-action" type="button" aria-label="Edit jordan.reyes@nexoratouch.com" data-open-modal="edit-sub-account-modal" aria-controls="edit-sub-account-modal" data-account-id="d891e307-231d-42be-9404-12c0e74ff612" data-account-email="jordan.reyes@nexoratouch.com" data-account-name="Jordan Reyes" data-account-phone="281 555 0129" data-account-role="Technician Lead" data-account-status="Disabled"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button><button class="icon-action" type="button" aria-label="Activate jordan.reyes@nexoratouch.com" data-sub-account-action="activate" data-account-email="jordan.reyes@nexoratouch.com"><i data-lucide="user-check" aria-hidden="true"></i><span>Activate</span></button><button class="icon-action" type="button" aria-label="Reset password for jordan.reyes@nexoratouch.com" data-open-reset-password-modal data-account-email="jordan.reyes@nexoratouch.com" data-account-name="Jordan Reyes"><i data-lucide="key-round" aria-hidden="true"></i><span>Reset password</span></button><button class="icon-action" type="button" aria-label="Resend login email to jordan.reyes@nexoratouch.com" data-open-resend-email-modal data-account-email="jordan.reyes@nexoratouch.com" data-account-name="Jordan Reyes"><i data-lucide="mail" aria-hidden="true"></i><span>Resend email</span></button></div></td>
+                          <td data-label="Account"><div class="cell-title">jordan.reyes@nexoratouch.com</div><div class="cell-meta">Jordan Reyes</div><div class="cell-meta">+1 281 555 0129</div></td>
+                          <td data-label="Role"><span class="role-badge">Technician Lead</span></td>
+                          <td data-label="Status"><span class="status-pill is-disabled">Disabled</span></td>
+                          <td data-label="Last Login"><span class="credits-history-date">Aug 05, 2026<small>5:12 PM</small></span></td>
+                          <td data-label="Actions"><div class="table-actions"><button class="icon-action" type="button" aria-label="View jordan.reyes@nexoratouch.com" data-open-modal="sub-account-detail-modal" aria-controls="sub-account-detail-modal"><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button><button class="icon-action" type="button" aria-label="Edit jordan.reyes@nexoratouch.com" data-open-modal="edit-sub-account-modal" aria-controls="edit-sub-account-modal" data-account-id="d891e307-231d-42be-9404-12c0e74ff612" data-account-email="jordan.reyes@nexoratouch.com" data-account-name="Jordan Reyes" data-account-phone="281 555 0129" data-account-role="Technician Lead" data-account-status="Disabled"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button><button class="icon-action" type="button" aria-label="Activate jordan.reyes@nexoratouch.com" data-sub-account-action="activate" data-account-email="jordan.reyes@nexoratouch.com"><i data-lucide="user-check" aria-hidden="true"></i><span>Activate</span></button><button class="icon-action" type="button" aria-label="Reset password for jordan.reyes@nexoratouch.com" data-open-reset-password-modal data-account-email="jordan.reyes@nexoratouch.com" data-account-name="Jordan Reyes"><i data-lucide="key-round" aria-hidden="true"></i><span>Reset password</span></button><button class="icon-action" type="button" aria-label="Resend login email to jordan.reyes@nexoratouch.com" data-open-resend-email-modal data-account-email="jordan.reyes@nexoratouch.com" data-account-name="Jordan Reyes"><i data-lucide="mail" aria-hidden="true"></i><span>Resend email</span></button></div></td>
                         </tr>
                       </tbody>
                     </table>
@@ -1602,32 +1671,32 @@
                       <thead><tr><th>Role</th><th>Permissions</th><th>Sub Account</th><th>Daily Limit</th><th>Actions</th></tr></thead>
                       <tbody>
                         <tr>
-                          <td><div class="identity-cell"><span class="mini-avatar"><i data-lucide="shield" aria-hidden="true"></i></span><div><div class="cell-title">Owner Manager</div><div class="cell-meta">ROLE-001</div></div></div></td>
-                          <td><div class="cell-title">11 modules enabled</div><div class="cell-meta">Full merchant dashboard access</div></td>
-                          <td>1 assigned</td>
-                          <td>-</td>
-                          <td><div class="table-actions"><a class="icon-action" href="role-details.html?roleId=ROLE-001" aria-label="View or Edit Owner Manager role"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></a><button class="icon-action" type="button" aria-label="Delete Owner Manager role" data-delete-role data-role-id="ROLE-001" data-role-name="Owner Manager" data-role-assigned-count="1" disabled aria-disabled="true"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete</span></button></div></td>
+                          <td data-label="Role"><div class="identity-cell"><span class="mini-avatar"><i data-lucide="shield" aria-hidden="true"></i></span><div><div class="cell-title">Owner Manager</div><div class="cell-meta">ROLE-001</div></div></div></td>
+                          <td data-label="Permissions"><div class="cell-title">11 modules enabled</div><div class="cell-meta">Full merchant dashboard access</div></td>
+                          <td data-label="Sub Account">1 assigned</td>
+                          <td data-label="Daily Limit">-</td>
+                          <td data-label="Actions"><div class="table-actions"><a class="icon-action" href="role-details.html?roleId=ROLE-001" aria-label="View or Edit Owner Manager role"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></a><button class="icon-action" type="button" aria-label="Delete Owner Manager role" data-delete-role data-role-id="ROLE-001" data-role-name="Owner Manager" data-role-assigned-count="1" disabled aria-disabled="true"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete</span></button></div></td>
                         </tr>
                         <tr>
-                          <td><div class="identity-cell"><span class="mini-avatar"><i data-lucide="shield" aria-hidden="true"></i></span><div><div class="cell-title">Front Desk</div><div class="cell-meta">ROLE-002</div></div></div></td>
-                          <td><div class="cell-title">5 modules enabled</div><div class="cell-meta">AI Hub / Booking, reviews, support</div></td>
-                          <td>6 assigned</td>
-                          <td>-</td>
-                          <td><div class="table-actions"><a class="icon-action" href="role-details.html?roleId=ROLE-002" aria-label="View or Edit Front Desk role"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></a><button class="icon-action" type="button" aria-label="Delete Front Desk role" data-delete-role data-role-id="ROLE-002" data-role-name="Front Desk" data-role-assigned-count="6" disabled aria-disabled="true"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete</span></button></div></td>
+                          <td data-label="Role"><div class="identity-cell"><span class="mini-avatar"><i data-lucide="shield" aria-hidden="true"></i></span><div><div class="cell-title">Front Desk</div><div class="cell-meta">ROLE-002</div></div></div></td>
+                          <td data-label="Permissions"><div class="cell-title">5 modules enabled</div><div class="cell-meta">AI Hub / Booking, reviews, support</div></td>
+                          <td data-label="Sub Account">6 assigned</td>
+                          <td data-label="Daily Limit">-</td>
+                          <td data-label="Actions"><div class="table-actions"><a class="icon-action" href="role-details.html?roleId=ROLE-002" aria-label="View or Edit Front Desk role"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></a><button class="icon-action" type="button" aria-label="Delete Front Desk role" data-delete-role data-role-id="ROLE-002" data-role-name="Front Desk" data-role-assigned-count="6" disabled aria-disabled="true"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete</span></button></div></td>
                         </tr>
                         <tr>
-                          <td><div class="identity-cell"><span class="mini-avatar"><i data-lucide="shield" aria-hidden="true"></i></span><div><div class="cell-title">Technician Lead</div><div class="cell-meta">ROLE-003</div></div></div></td>
-                          <td><div class="cell-title">6 modules enabled</div><div class="cell-meta">Sub Account, touchpoints, reviews, analytics</div></td>
-                          <td>3 assigned</td>
-                          <td>-</td>
-                          <td><div class="table-actions"><a class="icon-action" href="role-details.html?roleId=ROLE-003" aria-label="View or Edit Technician Lead role"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></a><button class="icon-action" type="button" aria-label="Delete Technician Lead role" data-delete-role data-role-id="ROLE-003" data-role-name="Technician Lead" data-role-assigned-count="3" disabled aria-disabled="true"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete</span></button></div></td>
+                          <td data-label="Role"><div class="identity-cell"><span class="mini-avatar"><i data-lucide="shield" aria-hidden="true"></i></span><div><div class="cell-title">Technician Lead</div><div class="cell-meta">ROLE-003</div></div></div></td>
+                          <td data-label="Permissions"><div class="cell-title">6 modules enabled</div><div class="cell-meta">Sub Account, touchpoints, reviews, analytics</div></td>
+                          <td data-label="Sub Account">3 assigned</td>
+                          <td data-label="Daily Limit">-</td>
+                          <td data-label="Actions"><div class="table-actions"><a class="icon-action" href="role-details.html?roleId=ROLE-003" aria-label="View or Edit Technician Lead role"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></a><button class="icon-action" type="button" aria-label="Delete Technician Lead role" data-delete-role data-role-id="ROLE-003" data-role-name="Technician Lead" data-role-assigned-count="3" disabled aria-disabled="true"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete</span></button></div></td>
                         </tr>
                         <tr>
-                          <td><div class="identity-cell"><span class="mini-avatar"><i data-lucide="shield" aria-hidden="true"></i></span><div><div class="cell-title">Billing Auditor</div><div class="cell-meta">ROLE-004</div></div></div></td>
-                          <td><div class="cell-title">2 modules enabled</div><div class="cell-meta">Payments and reports only</div></td>
-                          <td>0 assigned</td>
-                          <td>-</td>
-                          <td><div class="table-actions"><a class="icon-action" href="role-details.html?roleId=ROLE-004" aria-label="View or Edit Billing Auditor role"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></a><button class="icon-action" type="button" aria-label="Delete Billing Auditor role" data-delete-role data-role-id="ROLE-004" data-role-name="Billing Auditor" data-role-assigned-count="0"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete</span></button></div></td>
+                          <td data-label="Role"><div class="identity-cell"><span class="mini-avatar"><i data-lucide="shield" aria-hidden="true"></i></span><div><div class="cell-title">Billing Auditor</div><div class="cell-meta">ROLE-004</div></div></div></td>
+                          <td data-label="Permissions"><div class="cell-title">2 modules enabled</div><div class="cell-meta">Payments and reports only</div></td>
+                          <td data-label="Sub Account">0 assigned</td>
+                          <td data-label="Daily Limit">-</td>
+                          <td data-label="Actions"><div class="table-actions"><a class="icon-action" href="role-details.html?roleId=ROLE-004" aria-label="View or Edit Billing Auditor role"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></a><button class="icon-action" type="button" aria-label="Delete Billing Auditor role" data-delete-role data-role-id="ROLE-004" data-role-name="Billing Auditor" data-role-assigned-count="0"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete</span></button></div></td>
                         </tr>
                       </tbody>
                     </table>
@@ -1655,11 +1724,11 @@
                     <table class="owner-table is-log-table">
                       <thead><tr><th>Time</th><th>Sub account</th><th>Role</th><th>Action</th><th>Module</th><th>Status</th></tr></thead>
                       <tbody>
-                        <tr><td><span class="credits-history-date">Aug 07, 2026<small>10:15 AM</small></span></td><td><div class="cell-title">Mai Tran</div><div class="cell-meta">mai@nexoratouch.com</div></td><td><span class="role-badge">Owner Manager</span></td><td>Login success</td><td>Authentication</td><td><span class="status-pill">Success</span></td></tr>
-                        <tr><td><span class="credits-history-date">Aug 07, 2026<small>9:42 AM</small></span></td><td><div class="cell-title">Mai Tran</div><div class="cell-meta">mai@nexoratouch.com</div></td><td><span class="role-badge">Owner Manager</span></td><td>Updated Sub Account</td><td>Sub Account</td><td><span class="status-pill">Success</span></td></tr>
-                        <tr><td><span class="credits-history-date">Aug 06, 2026<small>4:18 PM</small></span></td><td><div class="cell-title">Amy Le</div><div class="cell-meta">amy.le@nexoratouch.com</div></td><td><span class="role-badge">Front Desk</span></td><td>Login failed</td><td>Authentication</td><td><span class="status-pill is-disabled">Failed</span></td></tr>
-                        <tr><td><span class="credits-history-date">Aug 06, 2026<small>2:26 PM</small></span></td><td><div class="cell-title">Jordan Reyes</div><div class="cell-meta">jordan.reyes@nexoratouch.com</div></td><td><span class="role-badge">Technician Lead</span></td><td>Viewed transactions</td><td>Transactions</td><td><span class="status-pill">Success</span></td></tr>
-                        <tr><td><span class="credits-history-date">Aug 06, 2026<small>11:03 AM</small></span></td><td><div class="cell-title">Mai Tran</div><div class="cell-meta">mai@nexoratouch.com</div></td><td><span class="role-badge">Owner Manager</span></td><td>Role changed</td><td>Settings</td><td><span class="status-pill">Success</span></td></tr>
+                        <tr><td data-label="Time"><span class="credits-history-date">Aug 07, 2026<small>10:15 AM</small></span></td><td data-label="Sub account"><div class="cell-title">Mai Tran</div><div class="cell-meta">mai@nexoratouch.com</div></td><td data-label="Role"><span class="role-badge">Owner Manager</span></td><td data-label="Action">Login success</td><td data-label="Module">Authentication</td><td data-label="Status"><span class="status-pill">Success</span></td></tr>
+                        <tr><td data-label="Time"><span class="credits-history-date">Aug 07, 2026<small>9:42 AM</small></span></td><td data-label="Sub account"><div class="cell-title">Mai Tran</div><div class="cell-meta">mai@nexoratouch.com</div></td><td data-label="Role"><span class="role-badge">Owner Manager</span></td><td data-label="Action">Updated Sub Account</td><td data-label="Module">Sub Account</td><td data-label="Status"><span class="status-pill">Success</span></td></tr>
+                        <tr><td data-label="Time"><span class="credits-history-date">Aug 06, 2026<small>4:18 PM</small></span></td><td data-label="Sub account"><div class="cell-title">Amy Le</div><div class="cell-meta">amy.le@nexoratouch.com</div></td><td data-label="Role"><span class="role-badge">Front Desk</span></td><td data-label="Action">Login failed</td><td data-label="Module">Authentication</td><td data-label="Status"><span class="status-pill is-disabled">Failed</span></td></tr>
+                        <tr><td data-label="Time"><span class="credits-history-date">Aug 06, 2026<small>2:26 PM</small></span></td><td data-label="Sub account"><div class="cell-title">Jordan Reyes</div><div class="cell-meta">jordan.reyes@nexoratouch.com</div></td><td data-label="Role"><span class="role-badge">Technician Lead</span></td><td data-label="Action">Viewed transactions</td><td data-label="Module">Transactions</td><td data-label="Status"><span class="status-pill">Success</span></td></tr>
+                        <tr><td data-label="Time"><span class="credits-history-date">Aug 06, 2026<small>11:03 AM</small></span></td><td data-label="Sub account"><div class="cell-title">Mai Tran</div><div class="cell-meta">mai@nexoratouch.com</div></td><td data-label="Role"><span class="role-badge">Owner Manager</span></td><td data-label="Action">Role changed</td><td data-label="Module">Settings</td><td data-label="Status"><span class="status-pill">Success</span></td></tr>
                       </tbody>
                     </table>
                   </div>

@@ -132,7 +132,7 @@ test('uses Account as the first Sub Accounts list column', () => {
   ]) {
     const escapedEmail = email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
     const escapedPhone = phone.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    assert.match(accountTable, new RegExp(`<td><div class="cell-title">${escapedEmail}<\\/div><div class="cell-meta">${name}<\\/div><div class="cell-meta">${escapedPhone}<\\/div><\\/td>`));
+    assert.match(accountTable, new RegExp(`<td data-label="Account"><div class="cell-title">${escapedEmail}<\\/div><div class="cell-meta">${name}<\\/div><div class="cell-meta">${escapedPhone}<\\/div><\\/td>`));
   }
 });
 
@@ -157,17 +157,17 @@ test('formats Sub Account dates with the shared two-line date time style', () =>
 
   const accountTable = tableMatch[1];
   assert.match(accountTable, /<th>Last Login<\/th>/);
-  assert.match(accountTable, /<td><span class="credits-history-date">Aug 07, 2026<small>9:42 AM<\/small><\/span><\/td>/);
-  assert.match(accountTable, /<td><div class="cell-title">Never<\/div><\/td>/);
-  assert.match(accountTable, /<td><span class="credits-history-date">Aug 05, 2026<small>5:12 PM<\/small><\/span><\/td>/);
+  assert.match(accountTable, /<td data-label="Last Login"><span class="credits-history-date">Aug 07, 2026<small>9:42 AM<\/small><\/span><\/td>/);
+  assert.match(accountTable, /<td data-label="Last Login"><div class="cell-title">Never<\/div><\/td>/);
+  assert.match(accountTable, /<td data-label="Last Login"><span class="credits-history-date">Aug 05, 2026<small>5:12 PM<\/small><\/span><\/td>/);
   assert.doesNotMatch(accountTable, /Chrome on Mac|Safari on iPad|Login email sent/);
   assert.doesNotMatch(accountTable, /Today 9:42 AM|Aug 7 &middot; 9:42 AM|Aug 5 &middot; 5:12 PM|Aug 5, 2026 5:12 PM/);
 
   const logTable = logTableMatch[1];
-  const logTimeCells = logTable.match(/<td><span class="credits-history-date">[A-Z][a-z]{2} \d{2}, 2026<small>\d{1,2}:\d{2} [AP]M<\/small><\/span><\/td>/g) || [];
+  const logTimeCells = logTable.match(/<td data-label="Time"><span class="credits-history-date">[A-Z][a-z]{2} \d{2}, 2026<small>\d{1,2}:\d{2} [AP]M<\/small><\/span><\/td>/g) || [];
   assert.equal(logTimeCells.length, 5, 'Every Activity Logs Time cell should use date line plus small time line');
-  assert.match(logTable, /<td><span class="credits-history-date">Aug 07, 2026<small>10:15 AM<\/small><\/span><\/td>/);
-  assert.match(logTable, /<td><span class="credits-history-date">Aug 06, 2026<small>4:18 PM<\/small><\/span><\/td>/);
+  assert.match(logTable, /<td data-label="Time"><span class="credits-history-date">Aug 07, 2026<small>10:15 AM<\/small><\/span><\/td>/);
+  assert.match(logTable, /<td data-label="Time"><span class="credits-history-date">Aug 06, 2026<small>4:18 PM<\/small><\/span><\/td>/);
   assert.doesNotMatch(logTable, /Today 10:15 AM|Yesterday 4:18 PM|Aug 6, 2026 2:26 PM/);
 
   assert.match(html, /<div class="detail-row"><span>Last login<\/span><span class="detail-value"><span class="credits-history-date">Aug 07, 2026<small>9:42 AM<\/small><\/span><\/span><\/div>/);
@@ -191,10 +191,10 @@ test('uses Sub account as the Activity Logs account identifier', () => {
     ['Jordan Reyes', 'jordan.reyes@nexoratouch.com']
   ]) {
     const escapedEmail = email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    assert.match(logTable, new RegExp(`<td><div class="cell-title">${name}<\\/div><div class="cell-meta">${escapedEmail}<\\/div><\\/td>`));
+    assert.match(logTable, new RegExp(`<td data-label="Sub account"><div class="cell-title">${name}<\\/div><div class="cell-meta">${escapedEmail}<\\/div><\\/td>`));
   }
 
-  assert.match(logTable, /<tr><td><span class="credits-history-date">Aug 07, 2026<small>10:15 AM<\/small><\/span><\/td><td><div class="cell-title">Mai Tran<\/div><div class="cell-meta">mai@nexoratouch\.com<\/div><\/td><td><span class="role-badge">Owner Manager<\/span><\/td>/);
+  assert.match(logTable, /<tr><td data-label="Time"><span class="credits-history-date">Aug 07, 2026<small>10:15 AM<\/small><\/span><\/td><td data-label="Sub account"><div class="cell-title">Mai Tran<\/div><div class="cell-meta">mai@nexoratouch\.com<\/div><\/td><td data-label="Role"><span class="role-badge">Owner Manager<\/span><\/td>/);
 });
 
 test('opens Activity Logs filters from a dropdown button', () => {
@@ -315,7 +315,7 @@ test('enables role delete only when no Sub Account is assigned and confirms dele
   const panel = panelContent(html, 'sub-account');
 
   assert.match(panel, /<div class="cell-title">Billing Auditor<\/div><div class="cell-meta">ROLE-004<\/div>/);
-  assert.match(panel, /<td>0 assigned<\/td>/);
+  assert.match(panel, /<td data-label="Sub Account">0 assigned<\/td>/);
 
   for (const [roleId, roleName, assignedCount] of [['ROLE-001', 'Owner Manager', '1'], ['ROLE-002', 'Front Desk', '6'], ['ROLE-003', 'Technician Lead', '3']]) {
     assert.match(panel, new RegExp(`<button class="icon-action" type="button" aria-label="Delete ${roleName} role" data-delete-role data-role-id="${roleId}" data-role-name="${roleName}" data-role-assigned-count="${assignedCount}" disabled aria-disabled="true">[\\s\\S]*?<span>Delete<\\/span><\\/button>`));
@@ -424,7 +424,7 @@ test('keeps Sub Account filters in one row on mobile', () => {
   assert.match(style, /\.filter-row\.is-account-filters::-webkit-scrollbar\s*\{[^}]*display:\s*none;[^}]*\}/);
 });
 
-test('wraps all Sub Account tables in Bootstrap-style responsive shells on mobile', () => {
+test('renders all Sub Account tables as mobile label-value cards', () => {
   const html = source();
   const panel = panelContent(html, 'sub-account');
   const responsiveShells = panel.match(/<div class="table-shell table-responsive">[\s\S]*?<table class="owner-table (?:is-account-table|is-role-table|is-log-table)">[\s\S]*?<\/table>\s*<\/div>/g) || [];
@@ -434,18 +434,29 @@ test('wraps all Sub Account tables in Bootstrap-style responsive shells on mobil
   assert.match(responsiveShells[1], /<table class="owner-table is-role-table">/);
   assert.match(responsiveShells[2], /<table class="owner-table is-log-table">/);
 
-  const responsiveRule = styleRule(html, '.table-responsive');
-  assertCssDeclaration(responsiveRule, 'display', 'block');
-  assertCssDeclaration(responsiveRule, 'width', '100%');
-  assertCssDeclaration(responsiveRule, 'max-width', '100%');
-  assertCssDeclaration(responsiveRule, 'overflow-x', 'auto');
-  assertCssDeclaration(responsiveRule, '-webkit-overflow-scrolling', 'touch');
+  for (const [tableClass, rowCount, labels] of [
+    ['is-account-table', 3, ['Account', 'Role', 'Status', 'Last Login', 'Actions']],
+    ['is-role-table', 4, ['Role', 'Permissions', 'Sub Account', 'Daily Limit', 'Actions']],
+    ['is-log-table', 5, ['Time', 'Sub account', 'Role', 'Action', 'Module', 'Status']]
+  ]) {
+    const table = panel.match(new RegExp(`<table class="owner-table ${tableClass}">([\\s\\S]*?)<\\/table>`))?.[1] || '';
+    assert.ok(table, `${tableClass} should render`);
 
-  const roleTableRule = styleRule(html, '.owner-table.is-role-table');
-  assertCssDeclaration(roleTableRule, 'min-width', '860px');
+    for (const label of labels) {
+      const escapedLabel = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+      const cells = table.match(new RegExp(`<td data-label="${escapedLabel}">`, 'g')) || [];
+      assert.equal(cells.length, rowCount, `${tableClass} should render ${rowCount} mobile labels for ${label}`);
+    }
+  }
 
-  assert.match(html, /@media\s*\(max-width:\s*900px\)\s*\{[\s\S]*?\.table-responsive \.owner-table\s*\{[^}]*width:\s*max-content;[^}]*min-width:\s*100%;[^}]*\}/);
-  assert.match(html, /@media\s*\(max-width:\s*900px\)\s*\{[\s\S]*?\.table-responsive \.owner-table th,[\s\S]*?\.table-responsive \.owner-table td\s*\{[^}]*white-space:\s*nowrap;[^}]*\}/);
+  assert.match(html, /@media\s*\(max-width:\s*900px\)\s*\{[\s\S]*?\.table-responsive\s*\{[^}]*overflow-x:\s*visible;[^}]*border:\s*0;[^}]*background:\s*transparent;[^}]*\}/);
+  assert.match(html, /@media\s*\(max-width:\s*900px\)\s*\{[\s\S]*?\.table-responsive \.owner-table\s*\{[^}]*display:\s*block;[^}]*width:\s*100%;[^}]*min-width:\s*0;[^}]*border-collapse:\s*separate;[^}]*border-spacing:\s*0 10px;[^}]*\}/);
+  assert.match(html, /@media\s*\(max-width:\s*900px\)\s*\{[\s\S]*?\.table-responsive \.owner-table thead\s*\{[^}]*display:\s*none;[^}]*\}/);
+  assert.match(html, /@media\s*\(max-width:\s*900px\)\s*\{[\s\S]*?\.table-responsive \.owner-table tbody,[\s\S]*?\.table-responsive \.owner-table tr,[\s\S]*?\.table-responsive \.owner-table td\s*\{[^}]*display:\s*block;[^}]*width:\s*100%;[^}]*\}/);
+  assert.match(html, /@media\s*\(max-width:\s*900px\)\s*\{[\s\S]*?\.table-responsive \.owner-table td\s*\{[^}]*position:\s*relative;[^}]*padding:\s*10px 12px 10px 128px;[^}]*min-height:\s*40px;[^}]*white-space:\s*normal;[^}]*\}/);
+  assert.match(html, /@media\s*\(max-width:\s*900px\)\s*\{[\s\S]*?\.table-responsive \.owner-table tr:last-child td\s*\{[^}]*border-bottom:\s*1px solid var\(--nexora-rule\);[^}]*\}/);
+  assert.match(html, /@media\s*\(max-width:\s*900px\)\s*\{[\s\S]*?\.table-responsive \.owner-table td::before\s*\{[^}]*content:\s*attr\(data-label\) ":";[^}]*position:\s*absolute;[^}]*top:\s*10px;[^}]*left:\s*12px;[^}]*width:\s*104px;[^}]*\}/);
+  assert.doesNotMatch(html, /@media\s*\(max-width:\s*900px\)\s*\{[\s\S]*?\.table-responsive \.owner-table th,[\s\S]*?\.table-responsive \.owner-table td\s*\{[^}]*white-space:\s*nowrap;[^}]*\}/);
 });
 
 test('renders Add New Sub Account and Sub Account Detail as modal dialogs', () => {
