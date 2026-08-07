@@ -2373,6 +2373,27 @@
       min-height: 16px;
     }
 
+    .settings-social-links {
+      display: grid;
+      grid-column: 1 / -1;
+      gap: 10px;
+      border-top: 1px solid var(--nexora-border);
+      margin-top: 2px;
+      padding-top: 12px;
+    }
+
+    .settings-social-links-title {
+      color: var(--nexora-text);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .settings-social-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+    }
+
     .settings-label {
       color: var(--nexora-subtle);
       font-size: 11px;
@@ -2806,9 +2827,293 @@
       color: var(--nexora-subtle);
     }
 
+    [data-settings-holiday-card],
+    [data-settings-booking-policies-card] {
+      min-width: 0;
+      position: relative;
+    }
+
+    [data-settings-holiday-card] .settings-card-head {
+      align-items: center;
+    }
+
+    .settings-booking-policy-toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 14px;
+      color: var(--nexora-text);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .settings-booking-policy-grid {
+      display: grid;
+      grid-template-columns: 1fr;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .settings-booking-policy-preview {
+      display: grid;
+      gap: 6px;
+      margin-top: 14px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: #fbfbff;
+      padding: 11px 12px;
+    }
+
+    .settings-booking-policy-preview-label {
+      color: var(--nexora-brand);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .settings-booking-policy-preview-text {
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .settings-holiday-add-button {
+      min-height: 34px;
+      border-radius: 9px;
+      padding: 0 14px;
+      font-size: 12px;
+    }
+
+    .settings-holiday-table {
+      display: grid;
+      gap: 4px;
+    }
+
+    .settings-holiday-table-head,
+    .settings-holiday-row {
+      display: grid;
+      grid-template-columns: minmax(110px, 1.1fr) minmax(120px, 1.25fr) minmax(78px, 0.7fr) 168px;
+      column-gap: 14px;
+      align-items: center;
+    }
+
+    .settings-holiday-table-head {
+      color: var(--nexora-subtle);
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: 0.02em;
+      text-transform: uppercase;
+    }
+
+    .settings-holiday-row {
+      min-height: 34px;
+      border-radius: 8px;
+      color: var(--nexora-text);
+      cursor: default;
+      font-size: 12px;
+      font-weight: 750;
+      transition: background 0.16s ease;
+    }
+
+    .settings-holiday-row:hover {
+      background: rgba(70, 72, 216, 0.04);
+    }
+
+    .settings-holiday-date,
+    .settings-holiday-reason,
+    .settings-holiday-type {
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .settings-holiday-form {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      gap: 10px;
+      align-items: end;
+      border-top: 1px solid var(--nexora-border);
+      margin-top: 14px;
+      padding-top: 14px;
+    }
+
+    .settings-holiday-modal .settings-service-dialog {
+      width: min(100%, 620px);
+    }
+
+    .settings-holiday-modal .settings-holiday-form {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      border-top: 0;
+      margin-top: 0;
+      padding-top: 0;
+    }
+
+    .settings-holiday-reason-field {
+      grid-column: 1 / -1;
+    }
+
+    .settings-holiday-reason-suggestions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 7px;
+      grid-column: 1 / -1;
+      margin-top: -2px;
+    }
+
+    .settings-holiday-reason-chip {
+      border: 1px solid rgba(70, 72, 216, 0.18);
+      border-radius: 999px;
+      background: #f7f8ff;
+      padding: 6px 10px;
+      color: var(--nexora-brand);
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 1;
+      white-space: nowrap;
+      transition: border-color 0.16s ease, background 0.16s ease, color 0.16s ease;
+    }
+
+    .settings-holiday-reason-chip:hover {
+      border-color: rgba(70, 72, 216, 0.34);
+      background: #eef2ff;
+      color: var(--nexora-electric);
+    }
+
+    .settings-holiday-actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      justify-content: flex-end;
+    }
+
+    .settings-holiday-actions > button {
+      min-width: 0;
+    }
+
+    .settings-holiday-notify {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      margin-top: 12px;
+      color: var(--nexora-text);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .settings-holiday-notify span {
+      min-width: 0;
+    }
+
+    .settings-holiday-notify .is-off {
+      color: var(--nexora-subtle);
+    }
+
+    .settings-holiday-row-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      justify-content: flex-end;
+      opacity: 1;
+      transition: opacity 0.16s ease;
+    }
+
+    .settings-holiday-row:hover .settings-holiday-row-actions,
+    .settings-holiday-row:focus-within .settings-holiday-row-actions {
+      opacity: 1;
+    }
+
+    .settings-holiday-icon-button {
+      display: inline-flex;
+      align-items: center;
+      height: 26px;
+      padding: 0 9px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--nexora-muted);
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .settings-holiday-icon-button:hover {
+      border-color: rgba(70, 72, 216, 0.25);
+      background: #f7f8ff;
+      color: var(--nexora-brand);
+    }
+
+    .settings-holiday-icon-button.is-danger:hover {
+      border-color: rgba(220, 38, 38, 0.22);
+      background: #fff1f2;
+      color: #dc2626;
+    }
+
+    .settings-holiday-empty {
+      padding: 12px 0 4px;
+      color: var(--nexora-muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .settings-holiday-badge {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      background: #eef2ff;
+      padding: 3px 8px;
+      color: var(--nexora-brand);
+      font-size: 11px;
+      font-weight: 900;
+      white-space: nowrap;
+    }
+
+    .settings-holiday-badge.is-closed {
+      background: #fff1f2;
+      color: #b91c1c;
+    }
+
+    .settings-holiday-badge.is-adjusted {
+      background: #fffbeb;
+      color: #92400e;
+    }
+
+    .booking-calendar-closed-cell {
+      background: #fef2f2 !important;
+      color: #991b1b;
+      pointer-events: none;
+    }
+
+    .booking-calendar-closed-cell .booking-cell-add {
+      opacity: 0.35;
+    }
+
     @media (max-width: 520px) {
       .settings-booking-sms-row {
         align-items: start;
+      }
+
+      .settings-holiday-form {
+        grid-template-columns: 1fr;
+      }
+
+      .settings-holiday-table-head,
+      .settings-holiday-row {
+        grid-template-columns: minmax(86px, 1fr) minmax(82px, 1fr) auto 148px;
+        column-gap: 8px;
+      }
+
+      .settings-holiday-row-actions {
+        opacity: 1;
+      }
+
+      .settings-holiday-notify,
+      .settings-holiday-row-actions {
+        justify-content: flex-start;
       }
     }
 
@@ -3072,7 +3377,7 @@
 
     .settings-service-header {
       display: grid;
-      grid-template-columns: 30px minmax(82px, 1fr) 58px 70px 28px;
+      grid-template-columns: 30px minmax(82px, 1fr) 58px 70px 28px 28px;
       align-items: center;
       gap: 5px;
       padding: 0 7px 4px;
@@ -3103,13 +3408,13 @@
 
     .settings-service-edit-grid {
       display: grid;
-      grid-template-columns: 30px minmax(82px, 1fr) 58px 70px 28px;
+      grid-template-columns: 30px minmax(82px, 1fr) 58px 70px 28px 28px;
       align-items: center;
       gap: 5px;
     }
 
     .settings-service-row.is-compact .settings-service-edit-grid {
-      grid-template-columns: 34px minmax(96px, 1fr) 64px 72px 28px;
+      grid-template-columns: 34px minmax(96px, 1fr) 64px 72px 28px 28px;
       gap: 6px;
       align-items: center;
     }
@@ -3203,6 +3508,7 @@
       gap: 7px;
     }
 
+    .settings-service-edit,
     .settings-service-remove {
       display: inline-flex;
       width: 28px;
@@ -3217,11 +3523,17 @@
       font-weight: 700;
     }
 
+    .settings-service-row.is-compact .settings-service-edit,
     .settings-service-row.is-compact .settings-service-remove {
       width: 28px;
       height: 34px;
       border-radius: 8px;
       font-size: 13px;
+    }
+
+    .settings-service-edit:hover {
+      border-color: rgba(70, 72, 216, 0.25);
+      color: var(--nexora-brand);
     }
 
     .settings-service-remove:hover {
@@ -3822,10 +4134,25 @@
       display: flex;
       flex: 1 1 220px;
       flex-wrap: wrap;
+      align-items: center;
       gap: 8px;
       order: 1;
       min-width: 0;
+      margin-top: 8px;
+    }
+
+    .settings-promo-meta .settings-promo-suggest-row {
       margin-top: 0;
+    }
+
+    .settings-suggest-label {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      color: var(--nexora-muted);
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
     }
 
     .settings-promo-suggest {
@@ -7204,8 +7531,13 @@
       .settings-field-grid,
       .settings-location-grid,
       .settings-template-grid,
-      .settings-offer-grid {
+      .settings-offer-grid,
+      .settings-booking-policy-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .settings-social-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
       }
 
       .settings-loyalty-form {
@@ -7230,7 +7562,7 @@
 
       .settings-service-header {
         display: grid;
-        grid-template-columns: 34px minmax(180px, 1fr) 76px 88px 28px;
+        grid-template-columns: 34px minmax(180px, 1fr) 76px 88px 28px 28px;
       }
 
       .settings-service-row.is-compact {
@@ -7238,16 +7570,17 @@
       }
 
       .settings-service-edit-grid {
-        grid-template-columns: 34px minmax(180px, 1fr) 76px 88px 28px;
+        grid-template-columns: 34px minmax(180px, 1fr) 76px 88px 28px 28px;
         align-items: center;
       }
 
       .settings-service-row.is-compact .settings-service-edit-grid {
-        grid-template-columns: 34px minmax(180px, 1fr) 76px 88px 28px;
+        grid-template-columns: 34px minmax(180px, 1fr) 76px 88px 28px 28px;
       }
 
       .settings-service-row.is-compact .settings-service-edit-grid > .settings-service-input,
       .settings-service-row.is-compact .settings-service-input-wrap,
+      .settings-service-row.is-compact .settings-service-edit,
       .settings-service-row.is-compact .settings-service-remove {
         grid-column: auto;
         grid-row: auto;
@@ -9887,6 +10220,23 @@
                         <span class="settings-label">Website</span>
                         <input class="settings-input" type="url" value="https://bitcoinnailbar.com" placeholder="https://bitcoinnailbar.com" autocomplete="url" inputmode="url">
                       </label>
+                      <div class="settings-social-links">
+                        <div class="settings-social-links-title">Social Links</div>
+                        <div class="settings-social-grid">
+                          <label class="settings-field">
+                            <span class="settings-label">Facebook</span>
+                            <input class="settings-input" type="url" value="https://facebook.com/bitcoinnailbar" placeholder="https://facebook.com/your-salon" autocomplete="url" inputmode="url" data-settings-social-link="facebook">
+                          </label>
+                          <label class="settings-field">
+                            <span class="settings-label">Instagram</span>
+                            <input class="settings-input" type="url" value="https://instagram.com/bitcoinnailbar" placeholder="https://instagram.com/your-salon" autocomplete="url" inputmode="url" data-settings-social-link="instagram">
+                          </label>
+                          <label class="settings-field">
+                            <span class="settings-label">Yelp</span>
+                            <input class="settings-input" type="url" value="https://yelp.com/biz/bitcoin-nail-bar-houston" placeholder="https://yelp.com/biz/your-salon" autocomplete="url" inputmode="url" data-settings-social-link="yelp">
+                          </label>
+                        </div>
+                      </div>
                     </div>
                   </article>
 
@@ -10007,6 +10357,120 @@
                     </div>
                   </article>
 
+                  <article class="settings-card" data-settings-holiday-card>
+                    <div class="settings-card-head">
+                      <div>
+                        <div class="settings-card-title"><i class="bi bi-calendar-x" aria-hidden="true"></i>Holiday &amp; Closures</div>
+                        <div class="settings-card-sub">Set dates when the salon is closed or has adjusted hours.</div>
+                      </div>
+                      <button class="booking-primary-button settings-holiday-add-button" type="button" data-settings-holiday-add>+ Add date</button>
+                    </div>
+
+                    <div class="settings-holiday-table" role="table" aria-label="Holiday and closures">
+                      <div class="settings-holiday-table-head" role="row">
+                        <span role="columnheader">DATE</span>
+                        <span role="columnheader">REASON</span>
+                        <span role="columnheader">TYPE</span>
+                        <span role="columnheader">ACTIONS</span>
+                      </div>
+                      <div class="settings-holiday-list" data-settings-holiday-list aria-live="polite" role="rowgroup"></div>
+                    </div>
+
+                    <div class="settings-holiday-notify">
+                      <span data-settings-holiday-auto-notify-status>Auto-notify via AI Voice &amp; SMS</span>
+                      <button class="toggle-pill is-on" type="button" data-settings-holiday-auto-notify-toggle role="switch" aria-checked="true" aria-label="Disable holiday auto-notify"></button>
+                    </div>
+
+                  </article>
+
+                  <article class="settings-card" data-settings-booking-policies-card>
+                    <div class="settings-card-head">
+                      <div>
+                        <div class="settings-card-title"><i class="bi bi-shield-check" aria-hidden="true"></i>Booking Policies</div>
+                        <div class="settings-card-sub">Deposits, cancellations, and no-show rules.</div>
+                      </div>
+                    </div>
+
+                    <div class="settings-booking-policy-toggle-row">
+                      <span data-settings-booking-policy-toggle-label>Require deposit</span>
+                      <button class="toggle-pill is-on" type="button" data-settings-booking-policy-toggle role="switch" aria-checked="true" aria-label="Disable deposit requirement"></button>
+                    </div>
+
+                    <div class="settings-booking-policy-grid">
+                      <label class="settings-field">
+                        <span class="settings-label">DEPOSIT</span>
+                        <input class="settings-input" type="text" value="20% of service price" data-settings-booking-policy-input data-settings-booking-policy-deposit>
+                      </label>
+                      <label class="settings-field">
+                        <span class="settings-label">MINIMUM SERVICE PRICE</span>
+                        <input class="settings-input" type="text" value="$75" data-settings-booking-policy-input data-settings-booking-policy-min-price>
+                      </label>
+                      <label class="settings-field">
+                        <span class="settings-label">CANCELLATION WINDOW</span>
+                        <input class="settings-input" type="text" value="2h" data-settings-booking-policy-input data-settings-booking-policy-cancellation-window>
+                      </label>
+                      <label class="settings-field">
+                        <span class="settings-label">NO-SHOW FEE</span>
+                        <input class="settings-input" type="text" value="$20" data-settings-booking-policy-input data-settings-booking-policy-no-show-fee>
+                      </label>
+                    </div>
+
+                    <div class="settings-booking-policy-preview" data-settings-booking-policy-preview aria-live="polite">
+                      <span class="settings-booking-policy-preview-label">PREVIEW</span>
+                      <span class="settings-booking-policy-preview-text" data-settings-booking-policy-preview-text>"A 20% deposit is required for services $75+. Cancel 2h ahead to avoid a $20 no-show fee."</span>
+                    </div>
+                  </article>
+
+                  <div class="settings-service-modal settings-holiday-modal" data-settings-holiday-modal hidden>
+                    <div class="settings-service-dialog" role="dialog" aria-modal="true" aria-labelledby="settings-holiday-modal-title">
+                      <div class="settings-service-modal-head">
+                        <div>
+                          <div class="settings-service-modal-title" id="settings-holiday-modal-title" data-settings-holiday-modal-title>Add Holiday &amp; Closure</div>
+                          <div class="settings-service-modal-sub">Choose the date, type, and reason. Adjusted days use custom hours for booking availability.</div>
+                        </div>
+                        <button class="settings-service-modal-close" type="button" data-settings-holiday-cancel aria-label="Close holiday modal"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+                      </div>
+                      <div class="settings-service-modal-body">
+                        <div class="settings-holiday-form" data-settings-holiday-form>
+                          <label class="settings-field">
+                            <span class="settings-label">Date</span>
+                            <input class="settings-input" type="date" value="2026-07-09" data-settings-holiday-date>
+                          </label>
+                          <label class="settings-field">
+                            <span class="settings-label">Status</span>
+                            <select class="settings-select" data-settings-holiday-status>
+                              <option value="closed">Closed</option>
+                              <option value="adjusted">Adjusted</option>
+                            </select>
+                          </label>
+                          <label class="settings-field" data-settings-holiday-hours>
+                            <span class="settings-label">Open</span>
+                            <input class="settings-input" type="text" value="10:00 AM" placeholder="10:00 AM" data-settings-holiday-open>
+                          </label>
+                          <label class="settings-field" data-settings-holiday-hours>
+                            <span class="settings-label">Close</span>
+                            <input class="settings-input" type="text" value="3:00 PM" placeholder="3:00 PM" data-settings-holiday-close>
+                          </label>
+                          <label class="settings-field settings-holiday-reason-field">
+                            <span class="settings-label">Reason</span>
+                            <input class="settings-input" type="text" value="Staff training day" placeholder="Christmas Day, Thanksgiving, staff training" data-settings-holiday-reason>
+                          </label>
+                          <div class="settings-holiday-reason-suggestions" aria-label="Reason suggestions">
+                            <button class="settings-holiday-reason-chip" type="button" data-settings-holiday-reason-suggestion="Christmas Day">Christmas Day</button>
+                            <button class="settings-holiday-reason-chip" type="button" data-settings-holiday-reason-suggestion="Thanksgiving">Thanksgiving</button>
+                            <button class="settings-holiday-reason-chip" type="button" data-settings-holiday-reason-suggestion="New Year's Day">New Year's Day</button>
+                            <button class="settings-holiday-reason-chip" type="button" data-settings-holiday-reason-suggestion="Independence Day">Independence Day</button>
+                            <button class="settings-holiday-reason-chip" type="button" data-settings-holiday-reason-suggestion="Staff training">Staff training</button>
+                          </div>
+                        </div>
+                      </div>
+                      <div class="settings-service-modal-actions settings-holiday-actions">
+                        <button class="booking-secondary-button" type="button" data-settings-holiday-cancel>Cancel</button>
+                        <button class="booking-primary-button" type="button" data-settings-holiday-save><i class="bi bi-check-lg" aria-hidden="true"></i>Save Closure</button>
+                      </div>
+                    </div>
+                  </div>
+
                 <article class="settings-card">
                   <div class="settings-card-head">
                     <div>
@@ -10028,6 +10492,12 @@
                     <label class="settings-field" style="grid-column: 1 / -1;">
                       <span class="settings-label">Greeting</span>
                       <textarea class="settings-textarea" data-settings-greeting>Hi! Thanks for calling Bitcoin Nail Bar. I'm your AI assistant — I can help you book an appointment, check pricing, or answer questions. How can I help today?</textarea>
+                      <div class="settings-promo-suggest-row">
+                        <span class="settings-suggest-label"><i class="bi bi-stars" aria-hidden="true"></i>Suggestion</span>
+                        <button class="settings-promo-suggest" type="button" data-greeting-fill="warm-welcome">Warm Welcome</button>
+                        <button class="settings-promo-suggest" type="button" data-greeting-fill="quick-booking">Quick Booking</button>
+                        <button class="settings-promo-suggest" type="button" data-greeting-fill="bilingual">Bilingual Greeting</button>
+                      </div>
                     </label>
                     <label class="settings-field" style="grid-column: 1 / -1;">
                       <span class="settings-label settings-label-with-tooltip">
@@ -10037,11 +10507,14 @@
                           <span class="settings-tooltip-content" id="promotion-details-help" role="tooltip">AI Voice reads this offer when a customer asks about promotions. Tap a suggestion chip to fill in a template, then edit it for your salon.</span>
                         </span>
                       </span>
-                      <textarea class="settings-textarea" data-settings-promo maxlength="1000" style="min-height: 220px;" placeholder="e.g.:&#10;Promotion 1: Reward Yourself&#10;Offer: Free $25 e-gift card.&#10;Eligibility: Book any pedicure service of $55 or more.&#10;Availability: Monday–Saturday, by appointment only.&#10;Rules: One free $25 e-gift card per qualifying visit. For future services only, not redeemable for cash, and cannot be used for gratuity. Cannot combine with other promotions, discounts, coupons, rewards, or special offers. One promotional offer per customer per visit.&#10;General rule: The salon may modify or end any promotion at any time."></textarea>
+                      <textarea class="settings-textarea" data-settings-promo maxlength="1000" style="min-height: 150px;" placeholder="e.g.:&#10;Promotion 1: Reward Yourself&#10;Offer: Free $25 e-gift card.&#10;Eligibility: Book any pedicure service of $55 or more.&#10;Availability: Monday–Saturday, by appointment only.&#10;Rules: One free $25 e-gift card per qualifying visit. For future services only, not redeemable for cash, and cannot be used for gratuity. Cannot combine with other promotions, discounts, coupons, rewards, or special offers. One promotional offer per customer per visit.&#10;General rule: The salon may modify or end any promotion at any time."></textarea>
                       <div class="settings-promo-meta">
                         <div class="settings-promo-count"><span data-promo-count>0</span>/1000</div>
                         <div class="settings-promo-suggest-row">
-                          <button class="settings-promo-suggest" type="button" data-promo-fill="reward-yourself"><i class="bi bi-stars" aria-hidden="true"></i>Suggestion: Reward Yourself</button>
+                          <span class="settings-suggest-label"><i class="bi bi-stars" aria-hidden="true"></i>Suggestion</span>
+                          <button class="settings-promo-suggest" type="button" data-promo-fill="reward-yourself">Reward Yourself</button>
+                          <button class="settings-promo-suggest" type="button" data-promo-fill="first-visit">First-Visit Special</button>
+                          <button class="settings-promo-suggest" type="button" data-promo-fill="refer-a-friend">Refer-a-Friend</button>
                         </div>
                       </div>
                     </label>
@@ -10063,6 +10536,12 @@
                       </div>
                       <div class="settings-field">
                         <textarea class="settings-textarea" data-settings-first-call-sms-message aria-label="SMS message" maxlength="320">Thanks for booking with Bitcoin Nail Bar! We’re excited to see you. Reply to this text with any questions or to learn about our current promotions.</textarea>
+                        <div class="settings-promo-suggest-row">
+                          <span class="settings-suggest-label"><i class="bi bi-stars" aria-hidden="true"></i>Suggestion</span>
+                          <button class="settings-promo-suggest" type="button" data-first-call-sms-fill="thanks-booking">Thanks for Booking</button>
+                          <button class="settings-promo-suggest" type="button" data-first-call-sms-fill="first-time-welcome">First-Time Welcome</button>
+                          <button class="settings-promo-suggest" type="button" data-first-call-sms-fill="promo-teaser">Promotion Teaser</button>
+                        </div>
                       </div>
                     </div>
                   </div>
@@ -10176,8 +10655,8 @@
                 <div class="settings-service-dialog" role="dialog" aria-modal="true" aria-labelledby="service-modal-title">
                   <div class="settings-service-modal-head">
                     <div>
-                      <div class="settings-service-modal-title" id="service-modal-title">Add service</div>
-                      <div class="settings-service-modal-sub">Enter the service details, then choose a category for it.</div>
+                      <div class="settings-service-modal-title" id="service-modal-title" data-service-modal-title>Add service</div>
+                      <div class="settings-service-modal-sub" data-service-modal-sub>Enter the service details, then choose a category for it.</div>
                     </div>
                     <button class="settings-service-modal-close" type="button" data-service-modal-close aria-label="Close service modal"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
                   </div>
@@ -11234,6 +11713,7 @@
     var TECHNICIAN_SERVICE_CATALOG_URL = '../menu/menu.json';
     var settingsManagedCategories = [];
     var settingsCategoryDraft = null;
+    var settingsServiceEditContext = null;
     var APPOINTMENT_SERVICE_CATALOG_URL = '../assets/booking-service-catalog-draft.json';
     var catalog = salonData.loadCatalog();
     var BOOKING_CALENDAR_SERVICE_OPTIONS = [];
@@ -12060,6 +12540,8 @@
       scheduledTickets.forEach(function(ticket) { var ticketEnd = new Date(ticket.endAt); if (ticketEnd > end) end = ticketEnd; });
       var startAt = formatBookingCalendarDateTime(start);
       var endAt = formatBookingCalendarDateTime(end);
+      var holidayError = settingsHolidayPlacementError(startAt, endAt);
+      if (holidayError) return { error: holidayError };
       var conflict = scheduledTickets.some(function(ticket) {
         return ticket.technicianId && appointmentStore.hasConflict(appointmentStore.loadAll(null, catalog), { technicianId: ticket.technicianId, startAt: ticket.startAt, endAt: ticket.endAt }, bookingPanelAppointmentId);
       });
@@ -12634,6 +13116,12 @@
       var tech = resize ? (ticket ? (ticket.technicianId || 'unassigned') : (record.technicianId || 'unassigned')) : bookingCalendarResourceTech(args.newResource);
       var start = bookingCalendarDayPilotTime(args.newStart);
       var end = bookingCalendarDayPilotTime(args.newEnd);
+      var holidayError = settingsHolidayPlacementError(start, end);
+      if (holidayError) {
+        setSettingsStatus(holidayError);
+        args.preventDefault();
+        return;
+      }
       if (!bookingCalendarCanPlace(record.id, start, end, tech === 'unassigned' ? 'unassigned' : tech)) {
         args.preventDefault();
       }
@@ -12647,6 +13135,12 @@
       var tech = resize ? (ticket ? (ticket.technicianId || 'unassigned') : (record.technicianId || 'unassigned')) : bookingCalendarResourceTech(args.newResource);
       var start = bookingCalendarDayPilotTime(args.newStart);
       var end = bookingCalendarDayPilotTime(args.newEnd);
+      var holidayError = settingsHolidayPlacementError(start, end);
+      if (holidayError) {
+        setSettingsStatus(holidayError);
+        renderBookingCalendar();
+        return;
+      }
       if (ticket) {
         bookingCalendarUpdateTicket(record.id, meta.ticketId, start, end, tech);
         return;
@@ -12729,6 +13223,11 @@
       var scheduledTickets = appointmentTicketUtils && appointmentTicketUtils.scheduleTickets ? appointmentTicketUtils.scheduleTickets(bookingCreateTickets, formatBookingCalendarDateTime(start)) : bookingCreateTickets;
       var end = new Date(start.getTime() + duration * 60000);
       scheduledTickets.forEach(function(ticket) { var ticketEnd = new Date(ticket.endAt); if (ticketEnd > end) end = ticketEnd; });
+      var holidayError = settingsHolidayPlacementError(formatBookingCalendarDateTime(start), formatBookingCalendarDateTime(end));
+      if (holidayError) {
+        setBookingCreateError(holidayError);
+        return;
+      }
       var conflict = scheduledTickets.some(function(ticket) {
         return ticket.technicianId && appointmentStore.hasConflict(appointmentStore.loadAll(null, catalog), { technicianId: ticket.technicianId, startAt: ticket.startAt, endAt: ticket.endAt }, null);
       });
@@ -12809,6 +13308,12 @@
         headerHeight: 44,
         timeFormat: 'Clock12Hours',
         onBeforeCellRender: function(args) {
+          if (settingsHolidayCellIsBlocked(args.cell.start, args.cell.end)) {
+            args.cell.properties.disabled = true;
+            args.cell.properties.cssClass = 'booking-calendar-closed-cell';
+            args.cell.properties.html = '<span class="booking-cell-add" aria-hidden="true"><span>Closed</span></span>';
+            return;
+          }
           args.cell.properties.html = '<span class="booking-cell-add" aria-hidden="true"><span>+</span></span>';
         },
         eventMoveHandling: 'Update',
@@ -12817,6 +13322,12 @@
         onTimeRangeSelected: function(args) {
           var start = new Date(bookingCalendarDayPilotTime(args.start));
           var end = new Date(bookingCalendarDayPilotTime(args.end));
+          var holidayError = settingsHolidayPlacementError(formatBookingCalendarDateTime(start), formatBookingCalendarDateTime(end));
+          if (holidayError) {
+            if (bookingTeamCalendar) bookingTeamCalendar.clearSelection();
+            setSettingsStatus(holidayError);
+            return;
+          }
           openBookingAppointmentPanelForNew(start, end, bookingCalendarResourceTech(args.resource));
         },
         onEventClick: function(args) { openBookingAppointmentPanel(findBookingItemById(bookingCalendarEventMeta(args.e).orderId)); },
@@ -13885,6 +14396,542 @@ function getBookingCardCallStart(item) {
       }
     }
 
+    var SETTINGS_HOLIDAY_STORAGE_KEY = 'nexora:holiday-closures:v1:' + (salonData && salonData.SALON_ID ? salonData.SALON_ID : 'bitcoin-nail-bar-houston');
+    var settingsHolidayClosures = [
+      {
+        date: '2026-12-25',
+        status: 'closed',
+        open: '10:00 AM',
+        close: '3:00 PM',
+        reason: 'Christmas Day',
+        autoNotify: true,
+        message: ''
+      },
+      {
+        date: '2026-11-26',
+        status: 'adjusted',
+        open: '10:00 AM',
+        close: '3:00 PM',
+        reason: 'Thanksgiving',
+        autoNotify: true,
+        message: ''
+      },
+      {
+        date: '2026-07-04',
+        status: 'adjusted',
+        open: '9:00 AM',
+        close: '1:00 PM',
+        reason: 'Independence Day',
+        autoNotify: true,
+        message: ''
+      }
+    ];
+    var settingsHolidayInitialized = false;
+    var settingsHolidayModalMode = 'add';
+
+    function normalizeSettingsHolidayClosure(item) {
+      item = item || {};
+      var status = item.status === 'adjusted' ? 'adjusted' : 'closed';
+      return {
+        date: String(item.date || '').slice(0, 10),
+        status: status,
+        open: String(item.open || '10:00 AM').trim(),
+        close: String(item.close || '3:00 PM').trim(),
+        reason: String(item.reason || (status === 'closed' ? 'Closed' : 'Adjusted hours')).trim(),
+        autoNotify: item.autoNotify !== false,
+        message: String(item.message || '').trim()
+      };
+    }
+
+    function loadSettingsHolidayClosures() {
+      try {
+        var raw = localStorage.getItem(SETTINGS_HOLIDAY_STORAGE_KEY);
+        if (!raw) return settingsHolidayClosures.slice();
+        var parsed = JSON.parse(raw);
+        if (!Array.isArray(parsed)) return settingsHolidayClosures.slice();
+        var seen = {};
+        return parsed.map(normalizeSettingsHolidayClosure).filter(function(item) {
+          if (!item.date || seen[item.date]) return false;
+          seen[item.date] = true;
+          return true;
+        });
+      } catch (error) {
+        return settingsHolidayClosures.slice();
+      }
+    }
+
+    function saveSettingsHolidayClosures() {
+      try {
+        localStorage.setItem(SETTINGS_HOLIDAY_STORAGE_KEY, JSON.stringify(settingsHolidayClosures));
+      } catch (error) {
+        return false;
+      }
+      return true;
+    }
+
+    settingsHolidayClosures = loadSettingsHolidayClosures();
+
+    function settingsHolidayField(selector) {
+      return document.querySelector(selector);
+    }
+
+    function defaultSettingsHolidayClosure() {
+      var notify = settingsHolidayField('[data-settings-holiday-auto-notify-toggle]');
+      return {
+        date: '',
+        status: 'closed',
+        open: '10:00 AM',
+        close: '3:00 PM',
+        reason: '',
+        autoNotify: !notify || notify.classList.contains('is-on'),
+        message: ''
+      };
+    }
+
+    function openSettingsHolidayModal(closure, mode) {
+      var modal = settingsHolidayField('[data-settings-holiday-modal]');
+      if (!modal) return;
+      var savedClosure = closure && closure.date ? settingsHolidayClosureByDate(closure.date) : null;
+      settingsHolidayModalMode = mode === 'view' ? 'view' : (savedClosure ? 'edit' : 'add');
+      fillSettingsHolidayForm(closure || defaultSettingsHolidayClosure());
+      var title = settingsHolidayField('[data-settings-holiday-modal-title]');
+      if (title) {
+        title.textContent = settingsHolidayModalMode === 'view'
+          ? 'View Holiday & Closure'
+          : (settingsHolidayModalMode === 'edit' ? 'Edit Holiday & Closure' : 'Add Holiday & Closure');
+      }
+      modal.dataset.settingsHolidayMode = settingsHolidayModalMode;
+      modal.hidden = false;
+      var date = settingsHolidayField('[data-settings-holiday-date]');
+      if (date && !date.value) date.focus();
+    }
+
+    function openSettingsHolidayForm(closure, mode) {
+      openSettingsHolidayModal(closure, mode);
+    }
+
+    function closeSettingsHolidayModal() {
+      var modal = settingsHolidayField('[data-settings-holiday-modal]');
+      if (modal) modal.hidden = true;
+      settingsHolidayModalMode = 'add';
+    }
+
+    function closeSettingsHolidayForm() {
+      closeSettingsHolidayModal();
+    }
+
+    function settingsHolidayDisplayDate(date) {
+      var parsed = new Date(String(date || '') + 'T12:00:00');
+      if (!Number.isFinite(parsed.getTime())) return date || 'Selected date';
+      return parsed.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+    }
+
+    function settingsHolidayClockMinutes(value) {
+      var text = String(value || '').trim().toUpperCase();
+      var twelveHour = text.match(/^(\d{1,2})(?::([0-5]\d))?\s*(AM|PM)$/);
+      if (twelveHour) {
+        var hour = Number(twelveHour[1]);
+        var minute = Number(twelveHour[2] || 0);
+        if (hour < 1 || hour > 12) return null;
+        if (twelveHour[3] === 'AM' && hour === 12) hour = 0;
+        if (twelveHour[3] === 'PM' && hour !== 12) hour += 12;
+        return hour * 60 + minute;
+      }
+
+      var twentyFourHour = text.match(/^([01]?\d|2[0-3]):([0-5]\d)$/);
+      return twentyFourHour ? Number(twentyFourHour[1]) * 60 + Number(twentyFourHour[2]) : null;
+    }
+
+    function settingsHolidayClosureByDate(date) {
+      return settingsHolidayClosures.find(function(item) { return item.date === date; }) || null;
+    }
+
+    function collectSettingsHolidayForm() {
+      var date = settingsHolidayField('[data-settings-holiday-date]');
+      var status = settingsHolidayField('[data-settings-holiday-status]');
+      var open = settingsHolidayField('[data-settings-holiday-open]');
+      var close = settingsHolidayField('[data-settings-holiday-close]');
+      var reason = settingsHolidayField('[data-settings-holiday-reason]');
+      var notify = settingsHolidayField('[data-settings-holiday-auto-notify-toggle]');
+      return {
+        date: date ? date.value : '',
+        status: status ? status.value : 'closed',
+        open: open ? open.value.trim() : '',
+        close: close ? close.value.trim() : '',
+        reason: reason ? reason.value.trim() : '',
+        autoNotify: !notify || notify.classList.contains('is-on')
+      };
+    }
+
+    function fillSettingsHolidayForm(closure) {
+      if (!closure) return;
+      var date = settingsHolidayField('[data-settings-holiday-date]');
+      var status = settingsHolidayField('[data-settings-holiday-status]');
+      var open = settingsHolidayField('[data-settings-holiday-open]');
+      var close = settingsHolidayField('[data-settings-holiday-close]');
+      var reason = settingsHolidayField('[data-settings-holiday-reason]');
+      var notify = settingsHolidayField('[data-settings-holiday-auto-notify-toggle]');
+      if (date) date.value = closure.date || '';
+      if (status) status.value = closure.status || 'closed';
+      if (open) open.value = closure.open || '10:00 AM';
+      if (close) close.value = closure.close || '3:00 PM';
+      if (reason) reason.value = closure.reason || '';
+      if (notify) notify.classList.toggle('is-on', closure.autoNotify !== false);
+      syncSettingsHolidayAutoNotifyToggle(notify);
+      syncSettingsHolidayFormState();
+    }
+
+    function settingsHolidayAppointmentMinutes(record) {
+      var start = new Date(record && record.startAt ? record.startAt : '');
+      if (!Number.isFinite(start.getTime())) return null;
+      var end = record && record.endAt ? new Date(record.endAt) : new Date(start.getTime() + (Number(record.durationMin) || 60) * 60000);
+      if (!Number.isFinite(end.getTime())) end = new Date(start.getTime() + (Number(record.durationMin) || 60) * 60000);
+      return {
+        startMinutes: start.getHours() * 60 + start.getMinutes(),
+        endMinutes: end.getHours() * 60 + end.getMinutes()
+      };
+    }
+
+    function settingsHolidayAppointmentIsAffected(record, closure) {
+      if (!record || !closure || !closure.date || record.status === 'cancelled') return false;
+      if (String(record.startAt || '').slice(0, 10) !== closure.date) return false;
+      var appointmentMinutes = settingsHolidayAppointmentMinutes(record);
+      if (!appointmentMinutes) return false;
+      var startMinutes = appointmentMinutes.startMinutes;
+      var endMinutes = appointmentMinutes.endMinutes;
+
+      if (closure.status === 'closed') return true;
+
+      var openMinutes = settingsHolidayClockMinutes(closure.open);
+      var closeMinutes = settingsHolidayClockMinutes(closure.close);
+      if (openMinutes === null || closeMinutes === null || openMinutes >= closeMinutes) return true;
+
+      return startMinutes < openMinutes || endMinutes > closeMinutes;
+    }
+
+    function settingsHolidayImpactedAppointments(closure) {
+      if (!closure || !closure.date || !appointmentStore || typeof appointmentStore.loadAll !== 'function') return [];
+      return appointmentStore.loadAll(null, catalog).filter(function(record) {
+        return settingsHolidayAppointmentIsAffected(record, closure);
+      }).sort(function(a, b) {
+        return String(a.startAt || '').localeCompare(String(b.startAt || ''));
+      });
+    }
+
+    function settingsHolidayScheduleForRange(startAt, endAt) {
+      var start = new Date(startAt);
+      var end = new Date(endAt);
+      if (!Number.isFinite(start.getTime()) || !Number.isFinite(end.getTime())) return null;
+      var date = formatBookingCalendarDate(start);
+      var closure = settingsHolidayClosureByDate(date);
+      if (!closure) return null;
+      var candidate = {
+        startAt: formatBookingCalendarDateTime(start),
+        endAt: formatBookingCalendarDateTime(end),
+        status: 'pending'
+      };
+      var blocked = settingsHolidayAppointmentIsAffected(candidate, closure);
+      return {
+        closure: closure,
+        blocked: blocked,
+        date: date,
+        label: settingsHolidayClosureLabel(closure)
+      };
+    }
+
+    function settingsHolidayPlacementError(startAt, endAt) {
+      var schedule = settingsHolidayScheduleForRange(startAt, endAt);
+      if (!schedule || !schedule.blocked) return '';
+      var closure = schedule.closure;
+      if (closure.status === 'closed') {
+        return 'Salon is closed on ' + settingsHolidayDisplayDate(closure.date) + (closure.reason ? ' for ' + closure.reason : '') + '. Choose another date.';
+      }
+      return 'Salon hours are adjusted on ' + settingsHolidayDisplayDate(closure.date) + ' to ' + closure.open + ' - ' + closure.close + '. Choose a time inside salon hours.';
+    }
+
+    function settingsHolidayCellIsBlocked(startAt, endAt) {
+      return Boolean(settingsHolidayPlacementError(bookingCalendarDayPilotTime(startAt), bookingCalendarDayPilotTime(endAt)));
+    }
+
+    function settingsHolidayServiceLabel(record) {
+      return bookingRecordServiceNames(record || {}).join(', ') || 'Service to confirm';
+    }
+
+    function settingsHolidayClosureLabel(closure) {
+      if (!closure) return 'No closure selected';
+      if (closure.status === 'closed') return 'Closed all day';
+      return 'Adjusted hours: ' + (closure.open || 'Open') + ' to ' + (closure.close || 'Close');
+    }
+
+    function settingsHolidayFallbackMessage(closure) {
+      var salonNameField = document.querySelector('.settings-business-grid .settings-input');
+      var salonName = salonNameField && salonNameField.value ? salonNameField.value.trim() : 'Bitcoin Nail Bar';
+      var date = settingsHolidayDisplayDate(closure && closure.date);
+      var reason = closure && closure.reason ? ' for ' + closure.reason : '';
+      if (closure && closure.status === 'adjusted') {
+        return salonName + ' has adjusted hours on ' + date + ' from ' + (closure.open || 'open') + ' to ' + (closure.close || 'close') + reason + '. Please contact us or book a new time online.';
+      }
+      return salonName + ' is closed on ' + date + reason + '. Please contact us or book a new time online.';
+    }
+
+    function settingsHolidayNotificationSignature(closure, messageText) {
+      return [
+        closure && closure.date || '',
+        closure && closure.status || '',
+        closure && closure.open || '',
+        closure && closure.close || '',
+        closure && closure.reason || '',
+        messageText || ''
+      ].join('|');
+    }
+
+    function queueSettingsHolidayNotifications(closure, messageText) {
+      if (!closure || closure.autoNotify === false) return 0;
+      var affected = settingsHolidayImpactedAppointments(closure);
+      messageText = String(messageText || closure.message || '').trim() || settingsHolidayFallbackMessage(closure);
+      var signature = settingsHolidayNotificationSignature(closure, messageText);
+      affected.forEach(function(record) {
+        var metadata = Object.assign({}, record.metadata || {});
+        var existing = metadata.holidayClosureNotification || {};
+        var queuedAt = existing.signature === signature && existing.queuedAt ? existing.queuedAt : new Date().toISOString();
+        metadata.holidayClosureNotification = {
+          date: closure.date,
+          reason: closure.reason,
+          status: closure.status,
+          notificationStatus: 'queued',
+          channel: 'AI Voice + SMS',
+          message: messageText,
+          phone: record.phone || '',
+          queuedAt: queuedAt,
+          signature: signature
+        };
+        appointmentStore.update(record.id, {
+          metadata: metadata
+        }, null, catalog);
+      });
+      return affected.length;
+    }
+
+    function syncSettingsHolidayAutoNotifyToggle(toggle) {
+      if (!toggle) return;
+      var enabled = toggle.classList.contains('is-on');
+      toggle.setAttribute('aria-checked', enabled ? 'true' : 'false');
+      toggle.setAttribute('aria-label', enabled ? 'Disable holiday auto-notify' : 'Enable holiday auto-notify');
+      var label = settingsHolidayField('[data-settings-holiday-auto-notify-status]');
+      if (label) {
+        label.textContent = enabled ? 'Auto-notify via AI Voice & SMS' : 'Auto-notify off';
+        label.classList.toggle('is-off', !enabled);
+      }
+    }
+
+    function syncSettingsHolidayFormState() {
+      var form = collectSettingsHolidayForm();
+      var isAdjusted = form.status === 'adjusted';
+      var isViewMode = settingsHolidayModalMode === 'view';
+      document.querySelectorAll('[data-settings-holiday-form] .settings-input, [data-settings-holiday-form] .settings-select').forEach(function(input) {
+        var isHourInput = Boolean(input.closest('[data-settings-holiday-hours]'));
+        input.disabled = isViewMode || (isHourInput && !isAdjusted);
+      });
+      document.querySelectorAll('[data-settings-holiday-reason-suggestion]').forEach(function(button) {
+        button.hidden = isViewMode;
+        button.disabled = isViewMode;
+      });
+      var saveButton = settingsHolidayField('[data-settings-holiday-save]');
+      if (saveButton) {
+        saveButton.hidden = isViewMode;
+        saveButton.disabled = isViewMode;
+      }
+    }
+
+    function settingsHolidayRowMarkup(closure) {
+      var statusClass = closure.status === 'closed' ? 'is-closed' : 'is-adjusted';
+      var type = closure.status === 'closed' ? 'Closed' : 'Adjusted';
+      return '<div class="settings-holiday-row" role="row" data-settings-holiday-row="' + escapeHtml(closure.date) + '">' +
+        '<span class="settings-holiday-date" role="cell">' + escapeHtml(settingsHolidayDisplayDate(closure.date)) + '</span>' +
+        '<span class="settings-holiday-reason" role="cell">' + escapeHtml(closure.reason || 'No reason') + '</span>' +
+        '<span class="settings-holiday-type" role="cell"><span class="settings-holiday-badge ' + statusClass + '">' + escapeHtml(type) + '</span></span>' +
+        '<span class="settings-holiday-row-actions" role="cell">' +
+        '<button class="settings-holiday-icon-button" type="button" data-settings-holiday-edit="' + escapeHtml(closure.date) + '" aria-label="Edit closure" title="Edit closure">Edit</button>' +
+        '<button class="settings-holiday-icon-button" type="button" data-settings-holiday-view="' + escapeHtml(closure.date) + '" aria-label="View closure" title="View closure">View</button>' +
+        '<button class="settings-holiday-icon-button is-danger" type="button" data-settings-holiday-remove="' + escapeHtml(closure.date) + '" aria-label="Delete closure" title="Delete closure">Delete</button></span></div>';
+    }
+
+    function renderSettingsHolidayClosures() {
+      var list = settingsHolidayField('[data-settings-holiday-list]');
+      if (!list) return;
+      var sorted = settingsHolidayClosures.slice().sort(function(a, b) {
+        return String(a.date || '').localeCompare(String(b.date || ''));
+      });
+      list.innerHTML = sorted.length
+        ? sorted.map(settingsHolidayRowMarkup).join('')
+        : '<div class="settings-holiday-empty" role="row">No Holiday & Closures configured.</div>';
+      syncSettingsHolidayFormState();
+    }
+
+    function upsertSettingsHolidayClosure() {
+      var form = collectSettingsHolidayForm();
+      if (!form.date) {
+        setSettingsStatus('Choose a date before saving Holiday & Closures.');
+        return;
+      }
+      if (form.status === 'adjusted') {
+        var openMinutes = settingsHolidayClockMinutes(form.open);
+        var closeMinutes = settingsHolidayClockMinutes(form.close);
+        if (openMinutes === null || closeMinutes === null || openMinutes >= closeMinutes) {
+          setSettingsStatus('Adjusted hours need a valid open and close time.');
+          return;
+        }
+      }
+      if (!form.reason) form.reason = form.status === 'closed' ? 'Closed' : 'Adjusted hours';
+
+      var previousClosures = settingsHolidayClosures.slice();
+      var existingIndex = settingsHolidayClosures.findIndex(function(item) { return item.date === form.date; });
+      if (existingIndex >= 0) {
+        settingsHolidayClosures[existingIndex] = form;
+      } else {
+        settingsHolidayClosures.push(form);
+      }
+      if (!saveSettingsHolidayClosures()) {
+        settingsHolidayClosures = previousClosures;
+        renderSettingsHolidayClosures();
+        setSettingsStatus('Could not save Holiday & Closures. Check browser storage and try again.');
+        return;
+      }
+      var queuedCount = form.autoNotify !== false ? queueSettingsHolidayNotifications(form) : null;
+      renderSettingsHolidayClosures();
+      fillSettingsHolidayForm(form);
+      closeSettingsHolidayForm();
+      if (queuedCount !== null) {
+        renderBookingStoreRows();
+        filterBookingItems();
+      }
+      renderBookingCalendar();
+      var status = 'Holiday & Closures saved for ' + settingsHolidayDisplayDate(form.date) + '.';
+      if (queuedCount !== null) {
+        status += ' AI Voice and SMS queued for ' + queuedCount + ' affected appointment' + (queuedCount === 1 ? '' : 's') + '.';
+      }
+      setSettingsStatus(status);
+    }
+
+    function editSettingsHolidayClosure(date) {
+      var closure = settingsHolidayClosureByDate(date);
+      if (!closure) return;
+      openSettingsHolidayForm(closure, 'edit');
+      setSettingsStatus('Editing Holiday & Closures for ' + settingsHolidayDisplayDate(date) + '.');
+    }
+
+    function viewSettingsHolidayClosure(date) {
+      var closure = settingsHolidayClosureByDate(date);
+      if (!closure) return;
+      openSettingsHolidayForm(closure, 'view');
+      setSettingsStatus('Viewing Holiday & Closures for ' + settingsHolidayDisplayDate(date) + '.');
+    }
+
+    function deleteSettingsHolidayClosure(date) {
+      var targetDate = date;
+      var before = settingsHolidayClosures.length;
+      var previousClosures = settingsHolidayClosures.slice();
+      settingsHolidayClosures = settingsHolidayClosures.filter(function(item) { return item.date !== targetDate; });
+      if (!saveSettingsHolidayClosures()) {
+        settingsHolidayClosures = previousClosures;
+        renderSettingsHolidayClosures();
+        setSettingsStatus('Could not delete Holiday & Closures. Check browser storage and try again.');
+        return;
+      }
+      renderSettingsHolidayClosures();
+      syncSettingsHolidayFormState();
+      closeSettingsHolidayForm();
+      renderBookingCalendar();
+      if (before !== settingsHolidayClosures.length) {
+        setSettingsStatus('Holiday & Closures deleted for ' + settingsHolidayDisplayDate(targetDate) + '.');
+      }
+    }
+
+    function initSettingsHolidayClosures() {
+      var card = settingsHolidayField('[data-settings-holiday-card]');
+      if (!card) return;
+      if (!settingsHolidayInitialized) {
+        settingsHolidayInitialized = true;
+        document.querySelectorAll('[data-settings-holiday-status], [data-settings-holiday-open], [data-settings-holiday-close], [data-settings-holiday-reason]').forEach(function(field) {
+          field.addEventListener('input', syncSettingsHolidayFormState);
+          field.addEventListener('change', syncSettingsHolidayFormState);
+        });
+        var date = settingsHolidayField('[data-settings-holiday-date]');
+        if (date) {
+          date.addEventListener('change', function() {
+            var existing = settingsHolidayClosureByDate(date.value);
+            var title = settingsHolidayField('[data-settings-holiday-modal-title]');
+            if (existing) {
+              fillSettingsHolidayForm(existing);
+              if (title) title.textContent = 'Edit Holiday & Closure';
+            } else {
+              if (title) title.textContent = 'Add Holiday & Closure';
+              syncSettingsHolidayFormState();
+            }
+          });
+        }
+        var notify = settingsHolidayField('[data-settings-holiday-auto-notify-toggle]');
+        if (notify) {
+          syncSettingsHolidayAutoNotifyToggle(notify);
+          notify.addEventListener('click', function() {
+            syncSettingsHolidayAutoNotifyToggle(notify);
+            syncSettingsHolidayFormState();
+          });
+        }
+        var save = settingsHolidayField('[data-settings-holiday-save]');
+        if (save) save.addEventListener('click', upsertSettingsHolidayClosure);
+        var add = settingsHolidayField('[data-settings-holiday-add]');
+        if (add) add.addEventListener('click', function() {
+          openSettingsHolidayForm(defaultSettingsHolidayClosure());
+          setSettingsStatus('Adding a Holiday & Closures date.');
+        });
+        document.querySelectorAll('[data-settings-holiday-cancel]').forEach(function(cancel) {
+          cancel.addEventListener('click', function() {
+            closeSettingsHolidayForm();
+            setSettingsStatus('Holiday & Closures form closed.');
+          });
+        });
+        var modal = settingsHolidayField('[data-settings-holiday-modal]');
+        if (modal) {
+          modal.addEventListener('click', function(event) {
+            if (event.target === modal) closeSettingsHolidayForm();
+          });
+        }
+        document.querySelectorAll('[data-settings-holiday-reason-suggestion]').forEach(function(suggestion) {
+          suggestion.addEventListener('click', function() {
+            var reason = settingsHolidayField('[data-settings-holiday-reason]');
+            if (!reason) return;
+            reason.value = suggestion.dataset.settingsHolidayReasonSuggestion || '';
+            reason.focus();
+            syncSettingsHolidayFormState();
+          });
+        });
+        var list = settingsHolidayField('[data-settings-holiday-list]');
+        if (list) {
+          list.addEventListener('click', function(event) {
+            var removeButton = event.target.closest('[data-settings-holiday-remove]');
+            if (removeButton) {
+              deleteSettingsHolidayClosure(removeButton.dataset.settingsHolidayRemove);
+              return;
+            }
+            var view = event.target.closest('[data-settings-holiday-view]');
+            if (view) {
+              viewSettingsHolidayClosure(view.dataset.settingsHolidayView);
+              return;
+            }
+            var edit = event.target.closest('[data-settings-holiday-edit]');
+            if (edit) {
+              editSettingsHolidayClosure(edit.dataset.settingsHolidayEdit);
+              return;
+            }
+          });
+        }
+      }
+      var selected = settingsHolidayClosureByDate((settingsHolidayField('[data-settings-holiday-date]') || {}).value);
+      if (selected) fillSettingsHolidayForm(selected);
+      renderSettingsHolidayClosures();
+    }
+
     function settingsServiceCategoriesFromCatalog(source) {
       if (source && Array.isArray(source.categories) && source.categories.length) return source.categories;
 
@@ -13957,6 +15004,7 @@ function getBookingCardCallStart(item) {
           '<input class="settings-service-input" type="text" value="' + escapeHtml(service.name || 'Unnamed service') + '" aria-label="Service name">' +
           '<div class="settings-service-input-wrap"><span class="settings-service-prefix">$</span><input class="settings-service-input price" type="number" value="' + escapeHtml(price) + '" aria-label="Service price"></div>' +
           '<div class="settings-service-input-wrap"><input class="settings-service-input duration" type="number" value="' + escapeHtml(duration) + '" aria-label="Service duration"><span class="settings-service-suffix">min</span></div>' +
+          '<button class="settings-service-edit" type="button" data-service-edit aria-label="Edit service"><i class="bi bi-pencil" aria-hidden="true"></i></button>' +
           '<button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>' +
         '</div>' +
       '</div>';
@@ -13966,7 +15014,7 @@ function getBookingCardCallStart(item) {
       var services = Array.isArray(category.services) ? category.services : [];
       return '<details class="settings-service-category" data-service-category data-service-category-id="' + escapeHtml(category.id || '') + '"' + (index === 0 ? ' open' : '') + '>' +
         '<summary class="settings-service-category-head"><span class="settings-service-category-name">' + escapeHtml(category.name || 'Other services') + '</span><span class="settings-service-category-count">' + services.length + '</span><i class="settings-service-category-chevron" data-lucide="chevron-down" aria-hidden="true"></i></summary>' +
-        '<div class="settings-service-category-body"><div class="settings-service-header" aria-hidden="true"><span></span><span>Service</span><span>Price</span><span>Duration</span><span></span></div>' +
+        '<div class="settings-service-category-body"><div class="settings-service-header" aria-hidden="true"><span></span><span>Service</span><span>Price</span><span>Duration</span><span></span><span></span></div>' +
         services.map(function(service, serviceIndex) { return settingsServiceRowMarkup(service, index + serviceIndex); }).join('') + '</div></details>';
     }
 
@@ -14184,6 +15232,58 @@ function getBookingCardCallStart(item) {
           'Rules: One free $25 e-gift card per qualifying visit. For future services only, not redeemable for cash, and cannot be used for gratuity. Cannot combine with other promotions, discounts, coupons, rewards, or special offers. One promotional offer per customer per visit.',
           'General rule: The salon may modify or end any promotion at any time.'
         ].join('\n')
+      },
+      'first-visit': {
+        label: 'Promotion 2: First-Visit Special',
+        text: [
+          'Promotion 2: First-Visit Special',
+          'Offer: 20% off any service for new customers.',
+          'Eligibility: First-time customers only, valid on their first visit.',
+          'Availability: Monday–Saturday, by appointment only.',
+          'Rules: One 20% discount per new customer. Cannot combine with other promotions, discounts, coupons, rewards, or special offers.',
+          'General rule: The salon may modify or end any promotion at any time.'
+        ].join('\n')
+      },
+      'refer-a-friend': {
+        label: 'Promotion 3: Refer-a-Friend',
+        text: [
+          'Promotion 3: Refer-a-Friend',
+          'Offer: $15 credit for you and your friend.',
+          'Eligibility: Referred friend must book and complete a service of $40 or more.',
+          'Availability: Ongoing, by appointment only.',
+          'Rules: Credit is issued after the referred friend’s visit is complete. Cannot combine with other promotions, discounts, coupons, rewards, or special offers.',
+          'General rule: The salon may modify or end any promotion at any time.'
+        ].join('\n')
+      }
+    };
+
+    var GREETING_TEMPLATES = {
+      'warm-welcome': {
+        label: 'Warm Welcome',
+        text: 'Hi! Thanks for calling Bitcoin Nail Bar. I’m your AI assistant — I can help you book an appointment, check pricing, or answer questions. How can I help today?'
+      },
+      'quick-booking': {
+        label: 'Quick Booking',
+        text: 'Hello! You’ve reached Bitcoin Nail Bar. I can book your appointment right now, check today’s availability, or answer a quick pricing question — what would you like to do?'
+      },
+      'bilingual': {
+        label: 'Bilingual Greeting',
+        text: 'Xin chào! Bạn đã gọi đến Bitcoin Nail Bar. / Hi! You’ve reached Bitcoin Nail Bar. Tôi có thể giúp đặt lịch, kiểm tra giá, hoặc trả lời câu hỏi. How can I help you today?'
+      }
+    };
+
+    var FIRST_CALL_SMS_TEMPLATES = {
+      'thanks-booking': {
+        label: 'Thanks for Booking',
+        text: 'Thanks for booking with Bitcoin Nail Bar! We’re excited to see you. Reply to this text with any questions or to learn about our current promotions.'
+      },
+      'first-time-welcome': {
+        label: 'First-Time Welcome',
+        text: 'Thanks for calling Bitcoin Nail Bar! We’re glad to have you. Reply here anytime with questions, or ask about booking your next visit.'
+      },
+      'promo-teaser': {
+        label: 'Promotion Teaser',
+        text: 'Thanks for calling Bitcoin Nail Bar! Ask us about this month’s promotions on your next visit — reply to this text with any questions.'
       }
     };
 
@@ -14209,6 +15309,27 @@ function getBookingCardCallStart(item) {
       textarea.focus();
       updatePromoCount();
       setSettingsStatus('Promotion template filled in: ' + template.label + '. Edit it for your salon, then click Save.');
+    }
+
+    function fillGreetingTemplate(key) {
+      var template = GREETING_TEMPLATES[key];
+      var textarea = document.querySelector('[data-settings-greeting]');
+      if (!template || !textarea) return;
+
+      textarea.value = template.text;
+      textarea.focus();
+      setSettingsStatus('Greeting template filled in: ' + template.label + '. Edit it for your salon, then click Save.');
+    }
+
+    function fillFirstCallSmsTemplate(key) {
+      var template = FIRST_CALL_SMS_TEMPLATES[key];
+      var textarea = document.querySelector('[data-settings-first-call-sms-message]');
+      if (!template || !textarea) return;
+
+      var max = parseInt(textarea.getAttribute('maxlength'), 10) || 320;
+      textarea.value = template.text.slice(0, max);
+      textarea.focus();
+      setSettingsStatus('First-call SMS template filled in: ' + template.label + '. Edit it for your salon, then click Save.');
     }
 
     function addSettingsServiceRow(name, price, duration, categoryId, categoryName) {
@@ -14246,15 +15367,71 @@ function getBookingCardCallStart(item) {
       error.hidden = !message;
     }
 
+    function setSettingsServiceModalMode(mode) {
+      var title = document.querySelector('[data-service-modal-title]');
+      var sub = document.querySelector('[data-service-modal-sub]');
+      var saveButton = document.querySelector('[data-service-modal-save]');
+      if (mode === 'edit') {
+        if (title) title.textContent = 'Edit service';
+        if (sub) sub.textContent = 'Update the service details, then save your changes.';
+        if (saveButton) saveButton.innerHTML = '<i class="bi bi-check-lg" aria-hidden="true"></i>Save changes';
+      } else {
+        if (title) title.textContent = 'Add service';
+        if (sub) sub.textContent = 'Enter the service details, then choose a category for it.';
+        if (saveButton) saveButton.innerHTML = '<i class="bi bi-plus-lg" aria-hidden="true"></i>Add service';
+      }
+    }
+
     function openSettingsServiceModal() {
       var modal = document.querySelector('[data-service-modal]');
       if (!modal) return;
 
+      settingsServiceEditContext = null;
       populateSettingsServiceModalCategories();
       ['name', 'description', 'price', 'duration'].forEach(function(name) {
         var field = document.querySelector('[data-service-modal-field="' + name + '"]');
         if (field) field.value = '';
       });
+      setSettingsServiceModalMode('add');
+      setSettingsServiceModalError('');
+      modal.hidden = false;
+      document.body.style.overflow = 'hidden';
+
+      var firstField = document.querySelector('[data-service-modal-field="name"]');
+      if (firstField) firstField.focus();
+    }
+
+    function findSettingsManagedService(serviceId, categoryId) {
+      var category = settingsManagedCategories.find(function(item) { return item.id === categoryId; });
+      var service = category ? category.services.find(function(item) { return item.id === serviceId; }) : null;
+      return { category: category, service: service };
+    }
+
+    function openSettingsServiceModalForEdit(serviceId, categoryId) {
+      var modal = document.querySelector('[data-service-modal]');
+      if (!modal) return;
+
+      var found = findSettingsManagedService(serviceId, categoryId);
+      if (!found.service) return;
+
+      settingsServiceEditContext = { serviceId: serviceId, categoryId: categoryId };
+      populateSettingsServiceModalCategories();
+
+      var categoryField = document.querySelector('[data-service-modal-field="category"]');
+      if (categoryField) categoryField.value = categoryId;
+
+      var values = {
+        name: found.service.name,
+        description: found.service.description,
+        price: found.service.price,
+        duration: found.service.durationMin
+      };
+      ['name', 'description', 'price', 'duration'].forEach(function(name) {
+        var field = document.querySelector('[data-service-modal-field="' + name + '"]');
+        if (field) field.value = values[name] == null ? '' : values[name];
+      });
+
+      setSettingsServiceModalMode('edit');
       setSettingsServiceModalError('');
       modal.hidden = false;
       document.body.style.overflow = 'hidden';
@@ -14268,14 +15445,58 @@ function getBookingCardCallStart(item) {
       if (!modal) return;
 
       modal.hidden = true;
+      settingsServiceEditContext = null;
       setSettingsServiceModalError('');
       document.body.style.overflow = '';
+    }
+
+    function updateSettingsServiceRow(serviceId, previousCategoryId, updates) {
+      var found = findSettingsManagedService(serviceId, previousCategoryId);
+      if (!found.service) return;
+
+      var previousRow = document.querySelector('[data-service-row][data-service-id="' + serviceId + '"]');
+      var previousCategoryEl = previousRow ? previousRow.closest('[data-service-category]') : null;
+
+      found.service.name = updates.name;
+      found.service.price = updates.price;
+      found.service.durationMin = updates.durationMin;
+      if (updates.description) {
+        found.service.description = updates.description;
+      } else {
+        delete found.service.description;
+      }
+
+      if (updates.categoryId === previousCategoryId) {
+        if (previousRow) {
+          var inputs = previousRow.querySelectorAll('.settings-service-input');
+          if (inputs[0]) inputs[0].value = found.service.name;
+          if (inputs[1]) inputs[1].value = found.service.price;
+          if (inputs[2]) inputs[2].value = found.service.durationMin;
+        }
+        setSettingsStatus('Service updated: ' + found.service.name + '.');
+        return;
+      }
+
+      found.category.services = found.category.services.filter(function(item) { return item.id !== serviceId; });
+      if (previousRow) previousRow.remove();
+      updateSettingsServiceCategoryCount(previousCategoryEl);
+
+      var nextCategory = settingsEnsureManagedCategory(updates.categoryId, updates.categoryName);
+      nextCategory.services.push(found.service);
+      var nextList = settingsEnsureCategory(updates.categoryId, updates.categoryName);
+      if (nextList) {
+        nextList.insertAdjacentHTML('beforeend', settingsServiceRowMarkup(found.service, nextList.querySelectorAll('[data-service-row]').length));
+        updateSettingsServiceCategoryCount(nextList.closest('[data-service-category]'));
+      }
+      renderSettingsCategoryManager();
+      setSettingsStatus('Service updated: ' + found.service.name + '.');
     }
 
     function saveSettingsServiceModal() {
       var name = getSettingsServiceModalField('name');
       var priceValue = getSettingsServiceModalField('price');
       var durationValue = getSettingsServiceModalField('duration');
+      var description = getSettingsServiceModalField('description');
       var categoryField = document.querySelector('[data-service-modal-field="category"]');
       var categoryOption = categoryField && categoryField.options[categoryField.selectedIndex];
       var categoryId = categoryField ? categoryField.value : 'custom-services';
@@ -14302,6 +15523,19 @@ function getBookingCardCallStart(item) {
         setSettingsServiceModalError('Minutes must be greater than 0.');
         field = document.querySelector('[data-service-modal-field="duration"]');
         if (field) field.focus();
+        return;
+      }
+
+      if (settingsServiceEditContext) {
+        updateSettingsServiceRow(settingsServiceEditContext.serviceId, settingsServiceEditContext.categoryId, {
+          name: name,
+          price: price,
+          durationMin: duration,
+          description: description,
+          categoryId: categoryId,
+          categoryName: categoryName
+        });
+        closeSettingsServiceModal();
         return;
       }
 
@@ -14403,6 +15637,33 @@ function getBookingCardCallStart(item) {
         status.textContent = enabled ? 'On' : 'Off';
         status.classList.toggle('is-off', !enabled);
       }
+    }
+
+    function syncBookingPoliciesPreview() {
+      var toggle = document.querySelector('[data-settings-booking-policy-toggle]');
+      var deposit = document.querySelector('[data-settings-booking-policy-deposit]');
+      var minPrice = document.querySelector('[data-settings-booking-policy-min-price]');
+      var cancellationWindow = document.querySelector('[data-settings-booking-policy-cancellation-window]');
+      var noShowFee = document.querySelector('[data-settings-booking-policy-no-show-fee]');
+      var preview = document.querySelector('[data-settings-booking-policy-preview-text]');
+      var label = document.querySelector('[data-settings-booking-policy-toggle-label]');
+      if (!preview) return;
+
+      var enabled = !toggle || toggle.classList.contains('is-on');
+      var depositText = deposit && deposit.value.trim() ? deposit.value.trim() : '20% of service price';
+      var minPriceText = minPrice && minPrice.value.trim() ? minPrice.value.trim() : '$75';
+      var cancellationWindowText = cancellationWindow && cancellationWindow.value.trim() ? cancellationWindow.value.trim() : '2h';
+      var noShowFeeText = noShowFee && noShowFee.value.trim() ? noShowFee.value.trim() : '$20';
+
+      if (toggle) {
+        toggle.setAttribute('aria-checked', enabled ? 'true' : 'false');
+        toggle.setAttribute('aria-label', enabled ? 'Disable deposit requirement' : 'Enable deposit requirement');
+      }
+      if (label) label.textContent = enabled ? 'Require deposit' : 'Deposit not required';
+
+      preview.textContent = enabled
+        ? '"A ' + depositText + ' deposit is required for services ' + minPriceText + '+. Cancel ' + cancellationWindowText + ' ahead to avoid a ' + noShowFeeText + ' no-show fee."'
+        : '"No deposit is required. Cancel ' + cancellationWindowText + ' ahead to avoid a ' + noShowFeeText + ' no-show fee."';
     }
 
     var settingsLanguageGreetings = {
@@ -15037,6 +16298,18 @@ function getBookingCardCallStart(item) {
         return;
       }
 
+      var greetingFill = event.target.closest('[data-greeting-fill]');
+      if (greetingFill) {
+        fillGreetingTemplate(greetingFill.dataset.greetingFill);
+        return;
+      }
+
+      var firstCallSmsFill = event.target.closest('[data-first-call-sms-fill]');
+      if (firstCallSmsFill) {
+        fillFirstCallSmsTemplate(firstCallSmsFill.dataset.firstCallSmsFill);
+        return;
+      }
+
       var settingsAction = event.target.closest('[data-settings-action]');
       if (settingsAction) {
         runSettingsAction(settingsAction.dataset.settingsAction, settingsAction);
@@ -15128,6 +16401,16 @@ function getBookingCardCallStart(item) {
         serviceSuggest.hidden = true;
       }
 
+      var serviceEdit = event.target.closest('[data-service-edit]');
+      if (serviceEdit) {
+        var editRow = serviceEdit.closest('[data-service-row]');
+        var editCategory = editRow ? editRow.closest('[data-service-category]') : null;
+        var editServiceId = editRow ? editRow.dataset.serviceId : '';
+        var editCategoryId = editCategory ? editCategory.dataset.serviceCategoryId : '';
+        if (editServiceId && editCategoryId) openSettingsServiceModalForEdit(editServiceId, editCategoryId);
+        return;
+      }
+
       var serviceRemove = event.target.closest('[data-service-remove]');
       if (serviceRemove) {
         var serviceRow = serviceRemove.closest('[data-service-row]');
@@ -15216,6 +16499,7 @@ function getBookingCardCallStart(item) {
     document.addEventListener('keydown', function(event) {
       var modal = document.querySelector('[data-offer-modal]');
       var serviceModal = document.querySelector('[data-service-modal]');
+      var holidayModal = document.querySelector('[data-settings-holiday-modal]');
       var techModal = document.querySelector('[data-tech-modal]');
       var bookingDetailModal = document.querySelector('[data-booking-detail-modal]');
       var bookingCreateModal = document.querySelector('[data-booking-create-modal]');
@@ -15254,6 +16538,11 @@ function getBookingCardCallStart(item) {
 
       if (event.key === 'Escape' && serviceModal && !serviceModal.hidden) {
         closeSettingsServiceModal();
+        return;
+      }
+
+      if (event.key === 'Escape' && holidayModal && !holidayModal.hidden) {
+        closeSettingsHolidayForm();
         return;
       }
 
@@ -15384,6 +16673,18 @@ function getBookingCardCallStart(item) {
         syncBookingSmsNotificationToggle(toggle);
         var recipient = toggle.dataset.settingsBookingSmsRecipient || 'Booking recipient';
         setSettingsStatus(recipient + ' booking SMS ' + (toggle.classList.contains('is-on') ? 'enabled' : 'disabled') + '.');
+      });
+    });
+
+    document.querySelectorAll('[data-settings-booking-policy-input]').forEach(function(input) {
+      input.addEventListener('input', syncBookingPoliciesPreview);
+    });
+
+    document.querySelectorAll('[data-settings-booking-policy-toggle]').forEach(function(toggle) {
+      syncBookingPoliciesPreview();
+      toggle.addEventListener('click', function() {
+        syncBookingPoliciesPreview();
+        setSettingsStatus('Booking Policies deposit requirement ' + (toggle.classList.contains('is-on') ? 'enabled' : 'disabled') + '.');
       });
     });
 
@@ -15828,6 +17129,7 @@ function getBookingCardCallStart(item) {
     repairBookingStaticSources(initialBookingRows);
     renderBookingTechnicianRoster();
     renderBookingStoreRows();
+    initSettingsHolidayClosures();
     appointmentStore.subscribe(function() {
       catalog = salonData.loadCatalog();
       rebuildBookingCatalogViews();
@@ -15836,8 +17138,15 @@ function getBookingCardCallStart(item) {
       filterBookingItems();
       renderBookingCalendar();
       renderBookingCards();
+      renderSettingsHolidayClosures();
     }, window);
     window.addEventListener('storage', function(event) {
+      if (event && event.key === SETTINGS_HOLIDAY_STORAGE_KEY) {
+        settingsHolidayClosures = loadSettingsHolidayClosures();
+        renderSettingsHolidayClosures();
+        renderBookingCalendar();
+        return;
+      }
       if (!event || event.key !== salonData.STORAGE_KEY) return;
       catalog = salonData.loadCatalog();
       rebuildBookingCatalogViews();
@@ -15845,6 +17154,7 @@ function getBookingCardCallStart(item) {
       renderBookingStoreRows();
       filterBookingItems();
       renderBookingCalendar();
+      renderSettingsHolidayClosures();
     });
     updateBookingSearchPlaceholder();
     initBookingViewMode();

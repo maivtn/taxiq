@@ -163,9 +163,18 @@ test('adds website and structured salon location fields to Salon Info', () => {
   const salonInfo = html.match(/<div class="settings-card-title"><i class="bi bi-shop"[^>]*><\/i>Salon Info<\/div>[\s\S]*?<\/article>/)?.[0] || '';
   const websitePosition = salonInfo.indexOf('<span class="settings-label">Website</span>');
   const reviewLinkPosition = salonInfo.indexOf('<span class="settings-label">Google Review Link</span>');
+  const socialLinksPosition = salonInfo.indexOf('Social Links');
 
   assert.match(salonInfo, /<span class="settings-label">Website<\/span>[\s\S]*?<input class="settings-input" type="url"[^>]*autocomplete="url"/);
-  assert.ok(websitePosition > reviewLinkPosition, 'Website should be the last Salon Info field');
+  assert.ok(websitePosition > reviewLinkPosition, 'Website should appear after Google Review Link');
+  assert.ok(socialLinksPosition > websitePosition, 'Social Links should appear after Website');
+  assert.match(salonInfo, /Social Links/);
+  for (const network of ['facebook', 'instagram', 'yelp']) {
+    assert.match(salonInfo, new RegExp(`data-settings-social-link="${network}"`));
+  }
+  for (const label of ['Facebook', 'Instagram', 'Yelp']) {
+    assert.match(salonInfo, new RegExp(`<span class="settings-label">${label}<\\/span>[\\s\\S]*?<input class="settings-input" type="url"`));
+  }
   assert.match(salonInfo, /<span class="settings-label settings-label-with-tooltip">\s*Salon phone number[\s\S]*?<button class="settings-tooltip-trigger" type="button" aria-label="Salon phone number info" aria-describedby="salon-phone-number-help">[\s\S]*bi-info-circle/);
   assert.match(salonInfo, /<span class="settings-tooltip-content" id="salon-phone-number-help" role="tooltip">The number customers currently call; it will be forwarded to the AI number\.<\/span>/);
   assert.doesNotMatch(salonInfo, /<span class="settings-help">The number customers currently call/);
