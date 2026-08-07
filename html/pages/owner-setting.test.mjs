@@ -107,7 +107,7 @@ test('renders Sub Account tab content from the product design document', () => {
     assert.match(html, new RegExp(label));
   }
 
-  for (const label of ['Date range', 'Login success', 'Viewed transactions', 'Role changed']) {
+  for (const label of ['Login success', 'Viewed transactions', 'Role changed']) {
     assert.match(html, new RegExp(label));
   }
 
@@ -203,19 +203,45 @@ test('opens Activity Logs filters from a dropdown button', () => {
 
   assert.match(panel, /<div class="log-filter-menu" data-log-filter-menu>\s*<button class="owner-button log-filter-toggle" type="button" data-log-filter-toggle aria-expanded="false" aria-controls="activity-log-filters">[\s\S]*?<span>Filters<\/span><\/button>/);
   assert.match(panel, /<div class="log-filter-dropdown" id="activity-log-filters" data-log-filter-dropdown hidden>\s*<div class="filter-row is-log-filters">/);
+  assert.match(panel, /<div class="log-filter-pair">\s*<label class="form-field"><span class="field-label">Role<\/span>[\s\S]*?<label class="form-field"><span class="field-label">Status<\/span>/);
 
-  for (const label of ['Search logs', 'Sub Account', 'Role', 'Module', 'Status', 'Date range']) {
+  for (const label of ['Search logs', 'Sub Account', 'Role', 'Status']) {
     assert.match(panel, new RegExp(`<span class="field-label">${label}<\\/span>`));
   }
+  assert.doesNotMatch(panel, /<span class="field-label">Module<\/span><select class="field-select"><option>All modules<\/option>/);
+  assert.doesNotMatch(panel, /<span class="field-label">Date range<\/span>/);
 
   const menuRule = styleRule(html, '.log-filter-menu');
   assertCssDeclaration(menuRule, 'position', 'relative');
+  assertCssDeclaration(menuRule, 'align-items', 'flex-start');
   assertCssDeclaration(menuRule, 'justify-content', 'flex-end');
+
+  const toggleRule = styleRule(html, '.log-filter-toggle');
+  assertCssDeclaration(toggleRule, 'min-height', '38px');
+  assertCssDeclaration(toggleRule, 'flex', '0 0 auto');
+  assertCssDeclaration(toggleRule, 'align-self', 'flex-start');
 
   const dropdownRule = styleRule(html, '.log-filter-dropdown');
   assertCssDeclaration(dropdownRule, 'position', 'absolute');
   assertCssDeclaration(dropdownRule, 'right', '0');
   assertCssDeclaration(dropdownRule, 'z-index', '12');
+
+  const logFilterRule = styleRule(html, '.filter-row.is-log-filters');
+  assertCssDeclaration(logFilterRule, 'display', 'flex');
+  assertCssDeclaration(logFilterRule, 'align-items', 'end');
+  assertCssDeclaration(logFilterRule, 'flex-wrap', 'wrap');
+
+  const logFilterPairRule = styleRule(html, '.log-filter-pair');
+  assertCssDeclaration(logFilterPairRule, 'display', 'flex');
+  assertCssDeclaration(logFilterPairRule, 'flex', '1 1 300px');
+  assertCssDeclaration(logFilterPairRule, 'gap', '10px');
+  assertCssDeclaration(logFilterPairRule, 'min-width', '260px');
+
+  const logFilterPairFieldRule = styleRule(html, '.log-filter-pair .form-field');
+  assertCssDeclaration(logFilterPairFieldRule, 'flex', '1 1 0');
+
+  assert.match(html, /@media\s*\(max-width:\s*560px\)\s*\{[\s\S]*?\.log-filter-menu\s*\{[^}]*flex-direction:\s*column;[^}]*align-items:\s*flex-start;[^}]*justify-content:\s*flex-start;[^}]*\}/);
+  assert.match(html, /\.log-filter-menu \.owner-button\s*\{[^}]*width:\s*auto;[^}]*min-height:\s*38px;[^}]*flex:\s*0 0 auto;[^}]*\}/);
 
   assert.match(html, /var logFilterToggle = document\.querySelector\('\[data-log-filter-toggle\]'\);/);
   assert.match(html, /function setLogFilterDropdownOpen\(isOpen\)/);
@@ -272,6 +298,8 @@ test('omits Sub Account pagination rows', () => {
 test('links role actions to Role Details page with roleId parameters', () => {
   const html = source();
   const panel = panelContent(html, 'sub-account');
+
+  assert.match(panel, /<table class="owner-table is-role-table">/);
 
   for (const [roleId, roleName] of [['ROLE-001', 'Owner Manager'], ['ROLE-002', 'Front Desk'], ['ROLE-003', 'Technician Lead'], ['ROLE-004', 'Billing Auditor']]) {
     assert.match(panel, new RegExp(`<a class="icon-action" href="role-details\\.html\\?roleId=${roleId}" aria-label="View or Edit ${roleName} role">[\\s\\S]*?<span>Edit<\\/span><\\/a>`));
@@ -385,6 +413,39 @@ test('places Add New Sub Account beside the Sub Accounts search controls', () =>
   const accountFilterRule = styleRule(html, '.filter-row.is-account-filters');
   assertCssDeclaration(accountFilterRule, 'grid-template-columns', 'minmax(180px, 260px) repeat(2, minmax(120px, 160px))');
   assert.match(panel, /<span>Add New Sub Account<\/span>/);
+});
+
+test('keeps Sub Account filters in one row on mobile', () => {
+  const html = source();
+  const style = html.match(/<style>([\s\S]*?)<\/style>/)?.[1] || '';
+
+  assert.match(style, /@media\s*\(max-width:\s*900px\)\s*\{[\s\S]*?\.filter-row\.is-account-filters\s*\{[^}]*display:\s*flex;[^}]*flex-wrap:\s*nowrap;[^}]*overflow-x:\s*auto;[^}]*scrollbar-width:\s*none;[^}]*\}/);
+  assert.match(style, /\.filter-row\.is-account-filters \.form-field\s*\{[^}]*flex:\s*0 0 150px;[^}]*\}/);
+  assert.match(style, /\.filter-row\.is-account-filters::-webkit-scrollbar\s*\{[^}]*display:\s*none;[^}]*\}/);
+});
+
+test('wraps all Sub Account tables in Bootstrap-style responsive shells on mobile', () => {
+  const html = source();
+  const panel = panelContent(html, 'sub-account');
+  const responsiveShells = panel.match(/<div class="table-shell table-responsive">[\s\S]*?<table class="owner-table (?:is-account-table|is-role-table|is-log-table)">[\s\S]*?<\/table>\s*<\/div>/g) || [];
+
+  assert.equal(responsiveShells.length, 3);
+  assert.match(responsiveShells[0], /<table class="owner-table is-account-table">/);
+  assert.match(responsiveShells[1], /<table class="owner-table is-role-table">/);
+  assert.match(responsiveShells[2], /<table class="owner-table is-log-table">/);
+
+  const responsiveRule = styleRule(html, '.table-responsive');
+  assertCssDeclaration(responsiveRule, 'display', 'block');
+  assertCssDeclaration(responsiveRule, 'width', '100%');
+  assertCssDeclaration(responsiveRule, 'max-width', '100%');
+  assertCssDeclaration(responsiveRule, 'overflow-x', 'auto');
+  assertCssDeclaration(responsiveRule, '-webkit-overflow-scrolling', 'touch');
+
+  const roleTableRule = styleRule(html, '.owner-table.is-role-table');
+  assertCssDeclaration(roleTableRule, 'min-width', '860px');
+
+  assert.match(html, /@media\s*\(max-width:\s*900px\)\s*\{[\s\S]*?\.table-responsive \.owner-table\s*\{[^}]*width:\s*max-content;[^}]*min-width:\s*100%;[^}]*\}/);
+  assert.match(html, /@media\s*\(max-width:\s*900px\)\s*\{[\s\S]*?\.table-responsive \.owner-table th,[\s\S]*?\.table-responsive \.owner-table td\s*\{[^}]*white-space:\s*nowrap;[^}]*\}/);
 });
 
 test('renders Add New Sub Account and Sub Account Detail as modal dialogs', () => {
@@ -631,6 +692,24 @@ test('colors Sub Account account action buttons by action type', () => {
   const accountActivateRule = styleRule(html, '.owner-table.is-account-table [data-sub-account-action="activate"]');
   assertCssDeclaration(accountActivateRule, 'background', '#eafaf3');
   assertCssDeclaration(accountActivateRule, 'color', '#087a55');
+});
+
+test('colors Role action buttons by action type', () => {
+  const html = source();
+  const panel = panelContent(html, 'sub-account');
+
+  assert.match(panel, /<table class="owner-table is-role-table">/);
+
+  const roleEditRule = styleRule(html, '.owner-table.is-role-table a.icon-action[href^="role-details.html"]');
+  assertCssDeclaration(roleEditRule, 'background', '#f1f2ff');
+  assertCssDeclaration(roleEditRule, 'color', 'var(--nexora-brand)');
+
+  const roleDeleteRule = styleRule(html, '.owner-table.is-role-table [data-delete-role]:not(:disabled)');
+  assertCssDeclaration(roleDeleteRule, 'background', '#fff1f1');
+  assertCssDeclaration(roleDeleteRule, 'color', '#b42318');
+
+  assert.match(panel, /data-role-assigned-count="0"><i data-lucide="trash-2" aria-hidden="true"><\/i><span>Delete<\/span><\/button>/);
+  assert.match(panel, /data-role-assigned-count="1" disabled aria-disabled="true"><i data-lucide="trash-2" aria-hidden="true"><\/i><span>Delete<\/span><\/button>/);
 });
 
 test('leaves unfinished account setting tabs empty except Sub Account', () => {

@@ -661,6 +661,14 @@
       background: #fff;
     }
 
+    .table-responsive {
+      display: block;
+      width: 100%;
+      max-width: 100%;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+    }
+
     .owner-table {
       width: 100%;
       min-width: 760px;
@@ -845,6 +853,18 @@
       color: #087a55;
     }
 
+    .owner-table.is-role-table a.icon-action[href^="role-details.html"] {
+      border-color: rgba(70, 72, 216, .22);
+      background: #f1f2ff;
+      color: var(--nexora-brand);
+    }
+
+    .owner-table.is-role-table [data-delete-role]:not(:disabled) {
+      border-color: rgba(180, 35, 24, .22);
+      background: #fff1f1;
+      color: #b42318;
+    }
+
     .sub-account-action-status {
       display: none;
       align-items: center;
@@ -914,12 +934,16 @@
     .log-filter-menu {
       position: relative;
       display: flex;
+      align-items: flex-start;
       justify-content: flex-end;
       margin-bottom: 12px;
     }
 
     .log-filter-toggle {
       width: auto;
+      min-height: 38px;
+      flex: 0 0 auto;
+      align-self: flex-start;
     }
 
     .log-filter-toggle.is-active {
@@ -950,11 +974,32 @@
     }
 
     .filter-row.is-log-filters {
-      grid-template-columns: minmax(220px, 1fr) repeat(5, minmax(130px, 160px));
+      display: flex;
+      align-items: end;
+      flex-wrap: wrap;
+    }
+
+    .filter-row.is-log-filters > .form-field {
+      flex: 1 1 180px;
+    }
+
+    .log-filter-pair {
+      display: flex;
+      flex: 1 1 300px;
+      gap: 10px;
+      min-width: 260px;
+    }
+
+    .log-filter-pair .form-field {
+      flex: 1 1 0;
     }
 
     .owner-table.is-account-table {
       min-width: 980px;
+    }
+
+    .owner-table.is-role-table {
+      min-width: 860px;
     }
 
     .owner-table.is-log-table {
@@ -1346,6 +1391,33 @@
       .inline-workflow-grid {
         grid-template-columns: 1fr;
       }
+
+      .filter-row.is-account-filters {
+        display: flex;
+        flex-wrap: nowrap;
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding-bottom: 2px;
+        scrollbar-width: none;
+      }
+
+      .filter-row.is-account-filters .form-field {
+        flex: 0 0 150px;
+      }
+
+      .filter-row.is-account-filters::-webkit-scrollbar {
+        display: none;
+      }
+
+      .table-responsive .owner-table {
+        width: max-content;
+        min-width: 100%;
+      }
+
+      .table-responsive .owner-table th,
+      .table-responsive .owner-table td {
+        white-space: nowrap;
+      }
     }
 
     @media (max-width: 560px) {
@@ -1389,11 +1461,15 @@
       }
 
       .log-filter-menu {
+        flex-direction: column;
+        align-items: flex-start;
         justify-content: flex-start;
       }
 
       .log-filter-menu .owner-button {
         width: auto;
+        min-height: 38px;
+        flex: 0 0 auto;
       }
 
       .log-filter-dropdown {
@@ -1486,7 +1562,7 @@
                     </div>
                     <button class="owner-button is-primary" type="button" data-open-modal="add-sub-account-modal" aria-controls="add-sub-account-modal" aria-haspopup="dialog"><i data-lucide="user-plus" aria-hidden="true"></i><span>Add New Sub Account</span></button>
                   </div>
-                  <div class="table-shell">
+                  <div class="table-shell table-responsive">
                     <table class="owner-table is-account-table">
                       <thead><tr><th>Account</th><th>Role</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead>
                       <tbody>
@@ -1521,8 +1597,8 @@
                   <div class="role-toolbar">
                     <button class="owner-button is-primary" type="button" data-add-role><i data-lucide="shield-plus" aria-hidden="true"></i><span>Add Role</span></button>
                   </div>
-                  <div class="table-shell">
-                    <table class="owner-table">
+                  <div class="table-shell table-responsive">
+                    <table class="owner-table is-role-table">
                       <thead><tr><th>Role</th><th>Permissions</th><th>Sub Account</th><th>Daily Limit</th><th>Actions</th></tr></thead>
                       <tbody>
                         <tr>
@@ -1568,14 +1644,14 @@
                       <div class="filter-row is-log-filters">
                         <label class="form-field"><span class="field-label">Search logs</span><input class="field-input" type="search" placeholder="Name, email, or action"></label>
                         <label class="form-field"><span class="field-label">Sub Account</span><select class="field-select"><option>All sub accounts</option><option>Mai Tran</option><option>Amy Le</option><option>Jordan Reyes</option></select></label>
-                        <label class="form-field"><span class="field-label">Role</span><select class="field-select"><option>All roles</option><option>Owner Manager</option><option>Front Desk</option><option>Technician Lead</option></select></label>
-                        <label class="form-field"><span class="field-label">Module</span><select class="field-select"><option>All modules</option><option>Settings</option><option>Authentication</option><option>Transactions</option><option>Sub Account</option></select></label>
-                        <label class="form-field"><span class="field-label">Status</span><select class="field-select"><option>All statuses</option><option>Success</option><option>Failed</option></select></label>
-                        <label class="form-field"><span class="field-label">Date range</span><input class="field-input" type="text" value="Last 30 days"></label>
+                        <div class="log-filter-pair">
+                          <label class="form-field"><span class="field-label">Role</span><select class="field-select"><option>All roles</option><option>Owner Manager</option><option>Front Desk</option><option>Technician Lead</option></select></label>
+                          <label class="form-field"><span class="field-label">Status</span><select class="field-select"><option>All statuses</option><option>Success</option><option>Failed</option></select></label>
+                        </div>
                       </div>
                     </div>
                   </div>
-                  <div class="table-shell">
+                  <div class="table-shell table-responsive">
                     <table class="owner-table is-log-table">
                       <thead><tr><th>Time</th><th>Sub account</th><th>Role</th><th>Action</th><th>Module</th><th>Status</th></tr></thead>
                       <tbody>
