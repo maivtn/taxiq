@@ -27,6 +27,18 @@ For new or touched card/list/workspace layouts, prefer Bootstrap-style flex row/
 
 For every new or touched UI page, optimize space on tablet and phone. On phone, make components smaller and denser so customers and staff do not have to scroll too much: reduce section gaps, card padding, large media/QR sizes, button heights, and oversized text while keeping labels readable and actions tappable.
 
+## Action Button Label Rule
+
+For every new or touched table, list, card, or modal action, action buttons must include visible text labels. Use icon + text when an icon helps scanning, but do not rely on icon-only buttons, `aria-label`, `title`, or screen-reader-only text as the only action label. Icon-only controls are reserved for universal window/navigation affordances such as close, collapse, and menu controls, and they still require accessible labels.
+
+## Date Time UI Rule
+
+For every new or touched table, list, card, modal, or detail field that displays both date and time, use the shared `credits-history-date` two-line style: first line `MMM DD, YYYY`, second line a nested `<small>h:mm AM/PM</small>`. Do not use relative labels like `Today` or combined one-line strings like `Aug 7 · 9:42 AM` for these date-time values.
+
+## SweetAlert UI Rule
+
+For every new or touched notification, confirmation, alert, or simple informational modal, use SweetAlert2 (`sweetalert2@11`) with page-scoped `.swal2-*` styling that matches the local design system. Do not build one-off lightweight confirm/alert modals with custom modal cards such as `owner-modal-card is-confirm`. Custom in-page modals are reserved for complex forms, detail views, tables, multi-step workflows, and other interactions that need richer structured content. Native `alert()` and `confirm()` should only be fallback behavior when SweetAlert2 is unavailable.
+
 ## Structure
 
 ```text

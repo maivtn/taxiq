@@ -6,7 +6,7 @@
 
    Per-page config (set BEFORE this script runs):
      window.NEXORA_SHELL = {
-       activePage: 'booking' | 'community' | 'reward' | 'pos' | 'review' | 'packages' | 'stations' | 'staff',
+       activePage: 'booking' | 'community' | 'reward' | 'pos' | 'review' | 'packages' | 'stations' | 'owner-settings' | 'staff',
                                            // which functional group is native
        activeTab:  '<tabId>',              // initial highlighted sub-item
        showClearStorage: true,             // optional header action for local development
@@ -28,7 +28,8 @@
     pos: 'pos-phase-1.html',
     review: 'nexora-review.html',
     packages: 'nexora-packages.html',
-    stations: 'qr-stations.html'
+    stations: 'qr-stations.html',
+    'owner-settings': 'owner-setting.html'
   };
 
   // Single source of truth for the whole sidebar.
@@ -91,7 +92,13 @@
       { label: 'Management', tab: 'management' }
     ] },
     { type: 'item', label: 'Analytics', icon: 'chart-no-axes-combined' },
-    { type: 'item', label: 'Settings', icon: 'settings' },
+    { type: 'group', key: 'settings', label: 'Settings', icon: 'settings', page: 'owner-settings', items: [
+      { label: 'Account', tab: 'account' },
+      { label: 'Business Verification', tab: 'business-verification' },
+      { label: 'Sub Account', tab: 'sub-account' },
+      { label: 'Affiliate Link', tab: 'affiliate-link' },
+      { label: 'Terms & Privacy', tab: 'terms-privacy' }
+    ] },
     { type: 'item', label: 'Support', icon: 'circle-question-mark' }
   ];
 

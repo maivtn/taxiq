@@ -130,10 +130,10 @@ test('labels the POS Check-in, Tickets, and Customers tabs in the sidebar', () =
   assert.doesNotMatch(html, /data-shell-tab="dispatch"/);
 });
 
-test('keeps the shared sidebar in the drawer state through 1200px', () => {
-  assert.match(shellCss, /@media\s*\(max-width:\s*1200px\)[\s\S]*?\.sidebar\s*\{[\s\S]*?transform:\s*translateX\(-105%\)/);
-  assert.match(shellCss, /@media\s*\(min-width:\s*1366px\)[\s\S]*?\.sidebar\s*\{[\s\S]*?display:\s*flex/);
-  assert.match(shellCss, /@media\s*\(min-width:\s*1366px\)[\s\S]*?\.app-area\s*\{[\s\S]*?padding-left:\s*288px/);
+test('keeps the shared sidebar in the drawer state through 1366px', () => {
+  assert.match(shellCss, /@media\s*\(max-width:\s*1366px\)[\s\S]*?\.sidebar\s*\{[\s\S]*?transform:\s*translateX\(-105%\)/);
+  assert.match(shellCss, /@media\s*\(min-width:\s*1367px\)[\s\S]*?\.sidebar\s*\{[\s\S]*?display:\s*flex/);
+  assert.match(shellCss, /@media\s*\(min-width:\s*1367px\)[\s\S]*?\.app-area\s*\{[\s\S]*?padding-left:\s*288px/);
 });
 
 test('keeps inline shell pages on the same 1366px desktop breakpoint', () => {
@@ -142,6 +142,11 @@ test('keeps inline shell pages on the same 1366px desktop breakpoint', () => {
     assert.doesNotMatch(html, /@media\s*\(min-width:\s*1024px\)[\s\S]*?\.sidebar\s*\{[\s\S]*?display:\s*flex/);
     assert.match(html, /@media\s*\(min-width:\s*1366px\)[\s\S]*?\.sidebar\s*\{[\s\S]*?display:\s*flex/);
   }
+});
+
+test('provides the shared two-line date time display class', () => {
+  assert.match(shellCss, /\.credits-history-date\s*\{[\s\S]*?display:\s*grid;[\s\S]*?gap:\s*2px;/);
+  assert.match(shellCss, /\.credits-history-date small\s*\{[\s\S]*?display:\s*block;[\s\S]*?font-size:\s*10px;[\s\S]*?font-weight:\s*700;/);
 });
 
 test('exposes an accessible hamburger drawer contract', () => {

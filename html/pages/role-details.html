@@ -1,0 +1,734 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nexora Touch - Role Details</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <style>
+    :root {
+      --nexora-brand: #4648d8;
+      --nexora-brand-dark: #3638b8;
+      --nexora-electric: #0f72ff;
+      --nexora-text: #111827;
+      --nexora-muted: #6b7280;
+      --nexora-subtle: #9ca3af;
+      --nexora-border: #d9e0ec;
+      --nexora-rule: #e7edf6;
+      --nexora-surface: #fff;
+      --nexora-page: #f6f8fc;
+      --nexora-card-shadow: 0 18px 42px rgba(15, 23, 42, .08);
+    }
+
+    body {
+      background: var(--nexora-page);
+      color: var(--nexora-text);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .content {
+      display: grid;
+      align-content: start;
+      gap: 18px;
+      padding: 22px;
+    }
+
+    .page-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: flex-start;
+      gap: 12px;
+      flex-wrap: nowrap;
+    }
+
+    .page-head > div {
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .page-head .owner-button {
+      flex: 0 0 auto;
+    }
+
+    .page-title {
+      margin: 0;
+      color: var(--nexora-text);
+      font-size: 28px;
+      font-weight: 900;
+      letter-spacing: 0;
+      line-height: 34px;
+    }
+
+    .page-copy {
+      max-width: 760px;
+      margin: 7px 0 0;
+      color: var(--nexora-muted);
+      font-size: 14px;
+      font-weight: 600;
+      line-height: 21px;
+    }
+
+    .owner-button {
+      display: inline-flex;
+      min-height: 38px;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 8px;
+      background: #fff;
+      padding: 0 14px;
+      color: var(--nexora-text);
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background .16s, border-color .16s, color .16s, transform .16s;
+    }
+
+    .owner-button i {
+      width: 16px;
+      height: 16px;
+    }
+
+    .owner-button:hover {
+      border-color: rgba(70, 72, 216, .35);
+      background: #f8faff;
+      color: var(--nexora-brand);
+    }
+
+    .owner-button.is-primary {
+      border-color: transparent;
+      background: var(--nexora-brand);
+      color: #fff;
+      box-shadow: 0 10px 18px rgba(70, 72, 216, .22);
+    }
+
+    .owner-button.is-primary:hover {
+      background: var(--nexora-brand-dark);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .role-detail-shell {
+      border: 1px solid var(--nexora-rule);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: var(--nexora-card-shadow);
+      overflow: hidden;
+    }
+
+    .role-card {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      border-bottom: 1px solid var(--nexora-rule);
+      padding: 16px;
+    }
+
+    .role-card-icon {
+      display: inline-flex;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: #eef6ff;
+      color: var(--nexora-electric);
+    }
+
+    .role-card-icon i {
+      width: 18px;
+      height: 18px;
+    }
+
+    .cell-title {
+      color: var(--nexora-text);
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 20px;
+    }
+
+    .cell-meta {
+      margin-top: 2px;
+      color: var(--nexora-subtle);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 18px;
+    }
+
+    .role-detail-body {
+      display: grid;
+      gap: 14px;
+      padding: 16px;
+    }
+
+    .form-field {
+      display: grid;
+      gap: 7px;
+    }
+
+    .field-label {
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 850;
+      line-height: 16px;
+    }
+
+    .field-input {
+      min-height: 40px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 8px;
+      background: #fff;
+      padding: 0 12px;
+      color: var(--nexora-text);
+      font-size: 13px;
+      font-weight: 700;
+      outline: none;
+    }
+
+    .field-input:focus {
+      border-color: rgba(70, 72, 216, .55);
+      box-shadow: 0 0 0 3px rgba(70, 72, 216, .12);
+    }
+
+    .permission-menu {
+      display: grid;
+      gap: 12px;
+    }
+
+    .permission-group {
+      overflow: hidden;
+      border: 1px solid var(--nexora-rule);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .permission-parent-row {
+      display: flex;
+      min-height: 50px;
+      align-items: center;
+      gap: 10px;
+      background: #fbfcff;
+      padding: 11px 12px;
+    }
+
+    .permission-parent-icon {
+      display: inline-flex;
+      width: 30px;
+      height: 30px;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: #eef6ff;
+      color: var(--nexora-electric);
+    }
+
+    .permission-parent-icon i {
+      width: 16px;
+      height: 16px;
+    }
+
+    .permission-copy {
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .permission-title {
+      display: block;
+      color: var(--nexora-text);
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 18px;
+    }
+
+    .permission-meta {
+      display: block;
+      margin-top: 2px;
+      color: var(--nexora-subtle);
+      font-size: 11px;
+      font-weight: 750;
+      line-height: 15px;
+    }
+
+    .permission-child-list {
+      display: grid;
+      border-top: 1px solid var(--nexora-rule);
+      background: #fff;
+    }
+
+    .permission-child-row {
+      display: flex;
+      min-height: 40px;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-top: 1px solid var(--nexora-rule);
+      padding: 9px 12px 9px 52px;
+    }
+
+    .permission-child-row:first-child {
+      border-top: 0;
+    }
+
+    .permission-child-title {
+      min-width: 0;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 16px;
+    }
+
+    .role-switch {
+      position: relative;
+      display: inline-flex;
+      width: 42px;
+      height: 24px;
+      flex: 0 0 auto;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .role-switch input {
+      position: absolute;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .role-switch-track {
+      position: relative;
+      display: inline-flex;
+      width: 42px;
+      height: 24px;
+      border-radius: 999px;
+      background: #dce4ef;
+      transition: background .16s ease;
+    }
+
+    .role-switch-thumb {
+      position: absolute;
+      top: 3px;
+      left: 3px;
+      width: 18px;
+      height: 18px;
+      border-radius: 999px;
+      background: #fff;
+      box-shadow: 0 1px 3px rgba(15, 23, 42, .22);
+      transition: transform .16s ease;
+    }
+
+    .role-switch input:checked + .role-switch-track {
+      background: var(--nexora-brand);
+    }
+
+    .role-switch input:indeterminate + .role-switch-track {
+      background: #f59e0b;
+    }
+
+    .role-switch input:checked + .role-switch-track .role-switch-thumb {
+      transform: translateX(18px);
+    }
+
+    .role-switch input:focus-visible + .role-switch-track {
+      box-shadow: 0 0 0 3px rgba(70, 72, 216, .16);
+    }
+
+    .action-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--nexora-rule);
+      padding-top: 14px;
+    }
+
+    .save-status {
+      margin-right: auto;
+      color: var(--nexora-subtle);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    @media (max-width: 900px) {
+      .content {
+        padding: 18px;
+      }
+
+    }
+
+    @media (max-width: 560px) {
+      .content {
+        gap: 14px;
+        padding: 14px;
+      }
+
+      .page-title {
+        font-size: 23px;
+        line-height: 29px;
+      }
+
+      .role-card,
+      .role-detail-body {
+        padding: 14px;
+      }
+
+      .owner-button {
+        width: 100%;
+      }
+
+      .page-head .owner-button {
+        width: auto;
+      }
+
+      .permission-child-row {
+        padding-left: 14px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Main navigation"></aside>
+    <div class="app-area">
+      <header class="header"></header>
+      <main class="content" aria-label="Role Details content">
+        <div class="page-head">
+          <a class="owner-button" href="owner-setting.html?tab=sub-account&amp;view=roles"><i data-lucide="arrow-left" aria-hidden="true"></i><span>Back</span></a>
+          <div>
+            <h1 class="page-title">Role Details</h1>
+            <p class="page-copy">Configure permissions for this role and control which merchant dashboard modules assigned Sub Accounts can access.</p>
+          </div>
+        </div>
+
+        <section class="role-detail-shell" aria-label="Role module permissions">
+          <div class="role-card">
+            <span class="role-card-icon"><i data-lucide="shield" aria-hidden="true"></i></span>
+            <div>
+              <div class="cell-title"><span data-role-name>Front Desk</span></div>
+              <div class="cell-meta">Role ID: <span data-role-id>ROLE-002</span></div>
+            </div>
+          </div>
+          <div class="role-detail-body">
+            <label class="form-field"><span class="field-label">Role Name</span><input class="field-input" type="text" value="Front Desk" maxlength="100" data-role-name-input></label>
+            <div class="permission-menu" aria-label="Sidebar module permissions">
+              <section class="permission-group is-flat" data-permission-parent="dashboard">
+                <div class="permission-parent-row">
+                  <span class="permission-parent-icon"><i data-lucide="layout-dashboard" aria-hidden="true"></i></span>
+                  <span class="permission-copy"><span class="permission-title">Dashboard</span><span class="permission-meta">Operational overview</span></span>
+                  <label class="role-switch" aria-label="Toggle Dashboard access"><input type="checkbox" role="switch" data-module="dashboard"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label>
+                </div>
+              </section>
+              <section class="permission-group is-flat" data-permission-parent="staff">
+                <div class="permission-parent-row">
+                  <span class="permission-parent-icon"><i data-lucide="users-round" aria-hidden="true"></i></span>
+                  <span class="permission-copy"><span class="permission-title">Sub Account</span><span class="permission-meta">Sub Account directory and profiles</span></span>
+                  <label class="role-switch" aria-label="Toggle Sub Account access"><input type="checkbox" role="switch" data-module="staff"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label>
+                </div>
+              </section>
+              <section class="permission-group is-flat" data-permission-parent="reviews">
+                <div class="permission-parent-row">
+                  <span class="permission-parent-icon"><i data-lucide="star" aria-hidden="true"></i></span>
+                  <span class="permission-copy"><span class="permission-title">Reviews</span><span class="permission-meta">Customer review management</span></span>
+                  <label class="role-switch" aria-label="Toggle Reviews access"><input type="checkbox" role="switch" data-module="reviews"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label>
+                </div>
+              </section>
+              <section class="permission-group is-flat" data-permission-parent="analytics">
+                <div class="permission-parent-row">
+                  <span class="permission-parent-icon"><i data-lucide="chart-no-axes-combined" aria-hidden="true"></i></span>
+                  <span class="permission-copy"><span class="permission-title">Analytics</span><span class="permission-meta">Business reporting</span></span>
+                  <label class="role-switch" aria-label="Toggle Analytics access"><input type="checkbox" role="switch" data-module="analytics"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label>
+                </div>
+              </section>
+              <section class="permission-group" data-permission-parent="payments">
+                <div class="permission-parent-row">
+                  <span class="permission-parent-icon"><i data-lucide="wallet" aria-hidden="true"></i></span>
+                  <span class="permission-copy"><span class="permission-title">Payments &amp; Payouts</span><span class="permission-meta">Payment operations and payroll</span></span>
+                  <label class="role-switch" aria-label="Toggle Payments &amp; Payouts access"><input type="checkbox" role="switch" data-module="payments"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label>
+                </div>
+                <div class="permission-child-list">
+                  <div class="permission-child-row"><span class="permission-child-title">Overview</span><label class="role-switch" aria-label="Toggle Payments Overview access"><input type="checkbox" role="switch" data-module="paymentsOverview"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Customer Payments</span><label class="role-switch" aria-label="Toggle Customer Payments access"><input type="checkbox" role="switch" data-module="paymentsCustomerPayments"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Tips</span><label class="role-switch" aria-label="Toggle Tips access"><input type="checkbox" role="switch" data-module="paymentsTips"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Payroll</span><label class="role-switch" aria-label="Toggle Payroll access"><input type="checkbox" role="switch" data-module="paymentsPayroll"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Direct Savings</span><label class="role-switch" aria-label="Toggle Direct Savings access"><input type="checkbox" role="switch" data-module="paymentsDirectSavings"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                </div>
+              </section>
+              <section class="permission-group" data-permission-parent="packages">
+                <div class="permission-parent-row">
+                  <span class="permission-parent-icon"><i data-lucide="crown" aria-hidden="true"></i></span>
+                  <span class="permission-copy"><span class="permission-title">Package Management</span><span class="permission-meta">Plan and subscription access</span></span>
+                  <label class="role-switch" aria-label="Toggle Package Management access"><input type="checkbox" role="switch" data-module="packages"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label>
+                </div>
+                <div class="permission-child-list">
+                  <div class="permission-child-row"><span class="permission-child-title">Overview</span><label class="role-switch" aria-label="Toggle Package Overview access"><input type="checkbox" role="switch" data-module="packagesOverview"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Subscriptions</span><label class="role-switch" aria-label="Toggle Subscriptions access"><input type="checkbox" role="switch" data-module="packagesSubscriptions"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">AI Voice Plans</span><label class="role-switch" aria-label="Toggle AI Voice Plans access"><input type="checkbox" role="switch" data-module="packagesAiVoicePlans"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Package History</span><label class="role-switch" aria-label="Toggle Package History access"><input type="checkbox" role="switch" data-module="packagesHistory"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                </div>
+              </section>
+              <section class="permission-group" data-permission-parent="stations">
+                <div class="permission-parent-row">
+                  <span class="permission-parent-icon"><i data-lucide="qr-code" aria-hidden="true"></i></span>
+                  <span class="permission-copy"><span class="permission-title">Stations &amp; QR Codes</span><span class="permission-meta">Station and QR setup</span></span>
+                  <label class="role-switch" aria-label="Toggle Stations &amp; QR Codes access"><input type="checkbox" role="switch" data-module="stations"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label>
+                </div>
+                <div class="permission-child-list">
+                  <div class="permission-child-row"><span class="permission-child-title">QR Stations</span><label class="role-switch" aria-label="Toggle QR Stations access"><input type="checkbox" role="switch" data-module="stationsQrStations"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">OneQR</span><label class="role-switch" aria-label="Toggle OneQR access"><input type="checkbox" role="switch" data-module="stationsOneQr"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                </div>
+              </section>
+              <section class="permission-group" data-permission-parent="booking">
+                <div class="permission-parent-row">
+                  <span class="permission-parent-icon"><i data-lucide="calendar-days" aria-hidden="true"></i></span>
+                  <span class="permission-copy"><span class="permission-title">Ai Hub</span><span class="permission-meta">Booking and customer engagement</span></span>
+                  <label class="role-switch" aria-label="Toggle Ai Hub access"><input type="checkbox" role="switch" data-module="booking"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label>
+                </div>
+                <div class="permission-child-list">
+                  <div class="permission-child-row"><span class="permission-child-title">Booking Book</span><label class="role-switch" aria-label="Toggle Booking Book access"><input type="checkbox" role="switch" data-module="bookingBook"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Customers</span><label class="role-switch" aria-label="Toggle Booking Customers access"><input type="checkbox" role="switch" data-module="bookingCustomers"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Call Log</span><label class="role-switch" aria-label="Toggle Call Log access"><input type="checkbox" role="switch" data-module="bookingCallLog"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">SMS Campaigns</span><label class="role-switch" aria-label="Toggle SMS Campaigns access"><input type="checkbox" role="switch" data-module="bookingSmsCampaigns"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">QR Codes</span><label class="role-switch" aria-label="Toggle Booking QR Codes access"><input type="checkbox" role="switch" data-module="bookingQrCodes"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Plans</span><label class="role-switch" aria-label="Toggle Plans access"><input type="checkbox" role="switch" data-module="bookingPlans"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Salon Settings</span><label class="role-switch" aria-label="Toggle Salon Settings access"><input type="checkbox" role="switch" data-module="bookingSalonSettings"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                </div>
+              </section>
+              <section class="permission-group" data-permission-parent="community">
+                <div class="permission-parent-row">
+                  <span class="permission-parent-icon"><i data-lucide="users-round" aria-hidden="true"></i></span>
+                  <span class="permission-copy"><span class="permission-title">Community</span><span class="permission-meta">Community content and groups</span></span>
+                  <label class="role-switch" aria-label="Toggle Community access"><input type="checkbox" role="switch" data-module="community"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label>
+                </div>
+                <div class="permission-child-list">
+                  <div class="permission-child-row"><span class="permission-child-title">Feed</span><label class="role-switch" aria-label="Toggle Feed access"><input type="checkbox" role="switch" data-module="communityFeed"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Groups</span><label class="role-switch" aria-label="Toggle Groups access"><input type="checkbox" role="switch" data-module="communityGroups"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Learning</span><label class="role-switch" aria-label="Toggle Learning access"><input type="checkbox" role="switch" data-module="communityLearning"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Jobs</span><label class="role-switch" aria-label="Toggle Jobs access"><input type="checkbox" role="switch" data-module="communityJobs"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Events</span><label class="role-switch" aria-label="Toggle Events access"><input type="checkbox" role="switch" data-module="communityEvents"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                </div>
+              </section>
+              <section class="permission-group" data-permission-parent="reward">
+                <div class="permission-parent-row">
+                  <span class="permission-parent-icon"><i data-lucide="gift" aria-hidden="true"></i></span>
+                  <span class="permission-copy"><span class="permission-title">Reward</span><span class="permission-meta">Loyalty and reward programs</span></span>
+                  <label class="role-switch" aria-label="Toggle Reward access"><input type="checkbox" role="switch" data-module="reward"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label>
+                </div>
+                <div class="permission-child-list">
+                  <div class="permission-child-row"><span class="permission-child-title">Overview</span><label class="role-switch" aria-label="Toggle Reward Overview access"><input type="checkbox" role="switch" data-module="rewardOverview"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Earn Rules</span><label class="role-switch" aria-label="Toggle Earn Rules access"><input type="checkbox" role="switch" data-module="rewardEarnRules"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Reward Catalog</span><label class="role-switch" aria-label="Toggle Reward Catalog access"><input type="checkbox" role="switch" data-module="rewardCatalog"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Customers</span><label class="role-switch" aria-label="Toggle Reward Customers access"><input type="checkbox" role="switch" data-module="rewardCustomers"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Loyalty Activity</span><label class="role-switch" aria-label="Toggle Loyalty Activity access"><input type="checkbox" role="switch" data-module="rewardLoyaltyActivity"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Analytics</span><label class="role-switch" aria-label="Toggle Reward Analytics access"><input type="checkbox" role="switch" data-module="rewardAnalytics"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                </div>
+              </section>
+              <section class="permission-group" data-permission-parent="pos">
+                <div class="permission-parent-row">
+                  <span class="permission-parent-icon"><i data-lucide="monitor" aria-hidden="true"></i></span>
+                  <span class="permission-copy"><span class="permission-title">POS</span><span class="permission-meta">Point-of-sale workflows</span></span>
+                  <label class="role-switch" aria-label="Toggle POS access"><input type="checkbox" role="switch" data-module="pos"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label>
+                </div>
+                <div class="permission-child-list">
+                  <div class="permission-child-row"><span class="permission-child-title">Check-in</span><label class="role-switch" aria-label="Toggle Check-in access"><input type="checkbox" role="switch" data-module="posCheckIn"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Tickets</span><label class="role-switch" aria-label="Toggle Tickets access"><input type="checkbox" role="switch" data-module="posTickets"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Booking</span><label class="role-switch" aria-label="Toggle POS Booking access"><input type="checkbox" role="switch" data-module="posBooking"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Customers</span><label class="role-switch" aria-label="Toggle POS Customers access"><input type="checkbox" role="switch" data-module="posCustomers"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Time Clock</span><label class="role-switch" aria-label="Toggle Time Clock access"><input type="checkbox" role="switch" data-module="posTimeClock"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Management</span><label class="role-switch" aria-label="Toggle Management access"><input type="checkbox" role="switch" data-module="posManagement"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                </div>
+              </section>
+              <section class="permission-group" data-permission-parent="settings">
+                <div class="permission-parent-row">
+                  <span class="permission-parent-icon"><i data-lucide="settings" aria-hidden="true"></i></span>
+                  <span class="permission-copy"><span class="permission-title">Settings</span><span class="permission-meta">Business and account settings</span></span>
+                  <label class="role-switch" aria-label="Toggle Settings access"><input type="checkbox" role="switch" data-module="settings"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label>
+                </div>
+                <div class="permission-child-list">
+                  <div class="permission-child-row"><span class="permission-child-title">Account</span><label class="role-switch" aria-label="Toggle Account access"><input type="checkbox" role="switch" data-module="settingsAccount"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Business Verification</span><label class="role-switch" aria-label="Toggle Business Verification access"><input type="checkbox" role="switch" data-module="settingsBusinessVerification"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Sub Account</span><label class="role-switch" aria-label="Toggle Settings Sub Account access"><input type="checkbox" role="switch" data-module="settingsSubAccount"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Affiliate Link</span><label class="role-switch" aria-label="Toggle Affiliate Link access"><input type="checkbox" role="switch" data-module="settingsAffiliateLink"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Terms &amp; Privacy</span><label class="role-switch" aria-label="Toggle Terms &amp; Privacy access"><input type="checkbox" role="switch" data-module="settingsTermsPrivacy"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                </div>
+              </section>
+              <section class="permission-group is-flat" data-permission-parent="support">
+                <div class="permission-parent-row">
+                  <span class="permission-parent-icon"><i data-lucide="circle-question-mark" aria-hidden="true"></i></span>
+                  <span class="permission-copy"><span class="permission-title">Support</span><span class="permission-meta">Help center and support tools</span></span>
+                  <label class="role-switch" aria-label="Toggle Support access"><input type="checkbox" role="switch" data-module="support"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label>
+                </div>
+              </section>
+            </div>
+            <div class="action-row">
+              <span class="save-status" data-save-status></span>
+              <button class="owner-button" type="button"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete role</span></button>
+              <button class="owner-button is-primary" type="button" data-save-button><i data-lucide="save" aria-hidden="true"></i><span>Save changes</span></button>
+            </div>
+          </div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>
+    window.NEXORA_SHELL = {
+      activePage: 'owner-settings',
+      activeTab: 'sub-account',
+      onNavigate: function (tabId) {
+        window.location.href = 'owner-setting.html?tab=' + encodeURIComponent(tabId);
+      }
+    };
+  </script>
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script src="../assets/nexora-shell.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      var allModuleIds = [
+        'dashboard', 'staff', 'reviews', 'analytics', 'payments', 'paymentsOverview', 'paymentsCustomerPayments',
+        'paymentsTips', 'paymentsPayroll', 'paymentsDirectSavings', 'packages', 'packagesOverview', 'packagesSubscriptions',
+        'packagesAiVoicePlans', 'packagesHistory', 'stations', 'stationsQrStations', 'stationsOneQr', 'booking', 'bookingBook',
+        'bookingCustomers', 'bookingCallLog', 'bookingSmsCampaigns', 'bookingQrCodes', 'bookingPlans', 'bookingSalonSettings',
+        'community', 'communityFeed', 'communityGroups', 'communityLearning', 'communityJobs', 'communityEvents', 'reward',
+        'rewardOverview', 'rewardEarnRules', 'rewardCatalog', 'rewardCustomers', 'rewardLoyaltyActivity', 'rewardAnalytics',
+        'pos', 'posCheckIn', 'posTickets', 'posBooking', 'posCustomers', 'posTimeClock', 'posManagement',
+        'settings', 'settingsAccount', 'settingsBusinessVerification', 'settingsSubAccount', 'settingsAffiliateLink', 'settingsTermsPrivacy', 'support'
+      ];
+
+      function moduleMap(enabledIds) {
+        return allModuleIds.reduce(function (permissions, moduleId) {
+          permissions[moduleId] = enabledIds.indexOf(moduleId) !== -1;
+          return permissions;
+        }, {});
+      }
+
+      var roles = {
+        'ROLE-001': {
+          name: 'Owner Manager',
+          modules: moduleMap(allModuleIds)
+        },
+        'ROLE-002': {
+          name: 'Front Desk',
+          modules: moduleMap([
+            'reviews', 'booking', 'bookingBook', 'bookingCustomers', 'bookingCallLog', 'bookingSmsCampaigns',
+            'bookingQrCodes', 'bookingPlans', 'bookingSalonSettings', 'community', 'communityFeed', 'reward',
+            'rewardOverview', 'rewardCustomers', 'pos', 'posCheckIn', 'posTickets', 'posBooking', 'posCustomers',
+            'support'
+          ])
+        },
+        'ROLE-003': {
+          name: 'Technician Lead',
+          modules: moduleMap([
+            'dashboard', 'staff', 'reviews', 'analytics', 'booking', 'bookingBook', 'bookingCustomers',
+            'bookingSalonSettings', 'reward', 'rewardOverview', 'rewardAnalytics', 'pos', 'posCheckIn', 'posTickets',
+            'posBooking', 'posCustomers', 'posTimeClock', 'posManagement', 'support'
+          ])
+        }
+      };
+
+      var requestedRoleId = new URLSearchParams(window.location.search).get('roleId');
+      var requestedRoleName = new URLSearchParams(window.location.search).get('roleName');
+      var customRoleName = (requestedRoleName || '').trim().slice(0, 100);
+      var roleId = requestedRoleId && (roles[requestedRoleId] || customRoleName) ? requestedRoleId : 'ROLE-002';
+      var role = roles[roleId] || { name: customRoleName || 'New Role', modules: moduleMap([]) };
+
+      function setText(selector, value) {
+        var element = document.querySelector(selector);
+        if (element) element.textContent = value;
+      }
+
+      setText('[data-role-name]', role.name);
+      setText('[data-role-id]', roleId);
+
+      var nameInput = document.querySelector('[data-role-name-input]');
+      if (nameInput) nameInput.value = role.name;
+
+      Object.keys(role.modules).forEach(function (moduleId) {
+        var input = document.querySelector('[data-module="' + moduleId + '"]');
+        if (input) input.checked = role.modules[moduleId];
+      });
+
+      var moduleInputs = Array.prototype.slice.call(document.querySelectorAll('[data-module]'));
+      var permissionGroups = Array.prototype.slice.call(document.querySelectorAll('[data-permission-parent]'));
+
+      function setSwitchAria(input) {
+        if (!input) return;
+        input.setAttribute('aria-checked', input.indeterminate ? 'mixed' : input.checked ? 'true' : 'false');
+      }
+
+      function setSaveStatus(message) {
+        var status = document.querySelector('[data-save-status]');
+        if (status) status.textContent = message;
+      }
+
+      function childInputsForGroup(group) {
+        return Array.prototype.slice.call(group.querySelectorAll('.permission-child-list [data-module]'));
+      }
+
+      function parentInputForGroup(group) {
+        return group.querySelector('.permission-parent-row [data-module]');
+      }
+
+      function syncParentSwitch(group) {
+        var parentInput = parentInputForGroup(group);
+        var childInputs = childInputsForGroup(group);
+        if (!parentInput) return;
+        if (!childInputs.length) {
+          parentInput.indeterminate = false;
+          setSwitchAria(parentInput);
+          return;
+        }
+        var checkedCount = childInputs.filter(function (input) { return input.checked; }).length;
+        parentInput.checked = checkedCount === childInputs.length;
+        parentInput.indeterminate = checkedCount > 0 && checkedCount < childInputs.length;
+        setSwitchAria(parentInput);
+      }
+
+      function markPermissionsDirty() {
+        setSaveStatus('Unsaved changes.');
+      }
+
+      moduleInputs.forEach(setSwitchAria);
+      permissionGroups.forEach(syncParentSwitch);
+
+      moduleInputs.forEach(function (input) {
+        input.addEventListener('change', function () {
+          var group = input.closest('[data-permission-parent]');
+          if (!group) {
+            setSwitchAria(input);
+            markPermissionsDirty();
+            return;
+          }
+          var parentInput = parentInputForGroup(group);
+          var childInputs = childInputsForGroup(group);
+          input.indeterminate = false;
+          if (input === parentInput && childInputs.length) {
+            childInputs.forEach(function (childInput) {
+              childInput.checked = input.checked;
+              childInput.indeterminate = false;
+              setSwitchAria(childInput);
+            });
+          }
+          setSwitchAria(input);
+          syncParentSwitch(group);
+          markPermissionsDirty();
+        });
+      });
+
+      var saveButton = document.querySelector('[data-save-button]');
+      if (saveButton) {
+        saveButton.addEventListener('click', function () {
+          setSaveStatus('Saved just now.');
+        });
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -27,6 +27,24 @@ select {
   font: inherit;
 }
 
+.credits-history-date {
+  display: grid;
+  gap: 2px;
+  color: var(--nexora-text);
+  font-size: 12px;
+  font-weight: 800;
+  line-height: 16px;
+  white-space: nowrap;
+}
+
+.credits-history-date small {
+  display: block;
+  color: var(--nexora-text);
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 14px;
+}
+
 :root {
   --luxury-gold: #d4af37;
   --brand-cyan: #32d7ff;

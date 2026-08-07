@@ -1,0 +1,2043 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexora Touch - Account Settings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    .page-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 0 auto 20px;
+      max-width: 1180px;
+    }
+
+    .page-title {
+      margin: 0;
+      color: var(--nexora-text);
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 32px;
+    }
+
+    .page-description {
+      max-width: 680px;
+      margin: 8px 0 0;
+      color: var(--nexora-muted);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 20px;
+    }
+
+    .owner-status {
+      display: inline-flex;
+      min-height: 34px;
+      align-items: center;
+      gap: 8px;
+      border: 1px solid rgba(0, 184, 115, .22);
+      border-radius: 8px;
+      background: rgba(0, 184, 115, .08);
+      padding: 0 12px;
+      color: #087a55;
+      font-size: 12px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
+    .owner-status i {
+      width: 15px;
+      height: 15px;
+    }
+
+    .settings-shell {
+      width: min(100%, 1180px);
+      margin: 0 auto;
+    }
+
+    .page-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin: 0 0 18px;
+    }
+
+    .page-tab {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      gap: 10px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 12px;
+      background: var(--nexora-surface);
+      padding: 8px 14px 8px 10px;
+      color: var(--nexora-muted);
+      font-size: 13px;
+      font-weight: 800;
+      box-shadow: var(--nexora-card-shadow);
+      cursor: pointer;
+      transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+
+    .page-tab:hover {
+      border-color: rgba(70, 72, 216, 0.35);
+      background: #fff;
+      color: var(--nexora-text);
+      transform: translateY(-1px);
+    }
+
+    .page-tab.is-active,
+    .page-tab[aria-selected="true"] {
+      border-color: transparent;
+      background: linear-gradient(90deg, var(--nexora-electric), var(--nexora-violet));
+      color: #fff;
+      box-shadow: 0 12px 26px rgba(43, 89, 255, 0.22);
+    }
+
+    .page-tab-icon {
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9px;
+      background: var(--nexora-surface-muted);
+      color: var(--nexora-brand);
+    }
+
+    .page-tab.is-active .page-tab-icon,
+    .page-tab[aria-selected="true"] .page-tab-icon {
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+    }
+
+    .page-tab svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    .page-tab svg path,
+    .page-tab svg rect,
+    .page-tab svg circle,
+    .page-tab svg line,
+    .page-tab svg polyline {
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .settings-panel {
+      display: block;
+    }
+
+    .settings-panel[hidden] {
+      display: none;
+    }
+
+    .settings-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1.15fr) minmax(280px, .85fr);
+      gap: 16px;
+      align-items: start;
+    }
+
+    .settings-section {
+      border: 1px solid var(--nexora-border);
+      border-radius: 8px;
+      background: var(--nexora-surface);
+      box-shadow: var(--nexora-card-shadow);
+      overflow: hidden;
+    }
+
+    .settings-section + .settings-section {
+      margin-top: 16px;
+    }
+
+    .settings-section.is-sub-account-frameless {
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      box-shadow: none;
+      overflow: visible;
+    }
+
+    .settings-section.is-sub-account-frameless > .section-head {
+      border-bottom: 0;
+      padding: 0;
+      margin-bottom: 14px;
+    }
+
+    .settings-section.is-sub-account-frameless > .section-body {
+      padding: 0;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid var(--nexora-rule);
+      padding: 18px;
+    }
+
+    .section-title-row {
+      display: flex;
+      min-width: 0;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .section-icon {
+      display: inline-flex;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: #f0f7ff;
+      color: var(--nexora-electric);
+    }
+
+    .section-icon i {
+      width: 18px;
+      height: 18px;
+    }
+
+    .section-title {
+      margin: 0;
+      color: var(--nexora-text);
+      font-size: 17px;
+      font-weight: 850;
+      line-height: 24px;
+    }
+
+    .section-copy {
+      margin: 4px 0 0;
+      color: var(--nexora-muted);
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 19px;
+    }
+
+    .section-body {
+      padding: 18px;
+    }
+
+    .form-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .form-field {
+      min-width: 0;
+    }
+
+    .form-field.is-wide {
+      grid-column: 1 / -1;
+    }
+
+    .field-label {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--nexora-text);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .field-label .field-optional {
+      color: var(--nexora-subtle);
+      font-weight: 600;
+    }
+
+    .field-input,
+    .field-select,
+    .field-textarea {
+      width: 100%;
+      border: 1px solid var(--nexora-border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--nexora-text);
+      font-size: 14px;
+      font-weight: 600;
+      outline: 0;
+      transition: border-color .16s, box-shadow .16s;
+    }
+
+    .field-input,
+    .field-select {
+      height: 42px;
+      padding: 0 12px;
+    }
+
+    .field-textarea {
+      min-height: 98px;
+      resize: vertical;
+      padding: 11px 12px;
+      line-height: 20px;
+    }
+
+    .field-input:focus,
+    .field-select:focus,
+    .field-textarea:focus {
+      border-color: var(--nexora-brand);
+      box-shadow: 0 0 0 3px rgba(70, 72, 216, .12);
+    }
+
+    .field-note {
+      margin: 7px 0 0;
+      color: var(--nexora-subtle);
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 18px;
+    }
+
+    .action-row {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--nexora-rule);
+      padding: 14px 18px;
+    }
+
+    .owner-button {
+      display: inline-flex;
+      min-height: 38px;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 8px;
+      background: #fff;
+      padding: 0 14px;
+      color: var(--nexora-text);
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+      cursor: pointer;
+      transition: background .16s, border-color .16s, color .16s, transform .16s;
+    }
+
+    .owner-button i {
+      width: 16px;
+      height: 16px;
+    }
+
+    .owner-button:hover {
+      border-color: rgba(70, 72, 216, .35);
+      background: #f8faff;
+      color: var(--nexora-brand);
+    }
+
+    .owner-button.is-primary {
+      border-color: transparent;
+      background: var(--nexora-brand);
+      color: #fff;
+      box-shadow: 0 10px 18px rgba(70, 72, 216, .22);
+    }
+
+    .owner-button.is-primary:hover {
+      background: var(--nexora-brand-dark);
+      color: #fff;
+      transform: translateY(-1px);
+    }
+
+    .owner-button.is-success {
+      border-color: transparent;
+      background: #08a952;
+      color: #fff;
+      box-shadow: 0 0 0 4px rgba(8, 169, 82, .16);
+    }
+
+    .owner-button.is-success:hover {
+      background: #078945;
+      color: #fff;
+    }
+
+    .owner-button.is-danger {
+      border-color: transparent;
+      background: #dc2626;
+      color: #fff;
+      box-shadow: 0 0 0 4px rgba(220, 38, 38, .14);
+    }
+
+    .owner-button.is-danger:hover {
+      background: #b91c1c;
+      color: #fff;
+    }
+
+    .owner-button.is-soft {
+      border-color: rgba(245, 158, 11, .28);
+      background: rgba(245, 158, 11, .08);
+      color: #945500;
+    }
+
+    .save-status {
+      margin-right: auto;
+      color: var(--nexora-subtle);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .info-list {
+      display: grid;
+      gap: 10px;
+      margin: 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .info-item {
+      display: grid;
+      grid-template-columns: 30px minmax(0, 1fr);
+      gap: 10px;
+      align-items: start;
+      border: 1px solid var(--nexora-rule);
+      border-radius: 8px;
+      background: #fbfcff;
+      padding: 12px;
+    }
+
+    .info-mark {
+      display: inline-flex;
+      width: 30px;
+      height: 30px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: #eafaf3;
+      color: var(--nexora-success);
+    }
+
+    .info-mark.is-warn {
+      background: #fff7e8;
+      color: var(--nexora-warning);
+    }
+
+    .info-mark.is-blue {
+      background: #eef6ff;
+      color: var(--nexora-electric);
+    }
+
+    .info-mark i {
+      width: 16px;
+      height: 16px;
+    }
+
+    .info-title {
+      margin: 0;
+      color: var(--nexora-text);
+      font-size: 13px;
+      font-weight: 850;
+      line-height: 18px;
+    }
+
+    .info-copy {
+      margin: 3px 0 0;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 18px;
+    }
+
+    .status-pill {
+      display: inline-flex;
+      min-height: 26px;
+      align-items: center;
+      border-radius: 8px;
+      background: rgba(0, 184, 115, .1);
+      padding: 0 10px;
+      color: var(--nexora-success);
+      font-size: 12px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .status-pill.is-review {
+      background: rgba(245, 158, 11, .12);
+      color: #945500;
+    }
+
+    .document-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .document-row {
+      display: grid;
+      grid-template-columns: 34px minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+      border: 1px solid var(--nexora-rule);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+    }
+
+    .document-row i {
+      width: 18px;
+      height: 18px;
+      color: var(--nexora-brand);
+    }
+
+    .document-title {
+      color: var(--nexora-text);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .document-meta {
+      margin-top: 2px;
+      color: var(--nexora-subtle);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .link-box {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .terms-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .terms-row {
+      display: grid;
+      grid-template-columns: 20px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid var(--nexora-rule);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+    }
+
+    .terms-row input {
+      width: 18px;
+      height: 18px;
+      accent-color: var(--nexora-brand);
+    }
+
+    .terms-title {
+      color: var(--nexora-text);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .terms-meta {
+      margin-top: 2px;
+      color: var(--nexora-subtle);
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .mini-metrics {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .mini-metric {
+      border: 1px solid var(--nexora-rule);
+      border-radius: 8px;
+      background: #fbfcff;
+      padding: 12px;
+    }
+
+    .metric-label {
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .metric-value {
+      margin-top: 6px;
+      color: var(--nexora-text);
+      font-size: 22px;
+      font-weight: 900;
+      line-height: 28px;
+    }
+
+    .sub-account-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      flex-wrap: wrap;
+      margin-bottom: 14px;
+    }
+
+    .booking-view-switch {
+      display: inline-flex;
+      flex-shrink: 0;
+      align-items: center;
+      gap: 4px;
+      height: 36px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: var(--nexora-surface-muted);
+      padding: 3px;
+    }
+
+    .booking-view-button {
+      display: inline-flex;
+      height: 28px;
+      min-height: 28px;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      padding: 0 10px;
+      color: var(--nexora-muted);
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s, box-shadow 0.2s;
+    }
+
+    .booking-view-button i {
+      width: 14px;
+      height: 14px;
+    }
+
+    .booking-view-button.is-active {
+      background: #fff;
+      color: var(--nexora-brand);
+      box-shadow: var(--nexora-card-shadow);
+    }
+
+    .sub-account-panel[hidden] {
+      display: none;
+    }
+
+    .filter-row {
+      display: grid;
+      grid-template-columns: minmax(220px, 1fr) repeat(2, minmax(140px, 180px));
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .table-shell {
+      overflow-x: auto;
+      border: 1px solid var(--nexora-rule);
+      border-radius: 8px;
+      background: #fff;
+    }
+
+    .owner-table {
+      width: 100%;
+      min-width: 760px;
+      border-collapse: collapse;
+    }
+
+    .owner-table th,
+    .owner-table td {
+      border-bottom: 1px solid var(--nexora-rule);
+      padding: 12px;
+      text-align: left;
+      vertical-align: middle;
+    }
+
+    .owner-table th {
+      background: #fbfcff;
+      color: var(--nexora-muted);
+      font-size: 11px;
+      font-weight: 900;
+      text-transform: uppercase;
+    }
+
+    .owner-table tr:last-child td {
+      border-bottom: 0;
+    }
+
+    .identity-cell {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-width: 0;
+    }
+
+    .mini-avatar {
+      display: inline-flex;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: #eef2ff;
+      color: var(--nexora-brand);
+      font-size: 12px;
+      font-weight: 900;
+    }
+
+    .mini-avatar i {
+      width: 16px;
+      height: 16px;
+    }
+
+    .cell-title {
+      color: var(--nexora-text);
+      font-size: 13px;
+      font-weight: 850;
+      line-height: 18px;
+    }
+
+    .cell-meta {
+      margin-top: 2px;
+      color: var(--nexora-subtle);
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 17px;
+    }
+
+    .role-badge {
+      display: inline-flex;
+      min-height: 25px;
+      align-items: center;
+      border-radius: 8px;
+      background: #eef6ff;
+      padding: 0 9px;
+      color: var(--nexora-electric);
+      font-size: 12px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+
+    .status-pill.is-pending {
+      background: rgba(245, 158, 11, .12);
+      color: #945500;
+    }
+
+    .status-pill.is-disabled {
+      background: var(--nexora-surface-muted);
+      color: var(--nexora-subtle);
+    }
+
+    .table-actions {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .icon-action {
+      display: inline-flex;
+      min-height: 32px;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 8px;
+      background: #fff;
+      padding: 0 9px;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 850;
+      text-decoration: none;
+      cursor: pointer;
+      white-space: nowrap;
+    }
+
+    .icon-action:hover {
+      border-color: rgba(70, 72, 216, .35);
+      color: var(--nexora-brand);
+    }
+
+    .icon-action:disabled {
+      border-color: var(--nexora-rule);
+      background: var(--nexora-surface-muted);
+      color: var(--nexora-subtle);
+      cursor: not-allowed;
+      opacity: .58;
+    }
+
+    .icon-action:disabled:hover {
+      border-color: var(--nexora-rule);
+      color: var(--nexora-subtle);
+      transform: none;
+    }
+
+    .icon-action i {
+      width: 15px;
+      height: 15px;
+      flex: 0 0 auto;
+    }
+
+    .sub-account-action-status {
+      display: none;
+      align-items: center;
+      min-height: 34px;
+      margin-top: 10px;
+      border: 1px solid rgba(70, 72, 216, .18);
+      border-radius: 8px;
+      background: rgba(70, 72, 216, .07);
+      padding: 8px 11px;
+      color: var(--nexora-brand);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 18px;
+    }
+
+    .sub-account-action-status:not(:empty) {
+      display: flex;
+    }
+
+    .permission-grid {
+      display: grid;
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: 10px;
+    }
+
+    .permission-item {
+      border: 1px solid var(--nexora-rule);
+      border-radius: 8px;
+      background: #fbfcff;
+      padding: 11px;
+    }
+
+    .permission-title {
+      color: var(--nexora-text);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .permission-copy {
+      margin-top: 4px;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 18px;
+    }
+
+    .filter-row.is-account-filters {
+      grid-template-columns: minmax(220px, 1fr) repeat(2, minmax(120px, 160px));
+    }
+
+    .sub-account-filter-bar {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: end;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .sub-account-filter-bar .filter-row {
+      margin-bottom: 0;
+    }
+
+    .sub-account-filter-bar .owner-button {
+      min-height: 42px;
+    }
+
+    .filter-row.is-log-filters {
+      grid-template-columns: minmax(220px, 1fr) repeat(5, minmax(130px, 160px));
+    }
+
+    .owner-table.is-account-table {
+      min-width: 980px;
+    }
+
+    .owner-table.is-log-table {
+      min-width: 1160px;
+    }
+
+    .owner-table.is-log-table td {
+      color: var(--nexora-text);
+      font-size: 14px;
+      font-weight: 650;
+      line-height: 20px;
+    }
+
+    .owner-table.is-log-table .credits-history-date {
+      font-size: 14px;
+      line-height: 18px;
+    }
+
+    .owner-table.is-log-table .credits-history-date small {
+      font-size: 11px;
+      line-height: 14px;
+    }
+
+    .owner-table.is-log-table .role-badge {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .owner-table.is-log-table .status-pill {
+      font-size: 14px;
+      line-height: 20px;
+    }
+
+    .inline-workflow-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+      gap: 12px;
+      margin-top: 14px;
+    }
+
+    .workflow-panel {
+      border: 1px solid var(--nexora-rule);
+      border-radius: 8px;
+      background: #fff;
+      padding: 14px;
+    }
+
+    .workflow-title-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .workflow-title {
+      margin: 0;
+      color: var(--nexora-text);
+      font-size: 14px;
+      font-weight: 900;
+      line-height: 20px;
+    }
+
+    .workflow-copy {
+      margin: 4px 0 0;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 18px;
+    }
+
+    .preview-box {
+      display: grid;
+      gap: 6px;
+      margin-top: 12px;
+      border: 1px dashed rgba(70, 72, 216, .32);
+      border-radius: 8px;
+      background: #f8faff;
+      padding: 12px;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 18px;
+    }
+
+    .detail-list {
+      display: grid;
+      gap: 9px;
+    }
+
+    .detail-row {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 12px;
+      border-bottom: 1px solid var(--nexora-rule);
+      padding-bottom: 9px;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 18px;
+    }
+
+    .detail-row:last-child {
+      border-bottom: 0;
+      padding-bottom: 0;
+    }
+
+    .detail-value {
+      color: var(--nexora-text);
+      font-weight: 850;
+      text-align: right;
+    }
+
+    .edit-account-form {
+      display: grid;
+      gap: 14px;
+    }
+
+    .edit-account-row {
+      display: grid;
+      grid-template-columns: 140px minmax(0, 1fr);
+      gap: 16px;
+      align-items: center;
+    }
+
+    .edit-account-readonly {
+      color: var(--nexora-text);
+      font-size: 14px;
+      font-weight: 850;
+      line-height: 20px;
+      overflow-wrap: anywhere;
+    }
+
+    .phone-input-group {
+      display: grid;
+      grid-template-columns: 74px minmax(0, 1fr);
+      gap: 0;
+    }
+
+    .phone-input-group .field-select {
+      border-radius: 8px 0 0 8px;
+      border-right: 0;
+    }
+
+    .phone-input-group .field-input {
+      border-radius: 0 8px 8px 0;
+    }
+
+    .module-chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .module-chip {
+      display: inline-flex;
+      min-height: 26px;
+      align-items: center;
+      border-radius: 8px;
+      background: #eef6ff;
+      padding: 0 9px;
+      color: var(--nexora-electric);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .role-toolbar {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .owner-modal[hidden] {
+      display: none;
+    }
+
+    .owner-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 90;
+      display: grid;
+      place-items: center;
+      padding: 24px;
+    }
+
+    .owner-modal-backdrop {
+      position: absolute;
+      inset: 0;
+      border: 0;
+      background: rgba(13, 18, 33, .48);
+      cursor: pointer;
+    }
+
+    .owner-modal-card {
+      position: relative;
+      z-index: 1;
+      width: min(100%, 720px);
+      max-height: min(760px, calc(100vh - 48px));
+      overflow: hidden;
+      border: 1px solid var(--nexora-border);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 24px 70px rgba(13, 18, 33, .24);
+    }
+
+    .owner-modal-card.is-wide {
+      width: min(100%, 860px);
+    }
+
+    .owner-modal-head {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 14px;
+      border-bottom: 1px solid var(--nexora-rule);
+      padding: 18px;
+    }
+
+    .modal-title {
+      margin: 0;
+      color: var(--nexora-text);
+      font-size: 18px;
+      font-weight: 900;
+      line-height: 24px;
+    }
+
+    .modal-copy {
+      margin: 4px 0 0;
+      color: var(--nexora-muted);
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 19px;
+    }
+
+    .owner-modal-close {
+      display: inline-flex;
+      width: 34px;
+      height: 34px;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--nexora-border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--nexora-muted);
+      cursor: pointer;
+    }
+
+    .owner-modal-close:hover {
+      border-color: rgba(70, 72, 216, .35);
+      color: var(--nexora-brand);
+    }
+
+    .owner-modal-close i {
+      width: 16px;
+      height: 16px;
+    }
+
+    .owner-modal-body {
+      max-height: calc(100vh - 210px);
+      overflow-y: auto;
+      padding: 18px;
+    }
+
+    .owner-modal-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 10px;
+      border-top: 1px solid var(--nexora-rule);
+      padding: 14px 18px;
+    }
+
+    /* SweetAlert2 follows the Owner Settings design system. */
+    .swal2-popup {
+      border-radius: 16px !important;
+      box-shadow: 0 24px 60px rgba(8, 16, 34, .28) !important;
+      font-family: Inter, system-ui, sans-serif !important;
+    }
+
+    .swal2-title {
+      color: var(--nexora-text) !important;
+      font-size: 19px !important;
+      font-weight: 900 !important;
+      line-height: 26px !important;
+    }
+
+    .swal2-html-container {
+      color: var(--nexora-muted) !important;
+      font-size: 14px !important;
+      font-weight: 600 !important;
+      line-height: 21px !important;
+    }
+
+    .swal2-actions {
+      gap: 10px !important;
+    }
+
+    .swal2-styled.swal2-confirm,
+    .swal2-styled.swal2-cancel {
+      border-radius: 8px !important;
+      font-size: 14px !important;
+      font-weight: 850 !important;
+      padding: 10px 20px !important;
+    }
+
+    .swal2-styled.swal2-confirm {
+      box-shadow: 0 12px 26px rgba(70, 72, 216, .24) !important;
+    }
+
+    .swal2-styled.swal2-cancel {
+      background: #fff !important;
+      border: 1px solid var(--nexora-border) !important;
+      color: var(--nexora-text) !important;
+    }
+
+    .swal2-styled:focus {
+      box-shadow: none !important;
+    }
+
+    @media (max-width: 900px) {
+      .page-heading {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .owner-status {
+        width: fit-content;
+      }
+
+      .page-tabs {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 4px;
+        margin-bottom: 14px;
+      }
+
+      .page-tab {
+        width: 100%;
+        min-width: 0;
+        min-height: 48px;
+        flex-direction: column;
+        justify-content: center;
+        gap: 3px;
+        border-radius: 10px;
+        padding: 5px 2px;
+        font-size: 10px;
+        line-height: 1.12;
+        text-align: center;
+        box-shadow: none;
+      }
+
+      .page-tab-icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 7px;
+      }
+
+      .page-tab svg {
+        width: 13px;
+        height: 13px;
+      }
+
+      .page-tab > span:last-child {
+        display: block;
+        max-width: 100%;
+        overflow-wrap: anywhere;
+      }
+
+      .settings-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .filter-row,
+      .filter-row.is-account-filters,
+      .filter-row.is-log-filters,
+      .sub-account-filter-bar,
+      .edit-account-row,
+      .permission-grid,
+      .inline-workflow-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .page-tabs {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .form-grid,
+      .mini-metrics {
+        grid-template-columns: 1fr;
+      }
+
+      .section-head,
+      .section-body,
+      .action-row {
+        padding: 14px;
+      }
+
+      .document-row,
+      .terms-row,
+      .link-box,
+      .owner-modal-footer {
+        grid-template-columns: 1fr;
+      }
+
+      .owner-modal {
+        padding: 14px;
+      }
+
+      .owner-modal-body {
+        max-height: calc(100vh - 190px);
+      }
+
+      .document-row i {
+        display: none;
+      }
+
+      .owner-button {
+        width: 100%;
+      }
+
+      .save-status {
+        width: 100%;
+      }
+
+      .booking-view-switch,
+      .booking-view-button {
+        width: 100%;
+      }
+
+      .booking-view-switch {
+        flex-direction: column;
+        height: auto;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Dashboard sidebar"></aside>
+
+    <div class="app-area">
+      <header class="header"></header>
+
+      <main class="content" aria-label="Account Settings content">
+        <div class="page-heading">
+          <div>
+            <h1 class="page-title">Account Settings</h1>
+            <p class="page-description">Manage your account info, payout methods, business details, and compliance verification.</p>
+          </div>
+          <div class="owner-status"><i data-lucide="shield-check" aria-hidden="true"></i><span>Owner verified</span></div>
+        </div>
+
+        <div class="settings-shell">
+          <div class="page-tabs" role="tablist" aria-label="Account settings sections">
+            <button class="page-tab" type="button" role="tab" id="tab-account" aria-controls="panel-account" aria-selected="false" tabindex="-1" data-settings-tab="account">
+              <span class="page-tab-icon"><i data-lucide="user-round" aria-hidden="true"></i></span>
+              <span>ACCOUNT</span>
+            </button>
+            <button class="page-tab" type="button" role="tab" id="tab-business-verification" aria-controls="panel-business-verification" aria-selected="false" tabindex="-1" data-settings-tab="business-verification">
+              <span class="page-tab-icon"><i data-lucide="badge-check" aria-hidden="true"></i></span>
+              <span>BUSINESS VERIFICATION</span>
+            </button>
+            <button class="page-tab is-active" type="button" role="tab" id="tab-sub-account" aria-controls="panel-sub-account" aria-selected="true" tabindex="0" data-settings-tab="sub-account">
+              <span class="page-tab-icon"><i data-lucide="users-round" aria-hidden="true"></i></span>
+              <span>SUB ACCOUNT</span>
+            </button>
+            <button class="page-tab" type="button" role="tab" id="tab-affiliate-link" aria-controls="panel-affiliate-link" aria-selected="false" tabindex="-1" data-settings-tab="affiliate-link">
+              <span class="page-tab-icon"><i data-lucide="link" aria-hidden="true"></i></span>
+              <span>AFFILIATE LINK</span>
+            </button>
+            <button class="page-tab" type="button" role="tab" id="tab-terms-privacy" aria-controls="panel-terms-privacy" aria-selected="false" tabindex="-1" data-settings-tab="terms-privacy">
+              <span class="page-tab-icon"><i data-lucide="scroll-text" aria-hidden="true"></i></span>
+              <span>TERMS &amp; PRIVACY</span>
+            </button>
+          </div>
+
+          <section class="settings-panel" id="panel-account" role="tabpanel" aria-labelledby="tab-account" data-settings-panel="account" hidden>
+          </section>
+
+          <section class="settings-panel" id="panel-business-verification" role="tabpanel" aria-labelledby="tab-business-verification" data-settings-panel="business-verification" hidden>
+          </section>
+
+          <section class="settings-panel" id="panel-sub-account" role="tabpanel" aria-labelledby="tab-sub-account" data-settings-panel="sub-account">
+            <article class="settings-section is-sub-account-frameless">
+              <div class="section-head">
+                <p class="section-copy">Manage Sub Account login accounts, role permissions, and activity logs under this owner account.</p>
+              </div>
+              <div class="section-body">
+                <div class="sub-account-toolbar">
+                  <div class="booking-view-switch" role="group" aria-label="Sub account management views">
+                    <button class="booking-view-button is-active" type="button" aria-pressed="true" data-sub-account-view="accounts"><i data-lucide="users-round" aria-hidden="true"></i><span>Sub Accounts</span></button>
+                    <button class="booking-view-button" type="button" aria-pressed="false" data-sub-account-view="roles"><i data-lucide="shield" aria-hidden="true"></i><span>Roles</span></button>
+                    <button class="booking-view-button" type="button" aria-pressed="false" data-sub-account-view="logs"><i data-lucide="list-filter" aria-hidden="true"></i><span>Activity Logs</span></button>
+                  </div>
+                </div>
+
+                <div class="sub-account-panel" data-sub-account-panel="accounts">
+                  <div class="sub-account-filter-bar">
+                    <div class="filter-row is-account-filters">
+                      <label class="form-field"><span class="field-label">Search</span><input class="field-input" type="search" placeholder="Email, name, or phone"></label>
+                      <label class="form-field"><span class="field-label">Status</span><select class="field-select"><option>All statuses</option><option>Active</option><option>Disabled</option><option>Pending</option></select></label>
+                      <label class="form-field"><span class="field-label">Role</span><select class="field-select"><option>All roles</option><option>Owner Manager</option><option>Front Desk</option><option>Technician Lead</option></select></label>
+                    </div>
+                    <button class="owner-button is-primary" type="button" data-open-modal="add-sub-account-modal" aria-controls="add-sub-account-modal" aria-haspopup="dialog"><i data-lucide="user-plus" aria-hidden="true"></i><span>Add New Sub Account</span></button>
+                  </div>
+                  <div class="table-shell">
+                    <table class="owner-table is-account-table">
+                      <thead><tr><th>Account</th><th>Role</th><th>Status</th><th>Last Login</th><th>Actions</th></tr></thead>
+                      <tbody>
+                        <tr>
+                          <td><div class="cell-title">mai@nexoratouch.com</div><div class="cell-meta">Mai Tran</div><div class="cell-meta">+1 832 555 0182</div></td>
+                          <td><span class="role-badge">Owner Manager</span></td>
+                          <td><span class="status-pill">Active</span></td>
+                          <td><span class="credits-history-date">Aug 07, 2026<small>9:42 AM</small></span></td>
+                          <td><div class="table-actions"><button class="icon-action" type="button" aria-label="View mai@nexoratouch.com" data-open-modal="sub-account-detail-modal" aria-controls="sub-account-detail-modal"><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button><button class="icon-action" type="button" aria-label="Edit mai@nexoratouch.com" data-open-modal="edit-sub-account-modal" aria-controls="edit-sub-account-modal" data-account-id="b7210960-ecab9-461f-9afb-82b64b9835dd" data-account-email="mai@nexoratouch.com" data-account-name="Mai Tran" data-account-phone="832 555 0182" data-account-role="Owner Manager" data-account-status="Active"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button><button class="icon-action" type="button" aria-label="Deactivate mai@nexoratouch.com" data-open-deactivate-modal data-account-email="mai@nexoratouch.com" data-account-name="Mai Tran"><i data-lucide="user-x" aria-hidden="true"></i><span>Deactivate</span></button><button class="icon-action" type="button" aria-label="Reset password for mai@nexoratouch.com" data-open-reset-password-modal data-account-email="mai@nexoratouch.com" data-account-name="Mai Tran"><i data-lucide="key-round" aria-hidden="true"></i><span>Reset password</span></button><button class="icon-action" type="button" aria-label="Resend login email to mai@nexoratouch.com" data-open-resend-email-modal data-account-email="mai@nexoratouch.com" data-account-name="Mai Tran"><i data-lucide="mail" aria-hidden="true"></i><span>Resend email</span></button></div></td>
+                        </tr>
+                        <tr>
+                          <td><div class="cell-title">amy.le@nexoratouch.com</div><div class="cell-meta">Amy Le</div><div class="cell-meta">+1 713 555 0144</div></td>
+                          <td><span class="role-badge">Front Desk</span></td>
+                          <td><span class="status-pill is-pending">Pending</span></td>
+                          <td><div class="cell-title">Never</div></td>
+                          <td><div class="table-actions"><button class="icon-action" type="button" aria-label="View amy.le@nexoratouch.com" data-open-modal="sub-account-detail-modal" aria-controls="sub-account-detail-modal"><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button><button class="icon-action" type="button" aria-label="Edit amy.le@nexoratouch.com" data-open-modal="edit-sub-account-modal" aria-controls="edit-sub-account-modal" data-account-id="c143b217-4c48-47ef-b1a7-7fb1ce86a011" data-account-email="amy.le@nexoratouch.com" data-account-name="Amy Le" data-account-phone="713 555 0144" data-account-role="Front Desk" data-account-status="Pending"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button><button class="icon-action" type="button" aria-label="Deactivate amy.le@nexoratouch.com" data-open-deactivate-modal data-account-email="amy.le@nexoratouch.com" data-account-name="Amy Le"><i data-lucide="user-x" aria-hidden="true"></i><span>Deactivate</span></button><button class="icon-action" type="button" aria-label="Reset password for amy.le@nexoratouch.com" data-open-reset-password-modal data-account-email="amy.le@nexoratouch.com" data-account-name="Amy Le"><i data-lucide="key-round" aria-hidden="true"></i><span>Reset password</span></button><button class="icon-action" type="button" aria-label="Resend login email to amy.le@nexoratouch.com" data-open-resend-email-modal data-account-email="amy.le@nexoratouch.com" data-account-name="Amy Le"><i data-lucide="mail" aria-hidden="true"></i><span>Resend email</span></button></div></td>
+                        </tr>
+                        <tr>
+                          <td><div class="cell-title">jordan.reyes@nexoratouch.com</div><div class="cell-meta">Jordan Reyes</div><div class="cell-meta">+1 281 555 0129</div></td>
+                          <td><span class="role-badge">Technician Lead</span></td>
+                          <td><span class="status-pill is-disabled">Disabled</span></td>
+                          <td><span class="credits-history-date">Aug 05, 2026<small>5:12 PM</small></span></td>
+                          <td><div class="table-actions"><button class="icon-action" type="button" aria-label="View jordan.reyes@nexoratouch.com" data-open-modal="sub-account-detail-modal" aria-controls="sub-account-detail-modal"><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button><button class="icon-action" type="button" aria-label="Edit jordan.reyes@nexoratouch.com" data-open-modal="edit-sub-account-modal" aria-controls="edit-sub-account-modal" data-account-id="d891e307-231d-42be-9404-12c0e74ff612" data-account-email="jordan.reyes@nexoratouch.com" data-account-name="Jordan Reyes" data-account-phone="281 555 0129" data-account-role="Technician Lead" data-account-status="Disabled"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button><button class="icon-action" type="button" aria-label="Activate jordan.reyes@nexoratouch.com" data-sub-account-action="activate" data-account-email="jordan.reyes@nexoratouch.com"><i data-lucide="user-check" aria-hidden="true"></i><span>Activate</span></button><button class="icon-action" type="button" aria-label="Reset password for jordan.reyes@nexoratouch.com" data-open-reset-password-modal data-account-email="jordan.reyes@nexoratouch.com" data-account-name="Jordan Reyes"><i data-lucide="key-round" aria-hidden="true"></i><span>Reset password</span></button><button class="icon-action" type="button" aria-label="Resend login email to jordan.reyes@nexoratouch.com" data-open-resend-email-modal data-account-email="jordan.reyes@nexoratouch.com" data-account-name="Jordan Reyes"><i data-lucide="mail" aria-hidden="true"></i><span>Resend email</span></button></div></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <div class="sub-account-action-status" role="status" aria-live="polite" data-sub-account-action-status></div>
+                </div>
+
+                <div class="sub-account-panel" data-sub-account-panel="roles" hidden>
+                  <div class="role-toolbar">
+                    <button class="owner-button is-primary" type="button" data-add-role><i data-lucide="shield-plus" aria-hidden="true"></i><span>Add Role</span></button>
+                  </div>
+                  <div class="table-shell">
+                    <table class="owner-table">
+                      <thead><tr><th>Role</th><th>Permissions</th><th>Sub Account</th><th>Daily Limit</th><th>Actions</th></tr></thead>
+                      <tbody>
+                        <tr>
+                          <td><div class="identity-cell"><span class="mini-avatar"><i data-lucide="shield" aria-hidden="true"></i></span><div><div class="cell-title">Owner Manager</div><div class="cell-meta">ROLE-001</div></div></div></td>
+                          <td><div class="cell-title">11 modules enabled</div><div class="cell-meta">Full merchant dashboard access</div></td>
+                          <td>1 assigned</td>
+                          <td>-</td>
+                          <td><div class="table-actions"><a class="icon-action" href="role-details.html?roleId=ROLE-001" aria-label="View or Edit Owner Manager role"><i data-lucide="pencil" aria-hidden="true"></i><span>View/Edit</span></a><button class="icon-action" type="button" aria-label="Delete Owner Manager role" data-delete-role data-role-id="ROLE-001" data-role-name="Owner Manager" data-role-assigned-count="1" disabled aria-disabled="true"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete</span></button></div></td>
+                        </tr>
+                        <tr>
+                          <td><div class="identity-cell"><span class="mini-avatar"><i data-lucide="shield" aria-hidden="true"></i></span><div><div class="cell-title">Front Desk</div><div class="cell-meta">ROLE-002</div></div></div></td>
+                          <td><div class="cell-title">5 modules enabled</div><div class="cell-meta">AI Hub / Booking, reviews, support</div></td>
+                          <td>6 assigned</td>
+                          <td>-</td>
+                          <td><div class="table-actions"><a class="icon-action" href="role-details.html?roleId=ROLE-002" aria-label="View or Edit Front Desk role"><i data-lucide="pencil" aria-hidden="true"></i><span>View/Edit</span></a><button class="icon-action" type="button" aria-label="Delete Front Desk role" data-delete-role data-role-id="ROLE-002" data-role-name="Front Desk" data-role-assigned-count="6" disabled aria-disabled="true"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete</span></button></div></td>
+                        </tr>
+                        <tr>
+                          <td><div class="identity-cell"><span class="mini-avatar"><i data-lucide="shield" aria-hidden="true"></i></span><div><div class="cell-title">Technician Lead</div><div class="cell-meta">ROLE-003</div></div></div></td>
+                          <td><div class="cell-title">6 modules enabled</div><div class="cell-meta">Sub Account, touchpoints, reviews, analytics</div></td>
+                          <td>3 assigned</td>
+                          <td>-</td>
+                          <td><div class="table-actions"><a class="icon-action" href="role-details.html?roleId=ROLE-003" aria-label="View or Edit Technician Lead role"><i data-lucide="pencil" aria-hidden="true"></i><span>View/Edit</span></a><button class="icon-action" type="button" aria-label="Delete Technician Lead role" data-delete-role data-role-id="ROLE-003" data-role-name="Technician Lead" data-role-assigned-count="3" disabled aria-disabled="true"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete</span></button></div></td>
+                        </tr>
+                        <tr>
+                          <td><div class="identity-cell"><span class="mini-avatar"><i data-lucide="shield" aria-hidden="true"></i></span><div><div class="cell-title">Billing Auditor</div><div class="cell-meta">ROLE-004</div></div></div></td>
+                          <td><div class="cell-title">2 modules enabled</div><div class="cell-meta">Payments and reports only</div></td>
+                          <td>0 assigned</td>
+                          <td>-</td>
+                          <td><div class="table-actions"><a class="icon-action" href="role-details.html?roleId=ROLE-004" aria-label="View or Edit Billing Auditor role"><i data-lucide="pencil" aria-hidden="true"></i><span>View/Edit</span></a><button class="icon-action" type="button" aria-label="Delete Billing Auditor role" data-delete-role data-role-id="ROLE-004" data-role-name="Billing Auditor" data-role-assigned-count="0"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete</span></button></div></td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                  <p class="field-note">A role cannot be deleted while one or more sub accounts are assigned to it.</p>
+                  <div class="sub-account-action-status" role="status" aria-live="polite" data-role-action-status></div>
+
+                </div>
+
+                <div class="sub-account-panel" data-sub-account-panel="logs" hidden>
+                  <div class="filter-row is-log-filters">
+                    <label class="form-field"><span class="field-label">Search logs</span><input class="field-input" type="search" placeholder="Name, email, or action"></label>
+                    <label class="form-field"><span class="field-label">Sub Account</span><select class="field-select"><option>All sub accounts</option><option>Mai Tran</option><option>Amy Le</option><option>Jordan Reyes</option></select></label>
+                    <label class="form-field"><span class="field-label">Role</span><select class="field-select"><option>All roles</option><option>Owner Manager</option><option>Front Desk</option><option>Technician Lead</option></select></label>
+                    <label class="form-field"><span class="field-label">Module</span><select class="field-select"><option>All modules</option><option>Settings</option><option>Authentication</option><option>Transactions</option><option>Sub Account</option></select></label>
+                    <label class="form-field"><span class="field-label">Status</span><select class="field-select"><option>All statuses</option><option>Success</option><option>Failed</option></select></label>
+                    <label class="form-field"><span class="field-label">Date range</span><input class="field-input" type="text" value="Last 30 days"></label>
+                  </div>
+                  <div class="table-shell">
+                    <table class="owner-table is-log-table">
+                      <thead><tr><th>Time</th><th>Email</th><th>Role</th><th>Action</th><th>Module</th><th>Status</th></tr></thead>
+                      <tbody>
+                        <tr><td><span class="credits-history-date">Aug 07, 2026<small>10:15 AM</small></span></td><td>mai@nexoratouch.com</td><td><span class="role-badge">Owner Manager</span></td><td>Login success</td><td>Authentication</td><td><span class="status-pill">Success</span></td></tr>
+                        <tr><td><span class="credits-history-date">Aug 07, 2026<small>9:42 AM</small></span></td><td>mai@nexoratouch.com</td><td><span class="role-badge">Owner Manager</span></td><td>Updated Sub Account</td><td>Sub Account</td><td><span class="status-pill">Success</span></td></tr>
+                        <tr><td><span class="credits-history-date">Aug 06, 2026<small>4:18 PM</small></span></td><td>amy.le@nexoratouch.com</td><td><span class="role-badge">Front Desk</span></td><td>Login failed</td><td>Authentication</td><td><span class="status-pill is-disabled">Failed</span></td></tr>
+                        <tr><td><span class="credits-history-date">Aug 06, 2026<small>2:26 PM</small></span></td><td>jordan.reyes@nexoratouch.com</td><td><span class="role-badge">Technician Lead</span></td><td>Viewed transactions</td><td>Transactions</td><td><span class="status-pill">Success</span></td></tr>
+                        <tr><td><span class="credits-history-date">Aug 06, 2026<small>11:03 AM</small></span></td><td>mai@nexoratouch.com</td><td><span class="role-badge">Owner Manager</span></td><td>Role changed</td><td>Settings</td><td><span class="status-pill">Success</span></td></tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </div>
+              </div>
+            </article>
+          </section>
+
+          <section class="settings-panel" id="panel-affiliate-link" role="tabpanel" aria-labelledby="tab-affiliate-link" data-settings-panel="affiliate-link" hidden>
+          </section>
+
+          <section class="settings-panel" id="panel-terms-privacy" role="tabpanel" aria-labelledby="tab-terms-privacy" data-settings-panel="terms-privacy" hidden>
+          </section>
+
+          <div class="owner-modal" id="add-sub-account-modal" role="dialog" aria-modal="true" aria-labelledby="add-sub-account-modal-title" hidden>
+            <button class="owner-modal-backdrop" type="button" aria-label="Close Add New Sub Account modal" data-close-modal="add-sub-account-modal"></button>
+            <div class="owner-modal-card" role="document">
+              <div class="owner-modal-head">
+                <div>
+                  <h3 class="modal-title" id="add-sub-account-modal-title">Add New Sub Account</h3>
+                  <p class="modal-copy">Create a Sub Account login account, assign a role, and send login details.</p>
+                </div>
+                <button class="owner-modal-close" type="button" aria-label="Close Add New Sub Account modal" data-close-modal="add-sub-account-modal"><i data-lucide="x" aria-hidden="true"></i></button>
+              </div>
+              <div class="owner-modal-body">
+                <div class="form-grid">
+                  <label class="form-field"><span class="field-label">Email</span><input class="field-input" type="email" placeholder="e.g. john@example.com"></label>
+                  <label class="form-field"><span class="field-label">Password</span><input class="field-input" type="password" placeholder="At least 6 characters"></label>
+                  <label class="form-field"><span class="field-label">Role</span><select class="field-select"><option value="" selected>Select role</option><option>Front Desk</option><option>Owner Manager</option><option>Technician Lead</option></select></label>
+                  <label class="form-field"><span class="field-label">Display name <span class="field-optional">(optional)</span></span><input class="field-input" type="text" placeholder="Defaults to the username"></label>
+                  <label class="form-field is-wide"><span class="field-label">Phone <span class="field-optional">(optional)</span></span><input class="field-input" type="tel" placeholder="Phone number"></label>
+                </div>
+                <div class="preview-box" aria-label="Login email preview">
+                  <span>After the Sub Account is created, the system will email the login details to this account:</span>
+                  <span>Email: --</span>
+                  <span>Password: --</span>
+                  <span>Login link: https://staging-merchant.vlinkpay.com/sub-account/login?merchant=nt-houston</span>
+                </div>
+              </div>
+              <div class="owner-modal-footer">
+                <button class="owner-button" type="button" data-close-modal="add-sub-account-modal"><i data-lucide="x" aria-hidden="true"></i><span>Cancel</span></button>
+                <button class="owner-button is-primary" type="button"><i data-lucide="user-plus" aria-hidden="true"></i><span>Create Sub Account</span></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="owner-modal" id="edit-sub-account-modal" role="dialog" aria-modal="true" aria-labelledby="edit-sub-account-modal-title" hidden>
+            <button class="owner-modal-backdrop" type="button" aria-label="Close Edit Sub Account modal" data-close-modal="edit-sub-account-modal"></button>
+            <div class="owner-modal-card" role="document">
+              <div class="owner-modal-head">
+                <div>
+                  <h3 class="modal-title" id="edit-sub-account-modal-title">Edit Sub Account</h3>
+                  <p class="modal-copy">Update profile details, role, and login status for this Sub Account.</p>
+                </div>
+                <button class="owner-modal-close" type="button" aria-label="Close Edit Sub Account modal" data-close-modal="edit-sub-account-modal"><i data-lucide="x" aria-hidden="true"></i></button>
+              </div>
+              <div class="owner-modal-body">
+                <div class="edit-account-form" aria-label="Edit Sub Account form">
+                  <div class="edit-account-row"><span class="field-label">Name</span><input class="field-input" type="text" value="Mai Tran" data-edit-account-name></div>
+                  <div class="edit-account-row"><span class="field-label">ID</span><span class="edit-account-readonly" data-edit-account-id>b7210960-ecab9-461f-9afb-82b64b9835dd</span></div>
+                  <div class="edit-account-row"><span class="field-label">Email</span><span class="edit-account-readonly" data-edit-account-email>mai@nexoratouch.com</span></div>
+                  <div class="edit-account-row"><span class="field-label">Phone</span><div class="phone-input-group"><select class="field-select is-country-code" aria-label="Country code" data-edit-account-country-code><option>+1</option></select><input class="field-input" type="tel" value="832 555 0182" data-edit-account-phone></div></div>
+                  <div class="edit-account-row"><span class="field-label">Role</span><select class="field-select" data-edit-account-role><option>Owner Manager</option><option>Front Desk</option><option>Technician Lead</option></select></div>
+                  <div class="edit-account-row"><span class="field-label">Status</span><span class="status-pill" data-edit-account-status>Active</span></div>
+                </div>
+              </div>
+              <div class="owner-modal-footer">
+                <button class="owner-button" type="button" data-close-modal="edit-sub-account-modal"><i data-lucide="x" aria-hidden="true"></i><span>Cancel</span></button>
+                <button class="owner-button is-primary" type="button" data-save-edit-sub-account><i data-lucide="save" aria-hidden="true"></i><span>Save Changes</span></button>
+              </div>
+            </div>
+          </div>
+
+          <div class="owner-modal" id="sub-account-detail-modal" role="dialog" aria-modal="true" aria-labelledby="sub-account-detail-modal-title" hidden>
+            <button class="owner-modal-backdrop" type="button" aria-label="Close Sub Account Detail modal" data-close-modal="sub-account-detail-modal"></button>
+            <div class="owner-modal-card is-wide" role="document">
+              <div class="owner-modal-head">
+                <div>
+                  <h3 class="modal-title" id="sub-account-detail-modal-title">Sub Account Detail</h3>
+                  <p class="modal-copy">View account status, role, login URL, and effective module permissions.</p>
+                </div>
+                <button class="owner-modal-close" type="button" aria-label="Close Sub Account Detail modal" data-close-modal="sub-account-detail-modal"><i data-lucide="x" aria-hidden="true"></i></button>
+              </div>
+              <div class="owner-modal-body">
+                <div class="detail-list">
+                  <div class="detail-row"><span>Display name</span><span class="detail-value">Mai Tran</span></div>
+                  <div class="detail-row"><span>Email</span><span class="detail-value">mai@nexoratouch.com</span></div>
+                  <div class="detail-row"><span>Phone</span><span class="detail-value">+1 832 555 0182</span></div>
+                  <div class="detail-row"><span>Role</span><span class="detail-value">Owner Manager</span></div>
+                  <div class="detail-row"><span>Status</span><span class="detail-value">Active</span></div>
+                  <div class="detail-row"><span>Created at</span><span class="detail-value">Jul 18, 2026</span></div>
+                  <div class="detail-row"><span>Last login</span><span class="detail-value"><span class="credits-history-date">Aug 07, 2026<small>9:42 AM</small></span></span></div>
+                  <div class="detail-row"><span>Login URL</span><span class="detail-value">/sub-account/login?merchant=nt-houston</span></div>
+                </div>
+                <div class="module-chip-list" aria-label="Effective module permissions">
+                  <span class="module-chip">Dashboard</span>
+                  <span class="module-chip">Sub Account</span>
+                  <span class="module-chip">Settings</span>
+                  <span class="module-chip">Support</span>
+                  <span class="module-chip">AI Hub / Booking</span>
+                  <span class="module-chip">Reviews</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>window.NEXORA_SHELL = { activePage: 'owner-settings', activeTab: 'sub-account' };</script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script src="../assets/nexora-shell.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      var tabs = Array.prototype.slice.call(document.querySelectorAll('[data-settings-tab]'));
+      var panels = Array.prototype.slice.call(document.querySelectorAll('[data-settings-panel]'));
+      var subAccountViewButtons = Array.prototype.slice.call(document.querySelectorAll('[data-sub-account-view]'));
+      var subAccountPanels = Array.prototype.slice.call(document.querySelectorAll('[data-sub-account-panel]'));
+      var modalOpenButtons = Array.prototype.slice.call(document.querySelectorAll('[data-open-modal]'));
+      var modalCloseButtons = Array.prototype.slice.call(document.querySelectorAll('[data-close-modal]'));
+      var ownerModals = Array.prototype.slice.call(document.querySelectorAll('.owner-modal'));
+      var subAccountActionButtons = Array.prototype.slice.call(document.querySelectorAll('[data-sub-account-action]'));
+      var resetPasswordButtons = Array.prototype.slice.call(document.querySelectorAll('[data-open-reset-password-modal]'));
+      var resendEmailButtons = Array.prototype.slice.call(document.querySelectorAll('[data-open-resend-email-modal]'));
+      var deactivateButtons = Array.prototype.slice.call(document.querySelectorAll('[data-open-deactivate-modal]'));
+      var roleDeleteButtons = Array.prototype.slice.call(document.querySelectorAll('[data-delete-role]'));
+      var subAccountActionStatus = document.querySelector('[data-sub-account-action-status]');
+      var roleActionStatus = document.querySelector('[data-role-action-status]');
+      var saveEditSubAccountButton = document.querySelector('[data-save-edit-sub-account]');
+      var addRoleButton = document.querySelector('[data-add-role]');
+      var currentEditSubAccountButton = null;
+      var pendingDeactivateRow = null;
+      var defaultTab = 'sub-account';
+      var defaultSubAccountView = 'accounts';
+      var subAccountActionMessages = {
+        'activate': '{email} was activated.',
+        'deactivate': '{email} was deactivated.',
+        'reset-password': 'Password reset and a new login email was sent to {email}.',
+        'resend-login-email': 'Login email resent to {email}.'
+      };
+
+      function hasTab(tabId) {
+        return tabs.some(function (tab) { return tab.getAttribute('data-settings-tab') === tabId; });
+      }
+
+      function currentQueryTab() {
+        try {
+          return new URLSearchParams(window.location.search).get('tab') || '';
+        } catch (error) {
+          return '';
+        }
+      }
+
+      function currentQueryView() {
+        try {
+          return new URLSearchParams(window.location.search).get('view') || '';
+        } catch (error) {
+          return '';
+        }
+      }
+
+      function activateTab(tabId, shouldUpdateUrl) {
+        var nextTab = hasTab(tabId) ? tabId : defaultTab;
+        tabs.forEach(function (tab) {
+          var isActive = tab.getAttribute('data-settings-tab') === nextTab;
+          tab.classList.toggle('is-active', isActive);
+          tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          tab.setAttribute('tabindex', isActive ? '0' : '-1');
+        });
+        panels.forEach(function (panel) {
+          panel.hidden = panel.getAttribute('data-settings-panel') !== nextTab;
+        });
+        if (window.NEXORA_SHELL && typeof window.NEXORA_SHELL.setActiveTab === 'function') {
+          window.NEXORA_SHELL.setActiveTab(nextTab);
+        }
+        if (shouldUpdateUrl && window.history && typeof window.history.replaceState === 'function') {
+          var url = new URL(window.location.href);
+          url.searchParams.set('tab', nextTab);
+          if (nextTab !== 'sub-account') url.searchParams.delete('view');
+          window.history.replaceState(null, '', url.toString());
+        }
+      }
+
+      window.activateMainTab = function (tabId) {
+        activateTab(tabId, true);
+      };
+
+      tabs.forEach(function (tab, index) {
+        tab.addEventListener('click', function () {
+          activateTab(tab.getAttribute('data-settings-tab'), true);
+        });
+        tab.addEventListener('keydown', function (event) {
+          if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+          event.preventDefault();
+          var direction = event.key === 'ArrowRight' ? 1 : -1;
+          var nextIndex = (index + direction + tabs.length) % tabs.length;
+          tabs[nextIndex].focus();
+          activateTab(tabs[nextIndex].getAttribute('data-settings-tab'), true);
+        });
+      });
+
+      function openModal(modalId) {
+        var modal = document.getElementById(modalId);
+        if (!modal) return;
+        modal.hidden = false;
+        document.body.classList.add('owner-modal-open');
+        var closeButton = modal.querySelector('[data-close-modal]');
+        if (closeButton) closeButton.focus();
+      }
+
+      function closeModal(modalId) {
+        var modal = document.getElementById(modalId);
+        if (!modal) return;
+        modal.hidden = true;
+        var hasOpenModal = ownerModals.some(function (item) { return !item.hidden; });
+        if (!hasOpenModal) document.body.classList.remove('owner-modal-open');
+      }
+
+      function setText(selector, value) {
+        var element = document.querySelector(selector);
+        if (element) element.textContent = value || '';
+      }
+
+      function setValue(selector, value) {
+        var element = document.querySelector(selector);
+        if (element) element.value = value || '';
+      }
+
+      function updateStatusPill(statusPill, status) {
+        if (!statusPill) return;
+        var nextStatus = status || 'Active';
+        statusPill.textContent = nextStatus;
+        statusPill.className = 'status-pill';
+        statusPill.classList.toggle('is-pending', nextStatus === 'Pending');
+        statusPill.classList.toggle('is-disabled', nextStatus === 'Disabled');
+      }
+
+      function populateEditSubAccountModal(button) {
+        currentEditSubAccountButton = button;
+        setValue('[data-edit-account-name]', button.getAttribute('data-account-name'));
+        setText('[data-edit-account-id]', button.getAttribute('data-account-id'));
+        setText('[data-edit-account-email]', button.getAttribute('data-account-email'));
+        setValue('[data-edit-account-phone]', button.getAttribute('data-account-phone'));
+        setValue('[data-edit-account-role]', button.getAttribute('data-account-role'));
+        updateStatusPill(document.querySelector('[data-edit-account-status]'), button.getAttribute('data-account-status'));
+      }
+
+      function subAccountName(button) {
+        return button.getAttribute('data-account-name') || button.getAttribute('data-account-email') || 'this Sub Account';
+      }
+
+      function subAccountActionTarget(button, action, email) {
+        return {
+          getAttribute: function (attribute) {
+            if (attribute === 'data-sub-account-action') return action;
+            if (attribute === 'data-account-email') return email;
+            return button.getAttribute(attribute);
+          },
+          closest: function (selector) {
+            return button.closest(selector);
+          }
+        };
+      }
+
+      function showSubAccountConfirm(button, options) {
+        var email = button.getAttribute('data-account-email') || '';
+        var fallbackMessage = options.title + '\n\n' + options.text;
+        var confirmAction = function () {
+          setSubAccountActionStatus(subAccountActionTarget(button, options.action, email));
+        };
+
+        if (options.action === 'deactivate') pendingDeactivateRow = button.closest('tr');
+
+        if (window.Swal && typeof window.Swal.fire === 'function') {
+          Swal.fire({
+            icon: options.icon || 'warning',
+            title: options.title,
+            text: options.text,
+            showCancelButton: true,
+            confirmButtonText: options.confirmButtonText,
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: options.confirmButtonColor || '#08a952',
+            reverseButtons: true
+          }).then(function (result) {
+            if (result.isConfirmed) {
+              confirmAction();
+              return;
+            }
+            if (options.action === 'deactivate') pendingDeactivateRow = null;
+          });
+          return;
+        }
+
+        if (window.confirm(fallbackMessage)) {
+          confirmAction();
+          return;
+        }
+        if (options.action === 'deactivate') pendingDeactivateRow = null;
+      }
+
+      function validateRoleName(value) {
+        var trimmed = (value || '').trim();
+        if (!trimmed) return 'Role name is required.';
+        if (trimmed.length > 100) return 'Role name must be 100 characters or fewer.';
+        return '';
+      }
+
+      function roleIdFromName(name) {
+        var slug = (name || '').trim().toUpperCase().replace(/[^A-Z0-9]+/g, '-').replace(/^-+|-+$/g, '').slice(0, 80);
+        return 'ROLE-' + (slug || 'NEW');
+      }
+
+      function openRoleDetailsForNewRole(roleName) {
+        window.location.href = 'role-details.html?roleId=' + encodeURIComponent(roleIdFromName(roleName)) + '&roleName=' + encodeURIComponent(roleName);
+      }
+
+      function showAddRoleModal() {
+        if (window.Swal && typeof window.Swal.fire === 'function') {
+          Swal.fire({
+            title: 'Add Role',
+            input: 'text',
+            inputLabel: 'Role name',
+            inputPlaceholder: 'Enter role name',
+            inputAttributes: { maxlength: '100', autocapitalize: 'off', autocomplete: 'off' },
+            showCancelButton: true,
+            confirmButtonText: 'Add',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#08a952',
+            inputValidator: function (value) {
+              var validationMessage = validateRoleName(value);
+              if (validationMessage) return validationMessage;
+            }
+          }).then(function (result) {
+            if (!result.isConfirmed) return;
+            var roleName = (result.value || '').trim();
+            Swal.fire({
+              icon: 'success',
+              title: 'Role added successfully',
+              text: roleName + ' was added. Set module permissions next.',
+              confirmButtonText: 'Set modules',
+              confirmButtonColor: '#08a952'
+            }).then(function () {
+              openRoleDetailsForNewRole(roleName);
+            });
+          });
+          return;
+        }
+
+        var fallbackRoleName = window.prompt('Role name');
+        if (fallbackRoleName === null) return;
+        var validationMessage = validateRoleName(fallbackRoleName);
+        if (validationMessage) {
+          window.alert(validationMessage);
+          return;
+        }
+        var roleName = fallbackRoleName.trim();
+        window.alert('Role added successfully');
+        openRoleDetailsForNewRole(roleName);
+      }
+
+      if (addRoleButton) addRoleButton.addEventListener('click', showAddRoleModal);
+
+      function assignedSubAccountCount(button) {
+        return parseInt(button.getAttribute('data-role-assigned-count') || '0', 10) || 0;
+      }
+
+      function deleteRoleRow(button) {
+        var roleName = button.getAttribute('data-role-name') || 'Role';
+        var row = button.closest('tr');
+        if (row) row.remove();
+        if (roleActionStatus) roleActionStatus.textContent = roleName + ' role deleted.';
+      }
+
+      function showDeleteRoleConfirm(button) {
+        if (assignedSubAccountCount(button) !== 0) return;
+        var roleName = button.getAttribute('data-role-name') || 'This role';
+        if (window.Swal && typeof window.Swal.fire === 'function') {
+          Swal.fire({
+            icon: 'warning',
+            title: 'Delete role?',
+            text: roleName + ' has no assigned Sub Accounts and will be removed.',
+            showCancelButton: true,
+            confirmButtonText: 'Delete Role',
+            cancelButtonText: 'Cancel',
+            confirmButtonColor: '#dc2626',
+            reverseButtons: true
+          }).then(function (result) {
+            if (result.isConfirmed) deleteRoleRow(button);
+          });
+          return;
+        }
+        if (window.confirm('Delete role?\n\n' + roleName + ' has no assigned Sub Accounts and will be removed.')) {
+          deleteRoleRow(button);
+        }
+      }
+
+      roleDeleteButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          showDeleteRoleConfirm(button);
+        });
+      });
+
+      modalOpenButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          var modalId = button.getAttribute('data-open-modal');
+          if (modalId === 'edit-sub-account-modal') populateEditSubAccountModal(button);
+          openModal(modalId);
+        });
+      });
+
+      modalCloseButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          closeModal(button.getAttribute('data-close-modal'));
+        });
+      });
+
+      resetPasswordButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          var name = subAccountName(button);
+          showSubAccountConfirm(button, {
+            action: 'reset-password',
+            icon: 'warning',
+            title: 'Reset Sub Account password?',
+            text: 'A new password will be generated for ' + name + ' and sent through the Sub Account credential flow.',
+            confirmButtonText: 'Reset Password'
+          });
+        });
+      });
+
+      resendEmailButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          var name = subAccountName(button);
+          var email = button.getAttribute('data-account-email') || '';
+          showSubAccountConfirm(button, {
+            action: 'resend-login-email',
+            icon: 'question',
+            title: 'Send login email?',
+            text: 'A login email will be sent to ' + name + ' at ' + email + '.',
+            confirmButtonText: 'Send Mail'
+          });
+        });
+      });
+
+      deactivateButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          var name = subAccountName(button);
+          showSubAccountConfirm(button, {
+            action: 'deactivate',
+            icon: 'warning',
+            title: 'Deactivate Sub Account?',
+            text: name + ' will lose login access until this Sub Account is activated again.',
+            confirmButtonText: 'Deactivate',
+            confirmButtonColor: '#dc2626'
+          });
+        });
+      });
+
+      function setSubAccountActionStatus(button) {
+        var action = button.getAttribute('data-sub-account-action');
+        var email = button.getAttribute('data-account-email') || 'this Sub Account';
+        var message = subAccountActionMessages[action] || 'Action completed for {email}.';
+        if (subAccountActionStatus) subAccountActionStatus.textContent = message.replace('{email}', email);
+        if (action !== 'activate' && action !== 'deactivate') return;
+        var row = action === 'deactivate' && pendingDeactivateRow ? pendingDeactivateRow : button.closest('tr');
+        if (!row) return;
+        var statusPill = row.querySelector('.status-pill');
+        if (!statusPill) return;
+        statusPill.textContent = action === 'activate' ? 'Active' : 'Disabled';
+        statusPill.classList.toggle('is-disabled', action === 'deactivate');
+        statusPill.classList.remove('is-pending');
+        if (action === 'deactivate') pendingDeactivateRow = null;
+      }
+
+      subAccountActionButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          setSubAccountActionStatus(button);
+        });
+      });
+
+      if (saveEditSubAccountButton) {
+        saveEditSubAccountButton.addEventListener('click', function () {
+          if (!currentEditSubAccountButton) return;
+          var row = currentEditSubAccountButton.closest('tr');
+          var name = (document.querySelector('[data-edit-account-name]') || {}).value || '';
+          var phone = (document.querySelector('[data-edit-account-phone]') || {}).value || '';
+          var role = (document.querySelector('[data-edit-account-role]') || {}).value || '';
+          var status = (document.querySelector('[data-edit-account-status]') || {}).textContent || 'Active';
+          currentEditSubAccountButton.setAttribute('data-account-name', name);
+          currentEditSubAccountButton.setAttribute('data-account-phone', phone);
+          currentEditSubAccountButton.setAttribute('data-account-role', role);
+          currentEditSubAccountButton.setAttribute('data-account-status', status);
+          if (row) {
+            var metas = row.querySelectorAll('td:first-child .cell-meta');
+            if (metas[0]) metas[0].textContent = name;
+            if (metas[1]) metas[1].textContent = '+1 ' + phone;
+            var roleBadge = row.querySelector('.role-badge');
+            if (roleBadge) roleBadge.textContent = role;
+            updateStatusPill(row.querySelector('.status-pill'), status);
+            var resetButton = row.querySelector('[data-open-reset-password-modal]');
+            if (resetButton) resetButton.setAttribute('data-account-name', name);
+            var resendButton = row.querySelector('[data-open-resend-email-modal]');
+            if (resendButton) resendButton.setAttribute('data-account-name', name);
+            var deactivateButton = row.querySelector('[data-open-deactivate-modal]');
+            if (deactivateButton) deactivateButton.setAttribute('data-account-name', name);
+          }
+          if (subAccountActionStatus) subAccountActionStatus.textContent = 'Sub Account updated for ' + name + '.';
+          closeModal('edit-sub-account-modal');
+        });
+      }
+
+      document.addEventListener('keydown', function (event) {
+        if (event.key !== 'Escape') return;
+        ownerModals.forEach(function (modal) {
+          if (!modal.hidden) closeModal(modal.id);
+        });
+      });
+
+      function hasSubAccountView(viewId) {
+        return subAccountViewButtons.some(function (button) { return button.getAttribute('data-sub-account-view') === viewId; });
+      }
+
+      function activateSubAccountView(viewId, shouldUpdateUrl) {
+        var nextView = hasSubAccountView(viewId) ? viewId : defaultSubAccountView;
+        subAccountViewButtons.forEach(function (button) {
+          var isActive = button.getAttribute('data-sub-account-view') === nextView;
+          button.classList.toggle('is-active', isActive);
+          button.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+        });
+        subAccountPanels.forEach(function (panel) {
+          panel.hidden = panel.getAttribute('data-sub-account-panel') !== nextView;
+        });
+        if (shouldUpdateUrl && window.history && typeof window.history.replaceState === 'function') {
+          var url = new URL(window.location.href);
+          url.searchParams.set('tab', 'sub-account');
+          url.searchParams.set('view', nextView);
+          window.history.replaceState(null, '', url.toString());
+        }
+      }
+
+      subAccountViewButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          activateSubAccountView(button.getAttribute('data-sub-account-view'), true);
+        });
+      });
+
+      var saveButtons = Array.prototype.slice.call(document.querySelectorAll('[data-save-button]'));
+      saveButtons.forEach(function (button) {
+        button.addEventListener('click', function () {
+          var status = document.querySelector('[data-save-status]');
+          if (status) status.textContent = 'Saved just now.';
+        });
+      });
+
+      var copyButton = document.querySelector('[data-copy-affiliate]');
+      var copyInput = document.querySelector('[data-affiliate-url]');
+      var copyStatus = document.querySelector('[data-copy-status]');
+      if (copyButton && copyInput) {
+        copyButton.addEventListener('click', function () {
+          copyInput.select();
+          try {
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+              navigator.clipboard.writeText(copyInput.value);
+            } else {
+              document.execCommand('copy');
+            }
+            if (copyStatus) copyStatus.textContent = 'Affiliate link copied.';
+          } catch (error) {
+            if (copyStatus) copyStatus.textContent = 'Select and copy the link manually.';
+          }
+        });
+      }
+
+      activateTab(currentQueryTab(), false);
+      activateSubAccountView(currentQueryView(), false);
+    })();
+  </script>
+</body>
+</html>
