@@ -70,6 +70,23 @@ test('renders the Sub Account settings tab and management sections', () => {
   }
 });
 
+test('keeps Sub Account booking view switch items auto width', () => {
+  const html = source();
+  const style = html.match(/<style>([\s\S]*?)<\/style>/)?.[1] || '';
+
+  const switchRule = styleRule(html, '.booking-view-switch');
+  assertCssDeclaration(switchRule, 'width', 'max-content');
+  assertCssDeclaration(switchRule, 'max-width', '100%');
+  assertCssDeclaration(switchRule, 'overflow-x', 'auto');
+
+  const buttonRule = styleRule(html, '.booking-view-button');
+  assertCssDeclaration(buttonRule, 'width', 'auto');
+  assertCssDeclaration(buttonRule, 'flex', '0 0 auto');
+
+  assert.doesNotMatch(style, /\.booking-view-switch,\s*\.booking-view-button\s*\{[^}]*width:\s*100%;[^}]*\}/);
+  assert.doesNotMatch(style, /\.booking-view-switch\s*\{[^}]*flex-direction:\s*column;[^}]*\}/);
+});
+
 test('renders Sub Account tab content from the product design document', () => {
   const html = source();
   const panel = panelContent(html, 'sub-account');
@@ -156,7 +173,7 @@ test('formats Sub Account dates with the shared two-line date time style', () =>
   assert.match(html, /<div class="detail-row"><span>Last login<\/span><span class="detail-value"><span class="credits-history-date">Aug 07, 2026<small>9:42 AM<\/small><\/span><\/span><\/div>/);
 });
 
-test('uses Email as the Activity Logs account identifier', () => {
+test('uses Sub account as the Activity Logs account identifier', () => {
   const html = source();
   const panel = panelContent(html, 'sub-account');
   const logTableMatch = panel.match(/<table class="owner-table is-log-table">([\s\S]*?)<\/table>/);
@@ -164,15 +181,48 @@ test('uses Email as the Activity Logs account identifier', () => {
   assert.ok(logTableMatch, 'Activity Logs table should render');
 
   const logTable = logTableMatch[1];
-  assert.match(logTable, /<thead><tr><th>Time<\/th><th>Email<\/th><th>Role<\/th><th>Action<\/th><th>Module<\/th><th>Status<\/th><\/tr><\/thead>/);
-  assert.doesNotMatch(logTable, /<th>Sub Account<\/th>|<th>IP Address<\/th>|<th>Device \/ Browser<\/th>/);
+  assert.match(logTable, /<thead><tr><th>Time<\/th><th>Sub account<\/th><th>Role<\/th><th>Action<\/th><th>Module<\/th><th>Status<\/th><\/tr><\/thead>/);
+  assert.doesNotMatch(logTable, /<th>Email<\/th>|<th>IP Address<\/th>|<th>Device \/ Browser<\/th>/);
   assert.doesNotMatch(logTable, /104\.28\.32\.14|172\.56\.41\.18|198\.51\.100\.42|Chrome on Mac|Safari on iPhone|Edge on Windows/);
 
-  for (const name of ['Mai Tran', 'Amy Le', 'Jordan Reyes']) {
-    assert.doesNotMatch(logTable, new RegExp(`<td>${name}<\\/td>`));
+  for (const [name, email] of [
+    ['Mai Tran', 'mai@nexoratouch.com'],
+    ['Amy Le', 'amy.le@nexoratouch.com'],
+    ['Jordan Reyes', 'jordan.reyes@nexoratouch.com']
+  ]) {
+    const escapedEmail = email.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    assert.match(logTable, new RegExp(`<td><div class="cell-title">${name}<\\/div><div class="cell-meta">${escapedEmail}<\\/div><\\/td>`));
   }
 
-  assert.match(logTable, /<tr><td><span class="credits-history-date">Aug 07, 2026<small>10:15 AM<\/small><\/span><\/td><td>mai@nexoratouch\.com<\/td><td><span class="role-badge">Owner Manager<\/span><\/td>/);
+  assert.match(logTable, /<tr><td><span class="credits-history-date">Aug 07, 2026<small>10:15 AM<\/small><\/span><\/td><td><div class="cell-title">Mai Tran<\/div><div class="cell-meta">mai@nexoratouch\.com<\/div><\/td><td><span class="role-badge">Owner Manager<\/span><\/td>/);
+});
+
+test('opens Activity Logs filters from a dropdown button', () => {
+  const html = source();
+  const panel = panelContent(html, 'sub-account');
+
+  assert.match(panel, /<div class="log-filter-menu" data-log-filter-menu>\s*<button class="owner-button log-filter-toggle" type="button" data-log-filter-toggle aria-expanded="false" aria-controls="activity-log-filters">[\s\S]*?<span>Filters<\/span><\/button>/);
+  assert.match(panel, /<div class="log-filter-dropdown" id="activity-log-filters" data-log-filter-dropdown hidden>\s*<div class="filter-row is-log-filters">/);
+
+  for (const label of ['Search logs', 'Sub Account', 'Role', 'Module', 'Status', 'Date range']) {
+    assert.match(panel, new RegExp(`<span class="field-label">${label}<\\/span>`));
+  }
+
+  const menuRule = styleRule(html, '.log-filter-menu');
+  assertCssDeclaration(menuRule, 'position', 'relative');
+  assertCssDeclaration(menuRule, 'justify-content', 'flex-end');
+
+  const dropdownRule = styleRule(html, '.log-filter-dropdown');
+  assertCssDeclaration(dropdownRule, 'position', 'absolute');
+  assertCssDeclaration(dropdownRule, 'right', '0');
+  assertCssDeclaration(dropdownRule, 'z-index', '12');
+
+  assert.match(html, /var logFilterToggle = document\.querySelector\('\[data-log-filter-toggle\]'\);/);
+  assert.match(html, /function setLogFilterDropdownOpen\(isOpen\)/);
+  assert.match(html, /logFilterDropdown\.hidden = !isOpen;/);
+  assert.match(html, /logFilterToggle\.setAttribute\('aria-expanded', isOpen \? 'true' : 'false'\);/);
+  assert.match(html, /logFilterMenu\.contains\(event\.target\)/);
+  assert.match(html, /setLogFilterDropdownOpen\(false\);[\s\S]*ownerModals\.forEach/);
 });
 
 test('keeps Activity Logs table typography balanced around 14px', () => {
@@ -199,6 +249,17 @@ test('keeps Activity Logs table typography balanced around 14px', () => {
   assertCssDeclaration(logStatusRule, 'line-height', '20px');
 });
 
+test('keeps select arrows inset from the right edge', () => {
+  const html = source();
+  const style = html.match(/<style>([\s\S]*?)<\/style>/)?.[1] || '';
+
+  assert.match(style, /\.field-select\s*\{[\s\S]*?appearance:\s*none;[\s\S]*?background-repeat:\s*no-repeat;[\s\S]*?background-position:\s*right 16px center;[\s\S]*?padding-right:\s*42px;[\s\S]*?\}/);
+
+  const countryCodeSelectRule = styleRule(html, '.phone-input-group .field-select');
+  assertCssDeclaration(countryCodeSelectRule, 'background-position', 'right 12px center');
+  assertCssDeclaration(countryCodeSelectRule, 'padding-right', '30px');
+});
+
 test('omits Sub Account pagination rows', () => {
   const html = source();
   const panel = panelContent(html, 'sub-account');
@@ -213,7 +274,7 @@ test('links role actions to Role Details page with roleId parameters', () => {
   const panel = panelContent(html, 'sub-account');
 
   for (const [roleId, roleName] of [['ROLE-001', 'Owner Manager'], ['ROLE-002', 'Front Desk'], ['ROLE-003', 'Technician Lead'], ['ROLE-004', 'Billing Auditor']]) {
-    assert.match(panel, new RegExp(`<a class="icon-action" href="role-details\\.html\\?roleId=${roleId}" aria-label="View or Edit ${roleName} role">[\\s\\S]*?<span>View/Edit<\\/span><\\/a>`));
+    assert.match(panel, new RegExp(`<a class="icon-action" href="role-details\\.html\\?roleId=${roleId}" aria-label="View or Edit ${roleName} role">[\\s\\S]*?<span>Edit<\\/span><\\/a>`));
   }
 
   assert.doesNotMatch(panel, /<div class="role-detail-shell">/);
@@ -322,7 +383,7 @@ test('places Add New Sub Account beside the Sub Accounts search controls', () =>
   const filterBarRule = styleRule(html, '.sub-account-filter-bar');
   assertCssDeclaration(filterBarRule, 'grid-template-columns', 'minmax(0, 1fr) auto');
   const accountFilterRule = styleRule(html, '.filter-row.is-account-filters');
-  assertCssDeclaration(accountFilterRule, 'grid-template-columns', 'minmax(220px, 1fr) repeat(2, minmax(120px, 160px))');
+  assertCssDeclaration(accountFilterRule, 'grid-template-columns', 'minmax(180px, 260px) repeat(2, minmax(120px, 160px))');
   assert.match(panel, /<span>Add New Sub Account<\/span>/);
 });
 
@@ -396,6 +457,20 @@ test('renders Sub Account Detail as read-only without workflow actions', () => {
   assert.doesNotMatch(modal, /<div class="owner-modal-footer">/);
   assert.doesNotMatch(modal, /Edit account info|Change role|Resend login email/);
   assert.doesNotMatch(modal, /data-open-resend-email-modal/);
+});
+
+test('keeps Sub Account Detail labels and values close together', () => {
+  const html = source();
+
+  const detailRowRule = styleRule(html, '.detail-row');
+  assertCssDeclaration(detailRowRule, 'display', 'grid');
+  assertCssDeclaration(detailRowRule, 'grid-template-columns', 'minmax(96px, 118px) minmax(0, 1fr)');
+  assertCssDeclaration(detailRowRule, 'justify-content', 'start');
+  assertCssDeclaration(detailRowRule, 'column-gap', '10px');
+
+  const detailValueRule = styleRule(html, '.detail-value');
+  assertCssDeclaration(detailValueRule, 'text-align', 'left');
+  assertCssDeclaration(detailValueRule, 'overflow-wrap', 'anywhere');
 });
 
 test('renders Edit Sub Account modal and confirms reset password with SweetAlert', () => {
@@ -506,6 +581,56 @@ test('renders all table action buttons with visible text labels', () => {
     assert.match(button, /<span>[^<]+<\/span>/, `Action button must include a visible text label: ${button}`);
     assert.doesNotMatch(button, /<span class="sr-only">/, `Action button label must not be screen-reader-only: ${button}`);
   }
+});
+
+test('keeps Sub Account table action icons compact', () => {
+  const html = source();
+
+  const tableActionsRule = styleRule(html, '.table-actions');
+  assertCssDeclaration(tableActionsRule, 'gap', '5px');
+
+  const iconActionRule = styleRule(html, '.icon-action');
+  assertCssDeclaration(iconActionRule, 'min-height', '30px');
+  assertCssDeclaration(iconActionRule, 'gap', '5px');
+  assertCssDeclaration(iconActionRule, 'padding', '0 8px');
+
+  const iconRule = styleRule(html, '.icon-action i');
+  assertCssDeclaration(iconRule, 'width', '11px');
+  assertCssDeclaration(iconRule, 'height', '11px');
+  assertCssDeclaration(iconRule, 'display', 'block');
+
+  const renderedIconRule = styleRule(html, '.icon-action svg');
+  assertCssDeclaration(renderedIconRule, 'width', '11px');
+  assertCssDeclaration(renderedIconRule, 'height', '11px');
+  assertCssDeclaration(renderedIconRule, 'display', 'block');
+});
+
+test('colors Sub Account account action buttons by action type', () => {
+  const html = source();
+
+  const accountViewRule = styleRule(html, '.owner-table.is-account-table [data-open-modal="sub-account-detail-modal"]');
+  assertCssDeclaration(accountViewRule, 'background', '#eef6ff');
+  assertCssDeclaration(accountViewRule, 'color', '#155eef');
+
+  const accountEditRule = styleRule(html, '.owner-table.is-account-table [data-open-modal="edit-sub-account-modal"]');
+  assertCssDeclaration(accountEditRule, 'background', '#f1f2ff');
+  assertCssDeclaration(accountEditRule, 'color', 'var(--nexora-brand)');
+
+  const accountDeactivateRule = styleRule(html, '.owner-table.is-account-table [data-open-deactivate-modal]');
+  assertCssDeclaration(accountDeactivateRule, 'background', '#fff1f1');
+  assertCssDeclaration(accountDeactivateRule, 'color', '#b42318');
+
+  const accountResetRule = styleRule(html, '.owner-table.is-account-table [data-open-reset-password-modal]');
+  assertCssDeclaration(accountResetRule, 'background', '#fff7e8');
+  assertCssDeclaration(accountResetRule, 'color', '#945500');
+
+  const accountResendRule = styleRule(html, '.owner-table.is-account-table [data-open-resend-email-modal]');
+  assertCssDeclaration(accountResendRule, 'background', '#ecfdf8');
+  assertCssDeclaration(accountResendRule, 'color', '#0f766e');
+
+  const accountActivateRule = styleRule(html, '.owner-table.is-account-table [data-sub-account-action="activate"]');
+  assertCssDeclaration(accountActivateRule, 'background', '#eafaf3');
+  assertCssDeclaration(accountActivateRule, 'color', '#087a55');
 });
 
 test('leaves unfinished account setting tabs empty except Sub Account', () => {

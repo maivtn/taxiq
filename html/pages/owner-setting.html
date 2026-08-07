@@ -277,6 +277,16 @@
       padding: 0 12px;
     }
 
+    .field-select {
+      -webkit-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b778c' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 16px center;
+      background-size: 16px 16px;
+      padding-right: 42px;
+    }
+
     .field-textarea {
       min-height: 98px;
       resize: vertical;
@@ -582,6 +592,8 @@
 
     .booking-view-switch {
       display: inline-flex;
+      width: max-content;
+      max-width: 100%;
       flex-shrink: 0;
       align-items: center;
       gap: 4px;
@@ -589,11 +601,20 @@
       border: 1px solid var(--nexora-border);
       border-radius: 10px;
       background: var(--nexora-surface-muted);
+      overflow-x: auto;
+      overflow-y: hidden;
       padding: 3px;
+      scrollbar-width: none;
+    }
+
+    .booking-view-switch::-webkit-scrollbar {
+      display: none;
     }
 
     .booking-view-button {
       display: inline-flex;
+      width: auto;
+      flex: 0 0 auto;
       height: 28px;
       min-height: 28px;
       align-items: center;
@@ -733,20 +754,20 @@
     .table-actions {
       display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
       flex-wrap: wrap;
     }
 
     .icon-action {
       display: inline-flex;
-      min-height: 32px;
+      min-height: 30px;
       align-items: center;
       justify-content: center;
-      gap: 6px;
+      gap: 5px;
       border: 1px solid var(--nexora-border);
       border-radius: 8px;
       background: #fff;
-      padding: 0 9px;
+      padding: 0 8px;
       color: var(--nexora-muted);
       font-size: 12px;
       font-weight: 850;
@@ -775,9 +796,53 @@
     }
 
     .icon-action i {
-      width: 15px;
-      height: 15px;
+      width: 11px;
+      height: 11px;
+      display: block;
       flex: 0 0 auto;
+    }
+
+    .icon-action svg {
+      width: 11px;
+      height: 11px;
+      display: block;
+      flex: 0 0 auto;
+    }
+
+    .owner-table.is-account-table [data-open-modal="sub-account-detail-modal"] {
+      border-color: rgba(43, 89, 255, .22);
+      background: #eef6ff;
+      color: #155eef;
+    }
+
+    .owner-table.is-account-table [data-open-modal="edit-sub-account-modal"] {
+      border-color: rgba(70, 72, 216, .22);
+      background: #f1f2ff;
+      color: var(--nexora-brand);
+    }
+
+    .owner-table.is-account-table [data-open-deactivate-modal] {
+      border-color: rgba(180, 35, 24, .22);
+      background: #fff1f1;
+      color: #b42318;
+    }
+
+    .owner-table.is-account-table [data-open-reset-password-modal] {
+      border-color: rgba(245, 158, 11, .28);
+      background: #fff7e8;
+      color: #945500;
+    }
+
+    .owner-table.is-account-table [data-open-resend-email-modal] {
+      border-color: rgba(15, 118, 110, .22);
+      background: #ecfdf8;
+      color: #0f766e;
+    }
+
+    .owner-table.is-account-table [data-sub-account-action="activate"] {
+      border-color: rgba(8, 169, 82, .24);
+      background: #eafaf3;
+      color: #087a55;
     }
 
     .sub-account-action-status {
@@ -827,7 +892,7 @@
     }
 
     .filter-row.is-account-filters {
-      grid-template-columns: minmax(220px, 1fr) repeat(2, minmax(120px, 160px));
+      grid-template-columns: minmax(180px, 260px) repeat(2, minmax(120px, 160px));
     }
 
     .sub-account-filter-bar {
@@ -844,6 +909,44 @@
 
     .sub-account-filter-bar .owner-button {
       min-height: 42px;
+    }
+
+    .log-filter-menu {
+      position: relative;
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 12px;
+    }
+
+    .log-filter-toggle {
+      width: auto;
+    }
+
+    .log-filter-toggle.is-active {
+      border-color: rgba(70, 72, 216, .35);
+      background: #f8faff;
+      color: var(--nexora-brand);
+    }
+
+    .log-filter-dropdown[hidden] {
+      display: none;
+    }
+
+    .log-filter-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      z-index: 12;
+      width: min(100%, 900px);
+      border: 1px solid var(--nexora-border);
+      border-radius: 8px;
+      background: #fff;
+      box-shadow: 0 18px 40px rgba(8, 31, 73, .16);
+      padding: 12px;
+    }
+
+    .log-filter-dropdown .filter-row {
+      margin-bottom: 0;
     }
 
     .filter-row.is-log-filters {
@@ -943,10 +1046,11 @@
     }
 
     .detail-row {
-      display: flex;
+      display: grid;
+      grid-template-columns: minmax(96px, 118px) minmax(0, 1fr);
       align-items: flex-start;
-      justify-content: space-between;
-      gap: 12px;
+      justify-content: start;
+      column-gap: 10px;
       border-bottom: 1px solid var(--nexora-rule);
       padding-bottom: 9px;
       color: var(--nexora-muted);
@@ -963,7 +1067,8 @@
     .detail-value {
       color: var(--nexora-text);
       font-weight: 850;
-      text-align: right;
+      text-align: left;
+      overflow-wrap: anywhere;
     }
 
     .edit-account-form {
@@ -995,6 +1100,9 @@
     .phone-input-group .field-select {
       border-radius: 8px 0 0 8px;
       border-right: 0;
+      background-position: right 12px center;
+      padding-left: 10px;
+      padding-right: 30px;
     }
 
     .phone-input-group .field-input {
@@ -1241,9 +1349,6 @@
     }
 
     @media (max-width: 560px) {
-      .page-tabs {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
 
       .form-grid,
       .mini-metrics {
@@ -1283,14 +1388,30 @@
         width: 100%;
       }
 
-      .booking-view-switch,
-      .booking-view-button {
+      .log-filter-menu {
+        justify-content: flex-start;
+      }
+
+      .log-filter-menu .owner-button {
+        width: auto;
+      }
+
+      .log-filter-dropdown {
+        position: static;
         width: 100%;
+        margin-top: 8px;
       }
 
       .booking-view-switch {
-        flex-direction: column;
+        width: max-content;
+        max-width: 100%;
+        flex-direction: row;
         height: auto;
+      }
+
+      .booking-view-button {
+        width: auto;
+        flex: 0 0 auto;
       }
     }
   </style>
@@ -1409,28 +1530,28 @@
                           <td><div class="cell-title">11 modules enabled</div><div class="cell-meta">Full merchant dashboard access</div></td>
                           <td>1 assigned</td>
                           <td>-</td>
-                          <td><div class="table-actions"><a class="icon-action" href="role-details.html?roleId=ROLE-001" aria-label="View or Edit Owner Manager role"><i data-lucide="pencil" aria-hidden="true"></i><span>View/Edit</span></a><button class="icon-action" type="button" aria-label="Delete Owner Manager role" data-delete-role data-role-id="ROLE-001" data-role-name="Owner Manager" data-role-assigned-count="1" disabled aria-disabled="true"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete</span></button></div></td>
+                          <td><div class="table-actions"><a class="icon-action" href="role-details.html?roleId=ROLE-001" aria-label="View or Edit Owner Manager role"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></a><button class="icon-action" type="button" aria-label="Delete Owner Manager role" data-delete-role data-role-id="ROLE-001" data-role-name="Owner Manager" data-role-assigned-count="1" disabled aria-disabled="true"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete</span></button></div></td>
                         </tr>
                         <tr>
                           <td><div class="identity-cell"><span class="mini-avatar"><i data-lucide="shield" aria-hidden="true"></i></span><div><div class="cell-title">Front Desk</div><div class="cell-meta">ROLE-002</div></div></div></td>
                           <td><div class="cell-title">5 modules enabled</div><div class="cell-meta">AI Hub / Booking, reviews, support</div></td>
                           <td>6 assigned</td>
                           <td>-</td>
-                          <td><div class="table-actions"><a class="icon-action" href="role-details.html?roleId=ROLE-002" aria-label="View or Edit Front Desk role"><i data-lucide="pencil" aria-hidden="true"></i><span>View/Edit</span></a><button class="icon-action" type="button" aria-label="Delete Front Desk role" data-delete-role data-role-id="ROLE-002" data-role-name="Front Desk" data-role-assigned-count="6" disabled aria-disabled="true"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete</span></button></div></td>
+                          <td><div class="table-actions"><a class="icon-action" href="role-details.html?roleId=ROLE-002" aria-label="View or Edit Front Desk role"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></a><button class="icon-action" type="button" aria-label="Delete Front Desk role" data-delete-role data-role-id="ROLE-002" data-role-name="Front Desk" data-role-assigned-count="6" disabled aria-disabled="true"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete</span></button></div></td>
                         </tr>
                         <tr>
                           <td><div class="identity-cell"><span class="mini-avatar"><i data-lucide="shield" aria-hidden="true"></i></span><div><div class="cell-title">Technician Lead</div><div class="cell-meta">ROLE-003</div></div></div></td>
                           <td><div class="cell-title">6 modules enabled</div><div class="cell-meta">Sub Account, touchpoints, reviews, analytics</div></td>
                           <td>3 assigned</td>
                           <td>-</td>
-                          <td><div class="table-actions"><a class="icon-action" href="role-details.html?roleId=ROLE-003" aria-label="View or Edit Technician Lead role"><i data-lucide="pencil" aria-hidden="true"></i><span>View/Edit</span></a><button class="icon-action" type="button" aria-label="Delete Technician Lead role" data-delete-role data-role-id="ROLE-003" data-role-name="Technician Lead" data-role-assigned-count="3" disabled aria-disabled="true"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete</span></button></div></td>
+                          <td><div class="table-actions"><a class="icon-action" href="role-details.html?roleId=ROLE-003" aria-label="View or Edit Technician Lead role"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></a><button class="icon-action" type="button" aria-label="Delete Technician Lead role" data-delete-role data-role-id="ROLE-003" data-role-name="Technician Lead" data-role-assigned-count="3" disabled aria-disabled="true"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete</span></button></div></td>
                         </tr>
                         <tr>
                           <td><div class="identity-cell"><span class="mini-avatar"><i data-lucide="shield" aria-hidden="true"></i></span><div><div class="cell-title">Billing Auditor</div><div class="cell-meta">ROLE-004</div></div></div></td>
                           <td><div class="cell-title">2 modules enabled</div><div class="cell-meta">Payments and reports only</div></td>
                           <td>0 assigned</td>
                           <td>-</td>
-                          <td><div class="table-actions"><a class="icon-action" href="role-details.html?roleId=ROLE-004" aria-label="View or Edit Billing Auditor role"><i data-lucide="pencil" aria-hidden="true"></i><span>View/Edit</span></a><button class="icon-action" type="button" aria-label="Delete Billing Auditor role" data-delete-role data-role-id="ROLE-004" data-role-name="Billing Auditor" data-role-assigned-count="0"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete</span></button></div></td>
+                          <td><div class="table-actions"><a class="icon-action" href="role-details.html?roleId=ROLE-004" aria-label="View or Edit Billing Auditor role"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></a><button class="icon-action" type="button" aria-label="Delete Billing Auditor role" data-delete-role data-role-id="ROLE-004" data-role-name="Billing Auditor" data-role-assigned-count="0"><i data-lucide="trash-2" aria-hidden="true"></i><span>Delete</span></button></div></td>
                         </tr>
                       </tbody>
                     </table>
@@ -1441,23 +1562,28 @@
                 </div>
 
                 <div class="sub-account-panel" data-sub-account-panel="logs" hidden>
-                  <div class="filter-row is-log-filters">
-                    <label class="form-field"><span class="field-label">Search logs</span><input class="field-input" type="search" placeholder="Name, email, or action"></label>
-                    <label class="form-field"><span class="field-label">Sub Account</span><select class="field-select"><option>All sub accounts</option><option>Mai Tran</option><option>Amy Le</option><option>Jordan Reyes</option></select></label>
-                    <label class="form-field"><span class="field-label">Role</span><select class="field-select"><option>All roles</option><option>Owner Manager</option><option>Front Desk</option><option>Technician Lead</option></select></label>
-                    <label class="form-field"><span class="field-label">Module</span><select class="field-select"><option>All modules</option><option>Settings</option><option>Authentication</option><option>Transactions</option><option>Sub Account</option></select></label>
-                    <label class="form-field"><span class="field-label">Status</span><select class="field-select"><option>All statuses</option><option>Success</option><option>Failed</option></select></label>
-                    <label class="form-field"><span class="field-label">Date range</span><input class="field-input" type="text" value="Last 30 days"></label>
+                  <div class="log-filter-menu" data-log-filter-menu>
+                    <button class="owner-button log-filter-toggle" type="button" data-log-filter-toggle aria-expanded="false" aria-controls="activity-log-filters"><i data-lucide="sliders-horizontal" aria-hidden="true"></i><span>Filters</span></button>
+                    <div class="log-filter-dropdown" id="activity-log-filters" data-log-filter-dropdown hidden>
+                      <div class="filter-row is-log-filters">
+                        <label class="form-field"><span class="field-label">Search logs</span><input class="field-input" type="search" placeholder="Name, email, or action"></label>
+                        <label class="form-field"><span class="field-label">Sub Account</span><select class="field-select"><option>All sub accounts</option><option>Mai Tran</option><option>Amy Le</option><option>Jordan Reyes</option></select></label>
+                        <label class="form-field"><span class="field-label">Role</span><select class="field-select"><option>All roles</option><option>Owner Manager</option><option>Front Desk</option><option>Technician Lead</option></select></label>
+                        <label class="form-field"><span class="field-label">Module</span><select class="field-select"><option>All modules</option><option>Settings</option><option>Authentication</option><option>Transactions</option><option>Sub Account</option></select></label>
+                        <label class="form-field"><span class="field-label">Status</span><select class="field-select"><option>All statuses</option><option>Success</option><option>Failed</option></select></label>
+                        <label class="form-field"><span class="field-label">Date range</span><input class="field-input" type="text" value="Last 30 days"></label>
+                      </div>
+                    </div>
                   </div>
                   <div class="table-shell">
                     <table class="owner-table is-log-table">
-                      <thead><tr><th>Time</th><th>Email</th><th>Role</th><th>Action</th><th>Module</th><th>Status</th></tr></thead>
+                      <thead><tr><th>Time</th><th>Sub account</th><th>Role</th><th>Action</th><th>Module</th><th>Status</th></tr></thead>
                       <tbody>
-                        <tr><td><span class="credits-history-date">Aug 07, 2026<small>10:15 AM</small></span></td><td>mai@nexoratouch.com</td><td><span class="role-badge">Owner Manager</span></td><td>Login success</td><td>Authentication</td><td><span class="status-pill">Success</span></td></tr>
-                        <tr><td><span class="credits-history-date">Aug 07, 2026<small>9:42 AM</small></span></td><td>mai@nexoratouch.com</td><td><span class="role-badge">Owner Manager</span></td><td>Updated Sub Account</td><td>Sub Account</td><td><span class="status-pill">Success</span></td></tr>
-                        <tr><td><span class="credits-history-date">Aug 06, 2026<small>4:18 PM</small></span></td><td>amy.le@nexoratouch.com</td><td><span class="role-badge">Front Desk</span></td><td>Login failed</td><td>Authentication</td><td><span class="status-pill is-disabled">Failed</span></td></tr>
-                        <tr><td><span class="credits-history-date">Aug 06, 2026<small>2:26 PM</small></span></td><td>jordan.reyes@nexoratouch.com</td><td><span class="role-badge">Technician Lead</span></td><td>Viewed transactions</td><td>Transactions</td><td><span class="status-pill">Success</span></td></tr>
-                        <tr><td><span class="credits-history-date">Aug 06, 2026<small>11:03 AM</small></span></td><td>mai@nexoratouch.com</td><td><span class="role-badge">Owner Manager</span></td><td>Role changed</td><td>Settings</td><td><span class="status-pill">Success</span></td></tr>
+                        <tr><td><span class="credits-history-date">Aug 07, 2026<small>10:15 AM</small></span></td><td><div class="cell-title">Mai Tran</div><div class="cell-meta">mai@nexoratouch.com</div></td><td><span class="role-badge">Owner Manager</span></td><td>Login success</td><td>Authentication</td><td><span class="status-pill">Success</span></td></tr>
+                        <tr><td><span class="credits-history-date">Aug 07, 2026<small>9:42 AM</small></span></td><td><div class="cell-title">Mai Tran</div><div class="cell-meta">mai@nexoratouch.com</div></td><td><span class="role-badge">Owner Manager</span></td><td>Updated Sub Account</td><td>Sub Account</td><td><span class="status-pill">Success</span></td></tr>
+                        <tr><td><span class="credits-history-date">Aug 06, 2026<small>4:18 PM</small></span></td><td><div class="cell-title">Amy Le</div><div class="cell-meta">amy.le@nexoratouch.com</div></td><td><span class="role-badge">Front Desk</span></td><td>Login failed</td><td>Authentication</td><td><span class="status-pill is-disabled">Failed</span></td></tr>
+                        <tr><td><span class="credits-history-date">Aug 06, 2026<small>2:26 PM</small></span></td><td><div class="cell-title">Jordan Reyes</div><div class="cell-meta">jordan.reyes@nexoratouch.com</div></td><td><span class="role-badge">Technician Lead</span></td><td>Viewed transactions</td><td>Transactions</td><td><span class="status-pill">Success</span></td></tr>
+                        <tr><td><span class="credits-history-date">Aug 06, 2026<small>11:03 AM</small></span></td><td><div class="cell-title">Mai Tran</div><div class="cell-meta">mai@nexoratouch.com</div></td><td><span class="role-badge">Owner Manager</span></td><td>Role changed</td><td>Settings</td><td><span class="status-pill">Success</span></td></tr>
                       </tbody>
                     </table>
                   </div>
@@ -1593,6 +1719,9 @@
       var roleActionStatus = document.querySelector('[data-role-action-status]');
       var saveEditSubAccountButton = document.querySelector('[data-save-edit-sub-account]');
       var addRoleButton = document.querySelector('[data-add-role]');
+      var logFilterMenu = document.querySelector('[data-log-filter-menu]');
+      var logFilterToggle = document.querySelector('[data-log-filter-toggle]');
+      var logFilterDropdown = document.querySelector('[data-log-filter-dropdown]');
       var currentEditSubAccountButton = null;
       var pendingDeactivateRow = null;
       var defaultTab = 'sub-account';
@@ -1973,8 +2102,27 @@
         });
       }
 
+      function setLogFilterDropdownOpen(isOpen) {
+        if (!logFilterToggle || !logFilterDropdown) return;
+        logFilterDropdown.hidden = !isOpen;
+        logFilterToggle.setAttribute('aria-expanded', isOpen ? 'true' : 'false');
+        logFilterToggle.classList.toggle('is-active', isOpen);
+      }
+
+      if (logFilterToggle) {
+        logFilterToggle.addEventListener('click', function () {
+          setLogFilterDropdownOpen(logFilterDropdown ? logFilterDropdown.hidden : false);
+        });
+      }
+
+      document.addEventListener('click', function (event) {
+        if (!logFilterMenu || !logFilterDropdown || logFilterDropdown.hidden) return;
+        if (!logFilterMenu.contains(event.target)) setLogFilterDropdownOpen(false);
+      });
+
       document.addEventListener('keydown', function (event) {
         if (event.key !== 'Escape') return;
+        setLogFilterDropdownOpen(false);
         ownerModals.forEach(function (modal) {
           if (!modal.hidden) closeModal(modal.id);
         });

@@ -181,7 +181,7 @@ The Roles tab shows the list of roles the owner has configured.
 #### Actions
 
 - Add Role
-- View/Edit role
+- Edit role
 - Delete role
 
 #### Delete rule
