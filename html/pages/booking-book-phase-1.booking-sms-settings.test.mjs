@@ -8,6 +8,8 @@ const SETTINGS_END = SOURCE.indexOf('<section class="tab-panel" id="panel-custom
 const SETTINGS_PANEL = SOURCE.slice(SETTINGS_START, SETTINGS_END);
 const BOOKING_SMS_CARD = SETTINGS_PANEL.match(/<article class="settings-card" data-settings-booking-sms-card>[\s\S]*?<\/article>/)?.[0] || '';
 const BOOKING_POLICIES_CARD = SETTINGS_PANEL.match(/<article class="settings-card" data-settings-booking-policies-card>[\s\S]*?<\/article>/)?.[0] || '';
+const BOOKING_POLICY_GRID_RULE = SOURCE.match(/\.settings-booking-policy-grid\s*\{([^}]*)\}/)?.[1] || '';
+const BOOKING_POLICY_DESKTOP_GRID_RULE = SOURCE.match(/@media \(min-width:\s*640px\) \{[\s\S]*?\.settings-booking-policy-grid\s*\{([^}]*)\}/)?.[1] || '';
 
 test('adds three booking SMS recipient switches to Settings', () => {
   assert.match(BOOKING_SMS_CARD, /data-settings-booking-sms-card/);
@@ -45,9 +47,15 @@ test('adds Booking Policies card for deposits cancellations and no-show fees', (
   assert.match(BOOKING_POLICIES_CARD, /DEPOSIT[\s\S]*20% of service price/);
   assert.match(BOOKING_POLICIES_CARD, /NO-SHOW FEE[\s\S]*\$20/);
   assert.match(BOOKING_POLICIES_CARD, /data-settings-booking-policy-preview/);
+  assert.match(BOOKING_POLICY_GRID_RULE, /grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/);
   assert.match(SOURCE, /function syncBookingPoliciesPreview\(/);
   assert.match(SOURCE, /querySelectorAll\('\[data-settings-booking-policy-input\]'\)/);
   assert.match(SOURCE, /querySelectorAll\('\[data-settings-booking-policy-toggle\]'\)/);
+});
+
+test('lays out Booking Policies fields in two mobile columns and four desktop columns', () => {
+  assert.match(BOOKING_POLICY_GRID_RULE, /grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/);
+  assert.match(BOOKING_POLICY_DESKTOP_GRID_RULE, /grid-template-columns:\s*repeat\(4,\s*minmax\(0,\s*1fr\)\)/);
 });
 
 test('groups related Settings cards in the requested desktop order', () => {

@@ -97,10 +97,12 @@ test('Holiday & Closures keeps one configuration per date', () => {
   assert.match(SOURCE, /settingsHolidayClosures\.push\(form\)/);
 });
 
-test('Holiday & Closures starts with closed and adjusted demo rows', () => {
+test('Holiday & Closures starts with exactly two demo rows', () => {
+  assert.match(HOLIDAY_LOGIC, /nexora:holiday-closures:v2:/);
+  assert.equal((HOLIDAY_LOGIC.match(/date:\s*'2026-/g) || []).length, 2);
   assert.match(HOLIDAY_LOGIC, /date:\s*'2026-12-25'[\s\S]*status:\s*'closed'[\s\S]*reason:\s*'Christmas Day'/);
   assert.match(HOLIDAY_LOGIC, /date:\s*'2026-11-26'[\s\S]*status:\s*'adjusted'[\s\S]*open:\s*'10:00 AM'[\s\S]*close:\s*'3:00 PM'[\s\S]*reason:\s*'Thanksgiving'/);
-  assert.match(HOLIDAY_LOGIC, /date:\s*'2026-07-04'[\s\S]*status:\s*'adjusted'[\s\S]*open:\s*'9:00 AM'[\s\S]*close:\s*'1:00 PM'[\s\S]*reason:\s*'Independence Day'/);
+  assert.doesNotMatch(HOLIDAY_LOGIC, /Independence Day/);
 });
 
 test('Holiday & Closures list exposes Edit, View, and Delete buttons', () => {

@@ -224,6 +224,9 @@ test('adds an editable address-detected time zone to Operating Hours', () => {
   const operatingHours = html.match(/<div class="settings-card-title"><i class="bi bi-clock-history"[^>]*><\/i>Operating Hours<\/div>[\s\S]*?<\/article>/)?.[0] || '';
   const timezoneOptions = Array.from(operatingHours.matchAll(/<option value="([^"]+)"(?: selected)?>([^<]+)<\/option>/g));
   const timezoneToolbarRule = html.match(/\.settings-hours-toolbar\s*\{([^}]*)\}/)?.[1] || '';
+  const timezoneFieldRule = html.match(/\.settings-timezone-field\s*\{([^}]*)\}/)?.[1] || '';
+  const timezoneSelectRule = html.match(/\.settings-timezone-select\s*\{([^}]*)\}/)?.[1] || '';
+  const timezoneStatusRule = html.match(/\.settings-timezone-status\s*\{([^}]*)\}/)?.[1] || '';
   const timezonePosition = operatingHours.indexOf('<div class="settings-hours-toolbar">');
   const lastHourPosition = operatingHours.lastIndexOf('data-settings-hour-toggle');
 
@@ -234,6 +237,13 @@ test('adds an editable address-detected time zone to Operating Hours', () => {
   assert.ok(timezonePosition > lastHourPosition, 'Time zone should be the last Operating Hours control');
   assert.match(timezoneToolbarRule, /margin-top:\s*12px/);
   assert.match(timezoneToolbarRule, /margin-bottom:\s*0/);
+  assert.match(timezoneToolbarRule, /align-items:\s*center/);
+  assert.match(timezoneToolbarRule, /min-height:\s*64px/);
+  assert.match(timezoneFieldRule, /align-self:\s*center/);
+  assert.match(timezoneFieldRule, /grid-template-rows:\s*auto 38px/);
+  assert.match(timezoneSelectRule, /height:\s*38px/);
+  assert.match(timezoneStatusRule, /align-self:\s*center/);
+  assert.match(timezoneStatusRule, /padding-bottom:\s*0/);
   assert.match(operatingHours, /data-settings-timezone-status>Auto-detected from salon address<\/span>/);
   assert.match(html, /data-settings-address-field="state"/);
   assert.match(html, /function detectSettingsTimeZone\(\)/);

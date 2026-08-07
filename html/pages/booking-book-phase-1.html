@@ -2602,7 +2602,8 @@
 
     .settings-hours-toolbar {
       display: flex;
-      align-items: flex-end;
+      min-height: 64px;
+      align-items: center;
       gap: 10px;
       margin-top: 12px;
       margin-bottom: 0;
@@ -2615,18 +2616,22 @@
     .settings-timezone-field {
       display: grid;
       min-width: 220px;
+      align-self: center;
       flex: 0 1 280px;
+      grid-template-rows: auto 38px;
       gap: 4px;
     }
 
     .settings-timezone-select {
-      min-height: 36px;
+      height: 38px;
+      min-height: 38px;
       border-radius: 9px;
       padding: 0 10px;
     }
 
     .settings-timezone-status {
-      padding-bottom: 9px;
+      align-self: center;
+      padding-bottom: 0;
       color: var(--nexora-muted);
       font-size: 11px;
       font-weight: 600;
@@ -2850,7 +2855,7 @@
 
     .settings-booking-policy-grid {
       display: grid;
-      grid-template-columns: 1fr;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 10px;
       margin-top: 12px;
     }
@@ -7531,9 +7536,12 @@
       .settings-field-grid,
       .settings-location-grid,
       .settings-template-grid,
-      .settings-offer-grid,
-      .settings-booking-policy-grid {
+      .settings-offer-grid {
         grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
+      .settings-booking-policy-grid {
+        grid-template-columns: repeat(4, minmax(0, 1fr));
       }
 
       .settings-social-grid {
@@ -14396,7 +14404,7 @@ function getBookingCardCallStart(item) {
       }
     }
 
-    var SETTINGS_HOLIDAY_STORAGE_KEY = 'nexora:holiday-closures:v1:' + (salonData && salonData.SALON_ID ? salonData.SALON_ID : 'bitcoin-nail-bar-houston');
+    var SETTINGS_HOLIDAY_STORAGE_KEY = 'nexora:holiday-closures:v2:' + (salonData && salonData.SALON_ID ? salonData.SALON_ID : 'bitcoin-nail-bar-houston');
     var settingsHolidayClosures = [
       {
         date: '2026-12-25',
@@ -14413,15 +14421,6 @@ function getBookingCardCallStart(item) {
         open: '10:00 AM',
         close: '3:00 PM',
         reason: 'Thanksgiving',
-        autoNotify: true,
-        message: ''
-      },
-      {
-        date: '2026-07-04',
-        status: 'adjusted',
-        open: '9:00 AM',
-        close: '1:00 PM',
-        reason: 'Independence Day',
         autoNotify: true,
         message: ''
       }
