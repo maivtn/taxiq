@@ -75,13 +75,13 @@
 }
 
 .staff-sidebar .staff-nav-item .sidebar-icon-wrap {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
 }
 
 .staff-sidebar .staff-nav-item .lucide-menu-icon {
-  width: 20px;
-  height: 20px;
+  width: 17px;
+  height: 17px;
   color: #d69cff;
   filter: drop-shadow(0 0 5px rgba(214, 156, 255, 0.4));
 }

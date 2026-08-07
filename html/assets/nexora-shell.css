@@ -226,8 +226,8 @@ select {
 
 .sidebar-icon-wrap {
   display: inline-flex;
-  width: 36px;
-  height: 36px;
+  width: 30px;
+  height: 30px;
   flex-shrink: 0;
   align-items: center;
   justify-content: center;
@@ -235,8 +235,8 @@ select {
 }
 
 .sidebar-icon {
-  width: 28px;
-  height: 28px;
+  width: 24px;
+  height: 24px;
   object-fit: contain;
   filter: brightness(1.15) saturate(1.2) contrast(1.05)
     drop-shadow(0 0 3px rgba(255, 66, 215, 0.3))
@@ -265,8 +265,8 @@ select {
 
 .lucide-menu-icon {
   display: block;
-  width: 28px;
-  height: 28px;
+  width: 22px;
+  height: 22px;
   color: #fff;
   filter: drop-shadow(0 0 4px rgba(255, 66, 215, 0.32))
     drop-shadow(0 0 8px rgba(50, 215, 255, 0.24));
