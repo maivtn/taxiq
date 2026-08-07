@@ -3,8 +3,11 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#070816">
-  <title>NEXORA TOUCH — Customer Rewards</title>
+  <meta name="theme-color" content="#f7f9fc">
+  <title>NEXORA TOUCH — Customer Rewards Light</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
   <script src="https://unpkg.com/lucide@latest"></script>
   <script src="https://cdn.jsdelivr.net/npm/qrcode-generator@1.4.4/qrcode.js"></script>
@@ -13,53 +16,54 @@
   <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
   <style type="text/tailwindcss">
     @theme {
-      --color-app-bg: #070816;
-      --color-app-panel: #0d1024;
-      --color-app-card: #12162f;
-      --color-app-line: #252c51;
-      --color-app-text: #f7f7ff;
-      --color-app-muted: #9da6c9;
-      --color-app-purple: #7c3dff;
-      --color-app-pink: #d946ef;
-      --color-app-cyan: #22d3ee;
-      --color-app-green: #34d399;
-      --color-app-gold: #fbbf24;
-      --color-app-red: #fb7185;
+      --color-app-bg: #f7f9fc;
+      --color-app-panel: #f3f6fa;
+      --color-app-card: #ffffff;
+      --color-app-line: #dde5ef;
+      --color-app-text: #0b1220;
+      --color-app-muted: #4d5870;
+      --color-app-purple: #4648d8;
+      --color-app-pink: #8e4df8;
+      --color-app-cyan: #2b59ff;
+      --color-app-green: #00b873;
+      --color-app-gold: #d4af37;
+      --color-app-red: #ef4444;
+      --color-app-sidebar: #081f49;
     }
 
     @layer base {
-      html { color-scheme: dark; }
-      body { @apply m-0 min-h-dvh bg-[#070816] text-[#f7f7ff] antialiased; }
+      html { color-scheme: light; }
+      body { @apply m-0 min-h-dvh bg-[#f7f9fc] text-[#0b1220] antialiased; font-family: "Inter", system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
       button, input, select, textarea { font: inherit; }
     }
 
     @layer components {
-      .app-card { @apply rounded-2xl border border-[#252c51] bg-[#12162f] p-4 shadow-[0_16px_40px_rgba(0,0,0,.18)]; }
-      .app-button { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl bg-gradient-to-r from-[#7c3dff] to-[#d946ef] px-4 py-3 text-sm font-extrabold text-white transition active:scale-[.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22d3ee] disabled:cursor-not-allowed disabled:opacity-50; }
-      .app-button-secondary { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-xl border border-[#252c51] bg-none bg-[#0d1024] px-4 py-3 text-sm font-extrabold text-[#f7f7ff] shadow-none transition active:scale-[.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22d3ee] disabled:cursor-not-allowed disabled:opacity-50; }
-      .app-input { @apply min-h-11 w-full rounded-xl border border-[#252c51] bg-[#0d1024] px-3.5 py-3 text-sm text-[#f7f7ff] outline-none placeholder:text-[#9da6c9] focus:border-[#22d3ee] focus:ring-2 focus:ring-[#22d3ee]/20; }
-      .app-chip { @apply inline-flex min-h-11 items-center whitespace-nowrap rounded-full border border-[#252c51] bg-[#12162f] px-4 text-xs font-bold text-[#9da6c9] transition hover:border-[#7c3dff] hover:text-white aria-pressed:border-transparent aria-pressed:bg-[#7c3dff] aria-pressed:text-white; }
+      .app-card { @apply rounded-lg border border-[#dde5ef] bg-white p-4 shadow-[0_2px_8px_rgba(15,23,42,.08)]; }
+      .app-button { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg bg-gradient-to-r from-[#2b59ff] to-[#8e4df8] px-4 py-3 text-sm font-extrabold text-white shadow-[0_8px_18px_rgba(43,89,255,.18)] transition active:scale-[.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32d7ff] disabled:cursor-not-allowed disabled:opacity-50; }
+      .app-button-secondary { @apply inline-flex min-h-11 items-center justify-center gap-2 rounded-lg border border-[#dde5ef] bg-white px-4 py-3 text-sm font-extrabold text-[#0b1220] shadow-[0_2px_8px_rgba(15,23,42,.06)] transition active:scale-[.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32d7ff] disabled:cursor-not-allowed disabled:opacity-50; }
+      .app-input { @apply min-h-11 w-full rounded-lg border border-[#dde5ef] bg-white px-3.5 py-3 text-sm text-[#0b1220] outline-none placeholder:text-[#7a8296] focus:border-[#4648d8] focus:ring-2 focus:ring-[#4648d8]/15; }
+      .app-chip { @apply inline-flex min-h-11 items-center whitespace-nowrap rounded-full border border-[#dde5ef] bg-white px-4 text-xs font-bold text-[#4d5870] shadow-[0_1px_3px_rgba(15,23,42,.05)] transition hover:border-[#4648d8] hover:text-[#0b1220] aria-pressed:border-transparent aria-pressed:bg-[#4648d8] aria-pressed:text-white; }
       /* Reward cards sit two-up on phones, so everything inside them shrinks below sm. */
       .reward-card { @apply flex flex-col p-3 sm:p-4; }
       .reward-card-title { @apply text-sm font-black leading-5 sm:text-lg sm:leading-7; }
-      .reward-card-meta { @apply mt-1.5 flex-1 text-[11px] leading-4 text-[#9da6c9] sm:mt-2 sm:text-sm sm:leading-6; }
+      .reward-card-meta { @apply mt-1.5 flex-1 text-[11px] leading-4 text-[#4d5870] sm:mt-2 sm:text-sm sm:leading-6; }
       .reward-card-footer { @apply mt-3 flex flex-col items-stretch gap-2 sm:mt-5 sm:flex-row sm:items-center sm:justify-between sm:gap-3; }
       .reward-card-cost { @apply text-xs sm:text-base; }
       .reward-card-cta { @apply min-h-9 w-full px-2 py-2 text-[11px] sm:min-h-11 sm:w-auto sm:px-4 sm:py-3 sm:text-sm; }
-      .app-tabs { @apply inline-flex gap-1 rounded-xl border border-[#252c51] bg-[#12162f] p-1; }
-      .app-tab { @apply inline-flex min-h-9 items-center whitespace-nowrap rounded-lg px-4 text-xs font-bold text-[#9da6c9] transition hover:text-white aria-pressed:bg-[#7c3dff]/20 aria-pressed:text-white focus-visible:outline-2 focus-visible:outline-[#22d3ee]; }
-      .icon-button { @apply inline-grid size-11 shrink-0 place-items-center rounded-xl border border-[#252c51] bg-[#12162f] text-[#9da6c9] hover:text-white focus-visible:outline-2 focus-visible:outline-[#22d3ee]; }
+      .app-tabs { @apply inline-flex gap-1 rounded-lg border border-[#dde5ef] bg-[#f3f6fa] p-1; }
+      .app-tab { @apply inline-flex min-h-9 items-center whitespace-nowrap rounded-md px-4 text-xs font-bold text-[#4d5870] transition hover:text-[#0b1220] aria-pressed:bg-white aria-pressed:text-[#4648d8] aria-pressed:shadow-[0_2px_8px_rgba(15,23,42,.08)] focus-visible:outline-2 focus-visible:outline-[#32d7ff]; }
+      .icon-button { @apply inline-grid size-11 shrink-0 place-items-center rounded-lg border border-[#dde5ef] bg-white text-[#0b1220] shadow-[0_2px_8px_rgba(15,23,42,.06)] hover:bg-[#f3f6fa] focus-visible:outline-2 focus-visible:outline-[#32d7ff]; }
       .section-title { @apply text-base font-extrabold tracking-tight sm:text-lg; }
-      .eyebrow { @apply text-[11px] font-extrabold uppercase tracking-[.18em] text-[#9da6c9]; }
-      .metric-card { @apply rounded-xl border border-white/10 bg-white/[.07] p-3; }
-      .nav-item { @apply flex min-h-12 items-center gap-3 rounded-xl px-3 text-sm font-bold text-[#9da6c9] transition hover:bg-white/5 hover:text-white focus-visible:outline-2 focus-visible:outline-[#22d3ee]; }
-      .nav-item[aria-current="page"] { @apply bg-[#7c3dff]/15 text-white; }
-      .mobile-nav-item { @apply flex min-h-16 flex-col items-center justify-center gap-1 text-[11px] font-bold text-[#9da6c9] focus-visible:outline-2 focus-visible:outline-[#22d3ee]; }
-      .mobile-nav-item[aria-current="page"] { @apply text-[#d946ef]; }
-      .mobile-scan-button { @apply relative -mt-5 flex min-h-20 flex-col items-center justify-start gap-1 text-[11px] font-bold text-[#9da6c9] focus-visible:outline-2 focus-visible:outline-[#22d3ee]; }
-      .mobile-scan-icon { @apply grid size-14 place-items-center rounded-full border-4 border-[#0d1024] bg-gradient-to-br from-[#7c3dff] to-[#d946ef] text-white shadow-[0_10px_28px_rgba(124,61,255,.55)]; }
-      .mobile-scan-button[aria-current="page"] { @apply text-[#d946ef]; }
-      .field-error { @apply mt-1 text-xs font-bold text-[#fb7185]; }
+      .eyebrow { @apply text-[11px] font-extrabold uppercase tracking-[.18em] text-[#7a8296]; }
+      .metric-card { @apply rounded-lg border border-[#dde5ef] bg-[#f3f6fa] p-3; }
+      .nav-item { @apply flex min-h-12 items-center gap-3 rounded-lg px-3 text-sm font-bold text-[#4d5870] transition hover:bg-[#f3f6fa] hover:text-[#0b1220] focus-visible:outline-2 focus-visible:outline-[#32d7ff]; }
+      .nav-item[aria-current="page"] { @apply bg-[#4648d8]/10 text-[#4648d8]; }
+      .mobile-nav-item { @apply flex min-h-16 flex-col items-center justify-center gap-1 text-[11px] font-bold text-[#4d5870] focus-visible:outline-2 focus-visible:outline-[#32d7ff]; }
+      .mobile-nav-item[aria-current="page"] { @apply text-[#4648d8]; }
+      .mobile-scan-button { @apply relative -mt-5 flex min-h-20 flex-col items-center justify-start gap-1 text-[11px] font-bold text-[#4d5870] focus-visible:outline-2 focus-visible:outline-[#32d7ff]; }
+      .mobile-scan-icon { @apply grid size-14 place-items-center rounded-full border-4 border-[#f7f9fc] bg-gradient-to-br from-[#2b59ff] to-[#8e4df8] text-white shadow-[0_10px_26px_rgba(43,89,255,.28)]; }
+      .mobile-scan-button[aria-current="page"] { @apply text-[#4648d8]; }
+      .field-error { @apply mt-1 text-xs font-bold text-[#ef4444]; }
     }
 
     @keyframes scan-pass { from { transform: translateY(0); } to { transform: translateY(250px); } }
@@ -98,7 +102,7 @@
       min-height: 100dvh;
       margin-inline: auto;
       overflow-x: clip;
-      background: #070816;
+      background: #f7f9fc;
     }
 
     body.mobile-app-shell #desktop-sidebar {
@@ -173,11 +177,11 @@
 
     @media (min-width: 640px) {
       body.mobile-app-shell {
-        background: #02030a;
+        background: #e8edf5;
       }
 
       body.mobile-app-shell #app-shell {
-        box-shadow: 0 0 0 1px rgba(37, 44, 81, .8), 0 24px 80px rgba(0, 0, 0, .45);
+        box-shadow: 0 0 0 1px rgba(221, 229, 239, .9), 0 24px 80px rgba(15, 23, 42, .14);
       }
 
       /* Tailwind's responsive utilities use the browser viewport. Re-apply the phone defaults
@@ -212,6 +216,81 @@
         display: none !important;
       }
     }
+
+    body.mobile-app-shell {
+      color: #0b1220;
+      background:
+        radial-gradient(circle at 0% 0%, rgba(43, 89, 255, .08), transparent 24rem),
+        #eef3f9;
+    }
+
+    body.mobile-app-shell #app-shell {
+      color: #0b1220;
+    }
+
+    body.mobile-app-shell [class*="bg-[#0d1024]"],
+    body.mobile-app-shell [class*="bg-[#12162f]"] {
+      background-color: #ffffff !important;
+    }
+
+    body.mobile-app-shell [class*="border-[#252c51]"] {
+      border-color: #dde5ef !important;
+    }
+
+    body.mobile-app-shell [class*="text-[#f7f7ff]"] {
+      color: #0b1220 !important;
+    }
+
+    body.mobile-app-shell [class*="text-[#9da6c9]"] {
+      color: #4d5870 !important;
+    }
+
+    body.mobile-app-shell .app-card,
+    body.mobile-app-shell .metric-card {
+      border-radius: 8px;
+    }
+
+    body.mobile-app-shell .app-card:hover {
+      box-shadow: 0 8px 24px rgba(15, 23, 42, .06);
+    }
+
+    body.mobile-app-shell #mobile-header {
+      box-shadow: 0 1px 0 rgba(221, 229, 239, .8), 0 8px 24px rgba(15, 23, 42, .04);
+    }
+
+    body.mobile-app-shell #mobile-nav {
+      border-color: #dde5ef !important;
+      background: rgba(255, 255, 255, .96) !important;
+      box-shadow: 0 -10px 28px rgba(15, 23, 42, .08);
+    }
+
+    body.mobile-app-shell #app-overlay,
+    body.mobile-app-shell #receipt-scanner,
+    body.mobile-app-shell #intro-overlay {
+      left: 50% !important;
+      right: auto !important;
+      width: min(100dvw, 393px);
+      transform: translateX(-50%);
+    }
+
+    body.mobile-app-shell #app-overlay > .app-card,
+    body.mobile-app-shell #receipt-scanner > .app-card,
+    body.mobile-app-shell #intro-overlay > .app-card {
+      max-width: min(100%, 361px) !important;
+    }
+
+    body.mobile-app-shell #intro-overlay .app-card {
+      width: min(100%, 361px) !important;
+    }
+
+    body.mobile-app-shell #intro-overlay p {
+      overflow-wrap: anywhere;
+    }
+
+    body.mobile-app-shell #form-error-state > div,
+    body.mobile-app-shell #toast-region > div {
+      box-shadow: 0 8px 24px rgba(15, 23, 42, .12);
+    }
   </style>
 </head>
 <body class="mobile-app-shell">
@@ -220,7 +299,7 @@
     <aside id="desktop-sidebar" class="hidden min-h-dvh border-r border-app-line bg-app-panel lg:sticky lg:top-0 lg:flex lg:flex-col">
       <div class="px-6 py-7">
         <div class="flex items-center gap-3">
-          <span class="grid size-10 place-items-center rounded-xl bg-gradient-to-br from-app-purple to-app-pink shadow-lg shadow-app-purple/20"><i data-lucide="sparkles" class="size-5" aria-hidden="true"></i></span>
+          <img class="size-10 rounded-xl object-cover shadow-lg shadow-app-purple/20" src="../pages/assets/icon-nexora.png" alt="" aria-hidden="true">
           <div><strong class="block text-sm tracking-wide">NEXORA</strong><span class="text-xs text-app-muted">Customer Rewards</span></div>
         </div>
       </div>
@@ -231,7 +310,7 @@
     <div class="min-w-0">
       <header id="mobile-header" class="sticky top-0 z-40 border-b border-app-line bg-app-bg/90 px-4 pb-3 pt-[max(0.75rem,env(safe-area-inset-top))] backdrop-blur lg:hidden">
         <div class="flex items-center justify-between">
-          <div class="flex items-center gap-2.5"><span class="grid size-9 place-items-center rounded-xl bg-gradient-to-br from-app-purple to-app-pink"><i data-lucide="sparkles" class="size-4" aria-hidden="true"></i></span><div><strong class="block text-sm">NEXORA</strong><span class="block text-[10px] text-app-muted">Customer Rewards</span></div></div>
+          <div class="flex items-center gap-2.5"><img class="size-9 rounded-xl object-cover" src="../pages/assets/icon-nexora.png" alt="" aria-hidden="true"><div><strong class="block text-sm">NEXORA</strong><span class="block text-[10px] text-app-muted">Customer Rewards</span></div></div>
           <button type="button" class="grid size-11 place-items-center rounded-xl border border-app-line bg-app-card text-app-muted" data-action="open-notifications" aria-label="Thông báo"><i data-lucide="bell" class="size-5" aria-hidden="true"></i></button>
         </div>
       </header>
@@ -244,7 +323,7 @@
           </div>
 
           <div class="grid gap-4 xl:grid-cols-[1.35fr_.65fr]">
-            <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_90%_10%,rgba(34,211,238,.24),transparent_38%),linear-gradient(135deg,#6d2bf0,#4a23d9_48%,#0757cf)] p-5 shadow-2xl shadow-app-purple/20 sm:p-6">
+            <div class="relative overflow-hidden rounded-xl border border-[#dbe4f0] bg-[radial-gradient(circle_at_90%_10%,rgba(50,215,255,.24),transparent_38%),linear-gradient(135deg,#2b59ff,#4648d8_50%,#8e4df8)] p-5 text-white shadow-[0_12px_28px_rgba(43,89,255,.18)] sm:p-6">
               <div class="relative z-10 flex items-start justify-between gap-4">
                 <div>
                   <p class="text-xs font-extrabold uppercase tracking-[.18em] text-white/70" data-en="Your points" data-vi="Điểm của bạn">Điểm của bạn</p>
@@ -419,14 +498,14 @@
           <div class="mx-auto grid min-h-[70vh] max-w-md place-items-center"><div class="w-full"><button class="icon-button" type="button" data-action="back" data-back-target="login1" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><p class="eyebrow mt-7" data-en="Secure sign in" data-vi="Đăng nhập an toàn">Đăng nhập an toàn</p><h1 id="login2-title" class="mt-2 text-3xl font-black" data-en="Check your messages" data-vi="Kiểm tra tin nhắn">Kiểm tra tin nhắn</h1><p class="mt-3 text-sm leading-6 text-app-muted" data-en="We sent a 6-digit code to your US number." data-vi="Mã 6 chữ số đã được gửi đến số điện thoại US của bạn.">Mã 6 chữ số đã được gửi đến số điện thoại US của bạn.</p><label class="mt-7 block text-sm font-bold"><span data-en="Verification code" data-vi="Mã xác thực">Mã xác thực</span><input id="otp-code" class="app-input mt-2 text-center text-xl font-black tracking-[.4em]" type="text" inputmode="numeric" autocomplete="one-time-code" maxlength="6" data-en-ph="000000" data-vi-ph="000000" placeholder="000000"></label><p class="mt-2 rounded-xl bg-app-cyan/5 p-3 text-xs text-app-cyan" data-en="Prototype code: 246810" data-vi="Mã dùng thử: 246810">Mã dùng thử: 246810</p><p id="otp-error" class="field-error hidden" role="alert"></p><button class="app-button mt-5 w-full" type="button" data-action="verify-otp"><i data-lucide="shield-check" class="size-4" aria-hidden="true"></i><span data-en="Verify & sign in" data-vi="Xác thực & đăng nhập">Xác thực & đăng nhập</span></button><button id="otp-resend" class="mt-4 min-h-11 w-full text-sm font-bold text-app-cyan" type="button" data-action="resend-code" data-en="Resend code" data-vi="Gửi lại mã">Gửi lại mã</button></div></div>
         </section>
         <section class="app-screen hidden" id="wallet" data-ready="true" data-module="wallet" aria-labelledby="wallet-title">
-          <div class="mb-5 flex items-end justify-between gap-4"><div><p class="eyebrow" data-en="Your rewards" data-vi="Phần thưởng của bạn">Phần thưởng của bạn</p><h1 id="wallet-title" class="mt-1 text-2xl font-black tracking-tight sm:text-3xl" data-en="Points wallet" data-vi="Ví điểm">Ví điểm</h1><p class="mt-1 text-sm text-app-muted" data-en="Each business keeps its own point balance." data-vi="Điểm được tách riêng theo từng doanh nghiệp.">Điểm được tách riêng theo từng doanh nghiệp.</p></div><button type="button" class="app-button-secondary hidden sm:inline-flex" data-action="navigate" data-target="history"><i data-lucide="history" class="size-4" aria-hidden="true"></i><span data-en="History" data-vi="Lịch sử">Lịch sử</span></button></div>
-          <div id="wallet-loading" class="hidden space-y-3" aria-live="polite" aria-hidden="true"><span class="sr-only" data-en="Loading wallet" data-vi="Đang tải ví điểm">Đang tải ví điểm</span><div class="h-28 animate-pulse rounded-3xl bg-white/10"></div><div class="grid grid-cols-3 gap-3"><div class="h-20 animate-pulse rounded-2xl bg-white/10"></div><div class="h-20 animate-pulse rounded-2xl bg-white/10"></div><div class="h-20 animate-pulse rounded-2xl bg-white/10"></div></div></div>
+          <div class="mb-5 flex items-end justify-between gap-4"><div><p class="eyebrow" data-en="Your rewards" data-vi="Phần thưởng của bạn">Phần thưởng của bạn</p><h1 id="wallet-title" class="mt-1 text-xl font-black tracking-tight sm:text-2xl" data-en="Points wallet" data-vi="Ví điểm">Ví điểm</h1><p class="mt-1 text-sm text-app-muted" data-en="Each business keeps its own point balance." data-vi="Điểm được tách riêng theo từng doanh nghiệp.">Điểm được tách riêng theo từng doanh nghiệp.</p></div><button type="button" class="app-button-secondary hidden sm:inline-flex" data-action="navigate" data-target="history"><i data-lucide="history" class="size-4" aria-hidden="true"></i><span data-en="History" data-vi="Lịch sử">Lịch sử</span></button></div>
+          <div id="wallet-loading" class="hidden space-y-3" aria-live="polite" aria-hidden="true"><span class="sr-only" data-en="Loading wallet" data-vi="Đang tải ví điểm">Đang tải ví điểm</span><div class="h-28 animate-pulse rounded-lg bg-app-panel"></div><div class="grid grid-cols-3 gap-3"><div class="h-20 animate-pulse rounded-lg bg-app-panel"></div><div class="h-20 animate-pulse rounded-lg bg-app-panel"></div><div class="h-20 animate-pulse rounded-lg bg-app-panel"></div></div></div>
           <div id="wallet-error" class="hidden app-card border-app-red/40" role="alert"><strong data-en="Wallet could not load" data-vi="Không tải được ví điểm">Không tải được ví điểm</strong><p class="mt-1 text-sm text-app-muted" data-en="Your saved data is unchanged." data-vi="Dữ liệu đã lưu của bạn không thay đổi.">Dữ liệu đã lưu của bạn không thay đổi.</p><button type="button" class="app-button-secondary mt-3" data-action="retry-wallet" data-en="Try again" data-vi="Thử lại">Thử lại</button></div>
-          <div class="relative mb-4 overflow-hidden rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_90%_10%,rgba(34,211,238,.24),transparent_38%),linear-gradient(135deg,#6d2bf0,#4a23d9_48%,#0757cf)] p-5 shadow-2xl shadow-app-purple/20 sm:p-6">
+          <div class="relative mb-4 overflow-hidden rounded-xl border border-[#dbe4f0] bg-[radial-gradient(circle_at_90%_10%,rgba(50,215,255,.24),transparent_38%),linear-gradient(135deg,#2b59ff,#4648d8_50%,#8e4df8)] p-5 text-white shadow-[0_12px_28px_rgba(43,89,255,.18)] sm:p-6">
             <div class="relative z-10 flex items-start justify-between gap-4">
               <div>
                 <p class="text-xs font-extrabold uppercase tracking-[.18em] text-white/70" data-en="Your points" data-vi="Điểm của bạn">Điểm của bạn</p>
-                <div class="mt-2 flex items-end gap-2"><strong data-balance-business="bitcoin-nail-bar" class="text-4xl font-black tracking-tight sm:text-5xl">2,450</strong><span class="pb-1 text-sm font-bold text-white/70" data-en="points" data-vi="điểm">điểm</span></div>
+                <div class="mt-2 flex items-end gap-2"><strong data-balance-business="bitcoin-nail-bar" class="text-3xl font-black tracking-tight sm:text-4xl">2,450</strong><span class="pb-1 text-sm font-bold text-white/70" data-en="points" data-vi="điểm">điểm</span></div>
               </div>
               <div class="text-right">
                 <p class="text-[11px] font-bold uppercase tracking-wide text-white/60" data-en="Current tier" data-vi="Hạng hiện tại">Hạng hiện tại</p>
@@ -475,7 +554,7 @@
         <section class="app-screen hidden" id="scan" data-ready="true" data-module="scan" aria-labelledby="scan-title">
           <div class="mx-auto max-w-2xl"><div id="scan-intro" class="text-center"><p class="eyebrow" data-en="NEXORA Touch" data-vi="NEXORA Touch">NEXORA Touch</p><h1 id="scan-title" class="mt-1 text-2xl font-black tracking-tight sm:text-3xl" data-en="Scan to check in, tip or pay" data-vi="Quét để check-in, tip hoặc thanh toán">Quét để check-in, tip hoặc thanh toán</h1><p class="mx-auto mt-2 max-w-lg text-sm leading-6 text-app-muted" data-en="This prototype simulates reading a NEXORA QR, then lets you choose the right action." data-vi="Bản mẫu mô phỏng đọc mã NEXORA, sau đó cho bạn chọn đúng thao tác.">Bản mẫu mô phỏng đọc mã NEXORA, sau đó cho bạn chọn đúng thao tác.</p></div>
           <div id="scan-camera-view" data-scan-view="camera" aria-hidden="false">
-            <div class="app-card relative mx-auto mt-6 aspect-square w-full max-w-[360px] overflow-hidden bg-[radial-gradient(circle_at_center,rgba(34,211,238,.12),transparent_60%)] p-6" id="scan-surface"><div class="absolute left-5 top-5 size-12 rounded-tl-2xl border-l-4 border-t-4 border-app-cyan"></div><div class="absolute right-5 top-5 size-12 rounded-tr-2xl border-r-4 border-t-4 border-app-cyan"></div><div class="absolute bottom-5 left-5 size-12 rounded-bl-2xl border-b-4 border-l-4 border-app-cyan"></div><div class="absolute bottom-5 right-5 size-12 rounded-br-2xl border-b-4 border-r-4 border-app-cyan"></div><div class="grid h-full place-items-center text-center"><div><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-cyan/10 text-app-cyan"><i data-lucide="scan-qr-code" class="size-10" aria-hidden="true"></i></span><p class="mt-4 text-sm font-bold" data-en="Camera ready" data-vi="Camera đã sẵn sàng">Camera đã sẵn sàng</p><p class="mt-1 text-xs text-app-muted" data-en="Tap below to simulate scanning" data-vi="Chạm nút dưới để mô phỏng quét">Chạm nút dưới để mô phỏng quét</p></div></div><div id="scan-loading-state" class="pointer-events-none absolute inset-x-8 bottom-6 hidden rounded-xl bg-app-panel/90 p-3 text-center text-xs font-bold text-app-cyan" data-state="loading" data-en="Reading QR code…" data-vi="Đang đọc mã QR…">Đang đọc mã QR…</div><div id="scan-line" class="pointer-events-none absolute inset-x-8 top-10 hidden h-0.5 bg-gradient-to-r from-transparent via-app-cyan to-transparent shadow-[0_0_18px_#22d3ee]"></div></div>
+            <div class="app-card relative mx-auto mt-6 aspect-square w-full max-w-[360px] overflow-hidden bg-[radial-gradient(circle_at_center,rgba(43,89,255,.10),transparent_60%)] p-6" id="scan-surface"><div class="absolute left-5 top-5 size-12 rounded-tl-2xl border-l-4 border-t-4 border-app-cyan"></div><div class="absolute right-5 top-5 size-12 rounded-tr-2xl border-r-4 border-t-4 border-app-cyan"></div><div class="absolute bottom-5 left-5 size-12 rounded-bl-2xl border-b-4 border-l-4 border-app-cyan"></div><div class="absolute bottom-5 right-5 size-12 rounded-br-2xl border-b-4 border-r-4 border-app-cyan"></div><div class="grid h-full place-items-center text-center"><div><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-cyan/10 text-app-cyan"><i data-lucide="scan-qr-code" class="size-10" aria-hidden="true"></i></span><p class="mt-4 text-sm font-bold" data-en="Camera ready" data-vi="Camera đã sẵn sàng">Camera đã sẵn sàng</p><p class="mt-1 text-xs text-app-muted" data-en="Tap below to simulate scanning" data-vi="Chạm nút dưới để mô phỏng quét">Chạm nút dưới để mô phỏng quét</p></div></div><div id="scan-loading-state" class="pointer-events-none absolute inset-x-8 bottom-6 hidden rounded-xl bg-app-panel/90 p-3 text-center text-xs font-bold text-app-cyan" data-state="loading" data-en="Reading QR code…" data-vi="Đang đọc mã QR…">Đang đọc mã QR…</div><div id="scan-line" class="pointer-events-none absolute inset-x-8 top-10 hidden h-0.5 bg-gradient-to-r from-transparent via-app-cyan to-transparent shadow-[0_0_18px_rgba(43,89,255,.45)]"></div></div>
             <button type="button" class="app-button-secondary mx-auto mt-5 block w-full max-w-[360px]" data-action="enter-code" data-en="Enter code" data-vi="Nhập mã">Nhập mã</button>
             <section class="mx-auto mt-6 w-full max-w-[360px]" aria-labelledby="scan-demo-actions-title">
               <h2 id="scan-demo-actions-title" class="eyebrow" data-en="SIMULATE" data-vi="MÔ PHỎNG">MÔ PHỎNG</h2>
@@ -573,7 +652,7 @@
         <section class="app-screen hidden" id="liveticket" data-ready="true" data-module="scan" aria-labelledby="liveticket-title">
           <div class="mx-auto max-w-2xl">
             <div class="mb-5 flex items-center gap-3"><button class="icon-button" type="button" data-action="back" data-back-target="home" aria-label="Quay lại"><i data-lucide="arrow-left" class="size-5" aria-hidden="true"></i></button><div><p class="eyebrow" data-en="Live ticket" data-vi="Phiếu dịch vụ">Phiếu dịch vụ</p><h1 id="liveticket-title" class="text-2xl font-black" tabindex="-1" data-en="Your service ticket" data-vi="Phiếu dịch vụ của bạn">Phiếu dịch vụ của bạn</h1></div></div>
-            <div class="relative overflow-hidden rounded-3xl border border-white/10 bg-[radial-gradient(circle_at_90%_10%,rgba(34,211,238,.24),transparent_38%),linear-gradient(135deg,#6d2bf0,#4a23d9_48%,#0757cf)] p-5 text-white shadow-2xl shadow-app-purple/20">
+            <div class="relative overflow-hidden rounded-xl border border-[#dbe4f0] bg-[radial-gradient(circle_at_90%_10%,rgba(50,215,255,.24),transparent_38%),linear-gradient(135deg,#2b59ff,#4648d8_50%,#8e4df8)] p-5 text-white shadow-[0_12px_28px_rgba(43,89,255,.18)]">
               <div class="flex items-start justify-between gap-4">
                 <div><p class="text-xs font-extrabold uppercase tracking-[.16em] text-white/70" data-en="Customer live ticket" data-vi="Phiếu dịch vụ khách">Phiếu dịch vụ khách</p><strong id="liveticket-number" class="mt-1 block text-3xl font-black"></strong></div>
                 <span id="liveticket-status" class="rounded-full bg-white/15 px-3 py-1 text-xs font-black"></span>
@@ -665,7 +744,7 @@
           <div class="mx-auto grid min-h-[65vh] max-w-xl place-items-center text-center"><div class="w-full"><span class="mx-auto grid size-20 place-items-center rounded-3xl bg-app-green/10 text-app-green"><i data-lucide="party-popper" class="size-10" aria-hidden="true"></i></span><h1 id="onb4-title" class="mt-6 text-3xl font-black" data-en="25 points are waiting" data-vi="25 điểm đã sẵn sàng">25 điểm đã sẵn sàng</h1><p class="mt-3 text-sm text-app-muted" data-en="Stored in your Bitcoin Nail Bar balance." data-vi="Đã lưu trong số dư Bitcoin Nail Bar của bạn.">Đã lưu trong số dư Bitcoin Nail Bar của bạn.</p><div class="app-card mt-6"><p class="eyebrow" data-en="Current balance" data-vi="Số dư hiện tại">Số dư hiện tại</p><strong data-balance-with-unit="bitcoin-nail-bar" class="mt-2 block text-3xl font-black text-app-green">2.450 điểm</strong></div><button class="app-button mt-5 w-full" type="button" data-action="finish-onboarding" data-en="Enter app" data-vi="Vào ứng dụng">Vào ứng dụng</button></div></div>
         </section>
         <section class="app-screen hidden" id="explore" data-ready="true" data-module="explore" aria-labelledby="explore-title">
-          <div class="mb-5"><p class="eyebrow" data-en="Verified local businesses" data-vi="Doanh nghiệp địa phương đã xác minh">Doanh nghiệp địa phương đã xác minh</p><h1 id="explore-title" class="mt-1 text-2xl font-black tracking-tight sm:text-3xl" data-en="Explore nearby" data-vi="Khám phá gần bạn">Khám phá gần bạn</h1><p class="mt-1 text-sm text-app-muted" data-en="Find trusted places with real visit and service data." data-vi="Tìm địa điểm uy tín với dữ liệu lượt ghé và dịch vụ thực.">Tìm địa điểm uy tín với dữ liệu lượt ghé và dịch vụ thực.</p></div>
+          <div class="mb-5"><p class="eyebrow" data-en="Verified local businesses" data-vi="Doanh nghiệp địa phương đã xác minh">Doanh nghiệp địa phương đã xác minh</p><h1 id="explore-title" class="mt-1 text-xl font-black tracking-tight sm:text-2xl" data-en="Explore nearby" data-vi="Khám phá gần bạn">Khám phá gần bạn</h1><p class="mt-1 text-sm text-app-muted" data-en="Find trusted places with real visit and service data." data-vi="Tìm địa điểm uy tín với dữ liệu lượt ghé và dịch vụ thực.">Tìm địa điểm uy tín với dữ liệu lượt ghé và dịch vụ thực.</p></div>
           <div class="relative"><i data-lucide="search" class="pointer-events-none absolute left-4 top-1/2 size-4 -translate-y-1/2 text-app-muted" aria-hidden="true"></i><input id="explore-search" class="app-input pl-11" type="search" data-en-ph="Search nails, spa, salon…" data-vi-ph="Tìm nail, spa, salon…" placeholder="Tìm nail, spa, salon…"></div>
           <div class="mt-3 flex gap-2 overflow-x-auto pb-2" aria-label="Bộ lọc doanh nghiệp"><button class="app-chip" type="button" aria-pressed="true" data-explore-filter="all" data-en="All" data-vi="Tất cả">Tất cả</button><button class="app-chip" type="button" aria-pressed="false" data-explore-filter="nails" data-en="Nails" data-vi="Nail">Nail</button><button class="app-chip" type="button" aria-pressed="false" data-explore-filter="spa" data-en="Spa" data-vi="Spa">Spa</button><button class="app-chip" type="button" aria-pressed="false" data-explore-filter="salon" data-en="Salon" data-vi="Salon">Salon</button></div>
           <div id="business-grid" class="mt-4 grid grid-cols-2 gap-3 sm:gap-4 xl:grid-cols-3">
@@ -14543,7 +14622,7 @@
         points.textContent = formatPoints(getBusinessBalance(state, businessId).available);
         const history = document.createElement('button');
         history.type = 'button';
-        history.className = 'flex w-fit items-center gap-1.5 rounded-lg border border-[#252c51] bg-[#0d1024] px-2.5 py-1 text-[11px] font-bold text-[#f7f7ff] transition active:scale-[.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#22d3ee] sm:px-3 sm:py-1.5 sm:text-xs';
+        history.className = 'flex w-fit items-center gap-1.5 rounded-lg border border-app-line bg-app-card px-2.5 py-1 text-[11px] font-bold text-app-text shadow-[0_1px_3px_rgba(15,23,42,.05)] transition active:scale-[.98] focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-[#32d7ff] sm:px-3 sm:py-1.5 sm:text-xs';
         history.dataset.action = 'open-business-history';
         history.dataset.businessId = businessId;
         history.textContent = t('history');
