@@ -266,13 +266,17 @@ test('keeps Activity Logs table typography balanced around 14px', () => {
   assertCssDeclaration(logTimeRule, 'font-size', '11px');
   assertCssDeclaration(logTimeRule, 'line-height', '14px');
 
-  const logRoleRule = styleRule(html, '.owner-table.is-log-table .role-badge');
-  assertCssDeclaration(logRoleRule, 'font-size', '14px');
-  assertCssDeclaration(logRoleRule, 'line-height', '20px');
+  const roleBadgeRule = styleRule(html, '.role-badge');
+  assertCssDeclaration(roleBadgeRule, 'font-size', '11px');
+  assertCssDeclaration(roleBadgeRule, 'font-weight', '400');
+  assertCssDeclaration(roleBadgeRule, 'line-height', '16px');
+  assert.doesNotMatch(html, /\.owner-table\.is-log-table \.role-badge\s*\{[\s\S]*?font-size:\s*14px;/);
 
-  const logStatusRule = styleRule(html, '.owner-table.is-log-table .status-pill');
-  assertCssDeclaration(logStatusRule, 'font-size', '14px');
-  assertCssDeclaration(logStatusRule, 'line-height', '20px');
+  const statusPillRule = styleRule(html, '.status-pill');
+  assertCssDeclaration(statusPillRule, 'font-size', '11px');
+  assertCssDeclaration(statusPillRule, 'font-weight', '400');
+  assertCssDeclaration(statusPillRule, 'line-height', '16px');
+  assert.doesNotMatch(html, /\.owner-table\.is-log-table \.status-pill\s*\{[\s\S]*?font-size:\s*14px;/);
 });
 
 test('keeps select arrows inset from the right edge', () => {
