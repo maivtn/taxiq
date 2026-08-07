@@ -145,6 +145,7 @@
     .pos-mini.text { width: 100%; min-width: 170px; font-weight: 600; }
     .pos-inline { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
     .pos-inline-lbl { font-size: 12px; font-weight: 700; color: var(--nexora-muted); display: inline-flex; align-items: center; gap: 6px; }
+    .pos-pay-icon { width: 16px; height: 16px; object-fit: contain; vertical-align: middle; flex: 0 0 16px; }
 
     /* ── key/value line ── */
     .pos-line { display: flex; align-items: center; justify-content: space-between; gap: 10px; padding: 11px 0; border-bottom: 1px dashed var(--nexora-rule); }
@@ -3116,7 +3117,10 @@
         t4: { st: 'pending', method: null },
         t5: { st: 'pending', method: 'zelle' }
       };
-      var PAYOUT_M = { vlink: '🪙 VLinkPay', zelle: '💜 Zelle' };
+      var PAYOUT_M = {
+        vlink: '<img src="assets/icons/vlinkpay.png" alt="" class="pos-pay-icon" /> VLinkPay',
+        zelle: '<img src="assets/icons/zelle.png" alt="" class="pos-pay-icon" /> Zelle'
+      };
 
       /* ═══════════ derived ═══════════ */
       // $ of service and prorated tip earned per tech from today's ledger
@@ -5683,7 +5687,7 @@
             '</div>' +
           '</div></div>' +
           '<div class="pos-inline" style="gap:14px;margin-bottom:12px">' +
-          smInp('skillB', '💎 3+ expert skills +') + smInp('revB', '⭐ Rating 4.8+ +') + smInp('upsB', '✨ Upsell 20%+ +') + smInp('retB', '🔁 Steady guests +') + smInp('cap', '🧢 Max total bonus') +
+          smInp('skillB', '<i class="bi bi-gem" aria-hidden="true"></i> 3+ expert skills +') + smInp('revB', '<i class="bi bi-star-fill" aria-hidden="true"></i> Rating 4.8+ +') + smInp('upsB', '<i class="bi bi-stars" aria-hidden="true"></i> Upsell 20%+ +') + smInp('retB', '<i class="bi bi-arrow-repeat" aria-hidden="true"></i> Steady guests +') + smInp('cap', '<i class="bi bi-speedometer2" aria-hidden="true"></i> Max total bonus') +
           '</div>' +
           (mgSmartViewMode === 'card' ? cardsHtml : tableHtml) +
           '</div>';
@@ -5759,7 +5763,7 @@
             '<button class="booking-view-button' + (mgPayoutViewMode === 'card' ? ' is-active' : '') + '" type="button" data-mg-payout-view-target="card" aria-pressed="' + (mgPayoutViewMode === 'card' ? 'true' : 'false') + '"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>' +
           '</div></div>' +
           '<div class="pos-grid pos-g4" style="margin-bottom:14px">' +
-          '<div class="pos-card soft"><div class="pos-kpi-label">⏳ Unpaid</div><div class="pos-kpi-value">' + money0(pendTot) + '</div><div class="pos-muted" style="font-size:12px">pay + tips still owed</div></div>' +
+          '<div class="pos-card soft"><div class="pos-kpi-label"><i class="bi bi-clock-history" aria-hidden="true"></i> Unpaid</div><div class="pos-kpi-value">' + money0(pendTot) + '</div><div class="pos-muted" style="font-size:12px">pay + tips still owed</div></div>' +
           '<div class="pos-card soft"><div class="pos-kpi-label"><i class="bi bi-heart-fill" aria-hidden="true"></i> Tips today</div><div class="pos-kpi-value">' + money0(tipTot) + '</div><div class="pos-muted" style="font-size:12px">100% to techs, paid with payroll</div></div>' +
           '<div class="pos-card soft"><div class="pos-kpi-label"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Ready to pay</div><div class="pos-kpi-value">' + readyN + '</div><div class="pos-muted" style="font-size:12px">amount locked, waiting on a tap</div></div>' +
           '<div class="pos-card soft"><div class="pos-kpi-label"><i class="bi bi-exclamation-triangle-fill" aria-hidden="true"></i> Missing method</div><div class="pos-kpi-value ' + (missN ? 'pos-warn-text' : '') + '">' + missN + '</div><div class="pos-muted" style="font-size:12px">no payout destination — held</div></div>' +
