@@ -163,6 +163,19 @@ test('places Voice and SMS purchase actions inside the Voice and SMS Credits car
   assert.match(css, /@media\s*\(max-width:\s*520px\)[\s\S]*?\.credits-topup-actions\s*\{[\s\S]*?flex-direction:\s*row[\s\S]*?\.credits-topup-actions \.credits-action\s*\{[\s\S]*?width:\s*auto/);
 });
 
+test('gives Voice and SMS purchase buttons distinct colors', () => {
+  const html = source();
+  const css = readFileSync(CSS_URL, 'utf8');
+  const topupCard = html.match(/data-credits-card="sms-topup"[\s\S]*?<\/article>/)?.[0] || '';
+  const voiceButton = topupCard.match(/<button[^>]*data-credits-action="voice-buy"[^>]*>/)?.[0] || '';
+  const smsButton = topupCard.match(/<button[^>]*data-credits-action="sms-buy"[^>]*>/)?.[0] || '';
+
+  assert.match(voiceButton, /credits-action-voice/);
+  assert.match(smsButton, /credits-action-sms/);
+  assert.match(css, /\.credits-topup-actions \.credits-action-voice\s*\{[\s\S]*?background:\s*#1264df[\s\S]*?color:\s*#fff/);
+  assert.match(css, /\.credits-topup-actions \.credits-action-sms\s*\{[\s\S]*?background:\s*#168b55[\s\S]*?color:\s*#fff/);
+});
+
 test('reduces Pro and SMS Credits typography on mobile', () => {
   const css = readFileSync(CSS_URL, 'utf8');
 
@@ -361,6 +374,24 @@ test('adds a conditional Voice warning card above Usage history', () => {
   assert.match(runtime, /renderVoiceWarning\(voiceRemaining\)/);
   assert.match(css, /\.credits-voice-warning\s*\{[\s\S]*?display:\s*flex/);
   assert.match(css, /\.credits-voice-warning\[hidden\]\s*\{\s*display:\s*none/);
+});
+
+test('stacks Usage history rows on small screens without forcing horizontal scroll', () => {
+  const html = source();
+  const css = readFileSync(CSS_URL, 'utf8');
+  const usageHistory = html.match(/<section class="credits-history-section"[^>]*data-credits-usage-history[\s\S]*?<\/section>/)?.[0] || '';
+
+  assert.match(usageHistory, /id="credits-history-title">Usage history/);
+  assert.match(css, /@media\s*\(max-width:\s*520px\)[\s\S]*?\[data-credits-usage-history\] \.credits-history-scroll\s*\{[\s\S]*?overflow-x:\s*visible/);
+  assert.match(css, /\[data-credits-usage-history\] \.credits-history-table\s*\{[\s\S]*?min-width:\s*0/);
+  assert.match(css, /\[data-credits-usage-history\] \.credits-history-table thead\s*\{[\s\S]*?display:\s*none/);
+  assert.match(css, /\[data-credits-usage-history\] \.credits-history-table tr\s*\{[\s\S]*?display:\s*block/);
+  assert.match(css, /\[data-credits-usage-history\] \.credits-history-table td\s*\{[\s\S]*?white-space:\s*normal/);
+  assert.match(css, /\[data-credits-usage-history\] \.credits-history-table td::before\s*\{/);
+  assert.match(css, /td:nth-child\(1\)::before\s*\{\s*content:\s*"Product"/);
+  assert.match(css, /td:nth-child\(2\)::before\s*\{\s*content:\s*"Activity"/);
+  assert.match(css, /td:nth-child\(3\)::before\s*\{\s*content:\s*"Change"/);
+  assert.match(css, /td:nth-child\(4\)::before\s*\{\s*content:\s*"Date"/);
 });
 
 test('filters usage history by All, SMS, and Voice products', () => {

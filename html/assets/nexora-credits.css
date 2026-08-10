@@ -411,6 +411,34 @@
   color: var(--nexora-brand-dark, #393bc8);
 }
 
+.credits-topup-actions .credits-action-voice {
+  border-color: #1264df;
+  background: #1264df;
+  color: #fff;
+  box-shadow: 0 5px 12px rgba(18, 100, 223, .2);
+}
+
+.credits-topup-actions .credits-action-voice:hover,
+.credits-topup-actions .credits-action-voice:focus-visible {
+  border-color: #0f57c7;
+  background: #0f57c7;
+  color: #fff;
+}
+
+.credits-topup-actions .credits-action-sms {
+  border-color: #168b55;
+  background: #168b55;
+  color: #fff;
+  box-shadow: 0 5px 12px rgba(22, 139, 85, .2);
+}
+
+.credits-topup-actions .credits-action-sms:hover,
+.credits-topup-actions .credits-action-sms:focus-visible {
+  border-color: #0f7446;
+  background: #0f7446;
+  color: #fff;
+}
+
 .credits-history-section { margin-top: 18px; padding: 20px; }
 .credits-section-heading { align-items: center; margin-bottom: 14px; }
 .credits-history-tools { display: grid; justify-items: end; gap: 9px; }
@@ -480,4 +508,21 @@
   .credits-topup-actions { align-items: center; flex-direction: row; }
   .credits-topup-actions .credits-action { width: auto; padding: 5px 7px; font-size: 9px; }
   .credits-topup-balance-grid { grid-template-columns: 1fr; }
+  [data-credits-usage-history] .credits-history-scroll { overflow-x: visible; }
+  [data-credits-usage-history] .credits-history-table { min-width: 0; border-collapse: separate; border-spacing: 0 10px; font-size: 11px; }
+  [data-credits-usage-history] .credits-history-table thead { display: none; }
+  [data-credits-usage-history] .credits-history-table,
+  [data-credits-usage-history] .credits-history-table tbody,
+  [data-credits-usage-history] .credits-history-table tr,
+  [data-credits-usage-history] .credits-history-table td { display: block; width: 100%; }
+  [data-credits-usage-history] .credits-history-table tr { display: block; border: 1px solid var(--nexora-border); border-radius: 10px; background: #fff; padding: 10px; }
+  [data-credits-usage-history] .credits-history-table td { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 7px 0; border-bottom: 1px solid var(--nexora-rule); white-space: normal; text-align: right; }
+  [data-credits-usage-history] .credits-history-table td:first-child { padding-top: 0; }
+  [data-credits-usage-history] .credits-history-table td:last-child { padding-bottom: 0; border-bottom: 0; }
+  [data-credits-usage-history] .credits-history-table td::before { flex: 0 0 76px; color: var(--nexora-subtle); font-size: 9px; font-weight: 900; letter-spacing: .06em; text-align: left; text-transform: uppercase; }
+  [data-credits-usage-history] .credits-history-table td:nth-child(1)::before { content: "Product"; }
+  [data-credits-usage-history] .credits-history-table td:nth-child(2)::before { content: "Activity"; }
+  [data-credits-usage-history] .credits-history-table td:nth-child(3)::before { content: "Change"; }
+  [data-credits-usage-history] .credits-history-table td:nth-child(4)::before { content: "Date"; }
+  [data-credits-usage-history] .credits-history-date { justify-items: end; text-align: right; }
 }

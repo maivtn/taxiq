@@ -577,6 +577,18 @@ test('renders Edit Sub Account modal and confirms reset password with SweetAlert
   assertCssDeclaration(editRowRule, 'grid-template-columns', '140px minmax(0, 1fr)');
 });
 
+test('uses Owner Settings system color for non-destructive SweetAlert confirmations', () => {
+  const html = source();
+  const addRoleBlock = html.match(/function showAddRoleModal\(\) \{[\s\S]*?if \(addRoleButton\)/)?.[0] || '';
+  const subAccountConfirmBlock = html.match(/function showSubAccountConfirm\(button, options\) \{[\s\S]*?function validateRoleName/)?.[0] || '';
+
+  assert.match(html, /var systemConfirmButtonColor = 'var\(--nexora-brand\)';/);
+  assert.match(addRoleBlock, /confirmButtonColor: systemConfirmButtonColor/);
+  assert.match(subAccountConfirmBlock, /confirmButtonColor: options\.confirmButtonColor \|\| systemConfirmButtonColor/);
+  assert.doesNotMatch(addRoleBlock, /confirmButtonColor: '#08a952'/);
+  assert.doesNotMatch(subAccountConfirmBlock, /confirmButtonColor: options\.confirmButtonColor \|\| '#08a952'/);
+});
+
 test('confirms resend login email before sending mail', () => {
   const html = source();
   const panel = panelContent(html, 'sub-account');

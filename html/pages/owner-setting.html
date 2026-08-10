@@ -1863,6 +1863,7 @@
       var pendingDeactivateRow = null;
       var defaultTab = 'sub-account';
       var defaultSubAccountView = 'accounts';
+      var systemConfirmButtonColor = 'var(--nexora-brand)';
       var subAccountActionMessages = {
         'activate': '{email} was activated.',
         'deactivate': '{email} was deactivated.',
@@ -2010,7 +2011,7 @@
             showCancelButton: true,
             confirmButtonText: options.confirmButtonText,
             cancelButtonText: 'Cancel',
-            confirmButtonColor: options.confirmButtonColor || '#08a952',
+            confirmButtonColor: options.confirmButtonColor || systemConfirmButtonColor,
             reverseButtons: true
           }).then(function (result) {
             if (result.isConfirmed) {
@@ -2056,7 +2057,7 @@
             showCancelButton: true,
             confirmButtonText: 'Add',
             cancelButtonText: 'Cancel',
-            confirmButtonColor: '#08a952',
+            confirmButtonColor: systemConfirmButtonColor,
             inputValidator: function (value) {
               var validationMessage = validateRoleName(value);
               if (validationMessage) return validationMessage;
@@ -2069,7 +2070,7 @@
               title: 'Role added successfully',
               text: roleName + ' was added. Set module permissions next.',
               confirmButtonText: 'Set modules',
-              confirmButtonColor: '#08a952'
+              confirmButtonColor: systemConfirmButtonColor
             }).then(function () {
               openRoleDetailsForNewRole(roleName);
             });
