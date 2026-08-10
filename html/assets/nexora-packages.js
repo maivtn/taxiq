@@ -88,9 +88,16 @@ const PACKAGE_PLAN_DETAILS = {
   const purchaseHistory = document.querySelector('[data-purchase-history]');
   const packagePaymentModal = document.querySelector('[data-package-payment-modal]');
   const packageTrialModal = document.querySelector('[data-package-trial-modal]');
+  const billingCycleButtons = [...document.querySelectorAll('[data-package-billing-cycle]')];
+  const billingPriceElements = [...document.querySelectorAll('[data-billing-price]')];
+  const billingComparePriceElements = [...document.querySelectorAll('[data-billing-compare-price]')];
+  const billingCompareLabel = document.querySelector('[data-billing-compare-label]');
   const defaultTab = 'overview';
+  const defaultBillingCycle = 'monthly';
   const validTabIds = new Set(tabs.map((tab) => tab.dataset.packageTab));
+  const validBillingCycles = new Set(['monthly', 'yearly']);
   let packagePaymentPlan = null;
+  let packageBillingCycle = defaultBillingCycle;
   let packagePaymentId = PACKAGE_PAYMENT_METHODS[0].id;
   let packagePaymentModalOpener = null;
   let packagePaymentPreviousOverflow = '';
@@ -144,12 +151,69 @@ const PACKAGE_PLAN_DETAILS = {
     }).format(value);
   }
 
+  function formatWholeDollar(value) {
+    return new Intl.NumberFormat('en-US', {
+      maximumFractionDigits: 0
+    }).format(value);
+  }
+
+  function formatYearlyBillingAmount(monthlyAmount) {
+    return Math.round(monthlyAmount * 12 * 0.8);
+  }
+
+  function billingAmountForCycle(monthlyAmount, cycle = packageBillingCycle) {
+    return cycle === 'yearly' ? formatYearlyBillingAmount(monthlyAmount) : monthlyAmount;
+  }
+
+  function formatBillingTotalLabel(monthlyAmount, cycle = packageBillingCycle) {
+    if (monthlyAmount === null) return 'Custom quote';
+    const suffix = cycle === 'yearly' ? 'yr' : 'mo';
+    return `$${formatWholeDollar(billingAmountForCycle(monthlyAmount, cycle))}/${suffix}`;
+  }
+
+  function formatBillingPriceHTML(monthlyAmount, periodFormat, cycle = packageBillingCycle) {
+    const suffix = cycle === 'yearly' ? 'yr' : 'mo';
+    const amount = formatWholeDollar(billingAmountForCycle(monthlyAmount, cycle));
+    return periodFormat === 'spaced'
+      ? `$${amount} <span>/ ${suffix}</span>`
+      : `$${amount}<span>/${suffix}</span>`;
+  }
+
   function getPackageHistoryStatus(validUntil, reference = new Date()) {
     const end = new Date(validUntil);
     const active = Number.isFinite(end.getTime()) && end >= new Date(reference);
     return active
       ? { label: 'Active', className: 'is-active', icon: 'circle-check' }
       : { label: 'Expired', className: 'is-expired', icon: 'circle-x' };
+  }
+
+  function renderBillingPrices() {
+    billingPriceElements.forEach((element) => {
+      const monthlyAmount = Number(element.dataset.monthlyAmount);
+      if (!Number.isFinite(monthlyAmount)) return;
+      element.innerHTML = formatBillingPriceHTML(monthlyAmount, element.dataset.billingPeriodFormat || 'compact');
+    });
+
+    billingComparePriceElements.forEach((element) => {
+      const monthlyAmount = Number(element.dataset.monthlyAmount);
+      if (!Number.isFinite(monthlyAmount)) return;
+      element.textContent = `$${formatWholeDollar(billingAmountForCycle(monthlyAmount))}`;
+    });
+
+    if (billingCompareLabel) {
+      billingCompareLabel.textContent = packageBillingCycle === 'yearly' ? 'Yearly price' : 'Monthly price';
+    }
+  }
+
+  function activateBillingCycle(cycle) {
+    const nextCycle = validBillingCycles.has(cycle) ? cycle : defaultBillingCycle;
+    packageBillingCycle = nextCycle;
+    billingCycleButtons.forEach((button) => {
+      const active = button.dataset.packageBillingCycle === nextCycle;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+    renderBillingPrices();
   }
 
   function renderPackagePaymentOptions() {
@@ -223,7 +287,16 @@ const PACKAGE_PLAN_DETAILS = {
     const plan = nexoraPlan || voicePlan;
     const detail = plan && PACKAGE_PLAN_DETAILS[tabId] ? PACKAGE_PLAN_DETAILS[tabId][plan] : null;
     const trialAction = Boolean(voiceTrialPlan);
-    return detail ? { ...detail, plan, tabId, trial: trialAction && Boolean(detail.trial) } : null;
+    return detail
+      ? {
+          ...detail,
+          plan,
+          tabId,
+          billingCycle: packageBillingCycle,
+          totalLabel: formatBillingTotalLabel(detail.monthlyAmount),
+          trial: trialAction && Boolean(detail.trial)
+        }
+      : null;
   }
 
   function showPendingTrialAlert() {
@@ -603,6 +676,10 @@ const PACKAGE_PLAN_DETAILS = {
     });
   });
 
+  billingCycleButtons.forEach((button) => {
+    button.addEventListener('click', () => activateBillingCycle(button.dataset.packageBillingCycle));
+  });
+
   document.querySelectorAll('[data-nexora-select], [data-plan-select], [data-plan-trial]').forEach((button) => {
     button.addEventListener('click', () => {
       const details = getPackagePlanDetails(button);
@@ -667,6 +744,7 @@ const PACKAGE_PLAN_DETAILS = {
   window.addEventListener('popstate', () => activateTab(getTabFromURL(), false, false));
   if (overview) overview.addEventListener('change', handleAutoRenewChange);
 
+  activateBillingCycle(defaultBillingCycle);
   renderOverview();
   renderPurchaseHistory();
   activateTab(getTabFromURL(), false, false);

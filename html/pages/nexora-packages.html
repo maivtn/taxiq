@@ -28,6 +28,10 @@
               <button id="package-tab-voice" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-voice" data-package-tab="voice" tabindex="-1"><span class="package-tab-icon package-tab-icon-dual"><svg viewBox="0 0 28 28" fill="none" aria-hidden="true" focusable="false" data-package-icon="phone-sparkles"><path data-phone-shape="handset" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="m22.25 4.5.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2Z" fill="currentColor"></path><path d="m24.5 13 .45 1.2 1.2.45-1.2.45-.45 1.2-.45-1.2-1.2-.45 1.2-.45.45-1.2Z" fill="currentColor"></path></svg></span><span>AI Voice Plans</span></button>
               <button id="package-tab-history" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-history" data-package-tab="history" tabindex="-1"><span class="package-tab-icon"><i data-lucide="receipt" aria-hidden="true"></i></span><span>Package History</span></button>
             </div>
+            <div class="package-billing-switch" role="group" aria-label="Billing cycle">
+              <button class="package-billing-button is-active" type="button" aria-pressed="true" data-package-billing-cycle="monthly"><span>Monthly</span></button>
+              <button class="package-billing-button" type="button" aria-pressed="false" data-package-billing-cycle="yearly"><span>Yearly</span><span class="package-billing-discount-chip">Save 20%</span></button>
+            </div>
           </div>
 
           <section id="package-panel-overview" class="package-panel" role="tabpanel" aria-labelledby="package-tab-overview" data-package-panel="overview" data-package-overview></section>
@@ -50,7 +54,7 @@
                       <p>Perfect for micro booths and independent practitioners.</p>
                     </div>
                   </div>
-                  <div class="nexora-plan-price">$29 <span>/ mo</span></div>
+                  <div class="nexora-plan-price" data-billing-price data-monthly-amount="29" data-billing-period-format="spaced">$29 <span>/ mo</span></div>
                   <ul class="nexora-plan-features">
                     <li><span class="nexora-plan-check">✓</span>Branded tabletop QR placements</li>
                     <li><span class="nexora-plan-check">✓</span>Instant peer tip direct routing</li>
@@ -68,7 +72,7 @@
                       <p>Brilliant choice for growing teams and local boutique hubs.</p>
                     </div>
                   </div>
-                  <div class="nexora-plan-price">$79 <span>/ mo</span></div>
+                  <div class="nexora-plan-price" data-billing-price data-monthly-amount="79" data-billing-period-format="spaced">$79 <span>/ mo</span></div>
                   <ul class="nexora-plan-features">
                     <li><span class="nexora-plan-check">✓</span>Includes every Starter plan feature</li>
                     <li><span class="nexora-plan-check">✓</span>Custom technician roster logins</li>
@@ -117,7 +121,7 @@
                       </tr>
                     </thead>
                     <tbody>
-                      <tr><th scope="row">Monthly price</th><td>$29</td><td class="is-highlighted">$79</td><td>Custom</td></tr>
+                      <tr><th scope="row" data-billing-compare-label>Monthly price</th><td data-billing-compare-price data-monthly-amount="29">$29</td><td class="is-highlighted" data-billing-compare-price data-monthly-amount="79">$79</td><td>Custom</td></tr>
                       <tr><th scope="row">Active staff</th><td>Unlimited</td><td class="is-highlighted">Unlimited</td><td>Unlimited</td></tr>
                       <tr><th scope="row">Quick business identity check</th><td>—</td><td class="is-highlighted">—</td><td>—</td></tr>
                       <tr><th scope="row">QR code tipping</th><td>Branded</td><td class="is-highlighted">Branded</td><td>Premium NFC</td></tr>
@@ -145,7 +149,7 @@
                 <article class="service-plan-card" data-plan-card="starter">
                   <div class="plan-rec" aria-hidden="true"></div>
                   <div class="service-plan-name">Starter</div>
-                  <div class="service-plan-price">$99<span>/mo</span></div>
+                  <div class="service-plan-price" data-billing-price data-monthly-amount="99" data-billing-period-format="compact">$99<span>/mo</span></div>
                   <div class="service-plan-cross">$149/mo</div>
                   <div class="plan-features">
                     <div class="plan-feature"><span class="plan-check">✓</span><span>AI Voice 24/7</span></div>
@@ -160,7 +164,7 @@
                 <article class="service-plan-card is-recommended" data-plan-card="pro">
                   <div class="plan-rec">Recommended</div>
                   <div class="service-plan-name">Pro</div>
-                  <div class="service-plan-price">$199<span>/mo</span></div>
+                  <div class="service-plan-price" data-billing-price data-monthly-amount="199" data-billing-period-format="compact">$199<span>/mo</span></div>
                   <div class="service-plan-cross">$299/mo</div>
                   <div class="plan-features">
                     <div class="plan-feature"><span class="plan-check">✓</span><span>AI Voice + SMS Campaigns</span></div>
@@ -179,7 +183,7 @@
                 <article class="service-plan-card" data-plan-card="elite">
                   <div class="plan-rec" aria-hidden="true"></div>
                   <div class="service-plan-name">Elite</div>
-                  <div class="service-plan-price">$349<span>/mo</span></div>
+                  <div class="service-plan-price" data-billing-price data-monthly-amount="349" data-billing-period-format="compact">$349<span>/mo</span></div>
                   <div class="service-plan-cross">$499/mo</div>
                   <div class="plan-features">
                     <div class="plan-feature"><span class="plan-check">✓</span><span>Everything in Pro</span></div>

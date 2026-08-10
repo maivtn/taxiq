@@ -188,6 +188,61 @@
   gap: 0;
 }
 
+.package-billing-switch {
+  display: inline-flex;
+  width: max-content;
+  max-width: 100%;
+  align-items: center;
+  gap: 4px;
+  margin-top: 12px;
+  border: 1px solid var(--nexora-border);
+  border-radius: 10px;
+  background: var(--nexora-surface-muted);
+  padding: 3px;
+  overflow-x: auto;
+  scrollbar-width: none;
+}
+
+.package-billing-switch::-webkit-scrollbar {
+  display: none;
+}
+
+.package-billing-button {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 0;
+  border-radius: 8px;
+  background: transparent;
+  padding: 0 11px;
+  color: var(--nexora-muted);
+  font-size: 12px;
+  font-weight: 900;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: background .18s, color .18s, box-shadow .18s;
+}
+
+.package-billing-button.is-active {
+  background: #fff;
+  color: var(--nexora-brand);
+  box-shadow: var(--nexora-card-shadow);
+}
+
+.package-billing-discount-chip {
+  display: inline-flex;
+  min-height: 20px;
+  align-items: center;
+  border-radius: 999px;
+  background: rgba(0, 184, 115, 0.12);
+  padding: 0 7px;
+  color: var(--nexora-success);
+  font-size: 10px;
+  font-weight: 900;
+}
+
 .package-overview-kicker {
   color: var(--nexora-brand);
   font-size: 11px;

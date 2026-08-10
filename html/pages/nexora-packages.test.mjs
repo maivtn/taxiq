@@ -78,14 +78,27 @@ function fakeInteractiveElement(dataset = {}, options = {}) {
   return element;
 }
 
-function createPackageActionRuntime() {
+function createPackageActionRuntime(options = {}) {
   const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
+  const monthlyBillingButton = fakeInteractiveElement({ packageBillingCycle: 'monthly' });
+  const yearlyBillingButton = fakeInteractiveElement({ packageBillingCycle: 'yearly' });
   const trialButton = fakeInteractiveElement({ planTrial: 'Pro' }, { attributes: ['data-plan-trial'] });
-  const buyButton = fakeInteractiveElement({ planSelect: 'Pro' }, { attributes: ['data-plan-select'] });
+  const buyButton = fakeInteractiveElement({ planSelect: options.plan || 'Pro' }, { attributes: ['data-plan-select'] });
   const overview = fakeInteractiveElement();
   const purchaseHistory = fakeInteractiveElement();
   const tabs = ['overview', 'nexora', 'voice', 'history'].map((packageTab) => fakeInteractiveElement({ packageTab }));
   const panels = ['overview', 'nexora', 'voice', 'history'].map((packagePanel) => fakeInteractiveElement({ packagePanel }));
+  const priceElements = [
+    fakeInteractiveElement({ monthlyAmount: '29', billingPeriodFormat: 'spaced' }),
+    fakeInteractiveElement({ monthlyAmount: '79', billingPeriodFormat: 'spaced' }),
+    fakeInteractiveElement({ monthlyAmount: '99', billingPeriodFormat: 'compact' }),
+    fakeInteractiveElement({ monthlyAmount: '199', billingPeriodFormat: 'compact' }),
+    fakeInteractiveElement({ monthlyAmount: '349', billingPeriodFormat: 'compact' })
+  ];
+  const comparePriceCells = [
+    fakeInteractiveElement({ monthlyAmount: '29' }),
+    fakeInteractiveElement({ monthlyAmount: '79' })
+  ];
   const paymentClose = fakeInteractiveElement();
   const paymentChildren = new Map([
     ['[data-package-payment-list]', fakeInteractiveElement()],
@@ -129,11 +142,15 @@ function createPackageActionRuntime() {
         if (selector === '[data-purchase-history]') return purchaseHistory;
         if (selector === '[data-package-payment-modal]') return paymentModal;
         if (selector === '[data-package-trial-modal]') return trialModal;
+        if (selector === '[data-billing-compare-label]') return fakeInteractiveElement();
         return null;
       },
       querySelectorAll(selector) {
         if (selector === '[data-package-tab]') return tabs;
         if (selector === '[data-package-panel]') return panels;
+        if (selector === '[data-package-billing-cycle]') return [monthlyBillingButton, yearlyBillingButton];
+        if (selector === '[data-billing-price]') return priceElements;
+        if (selector === '[data-billing-compare-price]') return comparePriceCells;
         if (selector.includes('data-plan-trial')) return [trialButton, buyButton];
         if (selector.includes('data-plan-select')) return [buyButton];
         return [];
@@ -150,7 +167,18 @@ function createPackageActionRuntime() {
   };
 
   vm.runInNewContext(runtime, context);
-  return { trialButton, buyButton, paymentModal, trialModal };
+  if (options.billingCycle === 'yearly') yearlyBillingButton.dispatch('click');
+  return {
+    trialButton,
+    buyButton,
+    paymentModal,
+    trialModal,
+    monthlyBillingButton,
+    yearlyBillingButton,
+    priceElements,
+    comparePriceCells,
+    invoiceTotal: paymentChildren.get('[data-package-invoice-total]')
+  };
 }
 
 function renderPackageHistoryHTML() {
@@ -245,6 +273,22 @@ test('adds the package heading and ordered management tabs', () => {
   assert.equal((html.match(/class="package-tab is-active"/g) || []).length, 1);
 });
 
+test('renders shared Monthly and Yearly billing-cycle sub-tabs with discount chip', () => {
+  const html = source();
+  const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
+  const billingSwitch = html.match(/<div class="package-billing-switch" role="group" aria-label="Billing cycle">([\s\S]*?)<\/div>/)?.[1] || '';
+
+  assert.ok(billingSwitch, 'Package billing cycle switch should render under top-level tabs');
+  assert.match(html, /<div class="package-tabs" role="tablist" aria-label="Package management tabs">[\s\S]*?<\/div>\s*<div class="package-billing-switch" role="group" aria-label="Billing cycle">/);
+  assert.match(billingSwitch, /<button(?=[^>]*data-package-billing-cycle="monthly")(?=[^>]*aria-pressed="true")[^>]*>[\s\S]*?<span>Monthly<\/span>/);
+  assert.match(billingSwitch, /<button(?=[^>]*data-package-billing-cycle="yearly")(?=[^>]*aria-pressed="false")[^>]*>[\s\S]*?<span>Yearly<\/span>[\s\S]*?<span class="package-billing-discount-chip">Save 20%<\/span>/);
+
+  assert.match(css, /\.package-billing-switch\s*\{/);
+  assert.match(css, /\.package-billing-button\s*\{/);
+  assert.match(css, /\.package-billing-button\.is-active\s*\{/);
+  assert.match(css, /\.package-billing-discount-chip\s*\{/);
+});
+
 test('synchronizes package tabs with URL state and browser history', () => {
   const html = source();
   const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
@@ -282,7 +326,9 @@ test('renders the NEXORA plan cards and comparison table', () => {
   assert.match(css, /\.nexora-compare-table\s*\{/);
   assert.match(css, /\.nexora-compare-table \.is-highlighted/);
   assert.match(css, /\.nexora-compare-table caption\s*\{[\s\S]*?position:\s*absolute/);
-  assert.match(css, /@media \(min-width: 1200px\)\s*\{[\s\S]*?\.nexora-plan-grid\s*\{[\s\S]*?grid-template-columns: repeat\(3,/);
+  assert.match(css, /\.nexora-plan-grid\s*\{[\s\S]*?display:\s*flex;[\s\S]*?flex-wrap:\s*wrap;/);
+  assert.match(css, /\.nexora-plan-grid \.nexora-plan-card\s*\{[\s\S]*?flex:\s*0 0 100%;/);
+  assert.match(css, /@media \(min-width: 768px\)\s*\{[\s\S]*?\.nexora-plan-grid \.nexora-plan-card\s*\{[\s\S]*?flex:\s*0 0 calc\(33\.333% - 11px\);/);
 });
 
 test('opens a payment modal for paid plans and a Booking-style form for the AI Voice trial', () => {
@@ -335,6 +381,32 @@ test('renders separate trial and purchase actions for the Pro AI Voice plan', ()
   buyRuntime.buyButton.dispatch('click');
   assert.equal(buyRuntime.paymentModal.hidden, false);
   assert.equal(buyRuntime.trialModal.hidden, true);
+});
+
+test('switches paid package prices and payment totals to rounded yearly values', () => {
+  const html = source();
+  const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
+
+  assert.match(html, /data-billing-price data-monthly-amount="29" data-billing-period-format="spaced"/);
+  assert.match(html, /data-billing-price data-monthly-amount="199" data-billing-period-format="compact"/);
+  assert.match(runtime, /function formatYearlyBillingAmount\(monthlyAmount\)/);
+  assert.match(runtime, /Math\.round\(monthlyAmount \* 12 \* 0\.8\)/);
+  assert.match(runtime, /function renderBillingPrices\(\)/);
+  assert.match(runtime, /data-billing-compare-price/);
+
+  const yearlyRuntime = createPackageActionRuntime({ billingCycle: 'yearly', plan: 'Pro' });
+  yearlyRuntime.buyButton.dispatch('click');
+
+  assert.equal(yearlyRuntime.priceElements[0].innerHTML, '$278 <span>/ yr</span>');
+  assert.equal(yearlyRuntime.priceElements[1].innerHTML, '$758 <span>/ yr</span>');
+  assert.equal(yearlyRuntime.priceElements[2].innerHTML, '$950<span>/yr</span>');
+  assert.equal(yearlyRuntime.priceElements[3].innerHTML, '$1,910<span>/yr</span>');
+  assert.equal(yearlyRuntime.priceElements[4].innerHTML, '$3,350<span>/yr</span>');
+  assert.equal(yearlyRuntime.invoiceTotal.textContent, '$1,910/yr');
+
+  const monthlyRuntime = createPackageActionRuntime({ billingCycle: 'monthly', plan: 'Pro' });
+  monthlyRuntime.buyButton.dispatch('click');
+  assert.equal(monthlyRuntime.invoiceTotal.textContent, '$199/mo');
 });
 
 test('shows a SweetAlert pending message when the Free Trial is submitted twice', () => {
