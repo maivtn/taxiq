@@ -273,15 +273,33 @@ test('adds the package heading and ordered management tabs', () => {
   assert.equal((html.match(/class="package-tab is-active"/g) || []).length, 1);
 });
 
-test('renders shared Monthly and Yearly billing-cycle sub-tabs with discount chip', () => {
+test('places Monthly and Yearly billing-cycle sub-tabs below paid-plan headings', () => {
   const html = source();
   const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
-  const billingSwitch = html.match(/<div class="package-billing-switch" role="group" aria-label="Billing cycle">([\s\S]*?)<\/div>/)?.[1] || '';
+  const billingSwitches = [...html.matchAll(/<div class="package-billing-switch" role="group" aria-label="Billing cycle">([\s\S]*?)<\/div>/g)].map((match) => match[1]);
+  const nexoraPanel = html.match(/<section[^>]*data-package-panel="nexora"[^>]*>([\s\S]*?)<\/section>/)?.[1] || '';
+  const voicePanel = html.match(/<section[^>]*data-package-panel="voice"[^>]*>([\s\S]*?)<\/section>/)?.[1] || '';
+  const nexoraHeadingIndex = nexoraPanel.indexOf('class="nexora-package-heading"');
+  const nexoraBillingIndex = nexoraPanel.indexOf('class="package-billing-switch"');
+  const nexoraPlanGridIndex = nexoraPanel.indexOf('class="nexora-plan-grid"');
+  const voiceHeroIndex = voicePanel.indexOf('class="plans-hero"');
+  const voiceBillingIndex = voicePanel.indexOf('class="package-billing-switch"');
+  const voicePlanGridIndex = voicePanel.indexOf('class="plans-grid package-plan-grid"');
+  const pageHeadingStart = html.indexOf('<div class="page-heading package-heading">');
+  const pageHeadingEnd = html.indexOf('<section id="package-panel-overview"', pageHeadingStart);
+  const pageHeading = pageHeadingStart >= 0 && pageHeadingEnd > pageHeadingStart ? html.slice(pageHeadingStart, pageHeadingEnd) : '';
 
-  assert.ok(billingSwitch, 'Package billing cycle switch should render under top-level tabs');
-  assert.match(html, /<div class="package-tabs" role="tablist" aria-label="Package management tabs">[\s\S]*?<\/div>\s*<div class="package-billing-switch" role="group" aria-label="Billing cycle">/);
-  assert.match(billingSwitch, /<button(?=[^>]*data-package-billing-cycle="monthly")(?=[^>]*aria-pressed="true")[^>]*>[\s\S]*?<span>Monthly<\/span>/);
-  assert.match(billingSwitch, /<button(?=[^>]*data-package-billing-cycle="yearly")(?=[^>]*aria-pressed="false")[^>]*>[\s\S]*?<span>Yearly<\/span>[\s\S]*?<span class="package-billing-discount-chip">-20%<\/span>/);
+  assert.equal(billingSwitches.length, 2, 'NEXORA and AI Voice paid-plan panels should each expose billing-cycle sub-tabs');
+  assert.doesNotMatch(pageHeading, /class="package-billing-switch"/);
+  assert.ok(nexoraHeadingIndex >= 0, 'NEXORA package heading should render in the Subscriptions panel');
+  assert.ok(nexoraBillingIndex > nexoraHeadingIndex, 'NEXORA billing-cycle sub-tabs should sit below the NEXORA package heading');
+  assert.ok(nexoraPlanGridIndex > nexoraBillingIndex, 'NEXORA plan cards should sit below the billing-cycle sub-tabs');
+  assert.ok(voiceBillingIndex > voiceHeroIndex, 'AI Voice billing-cycle sub-tabs should sit below the panel offer heading');
+  assert.ok(voicePlanGridIndex > voiceBillingIndex, 'AI Voice plan cards should sit below the billing-cycle sub-tabs');
+  billingSwitches.forEach((billingSwitch) => {
+    assert.match(billingSwitch, /<button(?=[^>]*data-package-billing-cycle="monthly")(?=[^>]*aria-pressed="true")[^>]*>[\s\S]*?<span>Monthly<\/span>/);
+    assert.match(billingSwitch, /<button(?=[^>]*data-package-billing-cycle="yearly")(?=[^>]*aria-pressed="false")[^>]*>[\s\S]*?<span>Yearly<\/span>[\s\S]*?<span class="package-billing-discount-chip">-20%<\/span>/);
+  });
 
   assert.match(css, /\.package-billing-switch\s*\{/);
   assert.match(css, /\.package-billing-button\s*\{/);

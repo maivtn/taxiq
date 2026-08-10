@@ -194,7 +194,7 @@
   max-width: 100%;
   align-items: center;
   gap: 4px;
-  margin-top: 12px;
+  margin-top: 0;
   border: 1px solid var(--nexora-border);
   border-radius: 10px;
   background: var(--nexora-surface-muted);

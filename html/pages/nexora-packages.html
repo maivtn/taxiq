@@ -28,10 +28,6 @@
               <button id="package-tab-voice" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-voice" data-package-tab="voice" tabindex="-1"><span class="package-tab-icon package-tab-icon-dual"><svg viewBox="0 0 28 28" fill="none" aria-hidden="true" focusable="false" data-package-icon="phone-sparkles"><path data-phone-shape="handset" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="m22.25 4.5.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2Z" fill="currentColor"></path><path d="m24.5 13 .45 1.2 1.2.45-1.2.45-.45 1.2-.45-1.2-1.2-.45 1.2-.45.45-1.2Z" fill="currentColor"></path></svg></span><span>AI Voice Plans</span></button>
               <button id="package-tab-history" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-history" data-package-tab="history" tabindex="-1"><span class="package-tab-icon"><i data-lucide="receipt" aria-hidden="true"></i></span><span>Package History</span></button>
             </div>
-            <div class="package-billing-switch" role="group" aria-label="Billing cycle">
-              <button class="package-billing-button is-active" type="button" aria-pressed="true" data-package-billing-cycle="monthly"><span>Monthly</span></button>
-              <button class="package-billing-button" type="button" aria-pressed="false" data-package-billing-cycle="yearly"><span>Yearly</span><span class="package-billing-discount-chip">-20%</span></button>
-            </div>
           </div>
 
           <section id="package-panel-overview" class="package-panel" role="tabpanel" aria-labelledby="package-tab-overview" data-package-panel="overview" data-package-overview></section>
@@ -44,6 +40,10 @@
                   <p>Start with the essentials and unlock more growth tools as your team grows.</p>
                 </div>
                 <span class="nexora-package-note">Upgrade anytime</span>
+              </div>
+              <div class="package-billing-switch" role="group" aria-label="Billing cycle">
+                <button class="package-billing-button is-active" type="button" aria-pressed="true" data-package-billing-cycle="monthly"><span>Monthly</span></button>
+                <button class="package-billing-button" type="button" aria-pressed="false" data-package-billing-cycle="yearly"><span>Yearly</span><span class="package-billing-discount-chip">-20%</span></button>
               </div>
 
               <div class="nexora-plan-grid">
@@ -143,6 +143,10 @@
             <div class="package-plan-content">
               <div class="plans-hero">
                 Founding Salon Offer - only 7 Founding spots left · Price locked for 12 months
+              </div>
+              <div class="package-billing-switch" role="group" aria-label="Billing cycle">
+                <button class="package-billing-button is-active" type="button" aria-pressed="true" data-package-billing-cycle="monthly"><span>Monthly</span></button>
+                <button class="package-billing-button" type="button" aria-pressed="false" data-package-billing-cycle="yearly"><span>Yearly</span><span class="package-billing-discount-chip">-20%</span></button>
               </div>
 
               <div class="plans-grid package-plan-grid">
