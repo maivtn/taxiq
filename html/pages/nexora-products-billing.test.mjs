@@ -25,12 +25,12 @@ test('creates the Products & Billing page from the shared merchant shell', () =>
   assert.ok(existsSync(JS_URL), 'nexora-products-billing.js must exist');
 });
 
-test('matches the screenshot heading, tabs, and booking return action', () => {
+test('matches the screenshot heading and tabs without the booking return action', () => {
   const html = source();
   assert.match(html, /<span class="products-billing-kicker">Products &amp; Billing<\/span>/);
   assert.match(html, /<h1[^>]*>Manage every NEXORA product in one place\.<\/h1>/);
   assert.match(html, /Plans, usage and billing stay separate from daily operations\./);
-  assert.match(html, /href="booking-book-phase-1\.html"[\s\S]*?Back to Booking/);
+  assert.doesNotMatch(html, /products-booking-link|Back to Booking|href="booking-book-phase-1\.html"/);
 
   const tabs = [...html.matchAll(/data-products-billing-tab="([^"]+)"/g)].map((match) => match[1]);
   assert.deepEqual(tabs, ['overview', 'history', 'payment-methods']);
@@ -73,6 +73,7 @@ test('ships responsive styling and tab switching hooks for the billing page', ()
   assert.match(css, /\.products-billing-page\s*\{/);
   assert.match(css, /\.products-summary-grid\s*\{/);
   assert.match(css, /\.product-card\s*\{/);
+  assert.doesNotMatch(css, /products-booking-link/);
   assert.match(css, /@media \(min-width: 1180px\)/);
   assert.match(css, /@media \(max-width: 640px\)/);
 

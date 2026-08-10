@@ -519,10 +519,6 @@ const PACKAGE_PLAN_DETAILS = {
             <h1 id="package-products-overview-title">Manage every NEXORA product in one place.</h1>
             <p>Plans, usage and billing stay separate from daily operations.</p>
           </div>
-          <a class="products-booking-link" href="booking-book-phase-1.html">
-            <i data-lucide="arrow-left" aria-hidden="true"></i>
-            <span>Back to Booking</span>
-          </a>
         </div>
 
         <div class="products-summary-grid" aria-label="Products and billing summary">

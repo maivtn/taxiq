@@ -528,6 +528,7 @@ test('renders the Products & Billing overview inside Package Management overview
   assert.match(html, /data-package-overview/);
   assert.match(overviewHTML, /Manage every NEXORA product in one place\./);
   assert.match(overviewHTML, /Products &amp; Billing/);
+  assert.doesNotMatch(overviewHTML, /products-booking-link|Back to Booking|href="booking-book-phase-1\.html"/);
   assert.match(overviewHTML, /Active services[\s\S]*?<strong>3<\/strong>/);
   assert.match(overviewHTML, /Estimated monthly total[\s\S]*?<strong>\$377<\/strong>/);
   assert.match(overviewHTML, /Next invoice[\s\S]*?<strong>Aug 17<\/strong>/);

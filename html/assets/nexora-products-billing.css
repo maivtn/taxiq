@@ -41,30 +41,6 @@
   line-height: 1.45;
 }
 
-.products-booking-link {
-  display: inline-flex;
-  min-height: 38px;
-  width: max-content;
-  max-width: 100%;
-  align-items: center;
-  justify-content: center;
-  gap: 6px;
-  border: 1px solid var(--nexora-border);
-  border-radius: 8px;
-  background: #fff;
-  padding: 0 13px;
-  color: var(--nexora-text);
-  font-size: 13px;
-  font-weight: 900;
-  text-decoration: none;
-  box-shadow: var(--nexora-card-shadow);
-}
-
-.products-booking-link svg {
-  width: 15px;
-  height: 15px;
-}
-
 .products-billing-tabs {
   display: flex;
   flex-wrap: wrap;
@@ -514,8 +490,7 @@
     grid-template-columns: 1fr;
   }
 
-  .products-billing-tab,
-  .products-booking-link {
+  .products-billing-tab {
     width: 100%;
   }
 
