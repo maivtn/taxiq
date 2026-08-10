@@ -80,6 +80,11 @@ test('links and activates Reviews on the native Review page', () => {
   assert.match(html, /<a class="nav-item is-active" href="nexora-review\.html">[\s\S]*?<span>Reviews<\/span>/);
 });
 
+test('links and activates Products & Billing on its native page', () => {
+  const html = renderSidebar('products-billing', '');
+  assert.match(html, /<a class="nav-item is-active" href="nexora-products-billing\.html">[\s\S]*data-lucide="credit-card"[\s\S]*?<span>Products &amp; Billing<\/span>/);
+});
+
 test('renders the Staff sidebar with its staff-only navigation', () => {
   const html = renderSidebar('staff', 'dashboard');
   assert.match(html, /class="sidebar-panel staff-profile-panel"/);

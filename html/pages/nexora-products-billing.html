@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexora Touch - Products &amp; Billing</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/nexora-products-billing.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Dashboard sidebar"></aside>
+
+    <div class="app-area">
+      <header class="header"></header>
+
+      <main class="content" aria-label="Products and billing content">
+        <section class="products-billing-page" aria-labelledby="products-billing-title">
+          <div class="products-billing-heading">
+            <div class="products-billing-heading-copy">
+              <span class="products-billing-kicker">Products &amp; Billing</span>
+              <h1 id="products-billing-title">Manage every NEXORA product in one place.</h1>
+              <p>Plans, usage and billing stay separate from daily operations.</p>
+            </div>
+            <a class="products-booking-link" href="booking-book-phase-1.html">
+              <i data-lucide="arrow-left" aria-hidden="true"></i>
+              <span>Back to Booking</span>
+            </a>
+          </div>
+
+          <div class="products-billing-tabs" role="tablist" aria-label="Products and billing tabs">
+            <button id="products-billing-tab-overview" class="products-billing-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="products-billing-panel-overview" data-products-billing-tab="overview">Overview</button>
+            <button id="products-billing-tab-history" class="products-billing-tab" type="button" role="tab" aria-selected="false" aria-controls="products-billing-panel-history" data-products-billing-tab="history" tabindex="-1">Billing history</button>
+            <button id="products-billing-tab-payment-methods" class="products-billing-tab" type="button" role="tab" aria-selected="false" aria-controls="products-billing-panel-payment-methods" data-products-billing-tab="payment-methods" tabindex="-1">Payment methods</button>
+          </div>
+
+          <section id="products-billing-panel-overview" class="products-billing-panel" role="tabpanel" aria-labelledby="products-billing-tab-overview" data-products-billing-panel="overview">
+            <div class="products-summary-grid" aria-label="Products and billing summary">
+              <article class="products-summary-card">
+                <span>Active services</span>
+                <strong>3</strong>
+                <small>Across this salon</small>
+              </article>
+              <article class="products-summary-card">
+                <span>Estimated monthly total</span>
+                <strong>$377</strong>
+                <small>Before taxes and usage</small>
+              </article>
+              <article class="products-summary-card">
+                <span>Next invoice</span>
+                <strong>Aug 17</strong>
+                <small>Consolidated invoice</small>
+              </article>
+            </div>
+
+            <div class="product-card-grid" aria-label="NEXORA products">
+              <article class="product-card">
+                <div class="product-card-top">
+                  <span class="product-icon"><i data-lucide="phone-call" aria-hidden="true"></i></span>
+                  <span class="product-status is-active">Active</span>
+                </div>
+                <h2>AI Phone</h2>
+                <p>24/7 AI calls, appointment requests and SMS follow-up.</p>
+                <div class="product-price">$199<span>/month</span></div>
+                <div class="product-plan">Pro &middot; Aug 17, 2026</div>
+                <div class="product-meter" aria-label="Voice minutes 842 of 1000">
+                  <span style="width: 84.2%"></span>
+                </div>
+                <div class="product-usage"><span>Voice minutes</span><strong>842 / 1,000</strong></div>
+                <div class="product-actions">
+                  <button type="button">View usage</button>
+                  <button type="button">Manage plan</button>
+                </div>
+              </article>
+
+              <article class="product-card">
+                <div class="product-card-top">
+                  <span class="product-icon"><i data-lucide="percent" aria-hidden="true"></i></span>
+                  <span class="product-status is-trial">Trial</span>
+                </div>
+                <h2>Tax IQ</h2>
+                <p>Automated sales-tax insights and filing preparation.</p>
+                <div class="product-price">$0<span> during trial</span></div>
+                <div class="product-plan">14-day trial &middot; Ends Jul 26, 2026</div>
+                <div class="product-meter" aria-label="Reports analyzed 8 of 20">
+                  <span style="width: 40%"></span>
+                </div>
+                <div class="product-usage"><span>Reports analyzed</span><strong>8 / 20</strong></div>
+                <div class="product-actions">
+                  <button type="button">View usage</button>
+                  <button type="button">Manage plan</button>
+                </div>
+              </article>
+
+              <article class="product-card">
+                <div class="product-card-top">
+                  <span class="product-icon"><i data-lucide="corner-up-left" aria-hidden="true"></i></span>
+                  <span class="product-status is-active">Active</span>
+                </div>
+                <h2>QR Tips &amp; Reviews</h2>
+                <p>Collect tips and route happy guests to Google reviews.</p>
+                <div class="product-price">$79<span>/month</span></div>
+                <div class="product-plan">Growth &middot; Aug 17, 2026</div>
+                <div class="product-meter" aria-label="QR scans 684 of 1000">
+                  <span style="width: 68.4%"></span>
+                </div>
+                <div class="product-usage"><span>QR scans</span><strong>684 / 1,000</strong></div>
+                <div class="product-actions">
+                  <button type="button">View usage</button>
+                  <button type="button">Manage plan</button>
+                </div>
+              </article>
+
+              <article class="product-card">
+                <div class="product-card-top">
+                  <span class="product-icon"><i data-lucide="star" aria-hidden="true"></i></span>
+                  <span class="product-status is-muted">Not Activated</span>
+                </div>
+                <h2>Rewards</h2>
+                <p>Bring customers back with points and targeted rewards.</p>
+                <div class="product-price">$49<span>/month</span></div>
+                <div class="product-plan">Not activated &middot; Available now</div>
+                <div class="product-meter is-empty" aria-label="Members 0 of 500">
+                  <span style="width: 0%"></span>
+                </div>
+                <div class="product-usage"><span>Members</span><strong>0 / 500</strong></div>
+                <div class="product-actions">
+                  <button type="button">View usage</button>
+                  <button class="is-primary" type="button">Explore product</button>
+                </div>
+              </article>
+
+              <article class="product-card">
+                <div class="product-card-top">
+                  <span class="product-icon"><i data-lucide="calendar-days" aria-hidden="true"></i></span>
+                  <span class="product-status is-active">Active</span>
+                </div>
+                <h2>Booking</h2>
+                <p>Calendar, customer records and booking automation.</p>
+                <div class="product-price">$99<span>/month</span></div>
+                <div class="product-plan">Starter &middot; Aug 17, 2026</div>
+                <div class="product-meter" aria-label="Appointments 286 of 500">
+                  <span style="width: 57.2%"></span>
+                </div>
+                <div class="product-usage"><span>Appointments</span><strong>286 / 500</strong></div>
+                <div class="product-actions">
+                  <button type="button">View usage</button>
+                  <button type="button">Manage plan</button>
+                </div>
+              </article>
+            </div>
+          </section>
+
+          <section id="products-billing-panel-history" class="products-billing-panel" role="tabpanel" aria-labelledby="products-billing-tab-history" data-products-billing-panel="history" hidden>
+            <div class="billing-history-card">
+              <div class="panel-card-heading">
+                <h2>Billing history</h2>
+                <span>Last 90 days</span>
+              </div>
+              <div class="billing-history-table-wrap">
+                <table class="billing-history-table">
+                  <caption>Recent product invoices</caption>
+                  <thead>
+                    <tr>
+                      <th scope="col">Invoice</th>
+                      <th scope="col">Products</th>
+                      <th scope="col">Date</th>
+                      <th scope="col">Status</th>
+                      <th scope="col">Amount</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    <tr>
+                      <td><strong>INV-20260817</strong><span>Upcoming consolidated bill</span></td>
+                      <td>AI Phone, QR Tips &amp; Reviews, Booking</td>
+                      <td>Aug 17, 2026</td>
+                      <td><span class="history-status is-upcoming">Upcoming</span></td>
+                      <td>$377</td>
+                    </tr>
+                    <tr>
+                      <td><strong>INV-20260717</strong><span>Paid by card ending 4242</span></td>
+                      <td>AI Phone, QR Tips &amp; Reviews, Booking</td>
+                      <td>Jul 17, 2026</td>
+                      <td><span class="history-status is-paid">Paid</span></td>
+                      <td>$377</td>
+                    </tr>
+                    <tr>
+                      <td><strong>INV-20260617</strong><span>Paid by card ending 4242</span></td>
+                      <td>AI Phone, QR Tips &amp; Reviews</td>
+                      <td>Jun 17, 2026</td>
+                      <td><span class="history-status is-paid">Paid</span></td>
+                      <td>$278</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section id="products-billing-panel-payment-methods" class="products-billing-panel" role="tabpanel" aria-labelledby="products-billing-tab-payment-methods" data-products-billing-panel="payment-methods" hidden>
+            <div class="payment-method-grid">
+              <article class="payment-method-card is-default">
+                <div class="payment-method-icon"><i data-lucide="credit-card" aria-hidden="true"></i></div>
+                <div>
+                  <span>Default</span>
+                  <h2>Visa ending 4242</h2>
+                  <p>Expires 08/28</p>
+                </div>
+                <button type="button">Manage</button>
+              </article>
+              <article class="payment-method-card">
+                <div class="payment-method-icon"><i data-lucide="landmark" aria-hidden="true"></i></div>
+                <div>
+                  <span>Backup</span>
+                  <h2>ACH bank account</h2>
+                  <p>Connected for invoice fallback.</p>
+                </div>
+                <button type="button">Manage</button>
+              </article>
+              <article class="payment-method-card">
+                <div class="payment-method-icon"><i data-lucide="plus" aria-hidden="true"></i></div>
+                <div>
+                  <span>New method</span>
+                  <h2>Add payment method</h2>
+                  <p>Use a card, bank account, or approved wallet.</p>
+                </div>
+                <button class="is-primary" type="button">Add</button>
+              </article>
+            </div>
+          </section>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script src="../assets/nexora-products-billing.js"></script>
+  <script>
+    window.NEXORA_SHELL = {
+      activePage: 'products-billing'
+    };
+  </script>
+  <script src="../assets/nexora-shell.js"></script>
+</body>
+</html>

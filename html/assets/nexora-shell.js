@@ -6,7 +6,7 @@
 
    Per-page config (set BEFORE this script runs):
      window.NEXORA_SHELL = {
-       activePage: 'booking' | 'community' | 'reward' | 'pos' | 'review' | 'packages' | 'stations' | 'owner-settings' | 'staff',
+       activePage: 'booking' | 'community' | 'reward' | 'pos' | 'review' | 'products-billing' | 'packages' | 'stations' | 'owner-settings' | 'staff',
                                            // which functional group is native
        activeTab:  '<tabId>',              // initial highlighted sub-item
        showClearStorage: true,             // optional header action for local development
@@ -27,6 +27,7 @@
     reward: 'salon-setup-reward.html',
     pos: 'pos-phase-1.html',
     review: 'nexora-review.html',
+    'products-billing': 'nexora-products-billing.html',
     packages: 'nexora-packages.html',
     stations: 'qr-stations.html',
     'owner-settings': 'owner-setting.html'
@@ -49,6 +50,7 @@
       { label: 'Direct Savings' }
     ] },
     { type: 'item', label: 'Reviews', icon: 'star', page: 'review' },
+    { type: 'item', label: 'Products & Billing', icon: 'credit-card', page: 'products-billing' },
     { type: 'group', key: 'packages', label: 'Package Management', icon: 'crown', page: 'packages', items: [
       { label: 'Overview', tab: 'overview' },
       { label: 'Subscriptions', tab: 'nexora' },
