@@ -81,6 +81,16 @@ function createCheckinRuntime() {
   return { byId, context };
 }
 
+test('shows technician selection before choose services in the check-in form', () => {
+  const formState = SOURCE.match(/<div id="formState" class="hidden">([\s\S]*?)<button class="checkin-btn"/)?.[1] || '';
+  const technicianIndex = formState.indexOf('id="techGrid"');
+  const servicesIndex = formState.indexOf('class="card service-selection-card"');
+
+  assert.notEqual(technicianIndex, -1);
+  assert.notEqual(servicesIndex, -1);
+  assert.ok(technicianIndex < servicesIndex, 'technician selection should appear before Choose services');
+});
+
 test('hides beverage sections from the check-in service picker', () => {
   const { byId, context } = createCheckinRuntime();
 

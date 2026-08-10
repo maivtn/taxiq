@@ -1579,6 +1579,11 @@
               oninput="updateCheckinBtn()">
           </div>
 
+          <div class="card">
+            <div class="sec-head"><b>Technician</b><span>— optional, "First available" is fastest</span></div>
+            <div class="tech-grid" id="techGrid"></div>
+          </div>
+
           <div class="card service-selection-card">
             <div class="service-panel-head">
               <div>
@@ -1615,11 +1620,6 @@
                     class="service-summary-value" id="serviceTotalPrice">$0.00</strong></div>
               </div>
             </section>
-          </div>
-
-          <div class="card">
-            <div class="sec-head"><b>Technician</b><span>— optional, "First available" is fastest</span></div>
-            <div class="tech-grid" id="techGrid"></div>
           </div>
 
           <button class="checkin-btn" id="checkinBtn" type="button" disabled onclick="checkIn()"><i
