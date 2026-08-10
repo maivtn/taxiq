@@ -460,6 +460,30 @@ test('keeps New appointment, view switch, and Filter at the same height', () => 
   assert.match(addRule, /height:\s*36px/);
 });
 
+test('keeps Booking page tabs compact on desktop', () => {
+  const html = source();
+  const pageTabsRule = html.match(/\.page-tabs\s*\{([^}]*)\}/)?.[1] || '';
+  const pageTabRule = html.match(/\.page-tab\s*\{([^}]*)\}/)?.[1] || '';
+  const buttonWeightGroup = html.match(/\.mode-switch button,[\s\S]*?\.trial-submit\s*\{\s*font-weight:\s*700;/)?.[0] || '';
+
+  assert.match(pageTabsRule, /gap:\s*4px;/);
+  assert.match(pageTabRule, /gap:\s*4px;/);
+  assert.match(pageTabRule, /padding:\s*8px\s+8px;/);
+  assert.match(pageTabRule, /font-weight:\s*600;/);
+  assert.doesNotMatch(buttonWeightGroup, /\.page-tab,/);
+});
+
+test('lets the Appointments Overview card shrink while its table scrolls internally', () => {
+  const html = source();
+  const cardRule = html.match(/\.booking-grid > \.overview-card\s*\{([^}]*)\}/)?.[1] || '';
+  const tableWrapRule = html.match(/\.booking-table-wrap\s*\{([^}]*)\}/)?.[1] || '';
+  const tableRule = html.match(/\.booking-table\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(cardRule, /min-width:\s*0;/);
+  assert.match(tableWrapRule, /overflow-x:\s*auto;/);
+  assert.match(tableRule, /min-width:\s*1040px;/);
+});
+
 test('does not close New appointment when clicking outside the dialog', () => {
   const html = source();
 
@@ -486,6 +510,18 @@ test('restores status filter chips in the Appointments Overview', () => {
   assert.match(html, /data-booking-status-chip="noshow"/);
   assert.match(html, /data-booking-status-count="all"/);
   assert.match(html, /aria-label="Filter appointments by status"/);
+});
+
+test('adds an Upcoming chip for customers whose appointments are still ahead', () => {
+  const html = source();
+  const overviewChips = html.match(/<div class="booking-status-chips" data-booking-status-chips[\s\S]*?<\/div>/)?.[0] || '';
+
+  assert.match(overviewChips, /data-booking-status-chip="upcoming"[^>]*>Upcoming/);
+  assert.match(overviewChips, /data-booking-status-count="upcoming"/);
+  assert.match(html, /function isBookingUpcomingItem\(item\)/);
+  assert.match(html, /if \(isBookingUpcomingItem\(item\)\) counts\.upcoming\+\+;/);
+  assert.match(html, /bookingStatusFilter === 'upcoming'\s*\?\s*isBookingUpcomingItem\(item\)/);
+  assert.match(html, /var isValid = status === 'all' \|\| status === 'upcoming' \|\| BOOKING_STATUS_CLASS\[status\];/);
 });
 
 test('positions booking filter labels over the input corner', () => {

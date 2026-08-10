@@ -657,7 +657,7 @@
     .page-tabs {
       display: flex;
       flex-wrap: wrap;
-      gap: 10px;
+      gap: 4px;
       margin-top: 20px;
     }
 
@@ -665,14 +665,14 @@
       display: inline-flex;
       min-height: 44px;
       align-items: center;
-      gap: 10px;
+      gap: 4px;
       border: 1px solid var(--nexora-border);
       border-radius: 12px;
       background: var(--nexora-surface);
-      padding: 8px 14px 8px 10px;
+      padding: 8px 8px;
       color: var(--nexora-muted);
       font-size: 13px;
-      font-weight: 800;
+      font-weight: 600;
       box-shadow: var(--nexora-card-shadow);
       transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
     }
@@ -4675,6 +4675,12 @@
       gap: 16px;
     }
 
+    /* Keep wide appointment tables scrolling inside their wrapper instead of
+       forcing the whole overview card and header toolbar wider than the viewport. */
+    .booking-grid > .overview-card {
+      min-width: 0;
+    }
+
     .booking-appointment-layout {
       display: grid;
       grid-template-columns: 1fr;
@@ -7382,7 +7388,6 @@
       font-weight: 700;
     }
 
-    .page-tab,
     .mode-switch button,
     .language-switcher button,
     .booking-subtab,
@@ -9114,6 +9119,7 @@
 
                     <div class="booking-status-chips" data-booking-status-chips role="group" aria-label="Filter appointments by status">
                       <button class="booking-status-chip is-active" type="button" data-booking-status-chip="all" aria-pressed="true">All <span class="booking-status-chip-count" data-booking-status-count="all">0</span></button>
+                      <button class="booking-status-chip" type="button" data-booking-status-chip="upcoming" aria-pressed="false">Upcoming <span class="booking-status-chip-count" data-booking-status-count="upcoming">0</span></button>
                       <button class="booking-status-chip" type="button" data-booking-status-chip="new" aria-pressed="false">New <span class="booking-status-chip-count" data-booking-status-count="new">0</span></button>
                       <button class="booking-status-chip" type="button" data-booking-status-chip="sms-sent" aria-pressed="false">SMS Sent <span class="booking-status-chip-count" data-booking-status-count="sms-sent">0</span></button>
                       <button class="booking-status-chip" type="button" data-booking-status-chip="done" aria-pressed="false">Completed <span class="booking-status-chip-count" data-booking-status-count="done">0</span></button>
@@ -12058,13 +12064,22 @@
       updateBookingStatusChips();
     }
 
+    function isBookingUpcomingItem(item) {
+      if (!item || !item.dataset || !item.classList) return false;
+      var itemDate = item.dataset.bookingDate || '';
+      return itemDate >= BOOKING_TODAY_DATE &&
+        !item.classList.contains(BOOKING_STATUS_CLASS.done) &&
+        !item.classList.contains(BOOKING_STATUS_CLASS.noshow);
+    }
+
     function updateBookingStatusChips() {
       var subpanel = document.getElementById('booking-subpanel-today');
       if (!subpanel) return;
 
       var allItems = Array.from(subpanel.querySelectorAll('[data-booking-item]'));
-      var counts = { all: allItems.length, 'new': 0, 'sms-sent': 0, 'done': 0, 'noshow': 0 };
+      var counts = { all: allItems.length, upcoming: 0, 'new': 0, 'sms-sent': 0, 'done': 0, 'noshow': 0 };
       allItems.forEach(function(item) {
+        if (isBookingUpcomingItem(item)) counts.upcoming++;
         Object.keys(BOOKING_STATUS_CLASS).forEach(function(key) {
           if (item.classList.contains(BOOKING_STATUS_CLASS[key])) counts[key]++;
         });
@@ -12083,7 +12098,7 @@
     }
 
     function setBookingStatusFilter(status) {
-      var isValid = status === 'all' || BOOKING_STATUS_CLASS[status];
+      var isValid = status === 'all' || status === 'upcoming' || BOOKING_STATUS_CLASS[status];
       bookingStatusFilter = isValid ? status : 'all';
       filterBookingItems();
     }
@@ -13588,7 +13603,7 @@ function getBookingCardCallStart(item) {
         var matchesSearch = !query || searchValue.indexOf(query) !== -1;
         var matchesDateFrom = !dateFrom || itemDate >= dateFrom;
         var matchesDateTo = !dateTo || itemDate <= dateTo;
-        var matchesStatus = bookingStatusFilter === 'all' || item.classList.contains(statusClass);
+        var matchesStatus = bookingStatusFilter === 'all' || (bookingStatusFilter === 'upcoming' ? isBookingUpcomingItem(item) : item.classList.contains(statusClass));
         item.hidden = !(matchesSearch && matchesDateFrom && matchesDateTo && matchesStatus);
       });
 
