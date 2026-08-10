@@ -512,45 +512,134 @@ const PACKAGE_PLAN_DETAILS = {
   function renderOverview() {
     if (!overview) return;
     overview.innerHTML = `
-      <div class="package-overview-grid">
-        ${OWNED_PACKAGES.map((item) => {
-          const status = getPackageHistoryStatus(item.expiresAt);
-          return `
-          <article class="package-owned-card" data-owned-package="${escapeHTML(item.id)}">
-            <div class="package-owned-card-top">
-              <span class="package-product-badge">${escapeHTML(item.product)}</span>
-              <span class="package-status ${status.className}"><i data-lucide="${status.icon}" aria-hidden="true"></i>${status.label}</span>
-            </div>
-            <div class="package-owned-title-row">
-                <div class="package-owned-info">
-                  <div class="package-owned-name-row">
-                    <h3>${escapeHTML(item.name)}</h3>
-                    <div class="package-autorenew-row">
-                      <span class="package-autorenew-label">Auto Renew</span>
-                      <label class="package-switch">
-                        <input type="checkbox" data-autorenew-input data-owned-package-id="${escapeHTML(item.id)}" ${item.autoRenew ? 'checked' : ''} aria-label="Auto renew ${escapeHTML(item.name)}">
-                        <span class="package-switch-track">
-                          <span class="package-switch-thumb"></span>
-                          <span class="package-autorenew-state" data-autorenew-state>${item.autoRenew ? 'ON' : 'OFF'}</span>
-                        </span>
-                      </label>
-                    </div>
-                  </div>
-                  <p>${escapeHTML(item.description)}</p>
-                </div>
-            </div>
-                <div class="package-date-grid">
-                  <div><span>Activated</span><strong>${formatDate(item.activatedAt)}</strong></div>
-                  <div><span>Expires</span><strong>${formatDate(item.expiresAt)}</strong></div>
-                </div>
-                <div class="package-countdown" data-countdown data-package-end="${escapeHTML(item.expiresAt)}">
-                  <div class="package-countdown-heading"><span class="package-countdown-icon"><i data-lucide="clock-3" aria-hidden="true"></i></span><span class="package-countdown-label">Remaining Time</span></div>
-                  <div class="package-countdown-units" role="group" aria-label="Remaining time">${renderCountdownUnits(item.expiresAt)}</div>
-                </div>
+      <section class="products-billing-page package-products-overview" aria-labelledby="package-products-overview-title">
+        <div class="products-billing-heading">
+          <div class="products-billing-heading-copy">
+            <span class="products-billing-kicker">Products &amp; Billing</span>
+            <h1 id="package-products-overview-title">Manage every NEXORA product in one place.</h1>
+            <p>Plans, usage and billing stay separate from daily operations.</p>
+          </div>
+          <a class="products-booking-link" href="booking-book-phase-1.html">
+            <i data-lucide="arrow-left" aria-hidden="true"></i>
+            <span>Back to Booking</span>
+          </a>
+        </div>
+
+        <div class="products-summary-grid" aria-label="Products and billing summary">
+          <article class="products-summary-card">
+            <span>Active services</span>
+            <strong>3</strong>
+            <small>Across this salon</small>
           </article>
-        `;
-        }).join('')}
-      </div>
+          <article class="products-summary-card">
+            <span>Estimated monthly total</span>
+            <strong>$377</strong>
+            <small>Before taxes and usage</small>
+          </article>
+          <article class="products-summary-card">
+            <span>Next invoice</span>
+            <strong>Aug 17</strong>
+            <small>Consolidated invoice</small>
+          </article>
+        </div>
+
+        <div class="product-card-grid" aria-label="NEXORA products">
+          <article class="product-card">
+            <div class="product-card-top">
+              <span class="product-icon"><i data-lucide="phone-call" aria-hidden="true"></i></span>
+              <span class="product-status is-active">Active</span>
+            </div>
+            <h2>AI Phone</h2>
+            <p>24/7 AI calls, appointment requests and SMS follow-up.</p>
+            <div class="product-price">$199<span>/month</span></div>
+            <div class="product-plan">Pro &middot; Aug 17, 2026</div>
+            <div class="product-meter" aria-label="Voice minutes 842 of 1000">
+              <span style="width: 84.2%"></span>
+            </div>
+            <div class="product-usage"><span>Voice minutes</span><strong>842 / 1,000</strong></div>
+            <div class="product-actions">
+              <button type="button">View usage</button>
+              <button type="button">Manage plan</button>
+            </div>
+          </article>
+
+          <article class="product-card">
+            <div class="product-card-top">
+              <span class="product-icon"><i data-lucide="percent" aria-hidden="true"></i></span>
+              <span class="product-status is-trial">Trial</span>
+            </div>
+            <h2>Tax IQ</h2>
+            <p>Automated sales-tax insights and filing preparation.</p>
+            <div class="product-price">$0<span> during trial</span></div>
+            <div class="product-plan">14-day trial &middot; Ends Jul 26, 2026</div>
+            <div class="product-meter" aria-label="Reports analyzed 8 of 20">
+              <span style="width: 40%"></span>
+            </div>
+            <div class="product-usage"><span>Reports analyzed</span><strong>8 / 20</strong></div>
+            <div class="product-actions">
+              <button type="button">View usage</button>
+              <button type="button">Manage plan</button>
+            </div>
+          </article>
+
+          <article class="product-card">
+            <div class="product-card-top">
+              <span class="product-icon"><i data-lucide="corner-up-left" aria-hidden="true"></i></span>
+              <span class="product-status is-active">Active</span>
+            </div>
+            <h2>QR Tips &amp; Reviews</h2>
+            <p>Collect tips and route happy guests to Google reviews.</p>
+            <div class="product-price">$79<span>/month</span></div>
+            <div class="product-plan">Growth &middot; Aug 17, 2026</div>
+            <div class="product-meter" aria-label="QR scans 684 of 1000">
+              <span style="width: 68.4%"></span>
+            </div>
+            <div class="product-usage"><span>QR scans</span><strong>684 / 1,000</strong></div>
+            <div class="product-actions">
+              <button type="button">View usage</button>
+              <button type="button">Manage plan</button>
+            </div>
+          </article>
+
+          <article class="product-card">
+            <div class="product-card-top">
+              <span class="product-icon"><i data-lucide="star" aria-hidden="true"></i></span>
+              <span class="product-status is-muted">Not Activated</span>
+            </div>
+            <h2>Rewards</h2>
+            <p>Bring customers back with points and targeted rewards.</p>
+            <div class="product-price">$49<span>/month</span></div>
+            <div class="product-plan">Not activated &middot; Available now</div>
+            <div class="product-meter is-empty" aria-label="Members 0 of 500">
+              <span style="width: 0%"></span>
+            </div>
+            <div class="product-usage"><span>Members</span><strong>0 / 500</strong></div>
+            <div class="product-actions">
+              <button type="button">View usage</button>
+              <button class="is-primary" type="button">Explore product</button>
+            </div>
+          </article>
+
+          <article class="product-card">
+            <div class="product-card-top">
+              <span class="product-icon"><i data-lucide="calendar-days" aria-hidden="true"></i></span>
+              <span class="product-status is-active">Active</span>
+            </div>
+            <h2>Booking</h2>
+            <p>Calendar, customer records and booking automation.</p>
+            <div class="product-price">$99<span>/month</span></div>
+            <div class="product-plan">Starter &middot; Aug 17, 2026</div>
+            <div class="product-meter" aria-label="Appointments 286 of 500">
+              <span style="width: 57.2%"></span>
+            </div>
+            <div class="product-usage"><span>Appointments</span><strong>286 / 500</strong></div>
+            <div class="product-actions">
+              <button type="button">View usage</button>
+              <button type="button">Manage plan</button>
+            </div>
+          </article>
+        </div>
+      </section>
     `;
     if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
   }

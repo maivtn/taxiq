@@ -236,6 +236,54 @@ function renderPackageHistoryHTML() {
   return purchaseHistory.innerHTML;
 }
 
+function renderPackageOverviewHTML() {
+  const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
+  const overview = fakeElement();
+  const purchaseHistory = fakeElement();
+  const tabs = ['overview', 'nexora', 'voice', 'history'].map((packageTab) => fakeElement({ packageTab }));
+  const panels = ['overview', 'nexora', 'voice', 'history'].map((packagePanel) => fakeElement({ packagePanel }));
+
+  const context = {
+    Date,
+    Intl,
+    URL,
+    document: {
+      body: {
+        classList: { add() {}, remove() {} },
+        style: { overflow: '' }
+      },
+      addEventListener() {},
+      querySelector(selector) {
+        if (selector === '[data-package-overview]') return overview;
+        if (selector === '[data-purchase-history]') return purchaseHistory;
+        if (selector === '[data-package-payment-modal]') return null;
+        if (selector === '[data-package-trial-modal]') return null;
+        return null;
+      },
+      querySelectorAll(selector) {
+        if (selector === '[data-package-tab]') return tabs;
+        if (selector === '[data-package-panel]') return panels;
+        if (selector === '[data-nexora-select], [data-plan-select]') return [];
+        if (selector === '[data-package-billing-cycle]') return [];
+        if (selector === '[data-billing-price]') return [];
+        if (selector === '[data-billing-compare-price]') return [];
+        if (selector === '[data-countdown]') return [];
+        return [];
+      }
+    },
+    window: {
+      addEventListener() {},
+      history: { pushState() {}, replaceState() {} },
+      location: { href: 'https://example.test/nexora-packages.html?tab=overview' },
+      localStorage: { getItem() { return null; }, setItem() {} },
+      lucide: { createIcons() {} },
+      setInterval() {}
+    }
+  };
+  vm.runInNewContext(runtime, context);
+  return overview.innerHTML;
+}
+
 test('creates the empty Package Management page from the shared shell', () => {
   const html = source();
   assert.match(html, /<title>Nexora Touch - Package Management<\/title>/);
@@ -470,52 +518,30 @@ test('copies the Booking Book Plans content into the Voice + SMS panel', () => {
   assert.match(voicePanel, /Start 14-Day Free Trial/);
 });
 
-test('provides the owned-package overview panel and countdown data contract', () => {
+test('renders the Products & Billing overview inside Package Management overview tab', () => {
   const html = source();
-  const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
-  const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
+  const overviewHTML = renderPackageOverviewHTML();
+
   assert.match(html, /<script src="\.\.\/assets\/nexora-packages\.js"><\/script>/);
+  assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-products-billing\.css">/);
   assert.match(html, /data-package-panel="overview"/);
   assert.match(html, /data-package-overview/);
-  assert.doesNotMatch(runtime, /package-overview-head/);
-  assert.doesNotMatch(css, /\.package-overview-head/);
-  assert.match(runtime, /OWNED_PACKAGES/);
-  assert.match(runtime, /activatedAt/);
-  assert.match(runtime, /expiresAt/);
-  assert.match(runtime, /data-countdown/);
-  assert.match(runtime, /function formatCountdown/);
-});
+  assert.match(overviewHTML, /Manage every NEXORA product in one place\./);
+  assert.match(overviewHTML, /Products &amp; Billing/);
+  assert.match(overviewHTML, /Active services[\s\S]*?<strong>3<\/strong>/);
+  assert.match(overviewHTML, /Estimated monthly total[\s\S]*?<strong>\$377<\/strong>/);
+  assert.match(overviewHTML, /Next invoice[\s\S]*?<strong>Aug 17<\/strong>/);
 
-test('keeps mutable package prices out of owned-package overview cards', () => {
-  const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
-  assert.doesNotMatch(runtime, /\n\s+price:\s*['"]/);
-  assert.doesNotMatch(runtime, /escapeHTML\(item\.price\)/);
-});
+  for (const product of ['AI Phone', 'Tax IQ', 'QR Tips &amp; Reviews', 'Rewards', 'Booking']) {
+    assert.match(overviewHTML, new RegExp(`<h2>${product}<\\/h2>`));
+  }
 
-test('spells out countdown units and gives the remaining-time block a clear visual treatment', () => {
-  const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
-  const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
-  assert.match(runtime, /class="package-countdown-icon"/);
-  assert.doesNotMatch(runtime, /package-countdown-value|data-countdown-value/);
-  assert.match(runtime, /class="package-countdown-units"/);
-  assert.match(runtime, /\['years', 'Years'\]/);
-  assert.match(runtime, /\['months', 'Months'\]/);
-  assert.match(runtime, /\['days', 'Days'\]/);
-  assert.match(runtime, /\['hours', 'Hours'\]/);
-  assert.match(runtime, /\['minutes', 'Minutes'\]/);
-  assert.match(runtime, /\['seconds', 'Seconds'\]/);
-  assert.match(runtime, /function formatCountdownParts/);
-  assert.match(runtime, /days/);
-  assert.match(runtime, /hours/);
-  assert.match(runtime, /minutes/);
-  assert.match(runtime, /seconds/);
-  assert.doesNotMatch(runtime, /`\$\{days\}d/);
-  assert.match(css, /\.package-countdown\s*\{[\s\S]*?border:/);
-  assert.match(css, /\.package-countdown-icon\s*\{/);
-  assert.match(css, /\.package-countdown-units\s*\{/);
-  assert.match(css, /\.package-countdown-unit\s*\{/);
-  assert.match(css, /\.package-countdown-unit strong\s*\{/);
-  assert.doesNotMatch(css, /\.package-countdown-value\s*\{/);
+  assert.match(overviewHTML, /Voice minutes[\s\S]*?842 \/ 1,000/);
+  assert.match(overviewHTML, /Reports analyzed[\s\S]*?8 \/ 20/);
+  assert.match(overviewHTML, /QR scans[\s\S]*?684 \/ 1,000/);
+  assert.match(overviewHTML, /Members[\s\S]*?0 \/ 500/);
+  assert.match(overviewHTML, /Appointments[\s\S]*?286 \/ 500/);
+  assert.doesNotMatch(overviewHTML, /package-owned-card|Remaining Time|Auto Renew/);
 });
 
 test('provides the package purchase history panel and transaction data contract', () => {
