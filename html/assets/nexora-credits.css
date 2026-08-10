@@ -376,6 +376,7 @@
   border-radius: 7px;
   padding: 6px 8px;
   font-size: 10px;
+  font-weight: 700;
 }
 
 .credits-action svg { width: 15px; height: 15px; }
