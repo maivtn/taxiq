@@ -518,7 +518,7 @@ test('copies the Booking Book Plans content into the Voice + SMS panel', () => {
   assert.match(voicePanel, /Start 14-Day Free Trial/);
 });
 
-test('renders the Products & Billing overview inside Package Management overview tab', () => {
+test('merges the Products & Billing overview with existing package ownership cards', () => {
   const html = source();
   const overviewHTML = renderPackageOverviewHTML();
 
@@ -542,7 +542,12 @@ test('renders the Products & Billing overview inside Package Management overview
   assert.match(overviewHTML, /QR scans[\s\S]*?684 \/ 1,000/);
   assert.match(overviewHTML, /Members[\s\S]*?0 \/ 500/);
   assert.match(overviewHTML, /Appointments[\s\S]*?286 \/ 500/);
-  assert.doesNotMatch(overviewHTML, /package-owned-card|Remaining Time|Auto Renew/);
+  assert.match(overviewHTML, /package-owned-card/);
+  assert.match(overviewHTML, /Professional Pro/);
+  assert.match(overviewHTML, /Voice \+ SMS[\s\S]*?Pro/);
+  assert.match(overviewHTML, /Auto Renew/);
+  assert.match(overviewHTML, /Remaining Time/);
+  assert.match(overviewHTML, /data-countdown/);
 });
 
 test('provides the package purchase history panel and transaction data contract', () => {

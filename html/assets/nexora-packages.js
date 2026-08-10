@@ -635,6 +635,46 @@ const PACKAGE_PLAN_DETAILS = {
             </div>
           </article>
         </div>
+
+        <div class="package-overview-grid" aria-label="Current package ownership">
+          ${OWNED_PACKAGES.map((item) => {
+            const status = getPackageHistoryStatus(item.expiresAt);
+            return `
+            <article class="package-owned-card" data-owned-package="${escapeHTML(item.id)}">
+              <div class="package-owned-card-top">
+                <span class="package-product-badge">${escapeHTML(item.product)}</span>
+                <span class="package-status ${status.className}"><i data-lucide="${status.icon}" aria-hidden="true"></i>${status.label}</span>
+              </div>
+              <div class="package-owned-title-row">
+                <div class="package-owned-info">
+                  <div class="package-owned-name-row">
+                    <h3>${escapeHTML(item.name)}</h3>
+                    <div class="package-autorenew-row">
+                      <span class="package-autorenew-label">Auto Renew</span>
+                      <label class="package-switch">
+                        <input type="checkbox" data-autorenew-input data-owned-package-id="${escapeHTML(item.id)}" ${item.autoRenew ? 'checked' : ''} aria-label="Auto renew ${escapeHTML(item.name)}">
+                        <span class="package-switch-track">
+                          <span class="package-switch-thumb"></span>
+                          <span class="package-autorenew-state" data-autorenew-state>${item.autoRenew ? 'ON' : 'OFF'}</span>
+                        </span>
+                      </label>
+                    </div>
+                  </div>
+                  <p>${escapeHTML(item.description)}</p>
+                </div>
+              </div>
+              <div class="package-date-grid">
+                <div><span>Activated</span><strong>${formatDate(item.activatedAt)}</strong></div>
+                <div><span>Expires</span><strong>${formatDate(item.expiresAt)}</strong></div>
+              </div>
+              <div class="package-countdown" data-countdown data-package-end="${escapeHTML(item.expiresAt)}">
+                <div class="package-countdown-heading"><span class="package-countdown-icon"><i data-lucide="clock-3" aria-hidden="true"></i></span><span class="package-countdown-label">Remaining Time</span></div>
+                <div class="package-countdown-units" role="group" aria-label="Remaining time">${renderCountdownUnits(item.expiresAt)}</div>
+              </div>
+            </article>
+          `;
+          }).join('')}
+        </div>
       </section>
     `;
     if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
