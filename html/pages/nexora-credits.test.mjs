@@ -176,6 +176,13 @@ test('gives Voice and SMS purchase buttons distinct colors', () => {
   assert.match(css, /\.credits-topup-actions \.credits-action-sms\s*\{[\s\S]*?background:\s*#168b55[\s\S]*?color:\s*#fff/);
 });
 
+test('keeps Voice and SMS purchase button labels moderately weighted', () => {
+  const css = readFileSync(CSS_URL, 'utf8');
+  const topupActionRule = css.match(/\.credits-topup-actions \.credits-action\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(topupActionRule, /font-weight:\s*700/);
+});
+
 test('reduces Pro and SMS Credits typography on mobile', () => {
   const css = readFileSync(CSS_URL, 'utf8');
 
