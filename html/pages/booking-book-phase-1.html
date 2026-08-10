@@ -7625,6 +7625,12 @@
       }
     }
 
+    @media (min-width: 1024px) {
+      .plans-grid {
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+      }
+    }
+
     @media (min-width: 1366px) {
       .sidebar {
         display: flex;
@@ -10014,12 +10020,19 @@
                         <span class="credits-rollover-badge"><i data-lucide="shield-check" aria-hidden="true"></i><span>Không hết hạn</span></span>
                       </div>
 
-                      <div class="credits-plan-remaining credits-topup-remaining" aria-label="Remaining Voice and SMS credits">
-                        <span class="credits-label">Còn lại</span>
-                        <div class="credits-plan-remaining-values">
-                          <strong data-credits-voice-topup-balance>0</strong><span class="credits-plan-remaining-unit">min</span>
-                          <span class="credits-plan-remaining-separator" aria-hidden="true">·</span>
-                          <strong data-credits-sms-topup-balance>450</strong><span class="credits-plan-remaining-unit">SMS</span>
+                      <div class="credits-topup-balance-row">
+                        <div class="credits-plan-remaining" aria-label="Remaining Voice and SMS credits">
+                          <span class="credits-label">Còn lại</span>
+                          <div class="credits-plan-remaining-values">
+                            <strong data-credits-voice-topup-balance>0</strong><span class="credits-plan-remaining-unit">min</span>
+                            <span class="credits-plan-remaining-separator" aria-hidden="true">·</span>
+                            <strong data-credits-sms-topup-balance>450</strong><span class="credits-plan-remaining-unit">SMS</span>
+                          </div>
+                        </div>
+
+                        <div class="credits-actions credits-topup-actions" aria-label="Buy Voice and SMS credits">
+                          <button class="credits-action credits-action-secondary" data-credits-action="voice-buy" type="button"><span>Mua Voice credit</span></button>
+                          <button class="credits-action credits-action-secondary" data-credits-action="sms-buy" type="button"><span>Mua SMS credit</span></button>
                         </div>
                       </div>
 
@@ -10033,10 +10046,6 @@
                         <strong>AI Voice sắp hết</strong>
                         <p>Bạn chỉ còn <span data-credits-voice-warning-remaining>380</span> phút Voice. Mua thêm credit hoặc nâng cấp gói để tránh gián đoạn.</p>
                       </div>
-                    </div>
-                    <div class="credits-actions" aria-label="Buy additional credits">
-                      <button class="credits-action credits-action-secondary" data-credits-action="voice-buy" type="button"><i data-lucide="phone-call" aria-hidden="true"></i><span>Mua Voice credit</span></button>
-                      <button class="credits-action credits-action-secondary" data-credits-action="sms-buy" type="button"><i data-lucide="message-circle" aria-hidden="true"></i><span>Mua SMS credit</span></button>
                     </div>
                   </div>
 

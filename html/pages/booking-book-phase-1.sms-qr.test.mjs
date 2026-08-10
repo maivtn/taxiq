@@ -618,7 +618,7 @@ test('provides a selectable SMS credits checkout beside the credits pill', () =>
   assert.match(html, /updateCredits\(state\.credits \+ selectedPackage\.credits\)/);
 });
 
-test('opens an Elite payment modal with payment method and invoice only', () => {
+test('opens a plan payment modal with payment method and invoice only', () => {
   const html = source();
 
   assert.match(html, /data-plan-payment-modal/);
@@ -630,7 +630,7 @@ test('opens an Elite payment modal with payment method and invoice only', () => 
   assert.doesNotMatch(html, /data-plan-package-list/);
   assert.match(html, /function openServicePlanPaymentModal\(plan\)/);
   assert.match(html, /function confirmServicePlanPayment\(\)/);
-  assert.match(html, /button\.dataset\.planSelect === 'Starter' \|\| button\.dataset\.planSelect === 'Elite'[\s\S]*?openServicePlanPaymentModal/);
+  assert.match(html, /button\.dataset\.planSelect === 'Starter' \|\| button\.dataset\.planSelect === 'Pro' \|\| button\.dataset\.planSelect === 'Elite'[\s\S]*?openServicePlanPaymentModal/);
   assert.match(html, /data-plan-card-form hidden/);
 });
 
@@ -638,7 +638,7 @@ test('uses the same payment modal for Starter with the Starter invoice amount', 
   const html = source();
 
   assert.match(html, /data-plan-select="Starter"/);
-  assert.match(html, /planPaymentPlan === 'Starter' \? 99 : 349/);
+  assert.match(html, /planPaymentPlan === 'Starter' \? 99 : planPaymentPlan === 'Pro' \? 199 : 349/);
   assert.match(html, /invoiceTotal\.textContent = marketingMoney\(planPrice\) \+ '\/mo'/);
   assert.match(html, /selectServicePlan\(planPaymentPlan\)/);
 });
@@ -655,6 +655,16 @@ test('adds Package History as a Plans view switch sub tab', () => {
   assert.match(plansPanel, /data-package-history/);
   assert.match(plansPanel, /<th scope="col">Date &amp; time<\/th>[\s\S]*<th scope="col">Amount<\/th>[\s\S]*<th scope="col">Package purchased<\/th>[\s\S]*<th scope="col">Term<\/th>[\s\S]*<th scope="col">Valid Until<\/th>[\s\S]*<th scope="col">Status<\/th>[\s\S]*<th scope="col">Transaction ID<\/th>/);
   assert.match(html, /mode === 'history' \? 'history' : mode === 'credits' \? 'credits' : 'package'/);
+});
+
+test('keeps the three Buy Package cards in one row on desktop', () => {
+  const html = source();
+  const plansPanel = html.match(/<section class="tab-panel" id="panel-plans"[\s\S]*?<section class="tab-panel" id="panel-settings"/)?.[0] || '';
+  const packagePanel = plansPanel.match(/<div data-plans-view-panel="package"[\s\S]*?<section class="credits-page"/)?.[0] || '';
+  const planCards = [...packagePanel.matchAll(/data-plan-card="([^"]+)"/g)].map((match) => match[1]);
+
+  assert.deepEqual(planCards, ['starter', 'pro', 'elite']);
+  assert.match(html, /@media\s*\(min-width:\s*1024px\)\s*\{[\s\S]*?\.plans-grid\s*\{[\s\S]*?grid-template-columns:\s*repeat\(3,\s*minmax\(0,\s*1fr\)\)/);
 });
 
 test('removes the extra number allowance from the Elite plan', () => {

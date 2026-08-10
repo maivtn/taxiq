@@ -135,6 +135,34 @@ test('keeps Credit Usage cards compact without hiding their usage details', () =
   assert.match(css, /\.credits-plan-remaining-unit\s*\{/);
 });
 
+test('styles Voice and SMS Credits remaining balance like the Pro card', () => {
+  const html = source();
+  const css = readFileSync(CSS_URL, 'utf8');
+  const topupCard = html.match(/data-credits-card="sms-topup"[\s\S]*?<\/article>/)?.[0] || '';
+
+  assert.match(topupCard, /<div class="credits-plan-remaining" aria-label="Remaining Voice and SMS credits">\s*<span class="credits-label">Còn lại<\/span>\s*<div class="credits-plan-remaining-values">/);
+  assert.doesNotMatch(topupCard, /credits-topup-remaining/);
+  assert.doesNotMatch(css, /\.credits-topup-remaining/);
+});
+
+test('places Voice and SMS purchase actions inside the Voice and SMS Credits card', () => {
+  const html = source();
+  const css = readFileSync(CSS_URL, 'utf8');
+  const topupCard = html.match(/data-credits-card="sms-topup"[\s\S]*?<\/article>/)?.[0] || '';
+  const topupActions = topupCard.match(/<div class="credits-actions credits-topup-actions"[\s\S]*?<\/div>/)?.[0] || '';
+  const voiceWarning = html.match(/class="credits-voice-warning"[\s\S]*?<section class="credits-history-section"/)?.[0] || '';
+
+  assert.match(topupCard, /class="credits-topup-balance-row"[\s\S]*?class="credits-plan-remaining"[\s\S]*?class="credits-actions credits-topup-actions"/);
+  assert.match(topupCard, /class="credits-actions credits-topup-actions"[^>]*aria-label="Buy Voice and SMS credits"/);
+  assert.match(topupCard, /data-credits-action="voice-buy"[\s\S]*?Mua Voice credit[\s\S]*?data-credits-action="sms-buy"[\s\S]*?Mua SMS credit/);
+  assert.doesNotMatch(topupActions, /<i\b|data-lucide/);
+  assert.doesNotMatch(voiceWarning, /data-credits-action="(?:voice|sms)-buy"/);
+  assert.match(css, /\.credits-topup-balance-row\s*\{[\s\S]*?display:\s*flex[\s\S]*?justify-content:\s*space-between/);
+  assert.match(css, /\.credits-topup-actions\s*\{[\s\S]*?margin-top:\s*0/);
+  assert.match(css, /\.credits-topup-actions \.credits-action\s*\{[\s\S]*?padding:\s*6px 8px[\s\S]*?font-size:\s*10px/);
+  assert.match(css, /@media\s*\(max-width:\s*520px\)[\s\S]*?\.credits-topup-actions\s*\{[\s\S]*?flex-direction:\s*row[\s\S]*?\.credits-topup-actions \.credits-action\s*\{[\s\S]*?width:\s*auto/);
+});
+
 test('reduces Pro and SMS Credits typography on mobile', () => {
   const css = readFileSync(CSS_URL, 'utf8');
 
