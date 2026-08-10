@@ -510,7 +510,8 @@ test('spells out countdown units and gives the remaining-time block a clear visu
   assert.match(runtime, /minutes/);
   assert.match(runtime, /seconds/);
   assert.doesNotMatch(runtime, /`\$\{days\}d/);
-  assert.match(css, /\.package-countdown\s*\{[\s\S]*?border:/);
+  assert.match(css, /\.package-countdown\s*\{[^}]*border:/);
+  assert.match(css, /\.package-countdown\s*\{[^}]*margin-top:\s*12px;/);
   assert.match(css, /\.package-countdown-icon\s*\{/);
   assert.match(css, /\.package-countdown-units\s*\{/);
   assert.match(css, /\.package-countdown-unit\s*\{/);
