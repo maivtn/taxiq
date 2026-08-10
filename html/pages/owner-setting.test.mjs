@@ -103,7 +103,7 @@ test('renders Sub Account tab content from the product design document', () => {
     assert.match(html, new RegExp(label));
   }
 
-  for (const label of ['Daily Limit', 'Owner Manager', 'Front Desk', 'Technician Lead']) {
+  for (const label of ['Owner Manager', 'Front Desk', 'Technician Lead']) {
     assert.match(html, new RegExp(label));
   }
 
@@ -112,6 +112,19 @@ test('renders Sub Account tab content from the product design document', () => {
   }
 
   assert.doesNotMatch(panel, /\b[Ss]taff\b/);
+});
+
+test('omits Daily Limit from the Sub Account Roles view', () => {
+  const html = source();
+  const panel = panelContent(html, 'sub-account');
+  const roleTableMatch = panel.match(/<table class="owner-table is-role-table">([\s\S]*?)<\/table>/);
+
+  assert.ok(roleTableMatch, 'Roles table should render');
+
+  const roleTable = roleTableMatch[1];
+  assert.match(roleTable, /<thead><tr><th>Role<\/th><th>Permissions<\/th><th>Sub Account<\/th><th>Actions<\/th><\/tr><\/thead>/);
+  assert.doesNotMatch(roleTable, /Daily Limit/);
+  assert.doesNotMatch(roleTable, /data-label="Daily Limit"/);
 });
 
 test('uses Account as the first Sub Accounts list column', () => {
@@ -440,7 +453,7 @@ test('renders all Sub Account tables as mobile label-value cards', () => {
 
   for (const [tableClass, rowCount, labels] of [
     ['is-account-table', 3, ['Account', 'Role', 'Status', 'Last Login', 'Actions']],
-    ['is-role-table', 4, ['Role', 'Permissions', 'Sub Account', 'Daily Limit', 'Actions']],
+    ['is-role-table', 4, ['Role', 'Permissions', 'Sub Account', 'Actions']],
     ['is-log-table', 5, ['Time', 'Sub account', 'Role', 'Action', 'Module', 'Status']]
   ]) {
     const table = panel.match(new RegExp(`<table class="owner-table ${tableClass}">([\\s\\S]*?)<\\/table>`))?.[1] || '';

@@ -213,13 +213,23 @@ var DEFAULT_MAIN_TAB = 'booking';
       updateBookingStatusChips();
     }
 
+    function isBookingUpcomingItem(item) {
+      if (!item || !item.dataset || !item.classList) return false;
+      var itemDate = item.dataset.bookingDate || '';
+      return itemDate >= BOOKING_TODAY_DATE &&
+        !item.classList.contains(BOOKING_STATUS_CLASS.done) &&
+        !item.classList.contains(BOOKING_STATUS_CLASS.noshow) &&
+        !item.classList.contains(BOOKING_STATUS_CLASS['checked-out']);
+    }
+
     function updateBookingStatusChips() {
       var subpanel = document.getElementById('booking-subpanel-today');
       if (!subpanel) return;
 
       var allItems = Array.from(subpanel.querySelectorAll('[data-booking-item]'));
-      var counts = { all: allItems.length, 'new': 0, 'sms-sent': 0, 'done': 0, 'noshow': 0 };
+      var counts = { all: allItems.length, upcoming: 0, 'new': 0, 'sms-sent': 0, 'done': 0, 'noshow': 0 };
       allItems.forEach(function(item) {
+        if (isBookingUpcomingItem(item)) counts.upcoming++;
         Object.keys(BOOKING_STATUS_CLASS).forEach(function(key) {
           if (item.classList.contains(BOOKING_STATUS_CLASS[key])) counts[key]++;
         });
@@ -238,7 +248,7 @@ var DEFAULT_MAIN_TAB = 'booking';
     }
 
     function setBookingStatusFilter(status) {
-      var isValid = status === 'all' || BOOKING_STATUS_CLASS[status];
+      var isValid = status === 'all' || status === 'upcoming' || BOOKING_STATUS_CLASS[status];
       bookingStatusFilter = isValid ? status : 'all';
       filterBookingItems();
     }
@@ -1774,7 +1784,7 @@ function bookingCardStatusIcon(item) {
         var matchesSearch = !query || searchValue.indexOf(query) !== -1;
         var matchesDateFrom = !dateFrom || itemDate >= dateFrom;
         var matchesDateTo = !dateTo || itemDate <= dateTo;
-        var matchesStatus = bookingStatusFilter === 'all' || item.classList.contains(statusClass);
+        var matchesStatus = bookingStatusFilter === 'all' || (bookingStatusFilter === 'upcoming' ? isBookingUpcomingItem(item) : item.classList.contains(statusClass));
         item.hidden = !(matchesSearch && matchesDateFrom && matchesDateTo && matchesStatus);
       });
 

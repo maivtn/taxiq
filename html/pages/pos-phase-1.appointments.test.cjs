@@ -54,6 +54,18 @@ test('POS Booking keeps Calendar as a subtab and Table/Card as the Appointments 
   assert.match(source, /data-booking-appointment-panel[^>]*hidden/);
 });
 
+test('POS Booking Appointments Overview exposes Upcoming customer filter chip', () => {
+  const overviewChips = html.match(/<div class="booking-status-chips" data-booking-status-chips[\s\S]*?<\/div>/)?.[0] || '';
+
+  assert.match(overviewChips, /data-booking-status-chip="upcoming"[^>]*>Upcoming/);
+  assert.match(overviewChips, /data-booking-status-count="upcoming"/);
+  assert.match(runtime, /function isBookingUpcomingItem\(item\)/);
+  assert.match(runtime, /!item\.classList\.contains\(BOOKING_STATUS_CLASS\['checked-out'\]\)/);
+  assert.match(runtime, /if \(isBookingUpcomingItem\(item\)\) counts\.upcoming\+\+;/);
+  assert.match(runtime, /bookingStatusFilter === 'upcoming'\s*\?\s*isBookingUpcomingItem\(item\)/);
+  assert.match(runtime, /var isValid = status === 'all' \|\| status === 'upcoming' \|\| BOOKING_STATUS_CLASS\[status\];/);
+});
+
 test('POS Booking starts in Appointments Table mode and opens Calendar on its subtab', () => {
   assert.match(runtime, /function activateBookingSubTab\([\s\S]*target === 'calendar'[\s\S]*initBookingCalendar\(\)/);
   // initBookingViewMode defaults to 'card' on narrow screens (<=1366px) and 'table' otherwise.

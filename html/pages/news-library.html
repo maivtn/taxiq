@@ -1,0 +1,1162 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexora Touch - News &amp; Library</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    .page-heading {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin: 0 auto 20px;
+      max-width: 1180px;
+    }
+
+    .page-title {
+      margin: 0;
+      color: var(--nexora-text);
+      font-size: 24px;
+      font-weight: 800;
+      line-height: 32px;
+    }
+
+    .page-description {
+      max-width: 680px;
+      margin: 8px 0 0;
+      color: var(--nexora-muted);
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 20px;
+    }
+
+    .news-shell {
+      width: min(100%, 1180px);
+      margin: 0 auto;
+    }
+
+    .page-tabs {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 4px;
+      margin: 0 0 18px;
+    }
+
+    .page-tab {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      gap: 4px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 12px;
+      background: var(--nexora-surface);
+      padding: 8px 8px;
+      color: var(--nexora-muted);
+      font-size: 13px;
+      font-weight: 600;
+      box-shadow: var(--nexora-card-shadow);
+      transition: background 0.2s, border-color 0.2s, color 0.2s, box-shadow 0.2s, transform 0.2s;
+    }
+
+    .page-tab:hover {
+      border-color: rgba(70, 72, 216, 0.35);
+      background: #fff;
+      color: var(--nexora-text);
+      transform: translateY(-1px);
+    }
+
+    .page-tab.is-active,
+    .page-tab[aria-selected="true"] {
+      border-color: transparent;
+      background: linear-gradient(90deg, var(--nexora-electric), var(--nexora-violet));
+      color: #fff;
+      box-shadow: 0 12px 26px rgba(43, 89, 255, 0.22);
+    }
+
+    .page-tab-icon {
+      display: inline-flex;
+      width: 28px;
+      height: 28px;
+      flex-shrink: 0;
+      align-items: center;
+      justify-content: center;
+      border-radius: 9px;
+      background: var(--nexora-surface-muted);
+      color: var(--nexora-brand);
+    }
+
+    .page-tab.is-active .page-tab-icon,
+    .page-tab[aria-selected="true"] .page-tab-icon {
+      background: rgba(255, 255, 255, 0.18);
+      color: #fff;
+    }
+
+    .page-tab i,
+    .page-tab svg {
+      width: 17px;
+      height: 17px;
+    }
+
+    .page-tab svg path,
+    .page-tab svg rect {
+      stroke: currentColor;
+      stroke-width: 2;
+      stroke-linecap: round;
+      stroke-linejoin: round;
+    }
+
+    .news-panel {
+      display: block;
+    }
+
+    .news-panel[hidden] {
+      display: none;
+    }
+
+    .library-section {
+      border: 1px solid var(--nexora-border);
+      border-radius: 8px;
+      background: var(--nexora-surface);
+      box-shadow: var(--nexora-card-shadow);
+      overflow: hidden;
+    }
+
+    .library-section-body {
+      padding: 18px;
+    }
+
+    .library-empty {
+      display: grid;
+      min-height: 280px;
+      place-items: center;
+      border: 1px dashed var(--nexora-border);
+      border-radius: 8px;
+      background: #fbfcff;
+      padding: 28px;
+      text-align: center;
+    }
+
+    .library-empty-icon {
+      display: inline-flex;
+      width: 46px;
+      height: 46px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 12px;
+      background: #eef6ff;
+      color: var(--nexora-electric);
+    }
+
+    .library-empty-icon i {
+      width: 22px;
+      height: 22px;
+    }
+
+    .library-empty-title {
+      margin: 14px 0 0;
+      color: var(--nexora-text);
+      font-size: 16px;
+      font-weight: 850;
+      line-height: 22px;
+    }
+
+    .library-empty-copy {
+      max-width: 420px;
+      margin: 6px auto 0;
+      color: var(--nexora-muted);
+      font-size: 13px;
+      font-weight: 500;
+      line-height: 19px;
+    }
+
+    .library-loading,
+    .library-error {
+      display: grid;
+      min-height: 180px;
+      place-items: center;
+      border: 1px dashed var(--nexora-border);
+      border-radius: 8px;
+      background: #fbfcff;
+      padding: 24px;
+      color: var(--nexora-muted);
+      font-size: 13px;
+      font-weight: 700;
+      text-align: center;
+    }
+
+    .library-error {
+      border-color: rgba(239, 68, 68, .22);
+      background: #fff7f7;
+      color: #b42318;
+    }
+
+    .library-block + .library-block {
+      margin-top: 22px;
+    }
+
+    .library-block-title {
+      margin: 0 0 12px;
+      color: var(--nexora-text);
+      font-size: 16px;
+      font-weight: 850;
+      line-height: 22px;
+    }
+
+    .media-grid,
+    .topic-grid,
+    .training-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .media-list,
+    .document-list,
+    .event-list,
+    .history-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .video-card,
+    .inline-media-card,
+    .topic-card,
+    .document-card,
+    .featured-content-card,
+    .training-card,
+    .event-card,
+    .history-card {
+      min-width: 0;
+      border: 1px solid var(--nexora-rule);
+      border-radius: 8px;
+      background: #fff;
+      color: inherit;
+      text-decoration: none;
+      transition: border-color .18s, box-shadow .18s, transform .18s, background .18s;
+    }
+
+    .video-card:hover,
+    .inline-media-card:hover,
+    .topic-card:hover,
+    .document-card:hover,
+    .featured-content-card:hover,
+    .training-card:hover,
+    .event-card:hover,
+    .history-card:hover {
+      border-color: rgba(70, 72, 216, .28);
+      background: #fbfcff;
+      box-shadow: var(--nexora-soft-shadow);
+      transform: translateY(-1px);
+    }
+
+    .video-card,
+    .featured-content-card {
+      display: block;
+      overflow: hidden;
+    }
+
+    .video-thumb,
+    .featured-thumb,
+    .training-thumb {
+      position: relative;
+      overflow: hidden;
+      background: var(--nexora-surface-muted);
+      aspect-ratio: 16 / 9;
+    }
+
+    .video-thumb img,
+    .featured-thumb img,
+    .training-thumb img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .play-mark {
+      position: absolute;
+      right: 10px;
+      bottom: 10px;
+      display: inline-flex;
+      min-height: 28px;
+      align-items: center;
+      gap: 6px;
+      border-radius: 8px;
+      background: rgba(11, 18, 32, .86);
+      padding: 0 9px;
+      color: #fff;
+      font-size: 11px;
+      font-weight: 850;
+    }
+
+    .video-card-body,
+    .featured-content-body,
+    .training-card-body,
+    .topic-card,
+    .document-card,
+    .event-card,
+    .history-card {
+      padding: 14px;
+    }
+
+    .media-meta,
+    .document-meta,
+    .event-meta,
+    .history-meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 6px;
+      color: var(--nexora-brand);
+      font-size: 11px;
+      font-weight: 800;
+      line-height: 16px;
+    }
+
+    .media-title,
+    .topic-title,
+    .document-title,
+    .event-title,
+    .history-title {
+      margin: 0;
+      color: var(--nexora-text);
+      font-size: 14px;
+      font-weight: 850;
+      line-height: 20px;
+    }
+
+    .media-desc,
+    .topic-desc,
+    .event-desc,
+    .history-desc {
+      margin: 7px 0 0;
+      color: var(--nexora-muted);
+      font-size: 12px;
+      font-weight: 500;
+      line-height: 18px;
+    }
+
+    .inline-media-card,
+    .document-card,
+    .event-card,
+    .history-card {
+      display: grid;
+      grid-template-columns: auto minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      padding: 12px;
+    }
+
+    .inline-thumb {
+      position: relative;
+      width: 112px;
+      height: 72px;
+      overflow: hidden;
+      border-radius: 8px;
+      background: var(--nexora-surface-muted);
+    }
+
+    .inline-thumb img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    .action-pill {
+      display: inline-flex;
+      min-height: 34px;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      border: 1px solid rgba(70, 72, 216, .18);
+      border-radius: 8px;
+      background: #f8faff;
+      padding: 0 12px;
+      color: var(--nexora-brand);
+      font-size: 12px;
+      font-weight: 850;
+      white-space: nowrap;
+      text-decoration: none;
+      font-family: inherit;
+      cursor: pointer;
+    }
+
+    .action-pill.is-primary {
+      border-color: transparent;
+      background: var(--nexora-brand);
+      color: #fff;
+    }
+
+    .event-actions {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .topic-card {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr);
+      gap: 12px;
+    }
+
+    .topic-icon,
+    .document-icon,
+    .event-date-card,
+    .history-icon {
+      display: inline-flex;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 auto;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: #eef6ff;
+      color: var(--nexora-electric);
+    }
+
+    .topic-icon i,
+    .document-icon i,
+    .history-icon i {
+      width: 18px;
+      height: 18px;
+    }
+
+    .event-date-card {
+      display: grid;
+      width: 76px;
+      height: 58px;
+      align-content: center;
+      text-align: center;
+    }
+
+    .event-date-card strong,
+    .event-date-card span {
+      display: block;
+    }
+
+    .event-date-card strong {
+      color: var(--nexora-text);
+      font-size: 13px;
+      font-weight: 900;
+      line-height: 18px;
+    }
+
+    .event-date-card span {
+      color: var(--nexora-brand);
+      font-size: 11px;
+      font-weight: 850;
+      line-height: 15px;
+      text-transform: uppercase;
+    }
+
+    .news-library-swal-popup {
+      border-radius: 8px;
+      color: var(--nexora-text);
+      font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+
+    .news-library-swal-title {
+      color: var(--nexora-text);
+      font-size: 18px;
+      font-weight: 850;
+      line-height: 24px;
+    }
+
+    .news-library-swal-close {
+      color: var(--nexora-muted);
+      outline: none;
+    }
+
+    .news-library-swal-html {
+      margin: 0;
+    }
+
+    .news-library-swal-frame {
+      width: 100%;
+      aspect-ratio: 16 / 9;
+      background: #0b1220;
+    }
+
+    .news-library-swal-frame.is-document {
+      height: min(72vh, 680px);
+      aspect-ratio: auto;
+      background: #fff;
+    }
+
+    .news-library-swal-frame iframe {
+      display: block;
+      width: 100%;
+      height: 100%;
+      border: 0;
+    }
+
+    .news-library-swal-content {
+      background: #fff;
+      padding: 18px;
+      color: var(--nexora-text);
+      font-size: 14px;
+      line-height: 1.6;
+      text-align: left;
+    }
+
+    .news-library-swal-content img {
+      max-width: 100%;
+      height: auto;
+    }
+
+    @media (max-width: 900px) {
+      .page-heading {
+        display: grid;
+      }
+
+      .media-grid,
+      .topic-grid,
+      .training-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .inline-media-card,
+      .document-card,
+      .event-card,
+      .history-card {
+        grid-template-columns: auto minmax(0, 1fr);
+      }
+
+      .inline-media-card .action-pill,
+      .document-card .action-pill,
+      .event-actions,
+      .history-card .action-pill {
+        grid-column: 1 / -1;
+        justify-self: flex-start;
+      }
+
+      .event-actions {
+        justify-content: flex-start;
+      }
+    }
+
+    @media (max-width: 767px) {
+      .page-tabs {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 4px;
+      }
+
+      .page-tab {
+        width: 100%;
+        min-width: 0;
+        min-height: 48px;
+        flex-direction: column;
+        justify-content: center;
+        gap: 3px;
+        border-radius: 10px;
+        padding: 5px 2px;
+        font-size: 10px;
+        line-height: 1.12;
+        text-align: center;
+        box-shadow: none;
+      }
+
+      .page-tab-icon {
+        width: 20px;
+        height: 20px;
+        border-radius: 7px;
+      }
+
+      .page-tab i,
+      .page-tab svg {
+        width: 13px;
+        height: 13px;
+      }
+
+      .page-tab > span:last-child {
+        display: block;
+        max-width: 100%;
+        overflow-wrap: anywhere;
+      }
+    }
+
+    @media (max-width: 560px) {
+      .inline-media-card {
+        grid-template-columns: 1fr;
+      }
+
+      .inline-thumb {
+        width: 100%;
+        height: auto;
+        aspect-ratio: 16 / 9;
+      }
+    }
+
+    @media (max-width: 380px) {
+      .page-tab {
+        min-height: 46px;
+        font-size: 9px;
+      }
+
+      .page-tab-icon {
+        width: 18px;
+        height: 18px;
+      }
+    }
+  </style>
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Dashboard sidebar"></aside>
+
+    <div class="app-area">
+      <header class="header"></header>
+
+      <main class="content" aria-label="News &amp; Library content">
+        <div class="page-heading">
+          <div>
+            <h1 class="page-title" id="news-library-title">News &amp; Library</h1>
+            <p class="page-description">Keep Nexora Touch news and Zoom schedules in one owner workspace.</p>
+          </div>
+        </div>
+
+        <div class="news-shell">
+          <div class="page-tabs" role="tablist" aria-label="News and library sections">
+            <button class="page-tab is-active" type="button" role="tab" id="tab-news" aria-controls="panel-news" aria-selected="true" tabindex="0" data-news-tab="news">
+              <span class="page-tab-icon"><i data-lucide="newspaper" aria-hidden="true"></i></span>
+              <span>News</span>
+            </button>
+            <button class="page-tab" type="button" role="tab" id="tab-event-zoom-schedule" aria-controls="panel-event-zoom-schedule" aria-selected="false" tabindex="-1" data-news-tab="event-zoom-schedule">
+              <span class="page-tab-icon"><i data-lucide="calendar-days" aria-hidden="true"></i></span>
+              <span>Event &amp; Zoom Schedule</span>
+            </button>
+            <button class="page-tab" type="button" role="tab" id="tab-compensation-plan" aria-controls="panel-compensation-plan" aria-selected="false" tabindex="-1" data-news-tab="compensation-plan">
+              <span class="page-tab-icon"><i data-lucide="hand-coins" aria-hidden="true"></i></span>
+              <span>Compensation Plan</span>
+            </button>
+          </div>
+
+          <section class="news-panel" id="panel-news" role="tabpanel" aria-labelledby="tab-news" data-news-panel="news">
+            <article class="library-section">
+              <div class="library-section-body" data-news-content="news">
+                <div class="library-loading">Loading News Library...</div>
+              </div>
+            </article>
+          </section>
+
+          <section class="news-panel" id="panel-compensation-plan" role="tabpanel" aria-labelledby="tab-compensation-plan" data-news-panel="compensation-plan" hidden>
+            <article class="library-section">
+              <div class="library-section-body" data-news-content="compensation-plan">
+                <div class="library-loading">Loading News Library...</div>
+              </div>
+            </article>
+          </section>
+
+          <section class="news-panel" id="panel-event-zoom-schedule" role="tabpanel" aria-labelledby="tab-event-zoom-schedule" data-news-panel="event-zoom-schedule" hidden>
+            <article class="library-section">
+              <div class="library-section-body" data-news-content="event-zoom-schedule">
+                <div class="library-loading">Loading News Library...</div>
+              </div>
+            </article>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <script>window.NEXORA_SHELL = { activePage: 'news-library', activeTab: 'news' };</script>
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../assets/nexora-shell.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      var NEWS_LIBRARY_FILE = {
+        NEWS_LIBRARY_VI: 'https://raw.githubusercontent.com/vlink-group/VlinkPay/main/news-library/nexora-news-library-data-vi.json',
+        NEWS_LIBRARY_EN: 'https://raw.githubusercontent.com/vlink-group/VlinkPay/main/news-library/nexora-news-library-data.json'
+      };
+
+      var tabs = Array.prototype.slice.call(document.querySelectorAll('[data-news-tab]'));
+      var panels = Array.prototype.slice.call(document.querySelectorAll('[data-news-panel]'));
+      var defaultTab = 'news';
+      var emptyContent = {
+        featuredVideos: [],
+        channelVideos: [],
+        planTopics: [],
+        morePlanVideos: [],
+        featuredContent: null,
+        solutionPresentations: [],
+        trainingVideos: [],
+        upcomingSessions: [],
+        upcomingEvents: [],
+        recentSessions: [],
+        videoZoomHistory: []
+      };
+
+      function hasTab(tabId) {
+        return tabs.some(function (tab) { return tab.getAttribute('data-news-tab') === tabId; });
+      }
+
+      function currentQueryTab() {
+        try {
+          return new URLSearchParams(window.location.search).get('tab') || '';
+        } catch (error) {
+          return '';
+        }
+      }
+
+      function activateNewsTab(tabId, shouldUpdateUrl) {
+        var nextTab = hasTab(tabId) ? tabId : defaultTab;
+        tabs.forEach(function (tab) {
+          var isActive = tab.getAttribute('data-news-tab') === nextTab;
+          tab.classList.toggle('is-active', isActive);
+          tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
+          tab.setAttribute('tabindex', isActive ? '0' : '-1');
+        });
+        panels.forEach(function (panel) {
+          panel.hidden = panel.getAttribute('data-news-panel') !== nextTab;
+        });
+        if (window.NEXORA_SHELL && typeof window.NEXORA_SHELL.setActiveTab === 'function') {
+          window.NEXORA_SHELL.setActiveTab(nextTab);
+        }
+        if (shouldUpdateUrl && window.history && typeof window.history.replaceState === 'function') {
+          var url = new URL(window.location.href);
+          url.searchParams.set('tab', nextTab);
+          window.history.replaceState(null, '', url.toString());
+        }
+      }
+
+      window.activateMainTab = function (tabId) {
+        activateNewsTab(tabId, true);
+      };
+
+      function escapeHtml(value) {
+        return String(value == null ? '' : value).replace(/[&<>"']/g, function (char) {
+          return {
+            '&': '&amp;',
+            '<': '&lt;',
+            '>': '&gt;',
+            '"': '&quot;',
+            "'": '&#39;'
+          }[char];
+        });
+      }
+
+      function safeExternalUrl(value) {
+        if (!value || typeof value !== 'string') return '';
+        try {
+          var parsed = new URL(value, window.location.href);
+          return parsed.protocol === 'http:' || parsed.protocol === 'https:' ? parsed.toString() : '';
+        } catch (error) {
+          return '';
+        }
+      }
+
+      function toYoutubeEmbedUrl(url) {
+        try {
+          var parsed = new URL(url);
+          var host = parsed.hostname.replace('www.', '');
+          var videoId = '';
+
+          if (host === 'youtu.be') {
+            videoId = parsed.pathname.split('/').filter(Boolean)[0] || '';
+          } else if (host === 'youtube.com' || host === 'm.youtube.com') {
+            if (parsed.pathname === '/watch') {
+              videoId = parsed.searchParams.get('v') || '';
+            } else if (parsed.pathname.indexOf('/embed/') === 0) {
+              videoId = parsed.pathname.split('/embed/')[1].split('/')[0] || '';
+            } else if (parsed.pathname.indexOf('/shorts/') === 0) {
+              videoId = parsed.pathname.split('/shorts/')[1].split('/')[0] || '';
+            }
+          }
+
+          return videoId ? 'https://www.youtube.com/embed/' + videoId + '?autoplay=1&rel=0' : '';
+        } catch (error) {
+          return '';
+        }
+      }
+
+      function isPdfUrl(url) {
+        try {
+          return new URL(url).pathname.toLowerCase().endsWith('.pdf');
+        } catch (error) {
+          return /\.pdf(?:$|\?)/i.test(String(url || ''));
+        }
+      }
+
+      function isVideoUrl(url) {
+        return /(?:youtube\.com|youtu\.be)/i.test(String(url || ''));
+      }
+
+      function isDownloadableFileUrl(url) {
+        try {
+          return /\.(pptx|ppt|docx|doc|xlsx|xls|csv|txt|rtf|zip|rar|7z|odt|ods|odp|mp4|mov|avi|wmv|mkv)$/i.test(new URL(url).pathname);
+        } catch (error) {
+          return /\.(pptx|ppt|docx|doc|xlsx|xls|csv|txt|rtf|zip|rar|7z|odt|ods|odp|mp4|mov|avi|wmv|mkv)(\?.*)?$/i.test(String(url || ''));
+        }
+      }
+
+      function mediaAttributes(item) {
+        var href = safeExternalUrl(item && item.url);
+        return href
+          ? ' href="' + escapeHtml(href) + '" data-media-url="' + escapeHtml(href) + '" data-media-title="' + escapeHtml((item && item.title) || '') + '"'
+          : ' href="#" aria-disabled="true"';
+      }
+
+      function openSweetAlert(title, html, options) {
+        options = options || {};
+        if (!window.Swal || typeof window.Swal.fire !== 'function') return false;
+        window.Swal.fire({
+          title: escapeHtml(title || 'Preview'),
+          html: html,
+          width: options.width || 960,
+          showConfirmButton: false,
+          showCloseButton: true,
+          padding: '1rem',
+          customClass: {
+            popup: 'news-library-swal-popup ' + (options.popupClass || ''),
+            closeButton: 'news-library-swal-close',
+            title: 'news-library-swal-title',
+            htmlContainer: options.htmlClass || 'news-library-swal-html',
+            confirmButton: 'news-library-swal-confirm'
+          }
+        });
+        if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
+        return true;
+      }
+
+      function openModalFrame(title, src, frameClass) {
+        var isDocument = frameClass === 'is-document';
+        return openSweetAlert(
+          title,
+          '<div class="news-library-swal-frame ' + escapeHtml(frameClass || '') + '"><iframe src="' + escapeHtml(src) + '" title="' + escapeHtml(title || 'Preview') + '" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share" allowfullscreen></iframe></div>',
+          {
+            width: 960,
+            popupClass: isDocument ? 'news-library-swal-popup-document' : 'news-library-swal-popup-video'
+          }
+        );
+      }
+
+      function downloadFile(url) {
+        var anchor = document.createElement('a');
+        anchor.href = url;
+        anchor.target = '_blank';
+        anchor.rel = 'noopener noreferrer';
+        anchor.download = '';
+        document.body.appendChild(anchor);
+        anchor.click();
+        anchor.remove();
+      }
+
+      function stopNavigation(event) {
+        if (!event) return;
+        if (typeof event.preventDefault === 'function') event.preventDefault();
+        if (typeof event.stopPropagation === 'function') event.stopPropagation();
+      }
+
+      function openMedia(event, url, title) {
+        var youtubeEmbedUrl = toYoutubeEmbedUrl(url);
+        if (youtubeEmbedUrl) {
+          stopNavigation(event);
+          if (!openModalFrame(title, youtubeEmbedUrl, 'is-video')) {
+            var youtubeUrl = safeExternalUrl(url);
+            if (youtubeUrl) window.open(youtubeUrl, '_blank', 'noopener,noreferrer');
+          }
+          return;
+        }
+
+        var safeUrl = safeExternalUrl(url);
+        if (!safeUrl) return;
+
+        if (isPdfUrl(safeUrl)) {
+          stopNavigation(event);
+          if (!openModalFrame(title, safeUrl, 'is-document')) {
+            window.open(safeUrl, '_blank', 'noopener,noreferrer');
+          }
+          return;
+        }
+
+        stopNavigation(event);
+        if (isDownloadableFileUrl(safeUrl)) {
+          downloadFile(safeUrl);
+          return;
+        }
+        window.open(safeUrl, '_blank', 'noopener,noreferrer');
+      }
+
+      function openHtmlContent(title, htmlContent) {
+        if (!htmlContent) return;
+        openSweetAlert(title || 'Details', '<div class="news-library-swal-content">' + htmlContent + '</div>', {
+          width: 860,
+          popupClass: 'news-library-swal-popup-content',
+          htmlClass: 'news-library-swal-html news-library-swal-html-content'
+        });
+      }
+
+      function imageMarkup(item, className, fallbackIcon) {
+        var src = safeExternalUrl(item && item.image);
+        var alt = escapeHtml((item && (item.alt || item.title)) || '');
+        if (!src) {
+          return '<div class="' + className + '"><span class="library-empty-icon"><i data-lucide="' + fallbackIcon + '" aria-hidden="true"></i></span></div>';
+        }
+        return '<div class="' + className + '"><img src="' + escapeHtml(src) + '" alt="' + alt + '"></div>';
+      }
+
+      function metaMarkup(parts, className) {
+        var items = parts.filter(Boolean);
+        if (!items.length) return '';
+        return '<div class="' + className + '">' + items.map(function (part) {
+          return '<span>' + escapeHtml(part) + '</span>';
+        }).join('') + '</div>';
+      }
+
+      function actionLabel(url) {
+        if (isPdfUrl(url)) return 'Open PDF';
+        if (isVideoUrl(url)) return 'Watch';
+        return 'Open';
+      }
+
+      function actionIcon(url) {
+        if (isPdfUrl(url)) return 'file-text';
+        if (isVideoUrl(url)) return 'play';
+        return 'external-link';
+      }
+
+      function blockMarkup(title, html) {
+        if (!html) return '';
+        return '<div class="library-block"><h3 class="library-block-title">' + escapeHtml(title) + '</h3>' + html + '</div>';
+      }
+
+      function emptyMarkup(label) {
+        return '<div class="library-empty"><div><span class="library-empty-icon"><i data-lucide="inbox" aria-hidden="true"></i></span><p class="library-empty-title">No ' + escapeHtml(label) + ' yet</p></div></div>';
+      }
+
+      function renderVideoCard(item) {
+        var url = item && item.url;
+        return '<a class="video-card"' + mediaAttributes(item) + '>' +
+          imageMarkup(item, 'video-thumb', 'video') +
+          '<div class="video-card-body">' +
+            metaMarkup([item.badge, item.duration, item.timeAgo, item.views], 'media-meta') +
+            '<h3 class="media-title">' + escapeHtml(item.title) + '</h3>' +
+            '<p class="media-desc">' + escapeHtml(item.description) + '</p>' +
+            '<span class="action-pill"><i data-lucide="' + actionIcon(url) + '" aria-hidden="true"></i> ' + actionLabel(url) + '</span>' +
+          '</div>' +
+        '</a>';
+      }
+
+      function renderInlineMediaCard(item) {
+        var url = item && item.url;
+        return '<a class="inline-media-card"' + mediaAttributes(item) + '>' +
+          imageMarkup(item, 'inline-thumb', 'video') +
+          '<div>' +
+            metaMarkup([item.duration, item.timeAgo, item.views], 'media-meta') +
+            '<h3 class="media-title">' + escapeHtml(item.title) + '</h3>' +
+            '<p class="media-desc">' + escapeHtml(item.description) + '</p>' +
+          '</div>' +
+          '<span class="action-pill"><i data-lucide="' + actionIcon(url) + '" aria-hidden="true"></i> ' + actionLabel(url) + '</span>' +
+        '</a>';
+      }
+
+      function renderTopicCard(item) {
+        var url = item && item.url;
+        return '<a class="topic-card"' + mediaAttributes(item) + '>' +
+          '<span class="topic-icon"><i data-lucide="' + actionIcon(url) + '" aria-hidden="true"></i></span>' +
+          '<div><h3 class="topic-title">' + escapeHtml(item.title) + '</h3><p class="topic-desc">' + escapeHtml(item.description) + '</p></div>' +
+        '</a>';
+      }
+
+      function renderDocumentCard(item) {
+        var url = item && item.url;
+        var summary = item.meta || item.description || '';
+        return '<a class="document-card"' + mediaAttributes(item) + '>' +
+          '<span class="document-icon"><i data-lucide="' + actionIcon(url) + '" aria-hidden="true"></i></span>' +
+          '<div><h3 class="document-title">' + escapeHtml(item.title) + '</h3><p class="document-meta">' + escapeHtml(summary) + '</p></div>' +
+          '<span class="action-pill"><i data-lucide="' + actionIcon(url) + '" aria-hidden="true"></i> ' + actionLabel(url) + '</span>' +
+        '</a>';
+      }
+
+      function renderFeaturedContentCard(item) {
+        if (!item) return '';
+        var url = item.url;
+        return '<a class="featured-content-card"' + mediaAttributes(item) + '>' +
+          '<div class="featured-thumb">' +
+            (safeExternalUrl(item.image) ? '<img src="' + escapeHtml(safeExternalUrl(item.image)) + '" alt="' + escapeHtml(item.title) + '">' : '') +
+            '<span class="play-mark"><i data-lucide="' + actionIcon(url) + '" aria-hidden="true"></i> ' + escapeHtml(item.duration || actionLabel(url)) + '</span>' +
+          '</div>' +
+          '<div class="featured-content-body">' +
+            '<h3 class="media-title">' + escapeHtml(item.title) + '</h3>' +
+            '<p class="media-desc">' + escapeHtml(item.description) + '</p>' +
+          '</div>' +
+        '</a>';
+      }
+
+      function renderTrainingCard(item) {
+        return '<a class="training-card"' + mediaAttributes(item) + '>' +
+          imageMarkup(item, 'training-thumb', 'video') +
+          '<div class="training-card-body"><h3 class="media-title">' + escapeHtml(item.title) + '</h3><p class="media-desc">' + escapeHtml(item.meta) + '</p></div>' +
+        '</a>';
+      }
+
+      function renderEventCard(item) {
+        var hasLink = !!safeExternalUrl(item && item.link);
+        var hasDetails = !!(item && item.htmlContent);
+        var actions = (hasLink ? '<a class="action-pill is-primary" href="' + escapeHtml(safeExternalUrl(item.link)) + '" target="_blank" rel="noopener noreferrer"><i data-lucide="video" aria-hidden="true"></i> ' + escapeHtml(item.primaryAction || 'Join') + '</a>' : '') +
+          (hasDetails ? '<button class="action-pill" type="button" data-html-title="' + escapeHtml(item.title) + '" data-html-content="' + escapeHtml(item.htmlContent) + '"><i data-lucide="info" aria-hidden="true"></i> ' + escapeHtml(item.secondaryAction || 'Details') + '</button>' : '');
+        return '<div class="event-card">' +
+          '<span class="event-date-card"><span>' + escapeHtml(item.day) + '</span><strong>' + escapeHtml(item.date) + '</strong></span>' +
+          '<div>' +
+            metaMarkup([item.time, item.type], 'event-meta') +
+            '<h3 class="event-title">' + escapeHtml(item.title) + '</h3>' +
+            '<p class="event-desc">' + escapeHtml(item.description) + '</p>' +
+          '</div>' +
+          (actions ? '<div class="event-actions">' + actions + '</div>' : '') +
+        '</div>';
+      }
+
+      function renderHistoryCard(item) {
+        var url = item && item.url;
+        return '<a class="history-card"' + mediaAttributes(item) + '>' +
+          '<span class="history-icon"><i data-lucide="' + actionIcon(url) + '" aria-hidden="true"></i></span>' +
+          '<div>' +
+            metaMarkup([item.date, item.time], 'history-meta') +
+            '<h3 class="history-title">' + escapeHtml(item.title) + '</h3>' +
+            '<p class="history-desc">' + escapeHtml(item.description) + '</p>' +
+          '</div>' +
+          '<span class="action-pill"><i data-lucide="' + actionIcon(url) + '" aria-hidden="true"></i> ' + actionLabel(url) + '</span>' +
+        '</a>';
+      }
+
+      function renderList(items, className, renderer) {
+        if (!items || !items.length) return '';
+        return '<div class="' + className + '">' + items.map(renderer).join('') + '</div>';
+      }
+
+      function renderNewsTab(featuredVideos, channelVideos) {
+        return blockMarkup('Featured videos', renderList(featuredVideos, 'media-grid', renderVideoCard)) +
+          blockMarkup('More from channel', renderList(channelVideos, 'media-list', renderInlineMediaCard)) ||
+          emptyMarkup('news content');
+      }
+
+      function renderCompensationPlanTab(planTopics) {
+        return blockMarkup('Core topics', renderList(planTopics, 'topic-grid', renderTopicCard)) ||
+          emptyMarkup('compensation plan content');
+      }
+
+      function renderPresentationVideoTab(featuredContent, solutionPresentations, trainingVideos) {
+        return blockMarkup('Featured content', renderFeaturedContentCard(featuredContent)) +
+          blockMarkup('Solution presentations', renderList(solutionPresentations, 'document-list', renderDocumentCard)) +
+          blockMarkup('Training videos', renderList(trainingVideos, 'training-grid', renderTrainingCard)) ||
+          emptyMarkup('presentation content');
+      }
+
+      function renderEventZoomScheduleTab(upcomingSessions, upcomingEvents) {
+        var events = (upcomingSessions || []).concat(upcomingEvents || []);
+        return blockMarkup('Upcoming Zoom sessions', renderList(events, 'event-list', renderEventCard)) ||
+          emptyMarkup('event content');
+      }
+
+      function normalizeNewsLibraryContent(content) {
+        var next = content && typeof content === 'object' ? content : {};
+        return {
+          featuredVideos: Array.isArray(next.featuredVideos) ? next.featuredVideos : emptyContent.featuredVideos,
+          channelVideos: Array.isArray(next.channelVideos) ? next.channelVideos : emptyContent.channelVideos,
+          planTopics: Array.isArray(next.planTopics) ? next.planTopics : emptyContent.planTopics,
+          morePlanVideos: Array.isArray(next.morePlanVideos) ? next.morePlanVideos : emptyContent.morePlanVideos,
+          featuredContent: next.featuredContent || emptyContent.featuredContent,
+          solutionPresentations: Array.isArray(next.solutionPresentations) ? next.solutionPresentations : emptyContent.solutionPresentations,
+          trainingVideos: Array.isArray(next.trainingVideos) ? next.trainingVideos : emptyContent.trainingVideos,
+          upcomingSessions: Array.isArray(next.upcomingSessions) ? next.upcomingSessions : emptyContent.upcomingSessions,
+          upcomingEvents: Array.isArray(next.upcomingEvents) ? next.upcomingEvents : emptyContent.upcomingEvents,
+          recentSessions: Array.isArray(next.recentSessions) ? next.recentSessions : emptyContent.recentSessions,
+          videoZoomHistory: Array.isArray(next.videoZoomHistory) ? next.videoZoomHistory : emptyContent.videoZoomHistory
+        };
+      }
+
+      function renderInto(tabId, html) {
+        var target = document.querySelector('[data-news-content="' + tabId + '"]');
+        if (!target) return;
+        target.innerHTML = html;
+      }
+
+      function renderNewsLibraryContent(content) {
+        content = normalizeNewsLibraryContent(content);
+        renderInto('news', renderNewsTab(content.featuredVideos, content.channelVideos));
+        renderInto('compensation-plan', renderCompensationPlanTab(content.planTopics));
+        renderInto('event-zoom-schedule', renderEventZoomScheduleTab(content.upcomingSessions, content.upcomingEvents));
+        if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
+      }
+
+      function fetchNewsLibraryContent(sourceUrl) {
+        return fetch(sourceUrl, { cache: 'no-store' }).then(function (response) {
+          if (!response.ok) throw new Error('Failed to fetch news library content: ' + response.status);
+          return response.json();
+        });
+      }
+
+      function loadNewsLibraryContent() {
+        var lang = document.documentElement.lang === 'vi' ? 'vi' : 'en';
+        var primaryUrl = lang === 'vi' ? NEWS_LIBRARY_FILE.NEWS_LIBRARY_VI : NEWS_LIBRARY_FILE.NEWS_LIBRARY_EN;
+        return fetchNewsLibraryContent(primaryUrl)
+          .catch(function (error) {
+            if (primaryUrl === NEWS_LIBRARY_FILE.NEWS_LIBRARY_EN) throw error;
+            return fetchNewsLibraryContent(NEWS_LIBRARY_FILE.NEWS_LIBRARY_EN);
+          })
+          .then(function (content) {
+            renderNewsLibraryContent(content);
+          })
+          .catch(function () {
+            ['news', 'compensation-plan', 'event-zoom-schedule'].forEach(function (tabId) {
+              renderInto(tabId, '<div class="library-error">Unable to load News Library content. Please check the network connection and refresh.</div>');
+            });
+          });
+      }
+
+      tabs.forEach(function (tab, index) {
+        tab.addEventListener('click', function () {
+          activateNewsTab(tab.getAttribute('data-news-tab'), true);
+        });
+        tab.addEventListener('keydown', function (event) {
+          if (event.key !== 'ArrowRight' && event.key !== 'ArrowLeft') return;
+          event.preventDefault();
+          var direction = event.key === 'ArrowRight' ? 1 : -1;
+          var nextIndex = (index + direction + tabs.length) % tabs.length;
+          tabs[nextIndex].focus();
+          activateNewsTab(tabs[nextIndex].getAttribute('data-news-tab'), true);
+        });
+      });
+
+      document.addEventListener('click', function (event) {
+        var target = event.target;
+        var mediaTrigger = target && typeof target.closest === 'function' ? target.closest('[data-media-url]') : null;
+        if (mediaTrigger) {
+          openMedia(event, mediaTrigger.getAttribute('data-media-url'), mediaTrigger.getAttribute('data-media-title') || mediaTrigger.textContent.trim());
+          return;
+        }
+
+        var htmlTrigger = target && typeof target.closest === 'function' ? target.closest('[data-html-content]') : null;
+        if (htmlTrigger) {
+          stopNavigation(event);
+          openHtmlContent(htmlTrigger.getAttribute('data-html-title'), htmlTrigger.getAttribute('data-html-content'));
+        }
+      });
+
+      activateNewsTab(currentQueryTab(), false);
+      window.NEXORA_NEWS_LIBRARY = {
+        loadNewsLibraryContent: loadNewsLibraryContent,
+        renderNewsLibraryContent: renderNewsLibraryContent,
+        normalizeNewsLibraryContent: normalizeNewsLibraryContent,
+        openHtmlContent: openHtmlContent,
+        openMedia: openMedia,
+        toYoutubeEmbedUrl: toYoutubeEmbedUrl
+      };
+      loadNewsLibraryContent();
+      if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
+    })();
+  </script>
+</body>
+</html>

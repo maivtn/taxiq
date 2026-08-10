@@ -615,6 +615,19 @@
     }
   });
 
+  function pruneDuplicatePrintableQrBitmaps(card) {
+    if (!card) return;
+    card.querySelectorAll('.qr-code').forEach(function (qrCode) {
+      var primaryBitmap = qrCode.querySelector('canvas, img:not(.qr-logo-img)');
+      qrCode.querySelectorAll('img:not(.qr-logo-img)').forEach(function (duplicate) {
+        if (duplicate !== primaryBitmap) duplicate.remove();
+      });
+      qrCode.querySelectorAll('canvas').forEach(function (duplicate) {
+        if (duplicate !== primaryBitmap) duplicate.remove();
+      });
+    });
+  }
+
   function buildPrintableCard() {
     if (!viewModal) return null;
     var printCardSource = viewModal.querySelector('[data-oneqr-print-card], [data-salon-print-card]');
@@ -624,6 +637,7 @@
     if (closeButton) closeButton.remove();
     var actions = card.querySelector('[data-oneqr-modal-actions], [data-salon-modal-actions]');
     if (actions) actions.remove();
+    pruneDuplicatePrintableQrBitmaps(card);
 
     var sourceCanvases = printCardSource.querySelectorAll('canvas');
     var cardCanvases = card.querySelectorAll('canvas');
@@ -696,7 +710,8 @@
       '[data-salon-print-card]::before { content: "" !important; position: absolute !important; inset: 0 !important; z-index: 1 !important; pointer-events: none !important; opacity: 0.16 !important; background-image: radial-gradient(circle, rgba(255, 255, 255, 0.52) 0.55px, transparent 0.8px) !important; background-size: 3px 3px !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }' +
       '[data-print-dot-overlay] { display: none !important; }' +
       '[data-print-content="salon-qr"] { --print-scale: 0.70; --print-side-gutter: 0.24in; --print-top-offset: 0.16in; position: relative !important; z-index: 2 !important; width: calc((100% - (var(--print-side-gutter) * 2)) / var(--print-scale)); margin: var(--print-top-offset) 0 0 var(--print-side-gutter); transform: scale(var(--print-scale)); transform-origin: top left; }' +
-      '[data-salon-modal-qr] { width: 285px !important; }' +
+      '[data-salon-modal-qr] { width: 285px !important; height: 285px !important; aspect-ratio: 1 / 1 !important; }' +
+      '[data-salon-modal-qr] > img:not(.qr-logo-img), [data-salon-modal-qr] > canvas { width: 100% !important; height: 100% !important; object-fit: cover !important; display: block !important; }' +
       '[data-print-logo] { width: 196px !important; max-width: 196px !important; height: auto !important; object-fit: contain !important; object-position: center !important; margin-top: -0.2in !important; margin-bottom: -0.34in !important; }' +
       '[data-print-headline] { margin-top: 0 !important; }' +
       '[data-print-rewarded] { background: linear-gradient(90deg, #F472B6 0%, #C084FC 50%, #67E8F9 100%) !important; -webkit-background-clip: text !important; background-clip: text !important; color: transparent !important; -webkit-text-fill-color: transparent !important; -webkit-print-color-adjust: exact !important; print-color-adjust: exact !important; }' +

@@ -153,6 +153,17 @@ test('prints the salon QR lower cluster at a compact matching width', () => {
   }
 });
 
+test('prints one OneQR bitmap in a square QR frame', () => {
+  const oneqr = oneqrSource();
+
+  assert.match(oneqr, /function pruneDuplicatePrintableQrBitmaps\(card\)/);
+  assert.match(oneqr, /card\.querySelectorAll\('\.qr-code'\)\.forEach/);
+  assert.match(oneqr, /querySelectorAll\('img:not\(\.qr-logo-img\)'\)/);
+  assert.match(oneqr, /duplicate\.remove\(\);/);
+  assert.match(oneqr, /\[data-salon-modal-qr\] \{ width:\s*285px !important; height:\s*285px !important; aspect-ratio:\s*1 \/ 1 !important;/);
+  assert.match(oneqr, /\[data-salon-modal-qr\] > img:not\(\.qr-logo-img\), \[data-salon-modal-qr\] > canvas \{ width:\s*100% !important; height:\s*100% !important;/);
+});
+
 test('lets the OneQR Live Preview View All button show every enabled module', () => {
   const html = source();
   const oneqr = oneqrSource();

@@ -2083,6 +2083,16 @@
 
   body.is-printing-salon-qr [data-salon-modal-qr] {
     width: 285px !important;
+    height: 285px !important;
+    aspect-ratio: 1 / 1 !important;
+  }
+
+  body.is-printing-salon-qr [data-salon-modal-qr] > img:not(.qr-logo-img),
+  body.is-printing-salon-qr [data-salon-modal-qr] > canvas {
+    width: 100% !important;
+    height: 100% !important;
+    object-fit: cover !important;
+    display: block !important;
   }
 
   body.is-printing-salon-qr [data-print-logo] {

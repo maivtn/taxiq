@@ -6,7 +6,7 @@
 
    Per-page config (set BEFORE this script runs):
      window.NEXORA_SHELL = {
-       activePage: 'booking' | 'community' | 'reward' | 'pos' | 'review' | 'packages' | 'stations' | 'owner-settings' | 'staff',
+       activePage: 'booking' | 'community' | 'reward' | 'pos' | 'review' | 'packages' | 'stations' | 'news-library' | 'owner-settings' | 'staff',
                                            // which functional group is native
        activeTab:  '<tabId>',              // initial highlighted sub-item
        showClearStorage: true,             // optional header action for local development
@@ -29,6 +29,7 @@
     review: 'nexora-review.html',
     packages: 'nexora-packages.html',
     stations: 'qr-stations.html',
+    'news-library': 'news-library.html',
     'owner-settings': 'owner-setting.html'
   };
 
@@ -98,6 +99,11 @@
       { label: 'Sub Account', tab: 'sub-account' },
       { label: 'Affiliate Link', tab: 'affiliate-link' },
       { label: 'Terms & Privacy', tab: 'terms-privacy' }
+    ] },
+    { type: 'group', key: 'news-library', label: 'News & Library', icon: 'newspaper', page: 'news-library', items: [
+      { label: 'News', tab: 'news' },
+      { label: 'Event & Zoom Schedule', tab: 'event-zoom-schedule' },
+      { label: 'Compensation Plan', tab: 'compensation-plan' }
     ] },
     { type: 'item', label: 'Support', icon: 'circle-question-mark' }
   ];
