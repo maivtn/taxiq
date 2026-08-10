@@ -10,17 +10,19 @@ import {
   ViewEncapsulation,
 } from '@angular/core';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { MatDialog } from '@angular/material/dialog';
 import { MatTabsModule } from '@angular/material/tabs';
 import { ActivatedRoute, Router } from '@angular/router';
 import { TranslocoModule, TranslocoService } from '@jsverse/transloco';
 
 import { appRoutes } from '@lib/utils';
-import { PrivacyPolicyDialogComponent } from '@pages/homepage/components/footer/privacy-policy-dialog/privacy-policy-dialog.component';
 import { NEWS_LIBRARY_FILE } from '@shared/utils/constants/help-center';
 import { catchError, distinctUntilChanged, map, Observable, of, startWith, switchMap } from 'rxjs';
 import Swal from 'sweetalert2';
 import { ChannelVideo, NewsLibraryContent, NewsTab } from './news-library.types';
+
+type NewsLibraryViewContent = Required<
+  Pick<NewsLibraryContent, 'featuredVideos' | 'channelVideos' | 'planTopics' | 'upcomingSessions' | 'upcomingEvents'>
+>;
 
 @Component({
   selector: 'app-news-library',
@@ -46,31 +48,23 @@ export class NewsLibraryComponent implements OnInit {
     };
   });
 
-  readonly content = signal<Required<NewsLibraryContent>>({
+  readonly content = signal<NewsLibraryViewContent>({
     featuredVideos: [],
     channelVideos: [],
     planTopics: [],
-    morePlanVideos: [],
-    featuredContent: null,
-    solutionPresentations: [],
-    trainingVideos: [],
     upcomingSessions: [],
     upcomingEvents: [],
-    recentSessions: [],
-    videoZoomHistory: [],
   });
 
   readonly tabs: Array<{ id: NewsTab; labelKey: string }> = [
     { id: 'news', labelKey: 'news' },
     { id: 'events', labelKey: 'event-zoom' },
     { id: 'plan', labelKey: 'compensation-plan' },
-    { id: 'content', labelKey: 'presentation-video' },
   ];
 
   readonly #destroyRef = inject(DestroyRef);
   readonly #route = inject(ActivatedRoute);
   readonly #router = inject(Router);
-  readonly #dialog = inject(MatDialog);
 
   get activeTabIndex(): number {
     const activeIndex = this.tabs.findIndex((tab) => tab.id === this.activeTab());
@@ -195,10 +189,42 @@ export class NewsLibraryComponent implements OnInit {
     }
 
     if (this.isPdfUrl(url)) {
+      const safeUrl = this.getSafeExternalUrl(url);
+      if (!safeUrl) {
+        return;
+      }
+
       event.preventDefault();
       event.stopPropagation();
-      this.#dialog.open(PrivacyPolicyDialogComponent, {
-        data: url,
+
+      const safeTitle = this.escapeHtml(title);
+      const safeDocUrl = this.escapeHtml(safeUrl);
+      const openPdfLabel = this.escapeHtml(
+        this.#translocoService.translate('sitebar.news-library.subMenu.open-pdf'),
+      );
+
+      void Swal.fire({
+        title: safeTitle,
+        html: `
+        <div class="news-library-swal-doc">
+          <iframe src="${safeDocUrl}" title="${safeTitle}"></iframe>
+        </div>
+        <div class="news-library-swal-doc-actions">
+          <a class="news-library-swal-doc-link" href="${safeDocUrl}" target="_blank" rel="noopener noreferrer">
+            ${openPdfLabel}
+          </a>
+        </div>
+      `,
+        width: 980,
+        showConfirmButton: false,
+        showCloseButton: true,
+        padding: '1rem',
+        customClass: {
+          popup: 'news-library-swal-popup news-library-swal-popup-doc',
+          closeButton: 'news-library-swal-close',
+          title: 'news-library-swal-title',
+          htmlContainer: 'news-library-swal-html',
+        },
       });
       return;
     }
@@ -240,22 +266,12 @@ export class NewsLibraryComponent implements OnInit {
     });
   }
 
-  openPresentationPopup(event: Event, url: string, title: string): void {
-    this.openMedia(event, url, title);
-  }
-
   getMediaActionLabel(url: string): string {
     return this.isPdfUrl(url) ? this.mediaActionLabels().pdf : this.mediaActionLabels().video;
   }
 
   getMediaActionIcon(url: string): string {
     return this.isPdfUrl(url) ? 'far fa-file-pdf' : 'fas fa-play';
-  }
-
-  getZoomHistoryIcon(url: string): string {
-    if (this.isPdfUrl(url)) return 'far fa-file-pdf';
-    if (this.isDownloadableFileUrl(url)) return 'fas fa-file';
-    return 'fas fa-video';
   }
 
   openExternalLink(url?: string): void {
@@ -335,19 +351,13 @@ export class NewsLibraryComponent implements OnInit {
     });
   }
 
-  private normalizeContent(content: NewsLibraryContent): Required<NewsLibraryContent> {
+  private normalizeContent(content: NewsLibraryContent): NewsLibraryViewContent {
     return {
       featuredVideos: content.featuredVideos ?? [],
       channelVideos: content.channelVideos ?? [],
       planTopics: content.planTopics ?? [],
-      morePlanVideos: content.morePlanVideos ?? [],
-      featuredContent: content.featuredContent ?? null,
-      solutionPresentations: content.solutionPresentations ?? [],
-      trainingVideos: content.trainingVideos ?? [],
       upcomingSessions: content.upcomingSessions ?? [],
       upcomingEvents: content.upcomingEvents ?? [],
-      recentSessions: content.recentSessions ?? [],
-      videoZoomHistory: content.videoZoomHistory ?? [],
     };
   }
 
@@ -423,8 +433,6 @@ export class NewsLibraryComponent implements OnInit {
     switch (tab) {
       case 'plan':
         return appRoutes.newsLibrary.plan;
-      case 'content':
-        return appRoutes.newsLibrary.content;
       case 'events':
         return appRoutes.newsLibrary.events;
       case 'news':

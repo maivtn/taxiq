@@ -40,8 +40,9 @@ test('News Library styling uses Nexora Touch color system for cards and tab menu
   assert.match(scss, /--news-brand:\s*var\(--nexora-brand,\s*#4648d8\)/);
   assert.match(scss, /--news-electric:\s*var\(--nexora-electric,\s*#2b59ff\)/);
   assert.match(scss, /--news-violet:\s*var\(--nexora-violet,\s*#8e4df8\)/);
-  assert.match(scss, /\.news-library-tab-group[\s\S]*--mdc-tab-indicator-active-indicator-color:\s*var\(--news-brand\)/);
-  assert.match(scss, /\.mat-mdc-tab\.mdc-tab--active \.mdc-tab__text-label[\s\S]*color:\s*var\(--news-brand\)/);
+  assert.match(scss, /\.news-library-tab-group[\s\S]*--mdc-tab-indicator-active-indicator-color:\s*transparent/);
+  assert.match(scss, /\.mat-mdc-tab\.mdc-tab--active[\s\S]*linear-gradient\(90deg,\s*var\(--news-electric\),\s*var\(--news-violet\)\)/);
+  assert.match(scss, /\.mat-mdc-tab\.mdc-tab--active \.mdc-tab__text-label[\s\S]*color:\s*#fff/);
   assert.match(scss, /\.news-view-more-toggle[\s\S]*linear-gradient\(135deg,\s*var\(--news-electric\),\s*var\(--news-violet\)\)/);
   assert.doesNotMatch(scss, retiredWarmPalette);
 });
