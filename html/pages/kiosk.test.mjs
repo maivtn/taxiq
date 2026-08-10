@@ -36,7 +36,7 @@ test('kiosk service prices use comma thousands separators', () => {
   assert.doesNotMatch(html, /\$' \+ service\.price\.toFixed\(2\)/);
 });
 
-test('POS opens the repository kiosk page instead of the stale external mockup', () => {
-  assert.match(posHtml, /href="kiosk\.html"[^>]*target="_blank"/);
-  assert.doesNotMatch(posHtml, /pos-nexoratouch\.vercel\.app\/mockups\/phase1\/kiosk\.html/);
+test('POS opens the requested external kiosk mockup', () => {
+  assert.match(posHtml, /href="https:\/\/pos-nexoratouch\.vercel\.app\/mockups\/phase1\/kiosk\.html"[^>]*target="_blank"/);
+  assert.doesNotMatch(posHtml, /href="kiosk\.html"[^>]*target="_blank"/);
 });

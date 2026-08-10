@@ -548,8 +548,8 @@ test('Customers table uses 7 focused columns with a separate Source chip, and No
   assert.match(html, /function renderCustSegChips\(\) \{/);
 });
 
-test('POS title row links to the working repository kiosk', () => {
-  assert.match(html, /<a class="pos-btn pos-btn-sm" href="kiosk\.html" target="_blank" rel="noopener noreferrer"><i class="bi bi-tablet" aria-hidden="true"><\/i> Kiosk<\/a>/);
+test('POS title row opens the requested external kiosk HTML', () => {
+  assert.match(html, /<a class="pos-btn pos-btn-sm" href="https:\/\/pos-nexoratouch\.vercel\.app\/mockups\/phase1\/kiosk\.html" target="_blank" rel="noopener noreferrer"><i class="bi bi-tablet" aria-hidden="true"><\/i> Kiosk<\/a>/);
 });
 
 test('Management keeps Customers out while adding a Services subtab for menu management', () => {
