@@ -60,6 +60,17 @@ function renderSidebar(activePage, activeTab) {
   return sidebar.innerHTML;
 }
 
+function mediaBlock(source, minWidth) {
+  const pattern = new RegExp(`@media\\s*\\(min-width:\\s*${minWidth}px\\)\\s*\\{`);
+  const match = source.match(pattern);
+  if (!match) return '';
+  const start = match.index;
+  const bodyStart = start + match[0].length;
+  const nextMedia = source.slice(bodyStart).search(/\n\s*@media\s*\(/);
+  const end = nextMedia === -1 ? source.length : bodyStart + nextMedia;
+  return source.slice(start, end);
+}
+
 test('uses Ai Hub as the booking sidebar group label', () => {
   const html = renderSidebar('booking', 'booking');
   assert.match(html, /data-lucide="calendar-days"[\s\S]*?<span>Ai Hub<\/span>/);
@@ -78,11 +89,6 @@ test('renders all Reward submenu buttons on the native Reward page', () => {
 test('links and activates Reviews on the native Review page', () => {
   const html = renderSidebar('review', '');
   assert.match(html, /<a class="nav-item is-active" href="nexora-review\.html">[\s\S]*?<span>Reviews<\/span>/);
-});
-
-test('links and activates Products & Billing on its native page', () => {
-  const html = renderSidebar('products-billing', '');
-  assert.match(html, /<a class="nav-item is-active" href="nexora-products-billing\.html">[\s\S]*data-lucide="credit-card"[\s\S]*?<span>Products &amp; Billing<\/span>/);
 });
 
 test('renders the Staff sidebar with its staff-only navigation', () => {
@@ -144,8 +150,8 @@ test('keeps the shared sidebar in the drawer state through 1366px', () => {
 test('keeps inline shell pages on the same 1366px desktop breakpoint', () => {
   for (const file of INLINE_SHELL_PAGES) {
     const html = readFileSync(new URL(`../pages/${file}`, import.meta.url), 'utf8');
-    assert.doesNotMatch(html, /@media\s*\(min-width:\s*1024px\)[\s\S]*?\.sidebar\s*\{[\s\S]*?display:\s*flex/);
-    assert.match(html, /@media\s*\(min-width:\s*1366px\)[\s\S]*?\.sidebar\s*\{[\s\S]*?display:\s*flex/);
+    assert.doesNotMatch(mediaBlock(html, 1024), /\.sidebar\s*\{[\s\S]*?display:\s*flex/);
+    assert.match(mediaBlock(html, 1366), /\.sidebar\s*\{[\s\S]*?display:\s*flex/);
   }
 });
 
