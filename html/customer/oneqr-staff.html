@@ -83,6 +83,7 @@
     }
 
     .oneqr-scan-item {
+      appearance: none;
       display: flex;
       flex: 0 0 calc(50% - 6px);
       min-height: 92px;
@@ -96,6 +97,7 @@
       padding: 14px 10px;
       color: inherit;
       cursor: pointer;
+      font-family: inherit;
       text-align: center;
       text-decoration: none;
       transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
@@ -108,6 +110,11 @@
     }
 
     .oneqr-scan-item.is-active {
+      border-color: #6d4de0;
+      box-shadow: 0 10px 22px rgba(109, 77, 224, 0.18);
+    }
+
+    .oneqr-scan-item[aria-pressed="true"] {
       border-color: #6d4de0;
       box-shadow: 0 10px 22px rgba(109, 77, 224, 0.18);
     }
@@ -135,6 +142,67 @@
       font-weight: 800;
       letter-spacing: 0.02em;
       text-transform: capitalize;
+    }
+
+    .oneqr-staff-status {
+      margin: 0 20px 18px;
+      border: 1px solid #e7e6f5;
+      border-radius: 16px;
+      background: #fafaff;
+      padding: 15px;
+    }
+
+    .oneqr-staff-status-kicker {
+      margin: 0 0 6px;
+      color: #6d4de0;
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .oneqr-staff-status h2 {
+      margin: 0;
+      color: #0b1220;
+      font-size: 17px;
+      font-weight: 900;
+      letter-spacing: 0;
+    }
+
+    .oneqr-staff-status p:last-of-type {
+      margin: 6px 0 0;
+      color: #596579;
+      font-size: 13px;
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    .oneqr-staff-activity {
+      display: grid;
+      gap: 6px;
+      margin: 12px 0 0;
+      padding: 0;
+      list-style: none;
+    }
+
+    .oneqr-staff-activity li {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 10px;
+      border-radius: 10px;
+      background: #fff;
+      padding: 8px 10px;
+      color: #4a5568;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .oneqr-staff-activity time {
+      flex: 0 0 auto;
+      color: #8792a2;
+      font-size: 11px;
+      font-weight: 800;
     }
 
     .oneqr-staff-panel {
@@ -184,6 +252,12 @@
       border-color: #cabdf7;
     }
 
+    .oneqr-staff-choice.is-selected,
+    .oneqr-staff-choice[aria-pressed="true"] {
+      border-color: #6d4de0;
+      box-shadow: 0 10px 22px rgba(109, 77, 224, 0.12);
+    }
+
     .oneqr-staff-choice-num {
       display: flex;
       width: 26px;
@@ -217,31 +291,38 @@
       </span>
     </div>
 
+    <section class="oneqr-staff-status" id="oneqrStaffStatus" aria-live="polite">
+      <p class="oneqr-staff-status-kicker">Current action</p>
+      <h2 id="oneqrStaffActionTitle">Ready for staff action</h2>
+      <p id="oneqrStaffActionMessage">Clock in, receive a customer, or request approval from this staff portal.</p>
+      <ul class="oneqr-staff-activity" id="oneqrStaffActivityList" aria-label="Recent staff activity"></ul>
+    </section>
+
     <nav class="oneqr-scan-menu" aria-label="Staff quick actions">
-      <a class="oneqr-scan-item" href="#">
+      <button class="oneqr-scan-item" type="button" data-staff-action="clock-in" aria-pressed="false">
         <span class="oneqr-scan-icon"><i data-lucide="check-circle-2" aria-hidden="true"></i></span>
-        <span>Clock-in</span>
-      </a>
-      <a class="oneqr-scan-item" href="#">
+        <span data-staff-label>Clock-in</span>
+      </button>
+      <button class="oneqr-scan-item" type="button" data-staff-action="turn">
         <span class="oneqr-scan-icon"><i data-lucide="user-cog" aria-hidden="true"></i></span>
-        <span>Turn 2</span>
-      </a>
-      <button class="oneqr-scan-item" type="button" id="oneqrReceiveCustomerBtn" aria-expanded="false" aria-controls="oneqrReceiveCustomerPanel">
+        <span data-staff-label>Turn 2</span>
+      </button>
+      <button class="oneqr-scan-item" type="button" id="oneqrReceiveCustomerBtn" data-staff-action="receive-customer" aria-expanded="false" aria-controls="oneqrReceiveCustomerPanel">
         <span class="oneqr-scan-icon"><i data-lucide="check" aria-hidden="true"></i></span>
         <span>Receive Customer</span>
       </button>
-      <a class="oneqr-scan-item" href="#">
+      <button class="oneqr-scan-item" type="button" data-staff-action="complete-service">
         <span class="oneqr-scan-icon"><i data-lucide="star" aria-hidden="true"></i></span>
         <span>Complete Service</span>
-      </a>
-      <a class="oneqr-scan-item" href="#">
+      </button>
+      <button class="oneqr-scan-item" type="button" data-staff-action="tip">
         <span class="oneqr-scan-icon"><i data-lucide="dollar-sign" aria-hidden="true"></i></span>
         <span>Tip</span>
-      </a>
-      <a class="oneqr-scan-item" href="#">
+      </button>
+      <button class="oneqr-scan-item" type="button" data-staff-action="request-approval">
         <span class="oneqr-scan-icon"><i data-lucide="external-link" aria-hidden="true"></i></span>
         <span>Request Approval</span>
-      </a>
+      </button>
     </nav>
 
     <div class="oneqr-staff-panel" id="oneqrReceiveCustomerPanel" hidden>
@@ -262,32 +343,206 @@
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script>
     (function () {
-      var nameEl = document.getElementById('oneqrStaffName');
-      try {
-        var name = (window.localStorage.getItem('taxiq:customer-name') || '').trim();
-        if (name) nameEl.textContent = 'Hi ' + name;
-      } catch (error) { /* storage unavailable */ }
+      var STORAGE_KEY = 'taxiq:oneqr-staff-state';
+      var DEFAULT_STATE = {
+        clockedIn: false,
+        turnNumber: 2,
+        arrivalType: '',
+        activeService: false,
+        approvalStatus: '',
+        lastTitle: 'Ready for staff action',
+        lastMessage: 'Clock in, receive a customer, or request approval from this staff portal.',
+        activity: []
+      };
 
-      var receiveBtn = document.getElementById('oneqrReceiveCustomerBtn');
-      var panel = document.getElementById('oneqrReceiveCustomerPanel');
-      if (receiveBtn && panel) {
-        receiveBtn.addEventListener('click', function () {
-          var expanded = receiveBtn.getAttribute('aria-expanded') === 'true';
-          receiveBtn.setAttribute('aria-expanded', String(!expanded));
-          receiveBtn.classList.toggle('is-active', !expanded);
-          panel.hidden = expanded;
-          if (!expanded) panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      function readState() {
+        try {
+          var saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || '{}');
+          return {
+            clockedIn: Boolean(saved.clockedIn),
+            turnNumber: Number(saved.turnNumber) > 0 ? Number(saved.turnNumber) : DEFAULT_STATE.turnNumber,
+            arrivalType: typeof saved.arrivalType === 'string' ? saved.arrivalType : '',
+            activeService: Boolean(saved.activeService),
+            approvalStatus: typeof saved.approvalStatus === 'string' ? saved.approvalStatus : '',
+            lastTitle: typeof saved.lastTitle === 'string' && saved.lastTitle ? saved.lastTitle : DEFAULT_STATE.lastTitle,
+            lastMessage: typeof saved.lastMessage === 'string' && saved.lastMessage ? saved.lastMessage : DEFAULT_STATE.lastMessage,
+            activity: Array.isArray(saved.activity) ? saved.activity.slice(0, 4) : []
+          };
+        } catch (error) {
+          return {
+            clockedIn: DEFAULT_STATE.clockedIn,
+            turnNumber: DEFAULT_STATE.turnNumber,
+            arrivalType: DEFAULT_STATE.arrivalType,
+            activeService: DEFAULT_STATE.activeService,
+            approvalStatus: DEFAULT_STATE.approvalStatus,
+            lastTitle: DEFAULT_STATE.lastTitle,
+            lastMessage: DEFAULT_STATE.lastMessage,
+            activity: []
+          };
+        }
+      }
+
+      function saveState() {
+        try {
+          window.localStorage.setItem(STORAGE_KEY, JSON.stringify(state));
+        } catch (error) { /* storage unavailable */ }
+      }
+
+      function setText(id, value) {
+        var element = document.getElementById(id);
+        if (element) element.textContent = value;
+      }
+
+      function nowLabel() {
+        return new Date().toLocaleTimeString([], { hour: 'numeric', minute: '2-digit' });
+      }
+
+      function addActivity(label) {
+        state.activity.unshift({ label: label, time: nowLabel() });
+        state.activity = state.activity.slice(0, 4);
+      }
+
+      function showStatus(title, message, activityLabel) {
+        state.lastTitle = title;
+        state.lastMessage = message;
+        if (activityLabel) addActivity(activityLabel);
+        renderStatus();
+        saveState();
+      }
+
+      function renderStatus() {
+        setText('oneqrStaffActionTitle', state.lastTitle);
+        setText('oneqrStaffActionMessage', state.lastMessage);
+
+        var list = document.getElementById('oneqrStaffActivityList');
+        if (list) {
+          var items = state.activity.map(function (entry) {
+            var item = document.createElement('li');
+            var label = document.createElement('span');
+            var time = document.createElement('time');
+            label.textContent = entry.label;
+            time.textContent = entry.time;
+            item.append(label, time);
+            return item;
+          });
+          list.replaceChildren.apply(list, items);
+        }
+      }
+
+      function setButtonStates() {
+        document.querySelectorAll('[data-staff-action]').forEach(function (control) {
+          var action = control.dataset.staffAction;
+          var label = control.querySelector ? control.querySelector('[data-staff-label]') : null;
+          var pressed = action === 'clock-in' && state.clockedIn;
+
+          if (action === 'clock-in' && label) label.textContent = state.clockedIn ? 'Clock-out' : 'Clock-in';
+          if (action === 'turn' && label) label.textContent = 'Turn ' + state.turnNumber;
+
+          control.classList.toggle('is-active', pressed);
+          if (action === 'clock-in') control.setAttribute('aria-pressed', String(pressed));
+        });
+
+        document.querySelectorAll('.oneqr-staff-choice').forEach(function (choice) {
+          var selected = choice.dataset.choice === state.arrivalType;
+          choice.classList.toggle('is-selected', selected);
+          choice.setAttribute('aria-pressed', String(selected));
         });
       }
 
-      document.querySelectorAll('.oneqr-staff-choice').forEach(function (btn) {
-        btn.addEventListener('click', function () {
-          document.querySelectorAll('.oneqr-staff-choice').forEach(function (b) { b.style.borderColor = ''; });
-          btn.style.borderColor = '#6d4de0';
+      function openReceivePanel() {
+        var receiveBtn = document.getElementById('oneqrReceiveCustomerBtn');
+        var panel = document.getElementById('oneqrReceiveCustomerPanel');
+        if (!receiveBtn || !panel) return;
+
+        var expanded = receiveBtn.getAttribute('aria-expanded') === 'true';
+        var nextExpanded = !expanded;
+        receiveBtn.setAttribute('aria-expanded', String(nextExpanded));
+        receiveBtn.classList.toggle('is-active', nextExpanded);
+        panel.hidden = !nextExpanded;
+        if (nextExpanded) {
+          panel.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+          showStatus('Choose arrival type', 'Select Appointment or Walk-in to attach the next customer to your station.');
+        } else {
+          showStatus('Receive customer closed', 'Customer intake is hidden. Open it again when the next guest arrives.');
+        }
+      }
+
+      function handleStaffAction(action) {
+        if (action === 'clock-in') {
+          state.clockedIn = !state.clockedIn;
+          setButtonStates();
+          showStatus(
+            state.clockedIn ? 'Clocked in' : 'Clocked out',
+            state.clockedIn ? 'Your shift is active and ready for assigned services.' : 'Your shift is paused for this demo.',
+            state.clockedIn ? 'Clocked in' : 'Clocked out'
+          );
+          return;
+        }
+
+        if (action === 'turn') {
+          state.turnNumber += 1;
+          setButtonStates();
+          showStatus('Turn updated', 'You are now on turn ' + state.turnNumber + '.', 'Turn ' + state.turnNumber);
+          return;
+        }
+
+        if (action === 'receive-customer') {
+          openReceivePanel();
+          return;
+        }
+
+        if (action === 'complete-service') {
+          if (!state.activeService) {
+            showStatus('No active service', 'Receive a customer before marking a service complete.');
+            return;
+          }
+          state.activeService = false;
+          state.arrivalType = '';
+          setButtonStates();
+          showStatus('Service completed', 'Ticket marked complete. The customer can continue to tip and review.', 'Service completed');
+          return;
+        }
+
+        if (action === 'tip') {
+          showStatus('Tip prompt ready', 'Show the customer this OneQR so they can choose Tip & Pay from their phone.', 'Tip prompt opened');
+          return;
+        }
+
+        if (action === 'request-approval') {
+          state.approvalStatus = 'pending';
+          showStatus('Approval requested', 'Discount approval was sent to the owner queue. Status: pending.', 'Approval pending');
+        }
+      }
+
+      var state = readState();
+      var nameEl = document.getElementById('oneqrStaffName');
+      try {
+        var name = (window.localStorage.getItem('taxiq:customer-name') || '').trim();
+        if (name && nameEl) nameEl.textContent = 'Hi ' + name;
+      } catch (error) { /* storage unavailable */ }
+
+      document.querySelectorAll('[data-staff-action]').forEach(function (control) {
+        control.addEventListener('click', function () {
+          handleStaffAction(control.dataset.staffAction);
         });
       });
 
-      lucide.createIcons();
+      document.querySelectorAll('.oneqr-staff-choice').forEach(function (btn) {
+        btn.addEventListener('click', function () {
+          state.arrivalType = btn.dataset.choice || '';
+          state.activeService = true;
+          var receiveBtn = document.getElementById('oneqrReceiveCustomerBtn');
+          if (receiveBtn) receiveBtn.classList.remove('is-active');
+          setButtonStates();
+          showStatus('Customer received', state.arrivalType + ' customer assigned to your station.', state.arrivalType + ' customer received');
+        });
+      });
+
+      renderStatus();
+      setButtonStates();
+
+      var iconApi = window.lucide || (typeof lucide !== 'undefined' ? lucide : null);
+      if (iconApi && typeof iconApi.createIcons === 'function') iconApi.createIcons();
     })();
   </script>
 </body>
