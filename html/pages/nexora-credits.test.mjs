@@ -120,9 +120,11 @@ test('matches the compact monthly plan and rollover credit layout in Booking Boo
 
 test('keeps Credit Usage cards compact without hiding their usage details', () => {
   const css = readFileSync(CSS_URL, 'utf8');
+  const cardRule = css.match(/\.credits-card\s*\{([^}]*)\}/)?.[1] || '';
 
   assert.match(css, /\.credits-balance-grid\s*\{[\s\S]*?gap:\s*12px/);
   assert.match(css, /\.credits-card\s*\{[\s\S]*?padding:\s*14px;/);
+  assert.doesNotMatch(cardRule, /min-height/);
   assert.match(css, /\.credits-card-head\s*\{[\s\S]*?gap:\s*9px/);
   assert.match(css, /\.credits-plan-usage\s*\{[\s\S]*?gap:\s*12px[\s\S]*?margin-top:\s*12px/);
   assert.match(css, /\.credits-usage-progress\s*\{[\s\S]*?height:\s*6px[\s\S]*?margin-top:\s*5px/);

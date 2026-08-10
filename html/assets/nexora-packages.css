@@ -386,7 +386,7 @@
   position: relative;
   overflow: hidden;
   display: block;
-  margin-top: 12px;
+  margin-top: 0;
   border: 1px solid rgba(70, 72, 216, 0.15);
   border-radius: 10px;
   background: linear-gradient(135deg, #eef0ff 0%, #faf9ff 100%);
