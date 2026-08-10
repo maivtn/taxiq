@@ -557,32 +557,48 @@
       gap: 10px;
     }
 
+    .category-chip-list {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .category-panel-list {
+      display: block;
+    }
+
     .service-category {
-      border: 1px solid var(--border-default);
-      border-radius: var(--radius-panel);
-      background: var(--surface-default);
-      overflow: hidden;
+      border: 0;
+      border-radius: 0;
+      background: transparent;
+      overflow: visible;
     }
 
     .service-category.open {
-      border-color: rgba(70, 72, 212, .42);
-      box-shadow: 0 8px 20px rgba(70, 72, 212, .10);
+      box-shadow: none;
     }
 
     .category-trigger {
-      width: 100%;
-      display: flex;
+      width: auto;
+      max-width: 100%;
+      min-height: 34px;
+      display: inline-flex;
       align-items: center;
-      gap: 12px;
-      border: 0;
+      gap: 7px;
+      border: 1px solid var(--border-default);
+      border-radius: 999px;
       background: var(--surface-default);
       color: var(--text-primary);
-      padding: 8px 14px;
+      padding: 5px 8px 5px 12px;
       text-align: left;
+      box-shadow: 0 5px 12px rgba(24, 20, 54, .05);
     }
 
-    .service-category.open .category-trigger {
+    .category-trigger[aria-expanded="true"] {
+      border-color: rgba(70, 72, 212, .32);
       background: var(--surface-selected);
+      box-shadow: 0 8px 18px rgba(70, 72, 212, .10);
     }
 
     .category-trigger:hover,
@@ -595,44 +611,30 @@
       box-shadow: inset 0 0 0 3px var(--primary-subtle);
     }
 
-    .category-trigger i {
-      width: 18px;
-      height: 18px;
-      color: var(--text-secondary);
-      transition: transform .16s ease;
-    }
-
-    .service-category.open .category-trigger i {
-      transform: rotate(180deg);
-    }
-
-    .category-title {
+    .category-chip-name {
       min-width: 0;
-      flex: 1;
-      font-size: 13px;
+      font-size: 12px;
       font-weight: 850;
+      line-height: 1.15;
+      overflow-wrap: anywhere;
     }
 
-    .category-kind {
-      font-size: 12px;
-      color: var(--text-secondary);
-      font-weight: 700;
-    }
-
-    .category-count {
-      min-width: 28px;
-      padding: 4px 7px;
+    .category-chip-number {
+      flex: 0 0 auto;
+      min-width: 22px;
+      padding: 3px 7px;
       border-radius: 999px;
-      background: var(--background-default);
-      color: var(--text-secondary);
-      font-size: 12px;
-      font-weight: 800;
+      background: #F1EDFF;
+      color: #6d5be6;
+      font-size: 11px;
+      font-weight: 900;
+      line-height: 1.1;
       text-align: center;
     }
 
     .category-content {
       display: none;
-      padding: 8px 12px 12px;
+      padding: 8px 0 2px;
     }
 
     .service-category.open .category-content {
@@ -1801,6 +1803,7 @@
     function normalizeMenuData(data) {
       const sections = Array.isArray(data?.sections) ? data.sections : [];
       return sections
+        .filter(section => String(section.kind || '').toLowerCase() !== 'beverage')
         .map(section => ({
           id: section.id,
           title: section.title,
@@ -1855,13 +1858,16 @@
       toggleServiceSelection(id);
     }
     function toggleServiceCategory(id) {
-      const target = document.querySelector(`[data-category-id="${id}"]`);
+      const target = document.querySelector(`[data-category-panel="${id}"]`);
       if (!target) return;
       const shouldOpen = !target.classList.contains('open');
-      document.querySelectorAll('.service-category').forEach(category => {
+      document.querySelectorAll('[data-category-panel]').forEach(category => {
         const open = category === target && shouldOpen;
         category.classList.toggle('open', open);
-        category.querySelector('.category-trigger')?.setAttribute('aria-expanded', open ? 'true' : 'false');
+      });
+      document.querySelectorAll('[data-category-chip]').forEach(chip => {
+        const open = chip.dataset.categoryChip === id && shouldOpen;
+        chip.setAttribute('aria-expanded', open ? 'true' : 'false');
       });
     }
     function renderServices() {
@@ -1871,9 +1877,13 @@
         container.innerHTML = `<div class="service-${menuLoadError ? 'error' : 'loading'}">${menuLoadError ? 'Services could not be loaded. Please try again.' : 'Loading services…'}</div>`;
         return;
       }
-      const hasOpenCategory = container.querySelector('.service-category.open');
-      const initialOpenId = hasOpenCategory?.dataset.categoryId || SERVICE_CATEGORIES[0].id;
-      container.innerHTML = SERVICE_CATEGORIES.map(category => {
+      const hasOpenCategory = container.querySelector('[data-category-panel].open');
+      const initialOpenId = hasOpenCategory?.dataset.categoryPanel || SERVICE_CATEGORIES[0].id;
+      const categoryChips = SERVICE_CATEGORIES.map(category => {
+        const categoryOpen = category.id === initialOpenId;
+        return `<button class="category-trigger category-chip" type="button" data-category-chip="${escapeHtml(category.id)}" aria-expanded="${categoryOpen ? 'true' : 'false'}" aria-controls="category-${escapeHtml(category.id)}" onclick='toggleServiceCategory(${JSON.stringify(category.id)})'><span class="category-chip-name">${escapeHtml(category.title)}</span><span class="category-chip-number">${category.items.length}</span></button>`;
+      }).join('');
+      const categoryPanels = SERVICE_CATEGORIES.map(category => {
         const categoryOpen = category.id === initialOpenId;
         const categoryItems = category.items.map(service => {
           const selected = selectedServices.includes(service.id);
@@ -1885,11 +1895,11 @@
         <div class="service-card-main"><div class="service-card-title"><strong>${escapeHtml(service.name)}</strong>${typeTag}</div><div class="service-card-meta">${duration}<span class="service-price${priceClass}">${escapeHtml(service.priceLabel)}</span></div></div><span class="service-selected-check${selected ? ' is-selected' : ''}" aria-hidden="true"><i data-lucide="${selected ? 'check' : 'circle'}" class="selected-check-icon"></i></span>${details}
       </div>`;
         }).join('');
-        return `<article class="service-category${categoryOpen ? ' open' : ''}" data-category-id="${escapeHtml(category.id)}">
-      <button class="category-trigger" type="button" aria-expanded="${categoryOpen ? 'true' : 'false'}" aria-controls="category-${escapeHtml(category.id)}" onclick='toggleServiceCategory(${JSON.stringify(category.id)})'><span class="category-title">${escapeHtml(category.title)}</span><span class="category-count">${category.items.length}</span><span class="category-kind">${escapeHtml(category.kind)}</span><i data-lucide="chevron-down" aria-hidden="true"></i></button>
+        return `<section class="service-category${categoryOpen ? ' open' : ''}" data-category-panel="${escapeHtml(category.id)}">
       <div class="category-content" id="category-${escapeHtml(category.id)}"><div class="service-category-grid">${categoryItems}</div></div>
-    </article>`;
+    </section>`;
       }).join('');
+      container.innerHTML = `<div class="category-chip-list" role="list" aria-label="Service categories">${categoryChips}</div><div class="category-panel-list">${categoryPanels}</div>`;
       refreshIcons(container);
     }
     function renderSelectedServices() {
