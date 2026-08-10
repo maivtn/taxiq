@@ -281,12 +281,13 @@ test('renders shared Monthly and Yearly billing-cycle sub-tabs with discount chi
   assert.ok(billingSwitch, 'Package billing cycle switch should render under top-level tabs');
   assert.match(html, /<div class="package-tabs" role="tablist" aria-label="Package management tabs">[\s\S]*?<\/div>\s*<div class="package-billing-switch" role="group" aria-label="Billing cycle">/);
   assert.match(billingSwitch, /<button(?=[^>]*data-package-billing-cycle="monthly")(?=[^>]*aria-pressed="true")[^>]*>[\s\S]*?<span>Monthly<\/span>/);
-  assert.match(billingSwitch, /<button(?=[^>]*data-package-billing-cycle="yearly")(?=[^>]*aria-pressed="false")[^>]*>[\s\S]*?<span>Yearly<\/span>[\s\S]*?<span class="package-billing-discount-chip">Save 20%<\/span>/);
+  assert.match(billingSwitch, /<button(?=[^>]*data-package-billing-cycle="yearly")(?=[^>]*aria-pressed="false")[^>]*>[\s\S]*?<span>Yearly<\/span>[\s\S]*?<span class="package-billing-discount-chip">-20%<\/span>/);
 
   assert.match(css, /\.package-billing-switch\s*\{/);
   assert.match(css, /\.package-billing-button\s*\{/);
   assert.match(css, /\.package-billing-button\.is-active\s*\{/);
-  assert.match(css, /\.package-billing-discount-chip\s*\{/);
+  assert.match(css, /\.package-billing-discount-chip\s*\{[\s\S]*?background:\s*rgba\(239,\s*68,\s*68,\s*0\.12\)/);
+  assert.match(css, /\.package-billing-discount-chip\s*\{[\s\S]*?color:\s*var\(--nexora-danger\)/);
 });
 
 test('synchronizes package tabs with URL state and browser history', () => {

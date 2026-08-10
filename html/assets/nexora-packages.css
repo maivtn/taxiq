@@ -236,9 +236,9 @@
   min-height: 20px;
   align-items: center;
   border-radius: 999px;
-  background: rgba(0, 184, 115, 0.12);
+  background: rgba(239, 68, 68, 0.12);
   padding: 0 7px;
-  color: var(--nexora-success);
+  color: var(--nexora-danger);
   font-size: 10px;
   font-weight: 900;
 }
