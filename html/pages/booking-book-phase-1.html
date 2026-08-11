@@ -2354,6 +2354,10 @@
       min-width: 0;
     }
 
+    .settings-business-grid > .settings-salon-name-field {
+      grid-column: 1 / -1;
+    }
+
     .settings-business-grid > .settings-field:not(.settings-span-full) {
       grid-template-rows: 16px 46px;
     }
@@ -7545,6 +7549,10 @@
         grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
+      .settings-business-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+      }
+
       .settings-booking-policy-grid {
         grid-template-columns: repeat(4, minmax(0, 1fr));
       }
@@ -10165,7 +10173,7 @@
                       <button class="settings-collapse-button" type="button" data-settings-collapse aria-expanded="true" aria-label="Collapse salon info"><i class="bi bi-chevron-up" aria-hidden="true"></i></button>
                     </div>
                     <div class="settings-field-grid settings-business-grid">
-                      <label class="settings-field">
+                      <label class="settings-field settings-salon-name-field">
                         <span class="settings-label">Salon name</span>
                         <input class="settings-input" type="text" value="Bitcoin Nail Bar">
                       </label>
@@ -10193,6 +10201,19 @@
                         <span class="phone-input-shell">
                           <select class="phone-country-select" aria-label="Country code" disabled><option value="+1" selected>+1</option></select>
                           <input class="settings-input phone-mask-input" type="tel" value="(832) 786-5576" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel-national" data-phone-mask readonly>
+                        </span>
+                      </label>
+                      <label class="settings-field">
+                        <span class="settings-label settings-label-with-tooltip">
+                          Cell Phone
+                          <span class="settings-tooltip">
+                            <button class="settings-tooltip-trigger" type="button" aria-label="Cell Phone info" aria-describedby="cell-phone-help"><i class="bi bi-info-circle" aria-hidden="true"></i></button>
+                            <span class="settings-tooltip-content" id="cell-phone-help" role="tooltip">AI forwards calls to this number when a customer asks to speak with a real person</span>
+                          </span>
+                        </span>
+                        <span class="phone-input-shell">
+                          <select class="phone-country-select" aria-label="Country code"><option value="+1" selected>+1</option><option value="+84">+84</option><option value="+52">+52</option></select>
+                          <input class="settings-input phone-mask-input" type="tel" value="" placeholder="(123) 456-7890" inputmode="numeric" autocomplete="tel-national" data-phone-mask>
                         </span>
                       </label>
                       <label class="settings-field">
