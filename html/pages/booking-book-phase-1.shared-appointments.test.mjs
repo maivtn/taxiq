@@ -125,6 +125,10 @@ test('Booking Book keeps Appointments and Calendar subtabs', () => {
   assert.match(SOURCE, /id="booking-subpanel-calendar" data-booking-sub-panel="calendar"/);
 });
 
+test('standalone Booking Book shell plan button opens Package Management overview', () => {
+  assert.match(APP_SHELL_SOURCE, /planButton[\s\S]*addEventListener\('click'[\s\S]*nexora-packages\.html\?tab=overview/);
+});
+
 test('Booking Book overview KPIs use flex wrapping instead of grid columns', () => {
   for (const source of [SOURCE, APP_SHELL_SOURCE]) {
     const overviewKpisBlock = source.match(/\.overview-kpis\s*\{[^}]*\}/)?.[0] || '';

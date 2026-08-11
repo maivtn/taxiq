@@ -7635,6 +7635,13 @@
       onlineButton.addEventListener('click', reserveOnlineBooking);
     }
 
+    var planButton = document.querySelector('.sidebar .plan-button');
+    if (planButton) {
+      planButton.addEventListener('click', function() {
+        window.location.href = 'nexora-packages.html?tab=overview';
+      });
+    }
+
     document.querySelectorAll('.toggle-pill').forEach(function(toggle) {
       toggle.addEventListener('click', function() {
         toggle.classList.toggle('is-on');

@@ -24,13 +24,6 @@ const rewardItems = [
   ['analytics', 'Analytics']
 ];
 
-const packageItems = [
-  ['overview', 'Overview'],
-  ['nexora', 'Subscriptions'],
-  ['voice', 'AI Voice Plans'],
-  ['history', 'Package History']
-];
-
 function classList() {
   return { add() {}, remove() {}, toggle() {}, contains() { return false; } };
 }
@@ -60,6 +53,39 @@ function renderSidebar(activePage, activeTab) {
   return sidebar.innerHTML;
 }
 
+function bootShellWithPlanButton() {
+  const listeners = {};
+  const sidebar = { innerHTML: '', classList: classList() };
+  const header = { innerHTML: '' };
+  const planButton = {
+    addEventListener(type, handler) {
+      listeners[type] = handler;
+    }
+  };
+  let backdrop = null;
+  const document = {
+    readyState: 'complete',
+    body: { appendChild(node) { backdrop = node; } },
+    createElement() { return { className: '', classList: classList(), addEventListener() {} }; },
+    addEventListener() {},
+    getElementById() { return null; },
+    querySelector(selector) {
+      if (selector === 'aside.sidebar') return sidebar;
+      if (selector === 'header.header') return header;
+      if (selector === '.sidebar .plan-button') return planButton;
+      if (selector === '.nexora-shell-backdrop') return backdrop;
+      return null;
+    },
+    querySelectorAll() { return []; }
+  };
+  const window = {
+    NEXORA_SHELL: { activePage: 'booking', activeTab: 'booking' },
+    location: { search: '', href: 'booking-book-phase-1.html' }
+  };
+  vm.runInNewContext(shellSource, { window, document, URLSearchParams });
+  return { listeners, window };
+}
+
 function mediaBlock(source, minWidth) {
   const pattern = new RegExp(`@media\\s*\\(min-width:\\s*${minWidth}px\\)\\s*\\{`);
   const match = source.match(pattern);
@@ -75,6 +101,22 @@ test('uses Ai Hub as the booking sidebar group label', () => {
   const html = renderSidebar('booking', 'booking');
   assert.match(html, /data-lucide="calendar-days"[\s\S]*?<span>Ai Hub<\/span>/);
   assert.doesNotMatch(html, /<span>Booking Hub<\/span>/);
+});
+
+test('labels the Ai Hub booking sidebar item as Booking', () => {
+  const html = renderSidebar('booking', 'booking');
+  const bookingItem = html.match(/data-shell-tab="booking"[\s\S]*?<\/button>/)?.[0] || '';
+  assert.match(bookingItem, /<span>Booking<\/span>/);
+  assert.doesNotMatch(bookingItem, /Booking Book/);
+});
+
+test('keeps inline Booking sidebar fallback labels concise', () => {
+  for (const file of ['booking-book-phase-1.html', 'change-icon.html']) {
+    const html = readFileSync(new URL(`../pages/${file}`, import.meta.url), 'utf8');
+    const bookingItem = html.match(/<button class="nav-subitem[^"]*" type="button" data-tab-target="booking"[\s\S]*?<\/button>/)?.[0] || '';
+    assert.match(bookingItem, /<span>Booking<\/span>/);
+    assert.doesNotMatch(bookingItem, /Booking Book/);
+  }
 });
 
 test('renders all Reward submenu buttons on the native Reward page', () => {
@@ -107,16 +149,20 @@ test('adds a sign-out icon to the sidebar footer action', () => {
   assert.match(html, /class="logout-button"[\s\S]*data-lucide="log-out"[\s\S]*<span>Sign out<\/span><\/button>/);
 });
 
-test('renders all five Package Management submenu items on the native Packages page', () => {
-  const html = renderSidebar('packages', 'overview');
-  for (const [tab, label] of packageItems) {
-    const escapedLabel = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
-    assert.match(html, new RegExp(`data-shell-tab="${tab}"[\\s\\S]*?<span>${escapedLabel}<\\/span>`));
+test('does not render Package Management as a sidebar menu', () => {
+  for (const [activePage, activeTab] of [['booking', 'booking'], ['packages', 'overview']]) {
+    const html = renderSidebar(activePage, activeTab);
+    assert.doesNotMatch(html, /<span>Package Management<\/span>/);
+    assert.doesNotMatch(html, /data-shell-tab="(?:overview|nexora|voice|history)"[\s\S]*?Package/);
+    assert.doesNotMatch(html, /href="nexora-packages\.html\?tab=/);
   }
-  assert.match(html, /class="nav-item nav-parent is-expanded"[\s\S]*?<span>Package Management<\/span>/);
-  assert.match(html, /class="nav-item nav-parent is-expanded"[\s\S]*?data-lucide="crown"/);
-  assert.match(html, /data-nav-subnav[\s\S]*?data-shell-tab="overview"/);
-  assert.doesNotMatch(html, /Purchase History/);
+});
+
+test('opens the Package Management overview from the plan button', () => {
+  const runtime = bootShellWithPlanButton();
+  assert.equal(typeof runtime.listeners.click, 'function');
+  runtime.listeners.click();
+  assert.equal(runtime.window.location.href, 'nexora-packages.html?tab=overview');
 });
 
 test('links every Reward submenu from pages that share the sidebar', () => {

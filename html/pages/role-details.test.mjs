@@ -181,13 +181,14 @@ test('renders module permissions as sidebar parent and child menus', () => {
 
   assert.doesNotMatch(html, /data-permission-parent="home"|data-module="home"|Toggle Home access|<span class="permission-title">Home<\/span>|'home'/);
 
-  for (const [parent, label] of [['dashboard', 'Dashboard'], ['staff', 'Sub Account'], ['payments', 'Payments &amp; Payouts'], ['packages', 'Package Management'], ['stations', 'Stations &amp; QR Codes'], ['booking', 'Ai Hub'], ['community', 'Community'], ['reward', 'Reward'], ['pos', 'POS'], ['settings', 'Settings'], ['support', 'Support']]) {
+  for (const [parent, label] of [['dashboard', 'Dashboard'], ['staff', 'Sub Account'], ['payments', 'Payments &amp; Payouts'], ['stations', 'Stations &amp; QR Codes'], ['booking', 'Ai Hub'], ['community', 'Community'], ['reward', 'Reward'], ['pos', 'POS'], ['settings', 'Settings'], ['support', 'Support']]) {
     assert.match(html, new RegExp(`<section class="permission-group[^"]*" data-permission-parent="${parent}"[\\s\\S]*?<span class="permission-title">${label}<\\/span>`));
   }
+  assert.doesNotMatch(html, /data-permission-parent="packages"|data-module="packages(?:Overview|Subscriptions|AiVoicePlans|History)?"|Toggle Package Management access|<span class="permission-title">Package Management<\/span>/);
 
   for (const [parent, children] of [
     ['payments', ['Overview', 'Customer Payments', 'Tips', 'Payroll', 'Direct Savings']],
-    ['booking', ['Booking Book', 'Customers', 'Call Log', 'SMS Campaigns', 'QR Codes', 'Plans', 'Salon Settings']],
+    ['booking', ['Booking', 'Customers', 'Call Log', 'SMS Campaigns', 'QR Codes', 'Plans', 'Salon Settings']],
     ['reward', ['Overview', 'Earn Rules', 'Reward Catalog', 'Customers', 'Loyalty Activity', 'Analytics']],
     ['pos', ['Check-in', 'Tickets', 'Booking', 'Customers', 'Time Clock', 'Management']],
     ['settings', ['Account', 'Business Verification', 'Sub Account', 'Affiliate Link', 'Terms &amp; Privacy']]
@@ -209,7 +210,7 @@ test('renders permission controls as styled switches and keeps action labels vis
 
   assert.ok(switchControls.length >= 30, 'Role Details should render switches for parent and child permissions');
   assert.match(html, /<label class="role-switch" aria-label="Toggle Dashboard access"><input type="checkbox" role="switch" data-module="dashboard"[^>]*><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"><\/span><\/span><\/label>/);
-  assert.match(html, /<label class="role-switch" aria-label="Toggle Booking Book access"><input type="checkbox" role="switch" data-module="bookingBook"[^>]*><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"><\/span><\/span><\/label>/);
+  assert.match(html, /<label class="role-switch" aria-label="Toggle Booking access"><input type="checkbox" role="switch" data-module="bookingBook"[^>]*><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"><\/span><\/span><\/label>/);
   assert.match(html, /<label class="role-switch" aria-label="Toggle Terms &amp; Privacy access"><input type="checkbox" role="switch" data-module="settingsTermsPrivacy"[^>]*><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"><\/span><\/span><\/label>/);
   assert.match(html, /'settings', 'settingsAccount', 'settingsBusinessVerification', 'settingsSubAccount', 'settingsAffiliateLink', 'settingsTermsPrivacy', 'support'/);
 

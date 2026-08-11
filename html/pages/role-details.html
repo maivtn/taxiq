@@ -459,19 +459,6 @@
                   <div class="permission-child-row"><span class="permission-child-title">Direct Savings</span><label class="role-switch" aria-label="Toggle Direct Savings access"><input type="checkbox" role="switch" data-module="paymentsDirectSavings"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
                 </div>
               </section>
-              <section class="permission-group" data-permission-parent="packages">
-                <div class="permission-parent-row">
-                  <span class="permission-parent-icon"><i data-lucide="crown" aria-hidden="true"></i></span>
-                  <span class="permission-copy"><span class="permission-title">Package Management</span><span class="permission-meta">Plan and subscription access</span></span>
-                  <label class="role-switch" aria-label="Toggle Package Management access"><input type="checkbox" role="switch" data-module="packages"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label>
-                </div>
-                <div class="permission-child-list">
-                  <div class="permission-child-row"><span class="permission-child-title">Overview</span><label class="role-switch" aria-label="Toggle Package Overview access"><input type="checkbox" role="switch" data-module="packagesOverview"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
-                  <div class="permission-child-row"><span class="permission-child-title">Subscriptions</span><label class="role-switch" aria-label="Toggle Subscriptions access"><input type="checkbox" role="switch" data-module="packagesSubscriptions"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
-                  <div class="permission-child-row"><span class="permission-child-title">AI Voice Plans</span><label class="role-switch" aria-label="Toggle AI Voice Plans access"><input type="checkbox" role="switch" data-module="packagesAiVoicePlans"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
-                  <div class="permission-child-row"><span class="permission-child-title">Package History</span><label class="role-switch" aria-label="Toggle Package History access"><input type="checkbox" role="switch" data-module="packagesHistory"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
-                </div>
-              </section>
               <section class="permission-group" data-permission-parent="stations">
                 <div class="permission-parent-row">
                   <span class="permission-parent-icon"><i data-lucide="qr-code" aria-hidden="true"></i></span>
@@ -490,7 +477,7 @@
                   <label class="role-switch" aria-label="Toggle Ai Hub access"><input type="checkbox" role="switch" data-module="booking"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label>
                 </div>
                 <div class="permission-child-list">
-                  <div class="permission-child-row"><span class="permission-child-title">Booking Book</span><label class="role-switch" aria-label="Toggle Booking Book access"><input type="checkbox" role="switch" data-module="bookingBook"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
+                  <div class="permission-child-row"><span class="permission-child-title">Booking</span><label class="role-switch" aria-label="Toggle Booking access"><input type="checkbox" role="switch" data-module="bookingBook"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
                   <div class="permission-child-row"><span class="permission-child-title">Customers</span><label class="role-switch" aria-label="Toggle Booking Customers access"><input type="checkbox" role="switch" data-module="bookingCustomers"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
                   <div class="permission-child-row"><span class="permission-child-title">Call Log</span><label class="role-switch" aria-label="Toggle Call Log access"><input type="checkbox" role="switch" data-module="bookingCallLog"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
                   <div class="permission-child-row"><span class="permission-child-title">SMS Campaigns</span><label class="role-switch" aria-label="Toggle SMS Campaigns access"><input type="checkbox" role="switch" data-module="bookingSmsCampaigns"><span class="role-switch-track" aria-hidden="true"><span class="role-switch-thumb"></span></span></label></div>
@@ -593,8 +580,7 @@
 
       var allModuleIds = [
         'dashboard', 'staff', 'reviews', 'analytics', 'payments', 'paymentsOverview', 'paymentsCustomerPayments',
-        'paymentsTips', 'paymentsPayroll', 'paymentsDirectSavings', 'packages', 'packagesOverview', 'packagesSubscriptions',
-        'packagesAiVoicePlans', 'packagesHistory', 'stations', 'stationsQrStations', 'stationsOneQr', 'booking', 'bookingBook',
+        'paymentsTips', 'paymentsPayroll', 'paymentsDirectSavings', 'stations', 'stationsQrStations', 'stationsOneQr', 'booking', 'bookingBook',
         'bookingCustomers', 'bookingCallLog', 'bookingSmsCampaigns', 'bookingQrCodes', 'bookingPlans', 'bookingSalonSettings',
         'community', 'communityFeed', 'communityGroups', 'communityLearning', 'communityJobs', 'communityEvents', 'reward',
         'rewardOverview', 'rewardEarnRules', 'rewardCatalog', 'rewardCustomers', 'rewardLoyaltyActivity', 'rewardAnalytics',

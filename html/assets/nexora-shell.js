@@ -50,18 +50,12 @@
       { label: 'Direct Savings' }
     ] },
     { type: 'item', label: 'Reviews', icon: 'star', page: 'review' },
-    { type: 'group', key: 'packages', label: 'Package Management', icon: 'crown', page: 'packages', items: [
-      { label: 'Overview', tab: 'overview' },
-      { label: 'Subscriptions', tab: 'nexora' },
-      { label: 'AI Voice Plans', tab: 'voice' },
-      { label: 'Package History', tab: 'history' }
-    ] },
     { type: 'group', key: 'stations', label: 'Stations & QR Codes', icon: 'qr-code', page: 'stations', items: [
       { label: 'QR Stations', tab: 'qr-stations' },
       { label: 'OneQR', tab: 'one-qr' }
     ] },
     { type: 'group', key: 'booking', label: 'Ai Hub', icon: 'calendar-days', page: 'booking', items: [
-      { label: 'Booking Book', tab: 'booking' },
+      { label: 'Booking', tab: 'booking' },
       { label: 'Customers', tab: 'customers' },
       { label: 'Call Log', tab: 'calllog' },
       { label: 'SMS Campaigns', tab: 'sms-campaigns' },
@@ -289,6 +283,14 @@
           setDrawer(false);
         });
       })(tabs[j]);
+    }
+
+    var planButton = document.querySelector('.sidebar .plan-button');
+    if (planButton) {
+      planButton.addEventListener('click', function () {
+        window.location.href = PAGES.packages + '?tab=overview';
+        setDrawer(false);
+      });
     }
 
     // mobile drawer open / close
