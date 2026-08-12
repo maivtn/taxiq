@@ -1366,6 +1366,24 @@
       box-shadow: none;
     }
 
+    .consent {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      margin-top: 12px;
+      color: var(--text-muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .consent input {
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+      margin-top: 1px;
+      accent-color: var(--primary);
+    }
+
     .checkin-btn i {
       width: 19px;
       height: 19px;
@@ -1589,8 +1607,6 @@
               <div>
                 <div class="card-title"><i data-lucide="sparkles" aria-hidden="true"></i><span>Choose
                     services</span></div>
-                <p class="service-panel-hint">Tap a service card to select or remove it. Open one category at a time
-                  to keep the list easy to scan.</p>
               </div>
             </div>
             <div class="service-accordion" id="serviceAccordion" aria-label="Services">
@@ -1624,6 +1640,11 @@
 
           <button class="checkin-btn" id="checkinBtn" type="button" disabled onclick="checkIn()"><i
               data-lucide="check" aria-hidden="true"></i><span>Check me in</span></button>
+          <div class="consent">
+            <input type="checkbox" id="smsConsent">
+            <label for="smsConsent">I agree to receive text messages from Bitcoin Nail Bar (offers, reminders
+              &amp; rewards). Msg &amp; data rates may apply. Reply STOP anytime to opt out.</label>
+          </div>
         </div>
       </section>
 
@@ -1985,29 +2006,20 @@
     }
 
     /* ===== Technicians ===== */
-    function techDisabled(t) {
-      if (t.id === 'first') return false;
-      return selectedServices.some(s => !t.services.includes(s));
-    }
     function selectTech(id) {
       const t = TECHS.find(x => x.id === id);
-      if (!t || techDisabled(t)) return;
+      if (!t) return;
       selectedTech = id;
       renderTechs();
     }
     function renderTechs() {
-      // If the current pick can no longer do the selected services, fall back to First available.
-      const cur = TECHS.find(t => t.id === selectedTech);
-      if (cur && techDisabled(cur)) selectedTech = 'first';
       $('techGrid').innerHTML = TECHS.map(t => {
-        const disabled = techDisabled(t);
-        const on = selectedTech === t.id && !disabled;
+        const on = selectedTech === t.id;
         let st;
-        if (disabled) st = '<span class="st muted">Not available for this service</span>';
-        else if (t.status === 'first') st = '<span class="st muted">shortest wait</span>';
+        if (t.status === 'first') st = '<span class="st muted">shortest wait</span>';
         else if (t.status === 'busy') st = '<span class="st busy"><span class="dot"></span>busy now</span>';
         else st = '<span class="st avail"><span class="dot"></span>available</span>';
-        return `<button class="tech ${on ? 'on' : ''} ${disabled ? 'disabled' : ''}" type="button" ${disabled ? 'aria-disabled="true"' : ''} onclick="selectTech('${t.id}')">
+        return `<button class="tech ${on ? 'on' : ''}" type="button" onclick="selectTech('${t.id}')">
           <span class="tech-selected-check${on ? ' is-selected' : ''}" aria-hidden="true"><i data-lucide="${on ? 'check' : 'circle'}" class="selected-check-icon"></i></span><span class="avatar"><i data-lucide="user-round" aria-hidden="true"></i></span><span class="nm">${escapeHtml(t.name)}</span>${st}</button>`;
       }).join('');
       refreshIcons($('techGrid'));
@@ -2018,7 +2030,7 @@
       const btn = $('checkinBtn');
       const named = ($('nameInput').value || '').trim().length > 0;
       const n = selectedServices.length;
-      btn.disabled = !(named && n > 0);
+      btn.disabled = !named;
       btn.innerHTML = `<i data-lucide="check" aria-hidden="true"></i><span>Check me in${n > 0 ? ` (${n} selected)` : ''}</span>`;
       refreshIcons(btn);
     }
@@ -2027,10 +2039,9 @@
     async function checkIn() {
       const name = ($('nameInput').value || '').trim();
       if (!name) { toast('Please enter your name.'); return; }
-      if (!selectedServices.length) { toast('Please choose at least one service.'); return; }
 
       const services = selectedServices.map(serviceById).filter(Boolean).map(service => ({ name: service.name, price: service.price }));
-      if (!services.length) { toast('The service list changed — please choose again.'); return; }
+      if (selectedServices.length && services.length !== selectedServices.length) { toast('The service list changed — please choose again.'); return; }
       const techObj = TECHS.find(t => t.id === selectedTech) || TECHS[0];
       const phone = formatPhone(phoneDigits);
       const isReturning = !!(recognized && recognized.name);

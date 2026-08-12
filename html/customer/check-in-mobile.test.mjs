@@ -46,7 +46,7 @@ function createCheckinRuntime() {
     'serviceAccordion', 'selectedServices', 'selectedServiceChips', 'selectedServicesEmpty',
     'serviceSelectedCount', 'serviceTotalDuration', 'serviceTotalPrice', 'serviceNote',
     'serviceNoteCard', 'techGrid', 'checkinBtn', 'nameInput', 'phoneInput', 'toast',
-    'kioskLanguageMenu', 'kioskLanguageTrigger', 'serviceDetailsModal'
+    'kioskLanguageMenu', 'kioskLanguageTrigger', 'serviceDetailsModal', 'kiosk-done-card'
   ];
   const byId = new Map(ids.map((id) => [id, createElement(id)]));
   const document = {
@@ -89,6 +89,18 @@ test('shows technician selection before choose services in the check-in form', (
   assert.notEqual(technicianIndex, -1);
   assert.notEqual(servicesIndex, -1);
   assert.ok(technicianIndex < servicesIndex, 'technician selection should appear before Choose services');
+});
+
+test('shows SMS consent immediately below the check-in button', () => {
+  const buttonIndex = SOURCE.indexOf('<button class="checkin-btn" id="checkinBtn"');
+  const consentIndex = SOURCE.indexOf('<div class="consent">', buttonIndex);
+  const doneScreenIndex = SOURCE.indexOf('<!-- ===== Done screen ===== -->', buttonIndex);
+
+  assert.notEqual(buttonIndex, -1);
+  assert.notEqual(consentIndex, -1);
+  assert.ok(consentIndex > buttonIndex, 'SMS consent should appear after the check-in button');
+  assert.ok(consentIndex < doneScreenIndex, 'SMS consent should stay inside the form before the done screen');
+  assert.match(SOURCE, /<button class="checkin-btn" id="checkinBtn"[\s\S]*?<\/button>\s*<div class="consent">\s*<input type="checkbox" id="smsConsent">\s*<label for="smsConsent">I agree to receive text messages from Bitcoin Nail Bar \(offers, reminders\s*&amp; rewards\)\. Msg &amp; data rates may apply\. Reply STOP anytime to opt out\.<\/label>\s*<\/div>/);
 });
 
 test('hides beverage sections from the check-in service picker', () => {
@@ -184,4 +196,43 @@ test('does not render chevron icons inside category chips', () => {
   const chipList = html.match(/<div class="category-chip-list"[^>]*>([\s\S]*?)<\/div><div class="category-panel-list">/)?.[1] || '';
   assert.doesNotMatch(chipList, /data-lucide="chevron-down"/);
   assert.doesNotMatch(chipList, /<i\b/);
+});
+
+test('allows guest check-in without choosing a service', async () => {
+  const { byId, context } = createCheckinRuntime();
+
+  byId.get('nameInput').value = 'Mia Nguyen';
+
+  vm.runInContext('updateCheckinBtn();', context);
+  assert.equal(byId.get('checkinBtn').disabled, false);
+
+  await vm.runInContext('checkIn();', context);
+
+  assert.doesNotMatch(byId.get('toast').textContent, /Please choose at least one service|service list changed/i);
+  assert.match(byId.get('kiosk-done-card').innerHTML, /You're checked in, Mia Nguyen!/);
+});
+
+test('keeps technicians selectable after services are chosen', () => {
+  const { byId, context } = createCheckinRuntime();
+
+  const selectedTech = vm.runInContext(`
+    SERVICE_CATEGORIES = [{
+      id: 'pedicure',
+      title: 'Pedicure',
+      kind: 'service',
+      items: [{ id: 'classic-pedicure', name: 'Classic Pedicure', priceLabel: '$40', price: 40, durationMinutes: 30 }]
+    }];
+    SERVICES = SERVICE_CATEGORIES.flatMap(category => category.items);
+    selectedServices = ['classic-pedicure'];
+    TECHS.forEach(tech => { if (tech.id !== 'first') tech.services = []; });
+    renderTechs();
+    selectTech('kim');
+    selectedTech;
+  `, context);
+
+  const html = byId.get('techGrid').innerHTML;
+  assert.doesNotMatch(html, /Not available for this service/);
+  assert.doesNotMatch(html, /aria-disabled="true"/);
+  assert.doesNotMatch(html, /class="tech[^"]*\bdisabled\b/);
+  assert.equal(selectedTech, 'kim');
 });
