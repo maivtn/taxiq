@@ -22,11 +22,11 @@ test('POS mode uses the demo PIN and applies Front Desk management visibility', 
   assert.match(html, /function applyPosModeAccess\(/);
   assert.match(html, /managementTab\.hidden = isFrontDesk/);
   assert.match(html, /managementPanel\.hidden = isFrontDesk/);
-  assert.match(html, /if \(isFrontDesk && activeTabId === ['"]management['"]\) activateTab\(['"]checkin['"]\)/);
+  assert.match(html, /if \(isFrontDesk && activeTabId === ['"]management['"]\) activateTab\(['"]todaybooking['"]\)/);
 });
 
 test('POS rejects direct Management activation for Front Desk mode', () => {
-  assert.match(html, /if \(id === ['"]management['"] && getActiveStaff\(\)\.role === ['"]frontdesk['"]\) id = ['"]checkin['"]/);
+  assert.match(html, /if \(id === ['"]management['"] && getActiveStaff\(\)\.role === ['"]frontdesk['"]\) id = ['"]todaybooking['"]/);
 });
 
 test('POS labels the tickets tab as Queue & Tech Assign while keeping the tickets route', () => {
@@ -40,17 +40,17 @@ test('POS labels the tickets tab as Queue & Tech Assign while keeping the ticket
   assert.doesNotMatch(tabsBlock, /data-pos-tab="tickets"[\s\S]{0,100}Tickets<\/button>/);
 });
 
-test('POS shows Check-in first and Today Booking second as separate tabs', () => {
+test('POS temporarily hides the Check-in tab and keeps Today Booking first visible', () => {
   const tabsBlock = html.match(/<div class="page-tabs"[\s\S]*?<\/div>/)?.[0] || '';
   const checkinIndex = tabsBlock.indexOf('data-pos-tab="checkin"');
   const todayBookingIndex = tabsBlock.indexOf('data-pos-tab="todaybooking"');
   const waitingListIndex = tabsBlock.indexOf('data-pos-tab="tickets"');
 
-  assert.ok(checkinIndex !== -1, 'expected Check-in tab');
-  assert.ok(todayBookingIndex > checkinIndex, 'expected Today Booking after Check-in');
+  assert.ok(checkinIndex !== -1, 'expected hidden Check-in tab to stay in markup');
+  assert.ok(todayBookingIndex > checkinIndex, 'expected Today Booking after hidden Check-in');
   assert.ok(waitingListIndex > todayBookingIndex, 'expected Dispatch tab after Today Booking');
-  assert.match(tabsBlock, /data-pos-tab="checkin"[\s\S]{0,100}Check-in<\/button>/);
-  assert.match(tabsBlock, /data-pos-tab="todaybooking"[\s\S]{0,100}Today Booking<\/button>/);
+  assert.match(tabsBlock, /<button class="page-tab"[^>]*hidden[^>]*data-pos-tab="checkin"[\s\S]{0,100}Check-in<\/button>/);
+  assert.match(tabsBlock, /<button class="page-tab is-active"[^>]*data-pos-tab="todaybooking"[\s\S]{0,100}Today Booking<\/button>/);
 });
 
 test('POS opens Today Booking by default when no tab query is present', () => {
@@ -58,10 +58,11 @@ test('POS opens Today Booking by default when no tab query is present', () => {
   const checkinPanel = html.match(/<section class="pos-panel" data-pos-panel="checkin"[\s\S]*?<\/section>/)?.[0] || '';
   const todayBookingPanel = html.match(/<section class="pos-panel is-active" data-pos-panel="todaybooking"[\s\S]*?<\/section>/)?.[0] || '';
 
-  assert.match(tabsBlock, /<button class="page-tab"[^>]*data-pos-tab="checkin"[\s\S]{0,100}Check-in<\/button>/);
+  assert.match(tabsBlock, /<button class="page-tab"[^>]*hidden[^>]*data-pos-tab="checkin"[\s\S]{0,100}Check-in<\/button>/);
   assert.match(tabsBlock, /<button class="page-tab is-active"[^>]*data-pos-tab="todaybooking"[\s\S]{0,100}Today Booking<\/button>/);
   assert.match(checkinPanel, /data-frontdesk-kiosk-frame/);
   assert.match(todayBookingPanel, /data-eta-panel/);
+  assert.match(html, /if \(TABS\.indexOf\(id\) === -1\) id = 'todaybooking'/);
   assert.match(html, /activateTab\(new URL\(window\.location\.href\)\.searchParams\.get\('tab'\) \|\| 'todaybooking'\)/);
 });
 

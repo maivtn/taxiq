@@ -39,8 +39,8 @@ test('Swap tech opens a technician picker modal and routes selection through the
   assert.match(html, /fAssign\(w, tid\)/);
 });
 
-test('POS splits the legacy Operations/dispatch tab into Check-in, Today Booking, Dispatch, and Customers', () => {
-  assert.match(html, /data-pos-tab="checkin"[^>]*>[\s\S]{0,60}Check-in/);
+test('POS splits the legacy Operations/dispatch tab while temporarily hiding Check-in', () => {
+  assert.match(html, /<button class="page-tab"[^>]*hidden[^>]*data-pos-tab="checkin"[^>]*>[\s\S]{0,60}Check-in/);
   assert.match(html, /data-pos-tab="todaybooking"[^>]*>[\s\S]{0,60}Today Booking/);
   assert.match(html, /data-pos-tab="tickets"[^>]*>[\s\S]{0,120}Queue & Tech Assign/);
   assert.doesNotMatch(html, /data-pos-tab="tickets"[^>]*>[\s\S]{0,140}Dispatch - Queue & Tech Assignment/);
@@ -55,10 +55,13 @@ test('POS splits the legacy Operations/dispatch tab into Check-in, Today Booking
   assert.doesNotMatch(html, /data-pos-panel="dispatch"/);
 });
 
-test('POS keeps the top-level tab order Check-in | Today Booking | Dispatch | Booking | Customers | Time Clock | Management', () => {
+test('POS keeps the visible top-level tab order starting at Today Booking', () => {
   const tabsBlock = html.match(/<div class="page-tabs"[\s\S]*?<\/div>/)?.[0] || '';
-  const order = ['checkin', 'todaybooking', 'tickets', 'booking', 'customers', 'clock', 'management'];
+  const checkinButton = tabsBlock.match(/<button[^>]*data-pos-tab="checkin"[\s\S]*?<\/button>/)?.[0] || '';
+  const order = ['todaybooking', 'tickets', 'booking', 'customers', 'clock', 'management'];
   let lastIndex = -1;
+
+  assert.match(checkinButton, /hidden/);
   order.forEach((id) => {
     const idx = tabsBlock.indexOf('data-pos-tab="' + id + '"');
     assert.ok(idx > lastIndex, 'expected tab "' + id + '" to appear in order');

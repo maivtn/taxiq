@@ -1044,7 +1044,7 @@
           </div>
           <p class="page-description">Bitcoin Nail Bar · Houston, TX — run the front desk: time clock, salon management, and appointments.</p>
           <div class="page-tabs" role="tablist" aria-label="POS sections">
-            <button class="page-tab" type="button" role="tab" data-pos-tab="checkin"><i class="bi bi-door-open" aria-hidden="true"></i> Check-in</button>
+            <button class="page-tab" type="button" role="tab" hidden data-pos-tab="checkin"><i class="bi bi-door-open" aria-hidden="true"></i> Check-in</button>
             <button class="page-tab is-active" type="button" role="tab" data-pos-tab="todaybooking"><i class="bi bi-calendar-event" aria-hidden="true"></i> Today Booking</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="tickets"><i class="bi bi-grid-1x2" aria-hidden="true"></i> Queue & Tech Assign</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="booking"><i class="bi bi-calendar-check" aria-hidden="true"></i> Booking</button>
@@ -2669,7 +2669,7 @@
           managementPanel.hidden = isFrontDesk;
           managementPanel.setAttribute('aria-hidden', String(isFrontDesk));
         }
-        if (isFrontDesk && activeTabId === 'management') activateTab('checkin');
+        if (isFrontDesk && activeTabId === 'management') activateTab('todaybooking');
       }
 
       var salonData = window.NEXORA_SALON_DATA;
@@ -7497,8 +7497,8 @@
       var panels = document.querySelectorAll('[data-pos-panel]');
       function activateTab(id) {
         if (TAB_ALIASES[id]) id = TAB_ALIASES[id];
-        if (id === 'management' && getActiveStaff().role === 'frontdesk') id = 'checkin';
-        if (TABS.indexOf(id) === -1) id = TABS[0];
+        if (id === 'management' && getActiveStaff().role === 'frontdesk') id = 'todaybooking';
+        if (TABS.indexOf(id) === -1) id = 'todaybooking';
         activeTabId = id;
         tabBtns.forEach(function (t) { t.classList.toggle('is-active', t.getAttribute('data-pos-tab') === id); });
         panels.forEach(function (p) { p.classList.toggle('is-active', p.getAttribute('data-pos-panel') === id); });
