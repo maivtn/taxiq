@@ -256,6 +256,17 @@ test('POS New appointment service cards stay compact', () => {
   assert.match(selectedCheckRule, /height:\s*18px/);
 });
 
+test('POS New appointment select arrows are inset from the right edge', () => {
+  const selectRule = css.match(/\n\s*\.booking-select\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(selectRule, /appearance:\s*none/);
+  assert.match(selectRule, /-webkit-appearance:\s*none/);
+  assert.match(selectRule, /padding-right:\s*34px/);
+  assert.match(selectRule, /background-image:\s*url\("data:image\/svg\+xml/);
+  assert.match(selectRule, /background-position:\s*right 12px center/);
+  assert.match(selectRule, /background-size:\s*14px 14px/);
+});
+
 test('POS New appointment labels selected services before removable name chips', () => {
   const createModal = html.match(/<div class="booking-create-modal" data-booking-create-modal[\s\S]*?<div class="booking-create-error"/)?.[0] || '';
   const selectedIndex = createModal.indexOf('data-booking-create-selected-services');

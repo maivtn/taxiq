@@ -205,6 +205,18 @@ test('New appointment service cards stay compact', () => {
   assert.match(selectedCheckRule, /height:\s*18px/);
 });
 
+test('New appointment select arrows are inset from the right edge', () => {
+  const html = source();
+  const selectRule = html.match(/\n\s*\.booking-select\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(selectRule, /appearance:\s*none/);
+  assert.match(selectRule, /-webkit-appearance:\s*none/);
+  assert.match(selectRule, /padding-right:\s*34px/);
+  assert.match(selectRule, /background-image:\s*url\("data:image\/svg\+xml/);
+  assert.match(selectRule, /background-position:\s*right 12px center/);
+  assert.match(selectRule, /background-size:\s*14px 14px/);
+});
+
 test('limits long service category lists and enables vertical scrolling', () => {
   const html = source();
   const servicePickerRule = html.match(/\.booking-service-categories\s*\{([^}]*)\}/)?.[1] || '';
