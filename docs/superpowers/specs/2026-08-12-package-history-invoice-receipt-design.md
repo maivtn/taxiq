@@ -466,3 +466,21 @@ Hoàn thành khi tất cả điều kiện sau đúng:
 6. Tạo PDF NEXORA mẫu từ cùng fixture data.
 7. Kết nối download actions.
 8. Chạy test, render trang/PDF và kiểm tra responsive.
+
+## 15. Print layout and billing terminology addendum
+
+Approved on August 12, 2026:
+
+- Rename the user-facing `Package History` tab and back-link copy to `Billing History`; keep the internal URL key `tab=history` for backward compatibility.
+- Downloaded invoice and receipt PDFs use ISO A4 portrait (`595.28 x 841.89 pt`).
+- Browser printing from Billing Detail uses A4 portrait through `@page` and a dedicated `@media print` layout.
+- Printed Billing Detail hides application chrome, navigation, download/payment controls, dialog UI, decorative shadows, and the back link.
+- Printed content uses the full A4 content width with stable margins, a legible table, and black/dark text on white.
+- Summary, line-item rows, total rows, and the document heading must not split internally. The full document may continue to another page when content is longer than one page.
+- Print verification must cover paid and payment-due records, confirm A4 page size, and inspect every rendered page for clipping, overlap, or orphaned totals.
+
+### Considered approaches
+
+1. Dedicated print CSS on Billing Detail plus A4 ReportLab output (selected): keeps browser print and downloads consistent without duplicating the page or data flow.
+2. A separate print-only HTML page: offers isolation but duplicates rendering and routing logic.
+3. Redirect Print to the downloadable PDF: avoids browser print CSS but does not satisfy the requirement that Ctrl/Cmd+P work directly from Billing Detail.
