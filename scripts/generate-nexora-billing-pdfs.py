@@ -13,7 +13,7 @@ from typing import Any
 from reportlab.lib import colors
 from reportlab.lib.colors import HexColor
 from reportlab.lib.enums import TA_LEFT, TA_RIGHT
-from reportlab.lib.pagesizes import letter
+from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import (
@@ -192,11 +192,11 @@ def footer(canvas: Any, document: Any) -> None:
     canvas.saveState()
     canvas.setStrokeColor(BORDER)
     canvas.setLineWidth(0.5)
-    canvas.line(document.leftMargin, 0.52 * inch, letter[0] - document.rightMargin, 0.52 * inch)
+    canvas.line(document.leftMargin, 0.52 * inch, A4[0] - document.rightMargin, 0.52 * inch)
     canvas.setFillColor(SUBTLE)
     canvas.setFont("Helvetica", 7.5)
     canvas.drawString(document.leftMargin, 0.34 * inch, "NEXORA Touch billing document")
-    canvas.drawRightString(letter[0] - document.rightMargin, 0.34 * inch, f"Page {canvas.getPageNumber()} of 1")
+    canvas.drawRightString(A4[0] - document.rightMargin, 0.34 * inch, f"Page {canvas.getPageNumber()}")
     canvas.restoreState()
 
 
@@ -388,7 +388,7 @@ def build_document(record: dict[str, Any], output_path: Path, document_type: str
     style = styles()
     document = SimpleDocTemplate(
         str(output_path),
-        pagesize=letter,
+        pagesize=A4,
         leftMargin=0.58 * inch,
         rightMargin=0.58 * inch,
         topMargin=0.5 * inch,

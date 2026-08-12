@@ -827,3 +827,196 @@ body.billing-payment-open {
     width: 100%;
   }
 }
+
+@page {
+  size: A4 portrait;
+  margin: 12mm;
+}
+
+@media print {
+  *,
+  *::before,
+  *::after {
+    -webkit-print-color-adjust: exact;
+    print-color-adjust: exact;
+  }
+
+  html,
+  body {
+    min-width: 0;
+    background: #fff !important;
+  }
+
+  body {
+    margin: 0;
+  }
+
+  .sidebar,
+  .header,
+  .billing-detail-back,
+  .billing-detail-actions,
+  .billing-payment-modal,
+  .nexora-shell-backdrop {
+    display: none !important;
+  }
+
+  .shell,
+  .app-area,
+  .content,
+  .billing-detail-page {
+    display: block;
+    width: auto;
+    min-width: 0;
+    max-width: none;
+    margin: 0;
+    background: #fff !important;
+  }
+
+  .app-area {
+    min-height: 0;
+    padding-left: 0 !important;
+  }
+
+  .content {
+    min-height: 0;
+    padding: 0;
+  }
+
+  .billing-detail-page {
+    padding-bottom: 0;
+  }
+
+  [data-billing-detail-root] {
+    gap: 7mm;
+  }
+
+  .billing-detail-summary,
+  .billing-detail-document,
+  .billing-detail-empty {
+    border: 0.25mm solid #dce3ee;
+    border-radius: 3mm;
+    background: #fff !important;
+    box-shadow: none;
+  }
+
+  .billing-detail-summary,
+  .billing-detail-document {
+    padding: 6mm;
+  }
+
+  .billing-detail-summary {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .billing-detail-summary-main {
+    margin-top: 4mm;
+  }
+
+  .billing-detail-summary-main h2 {
+    font-size: 30pt;
+  }
+
+  .billing-detail-document-icon {
+    width: 16mm;
+    height: 18mm;
+    border-radius: 2.5mm;
+    box-shadow: none;
+  }
+
+  .billing-detail-meta {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 4mm 6mm;
+    margin-top: 5mm;
+    padding-top: 5mm;
+  }
+
+  .billing-detail-document-head {
+    align-items: flex-start;
+    flex-direction: row;
+    break-after: avoid;
+    page-break-after: avoid;
+  }
+
+  .billing-detail-table-wrap {
+    margin-top: 5mm;
+    overflow: visible;
+  }
+
+  .billing-detail-table {
+    display: table;
+    width: 100%;
+    min-width: 0;
+    table-layout: fixed;
+  }
+
+  .billing-detail-table thead {
+    position: static;
+    display: table-header-group;
+    width: auto;
+    height: auto;
+    overflow: visible;
+    clip: auto;
+  }
+
+  .billing-detail-table tbody {
+    display: table-row-group;
+  }
+
+  .billing-detail-table tr {
+    display: table-row;
+  }
+
+  .billing-detail-table th,
+  .billing-detail-table td,
+  .billing-detail-table td:first-child,
+  .billing-detail-table td:last-child {
+    display: table-cell;
+    width: auto;
+    border-bottom: 0.25mm solid #e5eaf2;
+    padding: 3mm 2.5mm;
+    text-align: right;
+  }
+
+  .billing-detail-table th:first-child,
+  .billing-detail-table td:first-child {
+    width: 52%;
+    padding-left: 0;
+    text-align: left;
+  }
+
+  .billing-detail-table th:last-child,
+  .billing-detail-table td:last-child {
+    padding-right: 0;
+  }
+
+  .billing-detail-table td::before {
+    content: none;
+  }
+
+  .billing-detail-table tr,
+  .billing-detail-totals div {
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .billing-detail-totals {
+    width: 46%;
+    margin-top: 4mm;
+    break-inside: avoid;
+    page-break-inside: avoid;
+  }
+
+  .billing-detail-totals div {
+    padding: 2.5mm 0;
+  }
+
+  .billing-detail-support {
+    margin-top: 5mm;
+  }
+
+  .billing-detail-support a {
+    color: inherit;
+    text-decoration: none;
+  }
+}

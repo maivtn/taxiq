@@ -225,7 +225,7 @@
         <span class="billing-detail-empty-icon"><i data-lucide="file-question" aria-hidden="true"></i></span>
         <h2>Billing record not found</h2>
         <p>The transaction link may be invalid or the billing record is no longer available.</p>
-        <a class="billing-detail-action is-primary" href="nexora-packages.html?tab=history">Back to Package History</a>
+        <a class="billing-detail-action is-primary" href="nexora-packages.html?tab=history">Back to Billing History</a>
       </article>
     `;
   }

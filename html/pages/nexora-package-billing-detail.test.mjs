@@ -142,7 +142,8 @@ test('creates Billing Detail from the Salon shared-shell skeleton', () => {
   assert.match(html, /<div class="app-area">/);
   assert.match(html, /<header class="header"><\/header>/);
   assert.match(html, /<main class="content" aria-label="Billing details content">/);
-  assert.match(html, /<a[^>]*href="nexora-packages\.html\?tab=history"[^>]*>[\s\S]*?Back to Package History/);
+  assert.match(html, /<a[^>]*href="nexora-packages\.html\?tab=history"[^>]*>[\s\S]*?Back to Billing History/);
+  assert.doesNotMatch(html, /Back to Package History/);
   assert.match(html, /data-billing-detail-root/);
   assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css">/);
   assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-package-billing-detail\.css">/);
@@ -215,7 +216,7 @@ test('shows a safe not-found state for an unknown transaction', () => {
   const html = createBillingRuntime('?transaction=missing').root.innerHTML;
 
   assert.match(html, /Billing record not found/);
-  assert.match(html, /nexora-packages\.html\?tab=history/);
+  assert.match(html, /nexora-packages\.html\?tab=history[^>]*>[\s\S]*?Back to Billing History/);
   assert.doesNotMatch(html, /NXR-20260810-0003/);
 });
 
@@ -272,6 +273,8 @@ test('provides real PDF download documents that match billing records', () => {
     const invoiceURL = new URL(record.invoiceFile, PAGE_URL);
     assert.ok(existsSync(invoiceURL), `Invoice PDF must exist for ${record.transactionId}`);
     assert.equal(readFileSync(invoiceURL).subarray(0, 5).toString(), '%PDF-');
+    const invoiceInfo = execFileSync('pdfinfo', [fileURLToPath(invoiceURL)], { encoding: 'utf8' });
+    assert.match(invoiceInfo, /Page size:\s+595\.276 x 841\.89 pts \(A4\)/);
     const invoiceText = execFileSync('pdftotext', [fileURLToPath(invoiceURL), '-'], { encoding: 'utf8' });
     assert.match(invoiceText, /NEXORA Touch/);
     assert.match(invoiceText, new RegExp(record.seller.legalName));
@@ -286,6 +289,8 @@ test('provides real PDF download documents that match billing records', () => {
       const receiptURL = new URL(record.receiptFile, PAGE_URL);
       assert.ok(existsSync(receiptURL), `Receipt PDF must exist for ${record.transactionId}`);
       assert.equal(readFileSync(receiptURL).subarray(0, 5).toString(), '%PDF-');
+      const receiptInfo = execFileSync('pdfinfo', [fileURLToPath(receiptURL)], { encoding: 'utf8' });
+      assert.match(receiptInfo, /Page size:\s+595\.276 x 841\.89 pts \(A4\)/);
       const receiptText = execFileSync('pdftotext', [fileURLToPath(receiptURL), '-'], { encoding: 'utf8' });
       assert.match(receiptText, /NEXORA Touch/);
       assert.match(receiptText, new RegExp(record.receiptNumber));
@@ -326,4 +331,18 @@ test('loads responsive Billing Detail styles', () => {
   assert.match(css, /\.billing-payment-modal\s*\{/);
   assert.match(css, /\.billing-payment-dialog\s*\{/);
   assert.match(css, /@media \(max-width: 640px\)/);
+});
+
+test('prints Billing Detail on A4 without app chrome or split billing rows', () => {
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const printRules = css.slice(css.indexOf('@media print'));
+
+  assert.match(css, /@page\s*\{[\s\S]*?size:\s*A4 portrait;[\s\S]*?margin:\s*12mm;/);
+  assert.match(printRules, /\.sidebar,[\s\S]*?\.header,[\s\S]*?\.billing-detail-back,[\s\S]*?\.billing-detail-actions,[\s\S]*?\.billing-payment-modal[\s\S]*?display:\s*none\s*!important;/);
+  assert.match(printRules, /\.app-area\s*\{[\s\S]*?padding-left:\s*0\s*!important;/);
+  assert.match(printRules, /\.content\s*\{[\s\S]*?min-height:\s*0;[\s\S]*?padding:\s*0;/);
+  assert.match(printRules, /\.shell,\s*\.app-area,\s*\.content,\s*\.billing-detail-page\s*\{[^}]*background:\s*#fff\s*!important;/);
+  assert.match(printRules, /\.billing-detail-table\s*\{[\s\S]*?min-width:\s*0;[\s\S]*?table-layout:\s*fixed;/);
+  assert.match(printRules, /\.billing-detail-table tr,[\s\S]*?\.billing-detail-totals div[\s\S]*?break-inside:\s*avoid;/);
+  assert.match(printRules, /\.billing-detail-summary,[\s\S]*?\.billing-detail-document[\s\S]*?box-shadow:\s*none;/);
 });
