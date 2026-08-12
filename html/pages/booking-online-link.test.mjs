@@ -93,6 +93,32 @@ test('falls back to a temporary textarea when Clipboard API is unavailable', asy
   assert.equal(appendedTextarea, null);
 });
 
+test('falls back to a temporary textarea when Clipboard API rejects the copy', async () => {
+  const api = loadRuntime();
+  let copiedSelection = '';
+  const document = {
+    body: { appendChild() {} },
+    createElement() {
+      return {
+        value: '',
+        setAttribute() {},
+        style: {},
+        select() { copiedSelection = this.value; },
+        remove() {}
+      };
+    },
+    execCommand() { return true; }
+  };
+
+  await api.copyText(
+    'https://merchant.nexora.test/html/customer/booking.html',
+    { writeText() { return Promise.reject(new Error('permission denied')); } },
+    document
+  );
+
+  assert.equal(copiedSelection, 'https://merchant.nexora.test/html/customer/booking.html');
+});
+
 test('encodes the exact booking URL and degrades when QRCode is unavailable', () => {
   const api = loadRuntime();
   const bookingUrl = 'https://merchant.nexora.test/html/customer/booking.html';
@@ -114,6 +140,81 @@ test('encodes the exact booking URL and degrades when QRCode is unavailable', ()
 
   assert.equal(api.renderBookingQr(container, bookingUrl, undefined), false);
   assert.equal(container.encodedText, '');
+});
+
+test('initializes visible links, copy, and QR with one absolute booking URL', async () => {
+  const api = loadRuntime();
+  const bookingUrl = 'https://merchant.nexora.test/html/customer/booking.html';
+  const listeners = {};
+  function eventNode(name, extra = {}) {
+    return {
+      name,
+      addEventListener(type, listener) { listeners[name + ':' + type] = listener; },
+      ...extra
+    };
+  }
+  const urlText = { tagName: 'SPAN', textContent: '' };
+  const urlAnchor = {
+    tagName: 'A',
+    textContent: '',
+    href: '',
+    setAttribute(name, value) { if (name === 'href') this.href = value; }
+  };
+  const copyButton = eventNode('copy');
+  const copyStatus = { textContent: '' };
+  const qrButton = eventNode('qr');
+  const qrDialog = { shown: false, showModal() { this.shown = true; } };
+  const qrContainer = { replaceChildren() {} };
+  const qrFallback = { hidden: true };
+  const closeButton = eventNode('close');
+  const selectorMap = new Map([
+    ['[data-booking-online-copy]', copyButton],
+    ['[data-booking-online-copy-status]', copyStatus],
+    ['[data-booking-online-qr-open]', qrButton],
+    ['[data-booking-online-qr-dialog]', qrDialog],
+    ['[data-booking-online-qr]', qrContainer],
+    ['[data-booking-online-qr-fallback]', qrFallback],
+    ['[data-booking-online-qr-close]', closeButton]
+  ]);
+  const share = {
+    ready: false,
+    getAttribute(name) {
+      if (name === 'data-booking-online-ready') return this.ready ? 'true' : null;
+      if (name === 'data-booking-path') return '../customer/booking.html';
+      return null;
+    },
+    setAttribute(name) { if (name === 'data-booking-online-ready') this.ready = true; },
+    querySelector(selector) { return selectorMap.get(selector) || null; },
+    querySelectorAll(selector) {
+      assert.equal(selector, '[data-booking-online-url]');
+      return [urlText, urlAnchor];
+    }
+  };
+  const document = { querySelector() { return share; } };
+  let copiedText = '';
+  let qrText = '';
+  function FakeQRCode(target, options) { qrText = options.text; }
+  FakeQRCode.CorrectLevel = { M: 'medium' };
+
+  const result = api.initialize(document, {
+    location: { href: 'https://merchant.nexora.test/html/pages/booking-book-phase-1.html?tab=booking' },
+    navigator: { clipboard: { writeText(text) { copiedText = text; return Promise.resolve(); } } },
+    QRCode: FakeQRCode,
+    setTimeout() {}
+  });
+  listeners['copy:click']();
+  await Promise.resolve();
+  await Promise.resolve();
+  listeners['qr:click']();
+
+  assert.equal(result.url, bookingUrl);
+  assert.equal(urlText.textContent, bookingUrl);
+  assert.equal(urlAnchor.textContent, bookingUrl);
+  assert.equal(urlAnchor.href, bookingUrl);
+  assert.equal(copiedText, bookingUrl);
+  assert.equal(qrText, bookingUrl);
+  assert.equal(qrDialog.shown, true);
+  assert.equal(qrFallback.hidden, true);
 });
 
 test('places the online booking share control beside the AI Voice guide', () => {

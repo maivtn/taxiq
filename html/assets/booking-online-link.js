@@ -7,13 +7,7 @@
     return new URL(bookingPath || DEFAULT_BOOKING_PATH, pageHref).href;
   }
 
-  function copyText(text, clipboard, documentRef) {
-    if (clipboard && typeof clipboard.writeText === 'function') {
-      return Promise.resolve().then(function() {
-        return clipboard.writeText(text);
-      });
-    }
-
+  function copyTextWithTextarea(text, documentRef) {
     return Promise.resolve().then(function() {
       if (!documentRef || !documentRef.body || typeof documentRef.execCommand !== 'function') {
         throw new Error('Clipboard is unavailable');
@@ -29,6 +23,18 @@
       textarea.remove();
       if (!copied) throw new Error('Copy command failed');
     });
+  }
+
+  function copyText(text, clipboard, documentRef) {
+    if (clipboard && typeof clipboard.writeText === 'function') {
+      return Promise.resolve().then(function() {
+        return clipboard.writeText(text);
+      }).catch(function() {
+        return copyTextWithTextarea(text, documentRef);
+      });
+    }
+
+    return copyTextWithTextarea(text, documentRef);
   }
 
   function renderBookingQr(container, url, QRCodeCtor) {
