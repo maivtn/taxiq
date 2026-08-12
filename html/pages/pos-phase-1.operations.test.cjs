@@ -72,8 +72,8 @@ test('POS aliases the legacy ?tab=dispatch and ?tab=appointments URLs to their n
 });
 
 test('POS keeps ticket KPIs in Tickets and merges the Time Clock roster into one table', () => {
-  const checkinPanel = html.match(/<section class="pos-panel is-active" data-pos-panel="checkin"[\s\S]*?<\/section>/)?.[0] || '';
-  const todayBookingPanel = html.match(/<section class="pos-panel" data-pos-panel="todaybooking"[\s\S]*?<\/section>/)?.[0] || '';
+  const checkinPanel = html.match(/<section class="pos-panel" data-pos-panel="checkin"[\s\S]*?<\/section>/)?.[0] || '';
+  const todayBookingPanel = html.match(/<section class="pos-panel is-active" data-pos-panel="todaybooking"[\s\S]*?<\/section>/)?.[0] || '';
   const ticketsPanel = html.match(/<section class="pos-panel" data-pos-panel="tickets"[\s\S]*?<\/section>/)?.[0] || '';
   const clockPanel = html.match(/<section class="pos-panel" data-pos-panel="clock"[\s\S]*?<\/section>/)?.[0] || '';
 

@@ -53,9 +53,21 @@ test('POS shows Check-in first and Today Booking second as separate tabs', () =>
   assert.match(tabsBlock, /data-pos-tab="todaybooking"[\s\S]{0,100}Today Booking<\/button>/);
 });
 
+test('POS opens Today Booking by default when no tab query is present', () => {
+  const tabsBlock = html.match(/<div class="page-tabs"[\s\S]*?<\/div>/)?.[0] || '';
+  const checkinPanel = html.match(/<section class="pos-panel" data-pos-panel="checkin"[\s\S]*?<\/section>/)?.[0] || '';
+  const todayBookingPanel = html.match(/<section class="pos-panel is-active" data-pos-panel="todaybooking"[\s\S]*?<\/section>/)?.[0] || '';
+
+  assert.match(tabsBlock, /<button class="page-tab"[^>]*data-pos-tab="checkin"[\s\S]{0,100}Check-in<\/button>/);
+  assert.match(tabsBlock, /<button class="page-tab is-active"[^>]*data-pos-tab="todaybooking"[\s\S]{0,100}Today Booking<\/button>/);
+  assert.match(checkinPanel, /data-frontdesk-kiosk-frame/);
+  assert.match(todayBookingPanel, /data-eta-panel/);
+  assert.match(html, /activateTab\(new URL\(window\.location\.href\)\.searchParams\.get\('tab'\) \|\| 'todaybooking'\)/);
+});
+
 test('POS Check-in tab embeds the kiosk flow for helping a guest', () => {
-  const checkinPanel = html.match(/<section class="pos-panel is-active" data-pos-panel="checkin"[\s\S]*?<\/section>/)?.[0] || '';
-  const todayBookingPanel = html.match(/<section class="pos-panel" data-pos-panel="todaybooking"[\s\S]*?<\/section>/)?.[0] || '';
+  const checkinPanel = html.match(/<section class="pos-panel" data-pos-panel="checkin"[\s\S]*?<\/section>/)?.[0] || '';
+  const todayBookingPanel = html.match(/<section class="pos-panel is-active" data-pos-panel="todaybooking"[\s\S]*?<\/section>/)?.[0] || '';
 
   assert.match(checkinPanel, /data-frontdesk-kiosk-frame/);
   assert.match(checkinPanel, /src="https:\/\/pos-nexoratouch\.vercel\.app\/mockups\/phase1\/kiosk\.html"/);

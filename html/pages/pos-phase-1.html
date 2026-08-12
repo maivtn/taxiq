@@ -1044,8 +1044,8 @@
           </div>
           <p class="page-description">Bitcoin Nail Bar · Houston, TX — run the front desk: time clock, salon management, and appointments.</p>
           <div class="page-tabs" role="tablist" aria-label="POS sections">
-            <button class="page-tab is-active" type="button" role="tab" data-pos-tab="checkin"><i class="bi bi-door-open" aria-hidden="true"></i> Check-in</button>
-            <button class="page-tab" type="button" role="tab" data-pos-tab="todaybooking"><i class="bi bi-calendar-event" aria-hidden="true"></i> Today Booking</button>
+            <button class="page-tab" type="button" role="tab" data-pos-tab="checkin"><i class="bi bi-door-open" aria-hidden="true"></i> Check-in</button>
+            <button class="page-tab is-active" type="button" role="tab" data-pos-tab="todaybooking"><i class="bi bi-calendar-event" aria-hidden="true"></i> Today Booking</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="tickets"><i class="bi bi-grid-1x2" aria-hidden="true"></i> Queue & Tech Assign</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="booking"><i class="bi bi-calendar-check" aria-hidden="true"></i> Booking</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="customers"><i class="bi bi-person-vcard" aria-hidden="true"></i> Customers</button>
@@ -1085,14 +1085,14 @@
         </div>
 
         <!-- ══════════ 🚪 CHECK-IN — HELP GUESTS ══════════ -->
-        <section class="pos-panel is-active" data-pos-panel="checkin" aria-label="Check-in">
+        <section class="pos-panel" data-pos-panel="checkin" aria-label="Check-in">
           <div class="pos-stack">
             <iframe class="frontdesk-kiosk-frame" data-frontdesk-kiosk-frame src="https://pos-nexoratouch.vercel.app/mockups/phase1/kiosk.html" title="Customer kiosk check-in" loading="lazy"></iframe>
           </div>
         </section>
 
         <!-- ══════════ 📅 TODAY BOOKING — GUEST ARRIVAL ══════════ -->
-        <section class="pos-panel" data-pos-panel="todaybooking" aria-label="Today Booking">
+        <section class="pos-panel is-active" data-pos-panel="todaybooking" aria-label="Today Booking">
           <div class="pos-stack">
 
             <div class="pos-card panel-blue" data-eta-panel hidden>
@@ -2576,7 +2576,7 @@
       var POS_DEMO_PIN = '1234';
       var activeStaffId = 'owner';
       var selectedStaffId = 'owner';
-      var activeTabId = 'checkin';
+      var activeTabId = 'todaybooking';
 
       var STAFF = [
         { id: 'owner', name: 'Brian', ava: 'B', role: 'owner' },
@@ -7532,7 +7532,7 @@
       renderCustomersTab();
       loadMenuServicesIntoSalonCatalog();
       applyPosModeAccess();
-      activateTab(new URL(window.location.href).searchParams.get('tab') || 'checkin');
+      activateTab(new URL(window.location.href).searchParams.get('tab') || 'todaybooking');
       if (salonData.storageAvailable && !salonData.storageAvailable()) {
         setTimeout(function () { toast('Local changes are available in this tab; cross-tab sync is unavailable.', 'info'); }, 0);
       }
