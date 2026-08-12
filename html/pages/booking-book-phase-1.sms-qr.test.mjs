@@ -822,7 +822,7 @@ test('adds Package History as a Plans view switch sub tab', () => {
   assert.match(switcher, /data-plans-view-target="history"[\s\S]*Package History/);
   assert.match(plansPanel, /data-plans-view-panel="history"[\s\S]*id="plans-package-history-title"[\s\S]*Package History/);
   assert.match(plansPanel, /data-package-history/);
-  assert.match(plansPanel, /<th scope="col">Date &amp; time<\/th>[\s\S]*<th scope="col">Amount<\/th>[\s\S]*<th scope="col">Package purchased<\/th>[\s\S]*<th scope="col">Term<\/th>[\s\S]*<th scope="col">Valid Until<\/th>[\s\S]*<th scope="col">Status<\/th>[\s\S]*<th scope="col">Transaction ID<\/th>/);
+  assert.match(plansPanel, /<th scope="col">Date &amp; time<\/th>[\s\S]*<th scope="col">Amount<\/th>[\s\S]*<th scope="col">Package<\/th>[\s\S]*<th scope="col">Term<\/th>[\s\S]*<th scope="col">Valid Until<\/th>[\s\S]*<th scope="col">Status<\/th>[\s\S]*<th scope="col">Transaction ID<\/th>/);
   assert.match(html, /mode === 'history' \? 'history' : mode === 'credits' \? 'credits' : 'package'/);
 });
 
