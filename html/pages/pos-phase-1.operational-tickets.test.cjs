@@ -402,6 +402,31 @@ test('Check-in request Card/Table renderers preserve the same request actions an
   assert.match(html, /posServiceDisplayName\(r\.svc\)/);
 });
 
+test('Queue shows App/QR Anyone requests as unassigned tickets with a Choose tech action', () => {
+  const acceptHandler = html.match(/\/\* check-in requests \*\/[\s\S]*?\/\* access requests \*\//)?.[0] || '';
+  const ticketTech = html.match(/function ticketTechHtml\(w, variant\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const ticketActions = html.match(/function ticketActionsHtml\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const singleCard = html.match(/function renderSingleTicketCard\(w, now, selW\) \{[\s\S]*?if \(w\.status === 'ready'\)/)?.[0] || '';
+  const swapModal = html.match(/<div class="sms-modal" data-swap-tech-modal[\s\S]*?<\/div>\s*<\/div>\s*<\/div>/)?.[0] || '';
+  const openSwap = html.match(/function openSwapTechModal\(wid\) \{[\s\S]*?\n      \}/)?.[0] || '';
+
+  assert.match(html, /name: 'Olivia Park'[\s\S]{0,120}reqTech: null/);
+  assert.match(acceptHandler, /WAITLIST\.push\(nw\);/);
+  assert.match(acceptHandler, /techId: null, reqTech: r\.reqTech \|\| null/);
+  assert.match(ticketTech, /is-anyone/);
+  assert.match(ticketTech, />Anyone<\/span>/);
+  assert.match(ticketActions, /ticketNeedsTechPicker\(w\)/);
+  assert.match(ticketActions, /data-wswap/);
+  assert.match(ticketActions, /Choose tech/);
+  assert.match(singleCard, /ticketNeedsTechPicker\(w\)/);
+  assert.match(singleCard, /data-wswap/);
+  assert.match(singleCard, /Choose tech/);
+  assert.match(swapModal, /data-swap-tech-title-text/);
+  assert.match(swapModal, /data-swap-tech-copy-text/);
+  assert.match(openSwap, /w\.techId \? 'Swap technician' : 'Choose technician'/);
+  assert.match(openSwap, /w\.techId \? 'Choose a free technician to take over' : 'Choose a free technician for'/);
+});
+
 test('Check-in request cards use the Queue card hierarchy with request content', () => {
   const card = html.match(/function ciqCardHtml\(r\) \{[\s\S]*?\n      \}/)?.[0] || '';
   assert.match(card, /class="wl-card queue-card/);

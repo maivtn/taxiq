@@ -261,9 +261,9 @@ test('POS New appointment select arrows are inset from the right edge', () => {
 
   assert.match(selectRule, /appearance:\s*none/);
   assert.match(selectRule, /-webkit-appearance:\s*none/);
-  assert.match(selectRule, /padding-right:\s*34px/);
+  assert.match(selectRule, /padding-right:\s*40px/);
   assert.match(selectRule, /background-image:\s*url\("data:image\/svg\+xml/);
-  assert.match(selectRule, /background-position:\s*right 12px center/);
+  assert.match(selectRule, /background-position:\s*right 18px center/);
   assert.match(selectRule, /background-size:\s*14px 14px/);
 });
 

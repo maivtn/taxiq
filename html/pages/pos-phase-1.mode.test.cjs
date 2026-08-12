@@ -29,6 +29,13 @@ test('POS rejects direct Management activation for Front Desk mode', () => {
   assert.match(html, /if \(id === ['"]management['"] && getActiveStaff\(\)\.role === ['"]frontdesk['"]\) id = ['"]checkin['"]/);
 });
 
+test('POS labels the tickets tab as Turns while keeping the tickets route', () => {
+  const tabsBlock = html.match(/<div class="page-tabs"[\s\S]*?<\/div>/)?.[0] || '';
+
+  assert.match(tabsBlock, /data-pos-tab="tickets"[\s\S]{0,100}Turns<\/button>/);
+  assert.doesNotMatch(tabsBlock, /data-pos-tab="tickets"[\s\S]{0,100}Tickets<\/button>/);
+});
+
 test('POS mode UI exposes a labelled badge and keyboard-friendly PIN controls', () => {
   assert.match(html, /data-pos-mode-badge-text/);
   assert.match(html, /id="pos-mode-title"/);

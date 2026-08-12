@@ -399,7 +399,7 @@
     .queue-card-service strong { display: block; overflow-wrap: anywhere; font-size: var(--pos-card-content-fs); font-weight: 700; color: var(--nexora-text); }
     .queue-card-sub { display: block; margin-top: 2px; font-size: 12px; font-weight: 600; color: var(--nexora-muted); }
     .queue-card-tech-value { overflow-wrap: anywhere; font-size: var(--pos-card-content-fs); font-weight: 700; color: var(--nexora-text); }
-    .queue-card-tech-value.is-requested { color: var(--nexora-warning); }
+    .queue-card-tech-value.is-requested, .queue-card-tech-value.is-anyone, .queue-table-tech.is-anyone { color: var(--nexora-warning); }
     .queue-card-meta { display: flex; flex-direction: row; align-items: center; justify-content: space-between; gap: 8px; width: 100%; margin-top: 6px; flex-wrap: wrap; }
     .queue-card-tech, .queue-card-booking { display: inline-flex; align-items: center; gap: 4px; max-width: 100%; min-width: 0; overflow-wrap: anywhere; font-size: 12px; font-weight: 600; color: var(--nexora-muted); }
     .queue-card-tech i, .queue-card-booking i { font-size: 11px; }
@@ -1043,7 +1043,7 @@
           <p class="page-description">Bitcoin Nail Bar · Houston, TX — run the front desk: time clock, salon management, and appointments.</p>
           <div class="page-tabs" role="tablist" aria-label="POS sections">
             <button class="page-tab is-active" type="button" role="tab" data-pos-tab="checkin"><i class="bi bi-door-open" aria-hidden="true"></i> Check-in</button>
-            <button class="page-tab" type="button" role="tab" data-pos-tab="tickets"><i class="bi bi-grid-1x2" aria-hidden="true"></i> Tickets</button>
+            <button class="page-tab" type="button" role="tab" data-pos-tab="tickets"><i class="bi bi-grid-1x2" aria-hidden="true"></i> Turns</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="booking"><i class="bi bi-calendar-check" aria-hidden="true"></i> Booking</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="customers"><i class="bi bi-person-vcard" aria-hidden="true"></i> Customers</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="clock"><i class="bi bi-clock-history" aria-hidden="true"></i> Time Clock</button>
@@ -1188,11 +1188,11 @@
         <div class="sms-modal" data-swap-tech-modal role="dialog" aria-modal="true" aria-labelledby="swap-tech-title">
           <div class="sms-dialog swap-tech-dialog">
             <div class="sms-mhead">
-              <h3 id="swap-tech-title"><i class="bi bi-arrow-left-right" aria-hidden="true"></i> Swap technician</h3>
+              <h3 id="swap-tech-title"><i class="bi bi-person-plus" aria-hidden="true"></i> <span data-swap-tech-title-text>Swap technician</span></h3>
               <button class="pos-icon-btn" type="button" data-swap-tech-close aria-label="Close"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
             </div>
             <div class="sms-mbody">
-              <p class="pos-muted swap-tech-copy">Choose a free technician to take over <strong data-swap-tech-guest>this guest</strong>.</p>
+              <p class="pos-muted swap-tech-copy"><span data-swap-tech-copy-text>Choose a free technician to take over</span> <strong data-swap-tech-guest>this guest</strong>.</p>
               <div class="swap-tech-list" data-swap-tech-list role="listbox" aria-label="Available technicians"></div>
             </div>
             <div class="sms-mfoot" style="justify-content:flex-end">
@@ -3999,11 +3999,14 @@
         var note = String(w.note || (c && c.notes && c.notes.staff) || '').trim();
         return note ? '<span class="queue-table-note" title="' + esc(note) + '">' + esc(note) + '</span>' : '<span class="pos-muted">—</span>';
       }
+      function ticketNeedsTechPicker(w) {
+        return w && w.status === 'waiting' && !w.techId && !w.reqTech;
+      }
       function ticketTechHtml(w, variant) {
         var cls = variant === 'card' ? 'queue-card-tech-value' : 'queue-table-tech';
         if (w.techId) return '<span class="' + cls + '">' + esc(techName(w.techId)) + '</span>';
         if (w.reqTech) return '<span class="' + cls + ' is-requested">' + esc(techName(w.reqTech)) + '</span>';
-        return '<span class="pos-muted">Unassigned</span>';
+        return '<span class="' + cls + ' is-anyone">Anyone</span>';
       }
       // Table mode: one row per service ticket (not per order), same actions as the card view.
       // Table mode carries the operational fields as separate columns so the queue can be scanned
@@ -4038,6 +4041,10 @@
       }
       function ticketActionsHtml(w) {
         if (w.status === 'waiting') {
+          if (ticketNeedsTechPicker(w)) {
+            return '<button class="pos-btn pos-btn-primary pos-btn-sm queue-action-primary" data-wswap="' + w.id + '"><i class="bi bi-person-plus" aria-hidden="true"></i> Choose tech</button>' +
+              '<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button>';
+          }
           var auto = fAutoTech(w);
           return '<button class="pos-btn pos-btn-primary pos-btn-sm queue-action-primary" data-wstart="' + w.id + '"' + (auto ? '' : ' disabled') + '><i class="bi bi-play-fill" aria-hidden="true"></i> ' + (auto ? esc(auto.name) : 'No tech') + '</button>' +
             '<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button>';
@@ -4056,7 +4063,7 @@
       }
       function ticketLabelHtml(w) {
         var svcName = esc(posServiceDisplayName(w.svc || 'No service chosen'));
-        var techLbl = w.status === 'waiting' ? (w.techId ? 'waiting on ' + esc(techName(w.techId)) : 'waiting')
+        var techLbl = w.status === 'waiting' ? (w.techId ? 'waiting on ' + esc(techName(w.techId)) : (w.reqTech ? 'requested ' + esc(techName(w.reqTech)) : 'Anyone'))
           : w.status === 'service' ? esc(techName(w.techId)) + ' — in service'
           : w.status === 'ready' ? esc(techName(w.techId)) + ' — ready'
           : w.status === 'completed' ? esc(techName(w.techId)) + ' — completed'
@@ -4103,12 +4110,15 @@
           var waitMin = w.atMs ? Math.max(0, Math.floor((now - w.atMs) / 60000)) : 0;
           var late = waitMin > 20;
           var reqBusy = w.reqTech && !freeTechs().find(function (t) { return t.id === w.reqTech; });
+          var needsTechPicker = ticketNeedsTechPicker(w);
           var auto = fAutoTech(w);
           return '<article class="wl-card queue-card perf-card tappable' + (late ? ' late' : (w.appt ? ' appt' : '')) + sel + '" data-wtap="' + w.id + '">' +
             ticketCardBodyHtml(w, w.atMs ? waitMin + "' waiting" : '—', ticketStatusBadge('waiting'), reqBusy ? ' <span class="pos-warn-text" style="font-size:12px">(busy)</span>' : '') +
             '<div class="perf-divider"></div>' +
             '<div class="perf-cta-row">' +
-              '<button class="perf-cta-btn perf-cta-btn-primary" data-wstart="' + w.id + '"' + (auto ? '' : ' disabled') + '><i class="bi bi-play-fill" aria-hidden="true"></i> ' + (auto ? esc(auto.name) : 'No tech') + '</button>' +
+              (needsTechPicker
+                ? '<button class="perf-cta-btn perf-cta-btn-primary" data-wswap="' + w.id + '"><i class="bi bi-person-plus" aria-hidden="true"></i> Choose tech</button>'
+                : '<button class="perf-cta-btn perf-cta-btn-primary" data-wstart="' + w.id + '"' + (auto ? '' : ' disabled') + '><i class="bi bi-play-fill" aria-hidden="true"></i> ' + (auto ? esc(auto.name) : 'No tech') + '</button>') +
               '<button class="perf-cta-btn perf-cta-btn-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button>' +
             '</div></article>';
         }
@@ -4240,6 +4250,8 @@
         if (!w || !modal) return;
         swapTechFor = w.id;
         fSel = null; fWarn = null;
+        set('[data-swap-tech-title-text]', w.techId ? 'Swap technician' : 'Choose technician');
+        set('[data-swap-tech-copy-text]', w.techId ? 'Choose a free technician to take over' : 'Choose a free technician for');
         set('[data-swap-tech-guest]', w.name);
         html('[data-swap-tech-list]', swapTechOptionsHtml(w));
         modal.classList.add('open');

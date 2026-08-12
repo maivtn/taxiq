@@ -39,9 +39,9 @@ test('Swap tech opens a technician picker modal and routes selection through the
   assert.match(html, /fAssign\(w, tid\)/);
 });
 
-test('POS splits the legacy Operations/dispatch tab into Check-in, Tickets, and Customers', () => {
+test('POS splits the legacy Operations/dispatch tab into Check-in, Turns, and Customers', () => {
   assert.match(html, /data-pos-tab="checkin"[^>]*>[\s\S]{0,60}Check-in/);
-  assert.match(html, /data-pos-tab="tickets"[^>]*>[\s\S]{0,60}Tickets/);
+  assert.match(html, /data-pos-tab="tickets"[^>]*>[\s\S]{0,60}Turns/);
   assert.match(html, /data-pos-tab="customers"[^>]*>[\s\S]{0,60}Customers/);
   assert.match(html, /data-pos-panel="checkin"/);
   assert.match(html, /data-pos-panel="tickets"/);
@@ -50,7 +50,7 @@ test('POS splits the legacy Operations/dispatch tab into Check-in, Tickets, and 
   assert.doesNotMatch(html, /data-pos-panel="dispatch"/);
 });
 
-test('POS keeps the top-level tab order Check-in | Tickets | Booking | Customers | Time Clock | Management', () => {
+test('POS keeps the top-level tab order Check-in | Turns | Booking | Customers | Time Clock | Management', () => {
   const tabsBlock = html.match(/<div class="page-tabs"[\s\S]*?<\/div>/)?.[0] || '';
   const order = ['checkin', 'tickets', 'booking', 'customers', 'clock', 'management'];
   let lastIndex = -1;

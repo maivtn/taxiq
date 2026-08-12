@@ -154,6 +154,17 @@ test('renders service categories as name plus count chips', () => {
   assert.doesNotMatch(html, /category-kind/);
 });
 
+test('keeps service category chips compact', () => {
+  const triggerRule = SOURCE.match(/\.category-trigger\s*\{([^}]*)\}/)?.[1] || '';
+  const numberRule = SOURCE.match(/\.category-chip-number\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(triggerRule, /min-height:\s*30px/);
+  assert.match(triggerRule, /gap:\s*5px/);
+  assert.match(triggerRule, /padding:\s*3px 6px 3px 9px/);
+  assert.match(numberRule, /min-width:\s*20px/);
+  assert.match(numberRule, /padding:\s*2px 6px/);
+});
+
 test('groups category chips inline in one wrapper before service panels', () => {
   const { byId, context } = createCheckinRuntime();
 
@@ -210,6 +221,20 @@ test('allows guest check-in without choosing a service', async () => {
 
   assert.doesNotMatch(byId.get('toast').textContent, /Please choose at least one service|service list changed/i);
   assert.match(byId.get('kiosk-done-card').innerHTML, /You're checked in, Mia Nguyen!/);
+});
+
+test('allows guest check-in without entering a customer name', async () => {
+  const { byId, context } = createCheckinRuntime();
+
+  byId.get('nameInput').value = '';
+
+  vm.runInContext('updateCheckinBtn();', context);
+  assert.equal(byId.get('checkinBtn').disabled, false);
+
+  await vm.runInContext('checkIn();', context);
+
+  assert.doesNotMatch(byId.get('toast').textContent, /Please enter your name/i);
+  assert.match(byId.get('kiosk-done-card').innerHTML, /You're checked in, Guest!/);
 });
 
 test('keeps technicians selectable after services are chosen', () => {
