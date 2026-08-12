@@ -179,11 +179,21 @@ test('does not render the SMS submenu item under POS', () => {
   assert.doesNotMatch(html, /data-shell-tab="appointments"/);
 });
 
-test('labels the POS Check-in, Tickets, and Customers tabs in the sidebar', () => {
-  const html = renderSidebar('pos', 'checkin');
-  assert.match(html, /data-shell-tab="checkin"[\s\S]*?<span>Check-in<\/span>/);
-  assert.match(html, /data-shell-tab="tickets"[\s\S]*?<span>Tickets<\/span>/);
-  assert.match(html, /data-shell-tab="customers"[\s\S]*?<span>Customers<\/span>/);
+test('matches the POS sidebar submenu to the current POS tabs', () => {
+  const html = renderSidebar('pos', 'todaybooking');
+  for (const [tab, label] of [
+    ['todaybooking', 'Today Booking'],
+    ['tickets', 'Queue &amp; Tech Assign'],
+    ['booking', 'Booking'],
+    ['customers', 'Customers'],
+    ['clock', 'Time Clock'],
+    ['management', 'Management']
+  ]) {
+    assert.match(html, new RegExp(`data-shell-tab="${tab}"[\\s\\S]*?<span>${label}<\\/span>`));
+  }
+  assert.match(html, /class="nav-subitem is-active"[^>]*data-shell-tab="todaybooking"[\s\S]*?<span>Today Booking<\/span>/);
+  assert.doesNotMatch(html, /data-shell-tab="checkin"[\s\S]*?<span>Check-in<\/span>/);
+  assert.doesNotMatch(html, /data-shell-tab="tickets"[\s\S]*?<span>Tickets<\/span>/);
   assert.doesNotMatch(html, /data-shell-tab="dispatch"/);
 });
 

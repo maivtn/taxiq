@@ -79,8 +79,8 @@
       { label: 'Analytics', tab: 'analytics' }
     ] },
     { type: 'group', key: 'pos', label: 'POS', icon: 'monitor', page: 'pos', items: [
-      { label: 'Check-in', tab: 'checkin' },
-      { label: 'Tickets', tab: 'tickets' },
+      { label: 'Today Booking', tab: 'todaybooking' },
+      { label: 'Queue & Tech Assign', tab: 'tickets' },
       { label: 'Booking', tab: 'booking' },
       { label: 'Customers', tab: 'customers' },
       { label: 'Time Clock', tab: 'clock' },
