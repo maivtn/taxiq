@@ -66,6 +66,18 @@ test('POS opens Today Booking by default when no tab query is present', () => {
   assert.match(html, /activateTab\(new URL\(window\.location\.href\)\.searchParams\.get\('tab'\) \|\| 'todaybooking'\)/);
 });
 
+test('POS Today Booking shows App/QR check-in requests above bookings ETA', () => {
+  const todayBookingPanel = html.match(/<section class="pos-panel is-active" data-pos-panel="todaybooking"[\s\S]*?<\/section>/)?.[0] || '';
+  const checkinRequestsIndex = todayBookingPanel.indexOf('data-ciq-panel');
+  const bookingsEtaIndex = todayBookingPanel.indexOf('data-eta-panel');
+
+  assert.ok(checkinRequestsIndex !== -1, 'expected App/QR check-in requests panel');
+  assert.ok(bookingsEtaIndex !== -1, 'expected bookings ETA panel');
+  assert.ok(checkinRequestsIndex < bookingsEtaIndex, 'expected App/QR check-in requests before bookings ETA');
+  assert.match(todayBookingPanel, /Check-in from the Nexora App \/ QR — waiting on the front desk/);
+  assert.match(todayBookingPanel, /Today's bookings &amp; ETA — guests on the way/);
+});
+
 test('POS Check-in tab embeds the kiosk flow for helping a guest', () => {
   const checkinPanel = html.match(/<section class="pos-panel" data-pos-panel="checkin"[\s\S]*?<\/section>/)?.[0] || '';
   const todayBookingPanel = html.match(/<section class="pos-panel is-active" data-pos-panel="todaybooking"[\s\S]*?<\/section>/)?.[0] || '';

@@ -1095,17 +1095,6 @@
         <section class="pos-panel is-active" data-pos-panel="todaybooking" aria-label="Today Booking">
           <div class="pos-stack">
 
-            <div class="pos-card panel-blue" data-eta-panel hidden>
-              <div class="pos-card-head">
-                <h3><i class="bi bi-calendar-event" aria-hidden="true"></i> Today's bookings &amp; ETA — guests on the way (<span data-eta-count>0</span>)</h3>
-                <div class="booking-view-switch" role="group" aria-label="Bookings view mode">
-                  <button class="booking-view-button is-active" type="button" data-eta-view-target="card" aria-pressed="true"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>
-                  <button class="booking-view-button" type="button" data-eta-view-target="table" aria-pressed="false"><i class="bi bi-table" aria-hidden="true"></i>Table</button>
-                </div>
-              </div>
-              <div data-eta-list></div>
-            </div>
-
             <div class="pos-card panel-violet" data-ciq-panel hidden>
               <div class="pos-card-head">
                 <h3><i class="bi bi-inbox-fill" aria-hidden="true"></i> Check-in from the Nexora App / QR — waiting on the front desk (<span data-ciq-count>0</span>)</h3>
@@ -1115,6 +1104,17 @@
                 </div>
               </div>
               <div data-ciq-list></div>
+            </div>
+
+            <div class="pos-card panel-blue" data-eta-panel hidden>
+              <div class="pos-card-head">
+                <h3><i class="bi bi-calendar-event" aria-hidden="true"></i> Today's bookings &amp; ETA — guests on the way (<span data-eta-count>0</span>)</h3>
+                <div class="booking-view-switch" role="group" aria-label="Bookings view mode">
+                  <button class="booking-view-button is-active" type="button" data-eta-view-target="card" aria-pressed="true"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>
+                  <button class="booking-view-button" type="button" data-eta-view-target="table" aria-pressed="false"><i class="bi bi-table" aria-hidden="true"></i>Table</button>
+                </div>
+              </div>
+              <div data-eta-list></div>
             </div>
 
           </div>
