@@ -331,19 +331,24 @@ Một billing record hỗ trợ cấu trúc logic sau:
   billTo,
   paymentMethod,
   processor,
+  processorTransactionId,
   lineItems,
   subtotal,
   taxLabel,
   taxRate,
   taxAmount,
   total,
-  billingTerm
+  billingTerm,
+  invoiceFile,
+  receiptFile
 }
 ```
 
 Quy tắc:
 
+- `seller` gồm `name`, `legalName`, `addressLines`, `email`; `billTo` gồm `name`, `addressLines`, `email` để UI và PDF dùng chung thông tin pháp lý/liên hệ.
 - `receiptNumber`, `datePaid`, `paymentMethod` và `processor` chỉ bắt buộc khi `paymentStatus === 'paid'`.
+- `transactionId` là mã record dùng ở Package History/URL; `processorTransactionId` là mã đối soát riêng của cổng thanh toán.
 - `dateDue` bắt buộc với `payment_due` và `overdue`.
 - `lineItems` là mảng để hỗ trợ một hoặc nhiều loại gói/add-on trong cùng billing record.
 - `total = subtotal + taxAmount`.
@@ -397,6 +402,7 @@ Payment Due/Overdue
 - Link/nút action có accessible name chứa loại chứng từ và mã tương ứng.
 - Badge không chỉ dựa vào màu; luôn có text `Paid`, `Payment due` hoặc `Overdue`.
 - Back link, download actions và Pay now có focus state rõ ràng.
+- Dialog Pay now giữ focus bên trong, đặt shell nền ở trạng thái `inert`, hỗ trợ `Escape` và trả focus về nút mở khi đóng.
 - Bảng line item dùng semantic table với header scope phù hợp.
 - Tổng tiền được đặt sau line item trong DOM để screen reader đọc theo thứ tự logic.
 - Trang có một `h1`; các card dùng heading level kế tiếp đúng thứ tự.
