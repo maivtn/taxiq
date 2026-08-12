@@ -296,20 +296,24 @@ test('Start button click is isolated from the change-tech modal route', () => {
   assert.doesNotMatch(startHandler, /openSwapTechModal/);
 });
 
-test('Done keeps the finished ticket visible and scrolls back to it after render', () => {
+test('Queue actions keep All selected and switch only specific filters before scrolling', () => {
+  const followHelper = html.match(/function followQueueTicketAfterAction\(w, fallbackFilter\) \{[\s\S]*?\n      \}/)?.[0] || '';
   const scrollHelper = html.match(/function scrollQueueTicketIntoView\(wid\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const startHandler = html.match(/\/\* ▶ one-tap assign \*\/[\s\S]*?\/\* ⇄ swap tech \*\//)?.[0] || '';
   const doneHandler = html.match(/\/\* ✋ done \*\/[\s\S]*?\/\* 💳 charge/)?.[0] || '';
   const spotlight = html.match(/function spotlightQueueTicket\(wid\) \{[\s\S]*?\n      \}/)?.[0] || '';
 
+  assert.match(followHelper, /if \(ticketsFilter !== 'all' && !ticketsMatchesFilter\(w\) && fallbackFilter\) ticketsFilter = fallbackFilter/);
+  assert.match(followHelper, /fSel = w\.id/);
+  assert.match(followHelper, /renderFloor\(\); renderManagement\(\);/);
+  assert.match(followHelper, /if \(ticketsMatchesFilter\(w\)\) scrollQueueTicketIntoView\(w\.id\)/);
+  assert.match(html, /\{ id: 'cancelled', label: 'Cancelled' \}/);
   assert.match(scrollHelper, /document\.querySelector\('\[data-queue-ticket-id="' \+ wid \+ '"\]'\)/);
   assert.match(scrollHelper, /scrollIntoView\(\{ behavior: 'smooth', block: 'center' \}\)/);
+  assert.match(startHandler, /fAssign\(sw, stech\.id\);[\s\S]*followQueueTicketAfterAction\(sw, 'service'\)/);
   assert.match(doneHandler, /dw\.status = 'ready'/);
-  assert.match(doneHandler, /ticketsFilter = 'ready'/);
-  assert.match(doneHandler, /fSel = dw\.id/);
-  assert.match(doneHandler, /renderFloor\(\); renderManagement\(\);/);
-  assert.match(doneHandler, /scrollQueueTicketIntoView\(dw\.id\)/);
-  assert.ok(doneHandler.indexOf("ticketsFilter = 'ready'") < doneHandler.indexOf('renderFloor(); renderManagement();'), 'expected ready filter before re-render');
-  assert.ok(doneHandler.indexOf('renderFloor(); renderManagement();') < doneHandler.indexOf('scrollQueueTicketIntoView(dw.id)'), 'expected scroll after re-render');
+  assert.match(doneHandler, /followQueueTicketAfterAction\(dw, 'ready'\)/);
+  assert.doesNotMatch(doneHandler, /ticketsFilter = 'ready'/);
   assert.match(spotlight, /scrollQueueTicketIntoView\(wid\)/);
 });
 

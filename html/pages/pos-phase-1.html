@@ -3999,13 +3999,14 @@
       /* ── the board ── */
       // Tickets view mode + status filter (#pos-nail-salon-ops Phase 3 UI)
       var ticketsViewMode = 'card';   // 'card' | 'table'
-      var ticketsFilter = 'all';      // all | waiting | service | ready | completed
+      var ticketsFilter = 'all';      // all | waiting | service | ready | completed | cancelled
       var TICKETS_STATUS_CHIPS = [
         { id: 'all', label: 'All' },
         { id: 'waiting', label: 'Waiting' },
         { id: 'service', label: 'In service' },
         { id: 'ready', label: 'Ready' },
-        { id: 'completed', label: 'Completed' }
+        { id: 'completed', label: 'Completed' },
+        { id: 'cancelled', label: 'Cancelled' }
       ];
       function ticketsChipCount(id) {
         if (id === 'all') return WAITLIST.filter(ticketOpen).length;
@@ -4063,6 +4064,13 @@
           var target = document.querySelector('[data-queue-ticket-id="' + wid + '"]');
           if (target && target.scrollIntoView) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 0);
+      }
+      function followQueueTicketAfterAction(w, fallbackFilter) {
+        if (!w) return;
+        if (ticketsFilter !== 'all' && !ticketsMatchesFilter(w) && fallbackFilter) ticketsFilter = fallbackFilter;
+        fSel = w.id;
+        renderFloor(); renderManagement();
+        if (ticketsMatchesFilter(w)) scrollQueueTicketIntoView(w.id);
       }
       function spotlightQueueTicket(wid) {
         fSel = wid;
@@ -4343,14 +4351,14 @@
             if (override) wlog(w, '⚠ Skill override: assigned to ' + t.name + ' without the ' + match.req + ' skill');
             assignWaitingTech(w, tid);
             closeSwapTechModal();
-            renderManagement();
+            followQueueTicketAfterAction(w, 'waiting');
             toast(w.name + ' assigned to ' + t.name + (override ? ' (override logged)' : ''));
             return;
           }
           if (override) wlog(w, '⚠ Skill override: swapped to ' + t.name + ' without the ' + match.req + ' skill');
           fAssign(w, tid);
           closeSwapTechModal();
-          renderManagement();
+          followQueueTicketAfterAction(w, w.status);
           toast(w.name + ' → ' + t.name + (override ? ' (override logged)' : ''));
         };
         if (!match.okSkill) {
@@ -4507,6 +4515,7 @@
             if (areq && at && (at.skills || []).indexOf(areq) === -1) wlog(aw, '⚠ Skill override: approved ' + at.name + ' without the ' + areq + ' skill');
             wlog(aw, '🔐 Front desk approved the access request — ' + techName(ar.tid) + ' takes the ticket');
             fAssign(aw, ar.tid);
+            followQueueTicketAfterAction(aw, 'service');
             toast(techName(ar.tid) + ' now owns ticket #' + aw.id);
             return;
           }
@@ -4555,6 +4564,7 @@
           var stech = sw && waitingStartTech(sw);
           if (!stech) { toast('No free tech right now', 'info'); return; }
           fAssign(sw, stech.id);
+          followQueueTicketAfterAction(sw, 'service');
           serviceStartedModal(sw, stech);
           return;
         }
@@ -4568,10 +4578,7 @@
           if (dw) {
             dw.status = 'ready'; dw.readyAtMs = Date.now();
             wlog(dw, '✋ ' + techName(dw.techId) + ' finished — guest waiting to pay');
-            ticketsFilter = 'ready';
-            fSel = dw.id;
-            renderFloor(); renderManagement();
-            scrollQueueTicketIntoView(dw.id);
+            followQueueTicketAfterAction(dw, 'ready');
             openQuickNote(dw.name);
           }
           return;
@@ -4600,7 +4607,8 @@
           });
           if (fSel != null && groupTickets.some(function (x) { return x.id === fSel; })) fSel = null;
           if (bookingId) checkBookingOrderComplete(bookingId);
-          renderFloor(); renderManagement(); renderClock();
+          followQueueTicketAfterAction(groupTickets[0], 'completed');
+          renderClock();
           toast('Charged ' + money(sub + tip) + (turnedTechs.length ? ' · turn +1 for ' + turnedTechs.join(', ') : ''));
           return;
         }
@@ -4612,8 +4620,7 @@
           confirmBox('Remove ' + xw.name + ' from the queue?', 'The ticket is dropped — production keeps it as a cancelled record.').then(function (ok) {
             if (!ok) return;
             xw.status = 'cancelled';
-            if (fSel === xw.id) fSel = null;
-            renderFloor(); renderManagement();
+            followQueueTicketAfterAction(xw, 'cancelled');
           });
           return;
         }
@@ -4642,6 +4649,7 @@
           }
           if (!ok2) wlog(aw2, '⚠ Skill override: assigned ' + techName(tid) + ' without the ' + req2 + ' skill');
           fAssign(aw2, tid);                     // second tap (or qualified): assign
+          followQueueTicketAfterAction(aw2, 'service');
           toast(aw2.name + ' → ' + techName(tid) + (ok2 ? '' : ' (override logged)'));
           return;
         }
