@@ -50,7 +50,7 @@ html/
     app-data.json
     app-data.js
     app.js
-  pages/
+  taxiq/
     analytics.html
     onboarding.html
     employers.html

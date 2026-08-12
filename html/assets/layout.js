@@ -92,7 +92,7 @@ const TaxIQLayout = (() => {
 
   function pageHref(id){
     if(id === "dashboard") return rootPath === "." ? "index.html" : "../index.html";
-    return rootPath === "." ? "pages/" + pages[id].file : pages[id].file;
+    return rootPath === "." ? "taxiq/" + pages[id].file : pages[id].file;
   }
 
   function renderHeader(meta){
