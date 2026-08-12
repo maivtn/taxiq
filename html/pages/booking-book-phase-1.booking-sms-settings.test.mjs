@@ -14,33 +14,34 @@ const BOOKING_POLICY_DESKTOP_GRID_RULE = SOURCE.match(/@media \(min-width:\s*640
 const SALON_NAME_FIELD_RULE = SOURCE.match(/\.settings-business-grid\s*>\s*\.settings-salon-name-field\s*\{([\s\S]*?)\n\s*\}/)?.[1] || '';
 const SETTINGS_BUSINESS_DESKTOP_GRID_RULE = SOURCE.match(/@media \(min-width:\s*640px\) \{[\s\S]*?\.settings-business-grid\s*\{([^}]*)\}/)?.[1] || '';
 
-test('Salon Info includes a separate Cell Phone input', () => {
+test('Salon Info uses Booking notification number for live-person call forwarding', () => {
   assert.match(SALON_INFO_CARD, />Salon Info<\/div>/);
-  assert.match(SALON_INFO_CARD, /<span class="settings-label settings-label-with-tooltip">[\s\S]*Cell Phone[\s\S]*<\/span>/);
-  assert.match(SALON_INFO_CARD, /id="cell-phone-help" role="tooltip">AI forwards calls to this number when a customer asks to speak with a real person<\/span>/);
-  assert.match(SALON_INFO_CARD, /Cell Phone[\s\S]*<input class="settings-input phone-mask-input" type="tel"[^>]*autocomplete="tel-national"[^>]*data-phone-mask/);
+  assert.doesNotMatch(SALON_INFO_CARD, /Cell Phone/);
+  assert.doesNotMatch(SALON_INFO_CARD, /cell-phone-help/);
+  assert.match(SALON_INFO_CARD, /<span class="settings-label settings-label-with-tooltip">[\s\S]*Booking notification number[\s\S]*<\/span>/);
+  assert.match(SALON_INFO_CARD, /id="booking-notification-number-help" role="tooltip">Gets booking SMS notifications and AI forwards calls to this phone number when a customer asks to speak with a real person\.<\/span>/);
+  assert.match(SALON_INFO_CARD, /Booking notification number[\s\S]*<input class="settings-input phone-mask-input" type="tel"[^>]*autocomplete="tel-national"[^>]*data-phone-mask/);
 
   const salonPhonePosition = SALON_INFO_CARD.indexOf('Salon phone number');
-  const cellPhonePosition = SALON_INFO_CARD.indexOf('Cell Phone');
   const aiNumberPosition = SALON_INFO_CARD.indexOf('AI answering number');
-  assert.ok(cellPhonePosition > salonPhonePosition, 'Cell Phone should follow Salon phone number');
-  assert.ok(cellPhonePosition > aiNumberPosition, 'Cell Phone should follow AI answering number');
+  const notificationNumberPosition = SALON_INFO_CARD.indexOf('Booking notification number');
+  assert.ok(notificationNumberPosition > salonPhonePosition, 'Booking notification number should follow Salon phone number');
+  assert.ok(notificationNumberPosition > aiNumberPosition, 'Booking notification number should follow AI answering number');
 });
 
-test('Salon Info places salon name full-width above two rows of phone fields', () => {
+test('Salon Info places salon name and salon phone number on the same row', () => {
   assert.match(SALON_INFO_CARD, /<label class="settings-field settings-salon-name-field">[\s\S]*<span class="settings-label">Salon name<\/span>/);
-  assert.match(SALON_NAME_FIELD_RULE, /grid-column:\s*1\s*\/\s*-1/);
+  assert.doesNotMatch(SALON_NAME_FIELD_RULE, /grid-column:\s*1\s*\/\s*-1/);
   assert.match(SETTINGS_BUSINESS_DESKTOP_GRID_RULE, /grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/);
 
   const addressPosition = SALON_INFO_CARD.indexOf('settings-location-grid');
   const phoneFieldsArea = SALON_INFO_CARD.slice(0, addressPosition);
-  assert.equal((phoneFieldsArea.match(/type="tel"/g) || []).length, 4);
+  assert.equal((phoneFieldsArea.match(/type="tel"/g) || []).length, 3);
 
   const positions = [
     SALON_INFO_CARD.indexOf('Salon name'),
     SALON_INFO_CARD.indexOf('Salon phone number'),
     SALON_INFO_CARD.indexOf('AI answering number'),
-    SALON_INFO_CARD.indexOf('Cell Phone'),
     SALON_INFO_CARD.indexOf('Booking notification number')
   ];
   assert.ok(positions.every((position) => position >= 0), 'all Salon Info name and phone labels must exist');
