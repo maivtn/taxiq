@@ -432,6 +432,255 @@
   line-height: 1.55;
 }
 
+body.billing-payment-open {
+  overflow: hidden;
+}
+
+.billing-payment-modal {
+  position: fixed;
+  z-index: 1200;
+  inset: 0;
+  display: grid;
+  overflow-y: auto;
+  place-items: center;
+  background: rgba(8, 31, 73, 0.48);
+  padding: 24px;
+  backdrop-filter: blur(5px);
+}
+
+.billing-payment-modal[hidden] {
+  display: none;
+}
+
+.billing-payment-dialog {
+  width: min(100%, 520px);
+  overflow: hidden;
+  border: 1px solid rgba(255, 255, 255, 0.42);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: 0 30px 80px rgba(8, 31, 73, 0.3);
+}
+
+.billing-payment-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  border-bottom: 1px solid var(--nexora-border);
+  padding: 22px 24px 18px;
+}
+
+.billing-payment-kicker {
+  color: var(--nexora-brand);
+  font-size: 9px;
+  font-weight: 900;
+  letter-spacing: 0.06em;
+  text-transform: uppercase;
+}
+
+.billing-payment-head h2 {
+  margin: 5px 0 0;
+  color: var(--nexora-text);
+  font-size: 22px;
+  font-weight: 900;
+  letter-spacing: -0.025em;
+}
+
+.billing-payment-head p {
+  margin: 6px 0 0;
+  color: var(--nexora-muted);
+  font-size: 12px;
+  font-weight: 650;
+}
+
+.billing-payment-close {
+  display: grid;
+  width: 36px;
+  height: 36px;
+  flex: 0 0 36px;
+  place-items: center;
+  border: 1px solid var(--nexora-border);
+  border-radius: 9px;
+  background: #fff;
+  color: var(--nexora-muted);
+  cursor: pointer;
+}
+
+.billing-payment-close:focus-visible,
+.billing-payment-secondary:focus-visible,
+.billing-payment-primary:focus-visible,
+.billing-payment-methods input:focus-visible + span {
+  outline: 3px solid rgba(70, 72, 216, 0.22);
+  outline-offset: 2px;
+}
+
+.billing-payment-close svg {
+  width: 17px;
+  height: 17px;
+}
+
+.billing-payment-body {
+  padding: 20px 24px;
+}
+
+.billing-payment-summary {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--nexora-border);
+  border-radius: 12px;
+  background: var(--nexora-surface-muted);
+  padding: 13px 14px;
+}
+
+.billing-payment-summary div {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 18px;
+}
+
+.billing-payment-summary span {
+  color: var(--nexora-subtle);
+  font-size: 10px;
+  font-weight: 850;
+  text-transform: uppercase;
+}
+
+.billing-payment-summary strong {
+  color: var(--nexora-text);
+  font-size: 12px;
+  font-weight: 900;
+  text-align: right;
+}
+
+.billing-payment-summary .is-total {
+  margin-top: 3px;
+  border-top: 1px solid var(--nexora-border);
+  padding-top: 10px;
+}
+
+.billing-payment-summary .is-total strong {
+  color: var(--nexora-brand);
+  font-size: 17px;
+}
+
+.billing-payment-methods {
+  display: grid;
+  gap: 8px;
+  margin: 18px 0 0;
+  padding: 0;
+  border: 0;
+}
+
+.billing-payment-methods legend {
+  margin-bottom: 9px;
+  color: var(--nexora-text);
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.billing-payment-methods label {
+  position: relative;
+  cursor: pointer;
+}
+
+.billing-payment-methods input {
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.billing-payment-methods label > span {
+  display: flex;
+  min-height: 44px;
+  align-items: center;
+  gap: 10px;
+  border: 1px solid var(--nexora-border);
+  border-radius: 10px;
+  padding: 10px 12px;
+  color: var(--nexora-muted);
+  transition: border-color 0.18s ease, background 0.18s ease;
+}
+
+.billing-payment-methods input:checked + span {
+  border-color: var(--nexora-brand);
+  background: rgba(70, 72, 216, 0.06);
+  color: var(--nexora-brand);
+}
+
+.billing-payment-methods svg {
+  width: 18px;
+  height: 18px;
+}
+
+.billing-payment-methods strong {
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.billing-payment-demo-note {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  margin-top: 16px;
+  border-radius: 9px;
+  background: #f5f7ff;
+  padding: 10px 11px;
+  color: var(--nexora-muted);
+  font-size: 11px;
+  font-weight: 700;
+  line-height: 1.4;
+}
+
+.billing-payment-demo-note svg {
+  width: 15px;
+  height: 15px;
+  flex: 0 0 auto;
+  color: var(--nexora-brand);
+}
+
+.billing-payment-foot {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  border-top: 1px solid var(--nexora-border);
+  background: #fbfcff;
+  padding: 16px 24px;
+}
+
+.billing-payment-secondary,
+.billing-payment-primary {
+  min-height: 42px;
+  border-radius: 10px;
+  padding: 9px 14px;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.billing-payment-secondary {
+  border: 1px solid var(--nexora-border);
+  background: #fff;
+  color: var(--nexora-muted);
+}
+
+.billing-payment-primary {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  border: 0;
+  background: linear-gradient(90deg, var(--nexora-electric), var(--nexora-violet));
+  color: #fff;
+  box-shadow: 0 9px 20px rgba(70, 72, 216, 0.2);
+}
+
+.billing-payment-primary svg {
+  width: 16px;
+  height: 16px;
+}
+
 @media (max-width: 760px) {
   .billing-detail-meta {
     grid-template-columns: repeat(2, minmax(0, 1fr));
@@ -524,6 +773,27 @@
   }
 
   .billing-detail-totals {
+    width: 100%;
+  }
+
+  .billing-payment-modal {
+    padding: 10px;
+  }
+
+  .billing-payment-head,
+  .billing-payment-body,
+  .billing-payment-foot {
+    padding-right: 16px;
+    padding-left: 16px;
+  }
+
+  .billing-payment-foot {
+    align-items: stretch;
+    flex-direction: column-reverse;
+  }
+
+  .billing-payment-secondary,
+  .billing-payment-primary {
     width: 100%;
   }
 }

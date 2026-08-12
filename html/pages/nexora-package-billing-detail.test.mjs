@@ -15,7 +15,8 @@ function source() {
 
 function fakeElement(options = {}) {
   const listeners = {};
-  return {
+  const element = {
+    dataset: options.dataset || {},
     hidden: Boolean(options.hidden),
     innerHTML: '',
     textContent: '',
@@ -31,15 +32,32 @@ function fakeElement(options = {}) {
     dispatch(type, event = {}) {
       if (listeners[type]) listeners[type]({ preventDefault() {}, ...event });
     },
-    focus() {},
-    querySelector() { return null; },
+    focus() {
+      element.focused = true;
+    },
+    querySelector(selector) {
+      return options.querySelector ? options.querySelector(selector) : null;
+    },
     setAttribute() {}
   };
+  return element;
 }
 
 function createBillingRuntime(search) {
   assert.ok(existsSync(DETAIL_JS_URL), 'nexora-package-billing-detail.js must exist');
   const root = fakeElement();
+  const modalSummary = fakeElement();
+  const modalClose = fakeElement();
+  const modal = fakeElement({
+    hidden: true,
+    querySelector(selector) {
+      if (selector === '[data-billing-payment-summary]') return modalSummary;
+      if (selector === '[data-billing-payment-close]') return modalClose;
+      return null;
+    }
+  });
+  const payNowTarget = fakeElement({ dataset: { billingPayNow: 'SMS-20260811-0001' } });
+  payNowTarget.closest = (selector) => selector === '[data-billing-pay-now]' ? payNowTarget : null;
   const documentListeners = {};
   const document = {
     body: {
@@ -48,6 +66,7 @@ function createBillingRuntime(search) {
     },
     querySelector(selector) {
       if (selector === '[data-billing-detail-root]') return root;
+      if (selector === '[data-billing-payment-modal]') return modal;
       return null;
     },
     addEventListener(type, handler) {
@@ -70,7 +89,7 @@ function createBillingRuntime(search) {
 
   vm.runInNewContext(readFileSync(BILLING_DATA_URL, 'utf8'), context);
   vm.runInNewContext(readFileSync(DETAIL_JS_URL, 'utf8'), context);
-  return { document, root };
+  return { document, modal, modalClose, modalSummary, payNowTarget, root };
 }
 
 test('creates Billing Detail from the Salon shared-shell skeleton', () => {
@@ -145,6 +164,32 @@ test('shows a safe not-found state for an unknown transaction', () => {
   assert.doesNotMatch(html, /NXR-20260810-0003/);
 });
 
+test('provides an accessible demo payment UI for unpaid invoices', () => {
+  const html = source();
+
+  assert.match(html, /data-billing-payment-modal hidden aria-hidden="true"/);
+  assert.match(html, /role="dialog" aria-modal="true"/);
+  assert.match(html, /id="billing-payment-title"[^>]*>Pay invoice</);
+  assert.match(html, /data-billing-payment-summary/);
+  assert.match(html, /Demo only - payment processing is not connected\./);
+  assert.match(html, /data-billing-payment-close/);
+});
+
+test('opens and closes the Pay now demo payment UI', () => {
+  const runtime = createBillingRuntime('?transaction=SMS-20260811-0001');
+
+  runtime.root.dispatch('click', { target: runtime.payNowTarget });
+  assert.equal(runtime.modal.hidden, false);
+  assert.match(runtime.modalSummary.innerHTML, /SMS Business/);
+  assert.match(runtime.modalSummary.innerHTML, /NX-2026-0811-1CCEE7/);
+  assert.match(runtime.modalSummary.innerHTML, /\$179\.00/);
+  assert.equal(runtime.modalClose.focused, true);
+
+  runtime.document.dispatch('keydown', { key: 'Escape' });
+  assert.equal(runtime.modal.hidden, true);
+  assert.equal(runtime.payNowTarget.focused, true);
+});
+
 test('loads responsive Billing Detail styles', () => {
   assert.ok(existsSync(DETAIL_CSS_URL), 'nexora-package-billing-detail.css must exist');
   const css = readFileSync(DETAIL_CSS_URL, 'utf8');
@@ -152,5 +197,7 @@ test('loads responsive Billing Detail styles', () => {
   assert.match(css, /\.billing-detail-page\s*\{/);
   assert.match(css, /\.billing-detail-summary,[\s\S]*?\.billing-detail-document[\s\S]*?\{/);
   assert.match(css, /\.billing-detail-action:focus-visible[\s\S]*?\{/);
+  assert.match(css, /\.billing-payment-modal\s*\{/);
+  assert.match(css, /\.billing-payment-dialog\s*\{/);
   assert.match(css, /@media \(max-width: 640px\)/);
 });

@@ -5,6 +5,9 @@
     ? window.NEXORA_PACKAGE_BILLING_RECORDS
     : [];
   const root = document.querySelector('[data-billing-detail-root]');
+  const paymentModal = document.querySelector('[data-billing-payment-modal]');
+  let paymentOpener = null;
+  let paymentPreviousOverflow = '';
 
   function escapeHTML(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, (character) => ({
@@ -220,8 +223,70 @@
       : renderUnpaidBillingDetail(record);
   }
 
+  function openBillingPayment(record, opener) {
+    if (!paymentModal || !record || record.paymentStatus === 'paid') return;
+    const summary = paymentModal.querySelector('[data-billing-payment-summary]');
+    const closeButton = paymentModal.querySelector('[data-billing-payment-close]');
+    paymentOpener = opener || null;
+    paymentPreviousOverflow = document.body.style.overflow;
+    if (summary) {
+      summary.innerHTML = `
+        <div>
+          <span>Invoice</span>
+          <strong>${escapeHTML(record.invoiceNumber)}</strong>
+        </div>
+        <div>
+          <span>Package</span>
+          <strong>${escapeHTML(record.packageName)}</strong>
+        </div>
+        <div class="is-total">
+          <span>Amount due</span>
+          <strong>${formatMoney(record.total, record.currency)}</strong>
+        </div>
+      `;
+    }
+    paymentModal.hidden = false;
+    paymentModal.setAttribute('aria-hidden', 'false');
+    document.body.classList.add('billing-payment-open');
+    document.body.style.overflow = 'hidden';
+    if (closeButton) closeButton.focus();
+    if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
+  }
+
+  function closeBillingPayment() {
+    if (!paymentModal || paymentModal.hidden) return;
+    paymentModal.hidden = true;
+    paymentModal.setAttribute('aria-hidden', 'true');
+    document.body.classList.remove('billing-payment-open');
+    document.body.style.overflow = paymentPreviousOverflow;
+    if (paymentOpener && typeof paymentOpener.focus === 'function') paymentOpener.focus();
+    paymentOpener = null;
+  }
+
   if (!root) return;
   const transactionId = new URLSearchParams(window.location.search).get('transaction') || '';
   root.innerHTML = renderBillingDetail(findBillingRecord(transactionId));
+
+  root.addEventListener('click', (event) => {
+    const opener = event.target && typeof event.target.closest === 'function'
+      ? event.target.closest('[data-billing-pay-now]')
+      : null;
+    if (!opener) return;
+    openBillingPayment(findBillingRecord(opener.dataset.billingPayNow), opener);
+  });
+
+  if (paymentModal) {
+    paymentModal.addEventListener('click', (event) => {
+      const closeControl = event.target && typeof event.target.closest === 'function'
+        ? event.target.closest('[data-billing-payment-close]')
+        : null;
+      if (event.target === paymentModal || closeControl) closeBillingPayment();
+    });
+  }
+
+  document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && paymentModal && !paymentModal.hidden) closeBillingPayment();
+  });
+
   if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
 })();

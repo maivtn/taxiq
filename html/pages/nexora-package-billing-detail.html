@@ -30,6 +30,35 @@
     </div>
   </div>
 
+  <div class="billing-payment-modal" data-billing-payment-modal hidden aria-hidden="true">
+    <div class="billing-payment-dialog" role="dialog" aria-modal="true" aria-labelledby="billing-payment-title" aria-describedby="billing-payment-description">
+      <div class="billing-payment-head">
+        <div>
+          <span class="billing-payment-kicker">NEXORA secure billing</span>
+          <h2 id="billing-payment-title">Pay invoice</h2>
+          <p id="billing-payment-description">Choose a payment method for this invoice.</p>
+        </div>
+        <button class="billing-payment-close" type="button" data-billing-payment-close aria-label="Close payment dialog"><i data-lucide="x" aria-hidden="true"></i></button>
+      </div>
+
+      <div class="billing-payment-body">
+        <div class="billing-payment-summary" data-billing-payment-summary></div>
+        <fieldset class="billing-payment-methods">
+          <legend>Payment method</legend>
+          <label><input type="radio" name="billing-payment-method" value="card" checked><span><i data-lucide="credit-card" aria-hidden="true"></i><strong>Credit or debit card</strong></span></label>
+          <label><input type="radio" name="billing-payment-method" value="usdv"><span><i data-lucide="wallet-cards" aria-hidden="true"></i><strong>USDV balance</strong></span></label>
+          <label><input type="radio" name="billing-payment-method" value="usdt"><span><i data-lucide="coins" aria-hidden="true"></i><strong>USDT balance</strong></span></label>
+        </fieldset>
+        <div class="billing-payment-demo-note" role="note"><i data-lucide="info" aria-hidden="true"></i><span>Demo only - payment processing is not connected.</span></div>
+      </div>
+
+      <div class="billing-payment-foot">
+        <button class="billing-payment-secondary" type="button" data-billing-payment-close>Close</button>
+        <button class="billing-payment-primary" type="button" data-billing-payment-close><i data-lucide="shield-check" aria-hidden="true"></i><span>Continue payment demo</span></button>
+      </div>
+    </div>
+  </div>
+
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script src="../assets/nexora-package-billing-data.js"></script>
   <script src="../assets/nexora-package-billing-detail.js"></script>
