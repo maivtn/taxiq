@@ -139,7 +139,7 @@ test('keeps incoming call durations around two to three minutes', () => {
 test('allows New appointment to select multiple services and keeps their total duration', () => {
   const html = source();
 
-  assert.match(html, /class="booking-create-ticket-host"[^>]*data-booking-create-ticket-host/);
+  assert.match(html, /class="booking-service-chips"[^>]*data-booking-create-field="service"[^>]*aria-label="Select one or more services"/);
   assert.match(html, /data-booking-create-service/);
   assert.match(html, /function getBookingCreateServices\(\)/);
   assert.match(html, /is-selected/);
@@ -150,11 +150,34 @@ test('allows New appointment to select multiple services and keeps their total d
   assert.match(html, /services\.join\(' '\)/);
 });
 
-test('limits long service pickers and enables vertical scrolling', () => {
+test('New appointment shows the full service picker before the technician selector', () => {
   const html = source();
-  const servicePickerRule = html.match(/\.booking-service-chips\s*\{([^}]*)\}/)?.[1] || '';
+  const modal = html.match(/<div class="booking-create-modal"[\s\S]*?<\/div>\s*<div class="booking-create-actions">/)?.[0] || '';
+  const serviceIndex = modal.indexOf('data-booking-create-field="service"');
+  const techIndex = modal.indexOf('data-booking-create-field="tech"');
 
-  assert.match(servicePickerRule, /max-height:\s*160px/);
+  assert.ok(serviceIndex >= 0, 'New appointment should render the service picker field');
+  assert.ok(techIndex > serviceIndex, 'Technician selector should appear below services');
+  assert.doesNotMatch(modal, /data-booking-create-ticket-tech-search/);
+  assert.doesNotMatch(modal, /data-booking-create-ticket-add/);
+});
+
+test('New appointment services come from the menu catalog and render category chips', () => {
+  const html = source();
+
+  assert.match(html, /var APPOINTMENT_SERVICE_CATALOG_URL = '\.\.\/menu\/menu\.json';/);
+  assert.match(html, /appointmentServiceCatalogLoader\.load\(APPOINTMENT_SERVICE_CATALOG_URL\)/);
+  assert.match(html, /function bookingServicePickerCategoryChips\(categories, activeCategoryId\)/);
+  assert.match(html, /data-booking-service-category-chip="all"/);
+  assert.match(html, /data-booking-service-category-filter/);
+  assert.match(html, /bookingCreateField\('service'\)\.innerHTML = bookingServicePickerMarkup\('create', \[\]\);/);
+});
+
+test('limits long service category lists and enables vertical scrolling', () => {
+  const html = source();
+  const servicePickerRule = html.match(/\.booking-service-categories\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(servicePickerRule, /max-height:\s*280px/);
   assert.match(servicePickerRule, /overflow-y:\s*auto/);
 });
 
@@ -182,7 +205,7 @@ test('adds website and structured salon location fields to Salon Info', () => {
   assert.match(salonInfo, /<span class="settings-tooltip-content" id="ai-answering-number-help" role="tooltip">Provided by NEXORA; AI answers 24\/7 on this number\.<\/span>/);
   assert.doesNotMatch(salonInfo, /<span class="settings-help">Provided by NEXORA; AI answers 24\/7 on this number\.<\/span>/);
   assert.match(salonInfo, /<span class="settings-label settings-label-with-tooltip">\s*Booking notification number[\s\S]*?<button class="settings-tooltip-trigger" type="button" aria-label="Booking notification number info" aria-describedby="booking-notification-number-help">[\s\S]*bi-info-circle/);
-  assert.match(salonInfo, /<span class="settings-tooltip-content" id="booking-notification-number-help" role="tooltip">Gets an SMS when a customer books or texts - can be the owner's or manager's number\.<\/span>/);
+  assert.match(salonInfo, /<span class="settings-tooltip-content" id="booking-notification-number-help" role="tooltip">Gets booking SMS notifications and AI forwards calls to this phone number when a customer asks to speak with a real person\.<\/span>/);
   assert.doesNotMatch(salonInfo, /<span class="settings-help">Gets an SMS when a customer books or texts - can be the owner's or manager's number\.<\/span>/);
   assert.match(salonInfo, /<span class="settings-label">Address \*<\/span>[\s\S]*?value="9793 Westheimer Rd, Suite A"/);
   assert.doesNotMatch(salonInfo, /Address line 1/);
@@ -330,7 +353,7 @@ test('uses regular weight for service duration in New appointment', () => {
 test('shows total price and total time below New appointment services', () => {
   const html = source();
 
-  assert.match(html, /data-booking-create-ticket-host[\s\S]*class="booking-service-summary"/);
+  assert.match(html, /data-booking-create-field="service"[\s\S]*class="booking-service-summary"/);
   assert.match(html, /data-booking-create-total-price>\$0<\/strong>/);
   assert.match(html, /data-booking-create-total-duration>0 min<\/strong>/);
   assert.match(html, /function bookingServicePriceTotal\(services\)/);
@@ -353,7 +376,7 @@ test('renders service totals as text instead of input-like controls', () => {
 test('makes the New appointment services picker span the full form width', () => {
   const html = source();
 
-  assert.match(html, /<label class="booking-create-field is-full">[\s\S]*?data-booking-create-ticket-host/);
+  assert.match(html, /<label class="booking-create-field is-full">[\s\S]*?data-booking-create-field="service"/);
 });
 
 test('removes the manual duration selector from New appointment', () => {
@@ -362,7 +385,7 @@ test('removes the manual duration selector from New appointment', () => {
   assert.doesNotMatch(html, /<select class="booking-select" data-booking-create-field="duration">/);
   assert.doesNotMatch(html, /bookingCreateField\('duration'\)/);
   assert.doesNotMatch(html, /syncBookingCreateDuration/);
-  assert.match(html, /var duration = \(appointmentTicketUtils && appointmentTicketUtils\.ticketTotals \? appointmentTicketUtils\.ticketTotals\(bookingCreateTickets\)\.duration : 0\) \|\| 60;/);
+  assert.match(html, /var duration = \(appointmentTicketUtils && appointmentTicketUtils\.ticketTotals \? appointmentTicketUtils\.ticketTotals\(createTickets\)\.duration : 0\) \|\| bookingServiceDurationMinutes\(services\) \|\| 60;/);
 });
 
 test('keeps technician and status together before the date and time fields', () => {

@@ -58,11 +58,9 @@ var DEFAULT_MAIN_TAB = 'booking';
       catalog = salonData.loadCatalog();
       BOOKING_CALENDAR_SERVICE_OPTIONS = [];
       BOOKING_CALENDAR_SERVICE_DURATIONS = {};
-      var activeSalonServices = catalog.services.filter(function(service) { return service.active; });
-      var hasManagedMenuServices = salonData.catalogUsesMenuServices && salonData.catalogUsesMenuServices(catalog);
-      var serviceSource = (!hasManagedMenuServices && appointmentServiceCatalog && appointmentServiceCatalog.services.length)
+      var serviceSource = appointmentServiceCatalog && appointmentServiceCatalog.services.length
         ? appointmentServiceCatalog.services
-        : activeSalonServices;
+        : catalog.services.filter(function(service) { return service.active; });
       serviceSource.forEach(function(service) {
         var salonService = salonData.findService(catalog, service.id) || salonData.findService(catalog, service.name);
         BOOKING_CALENDAR_SERVICE_OPTIONS.push({
@@ -562,10 +560,21 @@ var DEFAULT_MAIN_TAB = 'booking';
       return categories;
     }
 
+    function bookingServicePickerCategoryChips(categories, activeCategoryId) {
+      activeCategoryId = activeCategoryId || 'all';
+      var chips = '<button class="booking-service-category-chip' + (activeCategoryId === 'all' ? ' is-active' : '') + '" type="button" data-booking-service-category-chip="all" aria-pressed="' + (activeCategoryId === 'all' ? 'true' : 'false') + '">All</button>';
+      chips += categories.map(function(category) {
+        var isActive = activeCategoryId === category.id;
+        return '<button class="booking-service-category-chip' + (isActive ? ' is-active' : '') + '" type="button" data-booking-service-category-chip="' + escapeHtml(category.id) + '" aria-pressed="' + (isActive ? 'true' : 'false') + '">' + escapeHtml(category.name) + '</button>';
+      }).join('');
+      return '<div class="booking-service-category-filter" data-booking-service-category-filter role="group" aria-label="Service categories">' + chips + '</div>';
+    }
+
     function bookingServicePickerMarkup(mode, selectedNames) {
       var selected = {};
       (selectedNames || []).forEach(function(name) { selected[String(name).toLowerCase()] = true; });
       var categories = bookingServicePickerCategories();
+      var activeCategoryId = 'all';
       var buttons = categories.map(function(category) {
         var serviceButtons = category.services.map(function(option) {
           var isSelected = Boolean(selected[option.name.toLowerCase()]);
@@ -576,32 +585,52 @@ var DEFAULT_MAIN_TAB = 'booking';
           return '<button class="booking-service-chip-button' + (isSelected ? ' is-selected' : '') + '" type="button" ' + buttonAttributes + ' data-service-category="' + escapeHtml(category.name) + '" aria-pressed="' + (isSelected ? 'true' : 'false') + '">' +
             '<span class="booking-service-option-name">' + escapeHtml(option.name) + '</span><span class="booking-service-option-meta">' + price + ' · ' + option.duration + ' min</span></button>';
         }).join('');
-        var categoryOpen = category.services.some(function(option) { return selected[option.name.toLowerCase()]; });
-        return '<details class="booking-service-category" data-booking-service-category data-category-name="' + escapeHtml(category.name) + '"' + (categoryOpen ? ' open' : '') + '>' +
+        var categoryOpen = activeCategoryId === 'all' || activeCategoryId === category.id || category.services.some(function(option) { return selected[option.name.toLowerCase()]; });
+        return '<details class="booking-service-category" data-booking-service-category data-category-id="' + escapeHtml(category.id) + '" data-category-name="' + escapeHtml(category.name) + '"' + (categoryOpen ? ' open' : '') + '>' +
           '<summary class="booking-service-category-head"><span class="booking-service-category-name">' + escapeHtml(category.name) + '</span><span class="booking-service-category-count">' + category.services.length + '</span></summary>' +
           '<div class="booking-service-category-options">' + serviceButtons + '</div></details>';
       }).join('');
       return '<div class="booking-service-picker" data-booking-service-picker data-booking-service-picker-mode="' + mode + '">' +
         '<div class="booking-service-search-shell"><i class="bi bi-search" aria-hidden="true"></i><input class="booking-service-search" type="search" placeholder="Search services..." aria-label="Search services" data-booking-service-search></div>' +
+        bookingServicePickerCategoryChips(categories, activeCategoryId) +
         '<div class="booking-service-categories" data-booking-service-results>' + buttons + '<div class="booking-service-empty" data-booking-service-empty hidden>No matching services found.</div></div></div>';
+    }
+
+    function bookingServiceActiveCategoryId(picker) {
+      var active = picker && picker.querySelector('[data-booking-service-category-chip].is-active');
+      return active ? (active.getAttribute('data-booking-service-category-chip') || 'all') : 'all';
+    }
+
+    function setBookingServiceCategoryFilter(picker, categoryId) {
+      if (!picker) return;
+      var activeCategoryId = categoryId || 'all';
+      picker.querySelectorAll('[data-booking-service-category-chip]').forEach(function(chip) {
+        var isActive = (chip.getAttribute('data-booking-service-category-chip') || 'all') === activeCategoryId;
+        chip.classList.toggle('is-active', isActive);
+        chip.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+      });
+      var search = picker.querySelector('[data-booking-service-search]');
+      if (search) filterBookingServicePicker(search);
     }
 
     function filterBookingServicePicker(input) {
       var picker = input && input.closest('[data-booking-service-picker]');
       if (!picker) return;
       var query = String(input.value || '').trim().toLowerCase();
+      var activeCategoryId = bookingServiceActiveCategoryId(picker);
       var visibleCount = 0;
       picker.querySelectorAll('[data-booking-service-category]').forEach(function(category) {
+        var matchesCategory = activeCategoryId === 'all' || category.dataset.categoryId === activeCategoryId;
         var categoryName = String(category.dataset.categoryName || '').toLowerCase();
         var categoryVisible = 0;
         category.querySelectorAll('[data-booking-create-service], [data-booking-panel-select="service"]').forEach(function(button) {
           var haystack = (button.dataset.serviceName || button.dataset.bookingCreateService || '') + ' ' + categoryName;
-          var visible = !query || haystack.toLowerCase().indexOf(query) !== -1;
+          var visible = matchesCategory && (!query || haystack.toLowerCase().indexOf(query) !== -1);
           button.hidden = !visible;
           if (visible) categoryVisible++;
         });
-        category.hidden = categoryVisible === 0;
-        if (query && categoryVisible) category.open = true;
+        category.hidden = !matchesCategory || categoryVisible === 0;
+        if (matchesCategory && categoryVisible) category.open = true;
         visibleCount += categoryVisible;
       });
       var empty = picker.querySelector('[data-booking-service-empty]');
@@ -1232,12 +1261,38 @@ var DEFAULT_MAIN_TAB = 'booking';
       if (duration) duration.textContent = totalDuration + ' min';
     }
 
+    function bookingCreateTicketsFromServices(services) {
+      var tech = bookingCalendarResourceTech(bookingCreateField('tech') ? bookingCreateField('tech').value : 'unassigned');
+      var techId = tech === 'unassigned' ? null : tech;
+      return (services || []).map(function(serviceName, index) {
+        var option = BOOKING_CALENDAR_SERVICE_OPTIONS.find(function(service) { return service.name === serviceName; });
+        return {
+          id: 'ticket-' + (index + 1),
+          serviceId: option ? option.serviceId : '',
+          serviceName: serviceName,
+          price: option ? option.price : null,
+          durationMin: option ? option.duration : 60,
+          technicianId: techId,
+          technicianName: techId ? bookingTechName(techId) : 'Anyone',
+          status: 'confirmed'
+        };
+      });
+    }
+
     function populateBookingCreateForm() {
       bookingCreateTickets = [];
       bookingCreateSelectedServiceId = '';
       bookingCreateSelectedTechId = null;
       bookingCreateSelectedTechName = 'Anyone';
-      renderBookingCreateTicketPicker();
+      if (bookingCreateField('service')) {
+        bookingCreateField('service').innerHTML = bookingServicePickerMarkup('create', []);
+      }
+      var tech = bookingCreateField('tech');
+      if (tech) {
+        tech.innerHTML = '<option value="unassigned">Anyone / Unassigned</option>' + BOOKING_CALENDAR_TECHNICIANS.map(function(id) {
+          return '<option value="' + escapeHtml(id) + '">' + escapeHtml(bookingTechName(id)) + '</option>';
+        }).join('');
+      }
       updateBookingCreateServiceSummary();
     }
 
@@ -1430,7 +1485,8 @@ var DEFAULT_MAIN_TAB = 'booking';
       var date = get('date');
       var time = get('time');
       var phone = get('phone').trim();
-      var duration = (appointmentTicketUtils && appointmentTicketUtils.ticketTotals ? appointmentTicketUtils.ticketTotals(bookingCreateTickets).duration : 0) || 60;
+      var createTickets = bookingCreateTicketsFromServices(services);
+      var duration = (appointmentTicketUtils && appointmentTicketUtils.ticketTotals ? appointmentTicketUtils.ticketTotals(createTickets).duration : 0) || bookingServiceDurationMinutes(services) || 60;
       var status = get('status') || 'new';
       var note = get('note').trim();
 
@@ -1441,7 +1497,7 @@ var DEFAULT_MAIN_TAB = 'booking';
 
       var start = new Date(date + 'T' + time + ':00');
       if (!Number.isFinite(start.getTime())) { setBookingCreateError('Pick a valid date and start time.'); return; }
-      var scheduledTickets = appointmentTicketUtils && appointmentTicketUtils.scheduleTickets ? appointmentTicketUtils.scheduleTickets(bookingCreateTickets, formatBookingCalendarDateTime(start)) : bookingCreateTickets;
+      var scheduledTickets = appointmentTicketUtils && appointmentTicketUtils.scheduleTickets ? appointmentTicketUtils.scheduleTickets(createTickets, formatBookingCalendarDateTime(start)) : createTickets;
       var end = new Date(start.getTime() + duration * 60000);
       scheduledTickets.forEach(function(ticket) { var ticketEnd = new Date(ticket.endAt); if (ticketEnd > end) end = ticketEnd; });
       var conflict = scheduledTickets.some(function(ticket) {
@@ -2887,6 +2943,12 @@ function bookingCardStatusIcon(item) {
     if (bookingCreateSave) bookingCreateSave.addEventListener('click', saveBookingFromCalendar);
 
     document.addEventListener('click', function(event) {
+      var bookingServiceCategoryChip = event.target.closest('[data-booking-service-category-chip]');
+      if (bookingServiceCategoryChip) {
+        setBookingServiceCategoryFilter(bookingServiceCategoryChip.closest('[data-booking-service-picker]'), bookingServiceCategoryChip.getAttribute('data-booking-service-category-chip') || 'all');
+        return;
+      }
+
       var bookingServiceCategorySummary = event.target.closest('summary.booking-service-category-head');
       if (bookingServiceCategorySummary) {
         event.preventDefault();

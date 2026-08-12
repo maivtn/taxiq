@@ -12,9 +12,11 @@ test('Booking Book loads shared catalog and appointment store before its runtime
 });
 
 test('Booking Book loads the approved category service JSON for appointment pickers', () => {
-  assert.match(SOURCE, /booking-service-catalog-draft\.json/);
+  assert.match(SOURCE, /\.\.\/menu\/menu\.json/);
+  assert.doesNotMatch(SOURCE, /booking-service-catalog-draft\.json/);
   assert.match(SOURCE, /appointmentServiceCatalogLoader\.load/);
   assert.match(SOURCE, /data-booking-service-search/);
+  assert.match(SOURCE, /data-booking-service-category-chip/);
   assert.match(SOURCE, /data-booking-service-category/);
 });
 

@@ -159,10 +159,10 @@ test('POS Booking rolls static demo rows to the current operating date before Ch
   assert.match(runtime, /repairBookingStaticDates\(initialBookingRows\);/);
 });
 
-test('POS Booking refreshes from the salon-managed menu service catalog', () => {
+test('POS Booking refreshes New appointment services from menu.json first', () => {
   assert.match(runtime, /var APPOINTMENT_SERVICE_CATALOG_URL = '\.\.\/menu\/menu\.json'/);
-  assert.match(runtime, /catalogUsesMenuServices\(catalog\)/);
-  assert.match(runtime, /var activeSalonServices = catalog\.services\.filter\(function\(service\) \{ return service\.active; \}\)/);
+  assert.match(runtime, /var serviceSource = appointmentServiceCatalog && appointmentServiceCatalog\.services\.length/);
+  assert.match(runtime, /\? appointmentServiceCatalog\.services\s*:\s*catalog\.services\.filter\(function\(service\) \{ return service\.active; \}\);/);
   assert.match(runtime, /render: function\(\) \{[\s\S]*rebuildBookingCatalogViews\(\);/);
 });
 
@@ -192,17 +192,37 @@ test('POS Booking preserves source badges and selected service totals', () => {
   assert.match(source, /function bookingPanelSelectedServiceTotals\(/);
 });
 
-test('POS Booking uses the approved category ticket pickers', () => {
+test('POS Booking uses the approved category ticket pickers in the appointment panel', () => {
   for (const hook of [
     'data-booking-panel-ticket-service-search',
     'data-booking-panel-ticket-tech-search',
     'data-booking-panel-ticket-add',
-    'data-booking-panel-ticket-remove',
-    'data-booking-create-ticket-service-search',
-    'data-booking-create-ticket-tech-search',
-    'data-booking-create-ticket-add'
+    'data-booking-panel-ticket-remove'
   ]) assert.match(source, new RegExp(hook));
   assert.doesNotMatch(source, /data-booking-panel-field="duration"/);
+});
+
+test('POS New appointment shows the full service picker before the technician selector', () => {
+  const createModal = html.match(/<div class="booking-create-modal" data-booking-create-modal[\s\S]*?<div class="booking-create-error"/)?.[0] || '';
+  const serviceIndex = createModal.indexOf('data-booking-create-field="service"');
+  const techIndex = createModal.indexOf('data-booking-create-field="tech"');
+
+  assert.match(createModal, /class="booking-service-chips"[\s\S]{0,120}data-booking-create-field="service"[\s\S]{0,120}aria-label="Select one or more services"/);
+  assert.ok(serviceIndex >= 0, 'New appointment should expose a service picker');
+  assert.ok(techIndex > serviceIndex, 'New appointment should choose services before technician');
+  assert.doesNotMatch(createModal, /data-booking-create-ticket-tech-search|data-booking-create-ticket-add/);
+  assert.match(runtime, /bookingCreateField\('service'\)\.innerHTML = bookingServicePickerMarkup\('create', \[\]\);/);
+  assert.match(runtime, /function bookingCreateTicketsFromServices\(services\)/);
+  assert.match(runtime, /var createTickets = bookingCreateTicketsFromServices\(services\);/);
+  assert.match(runtime, /appointmentTicketUtils\.scheduleTickets\(createTickets, formatBookingCalendarDateTime\(start\)\)/);
+});
+
+test('POS New appointment services come from menu.json and render category chips', () => {
+  assert.match(runtime, /var APPOINTMENT_SERVICE_CATALOG_URL = '\.\.\/menu\/menu\.json';/);
+  assert.match(runtime, /appointmentServiceCatalogLoader\.load\(APPOINTMENT_SERVICE_CATALOG_URL\)/);
+  assert.match(runtime, /function bookingServicePickerCategoryChips\(categories, activeCategoryId\)/);
+  assert.match(runtime, /data-booking-service-category-chip="all"/);
+  assert.match(runtime, /data-booking-service-category-filter/);
 });
 
 test('POS Booking labels the appointment time field as Time', () => {
