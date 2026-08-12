@@ -4036,14 +4036,17 @@
       function ticketNeedsTechPicker(w) {
         return w && w.status === 'waiting' && !w.techId && !w.reqTech;
       }
-      function spotlightQueueTicket(wid) {
-        fSel = wid;
-        ticketsFilter = 'waiting';
-        activateTab('tickets');
+      function scrollQueueTicketIntoView(wid) {
         setTimeout(function () {
           var target = document.querySelector('[data-queue-ticket-id="' + wid + '"]');
           if (target && target.scrollIntoView) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
         }, 0);
+      }
+      function spotlightQueueTicket(wid) {
+        fSel = wid;
+        ticketsFilter = 'waiting';
+        activateTab('tickets');
+        scrollQueueTicketIntoView(wid);
       }
       function ticketTechHtml(w, variant) {
         var cls = variant === 'card' ? 'queue-card-tech-value' : 'queue-table-tech';
@@ -4543,8 +4546,10 @@
           if (dw) {
             dw.status = 'ready'; dw.readyAtMs = Date.now();
             wlog(dw, '✋ ' + techName(dw.techId) + ' finished — guest waiting to pay');
-            if (fSel === dw.id) fSel = null;
+            ticketsFilter = 'ready';
+            fSel = dw.id;
             renderFloor(); renderManagement();
+            scrollQueueTicketIntoView(dw.id);
             openQuickNote(dw.name);
           }
           return;

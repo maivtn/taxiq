@@ -281,6 +281,23 @@ test('Start button click is isolated from the change-tech modal route', () => {
   assert.doesNotMatch(startHandler, /openSwapTechModal/);
 });
 
+test('Done keeps the finished ticket visible and scrolls back to it after render', () => {
+  const scrollHelper = html.match(/function scrollQueueTicketIntoView\(wid\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const doneHandler = html.match(/\/\* ✋ done \*\/[\s\S]*?\/\* 💳 charge/)?.[0] || '';
+  const spotlight = html.match(/function spotlightQueueTicket\(wid\) \{[\s\S]*?\n      \}/)?.[0] || '';
+
+  assert.match(scrollHelper, /document\.querySelector\('\[data-queue-ticket-id="' \+ wid \+ '"\]'\)/);
+  assert.match(scrollHelper, /scrollIntoView\(\{ behavior: 'smooth', block: 'center' \}\)/);
+  assert.match(doneHandler, /dw\.status = 'ready'/);
+  assert.match(doneHandler, /ticketsFilter = 'ready'/);
+  assert.match(doneHandler, /fSel = dw\.id/);
+  assert.match(doneHandler, /renderFloor\(\); renderManagement\(\);/);
+  assert.match(doneHandler, /scrollQueueTicketIntoView\(dw\.id\)/);
+  assert.ok(doneHandler.indexOf("ticketsFilter = 'ready'") < doneHandler.indexOf('renderFloor(); renderManagement();'), 'expected ready filter before re-render');
+  assert.ok(doneHandler.indexOf('renderFloor(); renderManagement();') < doneHandler.indexOf('scrollQueueTicketIntoView(dw.id)'), 'expected scroll after re-render');
+  assert.match(spotlight, /scrollQueueTicketIntoView\(wid\)/);
+});
+
 test('Ready and service queue cards do not add a heavy border accent', () => {
   const readyRule = html.match(/\.queue-card\.rdy \{[^}]*\}/)?.[0] || '';
   const serviceRule = html.match(/\.queue-card\.svc \{[^}]*\}/)?.[0] || '';
@@ -493,7 +510,7 @@ test('Queue shows App/QR Anyone requests as unassigned tickets with an Assign te
   assert.match(spotlight, /fSel = wid/);
   assert.match(spotlight, /ticketsFilter = 'waiting'/);
   assert.match(spotlight, /activateTab\('tickets'\)/);
-  assert.match(spotlight, /scrollIntoView/);
+  assert.match(spotlight, /scrollQueueTicketIntoView\(wid\)/);
   assert.match(swapModal, /data-swap-tech-title-text/);
   assert.match(swapModal, /data-swap-tech-copy-text/);
   assert.match(openSwap, /w\.techId \? 'Swap technician' : 'Choose technician'/);
