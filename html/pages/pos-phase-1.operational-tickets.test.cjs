@@ -48,14 +48,17 @@ test('POS rehydrates operational tickets from checked-in bookings after every st
   assert.match(html, /reloadAppointmentSnapshot\(\);\s*\n\s*rehydrateOperationalTickets\(\);\s*\n\s*renderManagement\(\);/);
 });
 
-test('POS charges the whole order at once: every open ticket must be ready, turns credit each ticket\'s own tech', () => {
-  const pay = html.match(/\/\* 💳 charge the whole order[\s\S]*?\n {8}\}/)?.[0] || '';
-  assert.match(pay, /var groupTickets = WAITLIST\.filter\(function \(x\) \{ return x\.orderId === orderKey && ticketOpen\(x\); \}\);/);
-  assert.match(pay, /if \(groupTickets\.some\(function \(x\) \{ return x\.status !== 'ready'; \}\)\) \{/);
-  assert.match(pay, /SALES\.push\(\{ name: groupTickets\[0\]\.name, method: 'card', tip: tip, total: sub \+ tip, items: allItems, orderId: orderKey, bookingId: bookingId \}\);/);
-  assert.match(pay, /x\.status = 'completed';/);
-  assert.match(pay, /if \(tt\) \{ tt\.turns \+= 1;/);
-  assert.match(pay, /if \(bookingId\) checkBookingOrderComplete\(bookingId\);/);
+test('Queue Checkout opens the shared checkout page instead of charging in place', () => {
+  const checkoutHelper = html.match(/function openQueueCheckout\(orderKey\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const pay = html.match(/\/\* 💳 checkout the order[\s\S]*?\/\* ✕ remove/)?.[0] || '';
+
+  assert.match(checkoutHelper, /WAITLIST\.filter\(function \(x\) \{ return x\.orderId === orderKey && ticketOpen\(x\); \}\)/);
+  assert.match(checkoutHelper, /persistQueueCheckoutSnapshot\(snapshot\)/);
+  assert.match(checkoutHelper, /window\.location\.href = queueCheckoutUrl\(snapshot\)/);
+  assert.match(pay, /openQueueCheckout\(pw\.getAttribute\('data-wpay'\)\)/);
+  assert.doesNotMatch(pay, /SALES\.push/);
+  assert.doesNotMatch(pay, /x\.status = 'completed'/);
+  assert.doesNotMatch(pay, /No items on this order yet/);
 });
 
 test('Queue tickets with a service name hydrate billable line items before Checkout', () => {

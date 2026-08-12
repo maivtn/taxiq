@@ -321,7 +321,7 @@
     return {
       id: String(input.id || 'apt-' + Date.now()),
       salonId: SALON_ID,
-      customerName: String(input.customerName || input.name || '').trim(),
+      customerName: String(input.customerName || input.name || 'Guest').trim(),
       phone: String(input.phone || '').trim(),
       email: String(input.email || '').trim(),
       serviceIds: parts.ids,
@@ -344,9 +344,7 @@
   }
 
   function validateRecord(record) {
-    if (!record.customerName) return { code: 'customer-name-required', field: 'customerName', message: 'Enter the customer name.' };
     if (!record.phone) return { code: 'phone-required', field: 'phone', message: 'Enter the phone number.' };
-    if (!record.serviceIds.length && !record.serviceNames.length) return { code: 'service-required', field: 'services', message: 'Select at least one service.' };
     if (!record.startAt || !record.endAt) return { code: 'time-required', field: 'startAt', message: 'Pick a valid date and time.' };
     if (!Number.isFinite(new Date(record.startAt).getTime()) || !Number.isFinite(new Date(record.endAt).getTime())) {
       return { code: 'time-invalid', field: 'startAt', message: 'Pick a valid date and time.' };
@@ -508,7 +506,11 @@
 
   function create(input, storage, catalog, now) {
     var state = readState(storage, catalog);
-    var record = normalizeAppointment(input, catalog, now);
+    var createInput = Object.assign({}, input || {});
+    if (!createInput.startAt && !createInput.start && !(createInput.date && createInput.time)) {
+      createInput.startAt = new Date(now || Date.now());
+    }
+    var record = normalizeAppointment(createInput, catalog, now);
     if (findRecordIndex(state.records, record.id) >= 0) {
       return { ok: false, error: { code: 'duplicate-id', field: 'id', message: 'An appointment with this ID already exists.' } };
     }

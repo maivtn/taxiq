@@ -19,6 +19,35 @@ test('appointment storage is scoped to the Bitcoin Nail Bar salon', () => {
   assert.equal(store.STORAGE_KEY, 'nexora:appointments:v1:bitcoin-nail-bar-houston');
 });
 
+test('creates an appointment when phone is the only supplied form field', () => {
+  const target = storage();
+  const result = store.create({
+    id: 'apt-phone-only',
+    phone: '(832) 555-0100',
+  }, target, catalog, '2026-08-12T09:30:00.000Z');
+
+  assert.equal(result.ok, true);
+  assert.equal(result.record.customerName, 'Guest');
+  assert.deepEqual(result.record.serviceIds, []);
+  assert.deepEqual(result.record.serviceNames, []);
+  assert.equal(result.record.durationMin, 60);
+  assert.ok(Number.isFinite(new Date(result.record.startAt).getTime()));
+  assert.ok(new Date(result.record.endAt).getTime() > new Date(result.record.startAt).getTime());
+});
+
+test('still rejects an appointment without a phone', () => {
+  const result = store.create({
+    id: 'apt-no-phone',
+    customerName: 'Linh',
+    serviceNames: ['Pedicure'],
+    startAt: '2026-08-12T09:30:00',
+    endAt: '2026-08-12T10:30:00',
+  }, storage(), catalog, '2026-08-12T09:00:00.000Z');
+
+  assert.equal(result.ok, false);
+  assert.equal(result.error.code, 'phone-required');
+});
+
 test('normalizes a POS seed into canonical local date/time fields', () => {
   const record = store.normalizeAppointment({
     id: 'apt-1', name: 'Linh', phone: '(832) 555-0100', techId: 't2',

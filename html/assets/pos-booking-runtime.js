@@ -384,6 +384,7 @@ var DEFAULT_MAIN_TAB = 'booking';
     var bookingPanelServices = {};
     var bookingPanelExternalServices = [];
     var bookingPanelWarning = '';
+    var bookingPanelInvalidField = '';
     var bookingCreateTickets = [];
     var bookingCreateSelectedServiceId = '';
     var bookingCreateSelectedTechId = null;
@@ -538,6 +539,26 @@ var DEFAULT_MAIN_TAB = 'booking';
 
     function bookingPanelField(name) {
       return document.querySelector('[data-booking-panel-field="' + name + '"]');
+    }
+
+    function bookingPanelInvalidClass(name) {
+      return bookingPanelInvalidField === name ? ' is-invalid' : '';
+    }
+
+    function bookingPanelInvalidAttributes(name) {
+      return bookingPanelInvalidField === name ? ' aria-invalid="true"' : '';
+    }
+
+    function clearBookingPanelInvalidField(field) {
+      if (!field) return;
+      var name = field.getAttribute('data-booking-panel-field') || '';
+      if (bookingPanelInvalidField && bookingPanelInvalidField !== name) return;
+      field.classList.remove('is-invalid');
+      field.removeAttribute('aria-invalid');
+      bookingPanelInvalidField = '';
+      bookingPanelWarning = '';
+      var warning = document.querySelector('[data-booking-panel-warning]');
+      if (warning) warning.textContent = '';
     }
 
     function bookingPanelSelectedServiceDuration() {
@@ -725,10 +746,10 @@ var DEFAULT_MAIN_TAB = 'booking';
         '<div class="booking-panel-head"><div><div class="booking-panel-title"><i class="bi ' + (editing ? 'bi-card-text' : 'bi-calendar-plus') + ' booking-panel-title-icon" aria-hidden="true"></i><span>' + (editing ? 'Appointment details' : 'New appointment') + '</span></div>' + meta + '</div><button class="booking-panel-header-close booking-secondary-button icon-only" type="button" data-booking-panel-action="close" aria-label="Close appointment details"><i class="bi bi-x-lg" aria-hidden="true"></i></button></div>' +
         '<div class="booking-panel-form">' +
         '<label class="booking-create-field"><span class="booking-create-label">Customer</span><input class="booking-input" type="text" maxlength="60" data-booking-panel-field="name" value="' + escapeHtml(bookingPanelDraft.name) + '"></label>' +
-        '<label class="booking-create-field"><span class="booking-create-label">Phone</span><input class="booking-input" type="tel" maxlength="20" data-booking-panel-field="phone" value="' + escapeHtml(bookingPanelDraft.phone) + '"></label>' +
+        '<label class="booking-create-field"><span class="booking-create-label">Phone *</span><input class="booking-input' + bookingPanelInvalidClass('phone') + '" type="tel" maxlength="20" data-booking-panel-field="phone" value="' + escapeHtml(bookingPanelDraft.phone) + '"' + bookingPanelInvalidAttributes('phone') + ' required></label>' +
         '<div class="booking-create-field booking-panel-field-full"><span class="booking-create-label">Service — Technician</span>' + ticketPicker + '<div class="booking-ticket-list" data-booking-panel-ticket-list>' + bookingPanelTicketRowsMarkup() + '</div><div class="appointment-service-summary" aria-live="polite"><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total price:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-price>' + bookingMoney(panelServiceTotals.price) + '</strong></span><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total time:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-duration>' + panelServiceTotals.duration + ' min</strong></span></div></div>' +
-        '<div class="booking-panel-form-grid"><label class="booking-create-field"><span class="booking-create-label">Date</span><input class="booking-input" type="date" data-booking-panel-field="date" value="' + escapeHtml(bookingPanelDraft.date) + '"></label>' +
-        '<label class="booking-create-field"><span class="booking-create-label">Time</span><input class="booking-input" type="time" step="900" data-booking-panel-field="time" value="' + escapeHtml(bookingPanelDraft.time) + '"></label></div>' +
+        '<div class="booking-panel-form-grid"><label class="booking-create-field"><span class="booking-create-label">Date</span><input class="booking-input' + bookingPanelInvalidClass('date') + '" type="date" data-booking-panel-field="date" value="' + escapeHtml(bookingPanelDraft.date) + '"' + bookingPanelInvalidAttributes('date') + '></label>' +
+        '<label class="booking-create-field"><span class="booking-create-label">Time</span><input class="booking-input' + bookingPanelInvalidClass('time') + '" type="time" step="900" data-booking-panel-field="time" value="' + escapeHtml(bookingPanelDraft.time) + '"' + bookingPanelInvalidAttributes('time') + '></label></div>' +
         '<label class="booking-create-field booking-panel-field-full"><span class="booking-create-label">Status</span><select class="booking-select" data-booking-panel-field="status">' + statusOptions + '</select></label>' +
         '<label class="booking-create-field"><span class="booking-create-label">Note</span><textarea class="booking-input" maxlength="240" data-booking-panel-field="note">' + escapeHtml(bookingPanelDraft.note || '') + '</textarea></label>' +
         '<div class="booking-create-error" data-booking-panel-warning role="alert" aria-live="polite">' + escapeHtml(bookingPanelWarning) + '</div>' +
@@ -753,6 +774,7 @@ var DEFAULT_MAIN_TAB = 'booking';
       bookingPanelAppointmentId = record.id;
       bookingPanelMode = 'edit';
       bookingPanelWarning = '';
+      bookingPanelInvalidField = '';
       bookingPanelDraft = bookingPanelDraftFromRecord(record);
       renderBookingAppointmentPanel();
     }
@@ -763,6 +785,7 @@ var DEFAULT_MAIN_TAB = 'booking';
       bookingPanelAppointmentId = null;
       bookingPanelMode = 'new';
       bookingPanelWarning = '';
+      bookingPanelInvalidField = '';
       bookingPanelTickets = [];
       bookingPanelSelectedServiceId = '';
       bookingPanelSelectedTechId = null;
@@ -782,14 +805,18 @@ var DEFAULT_MAIN_TAB = 'booking';
       bookingPanelAppointmentId = null;
       bookingPanelDraft = null;
       bookingPanelWarning = '';
+      bookingPanelInvalidField = '';
       if (bookingTeamCalendar) bookingTeamCalendar.clearSelection();
       renderBookingAppointmentPanel();
       syncBookingAppointmentPanelPresentation();
     }
 
-    function bookingPanelSetWarning(message) {
+    function bookingPanelSetWarning(message, fieldName) {
       bookingPanelWarning = message || '';
+      bookingPanelInvalidField = message && fieldName ? fieldName : '';
       renderBookingAppointmentPanel();
+      var field = bookingPanelInvalidField ? bookingPanelField(bookingPanelInvalidField) : null;
+      if (field && typeof field.focus === 'function') field.focus();
     }
 
     function bookingPanelRefreshAfterWrite(record) {
@@ -806,13 +833,14 @@ var DEFAULT_MAIN_TAB = 'booking';
     function bookingPanelCanonicalPayload() {
       bookingPanelSyncDraft();
       var services = bookingPanelTickets.map(function(ticket) { return ticket.serviceName; });
-      if (!bookingPanelDraft.phone) return { error: 'Enter the phone number.' };
-      if (!bookingPanelDraft.name) return { error: 'Enter the customer name.' };
-      if (!bookingPanelTickets.length) return { error: 'Add at least one service.' };
-      if (!bookingPanelDraft.date || !bookingPanelDraft.time) return { error: 'Pick a valid date and start time.' };
+      var defaultStart = new Date();
+      var date = bookingPanelDraft.date || bookingCalendarInputDate(defaultStart);
+      var time = bookingPanelDraft.time || bookingCalendarInputTime(defaultStart);
+      bookingPanelDraft.name = bookingPanelDraft.name || 'Guest';
+      if (!bookingPanelDraft.phone) return { error: 'Enter the phone number.', field: 'phone' };
 
-      var start = new Date(bookingPanelDraft.date + 'T' + bookingPanelDraft.time + ':00');
-      if (!Number.isFinite(start.getTime())) return { error: 'Pick a valid date and start time.' };
+      var start = new Date(date + 'T' + time + ':00');
+      if (!Number.isFinite(start.getTime())) return { error: 'Pick a valid date and start time.', field: 'date' };
       var scheduledTickets = appointmentTicketUtils && appointmentTicketUtils.scheduleTickets
         ? appointmentTicketUtils.scheduleTickets(bookingPanelTickets, formatBookingCalendarDateTime(start))
         : bookingPanelTickets;
@@ -855,13 +883,14 @@ var DEFAULT_MAIN_TAB = 'booking';
 
     function saveBookingAppointmentPanel() {
       var prepared = bookingPanelCanonicalPayload();
-      if (prepared.error) { bookingPanelSetWarning(prepared.error); return; }
+      if (prepared.error) { bookingPanelSetWarning(prepared.error, prepared.field); return; }
       var result = bookingPanelMode === 'edit'
         ? appointmentStore.update(bookingPanelAppointmentId, prepared.payload, null, catalog)
         : appointmentStore.create(prepared.payload, null, catalog);
-      if (!result.ok) { bookingPanelSetWarning(result.error.message); return; }
+      if (!result.ok) { bookingPanelSetWarning(result.error.message, result.error.code === 'phone-required' ? 'phone' : ''); return; }
       bookingCalendarDate = prepared.payload.startAt.slice(0, 10);
       bookingPanelWarning = '';
+      bookingPanelInvalidField = '';
       bookingPanelRefreshAfterWrite(result.record);
     }
 
@@ -870,6 +899,7 @@ var DEFAULT_MAIN_TAB = 'booking';
       var result = appointmentStore.update(bookingPanelAppointmentId, appointmentStore.mapBookingStatus(status), null, catalog);
       if (!result.ok) { bookingPanelSetWarning(result.error.message); return; }
       bookingPanelWarning = '';
+      bookingPanelInvalidField = '';
       bookingPanelRefreshAfterWrite(result.record);
     }
 
@@ -878,6 +908,7 @@ var DEFAULT_MAIN_TAB = 'booking';
       var result = appointmentStore.update(bookingPanelAppointmentId, { smsStatus: 'sent' }, null, catalog);
       if (!result.ok) { bookingPanelSetWarning(result.error.message); return; }
       bookingPanelWarning = '';
+      bookingPanelInvalidField = '';
       bookingPanelRefreshAfterWrite(result.record);
     }
 
@@ -1146,9 +1177,34 @@ var DEFAULT_MAIN_TAB = 'booking';
       return document.querySelector('[data-booking-create-field="' + name + '"]');
     }
 
-    function setBookingCreateError(message) {
+    function clearBookingCreateInvalidField(field) {
+      if (!field) return;
+      field.classList.remove('is-invalid');
+      field.removeAttribute('aria-invalid');
+      var shell = field.closest('.phone-input-shell');
+      if (shell) shell.classList.remove('is-invalid');
+    }
+
+    function clearBookingCreateInvalidFields() {
+      document.querySelectorAll('[data-booking-create-field]').forEach(clearBookingCreateInvalidField);
+    }
+
+    function setBookingCreateFieldInvalid(name, invalid) {
+      var field = bookingCreateField(name);
+      if (!field) return;
+      field.classList.toggle('is-invalid', invalid);
+      if (invalid) field.setAttribute('aria-invalid', 'true');
+      else field.removeAttribute('aria-invalid');
+      var shell = field.closest('.phone-input-shell');
+      if (shell) shell.classList.toggle('is-invalid', invalid);
+      if (invalid && typeof field.focus === 'function') field.focus();
+    }
+
+    function setBookingCreateError(message, fieldName) {
       var error = document.querySelector('[data-booking-create-error]');
       if (error) error.textContent = message || '';
+      clearBookingCreateInvalidFields();
+      if (message && fieldName) setBookingCreateFieldInvalid(fieldName, true);
     }
 
     function setBookingCreateServiceSelected(button, selected) {
@@ -1359,7 +1415,7 @@ var DEFAULT_MAIN_TAB = 'booking';
 
       modal.hidden = false;
       document.body.style.overflow = 'hidden';
-      if (name) name.focus();
+      if (phone) phone.focus();
     }
 
     function closeBookingCreateModal() {
@@ -1518,23 +1574,21 @@ var DEFAULT_MAIN_TAB = 'booking';
         var field = bookingCreateField(name);
         return field ? field.value : '';
       };
-      var name = get('name').trim();
+      var defaultStart = new Date();
+      var name = get('name').trim() || 'Guest';
       var services = getBookingCreateServices();
-      var date = get('date');
-      var time = get('time');
+      var date = get('date') || bookingCalendarInputDate(defaultStart);
+      var time = get('time') || bookingCalendarInputTime(defaultStart);
       var phone = get('phone').trim();
       var createTickets = bookingCreateTicketsFromServices(services);
       var duration = (appointmentTicketUtils && appointmentTicketUtils.ticketTotals ? appointmentTicketUtils.ticketTotals(createTickets).duration : 0) || bookingServiceDurationMinutes(services) || 60;
       var status = get('status') || 'new';
       var note = get('note').trim();
 
-      if (!phone) { setBookingCreateError('Enter the phone number.'); return; }
-      if (!name) { setBookingCreateError('Enter the customer name.'); return; }
-      if (!services.length) { setBookingCreateError('Select at least one service.'); return; }
-      if (!date || !time) { setBookingCreateError('Pick a valid date and start time.'); return; }
+      if (!phone) { setBookingCreateError('Enter the phone number.', 'phone'); return; }
 
       var start = new Date(date + 'T' + time + ':00');
-      if (!Number.isFinite(start.getTime())) { setBookingCreateError('Pick a valid date and start time.'); return; }
+      if (!Number.isFinite(start.getTime())) { setBookingCreateError('Pick a valid date and start time.', 'date'); return; }
       var scheduledTickets = appointmentTicketUtils && appointmentTicketUtils.scheduleTickets ? appointmentTicketUtils.scheduleTickets(createTickets, formatBookingCalendarDateTime(start)) : createTickets;
       var end = new Date(start.getTime() + duration * 60000);
       scheduledTickets.forEach(function(ticket) { var ticketEnd = new Date(ticket.endAt); if (ticketEnd > end) end = ticketEnd; });
@@ -1564,7 +1618,7 @@ var DEFAULT_MAIN_TAB = 'booking';
         note: note,
         source: 'manual-add'
       }, null, catalog);
-      if (!result.ok) { setBookingCreateError(result.error.message); return; }
+      if (!result.ok) { setBookingCreateError(result.error.message, result.error.code === 'phone-required' ? 'phone' : ''); return; }
 
       bookingCalendarDate = date;
       closeBookingCreateModal();
@@ -2935,6 +2989,11 @@ function bookingCardStatusIcon(item) {
     });
 
     document.addEventListener('change', function(event) {
+      var createField = event.target.closest('[data-booking-create-field]');
+      if (createField) clearBookingCreateInvalidField(createField);
+      var panelField = event.target.closest('[data-booking-panel-field]');
+      if (panelField) clearBookingPanelInvalidField(panelField);
+
       if (event.target.matches('[data-tech-service-all]')) {
         document.querySelectorAll('[data-tech-service]').forEach(function(option) {
           option.checked = event.target.checked;
@@ -3050,7 +3109,7 @@ function bookingCardStatusIcon(item) {
         if (!option) { bookingPanelSetWarning('Search and select a service first.'); return; }
         if (bookingPanelTickets.some(function(ticket) { return String(ticket.serviceId) === String(option.serviceId); })) { bookingPanelSetWarning('This service is already in the order.'); return; }
         bookingPanelTickets.push({ id: 'ticket-' + (bookingPanelTickets.length + 1), serviceId: option.serviceId, serviceName: option.name, price: option.price, durationMin: option.duration, technicianId: bookingPanelSelectedTechId, technicianName: bookingPanelSelectedTechName, status: bookingPanelDraft ? bookingPanelDraft.status : 'confirmed' });
-        bookingPanelSelectedServiceId = ''; bookingPanelSelectedTechId = null; bookingPanelSelectedTechName = 'Anyone'; bookingPanelWarning = '';
+        bookingPanelSelectedServiceId = ''; bookingPanelSelectedTechId = null; bookingPanelSelectedTechName = 'Anyone'; bookingPanelWarning = ''; bookingPanelInvalidField = '';
         renderBookingAppointmentPanel();
         return;
       }
@@ -3132,6 +3191,7 @@ function bookingCardStatusIcon(item) {
         if (bookingPanelServices[serviceName]) delete bookingPanelServices[serviceName];
         else bookingPanelServices[serviceName] = 1;
         bookingPanelWarning = '';
+        bookingPanelInvalidField = '';
         renderBookingAppointmentPanel();
         return;
       }
@@ -3296,6 +3356,10 @@ function bookingCardStatusIcon(item) {
     });
 
     document.addEventListener('input', function(event) {
+      var createField = event.target.closest('[data-booking-create-field]');
+      if (createField) clearBookingCreateInvalidField(createField);
+      var panelField = event.target.closest('[data-booking-panel-field]');
+      if (panelField) clearBookingPanelInvalidField(panelField);
       var createTicketServiceSearch = event.target.closest('[data-booking-create-ticket-service-search]');
       if (createTicketServiceSearch) {
         filterBookingCreateTicketServices(createTicketServiceSearch);

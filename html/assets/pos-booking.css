@@ -1262,6 +1262,28 @@
       box-shadow: 0 0 0 2px rgba(70, 72, 216, 0.16);
     }
 
+    .booking-select.is-invalid,
+    .booking-input.is-invalid,
+    .booking-select[aria-invalid="true"],
+    .booking-input[aria-invalid="true"],
+    .phone-input-shell.is-invalid {
+      border-color: #dc2626;
+      box-shadow: 0 0 0 2px rgba(220, 38, 38, 0.14);
+    }
+
+    .booking-select.is-invalid:focus,
+    .booking-input.is-invalid:focus,
+    .booking-select[aria-invalid="true"]:focus,
+    .booking-input[aria-invalid="true"]:focus,
+    .phone-input-shell.is-invalid:focus-within {
+      border-color: #dc2626;
+      box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.18);
+    }
+
+    .phone-input-shell.is-invalid .phone-country-select {
+      border-right-color: rgba(220, 38, 38, 0.32);
+    }
+
     .booking-clear-button {
       align-self: end;
       height: 40px;

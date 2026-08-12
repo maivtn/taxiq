@@ -8,6 +8,8 @@
 
   var params = new URLSearchParams(window.location.search);
   var bookingId = params.get('bookingId') || '';
+  var orderId = params.get('orderId') || '';
+  var QUEUE_CHECKOUT_STORAGE_PREFIX = 'nexora:queue-checkout:v1:';
 
   var root = document.querySelector('[data-checkout-root]');
   var empty = document.querySelector('[data-checkout-empty]');
@@ -25,7 +27,33 @@
     });
   }
 
+  function queueCheckoutStorageKey(value) {
+    return QUEUE_CHECKOUT_STORAGE_PREFIX + String(value || '');
+  }
+
+  function readQueueCheckoutSnapshot(value) {
+    if (!value) return null;
+    try {
+      var raw = window.sessionStorage && window.sessionStorage.getItem(queueCheckoutStorageKey(value));
+      var parsed = raw ? JSON.parse(raw) : null;
+      if (!parsed || String(parsed.orderId || '') !== String(value)) return null;
+      parsed.metadata = Object.assign({ queueCheckout: true, orderId: value }, parsed.metadata || {});
+      return parsed;
+    } catch (err) {
+      return null;
+    }
+  }
+
+  function writeQueueCheckoutSnapshot(record) {
+    if (!record || !record.orderId) return;
+    try {
+      window.sessionStorage.setItem(queueCheckoutStorageKey(record.orderId), JSON.stringify(record));
+    } catch (err) {}
+  }
+
   function findRecord() {
+    var queueRecord = readQueueCheckoutSnapshot(orderId);
+    if (queueRecord) return queueRecord;
     return appointmentStore.loadAll(null, catalog).find(function (r) {
       return String(r.id) === String(bookingId);
     }) || null;
@@ -33,7 +61,7 @@
 
   var record = findRecord();
 
-  if (!bookingId || !record) {
+  if ((!bookingId && !orderId) || !record) {
     if (root) root.hidden = true;
     if (empty) empty.hidden = false;
     return;
@@ -70,6 +98,7 @@
   }
 
   var alreadyCheckedOut = Boolean(record.metadata && record.metadata.checkedOut);
+  var isQueueCheckout = Boolean(record.metadata && record.metadata.queueCheckout);
   var tipState = { mode: 'fixed', value: 15 };
   var discountState = null;
   var paymentMethods = ['Card', 'Cash', 'Gift Card', 'Split pay'];
@@ -270,19 +299,31 @@
     var tip = computeTip();
     var discount = computeDiscount();
     var total = subtotal() - discount + tip;
+    var checkoutMetadata = {
+      checkedOut: true,
+      checkoutTotal: total,
+      checkoutTip: tip,
+      checkoutDiscount: discount,
+      checkoutMethod: selectedMethod,
+      checkoutAt: new Date().toISOString()
+    };
     if (persist) {
-      var result = appointmentStore.update(record.id, {
-        metadata: Object.assign({}, record.metadata, {
-          checkedOut: true,
-          checkoutTotal: total,
-          checkoutTip: tip,
-          checkoutDiscount: discount,
-          checkoutMethod: selectedMethod,
-          checkoutAt: new Date().toISOString()
-        })
-      }, null, catalog);
-      if (!result.ok) return;
-      record = result.record;
+      if (isQueueCheckout) {
+        record = Object.assign({}, record, { metadata: Object.assign({}, record.metadata, checkoutMetadata) });
+        writeQueueCheckoutSnapshot(record);
+        if (record.bookingId) {
+          var booking = appointmentStore.loadAll(null, catalog).find(function (r) { return String(r.id) === String(record.bookingId); });
+          appointmentStore.update(record.bookingId, {
+            metadata: Object.assign({}, booking && booking.metadata, checkoutMetadata)
+          }, null, catalog);
+        }
+      } else {
+        var result = appointmentStore.update(record.id, {
+          metadata: Object.assign({}, record.metadata, checkoutMetadata)
+        }, null, catalog);
+        if (!result.ok) return;
+        record = result.record;
+      }
     }
     var chargeButton = document.querySelector('[data-checkout-charge]');
     if (chargeButton) {

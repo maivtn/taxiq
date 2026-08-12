@@ -2134,11 +2134,11 @@
                           </span>
                         </label>
                         <label class="booking-create-field">
-                          <span class="booking-create-label">Customer name *</span>
+                          <span class="booking-create-label">Customer name</span>
                           <input class="booking-input" type="text" maxlength="60" data-booking-create-field="name" placeholder="Enter customer name" autocomplete="name">
                         </label>
                         <label class="booking-create-field is-full">
-                          <span class="booking-create-label">Services * <span class="booking-create-hint">Tap to pick several</span></span>
+                          <span class="booking-create-label">Services <span class="booking-create-hint">Tap to pick several</span></span>
                           <div class="booking-service-chips" data-booking-create-field="service" role="group" aria-label="Select one or more services"></div>
                           <div class="booking-selected-services" data-booking-create-selected-services aria-live="polite" hidden></div>
                           <div class="booking-service-summary" aria-live="polite">
@@ -2166,11 +2166,11 @@
                           </select>
                         </label>
                         <label class="booking-create-field">
-                          <span class="booking-create-label">Date *</span>
+                          <span class="booking-create-label">Date</span>
                           <input class="booking-input" type="date" data-booking-create-field="date">
                         </label>
                         <label class="booking-create-field">
-                          <span class="booking-create-label">Time *</span>
+                          <span class="booking-create-label">Time</span>
                           <input class="booking-input" type="time" step="900" data-booking-create-field="time">
                         </label>
                         <label class="booking-create-field is-full">
@@ -2859,6 +2859,75 @@
           byKey[key].tickets.push(w);
         });
         return order;
+      }
+      var QUEUE_CHECKOUT_STORAGE_PREFIX = 'nexora:queue-checkout:v1:';
+      function queueCheckoutStorageKey(orderId) {
+        return QUEUE_CHECKOUT_STORAGE_PREFIX + String(orderId || '');
+      }
+      function queueCheckoutSnapshot(orderKey, groupTickets) {
+        var first = groupTickets[0] || {};
+        var bookingTicket = groupTickets.find(function (w) { return !!w.bookingId; }) || null;
+        var techTicket = groupTickets.find(function (w) { return !!(w.techId || w.reqTech); }) || null;
+        var serviceDetails = [];
+        groupTickets.forEach(function (w) {
+          var billItems = (Array.isArray(w.items) && w.items.length) ? w.items : queueItemsForService(w.svc, w.techId || w.reqTech || null);
+          if (!billItems.length && w.svc) billItems = [{ name: posServiceDisplayName(w.svc), price: 0, techId: w.techId || w.reqTech || null, cat: '' }];
+          billItems.forEach(function (item) {
+            var tid = item.techId || w.techId || w.reqTech || null;
+            serviceDetails.push({
+              name: item.name || w.svc || 'Service',
+              price: Number(item.price) || 0,
+              technicianId: tid,
+              technicianName: tid ? techName(tid) : 'Anyone',
+              serviceTicketId: w.serviceTicketId || null,
+              durationMin: w.durationMin || null,
+              category: item.cat || ''
+            });
+          });
+        });
+        return {
+          id: 'queue-' + String(orderKey || first.id || Date.now()),
+          orderId: orderKey,
+          bookingId: bookingTicket ? bookingTicket.bookingId : null,
+          customerName: first.name || 'Walk-in',
+          name: first.name || 'Walk-in',
+          phone: first.phone || '',
+          customerGroup: first.customerGroup || '',
+          startAt: first.atMs ? new Date(first.atMs).toISOString() : new Date().toISOString(),
+          technicianName: techTicket ? techName(techTicket.techId || techTicket.reqTech) : 'Anyone',
+          serviceDetails: serviceDetails,
+          tickets: groupTickets.map(function (w) {
+            return {
+              id: w.serviceTicketId || ('queue-ticket-' + w.id),
+              serviceName: w.svc || '',
+              price: (w.items && w.items[0] && Number(w.items[0].price)) || 0,
+              technicianId: w.techId || w.reqTech || null,
+              technicianName: (w.techId || w.reqTech) ? techName(w.techId || w.reqTech) : 'Anyone',
+              status: w.status,
+              queueTicketId: w.id
+            };
+          }),
+          metadata: { queueCheckout: true, orderId: orderKey, checkedOut: false }
+        };
+      }
+      function persistQueueCheckoutSnapshot(snapshot) {
+        try {
+          window.sessionStorage.setItem(queueCheckoutStorageKey(snapshot.orderId), JSON.stringify(snapshot));
+        } catch (err) {}
+      }
+      function queueCheckoutUrl(snapshot) {
+        var params = new URLSearchParams();
+        params.set('orderId', snapshot.orderId);
+        if (snapshot.bookingId) params.set('bookingId', snapshot.bookingId);
+        params.set('source', 'queue');
+        return 'pos-checkout.html?' + params.toString();
+      }
+      function openQueueCheckout(orderKey) {
+        var groupTickets = WAITLIST.filter(function (x) { return x.orderId === orderKey && ticketOpen(x); });
+        if (!groupTickets.length) return;
+        var snapshot = queueCheckoutSnapshot(orderKey, groupTickets);
+        persistQueueCheckoutSnapshot(snapshot);
+        window.location.href = queueCheckoutUrl(snapshot);
       }
       // Builds one operational ticket for one booking service ticket — shared by check-in and rehydrate
       // so both paths create the exact same shape and never diverge.
@@ -4583,33 +4652,10 @@
           }
           return;
         }
-        /* 💳 charge the whole order — one bill per orderId; every open ticket on it must be ready first */
+        /* 💳 checkout the order — same destination as Booking checkout, seeded with Queue data */
         var pw = e.target.closest('[data-wpay]');
         if (pw) {
-          var orderKey = pw.getAttribute('data-wpay');
-          var groupTickets = WAITLIST.filter(function (x) { return x.orderId === orderKey && ticketOpen(x); });
-          if (!groupTickets.length) return;
-          if (groupTickets.some(function (x) { return x.status !== 'ready'; })) {
-            toast('Every service on this order must be ready before charging', 'info');
-            return;
-          }
-          var allItems = groupTickets.reduce(function (acc, x) { return acc.concat(x.items || []); }, []);
-          if (!allItems.length) { toast('No items on this order yet — add them at checkout', 'info'); return; }
-          var sub = allItems.reduce(function (s, i) { return s + i.price; }, 0);
-          var tip = Math.round(sub * 0.2 * 100) / 100;
-          var bookingId = groupTickets[0].bookingId || null;
-          SALES.push({ name: groupTickets[0].name, method: 'card', tip: tip, total: sub + tip, items: allItems, orderId: orderKey, bookingId: bookingId });
-          var turnedTechs = [];
-          groupTickets.forEach(function (x) {
-            x.status = 'completed';   // the turn counts on payment, not on assignment — credited per ticket's own tech
-            var tt = techById(x.techId);
-            if (tt) { tt.turns += 1; if (turnedTechs.indexOf(tt.name) === -1) turnedTechs.push(tt.name); }
-          });
-          if (fSel != null && groupTickets.some(function (x) { return x.id === fSel; })) fSel = null;
-          if (bookingId) checkBookingOrderComplete(bookingId);
-          followQueueTicketAfterAction(groupTickets[0], 'completed');
-          renderClock();
-          toast('Charged ' + money(sub + tip) + (turnedTechs.length ? ' · turn +1 for ' + turnedTechs.join(', ') : ''));
+          openQueueCheckout(pw.getAttribute('data-wpay'));
           return;
         }
         /* ✕ remove — marks the ticket cancelled instead of deleting it, so a rehydrate never recreates it */

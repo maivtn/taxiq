@@ -33,7 +33,9 @@ function element(overrides) {
   }, overrides || {});
 }
 
-function runCheckout(record) {
+function runCheckout(record, options) {
+  options = options || {};
+  const storage = new Map(options.sessionEntries || []);
   const selectors = new Map([
     ['[data-checkout-root]', element()],
     ['[data-checkout-empty]', element()],
@@ -62,7 +64,11 @@ function runCheckout(record) {
     addEventListener() {},
   };
   const window = {
-    location: { search: '?bookingId=booking-1' },
+    location: { search: options.search || '?bookingId=booking-1' },
+    sessionStorage: {
+      getItem(key) { return storage.has(key) ? storage.get(key) : null; },
+      setItem(key, value) { storage.set(key, String(value)); },
+    },
     NEXORA_SALON_DATA: {
       loadCatalog() {
         return {
@@ -75,7 +81,7 @@ function runCheckout(record) {
       },
     },
     NEXORA_APPOINTMENTS_STORE: {
-      loadAll() { return [record]; },
+      loadAll() { return record ? [record] : []; },
       update(id, patch) { return { ok: true, record: Object.assign({}, record, patch) }; },
     },
   };
@@ -91,11 +97,11 @@ function runCheckout(record) {
     Array,
   });
 
-  return selectors;
+  return { selectors, storage };
 }
 
 test('checkout formats service prices and totals with comma thousand separators', () => {
-  const selectors = runCheckout({
+  const { selectors } = runCheckout({
     id: 'booking-1',
     customerName: 'Sarah Lee',
     technicianName: 'Lan T.',
@@ -110,4 +116,31 @@ test('checkout formats service prices and totals with comma thousand separators'
   assert.equal(selectors.get('[data-checkout-total]').textContent, '$1,249.56');
   assert.equal(selectors.get('[data-checkout-charge]').textContent, 'Charge $1,249.56');
   assert.match(selectors.get('[data-checkout-add-service-select]').innerHTML, /Deluxe package — \$1,234\.56/);
+});
+
+test('checkout opens Queue order snapshots from orderId links', () => {
+  const snapshot = {
+    id: 'queue-walkin-9',
+    orderId: 'walkin-9',
+    customerName: 'Lisa Truong',
+    phone: '(281) 903-5517',
+    startAt: '2026-08-12T13:32:00',
+    technicianName: 'Kim',
+    serviceDetails: [
+      { name: 'Acrylic — Full Set', price: 70, technicianName: 'Kim' },
+    ],
+    metadata: { queueCheckout: true },
+  };
+  const { selectors } = runCheckout(null, {
+    search: '?orderId=walkin-9&source=queue',
+    sessionEntries: [['nexora:queue-checkout:v1:walkin-9', JSON.stringify(snapshot)]],
+  });
+
+  assert.equal(selectors.get('[data-checkout-root]').hidden, false);
+  assert.equal(selectors.get('[data-checkout-empty]').hidden, true);
+  assert.match(selectors.get('[data-checkout-meta]').textContent, /Lisa Truong/);
+  assert.match(selectors.get('[data-checkout-lines]').innerHTML, /Acrylic — Full Set/);
+  assert.match(selectors.get('[data-checkout-lines]').innerHTML, /Kim/);
+  assert.equal(selectors.get('[data-checkout-subtotal]').textContent, '$70.00');
+  assert.equal(selectors.get('[data-checkout-total]').textContent, '$85.00');
 });

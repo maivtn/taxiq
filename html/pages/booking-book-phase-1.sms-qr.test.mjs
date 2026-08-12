@@ -460,14 +460,60 @@ test('keeps technician and status together before the date and time fields', () 
   assert.ok(fields[0] < fields[1] && fields[1] < fields[2] && fields[2] < fields[3]);
 });
 
-test('puts required phone before customer name in New appointment', () => {
+test('requires only phone in New appointment', () => {
   const html = source();
-  const phoneIndex = html.indexOf('data-booking-create-field="phone"');
-  const nameIndex = html.indexOf('data-booking-create-field="name"');
+  const createModal = html.match(/<div class="booking-create-modal" data-booking-create-modal[\s\S]*?<div class="booking-create-error"/)?.[0] || '';
+  const saveHandler = html.match(/function saveBookingFromCalendar\(\) \{[\s\S]*?\n    \}\n\n    function/)?.[0] || '';
+  const phoneIndex = createModal.indexOf('data-booking-create-field="phone"');
+  const nameIndex = createModal.indexOf('data-booking-create-field="name"');
 
   assert.ok(phoneIndex >= 0 && nameIndex >= 0 && phoneIndex < nameIndex);
-  assert.match(html, /<span class="booking-create-label">Phone \*<\/span>[\s\S]*?data-booking-create-field="phone"[^>]*required/);
-  assert.match(html, /if \(!phone\) \{ setBookingCreateError\('Enter the phone number\.'\); return; \}/);
+  assert.match(createModal, /<span class="booking-create-label">Phone \*<\/span>[\s\S]*?data-booking-create-field="phone"[^>]*required/);
+  assert.match(createModal, /<span class="booking-create-label">Customer name<\/span>/);
+  assert.match(createModal, /<span class="booking-create-label">Services <span class="booking-create-hint">/);
+  assert.match(createModal, /<span class="booking-create-label">Date<\/span>/);
+  assert.match(createModal, /<span class="booking-create-label">Time<\/span>/);
+  assert.equal((createModal.match(/\srequired(?=[\s>])/g) || []).length, 1);
+  assert.match(saveHandler, /if \(!phone\) \{ setBookingCreateError\('Enter the phone number\.', 'phone'\); return; \}/);
+  assert.doesNotMatch(saveHandler, /if \(!name\)|if \(!services\.length\)|if \(!date \|\| !time\)/);
+  assert.match(saveHandler, /var name = get\('name'\)\.trim\(\) \|\| 'Guest';/);
+});
+
+test('requires only phone in the responsive New appointment panel', () => {
+  const html = source();
+  const panelRenderer = html.match(/function renderBookingAppointmentPanel\(\) \{[\s\S]*?\n    \}\n\n    (?:window\.addEventListener|function openBookingAppointmentPanel)/)?.[0] || '';
+  const payloadBuilder = html.match(/function bookingPanelCanonicalPayload\(\) \{[\s\S]*?\n    \}\n\n    function saveBookingAppointmentPanel/)?.[0] || '';
+
+  assert.match(panelRenderer, /booking-create-label">Phone \*<\/span><input[^>]*data-booking-panel-field="phone"[^>]*required/);
+  assert.match(panelRenderer, /booking-create-label">Customer<\/span><input[^>]*data-booking-panel-field="name"/);
+  assert.match(payloadBuilder, /if \(!bookingPanelDraft\.phone\) return \{ error: 'Enter the phone number\.', field: 'phone' \};/);
+  assert.doesNotMatch(payloadBuilder, /if \(!bookingPanelDraft\.name\)|if \(!bookingPanelTickets\.length\)|if \(!bookingPanelDraft\.date \|\| !bookingPanelDraft\.time\)/);
+});
+
+test('New appointment shows a red invalid border on failed phone validation', () => {
+  const html = source();
+  const createValidation = html.match(/function setBookingCreateFieldInvalid\([\s\S]*?\n    \}\n\n    function setBookingCreateError/)?.[0] || '';
+  const saveHandler = html.match(/function saveBookingFromCalendar\(\) \{[\s\S]*?\n    \}\n\n    function initBookingCalendar/)?.[0] || '';
+  const inputHandler = html.match(/document\.addEventListener\('input', function\(event\) \{[\s\S]*?\n    \}\);/)?.[0] || '';
+
+  assert.match(html, /\.booking-input\.is-invalid[\s\S]*?\.phone-input-shell\.is-invalid\s*\{[\s\S]*?border-color:\s*#dc2626/);
+  assert.match(createValidation, /field\.classList\.toggle\('is-invalid', invalid\)/);
+  assert.match(createValidation, /field\.setAttribute\('aria-invalid', 'true'\)/);
+  assert.match(createValidation, /shell\.classList\.toggle\('is-invalid', invalid\)/);
+  assert.match(saveHandler, /if \(!phone\) \{ setBookingCreateError\('Enter the phone number\.', 'phone'\); return; \}/);
+  assert.match(inputHandler, /clearBookingCreateInvalidField\(createField\)/);
+});
+
+test('responsive New appointment panel keeps the invalid phone border after rerendering its warning', () => {
+  const html = source();
+  const panelRenderer = html.match(/function renderBookingAppointmentPanel\(\) \{[\s\S]*?\n    \}\n\n    (?:window\.addEventListener|function openBookingAppointmentPanel)/)?.[0] || '';
+  const payloadBuilder = html.match(/function bookingPanelCanonicalPayload\(\) \{[\s\S]*?\n    \}\n\n    function saveBookingAppointmentPanel/)?.[0] || '';
+  const savePanel = html.match(/function saveBookingAppointmentPanel\(\) \{[\s\S]*?\n    \}\n\n    function setBookingPanelStatus/)?.[0] || '';
+
+  assert.match(panelRenderer, /class="booking-input' \+ bookingPanelInvalidClass\('phone'\) \+ '"/);
+  assert.match(panelRenderer, /data-booking-panel-field="phone"[\s\S]{0,120}bookingPanelInvalidAttributes\('phone'\)[\s\S]{0,40}required/);
+  assert.match(payloadBuilder, /if \(!bookingPanelDraft\.phone\) return \{ error: 'Enter the phone number\.', field: 'phone' \};/);
+  assert.match(savePanel, /bookingPanelSetWarning\(prepared\.error, prepared\.field\)/);
 });
 
 test('uses the shared phone mask for New appointment phone', () => {
