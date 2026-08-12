@@ -2774,6 +2774,25 @@
       }
 
       function catById(id) { for (var i = 0; i < MENU.length; i++) if (MENU[i].id === id) return MENU[i]; return null; }
+      function queueServiceForName(svc) {
+        return salonData.findService(salonCatalog, svc);
+      }
+      function queueServiceCategory(service, svc) {
+        if (service) return legacyServiceGroupKey(service) || service.categoryId || '';
+        return legacyServiceGroupKey({ name: svc, categoryName: svc });
+      }
+      function queueDurationForService(svc) {
+        var service = queueServiceForName(svc);
+        return service ? service.durationMin || 0 : 0;
+      }
+      function queueItemsForService(svc, techId) {
+        var service = salonData.findService(salonCatalog, svc);
+        var name = service ? posServiceDisplayName(service.name) : posServiceDisplayName(svc || '');
+        if (!name) return [];
+        var price = service && service.price != null ? service.price : 0;
+        var cat = queueServiceCategory(service, svc);
+        return [{ name: name, price: price, techId: techId || null, cat: cat }];
+      }
 
       // #73 — match weights, read live by the dispatch board
       var MATCH_RULES = { wSkill: 55, wMiss: 15, wTurn: 25, wReq: 15, wPref: 10, wExp: 5, wFit: 5, useTurn: true, override: 'manager' };
@@ -2811,7 +2830,10 @@
         if (w.bookingId === undefined) w.bookingId = null;
         if (w.serviceTicketId === undefined) w.serviceTicketId = null;
         if (w.customerId === undefined) w.customerId = w.name;
+        if (!Array.isArray(w.items)) w.items = [];
+        if (!w.items.length && w.svc) w.items = queueItemsForService(w.svc, w.techId || w.reqTech || null);
         if (w.durationMin === undefined) w.durationMin = 0;
+        if (!w.durationMin && w.svc) w.durationMin = queueDurationForService(w.svc);
       });
       var wlSeq = 4;
       function wlog(w, msg) { if (w) (w.log || (w.log = [])).push({ at: Date.now(), msg: msg }); }
@@ -4457,9 +4479,9 @@
           CHECKINQ = CHECKINQ.filter(function (x) { return x.id !== cid; });
           if (cok && r) {
             var nwId = ++wlSeq;
-            var nw = { id: nwId, orderId: 'walkin-' + nwId, bookingId: null, serviceTicketId: null, customerId: r.name, durationMin: 0,
+            var nw = { id: nwId, orderId: 'walkin-' + nwId, bookingId: null, serviceTicketId: null, customerId: r.name, durationMin: queueDurationForService(r.svc),
               name: r.name, phone: '', customerGroup: 'New', badge: 'violet', badgeTxt: r.src.indexOf('📱') === 0 ? '📱 App' : '🌐 QR', svc: r.svc,
-              at: nowTime(), atMs: Date.now(), status: 'waiting', techId: null, reqTech: r.reqTech || null, items: [], log: [] };
+              at: nowTime(), atMs: Date.now(), status: 'waiting', techId: null, reqTech: r.reqTech || null, items: queueItemsForService(r.svc, r.reqTech || null), log: [] };
             WAITLIST.unshift(nw);
             wlog(nw, '📥 Checked in via ' + (r.src.indexOf('📱') === 0 ? 'the Nexora App' : 'the web QR') + ' — confirmed by the front desk' + (r.reqTech ? ' · wants ' + techName(r.reqTech) : ''));
             toast(r.name + ' added to the queue');

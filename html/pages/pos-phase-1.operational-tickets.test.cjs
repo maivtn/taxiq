@@ -58,6 +58,21 @@ test('POS charges the whole order at once: every open ticket must be ready, turn
   assert.match(pay, /if \(bookingId\) checkBookingOrderComplete\(bookingId\);/);
 });
 
+test('Queue tickets with a service name hydrate billable line items before Charge', () => {
+  const helper = html.match(/function queueItemsForService\(svc, techId\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const waitlistInit = html.match(/WAITLIST\.forEach\(function \(w\) \{[\s\S]*?\n      \}\);/)?.[0] || '';
+  const acceptHandler = html.match(/\/\* check-in requests \*\/[\s\S]*?\/\* access requests \*\//)?.[0] || '';
+
+  assert.match(html, /name: 'Lisa Trương'[\s\S]*svc: 'Acrylic — Full Set'/);
+  assert.match(helper, /salonData\.findService\(salonCatalog, svc\)/);
+  assert.match(helper, /return \[\{ name: name, price: price, techId: techId \|\| null, cat: cat \}\]/);
+  assert.match(waitlistInit, /if \(!Array\.isArray\(w\.items\)\) w\.items = \[\]/);
+  assert.match(waitlistInit, /if \(!w\.items\.length && w\.svc\) w\.items = queueItemsForService\(w\.svc, w\.techId \|\| w\.reqTech \|\| null\)/);
+  assert.match(waitlistInit, /if \(!w\.durationMin && w\.svc\) w\.durationMin = queueDurationForService\(w\.svc\)/);
+  assert.match(acceptHandler, /durationMin: queueDurationForService\(r\.svc\)/);
+  assert.match(acceptHandler, /items: queueItemsForService\(r\.svc, r\.reqTech \|\| null\)/);
+});
+
 test('POS completes a booking only once every non-cancelled service ticket has been paid', () => {
   assert.match(html, /function checkBookingOrderComplete\(bookingId\) \{/);
   const complete = html.match(/function checkBookingOrderComplete\(bookingId\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
