@@ -164,13 +164,45 @@ test('New appointment shows the full service picker before the technician select
 
 test('New appointment services come from the menu catalog and render category chips', () => {
   const html = source();
+  const pickerMarkup = html.match(/function bookingServicePickerMarkup\(mode, selectedNames\) \{[\s\S]*?\n    \}/)?.[0] || '';
 
   assert.match(html, /var APPOINTMENT_SERVICE_CATALOG_URL = '\.\.\/menu\/menu\.json';/);
   assert.match(html, /appointmentServiceCatalogLoader\.load\(APPOINTMENT_SERVICE_CATALOG_URL\)/);
   assert.match(html, /function bookingServicePickerCategoryChips\(categories, activeCategoryId\)/);
-  assert.match(html, /data-booking-service-category-chip="all"/);
+  assert.doesNotMatch(html, /data-booking-service-category-chip="all"/);
   assert.match(html, /data-booking-service-category-filter/);
+  assert.match(html, /class="category-trigger category-chip booking-service-category-chip/);
+  assert.match(html, /category-chip-list/);
+  assert.match(html, /aria-expanded="/);
+  assert.match(pickerMarkup, /data-booking-service-category-id/);
+  assert.match(pickerMarkup, /category-panel-list/);
+  assert.match(pickerMarkup, /service-category-grid/);
+  assert.doesNotMatch(pickerMarkup, /<details class="booking-service-category"|summary class="booking-service-category-head"/);
   assert.match(html, /bookingCreateField\('service'\)\.innerHTML = bookingServicePickerMarkup\('create', \[\]\);/);
+});
+
+test('New appointment selected service shows a check mark instead of a filled background', () => {
+  const html = source();
+  const pickerMarkup = html.match(/function bookingServicePickerMarkup\(mode, selectedNames\) \{[\s\S]*?\n    \}/)?.[0] || '';
+  const selectedCardRule = html.match(/\.booking-service-chip-button\.service-card\.is-selected\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(pickerMarkup, /booking-service-selected-check/);
+  assert.match(html, /\.booking-service-selected-check/);
+  assert.match(html, /\.booking-service-chip-button\.service-card\.is-selected \.booking-service-selected-check/);
+  assert.match(selectedCardRule, /background:\s*#fff/);
+  assert.doesNotMatch(selectedCardRule, /background:\s*var\(--nexora-brand\)|border-color:\s*transparent|color:\s*#fff/);
+});
+
+test('New appointment service cards stay compact', () => {
+  const html = source();
+  const serviceCardRule = html.match(/\.booking-service-chip-button\.service-card\s*\{([^}]*)\}/)?.[1] || '';
+  const selectedCheckRule = html.match(/\.booking-service-selected-check\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(serviceCardRule, /min-height:\s*48px/);
+  assert.match(serviceCardRule, /padding:\s*6px 30px 6px 8px/);
+  assert.match(serviceCardRule, /gap:\s*2px/);
+  assert.match(selectedCheckRule, /width:\s*18px/);
+  assert.match(selectedCheckRule, /height:\s*18px/);
 });
 
 test('limits long service category lists and enables vertical scrolling', () => {
@@ -359,6 +391,24 @@ test('shows total price and total time below New appointment services', () => {
   assert.match(html, /function bookingServicePriceTotal\(services\)/);
   assert.match(html, /function updateBookingCreateServiceSummary\(\)/);
   assert.match(html, /updateBookingCreateServiceSummary\(\);/);
+});
+
+test('New appointment lists selected services as removable name chips', () => {
+  const html = source();
+  const serviceField = html.match(/<label class="booking-create-field is-full">[\s\S]*?data-booking-create-total-duration>0 min<\/strong>[\s\S]*?<\/label>/)?.[0] || '';
+  const selectedIndex = serviceField.indexOf('data-booking-create-selected-services');
+  const summaryIndex = serviceField.indexOf('class="booking-service-summary"');
+
+  assert.match(serviceField, /data-booking-create-field="service"[\s\S]*data-booking-create-selected-services/);
+  assert.ok(selectedIndex >= 0, 'selected services list should exist below the picker');
+  assert.ok(summaryIndex > selectedIndex, 'selected services should appear before total price and time');
+  assert.match(html, /function renderBookingCreateSelectedServices\(\)/);
+  assert.match(html, /booking-selected-service-chip/);
+  assert.match(html, /booking-selected-service-name/);
+  assert.match(html, /data-booking-create-service-remove/);
+  assert.match(html, /var bookingCreateServiceRemove = event\.target\.closest\('\[data-booking-create-service-remove\]'\);/);
+  assert.match(html, /setBookingCreateServiceSelected\(button, false\);/);
+  assert.doesNotMatch(html, /booking-selected-services-title|booking-selected-service-row|booking-selected-service-main|booking-selected-service-list/);
 });
 
 test('renders service totals as text instead of input-like controls', () => {

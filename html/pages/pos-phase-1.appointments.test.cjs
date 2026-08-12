@@ -218,11 +218,59 @@ test('POS New appointment shows the full service picker before the technician se
 });
 
 test('POS New appointment services come from menu.json and render category chips', () => {
+  const pickerMarkup = runtime.match(/function bookingServicePickerMarkup\(mode, selectedNames\) \{[\s\S]*?\n    \}/)?.[0] || '';
+
   assert.match(runtime, /var APPOINTMENT_SERVICE_CATALOG_URL = '\.\.\/menu\/menu\.json';/);
   assert.match(runtime, /appointmentServiceCatalogLoader\.load\(APPOINTMENT_SERVICE_CATALOG_URL\)/);
   assert.match(runtime, /function bookingServicePickerCategoryChips\(categories, activeCategoryId\)/);
-  assert.match(runtime, /data-booking-service-category-chip="all"/);
+  assert.doesNotMatch(runtime, /data-booking-service-category-chip="all"/);
   assert.match(runtime, /data-booking-service-category-filter/);
+  assert.match(runtime, /class="category-trigger category-chip booking-service-category-chip/);
+  assert.match(runtime, /category-chip-list/);
+  assert.match(runtime, /aria-expanded="/);
+  assert.match(pickerMarkup, /data-booking-service-category-id/);
+  assert.match(pickerMarkup, /category-panel-list/);
+  assert.match(pickerMarkup, /service-category-grid/);
+  assert.doesNotMatch(pickerMarkup, /<details class="booking-service-category"|summary class="booking-service-category-head"/);
+});
+
+test('POS New appointment selected service shows a check mark instead of a filled background', () => {
+  const pickerMarkup = runtime.match(/function bookingServicePickerMarkup\(mode, selectedNames\) \{[\s\S]*?\n    \}/)?.[0] || '';
+  const selectedCardRule = css.match(/\.booking-service-chip-button\.service-card\.is-selected\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(pickerMarkup, /booking-service-selected-check/);
+  assert.match(css, /\.booking-service-selected-check/);
+  assert.match(css, /\.booking-service-chip-button\.service-card\.is-selected \.booking-service-selected-check/);
+  assert.match(selectedCardRule, /background:\s*#fff/);
+  assert.doesNotMatch(selectedCardRule, /background:\s*var\(--nexora-brand\)|border-color:\s*transparent|color:\s*#fff/);
+});
+
+test('POS New appointment service cards stay compact', () => {
+  const serviceCardRule = css.match(/\.booking-service-chip-button\.service-card\s*\{([^}]*)\}/)?.[1] || '';
+  const selectedCheckRule = css.match(/\.booking-service-selected-check\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(serviceCardRule, /min-height:\s*48px/);
+  assert.match(serviceCardRule, /padding:\s*6px 30px 6px 8px/);
+  assert.match(serviceCardRule, /gap:\s*2px/);
+  assert.match(selectedCheckRule, /width:\s*18px/);
+  assert.match(selectedCheckRule, /height:\s*18px/);
+});
+
+test('POS New appointment lists selected services as removable name chips', () => {
+  const createModal = html.match(/<div class="booking-create-modal" data-booking-create-modal[\s\S]*?<div class="booking-create-error"/)?.[0] || '';
+  const selectedIndex = createModal.indexOf('data-booking-create-selected-services');
+  const summaryIndex = createModal.indexOf('class="booking-service-summary"');
+
+  assert.match(createModal, /data-booking-create-field="service"[\s\S]*data-booking-create-selected-services/);
+  assert.ok(selectedIndex >= 0, 'selected services list should exist below the picker');
+  assert.ok(summaryIndex > selectedIndex, 'selected services should appear before total price and time');
+  assert.match(runtime, /function renderBookingCreateSelectedServices\(\)/);
+  assert.match(runtime + css, /booking-selected-service-chip/);
+  assert.match(runtime + css, /booking-selected-service-name/);
+  assert.match(runtime, /data-booking-create-service-remove/);
+  assert.match(runtime, /var bookingCreateServiceRemove = event\.target\.closest\('\[data-booking-create-service-remove\]'\);/);
+  assert.match(runtime, /setBookingCreateServiceSelected\(button, false\);/);
+  assert.doesNotMatch(runtime + css, /booking-selected-services-title|booking-selected-service-row|booking-selected-service-main|booking-selected-service-list/);
 });
 
 test('POS Booking labels the appointment time field as Time', () => {

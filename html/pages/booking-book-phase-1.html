@@ -5076,10 +5076,22 @@
     .booking-service-search { width: 100%; height: 36px; border: 1px solid var(--nexora-border); border-radius: 9px; background: #fff; padding: 0 11px 0 31px; color: var(--nexora-text); font-size: 12px; font-weight: 600; }
     .booking-service-search:focus { outline: 0; border-color: var(--nexora-brand); box-shadow: 0 0 0 2px rgba(70, 72, 216, .12); }
     .booking-service-category-filter { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 2px; }
+    .booking-service-category-filter.category-chip-list { flex-wrap: wrap; align-items: center; overflow-x: visible; }
     .booking-service-category-chip { flex: 0 0 auto; border: 1px solid var(--nexora-border); border-radius: 999px; background: #fff; padding: 6px 10px; color: var(--nexora-muted); font-size: 11px; font-weight: 800; white-space: nowrap; transition: background .2s, border-color .2s, color .2s; }
+    .booking-service-category-chip.category-trigger { width: auto; max-width: 100%; min-height: 34px; display: inline-flex; align-items: center; gap: 7px; padding: 5px 8px 5px 12px; text-align: left; box-shadow: 0 5px 12px rgba(24, 20, 54, .05); }
     .booking-service-category-chip:hover { border-color: var(--nexora-brand); color: var(--nexora-brand); }
-    .booking-service-category-chip.is-active { border-color: transparent; background: var(--nexora-brand); color: #fff; }
+    .booking-service-category-chip.is-active,
+    .booking-service-category-chip[aria-expanded="true"] { border-color: rgba(70, 72, 216, .32); background: #f3f1ff; color: var(--nexora-brand); box-shadow: 0 8px 18px rgba(70, 72, 216, .10); }
+    .category-chip-name { min-width: 0; overflow-wrap: anywhere; font-size: 12px; font-weight: 850; line-height: 1.15; }
+    .category-chip-number { flex: 0 0 auto; min-width: 22px; border-radius: 999px; background: #e9edff; padding: 3px 7px; color: var(--nexora-brand); font-size: 11px; font-weight: 900; line-height: 1.1; text-align: center; }
     .booking-service-categories { display: grid; max-height: 280px; gap: 7px; overflow-y: auto; padding-right: 2px; }
+    .booking-service-categories.category-panel-list { display: block; }
+    .service-category { border: 0; border-radius: 0; background: transparent; overflow: visible; }
+    .service-category[hidden] { display: none; }
+    .service-category.open { box-shadow: none; }
+    .category-content { display: none; padding: 8px 0 2px; }
+    .service-category.open .category-content { display: block; }
+    .service-category-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
     .booking-service-category { overflow: hidden; border: 1px solid var(--nexora-border); border-radius: 10px; background: #fff; }
     .booking-service-category-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; border-bottom: 1px solid var(--nexora-rule); background: #f8faff; padding: 8px 10px; cursor: pointer; }
     .booking-service-category-head::-webkit-details-marker { display: none; }
@@ -5089,14 +5101,28 @@
     .booking-service-category-count { flex-shrink: 0; border-radius: 999px; background: #e9edff; padding: 2px 7px; color: var(--nexora-brand); font-size: 10px; font-weight: 800; }
     .booking-service-category-options { display: grid; gap: 6px; padding: 8px; }
     .booking-service-chips { display: grid; gap: 8px; overflow: visible; }
-    .booking-service-chip-button { display: flex; width: 100%; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid var(--nexora-border); border-radius: 8px; background: #fff; padding: 8px 9px; color: var(--nexora-muted); font-size: 12px; font-weight: 700; line-height: 1.25; text-align: left; transition: background 0.2s, border-color 0.2s, color 0.2s; }
+    .booking-service-chip-button { display: flex; width: 100%; min-width: 0; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid var(--nexora-border); border-radius: 8px; background: #fff; padding: 8px 9px; color: var(--nexora-muted); font-size: 12px; font-weight: 700; line-height: 1.25; text-align: left; transition: background 0.2s, border-color 0.2s, color 0.2s; }
+    .booking-service-chip-button.service-card { position: relative; min-height: 48px; flex-direction: column; align-items: flex-start; justify-content: flex-start; gap: 2px; border-radius: 10px; padding: 6px 30px 6px 8px; box-shadow: 0 6px 14px rgba(38, 43, 89, .06); }
     .booking-service-chip-button:hover { border-color: var(--nexora-brand); color: var(--nexora-brand); }
     .booking-service-chip-button.is-selected { border-color: transparent; background: var(--nexora-brand); color: #fff; }
+    .booking-service-chip-button.service-card.is-selected { border-color: var(--nexora-brand); background: #fff; color: var(--nexora-text); box-shadow: 0 8px 18px rgba(70, 72, 216, .12); }
+    .booking-service-chip-button.service-card.is-selected:hover { background: #fff; color: var(--nexora-brand); }
     .booking-service-chip-button[hidden] { display: none; }
     .booking-service-option-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; }
+    .booking-service-chip-button.service-card .booking-service-option-name { overflow: visible; overflow-wrap: anywhere; text-overflow: clip; white-space: normal; }
     .booking-service-option-meta { flex-shrink: 0; color: var(--nexora-subtle); font-size: 10px; font-weight: 700; white-space: nowrap; }
+    .booking-service-chip-button.service-card .booking-service-option-meta { white-space: normal; }
     .booking-service-chip-button.is-selected .booking-service-option-meta { color: rgba(255, 255, 255, .82); }
+    .booking-service-chip-button.service-card.is-selected .booking-service-option-meta { color: var(--nexora-subtle); }
+    .booking-service-selected-check { position: absolute; top: 6px; right: 7px; display: none; width: 18px; height: 18px; place-items: center; border: 1px solid var(--nexora-brand); border-radius: 999px; background: var(--nexora-brand); color: #fff; font-size: 11px; line-height: 1; }
+    .booking-service-chip-button.service-card.is-selected .booking-service-selected-check { display: grid; }
     .booking-service-empty { padding: 12px; color: var(--nexora-subtle); font-size: 11px; font-weight: 700; text-align: center; }
+    .booking-selected-services { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .booking-selected-services[hidden] { display: none; }
+    .booking-selected-service-chip { display: inline-flex; max-width: 100%; align-items: center; gap: 6px; border: 1px solid var(--nexora-border); border-radius: 999px; background: #fff; padding: 4px 4px 4px 10px; color: var(--nexora-text); font-size: 11px; font-weight: 800; }
+    .booking-selected-service-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .booking-selected-service-remove { display: inline-grid; width: 20px; height: 20px; flex: 0 0 auto; place-items: center; border: 0; border-radius: 999px; background: transparent; color: var(--nexora-subtle); font-size: 10px; }
+    .booking-selected-service-remove:hover { background: #fff0f3; color: #d33d67; }
     .booking-ticket-builder-grid { display: grid; grid-template-columns: 1fr; gap: 8px; align-items: end; }
     .booking-ticket-field { position: relative; display: grid; gap: 5px; min-width: 0; }
     .booking-ticket-field > label { color: var(--nexora-muted); font-size: 10px; font-weight: 800; }
@@ -9559,6 +9585,7 @@
                         <label class="booking-create-field is-full">
                           <span class="booking-create-label">Services * <span class="booking-create-hint">Tap to pick several</span></span>
                           <div class="booking-service-chips" data-booking-create-field="service" role="group" aria-label="Select one or more services"></div>
+                          <div class="booking-selected-services" data-booking-create-selected-services aria-live="polite" hidden></div>
                           <div class="booking-service-summary" aria-live="polite">
                             <span class="booking-service-summary-item">
                               <span class="booking-service-summary-label">Total price:</span>
@@ -12435,53 +12462,71 @@
       return categories;
     }
 
+    function bookingServicePickerInitialCategoryId(categories, selected) {
+      var selectedCategoryId = '';
+      categories.some(function(category) {
+        return category.services.some(function(option) {
+          if (selected[option.name.toLowerCase()]) {
+            selectedCategoryId = category.id;
+            return true;
+          }
+          return false;
+        });
+      });
+      return selectedCategoryId || (categories[0] ? categories[0].id : '');
+    }
+
     function bookingServicePickerCategoryChips(categories, activeCategoryId) {
-      activeCategoryId = activeCategoryId || 'all';
-      var chips = '<button class="booking-service-category-chip' + (activeCategoryId === 'all' ? ' is-active' : '') + '" type="button" data-booking-service-category-chip="all" aria-pressed="' + (activeCategoryId === 'all' ? 'true' : 'false') + '">All</button>';
-      chips += categories.map(function(category) {
+      activeCategoryId = activeCategoryId || (categories[0] ? categories[0].id : '');
+      var chips = categories.map(function(category) {
         var isActive = activeCategoryId === category.id;
-        return '<button class="booking-service-category-chip' + (isActive ? ' is-active' : '') + '" type="button" data-booking-service-category-chip="' + escapeHtml(category.id) + '" aria-pressed="' + (isActive ? 'true' : 'false') + '">' + escapeHtml(category.name) + '</button>';
+        return '<button class="category-trigger category-chip booking-service-category-chip' + (isActive ? ' is-active' : '') + '" type="button" data-booking-service-category-chip="' + escapeHtml(category.id) + '" aria-expanded="' + (isActive ? 'true' : 'false') + '" aria-pressed="' + (isActive ? 'true' : 'false') + '"><span class="category-chip-name">' + escapeHtml(category.name) + '</span><span class="category-chip-number">' + category.services.length + '</span></button>';
       }).join('');
-      return '<div class="booking-service-category-filter" data-booking-service-category-filter role="group" aria-label="Service categories">' + chips + '</div>';
+      return '<div class="booking-service-category-filter category-chip-list" data-booking-service-category-filter role="list" aria-label="Service categories">' + chips + '</div>';
     }
 
     function bookingServicePickerMarkup(mode, selectedNames) {
       var selected = {};
       (selectedNames || []).forEach(function(name) { selected[String(name).toLowerCase()] = true; });
       var categories = bookingServicePickerCategories();
-      var activeCategoryId = 'all';
-      var buttons = categories.map(function(category) {
+      var activeCategoryId = bookingServicePickerInitialCategoryId(categories, selected);
+      var panels = categories.map(function(category) {
         var serviceButtons = category.services.map(function(option) {
           var isSelected = Boolean(selected[option.name.toLowerCase()]);
           var price = option.price == null ? '—' : bookingMoney(option.price);
+          var escapedName = escapeHtml(option.name);
+          var escapedCategoryId = escapeHtml(category.id);
           var buttonAttributes = mode === 'create'
-            ? 'data-booking-create-service="' + escapeHtml(option.name) + '"'
-            : 'data-booking-panel-select="service" data-service-name="' + escapeHtml(option.name) + '"';
-          return '<button class="booking-service-chip-button' + (isSelected ? ' is-selected' : '') + '" type="button" ' + buttonAttributes + ' data-service-category="' + escapeHtml(category.name) + '" aria-pressed="' + (isSelected ? 'true' : 'false') + '">' +
-            '<span class="booking-service-option-name">' + escapeHtml(option.name) + '</span><span class="booking-service-option-meta">' + price + ' · ' + option.duration + ' min</span></button>';
+            ? 'data-booking-create-service="' + escapedName + '" data-service-name="' + escapedName + '"'
+            : 'data-booking-panel-select="service" data-service-name="' + escapedName + '"';
+          return '<button class="booking-service-chip-button service-card' + (isSelected ? ' is-selected' : '') + '" type="button" ' + buttonAttributes + ' data-booking-service-category-id="' + escapedCategoryId + '" data-service-category="' + escapeHtml(category.name) + '" aria-pressed="' + (isSelected ? 'true' : 'false') + '">' +
+            '<span class="booking-service-option-name">' + escapeHtml(option.name) + '</span><span class="booking-service-option-meta">' + price + ' · ' + option.duration + ' min</span><span class="booking-service-selected-check" aria-hidden="true"><i class="bi bi-check-lg" aria-hidden="true"></i></span></button>';
         }).join('');
-        var categoryOpen = activeCategoryId === 'all' || activeCategoryId === category.id || category.services.some(function(option) { return selected[option.name.toLowerCase()]; });
-        return '<details class="booking-service-category" data-booking-service-category data-category-id="' + escapeHtml(category.id) + '" data-category-name="' + escapeHtml(category.name) + '"' + (categoryOpen ? ' open' : '') + '>' +
-          '<summary class="booking-service-category-head"><span class="booking-service-category-name">' + escapeHtml(category.name) + '</span><span class="booking-service-category-count">' + category.services.length + '</span></summary>' +
-          '<div class="booking-service-category-options">' + serviceButtons + '</div></details>';
+        var categoryOpen = activeCategoryId === category.id;
+        return '<section class="service-category' + (categoryOpen ? ' open' : '') + '" data-booking-service-category data-booking-service-category-id="' + escapeHtml(category.id) + '" data-category-id="' + escapeHtml(category.id) + '" data-category-name="' + escapeHtml(category.name) + '"' + (categoryOpen ? '' : ' hidden') + '>' +
+          '<div class="category-content"><div class="service-category-grid">' + serviceButtons + '</div></div></section>';
       }).join('');
       return '<div class="booking-service-picker" data-booking-service-picker data-booking-service-picker-mode="' + mode + '">' +
         '<div class="booking-service-search-shell"><i class="bi bi-search" aria-hidden="true"></i><input class="booking-service-search" type="search" placeholder="Search services..." aria-label="Search services" data-booking-service-search></div>' +
         bookingServicePickerCategoryChips(categories, activeCategoryId) +
-        '<div class="booking-service-categories" data-booking-service-results>' + buttons + '<div class="booking-service-empty" data-booking-service-empty hidden>No matching services found.</div></div></div>';
+        '<div class="booking-service-categories category-panel-list" data-booking-service-results>' + panels + '<div class="booking-service-empty" data-booking-service-empty hidden>No matching services found.</div></div></div>';
     }
 
     function bookingServiceActiveCategoryId(picker) {
       var active = picker && picker.querySelector('[data-booking-service-category-chip].is-active');
-      return active ? (active.getAttribute('data-booking-service-category-chip') || 'all') : 'all';
+      if (active) return active.getAttribute('data-booking-service-category-chip') || '';
+      var first = picker && picker.querySelector('[data-booking-service-category-chip]');
+      return first ? (first.getAttribute('data-booking-service-category-chip') || '') : '';
     }
 
     function setBookingServiceCategoryFilter(picker, categoryId) {
       if (!picker) return;
-      var activeCategoryId = categoryId || 'all';
+      var first = picker.querySelector('[data-booking-service-category-chip]');
+      var activeCategoryId = categoryId || (first ? (first.getAttribute('data-booking-service-category-chip') || '') : '');
       picker.querySelectorAll('[data-booking-service-category-chip]').forEach(function(chip) {
-        var isActive = (chip.getAttribute('data-booking-service-category-chip') || 'all') === activeCategoryId;
+        var isActive = (chip.getAttribute('data-booking-service-category-chip') || '') === activeCategoryId;
         chip.classList.toggle('is-active', isActive);
+        chip.setAttribute('aria-expanded', isActive ? 'true' : 'false');
         chip.setAttribute('aria-pressed', isActive ? 'true' : 'false');
       });
       var search = picker.querySelector('[data-booking-service-search]');
@@ -12495,7 +12540,7 @@
       var activeCategoryId = bookingServiceActiveCategoryId(picker);
       var visibleCount = 0;
       picker.querySelectorAll('[data-booking-service-category]').forEach(function(category) {
-        var matchesCategory = activeCategoryId === 'all' || category.dataset.categoryId === activeCategoryId;
+        var matchesCategory = !activeCategoryId || category.dataset.bookingServiceCategoryId === activeCategoryId || category.dataset.categoryId === activeCategoryId;
         var categoryName = String(category.dataset.categoryName || '').toLowerCase();
         var categoryVisible = 0;
         category.querySelectorAll('[data-booking-create-service], [data-booking-panel-select="service"]').forEach(function(button) {
@@ -12505,7 +12550,7 @@
           if (visible) categoryVisible++;
         });
         category.hidden = !matchesCategory || categoryVisible === 0;
-        if (matchesCategory && categoryVisible) category.open = true;
+        category.classList.toggle('open', matchesCategory && categoryVisible > 0);
         visibleCount += categoryVisible;
       });
       var empty = picker.querySelector('[data-booking-service-empty]');
@@ -13104,12 +13149,32 @@
       });
     }
 
+    function renderBookingCreateSelectedServices() {
+      var host = document.querySelector('[data-booking-create-selected-services]');
+      if (!host) return;
+      var services = bookingServiceDetails(getBookingCreateServices());
+      if (!services.length) {
+        host.innerHTML = '';
+        host.hidden = true;
+        return;
+      }
+      var rows = services.map(function(service) {
+        var name = service.name || '';
+        return '<span class="booking-selected-service-chip" data-booking-selected-service="' + escapeHtml(name) + '">' +
+          '<span class="booking-selected-service-name">' + escapeHtml(name) + '</span>' +
+          '<button class="booking-selected-service-remove" type="button" data-booking-create-service-remove="' + escapeHtml(name) + '" aria-label="Remove ' + escapeHtml(name) + '"><i class="bi bi-x-lg" aria-hidden="true"></i></button></span>';
+      }).join('');
+      host.hidden = false;
+      host.innerHTML = rows;
+    }
+
     function updateBookingCreateServiceSummary() {
       var services = getBookingCreateServices();
       var totalPrice = bookingServicePriceTotal(services);
       var totalDuration = bookingServiceDurationMinutes(services);
       var price = document.querySelector('[data-booking-create-total-price]');
       var duration = document.querySelector('[data-booking-create-total-duration]');
+      renderBookingCreateSelectedServices();
       if (price) price.textContent = bookingMoney(totalPrice);
       if (duration) duration.textContent = totalDuration + ' min';
     }
@@ -16209,7 +16274,7 @@ function getBookingCardCallStart(item) {
 
       var bookingServiceCategoryChip = event.target.closest('[data-booking-service-category-chip]');
       if (bookingServiceCategoryChip) {
-        setBookingServiceCategoryFilter(bookingServiceCategoryChip.closest('[data-booking-service-picker]'), bookingServiceCategoryChip.getAttribute('data-booking-service-category-chip') || 'all');
+        setBookingServiceCategoryFilter(bookingServiceCategoryChip.closest('[data-booking-service-picker]'), bookingServiceCategoryChip.getAttribute('data-booking-service-category-chip') || '');
         return;
       }
 
@@ -16218,6 +16283,19 @@ function getBookingCardCallStart(item) {
         event.preventDefault();
         var bookingServiceCategory = bookingServiceCategorySummary.parentElement;
         bookingServiceCategory.open = !bookingServiceCategory.open;
+        return;
+      }
+
+      var bookingCreateServiceRemove = event.target.closest('[data-booking-create-service-remove]');
+      if (bookingCreateServiceRemove) {
+        var serviceName = bookingCreateServiceRemove.getAttribute('data-booking-create-service-remove') || '';
+        var serviceField = bookingCreateField('service');
+        var button = serviceField && Array.from(serviceField.querySelectorAll('[data-booking-create-service]')).find(function(candidate) {
+          return (candidate.dataset.bookingCreateService || '') === serviceName;
+        });
+        setBookingCreateServiceSelected(button, false);
+        updateBookingCreateServiceSummary();
+        setBookingCreateError('');
         return;
       }
 

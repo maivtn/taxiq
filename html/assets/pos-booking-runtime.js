@@ -560,53 +560,71 @@ var DEFAULT_MAIN_TAB = 'booking';
       return categories;
     }
 
+    function bookingServicePickerInitialCategoryId(categories, selected) {
+      var selectedCategoryId = '';
+      categories.some(function(category) {
+        return category.services.some(function(option) {
+          if (selected[option.name.toLowerCase()]) {
+            selectedCategoryId = category.id;
+            return true;
+          }
+          return false;
+        });
+      });
+      return selectedCategoryId || (categories[0] ? categories[0].id : '');
+    }
+
     function bookingServicePickerCategoryChips(categories, activeCategoryId) {
-      activeCategoryId = activeCategoryId || 'all';
-      var chips = '<button class="booking-service-category-chip' + (activeCategoryId === 'all' ? ' is-active' : '') + '" type="button" data-booking-service-category-chip="all" aria-pressed="' + (activeCategoryId === 'all' ? 'true' : 'false') + '">All</button>';
-      chips += categories.map(function(category) {
+      activeCategoryId = activeCategoryId || (categories[0] ? categories[0].id : '');
+      var chips = categories.map(function(category) {
         var isActive = activeCategoryId === category.id;
-        return '<button class="booking-service-category-chip' + (isActive ? ' is-active' : '') + '" type="button" data-booking-service-category-chip="' + escapeHtml(category.id) + '" aria-pressed="' + (isActive ? 'true' : 'false') + '">' + escapeHtml(category.name) + '</button>';
+        return '<button class="category-trigger category-chip booking-service-category-chip' + (isActive ? ' is-active' : '') + '" type="button" data-booking-service-category-chip="' + escapeHtml(category.id) + '" aria-expanded="' + (isActive ? 'true' : 'false') + '" aria-pressed="' + (isActive ? 'true' : 'false') + '"><span class="category-chip-name">' + escapeHtml(category.name) + '</span><span class="category-chip-number">' + category.services.length + '</span></button>';
       }).join('');
-      return '<div class="booking-service-category-filter" data-booking-service-category-filter role="group" aria-label="Service categories">' + chips + '</div>';
+      return '<div class="booking-service-category-filter category-chip-list" data-booking-service-category-filter role="list" aria-label="Service categories">' + chips + '</div>';
     }
 
     function bookingServicePickerMarkup(mode, selectedNames) {
       var selected = {};
       (selectedNames || []).forEach(function(name) { selected[String(name).toLowerCase()] = true; });
       var categories = bookingServicePickerCategories();
-      var activeCategoryId = 'all';
-      var buttons = categories.map(function(category) {
+      var activeCategoryId = bookingServicePickerInitialCategoryId(categories, selected);
+      var panels = categories.map(function(category) {
         var serviceButtons = category.services.map(function(option) {
           var isSelected = Boolean(selected[option.name.toLowerCase()]);
           var price = option.price == null ? '—' : bookingMoney(option.price);
+          var escapedName = escapeHtml(option.name);
+          var escapedCategoryId = escapeHtml(category.id);
           var buttonAttributes = mode === 'create'
-            ? 'data-booking-create-service="' + escapeHtml(option.name) + '"'
-            : 'data-booking-panel-select="service" data-service-name="' + escapeHtml(option.name) + '"';
-          return '<button class="booking-service-chip-button' + (isSelected ? ' is-selected' : '') + '" type="button" ' + buttonAttributes + ' data-service-category="' + escapeHtml(category.name) + '" aria-pressed="' + (isSelected ? 'true' : 'false') + '">' +
-            '<span class="booking-service-option-name">' + escapeHtml(option.name) + '</span><span class="booking-service-option-meta">' + price + ' · ' + option.duration + ' min</span></button>';
+            ? 'data-booking-create-service="' + escapedName + '" data-service-name="' + escapedName + '"'
+            : 'data-booking-panel-select="service" data-service-name="' + escapedName + '"';
+          return '<button class="booking-service-chip-button service-card' + (isSelected ? ' is-selected' : '') + '" type="button" ' + buttonAttributes + ' data-booking-service-category-id="' + escapedCategoryId + '" data-service-category="' + escapeHtml(category.name) + '" aria-pressed="' + (isSelected ? 'true' : 'false') + '">' +
+            '<span class="booking-service-option-name">' + escapeHtml(option.name) + '</span><span class="booking-service-option-meta">' + price + ' · ' + option.duration + ' min</span><span class="booking-service-selected-check" aria-hidden="true"><i class="bi bi-check-lg" aria-hidden="true"></i></span></button>';
         }).join('');
-        var categoryOpen = activeCategoryId === 'all' || activeCategoryId === category.id || category.services.some(function(option) { return selected[option.name.toLowerCase()]; });
-        return '<details class="booking-service-category" data-booking-service-category data-category-id="' + escapeHtml(category.id) + '" data-category-name="' + escapeHtml(category.name) + '"' + (categoryOpen ? ' open' : '') + '>' +
-          '<summary class="booking-service-category-head"><span class="booking-service-category-name">' + escapeHtml(category.name) + '</span><span class="booking-service-category-count">' + category.services.length + '</span></summary>' +
-          '<div class="booking-service-category-options">' + serviceButtons + '</div></details>';
+        var categoryOpen = activeCategoryId === category.id;
+        return '<section class="service-category' + (categoryOpen ? ' open' : '') + '" data-booking-service-category data-booking-service-category-id="' + escapeHtml(category.id) + '" data-category-id="' + escapeHtml(category.id) + '" data-category-name="' + escapeHtml(category.name) + '"' + (categoryOpen ? '' : ' hidden') + '>' +
+          '<div class="category-content"><div class="service-category-grid">' + serviceButtons + '</div></div></section>';
       }).join('');
       return '<div class="booking-service-picker" data-booking-service-picker data-booking-service-picker-mode="' + mode + '">' +
         '<div class="booking-service-search-shell"><i class="bi bi-search" aria-hidden="true"></i><input class="booking-service-search" type="search" placeholder="Search services..." aria-label="Search services" data-booking-service-search></div>' +
         bookingServicePickerCategoryChips(categories, activeCategoryId) +
-        '<div class="booking-service-categories" data-booking-service-results>' + buttons + '<div class="booking-service-empty" data-booking-service-empty hidden>No matching services found.</div></div></div>';
+        '<div class="booking-service-categories category-panel-list" data-booking-service-results>' + panels + '<div class="booking-service-empty" data-booking-service-empty hidden>No matching services found.</div></div></div>';
     }
 
     function bookingServiceActiveCategoryId(picker) {
       var active = picker && picker.querySelector('[data-booking-service-category-chip].is-active');
-      return active ? (active.getAttribute('data-booking-service-category-chip') || 'all') : 'all';
+      if (active) return active.getAttribute('data-booking-service-category-chip') || '';
+      var first = picker && picker.querySelector('[data-booking-service-category-chip]');
+      return first ? (first.getAttribute('data-booking-service-category-chip') || '') : '';
     }
 
     function setBookingServiceCategoryFilter(picker, categoryId) {
       if (!picker) return;
-      var activeCategoryId = categoryId || 'all';
+      var first = picker.querySelector('[data-booking-service-category-chip]');
+      var activeCategoryId = categoryId || (first ? (first.getAttribute('data-booking-service-category-chip') || '') : '');
       picker.querySelectorAll('[data-booking-service-category-chip]').forEach(function(chip) {
-        var isActive = (chip.getAttribute('data-booking-service-category-chip') || 'all') === activeCategoryId;
+        var isActive = (chip.getAttribute('data-booking-service-category-chip') || '') === activeCategoryId;
         chip.classList.toggle('is-active', isActive);
+        chip.setAttribute('aria-expanded', isActive ? 'true' : 'false');
         chip.setAttribute('aria-pressed', isActive ? 'true' : 'false');
       });
       var search = picker.querySelector('[data-booking-service-search]');
@@ -620,7 +638,7 @@ var DEFAULT_MAIN_TAB = 'booking';
       var activeCategoryId = bookingServiceActiveCategoryId(picker);
       var visibleCount = 0;
       picker.querySelectorAll('[data-booking-service-category]').forEach(function(category) {
-        var matchesCategory = activeCategoryId === 'all' || category.dataset.categoryId === activeCategoryId;
+        var matchesCategory = !activeCategoryId || category.dataset.bookingServiceCategoryId === activeCategoryId || category.dataset.categoryId === activeCategoryId;
         var categoryName = String(category.dataset.categoryName || '').toLowerCase();
         var categoryVisible = 0;
         category.querySelectorAll('[data-booking-create-service], [data-booking-panel-select="service"]').forEach(function(button) {
@@ -630,7 +648,7 @@ var DEFAULT_MAIN_TAB = 'booking';
           if (visible) categoryVisible++;
         });
         category.hidden = !matchesCategory || categoryVisible === 0;
-        if (matchesCategory && categoryVisible) category.open = true;
+        category.classList.toggle('open', matchesCategory && categoryVisible > 0);
         visibleCount += categoryVisible;
       });
       var empty = picker.querySelector('[data-booking-service-empty]');
@@ -1251,12 +1269,32 @@ var DEFAULT_MAIN_TAB = 'booking';
       });
     }
 
+    function renderBookingCreateSelectedServices() {
+      var host = document.querySelector('[data-booking-create-selected-services]');
+      if (!host) return;
+      var services = bookingServiceDetails(getBookingCreateServices());
+      if (!services.length) {
+        host.innerHTML = '';
+        host.hidden = true;
+        return;
+      }
+      var rows = services.map(function(service) {
+        var name = service.name || '';
+        return '<span class="booking-selected-service-chip" data-booking-selected-service="' + escapeHtml(name) + '">' +
+          '<span class="booking-selected-service-name">' + escapeHtml(name) + '</span>' +
+          '<button class="booking-selected-service-remove" type="button" data-booking-create-service-remove="' + escapeHtml(name) + '" aria-label="Remove ' + escapeHtml(name) + '"><i class="bi bi-x-lg" aria-hidden="true"></i></button></span>';
+      }).join('');
+      host.hidden = false;
+      host.innerHTML = rows;
+    }
+
     function updateBookingCreateServiceSummary() {
       var services = getBookingCreateServices();
       var totalPrice = bookingServicePriceTotal(services);
       var totalDuration = bookingServiceDurationMinutes(services);
       var price = document.querySelector('[data-booking-create-total-price]');
       var duration = document.querySelector('[data-booking-create-total-duration]');
+      renderBookingCreateSelectedServices();
       if (price) price.textContent = bookingMoney(totalPrice);
       if (duration) duration.textContent = totalDuration + ' min';
     }
@@ -2945,7 +2983,7 @@ function bookingCardStatusIcon(item) {
     document.addEventListener('click', function(event) {
       var bookingServiceCategoryChip = event.target.closest('[data-booking-service-category-chip]');
       if (bookingServiceCategoryChip) {
-        setBookingServiceCategoryFilter(bookingServiceCategoryChip.closest('[data-booking-service-picker]'), bookingServiceCategoryChip.getAttribute('data-booking-service-category-chip') || 'all');
+        setBookingServiceCategoryFilter(bookingServiceCategoryChip.closest('[data-booking-service-picker]'), bookingServiceCategoryChip.getAttribute('data-booking-service-category-chip') || '');
         return;
       }
 
@@ -2954,6 +2992,19 @@ function bookingCardStatusIcon(item) {
         event.preventDefault();
         var bookingServiceCategory = bookingServiceCategorySummary.parentElement;
         bookingServiceCategory.open = !bookingServiceCategory.open;
+        return;
+      }
+
+      var bookingCreateServiceRemove = event.target.closest('[data-booking-create-service-remove]');
+      if (bookingCreateServiceRemove) {
+        var serviceName = bookingCreateServiceRemove.getAttribute('data-booking-create-service-remove') || '';
+        var serviceField = bookingCreateField('service');
+        var button = serviceField && Array.from(serviceField.querySelectorAll('[data-booking-create-service]')).find(function(candidate) {
+          return (candidate.dataset.bookingCreateService || '') === serviceName;
+        });
+        setBookingCreateServiceSelected(button, false);
+        updateBookingCreateServiceSummary();
+        setBookingCreateError('');
         return;
       }
 
