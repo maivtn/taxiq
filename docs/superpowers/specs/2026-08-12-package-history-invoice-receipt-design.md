@@ -75,7 +75,45 @@ Lý do chọn:
 - Dễ mở rộng cho nhiều loại gói hoặc nhiều line item.
 - Giữ URL có thể bookmark, refresh và quay lại từ browser history.
 
-### 4.2. Các phương án không chọn
+### 4.2. Baseline HTML bắt buộc: `salon.html`
+
+File mới `html/pages/nexora-package-billing-detail.html` phải được tạo từ skeleton của `html/pages/salon.html`, không lấy toàn bộ `nexora-packages.html` làm template.
+
+Các phần phải giữ theo baseline `salon.html`:
+
+- `<!doctype html>` và các meta `charset`, `viewport`.
+- Inter font import.
+- Shared stylesheet `../assets/nexora-shell.css`.
+- Cấu trúc `.shell`.
+- Empty `<aside class="sidebar" aria-label="Dashboard sidebar"></aside>` để shared shell render sidebar.
+- `.app-area` chứa empty `<header class="header"></header>` và `<main class="content">`.
+- Lucide script.
+- Shared script `../assets/nexora-shell.js`.
+
+Các thay đổi có chủ đích so với `salon.html`:
+
+- Đổi `lang` thành `en-US` vì nội dung Billing Detail hiển thị bằng tiếng Anh.
+- Đổi page title thành `Nexora Touch - Billing Details`.
+- Đổi main accessible label thành `Billing details content`.
+- Điền nội dung Billing Detail vào bên trong `<main>` thay vì để main rỗng.
+- Thêm page-specific stylesheet `../assets/nexora-package-billing-detail.css` sau shared shell CSS.
+- Thêm shared billing data và page-specific JavaScript trước shared shell script.
+- Khai báo `window.NEXORA_SHELL` với `activePage: 'packages'` và `activeTab: 'history'` trước khi load `nexora-shell.js` để giữ đúng ngữ cảnh Package Management.
+
+Baseline này là một acceptance requirement, không chỉ là gợi ý triển khai.
+
+### 4.3. File boundaries dự kiến
+
+- Create `html/pages/nexora-package-billing-detail.html`: trang mới dựa trên `salon.html`.
+- Create `html/assets/nexora-package-billing-detail.css`: style riêng của Billing Detail.
+- Create `html/assets/nexora-package-billing-detail.js`: đọc transaction ID, render trạng thái và wire actions.
+- Create `html/assets/nexora-package-billing-data.js`: fixture/data contract dùng chung cho Package History và Billing Detail.
+- Create `html/pages/nexora-package-billing-detail.test.mjs`: contract test cho baseline shell và nội dung theo trạng thái.
+- Modify `html/assets/nexora-packages.js`: dùng shared billing data và render cột Action.
+- Modify `html/assets/nexora-packages.css`: bỏ style cell Valid Until, thêm style action/payment status.
+- Modify `html/pages/nexora-packages.test.mjs`: cập nhật column order và navigation contract.
+
+### 4.4. Các phương án không chọn
 
 #### Hai trang riêng cho Invoice và Receipt
 
@@ -138,7 +176,7 @@ Tên `View invoice` được giữ cho giao dịch đã thanh toán theo yêu c�
 
 ### 6.1. Khung trang chung
 
-Trang sử dụng NEXORA shell hiện có và gồm:
+Trang bắt đầu từ skeleton `salon.html`, sử dụng NEXORA shell hiện có và gồm:
 
 - Tiêu đề trang: `Billing details`.
 - Back link: `Back to Package History`, trở về `nexora-packages.html?tab=history`.
@@ -375,6 +413,8 @@ Payment Due/Overdue
 
 ### 12.2. Billing Detail
 
+- HTML mới giữ đúng `.shell`, empty sidebar, `.app-area`, empty header và shared assets từ `salon.html`.
+- HTML khai báo package shell context với `activePage: 'packages'` và `activeTab: 'history'`.
 - Transaction `paid` render receipt overview và hai download actions.
 - Transaction `payment_due` render invoice overview, Pay now và chỉ download invoice.
 - Transaction `overdue` render badge/thông báo overdue.
@@ -401,7 +441,7 @@ Hoàn thành khi tất cả điều kiện sau đúng:
 
 1. Package History không hiển thị `Valid Until`.
 2. Package History có cột `Action` và điều hướng được bằng transaction ID.
-3. Billing detail là trang riêng, không phải modal/drawer.
+3. Billing Detail là HTML mới dựa trên skeleton `salon.html` và là trang riêng, không phải modal/drawer.
 4. Paid record hiển thị receipt overview và tải được cả invoice lẫn receipt PDF.
 5. Unpaid/overdue record hiển thị invoice overview, amount due, due date và Pay now.
 6. Receipt action không xuất hiện trước khi thanh toán thành công.
@@ -416,7 +456,7 @@ Hoàn thành khi tất cả điều kiện sau đúng:
 2. Thêm test thất bại cho Package History và Billing Detail.
 3. Chuẩn hoá billing fixture/data contract.
 4. Chỉnh Package History.
-5. Tạo trang Billing Detail và assets riêng.
+5. Tạo trang Billing Detail từ `salon.html` và thêm assets riêng.
 6. Tạo PDF NEXORA mẫu từ cùng fixture data.
 7. Kết nối download actions.
 8. Chạy test, render trang/PDF và kiểm tra responsive.
