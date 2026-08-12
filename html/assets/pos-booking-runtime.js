@@ -552,7 +552,8 @@ var DEFAULT_MAIN_TAB = 'booking';
     function clearBookingPanelInvalidField(field) {
       if (!field) return;
       var name = field.getAttribute('data-booking-panel-field') || '';
-      if (bookingPanelInvalidField && bookingPanelInvalidField !== name) return;
+      var isInvalid = bookingPanelInvalidField === name || field.classList.contains('is-invalid') || field.getAttribute('aria-invalid') === 'true';
+      if (!isInvalid) return;
       field.classList.remove('is-invalid');
       field.removeAttribute('aria-invalid');
       bookingPanelInvalidField = '';
@@ -2990,7 +2991,11 @@ function bookingCardStatusIcon(item) {
 
     document.addEventListener('change', function(event) {
       var createField = event.target.closest('[data-booking-create-field]');
-      if (createField) clearBookingCreateInvalidField(createField);
+      if (createField) {
+        var createFieldWasInvalid = createField.classList.contains('is-invalid') || createField.getAttribute('aria-invalid') === 'true';
+        clearBookingCreateInvalidField(createField);
+        if (createFieldWasInvalid) setBookingCreateError('');
+      }
       var panelField = event.target.closest('[data-booking-panel-field]');
       if (panelField) clearBookingPanelInvalidField(panelField);
 
@@ -3357,7 +3362,11 @@ function bookingCardStatusIcon(item) {
 
     document.addEventListener('input', function(event) {
       var createField = event.target.closest('[data-booking-create-field]');
-      if (createField) clearBookingCreateInvalidField(createField);
+      if (createField) {
+        var createFieldWasInvalid = createField.classList.contains('is-invalid') || createField.getAttribute('aria-invalid') === 'true';
+        clearBookingCreateInvalidField(createField);
+        if (createFieldWasInvalid) setBookingCreateError('');
+      }
       var panelField = event.target.closest('[data-booking-panel-field]');
       if (panelField) clearBookingPanelInvalidField(panelField);
       var createTicketServiceSearch = event.target.closest('[data-booking-create-ticket-service-search]');
