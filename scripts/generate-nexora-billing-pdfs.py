@@ -248,13 +248,18 @@ def header_block(record: dict[str, Any], document_type: str, style: dict[str, Pa
 def parties_block(record: dict[str, Any], style: dict[str, ParagraphStyle]) -> Table:
     seller = record["seller"]
     bill_to = record["billTo"]
+    seller_address = "<br/>".join(xml(line) for line in seller.get("addressLines", []))
+    bill_to_address = "<br/>".join(xml(line) for line in bill_to.get("addressLines", []))
+    seller_legal_name = seller.get("legalName", seller["name"])
     data = [[
         Paragraph(
-            f"<b>{xml(seller['name'])}</b><br/><font color='#64748B'>{xml(seller['email'])}</font>",
+            f"<b>Seller</b><br/><b>{xml(seller_legal_name)}</b><br/>{seller_address}<br/>"
+            f"<font color='#64748B'>{xml(seller['email'])}</font>",
             style["body"],
         ),
         Paragraph(
-            f"<b>Bill to</b><br/>{xml(bill_to['name'])}<br/><font color='#64748B'>{xml(bill_to['email'])}</font>",
+            f"<b>Bill to</b><br/><b>{xml(bill_to['name'])}</b><br/>{bill_to_address}<br/>"
+            f"<font color='#64748B'>{xml(bill_to['email'])}</font>",
             style["body"],
         ),
     ]]

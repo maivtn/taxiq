@@ -18,6 +18,7 @@ function source() {
 
 function fakeElement(options = {}) {
   const listeners = {};
+  const attributes = new Map();
   const element = {
     dataset: options.dataset || {},
     hidden: Boolean(options.hidden),
@@ -37,29 +38,52 @@ function fakeElement(options = {}) {
     },
     focus() {
       element.focused = true;
+      if (options.onFocus) options.onFocus(element);
     },
     querySelector(selector) {
       return options.querySelector ? options.querySelector(selector) : null;
     },
-    setAttribute() {}
+    querySelectorAll(selector) {
+      return options.querySelectorAll ? options.querySelectorAll(selector) : [];
+    },
+    hasAttribute(name) {
+      return attributes.has(name);
+    },
+    removeAttribute(name) {
+      attributes.delete(name);
+    },
+    setAttribute(name, value) {
+      attributes.set(name, String(value));
+    }
   };
   return element;
 }
 
-function createBillingRuntime(search) {
+function createBillingRuntime(search, mutateRecords) {
   assert.ok(existsSync(DETAIL_JS_URL), 'nexora-package-billing-detail.js must exist');
+  let activeElement = null;
   const root = fakeElement();
   const modalSummary = fakeElement();
-  const modalClose = fakeElement();
+  const modalClose = fakeElement({ onFocus: (element) => { activeElement = element; } });
+  const modalChoice = fakeElement({ onFocus: (element) => { activeElement = element; } });
+  const modalContinue = fakeElement({ onFocus: (element) => { activeElement = element; } });
+  const modalFocusables = [modalClose, modalChoice, modalContinue];
   const modal = fakeElement({
     hidden: true,
     querySelector(selector) {
       if (selector === '[data-billing-payment-summary]') return modalSummary;
       if (selector === '[data-billing-payment-close]') return modalClose;
       return null;
+    },
+    querySelectorAll() {
+      return modalFocusables;
     }
   });
-  const payNowTarget = fakeElement({ dataset: { billingPayNow: 'SMS-20260811-0001' } });
+  const shell = fakeElement();
+  const payNowTarget = fakeElement({
+    dataset: { billingPayNow: 'SMS-20260811-0001' },
+    onFocus: (element) => { activeElement = element; }
+  });
   payNowTarget.closest = (selector) => selector === '[data-billing-pay-now]' ? payNowTarget : null;
   const documentListeners = {};
   const document = {
@@ -70,6 +94,7 @@ function createBillingRuntime(search) {
     querySelector(selector) {
       if (selector === '[data-billing-detail-root]') return root;
       if (selector === '[data-billing-payment-modal]') return modal;
+      if (selector === '.shell') return shell;
       return null;
     },
     addEventListener(type, handler) {
@@ -79,6 +104,11 @@ function createBillingRuntime(search) {
       if (documentListeners[type]) documentListeners[type]({ preventDefault() {}, ...event });
     }
   };
+  Object.defineProperty(document, 'activeElement', {
+    get() {
+      return activeElement;
+    }
+  });
   const context = {
     Date,
     Intl,
@@ -91,8 +121,9 @@ function createBillingRuntime(search) {
   };
 
   vm.runInNewContext(readFileSync(BILLING_DATA_URL, 'utf8'), context);
+  if (mutateRecords) mutateRecords(context.window.NEXORA_PACKAGE_BILLING_RECORDS);
   vm.runInNewContext(readFileSync(DETAIL_JS_URL, 'utf8'), context);
-  return { document, modal, modalClose, modalSummary, payNowTarget, root };
+  return { document, modal, modalChoice, modalClose, modalContinue, modalSummary, payNowTarget, root, shell };
 }
 
 function billingRecords() {
@@ -135,9 +166,24 @@ test('renders a paid billing record with invoice and receipt downloads', () => {
   assert.match(html, /Invoice number[\s\S]*?NX-2026-0810-023749/);
   assert.match(html, /Visa[\s\S]*?4242/);
   assert.match(html, /Stripe/);
+  assert.match(html, /Transaction ID[\s\S]*?NXR-20260810-0003/);
+  assert.match(html, /Processor transaction ID[\s\S]*?pi_3NX_023749/);
   assert.match(html, /Professional Pro/);
+  assert.match(html, /Tax \(0%\)/);
   assert.match(html, /Amount paid[\s\S]*?\$79\.00/);
   assert.doesNotMatch(html, /data-billing-pay-now/);
+});
+
+test('explains when an expected billing document is not available', () => {
+  const html = createBillingRuntime('?transaction=NXR-20260810-0003', (records) => {
+    records[0].invoiceFile = null;
+    records[0].receiptFile = null;
+  }).root.innerHTML;
+
+  assert.match(html, /aria-disabled="true"[\s\S]*?Download invoice/);
+  assert.match(html, /aria-disabled="true"[\s\S]*?Download receipt/);
+  assert.match(html, /Document is not available yet/);
+  assert.doesNotMatch(html, /href=""/);
 });
 
 test('renders a payment-due invoice without a receipt download', () => {
@@ -193,10 +239,30 @@ test('opens and closes the Pay now demo payment UI', () => {
   assert.match(runtime.modalSummary.innerHTML, /NX-2026-0811-1CCEE7/);
   assert.match(runtime.modalSummary.innerHTML, /\$179\.00/);
   assert.equal(runtime.modalClose.focused, true);
+  assert.equal(runtime.shell.hasAttribute('inert'), true);
+
+  let tabWasPrevented = false;
+  runtime.document.dispatch('keydown', {
+    key: 'Tab',
+    shiftKey: true,
+    preventDefault() { tabWasPrevented = true; }
+  });
+  assert.equal(tabWasPrevented, true);
+  assert.equal(runtime.modalContinue.focused, true);
+
+  tabWasPrevented = false;
+  runtime.document.dispatch('keydown', {
+    key: 'Tab',
+    shiftKey: false,
+    preventDefault() { tabWasPrevented = true; }
+  });
+  assert.equal(tabWasPrevented, true);
+  assert.equal(runtime.modalClose.focused, true);
 
   runtime.document.dispatch('keydown', { key: 'Escape' });
   assert.equal(runtime.modal.hidden, true);
   assert.equal(runtime.payNowTarget.focused, true);
+  assert.equal(runtime.shell.hasAttribute('inert'), false);
 });
 
 test('provides real PDF download documents that match billing records', () => {
@@ -208,6 +274,9 @@ test('provides real PDF download documents that match billing records', () => {
     assert.equal(readFileSync(invoiceURL).subarray(0, 5).toString(), '%PDF-');
     const invoiceText = execFileSync('pdftotext', [fileURLToPath(invoiceURL), '-'], { encoding: 'utf8' });
     assert.match(invoiceText, /NEXORA Touch/);
+    assert.match(invoiceText, new RegExp(record.seller.legalName));
+    assert.match(invoiceText, new RegExp(record.seller.addressLines[0]));
+    assert.match(invoiceText, new RegExp(record.billTo.addressLines[0]));
     assert.match(invoiceText, new RegExp(record.invoiceNumber));
     assert.match(invoiceText, new RegExp(record.packageName));
     assert.match(invoiceText, new RegExp(`\\$${record.total}\\.00`));

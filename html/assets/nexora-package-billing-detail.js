@@ -6,8 +6,10 @@
     : [];
   const root = document.querySelector('[data-billing-detail-root]');
   const paymentModal = document.querySelector('[data-billing-payment-modal]');
+  const shell = document.querySelector('.shell');
   let paymentOpener = null;
   let paymentPreviousOverflow = '';
+  let shellHadInert = false;
 
   function escapeHTML(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, (character) => ({
@@ -61,7 +63,17 @@
   }
 
   function renderDownloadAction(path, label, icon) {
-    if (!path) return '';
+    if (!path) {
+      return `
+        <span class="billing-detail-action-group">
+          <span class="billing-detail-action is-disabled" role="link" aria-disabled="true">
+            <i data-lucide="${icon}" aria-hidden="true"></i>
+            <span>${escapeHTML(label)}</span>
+          </span>
+          <span class="billing-detail-action-note" role="status">Document is not available yet</span>
+        </span>
+      `;
+    }
     const filename = downloadName(path);
     return `
       <a class="billing-detail-action" href="${escapeHTML(path)}" download="${escapeHTML(filename)}" aria-label="${escapeHTML(`${label} ${filename}`)}">
@@ -100,11 +112,12 @@
   }
 
   function renderTotals(record, paid) {
+    const hasTaxRate = record.taxRate !== null && record.taxRate !== undefined;
     return `
       <dl class="billing-detail-totals">
         <div><dt>Subtotal</dt><dd>${formatMoney(record.subtotal, record.currency)}</dd></div>
         <div><dt>Total excluding tax</dt><dd>${formatMoney(record.subtotal, record.currency)}</dd></div>
-        <div class="is-muted"><dt>${escapeHTML(record.taxLabel)}${record.taxRate ? ` (${escapeHTML(record.taxRate)}%)` : ''}</dt><dd>${formatMoney(record.taxAmount, record.currency)}</dd></div>
+        <div class="is-muted"><dt>${escapeHTML(record.taxLabel)}${hasTaxRate ? ` (${escapeHTML(record.taxRate)}%)` : ''}</dt><dd>${formatMoney(record.taxAmount, record.currency)}</dd></div>
         <div class="is-total"><dt>Total</dt><dd>${formatMoney(record.total, record.currency)}</dd></div>
         <div class="is-final"><dt>${paid ? 'Amount paid' : 'Amount due'}</dt><dd>${formatMoney(record.total, record.currency)}</dd></div>
       </dl>
@@ -137,7 +150,8 @@
           <div><dt>Invoice number</dt><dd>${escapeHTML(record.invoiceNumber)}</dd></div>
           <div><dt>Payment method</dt><dd>${escapeHTML(method.brand)} <span class="billing-detail-card-dots">••••</span> ${escapeHTML(method.last4)}</dd></div>
           <div><dt>Processor</dt><dd>${escapeHTML(record.processor)}</dd></div>
-          <div><dt>Transaction ID</dt><dd>${escapeHTML(record.processorTransactionId)}</dd></div>
+          <div><dt>Transaction ID</dt><dd>${escapeHTML(record.transactionId)}</dd></div>
+          <div><dt>Processor transaction ID</dt><dd>${escapeHTML(record.processorTransactionId)}</dd></div>
           <div><dt>Bill to</dt><dd>${escapeHTML(record.billTo.name)}<span>${escapeHTML(record.billTo.email)}</span></dd></div>
         </dl>
       </article>
@@ -247,6 +261,10 @@
     }
     paymentModal.hidden = false;
     paymentModal.setAttribute('aria-hidden', 'false');
+    if (shell) {
+      shellHadInert = shell.hasAttribute('inert');
+      shell.setAttribute('inert', '');
+    }
     document.body.classList.add('billing-payment-open');
     document.body.style.overflow = 'hidden';
     if (closeButton) closeButton.focus();
@@ -259,8 +277,35 @@
     paymentModal.setAttribute('aria-hidden', 'true');
     document.body.classList.remove('billing-payment-open');
     document.body.style.overflow = paymentPreviousOverflow;
+    if (shell && !shellHadInert) shell.removeAttribute('inert');
+    shellHadInert = false;
     if (paymentOpener && typeof paymentOpener.focus === 'function') paymentOpener.focus();
     paymentOpener = null;
+  }
+
+  function trapBillingPaymentFocus(event) {
+    if (!paymentModal || paymentModal.hidden || event.key !== 'Tab') return;
+    const focusable = Array.from(paymentModal.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    ));
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement;
+    if (event.shiftKey && active === first) {
+      event.preventDefault();
+      last.focus();
+      return;
+    }
+    if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+      return;
+    }
+    if (!paymentModal.contains || !paymentModal.contains(active)) {
+      event.preventDefault();
+      first.focus();
+    }
   }
 
   if (!root) return;
@@ -285,7 +330,11 @@
   }
 
   document.addEventListener('keydown', (event) => {
-    if (event.key === 'Escape' && paymentModal && !paymentModal.hidden) closeBillingPayment();
+    if (event.key === 'Escape' && paymentModal && !paymentModal.hidden) {
+      closeBillingPayment();
+      return;
+    }
+    trapBillingPaymentFocus(event);
   });
 
   if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
