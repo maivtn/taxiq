@@ -1285,7 +1285,7 @@ var DEFAULT_MAIN_TAB = 'booking';
           '<button class="booking-selected-service-remove" type="button" data-booking-create-service-remove="' + escapeHtml(name) + '" aria-label="Remove ' + escapeHtml(name) + '"><i class="bi bi-x-lg" aria-hidden="true"></i></button></span>';
       }).join('');
       host.hidden = false;
-      host.innerHTML = rows;
+      host.innerHTML = '<span class="booking-selected-services-title">Selected services</span>' + rows;
     }
 
     function updateBookingCreateServiceSummary() {

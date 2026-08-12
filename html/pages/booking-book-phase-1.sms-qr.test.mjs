@@ -393,7 +393,7 @@ test('shows total price and total time below New appointment services', () => {
   assert.match(html, /updateBookingCreateServiceSummary\(\);/);
 });
 
-test('New appointment lists selected services as removable name chips', () => {
+test('New appointment labels selected services before removable name chips', () => {
   const html = source();
   const serviceField = html.match(/<label class="booking-create-field is-full">[\s\S]*?data-booking-create-total-duration>0 min<\/strong>[\s\S]*?<\/label>/)?.[0] || '';
   const selectedIndex = serviceField.indexOf('data-booking-create-selected-services');
@@ -403,12 +403,14 @@ test('New appointment lists selected services as removable name chips', () => {
   assert.ok(selectedIndex >= 0, 'selected services list should exist below the picker');
   assert.ok(summaryIndex > selectedIndex, 'selected services should appear before total price and time');
   assert.match(html, /function renderBookingCreateSelectedServices\(\)/);
+  assert.match(html, /booking-selected-services-title/);
+  assert.match(html, />Selected services</);
   assert.match(html, /booking-selected-service-chip/);
   assert.match(html, /booking-selected-service-name/);
   assert.match(html, /data-booking-create-service-remove/);
   assert.match(html, /var bookingCreateServiceRemove = event\.target\.closest\('\[data-booking-create-service-remove\]'\);/);
   assert.match(html, /setBookingCreateServiceSelected\(button, false\);/);
-  assert.doesNotMatch(html, /booking-selected-services-title|booking-selected-service-row|booking-selected-service-main|booking-selected-service-list/);
+  assert.doesNotMatch(html, /booking-selected-service-row|booking-selected-service-main|booking-selected-service-list/);
 });
 
 test('renders service totals as text instead of input-like controls', () => {

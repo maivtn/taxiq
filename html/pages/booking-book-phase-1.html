@@ -5117,8 +5117,9 @@
     .booking-service-selected-check { position: absolute; top: 6px; right: 7px; display: none; width: 18px; height: 18px; place-items: center; border: 1px solid var(--nexora-brand); border-radius: 999px; background: var(--nexora-brand); color: #fff; font-size: 11px; line-height: 1; }
     .booking-service-chip-button.service-card.is-selected .booking-service-selected-check { display: grid; }
     .booking-service-empty { padding: 12px; color: var(--nexora-subtle); font-size: 11px; font-weight: 700; text-align: center; }
-    .booking-selected-services { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+    .booking-selected-services { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin-top: 8px; }
     .booking-selected-services[hidden] { display: none; }
+    .booking-selected-services-title { flex: 0 0 100%; color: var(--nexora-muted); font-size: 10px; font-weight: 800; line-height: 1.2; text-transform: uppercase; }
     .booking-selected-service-chip { display: inline-flex; max-width: 100%; align-items: center; gap: 6px; border: 1px solid var(--nexora-border); border-radius: 999px; background: #fff; padding: 4px 4px 4px 10px; color: var(--nexora-text); font-size: 11px; font-weight: 800; }
     .booking-selected-service-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
     .booking-selected-service-remove { display: inline-grid; width: 20px; height: 20px; flex: 0 0 auto; place-items: center; border: 0; border-radius: 999px; background: transparent; color: var(--nexora-subtle); font-size: 10px; }
@@ -13165,7 +13166,7 @@
           '<button class="booking-selected-service-remove" type="button" data-booking-create-service-remove="' + escapeHtml(name) + '" aria-label="Remove ' + escapeHtml(name) + '"><i class="bi bi-x-lg" aria-hidden="true"></i></button></span>';
       }).join('');
       host.hidden = false;
-      host.innerHTML = rows;
+      host.innerHTML = '<span class="booking-selected-services-title">Selected services</span>' + rows;
     }
 
     function updateBookingCreateServiceSummary() {

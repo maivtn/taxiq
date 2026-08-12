@@ -256,7 +256,7 @@ test('POS New appointment service cards stay compact', () => {
   assert.match(selectedCheckRule, /height:\s*18px/);
 });
 
-test('POS New appointment lists selected services as removable name chips', () => {
+test('POS New appointment labels selected services before removable name chips', () => {
   const createModal = html.match(/<div class="booking-create-modal" data-booking-create-modal[\s\S]*?<div class="booking-create-error"/)?.[0] || '';
   const selectedIndex = createModal.indexOf('data-booking-create-selected-services');
   const summaryIndex = createModal.indexOf('class="booking-service-summary"');
@@ -265,12 +265,14 @@ test('POS New appointment lists selected services as removable name chips', () =
   assert.ok(selectedIndex >= 0, 'selected services list should exist below the picker');
   assert.ok(summaryIndex > selectedIndex, 'selected services should appear before total price and time');
   assert.match(runtime, /function renderBookingCreateSelectedServices\(\)/);
+  assert.match(runtime + css, /booking-selected-services-title/);
+  assert.match(runtime, />Selected services</);
   assert.match(runtime + css, /booking-selected-service-chip/);
   assert.match(runtime + css, /booking-selected-service-name/);
   assert.match(runtime, /data-booking-create-service-remove/);
   assert.match(runtime, /var bookingCreateServiceRemove = event\.target\.closest\('\[data-booking-create-service-remove\]'\);/);
   assert.match(runtime, /setBookingCreateServiceSelected\(button, false\);/);
-  assert.doesNotMatch(runtime + css, /booking-selected-services-title|booking-selected-service-row|booking-selected-service-main|booking-selected-service-list/);
+  assert.doesNotMatch(runtime + css, /booking-selected-service-row|booking-selected-service-main|booking-selected-service-list/);
 });
 
 test('POS Booking labels the appointment time field as Time', () => {
