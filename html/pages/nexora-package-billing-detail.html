@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en-US">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexora Touch - Billing Details</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/nexora-package-billing-detail.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Dashboard sidebar"></aside>
+
+    <div class="app-area">
+      <header class="header"></header>
+
+      <main class="content" aria-label="Billing details content">
+        <section class="billing-detail-page" aria-labelledby="billing-detail-title">
+          <a class="billing-detail-back" href="nexora-packages.html?tab=history">
+            <i data-lucide="arrow-left" aria-hidden="true"></i>
+            <span>Back to Package History</span>
+          </a>
+          <h1 class="visually-hidden" id="billing-detail-title">Billing details</h1>
+          <div data-billing-detail-root></div>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script src="../assets/nexora-package-billing-data.js"></script>
+  <script src="../assets/nexora-package-billing-detail.js"></script>
+  <script>
+    window.NEXORA_SHELL = {
+      activePage: 'packages',
+      activeTab: 'history'
+    };
+  </script>
+  <script src="../assets/nexora-shell.js"></script>
+</body>
+</html>
