@@ -620,12 +620,19 @@
       line-height: 20px;
     }
 
+    .page-heading-links {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: stretch;
+      gap: 10px;
+      margin-top: 14px;
+    }
+
     .page-guide-link {
       display: inline-flex;
       max-width: 100%;
       align-items: center;
       gap: 8px;
-      margin-top: 14px;
       border: 1px solid rgba(70, 72, 216, .2);
       border-radius: 10px;
       background: linear-gradient(135deg, #fff, #f5f6ff);
@@ -652,6 +659,177 @@
     .page-guide-link .bi:last-child {
       color: var(--nexora-subtle);
       font-size: 13px;
+    }
+
+    .booking-online-share {
+      display: grid;
+      width: min(100%, 620px);
+      min-width: 0;
+      grid-template-columns: minmax(180px, 1fr) 38px 38px;
+      align-items: stretch;
+      gap: 6px;
+      border: 1px solid rgba(43, 89, 255, .2);
+      border-radius: 10px;
+      background: linear-gradient(135deg, #fff, #f4fbff);
+      padding: 5px;
+      box-shadow: var(--nexora-card-shadow);
+    }
+
+    .booking-online-anchor {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      justify-content: center;
+      gap: 2px;
+      border-radius: 7px;
+      padding: 3px 7px;
+      color: var(--nexora-text);
+      text-decoration: none;
+    }
+
+    .booking-online-anchor:hover .booking-online-url {
+      color: var(--nexora-electric);
+      text-decoration: underline;
+    }
+
+    .booking-online-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      color: var(--nexora-brand);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 16px;
+    }
+
+    .booking-online-url {
+      overflow: hidden;
+      color: var(--nexora-muted);
+      font-size: 11px;
+      font-weight: 600;
+      line-height: 15px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .booking-online-icon-button {
+      display: inline-flex;
+      width: 38px;
+      min-height: 38px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--nexora-border);
+      border-radius: 8px;
+      background: #fff;
+      color: var(--nexora-brand);
+      font-size: 16px;
+      transition: background .2s, border-color .2s, color .2s, transform .2s;
+    }
+
+    .booking-online-icon-button:hover {
+      border-color: var(--nexora-brand);
+      background: #f4f4ff;
+      color: var(--nexora-electric);
+      transform: translateY(-1px);
+    }
+
+    .booking-online-icon-button:focus-visible,
+    .booking-online-anchor:focus-visible,
+    .booking-online-qr-close:focus-visible,
+    .booking-online-qr-link:focus-visible {
+      outline: 3px solid rgba(43, 89, 255, .25);
+      outline-offset: 2px;
+    }
+
+    .booking-online-qr-dialog {
+      width: min(calc(100vw - 32px), 420px);
+      max-width: 420px;
+      border: 0;
+      border-radius: 20px;
+      background: transparent;
+      padding: 0;
+      color: var(--nexora-text);
+      box-shadow: 0 24px 70px rgba(15, 23, 42, .28);
+    }
+
+    .booking-online-qr-dialog::backdrop {
+      background: rgba(8, 31, 73, .58);
+      backdrop-filter: blur(4px);
+    }
+
+    .booking-online-qr-card {
+      position: relative;
+      border: 1px solid var(--nexora-border);
+      border-radius: 20px;
+      background: #fff;
+      padding: 28px;
+      text-align: center;
+    }
+
+    .booking-online-qr-close {
+      position: absolute;
+      top: 14px;
+      right: 14px;
+      display: inline-flex;
+      width: 36px;
+      height: 36px;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--nexora-border);
+      border-radius: 9px;
+      background: #fff;
+      color: var(--nexora-muted);
+      font-size: 14px;
+    }
+
+    .booking-online-qr-title {
+      margin: 4px 40px 0;
+      font-size: 20px;
+      line-height: 28px;
+    }
+
+    .booking-online-qr-description {
+      margin: 8px 0 0;
+      color: var(--nexora-muted);
+      font-size: 13px;
+      line-height: 20px;
+    }
+
+    .booking-online-qr-art {
+      display: flex;
+      width: 248px;
+      min-height: 248px;
+      align-items: center;
+      justify-content: center;
+      margin: 20px auto 0;
+      border: 1px solid var(--nexora-border);
+      border-radius: 16px;
+      background: #fff;
+      padding: 12px;
+    }
+
+    .booking-online-qr-art canvas,
+    .booking-online-qr-art img {
+      display: block;
+      max-width: 224px;
+      height: auto;
+    }
+
+    .booking-online-qr-fallback {
+      margin: 14px 0 0;
+      color: #b45309;
+      font-size: 12px;
+      line-height: 18px;
+    }
+
+    .booking-online-qr-link {
+      display: block;
+      margin-top: 16px;
+      overflow-wrap: anywhere;
+      color: var(--nexora-electric);
+      font-size: 12px;
+      font-weight: 700;
+      line-height: 18px;
     }
 
     .page-tabs {
@@ -8897,11 +9075,38 @@
           <div class="page-heading">
             <h1 class="page-title">AI Hub</h1>
             <p class="page-description">Manage salon bookings, appointments, and client scheduling from this workspace.</p>
-            <a class="page-guide-link" href="salon-guide-ai-voice.html" aria-label="Open the AI Voice setup guide">
-              <i class="bi bi-journal-text" aria-hidden="true"></i>
-              <span>AI Voice setup guide</span>
-              <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
-            </a>
+            <div class="page-heading-links">
+              <a class="page-guide-link" href="salon-guide-ai-voice.html" aria-label="Open the AI Voice setup guide">
+                <i class="bi bi-journal-text" aria-hidden="true"></i>
+                <span>AI Voice setup guide</span>
+                <i class="bi bi-arrow-up-right" aria-hidden="true"></i>
+              </a>
+              <div class="booking-online-share" data-booking-online-share data-booking-path="../customer/booking.html">
+                <a class="booking-online-anchor" href="../customer/booking.html" target="_blank" rel="noopener" aria-label="Open online booking page">
+                  <span class="booking-online-label"><i class="bi bi-link-45deg" aria-hidden="true"></i>Link booking online</span>
+                  <span class="booking-online-url" data-booking-online-url>html/customer/booking.html</span>
+                </a>
+                <button class="booking-online-icon-button" type="button" data-booking-online-copy aria-label="Copy online booking link" title="Copy link">
+                  <i class="bi bi-copy" aria-hidden="true"></i>
+                </button>
+                <button class="booking-online-icon-button" type="button" data-booking-online-qr-open aria-label="Show online booking QR code" title="Show QR code">
+                  <i class="bi bi-qr-code" aria-hidden="true"></i>
+                </button>
+                <span class="sr-only" data-booking-online-copy-status aria-live="polite"></span>
+                <dialog class="booking-online-qr-dialog" data-booking-online-qr-dialog aria-labelledby="booking-online-qr-title">
+                  <div class="booking-online-qr-card">
+                    <button class="booking-online-qr-close" type="button" data-booking-online-qr-close aria-label="Close booking QR code">
+                      <i class="bi bi-x-lg" aria-hidden="true"></i>
+                    </button>
+                    <h2 class="booking-online-qr-title" id="booking-online-qr-title">Scan to book online</h2>
+                    <p class="booking-online-qr-description">Open the customer booking page on your phone.</p>
+                    <div class="booking-online-qr-art" data-booking-online-qr role="img" aria-label="QR code for the online booking page"></div>
+                    <p class="booking-online-qr-fallback" data-booking-online-qr-fallback hidden>QR preview is unavailable. Open the link below instead.</p>
+                    <a class="booking-online-qr-link" data-booking-online-url href="../customer/booking.html" target="_blank" rel="noopener">html/customer/booking.html</a>
+                  </div>
+                </dialog>
+              </div>
+            </div>
             <div class="page-tabs" role="tablist" aria-label="Booking Book sections">
               <button class="page-tab is-active" type="button" role="tab" aria-selected="true" data-tab-target="booking" aria-controls="panel-booking">
                 <span class="page-tab-icon">
@@ -19295,6 +19500,7 @@ function getBookingCardCallStart(item) {
   <script>
     window.NEXORA_SHELL = { activePage: 'booking', activeTab: 'booking' };
   </script>
+  <script src="../assets/booking-online-link.js"></script>
   <script src="../assets/nexora-shell.js"></script>
 </body>
 </html>

@@ -4,6 +4,7 @@ import { existsSync, readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
 const RUNTIME_URL = new URL('../assets/booking-online-link.js', import.meta.url);
+const BOOKING_BOOK_URL = new URL('./booking-book-phase-1.html', import.meta.url);
 
 function loadRuntime(overrides = {}) {
   assert.ok(existsSync(RUNTIME_URL), 'booking-online-link.js must exist');
@@ -113,4 +114,30 @@ test('encodes the exact booking URL and degrades when QRCode is unavailable', ()
 
   assert.equal(api.renderBookingQr(container, bookingUrl, undefined), false);
   assert.equal(container.encodedText, '');
+});
+
+test('places the online booking share control beside the AI Voice guide', () => {
+  assert.ok(existsSync(BOOKING_BOOK_URL), 'booking-book-phase-1.html must exist');
+  const html = readFileSync(BOOKING_BOOK_URL, 'utf8');
+  const headingLinks = html.match(/<div class="page-heading-links">[\s\S]*?<\/div>\s*<div class="page-tabs"/)?.[0] || '';
+
+  assert.match(headingLinks, /AI Voice setup guide/);
+  assert.match(headingLinks, /data-booking-online-share[^>]*data-booking-path="\.\.\/customer\/booking\.html"/);
+  assert.match(headingLinks, /Link booking online/);
+  assert.match(headingLinks, /data-booking-online-url/);
+  assert.match(headingLinks, /data-booking-online-copy[^>]*aria-label="Copy online booking link"/);
+  assert.match(headingLinks, /data-booking-online-copy[^>]*>[\s\S]*?class="bi bi-copy"/);
+  assert.match(headingLinks, /data-booking-online-qr-open[^>]*aria-label="Show online booking QR code"/);
+  assert.match(headingLinks, /data-booking-online-qr-open[^>]*>[\s\S]*?class="bi bi-qr-code"/);
+});
+
+test('provides an accessible QR dialog and loads the booking link runtime', () => {
+  const html = readFileSync(BOOKING_BOOK_URL, 'utf8');
+
+  assert.match(html, /<dialog[^>]*data-booking-online-qr-dialog[^>]*aria-labelledby="booking-online-qr-title"/);
+  assert.match(html, /data-booking-online-qr(?:\s|>)/);
+  assert.match(html, /data-booking-online-qr-fallback[^>]*hidden/);
+  assert.match(html, /data-booking-online-qr-close[^>]*aria-label="Close booking QR code"/);
+  assert.match(html, /data-booking-online-copy-status[^>]*aria-live="polite"/);
+  assert.match(html, /<script src="\.\.\/assets\/booking-online-link\.js"><\/script>/);
 });
