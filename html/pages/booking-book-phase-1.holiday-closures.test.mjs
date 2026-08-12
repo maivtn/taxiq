@@ -15,6 +15,12 @@ const HOLIDAY_MODAL = HOLIDAY_MODAL_START >= 0 && HOLIDAY_MODAL_END > HOLIDAY_MO
 const HOLIDAY_LOGIC_START = SOURCE.indexOf('var SETTINGS_HOLIDAY_STORAGE_KEY');
 const HOLIDAY_LOGIC_END = SOURCE.indexOf('function settingsServiceCategoriesFromCatalog');
 const HOLIDAY_LOGIC = SOURCE.slice(HOLIDAY_LOGIC_START, HOLIDAY_LOGIC_END);
+const HOLIDAY_CONTAINER_RULE = SOURCE.match(/\[data-settings-holiday-card\]\s*\{([\s\S]*?)\n\s*\}/)?.[1] || '';
+const HOLIDAY_CONTAINER_START = SOURCE.indexOf('@container holiday-card (max-width: 420px)');
+const HOLIDAY_CONTAINER_END = SOURCE.indexOf('@media (max-width: 520px)', HOLIDAY_CONTAINER_START);
+const HOLIDAY_CONTAINER_CSS = HOLIDAY_CONTAINER_START >= 0 && HOLIDAY_CONTAINER_END > HOLIDAY_CONTAINER_START
+  ? SOURCE.slice(HOLIDAY_CONTAINER_START, HOLIDAY_CONTAINER_END)
+  : '';
 
 test('Settings adds Holiday & Closures after regular operating hours', () => {
   assert.match(HOLIDAY_CARD, /Holiday &amp; Closures/);
@@ -87,6 +93,21 @@ test('Holiday & Closures explains booking impact and auto notify by AI Voice and
   assert.doesNotMatch(HOLIDAY_CARD, /data-settings-holiday-bookable-summary/);
   assert.doesNotMatch(SOURCE, /\.settings-holiday-impact/);
   assert.doesNotMatch(SOURCE, /function renderSettingsHolidayImpact\(/);
+});
+
+test('Holiday & Closures table stacks when its card is narrow, even inside a modal', () => {
+  assert.match(HOLIDAY_CONTAINER_RULE, /container:\s*holiday-card\s*\/\s*inline-size/);
+  assert.match(HOLIDAY_CONTAINER_CSS, /\.settings-holiday-table-head\s*\{[\s\S]*?display:\s*none/);
+
+  const narrowRowRule = HOLIDAY_CONTAINER_CSS.match(/\.settings-holiday-row\s*\{([\s\S]*?)\n\s*\}/)?.[1] || '';
+  assert.match(narrowRowRule, /grid-template-columns:\s*minmax\(0,\s*1fr\)\s+auto/);
+  assert.match(narrowRowRule, /grid-template-areas:\s*"date type"\s*"reason reason"\s*"actions actions"/);
+  assert.doesNotMatch(narrowRowRule, /148px|168px/);
+
+  assert.match(HOLIDAY_CONTAINER_CSS, /\.settings-holiday-date\s*\{[\s\S]*?grid-area:\s*date/);
+  assert.match(HOLIDAY_CONTAINER_CSS, /\.settings-holiday-type\s*\{[\s\S]*?grid-area:\s*type/);
+  assert.match(HOLIDAY_CONTAINER_CSS, /\.settings-holiday-reason\s*\{[\s\S]*?grid-area:\s*reason[\s\S]*?white-space:\s*normal/);
+  assert.match(HOLIDAY_CONTAINER_CSS, /\.settings-holiday-row-actions\s*\{[\s\S]*?grid-area:\s*actions[\s\S]*?flex-wrap:\s*wrap/);
 });
 
 test('Holiday & Closures keeps one configuration per date', () => {

@@ -48,6 +48,24 @@ test('Salon Info places salon name and salon phone number on the same row', () =
   assert.deepEqual(positions, [...positions].sort((a, b) => a - b));
 });
 
+test('Salon Info places Google Review Link and Website on the same grid row', () => {
+  const googleField = SALON_INFO_CARD.match(/<label class="[^"]*"[^>]*>\s*<span class="settings-label">Google Review Link<\/span>[\s\S]*?<\/label>/)?.[0] || '';
+  const websiteField = SALON_INFO_CARD.match(/<label class="[^"]*"[^>]*>\s*<span class="settings-label">Website<\/span>[\s\S]*?<\/label>/)?.[0] || '';
+  assert.match(googleField, /<label class="settings-field">/);
+  assert.match(websiteField, /<label class="settings-field">/);
+  assert.doesNotMatch(googleField, /settings-span-full/);
+  assert.doesNotMatch(websiteField, /settings-span-full/);
+  assert.doesNotMatch(googleField, /style="grid-column:\s*1\s*\/\s*-1;"/);
+  assert.doesNotMatch(websiteField, /style="grid-column:\s*1\s*\/\s*-1;"/);
+
+  const googlePosition = SALON_INFO_CARD.indexOf('Google Review Link');
+  const websitePosition = SALON_INFO_CARD.indexOf('Website');
+  const socialLinksPosition = SALON_INFO_CARD.indexOf('Social Links');
+  assert.ok(googlePosition >= 0);
+  assert.ok(websitePosition > googlePosition, 'Website should sit immediately after Google Review Link in the two-column grid');
+  assert.ok(socialLinksPosition > websitePosition, 'Social Links should remain below the link fields');
+});
+
 test('adds three booking SMS recipient switches to Settings', () => {
   assert.match(BOOKING_SMS_CARD, /data-settings-booking-sms-card/);
   assert.match(BOOKING_SMS_CARD, /Booking SMS Notifications/);
