@@ -41,7 +41,6 @@
     { type: 'item', label: 'Home', icon: 'home' },
     { type: 'divider' },
     { type: 'item', label: 'Dashboard', icon: 'layout-dashboard' },
-    { type: 'item', label: 'Staff', icon: 'users-round' },
     { type: 'group', key: 'payments', label: 'Payments & Payouts', icon: 'wallet', items: [
       { label: 'Overview' },
       { label: 'Customer Payments' },
@@ -91,6 +90,7 @@
       { label: 'Account', tab: 'account' },
       { label: 'Business Verification', tab: 'business-verification' },
       { label: 'Sub Account', tab: 'sub-account' },
+      { label: 'Staff', tab: 'staff' },
       { label: 'Affiliate Link', tab: 'affiliate-link' },
       { label: 'Terms & Privacy', tab: 'terms-privacy' }
     ] },

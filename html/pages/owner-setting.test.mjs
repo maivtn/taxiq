@@ -51,7 +51,7 @@ test('renders the requested Account Settings headline and tabs', () => {
   assert.match(html, /Manage your account info, payout methods, business details, and compliance verification\./);
   assert.match(html, /<div class="page-tabs" role="tablist" aria-label="Account settings sections">/);
 
-  for (const tab of ['ACCOUNT', 'BUSINESS VERIFICATION', 'SUB ACCOUNT', 'AFFILIATE LINK', 'TERMS &amp; PRIVACY']) {
+  for (const tab of ['ACCOUNT', 'BUSINESS VERIFICATION', 'SUB ACCOUNT', 'STAFF', 'AFFILIATE LINK', 'TERMS &amp; PRIVACY']) {
     assert.match(html, new RegExp(`<button class="page-tab[^"]*"[^>]*role="tab"[\\s\\S]*?<span class="page-tab-icon">[\\s\\S]*?<\\/span>[\\s\\S]*?<span>${tab}<\\/span>[\\s\\S]*?<\\/button>`));
   }
 });
@@ -754,7 +754,7 @@ test('colors Role action buttons by action type', () => {
 
 test('leaves unfinished account setting tabs empty except Sub Account', () => {
   const html = source();
-  for (const panel of ['account', 'business-verification', 'affiliate-link', 'terms-privacy']) {
+  for (const panel of ['account', 'business-verification', 'staff', 'affiliate-link', 'terms-privacy']) {
     assert.equal(panelContent(html, panel).trim(), '', `panel-${panel} should be empty until it is implemented`);
   }
 
@@ -763,7 +763,7 @@ test('leaves unfinished account setting tabs empty except Sub Account', () => {
 
 test('wires Owner Settings tabs with accessible tab panels', () => {
   const html = source();
-  for (const panel of ['account', 'business-verification', 'affiliate-link', 'terms-privacy', 'sub-account']) {
+  for (const panel of ['account', 'business-verification', 'staff', 'affiliate-link', 'terms-privacy', 'sub-account']) {
     assert.match(html, new RegExp(`id="panel-${panel}"[\\s\\S]*?role="tabpanel"`));
   }
 

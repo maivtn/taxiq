@@ -133,6 +133,15 @@ test('links and activates Reviews on the native Review page', () => {
   assert.match(html, /<a class="nav-item is-active" href="nexora-review\.html">[\s\S]*?<span>Reviews<\/span>/);
 });
 
+test('moves merchant Staff navigation under Settings', () => {
+  const merchantHtml = renderSidebar('booking', 'booking');
+  assert.doesNotMatch(merchantHtml, /<button class="nav-item" type="button">[\s\S]*?<span>Staff<\/span><\/button>/);
+  assert.match(merchantHtml, /href="owner-setting\.html\?tab=staff"[\s\S]*?<span>Staff<\/span>/);
+
+  const settingsHtml = renderSidebar('owner-settings', 'staff');
+  assert.match(settingsHtml, /class="nav-subitem is-active"[^>]*data-shell-tab="staff"[\s\S]*?<span>Staff<\/span>/);
+});
+
 test('renders the Staff sidebar with its staff-only navigation', () => {
   const html = renderSidebar('staff', 'dashboard');
   assert.match(html, /class="sidebar-panel staff-profile-panel"/);
