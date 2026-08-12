@@ -95,6 +95,8 @@
     .pos-card.soft { background: var(--nexora-surface-muted); box-shadow: none; }
     .pos-card-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; flex-wrap: wrap; }
     .pos-card-head h3 { margin: 0; font-size: 16px; font-weight: 800; color: var(--nexora-text); }
+    .frontdesk-kiosk-frame { display: block; width: 100%; min-height: min(760px, calc(100vh - 220px)); border: 0; border-radius: 12px; background: #fff; }
+    @media (max-width: 900px) { .frontdesk-kiosk-frame { min-height: 820px; } }
 
     .pos-kpi-label { color: var(--nexora-muted); font-size: 12px; font-weight: 700; }
     .pos-kpi-value { font-size: 24px; font-weight: 900; color: var(--nexora-text); margin-top: 4px; }
@@ -1043,7 +1045,8 @@
           <p class="page-description">Bitcoin Nail Bar · Houston, TX — run the front desk: time clock, salon management, and appointments.</p>
           <div class="page-tabs" role="tablist" aria-label="POS sections">
             <button class="page-tab is-active" type="button" role="tab" data-pos-tab="checkin"><i class="bi bi-door-open" aria-hidden="true"></i> Check-in</button>
-            <button class="page-tab" type="button" role="tab" data-pos-tab="tickets"><i class="bi bi-grid-1x2" aria-hidden="true"></i> Turns</button>
+            <button class="page-tab" type="button" role="tab" data-pos-tab="todaybooking"><i class="bi bi-calendar-event" aria-hidden="true"></i> Today Booking</button>
+            <button class="page-tab" type="button" role="tab" data-pos-tab="tickets"><i class="bi bi-grid-1x2" aria-hidden="true"></i> Waiting List</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="booking"><i class="bi bi-calendar-check" aria-hidden="true"></i> Booking</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="customers"><i class="bi bi-person-vcard" aria-hidden="true"></i> Customers</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="clock"><i class="bi bi-clock-history" aria-hidden="true"></i> Time Clock</button>
@@ -1081,8 +1084,15 @@
           </div>
         </div>
 
-        <!-- ══════════ 🚪 CHECK-IN — GUEST ARRIVAL ══════════ -->
+        <!-- ══════════ 🚪 CHECK-IN — HELP GUESTS ══════════ -->
         <section class="pos-panel is-active" data-pos-panel="checkin" aria-label="Check-in">
+          <div class="pos-stack">
+            <iframe class="frontdesk-kiosk-frame" data-frontdesk-kiosk-frame src="https://pos-nexoratouch.vercel.app/mockups/phase1/kiosk.html" title="Customer kiosk check-in" loading="lazy"></iframe>
+          </div>
+        </section>
+
+        <!-- ══════════ 📅 TODAY BOOKING — GUEST ARRIVAL ══════════ -->
+        <section class="pos-panel" data-pos-panel="todaybooking" aria-label="Today Booking">
           <div class="pos-stack">
 
             <div class="pos-card panel-blue" data-eta-panel hidden>
@@ -4002,6 +4012,15 @@
       function ticketNeedsTechPicker(w) {
         return w && w.status === 'waiting' && !w.techId && !w.reqTech;
       }
+      function spotlightQueueTicket(wid) {
+        fSel = wid;
+        ticketsFilter = 'waiting';
+        activateTab('tickets');
+        setTimeout(function () {
+          var target = document.querySelector('[data-queue-ticket-id="' + wid + '"]');
+          if (target && target.scrollIntoView) target.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 0);
+      }
       function ticketTechHtml(w, variant) {
         var cls = variant === 'card' ? 'queue-card-tech-value' : 'queue-table-tech';
         if (w.techId) return '<span class="' + cls + '">' + esc(techName(w.techId)) + '</span>';
@@ -4024,7 +4043,7 @@
               : w.status === 'service' ? (w.svcAtMs ? Math.max(0, Math.floor((now - w.svcAtMs) / 60000)) + "' in service" : '—')
               : w.status === 'ready' ? (w.readyAtMs ? Math.max(0, Math.floor((now - w.readyAtMs) / 60000)) + "' to pay" : '—')
               : '—';
-            return '<tr class="booking-table-row"><td><div class="booking-customer-name">' + esc(w.name) +
+            return '<tr class="booking-table-row" data-queue-ticket-id="' + w.id + '"><td><div class="booking-customer-name">' + esc(w.name) +
               (r.g.tickets.length > 1 ? ' <span class="pos-muted" style="font-size:12px;font-weight:600">· ' + r.g.tickets.length + ' svc</span>' : '') + '</div>' +
               '</td>' +
               '<td>' + esc(w.phone || '—') + '</td>' +
@@ -4112,7 +4131,7 @@
           var reqBusy = w.reqTech && !freeTechs().find(function (t) { return t.id === w.reqTech; });
           var needsTechPicker = ticketNeedsTechPicker(w);
           var auto = fAutoTech(w);
-          return '<article class="wl-card queue-card perf-card tappable' + (late ? ' late' : (w.appt ? ' appt' : '')) + sel + '" data-wtap="' + w.id + '">' +
+          return '<article class="wl-card queue-card perf-card tappable' + (late ? ' late' : (w.appt ? ' appt' : '')) + sel + '" data-wtap="' + w.id + '" data-queue-ticket-id="' + w.id + '">' +
             ticketCardBodyHtml(w, w.atMs ? waitMin + "' waiting" : '—', ticketStatusBadge('waiting'), reqBusy ? ' <span class="pos-warn-text" style="font-size:12px">(busy)</span>' : '') +
             '<div class="perf-divider"></div>' +
             '<div class="perf-cta-row">' +
@@ -4124,7 +4143,7 @@
         }
         if (w.status === 'ready') {
           var rdyMin = w.readyAtMs ? Math.max(0, Math.floor((now - w.readyAtMs) / 60000)) : 0;
-          return '<article class="wl-card queue-card perf-card rdy">' +
+          return '<article class="wl-card queue-card perf-card rdy" data-queue-ticket-id="' + w.id + '">' +
             ticketCardBodyHtml(w, w.readyAtMs ? rdyMin + "' to pay" : '—', ticketStatusBadge('ready')) +
             '<div class="perf-divider"></div>' +
             '<div class="perf-cta-row">' +
@@ -4134,7 +4153,7 @@
         }
         if (w.status === 'service') {
           var svcMin = w.svcAtMs ? Math.max(0, Math.floor((now - w.svcAtMs) / 60000)) : 0;
-          return '<article class="wl-card queue-card perf-card svc' + sel + '">' +
+          return '<article class="wl-card queue-card perf-card svc' + sel + '" data-queue-ticket-id="' + w.id + '">' +
             ticketCardBodyHtml(w, w.svcAtMs ? svcMin + "' in service" : '—', ticketStatusBadge('service')) +
             '<div class="perf-divider"></div>' +
             '<div class="perf-cta-row">' +
@@ -4145,7 +4164,7 @@
             '</div></article>';
         }
         // completed/cancelled — only reachable via the Tickets status-chip filter; read-only
-        return '<article class="wl-card queue-card perf-card">' +
+        return '<article class="wl-card queue-card perf-card" data-queue-ticket-id="' + w.id + '">' +
           ticketCardBodyHtml(w, '—', ticketStatusBadge(w.status)) +
           '</article>';
       }
@@ -4154,7 +4173,7 @@
       function renderTicketGroupCard(g, now, selW) {
         var lines = g.tickets.map(function (w) {
           var sel = selW && selW.id === w.id ? ' is-sel' : '';
-          return '<div class="wl-ticket-row' + sel + '" data-wtap="' + w.id + '">' +
+          return '<div class="wl-ticket-row' + sel + '" data-wtap="' + w.id + '" data-queue-ticket-id="' + w.id + '">' +
             '<span class="wl-ticket-svc">' + ticketLabelHtml(w) + '</span>' +
             '<span class="wl-ticket-actions">' + ticketActionsHtml(w) + '</span></div>';
         }).join('');
@@ -4344,7 +4363,7 @@
           return;
         }
 
-        if (!e.target.closest('[data-pos-panel="checkin"], [data-pos-panel="tickets"], [data-pos-panel="clock"]')) return;
+        if (!e.target.closest('[data-pos-panel="checkin"], [data-pos-panel="todaybooking"], [data-pos-panel="tickets"], [data-pos-panel="clock"]')) return;
 
         /* Tickets: card/table view switch */
         var tixView = e.target.closest('[data-tix-view-target]');
@@ -4404,9 +4423,12 @@
             var nw = { id: nwId, orderId: 'walkin-' + nwId, bookingId: null, serviceTicketId: null, customerId: r.name, durationMin: 0,
               name: r.name, phone: '', customerGroup: 'New', badge: 'violet', badgeTxt: r.src.indexOf('📱') === 0 ? '📱 App' : '🌐 QR', svc: r.svc,
               at: nowTime(), atMs: Date.now(), status: 'waiting', techId: null, reqTech: r.reqTech || null, items: [], log: [] };
-            WAITLIST.push(nw);
+            WAITLIST.unshift(nw);
             wlog(nw, '📥 Checked in via ' + (r.src.indexOf('📱') === 0 ? 'the Nexora App' : 'the web QR') + ' — confirmed by the front desk' + (r.reqTech ? ' · wants ' + techName(r.reqTech) : ''));
             toast(r.name + ' added to the queue');
+            spotlightQueueTicket(nw.id);
+            renderManagement();
+            return;
           } else if (r) { toast(r.name + ' declined — the app tells them why', 'info'); }
           renderFloor(); renderManagement();
           return;
@@ -7434,7 +7456,7 @@
       }
       // URL compatibility during the transition: old links keep working, pointed at their new home.
       var TAB_ALIASES = { dispatch: 'tickets', appointments: 'booking' };
-      var TABS = ['checkin', 'tickets', 'booking', 'customers', 'clock', 'management'];
+      var TABS = ['checkin', 'todaybooking', 'tickets', 'booking', 'customers', 'clock', 'management'];
       var tabBtns = document.querySelectorAll('[data-pos-tab]');
       var panels = document.querySelectorAll('[data-pos-panel]');
       function activateTab(id) {
@@ -7447,7 +7469,7 @@
         var url = new URL(window.location.href);
         url.searchParams.set('tab', id);
         window.history.replaceState({ tab: id }, '', url.search);
-        if (id === 'checkin' || id === 'tickets') renderFloor();
+        if (id === 'todaybooking' || id === 'tickets') renderFloor();
         if (id === 'clock') renderClock();
         if (id === 'management') {
           if (mgSubtab === 'services') resetServiceCategoryCollapses();
@@ -7481,9 +7503,9 @@
 
       // Wait / service / pay timers tick on their own; refresh the board while it is on screen.
       setInterval(function () {
-        var checkinPanel = $('[data-pos-panel="checkin"]');
+        var todayBookingPanel = $('[data-pos-panel="todaybooking"]');
         var ticketsPanel = $('[data-pos-panel="tickets"]');
-        var onScreen = (checkinPanel && checkinPanel.classList.contains('is-active')) || (ticketsPanel && ticketsPanel.classList.contains('is-active'));
+        var onScreen = (todayBookingPanel && todayBookingPanel.classList.contains('is-active')) || (ticketsPanel && ticketsPanel.classList.contains('is-active'));
         if (onScreen) renderFloor();
       }, 30000);
 

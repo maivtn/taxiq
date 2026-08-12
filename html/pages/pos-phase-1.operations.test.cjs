@@ -39,20 +39,22 @@ test('Swap tech opens a technician picker modal and routes selection through the
   assert.match(html, /fAssign\(w, tid\)/);
 });
 
-test('POS splits the legacy Operations/dispatch tab into Check-in, Turns, and Customers', () => {
+test('POS splits the legacy Operations/dispatch tab into Check-in, Today Booking, Waiting List, and Customers', () => {
   assert.match(html, /data-pos-tab="checkin"[^>]*>[\s\S]{0,60}Check-in/);
-  assert.match(html, /data-pos-tab="tickets"[^>]*>[\s\S]{0,60}Turns/);
+  assert.match(html, /data-pos-tab="todaybooking"[^>]*>[\s\S]{0,60}Today Booking/);
+  assert.match(html, /data-pos-tab="tickets"[^>]*>[\s\S]{0,60}Waiting List/);
   assert.match(html, /data-pos-tab="customers"[^>]*>[\s\S]{0,60}Customers/);
   assert.match(html, /data-pos-panel="checkin"/);
+  assert.match(html, /data-pos-panel="todaybooking"/);
   assert.match(html, /data-pos-panel="tickets"/);
   assert.match(html, /data-pos-panel="customers"/);
   assert.doesNotMatch(html, /data-pos-tab="dispatch"/);
   assert.doesNotMatch(html, /data-pos-panel="dispatch"/);
 });
 
-test('POS keeps the top-level tab order Check-in | Turns | Booking | Customers | Time Clock | Management', () => {
+test('POS keeps the top-level tab order Check-in | Today Booking | Waiting List | Booking | Customers | Time Clock | Management', () => {
   const tabsBlock = html.match(/<div class="page-tabs"[\s\S]*?<\/div>/)?.[0] || '';
-  const order = ['checkin', 'tickets', 'booking', 'customers', 'clock', 'management'];
+  const order = ['checkin', 'todaybooking', 'tickets', 'booking', 'customers', 'clock', 'management'];
   let lastIndex = -1;
   order.forEach((id) => {
     const idx = tabsBlock.indexOf('data-pos-tab="' + id + '"');
@@ -68,14 +70,20 @@ test('POS aliases the legacy ?tab=dispatch and ?tab=appointments URLs to their n
 
 test('POS keeps ticket KPIs in Tickets and merges the Time Clock roster into one table', () => {
   const checkinPanel = html.match(/<section class="pos-panel is-active" data-pos-panel="checkin"[\s\S]*?<\/section>/)?.[0] || '';
+  const todayBookingPanel = html.match(/<section class="pos-panel" data-pos-panel="todaybooking"[\s\S]*?<\/section>/)?.[0] || '';
   const ticketsPanel = html.match(/<section class="pos-panel" data-pos-panel="tickets"[\s\S]*?<\/section>/)?.[0] || '';
   const clockPanel = html.match(/<section class="pos-panel" data-pos-panel="clock"[\s\S]*?<\/section>/)?.[0] || '';
 
-  assert.match(checkinPanel, /data-eta-panel/);
-  assert.match(checkinPanel, /data-ciq-panel/);
+  assert.match(checkinPanel, /data-frontdesk-kiosk-frame/);
+  assert.match(checkinPanel, /src="https:\/\/pos-nexoratouch\.vercel\.app\/mockups\/phase1\/kiosk\.html"/);
+  assert.doesNotMatch(checkinPanel, /src="kiosk\.html"/);
   assert.doesNotMatch(checkinPanel, /data-wl-name|data-wl-phone|data-wl-add/);
+  assert.doesNotMatch(checkinPanel, /data-eta-panel|data-ciq-panel/);
   assert.doesNotMatch(checkinPanel, /disp-stats/);
   assert.doesNotMatch(checkinPanel, /data-tech-board/);
+
+  assert.match(todayBookingPanel, /data-eta-panel/);
+  assert.match(todayBookingPanel, /data-ciq-panel/);
 
   assert.match(ticketsPanel, /disp-stats/);
   assert.match(ticketsPanel, /data-arq-panel/);
@@ -308,6 +316,6 @@ test('POS fixes the previously-undefined custByPhone lookup used by walk-in chec
 });
 
 test('POS renders floor tabs and allows the merged Time Clock roster to handle actions', () => {
-  assert.match(html, /if \(id === 'checkin' \|\| id === 'tickets'\) renderFloor\(\);/);
-  assert.match(html, /if \(!e\.target\.closest\('\[data-pos-panel="checkin"\], \[data-pos-panel="tickets"\], \[data-pos-panel="clock"\]'\)\) return;/);
+  assert.match(html, /if \(id === 'todaybooking' \|\| id === 'tickets'\) renderFloor\(\);/);
+  assert.match(html, /if \(!e\.target\.closest\('\[data-pos-panel="checkin"\], \[data-pos-panel="todaybooking"\], \[data-pos-panel="tickets"\], \[data-pos-panel="clock"\]'\)\) return;/);
 });

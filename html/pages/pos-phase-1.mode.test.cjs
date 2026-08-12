@@ -29,11 +29,38 @@ test('POS rejects direct Management activation for Front Desk mode', () => {
   assert.match(html, /if \(id === ['"]management['"] && getActiveStaff\(\)\.role === ['"]frontdesk['"]\) id = ['"]checkin['"]/);
 });
 
-test('POS labels the tickets tab as Turns while keeping the tickets route', () => {
+test('POS labels the tickets tab as Waiting List while keeping the tickets route', () => {
   const tabsBlock = html.match(/<div class="page-tabs"[\s\S]*?<\/div>/)?.[0] || '';
 
-  assert.match(tabsBlock, /data-pos-tab="tickets"[\s\S]{0,100}Turns<\/button>/);
+  assert.match(tabsBlock, /data-pos-tab="tickets"[\s\S]{0,100}Waiting List<\/button>/);
+  assert.doesNotMatch(tabsBlock, /data-pos-tab="tickets"[\s\S]{0,100}Turns<\/button>/);
   assert.doesNotMatch(tabsBlock, /data-pos-tab="tickets"[\s\S]{0,100}Tickets<\/button>/);
+});
+
+test('POS shows Check-in first and Today Booking second as separate tabs', () => {
+  const tabsBlock = html.match(/<div class="page-tabs"[\s\S]*?<\/div>/)?.[0] || '';
+  const checkinIndex = tabsBlock.indexOf('data-pos-tab="checkin"');
+  const todayBookingIndex = tabsBlock.indexOf('data-pos-tab="todaybooking"');
+  const waitingListIndex = tabsBlock.indexOf('data-pos-tab="tickets"');
+
+  assert.ok(checkinIndex !== -1, 'expected Check-in tab');
+  assert.ok(todayBookingIndex > checkinIndex, 'expected Today Booking after Check-in');
+  assert.ok(waitingListIndex > todayBookingIndex, 'expected Waiting List after Today Booking');
+  assert.match(tabsBlock, /data-pos-tab="checkin"[\s\S]{0,100}Check-in<\/button>/);
+  assert.match(tabsBlock, /data-pos-tab="todaybooking"[\s\S]{0,100}Today Booking<\/button>/);
+});
+
+test('POS Check-in tab embeds the kiosk flow for helping a guest', () => {
+  const checkinPanel = html.match(/<section class="pos-panel is-active" data-pos-panel="checkin"[\s\S]*?<\/section>/)?.[0] || '';
+  const todayBookingPanel = html.match(/<section class="pos-panel" data-pos-panel="todaybooking"[\s\S]*?<\/section>/)?.[0] || '';
+
+  assert.match(checkinPanel, /data-frontdesk-kiosk-frame/);
+  assert.match(checkinPanel, /src="https:\/\/pos-nexoratouch\.vercel\.app\/mockups\/phase1\/kiosk\.html"/);
+  assert.doesNotMatch(checkinPanel, /src="kiosk\.html"/);
+  assert.doesNotMatch(checkinPanel, /data-wl-name|data-wl-phone|data-wl-add/);
+  assert.doesNotMatch(checkinPanel, /data-eta-panel|data-ciq-panel/);
+  assert.match(todayBookingPanel, /data-eta-panel/);
+  assert.match(todayBookingPanel, /data-ciq-panel/);
 });
 
 test('POS mode UI exposes a labelled badge and keyboard-friendly PIN controls', () => {
