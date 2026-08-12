@@ -29,10 +29,13 @@ test('POS rejects direct Management activation for Front Desk mode', () => {
   assert.match(html, /if \(id === ['"]management['"] && getActiveStaff\(\)\.role === ['"]frontdesk['"]\) id = ['"]checkin['"]/);
 });
 
-test('POS labels the tickets tab as Waiting List while keeping the tickets route', () => {
+test('POS labels the tickets tab as Queue & Tech Assign while keeping the tickets route', () => {
   const tabsBlock = html.match(/<div class="page-tabs"[\s\S]*?<\/div>/)?.[0] || '';
 
-  assert.match(tabsBlock, /data-pos-tab="tickets"[\s\S]{0,100}Waiting List<\/button>/);
+  assert.match(tabsBlock, /data-pos-tab="tickets"[\s\S]{0,140}Queue & Tech Assign<\/button>/);
+  assert.doesNotMatch(tabsBlock, /data-pos-tab="tickets"[\s\S]{0,180}Dispatch - Queue & Tech Assignment<\/button>/);
+  assert.doesNotMatch(tabsBlock, /data-pos-tab="tickets"[\s\S]{0,180}Điều phối/);
+  assert.doesNotMatch(tabsBlock, /data-pos-tab="tickets"[\s\S]{0,100}Waiting List<\/button>/);
   assert.doesNotMatch(tabsBlock, /data-pos-tab="tickets"[\s\S]{0,100}Turns<\/button>/);
   assert.doesNotMatch(tabsBlock, /data-pos-tab="tickets"[\s\S]{0,100}Tickets<\/button>/);
 });
@@ -45,7 +48,7 @@ test('POS shows Check-in first and Today Booking second as separate tabs', () =>
 
   assert.ok(checkinIndex !== -1, 'expected Check-in tab');
   assert.ok(todayBookingIndex > checkinIndex, 'expected Today Booking after Check-in');
-  assert.ok(waitingListIndex > todayBookingIndex, 'expected Waiting List after Today Booking');
+  assert.ok(waitingListIndex > todayBookingIndex, 'expected Dispatch tab after Today Booking');
   assert.match(tabsBlock, /data-pos-tab="checkin"[\s\S]{0,100}Check-in<\/button>/);
   assert.match(tabsBlock, /data-pos-tab="todaybooking"[\s\S]{0,100}Today Booking<\/button>/);
 });

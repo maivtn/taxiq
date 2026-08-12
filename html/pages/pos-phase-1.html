@@ -1046,7 +1046,7 @@
           <div class="page-tabs" role="tablist" aria-label="POS sections">
             <button class="page-tab is-active" type="button" role="tab" data-pos-tab="checkin"><i class="bi bi-door-open" aria-hidden="true"></i> Check-in</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="todaybooking"><i class="bi bi-calendar-event" aria-hidden="true"></i> Today Booking</button>
-            <button class="page-tab" type="button" role="tab" data-pos-tab="tickets"><i class="bi bi-grid-1x2" aria-hidden="true"></i> Waiting List</button>
+            <button class="page-tab" type="button" role="tab" data-pos-tab="tickets"><i class="bi bi-grid-1x2" aria-hidden="true"></i> Queue & Tech Assign</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="booking"><i class="bi bi-calendar-check" aria-hidden="true"></i> Booking</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="customers"><i class="bi bi-person-vcard" aria-hidden="true"></i> Customers</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="clock"><i class="bi bi-clock-history" aria-hidden="true"></i> Time Clock</button>
@@ -1146,17 +1146,6 @@
               <div class="disp-stat" style="--accent:var(--nexora-success)"><div class="disp-num" data-fs-rev>$0</div><div class="disp-lbl"><i class="bi bi-cash-stack" aria-hidden="true"></i> Revenue today</div></div>
             </div>
 
-            <div class="pos-card panel-amber" data-arq-panel hidden>
-              <div class="pos-card-head">
-                <h3><i class="bi bi-shield-lock" aria-hidden="true"></i> Tech access requests — waiting on front desk / manager (<span data-arq-count>0</span>)</h3>
-                <div class="booking-view-switch" role="group" aria-label="Access requests view mode">
-                  <button class="booking-view-button is-active" type="button" data-arq-view-target="card" aria-pressed="true"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>
-                  <button class="booking-view-button" type="button" data-arq-view-target="table" aria-pressed="false"><i class="bi bi-table" aria-hidden="true"></i>Table</button>
-                </div>
-              </div>
-              <div data-arq-list></div>
-            </div>
-
             <div class="disp-grid">
               <div class="pos-card">
                 <div class="pos-card-head">
@@ -1170,6 +1159,17 @@
                 <div data-wait-list></div>
               </div>
 
+            </div>
+
+            <div class="pos-card panel-amber" data-arq-panel hidden>
+              <div class="pos-card-head">
+                <h3><i class="bi bi-shield-lock" aria-hidden="true"></i> Tech access requests — waiting on front desk / manager (<span data-arq-count>0</span>)</h3>
+                <div class="booking-view-switch" role="group" aria-label="Access requests view mode">
+                  <button class="booking-view-button is-active" type="button" data-arq-view-target="card" aria-pressed="true"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>
+                  <button class="booking-view-button" type="button" data-arq-view-target="table" aria-pressed="false"><i class="bi bi-table" aria-hidden="true"></i>Table</button>
+                </div>
+              </div>
+              <div data-arq-list></div>
             </div>
 
           </div>
@@ -2542,6 +2542,7 @@
 
       /* ═══════════ helpers ═══════════ */
       function esc(s) { return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+      function escPlain(s) { return String(s == null ? '' : s); }
       function money(n) { return '$' + (Math.round((n || 0) * 100) / 100).toLocaleString('en-US', { minimumFractionDigits: 2, maximumFractionDigits: 2 }); }
       function money0(n) { return '$' + Math.round(n || 0).toLocaleString('en-US'); }
       function pct(n) { return Math.round((n || 0) * 100) + '%'; }
@@ -2554,6 +2555,13 @@
         if (!window.Swal) return Promise.resolve(window.confirm(title));
         return Swal.fire({ icon: 'warning', title: title, text: text, showCancelButton: true, confirmButtonText: 'Confirm', cancelButtonText: 'Cancel' })
           .then(function (r) { return !!r.isConfirmed; });
+      }
+      function serviceStartedModal(w, t) {
+        if (window.Swal) {
+          Swal.fire({ icon: 'success', title: 'Service started', text: escPlain(w.name) + ' is now in service with ' + escPlain(t.name), confirmButtonText: 'OK' });
+          return;
+        }
+        if (window.alert) window.alert('Service started');
       }
       var timeFmt = function (ms) { return new Date(ms).toLocaleTimeString('en-US', { hour: 'numeric', minute: '2-digit' }); };
       function nowTime() { return timeFmt(Date.now()); }
@@ -3217,6 +3225,13 @@
         var pool = elig.length ? elig : free;   // nobody qualified → fall back to any free tech (manual assign still warns)
         return pool.length ? pool.slice().sort(function (a, b) { return a.turns - b.turns; })[0] : null;
       }
+      function waitingStartTech(w) {
+        if (!w) return null;
+        if (w.techId) return techById(w.techId);
+        var requested = w.reqTech && techById(w.reqTech);
+        if (requested) return requested;
+        return fAutoTech(w);
+      }
       // 📟 #78 — beep the tech; the push lands in the Time Clock notification feed
       function pageTech(tid, why) {
         var t = techById(tid); if (!t) return;
@@ -3225,6 +3240,15 @@
 
       var fSel = null;    // guest picked for the two-tap assign
       var fWarn = null;   // {wid, tid} — showing the missing-skill warning; a second tap overrides
+      function assignWaitingTech(w, tid) {
+        fWarn = null;
+        if (!w) return;
+        var prev = w.techId;
+        w.techId = tid;
+        fSel = null;
+        wlog(w, prev && prev !== tid ? 'Changed tech ' + techName(prev) + ' to ' + techName(tid) : 'Assigned ' + techName(tid) + ' - ready to start');
+        renderFloor(); renderClock();
+      }
       function fAssign(w, tid) {
         fWarn = null;
         if (w.status === 'waiting') {
@@ -4061,15 +4085,16 @@
       function ticketActionsHtml(w) {
         if (w.status === 'waiting') {
           if (ticketNeedsTechPicker(w)) {
-            return '<button class="pos-btn pos-btn-primary pos-btn-sm queue-action-primary" data-wswap="' + w.id + '"><i class="bi bi-person-plus" aria-hidden="true"></i> Choose tech</button>' +
+            return '<button class="pos-btn pos-btn-primary pos-btn-sm queue-action-primary" data-wswap="' + w.id + '"><i class="bi bi-person-plus" aria-hidden="true"></i> Assign tech</button>' +
               '<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button>';
           }
-          var auto = fAutoTech(w);
-          return '<button class="pos-btn pos-btn-primary pos-btn-sm queue-action-primary" data-wstart="' + w.id + '"' + (auto ? '' : ' disabled') + '><i class="bi bi-play-fill" aria-hidden="true"></i> ' + (auto ? esc(auto.name) : 'No tech') + '</button>' +
+          var startTech = waitingStartTech(w);
+          return '<button class="pos-btn pos-btn-primary pos-btn-sm queue-action-primary" data-wstart="' + w.id + '"' + (startTech ? '' : ' disabled') + '><i class="bi bi-play-fill" aria-hidden="true"></i> ' + (startTech ? esc(startTech.name) : 'No tech') + '</button>' +
+            '<button class="pos-btn pos-btn-sm queue-action-muted" data-wswap="' + w.id + '" title="Change tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i> Change tech</button>' +
             '<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button>';
         }
         if (w.status === 'service') {
-          return '<button class="pos-btn pos-btn-sm queue-action-muted" data-wswap="' + w.id + '" title="Swap tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i> Swap</button>' +
+          return '<button class="pos-btn pos-btn-sm queue-action-muted" data-wswap="' + w.id + '" title="Change tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i> Change tech</button>' +
             '<button class="pos-btn pos-btn-sm queue-action-progress" data-wdone="' + w.id + '" title="Tech finished — guest waits to pay"><i class="bi bi-check2" aria-hidden="true"></i> Done</button>' +
             '<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button>';
         }
@@ -4130,14 +4155,15 @@
           var late = waitMin > 20;
           var reqBusy = w.reqTech && !freeTechs().find(function (t) { return t.id === w.reqTech; });
           var needsTechPicker = ticketNeedsTechPicker(w);
-          var auto = fAutoTech(w);
+          var startTech = waitingStartTech(w);
           return '<article class="wl-card queue-card perf-card tappable' + (late ? ' late' : (w.appt ? ' appt' : '')) + sel + '" data-wtap="' + w.id + '" data-queue-ticket-id="' + w.id + '">' +
             ticketCardBodyHtml(w, w.atMs ? waitMin + "' waiting" : '—', ticketStatusBadge('waiting'), reqBusy ? ' <span class="pos-warn-text" style="font-size:12px">(busy)</span>' : '') +
             '<div class="perf-divider"></div>' +
             '<div class="perf-cta-row">' +
               (needsTechPicker
-                ? '<button class="perf-cta-btn perf-cta-btn-primary" data-wswap="' + w.id + '"><i class="bi bi-person-plus" aria-hidden="true"></i> Choose tech</button>'
-                : '<button class="perf-cta-btn perf-cta-btn-primary" data-wstart="' + w.id + '"' + (auto ? '' : ' disabled') + '><i class="bi bi-play-fill" aria-hidden="true"></i> ' + (auto ? esc(auto.name) : 'No tech') + '</button>') +
+                ? '<button class="perf-cta-btn perf-cta-btn-muted" data-wswap="' + w.id + '"><i class="bi bi-person-plus" aria-hidden="true"></i> Assign tech</button>'
+                : '<button class="perf-cta-btn perf-cta-btn-primary" data-wstart="' + w.id + '"' + (startTech ? '' : ' disabled') + '><i class="bi bi-play-fill" aria-hidden="true"></i> ' + (startTech ? esc(startTech.name) : 'No tech') + '</button>') +
+              (needsTechPicker ? '' : '<button class="perf-cta-btn perf-cta-btn-muted" data-wswap="' + w.id + '" title="Change tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i> Change tech</button>') +
               '<button class="perf-cta-btn perf-cta-btn-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button>' +
             '</div></article>';
         }
@@ -4157,7 +4183,7 @@
             ticketCardBodyHtml(w, w.svcAtMs ? svcMin + "' in service" : '—', ticketStatusBadge('service')) +
             '<div class="perf-divider"></div>' +
             '<div class="perf-cta-row">' +
-              '<button class="perf-cta-btn perf-cta-btn-muted" data-wswap="' + w.id + '" title="Swap tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i> Swap</button>' +
+              '<button class="perf-cta-btn perf-cta-btn-muted" data-wswap="' + w.id + '" title="Change tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i> Change tech</button>' +
               '<button class="perf-cta-btn perf-cta-btn-primary" data-wdone="' + w.id + '" title="Tech finished — guest waits to pay"><i class="bi bi-check2" aria-hidden="true"></i> Done</button>' +
               '<button class="perf-cta-btn perf-cta-btn-success" data-wpay="' + esc(w.orderId) + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Charge</button>' +
               '<button class="perf-cta-btn perf-cta-btn-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button>' +
@@ -4288,6 +4314,14 @@
         if (!w || !t || busyName(tid) || w.techId === tid) return;
         var match = matchScore(t, w);
         var apply = function (override) {
+          if (w.status === 'waiting') {
+            if (override) wlog(w, '⚠ Skill override: assigned to ' + t.name + ' without the ' + match.req + ' skill');
+            assignWaitingTech(w, tid);
+            closeSwapTechModal();
+            renderManagement();
+            toast(w.name + ' assigned to ' + t.name + (override ? ' (override logged)' : ''));
+            return;
+          }
           if (override) wlog(w, '⚠ Skill override: swapped to ' + t.name + ' without the ' + match.req + ' skill');
           fAssign(w, tid);
           closeSwapTechModal();
@@ -4490,11 +4524,13 @@
         /* ▶ one-tap assign */
         var st = e.target.closest('[data-wstart]');
         if (st) {
+          e.preventDefault();
+          e.stopImmediatePropagation();
           var sw = WAITLIST.find(function (x) { return x.id == st.getAttribute('data-wstart'); });
-          var stech = sw && fAutoTech(sw);
+          var stech = sw && waitingStartTech(sw);
           if (!stech) { toast('No free tech right now', 'info'); return; }
           fAssign(sw, stech.id);
-          toast(sw.name + ' → ' + stech.name);
+          serviceStartedModal(sw, stech);
           return;
         }
         /* ⇄ swap tech */

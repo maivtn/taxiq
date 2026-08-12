@@ -221,6 +221,66 @@ test('Queue single-ticket cards retain their status actions and state class hook
   assert.match(card, /appt/);
 });
 
+test('Queue service tickets label the swap action as Change tech', () => {
+  const ticketActions = html.match(/function ticketActionsHtml\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const singleCard = html.match(/function renderSingleTicketCard\(w, now, selW\) \{[\s\S]*?\n      \}\n      \/\/ Multi-ticket order card/)?.[0] || '';
+
+  assert.match(ticketActions, /data-wswap[\s\S]{0,140}title="Change tech"[\s\S]{0,80}Change tech<\/button>/);
+  assert.match(singleCard, /data-wswap[\s\S]{0,140}title="Change tech"[\s\S]{0,80}Change tech<\/button>/);
+  assert.doesNotMatch(ticketActions, /> Swap<\/button>/);
+  assert.doesNotMatch(singleCard, /> Swap<\/button>/);
+});
+
+test('Queue waiting tickets with a technician also expose Change tech before service starts', () => {
+  const ticketActions = html.match(/function ticketActionsHtml\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const singleCard = html.match(/function renderSingleTicketCard\(w, now, selW\) \{[\s\S]*?\n      \}\n      \/\/ Multi-ticket order card/)?.[0] || '';
+
+  assert.match(ticketActions, /data-wstart[\s\S]*?<\/button>' \+\n\s*'<button class="pos-btn pos-btn-sm queue-action-muted" data-wswap[\s\S]*?title="Change tech"[\s\S]*?Change tech<\/button>' \+\n\s*'<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel/);
+  assert.match(singleCard, /class="perf-cta-btn perf-cta-btn-primary" data-wstart/);
+  assert.doesNotMatch(singleCard, /class="perf-cta-btn perf-cta-btn-primary" data-wswap[\s\S]{0,120}Assign tech/);
+  assert.match(singleCard, /data-wstart[\s\S]*?<\/button>'\) \+\n\s*\(needsTechPicker \? '' : '<button class="perf-cta-btn perf-cta-btn-muted" data-wswap[\s\S]*?title="Change tech"[\s\S]*?Change tech<\/button>'\) \+\n\s*'<button class="perf-cta-btn perf-cta-btn-danger" data-wcancel/);
+});
+
+test('Assign tech keeps the ticket waiting and makes Start use the assigned technician', () => {
+  const assignWaiting = html.match(/function assignWaitingTech\(w, tid\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const waitingStart = html.match(/function waitingStartTech\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const ticketActions = html.match(/function ticketActionsHtml\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const singleCard = html.match(/function renderSingleTicketCard\(w, now, selW\) \{[\s\S]*?\n      \}\n      \/\/ Multi-ticket order card/)?.[0] || '';
+  const chooseSwap = html.match(/function chooseSwapTech\(tid\) \{[\s\S]*?\n      \}\n\n      document\.addEventListener/)?.[0] || '';
+  const startHandler = html.match(/\/\* ▶ one-tap assign \*\/[\s\S]*?\/\* ⇄ swap tech \*\//)?.[0] || '';
+
+  assert.match(assignWaiting, /w\.techId = tid/);
+  assert.doesNotMatch(assignWaiting, /w\.status = 'service'/);
+  assert.doesNotMatch(assignWaiting, /pageTech/);
+  assert.match(waitingStart, /if \(w\.techId\) return techById\(w\.techId\)/);
+  assert.match(waitingStart, /var requested = w\.reqTech && techById\(w\.reqTech\)/);
+  assert.match(waitingStart, /if \(requested\) return requested/);
+  assert.match(waitingStart, /return fAutoTech\(w\)/);
+  assert.match(ticketActions, /var startTech = waitingStartTech\(w\)/);
+  assert.match(ticketActions, /startTech \? esc\(startTech\.name\) : 'No tech'/);
+  assert.match(singleCard, /var startTech = waitingStartTech\(w\)/);
+  assert.match(singleCard, /startTech \? esc\(startTech\.name\) : 'No tech'/);
+  assert.match(chooseSwap, /if \(w\.status === 'waiting'\) \{[\s\S]*assignWaitingTech\(w, tid\);[\s\S]*return;/);
+  assert.match(startHandler, /var stech = sw && waitingStartTech\(sw\)/);
+  assert.match(startHandler, /fAssign\(sw, stech\.id\)/);
+});
+
+test('Start button click is isolated from the change-tech modal route', () => {
+  const modalHelper = html.match(/function serviceStartedModal\(w, t\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const startHandler = html.match(/\/\* ▶ one-tap assign \*\/[\s\S]*?\/\* ⇄ swap tech \*\//)?.[0] || '';
+  const startIndex = html.indexOf("var st = e.target.closest('[data-wstart]')");
+  const swapIndex = html.indexOf("var sp = e.target.closest('[data-wswap]')");
+  const tapIndex = html.indexOf("var tap = e.target.closest('[data-wtap]')");
+
+  assert.match(modalHelper, /Swal\.fire\(\{[\s\S]*title: 'Service started'/);
+  assert.match(modalHelper, /text: escPlain\(w\.name\) \+ ' is now in service with ' \+ escPlain\(t\.name\)/);
+  assert.ok(startIndex !== -1 && swapIndex !== -1 && startIndex < swapIndex, 'expected start route before change-tech route');
+  assert.ok(tapIndex === -1 || startIndex < tapIndex, 'expected start route before card tap route');
+  assert.match(startHandler, /if \(st\) \{[\s\S]*e\.preventDefault\(\);[\s\S]*e\.stopImmediatePropagation\(\);[\s\S]*fAssign\(sw, stech\.id\);[\s\S]*serviceStartedModal\(sw, stech\)/);
+  assert.doesNotMatch(startHandler, /toast\(sw\.name \+ ' → ' \+ stech\.name\)/);
+  assert.doesNotMatch(startHandler, /openSwapTechModal/);
+});
+
 test('Ready and service queue cards do not add a heavy border accent', () => {
   const readyRule = html.match(/\.queue-card\.rdy \{[^}]*\}/)?.[0] || '';
   const serviceRule = html.match(/\.queue-card\.svc \{[^}]*\}/)?.[0] || '';
@@ -402,7 +462,7 @@ test('Check-in request Card/Table renderers preserve the same request actions an
   assert.match(html, /posServiceDisplayName\(r\.svc\)/);
 });
 
-test('Queue shows App/QR Anyone requests as unassigned tickets with a Choose tech action', () => {
+test('Queue shows App/QR Anyone requests as unassigned tickets with an Assign tech action', () => {
   const acceptHandler = html.match(/\/\* check-in requests \*\/[\s\S]*?\/\* access requests \*\//)?.[0] || '';
   const ticketTech = html.match(/function ticketTechHtml\(w, variant\) \{[\s\S]*?\n      \}/)?.[0] || '';
   const ticketActions = html.match(/function ticketActionsHtml\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
@@ -421,13 +481,15 @@ test('Queue shows App/QR Anyone requests as unassigned tickets with a Choose tec
   assert.match(ticketTech, />Anyone<\/span>/);
   assert.match(ticketActions, /ticketNeedsTechPicker\(w\)/);
   assert.match(ticketActions, /data-wswap/);
-  assert.match(ticketActions, /Choose tech/);
+  assert.match(ticketActions, /Assign tech/);
+  assert.doesNotMatch(ticketActions, />Choose tech<\/button>/);
   assert.match(singleCard, /ticketNeedsTechPicker\(w\)/);
   assert.match(singleCard, /data-queue-ticket-id/);
   assert.match(table, /data-queue-ticket-id/);
   assert.match(groupCard, /data-queue-ticket-id/);
   assert.match(singleCard, /data-wswap/);
-  assert.match(singleCard, /Choose tech/);
+  assert.match(singleCard, /Assign tech/);
+  assert.doesNotMatch(singleCard, />Choose tech<\/button>/);
   assert.match(spotlight, /fSel = wid/);
   assert.match(spotlight, /ticketsFilter = 'waiting'/);
   assert.match(spotlight, /activateTab\('tickets'\)/);
@@ -506,6 +568,15 @@ test('Check-in card modes use the same responsive flex columns as Queue', () => 
 test('POS normalizes service names in the check-in service picker too', () => {
   assert.match(html, /function posServiceDisplayName\(value\) \{/);
   assert.match(html, /esc\(posServiceDisplayName\(t\.serviceName\)\)/);
+});
+
+test('Tech access requests render below the Queue in Dispatch tab', () => {
+  const ticketsPanel = html.match(/<section class="pos-panel" data-pos-panel="tickets"[\s\S]*?<!-- Quick note/)?.[0] || '';
+  const queueIndex = ticketsPanel.indexOf('data-wait-list');
+  const accessIndex = ticketsPanel.indexOf('data-arq-panel');
+
+  assert.ok(queueIndex !== -1, 'expected Queue list in Dispatch tab');
+  assert.ok(accessIndex > queueIndex, 'expected Tech access requests below Queue');
 });
 
 test('Tech access requests panel has a card/table view switch that carries the same info both ways', () => {
