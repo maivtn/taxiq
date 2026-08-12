@@ -4206,7 +4206,7 @@
             ticketCardBodyHtml(w, w.readyAtMs ? rdyMin + "' to pay" : '—', ticketStatusBadge('ready')) +
             '<div class="perf-divider"></div>' +
             '<div class="perf-cta-row">' +
-              '<button class="perf-cta-btn perf-cta-btn-success-fill" data-wpay="' + esc(w.orderId) + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Charge</button>' +
+              '<button class="perf-cta-btn perf-cta-btn-success-fill" data-wpay="' + esc(w.orderId) + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Checkout</button>' +
               '<button class="perf-cta-btn perf-cta-btn-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button>' +
             '</div></article>';
         }
@@ -4218,7 +4218,7 @@
             '<div class="perf-cta-row">' +
               '<button class="perf-cta-btn perf-cta-btn-muted" data-wswap="' + w.id + '" title="Change tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i> Change tech</button>' +
               '<button class="perf-cta-btn perf-cta-btn-primary" data-wdone="' + w.id + '" title="Tech finished — guest waits to pay"><i class="bi bi-check2" aria-hidden="true"></i> Done</button>' +
-              '<button class="perf-cta-btn perf-cta-btn-success" data-wpay="' + esc(w.orderId) + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Charge</button>' +
+              '<button class="perf-cta-btn perf-cta-btn-success" data-wpay="' + esc(w.orderId) + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Checkout</button>' +
               '<button class="perf-cta-btn perf-cta-btn-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button>' +
             '</div></article>';
         }
@@ -4228,7 +4228,7 @@
           '</article>';
       }
       // Multi-ticket order card: one guest/order with several service tickets, each on its own line
-      // with its own status/actions, and one Charge button for the whole order (#pos-nail-salon-ops).
+      // with its own status/actions, and one Checkout button for the whole order (#pos-nail-salon-ops).
       function renderTicketGroupCard(g, now, selW) {
         var lines = g.tickets.map(function (w) {
           var sel = selW && selW.id === w.id ? ' is-sel' : '';
@@ -4243,7 +4243,7 @@
         var mins = g.tickets.reduce(function (s, w) { return s + (w.durationMin || 0); }, 0);
         var checkedInBadge = g.bookingId ? ' <span class="pos-chip pos-chip-blue">Checked in</span>' : '';
         var chargeBtn = allReady
-          ? '<button class="pos-btn pos-btn-success pos-btn-sm queue-action-pay" data-wpay="' + esc(g.orderId) + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Charge</button>'
+          ? '<button class="pos-btn pos-btn-success pos-btn-sm queue-action-pay" data-wpay="' + esc(g.orderId) + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Checkout</button>'
           : '<button class="pos-btn pos-btn-sm queue-action-muted" disabled>' + readyCount + '/' + activeTickets.length + ' ready</button>';
         return '<div class="wl-card wl-group">' +
           '<div class="wl-info"><div class="wl-name">' + esc(g.name) + (g.phone ? ' · ' + esc(g.phone) : '') + checkedInBadge + '</div>' +
@@ -4267,7 +4267,7 @@
 
         // Tickets: one card per guest/order, grouped by orderId. A single-ticket order renders the
         // original floor card unchanged; a multi-ticket order (from a booking with several service
-        // tickets) renders one line per ticket under a shared header and a single order-level Charge.
+        // tickets) renders one line per ticket under a shared header and a single order-level Checkout.
         // The status chip picks which tickets are included; the view switch picks card vs table.
         renderTicketsStatusChips();
         var groups = waitlistGroups(ticketsMatchesFilter).sort(function (a, b) {

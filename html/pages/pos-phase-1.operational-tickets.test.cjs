@@ -58,7 +58,7 @@ test('POS charges the whole order at once: every open ticket must be ready, turn
   assert.match(pay, /if \(bookingId\) checkBookingOrderComplete\(bookingId\);/);
 });
 
-test('Queue tickets with a service name hydrate billable line items before Charge', () => {
+test('Queue tickets with a service name hydrate billable line items before Checkout', () => {
   const helper = html.match(/function queueItemsForService\(svc, techId\) \{[\s\S]*?\n      \}/)?.[0] || '';
   const waitlistInit = html.match(/WAITLIST\.forEach\(function \(w\) \{[\s\S]*?\n      \}\);/)?.[0] || '';
   const acceptHandler = html.match(/\/\* check-in requests \*\/[\s\S]*?\/\* access requests \*\//)?.[0] || '';
@@ -71,6 +71,17 @@ test('Queue tickets with a service name hydrate billable line items before Charg
   assert.match(waitlistInit, /if \(!w\.durationMin && w\.svc\) w\.durationMin = queueDurationForService\(w\.svc\)/);
   assert.match(acceptHandler, /durationMin: queueDurationForService\(r\.svc\)/);
   assert.match(acceptHandler, /items: queueItemsForService\(r\.svc, r\.reqTech \|\| null\)/);
+});
+
+test('Queue payment actions are labelled Checkout while retaining the payment action hook', () => {
+  const singleCard = html.match(/function renderSingleTicketCard\(w, now, selW\) \{[\s\S]*?\n      \}\n      \/\/ Multi-ticket order card/)?.[0] || '';
+  const groupCard = html.match(/function renderTicketGroupCard\(g, now, selW\) \{[\s\S]*?\n      \}\n      function renderFloor/)?.[0] || '';
+
+  assert.match(singleCard, /perf-cta-btn-success-fill" data-wpay="' \+ esc\(w\.orderId\)[\s\S]{0,160}Checkout<\/button>/);
+  assert.match(singleCard, /perf-cta-btn-success" data-wpay="' \+ esc\(w\.orderId\)[\s\S]{0,160}Checkout<\/button>/);
+  assert.match(groupCard, /queue-action-pay" data-wpay="' \+ esc\(g\.orderId\)[\s\S]{0,160}Checkout<\/button>/);
+  assert.doesNotMatch(singleCard, /data-wpay="' \+ esc\(w\.orderId\)[\s\S]{0,160}Charge<\/button>/);
+  assert.doesNotMatch(groupCard, /data-wpay="' \+ esc\(g\.orderId\)[\s\S]{0,160}Charge<\/button>/);
 });
 
 test('POS completes a booking only once every non-cancelled service ticket has been paid', () => {
