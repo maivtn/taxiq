@@ -1,12 +1,15 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import { execFileSync } from 'node:child_process';
 import { existsSync, readFileSync } from 'node:fs';
+import { fileURLToPath } from 'node:url';
 import vm from 'node:vm';
 
 const PAGE_URL = new URL('./nexora-package-billing-detail.html', import.meta.url);
 const DETAIL_CSS_URL = new URL('../assets/nexora-package-billing-detail.css', import.meta.url);
 const DETAIL_JS_URL = new URL('../assets/nexora-package-billing-detail.js', import.meta.url);
 const BILLING_DATA_URL = new URL('../assets/nexora-package-billing-data.js', import.meta.url);
+const PDF_GENERATOR_URL = new URL('../../scripts/generate-nexora-billing-pdfs.py', import.meta.url);
 
 function source() {
   assert.ok(existsSync(PAGE_URL), 'nexora-package-billing-detail.html must exist');
@@ -90,6 +93,12 @@ function createBillingRuntime(search) {
   vm.runInNewContext(readFileSync(BILLING_DATA_URL, 'utf8'), context);
   vm.runInNewContext(readFileSync(DETAIL_JS_URL, 'utf8'), context);
   return { document, modal, modalClose, modalSummary, payNowTarget, root };
+}
+
+function billingRecords() {
+  const context = { window: {} };
+  vm.runInNewContext(readFileSync(BILLING_DATA_URL, 'utf8'), context);
+  return context.window.NEXORA_PACKAGE_BILLING_RECORDS;
 }
 
 test('creates Billing Detail from the Salon shared-shell skeleton', () => {
@@ -188,6 +197,54 @@ test('opens and closes the Pay now demo payment UI', () => {
   runtime.document.dispatch('keydown', { key: 'Escape' });
   assert.equal(runtime.modal.hidden, true);
   assert.equal(runtime.payNowTarget.focused, true);
+});
+
+test('provides real PDF download documents that match billing records', () => {
+  assert.ok(existsSync(PDF_GENERATOR_URL), 'NEXORA billing PDF generator must exist');
+
+  billingRecords().forEach((record) => {
+    const invoiceURL = new URL(record.invoiceFile, PAGE_URL);
+    assert.ok(existsSync(invoiceURL), `Invoice PDF must exist for ${record.transactionId}`);
+    assert.equal(readFileSync(invoiceURL).subarray(0, 5).toString(), '%PDF-');
+    const invoiceText = execFileSync('pdftotext', [fileURLToPath(invoiceURL), '-'], { encoding: 'utf8' });
+    assert.match(invoiceText, /NEXORA Touch/);
+    assert.match(invoiceText, new RegExp(record.invoiceNumber));
+    assert.match(invoiceText, new RegExp(record.packageName));
+    assert.match(invoiceText, new RegExp(`\\$${record.total}\\.00`));
+    assert.match(invoiceText, /Amount due/);
+
+    if (record.paymentStatus === 'paid') {
+      const receiptURL = new URL(record.receiptFile, PAGE_URL);
+      assert.ok(existsSync(receiptURL), `Receipt PDF must exist for ${record.transactionId}`);
+      assert.equal(readFileSync(receiptURL).subarray(0, 5).toString(), '%PDF-');
+      const receiptText = execFileSync('pdftotext', [fileURLToPath(receiptURL), '-'], { encoding: 'utf8' });
+      assert.match(receiptText, /NEXORA Touch/);
+      assert.match(receiptText, new RegExp(record.receiptNumber));
+      assert.match(receiptText, new RegExp(record.invoiceNumber));
+      assert.match(receiptText, /Visa - 4242/);
+      assert.match(receiptText, /Amount paid/);
+      assert.match(receiptText, new RegExp(`\\$${record.total}\\.00`));
+      return;
+    }
+
+    assert.equal(record.receiptFile, null);
+  });
+});
+
+test('keeps PDF amount labels visually separated from headline totals', () => {
+  billingRecords().forEach((record) => {
+    const documentPath = fileURLToPath(new URL(record.invoiceFile, PAGE_URL));
+    const bbox = execFileSync('pdftotext', ['-bbox-layout', documentPath, '-'], { encoding: 'utf8' });
+    const label = bbox.match(/<word[^>]*yMax="([\d.]+)"[^>]*>Amount<\/word>\s*<word[^>]*>(?:due|paid)<\/word>/);
+    const amount = bbox.match(new RegExp(`<word[^>]*yMin="([\\d.]+)"[^>]*>\\$${record.total}\\.00<\\/word>`));
+
+    assert.ok(label, `Headline amount label bounding box must exist in ${record.invoiceNumber}`);
+    assert.ok(amount, `Headline total bounding box must exist in ${record.invoiceNumber}`);
+    assert.ok(
+      Number(amount[1]) >= Number(label[1]) + 2,
+      `Headline total must not overlap its label in ${record.invoiceNumber}`
+    );
+  });
 });
 
 test('loads responsive Billing Detail styles', () => {
