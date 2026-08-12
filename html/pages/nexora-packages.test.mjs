@@ -7,6 +7,7 @@ const PAGE_URL = new URL('./nexora-packages.html', import.meta.url);
 const BOOKING_PAGE_URL = new URL('./booking-book-phase-1.html', import.meta.url);
 const SHELL_CSS_URL = new URL('../assets/nexora-shell.css', import.meta.url);
 const PACKAGE_CSS_URL = new URL('../assets/nexora-packages.css', import.meta.url);
+const PACKAGE_BILLING_DATA_URL = new URL('../assets/nexora-package-billing-data.js', import.meta.url);
 const PACKAGE_JS_URL = new URL('../assets/nexora-packages.js', import.meta.url);
 
 function source() {
@@ -78,8 +79,13 @@ function fakeInteractiveElement(dataset = {}, options = {}) {
   return element;
 }
 
+function runPackageScripts(context) {
+  assert.ok(existsSync(PACKAGE_BILLING_DATA_URL), 'nexora-package-billing-data.js must exist');
+  vm.runInNewContext(readFileSync(PACKAGE_BILLING_DATA_URL, 'utf8'), context);
+  vm.runInNewContext(readFileSync(PACKAGE_JS_URL, 'utf8'), context);
+}
+
 function createPackageActionRuntime(options = {}) {
-  const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
   const monthlyBillingButton = fakeInteractiveElement({ packageBillingCycle: 'monthly' });
   const yearlyBillingButton = fakeInteractiveElement({ packageBillingCycle: 'yearly' });
   const trialButton = fakeInteractiveElement({ planTrial: 'Pro' }, { attributes: ['data-plan-trial'] });
@@ -166,7 +172,7 @@ function createPackageActionRuntime(options = {}) {
     }
   };
 
-  vm.runInNewContext(runtime, context);
+  runPackageScripts(context);
   if (options.billingCycle === 'yearly') yearlyBillingButton.dispatch('click');
   return {
     trialButton,
@@ -182,7 +188,6 @@ function createPackageActionRuntime(options = {}) {
 }
 
 function renderPackageHistoryHTML() {
-  const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
   const purchaseHistory = fakeElement();
   const overview = fakeElement();
   const tabs = ['overview', 'nexora', 'voice', 'history'].map((packageTab) => fakeElement({ packageTab }));
@@ -232,7 +237,7 @@ function renderPackageHistoryHTML() {
       setInterval() {}
     }
   };
-  vm.runInNewContext(runtime, context);
+  runPackageScripts(context);
   return purchaseHistory.innerHTML;
 }
 
@@ -523,34 +528,40 @@ test('provides the package purchase history panel and transaction data contract'
   const html = source();
   const runtime = readFileSync(PACKAGE_JS_URL, 'utf8');
   const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
+  assert.ok(existsSync(PACKAGE_BILLING_DATA_URL), 'shared package billing data must exist');
+  const billingData = readFileSync(PACKAGE_BILLING_DATA_URL, 'utf8');
   assert.match(html, /data-package-panel="history"/);
   assert.match(html, /data-purchase-history/);
+  assert.match(html, /<script src="\.\.\/assets\/nexora-package-billing-data\.js"><\/script>\s*<script src="\.\.\/assets\/nexora-packages\.js"><\/script>/);
   assert.match(runtime, /PURCHASE_HISTORY/);
-  assert.match(runtime, /purchasedAt/);
-  assert.match(runtime, /transactionId/);
-  assert.match(runtime, /term: '1 month'/);
-  assert.match(runtime, /validUntil/);
-  assert.match(runtime, /amount/);
-  assert.match(runtime, /function getPackageHistoryStatus/);
+  assert.match(runtime, /window\.NEXORA_PACKAGE_BILLING_RECORDS/);
+  assert.match(billingData, /"transactionId": "NXR-20260810-0003"/);
+  assert.match(billingData, /"paymentStatus": "paid"/);
+  assert.match(billingData, /"paymentStatus": "payment_due"/);
+  assert.match(billingData, /"paymentStatus": "overdue"/);
+  assert.match(billingData, /"billingTerm": "1 month"/);
+  assert.match(billingData, /"total": 79/);
+  assert.match(runtime, /function getPackageBillingStatus/);
+  assert.match(runtime, /function packageBillingDetailHref/);
   assert.match(runtime, /function renderPurchaseHistory/);
   assert.doesNotMatch(runtime, /package-history-head/);
   assert.match(runtime, /<th scope="col">Term<\/th>/);
-  assert.match(runtime, /<th scope="col">Valid Until<\/th>/);
   assert.match(runtime, /<th scope="col">Status<\/th>/);
-  assert.match(runtime, /item\.term/);
-  assert.match(runtime, /item\.validUntil/);
+  assert.match(runtime, /<th scope="col">Action<\/th>/);
+  assert.match(runtime, /item\.billingTerm/);
+  assert.match(runtime, /item\.paymentStatus/);
   assert.match(runtime, /package-history-status-badge/);
-  assert.doesNotMatch(runtime, />Paid</);
   assert.match(css, /\.package-history/);
   assert.doesNotMatch(css, /\.package-history-head/);
   assert.match(css, /\.package-history-table/);
   assert.match(css, /\.package-history-term/);
-  assert.match(css, /\.package-history-valid-until/);
+  assert.doesNotMatch(css, /\.package-history-valid-until/);
   assert.match(css, /\.package-history-status-badge/);
+  assert.match(css, /\.package-history-action-link/);
   assert.match(css, /\.package-history-table caption\s*\{[\s\S]*?position:\s*absolute/);
 });
 
-test('renders package history columns in the requested order with package activity status', () => {
+test('renders package history billing columns, statuses, and record actions', () => {
   const historyHTML = renderPackageHistoryHTML();
   const columnLabels = [...historyHTML.matchAll(/<th scope="col">([^<]+)<\/th>/g)].map((match) => decodeEntities(match[1]));
   assert.deepEqual(columnLabels, [
@@ -558,9 +569,9 @@ test('renders package history columns in the requested order with package activi
     'Amount',
     'Package',
     'Term',
-    'Valid Until',
     'Status',
-    'Transaction ID'
+    'Transaction ID',
+    'Action'
   ]);
 
   const firstRow = historyHTML.match(/<tbody>\s*<tr>([\s\S]*?)<\/tr>/)?.[1] || '';
@@ -570,13 +581,27 @@ test('renders package history columns in the requested order with package activi
     'Amount',
     'Package',
     'Term',
-    'Valid Until',
     'Status',
-    'Transaction ID'
+    'Transaction ID',
+    'Action'
   ]);
-  assert.match(historyHTML, /package-history-status-badge is-active[\s\S]*?>Active</);
-  assert.match(historyHTML, /package-history-status-badge is-expired[\s\S]*?>Expired</);
-  assert.doesNotMatch(historyHTML, />Paid</);
+  assert.doesNotMatch(historyHTML, /Valid Until/);
+  assert.match(historyHTML, /package-history-status-badge is-paid[\s\S]*?>Paid</);
+  assert.match(historyHTML, /package-history-status-badge is-payment-due[\s\S]*?>Payment due</);
+  assert.match(historyHTML, /package-history-status-badge is-overdue[\s\S]*?>Overdue</);
+  assert.match(historyHTML, /nexora-package-billing-detail\.html\?transaction=NXR-20260810-0003[\s\S]*?>[\s\S]*View invoice/);
+  assert.match(historyHTML, /nexora-package-billing-detail\.html\?transaction=SMS-20260811-0001[\s\S]*?>[\s\S]*Payment details/);
+  assert.match(historyHTML, /nexora-package-billing-detail\.html\?transaction=VMS-20260701-0002[\s\S]*?>[\s\S]*Payment details/);
+});
+
+test('stacks package history records and enlarges actions on mobile', () => {
+  const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
+  const mobileRules = css.match(/@media \(max-width: 640px\) \{([\s\S]*?)\n\}/)?.[1] || '';
+
+  assert.match(mobileRules, /\.package-history-table thead/);
+  assert.match(mobileRules, /\.package-history-table tr/);
+  assert.match(mobileRules, /\.package-history-table td::before[\s\S]*?content:\s*attr\(data-label\)/);
+  assert.match(mobileRules, /\.package-history-action-link[\s\S]*?min-height:\s*44px/);
 });
 
 test('loads package-specific presentation styles', () => {

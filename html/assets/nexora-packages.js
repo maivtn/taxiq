@@ -21,41 +21,9 @@ const OWNED_PACKAGES = [
   }
 ];
 
-const PURCHASE_HISTORY = [
-  {
-    transactionId: 'NXR-20260801-0003',
-    purchasedAt: '2026-08-01T09:30:00+07:00',
-    product: 'NEXORA',
-    packageName: 'Professional Pro',
-    billing: 'Monthly subscription',
-    term: '1 month',
-    validUntil: '2026-08-31T23:59:59+07:00',
-    amount: 79,
-    currency: 'USD'
-  },
-  {
-    transactionId: 'NXR-20260701-0001',
-    purchasedAt: '2026-07-01T09:30:00+07:00',
-    product: 'NEXORA',
-    packageName: 'Professional Pro',
-    billing: 'Monthly subscription',
-    term: '1 month',
-    validUntil: '2026-07-31T23:59:59+07:00',
-    amount: 79,
-    currency: 'USD'
-  },
-  {
-    transactionId: 'VMS-20260701-0002',
-    purchasedAt: '2026-07-01T09:35:00+07:00',
-    product: 'Voice + SMS',
-    packageName: 'Pro',
-    billing: 'Monthly subscription',
-    term: '1 month',
-    validUntil: '2026-07-31T23:59:59+07:00',
-    amount: 199,
-    currency: 'USD'
-  }
-];
+const PURCHASE_HISTORY = Array.isArray(window.NEXORA_PACKAGE_BILLING_RECORDS)
+  ? window.NEXORA_PACKAGE_BILLING_RECORDS
+  : [];
 
 const PACKAGE_PAYMENT_METHODS = [
   { id: 'USDV', label: 'USDV', balance: '$79,000.00', asset: 'assets/usdv.png' },
@@ -179,12 +147,26 @@ const PACKAGE_PLAN_DETAILS = {
       : `$${amount}<span>/${suffix}</span>`;
   }
 
-  function getPackageHistoryStatus(validUntil, reference = new Date()) {
+  function getOwnedPackageStatus(validUntil, reference = new Date()) {
     const end = new Date(validUntil);
     const active = Number.isFinite(end.getTime()) && end >= new Date(reference);
     return active
       ? { label: 'Active', className: 'is-active', icon: 'circle-check' }
       : { label: 'Expired', className: 'is-expired', icon: 'circle-x' };
+  }
+
+  function getPackageBillingStatus(item) {
+    if (item.paymentStatus === 'paid') {
+      return { label: 'Paid', className: 'is-paid', icon: 'circle-check' };
+    }
+    if (item.paymentStatus === 'overdue') {
+      return { label: 'Overdue', className: 'is-overdue', icon: 'circle-alert' };
+    }
+    return { label: 'Payment due', className: 'is-payment-due', icon: 'clock-3' };
+  }
+
+  function packageBillingDetailHref(item) {
+    return `nexora-package-billing-detail.html?transaction=${encodeURIComponent(item.transactionId)}`;
   }
 
   function renderBillingPrices() {
@@ -514,7 +496,7 @@ const PACKAGE_PLAN_DETAILS = {
     overview.innerHTML = `
       <div class="package-overview-grid">
         ${OWNED_PACKAGES.map((item) => {
-          const status = getPackageHistoryStatus(item.expiresAt);
+          const status = getOwnedPackageStatus(item.expiresAt);
           return `
           <article class="package-owned-card" data-owned-package="${escapeHTML(item.id)}">
             <div class="package-owned-card-top">
@@ -586,34 +568,38 @@ const PACKAGE_PLAN_DETAILS = {
               <th scope="col">Amount</th>
               <th scope="col">Package</th>
               <th scope="col">Term</th>
-              <th scope="col">Valid Until</th>
               <th scope="col">Status</th>
               <th scope="col">Transaction ID</th>
+              <th scope="col">Action</th>
             </tr>
           </thead>
           <tbody>
             ${PURCHASE_HISTORY.map((item) => {
-              const status = getPackageHistoryStatus(item.validUntil);
+              const status = getPackageBillingStatus(item);
+              const historyDate = item.datePaid || item.dateIssued;
+              const actionLabel = item.paymentStatus === 'paid' ? 'View invoice' : 'Payment details';
               return `
                 <tr>
                   <td data-label="Date &amp; time">
-                    <strong>${formatPurchaseDate(item.purchasedAt)}</strong>
-                    <span>${formatPurchaseTime(item.purchasedAt)}</span>
+                    <strong>${formatPurchaseDate(historyDate)}</strong>
+                    <span>${formatPurchaseTime(historyDate)}</span>
                   </td>
-                  <td class="package-history-amount" data-label="Amount">${formatAmount(item.amount, item.currency)}</td>
+                  <td class="package-history-amount" data-label="Amount">${formatAmount(item.total, item.currency)}</td>
                   <td data-label="Package">
                     <div class="package-history-package">
                       <strong>${escapeHTML(`${item.product} ${item.packageName}`)}</strong>
                       <span>${escapeHTML(item.billing)}</span>
                     </div>
                   </td>
-                  <td data-label="Term"><span class="package-history-term">${escapeHTML(item.term)}</span></td>
-                  <td class="package-history-valid-until" data-label="Valid Until"><strong>${formatPurchaseDate(item.validUntil)}</strong></td>
+                  <td data-label="Term"><span class="package-history-term">${escapeHTML(item.billingTerm)}</span></td>
                   <td class="package-history-status" data-label="Status">
                     <span class="package-history-status-badge ${status.className}"><i data-lucide="${status.icon}" aria-hidden="true"></i>${status.label}</span>
                   </td>
                   <td data-label="Transaction ID">
                     <code>${escapeHTML(item.transactionId)}</code>
+                  </td>
+                  <td class="package-history-action" data-label="Action">
+                    <a class="package-history-action-link" href="${escapeHTML(packageBillingDetailHref(item))}" aria-label="${escapeHTML(`${actionLabel} ${item.invoiceNumber}`)}"><i data-lucide="file-text" aria-hidden="true"></i><span>${actionLabel}</span></a>
                   </td>
                 </tr>
               `;

@@ -683,10 +683,6 @@
   white-space: nowrap;
 }
 
-.package-history-valid-until {
-  white-space: nowrap;
-}
-
 .package-history-amount {
   color: var(--nexora-text);
   font-size: 14px;
@@ -709,12 +705,17 @@
   font-weight: 900 !important;
 }
 
-.package-history-status-badge.is-active {
+.package-history-status-badge.is-paid {
   background: #e6fbf2;
   color: #008f5a !important;
 }
 
-.package-history-status-badge.is-expired {
+.package-history-status-badge.is-payment-due {
+  background: #fff7df;
+  color: #a16207 !important;
+}
+
+.package-history-status-badge.is-overdue {
   background: #fff1f0;
   color: #c2410c !important;
 }
@@ -722,6 +723,43 @@
 .package-history-status-badge svg {
   width: 14px;
   height: 14px;
+}
+
+.package-history-action {
+  white-space: nowrap;
+}
+
+.package-history-action-link {
+  display: inline-flex;
+  min-height: 36px;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border: 1px solid rgba(70, 72, 216, 0.2);
+  border-radius: 9px;
+  background: rgba(70, 72, 216, 0.06);
+  padding: 8px 11px;
+  color: var(--nexora-brand);
+  font-size: 11px;
+  font-weight: 900;
+  text-decoration: none;
+  transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+}
+
+.package-history-action-link:hover {
+  border-color: rgba(70, 72, 216, 0.42);
+  background: rgba(70, 72, 216, 0.1);
+  box-shadow: 0 6px 14px rgba(70, 72, 216, 0.1);
+}
+
+.package-history-action-link:focus-visible {
+  outline: 3px solid rgba(70, 72, 216, 0.22);
+  outline-offset: 2px;
+}
+
+.package-history-action-link svg {
+  width: 15px;
+  height: 15px;
 }
 
 .package-plan-content {
@@ -2093,6 +2131,83 @@ body.package-payment-open {
 
   .nexora-plan-card {
     min-height: 0;
+  }
+
+  .package-history-table-wrap {
+    overflow: visible;
+    border: 0;
+    background: transparent;
+    box-shadow: none;
+  }
+
+  .package-history-table,
+  .package-history-table tbody,
+  .package-history-table tr,
+  .package-history-table td {
+    display: block;
+    width: 100%;
+  }
+
+  .package-history-table {
+    min-width: 0;
+  }
+
+  .package-history-table thead {
+    position: absolute;
+    width: 1px;
+    height: 1px;
+    overflow: hidden;
+    clip: rect(0 0 0 0);
+    clip-path: inset(50%);
+  }
+
+  .package-history-table tr {
+    margin-bottom: 12px;
+    overflow: hidden;
+    border: 1px solid var(--nexora-border);
+    border-radius: 14px;
+    background: #fff;
+    box-shadow: var(--nexora-card-shadow);
+  }
+
+  .package-history-table td {
+    display: grid;
+    grid-template-columns: minmax(92px, 0.42fr) minmax(0, 1fr);
+    gap: 12px;
+    align-items: center;
+    padding: 12px 14px;
+    text-align: right;
+  }
+
+  .package-history-table td::before {
+    color: var(--nexora-subtle);
+    content: attr(data-label);
+    font-size: 10px;
+    font-weight: 900;
+    letter-spacing: 0.04em;
+    text-align: left;
+    text-transform: uppercase;
+  }
+
+  .package-history-table tbody tr:last-child td {
+    border-bottom: 1px solid var(--nexora-border);
+  }
+
+  .package-history-table td:last-child,
+  .package-history-table tbody tr:last-child td:last-child {
+    border-bottom: 0;
+  }
+
+  .package-history-package,
+  .package-history-table td > strong,
+  .package-history-table td > span,
+  .package-history-table td > code {
+    justify-self: end;
+  }
+
+  .package-history-action-link {
+    width: 100%;
+    min-height: 44px;
   }
 }
 
