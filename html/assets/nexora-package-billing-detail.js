@@ -83,6 +83,19 @@
     `;
   }
 
+  function renderEmailAction(record) {
+    const paid = record.paymentStatus === 'paid';
+    const action = paid ? 'resend' : 'reminder';
+    const label = paid ? 'Resend email' : 'Send reminder';
+    const icon = paid ? 'mail' : 'bell-ring';
+    return `
+      <button class="billing-detail-action" type="button" data-billing-email-action="${action}" data-billing-transaction="${escapeHTML(record.transactionId)}" aria-label="${escapeHTML(`${label} for invoice ${record.invoiceNumber}`)}">
+        <i data-lucide="${icon}" aria-hidden="true"></i>
+        <span>${label}</span>
+      </button>
+    `;
+  }
+
   function renderLineItems(record) {
     return `
       <div class="billing-detail-table-wrap">
@@ -141,9 +154,10 @@
           </div>
           <span class="billing-detail-document-icon" aria-hidden="true"><i data-lucide="receipt-text"></i></span>
         </div>
-        <div class="billing-detail-actions" aria-label="Download billing documents">
+        <div class="billing-detail-actions" aria-label="Billing document actions">
           ${renderDownloadAction(record.invoiceFile, 'Download invoice', 'download')}
           ${renderDownloadAction(record.receiptFile, 'Download receipt', 'download')}
+          ${renderEmailAction(record)}
         </div>
         <dl class="billing-detail-meta">
           <div><dt>Receipt number</dt><dd>${escapeHTML(record.receiptNumber)}</dd></div>
@@ -193,6 +207,7 @@
         ${overdueNotice}
         <div class="billing-detail-actions" aria-label="Invoice actions">
           ${renderDownloadAction(record.invoiceFile, 'Download invoice', 'download')}
+          ${renderEmailAction(record)}
           <button class="billing-detail-action is-primary" type="button" data-billing-pay-now="${escapeHTML(record.transactionId)}"><i data-lucide="credit-card" aria-hidden="true"></i><span>Pay now</span></button>
         </div>
         <dl class="billing-detail-meta">
@@ -225,7 +240,7 @@
         <span class="billing-detail-empty-icon"><i data-lucide="file-question" aria-hidden="true"></i></span>
         <h2>Billing record not found</h2>
         <p>The transaction link may be invalid or the billing record is no longer available.</p>
-        <a class="billing-detail-action is-primary" href="nexora-packages.html?tab=history">Back to Billing History</a>
+        <a class="billing-detail-action is-primary" href="nexora-packages.html?tab=history">Back to Package History</a>
       </article>
     `;
   }
@@ -308,16 +323,37 @@
     }
   }
 
+  function showEmailActionConfirmation(record) {
+    if (!record) return;
+    const paid = record.paymentStatus === 'paid';
+    const options = {
+      icon: 'success',
+      title: paid ? 'Email resent successfully' : 'Payment reminder sent successfully',
+      text: paid
+        ? `Billing documents were sent to ${record.billTo.email}.`
+        : `A payment reminder was sent to ${record.billTo.email}.`,
+      confirmButtonText: 'Done'
+    };
+    if (window.Swal && typeof window.Swal.fire === 'function') {
+      window.Swal.fire(options);
+      return;
+    }
+    if (typeof window.alert === 'function') window.alert(`${options.title}\n${options.text}`);
+  }
+
   if (!root) return;
   const transactionId = new URLSearchParams(window.location.search).get('transaction') || '';
   root.innerHTML = renderBillingDetail(findBillingRecord(transactionId));
 
   root.addEventListener('click', (event) => {
-    const opener = event.target && typeof event.target.closest === 'function'
-      ? event.target.closest('[data-billing-pay-now]')
-      : null;
-    if (!opener) return;
-    openBillingPayment(findBillingRecord(opener.dataset.billingPayNow), opener);
+    const target = event.target && typeof event.target.closest === 'function' ? event.target : null;
+    const emailAction = target ? target.closest('[data-billing-email-action]') : null;
+    if (emailAction) {
+      showEmailActionConfirmation(findBillingRecord(emailAction.dataset.billingTransaction));
+      return;
+    }
+    const opener = target ? target.closest('[data-billing-pay-now]') : null;
+    if (opener) openBillingPayment(findBillingRecord(opener.dataset.billingPayNow), opener);
   });
 
   if (paymentModal) {

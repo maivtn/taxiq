@@ -60,9 +60,11 @@ function fakeElement(options = {}) {
   return element;
 }
 
-function createBillingRuntime(search, mutateRecords) {
+function createBillingRuntime(search, mutateRecords, options = {}) {
   assert.ok(existsSync(DETAIL_JS_URL), 'nexora-package-billing-detail.js must exist');
   let activeElement = null;
+  const swalCalls = [];
+  const alertCalls = [];
   const root = fakeElement();
   const modalSummary = fakeElement();
   const modalClose = fakeElement({ onFocus: (element) => { activeElement = element; } });
@@ -86,6 +88,20 @@ function createBillingRuntime(search, mutateRecords) {
     onFocus: (element) => { activeElement = element; }
   });
   payNowTarget.closest = (selector) => selector === '[data-billing-pay-now]' ? payNowTarget : null;
+  const resendEmailTarget = fakeElement({
+    dataset: {
+      billingEmailAction: 'resend',
+      billingTransaction: 'NXR-20260810-0003'
+    }
+  });
+  const reminderTarget = fakeElement({
+    dataset: {
+      billingEmailAction: 'reminder',
+      billingTransaction: 'SMS-20260811-0001'
+    }
+  });
+  resendEmailTarget.closest = (selector) => selector === '[data-billing-email-action]' ? resendEmailTarget : null;
+  reminderTarget.closest = (selector) => selector === '[data-billing-email-action]' ? reminderTarget : null;
   const documentListeners = {};
   const document = {
     body: {
@@ -117,14 +133,32 @@ function createBillingRuntime(search, mutateRecords) {
     document,
     window: {
       location: { search },
-      lucide: { createIcons() {} }
+      lucide: { createIcons() {} },
+      alert(message) { alertCalls.push(message); },
+      ...(options.withoutSwal ? {} : {
+        Swal: { fire(config) { swalCalls.push(config); } }
+      })
     }
   };
 
   vm.runInNewContext(readFileSync(BILLING_DATA_URL, 'utf8'), context);
   if (mutateRecords) mutateRecords(context.window.NEXORA_PACKAGE_BILLING_RECORDS);
   vm.runInNewContext(readFileSync(DETAIL_JS_URL, 'utf8'), context);
-  return { document, modal, modalChoice, modalClose, modalContinue, modalSummary, payNowTarget, root, shell };
+  return {
+    alertCalls,
+    document,
+    modal,
+    modalChoice,
+    modalClose,
+    modalContinue,
+    modalSummary,
+    payNowTarget,
+    reminderTarget,
+    resendEmailTarget,
+    root,
+    shell,
+    swalCalls
+  };
 }
 
 function billingRecords() {
@@ -143,12 +177,12 @@ test('creates Billing Detail from the Salon shared-shell skeleton', () => {
   assert.match(html, /<div class="app-area">/);
   assert.match(html, /<header class="header"><\/header>/);
   assert.match(html, /<main class="content" aria-label="Billing details content">/);
-  assert.match(html, /<a[^>]*href="nexora-packages\.html\?tab=history"[^>]*>[\s\S]*?Back to Billing History/);
-  assert.doesNotMatch(html, /Back to Package History/);
+  assert.match(html, /<a[^>]*href="nexora-packages\.html\?tab=history"[^>]*>[\s\S]*?Back to Package History/);
+  assert.doesNotMatch(html, /Back to Billing History/);
   assert.match(html, /data-billing-detail-root/);
   assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css">/);
   assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-package-billing-detail\.css">/);
-  assert.match(html, /<script src="\.\.\/assets\/nexora-package-billing-data\.js"><\/script>\s*<script src="\.\.\/assets\/nexora-package-billing-detail\.js"><\/script>/);
+  assert.match(html, /<script src="\.\.\/assets\/nexora-package-billing-data\.js"><\/script>\s*<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/sweetalert2@11"><\/script>\s*<script src="\.\.\/assets\/nexora-package-billing-detail\.js"><\/script>/);
   assert.match(html, /activePage:\s*'packages'/);
   assert.match(html, /activeTab:\s*'history'/);
   assert.match(html, /<script src="\.\.\/assets\/nexora-shell\.js"><\/script>/);
@@ -173,6 +207,10 @@ test('renders a paid billing record with invoice and receipt downloads', () => {
   assert.match(html, /Professional Pro/);
   assert.match(html, /Tax \(0%\)/);
   assert.match(html, /Amount paid[\s\S]*?\$79\.00/);
+  assert.match(html, /data-billing-email-action="resend"/);
+  assert.match(html, /data-billing-transaction="NXR-20260810-0003"/);
+  assert.match(html, />Resend email</);
+  assert.doesNotMatch(html, /data-billing-email-action="reminder"|>Send reminder</);
   assert.doesNotMatch(html, /data-billing-pay-now/);
 });
 
@@ -198,6 +236,10 @@ test('renders a payment-due invoice without a receipt download', () => {
   assert.match(html, /Due August 18, 2026/);
   assert.match(html, /Download invoice/);
   assert.match(html, /href="assets\/billing-documents\/Invoice-NX-2026-0811-1CCEE7\.pdf"[^>]*download="Invoice-NX-2026-0811-1CCEE7\.pdf"/);
+  assert.match(html, /data-billing-email-action="reminder"/);
+  assert.match(html, /data-billing-transaction="SMS-20260811-0001"/);
+  assert.match(html, />Send reminder</);
+  assert.doesNotMatch(html, /data-billing-email-action="resend"|>Resend email</);
   assert.match(html, /data-billing-pay-now[\s\S]*?Pay now/);
   assert.doesNotMatch(html, /Download receipt/);
   assert.doesNotMatch(html, /Receipt number/);
@@ -220,6 +262,10 @@ test('renders an overdue invoice with an explicit warning', () => {
   assert.match(html, /billing-detail-status is-overdue[\s\S]*?>Overdue</);
   assert.match(html, /This invoice is overdue/);
   assert.match(html, /\$199\.00/);
+  assert.match(html, /data-billing-email-action="reminder"/);
+  assert.match(html, /data-billing-transaction="VMS-20260701-0002"/);
+  assert.match(html, />Send reminder</);
+  assert.doesNotMatch(html, /data-billing-email-action="resend"|>Resend email</);
   assert.match(html, /data-billing-pay-now[\s\S]*?Pay now/);
   assert.doesNotMatch(html, /Download receipt/);
 });
@@ -228,7 +274,7 @@ test('shows a safe not-found state for an unknown transaction', () => {
   const html = createBillingRuntime('?transaction=missing').root.innerHTML;
 
   assert.match(html, /Billing record not found/);
-  assert.match(html, /nexora-packages\.html\?tab=history[^>]*>[\s\S]*?Back to Billing History/);
+  assert.match(html, /nexora-packages\.html\?tab=history[^>]*>[\s\S]*?Back to Package History/);
   assert.doesNotMatch(html, /NXR-20260810-0003/);
 });
 
@@ -277,6 +323,43 @@ test('opens and closes the Pay now demo payment UI', () => {
   assert.equal(runtime.modal.hidden, true);
   assert.equal(runtime.payNowTarget.focused, true);
   assert.equal(runtime.shell.hasAttribute('inert'), false);
+});
+
+test('confirms a paid billing email resend with SweetAlert', () => {
+  const runtime = createBillingRuntime('?transaction=NXR-20260810-0003');
+
+  runtime.root.dispatch('click', { target: runtime.resendEmailTarget });
+
+  assert.equal(runtime.swalCalls.length, 1);
+  assert.equal(runtime.swalCalls[0].icon, 'success');
+  assert.equal(runtime.swalCalls[0].title, 'Email resent successfully');
+  assert.equal(runtime.swalCalls[0].text, 'Billing documents were sent to billing@bitcoinnailbar.com.');
+  assert.equal(runtime.swalCalls[0].confirmButtonText, 'Done');
+  assert.deepEqual(runtime.alertCalls, []);
+});
+
+test('confirms an unpaid payment reminder with SweetAlert', () => {
+  const runtime = createBillingRuntime('?transaction=SMS-20260811-0001');
+
+  runtime.root.dispatch('click', { target: runtime.reminderTarget });
+
+  assert.equal(runtime.swalCalls.length, 1);
+  assert.equal(runtime.swalCalls[0].icon, 'success');
+  assert.equal(runtime.swalCalls[0].title, 'Payment reminder sent successfully');
+  assert.equal(runtime.swalCalls[0].text, 'A payment reminder was sent to billing@bitcoinnailbar.com.');
+  assert.equal(runtime.swalCalls[0].confirmButtonText, 'Done');
+  assert.deepEqual(runtime.alertCalls, []);
+});
+
+test('falls back to native alert when SweetAlert is unavailable', () => {
+  const runtime = createBillingRuntime('?transaction=NXR-20260810-0003', null, { withoutSwal: true });
+
+  runtime.root.dispatch('click', { target: runtime.resendEmailTarget });
+
+  assert.deepEqual(runtime.swalCalls, []);
+  assert.deepEqual(runtime.alertCalls, [
+    'Email resent successfully\nBilling documents were sent to billing@bitcoinnailbar.com.'
+  ]);
 });
 
 test('uses uppercase NEXORA TOUCH across billing surfaces and generated documents', () => {
