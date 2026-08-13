@@ -50,7 +50,7 @@
       "processor": null,
       "processorTransactionId": null,
       "lineItems": [
-        { "description": "Voice Credit", "period": "Aug 11-Sep 11, 2026", "quantity": 1, "unitPrice": 179, "amount": 179 }
+        { "description": "Voice Credit", "period": "", "quantity": 1, "unitPrice": 179, "amount": 179 }
       ],
       "subtotal": 179,
       "taxLabel": "Tax",
