@@ -99,7 +99,7 @@
           <tbody>
             ${record.lineItems.map((item) => `
               <tr>
-                <td data-label="Description"><strong>${escapeHTML(item.description)}</strong><span>${escapeHTML(item.period)}</span></td>
+                <td data-label="Description"><strong>${escapeHTML(item.description)}</strong>${item.period ? `<span>${escapeHTML(item.period)}</span>` : ''}</td>
                 <td data-label="Qty">${escapeHTML(item.quantity)}</td>
                 <td data-label="Unit price">${formatMoney(item.unitPrice, record.currency)}</td>
                 <td data-label="Amount"><strong>${formatMoney(item.amount, record.currency)}</strong></td>

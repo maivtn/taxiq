@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nexora Touch - Account Settings</title>
+  <title>NEXORA TOUCH - Settings</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -61,13 +61,22 @@
 
     .page-tabs {
       display: flex;
-      flex-wrap: wrap;
+      flex-wrap: nowrap;
       gap: 10px;
       margin: 0 0 18px;
+      overflow-x: auto;
+      overflow-y: hidden;
+      padding-bottom: 4px;
+      scrollbar-width: none;
+    }
+
+    .page-tabs::-webkit-scrollbar {
+      display: none;
     }
 
     .page-tab {
       display: inline-flex;
+      flex: 0 0 auto;
       min-height: 44px;
       align-items: center;
       gap: 10px;
@@ -96,40 +105,6 @@
       background: linear-gradient(90deg, var(--nexora-electric), var(--nexora-violet));
       color: #fff;
       box-shadow: 0 12px 26px rgba(43, 89, 255, 0.22);
-    }
-
-    .page-tab-icon {
-      display: inline-flex;
-      width: 28px;
-      height: 28px;
-      flex-shrink: 0;
-      align-items: center;
-      justify-content: center;
-      border-radius: 9px;
-      background: var(--nexora-surface-muted);
-      color: var(--nexora-brand);
-    }
-
-    .page-tab.is-active .page-tab-icon,
-    .page-tab[aria-selected="true"] .page-tab-icon {
-      background: rgba(255, 255, 255, 0.18);
-      color: #fff;
-    }
-
-    .page-tab svg {
-      width: 17px;
-      height: 17px;
-    }
-
-    .page-tab svg path,
-    .page-tab svg rect,
-    .page-tab svg circle,
-    .page-tab svg line,
-    .page-tab svg polyline {
-      stroke: currentColor;
-      stroke-width: 2;
-      stroke-linecap: round;
-      stroke-linejoin: round;
     }
 
     .settings-panel {
@@ -913,6 +888,130 @@
       line-height: 18px;
     }
 
+    .sidebar-menu-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .sidebar-menu-row {
+      display: grid;
+      grid-template-columns: 38px minmax(0, 1fr) auto;
+      gap: 12px;
+      align-items: center;
+      border: 1px solid var(--nexora-rule);
+      border-radius: 8px;
+      background: #fff;
+      padding: 12px;
+    }
+
+    .sidebar-menu-row.is-locked {
+      background: #fbfcff;
+    }
+
+    .sidebar-menu-icon {
+      display: inline-flex;
+      width: 38px;
+      height: 38px;
+      align-items: center;
+      justify-content: center;
+      border-radius: 8px;
+      background: #eef6ff;
+      color: var(--nexora-electric);
+    }
+
+    .sidebar-menu-icon i {
+      width: 17px;
+      height: 17px;
+    }
+
+    .sidebar-menu-copy {
+      min-width: 0;
+    }
+
+    .sidebar-menu-title {
+      display: block;
+      color: var(--nexora-text);
+      font-size: 13px;
+      font-weight: 850;
+      line-height: 18px;
+    }
+
+    .sidebar-menu-subtitle {
+      display: block;
+      margin-top: 2px;
+      color: var(--nexora-subtle);
+      font-size: 12px;
+      font-weight: 600;
+      line-height: 17px;
+    }
+
+    .sidebar-menu-toggle {
+      position: relative;
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      cursor: pointer;
+    }
+
+    .sidebar-menu-toggle input {
+      position: absolute;
+      width: 1px;
+      height: 1px;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .sidebar-menu-toggle-track {
+      position: relative;
+      display: inline-flex;
+      width: 46px;
+      height: 26px;
+      align-items: center;
+      border-radius: 999px;
+      background: #dfe5ef;
+      transition: background .16s, box-shadow .16s;
+    }
+
+    .sidebar-menu-toggle-thumb {
+      position: absolute;
+      left: 3px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #fff;
+      box-shadow: 0 2px 6px rgba(13, 18, 33, .18);
+      transition: transform .16s;
+    }
+
+    .sidebar-menu-toggle input:checked + .sidebar-menu-toggle-track {
+      background: var(--nexora-brand);
+      box-shadow: 0 0 0 4px rgba(70, 72, 216, .12);
+    }
+
+    .sidebar-menu-toggle input:checked + .sidebar-menu-toggle-track .sidebar-menu-toggle-thumb {
+      transform: translateX(20px);
+    }
+
+    .sidebar-menu-toggle input:disabled + .sidebar-menu-toggle-track {
+      background: #d9f7e9;
+      box-shadow: none;
+      opacity: .9;
+      cursor: not-allowed;
+    }
+
+    .sidebar-menu-lock-note {
+      display: inline-flex;
+      min-height: 26px;
+      align-items: center;
+      border-radius: 8px;
+      background: rgba(0, 184, 115, .1);
+      padding: 0 10px;
+      color: var(--nexora-success);
+      font-size: 11px;
+      font-weight: 800;
+      white-space: nowrap;
+    }
+
     .filter-row.is-account-filters {
       grid-template-columns: minmax(180px, 260px) repeat(2, minmax(120px, 160px));
     }
@@ -1353,17 +1452,6 @@
         box-shadow: none;
       }
 
-      .page-tab-icon {
-        width: 20px;
-        height: 20px;
-        border-radius: 7px;
-      }
-
-      .page-tab svg {
-        width: 13px;
-        height: 13px;
-      }
-
       .page-tab > span:last-child {
         display: block;
         max-width: 100%;
@@ -1561,10 +1649,10 @@
     <div class="app-area">
       <header class="header"></header>
 
-      <main class="content" aria-label="Account Settings content">
+      <main class="content" aria-label="Settings content">
         <div class="page-heading">
           <div>
-            <h1 class="page-title">Account Settings</h1>
+            <h1 class="page-title">Settings</h1>
             <p class="page-description">Manage your account info, payout methods, business details, and compliance verification.</p>
           </div>
           <div class="owner-status"><i data-lucide="shield-check" aria-hidden="true"></i><span>Owner verified</span></div>
@@ -1573,28 +1661,25 @@
         <div class="settings-shell">
           <div class="page-tabs" role="tablist" aria-label="Account settings sections">
             <button class="page-tab" type="button" role="tab" id="tab-account" aria-controls="panel-account" aria-selected="false" tabindex="-1" data-settings-tab="account">
-              <span class="page-tab-icon"><i data-lucide="user-round" aria-hidden="true"></i></span>
-              <span>ACCOUNT</span>
+              <span>Account</span>
             </button>
             <button class="page-tab" type="button" role="tab" id="tab-business-verification" aria-controls="panel-business-verification" aria-selected="false" tabindex="-1" data-settings-tab="business-verification">
-              <span class="page-tab-icon"><i data-lucide="badge-check" aria-hidden="true"></i></span>
-              <span>BUSINESS VERIFICATION</span>
+              <span>Business Verification</span>
             </button>
             <button class="page-tab is-active" type="button" role="tab" id="tab-sub-account" aria-controls="panel-sub-account" aria-selected="true" tabindex="0" data-settings-tab="sub-account">
-              <span class="page-tab-icon"><i data-lucide="users-round" aria-hidden="true"></i></span>
-              <span>SUB ACCOUNT</span>
+              <span>Sub Account</span>
             </button>
             <button class="page-tab" type="button" role="tab" id="tab-staff" aria-controls="panel-staff" aria-selected="false" tabindex="-1" data-settings-tab="staff">
-              <span class="page-tab-icon"><i data-lucide="user-round-cog" aria-hidden="true"></i></span>
-              <span>STAFF</span>
+              <span>Staff</span>
             </button>
             <button class="page-tab" type="button" role="tab" id="tab-affiliate-link" aria-controls="panel-affiliate-link" aria-selected="false" tabindex="-1" data-settings-tab="affiliate-link">
-              <span class="page-tab-icon"><i data-lucide="link" aria-hidden="true"></i></span>
-              <span>AFFILIATE LINK</span>
+              <span>Affiliate Link</span>
             </button>
             <button class="page-tab" type="button" role="tab" id="tab-terms-privacy" aria-controls="panel-terms-privacy" aria-selected="false" tabindex="-1" data-settings-tab="terms-privacy">
-              <span class="page-tab-icon"><i data-lucide="scroll-text" aria-hidden="true"></i></span>
-              <span>TERMS &amp; PRIVACY</span>
+              <span>Terms &amp; Privacy</span>
+            </button>
+            <button class="page-tab" type="button" role="tab" id="tab-sidebar-menu" aria-controls="panel-sidebar-menu" aria-selected="false" tabindex="-1" data-settings-tab="sidebar-menu">
+              <span>Sidebar Config</span>
             </button>
           </div>
 
@@ -1738,6 +1823,95 @@
           <section class="settings-panel" id="panel-terms-privacy" role="tabpanel" aria-labelledby="tab-terms-privacy" data-settings-panel="terms-privacy" hidden>
           </section>
 
+          <section class="settings-panel" id="panel-sidebar-menu" role="tabpanel" aria-labelledby="tab-sidebar-menu" data-settings-panel="sidebar-menu" hidden>
+            <article class="settings-section">
+              <div class="section-head">
+                <div class="section-title-row">
+                  <span class="section-icon"><i data-lucide="panel-left" aria-hidden="true"></i></span>
+                  <div>
+                    <h2 class="section-title">Sidebar Config</h2>
+                    <p class="section-copy">Choose which sidebar menu items are visible for this owner account.</p>
+                  </div>
+                </div>
+                <span class="sidebar-menu-lock-note">Settings always visible</span>
+              </div>
+              <div class="section-body">
+                <div class="sidebar-menu-list" data-sidebar-menu-list aria-label="Sidebar menu visibility">
+                  <div class="sidebar-menu-row" data-sidebar-menu-item="home">
+                    <span class="sidebar-menu-icon"><i data-lucide="home" aria-hidden="true"></i></span>
+                    <span class="sidebar-menu-copy"><span class="sidebar-menu-title">Home</span><span class="sidebar-menu-subtitle">Main landing shortcut.</span></span>
+                    <label class="sidebar-menu-toggle" aria-label="Show Home in sidebar"><input type="checkbox" data-sidebar-menu-toggle="home" checked><span class="sidebar-menu-toggle-track" aria-hidden="true"><span class="sidebar-menu-toggle-thumb"></span></span></label>
+                  </div>
+                  <div class="sidebar-menu-row" data-sidebar-menu-item="dashboard">
+                    <span class="sidebar-menu-icon"><i data-lucide="layout-dashboard" aria-hidden="true"></i></span>
+                    <span class="sidebar-menu-copy"><span class="sidebar-menu-title">Dashboard</span><span class="sidebar-menu-subtitle">Overview metrics and quick actions.</span></span>
+                    <label class="sidebar-menu-toggle" aria-label="Show Dashboard in sidebar"><input type="checkbox" data-sidebar-menu-toggle="dashboard" checked><span class="sidebar-menu-toggle-track" aria-hidden="true"><span class="sidebar-menu-toggle-thumb"></span></span></label>
+                  </div>
+                  <div class="sidebar-menu-row" data-sidebar-menu-item="payments">
+                    <span class="sidebar-menu-icon"><i data-lucide="wallet" aria-hidden="true"></i></span>
+                    <span class="sidebar-menu-copy"><span class="sidebar-menu-title">Payments &amp; Payouts</span><span class="sidebar-menu-subtitle">Payments, tips, payroll, and savings.</span></span>
+                    <label class="sidebar-menu-toggle" aria-label="Show Payments and Payouts in sidebar"><input type="checkbox" data-sidebar-menu-toggle="payments" checked><span class="sidebar-menu-toggle-track" aria-hidden="true"><span class="sidebar-menu-toggle-thumb"></span></span></label>
+                  </div>
+                  <div class="sidebar-menu-row" data-sidebar-menu-item="review">
+                    <span class="sidebar-menu-icon"><i data-lucide="star" aria-hidden="true"></i></span>
+                    <span class="sidebar-menu-copy"><span class="sidebar-menu-title">Reviews</span><span class="sidebar-menu-subtitle">Review requests and reputation tools.</span></span>
+                    <label class="sidebar-menu-toggle" aria-label="Show Reviews in sidebar"><input type="checkbox" data-sidebar-menu-toggle="review" checked><span class="sidebar-menu-toggle-track" aria-hidden="true"><span class="sidebar-menu-toggle-thumb"></span></span></label>
+                  </div>
+                  <div class="sidebar-menu-row" data-sidebar-menu-item="stations">
+                    <span class="sidebar-menu-icon"><i data-lucide="qr-code" aria-hidden="true"></i></span>
+                    <span class="sidebar-menu-copy"><span class="sidebar-menu-title">Stations &amp; QR Codes</span><span class="sidebar-menu-subtitle">Station setup, OneQR, and QR flows.</span></span>
+                    <label class="sidebar-menu-toggle" aria-label="Show Stations and QR Codes in sidebar"><input type="checkbox" data-sidebar-menu-toggle="stations" checked><span class="sidebar-menu-toggle-track" aria-hidden="true"><span class="sidebar-menu-toggle-thumb"></span></span></label>
+                  </div>
+                  <div class="sidebar-menu-row" data-sidebar-menu-item="booking">
+                    <span class="sidebar-menu-icon"><i data-lucide="calendar-days" aria-hidden="true"></i></span>
+                    <span class="sidebar-menu-copy"><span class="sidebar-menu-title">Ai Hub</span><span class="sidebar-menu-subtitle">Booking, customers, calls, SMS, and plans.</span></span>
+                    <label class="sidebar-menu-toggle" aria-label="Show Ai Hub in sidebar"><input type="checkbox" data-sidebar-menu-toggle="booking" checked><span class="sidebar-menu-toggle-track" aria-hidden="true"><span class="sidebar-menu-toggle-thumb"></span></span></label>
+                  </div>
+                  <div class="sidebar-menu-row" data-sidebar-menu-item="community">
+                    <span class="sidebar-menu-icon"><i data-lucide="users-round" aria-hidden="true"></i></span>
+                    <span class="sidebar-menu-copy"><span class="sidebar-menu-title">Community</span><span class="sidebar-menu-subtitle">Feed, groups, learning, jobs, and events.</span></span>
+                    <label class="sidebar-menu-toggle" aria-label="Show Community in sidebar"><input type="checkbox" data-sidebar-menu-toggle="community" checked><span class="sidebar-menu-toggle-track" aria-hidden="true"><span class="sidebar-menu-toggle-thumb"></span></span></label>
+                  </div>
+                  <div class="sidebar-menu-row" data-sidebar-menu-item="reward">
+                    <span class="sidebar-menu-icon"><i data-lucide="gift" aria-hidden="true"></i></span>
+                    <span class="sidebar-menu-copy"><span class="sidebar-menu-title">Reward</span><span class="sidebar-menu-subtitle">Loyalty rules, catalog, activity, and analytics.</span></span>
+                    <label class="sidebar-menu-toggle" aria-label="Show Reward in sidebar"><input type="checkbox" data-sidebar-menu-toggle="reward" checked><span class="sidebar-menu-toggle-track" aria-hidden="true"><span class="sidebar-menu-toggle-thumb"></span></span></label>
+                  </div>
+                  <div class="sidebar-menu-row" data-sidebar-menu-item="pos">
+                    <span class="sidebar-menu-icon"><i data-lucide="monitor" aria-hidden="true"></i></span>
+                    <span class="sidebar-menu-copy"><span class="sidebar-menu-title">POS</span><span class="sidebar-menu-subtitle">Today booking, queue, customers, and time clock.</span></span>
+                    <label class="sidebar-menu-toggle" aria-label="Show POS in sidebar"><input type="checkbox" data-sidebar-menu-toggle="pos" checked><span class="sidebar-menu-toggle-track" aria-hidden="true"><span class="sidebar-menu-toggle-thumb"></span></span></label>
+                  </div>
+                  <div class="sidebar-menu-row" data-sidebar-menu-item="analytics">
+                    <span class="sidebar-menu-icon"><i data-lucide="chart-no-axes-combined" aria-hidden="true"></i></span>
+                    <span class="sidebar-menu-copy"><span class="sidebar-menu-title">Analytics</span><span class="sidebar-menu-subtitle">Reports and performance insights.</span></span>
+                    <label class="sidebar-menu-toggle" aria-label="Show Analytics in sidebar"><input type="checkbox" data-sidebar-menu-toggle="analytics" checked><span class="sidebar-menu-toggle-track" aria-hidden="true"><span class="sidebar-menu-toggle-thumb"></span></span></label>
+                  </div>
+                  <div class="sidebar-menu-row is-locked" data-sidebar-menu-item="settings" data-sidebar-menu-locked="true">
+                    <span class="sidebar-menu-icon"><i data-lucide="settings" aria-hidden="true"></i></span>
+                    <span class="sidebar-menu-copy"><span class="sidebar-menu-title">Settings</span><span class="sidebar-menu-subtitle">Locked on so this control always remains reachable.</span></span>
+                    <label class="sidebar-menu-toggle" aria-label="Settings is always shown in sidebar"><input type="checkbox" data-sidebar-menu-toggle="settings" checked disabled><span class="sidebar-menu-toggle-track" aria-hidden="true"><span class="sidebar-menu-toggle-thumb"></span></span></label>
+                  </div>
+                  <div class="sidebar-menu-row" data-sidebar-menu-item="news-library">
+                    <span class="sidebar-menu-icon"><i data-lucide="newspaper" aria-hidden="true"></i></span>
+                    <span class="sidebar-menu-copy"><span class="sidebar-menu-title">News &amp; Library</span><span class="sidebar-menu-subtitle">News, events, Zoom schedule, and compensation plan.</span></span>
+                    <label class="sidebar-menu-toggle" aria-label="Show News and Library in sidebar"><input type="checkbox" data-sidebar-menu-toggle="news-library" checked><span class="sidebar-menu-toggle-track" aria-hidden="true"><span class="sidebar-menu-toggle-thumb"></span></span></label>
+                  </div>
+                  <div class="sidebar-menu-row" data-sidebar-menu-item="support">
+                    <span class="sidebar-menu-icon"><i data-lucide="circle-question-mark" aria-hidden="true"></i></span>
+                    <span class="sidebar-menu-copy"><span class="sidebar-menu-title">Support</span><span class="sidebar-menu-subtitle">Help and merchant support access.</span></span>
+                    <label class="sidebar-menu-toggle" aria-label="Show Support in sidebar"><input type="checkbox" data-sidebar-menu-toggle="support" checked><span class="sidebar-menu-toggle-track" aria-hidden="true"><span class="sidebar-menu-toggle-thumb"></span></span></label>
+                  </div>
+                </div>
+                <p class="field-note">Changes save automatically to this browser and update the shared sidebar immediately.</p>
+              </div>
+              <div class="action-row">
+                <span class="save-status" data-sidebar-menu-status>All sidebar items are visible.</span>
+                <button class="owner-button" type="button" data-sidebar-menu-reset><i data-lucide="rotate-ccw" aria-hidden="true"></i><span>Show all items</span></button>
+              </div>
+            </article>
+          </section>
+
           <div class="owner-modal" id="add-sub-account-modal" role="dialog" aria-modal="true" aria-labelledby="add-sub-account-modal-title" hidden>
             <button class="owner-modal-backdrop" type="button" aria-label="Close Add New Sub Account modal" data-close-modal="add-sub-account-modal"></button>
             <div class="owner-modal-card" role="document">
@@ -1862,17 +2036,132 @@
       var logFilterMenu = document.querySelector('[data-log-filter-menu]');
       var logFilterToggle = document.querySelector('[data-log-filter-toggle]');
       var logFilterDropdown = document.querySelector('[data-log-filter-dropdown]');
+      var sidebarMenuToggles = Array.prototype.slice.call(document.querySelectorAll('[data-sidebar-menu-toggle]'));
+      var sidebarMenuResetButton = document.querySelector('[data-sidebar-menu-reset]');
+      var sidebarMenuStatus = document.querySelector('[data-sidebar-menu-status]');
       var currentEditSubAccountButton = null;
       var pendingDeactivateRow = null;
       var defaultTab = 'sub-account';
       var defaultSubAccountView = 'accounts';
       var systemConfirmButtonColor = 'var(--nexora-brand)';
+      var fallbackSidebarVisibilityStorageKey = 'nexora.sidebar.visibility.v1';
       var subAccountActionMessages = {
         'activate': '{email} was activated.',
         'deactivate': '{email} was deactivated.',
         'reset-password': 'Password reset and a new login email was sent to {email}.',
         'resend-login-email': 'Login email resent to {email}.'
       };
+
+      function sidebarVisibilityStorageKey() {
+        return (window.NEXORA_SHELL && window.NEXORA_SHELL.sidebarVisibilityStorageKey) || fallbackSidebarVisibilityStorageKey;
+      }
+
+      function sidebarToggleKeySet() {
+        var keys = {};
+        sidebarMenuToggles.forEach(function (toggle) {
+          keys[toggle.getAttribute('data-sidebar-menu-toggle')] = true;
+        });
+        return keys;
+      }
+
+      function normalizeSidebarHiddenKeys(keys) {
+        var valid = sidebarToggleKeySet();
+        var seen = {};
+        var hiddenKeys = [];
+        if (!Array.isArray(keys)) return hiddenKeys;
+        keys.forEach(function (rawKey) {
+          var key = String(rawKey || '');
+          if (!key || key === 'settings' || seen[key] || !valid[key]) return;
+          seen[key] = true;
+          hiddenKeys.push(key);
+        });
+        return hiddenKeys;
+      }
+
+      function readSidebarHiddenKeys() {
+        if (window.NEXORA_SHELL && typeof window.NEXORA_SHELL.getHiddenSidebarKeys === 'function') {
+          return normalizeSidebarHiddenKeys(window.NEXORA_SHELL.getHiddenSidebarKeys());
+        }
+        try {
+          var raw = window.localStorage.getItem(sidebarVisibilityStorageKey());
+          if (!raw) return [];
+          var data = JSON.parse(raw);
+          if (Array.isArray(data)) return normalizeSidebarHiddenKeys(data);
+          if (data && Array.isArray(data.hiddenKeys)) return normalizeSidebarHiddenKeys(data.hiddenKeys);
+        } catch (error) {
+          return [];
+        }
+        return [];
+      }
+
+      function setSidebarMenuStatus(message) {
+        if (sidebarMenuStatus) sidebarMenuStatus.textContent = message;
+      }
+
+      function hiddenKeysFromSidebarToggles() {
+        var hiddenKeys = [];
+        sidebarMenuToggles.forEach(function (toggle) {
+          var key = toggle.getAttribute('data-sidebar-menu-toggle');
+          if (toggle.disabled || key === 'settings') return;
+          if (!toggle.checked) hiddenKeys.push(key);
+        });
+        return hiddenKeys;
+      }
+
+      function saveSidebarHiddenKeys(hiddenKeys) {
+        hiddenKeys = normalizeSidebarHiddenKeys(hiddenKeys);
+        if (window.NEXORA_SHELL && typeof window.NEXORA_SHELL.setHiddenSidebarKeys === 'function') {
+          hiddenKeys = window.NEXORA_SHELL.setHiddenSidebarKeys(hiddenKeys);
+          if (typeof window.NEXORA_SHELL.refreshSidebar === 'function') window.NEXORA_SHELL.refreshSidebar();
+          return hiddenKeys;
+        }
+        try {
+          window.localStorage.setItem(sidebarVisibilityStorageKey(), JSON.stringify({ hiddenKeys: hiddenKeys }));
+        } catch (error) {}
+        return hiddenKeys;
+      }
+
+      function sidebarMenuLabel(toggle) {
+        var row = toggle.closest('[data-sidebar-menu-item]');
+        var label = row ? row.querySelector('.sidebar-menu-title') : null;
+        return label ? label.textContent : 'Sidebar item';
+      }
+
+      function applySidebarMenuVisibilityState() {
+        var hiddenMap = {};
+        readSidebarHiddenKeys().forEach(function (key) { hiddenMap[key] = true; });
+        sidebarMenuToggles.forEach(function (toggle) {
+          var key = toggle.getAttribute('data-sidebar-menu-toggle');
+          if (toggle.disabled || key === 'settings') {
+            toggle.checked = true;
+            return;
+          }
+          toggle.checked = !hiddenMap[key];
+        });
+        var hiddenCount = Object.keys(hiddenMap).length;
+        setSidebarMenuStatus(hiddenCount ? hiddenCount + ' sidebar item' + (hiddenCount === 1 ? ' is' : 's are') + ' hidden.' : 'All sidebar items are visible.');
+      }
+
+      function handleSidebarMenuToggle(toggle) {
+        if (toggle.disabled) return;
+        var hiddenKeys = saveSidebarHiddenKeys(hiddenKeysFromSidebarToggles());
+        setSidebarMenuStatus((toggle.checked ? 'Showing ' : 'Hiding ') + sidebarMenuLabel(toggle) + ' in sidebar.');
+        if (!hiddenKeys.length) setSidebarMenuStatus('All sidebar items are visible.');
+      }
+
+      sidebarMenuToggles.forEach(function (toggle) {
+        toggle.addEventListener('change', function () {
+          handleSidebarMenuToggle(toggle);
+        });
+      });
+
+      if (sidebarMenuResetButton) {
+        sidebarMenuResetButton.addEventListener('click', function () {
+          sidebarMenuToggles.forEach(function (toggle) { toggle.checked = true; });
+          saveSidebarHiddenKeys([]);
+          setSidebarMenuStatus('All sidebar items are visible.');
+        });
+      }
 
       function hasTab(tabId) {
         return tabs.some(function (tab) { return tab.getAttribute('data-settings-tab') === tabId; });
@@ -1901,6 +2190,9 @@
           tab.classList.toggle('is-active', isActive);
           tab.setAttribute('aria-selected', isActive ? 'true' : 'false');
           tab.setAttribute('tabindex', isActive ? '0' : '-1');
+          if (isActive && typeof tab.scrollIntoView === 'function') {
+            tab.scrollIntoView({ block: 'nearest', inline: 'nearest' });
+          }
         });
         panels.forEach(function (panel) {
           panel.hidden = panel.getAttribute('data-settings-panel') !== nextTab;
@@ -2324,6 +2616,7 @@
         });
       }
 
+      applySidebarMenuVisibilityState();
       activateTab(currentQueryTab(), false);
       activateSubAccountView(currentQueryView(), false);
     })();

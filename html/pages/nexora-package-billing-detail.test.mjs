@@ -203,6 +203,17 @@ test('renders a payment-due invoice without a receipt download', () => {
   assert.doesNotMatch(html, /Receipt number/);
 });
 
+test('omits billing periods for Voice Credit in detail and PDF views', () => {
+  const html = createBillingRuntime('?transaction=SMS-20260811-0001').root.innerHTML;
+  const record = billingRecords().find((item) => item.transactionId === 'SMS-20260811-0001');
+  const invoiceText = execFileSync('pdftotext', [fileURLToPath(new URL(record.invoiceFile, PAGE_URL)), '-'], { encoding: 'utf8' });
+
+  assert.match(html, /<td data-label="Description"><strong>Voice Credit<\/strong><\/td>/);
+  assert.doesNotMatch(html, /<strong>Voice Credit<\/strong><span>\s*<\/span>/);
+  assert.doesNotMatch(html, /Voice Credit[\s\S]*?Aug 11-Sep 11, 2026/);
+  assert.doesNotMatch(invoiceText, /Voice Credit[\s\S]*?Aug 11-Sep 11, 2026/);
+});
+
 test('renders an overdue invoice with an explicit warning', () => {
   const html = createBillingRuntime('?transaction=VMS-20260701-0002').root.innerHTML;
 
@@ -448,6 +459,7 @@ test('keeps the paid status badge compact with centered text', () => {
 test('loads responsive Billing Detail styles', () => {
   assert.ok(existsSync(DETAIL_CSS_URL), 'nexora-package-billing-detail.css must exist');
   const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const documentIconRule = css.match(/\.billing-detail-document-icon svg\s*\{([\s\S]*?)\}/)?.[1] || '';
 
   assert.match(css, /\.billing-detail-page\s*\{/);
   assert.match(css, /\.billing-detail-summary,[\s\S]*?\.billing-detail-document[\s\S]*?\{/);
@@ -455,6 +467,7 @@ test('loads responsive Billing Detail styles', () => {
   assert.match(css, /\.billing-payment-modal\s*\{/);
   assert.match(css, /\.billing-payment-dialog\s*\{/);
   assert.match(css, /@media \(max-width: 640px\)/);
+  assert.match(documentIconRule, /stroke-width:\s*1\.25;/);
 });
 
 test('keeps mobile line item dates underneath descriptions without narrow wrapping', () => {

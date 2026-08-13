@@ -35,36 +35,19 @@ function renderSidebar(activePage, activeTab) {
   return sidebar.innerHTML;
 }
 
-test('renders Settings as an expanded submenu group on the Owner Settings page', () => {
+test('renders Settings as a flat active sidebar item on the Owner Settings page', () => {
   const html = renderSidebar('owner-settings', 'sub-account');
 
-  assert.match(html, /class="nav-item nav-parent is-expanded"[\s\S]*?aria-controls="nexora-subnav-settings"[\s\S]*?data-lucide="settings"[\s\S]*?<span>Settings<\/span>/);
-  assert.match(html, /<div class="nav-subnav" id="nexora-subnav-settings" data-nav-subnav>/);
-
-  for (const [tab, label] of [
-    ['account', 'Account'],
-    ['business-verification', 'Business Verification'],
-    ['sub-account', 'Sub Account'],
-    ['affiliate-link', 'Affiliate Link'],
-    ['terms-privacy', 'Terms &amp; Privacy']
-  ]) {
-    assert.match(html, new RegExp(`data-shell-tab="${tab}"[\\s\\S]*?<span>${label}<\\/span>`));
-  }
-
-  assert.match(html, /class="nav-subitem is-active"[^>]*data-shell-tab="sub-account"[\s\S]*?<span>Sub Account<\/span>/);
-  assert.doesNotMatch(html, /<a class="nav-item is-active" href="owner-setting\.html">[\s\S]*?<span>Settings<\/span><\/a>/);
+  assert.match(html, /<a class="nav-item is-active" href="owner-setting\.html">[\s\S]*?data-lucide="settings"[\s\S]*?<span>Settings<\/span><\/a>/);
+  assert.doesNotMatch(html, /aria-controls="nexora-subnav-settings"/);
+  assert.doesNotMatch(html, /id="nexora-subnav-settings"/);
+  assert.doesNotMatch(html, /data-shell-tab="(?:account|business-verification|sub-account|staff|affiliate-link|terms-privacy|sidebar-menu)"/);
 });
 
-test('links Settings submenu items from other shared sidebar pages', () => {
+test('links Settings as a flat sidebar item from other shared sidebar pages', () => {
   const html = renderSidebar('booking', 'booking');
 
-  for (const [tab, label] of [
-    ['account', 'Account'],
-    ['business-verification', 'Business Verification'],
-    ['sub-account', 'Sub Account'],
-    ['affiliate-link', 'Affiliate Link'],
-    ['terms-privacy', 'Terms &amp; Privacy']
-  ]) {
-    assert.match(html, new RegExp(`href="owner-setting.html\\?tab=${tab}"[\\s\\S]*?<span>${label}<\\/span>`));
-  }
+  assert.match(html, /<a class="nav-item" href="owner-setting\.html">[\s\S]*?data-lucide="settings"[\s\S]*?<span>Settings<\/span><\/a>/);
+  assert.doesNotMatch(html, /owner-setting\.html\?tab=/);
+  assert.doesNotMatch(html, /id="nexora-subnav-settings"/);
 });

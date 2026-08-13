@@ -36,29 +36,81 @@ function iconActionControls(html) {
 
 test('creates the Owner Settings page from the shared merchant shell', () => {
   const html = source();
-  assert.match(html, /<title>Nexora Touch - Account Settings<\/title>/);
+  assert.match(html, /<title>NEXORA TOUCH - Settings<\/title>/);
   assert.match(html, /<div class="shell">/);
   assert.match(html, /<aside class="sidebar"[^>]*><\/aside>/);
   assert.match(html, /<header class="header"><\/header>/);
-  assert.match(html, /<main class="content" aria-label="Account Settings content">/);
+  assert.match(html, /<main class="content" aria-label="Settings content">/);
   assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css">/);
   assert.match(html, /<script src="\.\.\/assets\/nexora-shell\.js"><\/script>/);
 });
 
 test('renders the requested Account Settings headline and tabs', () => {
   const html = source();
-  assert.match(html, /<h1 class="page-title">Account Settings<\/h1>/);
+  assert.match(html, /<h1 class="page-title">Settings<\/h1>/);
   assert.match(html, /Manage your account info, payout methods, business details, and compliance verification\./);
   assert.match(html, /<div class="page-tabs" role="tablist" aria-label="Account settings sections">/);
 
-  for (const tab of ['ACCOUNT', 'BUSINESS VERIFICATION', 'SUB ACCOUNT', 'STAFF', 'AFFILIATE LINK', 'TERMS &amp; PRIVACY']) {
-    assert.match(html, new RegExp(`<button class="page-tab[^"]*"[^>]*role="tab"[\\s\\S]*?<span class="page-tab-icon">[\\s\\S]*?<\\/span>[\\s\\S]*?<span>${tab}<\\/span>[\\s\\S]*?<\\/button>`));
+  const tabsBlock = html.match(/<div class="page-tabs" role="tablist" aria-label="Account settings sections">([\s\S]*?)<\/div>/)?.[1] || '';
+  assert.doesNotMatch(tabsBlock, /page-tab-icon|data-lucide=/);
+
+  for (const tab of ['Account', 'Business Verification', 'Sub Account', 'Staff', 'Affiliate Link', 'Terms &amp; Privacy', 'Sidebar Config']) {
+    assert.match(html, new RegExp(`<button class="page-tab[^"]*"[^>]*role="tab"[\\s\\S]*?<span>${tab}<\\/span>[\\s\\S]*?<\\/button>`));
   }
+});
+
+test('renders Sidebar Config settings for hiding shared sidebar items', () => {
+  const html = source();
+  assert.match(html, /<button class="page-tab"[^>]*id="tab-sidebar-menu"[^>]*data-settings-tab="sidebar-menu"[\s\S]*?<span>Sidebar Config<\/span>[\s\S]*?<\/button>/);
+
+  const panel = panelContent(html, 'sidebar-menu');
+  assert.match(panel, /<h2 class="section-title">Sidebar Config<\/h2>/);
+  assert.match(panel, /Choose which sidebar menu items are visible for this owner account\./);
+  assert.match(panel, /data-sidebar-menu-list/);
+  assert.match(panel, /data-sidebar-menu-status/);
+  assert.match(panel, /data-sidebar-menu-reset/);
+
+  for (const [key, label] of [
+    ['home', 'Home'],
+    ['dashboard', 'Dashboard'],
+    ['payments', 'Payments &amp; Payouts'],
+    ['review', 'Reviews'],
+    ['stations', 'Stations &amp; QR Codes'],
+    ['booking', 'Ai Hub'],
+    ['community', 'Community'],
+    ['reward', 'Reward'],
+    ['pos', 'POS'],
+    ['analytics', 'Analytics'],
+    ['settings', 'Settings'],
+    ['news-library', 'News &amp; Library'],
+    ['support', 'Support']
+  ]) {
+    assert.match(panel, new RegExp(`data-sidebar-menu-item="${key}"[\\s\\S]*?<span class="sidebar-menu-title">${label}<\\/span>`));
+  }
+
+  assert.match(panel, /data-sidebar-menu-item="settings"[\s\S]*data-sidebar-menu-locked="true"[\s\S]*data-sidebar-menu-toggle="settings"[\s\S]*checked disabled/);
+});
+
+test('keeps the Settings tab bar as a desktop horizontal scroller', () => {
+  const html = source();
+
+  const tabsRule = styleRule(html, '.page-tabs');
+  assertCssDeclaration(tabsRule, 'flex-wrap', 'nowrap');
+  assertCssDeclaration(tabsRule, 'overflow-x', 'auto');
+
+  const tabRule = styleRule(html, '.page-tab');
+  assertCssDeclaration(tabRule, 'flex', '0 0 auto');
+});
+
+test('scrolls the active Settings tab into view when tab bar overflows', () => {
+  const html = source();
+
+  assert.match(html, /if \(isActive && typeof tab\.scrollIntoView === 'function'\) \{[\s\S]*?tab\.scrollIntoView\(\{ block: 'nearest', inline: 'nearest' \}\);[\s\S]*?\}/);
 });
 
 test('renders the Sub Account settings tab and management sections', () => {
   const html = source();
-  assert.match(html, /<button class="page-tab[^"]*"[^>]*role="tab"[^>]*data-settings-tab="sub-account"[\s\S]*?<span>SUB ACCOUNT<\/span>[\s\S]*?<\/button>/);
+  assert.match(html, /<button class="page-tab[^"]*"[^>]*role="tab"[^>]*data-settings-tab="sub-account"[\s\S]*?<span>Sub Account<\/span>[\s\S]*?<\/button>/);
   assert.match(html, /id="panel-sub-account"[\s\S]*?role="tabpanel"/);
   assert.match(html, /Manage Sub Account login accounts, role permissions, and activity logs under this owner account\./);
 
@@ -763,13 +815,16 @@ test('leaves unfinished account setting tabs empty except Sub Account', () => {
 
 test('wires Owner Settings tabs with accessible tab panels', () => {
   const html = source();
-  for (const panel of ['account', 'business-verification', 'staff', 'affiliate-link', 'terms-privacy', 'sub-account']) {
+  for (const panel of ['account', 'business-verification', 'staff', 'affiliate-link', 'terms-privacy', 'sidebar-menu', 'sub-account']) {
     assert.match(html, new RegExp(`id="panel-${panel}"[\\s\\S]*?role="tabpanel"`));
   }
 
   assert.match(html, /window\.NEXORA_SHELL = \{ activePage: 'owner-settings', activeTab: 'sub-account' \};/);
   assert.match(html, /querySelectorAll\('\[data-settings-tab\]'\)/);
   assert.match(html, /querySelectorAll\('\[data-sub-account-view\]'\)/);
+  assert.match(html, /querySelectorAll\('\[data-sidebar-menu-toggle\]'\)/);
+  assert.match(html, /window\.NEXORA_SHELL\.setHiddenSidebarKeys\(hiddenKeys\)/);
+  assert.match(html, /window\.NEXORA_SHELL\.refreshSidebar\(\)/);
   assert.match(html, /window\.activateMainTab = function \(tabId\) \{[\s\S]*?activateTab\(tabId, true\);[\s\S]*?\};/);
   assert.match(html, /window\.NEXORA_SHELL\.setActiveTab\(nextTab\)/);
   assert.match(html, /window\.history\.replaceState/);

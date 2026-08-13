@@ -317,8 +317,10 @@ def line_items_table(record: dict[str, Any], style: dict[str, ParagraphStyle]) -
         Paragraph("Amount", style["label"]),
     ]]
     for item in record["lineItems"]:
+        period = item.get("period")
         description = Paragraph(
-            f"<b>{xml(item['description'])}</b><br/><font color='#64748B'>{xml(item['period'])}</font>",
+            f"<b>{xml(item['description'])}</b>"
+            + (f"<br/><font color='#64748B'>{xml(period)}</font>" if period else ""),
             style["body"],
         )
         tax = f"{float(record['taxRate']):g}%"

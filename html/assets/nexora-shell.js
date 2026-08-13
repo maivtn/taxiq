@@ -33,14 +33,16 @@
     'owner-settings': 'owner-setting.html'
   };
 
+  var SIDEBAR_VISIBILITY_STORAGE_KEY = 'nexora.sidebar.visibility.v1';
+
   // Single source of truth for the whole sidebar.
   // group.page === activePage  -> native group: open, sub-items drive this page's tabs
   // group.page (other page)     -> foreign group: collapsed, sub-items link across pages
   // group without page          -> section links (no destination yet)
   var NAV = [
-    { type: 'item', label: 'Home', icon: 'home' },
+    { type: 'item', key: 'home', label: 'Home', icon: 'home' },
     { type: 'divider' },
-    { type: 'item', label: 'Dashboard', icon: 'layout-dashboard' },
+    { type: 'item', key: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard' },
     { type: 'group', key: 'payments', label: 'Payments & Payouts', icon: 'wallet', items: [
       { label: 'Overview' },
       { label: 'Customer Payments' },
@@ -48,7 +50,7 @@
       { label: 'Payroll' },
       { label: 'Direct Savings' }
     ] },
-    { type: 'item', label: 'Reviews', icon: 'star', page: 'review' },
+    { type: 'item', key: 'review', label: 'Reviews', icon: 'star', page: 'review' },
     { type: 'group', key: 'stations', label: 'Stations & QR Codes', icon: 'qr-code', page: 'stations', items: [
       { label: 'QR Stations', tab: 'qr-stations' },
       { label: 'OneQR', tab: 'one-qr' }
@@ -85,22 +87,112 @@
       { label: 'Time Clock', tab: 'clock' },
       { label: 'Management', tab: 'management' }
     ] },
-    { type: 'item', label: 'Analytics', icon: 'chart-no-axes-combined' },
+    { type: 'item', key: 'analytics', label: 'Analytics', icon: 'chart-no-axes-combined' },
     { type: 'group', key: 'settings', label: 'Settings', icon: 'settings', page: 'owner-settings', items: [
       { label: 'Account', tab: 'account' },
       { label: 'Business Verification', tab: 'business-verification' },
       { label: 'Sub Account', tab: 'sub-account' },
       { label: 'Staff', tab: 'staff' },
       { label: 'Affiliate Link', tab: 'affiliate-link' },
-      { label: 'Terms & Privacy', tab: 'terms-privacy' }
+      { label: 'Terms & Privacy', tab: 'terms-privacy' },
+      { label: 'Sidebar Config', tab: 'sidebar-menu' }
     ] },
     { type: 'group', key: 'news-library', label: 'News & Library', icon: 'newspaper', page: 'news-library', items: [
       { label: 'News', tab: 'news' },
       { label: 'Event & Zoom Schedule', tab: 'event-zoom-schedule' },
       { label: 'Compensation Plan', tab: 'compensation-plan' }
     ] },
-    { type: 'item', label: 'Support', icon: 'circle-question-mark' }
+    { type: 'item', key: 'support', label: 'Support', icon: 'circle-question-mark' }
   ];
+
+  var LOCKED_SIDEBAR_KEYS = { settings: true };
+
+  function sidebarNodeKey(node) {
+    return node && node.key ? String(node.key) : '';
+  }
+
+  function sidebarMenuItemFromNode(node) {
+    var key = sidebarNodeKey(node);
+    return {
+      key: key,
+      label: node.label,
+      locked: !!LOCKED_SIDEBAR_KEYS[key]
+    };
+  }
+
+  var SIDEBAR_MENU_ITEMS = NAV.filter(function (node) {
+    return node.type !== 'divider';
+  }).map(sidebarMenuItemFromNode);
+
+  function sidebarMenuKeyMap() {
+    var map = {};
+    SIDEBAR_MENU_ITEMS.forEach(function (item) { map[item.key] = item; });
+    return map;
+  }
+
+  function storage() {
+    try { return window.localStorage || null; } catch (e) { return null; }
+  }
+
+  function normalizeHiddenSidebarKeys(keys) {
+    var valid = sidebarMenuKeyMap();
+    var seen = {};
+    var hidden = [];
+    if (!Array.isArray(keys)) return hidden;
+    keys.forEach(function (rawKey) {
+      var key = String(rawKey || '');
+      if (!key || seen[key] || !valid[key] || valid[key].locked) return;
+      seen[key] = true;
+      hidden.push(key);
+    });
+    return hidden;
+  }
+
+  function getHiddenSidebarKeys() {
+    var store = storage();
+    if (!store) return [];
+    try {
+      var raw = store.getItem(SIDEBAR_VISIBILITY_STORAGE_KEY);
+      if (!raw) return [];
+      var data = JSON.parse(raw);
+      if (Array.isArray(data)) return normalizeHiddenSidebarKeys(data);
+      if (data && Array.isArray(data.hiddenKeys)) return normalizeHiddenSidebarKeys(data.hiddenKeys);
+      if (data && Array.isArray(data.hidden)) return normalizeHiddenSidebarKeys(data.hidden);
+    } catch (e) {
+      return [];
+    }
+    return [];
+  }
+
+  function setHiddenSidebarKeys(keys) {
+    var hiddenKeys = normalizeHiddenSidebarKeys(keys);
+    var store = storage();
+    if (store) {
+      try { store.setItem(SIDEBAR_VISIBILITY_STORAGE_KEY, JSON.stringify({ hiddenKeys: hiddenKeys })); } catch (e) {}
+    }
+    return hiddenKeys;
+  }
+
+  function hiddenSidebarKeySet() {
+    var hidden = {};
+    getHiddenSidebarKeys().forEach(function (key) { hidden[key] = true; });
+    return hidden;
+  }
+
+  function visibleNav() {
+    var hidden = hiddenSidebarKeySet();
+    var nodes = [];
+    NAV.forEach(function (node) {
+      if (node.type === 'divider') {
+        if (nodes.length && nodes[nodes.length - 1].type !== 'divider') nodes.push(node);
+        return;
+      }
+      if (hidden[sidebarNodeKey(node)]) return;
+      nodes.push(node);
+    });
+    while (nodes.length && nodes[nodes.length - 1].type === 'divider') nodes.pop();
+    return nodes;
+  }
 
   // Resolve the initial active tab: ?tab= wins, then config.
   var urlTab = '';
@@ -168,26 +260,27 @@
   }
 
   function renderNav() {
-    return NAV.map(function (node) {
+    return visibleNav().map(function (node) {
       if (node.type === 'divider') return '<div class="nav-divider"></div>';
       if (node.type === 'group') return renderGroup(node);
       return renderFlat(node);
     }).join('');
   }
 
-  var SIDEBAR_HTML =
-    '<div class="sidebar-panel">' +
-      '<div class="profile-row"><div class="avatar">NT</div><div>' +
-        '<div class="profile-name">NEXORA TOUCH</div>' +
-        '<div class="profile-email">merchant@nexoratouch.com</div>' +
-      '</div></div>' +
-    '</div>' +
-    '<nav class="sidebar-nav" aria-label="Main menu">' + renderNav() + '</nav>' +
-    '<div class="sidebar-panel plan-panel">' +
-      '<div class="plan-info"><div class="panel-kicker">Current Plan</div><div class="panel-title">Pro Plan</div></div>' +
-      '<button class="plan-button" type="button">Manage</button>' +
-    '</div>' +
-    '<div class="sidebar-footer"><button class="logout-button" type="button"><span class="logout-icon"><i data-lucide="log-out" aria-hidden="true"></i></span><span>Sign out</span></button></div>';
+  function renderMerchantSidebarHtml() {
+    return '<div class="sidebar-panel">' +
+        '<div class="profile-row"><div class="avatar">NT</div><div>' +
+          '<div class="profile-name">NEXORA TOUCH</div>' +
+          '<div class="profile-email">merchant@nexoratouch.com</div>' +
+        '</div></div>' +
+      '</div>' +
+      '<nav class="sidebar-nav" aria-label="Main menu">' + renderNav() + '</nav>' +
+      '<div class="sidebar-panel plan-panel">' +
+        '<div class="plan-info"><div class="panel-kicker">Current Plan</div><div class="panel-title">Pro Plan</div></div>' +
+        '<button class="plan-button" type="button">Manage</button>' +
+      '</div>' +
+      '<div class="sidebar-footer"><button class="logout-button" type="button"><span class="logout-icon"><i data-lucide="log-out" aria-hidden="true"></i></span><span>Sign out</span></button></div>';
+  }
 
   var STAFF_SIDEBAR_HTML =
     '<div class="sidebar-panel staff-profile-panel">' +
@@ -257,7 +350,7 @@
     }
   }
 
-  function wire() {
+  function wireSidebar() {
     // group expand / collapse
     var toggles = document.querySelectorAll('.sidebar [data-nav-group]');
     for (var i = 0; i < toggles.length; i++) {
@@ -292,7 +385,10 @@
         setDrawer(false);
       });
     }
+  }
 
+  function wire() {
+    wireSidebar();
     // mobile drawer open / close
     var opener = document.querySelector('.header [data-shell-drawer-open]');
     if (opener) opener.addEventListener('click', function () {
@@ -324,11 +420,19 @@
     }
   }
 
+  function refreshSidebar() {
+    var sidebar = document.querySelector('aside.sidebar');
+    if (!sidebar || activePage === 'staff') return;
+    sidebar.innerHTML = renderMerchantSidebarHtml();
+    wireSidebar();
+    if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
+  }
+
   function init() {
     var sidebar = document.querySelector('aside.sidebar');
     var header = document.querySelector('header.header');
     if (sidebar) sidebar.id = 'nexora-sidebar';
-    if (sidebar) sidebar.innerHTML = activePage === 'staff' ? STAFF_SIDEBAR_HTML : SIDEBAR_HTML;
+    if (sidebar) sidebar.innerHTML = activePage === 'staff' ? STAFF_SIDEBAR_HTML : renderMerchantSidebarHtml();
     if (header) header.innerHTML = HEADER_HTML;
 
     // drawer backdrop (once)
@@ -345,6 +449,11 @@
   // expose the highlight setter so pages can sync on top-tab changes
   window.NEXORA_SHELL = cfg;
   cfg.setActiveTab = setActiveTab;
+  cfg.sidebarVisibilityStorageKey = SIDEBAR_VISIBILITY_STORAGE_KEY;
+  cfg.sidebarMenuItems = SIDEBAR_MENU_ITEMS.slice();
+  cfg.getHiddenSidebarKeys = getHiddenSidebarKeys;
+  cfg.setHiddenSidebarKeys = setHiddenSidebarKeys;
+  cfg.refreshSidebar = refreshSidebar;
 
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
   else init();

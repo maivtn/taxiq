@@ -9,7 +9,6 @@ const shellSource = readFileSync(SHELL_URL, 'utf8');
 const shellCss = readFileSync(SHELL_CSS_URL, 'utf8');
 const INLINE_SHELL_PAGES = [
   'booking-book-phase-1.html',
-  'booking-book-src-app-shell.html',
   'community.html',
   'salon-setup-reward.html',
   'change-icon.html'
@@ -28,10 +27,28 @@ function classList() {
   return { add() {}, remove() {}, toggle() {}, contains() { return false; } };
 }
 
-function renderSidebar(activePage, activeTab) {
+function makeLocalStorage(initial = {}) {
+  const store = new Map(Object.entries(initial));
+  return {
+    getItem(key) {
+      return store.has(key) ? store.get(key) : null;
+    },
+    setItem(key, value) {
+      store.set(key, String(value));
+    },
+    removeItem(key) {
+      store.delete(key);
+    }
+  };
+}
+
+function renderSidebar(activePage, activeTab, hiddenKeys = []) {
   const sidebar = { innerHTML: '', classList: classList() };
   const header = { innerHTML: '' };
   let backdrop = null;
+  const localStorage = makeLocalStorage({
+    'nexora.sidebar.visibility.v1': JSON.stringify({ hiddenKeys })
+  });
   const document = {
     readyState: 'complete',
     body: { appendChild(node) { backdrop = node; } },
@@ -47,10 +64,40 @@ function renderSidebar(activePage, activeTab) {
   };
   const window = {
     NEXORA_SHELL: { activePage, activeTab },
-    location: { search: '' }
+    location: { search: '' },
+    localStorage
   };
   vm.runInNewContext(shellSource, { window, document, URLSearchParams });
   return sidebar.innerHTML;
+}
+
+function bootShellForVisibility(hiddenKeys = []) {
+  const sidebar = { innerHTML: '', classList: classList() };
+  const header = { innerHTML: '' };
+  let backdrop = null;
+  const localStorage = makeLocalStorage({
+    'nexora.sidebar.visibility.v1': JSON.stringify({ hiddenKeys })
+  });
+  const document = {
+    readyState: 'complete',
+    body: { appendChild(node) { backdrop = node; } },
+    createElement() { return { className: '', classList: classList(), addEventListener() {} }; },
+    addEventListener() {},
+    querySelector(selector) {
+      if (selector === 'aside.sidebar') return sidebar;
+      if (selector === 'header.header') return header;
+      if (selector === '.nexora-shell-backdrop') return backdrop;
+      return null;
+    },
+    querySelectorAll() { return []; }
+  };
+  const window = {
+    NEXORA_SHELL: { activePage: 'booking', activeTab: 'booking' },
+    location: { search: '' },
+    localStorage
+  };
+  vm.runInNewContext(shellSource, { window, document, URLSearchParams });
+  return { window, sidebar, localStorage };
 }
 
 function bootShellWithPlanButton() {
@@ -140,6 +187,25 @@ test('moves merchant Staff navigation under Settings', () => {
 
   const settingsHtml = renderSidebar('owner-settings', 'staff');
   assert.match(settingsHtml, /class="nav-subitem is-active"[^>]*data-shell-tab="staff"[\s\S]*?<span>Staff<\/span>/);
+});
+
+test('hides shared merchant sidebar items from saved Settings visibility', () => {
+  const html = renderSidebar('booking', 'booking', ['dashboard', 'support', 'settings']);
+
+  assert.doesNotMatch(html, />Dashboard</);
+  assert.doesNotMatch(html, />Support</);
+  assert.match(html, /data-lucide="settings"[\s\S]*?<span>Settings<\/span>/);
+});
+
+test('exposes sidebar visibility helpers that keep Settings visible', () => {
+  const runtime = bootShellForVisibility(['dashboard']);
+  const api = runtime.window.NEXORA_SHELL;
+
+  assert.equal(api.sidebarVisibilityStorageKey, 'nexora.sidebar.visibility.v1');
+  assert.ok(api.sidebarMenuItems.some((item) => item.key === 'settings' && item.locked === true));
+  assert.deepEqual(Array.from(api.getHiddenSidebarKeys()), ['dashboard']);
+  assert.deepEqual(Array.from(api.setHiddenSidebarKeys(['analytics', 'settings', 'missing'])), ['analytics']);
+  assert.equal(runtime.localStorage.getItem('nexora.sidebar.visibility.v1'), JSON.stringify({ hiddenKeys: ['analytics'] }));
 });
 
 test('renders the Staff sidebar with its staff-only navigation', () => {
