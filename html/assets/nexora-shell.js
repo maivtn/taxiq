@@ -79,29 +79,10 @@
       { label: 'Loyalty Activity', tab: 'loyalty-activity' },
       { label: 'Analytics', tab: 'analytics' }
     ] },
-    { type: 'group', key: 'pos', label: 'POS', icon: 'monitor', page: 'pos', items: [
-      { label: 'Today Booking', tab: 'todaybooking' },
-      { label: 'Queue & Tech Assign', tab: 'tickets' },
-      { label: 'Booking', tab: 'booking' },
-      { label: 'Customers', tab: 'customers' },
-      { label: 'Time Clock', tab: 'clock' },
-      { label: 'Management', tab: 'management' }
-    ] },
+    { type: 'item', key: 'pos', label: 'POS', icon: 'monitor', page: 'pos' },
     { type: 'item', key: 'analytics', label: 'Analytics', icon: 'chart-no-axes-combined' },
-    { type: 'group', key: 'settings', label: 'Settings', icon: 'settings', page: 'owner-settings', items: [
-      { label: 'Account', tab: 'account' },
-      { label: 'Business Verification', tab: 'business-verification' },
-      { label: 'Sub Account', tab: 'sub-account' },
-      { label: 'Staff', tab: 'staff' },
-      { label: 'Affiliate Link', tab: 'affiliate-link' },
-      { label: 'Terms & Privacy', tab: 'terms-privacy' },
-      { label: 'Sidebar Config', tab: 'sidebar-menu' }
-    ] },
-    { type: 'group', key: 'news-library', label: 'News & Library', icon: 'newspaper', page: 'news-library', items: [
-      { label: 'News', tab: 'news' },
-      { label: 'Event & Zoom Schedule', tab: 'event-zoom-schedule' },
-      { label: 'Compensation Plan', tab: 'compensation-plan' }
-    ] },
+    { type: 'item', key: 'settings', label: 'Settings', icon: 'settings', page: 'owner-settings' },
+    { type: 'item', key: 'news-library', label: 'News & Library', icon: 'newspaper', page: 'news-library' },
     { type: 'item', key: 'support', label: 'Support', icon: 'circle-question-mark' }
   ];
 

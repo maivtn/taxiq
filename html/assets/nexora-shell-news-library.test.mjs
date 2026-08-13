@@ -35,40 +35,22 @@ function renderSidebar(activePage, activeTab) {
   return sidebar.innerHTML;
 }
 
-test('renders News & Library as an expanded submenu group on its page', () => {
+test('renders News & Library as a flat active sidebar item on its page', () => {
   const html = renderSidebar('news-library', 'event-zoom-schedule');
 
-  assert.match(html, /class="nav-item nav-parent is-expanded"[\s\S]*?aria-controls="nexora-subnav-news-library"[\s\S]*?data-lucide="newspaper"[\s\S]*?<span>News &amp; Library<\/span>/);
-  assert.match(html, /<div class="nav-subnav" id="nexora-subnav-news-library" data-nav-subnav>/);
-  assert.match(html, /data-shell-tab="news"[\s\S]*?<span>News<\/span>[\s\S]*?data-shell-tab="event-zoom-schedule"[\s\S]*?<span>Event &amp; Zoom Schedule<\/span>[\s\S]*?data-shell-tab="compensation-plan"[\s\S]*?<span>Compensation Plan<\/span>/);
-
-  for (const [tab, label] of [
-    ['news', 'News'],
-    ['event-zoom-schedule', 'Event &amp; Zoom Schedule'],
-    ['compensation-plan', 'Compensation Plan']
-  ]) {
-    assert.match(html, new RegExp(`data-shell-tab="${tab}"[\\s\\S]*?<span>${label}<\\/span>`));
-  }
-
-  assert.doesNotMatch(html, /data-shell-tab="presentation-video"/);
+  assert.match(html, /<a class="nav-item is-active" href="news-library\.html">[\s\S]*?data-lucide="newspaper"[\s\S]*?<span>News &amp; Library<\/span><\/a>/);
+  assert.doesNotMatch(html, /aria-controls="nexora-subnav-news-library"/);
+  assert.doesNotMatch(html, /id="nexora-subnav-news-library"/);
+  assert.doesNotMatch(html, /data-shell-tab="(?:news|event-zoom-schedule|compensation-plan|presentation-video)"/);
   assert.doesNotMatch(html, /<span>Presentation &amp; Video<\/span>/);
-  assert.match(html, /class="nav-subitem is-active"[^>]*data-shell-tab="event-zoom-schedule"[\s\S]*?<span>Event &amp; Zoom Schedule<\/span>/);
 });
 
-test('links News & Library submenu items from other shared sidebar pages', () => {
+test('links News & Library as a flat sidebar item from other shared sidebar pages', () => {
   const html = renderSidebar('booking', 'booking');
 
-  assert.match(html, /href="news-library\.html\?tab=news"[\s\S]*?<span>News<\/span>[\s\S]*?href="news-library\.html\?tab=event-zoom-schedule"[\s\S]*?<span>Event &amp; Zoom Schedule<\/span>[\s\S]*?href="news-library\.html\?tab=compensation-plan"[\s\S]*?<span>Compensation Plan<\/span>/);
-
-  for (const [tab, label] of [
-    ['news', 'News'],
-    ['event-zoom-schedule', 'Event &amp; Zoom Schedule'],
-    ['compensation-plan', 'Compensation Plan']
-  ]) {
-    assert.match(html, new RegExp(`href="news-library.html\\?tab=${tab}"[\\s\\S]*?<span>${label}<\\/span>`));
-  }
-
-  assert.doesNotMatch(html, /href="news-library\.html\?tab=presentation-video"/);
+  assert.match(html, /<a class="nav-item" href="news-library\.html">[\s\S]*?data-lucide="newspaper"[\s\S]*?<span>News &amp; Library<\/span><\/a>/);
+  assert.doesNotMatch(html, /news-library\.html\?tab=/);
+  assert.doesNotMatch(html, /id="nexora-subnav-news-library"/);
 });
 
 test('places News & Library directly above Support in the shared sidebar', () => {
@@ -80,5 +62,5 @@ test('places News & Library directly above Support in the shared sidebar', () =>
   assert.ok(settingsIndex > -1, 'Settings must be rendered before the lower sidebar items');
   assert.ok(newsIndex > settingsIndex, 'News & Library should sit below Settings');
   assert.ok(supportIndex > newsIndex, 'Support should sit below News & Library');
-  assert.doesNotMatch(html.slice(newsIndex, supportIndex), /<span>(Community|Reward|POS|Analytics|Settings)<\/span>/);
+  assert.doesNotMatch(html.slice(newsIndex, supportIndex), /<span>(News|Event &amp; Zoom Schedule|Compensation Plan|Community|Reward|POS|Analytics|Settings)<\/span>/);
 });

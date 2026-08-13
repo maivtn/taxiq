@@ -180,13 +180,16 @@ test('links and activates Reviews on the native Review page', () => {
   assert.match(html, /<a class="nav-item is-active" href="nexora-review\.html">[\s\S]*?<span>Reviews<\/span>/);
 });
 
-test('moves merchant Staff navigation under Settings', () => {
+test('keeps Settings sidebar navigation flat without Owner Settings tab subitems', () => {
   const merchantHtml = renderSidebar('booking', 'booking');
   assert.doesNotMatch(merchantHtml, /<button class="nav-item" type="button">[\s\S]*?<span>Staff<\/span><\/button>/);
-  assert.match(merchantHtml, /href="owner-setting\.html\?tab=staff"[\s\S]*?<span>Staff<\/span>/);
+  assert.doesNotMatch(merchantHtml, /href="owner-setting\.html\?tab=staff"[\s\S]*?<span>Staff<\/span>/);
+  assert.match(merchantHtml, /<a class="nav-item" href="owner-setting\.html">[\s\S]*?<span>Settings<\/span>/);
 
   const settingsHtml = renderSidebar('owner-settings', 'staff');
-  assert.match(settingsHtml, /class="nav-subitem is-active"[^>]*data-shell-tab="staff"[\s\S]*?<span>Staff<\/span>/);
+  assert.match(settingsHtml, /<a class="nav-item is-active" href="owner-setting\.html">[\s\S]*?<span>Settings<\/span>/);
+  assert.doesNotMatch(settingsHtml, /data-shell-tab="staff"/);
+  assert.doesNotMatch(settingsHtml, /id="nexora-subnav-settings"/);
 });
 
 test('hides shared merchant sidebar items from saved Settings visibility', () => {
@@ -247,29 +250,26 @@ test('links every Reward submenu from pages that share the sidebar', () => {
   }
 });
 
-test('does not render the SMS submenu item under POS', () => {
+test('renders POS as a flat active sidebar item on the POS page', () => {
   const html = renderSidebar('pos', 'checkin');
-  assert.doesNotMatch(html, /data-shell-tab="sms"/);
-  assert.match(html, /data-shell-tab="booking"[\s\S]*?<span>Booking<\/span>/);
-  assert.doesNotMatch(html, /data-shell-tab="appointments"/);
+  assert.match(html, /<a class="nav-item is-active" href="pos-phase-1\.html">[\s\S]*?data-lucide="monitor"[\s\S]*?<span>POS<\/span><\/a>/);
+  assert.doesNotMatch(html, /aria-controls="nexora-subnav-pos"/);
+  assert.doesNotMatch(html, /id="nexora-subnav-pos"/);
+  assert.doesNotMatch(html, /href="pos-phase-1\.html\?tab=/);
 });
 
-test('matches the POS sidebar submenu to the current POS tabs', () => {
-  const html = renderSidebar('pos', 'todaybooking');
-  for (const [tab, label] of [
-    ['todaybooking', 'Today Booking'],
-    ['tickets', 'Queue &amp; Tech Assign'],
-    ['booking', 'Booking'],
-    ['customers', 'Customers'],
-    ['clock', 'Time Clock'],
-    ['management', 'Management']
-  ]) {
-    assert.match(html, new RegExp(`data-shell-tab="${tab}"[\\s\\S]*?<span>${label}<\\/span>`));
-  }
-  assert.match(html, /class="nav-subitem is-active"[^>]*data-shell-tab="todaybooking"[\s\S]*?<span>Today Booking<\/span>/);
-  assert.doesNotMatch(html, /data-shell-tab="checkin"[\s\S]*?<span>Check-in<\/span>/);
-  assert.doesNotMatch(html, /data-shell-tab="tickets"[\s\S]*?<span>Tickets<\/span>/);
-  assert.doesNotMatch(html, /data-shell-tab="dispatch"/);
+test('links POS as a flat sidebar item from other shared sidebar pages', () => {
+  const html = renderSidebar('booking', 'booking');
+  const posIndex = html.indexOf('<span>POS</span>');
+  const analyticsIndex = html.indexOf('<span>Analytics</span>', posIndex);
+  const posSlice = html.slice(posIndex, analyticsIndex);
+
+  assert.ok(posIndex > -1, 'POS should render in the shared sidebar');
+  assert.ok(analyticsIndex > posIndex, 'Analytics should sit below POS');
+  assert.match(html, /<a class="nav-item" href="pos-phase-1\.html">[\s\S]*?data-lucide="monitor"[\s\S]*?<span>POS<\/span><\/a>/);
+  assert.doesNotMatch(posSlice, /nav-subitem|Today Booking|Queue &amp; Tech Assign|Time Clock|Management/);
+  assert.doesNotMatch(html, /id="nexora-subnav-pos"/);
+  assert.doesNotMatch(html, /href="pos-phase-1\.html\?tab=/);
 });
 
 test('keeps the shared sidebar in the drawer state through 1366px', () => {
