@@ -457,6 +457,23 @@ test('loads responsive Billing Detail styles', () => {
   assert.match(css, /@media \(max-width: 640px\)/);
 });
 
+test('keeps mobile line item dates underneath descriptions without narrow wrapping', () => {
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const mobileStart = css.indexOf('@media (max-width: 640px)');
+  const mobileEnd = css.indexOf('@page', mobileStart);
+  const mobileRules = css.slice(mobileStart, mobileEnd);
+  const descriptionRule = mobileRules.match(/\.billing-detail-table td\[data-label="Description"\],[\s\S]*?\.billing-detail-table td\[data-label="Description"\]:first-child\s*\{([\s\S]*?)\}/)?.[1] || '';
+  const descriptionChildrenRule = mobileRules.match(/\.billing-detail-table td\[data-label="Description"\]::before,[\s\S]*?\.billing-detail-table td\[data-label="Description"\] span\s*\{([\s\S]*?)\}/)?.[1] || '';
+  const descriptionPeriodRule = [...mobileRules.matchAll(/\.billing-detail-table td\[data-label="Description"\] span\s*\{([\s\S]*?)\}/g)]
+    .map((match) => match[1])
+    .find((rule) => /white-space:\s*nowrap;/.test(rule)) || '';
+
+  assert.match(descriptionRule, /grid-template-columns:\s*minmax\(0,\s*1fr\);/);
+  assert.match(descriptionRule, /text-align:\s*left;/);
+  assert.match(descriptionChildrenRule, /grid-column:\s*1;/);
+  assert.match(descriptionPeriodRule, /white-space:\s*nowrap;/);
+});
+
 test('prints Billing Detail on A4 without app chrome or split billing rows', () => {
   const css = readFileSync(DETAIL_CSS_URL, 'utf8');
   const printRules = css.slice(css.indexOf('@media print'));

@@ -802,6 +802,24 @@ body.billing-payment-open {
     text-transform: uppercase;
   }
 
+  .billing-detail-table td[data-label="Description"],
+  .billing-detail-table td[data-label="Description"]:first-child {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 5px;
+    text-align: left;
+  }
+
+  .billing-detail-table td[data-label="Description"]::before,
+  .billing-detail-table td[data-label="Description"] strong,
+  .billing-detail-table td[data-label="Description"] span {
+    grid-column: 1;
+  }
+
+  .billing-detail-table td[data-label="Description"] span {
+    margin-top: 0;
+    white-space: nowrap;
+  }
+
   .billing-detail-totals {
     width: 100%;
   }
