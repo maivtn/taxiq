@@ -5,6 +5,7 @@ const path = require('node:path');
 const vm = require('node:vm');
 
 const runtime = fs.readFileSync(path.join(__dirname, 'pos-checkout.js'), 'utf8');
+const page = fs.readFileSync(path.join(__dirname, '../pages/pos-checkout.html'), 'utf8');
 
 function element(overrides) {
   const classes = new Set();
@@ -36,6 +37,7 @@ function element(overrides) {
 function runCheckout(record, options) {
   options = options || {};
   const storage = new Map(options.sessionEntries || []);
+  const listeners = {};
   const selectors = new Map([
     ['[data-checkout-root]', element()],
     ['[data-checkout-empty]', element()],
@@ -53,6 +55,8 @@ function runCheckout(record, options) {
     ['[data-checkout-method-label]', element()],
     ['[data-checkout-total]', element()],
     ['[data-checkout-charge]', element()],
+    ['[data-checkout-split]', element({ hidden: true })],
+    ['[data-checkout-split-status]', element()],
     ['[data-checkout-add-service-select]', element()],
     ['[data-checkout-add-service-tech]', element()],
     ['[data-checkout-add-product-select]', element()],
@@ -61,7 +65,7 @@ function runCheckout(record, options) {
   const document = {
     querySelector(selector) { return selectors.get(selector) || null; },
     querySelectorAll() { return []; },
-    addEventListener() {},
+    addEventListener(type, handler) { listeners[type] = handler; },
   };
   const window = {
     location: { search: options.search || '?bookingId=booking-1' },
@@ -97,7 +101,14 @@ function runCheckout(record, options) {
     Array,
   });
 
-  return { selectors, storage };
+  return { selectors, storage, listeners };
+}
+
+function eventTarget(selector, node) {
+  return Object.assign({
+    closest(candidate) { return candidate === selector ? this : null; },
+    matches(candidate) { return candidate === selector; },
+  }, node || {});
 }
 
 test('checkout formats service prices and totals with comma thousand separators', () => {
@@ -143,4 +154,50 @@ test('checkout opens Queue order snapshots from orderId links', () => {
   assert.match(selectors.get('[data-checkout-lines]').innerHTML, /Kim/);
   assert.equal(selectors.get('[data-checkout-subtotal]').textContent, '$70.00');
   assert.equal(selectors.get('[data-checkout-total]').textContent, '$85.00');
+});
+
+test('checkout page reserves a split payment detail area in the Payment method section', () => {
+  assert.match(page, /<div class="checkout-split-payment" data-checkout-split hidden>/);
+  assert.match(page, /data-checkout-split-status/);
+});
+
+test('Split pay renders two payment types and keeps their amounts equal to the checkout total', () => {
+  const { selectors, listeners } = runCheckout({
+    id: 'booking-1',
+    customerName: 'Sarah Lee',
+    technicianName: 'Lan T.',
+    startAt: '2026-08-04T10:00:00',
+    serviceDetails: [{ name: 'Deluxe package', price: 70, technicianName: 'Lan T.' }],
+    metadata: {},
+  });
+
+  listeners.click({
+    target: eventTarget('[data-checkout-pay]', { dataset: { checkoutPay: 'Split pay' } }),
+  });
+
+  const split = selectors.get('[data-checkout-split]');
+  assert.equal(split.hidden, false);
+  assert.match(split.innerHTML, /data-checkout-split-method="0"[\s\S]*<option value="Card" selected>Card<\/option>/);
+  assert.match(split.innerHTML, /data-checkout-split-method="1"[\s\S]*<option value="Cash" selected>Cash<\/option>/);
+  assert.match(split.innerHTML, /data-checkout-split-amount="0"[\s\S]*value="42\.50"/);
+  assert.match(split.innerHTML, /data-checkout-split-amount="1"[\s\S]*value="42\.50"/);
+  assert.equal(selectors.get('[data-checkout-method-label]').textContent, 'Split pay · Card $42.50 + Cash $42.50');
+
+  listeners.change({
+    target: eventTarget('[data-checkout-split-amount]', {
+      dataset: { checkoutSplitAmount: '0' },
+      value: '30',
+    }),
+  });
+  assert.match(split.innerHTML, /data-checkout-split-amount="0"[\s\S]*value="30\.00"/);
+  assert.match(split.innerHTML, /data-checkout-split-amount="1"[\s\S]*value="55\.00"/);
+  assert.equal(selectors.get('[data-checkout-method-label]').textContent, 'Split pay · Card $30.00 + Cash $55.00');
+
+  listeners.change({
+    target: eventTarget('[data-checkout-split-method]', {
+      dataset: { checkoutSplitMethod: '1' },
+      value: 'Gift Card',
+    }),
+  });
+  assert.equal(selectors.get('[data-checkout-method-label]').textContent, 'Split pay · Card $30.00 + Gift Card $55.00');
 });
