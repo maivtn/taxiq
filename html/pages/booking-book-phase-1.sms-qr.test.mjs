@@ -52,6 +52,15 @@ test('registers SMS Campaigns and QR Codes in both Booking Hub navigation surfac
   assert.match(html, /qrcodejs\/1\.0\.0\/qrcode\.min\.js/);
 });
 
+test('labels the Booking Book tab as Booking without changing its target', () => {
+  const html = source();
+  const bookingTab = html.match(/<button class="page-tab is-active"[^>]*data-tab-target="booking"[\s\S]*?<\/button>/)?.[0] || '';
+
+  assert.match(bookingTab, /<span>Booking<\/span>/);
+  assert.doesNotMatch(bookingTab, /<span>Booking Book<\/span>/);
+  assert.match(bookingTab, /aria-controls="panel-booking"/);
+});
+
 test('lays out each SMS campaign icon and text as separate card columns', () => {
   const html = source();
 
@@ -229,17 +238,21 @@ test('adds website and structured salon location fields to Salon Info', () => {
   const html = source();
   const salonInfo = html.match(/<div class="settings-card-title"><i class="bi bi-shop"[^>]*><\/i>Salon Info<\/div>[\s\S]*?<\/article>/)?.[0] || '';
   const websitePosition = salonInfo.indexOf('<span class="settings-label">Website</span>');
-  const reviewLinkPosition = salonInfo.indexOf('<span class="settings-label">Google Review Link</span>');
+  const googleReviewLinkPosition = salonInfo.indexOf('<span class="settings-label">Google Review Link</span>');
+  const yelpReviewLinkPosition = salonInfo.indexOf('<span class="settings-label">Yelp Review Link</span>');
   const socialLinksPosition = salonInfo.indexOf('Social Links');
 
-  assert.match(salonInfo, /<span class="settings-label">Website<\/span>[\s\S]*?<input class="settings-input" type="url"[^>]*autocomplete="url"/);
-  assert.ok(websitePosition > reviewLinkPosition, 'Website should appear after Google Review Link');
-  assert.ok(socialLinksPosition > websitePosition, 'Social Links should appear after Website');
+  assert.match(salonInfo, /<label class="settings-field settings-span-full">\s*<span class="settings-label">Website<\/span>[\s\S]*?<input class="settings-input" type="url"[^>]*autocomplete="url"/);
+  assert.match(salonInfo, /<span class="settings-label">Yelp Review Link<\/span>[\s\S]*?<input class="settings-input" type="url"[^>]*data-settings-review-link="yelp"/);
+  assert.ok(googleReviewLinkPosition > websitePosition, 'Google Review Link should appear after Website');
+  assert.ok(yelpReviewLinkPosition > googleReviewLinkPosition, 'Yelp Review Link should appear after Google Review Link');
+  assert.ok(socialLinksPosition > yelpReviewLinkPosition, 'Social Links should appear after the review links');
   assert.match(salonInfo, /Social Links/);
-  for (const network of ['facebook', 'instagram', 'yelp']) {
+  for (const network of ['facebook', 'instagram']) {
     assert.match(salonInfo, new RegExp(`data-settings-social-link="${network}"`));
   }
-  for (const label of ['Facebook', 'Instagram', 'Yelp']) {
+  assert.doesNotMatch(salonInfo, /data-settings-social-link="yelp"/);
+  for (const label of ['Facebook', 'Instagram']) {
     assert.match(salonInfo, new RegExp(`<span class="settings-label">${label}<\\/span>[\\s\\S]*?<input class="settings-input" type="url"`));
   }
   assert.match(salonInfo, /<span class="settings-label settings-label-with-tooltip">\s*Salon phone number[\s\S]*?<button class="settings-tooltip-trigger" type="button" aria-label="Salon phone number info" aria-describedby="salon-phone-number-help">[\s\S]*bi-info-circle/);

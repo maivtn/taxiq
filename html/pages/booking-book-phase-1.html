@@ -2536,6 +2536,10 @@
       grid-template-rows: 16px 46px;
     }
 
+    .settings-business-grid > .settings-span-full {
+      grid-column: 1 / -1;
+    }
+
     .settings-business-grid .settings-label,
     .settings-business-grid .settings-help {
       overflow: hidden;
@@ -7838,7 +7842,7 @@
       }
 
       .settings-social-grid {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
+        grid-template-columns: repeat(2, minmax(0, 1fr));
       }
 
       .settings-loyalty-form {
@@ -9123,7 +9127,7 @@
                     <path d="M16 18h.01"></path>
                   </svg>
                 </span>
-                <span>Booking Book</span>
+                <span>Booking</span>
               </button>
               <button class="page-tab" type="button" role="tab" aria-selected="false" data-tab-target="customers" aria-controls="panel-customers">
                 <span class="page-tab-icon">
@@ -10551,13 +10555,17 @@
                           </select>
                         </label>
                       </div>
+                      <label class="settings-field settings-span-full">
+                        <span class="settings-label">Website</span>
+                        <input class="settings-input" type="url" value="https://bitcoinnailbar.com" placeholder="https://bitcoinnailbar.com" autocomplete="url" inputmode="url">
+                      </label>
                       <label class="settings-field">
                         <span class="settings-label">Google Review Link</span>
                         <input class="settings-input" type="text" value="g.page/bitcoinnailbar">
                       </label>
                       <label class="settings-field">
-                        <span class="settings-label">Website</span>
-                        <input class="settings-input" type="url" value="https://bitcoinnailbar.com" placeholder="https://bitcoinnailbar.com" autocomplete="url" inputmode="url">
+                        <span class="settings-label">Yelp Review Link</span>
+                        <input class="settings-input" type="url" value="https://yelp.com/biz/bitcoin-nail-bar-houston" placeholder="https://yelp.com/biz/your-salon" autocomplete="url" inputmode="url" data-settings-review-link="yelp">
                       </label>
                       <div class="settings-social-links">
                         <div class="settings-social-links-title">Social Links</div>
@@ -10569,10 +10577,6 @@
                           <label class="settings-field">
                             <span class="settings-label">Instagram</span>
                             <input class="settings-input" type="url" value="https://instagram.com/bitcoinnailbar" placeholder="https://instagram.com/your-salon" autocomplete="url" inputmode="url" data-settings-social-link="instagram">
-                          </label>
-                          <label class="settings-field">
-                            <span class="settings-label">Yelp</span>
-                            <input class="settings-input" type="url" value="https://yelp.com/biz/bitcoin-nail-bar-houston" placeholder="https://yelp.com/biz/your-salon" autocomplete="url" inputmode="url" data-settings-social-link="yelp">
                           </label>
                         </div>
                       </div>

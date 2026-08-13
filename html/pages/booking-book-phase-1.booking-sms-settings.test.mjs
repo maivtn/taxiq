@@ -12,7 +12,9 @@ const BOOKING_POLICIES_CARD = SETTINGS_PANEL.match(/<article class="settings-car
 const BOOKING_POLICY_GRID_RULE = SOURCE.match(/\.settings-booking-policy-grid\s*\{([^}]*)\}/)?.[1] || '';
 const BOOKING_POLICY_DESKTOP_GRID_RULE = SOURCE.match(/@media \(min-width:\s*640px\) \{[\s\S]*?\.settings-booking-policy-grid\s*\{([^}]*)\}/)?.[1] || '';
 const SALON_NAME_FIELD_RULE = SOURCE.match(/\.settings-business-grid\s*>\s*\.settings-salon-name-field\s*\{([\s\S]*?)\n\s*\}/)?.[1] || '';
+const SETTINGS_BUSINESS_FULL_SPAN_RULE = SOURCE.match(/\.settings-business-grid\s*>\s*\.settings-span-full\s*\{([^}]*)\}/)?.[1] || '';
 const SETTINGS_BUSINESS_DESKTOP_GRID_RULE = SOURCE.match(/@media \(min-width:\s*640px\) \{[\s\S]*?\.settings-business-grid\s*\{([^}]*)\}/)?.[1] || '';
+const SETTINGS_SOCIAL_DESKTOP_GRID_RULE = SOURCE.match(/@media \(min-width:\s*640px\) \{[\s\S]*?\.settings-social-grid\s*\{([^}]*)\}/)?.[1] || '';
 
 test('Salon Info uses Booking notification number for live-person call forwarding', () => {
   assert.match(SALON_INFO_CARD, />Salon Info<\/div>/);
@@ -48,22 +50,41 @@ test('Salon Info places salon name and salon phone number on the same row', () =
   assert.deepEqual(positions, [...positions].sort((a, b) => a - b));
 });
 
-test('Salon Info places Google Review Link and Website on the same grid row', () => {
+test('Salon Info places full-width Website before the Google and Yelp review links', () => {
   const googleField = SALON_INFO_CARD.match(/<label class="[^"]*"[^>]*>\s*<span class="settings-label">Google Review Link<\/span>[\s\S]*?<\/label>/)?.[0] || '';
+  const yelpField = SALON_INFO_CARD.match(/<label class="[^"]*"[^>]*>\s*<span class="settings-label">Yelp Review Link<\/span>[\s\S]*?<\/label>/)?.[0] || '';
   const websiteField = SALON_INFO_CARD.match(/<label class="[^"]*"[^>]*>\s*<span class="settings-label">Website<\/span>[\s\S]*?<\/label>/)?.[0] || '';
   assert.match(googleField, /<label class="settings-field">/);
-  assert.match(websiteField, /<label class="settings-field">/);
+  assert.match(yelpField, /<label class="settings-field">/);
+  assert.match(yelpField, /type="url"/);
+  assert.match(websiteField, /<label class="settings-field settings-span-full">/);
+  assert.match(SETTINGS_BUSINESS_FULL_SPAN_RULE, /grid-column:\s*1\s*\/\s*-1/);
   assert.doesNotMatch(googleField, /settings-span-full/);
-  assert.doesNotMatch(websiteField, /settings-span-full/);
+  assert.doesNotMatch(yelpField, /settings-span-full/);
   assert.doesNotMatch(googleField, /style="grid-column:\s*1\s*\/\s*-1;"/);
-  assert.doesNotMatch(websiteField, /style="grid-column:\s*1\s*\/\s*-1;"/);
+  assert.doesNotMatch(yelpField, /style="grid-column:\s*1\s*\/\s*-1;"/);
 
   const googlePosition = SALON_INFO_CARD.indexOf('Google Review Link');
+  const yelpPosition = SALON_INFO_CARD.indexOf('Yelp Review Link');
   const websitePosition = SALON_INFO_CARD.indexOf('Website');
   const socialLinksPosition = SALON_INFO_CARD.indexOf('Social Links');
-  assert.ok(googlePosition >= 0);
-  assert.ok(websitePosition > googlePosition, 'Website should sit immediately after Google Review Link in the two-column grid');
-  assert.ok(socialLinksPosition > websitePosition, 'Social Links should remain below the link fields');
+  assert.ok(websitePosition >= 0);
+  assert.ok(googlePosition > websitePosition, 'Google Review Link should appear after Website');
+  assert.ok(yelpPosition > googlePosition, 'Yelp Review Link should sit immediately after Google Review Link');
+  assert.ok(socialLinksPosition > yelpPosition, 'Social Links should remain below the link fields');
+});
+
+test('Salon Info keeps Yelp out of Social Links', () => {
+  const socialLinks = SALON_INFO_CARD.slice(SALON_INFO_CARD.indexOf('Social Links'));
+
+  assert.match(socialLinks, /data-settings-social-link="facebook"/);
+  assert.match(socialLinks, /data-settings-social-link="instagram"/);
+  assert.doesNotMatch(socialLinks, /<span class="settings-label">Yelp<\/span>/);
+  assert.doesNotMatch(socialLinks, /data-settings-social-link="yelp"/);
+});
+
+test('Salon Info spreads its two Social Links across one desktop row', () => {
+  assert.match(SETTINGS_SOCIAL_DESKTOP_GRID_RULE, /grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/);
 });
 
 test('adds three booking SMS recipient switches to Settings', () => {
