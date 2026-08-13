@@ -9,6 +9,7 @@ const PAGE_URL = new URL('./nexora-package-billing-detail.html', import.meta.url
 const DETAIL_CSS_URL = new URL('../assets/nexora-package-billing-detail.css', import.meta.url);
 const DETAIL_JS_URL = new URL('../assets/nexora-package-billing-detail.js', import.meta.url);
 const BILLING_DATA_URL = new URL('../assets/nexora-package-billing-data.js', import.meta.url);
+const SHELL_JS_URL = new URL('../assets/nexora-shell.js', import.meta.url);
 const PDF_GENERATOR_URL = new URL('../../scripts/generate-nexora-billing-pdfs.py', import.meta.url);
 
 function source() {
@@ -136,7 +137,7 @@ test('creates Billing Detail from the Salon shared-shell skeleton', () => {
   const html = source();
 
   assert.match(html, /<html lang="en-US">/);
-  assert.match(html, /<title>Nexora Touch - Billing Details<\/title>/);
+  assert.match(html, /<title>NEXORA TOUCH - Billing Details<\/title>/);
   assert.match(html, /<div class="shell">/);
   assert.match(html, /<aside class="sidebar" aria-label="Dashboard sidebar"><\/aside>/);
   assert.match(html, /<div class="app-area">/);
@@ -156,7 +157,7 @@ test('creates Billing Detail from the Salon shared-shell skeleton', () => {
 test('renders a paid billing record with invoice and receipt downloads', () => {
   const html = createBillingRuntime('?transaction=NXR-20260810-0003').root.innerHTML;
 
-  assert.match(html, /Receipt from NEXORA Touch/);
+  assert.match(html, /Receipt from NEXORA TOUCH/);
   assert.match(html, /billing-detail-status is-paid[\s\S]*?>Paid</);
   assert.match(html, /\$79\.00/);
   assert.match(html, /Download invoice/);
@@ -190,7 +191,7 @@ test('explains when an expected billing document is not available', () => {
 test('renders a payment-due invoice without a receipt download', () => {
   const html = createBillingRuntime('?transaction=SMS-20260811-0001').root.innerHTML;
 
-  assert.match(html, /Invoice from NEXORA Touch/);
+  assert.match(html, /Invoice from NEXORA TOUCH/);
   assert.match(html, /billing-detail-status is-payment-due[\s\S]*?>Payment due</);
   assert.match(html, /\$179\.00/);
   assert.match(html, /Amount due/);
@@ -227,6 +228,7 @@ test('provides an accessible demo payment UI for unpaid invoices', () => {
   assert.match(html, /role="dialog" aria-modal="true"/);
   assert.match(html, /id="billing-payment-title"[^>]*>Pay invoice</);
   assert.match(html, /data-billing-payment-summary/);
+  assert.match(html, /NEXORA TOUCH secure billing/);
   assert.match(html, /Demo only - payment processing is not connected\./);
   assert.match(html, /data-billing-payment-close/);
 });
@@ -266,6 +268,42 @@ test('opens and closes the Pay now demo payment UI', () => {
   assert.equal(runtime.shell.hasAttribute('inert'), false);
 });
 
+test('uses uppercase NEXORA TOUCH across billing surfaces and generated documents', () => {
+  assert.ok(existsSync(SHELL_JS_URL), 'nexora-shell.js must exist');
+  const shellRuntime = readFileSync(SHELL_JS_URL, 'utf8');
+  assert.match(shellRuntime, /<div class="profile-name">NEXORA TOUCH<\/div>/);
+  assert.doesNotMatch(shellRuntime, /<div class="profile-name">Nexora Touch<\/div>/);
+
+  const paidHTML = createBillingRuntime('?transaction=NXR-20260810-0003').root.innerHTML;
+  const unpaidHTML = createBillingRuntime('?transaction=SMS-20260811-0001').root.innerHTML;
+  assert.match(paidHTML, /Receipt from NEXORA TOUCH/);
+  assert.match(unpaidHTML, /Invoice from NEXORA TOUCH/);
+  assert.doesNotMatch(`${paidHTML}\n${unpaidHTML}`, /NEXORA Touch|Nexora Touch/);
+
+  billingRecords().forEach((record) => {
+    assert.equal(record.seller.name, 'NEXORA TOUCH');
+    assert.equal(record.seller.legalName, 'NEXORA TOUCH, LLC');
+
+    const invoicePath = fileURLToPath(new URL(record.invoiceFile, PAGE_URL));
+    const invoiceInfo = execFileSync('pdfinfo', [invoicePath], { encoding: 'utf8' });
+    const invoiceText = execFileSync('pdftotext', [invoicePath, '-'], { encoding: 'utf8' });
+    assert.match(invoiceInfo, /Author:\s+NEXORA TOUCH/);
+    assert.doesNotMatch(invoiceInfo, /NEXORA Touch|Nexora Touch/);
+    assert.match(invoiceText, /NEXORA TOUCH/);
+    assert.doesNotMatch(invoiceText, /NEXORA Touch|Nexora Touch/);
+
+    if (record.receiptFile) {
+      const receiptPath = fileURLToPath(new URL(record.receiptFile, PAGE_URL));
+      const receiptInfo = execFileSync('pdfinfo', [receiptPath], { encoding: 'utf8' });
+      const receiptText = execFileSync('pdftotext', [receiptPath, '-'], { encoding: 'utf8' });
+      assert.match(receiptInfo, /Author:\s+NEXORA TOUCH/);
+      assert.doesNotMatch(receiptInfo, /NEXORA Touch|Nexora Touch/);
+      assert.match(receiptText, /NEXORA TOUCH/);
+      assert.doesNotMatch(receiptText, /NEXORA Touch|Nexora Touch/);
+    }
+  });
+});
+
 test('provides real PDF download documents that match billing records', () => {
   assert.ok(existsSync(PDF_GENERATOR_URL), 'NEXORA billing PDF generator must exist');
 
@@ -276,7 +314,7 @@ test('provides real PDF download documents that match billing records', () => {
     const invoiceInfo = execFileSync('pdfinfo', [fileURLToPath(invoiceURL)], { encoding: 'utf8' });
     assert.match(invoiceInfo, /Page size:\s+595\.276 x 841\.89 pts \(A4\)/);
     const invoiceText = execFileSync('pdftotext', [fileURLToPath(invoiceURL), '-'], { encoding: 'utf8' });
-    assert.match(invoiceText, /NEXORA Touch/);
+    assert.match(invoiceText, /NEXORA TOUCH/);
     assert.match(invoiceText, new RegExp(record.seller.legalName));
     assert.match(invoiceText, new RegExp(record.seller.addressLines[0]));
     assert.match(invoiceText, new RegExp(record.billTo.addressLines[0]));
@@ -292,7 +330,7 @@ test('provides real PDF download documents that match billing records', () => {
       const receiptInfo = execFileSync('pdfinfo', [fileURLToPath(receiptURL)], { encoding: 'utf8' });
       assert.match(receiptInfo, /Page size:\s+595\.276 x 841\.89 pts \(A4\)/);
       const receiptText = execFileSync('pdftotext', [fileURLToPath(receiptURL), '-'], { encoding: 'utf8' });
-      assert.match(receiptText, /NEXORA Touch/);
+      assert.match(receiptText, /NEXORA TOUCH/);
       assert.match(receiptText, new RegExp(record.receiptNumber));
       assert.match(receiptText, new RegExp(record.invoiceNumber));
       assert.match(receiptText, /Visa - 4242/);

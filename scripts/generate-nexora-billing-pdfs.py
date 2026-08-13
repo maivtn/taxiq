@@ -200,7 +200,7 @@ def footer(canvas: Any, document: Any) -> None:
     canvas.line(CONTENT_LEFT, 0.52 * inch, A4[0] - CONTENT_LEFT, 0.52 * inch)
     canvas.setFillColor(SUBTLE)
     canvas.setFont("Helvetica", 7.5)
-    canvas.drawString(CONTENT_LEFT, 0.34 * inch, "NEXORA Touch billing document")
+    canvas.drawString(CONTENT_LEFT, 0.34 * inch, "NEXORA TOUCH billing document")
     canvas.drawRightString(A4[0] - CONTENT_LEFT, 0.34 * inch, f"Page {canvas.getPageNumber()}")
     canvas.restoreState()
 
@@ -412,7 +412,7 @@ def build_document(record: dict[str, Any], output_path: Path, document_type: str
         topMargin=0.5 * inch,
         bottomMargin=0.68 * inch,
         title=f"{document_type} {record['invoiceNumber']}",
-        author="NEXORA Touch",
+        author="NEXORA TOUCH",
         subject="Package billing document",
     )
     story: list[Any] = []

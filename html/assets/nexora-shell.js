@@ -178,7 +178,7 @@
   var SIDEBAR_HTML =
     '<div class="sidebar-panel">' +
       '<div class="profile-row"><div class="avatar">NT</div><div>' +
-        '<div class="profile-name">Nexora Touch</div>' +
+        '<div class="profile-name">NEXORA TOUCH</div>' +
         '<div class="profile-email">merchant@nexoratouch.com</div>' +
       '</div></div>' +
     '</div>' +
