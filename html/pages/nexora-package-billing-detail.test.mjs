@@ -363,6 +363,48 @@ test('aligns PDF content to equal left and right page margins', () => {
   });
 });
 
+test('renders four rounded corners on PDF status and amount surfaces', () => {
+  const paidRecord = billingRecords().find((record) => record.paymentStatus === 'paid');
+  const documentPath = fileURLToPath(new URL(paidRecord.invoiceFile, PAGE_URL));
+  const svg = execFileSync('pdftocairo', ['-svg', '-f', '1', '-l', '1', documentPath, '-'], { encoding: 'utf8' });
+  const roundedClipPaths = [...new Set(
+    [...svg.matchAll(/<path clip-rule="evenodd" d="([^"]+)"/g)].map((match) => match[1])
+  )];
+
+  assert.equal(roundedClipPaths.length, 2, 'Status and Amount surfaces must each expose one rounded clip path');
+  roundedClipPaths.forEach((path) => {
+    assert.ok(
+      (path.match(/\bC\b/g) || []).length >= 4,
+      'Each rounded surface must curve all four corners'
+    );
+  });
+});
+
+test('keeps the paid status badge compact with centered text', () => {
+  const paidRecord = billingRecords().find((record) => record.paymentStatus === 'paid');
+  const documentPath = fileURLToPath(new URL(paidRecord.invoiceFile, PAGE_URL));
+  const svg = execFileSync('pdftocairo', ['-svg', '-f', '1', '-l', '1', documentPath, '-'], { encoding: 'utf8' });
+  const roundedClipPaths = [...new Set(
+    [...svg.matchAll(/<path clip-rule="evenodd" d="([^"]+)"/g)].map((match) => match[1])
+  )];
+  const bounds = roundedClipPaths.map((path) => {
+    const points = [...path.matchAll(/([\d.]+)\s+([\d.]+)/g)];
+    const xValues = points.map((point) => Number(point[1]));
+    return { xMin: Math.min(...xValues), xMax: Math.max(...xValues) };
+  });
+  const statusBounds = bounds.sort((left, right) => (left.xMax - left.xMin) - (right.xMax - right.xMin))[0];
+  const bbox = execFileSync('pdftotext', ['-bbox-layout', documentPath, '-'], { encoding: 'utf8' });
+  const paidWord = bbox.match(/<word xMin="([\d.]+)"[^>]*xMax="([\d.]+)"[^>]*>PAID<\/word>/);
+
+  assert.ok(paidWord, 'Paid status text bounding box must exist');
+  const badgeWidth = statusBounds.xMax - statusBounds.xMin;
+  const badgeCenter = (statusBounds.xMin + statusBounds.xMax) / 2;
+  const textCenter = (Number(paidWord[1]) + Number(paidWord[2])) / 2;
+
+  assert.ok(badgeWidth <= 52, 'Paid badge must remain compact');
+  assert.ok(Math.abs(badgeCenter - textCenter) <= 1, 'Paid badge text must be centered');
+});
+
 test('loads responsive Billing Detail styles', () => {
   assert.ok(existsSync(DETAIL_CSS_URL), 'nexora-package-billing-detail.css must exist');
   const css = readFileSync(DETAIL_CSS_URL, 'utf8');

@@ -12,7 +12,7 @@ from typing import Any
 
 from reportlab.lib import colors
 from reportlab.lib.colors import HexColor
-from reportlab.lib.enums import TA_LEFT, TA_RIGHT
+from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
@@ -207,14 +207,19 @@ def footer(canvas: Any, document: Any) -> None:
 
 def header_block(record: dict[str, Any], document_type: str, style: dict[str, ParagraphStyle]) -> list[Any]:
     status_text, status_color, status_background = status_label(record)
+    status_width = {
+        "PAID": 0.68 * inch,
+        "OVERDUE": 0.86 * inch,
+        "PAYMENT DUE": 1.15 * inch,
+    }[status_text]
     status = Table(
-        [[Paragraph(f"<b>{status_text}</b>", ParagraphStyle("Status", parent=style["small"], textColor=status_color, alignment=TA_RIGHT))]],
-        colWidths=[1.18 * inch],
+        [[Paragraph(f"<b>{status_text}</b>", ParagraphStyle("Status", parent=style["small"], textColor=status_color, alignment=TA_CENTER))]],
+        colWidths=[status_width],
+        cornerRadii=[7, 7, 7, 7],
     )
     status.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, -1), status_background),
         ("BOX", (0, 0), (-1, -1), 0.5, status_background),
-        ("ROUNDEDCORNERS", [7]),
         ("TOPPADDING", (0, 0), (-1, -1), 5),
         ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
         ("LEFTPADDING", (0, 0), (-1, -1), 8),
@@ -223,7 +228,7 @@ def header_block(record: dict[str, Any], document_type: str, style: dict[str, Pa
     ]))
     brand_row = Table(
         [[Paragraph("NEXORA TOUCH", style["brand"]), status]],
-        colWidths=[CONTENT_WIDTH - (1.18 * inch), 1.18 * inch],
+        colWidths=[CONTENT_WIDTH - status_width, status_width],
     )
     brand_row.setStyle(TableStyle([
         ("VALIGN", (0, 0), (-1, -1), "TOP"),
@@ -287,11 +292,10 @@ def amount_block(record: dict[str, Any], document_type: str, style: dict[str, Pa
         [Paragraph(headline, style["meta"])],
         [Paragraph(format_money(record["total"], record["currency"]), style["amount"])],
         [Paragraph(date_copy, style["meta"])],
-    ], colWidths=[CONTENT_WIDTH])
+    ], colWidths=[CONTENT_WIDTH], cornerRadii=[9, 9, 9, 9])
     table.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, -1), SURFACE),
         ("BOX", (0, 0), (-1, -1), 0.7, BORDER),
-        ("ROUNDEDCORNERS", [9]),
         ("LEFTPADDING", (0, 0), (-1, -1), 14),
         ("RIGHTPADDING", (0, 0), (-1, -1), 14),
         ("TOPPADDING", (0, 0), (0, 0), 12),
