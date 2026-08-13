@@ -37,7 +37,7 @@
       "product": "Voice Credit",
       "packageName": "Voice Credit",
       "billing": "Voice Credit",
-      "billingTerm": "1 month",
+      "billingTerm": "-",
       "invoiceNumber": "NX-2026-0811-1CCEE7",
       "receiptNumber": null,
       "dateIssued": "2026-08-11T09:00:00+07:00",
@@ -50,7 +50,7 @@
       "processor": null,
       "processorTransactionId": null,
       "lineItems": [
-        { "description": "SMS Business", "period": "Aug 11-Sep 11, 2026", "quantity": 1, "unitPrice": 179, "amount": 179 }
+        { "description": "Voice Credit", "period": "Aug 11-Sep 11, 2026", "quantity": 1, "unitPrice": 179, "amount": 179 }
       ],
       "subtotal": 179,
       "taxLabel": "Tax",

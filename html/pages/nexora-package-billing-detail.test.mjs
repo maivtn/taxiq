@@ -238,7 +238,7 @@ test('opens and closes the Pay now demo payment UI', () => {
 
   runtime.root.dispatch('click', { target: runtime.payNowTarget });
   assert.equal(runtime.modal.hidden, false);
-  assert.match(runtime.modalSummary.innerHTML, /SMS Business/);
+  assert.match(runtime.modalSummary.innerHTML, /Voice Credit/);
   assert.match(runtime.modalSummary.innerHTML, /NX-2026-0811-1CCEE7/);
   assert.match(runtime.modalSummary.innerHTML, /\$179\.00/);
   assert.equal(runtime.modalClose.focused, true);
@@ -319,7 +319,9 @@ test('provides real PDF download documents that match billing records', () => {
     assert.match(invoiceText, new RegExp(record.seller.addressLines[0]));
     assert.match(invoiceText, new RegExp(record.billTo.addressLines[0]));
     assert.match(invoiceText, new RegExp(record.invoiceNumber));
-    assert.match(invoiceText, new RegExp(record.packageName));
+    record.lineItems.forEach((item) => {
+      assert.match(invoiceText, new RegExp(item.description));
+    });
     assert.match(invoiceText, new RegExp(`\\$${record.total}\\.00`));
     assert.match(invoiceText, /Amount due/);
 

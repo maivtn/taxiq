@@ -589,7 +589,7 @@ test('renders package history billing columns, statuses, and record actions', ()
   ]);
   const packageLabels = [...historyHTML.matchAll(/<div class="package-history-package">([\s\S]*?)<\/div>/g)]
     .map((match) => decodeEntities(match[1].replace(/<[^>]+>/g, ' ').replace(/\s+/g, ' ').trim()));
-  assert.deepEqual(packageLabels, ['NEXORA TOUCH', 'Voice + SMS', 'AI Voice Plans']);
+  assert.deepEqual(packageLabels, ['Professional Pro', 'Voice Credit', 'AI Voice Pro']);
   assert.doesNotMatch(historyHTML, /Valid Until/);
   assert.match(historyHTML, /package-history-status-badge is-paid[\s\S]*?>Paid</);
   assert.match(historyHTML, /package-history-status-badge is-payment-due[\s\S]*?>Payment due</);
