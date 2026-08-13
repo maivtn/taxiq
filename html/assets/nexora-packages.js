@@ -587,8 +587,7 @@ const PACKAGE_PLAN_DETAILS = {
                   <td class="package-history-amount" data-label="Amount">${formatAmount(item.total, item.currency)}</td>
                   <td data-label="Package">
                     <div class="package-history-package">
-                      <strong>${escapeHTML(`${item.product} ${item.packageName}`)}</strong>
-                      <span>${escapeHTML(item.billing)}</span>
+                      <strong>${escapeHTML(item.product)}</strong>
                     </div>
                   </td>
                   <td data-label="Term"><span class="package-history-term">${escapeHTML(item.billingTerm)}</span></td>

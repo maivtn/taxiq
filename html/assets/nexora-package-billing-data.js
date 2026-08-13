@@ -5,7 +5,7 @@
     {
       "transactionId": "NXR-20260810-0003",
       "paymentStatus": "paid",
-      "product": "NEXORA",
+      "product": "Professional Pro",
       "packageName": "Professional Pro",
       "billing": "Monthly subscription",
       "billingTerm": "1 month",
@@ -34,8 +34,8 @@
     {
       "transactionId": "SMS-20260811-0001",
       "paymentStatus": "payment_due",
-      "product": "Voice + SMS",
-      "packageName": "SMS Business",
+      "product": "Voice Credit",
+      "packageName": "Voice Credit",
       "billing": "Monthly subscription",
       "billingTerm": "1 month",
       "invoiceNumber": "NX-2026-0811-1CCEE7",
@@ -63,7 +63,7 @@
     {
       "transactionId": "VMS-20260701-0002",
       "paymentStatus": "overdue",
-      "product": "AI Voice Plans",
+      "product": "AI Voice Pro",
       "packageName": "AI Voice Pro",
       "billing": "Monthly subscription",
       "billingTerm": "1 month",
