@@ -103,6 +103,11 @@
   var discountState = null;
   var paymentMethods = ['Card', 'Cash', 'Gift Card', 'Split pay'];
   var selectedMethod = paymentMethods[0];
+  var splitPaymentMethods = ['Card', 'Cash', 'Gift Card'];
+  var splitPayments = [
+    { method: 'Card', amount: 0 },
+    { method: 'Cash', amount: 0 }
+  ];
   var primaryTechName = record.technicianName || (items[0] && items[0].technicianName) || 'Technician';
 
   function computeTip() {
@@ -114,6 +119,101 @@
     var base = subtotal();
     var amount = discountState.mode === 'percent' ? base * discountState.value / 100 : discountState.value;
     return Math.min(Math.max(amount, 0), base);
+  }
+
+  function checkoutTotal() {
+    return subtotal() - computeDiscount() + computeTip();
+  }
+
+  function amountToCents(value) {
+    return Math.round((Number(value) || 0) * 100);
+  }
+
+  function centsToAmount(value) {
+    return Math.max(0, value) / 100;
+  }
+
+  function syncSplitAmounts(changedIndex) {
+    var totalCents = amountToCents(checkoutTotal());
+    var firstCents = amountToCents(splitPayments[0].amount);
+    var secondCents = amountToCents(splitPayments[1].amount);
+
+    if (changedIndex === 0) {
+      firstCents = Math.min(Math.max(firstCents, 0), totalCents);
+      secondCents = totalCents - firstCents;
+    } else if (changedIndex === 1) {
+      secondCents = Math.min(Math.max(secondCents, 0), totalCents);
+      firstCents = totalCents - secondCents;
+    } else if (!firstCents && !secondCents) {
+      firstCents = Math.floor(totalCents / 2);
+      secondCents = totalCents - firstCents;
+    } else if (firstCents + secondCents !== totalCents) {
+      firstCents = Math.min(Math.max(firstCents, 0), totalCents);
+      secondCents = totalCents - firstCents;
+    }
+
+    splitPayments[0].amount = centsToAmount(firstCents);
+    splitPayments[1].amount = centsToAmount(secondCents);
+  }
+
+  function splitMethodOptions(selected, otherSelected) {
+    return splitPaymentMethods.map(function (method) {
+      var disabled = method === otherSelected && method !== selected ? ' disabled' : '';
+      return '<option value="' + esc(method) + '"' + (method === selected ? ' selected' : '') + disabled + '>' + esc(method) + '</option>';
+    }).join('');
+  }
+
+  function splitPaymentLabel() {
+    syncSplitAmounts();
+    return splitPayments.map(function (payment) {
+      return payment.method + ' ' + money(payment.amount);
+    }).join(' + ');
+  }
+
+  function renderSplitPayment() {
+    var host = document.querySelector('[data-checkout-split]');
+    if (!host) return;
+
+    if (selectedMethod !== 'Split pay') {
+      host.hidden = true;
+      host.innerHTML = '<div class="checkout-split-status" data-checkout-split-status></div>';
+      return;
+    }
+
+    syncSplitAmounts();
+    host.hidden = false;
+    host.innerHTML =
+      '<div class="checkout-split-head">' +
+        '<div><strong>Split payment</strong><span>Choose 2 payment types and enter how much each one pays.</span></div>' +
+        '<span class="checkout-split-total">Total ' + money(checkoutTotal()) + '</span>' +
+      '</div>' +
+      '<div class="checkout-split-grid">' +
+        splitPayments.map(function (payment, index) {
+          var other = splitPayments[index === 0 ? 1 : 0];
+          return '<div class="checkout-split-row">' +
+            '<label class="checkout-field"><span>Payment ' + (index + 1) + '</span><select class="booking-select" data-checkout-split-method="' + index + '">' + splitMethodOptions(payment.method, other.method) + '</select></label>' +
+            '<label class="checkout-field"><span>Amount</span><input class="booking-input" type="number" min="0" step="0.01" inputmode="decimal" data-checkout-split-amount="' + index + '" value="' + payment.amount.toFixed(2) + '"></label>' +
+          '</div>';
+        }).join('') +
+      '</div>' +
+      '<div class="checkout-split-status" data-checkout-split-status>' + esc(splitPaymentLabel()) + '</div>';
+  }
+
+  function setSplitMethod(index, method) {
+    if (!splitPayments[index]) return;
+    splitPayments[index].method = method || splitPayments[index].method;
+    var otherIndex = index === 0 ? 1 : 0;
+    if (splitPayments[0].method === splitPayments[1].method) {
+      splitPayments[otherIndex].method = splitPaymentMethods.find(function (candidate) {
+        return candidate !== splitPayments[index].method;
+      }) || splitPayments[otherIndex].method;
+    }
+  }
+
+  function setSplitAmount(index, value) {
+    if (!splitPayments[index]) return;
+    splitPayments[index].amount = Math.max(Number(value) || 0, 0);
+    syncSplitAmounts(index);
   }
 
   function formatStart() {
@@ -167,7 +267,7 @@
   function renderSummary() {
     var tip = computeTip();
     var discount = computeDiscount();
-    var total = subtotal() - discount + tip;
+    var total = checkoutTotal();
     var setText = function (selector, text) {
       var el = document.querySelector(selector);
       if (el) el.textContent = text;
@@ -177,8 +277,9 @@
     var discountRow = document.querySelector('[data-checkout-discount-row]');
     if (discountRow) discountRow.hidden = discount <= 0;
     setText('[data-checkout-discount-amount]', '-' + money(discount));
-    setText('[data-checkout-method-label]', selectedMethod);
+    setText('[data-checkout-method-label]', selectedMethod === 'Split pay' ? 'Split pay · ' + splitPaymentLabel() : selectedMethod);
     setText('[data-checkout-total]', money(total));
+    renderSplitPayment();
     var chargeButton = document.querySelector('[data-checkout-charge]');
     if (chargeButton && !chargeButton.classList.contains('is-paid')) {
       chargeButton.textContent = 'Charge ' + money(total);
@@ -296,6 +397,7 @@
   }
 
   function markPaid(persist) {
+    if (selectedMethod === 'Split pay') syncSplitAmounts();
     var tip = computeTip();
     var discount = computeDiscount();
     var total = subtotal() - discount + tip;
@@ -305,6 +407,9 @@
       checkoutTip: tip,
       checkoutDiscount: discount,
       checkoutMethod: selectedMethod,
+      checkoutSplitPayments: selectedMethod === 'Split pay' ? splitPayments.map(function (payment) {
+        return { method: payment.method, amount: payment.amount };
+      }) : null,
       checkoutAt: new Date().toISOString()
     };
     if (persist) {
@@ -355,6 +460,7 @@
     var payMethod = event.target.closest('[data-checkout-pay]');
     if (payMethod) {
       selectedMethod = payMethod.dataset.checkoutPay;
+      if (selectedMethod === 'Split pay') syncSplitAmounts();
       renderPaymentMethods();
       renderSummary();
       return;
@@ -448,6 +554,20 @@
   });
 
   document.addEventListener('change', function (event) {
+    var splitMethod = event.target.closest('[data-checkout-split-method]');
+    if (splitMethod) {
+      setSplitMethod(Number(splitMethod.dataset.checkoutSplitMethod), splitMethod.value);
+      renderSummary();
+      return;
+    }
+
+    var splitAmount = event.target.closest('[data-checkout-split-amount]');
+    if (splitAmount) {
+      setSplitAmount(Number(splitAmount.dataset.checkoutSplitAmount), splitAmount.value);
+      renderSummary();
+      return;
+    }
+
     if (event.target.matches('[data-checkout-add-product-select]')) {
       syncProductPriceField();
     }
