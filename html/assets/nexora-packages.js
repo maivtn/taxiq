@@ -561,7 +561,7 @@ const PACKAGE_PLAN_DETAILS = {
     purchaseHistory.innerHTML = `
       <div class="package-history-table-wrap">
         <table class="package-history-table">
-          <caption class="visually-hidden">Billing history</caption>
+          <caption class="visually-hidden">Package history</caption>
           <thead>
             <tr>
               <th scope="col">Date &amp; time</th>

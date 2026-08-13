@@ -273,8 +273,8 @@ test('adds the package heading and ordered management tabs', () => {
   assert.doesNotMatch(html, /data-package-tab="credits"/);
   assert.doesNotMatch(html, /data-package-panel="credits"/);
   const historyTab = html.match(/<button[^>]*data-package-tab="history"[\s\S]*?<\/button>/)?.[0] || '';
-  assert.match(historyTab, /<span>Billing History<\/span>/);
-  assert.doesNotMatch(historyTab, /Package History|Purchase History/);
+  assert.match(historyTab, /<span>Package History<\/span>/);
+  assert.doesNotMatch(historyTab, /Billing History|Purchase History/);
   assert.equal((html.match(/class="package-tab is-active"/g) || []).length, 1);
 });
 
@@ -563,8 +563,8 @@ test('provides the package purchase history panel and transaction data contract'
 
 test('renders package history billing columns, statuses, and record actions', () => {
   const historyHTML = renderPackageHistoryHTML();
-  assert.match(historyHTML, /<caption class="visually-hidden">Billing history<\/caption>/);
-  assert.doesNotMatch(historyHTML, /Package purchase history/);
+  assert.match(historyHTML, /<caption class="visually-hidden">Package history<\/caption>/);
+  assert.doesNotMatch(historyHTML, /Billing history|Package purchase history/);
   const columnLabels = [...historyHTML.matchAll(/<th scope="col">([^<]+)<\/th>/g)].map((match) => decodeEntities(match[1]));
   assert.deepEqual(columnLabels, [
     'Date & time',
