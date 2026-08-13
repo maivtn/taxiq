@@ -321,6 +321,48 @@ test('keeps PDF amount labels visually separated from headline totals', () => {
   });
 });
 
+test('aligns PDF content to equal left and right page margins', () => {
+  const documents = billingRecords().flatMap((record) => [
+    { path: record.invoiceFile, title: 'Invoice', total: record.total },
+    ...(record.receiptFile ? [{ path: record.receiptFile, title: 'Receipt', total: record.total }] : [])
+  ]);
+
+  documents.forEach((document) => {
+    const documentPath = fileURLToPath(new URL(document.path, PAGE_URL));
+    const bbox = execFileSync('pdftotext', ['-bbox-layout', documentPath, '-'], { encoding: 'utf8' });
+    const pageWidth = Number(bbox.match(/<page width="([\d.]+)"/)?.[1]);
+    const words = [...bbox.matchAll(/<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">([^<]+)<\/word>/g)]
+      .map((match) => ({
+        xMin: Number(match[1]),
+        yMin: Number(match[2]),
+        xMax: Number(match[3]),
+        yMax: Number(match[4]),
+        text: match[5]
+      }));
+    const title = words.find((word) => word.text === document.title && word.yMin < 120);
+    const brand = words.find((word) => word.text === 'NEXORA' && word.yMin < 70);
+    const seller = words.find((word) => word.text === 'Seller');
+    const description = words.find((word) => word.text === 'Description');
+    const lineItemAmount = words
+      .filter((word) => word.text === `$${document.total}.00` && word.yMin > description.yMax && word.yMin < description.yMax + 80)
+      .sort((left, right) => right.xMax - left.xMax)[0];
+
+    assert.ok(Number.isFinite(pageWidth), `Page width must be measurable in ${document.path}`);
+    assert.ok(title && brand && seller && description && lineItemAmount, `Alignment anchors must exist in ${document.path}`);
+
+    [brand, seller, description].forEach((anchor) => {
+      assert.ok(
+        Math.abs(anchor.xMin - title.xMin) <= 0.75,
+        `${anchor.text} must share the left content guide in ${document.path}`
+      );
+    });
+    assert.ok(
+      Math.abs(title.xMin - (pageWidth - lineItemAmount.xMax)) <= 0.75,
+      `Left and right content margins must match in ${document.path}`
+    );
+  });
+});
+
 test('loads responsive Billing Detail styles', () => {
   assert.ok(existsSync(DETAIL_CSS_URL), 'nexora-package-billing-detail.css must exist');
   const css = readFileSync(DETAIL_CSS_URL, 'utf8');

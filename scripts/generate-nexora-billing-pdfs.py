@@ -43,6 +43,11 @@ DUE_BG = HexColor("#FFF7DF")
 OVERDUE = HexColor("#C2410C")
 OVERDUE_BG = HexColor("#FFF1F0")
 
+PAGE_HORIZONTAL_MARGIN = 0.58 * inch
+FRAME_HORIZONTAL_PADDING = 6
+CONTENT_LEFT = PAGE_HORIZONTAL_MARGIN + FRAME_HORIZONTAL_PADDING
+CONTENT_WIDTH = A4[0] - (2 * CONTENT_LEFT)
+
 
 def load_records() -> list[dict[str, Any]]:
     source = DATA_PATH.read_text(encoding="utf-8")
@@ -192,11 +197,11 @@ def footer(canvas: Any, document: Any) -> None:
     canvas.saveState()
     canvas.setStrokeColor(BORDER)
     canvas.setLineWidth(0.5)
-    canvas.line(document.leftMargin, 0.52 * inch, A4[0] - document.rightMargin, 0.52 * inch)
+    canvas.line(CONTENT_LEFT, 0.52 * inch, A4[0] - CONTENT_LEFT, 0.52 * inch)
     canvas.setFillColor(SUBTLE)
     canvas.setFont("Helvetica", 7.5)
-    canvas.drawString(document.leftMargin, 0.34 * inch, "NEXORA Touch billing document")
-    canvas.drawRightString(A4[0] - document.rightMargin, 0.34 * inch, f"Page {canvas.getPageNumber()}")
+    canvas.drawString(CONTENT_LEFT, 0.34 * inch, "NEXORA Touch billing document")
+    canvas.drawRightString(A4[0] - CONTENT_LEFT, 0.34 * inch, f"Page {canvas.getPageNumber()}")
     canvas.restoreState()
 
 
@@ -218,7 +223,7 @@ def header_block(record: dict[str, Any], document_type: str, style: dict[str, Pa
     ]))
     brand_row = Table(
         [[Paragraph("NEXORA TOUCH", style["brand"]), status]],
-        colWidths=[5.55 * inch, 1.18 * inch],
+        colWidths=[CONTENT_WIDTH - (1.18 * inch), 1.18 * inch],
     )
     brand_row.setStyle(TableStyle([
         ("VALIGN", (0, 0), (-1, -1), "TOP"),
@@ -263,7 +268,7 @@ def parties_block(record: dict[str, Any], style: dict[str, ParagraphStyle]) -> T
             style["body"],
         ),
     ]]
-    table = Table(data, colWidths=[3.35 * inch, 3.35 * inch])
+    table = Table(data, colWidths=[CONTENT_WIDTH / 2, CONTENT_WIDTH / 2])
     table.setStyle(TableStyle([
         ("VALIGN", (0, 0), (-1, -1), "TOP"),
         ("LEFTPADDING", (0, 0), (-1, -1), 0),
@@ -282,7 +287,7 @@ def amount_block(record: dict[str, Any], document_type: str, style: dict[str, Pa
         [Paragraph(headline, style["meta"])],
         [Paragraph(format_money(record["total"], record["currency"]), style["amount"])],
         [Paragraph(date_copy, style["meta"])],
-    ], colWidths=[6.7 * inch])
+    ], colWidths=[CONTENT_WIDTH])
     table.setStyle(TableStyle([
         ("BACKGROUND", (0, 0), (-1, -1), SURFACE),
         ("BOX", (0, 0), (-1, -1), 0.7, BORDER),
@@ -320,7 +325,12 @@ def line_items_table(record: dict[str, Any], style: dict[str, ParagraphStyle]) -
             Paragraph(tax, style["body_right"]),
             Paragraph(f"<b>{format_money(item['amount'], record['currency'])}</b>", style["body_right"]),
         ])
-    table = Table(rows, colWidths=[2.8 * inch, 0.52 * inch, 1.12 * inch, 0.84 * inch, 1.42 * inch], repeatRows=1)
+    base_width = 6.7 * inch
+    table = Table(
+        rows,
+        colWidths=[CONTENT_WIDTH * width / base_width for width in (2.8 * inch, 0.52 * inch, 1.12 * inch, 0.84 * inch, 1.42 * inch)],
+        repeatRows=1,
+    )
     table.setStyle(TableStyle([
         ("LINEBELOW", (0, 0), (-1, 0), 0.8, TEXT),
         ("LINEBELOW", (0, 1), (-1, -1), 0.5, BORDER),
@@ -371,7 +381,11 @@ def payment_history(record: dict[str, Any], style: dict[str, ParagraphStyle]) ->
         Paragraph(format_money(record["total"], record["currency"]), style["body_right"]),
         Paragraph(xml(record["receiptNumber"]), style["body_right"]),
     ]]
-    table = Table(rows, colWidths=[1.75 * inch, 1.65 * inch, 1.45 * inch, 1.85 * inch])
+    base_width = 6.7 * inch
+    table = Table(
+        rows,
+        colWidths=[CONTENT_WIDTH * width / base_width for width in (1.75 * inch, 1.65 * inch, 1.45 * inch, 1.85 * inch)],
+    )
     table.setStyle(TableStyle([
         ("LINEBELOW", (0, 0), (-1, 0), 0.8, TEXT),
         ("VALIGN", (0, 0), (-1, -1), "TOP"),
@@ -389,8 +403,8 @@ def build_document(record: dict[str, Any], output_path: Path, document_type: str
     document = SimpleDocTemplate(
         str(output_path),
         pagesize=A4,
-        leftMargin=0.58 * inch,
-        rightMargin=0.58 * inch,
+        leftMargin=PAGE_HORIZONTAL_MARGIN,
+        rightMargin=PAGE_HORIZONTAL_MARGIN,
         topMargin=0.5 * inch,
         bottomMargin=0.68 * inch,
         title=f"{document_type} {record['invoiceNumber']}",
