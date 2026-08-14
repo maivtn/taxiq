@@ -174,6 +174,13 @@ function cssRule(css, selector) {
   return match[1];
 }
 
+function cssDeclarationValue(rule, property) {
+  const escapedProperty = property.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const match = rule.match(new RegExp(`(?:^|[;\\n])\\s*${escapedProperty}\\s*:\\s*([^;]+);`));
+  assert.ok(match, `CSS property "${property}" must exist`);
+  return match[1].trim();
+}
+
 function pdfBBoxWords(documentPath) {
   const bbox = execFileSync('pdftotext', ['-bbox-layout', documentPath, '-'], { encoding: 'utf8' });
   return [...bbox.matchAll(/<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">([^<]+)<\/word>/g)]
@@ -793,7 +800,7 @@ test('keeps billing detail buttons compact on screen', () => {
   assert.match(paymentButtonRule, /padding:\s*7px 12px/);
 });
 
-test('keeps billing detail actions auto width on desktop and fitted to one row on mobile', () => {
+test('keeps billing detail actions full width with auto-width buttons', () => {
   const css = readFileSync(DETAIL_CSS_URL, 'utf8');
   const mobileRules = css.slice(css.indexOf('@media (max-width: 640px)'), css.indexOf('@page'));
   const actionsRule = cssRule(css, '.billing-detail-actions');
@@ -805,20 +812,17 @@ test('keeps billing detail actions auto width on desktop and fitted to one row o
 
   assert.match(actionsRule, /display:\s*flex;/);
   assert.match(actionsRule, /flex-wrap:\s*nowrap;/);
-  assert.match(actionsRule, /width:\s*fit-content;/);
-  assert.match(actionsRule, /max-width:\s*100%;/);
-  assert.match(actionRule, /flex:\s*0 0 auto;/);
-  assert.match(actionGroupRule, /flex:\s*0 0 auto;/);
+  assert.equal(cssDeclarationValue(actionsRule, 'width'), '100%');
+  assert.equal(cssDeclarationValue(actionRule, 'flex'), '0 0 auto');
+  assert.equal(cssDeclarationValue(actionGroupRule, 'flex'), '0 0 auto');
   assert.match(mobileActionsRule, /display:\s*flex;/);
-  assert.match(mobileActionsRule, /width:\s*100%;/);
+  assert.equal(cssDeclarationValue(mobileActionsRule, 'width'), '100%');
   assert.match(mobileActionsRule, /gap:\s*6px;/);
-  assert.match(mobileActionRule, /flex:\s*1 1 0;/);
-  assert.match(mobileActionRule, /min-width:\s*0;/);
+  assert.equal(cssDeclarationValue(mobileActionRule, 'flex'), '0 0 auto');
   assert.match(mobileActionRule, /min-height:\s*34px;/);
   assert.match(mobileActionRule, /padding:\s*6px 7px;/);
   assert.match(mobileActionRule, /font-size:\s*10px;/);
-  assert.match(mobileActionGroupRule, /flex:\s*1 1 0;/);
-  assert.match(mobileActionGroupRule, /min-width:\s*0;/);
+  assert.equal(cssDeclarationValue(mobileActionGroupRule, 'flex'), '0 0 auto');
 });
 
 test('keeps mobile billing detail meta labels and values on one row', () => {
