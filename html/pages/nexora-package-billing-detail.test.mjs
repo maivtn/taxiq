@@ -568,9 +568,9 @@ test('uses uppercase NEXORA TOUCH across billing surfaces and generated document
     assert.match(invoiceText, /NEXORA TOUCH LLC/);
     assert.match(invoiceText, /9793 Westheimer Rd Suite A/);
     assert.match(invoiceText, /Houston, TX 77042/);
-    assert.match(invoiceText, /\(832\) 979-5559/);
     assert.match(invoiceText, /support@nexoratouch\.com/);
     assert.doesNotMatch(invoiceText, /NEXORA Touch|Nexora Touch/);
+    assert.doesNotMatch(invoiceText, /\(832\) 979-5559/);
     assert.doesNotMatch(invoiceText, /NEXORA TOUCH, LLC|5900 Balcones|Austin, TX 78731/);
 
     if (record.receiptFile) {
@@ -583,9 +583,9 @@ test('uses uppercase NEXORA TOUCH across billing surfaces and generated document
       assert.match(receiptText, /NEXORA TOUCH LLC/);
       assert.match(receiptText, /9793 Westheimer Rd Suite A/);
       assert.match(receiptText, /Houston, TX 77042/);
-      assert.match(receiptText, /\(832\) 979-5559/);
       assert.match(receiptText, /support@nexoratouch\.com/);
       assert.doesNotMatch(receiptText, /NEXORA Touch|Nexora Touch/);
+      assert.doesNotMatch(receiptText, /\(832\) 979-5559/);
       assert.doesNotMatch(receiptText, /NEXORA TOUCH, LLC|5900 Balcones|Austin, TX 78731/);
     }
   });
@@ -604,8 +604,8 @@ test('provides real PDF download documents that match billing records', () => {
     assert.match(invoiceText, /NEXORA TOUCH/);
     assert.match(invoiceText, textPattern(record.seller.legalName));
     assert.match(invoiceText, textPattern(record.seller.addressLines[0]));
-    assert.match(invoiceText, textPattern(record.seller.phone));
     assert.match(invoiceText, textPattern(record.seller.email));
+    assert.doesNotMatch(invoiceText, textPattern(record.seller.phone));
     assert.match(invoiceText, textPattern(record.billTo.addressLines[0]));
     assert.match(invoiceText, textPattern(record.invoiceNumber));
     record.lineItems.forEach((item) => {
@@ -624,8 +624,8 @@ test('provides real PDF download documents that match billing records', () => {
       assert.match(receiptText, /NEXORA TOUCH/);
       assert.match(receiptText, textPattern(record.seller.legalName));
       assert.match(receiptText, textPattern(record.seller.addressLines[0]));
-      assert.match(receiptText, textPattern(record.seller.phone));
       assert.match(receiptText, textPattern(record.seller.email));
+      assert.doesNotMatch(receiptText, textPattern(record.seller.phone));
       assert.match(receiptText, textPattern(record.receiptNumber));
       assert.match(receiptText, textPattern(record.invoiceNumber));
       assert.match(receiptText, /Visa - 4242/);
@@ -1117,6 +1117,15 @@ test('prints browser billing headers with document label and NEXORA logo instead
   assert.match(cssRule(printRules, '.billing-detail-print-logo'), /display:\s*block;/);
   assert.match(cssRule(printRules, '.billing-detail-document-icon'), /display:\s*none;/);
   assert.doesNotMatch(css, /billing-detail-status/);
+});
+
+test('omits the seller phone from printed billing detail output', () => {
+  const unpaidHTML = createBillingRuntime('?transaction=SMS-20260811-0001').root.innerHTML;
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const printRules = css.slice(css.indexOf('@media print'));
+
+  assert.match(unpaidHTML, /class="billing-detail-seller-phone">\s*\(832\) 979-5559\s*<\/span>/);
+  assert.match(cssRule(printRules, '.billing-detail-seller-phone'), /display:\s*none\s*!important;/);
 });
 
 test('keeps billing detail buttons compact on screen', () => {

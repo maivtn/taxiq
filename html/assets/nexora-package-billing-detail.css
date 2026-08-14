@@ -1257,6 +1257,10 @@ body.billing-email-preview-open {
     object-fit: contain;
   }
 
+  .billing-detail-seller-phone {
+    display: none !important;
+  }
+
   .billing-detail-document-icon {
     display: none;
   }
