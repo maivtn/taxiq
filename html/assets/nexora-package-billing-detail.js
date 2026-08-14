@@ -187,7 +187,7 @@
           <div data-billing-email-preview-hidden="true"><dt>Processor</dt><dd>${escapeHTML(record.processor)}</dd></div>
           <div data-billing-email-preview-hidden="true"><dt>Transaction ID</dt><dd>${escapeHTML(record.transactionId)}</dd></div>
           <div data-billing-email-preview-hidden="true"><dt>Processor transaction ID</dt><dd>${escapeHTML(record.processorTransactionId)}</dd></div>
-          <div data-billing-email-preview-hidden="true"><dt>Bill to</dt><dd>${escapeHTML(record.billTo.name)}<span>${escapeHTML(record.billTo.email)}</span></dd></div>
+          <div class="billing-detail-bill-to-meta" data-billing-email-preview-hidden="true"><dt>Bill to</dt><dd>${escapeHTML(record.billTo.name)}<span>${escapeHTML(record.billTo.email)}</span></dd></div>
         </dl>
       </article>
 
@@ -230,7 +230,7 @@
           <div><dt>Date of issue</dt><dd>${formatDate(record.dateIssued)}</dd></div>
           <div><dt>Due date</dt><dd>${formatDate(record.dateDue)}</dd></div>
           <div class="billing-detail-seller-meta"><dt>Seller</dt><dd>${escapeHTML(record.seller.legalName || record.seller.name)}${record.seller.phone ? `<span class="billing-detail-seller-phone">${escapeHTML(record.seller.phone)}</span>` : ''}<span>${escapeHTML(record.seller.email)}</span></dd></div>
-          <div data-billing-email-preview-hidden="true"><dt>Bill to</dt><dd>${escapeHTML(record.billTo.name)}<span>${escapeHTML(record.billTo.email)}</span></dd></div>
+          <div class="billing-detail-bill-to-meta" data-billing-email-preview-hidden="true"><dt>Bill to</dt><dd>${escapeHTML(record.billTo.name)}<span>${escapeHTML(record.billTo.email)}</span></dd></div>
           <div><dt>Billing term</dt><dd>${escapeHTML(record.billingTerm)}</dd></div>
         </dl>
       </article>

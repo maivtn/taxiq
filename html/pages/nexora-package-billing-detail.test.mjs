@@ -1143,6 +1143,27 @@ test('omits the seller label from printed billing detail output', () => {
   assert.match(cssRule(printRules, '.billing-detail-seller-meta dt'), /display:\s*none\s*!important;/);
 });
 
+test('prints bill-to shop name without bold weight', () => {
+  const paidHTML = createBillingRuntime('?transaction=NXR-20260810-0003').root.innerHTML;
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const printRules = css.slice(css.indexOf('@media print'));
+  const documents = billingRecords().flatMap((record) => [
+    record.invoiceFile,
+    ...(record.receiptFile ? [record.receiptFile] : [])
+  ]);
+
+  assert.match(paidHTML, /class="billing-detail-bill-to-meta"/);
+  assert.equal(cssDeclarationValue(cssRule(printRules, '.billing-detail-bill-to-meta dd'), 'font-weight'), '400');
+
+  documents.forEach((path) => {
+    const documentPath = fileURLToPath(new URL(path, PAGE_URL));
+    const xml = execFileSync('pdftohtml', ['-xml', '-stdout', documentPath], { encoding: 'utf8' });
+
+    assert.match(xml, /<text[^>]*>Bitcoin Nail Bar<\/text>/);
+    assert.doesNotMatch(xml, /<text[^>]*><b>Bitcoin Nail Bar<\/b><\/text>/);
+  });
+});
+
 test('keeps billing detail buttons compact on screen', () => {
   const css = readFileSync(DETAIL_CSS_URL, 'utf8');
   const actionRule = /\.billing-detail-action\s*\{([^}]*)\}/.exec(css)?.[1] || '';

@@ -249,7 +249,7 @@ def parties_block(record: dict[str, Any], style: dict[str, ParagraphStyle]) -> T
             style["body"],
         ),
         Paragraph(
-            f"<b>Bill to</b><br/><b>{xml(bill_to['name'])}</b><br/>{bill_to_address}<br/>"
+            f"<b>Bill to</b><br/>{xml(bill_to['name'])}<br/>{bill_to_address}<br/>"
             f"<font color='#000000'>{xml(bill_to['email'])}</font>",
             style["body"],
         ),

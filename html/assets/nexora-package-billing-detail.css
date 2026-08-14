@@ -1265,6 +1265,10 @@ body.billing-email-preview-open {
     display: none !important;
   }
 
+  .billing-detail-bill-to-meta dd {
+    font-weight: 400;
+  }
+
   .billing-detail-document-icon {
     display: none;
   }
