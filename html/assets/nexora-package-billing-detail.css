@@ -1337,6 +1337,11 @@ body.billing-email-preview-open {
     font-weight: 400;
   }
 
+  .billing-detail-meta dt,
+  .billing-detail-meta dd {
+    font-weight: 500;
+  }
+
   .billing-detail-table td:first-child strong,
   .billing-detail-totals .is-total dt,
   .billing-detail-totals .is-total dd,

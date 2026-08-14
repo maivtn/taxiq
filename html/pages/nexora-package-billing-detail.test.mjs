@@ -720,6 +720,19 @@ test('aligns PDF header metadata labels and values into columns', () => {
   assert.ok(Math.max(...valueStarts) - Math.min(...valueStarts) <= 0.75, 'Metadata values must share a value column');
 });
 
+test('uses medium weight for printed billing metadata', () => {
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const printRules = css.slice(css.indexOf('@media print'));
+  const printMetaWeightRule = /\.billing-detail-meta dt,\s*\.billing-detail-meta dd\s*\{([\s\S]*?)\}/.exec(printRules)?.[1] || '';
+  const generatorSource = readFileSync(PDF_GENERATOR_URL, 'utf8');
+  const headerBlockSource = /def header_block\([\s\S]*?\n\ndef /.exec(generatorSource)?.[0] || '';
+
+  assert.ok(printMetaWeightRule, 'Print metadata font-weight override must exist');
+  assert.match(printMetaWeightRule, /font-weight:\s*500;/);
+  assert.ok(headerBlockSource, 'PDF header_block generator must exist');
+  assert.doesNotMatch(headerBlockSource, /<b>\{xml\(label\)\}<\/b>|<b>\{xml\(value\)\}<\/b>/);
+});
+
 test('right-aligns PDF table headers with their row values', () => {
   const paidRecord = billingRecords().find((record) => record.paymentStatus === 'paid');
   const invoicePath = fileURLToPath(new URL(paidRecord.invoiceFile, PAGE_URL));
@@ -1009,7 +1022,7 @@ test('keeps screen typography calm with only regular and semibold weights', () =
   const screenRules = css.slice(0, css.indexOf('@page'));
   const invalidWeights = [...screenRules.matchAll(/font-weight:\s*(\d+)/g)]
     .map((match) => Number(match[1]))
-    .filter((weight) => ![400, 600].includes(weight));
+    .filter((weight) => ![400, 500, 600].includes(weight));
 
   assert.deepEqual(invalidWeights, []);
 });
@@ -1029,7 +1042,7 @@ test('keeps printed billing labels and document titles compact with calm weights
   const documentTitleRule = cssRule(printRules, '.billing-detail-document-head h2');
   const invalidWeights = [...css.matchAll(/font-weight:\s*(\d+)/g)]
     .map((match) => Number(match[1]))
-    .filter((weight) => ![400, 600].includes(weight));
+    .filter((weight) => ![400, 500, 600].includes(weight));
 
   assert.match(eyebrowRule, /font-size:\s*9pt/);
   assert.match(eyebrowRule, /font-weight:\s*400/);

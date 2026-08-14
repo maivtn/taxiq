@@ -211,8 +211,8 @@ def header_block(record: dict[str, Any], document_type: str, style: dict[str, Pa
     metadata = Table(
         [
             [
-                Paragraph(f"<b>{xml(label)}</b>", style["meta"]),
-                Paragraph(f"<b>{xml(value)}</b>", style["meta"]),
+                Paragraph(xml(label), style["meta"]),
+                Paragraph(xml(value), style["meta"]),
             ]
             for label, value in meta_rows
         ],
