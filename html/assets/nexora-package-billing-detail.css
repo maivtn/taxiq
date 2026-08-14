@@ -552,6 +552,20 @@ body.billing-email-preview-open {
   padding: 18px;
 }
 
+.billing-email-preview-brand {
+  display: flex;
+  width: min(100%, 390px);
+  justify-content: center;
+  margin: 0 auto 14px;
+}
+
+.billing-email-preview-brand img {
+  display: block;
+  width: 150px;
+  max-width: 70%;
+  height: auto;
+}
+
 .billing-email-preview-mobile {
   display: grid;
   width: min(100%, 390px);

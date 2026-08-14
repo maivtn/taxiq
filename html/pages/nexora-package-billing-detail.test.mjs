@@ -471,6 +471,10 @@ test('opens a developer email HTML preview with mobile billing content', () => {
 
   assert.equal(runtime.emailPreviewModal.hidden, false);
   assert.equal(runtime.emailPreviewModal.getAttribute('aria-hidden'), 'false');
+  const previewHTML = runtime.emailPreviewBody.innerHTML.trimStart();
+  assert.match(previewHTML, /^<div class="billing-email-preview-brand"/);
+  assert.match(previewHTML, /<img src="https:\/\/nexoratouch\.com\/homepage\/assets\/images\/logo-light-mode\.png" alt="NEXORA TOUCH">/);
+  assert.ok(previewHTML.indexOf('billing-email-preview-brand') < previewHTML.indexOf('billing-email-preview-mobile'));
   assert.match(runtime.emailPreviewBody.innerHTML, /billing-email-preview-mobile/);
   assert.match(runtime.emailPreviewBody.innerHTML, /billing-detail-summary/);
   assert.match(runtime.emailPreviewBody.innerHTML, /billing-detail-document/);
@@ -904,6 +908,8 @@ test('keeps billing detail table headers readable without uppercase transform', 
 test('styles developer email preview as mobile billing content inside the modal', () => {
   const css = readFileSync(DETAIL_CSS_URL, 'utf8');
   const modalRule = cssRule(css, '.billing-email-preview-modal');
+  const logoRule = cssRule(css, '.billing-email-preview-brand');
+  const logoImageRule = cssRule(css, '.billing-email-preview-brand img');
   const mobilePreviewRule = cssRule(css, '.billing-email-preview-mobile');
   const previewSummaryRule = cssRule(css, '.billing-email-preview-mobile .billing-detail-summary');
   const previewMetaRule = cssRule(css, '.billing-email-preview-mobile .billing-detail-meta');
@@ -912,6 +918,9 @@ test('styles developer email preview as mobile billing content inside the modal'
   const previewHiddenRule = /\.billing-email-preview-mobile \[data-billing-email-preview-hidden\],[\s\S]*?\.billing-email-preview-mobile \[data-billing-email-action\]\s*\{([\s\S]*?)\}/.exec(css)?.[1] || '';
 
   assert.match(modalRule, /position:\s*fixed;/);
+  assert.match(logoRule, /display:\s*flex;/);
+  assert.match(logoRule, /justify-content:\s*center;/);
+  assert.match(logoImageRule, /width:\s*150px;/);
   assert.match(mobilePreviewRule, /width:\s*min\(100%,\s*390px\);/);
   assert.match(previewSummaryRule, /padding:\s*18px;/);
   assert.match(previewMetaRule, /grid-template-columns:\s*1fr;/);

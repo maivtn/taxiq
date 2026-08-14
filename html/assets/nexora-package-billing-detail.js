@@ -11,6 +11,7 @@
   const emailPreviewBody = emailPreviewModal ? emailPreviewModal.querySelector('[data-billing-email-preview-body]') : null;
   const shell = document.querySelector('.shell');
   const NEXORA_PRINT_LOGO_URL = 'https://nexoratouch.com/homepage/assets/images/icon-nexora.png';
+  const NEXORA_EMAIL_LOGO_URL = 'https://nexoratouch.com/homepage/assets/images/logo-light-mode.png';
   let paymentOpener = null;
   let paymentPreviousOverflow = '';
   let shellHadInert = false;
@@ -327,7 +328,7 @@
       .replace(/\s*<button\b(?=[^>]*data-billing-email-action)[\s\S]*?<\/button>/g, '')
       .replace(/\s*<div\b(?=[^>]*data-billing-email-preview-hidden)[\s\S]*?<\/div>/g, '')
       .replace(/\s*<span\b(?=[^>]*class="[^"]*\bbilling-detail-status\b)[\s\S]*?<\/span>/g, '');
-    return `<div class="billing-email-preview-mobile" data-billing-email-preview-root>${previewHTML}</div>`;
+    return `<div class="billing-email-preview-brand"><img src="${NEXORA_EMAIL_LOGO_URL}" alt="NEXORA TOUCH"></div><div class="billing-email-preview-mobile" data-billing-email-preview-root>${previewHTML}</div>`;
   }
 
   function openBillingEmailPreview(opener) {
