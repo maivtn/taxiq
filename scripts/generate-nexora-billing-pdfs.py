@@ -30,9 +30,9 @@ DATA_PATH = ROOT / "html/assets/nexora-package-billing-data.js"
 PAGES_DIR = ROOT / "html/pages"
 LOGO_PATH = PAGES_DIR / "assets/icon-nexora.png"
 
-TEXT = HexColor("#0B1F42")
-MUTED = HexColor("#64748B")
-SUBTLE = HexColor("#94A3B8")
+TEXT = HexColor("#000000")
+MUTED = HexColor("#000000")
+SUBTLE = HexColor("#000000")
 BORDER = HexColor("#E5EAF2")
 SURFACE = HexColor("#F7F9FC")
 
@@ -213,12 +213,12 @@ def parties_block(record: dict[str, Any], style: dict[str, ParagraphStyle]) -> T
     data = [[
         Paragraph(
             f"<b>Seller</b><br/><b>{xml(seller_legal_name)}</b><br/>{seller_address}<br/>"
-            f"<font color='#64748B'>{xml(seller['email'])}</font>",
+            f"<font color='#000000'>{xml(seller['email'])}</font>",
             style["body"],
         ),
         Paragraph(
             f"<b>Bill to</b><br/><b>{xml(bill_to['name'])}</b><br/>{bill_to_address}<br/>"
-            f"<font color='#64748B'>{xml(bill_to['email'])}</font>",
+            f"<font color='#000000'>{xml(bill_to['email'])}</font>",
             style["body"],
         ),
     ]]
@@ -269,7 +269,7 @@ def line_items_table(record: dict[str, Any], style: dict[str, ParagraphStyle]) -
         period = item.get("period")
         description = Paragraph(
             f"<b>{xml(item['description'])}</b>"
-            + (f"<br/><font color='#64748B'>{xml(period)}</font>" if period else ""),
+            + (f"<br/><font color='#000000'>{xml(period)}</font>" if period else ""),
             style["body"],
         )
         tax = f"{float(record['taxRate']):g}%"

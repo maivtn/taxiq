@@ -208,6 +208,14 @@ function pdfSvgImagePlacements(documentPath) {
   ])).values()];
 }
 
+function pdfTextFillColors(documentPath) {
+  const svg = execFileSync('pdftocairo', ['-svg', '-f', '1', '-l', '1', documentPath, '-'], { encoding: 'utf8' });
+  return [...new Set(
+    [...svg.matchAll(/<g fill="rgb\(([^"]+)\)" fill-opacity="1">/g)]
+      .map((match) => match[1])
+  )];
+}
+
 test('creates Billing Detail from the Salon shared-shell skeleton', () => {
   const html = source();
 
@@ -684,6 +692,14 @@ test('keeps screen typography calm with only regular and semibold weights', () =
   assert.deepEqual(invalidWeights, []);
 });
 
+test('keeps billing detail meta labels readable without uppercase transform', () => {
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const metaLabelRule = cssRule(css, '.billing-detail-meta dt');
+
+  assert.match(metaLabelRule, /text-transform:\s*none;/);
+  assert.match(metaLabelRule, /letter-spacing:\s*0;/);
+});
+
 test('keeps printed billing labels and document titles compact with calm weights', () => {
   const css = readFileSync(DETAIL_CSS_URL, 'utf8');
   const printRules = css.slice(css.indexOf('@media print'));
@@ -698,6 +714,28 @@ test('keeps printed billing labels and document titles compact with calm weights
   assert.match(documentTitleRule, /font-size:\s*13pt/);
   assert.match(documentTitleRule, /font-weight:\s*600/);
   assert.deepEqual(invalidWeights, []);
+});
+
+test('prints billing detail text in black instead of muted screen colors', () => {
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const printRules = css.slice(css.indexOf('@media print'));
+  const printTextColorRule = /\.billing-detail-summary,[\s\S]*?\.billing-detail-summary \*,[\s\S]*?\.billing-detail-document,[\s\S]*?\.billing-detail-document \*,[\s\S]*?\.billing-detail-empty,[\s\S]*?\.billing-detail-empty \*\s*\{([\s\S]*?)\}/.exec(printRules)?.[1] || '';
+  const disallowedMutedPrintColors = /color:\s*(?:var\(--nexora-(?:muted|subtle|text)\)|#(?:0b1f42|64748b|94a3b8))\b/i;
+
+  assert.match(printTextColorRule, /color:\s*#000\s*!important;/);
+  assert.equal(disallowedMutedPrintColors.test(printRules), false);
+});
+
+test('generates PDF billing text in black instead of gray or navy', () => {
+  const documents = billingRecords().flatMap((record) => [
+    record.invoiceFile,
+    ...(record.receiptFile ? [record.receiptFile] : [])
+  ]);
+
+  documents.forEach((path) => {
+    const documentPath = fileURLToPath(new URL(path, PAGE_URL));
+    assert.deepEqual(pdfTextFillColors(documentPath), ['0%, 0%, 0%'], `${path} text must render in black`);
+  });
 });
 
 test('prints browser billing headers with document label and NEXORA logo instead of status', () => {
@@ -760,13 +798,15 @@ test('keeps billing detail actions auto width on desktop and fitted to one row o
 test('keeps mobile billing detail meta labels and values on one row', () => {
   const css = readFileSync(DETAIL_CSS_URL, 'utf8');
   const mobileRules = css.slice(css.indexOf('@media (max-width: 640px)'), css.indexOf('@page'));
+  const mobileMetaRule = cssRule(mobileRules, '.billing-detail-meta');
   const mobileMetaItemRule = cssRule(mobileRules, '.billing-detail-meta div');
   const mobileMetaValueRule = cssRule(mobileRules, '.billing-detail-meta dd');
 
+  assert.match(mobileMetaRule, /gap:\s*10px;/);
   assert.match(mobileMetaItemRule, /display:\s*flex;/);
   assert.match(mobileMetaItemRule, /align-items:\s*baseline;/);
   assert.match(mobileMetaItemRule, /justify-content:\s*space-between;/);
-  assert.match(mobileMetaItemRule, /gap:\s*12px;/);
+  assert.match(mobileMetaItemRule, /gap:\s*8px;/);
   assert.match(mobileMetaValueRule, /margin:\s*0;/);
   assert.match(mobileMetaValueRule, /text-align:\s*right;/);
 });

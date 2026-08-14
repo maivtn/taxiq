@@ -253,8 +253,8 @@
   color: var(--nexora-subtle);
   font-size: 10px;
   font-weight: 400;
-  letter-spacing: 0.045em;
-  text-transform: uppercase;
+  letter-spacing: 0;
+  text-transform: none;
 }
 
 .billing-detail-meta dd {
@@ -740,13 +740,14 @@ body.billing-payment-open {
 
   .billing-detail-meta {
     grid-template-columns: 1fr;
+    gap: 10px;
   }
 
   .billing-detail-meta div {
     display: flex;
     align-items: baseline;
     justify-content: space-between;
-    gap: 12px;
+    gap: 8px;
   }
 
   .billing-detail-meta dd {
@@ -953,6 +954,15 @@ body.billing-payment-open {
   .billing-detail-summary,
   .billing-detail-document {
     padding: 6mm;
+  }
+
+  .billing-detail-summary,
+  .billing-detail-summary *,
+  .billing-detail-document,
+  .billing-detail-document *,
+  .billing-detail-empty,
+  .billing-detail-empty * {
+    color: #000 !important;
   }
 
   .billing-detail-summary {
