@@ -192,7 +192,7 @@
 
 .billing-detail-actions {
   display: flex;
-  flex-wrap: nowrap;
+  flex-wrap: wrap;
   gap: 10px;
   width: 100%;
   max-width: 100%;
@@ -1011,6 +1011,7 @@ body.billing-email-preview-open {
 
   .billing-detail-actions {
     display: flex;
+    flex-wrap: wrap;
     width: 100%;
     gap: 6px;
     padding-top: 14px;

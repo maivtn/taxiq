@@ -1037,7 +1037,7 @@ test('keeps billing detail buttons compact on screen', () => {
   assert.match(paymentButtonRule, /padding:\s*7px 12px/);
 });
 
-test('keeps billing detail actions full width with auto-width buttons', () => {
+test('lets billing detail actions wrap with auto-width buttons', () => {
   const css = readFileSync(DETAIL_CSS_URL, 'utf8');
   const mobileRules = css.slice(css.indexOf('@media (max-width: 640px)'), css.indexOf('@page'));
   const actionsRule = cssRule(css, '.billing-detail-actions');
@@ -1048,11 +1048,12 @@ test('keeps billing detail actions full width with auto-width buttons', () => {
   const mobileActionGroupRule = cssRule(mobileRules, '.billing-detail-action-group');
 
   assert.match(actionsRule, /display:\s*flex;/);
-  assert.match(actionsRule, /flex-wrap:\s*nowrap;/);
+  assert.match(actionsRule, /flex-wrap:\s*wrap;/);
   assert.equal(cssDeclarationValue(actionsRule, 'width'), '100%');
   assert.equal(cssDeclarationValue(actionRule, 'flex'), '0 0 auto');
   assert.equal(cssDeclarationValue(actionGroupRule, 'flex'), '0 0 auto');
   assert.match(mobileActionsRule, /display:\s*flex;/);
+  assert.match(mobileActionsRule, /flex-wrap:\s*wrap;/);
   assert.equal(cssDeclarationValue(mobileActionsRule, 'width'), '100%');
   assert.match(mobileActionsRule, /gap:\s*6px;/);
   assert.equal(cssDeclarationValue(mobileActionRule, 'flex'), '0 0 auto');
