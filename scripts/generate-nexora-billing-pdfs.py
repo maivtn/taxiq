@@ -181,7 +181,7 @@ def footer(canvas: Any, document: Any) -> None:
     canvas.line(CONTENT_LEFT, 0.52 * inch, A4[0] - CONTENT_LEFT, 0.52 * inch)
     canvas.setFillColor(SUBTLE)
     canvas.setFont("Helvetica", 7.5)
-    canvas.drawRightString(A4[0] - CONTENT_LEFT, 0.34 * inch, f"Page {canvas.getPageNumber()}")
+    canvas.drawRightString(A4[0] - CONTENT_LEFT, 0.34 * inch, f"Page {canvas.getPageNumber()} of 1")
     canvas.restoreState()
 
 

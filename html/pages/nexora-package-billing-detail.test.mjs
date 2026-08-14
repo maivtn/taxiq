@@ -879,6 +879,20 @@ test('omits the NEXORA TOUCH billing document footer copy from PDFs', () => {
   });
 });
 
+test('prints PDF footer page count as Page 1 of 1', () => {
+  const documents = billingRecords().flatMap((record) => [
+    record.invoiceFile,
+    ...(record.receiptFile ? [record.receiptFile] : [])
+  ]);
+
+  documents.forEach((path) => {
+    const documentText = execFileSync('pdftotext', [fileURLToPath(new URL(path, PAGE_URL)), '-'], { encoding: 'utf8' });
+
+    assert.match(documentText, /Page 1 of 1/);
+    assert.doesNotMatch(documentText, /Page 1\s*(?:\n|\f|$)/);
+  });
+});
+
 test('loads responsive Billing Detail styles', () => {
   assert.ok(existsSync(DETAIL_CSS_URL), 'nexora-package-billing-detail.css must exist');
   const css = readFileSync(DETAIL_CSS_URL, 'utf8');
