@@ -410,7 +410,17 @@
       text: paid
         ? `Billing documents were sent to ${record.billTo.email}.`
         : `A payment reminder was sent to ${record.billTo.email}.`,
-      confirmButtonText: 'Done'
+      confirmButtonText: 'Done',
+      buttonsStyling: false,
+      customClass: {
+        container: 'billing-swal-container',
+        popup: 'billing-swal-popup',
+        icon: 'billing-swal-icon',
+        title: 'billing-swal-title',
+        htmlContainer: 'billing-swal-html',
+        actions: 'billing-swal-actions',
+        confirmButton: 'billing-swal-confirm'
+      }
     };
     if (window.Swal && typeof window.Swal.fire === 'function') {
       window.Swal.fire(options);

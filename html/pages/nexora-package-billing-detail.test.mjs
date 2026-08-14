@@ -511,6 +511,16 @@ test('confirms a paid billing email resend with SweetAlert', () => {
   assert.equal(runtime.swalCalls[0].title, 'Email resent successfully');
   assert.equal(runtime.swalCalls[0].text, 'Billing documents were sent to billing@bitcoinnailbar.com.');
   assert.equal(runtime.swalCalls[0].confirmButtonText, 'Done');
+  assert.equal(runtime.swalCalls[0].buttonsStyling, false);
+  assert.deepEqual({ ...runtime.swalCalls[0].customClass }, {
+    container: 'billing-swal-container',
+    popup: 'billing-swal-popup',
+    icon: 'billing-swal-icon',
+    title: 'billing-swal-title',
+    htmlContainer: 'billing-swal-html',
+    actions: 'billing-swal-actions',
+    confirmButton: 'billing-swal-confirm'
+  });
   assert.deepEqual(runtime.alertCalls, []);
 });
 
@@ -524,7 +534,40 @@ test('confirms an unpaid payment reminder with SweetAlert', () => {
   assert.equal(runtime.swalCalls[0].title, 'Payment reminder sent successfully');
   assert.equal(runtime.swalCalls[0].text, 'A payment reminder was sent to billing@bitcoinnailbar.com.');
   assert.equal(runtime.swalCalls[0].confirmButtonText, 'Done');
+  assert.equal(runtime.swalCalls[0].buttonsStyling, false);
+  assert.deepEqual({ ...runtime.swalCalls[0].customClass }, {
+    container: 'billing-swal-container',
+    popup: 'billing-swal-popup',
+    icon: 'billing-swal-icon',
+    title: 'billing-swal-title',
+    htmlContainer: 'billing-swal-html',
+    actions: 'billing-swal-actions',
+    confirmButton: 'billing-swal-confirm'
+  });
   assert.deepEqual(runtime.alertCalls, []);
+});
+
+test('styles billing SweetAlert confirmations with the Nexora visual system', () => {
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const popupRule = cssRule(css, '.billing-swal-popup');
+  const iconRule = cssRule(css, '.billing-swal-icon.swal2-success');
+  const titleRule = cssRule(css, '.billing-swal-title');
+  const htmlRule = cssRule(css, '.billing-swal-html');
+  const confirmRule = cssRule(css, '.billing-swal-confirm');
+
+  assert.match(cssRule(css, '.billing-swal-container'), /z-index:\s*400\s*!important;/);
+  assert.match(popupRule, /border:\s*1px solid var\(--nexora-border\)\s*!important;/);
+  assert.match(popupRule, /border-radius:\s*16px\s*!important;/);
+  assert.match(popupRule, /background:\s*linear-gradient\(180deg,\s*#fff,\s*#f8fbff\)\s*!important;/);
+  assert.match(popupRule, /font-family:\s*Inter,\s*system-ui,\s*sans-serif\s*!important;/);
+  assert.match(iconRule, /color:\s*var\(--nexora-success\)\s*!important;/);
+  assert.match(titleRule, /font-size:\s*18px\s*!important;/);
+  assert.match(titleRule, /font-weight:\s*600\s*!important;/);
+  assert.match(htmlRule, /font-size:\s*13px\s*!important;/);
+  assert.match(htmlRule, /font-weight:\s*400\s*!important;/);
+  assert.match(confirmRule, /min-height:\s*38px\s*!important;/);
+  assert.match(confirmRule, /background:\s*linear-gradient\(90deg,\s*var\(--nexora-electric\),\s*var\(--nexora-violet\)\)\s*!important;/);
+  assert.match(confirmRule, /font-weight:\s*600\s*!important;/);
 });
 
 test('falls back to native alert when SweetAlert is unavailable', () => {

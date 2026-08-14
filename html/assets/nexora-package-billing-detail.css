@@ -11,6 +11,81 @@
   white-space: nowrap !important;
 }
 
+.billing-swal-container {
+  z-index: 400 !important;
+}
+
+.billing-swal-popup {
+  width: min(100% - 32px, 440px) !important;
+  border: 1px solid var(--nexora-border) !important;
+  border-radius: 16px !important;
+  background: linear-gradient(180deg, #fff, #f8fbff) !important;
+  padding: 24px 22px 20px !important;
+  font-family: Inter, system-ui, sans-serif !important;
+  box-shadow: 0 28px 80px rgba(8, 31, 73, 0.28) !important;
+}
+
+.billing-swal-icon {
+  margin: 4px auto 14px !important;
+  border-width: 2px !important;
+}
+
+.billing-swal-icon.swal2-success {
+  border-color: rgba(0, 184, 115, 0.34) !important;
+  color: var(--nexora-success) !important;
+}
+
+.billing-swal-icon.swal2-success [class^='swal2-success-line'] {
+  background-color: var(--nexora-success) !important;
+}
+
+.billing-swal-icon.swal2-success .swal2-success-ring {
+  border-color: rgba(0, 184, 115, 0.3) !important;
+}
+
+.billing-swal-title {
+  margin: 0 !important;
+  color: var(--nexora-text) !important;
+  font-size: 18px !important;
+  font-weight: 600 !important;
+  line-height: 1.25 !important;
+}
+
+.billing-swal-html {
+  margin: 10px 0 0 !important;
+  color: var(--nexora-muted) !important;
+  font-size: 13px !important;
+  font-weight: 400 !important;
+  line-height: 1.55 !important;
+}
+
+.billing-swal-actions {
+  gap: 10px !important;
+  margin: 20px auto 0 !important;
+}
+
+.billing-swal-confirm {
+  display: inline-flex !important;
+  min-height: 38px !important;
+  align-items: center !important;
+  justify-content: center !important;
+  border: 0 !important;
+  border-radius: 9px !important;
+  background: linear-gradient(90deg, var(--nexora-electric), var(--nexora-violet)) !important;
+  padding: 9px 20px !important;
+  color: #fff !important;
+  font: inherit !important;
+  font-size: 12px !important;
+  font-weight: 600 !important;
+  box-shadow: 0 10px 22px rgba(70, 72, 216, 0.22) !important;
+  cursor: pointer !important;
+}
+
+.billing-swal-confirm:focus-visible {
+  outline: 3px solid rgba(70, 72, 216, 0.18) !important;
+  outline-offset: 2px !important;
+}
+
 .billing-detail-page {
   width: min(100%, 1060px);
   margin: 0 auto;
