@@ -186,6 +186,28 @@ function pdfBBoxWords(documentPath) {
     }));
 }
 
+function pdfSvgImagePlacements(documentPath) {
+  const svg = execFileSync('pdftocairo', ['-svg', '-f', '1', '-l', '1', documentPath, '-'], { encoding: 'utf8' });
+  const placements = [...svg.matchAll(/<use xlink:href="#source-\d+"[^>]*transform="matrix\(([-\d.]+),\s*0,\s*0,\s*([-\d.]+),\s*([-\d.]+),\s*([-\d.]+)\)"/g)]
+    .map((match) => {
+      const scaleX = Math.abs(Number(match[1]));
+      const scaleY = Math.abs(Number(match[2]));
+      const x = Number(match[3]);
+      const y = Number(match[4]);
+      return {
+        x,
+        y,
+        width: 256 * scaleX,
+        height: 256 * scaleY
+      };
+    });
+
+  return [...new Map(placements.map((placement) => [
+    `${placement.x.toFixed(3)}:${placement.y.toFixed(3)}:${placement.width.toFixed(3)}:${placement.height.toFixed(3)}`,
+    placement
+  ])).values()];
+}
+
 test('creates Billing Detail from the Salon shared-shell skeleton', () => {
   const html = source();
 
@@ -500,6 +522,37 @@ test('keeps PDF Invoice and Receipt titles modest for printed documents', () => 
   });
 });
 
+test('prints PDF headers with document title and logo instead of brand text or status', () => {
+  const documents = billingRecords().flatMap((record) => [
+    { path: record.invoiceFile, title: 'Invoice' },
+    ...(record.receiptFile ? [{ path: record.receiptFile, title: 'Receipt' }] : [])
+  ]);
+  const statusWords = new Set(['PAID', 'PAYMENT', 'DUE', 'OVERDUE']);
+
+  documents.forEach((document) => {
+    const documentPath = fileURLToPath(new URL(document.path, PAGE_URL));
+    const words = pdfBBoxWords(documentPath);
+    const title = words
+      .filter((word) => word.text === document.title && word.yMin < 90)
+      .sort((left, right) => left.yMin - right.yMin)[0];
+    const headerWords = words.filter((word) => word.yMin < 95).map((word) => word.text);
+    const logo = pdfSvgImagePlacements(documentPath)
+      .filter((placement) => placement.x > 470 && placement.y < 90)
+      .sort((left, right) => right.x - left.x)[0];
+
+    assert.ok(title, `${document.title} title must be the first text in ${document.path}`);
+    assert.ok(logo, `NEXORA logo must print in the right side of the ${document.title} header`);
+    assert.ok(logo.x > title.xMax, `NEXORA logo must sit to the right of ${document.title} in ${document.path}`);
+    assert.ok(
+      Math.abs((logo.y + logo.height / 2) - ((title.yMin + title.yMax) / 2)) <= 18,
+      `NEXORA logo must align vertically with ${document.title} in ${document.path}`
+    );
+    assert.equal(headerWords.includes('NEXORA'), false, `Text brand must not print in the ${document.title} header`);
+    assert.equal(headerWords.includes('TOUCH'), false, `Text brand must not print in the ${document.title} header`);
+    assert.equal(headerWords.some((word) => statusWords.has(word)), false, `Status must not print in the ${document.title} header`);
+  });
+});
+
 test('keeps PDF amount labels visually separated from headline totals', () => {
   billingRecords().forEach((record) => {
     const documentPath = fileURLToPath(new URL(record.invoiceFile, PAGE_URL));
@@ -535,7 +588,6 @@ test('aligns PDF content to equal left and right page margins', () => {
         text: match[5]
       }));
     const title = words.find((word) => word.text === document.title && word.yMin < 120);
-    const brand = words.find((word) => word.text === 'NEXORA' && word.yMin < 70);
     const seller = words.find((word) => word.text === 'Seller');
     const description = words.find((word) => word.text === 'Description');
     const lineItemAmount = words
@@ -543,9 +595,9 @@ test('aligns PDF content to equal left and right page margins', () => {
       .sort((left, right) => right.xMax - left.xMax)[0];
 
     assert.ok(Number.isFinite(pageWidth), `Page width must be measurable in ${document.path}`);
-    assert.ok(title && brand && seller && description && lineItemAmount, `Alignment anchors must exist in ${document.path}`);
+    assert.ok(title && seller && description && lineItemAmount, `Alignment anchors must exist in ${document.path}`);
 
-    [brand, seller, description].forEach((anchor) => {
+    [seller, description].forEach((anchor) => {
       assert.ok(
         Math.abs(anchor.xMin - title.xMin) <= 0.75,
         `${anchor.text} must share the left content guide in ${document.path}`
@@ -558,7 +610,7 @@ test('aligns PDF content to equal left and right page margins', () => {
   });
 });
 
-test('renders four rounded corners on PDF status and amount surfaces', () => {
+test('renders four rounded corners on the PDF amount surface', () => {
   const paidRecord = billingRecords().find((record) => record.paymentStatus === 'paid');
   const documentPath = fileURLToPath(new URL(paidRecord.invoiceFile, PAGE_URL));
   const svg = execFileSync('pdftocairo', ['-svg', '-f', '1', '-l', '1', documentPath, '-'], { encoding: 'utf8' });
@@ -566,38 +618,32 @@ test('renders four rounded corners on PDF status and amount surfaces', () => {
     [...svg.matchAll(/<path clip-rule="evenodd" d="([^"]+)"/g)].map((match) => match[1])
   )];
 
-  assert.equal(roundedClipPaths.length, 2, 'Status and Amount surfaces must each expose one rounded clip path');
+  assert.equal(roundedClipPaths.length, 1, 'Amount surface must expose one rounded clip path');
   roundedClipPaths.forEach((path) => {
     assert.ok(
       (path.match(/\bC\b/g) || []).length >= 4,
-      'Each rounded surface must curve all four corners'
+      'Amount surface must curve all four corners'
     );
   });
 });
 
-test('keeps the paid status badge compact with centered text', () => {
-  const paidRecord = billingRecords().find((record) => record.paymentStatus === 'paid');
-  const documentPath = fileURLToPath(new URL(paidRecord.invoiceFile, PAGE_URL));
-  const svg = execFileSync('pdftocairo', ['-svg', '-f', '1', '-l', '1', documentPath, '-'], { encoding: 'utf8' });
-  const roundedClipPaths = [...new Set(
-    [...svg.matchAll(/<path clip-rule="evenodd" d="([^"]+)"/g)].map((match) => match[1])
-  )];
-  const bounds = roundedClipPaths.map((path) => {
-    const points = [...path.matchAll(/([\d.]+)\s+([\d.]+)/g)];
-    const xValues = points.map((point) => Number(point[1]));
-    return { xMin: Math.min(...xValues), xMax: Math.max(...xValues) };
+test('omits PDF status badges from printed document headers', () => {
+  const documents = billingRecords().flatMap((record) => [
+    record.invoiceFile,
+    ...(record.receiptFile ? [record.receiptFile] : [])
+  ]);
+
+  documents.forEach((path) => {
+    const documentPath = fileURLToPath(new URL(path, PAGE_URL));
+    const headerWords = pdfBBoxWords(documentPath)
+      .filter((word) => word.yMin < 95)
+      .map((word) => word.text);
+
+    assert.equal(headerWords.includes('PAID'), false, `Paid status must not print in ${path}`);
+    assert.equal(headerWords.includes('PAYMENT'), false, `Payment due status must not print in ${path}`);
+    assert.equal(headerWords.includes('DUE'), false, `Payment due status must not print in ${path}`);
+    assert.equal(headerWords.includes('OVERDUE'), false, `Overdue status must not print in ${path}`);
   });
-  const statusBounds = bounds.sort((left, right) => (left.xMax - left.xMin) - (right.xMax - right.xMin))[0];
-  const bbox = execFileSync('pdftotext', ['-bbox-layout', documentPath, '-'], { encoding: 'utf8' });
-  const paidWord = bbox.match(/<word xMin="([\d.]+)"[^>]*xMax="([\d.]+)"[^>]*>PAID<\/word>/);
-
-  assert.ok(paidWord, 'Paid status text bounding box must exist');
-  const badgeWidth = statusBounds.xMax - statusBounds.xMin;
-  const badgeCenter = (statusBounds.xMin + statusBounds.xMax) / 2;
-  const textCenter = (Number(paidWord[1]) + Number(paidWord[2])) / 2;
-
-  assert.ok(badgeWidth <= 52, 'Paid badge must remain compact');
-  assert.ok(Math.abs(badgeCenter - textCenter) <= 1, 'Paid badge text must be centered');
 });
 
 test('loads responsive Billing Detail styles', () => {
@@ -654,6 +700,24 @@ test('keeps printed billing labels and document titles compact with calm weights
   assert.deepEqual(invalidWeights, []);
 });
 
+test('prints browser billing headers with document label and NEXORA logo instead of status', () => {
+  const paidHTML = createBillingRuntime('?transaction=NXR-20260810-0003').root.innerHTML;
+  const unpaidHTML = createBillingRuntime('?transaction=SMS-20260811-0001').root.innerHTML;
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const printRules = css.slice(css.indexOf('@media print'));
+
+  assert.match(paidHTML, /billing-detail-print-document-label">Receipt<\/span>/);
+  assert.match(unpaidHTML, /billing-detail-print-document-label">Invoice<\/span>/);
+  assert.match(paidHTML, /class="billing-detail-print-logo"[^>]*src="https:\/\/nexoratouch\.com\/homepage\/assets\/images\/icon-nexora\.png"[^>]*alt="NEXORA TOUCH logo"/);
+  assert.match(unpaidHTML, /class="billing-detail-print-logo"[^>]*src="https:\/\/nexoratouch\.com\/homepage\/assets\/images\/icon-nexora\.png"[^>]*alt="NEXORA TOUCH logo"/);
+  assert.match(cssRule(css, '.billing-detail-print-logo'), /display:\s*none;/);
+  assert.match(cssRule(printRules, '.billing-detail-screen-document-label'), /display:\s*none;/);
+  assert.match(cssRule(printRules, '.billing-detail-print-document-label'), /display:\s*inline;/);
+  assert.match(cssRule(printRules, '.billing-detail-print-logo'), /display:\s*block;/);
+  assert.match(cssRule(printRules, '.billing-detail-document-icon'), /display:\s*none;/);
+  assert.match(cssRule(printRules, '.billing-detail-status'), /display:\s*none\s*!important;/);
+});
+
 test('keeps billing detail buttons compact on screen', () => {
   const css = readFileSync(DETAIL_CSS_URL, 'utf8');
   const actionRule = /\.billing-detail-action\s*\{([^}]*)\}/.exec(css)?.[1] || '';
@@ -663,6 +727,48 @@ test('keeps billing detail buttons compact on screen', () => {
   assert.match(actionRule, /padding:\s*7px 12px/);
   assert.match(paymentButtonRule, /min-height:\s*38px/);
   assert.match(paymentButtonRule, /padding:\s*7px 12px/);
+});
+
+test('keeps billing detail actions auto width on desktop and fitted to one row on mobile', () => {
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const mobileRules = css.slice(css.indexOf('@media (max-width: 640px)'), css.indexOf('@page'));
+  const actionsRule = cssRule(css, '.billing-detail-actions');
+  const actionRule = cssRule(css, '.billing-detail-action');
+  const actionGroupRule = cssRule(css, '.billing-detail-action-group');
+  const mobileActionsRule = cssRule(mobileRules, '.billing-detail-actions');
+  const mobileActionRule = cssRule(mobileRules, '.billing-detail-action');
+  const mobileActionGroupRule = cssRule(mobileRules, '.billing-detail-action-group');
+
+  assert.match(actionsRule, /display:\s*flex;/);
+  assert.match(actionsRule, /flex-wrap:\s*nowrap;/);
+  assert.match(actionsRule, /width:\s*fit-content;/);
+  assert.match(actionsRule, /max-width:\s*100%;/);
+  assert.match(actionRule, /flex:\s*0 0 auto;/);
+  assert.match(actionGroupRule, /flex:\s*0 0 auto;/);
+  assert.match(mobileActionsRule, /display:\s*flex;/);
+  assert.match(mobileActionsRule, /width:\s*100%;/);
+  assert.match(mobileActionsRule, /gap:\s*6px;/);
+  assert.match(mobileActionRule, /flex:\s*1 1 0;/);
+  assert.match(mobileActionRule, /min-width:\s*0;/);
+  assert.match(mobileActionRule, /min-height:\s*34px;/);
+  assert.match(mobileActionRule, /padding:\s*6px 7px;/);
+  assert.match(mobileActionRule, /font-size:\s*10px;/);
+  assert.match(mobileActionGroupRule, /flex:\s*1 1 0;/);
+  assert.match(mobileActionGroupRule, /min-width:\s*0;/);
+});
+
+test('keeps mobile billing detail meta labels and values on one row', () => {
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const mobileRules = css.slice(css.indexOf('@media (max-width: 640px)'), css.indexOf('@page'));
+  const mobileMetaItemRule = cssRule(mobileRules, '.billing-detail-meta div');
+  const mobileMetaValueRule = cssRule(mobileRules, '.billing-detail-meta dd');
+
+  assert.match(mobileMetaItemRule, /display:\s*flex;/);
+  assert.match(mobileMetaItemRule, /align-items:\s*baseline;/);
+  assert.match(mobileMetaItemRule, /justify-content:\s*space-between;/);
+  assert.match(mobileMetaItemRule, /gap:\s*12px;/);
+  assert.match(mobileMetaValueRule, /margin:\s*0;/);
+  assert.match(mobileMetaValueRule, /text-align:\s*right;/);
 });
 
 test('keeps mobile line item dates underneath descriptions without narrow wrapping', () => {

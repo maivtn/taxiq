@@ -149,10 +149,22 @@
   stroke-width: 1.25;
 }
 
+.billing-detail-summary-mark {
+  display: grid;
+  place-items: center;
+}
+
+.billing-detail-print-document-label,
+.billing-detail-print-logo {
+  display: none;
+}
+
 .billing-detail-actions {
   display: flex;
-  flex-wrap: wrap;
+  flex-wrap: nowrap;
   gap: 10px;
+  width: fit-content;
+  max-width: 100%;
   margin-top: 22px;
   border-top: 1px solid var(--nexora-border);
   padding-top: 18px;
@@ -160,6 +172,7 @@
 
 .billing-detail-action {
   display: inline-flex;
+  flex: 0 0 auto;
   min-height: 38px;
   align-items: center;
   justify-content: center;
@@ -179,6 +192,7 @@
 
 .billing-detail-action-group {
   display: inline-flex;
+  flex: 0 0 auto;
   flex-direction: column;
   align-items: stretch;
   gap: 6px;
@@ -724,21 +738,50 @@ body.billing-payment-open {
     font-size: 28px;
   }
 
-  .billing-detail-actions,
   .billing-detail-meta {
     grid-template-columns: 1fr;
   }
 
+  .billing-detail-meta div {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .billing-detail-meta dd {
+    margin: 0;
+    text-align: right;
+  }
+
   .billing-detail-actions {
-    display: grid;
+    display: flex;
+    width: 100%;
+    gap: 6px;
+    padding-top: 14px;
   }
 
   .billing-detail-action {
-    width: 100%;
+    flex: 1 1 0;
+    min-height: 34px;
+    min-width: 0;
+    gap: 5px;
+    padding: 6px 7px;
+    font-size: 10px;
   }
 
   .billing-detail-action-group {
-    width: 100%;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .billing-detail-action svg {
+    width: 13px;
+    height: 13px;
+  }
+
+  .billing-detail-action-note {
+    font-size: 10px;
   }
 
   .billing-detail-document-head {
@@ -917,6 +960,10 @@ body.billing-payment-open {
     page-break-inside: avoid;
   }
 
+  .billing-detail-summary-main {
+    align-items: start;
+  }
+
   .billing-detail-summary-main h2 {
     font-size: 30pt;
     font-weight: 600;
@@ -941,11 +988,31 @@ body.billing-payment-open {
     letter-spacing: -0.01em;
   }
 
-  .billing-detail-document-icon {
-    width: 16mm;
+  .billing-detail-screen-document-label {
+    display: none;
+  }
+
+  .billing-detail-print-document-label {
+    display: inline;
+  }
+
+  .billing-detail-summary-mark {
+    align-self: start;
+  }
+
+  .billing-detail-print-logo {
+    display: block;
+    width: 18mm;
     height: 18mm;
-    border-radius: 2.5mm;
-    box-shadow: none;
+    object-fit: contain;
+  }
+
+  .billing-detail-document-icon {
+    display: none;
+  }
+
+  .billing-detail-status {
+    display: none !important;
   }
 
   .billing-detail-meta {

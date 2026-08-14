@@ -10,13 +10,13 @@ from html import escape
 from pathlib import Path
 from typing import Any
 
-from reportlab.lib import colors
 from reportlab.lib.colors import HexColor
-from reportlab.lib.enums import TA_CENTER, TA_LEFT, TA_RIGHT
+from reportlab.lib.enums import TA_RIGHT
 from reportlab.lib.pagesizes import A4
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet
 from reportlab.lib.units import inch
 from reportlab.platypus import (
+    Image,
     Paragraph,
     SimpleDocTemplate,
     Spacer,
@@ -28,25 +28,19 @@ from reportlab.platypus import (
 ROOT = Path(__file__).resolve().parents[1]
 DATA_PATH = ROOT / "html/assets/nexora-package-billing-data.js"
 PAGES_DIR = ROOT / "html/pages"
+LOGO_PATH = PAGES_DIR / "assets/icon-nexora.png"
 
-BRAND = HexColor("#4660D8")
-VIOLET = HexColor("#7055FF")
 TEXT = HexColor("#0B1F42")
 MUTED = HexColor("#64748B")
 SUBTLE = HexColor("#94A3B8")
 BORDER = HexColor("#E5EAF2")
 SURFACE = HexColor("#F7F9FC")
-PAID = HexColor("#008F5A")
-PAID_BG = HexColor("#E6FBF2")
-DUE = HexColor("#9A6700")
-DUE_BG = HexColor("#FFF7DF")
-OVERDUE = HexColor("#C2410C")
-OVERDUE_BG = HexColor("#FFF1F0")
 
 PAGE_HORIZONTAL_MARGIN = 0.58 * inch
 FRAME_HORIZONTAL_PADDING = 6
 CONTENT_LEFT = PAGE_HORIZONTAL_MARGIN + FRAME_HORIZONTAL_PADDING
 CONTENT_WIDTH = A4[0] - (2 * CONTENT_LEFT)
+HEADER_LOGO_SIZE = 0.38 * inch
 
 
 def load_records() -> list[dict[str, Any]]:
@@ -87,15 +81,6 @@ def xml(value: Any) -> str:
 def styles() -> dict[str, ParagraphStyle]:
     base = getSampleStyleSheet()
     return {
-        "brand": ParagraphStyle(
-            "Brand",
-            parent=base["Normal"],
-            fontName="Helvetica-Bold",
-            fontSize=13,
-            leading=16,
-            textColor=BRAND,
-            spaceAfter=0,
-        ),
         "title": ParagraphStyle(
             "Title",
             parent=base["Heading1"],
@@ -173,24 +158,7 @@ def styles() -> dict[str, ParagraphStyle]:
             textColor=TEXT,
             spaceAfter=8,
         ),
-        "small": ParagraphStyle(
-            "Small",
-            parent=base["Normal"],
-            fontName="Helvetica",
-            fontSize=8,
-            leading=11,
-            textColor=MUTED,
-        ),
     }
-
-
-def status_label(record: dict[str, Any]) -> tuple[str, colors.Color, colors.Color]:
-    status = record["paymentStatus"]
-    if status == "paid":
-        return "PAID", PAID, PAID_BG
-    if status == "overdue":
-        return "OVERDUE", OVERDUE, OVERDUE_BG
-    return "PAYMENT DUE", DUE, DUE_BG
 
 
 def footer(canvas: Any, document: Any) -> None:
@@ -206,32 +174,14 @@ def footer(canvas: Any, document: Any) -> None:
 
 
 def header_block(record: dict[str, Any], document_type: str, style: dict[str, ParagraphStyle]) -> list[Any]:
-    status_text, status_color, status_background = status_label(record)
-    status_width = {
-        "PAID": 0.68 * inch,
-        "OVERDUE": 0.86 * inch,
-        "PAYMENT DUE": 1.15 * inch,
-    }[status_text]
-    status = Table(
-        [[Paragraph(f"<b>{status_text}</b>", ParagraphStyle("Status", parent=style["small"], textColor=status_color, alignment=TA_CENTER))]],
-        colWidths=[status_width],
-        cornerRadii=[7, 7, 7, 7],
+    logo = Image(str(LOGO_PATH), width=HEADER_LOGO_SIZE, height=HEADER_LOGO_SIZE)
+    logo.hAlign = "RIGHT"
+    title_row = Table(
+        [[Paragraph(document_type, style["title"]), logo]],
+        colWidths=[CONTENT_WIDTH - HEADER_LOGO_SIZE, HEADER_LOGO_SIZE],
     )
-    status.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, -1), status_background),
-        ("BOX", (0, 0), (-1, -1), 0.5, status_background),
-        ("TOPPADDING", (0, 0), (-1, -1), 5),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 5),
-        ("LEFTPADDING", (0, 0), (-1, -1), 8),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 8),
+    title_row.setStyle(TableStyle([
         ("VALIGN", (0, 0), (-1, -1), "MIDDLE"),
-    ]))
-    brand_row = Table(
-        [[Paragraph("NEXORA TOUCH", style["brand"]), status]],
-        colWidths=[CONTENT_WIDTH - status_width, status_width],
-    )
-    brand_row.setStyle(TableStyle([
-        ("VALIGN", (0, 0), (-1, -1), "TOP"),
         ("LEFTPADDING", (0, 0), (-1, -1), 0),
         ("RIGHTPADDING", (0, 0), (-1, -1), 0),
         ("TOPPADDING", (0, 0), (-1, -1), 0),
@@ -247,9 +197,8 @@ def header_block(record: dict[str, Any], document_type: str, style: dict[str, Pa
         meta_lines.append(f"Date due  <b>{format_date(record['dateDue'])}</b>")
 
     return [
-        brand_row,
-        Spacer(1, 0.18 * inch),
-        Paragraph(document_type, style["title"]),
+        title_row,
+        Spacer(1, 0.08 * inch),
         Paragraph("<br/>".join(meta_lines), style["meta"]),
         Spacer(1, 0.22 * inch),
     ]

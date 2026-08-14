@@ -7,6 +7,7 @@
   const root = document.querySelector('[data-billing-detail-root]');
   const paymentModal = document.querySelector('[data-billing-payment-modal]');
   const shell = document.querySelector('.shell');
+  const NEXORA_PRINT_LOGO_URL = 'https://nexoratouch.com/homepage/assets/images/icon-nexora.png';
   let paymentOpener = null;
   let paymentPreviousOverflow = '';
   let shellHadInert = false;
@@ -60,6 +61,24 @@
     if (record.paymentStatus === 'paid') return { label: 'Paid', className: 'is-paid' };
     if (record.paymentStatus === 'overdue') return { label: 'Overdue', className: 'is-overdue' };
     return { label: 'Payment due', className: 'is-payment-due' };
+  }
+
+  function renderDocumentEyebrow(documentType, sellerName) {
+    return `
+      <p class="billing-detail-eyebrow">
+        <span class="billing-detail-screen-document-label">${escapeHTML(documentType)} from ${escapeHTML(sellerName)}</span>
+        <span class="billing-detail-print-document-label">${escapeHTML(documentType)}</span>
+      </p>
+    `;
+  }
+
+  function renderDocumentMark(icon) {
+    return `
+      <span class="billing-detail-summary-mark">
+        <span class="billing-detail-document-icon" aria-hidden="true"><i data-lucide="${icon}"></i></span>
+        <img class="billing-detail-print-logo" src="${NEXORA_PRINT_LOGO_URL}" alt="NEXORA TOUCH logo">
+      </span>
+    `;
   }
 
   function renderDownloadAction(path, label, icon) {
@@ -150,11 +169,11 @@
       <article class="billing-detail-summary" aria-labelledby="billing-summary-title">
         <div class="billing-detail-summary-main">
           <div>
-            <p class="billing-detail-eyebrow">Receipt from ${escapeHTML(record.seller.name)}</p>
+            ${renderDocumentEyebrow('Receipt', record.seller.name)}
             <h2 id="billing-summary-title">${formatMoney(record.total, record.currency)}</h2>
             <p class="billing-detail-date">Paid ${formatDateTime(record.datePaid)}</p>
           </div>
-          <span class="billing-detail-document-icon" aria-hidden="true"><i data-lucide="receipt-text"></i></span>
+          ${renderDocumentMark('receipt-text')}
         </div>
         <div class="billing-detail-actions" aria-label="Billing document actions">
           ${renderDownloadAction(record.invoiceFile, 'Download invoice', 'download')}
@@ -196,11 +215,11 @@
       <article class="billing-detail-summary" aria-labelledby="billing-summary-title">
         <div class="billing-detail-summary-main">
           <div>
-            <p class="billing-detail-eyebrow">Invoice from ${escapeHTML(record.seller.name)}</p>
+            ${renderDocumentEyebrow('Invoice', record.seller.name)}
             <h2 id="billing-summary-title">${formatMoney(record.total, record.currency)} due</h2>
             <p class="billing-detail-date">Due ${formatDate(record.dateDue)}</p>
           </div>
-          <span class="billing-detail-document-icon" aria-hidden="true"><i data-lucide="file-text"></i></span>
+          ${renderDocumentMark('file-text')}
         </div>
         ${overdueNotice}
         <div class="billing-detail-actions" aria-label="Invoice actions">
