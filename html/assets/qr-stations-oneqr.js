@@ -1,5 +1,5 @@
 /* ==========================================================================
-   QR Stations page — in-page tab switching (QR Stations / OneQR) plus the
+   QR Stations page — in-page workflow tab switching plus the
    OneQR Configuration module list + live preview.
    ========================================================================== */
 (function () {
@@ -7,7 +7,7 @@
 
   var tabs = Array.prototype.slice.call(document.querySelectorAll('[data-qr-tab]'));
   var panels = Array.prototype.slice.call(document.querySelectorAll('[data-qr-panel]'));
-  var defaultTab = 'qr-stations';
+  var defaultTab = 'one-qr';
   var validTabIds = {};
   tabs.forEach(function (tab) { validTabIds[tab.getAttribute('data-qr-tab')] = true; });
 

@@ -70,18 +70,30 @@
             <p>Create and manage tip stations. Customers scan to tip your staff.</p>
 
             <div class="qr-tabs" role="tablist" aria-label="Stations and QR tabs">
-              <button id="qr-tab-qr-stations" class="qr-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="qr-panel-qr-stations" data-qr-tab="qr-stations">
-                <span class="qr-tab-icon"><i data-lucide="qr-code" aria-hidden="true"></i></span>
-                <span>QR Stations</span>
-              </button>
-              <button id="qr-tab-one-qr" class="qr-tab" type="button" role="tab" aria-selected="false" aria-controls="qr-panel-one-qr" data-qr-tab="one-qr" tabindex="-1">
+              <button id="qr-tab-one-qr" class="qr-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="qr-panel-one-qr" data-qr-tab="one-qr">
                 <span class="qr-tab-icon"><i data-lucide="scan-line" aria-hidden="true"></i></span>
                 <span>OneQR</span>
+              </button>
+              <button id="qr-tab-qr-stations" class="qr-tab" type="button" role="tab" aria-selected="false" aria-controls="qr-panel-qr-stations" data-qr-tab="qr-stations" tabindex="-1">
+                <span class="qr-tab-icon"><i data-lucide="hand-coins" aria-hidden="true"></i></span>
+                <span>Receive Tips</span>
+              </button>
+              <button id="qr-tab-accept-payment" class="qr-tab" type="button" role="tab" aria-selected="false" aria-controls="qr-panel-accept-payment" data-qr-tab="accept-payment" tabindex="-1">
+                <span class="qr-tab-icon"><i data-lucide="credit-card" aria-hidden="true"></i></span>
+                <span>Accept Payment</span>
+              </button>
+              <button id="qr-tab-referral-link" class="qr-tab" type="button" role="tab" aria-selected="false" aria-controls="qr-panel-referral-link" data-qr-tab="referral-link" tabindex="-1">
+                <span class="qr-tab-icon"><i data-lucide="share-2" aria-hidden="true"></i></span>
+                <span>Referral Link</span>
+              </button>
+              <button id="qr-tab-staff-invite-qr" class="qr-tab" type="button" role="tab" aria-selected="false" aria-controls="qr-panel-staff-invite-qr" data-qr-tab="staff-invite-qr" tabindex="-1">
+                <span class="qr-tab-icon"><i data-lucide="user-plus" aria-hidden="true"></i></span>
+                <span>Staff Invite QR</span>
               </button>
             </div>
           </div>
 
-          <section id="qr-panel-qr-stations" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-qr-stations" data-qr-panel="qr-stations">
+          <section id="qr-panel-qr-stations" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-qr-stations" data-qr-panel="qr-stations" hidden>
           <section class="qr-stats-grid" aria-label="QR station summary">
             <article class="qr-stat-card is-indigo">
               <div class="qr-stat-copy">
@@ -202,7 +214,7 @@
           </section>
           </section>
 
-          <section id="qr-panel-one-qr" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-one-qr" data-qr-panel="one-qr" hidden>
+          <section id="qr-panel-one-qr" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-one-qr" data-qr-panel="one-qr">
           <section class="oneqr-section" aria-labelledby="oneqr-title">
             <div class="oneqr-heading">
               <h2 id="oneqr-title">OneQR Configuration</h2>
@@ -331,6 +343,30 @@
               </div>
             </div>
           </section>
+          </section>
+
+          <section id="qr-panel-accept-payment" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-accept-payment" data-qr-panel="accept-payment" hidden>
+            <article class="qr-workflow-placeholder">
+              <span class="qr-workflow-placeholder-icon"><i data-lucide="credit-card" aria-hidden="true"></i></span>
+              <h2>Accept Payment</h2>
+              <p>Configuration for this QR workflow will appear here.</p>
+            </article>
+          </section>
+
+          <section id="qr-panel-referral-link" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-referral-link" data-qr-panel="referral-link" hidden>
+            <article class="qr-workflow-placeholder">
+              <span class="qr-workflow-placeholder-icon"><i data-lucide="share-2" aria-hidden="true"></i></span>
+              <h2>Referral Link</h2>
+              <p>Configuration for this QR workflow will appear here.</p>
+            </article>
+          </section>
+
+          <section id="qr-panel-staff-invite-qr" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-staff-invite-qr" data-qr-panel="staff-invite-qr" hidden>
+            <article class="qr-workflow-placeholder">
+              <span class="qr-workflow-placeholder-icon"><i data-lucide="user-plus" aria-hidden="true"></i></span>
+              <h2>Staff Invite QR</h2>
+              <p>Configuration for this QR workflow will appear here.</p>
+            </article>
           </section>
         </section>
       </main>
@@ -476,7 +512,7 @@
   <script>
     window.NEXORA_SHELL = {
       activePage: 'stations',
-      activeTab: 'qr-stations',
+      activeTab: 'one-qr',
       onNavigate: function (tabId) {
         if (window.NEXORA_QR_SELECT_TAB) window.NEXORA_QR_SELECT_TAB(tabId, { updateURL: true });
       }

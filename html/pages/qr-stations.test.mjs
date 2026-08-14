@@ -37,12 +37,53 @@ test('creates the QR Stations page from the shared merchant shell', () => {
   const html = source();
 
   assert.match(html, /<title>Nexora Touch - QR Stations<\/title>/);
-  assert.match(html, /window\.NEXORA_SHELL\s*=\s*\{[\s\S]*activePage:\s*'stations'[\s\S]*activeTab:\s*'qr-stations'/);
+  assert.match(html, /window\.NEXORA_SHELL\s*=\s*\{[\s\S]*activePage:\s*'stations'[\s\S]*activeTab:\s*'one-qr'/);
   assert.match(html, /<aside class="sidebar"[^>]*><\/aside>/);
   assert.match(html, /<header class="header"><\/header>/);
   assert.match(html, /<main class="content qr-stations-page" aria-label="QR Stations content">/);
   assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css">/);
   assert.match(html, /<script src="\.\.\/assets\/nexora-shell\.js"><\/script>/);
+});
+
+test('opens OneQR first and exposes every requested QR workflow as a working tab', () => {
+  const html = source();
+  const oneqr = oneqrSource();
+  const tablist = /<div class="qr-tabs"[^>]*>([\s\S]*?)<\/div>\s*<\/div>/.exec(html)?.[1] || '';
+  const tabs = Array.from(tablist.matchAll(/<button\b([^>]*)>[\s\S]*?<span>([^<]+)<\/span>\s*<\/button>/g)).map((match) => ({
+    attributes: match[1],
+    id: /data-qr-tab="([^"]+)"/.exec(match[1])?.[1] || '',
+    label: match[2]
+  }));
+  const expectedTabs = [
+    ['one-qr', 'OneQR'],
+    ['qr-stations', 'Receive Tips'],
+    ['accept-payment', 'Accept Payment'],
+    ['referral-link', 'Referral Link'],
+    ['staff-invite-qr', 'Staff Invite QR']
+  ];
+
+  assert.deepEqual(tabs.map(({ id, label }) => [id, label]), expectedTabs);
+  assert.match(tabs[0].attributes, /class="qr-tab is-active"/);
+  assert.match(tabs[0].attributes, /aria-selected="true"/);
+  for (const tab of tabs.slice(1)) {
+    assert.match(tab.attributes, /aria-selected="false"/);
+    assert.match(tab.attributes, /tabindex="-1"/);
+  }
+
+  for (const [id] of expectedTabs) {
+    const panel = new RegExp(`<section id="qr-panel-${id}"[^>]*data-qr-panel="${id}"[^>]*>`).exec(html)?.[0] || '';
+    assert.ok(panel, `${id} must control a matching panel`);
+    if (id === 'one-qr') assert.doesNotMatch(panel, /\shidden(?:\s|>)/);
+    else assert.match(panel, /\shidden(?:\s|>)/);
+  }
+  assert.match(oneqr, /var defaultTab = 'one-qr'/);
+});
+
+test('uses the Lucide hand-coins icon for Receive Tips', () => {
+  const html = source();
+  const receiveTipsTab = /<button[^>]*data-qr-tab="qr-stations"[^>]*>[\s\S]*?<\/button>/.exec(html)?.[0] || '';
+
+  assert.match(receiveTipsTab, /data-lucide="hand-coins"/);
 });
 
 test('renders the salon QR station dashboard shown in the mockup', () => {
@@ -92,6 +133,18 @@ test('keeps QR Stations dense on tablet and phone viewports', () => {
   assert.match(phoneMedia, /\.qr-code-frame\s*\{[^}]*width:\s*68px;[^}]*height:\s*68px/);
   assert.match(phoneMedia, /\.qr-code-art\s*\{[^}]*width:\s*52px;[^}]*height:\s*52px/);
   assert.match(phoneMedia, /\.qr-link-device\s*\{[^}]*min-height:\s*30px/);
+});
+
+test('keeps Add Station compact like an AI Hub primary action', () => {
+  const css = cssSource();
+  const addStationRule = /\.qr-add-station\s*\{([^}]*)\}/.exec(css)?.[1] || '';
+
+  assert.match(addStationRule, /align-self:\s*flex-start/);
+  assert.match(addStationRule, /min-height:\s*38px/);
+  assert.match(addStationRule, /gap:\s*7px/);
+  assert.match(addStationRule, /padding:\s*0 14px/);
+  assert.match(addStationRule, /font-size:\s*12px/);
+  assert.match(addStationRule, /font-weight:\s*700/);
 });
 
 test('keeps the OneQR print card in a 5 by 7 portrait ratio', () => {
