@@ -926,7 +926,7 @@ test('styles developer email preview as mobile billing content inside the modal'
 
   assert.match(modalRule, /position:\s*fixed;/);
   assert.match(logoRule, /display:\s*flex;/);
-  assert.match(logoRule, /justify-content:\s*center;/);
+  assert.match(logoRule, /justify-content:\s*flex-start;/);
   assert.match(logoImageRule, /width:\s*150px;/);
   assert.match(mobilePreviewRule, /width:\s*min\(100%,\s*390px\);/);
   assert.match(previewSummaryRule, /padding:\s*18px;/);

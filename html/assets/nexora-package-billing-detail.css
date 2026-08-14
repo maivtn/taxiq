@@ -555,7 +555,7 @@ body.billing-email-preview-open {
 .billing-email-preview-brand {
   display: flex;
   width: min(100%, 390px);
-  justify-content: center;
+  justify-content: flex-start;
   margin: 0 auto 14px;
 }
 
