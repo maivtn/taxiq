@@ -576,9 +576,17 @@ body.billing-email-preview-open {
   font-size: 28px;
 }
 
+.billing-email-preview-mobile .billing-detail-document-kicker {
+  font-size: 11px;
+}
+
 .billing-email-preview-mobile .billing-detail-meta {
   grid-template-columns: 1fr;
   gap: 10px;
+}
+
+.billing-email-preview-mobile .billing-detail-meta dt {
+  font-size: 11px;
 }
 
 .billing-email-preview-mobile .billing-detail-meta div {
@@ -606,7 +614,7 @@ body.billing-email-preview-open {
   min-height: 34px;
   gap: 5px;
   padding: 6px 7px;
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .billing-email-preview-mobile .billing-detail-action svg {
@@ -615,7 +623,7 @@ body.billing-email-preview-open {
 }
 
 .billing-email-preview-mobile .billing-detail-action-note {
-  font-size: 10px;
+  font-size: 11px;
 }
 
 .billing-email-preview-mobile .billing-detail-document-head {
@@ -662,7 +670,7 @@ body.billing-email-preview-open {
 .billing-email-preview-mobile .billing-detail-table td::before {
   color: var(--nexora-subtle);
   content: attr(data-label);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 400;
   letter-spacing: 0;
   text-align: left;

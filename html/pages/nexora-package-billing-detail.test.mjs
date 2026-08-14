@@ -930,6 +930,26 @@ test('styles developer email preview as mobile billing content inside the modal'
   assert.match(previewHiddenRule, /display:\s*none\s*!important;/);
 });
 
+test('keeps developer email preview text at least 11px', () => {
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const previewKickerRule = cssRule(css, '.billing-email-preview-mobile .billing-detail-document-kicker');
+  const previewMetaLabelRule = cssRule(css, '.billing-email-preview-mobile .billing-detail-meta dt');
+  const previewActionRule = cssRule(css, '.billing-email-preview-mobile .billing-detail-action');
+  const previewActionNoteRule = cssRule(css, '.billing-email-preview-mobile .billing-detail-action-note');
+  const previewTableLabelRule = cssRule(css, '.billing-email-preview-mobile .billing-detail-table td::before');
+
+  [
+    previewKickerRule,
+    previewMetaLabelRule,
+    previewActionRule,
+    previewActionNoteRule,
+    previewTableLabelRule
+  ].forEach((rule) => {
+    const size = Number(cssDeclarationValue(rule, 'font-size').replace('px', ''));
+    assert.ok(size >= 11, `Email preview text font-size must be at least 11px, got ${size}px`);
+  });
+});
+
 test('keeps the billing summary amount compact on screen without changing print typography', () => {
   const css = readFileSync(DETAIL_CSS_URL, 'utf8');
   const summaryAmountRule = /\.billing-detail-summary-main h2\s*\{([^}]*)\}/.exec(css)?.[1] || '';
