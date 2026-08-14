@@ -726,7 +726,11 @@ test('right-aligns PDF table headers with their row values', () => {
   const receiptPath = fileURLToPath(new URL(paidRecord.receiptFile, PAGE_URL));
   const invoiceWords = pdfBBoxWords(invoicePath);
   const receiptWords = pdfBBoxWords(receiptPath);
-  const lineItemWords = invoiceWords.filter((word) => word.yMin > 320 && word.yMin < 390);
+  const lineItemHeader = pdfPhraseBounds(invoiceWords, 'Description')[0];
+  const lineItemWords = invoiceWords.filter((word) => (
+    word.yMin >= lineItemHeader.yMin - 2
+    && word.yMin < lineItemHeader.yMin + 55
+  ));
   const paymentHistoryTitle = pdfPhraseBounds(receiptWords, 'Payment history')[0];
   const historyWords = receiptWords.filter((word) => (
     word.yMin > paymentHistoryTitle.yMin
@@ -750,13 +754,18 @@ test('right-aligns PDF table headers with their row values', () => {
 test('keeps printed billing totals rows close together', () => {
   const paidRecord = billingRecords().find((record) => record.paymentStatus === 'paid');
   const receiptPath = fileURLToPath(new URL(paidRecord.receiptFile, PAGE_URL));
-  const totalsWords = pdfBBoxWords(receiptPath).filter((word) => word.yMin > 400 && word.yMin < 550);
+  const receiptWords = pdfBBoxWords(receiptPath);
+  const subtotalRow = pdfPhraseBounds(receiptWords, 'Subtotal')[0];
+  const totalsWords = receiptWords.filter((word) => (
+    word.yMin >= subtotalRow.yMin - 2
+    && word.yMin < subtotalRow.yMin + 110
+  ));
   const taxRow = pdfPhraseBounds(totalsWords, 'Tax (0%)')[0];
   const standaloneTotalRow = pdfPhraseBounds(totalsWords, 'Total')
     .find((row) => row.yMin > taxRow.yMin);
   assert.ok(standaloneTotalRow, 'Standalone Total row must exist after Tax row');
   const totalRowStarts = [
-    pdfPhraseBounds(totalsWords, 'Subtotal')[0].yMin,
+    subtotalRow.yMin,
     pdfPhraseBounds(totalsWords, 'Total excluding tax')[0].yMin,
     taxRow.yMin,
     standaloneTotalRow.yMin,
@@ -781,20 +790,20 @@ test('keeps printed Amount paid total row unshaded', () => {
   assert.doesNotMatch(totalsTableSource, /"BACKGROUND"/, 'PDF totals rows should not add gray row backgrounds');
 });
 
-test('keeps PDF amount labels visually separated from headline totals', () => {
-  billingRecords().forEach((record) => {
-    const documentPath = fileURLToPath(new URL(record.invoiceFile, PAGE_URL));
-    const bbox = execFileSync('pdftotext', ['-bbox-layout', documentPath, '-'], { encoding: 'utf8' });
-    const label = bbox.match(/<word[^>]*yMax="([\d.]+)"[^>]*>Amount<\/word>\s*<word[^>]*>(?:due|paid)<\/word>/);
-    const amount = bbox.match(new RegExp(`<word[^>]*yMin="([\\d.]+)"[^>]*>\\$${record.total}\\.00<\\/word>`));
+test('renders PDF amount summary as a plain inline sentence without a card', () => {
+  const paidRecord = billingRecords().find((record) => record.paymentStatus === 'paid');
+  const dueRecord = billingRecords().find((record) => record.paymentStatus === 'payment_due');
+  const paidText = execFileSync('pdftotext', [fileURLToPath(new URL(paidRecord.receiptFile, PAGE_URL)), '-'], { encoding: 'utf8' });
+  const dueText = execFileSync('pdftotext', [fileURLToPath(new URL(dueRecord.invoiceFile, PAGE_URL)), '-'], { encoding: 'utf8' });
+  const generatorSource = readFileSync(PDF_GENERATOR_URL, 'utf8');
+  const amountBlockSource = /def amount_block\([\s\S]*?\n\ndef /.exec(generatorSource)?.[0] || '';
 
-    assert.ok(label, `Headline amount label bounding box must exist in ${record.invoiceNumber}`);
-    assert.ok(amount, `Headline total bounding box must exist in ${record.invoiceNumber}`);
-    assert.ok(
-      Number(amount[1]) >= Number(label[1]) + 2,
-      `Headline total must not overlap its label in ${record.invoiceNumber}`
-    );
-  });
+  assert.ok(amountBlockSource, 'PDF amount_block generator must exist');
+  assert.match(paidText.replace(/\s+/g, ' '), /\$79\.00 paid on August 10, 2026/);
+  assert.match(dueText.replace(/\s+/g, ' '), /\$179\.00 USD due August 18, 2026/);
+  assert.doesNotMatch(paidText, /Amount paid\s+\$79\.00\s+Paid August 10, 2026/);
+  assert.doesNotMatch(dueText, /Amount due\s+\$179\.00\s+Due August 18, 2026/);
+  assert.doesNotMatch(amountBlockSource, /"BACKGROUND"|"BOX"|cornerRadii|SURFACE|BORDER/);
 });
 
 test('aligns PDF content to equal left and right page margins', () => {
@@ -834,23 +843,6 @@ test('aligns PDF content to equal left and right page margins', () => {
     assert.ok(
       Math.abs(title.xMin - (pageWidth - lineItemAmount.xMax)) <= 0.75,
       `Left and right content margins must match in ${document.path}`
-    );
-  });
-});
-
-test('renders four rounded corners on the PDF amount surface', () => {
-  const paidRecord = billingRecords().find((record) => record.paymentStatus === 'paid');
-  const documentPath = fileURLToPath(new URL(paidRecord.invoiceFile, PAGE_URL));
-  const svg = execFileSync('pdftocairo', ['-svg', '-f', '1', '-l', '1', documentPath, '-'], { encoding: 'utf8' });
-  const roundedClipPaths = [...new Set(
-    [...svg.matchAll(/<path clip-rule="evenodd" d="([^"]+)"/g)].map((match) => match[1])
-  )];
-
-  assert.equal(roundedClipPaths.length, 1, 'Amount surface must expose one rounded clip path');
-  roundedClipPaths.forEach((path) => {
-    assert.ok(
-      (path.match(/\bC\b/g) || []).length >= 4,
-      'Amount surface must curve all four corners'
     );
   });
 });

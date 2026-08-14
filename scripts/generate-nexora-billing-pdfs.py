@@ -34,7 +34,6 @@ TEXT = HexColor("#000000")
 MUTED = HexColor("#000000")
 SUBTLE = HexColor("#000000")
 BORDER = HexColor("#E5EAF2")
-SURFACE = HexColor("#F7F9FC")
 
 PAGE_HORIZONTAL_MARGIN = 0.58 * inch
 FRAME_HORIZONTAL_PADDING = 6
@@ -72,6 +71,10 @@ def format_date(value: str) -> str:
 def format_money(value: float, currency: str = "USD") -> str:
     amount = f"${float(value):,.2f}"
     return f"{amount} {currency}" if currency != "USD" else amount
+
+
+def format_money_with_currency(value: float, currency: str = "USD") -> str:
+    return f"${float(value):,.2f} {currency}"
 
 
 def xml(value: Any) -> str:
@@ -155,8 +158,8 @@ def styles() -> dict[str, ParagraphStyle]:
             "Amount",
             parent=base["Normal"],
             fontName="Helvetica-Bold",
-            fontSize=22,
-            leading=26,
+            fontSize=13,
+            leading=17,
             textColor=TEXT,
         ),
         "section": ParagraphStyle(
@@ -262,28 +265,14 @@ def parties_block(record: dict[str, Any], style: dict[str, ParagraphStyle]) -> T
     return table
 
 
-def amount_block(record: dict[str, Any], document_type: str, style: dict[str, ParagraphStyle]) -> Table:
+def amount_block(record: dict[str, Any], document_type: str, style: dict[str, ParagraphStyle]) -> Paragraph:
     paid = document_type == "Receipt"
-    headline = "Amount paid" if paid else "Amount due"
-    date_copy = f"Paid {format_date(record['datePaid'])}" if paid else f"Due {format_date(record['dateDue'])}"
-    table = Table([
-        [Paragraph(headline, style["meta"])],
-        [Paragraph(format_money(record["total"], record["currency"]), style["amount"])],
-        [Paragraph(date_copy, style["meta"])],
-    ], colWidths=[CONTENT_WIDTH], cornerRadii=[9, 9, 9, 9])
-    table.setStyle(TableStyle([
-        ("BACKGROUND", (0, 0), (-1, -1), SURFACE),
-        ("BOX", (0, 0), (-1, -1), 0.7, BORDER),
-        ("LEFTPADDING", (0, 0), (-1, -1), 14),
-        ("RIGHTPADDING", (0, 0), (-1, -1), 14),
-        ("TOPPADDING", (0, 0), (0, 0), 12),
-        ("BOTTOMPADDING", (0, 0), (0, 0), 2),
-        ("TOPPADDING", (0, 1), (0, 1), 0),
-        ("BOTTOMPADDING", (0, 1), (0, 1), 3),
-        ("TOPPADDING", (0, 2), (0, 2), 0),
-        ("BOTTOMPADDING", (0, 2), (0, 2), 12),
-    ]))
-    return table
+    amount = format_money(record["total"], record["currency"])
+    if paid:
+        summary = f"{amount} paid on {format_date(record['datePaid'])}"
+    else:
+        summary = f"{format_money_with_currency(record['total'], record['currency'])} due {format_date(record['dateDue'])}"
+    return Paragraph(xml(summary), style["amount"])
 
 
 def line_items_table(record: dict[str, Any], style: dict[str, ParagraphStyle]) -> Table:
