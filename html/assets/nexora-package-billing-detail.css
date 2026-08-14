@@ -980,6 +980,7 @@ body.billing-payment-open {
   }
 
   .billing-detail-eyebrow {
+    margin-bottom: 4mm;
     font-size: 9pt;
     font-weight: 400;
   }

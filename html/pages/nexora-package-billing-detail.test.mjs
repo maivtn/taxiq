@@ -561,6 +561,31 @@ test('prints PDF headers with document title and logo instead of brand text or s
   });
 });
 
+test('prints PDF document metadata with breathing room below the title', () => {
+  const documents = billingRecords().flatMap((record) => [
+    { path: record.invoiceFile, title: 'Invoice' },
+    ...(record.receiptFile ? [{ path: record.receiptFile, title: 'Receipt' }] : [])
+  ]);
+
+  documents.forEach((document) => {
+    const documentPath = fileURLToPath(new URL(document.path, PAGE_URL));
+    const words = pdfBBoxWords(documentPath);
+    const title = words
+      .filter((word) => word.text === document.title && word.yMin < 90)
+      .sort((left, right) => left.yMin - right.yMin)[0];
+    const firstMetaWord = words
+      .filter((word) => title && word.yMin > title.yMax && word.yMin < 125 && Math.abs(word.xMin - title.xMin) <= 1)
+      .sort((left, right) => left.yMin - right.yMin)[0];
+
+    assert.ok(title, `${document.title} title must exist in ${document.path}`);
+    assert.ok(firstMetaWord, `Document metadata must sit under ${document.title} in ${document.path}`);
+    assert.ok(
+      firstMetaWord.yMin - title.yMax >= 18,
+      `${document.title} title needs clear space before metadata in ${document.path}`
+    );
+  });
+});
+
 test('keeps PDF amount labels visually separated from headline totals', () => {
   billingRecords().forEach((record) => {
     const documentPath = fileURLToPath(new URL(record.invoiceFile, PAGE_URL));
@@ -749,6 +774,7 @@ test('prints browser billing headers with document label and NEXORA logo instead
   assert.match(paidHTML, /class="billing-detail-print-logo"[^>]*src="https:\/\/nexoratouch\.com\/homepage\/assets\/images\/icon-nexora\.png"[^>]*alt="NEXORA TOUCH logo"/);
   assert.match(unpaidHTML, /class="billing-detail-print-logo"[^>]*src="https:\/\/nexoratouch\.com\/homepage\/assets\/images\/icon-nexora\.png"[^>]*alt="NEXORA TOUCH logo"/);
   assert.match(cssRule(css, '.billing-detail-print-logo'), /display:\s*none;/);
+  assert.match(cssRule(printRules, '.billing-detail-eyebrow'), /margin-bottom:\s*4mm;/);
   assert.match(cssRule(printRules, '.billing-detail-screen-document-label'), /display:\s*none;/);
   assert.match(cssRule(printRules, '.billing-detail-print-document-label'), /display:\s*inline;/);
   assert.match(cssRule(printRules, '.billing-detail-print-logo'), /display:\s*block;/);

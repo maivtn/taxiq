@@ -198,7 +198,7 @@ def header_block(record: dict[str, Any], document_type: str, style: dict[str, Pa
 
     return [
         title_row,
-        Spacer(1, 0.08 * inch),
+        Spacer(1, 0.18 * inch),
         Paragraph("<br/>".join(meta_lines), style["meta"]),
         Spacer(1, 0.22 * inch),
     ]
