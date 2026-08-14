@@ -562,9 +562,19 @@ test('keeps the billing summary amount compact on screen without changing print 
   const printSummaryAmountRule = /\.billing-detail-summary-main h2\s*\{([^}]*)\}/.exec(printRules)?.[1] || '';
 
   assert.match(summaryAmountRule, /font-size:\s*clamp\(28px,\s*4vw,\s*38px\)/);
-  assert.match(summaryAmountRule, /font-weight:\s*800/);
+  assert.match(summaryAmountRule, /font-weight:\s*600/);
   assert.match(mobileSummaryAmountRule, /font-size:\s*28px/);
   assert.match(printSummaryAmountRule, /font-size:\s*30pt/);
+});
+
+test('keeps screen typography calm with only regular and semibold weights', () => {
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const screenRules = css.slice(0, css.indexOf('@page'));
+  const invalidWeights = [...screenRules.matchAll(/font-weight:\s*(\d+)/g)]
+    .map((match) => Number(match[1]))
+    .filter((weight) => ![400, 600].includes(weight));
+
+  assert.deepEqual(invalidWeights, []);
 });
 
 test('keeps billing detail buttons compact on screen', () => {
