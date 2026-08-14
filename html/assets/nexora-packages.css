@@ -57,7 +57,7 @@
   margin: 0 !important;
   color: var(--nexora-text) !important;
   font-size: 19px !important;
-  font-weight: 900 !important;
+  font-weight: 600 !important;
   line-height: 1.25 !important;
 }
 
@@ -65,7 +65,7 @@
   margin: 10px 0 0 !important;
   color: var(--nexora-muted) !important;
   font-size: 13px !important;
-  font-weight: 600 !important;
+  font-weight: 400 !important;
   line-height: 1.55 !important;
 }
 
@@ -80,7 +80,7 @@
   padding: 10px 20px !important;
   background: linear-gradient(90deg, var(--nexora-electric), var(--nexora-violet)) !important;
   font-size: 12px !important;
-  font-weight: 900 !important;
+  font-weight: 600 !important;
   box-shadow: 0 10px 22px rgba(70, 72, 216, 0.22) !important;
 }
 
@@ -92,7 +92,7 @@
   color: var(--nexora-muted) !important;
   padding: 10px 20px !important;
   font-size: 12px !important;
-  font-weight: 900 !important;
+  font-weight: 600 !important;
 }
 
 .swal2-styled:focus {
@@ -111,7 +111,7 @@
   margin: 0;
   color: var(--nexora-text);
   font-size: 24px;
-  font-weight: 800;
+  font-weight: 600;
   line-height: 32px;
 }
 
@@ -119,7 +119,7 @@
   margin: 8px 0 0;
   color: var(--nexora-muted);
   font-size: 14px;
-  font-weight: 500;
+  font-weight: 400;
   line-height: 20px;
 }
 
@@ -141,7 +141,7 @@
   padding: 8px 14px 8px 10px;
   color: var(--nexora-muted);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 600;
   box-shadow: var(--nexora-card-shadow);
   white-space: nowrap;
   cursor: pointer;
@@ -219,7 +219,7 @@
   padding: 0 11px;
   color: var(--nexora-muted);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 600;
   white-space: nowrap;
   cursor: pointer;
   transition: background .18s, color .18s, box-shadow .18s;
@@ -240,13 +240,13 @@
   padding: 0 7px;
   color: var(--nexora-danger);
   font-size: 10px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .package-overview-kicker {
   color: var(--nexora-brand);
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 400;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -258,7 +258,7 @@
   padding: 7px 10px;
   color: #008f5a;
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .package-overview-grid {
@@ -289,7 +289,7 @@
   padding: 5px 9px;
   color: var(--nexora-brand);
   font-size: 10px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -300,7 +300,7 @@
   gap: 5px;
   color: #00a96b;
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .package-status svg {
@@ -337,7 +337,7 @@
   min-width: 0;
   color: var(--nexora-text);
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 600;
   line-height: 1.25;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -369,7 +369,7 @@
   display: block;
   color: var(--nexora-subtle);
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 400;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -379,7 +379,7 @@
   margin-top: 4px;
   color: var(--nexora-text);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .package-countdown {
@@ -436,7 +436,7 @@
 .package-countdown-heading .package-countdown-label {
   color: var(--nexora-brand);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 400;
   letter-spacing: 0.02em;
   text-transform: none;
 }
@@ -466,7 +466,7 @@
   color: var(--nexora-text);
   font-size: 20px;
   font-variant-numeric: tabular-nums;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: -0.03em;
   line-height: 1;
 }
@@ -482,7 +482,7 @@
 .package-autorenew-label {
   color: var(--nexora-subtle);
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 400;
 }
 
 .package-switch {
@@ -536,7 +536,7 @@
   transform: translateY(-50%);
   color: #64748b;
   font-size: 8px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.03em;
   transition: color .18s ease, right .18s ease, left .18s ease;
 }
@@ -559,7 +559,7 @@
   margin-top: 6px;
   color: var(--nexora-subtle);
   font-size: 9px;
-  font-weight: 800;
+  font-weight: 400;
   line-height: 1;
   white-space: nowrap;
 }
@@ -578,7 +578,7 @@
   gap: 8px;
   color: var(--nexora-muted);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 .package-feature-list li svg {
@@ -627,7 +627,7 @@
   background: var(--nexora-surface-muted);
   color: var(--nexora-muted);
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 400;
   letter-spacing: 0.04em;
   text-transform: uppercase;
   white-space: nowrap;
@@ -648,7 +648,7 @@
 .package-history-package > strong {
   color: var(--nexora-text);
   font-size: 13px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .package-history-table td > span,
@@ -656,7 +656,7 @@
   margin-top: 4px;
   color: var(--nexora-subtle);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .package-history-table code {
@@ -666,7 +666,7 @@
   color: var(--nexora-brand);
   font-family: inherit;
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -679,14 +679,14 @@
   padding: 6px 9px;
   color: var(--nexora-brand) !important;
   font-size: 11px !important;
-  font-weight: 900 !important;
+  font-weight: 600 !important;
   white-space: nowrap;
 }
 
 .package-history-amount {
   color: var(--nexora-text);
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 600;
   white-space: nowrap;
 }
 
@@ -702,7 +702,7 @@
   border-radius: 999px;
   padding: 6px 9px;
   font-size: 11px !important;
-  font-weight: 900 !important;
+  font-weight: 600 !important;
 }
 
 .package-history-status-badge.is-paid {
@@ -741,7 +741,7 @@
   padding: 7px 10px;
   color: var(--nexora-text);
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 600;
   text-decoration: none;
   transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
@@ -774,7 +774,7 @@
   padding: 12px 14px;
   color: #9a6100;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 400;
 }
 
 .package-plan-content .plans-grid {
@@ -812,35 +812,35 @@
   min-height: 24px;
   color: var(--nexora-brand);
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 600;
   text-transform: uppercase;
 }
 
 .package-plan-content .service-plan-name {
   color: var(--nexora-text);
   font-size: 18px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .package-plan-content .service-plan-price {
   margin-top: 10px;
   color: var(--nexora-text);
   font-size: 34px;
-  font-weight: 900;
+  font-weight: 600;
   line-height: 1;
 }
 
 .package-plan-content .service-plan-price span {
   color: var(--nexora-muted);
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 400;
 }
 
 .package-plan-content .service-plan-cross {
   margin-top: 5px;
   color: var(--nexora-subtle);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 400;
   text-decoration: line-through;
 }
 
@@ -857,7 +857,7 @@
   align-items: start;
   color: var(--nexora-muted);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 400;
   line-height: 1.45;
 }
 
@@ -871,7 +871,7 @@
   background: rgba(0, 184, 115, 0.12);
   color: #00a96b;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .package-plan-content .plan-check.muted {
@@ -886,7 +886,7 @@
   padding: 9px;
   color: var(--nexora-brand);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 400;
   line-height: 1.45;
 }
 
@@ -905,7 +905,7 @@
   padding: 12px;
   color: var(--nexora-brand);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -943,13 +943,13 @@
   margin: 0;
   color: var(--nexora-text);
   font-size: 16px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .package-plan-content .card-meta {
   color: var(--nexora-brand);
   font-size: 10px;
-  font-weight: 900;
+  font-weight: 400;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -1047,14 +1047,14 @@
 .package-plan-content .roi-value {
   color: var(--metric-color, var(--nexora-text));
   font-size: 26px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .package-plan-content .roi-label {
   margin-top: 3px;
   color: var(--nexora-muted);
   font-size: 11px;
-  font-weight: 800;
+  font-weight: 400;
 }
 
 .package-plan-content .roi-summary {
@@ -1065,7 +1065,7 @@
   padding: 9px 11px;
   color: var(--nexora-muted);
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 .package-plan-content .roi-summary-positive {
@@ -1083,7 +1083,7 @@
   margin-top: 14px;
   color: var(--nexora-muted);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 400;
 }
 
 .package-plan-content .guarantee-grid div {
@@ -1112,7 +1112,7 @@
   margin: 4px 0 0;
   color: var(--nexora-text);
   font-size: 22px;
-  font-weight: 900;
+  font-weight: 600;
   line-height: 1.2;
 }
 
@@ -1128,7 +1128,7 @@
   flex-shrink: 0;
   color: var(--nexora-brand);
   font-size: 11px;
-  font-weight: 900;
+  font-weight: 400;
   letter-spacing: 0.06em;
   text-transform: uppercase;
 }
@@ -1179,7 +1179,7 @@
   margin: 0;
   color: var(--nexora-text);
   font-size: 20px;
-  font-weight: 900;
+  font-weight: 600;
   line-height: 1.2;
 }
 
@@ -1196,7 +1196,7 @@
   border-radius: 999px;
   padding: 5px 9px;
   font-size: 10px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.05em;
 }
 
@@ -1212,7 +1212,7 @@
   padding: 8px 14px;
   color: #fff;
   font-size: 10px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.08em;
   text-align: center;
   text-transform: uppercase;
@@ -1222,7 +1222,7 @@
   margin-top: 26px;
   color: var(--nexora-text);
   font-size: 38px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: -0.04em;
   line-height: 1;
 }
@@ -1230,7 +1230,7 @@
 .nexora-plan-price span {
   color: var(--nexora-muted);
   font-size: 13px;
-  font-weight: 800;
+  font-weight: 400;
   letter-spacing: 0;
 }
 
@@ -1259,7 +1259,7 @@
   align-items: start;
   color: var(--nexora-muted);
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 400;
   line-height: 1.4;
 }
 
@@ -1273,7 +1273,7 @@
   background: rgba(70, 72, 216, 0.1);
   color: var(--nexora-brand);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .nexora-plan-check.is-green {
@@ -1290,7 +1290,7 @@
   padding: 12px 14px;
   color: var(--nexora-text);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 600;
   cursor: pointer;
   transition: border-color 0.2s, box-shadow 0.2s, transform 0.2s;
 }
@@ -1368,7 +1368,7 @@
 .nexora-compare-table thead th {
   background: #f8fafc;
   color: var(--nexora-text);
-  font-weight: 900;
+  font-weight: 400;
   white-space: nowrap;
 }
 
@@ -1380,11 +1380,11 @@
 
 .nexora-compare-table tbody th {
   color: #334155;
-  font-weight: 800;
+  font-weight: 400;
 }
 
 .nexora-compare-table tbody td {
-  font-weight: 700;
+  font-weight: 400;
   white-space: nowrap;
 }
 
@@ -1405,7 +1405,7 @@
 .nexora-compare-table .is-supported {
   color: #00a96b;
   font-size: 18px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 body.package-trial-open {
@@ -1454,7 +1454,7 @@ body.package-trial-open {
   padding: 7px 12px;
   color: var(--nexora-brand);
   font-size: 10px;
-  font-weight: 900;
+  font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
 }
@@ -1498,7 +1498,7 @@ body.package-trial-open {
   background-clip: text;
   color: transparent;
   font-size: 25px;
-  font-weight: 900;
+  font-weight: 600;
   line-height: 1.16;
 }
 
@@ -1507,7 +1507,7 @@ body.package-trial-open {
   margin: 9px 0 0;
   color: var(--nexora-muted);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 400;
   line-height: 1.5;
 }
 
@@ -1530,7 +1530,7 @@ body.package-trial-open {
   padding: 6px 10px;
   color: var(--nexora-text);
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 400;
 }
 
 .package-trial-benefits svg {
@@ -1563,7 +1563,7 @@ body.package-trial-open {
 .package-trial-label {
   color: var(--nexora-subtle);
   font-size: 10px;
-  font-weight: 900;
+  font-weight: 400;
   letter-spacing: 0.03em;
   text-transform: uppercase;
 }
@@ -1575,7 +1575,7 @@ body.package-trial-open {
 .package-trial-label em {
   color: var(--nexora-subtle);
   font-size: 10px;
-  font-weight: 600;
+  font-weight: 400;
   letter-spacing: 0;
   text-transform: none;
 }
@@ -1590,7 +1590,7 @@ body.package-trial-open {
   color: var(--nexora-text);
   font: inherit;
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 400;
   outline: none;
 }
 
@@ -1625,7 +1625,7 @@ body.package-trial-open {
   padding: 7px 10px;
   color: var(--nexora-muted);
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -1641,7 +1641,7 @@ body.package-trial-open {
   margin-top: 12px;
   color: #b91c1c;
   font-size: 11px;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 .package-trial-foot {
@@ -1656,7 +1656,7 @@ body.package-trial-open {
   border-radius: 9px;
   padding: 10px 14px;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -1740,7 +1740,7 @@ body.package-payment-open {
   gap: 9px;
   color: var(--nexora-text);
   font-size: 17px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .package-payment-modal-title svg {
@@ -1753,7 +1753,7 @@ body.package-payment-open {
   margin-top: 4px;
   color: var(--nexora-muted);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .package-payment-close {
@@ -1795,7 +1795,7 @@ body.package-payment-open {
   margin-bottom: 10px;
   color: var(--nexora-subtle);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 400;
   letter-spacing: 0.08em;
   text-transform: uppercase;
 }
@@ -1888,7 +1888,7 @@ body.package-payment-open {
 
 .package-payment-name {
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .package-payment-balance {
@@ -1901,7 +1901,7 @@ body.package-payment-open {
   display: block;
   color: var(--nexora-subtle);
   font-size: 10px;
-  font-weight: 800;
+  font-weight: 400;
   letter-spacing: 0.05em;
   text-transform: uppercase;
 }
@@ -1911,7 +1911,7 @@ body.package-payment-open {
   margin-top: 2px;
   color: var(--nexora-text);
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .package-card-form {
@@ -1932,7 +1932,7 @@ body.package-payment-open {
   gap: 7px;
   color: var(--nexora-text);
   font-size: 14px;
-  font-weight: 800;
+  font-weight: 600;
 }
 
 .package-card-form-head svg {
@@ -1973,7 +1973,7 @@ body.package-payment-open {
 .package-card-label {
   color: #273244;
   font-size: 12px;
-  font-weight: 800;
+  font-weight: 400;
 }
 
 .package-card-input,
@@ -2004,7 +2004,7 @@ body.package-payment-open {
   min-height: 16px;
   color: #b91c1c;
   font-size: 12px;
-  font-weight: 700;
+  font-weight: 400;
 }
 
 .package-payment-invoice {
@@ -2021,7 +2021,7 @@ body.package-payment-open {
   gap: 12px;
   color: var(--nexora-muted);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 400;
 }
 
 .package-payment-invoice-row + .package-payment-invoice-row {
@@ -2030,7 +2030,7 @@ body.package-payment-open {
 
 .package-payment-invoice-row strong {
   color: var(--nexora-text);
-  font-weight: 900;
+  font-weight: 600;
   text-align: right;
 }
 
@@ -2040,7 +2040,7 @@ body.package-payment-open {
   padding-top: 10px;
   color: var(--nexora-text);
   font-size: 14px;
-  font-weight: 900;
+  font-weight: 600;
 }
 
 .package-payment-invoice-total strong {
@@ -2064,7 +2064,7 @@ body.package-payment-open {
   border-radius: 9px;
   padding: 10px 14px;
   font-size: 12px;
-  font-weight: 900;
+  font-weight: 600;
   cursor: pointer;
 }
 
@@ -2183,7 +2183,7 @@ body.package-payment-open {
     color: var(--nexora-subtle);
     content: attr(data-label);
     font-size: 10px;
-    font-weight: 900;
+    font-weight: 400;
     letter-spacing: 0.04em;
     text-align: left;
     text-transform: uppercase;

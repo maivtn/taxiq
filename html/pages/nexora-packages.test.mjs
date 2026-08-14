@@ -32,6 +32,10 @@ function assertCssDeclaration(rule, property, value) {
   assert.match(rule, new RegExp(`${escapedProperty}\\s*:\\s*${escapedValue}\\s*;`));
 }
 
+function assertCssFontWeight(rule, value) {
+  assert.match(rule, new RegExp(`font-weight\\s*:\\s*${value}(?:\\s*!important)?\\s*;`));
+}
+
 function fakeElement(dataset = {}) {
   return {
     dataset,
@@ -657,6 +661,37 @@ test('loads package-specific presentation styles', () => {
   assert.match(css, /\.swal2-popup\s*\{[\s\S]*?border-radius:\s*16px/);
   assert.match(css, /\.swal2-styled\.swal2-confirm\s*\{[\s\S]*?background:\s*linear-gradient\(90deg/);
   assert.match(css, /\.swal2-icon\.swal2-info\s*\{[\s\S]*?color:\s*var\(--nexora-brand\)/);
+});
+
+test('keeps package page typography calm with only regular and semibold weights', () => {
+  const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
+  const invalidWeights = [...css.matchAll(/font-weight:\s*(\d+)/g)]
+    .map((match) => Number(match[1]))
+    .filter((weight) => ![400, 600].includes(weight));
+
+  assert.deepEqual(invalidWeights, []);
+});
+
+test('keeps package page body copy, metadata, and tables at regular weight', () => {
+  const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
+  const regularTextSelectors = [
+    '.swal2-html-container',
+    '.package-overview-kicker',
+    '.package-feature-list li',
+    '.package-history-table th',
+    '.package-history-table td > span, .package-history-package > span',
+    '.package-plan-content .plan-feature',
+    '.package-plan-content .card-meta',
+    '.nexora-plan-features li',
+    '.nexora-compare-table tbody td',
+    '.package-trial-head p',
+    '.package-payment-section-label',
+    '.package-payment-invoice-row'
+  ];
+
+  regularTextSelectors.forEach((selector) => {
+    assertCssFontWeight(cssRule(css, selector), '400');
+  });
 });
 
 test('matches the Booking Hub tab treatment', () => {
