@@ -1,12 +1,16 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
+import { createRequire } from 'node:module';
+import { fileURLToPath } from 'node:url';
 
 const PAGE_URL = new URL('./qr-stations.html', import.meta.url);
 const SHELL_URL = new URL('../assets/nexora-shell.js', import.meta.url);
 const CSS_URL = new URL('../assets/qr-stations.css', import.meta.url);
 const ONEQR_URL = new URL('../assets/qr-stations-oneqr.js', import.meta.url);
 const QRCODE_URL = new URL('../assets/qr-stations-qrcode.js', import.meta.url);
+const WORKFLOWS_URL = new URL('../assets/qr-stations-workflows.js', import.meta.url);
+const require = createRequire(import.meta.url);
 
 function source() {
   assert.ok(existsSync(PAGE_URL), 'qr-stations.html must exist');
@@ -31,6 +35,20 @@ function oneqrSource() {
 function qrCodeSource() {
   assert.ok(existsSync(QRCODE_URL), 'qr-stations-qrcode.js must exist');
   return readFileSync(QRCODE_URL, 'utf8');
+}
+
+function workflowPanel(html, id) {
+  const start = html.indexOf(`<section id="qr-panel-${id}"`);
+  assert.notEqual(start, -1, `${id} panel must exist`);
+  const nextPanel = html.indexOf('<section id="qr-panel-', start + 1);
+  return html.slice(start, nextPanel === -1 ? html.length : nextPanel);
+}
+
+function workflowApi() {
+  assert.ok(existsSync(WORKFLOWS_URL), 'qr-stations-workflows.js must exist');
+  const path = fileURLToPath(WORKFLOWS_URL);
+  delete require.cache[path];
+  return require(path);
 }
 
 test('creates the QR Stations page from the shared merchant shell', () => {
@@ -84,6 +102,82 @@ test('uses the Lucide hand-coins icon for Receive Tips', () => {
   const receiveTipsTab = /<button[^>]*data-qr-tab="qr-stations"[^>]*>[\s\S]*?<\/button>/.exec(html)?.[0] || '';
 
   assert.match(receiveTipsTab, /data-lucide="hand-coins"/);
+});
+
+test('fills the Accept Payment tab with its QR card and payout methods', () => {
+  const html = source();
+  const panel = workflowPanel(html, 'accept-payment');
+
+  assert.doesNotMatch(panel, /qr-workflow-placeholder/);
+  assert.match(panel, /Use your direct payment QR and manage the payout methods available to customers\./);
+  assert.match(panel, /data-payment-qr-card[\s\S]*?<h2>aaa<\/h2>/);
+  assert.match(panel, /data-qr-value="https:\/\/staging-web\.nexoratouch\.com\/pay\/3d1d5426-4a7d-476b-9a0d-b651b3020327"/);
+  for (const action of ['view-payment-qr', 'copy-payment-link', 'download-payment-qr', 'payment-history']) {
+    assert.match(panel, new RegExp(`data-workflow-action="${action}"`));
+  }
+  assert.match(panel, /<h2[^>]*>[\s\S]*Payout Methods[\s\S]*<\/h2>/i);
+  for (const method of ['Zelle', 'Cash App', 'Venmo', 'VLINKPAY Wallet', 'Apple Cash', 'PayPal']) {
+    assert.match(panel, new RegExp(`data-payout-method="${method}"`));
+  }
+  assert.equal((panel.match(/data-payout-toggle/g) || []).length, 6);
+  assert.equal((panel.match(/data-payout-view/g) || []).length, 6);
+  assert.equal((panel.match(/data-payout-edit/g) || []).length, 6);
+});
+
+test('fills the Referral Link tab with working left and right placement choices', () => {
+  const html = source();
+  const panel = workflowPanel(html, 'referral-link');
+
+  assert.doesNotMatch(panel, /qr-workflow-placeholder/);
+  assert.match(panel, /Share your affiliate link and choose where new members are placed in your network\./);
+  assert.match(panel, /name="referral-placement"[^>]*value="left"[^>]*checked/);
+  assert.match(panel, /name="referral-placement"[^>]*value="right"/);
+  assert.match(panel, /data-referral-qr[^>]*data-qr-value="https:\/\/staging-web\.nexoratouch\.com\/\?ref=71C25492&amp;leg=left"/);
+  assert.match(panel, /data-referral-link/);
+  assert.match(panel, /data-workflow-action="download-referral-qr"/);
+  assert.match(panel, /data-workflow-action="copy-referral-link"/);
+});
+
+test('fills the Staff Invite QR tab with an invite code and sharing actions', () => {
+  const html = source();
+  const panel = workflowPanel(html, 'staff-invite-qr');
+
+  assert.doesNotMatch(panel, /qr-workflow-placeholder/);
+  assert.match(panel, /Share this QR or join link to invite staff to your business\./);
+  assert.match(panel, /Staff Invite Link/i);
+  assert.match(panel, /data-staff-invite-qr[^>]*data-qr-value="https:\/\/staging-web\.nexoratouch\.com\/invite\/public\/blnexora\?ref=71C25492&amp;source=public_link"/);
+  assert.match(panel, /data-staff-invite-link/);
+  assert.match(panel, /data-workflow-action="copy-staff-invite"/);
+  assert.match(panel, /data-workflow-action="share-staff-invite"/);
+});
+
+test('centers the Referral and Staff Invite cards in their flex panels', () => {
+  const css = cssSource();
+  const referralRule = /\.referral-card\s*\{([^}]*)\}/.exec(css)?.[1] || '';
+  const staffRule = /\.staff-invite-card\s*\{([^}]*)\}/.exec(css)?.[1] || '';
+
+  assert.match(referralRule, /align-self:\s*center/);
+  assert.match(staffRule, /align-self:\s*center/);
+});
+
+test('builds deterministic referral URLs for both placement legs', () => {
+  const workflows = workflowApi();
+
+  assert.equal(workflows.buildReferralUrl('left'), 'https://staging-web.nexoratouch.com/?ref=71C25492&leg=left');
+  assert.equal(workflows.buildReferralUrl('right'), 'https://staging-web.nexoratouch.com/?ref=71C25492&leg=right');
+  assert.equal(workflows.buildReferralUrl('unexpected'), 'https://staging-web.nexoratouch.com/?ref=71C25492&leg=left');
+});
+
+test('includes the two workflow preview dialogs shown in the references', () => {
+  const html = source();
+
+  assert.match(html, /data-payment-qr-modal[^>]*aria-hidden="true"/);
+  assert.match(html, /Customers scan to pay/i);
+  assert.match(html, /Secure redirect by VLINKPAY/i);
+  assert.match(html, /data-payout-modal[^>]*aria-hidden="true"/);
+  assert.match(html, /data-payout-modal-method>Zelle</);
+  assert.match(html, /data-payout-modal-name>David Nguyen</);
+  assert.match(html, /data-payout-modal-account>jadepham290798@gmail\.com</);
 });
 
 test('renders the salon QR station dashboard shown in the mockup', () => {

@@ -2076,6 +2076,891 @@
   }
 }
 
+/* Secondary QR workflows: payment, referrals, and staff invites */
+.qr-workflow-intro {
+  margin: 0;
+  color: #53617a;
+  font-size: 12px;
+  font-weight: 500;
+  line-height: 1.5;
+}
+
+.workflow-btn {
+  display: inline-flex;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid #d8e1ee;
+  border-radius: 8px;
+  background: #fff;
+  padding: 0 14px;
+  color: #111827;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: border-color 0.18s, background 0.18s, color 0.18s, transform 0.18s;
+}
+
+.workflow-btn:hover {
+  border-color: #b7c0ff;
+  background: #f8f8ff;
+  color: #4648d4;
+  transform: translateY(-1px);
+}
+
+.workflow-btn svg {
+  width: 14px;
+  height: 14px;
+}
+
+.workflow-btn.is-primary {
+  border-color: #4948e4;
+  background: #4948e4;
+  color: #fff;
+}
+
+.workflow-btn.is-primary:hover {
+  border-color: #3d3cca;
+  background: #3d3cca;
+  color: #fff;
+}
+
+.workflow-btn.is-info {
+  border-color: #a7dcff;
+  background: #f1faff;
+  color: #0879be;
+}
+
+.workflow-btn.is-amber {
+  border-color: #df7b00;
+  background: #df7b00;
+  color: #fff;
+}
+
+.workflow-btn.is-amber:hover {
+  border-color: #c66c00;
+  background: #c66c00;
+  color: #fff;
+}
+
+.workflow-btn.is-soft-brand {
+  border-color: #c7c5ff;
+  background: #eeedff;
+  color: #4b48e7;
+}
+
+.workflow-btn.is-wide {
+  width: 100%;
+}
+
+.direct-payment-card {
+  display: grid;
+  grid-template-columns: 120px minmax(0, 1fr);
+  gap: 20px;
+  align-items: center;
+  border: 1px solid #d7e0ec;
+  border-radius: 12px;
+  background: #fff;
+  padding: 22px 24px;
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.04);
+}
+
+.direct-payment-code {
+  width: 120px;
+  height: 120px;
+  padding: 8px;
+}
+
+.direct-payment-code .qr-code-art {
+  width: 102px;
+  height: 102px;
+}
+
+.direct-payment-detail {
+  min-width: 0;
+}
+
+.direct-payment-detail h2 {
+  margin: 0 0 7px;
+  color: #111827;
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.direct-payment-link {
+  display: inline-flex;
+  max-width: 100%;
+  align-items: center;
+  gap: 5px;
+  color: #087ff5;
+  font-size: 10px;
+  font-weight: 800;
+  text-decoration: none;
+}
+
+.direct-payment-link span {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.direct-payment-link svg {
+  width: 12px;
+  height: 12px;
+  flex: 0 0 auto;
+}
+
+.direct-payment-detail > p {
+  margin: 8px 0 12px;
+  color: #64748b;
+  font-size: 10px;
+}
+
+.direct-payment-actions {
+  display: grid;
+  grid-template-columns: repeat(4, minmax(0, 1fr));
+  gap: 8px;
+}
+
+.payout-methods-card {
+  border: 1px solid #d7e0ec;
+  border-radius: 12px;
+  background: #fff;
+  padding: 0 24px 18px;
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.04);
+}
+
+.payout-methods-head {
+  border-bottom: 1px solid #d7e0ec;
+  padding: 20px 0 13px;
+}
+
+.payout-methods-head h2 {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0;
+  color: #111827;
+  font-size: 12px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.payout-methods-head svg {
+  width: 15px;
+  height: 15px;
+  color: #4b48e7;
+}
+
+.payout-methods-list {
+  display: grid;
+  gap: 8px;
+  padding-top: 16px;
+}
+
+.payout-method-row {
+  display: grid;
+  grid-template-columns: 36px 30px minmax(0, 1fr) auto;
+  gap: 10px;
+  align-items: center;
+  min-height: 54px;
+  border: 1px solid #d7e0ec;
+  border-radius: 10px;
+  padding: 7px 12px;
+}
+
+.payout-toggle {
+  position: relative;
+  width: 34px;
+  height: 20px;
+  border: 0;
+  border-radius: 999px;
+  background: #cbd5e1;
+  padding: 0;
+  cursor: pointer;
+  transition: background 0.18s;
+}
+
+.payout-toggle span {
+  position: absolute;
+  top: 3px;
+  left: 3px;
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.24);
+  transition: transform 0.18s;
+}
+
+.payout-toggle.is-on {
+  background: #df7b00;
+}
+
+.payout-toggle.is-on span {
+  transform: translateX(14px);
+}
+
+.payout-method-icon,
+.payout-dialog-icon {
+  display: grid;
+  width: 28px;
+  height: 28px;
+  place-items: center;
+  border: 1px solid #dce5f1;
+  border-radius: 8px;
+  background: #f8fafc;
+  font-size: 15px;
+  font-weight: 900;
+}
+
+.payout-method-icon svg {
+  width: 17px;
+  height: 17px;
+}
+
+.payout-method-icon.is-zelle,
+.payout-dialog-icon.is-zelle { color: #6515e8; }
+.payout-method-icon.is-cashapp,
+.payout-dialog-icon.is-cashapp { background: #10d552; color: #fff; }
+.payout-method-icon.is-venmo,
+.payout-dialog-icon.is-venmo { color: #1683ff; font-style: italic; }
+.payout-method-icon.is-vlinkpay,
+.payout-dialog-icon.is-vlinkpay { color: #087ff5; }
+.payout-method-icon.is-apple,
+.payout-dialog-icon.is-apple { color: #050505; }
+.payout-method-icon.is-paypal,
+.payout-dialog-icon.is-paypal { color: #103b91; font-style: italic; }
+
+.payout-method-copy {
+  display: grid;
+  min-width: 0;
+  gap: 3px;
+}
+
+.payout-method-copy strong {
+  color: #111827;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.payout-method-copy span {
+  overflow: hidden;
+  color: #53617a;
+  font-size: 10px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.payout-method-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.payout-action {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  border: 1px solid #a7dcff;
+  border-radius: 8px;
+  background: #f1faff;
+  padding: 0 9px;
+  color: #0879be;
+  font: inherit;
+  font-size: 9px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.payout-action.is-edit {
+  border-color: #f5d27f;
+  background: #fffaf0;
+  color: #d76d00;
+}
+
+.payout-action svg {
+  width: 12px;
+  height: 12px;
+}
+
+.referral-card {
+  display: grid;
+  width: min(100%, 576px);
+  align-self: center;
+  justify-items: center;
+  gap: 20px;
+  border: 1px solid #d7e0ec;
+  border-radius: 12px;
+  background: #fff;
+  padding: 24px;
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.04);
+}
+
+.referral-placement {
+  width: 100%;
+  border: 1px solid #edf1f6;
+  border-radius: 10px;
+  background: #f8fafc;
+  padding: 12px 16px;
+  text-align: center;
+}
+
+.referral-placement legend {
+  float: left;
+  width: 100%;
+  margin-bottom: 8px;
+  color: #64748b;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.referral-placement-options {
+  display: flex;
+  clear: both;
+  justify-content: center;
+  gap: 24px;
+}
+
+.referral-placement label {
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  color: #64748b;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.referral-placement input {
+  width: 15px;
+  height: 15px;
+  margin: 0;
+  accent-color: #5354f5;
+}
+
+.referral-placement label:has(input:checked) {
+  color: #4648d4;
+}
+
+.referral-qr-frame,
+.staff-invite-qr-frame,
+.payment-share-code,
+.payout-dialog-qr {
+  display: grid;
+  place-items: center;
+  border: 1px solid #dbe4ef;
+  background: #fff;
+}
+
+.referral-qr-frame {
+  width: 240px;
+  height: 240px;
+  border-radius: 16px;
+  padding: 12px;
+}
+
+.referral-qr-frame .qr-code-art {
+  width: 216px;
+  height: 216px;
+}
+
+.referral-link {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  color: #087ff5;
+  font-size: 10px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.referral-actions,
+.staff-invite-actions {
+  display: grid;
+  width: 86%;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.staff-invite-card {
+  display: grid;
+  width: min(100%, 672px);
+  align-self: center;
+  justify-items: center;
+  gap: 12px;
+  border: 1px solid #d7e0ec;
+  border-radius: 16px;
+  background: #fff;
+  padding: 24px;
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.05);
+  text-align: center;
+}
+
+.staff-invite-icon {
+  display: grid;
+  width: 44px;
+  height: 44px;
+  place-items: center;
+  border-radius: 13px;
+  background: #fff8e8;
+  color: #dc7300;
+}
+
+.staff-invite-icon svg {
+  width: 20px;
+  height: 20px;
+}
+
+.staff-invite-card h2 {
+  margin: 1px 0 0;
+  color: #111827;
+  font-size: 16px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.staff-invite-card > p {
+  margin: -4px 0 4px;
+  color: #53617a;
+  font-size: 11px;
+  line-height: 1.5;
+}
+
+.staff-invite-qr-frame {
+  width: 176px;
+  height: 176px;
+  border-radius: 16px;
+  padding: 10px;
+}
+
+.staff-invite-qr-frame .qr-code-art {
+  width: 154px;
+  height: 154px;
+}
+
+.staff-invite-link {
+  width: 100%;
+  overflow: hidden;
+  border: 1px solid #d7e0ec;
+  border-radius: 7px;
+  background: #f8fafc;
+  padding: 13px 12px;
+  color: #53617a;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 9px;
+  text-align: left;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.staff-invite-actions {
+  width: 100%;
+  gap: 8px;
+}
+
+.workflow-dialog-shell {
+  position: fixed;
+  inset: 0;
+  z-index: 130;
+  display: grid;
+  place-items: center;
+  overflow-y: auto;
+  padding: 18px;
+}
+
+.workflow-dialog-shell[hidden] {
+  display: none;
+}
+
+.workflow-dialog-backdrop {
+  position: fixed;
+  inset: 0;
+  border: 0;
+  background: rgba(15, 23, 42, 0.64);
+  backdrop-filter: blur(3px);
+  cursor: default;
+}
+
+.workflow-dialog {
+  position: relative;
+  z-index: 1;
+  width: min(100%, 448px);
+  border-radius: 14px;
+  background: #fff;
+  padding: 46px 22px 22px;
+  box-shadow: 0 24px 70px rgba(15, 23, 42, 0.32);
+}
+
+.workflow-dialog-close {
+  position: absolute;
+  top: 13px;
+  right: 13px;
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border: 0;
+  background: transparent;
+  color: #94a3b8;
+  cursor: pointer;
+}
+
+.workflow-dialog-close svg {
+  width: 19px;
+  height: 19px;
+}
+
+.payment-share-card {
+  display: grid;
+  justify-items: center;
+  gap: 14px;
+  border: 1px solid #dbe4ef;
+  border-radius: 16px;
+  background: #f8fafc;
+  padding: 20px;
+  box-shadow: 0 2px 5px rgba(15, 23, 42, 0.08);
+}
+
+.payment-share-brand {
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  color: #111827;
+  font-size: 16px;
+  letter-spacing: 0.04em;
+}
+
+.payment-share-brand img {
+  width: 25px;
+  height: 25px;
+  border-radius: 6px;
+}
+
+.payment-share-code {
+  width: 232px;
+  height: 232px;
+  border-radius: 13px;
+  padding: 10px;
+}
+
+.payment-share-code .qr-code-art {
+  width: 210px;
+  height: 210px;
+}
+
+.payment-share-card p,
+.payment-share-card > span {
+  margin: 0;
+  color: #53617a;
+  font-size: 9px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+
+.payment-share-card > span {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  color: #8791a8;
+  font-size: 10px;
+  text-transform: none;
+}
+
+.payment-share-card > span svg {
+  width: 13px;
+  height: 13px;
+  color: #4b48e7;
+}
+
+.payment-share-link {
+  display: flex;
+  min-height: 42px;
+  align-items: center;
+  gap: 8px;
+  margin: 16px 0;
+  border: 1px solid #d7e0ec;
+  border-radius: 9px;
+  background: #f8fafc;
+  padding: 0 11px 0 16px;
+}
+
+.payment-share-link code {
+  flex: 1;
+  overflow: hidden;
+  color: #53617a;
+  font-size: 9px;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.payment-share-link button {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  border: 0;
+  background: transparent;
+  color: #4b48e7;
+  font: inherit;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+  cursor: pointer;
+}
+
+.payment-share-link svg {
+  width: 13px;
+  height: 13px;
+}
+
+.payment-qr-dialog > .workflow-btn + .workflow-btn {
+  margin-top: 9px;
+}
+
+.payout-dialog {
+  display: grid;
+  width: min(100%, 340px);
+  justify-items: center;
+  gap: 10px;
+  border-radius: 16px;
+  padding: 18px;
+  text-align: center;
+}
+
+.payout-dialog .workflow-dialog-close {
+  top: 9px;
+  right: 9px;
+}
+
+.payout-dialog-icon {
+  width: 40px;
+  height: 40px;
+  margin-top: -1px;
+  border-radius: 11px;
+  font-size: 22px;
+}
+
+.payout-dialog h2 {
+  margin: 0;
+  color: #111827;
+  font-size: 21px;
+  font-weight: 900;
+}
+
+.payout-dialog-kicker {
+  margin: 3px 0 0;
+  color: #53617a;
+  font-size: 10px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.payout-dialog-qr {
+  width: 176px;
+  height: 176px;
+  border-radius: 13px;
+  padding: 9px;
+}
+
+.payout-dialog-qr .qr-code-art {
+  width: 156px;
+  height: 156px;
+}
+
+.payout-dialog dl {
+  width: 100%;
+  margin: 5px 0 6px;
+  text-align: left;
+}
+
+.payout-dialog dl div {
+  border-top: 1px solid #e5eaf1;
+  padding: 10px 0;
+}
+
+.payout-dialog dt {
+  margin-bottom: 4px;
+  color: #53617a;
+  font-size: 8px;
+  font-weight: 900;
+  text-transform: uppercase;
+}
+
+.payout-dialog dd {
+  margin: 0;
+  color: #111827;
+  font-family: "SFMono-Regular", Consolas, "Liberation Mono", monospace;
+  font-size: 11px;
+  font-weight: 800;
+  overflow-wrap: anywhere;
+}
+
+.workflow-toast {
+  position: fixed;
+  right: 24px;
+  bottom: 24px;
+  z-index: 160;
+  max-width: min(360px, calc(100vw - 32px));
+  border-radius: 10px;
+  background: #111827;
+  padding: 11px 15px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 700;
+  box-shadow: 0 14px 36px rgba(15, 23, 42, 0.28);
+}
+
+.workflow-toast[hidden] {
+  display: none;
+}
+
+@media (max-width: 760px) {
+  .direct-payment-card {
+    grid-template-columns: 104px minmax(0, 1fr);
+    gap: 14px;
+    padding: 18px;
+  }
+
+  .direct-payment-code {
+    width: 104px;
+    height: 104px;
+  }
+
+  .direct-payment-code .qr-code-art {
+    width: 86px;
+    height: 86px;
+  }
+
+  .direct-payment-actions {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 520px) {
+  .qr-workflow-intro {
+    font-size: 10px;
+  }
+
+  .direct-payment-card {
+    grid-template-columns: 82px minmax(0, 1fr);
+    gap: 10px;
+    padding: 12px;
+  }
+
+  .direct-payment-code {
+    width: 82px;
+    height: 82px;
+    padding: 6px;
+  }
+
+  .direct-payment-code .qr-code-art {
+    width: 68px;
+    height: 68px;
+  }
+
+  .direct-payment-link,
+  .direct-payment-detail > p {
+    font-size: 8px;
+  }
+
+  .direct-payment-actions {
+    grid-column: 1 / -1;
+    margin-left: calc(-82px - 10px);
+  }
+
+  .workflow-btn {
+    min-height: 34px;
+    padding: 0 9px;
+    font-size: 9px;
+  }
+
+  .payout-methods-card {
+    padding: 0 10px 12px;
+  }
+
+  .payout-methods-head {
+    padding: 14px 2px 10px;
+  }
+
+  .payout-method-row {
+    grid-template-columns: 32px 28px minmax(0, 1fr);
+    gap: 7px;
+    padding: 7px 8px;
+  }
+
+  .payout-method-actions {
+    grid-column: 2 / -1;
+    justify-content: flex-end;
+  }
+
+  .payout-method-copy strong {
+    font-size: 11px;
+  }
+
+  .payout-method-copy span {
+    font-size: 8px;
+  }
+
+  .referral-card,
+  .staff-invite-card {
+    gap: 14px;
+    padding: 16px 12px;
+  }
+
+  .referral-placement-options {
+    gap: 16px;
+  }
+
+  .referral-qr-frame {
+    width: 212px;
+    height: 212px;
+  }
+
+  .referral-qr-frame .qr-code-art {
+    width: 188px;
+    height: 188px;
+  }
+
+  .referral-actions {
+    width: 100%;
+  }
+
+  .workflow-dialog-shell {
+    padding: 12px;
+  }
+
+  .workflow-dialog {
+    padding: 43px 14px 16px;
+  }
+
+  .payment-share-card {
+    padding: 16px 10px;
+  }
+
+  .payment-share-code {
+    width: 212px;
+    height: 212px;
+  }
+
+  .payment-share-code .qr-code-art {
+    width: 190px;
+    height: 190px;
+  }
+
+  .payout-dialog {
+    padding: 18px;
+  }
+
+  .workflow-toast {
+    right: 16px;
+    bottom: 16px;
+  }
+}
+
 /* Exact Staff App salon QR modal support */
 [data-salon-qr-modal] {
   position: fixed !important;

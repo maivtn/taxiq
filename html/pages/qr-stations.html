@@ -350,26 +350,126 @@
           </section>
 
           <section id="qr-panel-accept-payment" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-accept-payment" data-qr-panel="accept-payment" hidden>
-            <article class="qr-workflow-placeholder">
-              <span class="qr-workflow-placeholder-icon"><i data-lucide="credit-card" aria-hidden="true"></i></span>
-              <h2>Accept Payment</h2>
-              <p>Configuration for this QR workflow will appear here.</p>
+            <p class="qr-workflow-intro">Use your direct payment QR and manage the payout methods available to customers.</p>
+
+            <article class="direct-payment-card" data-payment-qr-card>
+              <div class="direct-payment-code qr-code-frame" aria-label="Direct payment QR code">
+                <div class="qr-code-art" data-payment-qr data-qr-value="https://staging-web.nexoratouch.com/pay/3d1d5426-4a7d-476b-9a0d-b651b3020327" data-qr-size="168" role="img" aria-label="Direct payment QR code preview"></div>
+              </div>
+              <div class="direct-payment-detail">
+                <h2>aaa</h2>
+                <a class="direct-payment-link" href="https://staging-web.nexoratouch.com/pay/3d1d5426-4a7d-476b-9a0d-b651b3020327" target="_blank" rel="noopener" data-payment-link>
+                  <span>staging-web.nexoratouch.com/pay/3d1d5426-4a7d-476b-9a0d-b651b3020327</span>
+                  <i data-lucide="external-link" aria-hidden="true"></i>
+                </a>
+                <p>Customers scan to pay</p>
+                <div class="direct-payment-actions">
+                  <button class="workflow-btn is-info" type="button" data-workflow-action="view-payment-qr"><i data-lucide="qr-code" aria-hidden="true"></i><span>View QR</span></button>
+                  <button class="workflow-btn" type="button" data-workflow-action="copy-payment-link"><i data-lucide="copy" aria-hidden="true"></i><span>Copy link</span></button>
+                  <button class="workflow-btn is-amber" type="button" data-workflow-action="download-payment-qr"><i data-lucide="download" aria-hidden="true"></i><span>Download QR</span></button>
+                  <button class="workflow-btn is-soft-brand" type="button" data-workflow-action="payment-history"><i data-lucide="clipboard-list" aria-hidden="true"></i><span>Payment history</span></button>
+                </div>
+              </div>
             </article>
+
+            <section class="payout-methods-card" aria-labelledby="payout-methods-title">
+              <div class="payout-methods-head">
+                <h2 id="payout-methods-title"><i data-lucide="wallet-cards" aria-hidden="true"></i><span>Payout Methods</span></h2>
+              </div>
+              <div class="payout-methods-list">
+                <article class="payout-method-row" data-payout-method="Zelle" data-payout-name="David Nguyen" data-payout-account="jadepham290798@gmail.com" data-payout-icon="Z">
+                  <button class="payout-toggle is-on" type="button" role="switch" aria-checked="true" aria-label="Enable Zelle" data-payout-toggle><span></span></button>
+                  <span class="payout-method-icon is-zelle" aria-hidden="true">Z</span>
+                  <div class="payout-method-copy"><strong>Zelle</strong><span>David Nguyen · jadepham290798@gmail.com</span></div>
+                  <div class="payout-method-actions">
+                    <button class="payout-action is-view" type="button" data-payout-view><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button>
+                    <button class="payout-action is-edit" type="button" data-payout-edit><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button>
+                  </div>
+                </article>
+                <article class="payout-method-row" data-payout-method="Cash App" data-payout-name="Nexora_b1" data-payout-account="12312321" data-payout-icon="$">
+                  <button class="payout-toggle is-on" type="button" role="switch" aria-checked="true" aria-label="Enable Cash App" data-payout-toggle><span></span></button>
+                  <span class="payout-method-icon is-cashapp" aria-hidden="true">$</span>
+                  <div class="payout-method-copy"><strong>Cash App</strong><span>Nexora_b1 · 12312321</span></div>
+                  <div class="payout-method-actions">
+                    <button class="payout-action is-view" type="button" data-payout-view><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button>
+                    <button class="payout-action is-edit" type="button" data-payout-edit><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button>
+                  </div>
+                </article>
+                <article class="payout-method-row" data-payout-method="Venmo" data-payout-name="Nexora_b1" data-payout-account="@nguyen_la" data-payout-icon="V">
+                  <button class="payout-toggle is-on" type="button" role="switch" aria-checked="true" aria-label="Enable Venmo" data-payout-toggle><span></span></button>
+                  <span class="payout-method-icon is-venmo" aria-hidden="true">V</span>
+                  <div class="payout-method-copy"><strong>Venmo</strong><span>Nexora_b1 · @nguyen_la</span></div>
+                  <div class="payout-method-actions">
+                    <button class="payout-action is-view" type="button" data-payout-view><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button>
+                    <button class="payout-action is-edit" type="button" data-payout-edit><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button>
+                  </div>
+                </article>
+                <article class="payout-method-row" data-payout-method="VLINKPAY Wallet" data-payout-name="jade" data-payout-account="jade" data-payout-icon="✣">
+                  <button class="payout-toggle is-on" type="button" role="switch" aria-checked="true" aria-label="Enable VLINKPAY Wallet" data-payout-toggle><span></span></button>
+                  <span class="payout-method-icon is-vlinkpay" aria-hidden="true">✣</span>
+                  <div class="payout-method-copy"><strong>VLINKPAY Wallet</strong><span>jade</span></div>
+                  <div class="payout-method-actions">
+                    <button class="payout-action is-view" type="button" data-payout-view><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button>
+                    <button class="payout-action is-edit" type="button" data-payout-edit><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button>
+                  </div>
+                </article>
+                <article class="payout-method-row" data-payout-method="Apple Cash" data-payout-name="Nexora_b1" data-payout-account="Nexora_b1" data-payout-icon="●">
+                  <button class="payout-toggle is-on" type="button" role="switch" aria-checked="true" aria-label="Enable Apple Cash" data-payout-toggle><span></span></button>
+                  <span class="payout-method-icon is-apple" aria-hidden="true"><i data-lucide="apple"></i></span>
+                  <div class="payout-method-copy"><strong>Apple Cash</strong><span>Nexora_b1 · Nexora_b1</span></div>
+                  <div class="payout-method-actions">
+                    <button class="payout-action is-view" type="button" data-payout-view><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button>
+                    <button class="payout-action is-edit" type="button" data-payout-edit><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button>
+                  </div>
+                </article>
+                <article class="payout-method-row" data-payout-method="PayPal" data-payout-name="Nexora_b1" data-payout-account="232323@gmail.com" data-payout-icon="P">
+                  <button class="payout-toggle is-on" type="button" role="switch" aria-checked="true" aria-label="Enable PayPal" data-payout-toggle><span></span></button>
+                  <span class="payout-method-icon is-paypal" aria-hidden="true">P</span>
+                  <div class="payout-method-copy"><strong>PayPal</strong><span>Nexora_b1 · 232323@gmail.com</span></div>
+                  <div class="payout-method-actions">
+                    <button class="payout-action is-view" type="button" data-payout-view><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button>
+                    <button class="payout-action is-edit" type="button" data-payout-edit><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button>
+                  </div>
+                </article>
+              </div>
+            </section>
           </section>
 
           <section id="qr-panel-referral-link" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-referral-link" data-qr-panel="referral-link" hidden>
-            <article class="qr-workflow-placeholder">
-              <span class="qr-workflow-placeholder-icon"><i data-lucide="share-2" aria-hidden="true"></i></span>
-              <h2>Referral Link</h2>
-              <p>Configuration for this QR workflow will appear here.</p>
+            <p class="qr-workflow-intro">Share your affiliate link and choose where new members are placed in your network.</p>
+            <article class="referral-card">
+              <fieldset class="referral-placement">
+                <legend>Select Placement Leg</legend>
+                <div class="referral-placement-options">
+                  <label><input type="radio" name="referral-placement" value="left" checked><span>Left Leg</span></label>
+                  <label><input type="radio" name="referral-placement" value="right"><span>Right Leg</span></label>
+                </div>
+              </fieldset>
+              <div class="referral-qr-frame">
+                <div class="qr-code-art" data-referral-qr data-qr-value="https://staging-web.nexoratouch.com/?ref=71C25492&amp;leg=left" data-qr-size="232" role="img" aria-label="Referral QR code for the left leg"></div>
+              </div>
+              <a class="referral-link" href="https://staging-web.nexoratouch.com/?ref=71C25492&amp;leg=left" target="_blank" rel="noopener" data-referral-link>https://staging-web.nexoratouch.com/?ref=71C25492&amp;leg=left</a>
+              <div class="referral-actions">
+                <button class="workflow-btn" type="button" data-workflow-action="download-referral-qr"><i data-lucide="download" aria-hidden="true"></i><span>Download QR</span></button>
+                <button class="workflow-btn is-primary" type="button" data-workflow-action="copy-referral-link"><i data-lucide="copy" aria-hidden="true"></i><span>Copy Link</span></button>
+              </div>
             </article>
           </section>
 
           <section id="qr-panel-staff-invite-qr" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-staff-invite-qr" data-qr-panel="staff-invite-qr" hidden>
-            <article class="qr-workflow-placeholder">
-              <span class="qr-workflow-placeholder-icon"><i data-lucide="user-plus" aria-hidden="true"></i></span>
-              <h2>Staff Invite QR</h2>
-              <p>Configuration for this QR workflow will appear here.</p>
+            <p class="qr-workflow-intro">Share this QR or join link to invite staff to your business.</p>
+            <article class="staff-invite-card">
+              <span class="staff-invite-icon"><i data-lucide="user-plus" aria-hidden="true"></i></span>
+              <h2>Staff Invite Link</h2>
+              <p>Share this link or QR code so technicians can create their account and join your salon.</p>
+              <div class="staff-invite-qr-frame">
+                <div class="qr-code-art" data-staff-invite-qr data-qr-value="https://staging-web.nexoratouch.com/invite/public/blnexora?ref=71C25492&amp;source=public_link" data-qr-size="176" role="img" aria-label="Staff invite QR code"></div>
+              </div>
+              <div class="staff-invite-link" data-staff-invite-link>https://staging-web.nexoratouch.com/invite/public/blnexora?ref=71C25492&amp;source=public_link</div>
+              <div class="staff-invite-actions">
+                <button class="workflow-btn" type="button" data-workflow-action="copy-staff-invite"><i data-lucide="copy" aria-hidden="true"></i><span>Copy</span></button>
+                <button class="workflow-btn is-primary" type="button" data-workflow-action="share-staff-invite"><i data-lucide="share-2" aria-hidden="true"></i><span>Share</span></button>
+              </div>
             </article>
           </section>
         </section>
@@ -499,6 +599,44 @@
     </div>
   </div>
 
+  <div class="workflow-dialog-shell" data-payment-qr-modal aria-hidden="true" hidden>
+    <button class="workflow-dialog-backdrop" type="button" data-workflow-modal-close aria-label="Close payment QR preview"></button>
+    <section class="workflow-dialog payment-qr-dialog" role="dialog" aria-modal="true" aria-labelledby="payment-qr-dialog-title">
+      <button class="workflow-dialog-close" type="button" data-workflow-modal-close aria-label="Close payment QR preview"><i data-lucide="x" aria-hidden="true"></i></button>
+      <div class="payment-share-card">
+        <div class="payment-share-brand" id="payment-qr-dialog-title"><img src="../assets/nexora-logo.svg" alt=""><strong>NEXORA</strong></div>
+        <div class="payment-share-code">
+          <div class="qr-code-art" data-payment-modal-qr data-qr-value="https://staging-web.nexoratouch.com/pay/3d1d5426-4a7d-476b-9a0d-b651b3020327" data-qr-size="232" role="img" aria-label="Payment QR code"></div>
+        </div>
+        <p>Customers scan to pay</p>
+        <span><i data-lucide="shield-check" aria-hidden="true"></i>Secure redirect by VLINKPAY</span>
+      </div>
+      <div class="payment-share-link"><code>staging-web.nexoratouch.com/pay/3d1d5426-4a...</code><button type="button" data-workflow-action="copy-payment-link"><i data-lucide="copy" aria-hidden="true"></i><span>Copy</span></button></div>
+      <button class="workflow-btn is-primary is-wide" type="button" data-workflow-action="download-payment-qr"><i data-lucide="download" aria-hidden="true"></i><span>Download</span></button>
+      <button class="workflow-btn is-wide" type="button" data-workflow-action="print-payment-qr"><i data-lucide="printer" aria-hidden="true"></i><span>Print QR</span></button>
+    </section>
+  </div>
+
+  <div class="workflow-dialog-shell" data-payout-modal aria-hidden="true" hidden>
+    <button class="workflow-dialog-backdrop" type="button" data-workflow-modal-close aria-label="Close payout method"></button>
+    <section class="workflow-dialog payout-dialog" role="dialog" aria-modal="true" aria-labelledby="payout-dialog-title">
+      <button class="workflow-dialog-close" type="button" data-workflow-modal-close aria-label="Close payout method"><i data-lucide="x" aria-hidden="true"></i></button>
+      <span class="payout-dialog-icon is-zelle" data-payout-modal-icon>Z</span>
+      <h2 id="payout-dialog-title" data-payout-modal-method>Zelle</h2>
+      <p class="payout-dialog-kicker">Scan to Pay</p>
+      <div class="payout-dialog-qr">
+        <div class="qr-code-art" data-payout-modal-qr data-qr-value="https://staging-web.nexoratouch.com/pay/3d1d5426-4a7d-476b-9a0d-b651b3020327?method=zelle" data-qr-size="176" role="img" aria-label="Zelle payment QR code"></div>
+      </div>
+      <dl>
+        <div><dt>Registered Name</dt><dd data-payout-modal-name>David Nguyen</dd></div>
+        <div><dt>Email or Phone</dt><dd data-payout-modal-account>jadepham290798@gmail.com</dd></div>
+      </dl>
+      <button class="workflow-btn is-primary is-wide" type="button" data-workflow-modal-close><span data-payout-modal-close-label>Close</span></button>
+    </section>
+  </div>
+
+  <div class="workflow-toast" role="status" aria-live="polite" data-workflow-toast hidden></div>
+
   <div class="oneqr-modal" id="oneqrAddModuleModal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-label="Add module">
     <div class="oneqr-modal-backdrop" data-oneqr-add-module-close></div>
     <div class="oneqr-modal-dialog">
@@ -527,5 +665,6 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="../assets/nexora-shell.js"></script>
   <script src="../assets/qr-stations-oneqr.js"></script>
+  <script src="../assets/qr-stations-workflows.js"></script>
 </body>
 </html>

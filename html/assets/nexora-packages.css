@@ -731,16 +731,16 @@
 
 .package-history-action-link {
   display: inline-flex;
-  min-height: 44px;
+  min-height: 36px;
   align-items: center;
   justify-content: center;
-  gap: 8px;
+  gap: 6px;
   border: 1px solid var(--nexora-border);
-  border-radius: 10px;
+  border-radius: 8px;
   background: #fff;
-  padding: 10px 14px;
+  padding: 7px 10px;
   color: var(--nexora-text);
-  font-size: 12px;
+  font-size: 11px;
   font-weight: 900;
   text-decoration: none;
   transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
@@ -758,8 +758,8 @@
 }
 
 .package-history-action-link svg {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
 }
 
 .package-plan-content {

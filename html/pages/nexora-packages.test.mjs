@@ -615,25 +615,25 @@ test('renders package history billing columns, statuses, and record actions', ()
   assert.match(historyHTML, /nexora-package-billing-detail\.html\?transaction=VMS-20260701-0002[\s\S]*?>[\s\S]*Payment details/);
 });
 
-test('matches package history actions to the billing detail secondary button style', () => {
+test('uses a compact secondary button style for package history actions', () => {
   const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
   const actionRule = cssRule(css, '.package-history-action-link');
   const hoverRule = cssRule(css, '.package-history-action-link:hover');
   const iconRule = cssRule(css, '.package-history-action-link svg');
 
-  assertCssDeclaration(actionRule, 'min-height', '44px');
-  assertCssDeclaration(actionRule, 'gap', '8px');
+  assertCssDeclaration(actionRule, 'min-height', '36px');
+  assertCssDeclaration(actionRule, 'gap', '6px');
   assertCssDeclaration(actionRule, 'border', '1px solid var(--nexora-border)');
-  assertCssDeclaration(actionRule, 'border-radius', '10px');
+  assertCssDeclaration(actionRule, 'border-radius', '8px');
   assertCssDeclaration(actionRule, 'background', '#fff');
-  assertCssDeclaration(actionRule, 'padding', '10px 14px');
+  assertCssDeclaration(actionRule, 'padding', '7px 10px');
   assertCssDeclaration(actionRule, 'color', 'var(--nexora-text)');
-  assertCssDeclaration(actionRule, 'font-size', '12px');
+  assertCssDeclaration(actionRule, 'font-size', '11px');
   assertCssDeclaration(hoverRule, 'border-color', 'rgba(70, 72, 216, 0.36)');
   assertCssDeclaration(hoverRule, 'box-shadow', '0 8px 18px rgba(70, 72, 216, 0.1)');
   assertCssDeclaration(hoverRule, 'transform', 'translateY(-1px)');
-  assertCssDeclaration(iconRule, 'width', '16px');
-  assertCssDeclaration(iconRule, 'height', '16px');
+  assertCssDeclaration(iconRule, 'width', '14px');
+  assertCssDeclaration(iconRule, 'height', '14px');
 });
 
 test('stacks package history records and enlarges actions on mobile', () => {

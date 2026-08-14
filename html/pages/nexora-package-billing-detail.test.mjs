@@ -553,6 +553,20 @@ test('loads responsive Billing Detail styles', () => {
   assert.match(documentIconRule, /stroke-width:\s*1\.25;/);
 });
 
+test('keeps the billing summary amount compact on screen without changing print typography', () => {
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const summaryAmountRule = /\.billing-detail-summary-main h2\s*\{([^}]*)\}/.exec(css)?.[1] || '';
+  const mobileRules = css.slice(css.indexOf('@media (max-width: 640px)'), css.indexOf('@page'));
+  const mobileSummaryAmountRule = /\.billing-detail-summary-main h2\s*\{([^}]*)\}/.exec(mobileRules)?.[1] || '';
+  const printRules = css.slice(css.indexOf('@media print'));
+  const printSummaryAmountRule = /\.billing-detail-summary-main h2\s*\{([^}]*)\}/.exec(printRules)?.[1] || '';
+
+  assert.match(summaryAmountRule, /font-size:\s*clamp\(28px,\s*4vw,\s*38px\)/);
+  assert.match(summaryAmountRule, /font-weight:\s*800/);
+  assert.match(mobileSummaryAmountRule, /font-size:\s*28px/);
+  assert.match(printSummaryAmountRule, /font-size:\s*30pt/);
+});
+
 test('keeps mobile line item dates underneath descriptions without narrow wrapping', () => {
   const css = readFileSync(DETAIL_CSS_URL, 'utf8');
   const mobileStart = css.indexOf('@media (max-width: 640px)');
