@@ -19,6 +19,19 @@ function decodeEntities(value) {
   return value.replace(/&amp;/g, '&');
 }
 
+function cssRule(css, selector) {
+  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
+  const match = css.match(new RegExp(`${escaped}\\s*\\{([\\s\\S]*?)\\}`));
+  assert.ok(match, `CSS rule for "${selector}" must exist`);
+  return match[1];
+}
+
+function assertCssDeclaration(rule, property, value) {
+  const escapedProperty = property.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  const escapedValue = value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+  assert.match(rule, new RegExp(`${escapedProperty}\\s*:\\s*${escapedValue}\\s*;`));
+}
+
 function fakeElement(dataset = {}) {
   return {
     dataset,
@@ -600,6 +613,27 @@ test('renders package history billing columns, statuses, and record actions', ()
   assert.match(historyHTML, /nexora-package-billing-detail\.html\?transaction=NXR-20260810-0003[\s\S]*?>[\s\S]*View invoice/);
   assert.match(historyHTML, /nexora-package-billing-detail\.html\?transaction=SMS-20260811-0001[\s\S]*?>[\s\S]*Payment details/);
   assert.match(historyHTML, /nexora-package-billing-detail\.html\?transaction=VMS-20260701-0002[\s\S]*?>[\s\S]*Payment details/);
+});
+
+test('matches package history actions to the billing detail secondary button style', () => {
+  const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
+  const actionRule = cssRule(css, '.package-history-action-link');
+  const hoverRule = cssRule(css, '.package-history-action-link:hover');
+  const iconRule = cssRule(css, '.package-history-action-link svg');
+
+  assertCssDeclaration(actionRule, 'min-height', '44px');
+  assertCssDeclaration(actionRule, 'gap', '8px');
+  assertCssDeclaration(actionRule, 'border', '1px solid var(--nexora-border)');
+  assertCssDeclaration(actionRule, 'border-radius', '10px');
+  assertCssDeclaration(actionRule, 'background', '#fff');
+  assertCssDeclaration(actionRule, 'padding', '10px 14px');
+  assertCssDeclaration(actionRule, 'color', 'var(--nexora-text)');
+  assertCssDeclaration(actionRule, 'font-size', '12px');
+  assertCssDeclaration(hoverRule, 'border-color', 'rgba(70, 72, 216, 0.36)');
+  assertCssDeclaration(hoverRule, 'box-shadow', '0 8px 18px rgba(70, 72, 216, 0.1)');
+  assertCssDeclaration(hoverRule, 'transform', 'translateY(-1px)');
+  assertCssDeclaration(iconRule, 'width', '16px');
+  assertCssDeclaration(iconRule, 'height', '16px');
 });
 
 test('stacks package history records and enlarges actions on mobile', () => {

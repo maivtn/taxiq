@@ -731,25 +731,25 @@
 
 .package-history-action-link {
   display: inline-flex;
-  min-height: 36px;
+  min-height: 44px;
   align-items: center;
   justify-content: center;
-  gap: 6px;
-  border: 1px solid rgba(70, 72, 216, 0.2);
-  border-radius: 9px;
-  background: rgba(70, 72, 216, 0.06);
-  padding: 8px 11px;
-  color: var(--nexora-brand);
-  font-size: 11px;
+  gap: 8px;
+  border: 1px solid var(--nexora-border);
+  border-radius: 10px;
+  background: #fff;
+  padding: 10px 14px;
+  color: var(--nexora-text);
+  font-size: 12px;
   font-weight: 900;
   text-decoration: none;
-  transition: border-color 0.18s ease, background 0.18s ease, box-shadow 0.18s ease;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
 
 .package-history-action-link:hover {
-  border-color: rgba(70, 72, 216, 0.42);
-  background: rgba(70, 72, 216, 0.1);
-  box-shadow: 0 6px 14px rgba(70, 72, 216, 0.1);
+  border-color: rgba(70, 72, 216, 0.36);
+  box-shadow: 0 8px 18px rgba(70, 72, 216, 0.1);
+  transform: translateY(-1px);
 }
 
 .package-history-action-link:focus-visible {
@@ -758,8 +758,8 @@
 }
 
 .package-history-action-link svg {
-  width: 15px;
-  height: 15px;
+  width: 16px;
+  height: 16px;
 }
 
 .package-plan-content {

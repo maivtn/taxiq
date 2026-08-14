@@ -70,11 +70,10 @@ test('renders the salon QR station dashboard shown in the mockup', () => {
   assert.equal((html.match(/class="qr-link-device"/g) || []).length, 3);
 });
 
-test('links Stations & QR Codes sidebar items to the QR Stations page', () => {
+test('registers the QR Stations page route in the shared shell', () => {
   const shell = shellSource();
 
   assert.match(shell, /stations:\s*'qr-stations\.html'/);
-  assert.match(shell, /key:\s*'stations'[\s\S]*page:\s*'stations'[\s\S]*label:\s*'QR Stations',\s*tab:\s*'qr-stations'/);
 });
 
 test('keeps QR Stations dense on tablet and phone viewports', () => {

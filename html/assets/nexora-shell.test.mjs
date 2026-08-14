@@ -180,6 +180,18 @@ test('links and activates Reviews on the native Review page', () => {
   assert.match(html, /<a class="nav-item is-active" href="nexora-review\.html">[\s\S]*?<span>Reviews<\/span>/);
 });
 
+test('keeps Stations & QR Codes flat without QR Stations or OneQR submenu items', () => {
+  const merchantHtml = renderSidebar('booking', 'booking');
+  assert.match(merchantHtml, /<a class="nav-item" href="qr-stations\.html">[\s\S]*?<span>Stations &amp; QR Codes<\/span><\/a>/);
+  assert.doesNotMatch(merchantHtml, /href="qr-stations\.html\?tab=/);
+  assert.doesNotMatch(merchantHtml, /id="nexora-subnav-stations"/);
+
+  const stationsHtml = renderSidebar('stations', 'qr-stations');
+  assert.match(stationsHtml, /<a class="nav-item is-active" href="qr-stations\.html">[\s\S]*?<span>Stations &amp; QR Codes<\/span><\/a>/);
+  assert.doesNotMatch(stationsHtml, /data-shell-tab="(?:qr-stations|one-qr)"/);
+  assert.doesNotMatch(stationsHtml, /id="nexora-subnav-stations"/);
+});
+
 test('keeps Settings sidebar navigation flat without Owner Settings tab subitems', () => {
   const merchantHtml = renderSidebar('booking', 'booking');
   assert.doesNotMatch(merchantHtml, /<button class="nav-item" type="button">[\s\S]*?<span>Staff<\/span><\/button>/);
