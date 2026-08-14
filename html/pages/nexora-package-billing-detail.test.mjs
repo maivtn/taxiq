@@ -191,7 +191,8 @@ test('creates Billing Detail from the Salon shared-shell skeleton', () => {
 test('renders a paid billing record with invoice and receipt downloads', () => {
   const html = createBillingRuntime('?transaction=NXR-20260810-0003').root.innerHTML;
 
-  assert.match(html, /Receipt from NEXORA TOUCH/);
+  assert.match(html, /<p class="billing-detail-eyebrow">Receipt<\/p>/);
+  assert.doesNotMatch(html, /Receipt from NEXORA TOUCH/);
   assert.match(html, /billing-detail-status is-paid[\s\S]*?>Paid</);
   assert.match(html, /\$79\.00/);
   assert.match(html, /Download invoice/);
@@ -229,7 +230,8 @@ test('explains when an expected billing document is not available', () => {
 test('renders a payment-due invoice without a receipt download', () => {
   const html = createBillingRuntime('?transaction=SMS-20260811-0001').root.innerHTML;
 
-  assert.match(html, /Invoice from NEXORA TOUCH/);
+  assert.match(html, /<p class="billing-detail-eyebrow">Invoice<\/p>/);
+  assert.doesNotMatch(html, /Invoice from NEXORA TOUCH/);
   assert.match(html, /billing-detail-status is-payment-due[\s\S]*?>Payment due</);
   assert.match(html, /\$179\.00/);
   assert.match(html, /Amount due/);
@@ -370,8 +372,9 @@ test('uses uppercase NEXORA TOUCH across billing surfaces and generated document
 
   const paidHTML = createBillingRuntime('?transaction=NXR-20260810-0003').root.innerHTML;
   const unpaidHTML = createBillingRuntime('?transaction=SMS-20260811-0001').root.innerHTML;
-  assert.match(paidHTML, /Receipt from NEXORA TOUCH/);
-  assert.match(unpaidHTML, /Invoice from NEXORA TOUCH/);
+  assert.match(paidHTML, /<p class="billing-detail-eyebrow">Receipt<\/p>/);
+  assert.match(unpaidHTML, /<p class="billing-detail-eyebrow">Invoice<\/p>/);
+  assert.doesNotMatch(`${paidHTML}\n${unpaidHTML}`, /Receipt from NEXORA TOUCH|Invoice from NEXORA TOUCH/);
   assert.doesNotMatch(`${paidHTML}\n${unpaidHTML}`, /NEXORA Touch|Nexora Touch/);
 
   billingRecords().forEach((record) => {

@@ -148,7 +148,7 @@
         </div>
         <div class="billing-detail-summary-main">
           <div>
-            <p class="billing-detail-eyebrow">Receipt from ${escapeHTML(record.seller.name)}</p>
+            <p class="billing-detail-eyebrow">Receipt</p>
             <h2 id="billing-summary-title">${formatMoney(record.total, record.currency)}</h2>
             <p class="billing-detail-date">Paid ${formatDateTime(record.datePaid)}</p>
           </div>
@@ -198,7 +198,7 @@
         </div>
         <div class="billing-detail-summary-main">
           <div>
-            <p class="billing-detail-eyebrow">Invoice from ${escapeHTML(record.seller.name)}</p>
+            <p class="billing-detail-eyebrow">Invoice</p>
             <h2 id="billing-summary-title">${formatMoney(record.total, record.currency)} due</h2>
             <p class="billing-detail-date">Due ${formatDate(record.dateDue)}</p>
           </div>
