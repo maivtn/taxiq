@@ -188,18 +188,37 @@ def header_block(record: dict[str, Any], document_type: str, style: dict[str, Pa
         ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
     ]))
 
-    meta_lines = [f"Invoice number  <b>{xml(record['invoiceNumber'])}</b>"]
+    meta_rows = [("Invoice number", record["invoiceNumber"])]
     if document_type == "Receipt":
-        meta_lines.append(f"Receipt number  <b>{xml(record['receiptNumber'])}</b>")
-        meta_lines.append(f"Date paid  <b>{format_date(record['datePaid'])}</b>")
+        meta_rows.append(("Receipt number", record["receiptNumber"]))
+        meta_rows.append(("Date paid", format_date(record["datePaid"])))
     else:
-        meta_lines.append(f"Date of issue  <b>{format_date(record['dateIssued'])}</b>")
-        meta_lines.append(f"Date due  <b>{format_date(record['dateDue'])}</b>")
+        meta_rows.append(("Date of issue", format_date(record["dateIssued"])))
+        meta_rows.append(("Date due", format_date(record["dateDue"])))
+
+    metadata = Table(
+        [
+            [
+                Paragraph(f"<b>{xml(label)}</b>", style["meta"]),
+                Paragraph(f"<b>{xml(value)}</b>", style["meta"]),
+            ]
+            for label, value in meta_rows
+        ],
+        colWidths=[1.15 * inch, CONTENT_WIDTH - (1.15 * inch)],
+        hAlign="LEFT",
+    )
+    metadata.setStyle(TableStyle([
+        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+        ("LEFTPADDING", (0, 0), (-1, -1), 0),
+        ("RIGHTPADDING", (0, 0), (-1, -1), 0),
+        ("TOPPADDING", (0, 0), (-1, -1), 0),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 0),
+    ]))
 
     return [
         title_row,
         Spacer(1, 0.18 * inch),
-        Paragraph("<br/>".join(meta_lines), style["meta"]),
+        metadata,
         Spacer(1, 0.22 * inch),
     ]
 

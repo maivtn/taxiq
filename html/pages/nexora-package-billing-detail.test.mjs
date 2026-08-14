@@ -50,6 +50,9 @@ function fakeElement(options = {}) {
     hasAttribute(name) {
       return attributes.has(name);
     },
+    getAttribute(name) {
+      return attributes.has(name) ? attributes.get(name) : null;
+    },
     removeAttribute(name) {
       attributes.delete(name);
     },
@@ -71,6 +74,10 @@ function createBillingRuntime(search, mutateRecords, options = {}) {
   const modalChoice = fakeElement({ onFocus: (element) => { activeElement = element; } });
   const modalContinue = fakeElement({ onFocus: (element) => { activeElement = element; } });
   const modalFocusables = [modalClose, modalChoice, modalContinue];
+  const emailPreviewOpen = fakeElement({ onFocus: (element) => { activeElement = element; } });
+  const emailPreviewBody = fakeElement();
+  const emailPreviewClose = fakeElement({ onFocus: (element) => { activeElement = element; } });
+  const emailPreviewFocusables = [emailPreviewClose];
   const modal = fakeElement({
     hidden: true,
     querySelector(selector) {
@@ -80,6 +87,17 @@ function createBillingRuntime(search, mutateRecords, options = {}) {
     },
     querySelectorAll() {
       return modalFocusables;
+    }
+  });
+  const emailPreviewModal = fakeElement({
+    hidden: true,
+    querySelector(selector) {
+      if (selector === '[data-billing-email-preview-body]') return emailPreviewBody;
+      if (selector === '[data-billing-email-preview-close]') return emailPreviewClose;
+      return null;
+    },
+    querySelectorAll() {
+      return emailPreviewFocusables;
     }
   });
   const shell = fakeElement();
@@ -102,6 +120,7 @@ function createBillingRuntime(search, mutateRecords, options = {}) {
   });
   resendEmailTarget.closest = (selector) => selector === '[data-billing-email-action]' ? resendEmailTarget : null;
   reminderTarget.closest = (selector) => selector === '[data-billing-email-action]' ? reminderTarget : null;
+  emailPreviewClose.closest = (selector) => selector === '[data-billing-email-preview-close]' ? emailPreviewClose : null;
   const documentListeners = {};
   const document = {
     body: {
@@ -111,6 +130,8 @@ function createBillingRuntime(search, mutateRecords, options = {}) {
     querySelector(selector) {
       if (selector === '[data-billing-detail-root]') return root;
       if (selector === '[data-billing-payment-modal]') return modal;
+      if (selector === '[data-billing-email-preview-open]') return emailPreviewOpen;
+      if (selector === '[data-billing-email-preview-modal]') return emailPreviewModal;
       if (selector === '.shell') return shell;
       return null;
     },
@@ -152,6 +173,10 @@ function createBillingRuntime(search, mutateRecords, options = {}) {
     modalClose,
     modalContinue,
     modalSummary,
+    emailPreviewBody,
+    emailPreviewClose,
+    emailPreviewModal,
+    emailPreviewOpen,
     payNowTarget,
     reminderTarget,
     resendEmailTarget,
@@ -231,11 +256,14 @@ test('creates Billing Detail from the Salon shared-shell skeleton', () => {
   assert.match(html, /<div class="shell">/);
   assert.match(html, /<aside class="sidebar" aria-label="Dashboard sidebar"><\/aside>/);
   assert.match(html, /<div class="app-area">/);
-  assert.match(html, /<header class="header"><\/header>/);
+  assert.match(html, /data-billing-email-preview-open[\s\S]*?dev - view html send email[\s\S]*?<\/button>\s*<\/div>\s*<header class="header"><\/header>/);
   assert.match(html, /<main class="content" aria-label="Billing details content">/);
   assert.match(html, /<a[^>]*href="nexora-packages\.html\?tab=history"[^>]*>[\s\S]*?Back to Package History/);
   assert.doesNotMatch(html, /Back to Billing History/);
   assert.match(html, /data-billing-detail-root/);
+  assert.match(html, /data-billing-email-preview-modal hidden aria-hidden="true"/);
+  assert.match(html, /data-billing-email-preview-body/);
+  assert.match(html, /data-billing-email-preview-close/);
   assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css">/);
   assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-package-billing-detail\.css">/);
   assert.match(html, /<script src="\.\.\/assets\/nexora-package-billing-data\.js"><\/script>\s*<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/sweetalert2@11"><\/script>\s*<script src="\.\.\/assets\/nexora-package-billing-detail\.js"><\/script>/);
@@ -400,6 +428,34 @@ test('opens and closes the Pay now demo payment UI', () => {
   runtime.document.dispatch('keydown', { key: 'Escape' });
   assert.equal(runtime.modal.hidden, true);
   assert.equal(runtime.payNowTarget.focused, true);
+  assert.equal(runtime.shell.hasAttribute('inert'), false);
+});
+
+test('opens a developer email HTML preview with mobile billing content', () => {
+  const runtime = createBillingRuntime('?transaction=NXR-20260810-0003');
+
+  runtime.emailPreviewOpen.dispatch('click');
+
+  assert.equal(runtime.emailPreviewModal.hidden, false);
+  assert.equal(runtime.emailPreviewModal.getAttribute('aria-hidden'), 'false');
+  assert.match(runtime.emailPreviewBody.innerHTML, /billing-email-preview-mobile/);
+  assert.match(runtime.emailPreviewBody.innerHTML, /billing-detail-summary/);
+  assert.match(runtime.emailPreviewBody.innerHTML, /billing-detail-document/);
+  assert.match(runtime.emailPreviewBody.innerHTML, /Download invoice/);
+  assert.match(runtime.emailPreviewBody.innerHTML, /Download receipt/);
+  assert.match(runtime.emailPreviewBody.innerHTML, /Receipt #RCPT-2026-0810-023749/);
+  assert.doesNotMatch(runtime.emailPreviewBody.innerHTML, /data-billing-email-action|Resend email/);
+  assert.doesNotMatch(runtime.emailPreviewBody.innerHTML, /<dt>Processor<\/dt>|Stripe/);
+  assert.doesNotMatch(runtime.emailPreviewBody.innerHTML, /<dt>Transaction ID<\/dt>|NXR-20260810-0003/);
+  assert.doesNotMatch(runtime.emailPreviewBody.innerHTML, /<dt>Processor transaction ID<\/dt>|pi_3NX_023749/);
+  assert.doesNotMatch(runtime.emailPreviewBody.innerHTML, /<dt>Bill to<\/dt>|Bitcoin Nail Bar|billing@bitcoinnailbar\.com/);
+  assert.equal(runtime.emailPreviewClose.focused, true);
+  assert.equal(runtime.shell.hasAttribute('inert'), true);
+
+  runtime.emailPreviewModal.dispatch('click', { target: runtime.emailPreviewClose });
+  assert.equal(runtime.emailPreviewModal.hidden, true);
+  assert.equal(runtime.emailPreviewModal.getAttribute('aria-hidden'), 'true');
+  assert.equal(runtime.emailPreviewOpen.focused, true);
   assert.equal(runtime.shell.hasAttribute('inert'), false);
 });
 
@@ -593,6 +649,39 @@ test('prints PDF document metadata with breathing room below the title', () => {
   });
 });
 
+test('aligns PDF header metadata labels and values into columns', () => {
+  const paidRecord = billingRecords().find((record) => record.paymentStatus === 'paid');
+  const documentPath = fileURLToPath(new URL(paidRecord.receiptFile, PAGE_URL));
+  const rows = pdfBBoxWords(documentPath)
+    .filter((word) => word.yMin > 75 && word.yMin < 130)
+    .reduce((groups, word) => {
+      const group = groups.find((item) => Math.abs(item.yMin - word.yMin) <= 1);
+      if (group) {
+        group.words.push(word);
+        return groups;
+      }
+      groups.push({ yMin: word.yMin, words: [word] });
+      return groups;
+    }, [])
+    .map((group) => group.words.sort((left, right) => left.xMin - right.xMin))
+    .sort((left, right) => left[0].yMin - right[0].yMin);
+
+  const valueStarts = rows.map((row) => {
+    const valueWord = row.find((word) => [
+      paidRecord.invoiceNumber,
+      paidRecord.receiptNumber,
+      'August'
+    ].includes(word.text));
+    assert.ok(valueWord, `Metadata row "${row.map((word) => word.text).join(' ')}" must include a value`);
+    return valueWord.xMin;
+  });
+  const labelStarts = rows.map((row) => row[0].xMin);
+
+  assert.ok(rows.length >= 3, 'Receipt metadata must include invoice, receipt, and paid date rows');
+  assert.ok(Math.max(...labelStarts) - Math.min(...labelStarts) <= 0.75, 'Metadata labels must share a left edge');
+  assert.ok(Math.max(...valueStarts) - Math.min(...valueStarts) <= 0.75, 'Metadata values must share a value column');
+});
+
 test('keeps PDF amount labels visually separated from headline totals', () => {
   billingRecords().forEach((record) => {
     const documentPath = fileURLToPath(new URL(record.invoiceFile, PAGE_URL));
@@ -698,6 +787,50 @@ test('loads responsive Billing Detail styles', () => {
   assert.match(css, /\.billing-payment-dialog\s*\{/);
   assert.match(css, /@media \(max-width: 640px\)/);
   assert.match(documentIconRule, /stroke-width:\s*1\.25;/);
+});
+
+test('keeps billing detail meta visually tight without a divider', () => {
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const metaRules = [...css.matchAll(/\.billing-detail-meta\s*\{([\s\S]*?)\}/g)]
+    .map((match) => match[1]);
+
+  assert.ok(metaRules.length > 0, 'billing detail meta styles must exist');
+  metaRules.forEach((rule) => {
+    assert.doesNotMatch(rule, /border-top:/);
+    assert.doesNotMatch(rule, /padding-top:/);
+  });
+});
+
+test('keeps billing detail table headers readable without uppercase transform', () => {
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const mobileRules = css.slice(css.indexOf('@media (max-width: 640px)'), css.indexOf('@page'));
+  const tableHeaderRule = cssRule(css, '.billing-detail-table th');
+  const mobileTableLabelRule = cssRule(mobileRules, '.billing-detail-table td::before');
+
+  assert.match(tableHeaderRule, /letter-spacing:\s*0;/);
+  assert.match(tableHeaderRule, /text-transform:\s*none;/);
+  assert.match(mobileTableLabelRule, /letter-spacing:\s*0;/);
+  assert.match(mobileTableLabelRule, /text-transform:\s*none;/);
+});
+
+test('styles developer email preview as mobile billing content inside the modal', () => {
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const modalRule = cssRule(css, '.billing-email-preview-modal');
+  const mobilePreviewRule = cssRule(css, '.billing-email-preview-mobile');
+  const previewSummaryRule = cssRule(css, '.billing-email-preview-mobile .billing-detail-summary');
+  const previewMetaRule = cssRule(css, '.billing-email-preview-mobile .billing-detail-meta');
+  const previewMetaItemRule = cssRule(css, '.billing-email-preview-mobile .billing-detail-meta div');
+  const previewTableRule = cssRule(css, '.billing-email-preview-mobile .billing-detail-table');
+  const previewHiddenRule = /\.billing-email-preview-mobile \[data-billing-email-preview-hidden\],[\s\S]*?\.billing-email-preview-mobile \[data-billing-email-action\]\s*\{([\s\S]*?)\}/.exec(css)?.[1] || '';
+
+  assert.match(modalRule, /position:\s*fixed;/);
+  assert.match(mobilePreviewRule, /width:\s*min\(100%,\s*390px\);/);
+  assert.match(previewSummaryRule, /padding:\s*18px;/);
+  assert.match(previewMetaRule, /grid-template-columns:\s*1fr;/);
+  assert.match(previewMetaRule, /gap:\s*10px;/);
+  assert.match(previewMetaItemRule, /display:\s*flex;/);
+  assert.match(previewTableRule, /min-width:\s*0;/);
+  assert.match(previewHiddenRule, /display:\s*none\s*!important;/);
 });
 
 test('keeps the billing summary amount compact on screen without changing print typography', () => {

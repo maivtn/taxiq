@@ -15,6 +15,12 @@
     <aside class="sidebar" aria-label="Dashboard sidebar"></aside>
 
     <div class="app-area">
+      <div class="billing-dev-toolbar" aria-label="Developer billing tools">
+        <button class="billing-dev-preview-button" type="button" data-billing-email-preview-open>
+          <i data-lucide="code-2" aria-hidden="true"></i>
+          <span>dev - view html send email</span>
+        </button>
+      </div>
       <header class="header"></header>
 
       <main class="content" aria-label="Billing details content">
@@ -27,6 +33,20 @@
           <div data-billing-detail-root></div>
         </section>
       </main>
+    </div>
+  </div>
+
+  <div class="billing-email-preview-modal" data-billing-email-preview-modal hidden aria-hidden="true">
+    <div class="billing-email-preview-dialog" role="dialog" aria-modal="true" aria-labelledby="billing-email-preview-title" aria-describedby="billing-email-preview-description">
+      <div class="billing-email-preview-head">
+        <div>
+          <span class="billing-payment-kicker">Developer preview</span>
+          <h2 id="billing-email-preview-title">HTML send email</h2>
+          <p id="billing-email-preview-description">Mobile-style preview of the billing HTML that will be sent by email.</p>
+        </div>
+        <button class="billing-payment-close" type="button" data-billing-email-preview-close aria-label="Close email HTML preview"><i data-lucide="x" aria-hidden="true"></i></button>
+      </div>
+      <div class="billing-email-preview-body" data-billing-email-preview-body></div>
     </div>
   </div>
 

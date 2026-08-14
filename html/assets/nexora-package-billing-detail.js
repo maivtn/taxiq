@@ -6,11 +6,17 @@
     : [];
   const root = document.querySelector('[data-billing-detail-root]');
   const paymentModal = document.querySelector('[data-billing-payment-modal]');
+  const emailPreviewOpen = document.querySelector('[data-billing-email-preview-open]');
+  const emailPreviewModal = document.querySelector('[data-billing-email-preview-modal]');
+  const emailPreviewBody = emailPreviewModal ? emailPreviewModal.querySelector('[data-billing-email-preview-body]') : null;
   const shell = document.querySelector('.shell');
   const NEXORA_PRINT_LOGO_URL = 'https://nexoratouch.com/homepage/assets/images/icon-nexora.png';
   let paymentOpener = null;
   let paymentPreviousOverflow = '';
   let shellHadInert = false;
+  let emailPreviewOpener = null;
+  let emailPreviewPreviousOverflow = '';
+  let emailPreviewShellHadInert = false;
 
   function escapeHTML(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, (character) => ({
@@ -184,10 +190,10 @@
           <div><dt>Receipt number</dt><dd>${escapeHTML(record.receiptNumber)}</dd></div>
           <div><dt>Invoice number</dt><dd>${escapeHTML(record.invoiceNumber)}</dd></div>
           <div><dt>Payment method</dt><dd>${escapeHTML(method.brand)} <span class="billing-detail-card-dots">••••</span> ${escapeHTML(method.last4)}</dd></div>
-          <div><dt>Processor</dt><dd>${escapeHTML(record.processor)}</dd></div>
-          <div><dt>Transaction ID</dt><dd>${escapeHTML(record.transactionId)}</dd></div>
-          <div><dt>Processor transaction ID</dt><dd>${escapeHTML(record.processorTransactionId)}</dd></div>
-          <div><dt>Bill to</dt><dd>${escapeHTML(record.billTo.name)}<span>${escapeHTML(record.billTo.email)}</span></dd></div>
+          <div data-billing-email-preview-hidden="true"><dt>Processor</dt><dd>${escapeHTML(record.processor)}</dd></div>
+          <div data-billing-email-preview-hidden="true"><dt>Transaction ID</dt><dd>${escapeHTML(record.transactionId)}</dd></div>
+          <div data-billing-email-preview-hidden="true"><dt>Processor transaction ID</dt><dd>${escapeHTML(record.processorTransactionId)}</dd></div>
+          <div data-billing-email-preview-hidden="true"><dt>Bill to</dt><dd>${escapeHTML(record.billTo.name)}<span>${escapeHTML(record.billTo.email)}</span></dd></div>
         </dl>
       </article>
 
@@ -232,7 +238,7 @@
           <div><dt>Date of issue</dt><dd>${formatDate(record.dateIssued)}</dd></div>
           <div><dt>Due date</dt><dd>${formatDate(record.dateDue)}</dd></div>
           <div><dt>Seller</dt><dd>${escapeHTML(record.seller.name)}<span>${escapeHTML(record.seller.email)}</span></dd></div>
-          <div><dt>Bill to</dt><dd>${escapeHTML(record.billTo.name)}<span>${escapeHTML(record.billTo.email)}</span></dd></div>
+          <div data-billing-email-preview-hidden="true"><dt>Bill to</dt><dd>${escapeHTML(record.billTo.name)}<span>${escapeHTML(record.billTo.email)}</span></dd></div>
           <div><dt>Billing term</dt><dd>${escapeHTML(record.billingTerm)}</dd></div>
         </dl>
       </article>
@@ -315,6 +321,45 @@
     paymentOpener = null;
   }
 
+  function buildBillingEmailPreviewHTML() {
+    const sourceHTML = root ? root.innerHTML : '';
+    const previewHTML = sourceHTML
+      .replace(/\s*<button\b(?=[^>]*data-billing-email-action)[\s\S]*?<\/button>/g, '')
+      .replace(/\s*<div\b(?=[^>]*data-billing-email-preview-hidden)[\s\S]*?<\/div>/g, '');
+    return `<div class="billing-email-preview-mobile" data-billing-email-preview-root>${previewHTML}</div>`;
+  }
+
+  function openBillingEmailPreview(opener) {
+    if (!emailPreviewModal || !emailPreviewBody || !root) return;
+    emailPreviewOpener = opener || null;
+    emailPreviewPreviousOverflow = document.body.style.overflow;
+    emailPreviewBody.innerHTML = buildBillingEmailPreviewHTML();
+    emailPreviewModal.hidden = false;
+    emailPreviewModal.setAttribute('aria-hidden', 'false');
+    if (shell) {
+      emailPreviewShellHadInert = shell.hasAttribute('inert');
+      shell.setAttribute('inert', '');
+    }
+    document.body.classList.add('billing-email-preview-open');
+    document.body.style.overflow = 'hidden';
+    const closeButton = emailPreviewModal.querySelector('[data-billing-email-preview-close]');
+    if (closeButton) closeButton.focus();
+    if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
+  }
+
+  function closeBillingEmailPreview() {
+    if (!emailPreviewModal || emailPreviewModal.hidden) return;
+    emailPreviewModal.hidden = true;
+    emailPreviewModal.setAttribute('aria-hidden', 'true');
+    if (emailPreviewBody) emailPreviewBody.innerHTML = '';
+    document.body.classList.remove('billing-email-preview-open');
+    document.body.style.overflow = emailPreviewPreviousOverflow;
+    if (shell && !emailPreviewShellHadInert) shell.removeAttribute('inert');
+    emailPreviewShellHadInert = false;
+    if (emailPreviewOpener && typeof emailPreviewOpener.focus === 'function') emailPreviewOpener.focus();
+    emailPreviewOpener = null;
+  }
+
   function trapBillingPaymentFocus(event) {
     if (!paymentModal || paymentModal.hidden || event.key !== 'Tab') return;
     const focusable = Array.from(paymentModal.querySelectorAll(
@@ -335,6 +380,31 @@
       return;
     }
     if (!paymentModal.contains || !paymentModal.contains(active)) {
+      event.preventDefault();
+      first.focus();
+    }
+  }
+
+  function trapBillingEmailPreviewFocus(event) {
+    if (!emailPreviewModal || emailPreviewModal.hidden || event.key !== 'Tab') return;
+    const focusable = Array.from(emailPreviewModal.querySelectorAll(
+      'a[href], button:not([disabled]), input:not([disabled]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])'
+    ));
+    if (!focusable.length) return;
+    const first = focusable[0];
+    const last = focusable[focusable.length - 1];
+    const active = document.activeElement;
+    if (event.shiftKey && active === first) {
+      event.preventDefault();
+      last.focus();
+      return;
+    }
+    if (!event.shiftKey && active === last) {
+      event.preventDefault();
+      first.focus();
+      return;
+    }
+    if (!emailPreviewModal.contains || !emailPreviewModal.contains(active)) {
       event.preventDefault();
       first.focus();
     }
@@ -362,6 +432,10 @@
   const transactionId = new URLSearchParams(window.location.search).get('transaction') || '';
   root.innerHTML = renderBillingDetail(findBillingRecord(transactionId));
 
+  if (emailPreviewOpen) {
+    emailPreviewOpen.addEventListener('click', () => openBillingEmailPreview(emailPreviewOpen));
+  }
+
   root.addEventListener('click', (event) => {
     const target = event.target && typeof event.target.closest === 'function' ? event.target : null;
     const emailAction = target ? target.closest('[data-billing-email-action]') : null;
@@ -382,11 +456,25 @@
     });
   }
 
+  if (emailPreviewModal) {
+    emailPreviewModal.addEventListener('click', (event) => {
+      const closeControl = event.target && typeof event.target.closest === 'function'
+        ? event.target.closest('[data-billing-email-preview-close]')
+        : null;
+      if (event.target === emailPreviewModal || closeControl) closeBillingEmailPreview();
+    });
+  }
+
   document.addEventListener('keydown', (event) => {
+    if (event.key === 'Escape' && emailPreviewModal && !emailPreviewModal.hidden) {
+      closeBillingEmailPreview();
+      return;
+    }
     if (event.key === 'Escape' && paymentModal && !paymentModal.hidden) {
       closeBillingPayment();
       return;
     }
+    trapBillingEmailPreviewFocus(event);
     trapBillingPaymentFocus(event);
   });
 
