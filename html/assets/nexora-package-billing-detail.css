@@ -919,6 +919,26 @@ body.billing-payment-open {
 
   .billing-detail-summary-main h2 {
     font-size: 30pt;
+    font-weight: 600;
+  }
+
+  .billing-detail-eyebrow {
+    font-size: 9pt;
+    font-weight: 400;
+  }
+
+  .billing-detail-date {
+    font-weight: 400;
+  }
+
+  .billing-detail-document-kicker {
+    font-weight: 400;
+  }
+
+  .billing-detail-document-head h2 {
+    font-size: 13pt;
+    font-weight: 600;
+    letter-spacing: -0.01em;
   }
 
   .billing-detail-document-icon {
@@ -993,6 +1013,26 @@ body.billing-payment-open {
     border-bottom: 0.25mm solid #e5eaf2;
     padding: 3mm 2.5mm;
     text-align: right;
+  }
+
+  .billing-detail-meta dt,
+  .billing-detail-meta dd,
+  .billing-detail-table th,
+  .billing-detail-table td,
+  .billing-detail-totals dt,
+  .billing-detail-totals dd,
+  .billing-detail-support {
+    font-weight: 400;
+  }
+
+  .billing-detail-status,
+  .billing-detail-table td:first-child strong,
+  .billing-detail-totals .is-total dt,
+  .billing-detail-totals .is-total dd,
+  .billing-detail-totals .is-final dt,
+  .billing-detail-totals .is-final dd,
+  .billing-detail-support a {
+    font-weight: 600;
   }
 
   .billing-detail-table-number {

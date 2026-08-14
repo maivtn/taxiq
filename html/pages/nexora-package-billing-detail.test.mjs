@@ -167,6 +167,25 @@ function billingRecords() {
   return context.window.NEXORA_PACKAGE_BILLING_RECORDS;
 }
 
+function cssRule(css, selector) {
+  const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
+  const match = css.match(new RegExp(`${escaped}\\s*\\{([\\s\\S]*?)\\}`));
+  assert.ok(match, `CSS rule for "${selector}" must exist`);
+  return match[1];
+}
+
+function pdfBBoxWords(documentPath) {
+  const bbox = execFileSync('pdftotext', ['-bbox-layout', documentPath, '-'], { encoding: 'utf8' });
+  return [...bbox.matchAll(/<word xMin="([\d.]+)" yMin="([\d.]+)" xMax="([\d.]+)" yMax="([\d.]+)">([^<]+)<\/word>/g)]
+    .map((match) => ({
+      xMin: Number(match[1]),
+      yMin: Number(match[2]),
+      xMax: Number(match[3]),
+      yMax: Number(match[4]),
+      text: match[5]
+    }));
+}
+
 test('creates Billing Detail from the Salon shared-shell skeleton', () => {
   const html = source();
 
@@ -461,6 +480,26 @@ test('provides real PDF download documents that match billing records', () => {
   });
 });
 
+test('keeps PDF Invoice and Receipt titles modest for printed documents', () => {
+  const documents = billingRecords().flatMap((record) => [
+    { path: record.invoiceFile, title: 'Invoice' },
+    ...(record.receiptFile ? [{ path: record.receiptFile, title: 'Receipt' }] : [])
+  ]);
+
+  documents.forEach((document) => {
+    const documentPath = fileURLToPath(new URL(document.path, PAGE_URL));
+    const titleWord = pdfBBoxWords(documentPath)
+      .filter((word) => word.text === document.title && word.yMin < 110)
+      .sort((left, right) => left.yMin - right.yMin)[0];
+
+    assert.ok(titleWord, `${document.title} title must exist in ${document.path}`);
+    assert.ok(
+      titleWord.yMax - titleWord.yMin <= 17.5,
+      `${document.title} title must stay compact in ${document.path}`
+    );
+  });
+});
+
 test('keeps PDF amount labels visually separated from headline totals', () => {
   billingRecords().forEach((record) => {
     const documentPath = fileURLToPath(new URL(record.invoiceFile, PAGE_URL));
@@ -596,6 +635,22 @@ test('keeps screen typography calm with only regular and semibold weights', () =
     .map((match) => Number(match[1]))
     .filter((weight) => ![400, 600].includes(weight));
 
+  assert.deepEqual(invalidWeights, []);
+});
+
+test('keeps printed billing labels and document titles compact with calm weights', () => {
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const printRules = css.slice(css.indexOf('@media print'));
+  const eyebrowRule = cssRule(printRules, '.billing-detail-eyebrow');
+  const documentTitleRule = cssRule(printRules, '.billing-detail-document-head h2');
+  const invalidWeights = [...css.matchAll(/font-weight:\s*(\d+)/g)]
+    .map((match) => Number(match[1]))
+    .filter((weight) => ![400, 600].includes(weight));
+
+  assert.match(eyebrowRule, /font-size:\s*9pt/);
+  assert.match(eyebrowRule, /font-weight:\s*400/);
+  assert.match(documentTitleRule, /font-size:\s*13pt/);
+  assert.match(documentTitleRule, /font-weight:\s*600/);
   assert.deepEqual(invalidWeights, []);
 });
 
