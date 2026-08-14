@@ -345,7 +345,6 @@ def totals_table(record: dict[str, Any], document_type: str, style: dict[str, Pa
         ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
         ("LEFTPADDING", (0, 0), (0, -1), 0),
         ("RIGHTPADDING", (-1, 0), (-1, -1), 0),
-        ("BACKGROUND", (0, -1), (-1, -1), SURFACE),
     ]))
     return table
 

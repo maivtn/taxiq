@@ -774,6 +774,13 @@ test('keeps printed billing totals rows close together', () => {
   assert.match(printTotalsRowRule, /padding:\s*1\.4mm 0;/);
 });
 
+test('keeps printed Amount paid total row unshaded', () => {
+  const generatorSource = readFileSync(PDF_GENERATOR_URL, 'utf8');
+  const totalsTableSource = /def totals_table\([\s\S]*?\n\ndef /.exec(generatorSource)?.[0] || '';
+  assert.ok(totalsTableSource, 'PDF totals_table generator must exist');
+  assert.doesNotMatch(totalsTableSource, /"BACKGROUND"/, 'PDF totals rows should not add gray row backgrounds');
+});
+
 test('keeps PDF amount labels visually separated from headline totals', () => {
   billingRecords().forEach((record) => {
     const documentPath = fileURLToPath(new URL(record.invoiceFile, PAGE_URL));
