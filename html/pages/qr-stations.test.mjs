@@ -111,6 +111,47 @@ test('renders the salon QR station dashboard shown in the mockup', () => {
   assert.equal((html.match(/class="qr-link-device"/g) || []).length, 3);
 });
 
+test('uses the reference action hierarchy on station cards without changing station data', () => {
+  const html = source();
+  const cards = Array.from(html.matchAll(/<article class="qr-station-card">([\s\S]*?)<\/article>/g), (match) => match[1]);
+  const expectedStations = [
+    ['332332', '11', '$0.00'],
+    ['Front Desk', '5', '$0.00'],
+    ['Master Store', '256', '$11,217.36']
+  ];
+
+  assert.equal(cards.length, 3);
+  cards.forEach((card, index) => {
+    const [name, scans, revenue] = expectedStations[index];
+    assert.match(card, new RegExp(`<div class="qr-station-main">[\\s\\S]*?<h2>${name.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}<\\/h2>`));
+    assert.match(card, new RegExp(`Scans:<\\/span>\\s*<strong>${scans}<\\/strong>`));
+    assert.match(card, new RegExp(`Revenue:<\\/span>\\s*<strong class="qr-revenue">${revenue.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')}<\\/strong>`));
+    assert.match(card, /class="qr-station-quick-actions/);
+    assert.match(card, /class="qr-station-action is-view"[\s\S]*?<span>View QR<\/span>/);
+    assert.match(card, /class="qr-station-action is-copy"[\s\S]*?<span>Copy link<\/span>/);
+    assert.match(card, /class="qr-station-footer"[\s\S]*?Paper QR Only[\s\S]*?class="qr-link-device"/);
+  });
+  assert.match(cards[0], /class="qr-station-action is-remove"[\s\S]*?<span>Remove<\/span>/);
+  assert.doesNotMatch(cards[1], /is-remove/);
+  assert.doesNotMatch(cards[2], /is-remove/);
+});
+
+test('lays station cards out in compact main, action, and footer rows', () => {
+  const css = cssSource();
+  const cardRule = /\.qr-station-card\s*\{([^}]*)\}/.exec(css)?.[1] || '';
+  const mainRule = /\.qr-station-main\s*\{([^}]*)\}/.exec(css)?.[1] || '';
+  const actionsRule = /\.qr-station-quick-actions\s*\{([^}]*)\}/.exec(css)?.[1] || '';
+  const footerRule = /\.qr-station-footer\s*\{([^}]*)\}/.exec(css)?.[1] || '';
+
+  assert.match(cardRule, /display:\s*flex/);
+  assert.match(cardRule, /flex-direction:\s*column/);
+  assert.match(mainRule, /display:\s*grid/);
+  assert.match(mainRule, /grid-template-columns:\s*96px minmax\(0, 1fr\)/);
+  assert.match(actionsRule, /display:\s*grid/);
+  assert.match(actionsRule, /grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\)/);
+  assert.match(footerRule, /justify-content:\s*space-between/);
+});
+
 test('registers the QR Stations page route in the shared shell', () => {
   const shell = shellSource();
 
@@ -129,7 +170,7 @@ test('keeps QR Stations dense on tablet and phone viewports', () => {
   assert.match(phoneMedia, /\.qr-stats-grid\s*\{[^}]*grid-template-columns:\s*repeat\(2, minmax\(0, 1fr\)\)/);
   assert.match(phoneMedia, /\.qr-stat-card\s*\{[^}]*min-height:\s*58px;[^}]*padding:\s*10px 12px/);
   assert.match(phoneMedia, /\.qr-station-grid\s*\{[^}]*gap:\s*10px/);
-  assert.match(phoneMedia, /\.qr-station-card\s*\{[^}]*grid-template-columns:\s*76px minmax\(0, 1fr\);[^}]*padding:\s*18px 10px 10px/);
+  assert.match(phoneMedia, /\.qr-station-main\s*\{[^}]*grid-template-columns:\s*76px minmax\(0, 1fr\)/);
   assert.match(phoneMedia, /\.qr-code-frame\s*\{[^}]*width:\s*68px;[^}]*height:\s*68px/);
   assert.match(phoneMedia, /\.qr-code-art\s*\{[^}]*width:\s*52px;[^}]*height:\s*52px/);
   assert.match(phoneMedia, /\.qr-link-device\s*\{[^}]*min-height:\s*30px/);
