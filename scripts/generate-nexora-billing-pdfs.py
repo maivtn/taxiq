@@ -245,7 +245,7 @@ def parties_block(record: dict[str, Any], style: dict[str, ParagraphStyle]) -> T
     seller_contact = "<br/>".join(line for line in seller_contact_lines if line)
     data = [[
         Paragraph(
-            f"<b>Seller</b><br/><b>{xml(seller_legal_name)}</b><br/>{seller_contact}",
+            f"<b>{xml(seller_legal_name)}</b><br/>{seller_contact}",
             style["body"],
         ),
         Paragraph(

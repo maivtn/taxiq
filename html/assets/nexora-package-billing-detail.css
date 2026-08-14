@@ -1261,6 +1261,10 @@ body.billing-email-preview-open {
     display: none !important;
   }
 
+  .billing-detail-seller-meta dt {
+    display: none !important;
+  }
+
   .billing-detail-document-icon {
     display: none;
   }

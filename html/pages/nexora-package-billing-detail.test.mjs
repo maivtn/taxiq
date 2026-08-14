@@ -606,6 +606,7 @@ test('provides real PDF download documents that match billing records', () => {
     assert.match(invoiceText, textPattern(record.seller.addressLines[0]));
     assert.match(invoiceText, textPattern(record.seller.email));
     assert.doesNotMatch(invoiceText, textPattern(record.seller.phone));
+    assert.doesNotMatch(invoiceText, /(^|\n)Seller(\n|$)/);
     assert.match(invoiceText, textPattern(record.billTo.addressLines[0]));
     assert.match(invoiceText, textPattern(record.invoiceNumber));
     record.lineItems.forEach((item) => {
@@ -626,6 +627,7 @@ test('provides real PDF download documents that match billing records', () => {
       assert.match(receiptText, textPattern(record.seller.addressLines[0]));
       assert.match(receiptText, textPattern(record.seller.email));
       assert.doesNotMatch(receiptText, textPattern(record.seller.phone));
+      assert.doesNotMatch(receiptText, /(^|\n)Seller(\n|$)/);
       assert.match(receiptText, textPattern(record.receiptNumber));
       assert.match(receiptText, textPattern(record.invoiceNumber));
       assert.match(receiptText, /Visa - 4242/);
@@ -865,16 +867,20 @@ test('aligns PDF content to equal left and right page margins', () => {
         text: match[5]
       }));
     const title = words.find((word) => word.text === document.title && word.yMin < 120);
-    const seller = words.find((word) => word.text === 'Seller');
     const description = words.find((word) => word.text === 'Description');
+    const sellerName = words.find((word) => (
+      word.text === 'NEXORA'
+      && word.yMin > (title?.yMax ?? 0)
+      && word.yMin < (description?.yMin ?? Number.POSITIVE_INFINITY)
+    ));
     const lineItemAmount = words
       .filter((word) => word.text === `$${document.total}.00` && word.yMin > description.yMax && word.yMin < description.yMax + 80)
       .sort((left, right) => right.xMax - left.xMax)[0];
 
     assert.ok(Number.isFinite(pageWidth), `Page width must be measurable in ${document.path}`);
-    assert.ok(title && seller && description && lineItemAmount, `Alignment anchors must exist in ${document.path}`);
+    assert.ok(title && sellerName && description && lineItemAmount, `Alignment anchors must exist in ${document.path}`);
 
-    [seller, description].forEach((anchor) => {
+    [sellerName, description].forEach((anchor) => {
       assert.ok(
         Math.abs(anchor.xMin - title.xMin) <= 0.75,
         `${anchor.text} must share the left content guide in ${document.path}`
@@ -1126,6 +1132,15 @@ test('omits the seller phone from printed billing detail output', () => {
 
   assert.match(unpaidHTML, /class="billing-detail-seller-phone">\s*\(832\) 979-5559\s*<\/span>/);
   assert.match(cssRule(printRules, '.billing-detail-seller-phone'), /display:\s*none\s*!important;/);
+});
+
+test('omits the seller label from printed billing detail output', () => {
+  const unpaidHTML = createBillingRuntime('?transaction=SMS-20260811-0001').root.innerHTML;
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const printRules = css.slice(css.indexOf('@media print'));
+
+  assert.match(unpaidHTML, /class="billing-detail-seller-meta"/);
+  assert.match(cssRule(printRules, '.billing-detail-seller-meta dt'), /display:\s*none\s*!important;/);
 });
 
 test('keeps billing detail buttons compact on screen', () => {

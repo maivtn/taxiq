@@ -229,7 +229,7 @@
           <div><dt>Invoice number</dt><dd>${escapeHTML(record.invoiceNumber)}</dd></div>
           <div><dt>Date of issue</dt><dd>${formatDate(record.dateIssued)}</dd></div>
           <div><dt>Due date</dt><dd>${formatDate(record.dateDue)}</dd></div>
-          <div><dt>Seller</dt><dd>${escapeHTML(record.seller.legalName || record.seller.name)}${record.seller.phone ? `<span class="billing-detail-seller-phone">${escapeHTML(record.seller.phone)}</span>` : ''}<span>${escapeHTML(record.seller.email)}</span></dd></div>
+          <div class="billing-detail-seller-meta"><dt>Seller</dt><dd>${escapeHTML(record.seller.legalName || record.seller.name)}${record.seller.phone ? `<span class="billing-detail-seller-phone">${escapeHTML(record.seller.phone)}</span>` : ''}<span>${escapeHTML(record.seller.email)}</span></dd></div>
           <div data-billing-email-preview-hidden="true"><dt>Bill to</dt><dd>${escapeHTML(record.billTo.name)}<span>${escapeHTML(record.billTo.email)}</span></dd></div>
           <div><dt>Billing term</dt><dd>${escapeHTML(record.billingTerm)}</dd></div>
         </dl>
