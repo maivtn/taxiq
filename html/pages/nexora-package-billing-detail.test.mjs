@@ -478,6 +478,7 @@ test('opens a developer email HTML preview with mobile billing content', () => {
   assert.match(runtime.emailPreviewBody.innerHTML, /Download receipt/);
   assert.match(runtime.emailPreviewBody.innerHTML, /Receipt #RCPT-2026-0810-023749/);
   assert.doesNotMatch(runtime.emailPreviewBody.innerHTML, /data-billing-email-action|Resend email/);
+  assert.doesNotMatch(runtime.emailPreviewBody.innerHTML, /billing-detail-status|>Paid</);
   assert.doesNotMatch(runtime.emailPreviewBody.innerHTML, /<dt>Processor<\/dt>|Stripe/);
   assert.doesNotMatch(runtime.emailPreviewBody.innerHTML, /<dt>Transaction ID<\/dt>|NXR-20260810-0003/);
   assert.doesNotMatch(runtime.emailPreviewBody.innerHTML, /<dt>Processor transaction ID<\/dt>|pi_3NX_023749/);

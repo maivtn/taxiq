@@ -325,7 +325,8 @@
     const sourceHTML = root ? root.innerHTML : '';
     const previewHTML = sourceHTML
       .replace(/\s*<button\b(?=[^>]*data-billing-email-action)[\s\S]*?<\/button>/g, '')
-      .replace(/\s*<div\b(?=[^>]*data-billing-email-preview-hidden)[\s\S]*?<\/div>/g, '');
+      .replace(/\s*<div\b(?=[^>]*data-billing-email-preview-hidden)[\s\S]*?<\/div>/g, '')
+      .replace(/\s*<span\b(?=[^>]*class="[^"]*\bbilling-detail-status\b)[\s\S]*?<\/span>/g, '');
     return `<div class="billing-email-preview-mobile" data-billing-email-preview-root>${previewHTML}</div>`;
   }
 
