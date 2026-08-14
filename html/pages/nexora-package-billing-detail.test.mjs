@@ -951,6 +951,19 @@ test('keeps the billing summary amount compact on screen without changing print 
   assert.match(printSummaryAmountRule, /font-size:\s*30pt/);
 });
 
+test('keeps the billing document title smaller on mobile without changing print typography', () => {
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const documentTitleRule = cssRule(css, '.billing-detail-document-head h2');
+  const mobileRules = css.slice(css.indexOf('@media (max-width: 640px)'), css.indexOf('@page'));
+  const mobileDocumentTitleRule = cssRule(mobileRules, '.billing-detail-document-head h2');
+  const printRules = css.slice(css.indexOf('@media print'));
+  const printDocumentTitleRule = cssRule(printRules, '.billing-detail-document-head h2');
+
+  assert.match(documentTitleRule, /font-size:\s*20px/);
+  assert.match(mobileDocumentTitleRule, /font-size:\s*18px/);
+  assert.match(printDocumentTitleRule, /font-size:\s*13pt/);
+});
+
 test('keeps screen typography calm with only regular and semibold weights', () => {
   const css = readFileSync(DETAIL_CSS_URL, 'utf8');
   const screenRules = css.slice(0, css.indexOf('@page'));

@@ -992,6 +992,10 @@ body.billing-email-preview-open {
     font-size: 28px;
   }
 
+  .billing-detail-document-head h2 {
+    font-size: 18px;
+  }
+
   .billing-detail-meta {
     grid-template-columns: 1fr;
     gap: 10px;
