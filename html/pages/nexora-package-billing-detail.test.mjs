@@ -722,7 +722,11 @@ test('right-aligns PDF table headers with their row values', () => {
   const invoiceWords = pdfBBoxWords(invoicePath);
   const receiptWords = pdfBBoxWords(receiptPath);
   const lineItemWords = invoiceWords.filter((word) => word.yMin > 320 && word.yMin < 390);
-  const historyWords = receiptWords.filter((word) => word.yMin > 585 && word.yMin < 640);
+  const paymentHistoryTitle = pdfPhraseBounds(receiptWords, 'Payment history')[0];
+  const historyWords = receiptWords.filter((word) => (
+    word.yMin > paymentHistoryTitle.yMin
+    && word.yMin < paymentHistoryTitle.yMin + 80
+  ));
   const moneyLineItemValues = pdfPhraseBounds(lineItemWords, '$79.00')
     .sort((left, right) => left.xMin - right.xMin);
 
@@ -736,6 +740,33 @@ test('right-aligns PDF table headers with their row values', () => {
   ].forEach(([header, value, label]) => {
     assert.ok(Math.abs(header.xMax - value.xMax) <= 0.75, `${label} header must share the row value right edge`);
   });
+});
+
+test('keeps printed billing totals rows close together', () => {
+  const paidRecord = billingRecords().find((record) => record.paymentStatus === 'paid');
+  const receiptPath = fileURLToPath(new URL(paidRecord.receiptFile, PAGE_URL));
+  const totalsWords = pdfBBoxWords(receiptPath).filter((word) => word.yMin > 400 && word.yMin < 550);
+  const taxRow = pdfPhraseBounds(totalsWords, 'Tax (0%)')[0];
+  const standaloneTotalRow = pdfPhraseBounds(totalsWords, 'Total')
+    .find((row) => row.yMin > taxRow.yMin);
+  assert.ok(standaloneTotalRow, 'Standalone Total row must exist after Tax row');
+  const totalRowStarts = [
+    pdfPhraseBounds(totalsWords, 'Subtotal')[0].yMin,
+    pdfPhraseBounds(totalsWords, 'Total excluding tax')[0].yMin,
+    taxRow.yMin,
+    standaloneTotalRow.yMin,
+    pdfPhraseBounds(totalsWords, 'Amount paid')[0].yMin
+  ].sort((left, right) => left - right);
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const printRules = css.slice(css.indexOf('@media print'));
+  const printTotalsRowRule = [...printRules.matchAll(/\.billing-detail-totals div\s*\{([\s\S]*?)\}/g)]
+    .map((match) => match[1])
+    .find((rule) => /padding:/.test(rule)) || '';
+
+  const rowGaps = totalRowStarts.slice(1).map((yMin, index) => yMin - totalRowStarts[index]);
+  assert.ok(printTotalsRowRule, 'Print totals row padding rule must exist');
+  assert.ok(Math.max(...rowGaps) <= 20, 'PDF totals rows should be compact vertically');
+  assert.match(printTotalsRowRule, /padding:\s*1\.4mm 0;/);
 });
 
 test('keeps PDF amount labels visually separated from headline totals', () => {

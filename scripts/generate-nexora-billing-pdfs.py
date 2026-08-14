@@ -341,12 +341,10 @@ def totals_table(record: dict[str, Any], document_type: str, style: dict[str, Pa
     table = Table(rows, colWidths=[2.15 * inch, 1.55 * inch], hAlign="RIGHT")
     table.setStyle(TableStyle([
         ("LINEBELOW", (0, 0), (-1, -1), 0.45, BORDER),
-        ("TOPPADDING", (0, 0), (-1, -1), 6),
-        ("BOTTOMPADDING", (0, 0), (-1, -1), 6),
+        ("TOPPADDING", (0, 0), (-1, -1), 3),
+        ("BOTTOMPADDING", (0, 0), (-1, -1), 3),
         ("LEFTPADDING", (0, 0), (0, -1), 0),
         ("RIGHTPADDING", (-1, 0), (-1, -1), 0),
-        ("TOPPADDING", (0, -1), (-1, -1), 8),
-        ("BOTTOMPADDING", (0, -1), (-1, -1), 8),
         ("BACKGROUND", (0, -1), (-1, -1), SURFACE),
     ]))
     return table
