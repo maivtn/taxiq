@@ -64,12 +64,6 @@
     return billingRecords.find((record) => record.transactionId === transactionId) || null;
   }
 
-  function statusDetails(record) {
-    if (record.paymentStatus === 'paid') return { label: 'Paid', className: 'is-paid' };
-    if (record.paymentStatus === 'overdue') return { label: 'Overdue', className: 'is-overdue' };
-    return { label: 'Payment due', className: 'is-payment-due' };
-  }
-
   function renderDocumentEyebrow(documentType, sellerName) {
     return `
       <p class="billing-detail-eyebrow">
@@ -170,7 +164,6 @@
   }
 
   function renderPaidBillingDetail(record) {
-    const status = statusDetails(record);
     const method = record.paymentMethod || { brand: '', last4: '' };
     return `
       <article class="billing-detail-summary" aria-labelledby="billing-summary-title">
@@ -204,7 +197,6 @@
             <span class="billing-detail-document-kicker">Paid document</span>
             <h2 id="billing-document-title">Receipt #${escapeHTML(record.receiptNumber)}</h2>
           </div>
-          <span class="billing-detail-status ${status.className}">${status.label}</span>
         </div>
         ${renderLineItems(record)}
         ${renderTotals(record, true)}
@@ -214,7 +206,6 @@
   }
 
   function renderUnpaidBillingDetail(record) {
-    const status = statusDetails(record);
     const overdueNotice = record.paymentStatus === 'overdue'
       ? '<div class="billing-detail-overdue-notice"><i data-lucide="triangle-alert" aria-hidden="true"></i><span>This invoice is overdue. Please complete payment to keep your services uninterrupted.</span></div>'
       : '';
@@ -250,7 +241,6 @@
             <span class="billing-detail-document-kicker">Unpaid document</span>
             <h2 id="billing-document-title">Invoice #${escapeHTML(record.invoiceNumber)}</h2>
           </div>
-          <span class="billing-detail-status ${status.className}">${status.label}</span>
         </div>
         ${renderLineItems(record)}
         ${renderTotals(record, false)}
@@ -326,8 +316,7 @@
     const sourceHTML = root ? root.innerHTML : '';
     const previewHTML = sourceHTML
       .replace(/\s*<button\b(?=[^>]*data-billing-email-action)[\s\S]*?<\/button>/g, '')
-      .replace(/\s*<div\b(?=[^>]*data-billing-email-preview-hidden)[\s\S]*?<\/div>/g, '')
-      .replace(/\s*<span\b(?=[^>]*class="[^"]*\bbilling-detail-status\b)[\s\S]*?<\/span>/g, '');
+      .replace(/\s*<div\b(?=[^>]*data-billing-email-preview-hidden)[\s\S]*?<\/div>/g, '');
     return `<div class="billing-email-preview-brand"><img src="${NEXORA_EMAIL_LOGO_URL}" alt="NEXORA TOUCH"></div><div class="billing-email-preview-mobile" data-billing-email-preview-root>${previewHTML}</div>`;
   }
 

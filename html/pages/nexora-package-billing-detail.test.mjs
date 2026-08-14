@@ -309,7 +309,7 @@ test('renders a paid billing record with invoice and receipt downloads', () => {
   const html = createBillingRuntime('?transaction=NXR-20260810-0003').root.innerHTML;
 
   assert.match(html, /Receipt from NEXORA TOUCH/);
-  assert.match(html, /billing-detail-status is-paid[\s\S]*?>Paid</);
+  assert.doesNotMatch(html, /billing-detail-status|>Paid</);
   assert.match(html, /\$79\.00/);
   assert.match(html, /Download invoice/);
   assert.match(html, /href="assets\/billing-documents\/Invoice-NX-2026-0810-023749\.pdf"[^>]*download="Invoice-NX-2026-0810-023749\.pdf"/);
@@ -347,7 +347,7 @@ test('renders a payment-due invoice without a receipt download', () => {
   const html = createBillingRuntime('?transaction=SMS-20260811-0001').root.innerHTML;
 
   assert.match(html, /Invoice from NEXORA TOUCH/);
-  assert.match(html, /billing-detail-status is-payment-due[\s\S]*?>Payment due</);
+  assert.doesNotMatch(html, /billing-detail-status|>Payment due</);
   assert.match(html, /\$179\.00/);
   assert.match(html, /Amount due/);
   assert.match(html, /Due August 18, 2026/);
@@ -398,7 +398,7 @@ test('omits billing periods for Voice Credit in detail and PDF views', () => {
 test('renders an overdue invoice with an explicit warning', () => {
   const html = createBillingRuntime('?transaction=VMS-20260701-0002').root.innerHTML;
 
-  assert.match(html, /billing-detail-status is-overdue[\s\S]*?>Overdue</);
+  assert.doesNotMatch(html, /billing-detail-status|>Overdue</);
   assert.match(html, /This invoice is overdue/);
   assert.match(html, /\$199\.00/);
   assert.match(html, /data-billing-email-action="reminder"/);
@@ -1036,7 +1036,7 @@ test('prints browser billing headers with document label and NEXORA logo instead
   assert.match(cssRule(printRules, '.billing-detail-print-document-label'), /display:\s*inline;/);
   assert.match(cssRule(printRules, '.billing-detail-print-logo'), /display:\s*block;/);
   assert.match(cssRule(printRules, '.billing-detail-document-icon'), /display:\s*none;/);
-  assert.match(cssRule(printRules, '.billing-detail-status'), /display:\s*none\s*!important;/);
+  assert.doesNotMatch(css, /billing-detail-status/);
 });
 
 test('keeps billing detail buttons compact on screen', () => {

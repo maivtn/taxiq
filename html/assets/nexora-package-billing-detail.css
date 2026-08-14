@@ -103,34 +103,6 @@
   gap: 20px;
 }
 
-.billing-detail-status {
-  display: inline-flex;
-  min-height: 25px;
-  align-items: center;
-  border-radius: 999px;
-  padding: 5px 9px;
-  font-size: 10px;
-  font-weight: 600;
-  letter-spacing: 0.045em;
-  text-transform: uppercase;
-  white-space: nowrap;
-}
-
-.billing-detail-status.is-paid {
-  background: #e6fbf2;
-  color: #008f5a;
-}
-
-.billing-detail-status.is-payment-due {
-  background: #fff7df;
-  color: #9a6700;
-}
-
-.billing-detail-status.is-overdue {
-  background: #fff1f0;
-  color: #c2410c;
-}
-
 .billing-detail-summary-main {
   display: grid;
   grid-template-columns: minmax(0, 1fr) auto;
@@ -1281,10 +1253,6 @@ body.billing-email-preview-open {
     display: none;
   }
 
-  .billing-detail-status {
-    display: none !important;
-  }
-
   .billing-detail-meta {
     grid-template-columns: repeat(3, minmax(0, 1fr));
     gap: 4mm 6mm;
@@ -1361,7 +1329,6 @@ body.billing-email-preview-open {
     font-weight: 400;
   }
 
-  .billing-detail-status,
   .billing-detail-table td:first-child strong,
   .billing-detail-totals .is-total dt,
   .billing-detail-totals .is-total dd,
