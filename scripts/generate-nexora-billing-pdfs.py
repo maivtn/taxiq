@@ -116,6 +116,16 @@ def styles() -> dict[str, ParagraphStyle]:
             textColor=SUBTLE,
             uppercase=True,
         ),
+        "label_right": ParagraphStyle(
+            "LabelRight",
+            parent=base["Normal"],
+            fontName="Helvetica-Bold",
+            fontSize=8,
+            leading=11,
+            textColor=SUBTLE,
+            uppercase=True,
+            alignment=TA_RIGHT,
+        ),
         "body": ParagraphStyle(
             "Body",
             parent=base["Normal"],
@@ -279,10 +289,10 @@ def amount_block(record: dict[str, Any], document_type: str, style: dict[str, Pa
 def line_items_table(record: dict[str, Any], style: dict[str, ParagraphStyle]) -> Table:
     rows: list[list[Any]] = [[
         Paragraph("Description", style["label"]),
-        Paragraph("Qty", style["label"]),
-        Paragraph("Unit price", style["label"]),
-        Paragraph("Tax", style["label"]),
-        Paragraph("Amount", style["label"]),
+        Paragraph("Qty", style["label_right"]),
+        Paragraph("Unit price", style["label_right"]),
+        Paragraph("Tax", style["label_right"]),
+        Paragraph("Amount", style["label_right"]),
     ]]
     for item in record["lineItems"]:
         period = item.get("period")
@@ -347,8 +357,8 @@ def payment_history(record: dict[str, Any], style: dict[str, ParagraphStyle]) ->
     rows = [[
         Paragraph("Payment method", style["label"]),
         Paragraph("Date", style["label"]),
-        Paragraph("Amount paid", style["label"]),
-        Paragraph("Receipt number", style["label"]),
+        Paragraph("Amount paid", style["label_right"]),
+        Paragraph("Receipt number", style["label_right"]),
     ], [
         Paragraph(f"{xml(method['brand'])} - {xml(method['last4'])}", style["body"]),
         Paragraph(format_date(record["datePaid"]), style["body"]),

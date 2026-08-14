@@ -218,6 +218,39 @@ function pdfBBoxWords(documentPath) {
     }));
 }
 
+function pdfPhraseBounds(words, phrase) {
+  const tokens = phrase.split(' ');
+  const rows = words.reduce((groups, word) => {
+    const group = groups.find((item) => Math.abs(item.yMin - word.yMin) <= 1);
+    if (group) {
+      group.words.push(word);
+      return groups;
+    }
+    groups.push({ yMin: word.yMin, words: [word] });
+    return groups;
+  }, []);
+  const matches = [];
+
+  rows.forEach((row) => {
+    const sortedWords = row.words.sort((left, right) => left.xMin - right.xMin);
+    for (let index = 0; index <= sortedWords.length - tokens.length; index += 1) {
+      const slice = sortedWords.slice(index, index + tokens.length);
+      if (slice.every((word, tokenIndex) => word.text === tokens[tokenIndex])) {
+        matches.push({
+          xMin: Math.min(...slice.map((word) => word.xMin)),
+          yMin: Math.min(...slice.map((word) => word.yMin)),
+          xMax: Math.max(...slice.map((word) => word.xMax)),
+          yMax: Math.max(...slice.map((word) => word.yMax)),
+          text: phrase
+        });
+      }
+    }
+  });
+
+  assert.ok(matches.length > 0, `PDF phrase "${phrase}" must exist`);
+  return matches;
+}
+
 function pdfSvgImagePlacements(documentPath) {
   const svg = execFileSync('pdftocairo', ['-svg', '-f', '1', '-l', '1', documentPath, '-'], { encoding: 'utf8' });
   const placements = [...svg.matchAll(/<use xlink:href="#source-\d+"[^>]*transform="matrix\(([-\d.]+),\s*0,\s*0,\s*([-\d.]+),\s*([-\d.]+),\s*([-\d.]+)\)"/g)]
@@ -680,6 +713,29 @@ test('aligns PDF header metadata labels and values into columns', () => {
   assert.ok(rows.length >= 3, 'Receipt metadata must include invoice, receipt, and paid date rows');
   assert.ok(Math.max(...labelStarts) - Math.min(...labelStarts) <= 0.75, 'Metadata labels must share a left edge');
   assert.ok(Math.max(...valueStarts) - Math.min(...valueStarts) <= 0.75, 'Metadata values must share a value column');
+});
+
+test('right-aligns PDF table headers with their row values', () => {
+  const paidRecord = billingRecords().find((record) => record.paymentStatus === 'paid');
+  const invoicePath = fileURLToPath(new URL(paidRecord.invoiceFile, PAGE_URL));
+  const receiptPath = fileURLToPath(new URL(paidRecord.receiptFile, PAGE_URL));
+  const invoiceWords = pdfBBoxWords(invoicePath);
+  const receiptWords = pdfBBoxWords(receiptPath);
+  const lineItemWords = invoiceWords.filter((word) => word.yMin > 320 && word.yMin < 390);
+  const historyWords = receiptWords.filter((word) => word.yMin > 585 && word.yMin < 640);
+  const moneyLineItemValues = pdfPhraseBounds(lineItemWords, '$79.00')
+    .sort((left, right) => left.xMin - right.xMin);
+
+  [
+    [pdfPhraseBounds(lineItemWords, 'Qty')[0], pdfPhraseBounds(lineItemWords, '1')[0], 'Qty'],
+    [pdfPhraseBounds(lineItemWords, 'Unit price')[0], moneyLineItemValues[0], 'Unit price'],
+    [pdfPhraseBounds(lineItemWords, 'Tax')[0], pdfPhraseBounds(lineItemWords, '0%')[0], 'Tax'],
+    [pdfPhraseBounds(lineItemWords, 'Amount')[0], moneyLineItemValues[1], 'Amount'],
+    [pdfPhraseBounds(historyWords, 'Amount paid')[0], pdfPhraseBounds(historyWords, '$79.00')[0], 'Amount paid'],
+    [pdfPhraseBounds(historyWords, 'Receipt number')[0], pdfPhraseBounds(historyWords, paidRecord.receiptNumber)[0], 'Receipt number']
+  ].forEach(([header, value, label]) => {
+    assert.ok(Math.abs(header.xMax - value.xMax) <= 0.75, `${label} header must share the row value right edge`);
+  });
 });
 
 test('keeps PDF amount labels visually separated from headline totals', () => {
