@@ -192,6 +192,10 @@ function billingRecords() {
   return context.window.NEXORA_PACKAGE_BILLING_RECORDS;
 }
 
+function textPattern(value) {
+  return new RegExp(String(value).replace(/[.*+?^${}()|[\]\\]/g, '\\$&'));
+}
+
 function cssRule(css, selector) {
   const escaped = selector.replace(/[.*+?^${}()|[\]\\]/g, '\\$&').replace(/\s+/g, '\\s+');
   const match = css.match(new RegExp(`${escaped}\\s*\\{([\\s\\S]*?)\\}`));
@@ -544,11 +548,16 @@ test('uses uppercase NEXORA TOUCH across billing surfaces and generated document
   const unpaidHTML = createBillingRuntime('?transaction=SMS-20260811-0001').root.innerHTML;
   assert.match(paidHTML, /Receipt from NEXORA TOUCH/);
   assert.match(unpaidHTML, /Invoice from NEXORA TOUCH/);
+  assert.match(unpaidHTML, /NEXORA TOUCH LLC/);
+  assert.match(unpaidHTML, /\(832\) 979-5559/);
   assert.doesNotMatch(`${paidHTML}\n${unpaidHTML}`, /NEXORA Touch|Nexora Touch/);
 
   billingRecords().forEach((record) => {
     assert.equal(record.seller.name, 'NEXORA TOUCH');
-    assert.equal(record.seller.legalName, 'NEXORA TOUCH, LLC');
+    assert.equal(record.seller.legalName, 'NEXORA TOUCH LLC');
+    assert.equal(record.seller.email, 'support@nexoratouch.com');
+    assert.equal(record.seller.phone, '(832) 979-5559');
+    assert.deepEqual(Array.from(record.seller.addressLines), ['9793 Westheimer Rd Suite A', 'Houston, TX 77042']);
 
     const invoicePath = fileURLToPath(new URL(record.invoiceFile, PAGE_URL));
     const invoiceInfo = execFileSync('pdfinfo', [invoicePath], { encoding: 'utf8' });
@@ -556,7 +565,13 @@ test('uses uppercase NEXORA TOUCH across billing surfaces and generated document
     assert.match(invoiceInfo, /Author:\s+NEXORA TOUCH/);
     assert.doesNotMatch(invoiceInfo, /NEXORA Touch|Nexora Touch/);
     assert.match(invoiceText, /NEXORA TOUCH/);
+    assert.match(invoiceText, /NEXORA TOUCH LLC/);
+    assert.match(invoiceText, /9793 Westheimer Rd Suite A/);
+    assert.match(invoiceText, /Houston, TX 77042/);
+    assert.match(invoiceText, /\(832\) 979-5559/);
+    assert.match(invoiceText, /support@nexoratouch\.com/);
     assert.doesNotMatch(invoiceText, /NEXORA Touch|Nexora Touch/);
+    assert.doesNotMatch(invoiceText, /NEXORA TOUCH, LLC|5900 Balcones|Austin, TX 78731/);
 
     if (record.receiptFile) {
       const receiptPath = fileURLToPath(new URL(record.receiptFile, PAGE_URL));
@@ -565,7 +580,13 @@ test('uses uppercase NEXORA TOUCH across billing surfaces and generated document
       assert.match(receiptInfo, /Author:\s+NEXORA TOUCH/);
       assert.doesNotMatch(receiptInfo, /NEXORA Touch|Nexora Touch/);
       assert.match(receiptText, /NEXORA TOUCH/);
+      assert.match(receiptText, /NEXORA TOUCH LLC/);
+      assert.match(receiptText, /9793 Westheimer Rd Suite A/);
+      assert.match(receiptText, /Houston, TX 77042/);
+      assert.match(receiptText, /\(832\) 979-5559/);
+      assert.match(receiptText, /support@nexoratouch\.com/);
       assert.doesNotMatch(receiptText, /NEXORA Touch|Nexora Touch/);
+      assert.doesNotMatch(receiptText, /NEXORA TOUCH, LLC|5900 Balcones|Austin, TX 78731/);
     }
   });
 });
@@ -581,12 +602,14 @@ test('provides real PDF download documents that match billing records', () => {
     assert.match(invoiceInfo, /Page size:\s+595\.276 x 841\.89 pts \(A4\)/);
     const invoiceText = execFileSync('pdftotext', [fileURLToPath(invoiceURL), '-'], { encoding: 'utf8' });
     assert.match(invoiceText, /NEXORA TOUCH/);
-    assert.match(invoiceText, new RegExp(record.seller.legalName));
-    assert.match(invoiceText, new RegExp(record.seller.addressLines[0]));
-    assert.match(invoiceText, new RegExp(record.billTo.addressLines[0]));
-    assert.match(invoiceText, new RegExp(record.invoiceNumber));
+    assert.match(invoiceText, textPattern(record.seller.legalName));
+    assert.match(invoiceText, textPattern(record.seller.addressLines[0]));
+    assert.match(invoiceText, textPattern(record.seller.phone));
+    assert.match(invoiceText, textPattern(record.seller.email));
+    assert.match(invoiceText, textPattern(record.billTo.addressLines[0]));
+    assert.match(invoiceText, textPattern(record.invoiceNumber));
     record.lineItems.forEach((item) => {
-      assert.match(invoiceText, new RegExp(item.description));
+      assert.match(invoiceText, textPattern(item.description));
     });
     assert.match(invoiceText, new RegExp(`\\$${record.total}\\.00`));
     assert.match(invoiceText, /Amount due/);
@@ -599,8 +622,12 @@ test('provides real PDF download documents that match billing records', () => {
       assert.match(receiptInfo, /Page size:\s+595\.276 x 841\.89 pts \(A4\)/);
       const receiptText = execFileSync('pdftotext', [fileURLToPath(receiptURL), '-'], { encoding: 'utf8' });
       assert.match(receiptText, /NEXORA TOUCH/);
-      assert.match(receiptText, new RegExp(record.receiptNumber));
-      assert.match(receiptText, new RegExp(record.invoiceNumber));
+      assert.match(receiptText, textPattern(record.seller.legalName));
+      assert.match(receiptText, textPattern(record.seller.addressLines[0]));
+      assert.match(receiptText, textPattern(record.seller.phone));
+      assert.match(receiptText, textPattern(record.seller.email));
+      assert.match(receiptText, textPattern(record.receiptNumber));
+      assert.match(receiptText, textPattern(record.invoiceNumber));
       assert.match(receiptText, /Visa - 4242/);
       assert.match(receiptText, /Amount paid/);
       assert.match(receiptText, new RegExp(`\\$${record.total}\\.00`));

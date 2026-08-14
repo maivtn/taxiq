@@ -241,10 +241,14 @@ def parties_block(record: dict[str, Any], style: dict[str, ParagraphStyle]) -> T
     seller_address = "<br/>".join(xml(line) for line in seller.get("addressLines", []))
     bill_to_address = "<br/>".join(xml(line) for line in bill_to.get("addressLines", []))
     seller_legal_name = seller.get("legalName", seller["name"])
+    seller_contact_lines = [seller_address]
+    if seller.get("phone"):
+        seller_contact_lines.append(xml(seller["phone"]))
+    seller_contact_lines.append(f"<font color='#000000'>{xml(seller['email'])}</font>")
+    seller_contact = "<br/>".join(line for line in seller_contact_lines if line)
     data = [[
         Paragraph(
-            f"<b>Seller</b><br/><b>{xml(seller_legal_name)}</b><br/>{seller_address}<br/>"
-            f"<font color='#000000'>{xml(seller['email'])}</font>",
+            f"<b>Seller</b><br/><b>{xml(seller_legal_name)}</b><br/>{seller_contact}",
             style["body"],
         ),
         Paragraph(
