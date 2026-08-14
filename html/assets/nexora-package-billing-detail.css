@@ -65,22 +65,11 @@
   padding: 26px;
 }
 
-.billing-detail-summary-head,
 .billing-detail-document-head {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
   gap: 20px;
-}
-
-.billing-detail-brand {
-  background: linear-gradient(90deg, var(--nexora-electric), var(--nexora-violet));
-  -webkit-background-clip: text;
-  background-clip: text;
-  color: transparent;
-  font-size: 13px;
-  font-weight: 600;
-  letter-spacing: 0.04em;
 }
 
 .billing-detail-status {
@@ -970,6 +959,19 @@ body.billing-payment-open {
     table-layout: fixed;
   }
 
+  .billing-detail-col-description {
+    width: 52%;
+  }
+
+  .billing-detail-col-qty {
+    width: 10%;
+  }
+
+  .billing-detail-col-unit,
+  .billing-detail-col-amount {
+    width: 19%;
+  }
+
   .billing-detail-table thead {
     position: static;
     display: table-header-group;
@@ -998,9 +1000,13 @@ body.billing-payment-open {
     text-align: right;
   }
 
+  .billing-detail-table-number {
+    text-align: right;
+    font-variant-numeric: tabular-nums;
+  }
+
   .billing-detail-table th:first-child,
   .billing-detail-table td:first-child {
-    width: 52%;
     padding-left: 0;
     text-align: left;
   }

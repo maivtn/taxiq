@@ -101,21 +101,27 @@
       <div class="billing-detail-table-wrap">
         <table class="billing-detail-table">
           <caption class="visually-hidden">Billing line items</caption>
+          <colgroup>
+            <col class="billing-detail-col-description">
+            <col class="billing-detail-col-qty">
+            <col class="billing-detail-col-unit">
+            <col class="billing-detail-col-amount">
+          </colgroup>
           <thead>
             <tr>
               <th scope="col">Description</th>
-              <th scope="col">Qty</th>
-              <th scope="col">Unit price</th>
-              <th scope="col">Amount</th>
+              <th scope="col" class="billing-detail-table-number">Qty</th>
+              <th scope="col" class="billing-detail-table-number">Unit price</th>
+              <th scope="col" class="billing-detail-table-number">Amount</th>
             </tr>
           </thead>
           <tbody>
             ${record.lineItems.map((item) => `
               <tr>
                 <td data-label="Description"><strong>${escapeHTML(item.description)}</strong>${item.period ? `<span>${escapeHTML(item.period)}</span>` : ''}</td>
-                <td data-label="Qty">${escapeHTML(item.quantity)}</td>
-                <td data-label="Unit price">${formatMoney(item.unitPrice, record.currency)}</td>
-                <td data-label="Amount"><strong>${formatMoney(item.amount, record.currency)}</strong></td>
+                <td class="billing-detail-table-number" data-label="Qty">${escapeHTML(item.quantity)}</td>
+                <td class="billing-detail-table-number" data-label="Unit price">${formatMoney(item.unitPrice, record.currency)}</td>
+                <td class="billing-detail-table-number" data-label="Amount"><strong>${formatMoney(item.amount, record.currency)}</strong></td>
               </tr>
             `).join('')}
           </tbody>
@@ -142,13 +148,9 @@
     const method = record.paymentMethod || { brand: '', last4: '' };
     return `
       <article class="billing-detail-summary" aria-labelledby="billing-summary-title">
-        <div class="billing-detail-summary-head">
-          <span class="billing-detail-brand">NEXORA TOUCH</span>
-          <span class="billing-detail-status ${status.className}">${status.label}</span>
-        </div>
         <div class="billing-detail-summary-main">
           <div>
-            <p class="billing-detail-eyebrow">Receipt</p>
+            <p class="billing-detail-eyebrow">Receipt from ${escapeHTML(record.seller.name)}</p>
             <h2 id="billing-summary-title">${formatMoney(record.total, record.currency)}</h2>
             <p class="billing-detail-date">Paid ${formatDateTime(record.datePaid)}</p>
           </div>
@@ -192,13 +194,9 @@
       : '';
     return `
       <article class="billing-detail-summary" aria-labelledby="billing-summary-title">
-        <div class="billing-detail-summary-head">
-          <span class="billing-detail-brand">NEXORA TOUCH</span>
-          <span class="billing-detail-status ${status.className}">${status.label}</span>
-        </div>
         <div class="billing-detail-summary-main">
           <div>
-            <p class="billing-detail-eyebrow">Invoice</p>
+            <p class="billing-detail-eyebrow">Invoice from ${escapeHTML(record.seller.name)}</p>
             <h2 id="billing-summary-title">${formatMoney(record.total, record.currency)} due</h2>
             <p class="billing-detail-date">Due ${formatDate(record.dateDue)}</p>
           </div>

@@ -191,8 +191,7 @@ test('creates Billing Detail from the Salon shared-shell skeleton', () => {
 test('renders a paid billing record with invoice and receipt downloads', () => {
   const html = createBillingRuntime('?transaction=NXR-20260810-0003').root.innerHTML;
 
-  assert.match(html, /<p class="billing-detail-eyebrow">Receipt<\/p>/);
-  assert.doesNotMatch(html, /Receipt from NEXORA TOUCH/);
+  assert.match(html, /Receipt from NEXORA TOUCH/);
   assert.match(html, /billing-detail-status is-paid[\s\S]*?>Paid</);
   assert.match(html, /\$79\.00/);
   assert.match(html, /Download invoice/);
@@ -230,8 +229,7 @@ test('explains when an expected billing document is not available', () => {
 test('renders a payment-due invoice without a receipt download', () => {
   const html = createBillingRuntime('?transaction=SMS-20260811-0001').root.innerHTML;
 
-  assert.match(html, /<p class="billing-detail-eyebrow">Invoice<\/p>/);
-  assert.doesNotMatch(html, /Invoice from NEXORA TOUCH/);
+  assert.match(html, /Invoice from NEXORA TOUCH/);
   assert.match(html, /billing-detail-status is-payment-due[\s\S]*?>Payment due</);
   assert.match(html, /\$179\.00/);
   assert.match(html, /Amount due/);
@@ -245,6 +243,17 @@ test('renders a payment-due invoice without a receipt download', () => {
   assert.match(html, /data-billing-pay-now[\s\S]*?Pay now/);
   assert.doesNotMatch(html, /Download receipt/);
   assert.doesNotMatch(html, /Receipt number/);
+});
+
+test('omits the duplicate summary header from billing summary cards', () => {
+  const paidHTML = createBillingRuntime('?transaction=NXR-20260810-0003').root.innerHTML;
+  const unpaidHTML = createBillingRuntime('?transaction=SMS-20260811-0001').root.innerHTML;
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+
+  assert.doesNotMatch(`${paidHTML}\n${unpaidHTML}`, /billing-detail-summary-head/);
+  assert.doesNotMatch(`${paidHTML}\n${unpaidHTML}`, /billing-detail-brand/);
+  assert.doesNotMatch(css, /\.billing-detail-summary-head\b/);
+  assert.doesNotMatch(css, /\.billing-detail-brand\b/);
 });
 
 test('omits billing periods for Voice Credit in detail and PDF views', () => {
@@ -372,9 +381,8 @@ test('uses uppercase NEXORA TOUCH across billing surfaces and generated document
 
   const paidHTML = createBillingRuntime('?transaction=NXR-20260810-0003').root.innerHTML;
   const unpaidHTML = createBillingRuntime('?transaction=SMS-20260811-0001').root.innerHTML;
-  assert.match(paidHTML, /<p class="billing-detail-eyebrow">Receipt<\/p>/);
-  assert.match(unpaidHTML, /<p class="billing-detail-eyebrow">Invoice<\/p>/);
-  assert.doesNotMatch(`${paidHTML}\n${unpaidHTML}`, /Receipt from NEXORA TOUCH|Invoice from NEXORA TOUCH/);
+  assert.match(paidHTML, /Receipt from NEXORA TOUCH/);
+  assert.match(unpaidHTML, /Invoice from NEXORA TOUCH/);
   assert.doesNotMatch(`${paidHTML}\n${unpaidHTML}`, /NEXORA Touch|Nexora Touch/);
 
   billingRecords().forEach((record) => {
@@ -606,6 +614,26 @@ test('keeps mobile line item dates underneath descriptions without narrow wrappi
   assert.match(descriptionRule, /text-align:\s*left;/);
   assert.match(descriptionChildrenRule, /grid-column:\s*1;/);
   assert.match(descriptionPeriodRule, /white-space:\s*nowrap;/);
+});
+
+test('keeps printed numeric column headers aligned with their values', () => {
+  const html = createBillingRuntime('?transaction=NXR-20260810-0003').root.innerHTML;
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const printRules = css.slice(css.indexOf('@media print'));
+  const numberCellRule = /\.billing-detail-table-number\s*\{([^}]*)\}/.exec(printRules)?.[1] || '';
+
+  assert.match(html, /<colgroup>[\s\S]*?billing-detail-col-description[\s\S]*?billing-detail-col-qty[\s\S]*?billing-detail-col-unit[\s\S]*?billing-detail-col-amount[\s\S]*?<\/colgroup>/);
+  assert.match(html, /<th scope="col" class="billing-detail-table-number">Qty<\/th>/);
+  assert.match(html, /<th scope="col" class="billing-detail-table-number">Unit price<\/th>/);
+  assert.match(html, /<th scope="col" class="billing-detail-table-number">Amount<\/th>/);
+  assert.match(html, /<td class="billing-detail-table-number" data-label="Qty">1<\/td>/);
+  assert.match(html, /<td class="billing-detail-table-number" data-label="Unit price">\$79\.00<\/td>/);
+  assert.match(html, /<td class="billing-detail-table-number" data-label="Amount"><strong>\$79\.00<\/strong><\/td>/);
+  assert.match(printRules, /\.billing-detail-col-description\s*\{[\s\S]*?width:\s*52%;/);
+  assert.match(printRules, /\.billing-detail-col-qty\s*\{[\s\S]*?width:\s*10%;/);
+  assert.match(printRules, /\.billing-detail-col-unit,[\s\S]*?\.billing-detail-col-amount\s*\{[\s\S]*?width:\s*19%;/);
+  assert.match(numberCellRule, /text-align:\s*right;/);
+  assert.match(numberCellRule, /font-variant-numeric:\s*tabular-nums;/);
 });
 
 test('prints Billing Detail on A4 without app chrome or split billing rows', () => {
