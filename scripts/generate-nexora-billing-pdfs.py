@@ -181,7 +181,6 @@ def footer(canvas: Any, document: Any) -> None:
     canvas.line(CONTENT_LEFT, 0.52 * inch, A4[0] - CONTENT_LEFT, 0.52 * inch)
     canvas.setFillColor(SUBTLE)
     canvas.setFont("Helvetica", 7.5)
-    canvas.drawString(CONTENT_LEFT, 0.34 * inch, "NEXORA TOUCH billing document")
     canvas.drawRightString(A4[0] - CONTENT_LEFT, 0.34 * inch, f"Page {canvas.getPageNumber()}")
     canvas.restoreState()
 
