@@ -256,6 +256,17 @@ test('omits the duplicate summary header from billing summary cards', () => {
   assert.doesNotMatch(css, /\.billing-detail-brand\b/);
 });
 
+test('keeps billing summary main flush after removing the summary header', () => {
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const summaryMainRules = [...css.matchAll(/\.billing-detail-summary-main\s*\{([^}]*)\}/g)]
+    .map((match) => match[1]);
+
+  assert.ok(summaryMainRules.length > 0, 'billing summary main styles must exist');
+  summaryMainRules.forEach((rule) => {
+    assert.doesNotMatch(rule, /margin-top:/);
+  });
+});
+
 test('omits billing periods for Voice Credit in detail and PDF views', () => {
   const html = createBillingRuntime('?transaction=SMS-20260811-0001').root.innerHTML;
   const record = billingRecords().find((item) => item.transactionId === 'SMS-20260811-0001');

@@ -105,7 +105,6 @@
   grid-template-columns: minmax(0, 1fr) auto;
   gap: 24px;
   align-items: center;
-  margin-top: 20px;
 }
 
 .billing-detail-eyebrow {
@@ -916,10 +915,6 @@ body.billing-payment-open {
   .billing-detail-summary {
     break-inside: avoid;
     page-break-inside: avoid;
-  }
-
-  .billing-detail-summary-main {
-    margin-top: 4mm;
   }
 
   .billing-detail-summary-main h2 {
