@@ -567,6 +567,17 @@ test('keeps the billing summary amount compact on screen without changing print 
   assert.match(printSummaryAmountRule, /font-size:\s*30pt/);
 });
 
+test('keeps billing detail buttons compact on screen', () => {
+  const css = readFileSync(DETAIL_CSS_URL, 'utf8');
+  const actionRule = /\.billing-detail-action\s*\{([^}]*)\}/.exec(css)?.[1] || '';
+  const paymentButtonRule = /\.billing-payment-secondary,\s*\.billing-payment-primary\s*\{([^}]*)\}/.exec(css)?.[1] || '';
+
+  assert.match(actionRule, /min-height:\s*38px/);
+  assert.match(actionRule, /padding:\s*7px 12px/);
+  assert.match(paymentButtonRule, /min-height:\s*38px/);
+  assert.match(paymentButtonRule, /padding:\s*7px 12px/);
+});
+
 test('keeps mobile line item dates underneath descriptions without narrow wrapping', () => {
   const css = readFileSync(DETAIL_CSS_URL, 'utf8');
   const mobileStart = css.indexOf('@media (max-width: 640px)');

@@ -172,14 +172,14 @@
 
 .billing-detail-action {
   display: inline-flex;
-  min-height: 44px;
+  min-height: 38px;
   align-items: center;
   justify-content: center;
   gap: 8px;
   border: 1px solid var(--nexora-border);
   border-radius: 10px;
   background: #fff;
-  padding: 10px 14px;
+  padding: 7px 12px;
   color: var(--nexora-text);
   font: inherit;
   font-size: 12px;
@@ -677,9 +677,9 @@ body.billing-payment-open {
 
 .billing-payment-secondary,
 .billing-payment-primary {
-  min-height: 42px;
+  min-height: 38px;
   border-radius: 10px;
-  padding: 9px 14px;
+  padding: 7px 12px;
   font: inherit;
   font-size: 12px;
   font-weight: 900;
