@@ -900,6 +900,7 @@ test('keeps billing detail table headers readable without uppercase transform', 
 
   assert.match(tableHeaderRule, /letter-spacing:\s*0;/);
   assert.match(tableHeaderRule, /text-transform:\s*none;/);
+  assert.match(mobileTableLabelRule, /font-size:\s*11px;/);
   assert.match(mobileTableLabelRule, /letter-spacing:\s*0;/);
   assert.match(mobileTableLabelRule, /text-transform:\s*none;/);
 });
