@@ -2806,13 +2806,67 @@
         var service = queueServiceForName(svc);
         return service ? service.durationMin || 0 : 0;
       }
+      function queueItemForService(service, techId, serviceTicketId) {
+        var serviceName = posServiceDisplayName(service && (service.label || service.name) || '');
+        return {
+          serviceId: service && service.id ? String(service.id) : '',
+          serviceTicketId: serviceTicketId == null ? null : String(serviceTicketId),
+          name: serviceName,
+          price: Number(service && service.price) || 0,
+          durationMin: Number(service && service.durationMin) || 0,
+          techId: techId || null,
+          cat: queueServiceCategory(service, serviceName)
+        };
+      }
       function queueItemsForService(svc, techId) {
         var service = salonData.findService(salonCatalog, svc);
-        var name = service ? posServiceDisplayName(service.name) : posServiceDisplayName(svc || '');
-        if (!name) return [];
-        var price = service && service.price != null ? service.price : 0;
-        var cat = queueServiceCategory(service, svc);
-        return [{ name: name, price: price, techId: techId || null, cat: cat }];
+        if (!service) service = { id: '', label: posServiceDisplayName(svc || ''), price: 0, durationMin: 0 };
+        return service.label || service.name ? [queueItemForService(service, techId || null, null)] : [];
+      }
+      function queueTicketServiceIds(w) {
+        var ids = [];
+        (w && w.items || []).forEach(function (item) {
+          var id = item && item.serviceTicketId;
+          if (id != null && ids.indexOf(String(id)) === -1) ids.push(String(id));
+        });
+        (w && w.serviceTicketIds || []).forEach(function (id) {
+          if (id != null && ids.indexOf(String(id)) === -1) ids.push(String(id));
+        });
+        if (w && w.serviceTicketId != null && ids.indexOf(String(w.serviceTicketId)) === -1) ids.push(String(w.serviceTicketId));
+        return ids;
+      }
+      function normalizeQueueTicketServices(w) {
+        var legacyDuration = Number(w.durationMin) || 0;
+        if (!Array.isArray(w.items)) w.items = [];
+        if (!w.items.length && w.svc) w.items = queueItemsForService(w.svc, w.techId || w.reqTech || null);
+        w.items = w.items.map(function (item) {
+          var service = salonData.findService(salonCatalog, item.serviceId || item.name);
+          return {
+            serviceId: String(item.serviceId || (service && service.id) || ''),
+            serviceTicketId: item.serviceTicketId == null ? null : String(item.serviceTicketId),
+            name: posServiceDisplayName(item.name || (service && (service.label || service.name)) || ''),
+            price: Number(item.price != null ? item.price : service && service.price) || 0,
+            durationMin: Number(item.durationMin != null ? item.durationMin : service && service.durationMin) || 0,
+            techId: w.techId || w.reqTech || item.techId || null,
+            cat: item.cat || queueServiceCategory(service, item.name)
+          };
+        }).filter(function (item) { return !!item.name; });
+        w.serviceTicketIds = queueTicketServiceIds(w);
+        w.items.forEach(function (item, index) {
+          if (!item.serviceTicketId && w.serviceTicketIds[index]) item.serviceTicketId = w.serviceTicketIds[index];
+        });
+        if (legacyDuration && w.items.length && !w.items.some(function (item) { return item.durationMin > 0; })) w.items[0].durationMin = legacyDuration;
+        w.serviceTicketIds = queueTicketServiceIds(w);
+        w.serviceTicketId = w.serviceTicketIds[0] || null;
+        w.svc = w.items[0] ? w.items[0].name : '';
+        w.durationMin = w.items.reduce(function (sum, item) { return sum + item.durationMin; }, 0);
+        return w;
+      }
+      function queueTicketHasServiceTicket(w, serviceTicketId) {
+        return serviceTicketId != null && queueTicketServiceIds(w).indexOf(String(serviceTicketId)) !== -1;
+      }
+      function queueTicketAssignment(w) {
+        return String(w && (w.techId || w.reqTech) || 'anyone');
       }
 
       // #73 — match weights, read live by the dispatch board
@@ -2842,27 +2896,26 @@
             { at: Date.now() - 4 * 60000, msg: '✋ Kim finished — guest waiting to pay' }
           ] }
       ];
-      // Operational ticket links (#pos-nail-salon-ops Phase 3): every WAITLIST row is one service ticket.
-      // orderId groups tickets that bill together; bookingId/serviceTicketId trace back to the shared
-      // appointment store when the guest came from a Booking. Legacy/walk-in rows get a synthetic orderId
-      // so the grouped Tickets view always has something to group on.
+      // Operational ticket links: every WAITLIST row is one technician ticket with one or more services.
+      // orderId groups tickets that bill together; serviceTicketIds trace each item back to Booking.
       WAITLIST.forEach(function (w) {
         if (w.orderId == null) w.orderId = 'walkin-' + w.id;
         if (w.bookingId === undefined) w.bookingId = null;
         if (w.serviceTicketId === undefined) w.serviceTicketId = null;
+        if (!Array.isArray(w.serviceTicketIds)) w.serviceTicketIds = [];
         if (w.customerId === undefined) w.customerId = w.name;
-        if (!Array.isArray(w.items)) w.items = [];
-        if (!w.items.length && w.svc) w.items = queueItemsForService(w.svc, w.techId || w.reqTech || null);
-        if (w.durationMin === undefined) w.durationMin = 0;
-        if (!w.durationMin && w.svc) w.durationMin = queueDurationForService(w.svc);
+        normalizeQueueTicketServices(w);
       });
       var wlSeq = 4;
       function wlog(w, msg) { if (w) (w.log || (w.log = [])).push({ at: Date.now(), msg: msg }); }
       function floorCount(st) { return WAITLIST.filter(function (w) { return w.status === st; }).length; }
       function ticketOpen(w) { return w.status !== 'completed' && w.status !== 'cancelled'; }
-      function hasOpenTicketForServiceTicket(serviceTicketId) {
+      function hasOperationalTicketForServiceTicket(serviceTicketId) {
         if (!serviceTicketId) return false;
-        return WAITLIST.some(function (w) { return w.serviceTicketId === serviceTicketId && ticketOpen(w); });
+        return WAITLIST.some(function (w) { return w.status !== 'cancelled' && queueTicketHasServiceTicket(w, serviceTicketId); });
+      }
+      function hasOpenTicketForServiceTicket(serviceTicketId) {
+        return hasOperationalTicketForServiceTicket(serviceTicketId);
       }
       // Groups tickets by orderId so Tickets can render one card per guest/order with a service
       // line per ticket, while still billing and completing the whole order together. Defaults to

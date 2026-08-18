@@ -9,13 +9,27 @@ const bookingCss = fs.readFileSync(path.join(__dirname, '..', 'assets', 'pos-boo
 test('POS gives every WAITLIST row operational-ticket links back to the booking/order', () => {
   assert.match(html, /if \(w\.orderId == null\) w\.orderId = 'walkin-' \+ w\.id;/);
   assert.match(html, /if \(w\.bookingId === undefined\) w\.bookingId = null;/);
-  assert.match(html, /if \(w\.serviceTicketId === undefined\) w\.serviceTicketId = null;/);
+  assert.match(html, /if \(!Array\.isArray\(w\.serviceTicketIds\)\) w\.serviceTicketIds = \[\];/);
+  assert.match(html, /normalizeQueueTicketServices\(w\);/);
   assert.match(html, /if \(w\.customerId === undefined\) w\.customerId = w\.name;/);
 });
 
-test('POS treats "open" as not completed and not cancelled, and never lets two open tickets share a serviceTicketId', () => {
+test('POS treats "open" as not completed and not cancelled, and recognizes every linked service ticket id', () => {
   assert.match(html, /function ticketOpen\(w\) \{ return w\.status !== 'completed' && w\.status !== 'cancelled'; \}/);
-  assert.match(html, /function hasOpenTicketForServiceTicket\(serviceTicketId\) \{/);
+  assert.match(html, /function queueTicketHasServiceTicket\(w, serviceTicketId\) \{/);
+  const duplicateFn = html.match(/function hasOperationalTicketForServiceTicket\(serviceTicketId\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(duplicateFn, /queueTicketHasServiceTicket\(w, serviceTicketId\)/);
+  assert.match(duplicateFn, /w\.status !== 'cancelled'/);
+});
+
+test('Queue normalizes legacy and multi-service rows around items', () => {
+  assert.match(html, /function queueItemForService\(service, techId, serviceTicketId\) \{/);
+  assert.match(html, /function queueTicketServiceIds\(w\) \{/);
+  assert.match(html, /function normalizeQueueTicketServices\(w\) \{/);
+  assert.match(html, /w\.serviceTicketIds = queueTicketServiceIds\(w\);/);
+  assert.match(html, /w\.serviceTicketId = w\.serviceTicketIds\[0\] \|\| null;/);
+  assert.match(html, /w\.svc = w\.items\[0\] \? w\.items\[0\]\.name : '';/);
+  assert.match(html, /w\.durationMin = w\.items\.reduce/);
 });
 
 test('POS groups WAITLIST by orderId for the Tickets card view', () => {
@@ -68,10 +82,9 @@ test('Queue tickets with a service name hydrate billable line items before Check
 
   assert.match(html, /name: 'Lisa Trương'[\s\S]*svc: 'Acrylic — Full Set'/);
   assert.match(helper, /salonData\.findService\(salonCatalog, svc\)/);
-  assert.match(helper, /return \[\{ name: name, price: price, techId: techId \|\| null, cat: cat \}\]/);
-  assert.match(waitlistInit, /if \(!Array\.isArray\(w\.items\)\) w\.items = \[\]/);
-  assert.match(waitlistInit, /if \(!w\.items\.length && w\.svc\) w\.items = queueItemsForService\(w\.svc, w\.techId \|\| w\.reqTech \|\| null\)/);
-  assert.match(waitlistInit, /if \(!w\.durationMin && w\.svc\) w\.durationMin = queueDurationForService\(w\.svc\)/);
+  assert.match(helper, /queueItemForService\(service, techId \|\| null, null\)/);
+  assert.match(waitlistInit, /if \(!Array\.isArray\(w\.serviceTicketIds\)\) w\.serviceTicketIds = \[\]/);
+  assert.match(waitlistInit, /normalizeQueueTicketServices\(w\)/);
   assert.match(acceptHandler, /durationMin: queueDurationForService\(r\.svc\)/);
   assert.match(acceptHandler, /items: queueItemsForService\(r\.svc, r\.reqTech \|\| null\)/);
 });
