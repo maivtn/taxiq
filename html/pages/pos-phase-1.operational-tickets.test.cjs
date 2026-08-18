@@ -260,14 +260,87 @@ test('Queue service tickets label the swap action as Change tech', () => {
   assert.doesNotMatch(singleCard, /> Swap<\/button>/);
 });
 
+test('Queue exposes Edit service for every open ticket view and routes it to the service picker', () => {
+  const ticketActions = html.match(/function ticketActionsHtml\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const singleCard = html.match(/function renderSingleTicketCard\(w, now, selW\) \{[\s\S]*?\n      \}\n      \/\/ Multi-ticket order card/)?.[0] || '';
+  const clickHandler = html.match(/\/\* edit queue service \*\/[\s\S]*?\/\* ▶ one-tap assign \*\//)?.[0] || '';
+
+  assert.match(html, /data-queue-service-modal/);
+  assert.match(html, /function queueServiceEditButtonHtml\(w, variant\) \{/);
+  assert.equal((ticketActions.match(/queueServiceEditButtonHtml\(w, 'compact'\)/g) || []).length, 4);
+  assert.equal((singleCard.match(/queueServiceEditButtonHtml\(w, 'card'\)/g) || []).length, 3);
+  assert.match(clickHandler, /closest\('\[data-wservice\]'\)/);
+  assert.match(clickHandler, /openQueueServiceModal\(\+serviceEdit\.getAttribute\('data-wservice'\)\)/);
+  assert.match(html, /data-queue-service-pick/);
+  assert.match(html, /chooseQueueService\(servicePick\.getAttribute\('data-queue-service-pick'\)\)/);
+});
+
+test('Queue service edit updates billing fields and persists the linked booking ticket', () => {
+  const bookingPatchSource = html.match(/function queueBookingServicePatch\(booking, serviceTicketId, service\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const changeSource = html.match(/function changeQueueTicketService\(w, service\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const booking = {
+    id: 'booking-1',
+    tickets: [
+      { id: 'ticket-1', serviceId: 'svc-old', serviceName: 'Old service', price: 20, durationMin: 20, technicianId: 't1', status: 'confirmed' },
+      { id: 'ticket-2', serviceId: 'svc-keep', serviceName: 'Keep service', price: 15, durationMin: 15, technicianId: null, status: 'confirmed' }
+    ]
+  };
+  const service = { id: 'svc-new', label: 'Deluxe Pedicure', price: 55, durationMin: 50 };
+  const updates = [];
+  const logs = [];
+  let reloads = 0;
+  const queueItemsForService = (value, techId) => [{ name: 'Deluxe Pedicure', price: 55, techId, cat: 'pedi', source: value }];
+  const changeQueueTicketService = new Function(
+    'posServiceDisplayName',
+    'queueItemsForService',
+    'posBookingById',
+    'appointmentStore',
+    'salonCatalog',
+    'reloadAppointmentSnapshot',
+    'wlog',
+    bookingPatchSource + '\n' + changeSource + '\nreturn changeQueueTicketService;'
+  )(
+    (value) => String(value || '').trim(),
+    queueItemsForService,
+    (id) => id === booking.id ? booking : null,
+    { update(id, patch) { updates.push({ id, patch }); return { ok: true }; } },
+    { services: [] },
+    () => { reloads += 1; },
+    (ticket, message) => { logs.push(message); }
+  );
+  const ticket = {
+    id: 7,
+    bookingId: booking.id,
+    serviceTicketId: 'ticket-1',
+    svc: 'Old service',
+    durationMin: 20,
+    techId: 't1',
+    reqTech: null,
+    items: [{ name: 'Old service', price: 20, techId: 't1', cat: 'pedi' }]
+  };
+
+  assert.equal(changeQueueTicketService(ticket, service).ok, true);
+  assert.equal(ticket.svc, 'Deluxe Pedicure');
+  assert.equal(ticket.durationMin, 50);
+  assert.deepEqual(ticket.items, [{ name: 'Deluxe Pedicure', price: 55, techId: 't1', cat: 'pedi', source: 'svc-new' }]);
+  assert.equal(reloads, 1);
+  assert.deepEqual(updates[0].patch.serviceIds, ['svc-new', 'svc-keep']);
+  assert.deepEqual(updates[0].patch.serviceNames, ['Deluxe Pedicure', 'Keep service']);
+  assert.deepEqual(updates[0].patch.tickets[0], {
+    id: 'ticket-1', serviceId: 'svc-new', serviceName: 'Deluxe Pedicure', price: 55,
+    durationMin: 50, technicianId: 't1', status: 'confirmed'
+  });
+  assert.match(logs[0], /Changed service from Old service to Deluxe Pedicure/);
+});
+
 test('Queue waiting tickets with a technician also expose Change tech before service starts', () => {
   const ticketActions = html.match(/function ticketActionsHtml\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
   const singleCard = html.match(/function renderSingleTicketCard\(w, now, selW\) \{[\s\S]*?\n      \}\n      \/\/ Multi-ticket order card/)?.[0] || '';
 
-  assert.match(ticketActions, /data-wstart[\s\S]*?<\/button>' \+\n\s*'<button class="pos-btn pos-btn-sm queue-action-muted" data-wswap[\s\S]*?title="Change tech"[\s\S]*?Change tech<\/button>' \+\n\s*'<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel/);
+  assert.match(ticketActions, /data-wstart[\s\S]*?<\/button>' \+\n\s*'<button class="pos-btn pos-btn-sm queue-action-muted" data-wswap[\s\S]*?title="Change tech"[\s\S]*?Change tech<\/button>' \+\n\s*queueServiceEditButtonHtml\(w, 'compact'\) \+\n\s*'<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel/);
   assert.match(singleCard, /class="perf-cta-btn perf-cta-btn-primary" data-wstart/);
   assert.doesNotMatch(singleCard, /class="perf-cta-btn perf-cta-btn-primary" data-wswap[\s\S]{0,120}Assign tech/);
-  assert.match(singleCard, /data-wstart[\s\S]*?<\/button>'\) \+\n\s*\(needsTechPicker \? '' : '<button class="perf-cta-btn perf-cta-btn-muted" data-wswap[\s\S]*?title="Change tech"[\s\S]*?Change tech<\/button>'\) \+\n\s*'<button class="perf-cta-btn perf-cta-btn-danger" data-wcancel/);
+  assert.match(singleCard, /data-wstart[\s\S]*?<\/button>'\) \+\n\s*\(needsTechPicker \? '' : '<button class="perf-cta-btn perf-cta-btn-muted" data-wswap[\s\S]*?title="Change tech"[\s\S]*?Change tech<\/button>'\) \+\n\s*queueServiceEditButtonHtml\(w, 'card'\) \+\n\s*'<button class="perf-cta-btn perf-cta-btn-danger" data-wcancel/);
 });
 
 test('Assign tech keeps the ticket waiting and makes Start use the assigned technician', () => {
