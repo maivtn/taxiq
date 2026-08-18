@@ -165,13 +165,6 @@
     .pos-avatar.plain { background: var(--nexora-surface-muted); color: var(--nexora-text); font-size: 15px; }
     .pos-people { display: inline-flex; align-items: center; gap: 10px; }
     .pos-section-title { margin: 22px 0 12px; font-size: 12px; font-weight: 800; color: var(--nexora-subtle); text-transform: uppercase; letter-spacing: .05em; }
-    /* Management subtabs (#pos-nail-salon-ops) */
-    .mg-subtabs { display: flex; gap: 4px; border-bottom: 1px solid var(--nexora-border); margin-bottom: 18px; overflow-x: auto; scrollbar-width: none; }
-    .mg-subtabs::-webkit-scrollbar { display: none; }
-    .mg-subtab { padding: 10px 16px; border: 0; background: none; font-size: 13px; font-weight: 700; color: var(--nexora-muted); cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; flex: 0 0 auto; }
-    .mg-subtab:hover { color: var(--nexora-text); }
-    .mg-subtab.is-active { color: var(--nexora-brand); border-bottom-color: var(--nexora-brand); }
-
     /* ── cycle / pill toggle cells ── */
     .cyc { display: inline-flex; align-items: center; justify-content: center; min-width: 38px; height: 30px; padding: 0 8px; border: 1px solid var(--nexora-border); border-radius: 8px; background: #fff; font-size: 12px; font-weight: 800; color: var(--nexora-subtle); }
     .cyc[data-on="1"] { border-color: var(--nexora-success); color: var(--nexora-success); background: #e7f8f0; }
@@ -1263,13 +1256,6 @@
 
         <!-- ══════════ 🏢 MANAGEMENT (S13) ══════════ -->
         <section class="pos-panel" data-pos-panel="management" aria-label="Management">
-          <div class="mg-subtabs" role="tablist" aria-label="Management sections">
-            <button class="mg-subtab is-active" type="button" role="tab" aria-selected="true" data-mg-subtab="overview">Overview</button>
-            <button class="mg-subtab" type="button" role="tab" aria-selected="false" data-mg-subtab="payroll">Pay &amp; Payroll</button>
-            <button class="mg-subtab" type="button" role="tab" aria-selected="false" data-mg-subtab="services">Services</button>
-            <button class="mg-subtab" type="button" role="tab" aria-selected="false" data-mg-subtab="staff">Staff &amp; Roles</button>
-            <button class="mg-subtab" type="button" role="tab" aria-selected="false" data-mg-subtab="catalog">Skills &amp; Catalog</button>
-          </div>
           <div data-mgmt-body></div>
           <div class="sms-modal service-editor-modal" data-mg-service-modal role="dialog" aria-modal="true" aria-hidden="true" aria-label="Service editor">
             <div class="sms-dialog service-editor-dialog">
@@ -6802,45 +6788,27 @@
           '</div>';
       }
 
-      // Management subtabs (#pos-nail-salon-ops): groups the management sections by theme
-      // instead of one long scroll — Overview (today's numbers), Pay & Payroll (compensation
-      // mechanics), Services (menu CRUD), Staff & Roles (accounts/access/audit), Skills & Catalog (service/skill config),
-      // while customer profiles live in the dedicated Customers tab.
-      var mgSubtab = 'overview';
-      var MG_SUBTABS = ['overview', 'payroll', 'services', 'staff', 'catalog'];
-      function mgSubtabSections(ps) {
-        return {
-          overview: function () { return mgKpisHtml(ps) + '<div class="mg-split">' + mgRevenueHtml() + mgPayrollHtml(ps) + '</div>' + mgPerfHtml(ps); },
-          payroll: function () { return mgOwnerHtml(ps) + mgSmartHtml(ps) + mgPayoutHtml(ps); },
-          services: function () { return mgServicesHtml(); },
-          staff: function () { return mgStaffHtml() + mgRolesHtml() + mgLogHtml(); },
-          catalog: function () { return mgSkillsHtml() + mgSvcSkillHtml(); }
-        };
-      }
       function renderManagement() {
         var ps = payStats();
-        if (MG_SUBTABS.indexOf(mgSubtab) === -1) mgSubtab = MG_SUBTABS[0];
-        document.querySelectorAll('[data-mg-subtab]').forEach(function (b) {
-          var active = b.getAttribute('data-mg-subtab') === mgSubtab;
-          b.classList.toggle('is-active', active);
-          b.setAttribute('aria-selected', String(active));
-        });
-        var section = mgSubtabSections(ps)[mgSubtab];
-        html('[data-mgmt-body]', '<div class="pos-stack">' + (section ? section() : '') + '</div>');
+        html('[data-mgmt-body]', '<div class="pos-stack">' +
+          mgKpisHtml(ps) +
+          '<div class="mg-split">' + mgRevenueHtml() + mgPayrollHtml(ps) + '</div>' +
+          mgPerfHtml(ps) +
+          mgOwnerHtml(ps) +
+          mgSmartHtml(ps) +
+          mgPayoutHtml(ps) +
+          mgServicesHtml() +
+          mgStaffHtml() +
+          mgRolesHtml() +
+          mgLogHtml() +
+          mgSkillsHtml() +
+          mgSvcSkillHtml() +
+          '</div>');
       }
 
       /* ── management: clicks ── */
       document.addEventListener('click', function (e) {
         if (!e.target.closest('[data-pos-panel="management"]')) return;
-
-        var mgTab = e.target.closest('[data-mg-subtab]');
-        if (mgTab) {
-          var nextMgSubtab = mgTab.getAttribute('data-mg-subtab');
-          if (nextMgSubtab === 'services') resetServiceCategoryCollapses();
-          mgSubtab = nextMgSubtab;
-          renderManagement();
-          return;
-        }
 
         var serviceView = e.target.closest('[data-mg-service-view-target]');
         if (serviceView) {
@@ -7589,7 +7557,7 @@
         if (id === 'todaybooking' || id === 'tickets') renderFloor();
         if (id === 'clock') renderClock();
         if (id === 'management') {
-          if (mgSubtab === 'services') resetServiceCategoryCollapses();
+          resetServiceCategoryCollapses();
           renderManagement();
         }
         if (id === 'booking') { initBookingTab(); renderBookingTab(); }

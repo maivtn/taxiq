@@ -709,23 +709,54 @@ test('POS title row opens the requested external kiosk HTML', () => {
   assert.match(html, /<a class="pos-btn pos-btn-sm" href="https:\/\/pos-nexoratouch\.vercel\.app\/mockups\/phase1\/kiosk\.html" target="_blank" rel="noopener noreferrer"><i class="bi bi-tablet" aria-hidden="true"><\/i> Kiosk<\/a>/);
 });
 
-test('Management keeps Customers out while adding a Services subtab for menu management', () => {
-  assert.match(html, /data-mg-subtab="overview"/);
-  assert.match(html, /data-mg-subtab="payroll"/);
-  assert.match(html, /data-mg-subtab="services"/);
-  assert.match(html, /data-mg-subtab="staff"/);
-  assert.match(html, /data-mg-subtab="catalog"/);
-  assert.doesNotMatch(html, /data-mg-subtab="customers"/);
-  assert.match(html, /var MG_SUBTABS = \['overview', 'payroll', 'services', 'staff', 'catalog'\];/);
-  const sections = html.match(/function mgSubtabSections\(ps\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
-  assert.match(sections, /overview: function \(\) \{ return mgKpisHtml\(ps\) \+ '<div class="mg-split">' \+ mgRevenueHtml\(\) \+ mgPayrollHtml\(ps\) \+ '<\/div>' \+ mgPerfHtml\(ps\); \}/);
-  assert.match(sections, /payroll: function \(\) \{ return mgOwnerHtml\(ps\) \+ mgSmartHtml\(ps\) \+ mgPayoutHtml\(ps\); \}/);
-  assert.match(sections, /services: function \(\) \{ return mgServicesHtml\(\); \}/);
-  assert.match(sections, /staff: function \(\) \{ return mgStaffHtml\(\) \+ mgRolesHtml\(\) \+ mgLogHtml\(\); \}/);
-  assert.match(sections, /catalog: function \(\) \{ return mgSkillsHtml\(\) \+ mgSvcSkillHtml\(\); \}/);
-  assert.doesNotMatch(sections, /customers:/);
+test('Management renders every section on one page without subtabs', () => {
+  const managementPanel = html.match(/<section class="pos-panel" data-pos-panel="management"[\s\S]*?<\/section>/)?.[0] || '';
+  const renderManagementSource = html.match(/function renderManagement\(\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
+  let rendered = '';
+  const renderManagement = new Function(
+    'payStats',
+    'html',
+    'mgKpisHtml',
+    'mgRevenueHtml',
+    'mgPayrollHtml',
+    'mgPerfHtml',
+    'mgOwnerHtml',
+    'mgSmartHtml',
+    'mgPayoutHtml',
+    'mgServicesHtml',
+    'mgStaffHtml',
+    'mgRolesHtml',
+    'mgLogHtml',
+    'mgSkillsHtml',
+    'mgSvcSkillHtml',
+    renderManagementSource + '\nreturn renderManagement;'
+  )(
+    () => 'pay-stats',
+    (selector, value) => { assert.equal(selector, '[data-mgmt-body]'); rendered = value; },
+    (ps) => `kpis:${ps}|`,
+    () => 'revenue|',
+    (ps) => `payroll:${ps}|`,
+    (ps) => `performance:${ps}|`,
+    (ps) => `owner:${ps}|`,
+    (ps) => `smart:${ps}|`,
+    (ps) => `payout:${ps}|`,
+    () => 'services|',
+    () => 'staff|',
+    () => 'roles|',
+    () => 'log|',
+    () => 'skills|',
+    () => 'service-skills|'
+  );
+
+  renderManagement();
+
+  assert.doesNotMatch(managementPanel, /data-mg-subtab|mg-subtabs/);
+  assert.doesNotMatch(html, /\.mg-subtabs?\b|MG_SUBTABS|mgSubtabSections|var mgSubtab\b/);
+  assert.equal(
+    rendered,
+    '<div class="pos-stack">kpis:pay-stats|<div class="mg-split">revenue|payroll:pay-stats|</div>performance:pay-stats|owner:pay-stats|smart:pay-stats|payout:pay-stats|services|staff|roles|log|skills|service-skills|</div>'
+  );
   assert.doesNotMatch(html, /function mgCustHtml\(\)/);
-  assert.match(html, /var mgTab = e\.target\.closest\('\[data-mg-subtab\]'\);/);
 });
 
 test('Customer profile keeps the shared tag/note/regular-tech editors after Management loses its duplicate Customers subtab', () => {

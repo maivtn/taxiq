@@ -118,11 +118,11 @@ test('Management exposes Services as table/card views with modal CRUD detail fie
   const managementClicksRuntime = html.match(/\/\* ── management: clicks ── \*\/[\s\S]*?\/\* ── management: numeric \/ text edits ── \*\//)?.[0] || '';
   const activateTabRuntime = html.match(/function activateTab\(id\) \{[\s\S]*?\/\/ The sidebar's POS sub-items drive this page's tabs through the shell's navigate hook\./)?.[0] || '';
 
-  assert.match(managementPanel, /data-mg-subtab="services"[^>]*>Services/);
+  assert.doesNotMatch(managementPanel, /data-mg-subtab|mg-subtabs/);
   assert.match(html, /var SERVICE_MENU_URL = '\.\.\/menu\/menu\.json'/);
   assert.match(html, /seedServicesFromMenuCatalog/);
-  assert.match(html, /var MG_SUBTABS = \['overview', 'payroll', 'services', 'staff', 'catalog'\]/);
-  assert.match(html, /services: function \(\) \{ return mgServicesHtml\(\); \}/);
+  assert.doesNotMatch(html, /MG_SUBTABS|mgSubtabSections|var mgSubtab\b/);
+  assert.match(html, /function renderManagement\(\) \{[\s\S]*?mgServicesHtml\(\)[\s\S]*?mgStaffHtml\(\)[\s\S]*?mgSkillsHtml\(\)/);
   assert.doesNotMatch(servicesRuntime, /active · .*total · source: html\/menu\/menu\.json/);
   assert.match(servicesRuntime, /data-mg-service-view-target="table"/);
   assert.match(servicesRuntime, /data-mg-service-view-target="card"/);
@@ -193,10 +193,9 @@ test('Management exposes Services as table/card views with modal CRUD detail fie
   assert.match(html, /var serviceCategoryAdd = e\.target\.closest\('\[data-mg-service-add-category\]'\);/);
   assert.match(html, /openServiceModal\(null, 'add', serviceCategoryAdd\.getAttribute\('data-mg-service-add-category'\)\);/);
   assert.match(html, /var serviceCategoryToggle = e\.target\.closest\('\[data-mg-service-category-toggle\]'\);/);
-  assert.match(managementClicksRuntime, /var nextMgSubtab = mgTab\.getAttribute\('data-mg-subtab'\);/);
-  assert.match(managementClicksRuntime, /if \(nextMgSubtab === 'services'\) resetServiceCategoryCollapses\(\);/);
+  assert.doesNotMatch(managementClicksRuntime, /data-mg-subtab|nextMgSubtab/);
   assert.match(managementClicksRuntime, /serviceViewMode = serviceView\.getAttribute\('data-mg-service-view-target'\) === 'card' \? 'card' : 'table';[\s\S]{0,100}resetServiceCategoryCollapses\(\);/);
-  assert.match(activateTabRuntime, /if \(id === 'management'\) \{[\s\S]{0,80}if \(mgSubtab === 'services'\) resetServiceCategoryCollapses\(\);[\s\S]{0,80}renderManagement\(\);[\s\S]{0,20}\}/);
+  assert.match(activateTabRuntime, /if \(id === 'management'\) \{[\s\S]{0,80}resetServiceCategoryCollapses\(\);[\s\S]{0,80}renderManagement\(\);[\s\S]{0,20}\}/);
   assert.ok(
     html.indexOf("var serviceCategoryAdd = e.target.closest('[data-mg-service-add-category]');") <
       html.indexOf("var serviceCategoryToggle = e.target.closest('[data-mg-service-category-toggle]');"),
