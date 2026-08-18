@@ -268,6 +268,32 @@ test('Queue table mode stays full-width and is not constrained by the card row',
   assert.doesNotMatch(html, /\[data-wait-list\][^{]*\{ display: grid/);
 });
 
+test('Queue card, table, and grouped labels render every service item', () => {
+  assert.match(html, /function queueServiceNames\(w\) \{/);
+  assert.match(html, /function queueServicesHtml\(w, variant\) \{/);
+  const table = html.match(/function renderTicketsTable\(groups, now\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
+  const card = html.match(/function ticketCardBodyHtml\(w, elapsedLabel, statusChipHtml, techExtra\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
+  const label = html.match(/function ticketLabelHtml\(w\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
+  assert.match(table, /queueServicesHtml\(w, 'table'\)/);
+  assert.match(card, /queueServicesHtml\(w, 'card'\)/);
+  assert.match(label, /queueServiceNames\(w\)\.join\(', '\)/);
+  const namesSource = html.match(/function queueServiceNames\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const queueServiceNames = new Function('posServiceDisplayName', namesSource + '\nreturn queueServiceNames;')((value) => String(value || '').trim());
+  assert.deepEqual(queueServiceNames({ svc: 'Fallback', items: [{ name: 'Manicure' }, { name: 'Gel polish' }] }), ['Manicure', 'Gel polish']);
+});
+
+test('Technician matching requires skills for every Queue item', () => {
+  const reqSource = html.match(/function reqSkills\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.ok(reqSource);
+  const reqSkills = new Function('SVC_REQ', reqSource + '\nreturn reqSkills;')({ mani: 'Manicure', gel: 'Gel' });
+  assert.deepEqual(reqSkills({ items: [{ name: 'Classic manicure', cat: 'mani' }, { name: 'Gel polish', cat: 'gel' }] }), ['Manicure', 'Gel']);
+  const score = html.match(/function matchScore\(t, w\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(score, /var reqs = reqSkills\(w\);/);
+  assert.match(score, /var missing = reqs\.filter/);
+  assert.match(score, /okSkill: missing\.length === 0/);
+  assert.match(score, /missing: missing/);
+});
+
 test('Queue single-ticket cards have a clear identity, details, note, status, and action hierarchy', () => {
   const card = html.match(/function renderSingleTicketCard\(w, now, selW\) \{[\s\S]*?\n      \}/)?.[0] || '';
   assert.match(card, /class="wl-card queue-card/);

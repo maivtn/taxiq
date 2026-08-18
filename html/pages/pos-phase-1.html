@@ -694,6 +694,9 @@
     .queue-service-check { color: var(--nexora-brand); font-size: 18px; }
     .queue-service-selection { margin-top: 12px; color: var(--nexora-text); font-size: 13px; font-weight: 800; }
     .queue-service-error { margin: 8px 0 0; color: var(--nexora-danger); font-size: 12px; font-weight: 700; }
+    .queue-ticket-services { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .queue-ticket-service-line { display: block; overflow-wrap: anywhere; }
+    .queue-ticket-services-compact { display: inline; white-space: normal; overflow-wrap: anywhere; }
 
     .pos-mode-dialog { max-width: 560px; }
     .pos-mode-copy { margin: 0; line-height: 1.6; }
@@ -3390,26 +3393,26 @@
 
       /* ═══════════ 🪑 DISPATCH — skill match engine ═══════════ */
       var SVC_PRI = ['full', 'fill', 'dip', 'gel', 'wax', 'pedi', 'mani', 'addon', 'kid'];
-      // Which skill a job needs: the SVC_REQ table first (owner-configured), regex on free text as a fallback.
-      function reqSkill(w) {
-        for (var i = 0; i < SVC_PRI.length; i++) {
-          var cid = SVC_PRI[i];
-          if (!SVC_REQ[cid]) continue;
-          var cat = catById(cid); if (!cat) continue;
-          var hitSvc = (w.svc || '').indexOf(cat.label) !== -1;
-          var hitItem = (w.items || []).some(function (it) { return it.cat === cid; });
-          if (hitSvc || hitItem) return SVC_REQ[cid];
-        }
-        var txt = ((w.svc || '') + ' ' + (w.items || []).map(function (i) { return i.name; }).join(' ')).toLowerCase();
-        if (/acrylic|full set|fill|ombre|sculpt/.test(txt)) return 'Acrylic';
-        if (/dip/.test(txt)) return 'Dip';
-        if (/pedicure|pedi/.test(txt)) return 'Pedicure';
-        if (/design|nail art|chrome|cat eye/.test(txt)) return 'Design';
-        if (/wax/.test(txt)) return 'Waxing';
-        if (/gel|shellac/.test(txt)) return 'Gel';
-        if (/manicure|mani/.test(txt)) return 'Manicure';
-        return null;   // can't tell → anyone can take it
+      // A technician must cover every distinct requirement represented by the ticket's service items.
+      function reqSkills(w) {
+        var requirements = [];
+        (w.items && w.items.length ? w.items : [{ name: w.svc || '', cat: '' }]).forEach(function (item) {
+          var req = item.cat && SVC_REQ[item.cat] ? SVC_REQ[item.cat] : null;
+          if (!req) {
+            var txt = String(item.name || '').toLowerCase();
+            if (/acrylic|full set|fill|ombre|sculpt/.test(txt)) req = 'Acrylic';
+            else if (/dip/.test(txt)) req = 'Dip';
+            else if (/pedicure|pedi/.test(txt)) req = 'Pedicure';
+            else if (/design|nail art|chrome|cat eye/.test(txt)) req = 'Design';
+            else if (/wax/.test(txt)) req = 'Waxing';
+            else if (/gel|shellac/.test(txt)) req = 'Gel';
+            else if (/manicure|mani/.test(txt)) req = 'Manicure';
+          }
+          if (req && requirements.indexOf(req) === -1) requirements.push(req);
+        });
+        return requirements;
       }
+      function reqSkill(w) { return reqSkills(w)[0] || null; }
       function custOf(name) { return CUSTOMERS.find(function (c) { return c.name === name; }) || null; }
       function custByPhone(phone) {
         var digits = String(phone || '').replace(/\D/g, '');
@@ -3418,10 +3421,11 @@
       }
       function matchScore(t, w) {
         var R = MATCH_RULES;
-        var req = reqSkill(w);
-        var okSkill = !req || (t.skills || []).indexOf(req) !== -1;
+        var reqs = reqSkills(w);
+        var missing = reqs.filter(function (req) { return (t.skills || []).indexOf(req) === -1; });
+        var okSkill = missing.length === 0;
         var sc = okSkill ? R.wSkill : R.wMiss;                                   // the skill dominates
-        if (okSkill && req && (t.exp || []).indexOf(req) !== -1) sc += R.wExp;   // ★ expert on the needed skill
+        if (okSkill) sc += reqs.filter(function (req) { return (t.exp || []).indexOf(req) !== -1; }).length * R.wExp;
         if (R.useTurn) {
           var avg = TECHS.reduce(function (s, x) { return s + x.turns; }, 0) / (TECHS.length || 1);
           sc += Math.max(-10, Math.min(R.wTurn, Math.round((avg - t.turns) * 8)));  // turn fairness
@@ -3430,7 +3434,7 @@
         var c = custOf(w.name);
         if (c && c.prefTech === t.id) sc += R.wPref;                             // regular tech on the profile
         if (c && (t.fit || []).some(function (f) { return (c.tags || []).indexOf(f) !== -1 || (f === 'VIP' && c.seg === 'vip'); })) sc += R.wFit;
-        return { sc: Math.max(5, Math.min(99, sc)), req: req, okSkill: okSkill };
+        return { sc: Math.max(5, Math.min(99, sc)), req: reqs.join(', ') || null, reqs: reqs, missing: missing, okSkill: missing.length === 0 };
       }
       function busyName(tid) {
         var w = WAITLIST.find(function (x) { return x.status === 'service' && x.techId === tid; });
@@ -3444,12 +3448,11 @@
       // ▶ one-tap: the requested tech if free and qualified, otherwise the qualified tech with the fewest turns
       function fAutoTech(w) {
         var free = freeTechs();
-        var req = reqSkill(w);
         if (w.reqTech) {
           var r = free.find(function (t) { return t.id === w.reqTech; });
-          if (r && (!req || (r.skills || []).indexOf(req) !== -1)) return r;
+          if (r && matchScore(r, w).okSkill) return r;
         }
-        var elig = req ? free.filter(function (t) { return (t.skills || []).indexOf(req) !== -1; }) : free;
+        var elig = free.filter(function (t) { return matchScore(t, w).okSkill; });
         var pool = elig.length ? elig : free;   // nobody qualified → fall back to any free tech (manual assign still warns)
         return pool.length ? pool.slice().sort(function (a, b) { return a.turns - b.turns; })[0] : null;
       }
@@ -4125,9 +4128,8 @@
         var rows = items.map(function (r) {
           var w = WAITLIST.find(function (x) { return x.id === r.wid; });
           var t = techById(r.tid);
-          var req = reqSkill(w);
-          var ok = !req || (t.skills || []).indexOf(req) !== -1;
-          return { r: r, w: w, t: t, req: req, ok: ok };
+          var match = matchScore(t, w);
+          return { r: r, w: w, t: t, req: match.req, ok: match.okSkill };
         });
         html('[data-arq-list]', arqViewMode === 'table' ? renderArqTable(rows) : rows.map(arqCardHtml).join(''));
       }
@@ -4290,7 +4292,20 @@
         if (w.reqTech) return '<span class="' + cls + ' is-requested">' + esc(techName(w.reqTech)) + '</span>';
         return '<span class="' + cls + ' is-anyone">Anyone</span>';
       }
-      // Table mode: one row per service ticket (not per order), same actions as the card view.
+      function queueServiceNames(w) {
+        var names = (w.items || []).map(function (item) { return posServiceDisplayName(item.name || ''); }).filter(Boolean);
+        return names.length ? names : [posServiceDisplayName(w.svc || 'No service chosen')];
+      }
+      function queueServicesHtml(w, variant) {
+        var names = queueServiceNames(w);
+        if (variant === 'card') {
+          return '<span class="queue-ticket-services">' + names.map(function (name) {
+            return '<span class="queue-ticket-service-line">' + esc(name) + '</span>';
+          }).join('') + '</span>';
+        }
+        return '<span class="queue-ticket-services queue-ticket-services-compact">' + esc(names.join(', ')) + '</span>';
+      }
+      // Table mode: one row per technician ticket (not per order), same actions as the card view.
       // Table mode carries the operational fields as separate columns so the queue can be scanned
       // quickly: appointment hour, customer group, note, service, tech, status, elapsed time, total.
       function renderTicketsTable(groups, now) {
@@ -4312,7 +4327,7 @@
               '<td>' + esc(w.phone || '—') + '</td>' +
               '<td>' + esc(w.bookingTime || w.at || '—') + '</td>' +
               '<td>' + ticketCustomerGroupHtml(w) + '</td>' +
-              '<td>' + esc(posServiceDisplayName(w.svc || 'No service chosen')) + '</td>' +
+              '<td>' + queueServicesHtml(w, 'table') + '</td>' +
               '<td>' + ticketTechHtml(w) + '</td>' +
               '<td>' + ticketStatusBadge(w.status) + '</td>' +
               '<td>' + elapsedLabel + '</td>' +
@@ -4353,7 +4368,7 @@
         return ticketStatusBadge(w.status);
       }
       function ticketLabelHtml(w) {
-        var svcName = esc(posServiceDisplayName(w.svc || 'No service chosen'));
+        var svcName = esc(queueServiceNames(w).join(', '));
         var techLbl = w.status === 'waiting' ? (w.techId ? 'waiting on ' + esc(techName(w.techId)) : (w.reqTech ? 'requested ' + esc(techName(w.reqTech)) : 'Anyone'))
           : w.status === 'service' ? esc(techName(w.techId)) + ' — in service'
           : w.status === 'ready' ? esc(techName(w.techId)) + ' — ready'
@@ -4380,7 +4395,7 @@
           (groupHtml ? '<div style="margin-top:10px">' + groupHtml + '</div>' : '') +
           '<div class="perf-divider"></div>' +
           '<div class="perf-stat-row">' +
-            '<div class="perf-stat-col"><span class="perf-section-label">Service</span><span class="perf-stat-value">' + esc(posServiceDisplayName(w.svc || 'No service chosen')) + '</span></div>' +
+            '<div class="perf-stat-col"><span class="perf-section-label">Service</span><span class="perf-stat-value">' + queueServicesHtml(w, 'card') + '</span></div>' +
             '<div class="perf-stat-col"><span class="perf-section-label">Tech</span><span class="perf-stat-value">' + ticketTechHtml(w, 'card') + (techExtra || '') + '</span></div>' +
           '</div>' +
           '<div class="perf-divider"></div>' +
@@ -4392,7 +4407,7 @@
           '<div><span class="perf-section-label">Total</span><span class="perf-stat-value">' + money(total) + '</span></div>' +
           (noteText ? '<div class="perf-divider"></div><div><span class="perf-section-label">Note</span><span class="perf-stat-value" style="font-weight:600">' + esc(noteText) + '</span></div>' : '');
       }
-      // One WAITLIST row = one service ticket (#pos-nail-salon-ops Phase 3). A single-ticket order
+      // One WAITLIST row = one technician ticket. A single-ticket order
       // renders exactly like the original floor card, so the common walk-in path is unchanged.
       function renderSingleTicketCard(w, now, selW) {
         var sel = selW && selW.id === w.id ? ' is-sel' : '';
@@ -4565,14 +4580,14 @@
         var match = matchScore(t, w);
         var apply = function (override) {
           if (w.status === 'waiting') {
-            if (override) wlog(w, '⚠ Skill override: assigned to ' + t.name + ' without the ' + match.req + ' skill');
+            if (override) wlog(w, '⚠ Skill override: assigned to ' + t.name + ' without: ' + match.missing.join(', '));
             assignWaitingTech(w, tid);
             closeSwapTechModal();
             followQueueTicketAfterAction(w, 'waiting');
             toast(w.name + ' assigned to ' + t.name + (override ? ' (override logged)' : ''));
             return;
           }
-          if (override) wlog(w, '⚠ Skill override: swapped to ' + t.name + ' without the ' + match.req + ' skill');
+          if (override) wlog(w, '⚠ Skill override: swapped to ' + t.name + ' without: ' + match.missing.join(', '));
           fAssign(w, tid);
           closeSwapTechModal();
           followQueueTicketAfterAction(w, w.status);
@@ -4580,7 +4595,7 @@
         };
         if (!match.okSkill) {
           closeSwapTechModal();
-          confirmBox('Swap to ' + t.name + ' anyway?', t.name + ' does not have the ' + match.req + ' skill required for ' + (w.svc || 'this service') + '.').then(function (ok) { if (ok) apply(true); });
+          confirmBox('Swap to ' + t.name + ' anyway?', t.name + ' is missing ' + match.missing.join(', ') + ' for ' + queueServiceNames(w).join(', ') + '.').then(function (ok) { if (ok) apply(true); });
           return;
         }
         apply(false);
@@ -4962,8 +4977,8 @@
           var aw = WAITLIST.find(function (x) { return x.id === ar.wid; });
           if (aok && aw) {
             var at = techById(ar.tid);
-            var areq = reqSkill(aw);
-            if (areq && at && (at.skills || []).indexOf(areq) === -1) wlog(aw, '⚠ Skill override: approved ' + at.name + ' without the ' + areq + ' skill');
+            var accessMatch = at ? matchScore(at, aw) : null;
+            if (accessMatch && !accessMatch.okSkill) wlog(aw, '⚠ Skill override: approved ' + at.name + ' without: ' + accessMatch.missing.join(', '));
             wlog(aw, '🔐 Front desk approved the access request — ' + techName(ar.tid) + ' takes the ticket');
             fAssign(aw, ar.tid);
             followQueueTicketAfterAction(aw, 'service');
@@ -5072,14 +5087,14 @@
           if (!aw2) return;
           var tid = fa.getAttribute('data-fassign');
           var t2 = techById(tid);
-          var req2 = reqSkill(aw2);
-          var ok2 = !req2 || (t2.skills || []).indexOf(req2) !== -1;
+          var assignMatch = matchScore(t2, aw2);
+          var ok2 = assignMatch.okSkill;
           if (!ok2 && !(fWarn && fWarn.wid === aw2.id && fWarn.tid === tid)) {
             fWarn = { wid: aw2.id, tid: tid };   // first tap: block and warn
             renderFloor();
             return;
           }
-          if (!ok2) wlog(aw2, '⚠ Skill override: assigned ' + techName(tid) + ' without the ' + req2 + ' skill');
+          if (!ok2) wlog(aw2, '⚠ Skill override: assigned ' + techName(tid) + ' without: ' + assignMatch.missing.join(', '));
           fAssign(aw2, tid);                     // second tap (or qualified): assign
           followQueueTicketAfterAction(aw2, 'service');
           toast(aw2.name + ' → ' + techName(tid) + (ok2 ? '' : ' (override logged)'));
