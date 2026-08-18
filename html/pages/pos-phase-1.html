@@ -688,8 +688,12 @@
     .swap-tech-empty { border: 1px dashed var(--nexora-border); border-radius: 10px; padding: 14px; color: var(--nexora-muted); font-size: 12px; font-weight: 700; text-align: center; }
     .queue-service-list { max-height: min(60vh, 480px); overflow-y: auto; padding: 2px; }
     .queue-service-option[aria-selected="true"] { border-color: var(--nexora-brand); background: #f2f3ff; }
-    .queue-service-option[disabled] { cursor: default; opacity: 1; }
+    .queue-service-option.is-selected { box-shadow: inset 0 0 0 1px var(--nexora-brand); }
+    .queue-service-option[disabled] { cursor: not-allowed; opacity: .62; }
     .queue-service-price { min-width: 58px; color: var(--nexora-text); font-size: 13px; font-weight: 900; text-align: right; }
+    .queue-service-check { color: var(--nexora-brand); font-size: 18px; }
+    .queue-service-selection { margin-top: 12px; color: var(--nexora-text); font-size: 13px; font-weight: 800; }
+    .queue-service-error { margin: 8px 0 0; color: var(--nexora-danger); font-size: 12px; font-weight: 700; }
 
     .pos-mode-dialog { max-width: 560px; }
     .pos-mode-copy { margin: 0; line-height: 1.6; }
@@ -1223,11 +1227,17 @@
               <button class="pos-icon-btn" type="button" data-queue-service-close aria-label="Close"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
             </div>
             <div class="sms-mbody">
-              <p class="pos-muted swap-tech-copy">Choose a service for <strong data-queue-service-guest>this guest</strong>. Current: <strong data-queue-service-current>—</strong>.</p>
-              <div class="swap-tech-list queue-service-list" data-queue-service-list role="listbox" aria-label="Available services"></div>
+              <p class="pos-muted swap-tech-copy">Choose one or more services for <strong data-queue-service-guest>this guest</strong>. Current: <strong data-queue-service-current>—</strong>.</p>
+              <div class="swap-tech-list queue-service-list" data-queue-service-list role="listbox" aria-multiselectable="true" aria-label="Available services"></div>
+              <div class="queue-service-selection" aria-live="polite" data-queue-service-summary>0 services · 0 min · $0.00</div>
+              <p class="queue-service-error" data-queue-service-error hidden>At least one service is required.</p>
             </div>
-            <div class="sms-mfoot" style="justify-content:flex-end">
-              <button class="pos-btn pos-btn-sm" type="button" data-queue-service-close>Cancel</button>
+            <div class="sms-mfoot" style="justify-content:space-between;align-items:center">
+              <span class="pos-muted">Changes apply to this technician ticket.</span>
+              <span class="pos-inline">
+                <button class="pos-btn pos-btn-sm" type="button" data-queue-service-close>Cancel</button>
+                <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-queue-service-save><i class="bi bi-floppy" aria-hidden="true"></i> Save services</button>
+              </span>
             </div>
           </div>
         </div>
@@ -4577,7 +4587,9 @@
       }
 
       /* ── Queue service picker ── */
-      var queueServiceFor = null;
+      var queueServiceFor = null, queueServiceDraftIds = [];
+      var queueServiceOriginalServices = [];
+      var queueServiceCatalogReady = false;
       function queueBookingServicePatch(booking, serviceTicketId, service) {
         var serviceName = posServiceDisplayName(service && (service.label || service.name) || '');
         var price = Number(service && service.price);
@@ -4623,32 +4635,99 @@
         wlog(w, 'Changed service from ' + previousName + ' to ' + serviceName);
         return { ok: true };
       }
+      function queueSelectedServices() {
+        var selected = (MENU || []).filter(function (service) {
+          return queueServiceDraftIds.indexOf(String(service.id)) !== -1;
+        });
+        queueServiceOriginalServices.forEach(function (service) {
+          if (queueServiceDraftIds.indexOf(String(service._draftId)) === -1) return;
+          var duplicate = selected.some(function (candidate) {
+            return String(candidate.id) === String(service.id) || String(candidate.id) === String(service._draftId);
+          });
+          if (!duplicate) selected.push(service);
+        });
+        return selected;
+      }
       function queueServiceOptionsHtml(w) {
-        var currentService = queueServiceForName(w.svc);
-        var currentId = currentService ? currentService.id : '';
         var options = MENU || [];
-        if (!options.length) return '<div class="swap-tech-empty"><i class="bi bi-card-checklist" aria-hidden="true"></i> No active services are available.</div>';
-        return options.map(function (service) {
-          var selected = String(service.id) === String(currentId) || (!currentId && posServiceDisplayName(service.label) === posServiceDisplayName(w.svc));
+        var activeOptions = options.map(function (service) {
+          var selected = queueServiceDraftIds.indexOf(String(service.id)) !== -1;
           var meta = [service.categoryName || service.requiredSkill || 'Service'];
           if (service.durationMin) meta.push(service.durationMin + ' min');
-          return '<button class="swap-tech-option queue-service-option" type="button" role="option" data-queue-service-pick="' + esc(service.id) + '" aria-selected="' + (selected ? 'true' : 'false') + '"' + (selected ? ' disabled' : '') + '>' +
+          return '<button class="swap-tech-option queue-service-option' + (selected ? ' is-selected' : '') + '" type="button" role="option" data-queue-service-pick="' + esc(service.id) + '" aria-selected="' + (selected ? 'true' : 'false') + '">' +
             '<span class="pos-avatar"><i class="bi bi-stars" aria-hidden="true"></i></span>' +
-            '<span class="swap-tech-option-main"><span class="swap-tech-option-name">' + esc(service.label) + '</span>' +
+            '<span class="swap-tech-option-main"><span class="swap-tech-option-name">' + esc(service.label || service.name) + '</span>' +
             '<span class="swap-tech-option-meta">' + esc(meta.join(' · ')) + '</span></span>' +
-            (selected ? '<span class="pos-chip pos-chip-blue">Current</span>' : '') +
+            (selected ? '<i class="bi bi-check-circle-fill queue-service-check" aria-hidden="true"></i>' : '') +
             '<span class="queue-service-price">' + money(service.price || 0) + '</span>' +
             '</button>';
         }).join('');
+        var unavailableOptions = queueServiceOriginalServices.filter(function (service) { return service._unavailable; }).map(function (service) {
+          var selected = queueServiceDraftIds.indexOf(String(service._draftId)) !== -1;
+          return '<button class="swap-tech-option queue-service-option' + (selected ? ' is-selected' : '') + '" type="button" role="option" data-queue-service-pick="' + esc(service._draftId) + '" aria-selected="' + (selected ? 'true' : 'false') + '"' + (selected ? '' : ' disabled') + '>' +
+            '<span class="pos-avatar"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i></span>' +
+            '<span class="swap-tech-option-main"><span class="swap-tech-option-name">' + esc(service.label || service.name) + '</span>' +
+            '<span class="swap-tech-option-meta">Current service unavailable</span></span>' +
+            (selected ? '<i class="bi bi-check-circle-fill queue-service-check" aria-hidden="true"></i>' : '') +
+            '<span class="queue-service-price">' + money(service.price || 0) + '</span>' +
+            '</button>';
+        }).join('');
+        if (!activeOptions && !unavailableOptions) return '<div class="swap-tech-empty"><i class="bi bi-card-checklist" aria-hidden="true"></i> No active services are available.</div>';
+        return activeOptions + unavailableOptions;
+      }
+      function renderQueueServiceDraft(w) {
+        var selected = queueSelectedServices();
+        html('[data-queue-service-list]', queueServiceOptionsHtml(w));
+        var duration = selected.reduce(function (sum, service) { return sum + (Number(service.durationMin) || 0); }, 0);
+        var total = selected.reduce(function (sum, service) { return sum + (Number(service.price) || 0); }, 0);
+        set('[data-queue-service-summary]', selected.length + ' ' + (selected.length === 1 ? 'service' : 'services') + ' · ' + duration + ' min · ' + money(total));
+        var saveButton = $('[data-queue-service-save]');
+        if (saveButton) saveButton.disabled = !selected.length || !queueServiceCatalogReady;
+        var error = $('[data-queue-service-error]');
+        if (error) {
+          error.textContent = !queueServiceCatalogReady ? 'The service catalog is unavailable. Current services were kept.' : 'At least one service is required.';
+          error.hidden = !!selected.length && queueServiceCatalogReady;
+        }
+      }
+      function toggleQueueServiceDraft(serviceId) {
+        serviceId = String(serviceId);
+        var index = queueServiceDraftIds.indexOf(serviceId);
+        var unavailable = queueServiceOriginalServices.find(function (service) { return service._unavailable && String(service._draftId) === serviceId; });
+        if (index === -1) {
+          if (unavailable) return;
+          queueServiceDraftIds.push(serviceId);
+        } else {
+          queueServiceDraftIds.splice(index, 1);
+        }
+        var w = WAITLIST.find(function (ticket) { return ticket.id === queueServiceFor; });
+        if (w) renderQueueServiceDraft(w);
       }
       function openQueueServiceModal(wid) {
         var w = WAITLIST.find(function (ticket) { return ticket.id == wid && ticketOpen(ticket); });
         var modal = $('[data-queue-service-modal]');
         if (!w || !modal) return;
         queueServiceFor = w.id;
+        queueServiceCatalogReady = (MENU || []).length > 0;
+        queueServiceOriginalServices = (w.items || []).map(function (item, index) {
+          var catalogService = (MENU || []).find(function (service) {
+            return String(service.id) === String(item.serviceId) || posServiceDisplayName(service.label || service.name) === posServiceDisplayName(item.name);
+          });
+          var serviceId = String(item.serviceId || (catalogService && catalogService.id) || '');
+          var draftId = serviceId || (item.serviceTicketId ? 'linked:' + item.serviceTicketId : 'legacy:' + index);
+          return {
+            id: serviceId,
+            label: item.name,
+            name: item.name,
+            price: Number(item.price) || 0,
+            durationMin: Number(item.durationMin) || 0,
+            _draftId: draftId,
+            _unavailable: !catalogService
+          };
+        });
+        queueServiceDraftIds = queueServiceOriginalServices.map(function (service) { return String(service._draftId); });
         set('[data-queue-service-guest]', w.name);
-        set('[data-queue-service-current]', posServiceDisplayName(w.svc || 'No service chosen'));
-        html('[data-queue-service-list]', queueServiceOptionsHtml(w));
+        set('[data-queue-service-current]', queueServiceOriginalServices.length ? queueServiceOriginalServices.map(function (service) { return service.label; }).join(', ') : 'No service chosen');
+        renderQueueServiceDraft(w);
         modal.classList.add('open');
         document.body.style.overflow = 'hidden';
       }
@@ -4657,16 +4736,41 @@
         if (modal) modal.classList.remove('open');
         document.body.style.overflow = '';
         queueServiceFor = null;
+        queueServiceDraftIds = [];
+        queueServiceOriginalServices = [];
+        queueServiceCatalogReady = false;
       }
-      function chooseQueueService(serviceId) {
-        var w = WAITLIST.find(function (ticket) { return ticket.id === queueServiceFor; });
-        var service = (MENU || []).find(function (item) { return String(item.id) === String(serviceId); });
-        if (!w || !service) return;
-        var result = changeQueueTicketService(w, service);
-        if (!result.ok) { toast(result.error && result.error.message ? result.error.message : 'Service could not be updated.', 'error'); return; }
+      function changeQueueTicketServices(w, services) {
+        if (!w || !services || !services.length) return { ok: false, error: { message: 'At least one service is required.' } };
+        if (w.bookingId) return { ok: false, error: { message: 'Linked Booking services are not available yet.' } };
+        var previousNames = (w.items || []).map(function (item) { return item.name; });
+        var techId = w.techId || w.reqTech || null;
+        w.items = services.map(function (service) { return queueItemForService(service, techId, null); });
+        w.serviceTicketIds = [];
+        normalizeQueueTicketServices(w);
+        wlog(w, 'Changed services from ' + (previousNames.join(', ') || 'none') + ' to ' + w.items.map(function (item) { return item.name; }).join(', '));
+        return { ok: true };
+      }
+      function saveQueueServices() {
+        var w = WAITLIST.find(function (ticket) { return ticket.id === queueServiceFor && ticketOpen(ticket); });
+        var services = queueSelectedServices();
+        var error = $('[data-queue-service-error]');
+        if (!services.length) {
+          if (error) { error.textContent = 'At least one service is required.'; error.hidden = false; }
+          return;
+        }
+        if (!queueServiceCatalogReady) {
+          if (error) { error.textContent = 'The service catalog is unavailable. Current services were kept.'; error.hidden = false; }
+          return;
+        }
+        var result = changeQueueTicketServices(w, services);
+        if (!result.ok) {
+          if (error) { error.textContent = result.error && result.error.message || 'Services could not be updated.'; error.hidden = false; }
+          return;
+        }
         closeQueueServiceModal();
         followQueueTicketAfterAction(w, w.status);
-        toast(w.name + ' · service updated to ' + service.label);
+        toast(w.name + ' · ' + w.items.length + ' services updated');
       }
 
       document.addEventListener('click', function (e) {
@@ -4704,9 +4808,10 @@
         if (e.target.closest('[data-queue-service-close]') || e.target.matches('[data-queue-service-modal]')) { closeQueueServiceModal(); return; }
         var servicePick = e.target.closest('[data-queue-service-pick]');
         if (servicePick) {
-          chooseQueueService(servicePick.getAttribute('data-queue-service-pick'));
+          toggleQueueServiceDraft(servicePick.getAttribute('data-queue-service-pick'));
           return;
         }
+        if (e.target.closest('[data-queue-service-save]')) { saveQueueServices(); return; }
 
         /* check-in modal: search a phone number against today's bookings, or add a walk-in */
         if (e.target.closest('[data-ci-close]') || e.target.matches('[data-ci-modal]')) { closeCheckinModal(); return; }

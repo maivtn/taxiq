@@ -317,7 +317,61 @@ test('Queue exposes Edit service for every open ticket view and routes it to the
   assert.match(clickHandler, /closest\('\[data-wservice\]'\)/);
   assert.match(clickHandler, /openQueueServiceModal\(\+serviceEdit\.getAttribute\('data-wservice'\)\)/);
   assert.match(html, /data-queue-service-pick/);
-  assert.match(html, /chooseQueueService\(servicePick\.getAttribute\('data-queue-service-pick'\)\)/);
+  assert.match(html, /toggleQueueServiceDraft\(servicePick\.getAttribute\('data-queue-service-pick'\)\)/);
+  assert.match(html, /if \(e\.target\.closest\('\[data-queue-service-save\]'\)\) \{ saveQueueServices\(\); return; \}/);
+  assert.doesNotMatch(html, /chooseQueueService\(servicePick\.getAttribute/);
+});
+
+test('Edit service is a multi-select draft that saves explicitly', () => {
+  assert.match(html, /data-queue-service-summary/);
+  assert.match(html, /data-queue-service-error/);
+  assert.match(html, /data-queue-service-save/);
+  assert.match(html, /var queueServiceFor = null, queueServiceDraftIds = \[\];/);
+  assert.match(html, /function queueSelectedServices\(\) \{/);
+  assert.match(html, /function toggleQueueServiceDraft\(serviceId\) \{/);
+  assert.match(html, /function renderQueueServiceDraft\(w\) \{/);
+  assert.match(html, /function saveQueueServices\(\) \{/);
+  const open = html.match(/function openQueueServiceModal\(wid\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(open, /queueServiceOriginalServices = \(w\.items \|\| \[\]\)\.map/);
+  assert.match(open, /queueServiceDraftIds = queueServiceOriginalServices\.map/);
+});
+
+test('Edit service rejects empty selection and preserves current rows when catalog is unavailable', () => {
+  assert.match(html, /var queueServiceCatalogReady = false;/);
+  assert.match(html, /var queueServiceOriginalServices = \[\];/);
+  const save = html.match(/function saveQueueServices\(\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(save, /if \(!services\.length\)/);
+  assert.match(save, /At least one service is required\./);
+  const render = html.match(/function renderQueueServiceDraft\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(render, /saveButton\.disabled = !selected\.length \|\| !queueServiceCatalogReady/);
+  assert.match(html, /Current service unavailable/);
+});
+
+test('Explicit Save updates all selected services on a session-only walk-in', () => {
+  const changeSource = html.match(/function changeQueueTicketServices\(w, services\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const logs = [];
+  const changeQueueTicketServices = new Function(
+    'queueItemForService', 'normalizeQueueTicketServices', 'wlog',
+    changeSource + '\nreturn changeQueueTicketServices;'
+  )(
+    (service, techId) => ({ serviceId: service.id, serviceTicketId: null, name: service.label, price: service.price, durationMin: service.durationMin, techId, cat: '' }),
+    (ticket) => {
+      ticket.serviceTicketId = null;
+      ticket.svc = ticket.items[0] ? ticket.items[0].name : '';
+      ticket.durationMin = ticket.items.reduce((sum, item) => sum + item.durationMin, 0);
+      return ticket;
+    },
+    (ticket, message) => logs.push(message)
+  );
+  const ticket = { name: 'Walk-in', bookingId: null, techId: 't1', reqTech: null, svc: 'Old', items: [{ name: 'Old' }] };
+  const result = changeQueueTicketServices(ticket, [
+    { id: 'svc-1', label: 'Manicure', price: 25, durationMin: 30 },
+    { id: 'svc-2', label: 'Gel', price: 20, durationMin: 20 }
+  ]);
+  assert.equal(result.ok, true);
+  assert.deepEqual(ticket.items.map((item) => item.serviceId), ['svc-1', 'svc-2']);
+  assert.equal(ticket.durationMin, 50);
+  assert.match(logs[0], /Manicure, Gel/);
 });
 
 test('Queue service edit updates billing fields and persists the linked booking ticket', () => {
