@@ -25,6 +25,18 @@ function getApi() {
   return window.NEXORA_BOOKING_TEST_API;
 }
 
+function createMemoryStorage(initialValue = null) {
+  let value = initialValue;
+  let writeCount = 0;
+  return {
+    getItem() { return value; },
+    setItem(_key, nextValue) { value = String(nextValue); writeCount += 1; },
+    removeItem() { value = null; },
+    snapshot() { return value; },
+    writes() { return writeCount; }
+  };
+}
+
 const services = [
   { id: 'gel', name: 'Gel Manicure', priceCents: 4500, durationMinutes: 45 },
   { id: 'pedi', name: 'Signature Pedicure', priceCents: 5500, durationMinutes: 60 }
@@ -41,6 +53,37 @@ test('normalizes phone and recognizes returning customer', () => {
   assert.deepEqual(plain(api.findCustomerByPhone('8325550198', [{ phone: '8325550198', name: 'Mary Smith' }])), {
     phone: '8325550198', name: 'Mary Smith'
   });
+});
+
+test('reads saved customers safely and ignores malformed local data', () => {
+  const api = getApi();
+  assert.deepEqual(plain(api.readSavedCustomers(createMemoryStorage('{invalid json'))), []);
+  assert.deepEqual(plain(api.readSavedCustomers(createMemoryStorage(JSON.stringify([
+    { phone: '8325550198', name: 'Mary Smith', smsOptIn: true, booking: { id: 'private' } },
+    { phone: '123', name: 'Invalid Phone' },
+    { phone: '7135550142', name: '   ' }
+  ])))), [{ phone: '8325550198', name: 'Mary Smith' }]);
+});
+
+test('upserts only valid phone and name profiles in local storage', () => {
+  const api = getApi();
+  const storage = createMemoryStorage(JSON.stringify([{ phone: '8325550198', name: 'Old Name' }]));
+
+  assert.equal(api.saveCustomerLocally({ phone: '+1 (832) 555-0198', name: '  Mary Smith  ' }, storage), true);
+  assert.deepEqual(JSON.parse(storage.snapshot()), [{ phone: '8325550198', name: 'Mary Smith' }]);
+  assert.equal(api.saveCustomerLocally({ phone: '123', name: 'Ignored' }, storage), false);
+  assert.equal(api.saveCustomerLocally({ phone: '7135550142', name: '   ' }, storage), false);
+  assert.equal(storage.writes(), 1);
+});
+
+test('prefers a locally saved customer over the sample customer list', () => {
+  const api = getApi();
+  const storage = createMemoryStorage(JSON.stringify([{ phone: '8325550198', name: 'Local Name' }]));
+  assert.deepEqual(plain(api.findKnownCustomerByPhone(
+    '8325550198',
+    [{ phone: '8325550198', name: 'Sample Name' }],
+    storage
+  )), { phone: '8325550198', name: 'Local Name' });
 });
 
 test('prepares only entered customer details for the confirmation summary', () => {
@@ -257,9 +300,22 @@ test('shows selected services as removable chips below the catalog', () => {
   assert.match(SOURCE, /closest\?\.\('\[data-remove-service-id\]'\)/);
 });
 
-test('keeps booking data in memory only', () => {
-  assert.doesNotMatch(SOURCE, /localStorage/);
-  assert.doesNotMatch(SOURCE, /BOOKING_STORAGE_KEY|readState|persistState|clearState/);
+test('stores only the customer profile after a successful booking request', () => {
+  const api = getApi();
+  const storage = createMemoryStorage();
+  const draft = {
+    customer: { phone: '7135550199', name: 'Anna Le', isReturning: false, smsOptIn: true },
+    selectedServiceIds: ['gel'], selectedStaffId: 'any', selectedDate: '2026-07-24', selectedTime: '14:00', note: 'Window seat'
+  };
+
+  const result = api.submitBookingDraft(draft, catalog, storage, '2026-07-22T04:00:00.000Z', 'book-local-1');
+  assert.equal(result.ok, true);
+  assert.deepEqual(JSON.parse(storage.snapshot()), [{ phone: '7135550199', name: 'Anna Le' }]);
+
+  const rejectedStorage = createMemoryStorage();
+  const rejected = api.submitBookingDraft({ ...draft, customer: { phone: '123', name: 'Invalid' } }, catalog, rejectedStorage);
+  assert.equal(rejected.ok, false);
+  assert.equal(rejectedStorage.snapshot(), null);
 });
 
 test('allows booking dates beyond the previous seven-day window', () => {
@@ -386,6 +442,23 @@ test('keeps the brand header frameless', () => {
   assert.match(brandStyle, /border: 0/);
   assert.match(brandStyle, /box-shadow: none/);
   assert.match(brandStyle, /padding-bottom: 16px/);
+});
+
+test('shows approved salon promotions between the brand and booking form', () => {
+  const promotionSection = SOURCE.match(/<section class="promotion-section"[\s\S]*?<\/section>/)?.[0] || '';
+  const brandEndIndex = SOURCE.indexOf('</header>');
+  const promotionIndex = SOURCE.indexOf('<section class="promotion-section"');
+  const bookingAppIndex = SOURCE.indexOf('<main id="booking-app">');
+
+  assert.ok(brandEndIndex < promotionIndex);
+  assert.ok(promotionIndex < bookingAppIndex);
+  assert.match(promotionSection, /id="promotion-title">Ưu đãi nổi bật<\/h2>/);
+  assert.match(promotionSection, /Thứ 2–Thứ 6/);
+  assert.match(promotionSection, /10:00 AM–2:00 PM/);
+  assert.match(promotionSection, /Giảm 15%/);
+  assert.match(promotionSection, /Combo Manicure \+ Pedicure/);
+  assert.match(promotionSection, /Tiết kiệm \$10/);
+  assert.equal((promotionSection.match(/<article class="promotion-card/g) || []).length, 2);
 });
 
 test('removes decorative card emoji icons from section headers', () => {

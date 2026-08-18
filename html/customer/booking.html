@@ -42,6 +42,20 @@
     .brand-card h1 { margin: 0; font-size: clamp(23px, 5vw, 30px); line-height: 1.1; letter-spacing: 0; }
     .brand-card p { margin: 8px auto 0; max-width: 460px; color: var(--muted); font-size: 14px; line-height: 1.5; }
 
+    .promotion-section { margin: 0 0 14px; padding: 15px; border: 1px solid rgba(226, 220, 241, .9); border-radius: 20px; background: rgba(255, 255, 255, .86); box-shadow: 0 14px 34px rgba(108, 77, 153, .1); }
+    .promotion-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 11px; }
+    .promotion-kicker { margin: 0 0 4px; color: var(--pink-dark); font-size: 10px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+    .promotion-heading h2 { margin: 0; font-size: 19px; line-height: 1.2; }
+    .promotion-list { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(230px, 82%); gap: 10px; overflow-x: auto; padding-bottom: 3px; scroll-snap-type: x proximity; scrollbar-width: thin; }
+    .promotion-card { display: grid; min-width: 0; gap: 5px; padding: 14px; border: 1px solid #eadcf6; border-radius: 16px; background: linear-gradient(145deg, #fff7fc, #f7f2ff); scroll-snap-align: start; }
+    .promotion-card:nth-child(even) { border-color: #ded8fa; background: linear-gradient(145deg, #f8f5ff, #fff9fd); }
+    .promotion-badge { width: fit-content; padding: 4px 7px; border-radius: 999px; color: var(--pink-dark); background: #ffe8f4; font-size: 9px; font-weight: 900; letter-spacing: .08em; }
+    .promotion-card:nth-child(even) .promotion-badge { color: #5848d3; background: #ece8ff; }
+    .promotion-card h3 { margin: 2px 0 0; font-size: 14px; line-height: 1.3; }
+    .promotion-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
+    .promotion-card strong { margin-top: 2px; color: var(--pink-dark); font-size: 17px; }
+    .promotion-terms { margin: 9px 0 0; color: var(--soft-muted); font-size: 10px; line-height: 1.4; text-align: right; }
+
     .app-card { padding: 17px; border-radius: 22px; }
     .step-panel { animation: rise .22s ease-out; }
     @keyframes rise { from { opacity: .4; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
@@ -197,6 +211,8 @@
 
     @media (min-width: 640px) {
       .page-shell { width: min(100% - 28px, 780px); padding: 34px 0 112px; }
+      .promotion-section { margin-bottom: 18px; padding: 18px; }
+      .promotion-list { grid-auto-flow: initial; grid-auto-columns: initial; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; }
       .app-card { padding: 28px; border-radius: var(--radius); }
       .card-heading { gap: 16px; margin-bottom: 18px; }
       .card-heading p { margin-top: 7px; font-size: 13px; }
@@ -237,6 +253,30 @@
       <p class="brand-kicker">Đặt lịch trực tuyến</p>
       <h1>Bitcoin Nail Bar</h1>
     </header>
+
+    <section class="promotion-section" aria-labelledby="promotion-title">
+      <div class="promotion-heading">
+        <div>
+          <p class="promotion-kicker">Chương trình tại salon</p>
+          <h2 id="promotion-title">Ưu đãi nổi bật</h2>
+        </div>
+      </div>
+      <div class="promotion-list">
+        <article class="promotion-card">
+          <span class="promotion-badge">HAPPY HOURS</span>
+          <h3>Ưu đãi Thứ 2–Thứ 6</h3>
+          <p>Khung giờ 10:00 AM–2:00 PM</p>
+          <strong>Giảm 15%</strong>
+        </article>
+        <article class="promotion-card">
+          <span class="promotion-badge">COMBO DEAL</span>
+          <h3>Combo Manicure + Pedicure</h3>
+          <p>Đặt hai dịch vụ trong cùng một lịch hẹn</p>
+          <strong>Tiết kiệm $10</strong>
+        </article>
+      </div>
+      <p class="promotion-terms">Điều kiện áp dụng tại salon.</p>
+    </section>
 
     <main id="booking-app">
       <section class="step-panel app-card" data-step-panel="1">
@@ -401,6 +441,7 @@
         { phone: '8325550198', name: 'Mary Smith' },
         { phone: '7135550142', name: 'Jessica Nguyen' }
       ];
+      const CUSTOMER_STORAGE_KEY = 'bitcoin-nail-bar.customer-profiles.v1';
       let SERVICES = [];
       const SERVICE_CATALOG_URL = '../menu/menu.json';
       let SERVICE_CATEGORIES = [];
@@ -462,6 +503,45 @@
         const normalized = normalizePhone(phone);
         const match = customers.find((customer) => normalizePhone(customer?.phone) === normalized && normalized.length === 10);
         return match ? { phone: normalized, name: String(match.name || '').trim() } : null;
+      }
+
+      function getCustomerStorage() {
+        try {
+          return typeof window !== 'undefined' ? window.localStorage : null;
+        } catch {
+          return null;
+        }
+      }
+
+      function readSavedCustomers(storage = getCustomerStorage()) {
+        if (!storage) return [];
+        try {
+          const saved = JSON.parse(storage.getItem(CUSTOMER_STORAGE_KEY) || '[]');
+          if (!Array.isArray(saved)) return [];
+          return saved.map((customer) => ({
+            phone: normalizePhone(customer?.phone),
+            name: String(customer?.name || '').trim()
+          })).filter((customer) => customer.phone.length === 10 && customer.name);
+        } catch {
+          return [];
+        }
+      }
+
+      function saveCustomerLocally(customer, storage = getCustomerStorage()) {
+        const phone = normalizePhone(customer?.phone);
+        const name = String(customer?.name || '').trim();
+        if (!storage || phone.length !== 10 || !name) return false;
+        const customers = readSavedCustomers(storage).filter((savedCustomer) => savedCustomer.phone !== phone);
+        try {
+          storage.setItem(CUSTOMER_STORAGE_KEY, JSON.stringify([{ phone, name }, ...customers]));
+          return true;
+        } catch {
+          return false;
+        }
+      }
+
+      function findKnownCustomerByPhone(phone, customers = CUSTOMERS, storage = getCustomerStorage()) {
+        return findCustomerByPhone(phone, [...readSavedCustomers(storage), ...customers]);
       }
 
       function getCustomerReviewFields(customer = {}) {
@@ -550,7 +630,13 @@
         };
       }
 
-      const api = { normalizePhone, findCustomerByPhone, getCustomerReviewFields, toggleSelection, calculateBookingTotal, validateBookingDraft, validateBookingStep, createBookingRequest, parseBookingTime, formatBookingTime };
+      function submitBookingDraft(draft, catalog = CATALOG, storage = getCustomerStorage(), now = Date.now(), id = `book-${Date.now()}`) {
+        const result = createBookingRequest(draft, catalog, now, id);
+        if (result.ok) saveCustomerLocally(result.booking.customer, storage);
+        return result;
+      }
+
+      const api = { normalizePhone, findCustomerByPhone, findKnownCustomerByPhone, readSavedCustomers, saveCustomerLocally, getCustomerReviewFields, toggleSelection, calculateBookingTotal, validateBookingDraft, validateBookingStep, createBookingRequest, submitBookingDraft, parseBookingTime, formatBookingTime };
       if (typeof window !== 'undefined') window.NEXORA_BOOKING_TEST_API = api;
       if (typeof window === 'undefined' || window.NEXORA_BOOKING_SKIP_INIT) return;
 
@@ -751,7 +837,7 @@
         const phoneInput = $('#booking-phone');
         if (!phoneInput) return;
         const normalized = normalizePhone(phoneInput.value);
-        const customer = findCustomerByPhone(normalized, CUSTOMERS);
+        const customer = findKnownCustomerByPhone(normalized);
         phoneInput.value = formatPhone(normalized);
         state.customer.phone = normalized;
         if (customer) {
@@ -930,7 +1016,7 @@
         let id = `book-${Date.now()}`;
         let collision = 1;
         while (state.booking?.id === id) id = `book-${Date.now()}-${collision++}`;
-        const result = createBookingRequest(state, CATALOG, new Date().toISOString(), id);
+        const result = submitBookingDraft(state, CATALOG, getCustomerStorage(), new Date().toISOString(), id);
         if (!result.ok) { showValidation(result.errors); return; }
         state.booking = result.booking;
         state.step = 3;
