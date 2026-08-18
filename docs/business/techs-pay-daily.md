@@ -57,11 +57,11 @@
 
 **User Stories:**
 
-- As a Salon Owner, I want to xem Techs & Pay của hôm nay, so that I can theo dõi hoạt động và thu nhập vận hành của team.
-- As a Manager, I want to lọc theo một ngày trước đó, so that I can đối soát Turns, Hours, Service, Commission và Tip.
-- As an Accountant, I want to thấy số liệu lịch sử đã chốt, so that thay đổi Comm % hiện tại không làm sai dữ liệu cũ.
-- As an authorized user, I want to nhận trạng thái trống rõ ràng khi ngày không có hoạt động, so that I do not mistake zero activity for a system error.
-- As an unauthorized user, I want to receive a clear access denial, so that sensitive pay data is not exposed.
+- **As a** Salon Owner, **I want to** xem Techs & Pay của hôm nay, **so that** I can theo dõi hoạt động và thu nhập vận hành của team.
+- **As a** Manager, **I want to** lọc theo một ngày trước đó, **so that** I can đối soát Turns, Hours, Service, Commission và Tip.
+- **As a** Accountant, **I want to** thấy số liệu lịch sử đã chốt, **so that** thay đổi Comm % hiện tại không làm sai dữ liệu cũ.
+- **As a** Authorized User, **I want to** nhận trạng thái trống rõ ràng khi ngày không có hoạt động, **so that** I do not mistake zero activity for a system error.
+- **As a** Unauthorized User, **I want to** receive a clear access denial, **so that** sensitive pay data is not exposed.
 
 | Step | Who | Action | System Response | Notes |
 | :--- | :--- | :--- | :--- | :--- |
@@ -96,10 +96,10 @@ flowchart TD
 
 ### System Configuration & Administration
 
-- As a System Administrator, I want to cấu hình IANA timezone cho từng location, so that Business Date được xác định chính xác.
-- As a Salon Owner, I want to cấu hình Comm % có ngày hiệu lực cho từng technician, so that Commission được tính đúng cho hiện tại và lịch sử.
-- As a Salon Owner, I want to cấp quyền xem pay theo role, so that chỉ người phù hợp mới thấy dữ liệu nhạy cảm.
-- As an Auditor, I want to biết ai đã xem dữ liệu pay, location nào và ngày nào, so that hoạt động truy cập có thể được kiểm tra.
+- **As a** System Administrator, **I want to** cấu hình IANA timezone cho từng location, **so that** Business Date được xác định chính xác.
+- **As a** Salon Owner, **I want to** cấu hình Comm % có ngày hiệu lực cho từng technician, **so that** Commission được tính đúng cho hiện tại và lịch sử.
+- **As a** Salon Owner, **I want to** cấp quyền xem pay theo role, **so that** chỉ người phù hợp mới thấy dữ liệu nhạy cảm.
+- **As a** Auditor, **I want to** biết ai đã xem dữ liệu pay, location nào và ngày nào, **so that** hoạt động truy cập có thể được kiểm tra.
 
 | Configuration | Business Requirement |
 | :--- | :--- |
