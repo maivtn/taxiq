@@ -25,7 +25,7 @@
 | Service | Doanh số dịch vụ ròng đủ điều kiện tính commission, sau discount và refund hợp lệ, không gồm tax và tip. |
 | Commission | Số tiền hoa hồng trong ngày, được tính từ Service và Comm % có hiệu lực trong ngày đó. |
 | Tip | Tổng tip hợp lệ đã xác nhận và phân bổ cho technician trong ngày. |
-| Comm % | Tỷ lệ commission có hiệu lực cho technician trong ngày được chọn. |
+| Comm % | Tỷ lệ commission có hiệu lực cho technician trong ngày được chọn. Techs & Pay chỉ hiển thị; thay đổi tỷ lệ được thực hiện tại Settings > Staff. |
 | Tech takes | Số tiền vận hành trong ngày bằng Commission cộng Tip; đây chưa phải final payroll hoặc payout. |
 | Live Estimate | Kết quả tạm tính của ngày chưa được chốt; số liệu có thể thay đổi khi có ticket, tip, refund hoặc điều chỉnh mới. |
 | Finalized Snapshot | Kết quả đã được chốt và lưu snapshot; thay đổi Comm % hiện tại không được làm thay đổi lịch sử này. |
@@ -72,7 +72,7 @@
 | 5 | System | Tổng hợp Turns, Hours, Service và Tip. | Tất cả nguồn dữ liệu dùng cùng Business Date và cùng một snapshot time. | Không trả partial success khi nguồn bắt buộc bị lỗi. |
 | 6 | System | Lấy Comm % có hiệu lực và tính Commission. | Commission dùng Service × Comm %, hoặc dùng finalized snapshot nếu ngày đã chốt. | Tiền được tính bằng integer cents. |
 | 7 | System | Tính Tech takes. | Tech takes bằng Commission cộng Tip. | Chưa gồm guarantee, bonus, deduction, tax hoặc payout. |
-| 8 | System | Trả kết quả. | UI hiển thị Tech, Turns, Hours, Service, Commission, Tip, Comm % và Tech takes. | Ngày không có hoạt động vẫn trả success với giá trị `0`. |
+| 8 | System | Trả kết quả. | UI hiển thị Tech, Turns, Hours, Service, Commission, Tip, Comm % và Tech takes. | Comm % là read-only; ngày không có hoạt động vẫn trả success với giá trị `0`. |
 
 ```mermaid
 flowchart TD
@@ -97,7 +97,7 @@ flowchart TD
 ### System Configuration & Administration
 
 - **As a** System Administrator, **I want to** cấu hình IANA timezone cho từng location, **so that** Business Date được xác định chính xác.
-- **As a** Salon Owner, **I want to** cấu hình Comm % có ngày hiệu lực cho từng technician, **so that** Commission được tính đúng cho hiện tại và lịch sử.
+- **As a** Salon Owner, **I want to** cấu hình Comm % có ngày hiệu lực tại Settings > Staff, **so that** Techs & Pay có thể đọc đúng tỷ lệ cho hiện tại và lịch sử.
 - **As a** Salon Owner, **I want to** cấp quyền xem pay theo role, **so that** chỉ người phù hợp mới thấy dữ liệu nhạy cảm.
 - **As a** Auditor, **I want to** biết ai đã xem dữ liệu pay, location nào và ngày nào, **so that** hoạt động truy cập có thể được kiểm tra.
 
@@ -106,7 +106,7 @@ flowchart TD
 | Location Timezone | Bắt buộc là IANA timezone hợp lệ, ví dụ `America/Chicago`. |
 | Currency | V1 sử dụng USD. |
 | Pay View Permission | Chỉ Owner hoặc tài khoản được cấp quyền xem toàn bộ pay mới gọi được API. |
-| Commission Rate | Lưu theo effective date; lịch sử đã chốt phải dùng rate snapshot. |
+| Commission Rate | Được quản lý tại Settings > Staff và lưu theo effective date; lịch sử đã chốt phải dùng rate snapshot. |
 | Data Refresh | UI có thể refresh dữ liệu hôm nay mỗi 30–60 giây; ngày lịch sử không cần polling. |
 | Sensitive Data Logging | Log request metadata nhưng không log số Tip, Commission, Tech takes hoặc PII ở application log thông thường. |
 
@@ -147,7 +147,7 @@ stateDiagram-v2
 - **Rule 7 — Hours:** Tổng hợp clock session hợp lệ giao với khoảng thời gian của Business Date. Phiên qua nửa đêm chỉ tính phần nằm trong ngày được chọn.
 - **Rule 8 — Open shift:** Với hôm nay, clock session chưa đóng được tính đến snapshot time của response. Với ngày lịch sử, trạng thái on-shift luôn là false.
 - **Rule 9 — Service:** Chỉ gồm service line đã paid hoặc settled, sau discount và refund; không gồm tax, tip, gift-card load và item không đủ điều kiện commission.
-- **Rule 10 — Comm %:** Dùng rate có hiệu lực trong ngày được chọn. Finalized Snapshot dùng rate đã lưu cùng snapshot.
+- **Rule 10 — Comm % read-only:** Techs & Pay và API daily chỉ trả rate có hiệu lực trong ngày được chọn; không cung cấp input, update action hoặc mutation endpoint. Muốn thay đổi Comm %, người có quyền phải vào Settings > Staff. Finalized Snapshot dùng rate đã lưu cùng snapshot.
 - **Rule 11 — Commission:** Với Live Estimate, Commission bằng Service nhân Comm %, làm tròn half-up đến cent gần nhất.
 - **Rule 12 — Tip:** Chỉ gồm tip đã confirmed và adjustment hợp lệ; loại pending, disputed, voided, rejected và service charge không được phân loại là voluntary tip.
 - **Rule 13 — Tip allocation:** Ưu tiên phân bổ tip rõ ràng theo technician. Nếu ticket không có allocation, chia theo tỷ trọng Service đủ điều kiện và dùng largest remainder để tổng cent bằng đúng tip của ticket.
@@ -209,7 +209,7 @@ Cache-Control: private, no-store
 | Service | `service.amountCents` | Integer cents | Doanh số dịch vụ ròng đủ điều kiện commission. |
 | Commission | `commission.amountCents`, `commission.calculationStatus` | Integer cents, Status | Commission trong ngày và trạng thái Live Estimate/Finalized Snapshot. |
 | Tip | `tip.amountCents` | Integer cents | Tip hợp lệ được phân bổ cho technician. |
-| Comm % | `commissionRateBps` | Basis points | Tỷ lệ commission có hiệu lực trong ngày. |
+| Comm % | `commissionRateBps` | Basis points | Tỷ lệ commission có hiệu lực trong ngày; read-only trong Techs & Pay. |
 | Tech takes | `techTakesCents` | Integer cents | Commission cộng Tip. |
 
 #### Success example
@@ -302,6 +302,7 @@ Errors sử dụng `application/problem+json` và luôn có request ID để Sup
 | Tip đang disputed hoặc voided | Tip không được cộng vào cột Tip. | Manager / Support |
 | Ticket bị refund | Refund hợp lệ làm giảm Service và Commission live estimate theo business rules. | Automatic / Accountant review |
 | Comm % thay đổi sau ngày lịch sử đã chốt | Finalized Snapshot giữ nguyên rate và Commission cũ. | Automatic |
+| Người dùng cần thay đổi Comm % | Techs & Pay không cho sửa trực tiếp; người có quyền chuyển sang Settings > Staff để cập nhật pay setting. | Salon Owner / Administrator |
 | Không có quyền xem pay | API trả access denied và không trả dữ liệu technician. | Salon Owner / Administrator |
 | Một ledger bắt buộc bị lỗi | API trả service unavailable, không trả partial `200`. | Engineering / Support |
 
@@ -317,13 +318,15 @@ Errors sử dụng `application/problem+json` và luôn có request ID để Sup
 6. Hours xử lý đúng open shift và clock session qua nửa đêm.
 7. Service loại tax, tip, item không đủ điều kiện và phản ánh discount/refund hợp lệ.
 8. Commission dùng Service và Comm % có hiệu lực trong ngày.
-9. Tip chỉ gồm dữ liệu hợp lệ và tổng phân bổ giữ đúng số cent của ticket.
-10. Tech takes luôn bằng Commission cộng Tip.
-11. Lịch sử đã chốt không thay đổi khi Comm % hiện tại thay đổi.
-12. Ngày không có hoạt động trả `200`, `hasActivity: false` và giá trị `0`.
-13. Technician đã deactivate vẫn được giữ trong lịch sử phù hợp.
-14. Người không có quyền không thể xem hoặc suy ra location của tenant khác.
-15. Khi thiếu nguồn dữ liệu bắt buộc, API trả `503` thay vì response một phần.
+9. Comm % chỉ hiển thị; Techs & Pay không có input, update action hoặc mutation API cho tỷ lệ này.
+10. Khi cần thay đổi Comm %, người có quyền thực hiện tại Settings > Staff; lần đọc tiếp theo dùng rate theo effective date.
+11. Tip chỉ gồm dữ liệu hợp lệ và tổng phân bổ giữ đúng số cent của ticket.
+12. Tech takes luôn bằng Commission cộng Tip.
+13. Lịch sử đã chốt không thay đổi khi Comm % hiện tại thay đổi.
+14. Ngày không có hoạt động trả `200`, `hasActivity: false` và giá trị `0`.
+15. Technician đã deactivate vẫn được giữ trong lịch sử phù hợp.
+16. Người không có quyền không thể xem hoặc suy ra location của tenant khác.
+17. Khi thiếu nguồn dữ liệu bắt buộc, API trả `503` thay vì response một phần.
 
 ---
 
@@ -345,6 +348,10 @@ A: Lịch sử cần giữ đúng người đã có membership hoặc hoạt đ�
 
 A: Comm % được quản lý theo ngày hiệu lực. Ngày đã chốt sử dụng rate snapshot của chính ngày đó.
 
+**Q: Có thể sửa Comm % trực tiếp trong Techs & Pay không?**
+
+A: Không. Comm % trong Techs & Pay là read-only. Người có quyền cần vào Settings > Staff để thay đổi pay setting của technician.
+
 **Q: Ngày không có hoạt động có phải API bị lỗi không?**
 
 A: Không. API trả `200 OK`, `hasActivity: false` và các giá trị bằng `0`.
@@ -358,7 +365,7 @@ A: Các cột có quan hệ trực tiếp với nhau. Trả thiếu Tip, Service
 ### Out of Scope
 
 - Add, edit, activate hoặc deactivate technician
-- Update Comm % hoặc các pay settings khác
+- Update Comm % hoặc các pay settings khác trong Techs & Pay; cấu hình này thuộc Settings > Staff
 - Weekly guarantee và pay-model calculations
 - Bonus, deduction, tax withholding, gross pay và net pay
 - Gửi payout hoặc thay đổi payout status
