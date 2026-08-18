@@ -3440,6 +3440,11 @@
         var w = WAITLIST.find(function (x) { return x.status === 'service' && x.techId === tid; });
         return w ? w.name : null;
       }
+      function techAvailableForQueueTicket(tid, w) {
+        return !WAITLIST.some(function (candidate) {
+          return candidate.status === 'service' && candidate.techId === tid && (!w || String(candidate.orderId) !== String(w.orderId));
+        });
+      }
       function freeTechs() { return TECHS.filter(function (t) { return !busyName(t.id); }); }
       function nextTech() {
         var f = freeTechs();
@@ -3471,17 +3476,67 @@
 
       var fSel = null;    // guest picked for the two-tap assign
       var fWarn = null;   // {wid, tid} — showing the missing-skill warning; a second tap overrides
+      function mergeQueueTicketForAssignment(w) {
+        if (!w || !ticketOpen(w)) return w;
+        var collisions = WAITLIST.filter(function (candidate) {
+          return candidate !== w && ticketOpen(candidate) &&
+            String(candidate.orderId) === String(w.orderId) &&
+            queueTicketAssignment(candidate) === queueTicketAssignment(w);
+        });
+        var statusRank = { service: 3, waiting: 2, ready: 1 };
+        collisions.forEach(function (collision) {
+          var itemKeys = {};
+          var mergedItems = [];
+          (w.items || []).concat(collision.items || []).forEach(function (item) {
+            var key = String(item.serviceTicketId || item.serviceId || item.name || '');
+            if (!key || itemKeys[key]) return;
+            itemKeys[key] = true;
+            mergedItems.push(item);
+          });
+          w.items = mergedItems;
+          w.serviceTicketIds = queueTicketServiceIds(w).concat(queueTicketServiceIds(collision)).filter(function (id, index, ids) {
+            return ids.indexOf(id) === index;
+          });
+          if ((statusRank[collision.status] || 0) > (statusRank[w.status] || 0)) w.status = collision.status;
+          if (w.atMs && collision.atMs) w.atMs = Math.min(w.atMs, collision.atMs);
+          else w.atMs = w.atMs || collision.atMs;
+          if (w.svcAtMs && collision.svcAtMs) w.svcAtMs = Math.min(w.svcAtMs, collision.svcAtMs);
+          else w.svcAtMs = w.svcAtMs || collision.svcAtMs;
+          if (w.readyAtMs && collision.readyAtMs) w.readyAtMs = Math.min(w.readyAtMs, collision.readyAtMs);
+          else w.readyAtMs = w.readyAtMs || collision.readyAtMs;
+          w.log = (w.log || []).concat(collision.log || []);
+          collision.status = 'cancelled';
+          collision.supersededBy = w.id;
+          collision.items = [];
+          collision.serviceTicketIds = [];
+          collision.serviceTicketId = null;
+          collision.svc = '';
+          collision.durationMin = 0;
+          wlog(w, 'Merged technician ticket #' + collision.id + ' into this ticket');
+        });
+        normalizeQueueTicketServices(w);
+        return w;
+      }
+      function applyQueueTechnician(w, tid) {
+        if (!w) return null;
+        w.techId = tid || null;
+        w.reqTech = tid || null;
+        (w.items || []).forEach(function (item) { item.techId = tid || null; });
+        return mergeQueueTicketForAssignment(w);
+      }
       function assignWaitingTech(w, tid) {
         fWarn = null;
-        if (!w) return;
+        if (!w) return null;
         var prev = w.techId;
-        w.techId = tid;
+        w = applyQueueTechnician(w, tid);
         fSel = null;
         wlog(w, prev && prev !== tid ? 'Changed tech ' + techName(prev) + ' to ' + techName(tid) : 'Assigned ' + techName(tid) + ' - ready to start');
         renderFloor(); renderClock();
+        return w;
       }
       function fAssign(w, tid) {
         fWarn = null;
+        if (!w) return null;
         if (w.status === 'waiting') {
           w.status = 'service'; w.svcAtMs = Date.now();
           wlog(w, '💺 Assigned ' + techName(tid) + ' — service started');
@@ -3490,9 +3545,10 @@
           wlog(w, '⇄ Swapped tech ' + techName(w.techId) + ' → ' + techName(tid));
           pageTech(tid, 'Taking over: ' + w.name + (w.svc ? ' · ' + w.svc : ''));
         }
-        w.techId = tid;   // mid-service swap keeps the status and start time, and does not count another turn
+        w = applyQueueTechnician(w, tid);   // mid-service swap keeps the status and start time, and does not count another turn
         fSel = null;
         renderFloor(); renderClock();
+        return w;
       }
 
       /* ── guest profile lines (internal — the guest never sees these) ── */
@@ -4535,7 +4591,7 @@
       /* ── swap technician picker ── */
       var swapTechFor = null;
       function swapTechOptionsHtml(w) {
-        var options = freeTechs()
+        var options = TECHS.filter(function (t) { return techAvailableForQueueTicket(t.id, w); })
           .filter(function (t) { return t.id !== w.techId; })
           .map(function (t) { return { t: t, match: matchScore(t, w) }; })
           .sort(function (a, b) { return b.match.sc - a.match.sc || a.t.turns - b.t.turns; });
@@ -4576,19 +4632,19 @@
       function chooseSwapTech(tid) {
         var w = WAITLIST.find(function (x) { return x.id === swapTechFor; });
         var t = techById(tid);
-        if (!w || !t || busyName(tid) || w.techId === tid) return;
+        if (!w || !t || !techAvailableForQueueTicket(tid, w) || w.techId === tid) return;
         var match = matchScore(t, w);
         var apply = function (override) {
           if (w.status === 'waiting') {
             if (override) wlog(w, '⚠ Skill override: assigned to ' + t.name + ' without: ' + match.missing.join(', '));
-            assignWaitingTech(w, tid);
+            w = assignWaitingTech(w, tid);
             closeSwapTechModal();
             followQueueTicketAfterAction(w, 'waiting');
             toast(w.name + ' assigned to ' + t.name + (override ? ' (override logged)' : ''));
             return;
           }
           if (override) wlog(w, '⚠ Skill override: swapped to ' + t.name + ' without: ' + match.missing.join(', '));
-          fAssign(w, tid);
+          w = fAssign(w, tid);
           closeSwapTechModal();
           followQueueTicketAfterAction(w, w.status);
           toast(w.name + ' → ' + t.name + (override ? ' (override logged)' : ''));
@@ -4980,7 +5036,7 @@
             var accessMatch = at ? matchScore(at, aw) : null;
             if (accessMatch && !accessMatch.okSkill) wlog(aw, '⚠ Skill override: approved ' + at.name + ' without: ' + accessMatch.missing.join(', '));
             wlog(aw, '🔐 Front desk approved the access request — ' + techName(ar.tid) + ' takes the ticket');
-            fAssign(aw, ar.tid);
+            aw = fAssign(aw, ar.tid);
             followQueueTicketAfterAction(aw, 'service');
             toast(techName(ar.tid) + ' now owns ticket #' + aw.id);
             return;
@@ -5033,7 +5089,7 @@
           var sw = WAITLIST.find(function (x) { return x.id == st.getAttribute('data-wstart'); });
           var stech = sw && waitingStartTech(sw);
           if (!stech) { toast('No free tech right now', 'info'); return; }
-          fAssign(sw, stech.id);
+          sw = fAssign(sw, stech.id);
           followQueueTicketAfterAction(sw, 'service');
           serviceStartedModal(sw, stech);
           return;
@@ -5095,7 +5151,7 @@
             return;
           }
           if (!ok2) wlog(aw2, '⚠ Skill override: assigned ' + techName(tid) + ' without: ' + assignMatch.missing.join(', '));
-          fAssign(aw2, tid);                     // second tap (or qualified): assign
+          aw2 = fAssign(aw2, tid);               // second tap (or qualified): assign
           followQueueTicketAfterAction(aw2, 'service');
           toast(aw2.name + ' → ' + techName(tid) + (ok2 ? '' : ' (override logged)'));
           return;

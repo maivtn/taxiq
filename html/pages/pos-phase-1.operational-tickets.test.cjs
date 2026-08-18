@@ -521,7 +521,7 @@ test('Assign tech keeps the ticket waiting and makes Start use the assigned tech
   const chooseSwap = html.match(/function chooseSwapTech\(tid\) \{[\s\S]*?\n      \}\n\n      document\.addEventListener/)?.[0] || '';
   const startHandler = html.match(/\/\* ▶ one-tap assign \*\/[\s\S]*?\/\* ⇄ swap tech \*\//)?.[0] || '';
 
-  assert.match(assignWaiting, /w\.techId = tid/);
+  assert.match(assignWaiting, /w = applyQueueTechnician\(w, tid\)/);
   assert.doesNotMatch(assignWaiting, /w\.status = 'service'/);
   assert.doesNotMatch(assignWaiting, /pageTech/);
   assert.match(waitingStart, /if \(w\.techId\) return techById\(w\.techId\)/);
@@ -535,6 +535,61 @@ test('Assign tech keeps the ticket waiting and makes Start use the assigned tech
   assert.match(chooseSwap, /if \(w\.status === 'waiting'\) \{[\s\S]*assignWaitingTech\(w, tid\);[\s\S]*return;/);
   assert.match(startHandler, /var stech = sw && waitingStartTech\(sw\)/);
   assert.match(startHandler, /fAssign\(sw, stech\.id\)/);
+});
+
+test('Changing technician merges same-order Queue tickets without losing services', () => {
+  const mergeSource = html.match(/function mergeQueueTicketForAssignment\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const applySource = html.match(/function applyQueueTechnician\(w, tid\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.ok(mergeSource);
+  assert.ok(applySource);
+  assert.match(mergeSource, /String\(candidate\.orderId\) === String\(w\.orderId\)/);
+  assert.match(mergeSource, /queueTicketAssignment\(candidate\) === queueTicketAssignment\(w\)/);
+  assert.match(mergeSource, /serviceTicketId \|\| item\.serviceId/);
+  assert.match(mergeSource, /service: 3, waiting: 2, ready: 1/);
+  assert.match(mergeSource, /Math\.min/);
+  assert.match(mergeSource, /Merged technician ticket/);
+  const waitlist = [
+    {
+      id: 1, orderId: 'order-1', status: 'ready', techId: 't2', reqTech: 't2', atMs: 200, readyAtMs: 500,
+      serviceTicketIds: ['ticket-a'], items: [{ serviceId: 'svc-a', serviceTicketId: 'ticket-a', name: 'A', techId: 't2' }], log: []
+    },
+    {
+      id: 2, orderId: 'order-1', status: 'service', techId: 't2', reqTech: 't2', atMs: 100, svcAtMs: 300,
+      serviceTicketIds: ['ticket-b'], items: [{ serviceId: 'svc-b', serviceTicketId: 'ticket-b', name: 'B', techId: 't2' }], log: []
+    }
+  ];
+  const mergeQueueTicketForAssignment = new Function(
+    'WAITLIST', 'ticketOpen', 'queueTicketAssignment', 'queueTicketServiceIds', 'normalizeQueueTicketServices', 'wlog',
+    mergeSource + '\nreturn mergeQueueTicketForAssignment;'
+  )(
+    waitlist,
+    (ticket) => ticket.status !== 'completed' && ticket.status !== 'cancelled',
+    (ticket) => String(ticket.techId || ticket.reqTech || 'anyone'),
+    (ticket) => ticket.serviceTicketIds.slice(),
+    (ticket) => { ticket.serviceTicketId = ticket.serviceTicketIds[0] || null; return ticket; },
+    (ticket, message) => ticket.log.push({ message })
+  );
+  const survivor = mergeQueueTicketForAssignment(waitlist[0]);
+  assert.equal(survivor.status, 'service');
+  assert.deepEqual(survivor.items.map((item) => item.serviceId), ['svc-a', 'svc-b']);
+  assert.deepEqual(survivor.serviceTicketIds, ['ticket-a', 'ticket-b']);
+  assert.equal(survivor.atMs, 100);
+  assert.equal(survivor.svcAtMs, 300);
+  assert.equal(waitlist[1].status, 'cancelled');
+  assert.equal(waitlist[1].items.length, 0);
+  assert.match(survivor.log.at(-1).message, /Merged technician ticket #2/);
+  const assignWaiting = html.match(/function assignWaitingTech\(w, tid\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const assignService = html.match(/function fAssign\(w, tid\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(assignWaiting, /applyQueueTechnician\(w, tid\)/);
+  assert.match(assignService, /applyQueueTechnician\(w, tid\)/);
+  assert.match(html, /function techAvailableForQueueTicket\(tid, w\) \{/);
+  const swapOptions = html.match(/function swapTechOptionsHtml\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(swapOptions, /techAvailableForQueueTicket\(t\.id, w\)/);
+  const chooseSwap = html.match(/function chooseSwapTech\(tid\) \{[\s\S]*?\n      \}\n\n      \/\* ── Queue service picker/)?.[0] || '';
+  assert.match(chooseSwap, /w = assignWaitingTech\(w, tid\)/);
+  assert.match(chooseSwap, /w = fAssign\(w, tid\)/);
+  const startHandler = html.match(/\/\* ▶ one-tap assign \*\/[\s\S]*?\/\* ⇄ swap tech \*\//)?.[0] || '';
+  assert.match(startHandler, /sw = fAssign\(sw, stech\.id\)/);
 });
 
 test('Start button click is isolated from the change-tech modal route', () => {
