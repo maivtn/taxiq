@@ -43,6 +43,16 @@ test('normalizes phone and recognizes returning customer', () => {
   });
 });
 
+test('prepares only entered customer details for the confirmation summary', () => {
+  const api = getApi();
+  assert.deepEqual(plain(api.getCustomerReviewFields({ phone: '8325550198', name: '  Mary Smith  ' })), {
+    phone: '(832) 555-0198', name: 'Mary Smith'
+  });
+  assert.deepEqual(plain(api.getCustomerReviewFields({ phone: '', name: '   ' })), {
+    phone: '', name: ''
+  });
+});
+
 test('toggles multiple services and calculates combined total', () => {
   const api = getApi();
   let selected = api.toggleSelection([], 'gel');
@@ -277,7 +287,7 @@ test('hides optional SMS consent and returning-customer helper from step 1', () 
   assert.doesNotMatch(stepOne, /Quý khách đã từng sử dụng dịch vụ tại tiệm/);
 });
 
-test('keeps two input steps and places customer fields below the review summary in step 2', () => {
+test('keeps two input steps and places customer fields with consent above the review summary in step 2', () => {
   const stepOne = SOURCE.match(/data-step-panel="1"[\s\S]*?<\/section>/)?.[0] || '';
   const confirmationStep = SOURCE.match(/data-step-panel="2"[\s\S]*?<\/section>/)?.[0] || '';
   assert.doesNotMatch(stepOne, /Vui lòng nhập số điện thoại|id="booking-phone"|id="booking-name"/);
@@ -290,16 +300,19 @@ test('keeps two input steps and places customer fields below the review summary 
   assert.match(confirmationStep, /Vui lòng nhập số điện thoại/);
   assert.match(confirmationStep, /id="booking-phone"/);
   assert.match(confirmationStep, /id="booking-name"/);
-  assert.ok(confirmationStep.indexOf('class="review-summary"') < confirmationStep.indexOf('id="booking-phone"'));
+  assert.ok(confirmationStep.indexOf('id="booking-phone"') < confirmationStep.indexOf('class="sms-consent-group"'));
+  assert.ok(confirmationStep.indexOf('class="sms-consent-group"') < confirmationStep.indexOf('class="review-summary"'));
   assert.ok(confirmationStep.indexOf('id="booking-phone"') < confirmationStep.indexOf('id="booking-note"'));
   assert.doesNotMatch(SOURCE, /data-step-indicator="3"/);
   assert.doesNotMatch(SOURCE, /data-step-panel="4"/);
 });
 
-test('keeps customer details in inputs instead of duplicating them in the review summary', () => {
+test('adds optional phone and name rows to the confirmation summary', () => {
   const confirmationStep = SOURCE.match(/data-step-panel="2"[\s\S]*?<\/section>/)?.[0] || '';
-  assert.doesNotMatch(confirmationStep, /review-customer-name|review-customer/);
-  assert.doesNotMatch(SOURCE, /customerNameRow|setText\('#review-customer-name'|setText\('#review-customer'/);
+  assert.match(confirmationStep, /<div class="review-row" id="review-phone-row" hidden><dt>Số điện thoại<\/dt><dd id="review-phone"><\/dd><\/div>/);
+  assert.match(confirmationStep, /<div class="review-row" id="review-name-row" hidden><dt>Họ và tên<\/dt><dd id="review-name"><\/dd><\/div>/);
+  assert.match(SOURCE, /reviewPhoneRow\.hidden = !customerReview\.phone/);
+  assert.match(SOURCE, /reviewNameRow\.hidden = !customerReview\.name/);
 });
 
 test('shows optional SMS consent directly below the customer fields in step 2', () => {
