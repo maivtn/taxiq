@@ -42,10 +42,7 @@
     .brand-card h1 { margin: 0; font-size: clamp(23px, 5vw, 30px); line-height: 1.1; letter-spacing: 0; }
     .brand-card p { margin: 8px auto 0; max-width: 460px; color: var(--muted); font-size: 14px; line-height: 1.5; }
 
-    .promotion-section { margin: 0 0 14px; padding: 15px; border: 1px solid rgba(226, 220, 241, .9); border-radius: 20px; background: rgba(255, 255, 255, .86); box-shadow: 0 14px 34px rgba(108, 77, 153, .1); }
-    .promotion-heading { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; margin-bottom: 11px; }
-    .promotion-kicker { margin: 0 0 4px; color: var(--pink-dark); font-size: 10px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
-    .promotion-heading h2 { margin: 0; font-size: 19px; line-height: 1.2; }
+    .promotion-section { margin: 0 0 14px; padding: 0; border: 0; background: transparent; box-shadow: none; }
     .promotion-list { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(230px, 82%); gap: 10px; overflow-x: auto; padding-bottom: 3px; scroll-snap-type: x proximity; scrollbar-width: thin; }
     .promotion-card { display: grid; min-width: 0; gap: 5px; padding: 14px; border: 1px solid #eadcf6; border-radius: 16px; background: linear-gradient(145deg, #fff7fc, #f7f2ff); scroll-snap-align: start; }
     .promotion-card:nth-child(even) { border-color: #ded8fa; background: linear-gradient(145deg, #f8f5ff, #fff9fd); }
@@ -54,7 +51,6 @@
     .promotion-card h3 { margin: 2px 0 0; font-size: 14px; line-height: 1.3; }
     .promotion-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
     .promotion-card strong { margin-top: 2px; color: var(--pink-dark); font-size: 17px; }
-    .promotion-terms { margin: 9px 0 0; color: var(--soft-muted); font-size: 10px; line-height: 1.4; text-align: right; }
 
     .app-card { padding: 17px; border-radius: 22px; }
     .step-panel { animation: rise .22s ease-out; }
@@ -211,7 +207,7 @@
 
     @media (min-width: 640px) {
       .page-shell { width: min(100% - 28px, 780px); padding: 34px 0 112px; }
-      .promotion-section { margin-bottom: 18px; padding: 18px; }
+      .promotion-section { margin-bottom: 18px; }
       .promotion-list { grid-auto-flow: initial; grid-auto-columns: initial; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; }
       .app-card { padding: 28px; border-radius: var(--radius); }
       .card-heading { gap: 16px; margin-bottom: 18px; }
@@ -254,13 +250,7 @@
       <h1>Bitcoin Nail Bar</h1>
     </header>
 
-    <section class="promotion-section" aria-labelledby="promotion-title">
-      <div class="promotion-heading">
-        <div>
-          <p class="promotion-kicker">Chương trình tại salon</p>
-          <h2 id="promotion-title">Ưu đãi nổi bật</h2>
-        </div>
-      </div>
+    <section class="promotion-section" aria-label="Ưu đãi">
       <div class="promotion-list">
         <article class="promotion-card">
           <span class="promotion-badge">HAPPY HOURS</span>
@@ -275,7 +265,6 @@
           <strong>Tiết kiệm $10</strong>
         </article>
       </div>
-      <p class="promotion-terms">Điều kiện áp dụng tại salon.</p>
     </section>
 
     <main id="booking-app">

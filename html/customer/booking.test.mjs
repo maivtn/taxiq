@@ -444,21 +444,28 @@ test('keeps the brand header frameless', () => {
   assert.match(brandStyle, /padding-bottom: 16px/);
 });
 
-test('shows approved salon promotions between the brand and booking form', () => {
+test('shows only approved promotion cards between the brand and booking form', () => {
   const promotionSection = SOURCE.match(/<section class="promotion-section"[\s\S]*?<\/section>/)?.[0] || '';
+  const promotionStyle = SOURCE.match(/\.promotion-section \{([^}]*)\}/)?.[1] || '';
   const brandEndIndex = SOURCE.indexOf('</header>');
   const promotionIndex = SOURCE.indexOf('<section class="promotion-section"');
   const bookingAppIndex = SOURCE.indexOf('<main id="booking-app">');
 
   assert.ok(brandEndIndex < promotionIndex);
   assert.ok(promotionIndex < bookingAppIndex);
-  assert.match(promotionSection, /id="promotion-title">Ưu đãi nổi bật<\/h2>/);
+  assert.match(promotionSection, /aria-label="Ưu đãi"/);
+  assert.doesNotMatch(promotionSection, /promotion-heading|promotion-kicker|promotion-title|Điều kiện áp dụng tại salon/);
+  assert.doesNotMatch(SOURCE, /\.promotion-heading|\.promotion-kicker|\.promotion-terms/);
   assert.match(promotionSection, /Thứ 2–Thứ 6/);
   assert.match(promotionSection, /10:00 AM–2:00 PM/);
   assert.match(promotionSection, /Giảm 15%/);
   assert.match(promotionSection, /Combo Manicure \+ Pedicure/);
   assert.match(promotionSection, /Tiết kiệm \$10/);
   assert.equal((promotionSection.match(/<article class="promotion-card/g) || []).length, 2);
+  assert.match(promotionStyle, /padding: 0/);
+  assert.match(promotionStyle, /border: 0/);
+  assert.match(promotionStyle, /background: transparent/);
+  assert.match(promotionStyle, /box-shadow: none/);
 });
 
 test('removes decorative card emoji icons from section headers', () => {
