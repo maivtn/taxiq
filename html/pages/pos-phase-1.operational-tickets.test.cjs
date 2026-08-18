@@ -39,27 +39,59 @@ test('POS groups WAITLIST by orderId for the Tickets card view', () => {
   assert.match(html, /g\.tickets\.length === 1 \? renderSingleTicketCard\(g\.tickets\[0\], now, selW\) : renderTicketGroupCard\(g, now, selW\)/);
 });
 
-test('POS check-in is atomic: one operational ticket per service ticket, never a flattened row, never a duplicate', () => {
-  assert.match(html, /function createOperationalTicket\(booking, ticket\) \{/);
+test('POS check-in groups Booking services by technician without losing canonical ticket ids', () => {
+  assert.match(html, /function bookingTicketGroups\(booking\) \{/);
+  assert.match(html, /function createOperationalTicket\(booking, tickets\) \{/);
+  assert.match(html, /function syncBookingOperationalTickets\(booking\) \{/);
   assert.match(html, /function checkInBooking\(eb\) \{/);
   const checkIn = html.match(/function checkInBooking\(eb\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(checkIn, /if \(eb\.status === 'completed' \|\| eb\.status === 'no-show'\)/);
   assert.match(checkIn, /status: 'checked-in'/);
-  assert.match(checkIn, /\(booking && booking\.tickets \|\| \[\]\)\.forEach\(function \(ticket\) \{/);
-  assert.match(checkIn, /if \(WAITLIST\.some\(function \(w\) \{ return w\.serviceTicketId === ticket\.id; \}\)\) return;/);
-  assert.match(checkIn, /WAITLIST\.push\(createOperationalTicket\(booking, ticket\)\);/);
+  assert.match(checkIn, /var created = syncBookingOperationalTickets\(booking\);/);
+  const create = html.match(/function createOperationalTicket\(booking, tickets\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(create, /serviceTicketIds: tickets\.map/);
+  assert.match(create, /items: tickets\.map/);
   assert.match(html, /checkInBooking\(posBookingById\(ei\.getAttribute\('data-eta-in'\)\)\);/);
+});
+
+test('Booking ticket grouping creates one group per technician assignment', () => {
+  const groupSource = html.match(/function bookingTicketGroups\(booking\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.ok(groupSource);
+  const bookingTicketGroups = new Function(groupSource + '\nreturn bookingTicketGroups;')();
+  const groups = bookingTicketGroups({ tickets: [
+    { id: 'a', technicianId: 't1', status: 'confirmed' },
+    { id: 'b', technicianId: 't1', status: 'confirmed' },
+    { id: 'c', technicianId: 't2', status: 'confirmed' },
+    { id: 'd', technicianId: 't2', status: 'cancelled' }
+  ] });
+  assert.deepEqual(groups.map((group) => group.map((ticket) => ticket.id)), [['a', 'b'], ['c']]);
 });
 
 test('POS rehydrates operational tickets from checked-in bookings after every store reload, so a page refresh cannot drop a guest', () => {
   assert.match(html, /function rehydrateOperationalTickets\(\) \{/);
   const rehydrate = html.match(/function rehydrateOperationalTickets\(\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(rehydrate, /if \(b\.status !== 'checked-in'\) return;/);
-  assert.match(rehydrate, /WAITLIST\.push\(createOperationalTicket\(b, ticket\)\);/);
+  assert.match(rehydrate, /syncBookingOperationalTickets\(b\);/);
+  assert.doesNotMatch(rehydrate, /createOperationalTicket\(b, ticket\)/);
 
   assert.match(html, /reloadAppointmentSnapshot\(\);\s*\n\s*rehydrateOperationalTickets\(\);\s*\n\s*appointmentStore\.subscribe/);
   assert.match(html, /reloadAppointmentSnapshot\(\);\s*\n\s*rehydrateOperationalTickets\(\);\s*\n\s*renderFloor\(\);\s*\n\s*\}, window\);/);
   assert.match(html, /reloadAppointmentSnapshot\(\);\s*\n\s*rehydrateOperationalTickets\(\);\s*\n\s*renderManagement\(\);/);
+});
+
+test('Walk-in services assigned to the same technician share one Queue ticket', () => {
+  assert.match(html, /function walkInTicketGroups\(tickets\) \{/);
+  const groupSource = html.match(/function walkInTicketGroups\(tickets\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const walkInTicketGroups = new Function(groupSource + '\nreturn walkInTicketGroups;')();
+  const groups = walkInTicketGroups([
+    { serviceName: 'Manicure', technicianId: 't1' },
+    { serviceName: 'Gel', technicianId: 't1' },
+    { serviceName: 'Pedicure', technicianId: 't2' }
+  ]);
+  assert.deepEqual(groups.map((group) => group.map((ticket) => ticket.serviceName)), [['Manicure', 'Gel'], ['Pedicure']]);
+  const addWalkIn = html.match(/function addWalkIn\(name, phone, tickets\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(addWalkIn, /walkInTicketGroups\(tickets\)\.forEach/);
+  assert.match(addWalkIn, /items: group\.filter\(Boolean\)\.map/);
 });
 
 test('Queue Checkout opens the shared checkout page instead of charging in place', () => {
@@ -219,7 +251,7 @@ test('Queue table separates hour, customer group, note, technician, and elapsed 
   assert.match(bookingCss, /\.queue-table \.queue-customer-group \{[\s\S]*gap:\s*4px/);
   assert.match(html, /name: 'Lisa Trương',[\s\S]*?customerGroup: 'New'/);
   assert.doesNotMatch(table, /esc\(w\.badgeTxt\)/);
-  const createTicket = html.match(/function createOperationalTicket\(booking, ticket\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
+  const createTicket = html.match(/function createOperationalTicket\(booking, tickets\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(createTicket, /note: booking\.note \|\| ''/);
   assert.match(createTicket, /bookingTime: booking\.time \|\| ''/);
   assert.match(createTicket, /badgeTxt: booking\.time \? 'Booking' : ''/);
@@ -571,7 +603,8 @@ test('Check-in "no booking found" path has a service/technician ticket picker li
   assert.match(html, /data-ci-ticket-add/);
   assert.match(html, /data-ci-ticket-remove/);
   const addWalkInFn = html.match(/function addWalkIn\(name, phone, tickets\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
-  assert.match(addWalkInFn, /var list = \(tickets && tickets\.length\) \? tickets : \[null\];/);
+  assert.match(addWalkInFn, /walkInTicketGroups\(tickets\)\.forEach/);
+  assert.match(addWalkInFn, /WAITLIST\.push\(normalizeQueueTicketServices\(w\)\);/);
 });
 
 test('Check-in request inbox has App/QR sample data and a Card/Table view switch', () => {

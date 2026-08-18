@@ -3003,24 +3003,78 @@
         persistQueueCheckoutSnapshot(snapshot);
         window.location.href = queueCheckoutUrl(snapshot);
       }
-      // Builds one operational ticket for one booking service ticket — shared by check-in and rehydrate
-      // so both paths create the exact same shape and never diverge.
-      function createOperationalTicket(booking, ticket) {
-        return {
-          id: ++wlSeq, bookingId: booking.id, orderId: booking.id, serviceTicketId: ticket.id, customerId: booking.name,
-          name: booking.name, phone: booking.phone, customerGroup: booking.customerGroup || 'New', badge: 'blue', badgeTxt: booking.time ? 'Booking' : '', bookingTime: booking.time || '',
-          svc: ticket.serviceName, note: booking.note || '', at: nowTime(), atMs: Date.now(), status: 'waiting',
-          techId: ticket.technicianId || null, reqTech: ticket.technicianId || null,
-          durationMin: ticket.durationMin || 0,
-          items: [{ name: ticket.serviceName, price: ticket.price || 0, techId: ticket.technicianId, cat: '' }],
+      function bookingTicketGroups(booking) {
+        var order = [], groups = {};
+        (booking && booking.tickets || []).filter(function (ticket) { return ticket.status !== 'cancelled'; }).forEach(function (ticket) {
+          var key = String(ticket.technicianId || 'anyone');
+          if (!groups[key]) { groups[key] = []; order.push(groups[key]); }
+          groups[key].push(ticket);
+        });
+        return order;
+      }
+      // Builds one operational technician ticket for one or more canonical Booking service tickets.
+      function createOperationalTicket(booking, tickets) {
+        tickets = Array.isArray(tickets) ? tickets : [tickets];
+        var techId = tickets[0] && tickets[0].technicianId || null;
+        var w = {
+          id: ++wlSeq, bookingId: booking.id, orderId: booking.id,
+          serviceTicketId: tickets[0] ? tickets[0].id : null,
+          serviceTicketIds: tickets.map(function (ticket) { return String(ticket.id); }),
+          customerId: booking.name, name: booking.name, phone: booking.phone,
+          customerGroup: booking.customerGroup || 'New', badge: 'blue',
+          badgeTxt: booking.time ? 'Booking' : '', bookingTime: booking.time || '',
+          svc: '', note: booking.note || '', at: nowTime(), atMs: Date.now(), status: 'waiting',
+          techId: techId, reqTech: techId,
+          items: tickets.map(function (ticket) {
+            var found = salonData.findService(salonCatalog, ticket.serviceId || ticket.serviceName);
+            var service = {
+              id: ticket.serviceId || (found && found.id) || '',
+              label: ticket.serviceName || (found && (found.label || found.name)) || '',
+              price: ticket.price != null ? ticket.price : found && found.price,
+              durationMin: ticket.durationMin != null ? ticket.durationMin : found && found.durationMin
+            };
+            return queueItemForService(service, techId, ticket.id);
+          }),
           log: [], appt: true
         };
+        return normalizeQueueTicketServices(w);
+      }
+      function syncBookingOperationalTickets(booking) {
+        var touched = [];
+        bookingTicketGroups(booking).forEach(function (tickets) {
+          var missing = tickets.filter(function (ticket) { return !hasOperationalTicketForServiceTicket(ticket.id); });
+          if (!missing.length) return;
+          var assignment = String(tickets[0].technicianId || 'anyone');
+          var existing = WAITLIST.find(function (w) {
+            return ticketOpen(w) && String(w.orderId) === String(booking.id) && queueTicketAssignment(w) === assignment;
+          });
+          if (!existing) {
+            existing = createOperationalTicket(booking, missing);
+            WAITLIST.push(existing);
+          } else {
+            var added = createOperationalTicket(booking, missing);
+            existing.items = existing.items.concat(added.items);
+            existing.serviceTicketIds = queueTicketServiceIds(existing).concat(added.serviceTicketIds);
+            normalizeQueueTicketServices(existing);
+          }
+          if (touched.indexOf(existing) === -1) touched.push(existing);
+        });
+        return touched;
+      }
+      function walkInTicketGroups(tickets) {
+        var source = tickets && tickets.length ? tickets : [null];
+        var order = [], groups = {};
+        source.forEach(function (ticket) {
+          var key = String(ticket && ticket.technicianId || 'anyone');
+          if (!groups[key]) { groups[key] = []; order.push(groups[key]); }
+          groups[key].push(ticket);
+        });
+        return order;
       }
       // Walk-in order — no prior booking, so it becomes a single operational ticket directly in
       // Tickets. Shared by the inline Add form and the Check-in modal's "no booking found" path.
-      // tickets is an optional array of {serviceName, price, durationMin, technicianId, technicianName} —
-      // one operational ticket is created per entry, all sharing one orderId. No tickets falls back to
-      // the original bare walk-in row (no service chosen yet).
+      // tickets is an optional array of {serviceId, serviceName, price, durationMin, technicianId,
+      // technicianName}. Services assigned to the same technician share one operational ticket.
       function addWalkIn(name, phone, tickets) {
         phone = (phone || '').trim();
         var known = phone ? custByPhone(phone) : null;
@@ -3028,17 +3082,28 @@
         var badge = known ? (known.seg === 'vip' ? 'gold' : 'blue') : 'gray';
         var badgeTxt = known ? (known.seg === 'vip' ? '⭐ VIP · ' + known.visits + ' visits' : '↩️ ' + known.visits + ' visits') : '🆕 New';
         var orderId = 'walkin-' + (wlSeq + 1);
-        var list = (tickets && tickets.length) ? tickets : [null];
-        list.forEach(function (t) {
+        walkInTicketGroups(tickets).forEach(function (group) {
+          var first = group[0];
+          var techId = first && first.technicianId || null;
           var wlId = ++wlSeq;
-          WAITLIST.push({
-            id: wlId, orderId: orderId, bookingId: null, serviceTicketId: null, customerId: name, durationMin: t ? (t.durationMin || 0) : 0,
-            name: name, phone: phone, customerGroup: known ? (CUST_SEG_META[known.seg] ? CUST_SEG_META[known.seg].label : 'New') : 'New', badge: badge, badgeTxt: badgeTxt,
-            svc: t ? t.serviceName : '', at: nowTime(), atMs: Date.now(), status: 'waiting',
-            techId: t ? (t.technicianId || null) : null, reqTech: t ? (t.technicianId || null) : (known ? known.prefTech : null),
-            items: t ? [{ name: t.serviceName, price: t.price || 0, techId: t.technicianId, cat: '' }] : [],
+          var w = {
+            id: wlId, orderId: orderId, bookingId: null, serviceTicketId: null, serviceTicketIds: [], customerId: name,
+            name: name, phone: phone, customerGroup: known ? (CUST_SEG_META[known.seg] ? CUST_SEG_META[known.seg].label : 'New') : 'New',
+            badge: badge, badgeTxt: badgeTxt, svc: '', at: nowTime(), atMs: Date.now(), status: 'waiting',
+            techId: techId, reqTech: techId || (known ? known.prefTech : null),
+            items: group.filter(Boolean).map(function (ticket) {
+              var found = salonData.findService(salonCatalog, ticket.serviceId || ticket.serviceName);
+              var service = {
+                id: ticket.serviceId || (found && found.id) || '',
+                label: ticket.serviceName || (found && (found.label || found.name)) || '',
+                price: ticket.price != null ? ticket.price : found && found.price,
+                durationMin: ticket.durationMin != null ? ticket.durationMin : found && found.durationMin
+              };
+              return queueItemForService(service, techId, null);
+            }),
             log: []
-          });
+          };
+          WAITLIST.push(normalizeQueueTicketServices(w));
         });
         renderFloor(); renderManagement();
         toast(name + ' added to the queue');
@@ -3118,9 +3183,7 @@
         var modal = $('[data-ci-modal]'); if (modal) modal.classList.remove('open');
         document.body.style.overflow = '';
       }
-      // Atomic check-in (#pos-nail-salon-ops Phase 3): moves the Booking to checked-in and creates one
-      // operational ticket per non-cancelled service ticket that doesn't already have one — never a
-      // single flattened row, and never a duplicate for a service ticket that's already open or done.
+      // Atomic check-in: persist the Booking state, then create one Queue ticket per technician group.
       function checkInBooking(eb) {
         if (!eb) return;
         if (eb.status === 'completed' || eb.status === 'no-show') { toast('This booking is already closed', 'info'); return; }
@@ -3128,15 +3191,9 @@
         if (!result.ok) { toast(result.error.message, 'error'); return; }
         reloadAppointmentSnapshot();
         var booking = posBookingById(eb.id);
-        var created = 0;
-        (booking && booking.tickets || []).forEach(function (ticket) {
-          if (ticket.status === 'cancelled') return;
-          if (WAITLIST.some(function (w) { return w.serviceTicketId === ticket.id; })) return;
-          WAITLIST.push(createOperationalTicket(booking, ticket));
-          created++;
-        });
+        var created = syncBookingOperationalTickets(booking);
         renderFloor(); renderManagement();
-        if (created) toast(booking.name + ' checked in — ' + created + ' service' + (created > 1 ? 's' : '') + ' added to Tickets');
+        if (created.length) toast(booking.name + ' checked in — ' + created.length + ' technician ticket' + (created.length > 1 ? 's' : '') + ' added to Tickets');
         else toast(booking.name + ' is already checked in');
       }
       window.NEXORA_POS_BOOKING_CHECKIN = function (bookingId) {
@@ -3166,11 +3223,7 @@
       function rehydrateOperationalTickets() {
         BOOKINGS.forEach(function (b) {
           if (b.status !== 'checked-in') return;
-          (b.tickets || []).forEach(function (ticket) {
-            if (ticket.status === 'cancelled') return;
-            if (WAITLIST.some(function (w) { return w.serviceTicketId === ticket.id; })) return;
-            WAITLIST.push(createOperationalTicket(b, ticket));
-          });
+          syncBookingOperationalTickets(b);
         });
       }
 
