@@ -5734,17 +5734,19 @@
           '</div>';
       }
 
-      var mgPerfWeekPicker = null;
-      function initMgPerfWeekPicker() {
-        var input = $('[data-mg-perf-week]');
-        if (!input || !window.flatpickr || !window.weekSelect) return;
-        mgPerfWeekPicker = window.flatpickr(input, {
-          defaultDate: mgPerfWeek,
-          dateFormat: 'Y-m-d',
-          allowInput: true,
-          disableMobile: true,
-          locale: { firstDayOfWeek: 0 },
-          plugins: [new window.weekSelect()]
+      var mgWeekPickers = [];
+      function initMgWeekPickers() {
+        var inputs = document.querySelectorAll('[data-mg-week]');
+        if (!inputs.length || !window.flatpickr || !window.weekSelect) return;
+        mgWeekPickers = Array.prototype.map.call(inputs, function (input) {
+          return window.flatpickr(input, {
+            defaultDate: mgPerfWeek,
+            dateFormat: 'Y-m-d',
+            allowInput: true,
+            disableMobile: true,
+            locale: { firstDayOfWeek: 0 },
+            plugins: [new window.weekSelect()]
+          });
         });
       }
 
@@ -5853,7 +5855,7 @@
         return '<div class="pos-card">' +
           '<div class="pos-card-head"><h3><i class="bi bi-bullseye" aria-hidden="true"></i> Guarantee &amp; performance — ' + esc(performanceWeekRangeLabel(mgPerfWeek)) + ' (day ' + daysDone + '/' + daysWeek + ')</h3>' +
           '<div class="pos-inline">' +
-            '<label class="pos-inline-lbl">Week<input class="pos-input mg-perf-week-input" type="date" data-mg-perf-week value="' + esc(mgPerfWeek) + '" aria-label="Filter guarantee and performance by week"></label>' +
+            '<label class="pos-inline-lbl">Week<input class="pos-input mg-perf-week-input" type="date" data-mg-week data-mg-perf-week value="' + esc(mgPerfWeek) + '" aria-label="Filter guarantee and performance by week"></label>' +
             '<span class="pos-muted">techs needing attention first</span>' +
             '<div class="booking-view-switch" role="group" aria-label="Guarantee and performance view mode">' +
               '<button class="booking-view-button' + (mgPerfViewMode === 'table' ? ' is-active' : '') + '" type="button" data-mg-perf-view-target="table" aria-pressed="' + (mgPerfViewMode === 'table' ? 'true' : 'false') + '"><i class="bi bi-table" aria-hidden="true"></i>Table</button>' +
@@ -5868,16 +5870,20 @@
 
       var mgOwnerViewMode = DEFAULT_VIEW_MODE;
       function mgOwnerHtml(ps) {
-        var daysLeft = AD_DAYS_WEEK - AD_DAYS_DONE;
+        var selectedWeek = performanceWeekData(mgPerfWeek, ps);
+        var daysDone = Math.max(1, Number(selectedWeek.daysDone) || AD_DAYS_DONE);
+        var daysWeek = Math.max(1, Number(selectedWeek.daysWeek) || AD_DAYS_WEEK);
+        var daysLeft = Math.max(0, daysWeek - daysDone);
         var rows = TECHS.map(function (t) {
-          var done = weekDone(t, ps);
+          var weekTech = selectedWeek.tech[t.id] || {};
+          var done = Number(weekTech.done) || 0;
           var m = t.payModel || 'max';
           var pay = techPayWeek(t, done);          // tips excluded — 100% of tips go to the tech
           var own = done - pay;                    // what the salon keeps; negative = paying out of pocket
           var stdPct = m === 'baoshare' ? 1 - (t.baoSplit || t.comm) : 1 - t.comm;
           var ownPct = done ? own / done : 0;
           var T = t.comm ? (t.guar || 0) / t.comm : 0;
-          var proj = done / AD_DAYS_DONE * AD_DAYS_WEEK;
+          var proj = done / daysDone * daysWeek;
           return { t: t, m: m, done: done, pay: pay, own: own, ownPct: ownPct, stdPct: stdPct, T: T, proj: proj };
         }).sort(function (a, b) { return a.own - b.own; });
 
@@ -5896,7 +5902,9 @@
             var head = r.own < 0
               ? '<div class="pos-danger-text">🔴 Right now the salon is ~' + money0(-r.own) + ' out of pocket (produced ' + money0(r.done) + ' &lt; guarantee ' + money0(t.guar || 0) + ').</div>'
               : '<div class="pos-warn-text">🟠 Below the target — the salon keeps ' + pct(r.ownPct) + ' instead of ' + pct(r.stdPct) + '.</div>';
-            act = head + '<div class="pos-muted" style="font-size:12px;font-weight:600">Needs <b>' + money0(need) + '</b> more service (≈' + money0(daysLeft ? need / daysLeft : need) + '/day, ' + daysLeft + ' day(s) left) to clear ' + money0(r.T) + '. → Give them the walk-ins, push upsell/design. Run-rate projection: ' + money0(r.proj) + (r.proj < (t.guar || 0) ? ' — still short; two weeks in a row means revisiting the guarantee or the schedule' : '') + '.</div>';
+            act = head + '<div class="pos-muted" style="font-size:12px;font-weight:600">' + (daysLeft
+              ? 'Needs <b>' + money0(need) + '</b> more service (≈' + money0(need / daysLeft) + '/day, ' + daysLeft + ' day(s) left) to clear ' + money0(r.T) + '. → Give them the walk-ins, push upsell/design. Run-rate projection: ' + money0(r.proj) + (r.proj < (t.guar || 0) ? ' — still short; two weeks in a row means revisiting the guarantee or the schedule' : '') + '.'
+              : 'Week closed — finished <b>' + money0(need) + '</b> below the service target. Current pay settings are applied to this selected week.') + '</div>';
           }
           var pctCls = r.ownPct < 0 ? 'pos-danger-text' : r.ownPct < r.stdPct - 0.05 ? 'pos-warn-text' : 'pos-good-text';
           return { modelSel: modelSel, splitInp: splitInp, act: act, pctCls: pctCls };
@@ -5934,9 +5942,14 @@
               statusChip = { text: 'Below target', color: 'var(--nexora-warning)' };
               lines.push({ text: 'Below the target — the salon keeps ' + pct(r.ownPct) + ' instead of ' + pct(r.stdPct) + '.', cls: 'pos-warn-text' });
             }
-            lines.push({ text: 'Needs ' + money0(need) + ' more service (~' + money0(daysLeft ? need / daysLeft : need) + '/day, ' + daysLeft + ' day(s) left) to clear ' + money0(r.T) + '.' });
-            lines.push({ text: 'Give walk-ins, push upsell/design.' });
-            lines.push({ text: 'Run-rate projection: ' + money0(r.proj) + (r.proj < (t.guar || 0) ? ' — still short.' : '.') });
+            if (daysLeft) {
+              lines.push({ text: 'Needs ' + money0(need) + ' more service (~' + money0(need / daysLeft) + '/day, ' + daysLeft + ' day(s) left) to clear ' + money0(r.T) + '.' });
+              lines.push({ text: 'Give walk-ins, push upsell/design.' });
+              lines.push({ text: 'Run-rate projection: ' + money0(r.proj) + (r.proj < (t.guar || 0) ? ' — still short.' : '.') });
+            } else {
+              lines.push({ text: 'Week closed — finished ' + money0(need) + ' below the service target.' });
+              lines.push({ text: 'Current pay settings are applied to this selected week.' });
+            }
           }
           return { statusChip: statusChip, lines: lines };
         };
@@ -5967,16 +5980,18 @@
             '</article>';
         }).join('') + '</div>';
         return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3><i class="bi bi-briefcase" aria-hidden="true"></i> Pay model &amp; real split — on what techs actually produced (day ' + AD_DAYS_DONE + '/' + AD_DAYS_WEEK + ')</h3>' +
+          '<div class="pos-card-head"><h3><i class="bi bi-briefcase" aria-hidden="true"></i> Pay model &amp; real split — ' + esc(performanceWeekRangeLabel(mgPerfWeek)) + ' (day ' + daysDone + '/' + daysWeek + ')</h3>' +
           '<div class="pos-inline">' +
+            '<label class="pos-inline-lbl">Week<input class="pos-input mg-perf-week-input" type="date" data-mg-week data-mg-owner-week value="' + esc(mgPerfWeek) + '" aria-label="Filter pay model and real split by week"></label>' +
             '<span class="pos-muted">riskiest tech first · tips excluded (100% to techs)</span>' +
             '<div class="booking-view-switch" role="group" aria-label="Pay model view mode">' +
               '<button class="booking-view-button' + (mgOwnerViewMode === 'table' ? ' is-active' : '') + '" type="button" data-mg-owner-view-target="table" aria-pressed="' + (mgOwnerViewMode === 'table' ? 'true' : 'false') + '"><i class="bi bi-table" aria-hidden="true"></i>Table</button>' +
               '<button class="booking-view-button' + (mgOwnerViewMode === 'card' ? ' is-active' : '') + '" type="button" data-mg-owner-view-target="card" aria-pressed="' + (mgOwnerViewMode === 'card' ? 'true' : 'false') + '"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>' +
             '</div>' +
           '</div></div>' +
+          (selectedWeek.hasActivity ? '' : '<div class="swap-tech-empty" style="margin-bottom:14px"><i class="bi bi-calendar-x" aria-hidden="true"></i> No pay model data for this week.</div>') +
           (mgOwnerViewMode === 'card' ? cardsHtml : tableHtml) +
-          '<div class="pos-hint">📥 Input = service $ the tech produced (from the ledger, each item tagged to its tech). Three states: ✅ past target → standard split · 🟠 below target but production &gt; guarantee → salon still positive, thinner % · 🔴 production &lt; guarantee → salon pays the difference. "Guarantee + split over target": tech takes the guarantee + (production − target) × split %.</div>' +
+          '<div class="pos-hint">📥 Input = service $ the tech produced in the selected week. Current commission, guarantee, and pay-model settings are applied to that production. Three states: ✅ past target → standard split · 🟠 below target but production &gt; guarantee → salon still positive, thinner % · 🔴 production &lt; guarantee → salon pays the difference. "Guarantee + split over target": tech takes the guarantee + (production − target) × split %.</div>' +
           '</div>';
       }
 
@@ -7001,9 +7016,9 @@
       }
 
       function renderManagement() {
-        if (typeof mgPerfWeekPicker !== 'undefined' && mgPerfWeekPicker && typeof mgPerfWeekPicker.destroy === 'function') {
-          mgPerfWeekPicker.destroy();
-          mgPerfWeekPicker = null;
+        if (typeof mgWeekPickers !== 'undefined' && Array.isArray(mgWeekPickers)) {
+          mgWeekPickers.forEach(function (picker) { if (picker && typeof picker.destroy === 'function') picker.destroy(); });
+          mgWeekPickers = [];
         }
         var ps = payStats();
         html('[data-mgmt-body]', '<div class="pos-stack">' +
@@ -7020,7 +7035,7 @@
           mgSkillsHtml() +
           mgSvcSkillHtml() +
           '</div>');
-        if (typeof initMgPerfWeekPicker === 'function') initMgPerfWeekPicker();
+        if (typeof initMgWeekPickers === 'function') initMgWeekPickers();
       }
 
       /* ── management: clicks ── */
@@ -7344,7 +7359,7 @@
           return;
         }
 
-        var perfWeek = e.target.closest('[data-mg-perf-week]');
+        var perfWeek = e.target.closest('[data-mg-perf-week], [data-mg-owner-week]');
         if (perfWeek) {
           mgPerfWeek = performanceWeekStartKey(perfWeek.value || mgPerfCurrentWeek);
           renderManagement();

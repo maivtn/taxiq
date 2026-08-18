@@ -219,7 +219,7 @@ test('keeps shared menu note text compact', () => {
   assert.match(notesStyle, /gap: 3px/);
 });
 
-test('keeps the selected-service trash icon small and light', () => {
+test('keeps the selected-service trash icon legible inside its remove button', () => {
   const chipStyle = SOURCE.match(/\.selected-service-chip \{([^}]*)\}/)?.[1] || '';
   const removeButtonStyle = SOURCE.match(/\.selected-service-remove \{([^}]*)\}/)?.[1] || '';
   assert.match(chipStyle, /padding: 4px 5px 4px 8px/);
@@ -227,9 +227,9 @@ test('keeps the selected-service trash icon small and light', () => {
   assert.match(removeButtonStyle, /height: 26px/);
   assert.match(removeButtonStyle, /flex: 0 0 26px/);
   const trashStyle = SOURCE.match(/\.selected-service-remove svg \{([^}]*)\}/)?.[1] || '';
-  assert.match(trashStyle, /width: 5px/);
-  assert.match(trashStyle, /height: 5px/);
-  assert.match(trashStyle, /stroke-width: (?:0)?\.7/);
+  assert.match(trashStyle, /width: 12px/);
+  assert.match(trashStyle, /height: 12px/);
+  assert.match(trashStyle, /stroke-width: 2/);
 });
 
 test('shows selected services as removable chips below the catalog', () => {

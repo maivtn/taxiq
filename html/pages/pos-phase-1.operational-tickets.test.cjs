@@ -1058,7 +1058,7 @@ test('Guarantee performance renders the selected week picker, date range, histor
   const empty = renderPerformanceWeek({ daysDone: 6, daysWeek: 6, hasActivity: false, tech: {} }, '2024-04-14');
 
   assert.match(output, /Guarantee &amp; performance — Dec 28, 2025–Jan 3, 2026 \(day 6\/6\)/);
-  assert.match(output, /type="date" data-mg-perf-week value="2025-12-28"/);
+  assert.match(output, /type="date" data-mg-week data-mg-perf-week value="2025-12-28"/);
   assert.match(output, /Current sales<\/span>[\s\S]{0,100}\$1,234/);
   assert.match(output, /4\.6/);
   assert.match(output, /12 of 24/);
@@ -1098,7 +1098,8 @@ test('Guarantee performance loads and initializes Flatpickr weekSelect for Sunda
   assert.match(init, /document\.querySelectorAll\('\[data-mg-week\]'\)/);
   assert.match(init, /plugins:\s*\[new window\.weekSelect\(\)\]/);
   assert.match(init, /firstDayOfWeek:\s*0/);
-  assert.match(html, /data-mg-week data-mg-perf-week[\s\S]{0,260}data-mg-week data-mg-owner-week/);
+  assert.match(html, /data-mg-week data-mg-perf-week/);
+  assert.match(html, /data-mg-week data-mg-owner-week/);
   assert.match(html, /data-mg-perf-week\], \[data-mg-owner-week\][\s\S]{0,260}performanceWeekStartKey[\s\S]{0,160}renderManagement\(\)/);
 });
 
