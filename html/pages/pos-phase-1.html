@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
   <style>
     :root {
       --luxury-gold: #d4af37;
@@ -295,10 +296,15 @@
     .perf-stat-col:first-child { padding-left: 0; border-left: 0; }
     .perf-stat-value { display: block; font-size: var(--pos-card-content-fs); font-weight: 800; color: var(--nexora-text); margin-top: 2px; }
     .perf-stat-sub { display: block; font-size: 11.5px; font-weight: 600; color: var(--nexora-muted); margin-top: 2px; }
+    .mg-perf-week-input { height: 34px; min-width: 145px; padding: 0 8px; }
+    .flatpickr-day.week.selected { border-color: rgba(70, 72, 216, .2); border-radius: 0; background: rgba(70, 72, 216, .14); color: var(--nexora-brand); box-shadow: none; }
+    .flatpickr-day.week.selected:nth-child(7n + 1) { border-radius: 999px 0 0 999px; }
+    .flatpickr-day.week.selected:nth-child(7n) { border-radius: 0 999px 999px 0; }
 
     /* ── Techs & pay card: avatar+name+shift-chips head with a pinned Deactivate button,
        a 2×2 grid of boxed metrics, then a centered two-column editable footer. ── */
     .payroll-card { padding: 18px 20px; gap: 0; }
+    .mg-payroll-date-input { height: 34px; min-width: 150px; padding: 0 8px; }
     .payroll-avatar { width: 52px; height: 52px; flex-shrink: 0; border-radius: 50%; background: linear-gradient(135deg, var(--nexora-electric), var(--nexora-violet)); color: #fff; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 19px; }
     .payroll-metric-grid { display: flex; flex-wrap: wrap; gap: 10px; }
     .payroll-metric-box { flex: 1 1 calc(50% - 5px); min-width: 130px; border: 1px solid var(--nexora-border); border-radius: 12px; padding: 12px 14px; }
@@ -1042,7 +1048,7 @@
             <button class="page-tab" type="button" role="tab" data-pos-tab="tickets"><i class="bi bi-grid-1x2" aria-hidden="true"></i> Queue & Tech Assign</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="booking"><i class="bi bi-calendar-check" aria-hidden="true"></i> Booking</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="customers"><i class="bi bi-person-vcard" aria-hidden="true"></i> Customers</button>
-            <button class="page-tab" type="button" role="tab" data-pos-tab="clock"><i class="bi bi-clock-history" aria-hidden="true"></i> Time Clock</button>
+            <button class="page-tab" type="button" role="tab" data-pos-tab="clock"><i class="bi bi-clock-history" aria-hidden="true"></i> Staff Clock</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="management"><i class="bi bi-building-gear" aria-hidden="true"></i> Management</button>
           </div>
         </div>
@@ -2512,6 +2518,8 @@
   <script src="../assets/appointment-tickets.js"></script>
   <script src="../assets/appointments-store.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@daypilot/daypilot-lite-javascript@5.9.0/daypilot-javascript.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/plugins/weekSelect/weekSelect.js"></script>
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
@@ -3233,6 +3241,189 @@
           });
         });
         return m;
+      }
+      function payrollDateKey(date) {
+        var d = date instanceof Date ? date : new Date(date);
+        return d.getFullYear() + '-' + String(d.getMonth() + 1).padStart(2, '0') + '-' + String(d.getDate()).padStart(2, '0');
+      }
+      function buildDemoPayrollHistory(today) {
+        var snapshots = [
+          {
+            t1: { turns: 4, hours: 8, svc: 420, tip: 54 }, t2: { turns: 3, hours: 7.5, svc: 310, tip: 42 },
+            t3: { turns: 5, hours: 8.25, svc: 515, tip: 78 }, t4: { turns: 2, hours: 6, svc: 205, tip: 25 },
+            t5: { turns: 4, hours: 7, svc: 360, tip: 49 }
+          },
+          {
+            t1: { turns: 3, hours: 7, svc: 345, tip: 45 }, t2: { turns: 4, hours: 8, svc: 405, tip: 58 },
+            t3: { turns: 4, hours: 7.75, svc: 460, tip: 64 }, t4: { turns: 3, hours: 7, svc: 290, tip: 36 },
+            t5: { turns: 2, hours: 5.5, svc: 225, tip: 31 }
+          },
+          {
+            t1: { turns: 5, hours: 8.5, svc: 560, tip: 82 }, t2: { turns: 4, hours: 8, svc: 445, tip: 61 },
+            t3: { turns: 6, hours: 9, svc: 625, tip: 96 }, t4: { turns: 4, hours: 8, svc: 390, tip: 52 },
+            t5: { turns: 5, hours: 8.25, svc: 510, tip: 73 }
+          },
+          {
+            t1: { turns: 6, hours: 9, svc: 690, tip: 105 }, t2: { turns: 5, hours: 8.75, svc: 570, tip: 84 },
+            t3: { turns: 7, hours: 9.5, svc: 760, tip: 118 }, t4: { turns: 4, hours: 8, svc: 435, tip: 59 },
+            t5: { turns: 6, hours: 9, svc: 650, tip: 97 }
+          },
+          {
+            t1: { turns: 2, hours: 5.5, svc: 240, tip: 32 }, t2: { turns: 3, hours: 6.5, svc: 315, tip: 44 },
+            t3: { turns: 3, hours: 7, svc: 350, tip: 51 }, t4: { turns: 2, hours: 5, svc: 180, tip: 22 },
+            t5: { turns: 3, hours: 6, svc: 295, tip: 39 }
+          },
+          {
+            t1: { turns: 4, hours: 7.5, svc: 455, tip: 63 }, t2: { turns: 3, hours: 7, svc: 335, tip: 47 },
+            t3: { turns: 5, hours: 8.25, svc: 540, tip: 79 }, t4: { turns: 3, hours: 6.75, svc: 275, tip: 34 },
+            t5: { turns: 4, hours: 7.5, svc: 410, tip: 56 }
+          }
+        ];
+        var history = {};
+        snapshots.forEach(function (snapshot, index) {
+          var date = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+          date.setDate(date.getDate() - index - 1);
+          history[payrollDateKey(date)] = snapshot;
+        });
+        return history;
+      }
+      var mgPayrollToday = payrollDateKey(new Date());
+      var mgPayrollDate = mgPayrollToday;
+      var MG_PAYROLL_HISTORY = buildDemoPayrollHistory(new Date());
+      function payrollDateLabel(dateKey) {
+        if (dateKey === mgPayrollToday) return 'today';
+        var parts = String(dateKey || '').split('-').map(Number);
+        if (parts.length !== 3 || !parts[0] || !parts[1] || !parts[2]) return dateKey || 'today';
+        return new Date(parts[0], parts[1] - 1, parts[2]).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+      }
+      function payrollStatsForDate(dateKey, todayStats) {
+        var isToday = dateKey === mgPayrollToday;
+        var source = isToday ? (todayStats || {}) : (MG_PAYROLL_HISTORY[dateKey] || {});
+        var rows = {};
+        var hasActivity = false;
+        TECHS.forEach(function (t) {
+          var item = source[t.id] || {};
+          var row = {
+            turns: isToday ? Number(t.turns) || 0 : Number(item.turns) || 0,
+            hours: isToday ? Number(clockHours(t.id)) || 0 : Number(item.hours) || 0,
+            svc: Number(item.svc) || 0,
+            tip: Number(item.tip) || 0
+          };
+          if (row.turns || row.hours || row.svc || row.tip) hasActivity = true;
+          rows[t.id] = row;
+        });
+        return { rows: rows, hasActivity: hasActivity };
+      }
+
+      // U.S. salon calendar convention: a selected day resolves to its Sunday–Saturday week.
+      function performanceWeekStartKey(value) {
+        var date;
+        if (value instanceof Date) {
+          date = new Date(value.getFullYear(), value.getMonth(), value.getDate());
+        } else {
+          var parts = String(value || '').slice(0, 10).split('-').map(Number);
+          date = parts.length === 3 && parts[0] && parts[1] && parts[2]
+            ? new Date(parts[0], parts[1] - 1, parts[2])
+            : new Date();
+        }
+        date.setDate(date.getDate() - date.getDay());
+        return payrollDateKey(date);
+      }
+      function performanceWeekRangeLabel(weekKey) {
+        var startKey = performanceWeekStartKey(weekKey);
+        var parts = startKey.split('-').map(Number);
+        var start = new Date(parts[0], parts[1] - 1, parts[2]);
+        var end = new Date(parts[0], parts[1] - 1, parts[2] + 6);
+        var sm = start.toLocaleDateString('en-US', { month: 'short' });
+        var em = end.toLocaleDateString('en-US', { month: 'short' });
+        if (start.getFullYear() !== end.getFullYear()) {
+          return sm + ' ' + start.getDate() + ', ' + start.getFullYear() + '–' + em + ' ' + end.getDate() + ', ' + end.getFullYear();
+        }
+        if (start.getMonth() !== end.getMonth()) {
+          return sm + ' ' + start.getDate() + '–' + em + ' ' + end.getDate() + ', ' + end.getFullYear();
+        }
+        return sm + ' ' + start.getDate() + '–' + end.getDate() + ', ' + end.getFullYear();
+      }
+      function buildDemoPerformanceHistory() {
+        var base = {
+          t1: { done: 1510, rating: 4.8, reviews: 45, bills: 42, upsBills: 12, rebookEligible: 38, rebooked: 23, rework: 1 },
+          t2: { done: 1080, rating: 4.6, reviews: 34, bills: 35, upsBills: 6, rebookEligible: 31, rebooked: 14, rework: 1 },
+          t3: { done: 1775, rating: 4.4, reviews: 41, bills: 40, upsBills: 10, rebookEligible: 36, rebooked: 18, rework: 3 },
+          t4: { done: 850, rating: 4.7, reviews: 25, bills: 27, upsBills: 4, rebookEligible: 24, rebooked: 10, rework: 1 },
+          t5: { done: 1290, rating: 4.9, reviews: 24, bills: 26, upsBills: 8, rebookEligible: 22, rebooked: 13, rework: 0 }
+        };
+        var samples = [
+          ['2025-01-05', 0.78, -0.2, -8, -3, -3, 1],
+          ['2025-08-17', 0.93, 0.0, -3, -1, -1, 0],
+          ['2025-12-28', 1.12, 0.1, 5, 2, 2, 0],
+          ['2026-01-04', 0.87, -0.1, -5, -2, -2, 1],
+          ['2026-07-12', 1.03, 0.1, 2, 1, 1, -1],
+          ['2026-08-09', 1.08, 0.0, 4, 2, 2, 0]
+        ];
+        var history = {};
+        samples.forEach(function (sample) {
+          var tech = {};
+          Object.keys(base).forEach(function (id) {
+            var row = base[id];
+            var bills = Math.max(0, row.bills + sample[3]);
+            var eligible = Math.max(0, row.rebookEligible + sample[3]);
+            tech[id] = {
+              done: Math.round(row.done * sample[1]),
+              rating: Math.min(5, Math.max(0, Math.round((row.rating + sample[2]) * 10) / 10)),
+              reviews: Math.max(0, row.reviews + sample[3]),
+              bills: bills,
+              upsBills: Math.min(bills, Math.max(0, row.upsBills + sample[4])),
+              rebookEligible: eligible,
+              rebooked: Math.min(eligible, Math.max(0, row.rebooked + sample[5])),
+              rework: Math.max(0, row.rework + sample[6])
+            };
+          });
+          history[sample[0]] = { daysDone: 6, daysWeek: 6, tech: tech };
+        });
+        return history;
+      }
+      var mgPerfCurrentWeek = performanceWeekStartKey(new Date());
+      var mgPerfWeek = mgPerfCurrentWeek;
+      var MG_PERF_WEEK_HISTORY = buildDemoPerformanceHistory();
+      function performanceWeekData(dateKey, todayStats) {
+        var weekStart = performanceWeekStartKey(dateKey);
+        if (weekStart === mgPerfCurrentWeek) {
+          var liveTech = {};
+          var hasLiveActivity = false;
+          TECHS.forEach(function (t) {
+            var pf = TECH_PERF[t.id] || {};
+            var rbk = REBOOK[t.id] || {};
+            var liveBills = SALES.filter(function (sale) { return sale.items.some(function (item) { return item.techId === t.id; }); });
+            var liveUpsells = liveBills.filter(function (sale) { return sale.items.some(function (item) { return item.techId === t.id && item.cat === 'addon'; }); }).length;
+            var row = {
+              done: (Number(pf.wtd) || 0) + (todayStats[t.id] ? Number(todayStats[t.id].svc) || 0 : 0),
+              rating: pf.rating == null ? null : Number(pf.rating),
+              reviews: Number(pf.rev) || 0,
+              bills: (Number(pf.bills) || 0) + liveBills.length,
+              upsBills: (Number(pf.upsBills) || 0) + liveUpsells,
+              rebookEligible: Number(rbk.elig) || 0,
+              rebooked: Number(rbk.rb) || 0,
+              rework: Number(REWORK[t.id]) || 0
+            };
+            if (row.done || row.reviews || row.bills || row.rebookEligible || row.rework) hasLiveActivity = true;
+            liveTech[t.id] = row;
+          });
+          return { weekStart: weekStart, daysDone: AD_DAYS_DONE, daysWeek: AD_DAYS_WEEK, hasActivity: hasLiveActivity, tech: liveTech };
+        }
+        var snapshot = MG_PERF_WEEK_HISTORY[weekStart];
+        if (snapshot) {
+          return {
+            weekStart: weekStart,
+            daysDone: snapshot.daysDone || AD_DAYS_WEEK,
+            daysWeek: snapshot.daysWeek || AD_DAYS_WEEK,
+            hasActivity: Object.keys(snapshot.tech || {}).some(function (id) {
+              var row = snapshot.tech[id] || {};
+              return !!(row.done || row.reviews || row.bills || row.rebookEligible || row.rework);
+            }),
+            tech: snapshot.tech || {}
+          };
+        }
+        return { weekStart: weekStart, daysDone: AD_DAYS_WEEK, daysWeek: AD_DAYS_WEEK, hasActivity: false, tech: {} };
       }
       // Service $ this week = closed days (mock ledger) + today live
       function weekDone(t, ps) { return (TECH_PERF[t.id] ? TECH_PERF[t.id].wtd : 0) + (ps[t.id] ? ps[t.id].svc : 0); }
@@ -5033,17 +5224,19 @@
 
       var mgPayrollViewMode = DEFAULT_VIEW_MODE;
       function mgPayrollHtml(ps) {
+        var daily = payrollStatsForDate(mgPayrollDate, ps);
+        ps = daily.rows;
         var tableHtml = '<div class="pos-table-wrap"><table class="pos-table tight"><thead><tr>' +
           '<th>Tech</th><th>Turns</th><th><i class="bi bi-clock" aria-hidden="true"></i> Hours</th><th>Service $</th><th>Comm %</th><th>Commission</th><th>Tip</th><th>Tech takes</th><th>Weekly guarantee</th><th></th>' +
           '</tr></thead><tbody>' +
           TECHS.map(function (t) {
             var p = ps[t.id] || { svc: 0, tip: 0 };
             var comm = p.svc * t.comm;
-            var hrs = clockHours(t.id);
-            var onShift = isOnShift(t.id);
+            var hrs = p.hours;
+            var onShift = mgPayrollDate === mgPayrollToday && isOnShift(t.id);
             return '<tr>' +
               '<td><span class="pos-people"><span class="pos-avatar">' + initials(t.name) + '</span> <span class="pos-strong">' + esc(t.name) + '</span></span></td>' +
-              '<td>' + t.turns + '</td>' +
+              '<td>' + p.turns + '</td>' +
               '<td>' + (hrs ? hrs.toFixed(1) + 'h' : '<span class="pos-warn-text">not in</span>') + (onShift ? ' <span class="pos-good-text">●</span>' : '') + '</td>' +
               '<td class="pos-strong">' + money(p.svc) + '</td>' +
               '<td><input class="pos-mini" data-mg-comm="' + t.id + '" value="' + Math.round(t.comm * 100) + '" style="width:52px"> %</td>' +
@@ -5058,15 +5251,15 @@
         var cardsHtml = '<div data-mg-payroll-list>' + TECHS.map(function (t) {
           var p = ps[t.id] || { svc: 0, tip: 0 };
           var comm = p.svc * t.comm;
-          var hrs = clockHours(t.id);
-          var onShift = isOnShift(t.id);
+          var hrs = p.hours;
+          var onShift = mgPayrollDate === mgPayrollToday && isOnShift(t.id);
           return '<article class="queue-card payroll-card">' +
             '<div class="perf-head">' +
               '<span class="payroll-avatar">' + initials(t.name) + '</span>' +
               '<div class="perf-head-main">' +
                 '<div class="perf-name-row"><span class="perf-name">' + esc(t.name) + '</span></div>' +
                 '<div class="pos-inline" style="margin-top:8px;gap:8px;flex-wrap:wrap">' +
-                  '<span class="pos-chip pos-chip-violet" style="white-space:nowrap">' + t.turns + ' turns</span>' +
+                  '<span class="pos-chip pos-chip-violet" style="white-space:nowrap">' + p.turns + ' turns</span>' +
                   '<span class="pos-chip" style="background:#fff;border:1px solid var(--nexora-border);color:var(--nexora-text);white-space:nowrap">' + (hrs ? hrs.toFixed(1) + 'h' : '<span class="pos-warn-text">not in</span>') + (onShift ? ' <span class="pos-good-text">●</span>' : '') + '</span>' +
                 '</div>' +
               '</div>' +
@@ -5087,14 +5280,16 @@
             '</article>';
         }).join('') + '</div>';
         return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3><i class="bi bi-people-fill" aria-hidden="true"></i> Techs &amp; pay — today</h3>' +
+          '<div class="pos-card-head"><h3><i class="bi bi-people-fill" aria-hidden="true"></i> Techs &amp; pay — ' + esc(payrollDateLabel(mgPayrollDate)) + '</h3>' +
           '<div class="pos-inline">' +
+            '<label class="pos-inline-lbl">Date<input class="pos-input mg-payroll-date-input" type="date" data-mg-payroll-date value="' + esc(mgPayrollDate) + '" max="' + esc(mgPayrollToday) + '" aria-label="Filter Techs and pay by date"></label>' +
             '<div class="booking-view-switch" role="group" aria-label="Techs and pay view mode">' +
               '<button class="booking-view-button' + (mgPayrollViewMode === 'table' ? ' is-active' : '') + '" type="button" data-mg-payroll-view-target="table" aria-pressed="' + (mgPayrollViewMode === 'table' ? 'true' : 'false') + '"><i class="bi bi-table" aria-hidden="true"></i>Table</button>' +
               '<button class="booking-view-button' + (mgPayrollViewMode === 'card' ? ' is-active' : '') + '" type="button" data-mg-payroll-view-target="card" aria-pressed="' + (mgPayrollViewMode === 'card' ? 'true' : 'false') + '"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>' +
             '</div>' +
             '<button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-mg-addtech><i class="bi bi-person-plus"></i> Add tech</button>' +
           '</div></div>' +
+          (daily.hasActivity ? '' : '<div class="swap-tech-empty" style="margin-bottom:14px"><i class="bi bi-calendar-x" aria-hidden="true"></i> No payroll activity for this date.</div>') +
           (mgPayrollViewMode === 'card' ? cardsHtml : tableHtml) +
           '<div class="pos-hint">Edit commission % or the weekly guarantee: type a number then click away. "Deactivate" keeps payroll and tax history — nothing is deleted.</div>' +
           '</div>';
@@ -5539,36 +5734,51 @@
           '</div>';
       }
 
+      var mgPerfWeekPicker = null;
+      function initMgPerfWeekPicker() {
+        var input = $('[data-mg-perf-week]');
+        if (!input || !window.flatpickr || !window.weekSelect) return;
+        mgPerfWeekPicker = window.flatpickr(input, {
+          defaultDate: mgPerfWeek,
+          dateFormat: 'Y-m-d',
+          allowInput: true,
+          disableMobile: true,
+          locale: { firstDayOfWeek: 0 },
+          plugins: [new window.weekSelect()]
+        });
+      }
+
       var mgPerfViewMode = DEFAULT_VIEW_MODE;
       function mgPerfHtml(ps) {
+        var selectedWeek = performanceWeekData(mgPerfWeek, ps);
+        var daysDone = Math.max(1, Number(selectedWeek.daysDone) || AD_DAYS_DONE);
+        var daysWeek = Math.max(1, Number(selectedWeek.daysWeek) || AD_DAYS_WEEK);
         var rows = TECHS.map(function (t) {
-          var pf = TECH_PERF[t.id] || { wtd: 0, rating: null, rev: 0, bills: 0, upsBills: 0 };
-          var done = weekDone(t, ps);
+          var pf = selectedWeek.tech[t.id] || { done: 0, rating: null, reviews: 0, bills: 0, upsBills: 0, rebookEligible: 0, rebooked: 0, rework: 0 };
+          var done = Number(pf.done) || 0;
           var target = (t.guar && t.comm) ? t.guar / t.comm : 0;   // service $ needed to cover the guarantee
-          var daily = target / AD_DAYS_WEEK;
-          var proj = done / AD_DAYS_DONE * AD_DAYS_WEEK;           // run-rate projection for the full week
+          var daily = target / daysWeek;
+          var proj = done / daysDone * daysWeek;                   // run-rate projection for the full week
           var gap = (t.guar || 0) - proj * t.comm;                 // >0 the salon tops up, <0 the salon profits
-          var daysLeft = AD_DAYS_WEEK - AD_DAYS_DONE;
+          var daysLeft = daysWeek - daysDone;
           var needDay = daysLeft > 0 ? Math.max(0, (target - done) / daysLeft) : 0;
-          // Upsell: mock week + today counted live off the ledger
-          var tBills = SALES.filter(function (s) { return s.items.some(function (i) { return i.techId === t.id; }); });
-          var tUps = tBills.filter(function (s) { return s.items.some(function (i) { return i.techId === t.id && i.cat === 'addon'; }); }).length;
-          var billsTot = (pf.bills || 0) + tBills.length;
-          var ups = billsTot ? ((pf.upsBills || 0) + tUps) / billsTot : 0;
-          var rbk = REBOOK[t.id] || { elig: 0, rb: 0 };
+          var billsTot = Number(pf.bills) || 0;
+          var ups = billsTot ? (Number(pf.upsBills) || 0) / billsTot : 0;
+          var rbk = { elig: Number(pf.rebookEligible) || 0, rb: Number(pf.rebooked) || 0 };
           return {
             t: t, pf: pf, done: done, target: target, daily: daily, proj: proj, gap: gap, needDay: needDay,
-            ups: ups, billsTot: billsTot, rbRate: rbk.elig ? rbk.rb / rbk.elig : 0, rbk: rbk, rework: REWORK[t.id] || 0
+            ups: ups, billsTot: billsTot, rbRate: rbk.elig ? rbk.rb / rbk.elig : 0, rbk: rbk, rework: Number(pf.rework) || 0
           };
         }).sort(function (a, b) { return b.gap - a.gap; });
 
         var perfRowHtml = function (r) {
           var p = r.target ? Math.min(100, Math.round(r.done / r.target * 100)) : 100;
           var status = r.gap > 0
-            ? '<span class="pos-warn-text">🔻 Salon tops up ~' + money0(r.gap) + '</span><div class="pos-muted" style="font-size:12px;font-weight:600">→ needs ' + money0(r.needDay) + '/day for the last ' + (AD_DAYS_WEEK - AD_DAYS_DONE) + ' day(s)</div>'
+            ? '<span class="pos-warn-text">🔻 Salon tops up ~' + money0(r.gap) + '</span><div class="pos-muted" style="font-size:12px;font-weight:600">' +
+              (daysWeek > daysDone ? '→ needs ' + money0(r.needDay) + '/day for the last ' + (daysWeek - daysDone) + ' day(s)' : 'Week closed — guarantee top-up applies') + '</div>'
             : '<span class="pos-good-text">✅ Over the guarantee — salon nets ~' + money0(-r.gap) + '</span>';
           var rating = r.pf.rating == null ? '<span class="pos-muted">none yet</span>'
-            : '<span class="' + (r.pf.rating < 4.5 ? 'pos-danger-text' : '') + '">' + r.pf.rating.toFixed(1) + '</span> <span class="pos-muted" style="font-size:12px">(' + r.pf.rev + ')</span>' +
+            : '<span class="' + (r.pf.rating < 4.5 ? 'pos-danger-text' : '') + '">' + r.pf.rating.toFixed(1) + '</span> <span class="pos-muted" style="font-size:12px">(' + r.pf.reviews + ')</span>' +
               (r.pf.rating < 4.5 ? '<div class="pos-warn-text" style="font-size:12px">→ read the reviews, coach</div>' : '');
           var upsTxt = '<span class="' + (r.ups < 0.15 ? 'pos-danger-text' : '') + '">' + pct(r.ups) + '</span> <span class="pos-muted" style="font-size:12px">/' + r.billsTot + ' bills</span>' +
             (r.ups < 0.15 ? '<div class="pos-warn-text" style="font-size:12px">→ push gel upgrade, design</div>' : '');
@@ -5594,15 +5804,15 @@
         var cardsHtml = '<div data-mg-perf-list>' + rows.map(function (r) {
           var t = r.t;
           var p = r.target ? Math.min(100, Math.round(r.done / r.target * 100)) : 100;
-          var daysLeft = AD_DAYS_WEEK - AD_DAYS_DONE;
+          var daysLeft = daysWeek - daysDone;
           var statusChip = r.gap > 0
             ? '<span class="pos-chip pos-chip-amber">Tops up ~' + money0(r.gap) + '</span>'
             : '<span class="pos-chip pos-chip-green">Over guarantee ~' + money0(-r.gap) + '</span>';
           var subLine = r.gap > 0
-            ? 'Needs ' + money0(r.needDay) + '/day for the last ' + daysLeft + ' day(s)'
+            ? (daysLeft > 0 ? 'Needs ' + money0(r.needDay) + '/day for the last ' + daysLeft + ' day(s)' : 'Week closed — guarantee top-up applies')
             : 'On pace — no top-up needed this week';
           var ratingVal = r.pf.rating == null ? '—' : r.pf.rating.toFixed(1);
-          var ratingSub = r.pf.rating == null ? 'no reviews yet' : r.pf.rev + ' reviews';
+          var ratingSub = r.pf.rating == null ? 'no reviews yet' : r.pf.reviews + ' reviews';
           var upsellSuggested = r.ups < 0.15;
           return '<article class="queue-card perf-card">' +
             '<div class="perf-head">' +
@@ -5641,14 +5851,16 @@
             '</article>';
         }).join('') + '</div>';
         return '<div class="pos-card">' +
-          '<div class="pos-card-head"><h3><i class="bi bi-bullseye" aria-hidden="true"></i> Guarantee &amp; performance — this week (day ' + AD_DAYS_DONE + '/' + AD_DAYS_WEEK + ')</h3>' +
+          '<div class="pos-card-head"><h3><i class="bi bi-bullseye" aria-hidden="true"></i> Guarantee &amp; performance — ' + esc(performanceWeekRangeLabel(mgPerfWeek)) + ' (day ' + daysDone + '/' + daysWeek + ')</h3>' +
           '<div class="pos-inline">' +
+            '<label class="pos-inline-lbl">Week<input class="pos-input mg-perf-week-input" type="date" data-mg-perf-week value="' + esc(mgPerfWeek) + '" aria-label="Filter guarantee and performance by week"></label>' +
             '<span class="pos-muted">techs needing attention first</span>' +
             '<div class="booking-view-switch" role="group" aria-label="Guarantee and performance view mode">' +
               '<button class="booking-view-button' + (mgPerfViewMode === 'table' ? ' is-active' : '') + '" type="button" data-mg-perf-view-target="table" aria-pressed="' + (mgPerfViewMode === 'table' ? 'true' : 'false') + '"><i class="bi bi-table" aria-hidden="true"></i>Table</button>' +
               '<button class="booking-view-button' + (mgPerfViewMode === 'card' ? ' is-active' : '') + '" type="button" data-mg-perf-view-target="card" aria-pressed="' + (mgPerfViewMode === 'card' ? 'true' : 'false') + '"><i class="bi bi-grid-1x2" aria-hidden="true"></i>Card</button>' +
             '</div>' +
           '</div></div>' +
+          (selectedWeek.hasActivity ? '' : '<div class="swap-tech-empty" style="margin-bottom:14px"><i class="bi bi-calendar-x" aria-hidden="true"></i> No performance data for this week.</div>') +
           (mgPerfViewMode === 'card' ? cardsHtml : tableHtml) +
           '<div class="pos-hint">Needs /week = guarantee ÷ commission % (a $900 guarantee at 60% means the tech must produce $1,500 of service before the salon breaks even on the guarantee). Ratings come from the post-ticket SMS review. Upsell = share of bills carrying an add-on item. Rebook and rework are fed by checkout flags.</div>' +
           '</div>';
@@ -6789,6 +7001,10 @@
       }
 
       function renderManagement() {
+        if (typeof mgPerfWeekPicker !== 'undefined' && mgPerfWeekPicker && typeof mgPerfWeekPicker.destroy === 'function') {
+          mgPerfWeekPicker.destroy();
+          mgPerfWeekPicker = null;
+        }
         var ps = payStats();
         html('[data-mgmt-body]', '<div class="pos-stack">' +
           mgKpisHtml(ps) +
@@ -6804,6 +7020,7 @@
           mgSkillsHtml() +
           mgSvcSkillHtml() +
           '</div>');
+        if (typeof initMgPerfWeekPicker === 'function') initMgPerfWeekPicker();
       }
 
       /* ── management: clicks ── */
@@ -7119,6 +7336,20 @@
       /* ── management: selects & checkboxes ── */
       document.addEventListener('change', function (e) {
         if (!e.target.closest('[data-pos-panel="management"]')) return;
+
+        var payrollDate = e.target.closest('[data-mg-payroll-date]');
+        if (payrollDate) {
+          mgPayrollDate = payrollDate.value || mgPayrollToday;
+          renderManagement();
+          return;
+        }
+
+        var perfWeek = e.target.closest('[data-mg-perf-week]');
+        if (perfWeek) {
+          mgPerfWeek = performanceWeekStartKey(perfWeek.value || mgPerfCurrentWeek);
+          renderManagement();
+          return;
+        }
 
         if (e.target.matches('[data-mg-service-form-category], [data-mg-service-form-skill], [data-mg-service-form-type], [data-mg-service-form-active]')) {
           updateServiceModalSummary();

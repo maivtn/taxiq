@@ -340,12 +340,13 @@ test('POS Booking labels the appointment time field as Time', () => {
   assert.doesNotMatch(runtime, /<span class="booking-create-label">Start time<\/span>/);
 });
 
-test('POS Booking uses native date fields without Flatpickr popup containers', () => {
+test('POS Booking keeps native date fields while Management owns the scoped Flatpickr week picker', () => {
   assert.match(html, /<input class="booking-input" type="date"[^>]*data-booking-date-from>/);
   assert.match(html, /<input class="booking-input" type="date"[^>]*data-booking-date-to>/);
   assert.match(runtime, /bookingDateFrom\.addEventListener\('change', filterBookingItems\)/);
   assert.match(runtime, /bookingDateTo\.addEventListener\('change', filterBookingItems\)/);
-  assert.doesNotMatch(source, /flatpickr/i);
+  assert.doesNotMatch(runtime, /flatpickr/i);
+  assert.match(html, /document\.querySelectorAll\('\[data-mg-week\]'\)[\s\S]{0,400}window\.flatpickr\(input,/);
 });
 
 test('POS Booking renders a shared DayPilot resource calendar', () => {

@@ -759,6 +759,349 @@ test('Management renders every section on one page without subtabs', () => {
   assert.doesNotMatch(html, /function mgCustHtml\(\)/);
 });
 
+function payrollFunctionSource(name) {
+  const source = html.match(new RegExp('function ' + name + '\\([^)]*\\) \\{[\\s\\S]*?\\n {6}\\}'))?.[0] || '';
+  assert.ok(source, `expected ${name}() in the POS runtime`);
+  return source;
+}
+
+function loadPayrollRuntime({ techs, history, todayKey, clockHours = () => 0 }) {
+  return new Function(
+    'TECHS',
+    'MG_PAYROLL_HISTORY',
+    'mgPayrollToday',
+    'clockHours',
+    payrollFunctionSource('payrollDateKey') + '\n' +
+      payrollFunctionSource('buildDemoPayrollHistory') + '\n' +
+      payrollFunctionSource('payrollStatsForDate') + '\n' +
+      'return { payrollDateKey, buildDemoPayrollHistory, payrollStatsForDate };'
+  )(techs, history, todayKey, clockHours);
+}
+
+function renderPayrollForDate({ selectedDate, history, todayKey, viewMode = 'card' }) {
+  const techs = [
+    { id: 't1', name: 'Kim', turns: 6, comm: 0.5, guar: 400 },
+    { id: 't2', name: 'Andy', turns: 2, comm: 0.6, guar: 300 }
+  ];
+  return new Function(
+    'TECHS',
+    'MG_PAYROLL_HISTORY',
+    'mgPayrollToday',
+    'mgPayrollDate',
+    'clockHours',
+    'isOnShift',
+    'mgPayrollViewMode',
+    'money',
+    'initials',
+    'esc',
+    payrollFunctionSource('payrollDateKey') + '\n' +
+      payrollFunctionSource('payrollDateLabel') + '\n' +
+      payrollFunctionSource('payrollStatsForDate') + '\n' +
+      payrollFunctionSource('mgPayrollHtml') + '\n' +
+      'return mgPayrollHtml;'
+  )(
+    techs,
+    history,
+    todayKey,
+    selectedDate,
+    (id) => id === 't1' ? 6.25 : 0,
+    (id) => id === 't1',
+    viewMode,
+    (value) => '$' + Number(value).toFixed(2),
+    (name) => name.slice(0, 1),
+    (value) => String(value)
+  )({ t1: { svc: 120, tip: 20 }, t2: { svc: 80, tip: 10 } });
+}
+
+test('Techs and pay seeds six prior dates with varying historical payroll totals', () => {
+  const runtime = loadPayrollRuntime({ techs: [], history: {}, todayKey: '2026-08-18' });
+  const history = runtime.buildDemoPayrollHistory(new Date(2026, 7, 18, 12, 0, 0));
+  const keys = Object.keys(history).sort();
+  const serviceTotals = keys.map((key) => Object.values(history[key]).reduce((sum, row) => sum + row.svc, 0));
+
+  assert.deepEqual(keys, ['2026-08-12', '2026-08-13', '2026-08-14', '2026-08-15', '2026-08-16', '2026-08-17']);
+  assert.ok(new Set(serviceTotals).size > 1, 'expected historical dates to show different service totals');
+});
+
+test('Techs and pay uses live turns, hours, sales, and tips for today', () => {
+  const runtime = loadPayrollRuntime({
+    techs: [{ id: 't1', turns: 6 }, { id: 't2', turns: 2 }],
+    history: {},
+    todayKey: '2026-08-18',
+    clockHours: (id) => id === 't1' ? 6.25 : 0
+  });
+
+  assert.deepEqual(runtime.payrollStatsForDate('2026-08-18', {
+    t1: { svc: 120, tip: 20 },
+    t2: { svc: 80, tip: 10 }
+  }), {
+    rows: {
+      t1: { turns: 6, hours: 6.25, svc: 120, tip: 20 },
+      t2: { turns: 2, hours: 0, svc: 80, tip: 10 }
+    },
+    hasActivity: true
+  });
+});
+
+test('Techs and pay renders the selected historical date and its payroll metrics', () => {
+  const output = renderPayrollForDate({
+    selectedDate: '2026-08-17',
+    todayKey: '2026-08-18',
+    history: {
+      '2026-08-17': {
+        t1: { turns: 3, hours: 7.5, svc: 240, tip: 30 },
+        t2: { turns: 1, hours: 4, svc: 90, tip: 12 }
+      }
+    }
+  });
+
+  assert.match(output, /Techs &amp; pay — Aug 17, 2026/);
+  assert.match(output, /type="date" data-mg-payroll-date value="2026-08-17" max="2026-08-18"/);
+  assert.match(output, />3 turns</);
+  assert.match(output, />7\.5h</);
+  assert.match(output, /Service \$<\/span><span class="perf-stat-value">\$240\.00/);
+  assert.match(output, /Commission<\/span><span class="perf-stat-value">\$120\.00/);
+  assert.match(output, /Tip<\/span><span class="perf-stat-value pos-good-text">\$30\.00/);
+  assert.match(output, /Tech takes<\/span><span class="perf-stat-value">\$150\.00/);
+  assert.match(html, /data-mg-payroll-date[\s\S]{0,240}renderManagement\(\)/);
+});
+
+test('Techs and pay shows an empty state for a date without payroll activity', () => {
+  const output = renderPayrollForDate({ selectedDate: '2026-08-10', todayKey: '2026-08-18', history: {} });
+
+  assert.match(output, /No payroll activity for this date/);
+  assert.match(output, /Service \$<\/span><span class="perf-stat-value">\$0\.00/);
+});
+
+function performanceFunctionSource(name) {
+  const source = html.match(new RegExp('function ' + name + '\\([^)]*\\) \\{[\\s\\S]*?\\n {6}\\}'))?.[0] || '';
+  assert.ok(source, `expected ${name}() in the POS runtime`);
+  return source;
+}
+
+function loadPerformanceRuntime({
+  techs = [],
+  sales = [],
+  techPerf = {},
+  rebook = {},
+  rework = {},
+  history = {},
+  currentWeek = '2026-08-16',
+  daysDone = 5,
+  daysWeek = 6
+} = {}) {
+  return new Function(
+    'TECHS',
+    'SALES',
+    'TECH_PERF',
+    'REBOOK',
+    'REWORK',
+    'MG_PERF_WEEK_HISTORY',
+    'mgPerfCurrentWeek',
+    'AD_DAYS_DONE',
+    'AD_DAYS_WEEK',
+    payrollFunctionSource('payrollDateKey') + '\n' +
+      performanceFunctionSource('performanceWeekStartKey') + '\n' +
+      performanceFunctionSource('performanceWeekRangeLabel') + '\n' +
+      performanceFunctionSource('buildDemoPerformanceHistory') + '\n' +
+      performanceFunctionSource('performanceWeekData') + '\n' +
+      'return { performanceWeekStartKey, performanceWeekRangeLabel, buildDemoPerformanceHistory, performanceWeekData };'
+  )(techs, sales, techPerf, rebook, rework, history, currentWeek, daysDone, daysWeek);
+}
+
+function renderPerformanceWeek(weekData, selectedWeek = '2025-12-28', viewMode = 'card') {
+  const techs = [{ id: 't1', name: 'Kim Nguyen', guar: 900, comm: 0.6 }];
+  return new Function(
+    'TECHS',
+    'TECH_PERF',
+    'SALES',
+    'REBOOK',
+    'REWORK',
+    'AD_DAYS_DONE',
+    'AD_DAYS_WEEK',
+    'mgPerfWeek',
+    'mgPerfViewMode',
+    'performanceWeekData',
+    'performanceWeekRangeLabel',
+    'money0',
+    'pct',
+    'initials',
+    'esc',
+    'weekDone',
+    performanceFunctionSource('mgPerfHtml') + '\nreturn mgPerfHtml;'
+  )(
+    techs,
+    {},
+    [],
+    {},
+    {},
+    5,
+    6,
+    selectedWeek,
+    viewMode,
+    () => weekData,
+    () => 'Dec 28, 2025–Jan 3, 2026',
+    (value) => '$' + Math.round(Number(value) || 0).toLocaleString('en-US'),
+    (value) => Math.round((Number(value) || 0) * 100) + '%',
+    () => 'KN',
+    (value) => String(value),
+    () => 0
+  )({});
+}
+
+function renderOwnerWeek(weekData, selectedWeek = '2025-12-28', viewMode = 'card') {
+  const techs = [{ id: 't1', name: 'Kim Nguyen', guar: 900, comm: 0.6, payModel: 'max' }];
+  return new Function(
+    'TECHS',
+    'AD_DAYS_DONE',
+    'AD_DAYS_WEEK',
+    'mgPerfWeek',
+    'mgOwnerViewMode',
+    'performanceWeekData',
+    'performanceWeekRangeLabel',
+    'PAY_MODELS',
+    'effComm',
+    'money0',
+    'money',
+    'pct',
+    'initials',
+    'esc',
+    'weekDone',
+    performanceFunctionSource('techPayWeek') + '\n' +
+      performanceFunctionSource('mgOwnerHtml') + '\nreturn mgOwnerHtml;'
+  )(
+    techs,
+    5,
+    6,
+    selectedWeek,
+    viewMode,
+    () => weekData,
+    () => 'Dec 28, 2025–Jan 3, 2026',
+    { max: 'Guarantee ↔ commission (max)', baoshare: 'Guarantee + split over target', comm: 'Straight commission' },
+    (tech) => tech.comm,
+    (value) => '$' + Math.round(Number(value) || 0).toLocaleString('en-US'),
+    (value) => '$' + Number(value || 0).toFixed(2),
+    (value) => Math.round((Number(value) || 0) * 100) + '%',
+    () => 'KN',
+    (value) => String(value),
+    () => 0
+  )({});
+}
+
+test('Guarantee performance normalizes any selected date to a Sunday-start week, including across years', () => {
+  const runtime = loadPerformanceRuntime();
+
+  assert.equal(runtime.performanceWeekStartKey('2026-08-18'), '2026-08-16');
+  assert.equal(runtime.performanceWeekStartKey('2026-01-01'), '2025-12-28');
+  assert.equal(runtime.performanceWeekRangeLabel('2026-08-16'), 'Aug 16–22, 2026');
+  assert.equal(runtime.performanceWeekRangeLabel('2025-12-28'), 'Dec 28, 2025–Jan 3, 2026');
+});
+
+test('Guarantee performance history spans years and changes the selected week metrics', () => {
+  const runtime = loadPerformanceRuntime();
+  const history = runtime.buildDemoPerformanceHistory();
+  const keys = Object.keys(history);
+
+  assert.ok(keys.some((key) => key.startsWith('2025-')), 'expected at least one 2025 sample week');
+  assert.ok(keys.some((key) => key.startsWith('2026-')), 'expected at least one 2026 sample week');
+  assert.notEqual(history['2025-01-05'].tech.t1.done, history['2026-08-09'].tech.t1.done);
+});
+
+test('Guarantee performance uses live data for the current week and snapshots for historical weeks', () => {
+  const history = {
+    '2025-12-28': {
+      daysDone: 6,
+      tech: {
+        t1: { done: 1234, rating: 4.6, reviews: 31, bills: 28, upsBills: 7, rebookEligible: 24, rebooked: 12, rework: 2 }
+      }
+    }
+  };
+  const runtime = loadPerformanceRuntime({
+    techs: [{ id: 't1' }],
+    sales: [{ items: [{ techId: 't1', cat: 'addon' }] }],
+    techPerf: { t1: { wtd: 100, rating: 4.9, rev: 8, bills: 2, upsBills: 0 } },
+    rebook: { t1: { elig: 7, rb: 4 } },
+    rework: { t1: 1 },
+    history
+  });
+
+  const current = runtime.performanceWeekData('2026-08-18', { t1: { svc: 25 } });
+  const historical = runtime.performanceWeekData('2026-01-01', { t1: { svc: 999 } });
+  const empty = runtime.performanceWeekData('2024-04-17', { t1: { svc: 999 } });
+
+  assert.deepEqual(current.tech.t1, {
+    done: 125,
+    rating: 4.9,
+    reviews: 8,
+    bills: 3,
+    upsBills: 1,
+    rebookEligible: 7,
+    rebooked: 4,
+    rework: 1
+  });
+  assert.equal(current.hasActivity, true);
+  assert.equal(historical.weekStart, '2025-12-28');
+  assert.equal(historical.tech.t1.done, 1234);
+  assert.equal(historical.daysDone, 6);
+  assert.equal(empty.hasActivity, false);
+});
+
+test('Guarantee performance renders the selected week picker, date range, history, and empty state', () => {
+  const output = renderPerformanceWeek({
+    daysDone: 6,
+    daysWeek: 6,
+    hasActivity: true,
+    tech: {
+      t1: { done: 1234, rating: 4.6, reviews: 31, bills: 28, upsBills: 7, rebookEligible: 24, rebooked: 12, rework: 2 }
+    }
+  });
+  const empty = renderPerformanceWeek({ daysDone: 6, daysWeek: 6, hasActivity: false, tech: {} }, '2024-04-14');
+
+  assert.match(output, /Guarantee &amp; performance — Dec 28, 2025–Jan 3, 2026 \(day 6\/6\)/);
+  assert.match(output, /type="date" data-mg-perf-week value="2025-12-28"/);
+  assert.match(output, /Current sales<\/span>[\s\S]{0,100}\$1,234/);
+  assert.match(output, /4\.6/);
+  assert.match(output, /12 of 24/);
+  assert.match(output, /25%/);
+  assert.match(output, /Week closed — guarantee top-up applies/);
+  assert.doesNotMatch(output, /last 0 day\(s\)/);
+  assert.match(empty, /No performance data for this week/);
+});
+
+test('Pay model renders the shared selected week and recalculates the split from historical production', () => {
+  const output = renderOwnerWeek({
+    daysDone: 6,
+    daysWeek: 6,
+    hasActivity: true,
+    tech: {
+      t1: { done: 1234, rating: 4.6, reviews: 31, bills: 28, upsBills: 7, rebookEligible: 24, rebooked: 12, rework: 2 }
+    }
+  });
+  const empty = renderOwnerWeek({ daysDone: 6, daysWeek: 6, hasActivity: false, tech: {} }, '2024-04-14');
+
+  assert.match(output, /Pay model &amp; real split — Dec 28, 2025–Jan 3, 2026 \(day 6\/6\)/);
+  assert.match(output, /type="date" data-mg-week data-mg-owner-week value="2025-12-28"/);
+  assert.match(output, /Produced this week<\/span><span class="perf-stat-value">\$1,234/);
+  assert.match(output, /Tech takes<\/span><span class="perf-stat-value">\$900\.00/);
+  assert.match(output, /Salon keeps<\/span><span class="perf-stat-value">\$334\.00/);
+  assert.match(output, /40% → <span class="pos-warn-text">27%/);
+  assert.match(output, /Week closed — finished \$266 below the service target/);
+  assert.doesNotMatch(output, /0 day\(s\) left/);
+  assert.match(empty, /No pay model data for this week/);
+});
+
+test('Guarantee performance loads and initializes Flatpickr weekSelect for Sunday-first weeks', () => {
+  assert.match(html, /flatpickr@4\.6\.13\/dist\/flatpickr\.min\.css/);
+  assert.match(html, /flatpickr@4\.6\.13\/dist\/flatpickr\.min\.js/);
+  assert.match(html, /flatpickr@4\.6\.13\/dist\/plugins\/weekSelect\/weekSelect\.js/);
+  const init = performanceFunctionSource('initMgWeekPickers');
+  assert.match(init, /document\.querySelectorAll\('\[data-mg-week\]'\)/);
+  assert.match(init, /plugins:\s*\[new window\.weekSelect\(\)\]/);
+  assert.match(init, /firstDayOfWeek:\s*0/);
+  assert.match(html, /data-mg-week data-mg-perf-week[\s\S]{0,260}data-mg-week data-mg-owner-week/);
+  assert.match(html, /data-mg-perf-week\], \[data-mg-owner-week\][\s\S]{0,260}performanceWeekStartKey[\s\S]{0,160}renderManagement\(\)/);
+});
+
 test('Customer profile keeps the shared tag/note/regular-tech editors after Management loses its duplicate Customers subtab', () => {
   assert.match(html, /function toggleCustTag\(ci, tag\) \{/);
   assert.match(html, /function saveCustNoteLevel\(ci, level, value\) \{/);
