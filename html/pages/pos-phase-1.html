@@ -2956,9 +2956,10 @@
         var bookingTicket = groupTickets.find(function (w) { return !!w.bookingId; }) || null;
         var techTicket = groupTickets.find(function (w) { return !!(w.techId || w.reqTech); }) || null;
         var serviceDetails = [];
+        var checkoutTickets = [];
         groupTickets.forEach(function (w) {
           var billItems = (Array.isArray(w.items) && w.items.length) ? w.items : queueItemsForService(w.svc, w.techId || w.reqTech || null);
-          if (!billItems.length && w.svc) billItems = [{ name: posServiceDisplayName(w.svc), price: 0, techId: w.techId || w.reqTech || null, cat: '' }];
+          if (!billItems.length && w.svc) billItems = [{ name: posServiceDisplayName(w.svc), price: 0, durationMin: w.durationMin || 0, techId: w.techId || w.reqTech || null, cat: '' }];
           billItems.forEach(function (item) {
             var tid = item.techId || w.techId || w.reqTech || null;
             serviceDetails.push({
@@ -2966,9 +2967,18 @@
               price: Number(item.price) || 0,
               technicianId: tid,
               technicianName: tid ? techName(tid) : 'Anyone',
-              serviceTicketId: w.serviceTicketId || null,
-              durationMin: w.durationMin || null,
+              serviceTicketId: item.serviceTicketId || null,
+              durationMin: item.durationMin || null,
               category: item.cat || ''
+            });
+            checkoutTickets.push({
+              id: item.serviceTicketId || ('queue-ticket-' + w.id + '-' + checkoutTickets.length),
+              serviceName: item.name || w.svc || 'Service',
+              price: Number(item.price) || 0,
+              technicianId: tid,
+              technicianName: tid ? techName(tid) : 'Anyone',
+              status: w.status,
+              queueTicketId: w.id
             });
           });
         });
@@ -2983,17 +2993,7 @@
           startAt: first.atMs ? new Date(first.atMs).toISOString() : new Date().toISOString(),
           technicianName: techTicket ? techName(techTicket.techId || techTicket.reqTech) : 'Anyone',
           serviceDetails: serviceDetails,
-          tickets: groupTickets.map(function (w) {
-            return {
-              id: w.serviceTicketId || ('queue-ticket-' + w.id),
-              serviceName: w.svc || '',
-              price: (w.items && w.items[0] && Number(w.items[0].price)) || 0,
-              technicianId: w.techId || w.reqTech || null,
-              technicianName: (w.techId || w.reqTech) ? techName(w.techId || w.reqTech) : 'Anyone',
-              status: w.status,
-              queueTicketId: w.id
-            };
-          }),
+          tickets: checkoutTickets,
           metadata: { queueCheckout: true, orderId: orderKey, checkedOut: false }
         };
       }
@@ -3223,12 +3223,40 @@
         var relevantTickets = (booking.tickets || []).filter(function (t) { return t.status !== 'cancelled'; });
         if (!relevantTickets.length) return;
         var allDone = relevantTickets.every(function (t) {
-          var w = WAITLIST.find(function (x) { return x.serviceTicketId === t.id; });
+          var w = WAITLIST.find(function (candidate) { return queueTicketHasServiceTicket(candidate, t.id); });
           return w && w.status === 'completed';
         });
         if (!allDone) return;
         var result = appointmentStore.update(bookingId, { status: 'completed' }, null, salonCatalog);
         if (result.ok) reloadAppointmentSnapshot();
+      }
+      function cancelQueueTicket(w) {
+        if (!w) return { ok: false, error: { message: 'Queue ticket not found.' } };
+        if (w.bookingId) {
+          var booking = posBookingById(w.bookingId);
+          var ids = queueTicketServiceIds(w);
+          var missingLink = !booking || !ids.length || ids.some(function (id) {
+            return !(booking.tickets || []).some(function (ticket) { return String(ticket.id) === String(id); });
+          });
+          if (missingLink) return { ok: false, error: { message: 'The linked booking ticket could not be found.' } };
+          var nextTickets = (booking.tickets || []).map(function (ticket) {
+            return ids.indexOf(String(ticket.id)) === -1 ? ticket : Object.assign({}, ticket, { status: 'cancelled' });
+          });
+          var activeTickets = nextTickets.filter(function (ticket) { return ticket.status !== 'cancelled'; });
+          var result = appointmentStore.update(booking.id, {
+            tickets: nextTickets,
+            serviceIds: activeTickets.map(function (ticket) { return ticket.serviceId || ''; }),
+            serviceNames: activeTickets.map(function (ticket) { return ticket.serviceName || ''; }),
+            serviceDetails: activeTickets.map(function (ticket) {
+              return { id: ticket.serviceId || '', name: ticket.serviceName || '', price: ticket.price, durationMin: ticket.durationMin, icon: '✨' };
+            })
+          }, null, salonCatalog);
+          if (!result.ok) return result;
+          reloadAppointmentSnapshot();
+        }
+        w.status = 'cancelled';
+        wlog(w, 'Cancelled technician ticket and all linked services');
+        return { ok: true };
       }
       // Rehydrate (#pos-nail-salon-ops Phase 3): WAITLIST is in-memory only, BOOKINGS persist. On boot
       // (and after any store sync), regenerate operational tickets for every checked-in booking so a
@@ -5122,7 +5150,11 @@
           if (!xw) return;
           confirmBox('Remove ' + xw.name + ' from the queue?', 'The ticket is dropped — production keeps it as a cancelled record.').then(function (ok) {
             if (!ok) return;
-            xw.status = 'cancelled';
+            var result = cancelQueueTicket(xw);
+            if (!result.ok) {
+              toast(result.error && result.error.message ? result.error.message : 'The Queue ticket could not be cancelled.', 'error');
+              return;
+            }
             followQueueTicketAfterAction(xw, 'cancelled');
           });
           return;
