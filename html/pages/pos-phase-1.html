@@ -4590,50 +4590,73 @@
       var queueServiceFor = null, queueServiceDraftIds = [];
       var queueServiceOriginalServices = [];
       var queueServiceCatalogReady = false;
-      function queueBookingServicePatch(booking, serviceTicketId, service) {
-        var serviceName = posServiceDisplayName(service && (service.label || service.name) || '');
-        var price = Number(service && service.price);
-        var durationMin = Number(service && service.durationMin);
-        if (!Number.isFinite(price)) price = 0;
-        if (!Number.isFinite(durationMin)) durationMin = 0;
-        var nextTickets = (booking.tickets || []).map(function (ticket) {
-          if (String(ticket.id) !== String(serviceTicketId)) return ticket;
-          return Object.assign({}, ticket, {
-            serviceId: service.id,
-            serviceName: serviceName,
-            price: price,
-            durationMin: durationMin
-          });
-        });
-        return {
-          tickets: nextTickets,
-          serviceIds: nextTickets.map(function (ticket) { return ticket.serviceId || ''; }),
-          serviceNames: nextTickets.map(function (ticket) { return ticket.serviceName || ''; }),
-          serviceDetails: nextTickets.map(function (ticket) {
-            return { id: ticket.serviceId || '', name: ticket.serviceName || '', price: ticket.price, durationMin: ticket.durationMin, icon: '✨' };
-          })
-        };
+      function nextBookingServiceTicketId(usedIds) {
+        var used = {};
+        (usedIds || []).forEach(function (id) { used[String(id)] = true; });
+        var index = 1;
+        while (used['ticket-' + index]) index++;
+        return 'ticket-' + index;
       }
-      function changeQueueTicketService(w, service) {
-        if (!w || !service) return { ok: false, error: { message: 'Ticket or service not found.' } };
-        var previousName = posServiceDisplayName(w.svc || 'No service chosen');
-        var serviceName = posServiceDisplayName(service.label || service.name || '');
-        if (!serviceName) return { ok: false, error: { message: 'Choose a valid service.' } };
-        var nextItems = queueItemsForService(service.id || serviceName, w.techId || w.reqTech || null);
-        if (w.bookingId && w.serviceTicketId) {
-          var booking = posBookingById(w.bookingId);
-          var linkedTicket = booking && (booking.tickets || []).some(function (ticket) { return String(ticket.id) === String(w.serviceTicketId); });
-          if (!booking || !linkedTicket) return { ok: false, error: { message: 'The linked booking ticket could not be found.' } };
-          var bookingPatch = queueBookingServicePatch(booking, w.serviceTicketId, service);
-          var updateResult = appointmentStore.update(booking.id, bookingPatch, null, salonCatalog);
-          if (!updateResult.ok) return updateResult;
-          reloadAppointmentSnapshot();
-        }
-        w.svc = serviceName;
-        w.durationMin = Number(service.durationMin) || 0;
-        w.items = nextItems;
-        wlog(w, 'Changed service from ' + previousName + ' to ' + serviceName);
-        return { ok: true };
+      function queueBookingServicesPatch(booking, w, services) {
+        var sourceTickets = (booking.tickets || []).slice();
+        var linkedIds = queueTicketServiceIds(w);
+        var missingLink = linkedIds.some(function (id) {
+          return !sourceTickets.some(function (ticket) { return String(ticket.id) === String(id); });
+        });
+        if (missingLink) return { ok: false, error: { message: 'The linked booking ticket could not be found.' } };
+        var techId = w.techId || w.reqTech || null;
+        var usedIds = sourceTickets.map(function (ticket) { return String(ticket.id); });
+        var retainedIds = {};
+        var selectedById = {};
+        var additions = [];
+        var selectedTickets = services.map(function (service) {
+          var requestedLink = service._serviceTicketId == null ? null : String(service._serviceTicketId);
+          var currentItem = (w.items || []).find(function (item) {
+            if (requestedLink && String(item.serviceTicketId) === requestedLink) return true;
+            if (service.id && String(item.serviceId) === String(service.id)) return true;
+            return !service.id && posServiceDisplayName(item.name) === posServiceDisplayName(service.label || service.name);
+          });
+          var retainedId = requestedLink || (currentItem && currentItem.serviceTicketId != null ? String(currentItem.serviceTicketId) : null);
+          if (retainedId && (linkedIds.indexOf(retainedId) === -1 || retainedIds[retainedId])) retainedId = null;
+          var original = retainedId ? sourceTickets.find(function (ticket) { return String(ticket.id) === retainedId; }) : null;
+          var id = original ? String(original.id) : nextBookingServiceTicketId(usedIds);
+          if (!original) usedIds.push(id);
+          else retainedIds[id] = true;
+          var serviceName = posServiceDisplayName(service.label || service.name || (original && original.serviceName) || '');
+          var ticket = Object.assign({}, original || {}, {
+            id: id,
+            serviceId: String(service.id || (original && original.serviceId) || ''),
+            serviceName: serviceName,
+            price: Number(service.price) || 0,
+            durationMin: Number(service.durationMin) || 0,
+            technicianId: techId,
+            technicianName: techId ? techName(techId) : 'Anyone',
+            status: original && original.status !== 'cancelled' ? original.status : 'confirmed'
+          });
+          selectedById[id] = ticket;
+          if (!original) additions.push(ticket);
+          return ticket;
+        });
+        var nextTickets = sourceTickets.map(function (ticket) {
+          var id = String(ticket.id);
+          if (selectedById[id]) return selectedById[id];
+          if (linkedIds.indexOf(id) !== -1) return Object.assign({}, ticket, { status: 'cancelled' });
+          return ticket;
+        }).concat(additions);
+        var activeTickets = nextTickets.filter(function (ticket) { return ticket.status !== 'cancelled'; });
+        return {
+          ok: true,
+          patch: {
+            tickets: nextTickets,
+            serviceIds: activeTickets.map(function (ticket) { return ticket.serviceId || ''; }),
+            serviceNames: activeTickets.map(function (ticket) { return ticket.serviceName || ''; }),
+            serviceDetails: activeTickets.map(function (ticket) {
+              return { id: ticket.serviceId || '', name: ticket.serviceName || '', price: ticket.price, durationMin: ticket.durationMin, icon: '✨' };
+            })
+          },
+          items: selectedTickets.map(function (ticket, index) { return queueItemForService(services[index], techId, ticket.id); }),
+          serviceTicketIds: selectedTickets.map(function (ticket) { return String(ticket.id); })
+        };
       }
       function queueSelectedServices() {
         var selected = (MENU || []).filter(function (service) {
@@ -4721,6 +4744,7 @@
             price: Number(item.price) || 0,
             durationMin: Number(item.durationMin) || 0,
             _draftId: draftId,
+            _serviceTicketId: item.serviceTicketId || null,
             _unavailable: !catalogService
           };
         });
@@ -4742,11 +4766,25 @@
       }
       function changeQueueTicketServices(w, services) {
         if (!w || !services || !services.length) return { ok: false, error: { message: 'At least one service is required.' } };
-        if (w.bookingId) return { ok: false, error: { message: 'Linked Booking services are not available yet.' } };
         var previousNames = (w.items || []).map(function (item) { return item.name; });
         var techId = w.techId || w.reqTech || null;
-        w.items = services.map(function (service) { return queueItemForService(service, techId, null); });
-        w.serviceTicketIds = [];
+        var nextItems, nextIds;
+        if (w.bookingId) {
+          var booking = posBookingById(w.bookingId);
+          if (!booking) return { ok: false, error: { message: 'The linked booking could not be found.' } };
+          var prepared = queueBookingServicesPatch(booking, w, services);
+          if (!prepared.ok) return prepared;
+          var updateResult = appointmentStore.update(booking.id, prepared.patch, null, salonCatalog);
+          if (!updateResult.ok) return updateResult;
+          nextItems = prepared.items;
+          nextIds = prepared.serviceTicketIds;
+          reloadAppointmentSnapshot();
+        } else {
+          nextItems = services.map(function (service) { return queueItemForService(service, techId, null); });
+          nextIds = [];
+        }
+        w.items = nextItems;
+        w.serviceTicketIds = nextIds;
         normalizeQueueTicketServices(w);
         wlog(w, 'Changed services from ' + (previousNames.join(', ') || 'none') + ' to ' + w.items.map(function (item) { return item.name; }).join(', '));
         return { ok: true };

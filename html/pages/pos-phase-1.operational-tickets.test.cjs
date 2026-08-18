@@ -374,62 +374,107 @@ test('Explicit Save updates all selected services on a session-only walk-in', ()
   assert.match(logs[0], /Manicure, Gel/);
 });
 
-test('Queue service edit updates billing fields and persists the linked booking ticket', () => {
-  const bookingPatchSource = html.match(/function queueBookingServicePatch\(booking, serviceTicketId, service\) \{[\s\S]*?\n      \}/)?.[0] || '';
-  const changeSource = html.match(/function changeQueueTicketService\(w, service\) \{[\s\S]*?\n      \}/)?.[0] || '';
+test('Queue multi-service edit preserves, creates, and cancels linked Booking tickets atomically', () => {
+  const idSource = html.match(/function nextBookingServiceTicketId\(usedIds\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const bookingPatchSource = html.match(/function queueBookingServicesPatch\(booking, w, services\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const changeSource = html.match(/function changeQueueTicketServices\(w, services\) \{[\s\S]*?\n      \}/)?.[0] || '';
   const booking = {
     id: 'booking-1',
     tickets: [
-      { id: 'ticket-1', serviceId: 'svc-old', serviceName: 'Old service', price: 20, durationMin: 20, technicianId: 't1', status: 'confirmed' },
-      { id: 'ticket-2', serviceId: 'svc-keep', serviceName: 'Keep service', price: 15, durationMin: 15, technicianId: null, status: 'confirmed' }
+      { id: 'ticket-1', serviceId: 'svc-keep', serviceName: 'Keep', price: 20, durationMin: 20, technicianId: 't1', status: 'confirmed' },
+      { id: 'ticket-2', serviceId: 'svc-remove', serviceName: 'Remove', price: 15, durationMin: 15, technicianId: 't1', status: 'confirmed' },
+      { id: 'ticket-3', serviceId: 'svc-other', serviceName: 'Other tech', price: 30, durationMin: 30, technicianId: 't2', status: 'confirmed' }
     ]
   };
-  const service = { id: 'svc-new', label: 'Deluxe Pedicure', price: 55, durationMin: 50 };
+  const selected = [
+    { id: 'svc-keep', label: 'Keep', price: 20, durationMin: 20 },
+    { id: 'svc-new', label: 'New', price: 40, durationMin: 45 }
+  ];
   const updates = [];
   const logs = [];
   let reloads = 0;
-  const queueItemsForService = (value, techId) => [{ name: 'Deluxe Pedicure', price: 55, techId, cat: 'pedi', source: value }];
-  const changeQueueTicketService = new Function(
+  const changeQueueTicketServices = new Function(
+    'queueTicketServiceIds',
     'posServiceDisplayName',
-    'queueItemsForService',
+    'queueItemForService',
+    'techName',
     'posBookingById',
     'appointmentStore',
     'salonCatalog',
     'reloadAppointmentSnapshot',
+    'normalizeQueueTicketServices',
     'wlog',
-    bookingPatchSource + '\n' + changeSource + '\nreturn changeQueueTicketService;'
+    idSource + '\n' + bookingPatchSource + '\n' + changeSource + '\nreturn changeQueueTicketServices;'
   )(
+    (ticket) => ticket.serviceTicketIds.slice(),
     (value) => String(value || '').trim(),
-    queueItemsForService,
+    (service, techId, serviceTicketId) => ({ serviceId: service.id, serviceTicketId, name: service.label, price: service.price, durationMin: service.durationMin, techId, cat: '' }),
+    (id) => id === 't1' ? 'Kim' : 'Anyone',
     (id) => id === booking.id ? booking : null,
     { update(id, patch) { updates.push({ id, patch }); return { ok: true }; } },
     { services: [] },
     () => { reloads += 1; },
+    (ticket) => {
+      ticket.serviceTicketId = ticket.serviceTicketIds[0] || null;
+      ticket.svc = ticket.items[0] ? ticket.items[0].name : '';
+      ticket.durationMin = ticket.items.reduce((sum, item) => sum + item.durationMin, 0);
+      return ticket;
+    },
     (ticket, message) => { logs.push(message); }
   );
   const ticket = {
     id: 7,
     bookingId: booking.id,
     serviceTicketId: 'ticket-1',
-    svc: 'Old service',
-    durationMin: 20,
+    serviceTicketIds: ['ticket-1', 'ticket-2'],
+    svc: 'Keep',
+    durationMin: 35,
     techId: 't1',
-    reqTech: null,
-    items: [{ name: 'Old service', price: 20, techId: 't1', cat: 'pedi' }]
+    reqTech: 't1',
+    items: [
+      { serviceId: 'svc-keep', serviceTicketId: 'ticket-1', name: 'Keep', price: 20, durationMin: 20, techId: 't1', cat: 'mani' },
+      { serviceId: 'svc-remove', serviceTicketId: 'ticket-2', name: 'Remove', price: 15, durationMin: 15, techId: 't1', cat: 'gel' }
+    ]
   };
 
-  assert.equal(changeQueueTicketService(ticket, service).ok, true);
-  assert.equal(ticket.svc, 'Deluxe Pedicure');
-  assert.equal(ticket.durationMin, 50);
-  assert.deepEqual(ticket.items, [{ name: 'Deluxe Pedicure', price: 55, techId: 't1', cat: 'pedi', source: 'svc-new' }]);
+  assert.equal(changeQueueTicketServices(ticket, selected).ok, true);
+  assert.deepEqual(ticket.serviceTicketIds, ['ticket-1', 'ticket-4']);
+  assert.deepEqual(ticket.items.map((item) => item.serviceId), ['svc-keep', 'svc-new']);
+  assert.equal(ticket.durationMin, 65);
   assert.equal(reloads, 1);
-  assert.deepEqual(updates[0].patch.serviceIds, ['svc-new', 'svc-keep']);
-  assert.deepEqual(updates[0].patch.serviceNames, ['Deluxe Pedicure', 'Keep service']);
-  assert.deepEqual(updates[0].patch.tickets[0], {
-    id: 'ticket-1', serviceId: 'svc-new', serviceName: 'Deluxe Pedicure', price: 55,
-    durationMin: 50, technicianId: 't1', status: 'confirmed'
-  });
-  assert.match(logs[0], /Changed service from Old service to Deluxe Pedicure/);
+  assert.equal(updates[0].patch.tickets.find((item) => item.id === 'ticket-2').status, 'cancelled');
+  assert.equal(updates[0].patch.tickets.find((item) => item.id === 'ticket-3').status, 'confirmed');
+  assert.equal(updates[0].patch.tickets.find((item) => item.id === 'ticket-4').serviceId, 'svc-new');
+  assert.match(logs[0], /Keep, New/);
+});
+
+test('Queue multi-service edit leaves Queue state unchanged when Booking persistence fails', () => {
+  const idSource = html.match(/function nextBookingServiceTicketId\(usedIds\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const bookingPatchSource = html.match(/function queueBookingServicesPatch\(booking, w, services\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const changeSource = html.match(/function changeQueueTicketServices\(w, services\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const booking = { id: 'booking-2', tickets: [{ id: 'ticket-1', serviceId: 'svc-old', serviceName: 'Old', price: 20, durationMin: 20, technicianId: 't1', status: 'confirmed' }] };
+  const ticket = { id: 8, bookingId: booking.id, serviceTicketId: 'ticket-1', serviceTicketIds: ['ticket-1'], svc: 'Old', durationMin: 20, techId: 't1', reqTech: 't1', items: [{ serviceId: 'svc-old', serviceTicketId: 'ticket-1', name: 'Old', price: 20, durationMin: 20, techId: 't1', cat: '' }], log: [] };
+  const before = structuredClone(ticket);
+  const changeQueueTicketServices = new Function(
+    'queueTicketServiceIds', 'posServiceDisplayName', 'queueItemForService', 'techName', 'posBookingById',
+    'appointmentStore', 'salonCatalog', 'reloadAppointmentSnapshot', 'normalizeQueueTicketServices', 'wlog',
+    idSource + '\n' + bookingPatchSource + '\n' + changeSource + '\nreturn changeQueueTicketServices;'
+  )(
+    (row) => row.serviceTicketIds.slice(),
+    (value) => String(value || '').trim(),
+    (service, techId, serviceTicketId) => ({ serviceId: service.id, serviceTicketId, name: service.label, price: service.price, durationMin: service.durationMin, techId, cat: '' }),
+    () => 'Kim',
+    () => booking,
+    { update() { return { ok: false, error: { message: 'Store unavailable' } }; } },
+    { services: [] },
+    () => assert.fail('reload must not run'),
+    () => assert.fail('normalize must not run'),
+    () => assert.fail('log must not run')
+  );
+  const result = changeQueueTicketServices(ticket, [{ id: 'svc-new', label: 'New', price: 40, durationMin: 45 }]);
+  assert.equal(result.ok, false);
+  assert.equal(result.error.message, 'Store unavailable');
+  assert.deepEqual(ticket, before);
 });
 
 test('Queue waiting tickets with a technician also expose Change tech before service starts', () => {
