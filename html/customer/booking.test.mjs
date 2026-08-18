@@ -68,6 +68,20 @@ test('allows a new customer to continue without entering a name', () => {
   assert.equal(result.ok, true);
 });
 
+test('validates the customer phone on step 2 instead of step 1', () => {
+  const api = getApi();
+  const draft = {
+    customer: { phone: '', name: '' },
+    selectedServiceIds: ['gel'],
+    selectedStaffId: 'any',
+    selectedDate: '2026-07-24',
+    selectedTime: '14:00'
+  };
+
+  assert.deepEqual(plain(api.validateBookingStep(draft, catalog, 1)), []);
+  assert.deepEqual(plain(api.validateBookingStep(draft, catalog, 2)), ['phone']);
+});
+
 test('creates a canonical booking request with consent and service summary', () => {
   const api = getApi();
   const result = api.createBookingRequest({
@@ -199,24 +213,10 @@ test('shows optional service type tags next to service names', () => {
   assert.match(SOURCE, /class="service-type-tag"/);
 });
 
-test('shows shared menu notes below the service catalog', () => {
-  assert.match(SOURCE, /<details class="service-notes" id="service-notes"/);
-  assert.match(SOURCE, /<summary><span class="service-notes-label">Lưu ý<\/span>/);
-  assert.match(SOURCE, /id="service-notes-list"/);
-  assert.match(SOURCE, /data-lucide="chevron-down"/);
-  assert.match(SOURCE, /notes: Array\.isArray\(catalog\.notes\)/);
-  assert.match(SOURCE, /notes\.map/);
-  assert.ok(SOURCE.indexOf('<details class="service-notes"') > SOURCE.indexOf('<div class="selection-summary"'));
-});
-
-test('keeps shared menu note text compact', () => {
-  const notesSummaryStyle = SOURCE.match(/\.service-notes > summary \{([^}]*)\}/)?.[1] || '';
-  const notesStyle = SOURCE.match(/\.service-notes ul \{([^}]*)\}/)?.[1] || '';
-  assert.match(notesSummaryStyle, /padding: 9px 11px/);
-  assert.match(notesSummaryStyle, /gap: 5px/);
-  assert.match(notesStyle, /font-size: 11px/);
-  assert.match(notesStyle, /line-height: 1\.25/);
-  assert.match(notesStyle, /gap: 3px/);
+test('removes shared menu notes from the booking page', () => {
+  assert.doesNotMatch(SOURCE, /service-notes|service-notes-list|service-notes-label/);
+  assert.doesNotMatch(SOURCE, /function renderServiceNotes\(/);
+  assert.doesNotMatch(SOURCE, /CATALOG\.notes|normalizedCatalog\.notes/);
 });
 
 test('keeps the selected-service trash icon legible inside its remove button', () => {
@@ -277,27 +277,56 @@ test('hides optional SMS consent and returning-customer helper from step 1', () 
   assert.doesNotMatch(stepOne, /Quý khách đã từng sử dụng dịch vụ tại tiệm/);
 });
 
-test('combines customer details and service selection into step 1', () => {
+test('keeps two input steps and places customer fields below the review summary in step 2', () => {
   const stepOne = SOURCE.match(/data-step-panel="1"[\s\S]*?<\/section>/)?.[0] || '';
   const confirmationStep = SOURCE.match(/data-step-panel="2"[\s\S]*?<\/section>/)?.[0] || '';
-  assert.match(stepOne, /Vui lòng nhập số điện thoại/);
+  assert.doesNotMatch(stepOne, /Vui lòng nhập số điện thoại|id="booking-phone"|id="booking-name"/);
   assert.match(stepOne, /Quý khách muốn sử dụng dịch vụ nào\?/);
   assert.match(stepOne, /id="service-options"[^>]*data-service-catalog/);
   assert.match(stepOne, /data-staff-id="any"/);
   assert.match(stepOne, /data-booking-date/);
   assert.match(stepOne, /data-booking-time/);
   assert.match(confirmationStep, /Xác nhận thông tin đặt lịch/);
-  assert.match(confirmationStep, /review-customer/);
+  assert.match(confirmationStep, /Vui lòng nhập số điện thoại/);
+  assert.match(confirmationStep, /id="booking-phone"/);
+  assert.match(confirmationStep, /id="booking-name"/);
+  assert.ok(confirmationStep.indexOf('class="review-summary"') < confirmationStep.indexOf('id="booking-phone"'));
+  assert.ok(confirmationStep.indexOf('id="booking-phone"') < confirmationStep.indexOf('id="booking-note"'));
   assert.doesNotMatch(SOURCE, /data-step-indicator="3"/);
   assert.doesNotMatch(SOURCE, /data-step-panel="4"/);
 });
 
-test('shows a separate customer name row only when a name is available', () => {
+test('keeps customer details in inputs instead of duplicating them in the review summary', () => {
   const confirmationStep = SOURCE.match(/data-step-panel="2"[\s\S]*?<\/section>/)?.[0] || '';
-  assert.match(confirmationStep, /<div class="review-row" id="review-customer-name-row" hidden>\s*<dt>Tên khách hàng<\/dt>\s*<dd id="review-customer-name"><\/dd>/);
-  assert.match(SOURCE, /customerNameRow\.hidden = !customerName/);
-  assert.match(SOURCE, /setText\('#review-customer-name', customerName\)/);
-  assert.match(SOURCE, /setText\('#review-customer', customerPhone\)/);
+  assert.doesNotMatch(confirmationStep, /review-customer-name|review-customer/);
+  assert.doesNotMatch(SOURCE, /customerNameRow|setText\('#review-customer-name'|setText\('#review-customer'/);
+});
+
+test('shows optional SMS consent directly below the customer fields in step 2', () => {
+  const confirmationStep = SOURCE.match(/data-step-panel="2"[\s\S]*?<\/section>/)?.[0] || '';
+  const customerFieldsIndex = confirmationStep.indexOf('id="customer-fields"');
+  const consentIndex = confirmationStep.indexOf('class="sms-consent-group"');
+  const noteIndex = confirmationStep.indexOf('id="booking-note"');
+
+  assert.notEqual(customerFieldsIndex, -1);
+  assert.notEqual(consentIndex, -1);
+  assert.ok(customerFieldsIndex < consentIndex);
+  assert.ok(consentIndex < noteIndex);
+  assert.match(confirmationStep, /<label class="sms-consent-group" for="sms-opt-in">\s*<input type="checkbox" id="sms-opt-in">\s*<span>I agree to receive text messages from Bitcoin Nail Bar \(offers, reminders &amp; rewards\)\. Msg &amp; data rates may apply\. Reply STOP anytime to opt out\.<\/span>\s*<\/label>/);
+  assert.match(SOURCE, /state\.customer\.smsOptIn = Boolean\(event\.target\.checked\)/);
+});
+
+test('keeps the SMS consent text readable without enlarging the checkbox', () => {
+  const consentStyle = SOURCE.match(/\.sms-consent-group \{([^}]*)\}/)?.[1] || '';
+  const checkboxStyle = SOURCE.match(/\.sms-consent-group input \{([^}]*)\}/)?.[1] || '';
+
+  assert.match(consentStyle, /display: flex/);
+  assert.match(consentStyle, /align-items: flex-start/);
+  assert.match(consentStyle, /gap: 10px/);
+  assert.match(consentStyle, /font-size: 14px/);
+  assert.match(consentStyle, /line-height: 1\.55/);
+  assert.match(checkboxStyle, /width: 18px/);
+  assert.match(checkboxStyle, /height: 18px/);
 });
 
 test('removes the redundant service step label', () => {
@@ -309,7 +338,8 @@ test('removes the redundant service step label', () => {
 test('removes the step 1 information label', () => {
   const stepOne = SOURCE.match(/data-step-panel="1"[\s\S]*?<\/section>/)?.[0] || '';
   assert.doesNotMatch(stepOne, /Bước 1 · Thông tin &amp; lịch hẹn/);
-  assert.match(stepOne, /Vui lòng nhập số điện thoại/);
+  assert.doesNotMatch(stepOne, /Vui lòng nhập số điện thoại/);
+  assert.match(stepOne, /Quý khách muốn sử dụng dịch vụ nào\?/);
 });
 
 test('removes the step 2 confirmation label', () => {
@@ -442,8 +472,9 @@ test('keeps the staff list synchronized before service selection', () => {
 
 test('uses native date and time inputs without picker libraries', () => {
   assert.match(SOURCE, /id="date-options" type="date"/);
-  assert.match(SOURCE, /id="time-options" type="time"/);
-  assert.match(SOURCE, /timeOptions\.step = '900'/);
+  assert.match(SOURCE, /<input class="booking-select" id="time-options" type="time"[^>]*step="900"[^>]*data-booking-time-select/);
+  assert.doesNotMatch(SOURCE, /<select[^>]*id="time-options"/);
+  assert.doesNotMatch(SOURCE, /timeOptions\.innerHTML/);
   assert.doesNotMatch(SOURCE, /flatpickr/i);
   assert.doesNotMatch(SOURCE, /timepicker/i);
   assert.doesNotMatch(SOURCE, /jquery/i);
@@ -456,4 +487,13 @@ test('normalizes native and 12-hour booking time values', () => {
   assert.equal(api.parseBookingTime('12:05 AM'), '00:05');
   assert.equal(api.parseBookingTime('12:30 PM'), '12:30');
   assert.equal(api.parseBookingTime('invalid'), '');
+});
+
+test('formats booking times with AM and PM labels', () => {
+  const api = getApi();
+  assert.equal(api.formatBookingTime('00:05'), '12:05 AM');
+  assert.equal(api.formatBookingTime('10:00'), '10:00 AM');
+  assert.equal(api.formatBookingTime('12:30'), '12:30 PM');
+  assert.equal(api.formatBookingTime('15:30'), '3:30 PM');
+  assert.equal(api.formatBookingTime('invalid'), '');
 });

@@ -66,6 +66,8 @@
     .field-error { min-height: 0; margin: 4px 0 0; color: #c62a69; font-size: 12px; font-weight: 650; }
     .returning-banner { margin-top: 12px; padding: 12px 14px; border: 1px solid #d8f1e7; border-radius: 16px; color: #137953; background: #f0fcf7; font-size: 13px; font-weight: 750; }
     #returning-customer + .card-heading { margin-top: 16px; }
+    .sms-consent-group { display: flex; align-items: flex-start; gap: 10px; margin-top: 12px; color: var(--muted); font-size: 14px; line-height: 1.55; cursor: pointer; }
+    .sms-consent-group input { width: 18px; height: 18px; flex: 0 0 auto; margin: 1px 0 0; accent-color: var(--pink); }
 
     .service-grid, .staff-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
     .choice-card { position: relative; display: flex; flex-direction: column; align-items: flex-start; justify-content: space-between; padding: 9px; border: 1px solid var(--line); border-radius: 13px; color: var(--ink); background: linear-gradient(145deg, #fff, #fdfbff); text-align: left; transition: border-color .18s, box-shadow .18s, transform .18s, background .18s; }
@@ -103,14 +105,6 @@
     .service-category-count { flex: 0 0 auto; margin-left: auto; padding: 3px 8px; border-radius: 999px; color: var(--purple); background: #f1edff; font-size: 10px; font-weight: 850; }
     .service-category .service-grid { padding: 8px; }
     .service-catalog-loading { padding: 16px 12px; border: 1px dashed #d8cceb; border-radius: 14px; color: var(--muted); background: #faf8ff; font-size: 12px; font-weight: 700; text-align: center; }
-    .service-notes { margin-top: 10px; border: 1px solid #eadff5; border-radius: 14px; color: #4d4968; background: #fbf8ff; }
-    .service-notes > summary { display: flex; align-items: center; justify-content: space-between; gap: 5px; padding: 9px 11px; color: var(--ink); cursor: pointer; list-style: none; }
-    .service-notes > summary::-webkit-details-marker { display: none; }
-    .service-notes-label { font-size: 12px; font-weight: 850; }
-    .service-notes-chevron { width: 14px; height: 14px; color: var(--muted); stroke-width: 2.5; transition: transform .18s ease; }
-    .service-notes:not([open]) .service-notes-chevron { transform: rotate(-90deg); }
-    .service-notes[open] > summary { border-bottom: 1px solid #eadff5; }
-    .service-notes ul { display: grid; gap: 3px; margin: 7px 11px 9px; padding-left: 19px; font-size: 11px; line-height: 1.25; }
     .service-description-modal { position: fixed; z-index: 20; inset: 0; display: grid; place-items: center; padding: 18px; }
     .service-description-backdrop { position: absolute; inset: 0; background: rgba(29, 27, 58, .42); backdrop-filter: blur(5px); }
     .service-description-dialog { position: relative; width: min(100%, 520px); max-height: min(85vh, 620px); overflow: auto; padding: 22px; border: 1px solid rgba(226, 220, 241, .95); border-radius: 24px; background: #fff; box-shadow: 0 24px 70px rgba(46, 28, 81, .28); }
@@ -248,28 +242,6 @@
       <section class="step-panel app-card" data-step-panel="1">
         <div class="card-heading">
           <div>
-            <h2>Vui lòng nhập số điện thoại</h2>
-          </div>
-        </div>
-
-        <div class="customer-fields" id="customer-fields">
-          <label class="form-field" id="booking-phone-field" for="booking-phone">
-            <span>Số điện thoại</span>
-            <input class="input" id="booking-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(832) 555-0198" aria-describedby="phone-error">
-            <p class="field-error" id="phone-error" role="alert"></p>
-          </label>
-
-          <label class="form-field" id="booking-name-field" for="booking-name">
-            <span>Họ và tên</span>
-            <input class="input" id="booking-name" type="text" autocomplete="name" placeholder="Ví dụ: Mary Smith" aria-describedby="name-error">
-            <p class="field-error" id="name-error" role="alert"></p>
-          </label>
-        </div>
-
-        <div class="returning-banner" id="returning-customer" hidden aria-live="polite"></div>
-
-        <div class="card-heading">
-          <div>
             <h2>Quý khách muốn sử dụng dịch vụ nào?</h2>
           </div>
         </div>
@@ -282,10 +254,6 @@
           <div class="selected-service-chips" id="selected-service-chips"></div>
         </div>
         <div class="selection-summary" aria-live="polite"><span id="service-count">Chưa chọn dịch vụ</span><strong id="service-total">$0</strong></div>
-        <details class="service-notes" id="service-notes" hidden aria-live="polite">
-          <summary><span class="service-notes-label">Lưu ý</span><i data-lucide="chevron-down" class="service-notes-chevron" aria-hidden="true"></i></summary>
-          <ul id="service-notes-list"></ul>
-        </details>
         <p class="field-error" id="service-error" role="alert"></p>
 
         <h3 class="section-title">Chuyên viên thực hiện</h3>
@@ -316,9 +284,9 @@
             <span>Ngày hẹn</span>
             <input class="booking-select" id="date-options" type="date" data-booking-date-select aria-label="Ngày hẹn">
           </label>
-          <label class="booking-select-field">
+          <label class="booking-select-field" for="time-options">
             <span>Giờ hẹn</span>
-            <input class="booking-select" id="time-options" type="time" data-booking-time-select aria-label="Giờ hẹn">
+            <input class="booking-select" id="time-options" type="time" lang="en-US" step="900" data-booking-time-select aria-label="Giờ hẹn">
           </label>
         </div>
         <p class="field-error" id="date-error" role="alert"></p>
@@ -339,8 +307,6 @@
 
         <div class="review-summary">
           <dl class="review-list">
-            <div class="review-row" id="review-customer-name-row" hidden><dt>Tên khách hàng</dt><dd id="review-customer-name"></dd></div>
-            <div class="review-row"><dt>Số điện thoại</dt><dd id="review-customer"></dd></div>
             <div class="review-row"><dt>Dịch vụ</dt><dd class="review-service-chips" id="review-services"></dd></div>
             <div class="review-row"><dt>Chuyên viên</dt><dd id="review-staff"></dd></div>
             <div class="review-row"><dt>Ngày &amp; giờ</dt><dd id="review-slot"></dd></div>
@@ -348,6 +314,34 @@
           <div class="review-divider" aria-hidden="true"></div>
           <div class="review-total"><span>Tổng dự kiến</span><strong id="review-total">$0</strong></div>
         </div>
+
+        <div class="card-heading">
+          <div>
+            <h2>Vui lòng nhập số điện thoại</h2>
+          </div>
+        </div>
+
+        <div class="customer-fields" id="customer-fields">
+          <label class="form-field" id="booking-phone-field" for="booking-phone">
+            <span>Số điện thoại</span>
+            <input class="input" id="booking-phone" type="tel" inputmode="tel" autocomplete="tel" placeholder="(832) 555-0198" aria-describedby="phone-error">
+            <p class="field-error" id="phone-error" role="alert"></p>
+          </label>
+
+          <label class="form-field" id="booking-name-field" for="booking-name">
+            <span>Họ và tên</span>
+            <input class="input" id="booking-name" type="text" autocomplete="name" placeholder="Ví dụ: Mary Smith" aria-describedby="name-error">
+            <p class="field-error" id="name-error" role="alert"></p>
+          </label>
+        </div>
+
+        <label class="sms-consent-group" for="sms-opt-in">
+          <input type="checkbox" id="sms-opt-in">
+          <span>I agree to receive text messages from Bitcoin Nail Bar (offers, reminders &amp; rewards). Msg &amp; data rates may apply. Reply STOP anytime to opt out.</span>
+        </label>
+
+        <div class="returning-banner" id="returning-customer" hidden aria-live="polite"></div>
+
         <label class="form-field" for="booking-note"><span>Ghi chú để tiệm phục vụ tốt hơn</span><textarea class="textarea" id="booking-note" placeholder="Ví dụ: Quý khách có mong muốn đặc biệt về màu sơn…"></textarea></label>
         <p class="field-error" id="review-error" role="alert"></p>
 
@@ -427,11 +421,6 @@
       const CATALOG = { services: SERVICES, staff: STAFF, slots: [] };
 
       function applyCustomerServiceCatalog(catalog) {
-        const normalizedCatalog = {
-          notes: Array.isArray(catalog.notes)
-            ? catalog.notes.map((entry) => String(entry || '').trim()).filter(Boolean)
-            : []
-        };
         const categories = (Array.isArray(catalog?.categories) ? catalog.categories : []).map((category) => ({
           id: String(category.id || ''),
           name: String(category.name || 'Dịch vụ khác').trim() || 'Dịch vụ khác',
@@ -456,7 +445,6 @@
         SERVICES = services;
         SERVICE_CATEGORIES = categories;
         CATALOG.services = SERVICES;
-        CATALOG.notes = normalizedCatalog.notes;
         STAFF.forEach((staff) => {
           if (staff.available) staff.specialties = SERVICES.map((service) => service.id);
         });
@@ -520,6 +508,11 @@
         return { ok: errors.length === 0, errors };
       }
 
+      function validateBookingStep(draft, catalog = CATALOG, step = 1) {
+        const errors = validateBookingDraft(draft, catalog).errors;
+        return step === 1 ? errors.filter((error) => error !== 'phone') : errors.filter((error) => error === 'phone');
+      }
+
       function createBookingRequest(draft, catalog = CATALOG, now = Date.now(), id = `book-${Date.now()}`) {
         const validation = validateBookingDraft(draft, catalog);
         if (!validation.ok) return validation;
@@ -547,7 +540,7 @@
         };
       }
 
-      const api = { normalizePhone, findCustomerByPhone, toggleSelection, calculateBookingTotal, validateBookingDraft, createBookingRequest, parseBookingTime };
+      const api = { normalizePhone, findCustomerByPhone, toggleSelection, calculateBookingTotal, validateBookingDraft, validateBookingStep, createBookingRequest, parseBookingTime, formatBookingTime };
       if (typeof window !== 'undefined') window.NEXORA_BOOKING_TEST_API = api;
       if (typeof window === 'undefined' || window.NEXORA_BOOKING_SKIP_INIT) return;
 
@@ -601,19 +594,6 @@
           });
         });
         window.lucide?.createIcons();
-      }
-
-      function renderServiceNotes(notes = CATALOG.notes) {
-        const section = $('#service-notes');
-        const list = $('#service-notes-list');
-        if (!section || !list) return;
-        const entries = Array.isArray(notes) ? notes.filter(Boolean) : [];
-        list.replaceChildren(...entries.map((entry) => {
-          const item = document.createElement('li');
-          item.textContent = entry;
-          return item;
-        }));
-        section.hidden = entries.length === 0;
       }
 
       function openServiceDescription(id, opener) {
@@ -677,7 +657,6 @@
         return loader.load(SERVICE_CATALOG_URL).then((catalog) => {
           if (!applyCustomerServiceCatalog(catalog)) return false;
           renderServiceCatalog(SERVICE_CATEGORIES);
-          renderServiceNotes(CATALOG.notes);
           renderSelections();
           return true;
         }).catch(() => {
@@ -699,7 +678,6 @@
           dateOptions.value = state.selectedDate;
         }
         if (timeOptions) {
-          timeOptions.step = '900';
           timeOptions.value = state.selectedTime;
         }
       }
@@ -744,14 +722,19 @@
         return twentyFourHour ? `${twentyFourHour[1]}:${twentyFourHour[2]}` : '';
       }
 
+      function formatBookingTime(value) {
+        const normalized = parseBookingTime(value);
+        if (!normalized) return '';
+        const [hourValue, minute] = normalized.split(':');
+        const hour = Number(hourValue);
+        const period = hour >= 12 ? 'PM' : 'AM';
+        return `${hour % 12 || 12}:${minute} ${period}`;
+      }
+
       function formatBookingSlot(date, time) {
         if (!date || !time) return '—';
-        const value = new Date(`${date}T${time}:00`);
         const dateLabel = formatBookingDate(date);
-        const timeLabel = new Intl.DateTimeFormat('en-US', {
-          hour: 'numeric', minute: '2-digit', hour12: true
-        }).format(value);
-        return `${dateLabel} · ${timeLabel}`;
+        return `${dateLabel} · ${formatBookingTime(time)}`;
       }
 
       function updateCustomerFromPhone() {
@@ -827,12 +810,6 @@
       function renderReview() {
         const total = calculateBookingTotal(state.selectedServiceIds, SERVICES);
         const names = state.selectedServiceIds.map((id) => serviceById(id)?.name).filter(Boolean);
-        const customerPhone = formatPhone(state.customer.phone) || '—';
-        const customerName = String(state.customer.name || '').trim();
-        const customerNameRow = $('#review-customer-name-row');
-        if (customerNameRow) customerNameRow.hidden = !customerName;
-        setText('#review-customer-name', customerName);
-        setText('#review-customer', customerPhone);
         const reviewServices = $('#review-services');
         if (reviewServices) {
           reviewServices.replaceChildren(...(names.length ? names.map((name) => {
@@ -899,7 +876,7 @@
       }
 
       function validateForStep(step) {
-        return step === 1 ? validateBookingDraft(state, CATALOG).errors : [];
+        return validateBookingStep(state, CATALOG, step);
       }
 
       function goToStep(nextStep) {
@@ -928,7 +905,7 @@
         const errors = validateBookingDraft(state, CATALOG).errors;
         if (errors.length) {
           showValidation(errors);
-          state.step = 1;
+          state.step = errors.some((error) => error !== 'phone') ? 1 : 2;
           renderSteps();
           return;
         }
