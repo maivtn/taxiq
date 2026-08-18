@@ -1,7 +1,9 @@
 # Techs & Pay Daily API Specification
 
+> **Superseded:** Tài liệu này đã được thay thế bởi [Techs & Pay — Theo Ngày](../../business/techs-pay-daily.md). Không dùng file này làm source of truth cho implementation mới.
+
 - **Date:** 2026-08-18
-- **Status:** Ready for API implementation review
+- **Status:** Superseded
 - **Scope:** One read-only API for the POS **Techs & pay** table
 - **API version:** `v1`
 
