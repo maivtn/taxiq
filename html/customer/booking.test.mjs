@@ -210,6 +210,13 @@ test('renders promotion copy and discount value as compact sibling regions', () 
   assert.match(list.innerHTML, /<div class="promotion-copy"><div class="promotion-title-row"><span class="promotion-badge">MONDAY<\/span><h3>Quiet day saving<\/h3><\/div><p>Book a quieter appointment<\/p><\/div><div class="promotion-highlight promotion-highlight-wide"><strong>10% OFF<\/strong><\/div>/);
 });
 
+test('stacks the promotion badge above its title', () => {
+  const titleRowStyle = SOURCE.match(/\.promotion-title-row\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(titleRowStyle, /display:\s*grid/);
+  assert.doesNotMatch(titleRowStyle, /display:\s*flex/);
+});
+
 test('hides the promotion section when no offer is active', () => {
   const api = getApi();
   const storage = createMemoryStorage(JSON.stringify({
