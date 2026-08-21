@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="theme-color" content="#f5efff">
   <title>Đặt lịch · Bitcoin Nail Bar</title>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.css">
   <script src="https://unpkg.com/lucide@0.468.0/dist/umd/lucide.min.js"></script>
   <style>
     :root {
@@ -43,14 +44,25 @@
     .brand-card p { margin: 8px auto 0; max-width: 460px; color: var(--muted); font-size: 14px; line-height: 1.5; }
 
     .promotion-section { margin: 0 0 14px; padding: 0; border: 0; background: transparent; box-shadow: none; }
-    .promotion-list { display: grid; grid-auto-flow: column; grid-auto-columns: minmax(230px, 82%); gap: 10px; overflow-x: auto; padding-bottom: 3px; scroll-snap-type: x proximity; scrollbar-width: thin; }
-    .promotion-card { display: grid; min-width: 0; gap: 5px; padding: 14px; border: 1px solid #eadcf6; border-radius: 16px; background: linear-gradient(145deg, #fff7fc, #f7f2ff); scroll-snap-align: start; }
+    .promotion-swiper { padding-bottom: 24px; }
+    .promotion-list { align-items: stretch; }
+    .promotion-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; height: auto; min-width: 0; align-items: center; gap: 10px; padding: 12px 14px; border: 1px solid #eadcf6; border-radius: 16px; background: linear-gradient(145deg, #fff7fc, #f7f2ff); }
     .promotion-card:nth-child(even) { border-color: #ded8fa; background: linear-gradient(145deg, #f8f5ff, #fff9fd); }
+    .promotion-copy { display: grid; min-width: 0; align-content: start; gap: 3px; }
     .promotion-badge { width: fit-content; padding: 4px 7px; border-radius: 999px; color: var(--pink-dark); background: #ffe8f4; font-size: 9px; font-weight: 900; letter-spacing: .08em; }
     .promotion-card:nth-child(even) .promotion-badge { color: #5848d3; background: #ece8ff; }
-    .promotion-card h3 { margin: 2px 0 0; font-size: 14px; line-height: 1.3; }
-    .promotion-card p { margin: 0; color: var(--muted); font-size: 12px; line-height: 1.45; }
-    .promotion-card strong { margin-top: 2px; color: var(--pink-dark); font-size: 17px; }
+    .promotion-card h3 { margin: 0; font-size: 14px; line-height: 1.25; }
+    .promotion-card p { margin: 0; color: var(--muted); font-size: 11px; line-height: 1.35; }
+    .promotion-highlight { display: grid; min-width: 82px; justify-items: end; gap: 1px; color: var(--pink-dark); text-align: right; }
+    .promotion-highlight strong { max-width: 108px; font-size: 17px; line-height: 1.15; }
+    .promotion-highlight small { color: var(--muted); font-size: 9px; font-weight: 800; }
+    .promotion-highlight-wide strong { font-size: 14px; }
+    .promotion-tier-list { display: grid; min-width: 96px; gap: 4px; }
+    .promotion-tier { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; }
+    .promotion-tier strong { color: var(--pink-dark); font-size: 12px; white-space: nowrap; }
+    .promotion-pagination.swiper-pagination { bottom: 0; }
+    .promotion-pagination .swiper-pagination-bullet { width: 7px; height: 7px; background: #b8acd0; opacity: .55; }
+    .promotion-pagination .swiper-pagination-bullet-active { width: 20px; border-radius: 999px; background: var(--pink); opacity: 1; }
 
     .app-card { padding: 17px; border-radius: 22px; }
     .step-panel { animation: rise .22s ease-out; }
@@ -208,7 +220,6 @@
     @media (min-width: 640px) {
       .page-shell { width: min(100% - 28px, 780px); padding: 34px 0 112px; }
       .promotion-section { margin-bottom: 18px; }
-      .promotion-list { grid-auto-flow: initial; grid-auto-columns: initial; grid-template-columns: repeat(2, minmax(0, 1fr)); overflow: visible; }
       .app-card { padding: 28px; border-radius: var(--radius); }
       .card-heading { gap: 16px; margin-bottom: 18px; }
       .card-heading p { margin-top: 7px; font-size: 13px; }
@@ -251,19 +262,52 @@
     </header>
 
     <section class="promotion-section" aria-label="Ưu đãi">
-      <div class="promotion-list">
-        <article class="promotion-card">
-          <span class="promotion-badge">HAPPY HOURS</span>
-          <h3>Ưu đãi Thứ 2–Thứ 6</h3>
-          <p>Khung giờ 10:00 AM–2:00 PM</p>
-          <strong>Giảm 15%</strong>
-        </article>
-        <article class="promotion-card">
-          <span class="promotion-badge">COMBO DEAL</span>
-          <h3>Combo Manicure + Pedicure</h3>
-          <p>Đặt hai dịch vụ trong cùng một lịch hẹn</p>
-          <strong>Tiết kiệm $10</strong>
-        </article>
+      <div class="promotion-swiper swiper">
+        <div class="promotion-list swiper-wrapper">
+          <article class="promotion-card swiper-slide">
+            <div class="promotion-copy">
+              <span class="promotion-badge">HAPPY HOURS</span>
+              <h3>Ưu đãi Thứ 2–Thứ 6</h3>
+              <p>Khung giờ 10:00 AM–2:00 PM</p>
+            </div>
+            <div class="promotion-highlight"><strong>Giảm 15%</strong></div>
+          </article>
+          <article class="promotion-card swiper-slide">
+            <div class="promotion-copy">
+              <span class="promotion-badge">COMBO DEAL</span>
+              <h3>Combo Manicure + Pedicure</h3>
+              <p>Đặt hai dịch vụ trong cùng một lịch hẹn</p>
+            </div>
+            <div class="promotion-highlight"><strong>Tiết kiệm $10</strong></div>
+          </article>
+          <article class="promotion-card swiper-slide">
+            <div class="promotion-copy">
+              <span class="promotion-badge">QUIET DAY SAVINGS</span>
+              <h3>Book on a quieter day and save!</h3>
+              <p>Monday · Tuesday · Wednesday</p>
+            </div>
+            <div class="promotion-highlight promotion-highlight-wide"><strong>-10% off everything</strong></div>
+          </article>
+          <article class="promotion-card swiper-slide">
+            <div class="promotion-copy">
+              <span class="promotion-badge">FIRST VISIT</span>
+              <h3>🎁 10% off your first visit!</h3>
+              <p>(applied automatically)</p>
+            </div>
+            <div class="promotion-highlight"><small>1st visit</small><strong>10% off</strong></div>
+          </article>
+          <article class="promotion-card swiper-slide">
+            <div class="promotion-copy">
+              <span class="promotion-badge">GROUP SAVINGS</span>
+              <h3>👥 Bring your friends and save!</h3>
+            </div>
+            <div class="promotion-tier-list">
+              <p class="promotion-tier"><span>2+ people:</span><strong>10% off</strong></p>
+              <p class="promotion-tier"><span>3+ people:</span><strong>15% off</strong></p>
+            </div>
+          </article>
+        </div>
+        <div class="promotion-pagination swiper-pagination"></div>
       </div>
     </section>
 
@@ -421,6 +465,31 @@
     <p class="screen-reader" id="booking-status" role="status" aria-live="polite"></p>
   </div>
 
+  <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+  <script id="promotion-carousel-script">
+    (() => {
+      const promotionSwiper = document.querySelector('.promotion-swiper');
+      if (!promotionSwiper || typeof window.Swiper !== 'function') return;
+
+      new window.Swiper(promotionSwiper, {
+        loop: true,
+        slidesPerView: 1,
+        spaceBetween: 10,
+        autoplay: {
+          delay: 4000,
+          disableOnInteraction: false,
+          pauseOnMouseEnter: true
+        },
+        pagination: {
+          el: promotionSwiper.querySelector('.promotion-pagination'),
+          clickable: true
+        },
+        breakpoints: {
+          640: { slidesPerView: 2 }
+        }
+      });
+    })();
+  </script>
   <script src="../assets/appointment-service-catalog.js"></script>
   <script id="booking-app-script">
     (() => {
@@ -625,7 +694,11 @@
         return result;
       }
 
-      const api = { normalizePhone, findCustomerByPhone, findKnownCustomerByPhone, readSavedCustomers, saveCustomerLocally, getCustomerReviewFields, toggleSelection, calculateBookingTotal, validateBookingDraft, validateBookingStep, createBookingRequest, submitBookingDraft, parseBookingTime, formatBookingTime };
+      function syncPromotionVisibility(promotionSection, step) {
+        if (promotionSection) promotionSection.hidden = Number(step) !== 1;
+      }
+
+      const api = { normalizePhone, findCustomerByPhone, findKnownCustomerByPhone, readSavedCustomers, saveCustomerLocally, getCustomerReviewFields, toggleSelection, calculateBookingTotal, validateBookingDraft, validateBookingStep, createBookingRequest, submitBookingDraft, syncPromotionVisibility, parseBookingTime, formatBookingTime };
       if (typeof window !== 'undefined') window.NEXORA_BOOKING_TEST_API = api;
       if (typeof window === 'undefined' || window.NEXORA_BOOKING_SKIP_INIT) return;
 
@@ -940,6 +1013,7 @@
 
       function renderSteps() {
         $$('[data-step-panel]').forEach((panel) => { panel.hidden = Number(panel.dataset.stepPanel) !== state.step; });
+        syncPromotionVisibility($('.promotion-section'), state.step);
         renderCustomer();
         renderSelections();
         renderReview();

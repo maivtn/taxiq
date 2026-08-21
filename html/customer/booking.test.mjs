@@ -135,6 +135,20 @@ test('validates the customer phone on step 2 instead of step 1', () => {
   assert.deepEqual(plain(api.validateBookingStep(draft, catalog, 2)), ['phone']);
 });
 
+test('shows promotions on step 1 and hides them on later steps', () => {
+  const api = getApi();
+  const promotionSection = { hidden: false };
+
+  api.syncPromotionVisibility(promotionSection, 1);
+  assert.equal(promotionSection.hidden, false);
+
+  api.syncPromotionVisibility(promotionSection, 2);
+  assert.equal(promotionSection.hidden, true);
+
+  api.syncPromotionVisibility(promotionSection, 3);
+  assert.equal(promotionSection.hidden, true);
+});
+
 test('creates a canonical booking request with consent and service summary', () => {
   const api = getApi();
   const result = api.createBookingRequest({
@@ -444,9 +458,10 @@ test('keeps the brand header frameless', () => {
   assert.match(brandStyle, /padding-bottom: 16px/);
 });
 
-test('shows only approved promotion cards between the brand and booking form', () => {
+test('shows all approved promotion slides between the brand and booking form', () => {
   const promotionSection = SOURCE.match(/<section class="promotion-section"[\s\S]*?<\/section>/)?.[0] || '';
   const promotionStyle = SOURCE.match(/\.promotion-section \{([^}]*)\}/)?.[1] || '';
+  const promotionCardStyle = SOURCE.match(/\.promotion-card \{([^}]*)\}/)?.[1] || '';
   const brandEndIndex = SOURCE.indexOf('</header>');
   const promotionIndex = SOURCE.indexOf('<section class="promotion-section"');
   const bookingAppIndex = SOURCE.indexOf('<main id="booking-app">');
@@ -461,11 +476,64 @@ test('shows only approved promotion cards between the brand and booking form', (
   assert.match(promotionSection, /Giảm 15%/);
   assert.match(promotionSection, /Combo Manicure \+ Pedicure/);
   assert.match(promotionSection, /Tiết kiệm \$10/);
-  assert.equal((promotionSection.match(/<article class="promotion-card/g) || []).length, 2);
+  assert.match(promotionSection, /Book on a quieter day and save!/);
+  assert.match(promotionSection, /Monday · Tuesday · Wednesday/);
+  assert.equal((promotionSection.match(/-10% off everything/g) || []).length, 1);
+  assert.match(promotionSection, /10% off your first visit!/);
+  assert.match(promotionSection, /applied automatically/);
+  assert.match(promotionSection, /Bring your friends and save!/);
+  assert.match(promotionSection, /2\+ people:[\s\S]*10% off/);
+  assert.match(promotionSection, /3\+ people:[\s\S]*15% off/);
+  assert.equal((promotionSection.match(/<article class="promotion-card swiper-slide/g) || []).length, 5);
+  assert.match(promotionSection, /class="promotion-swiper swiper"/);
+  assert.match(promotionSection, /class="promotion-list swiper-wrapper"/);
+  assert.match(promotionSection, /class="promotion-pagination swiper-pagination"/);
   assert.match(promotionStyle, /padding: 0/);
   assert.match(promotionStyle, /border: 0/);
   assert.match(promotionStyle, /background: transparent/);
   assert.match(promotionStyle, /box-shadow: none/);
+  assert.match(promotionCardStyle, /grid-template-columns: minmax\(0, 1fr\) auto/);
+  assert.match(promotionCardStyle, /align-items: center/);
+});
+
+test('initializes the promotion carousel with autoplay, pagination, and responsive slides', () => {
+  assert.match(SOURCE, /cdn\.jsdelivr\.net\/npm\/swiper@12\/swiper-bundle\.min\.css/);
+  assert.match(SOURCE, /cdn\.jsdelivr\.net\/npm\/swiper@12\/swiper-bundle\.min\.js/);
+
+  const script = SOURCE.match(/<script id="promotion-carousel-script">([\s\S]*?)<\/script>/)?.[1];
+  assert.ok(script, 'promotion carousel runtime script must exist');
+
+  const pagination = {};
+  const container = {
+    querySelector(selector) {
+      return selector === '.promotion-pagination' ? pagination : null;
+    }
+  };
+  const calls = [];
+  const window = {
+    Swiper: function Swiper(target, options) {
+      calls.push({ target, options });
+    }
+  };
+  const document = {
+    querySelector(selector) {
+      return selector === '.promotion-swiper' ? container : null;
+    }
+  };
+
+  vm.runInNewContext(script, { window, document });
+
+  assert.equal(calls.length, 1);
+  assert.equal(calls[0].target, container);
+  assert.equal(calls[0].options.loop, true);
+  assert.equal(calls[0].options.slidesPerView, 1);
+  assert.equal(calls[0].options.spaceBetween, 10);
+  assert.equal(calls[0].options.autoplay.delay, 4000);
+  assert.equal(calls[0].options.autoplay.disableOnInteraction, false);
+  assert.equal(calls[0].options.autoplay.pauseOnMouseEnter, true);
+  assert.equal(calls[0].options.pagination.el, pagination);
+  assert.equal(calls[0].options.pagination.clickable, true);
+  assert.equal(calls[0].options.breakpoints[640].slidesPerView, 2);
 });
 
 test('removes decorative card emoji icons from section headers', () => {
