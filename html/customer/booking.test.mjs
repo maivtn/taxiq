@@ -173,7 +173,7 @@ test('renders only active current promotions from the shared salon store', () =>
   assert.equal(section.hidden, false);
 });
 
-test('renders safe optional promotion artwork and automatic visual fallback', () => {
+test('renders optional promotion artwork without adding a placeholder when artwork is absent', () => {
   const api = getApi();
   const storage = createMemoryStorage(JSON.stringify({
     version: 1,
@@ -188,9 +188,26 @@ test('renders safe optional promotion artwork and automatic visual fallback', ()
   api.renderPromotionCards(list, section, storage, new Date('2026-08-21T10:00:00'));
 
   assert.match(list.innerHTML, /class="promotion-art"[^>]*src="data:image\/png;base64,AAAA"/);
-  assert.match(list.innerHTML, /class="promotion-auto-icon"[^>]*>👥</);
+  assert.equal((list.innerHTML.match(/class="promotion-visual"/g) || []).length, 1);
+  assert.doesNotMatch(list.innerHTML, /👥/);
   assert.match(list.innerHTML, /&lt;Group &amp; Friends&gt;/);
   assert.doesNotMatch(list.innerHTML, /<Group & Friends>/);
+});
+
+test('renders promotion copy and discount value as compact sibling regions', () => {
+  const api = getApi();
+  const storage = createMemoryStorage(JSON.stringify({
+    version: 1,
+    offers: [
+      { id: 'compact', title: 'Quiet day saving', badge: 'MONDAY', value: '10% OFF', description: 'Book a quieter appointment', eligibility: 'quiet-days', status: 'active' }
+    ]
+  }));
+  const list = { innerHTML: '' };
+  const section = { hidden: false };
+
+  api.renderPromotionCards(list, section, storage, new Date('2026-08-21T10:00:00'));
+
+  assert.match(list.innerHTML, /<div class="promotion-copy"><div class="promotion-title-row"><span class="promotion-badge">MONDAY<\/span><h3>Quiet day saving<\/h3><\/div><p>Book a quieter appointment<\/p><\/div><div class="promotion-highlight promotion-highlight-wide"><strong>10% OFF<\/strong><\/div>/);
 });
 
 test('hides the promotion section when no offer is active', () => {
