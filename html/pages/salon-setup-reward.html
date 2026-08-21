@@ -808,7 +808,8 @@
     .ai-managed-offer-card[hidden],
     .ai-offer-manager-empty[hidden] { display: none; }
     .ai-managed-offer-card.is-paused { background: #fbfcfe; opacity: .72; }
-    .ai-managed-offer-icon { display: inline-flex; width: 34px; height: 34px; align-items: center; justify-content: center; border-radius: 10px; background: var(--ai-purple-soft); color: var(--ai-purple); font-size: 15px; }
+    .ai-managed-offer-icon { display: inline-flex; width: 42px; height: 42px; align-items: center; justify-content: center; overflow: hidden; border-radius: 10px; background: var(--ai-purple-soft); color: var(--ai-purple); font-size: 18px; }
+    .ai-managed-offer-icon img { width: 100%; height: 100%; object-fit: cover; }
     .ai-managed-offer-card.is-paused .ai-managed-offer-icon { background: #f1f3f6; color: #667085; }
     .ai-managed-offer-content { min-width: 0; }
     .ai-managed-offer-head { display: flex; align-items: center; gap: 8px; min-width: 0; }
@@ -828,7 +829,7 @@
     .ai-offers .ai-guardrail li + li { margin-top: 4px; }
     .ai-offer-dialog[hidden] { display: none; }
     .ai-offer-dialog { position: fixed; inset: 0; z-index: 80; display: grid; place-items: center; overflow-y: auto; background: rgba(8, 16, 34, .52); padding: 20px; }
-    .ai-offer-dialog .ai-offer-dialog-card { width: min(560px, 100%); border: 1px solid var(--nexora-border); border-radius: 18px; background: #fff; box-shadow: 0 24px 64px rgba(8, 16, 34, .3); }
+    .ai-offer-dialog .ai-offer-dialog-card { width: min(640px, 100%); border: 1px solid var(--nexora-border); border-radius: 18px; background: #fff; box-shadow: 0 24px 64px rgba(8, 16, 34, .3); }
     .ai-offer-dialog .ai-offer-dialog-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--nexora-border); padding: 18px 20px; }
     .ai-offer-dialog h3 { margin: 0; color: var(--nexora-text); font-size: 17px; }
     .ai-offer-dialog .ai-offer-dialog-head p { margin: 5px 0 0; color: var(--nexora-muted); font-size: 12px; line-height: 1.5; }
@@ -841,6 +842,14 @@
     .ai-offer-dialog .ai-offer-dialog-body textarea,
     .ai-offer-dialog .ai-offer-dialog-body select { width: 100%; border: 1px solid var(--nexora-border); border-radius: 10px; background: #fff; padding: 10px 11px; color: var(--nexora-text); font-size: 13px; }
     .ai-offer-dialog .ai-offer-dialog-body textarea { min-height: 75px; resize: vertical; }
+    .ai-offer-field-hint { margin: 0; color: #98a2b3; font-size: 10px; line-height: 1.45; }
+    .ai-offer-image-field { display: grid; grid-template-columns: 96px minmax(0, 1fr); gap: 12px; align-items: center; }
+    .ai-offer-image-preview { display: grid; width: 96px; height: 68px; place-items: center; overflow: hidden; border: 1px dashed var(--nexora-border); border-radius: 12px; background: var(--nexora-surface-muted); color: #98a2b3; font-size: 22px; }
+    .ai-offer-image-preview img { width: 100%; height: 100%; object-fit: cover; }
+    .ai-offer-image-actions { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; }
+    .ai-offer-image-upload { display: inline-flex; align-items: center; gap: 6px; border: 1px solid var(--nexora-border); border-radius: 9px; background: #fff; padding: 8px 10px; color: var(--ai-purple); font-size: 11px; font-weight: 900; cursor: pointer; }
+    .ai-offer-image-upload input { position: absolute; width: 1px; height: 1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    .ai-offer-image-remove { border: 0; background: transparent; padding: 7px; color: #667085; font-size: 11px; font-weight: 800; }
     .ai-offer-dialog .ai-offer-dialog-foot { display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--nexora-border); background: var(--nexora-surface-muted); padding: 14px 20px; }
     @media (min-width: 1200px) { .ai-offers .ai-suggestion-list { grid-template-columns: repeat(3, minmax(0, 1fr)); } }
     @media (max-width: 800px) { .ai-offers .ai-demand-grid, .ai-offers .ai-suggestion-list { grid-template-columns: 1fr; } .ai-offers .ai-demand-card p { min-height: 0; } }
@@ -6660,12 +6669,6 @@
           </span>
           <span>Dashboard</span>
         </button>
-        <button class="nav-item" type="button">
-          <span class="sidebar-icon-wrap">
-            <i class="lucide-menu-icon" data-lucide="users-round" aria-hidden="true"></i>
-          </span>
-          <span>Staff</span>
-        </button>
         <div class="nav-group" data-nav-group="payments">
           <button class="nav-item is-parent" type="button" data-nav-parent-toggle aria-expanded="false">
             <span class="sidebar-icon-wrap">
@@ -6690,26 +6693,50 @@
           </span>
           <span>Reviews</span>
         </button>
-        <div class="nav-group" data-nav-group="stations">
+        <button class="nav-item" type="button">
+          <span class="sidebar-icon-wrap">
+            <i class="lucide-menu-icon" data-lucide="qr-code" aria-hidden="true"></i>
+          </span>
+          <span>Stations & QR Codes</span>
+        </button>
+        <div class="nav-group" data-nav-group="booking">
           <button class="nav-item is-parent" type="button" data-nav-parent-toggle aria-expanded="false">
             <span class="sidebar-icon-wrap">
-              <i class="lucide-menu-icon" data-lucide="qr-code" aria-hidden="true"></i>
+              <i class="lucide-menu-icon" data-lucide="calendar-days" aria-hidden="true"></i>
             </span>
-            <span>Stations & QR Codes</span>
+            <span>Ai Hub</span>
             <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
               <path d="m6 9 6 6 6-6"></path>
             </svg>
           </button>
           <div class="nav-submenu">
-            <button class="nav-subitem" type="button">QR Stations</button>
+            <button class="nav-subitem" type="button">Booking</button>
+            <button class="nav-subitem" type="button">Customers</button>
+            <button class="nav-subitem" type="button">Call Log</button>
+            <button class="nav-subitem" type="button">SMS Campaigns</button>
+            <button class="nav-subitem" type="button">QR Codes</button>
+            <button class="nav-subitem" type="button">Plans</button>
+            <button class="nav-subitem" type="button">Salon Settings</button>
           </div>
         </div>
-        <button class="nav-item" type="button">
-          <span class="sidebar-icon-wrap">
-            <i class="lucide-menu-icon" data-lucide="calendar-days" aria-hidden="true"></i>
-          </span>
-          <span>Booking Hub</span>
-        </button>
+        <div class="nav-group" data-nav-group="community">
+          <button class="nav-item is-parent" type="button" data-nav-parent-toggle aria-expanded="false">
+            <span class="sidebar-icon-wrap">
+              <i class="lucide-menu-icon" data-lucide="users-round" aria-hidden="true"></i>
+            </span>
+            <span>Community</span>
+            <svg class="nav-chevron" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+              <path d="m6 9 6 6 6-6"></path>
+            </svg>
+          </button>
+          <div class="nav-submenu">
+            <button class="nav-subitem" type="button">Feed</button>
+            <button class="nav-subitem" type="button">Groups</button>
+            <button class="nav-subitem" type="button">Learning</button>
+            <button class="nav-subitem" type="button">Jobs</button>
+            <button class="nav-subitem" type="button">Events</button>
+          </div>
+        </div>
         <div class="nav-group is-open" data-nav-group="reward">
           <button class="nav-item is-parent" type="button" data-nav-parent-toggle aria-expanded="true">
             <span class="sidebar-icon-wrap">
@@ -6732,6 +6759,12 @@
         </div>
         <button class="nav-item" type="button">
           <span class="sidebar-icon-wrap">
+            <i class="lucide-menu-icon" data-lucide="monitor" aria-hidden="true"></i>
+          </span>
+          <span>POS</span>
+        </button>
+        <button class="nav-item" type="button">
+          <span class="sidebar-icon-wrap">
             <i class="lucide-menu-icon" data-lucide="chart-no-axes-combined" aria-hidden="true"></i>
           </span>
           <span>Analytics</span>
@@ -6741,6 +6774,12 @@
             <i class="lucide-menu-icon" data-lucide="settings" aria-hidden="true"></i>
           </span>
           <span>Settings</span>
+        </button>
+        <button class="nav-item" type="button">
+          <span class="sidebar-icon-wrap">
+            <i class="lucide-menu-icon" data-lucide="newspaper" aria-hidden="true"></i>
+          </span>
+          <span>News & Library</span>
         </button>
         <button class="nav-item" type="button">
           <span class="sidebar-icon-wrap">
@@ -6771,7 +6810,7 @@
               <path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path>
             </svg>
           </button>
-          <img class="brand-logo" src="../../public/assets/nexora-logo.png" alt="Nexora Logo">
+          <img class="brand-logo" src="../assets/nexora-logo.svg" alt="Nexora Logo">
         </div>
 
         <label class="search">
@@ -7077,49 +7116,21 @@
                   <div class="ai-section-title">
                     <div>
                       <h3 id="ai-offer-manager-title">Manage offers</h3>
-                      <p class="muted">Review live offers, update their details, and control availability.</p>
+                      <p class="muted">Active offers appear automatically on booking Step 1. Add an optional image or let Nexora style the card for you.</p>
                     </div>
                     <button class="btn p" type="button" data-ai-offer-create><i class="bi bi-plus-lg" aria-hidden="true"></i> Create offer</button>
                   </div>
 
                   <div class="ai-offer-manager-toolbar">
                     <div class="ai-offer-manager-filters" role="tablist" aria-label="Offer status filters">
-                      <button class="ai-offer-manager-filter is-active" type="button" role="tab" aria-selected="true" data-ai-offer-manager-filter="all">All <span data-ai-offer-manager-count="all">3</span></button>
-                      <button class="ai-offer-manager-filter" type="button" role="tab" aria-selected="false" data-ai-offer-manager-filter="active">Active <span data-ai-offer-manager-count="active">2</span></button>
-                      <button class="ai-offer-manager-filter" type="button" role="tab" aria-selected="false" data-ai-offer-manager-filter="paused">Paused <span data-ai-offer-manager-count="paused">1</span></button>
+                      <button class="ai-offer-manager-filter is-active" type="button" role="tab" aria-selected="true" data-ai-offer-manager-filter="all">All <span data-ai-offer-manager-count="all">0</span></button>
+                      <button class="ai-offer-manager-filter" type="button" role="tab" aria-selected="false" data-ai-offer-manager-filter="active">Active <span data-ai-offer-manager-count="active">0</span></button>
+                      <button class="ai-offer-manager-filter" type="button" role="tab" aria-selected="false" data-ai-offer-manager-filter="paused">Paused <span data-ai-offer-manager-count="paused">0</span></button>
                     </div>
                     <label class="ai-offer-search"><i class="bi bi-search" aria-hidden="true"></i><span class="sr-only">Search offers</span><input type="search" placeholder="Search offers" data-ai-offer-manager-search></label>
                   </div>
 
-                  <div class="ai-managed-offer-list" data-ai-managed-offer-list>
-                    <article class="ai-managed-offer-card" data-ai-managed-offer data-ai-managed-offer-id="weekday-pedi-live" data-status="active" data-offer-title="Weekday Pedi Combo" data-offer-value="20% OFF" data-offer-schedule="Jul 21 – Aug 31, 2026 · 10:00 AM–2:00 PM" data-offer-start-date="2026-07-21" data-offer-end-date="2026-08-31" data-offer-start-time="10:00" data-offer-end-time="14:00" data-offer-description="A weekday pedicure combo for customers looking for a limited-time deal." data-offer-used="18 used" data-offer-expiry="Expires Aug 31, 2026" data-offer-channel="In-app · SMS">
-                      <span class="ai-managed-offer-icon"><i class="bi bi-megaphone" aria-hidden="true"></i></span>
-                      <div class="ai-managed-offer-content">
-                        <div class="ai-managed-offer-head"><h4 data-ai-managed-title>Weekday Pedi Combo</h4><span class="ai-managed-offer-status" data-ai-managed-status>Active</span></div>
-                        <p class="ai-managed-offer-summary"><span data-ai-managed-value>20% OFF</span> · <span data-ai-managed-schedule>Jul 21 – Aug 31, 2026 · 10:00 AM–2:00 PM</span></p>
-                        <div class="ai-managed-offer-meta"><span data-ai-managed-used>18 used</span><span data-ai-managed-expiry>Expires Aug 31, 2026</span><span data-ai-managed-channel>In-app · SMS</span></div>
-                      </div>
-                      <div class="ai-managed-offer-actions"><button class="ai-managed-action" type="button" data-ai-managed-edit>Edit</button><button class="ai-managed-action" type="button" data-ai-managed-toggle>Pause</button><button class="ai-managed-action is-danger" type="button" data-ai-managed-delete>Delete</button></div>
-                    </article>
-                    <article class="ai-managed-offer-card" data-ai-managed-offer data-ai-managed-offer-id="gelx-live" data-status="active" data-offer-title="Gel-X New Set" data-offer-value="$55 intro price" data-offer-schedule="Jul 21 – Sep 15, 2026 · 9:00 AM–8:00 PM" data-offer-start-date="2026-07-21" data-offer-end-date="2026-09-15" data-offer-start-time="09:00" data-offer-end-time="20:00" data-offer-description="Introductory Gel-X pricing for new sets." data-offer-used="9 used" data-offer-expiry="Expires Sep 15, 2026" data-offer-channel="In-app">
-                      <span class="ai-managed-offer-icon"><i class="bi bi-stars" aria-hidden="true"></i></span>
-                      <div class="ai-managed-offer-content">
-                        <div class="ai-managed-offer-head"><h4 data-ai-managed-title>Gel-X New Set</h4><span class="ai-managed-offer-status" data-ai-managed-status>Active</span></div>
-                        <p class="ai-managed-offer-summary"><span data-ai-managed-value>$55 intro price</span> · <span data-ai-managed-schedule>Jul 21 – Sep 15, 2026 · 9:00 AM–8:00 PM</span></p>
-                        <div class="ai-managed-offer-meta"><span data-ai-managed-used>9 used</span><span data-ai-managed-expiry>Expires Sep 15, 2026</span><span data-ai-managed-channel>In-app</span></div>
-                      </div>
-                      <div class="ai-managed-offer-actions"><button class="ai-managed-action" type="button" data-ai-managed-edit>Edit</button><button class="ai-managed-action" type="button" data-ai-managed-toggle>Pause</button><button class="ai-managed-action is-danger" type="button" data-ai-managed-delete>Delete</button></div>
-                    </article>
-                    <article class="ai-managed-offer-card is-paused" data-ai-managed-offer data-ai-managed-offer-id="first-visit-live" data-status="paused" data-offer-title="First Visit $10 Off" data-offer-value="$10 OFF" data-offer-schedule="Jul 21 – Dec 31, 2026 · 9:00 AM–8:00 PM" data-offer-start-date="2026-07-21" data-offer-end-date="2026-12-31" data-offer-start-time="09:00" data-offer-end-time="20:00" data-offer-description="A welcome offer for new customers." data-offer-used="42 used" data-offer-expiry="Expires Dec 31, 2026" data-offer-channel="In-app · SMS">
-                      <span class="ai-managed-offer-icon"><i class="bi bi-ticket-perforated" aria-hidden="true"></i></span>
-                      <div class="ai-managed-offer-content">
-                        <div class="ai-managed-offer-head"><h4 data-ai-managed-title>First Visit $10 Off</h4><span class="ai-managed-offer-status is-paused" data-ai-managed-status>Paused</span></div>
-                        <p class="ai-managed-offer-summary"><span data-ai-managed-value>$10 OFF</span> · <span data-ai-managed-schedule>Jul 21 – Dec 31, 2026 · 9:00 AM–8:00 PM</span></p>
-                        <div class="ai-managed-offer-meta"><span data-ai-managed-used>42 used</span><span data-ai-managed-expiry>Expires Dec 31, 2026</span><span data-ai-managed-channel>In-app · SMS</span></div>
-                      </div>
-                      <div class="ai-managed-offer-actions"><button class="ai-managed-action" type="button" data-ai-managed-edit>Edit</button><button class="ai-managed-action" type="button" data-ai-managed-toggle>Resume</button><button class="ai-managed-action is-danger" type="button" data-ai-managed-delete>Delete</button></div>
-                    </article>
-                  </div>
+                  <div class="ai-managed-offer-list" data-ai-managed-offer-list></div>
                   <p class="ai-offer-manager-empty" data-ai-offer-manager-empty hidden>No offers match this filter.</p>
                 </section>
 
@@ -7143,17 +7154,25 @@
                     <button class="ai-offer-close" type="button" data-ai-offer-close aria-label="Close offer editor">×</button>
                   </div>
                   <div class="ai-offer-dialog-body">
-                    <div class="field"><label for="ai-offer-title">Offer title</label><input id="ai-offer-title" type="text" data-ai-offer-field="title" required></div>
-                    <div class="field"><label for="ai-offer-value">Price or discount</label><input id="ai-offer-value" type="text" data-ai-offer-field="value" required></div>
+                    <div class="field"><label for="ai-offer-title">Offer title</label><input id="ai-offer-title" type="text" maxlength="80" data-ai-offer-field="title" required></div>
+                    <div class="form2">
+                      <div class="field"><label for="ai-offer-type">Offer type</label><select id="ai-offer-type" data-ai-offer-field="type"><option value="percent">Percent discount</option><option value="fixed">Fixed discount</option><option value="special-price">Special price</option><option value="custom">Custom offer</option></select></div>
+                      <div class="field"><label for="ai-offer-eligibility">Customer eligibility</label><select id="ai-offer-eligibility" data-ai-offer-field="eligibility"><option value="all">All customers</option><option value="weekday">Weekday</option><option value="quiet-days">Quiet days</option><option value="first-visit">First visit</option><option value="combo">Service combo</option><option value="group">Group booking</option><option value="custom">Custom rules</option></select></div>
+                    </div>
+                    <div class="form2">
+                      <div class="field"><label for="ai-offer-badge">Short badge</label><input id="ai-offer-badge" type="text" maxlength="24" placeholder="FIRST VISIT" data-ai-offer-field="badge"></div>
+                      <div class="field"><label for="ai-offer-value">Price or discount</label><input id="ai-offer-value" type="text" maxlength="40" placeholder="10% OFF" data-ai-offer-field="value" required></div>
+                    </div>
                     <div class="form2 ai-offer-schedule-grid">
-                      <div class="field"><label for="ai-offer-start-date">Start date</label><input id="ai-offer-start-date" type="text" placeholder="Select date" autocomplete="off" data-ai-offer-field="start-date" required></div>
-                      <div class="field"><label for="ai-offer-end-date">End date</label><input id="ai-offer-end-date" type="text" placeholder="Select date" autocomplete="off" data-ai-offer-field="end-date" required></div>
-                      <div class="field"><label for="ai-offer-start-time">Start time</label><input id="ai-offer-start-time" type="text" placeholder="Select time" autocomplete="off" data-ai-offer-field="start-time" required></div>
-                      <div class="field"><label for="ai-offer-end-time">End time</label><input id="ai-offer-end-time" type="text" placeholder="Select time" autocomplete="off" data-ai-offer-field="end-time" required></div>
+                      <div class="field"><label for="ai-offer-start-date">Start date <small>(optional)</small></label><input id="ai-offer-start-date" type="text" placeholder="No start date" autocomplete="off" data-ai-offer-field="start-date"></div>
+                      <div class="field"><label for="ai-offer-end-date">End date <small>(optional)</small></label><input id="ai-offer-end-date" type="text" placeholder="No end date" autocomplete="off" data-ai-offer-field="end-date"></div>
+                      <div class="field"><label for="ai-offer-start-time">Start time <small>(optional)</small></label><input id="ai-offer-start-time" type="text" placeholder="All day" autocomplete="off" data-ai-offer-field="start-time"></div>
+                      <div class="field"><label for="ai-offer-end-time">End time <small>(optional)</small></label><input id="ai-offer-end-time" type="text" placeholder="All day" autocomplete="off" data-ai-offer-field="end-time"></div>
                     </div>
                     <input id="ai-offer-schedule" type="hidden" data-ai-offer-field="schedule">
-                    <div class="field"><label for="ai-offer-description">Customer-facing details</label><textarea id="ai-offer-description" data-ai-offer-field="description"></textarea></div>
-                    <p class="muted">Publishing this offer makes it available to matching customers. Their identities remain hidden from your dashboard.</p>
+                    <div class="field"><label for="ai-offer-description">Customer-facing details</label><textarea id="ai-offer-description" maxlength="140" placeholder="Keep this short so the booking card stays compact." data-ai-offer-field="description"></textarea><p class="ai-offer-field-hint">Maximum 140 characters.</p></div>
+                    <div class="field"><label>Image optional</label><div class="ai-offer-image-field"><div class="ai-offer-image-preview" data-ai-offer-image-preview><i class="bi bi-image" aria-hidden="true"></i></div><div><div class="ai-offer-image-actions"><label class="ai-offer-image-upload"><i class="bi bi-upload" aria-hidden="true"></i> Upload image<input type="file" data-ai-offer-image-file accept="image/jpeg,image/png,image/webp"></label><button class="ai-offer-image-remove" type="button" data-ai-offer-image-remove hidden>Remove</button></div><p class="ai-offer-field-hint">JPG, PNG or WebP up to 600 KB. Without an image, Nexora chooses an icon and color automatically.</p></div></div><input type="hidden" data-ai-offer-field="image"></div>
+                    <p class="muted">Active offers appear automatically on booking Step 1. Pause an offer to remove it from the banner.</p>
                   </div>
                   <div class="ai-offer-dialog-foot">
                     <button class="btn o" type="button" data-ai-offer-close>Cancel</button>
@@ -7366,6 +7385,7 @@
     </div>
   </div>
 
+  <script src="../assets/promotions-store.js"></script>
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script>
     var DEFAULT_MAIN_TAB = 'overview';
@@ -9229,6 +9249,9 @@
     var AI_OFFER_DRAFTS = {
       pedi: {
         title: 'Weekday Pedi Combo — 20% OFF',
+        badge: 'WEEKDAY DEAL',
+        type: 'percent',
+        eligibility: 'quiet-days',
         value: '20% OFF',
         startDate: '2026-07-21',
         endDate: '2026-08-31',
@@ -9238,6 +9261,9 @@
       },
       gelx: {
         title: 'Gel-X New Set — $55 intro price',
+        badge: 'INTRO PRICE',
+        type: 'special-price',
+        eligibility: 'all',
         value: '$55 intro price',
         startDate: '2026-07-21',
         endDate: '2026-09-15',
@@ -9251,6 +9277,7 @@
     var currentAiOfferManagerFilter = 'all';
     var currentAiOfferManagerSearch = '';
     var aiOfferSchedulePickers = {};
+    var promotionStore = window.NEXORA_PROMOTIONS;
 
     function findAiOfferCard(offerId) {
       var cards = Array.from(document.querySelectorAll('[data-ai-offer-card]'));
@@ -9266,6 +9293,31 @@
     function getAiOfferField(name) {
       var field = document.querySelector('[data-ai-offer-field="' + name + '"]');
       return field ? field.value.trim() : '';
+    }
+
+    function syncAiOfferImagePreview() {
+      var image = getAiOfferField('image');
+      var preview = document.querySelector('[data-ai-offer-image-preview]');
+      var removeButton = document.querySelector('[data-ai-offer-image-remove]');
+      if (preview) preview.innerHTML = image
+        ? '<img src="' + escapeHtml(image) + '" alt="Offer artwork preview">'
+        : '<i class="bi bi-image" aria-hidden="true"></i>';
+      if (removeButton) removeButton.hidden = !image;
+    }
+
+    function setAiOfferDraftFields(draft) {
+      draft = draft || {};
+      setAiOfferField('title', draft.title || '');
+      setAiOfferField('type', draft.type || 'custom');
+      setAiOfferField('eligibility', draft.eligibility || 'all');
+      setAiOfferField('badge', draft.badge || 'SPECIAL OFFER');
+      setAiOfferField('value', draft.value || '');
+      setAiOfferField('description', draft.description || '');
+      setAiOfferField('image', draft.image || '');
+      setAiOfferScheduleFields(draft);
+      var imageInput = document.querySelector('[data-ai-offer-image-file]');
+      if (imageInput) imageInput.value = '';
+      syncAiOfferImagePreview();
     }
 
     function formatOfferDate(value, includeYear) {
@@ -9364,15 +9416,19 @@
     }
 
     function validateAiOfferSchedule(schedule) {
-      if (!schedule.startDate || !schedule.endDate || !schedule.startTime || !schedule.endTime) {
-        showRewardToast('Please choose the offer dates and daily time window.');
+      if (Boolean(schedule.startDate) !== Boolean(schedule.endDate)) {
+        showRewardToast('Choose both a start date and an end date, or leave both empty.');
         return false;
       }
-      if (schedule.endDate < schedule.startDate) {
+      if (Boolean(schedule.startTime) !== Boolean(schedule.endTime)) {
+        showRewardToast('Choose both a start time and an end time, or leave both empty.');
+        return false;
+      }
+      if (schedule.startDate && schedule.endDate < schedule.startDate) {
         showRewardToast('End date must be on or after the start date.');
         return false;
       }
-      if (schedule.startDate === schedule.endDate && schedule.endTime <= schedule.startTime) {
+      if (schedule.startTime && schedule.endTime <= schedule.startTime) {
         showRewardToast('End time must be later than the start time.');
         return false;
       }
@@ -9399,91 +9455,89 @@
     }
 
     function updateManagedOfferCard(card, draft) {
-      if (!card || !draft) return;
-      var schedule = draft.schedule || formatOfferSchedule(draft.startDate, draft.endDate, draft.startTime, draft.endTime);
-      card.dataset.offerTitle = draft.title;
-      card.dataset.offerValue = draft.value;
-      card.dataset.offerSchedule = schedule;
-      card.dataset.offerStartDate = draft.startDate || '';
-      card.dataset.offerEndDate = draft.endDate || '';
-      card.dataset.offerStartTime = draft.startTime || '';
-      card.dataset.offerEndTime = draft.endTime || '';
-      card.dataset.offerDescription = draft.description;
-      var title = card.querySelector('[data-ai-managed-title]');
-      var value = card.querySelector('[data-ai-managed-value]');
-      var scheduleEl = card.querySelector('[data-ai-managed-schedule]');
-      if (title) title.textContent = draft.title;
-      if (value) value.textContent = draft.value;
-      if (scheduleEl) scheduleEl.textContent = card.dataset.offerSchedule;
+      if (!card || !draft || !promotionStore) return null;
+      var saved = promotionStore.upsert(Object.assign({}, draft, {
+        id: card.dataset.aiManagedOfferId,
+        status: card.dataset.status === 'paused' ? 'paused' : 'active'
+      }));
+      if (!saved) {
+        showRewardToast('Could not save this offer. Remove the image or choose a smaller file, then try again.');
+        return null;
+      }
+      hydrateManagedOffersFromStore();
+      return findManagedOfferCard(saved.id);
     }
 
     function createManagedOfferFromDraft(draft) {
-      var list = document.querySelector('[data-ai-managed-offer-list]');
-      if (!list || !draft) return null;
-      var existing = draft.sourceId
-        ? Array.from(list.querySelectorAll('[data-ai-managed-offer]')).find(function(card) {
-          return card.dataset.aiManagedOfferSource === draft.sourceId;
-        })
-        : null;
-      if (existing) {
-        updateManagedOfferCard(existing, draft);
-        setManagedOfferStatus(existing, 'active');
-        return existing;
+      if (!draft || !promotionStore) return null;
+      var saved = promotionStore.upsert(Object.assign({}, draft, { status: 'active' }));
+      if (!saved) {
+        showRewardToast('Could not save this offer. Remove the image or choose a smaller file, then try again.');
+        return null;
       }
-
-      var id = draft.sourceId ? 'ai-' + draft.sourceId : 'custom-' + Date.now();
-      var schedule = draft.schedule || formatOfferSchedule(draft.startDate, draft.endDate, draft.startTime, draft.endTime);
-      var card = document.createElement('article');
-      card.className = 'ai-managed-offer-card';
-      card.dataset.aiManagedOffer = '';
-      card.dataset.aiManagedOfferId = id;
-      card.dataset.aiManagedOfferSource = draft.sourceId || '';
-      card.dataset.status = 'active';
-      card.dataset.offerTitle = draft.title;
-      card.dataset.offerValue = draft.value;
-      card.dataset.offerSchedule = schedule;
-      card.dataset.offerStartDate = draft.startDate || '';
-      card.dataset.offerEndDate = draft.endDate || '';
-      card.dataset.offerStartTime = draft.startTime || '';
-      card.dataset.offerEndTime = draft.endTime || '';
-      card.dataset.offerDescription = draft.description;
-      card.dataset.offerUsed = '0 used';
-      card.dataset.offerExpiry = 'Set expiry';
-      card.dataset.offerChannel = 'In-app';
-      card.innerHTML = '<span class="ai-managed-offer-icon"><i class="bi bi-megaphone" aria-hidden="true"></i></span>' +
-        '<div class="ai-managed-offer-content">' +
-          '<div class="ai-managed-offer-head"><h4 data-ai-managed-title></h4><span class="ai-managed-offer-status" data-ai-managed-status>Active</span></div>' +
-          '<p class="ai-managed-offer-summary"><span data-ai-managed-value></span> · <span data-ai-managed-schedule></span></p>' +
-          '<div class="ai-managed-offer-meta"><span data-ai-managed-used>0 used</span><span data-ai-managed-expiry>Set expiry</span><span data-ai-managed-channel>In-app</span></div>' +
-        '</div>' +
-        '<div class="ai-managed-offer-actions"><button class="ai-managed-action" type="button" data-ai-managed-edit>Edit</button><button class="ai-managed-action" type="button" data-ai-managed-toggle>Pause</button><button class="ai-managed-action is-danger" type="button" data-ai-managed-delete>Delete</button></div>';
-      list.appendChild(card);
-      updateManagedOfferCard(card, draft);
-      renderAiManagedOffers();
-      return card;
+      hydrateManagedOffersFromStore();
+      return findManagedOfferCard(saved.id);
     }
 
     function setManagedOfferStatus(card, status) {
-      if (!card) return;
-      var isPaused = status === 'paused';
-      card.dataset.status = isPaused ? 'paused' : 'active';
-      card.classList.toggle('is-paused', isPaused);
-      var statusEl = card.querySelector('[data-ai-managed-status]');
-      if (statusEl) {
-        statusEl.textContent = isPaused ? 'Paused' : 'Active';
-        statusEl.classList.toggle('is-paused', isPaused);
-      }
-      var toggle = card.querySelector('[data-ai-managed-toggle]');
-      if (toggle) toggle.textContent = isPaused ? 'Resume' : 'Pause';
-      renderAiManagedOffers();
+      if (!card || !promotionStore) return false;
+      var saved = promotionStore.setStatus(card.dataset.aiManagedOfferId, status);
+      hydrateManagedOffersFromStore();
+      return saved;
     }
 
     function deleteManagedOffer(card) {
-      if (!card) return;
+      if (!card || !promotionStore) return;
       var name = card.dataset.offerTitle || 'Offer';
-      card.remove();
-      renderAiManagedOffers();
+      promotionStore.remove(card.dataset.aiManagedOfferId);
+      hydrateManagedOffersFromStore();
       showRewardToast('Offer deleted: ' + name + '.');
+    }
+
+    function managedOfferCard(offer) {
+      var card = document.createElement('article');
+      var paused = offer.status === 'paused';
+      var schedule = formatOfferSchedule(offer.startDate, offer.endDate, offer.startTime, offer.endTime) || 'Ongoing';
+      var presentation = promotionStore.presentation(offer);
+      var visual = presentation.image
+        ? '<img src="' + escapeHtml(presentation.image) + '" alt="">'
+        : '<span aria-hidden="true">' + escapeHtml(presentation.icon) + '</span>';
+      var expiry = offer.endDate ? 'Ends ' + formatOfferDate(offer.endDate, true) : 'No end date';
+      var eligibilityLabels = {
+        all: 'All customers', weekday: 'Weekday', 'quiet-days': 'Quiet days',
+        'first-visit': 'First visit', combo: 'Service combo', group: 'Group booking', custom: 'Custom rules'
+      };
+      card.className = 'ai-managed-offer-card' + (paused ? ' is-paused' : '');
+      card.dataset.aiManagedOffer = '';
+      card.dataset.aiManagedOfferId = offer.id;
+      card.dataset.status = offer.status;
+      card.dataset.offerTitle = offer.title;
+      card.dataset.offerType = offer.type;
+      card.dataset.offerEligibility = offer.eligibility;
+      card.dataset.offerBadge = offer.badge;
+      card.dataset.offerValue = offer.value;
+      card.dataset.offerSchedule = schedule;
+      card.dataset.offerStartDate = offer.startDate;
+      card.dataset.offerEndDate = offer.endDate;
+      card.dataset.offerStartTime = offer.startTime;
+      card.dataset.offerEndTime = offer.endTime;
+      card.dataset.offerDescription = offer.description;
+      card.dataset.offerImage = offer.image;
+      card.innerHTML = '<span class="ai-managed-offer-icon">' + visual + '</span>' +
+        '<div class="ai-managed-offer-content">' +
+          '<div class="ai-managed-offer-head"><h4 data-ai-managed-title>' + escapeHtml(offer.title) + '</h4><span class="ai-managed-offer-status' + (paused ? ' is-paused' : '') + '" data-ai-managed-status>' + (paused ? 'Paused' : 'Active') + '</span></div>' +
+          '<p class="ai-managed-offer-summary"><span data-ai-managed-value>' + escapeHtml(offer.value) + '</span> · <span data-ai-managed-schedule>' + escapeHtml(schedule) + '</span></p>' +
+          '<div class="ai-managed-offer-meta"><span>' + escapeHtml(eligibilityLabels[offer.eligibility] || 'All customers') + '</span><span>' + escapeHtml(expiry) + '</span><span>Booking banner</span></div>' +
+        '</div>' +
+        '<div class="ai-managed-offer-actions"><button class="ai-managed-action" type="button" data-ai-managed-edit>Edit</button><button class="ai-managed-action" type="button" data-ai-managed-toggle>' + (paused ? 'Resume' : 'Pause') + '</button><button class="ai-managed-action is-danger" type="button" data-ai-managed-delete>Delete</button></div>';
+      return card;
+    }
+
+    function hydrateManagedOffersFromStore() {
+      var list = document.querySelector('[data-ai-managed-offer-list]');
+      if (!list || !promotionStore) return;
+      list.replaceChildren.apply(list, promotionStore.load().map(managedOfferCard));
+      renderAiManagedOffers();
     }
 
     function renderAiManagedOffers() {
@@ -9534,10 +9588,7 @@
       activeAiOfferId = offerId;
       activeAiOfferMode = 'suggestion';
       setAiOfferDialogMode('suggestion');
-      setAiOfferField('title', draft.title);
-      setAiOfferField('value', draft.value);
-      setAiOfferScheduleFields(draft);
-      setAiOfferField('description', draft.description);
+      setAiOfferDraftFields(draft);
       dialog.hidden = false;
       var title = document.querySelector('[data-ai-offer-field="title"]');
       if (title) title.focus();
@@ -9549,16 +9600,20 @@
       activeAiOfferId = card.dataset.aiManagedOfferId;
       activeAiOfferMode = 'managed-edit';
       setAiOfferDialogMode('managed-edit');
-      setAiOfferField('title', card.dataset.offerTitle);
-      setAiOfferField('value', card.dataset.offerValue);
-      setAiOfferScheduleFields({
+      setAiOfferDraftFields({
+        title: card.dataset.offerTitle,
+        type: card.dataset.offerType,
+        eligibility: card.dataset.offerEligibility,
+        badge: card.dataset.offerBadge,
+        value: card.dataset.offerValue,
         startDate: card.dataset.offerStartDate,
         endDate: card.dataset.offerEndDate,
         startTime: card.dataset.offerStartTime,
         endTime: card.dataset.offerEndTime,
-        summary: card.dataset.offerSchedule
+        summary: card.dataset.offerSchedule,
+        description: card.dataset.offerDescription,
+        image: card.dataset.offerImage
       });
-      setAiOfferField('description', card.dataset.offerDescription);
       dialog.hidden = false;
       var title = document.querySelector('[data-ai-offer-field="title"]');
       if (title) title.focus();
@@ -9570,10 +9625,7 @@
       activeAiOfferId = null;
       activeAiOfferMode = 'managed-create';
       setAiOfferDialogMode('managed-create');
-      setAiOfferField('title', '');
-      setAiOfferField('value', '');
-      setAiOfferScheduleFields({});
-      setAiOfferField('description', '');
+      setAiOfferDraftFields({ type: 'percent', eligibility: 'all', badge: 'SPECIAL OFFER' });
       dialog.hidden = false;
       var title = document.querySelector('[data-ai-offer-field="title"]');
       if (title) title.focus();
@@ -9607,7 +9659,6 @@
       var title = getAiOfferField('title');
       var value = getAiOfferField('value');
       var schedule = getAiOfferSchedule();
-      var description = getAiOfferField('description');
       if (!title || !value) {
         showRewardToast('Please complete the offer title and price or discount.');
         return;
@@ -9616,21 +9667,36 @@
         return;
       }
       setAiOfferField('schedule', schedule.summary);
+      var draft = {
+        title: title,
+        type: getAiOfferField('type'),
+        eligibility: getAiOfferField('eligibility'),
+        badge: getAiOfferField('badge'),
+        value: value,
+        schedule: schedule.summary,
+        startDate: schedule.startDate,
+        endDate: schedule.endDate,
+        startTime: schedule.startTime,
+        endTime: schedule.endTime,
+        description: getAiOfferField('description'),
+        image: getAiOfferField('image')
+      };
       if (activeAiOfferMode === 'managed-edit') {
         var managedCard = findManagedOfferCard(activeAiOfferId);
-        updateManagedOfferCard(managedCard, { title: title, value: value, schedule: schedule.summary, startDate: schedule.startDate, endDate: schedule.endDate, startTime: schedule.startTime, endTime: schedule.endTime, description: description });
+        if (!updateManagedOfferCard(managedCard, draft)) return;
         closeAiOfferEditor();
-        showRewardToast('Offer updated: ' + title + '.');
+        showRewardToast('Offer updated on the booking banner: ' + title + '.');
         return;
       }
 
       if (activeAiOfferMode === 'managed-create') {
-        createManagedOfferFromDraft({ title: title, value: value, schedule: schedule.summary, startDate: schedule.startDate, endDate: schedule.endDate, startTime: schedule.startTime, endTime: schedule.endTime, description: description });
+        if (!createManagedOfferFromDraft(draft)) return;
         closeAiOfferEditor();
-        showRewardToast('Offer created: ' + title + '.');
+        showRewardToast('Offer added to the booking banner: ' + title + '.');
         return;
       }
 
+      if (!createManagedOfferFromDraft(draft)) return;
       var card = findAiOfferCard(activeAiOfferId);
       if (card) {
         card.classList.add('is-published');
@@ -9643,20 +9709,9 @@
           status.textContent = 'Published in demo. Matching customers can now receive a limited notification.';
         }
       }
-      createManagedOfferFromDraft({
-        title: title,
-        value: value,
-        schedule: schedule.summary,
-        startDate: schedule.startDate,
-        endDate: schedule.endDate,
-        startTime: schedule.startTime,
-        endTime: schedule.endTime,
-        description: description,
-        sourceId: activeAiOfferId
-      });
       updateAiOfferCount();
       closeAiOfferEditor();
-      showRewardToast('Offer published in demo: ' + title + '.');
+      showRewardToast('Offer published to the booking banner: ' + title + '.');
     }
 
     document.querySelectorAll('[data-ai-offer-review]').forEach(function(button) {
@@ -9670,6 +9725,35 @@
     document.querySelectorAll('[data-ai-offer-close]').forEach(function(button) {
       button.addEventListener('click', closeAiOfferEditor);
     });
+
+    var aiOfferImageFile = document.querySelector('[data-ai-offer-image-file]');
+    if (aiOfferImageFile) {
+      aiOfferImageFile.addEventListener('change', function() {
+        var file = aiOfferImageFile.files && aiOfferImageFile.files[0];
+        if (!file || !promotionStore) return;
+        var validation = promotionStore.validateImage(file);
+        if (!validation.ok) {
+          aiOfferImageFile.value = '';
+          showRewardToast(validation.error === 'size' ? 'Image must be 600 KB or smaller.' : 'Please upload a JPG, PNG, or WebP image.');
+          return;
+        }
+        var reader = new FileReader();
+        reader.addEventListener('load', function() {
+          setAiOfferField('image', typeof reader.result === 'string' ? reader.result : '');
+          syncAiOfferImagePreview();
+        });
+        reader.readAsDataURL(file);
+      });
+    }
+
+    var aiOfferImageRemove = document.querySelector('[data-ai-offer-image-remove]');
+    if (aiOfferImageRemove) {
+      aiOfferImageRemove.addEventListener('click', function() {
+        setAiOfferField('image', '');
+        if (aiOfferImageFile) aiOfferImageFile.value = '';
+        syncAiOfferImagePreview();
+      });
+    }
 
     var aiOfferForm = document.querySelector('[data-ai-offer-form]');
     if (aiOfferForm) aiOfferForm.addEventListener('submit', publishAiOffer);
@@ -9711,15 +9795,22 @@
         if (!card) return;
         if (event.target.closest('[data-ai-managed-edit]')) { openManagedOfferEditor(card); return; }
         if (event.target.closest('[data-ai-managed-toggle]')) {
-          setManagedOfferStatus(card, card.dataset.status === 'paused' ? 'active' : 'paused');
-          showRewardToast((card.dataset.status === 'paused' ? 'Offer paused: ' : 'Offer resumed: ') + (card.dataset.offerTitle || 'Offer') + '.');
+          var offerName = card.dataset.offerTitle || 'Offer';
+          var nextStatus = card.dataset.status === 'paused' ? 'active' : 'paused';
+          setManagedOfferStatus(card, nextStatus);
+          showRewardToast((nextStatus === 'paused' ? 'Offer paused: ' : 'Offer resumed: ') + offerName + '.');
           return;
         }
         if (event.target.closest('[data-ai-managed-delete]')) deleteManagedOffer(card);
       });
     }
 
-    renderAiManagedOffers();
+    hydrateManagedOffersFromStore();
+    if (typeof window.addEventListener === 'function' && promotionStore) {
+      window.addEventListener('storage', function(event) {
+        if (event.key === promotionStore.STORAGE_KEY) hydrateManagedOffersFromStore();
+      });
+    }
 
     function showRewardBuilder(open) {
       var catalog = document.querySelector('[data-reward-catalog-view]');

@@ -18,6 +18,7 @@ const rewardItems = [
   ['overview', 'Overview'],
   ['earn-rules', 'Earn Rules'],
   ['reward-catalog', 'Reward Catalog'],
+  ['ai-offers', 'AI Offers'],
   ['customers', 'Customers'],
   ['loyalty-activity', 'Loyalty Activity'],
   ['analytics', 'Analytics']

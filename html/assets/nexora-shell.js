@@ -72,6 +72,7 @@
       { label: 'Overview', tab: 'overview' },
       { label: 'Earn Rules', tab: 'earn-rules' },
       { label: 'Reward Catalog', tab: 'reward-catalog' },
+      { label: 'AI Offers', tab: 'ai-offers' },
       { label: 'Customers', tab: 'customers' },
       { label: 'Loyalty Activity', tab: 'loyalty-activity' },
       { label: 'Analytics', tab: 'analytics' }

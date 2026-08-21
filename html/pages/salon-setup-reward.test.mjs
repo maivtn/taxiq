@@ -19,6 +19,28 @@ const sections = [
   ['analytics', 'Analytics', 'Analytics']
 ];
 
+test('keeps the inline merchant sidebar fallback aligned with the reference menu', () => {
+  const html = source();
+  const sidebar = html.match(/<aside class="sidebar"[\s\S]*?<\/aside>/)?.[0] || '';
+
+  assert.ok(sidebar, 'missing inline sidebar fallback');
+  assert.doesNotMatch(sidebar, /<span>Staff<\/span>/);
+  assert.match(sidebar, /data-nav-group="payments"[\s\S]*?<span>Payments (?:&|&amp;) Payouts<\/span>/);
+  assert.match(sidebar, /data-lucide="calendar-days"[\s\S]*?<span>Ai Hub<\/span>/);
+  assert.match(sidebar, /data-nav-group="community"[\s\S]*?<span>Community<\/span>/);
+  assert.match(sidebar, /data-nav-group="reward"[\s\S]*?<span>Reward<\/span>/);
+  assert.match(sidebar, /data-lucide="monitor"[\s\S]*?<span>POS<\/span>/);
+  assert.match(sidebar, /data-lucide="newspaper"[\s\S]*?<span>News (?:&|&amp;) Library<\/span>/);
+  assert.doesNotMatch(sidebar, /<span>Booking Hub<\/span>/);
+});
+
+test('uses the existing SVG logo asset without requesting the missing PNG', () => {
+  const html = source();
+
+  assert.match(html, /<img class="brand-logo" src="\.\.\/assets\/nexora-logo\.svg" alt="Nexora Logo">/);
+  assert.doesNotMatch(html, /nexora-logo\.png/);
+});
+
 test('uses seven synchronized loyalty management tabs and submenu items', () => {
   const html = source();
   assert.match(html, /<title>Nexora Touch - Rewards<\/title>/);
@@ -193,18 +215,44 @@ test('provides a managed offer list with filters and offer actions', () => {
   assert.match(panel[0], /data-ai-offer-manager-filter="active"/);
   assert.match(panel[0], /data-ai-offer-manager-filter="paused"/);
   assert.match(panel[0], /data-ai-offer-manager-search/);
-  assert.match(panel[0], /data-ai-managed-edit/);
-  assert.match(panel[0], /data-ai-managed-toggle/);
-  assert.match(panel[0], /data-ai-managed-delete/);
+  assert.match(html, /data-ai-managed-edit/);
+  assert.match(html, /data-ai-managed-toggle/);
+  assert.match(html, /data-ai-managed-delete/);
   assert.match(panel[0], /data-ai-offer-create/);
   assert.match(html, /function renderAiManagedOffers\(\)/);
   assert.match(html, /function openManagedOfferEditor\(card\)/);
   assert.match(html, /function createManagedOfferFromDraft\(draft\)/);
 });
 
+test('uses structured offer fields with optional artwork for the booking banner', () => {
+  const html = source();
+  const panel = html.match(/id="panel-ai-offers"[\s\S]*?(?=\n            <section class="tab-panel" id="panel-customers")/);
+  assert.ok(panel, 'missing AI Offers panel');
+
+  for (const field of ['title', 'type', 'eligibility', 'badge', 'value', 'description', 'image']) {
+    assert.match(panel[0], new RegExp(`data-ai-offer-field="${field}"`));
+  }
+  assert.match(panel[0], /data-ai-offer-image-file[^>]*accept="image\/jpeg,image\/png,image\/webp"/);
+  assert.match(panel[0], /data-ai-offer-image-preview/);
+  assert.match(panel[0], /data-ai-offer-image-remove/);
+  assert.match(panel[0], /Image optional/);
+  assert.match(panel[0], /Active offers appear automatically on booking Step 1/);
+});
+
+test('persists managed offers through the shared salon promotion store', () => {
+  const html = source();
+  assert.match(html, /src="\.\.\/assets\/promotions-store\.js"/);
+  assert.match(html, /var promotionStore = window\.NEXORA_PROMOTIONS/);
+  assert.match(html, /promotionStore\.load\(/);
+  assert.match(html, /promotionStore\.upsert\(/);
+  assert.match(html, /promotionStore\.setStatus\(/);
+  assert.match(html, /promotionStore\.remove\(/);
+  assert.match(html, /function hydrateManagedOffersFromStore\(\)/);
+});
+
 test('syncs published AI offers into the managed offer list', () => {
   const html = source();
-  assert.match(html, /function publishAiOffer\(event\)[\s\S]*?createManagedOfferFromDraft\(\{/);
+  assert.match(html, /function publishAiOffer\(event\)[\s\S]*?createManagedOfferFromDraft\((?:\{|draft)/);
   assert.match(html, /function updateManagedOfferCard\(card, draft\)/);
   assert.match(html, /function setManagedOfferStatus\(card, status\)/);
   assert.match(html, /function deleteManagedOffer\(card\)/);

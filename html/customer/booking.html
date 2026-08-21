@@ -46,8 +46,11 @@
     .promotion-section { margin: 0 0 14px; padding: 0; border: 0; background: transparent; box-shadow: none; }
     .promotion-swiper { padding-bottom: 24px; }
     .promotion-list { align-items: stretch; }
-    .promotion-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; height: auto; min-width: 0; align-items: center; gap: 10px; padding: 12px 14px; border: 1px solid #eadcf6; border-radius: 16px; background: linear-gradient(145deg, #fff7fc, #f7f2ff); }
+    .promotion-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; height: auto; min-width: 0; align-items: center; gap: 10px; padding: 10px 12px; overflow: hidden; border: 1px solid #eadcf6; border-radius: 16px; background: linear-gradient(145deg, #fff7fc, #f7f2ff); }
     .promotion-card:nth-child(even) { border-color: #ded8fa; background: linear-gradient(145deg, #f8f5ff, #fff9fd); }
+    .promotion-card.theme-first-visit { border-color: #f2c7df; background: linear-gradient(145deg, #fff5fb, #fff9ee); }
+    .promotion-card.theme-quiet-days, .promotion-card.theme-weekday { border-color: #cfe8df; background: linear-gradient(145deg, #f3fcf8, #f7f4ff); }
+    .promotion-card.theme-group { border-color: #d9d2fa; background: linear-gradient(145deg, #f5f2ff, #fff6fb); }
     .promotion-copy { display: grid; min-width: 0; align-content: start; gap: 3px; }
     .promotion-badge { width: fit-content; padding: 4px 7px; border-radius: 999px; color: var(--pink-dark); background: #ffe8f4; font-size: 9px; font-weight: 900; letter-spacing: .08em; }
     .promotion-card:nth-child(even) .promotion-badge { color: #5848d3; background: #ece8ff; }
@@ -57,6 +60,9 @@
     .promotion-highlight strong { max-width: 108px; font-size: 17px; line-height: 1.15; }
     .promotion-highlight small { color: var(--muted); font-size: 9px; font-weight: 800; }
     .promotion-highlight-wide strong { font-size: 14px; }
+    .promotion-visual { display: grid; width: 70px; height: 52px; place-items: center; overflow: hidden; border-radius: 12px; }
+    .promotion-art { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .promotion-auto-icon { display: grid; width: 100%; height: 100%; place-items: center; border: 1px solid rgba(113, 98, 242, .12); border-radius: inherit; background: rgba(255, 255, 255, .72); font-size: 25px; }
     .promotion-tier-list { display: grid; min-width: 96px; gap: 4px; }
     .promotion-tier { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; }
     .promotion-tier strong { color: var(--pink-dark); font-size: 12px; white-space: nowrap; }
@@ -261,52 +267,9 @@
       <h1>Bitcoin Nail Bar</h1>
     </header>
 
-    <section class="promotion-section" aria-label="Ưu đãi">
+    <section class="promotion-section" aria-label="Ưu đãi" hidden>
       <div class="promotion-swiper swiper">
-        <div class="promotion-list swiper-wrapper">
-          <article class="promotion-card swiper-slide">
-            <div class="promotion-copy">
-              <span class="promotion-badge">HAPPY HOURS</span>
-              <h3>Ưu đãi Thứ 2–Thứ 6</h3>
-              <p>Khung giờ 10:00 AM–2:00 PM</p>
-            </div>
-            <div class="promotion-highlight"><strong>Giảm 15%</strong></div>
-          </article>
-          <article class="promotion-card swiper-slide">
-            <div class="promotion-copy">
-              <span class="promotion-badge">COMBO DEAL</span>
-              <h3>Combo Manicure + Pedicure</h3>
-              <p>Đặt hai dịch vụ trong cùng một lịch hẹn</p>
-            </div>
-            <div class="promotion-highlight"><strong>Tiết kiệm $10</strong></div>
-          </article>
-          <article class="promotion-card swiper-slide">
-            <div class="promotion-copy">
-              <span class="promotion-badge">QUIET DAY SAVINGS</span>
-              <h3>Book on a quieter day and save!</h3>
-              <p>Monday · Tuesday · Wednesday</p>
-            </div>
-            <div class="promotion-highlight promotion-highlight-wide"><strong>-10% off everything</strong></div>
-          </article>
-          <article class="promotion-card swiper-slide">
-            <div class="promotion-copy">
-              <span class="promotion-badge">FIRST VISIT</span>
-              <h3>🎁 10% off your first visit!</h3>
-              <p>(applied automatically)</p>
-            </div>
-            <div class="promotion-highlight"><small>1st visit</small><strong>10% off</strong></div>
-          </article>
-          <article class="promotion-card swiper-slide">
-            <div class="promotion-copy">
-              <span class="promotion-badge">GROUP SAVINGS</span>
-              <h3>👥 Bring your friends and save!</h3>
-            </div>
-            <div class="promotion-tier-list">
-              <p class="promotion-tier"><span>2+ people:</span><strong>10% off</strong></p>
-              <p class="promotion-tier"><span>3+ people:</span><strong>15% off</strong></p>
-            </div>
-          </article>
-        </div>
+        <div class="promotion-list swiper-wrapper" data-promotion-list></div>
         <div class="promotion-pagination swiper-pagination"></div>
       </div>
     </section>
@@ -465,31 +428,7 @@
     <p class="screen-reader" id="booking-status" role="status" aria-live="polite"></p>
   </div>
 
-  <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
-  <script id="promotion-carousel-script">
-    (() => {
-      const promotionSwiper = document.querySelector('.promotion-swiper');
-      if (!promotionSwiper || typeof window.Swiper !== 'function') return;
-
-      new window.Swiper(promotionSwiper, {
-        loop: true,
-        slidesPerView: 1,
-        spaceBetween: 10,
-        autoplay: {
-          delay: 4000,
-          disableOnInteraction: false,
-          pauseOnMouseEnter: true
-        },
-        pagination: {
-          el: promotionSwiper.querySelector('.promotion-pagination'),
-          clickable: true
-        },
-        breakpoints: {
-          640: { slidesPerView: 2 }
-        }
-      });
-    })();
-  </script>
+  <script src="../assets/promotions-store.js"></script>
   <script src="../assets/appointment-service-catalog.js"></script>
   <script id="booking-app-script">
     (() => {
@@ -695,10 +634,38 @@
       }
 
       function syncPromotionVisibility(promotionSection, step) {
-        if (promotionSection) promotionSection.hidden = Number(step) !== 1;
+        if (!promotionSection) return;
+        const hasPromotions = !promotionSection.dataset || promotionSection.dataset.promotionCount !== '0';
+        promotionSection.hidden = Number(step) !== 1 || !hasPromotions;
       }
 
-      const api = { normalizePhone, findCustomerByPhone, findKnownCustomerByPhone, readSavedCustomers, saveCustomerLocally, getCustomerReviewFields, toggleSelection, calculateBookingTotal, validateBookingDraft, validateBookingStep, createBookingRequest, submitBookingDraft, syncPromotionVisibility, parseBookingTime, formatBookingTime };
+      function escapePromotionHtml(value) {
+        return String(value ?? '').replace(/[&<>"']/g, (character) => ({
+          '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#039;'
+        })[character]);
+      }
+
+      function renderPromotionCards(list, section, storage = window.localStorage, now = new Date()) {
+        const promotionStore = window.NEXORA_PROMOTIONS;
+        if (!list || !section || !promotionStore) return 0;
+        const offers = promotionStore.listActive(storage, now);
+        list.innerHTML = offers.map((offer) => {
+          const visual = promotionStore.presentation(offer);
+          const visualMarkup = visual.image
+            ? `<img class="promotion-art" src="${escapePromotionHtml(visual.image)}" alt="">`
+            : `<span class="promotion-auto-icon" aria-hidden="true">${escapePromotionHtml(visual.icon)}</span>`;
+          return `<article class="promotion-card swiper-slide theme-${escapePromotionHtml(visual.theme)}" data-promotion-id="${escapePromotionHtml(offer.id)}">` +
+            `<div class="promotion-copy"><span class="promotion-badge">${escapePromotionHtml(offer.badge)}</span>` +
+            `<h3>${escapePromotionHtml(offer.title)}</h3><p>${escapePromotionHtml(offer.description)}</p>` +
+            `<div class="promotion-highlight promotion-highlight-wide"><strong>${escapePromotionHtml(offer.value)}</strong></div></div>` +
+            `<div class="promotion-visual">${visualMarkup}</div></article>`;
+        }).join('');
+        if (section.dataset) section.dataset.promotionCount = String(offers.length);
+        section.hidden = offers.length === 0;
+        return offers.length;
+      }
+
+      const api = { normalizePhone, findCustomerByPhone, findKnownCustomerByPhone, readSavedCustomers, saveCustomerLocally, getCustomerReviewFields, toggleSelection, calculateBookingTotal, validateBookingDraft, validateBookingStep, createBookingRequest, submitBookingDraft, syncPromotionVisibility, renderPromotionCards, parseBookingTime, formatBookingTime };
       if (typeof window !== 'undefined') window.NEXORA_BOOKING_TEST_API = api;
       if (typeof window === 'undefined' || window.NEXORA_BOOKING_SKIP_INIT) return;
 
@@ -1148,11 +1115,54 @@
         }
       });
 
+      window.NEXORA_RENDER_BOOKING_PROMOTIONS = () => renderPromotionCards($('[data-promotion-list]'), $('.promotion-section'));
+      window.NEXORA_RENDER_BOOKING_PROMOTIONS();
       renderSlotOptions();
       const smsOptIn = $('#sms-opt-in');
       if (smsOptIn) smsOptIn.checked = Boolean(state.customer.smsOptIn);
       renderSteps();
       loadCustomerServiceCatalog();
+    })();
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/swiper@12/swiper-bundle.min.js"></script>
+  <script id="promotion-carousel-script">
+    (() => {
+      function initPromotionCarousel() {
+        const promotionSwiper = document.querySelector('.promotion-swiper');
+        if (!promotionSwiper || typeof window.Swiper !== 'function') return;
+        if (window.NEXORA_PROMOTION_SWIPER?.destroy) window.NEXORA_PROMOTION_SWIPER.destroy(true, true);
+
+        window.NEXORA_PROMOTION_SWIPER = new window.Swiper(promotionSwiper, {
+          loop: true,
+          slidesPerView: 1,
+          spaceBetween: 10,
+          autoplay: {
+            delay: 4000,
+            disableOnInteraction: false,
+            pauseOnMouseEnter: true
+          },
+          pagination: {
+            el: promotionSwiper.querySelector('.promotion-pagination'),
+            clickable: true
+          },
+          breakpoints: {
+            640: { slidesPerView: 2 }
+          }
+        });
+      }
+
+      function refreshPromotionCarousel() {
+        if (typeof window.NEXORA_RENDER_BOOKING_PROMOTIONS === 'function') window.NEXORA_RENDER_BOOKING_PROMOTIONS();
+        initPromotionCarousel();
+      }
+
+      initPromotionCarousel();
+      if (typeof window.addEventListener === 'function') {
+        window.addEventListener('storage', (event) => {
+          if (!window.NEXORA_PROMOTIONS || event.key === window.NEXORA_PROMOTIONS.STORAGE_KEY) refreshPromotionCarousel();
+        });
+        window.addEventListener('nexora:promotions-changed', refreshPromotionCarousel);
+      }
     })();
   </script>
 </body>

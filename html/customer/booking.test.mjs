@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
 const SOURCE = readFileSync(new URL('./booking.html', import.meta.url), 'utf8');
+const PROMOTIONS_SOURCE = readFileSync(new URL('../assets/promotions-store.js', import.meta.url), 'utf8');
 
 function plain(value) {
   return JSON.parse(JSON.stringify(value));
@@ -20,6 +21,8 @@ function getApi() {
   const window = { localStorage: storage, NEXORA_BOOKING_SKIP_INIT: true };
   const context = vm.createContext({ window, localStorage: storage, console, Date });
   window.window = window;
+  vm.runInContext(PROMOTIONS_SOURCE, context);
+  window.NEXORA_PROMOTIONS = context.NEXORA_PROMOTIONS;
   vm.runInContext(script, context);
   assert.ok(window.NEXORA_BOOKING_TEST_API, 'booking test API must exist');
   return window.NEXORA_BOOKING_TEST_API;
@@ -147,6 +150,61 @@ test('shows promotions on step 1 and hides them on later steps', () => {
 
   api.syncPromotionVisibility(promotionSection, 3);
   assert.equal(promotionSection.hidden, true);
+});
+
+test('renders only active current promotions from the shared salon store', () => {
+  const api = getApi();
+  const storage = createMemoryStorage(JSON.stringify({
+    version: 1,
+    offers: [
+      { id: 'current', title: 'Current Offer', badge: 'TODAY', type: 'percent', eligibility: 'all', value: '10% OFF', description: 'Valid now', status: 'active', startDate: '2026-08-01', endDate: '2026-08-31' },
+      { id: 'paused', title: 'Paused Offer', badge: 'PAUSED', type: 'fixed', eligibility: 'all', value: '$5 OFF', description: 'Hidden', status: 'paused' },
+      { id: 'future', title: 'Future Offer', badge: 'SOON', type: 'fixed', eligibility: 'all', value: '$8 OFF', description: 'Not started', status: 'active', startDate: '2026-09-01' }
+    ]
+  }));
+  const list = { innerHTML: '' };
+  const section = { hidden: false };
+
+  const count = api.renderPromotionCards(list, section, storage, new Date('2026-08-21T10:00:00'));
+
+  assert.equal(count, 1);
+  assert.match(list.innerHTML, /Current Offer/);
+  assert.doesNotMatch(list.innerHTML, /Paused Offer|Future Offer/);
+  assert.equal(section.hidden, false);
+});
+
+test('renders safe optional promotion artwork and automatic visual fallback', () => {
+  const api = getApi();
+  const storage = createMemoryStorage(JSON.stringify({
+    version: 1,
+    offers: [
+      { id: 'photo', title: 'Photo Offer', badge: 'PHOTO', value: '20% OFF', description: 'With artwork', eligibility: 'all', status: 'active', image: 'data:image/png;base64,AAAA' },
+      { id: 'group', title: '<Group & Friends>', badge: 'GROUP', value: '15% OFF', description: 'Bring friends', eligibility: 'group', status: 'active' }
+    ]
+  }));
+  const list = { innerHTML: '' };
+  const section = { hidden: false };
+
+  api.renderPromotionCards(list, section, storage, new Date('2026-08-21T10:00:00'));
+
+  assert.match(list.innerHTML, /class="promotion-art"[^>]*src="data:image\/png;base64,AAAA"/);
+  assert.match(list.innerHTML, /class="promotion-auto-icon"[^>]*>👥</);
+  assert.match(list.innerHTML, /&lt;Group &amp; Friends&gt;/);
+  assert.doesNotMatch(list.innerHTML, /<Group & Friends>/);
+});
+
+test('hides the promotion section when no offer is active', () => {
+  const api = getApi();
+  const storage = createMemoryStorage(JSON.stringify({
+    version: 1,
+    offers: [{ id: 'paused', title: 'Paused', value: '10% OFF', status: 'paused' }]
+  }));
+  const list = { innerHTML: 'old slides' };
+  const section = { hidden: false };
+
+  assert.equal(api.renderPromotionCards(list, section, storage, new Date('2026-08-21T10:00:00')), 0);
+  assert.equal(list.innerHTML, '');
+  assert.equal(section.hidden, true);
 });
 
 test('creates a canonical booking request with consent and service summary', () => {
@@ -458,7 +516,7 @@ test('keeps the brand header frameless', () => {
   assert.match(brandStyle, /padding-bottom: 16px/);
 });
 
-test('shows all approved promotion slides between the brand and booking form', () => {
+test('keeps the dynamic promotion carousel between the brand and booking form', () => {
   const promotionSection = SOURCE.match(/<section class="promotion-section"[\s\S]*?<\/section>/)?.[0] || '';
   const promotionStyle = SOURCE.match(/\.promotion-section \{([^}]*)\}/)?.[1] || '';
   const promotionCardStyle = SOURCE.match(/\.promotion-card \{([^}]*)\}/)?.[1] || '';
@@ -471,23 +529,11 @@ test('shows all approved promotion slides between the brand and booking form', (
   assert.match(promotionSection, /aria-label="Ưu đãi"/);
   assert.doesNotMatch(promotionSection, /promotion-heading|promotion-kicker|promotion-title|Điều kiện áp dụng tại salon/);
   assert.doesNotMatch(SOURCE, /\.promotion-heading|\.promotion-kicker|\.promotion-terms/);
-  assert.match(promotionSection, /Thứ 2–Thứ 6/);
-  assert.match(promotionSection, /10:00 AM–2:00 PM/);
-  assert.match(promotionSection, /Giảm 15%/);
-  assert.match(promotionSection, /Combo Manicure \+ Pedicure/);
-  assert.match(promotionSection, /Tiết kiệm \$10/);
-  assert.match(promotionSection, /Book on a quieter day and save!/);
-  assert.match(promotionSection, /Monday · Tuesday · Wednesday/);
-  assert.equal((promotionSection.match(/-10% off everything/g) || []).length, 1);
-  assert.match(promotionSection, /10% off your first visit!/);
-  assert.match(promotionSection, /applied automatically/);
-  assert.match(promotionSection, /Bring your friends and save!/);
-  assert.match(promotionSection, /2\+ people:[\s\S]*10% off/);
-  assert.match(promotionSection, /3\+ people:[\s\S]*15% off/);
-  assert.equal((promotionSection.match(/<article class="promotion-card swiper-slide/g) || []).length, 5);
+  assert.equal((promotionSection.match(/<article class="promotion-card swiper-slide/g) || []).length, 0);
   assert.match(promotionSection, /class="promotion-swiper swiper"/);
-  assert.match(promotionSection, /class="promotion-list swiper-wrapper"/);
+  assert.match(promotionSection, /class="promotion-list swiper-wrapper"[^>]*data-promotion-list/);
   assert.match(promotionSection, /class="promotion-pagination swiper-pagination"/);
+  assert.match(SOURCE, /src="\.\.\/assets\/promotions-store\.js"/);
   assert.match(promotionStyle, /padding: 0/);
   assert.match(promotionStyle, /border: 0/);
   assert.match(promotionStyle, /background: transparent/);
