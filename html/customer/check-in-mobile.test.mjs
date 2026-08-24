@@ -130,7 +130,7 @@ test('hides beverage sections from the check-in service picker', () => {
   assert.doesNotMatch(html, /Mojito/);
 });
 
-test('renders service categories as name plus count chips', () => {
+test('renders service categories as collapses with name, count, and chevron', () => {
   const { byId, context } = createCheckinRuntime();
 
   vm.runInContext(`
@@ -148,24 +148,22 @@ test('renders service categories as name plus count chips', () => {
   `, context);
 
   const html = byId.get('serviceAccordion').innerHTML;
-  assert.match(html, /class="category-trigger category-chip"/);
+  assert.match(html, /<section class="service-category open" data-category-panel="pedicure">/);
+  assert.match(html, /class="category-trigger"/);
   assert.match(html, /class="category-chip-name">Pedicure<\/span>/);
   assert.match(html, /class="category-chip-number">2<\/span>/);
+  assert.match(html, /data-lucide="chevron-down"/);
   assert.doesNotMatch(html, /category-kind/);
 });
 
-test('keeps service category chips compact', () => {
+test('uses full-width headers for the service category collapses', () => {
   const triggerRule = SOURCE.match(/\.category-trigger\s*\{([^}]*)\}/)?.[1] || '';
-  const numberRule = SOURCE.match(/\.category-chip-number\s*\{([^}]*)\}/)?.[1] || '';
 
-  assert.match(triggerRule, /min-height:\s*30px/);
-  assert.match(triggerRule, /gap:\s*5px/);
-  assert.match(triggerRule, /padding:\s*3px 6px 3px 9px/);
-  assert.match(numberRule, /min-width:\s*20px/);
-  assert.match(numberRule, /padding:\s*2px 6px/);
+  assert.match(triggerRule, /width:\s*100%/);
+  assert.match(triggerRule, /justify-content:\s*space-between/);
 });
 
-test('groups category chips inline in one wrapper before service panels', () => {
+test('renders each service category as one self-contained collapse', () => {
   const { byId, context } = createCheckinRuntime();
 
   vm.runInContext(`
@@ -185,28 +183,38 @@ test('groups category chips inline in one wrapper before service panels', () => 
   `, context);
 
   const html = byId.get('serviceAccordion').innerHTML;
-  assert.match(html, /<div class="category-chip-list"[^>]*>[\s\S]*category-chip-name">Pedicure<\/span>[\s\S]*category-chip-name">Manicure<\/span>[\s\S]*<\/div><div class="category-panel-list">/);
-  assert.doesNotMatch(html, /<article class="service-category[^"]*" data-category-id/);
+  const collapses = [...html.matchAll(/<section class="service-category(?: open)?" data-category-panel="([^"]+)">/g)];
+
+  assert.deepEqual(collapses.map(match => match[1]), ['pedicure', 'manicure']);
+  assert.match(html, /data-category-panel="pedicure">[\s\S]*?data-category-trigger="pedicure"[\s\S]*?id="category-pedicure"/);
+  assert.match(html, /data-category-panel="manicure">[\s\S]*?data-category-trigger="manicure"[\s\S]*?id="category-manicure"/);
+  assert.doesNotMatch(html, /category-chip-list|category-panel-list/);
 });
 
-test('does not render chevron icons inside category chips', () => {
-  const { byId, context } = createCheckinRuntime();
+test('opening a service category closes the previously open category', () => {
+  const { context } = createCheckinRuntime();
+  const pedicurePanel = createElement();
+  const manicurePanel = createElement();
+  const pedicureTrigger = createElement();
+  const manicureTrigger = createElement();
+  pedicurePanel.dataset.categoryPanel = 'pedicure';
+  manicurePanel.dataset.categoryPanel = 'manicure';
+  pedicureTrigger.dataset.categoryTrigger = 'pedicure';
+  manicureTrigger.dataset.categoryTrigger = 'manicure';
+  pedicurePanel.classList.add('open');
+  pedicureTrigger.setAttribute('aria-expanded', 'true');
+  manicureTrigger.setAttribute('aria-expanded', 'false');
+  context.document.querySelector = selector => selector === '[data-category-panel="manicure"]' ? manicurePanel : null;
+  context.document.querySelectorAll = selector => selector === '[data-category-panel]'
+    ? [pedicurePanel, manicurePanel]
+    : selector === '[data-category-trigger]' ? [pedicureTrigger, manicureTrigger] : [];
 
-  vm.runInContext(`
-    SERVICE_CATEGORIES = [{
-      id: 'pedicure',
-      title: 'Pedicure',
-      kind: 'service',
-      items: [{ id: 'pedicure--0', name: 'Classic Pedicure', priceLabel: '$40', price: 40, durationMinutes: 30 }]
-    }];
-    SERVICES = SERVICE_CATEGORIES.flatMap(category => category.items);
-    renderServices();
-  `, context);
+  vm.runInContext("toggleServiceCategory('manicure');", context);
 
-  const html = byId.get('serviceAccordion').innerHTML;
-  const chipList = html.match(/<div class="category-chip-list"[^>]*>([\s\S]*?)<\/div><div class="category-panel-list">/)?.[1] || '';
-  assert.doesNotMatch(chipList, /data-lucide="chevron-down"/);
-  assert.doesNotMatch(chipList, /<i\b/);
+  assert.equal(pedicurePanel.classList.contains('open'), false);
+  assert.equal(manicurePanel.classList.contains('open'), true);
+  assert.equal(pedicureTrigger.getAttribute('aria-expanded'), 'false');
+  assert.equal(manicureTrigger.getAttribute('aria-expanded'), 'true');
 });
 
 test('allows guest check-in without choosing a service', async () => {
