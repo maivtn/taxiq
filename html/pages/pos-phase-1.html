@@ -811,6 +811,7 @@
     }
   </style>
   <link rel="stylesheet" href="../assets/pos-booking.css">
+  <link rel="stylesheet" href="../assets/pos-printer-settings.css">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <style>
     /* Tech modal — categorized services picker (ported from booking-book-phase-1.html; pos-booking.css only has the older flat checkbox layout) */
@@ -1050,6 +1051,7 @@
             <button class="page-tab" type="button" role="tab" data-pos-tab="customers"><i class="bi bi-person-vcard" aria-hidden="true"></i> Customers</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="clock"><i class="bi bi-clock-history" aria-hidden="true"></i> Staff Clock</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="management"><i class="bi bi-building-gear" aria-hidden="true"></i> Management</button>
+            <button class="page-tab" type="button" role="tab" data-pos-tab="printer"><i class="bi bi-printer" aria-hidden="true"></i> Printer Settings</button>
           </div>
         </div>
 
@@ -1258,6 +1260,11 @@
             </div>
 
           </div>
+        </section>
+
+        <!-- ══════════ 🖨️ PRINTER SETTINGS ══════════ -->
+        <section class="pos-panel" data-pos-panel="printer" aria-label="Printer Settings">
+          <div data-printer-settings-root data-printer-demo-runtime="native"></div>
         </section>
 
         <!-- ══════════ 🏢 MANAGEMENT (S13) ══════════ -->
@@ -2530,6 +2537,7 @@
   <script src="../assets/booking-demo-date.js"></script>
   <script src="../assets/pos-booking-runtime.js"></script>
   <script src="../assets/pos-customer-import.js"></script>
+  <script src="../assets/pos-printer-settings.js"></script>
   <script>
     (function () {
       'use strict';
@@ -7787,7 +7795,7 @@
       }
       // URL compatibility during the transition: old links keep working, pointed at their new home.
       var TAB_ALIASES = { dispatch: 'tickets', appointments: 'booking' };
-      var TABS = ['checkin', 'todaybooking', 'tickets', 'booking', 'customers', 'clock', 'management'];
+      var TABS = ['checkin', 'todaybooking', 'tickets', 'booking', 'customers', 'clock', 'management', 'printer'];
       var tabBtns = document.querySelectorAll('[data-pos-tab]');
       var panels = document.querySelectorAll('[data-pos-panel]');
       function activateTab(id) {

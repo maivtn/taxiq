@@ -167,7 +167,7 @@ test('POS Booking refreshes New appointment services from menu.json first', () =
 });
 
 test('POS keeps the shared mode and tab activation contracts', () => {
-  assert.match(source, /var TABS = \['checkin', 'todaybooking', 'tickets', 'booking', 'customers', 'clock', 'management'\]/);
+  assert.match(source, /var TABS = \['checkin', 'todaybooking', 'tickets', 'booking', 'customers', 'clock', 'management', 'printer'\]/);
   assert.match(source, /function activateTab\(id\)/);
   assert.match(source, /if \(id === ['"]booking['"]\)/);
   assert.match(source, /data-pos-mode-modal[^>]*role="dialog"/);

@@ -1,0 +1,692 @@
+/* Printer Settings is scoped to the POS workspace so it can coexist with the
+   larger prototype without changing shared cards, buttons, or modal rules. */
+.printer-settings {
+  --printer-blue-soft: #eef4ff;
+  --printer-green-soft: #e8f8f1;
+  --printer-amber-soft: #fff7e5;
+  --printer-red-soft: #fff0f0;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.printer-settings-toolbar {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 18px;
+  flex-wrap: wrap;
+}
+
+.printer-settings-toolbar h2 {
+  margin: 2px 0 4px;
+  color: var(--nexora-text);
+  font-size: 22px;
+  line-height: 1.25;
+}
+
+.printer-settings-toolbar p,
+.printer-card-head p,
+.printer-discovery-dialog .sms-mhead p {
+  margin: 0;
+  color: var(--nexora-muted);
+  font-size: 13px;
+  font-weight: 600;
+  line-height: 1.5;
+}
+
+.printer-kicker {
+  color: var(--nexora-brand);
+  font-size: 11px;
+  font-weight: 900;
+  letter-spacing: .08em;
+  text-transform: uppercase;
+}
+
+.printer-runtime {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px;
+  border: 1px solid var(--nexora-border);
+  border-radius: 12px;
+  background: var(--nexora-surface);
+  box-shadow: var(--nexora-card-shadow);
+}
+
+.printer-runtime-label {
+  padding: 0 9px;
+  color: var(--nexora-subtle);
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.printer-runtime-button {
+  min-height: 38px;
+  border: 0;
+  border-radius: 9px;
+  background: transparent;
+  padding: 7px 13px;
+  color: var(--nexora-muted);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.printer-runtime-button:hover {
+  background: var(--nexora-surface-muted);
+  color: var(--nexora-text);
+}
+
+.printer-runtime-button.is-active {
+  background: linear-gradient(90deg, var(--nexora-electric), var(--nexora-violet));
+  box-shadow: 0 7px 16px rgba(43, 89, 255, .18);
+  color: #fff;
+}
+
+.printer-demo-note,
+.printer-help {
+  display: flex;
+  align-items: flex-start;
+  gap: 9px;
+  border-radius: 10px;
+  background: var(--printer-blue-soft);
+  padding: 10px 12px;
+  color: #42577d;
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.5;
+}
+
+.printer-demo-note {
+  width: fit-content;
+  max-width: 100%;
+}
+
+.printer-demo-note i,
+.printer-help i {
+  flex: 0 0 auto;
+  margin-top: 1px;
+  color: var(--nexora-electric);
+  font-size: 15px;
+}
+
+.printer-settings-columns {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  flex-wrap: wrap;
+}
+
+.printer-settings-columns > .printer-card {
+  flex: 1 1 430px;
+  min-width: 0;
+}
+
+.printer-settings-columns > .printer-card:first-child {
+  flex-grow: 1.15;
+}
+
+.printer-card {
+  overflow: hidden;
+  border: 1px solid var(--nexora-border);
+  border-radius: 15px;
+  background: var(--nexora-surface);
+  box-shadow: var(--nexora-card-shadow);
+}
+
+.printer-card-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 14px;
+  border-bottom: 1px solid var(--nexora-rule);
+  padding: 18px 20px 15px;
+}
+
+.printer-card-head h2 {
+  margin: 0 0 4px;
+  color: var(--nexora-text);
+  font-size: 17px;
+  line-height: 1.35;
+}
+
+.printer-card-body {
+  padding: 18px 20px;
+}
+
+.printer-method {
+  display: inline-flex;
+  min-height: 28px;
+  align-items: center;
+  border: 1px solid rgba(70, 72, 216, .22);
+  border-radius: 999px;
+  background: #f0efff;
+  padding: 4px 10px;
+  color: var(--nexora-brand);
+  font-size: 11px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.printer-device {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  border: 1px solid var(--nexora-border);
+  border-radius: 12px;
+  background: var(--nexora-surface-muted);
+  padding: 13px;
+}
+
+.printer-device-icon {
+  display: inline-flex;
+  width: 44px;
+  height: 44px;
+  flex: 0 0 44px;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #dbeafe;
+  border-radius: 12px;
+  background: var(--printer-blue-soft);
+  color: var(--nexora-electric);
+  font-size: 18px;
+}
+
+.printer-device-copy {
+  display: flex;
+  min-width: 160px;
+  flex: 1 1 180px;
+  flex-direction: column;
+  gap: 3px;
+}
+
+.printer-device-copy strong,
+.printer-setting-row strong,
+.printer-step strong,
+.printer-discovery-option strong {
+  color: var(--nexora-text);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.printer-device-copy span,
+.printer-setting-row small,
+.printer-step small,
+.printer-discovery-option small,
+.printer-last-test small {
+  display: block;
+  color: var(--nexora-muted);
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.45;
+}
+
+.printer-status {
+  display: inline-flex;
+  min-height: 30px;
+  align-items: center;
+  gap: 7px;
+  border: 1px solid transparent;
+  border-radius: 999px;
+  padding: 4px 10px;
+  font-size: 11px;
+  font-weight: 850;
+  white-space: nowrap;
+}
+
+.printer-status::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: currentColor;
+  content: "";
+}
+
+.printer-status.is-ready {
+  border-color: #b9ead5;
+  background: var(--printer-green-soft);
+  color: #008a58;
+}
+
+.printer-status.is-warning {
+  border-color: #f2d798;
+  background: var(--printer-amber-soft);
+  color: #9a6500;
+}
+
+.printer-status.is-error {
+  border-color: #f0b9b9;
+  background: var(--printer-red-soft);
+  color: #c83232;
+}
+
+.printer-status.is-neutral {
+  border-color: var(--nexora-border);
+  background: var(--nexora-surface-muted);
+  color: var(--nexora-muted);
+}
+
+.printer-help {
+  margin-top: 12px;
+}
+
+.printer-actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+  margin-top: 14px;
+}
+
+.printer-actions .pos-btn,
+.printer-step .pos-btn {
+  min-height: 40px;
+}
+
+.printer-danger-button {
+  border-color: #efc1c1;
+  color: var(--nexora-danger);
+}
+
+.printer-danger-button:hover {
+  background: var(--printer-red-soft);
+}
+
+.printer-demo-tools {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 15px;
+  border-top: 1px solid var(--nexora-rule);
+  padding-top: 14px;
+}
+
+.printer-demo-tools label {
+  color: var(--nexora-subtle);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: .04em;
+  text-transform: uppercase;
+}
+
+.printer-demo-tools .pos-input {
+  width: auto;
+  min-width: 170px;
+  height: 38px;
+}
+
+.printer-empty {
+  display: flex;
+  min-height: 275px;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  padding: 28px 20px;
+  text-align: center;
+}
+
+.printer-empty .printer-device-icon {
+  width: 58px;
+  height: 58px;
+  margin-bottom: 12px;
+  font-size: 23px;
+}
+
+.printer-empty h3 {
+  margin: 0 0 6px;
+  font-size: 16px;
+}
+
+.printer-empty p {
+  max-width: 330px;
+  margin: 0 0 15px;
+  color: var(--nexora-muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.printer-steps,
+.printer-setting-list {
+  display: flex;
+  flex-direction: column;
+}
+
+.printer-step {
+  display: flex;
+  min-height: 68px;
+  align-items: center;
+  gap: 11px;
+  border-bottom: 1px solid var(--nexora-rule);
+  padding: 10px 0;
+}
+
+.printer-step:last-child {
+  border-bottom: 0;
+}
+
+.printer-step > span {
+  display: inline-flex;
+  width: 30px;
+  height: 30px;
+  flex: 0 0 30px;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: var(--printer-blue-soft);
+  color: var(--nexora-brand);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+.printer-step > div {
+  min-width: 150px;
+  flex: 1 1 190px;
+}
+
+.printer-setting-row {
+  display: flex;
+  min-height: 62px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  border-bottom: 1px solid var(--nexora-rule);
+  padding: 9px 0;
+}
+
+.printer-setting-row:last-child {
+  border-bottom: 0;
+}
+
+.printer-setting-row > div:first-child {
+  min-width: 0;
+}
+
+.printer-switch {
+  position: relative;
+  display: inline-flex;
+  width: 46px;
+  height: 28px;
+  flex: 0 0 46px;
+  cursor: pointer;
+}
+
+.printer-switch input {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+}
+
+.printer-switch span {
+  width: 100%;
+  border: 1px solid var(--nexora-border);
+  border-radius: 999px;
+  background: #d9e0e9;
+  transition: background .16s, border-color .16s;
+}
+
+.printer-switch span::after {
+  position: absolute;
+  top: 4px;
+  left: 4px;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: #fff;
+  box-shadow: 0 2px 5px rgba(15, 23, 42, .18);
+  content: "";
+  transition: transform .16s;
+}
+
+.printer-switch input:checked + span {
+  border-color: var(--nexora-brand);
+  background: var(--nexora-brand);
+}
+
+.printer-switch input:checked + span::after {
+  transform: translateX(18px);
+}
+
+.printer-switch input:focus-visible + span {
+  outline: 3px solid rgba(43, 89, 255, .2);
+  outline-offset: 2px;
+}
+
+.printer-stepper {
+  display: flex;
+  flex: 0 0 auto;
+  overflow: hidden;
+  border: 1px solid var(--nexora-border);
+  border-radius: 10px;
+  background: #fff;
+}
+
+.printer-stepper button,
+.printer-stepper output {
+  display: inline-flex;
+  width: 38px;
+  min-height: 38px;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  background: transparent;
+  color: var(--nexora-text);
+  font-weight: 800;
+}
+
+.printer-stepper button {
+  font-size: 17px;
+}
+
+.printer-stepper button:hover:not(:disabled) {
+  background: var(--nexora-surface-muted);
+}
+
+.printer-stepper button:disabled {
+  color: var(--nexora-subtle);
+  cursor: not-allowed;
+  opacity: .45;
+}
+
+.printer-stepper output {
+  border-right: 1px solid var(--nexora-border);
+  border-left: 1px solid var(--nexora-border);
+  font-size: 12px;
+}
+
+.printer-save-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  flex-wrap: wrap;
+  margin-top: 12px;
+  border-top: 1px solid var(--nexora-rule);
+  padding-top: 14px;
+}
+
+.printer-save-bar > span {
+  color: var(--nexora-muted);
+  font-size: 11px;
+  font-weight: 700;
+}
+
+.printer-last-test {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 12px;
+  border: 1px solid #b9ead5;
+  border-radius: 10px;
+  background: var(--printer-green-soft);
+  padding: 10px 12px;
+  color: #06764e;
+  font-size: 12px;
+}
+
+.printer-last-test > span:first-child {
+  min-width: 0;
+}
+
+.printer-feedback {
+  min-height: 18px;
+  color: var(--nexora-muted);
+  font-size: 11px;
+  font-weight: 650;
+}
+
+.printer-discovery-dialog {
+  max-width: 560px;
+}
+
+.printer-discovery-dialog .sms-mhead {
+  align-items: flex-start;
+}
+
+.printer-discovery-dialog .sms-mhead h3 {
+  margin-bottom: 3px;
+}
+
+.printer-discovery-list {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.printer-discovery-option {
+  display: flex;
+  width: 100%;
+  min-height: 64px;
+  align-items: center;
+  gap: 11px;
+  border: 1px solid var(--nexora-border);
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px 12px;
+  color: var(--nexora-text);
+  text-align: left;
+}
+
+.printer-discovery-option:hover {
+  border-color: rgba(70, 72, 216, .4);
+  background: #f8f9ff;
+}
+
+.printer-discovery-option > span:nth-child(2) {
+  min-width: 0;
+  flex: 1;
+}
+
+.printer-discovery-option > i {
+  color: var(--nexora-brand);
+}
+
+@media (max-width: 900px) {
+  .printer-settings-columns {
+    flex-direction: column;
+  }
+
+  .printer-settings-columns > .printer-card {
+    width: 100%;
+    flex-basis: auto;
+  }
+}
+
+@media (max-width: 600px) {
+  .printer-settings {
+    gap: 10px;
+  }
+
+  .printer-settings-toolbar {
+    gap: 10px;
+  }
+
+  .printer-runtime {
+    width: 100%;
+  }
+
+  .printer-runtime-label {
+    display: none;
+  }
+
+  .printer-runtime-button {
+    flex: 1;
+  }
+
+  .printer-card-head,
+  .printer-card-body {
+    padding-right: 14px;
+    padding-left: 14px;
+  }
+
+  .printer-card-head {
+    padding-top: 14px;
+    padding-bottom: 12px;
+  }
+
+  .printer-card-body {
+    padding-top: 14px;
+    padding-bottom: 14px;
+  }
+
+  .printer-device {
+    align-items: flex-start;
+    padding: 10px;
+  }
+
+  .printer-device-copy {
+    min-width: 120px;
+  }
+
+  .printer-status {
+    margin-left: 56px;
+  }
+
+  .printer-actions .pos-btn {
+    flex: 1 1 calc(50% - 4px);
+  }
+
+  .printer-actions .printer-danger-button {
+    flex-basis: 100%;
+  }
+
+  .printer-demo-tools {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .printer-demo-tools .pos-input {
+    width: 100%;
+  }
+
+  .printer-step {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .printer-step .pos-btn {
+    width: 100%;
+    margin-left: 41px;
+  }
+
+  .printer-setting-row {
+    min-height: 58px;
+  }
+
+  .printer-last-test {
+    align-items: flex-start;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .printer-runtime-button,
+  .printer-switch span,
+  .printer-switch span::after {
+    transition: none;
+  }
+}
