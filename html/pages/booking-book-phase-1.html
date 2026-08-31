@@ -2419,13 +2419,24 @@
       line-height: 1.45;
     }
 
-    .settings-first-call-sms {
+    .settings-first-call-sms,
+    .settings-ai-content-group {
       display: grid;
       gap: 12px;
       border: 1px solid rgba(70, 72, 216, 0.18);
       border-radius: 12px;
       background: linear-gradient(180deg, rgba(70, 72, 216, 0.06), rgba(50, 215, 255, 0.04));
       padding: 14px;
+    }
+
+    .settings-ai-content-group {
+      grid-column: 1 / -1;
+    }
+
+    .settings-ai-content-group-head {
+      display: flex;
+      min-height: 24px;
+      align-items: center;
     }
 
     .settings-first-call-sms-head {
@@ -2466,6 +2477,682 @@
 
     .settings-first-call-sms .settings-textarea {
       min-height: 84px;
+    }
+
+    body.has-settings-voice-overlay {
+      overflow: hidden;
+    }
+
+    .settings-ai-voice-field {
+      grid-column: 1 / -1;
+    }
+
+    .settings-ai-voice-summary-card,
+    .settings-ai-voice-summary,
+    .settings-ai-voice-name-line,
+    .settings-voice-modal-title-row,
+    .settings-voice-library-tools,
+    .settings-voice-filter-button,
+    .settings-voice-filter-option,
+    .settings-voice-row,
+    .settings-voice-row-main,
+    .settings-voice-row-actions,
+    .settings-voice-modal-footer,
+    .settings-voice-toast {
+      display: flex;
+      align-items: center;
+    }
+
+    .settings-ai-voice-summary-card {
+      min-height: 76px;
+      justify-content: space-between;
+      gap: 14px;
+      border: 1px solid rgba(70, 72, 216, 0.24);
+      border-radius: 12px;
+      background: linear-gradient(135deg, rgba(70, 72, 216, 0.055), rgba(50, 215, 255, 0.035));
+      padding: 12px 13px;
+    }
+
+    .settings-ai-voice-summary {
+      min-width: 0;
+      gap: 11px;
+    }
+
+    .settings-ai-voice-orb {
+      position: relative;
+      display: grid;
+      width: 44px;
+      height: 44px;
+      flex: 0 0 auto;
+      place-items: center;
+      overflow: hidden;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #171b4a, #5d59e8 60%, #31c7ec);
+      box-shadow: 0 8px 18px rgba(70, 72, 216, 0.22);
+      color: #fff;
+    }
+
+    .settings-ai-voice-orb::before,
+    .settings-ai-voice-orb::after {
+      position: absolute;
+      border: 1px solid rgba(255, 255, 255, 0.48);
+      border-radius: 50%;
+      content: "";
+    }
+
+    .settings-ai-voice-orb::before {
+      width: 24px;
+      height: 24px;
+    }
+
+    .settings-ai-voice-orb::after {
+      width: 13px;
+      height: 13px;
+    }
+
+    .settings-ai-voice-orb .bi {
+      position: relative;
+      z-index: 1;
+      font-size: 17px;
+    }
+
+    .settings-ai-voice-copy {
+      min-width: 0;
+    }
+
+    .settings-ai-voice-name-line {
+      gap: 7px;
+    }
+
+    .settings-ai-voice-name-line strong {
+      color: var(--nexora-text);
+      font-size: 13px;
+      font-weight: 850;
+    }
+
+    .settings-ai-voice-active-chip {
+      border-radius: 999px;
+      background: rgba(0, 184, 115, 0.1);
+      padding: 2px 7px;
+      color: #008c58;
+      font-size: 9px;
+      font-weight: 850;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+    }
+
+    .settings-ai-voice-copy p {
+      margin: 2px 0 0;
+      color: var(--nexora-muted);
+      font-size: 11px;
+    }
+
+    .settings-voice-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 150;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(5, 13, 30, 0.58);
+      padding: 20px;
+      backdrop-filter: blur(5px);
+      opacity: 1;
+      transition: opacity 180ms ease;
+    }
+
+    .settings-voice-overlay[aria-hidden="true"] {
+      visibility: hidden;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .settings-voice-library {
+      display: flex;
+      width: min(100%, 660px);
+      max-height: 88vh;
+      max-height: 88dvh;
+      flex-direction: column;
+      overflow: hidden;
+      border: 1px solid rgba(255, 255, 255, 0.5);
+      border-radius: 18px;
+      background: #fff;
+      box-shadow: 0 24px 72px rgba(12, 22, 44, 0.24);
+      transform: translateY(0) scale(1);
+      transition: transform 180ms cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    .settings-voice-overlay[aria-hidden="true"] .settings-voice-library {
+      transform: translateY(12px) scale(0.985);
+    }
+
+    .settings-voice-modal-head {
+      padding: 19px 20px 14px;
+    }
+
+    .settings-voice-modal-title-row {
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .settings-voice-modal-title-row h2 {
+      margin: 0;
+      color: var(--nexora-text);
+      font-size: 17px;
+      letter-spacing: -0.02em;
+    }
+
+    .settings-voice-modal-head > p {
+      margin: 4px 36px 0 0;
+      color: var(--nexora-muted);
+      font-size: 11px;
+    }
+
+    .settings-voice-icon-button {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      background: transparent;
+      color: var(--nexora-muted);
+      cursor: pointer;
+    }
+
+    .settings-voice-icon-button:hover {
+      border-color: var(--nexora-border);
+      background: var(--nexora-surface-muted);
+      color: var(--nexora-text);
+    }
+
+    .settings-voice-library-tools {
+      position: relative;
+      align-items: stretch;
+      gap: 9px;
+      padding: 0 20px 14px;
+      border-bottom: 1px solid var(--nexora-rule);
+    }
+
+    .settings-voice-search-wrap {
+      position: relative;
+      min-width: 0;
+      flex: 1 1 auto;
+    }
+
+    .settings-voice-search-wrap .bi-search {
+      position: absolute;
+      top: 50%;
+      left: 12px;
+      color: var(--nexora-subtle);
+      font-size: 15px;
+      transform: translateY(-50%);
+      pointer-events: none;
+    }
+
+    .settings-voice-search-input {
+      width: 100%;
+      min-height: 42px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: var(--nexora-surface-muted);
+      padding: 0 12px 0 38px;
+      color: var(--nexora-text);
+      font-size: 12px;
+    }
+
+    .settings-voice-filter-wrap {
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .settings-voice-filter-button {
+      min-width: 112px;
+      min-height: 42px;
+      justify-content: space-between;
+      gap: 9px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 10px;
+      background: #fff;
+      padding: 0 11px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .settings-voice-filter-button .bi {
+      color: var(--nexora-subtle);
+      font-size: 12px;
+      transition: transform 140ms ease;
+    }
+
+    .settings-voice-filter-button[aria-expanded="true"] .bi {
+      transform: rotate(180deg);
+    }
+
+    .settings-voice-filter-menu {
+      position: absolute;
+      top: calc(100% + 6px);
+      right: 0;
+      z-index: 4;
+      width: 150px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 11px;
+      background: #fff;
+      padding: 5px;
+      box-shadow: 0 16px 38px rgba(15, 23, 42, 0.16);
+    }
+
+    .settings-voice-filter-menu[hidden] {
+      display: none;
+    }
+
+    .settings-voice-filter-option {
+      width: 100%;
+      min-height: 38px;
+      justify-content: space-between;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      padding: 0 10px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .settings-voice-filter-option:hover,
+    .settings-voice-filter-option.is-selected {
+      background: #e9e9ff;
+      color: var(--nexora-brand);
+    }
+
+    .settings-voice-filter-check {
+      opacity: 0;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .settings-voice-filter-option.is-selected .settings-voice-filter-check {
+      opacity: 1;
+    }
+
+    .settings-voice-list {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 8px;
+      scrollbar-color: #c6cfdd transparent;
+      scrollbar-width: thin;
+    }
+
+    .settings-voice-row {
+      width: 100%;
+      min-height: 68px;
+      justify-content: space-between;
+      gap: 12px;
+      border: 1px solid transparent;
+      border-radius: 11px;
+      padding: 8px 10px;
+      transition: border-color 140ms ease, background 140ms ease, box-shadow 140ms ease;
+    }
+
+    .settings-voice-row:hover {
+      background: var(--nexora-surface-muted);
+    }
+
+    .settings-voice-row[aria-selected="true"] {
+      border-color: rgba(70, 72, 216, 0.4);
+      background: #e9e9ff;
+      box-shadow: 0 0 0 1px rgba(70, 72, 216, 0.06);
+    }
+
+    .settings-voice-row[data-playing="true"] {
+      border-color: rgba(70, 72, 216, 0.48);
+    }
+
+    .settings-voice-row-main {
+      min-width: 0;
+      flex: 1 1 auto;
+      gap: 11px;
+      align-self: stretch;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      padding: 0;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .settings-voice-mini-orb {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 50%;
+      background: linear-gradient(145deg, #20275c, var(--voice-accent, #6f72ea));
+      color: #fff;
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: 0.02em;
+      box-shadow: 0 6px 14px rgba(42, 50, 97, 0.16);
+    }
+
+    .settings-voice-row-copy {
+      min-width: 0;
+    }
+
+    .settings-voice-row-name {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+    }
+
+    .settings-voice-row-name strong {
+      color: var(--nexora-text);
+      font-size: 12px;
+    }
+
+    .settings-voice-gender {
+      color: var(--nexora-subtle);
+      font-size: 9px;
+      font-weight: 750;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .settings-voice-row-copy p {
+      margin: 2px 0 0;
+      overflow: hidden;
+      color: var(--nexora-muted);
+      font-size: 10.5px;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .settings-voice-row-actions {
+      flex: 0 0 auto;
+      gap: 7px;
+    }
+
+    .settings-voice-select-check {
+      display: grid;
+      width: 24px;
+      height: 24px;
+      place-items: center;
+      border: 1px solid var(--nexora-border);
+      border-radius: 50%;
+      background: #fff;
+      padding: 0;
+      color: transparent;
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 900;
+    }
+
+    .settings-voice-row[aria-selected="true"] .settings-voice-select-check {
+      border-color: var(--nexora-brand);
+      background: var(--nexora-brand);
+      color: #fff;
+    }
+
+    .settings-voice-preview-button {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border: 1px solid #cfd8e5;
+      border-radius: 10px;
+      background: #fff;
+      color: var(--nexora-text);
+      cursor: pointer;
+    }
+
+    .settings-voice-preview-button:hover {
+      border-color: rgba(70, 72, 216, 0.42);
+      color: var(--nexora-brand);
+    }
+
+    .settings-voice-preview-button .bi-stop-fill {
+      display: none;
+    }
+
+    .settings-voice-row[data-playing="true"] .settings-voice-preview-button {
+      border-color: var(--nexora-brand);
+      background: var(--nexora-brand);
+      color: #fff;
+    }
+
+    .settings-voice-row[data-playing="true"] .settings-voice-preview-button .bi-play-fill {
+      display: none;
+    }
+
+    .settings-voice-row[data-playing="true"] .settings-voice-preview-button .bi-stop-fill {
+      display: block;
+    }
+
+    .settings-voice-empty-results {
+      display: grid;
+      min-height: 170px;
+      place-items: center;
+      padding: 24px;
+      color: var(--nexora-muted);
+      text-align: center;
+    }
+
+    .settings-voice-empty-results strong {
+      display: block;
+      margin-bottom: 3px;
+      color: var(--nexora-text);
+      font-size: 12px;
+    }
+
+    .settings-voice-empty-results span {
+      font-size: 10px;
+    }
+
+    .settings-voice-row[hidden],
+    .settings-voice-empty-results[hidden] {
+      display: none;
+    }
+
+    .settings-voice-modal-footer {
+      justify-content: space-between;
+      gap: 12px;
+      border-top: 1px solid var(--nexora-rule);
+      background: var(--nexora-surface-muted);
+      padding: 13px 20px;
+    }
+
+    .settings-voice-modal-footer-copy {
+      color: var(--nexora-muted);
+      font-size: 10px;
+    }
+
+    .settings-voice-modal-footer-copy strong {
+      color: var(--nexora-text);
+    }
+
+    .settings-voice-modal-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .settings-voice-modal-button {
+      display: inline-flex;
+      min-height: 40px;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 9px;
+      background: #fff;
+      padding: 0 13px;
+      color: var(--nexora-text);
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .settings-voice-modal-button.is-primary {
+      border-color: var(--nexora-brand);
+      background: var(--nexora-brand);
+      color: #fff;
+    }
+
+    .settings-voice-modal-button:disabled {
+      cursor: not-allowed;
+      opacity: 0.48;
+    }
+
+    .settings-voice-icon-button:focus-visible,
+    .settings-voice-filter-button:focus-visible,
+    .settings-voice-filter-option:focus-visible,
+    .settings-voice-row-main:focus-visible,
+    .settings-voice-preview-button:focus-visible,
+    .settings-voice-modal-button:focus-visible,
+    .settings-voice-search-input:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(70, 72, 216, 0.2);
+    }
+
+    .settings-voice-toast {
+      position: fixed;
+      right: 22px;
+      bottom: 22px;
+      z-index: 170;
+      max-width: min(360px, calc(100vw - 32px));
+      gap: 10px;
+      border: 1px solid rgba(0, 184, 115, 0.22);
+      border-radius: 12px;
+      background: #fff;
+      padding: 12px 14px;
+      box-shadow: 0 18px 48px rgba(15, 23, 42, 0.18);
+      color: var(--nexora-text);
+      font-size: 11px;
+      font-weight: 700;
+      opacity: 1;
+      transform: translateY(0);
+      transition: opacity 180ms ease, transform 180ms ease;
+    }
+
+    .settings-voice-toast[aria-hidden="true"] {
+      visibility: hidden;
+      opacity: 0;
+      transform: translateY(10px);
+    }
+
+    .settings-voice-toast-icon {
+      display: grid;
+      width: 24px;
+      height: 24px;
+      place-items: center;
+      border-radius: 50%;
+      background: rgba(0, 184, 115, 0.12);
+      color: var(--nexora-success);
+    }
+
+    @media (max-width: 639px) {
+      .settings-ai-voice-summary-card {
+        align-items: stretch;
+        flex-direction: column;
+      }
+
+      .settings-ai-voice-summary-card > .booking-secondary-button {
+        width: 100%;
+      }
+
+      .settings-voice-overlay {
+        align-items: flex-end;
+        padding: 0;
+      }
+
+      .settings-voice-library {
+        width: 100%;
+        max-height: 92vh;
+        max-height: 92dvh;
+        border-right: 0;
+        border-bottom: 0;
+        border-left: 0;
+        border-radius: 20px 20px 0 0;
+      }
+
+      .settings-voice-modal-head {
+        padding: 17px 16px 13px;
+      }
+
+      .settings-voice-library-tools {
+        padding: 0 16px 13px;
+      }
+
+      .settings-voice-filter-button {
+        min-width: 104px;
+      }
+
+      .settings-voice-list {
+        padding: 7px;
+      }
+
+      .settings-voice-row {
+        min-height: 72px;
+        padding: 8px;
+      }
+
+      .settings-voice-row-copy p {
+        max-width: 210px;
+      }
+
+      .settings-voice-select-check {
+        display: none;
+      }
+
+      .settings-voice-modal-footer {
+        align-items: stretch;
+        flex-direction: column;
+        padding: 12px 16px calc(12px + env(safe-area-inset-bottom));
+      }
+
+      .settings-voice-modal-actions .settings-voice-modal-button {
+        flex: 1 1 0;
+      }
+
+      .settings-voice-toast {
+        right: 16px;
+        bottom: calc(16px + env(safe-area-inset-bottom));
+        left: 16px;
+        max-width: none;
+      }
+    }
+
+    @media (max-width: 390px) {
+      .settings-voice-library-tools {
+        display: grid;
+        grid-template-columns: minmax(0, 1fr) 100px;
+        gap: 7px;
+      }
+
+      .settings-voice-filter-button {
+        min-width: 0;
+      }
+
+      .settings-voice-mini-orb {
+        width: 34px;
+        height: 34px;
+      }
+
+      .settings-voice-row-main {
+        gap: 8px;
+      }
+
+      .settings-voice-row-copy p {
+        max-width: 166px;
+      }
+
+      .settings-voice-preview-button {
+        width: 36px;
+        height: 36px;
+      }
     }
 
     .settings-input-row,
@@ -10814,7 +11501,7 @@
                     </div>
                   </div>
 
-                <article class="settings-card">
+                <article class="settings-card" data-settings-ai-voice data-settings-voice-id="carina">
                   <div class="settings-card-head">
                     <div>
                       <div class="settings-card-title"><span class="settings-ai-title-icon" aria-hidden="true">AI<i class="bi bi-stars"></i></span>AI Voice</div>
@@ -10825,42 +11512,62 @@
                   <div class="settings-field-grid">
                     <div class="settings-field" style="grid-column: 1 / -1;">
                       <span class="settings-label">AI LANGUAGE</span>
-                      <div class="settings-language-grid" role="group" aria-label="Select AI language">
+                      <div class="settings-language-grid" role="group" aria-label="Select AI language" data-settings-language-grid>
                         <button class="settings-language-card is-active" type="button" data-settings-language="auto" aria-pressed="true">Auto</button>
                         <button class="settings-language-card" type="button" data-settings-language="vi" aria-pressed="false">VI</button>
                         <button class="settings-language-card" type="button" data-settings-language="en" aria-pressed="false">EN</button>
                       </div>
                       <div class="settings-language-status" data-settings-language-status>Auto is on: the AI automatically detects Vietnamese or English when a customer calls.</div>
                     </div>
-                    <label class="settings-field" style="grid-column: 1 / -1;">
-                      <span class="settings-label">Greeting</span>
-                      <textarea class="settings-textarea" data-settings-greeting>Hi! Thanks for calling Bitcoin Nail Bar. I'm your AI assistant — I can help you book an appointment, check pricing, or answer questions. How can I help today?</textarea>
-                      <div class="settings-promo-suggest-row">
-                        <span class="settings-suggest-label"><i class="bi bi-stars" aria-hidden="true"></i>Suggestion</span>
-                        <button class="settings-promo-suggest" type="button" data-greeting-fill="warm-welcome">Warm Welcome</button>
-                        <button class="settings-promo-suggest" type="button" data-greeting-fill="quick-booking">Quick Booking</button>
-                        <button class="settings-promo-suggest" type="button" data-greeting-fill="bilingual">Bilingual Greeting</button>
+                    <div class="settings-field settings-ai-voice-field" data-settings-voice-field>
+                      <span class="settings-label">Voice</span>
+                      <div class="settings-ai-voice-summary-card">
+                        <div class="settings-ai-voice-summary">
+                          <span class="settings-ai-voice-orb" aria-hidden="true"><i class="bi bi-soundwave"></i></span>
+                          <div class="settings-ai-voice-copy">
+                            <div class="settings-ai-voice-name-line"><strong data-settings-current-voice-name>Carina</strong><span class="settings-ai-voice-active-chip">Active</span></div>
+                            <p data-settings-current-voice-description>Female · Soft, empathetic, and soothing.</p>
+                          </div>
+                        </div>
+                        <button class="booking-secondary-button" type="button" data-settings-open-voice-library><i class="bi bi-sliders" aria-hidden="true"></i>Change voice</button>
                       </div>
-                    </label>
-                    <label class="settings-field" style="grid-column: 1 / -1;">
-                      <span class="settings-label settings-label-with-tooltip">
-                        Promotion details
-                        <span class="settings-tooltip">
-                          <button class="settings-tooltip-trigger" type="button" aria-label="Promotion details info" aria-describedby="promotion-details-help"><i class="bi bi-info-circle" aria-hidden="true"></i></button>
-                          <span class="settings-tooltip-content" id="promotion-details-help" role="tooltip">AI Voice reads this offer when a customer asks about promotions. Tap a suggestion chip to fill in a template, then edit it for your salon.</span>
-                        </span>
-                      </span>
-                      <textarea class="settings-textarea" data-settings-promo maxlength="1000" style="min-height: 150px;" placeholder="e.g.:&#10;Promotion 1: Reward Yourself&#10;Offer: Free $25 e-gift card.&#10;Eligibility: Book any pedicure service of $55 or more.&#10;Availability: Monday–Saturday, by appointment only.&#10;Rules: One free $25 e-gift card per qualifying visit. For future services only, not redeemable for cash, and cannot be used for gratuity. Cannot combine with other promotions, discounts, coupons, rewards, or special offers. One promotional offer per customer per visit.&#10;General rule: The salon may modify or end any promotion at any time."></textarea>
-                      <div class="settings-promo-meta">
-                        <div class="settings-promo-count"><span data-promo-count>0</span>/1000</div>
+                      <div class="settings-language-status">Preview each voice before choosing the one that best represents your salon.</div>
+                    </div>
+                    <div class="settings-ai-content-group" data-settings-ai-content-group="greeting">
+                      <div class="settings-ai-content-group-head"><span class="settings-label">Greeting</span></div>
+                      <div class="settings-field">
+                        <textarea class="settings-textarea" data-settings-greeting aria-label="Greeting">Hi! Thanks for calling Bitcoin Nail Bar. I'm your AI assistant — I can help you book an appointment, check pricing, or answer questions. How can I help today?</textarea>
                         <div class="settings-promo-suggest-row">
                           <span class="settings-suggest-label"><i class="bi bi-stars" aria-hidden="true"></i>Suggestion</span>
-                          <button class="settings-promo-suggest" type="button" data-promo-fill="reward-yourself">Reward Yourself</button>
-                          <button class="settings-promo-suggest" type="button" data-promo-fill="first-visit">First-Visit Special</button>
-                          <button class="settings-promo-suggest" type="button" data-promo-fill="refer-a-friend">Refer-a-Friend</button>
+                          <button class="settings-promo-suggest" type="button" data-greeting-fill="warm-welcome">Warm Welcome</button>
+                          <button class="settings-promo-suggest" type="button" data-greeting-fill="quick-booking">Quick Booking</button>
+                          <button class="settings-promo-suggest" type="button" data-greeting-fill="bilingual">Bilingual Greeting</button>
                         </div>
                       </div>
-                    </label>
+                    </div>
+                    <div class="settings-ai-content-group" data-settings-ai-content-group="promotion">
+                      <div class="settings-ai-content-group-head">
+                        <span class="settings-label settings-label-with-tooltip">
+                          Promotion details
+                          <span class="settings-tooltip">
+                            <button class="settings-tooltip-trigger" type="button" aria-label="Promotion details info" aria-describedby="promotion-details-help"><i class="bi bi-info-circle" aria-hidden="true"></i></button>
+                            <span class="settings-tooltip-content" id="promotion-details-help" role="tooltip">AI Voice reads this offer when a customer asks about promotions. Tap a suggestion chip to fill in a template, then edit it for your salon.</span>
+                          </span>
+                        </span>
+                      </div>
+                      <div class="settings-field">
+                        <textarea class="settings-textarea" data-settings-promo aria-label="Promotion details" maxlength="1000" style="min-height: 150px;" placeholder="e.g.:&#10;Promotion 1: Reward Yourself&#10;Offer: Free $25 e-gift card.&#10;Eligibility: Book any pedicure service of $55 or more.&#10;Availability: Monday–Saturday, by appointment only.&#10;Rules: One free $25 e-gift card per qualifying visit. For future services only, not redeemable for cash, and cannot be used for gratuity. Cannot combine with other promotions, discounts, coupons, rewards, or special offers. One promotional offer per customer per visit.&#10;General rule: The salon may modify or end any promotion at any time."></textarea>
+                        <div class="settings-promo-meta">
+                          <div class="settings-promo-count"><span data-promo-count>0</span>/1000</div>
+                          <div class="settings-promo-suggest-row">
+                            <span class="settings-suggest-label"><i class="bi bi-stars" aria-hidden="true"></i>Suggestion</span>
+                            <button class="settings-promo-suggest" type="button" data-promo-fill="reward-yourself">Reward Yourself</button>
+                            <button class="settings-promo-suggest" type="button" data-promo-fill="first-visit">First-Visit Special</button>
+                            <button class="settings-promo-suggest" type="button" data-promo-fill="refer-a-friend">Refer-a-Friend</button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
                     <div class="settings-first-call-sms" style="grid-column: 1 / -1;" data-settings-first-call-sms>
                       <div class="settings-first-call-sms-head">
                         <div class="settings-first-call-sms-copy">
@@ -10890,6 +11597,71 @@
                   </div>
                   <button class="booking-secondary-button" type="button" data-settings-action="preview" style="margin-top: 10px; display: none;">🔊 Preview</button>
                 </article>
+
+                <div class="settings-voice-overlay" role="presentation" data-settings-voice-dialog aria-hidden="true">
+                  <section class="settings-voice-library" role="dialog" aria-modal="true" aria-labelledby="settings-voice-library-title" aria-describedby="settings-voice-library-description">
+                    <header class="settings-voice-modal-head">
+                      <div class="settings-voice-modal-title-row">
+                        <h2 id="settings-voice-library-title">Voice library</h2>
+                        <button class="settings-voice-icon-button" type="button" aria-label="Close voice library" data-settings-close-voice-library><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+                      </div>
+                      <p id="settings-voice-library-description">Choose a voice that feels natural and on-brand for your customers.</p>
+                    </header>
+
+                    <div class="settings-voice-library-tools">
+                      <label class="settings-voice-search-wrap">
+                        <i class="bi bi-search" aria-hidden="true"></i>
+                        <input class="settings-voice-search-input" type="search" placeholder="Search voices" aria-label="Search voices" autocomplete="off" data-settings-voice-search>
+                      </label>
+                      <div class="settings-voice-filter-wrap">
+                        <button class="settings-voice-filter-button" type="button" aria-haspopup="listbox" aria-expanded="false" data-settings-voice-gender-toggle><span data-settings-voice-gender-label>All voices</span><i class="bi bi-chevron-down" aria-hidden="true"></i></button>
+                        <div class="settings-voice-filter-menu" role="listbox" aria-label="Filter by gender" data-settings-voice-gender-menu hidden>
+                          <button class="settings-voice-filter-option is-selected" type="button" role="option" aria-selected="true" data-settings-voice-gender-option="all"><span>All voices</span><span class="settings-voice-filter-check">✓</span></button>
+                          <button class="settings-voice-filter-option" type="button" role="option" aria-selected="false" data-settings-voice-gender-option="female"><span>Female</span><span class="settings-voice-filter-check">✓</span></button>
+                          <button class="settings-voice-filter-option" type="button" role="option" aria-selected="false" data-settings-voice-gender-option="male"><span>Male</span><span class="settings-voice-filter-check">✓</span></button>
+                        </div>
+                      </div>
+                    </div>
+
+                    <div class="settings-voice-list" role="listbox" aria-label="Available AI voices" data-settings-voice-list>
+                      <article class="settings-voice-row" role="option" aria-selected="true" data-settings-voice-row data-voice-id="carina" data-gender="female" data-playing="false">
+                        <button class="settings-voice-row-main" type="button" data-settings-select-voice="carina"><span class="settings-voice-mini-orb" style="--voice-accent:#6d70e8">CA</span><span class="settings-voice-row-copy"><span class="settings-voice-row-name"><strong>Carina</strong><span class="settings-voice-gender">Female</span></span><p>Soft, empathetic, and soothing.</p></span></button>
+                        <span class="settings-voice-row-actions"><button class="settings-voice-select-check" type="button" aria-label="Select Carina" data-settings-select-voice="carina" data-settings-voice-check="carina">✓</button><button class="settings-voice-preview-button" type="button" aria-label="Play Carina preview" data-settings-preview-voice="carina"><i class="bi bi-play-fill" aria-hidden="true"></i><i class="bi bi-stop-fill" aria-hidden="true"></i></button></span>
+                      </article>
+                      <article class="settings-voice-row" role="option" aria-selected="false" data-settings-voice-row data-voice-id="ara" data-gender="female" data-playing="false">
+                        <button class="settings-voice-row-main" type="button" data-settings-select-voice="ara"><span class="settings-voice-mini-orb" style="--voice-accent:#df5da7">AR</span><span class="settings-voice-row-copy"><span class="settings-voice-row-name"><strong>Ara</strong><span class="settings-voice-gender">Female</span></span><p>Warm and friendly.</p></span></button>
+                        <span class="settings-voice-row-actions"><button class="settings-voice-select-check" type="button" aria-label="Select Ara" data-settings-select-voice="ara" data-settings-voice-check="ara">✓</button><button class="settings-voice-preview-button" type="button" aria-label="Play Ara preview" data-settings-preview-voice="ara"><i class="bi bi-play-fill" aria-hidden="true"></i><i class="bi bi-stop-fill" aria-hidden="true"></i></button></span>
+                      </article>
+                      <article class="settings-voice-row" role="option" aria-selected="false" data-settings-voice-row data-voice-id="aurora" data-gender="female" data-playing="false">
+                        <button class="settings-voice-row-main" type="button" data-settings-select-voice="aurora"><span class="settings-voice-mini-orb" style="--voice-accent:#19a5a0">AU</span><span class="settings-voice-row-copy"><span class="settings-voice-row-name"><strong>Aurora</strong><span class="settings-voice-gender">Female</span></span><p>Serene, steady, and radiant.</p></span></button>
+                        <span class="settings-voice-row-actions"><button class="settings-voice-select-check" type="button" aria-label="Select Aurora" data-settings-select-voice="aurora" data-settings-voice-check="aurora">✓</button><button class="settings-voice-preview-button" type="button" aria-label="Play Aurora preview" data-settings-preview-voice="aurora"><i class="bi bi-play-fill" aria-hidden="true"></i><i class="bi bi-stop-fill" aria-hidden="true"></i></button></span>
+                      </article>
+                      <article class="settings-voice-row" role="option" aria-selected="false" data-settings-voice-row data-voice-id="atlas" data-gender="male" data-playing="false">
+                        <button class="settings-voice-row-main" type="button" data-settings-select-voice="atlas"><span class="settings-voice-mini-orb" style="--voice-accent:#3476d8">AT</span><span class="settings-voice-row-copy"><span class="settings-voice-row-name"><strong>Atlas</strong><span class="settings-voice-gender">Male</span></span><p>Confident, commanding, and reassuring.</p></span></button>
+                        <span class="settings-voice-row-actions"><button class="settings-voice-select-check" type="button" aria-label="Select Atlas" data-settings-select-voice="atlas" data-settings-voice-check="atlas">✓</button><button class="settings-voice-preview-button" type="button" aria-label="Play Atlas preview" data-settings-preview-voice="atlas"><i class="bi bi-play-fill" aria-hidden="true"></i><i class="bi bi-stop-fill" aria-hidden="true"></i></button></span>
+                      </article>
+                      <article class="settings-voice-row" role="option" aria-selected="false" data-settings-voice-row data-voice-id="altair" data-gender="male" data-playing="false">
+                        <button class="settings-voice-row-main" type="button" data-settings-select-voice="altair"><span class="settings-voice-mini-orb" style="--voice-accent:#7857bc">AL</span><span class="settings-voice-row-copy"><span class="settings-voice-row-name"><strong>Altair</strong><span class="settings-voice-gender">Male</span></span><p>Elegant, refined, and effortlessly premium.</p></span></button>
+                        <span class="settings-voice-row-actions"><button class="settings-voice-select-check" type="button" aria-label="Select Altair" data-settings-select-voice="altair" data-settings-voice-check="altair">✓</button><button class="settings-voice-preview-button" type="button" aria-label="Play Altair preview" data-settings-preview-voice="altair"><i class="bi bi-play-fill" aria-hidden="true"></i><i class="bi bi-stop-fill" aria-hidden="true"></i></button></span>
+                      </article>
+                      <article class="settings-voice-row" role="option" aria-selected="false" data-settings-voice-row data-voice-id="cedar" data-gender="male" data-playing="false">
+                        <button class="settings-voice-row-main" type="button" data-settings-select-voice="cedar"><span class="settings-voice-mini-orb" style="--voice-accent:#4b7c68">CE</span><span class="settings-voice-row-copy"><span class="settings-voice-row-name"><strong>Cedar</strong><span class="settings-voice-gender">Male</span></span><p>Calm, grounded, and trustworthy.</p></span></button>
+                        <span class="settings-voice-row-actions"><button class="settings-voice-select-check" type="button" aria-label="Select Cedar" data-settings-select-voice="cedar" data-settings-voice-check="cedar">✓</button><button class="settings-voice-preview-button" type="button" aria-label="Play Cedar preview" data-settings-preview-voice="cedar"><i class="bi bi-play-fill" aria-hidden="true"></i><i class="bi bi-stop-fill" aria-hidden="true"></i></button></span>
+                      </article>
+                      <div class="settings-voice-empty-results" data-settings-voice-empty-results hidden><div><strong>No voices found</strong><span>Try another name, style, or gender filter.</span></div></div>
+                    </div>
+
+                    <footer class="settings-voice-modal-footer">
+                      <div class="settings-voice-modal-footer-copy">Selected: <strong data-settings-pending-voice-name>Carina</strong></div>
+                      <div class="settings-voice-modal-actions">
+                        <button class="settings-voice-modal-button" type="button" data-settings-cancel-voice-library>Cancel</button>
+                        <button class="settings-voice-modal-button is-primary" type="button" data-settings-use-voice disabled>Use this voice</button>
+                      </div>
+                    </footer>
+                  </section>
+                </div>
+
+                <div class="settings-voice-toast" role="status" aria-live="polite" aria-hidden="true" data-settings-voice-toast><span class="settings-voice-toast-icon" aria-hidden="true"><i class="bi bi-check-lg"></i></span><span data-settings-voice-toast-message></span></div>
 
                 <article class="settings-card" data-settings-booking-sms-card>
                   <div class="settings-card-head">
@@ -19505,6 +20277,7 @@ function getBookingCardCallStart(item) {
     window.NEXORA_SHELL = { activePage: 'booking', activeTab: 'booking' };
   </script>
   <script src="../assets/booking-online-link.js"></script>
+  <script src="../assets/booking-ai-voice-selector.js"></script>
   <script src="../assets/nexora-shell.js"></script>
 </body>
 </html>
