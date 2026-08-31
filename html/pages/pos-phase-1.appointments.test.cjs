@@ -183,12 +183,13 @@ test('POS Booking preserves the shared appointment source and action behavior', 
   assert.match(source, /data-booking-panel-action-group="destructive"/);
 });
 
-test('POS Booking preserves source badges and selected service totals', () => {
+test('POS Booking preserves source badges and a price-only selected service total', () => {
   assert.match(source, /function bookingSourceBadgesFromText\(/);
   assert.match(source, /bookingSourceBadgesFromText\([\s\S]*booking-source-voice/);
   assert.match(source, /appointment-service-summary/);
   assert.match(source, /Total price:/);
-  assert.match(source, /Total time:/);
+  assert.doesNotMatch(source, /Total time:/);
+  assert.doesNotMatch(source, /data-booking-(?:panel|create)-total-duration/);
   assert.match(source, /function bookingPanelSelectedServiceTotals\(/);
 });
 

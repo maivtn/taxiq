@@ -4292,6 +4292,19 @@
       padding: 7px;
     }
 
+    .settings-service-add-button {
+      width: 100%;
+      justify-content: center;
+      border-style: dashed;
+      background: #f8faff;
+      color: var(--nexora-brand);
+    }
+
+    .settings-service-row.is-draft {
+      border-color: rgba(70, 72, 216, 0.3);
+      background: rgba(70, 72, 216, 0.025);
+    }
+
     .settings-service-header {
       display: grid;
       grid-template-columns: 30px minmax(82px, 1fr) 58px 70px 28px 28px;
@@ -10520,10 +10533,6 @@
                               <span class="booking-service-summary-label">Total price:</span>
                               <strong class="booking-service-summary-value" data-booking-create-total-price>$0</strong>
                             </span>
-                            <span class="booking-service-summary-item">
-                              <span class="booking-service-summary-label">Total time:</span>
-                              <strong class="booking-service-summary-value" data-booking-create-total-duration>0 min</strong>
-                            </span>
                           </div>
                         </label>
                         <label class="booking-create-field">
@@ -11728,7 +11737,6 @@
                   <div class="settings-actions settings-service-actions">
                     <button class="booking-secondary-button settings-category-manager-open" type="button" data-settings-category-action="open"><i data-lucide="folder-tree" aria-hidden="true"></i>Manage Categories</button>
                     <button class="booking-secondary-button" type="button" data-settings-action="photo"><i class="bi bi-camera" aria-hidden="true"></i>Scan Menu</button>
-                    <button class="booking-primary-button" type="button" data-settings-action="add-service"><i class="bi bi-plus-lg" aria-hidden="true"></i>Enter Manually</button>
                   </div>
 
                   <div class="settings-service-panel" data-service-scan hidden>
@@ -12829,6 +12837,7 @@
     var settingsManagedCategories = [];
     var settingsCategoryDraft = null;
     var settingsServiceEditContext = null;
+    var settingsServiceDraftSequence = 0;
     var APPOINTMENT_SERVICE_CATALOG_URL = '../menu/menu.json';
     var catalog = salonData.loadCatalog();
     var BOOKING_CALENDAR_SERVICE_OPTIONS = [];
@@ -13644,7 +13653,7 @@
         '<div class="booking-panel-form">' +
         '<label class="booking-create-field"><span class="booking-create-label">Customer</span><input class="booking-input" type="text" maxlength="60" data-booking-panel-field="name" value="' + escapeHtml(bookingPanelDraft.name) + '"></label>' +
         '<label class="booking-create-field"><span class="booking-create-label">Phone *</span><input class="booking-input' + bookingPanelInvalidClass('phone') + '" type="tel" maxlength="20" data-booking-panel-field="phone" value="' + escapeHtml(bookingPanelDraft.phone) + '"' + bookingPanelInvalidAttributes('phone') + ' required></label>' +
-        '<div class="booking-create-field booking-panel-field-full"><span class="booking-create-label">Service — Technician</span>' + ticketPicker + '<div class="booking-ticket-list" data-booking-panel-ticket-list>' + bookingPanelTicketRowsMarkup() + '</div><div class="appointment-service-summary" aria-live="polite"><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total price:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-price>' + bookingMoney(panelServiceTotals.price) + '</strong></span><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total time:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-duration>' + panelServiceTotals.duration + ' min</strong></span></div></div>' +
+        '<div class="booking-create-field booking-panel-field-full"><span class="booking-create-label">Service — Technician</span>' + ticketPicker + '<div class="booking-ticket-list" data-booking-panel-ticket-list>' + bookingPanelTicketRowsMarkup() + '</div><div class="appointment-service-summary" aria-live="polite"><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total price:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-price>' + bookingMoney(panelServiceTotals.price) + '</strong></span></div></div>' +
         '<div class="booking-panel-form-grid"><label class="booking-create-field"><span class="booking-create-label">Date</span><input class="booking-input' + bookingPanelInvalidClass('date') + '" type="date" data-booking-panel-field="date" value="' + escapeHtml(bookingPanelDraft.date) + '"' + bookingPanelInvalidAttributes('date') + '></label>' +
         '<label class="booking-create-field"><span class="booking-create-label">Time</span><input class="booking-input' + bookingPanelInvalidClass('time') + '" type="time" step="900" data-booking-panel-field="time" value="' + escapeHtml(bookingPanelDraft.time) + '"' + bookingPanelInvalidAttributes('time') + '></label></div>' +
         '<label class="booking-create-field booking-panel-field-full"><span class="booking-create-label">Status</span><select class="booking-select" data-booking-panel-field="status">' + statusOptions + '</select></label>' +
@@ -14132,9 +14141,7 @@
       if (host) host.innerHTML = bookingCreateTicketMarkup();
       var totals = appointmentTicketUtils && appointmentTicketUtils.ticketTotals ? appointmentTicketUtils.ticketTotals(bookingCreateTickets) : { price: 0, duration: 0 };
       var price = document.querySelector('[data-booking-create-total-price]');
-      var duration = document.querySelector('[data-booking-create-total-duration]');
       if (price) price.textContent = bookingMoney(totals.price);
-      if (duration) duration.textContent = totals.duration + ' min';
     }
 
     function filterBookingCreateTicketServices(input) {
@@ -14242,12 +14249,9 @@
     function updateBookingCreateServiceSummary() {
       var services = getBookingCreateServices();
       var totalPrice = bookingServicePriceTotal(services);
-      var totalDuration = bookingServiceDurationMinutes(services);
       var price = document.querySelector('[data-booking-create-total-price]');
-      var duration = document.querySelector('[data-booking-create-total-duration]');
       renderBookingCreateSelectedServices();
       if (price) price.textContent = bookingMoney(totalPrice);
-      if (duration) duration.textContent = totalDuration + ' min';
     }
 
     function bookingCreateTicketsFromServices(services) {
@@ -16261,15 +16265,17 @@ function getBookingCardCallStart(item) {
 
     function settingsServiceRowMarkup(service, index) {
       service = service || {};
+      var isDraft = Boolean(service.isDraft);
+      var name = service.name == null || (isDraft && !service.name) ? '' : service.name;
       var price = service.price == null ? '' : service.price;
-      var duration = service.durationMin == null ? 60 : service.durationMin;
+      var duration = service.durationMin == null ? (isDraft ? '' : 60) : service.durationMin;
       var tone = ['tone-violet', 'tone-cyan', 'tone-rose', 'tone-sky', 'tone-amber', 'tone-emerald'][index % 6];
-      return '<div class="settings-service-row" data-service-row data-service-id="' + escapeHtml(service.id || '') + '">' +
+      return '<div class="settings-service-row' + (isDraft ? ' is-draft' : '') + '" data-service-row data-service-id="' + escapeHtml(service.id || '') + '"' + (isDraft ? ' data-service-draft="true"' : '') + '>' +
         '<div class="settings-service-edit-grid">' +
           '<span class="settings-service-visual ' + tone + '" aria-hidden="true">' + escapeHtml(service.icon || '✨') + '</span>' +
-          '<input class="settings-service-input" type="text" value="' + escapeHtml(service.name || 'Unnamed service') + '" aria-label="Service name">' +
-          '<div class="settings-service-input-wrap"><span class="settings-service-prefix">$</span><input class="settings-service-input price" type="number" value="' + escapeHtml(price) + '" aria-label="Service price"></div>' +
-          '<div class="settings-service-input-wrap"><input class="settings-service-input duration" type="number" value="' + escapeHtml(duration) + '" aria-label="Service duration"><span class="settings-service-suffix">min</span></div>' +
+          '<input class="settings-service-input" type="text" value="' + escapeHtml(name || (isDraft ? '' : 'Unnamed service')) + '"' + (isDraft ? ' placeholder="Service name"' : '') + ' aria-label="Service name">' +
+          '<div class="settings-service-input-wrap"><span class="settings-service-prefix">$</span><input class="settings-service-input price" type="number" value="' + escapeHtml(price) + '"' + (isDraft ? ' placeholder="0.00"' : '') + ' aria-label="Service price"></div>' +
+          '<div class="settings-service-input-wrap"><input class="settings-service-input duration" type="number" value="' + escapeHtml(duration) + '"' + (isDraft ? ' placeholder="60"' : '') + ' aria-label="Service duration"><span class="settings-service-suffix">min</span></div>' +
           '<button class="settings-service-edit" type="button" data-service-edit aria-label="Edit service"><i class="bi bi-pencil" aria-hidden="true"></i></button>' +
           '<button class="settings-service-remove" type="button" data-service-remove aria-label="Remove service">×</button>' +
         '</div>' +
@@ -16281,7 +16287,8 @@ function getBookingCardCallStart(item) {
       return '<details class="settings-service-category" data-service-category data-service-category-id="' + escapeHtml(category.id || '') + '"' + (index === 0 ? ' open' : '') + '>' +
         '<summary class="settings-service-category-head"><span class="settings-service-category-name">' + escapeHtml(category.name || 'Other services') + '</span><span class="settings-service-category-count">' + services.length + '</span><i class="settings-service-category-chevron" data-lucide="chevron-down" aria-hidden="true"></i></summary>' +
         '<div class="settings-service-category-body"><div class="settings-service-header" aria-hidden="true"><span></span><span>Service</span><span>Price</span><span>Duration</span><span></span><span></span></div>' +
-        services.map(function(service, serviceIndex) { return settingsServiceRowMarkup(service, index + serviceIndex); }).join('') + '</div></details>';
+        services.map(function(service, serviceIndex) { return settingsServiceRowMarkup(service, index + serviceIndex); }).join('') +
+        '<button class="booking-secondary-button settings-service-add-button" type="button" data-settings-service-draft-add><i class="bi bi-plus-lg" aria-hidden="true"></i>Add services</button></div></details>';
     }
 
     function renderSettingsServiceCatalog(source, fallback) {
@@ -16485,6 +16492,38 @@ function getBookingCardCallStart(item) {
       if (!category) return;
       var count = category.querySelector('.settings-service-category-count');
       if (count) count.textContent = category.querySelectorAll('[data-service-row]').length;
+    }
+
+    function addSettingsServiceDraft(button) {
+      var category = button ? button.closest('[data-service-category]') : null;
+      if (!category) return null;
+
+      var categoryId = category.dataset.serviceCategoryId || '';
+      var categoryNameElement = category.querySelector('.settings-service-category-name');
+      var categoryName = categoryNameElement ? categoryNameElement.textContent.trim() : 'Other services';
+      var rowIndex = category.querySelectorAll('[data-service-row]').length;
+      var draft = {
+        id: 'draft-' + Date.now() + '-' + (++settingsServiceDraftSequence),
+        name: '',
+        price: null,
+        durationMin: null,
+        icon: '✨',
+        isDraft: true
+      };
+
+      category.open = true;
+      button.insertAdjacentHTML('beforebegin', settingsServiceRowMarkup(draft, rowIndex));
+      var row = button.previousElementSibling;
+      updateSettingsServiceCategoryCount(category);
+
+      var managedCategory = settingsEnsureManagedCategory(categoryId, categoryName);
+      managedCategory.services.push(draft);
+      renderSettingsCategoryManager();
+      setSettingsStatus('Draft service added to ' + categoryName + '.');
+
+      var nameField = row ? row.querySelector('[aria-label="Service name"]') : null;
+      if (nameField) nameField.focus();
+      return row;
     }
 
     var PROMO_TEMPLATES = {
@@ -16835,11 +16874,6 @@ function getBookingCardCallStart(item) {
 
       if (action === 'suggest') {
         toggleServiceSuggestPanel();
-        return;
-      }
-
-      if (action === 'add-service') {
-        openSettingsServiceModal();
         return;
       }
 
@@ -17602,6 +17636,12 @@ function getBookingCardCallStart(item) {
       var firstCallSmsFill = event.target.closest('[data-first-call-sms-fill]');
       if (firstCallSmsFill) {
         fillFirstCallSmsTemplate(firstCallSmsFill.dataset.firstCallSmsFill);
+        return;
+      }
+
+      var settingsServiceDraftAdd = event.target.closest('[data-settings-service-draft-add]');
+      if (settingsServiceDraftAdd) {
+        addSettingsServiceDraft(settingsServiceDraftAdd);
         return;
       }
 

@@ -203,6 +203,13 @@
       font-weight: 750;
     }
 
+    .week-range {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
     .field input,
     .field select {
       min-height: 44px;
@@ -701,6 +708,7 @@
           <div class="field">
             <label for="weekValue">Report week</label>
             <input id="weekValue" name="weekValue" type="week" value="2026-W36">
+            <output class="week-range" for="weekValue" data-week-range aria-live="polite">Aug 31 – Sep 6, 2026</output>
           </div>
         </div>
       </div>
@@ -981,6 +989,11 @@
         return `${fullDate.format(start)}–${fullDate.format(end)}`
       }
 
+      function formatWeekRange(from, to) {
+        const start = dateFromIso(from)
+        return `${monthName.format(start)} ${start.getUTCDate()} – ${fullDate.format(dateFromIso(to))}`
+      }
+
       function syntheticDay(iso) {
         if (iso === TODAY) return { ...weekRows[0] }
         const date = dateFromIso(iso)
@@ -1174,6 +1187,7 @@
         showPicker('week')
         const value = $('[name="weekValue"]').value || THIS_WEEK
         const [from, to] = weekBounds(value)
+        setText('[data-week-range]', formatWeekRange(from, to))
         const rows = value === THIS_WEEK ? weekRows.map((row) => ({ ...row })) : dateRange(from, to)
         const current = value === THIS_WEEK
         renderTable(rows, {

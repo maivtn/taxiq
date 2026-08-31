@@ -60,10 +60,11 @@ test('Booking Book appointment details render source badges like the table', () 
   assert.match(SOURCE, /booking-panel-source-list/);
 });
 
-test('Booking Book appointment details show selected service totals', () => {
+test('Booking Book appointment details show a price-only selected service total', () => {
   assert.match(SOURCE, /appointment-service-summary/);
   assert.match(SOURCE, /Total price:/);
-  assert.match(SOURCE, /Total time:/);
+  assert.doesNotMatch(SOURCE, /Total time:/);
+  assert.doesNotMatch(SOURCE, /data-booking-(?:panel|create)-total-duration/);
   assert.match(SOURCE, /function bookingPanelSelectedServiceTotals\([\s\S]*bookingServicePriceTotal/);
 });
 
@@ -278,7 +279,7 @@ test('Booking Book opens Appointments in Table mode and initializes Calendar fro
 test('Booking Book hides the duplicate duration field beside status', () => {
   assert.doesNotMatch(SOURCE, /<select class="booking-select" data-booking-panel-field="duration">/);
   assert.doesNotMatch(SOURCE, /class="booking-duration-label" data-booking-panel-field="duration"/);
-  assert.match(SOURCE, /data-booking-panel-total-duration/);
+  assert.doesNotMatch(SOURCE, /data-booking-panel-total-duration/);
   assert.match(SOURCE, /function bookingPanelSelectedServiceDuration\(/);
   assert.match(SOURCE, /bookingPanelDraft\.duration = bookingPanelSelectedServiceDuration\(\)/);
 });

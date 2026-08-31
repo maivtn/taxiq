@@ -748,7 +748,7 @@ var DEFAULT_MAIN_TAB = 'booking';
         '<div class="booking-panel-form">' +
         '<label class="booking-create-field"><span class="booking-create-label">Customer</span><input class="booking-input" type="text" maxlength="60" data-booking-panel-field="name" value="' + escapeHtml(bookingPanelDraft.name) + '"></label>' +
         '<label class="booking-create-field"><span class="booking-create-label">Phone *</span><input class="booking-input' + bookingPanelInvalidClass('phone') + '" type="tel" maxlength="20" data-booking-panel-field="phone" value="' + escapeHtml(bookingPanelDraft.phone) + '"' + bookingPanelInvalidAttributes('phone') + ' required></label>' +
-        '<div class="booking-create-field booking-panel-field-full"><span class="booking-create-label">Service — Technician</span>' + ticketPicker + '<div class="booking-ticket-list" data-booking-panel-ticket-list>' + bookingPanelTicketRowsMarkup() + '</div><div class="appointment-service-summary" aria-live="polite"><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total price:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-price>' + bookingMoney(panelServiceTotals.price) + '</strong></span><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total time:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-duration>' + panelServiceTotals.duration + ' min</strong></span></div></div>' +
+        '<div class="booking-create-field booking-panel-field-full"><span class="booking-create-label">Service — Technician</span>' + ticketPicker + '<div class="booking-ticket-list" data-booking-panel-ticket-list>' + bookingPanelTicketRowsMarkup() + '</div><div class="appointment-service-summary" aria-live="polite"><span class="appointment-service-summary-item"><span class="appointment-service-summary-label">Total price:</span> <strong class="appointment-service-summary-value" data-booking-panel-total-price>' + bookingMoney(panelServiceTotals.price) + '</strong></span></div></div>' +
         '<div class="booking-panel-form-grid"><label class="booking-create-field"><span class="booking-create-label">Date</span><input class="booking-input' + bookingPanelInvalidClass('date') + '" type="date" data-booking-panel-field="date" value="' + escapeHtml(bookingPanelDraft.date) + '"' + bookingPanelInvalidAttributes('date') + '></label>' +
         '<label class="booking-create-field"><span class="booking-create-label">Time</span><input class="booking-input' + bookingPanelInvalidClass('time') + '" type="time" step="900" data-booking-panel-field="time" value="' + escapeHtml(bookingPanelDraft.time) + '"' + bookingPanelInvalidAttributes('time') + '></label></div>' +
         '<label class="booking-create-field booking-panel-field-full"><span class="booking-create-label">Status</span><select class="booking-select" data-booking-panel-field="status">' + statusOptions + '</select></label>' +
@@ -1238,9 +1238,7 @@ var DEFAULT_MAIN_TAB = 'booking';
       if (host) host.innerHTML = bookingCreateTicketMarkup();
       var totals = appointmentTicketUtils && appointmentTicketUtils.ticketTotals ? appointmentTicketUtils.ticketTotals(bookingCreateTickets) : { price: 0, duration: 0 };
       var price = document.querySelector('[data-booking-create-total-price]');
-      var duration = document.querySelector('[data-booking-create-total-duration]');
       if (price) price.textContent = bookingMoney(totals.price);
-      if (duration) duration.textContent = totals.duration + ' min';
     }
 
     function filterBookingCreateTicketServices(input) {
@@ -1348,12 +1346,9 @@ var DEFAULT_MAIN_TAB = 'booking';
     function updateBookingCreateServiceSummary() {
       var services = getBookingCreateServices();
       var totalPrice = bookingServicePriceTotal(services);
-      var totalDuration = bookingServiceDurationMinutes(services);
       var price = document.querySelector('[data-booking-create-total-price]');
-      var duration = document.querySelector('[data-booking-create-total-duration]');
       renderBookingCreateSelectedServices();
       if (price) price.textContent = bookingMoney(totalPrice);
-      if (duration) duration.textContent = totalDuration + ' min';
     }
 
     function bookingCreateTicketsFromServices(services) {

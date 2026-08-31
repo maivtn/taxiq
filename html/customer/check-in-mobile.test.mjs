@@ -44,7 +44,7 @@ function createElement(id = '') {
 function createCheckinRuntime() {
   const ids = [
     'serviceAccordion', 'selectedServices', 'selectedServiceChips', 'selectedServicesEmpty',
-    'serviceSelectedCount', 'serviceTotalDuration', 'serviceTotalPrice', 'serviceNote',
+    'serviceSelectedCount', 'serviceTotalPrice', 'serviceNote',
     'serviceNoteCard', 'techGrid', 'checkinBtn', 'nameInput', 'phoneInput', 'toast',
     'kioskLanguageMenu', 'kioskLanguageTrigger', 'serviceDetailsModal', 'kiosk-done-card'
   ];
@@ -268,4 +268,24 @@ test('keeps technicians selectable after services are chosen', () => {
   assert.doesNotMatch(html, /aria-disabled="true"/);
   assert.doesNotMatch(html, /class="tech[^"]*\bdisabled\b/);
   assert.equal(selectedTech, 'kim');
+});
+
+test('renders the no-preference technician choice as Anyone', () => {
+  const { byId, context } = createCheckinRuntime();
+
+  vm.runInContext('renderTechs();', context);
+
+  const html = byId.get('techGrid').innerHTML;
+  assert.match(html, /class="nm">Anyone<\/span>/);
+  assert.doesNotMatch(html, /First available/i);
+});
+
+test('omits total time from the selected services summary', () => {
+  const summary = SOURCE.match(/<div class="service-summary"[\s\S]*?<\/div>\s*<\/section>/)?.[0] || '';
+  const summaryRule = SOURCE.match(/\.service-summary\s*\{([^}]*)\}/)?.[1] || '';
+
+  assert.match(summary, /id="serviceSelectedCount"/);
+  assert.match(summary, /id="serviceTotalPrice"/);
+  assert.doesNotMatch(summary, /Total time|serviceTotalDuration/i);
+  assert.match(summaryRule, /grid-template-columns:\s*repeat\(2,\s*minmax\(0,\s*1fr\)\)/);
 });

@@ -925,7 +925,7 @@
 
     .service-summary {
       display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
+      grid-template-columns: repeat(2, minmax(0, 1fr));
       gap: 8px;
       margin-top: 14px;
     }
@@ -1604,7 +1604,7 @@
           </div>
 
           <div class="card">
-            <div class="sec-head"><b>Technician</b><span>— optional, "First available" is fastest</span></div>
+            <div class="sec-head"><b>Technician</b><span>— optional, "Anyone" is fastest</span></div>
             <div class="tech-grid" id="techGrid"></div>
           </div>
 
@@ -1636,8 +1636,6 @@
               <div class="service-summary" aria-label="Service summary">
                 <div class="service-summary-item"><span class="service-summary-label">Services</span><strong
                     class="service-summary-value" id="serviceSelectedCount">0</strong></div>
-                <div class="service-summary-item"><span class="service-summary-label">Total time</span><strong
-                    class="service-summary-value" id="serviceTotalDuration">—</strong></div>
                 <div class="service-summary-item"><span class="service-summary-label">Total</span><strong
                     class="service-summary-value" id="serviceTotalPrice">$0.00</strong></div>
               </div>
@@ -1700,7 +1698,7 @@
     let menuLoaded = false;
     let menuLoadError = null;
     const TECHS = [
-      { id: 'first', name: 'First available', services: [], status: 'first' },
+      { id: 'first', name: 'Anyone', services: [], status: 'first' },
       { id: 'tina', name: 'Tina', services: [], status: 'available' },
       { id: 'kim', name: 'Kim', services: [], status: 'available' },
       { id: 'helen', name: 'Helen', services: [], status: 'busy' },
@@ -1857,11 +1855,6 @@
     }
     function serviceById(id) { return SERVICES.find(service => service.id === id) || null; }
     function serviceDurationLabel(service) { return service?.durationMinutes ? `${service.durationMinutes} min` : ''; }
-    function serviceTotalDurationLabel(minutes) {
-      if (!minutes) return '—';
-      const hours = Math.floor(minutes / 60), remainder = minutes % 60;
-      return hours ? `${hours}h${remainder ? ` ${remainder}m` : ''}` : `${remainder} min`;
-    }
     function syncTechnicianServices() {
       const allIds = SERVICES.map(service => service.id);
       const nailOnlyIds = SERVICES
@@ -1933,9 +1926,7 @@
       selectedSection.classList.toggle('hidden', selected.length === 0);
       $('selectedServicesEmpty').classList.toggle('hidden', selected.length > 0);
       $('serviceSelectedCount').textContent = String(selected.length);
-      const totalMinutes = selected.reduce((sum, service) => sum + service.durationMinutes, 0);
       const totalPrice = selected.reduce((sum, service) => sum + service.price, 0);
-      $('serviceTotalDuration').textContent = serviceTotalDurationLabel(totalMinutes);
       $('serviceTotalPrice').textContent = money(totalPrice);
       chips.innerHTML = selected.map(service => `<div class="selected-service-chip"><span class="selected-service-chip-text"><span class="selected-service-chip-category">${escapeHtml(service.categoryTitle)}</span><span>${escapeHtml(service.name)}</span></span><button class="selected-service-chip-remove" type="button" aria-label="Remove ${escapeHtml(service.name)}" onclick='event.stopPropagation();toggleServiceSelection(${JSON.stringify(service.id)})'><i data-lucide="trash-2" aria-hidden="true"></i></button></div>`).join('');
       refreshIcons(chips);

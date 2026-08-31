@@ -1,11 +1,81 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { readFileSync } from 'node:fs';
+import { JSDOM } from 'jsdom';
 
 const SOURCE = readFileSync(new URL('./booking-book-phase-1.html', import.meta.url), 'utf8');
 const SERVICES_PANEL_START = SOURCE.indexOf('Services & Pricing');
 const SERVICES_PANEL_END = SOURCE.indexOf('AI Voice', SERVICES_PANEL_START);
 const SERVICES_PANEL = SOURCE.slice(SERVICES_PANEL_START, SERVICES_PANEL_END);
+
+function functionSource(name) {
+  const start = SOURCE.indexOf(`function ${name}(`);
+  assert.ok(start >= 0, `Expected function ${name} to exist`);
+  const bodyStart = SOURCE.indexOf('{', start);
+  let depth = 0;
+  let quote = '';
+  let escaped = false;
+
+  for (let index = bodyStart; index < SOURCE.length; index += 1) {
+    const char = SOURCE[index];
+    if (escaped) {
+      escaped = false;
+      continue;
+    }
+    if (quote && char === '\\') {
+      escaped = true;
+      continue;
+    }
+    if (quote) {
+      if (char === quote) quote = '';
+      continue;
+    }
+    if (char === "'" || char === '"' || char === '`') {
+      quote = char;
+      continue;
+    }
+    if (char === '{') depth += 1;
+    if (char === '}') {
+      depth -= 1;
+      if (depth === 0) return SOURCE.slice(start, index + 1);
+    }
+  }
+
+  assert.fail(`Could not read function ${name}`);
+}
+
+function loadSettingsServicesFeature() {
+  const dom = new JSDOM('<main data-settings-service-catalog></main>', {
+    pretendToBeVisual: true,
+    runScripts: 'outside-only',
+  });
+  const { window } = dom;
+  window.eval(`
+    var settingsManagedCategories = [];
+    var settingsServiceDraftSequence = 0;
+    function escapeHtml(value) {
+      return String(value == null ? '' : value)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#039;');
+    }
+    function renderSettingsCategoryManager() {}
+    function setSettingsStatus() {}
+    ${functionSource('settingsEnsureManagedCategory')}
+    ${functionSource('settingsServiceRowMarkup')}
+    ${functionSource('settingsServiceCategoryMarkup')}
+    ${functionSource('updateSettingsServiceCategoryCount')}
+    ${functionSource('addSettingsServiceDraft')}
+    window.settingsServicesFeature = {
+      categoryMarkup: settingsServiceCategoryMarkup,
+      addDraft: addSettingsServiceDraft,
+      managedCategories: settingsManagedCategories
+    };
+  `);
+  return { dom, window, feature: window.settingsServicesFeature };
+}
 
 test('Settings Services & Pricing renders from the shared JSON catalog', () => {
   assert.match(SOURCE, /data-settings-service-catalog/);
@@ -44,14 +114,13 @@ test('manual and industry services are added to CUSTOM SERVICES', () => {
   assert.match(SOURCE, /data-service-remove/);
 });
 
-test('Enter Manually opens a service modal with name, price, and minutes fields', () => {
+test('service edit modal keeps name, price, and minutes fields', () => {
   assert.match(SOURCE, /data-service-modal/);
   assert.match(SOURCE, /data-service-modal-field="name"/);
   assert.match(SOURCE, /data-service-modal-field="price"/);
   assert.match(SOURCE, /data-service-modal-field="duration"/);
-  assert.match(SOURCE, /function openSettingsServiceModal\(/);
+  assert.match(SOURCE, /function openSettingsServiceModalForEdit\(/);
   assert.match(SOURCE, /function saveSettingsServiceModal\(/);
-  assert.match(SOURCE, /if \(action === 'add-service'\) \{[\s\S]*openSettingsServiceModal\(\)/);
 });
 
 test('manual service modal lets the user choose a catalog category', () => {
@@ -88,8 +157,10 @@ test('Settings exposes category management controls', () => {
 });
 
 test('Services & Pricing actions share a wrapping flex row', () => {
-  assert.match(SERVICES_PANEL, /<div class="settings-actions settings-service-actions"[^>]*>[\s\S]*data-settings-category-action="open"[\s\S]*data-settings-action="photo"[\s\S]*data-settings-action="add-service"[\s\S]*<\/div>/);
+  assert.match(SERVICES_PANEL, /<div class="settings-actions settings-service-actions"[^>]*>[\s\S]*data-settings-category-action="open"[\s\S]*data-settings-action="photo"[\s\S]*<\/div>/);
   assert.doesNotMatch(SERVICES_PANEL, /data-settings-action="suggest"/);
+  assert.doesNotMatch(SERVICES_PANEL, /data-settings-action="add-service"/);
+  assert.doesNotMatch(SERVICES_PANEL, /Enter Manually/i);
 
   const rowRule = SOURCE.match(/\.settings-service-actions\s*\{([\s\S]*?)\n\s*\}/)?.[1] || '';
   assert.match(rowRule, /display:\s*flex/);
@@ -98,6 +169,51 @@ test('Services & Pricing actions share a wrapping flex row', () => {
   const buttonRule = SOURCE.match(/\.settings-service-actions\s*>\s*button\s*\{([\s\S]*?)\n\s*\}/)?.[1] || '';
   assert.match(buttonRule, /flex:\s*0\s+1\s+auto/);
   assert.match(buttonRule, /min-width:\s*0/);
+});
+
+test('each service category renders its own Add services action', () => {
+  const { feature, window } = loadSettingsServicesFeature();
+  const catalog = window.document.querySelector('[data-settings-service-catalog]');
+  catalog.innerHTML = [
+    feature.categoryMarkup({ id: 'manicure', name: 'Manicure', services: [{ id: 'gel', name: 'Gel Manicure', price: 35, durationMin: 45 }] }, 0),
+    feature.categoryMarkup({ id: 'pedicure', name: 'Pedicure', services: [{ id: 'spa', name: 'Spa Pedicure', price: 50, durationMin: 60 }] }, 1),
+  ].join('');
+
+  const categories = [...catalog.querySelectorAll('[data-service-category]')];
+  assert.equal(categories.length, 2);
+  categories.forEach((category) => {
+    const actions = category.querySelectorAll('[data-settings-service-draft-add]');
+    assert.equal(actions.length, 1);
+    assert.equal(actions[0].textContent.trim(), 'Add services');
+  });
+});
+
+test('Add services appends and focuses a blank draft in the selected category', () => {
+  const { feature, window } = loadSettingsServicesFeature();
+  const catalog = window.document.querySelector('[data-settings-service-catalog]');
+  catalog.innerHTML = [
+    feature.categoryMarkup({ id: 'manicure', name: 'Manicure', services: [{ id: 'gel', name: 'Gel Manicure', price: 35, durationMin: 45 }] }, 0),
+    feature.categoryMarkup({ id: 'pedicure', name: 'Pedicure', services: [{ id: 'spa', name: 'Spa Pedicure', price: 50, durationMin: 60 }] }, 1),
+  ].join('');
+
+  const categories = [...catalog.querySelectorAll('[data-service-category]')];
+  const addButton = categories[1].querySelector('[data-settings-service-draft-add]');
+  feature.addDraft(addButton);
+
+  assert.equal(categories[0].querySelectorAll('[data-service-row]').length, 1);
+  assert.equal(categories[1].querySelectorAll('[data-service-row]').length, 2);
+  const draft = categories[1].querySelector('[data-service-draft]');
+  assert.ok(draft);
+  assert.equal(draft.nextElementSibling, addButton);
+  assert.deepEqual(
+    [...draft.querySelectorAll('.settings-service-input')].map((input) => input.value),
+    ['', '', ''],
+  );
+  assert.equal(window.document.activeElement, draft.querySelector('[aria-label="Service name"]'));
+  assert.equal(categories[1].querySelector('.settings-service-category-count').textContent, '2');
+  assert.equal(feature.managedCategories[0].id, 'pedicure');
+  assert.equal(feature.managedCategories[0].services.length, 1);
+  assert.equal(feature.managedCategories[0].services[0].isDraft, true);
 });
 
 test('service modal validates required values before adding a custom service', () => {

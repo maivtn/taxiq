@@ -156,6 +156,20 @@ test('shows This Week as seven daily rows with a reconciled weekly total', () =>
   assert.equal(window.document.querySelector('[data-table-grand-total]')?.textContent?.trim(), '$18,745.90')
 })
 
+test('shows the calendar date range for the selected report week', () => {
+  const { window } = loadPrototype()
+
+  click(window, '[data-period="week"]')
+  const weekInput = window.document.querySelector('[name="weekValue"]')
+  assert.ok(weekInput instanceof window.HTMLInputElement)
+  assert.equal(window.document.querySelector('[data-week-range]')?.textContent?.trim(), 'Aug 31 – Sep 6, 2026')
+
+  weekInput.value = '2026-W35'
+  weekInput.dispatchEvent(new window.Event('change', { bubbles: true }))
+
+  assert.equal(window.document.querySelector('[data-week-range]')?.textContent?.trim(), 'Aug 24 – Aug 30, 2026')
+})
+
 test('shows This Year as twelve reconciled monthly rows without historical warnings', () => {
   const { window } = loadPrototype()
 

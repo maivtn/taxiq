@@ -495,7 +495,7 @@ body.dark .tip-wrap { background: radial-gradient(1000px 500px at 50% -10%, rgba
           <div class="ci-sub">A technician will be with you shortly.<br>Enjoy a complimentary drink while you wait 🍹</div>
         </div>
       </div>
-      <div class="spec-note" style="text-align:left;"><b>📐 SPEC S3 — Kiosk 1 MÀN HÌNH (#84, thay wizard nhiều bước):</b> Không chuyển trang — SĐT cố định bên trái, panel phải <b>lộ dần</b> theo dữ liệu. Đủ 10 số → <b>tự lookup</b> (7 số cuối), KHÔNG có nút Continue: <b>(a)</b> có booking hôm nay → panel phải chỉ còn 1 nút "✓ Yes, check me in" (thợ + dịch vụ + giờ lấy từ booking, ưu tiên hàng chờ; sai giờ &gt;30' vẫn cho check-in nhưng flag cho cashier); <b>(b)</b> khách cũ → chào tên + chọn nhóm dịch vụ (multi-select) và chọn thợ hiện CÙNG LÚC, thợ mặc định "First available" nên khách có thể bấm ✓ ngay sau 1 chạm dịch vụ; <b>(c)</b> khách mới → thêm ô tên + consent SMS <b>inline</b> ngay trên panel, không sang màn đăng ký riêng. Đường nhanh nhất: khách có hẹn = 10 số + 1 chạm; walk-in cũ = 10 số + 1 chạm dịch vụ + ✓. <b>🧰 Skill filter giữ nguyên:</b> thợ thiếu skill cho dịch vụ đã chọn → mờ + "Not available", re-check mỗi lần đổi lựa chọn dịch vụ. Avatar thợ từ Điều phối (owner duyệt). Consent SMS mặc định KHÔNG tick (TCPA). Guided Access khóa iPad, thoát = PIN. Offline queue sync lại khi có mạng. Check-in xong: overlay 🎉 + số thứ tự, auto reset 6s. Lý do 1 màn: giảm bước từ 4–5 xuống 2, khách thấy toàn bộ việc phải làm ngay từ đầu — nhưng thứ tự SĐT-trước vẫn giữ vì mọi nhánh (hẹn/cũ/mới) phụ thuộc lookup. <b>📱 QR check-in bằng phone khách (#93):</b> QR trên kiosk = universal link <b>nexora.us/s/bitcoinnailbar?k=TOKEN</b> — phone có Nexora App → deep link mở thẳng app, tự nhận diện tài khoản/points (luồng S17); không app → mở web check-in (tên + SĐT + dịch vụ, 3 chạm, không cần cài). CẢ HAI cùng tạo check-in request đổ về hộp 📥 ở S2 chờ lễ tân confirm — đúng 1 luồng, không nhánh riêng. Token trong QR xoay 60s (như QR vào ca S14) chống khách scan từ nhà xí chỗ; bản thật thêm geofence + rate limit per phone. Trong prototype: <b>bấm vào ảnh QR để giả lập khách vừa scan</b> — request hiện ở 📥 S2.</div>
+      <div class="spec-note" style="text-align:left;"><b>📐 SPEC S3 — Kiosk 1 MÀN HÌNH (#84, thay wizard nhiều bước):</b> Không chuyển trang — SĐT cố định bên trái, panel phải <b>lộ dần</b> theo dữ liệu. Đủ 10 số → <b>tự lookup</b> (7 số cuối), KHÔNG có nút Continue: <b>(a)</b> có booking hôm nay → panel phải chỉ còn 1 nút "✓ Yes, check me in" (thợ + dịch vụ + giờ lấy từ booking, ưu tiên hàng chờ; sai giờ &gt;30' vẫn cho check-in nhưng flag cho cashier); <b>(b)</b> khách cũ → chào tên + chọn nhóm dịch vụ (multi-select) và chọn thợ hiện CÙNG LÚC, thợ mặc định "Anyone" nên khách có thể bấm ✓ ngay sau 1 chạm dịch vụ; <b>(c)</b> khách mới → thêm ô tên + consent SMS <b>inline</b> ngay trên panel, không sang màn đăng ký riêng. Đường nhanh nhất: khách có hẹn = 10 số + 1 chạm; walk-in cũ = 10 số + 1 chạm dịch vụ + ✓. <b>🧰 Skill filter giữ nguyên:</b> thợ thiếu skill cho dịch vụ đã chọn → mờ + "Not available", re-check mỗi lần đổi lựa chọn dịch vụ. Avatar thợ từ Điều phối (owner duyệt). Consent SMS mặc định KHÔNG tick (TCPA). Guided Access khóa iPad, thoát = PIN. Offline queue sync lại khi có mạng. Check-in xong: overlay 🎉 + số thứ tự, auto reset 6s. Lý do 1 màn: giảm bước từ 4–5 xuống 2, khách thấy toàn bộ việc phải làm ngay từ đầu — nhưng thứ tự SĐT-trước vẫn giữ vì mọi nhánh (hẹn/cũ/mới) phụ thuộc lookup. <b>📱 QR check-in bằng phone khách (#93):</b> QR trên kiosk = universal link <b>nexora.us/s/bitcoinnailbar?k=TOKEN</b> — phone có Nexora App → deep link mở thẳng app, tự nhận diện tài khoản/points (luồng S17); không app → mở web check-in (tên + SĐT + dịch vụ, 3 chạm, không cần cài). CẢ HAI cùng tạo check-in request đổ về hộp 📥 ở S2 chờ lễ tân confirm — đúng 1 luồng, không nhánh riêng. Token trong QR xoay 60s (như QR vào ca S14) chống khách scan từ nhà xí chỗ; bản thật thêm geofence + rate limit per phone. Trong prototype: <b>bấm vào ảnh QR để giả lập khách vừa scan</b> — request hiện ở 📥 S2.</div>
     </div>
   </div>
 </div>
@@ -7671,7 +7671,7 @@ function kTechChips() {
   // 🧰 Skill filter: thợ thiếu skill cho dịch vụ khách đã chọn → mờ + không bấm được (EN cho khách), re-check mỗi lần đổi dịch vụ
   const reqs = [...kSvcSel].map(id => { const c = MENU.find(x => x.id === id); return c ? reqSkill({ svc: c.label, items: [] }) : null; }).filter(Boolean);
   return `<div class="ci-svc-pick" style="margin-bottom:0;">` +
-    `<button class="ci-svc ${kTechSel === null ? 'sel' : ''}" data-ktech="any"><span class="ico">✨</span>First available<div style="font-size:10px;color:var(--text-dim);margin-top:2px;">shortest wait</div></button>` +
+    `<button class="ci-svc ${kTechSel === null ? 'sel' : ''}" data-ktech="any"><span class="ico">✨</span>Anyone<div style="font-size:10px;color:var(--text-dim);margin-top:2px;">shortest wait</div></button>` +
     TECHS.map(t => {
       const ok = !reqs.length || reqs.every(r => (t.skills || []).includes(r));
       return `<button class="ci-svc ${kTechSel === t.id ? 'sel' : ''}" data-ktech="${t.id}" ${ok ? '' : 'disabled style="opacity:0.38;"'}><span class="ico" style="display:flex;justify-content:center;margin-bottom:4px;">${avaHtml(t.id, 40, false)}</span>${escapeHtml(t.name)}<div style="font-size:10px;margin-top:2px;color:${ok ? (busy.has(t.id) ? 'var(--orange)' : 'var(--green)') : 'var(--text-dim)'};">${ok ? (busy.has(t.id) ? '● busy now' : '● available') : 'Not available for this service'}</div></button>`;
@@ -7701,7 +7701,7 @@ function renderKiosk() {
        <label class="ci-consent" style="margin-bottom:0;"><input type="checkbox" id="kConsent" ${kNewConsent ? 'checked' : ''}><span>I agree to receive text messages from Bitcoin Nail Bar (offers, reminders &amp; rewards). Msg &amp; data rates may apply. Reply STOP anytime to opt out.</span></label>`;
   R.innerHTML = kCard(greet)
     + kCard(`<div style="font-size:14px;font-weight:800;margin-bottom:10px;">What are you here for today? <span style="color:var(--text-dim);font-weight:400;">Tap all that apply</span></div>${kSvcChips()}`)
-    + kCard(`<div style="font-size:14px;font-weight:800;margin-bottom:10px;">Technician <span style="color:var(--text-dim);font-weight:400;">— optional, "First available" is fastest</span></div>${kTechChips()}`)
+    + kCard(`<div style="font-size:14px;font-weight:800;margin-bottom:10px;">Technician <span style="color:var(--text-dim);font-weight:400;">— optional, "Anyone" is fastest</span></div>${kTechChips()}`)
     + `<button class="ci-big" data-kk="checkin" ${kCanGo() ? '' : 'disabled'}>✓ Check me in${kSvcSel.size ? ' (' + kSvcSel.size + ' selected)' : ''}</button>`;
 }
 function kLookup() {
@@ -7809,7 +7809,7 @@ function bRenderSvc() {
 }
 function bRenderTech() {
   $('bTechPick').innerHTML =
-    `<button class="bk-tech ${bTechSel === null ? 'sel' : ''}" data-btech="any"><span class="ava" style="width:48px;height:48px;"><span style="font-size:26px;">✨</span></span><div>First available<div class="sub">Shortest wait — we'll match you</div></div></button>` +
+    `<button class="bk-tech ${bTechSel === null ? 'sel' : ''}" data-btech="any"><span class="ava" style="width:48px;height:48px;"><span style="font-size:26px;">✨</span></span><div>Anyone<div class="sub">Shortest wait — we'll match you</div></div></button>` +
     TECHS.map(t =>
       `<button class="bk-tech ${bTechSel === t.id ? 'sel' : ''}" data-btech="${t.id}">${avaHtml(t.id, 48, false)}<div>${escapeHtml(t.name)}<div class="sub">Nail technician</div></div></button>`).join('');
 }
@@ -7853,7 +7853,7 @@ $('bConfirm').addEventListener('click', () => {
   const d7 = phone.replace(/\D/g, '').slice(-7);
   if (!CUSTOMERS.some(c => c.phone.replace(/\D/g, '').endsWith(d7)))
     CUSTOMERS.push({ name, phone, seg: 'new', visits: 0, spent: 0 });
-  $('bDoneSum').innerHTML = `${escapeHtml(svc)}<br>${bDay} · ${bTime} · with <b>${escapeHtml(bTechSel ? techName(bTechSel) : 'first available tech')}</b>`;
+  $('bDoneSum').innerHTML = `${escapeHtml(svc)}<br>${bDay} · ${bTime} · with <b>${escapeHtml(bTechSel ? techName(bTechSel) : 'Anyone')}</b>`;
   bShow('b-done');
 });
 $('bAgain').addEventListener('click', bReset);
@@ -7891,7 +7891,7 @@ function renderApPanel() {
       <label>Tên khách</label><input type="text" class="form-input" id="apName" style="width:100%;" maxlength="40" value="${escapeHtml(apDraft.name || '')}">
       <label>SĐT</label><input type="tel" class="form-input" id="apPhone" style="width:100%;" maxlength="14" value="${escapeHtml(apDraft.phone || '')}">
       <label>Dịch vụ (bấm chọn nhiều)</label><div class="ap-svc-chips">${MENU_SVC().map(c => `<button class="ap-chip ${apSvcSel.has(c.id) ? 'sel' : ''}" data-apsvc="${c.id}">${c.icon} ${escapeHtml(c.label)}</button>`).join('')}</div>
-      <label>Thợ</label><select class="form-input" id="apTech" style="width:100%;"><option value="">✨ Chưa gán — first available</option>${TECHS.map(t => `<option value="${t.id}" ${apDraft.techId === t.id ? 'selected' : ''}>${escapeHtml(t.name)}</option>`).join('')}</select>
+      <label>Thợ</label><select class="form-input" id="apTech" style="width:100%;"><option value="">✨ Chưa gán — Anyone</option>${TECHS.map(t => `<option value="${t.id}" ${apDraft.techId === t.id ? 'selected' : ''}>${escapeHtml(t.name)}</option>`).join('')}</select>
       <label>Ngày</label><select class="form-input" id="apDaySel" style="width:100%;"><option value="today" ${apDraft.day !== 'tomorrow' ? 'selected' : ''}>Hôm nay</option><option value="tomorrow" ${apDraft.day === 'tomorrow' ? 'selected' : ''}>Ngày mai</option></select>
       <label>Giờ</label><select class="form-input" id="apTime" style="width:100%;">${B_SLOTS.map(s => `<option ${apDraft.time === s ? 'selected' : ''}>${s}</option>`).join('')}</select>
       <div id="apWarn" style="font-size:11px;color:var(--orange);margin-top:8px;"></div>

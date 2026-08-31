@@ -407,12 +407,13 @@ test('uses regular weight for service duration in New appointment', () => {
   assert.match(html, /\.booking-service-duration\s*\{[^}]*font-weight:\s*400;/);
 });
 
-test('shows total price and total time below New appointment services', () => {
+test('shows only total price below New appointment services', () => {
   const html = source();
 
   assert.match(html, /data-booking-create-field="service"[\s\S]*class="booking-service-summary"/);
   assert.match(html, /data-booking-create-total-price>\$0<\/strong>/);
-  assert.match(html, /data-booking-create-total-duration>0 min<\/strong>/);
+  assert.doesNotMatch(html, /data-booking-create-total-duration/);
+  assert.doesNotMatch(html, /Total time:/);
   assert.match(html, /function bookingServicePriceTotal\(services\)/);
   assert.match(html, /function updateBookingCreateServiceSummary\(\)/);
   assert.match(html, /updateBookingCreateServiceSummary\(\);/);
@@ -420,13 +421,13 @@ test('shows total price and total time below New appointment services', () => {
 
 test('New appointment labels selected services before removable name chips', () => {
   const html = source();
-  const serviceField = html.match(/<label class="booking-create-field is-full">[\s\S]*?data-booking-create-total-duration>0 min<\/strong>[\s\S]*?<\/label>/)?.[0] || '';
+  const serviceField = html.match(/<label class="booking-create-field is-full">[\s\S]*?data-booking-create-total-price>\$0<\/strong>[\s\S]*?<\/label>/)?.[0] || '';
   const selectedIndex = serviceField.indexOf('data-booking-create-selected-services');
   const summaryIndex = serviceField.indexOf('class="booking-service-summary"');
 
   assert.match(serviceField, /data-booking-create-field="service"[\s\S]*data-booking-create-selected-services/);
   assert.ok(selectedIndex >= 0, 'selected services list should exist below the picker');
-  assert.ok(summaryIndex > selectedIndex, 'selected services should appear before total price and time');
+  assert.ok(summaryIndex > selectedIndex, 'selected services should appear before total price');
   assert.match(html, /function renderBookingCreateSelectedServices\(\)/);
   assert.match(html, /booking-selected-services-title/);
   assert.match(html, />Selected services</);
@@ -438,7 +439,7 @@ test('New appointment labels selected services before removable name chips', () 
   assert.doesNotMatch(html, /booking-selected-service-row|booking-selected-service-main|booking-selected-service-list/);
 });
 
-test('renders service totals as text instead of input-like controls', () => {
+test('renders the service price total as text instead of an input-like control', () => {
   const html = source();
   const summaryItemRule = html.match(/\.booking-service-summary-item\s*\{([^}]*)\}/)?.[1] || '';
   const summaryMarkup = html.match(/<div class="booking-service-summary"[\s\S]*?<\/div>\s*<\/label>/)?.[0] || '';
@@ -446,7 +447,7 @@ test('renders service totals as text instead of input-like controls', () => {
   assert.doesNotMatch(summaryItemRule, /\bborder\s*:/);
   assert.doesNotMatch(summaryItemRule, /\bbackground\s*:/);
   assert.match(html, /<span class="booking-service-summary-label">Total price:<\/span>\s*<strong[^>]*data-booking-create-total-price>\$0<\/strong>/);
-  assert.match(html, /<span class="booking-service-summary-label">Total time:<\/span>\s*<strong[^>]*data-booking-create-total-duration>0 min<\/strong>/);
+  assert.doesNotMatch(html, /data-booking-create-total-duration|Total time:/);
   assert.doesNotMatch(summaryMarkup, /<input\b/);
 });
 

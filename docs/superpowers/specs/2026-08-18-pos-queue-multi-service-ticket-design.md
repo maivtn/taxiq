@@ -103,7 +103,7 @@ The modal keeps the existing title and catalog presentation but changes each ser
 
 - Opening the modal preselects every service currently in `w.items`.
 - Clicking a service toggles its selected state and checkmark.
-- The current-selection footer shows service count, total duration, and total price.
+- The current-selection footer shows service count and total price. Duration stays in ticket data for scheduling only.
 - `Save services` applies the draft; `Cancel` and Escape discard it.
 - Save is disabled when no service is selected, and an inline message explains that at least one service is required.
 - The modal does not save immediately when an option is clicked.

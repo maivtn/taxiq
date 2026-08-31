@@ -50,7 +50,7 @@ Mỗi ticket được render thành một event riêng trên calendar, nằm ở
 - Các ticket khác technician dùng lane cursor độc lập và chạy song song.
 - Các ticket `Anyone` dùng chung lane unassigned và chạy nối tiếp với nhau.
 - Thời lượng event của mỗi ticket là `durationMin` của ticket đó.
-- Khoảng thời gian của order cha trên calendar kéo dài từ thời gian bắt đầu đến thời gian kết thúc muộn nhất của các ticket. `Total time` trên form vẫn là tổng thời lượng của tất cả ticket, còn calendar phản ánh thời gian thực tế sau khi có ticket chạy song song.
+- Khoảng thời gian của order cha trên calendar kéo dài từ thời gian bắt đầu đến thời gian kết thúc muộn nhất của các ticket. Form chỉ hiển thị tổng giá; duration vẫn được giữ trong dữ liệu để calendar phản ánh thời gian thực tế khi các ticket chạy song song.
 
 Khi click bất kỳ ticket event nào, hệ thống mở form của order cha và hiển thị toàn bộ ticket. Khi kéo hoặc resize một ticket, chỉ thời gian của ticket đó được cập nhật và lịch các ticket còn lại được giữ nguyên. Nếu thao tác không thể bảo toàn lịch ticket an toàn, hệ thống từ chối thao tác bằng cảnh báo hiện tại thay vì tự ý thay đổi ticket khác.
 
