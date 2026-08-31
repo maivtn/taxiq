@@ -285,6 +285,22 @@ test('links POS as a flat sidebar item from other shared sidebar pages', () => {
   assert.doesNotMatch(html, /href="pos-phase-1\.html\?tab=/);
 });
 
+test('links both income reports from the shared Analytics group', () => {
+  const html = renderSidebar('booking', 'booking');
+
+  assert.match(html, /aria-controls="nexora-subnav-analytics"/);
+  assert.match(html, /href="pos-shop-income-report\.html"[\s\S]*?<span>Store Income<\/span>/);
+  assert.match(html, /href="pos-service-income-report\.html"[\s\S]*?<span>Service Income<\/span>/);
+});
+
+test('expands Analytics and highlights the active standalone report', () => {
+  const html = renderSidebar('analytics', 'service-income');
+
+  assert.match(html, /data-nav-group aria-expanded="true" aria-controls="nexora-subnav-analytics"/);
+  assert.match(html, /class="nav-subitem is-active" href="pos-service-income-report\.html"/);
+  assert.match(html, /class="nav-subitem" href="pos-shop-income-report\.html"/);
+});
+
 test('keeps the shared sidebar in the drawer state through 1366px', () => {
   assert.match(shellCss, /@media\s*\(max-width:\s*1366px\)[\s\S]*?\.sidebar\s*\{[\s\S]*?transform:\s*translateX\(-105%\)/);
   assert.match(shellCss, /@media\s*\(min-width:\s*1367px\)[\s\S]*?\.sidebar\s*\{[\s\S]*?display:\s*flex/);

@@ -6,7 +6,7 @@
 
    Per-page config (set BEFORE this script runs):
      window.NEXORA_SHELL = {
-       activePage: 'booking' | 'community' | 'reward' | 'pos' | 'review' | 'packages' | 'stations' | 'news-library' | 'owner-settings' | 'staff',
+       activePage: 'booking' | 'community' | 'reward' | 'pos' | 'analytics' | 'review' | 'packages' | 'stations' | 'news-library' | 'owner-settings' | 'staff',
                                            // which functional group is native
        activeTab:  '<tabId>',              // initial highlighted sub-item
        showClearStorage: true,             // optional header action for local development
@@ -26,6 +26,7 @@
     community: 'community.html',
     reward: 'salon-setup-reward.html',
     pos: 'pos-phase-1.html',
+    analytics: 'pos-shop-income-report.html',
     review: 'nexora-review.html',
     packages: 'nexora-packages.html',
     stations: 'qr-stations.html',
@@ -78,7 +79,10 @@
       { label: 'Analytics', tab: 'analytics' }
     ] },
     { type: 'item', key: 'pos', label: 'POS', icon: 'monitor', page: 'pos' },
-    { type: 'item', key: 'analytics', label: 'Analytics', icon: 'chart-no-axes-combined' },
+    { type: 'group', key: 'analytics', label: 'Analytics', icon: 'chart-no-axes-combined', page: 'analytics', items: [
+      { label: 'Store Income', tab: 'store-income', href: 'pos-shop-income-report.html' },
+      { label: 'Service Income', tab: 'service-income', href: 'pos-service-income-report.html' }
+    ] },
     { type: 'item', key: 'settings', label: 'Settings', icon: 'settings', page: 'owner-settings' },
     { type: 'item', key: 'news-library', label: 'News & Library', icon: 'newspaper', page: 'news-library' },
     { type: 'item', key: 'support', label: 'Support', icon: 'circle-question-mark' }
@@ -222,6 +226,10 @@
 
     var items = node.items.map(function (it) {
       var inner = '<span class="nav-subitem-dot" aria-hidden="true"></span><span>' + esc(it.label) + '</span>';
+      if (it.href) {
+        var hrefActive = isNative && it.tab === activeTab;
+        return '<a class="nav-subitem' + (hrefActive ? ' is-active' : '') + '" href="' + esc(it.href) + '">' + inner + '</a>';
+      }
       if (node.page && !isNative) {
         // foreign group -> cross-page link
         var href = PAGES[node.page] + (it.tab ? ('?tab=' + encodeURIComponent(it.tab)) : '');

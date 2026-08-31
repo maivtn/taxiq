@@ -1,0 +1,890 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f9fc">
+  <title>Service Income — NEXORA TOUCH</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --canvas: #f7f9fc;
+      --surface: #ffffff;
+      --surface-muted: #f3f6fa;
+      --border: #dde5ef;
+      --rule: #e7ecf3;
+      --text: #0b1220;
+      --muted: #4d5870;
+      --subtle: #7a8296;
+      --brand: #4648d8;
+      --brand-dark: #393bc8;
+      --brand-soft: #e9e9ff;
+      --success: #00b873;
+      --success-soft: #e8f8f2;
+      --danger: #ef4444;
+      --danger-soft: #fef2f2;
+      --chart-violet: #8e4df8;
+      --chart-blue: #2b59ff;
+      --chart-teal: #12b886;
+      --chart-gold: #f59e0b;
+      --chart-rose: #ef4444;
+      --chart-cyan: #32d7ff;
+      --chart-indigo: #a8a9f3;
+      --chart-green: #00b873;
+      --shadow-card: 0 2px 8px rgba(15, 23, 42, 0.08);
+      --shadow-panel: 0 18px 55px rgba(12, 22, 44, 0.16);
+    }
+
+    * { box-sizing: border-box; }
+    html { background: var(--canvas); }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+      background:
+        radial-gradient(circle at 85% 0%, rgba(70, 72, 216, 0.06), transparent 28rem),
+        var(--canvas);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 14px;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body.has-overlay { overflow: hidden; }
+    button, input { font: inherit; }
+    button { color: inherit; }
+
+    button:focus-visible,
+    input:focus-visible {
+      border-color: var(--brand) !important;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(70, 72, 216, 0.2);
+    }
+
+    [hidden] { display: none !important; }
+
+    .page {
+      width: min(100%, 1240px);
+      margin: 0 auto;
+      padding: 16px 20px 24px;
+    }
+
+    .compact-header {
+      margin-bottom: 8px;
+    }
+
+    .compact-header h1 { margin: 0; }
+
+    .breadcrumb {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin-bottom: 16px;
+      color: var(--subtle);
+      font-size: 11px;
+      font-weight: 750;
+    }
+
+    .breadcrumb strong { color: var(--brand); }
+    .breadcrumb-separator { color: var(--border); }
+
+    .page-header,
+    .header-actions,
+    .prototype-toolbar,
+    .period-row,
+    .period-tabs,
+    .date-fields,
+    .chart-header,
+    .chart-title-row,
+    .chart-footer,
+    .drawer-header,
+    .drawer-meta,
+    .drawer-footer,
+    .ticket-row,
+    .empty-state {
+      display: flex;
+      align-items: center;
+    }
+
+    .page-header {
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 24px;
+    }
+
+    .eyebrow {
+      margin: 0 0 6px;
+      color: var(--brand);
+      font-size: 11px;
+      font-weight: 900;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      margin-bottom: 5px;
+      font-size: 28px;
+      font-size: clamp(24px, 2.7vw, 30px);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.1;
+    }
+
+    .subtitle {
+      max-width: 700px;
+      margin-bottom: 0;
+      color: var(--muted);
+      font-size: 13px;
+      font-weight: 500;
+    }
+
+    .header-actions {
+      flex: 0 0 auto;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+
+    .updated-label {
+      margin-right: 3px;
+      color: var(--subtle);
+      font-size: 11px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    .button {
+      display: inline-flex;
+      min-height: 44px;
+      align-items: center;
+      justify-content: center;
+      gap: 7px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      padding: 0 14px;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+      transition: background 140ms ease, border-color 140ms ease, color 140ms ease, transform 140ms ease;
+    }
+
+    .button:hover { background: var(--surface-muted); }
+    .button:active { transform: translateY(1px); }
+    .button-primary { border-color: var(--brand); background: var(--brand); color: white; }
+    .button-primary:hover { background: var(--brand-dark); }
+    .refresh-icon { display: inline-block; font-size: 16px; line-height: 1; }
+
+    .prototype-toolbar {
+      justify-content: space-between;
+      gap: 12px;
+      margin-top: 18px;
+      border: 1px dashed #c9d1df;
+      border-radius: 12px;
+      background: rgba(255, 255, 255, 0.66);
+      padding: 8px 10px;
+    }
+
+    .prototype-label {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .prototype-dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--brand);
+      box-shadow: 0 0 0 4px var(--brand-soft);
+    }
+
+    .state-switcher {
+      display: inline-flex;
+      flex-wrap: wrap;
+      gap: 3px;
+      border-radius: 9px;
+      background: var(--surface-muted);
+      padding: 3px;
+    }
+
+    .state-button {
+      min-height: 34px;
+      border: 0;
+      border-radius: 7px;
+      background: transparent;
+      padding: 0 10px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 800;
+    }
+
+    .state-button[aria-pressed="true"] {
+      background: var(--surface);
+      color: var(--brand-dark);
+      box-shadow: 0 1px 4px rgba(15, 23, 42, 0.09);
+    }
+
+    .toolbar-card {
+      margin-top: 0;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface);
+      box-shadow: var(--shadow-card);
+    }
+
+    .period-row {
+      justify-content: space-between;
+      gap: 18px;
+      padding: 11px 14px;
+    }
+
+    .control-label {
+      flex: 0 0 auto;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 900;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+    }
+
+    .period-tabs { flex: 1; flex-wrap: wrap; gap: 4px; }
+
+    .period-button {
+      min-height: 38px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      padding: 0 13px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 800;
+    }
+
+    .period-button:hover { background: var(--surface-muted); color: var(--text); }
+    .period-button[aria-selected="true"] { background: var(--brand-soft); color: var(--brand-dark); }
+
+    .timezone-chip {
+      flex: 0 0 auto;
+      border-radius: 999px;
+      background: var(--surface-muted);
+      padding: 6px 10px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 750;
+      white-space: nowrap;
+    }
+
+    .custom-range {
+      background: #fbfcfe;
+      padding: 9px 12px 10px;
+    }
+
+    .date-fields { align-items: flex-end; gap: 10px; }
+    .field { display: grid; min-width: 0; gap: 5px; }
+    .field label { color: var(--muted); font-size: 11px; font-weight: 800; }
+
+    .field input {
+      width: 100%;
+      min-height: 44px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      padding: 0 11px;
+      color: var(--text);
+      font-size: 16px;
+    }
+
+    .date-error { margin: 8px 0 0; color: var(--danger); font-size: 12px; font-weight: 750; }
+
+    .service-type-chip {
+      display: inline-flex;
+      align-items: center;
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 850;
+      white-space: nowrap;
+    }
+    .chart-stack { display: grid; gap: 8px; margin-top: 8px; }
+
+    .chart-card {
+      overflow: hidden;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface);
+      box-shadow: var(--shadow-card);
+    }
+
+    .chart-header {
+      justify-content: space-between;
+      gap: 16px;
+      min-height: 48px;
+      border-bottom: 1px solid var(--rule);
+      padding: 8px 12px;
+    }
+
+    .chart-title-row { gap: 10px; }
+
+    .chart-icon {
+      display: grid;
+      width: 36px;
+      height: 36px;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 10px;
+      background: var(--brand-soft);
+      color: var(--brand-dark);
+      font-size: 16px;
+      font-weight: 900;
+    }
+
+    .chart-card[data-chart="count"] .chart-icon { background: var(--success-soft); color: #00865a; }
+    .chart-header h2 { margin: 0; font-size: 14px; font-weight: 900; letter-spacing: -0.015em; }
+    .chart-subtitle { margin: 2px 0 0; color: var(--muted); font-size: 10px; }
+    .chart-total { flex: 0 0 auto; text-align: right; }
+    .chart-total strong { display: block; font-size: 15px; font-weight: 900; font-variant-numeric: tabular-nums; }
+
+    .chart-total span {
+      display: block;
+      margin-top: 2px;
+      color: var(--subtle);
+      font-size: 9px;
+      font-weight: 750;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .chart-body {
+      overflow-x: auto;
+      padding: 6px 12px 2px;
+    }
+
+    .column-plot {
+      display: flex;
+      min-width: 820px;
+      height: 220px;
+      align-items: stretch;
+      gap: 10px;
+      border-bottom: 1px solid var(--rule);
+    }
+
+    .rank-row {
+      display: flex;
+      min-width: 0;
+      flex: 1 1 0;
+    }
+
+    .bar-button {
+      --service-color: var(--brand);
+      display: flex;
+      width: 100%;
+      min-height: 212px;
+      flex-direction: column;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 5px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      padding: 3px 3px 5px;
+      text-align: center;
+      cursor: pointer;
+      transition: background 120ms ease;
+    }
+
+    .bar-button:hover { background: var(--surface-muted); }
+    .bar-button[data-color="violet"] { --service-color: var(--chart-violet); }
+    .bar-button[data-color="blue"] { --service-color: var(--chart-blue); }
+    .bar-button[data-color="teal"] { --service-color: var(--chart-teal); }
+    .bar-button[data-color="gold"] { --service-color: var(--chart-gold); }
+    .bar-button[data-color="rose"] { --service-color: var(--chart-rose); }
+    .bar-button[data-color="cyan"] { --service-color: var(--chart-cyan); }
+    .bar-button[data-color="indigo"] { --service-color: var(--chart-indigo); }
+    .bar-button[data-color="green"] { --service-color: var(--chart-green); }
+    .rank-number,
+    .service-caption,
+    .service-dot { display: none; }
+
+    .service-label {
+      display: flex;
+      width: 100%;
+      min-width: 0;
+      min-height: 38px;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+
+    .service-name-line {
+      display: flex;
+      max-width: 100%;
+      min-width: 0;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .service-name {
+      overflow: hidden;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 850;
+      display: -webkit-box;
+      -webkit-box-orient: vertical;
+      -webkit-line-clamp: 2;
+      line-height: 1.2;
+    }
+
+    .service-type-chip { background: var(--surface-muted); padding: 3px 6px; color: var(--subtle); }
+    .service-type-chip.inactive { background: var(--danger-soft); color: #c53737; }
+
+    .bar-track {
+      position: relative;
+      display: flex;
+      width: min(100%, 68px);
+      height: 128px;
+      align-items: flex-end;
+      overflow: hidden;
+      border-radius: 8px 8px 2px 2px;
+      background: linear-gradient(to top, var(--surface-muted), rgba(243, 246, 250, 0.35));
+    }
+
+    .bar-fill {
+      display: block;
+      width: 100%;
+      height: var(--bar-size);
+      min-height: 3px;
+      border-radius: 8px 8px 2px 2px;
+      background: linear-gradient(180deg, color-mix(in srgb, var(--service-color) 80%, white), var(--service-color));
+      box-shadow: inset 0 -1px rgba(0, 0, 0, 0.08);
+    }
+
+    .bar-value {
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 900;
+      order: -1;
+      min-height: 19px;
+      text-align: center;
+      white-space: nowrap;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .bar-value small { display: none; }
+
+    .chart-footer {
+      justify-content: space-between;
+      gap: 12px;
+      border-top: 1px solid var(--rule);
+      background: #fbfcfe;
+      padding: 10px 16px;
+    }
+
+    .reconcile-note { display: flex; min-width: 0; align-items: center; gap: 7px; color: var(--muted); font-size: 10px; font-weight: 650; }
+
+    .reconcile-check {
+      display: grid;
+      width: 18px;
+      height: 18px;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--success-soft);
+      color: #00865a;
+      font-size: 11px;
+      font-weight: 900;
+    }
+
+    .view-all-button {
+      flex: 0 0 auto;
+      min-height: 36px;
+      border: 0;
+      border-radius: 8px;
+      background: transparent;
+      padding: 0 9px;
+      color: var(--brand-dark);
+      cursor: pointer;
+      font-size: 10px;
+      font-weight: 850;
+    }
+
+    .view-all-button:hover { background: var(--brand-soft); }
+
+    .empty-state {
+      min-height: 320px;
+      flex-direction: column;
+      justify-content: center;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      background: var(--surface);
+      padding: 32px;
+      text-align: center;
+      box-shadow: var(--shadow-card);
+    }
+
+    .empty-icon {
+      display: grid;
+      width: 54px;
+      height: 54px;
+      place-items: center;
+      border-radius: 16px;
+      background: var(--brand-soft);
+      color: var(--brand-dark);
+      font-size: 24px;
+    }
+
+    .empty-state h2 { margin: 14px 0 5px; font-size: 17px; font-weight: 900; }
+    .empty-state p { max-width: 420px; margin: 0; color: var(--muted); font-size: 12px; }
+
+    .page-footer {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 18px;
+      margin-top: 13px;
+      color: var(--subtle);
+      font-size: 10px;
+    }
+
+    .page-footer p { max-width: 820px; margin: 0; }
+    .read-only-badge { flex: 0 0 auto; border-radius: 999px; background: var(--surface-muted); padding: 5px 9px; color: var(--muted); font-weight: 800; white-space: nowrap; }
+
+    .detail-overlay {
+      position: fixed;
+      z-index: 50;
+      inset: 0;
+      display: flex;
+      justify-content: flex-end;
+      background: rgba(11, 18, 32, 0.6);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 160ms ease;
+    }
+
+    .detail-overlay[aria-hidden="false"] { opacity: 1; pointer-events: auto; }
+
+    .drawer-panel {
+      display: flex;
+      width: min(100%, 560px);
+      height: 100%;
+      flex-direction: column;
+      transform: translateX(100%);
+      background: var(--surface);
+      box-shadow: var(--shadow-panel);
+      transition: transform 180ms ease;
+    }
+
+    .detail-overlay[aria-hidden="false"] .drawer-panel { transform: translateX(0); }
+
+    .drawer-header {
+      flex: 0 0 auto;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1px solid var(--rule);
+      padding: 18px 20px;
+    }
+
+    .drawer-kicker { margin: 0 0 5px; color: var(--brand); font-size: 10px; font-weight: 900; letter-spacing: 0.09em; text-transform: uppercase; }
+    .drawer-header h2 { margin: 0; font-size: 20px; font-weight: 900; letter-spacing: -0.025em; }
+    .drawer-subtitle { margin: 4px 0 0; color: var(--muted); font-size: 11px; }
+
+    .close-button {
+      display: grid;
+      width: 44px;
+      height: 44px;
+      flex: 0 0 auto;
+      place-items: center;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: var(--surface);
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 22px;
+      line-height: 1;
+    }
+
+    .close-button:hover { background: var(--surface-muted); color: var(--text); }
+
+    .drawer-summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      flex: 0 0 auto;
+      border-bottom: 1px solid var(--rule);
+      background: #fbfcfe;
+      padding: 12px 20px;
+    }
+
+    .drawer-stat { border: 1px solid var(--border); border-radius: 12px; background: var(--surface); padding: 11px 12px; }
+    .drawer-stat span { display: block; color: var(--muted); font-size: 9px; font-weight: 900; letter-spacing: 0.07em; text-transform: uppercase; }
+    .drawer-stat strong { display: block; margin-top: 3px; font-size: 18px; font-weight: 900; font-variant-numeric: tabular-nums; }
+
+    .drawer-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; padding: 14px 20px 22px; }
+    .drawer-meta { justify-content: space-between; gap: 14px; margin-bottom: 8px; }
+    .drawer-meta h3 { margin: 0; font-size: 12px; font-weight: 900; }
+    .drawer-meta span { color: var(--subtle); font-size: 10px; }
+    .ticket-list { overflow: hidden; border: 1px solid var(--border); border-radius: 12px; background: var(--surface); }
+
+    .ticket-header {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) 98px 78px;
+      gap: 10px;
+      border-bottom: 1px solid var(--rule);
+      background: var(--surface-muted);
+      padding: 8px 12px;
+      color: var(--muted);
+      font-size: 9px;
+      font-weight: 900;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+    }
+
+    .ticket-header span:not(:first-child) { text-align: right; }
+    .ticket-row { min-height: 74px; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--rule); padding: 10px 12px; }
+    .ticket-row:last-child { border-bottom: 0; }
+    .ticket-main { min-width: 0; }
+    .ticket-id { color: var(--text); font-size: 11px; font-weight: 900; }
+    .ticket-time { margin-top: 2px; color: var(--muted); font-size: 9px; }
+    .ticket-tech { margin-top: 4px; color: var(--subtle); font-size: 9px; }
+
+    .ticket-finance {
+      display: grid;
+      min-width: 174px;
+      grid-template-columns: 88px 76px;
+      gap: 10px;
+      text-align: right;
+    }
+
+    .ticket-finance span { display: block; color: var(--subtle); font-size: 8px; text-transform: uppercase; }
+    .ticket-finance strong { display: block; margin-top: 2px; font-size: 11px; font-variant-numeric: tabular-nums; }
+    .discount-value { color: var(--danger); }
+
+    .drawer-footer {
+      flex: 0 0 auto;
+      justify-content: space-between;
+      gap: 12px;
+      border-top: 1px solid var(--rule);
+      background: var(--surface);
+      padding: 12px 20px;
+    }
+
+    .drawer-footer p { margin: 0; color: var(--subtle); font-size: 9px; }
+
+    @media (max-width: 900px) {
+      .column-plot { min-width: 720px; }
+    }
+
+    @media (max-width: 700px) {
+      .page { padding: 12px 10px 18px; }
+      .chart-body { overflow-x: auto; padding-inline: 12px; }
+      .column-plot { min-width: 700px; height: 210px; }
+      .bar-button { min-height: 202px; }
+      .bar-track { height: 120px; }
+      .chart-header { align-items: flex-start; }
+      .detail-overlay { align-items: flex-end; }
+      .drawer-panel {
+        width: 100%;
+        height: auto;
+        max-height: 90vh;
+        max-height: 90dvh;
+        border-radius: 16px 16px 0 0;
+        transform: translateY(100%);
+      }
+      .detail-overlay[aria-hidden="false"] .drawer-panel { transform: translateY(0); }
+    }
+
+    @media (max-width: 480px) {
+      .compact-header h1 { font-size: 20px; }
+      .date-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); }
+      .date-fields .field { width: auto; }
+      .date-fields .button { width: 100%; grid-column: 1 / -1; }
+      .chart-header { padding-inline: 12px; }
+      .chart-total span { display: none; }
+      .drawer-header { padding: 15px 16px; }
+      .drawer-summary { padding-inline: 16px; }
+      .drawer-body { padding: 12px 16px 18px; }
+      .ticket-header { display: none; }
+      .ticket-row { align-items: flex-start; flex-direction: column; }
+      .ticket-finance { width: 100%; grid-template-columns: 1fr 1fr; text-align: left; }
+      .drawer-footer { align-items: stretch; flex-direction: column; padding-inline: 16px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Dashboard sidebar"></aside>
+
+    <div class="app-area">
+      <header class="header"></header>
+
+      <main class="content" aria-label="Service income report content">
+        <div class="page">
+    <header class="compact-header">
+      <h1>Service Income</h1>
+    </header>
+
+    <section class="toolbar-card" data-range-form aria-label="Report date range">
+      <div class="custom-range">
+        <div class="date-fields">
+          <div class="field"><label for="from-date">From date</label><input id="from-date" name="fromDate" type="date" value="2026-08-31"></div>
+          <div class="field"><label for="to-date">To date</label><input id="to-date" name="toDate" type="date" value="2026-08-31"></div>
+          <button class="button button-primary" type="button" data-apply-range>Run report</button>
+        </div>
+        <p class="date-error" data-date-error hidden role="alert">Start date must be on or before end date.</p>
+      </div>
+    </section>
+
+    <section class="empty-state" data-empty-state hidden>
+      <span class="empty-icon" aria-hidden="true">▥</span><h2>No completed services</h2><p>No completed service lines were found for this reporting period. Try a wider date range or return after checkout activity.</p>
+    </section>
+
+    <div data-report-content>
+      <div class="chart-stack">
+        <section class="chart-card" data-chart="revenue" data-orientation="vertical" aria-label="Revenue by Service">
+          <header class="chart-header">
+            <h2>Revenue by Service</h2>
+            <div class="chart-total"><strong data-total-revenue>$4,286.00</strong><span>Net revenue</span></div>
+          </header>
+          <div class="chart-body">
+            <div class="column-plot">
+              <div class="rank-row" data-rank-row><button class="bar-button" style="--bar-size: 100%" type="button" data-service-id="deluxe-pedicure" data-color="violet"><span class="bar-value">$1,170</span><span class="bar-track" data-column-bar><span class="bar-fill"></span></span><span class="service-label"><span class="service-name-line"><span class="service-name" data-service-name>Deluxe Pedicure</span></span></span></button></div>
+              <div class="rank-row" data-rank-row><button class="bar-button" style="--bar-size: 86.2%" type="button" data-service-id="gel-manicure" data-color="blue"><span class="bar-value">$1,008</span><span class="bar-track" data-column-bar><span class="bar-fill"></span></span><span class="service-label"><span class="service-name-line"><span class="service-name" data-service-name>Gel Manicure</span></span></span></button></div>
+              <div class="rank-row" data-rank-row><button class="bar-button" style="--bar-size: 66.7%" type="button" data-service-id="king-pedicure" data-color="teal"><span class="bar-value">$780</span><span class="bar-track" data-column-bar><span class="bar-fill"></span></span><span class="service-label"><span class="service-name-line"><span class="service-name" data-service-name>King Pedicure</span></span></span></button></div>
+              <div class="rank-row" data-rank-row><button class="bar-button" style="--bar-size: 43.1%" type="button" data-service-id="classic-manicure" data-color="gold"><span class="bar-value">$504</span><span class="bar-track" data-column-bar><span class="bar-fill"></span></span><span class="service-label"><span class="service-name-line"><span class="service-name" data-service-name>Classic Manicure</span></span></span></button></div>
+              <div class="rank-row" data-rank-row><button class="bar-button" style="--bar-size: 27.4%" type="button" data-service-id="callus-treatment" data-color="rose"><span class="bar-value">$320</span><span class="bar-track" data-column-bar><span class="bar-fill"></span></span><span class="service-label"><span class="service-name-line"><span class="service-name" data-service-name>Deluxe Pedicure — Callus Treatment</span></span><span class="service-type-chip">Add-on</span></span></button></div>
+              <div class="rank-row" data-rank-row><button class="bar-button" style="--bar-size: 21.2%" type="button" data-service-id="acrylic-full-set" data-color="cyan"><span class="bar-value">$248</span><span class="bar-track" data-column-bar><span class="bar-fill"></span></span><span class="service-label"><span class="service-name-line"><span class="service-name" data-service-name>Acrylic Full Set</span></span><span class="service-type-chip inactive">Inactive</span></span></button></div>
+              <div class="rank-row" data-rank-row><button class="bar-button" style="--bar-size: 12.3%" type="button" data-service-id="nail-art" data-color="indigo"><span class="bar-value">$144</span><span class="bar-track" data-column-bar><span class="bar-fill"></span></span><span class="service-label"><span class="service-name-line"><span class="service-name" data-service-name>Gel Manicure — Nail Art</span></span><span class="service-type-chip">Add-on</span></span></button></div>
+              <div class="rank-row" data-rank-row><button class="bar-button" style="--bar-size: 9.6%" type="button" data-service-id="polish-change" data-color="green"><span class="bar-value">$112</span><span class="bar-track" data-column-bar><span class="bar-fill"></span></span><span class="service-label"><span class="service-name-line"><span class="service-name" data-service-name>Polish Change</span></span></span></button></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="chart-card" data-chart="count" data-orientation="vertical" aria-label="Count by Service">
+          <header class="chart-header">
+            <h2>Count by Service</h2>
+            <div class="chart-total"><strong data-total-count>104</strong><span>Service lines</span></div>
+          </header>
+          <div class="chart-body">
+            <div class="column-plot">
+              <div class="rank-row" data-rank-row><button class="bar-button" style="--bar-size: 100%" type="button" data-service-id="gel-manicure" data-color="blue"><span class="bar-value">28</span><span class="bar-track" data-column-bar><span class="bar-fill"></span></span><span class="service-label"><span class="service-name-line"><span class="service-name" data-service-name>Gel Manicure</span></span></span></button></div>
+              <div class="rank-row" data-rank-row><button class="bar-button" style="--bar-size: 75%" type="button" data-service-id="classic-manicure" data-color="gold"><span class="bar-value">21</span><span class="bar-track" data-column-bar><span class="bar-fill"></span></span><span class="service-label"><span class="service-name-line"><span class="service-name" data-service-name>Classic Manicure</span></span></span></button></div>
+              <div class="rank-row" data-rank-row><button class="bar-button" style="--bar-size: 64.3%" type="button" data-service-id="deluxe-pedicure" data-color="violet"><span class="bar-value">18</span><span class="bar-track" data-column-bar><span class="bar-fill"></span></span><span class="service-label"><span class="service-name-line"><span class="service-name" data-service-name>Deluxe Pedicure</span></span></span></button></div>
+              <div class="rank-row" data-rank-row><button class="bar-button" style="--bar-size: 42.9%" type="button" data-service-id="king-pedicure" data-color="teal"><span class="bar-value">12</span><span class="bar-track" data-column-bar><span class="bar-fill"></span></span><span class="service-label"><span class="service-name-line"><span class="service-name" data-service-name>King Pedicure</span></span></span></button></div>
+              <div class="rank-row" data-rank-row><button class="bar-button" style="--bar-size: 35.7%" type="button" data-service-id="callus-treatment" data-color="rose"><span class="bar-value">10</span><span class="bar-track" data-column-bar><span class="bar-fill"></span></span><span class="service-label"><span class="service-name-line"><span class="service-name" data-service-name>Deluxe Pedicure — Callus Treatment</span></span><span class="service-type-chip">Add-on</span></span></button></div>
+              <div class="rank-row" data-rank-row><button class="bar-button" style="--bar-size: 21.4%" type="button" data-service-id="nail-art" data-color="indigo"><span class="bar-value">6</span><span class="bar-track" data-column-bar><span class="bar-fill"></span></span><span class="service-label"><span class="service-name-line"><span class="service-name" data-service-name>Gel Manicure — Nail Art</span></span><span class="service-type-chip">Add-on</span></span></button></div>
+              <div class="rank-row" data-rank-row><button class="bar-button" style="--bar-size: 17.9%" type="button" data-service-id="acrylic-full-set" data-color="cyan"><span class="bar-value">5</span><span class="bar-track" data-column-bar><span class="bar-fill"></span></span><span class="service-label"><span class="service-name-line"><span class="service-name" data-service-name>Acrylic Full Set</span></span><span class="service-type-chip inactive">Inactive</span></span></button></div>
+              <div class="rank-row" data-rank-row><button class="bar-button" style="--bar-size: 14.3%" type="button" data-service-id="polish-change" data-color="green"><span class="bar-value">4</span><span class="bar-track" data-column-bar><span class="bar-fill"></span></span><span class="service-label"><span class="service-name-line"><span class="service-name" data-service-name>Polish Change</span></span></span></button></div>
+            </div>
+          </div>
+        </section>
+      </div>
+    </div>
+        </div>
+      </main>
+
+  <div class="detail-overlay" data-detail-overlay aria-hidden="true">
+    <aside class="drawer-panel" role="dialog" aria-modal="true" aria-labelledby="detail-title">
+      <header class="drawer-header">
+        <div><p class="drawer-kicker">Completed service lines</p><h2 id="detail-title" data-detail-title>Service details</h2><p class="drawer-subtitle">Aug 31, 2026 · America/Chicago</p></div>
+        <button class="close-button" type="button" data-close-detail aria-label="Close service details">×</button>
+      </header>
+      <div class="drawer-summary">
+        <div class="drawer-stat"><span>Net revenue</span><strong data-detail-revenue>$0.00</strong></div>
+        <div class="drawer-stat"><span>Completed count</span><strong data-detail-count>0 service lines</strong></div>
+      </div>
+      <div class="drawer-body">
+        <div class="drawer-meta"><h3>Recent source transactions</h3><span>Showing 5 most recent</span></div>
+        <div class="ticket-list">
+          <div class="ticket-header" aria-hidden="true"><span>Ticket / technician</span><span>Original / discount</span><span>Net</span></div>
+          <article class="ticket-row" data-detail-row><div class="ticket-main"><div class="ticket-id">#1048 · 10:42 AM</div><div class="ticket-time">Aug 31, 2026</div><div class="ticket-tech">Technician · Mia Johnson</div></div><div class="ticket-finance"><div><span>Original / discount</span><strong>$70.00 / <b class="discount-value">−$5.00</b></strong></div><div><span>Net revenue</span><strong>$65.00</strong></div></div></article>
+          <article class="ticket-row" data-detail-row><div class="ticket-main"><div class="ticket-id">#1052 · 11:18 AM</div><div class="ticket-time">Aug 31, 2026</div><div class="ticket-tech">Technician · Sophia Lee</div></div><div class="ticket-finance"><div><span>Original / discount</span><strong>$65.00 / $0.00</strong></div><div><span>Net revenue</span><strong>$65.00</strong></div></div></article>
+          <article class="ticket-row" data-detail-row><div class="ticket-main"><div class="ticket-id">#1057 · 12:05 PM</div><div class="ticket-time">Aug 31, 2026</div><div class="ticket-tech">Technician · Olivia Davis</div></div><div class="ticket-finance"><div><span>Original / discount</span><strong>$75.00 / <b class="discount-value">−$10.00</b></strong></div><div><span>Net revenue</span><strong>$65.00</strong></div></div></article>
+          <article class="ticket-row" data-detail-row><div class="ticket-main"><div class="ticket-id">#1061 · 1:36 PM</div><div class="ticket-time">Aug 31, 2026</div><div class="ticket-tech">Technician · Emma Wilson</div></div><div class="ticket-finance"><div><span>Original / discount</span><strong>$65.00 / $0.00</strong></div><div><span>Net revenue</span><strong>$65.00</strong></div></div></article>
+          <article class="ticket-row" data-detail-row><div class="ticket-main"><div class="ticket-id">#1069 · 2:22 PM</div><div class="ticket-time">Aug 31, 2026</div><div class="ticket-tech">Technician · Ava Martinez</div></div><div class="ticket-finance"><div><span>Original / discount</span><strong>$70.00 / <b class="discount-value">−$5.00</b></strong></div><div><span>Net revenue</span><strong>$65.00</strong></div></div></article>
+        </div>
+      </div>
+      <footer class="drawer-footer"><p>Totals include all source lines. Only the five most recent are shown in this prototype.</p><button class="button button-primary" type="button">Open completed orders</button></footer>
+    </aside>
+  </div>
+    </div>
+  </div>
+
+  <script>
+    const dateError = document.querySelector('[data-date-error]')
+    const detailOverlay = document.querySelector('[data-detail-overlay]')
+    const closeDetailButton = document.querySelector('[data-close-detail]')
+    let activeDetailTrigger = null
+
+    const detailData = {
+      'deluxe-pedicure': { name: 'Deluxe Pedicure', revenue: '$1,170.00', count: '18 service lines' },
+      'gel-manicure': { name: 'Gel Manicure', revenue: '$1,008.00', count: '28 service lines' },
+      'king-pedicure': { name: 'King Pedicure', revenue: '$780.00', count: '12 service lines' },
+      'classic-manicure': { name: 'Classic Manicure', revenue: '$504.00', count: '21 service lines' },
+      'callus-treatment': { name: 'Deluxe Pedicure — Callus Treatment', revenue: '$320.00', count: '10 service lines' },
+      'acrylic-full-set': { name: 'Acrylic Full Set', revenue: '$248.00', count: '5 service lines' },
+      'nail-art': { name: 'Gel Manicure — Nail Art', revenue: '$144.00', count: '6 service lines' },
+      'polish-change': { name: 'Polish Change', revenue: '$112.00', count: '4 service lines' },
+    }
+
+    function closeDetail() {
+      detailOverlay.setAttribute('aria-hidden', 'true')
+      document.body.classList.remove('has-overlay')
+      activeDetailTrigger?.focus()
+    }
+
+    document.querySelector('[data-apply-range]').addEventListener('click', () => {
+      const from = document.querySelector('[name="fromDate"]').value
+      const to = document.querySelector('[name="toDate"]').value
+      const invalid = !from || !to || from > to
+      dateError.hidden = !invalid
+    })
+
+    document.querySelectorAll('[data-service-id]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const detail = detailData[button.dataset.serviceId]
+        if (!detail) return
+        document.querySelector('[data-detail-title]').textContent = detail.name
+        document.querySelector('[data-detail-revenue]').textContent = detail.revenue
+        document.querySelector('[data-detail-count]').textContent = detail.count
+        activeDetailTrigger = button
+        detailOverlay.setAttribute('aria-hidden', 'false')
+        document.body.classList.add('has-overlay')
+        closeDetailButton.focus()
+      })
+    })
+
+    closeDetailButton.addEventListener('click', closeDetail)
+    detailOverlay.addEventListener('click', (event) => { if (event.target === detailOverlay) closeDetail() })
+    document.addEventListener('keydown', (event) => {
+      if (event.key !== 'Escape' || detailOverlay.getAttribute('aria-hidden') === 'true') return
+      closeDetail()
+    })
+  </script>
+  <script>
+    window.NEXORA_SHELL = { activePage: 'analytics', activeTab: 'service-income' }
+  </script>
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script src="../assets/nexora-shell.js"></script>
+</body>
+</html>
