@@ -304,11 +304,27 @@
     .service-edit-button { display: inline-flex; width: 22px; height: 22px; flex: 0 0 auto; align-items: center; justify-content: center; border: 0; border-radius: 6px; background: transparent; color: var(--nexora-brand); cursor: pointer; }
     .service-edit-button:hover { background: #eef0ff; }
     .service-edit-button i { width: 11px; height: 11px; }
-    .edit-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
-    .edit-form-grid .edit-field:first-child { grid-column: 1 / -1; }
-    .edit-field label { display: block; margin-bottom: 6px; color: var(--nexora-text); font-size: 10px; font-weight: 800; }
-    .edit-field input { width: 100%; height: 40px; border: 1px solid var(--nexora-border); border-radius: 9px; outline: 0; padding: 0 10px; color: var(--nexora-text); font-size: 12px; }
-    .edit-field input:focus { border-color: var(--nexora-brand); box-shadow: 0 0 0 3px rgba(70,72,216,.1); }
+    .service-picker-card { max-width: 520px; }
+    .service-picker-search { position: relative; display: block; margin-bottom: 14px; }
+    .service-picker-search i { position: absolute; top: 50%; left: 12px; width: 15px; height: 15px; color: var(--nexora-subtle); transform: translateY(-50%); pointer-events: none; }
+    .service-picker-search input { width: 100%; height: 42px; border: 1px solid var(--nexora-border); border-radius: 10px; outline: 0; background: var(--nexora-surface-muted); padding: 0 12px 0 37px; color: var(--nexora-text); font-size: 12px; }
+    .service-picker-search input:focus { border-color: var(--nexora-brand); box-shadow: 0 0 0 3px rgba(70,72,216,.1); }
+    .service-picker-list { max-height: min(52vh, 430px); overflow-y: auto; padding-right: 3px; }
+    .service-picker-group { margin-bottom: 16px; }
+    .service-picker-group:last-child { margin-bottom: 0; }
+    .service-picker-category { margin: 0 0 7px; color: var(--nexora-subtle); font-size: 9px; font-weight: 850; letter-spacing: .06em; text-transform: uppercase; }
+    .service-picker-options { display: flex; flex-direction: column; gap: 7px; }
+    .service-picker-option { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; align-items: center; gap: 10px; width: 100%; border: 1px solid var(--nexora-border); border-radius: 11px; background: #fff; padding: 10px 11px; text-align: left; cursor: pointer; }
+    .service-picker-option:hover { border-color: #b6bbff; background: #fbfbff; }
+    .service-picker-option.is-selected { border-color: var(--nexora-brand); background: #f4f4ff; box-shadow: 0 0 0 1px rgba(70,72,216,.08); }
+    .service-picker-radio { display: inline-flex; width: 18px; height: 18px; align-items: center; justify-content: center; border: 2px solid #bbc4d4; border-radius: 999px; }
+    .service-picker-option.is-selected .service-picker-radio { border-color: var(--nexora-brand); }
+    .service-picker-option.is-selected .service-picker-radio::after { width: 8px; height: 8px; border-radius: 999px; background: var(--nexora-brand); content: ""; }
+    .service-picker-name { display: block; color: var(--nexora-text); font-size: 12px; font-weight: 800; }
+    .service-picker-meta { display: block; margin-top: 4px; color: var(--nexora-subtle); font-size: 9px; font-weight: 650; }
+    .service-picker-price { color: var(--nexora-text); font-size: 12px; font-weight: 900; }
+    .service-picker-empty { padding: 32px 12px; color: var(--nexora-subtle); font-size: 11px; font-weight: 650; text-align: center; }
+    .modal-btn:disabled { opacity: .5; cursor: not-allowed; }
   </style>
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/staff-shell.css">
@@ -394,15 +410,15 @@
     </div>
   </div>
 
-  <div class="modal-backdrop" data-edit-service-modal hidden>
-    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="edit-service-title">
-      <div class="modal-head"><div><h2 id="edit-service-title">Edit service</h2><p>Changes will be sent for manager approval.</p></div><button class="modal-close" type="button" data-close-edit-service aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button></div>
-      <div class="modal-body"><div class="edit-form-grid">
-        <div class="edit-field"><label for="edit-service-name">Service name</label><input id="edit-service-name" type="text" data-edit-service-name></div>
-        <div class="edit-field"><label for="edit-service-price">Price ($)</label><input id="edit-service-price" type="number" min="0" step="0.01" data-edit-service-price></div>
-        <div class="edit-field"><label for="edit-service-duration">Time (min)</label><input id="edit-service-duration" type="number" min="5" step="5" data-edit-service-duration></div>
-      </div></div>
-      <div class="modal-footer"><button class="modal-btn is-secondary" type="button" data-close-edit-service>Cancel</button><button class="modal-btn is-primary" type="button" data-save-edit-service>Save changes</button></div>
+  <div class="modal-backdrop" data-service-picker-modal hidden>
+    <div class="modal-card service-picker-card" role="dialog" aria-modal="true" aria-labelledby="service-picker-title">
+      <div class="modal-head"><div><h2 id="service-picker-title" data-service-picker-title>Select service</h2><p data-service-picker-subtitle>Choose a service from the salon catalog.</p></div><button class="modal-close" type="button" data-close-service-picker aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button></div>
+      <div class="modal-body">
+        <label class="service-picker-search"><i data-lucide="search" aria-hidden="true"></i><input type="search" placeholder="Search services…" aria-label="Search services" data-service-picker-search></label>
+        <div class="service-picker-list" data-service-picker-list></div>
+        <div class="service-picker-empty" data-service-picker-empty hidden>No services match your search.</div>
+      </div>
+      <div class="modal-footer"><button class="modal-btn is-secondary" type="button" data-close-service-picker>Cancel</button><button class="modal-btn is-primary" type="button" data-confirm-service-picker disabled>Use service</button></div>
     </div>
   </div>
 
@@ -411,6 +427,7 @@
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script>window.NEXORA_SHELL = { activePage: 'staff', activeTab: 'my-salons' };</script>
   <script src="../assets/nexora-shell.js"></script>
+  <script src="../assets/appointment-service-catalog.js"></script>
   <script>
     (function () {
       'use strict';
