@@ -34,6 +34,18 @@ function styleProperty(window, selector, property) {
   return rule.cssText.match(new RegExp(`${property}\\s*:\\s*([^;]+)`))?.[1]?.trim() ?? ''
 }
 
+function mediaStyleRule(window, condition, selector) {
+  const mediaRule = [...window.document.styleSheets[0].cssRules]
+    .find((candidate) => candidate.conditionText === condition)
+  assert.ok(mediaRule, `Expected a CSS media rule for ${condition}`)
+  const rule = [...mediaRule.cssRules].find((candidate) => candidate.selectorText
+    ?.split(',')
+    .map((part) => part.trim())
+    .includes(selector))
+  assert.ok(rule, `Expected ${condition} to include a CSS rule for ${selector}`)
+  return rule
+}
+
 function maxPixelValue(value) {
   const matches = [...String(value).matchAll(/([\d.]+)px/g)].map((match) => Number(match[1]))
   if (matches.length === 0) return Number.POSITIVE_INFINITY
@@ -57,6 +69,52 @@ test('defaults to the Day report for Today with payment and detail totals', () =
   assert.equal(window.document.body.textContent?.includes('Split Pay'), false)
   assert.equal(window.document.body.textContent?.includes('Check'), false)
   assert.equal(window.document.body.textContent?.includes('Gift Sold'), false)
+})
+
+test('prepares one table row for printing Day without replacing the screen cards', () => {
+  const { window } = loadPrototype()
+
+  assert.equal(window.document.querySelector('[data-day-view]')?.hidden, false)
+  assert.equal(window.document.querySelector('[data-table-view]')?.hidden, true)
+  assert.equal(window.document.querySelectorAll('[data-report-row]').length, 1)
+  assert.match(window.document.querySelector('[data-report-row]')?.textContent ?? '', /Mon, Aug 31/i)
+  assert.equal(window.document.querySelector('[data-table-grand-total]')?.textContent?.trim(), '$3,842.65')
+})
+
+test('prints only the report table with paper-safe table styles', () => {
+  const { window } = loadPrototype()
+  const printCanvas = mediaStyleRule(window, 'print', 'html')
+  const content = mediaStyleRule(window, 'print', '.content')
+  const hiddenPageContent = mediaStyleRule(window, 'print', '.page > :not(.table-card)')
+  const shellBackdrop = mediaStyleRule(window, 'print', '.nexora-shell-backdrop')
+  const tableCard = mediaStyleRule(window, 'print', '.table-card')
+  const tableHeading = mediaStyleRule(window, 'print', '.table-card > .section-heading')
+  const tableScroll = mediaStyleRule(window, 'print', '.table-scroll')
+  const table = mediaStyleRule(window, 'print', '.report-table')
+  const tableCells = mediaStyleRule(window, 'print', '.report-table th')
+  const tableHeaders = mediaStyleRule(window, 'print', '.report-table thead th')
+  const edgeColumns = mediaStyleRule(window, 'print', '.report-table th:first-child')
+
+  assert.equal(printCanvas.style.getPropertyValue('background-color'), '#fff')
+  assert.equal(printCanvas.style.getPropertyPriority('background-color'), 'important')
+  assert.equal(content.style.getPropertyValue('padding'), '0')
+  assert.equal(content.style.getPropertyPriority('padding'), 'important')
+  assert.equal(hiddenPageContent.style.getPropertyValue('display'), 'none')
+  assert.equal(shellBackdrop.style.getPropertyValue('display'), 'none')
+  assert.equal(shellBackdrop.style.getPropertyPriority('display'), 'important')
+  assert.equal(tableCard.style.getPropertyValue('display'), 'block')
+  assert.equal(tableCard.style.getPropertyPriority('display'), 'important')
+  assert.equal(tableHeading.style.getPropertyValue('display'), 'none')
+  assert.equal(tableScroll.style.getPropertyValue('overflow'), 'visible')
+  assert.equal(table.style.getPropertyValue('min-width'), '0')
+  assert.equal(tableCells.style.getPropertyValue('position'), 'static')
+  assert.equal(tableCells.style.getPropertyPriority('position'), 'important')
+  assert.equal(tableCells.style.getPropertyValue('padding'), '4px 3px')
+  assert.equal(tableCells.style.getPropertyValue('font-size'), '9px')
+  assert.equal(tableCells.style.getPropertyPriority('font-size'), 'important')
+  assert.equal(tableHeaders.style.getPropertyValue('white-space'), 'normal')
+  assert.equal(tableHeaders.style.getPropertyValue('font-size'), '8px')
+  assert.equal(edgeColumns.style.getPropertyValue('width'), 'auto')
 })
 
 test('renders inside the shared salon shell and identifies the active Analytics report', () => {

@@ -49,6 +49,7 @@ function loadFeature() {
       return [
         { name: 'Samantha', lang: 'en-US', localService: true },
         { name: 'Daniel', lang: 'en-US', localService: true },
+        { name: 'Vietnamese Female', lang: 'vi-VN', localService: true },
       ];
     },
     speak(utterance) {
@@ -119,6 +120,37 @@ test('opens an accessible library with six curated voices', () => {
 
 test('loads the Voice selector runtime on the Booking page', () => {
   assert.match(PAGE_SOURCE, /<script src="\.\.\/assets\/booking-ai-voice-selector\.js"><\/script>/);
+});
+
+test('switching AI Language to Vietnamese replaces Greeting with Vietnamese content', () => {
+  const { window } = loadFeature();
+  const { document } = window;
+
+  click(window, '[data-settings-language="vi"]');
+
+  assert.equal(
+    document.querySelector('[data-settings-greeting]')?.value,
+    'Xin chào! Cảm ơn bạn đã gọi đến Bitcoin Nail Bar. Tôi là trợ lý AI của tiệm. Tôi có thể giúp bạn đặt lịch hẹn, kiểm tra giá hoặc giải đáp thắc mắc. Hôm nay tôi có thể giúp gì cho bạn?',
+  );
+  assert.equal(document.querySelector('[data-settings-language="vi"]')?.getAttribute('aria-pressed'), 'true');
+});
+
+test('previews the current Vietnamese Greeting with a Vietnamese speech voice', () => {
+  const { spoken, window } = loadFeature();
+  const { document } = window;
+  const customGreeting = 'Xin chào chị Linh! Bitcoin Nail Bar có thể giúp chị đặt lịch hôm nay.';
+
+  click(window, '[data-settings-language="vi"]');
+  const greeting = document.querySelector('[data-settings-greeting]');
+  greeting.value = customGreeting;
+  greeting.dispatchEvent(new window.Event('input', { bubbles: true }));
+  click(window, '[data-settings-open-voice-library]');
+  click(window, '[data-settings-preview-voice="carina"]');
+
+  assert.equal(spoken.length, 1);
+  assert.equal(spoken[0].text, customGreeting);
+  assert.equal(spoken[0].lang, 'vi-VN');
+  assert.equal(spoken[0].voice?.lang, 'vi-VN');
 });
 
 test('filters the real voice library by search text and gender', () => {

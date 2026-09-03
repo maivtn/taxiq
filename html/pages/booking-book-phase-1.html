@@ -16968,7 +16968,7 @@ function getBookingCardCallStart(item) {
 
     var settingsLanguageGreetings = {
       auto: 'Hi! Thanks for calling Bitcoin Nail Bar. I\'m your bilingual AI assistant — I can help you book an appointment, check pricing, or answer questions in English or Vietnamese. How can I help today?',
-      vi: 'Hi! Thanks for calling Bitcoin Nail Bar. I\'m your AI assistant — I can help you book an appointment, check pricing, or answer questions. How can I help today?',
+      vi: 'Xin chào! Cảm ơn bạn đã gọi đến Bitcoin Nail Bar. Tôi là trợ lý AI của tiệm. Tôi có thể giúp bạn đặt lịch hẹn, kiểm tra giá hoặc giải đáp thắc mắc. Hôm nay tôi có thể giúp gì cho bạn?',
       en: 'Hello! Thank you for calling Bitcoin Nail Bar. This is the AI assistant. I can help you book an appointment, check prices, or answer questions. How can I help today?'
     };
 
@@ -17727,7 +17727,10 @@ function getBookingCardCallStart(item) {
 
       var settingsLanguage = event.target.closest('[data-settings-language]');
       if (settingsLanguage) {
-        selectSettingsLanguage(settingsLanguage);
+        var settingsAiVoice = settingsLanguage.closest('[data-settings-ai-voice]');
+        if (!settingsAiVoice || !settingsAiVoice.__voiceSelector) {
+          selectSettingsLanguage(settingsLanguage);
+        }
       }
 
       var serviceSuggest = event.target.closest('[data-service-suggest-add]');

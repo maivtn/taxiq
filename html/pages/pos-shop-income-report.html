@@ -652,14 +652,34 @@
 
     @media print {
       @page { margin: 0.55in; }
-      body { background: white; }
+      html, body, .shell { background-color: #fff !important; }
+      .content { min-height: 0; padding: 0 !important; }
+      .shell, .app-area, .content { display: block; width: 100%; min-width: 0; }
       .page { width: 100%; max-width: none; padding: 0; }
-      .header-actions, .report-toolbar, .overlay, .toast { display: none !important; }
-      .card { break-inside: avoid; box-shadow: none; }
-      .content-grid { grid-template-columns: 1fr 1fr; }
+      .sidebar,
+      .app-area > .header,
+      .page > :not(.table-card),
+      .table-card > .section-heading,
+      .nexora-shell-backdrop,
+      .overlay,
+      .toast { display: none !important; }
+      .table-card { display: block !important; margin: 0; overflow: visible; border: 0; box-shadow: none; }
       .table-scroll { max-height: none; overflow: visible; }
-      .report-table { min-width: 0; font-size: 9px; }
-      .payment-row { pointer-events: none; }
+      .report-table { width: 100%; min-width: 0; font-size: 9px; }
+      .report-table th,
+      .report-table td {
+        position: static !important;
+        left: auto;
+        right: auto;
+        padding: 4px 3px;
+        box-shadow: none;
+        font-size: 9px !important;
+      }
+      .report-table thead th { font-size: 8px !important; line-height: 1.2; white-space: normal; }
+      .report-table th:first-child,
+      .report-table td:first-child,
+      .report-table th:last-child,
+      .report-table td:last-child { width: auto; }
     }
   </style>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1127,6 +1147,7 @@
         $('[data-day-view]').hidden = false
         $('[data-table-view]').hidden = true
         const report = reportForDay(iso)
+        populateReportTable([syntheticDay(iso)], 'date')
         renderCommon(report)
         setText('[data-detail="services"]', currency.format(report.details.services))
         setText('[data-detail="discounts"]', `−${currency.format(report.details.discounts)}`)
@@ -1136,14 +1157,10 @@
         setText('[data-detail="total"]', currency.format(report.total))
       }
 
-      function renderTable(rows, options) {
+      function populateReportTable(rows, rowKind) {
         const totals = summarizeRows(rows)
-        const isYear = options.rowKind === 'month'
-        $('[data-day-view]').hidden = true
-        $('[data-table-view]').hidden = false
-        setText('[data-table-title]', isYear ? 'Monthly collection' : 'Daily collection')
+        const isYear = rowKind === 'month'
         setText('[data-first-column]', isYear ? 'Month' : 'Date')
-        setText('[data-table-total]', currency.format(totals.total))
 
         const body = $('[data-report-table-body]')
         body.innerHTML = rows.map((row) => {
@@ -1151,7 +1168,7 @@
           const label = isYear ? `${monthName.format(date)} ${date.getUTCFullYear()}` : rowDate.format(date)
           const meta = row.future ? 'Future month' : `${row.transactions} transactions`
           return `
-            <tr class="report-data-row${row.future ? ' future-row' : ''}" tabindex="0" data-report-row data-row-kind="${options.rowKind}" data-row-key="${row.key}" data-future="${Boolean(row.future)}">
+            <tr class="report-data-row${row.future ? ' future-row' : ''}" tabindex="0" data-report-row data-row-kind="${rowKind}" data-row-key="${row.key}" data-future="${Boolean(row.future)}">
               <td class="row-period">${label}<span>${meta}</span></td>
               <td>${currency.format(row.card)}</td>
               <td>${currency.format(row.cash)}</td>
@@ -1165,6 +1182,16 @@
 
         ;['card', 'cash', 'gift', 'zelle', 'wallet', 'tip'].forEach((method) => setText(`[data-table-total-cell="${method}"]`, currency.format(totals[method])))
         setText('[data-table-grand-total]', currency.format(totals.total))
+        return totals
+      }
+
+      function renderTable(rows, options) {
+        const totals = populateReportTable(rows, options.rowKind)
+        const isYear = options.rowKind === 'month'
+        $('[data-day-view]').hidden = true
+        $('[data-table-view]').hidden = false
+        setText('[data-table-title]', isYear ? 'Monthly collection' : 'Daily collection')
+        setText('[data-table-total]', currency.format(totals.total))
         const report = {
           title: options.title,
           dateLabel: options.dateLabel,

@@ -1,0 +1,621 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexora Touch - Work Orders</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    [hidden] { display: none !important; }
+    .work-orders-page { padding-bottom: 64px; }
+    .wo-shell { width: 100%; max-width: 1280px; margin: 0 auto; }
+    .wo-page-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 16px; margin-bottom: 22px; }
+    .wo-eyebrow { display: flex; align-items: center; gap: 7px; margin-bottom: 7px; color: var(--nexora-brand); font-size: 11px; font-weight: 800; letter-spacing: .08em; text-transform: uppercase; }
+    .wo-eyebrow i { width: 14px; height: 14px; }
+    .wo-title { margin: 0; color: var(--nexora-text); font-size: clamp(24px, 3vw, 32px); font-weight: 900; letter-spacing: -.025em; line-height: 1.15; }
+    .wo-description { margin: 8px 0 0; color: var(--nexora-muted); font-size: 14px; font-weight: 500; line-height: 1.5; }
+
+    .salon-gate { max-width: 900px; margin: 28px auto 0; }
+    .salon-gate-card { overflow: hidden; border: 1px solid var(--nexora-border); border-radius: 20px; background: var(--nexora-surface); box-shadow: var(--nexora-soft-shadow); }
+    .salon-gate-banner { display: flex; align-items: center; gap: 16px; padding: 22px 24px; background: linear-gradient(112deg, #111d45 0%, #3436ad 64%, #7449e9 100%); color: #fff; }
+    .salon-gate-icon { display: inline-flex; width: 48px; height: 48px; flex: 0 0 auto; align-items: center; justify-content: center; border: 1px solid rgba(255,255,255,.25); border-radius: 14px; background: rgba(255,255,255,.14); }
+    .salon-gate-icon i { width: 22px; height: 22px; }
+    .salon-gate-banner h2 { margin: 0; font-size: 18px; font-weight: 850; }
+    .salon-gate-banner p { margin: 5px 0 0; color: rgba(255,255,255,.72); font-size: 12px; line-height: 1.5; }
+    .salon-options { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; padding: 20px; }
+    .salon-option { display: flex; min-width: 0; align-items: center; gap: 13px; border: 1px solid var(--nexora-border); border-radius: 14px; background: #fff; padding: 16px; text-align: left; cursor: pointer; transition: border-color .18s, box-shadow .18s, transform .18s; }
+    .salon-option:hover { border-color: rgba(70,72,216,.55); box-shadow: 0 10px 22px rgba(70,72,216,.10); transform: translateY(-1px); }
+    .salon-option-avatar { display: inline-flex; width: 46px; height: 46px; flex: 0 0 auto; align-items: center; justify-content: center; border-radius: 13px; color: #fff; font-size: 12px; font-weight: 900; }
+    .salon-option-avatar.is-gold { background: linear-gradient(135deg, #f59e0b, #f97316); }
+    .salon-option-avatar.is-rose { background: linear-gradient(135deg, #ec4899, #8b5cf6); }
+    .salon-option-copy { min-width: 0; flex: 1; }
+    .salon-option-name { display: block; overflow: hidden; color: var(--nexora-text); font-size: 14px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+    .salon-option-meta { display: flex; align-items: center; gap: 5px; margin-top: 5px; color: var(--nexora-subtle); font-size: 11px; font-weight: 600; }
+    .salon-option-meta i { width: 12px; height: 12px; }
+    .salon-option-chevron { width: 17px; height: 17px; flex: 0 0 auto; color: var(--nexora-brand); }
+
+    .workspace-head { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; }
+    .workspace-salon { display: flex; min-width: 0; align-items: center; gap: 12px; }
+    .workspace-avatar { display: inline-flex; width: 44px; height: 44px; flex: 0 0 auto; align-items: center; justify-content: center; border-radius: 13px; background: linear-gradient(135deg, #f59e0b, #f97316); color: #fff; font-size: 12px; font-weight: 900; }
+    .workspace-avatar.is-rose { background: linear-gradient(135deg, #ec4899, #8b5cf6); }
+    .workspace-salon h1 { overflow: hidden; margin: 0; color: var(--nexora-text); font-size: 24px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
+    .workspace-salon p { margin: 4px 0 0; color: var(--nexora-subtle); font-size: 12px; font-weight: 600; }
+    .change-salon { display: inline-flex; height: 38px; flex: 0 0 auto; align-items: center; gap: 7px; border: 1px solid var(--nexora-border); border-radius: 10px; background: #fff; padding: 0 13px; color: var(--nexora-brand); font-size: 12px; font-weight: 800; cursor: pointer; }
+    .change-salon:hover { border-color: var(--nexora-brand); background: rgba(70,72,216,.04); }
+    .change-salon i { width: 15px; height: 15px; }
+
+    .summary-row { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; margin-bottom: 14px; }
+    .summary-card { display: flex; align-items: center; gap: 11px; border: 1px solid var(--nexora-border); border-radius: 13px; background: #fff; padding: 13px 14px; box-shadow: var(--nexora-card-shadow); }
+    .summary-icon { display: inline-flex; width: 34px; height: 34px; flex: 0 0 auto; align-items: center; justify-content: center; border-radius: 10px; }
+    .summary-icon i { width: 16px; height: 16px; }
+    .summary-icon.is-assigned { background: #eef0ff; color: var(--nexora-brand); }
+    .summary-icon.is-service { background: #fff6df; color: #d97706; }
+    .summary-icon.is-completed { background: #e8faf2; color: #009c62; }
+    .summary-value { color: var(--nexora-text); font-size: 19px; font-weight: 900; line-height: 1; }
+    .summary-label { margin-top: 4px; color: var(--nexora-subtle); font-size: 10px; font-weight: 750; text-transform: uppercase; }
+
+    .filter-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; border: 1px solid var(--nexora-border); border-radius: 14px; background: #fff; padding: 10px; box-shadow: var(--nexora-card-shadow); }
+    .date-control { position: relative; display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .date-control > i { width: 16px; height: 16px; margin-left: 4px; color: var(--nexora-brand); pointer-events: none; }
+    .date-control label { color: var(--nexora-muted); font-size: 11px; font-weight: 800; }
+    .date-input { height: 36px; border: 0; border-radius: 8px; outline: 0; background: var(--nexora-surface-muted); padding: 0 9px; color: var(--nexora-text); font-size: 12px; font-weight: 700; cursor: pointer; }
+    .date-input:focus { box-shadow: 0 0 0 2px rgba(70,72,216,.18); }
+    .status-tabs { display: flex; gap: 4px; overflow-x: auto; border-radius: 10px; background: var(--nexora-surface-muted); padding: 4px; scrollbar-width: none; }
+    .status-tabs::-webkit-scrollbar { display: none; }
+    .status-tab { height: 30px; flex: 0 0 auto; border: 0; border-radius: 7px; background: transparent; padding: 0 12px; color: var(--nexora-muted); font-size: 11px; font-weight: 750; cursor: pointer; white-space: nowrap; }
+    .status-tab.is-active { background: #fff; color: var(--nexora-brand); box-shadow: 0 2px 7px rgba(15,23,42,.10); }
+
+    .orders-layout { display: grid; grid-template-columns: minmax(320px, 430px) minmax(0, 1fr); gap: 14px; align-items: start; }
+    .orders-panel, .detail-panel { border: 1px solid var(--nexora-border); border-radius: 16px; background: #fff; box-shadow: var(--nexora-card-shadow); }
+    .orders-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--nexora-rule); padding: 15px 16px; }
+    .orders-panel-head h2 { margin: 0; color: var(--nexora-text); font-size: 14px; font-weight: 850; }
+    .orders-count { display: inline-flex; min-width: 24px; height: 24px; align-items: center; justify-content: center; border-radius: 999px; background: #eef0ff; padding: 0 8px; color: var(--nexora-brand); font-size: 11px; font-weight: 850; }
+    .orders-list { display: flex; max-height: 650px; flex-direction: column; gap: 8px; overflow-y: auto; padding: 10px; }
+    .order-card { width: 100%; border: 1px solid var(--nexora-border); border-radius: 12px; background: #fff; padding: 13px; text-align: left; cursor: pointer; transition: border-color .16s, background .16s, box-shadow .16s; }
+    .order-card:hover { border-color: rgba(70,72,216,.45); }
+    .order-card.is-active { border-color: var(--nexora-brand); background: #fafaff; box-shadow: inset 3px 0 0 var(--nexora-brand); }
+    .order-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .ticket-code { color: var(--nexora-brand); font-size: 10px; font-weight: 850; letter-spacing: .045em; text-transform: uppercase; }
+    .customer-name { margin-top: 4px; color: var(--nexora-text); font-size: 14px; font-weight: 850; }
+    .status-pill { display: inline-flex; min-height: 24px; flex: 0 0 auto; align-items: center; border-radius: 999px; padding: 0 9px; font-size: 10px; font-weight: 850; white-space: nowrap; }
+    .status-pill.is-assigned { background: #eef0ff; color: var(--nexora-brand); }
+    .status-pill.is-service { background: #fff3d6; color: #b76000; }
+    .status-pill.is-completed { background: #e5f9f0; color: #008655; }
+    .order-service { margin-top: 9px; overflow: hidden; color: var(--nexora-muted); font-size: 12px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+    .order-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 11px; padding-top: 10px; border-top: 1px solid var(--nexora-rule); color: var(--nexora-subtle); font-size: 10px; font-weight: 700; }
+    .order-meta span { display: inline-flex; align-items: center; gap: 4px; }
+    .order-meta i { width: 12px; height: 12px; }
+    .empty-list { padding: 48px 20px; color: var(--nexora-subtle); text-align: center; }
+    .empty-list i { width: 27px; height: 27px; margin-bottom: 9px; }
+    .empty-list strong { display: block; color: var(--nexora-muted); font-size: 13px; }
+    .empty-list span { display: block; margin-top: 5px; font-size: 11px; line-height: 1.5; }
+
+    .detail-panel { position: sticky; top: 78px; min-height: 320px; overflow: hidden; }
+    .detail-empty { display: flex; min-height: 420px; flex-direction: column; align-items: center; justify-content: center; padding: 40px; color: var(--nexora-subtle); text-align: center; }
+    .detail-empty i { width: 34px; height: 34px; margin-bottom: 12px; color: #b4bdd0; }
+    .detail-empty strong { color: var(--nexora-muted); font-size: 14px; }
+    .detail-empty span { margin-top: 5px; font-size: 11px; }
+    .detail-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--nexora-rule); padding: 17px 18px; }
+    .detail-code { color: var(--nexora-brand); font-size: 10px; font-weight: 850; letter-spacing: .05em; text-transform: uppercase; }
+    .detail-head h2 { margin: 4px 0 0; color: var(--nexora-text); font-size: 19px; font-weight: 900; }
+    .detail-body { padding: 17px 18px 20px; }
+    .customer-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) repeat(2, minmax(80px, 1fr)); gap: 9px; }
+    .info-card { min-width: 0; border: 1px solid var(--nexora-rule); border-radius: 11px; background: var(--nexora-surface-muted); padding: 11px; }
+    .info-label { display: flex; align-items: center; gap: 5px; color: var(--nexora-subtle); font-size: 9px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
+    .info-label i { width: 11px; height: 11px; }
+    .info-value { margin-top: 5px; overflow: hidden; color: var(--nexora-text); font-size: 12px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
+    .customer-phone { margin-top: 3px; color: var(--nexora-subtle); font-size: 10px; font-weight: 600; }
+    .note-box { display: flex; align-items: flex-start; gap: 9px; margin-top: 10px; border: 1px solid #f5dfad; border-radius: 11px; background: #fffaf0; padding: 11px 12px; color: #7c5513; font-size: 11px; font-weight: 600; line-height: 1.5; }
+    .note-box i { width: 14px; height: 14px; flex: 0 0 auto; margin-top: 1px; color: #d58b0a; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0 9px; }
+    .section-head h3 { margin: 0; color: var(--nexora-text); font-size: 12px; font-weight: 850; }
+    .section-head span { color: var(--nexora-subtle); font-size: 10px; font-weight: 700; }
+    .services { display: flex; flex-direction: column; gap: 8px; }
+    .service-card { border: 1px solid var(--nexora-border); border-radius: 11px; padding: 11px 12px; }
+    .service-row, .addon-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .service-name { color: var(--nexora-text); font-size: 12px; font-weight: 800; }
+    .service-sub { margin-top: 3px; color: var(--nexora-subtle); font-size: 10px; font-weight: 600; }
+    .service-price { color: var(--nexora-text); font-size: 12px; font-weight: 850; white-space: nowrap; }
+    .addon-row { margin: 9px 0 0 10px; border-top: 1px dashed var(--nexora-border); padding: 9px 0 0 10px; }
+    .addon-name { color: var(--nexora-muted); font-size: 11px; font-weight: 700; }
+    .approval-pill { display: inline-flex; height: 19px; align-items: center; border-radius: 999px; margin-left: 5px; padding: 0 7px; font-size: 8px; font-weight: 850; text-transform: uppercase; vertical-align: 1px; }
+    .approval-pill.is-pending { background: #fff3d6; color: #ad5a00; }
+    .approval-pill.is-approved { background: #e5f9f0; color: #008655; }
+    .approval-pill.is-rejected { background: #feecec; color: #d42d2d; }
+    .ticket-total { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; border-radius: 10px; background: #f0f1ff; padding: 11px 12px; color: var(--nexora-brand-dark); font-size: 12px; font-weight: 850; }
+    .detail-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+    .action-btn { display: inline-flex; min-height: 40px; flex: 1 1 auto; align-items: center; justify-content: center; gap: 7px; border-radius: 10px; padding: 0 13px; font-size: 11px; font-weight: 800; cursor: pointer; }
+    .action-btn i { width: 14px; height: 14px; }
+    .action-btn.is-primary { border: 1px solid transparent; background: var(--nexora-brand); color: #fff; box-shadow: 0 8px 18px rgba(70,72,216,.20); }
+    .action-btn.is-primary:hover { background: var(--nexora-brand-dark); }
+    .action-btn.is-outline { border: 1px solid var(--nexora-border); background: #fff; color: var(--nexora-brand); }
+    .action-btn.is-outline:hover { border-color: var(--nexora-brand); background: #fafaff; }
+    .completed-note { margin-top: 15px; border: 1px solid #ccebdd; border-radius: 11px; background: #f0fbf6; padding: 12px; }
+    .completed-note strong { display: flex; align-items: center; gap: 6px; color: #00794c; font-size: 11px; }
+    .completed-note i { width: 14px; height: 14px; }
+    .completed-note p { margin: 7px 0 0; color: #2d6450; font-size: 11px; font-weight: 600; line-height: 1.5; }
+
+    .modal-backdrop { position: fixed; inset: 0; z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 18px; background: rgba(8,19,45,.58); }
+    .modal-card { width: min(100%, 500px); max-height: calc(100vh - 36px); overflow-y: auto; border-radius: 18px; background: #fff; box-shadow: 0 30px 70px rgba(8,19,45,.30); }
+    .modal-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--nexora-rule); padding: 19px 20px 15px; }
+    .modal-head h2 { margin: 0; color: var(--nexora-text); font-size: 17px; font-weight: 900; }
+    .modal-head p { margin: 5px 0 0; color: var(--nexora-subtle); font-size: 11px; font-weight: 600; }
+    .modal-close { display: inline-flex; width: 30px; height: 30px; flex: 0 0 auto; align-items: center; justify-content: center; border: 0; border-radius: 8px; background: var(--nexora-surface-muted); color: var(--nexora-muted); cursor: pointer; }
+    .modal-close i { width: 15px; height: 15px; }
+    .modal-body { padding: 17px 20px; }
+    .field-label { display: block; margin-bottom: 8px; color: var(--nexora-text); font-size: 11px; font-weight: 850; }
+    .suggested-notes { display: flex; flex-wrap: wrap; gap: 7px; }
+    .note-chip { min-height: 31px; border: 1px solid var(--nexora-border); border-radius: 999px; background: #fff; padding: 0 11px; color: var(--nexora-muted); font-size: 10px; font-weight: 750; cursor: pointer; }
+    .note-chip.is-selected { border-color: var(--nexora-brand); background: #eef0ff; color: var(--nexora-brand); }
+    .notes-textarea { width: 100%; min-height: 100px; resize: vertical; margin-top: 16px; border: 1px solid var(--nexora-border); border-radius: 10px; outline: 0; padding: 11px 12px; color: var(--nexora-text); font-size: 12px; line-height: 1.5; }
+    .notes-textarea:focus { border-color: var(--nexora-brand); box-shadow: 0 0 0 3px rgba(70,72,216,.10); }
+    .field-error { margin: 7px 0 0; color: var(--nexora-danger); font-size: 10px; font-weight: 700; }
+    .modal-footer { display: flex; justify-content: flex-end; gap: 8px; border-top: 1px solid var(--nexora-rule); padding: 14px 20px 18px; }
+    .modal-btn { display: inline-flex; min-height: 39px; align-items: center; justify-content: center; border-radius: 9px; padding: 0 16px; font-size: 11px; font-weight: 800; cursor: pointer; }
+    .modal-btn.is-secondary { border: 1px solid var(--nexora-border); background: #fff; color: var(--nexora-muted); }
+    .modal-btn.is-primary { border: 1px solid transparent; background: var(--nexora-success); color: #fff; }
+
+    .toast { position: fixed; right: 22px; bottom: 22px; z-index: 1100; display: flex; max-width: min(380px, calc(100vw - 32px)); align-items: center; gap: 9px; border-radius: 11px; background: #102241; padding: 12px 14px; color: #fff; box-shadow: 0 16px 36px rgba(8,19,45,.28); font-size: 11px; font-weight: 700; }
+    .toast i { width: 16px; height: 16px; flex: 0 0 auto; color: #61e4b1; }
+
+    @media (max-width: 960px) {
+      .orders-layout { grid-template-columns: 1fr; }
+      .detail-panel { position: static; }
+      .orders-list { max-height: 430px; }
+    }
+    @media (max-width: 640px) {
+      .work-orders-page { padding-right: 12px; padding-left: 12px; }
+      .wo-page-head, .workspace-head { align-items: flex-start; }
+      .salon-options { grid-template-columns: 1fr; padding: 14px; }
+      .salon-gate-banner { padding: 18px; }
+      .workspace-salon h1 { font-size: 19px; }
+      .change-salon span { display: none; }
+      .change-salon { width: 38px; padding: 0; justify-content: center; }
+      .summary-row { gap: 7px; }
+      .summary-card { display: block; padding: 10px; }
+      .summary-icon { width: 29px; height: 29px; margin-bottom: 9px; }
+      .summary-value { font-size: 17px; }
+      .filter-bar { align-items: stretch; flex-direction: column; }
+      .date-control { justify-content: space-between; }
+      .date-input { flex: 1; }
+      .status-tabs { width: 100%; }
+      .status-tab { flex: 1 0 auto; }
+      .customer-grid { grid-template-columns: 1fr 1fr; }
+      .customer-grid .info-card:first-child { grid-column: 1 / -1; }
+      .detail-head, .detail-body { padding-right: 14px; padding-left: 14px; }
+      .action-btn.is-primary { flex-basis: 100%; order: -1; }
+      .modal-backdrop { align-items: flex-end; padding: 0; }
+      .modal-card { width: 100%; max-height: 90vh; border-radius: 18px 18px 0 0; }
+      .toast { right: 16px; bottom: 16px; }
+    }
+  </style>
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/staff-shell.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar staff-sidebar" aria-label="Staff sidebar"></aside>
+    <div class="app-area">
+      <header class="header"></header>
+      <main class="content work-orders-page" aria-label="Technician Work Orders">
+        <div class="wo-shell">
+          <section data-salon-gate>
+            <div class="wo-page-head">
+              <div>
+                <div class="wo-eyebrow"><i data-lucide="clipboard-list" aria-hidden="true"></i>My Workspace</div>
+                <h1 class="wo-title">Work Orders</h1>
+                <p class="wo-description">Choose where you're working to view tickets assigned to you.</p>
+              </div>
+            </div>
+            <div class="salon-gate">
+              <div class="salon-gate-card">
+                <div class="salon-gate-banner">
+                  <span class="salon-gate-icon"><i data-lucide="store" aria-hidden="true"></i></span>
+                  <div><h2>Select a salon</h2><p>Your work orders are separated by salon so you always see the correct station and service queue.</p></div>
+                </div>
+                <div class="salon-options" data-salon-options></div>
+              </div>
+            </div>
+          </section>
+
+          <section data-workspace hidden>
+            <div class="workspace-head">
+              <div class="workspace-salon">
+                <span class="workspace-avatar" data-workspace-avatar>GN</span>
+                <div><h1 data-workspace-name>Golden Nails &amp; Spa</h1><p>Technician Work Orders · <span data-today-label>Today</span></p></div>
+              </div>
+              <button class="change-salon" type="button" data-change-salon><i data-lucide="arrow-left-right" aria-hidden="true"></i><span>Change salon</span></button>
+            </div>
+
+            <div class="summary-row" aria-label="Work order summary">
+              <div class="summary-card"><span class="summary-icon is-assigned"><i data-lucide="user-check" aria-hidden="true"></i></span><div><div class="summary-value" data-summary-assigned>0</div><div class="summary-label">Assigned</div></div></div>
+              <div class="summary-card"><span class="summary-icon is-service"><i data-lucide="sparkles" aria-hidden="true"></i></span><div><div class="summary-value" data-summary-service>0</div><div class="summary-label">In Service</div></div></div>
+              <div class="summary-card"><span class="summary-icon is-completed"><i data-lucide="circle-check-big" aria-hidden="true"></i></span><div><div class="summary-value" data-summary-completed>0</div><div class="summary-label">Completed</div></div></div>
+            </div>
+
+            <div class="filter-bar">
+              <div class="date-control"><i data-lucide="calendar-days" aria-hidden="true"></i><label for="work-date">Work date</label><input class="date-input" id="work-date" type="date" data-date-filter></div>
+              <div class="status-tabs" role="tablist" aria-label="Filter by status">
+                <button class="status-tab is-active" type="button" role="tab" aria-selected="true" data-status-filter="assigned">Assigned</button>
+                <button class="status-tab" type="button" role="tab" aria-selected="false" data-status-filter="in-service">In Service</button>
+                <button class="status-tab" type="button" role="tab" aria-selected="false" data-status-filter="completed">Completed</button>
+                <button class="status-tab" type="button" role="tab" aria-selected="false" data-status-filter="all">All</button>
+              </div>
+            </div>
+
+            <div class="orders-layout">
+              <section class="orders-panel" aria-label="Assigned work orders">
+                <div class="orders-panel-head"><h2 data-list-title>Assigned today</h2><span class="orders-count" data-orders-count>0</span></div>
+                <div class="orders-list" data-orders-list></div>
+              </section>
+              <aside class="detail-panel" aria-live="polite" data-detail-panel></aside>
+            </div>
+          </section>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" data-complete-modal hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="complete-title">
+      <div class="modal-head"><div><h2 id="complete-title">Complete Work Order</h2><p data-complete-ticket>Ticket</p></div><button class="modal-close" type="button" data-close-modal aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button></div>
+      <div class="modal-body">
+        <label class="field-label">Suggested notes</label>
+        <div class="suggested-notes">
+          <button class="note-chip" type="button" data-note-chip="Service completed as requested.">Completed as requested</button>
+          <button class="note-chip" type="button" data-note-chip="Client was happy with the final result.">Client was happy</button>
+          <button class="note-chip" type="button" data-note-chip="Recommend a follow-up appointment in 2 weeks.">Follow up in 2 weeks</button>
+        </div>
+        <textarea class="notes-textarea" aria-label="Completion notes" placeholder="Add service notes…" data-complete-notes></textarea>
+        <p class="field-error" data-notes-error hidden>Select a suggested note or enter your own note.</p>
+      </div>
+      <div class="modal-footer"><button class="modal-btn is-secondary" type="button" data-close-modal>Cancel</button><button class="modal-btn is-primary" type="button" data-confirm-complete>Complete Work Order</button></div>
+    </div>
+  </div>
+
+  <div class="toast" role="status" data-toast hidden><i data-lucide="circle-check" aria-hidden="true"></i><span data-toast-message></span></div>
+
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script>window.NEXORA_SHELL = { activePage: 'staff', activeTab: 'work-orders' };</script>
+  <script src="../assets/nexora-shell.js"></script>
+  <script>
+    (function () {
+      'use strict';
+
+      var SALONS = [
+        { id: 'golden', name: 'Golden Nails & Spa', location: 'Miami, Florida', initials: 'GN', avatarClass: 'is-gold' },
+        { id: 'elite', name: 'Elite Beauty Lounge', location: 'Houston, Texas', initials: 'EB', avatarClass: 'is-rose' }
+      ];
+
+      function dateKey(date) {
+        var year = date.getFullYear();
+        var month = String(date.getMonth() + 1).padStart(2, '0');
+        var day = String(date.getDate()).padStart(2, '0');
+        return year + '-' + month + '-' + day;
+      }
+
+      function dateOffset(days) {
+        var date = new Date();
+        date.setDate(date.getDate() + days);
+        return dateKey(date);
+      }
+
+      var TODAY = dateOffset(0);
+      var TICKETS = [
+        { id: 'WO-1048', salonId: 'golden', date: TODAY, time: '9:30 AM', status: 'assigned', customer: 'Emma Williams', phone: '(305) 555-0184', station: '08', beeper: '21', note: 'Sensitive skin. Please use the fragrance-free lotion.', services: [
+          { name: 'Deluxe Pedicure', duration: 45, price: 55, addons: [{ name: 'Gel Polish', price: 15, approval: 'approved' }] },
+          { name: 'Classic Manicure', duration: 30, price: 28, addons: [] }
+        ] },
+        { id: 'WO-1051', salonId: 'golden', date: TODAY, time: '10:15 AM', status: 'assigned', customer: 'Sophia Martinez', phone: '(305) 555-0127', station: '08', beeper: '24', note: 'Client prefers a short almond shape and neutral colors.', services: [
+          { name: 'Acrylic Full Set', duration: 65, price: 68, addons: [{ name: 'French Design', price: 12, approval: 'pending' }] }
+        ] },
+        { id: 'WO-1042', salonId: 'golden', date: TODAY, time: '8:45 AM', status: 'in-service', customer: 'Olivia Brown', phone: '(786) 555-0145', station: '08', beeper: '17', note: 'Remove existing gel before the new color.', services: [
+          { name: 'Gel Manicure', duration: 40, price: 42, addons: [{ name: 'Gel Removal', price: 10, approval: 'approved' }] }
+        ] },
+        { id: 'WO-1039', salonId: 'golden', date: TODAY, time: '8:00 AM', status: 'completed', customer: 'Ava Johnson', phone: '(954) 555-0176', station: '08', beeper: '12', note: 'Walk-in guest.', completionNote: 'Client was happy with the final result.', services: [
+          { name: 'Spa Pedicure', duration: 50, price: 60, addons: [{ name: 'Callus Treatment', price: 9, approval: 'rejected' }] }
+        ] },
+        { id: 'WO-1025', salonId: 'golden', date: dateOffset(-1), time: '3:30 PM', status: 'completed', customer: 'Mia Davis', phone: '(305) 555-0109', station: '08', beeper: '34', note: 'Regular customer.', completionNote: 'Service completed as requested.', services: [
+          { name: 'Classic Pedicure', duration: 35, price: 38, addons: [] }
+        ] },
+        { id: 'WO-2074', salonId: 'elite', date: TODAY, time: '11:00 AM', status: 'assigned', customer: 'Isabella Moore', phone: '(713) 555-0133', station: '04', beeper: '09', note: 'First visit. Confirm length before shaping.', services: [
+          { name: 'Dip Powder', duration: 55, price: 52, addons: [{ name: 'Nail Art', price: 10, approval: 'approved' }] }
+        ] },
+        { id: 'WO-2070', salonId: 'elite', date: TODAY, time: '9:15 AM', status: 'in-service', customer: 'Amelia Wilson', phone: '(832) 555-0198', station: '04', beeper: '05', note: 'Avoid cutting cuticles too close.', services: [
+          { name: 'Builder Gel', duration: 60, price: 64, addons: [] }
+        ] }
+      ];
+
+      var currentSalonId = '';
+      var currentStatus = 'assigned';
+      var currentDate = TODAY;
+      var selectedTicketId = '';
+      var completingTicketId = '';
+      var selectedSuggestedNote = '';
+      var toastTimer = 0;
+
+      var gateEl = document.querySelector('[data-salon-gate]');
+      var workspaceEl = document.querySelector('[data-workspace]');
+      var salonOptionsEl = document.querySelector('[data-salon-options]');
+      var ordersListEl = document.querySelector('[data-orders-list]');
+      var detailPanelEl = document.querySelector('[data-detail-panel]');
+      var dateFilterEl = document.querySelector('[data-date-filter]');
+      var completeModalEl = document.querySelector('[data-complete-modal]');
+      var completeNotesEl = document.querySelector('[data-complete-notes]');
+
+      function esc(value) {
+        return String(value == null ? '' : value).replace(/[&<>\"]/g, function (char) {
+          return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '\"': '&quot;' }[char];
+        });
+      }
+
+      function money(value) { return '$' + Number(value || 0).toFixed(2); }
+      function salonById(id) { return SALONS.find(function (salon) { return salon.id === id; }); }
+      function ticketById(id) { return TICKETS.find(function (ticket) { return ticket.id === id; }); }
+      function statusLabel(status) { return status === 'in-service' ? 'In Service' : status.charAt(0).toUpperCase() + status.slice(1); }
+      function statusClass(status) { return status === 'in-service' ? 'is-service' : 'is-' + status; }
+
+      function serviceTotal(ticket) {
+        return ticket.services.reduce(function (total, service) {
+          var addons = service.addons.reduce(function (sum, addon) { return sum + (addon.approval === 'rejected' || addon.approval === 'pending' ? 0 : addon.price); }, 0);
+          return total + (service.approval === 'pending' || service.approval === 'rejected' ? 0 : service.price) + addons;
+        }, 0);
+      }
+
+      function renderSalonOptions() {
+        salonOptionsEl.innerHTML = SALONS.map(function (salon) {
+          return '<button class="salon-option" type="button" data-select-salon="' + esc(salon.id) + '">' +
+            '<span class="salon-option-avatar ' + salon.avatarClass + '">' + esc(salon.initials) + '</span>' +
+            '<span class="salon-option-copy"><span class="salon-option-name">' + esc(salon.name) + '</span><span class="salon-option-meta"><i data-lucide="map-pin" aria-hidden="true"></i>' + esc(salon.location) + '</span></span>' +
+            '<i class="salon-option-chevron" data-lucide="chevron-right" aria-hidden="true"></i></button>';
+        }).join('');
+        refreshIcons();
+      }
+
+      function openSalon(id) {
+        var salon = salonById(id);
+        if (!salon) return;
+        currentSalonId = id;
+        currentStatus = 'assigned';
+        currentDate = TODAY;
+        selectedTicketId = '';
+        dateFilterEl.value = TODAY;
+        gateEl.hidden = true;
+        workspaceEl.hidden = false;
+        document.querySelector('[data-workspace-name]').textContent = salon.name;
+        document.querySelector('[data-workspace-avatar]').textContent = salon.initials;
+        document.querySelector('[data-workspace-avatar]').className = 'workspace-avatar ' + salon.avatarClass;
+        setActiveStatus('assigned');
+        renderWorkspace();
+      }
+
+      function showSalonGate() {
+        workspaceEl.hidden = true;
+        gateEl.hidden = false;
+        currentSalonId = '';
+        selectedTicketId = '';
+      }
+
+      function ticketsForDate() {
+        return TICKETS.filter(function (ticket) { return ticket.salonId === currentSalonId && ticket.date === currentDate; });
+      }
+
+      function visibleTickets() {
+        return ticketsForDate().filter(function (ticket) { return currentStatus === 'all' || ticket.status === currentStatus; });
+      }
+
+      function renderSummary() {
+        var dayTickets = ticketsForDate();
+        ['assigned', 'in-service', 'completed'].forEach(function (status) {
+          var key = status === 'in-service' ? 'service' : status;
+          document.querySelector('[data-summary-' + key + ']').textContent = dayTickets.filter(function (ticket) { return ticket.status === status; }).length;
+        });
+      }
+
+      function renderOrderCard(ticket) {
+        var serviceNames = ticket.services.map(function (service) { return service.name; }).join(' · ');
+        return '<button class="order-card' + (selectedTicketId === ticket.id ? ' is-active' : '') + '" type="button" data-ticket-id="' + esc(ticket.id) + '">' +
+          '<span class="order-card-top"><span><span class="ticket-code">' + esc(ticket.id) + ' · ' + esc(ticket.time) + '</span><span class="customer-name">' + esc(ticket.customer) + '</span></span><span class="status-pill ' + statusClass(ticket.status) + '">' + statusLabel(ticket.status) + '</span></span>' +
+          '<span class="order-service">' + esc(serviceNames) + '</span>' +
+          '<span class="order-meta"><span><i data-lucide="armchair" aria-hidden="true"></i>Station ' + esc(ticket.station) + '</span><span><i data-lucide="bell-ring" aria-hidden="true"></i>Beeper ' + esc(ticket.beeper) + '</span><span><i data-lucide="clock-3" aria-hidden="true"></i>' + ticket.services.reduce(function (sum, service) { return sum + service.duration; }, 0) + ' min</span></span>' +
+        '</button>';
+      }
+
+      function renderList() {
+        var tickets = visibleTickets();
+        var dateLabel = currentDate === TODAY ? 'today' : new Date(currentDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        document.querySelector('[data-list-title]').textContent = (currentStatus === 'all' ? 'All work orders' : statusLabel(currentStatus)) + ' · ' + dateLabel;
+        document.querySelector('[data-orders-count]').textContent = tickets.length;
+        if (!tickets.length) {
+          selectedTicketId = '';
+          ordersListEl.innerHTML = '<div class="empty-list"><i data-lucide="clipboard-x" aria-hidden="true"></i><strong>No work orders found</strong><span>Try another date or status.</span></div>';
+        } else {
+          if (!tickets.some(function (ticket) { return ticket.id === selectedTicketId; })) selectedTicketId = tickets[0].id;
+          ordersListEl.innerHTML = tickets.map(renderOrderCard).join('');
+        }
+      }
+
+      function approvalPill(approval) {
+        return approval ? '<span class="approval-pill is-' + esc(approval) + '">' + esc(approval) + '</span>' : '';
+      }
+
+      function renderService(service) {
+        var addons = service.addons.map(function (addon) {
+          return '<div class="addon-row"><div><div class="addon-name">↳ ' + esc(addon.name) + approvalPill(addon.approval) + '</div><div class="service-sub">Add-on</div></div><span class="service-price">' + money(addon.price) + '</span></div>';
+        }).join('');
+        return '<div class="service-card"><div class="service-row"><div><div class="service-name">' + esc(service.name) + approvalPill(service.approval) + '</div><div class="service-sub">' + service.duration + ' min · Service</div></div><span class="service-price">' + money(service.price) + '</span></div>' + addons + '</div>';
+      }
+
+      function renderDetail() {
+        var ticket = ticketById(selectedTicketId);
+        if (!ticket) {
+          detailPanelEl.innerHTML = '<div class="detail-empty"><i data-lucide="mouse-pointer-click" aria-hidden="true"></i><strong>Select a work order</strong><span>Ticket details will appear here.</span></div>';
+          return;
+        }
+        var actionHtml = '';
+        if (ticket.status === 'assigned') {
+          actionHtml = '<div class="detail-actions"><button class="action-btn is-primary" type="button" data-start-ticket="' + esc(ticket.id) + '"><i data-lucide="play" aria-hidden="true"></i>Start Service</button></div>';
+        } else if (ticket.status === 'in-service') {
+          actionHtml = '<div class="detail-actions"><button class="action-btn is-outline" type="button" data-request-service="' + esc(ticket.id) + '"><i data-lucide="plus" aria-hidden="true"></i>Add Service</button><button class="action-btn is-outline" type="button" data-request-addon="' + esc(ticket.id) + '"><i data-lucide="circle-plus" aria-hidden="true"></i>Add-on</button><button class="action-btn is-primary" type="button" data-complete-ticket="' + esc(ticket.id) + '"><i data-lucide="check" aria-hidden="true"></i>Complete</button></div>';
+        } else {
+          actionHtml = '<div class="completed-note"><strong><i data-lucide="badge-check" aria-hidden="true"></i>Completed service notes</strong><p>' + esc(ticket.completionNote || 'Service completed.') + '</p></div>';
+        }
+        detailPanelEl.innerHTML = '<div class="detail-head"><div><div class="detail-code">' + esc(ticket.id) + ' · ' + esc(ticket.time) + '</div><h2>' + esc(ticket.customer) + '</h2></div><span class="status-pill ' + statusClass(ticket.status) + '">' + statusLabel(ticket.status) + '</span></div>' +
+          '<div class="detail-body"><div class="customer-grid">' +
+            '<div class="info-card"><div class="info-label"><i data-lucide="user-round" aria-hidden="true"></i>Customer</div><div class="info-value">' + esc(ticket.customer) + '</div><div class="customer-phone">' + esc(ticket.phone) + '</div></div>' +
+            '<div class="info-card"><div class="info-label"><i data-lucide="armchair" aria-hidden="true"></i>Station</div><div class="info-value">#' + esc(ticket.station) + '</div></div>' +
+            '<div class="info-card"><div class="info-label"><i data-lucide="bell-ring" aria-hidden="true"></i>Beeper</div><div class="info-value">#' + esc(ticket.beeper) + '</div></div>' +
+          '</div><div class="note-box"><i data-lucide="notebook-pen" aria-hidden="true"></i><span>' + esc(ticket.note) + '</span></div>' +
+          '<div class="section-head"><h3>Services &amp; Add-ons</h3><span>' + ticket.services.length + ' service' + (ticket.services.length === 1 ? '' : 's') + '</span></div>' +
+          '<div class="services">' + ticket.services.map(renderService).join('') + '</div><div class="ticket-total"><span>Approved total</span><strong>' + money(serviceTotal(ticket)) + '</strong></div>' + actionHtml + '</div>';
+      }
+
+      function renderWorkspace() {
+        renderSummary();
+        renderList();
+        renderDetail();
+        refreshIcons();
+      }
+
+      function setActiveStatus(status) {
+        currentStatus = status;
+        document.querySelectorAll('[data-status-filter]').forEach(function (button) {
+          var active = button.getAttribute('data-status-filter') === status;
+          button.classList.toggle('is-active', active);
+          button.setAttribute('aria-selected', active ? 'true' : 'false');
+        });
+      }
+
+      function showToast(message) {
+        var toast = document.querySelector('[data-toast]');
+        window.clearTimeout(toastTimer);
+        document.querySelector('[data-toast-message]').textContent = message;
+        toast.hidden = false;
+        toastTimer = window.setTimeout(function () { toast.hidden = true; }, 3200);
+      }
+
+      function startTicket(id) {
+        var ticket = ticketById(id);
+        if (!ticket || ticket.status !== 'assigned') return;
+        ticket.status = 'in-service';
+        selectedTicketId = id;
+        setActiveStatus('in-service');
+        renderWorkspace();
+        showToast(ticket.id + ' is now In Service.');
+      }
+
+      function openCompleteModal(id) {
+        var ticket = ticketById(id);
+        if (!ticket) return;
+        completingTicketId = id;
+        selectedSuggestedNote = '';
+        completeNotesEl.value = '';
+        document.querySelector('[data-complete-ticket]').textContent = ticket.id + ' · ' + ticket.customer;
+        document.querySelector('[data-notes-error]').hidden = true;
+        document.querySelectorAll('[data-note-chip]').forEach(function (chip) { chip.classList.remove('is-selected'); });
+        completeModalEl.hidden = false;
+        completeNotesEl.focus();
+      }
+
+      function closeCompleteModal() {
+        completeModalEl.hidden = true;
+        completingTicketId = '';
+      }
+
+      function completeTicket() {
+        var ticket = ticketById(completingTicketId);
+        if (!ticket) return;
+        var customNote = completeNotesEl.value.trim();
+        var finalNote = [selectedSuggestedNote, customNote].filter(Boolean).join(' ');
+        if (!finalNote) {
+          document.querySelector('[data-notes-error]').hidden = false;
+          return;
+        }
+        ticket.completionNote = finalNote;
+        ticket.status = 'completed';
+        selectedTicketId = ticket.id;
+        closeCompleteModal();
+        setActiveStatus('completed');
+        renderWorkspace();
+        showToast(ticket.id + ' completed successfully.');
+      }
+
+      function requestService(id) {
+        var ticket = ticketById(id);
+        if (!ticket) return;
+        if (ticket.services.some(function (service) { return service.name === 'Nail Art Design' && service.approval === 'pending'; })) {
+          showToast('This service request is already pending.');
+          return;
+        }
+        ticket.services.push({ name: 'Nail Art Design', duration: 20, price: 18, approval: 'pending', addons: [] });
+        renderWorkspace();
+        showToast('Service sent to manager for approval.');
+      }
+
+      function requestAddon(id) {
+        var ticket = ticketById(id);
+        if (!ticket || !ticket.services.length) return;
+        if (ticket.services[0].addons.some(function (addon) { return addon.name === 'Chrome Finish' && addon.approval === 'pending'; })) {
+          showToast('This add-on request is already pending.');
+          return;
+        }
+        ticket.services[0].addons.push({ name: 'Chrome Finish', price: 12, approval: 'pending' });
+        renderWorkspace();
+        showToast('Add-on sent to manager for approval.');
+      }
+
+      function refreshIcons() {
+        if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
+      }
+
+      salonOptionsEl.addEventListener('click', function (event) {
+        var button = event.target.closest('[data-select-salon]');
+        if (button) openSalon(button.getAttribute('data-select-salon'));
+      });
+      document.querySelector('[data-change-salon]').addEventListener('click', showSalonGate);
+      dateFilterEl.addEventListener('change', function () { currentDate = dateFilterEl.value || TODAY; selectedTicketId = ''; renderWorkspace(); });
+      document.querySelector('.status-tabs').addEventListener('click', function (event) {
+        var button = event.target.closest('[data-status-filter]');
+        if (!button) return;
+        setActiveStatus(button.getAttribute('data-status-filter'));
+        selectedTicketId = '';
+        renderWorkspace();
+      });
+      ordersListEl.addEventListener('click', function (event) {
+        var button = event.target.closest('[data-ticket-id]');
+        if (!button) return;
+        selectedTicketId = button.getAttribute('data-ticket-id');
+        renderWorkspace();
+        if (window.innerWidth <= 960) detailPanelEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+      });
+      detailPanelEl.addEventListener('click', function (event) {
+        var startButton = event.target.closest('[data-start-ticket]');
+        var completeButton = event.target.closest('[data-complete-ticket]');
+        var serviceButton = event.target.closest('[data-request-service]');
+        var addonButton = event.target.closest('[data-request-addon]');
+        if (startButton) startTicket(startButton.getAttribute('data-start-ticket'));
+        else if (completeButton) openCompleteModal(completeButton.getAttribute('data-complete-ticket'));
+        else if (serviceButton) requestService(serviceButton.getAttribute('data-request-service'));
+        else if (addonButton) requestAddon(addonButton.getAttribute('data-request-addon'));
+      });
+      completeModalEl.addEventListener('click', function (event) {
+        if (event.target === completeModalEl || event.target.closest('[data-close-modal]')) closeCompleteModal();
+        var chip = event.target.closest('[data-note-chip]');
+        if (chip) {
+          selectedSuggestedNote = chip.getAttribute('data-note-chip');
+          document.querySelectorAll('[data-note-chip]').forEach(function (item) { item.classList.toggle('is-selected', item === chip); });
+          document.querySelector('[data-notes-error]').hidden = true;
+        }
+        if (event.target.closest('[data-confirm-complete]')) completeTicket();
+      });
+      document.addEventListener('keydown', function (event) { if (event.key === 'Escape' && !completeModalEl.hidden) closeCompleteModal(); });
+
+      document.querySelector('[data-today-label]').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+      dateFilterEl.value = TODAY;
+      renderSalonOptions();
+    })();
+  </script>
+</body>
+</html>

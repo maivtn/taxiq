@@ -11,6 +11,26 @@
   };
 
   var PREVIEW_TEXT = "Hi, thanks for calling Bitcoin Nail Bar. I'm your AI assistant. How can I help you today?";
+  var LANGUAGE_SETTINGS = {
+    auto: {
+      greeting: "Hi! Thanks for calling Bitcoin Nail Bar. I'm your bilingual AI assistant — I can help you book an appointment, check pricing, or answer questions in English or Vietnamese. How can I help today?",
+      speechLanguage: 'en-US',
+      status: 'Auto is on: the AI automatically detects Vietnamese or English when a customer calls.',
+      label: 'VI + EN Auto'
+    },
+    vi: {
+      greeting: 'Xin chào! Cảm ơn bạn đã gọi đến Bitcoin Nail Bar. Tôi là trợ lý AI của tiệm. Tôi có thể giúp bạn đặt lịch hẹn, kiểm tra giá hoặc giải đáp thắc mắc. Hôm nay tôi có thể giúp gì cho bạn?',
+      speechLanguage: 'vi-VN',
+      status: 'Vietnamese is active: the AI greets and answers customers in Vietnamese first.',
+      label: 'VI'
+    },
+    en: {
+      greeting: 'Hello! Thank you for calling Bitcoin Nail Bar. This is the AI assistant. I can help you book an appointment, check prices, or answer questions. How can I help today?',
+      speechLanguage: 'en-US',
+      status: 'English is active: AI greets and answers customers in English.',
+      label: 'EN'
+    }
+  };
   var FEMALE_HINTS = ['samantha', 'ava', 'victoria', 'karen', 'moira', 'tessa', 'zira', 'female'];
   var MALE_HINTS = ['daniel', 'alex', 'fred', 'aaron', 'arthur', 'guy', 'david', 'male'];
 
@@ -39,12 +59,33 @@
     var toastMessage = doc.querySelector('[data-settings-voice-toast-message]');
     var greeting = root.querySelector('[data-settings-greeting]');
     var greetingCount = root.querySelector('[data-settings-greeting-count]');
+    var languageButtons = Array.prototype.slice.call(root.querySelectorAll('[data-settings-language]'));
+    var languageStatus = root.querySelector('[data-settings-language-status]');
     var currentVoiceId = VOICES[root.getAttribute('data-settings-voice-id')] ? root.getAttribute('data-settings-voice-id') : 'carina';
     var savedVoiceId = currentVoiceId;
     var pendingVoiceId = currentVoiceId;
     var genderFilter = 'all';
     var playingVoiceId = null;
     var toastTimer = null;
+
+    function setLanguage(language, replaceGreeting) {
+      var nextLanguage = LANGUAGE_SETTINGS[language] ? language : 'auto';
+      var languageSettings = LANGUAGE_SETTINGS[nextLanguage];
+
+      languageButtons.forEach(function(button) {
+        var active = button.getAttribute('data-settings-language') === nextLanguage;
+        button.classList.toggle('is-active', active);
+        button.setAttribute('aria-pressed', String(active));
+      });
+      root.setAttribute('data-settings-active-language', nextLanguage);
+
+      if (replaceGreeting !== false && greeting) {
+        greeting.value = languageSettings.greeting;
+        greeting.dispatchEvent(new host.Event('input', { bubbles: true }));
+      }
+      if (replaceGreeting !== false && languageStatus) languageStatus.textContent = languageSettings.status;
+      if (replaceGreeting !== false && status) status.textContent = 'AI language set to: ' + languageSettings.label + '.';
+    }
 
     function showToast(message) {
       if (!toast || !toastMessage) return;
@@ -56,10 +97,16 @@
       }, 3600);
     }
 
-    function systemVoiceFor(profile) {
+    function currentLanguageSettings() {
+      var language = root.getAttribute('data-settings-active-language') || 'auto';
+      return LANGUAGE_SETTINGS[language] || LANGUAGE_SETTINGS.auto;
+    }
+
+    function systemVoiceFor(profile, speechLanguage) {
       if (!host.speechSynthesis || typeof host.speechSynthesis.getVoices !== 'function') return null;
+      var languagePrefix = speechLanguage.split('-')[0];
       var available = host.speechSynthesis.getVoices().filter(function(voice) {
-        return /^en(-|_)/i.test(voice.lang || '');
+        return new RegExp('^' + languagePrefix + '(-|_)', 'i').test(voice.lang || '');
       });
       var hints = profile.gender === 'male' ? MALE_HINTS : FEMALE_HINTS;
       return available.find(function(voice) {
@@ -113,11 +160,13 @@
       playingVoiceId = null;
       renderRows();
 
-      var utterance = new host.SpeechSynthesisUtterance(text || PREVIEW_TEXT);
-      utterance.lang = 'en-US';
+      var languageSettings = currentLanguageSettings();
+      var previewText = text || (greeting && greeting.value.trim()) || PREVIEW_TEXT;
+      var utterance = new host.SpeechSynthesisUtterance(previewText);
+      utterance.lang = languageSettings.speechLanguage;
       utterance.rate = profile.rate;
       utterance.pitch = profile.pitch;
-      var browserVoice = systemVoiceFor(profile);
+      var browserVoice = systemVoiceFor(profile, languageSettings.speechLanguage);
       if (browserVoice) utterance.voice = browserVoice;
       utterance.onstart = function() {
         playingVoiceId = voiceId;
@@ -197,6 +246,12 @@
     useVoiceButton.addEventListener('click', applyVoice);
     searchInput.addEventListener('input', renderRows);
 
+    languageButtons.forEach(function(button) {
+      button.addEventListener('click', function() {
+        setLanguage(button.getAttribute('data-settings-language'));
+      });
+    });
+
     genderToggle.addEventListener('click', function() {
       genderMenu.hidden = !genderMenu.hidden;
       genderToggle.setAttribute('aria-expanded', String(!genderMenu.hidden));
@@ -269,6 +324,8 @@
       }
     });
 
+    var activeLanguageButton = root.querySelector('[data-settings-language][aria-pressed="true"]');
+    setLanguage(activeLanguageButton ? activeLanguageButton.getAttribute('data-settings-language') : 'auto', false);
     root.setAttribute('data-settings-voice-ready', 'true');
     renderRows();
 
@@ -276,6 +333,7 @@
       open: openLibrary,
       close: closeLibrary,
       preview: speakVoice,
+      setLanguage: setLanguage,
       getCurrentVoiceId: function() { return currentVoiceId; },
       getSavedVoiceId: function() { return savedVoiceId; }
     };
