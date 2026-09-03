@@ -117,6 +117,23 @@ test('normalizes multi-technician orders into ticket rows and keeps mixed parent
   assert.equal(record.durationMin, 60);
 });
 
+test('normalizes explicit ticket timezone values to the same wall-clock time as the appointment', () => {
+  const record = store.normalizeAppointment({
+    id: 'apt-ticket-timezone', name: 'Jade', phone: '1231231232',
+    startAt: '2026-09-03T10:00:00Z', endAt: '2026-09-03T11:00:00Z',
+    tickets: [{
+      id: 'ticket-a', serviceId: 'pedi', technicianId: 't1',
+      startAt: '2026-09-03T10:00:00Z', endAt: '2026-09-03T11:00:00Z',
+    }],
+    status: 'confirmed',
+  }, catalog, '2026-09-03T09:39:00.000Z');
+
+  assert.equal(record.startAt, '2026-09-03T10:00:00');
+  assert.equal(record.endAt, '2026-09-03T11:00:00');
+  assert.equal(record.tickets[0].startAt, '2026-09-03T10:00:00');
+  assert.equal(record.tickets[0].endAt, '2026-09-03T11:00:00');
+});
+
 test('derives a legacy order ticket with Anyone when no technician is assigned', () => {
   const record = store.normalizeAppointment({
     id: 'apt-ticket-legacy', name: 'Linh', phone: '8325550106', serviceIds: ['pedi'],

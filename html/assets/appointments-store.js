@@ -239,6 +239,10 @@
       rawTicketsFor(input, catalog, parts, serviceDetails, technician),
       ticketCatalog(catalog)
     );
+    normalized.forEach(function (ticket) {
+      if (ticket.startAt) ticket.startAt = normalizeDateTime(ticket.startAt);
+      if (ticket.endAt) ticket.endAt = normalizeDateTime(ticket.endAt);
+    });
     var hasCompleteTiming = normalized.length && normalized.every(function (ticket) {
       return ticket.startAt && ticket.endAt;
     });
