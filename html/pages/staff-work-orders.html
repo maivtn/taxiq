@@ -242,11 +242,80 @@
       .modal-card { width: 100%; max-height: 90vh; border-radius: 18px 18px 0 0; }
       .toast { right: 16px; bottom: 16px; }
     }
+
+    /* This prototype is intentionally mobile-first at every viewport. */
+    body.wo-mobile-page { background: #dfe6f0; }
+    body.wo-mobile-page .shell { min-height: 100vh; background: #dfe6f0; }
+    body.wo-mobile-page .sidebar,
+    body.wo-mobile-page .header,
+    body.wo-mobile-page .nexora-shell-backdrop { display: none !important; }
+    body.wo-mobile-page .app-area { min-height: 100vh; margin-left: 0 !important; }
+    body.wo-mobile-page .work-orders-page { width: 100%; max-width: 480px; min-height: 100vh; margin: 0 auto; background: #f4f7fb; padding: 22px 18px 48px; box-shadow: 0 0 28px rgba(33, 51, 79, .08); }
+    body.wo-mobile-page .wo-shell { max-width: none; }
+    body.wo-mobile-page .wo-page-head,
+    body.wo-mobile-page .workspace-head { align-items: flex-start; }
+    body.wo-mobile-page .wo-eyebrow { color: #62708a; font-size: 10px; letter-spacing: 0; text-transform: none; }
+    body.wo-mobile-page .wo-title { font-size: 24px; }
+    body.wo-mobile-page .wo-description { font-size: 12px; }
+    body.wo-mobile-page .salon-gate { margin-top: 26px; }
+    body.wo-mobile-page .salon-gate-card { overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+    body.wo-mobile-page .salon-gate-banner { display: none; }
+    body.wo-mobile-page .salon-options { grid-template-columns: 1fr; padding: 0; }
+    body.wo-mobile-page .salon-option { min-height: 82px; border-radius: 13px; padding: 13px; }
+    body.wo-mobile-page .salon-option-avatar,
+    body.wo-mobile-page .salon-option-avatar.is-gold,
+    body.wo-mobile-page .salon-option-avatar.is-rose { width: 42px; height: 42px; background: #e9eaff; color: var(--nexora-brand); }
+    body.wo-mobile-page .workspace-avatar,
+    body.wo-mobile-page .workspace-head-actions .change-salon { display: none; }
+    body.wo-mobile-page .workspace-salon h1 { font-size: 24px; }
+    body.wo-mobile-page .workspace-salon p { margin-top: 3px; }
+    body.wo-mobile-page .workspace-salon-name { border: 0; background: transparent; padding: 0; cursor: pointer; }
+    body.wo-mobile-page .workspace-ticket-badge { display: inline-flex; }
+    body.wo-mobile-page .summary-row { display: none; }
+    body.wo-mobile-page .filter-bar { align-items: stretch; flex-direction: column; border: 0; background: transparent; padding: 0; box-shadow: none; }
+    body.wo-mobile-page .date-control { width: 100%; min-height: 48px; justify-content: space-between; border: 1px solid #d6dfeb; border-radius: 12px; background: #fff; padding: 0 7px; }
+    body.wo-mobile-page .date-control > i { margin-left: auto; }
+    body.wo-mobile-page .date-control label { margin-right: auto; color: var(--nexora-text); font-size: 12px; }
+    body.wo-mobile-page .date-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+    body.wo-mobile-page .status-tabs { width: 100%; border: 1px solid #d6dfeb; border-radius: 12px; background: #fff; padding: 4px; }
+    body.wo-mobile-page .status-tab { min-height: 36px; flex: 1 0 auto; padding: 0 9px; font-size: 9px; }
+    body.wo-mobile-page .status-tab.is-active { background: var(--nexora-brand); color: #fff; }
+    body.wo-mobile-page .orders-layout { display: block; }
+    body.wo-mobile-page .orders-panel { border: 0; background: transparent; box-shadow: none; }
+    body.wo-mobile-page .orders-panel-head { border: 0; padding: 7px 2px 9px; }
+    body.wo-mobile-page .orders-panel-head h2,
+    body.wo-mobile-page .orders-count { height: auto; background: transparent; padding: 0; color: #62708a; font-size: 10px; }
+    body.wo-mobile-page .orders-list { max-height: none; gap: 9px; overflow: visible; padding: 0; }
+    body.wo-mobile-page .order-card { min-height: 108px; border-radius: 13px; padding: 16px 12px; }
+    body.wo-mobile-page .order-card.is-active { border-color: var(--nexora-border); background: #fff; box-shadow: none; }
+    body.wo-mobile-page .order-card-top { grid-template-columns: 47px minmax(0, 1fr) auto 14px; gap: 8px; }
+    body.wo-mobile-page .order-meta { margin-left: 55px; }
+    body.wo-mobile-page .detail-panel { position: static; display: none; border: 0; border-radius: 0; box-shadow: none; }
+    body.wo-mobile-page .workspace-section.is-detail-mode .workspace-head,
+    body.wo-mobile-page .workspace-section.is-detail-mode .summary-row,
+    body.wo-mobile-page .workspace-section.is-detail-mode .filter-bar,
+    body.wo-mobile-page .workspace-section.is-detail-mode .orders-panel { display: none; }
+    body.wo-mobile-page .workspace-section.is-detail-mode .detail-panel { display: block; }
+    body.wo-mobile-page .detail-back { display: inline-flex; }
+    body.wo-mobile-page.wo-detail-open .work-orders-page { background: #fff; padding: 0 0 48px; }
+    body.wo-mobile-page .detail-head { padding: 12px 18px; }
+    body.wo-mobile-page .detail-body { padding: 18px; }
+    body.wo-mobile-page .customer-phone { display: none; }
+    body.wo-mobile-page .action-btn.is-primary { flex-basis: 100%; order: -1; }
+    .service-name { display: flex; align-items: center; gap: 5px; }
+    .service-edit-button { display: inline-flex; width: 22px; height: 22px; flex: 0 0 auto; align-items: center; justify-content: center; border: 0; border-radius: 6px; background: transparent; color: var(--nexora-brand); cursor: pointer; }
+    .service-edit-button:hover { background: #eef0ff; }
+    .service-edit-button i { width: 11px; height: 11px; }
+    .edit-form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .edit-form-grid .edit-field:first-child { grid-column: 1 / -1; }
+    .edit-field label { display: block; margin-bottom: 6px; color: var(--nexora-text); font-size: 10px; font-weight: 800; }
+    .edit-field input { width: 100%; height: 40px; border: 1px solid var(--nexora-border); border-radius: 9px; outline: 0; padding: 0 10px; color: var(--nexora-text); font-size: 12px; }
+    .edit-field input:focus { border-color: var(--nexora-brand); box-shadow: 0 0 0 3px rgba(70,72,216,.1); }
   </style>
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/staff-shell.css">
 </head>
-<body>
+<body class="wo-mobile-page">
   <div class="shell">
     <aside class="sidebar staff-sidebar" aria-label="Staff sidebar"></aside>
     <div class="app-area">
@@ -276,7 +345,7 @@
             <div class="workspace-head">
               <div class="workspace-salon">
                 <span class="workspace-avatar" data-workspace-avatar>GN</span>
-                <div><div class="workspace-kicker">My workspace</div><h1>Work Orders</h1><p><span class="workspace-salon-name" data-workspace-name>Golden Nails &amp; Spa</span> · <span data-today-label>Today</span></p></div>
+                <div><div class="workspace-kicker">My workspace</div><h1>Work Orders</h1><p><button class="workspace-salon-name" type="button" data-workspace-name data-change-salon-inline>Golden Nails &amp; Spa</button><span data-today-label hidden>Today</span></p></div>
               </div>
               <div class="workspace-head-actions"><span class="workspace-ticket-badge" data-workspace-count>0</span><button class="change-salon" type="button" data-change-salon><i data-lucide="arrow-left-right" aria-hidden="true"></i><span>Change salon</span></button></div>
             </div>
@@ -327,10 +396,22 @@
     </div>
   </div>
 
+  <div class="modal-backdrop" data-edit-service-modal hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="edit-service-title">
+      <div class="modal-head"><div><h2 id="edit-service-title">Edit service</h2><p>Changes will be sent for manager approval.</p></div><button class="modal-close" type="button" data-close-edit-service aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button></div>
+      <div class="modal-body"><div class="edit-form-grid">
+        <div class="edit-field"><label for="edit-service-name">Service name</label><input id="edit-service-name" type="text" data-edit-service-name></div>
+        <div class="edit-field"><label for="edit-service-price">Price ($)</label><input id="edit-service-price" type="number" min="0" step="0.01" data-edit-service-price></div>
+        <div class="edit-field"><label for="edit-service-duration">Time (min)</label><input id="edit-service-duration" type="number" min="5" step="5" data-edit-service-duration></div>
+      </div></div>
+      <div class="modal-footer"><button class="modal-btn is-secondary" type="button" data-close-edit-service>Cancel</button><button class="modal-btn is-primary" type="button" data-save-edit-service>Save changes</button></div>
+    </div>
+  </div>
+
   <div class="toast" role="status" data-toast hidden><i data-lucide="circle-check" aria-hidden="true"></i><span data-toast-message></span></div>
 
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
-  <script>window.NEXORA_SHELL = { activePage: 'staff', activeTab: 'work-orders' };</script>
+  <script>window.NEXORA_SHELL = { activePage: 'staff', activeTab: 'my-salons' };</script>
   <script src="../assets/nexora-shell.js"></script>
   <script>
     (function () {
@@ -386,6 +467,8 @@
       var selectedTicketId = '';
       var completingTicketId = '';
       var selectedSuggestedNote = '';
+      var editingTicketId = '';
+      var editingServiceIndex = -1;
       var toastTimer = 0;
 
       var gateEl = document.querySelector('[data-salon-gate]');
@@ -396,6 +479,10 @@
       var dateFilterEl = document.querySelector('[data-date-filter]');
       var completeModalEl = document.querySelector('[data-complete-modal]');
       var completeNotesEl = document.querySelector('[data-complete-notes]');
+      var editServiceModalEl = document.querySelector('[data-edit-service-modal]');
+      var editServiceNameEl = document.querySelector('[data-edit-service-name]');
+      var editServicePriceEl = document.querySelector('[data-edit-service-price]');
+      var editServiceDurationEl = document.querySelector('[data-edit-service-duration]');
 
       function esc(value) {
         return String(value == null ? '' : value).replace(/[&<>\"]/g, function (char) {
@@ -506,7 +593,8 @@
           return '<div class="addon-row"><div class="addon-name"><i data-lucide="puzzle" aria-hidden="true"></i><span>' + esc(addon.name) + approvalPill(addon.approval) + '</span></div><span class="service-price">' + money(addon.price) + '</span><span class="service-time">20 min</span><span></span></div>';
         }).join('');
         var addOnButton = canEdit ? '<button class="service-addon-button" type="button" data-request-addon="' + esc(ticket.id) + '" data-service-index="' + serviceIndex + '"><i data-lucide="plus" aria-hidden="true"></i>Add-on</button>' : '';
-        return '<div class="service-card"><div class="service-row"><div class="service-name">' + esc(service.name) + approvalPill(service.approval) + '</div><span class="service-price">' + money(service.price) + '</span><span class="service-time">' + service.duration + ' min</span><span class="service-action">' + addOnButton + '</span></div>' + addons + '</div>';
+        var editButton = canEdit ? '<button class="service-edit-button" type="button" data-edit-service="' + esc(ticket.id) + '" data-service-index="' + serviceIndex + '" aria-label="Edit ' + esc(service.name) + '"><i data-lucide="pencil" aria-hidden="true"></i></button>' : '';
+        return '<div class="service-card"><div class="service-row"><div class="service-name"><span>' + esc(service.name) + approvalPill(service.approval) + '</span>' + editButton + '</div><span class="service-price">' + money(service.price) + '</span><span class="service-time">' + service.duration + ' min</span><span class="service-action">' + addOnButton + '</span></div>' + addons + '</div>';
       }
 
       function renderDetail() {
@@ -524,11 +612,12 @@
           actionHtml = '<div class="completed-note"><strong><i data-lucide="badge-check" aria-hidden="true"></i>Completed service notes</strong><p>' + esc(ticket.completionNote || 'Service completed.') + '</p></div>';
         }
         var addServiceButton = ticket.status !== 'completed' ? '<button class="service-add-button" type="button" data-request-service="' + esc(ticket.id) + '"><i data-lucide="plus" aria-hidden="true"></i>Add service</button>' : '';
+        var customerNoteHtml = '<div class="note-box"><i data-lucide="notebook-pen" aria-hidden="true"></i><span><span class="note-box-label">Important</span><strong>Customer notes</strong>' + esc(ticket.note) + '</span></div>';
+        var detailTailHtml = ticket.status === 'in-service' ? customerNoteHtml + actionHtml : actionHtml + customerNoteHtml;
         detailPanelEl.innerHTML = '<div class="detail-head"><div class="detail-head-main"><button class="detail-back" type="button" data-detail-back aria-label="Back to work orders"><i data-lucide="arrow-left" aria-hidden="true"></i></button><div><h2>Work Order</h2><div class="detail-code">' + esc(ticket.id) + '</div></div></div><span class="status-pill ' + statusClass(ticket.status) + '">' + statusLabel(ticket.status) + '</span></div>' +
           '<div class="detail-body"><div class="detail-customer"><span class="detail-customer-avatar">' + initials(ticket.customer) + '</span><div class="detail-customer-copy"><div class="detail-customer-label">Customer</div><div class="detail-customer-name">' + esc(ticket.customer) + '</div><div class="detail-customer-meta"><span><i data-lucide="panel-top" aria-hidden="true"></i>Station ' + esc(ticket.station) + '</span><span><i data-lucide="radio" aria-hidden="true"></i>Beeper B' + esc(ticket.beeper) + '</span><span class="customer-phone">' + esc(ticket.phone) + '</span></div></div></div>' +
           '<div class="section-head"><h3>Services</h3>' + addServiceButton + '</div><div class="service-table-head"><span>Service</span><span>Price</span><span>Time</span><span></span></div>' +
-          '<div class="services">' + ticket.services.map(function (service, index) { return renderService(ticket, service, index); }).join('') + '</div><div class="ticket-total"><span>Service total</span><strong>' + money(serviceTotal(ticket)) + '</strong></div>' + actionHtml +
-          '<div class="note-box"><i data-lucide="notebook-pen" aria-hidden="true"></i><span><span class="note-box-label">Important</span><strong>Customer notes</strong>' + esc(ticket.note) + '</span></div></div>';
+          '<div class="services">' + ticket.services.map(function (service, index) { return renderService(ticket, service, index); }).join('') + '</div><div class="ticket-total"><span>Service total</span><strong>' + money(serviceTotal(ticket)) + '</strong></div>' + detailTailHtml + '</div>';
       }
 
       function renderWorkspace() {
@@ -629,6 +718,41 @@
         showToast('Add-on sent to manager for approval.');
       }
 
+      function openEditService(id, serviceIndex) {
+        var ticket = ticketById(id);
+        var service = ticket && ticket.services[Number(serviceIndex)];
+        if (!service || ticket.status === 'completed') return;
+        editingTicketId = id;
+        editingServiceIndex = Number(serviceIndex);
+        editServiceNameEl.value = service.name;
+        editServicePriceEl.value = service.price;
+        editServiceDurationEl.value = service.duration;
+        editServiceModalEl.hidden = false;
+        editServiceNameEl.focus();
+      }
+
+      function closeEditService() {
+        editServiceModalEl.hidden = true;
+        editingTicketId = '';
+        editingServiceIndex = -1;
+      }
+
+      function saveEditService() {
+        var ticket = ticketById(editingTicketId);
+        var service = ticket && ticket.services[editingServiceIndex];
+        var name = editServiceNameEl.value.trim();
+        var price = Number(editServicePriceEl.value);
+        var duration = Number(editServiceDurationEl.value);
+        if (!service || !name || price < 0 || duration < 5) return;
+        service.name = name;
+        service.price = price;
+        service.duration = duration;
+        service.approval = 'pending';
+        closeEditService();
+        renderWorkspace();
+        showToast('Service changes sent to manager for approval.');
+      }
+
       function refreshIcons() {
         if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
       }
@@ -638,6 +762,7 @@
         if (button) openSalon(button.getAttribute('data-select-salon'));
       });
       document.querySelector('[data-change-salon]').addEventListener('click', showSalonGate);
+      document.querySelector('[data-change-salon-inline]').addEventListener('click', showSalonGate);
       dateFilterEl.addEventListener('change', function () { currentDate = dateFilterEl.value || TODAY; selectedTicketId = ''; renderWorkspace(); });
       document.querySelector('.date-control').addEventListener('click', function (event) {
         var button = event.target.closest('[data-date-step]');
@@ -660,11 +785,9 @@
         if (!button) return;
         selectedTicketId = button.getAttribute('data-ticket-id');
         renderWorkspace();
-        if (window.innerWidth <= 960) {
-          workspaceEl.classList.add('is-detail-mode');
-          document.body.classList.add('wo-detail-open');
-          window.scrollTo({ top: 0, behavior: 'smooth' });
-        }
+        workspaceEl.classList.add('is-detail-mode');
+        document.body.classList.add('wo-detail-open');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
       });
       detailPanelEl.addEventListener('click', function (event) {
         var backButton = event.target.closest('[data-detail-back]');
@@ -672,11 +795,13 @@
         var completeButton = event.target.closest('[data-complete-ticket]');
         var serviceButton = event.target.closest('[data-request-service]');
         var addonButton = event.target.closest('[data-request-addon]');
+        var editButton = event.target.closest('[data-edit-service]');
         if (backButton) {
           workspaceEl.classList.remove('is-detail-mode');
           document.body.classList.remove('wo-detail-open');
         } else if (startButton) startTicket(startButton.getAttribute('data-start-ticket'));
         else if (completeButton) openCompleteModal(completeButton.getAttribute('data-complete-ticket'));
+        else if (editButton) openEditService(editButton.getAttribute('data-edit-service'), editButton.getAttribute('data-service-index'));
         else if (serviceButton) requestService(serviceButton.getAttribute('data-request-service'));
         else if (addonButton) requestAddon(addonButton.getAttribute('data-request-addon'), addonButton.getAttribute('data-service-index'));
       });
@@ -690,7 +815,15 @@
         }
         if (event.target.closest('[data-confirm-complete]')) completeTicket();
       });
-      document.addEventListener('keydown', function (event) { if (event.key === 'Escape' && !completeModalEl.hidden) closeCompleteModal(); });
+      editServiceModalEl.addEventListener('click', function (event) {
+        if (event.target === editServiceModalEl || event.target.closest('[data-close-edit-service]')) closeEditService();
+        if (event.target.closest('[data-save-edit-service]')) saveEditService();
+      });
+      document.addEventListener('keydown', function (event) {
+        if (event.key !== 'Escape') return;
+        if (!completeModalEl.hidden) closeCompleteModal();
+        if (!editServiceModalEl.hidden) closeEditService();
+      });
 
       document.querySelector('[data-today-label]').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
       dateFilterEl.value = TODAY;

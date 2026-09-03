@@ -283,7 +283,6 @@
         iconWrap('briefcase-business') + '<span>My Workspace</span>' + CARET +
       '</button>' +
       '<div class="nav-subnav" id="staff-subnav-workspace" data-nav-subnav><div class="nav-subnav-inner">' +
-        '<a class="nav-subitem' + (activeTab === 'work-orders' ? ' is-active' : '') + '" href="staff-work-orders.html" data-staff-nav="work-orders"><span class="nav-subitem-dot" aria-hidden="true"></span><span>Work Orders</span></a>' +
         '<a class="nav-subitem" href="#" data-staff-nav="my-qr"><span class="nav-subitem-dot" aria-hidden="true"></span><span>My QR</span></a>' +
         '<a class="nav-subitem" href="#" data-staff-nav="my-earnings"><span class="nav-subitem-dot" aria-hidden="true"></span><span>My Earnings</span></a>' +
         '<a class="nav-subitem" href="#" data-staff-nav="my-reviews"><span class="nav-subitem-dot" aria-hidden="true"></span><span>My Reviews</span></a>' +
