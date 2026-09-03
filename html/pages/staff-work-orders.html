@@ -28,6 +28,7 @@
     .salon-option { display: flex; min-width: 0; align-items: center; gap: 13px; border: 1px solid var(--nexora-border); border-radius: 14px; background: #fff; padding: 16px; text-align: left; cursor: pointer; transition: border-color .18s, box-shadow .18s, transform .18s; }
     .salon-option:hover { border-color: rgba(70,72,216,.55); box-shadow: 0 10px 22px rgba(70,72,216,.10); transform: translateY(-1px); }
     .salon-option-avatar { display: inline-flex; width: 46px; height: 46px; flex: 0 0 auto; align-items: center; justify-content: center; border-radius: 13px; color: #fff; font-size: 12px; font-weight: 900; }
+    .salon-option-avatar i { width: 20px; height: 20px; }
     .salon-option-avatar.is-gold { background: linear-gradient(135deg, #f59e0b, #f97316); }
     .salon-option-avatar.is-rose { background: linear-gradient(135deg, #ec4899, #8b5cf6); }
     .salon-option-copy { min-width: 0; flex: 1; }
@@ -40,8 +41,12 @@
     .workspace-salon { display: flex; min-width: 0; align-items: center; gap: 12px; }
     .workspace-avatar { display: inline-flex; width: 44px; height: 44px; flex: 0 0 auto; align-items: center; justify-content: center; border-radius: 13px; background: linear-gradient(135deg, #f59e0b, #f97316); color: #fff; font-size: 12px; font-weight: 900; }
     .workspace-avatar.is-rose { background: linear-gradient(135deg, #ec4899, #8b5cf6); }
+    .workspace-kicker { margin-bottom: 6px; color: var(--nexora-subtle); font-size: 10px; font-weight: 750; }
     .workspace-salon h1 { overflow: hidden; margin: 0; color: var(--nexora-text); font-size: 24px; font-weight: 900; text-overflow: ellipsis; white-space: nowrap; }
     .workspace-salon p { margin: 4px 0 0; color: var(--nexora-subtle); font-size: 12px; font-weight: 600; }
+    .workspace-salon-name { color: var(--nexora-brand); font-weight: 800; }
+    .workspace-head-actions { display: flex; align-items: center; gap: 9px; }
+    .workspace-ticket-badge { display: none; min-width: 32px; height: 32px; align-items: center; justify-content: center; border-radius: 999px; background: #e9eaff; color: var(--nexora-brand); font-size: 12px; font-weight: 900; }
     .change-salon { display: inline-flex; height: 38px; flex: 0 0 auto; align-items: center; gap: 7px; border: 1px solid var(--nexora-border); border-radius: 10px; background: #fff; padding: 0 13px; color: var(--nexora-brand); font-size: 12px; font-weight: 800; cursor: pointer; }
     .change-salon:hover { border-color: var(--nexora-brand); background: rgba(70,72,216,.04); }
     .change-salon i { width: 15px; height: 15px; }
@@ -60,6 +65,9 @@
     .date-control { position: relative; display: flex; align-items: center; gap: 8px; min-width: 0; }
     .date-control > i { width: 16px; height: 16px; margin-left: 4px; color: var(--nexora-brand); pointer-events: none; }
     .date-control label { color: var(--nexora-muted); font-size: 11px; font-weight: 800; }
+    .date-step { display: inline-flex; width: 30px; height: 30px; flex: 0 0 auto; align-items: center; justify-content: center; border: 0; border-radius: 7px; background: transparent; color: var(--nexora-muted); cursor: pointer; }
+    .date-step:hover { background: var(--nexora-surface-muted); color: var(--nexora-brand); }
+    .date-step i { width: 15px; height: 15px; }
     .date-input { height: 36px; border: 0; border-radius: 8px; outline: 0; background: var(--nexora-surface-muted); padding: 0 9px; color: var(--nexora-text); font-size: 12px; font-weight: 700; cursor: pointer; }
     .date-input:focus { box-shadow: 0 0 0 2px rgba(70,72,216,.18); }
     .status-tabs { display: flex; gap: 4px; overflow-x: auto; border-radius: 10px; background: var(--nexora-surface-muted); padding: 4px; scrollbar-width: none; }
@@ -76,15 +84,18 @@
     .order-card { width: 100%; border: 1px solid var(--nexora-border); border-radius: 12px; background: #fff; padding: 13px; text-align: left; cursor: pointer; transition: border-color .16s, background .16s, box-shadow .16s; }
     .order-card:hover { border-color: rgba(70,72,216,.45); }
     .order-card.is-active { border-color: var(--nexora-brand); background: #fafaff; box-shadow: inset 3px 0 0 var(--nexora-brand); }
-    .order-card-top { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .order-card-top { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto 16px; align-items: start; gap: 10px; }
+    .order-time { color: var(--nexora-brand); font-size: 11px; font-weight: 900; }
+    .order-card-copy { min-width: 0; }
+    .order-chevron { width: 16px; height: 16px; align-self: center; color: #91a0b8; }
     .ticket-code { color: var(--nexora-brand); font-size: 10px; font-weight: 850; letter-spacing: .045em; text-transform: uppercase; }
-    .customer-name { margin-top: 4px; color: var(--nexora-text); font-size: 14px; font-weight: 850; }
+    .customer-name { display: block; color: var(--nexora-text); font-size: 13px; font-weight: 850; }
     .status-pill { display: inline-flex; min-height: 24px; flex: 0 0 auto; align-items: center; border-radius: 999px; padding: 0 9px; font-size: 10px; font-weight: 850; white-space: nowrap; }
     .status-pill.is-assigned { background: #eef0ff; color: var(--nexora-brand); }
     .status-pill.is-service { background: #fff3d6; color: #b76000; }
     .status-pill.is-completed { background: #e5f9f0; color: #008655; }
-    .order-service { margin-top: 9px; overflow: hidden; color: var(--nexora-muted); font-size: 12px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
-    .order-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; margin-top: 11px; padding-top: 10px; border-top: 1px solid var(--nexora-rule); color: var(--nexora-subtle); font-size: 10px; font-weight: 700; }
+    .order-service { display: block; margin-top: 6px; overflow: hidden; color: var(--nexora-muted); font-size: 11px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+    .order-meta { display: flex; flex-wrap: wrap; gap: 6px 12px; margin: 11px 0 0 68px; color: var(--nexora-subtle); font-size: 9px; font-weight: 700; }
     .order-meta span { display: inline-flex; align-items: center; gap: 4px; }
     .order-meta i { width: 12px; height: 12px; }
     .empty-list { padding: 48px 20px; color: var(--nexora-subtle); text-align: center; }
@@ -97,39 +108,54 @@
     .detail-empty i { width: 34px; height: 34px; margin-bottom: 12px; color: #b4bdd0; }
     .detail-empty strong { color: var(--nexora-muted); font-size: 14px; }
     .detail-empty span { margin-top: 5px; font-size: 11px; }
-    .detail-head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--nexora-rule); padding: 17px 18px; }
-    .detail-code { color: var(--nexora-brand); font-size: 10px; font-weight: 850; letter-spacing: .05em; text-transform: uppercase; }
-    .detail-head h2 { margin: 4px 0 0; color: var(--nexora-text); font-size: 19px; font-weight: 900; }
+    .detail-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; border-bottom: 1px solid var(--nexora-rule); padding: 15px 18px; }
+    .detail-head-main { display: flex; min-width: 0; align-items: center; gap: 10px; }
+    .detail-back { display: none; width: 30px; height: 30px; flex: 0 0 auto; align-items: center; justify-content: center; border: 0; border-radius: 8px; background: transparent; color: var(--nexora-muted); cursor: pointer; }
+    .detail-back i { width: 18px; height: 18px; }
+    .detail-code { color: var(--nexora-subtle); font-size: 9px; font-weight: 750; letter-spacing: .03em; }
+    .detail-head h2 { margin: 0 0 3px; color: var(--nexora-text); font-size: 15px; font-weight: 900; }
     .detail-body { padding: 17px 18px 20px; }
-    .customer-grid { display: grid; grid-template-columns: minmax(0, 1.5fr) repeat(2, minmax(80px, 1fr)); gap: 9px; }
-    .info-card { min-width: 0; border: 1px solid var(--nexora-rule); border-radius: 11px; background: var(--nexora-surface-muted); padding: 11px; }
-    .info-label { display: flex; align-items: center; gap: 5px; color: var(--nexora-subtle); font-size: 9px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
-    .info-label i { width: 11px; height: 11px; }
-    .info-value { margin-top: 5px; overflow: hidden; color: var(--nexora-text); font-size: 12px; font-weight: 800; text-overflow: ellipsis; white-space: nowrap; }
-    .customer-phone { margin-top: 3px; color: var(--nexora-subtle); font-size: 10px; font-weight: 600; }
-    .note-box { display: flex; align-items: flex-start; gap: 9px; margin-top: 10px; border: 1px solid #f5dfad; border-radius: 11px; background: #fffaf0; padding: 11px 12px; color: #7c5513; font-size: 11px; font-weight: 600; line-height: 1.5; }
+    .detail-customer { display: flex; align-items: center; gap: 12px; border-bottom: 1px solid var(--nexora-rule); padding-bottom: 17px; }
+    .detail-customer-avatar { display: inline-flex; width: 48px; height: 48px; flex: 0 0 auto; align-items: center; justify-content: center; border: 1px solid #cbd0ff; border-radius: 999px; background: #eef0ff; color: var(--nexora-brand); font-size: 12px; font-weight: 900; }
+    .detail-customer-copy { min-width: 0; flex: 1; }
+    .detail-customer-label { color: var(--nexora-brand); font-size: 9px; font-weight: 850; }
+    .detail-customer-name { margin-top: 4px; color: var(--nexora-text); font-size: 16px; font-weight: 900; }
+    .detail-customer-meta { display: flex; flex-wrap: wrap; gap: 6px 13px; margin-top: 7px; color: var(--nexora-muted); font-size: 10px; font-weight: 700; }
+    .detail-customer-meta span { display: inline-flex; align-items: center; gap: 5px; }
+    .detail-customer-meta i { width: 12px; height: 12px; color: var(--nexora-brand); }
+    .customer-phone { color: var(--nexora-subtle); font-weight: 600 !important; }
+    .note-box { display: flex; align-items: flex-start; gap: 9px; margin-top: 16px; border: 1px solid #f3c98e; border-radius: 11px; background: #fff8ef; padding: 13px 14px; color: #596178; font-size: 11px; font-weight: 600; line-height: 1.5; }
     .note-box i { width: 14px; height: 14px; flex: 0 0 auto; margin-top: 1px; color: #d58b0a; }
-    .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0 9px; }
-    .section-head h3 { margin: 0; color: var(--nexora-text); font-size: 12px; font-weight: 850; }
-    .section-head span { color: var(--nexora-subtle); font-size: 10px; font-weight: 700; }
-    .services { display: flex; flex-direction: column; gap: 8px; }
-    .service-card { border: 1px solid var(--nexora-border); border-radius: 11px; padding: 11px 12px; }
-    .service-row, .addon-row { display: flex; align-items: flex-start; justify-content: space-between; gap: 10px; }
+    .note-box strong { display: block; margin-bottom: 3px; color: var(--nexora-text); font-size: 11px; }
+    .note-box-label { color: #b46909; font-size: 9px; font-weight: 850; }
+    .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0 10px; }
+    .section-head h3 { margin: 0; color: var(--nexora-text); font-size: 13px; font-weight: 900; }
+    .service-add-button, .service-addon-button { display: inline-flex; align-items: center; gap: 4px; border: 0; background: transparent; padding: 3px 0; color: var(--nexora-brand); font-size: 10px; font-weight: 800; cursor: pointer; }
+    .service-add-button i, .service-addon-button i { width: 12px; height: 12px; }
+    .service-table-head { display: grid; grid-template-columns: minmax(0, 1fr) 64px 48px 62px; gap: 8px; padding: 8px 0; color: var(--nexora-subtle); font-size: 8px; font-weight: 800; }
+    .service-table-head span:not(:first-child) { text-align: right; }
+    .services { display: flex; flex-direction: column; gap: 0; border-top: 1px solid var(--nexora-rule); }
+    .service-card { border-bottom: 1px solid var(--nexora-rule); padding: 12px 0; }
+    .service-row, .addon-row { display: grid; grid-template-columns: minmax(0, 1fr) 64px 48px 62px; align-items: center; gap: 8px; }
     .service-name { color: var(--nexora-text); font-size: 12px; font-weight: 800; }
-    .service-sub { margin-top: 3px; color: var(--nexora-subtle); font-size: 10px; font-weight: 600; }
-    .service-price { color: var(--nexora-text); font-size: 12px; font-weight: 850; white-space: nowrap; }
-    .addon-row { margin: 9px 0 0 10px; border-top: 1px dashed var(--nexora-border); padding: 9px 0 0 10px; }
-    .addon-name { color: var(--nexora-muted); font-size: 11px; font-weight: 700; }
+    .service-sub { margin-top: 3px; color: var(--nexora-subtle); font-size: 9px; font-weight: 600; }
+    .service-price { color: var(--nexora-text); font-size: 11px; font-weight: 850; text-align: right; white-space: nowrap; }
+    .service-time { color: var(--nexora-muted); font-size: 9px; font-weight: 700; text-align: right; white-space: nowrap; }
+    .service-action { text-align: right; }
+    .addon-row { margin-top: 11px; }
+    .addon-name { display: inline-flex; align-items: center; gap: 5px; color: var(--nexora-text); font-size: 11px; font-weight: 750; }
+    .addon-name i { width: 12px; height: 12px; color: var(--nexora-brand); }
     .approval-pill { display: inline-flex; height: 19px; align-items: center; border-radius: 999px; margin-left: 5px; padding: 0 7px; font-size: 8px; font-weight: 850; text-transform: uppercase; vertical-align: 1px; }
     .approval-pill.is-pending { background: #fff3d6; color: #ad5a00; }
     .approval-pill.is-approved { background: #e5f9f0; color: #008655; }
     .approval-pill.is-rejected { background: #feecec; color: #d42d2d; }
-    .ticket-total { display: flex; align-items: center; justify-content: space-between; margin-top: 10px; border-radius: 10px; background: #f0f1ff; padding: 11px 12px; color: var(--nexora-brand-dark); font-size: 12px; font-weight: 850; }
+    .ticket-total { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--nexora-rule); padding: 14px 0 16px; color: var(--nexora-muted); font-size: 12px; font-weight: 650; }
+    .ticket-total strong { color: var(--nexora-text); font-size: 14px; font-weight: 900; }
     .detail-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
     .action-btn { display: inline-flex; min-height: 40px; flex: 1 1 auto; align-items: center; justify-content: center; gap: 7px; border-radius: 10px; padding: 0 13px; font-size: 11px; font-weight: 800; cursor: pointer; }
     .action-btn i { width: 14px; height: 14px; }
-    .action-btn.is-primary { border: 1px solid transparent; background: var(--nexora-brand); color: #fff; box-shadow: 0 8px 18px rgba(70,72,216,.20); }
-    .action-btn.is-primary:hover { background: var(--nexora-brand-dark); }
+    .action-btn.is-primary { min-height: 46px; border: 1px solid transparent; background: linear-gradient(100deg, #315cff, #6c32ef); color: #fff; box-shadow: 0 10px 24px rgba(70,72,216,.22); font-size: 12px; }
+    .action-btn.is-primary:hover { filter: brightness(.96); }
     .action-btn.is-outline { border: 1px solid var(--nexora-border); background: #fff; color: var(--nexora-brand); }
     .action-btn.is-outline:hover { border-color: var(--nexora-brand); background: #fafaff; }
     .completed-note { margin-top: 15px; border: 1px solid #ccebdd; border-radius: 11px; background: #f0fbf6; padding: 12px; }
@@ -162,28 +188,54 @@
 
     @media (max-width: 960px) {
       .orders-layout { grid-template-columns: 1fr; }
-      .detail-panel { position: static; }
+      .detail-panel { position: static; display: none; }
       .orders-list { max-height: 430px; }
+      .workspace-section.is-detail-mode .workspace-head,
+      .workspace-section.is-detail-mode .summary-row,
+      .workspace-section.is-detail-mode .filter-bar,
+      .workspace-section.is-detail-mode .orders-panel { display: none; }
+      .workspace-section.is-detail-mode .detail-panel { display: block; }
+      .workspace-section.is-detail-mode .orders-layout { display: block; }
+      .detail-back { display: inline-flex; }
+      body.wo-detail-open .header { display: none; }
+      body.wo-detail-open .work-orders-page { padding-top: 0; }
     }
     @media (max-width: 640px) {
-      .work-orders-page { padding-right: 12px; padding-left: 12px; }
+      .work-orders-page { padding: 20px 18px 48px; }
       .wo-page-head, .workspace-head { align-items: flex-start; }
-      .salon-options { grid-template-columns: 1fr; padding: 14px; }
-      .salon-gate-banner { padding: 18px; }
+      .wo-eyebrow { color: var(--nexora-muted); font-size: 10px; letter-spacing: 0; text-transform: none; }
+      .wo-title { font-size: 24px; }
+      .wo-description { font-size: 12px; }
+      .salon-gate { margin-top: 26px; }
+      .salon-gate-card { overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
+      .salon-gate-banner { display: none; }
+      .salon-options { grid-template-columns: 1fr; padding: 0; }
+      .salon-option { min-height: 82px; border-radius: 13px; padding: 13px; }
+      .salon-option-avatar, .salon-option-avatar.is-gold, .salon-option-avatar.is-rose { width: 42px; height: 42px; background: #e9eaff; color: var(--nexora-brand); }
+      .workspace-avatar { display: none; }
       .workspace-salon h1 { font-size: 19px; }
-      .change-salon span { display: none; }
-      .change-salon { width: 38px; padding: 0; justify-content: center; }
-      .summary-row { gap: 7px; }
-      .summary-card { display: block; padding: 10px; }
-      .summary-icon { width: 29px; height: 29px; margin-bottom: 9px; }
-      .summary-value { font-size: 17px; }
-      .filter-bar { align-items: stretch; flex-direction: column; }
-      .date-control { justify-content: space-between; }
-      .date-input { flex: 1; }
-      .status-tabs { width: 100%; }
-      .status-tab { flex: 1 0 auto; }
-      .customer-grid { grid-template-columns: 1fr 1fr; }
-      .customer-grid .info-card:first-child { grid-column: 1 / -1; }
+      .workspace-head-actions .change-salon { display: none; }
+      .workspace-ticket-badge { display: inline-flex; }
+      .summary-row { display: none; }
+      .filter-bar { align-items: stretch; flex-direction: column; border: 0; background: transparent; padding: 0; box-shadow: none; }
+      .date-control { width: 100%; min-height: 48px; justify-content: space-between; border: 1px solid var(--nexora-border); border-radius: 12px; background: #fff; padding: 0 7px; }
+      .date-control > i { margin-left: auto; }
+      .date-control label { margin-right: auto; color: var(--nexora-text); font-size: 12px; }
+      .date-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
+      .status-tabs { width: 100%; border: 1px solid var(--nexora-border); border-radius: 12px; background: #fff; padding: 4px; }
+      .status-tab { min-height: 36px; flex: 1 0 auto; padding: 0 9px; font-size: 9px; }
+      .status-tab.is-active { background: var(--nexora-brand); color: #fff; }
+      .orders-panel { border: 0; background: transparent; box-shadow: none; }
+      .orders-panel-head { border: 0; padding: 7px 2px 9px; }
+      .orders-panel-head h2 { color: var(--nexora-muted); font-size: 10px; }
+      .orders-count { height: auto; background: transparent; padding: 0; color: var(--nexora-muted); font-size: 10px; }
+      .orders-list { max-height: none; gap: 9px; overflow: visible; padding: 0; }
+      .order-card { min-height: 108px; border-radius: 13px; padding: 16px 12px; }
+      .order-card.is-active { border-color: var(--nexora-border); background: #fff; box-shadow: none; }
+      .order-card-top { grid-template-columns: 47px minmax(0, 1fr) auto 14px; gap: 8px; }
+      .order-meta { margin-left: 55px; }
+      .detail-panel { border: 0; border-radius: 0; box-shadow: none; }
+      .detail-customer { padding-top: 8px; }
       .detail-head, .detail-body { padding-right: 14px; padding-left: 14px; }
       .action-btn.is-primary { flex-basis: 100%; order: -1; }
       .modal-backdrop { align-items: flex-end; padding: 0; }
@@ -204,9 +256,9 @@
           <section data-salon-gate>
             <div class="wo-page-head">
               <div>
-                <div class="wo-eyebrow"><i data-lucide="clipboard-list" aria-hidden="true"></i>My Workspace</div>
-                <h1 class="wo-title">Work Orders</h1>
-                <p class="wo-description">Choose where you're working to view tickets assigned to you.</p>
+                <div class="wo-eyebrow">My workspace · My salon</div>
+                <h1 class="wo-title">Choose your salon</h1>
+                <p class="wo-description">Select a salon to view its work orders.</p>
               </div>
             </div>
             <div class="salon-gate">
@@ -220,13 +272,13 @@
             </div>
           </section>
 
-          <section data-workspace hidden>
+          <section class="workspace-section" data-workspace hidden>
             <div class="workspace-head">
               <div class="workspace-salon">
                 <span class="workspace-avatar" data-workspace-avatar>GN</span>
-                <div><h1 data-workspace-name>Golden Nails &amp; Spa</h1><p>Technician Work Orders · <span data-today-label>Today</span></p></div>
+                <div><div class="workspace-kicker">My workspace</div><h1>Work Orders</h1><p><span class="workspace-salon-name" data-workspace-name>Golden Nails &amp; Spa</span> · <span data-today-label>Today</span></p></div>
               </div>
-              <button class="change-salon" type="button" data-change-salon><i data-lucide="arrow-left-right" aria-hidden="true"></i><span>Change salon</span></button>
+              <div class="workspace-head-actions"><span class="workspace-ticket-badge" data-workspace-count>0</span><button class="change-salon" type="button" data-change-salon><i data-lucide="arrow-left-right" aria-hidden="true"></i><span>Change salon</span></button></div>
             </div>
 
             <div class="summary-row" aria-label="Work order summary">
@@ -236,12 +288,12 @@
             </div>
 
             <div class="filter-bar">
-              <div class="date-control"><i data-lucide="calendar-days" aria-hidden="true"></i><label for="work-date">Work date</label><input class="date-input" id="work-date" type="date" data-date-filter></div>
+              <div class="date-control"><button class="date-step" type="button" data-date-step="-1" aria-label="Previous day"><i data-lucide="chevron-left" aria-hidden="true"></i></button><i data-lucide="calendar-days" aria-hidden="true"></i><label for="work-date" data-date-label>Today</label><input class="date-input" id="work-date" type="date" data-date-filter><button class="date-step" type="button" data-date-step="1" aria-label="Next day"><i data-lucide="chevron-right" aria-hidden="true"></i></button></div>
               <div class="status-tabs" role="tablist" aria-label="Filter by status">
+                <button class="status-tab" type="button" role="tab" aria-selected="false" data-status-filter="all">All</button>
                 <button class="status-tab is-active" type="button" role="tab" aria-selected="true" data-status-filter="assigned">Assigned</button>
                 <button class="status-tab" type="button" role="tab" aria-selected="false" data-status-filter="in-service">In Service</button>
                 <button class="status-tab" type="button" role="tab" aria-selected="false" data-status-filter="completed">Completed</button>
-                <button class="status-tab" type="button" role="tab" aria-selected="false" data-status-filter="all">All</button>
               </div>
             </div>
 
@@ -352,6 +404,9 @@
       }
 
       function money(value) { return '$' + Number(value || 0).toFixed(2); }
+      function initials(name) {
+        return esc(String(name || '').split(/\s+/).slice(0, 2).map(function (part) { return part.charAt(0); }).join('').toUpperCase());
+      }
       function salonById(id) { return SALONS.find(function (salon) { return salon.id === id; }); }
       function ticketById(id) { return TICKETS.find(function (ticket) { return ticket.id === id; }); }
       function statusLabel(status) { return status === 'in-service' ? 'In Service' : status.charAt(0).toUpperCase() + status.slice(1); }
@@ -367,7 +422,7 @@
       function renderSalonOptions() {
         salonOptionsEl.innerHTML = SALONS.map(function (salon) {
           return '<button class="salon-option" type="button" data-select-salon="' + esc(salon.id) + '">' +
-            '<span class="salon-option-avatar ' + salon.avatarClass + '">' + esc(salon.initials) + '</span>' +
+            '<span class="salon-option-avatar ' + salon.avatarClass + '"><i data-lucide="store" aria-hidden="true"></i></span>' +
             '<span class="salon-option-copy"><span class="salon-option-name">' + esc(salon.name) + '</span><span class="salon-option-meta"><i data-lucide="map-pin" aria-hidden="true"></i>' + esc(salon.location) + '</span></span>' +
             '<i class="salon-option-chevron" data-lucide="chevron-right" aria-hidden="true"></i></button>';
         }).join('');
@@ -381,6 +436,8 @@
         currentStatus = 'assigned';
         currentDate = TODAY;
         selectedTicketId = '';
+        workspaceEl.classList.remove('is-detail-mode');
+        document.body.classList.remove('wo-detail-open');
         dateFilterEl.value = TODAY;
         gateEl.hidden = true;
         workspaceEl.hidden = false;
@@ -396,6 +453,8 @@
         gateEl.hidden = false;
         currentSalonId = '';
         selectedTicketId = '';
+        workspaceEl.classList.remove('is-detail-mode');
+        document.body.classList.remove('wo-detail-open');
       }
 
       function ticketsForDate() {
@@ -416,18 +475,18 @@
 
       function renderOrderCard(ticket) {
         var serviceNames = ticket.services.map(function (service) { return service.name; }).join(' · ');
+        var salon = salonById(ticket.salonId);
         return '<button class="order-card' + (selectedTicketId === ticket.id ? ' is-active' : '') + '" type="button" data-ticket-id="' + esc(ticket.id) + '">' +
-          '<span class="order-card-top"><span><span class="ticket-code">' + esc(ticket.id) + ' · ' + esc(ticket.time) + '</span><span class="customer-name">' + esc(ticket.customer) + '</span></span><span class="status-pill ' + statusClass(ticket.status) + '">' + statusLabel(ticket.status) + '</span></span>' +
-          '<span class="order-service">' + esc(serviceNames) + '</span>' +
-          '<span class="order-meta"><span><i data-lucide="armchair" aria-hidden="true"></i>Station ' + esc(ticket.station) + '</span><span><i data-lucide="bell-ring" aria-hidden="true"></i>Beeper ' + esc(ticket.beeper) + '</span><span><i data-lucide="clock-3" aria-hidden="true"></i>' + ticket.services.reduce(function (sum, service) { return sum + service.duration; }, 0) + ' min</span></span>' +
+          '<span class="order-card-top"><span class="order-time">' + esc(ticket.time) + '</span><span class="order-card-copy"><span class="customer-name">' + esc(ticket.customer) + '</span><span class="order-service">' + esc(serviceNames) + '</span></span><span class="status-pill ' + statusClass(ticket.status) + '">' + statusLabel(ticket.status) + '</span><i class="order-chevron" data-lucide="chevron-right" aria-hidden="true"></i></span>' +
+          '<span class="order-meta"><span><i data-lucide="store" aria-hidden="true"></i>' + esc(salon ? salon.name : '') + '</span><span><i data-lucide="map-pin" aria-hidden="true"></i>Station ' + esc(ticket.station) + '</span><span><i data-lucide="radio" aria-hidden="true"></i>Beeper B' + esc(ticket.beeper) + '</span></span>' +
         '</button>';
       }
 
       function renderList() {
         var tickets = visibleTickets();
-        var dateLabel = currentDate === TODAY ? 'today' : new Date(currentDate + 'T12:00:00').toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
-        document.querySelector('[data-list-title]').textContent = (currentStatus === 'all' ? 'All work orders' : statusLabel(currentStatus)) + ' · ' + dateLabel;
-        document.querySelector('[data-orders-count]').textContent = tickets.length;
+        document.querySelector('[data-list-title]').textContent = tickets.length + ' ticket' + (tickets.length === 1 ? '' : 's');
+        document.querySelector('[data-orders-count]').textContent = currentStatus === 'all' ? 'All' : statusLabel(currentStatus);
+        document.querySelector('[data-workspace-count]').textContent = tickets.length;
         if (!tickets.length) {
           selectedTicketId = '';
           ordersListEl.innerHTML = '<div class="empty-list"><i data-lucide="clipboard-x" aria-hidden="true"></i><strong>No work orders found</strong><span>Try another date or status.</span></div>';
@@ -441,11 +500,13 @@
         return approval ? '<span class="approval-pill is-' + esc(approval) + '">' + esc(approval) + '</span>' : '';
       }
 
-      function renderService(service) {
+      function renderService(ticket, service, serviceIndex) {
+        var canEdit = ticket.status !== 'completed';
         var addons = service.addons.map(function (addon) {
-          return '<div class="addon-row"><div><div class="addon-name">↳ ' + esc(addon.name) + approvalPill(addon.approval) + '</div><div class="service-sub">Add-on</div></div><span class="service-price">' + money(addon.price) + '</span></div>';
+          return '<div class="addon-row"><div class="addon-name"><i data-lucide="puzzle" aria-hidden="true"></i><span>' + esc(addon.name) + approvalPill(addon.approval) + '</span></div><span class="service-price">' + money(addon.price) + '</span><span class="service-time">20 min</span><span></span></div>';
         }).join('');
-        return '<div class="service-card"><div class="service-row"><div><div class="service-name">' + esc(service.name) + approvalPill(service.approval) + '</div><div class="service-sub">' + service.duration + ' min · Service</div></div><span class="service-price">' + money(service.price) + '</span></div>' + addons + '</div>';
+        var addOnButton = canEdit ? '<button class="service-addon-button" type="button" data-request-addon="' + esc(ticket.id) + '" data-service-index="' + serviceIndex + '"><i data-lucide="plus" aria-hidden="true"></i>Add-on</button>' : '';
+        return '<div class="service-card"><div class="service-row"><div class="service-name">' + esc(service.name) + approvalPill(service.approval) + '</div><span class="service-price">' + money(service.price) + '</span><span class="service-time">' + service.duration + ' min</span><span class="service-action">' + addOnButton + '</span></div>' + addons + '</div>';
       }
 
       function renderDetail() {
@@ -458,21 +519,22 @@
         if (ticket.status === 'assigned') {
           actionHtml = '<div class="detail-actions"><button class="action-btn is-primary" type="button" data-start-ticket="' + esc(ticket.id) + '"><i data-lucide="play" aria-hidden="true"></i>Start Service</button></div>';
         } else if (ticket.status === 'in-service') {
-          actionHtml = '<div class="detail-actions"><button class="action-btn is-outline" type="button" data-request-service="' + esc(ticket.id) + '"><i data-lucide="plus" aria-hidden="true"></i>Add Service</button><button class="action-btn is-outline" type="button" data-request-addon="' + esc(ticket.id) + '"><i data-lucide="circle-plus" aria-hidden="true"></i>Add-on</button><button class="action-btn is-primary" type="button" data-complete-ticket="' + esc(ticket.id) + '"><i data-lucide="check" aria-hidden="true"></i>Complete</button></div>';
+          actionHtml = '<div class="detail-actions"><button class="action-btn is-primary" type="button" data-complete-ticket="' + esc(ticket.id) + '"><i data-lucide="circle-check" aria-hidden="true"></i>Complete</button></div>';
         } else {
           actionHtml = '<div class="completed-note"><strong><i data-lucide="badge-check" aria-hidden="true"></i>Completed service notes</strong><p>' + esc(ticket.completionNote || 'Service completed.') + '</p></div>';
         }
-        detailPanelEl.innerHTML = '<div class="detail-head"><div><div class="detail-code">' + esc(ticket.id) + ' · ' + esc(ticket.time) + '</div><h2>' + esc(ticket.customer) + '</h2></div><span class="status-pill ' + statusClass(ticket.status) + '">' + statusLabel(ticket.status) + '</span></div>' +
-          '<div class="detail-body"><div class="customer-grid">' +
-            '<div class="info-card"><div class="info-label"><i data-lucide="user-round" aria-hidden="true"></i>Customer</div><div class="info-value">' + esc(ticket.customer) + '</div><div class="customer-phone">' + esc(ticket.phone) + '</div></div>' +
-            '<div class="info-card"><div class="info-label"><i data-lucide="armchair" aria-hidden="true"></i>Station</div><div class="info-value">#' + esc(ticket.station) + '</div></div>' +
-            '<div class="info-card"><div class="info-label"><i data-lucide="bell-ring" aria-hidden="true"></i>Beeper</div><div class="info-value">#' + esc(ticket.beeper) + '</div></div>' +
-          '</div><div class="note-box"><i data-lucide="notebook-pen" aria-hidden="true"></i><span>' + esc(ticket.note) + '</span></div>' +
-          '<div class="section-head"><h3>Services &amp; Add-ons</h3><span>' + ticket.services.length + ' service' + (ticket.services.length === 1 ? '' : 's') + '</span></div>' +
-          '<div class="services">' + ticket.services.map(renderService).join('') + '</div><div class="ticket-total"><span>Approved total</span><strong>' + money(serviceTotal(ticket)) + '</strong></div>' + actionHtml + '</div>';
+        var addServiceButton = ticket.status !== 'completed' ? '<button class="service-add-button" type="button" data-request-service="' + esc(ticket.id) + '"><i data-lucide="plus" aria-hidden="true"></i>Add service</button>' : '';
+        detailPanelEl.innerHTML = '<div class="detail-head"><div class="detail-head-main"><button class="detail-back" type="button" data-detail-back aria-label="Back to work orders"><i data-lucide="arrow-left" aria-hidden="true"></i></button><div><h2>Work Order</h2><div class="detail-code">' + esc(ticket.id) + '</div></div></div><span class="status-pill ' + statusClass(ticket.status) + '">' + statusLabel(ticket.status) + '</span></div>' +
+          '<div class="detail-body"><div class="detail-customer"><span class="detail-customer-avatar">' + initials(ticket.customer) + '</span><div class="detail-customer-copy"><div class="detail-customer-label">Customer</div><div class="detail-customer-name">' + esc(ticket.customer) + '</div><div class="detail-customer-meta"><span><i data-lucide="panel-top" aria-hidden="true"></i>Station ' + esc(ticket.station) + '</span><span><i data-lucide="radio" aria-hidden="true"></i>Beeper B' + esc(ticket.beeper) + '</span><span class="customer-phone">' + esc(ticket.phone) + '</span></div></div></div>' +
+          '<div class="section-head"><h3>Services</h3>' + addServiceButton + '</div><div class="service-table-head"><span>Service</span><span>Price</span><span>Time</span><span></span></div>' +
+          '<div class="services">' + ticket.services.map(function (service, index) { return renderService(ticket, service, index); }).join('') + '</div><div class="ticket-total"><span>Service total</span><strong>' + money(serviceTotal(ticket)) + '</strong></div>' + actionHtml +
+          '<div class="note-box"><i data-lucide="notebook-pen" aria-hidden="true"></i><span><span class="note-box-label">Important</span><strong>Customer notes</strong>' + esc(ticket.note) + '</span></div></div>';
       }
 
       function renderWorkspace() {
+        var activeDate = new Date(currentDate + 'T12:00:00');
+        document.querySelector('[data-date-label]').textContent = currentDate === TODAY ? 'Today' : activeDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
+        dateFilterEl.value = currentDate;
         renderSummary();
         renderList();
         renderDetail();
@@ -554,14 +616,15 @@
         showToast('Service sent to manager for approval.');
       }
 
-      function requestAddon(id) {
+      function requestAddon(id, serviceIndex) {
         var ticket = ticketById(id);
-        if (!ticket || !ticket.services.length) return;
-        if (ticket.services[0].addons.some(function (addon) { return addon.name === 'Chrome Finish' && addon.approval === 'pending'; })) {
+        var service = ticket && ticket.services[Number(serviceIndex)];
+        if (!service) return;
+        if (service.addons.some(function (addon) { return addon.name === 'Chrome Finish' && addon.approval === 'pending'; })) {
           showToast('This add-on request is already pending.');
           return;
         }
-        ticket.services[0].addons.push({ name: 'Chrome Finish', price: 12, approval: 'pending' });
+        service.addons.push({ name: 'Chrome Finish', price: 12, approval: 'pending' });
         renderWorkspace();
         showToast('Add-on sent to manager for approval.');
       }
@@ -576,6 +639,15 @@
       });
       document.querySelector('[data-change-salon]').addEventListener('click', showSalonGate);
       dateFilterEl.addEventListener('change', function () { currentDate = dateFilterEl.value || TODAY; selectedTicketId = ''; renderWorkspace(); });
+      document.querySelector('.date-control').addEventListener('click', function (event) {
+        var button = event.target.closest('[data-date-step]');
+        if (!button) return;
+        var date = new Date(currentDate + 'T12:00:00');
+        date.setDate(date.getDate() + Number(button.getAttribute('data-date-step')));
+        currentDate = dateKey(date);
+        selectedTicketId = '';
+        renderWorkspace();
+      });
       document.querySelector('.status-tabs').addEventListener('click', function (event) {
         var button = event.target.closest('[data-status-filter]');
         if (!button) return;
@@ -588,17 +660,25 @@
         if (!button) return;
         selectedTicketId = button.getAttribute('data-ticket-id');
         renderWorkspace();
-        if (window.innerWidth <= 960) detailPanelEl.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        if (window.innerWidth <= 960) {
+          workspaceEl.classList.add('is-detail-mode');
+          document.body.classList.add('wo-detail-open');
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
       });
       detailPanelEl.addEventListener('click', function (event) {
+        var backButton = event.target.closest('[data-detail-back]');
         var startButton = event.target.closest('[data-start-ticket]');
         var completeButton = event.target.closest('[data-complete-ticket]');
         var serviceButton = event.target.closest('[data-request-service]');
         var addonButton = event.target.closest('[data-request-addon]');
-        if (startButton) startTicket(startButton.getAttribute('data-start-ticket'));
+        if (backButton) {
+          workspaceEl.classList.remove('is-detail-mode');
+          document.body.classList.remove('wo-detail-open');
+        } else if (startButton) startTicket(startButton.getAttribute('data-start-ticket'));
         else if (completeButton) openCompleteModal(completeButton.getAttribute('data-complete-ticket'));
         else if (serviceButton) requestService(serviceButton.getAttribute('data-request-service'));
-        else if (addonButton) requestAddon(addonButton.getAttribute('data-request-addon'));
+        else if (addonButton) requestAddon(addonButton.getAttribute('data-request-addon'), addonButton.getAttribute('data-service-index'));
       });
       completeModalEl.addEventListener('click', function (event) {
         if (event.target === completeModalEl || event.target.closest('[data-close-modal]')) closeCompleteModal();
@@ -615,6 +695,9 @@
       document.querySelector('[data-today-label]').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
       dateFilterEl.value = TODAY;
       renderSalonOptions();
+      var requestedSalon = '';
+      try { requestedSalon = new URLSearchParams(window.location.search).get('salon') || ''; } catch (error) { requestedSalon = ''; }
+      if (salonById(requestedSalon)) openSalon(requestedSalon);
     })();
   </script>
 </body>

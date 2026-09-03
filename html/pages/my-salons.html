@@ -51,7 +51,8 @@
     .nickname-value { margin-left: 4px; font-size: 15px; font-weight: 800; color: var(--nexora-text); }
 
     .salon-actions { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; }
-    .salon-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px; padding: 0 16px; border-radius: 10px; font-size: 13px; font-weight: 700; white-space: nowrap; cursor: pointer; transition: transform .15s, background .15s, border-color .15s; }
+    .salon-btn { display: inline-flex; align-items: center; justify-content: center; gap: 6px; height: 38px; padding: 0 16px; border-radius: 10px; font-size: 13px; font-weight: 700; text-decoration: none; white-space: nowrap; cursor: pointer; transition: transform .15s, background .15s, border-color .15s; }
+    .salon-btn i { width: 14px; height: 14px; }
     .salon-btn-outline-danger { border: 1px solid rgba(239, 68, 68, .35); background: #fff; color: var(--nexora-danger); }
     .salon-btn-outline-danger:hover { background: rgba(239, 68, 68, .06); }
     .salon-btn-outline-brand { border: 1px solid var(--nexora-brand); background: #fff; color: var(--nexora-brand); }
@@ -205,6 +206,7 @@
       var SALONS = [
         {
           id: 'golden-nails-spa',
+          workOrdersId: 'golden',
           name: 'Golden Nails & Spa',
           location: 'Miami, Florida',
           joinedLabel: 'Jul 24, 2026',
@@ -216,6 +218,7 @@
         },
         {
           id: 'elite-beauty-lounge',
+          workOrdersId: 'elite',
           name: 'Elite Beauty Lounge',
           location: 'Houston, Texas',
           joinedLabel: 'Jun 26, 2026',
@@ -281,7 +284,8 @@
               '<div class="salon-actions">' +
                 '<button class="salon-btn salon-btn-outline-danger" type="button" data-action="unlink">Unlink</button>' +
                 '<button class="salon-btn salon-btn-outline-brand" type="button" data-action="edit-skill">Edit Work Skill</button>' +
-                '<button class="salon-btn salon-btn-solid" type="button" data-action="edit-nickname">Edit Nickname</button>' +
+                '<button class="salon-btn salon-btn-outline-brand" type="button" data-action="edit-nickname">Edit Nickname</button>' +
+                '<a class="salon-btn salon-btn-solid" href="staff-work-orders.html?salon=' + encodeURIComponent(salon.workOrdersId) + '"><i data-lucide="clipboard-list" aria-hidden="true"></i>Open Work Orders</a>' +
               '</div>' +
             '</div>' +
           '</article>'
