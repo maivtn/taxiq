@@ -130,13 +130,14 @@
     .note-box-label { color: #b46909; font-size: 9px; font-weight: 850; }
     .section-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 18px 0 10px; }
     .section-head h3 { margin: 0; color: var(--nexora-text); font-size: 13px; font-weight: 900; }
-    .service-add-button, .service-addon-button { display: inline-flex; align-items: center; gap: 4px; border: 0; background: transparent; padding: 3px 0; color: var(--nexora-brand); font-size: 10px; font-weight: 800; cursor: pointer; }
-    .service-add-button i, .service-addon-button i { width: 12px; height: 12px; }
-    .service-table-head { display: grid; grid-template-columns: minmax(0, 1fr) 64px 48px 62px; gap: 8px; padding: 8px 0; color: var(--nexora-subtle); font-size: 8px; font-weight: 800; }
+    .service-head-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
+    .service-add-button { display: inline-flex; min-height: 30px; align-items: center; justify-content: center; gap: 4px; border: 1px solid #cfd5e3; border-radius: 8px; background: #fff; padding: 0 9px; color: var(--nexora-brand); font-size: 9px; font-weight: 850; cursor: pointer; }
+    .service-add-button:hover { border-color: var(--nexora-brand); background: #f7f7ff; }
+    .service-table-head { display: grid; grid-template-columns: minmax(0, 1fr) 60px 44px 92px; gap: 8px; padding: 8px 0; color: var(--nexora-subtle); font-size: 8px; font-weight: 800; }
     .service-table-head span:not(:first-child) { text-align: right; }
     .services { display: flex; flex-direction: column; gap: 0; border-top: 1px solid var(--nexora-rule); }
     .service-card { border-bottom: 1px solid var(--nexora-rule); padding: 12px 0; }
-    .service-row, .addon-row { display: grid; grid-template-columns: minmax(0, 1fr) 64px 48px 62px; align-items: center; gap: 8px; }
+    .service-row, .addon-row { display: grid; grid-template-columns: minmax(0, 1fr) 60px 44px 92px; align-items: center; gap: 8px; }
     .service-name { color: var(--nexora-text); font-size: 12px; font-weight: 800; }
     .service-sub { margin-top: 3px; color: var(--nexora-subtle); font-size: 9px; font-weight: 600; }
     .service-price { color: var(--nexora-text); font-size: 11px; font-weight: 850; text-align: right; white-space: nowrap; }
@@ -151,6 +152,24 @@
     .approval-pill.is-rejected { background: #feecec; color: #d42d2d; }
     .ticket-total { display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid var(--nexora-rule); padding: 14px 0 16px; color: var(--nexora-muted); font-size: 12px; font-weight: 650; }
     .ticket-total strong { color: var(--nexora-text); font-size: 14px; font-weight: 900; }
+    .customer-approval { margin-top: 15px; border: 1px solid #f4b826; border-radius: 13px; background: #fffbeb; padding: 13px; color: #8d380c; }
+    .customer-approval-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .customer-approval-title { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 900; }
+    .customer-approval-title i { width: 14px; height: 14px; }
+    .customer-approval-cancel { border: 0; background: transparent; padding: 3px; color: #8d380c; font-size: 10px; font-weight: 850; cursor: pointer; }
+    .customer-approval-copy { margin: 4px 0 7px; font-size: 10px; font-weight: 750; line-height: 1.35; }
+    .customer-approval-services { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
+    .customer-approval-chip { display: inline-flex; min-height: 24px; align-items: center; border-radius: 999px; background: #fff; padding: 0 9px; color: #8d380c; font-size: 9px; font-weight: 850; }
+    .customer-approval-demo { display: flex; min-height: 38px; align-items: center; justify-content: center; border: 1px solid var(--nexora-brand); border-radius: 8px; background: #fff; color: var(--nexora-brand); font-size: 10px; font-weight: 800; }
+    .customer-approval-demo strong { margin-left: 4px; font-size: 14px; letter-spacing: .18em; }
+    .customer-approval-help { margin: 7px 0 8px; color: #62708a; font-size: 10px; font-weight: 700; line-height: 1.35; }
+    .customer-approval-form { display: grid; grid-template-columns: minmax(0, 1fr) 105px; gap: 7px; }
+    .customer-approval-input { width: 100%; height: 42px; border: 1px solid #d8dfeb; border-radius: 11px; outline: 0; background: #fff; padding: 0 12px; color: var(--nexora-text); font-size: 15px; font-weight: 850; letter-spacing: .22em; }
+    .customer-approval-input::placeholder { color: #9ea7b6; font-size: 12px; letter-spacing: .18em; }
+    .customer-approval-input:focus { border-color: var(--nexora-brand); box-shadow: 0 0 0 3px rgba(70,72,216,.1); }
+    .customer-approval-button { display: inline-flex; height: 42px; align-items: center; justify-content: center; gap: 6px; border: 0; border-radius: 11px; background: var(--nexora-brand); color: #fff; font-size: 11px; font-weight: 850; cursor: pointer; }
+    .customer-approval-button i { width: 14px; height: 14px; }
+    .customer-approval-error { margin: 7px 0 0; color: #c9352b; font-size: 9px; font-weight: 800; }
     .detail-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
     .action-btn { display: inline-flex; min-height: 40px; flex: 1 1 auto; align-items: center; justify-content: center; gap: 7px; border-radius: 10px; padding: 0 13px; font-size: 11px; font-weight: 800; cursor: pointer; }
     .action-btn i { width: 14px; height: 14px; }
@@ -247,7 +266,7 @@
     body.wo-mobile-page { background: var(--nexora-canvas); }
     body.wo-mobile-page .shell { min-height: 100vh; background: var(--nexora-canvas); }
     body.wo-mobile-page .app-area { min-height: 100vh; }
-    body.wo-mobile-page .work-orders-page { width: 100%; max-width: 480px; min-height: calc(100vh - 64px); margin: 0 auto; background: #f4f7fb; padding: 22px 18px 48px; box-shadow: 0 0 28px rgba(33, 51, 79, .08); }
+    body.wo-mobile-page .work-orders-page { width: 100%; max-width: 480px; min-height: calc(100vh - 64px); margin: 0 auto; border: 0; background: transparent; padding: 22px 18px 48px; box-shadow: none; }
     body.wo-mobile-page .wo-shell { max-width: none; }
     body.wo-mobile-page .wo-page-head,
     body.wo-mobile-page .workspace-head { align-items: flex-start; }
@@ -301,9 +320,13 @@
     body.wo-mobile-page .customer-phone { display: none; }
     body.wo-mobile-page .action-btn.is-primary { flex-basis: 100%; order: -1; }
     .service-name { display: flex; align-items: center; gap: 5px; }
-    .service-edit-button { display: inline-flex; width: 22px; height: 22px; flex: 0 0 auto; align-items: center; justify-content: center; border: 0; border-radius: 6px; background: transparent; color: var(--nexora-brand); cursor: pointer; }
+    .service-edit-button { display: inline-flex; min-height: 28px; align-items: center; justify-content: center; gap: 4px; border: 0; border-radius: 6px; background: transparent; padding: 0 5px; color: var(--nexora-brand); font-size: 8px; font-weight: 850; white-space: nowrap; cursor: pointer; }
     .service-edit-button:hover { background: #eef0ff; }
-    .service-edit-button i { width: 11px; height: 11px; }
+    .custom-service-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
+    .custom-service-field:first-child { grid-column: 1 / -1; }
+    .custom-service-field label { display: block; margin-bottom: 6px; color: var(--nexora-text); font-size: 10px; font-weight: 800; }
+    .custom-service-input { width: 100%; height: 42px; border: 1px solid var(--nexora-border); border-radius: 10px; outline: 0; background: #fff; padding: 0 11px; color: var(--nexora-text); font: inherit; font-size: 12px; }
+    .custom-service-input:focus { border-color: var(--nexora-brand); box-shadow: 0 0 0 3px rgba(70,72,216,.1); }
     .service-picker-card { max-width: 520px; }
     .service-picker-search { position: relative; display: block; margin-bottom: 14px; }
     .service-picker-search i { position: absolute; top: 50%; left: 12px; width: 15px; height: 15px; color: var(--nexora-subtle); transform: translateY(-50%); pointer-events: none; }
@@ -422,6 +445,21 @@
     </div>
   </div>
 
+  <div class="modal-backdrop" data-custom-service-modal hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="custom-service-title">
+      <div class="modal-head"><div><h2 id="custom-service-title">Add custom service</h2><p>Enter a service that is not available in the salon menu.</p></div><button class="modal-close" type="button" data-close-custom-service aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button></div>
+      <div class="modal-body">
+        <div class="custom-service-fields">
+          <div class="custom-service-field"><label for="custom-service-name">Service name</label><input class="custom-service-input" id="custom-service-name" type="text" placeholder="e.g. Custom nail repair" data-custom-service-name></div>
+          <div class="custom-service-field"><label for="custom-service-price">Price ($)</label><input class="custom-service-input" id="custom-service-price" type="number" min="0" step="0.01" placeholder="0.00" data-custom-service-price></div>
+          <div class="custom-service-field"><label for="custom-service-duration">Time (min)</label><input class="custom-service-input" id="custom-service-duration" type="number" min="1" step="5" value="30" data-custom-service-duration></div>
+        </div>
+        <p class="field-error" data-custom-service-error hidden>Enter a service name, valid price and duration.</p>
+      </div>
+      <div class="modal-footer"><button class="modal-btn is-secondary" type="button" data-close-custom-service>Cancel</button><button class="modal-btn is-primary" type="button" data-confirm-custom-service>Add custom service</button></div>
+    </div>
+  </div>
+
   <div class="toast" role="status" data-toast hidden><i data-lucide="circle-check" aria-hidden="true"></i><span data-toast-message></span></div>
 
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
@@ -436,6 +474,9 @@
         { id: 'golden', name: 'Golden Nails & Spa', location: 'Miami, Florida', initials: 'GN', avatarClass: 'is-gold' },
         { id: 'elite', name: 'Elite Beauty Lounge', location: 'Houston, Texas', initials: 'EB', avatarClass: 'is-rose' }
       ];
+
+      var SERVICE_CATEGORIES = [];
+      var serviceCatalogStatus = 'loading';
 
       function dateKey(date) {
         var year = date.getFullYear();
@@ -453,7 +494,7 @@
       var TODAY = dateOffset(0);
       var TICKETS = [
         { id: 'WO-1048', salonId: 'golden', date: TODAY, time: '09:30', status: 'assigned', customer: 'Emma Williams', phone: '(305) 555-0184', station: '08', beeper: '21', note: 'Sensitive skin. Please use the fragrance-free lotion.', services: [
-          { name: 'Deluxe Pedicure', duration: 45, price: 55, addons: [{ name: 'Gel Polish', price: 15, approval: 'approved' }] },
+          { name: 'Deluxe Pedicure', duration: 45, price: 55, addons: [] },
           { name: 'Classic Manicure', duration: 30, price: 28, addons: [] }
         ] },
         { id: 'WO-1051', salonId: 'golden', date: TODAY, time: '10:15', status: 'assigned', customer: 'Sophia Martinez', phone: '(305) 555-0127', station: '08', beeper: '24', note: 'Client prefers a short almond shape and neutral colors.', services: [
@@ -482,8 +523,12 @@
       var selectedTicketId = '';
       var completingTicketId = '';
       var selectedSuggestedNote = '';
-      var editingTicketId = '';
-      var editingServiceIndex = -1;
+      var servicePickerMode = 'add';
+      var servicePickerTicketId = '';
+      var servicePickerIndex = -1;
+      var selectedCatalogServiceId = '';
+      var servicePickerQuery = '';
+      var customServiceTicketId = '';
       var toastTimer = 0;
 
       var gateEl = document.querySelector('[data-salon-gate]');
@@ -494,10 +539,16 @@
       var dateFilterEl = document.querySelector('[data-date-filter]');
       var completeModalEl = document.querySelector('[data-complete-modal]');
       var completeNotesEl = document.querySelector('[data-complete-notes]');
-      var editServiceModalEl = document.querySelector('[data-edit-service-modal]');
-      var editServiceNameEl = document.querySelector('[data-edit-service-name]');
-      var editServicePriceEl = document.querySelector('[data-edit-service-price]');
-      var editServiceDurationEl = document.querySelector('[data-edit-service-duration]');
+      var servicePickerModalEl = document.querySelector('[data-service-picker-modal]');
+      var servicePickerListEl = document.querySelector('[data-service-picker-list]');
+      var servicePickerSearchEl = document.querySelector('[data-service-picker-search]');
+      var servicePickerEmptyEl = document.querySelector('[data-service-picker-empty]');
+      var servicePickerConfirmEl = document.querySelector('[data-confirm-service-picker]');
+      var customServiceModalEl = document.querySelector('[data-custom-service-modal]');
+      var customServiceNameEl = document.querySelector('[data-custom-service-name]');
+      var customServicePriceEl = document.querySelector('[data-custom-service-price]');
+      var customServiceDurationEl = document.querySelector('[data-custom-service-duration]');
+      var customServiceErrorEl = document.querySelector('[data-custom-service-error]');
 
       function esc(value) {
         return String(value == null ? '' : value).replace(/[&<>\"]/g, function (char) {
@@ -602,14 +653,32 @@
         return approval ? '<span class="approval-pill is-' + esc(approval) + '">' + esc(approval) + '</span>' : '';
       }
 
+      function pendingServices(ticket) {
+        return ticket.services.filter(function (service) { return service.approval === 'pending'; });
+      }
+
+      function customerApprovalHtml(ticket) {
+        var services = pendingServices(ticket);
+        if (!services.length) return '';
+        var lastFour = String(ticket.phone || '').replace(/\D/g, '').slice(-4);
+        return '<section class="customer-approval" data-customer-approval>' +
+          '<div class="customer-approval-head"><strong class="customer-approval-title"><i data-lucide="clock-3" aria-hidden="true"></i>Pending Approval</strong><button class="customer-approval-cancel" type="button" data-cancel-service-approval="' + esc(ticket.id) + '">Cancel</button></div>' +
+          '<p class="customer-approval-copy">New services are waiting for customer approval.</p>' +
+          '<div class="customer-approval-services">' + services.map(function (service) { return '<span class="customer-approval-chip">' + esc(service.name) + '</span>'; }).join('') + '</div>' +
+          '<div class="customer-approval-demo">Demo only · enter <strong>' + esc(lastFour) + '</strong></div>' +
+          '<p class="customer-approval-help">Customer enters the last 4 phone digits to approve the added service.</p>' +
+          '<div class="customer-approval-form"><input class="customer-approval-input" type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="Last 4 digits" aria-label="Last 4 phone digits" data-approval-code><button class="customer-approval-button" type="button" data-approve-services="' + esc(ticket.id) + '"><i data-lucide="shield-check" aria-hidden="true"></i>Approve</button></div>' +
+          '<p class="customer-approval-error" data-approval-error hidden>The last 4 digits do not match this customer.</p>' +
+        '</section>';
+      }
+
       function renderService(ticket, service, serviceIndex) {
         var canEdit = ticket.status !== 'completed';
         var addons = service.addons.map(function (addon) {
           return '<div class="addon-row"><div class="addon-name"><i data-lucide="puzzle" aria-hidden="true"></i><span>' + esc(addon.name) + approvalPill(addon.approval) + '</span></div><span class="service-price">' + money(addon.price) + '</span><span class="service-time">20 min</span><span></span></div>';
         }).join('');
-        var addOnButton = canEdit ? '<button class="service-addon-button" type="button" data-request-addon="' + esc(ticket.id) + '" data-service-index="' + serviceIndex + '"><i data-lucide="plus" aria-hidden="true"></i>Add-on</button>' : '';
-        var editButton = canEdit ? '<button class="service-edit-button" type="button" data-edit-service="' + esc(ticket.id) + '" data-service-index="' + serviceIndex + '" aria-label="Edit ' + esc(service.name) + '"><i data-lucide="pencil" aria-hidden="true"></i></button>' : '';
-        return '<div class="service-card"><div class="service-row"><div class="service-name"><span>' + esc(service.name) + approvalPill(service.approval) + '</span>' + editButton + '</div><span class="service-price">' + money(service.price) + '</span><span class="service-time">' + service.duration + ' min</span><span class="service-action">' + addOnButton + '</span></div>' + addons + '</div>';
+        var editButton = canEdit ? '<button class="service-edit-button" type="button" data-edit-service="' + esc(ticket.id) + '" data-service-index="' + serviceIndex + '" aria-label="Change ' + esc(service.name) + '">Change service</button>' : '';
+        return '<div class="service-card"><div class="service-row"><div class="service-name"><span>' + esc(service.name) + approvalPill(service.approval) + '</span></div><span class="service-price">' + money(service.price) + '</span><span class="service-time">' + service.duration + ' min</span><span class="service-action">' + editButton + '</span></div>' + addons + '</div>';
       }
 
       function renderDetail() {
@@ -626,13 +695,14 @@
         } else {
           actionHtml = '<div class="completed-note"><strong><i data-lucide="badge-check" aria-hidden="true"></i>Completed service notes</strong><p>' + esc(ticket.completionNote || 'Service completed.') + '</p></div>';
         }
-        var addServiceButton = ticket.status !== 'completed' ? '<button class="service-add-button" type="button" data-request-service="' + esc(ticket.id) + '"><i data-lucide="plus" aria-hidden="true"></i>Add service</button>' : '';
+        var serviceButtons = ticket.status !== 'completed' ? '<div class="service-head-actions"><button class="service-add-button" type="button" data-request-service="' + esc(ticket.id) + '">Add service</button><button class="service-add-button" type="button" data-request-custom-service="' + esc(ticket.id) + '">Add custom service</button></div>' : '';
         var customerNoteHtml = '<div class="note-box"><i data-lucide="notebook-pen" aria-hidden="true"></i><span><span class="note-box-label">Important</span><strong>Customer notes</strong>' + esc(ticket.note) + '</span></div>';
         var detailTailHtml = ticket.status === 'in-service' ? customerNoteHtml + actionHtml : actionHtml + customerNoteHtml;
+        var approvalHtml = customerApprovalHtml(ticket);
         detailPanelEl.innerHTML = '<div class="detail-head"><div class="detail-head-main"><button class="detail-back" type="button" data-detail-back aria-label="Back to work orders"><i data-lucide="arrow-left" aria-hidden="true"></i></button><div><h2>Work Order</h2><div class="detail-code">' + esc(ticket.id) + '</div></div></div><span class="status-pill ' + statusClass(ticket.status) + '">' + statusLabel(ticket.status) + '</span></div>' +
           '<div class="detail-body"><div class="detail-customer"><span class="detail-customer-avatar">' + initials(ticket.customer) + '</span><div class="detail-customer-copy"><div class="detail-customer-label">Customer</div><div class="detail-customer-name">' + esc(ticket.customer) + '</div><div class="detail-customer-meta"><span><i data-lucide="panel-top" aria-hidden="true"></i>Station ' + esc(ticket.station) + '</span><span><i data-lucide="radio" aria-hidden="true"></i>Beeper B' + esc(ticket.beeper) + '</span><span class="customer-phone">' + esc(ticket.phone) + '</span></div></div></div>' +
-          '<div class="section-head"><h3>Services</h3>' + addServiceButton + '</div><div class="service-table-head"><span>Service</span><span>Price</span><span>Time</span><span></span></div>' +
-          '<div class="services">' + ticket.services.map(function (service, index) { return renderService(ticket, service, index); }).join('') + '</div><div class="ticket-total"><span>Service total</span><strong>' + money(serviceTotal(ticket)) + '</strong></div>' + detailTailHtml + '</div>';
+          '<div class="section-head"><h3>Services</h3>' + serviceButtons + '</div><div class="service-table-head"><span>Service</span><span>Price</span><span>Time</span><span></span></div>' +
+          '<div class="services">' + ticket.services.map(function (service, index) { return renderService(ticket, service, index); }).join('') + '</div><div class="ticket-total"><span>Service total</span><strong>' + money(serviceTotal(ticket)) + '</strong></div>' + approvalHtml + detailTailHtml + '</div>';
       }
 
       function renderWorkspace() {
@@ -709,63 +779,182 @@
       }
 
       function requestService(id) {
-        var ticket = ticketById(id);
-        if (!ticket) return;
-        if (ticket.services.some(function (service) { return service.name === 'Nail Art Design' && service.approval === 'pending'; })) {
-          showToast('This service request is already pending.');
-          return;
-        }
-        ticket.services.push({ name: 'Nail Art Design', duration: 20, price: 18, approval: 'pending', addons: [] });
-        renderWorkspace();
-        showToast('Service sent to manager for approval.');
+        openServicePicker('add', id, -1);
       }
 
-      function requestAddon(id, serviceIndex) {
+      function openCustomService(id) {
         var ticket = ticketById(id);
-        var service = ticket && ticket.services[Number(serviceIndex)];
-        if (!service) return;
-        if (service.addons.some(function (addon) { return addon.name === 'Chrome Finish' && addon.approval === 'pending'; })) {
-          showToast('This add-on request is already pending.');
+        if (!ticket || ticket.status === 'completed') return;
+        customServiceTicketId = id;
+        customServiceNameEl.value = '';
+        customServicePriceEl.value = '';
+        customServiceDurationEl.value = '30';
+        customServiceErrorEl.hidden = true;
+        customServiceModalEl.hidden = false;
+        customServiceNameEl.focus();
+      }
+
+      function closeCustomService() {
+        customServiceModalEl.hidden = true;
+        customServiceTicketId = '';
+      }
+
+      function confirmCustomService() {
+        var ticket = ticketById(customServiceTicketId);
+        var name = customServiceNameEl.value.trim();
+        var price = Number(customServicePriceEl.value);
+        var duration = Number(customServiceDurationEl.value);
+        var valid = ticket && name && Number.isFinite(price) && price >= 0 && Number.isFinite(duration) && duration > 0;
+        if (!valid) {
+          customServiceErrorEl.hidden = false;
           return;
         }
-        service.addons.push({ name: 'Chrome Finish', price: 12, approval: 'pending' });
+        ticket.services.push({ name: name, price: price, duration: duration, approval: 'pending', addons: [] });
+        closeCustomService();
         renderWorkspace();
-        showToast('Add-on sent to manager for approval.');
+        showToast('Custom service sent to manager for approval.');
+      }
+
+      function approvePendingServices(id) {
+        var ticket = ticketById(id);
+        var input = detailPanelEl.querySelector('[data-approval-code]');
+        var error = detailPanelEl.querySelector('[data-approval-error]');
+        if (!ticket || !input || !error) return;
+        var expected = String(ticket.phone || '').replace(/\D/g, '').slice(-4);
+        var entered = input.value.replace(/\D/g, '').slice(0, 4);
+        input.value = entered;
+        if (entered.length !== 4 || entered !== expected) {
+          error.hidden = false;
+          input.focus();
+          return;
+        }
+        pendingServices(ticket).forEach(function (service) { service.approval = 'approved'; });
+        renderWorkspace();
+        showToast('Customer approved the new service.');
+      }
+
+      function cancelPendingServices(id) {
+        var ticket = ticketById(id);
+        if (!ticket) return;
+        pendingServices(ticket).forEach(function (service) { service.approval = 'rejected'; });
+        renderWorkspace();
+        showToast('Pending service approval was cancelled.');
+      }
+
+      function flatServiceCatalog() {
+        return SERVICE_CATEGORIES.reduce(function (items, category) {
+          return items.concat(category.services);
+        }, []);
+      }
+
+      function catalogServiceById(id) {
+        return flatServiceCatalog().find(function (service) { return service.id === id; });
+      }
+
+      function renderServicePicker() {
+        var query = servicePickerQuery.toLowerCase();
+        var visibleCount = 0;
+        if (serviceCatalogStatus !== 'ready') {
+          servicePickerListEl.innerHTML = '';
+          servicePickerEmptyEl.textContent = serviceCatalogStatus === 'loading' ? 'Loading services…' : 'Unable to load services from menu/menu.json.';
+          servicePickerEmptyEl.hidden = false;
+          servicePickerConfirmEl.disabled = true;
+          return;
+        }
+        servicePickerListEl.innerHTML = SERVICE_CATEGORIES.map(function (category) {
+          var services = category.services.filter(function (service) {
+            return !query || service.name.toLowerCase().indexOf(query) !== -1 || category.name.toLowerCase().indexOf(query) !== -1;
+          });
+          if (!services.length) return '';
+          visibleCount += services.length;
+          var options = services.map(function (service) {
+            var selected = service.id === selectedCatalogServiceId;
+            return '<button class="service-picker-option' + (selected ? ' is-selected' : '') + '" type="button" data-catalog-service="' + esc(service.id) + '" aria-pressed="' + (selected ? 'true' : 'false') + '">' +
+              '<span class="service-picker-radio" aria-hidden="true"></span><span><span class="service-picker-name">' + esc(service.name) + '</span><span class="service-picker-meta">' + (service.durationMin || 30) + ' min · ' + esc(category.name) + '</span></span><span class="service-picker-price">' + money(service.price) + '</span></button>';
+          }).join('');
+          return '<section class="service-picker-group"><h3 class="service-picker-category">' + esc(category.name) + '</h3><div class="service-picker-options">' + options + '</div></section>';
+        }).join('');
+        servicePickerEmptyEl.textContent = 'No services match your search.';
+        servicePickerEmptyEl.hidden = visibleCount !== 0;
+        servicePickerConfirmEl.disabled = !selectedCatalogServiceId;
+        refreshIcons();
+      }
+
+      function openServicePicker(mode, id, serviceIndex) {
+        var ticket = ticketById(id);
+        var currentService = ticket && ticket.services[Number(serviceIndex)];
+        if (!ticket || ticket.status === 'completed' || (mode === 'edit' && !currentService)) return;
+        servicePickerMode = mode;
+        servicePickerTicketId = id;
+        servicePickerIndex = Number(serviceIndex);
+        servicePickerQuery = '';
+        servicePickerSearchEl.value = '';
+        selectedCatalogServiceId = '';
+        if (currentService) {
+          var match = flatServiceCatalog().find(function (service) { return service.name.toLowerCase() === currentService.name.toLowerCase(); });
+          if (match) selectedCatalogServiceId = match.id;
+        }
+        document.querySelector('[data-service-picker-title]').textContent = mode === 'edit' ? 'Edit service' : 'Add service';
+        document.querySelector('[data-service-picker-subtitle]').textContent = mode === 'edit' ? 'Choose a replacement service from the salon catalog.' : 'Choose a service from the salon catalog.';
+        servicePickerConfirmEl.textContent = mode === 'edit' ? 'Update service' : 'Add service';
+        renderServicePicker();
+        servicePickerModalEl.hidden = false;
+        servicePickerSearchEl.focus();
       }
 
       function openEditService(id, serviceIndex) {
-        var ticket = ticketById(id);
-        var service = ticket && ticket.services[Number(serviceIndex)];
-        if (!service || ticket.status === 'completed') return;
-        editingTicketId = id;
-        editingServiceIndex = Number(serviceIndex);
-        editServiceNameEl.value = service.name;
-        editServicePriceEl.value = service.price;
-        editServiceDurationEl.value = service.duration;
-        editServiceModalEl.hidden = false;
-        editServiceNameEl.focus();
+        openServicePicker('edit', id, serviceIndex);
       }
 
-      function closeEditService() {
-        editServiceModalEl.hidden = true;
-        editingTicketId = '';
-        editingServiceIndex = -1;
+      function closeServicePicker() {
+        servicePickerModalEl.hidden = true;
+        servicePickerTicketId = '';
+        servicePickerIndex = -1;
+        selectedCatalogServiceId = '';
       }
 
-      function saveEditService() {
-        var ticket = ticketById(editingTicketId);
-        var service = ticket && ticket.services[editingServiceIndex];
-        var name = editServiceNameEl.value.trim();
-        var price = Number(editServicePriceEl.value);
-        var duration = Number(editServiceDurationEl.value);
-        if (!service || !name || price < 0 || duration < 5) return;
-        service.name = name;
-        service.price = price;
-        service.duration = duration;
-        service.approval = 'pending';
-        closeEditService();
+      function confirmServicePicker() {
+        var ticket = ticketById(servicePickerTicketId);
+        var selected = catalogServiceById(selectedCatalogServiceId);
+        if (!ticket || !selected) return;
+        var serviceData = { name: selected.name, duration: selected.durationMin || 30, price: Number(selected.price) || 0, approval: 'pending', addons: [] };
+        if (servicePickerMode === 'edit') {
+          var existing = ticket.services[servicePickerIndex];
+          if (!existing) return;
+          serviceData.addons = existing.addons || [];
+          ticket.services[servicePickerIndex] = serviceData;
+        } else {
+          ticket.services.push(serviceData);
+        }
+        var toastMessage = servicePickerMode === 'edit' ? 'Service change sent to manager for approval.' : 'Service sent to manager for approval.';
+        closeServicePicker();
         renderWorkspace();
-        showToast('Service changes sent to manager for approval.');
+        showToast(toastMessage);
+      }
+
+      function loadServiceCatalog() {
+        var catalogApi = window.NEXORA_APPOINTMENT_SERVICE_CATALOG;
+        if (!catalogApi || typeof catalogApi.load !== 'function') {
+          serviceCatalogStatus = 'error';
+          return;
+        }
+        catalogApi.load('../menu/menu.json').then(function (catalog) {
+          var categories = catalog.categories.map(function (category) {
+            return {
+              id: category.id,
+              name: category.name,
+              services: category.services.filter(function (service) { return service.type !== 'add-on'; }).map(function (service) {
+                return { id: service.id, name: service.name, price: service.price || 0, durationMin: service.durationMin || 30 };
+              })
+            };
+          }).filter(function (category) { return category.services.length; });
+          SERVICE_CATEGORIES = categories;
+          serviceCatalogStatus = categories.length ? 'ready' : 'error';
+          if (!servicePickerModalEl.hidden) renderServicePicker();
+        }).catch(function () {
+          serviceCatalogStatus = 'error';
+          if (!servicePickerModalEl.hidden) renderServicePicker();
+        });
       }
 
       function refreshIcons() {
@@ -809,16 +998,26 @@
         var startButton = event.target.closest('[data-start-ticket]');
         var completeButton = event.target.closest('[data-complete-ticket]');
         var serviceButton = event.target.closest('[data-request-service]');
-        var addonButton = event.target.closest('[data-request-addon]');
+        var customServiceButton = event.target.closest('[data-request-custom-service]');
         var editButton = event.target.closest('[data-edit-service]');
+        var approveServicesButton = event.target.closest('[data-approve-services]');
+        var cancelApprovalButton = event.target.closest('[data-cancel-service-approval]');
         if (backButton) {
           workspaceEl.classList.remove('is-detail-mode');
           document.body.classList.remove('wo-detail-open');
         } else if (startButton) startTicket(startButton.getAttribute('data-start-ticket'));
         else if (completeButton) openCompleteModal(completeButton.getAttribute('data-complete-ticket'));
+        else if (approveServicesButton) approvePendingServices(approveServicesButton.getAttribute('data-approve-services'));
+        else if (cancelApprovalButton) cancelPendingServices(cancelApprovalButton.getAttribute('data-cancel-service-approval'));
         else if (editButton) openEditService(editButton.getAttribute('data-edit-service'), editButton.getAttribute('data-service-index'));
         else if (serviceButton) requestService(serviceButton.getAttribute('data-request-service'));
-        else if (addonButton) requestAddon(addonButton.getAttribute('data-request-addon'), addonButton.getAttribute('data-service-index'));
+        else if (customServiceButton) openCustomService(customServiceButton.getAttribute('data-request-custom-service'));
+      });
+      detailPanelEl.addEventListener('input', function (event) {
+        if (!event.target.matches('[data-approval-code]')) return;
+        event.target.value = event.target.value.replace(/\D/g, '').slice(0, 4);
+        var error = detailPanelEl.querySelector('[data-approval-error]');
+        if (error) error.hidden = true;
       });
       completeModalEl.addEventListener('click', function (event) {
         if (event.target === completeModalEl || event.target.closest('[data-close-modal]')) closeCompleteModal();
@@ -830,19 +1029,38 @@
         }
         if (event.target.closest('[data-confirm-complete]')) completeTicket();
       });
-      editServiceModalEl.addEventListener('click', function (event) {
-        if (event.target === editServiceModalEl || event.target.closest('[data-close-edit-service]')) closeEditService();
-        if (event.target.closest('[data-save-edit-service]')) saveEditService();
+      servicePickerModalEl.addEventListener('click', function (event) {
+        if (event.target === servicePickerModalEl || event.target.closest('[data-close-service-picker]')) closeServicePicker();
+        if (event.target.closest('[data-confirm-service-picker]')) confirmServicePicker();
+      });
+      servicePickerListEl.addEventListener('click', function (event) {
+        var option = event.target.closest('[data-catalog-service]');
+        if (!option) return;
+        selectedCatalogServiceId = option.getAttribute('data-catalog-service');
+        renderServicePicker();
+      });
+      servicePickerSearchEl.addEventListener('input', function () {
+        servicePickerQuery = servicePickerSearchEl.value.trim();
+        renderServicePicker();
+      });
+      customServiceModalEl.addEventListener('click', function (event) {
+        if (event.target === customServiceModalEl || event.target.closest('[data-close-custom-service]')) closeCustomService();
+        if (event.target.closest('[data-confirm-custom-service]')) confirmCustomService();
+      });
+      [customServiceNameEl, customServicePriceEl, customServiceDurationEl].forEach(function (field) {
+        field.addEventListener('input', function () { customServiceErrorEl.hidden = true; });
       });
       document.addEventListener('keydown', function (event) {
         if (event.key !== 'Escape') return;
         if (!completeModalEl.hidden) closeCompleteModal();
-        if (!editServiceModalEl.hidden) closeEditService();
+        if (!servicePickerModalEl.hidden) closeServicePicker();
+        if (!customServiceModalEl.hidden) closeCustomService();
       });
 
       document.querySelector('[data-today-label]').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
       dateFilterEl.value = TODAY;
       renderSalonOptions();
+      loadServiceCatalog();
       var requestedSalon = '';
       try { requestedSalon = new URLSearchParams(window.location.search).get('salon') || ''; } catch (error) { requestedSalon = ''; }
       if (salonById(requestedSalon)) openSalon(requestedSalon);
