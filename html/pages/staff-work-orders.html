@@ -158,8 +158,10 @@
     .customer-approval-title i { width: 14px; height: 14px; }
     .customer-approval-cancel { border: 0; background: transparent; padding: 3px; color: #8d380c; font-size: 10px; font-weight: 850; cursor: pointer; }
     .customer-approval-copy { margin: 4px 0 7px; font-size: 10px; font-weight: 750; line-height: 1.35; }
-    .customer-approval-services { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 8px; }
-    .customer-approval-chip { display: inline-flex; min-height: 24px; align-items: center; border-radius: 999px; background: #fff; padding: 0 9px; color: #8d380c; font-size: 9px; font-weight: 850; }
+    .customer-approval-services { display: flex; flex-direction: column; gap: 5px; margin-bottom: 8px; }
+    .customer-approval-chip { display: flex; align-items: center; justify-content: space-between; gap: 8px; min-height: 28px; border-radius: 9px; background: #fff; padding: 0 10px; color: #8d380c; font-size: 10px; font-weight: 850; }
+    .customer-approval-chip-name { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .customer-approval-chip-price { flex: 0 0 auto; white-space: nowrap; }
     .customer-approval-demo { display: flex; min-height: 38px; align-items: center; justify-content: center; border: 1px solid var(--nexora-brand); border-radius: 8px; background: #fff; color: var(--nexora-brand); font-size: 10px; font-weight: 800; }
     .customer-approval-demo strong { margin-left: 4px; font-size: 14px; letter-spacing: .18em; }
     .customer-approval-help { margin: 7px 0 8px; color: #62708a; font-size: 10px; font-weight: 700; line-height: 1.35; }
@@ -664,7 +666,7 @@
         return '<section class="customer-approval" data-customer-approval>' +
           '<div class="customer-approval-head"><strong class="customer-approval-title"><i data-lucide="clock-3" aria-hidden="true"></i>Pending Approval</strong><button class="customer-approval-cancel" type="button" data-cancel-service-approval="' + esc(ticket.id) + '">Cancel</button></div>' +
           '<p class="customer-approval-copy">New services are waiting for customer approval.</p>' +
-          '<div class="customer-approval-services">' + services.map(function (service) { return '<span class="customer-approval-chip">' + esc(service.name) + '</span>'; }).join('') + '</div>' +
+          '<div class="customer-approval-services">' + services.map(function (service) { return '<span class="customer-approval-chip"><span class="customer-approval-chip-name">' + esc(service.name) + '</span><span class="customer-approval-chip-price">' + money(service.price) + '</span></span>'; }).join('') + '</div>' +
           '<div class="customer-approval-demo">Demo only · enter <strong>' + esc(lastFour) + '</strong></div>' +
           '<p class="customer-approval-help">Customer enters the last 4 phone digits to approve the added service.</p>' +
           '<div class="customer-approval-form"><input class="customer-approval-input" type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="Last 4 digits" aria-label="Last 4 phone digits" data-approval-code><button class="customer-approval-button" type="button" data-approve-services="' + esc(ticket.id) + '"><i data-lucide="shield-check" aria-hidden="true"></i>Approve</button></div>' +
