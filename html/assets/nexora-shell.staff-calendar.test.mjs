@@ -15,6 +15,7 @@ test('staff sidebar links to My Calendar and marks it active on the calendar pag
     runScripts: 'dangerously',
     url: 'https://staff.nexora.test/html/pages/pos-calendar.html',
   });
+  dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
 
   const calendarLink = dom.window.document.querySelector('[data-staff-nav="my-calendar"]');
   assert.equal(calendarLink?.getAttribute('href'), 'pos-calendar.html');
