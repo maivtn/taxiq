@@ -149,6 +149,19 @@
       margin-left: auto;
     }
 
+    .tech-service-picker-summary {
+      display: inline-flex;
+      flex: 0 0 auto;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .tech-service-picker-chevron {
+      color: var(--nexora-brand);
+      font-size: 11px;
+      line-height: 1;
+    }
+
     .tech-service-category {
       overflow: hidden;
       border: 1px solid var(--nexora-border);
@@ -316,6 +329,115 @@
       line-height: 1.45;
     }
 
+    .tech-tin-intro {
+      flex: 1 1 100%;
+      margin: 0;
+    }
+
+    .tech-tin-fieldset {
+      min-width: 0;
+      flex: 0 0 auto;
+      margin: 0;
+      border: 0;
+      padding: 0;
+    }
+
+    .tech-tin-options {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 6px;
+    }
+
+    .tech-tin-choice {
+      display: flex;
+      width: auto;
+      min-width: 0;
+      min-height: 52px;
+      flex: 0 0 auto;
+      align-items: flex-start;
+      gap: 8px;
+      border: 1px solid var(--nexora-border);
+      border-radius: 9px;
+      background: #fff;
+      padding: 8px 10px;
+      cursor: pointer;
+      transition: border-color .16s ease, background-color .16s ease, box-shadow .16s ease;
+    }
+
+    .tech-tin-choice:hover {
+      border-color: rgba(70, 72, 216, 0.32);
+    }
+
+    .tech-tin-choice:focus-within {
+      border-color: rgba(70, 72, 216, 0.42);
+      box-shadow: 0 0 0 3px rgba(70, 72, 216, 0.1);
+    }
+
+    .tech-tin-choice:has(input:checked) {
+      border-color: var(--nexora-brand);
+      background: color-mix(in srgb, var(--nexora-brand) 5%, white);
+    }
+
+    .tech-tin-choice input {
+      width: 15px;
+      height: 15px;
+      flex: 0 0 auto;
+      margin: 2px 0 0;
+      accent-color: var(--nexora-brand);
+    }
+
+    .tech-tin-choice-copy {
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      gap: 2px;
+    }
+
+    .tech-tin-choice-title {
+      color: var(--nexora-text);
+      font-size: 12px;
+      font-weight: 800;
+      line-height: 1.35;
+    }
+
+    .tech-tin-choice-description {
+      color: var(--nexora-muted);
+      font-size: 10.5px;
+      font-weight: 500;
+      line-height: 1.4;
+    }
+
+    .tech-tin-row {
+      display: flex;
+      flex: 1 1 100%;
+      flex-wrap: wrap;
+      align-items: start;
+      gap: 10px;
+    }
+
+    .tech-modal-grid .tech-tin-row > .settings-field {
+      min-width: 180px;
+      flex: 1 1 180px;
+    }
+
+    @media (max-width: 900px) {
+      .tech-tin-fieldset {
+        flex-basis: 100%;
+      }
+    }
+
+    @media (max-width: 540px) {
+      .tech-modal-grid .tech-tin-row > .settings-field {
+        min-width: 0;
+        flex-basis: 100%;
+      }
+
+      .tech-tin-choice {
+        flex-basis: 100%;
+      }
+    }
+
     .settings-toggle-row {
       display: flex;
       align-items: center;
@@ -329,6 +451,15 @@
       color: var(--nexora-text);
       font-size: 12px;
       font-weight: 800;
+    }
+
+    .tech-tips-toggle-row {
+      justify-content: flex-start;
+      gap: 8px;
+    }
+
+    .tech-tips-toggle-row .toggle-pill {
+      flex: 0 0 auto;
     }
 
     .staff-status {
@@ -428,25 +559,43 @@
                   </label>
                   <label class="settings-field"><span class="settings-label">Commission (%)</span><input class="settings-input" type="number" min="0" max="100" step="1" data-tech-field="commission" placeholder="60"></label>
                 </div>
-                <div class="settings-toggle-row">
-                  <span>Tips Enabled at POS Checkout</span>
+                <div class="settings-toggle-row tech-tips-toggle-row">
                   <button class="toggle-pill is-on" type="button" data-tech-tips-toggle role="switch" aria-checked="true" aria-label="Toggle tips enabled at POS checkout"></button>
+                  <span>Tips Enabled at POS Checkout</span>
                 </div>
               </div>
 
               <div class="tech-modal-section" data-tech-tax-section>
                 <div class="tech-modal-section-title"><i class="bi bi-file-earmark-lock" aria-hidden="true"></i>Tax Filing</div>
                 <div class="tech-modal-grid">
-                  <label class="settings-field"><span class="settings-label">SSN</span><input class="settings-input" type="password" data-tech-field="ssn" placeholder="Enter to set (cannot be changed once saved)" autocomplete="off"></label>
-                  <label class="settings-field"><span class="settings-label">EIN</span><input class="settings-input" type="text" data-tech-field="ein" placeholder="Enter to set (cannot be changed once saved)" autocomplete="off"></label>
-                  <label class="settings-field"><span class="settings-label">Contract Type</span>
-                    <select class="settings-input" data-tech-field="contractType">
-                      <option value="w2" selected>W-2</option>
-                      <option value="1099">1099</option>
-                    </select>
-                  </label>
+                  <p class="settings-help tech-tin-intro">The TIN should match the name entered on line 1 to help avoid backup withholding.</p>
+                  <div class="tech-tin-row" data-tech-tin-row>
+                    <fieldset class="tech-tin-fieldset">
+                      <legend class="settings-label">TIN type</legend>
+                      <div class="tech-tin-options" data-tech-tin-options role="radiogroup" aria-label="TIN type">
+                        <label class="tech-tin-choice">
+                          <input type="radio" name="techTinType" value="ssn" data-tech-tin-type checked>
+                          <span class="tech-tin-choice-copy"><span class="tech-tin-choice-title">SSN</span><span class="tech-tin-choice-description">Social Security number</span></span>
+                        </label>
+                        <label class="tech-tin-choice">
+                          <input type="radio" name="techTinType" value="ein" data-tech-tin-type>
+                          <span class="tech-tin-choice-copy"><span class="tech-tin-choice-title">EIN</span><span class="tech-tin-choice-description">Employer identification number</span></span>
+                        </label>
+                      </div>
+                    </fieldset>
+                    <label class="settings-field">
+                      <span class="settings-label" data-tech-tin-label>Social security number</span>
+                      <input class="settings-input" type="password" data-tech-field="tin" data-tech-tin-input placeholder="000-00-0000" inputmode="numeric" autocomplete="off">
+                      <span class="settings-help" data-tech-tin-help>For individuals, this is generally your SSN.</span>
+                    </label>
+                    <label class="settings-field"><span class="settings-label">Contract Type</span>
+                      <select class="settings-input" data-tech-field="contractType">
+                        <option value="w2" selected>W-2</option>
+                        <option value="1099">1099</option>
+                      </select>
+                    </label>
+                  </div>
                 </div>
-                <div class="settings-help">TaxIQ has not been set up for this business yet.</div>
               </div>
 
               <div class="tech-modal-section" data-tech-schedule-section>
@@ -548,6 +697,18 @@
     var catalog = salonData.loadCatalog();
     var pendingTechServices = [];
     var technicianServicePickerReady = false;
+    var TECH_TIN_COPY = {
+      ssn: {
+        label: 'Social security number',
+        placeholder: '000-00-0000',
+        help: 'For individuals, this is generally your SSN.'
+      },
+      ein: {
+        label: 'Employer identification number',
+        placeholder: '00-0000000',
+        help: 'For entities, this is generally the EIN.'
+      }
+    };
 
     function escapeHtml(value) {
       var div = document.createElement('div');
@@ -625,7 +786,7 @@
       }, 0);
       var state = error ? 'Unable to load services from menu.json.' : 'No services available.';
       technicianServicePickerReady = !error;
-      container.innerHTML = '<div class="tech-service-picker-toolbar"><label><input type="checkbox" data-tech-service-all>Check all categories</label><span class="tech-service-picker-count" data-tech-service-count>' + serviceCount + '</span></div>' + (categories.length ? categories.map(techServiceCategoryMarkup).join('') : '<div class="tech-service-catalog-state" data-tech-service-state>' + state + '</div>');
+      container.innerHTML = '<div class="tech-service-picker-toolbar"><label><input type="checkbox" data-tech-service-all>Check all services</label><span class="tech-service-picker-summary"><span class="tech-service-picker-count" data-tech-service-count>' + serviceCount + '</span><i class="bi bi-chevron-down tech-service-picker-chevron" aria-hidden="true"></i></span></div>' + (categories.length ? categories.map(techServiceCategoryMarkup).join('') : '<div class="tech-service-catalog-state" data-tech-service-state>' + state + '</div>');
       container.querySelectorAll('[data-tech-service-category-all]').forEach(function(categoryAll) {
         categoryAll.addEventListener('click', function(event) { event.stopPropagation(); });
       });
@@ -736,6 +897,41 @@
         var endValue = end ? end.value : '';
         return startValue && endValue ? day + '=' + startValue + '-' + endValue : '';
       }).filter(Boolean).join(';');
+    }
+
+    /* ── TIN type selector ── */
+    function getTechTinType() {
+      var selected = document.querySelector('[data-tech-tin-type]:checked');
+      return selected && selected.value === 'ein' ? 'ein' : 'ssn';
+    }
+
+    function syncTechTinField(options) {
+      var type = getTechTinType();
+      var copy = TECH_TIN_COPY[type];
+      var input = document.querySelector('[data-tech-tin-input]');
+      var label = document.querySelector('[data-tech-tin-label]');
+      var help = document.querySelector('[data-tech-tin-help]');
+
+      if (label) label.textContent = copy.label;
+      if (help) help.textContent = copy.help;
+      if (input) {
+        if (options && options.clear) input.value = '';
+        input.type = type === 'ssn' ? 'password' : 'text';
+        input.placeholder = copy.placeholder;
+        input.setAttribute('aria-label', copy.label);
+      }
+    }
+
+    function setTechTinValue(ssn, ein) {
+      var normalizedSsn = String(ssn || '').trim();
+      var normalizedEin = String(ein || '').trim();
+      var type = normalizedEin ? 'ein' : 'ssn';
+      var selected = document.querySelector('[data-tech-tin-type][value="' + type + '"]');
+      var input = document.querySelector('[data-tech-tin-input]');
+
+      if (selected) selected.checked = true;
+      syncTechTinField();
+      if (input) input.value = type === 'ein' ? normalizedEin : normalizedSsn;
     }
 
     /* ── Field get/set ── */
@@ -858,8 +1054,7 @@
       setTechField('commission', isCreate ? '60' : (choice.dataset.commission || '60'));
       setTechField('tipsEnabled', isCreate ? true : choice.dataset.tipsEnabled !== 'false');
       setTechField('contractType', isCreate ? 'w2' : (choice.dataset.contractType || 'w2'));
-      setTechField('ssn', isCreate ? '' : (choice.dataset.ssn || ''));
-      setTechField('ein', isCreate ? '' : (choice.dataset.ein || ''));
+      setTechTinValue(isCreate ? '' : (choice.dataset.ssn || ''), isCreate ? '' : (choice.dataset.ein || ''));
 
       var nameField = document.querySelector('[data-tech-field="name"]');
       setTechSelectOpen(false);
@@ -988,6 +1183,8 @@
 
       var commissionRaw = parseFloat(getTechField('commission'));
       var commission = Number.isFinite(commissionRaw) ? Math.min(100, Math.max(0, commissionRaw)) / 100 : 0.6;
+      var tinType = getTechTinType();
+      var tinValue = getTechField('tin');
 
       var data = {
         id: id,
@@ -1016,8 +1213,8 @@
           comm: commission,
           tipsEnabled: getTechField('tipsEnabled'),
           contractType: getTechField('contractType') || 'w2',
-          ssn: getTechField('ssn'),
-          ein: getTechField('ein')
+          ssn: tinType === 'ssn' ? tinValue : '',
+          ein: tinType === 'ein' ? tinValue : ''
         })
       }));
       salonData.saveCatalog(Object.assign({}, nextCatalog, { technicians: nextTechnicians }));
@@ -1030,6 +1227,7 @@
     /* ── Wiring ── */
     renderLucideIcons();
     initPhoneMasks();
+    syncTechTinField();
     renderStaffRoster();
     loadTechnicianServiceCatalog();
 
@@ -1105,7 +1303,9 @@
     });
 
     document.addEventListener('change', function(event) {
-      if (event.target.matches('[data-tech-service-all]')) {
+      if (event.target.matches('[data-tech-tin-type]')) {
+        syncTechTinField({ clear: true });
+      } else if (event.target.matches('[data-tech-service-all]')) {
         document.querySelectorAll('[data-tech-service]').forEach(function(option) {
           option.checked = event.target.checked;
         });
