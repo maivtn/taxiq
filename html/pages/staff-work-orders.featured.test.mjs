@@ -156,8 +156,11 @@ test('Add service selects and adds multiple catalog services in one confirmation
 
   click(window, '[data-confirm-service-picker]');
   const serviceNames = [...window.document.querySelectorAll('[data-detail-panel] .service-name')].map((element) => element.textContent);
-  assert.equal(serviceNames.filter((name) => name.includes('Polish Change')).length, 1);
-  assert.equal(serviceNames.filter((name) => name.includes('Nail Art')).length, 1);
+  const pendingNames = [...window.document.querySelectorAll('[data-customer-approval] .customer-approval-chip-name')].map((element) => element.textContent);
+  assert.equal(serviceNames.filter((name) => name.includes('Polish Change')).length, 0);
+  assert.equal(serviceNames.filter((name) => name.includes('Nail Art')).length, 0);
+  assert.equal(pendingNames.filter((name) => name.includes('Polish Change')).length, 1);
+  assert.equal(pendingNames.filter((name) => name.includes('Nail Art')).length, 1);
 
   dom.window.close();
 });
@@ -172,8 +175,25 @@ test('Add service permits the same catalog service again in a later confirmation
   click(window, '[data-catalog-service="polish-change"]');
   click(window, '[data-confirm-service-picker]');
 
+  const pendingNames = [...window.document.querySelectorAll('[data-customer-approval] .customer-approval-chip-name')].map((element) => element.textContent);
+  assert.equal(pendingNames.filter((name) => name.includes('Polish Change')).length, 2);
+
+  dom.window.close();
+});
+
+test('approved pending services move into the main service table', async () => {
+  const { dom, window } = loadPage(SERVICE_CATALOG);
+  await openAddServiceModal(window);
+
+  click(window, '[data-catalog-service="polish-change"]');
+  click(window, '[data-confirm-service-picker]');
+  const approvalCode = window.document.querySelector('[data-approval-code]');
+  approvalCode.value = '0127';
+  click(window, '[data-approve-services="WO-1051"]');
+
   const serviceNames = [...window.document.querySelectorAll('[data-detail-panel] .service-name')].map((element) => element.textContent);
-  assert.equal(serviceNames.filter((name) => name.includes('Polish Change')).length, 2);
+  assert.equal(serviceNames.filter((name) => name.includes('Polish Change')).length, 1);
+  assert.equal(window.document.querySelector('[data-customer-approval]'), null);
 
   dom.window.close();
 });
