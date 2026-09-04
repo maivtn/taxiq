@@ -49,6 +49,15 @@ async function openAddServiceModal(window) {
   click(window, '[data-request-service="WO-1051"]');
 }
 
+async function requestServiceChange(window, serviceId = 'polish-change') {
+  click(window, '[data-select-salon="golden"]');
+  click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+  await new Promise((resolve) => window.setTimeout(resolve, 0));
+  click(window, '[data-edit-service="WO-1051"]');
+  click(window, `[data-catalog-service="${serviceId}"]`);
+  click(window, '[data-confirm-service-picker]');
+}
+
 function click(window, selector) {
   const element = window.document.querySelector(selector);
   assert.ok(element, `Expected ${selector} to exist`);
@@ -194,6 +203,64 @@ test('approved pending services move into the main service table', async () => {
   const serviceNames = [...window.document.querySelectorAll('[data-detail-panel] .service-name')].map((element) => element.textContent);
   assert.equal(serviceNames.filter((name) => name.includes('Polish Change')).length, 1);
   assert.equal(window.document.querySelector('[data-customer-approval]'), null);
+
+  dom.window.close();
+});
+
+test('pending service change keeps the current service in the main table', async () => {
+  const { dom, window } = loadPage(SERVICE_CATALOG);
+  await requestServiceChange(window);
+
+  const serviceNames = [...window.document.querySelectorAll('[data-detail-panel] .service-name')].map((element) => element.textContent);
+  assert.equal(serviceNames.filter((name) => name.includes('Acrylic Full Set')).length, 1);
+  assert.equal(serviceNames.filter((name) => name.includes('Polish Change')).length, 0);
+  assert.match(window.document.querySelector('[data-customer-approval] .customer-approval-chip-name')?.textContent || '', /Acrylic Full Set.*Polish Change/);
+  assert.equal(window.document.querySelector('[data-detail-panel] .ticket-total strong')?.textContent.trim(), '$68.00');
+
+  dom.window.close();
+});
+
+test('cancelling a service change restores the current service without rejected rows', async () => {
+  const { dom, window } = loadPage(SERVICE_CATALOG);
+  await requestServiceChange(window);
+
+  click(window, '[data-cancel-service-approval="WO-1051"]');
+
+  const serviceNames = [...window.document.querySelectorAll('[data-detail-panel] .service-name')].map((element) => element.textContent);
+  assert.equal(serviceNames.filter((name) => name.includes('Acrylic Full Set')).length, 1);
+  assert.equal(serviceNames.filter((name) => name.includes('Polish Change')).length, 0);
+  assert.equal(window.document.querySelector('[data-customer-approval]'), null);
+  assert.equal(window.document.querySelectorAll('[data-detail-panel] .approval-pill.is-rejected').length, 0);
+
+  dom.window.close();
+});
+
+test('approving a service change replaces the current service', async () => {
+  const { dom, window } = loadPage(SERVICE_CATALOG);
+  await requestServiceChange(window);
+
+  const approvalCode = window.document.querySelector('[data-approval-code]');
+  approvalCode.value = '0127';
+  click(window, '[data-approve-services="WO-1051"]');
+
+  const serviceNames = [...window.document.querySelectorAll('[data-detail-panel] .service-name')].map((element) => element.textContent);
+  assert.equal(serviceNames.filter((name) => name.includes('Acrylic Full Set')).length, 0);
+  assert.equal(serviceNames.filter((name) => name.includes('Polish Change')).length, 1);
+
+  dom.window.close();
+});
+
+test('cancelling newly added services removes them without rejected rows', async () => {
+  const { dom, window } = loadPage(SERVICE_CATALOG);
+  await openAddServiceModal(window);
+
+  click(window, '[data-catalog-service="polish-change"]');
+  click(window, '[data-confirm-service-picker]');
+  click(window, '[data-cancel-service-approval="WO-1051"]');
+
+  const detailText = window.document.querySelector('[data-detail-panel]')?.textContent || '';
+  assert.doesNotMatch(detailText, /Polish Change/);
+  assert.doesNotMatch(detailText, /REJECTED/i);
 
   dom.window.close();
 });

@@ -611,7 +611,8 @@
 
       function serviceTotal(ticket) {
         return ticket.services.reduce(function (total, service) {
-          return total + (service.approval === 'pending' || service.approval === 'rejected' ? 0 : service.price);
+          if (service.approval === 'pending') return total + (service.previousService ? service.previousService.price : 0);
+          return total + (service.approval === 'rejected' ? 0 : service.price);
         }, 0);
       }
 
@@ -744,7 +745,7 @@
         return '<section class="customer-approval" data-customer-approval>' +
           '<div class="customer-approval-head"><strong class="customer-approval-title"><i data-lucide="clock-3" aria-hidden="true"></i>Pending Approval</strong><button class="customer-approval-cancel" type="button" data-cancel-service-approval="' + esc(ticket.id) + '">Cancel</button></div>' +
           '<p class="customer-approval-copy">New services are waiting for customer approval.</p>' +
-          '<div class="customer-approval-services">' + services.map(function (service) { return '<span class="customer-approval-chip"><span class="customer-approval-chip-name">' + esc(service.name) + '</span><span class="customer-approval-chip-price">' + money(service.price) + '</span></span>'; }).join('') + '</div>' +
+          '<div class="customer-approval-services">' + services.map(function (service) { var label = service.previousService ? service.previousService.name + ' → ' + service.name : service.name; return '<span class="customer-approval-chip"><span class="customer-approval-chip-name">' + esc(label) + '</span><span class="customer-approval-chip-price">' + money(service.price) + '</span></span>'; }).join('') + '</div>' +
           '<div class="customer-approval-demo">Demo only · enter <strong>' + esc(lastFour) + '</strong></div>' +
           '<p class="customer-approval-help">Customer enters the last 4 phone digits to approve the added service.</p>' +
           '<div class="customer-approval-form"><input class="customer-approval-input" type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="Last 4 digits" aria-label="Last 4 phone digits" data-approval-code><button class="customer-approval-button" type="button" data-approve-services="' + esc(ticket.id) + '"><i data-lucide="shield-check" aria-hidden="true"></i>Approve</button></div>' +
@@ -779,7 +780,7 @@
         detailPanelEl.innerHTML = '<div class="detail-head"><div class="detail-head-main"><button class="detail-back" type="button" data-detail-back aria-label="Back to work orders"><i data-lucide="arrow-left" aria-hidden="true"></i></button><div><h2>Work Order</h2><div class="detail-code">' + esc(ticket.id) + '</div></div></div><span class="status-pill ' + statusClass(ticket.status) + '">' + statusLabel(ticket.status) + '</span></div>' +
           '<div class="detail-body"><div class="detail-customer"><span class="detail-customer-avatar">' + initials(ticket.customer) + '</span><div class="detail-customer-copy"><div class="detail-customer-label">Customer</div><div class="detail-customer-name">' + esc(ticket.customer) + '</div><div class="detail-customer-meta"><span><i data-lucide="panel-top" aria-hidden="true"></i>Station ' + esc(ticket.station) + '</span><span><i data-lucide="radio" aria-hidden="true"></i>Beeper B' + esc(ticket.beeper) + '</span><span class="customer-phone">' + esc(ticket.phone) + '</span></div></div></div>' +
           '<div class="section-head"><h3>Services</h3>' + serviceButtons + '</div><div class="service-table-head"><span>Service</span><span>Price</span><span>Time</span><span></span></div>' +
-          '<div class="services">' + ticket.services.map(function (service, index) { return { service: service, index: index }; }).filter(function (item) { return item.service.approval !== 'pending'; }).map(function (item) { return renderService(ticket, item.service, item.index); }).join('') + '</div><div class="ticket-total"><span>Service total</span><strong>' + money(serviceTotal(ticket)) + '</strong></div>' + approvalHtml + detailTailHtml + '</div>';
+          '<div class="services">' + ticket.services.map(function (service, index) { return { service: service, index: index }; }).filter(function (item) { return item.service.approval !== 'pending' || item.service.previousService; }).map(function (item) { return renderService(ticket, item.service.approval === 'pending' ? item.service.previousService : item.service, item.index); }).join('') + '</div><div class="ticket-total"><span>Service total</span><strong>' + money(serviceTotal(ticket)) + '</strong></div>' + approvalHtml + detailTailHtml + '</div>';
       }
 
       function renderWorkspace() {
@@ -913,7 +914,11 @@
           input.focus();
           return;
         }
-        pendingServices(ticket).forEach(function (service) { service.approval = 'approved'; });
+        pendingServices(ticket).forEach(function (service) {
+          service.approval = 'approved';
+          delete service.previousService;
+          delete service.requestType;
+        });
         renderWorkspace();
         showToast('Customer approved the new service.');
       }
@@ -921,7 +926,14 @@
       function cancelPendingServices(id) {
         var ticket = ticketById(id);
         if (!ticket) return;
-        pendingServices(ticket).forEach(function (service) { service.approval = 'rejected'; });
+        ticket.services = ticket.services.reduce(function (services, service) {
+          if (service.approval !== 'pending') {
+            if (service.approval !== 'rejected') services.push(service);
+          } else if (service.previousService) {
+            services.push(service.previousService);
+          }
+          return services;
+        }, []);
         renderWorkspace();
         showToast('Pending service approval was cancelled.');
       }
@@ -1016,12 +1028,14 @@
         var selectedServices = selectedCatalogServiceIds.map(catalogServiceById).filter(Boolean);
         if (!ticket || !selectedServices.length) return;
         function serviceData(selected) {
-          return { name: selected.name, duration: selected.durationMin || 30, price: Number(selected.price) || 0, approval: 'pending' };
+          return { name: selected.name, duration: selected.durationMin || 30, price: Number(selected.price) || 0, approval: 'pending', requestType: 'add' };
         }
         if (servicePickerMode === 'edit') {
           var existing = ticket.services[servicePickerIndex];
           if (!existing) return;
           var replacement = serviceData(selectedServices[0]);
+          replacement.requestType = 'change';
+          replacement.previousService = Object.assign({}, existing);
           ticket.services[servicePickerIndex] = replacement;
         } else {
           selectedServices.forEach(function (selected) { ticket.services.push(serviceData(selected)); });
