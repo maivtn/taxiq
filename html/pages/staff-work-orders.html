@@ -163,15 +163,12 @@
     .service-table-head span:not(:first-child) { text-align: right; }
     .services { display: flex; flex-direction: column; gap: 0; border-top: 1px solid var(--nexora-rule); }
     .service-card { border-bottom: 1px solid var(--nexora-rule); padding: 12px 0; }
-    .service-row, .addon-row { display: grid; grid-template-columns: minmax(0, 1fr) 60px 44px 92px; align-items: center; gap: 8px; }
+    .service-row { display: grid; grid-template-columns: minmax(0, 1fr) 60px 44px 92px; align-items: center; gap: 8px; }
     .service-name { color: var(--nexora-text); font-size: 12px; font-weight: 800; }
     .service-sub { margin-top: 3px; color: var(--nexora-subtle); font-size: 11px; font-weight: 600; }
     .service-price { color: var(--nexora-text); font-size: 11px; font-weight: 850; text-align: right; white-space: nowrap; }
     .service-time { color: var(--nexora-muted); font-size: 11px; font-weight: 700; text-align: right; white-space: nowrap; }
     .service-action { text-align: right; }
-    .addon-row { margin-top: 11px; }
-    .addon-name { display: inline-flex; align-items: center; gap: 5px; color: var(--nexora-text); font-size: 11px; font-weight: 750; }
-    .addon-name i { width: 12px; height: 12px; color: var(--nexora-brand); }
     .approval-pill { display: inline-flex; height: 19px; align-items: center; border-radius: 999px; margin-left: 5px; padding: 0 7px; font-size: 11px; font-weight: 850; text-transform: uppercase; vertical-align: 1px; }
     .approval-pill.is-pending { background: #fff3d6; color: #ad5a00; }
     .approval-pill.is-approved { background: #e5f9f0; color: #008655; }
@@ -365,19 +362,28 @@
     .service-picker-search svg { position: absolute; top: 50%; left: 12px; z-index: 1; width: 15px; height: 15px; color: var(--nexora-subtle); transform: translateY(-50%); pointer-events: none; }
     .service-picker-search input { width: 100%; height: 42px; border: 1px solid var(--nexora-border); border-radius: 10px; outline: 0; background: var(--nexora-surface-muted); padding: 0 12px 0 37px; color: var(--nexora-text); font-size: 12px; }
     .service-picker-search input:focus { border-color: var(--nexora-brand); box-shadow: 0 0 0 3px rgba(70,72,216,.1); }
-    .service-picker-list { max-height: min(52vh, 430px); overflow-y: auto; padding-right: 3px; }
-    .service-picker-group { margin-bottom: 16px; }
-    .service-picker-group:last-child { margin-bottom: 0; }
-    .service-picker-category { margin: 0 0 7px; color: var(--nexora-subtle); font-size: 11px; font-weight: 850; letter-spacing: .06em; text-transform: uppercase; }
-    .service-picker-options { display: flex; flex-direction: column; gap: 7px; }
-    .service-picker-option { display: grid; grid-template-columns: 28px minmax(0, 1fr) auto; align-items: center; gap: 10px; width: 100%; border: 1px solid var(--nexora-border); border-radius: 11px; background: #fff; padding: 10px 11px; text-align: left; cursor: pointer; }
+    .service-picker-list { display: flex; max-height: min(52vh, 430px); flex-direction: column; gap: 9px; overflow-y: auto; padding-right: 3px; }
+    .service-picker-group { overflow: hidden; flex: 0 0 auto; border: 1px solid var(--nexora-border); border-radius: 13px; background: #fff; }
+    .service-picker-group[open] { border-color: #cfcdf7; box-shadow: 0 7px 18px rgba(70,72,216,.08); }
+    .service-picker-category-head { display: flex; min-height: 44px; align-items: center; gap: 9px; padding: 0 12px; color: var(--nexora-text); background: linear-gradient(145deg, #fff, #fafaff); cursor: pointer; list-style: none; }
+    .service-picker-category-head::-webkit-details-marker { display: none; }
+    .service-picker-group[open] .service-picker-category-head { border-bottom: 1px solid #e2e1f6; color: var(--nexora-brand); background: #f7f6ff; }
+    .service-picker-category { flex: 1; font-size: 11px; font-weight: 900; letter-spacing: .055em; text-transform: uppercase; }
+    .service-picker-category-count { display: inline-flex; min-width: 24px; height: 22px; align-items: center; justify-content: center; border-radius: 999px; background: #eeedff; padding: 0 7px; color: #5b55c8; font-size: 11px; font-weight: 900; }
+    .service-picker-category-chevron { width: 15px; height: 15px; flex: 0 0 auto; color: #8b94a8; transition: transform .18s ease; }
+    .service-picker-group:not([open]) .service-picker-category-chevron { transform: rotate(-90deg); }
+    .service-picker-options { display: flex; flex-direction: column; gap: 7px; padding: 8px; }
+    .service-picker-option { display: grid; grid-template-columns: 22px minmax(0, 1fr) auto; align-items: center; gap: 9px; width: 100%; border: 1px solid var(--nexora-border); border-radius: 11px; background: #fff; padding: 10px 11px; text-align: left; cursor: pointer; }
     .service-picker-option:hover { border-color: #b6bbff; background: #fbfbff; }
     .service-picker-option.is-selected { border-color: var(--nexora-brand); background: #f4f4ff; box-shadow: 0 0 0 1px rgba(70,72,216,.08); }
     .service-picker-radio { display: inline-flex; width: 18px; height: 18px; align-items: center; justify-content: center; border: 2px solid #bbc4d4; border-radius: 999px; }
     .service-picker-option.is-selected .service-picker-radio { border-color: var(--nexora-brand); }
     .service-picker-option.is-selected .service-picker-radio::after { width: 8px; height: 8px; border-radius: 999px; background: var(--nexora-brand); content: ""; }
-    .service-picker-name { display: block; color: var(--nexora-text); font-size: 12px; font-weight: 800; }
-    .service-picker-meta { display: block; margin-top: 4px; color: var(--nexora-subtle); font-size: 11px; font-weight: 650; }
+    .service-picker-checkbox { display: inline-flex; width: 18px; height: 18px; align-items: center; justify-content: center; border: 2px solid #bbc4d4; border-radius: 5px; }
+    .service-picker-option.is-selected .service-picker-checkbox { border-color: var(--nexora-brand); background: var(--nexora-brand); }
+    .service-picker-option.is-selected .service-picker-checkbox::after { width: 8px; height: 4px; border-bottom: 2px solid #fff; border-left: 2px solid #fff; content: ""; transform: translateY(-1px) rotate(-45deg); }
+    .service-picker-copy { display: flex; min-width: 0; align-items: baseline; gap: 8px; white-space: nowrap; }
+    .service-picker-name { display: block; min-width: 0; overflow: hidden; color: var(--nexora-text); font-size: 12px; font-weight: 800; text-overflow: ellipsis; }
     .service-picker-price { color: var(--nexora-text); font-size: 12px; font-weight: 900; }
     .service-picker-empty { padding: 32px 12px; color: var(--nexora-subtle); font-size: 11px; font-weight: 650; text-align: center; }
     .modal-btn:disabled { opacity: .5; cursor: not-allowed; }
@@ -530,26 +536,26 @@
       var TODAY = dateOffset(0);
       var TICKETS = [
         { id: 'WO-1048', salonId: 'golden', date: TODAY, time: '09:30', assignedAt: '2026-09-04T08:15:00-04:00', status: 'assigned', customer: 'Emma Williams', phone: '(305) 555-0184', station: '08', beeper: '21', note: 'Sensitive skin. Please use the fragrance-free lotion.', services: [
-          { name: 'Deluxe Pedicure', duration: 45, price: 55, addons: [] },
-          { name: 'Classic Manicure', duration: 30, price: 28, addons: [] }
+          { name: 'Deluxe Pedicure', duration: 45, price: 55 },
+          { name: 'Classic Manicure', duration: 30, price: 28 }
         ] },
         { id: 'WO-1051', salonId: 'golden', date: TODAY, time: '10:15', assignedAt: '2026-09-04T09:05:00-04:00', status: 'assigned', customer: 'Sophia Martinez', phone: '(305) 555-0127', station: '08', beeper: '24', note: 'Client prefers a short almond shape and neutral colors.', services: [
-          { name: 'Acrylic Full Set', duration: 65, price: 68, addons: [{ name: 'French Design', price: 12, approval: 'pending' }] }
+          { name: 'Acrylic Full Set', duration: 65, price: 68 }
         ] },
         { id: 'WO-1042', salonId: 'golden', date: TODAY, time: '08:45', status: 'in-service', customer: 'Olivia Brown', phone: '(786) 555-0145', station: '08', beeper: '17', note: 'Remove existing gel before the new color.', services: [
-          { name: 'Gel Manicure', duration: 40, price: 42, addons: [{ name: 'Gel Removal', price: 10, approval: 'approved' }] }
+          { name: 'Gel Manicure', duration: 40, price: 42 }
         ] },
         { id: 'WO-1039', salonId: 'golden', date: TODAY, time: '08:00', status: 'completed', customer: 'Ava Johnson', phone: '(954) 555-0176', station: '08', beeper: '12', note: 'Walk-in guest.', completionNote: 'Client was happy with the final result.', services: [
-          { name: 'Spa Pedicure', duration: 50, price: 60, addons: [{ name: 'Callus Treatment', price: 9, approval: 'rejected' }] }
+          { name: 'Spa Pedicure', duration: 50, price: 60 }
         ] },
         { id: 'WO-1025', salonId: 'golden', date: dateOffset(-1), time: '15:30', status: 'completed', customer: 'Mia Davis', phone: '(305) 555-0109', station: '08', beeper: '34', note: 'Regular customer.', completionNote: 'Service completed as requested.', services: [
-          { name: 'Classic Pedicure', duration: 35, price: 38, addons: [] }
+          { name: 'Classic Pedicure', duration: 35, price: 38 }
         ] },
         { id: 'WO-2074', salonId: 'elite', date: TODAY, time: '11:00', assignedAt: '2026-09-04T10:30:00-05:00', status: 'assigned', customer: 'Isabella Moore', phone: '(713) 555-0133', station: '04', beeper: '09', note: 'First visit. Confirm length before shaping.', services: [
-          { name: 'Dip Powder', duration: 55, price: 52, addons: [{ name: 'Nail Art', price: 10, approval: 'approved' }] }
+          { name: 'Dip Powder', duration: 55, price: 52 }
         ] },
         { id: 'WO-2070', salonId: 'elite', date: TODAY, time: '09:15', status: 'in-service', customer: 'Amelia Wilson', phone: '(832) 555-0198', station: '04', beeper: '05', note: 'Avoid cutting cuticles too close.', services: [
-          { name: 'Builder Gel', duration: 60, price: 64, addons: [] }
+          { name: 'Builder Gel', duration: 60, price: 64 }
         ] }
       ];
 
@@ -562,8 +568,9 @@
       var servicePickerMode = 'add';
       var servicePickerTicketId = '';
       var servicePickerIndex = -1;
-      var selectedCatalogServiceId = '';
+      var selectedCatalogServiceIds = [];
       var servicePickerQuery = '';
+      var openServicePickerCategoryId = '';
       var customServiceTicketId = '';
       var toastTimer = 0;
 
@@ -604,8 +611,7 @@
 
       function serviceTotal(ticket) {
         return ticket.services.reduce(function (total, service) {
-          var addons = service.addons.reduce(function (sum, addon) { return sum + (addon.approval === 'rejected' || addon.approval === 'pending' ? 0 : addon.price); }, 0);
-          return total + (service.approval === 'pending' || service.approval === 'rejected' ? 0 : service.price) + addons;
+          return total + (service.approval === 'pending' || service.approval === 'rejected' ? 0 : service.price);
         }, 0);
       }
 
@@ -748,11 +754,8 @@
 
       function renderService(ticket, service, serviceIndex) {
         var canEdit = ticket.status !== 'completed';
-        var addons = service.addons.map(function (addon) {
-          return '<div class="addon-row"><div class="addon-name"><i data-lucide="puzzle" aria-hidden="true"></i><span>' + esc(addon.name) + approvalPill(addon.approval) + '</span></div><span class="service-price">' + money(addon.price) + '</span><span class="service-time">20 min</span><span></span></div>';
-        }).join('');
         var editButton = canEdit ? '<button class="service-edit-button" type="button" data-edit-service="' + esc(ticket.id) + '" data-service-index="' + serviceIndex + '" aria-label="Change ' + esc(service.name) + '">Change service</button>' : '';
-        return '<div class="service-card"><div class="service-row"><div class="service-name"><span>' + esc(service.name) + approvalPill(service.approval) + '</span></div><span class="service-price">' + money(service.price) + '</span><span class="service-time">' + service.duration + ' min</span><span class="service-action">' + editButton + '</span></div>' + addons + '</div>';
+        return '<div class="service-card"><div class="service-row"><div class="service-name"><span>' + esc(service.name) + approvalPill(service.approval) + '</span></div><span class="service-price">' + money(service.price) + '</span><span class="service-time">' + service.duration + ' min</span><span class="service-action">' + editButton + '</span></div></div>';
       }
 
       function renderDetail() {
@@ -891,7 +894,7 @@
           customServiceErrorEl.hidden = false;
           return;
         }
-        ticket.services.push({ name: name, price: price, duration: duration, approval: 'pending', addons: [] });
+        ticket.services.push({ name: name, price: price, duration: duration, approval: 'pending' });
         closeCustomService();
         renderWorkspace();
         showToast('Custom service sent to manager for approval.');
@@ -950,15 +953,26 @@
           if (!services.length) return '';
           visibleCount += services.length;
           var options = services.map(function (service) {
-            var selected = service.id === selectedCatalogServiceId;
+            var selected = selectedCatalogServiceIds.indexOf(service.id) !== -1;
+            var selectorClass = servicePickerMode === 'edit' ? 'service-picker-radio' : 'service-picker-checkbox';
             return '<button class="service-picker-option' + (selected ? ' is-selected' : '') + '" type="button" data-catalog-service="' + esc(service.id) + '" aria-pressed="' + (selected ? 'true' : 'false') + '">' +
-              '<span class="service-picker-radio" aria-hidden="true"></span><span><span class="service-picker-name">' + esc(service.name) + '</span><span class="service-picker-meta">' + (service.durationMin || 30) + ' min · ' + esc(category.name) + '</span></span><span class="service-picker-price">' + money(service.price) + '</span></button>';
+              '<span class="' + selectorClass + '" aria-hidden="true"></span><span class="service-picker-copy"><span class="service-picker-name">' + esc(service.name) + '</span></span><span class="service-picker-price">' + money(service.price) + '</span></button>';
           }).join('');
-          return '<section class="service-picker-group"><h3 class="service-picker-category">' + esc(category.name) + '</h3><div class="service-picker-options">' + options + '</div></section>';
+          var openCategory = query || openServicePickerCategoryId === category.id;
+          return '<details class="service-picker-group" data-service-picker-category="' + esc(category.id) + '"' + (openCategory ? ' open' : '') + '><summary class="service-picker-category-head"><span class="service-picker-category">' + esc(category.name) + '</span><span class="service-picker-category-count">' + services.length + '</span><i class="service-picker-category-chevron" data-lucide="chevron-down" aria-hidden="true"></i></summary><div class="service-picker-options">' + options + '</div></details>';
         }).join('');
         servicePickerEmptyEl.textContent = 'No services match your search.';
         servicePickerEmptyEl.hidden = visibleCount !== 0;
-        servicePickerConfirmEl.disabled = !selectedCatalogServiceId;
+        servicePickerConfirmEl.disabled = selectedCatalogServiceIds.length === 0;
+        if (servicePickerMode === 'add') servicePickerConfirmEl.textContent = selectedCatalogServiceIds.length ? 'Add services (' + selectedCatalogServiceIds.length + ')' : 'Add services';
+        var categoryDetails = Array.from(servicePickerListEl.querySelectorAll('[data-service-picker-category]'));
+        categoryDetails.forEach(function (category) {
+          category.addEventListener('toggle', function () {
+            if (!category.open || servicePickerQuery) return;
+            openServicePickerCategoryId = category.getAttribute('data-service-picker-category');
+            categoryDetails.forEach(function (other) { if (other !== category) other.open = false; });
+          });
+        });
         refreshIcons();
       }
 
@@ -970,15 +984,16 @@
         servicePickerTicketId = id;
         servicePickerIndex = Number(serviceIndex);
         servicePickerQuery = '';
+        openServicePickerCategoryId = '';
         servicePickerSearchEl.value = '';
-        selectedCatalogServiceId = '';
+        selectedCatalogServiceIds = [];
         if (currentService) {
           var match = flatServiceCatalog().find(function (service) { return service.name.toLowerCase() === currentService.name.toLowerCase(); });
-          if (match) selectedCatalogServiceId = match.id;
+          if (match) selectedCatalogServiceIds = [match.id];
         }
         document.querySelector('[data-service-picker-title]').textContent = mode === 'edit' ? 'Edit service' : 'Add service';
-        document.querySelector('[data-service-picker-subtitle]').textContent = mode === 'edit' ? 'Choose a replacement service from the salon catalog.' : 'Choose a service from the salon catalog.';
-        servicePickerConfirmEl.textContent = mode === 'edit' ? 'Update service' : 'Add service';
+        document.querySelector('[data-service-picker-subtitle]').textContent = mode === 'edit' ? 'Choose a replacement service from the salon catalog.' : 'Choose one or more services from the salon catalog.';
+        servicePickerConfirmEl.textContent = mode === 'edit' ? 'Update service' : 'Add services';
         renderServicePicker();
         servicePickerModalEl.hidden = false;
         servicePickerSearchEl.focus();
@@ -992,23 +1007,26 @@
         servicePickerModalEl.hidden = true;
         servicePickerTicketId = '';
         servicePickerIndex = -1;
-        selectedCatalogServiceId = '';
+        selectedCatalogServiceIds = [];
+        openServicePickerCategoryId = '';
       }
 
       function confirmServicePicker() {
         var ticket = ticketById(servicePickerTicketId);
-        var selected = catalogServiceById(selectedCatalogServiceId);
-        if (!ticket || !selected) return;
-        var serviceData = { name: selected.name, duration: selected.durationMin || 30, price: Number(selected.price) || 0, approval: 'pending', addons: [] };
+        var selectedServices = selectedCatalogServiceIds.map(catalogServiceById).filter(Boolean);
+        if (!ticket || !selectedServices.length) return;
+        function serviceData(selected) {
+          return { name: selected.name, duration: selected.durationMin || 30, price: Number(selected.price) || 0, approval: 'pending' };
+        }
         if (servicePickerMode === 'edit') {
           var existing = ticket.services[servicePickerIndex];
           if (!existing) return;
-          serviceData.addons = existing.addons || [];
-          ticket.services[servicePickerIndex] = serviceData;
+          var replacement = serviceData(selectedServices[0]);
+          ticket.services[servicePickerIndex] = replacement;
         } else {
-          ticket.services.push(serviceData);
+          selectedServices.forEach(function (selected) { ticket.services.push(serviceData(selected)); });
         }
-        var toastMessage = servicePickerMode === 'edit' ? 'Service change sent to manager for approval.' : 'Service sent to manager for approval.';
+        var toastMessage = servicePickerMode === 'edit' ? 'Service change sent to manager for approval.' : selectedServices.length + ' service' + (selectedServices.length === 1 ? '' : 's') + ' sent to manager for approval.';
         closeServicePicker();
         renderWorkspace();
         showToast(toastMessage);
@@ -1130,7 +1148,16 @@
       servicePickerListEl.addEventListener('click', function (event) {
         var option = event.target.closest('[data-catalog-service]');
         if (!option) return;
-        selectedCatalogServiceId = option.getAttribute('data-catalog-service');
+        var category = option.closest('[data-service-picker-category]');
+        if (category) openServicePickerCategoryId = category.getAttribute('data-service-picker-category');
+        var serviceId = option.getAttribute('data-catalog-service');
+        if (servicePickerMode === 'edit') {
+          selectedCatalogServiceIds = [serviceId];
+        } else if (selectedCatalogServiceIds.indexOf(serviceId) === -1) {
+          selectedCatalogServiceIds.push(serviceId);
+        } else {
+          selectedCatalogServiceIds = selectedCatalogServiceIds.filter(function (id) { return id !== serviceId; });
+        }
         renderServicePicker();
       });
       servicePickerSearchEl.addEventListener('input', function () {

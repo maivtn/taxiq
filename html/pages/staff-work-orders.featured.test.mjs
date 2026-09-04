@@ -6,7 +6,7 @@ import { JSDOM } from 'jsdom';
 const PAGE_URL = new URL('./staff-work-orders.html', import.meta.url);
 const PAGE_HTML = readFileSync(PAGE_URL, 'utf8');
 
-function loadPage() {
+function loadPage(serviceCatalog = null) {
   const dom = new JSDOM(PAGE_HTML, {
     pretendToBeVisual: true,
     runScripts: 'dangerously',
@@ -14,12 +14,39 @@ function loadPage() {
     beforeParse(window) {
       window.scrollTo = () => {};
       window.NEXORA_APPOINTMENT_SERVICE_CATALOG = {
-        load() { return new Promise(() => {}); },
+        load() { return serviceCatalog ? Promise.resolve(serviceCatalog) : new Promise(() => {}); },
       };
     },
   });
 
   return { dom, window: dom.window };
+}
+
+const SERVICE_CATALOG = {
+  categories: [
+    {
+      id: 'nails',
+      name: 'Nails',
+      services: [
+        { id: 'polish-change', name: 'Polish Change', type: 'service', price: 15, durationMin: 20 },
+        { id: 'nail-art', name: 'Nail Art', type: 'service', price: 12, durationMin: 15 },
+      ],
+    },
+    {
+      id: 'pedicure',
+      name: 'Pedicure',
+      services: [
+        { id: 'spa-pedicure', name: 'Spa Pedicure', type: 'service', price: 55, durationMin: 45 },
+      ],
+    },
+  ],
+};
+
+async function openAddServiceModal(window) {
+  click(window, '[data-select-salon="golden"]');
+  click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+  await new Promise((resolve) => window.setTimeout(resolve, 0));
+  click(window, '[data-request-service="WO-1051"]');
 }
 
 function click(window, selector) {
@@ -113,6 +140,84 @@ test('service search icon stays inside the input after Lucide renders the SVG', 
   assert.equal(window.getComputedStyle(renderedIcon).position, 'absolute');
   assert.equal(window.getComputedStyle(renderedIcon).left, '12px');
   assert.equal(window.getComputedStyle(document.querySelector('[data-service-picker-search]')).paddingLeft, '37px');
+
+  dom.window.close();
+});
+
+test('Add service selects and adds multiple catalog services in one confirmation', async () => {
+  const { dom, window } = loadPage(SERVICE_CATALOG);
+  await openAddServiceModal(window);
+
+  click(window, '[data-catalog-service="polish-change"]');
+  click(window, '[data-catalog-service="nail-art"]');
+
+  assert.equal(window.document.querySelector('[data-confirm-service-picker]')?.textContent.trim(), 'Add services (2)');
+  assert.equal(window.document.querySelectorAll('[data-catalog-service][aria-pressed="true"]').length, 2);
+
+  click(window, '[data-confirm-service-picker]');
+  const serviceNames = [...window.document.querySelectorAll('[data-detail-panel] .service-name')].map((element) => element.textContent);
+  assert.equal(serviceNames.filter((name) => name.includes('Polish Change')).length, 1);
+  assert.equal(serviceNames.filter((name) => name.includes('Nail Art')).length, 1);
+
+  dom.window.close();
+});
+
+test('Add service permits the same catalog service again in a later confirmation', async () => {
+  const { dom, window } = loadPage(SERVICE_CATALOG);
+  await openAddServiceModal(window);
+
+  click(window, '[data-catalog-service="polish-change"]');
+  click(window, '[data-confirm-service-picker]');
+  click(window, '[data-request-service="WO-1051"]');
+  click(window, '[data-catalog-service="polish-change"]');
+  click(window, '[data-confirm-service-picker]');
+
+  const serviceNames = [...window.document.querySelectorAll('[data-detail-panel] .service-name')].map((element) => element.textContent);
+  assert.equal(serviceNames.filter((name) => name.includes('Polish Change')).length, 2);
+
+  dom.window.close();
+});
+
+test('service categories collapse so opening one closes the previous category', async () => {
+  const { dom, window } = loadPage(SERVICE_CATALOG);
+  await openAddServiceModal(window);
+  const categories = [...window.document.querySelectorAll('[data-service-picker-category]')];
+
+  assert.equal(categories.length, 2);
+  assert.equal(categories.every((category) => category.tagName === 'DETAILS'), true);
+  assert.equal(categories.every((category) => category.open === false), true);
+
+  categories[0].open = true;
+  categories[0].dispatchEvent(new window.Event('toggle'));
+  categories[1].open = true;
+  categories[1].dispatchEvent(new window.Event('toggle'));
+
+  assert.equal(categories[0].open, false);
+  assert.equal(categories[1].open, true);
+
+  dom.window.close();
+});
+
+test('service picker keeps each option compact without duration or category metadata', async () => {
+  const { dom, window } = loadPage(SERVICE_CATALOG);
+  await openAddServiceModal(window);
+
+  assert.equal(window.document.querySelectorAll('.service-picker-meta').length, 0);
+  assert.equal(window.document.querySelector('[data-catalog-service="polish-change"] .service-picker-name')?.textContent.trim(), 'Polish Change');
+  assert.equal(window.document.querySelector('[data-catalog-service="polish-change"] .service-picker-price')?.textContent.trim(), '$15.00');
+
+  dom.window.close();
+});
+
+test('work order details omit legacy add-ons and exclude them from the total', () => {
+  const { dom, window } = loadPage();
+
+  click(window, '[data-select-salon="golden"]');
+  click(window, '[data-status-filter="in-service"]');
+  click(window, '[data-orders-list] [data-ticket-id="WO-1042"]');
+
+  assert.equal(window.document.querySelectorAll('[data-detail-panel] .addon-row').length, 0);
+  assert.equal(window.document.querySelector('[data-detail-panel] .ticket-total strong')?.textContent.trim(), '$42.00');
 
   dom.window.close();
 });
