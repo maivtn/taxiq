@@ -1,0 +1,1371 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#f7f9fc">
+  <title>Store Income Report — NEXORA TOUCH</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --canvas: #f7f9fc;
+      --surface: #ffffff;
+      --surface-muted: #f3f6fa;
+      --border: #dde5ef;
+      --rule: #e7ecf3;
+      --text: #0b1220;
+      --muted: #4d5870;
+      --subtle: #7a8296;
+      --brand: #4648d8;
+      --brand-dark: #393bc8;
+      --brand-soft: #e9e9ff;
+      --success: #008f5a;
+      --success-soft: #e7f8f1;
+      --danger: #dc2626;
+      --shadow-card: 0 2px 8px rgba(15, 23, 42, 0.08);
+      --shadow-panel: 0 18px 55px rgba(12, 22, 44, 0.12);
+      --radius-container: 16px;
+      --radius-card: 12px;
+      --radius-control: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    html { background: var(--canvas); }
+
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      min-height: 100dvh;
+      margin: 0;
+      background: var(--canvas);
+      color: var(--text);
+      font-family: Inter, ui-sans-serif, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      font-size: 14px;
+      line-height: 1.45;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    button, input, select { font: inherit; }
+
+    button { color: inherit; }
+
+    button:focus-visible,
+    input:focus-visible,
+    select:focus-visible {
+      border-color: var(--brand) !important;
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(70, 72, 216, 0.2);
+    }
+
+    [hidden] { display: none !important; }
+
+    .page {
+      width: min(100%, 1240px);
+      margin: 0 auto;
+      padding: 16px 20px 24px;
+    }
+
+    h1, h2, h3, p { margin-top: 0; }
+
+    h1 {
+      margin-bottom: 0;
+      font-size: 24px;
+      font-size: clamp(20px, 2.3vw, 24px);
+      font-weight: 800;
+      letter-spacing: -0.035em;
+      line-height: 1.15;
+    }
+
+    h2 {
+      margin-bottom: 4px;
+      font-size: 16px;
+      font-weight: 800;
+      letter-spacing: -0.01em;
+    }
+
+    .page-header,
+    .section-heading,
+    .report-meta,
+    .detail-row,
+    .drawer-header,
+    .modal-header,
+    .order-row,
+    .toast {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+    }
+
+    .page-header { align-items: center; }
+
+    .header-actions,
+    .period-tabs,
+    .meta-line {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+    }
+
+    .button {
+      min-height: 44px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-control);
+      background: var(--surface);
+      padding: 0 14px;
+      color: var(--text);
+      cursor: pointer;
+      font-size: 13px;
+      font-weight: 750;
+      transition: background 140ms ease, border-color 140ms ease, color 140ms ease, transform 140ms ease;
+    }
+
+    .button:hover { background: var(--surface-muted); }
+    .button:active { transform: translateY(1px); }
+
+    .button-primary {
+      border-color: var(--brand);
+      background: var(--brand);
+      color: white;
+    }
+
+    .button-primary:hover { background: var(--brand-dark); }
+
+    .button-icon {
+      width: 44px;
+      padding: 0;
+      font-size: 20px;
+      line-height: 1;
+    }
+
+    .report-toolbar {
+      display: flex;
+      align-items: flex-end;
+      gap: 12px;
+      margin-top: 10px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-container);
+      background: var(--surface);
+      padding: 8px 10px;
+      box-shadow: var(--shadow-card);
+    }
+
+    .period-control {
+      display: flex;
+      align-items: center;
+      flex: 0 0 auto;
+      gap: 4px;
+      padding: 0;
+    }
+
+    .period-tab {
+      min-height: 44px;
+      border: 0;
+      border-radius: var(--radius-control);
+      background: transparent;
+      padding: 0 11px;
+      color: var(--muted);
+      cursor: pointer;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .period-tab:hover { background: var(--surface-muted); color: var(--text); }
+
+    .period-tab[aria-selected="true"] {
+      background: var(--brand-soft);
+      color: var(--brand-dark);
+    }
+
+    .picker-panel {
+      min-width: 0;
+      flex: 1 1 auto;
+      padding: 0;
+    }
+
+    .picker-row {
+      display: flex;
+      align-items: flex-end;
+      justify-content: flex-end;
+      flex-wrap: nowrap;
+      gap: 8px;
+    }
+
+    .picker-row .field { min-width: 168px; }
+
+    .field { display: grid; gap: 2px; }
+
+    .field label {
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 750;
+    }
+
+    .week-range {
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    .field input,
+    .field select {
+      min-height: 44px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-control);
+      background: var(--surface);
+      padding: 0 11px;
+      color: var(--text);
+      font-size: 14px;
+    }
+
+    .date-error {
+      margin: 8px 0 0;
+      color: var(--danger);
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .report-meta {
+      justify-content: flex-start;
+      padding: 8px 2px 0;
+    }
+
+    .report-meta h2 {
+      margin: 0;
+      font-size: 15px;
+    }
+
+    .meta-line {
+      margin-top: 0;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 550;
+    }
+
+    .meta-separator { color: var(--border); }
+
+    .card {
+      border: 1px solid var(--border);
+      border-radius: var(--radius-container);
+      background: var(--surface);
+      box-shadow: var(--shadow-card);
+    }
+
+    .content-grid {
+      display: grid;
+      grid-template-columns: minmax(0, 1fr) minmax(300px, 0.82fr);
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    .table-card {
+      margin-top: 8px;
+      overflow: hidden;
+    }
+
+    .table-scroll {
+      max-height: calc(100vh - 196px);
+      max-height: calc(100dvh - 196px);
+      overflow: auto;
+      overscroll-behavior: contain;
+    }
+
+    .report-table {
+      width: 100%;
+      min-width: 980px;
+      border-collapse: separate;
+      border-spacing: 0;
+      table-layout: fixed;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .report-table th,
+    .report-table td {
+      border-bottom: 1px solid var(--rule);
+      padding: 5px 10px;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    .report-table th:first-child,
+    .report-table td:first-child { width: 164px; text-align: left; }
+
+    .report-table th:last-child,
+    .report-table td:last-child { width: 148px; }
+
+    .report-table thead th {
+      position: sticky;
+      z-index: 4;
+      top: 0;
+      height: 38px;
+      background: var(--surface-muted);
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 850;
+      letter-spacing: 0.055em;
+      text-transform: uppercase;
+    }
+
+    .report-table tfoot td {
+      position: sticky;
+      z-index: 4;
+      bottom: 0;
+      height: 44px;
+      border-top: 1px solid var(--border);
+      border-bottom: 0;
+      background: #f0f2ff;
+      color: var(--text);
+      font-size: 12px;
+      font-weight: 850;
+    }
+
+    .report-data-row { height: 44px; cursor: pointer; }
+
+    .report-data-row td {
+      background: var(--surface);
+      color: var(--text);
+      font-size: 12px;
+    }
+
+    .report-data-row:hover td,
+    .report-data-row:focus td { background: #f7f7ff; }
+
+    .report-data-row:focus { outline: none; }
+    .report-data-row:focus td { box-shadow: inset 0 2px 0 var(--brand), inset 0 -2px 0 var(--brand); }
+    .report-data-row:focus td:first-child { box-shadow: inset 2px 0 0 var(--brand), inset 0 2px 0 var(--brand), inset 0 -2px 0 var(--brand); }
+    .report-data-row:focus td:last-child { box-shadow: inset -2px 0 0 var(--brand), inset 0 2px 0 var(--brand), inset 0 -2px 0 var(--brand); }
+
+    .row-period { font-weight: 800; }
+
+    .row-period span {
+      display: block;
+      margin-top: 1px;
+      color: var(--subtle);
+      font-size: 10px;
+      font-weight: 650;
+    }
+
+    .tip-cell { color: var(--success) !important; }
+    .total-cell { font-weight: 850; }
+    .future-row td { color: var(--subtle); }
+
+    .table-empty {
+      padding: 38px 16px !important;
+      color: var(--muted) !important;
+      text-align: center !important;
+    }
+
+    .panel { overflow: hidden; }
+
+    .section-heading {
+      min-height: 46px;
+      border-bottom: 1px solid var(--rule);
+      padding: 8px 14px;
+    }
+
+    .section-heading h2 { margin: 0; }
+
+    .section-total {
+      color: var(--text);
+      font-size: 14px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .payment-list { padding: 0; }
+
+    .payment-row {
+      display: grid;
+      width: 100%;
+      min-height: 44px;
+      grid-template-columns: minmax(0, 1fr) auto;
+      align-items: center;
+      gap: 10px;
+      border: 0;
+      border-bottom: 1px solid var(--rule);
+      background: transparent;
+      padding: 5px 14px;
+      text-align: left;
+      cursor: pointer;
+    }
+
+    .payment-row:last-child { border-bottom: 0; }
+    .payment-row:hover { background: var(--surface-muted); }
+
+    .method-name {
+      display: flex;
+      align-items: baseline;
+      justify-content: flex-start;
+      gap: 8px;
+      font-size: 13px;
+      font-weight: 750;
+    }
+
+    .allocation-count {
+      color: var(--subtle);
+      font-size: 10px;
+      font-weight: 650;
+      white-space: nowrap;
+    }
+
+    .method-amount {
+      font-size: 14px;
+      font-weight: 800;
+      font-variant-numeric: tabular-nums;
+      white-space: nowrap;
+    }
+
+    .detail-list { padding: 0 14px; }
+
+    .detail-row {
+      min-height: 38px;
+      border-bottom: 1px solid var(--rule);
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .detail-row:last-child { border-bottom: 0; }
+
+    .detail-row strong {
+      color: var(--text);
+      font-size: 13px;
+      font-variant-numeric: tabular-nums;
+    }
+
+    .detail-row .negative { color: var(--danger); }
+
+    .detail-row.total-detail {
+      min-height: 42px;
+      color: var(--text);
+      font-weight: 800;
+    }
+
+    .detail-row.total-detail strong { font-size: 15px; }
+
+    .overlay {
+      position: fixed;
+      z-index: 30;
+      inset: 0;
+      background: rgba(11, 18, 32, 0.58);
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 160ms ease;
+    }
+
+    .overlay[aria-hidden="false"] { opacity: 1; pointer-events: auto; }
+
+    .drawer {
+      position: absolute;
+      top: 0;
+      right: 0;
+      display: flex;
+      width: min(100%, 480px);
+      height: 100%;
+      flex-direction: column;
+      transform: translateX(100%);
+      background: var(--surface);
+      box-shadow: var(--shadow-panel);
+      transition: transform 180ms ease;
+    }
+
+    .overlay[aria-hidden="false"] .drawer { transform: translateX(0); }
+
+    .drawer-header,
+    .modal-header {
+      flex: 0 0 auto;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--rule);
+      padding: 18px 20px;
+    }
+
+    .drawer-header h2, .modal-header h2 { margin: 0; font-size: 18px; }
+    .drawer-subtitle { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+
+    .drawer-summary {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      flex: 0 0 auto;
+      border-bottom: 1px solid var(--rule);
+      padding: 12px 20px;
+      background: var(--surface-muted);
+    }
+
+    .drawer-summary-item span { display: block; color: var(--muted); font-size: 10px; font-weight: 750; text-transform: uppercase; }
+    .drawer-summary-item strong { display: block; margin-top: 2px; font-size: 17px; font-variant-numeric: tabular-nums; }
+
+    .order-list {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 6px 20px 20px;
+    }
+
+    .order-row {
+      min-height: 68px;
+      border-bottom: 1px solid var(--rule);
+      padding: 10px 0;
+    }
+
+    .order-id { font-size: 13px; font-weight: 800; }
+    .order-meta { margin-top: 3px; color: var(--muted); font-size: 11px; }
+    .order-amount { font-size: 14px; font-weight: 850; font-variant-numeric: tabular-nums; }
+    .order-status { margin-top: 3px; color: var(--success); font-size: 10px; font-weight: 800; text-align: right; text-transform: uppercase; }
+
+    .modal-shell {
+      display: grid;
+      place-items: center;
+      padding: 18px;
+    }
+
+    .modal {
+      display: flex;
+      width: min(100%, 460px);
+      max-height: 90vh;
+      max-height: 90dvh;
+      flex-direction: column;
+      overflow: hidden;
+      border-radius: var(--radius-container);
+      transform: translateY(8px) scale(0.98);
+      background: var(--surface);
+      box-shadow: var(--shadow-panel);
+      transition: transform 160ms ease;
+    }
+
+    .overlay[aria-hidden="false"] .modal { transform: translateY(0) scale(1); }
+
+    .modal-body {
+      flex: 1 1 auto;
+      min-height: 0;
+      overflow-y: auto;
+      padding: 18px 20px;
+    }
+
+    .modal-body .field input { width: 100%; }
+
+    .snapshot-card {
+      margin-top: 16px;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-card);
+      background: var(--surface-muted);
+      padding: 13px 14px;
+    }
+
+    .snapshot-card strong { display: block; }
+    .snapshot-card span { display: block; margin-top: 3px; color: var(--muted); font-size: 11px; }
+
+    .modal-footer {
+      display: flex;
+      flex: 0 0 auto;
+      justify-content: flex-end;
+      gap: 8px;
+      border-top: 1px solid var(--rule);
+      padding: 14px 20px;
+    }
+
+    .toast {
+      position: fixed;
+      z-index: 60;
+      right: 20px;
+      bottom: 20px;
+      max-width: min(420px, calc(100vw - 32px));
+      justify-content: flex-start;
+      border: 1px solid #b9e8d4;
+      border-radius: var(--radius-card);
+      background: #effbf6;
+      box-shadow: var(--shadow-panel);
+      padding: 12px 14px;
+      color: #006a43;
+      font-size: 12px;
+      font-weight: 750;
+    }
+
+    .toast::before {
+      display: grid;
+      width: 22px;
+      height: 22px;
+      flex: 0 0 auto;
+      place-items: center;
+      border-radius: 50%;
+      background: var(--success);
+      color: white;
+      content: "✓";
+      font-size: 12px;
+    }
+
+    @media (max-width: 900px) {
+      .page { padding: 14px 16px 20px; }
+      .period-tab { padding-inline: 8px; }
+    }
+
+    @media (max-width: 720px) {
+      .page { padding: 16px 14px 28px; }
+      .page-header { display: block; }
+      .header-actions { margin-top: 12px; }
+      .header-actions .button { flex: 1 1 0; }
+      .report-toolbar { display: block; }
+      .period-control { display: block; }
+      .period-tabs { display: grid; grid-template-columns: repeat(4, 1fr); gap: 5px; }
+      .period-tab { min-height: 44px; padding: 0 8px; }
+      .picker-panel { margin-top: 8px; }
+      .picker-row { display: grid; grid-template-columns: 1fr; }
+      .picker-row .field { min-width: 0; }
+      .picker-row .field input, .picker-row .field select, .picker-row .button { width: 100%; }
+      .content-grid { grid-template-columns: 1fr; }
+      .report-meta { align-items: flex-start; }
+      .section-heading { min-height: 46px; padding: 8px 14px; }
+      .payment-row { grid-template-columns: minmax(0, 1fr) auto; min-height: 44px; gap: 9px; padding: 5px 14px; }
+      .allocation-count { display: none; }
+      .detail-list { padding-inline: 14px; }
+      .drawer { top: auto; bottom: 0; width: 100%; height: min(82vh, 720px); height: min(82dvh, 720px); border-radius: var(--radius-container) var(--radius-container) 0 0; transform: translateY(100%); }
+      .overlay[aria-hidden="false"] .drawer { transform: translateY(0); }
+      .modal-footer .button { flex: 1 1 0; }
+      .toast { right: 16px; bottom: 16px; left: 16px; }
+      .report-table th:first-child,
+      .report-table td:first-child {
+        position: sticky;
+        z-index: 2;
+        left: 0;
+        box-shadow: 1px 0 0 var(--rule);
+      }
+      .report-table th:last-child,
+      .report-table td:last-child {
+        position: sticky;
+        z-index: 2;
+        right: 0;
+        box-shadow: -1px 0 0 var(--rule);
+      }
+      .report-table thead th:first-child,
+      .report-table thead th:last-child,
+      .report-table tfoot td:first-child,
+      .report-table tfoot td:last-child { z-index: 6; }
+      .report-table { min-width: 940px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: 0.01ms !important; }
+    }
+
+    @media print {
+      @page { margin: 0.55in; }
+      html, body { background-color: #fff !important; }
+      .page { width: 100%; max-width: none; padding: 0; }
+      .page > :not(.table-card),
+      .table-card > .section-heading,
+      .overlay,
+      .toast { display: none !important; }
+      .table-card { display: block !important; margin: 0; overflow: visible; border: 0; box-shadow: none; }
+      .table-scroll { max-height: none; overflow: visible; }
+      .report-table { width: 100%; min-width: 0; font-size: 9px; }
+      .report-table th,
+      .report-table td {
+        position: static !important;
+        left: auto;
+        right: auto;
+        padding: 4px 3px;
+        box-shadow: none;
+        font-size: 9px !important;
+      }
+      .report-table thead th { font-size: 8px !important; line-height: 1.2; white-space: normal; }
+      .report-table th:first-child,
+      .report-table td:first-child,
+      .report-table th:last-child,
+      .report-table td:last-child { width: auto; }
+    }
+  </style>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="page">
+    <header class="page-header">
+      <h1>Store Income</h1>
+      <div class="header-actions" aria-label="Report actions">
+        <button class="button" type="button" data-email-report>Email</button>
+        <button class="button button-primary" type="button" data-print-report>Print / PDF</button>
+      </div>
+    </header>
+
+    <section class="report-toolbar" aria-label="Reporting period">
+      <div class="period-control">
+        <div class="period-tabs" role="tablist" aria-label="Choose reporting period">
+          <button class="period-tab" type="button" role="tab" aria-selected="true" data-period="day">Day</button>
+          <button class="period-tab" type="button" role="tab" aria-selected="false" data-period="week">Week</button>
+          <button class="period-tab" type="button" role="tab" aria-selected="false" data-period="year">Year</button>
+          <button class="period-tab" type="button" role="tab" aria-selected="false" data-period="range">Range</button>
+        </div>
+      </div>
+
+      <div class="picker-panel" data-picker="day">
+        <div class="picker-row">
+          <div class="field">
+            <label for="dayDate">Report date</label>
+            <input id="dayDate" name="dayDate" type="date" value="2026-08-31" max="2026-08-31">
+          </div>
+        </div>
+      </div>
+
+      <div class="picker-panel" data-picker="week" hidden>
+        <div class="picker-row">
+          <div class="field">
+            <label for="weekValue">Report week</label>
+            <input id="weekValue" name="weekValue" type="week" value="2026-W36">
+            <output class="week-range" for="weekValue" data-week-range aria-live="polite">Aug 31 – Sep 6, 2026</output>
+          </div>
+        </div>
+      </div>
+
+      <div class="picker-panel" data-picker="year" hidden>
+        <div class="picker-row">
+          <div class="field">
+            <label for="yearValue">Report year</label>
+            <select id="yearValue" name="yearValue">
+              <option>2024</option>
+              <option>2025</option>
+              <option selected>2026</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="picker-panel" data-picker="range" hidden>
+        <div class="picker-row">
+          <div class="field">
+            <label for="fromDate">From date</label>
+            <input id="fromDate" name="fromDate" type="date" value="2026-08-01" max="2026-08-31">
+          </div>
+          <div class="field">
+            <label for="toDate">To date</label>
+            <input id="toDate" name="toDate" type="date" value="2026-08-31" max="2026-08-31">
+          </div>
+          <button class="button button-primary" type="button" data-apply-range>Apply range</button>
+        </div>
+        <p class="date-error" data-date-error role="alert" hidden>The From date must be on or before the To date.</p>
+      </div>
+    </section>
+
+    <section class="report-meta" aria-label="Report context">
+      <h2 data-period-title>Today</h2>
+      <div class="meta-line">
+        <span data-date-label>Aug 31, 2026 · 12:00 AM–2:42 PM</span>
+        <span class="meta-separator" aria-hidden="true">•</span>
+        <span>Central Time (CT)</span>
+      </div>
+    </section>
+
+    <section class="content-grid" data-day-view>
+      <article class="card panel">
+        <header class="section-heading">
+          <h2>Payment breakdown</h2>
+          <strong class="section-total" data-payment-total>$3,842.65</strong>
+        </header>
+        <div class="payment-list" data-payment-list>
+          <button class="payment-row" type="button" data-payment-method="card" aria-label="View Card payments">
+            <span class="method-name"><span>Card</span><span class="allocation-count" data-payment-count>21 allocations</span></span>
+            <strong class="method-amount" data-payment-amount="2468.20">$2,468.20</strong>
+          </button>
+          <button class="payment-row" type="button" data-payment-method="cash" aria-label="View Cash payments">
+            <span class="method-name"><span>Cash</span><span class="allocation-count" data-payment-count>8 allocations</span></span>
+            <strong class="method-amount" data-payment-amount="923.45">$923.45</strong>
+          </button>
+          <button class="payment-row" type="button" data-payment-method="gift" aria-label="View Gift Card payments">
+            <span class="method-name"><span>Gift Card</span><span class="allocation-count" data-payment-count>3 allocations</span></span>
+            <strong class="method-amount" data-payment-amount="312">$312.00</strong>
+          </button>
+          <button class="payment-row" type="button" data-payment-method="zelle" aria-label="View Zelle payments">
+            <span class="method-name"><span>Zelle</span><span class="allocation-count" data-payment-count>2 allocations</span></span>
+            <strong class="method-amount" data-payment-amount="139">$139.00</strong>
+          </button>
+          <button class="payment-row" type="button" data-payment-method="wallet" aria-label="View VLINKPAY Wallet payments">
+            <span class="method-name"><span>VLINKPAY Wallet</span><span class="allocation-count" data-payment-count>0 allocations</span></span>
+            <strong class="method-amount" data-payment-amount="0">$0.00</strong>
+          </button>
+        </div>
+      </article>
+
+      <article class="card panel">
+        <header class="section-heading">
+          <h2>Details</h2>
+        </header>
+        <div class="detail-list">
+          <div class="detail-row"><span>Services subtotal</span><strong data-detail="services">$2,920.00</strong></div>
+          <div class="detail-row"><span>Service discounts</span><strong class="negative" data-detail="discounts">−$147.50</strong></div>
+          <div class="detail-row"><span>Products subtotal</span><strong data-detail="products">$218.75</strong></div>
+          <div class="detail-row"><span>Sales tax</span><strong data-detail="tax">$221.40</strong></div>
+          <div class="detail-row"><span>Tips</span><strong data-detail="tips">$630.00</strong></div>
+          <div class="detail-row"><span>Supply Fee</span><strong data-supply-fee>$0.00</strong></div>
+          <div class="detail-row"><span>Merchant Fee</span><strong data-merchant-fee>$0.00</strong></div>
+          <div class="detail-row"><span>Return Transactions</span><strong><span data-return-count>0</span> · <span data-return-total>$0.00</span></strong></div>
+          <div class="detail-row total-detail"><span>Total collected</span><strong data-detail="total">$3,842.65</strong></div>
+        </div>
+      </article>
+    </section>
+
+    <section class="card table-card" data-table-view hidden aria-label="Income report table">
+      <header class="section-heading">
+        <h2 data-table-title>Daily collection</h2>
+        <strong class="section-total" data-table-total>$0.00</strong>
+      </header>
+      <div class="table-scroll" tabindex="0" aria-label="Scrollable income report data">
+        <table class="report-table">
+          <thead>
+            <tr>
+              <th scope="col" data-first-column>Date</th>
+              <th scope="col">Card</th>
+              <th scope="col">Cash</th>
+              <th scope="col">Gift Card</th>
+              <th scope="col">Zelle</th>
+              <th scope="col">Wallet</th>
+              <th scope="col">Tips (included)</th>
+              <th scope="col">Total Collected</th>
+            </tr>
+          </thead>
+          <tbody data-report-table-body></tbody>
+          <tfoot>
+            <tr>
+              <td>Period total</td>
+              <td data-table-total-cell="card">$0.00</td>
+              <td data-table-total-cell="cash">$0.00</td>
+              <td data-table-total-cell="gift">$0.00</td>
+              <td data-table-total-cell="zelle">$0.00</td>
+              <td data-table-total-cell="wallet">$0.00</td>
+              <td class="tip-cell" data-table-total-cell="tip">$0.00</td>
+              <td data-table-grand-total>$0.00</td>
+            </tr>
+          </tfoot>
+        </table>
+      </div>
+    </section>
+  </div>
+
+  <div class="overlay" data-order-drawer aria-hidden="true">
+    <aside class="drawer" role="dialog" aria-modal="true" aria-labelledby="drawerTitle">
+      <header class="drawer-header">
+        <div>
+          <h2 id="drawerTitle" data-drawer-title>Card payments</h2>
+          <p class="drawer-subtitle" data-drawer-subtitle>Today · Central Time (CT)</p>
+        </div>
+        <button class="button button-icon" type="button" aria-label="Close order list" data-close-drawer>×</button>
+      </header>
+      <div class="drawer-summary">
+        <div class="drawer-summary-item"><span>Orders shown</span><strong data-drawer-count>0</strong></div>
+        <div class="drawer-summary-item"><span>Selected amount</span><strong data-drawer-amount>$0.00</strong></div>
+      </div>
+      <div class="order-list" data-order-list></div>
+    </aside>
+  </div>
+
+  <div class="overlay modal-shell" data-email-modal aria-hidden="true">
+    <section class="modal" role="dialog" aria-modal="true" aria-labelledby="emailTitle">
+      <header class="modal-header">
+        <div>
+          <h2 id="emailTitle">Email report</h2>
+          <p class="drawer-subtitle">Send a PDF snapshot of the report currently shown.</p>
+        </div>
+        <button class="button button-icon" type="button" aria-label="Close email dialog" data-close-email>×</button>
+      </header>
+      <div class="modal-body">
+        <div class="field">
+          <label for="reportRecipient">Recipient email</label>
+          <input id="reportRecipient" name="reportRecipient" type="email" value="owner@lunasalon.com" placeholder="e.g. owner@lunasalon.com" autocomplete="email">
+        </div>
+        <p class="date-error" data-email-error role="alert" hidden>Enter a valid email address.</p>
+        <div class="snapshot-card">
+          <strong>Luna Nail Studio — Store Income</strong>
+          <span data-email-snapshot>Today · Aug 31, 2026 · $3,842.65</span>
+          <span>Central Time (CT) · PDF attachment</span>
+        </div>
+      </div>
+      <footer class="modal-footer">
+        <button class="button" type="button" data-cancel-email>Cancel</button>
+        <button class="button button-primary" type="button" data-send-report>Send report</button>
+      </footer>
+    </section>
+  </div>
+
+  <div class="toast" data-toast role="status" aria-live="polite" hidden></div>
+
+  <script>
+    (() => {
+      const TODAY = '2026-08-31'
+      const THIS_WEEK = '2026-W36'
+      const THIS_YEAR = 2026
+      const currency = new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' })
+      const fullDate = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'UTC' })
+      const rowDate = new Intl.DateTimeFormat('en-US', { weekday: 'short', month: 'short', day: 'numeric', timeZone: 'UTC' })
+      const monthName = new Intl.DateTimeFormat('en-US', { month: 'short', timeZone: 'UTC' })
+      const $ = (selector) => document.querySelector(selector)
+      const $$ = (selector) => [...document.querySelectorAll(selector)]
+      const state = { period: 'day', activeReport: null, lastFocus: null }
+
+      const methodNames = {
+        card: 'Card',
+        cash: 'Cash',
+        gift: 'Gift Card',
+        zelle: 'Zelle',
+        wallet: 'VLINKPAY Wallet',
+      }
+
+      const orderFixtures = {
+        card: [
+          ['#1048', '2:31 PM · Mia Johnson', 186.40],
+          ['#1046', '1:54 PM · Sophia Davis', 124.75],
+          ['#1043', '12:42 PM · Emma Wilson', 212.20],
+          ['#1039', '11:38 AM · Ava Martinez', 97.50],
+          ['#1034', '10:11 AM · Olivia Brown', 154.00],
+        ],
+        cash: [
+          ['#1047', '2:12 PM · Isabella Thomas', 82.25],
+          ['#1041', '12:05 PM · Charlotte Lee', 143.70],
+          ['#1036', '10:44 AM · Amelia Clark', 69.00],
+        ],
+        gift: [
+          ['#1044', '1:03 PM · Harper Hall', 125.00],
+          ['#1037', '11:09 AM · Evelyn Young', 98.00],
+          ['#1031', '9:22 AM · Abigail King', 89.00],
+        ],
+        zelle: [
+          ['#1042', '12:18 PM · Emily Scott', 74.00],
+          ['#1033', '9:48 AM · Ella Green', 65.00],
+        ],
+        wallet: [
+          ['#0975', 'Aug 24 · Grace Adams', 145.00],
+          ['#0938', 'Aug 21 · Chloe Baker', 140.00],
+        ],
+      }
+
+      const todayReport = {
+        title: 'Today',
+        dateLabel: 'Aug 31, 2026 · 12:00 AM–2:42 PM',
+        shortLabel: 'Today · Aug 31, 2026',
+        total: 3842.65,
+        transactions: 28,
+        payments: { card: [2468.20, 21], cash: [923.45, 8], gift: [312, 3], zelle: [139, 2], wallet: [0, 0] },
+        details: { services: 2920, discounts: 147.50, products: 218.75, tax: 221.40, tips: 630 },
+      }
+
+      const weekRows = [
+        { key: '2026-08-31', card: 2468.20, cash: 923.45, gift: 312, zelle: 139, wallet: 0, tip: 630, total: 3842.65, transactions: 28 },
+        { key: '2026-09-01', card: 1900, cash: 720, gift: 180, zelle: 98.20, wallet: 100, tip: 430, total: 2998.20, transactions: 22 },
+        { key: '2026-09-02', card: 2010.50, cash: 730, gift: 210, zelle: 124, wallet: 50, tip: 450, total: 3124.50, transactions: 24 },
+        { key: '2026-09-03', card: 1750.40, cash: 600, gift: 180, zelle: 100, wallet: 50, tip: 395, total: 2680.40, transactions: 19 },
+        { key: '2026-09-04', card: 2200.15, cash: 800, gift: 225, zelle: 100, wallet: 50, tip: 520, total: 3375.15, transactions: 25 },
+        { key: '2026-09-05', card: 1789, cash: 590, gift: 231, zelle: 80, wallet: 35, tip: 485, total: 2725, transactions: 19 },
+        { key: '2026-09-06', card: 0, cash: 0, gift: 0, zelle: 0, wallet: 0, tip: 0, total: 0, transactions: 0 },
+      ]
+
+      const baseYearRows = [
+        { month: 0, card: 28120.40, cash: 9812, gift: 2450, zelle: 1968, wallet: 900, tip: 5210, total: 43250.40, transactions: 312 },
+        { month: 1, card: 31840.20, cash: 10920, gift: 2800, zelle: 2250, wallet: 1100, tip: 5900, total: 48910.20, transactions: 348 },
+        { month: 2, card: 36420.75, cash: 12420, gift: 3050, zelle: 2590, wallet: 1200, tip: 6700, total: 55680.75, transactions: 401 },
+        { month: 3, card: 34110.30, cash: 11300, gift: 2780, zelle: 2750, wallet: 1200, tip: 6200, total: 52140.30, transactions: 376 },
+        { month: 4, card: 39080.10, cash: 13450, gift: 3100, zelle: 3050, wallet: 1200, tip: 7100, total: 59880.10, transactions: 425 },
+        { month: 5, card: 40250.80, cash: 13980, gift: 3200, zelle: 2690, wallet: 1200, tip: 7350, total: 61320.80, transactions: 439 },
+        { month: 6, card: 45142.85, cash: 15100, gift: 3750, zelle: 3100, wallet: 1250, tip: 8200, total: 68342.85, transactions: 482 },
+        { month: 7, card: 48400.60, cash: 16320.60, gift: 4108, zelle: 2884, wallet: 777, tip: 9760, total: 72490.20, transactions: 516 },
+        { month: 8, card: 0, cash: 0, gift: 0, zelle: 0, wallet: 0, tip: 0, total: 0, transactions: 0, future: true },
+        { month: 9, card: 0, cash: 0, gift: 0, zelle: 0, wallet: 0, tip: 0, total: 0, transactions: 0, future: true },
+        { month: 10, card: 0, cash: 0, gift: 0, zelle: 0, wallet: 0, tip: 0, total: 0, transactions: 0, future: true },
+        { month: 11, card: 0, cash: 0, gift: 0, zelle: 0, wallet: 0, tip: 0, total: 0, transactions: 0, future: true },
+      ]
+
+      function dateFromIso(iso) { return new Date(`${iso}T00:00:00Z`) }
+      function isoFromDate(date) { return date.toISOString().slice(0, 10) }
+      function roundMoney(value) { return Math.round(value * 100) / 100 }
+
+      function setText(selector, value) {
+        const element = $(selector)
+        if (element) element.textContent = value
+      }
+
+      function formatRange(from, to) {
+        const start = dateFromIso(from)
+        const end = dateFromIso(to)
+        const sameYear = start.getUTCFullYear() === end.getUTCFullYear()
+        const sameMonth = sameYear && start.getUTCMonth() === end.getUTCMonth()
+        if (sameMonth) return `${monthName.format(start)} ${start.getUTCDate()}–${end.getUTCDate()}, ${end.getUTCFullYear()}`
+        if (sameYear) return `${monthName.format(start)} ${start.getUTCDate()}–${monthName.format(end)} ${end.getUTCDate()}, ${end.getUTCFullYear()}`
+        return `${fullDate.format(start)}–${fullDate.format(end)}`
+      }
+
+      function formatWeekRange(from, to) {
+        const start = dateFromIso(from)
+        return `${monthName.format(start)} ${start.getUTCDate()} – ${fullDate.format(dateFromIso(to))}`
+      }
+
+      function syntheticDay(iso) {
+        if (iso === TODAY) return { ...weekRows[0] }
+        const date = dateFromIso(iso)
+        const day = date.getUTCDate()
+        if (date.getUTCDay() === 0) return { key: iso, card: 0, cash: 0, gift: 0, zelle: 0, wallet: 0, tip: 0, total: 0, transactions: 0 }
+        const totalCents = 175000 + ((day * 13711) % 150000)
+        const card = Math.round(totalCents * 0.63)
+        const cash = Math.round(totalCents * 0.22)
+        const gift = Math.round(totalCents * 0.06)
+        const zelle = Math.round(totalCents * 0.05)
+        const wallet = totalCents - card - cash - gift - zelle
+        return {
+          key: iso,
+          card: card / 100,
+          cash: cash / 100,
+          gift: gift / 100,
+          zelle: zelle / 100,
+          wallet: wallet / 100,
+          tip: Math.round(totalCents * 0.16) / 100,
+          total: totalCents / 100,
+          transactions: 15 + (day % 15),
+        }
+      }
+
+      function dateRange(from, to) {
+        const rows = []
+        const cursor = dateFromIso(from)
+        const end = dateFromIso(to)
+        while (cursor <= end) {
+          rows.push(syntheticDay(isoFromDate(cursor)))
+          cursor.setUTCDate(cursor.getUTCDate() + 1)
+        }
+        return rows
+      }
+
+      function weekBounds(value) {
+        const match = /^(\d{4})-W(\d{2})$/.exec(value)
+        if (!match) return [TODAY, '2026-09-06']
+        const year = Number(match[1])
+        const week = Number(match[2])
+        const jan4 = new Date(Date.UTC(year, 0, 4))
+        const day = jan4.getUTCDay() || 7
+        const monday = new Date(jan4)
+        monday.setUTCDate(jan4.getUTCDate() - day + 1 + ((week - 1) * 7))
+        const sunday = new Date(monday)
+        sunday.setUTCDate(monday.getUTCDate() + 6)
+        return [isoFromDate(monday), isoFromDate(sunday)]
+      }
+
+      function reportForDay(iso) {
+        if (iso === TODAY) return { ...todayReport }
+        const row = syntheticDay(iso)
+        const tips = row.tip
+        const tax = roundMoney(row.total * 0.057)
+        const products = roundMoney(row.total * 0.08)
+        const discounts = roundMoney(row.total * 0.04)
+        const services = roundMoney(row.total + discounts - products - tax - tips)
+        return {
+          title: 'Day report',
+          dateLabel: `${fullDate.format(dateFromIso(iso))} · Full business day`,
+          shortLabel: `Day · ${fullDate.format(dateFromIso(iso))}`,
+          total: row.total,
+          transactions: row.transactions,
+          payments: {
+            card: [row.card, Math.round(row.transactions * 0.75)],
+            cash: [row.cash, Math.round(row.transactions * 0.3)],
+            gift: [row.gift, Math.round(row.transactions * 0.1)],
+            zelle: [row.zelle, Math.round(row.transactions * 0.08)],
+            wallet: [row.wallet, Math.round(row.transactions * 0.05)],
+          },
+          details: { services, discounts, products, tax, tips },
+        }
+      }
+
+      function yearRows(year) {
+        if (year === THIS_YEAR) {
+          return baseYearRows.map((row) => ({ ...row, key: `${year}-${String(row.month + 1).padStart(2, '0')}` }))
+        }
+        const factor = year === 2025 ? 0.91 : 0.82
+        return baseYearRows.map((row) => {
+          const scaled = {}
+          ;['card', 'cash', 'gift', 'zelle', 'wallet', 'tip'].forEach((key) => { scaled[key] = roundMoney(row[key] * factor) })
+          return {
+            ...row,
+            ...scaled,
+            key: `${year}-${String(row.month + 1).padStart(2, '0')}`,
+            total: roundMoney(scaled.card + scaled.cash + scaled.gift + scaled.zelle + scaled.wallet),
+            transactions: Math.round(row.transactions * factor),
+            future: false,
+          }
+        })
+      }
+
+      function summarizeRows(rows) {
+        return rows.reduce((sum, row) => {
+          ;['card', 'cash', 'gift', 'zelle', 'wallet', 'tip', 'total', 'transactions'].forEach((key) => {
+            sum[key] += Number(row[key] || 0)
+          })
+          return sum
+        }, { card: 0, cash: 0, gift: 0, zelle: 0, wallet: 0, tip: 0, total: 0, transactions: 0 })
+      }
+
+      function showPicker(period) {
+        $$('[data-period]').forEach((button) => button.setAttribute('aria-selected', String(button.dataset.period === period)))
+        $$('[data-picker]').forEach((picker) => { picker.hidden = picker.dataset.picker !== period })
+      }
+
+      function renderCommon(report) {
+        state.activeReport = report
+        setText('[data-period-title]', report.title)
+        setText('[data-date-label]', report.dateLabel)
+        setText('[data-payment-total]', currency.format(report.total))
+
+        Object.entries(report.payments).forEach(([method, [amount, count]]) => {
+          const row = $(`[data-payment-method="${method}"]`)
+          if (row) {
+            row.hidden = false
+            const amountElement = row.querySelector('[data-payment-amount]')
+            amountElement.textContent = currency.format(amount)
+            amountElement.setAttribute('data-payment-amount', String(amount))
+            row.querySelector('[data-payment-count]').textContent = `${count} allocations`
+          }
+        })
+        setText('[data-email-snapshot]', `${report.shortLabel} · ${currency.format(report.total)}`)
+      }
+
+      function renderDay(iso) {
+        state.period = 'day'
+        $('[name="dayDate"]').value = iso
+        showPicker('day')
+        $('[data-day-view]').hidden = false
+        $('[data-table-view]').hidden = true
+        const report = reportForDay(iso)
+        populateReportTable([syntheticDay(iso)], 'date')
+        renderCommon(report)
+        setText('[data-detail="services"]', currency.format(report.details.services))
+        setText('[data-detail="discounts"]', `−${currency.format(report.details.discounts)}`)
+        setText('[data-detail="products"]', currency.format(report.details.products))
+        setText('[data-detail="tax"]', currency.format(report.details.tax))
+        setText('[data-detail="tips"]', currency.format(report.details.tips))
+        setText('[data-detail="total"]', currency.format(report.total))
+      }
+
+      function populateReportTable(rows, rowKind) {
+        const totals = summarizeRows(rows)
+        const isYear = rowKind === 'month'
+        setText('[data-first-column]', isYear ? 'Month' : 'Date')
+
+        const body = $('[data-report-table-body]')
+        body.innerHTML = rows.map((row) => {
+          const date = isYear ? new Date(Date.UTC(Number(row.key.slice(0, 4)), Number(row.key.slice(5, 7)) - 1, 1)) : dateFromIso(row.key)
+          const label = isYear ? `${monthName.format(date)} ${date.getUTCFullYear()}` : rowDate.format(date)
+          const meta = row.future ? 'Future month' : `${row.transactions} transactions`
+          return `
+            <tr class="report-data-row${row.future ? ' future-row' : ''}" tabindex="0" data-report-row data-row-kind="${rowKind}" data-row-key="${row.key}" data-future="${Boolean(row.future)}">
+              <td class="row-period">${label}<span>${meta}</span></td>
+              <td>${currency.format(row.card)}</td>
+              <td>${currency.format(row.cash)}</td>
+              <td>${currency.format(row.gift)}</td>
+              <td>${currency.format(row.zelle)}</td>
+              <td>${currency.format(row.wallet)}</td>
+              <td class="tip-cell">${currency.format(row.tip)}</td>
+              <td class="total-cell">${currency.format(row.total)}</td>
+            </tr>`
+        }).join('')
+
+        ;['card', 'cash', 'gift', 'zelle', 'wallet', 'tip'].forEach((method) => setText(`[data-table-total-cell="${method}"]`, currency.format(totals[method])))
+        setText('[data-table-grand-total]', currency.format(totals.total))
+        return totals
+      }
+
+      function renderTable(rows, options) {
+        const totals = populateReportTable(rows, options.rowKind)
+        const isYear = options.rowKind === 'month'
+        $('[data-day-view]').hidden = true
+        $('[data-table-view]').hidden = false
+        setText('[data-table-title]', isYear ? 'Monthly collection' : 'Daily collection')
+        setText('[data-table-total]', currency.format(totals.total))
+        const report = {
+          title: options.title,
+          dateLabel: options.dateLabel,
+          shortLabel: options.shortLabel,
+          total: roundMoney(totals.total),
+          transactions: totals.transactions,
+          payments: {
+            card: [roundMoney(totals.card), 0],
+            cash: [roundMoney(totals.cash), 0],
+            gift: [roundMoney(totals.gift), 0],
+            zelle: [roundMoney(totals.zelle), 0],
+            wallet: [roundMoney(totals.wallet), 0],
+          },
+        }
+        renderCommon(report)
+      }
+
+      function renderWeek() {
+        state.period = 'week'
+        showPicker('week')
+        const value = $('[name="weekValue"]').value || THIS_WEEK
+        const [from, to] = weekBounds(value)
+        setText('[data-week-range]', formatWeekRange(from, to))
+        const rows = value === THIS_WEEK ? weekRows.map((row) => ({ ...row })) : dateRange(from, to)
+        const current = value === THIS_WEEK
+        renderTable(rows, {
+          rowKind: 'date',
+          title: current ? 'This Week' : `Week · ${formatRange(from, to)}`,
+          dateLabel: `${formatRange(from, to)} · Monday–Sunday`,
+          shortLabel: `${current ? 'This Week' : 'Week'} · ${formatRange(from, to)}`,
+        })
+      }
+
+      function renderYear() {
+        state.period = 'year'
+        showPicker('year')
+        const year = Number($('[name="yearValue"]').value || THIS_YEAR)
+        renderTable(yearRows(year), {
+          rowKind: 'month',
+          title: year === THIS_YEAR ? 'This Year' : `Year ${year}`,
+          dateLabel: `${year} · 12 calendar months`,
+          shortLabel: `${year === THIS_YEAR ? 'This Year' : 'Year'} · ${year}`,
+        })
+      }
+
+      function renderRange(from, to) {
+        state.period = 'range'
+        showPicker('range')
+        renderTable(dateRange(from, to), {
+          rowKind: 'date',
+          title: `Range · ${formatRange(from, to)}`,
+          dateLabel: `${formatRange(from, to)} · Inclusive dates`,
+          shortLabel: `Range · ${formatRange(from, to)}`,
+        })
+      }
+
+      function selectPeriod(period) {
+        $('[data-date-error]').hidden = true
+        if (period === 'day') renderDay($('[name="dayDate"]').value || TODAY)
+        if (period === 'week') renderWeek()
+        if (period === 'year') renderYear()
+        if (period === 'range') renderRange($('[name="fromDate"]').value, $('[name="toDate"]').value)
+      }
+
+      function openDrawer(key, title) {
+        const report = state.activeReport
+        const rows = orderFixtures[key] || []
+        const amount = report.payments[key][0]
+        const count = report.payments[key][1]
+        state.lastFocus = document.activeElement
+        setText('[data-drawer-title]', title)
+        setText('[data-drawer-subtitle]', `${report.shortLabel} · Central Time (CT)`)
+        setText('[data-drawer-count]', String(count))
+        setText('[data-drawer-amount]', currency.format(amount))
+        $('[data-order-list]').innerHTML = rows.map(([id, meta, rowAmount]) => `
+          <article class="order-row" data-order-row>
+            <div><div class="order-id">${id}</div><div class="order-meta">${meta}</div></div>
+            <div><div class="order-amount">${currency.format(rowAmount)}</div><div class="order-status">Completed</div></div>
+          </article>
+        `).join('')
+        const drawer = $('[data-order-drawer]')
+        drawer.setAttribute('aria-hidden', 'false')
+        document.body.style.overflow = 'hidden'
+        $('[data-close-drawer]').focus()
+      }
+
+      function closeDrawer() {
+        $('[data-order-drawer]').setAttribute('aria-hidden', 'true')
+        document.body.style.overflow = ''
+        if (state.lastFocus?.focus) state.lastFocus.focus()
+      }
+
+      function openEmail() {
+        state.lastFocus = document.activeElement
+        $('[data-email-error]').hidden = true
+        $('[data-email-modal]').setAttribute('aria-hidden', 'false')
+        document.body.style.overflow = 'hidden'
+        $('[name="reportRecipient"]').focus()
+      }
+
+      function closeEmail() {
+        $('[data-email-modal]').setAttribute('aria-hidden', 'true')
+        document.body.style.overflow = ''
+        if (state.lastFocus?.focus) state.lastFocus.focus()
+      }
+
+      let toastTimer
+      function showToast(message) {
+        const toast = $('[data-toast]')
+        toast.textContent = message
+        toast.hidden = false
+        clearTimeout(toastTimer)
+        toastTimer = setTimeout(() => { toast.hidden = true }, 5000)
+      }
+
+      function openReportRow(row) {
+        if (row.dataset.future === 'true') return
+        if (row.dataset.rowKind === 'date') {
+          renderDay(row.dataset.rowKey)
+          return
+        }
+        const [year, month] = row.dataset.rowKey.split('-').map(Number)
+        const from = `${year}-${String(month).padStart(2, '0')}-01`
+        const last = new Date(Date.UTC(year, month, 0)).getUTCDate()
+        const to = `${year}-${String(month).padStart(2, '0')}-${String(last).padStart(2, '0')}`
+        $('[name="fromDate"]').value = from
+        $('[name="toDate"]').value = to
+        renderRange(from, to)
+      }
+
+      $$('[data-period]').forEach((button) => button.addEventListener('click', () => selectPeriod(button.dataset.period)))
+      $('[name="dayDate"]').addEventListener('change', (event) => renderDay(event.target.value))
+      $('[name="weekValue"]').addEventListener('change', renderWeek)
+      $('[name="yearValue"]').addEventListener('change', renderYear)
+      $('[data-apply-range]').addEventListener('click', () => {
+        const from = $('[name="fromDate"]').value
+        const to = $('[name="toDate"]').value
+        const error = $('[data-date-error]')
+        if (!from || !to || from > to) {
+          error.hidden = false
+          return
+        }
+        error.hidden = true
+        renderRange(from, to)
+      })
+
+      $('[data-report-table-body]').addEventListener('click', (event) => {
+        const row = event.target.closest('[data-report-row]')
+        if (row) openReportRow(row)
+      })
+      $('[data-report-table-body]').addEventListener('keydown', (event) => {
+        if (!['Enter', ' '].includes(event.key)) return
+        const row = event.target.closest('[data-report-row]')
+        if (!row) return
+        event.preventDefault()
+        openReportRow(row)
+      })
+
+      $$('[data-payment-method]').forEach((row) => row.addEventListener('click', () => openDrawer(row.dataset.paymentMethod, `${methodNames[row.dataset.paymentMethod]} payments`)))
+      $('[data-close-drawer]').addEventListener('click', closeDrawer)
+      $('[data-order-drawer]').addEventListener('click', (event) => { if (event.target === event.currentTarget) closeDrawer() })
+
+      $('[data-email-report]').addEventListener('click', openEmail)
+      $('[data-close-email]').addEventListener('click', closeEmail)
+      $('[data-cancel-email]').addEventListener('click', closeEmail)
+      $('[data-email-modal]').addEventListener('click', (event) => { if (event.target === event.currentTarget) closeEmail() })
+      $('[data-send-report]').addEventListener('click', () => {
+        const input = $('[name="reportRecipient"]')
+        const email = input.value.trim()
+        const error = $('[data-email-error]')
+        if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+          error.hidden = false
+          input.focus()
+          return
+        }
+        error.hidden = true
+        closeEmail()
+        showToast(`Report snapshot sent to ${email}.`)
+      })
+
+      $('[data-print-report]').addEventListener('click', () => window.print())
+
+      document.addEventListener('keydown', (event) => {
+        if (event.key !== 'Escape') return
+        if ($('[data-email-modal]').getAttribute('aria-hidden') === 'false') closeEmail()
+        else if ($('[data-order-drawer]').getAttribute('aria-hidden') === 'false') closeDrawer()
+      })
+
+      renderDay(TODAY)
+    })()
+  </script>
+</body>
+</html>
