@@ -96,6 +96,26 @@
   height: 16px;
 }
 
+.staff-nav-count {
+  display: inline-flex;
+  min-width: 24px;
+  height: 24px;
+  margin-left: auto;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  background: rgba(105, 122, 255, 0.9);
+  padding: 0 7px;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 900;
+}
+
+.staff-sidebar .staff-nav-item.is-active .staff-nav-count {
+  background: #fff;
+  color: var(--nexora-brand);
+}
+
 .staff-sidebar .nav-subnav-inner {
   margin-left: 24px;
   padding-left: 18px;

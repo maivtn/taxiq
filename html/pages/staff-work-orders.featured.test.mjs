@@ -72,13 +72,47 @@ test('starting the highlighted ticket promotes the next assigned ticket', () => 
   dom.window.close();
 });
 
-test('View calendar moves focus to the existing date picker', () => {
+test('View calendar carries the selected date and salon to My Calendar', () => {
   const { dom, window } = loadPage();
 
   click(window, '[data-select-salon="golden"]');
-  click(window, '[data-view-calendar]');
+  const calendarLink = window.document.querySelector('[data-view-calendar]');
 
-  assert.equal(window.document.activeElement, window.document.querySelector('[data-date-filter]'));
+  assert.equal(calendarLink?.getAttribute('href'), `pos-calendar.html?date=${window.document.querySelector('[data-date-filter]')?.value}&salon=golden`);
+
+  dom.window.close();
+});
+
+test('Today returns the date filter to the current day', () => {
+  const { dom, window } = loadPage();
+
+  click(window, '[data-select-salon="golden"]');
+  const dateInput = window.document.querySelector('[data-date-filter]');
+  const today = dateInput?.value;
+
+  click(window, '[data-date-step="1"]');
+  assert.notEqual(dateInput?.value, today);
+
+  click(window, '[data-date-today]');
+  assert.equal(dateInput?.value, today);
+  assert.equal(window.document.querySelector('[data-date-label]')?.textContent.trim(), 'Today');
+
+  dom.window.close();
+});
+
+test('service search icon stays inside the input after Lucide renders the SVG', () => {
+  const { dom, window } = loadPage();
+  const { document } = window;
+  const sourceIcon = document.querySelector('.service-picker-search [data-lucide="search"]');
+  const renderedIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+
+  assert.ok(sourceIcon, 'Expected the service search icon to exist');
+  renderedIcon.setAttribute('class', 'lucide lucide-search');
+  sourceIcon.replaceWith(renderedIcon);
+
+  assert.equal(window.getComputedStyle(renderedIcon).position, 'absolute');
+  assert.equal(window.getComputedStyle(renderedIcon).left, '12px');
+  assert.equal(window.getComputedStyle(document.querySelector('[data-service-picker-search]')).paddingLeft, '37px');
 
   dom.window.close();
 });

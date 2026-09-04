@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexora Touch - My Calendar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    [hidden] { display: none !important; }
+    .calendar-page { width: 100%; max-width: 500px; min-height: calc(100vh - 64px); margin: 0 auto; padding: 24px 18px 56px; }
+    .calendar { display: flex; flex-direction: column; gap: 20px; }
+    .calendar-header { display: flex; align-items: flex-end; justify-content: space-between; gap: 16px; }
+    .calendar-kicker { margin-bottom: 7px; color: #77839b; font-size: 11px; font-weight: 850; letter-spacing: .12em; text-transform: uppercase; }
+    .calendar-title { margin: 0; color: var(--nexora-text); font-size: 27px; font-weight: 900; letter-spacing: -.035em; }
+    .calendar-today { display: inline-flex; min-height: 40px; flex: 0 0 auto; align-items: center; justify-content: center; border: 1px solid #d7deeb; border-radius: 13px; background: #fff; padding: 0 15px; color: #263249; font-size: 12px; font-weight: 850; cursor: pointer; box-shadow: 0 5px 14px rgba(15,23,42,.04); }
+    .calendar-today:hover { border-color: var(--nexora-brand); color: var(--nexora-brand); }
+    .calendar-week-shell { border: 1px solid #e0e5f0; border-radius: 20px; background: rgba(255,255,255,.76); padding: 9px; box-shadow: 0 10px 28px rgba(15,23,42,.045); }
+    .calendar-week { display: flex; align-items: stretch; gap: 4px; }
+    .calendar-day { display: flex; min-width: 0; min-height: 66px; flex: 1 1 0; flex-direction: column; align-items: center; justify-content: center; gap: 7px; border: 0; border-radius: 14px; background: transparent; color: #667085; cursor: pointer; }
+    .calendar-day:hover { background: #f2f3ff; color: var(--nexora-brand); }
+    .calendar-day.is-selected { background: linear-gradient(145deg, #3f58df, #5841e7); color: #fff; box-shadow: 0 9px 18px rgba(70,72,216,.23); }
+    .calendar-weekday { font-size: 10px; font-weight: 750; text-transform: uppercase; }
+    .calendar-date { font-size: 14px; font-weight: 900; }
+    .calendar-day.is-today:not(.is-selected) .calendar-date { color: var(--nexora-brand); }
+    .schedule-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 12px; }
+    .schedule-head h2 { margin: 0; color: var(--nexora-text); font-size: 15px; font-weight: 900; }
+    .schedule-duration { color: #6b7892; font-size: 12px; font-weight: 700; white-space: nowrap; }
+    .appointment-list { display: flex; flex-direction: column; gap: 10px; margin-top: 12px; }
+    .appointment-row { display: flex; align-items: stretch; gap: 10px; color: inherit; text-decoration: none; }
+    .appointment-time { width: 54px; flex: 0 0 54px; padding-top: 16px; color: #687386; font-size: 11px; font-weight: 700; line-height: 1.2; }
+    .appointment-card { position: relative; display: flex; min-width: 0; min-height: 72px; flex: 1; align-items: center; justify-content: space-between; gap: 10px; overflow: hidden; border: 1px solid #dae1ec; border-radius: 15px; background: #fff; padding: 13px 14px; box-shadow: 0 7px 18px rgba(15,23,42,.045); transition: border-color .16s, transform .16s, box-shadow .16s; }
+    .appointment-card::before { position: absolute; inset: 0 auto 0 0; width: 4px; background: #7255f7; content: ""; }
+    .appointment-row:hover .appointment-card { border-color: #b8bdfa; transform: translateY(-1px); box-shadow: 0 10px 22px rgba(70,72,216,.09); }
+    .appointment-copy { min-width: 0; }
+    .appointment-title { display: block; overflow: hidden; color: #172033; font-size: 13px; font-weight: 850; text-overflow: ellipsis; white-space: nowrap; }
+    .appointment-meta { display: block; margin-top: 6px; color: #65718a; font-size: 11px; font-weight: 600; }
+    .appointment-status { display: inline-flex; min-height: 24px; flex: 0 0 auto; align-items: center; border-radius: 999px; padding: 0 8px; font-size: 10px; font-weight: 850; }
+    .appointment-row.is-assigned .appointment-status { background: #efedff; color: #5648cd; }
+    .appointment-row.is-service .appointment-card { background: #f8fffc; }
+    .appointment-row.is-service .appointment-card::before { background: #0aa76b; }
+    .appointment-row.is-service .appointment-status { background: #dff8ed; color: #087b55; }
+    .appointment-row.is-completed .appointment-card::before { background: #9aa5b5; }
+    .appointment-row.is-completed .appointment-status { background: #eef1f5; color: #626b78; }
+    .calendar-empty { border: 1px dashed #cfd7e5; border-radius: 18px; background: rgba(255,255,255,.58); padding: 38px 18px; color: #748096; text-align: center; }
+    .calendar-empty i, .calendar-empty svg { width: 25px; height: 25px; margin-bottom: 8px; color: #99a3b5; }
+    .calendar-empty strong { display: block; color: #39445a; font-size: 13px; }
+    .calendar-empty span { display: block; margin-top: 5px; font-size: 11px; }
+    .calendar-back { display: inline-flex; align-items: center; gap: 6px; align-self: flex-start; color: var(--nexora-brand); font-size: 12px; font-weight: 800; text-decoration: none; }
+    .calendar-back i, .calendar-back svg { width: 15px; height: 15px; }
+    @media (max-width: 420px) {
+      .calendar-page { padding-right: 14px; padding-left: 14px; }
+      .calendar-week-shell { margin-right: -4px; margin-left: -4px; padding: 7px; }
+      .calendar-day { min-height: 62px; }
+      .appointment-time { width: 48px; flex-basis: 48px; }
+      .appointment-status { display: none; }
+    }
+  </style>
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/staff-shell.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar staff-sidebar" id="nexora-sidebar" data-shell-sidebar></aside>
+    <div class="sidebar-overlay" data-shell-overlay></div>
+    <div class="app-area">
+      <header class="header" data-shell-header></header>
+      <main class="main-content calendar-page">
+        <section class="calendar" data-calendar>
+          <div class="calendar-header">
+            <div><div class="calendar-kicker">My schedule only</div><h1 class="calendar-title">My Calendar</h1></div>
+            <button class="calendar-today" type="button" data-calendar-today>Today</button>
+          </div>
+          <div class="calendar-week-shell"><div class="calendar-week" role="group" aria-label="Choose a day" data-calendar-week></div></div>
+          <section aria-live="polite">
+            <div class="schedule-head"><h2 data-calendar-heading></h2><span class="schedule-duration" data-calendar-duration></span></div>
+            <div class="appointment-list" data-calendar-list></div>
+          </section>
+          <a class="calendar-back" href="staff-work-orders.html" data-work-orders-link><i data-lucide="arrow-left" aria-hidden="true"></i>Back to work orders</a>
+        </section>
+      </main>
+    </div>
+  </div>
+  <script>window.NEXORA_SHELL = { activePage: 'staff', activeTab: 'my-calendar' };</script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="../assets/nexora-shell.js"></script>
+  <script>
+    (function () {
+      function dateKey(date) {
+        return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
+      }
+      function parseDate(value) { return /^\d{4}-\d{2}-\d{2}$/.test(value || '') ? new Date(value + 'T12:00:00') : null; }
+      function esc(value) { return String(value == null ? '' : value).replace(/[&<>'"]/g, function (char) { return ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;' })[char]; }); }
+      function timeLabel(value) { var parts = value.split(':'); var hour = Number(parts[0]); return (hour % 12 || 12) + ':' + parts[1] + ' ' + (hour >= 12 ? 'PM' : 'AM'); }
+      function durationLabel(minutes) { var hours = Math.floor(minutes / 60); var rest = minutes % 60; return (hours ? hours + 'h' : '') + (hours && rest ? ' ' : '') + (rest ? rest + 'm' : ''); }
+
+      var params = new URLSearchParams(window.location.search);
+      var TODAY = dateKey(new Date());
+      var requestedDate = parseDate(params.get('date'));
+      var selectedDate = requestedDate ? dateKey(requestedDate) : TODAY;
+      var salonId = params.get('salon') || 'golden';
+      var calendarEl = document.querySelector('[data-calendar]');
+      var weekEl = document.querySelector('[data-calendar-week]');
+      var listEl = document.querySelector('[data-calendar-list]');
+      var headingEl = document.querySelector('[data-calendar-heading]');
+      var durationEl = document.querySelector('[data-calendar-duration]');
+      var DEMO_APPOINTMENTS = [
+        { ticket: 'WO-1039', time: '08:00', duration: 60, customer: 'Ava Johnson', service: 'Classic Manicure', status: 'completed', label: 'Completed' },
+        { ticket: 'WO-1042', time: '08:45', duration: 45, customer: 'Olivia Brown', service: 'Gel Manicure', status: 'service', label: 'In service' },
+        { ticket: 'WO-1048', time: '09:30', duration: 75, customer: 'Emma Williams', service: 'Deluxe Pedicure', status: 'assigned', label: 'Assigned' },
+        { ticket: 'WO-1051', time: '10:15', duration: 45, customer: 'Sophia Martinez', service: 'Full Set Gel X', status: 'assigned', label: 'Assigned' }
+      ];
+
+      function appointmentsFor(date) { return date === TODAY ? DEMO_APPOINTMENTS : []; }
+      function renderWeek() {
+        var active = parseDate(selectedDate) || new Date();
+        var start = new Date(active);
+        start.setDate(active.getDate() - active.getDay());
+        var html = '';
+        for (var index = 0; index < 7; index += 1) {
+          var day = new Date(start);
+          day.setDate(start.getDate() + index);
+          var key = dateKey(day);
+          var classes = 'calendar-day' + (key === selectedDate ? ' is-selected' : '') + (key === TODAY ? ' is-today' : '');
+          html += '<button class="' + classes + '" type="button" data-calendar-day data-date="' + key + '" aria-pressed="' + (key === selectedDate ? 'true' : 'false') + '"><span class="calendar-weekday">' + day.toLocaleDateString('en-US', { weekday: 'short' }) + '</span><span class="calendar-date">' + day.getDate() + '</span></button>';
+        }
+        weekEl.innerHTML = html;
+      }
+      function renderSchedule() {
+        var active = parseDate(selectedDate) || new Date();
+        var appointments = appointmentsFor(selectedDate);
+        var total = appointments.reduce(function (sum, item) { return sum + item.duration; }, 0);
+        headingEl.textContent = active.toLocaleDateString('en-US', { weekday: 'long' }) + ' · ' + appointments.length + ' appointment' + (appointments.length === 1 ? '' : 's');
+        durationEl.textContent = total ? durationLabel(total) : '';
+        if (!appointments.length) {
+          listEl.innerHTML = '<div class="calendar-empty"><i data-lucide="calendar-check" aria-hidden="true"></i><strong>No appointments</strong><span>Your schedule is clear for this day.</span></div>';
+        } else {
+          listEl.innerHTML = appointments.map(function (item) {
+            return '<a class="appointment-row is-' + item.status + '" href="staff-work-orders.html?salon=' + encodeURIComponent(salonId) + '&ticket=' + encodeURIComponent(item.ticket) + '" data-calendar-appointment><span class="appointment-time">' + timeLabel(item.time) + '</span><span class="appointment-card"><span class="appointment-copy"><span class="appointment-title">' + esc(item.customer) + ' · ' + esc(item.service) + '</span><span class="appointment-meta">' + timeLabel(item.time) + ' · ' + item.duration + ' min · ' + esc(item.ticket) + '</span></span><span class="appointment-status">' + esc(item.label) + '</span></span></a>';
+          }).join('');
+        }
+        if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
+      }
+      function render() {
+        calendarEl.setAttribute('data-selected-date', selectedDate);
+        renderWeek();
+        renderSchedule();
+      }
+
+      document.querySelector('[data-work-orders-link]').href = 'staff-work-orders.html?salon=' + encodeURIComponent(salonId);
+      weekEl.addEventListener('click', function (event) {
+        var button = event.target.closest('[data-calendar-day]');
+        if (!button) return;
+        selectedDate = button.getAttribute('data-date');
+        render();
+      });
+      document.querySelector('[data-calendar-today]').addEventListener('click', function () { selectedDate = TODAY; render(); });
+      render();
+    })();
+  </script>
+</body>
+</html>

@@ -62,7 +62,8 @@
     .summary-label { margin-top: 4px; color: var(--nexora-subtle); font-size: 11px; font-weight: 750; text-transform: uppercase; }
 
     .filter-bar { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; border: 1px solid var(--nexora-border); border-radius: 14px; background: #fff; padding: 10px; box-shadow: var(--nexora-card-shadow); }
-    .date-control { position: relative; display: flex; align-items: center; gap: 8px; min-width: 0; }
+    .date-toolbar { display: flex; min-width: 0; align-items: center; gap: 8px; }
+    .date-control { position: relative; display: flex; min-width: 0; flex: 1; align-items: center; gap: 8px; }
     .date-control > i { width: 16px; height: 16px; margin-left: 4px; color: var(--nexora-brand); pointer-events: none; }
     .date-control label { color: var(--nexora-muted); font-size: 11px; font-weight: 800; }
     .date-step { display: inline-flex; width: 30px; height: 30px; flex: 0 0 auto; align-items: center; justify-content: center; border: 0; border-radius: 7px; background: transparent; color: var(--nexora-muted); cursor: pointer; }
@@ -70,6 +71,8 @@
     .date-step i { width: 15px; height: 15px; }
     .date-input { height: 36px; border: 0; border-radius: 8px; outline: 0; background: var(--nexora-surface-muted); padding: 0 9px; color: var(--nexora-text); font-size: 12px; font-weight: 700; cursor: pointer; }
     .date-input:focus { box-shadow: 0 0 0 2px rgba(70,72,216,.18); }
+    .date-today-button { display: inline-flex; min-height: 36px; flex: 0 0 auto; align-items: center; justify-content: center; border: 1px solid #d6daf5; border-radius: 10px; background: #fff; padding: 0 13px; color: var(--nexora-brand); font-size: 11px; font-weight: 850; cursor: pointer; }
+    .date-today-button:hover { border-color: var(--nexora-brand); background: #f6f6ff; }
     .status-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 1px; scrollbar-width: none; }
     .status-tabs::-webkit-scrollbar { display: none; }
     .status-tab { display: inline-flex; min-height: 36px; flex: 0 0 auto; align-items: center; gap: 7px; border: 1px solid var(--nexora-border); border-radius: 999px; background: #fff; padding: 0 12px; color: var(--nexora-muted); font-size: 11px; font-weight: 800; cursor: pointer; white-space: nowrap; }
@@ -90,7 +93,7 @@
     .orders-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--nexora-rule); padding: 15px 16px; }
     .orders-panel-head h2 { margin: 0; color: var(--nexora-text); font-size: 14px; font-weight: 850; }
     .orders-count { display: inline-flex; min-width: 24px; height: 24px; align-items: center; justify-content: center; border-radius: 999px; background: #eef0ff; padding: 0 8px; color: var(--nexora-brand); font-size: 11px; font-weight: 850; }
-    .view-calendar-button { display: inline-flex; min-height: 32px; align-items: center; justify-content: center; border: 1px solid var(--nexora-border); border-radius: 999px; background: #fff; padding: 0 12px; color: var(--nexora-text); font-size: 11px; font-weight: 850; cursor: pointer; box-shadow: 0 3px 10px rgba(15,23,42,.05); }
+    .view-calendar-button { display: inline-flex; min-height: 32px; align-items: center; justify-content: center; border: 1px solid var(--nexora-border); border-radius: 999px; background: #fff; padding: 0 12px; color: var(--nexora-text); font-size: 11px; font-weight: 850; text-decoration: none; cursor: pointer; box-shadow: 0 3px 10px rgba(15,23,42,.05); }
     .view-calendar-button:hover { border-color: var(--nexora-brand); color: var(--nexora-brand); }
     .featured-ticket-slot { margin-bottom: 18px; }
     .featured-ticket-card { overflow: hidden; border-radius: 22px; background: linear-gradient(135deg, #3245b8 0%, #6738f2 100%); padding: 18px; color: #fff; box-shadow: 0 18px 34px rgba(70,72,216,.24); }
@@ -262,6 +265,7 @@
       .workspace-ticket-badge { display: inline-flex; }
       .summary-row { display: none; }
       .filter-bar { align-items: stretch; flex-direction: column; border: 0; background: transparent; padding: 0; box-shadow: none; }
+      .date-toolbar { width: 100%; }
       .date-control { width: 100%; min-height: 52px; justify-content: space-between; border: 1px solid #d6daf5; border-radius: 16px; background: linear-gradient(135deg, #fff, #f8f8ff); padding: 0 8px; box-shadow: 0 7px 18px rgba(31,42,86,.055); }
       .date-control > i { margin-left: auto; }
       .date-control label { margin-right: auto; color: var(--nexora-text); font-size: 12px; }
@@ -314,6 +318,7 @@
     body.wo-mobile-page .workspace-ticket-badge { display: inline-flex; }
     body.wo-mobile-page .summary-row { display: none; }
     body.wo-mobile-page .filter-bar { align-items: stretch; flex-direction: column; gap: 12px; border: 0; background: transparent; padding: 0; box-shadow: none; }
+    body.wo-mobile-page .date-toolbar { width: 100%; }
     body.wo-mobile-page .date-control { width: 100%; min-height: 54px; justify-content: space-between; border: 1px solid #d6daf5; border-radius: 16px; background: linear-gradient(135deg, #fff, #f8f8ff); padding: 0 8px; box-shadow: 0 7px 18px rgba(31,42,86,.055); }
     body.wo-mobile-page .date-control > i,
     body.wo-mobile-page .date-control > svg { width: 30px; height: 30px; margin-left: auto; border-radius: 10px; background: #eef0ff; padding: 7px; color: var(--nexora-brand); }
@@ -356,7 +361,8 @@
     .custom-service-input:focus { border-color: var(--nexora-brand); box-shadow: 0 0 0 3px rgba(70,72,216,.1); }
     .service-picker-card { max-width: 520px; }
     .service-picker-search { position: relative; display: block; margin-bottom: 14px; }
-    .service-picker-search i { position: absolute; top: 50%; left: 12px; width: 15px; height: 15px; color: var(--nexora-subtle); transform: translateY(-50%); pointer-events: none; }
+    .service-picker-search i,
+    .service-picker-search svg { position: absolute; top: 50%; left: 12px; z-index: 1; width: 15px; height: 15px; color: var(--nexora-subtle); transform: translateY(-50%); pointer-events: none; }
     .service-picker-search input { width: 100%; height: 42px; border: 1px solid var(--nexora-border); border-radius: 10px; outline: 0; background: var(--nexora-surface-muted); padding: 0 12px 0 37px; color: var(--nexora-text); font-size: 12px; }
     .service-picker-search input:focus { border-color: var(--nexora-brand); box-shadow: 0 0 0 3px rgba(70,72,216,.1); }
     .service-picker-list { max-height: min(52vh, 430px); overflow-y: auto; padding-right: 3px; }
@@ -424,7 +430,7 @@
             </div>
 
             <div class="filter-bar">
-              <div class="date-control"><button class="date-step" type="button" data-date-step="-1" aria-label="Previous day"><i data-lucide="chevron-left" aria-hidden="true"></i></button><i data-lucide="calendar-days" aria-hidden="true"></i><label for="work-date" data-date-label>Today</label><input class="date-input" id="work-date" type="date" data-date-filter><button class="date-step" type="button" data-date-step="1" aria-label="Next day"><i data-lucide="chevron-right" aria-hidden="true"></i></button></div>
+              <div class="date-toolbar"><div class="date-control"><button class="date-step" type="button" data-date-step="-1" aria-label="Previous day"><i data-lucide="chevron-left" aria-hidden="true"></i></button><i data-lucide="calendar-days" aria-hidden="true"></i><label for="work-date" data-date-label>Today</label><input class="date-input" id="work-date" type="date" data-date-filter><button class="date-step" type="button" data-date-step="1" aria-label="Next day"><i data-lucide="chevron-right" aria-hidden="true"></i></button></div><button class="date-today-button" type="button" data-date-today>Today</button></div>
               <div class="status-tabs" role="tablist" aria-label="Filter by status">
                 <button class="status-tab is-active" type="button" role="tab" aria-selected="true" data-status-filter="assigned"><span>Assigned</span><span class="status-count" data-status-count="assigned">0</span></button>
                 <button class="status-tab" type="button" role="tab" aria-selected="false" data-status-filter="in-service"><span>In Service</span><span class="status-count" data-status-count="in-service">0</span></button>
@@ -435,7 +441,7 @@
             <div class="orders-layout">
               <section class="orders-panel" aria-label="Assigned work orders">
                 <div class="featured-ticket-slot" data-featured-ticket hidden></div>
-                <div class="orders-panel-head"><h2 data-list-title>Up next</h2><button class="view-calendar-button" type="button" data-view-calendar>View calendar</button><span class="orders-count" data-orders-count hidden>0</span></div>
+                <div class="orders-panel-head"><h2 data-list-title>Up next</h2><a class="view-calendar-button" href="pos-calendar.html" data-view-calendar>View calendar</a><span class="orders-count" data-orders-count hidden>0</span></div>
                 <div class="orders-list" data-orders-list></div>
               </section>
               <aside class="detail-panel" aria-live="polite" data-detail-panel></aside>
@@ -777,6 +783,7 @@
         var activeDate = new Date(currentDate + 'T12:00:00');
         document.querySelector('[data-date-label]').textContent = currentDate === TODAY ? 'Today' : activeDate.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         dateFilterEl.value = currentDate;
+        document.querySelector('[data-view-calendar]').href = 'pos-calendar.html?date=' + encodeURIComponent(currentDate) + '&salon=' + encodeURIComponent(currentSalonId);
         renderSummary();
         renderList();
         renderDetail();
@@ -1042,11 +1049,10 @@
       });
       document.querySelector('[data-change-salon]').addEventListener('click', showSalonGate);
       document.querySelector('[data-change-salon-inline]').addEventListener('click', showSalonGate);
-      document.querySelector('[data-view-calendar]').addEventListener('click', function () {
-        dateFilterEl.focus();
-        if (typeof dateFilterEl.showPicker === 'function') {
-          try { dateFilterEl.showPicker(); } catch (error) { /* Keep the focused native date input as the fallback. */ }
-        }
+      document.querySelector('[data-date-today]').addEventListener('click', function () {
+        currentDate = TODAY;
+        selectedTicketId = '';
+        renderWorkspace();
       });
       dateFilterEl.addEventListener('change', function () { currentDate = dateFilterEl.value || TODAY; selectedTicketId = ''; renderWorkspace(); });
       document.querySelector('.date-control').addEventListener('click', function (event) {
@@ -1144,8 +1150,20 @@
       renderSalonOptions();
       loadServiceCatalog();
       var requestedSalon = '';
-      try { requestedSalon = new URLSearchParams(window.location.search).get('salon') || ''; } catch (error) { requestedSalon = ''; }
-      if (salonById(requestedSalon)) openSalon(requestedSalon);
+      var requestedTicket = '';
+      try {
+        var requestedParams = new URLSearchParams(window.location.search);
+        requestedSalon = requestedParams.get('salon') || '';
+        requestedTicket = requestedParams.get('ticket') || '';
+      } catch (error) {
+        requestedSalon = '';
+        requestedTicket = '';
+      }
+      if (salonById(requestedSalon)) {
+        openSalon(requestedSalon);
+        var linkedTicket = ticketById(requestedTicket);
+        if (linkedTicket && linkedTicket.salonId === requestedSalon) openTicketDetail(requestedTicket);
+      }
     })();
   </script>
 </body>
