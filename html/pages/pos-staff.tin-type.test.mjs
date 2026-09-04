@@ -72,6 +72,28 @@ function click(window, selector) {
   return element;
 }
 
+test('opens the new technician modal automatically on page load', () => {
+  const { dom, window } = loadPage();
+  const modal = window.document.querySelector('[data-tech-modal]');
+
+  assert.ok(modal, 'Technician modal must exist');
+  assert.equal(modal.hidden, false);
+  assert.equal(modal.dataset.techMode, 'create');
+  assert.equal(window.document.body.style.overflow, 'hidden');
+
+  dom.window.close();
+});
+
+test('keeps the Tax Filing section hidden in the technician modal', () => {
+  const { dom, window } = loadPage();
+  const taxSection = window.document.querySelector('[data-tech-tax-section]');
+
+  assert.ok(taxSection, 'Tax Filing section must remain available for technician data');
+  assert.equal(taxSection.hidden, true);
+
+  dom.window.close();
+});
+
 test('Tax Filing starts with one optional SSN input controlled by an accessible TIN type radio group', () => {
   const { dom, window } = loadPage();
   const { document } = window;

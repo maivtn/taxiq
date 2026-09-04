@@ -329,11 +329,6 @@
       line-height: 1.45;
     }
 
-    .tech-tin-intro {
-      flex: 1 1 100%;
-      margin: 0;
-    }
-
     .tech-tin-fieldset {
       min-width: 0;
       flex: 0 0 auto;
@@ -565,10 +560,9 @@
                 </div>
               </div>
 
-              <div class="tech-modal-section" data-tech-tax-section>
+              <div class="tech-modal-section" data-tech-tax-section hidden>
                 <div class="tech-modal-section-title"><i class="bi bi-file-earmark-lock" aria-hidden="true"></i>Tax Filing</div>
                 <div class="tech-modal-grid">
-                  <p class="settings-help tech-tin-intro">The TIN should match the name entered on line 1 to help avoid backup withholding.</p>
                   <div class="tech-tin-row" data-tech-tin-row>
                     <fieldset class="tech-tin-fieldset">
                       <legend class="settings-label">TIN type</legend>
@@ -1230,6 +1224,7 @@
     syncTechTinField();
     renderStaffRoster();
     loadTechnicianServiceCatalog();
+    openNewTechModal();
 
     document.querySelectorAll('[data-tech-day-off]').forEach(function(dayOff) {
       syncTechDayOffRow(dayOff);
