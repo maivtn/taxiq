@@ -159,16 +159,16 @@
     .service-head-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 6px; }
     .service-add-button { display: inline-flex; min-height: 30px; align-items: center; justify-content: center; gap: 4px; border: 1px solid #cfd5e3; border-radius: 8px; background: #fff; padding: 0 9px; color: var(--nexora-brand); font-size: 11px; font-weight: 850; cursor: pointer; }
     .service-add-button:hover { border-color: var(--nexora-brand); background: #f7f7ff; }
-    .service-table-head { display: grid; grid-template-columns: minmax(0, 1fr) 60px 44px 92px; gap: 8px; padding: 8px 0; color: var(--nexora-subtle); font-size: 11px; font-weight: 800; }
+    .service-table-head { display: grid; grid-template-columns: minmax(0, 1fr) 60px 44px 128px; gap: 8px; padding: 8px 0; color: var(--nexora-subtle); font-size: 11px; font-weight: 800; }
     .service-table-head span:not(:first-child) { text-align: right; }
     .services { display: flex; flex-direction: column; gap: 0; border-top: 1px solid var(--nexora-rule); }
     .service-card { border-bottom: 1px solid var(--nexora-rule); padding: 12px 0; }
-    .service-row { display: grid; grid-template-columns: minmax(0, 1fr) 60px 44px 92px; align-items: center; gap: 8px; }
+    .service-row { display: grid; grid-template-columns: minmax(0, 1fr) 60px 44px 128px; align-items: center; gap: 8px; }
     .service-name { color: var(--nexora-text); font-size: 12px; font-weight: 800; }
     .service-sub { margin-top: 3px; color: var(--nexora-subtle); font-size: 11px; font-weight: 600; }
     .service-price { color: var(--nexora-text); font-size: 11px; font-weight: 850; text-align: right; white-space: nowrap; }
     .service-time { color: var(--nexora-muted); font-size: 11px; font-weight: 700; text-align: right; white-space: nowrap; }
-    .service-action { text-align: right; }
+    .service-action { display: flex; justify-content: flex-end; gap: 5px; }
     .approval-pill { display: inline-flex; height: 19px; align-items: center; border-radius: 999px; margin-left: 5px; padding: 0 7px; font-size: 11px; font-weight: 850; text-transform: uppercase; vertical-align: 1px; }
     .approval-pill.is-pending { background: #fff3d6; color: #ad5a00; }
     .approval-pill.is-approved { background: #e5f9f0; color: #008655; }
@@ -349,8 +349,11 @@
     body.wo-mobile-page .customer-phone { display: none; }
     body.wo-mobile-page .action-btn.is-primary { flex-basis: 100%; order: -1; }
     .service-name { display: flex; align-items: center; gap: 5px; }
-    .service-edit-button { display: inline-flex; min-height: 28px; align-items: center; justify-content: center; gap: 4px; border: 0; border-radius: 6px; background: transparent; padding: 0 5px; color: var(--nexora-brand); font-size: 11px; font-weight: 850; white-space: nowrap; cursor: pointer; }
-    .service-edit-button:hover { background: #eef0ff; }
+    .service-edit-button,
+    .service-remove-button { display: inline-flex; min-height: 30px; align-items: center; justify-content: center; border: 1px solid #c9cafa; border-radius: 8px; background: #f6f6ff; padding: 0 9px; color: var(--nexora-brand); font-size: 11px; font-weight: 850; white-space: nowrap; cursor: pointer; }
+    .service-edit-button:hover { border-color: var(--nexora-brand); background: #ececff; }
+    .service-remove-button { border-color: #f3c9cd; background: #fff7f7; color: #c9434f; }
+    .service-remove-button:hover { border-color: #e57d86; background: #ffeded; }
     .custom-service-fields { display: grid; grid-template-columns: 1fr 1fr; gap: 13px; }
     .custom-service-field:first-child { grid-column: 1 / -1; }
     .custom-service-field label { display: block; margin-bottom: 6px; color: var(--nexora-text); font-size: 11px; font-weight: 800; }
@@ -745,7 +748,7 @@
         return '<section class="customer-approval" data-customer-approval>' +
           '<div class="customer-approval-head"><strong class="customer-approval-title"><i data-lucide="clock-3" aria-hidden="true"></i>Pending Approval</strong><button class="customer-approval-cancel" type="button" data-cancel-service-approval="' + esc(ticket.id) + '">Cancel</button></div>' +
           '<p class="customer-approval-copy">New services are waiting for customer approval.</p>' +
-          '<div class="customer-approval-services">' + services.map(function (service) { var label = service.previousService ? service.previousService.name + ' → ' + service.name : service.name; return '<span class="customer-approval-chip"><span class="customer-approval-chip-name">' + esc(label) + '</span><span class="customer-approval-chip-price">' + money(service.price) + '</span></span>'; }).join('') + '</div>' +
+          '<div class="customer-approval-services">' + services.map(function (service) { var label = service.requestType === 'remove' ? 'Remove · ' + service.previousService.name : service.previousService ? service.previousService.name + ' → ' + service.name : service.name; return '<span class="customer-approval-chip"><span class="customer-approval-chip-name">' + esc(label) + '</span><span class="customer-approval-chip-price">' + money(service.price) + '</span></span>'; }).join('') + '</div>' +
           '<div class="customer-approval-demo">Demo only · enter <strong>' + esc(lastFour) + '</strong></div>' +
           '<p class="customer-approval-help">Customer enters the last 4 phone digits to approve the added service.</p>' +
           '<div class="customer-approval-form"><input class="customer-approval-input" type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="Last 4 digits" aria-label="Last 4 phone digits" data-approval-code><button class="customer-approval-button" type="button" data-approve-services="' + esc(ticket.id) + '"><i data-lucide="shield-check" aria-hidden="true"></i>Approve</button></div>' +
@@ -753,10 +756,10 @@
         '</section>';
       }
 
-      function renderService(ticket, service, serviceIndex) {
-        var canEdit = ticket.status !== 'completed';
-        var editButton = canEdit ? '<button class="service-edit-button" type="button" data-edit-service="' + esc(ticket.id) + '" data-service-index="' + serviceIndex + '" aria-label="Change ' + esc(service.name) + '">Change service</button>' : '';
-        return '<div class="service-card"><div class="service-row"><div class="service-name"><span>' + esc(service.name) + approvalPill(service.approval) + '</span></div><span class="service-price">' + money(service.price) + '</span><span class="service-time">' + service.duration + ' min</span><span class="service-action">' + editButton + '</span></div></div>';
+      function renderService(ticket, service, serviceIndex, actionsEnabled) {
+        var canEdit = ticket.status !== 'completed' && actionsEnabled !== false;
+        var actions = canEdit ? '<button class="service-edit-button" type="button" data-edit-service="' + esc(ticket.id) + '" data-service-index="' + serviceIndex + '" aria-label="Change ' + esc(service.name) + '">Change</button><button class="service-remove-button" type="button" data-remove-service="' + esc(ticket.id) + '" data-service-index="' + serviceIndex + '" aria-label="Remove ' + esc(service.name) + '">Remove</button>' : '';
+        return '<div class="service-card"><div class="service-row"><div class="service-name"><span>' + esc(service.name) + approvalPill(service.approval) + '</span></div><span class="service-price">' + money(service.price) + '</span><span class="service-time">' + service.duration + ' min</span><span class="service-action">' + actions + '</span></div></div>';
       }
 
       function renderDetail() {
@@ -780,7 +783,7 @@
         detailPanelEl.innerHTML = '<div class="detail-head"><div class="detail-head-main"><button class="detail-back" type="button" data-detail-back aria-label="Back to work orders"><i data-lucide="arrow-left" aria-hidden="true"></i></button><div><h2>Work Order</h2><div class="detail-code">' + esc(ticket.id) + '</div></div></div><span class="status-pill ' + statusClass(ticket.status) + '">' + statusLabel(ticket.status) + '</span></div>' +
           '<div class="detail-body"><div class="detail-customer"><span class="detail-customer-avatar">' + initials(ticket.customer) + '</span><div class="detail-customer-copy"><div class="detail-customer-label">Customer</div><div class="detail-customer-name">' + esc(ticket.customer) + '</div><div class="detail-customer-meta"><span><i data-lucide="panel-top" aria-hidden="true"></i>Station ' + esc(ticket.station) + '</span><span><i data-lucide="radio" aria-hidden="true"></i>Beeper B' + esc(ticket.beeper) + '</span><span class="customer-phone">' + esc(ticket.phone) + '</span></div></div></div>' +
           '<div class="section-head"><h3>Services</h3>' + serviceButtons + '</div><div class="service-table-head"><span>Service</span><span>Price</span><span>Time</span><span></span></div>' +
-          '<div class="services">' + ticket.services.map(function (service, index) { return { service: service, index: index }; }).filter(function (item) { return item.service.approval !== 'pending' || item.service.previousService; }).map(function (item) { return renderService(ticket, item.service.approval === 'pending' ? item.service.previousService : item.service, item.index); }).join('') + '</div><div class="ticket-total"><span>Service total</span><strong>' + money(serviceTotal(ticket)) + '</strong></div>' + approvalHtml + detailTailHtml + '</div>';
+          '<div class="services">' + ticket.services.map(function (service, index) { return { service: service, index: index }; }).filter(function (item) { return item.service.approval !== 'pending' || item.service.previousService; }).map(function (item) { return renderService(ticket, item.service.approval === 'pending' ? item.service.previousService : item.service, item.index, item.service.approval !== 'pending'); }).join('') + '</div><div class="ticket-total"><span>Service total</span><strong>' + money(serviceTotal(ticket)) + '</strong></div>' + approvalHtml + detailTailHtml + '</div>';
       }
 
       function renderWorkspace() {
@@ -914,13 +917,19 @@
           input.focus();
           return;
         }
-        pendingServices(ticket).forEach(function (service) {
-          service.approval = 'approved';
-          delete service.previousService;
-          delete service.requestType;
-        });
+        ticket.services = ticket.services.reduce(function (services, service) {
+          if (service.approval !== 'pending') {
+            services.push(service);
+          } else if (service.requestType !== 'remove') {
+            service.approval = 'approved';
+            delete service.previousService;
+            delete service.requestType;
+            services.push(service);
+          }
+          return services;
+        }, []);
         renderWorkspace();
-        showToast('Customer approved the new service.');
+        showToast('Customer approved the service request.');
       }
 
       function cancelPendingServices(id) {
@@ -1013,6 +1022,24 @@
 
       function openEditService(id, serviceIndex) {
         openServicePicker('edit', id, serviceIndex);
+      }
+
+      function requestRemoveService(id, serviceIndex) {
+        var ticket = ticketById(id);
+        var index = Number(serviceIndex);
+        var existing = ticket && ticket.services[index];
+        if (!ticket || !existing || ticket.status === 'completed' || existing.approval === 'pending') return;
+        ticket.services[index] = {
+          name: existing.name,
+          duration: existing.duration,
+          price: existing.price,
+          approval: 'pending',
+          requestType: 'remove',
+          previousService: Object.assign({}, existing)
+        };
+        selectedTicketId = id;
+        renderWorkspace();
+        showToast('Service removal sent to customer for approval.');
       }
 
       function closeServicePicker() {
@@ -1126,6 +1153,7 @@
         var serviceButton = event.target.closest('[data-request-service]');
         var customServiceButton = event.target.closest('[data-request-custom-service]');
         var editButton = event.target.closest('[data-edit-service]');
+        var removeButton = event.target.closest('[data-remove-service]');
         var approveServicesButton = event.target.closest('[data-approve-services]');
         var cancelApprovalButton = event.target.closest('[data-cancel-service-approval]');
         if (backButton) {
@@ -1135,6 +1163,7 @@
         else if (completeButton) openCompleteModal(completeButton.getAttribute('data-complete-ticket'));
         else if (approveServicesButton) approvePendingServices(approveServicesButton.getAttribute('data-approve-services'));
         else if (cancelApprovalButton) cancelPendingServices(cancelApprovalButton.getAttribute('data-cancel-service-approval'));
+        else if (removeButton) requestRemoveService(removeButton.getAttribute('data-remove-service'), removeButton.getAttribute('data-service-index'));
         else if (editButton) openEditService(editButton.getAttribute('data-edit-service'), editButton.getAttribute('data-service-index'));
         else if (serviceButton) requestService(serviceButton.getAttribute('data-request-service'));
         else if (customServiceButton) openCustomService(customServiceButton.getAttribute('data-request-custom-service'));

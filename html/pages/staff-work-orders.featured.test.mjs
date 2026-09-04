@@ -265,6 +265,71 @@ test('cancelling newly added services removes them without rejected rows', async
   dom.window.close();
 });
 
+test('service rows expose Change and Remove as distinct buttons', () => {
+  const { dom, window } = loadPage();
+
+  click(window, '[data-select-salon="golden"]');
+  click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+  const changeButton = window.document.querySelector('[data-edit-service="WO-1051"]');
+  const removeButton = window.document.querySelector('[data-remove-service="WO-1051"]');
+
+  assert.equal(changeButton?.tagName, 'BUTTON');
+  assert.equal(removeButton?.tagName, 'BUTTON');
+  assert.equal(window.getComputedStyle(changeButton).borderStyle, 'solid');
+  assert.equal(window.getComputedStyle(removeButton).borderStyle, 'solid');
+
+  dom.window.close();
+});
+
+test('requesting service removal keeps the service and current total while approval is pending', () => {
+  const { dom, window } = loadPage();
+
+  click(window, '[data-select-salon="golden"]');
+  click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+  click(window, '[data-remove-service="WO-1051"]');
+
+  assert.match(window.document.querySelector('[data-detail-panel] .service-name')?.textContent || '', /Acrylic Full Set/);
+  assert.equal(window.document.querySelector('[data-detail-panel] .ticket-total strong')?.textContent.trim(), '$68.00');
+  assert.match(window.document.querySelector('[data-customer-approval] .customer-approval-chip-name')?.textContent || '', /Remove.*Acrylic Full Set/);
+  assert.equal(window.document.querySelector('[data-edit-service="WO-1051"]'), null);
+  assert.equal(window.document.querySelector('[data-remove-service="WO-1051"]'), null);
+
+  dom.window.close();
+});
+
+test('cancelling service removal restores its actions without rejected rows', () => {
+  const { dom, window } = loadPage();
+
+  click(window, '[data-select-salon="golden"]');
+  click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+  click(window, '[data-remove-service="WO-1051"]');
+  click(window, '[data-cancel-service-approval="WO-1051"]');
+
+  assert.match(window.document.querySelector('[data-detail-panel] .service-name')?.textContent || '', /Acrylic Full Set/);
+  assert.ok(window.document.querySelector('[data-edit-service="WO-1051"]'));
+  assert.ok(window.document.querySelector('[data-remove-service="WO-1051"]'));
+  assert.equal(window.document.querySelector('[data-customer-approval]'), null);
+  assert.equal(window.document.querySelectorAll('[data-detail-panel] .approval-pill.is-rejected').length, 0);
+
+  dom.window.close();
+});
+
+test('approving service removal deletes the service', () => {
+  const { dom, window } = loadPage();
+
+  click(window, '[data-select-salon="golden"]');
+  click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+  click(window, '[data-remove-service="WO-1051"]');
+  const approvalCode = window.document.querySelector('[data-approval-code]');
+  approvalCode.value = '0127';
+  click(window, '[data-approve-services="WO-1051"]');
+
+  assert.equal(window.document.querySelectorAll('[data-detail-panel] .service-card').length, 0);
+  assert.equal(window.document.querySelector('[data-detail-panel] .ticket-total strong')?.textContent.trim(), '$0.00');
+
+  dom.window.close();
+});
+
 test('service categories collapse so opening one closes the previous category', async () => {
   const { dom, window } = loadPage(SERVICE_CATALOG);
   await openAddServiceModal(window);
