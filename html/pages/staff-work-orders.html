@@ -70,22 +70,45 @@
     .date-step i { width: 15px; height: 15px; }
     .date-input { height: 36px; border: 0; border-radius: 8px; outline: 0; background: var(--nexora-surface-muted); padding: 0 9px; color: var(--nexora-text); font-size: 12px; font-weight: 700; cursor: pointer; }
     .date-input:focus { box-shadow: 0 0 0 2px rgba(70,72,216,.18); }
-    .status-tabs { display: flex; gap: 4px; overflow-x: auto; border-radius: 10px; background: var(--nexora-surface-muted); padding: 4px; scrollbar-width: none; }
+    .status-tabs { display: flex; gap: 8px; overflow-x: auto; padding: 1px; scrollbar-width: none; }
     .status-tabs::-webkit-scrollbar { display: none; }
-    .status-tab { height: 30px; flex: 0 0 auto; border: 0; border-radius: 7px; background: transparent; padding: 0 12px; color: var(--nexora-muted); font-size: 11px; font-weight: 750; cursor: pointer; white-space: nowrap; }
-    .status-tab.is-active { background: #fff; color: var(--nexora-brand); box-shadow: 0 2px 7px rgba(15,23,42,.10); }
+    .status-tab { display: inline-flex; min-height: 36px; flex: 0 0 auto; align-items: center; gap: 7px; border: 1px solid var(--nexora-border); border-radius: 999px; background: #fff; padding: 0 12px; color: var(--nexora-muted); font-size: 11px; font-weight: 800; cursor: pointer; white-space: nowrap; }
+    .status-tab[data-status-filter="assigned"] { border-color: #d8d4ff; background: #f2f0ff; color: #5146c9; }
+    .status-tab[data-status-filter="in-service"] { border-color: #bdebf5; background: #edfbfe; color: #087b96; }
+    .status-tab[data-status-filter="completed"] { border-color: #c8ecd9; background: #eefaf4; color: #087b55; }
+    .status-tab[data-status-filter="assigned"].is-active { border-color: #8e84ee; background: #e9e6ff; }
+    .status-tab[data-status-filter="in-service"].is-active { border-color: #62cee3; background: #dff8fc; }
+    .status-tab[data-status-filter="completed"].is-active { border-color: #74d2a5; background: #e0f7eb; }
+    .status-tab.is-active { box-shadow: 0 7px 16px rgba(70,72,216,.1); }
+    .status-count { display: inline-flex; min-width: 21px; height: 21px; align-items: center; justify-content: center; border-radius: 999px; background: var(--nexora-surface-muted); padding: 0 6px; color: var(--nexora-text); font-size: 11px; font-weight: 900; }
+    .status-tab[data-status-filter="assigned"] .status-count { background: #dfdcff; color: #5146c9; }
+    .status-tab[data-status-filter="in-service"] .status-count { background: #d3f3f9; color: #087b96; }
+    .status-tab[data-status-filter="completed"] .status-count { background: #d8f2e5; color: #087b55; }
 
     .orders-layout { display: grid; grid-template-columns: minmax(320px, 430px) minmax(0, 1fr); gap: 14px; align-items: start; }
     .orders-panel, .detail-panel { border: 1px solid var(--nexora-border); border-radius: 16px; background: #fff; box-shadow: var(--nexora-card-shadow); }
     .orders-panel-head { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-bottom: 1px solid var(--nexora-rule); padding: 15px 16px; }
     .orders-panel-head h2 { margin: 0; color: var(--nexora-text); font-size: 14px; font-weight: 850; }
     .orders-count { display: inline-flex; min-width: 24px; height: 24px; align-items: center; justify-content: center; border-radius: 999px; background: #eef0ff; padding: 0 8px; color: var(--nexora-brand); font-size: 11px; font-weight: 850; }
+    .view-calendar-button { display: inline-flex; min-height: 32px; align-items: center; justify-content: center; border: 1px solid var(--nexora-border); border-radius: 999px; background: #fff; padding: 0 12px; color: var(--nexora-text); font-size: 11px; font-weight: 850; cursor: pointer; box-shadow: 0 3px 10px rgba(15,23,42,.05); }
+    .view-calendar-button:hover { border-color: var(--nexora-brand); color: var(--nexora-brand); }
+    .featured-ticket-slot { margin-bottom: 18px; }
+    .featured-ticket-card { overflow: hidden; border-radius: 22px; background: linear-gradient(135deg, #3245b8 0%, #6738f2 100%); padding: 18px; color: #fff; box-shadow: 0 18px 34px rgba(70,72,216,.24); }
+    .featured-ticket-top { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .featured-ticket-eyebrow { font-size: 11px; font-weight: 850; letter-spacing: .04em; text-transform: uppercase; }
+    .featured-ticket-status { display: inline-flex; min-height: 24px; align-items: center; border: 1px solid rgba(255,255,255,.24); border-radius: 999px; background: rgba(255,255,255,.14); padding: 0 9px; font-size: 11px; font-weight: 850; }
+    .featured-ticket-card h2 { margin: 10px 0 0; color: #fff; font-size: 19px; font-weight: 900; letter-spacing: -.02em; }
+    .featured-ticket-service { margin: 5px 0 0; color: rgba(255,255,255,.82); font-size: 12px; font-weight: 650; }
+    .featured-ticket-note { margin: 15px 0 13px; border: 1px solid rgba(255,255,255,.18); border-radius: 12px; background: rgba(255,255,255,.1); padding: 11px 12px; color: #fff; font-size: 11px; font-weight: 650; line-height: 1.45; }
+    .featured-ticket-button { width: 100%; min-height: 40px; border: 0; border-radius: 12px; background: #fff; color: var(--nexora-brand); font-size: 12px; font-weight: 900; cursor: pointer; box-shadow: 0 8px 18px rgba(24,27,90,.16); }
     .orders-list { display: flex; max-height: 650px; flex-direction: column; gap: 8px; overflow-y: auto; padding: 10px; }
     .order-card { width: 100%; border: 1px solid var(--nexora-border); border-radius: 12px; background: #fff; padding: 13px; text-align: left; cursor: pointer; transition: border-color .16s, background .16s, box-shadow .16s; }
     .order-card:hover { border-color: rgba(70,72,216,.45); }
     .order-card.is-active { border-color: var(--nexora-brand); background: #fafaff; box-shadow: inset 3px 0 0 var(--nexora-brand); }
-    .order-card-top { display: grid; grid-template-columns: 58px minmax(0, 1fr) auto 16px; align-items: start; gap: 10px; }
-    .order-time { color: var(--nexora-brand); font-size: 11px; font-weight: 900; }
+    .order-card-top { display: grid; grid-template-columns: 54px minmax(0, 1fr) auto; align-items: center; gap: 10px; }
+    .order-time { display: flex; flex-direction: column; color: var(--nexora-text); font-size: 11px; font-weight: 900; }
+    .order-time-value { font-size: 14px; line-height: 1.1; }
+    .order-time-period { margin-top: 4px; color: var(--nexora-subtle); font-size: 11px; font-weight: 800; }
     .order-card-copy { min-width: 0; }
     .order-chevron { width: 16px; height: 16px; align-self: center; color: #91a0b8; }
     .ticket-code { color: var(--nexora-brand); font-size: 11px; font-weight: 850; letter-spacing: .045em; text-transform: uppercase; }
@@ -239,21 +262,21 @@
       .workspace-ticket-badge { display: inline-flex; }
       .summary-row { display: none; }
       .filter-bar { align-items: stretch; flex-direction: column; border: 0; background: transparent; padding: 0; box-shadow: none; }
-      .date-control { width: 100%; min-height: 48px; justify-content: space-between; border: 1px solid var(--nexora-border); border-radius: 12px; background: #fff; padding: 0 7px; }
+      .date-control { width: 100%; min-height: 52px; justify-content: space-between; border: 1px solid #d6daf5; border-radius: 16px; background: linear-gradient(135deg, #fff, #f8f8ff); padding: 0 8px; box-shadow: 0 7px 18px rgba(31,42,86,.055); }
       .date-control > i { margin-left: auto; }
       .date-control label { margin-right: auto; color: var(--nexora-text); font-size: 12px; }
       .date-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
-      .status-tabs { width: 100%; border: 1px solid var(--nexora-border); border-radius: 12px; background: #fff; padding: 4px; }
-      .status-tab { min-height: 36px; flex: 1 0 auto; padding: 0 9px; font-size: 11px; }
-      .status-tab.is-active { background: var(--nexora-brand); color: #fff; }
+      .status-tabs { width: 100%; }
+      .status-tab { min-height: 38px; flex: 0 0 auto; padding: 0 12px; font-size: 11px; }
+      .status-tab.is-active { box-shadow: 0 7px 16px rgba(70,72,216,.1); }
       .orders-panel { border: 0; background: transparent; box-shadow: none; }
-      .orders-panel-head { border: 0; padding: 7px 2px 9px; }
+      .orders-panel-head { border: 0; padding: 0 0 11px; }
       .orders-panel-head h2 { color: var(--nexora-muted); font-size: 11px; }
       .orders-count { height: auto; background: transparent; padding: 0; color: var(--nexora-muted); font-size: 11px; }
       .orders-list { max-height: none; gap: 9px; overflow: visible; padding: 0; }
-      .order-card { min-height: 108px; border-radius: 13px; padding: 16px 12px; }
+      .order-card { min-height: 84px; border-radius: 16px; padding: 14px; }
       .order-card.is-active { border-color: var(--nexora-border); background: #fff; box-shadow: none; }
-      .order-card-top { grid-template-columns: 47px minmax(0, 1fr) auto 14px; gap: 8px; }
+      .order-card-top { grid-template-columns: 52px minmax(0, 1fr) auto; gap: 9px; }
       .order-meta { margin-left: 55px; }
       .detail-panel { border: 0; border-radius: 0; box-shadow: none; }
       .detail-customer { padding-top: 8px; }
@@ -290,35 +313,37 @@
     body.wo-mobile-page .workspace-salon-name { border: 0; background: transparent; padding: 0; cursor: pointer; }
     body.wo-mobile-page .workspace-ticket-badge { display: inline-flex; }
     body.wo-mobile-page .summary-row { display: none; }
-    body.wo-mobile-page .filter-bar { align-items: stretch; flex-direction: column; border: 0; background: transparent; padding: 0; box-shadow: none; }
-    body.wo-mobile-page .date-control { width: 100%; min-height: 48px; justify-content: space-between; border: 1px solid #d6dfeb; border-radius: 12px; background: #fff; padding: 0 7px; }
-    body.wo-mobile-page .date-control > i { margin-left: auto; }
-    body.wo-mobile-page .date-control label { margin-right: auto; color: var(--nexora-text); font-size: 12px; }
+    body.wo-mobile-page .filter-bar { align-items: stretch; flex-direction: column; gap: 12px; border: 0; background: transparent; padding: 0; box-shadow: none; }
+    body.wo-mobile-page .date-control { width: 100%; min-height: 54px; justify-content: space-between; border: 1px solid #d6daf5; border-radius: 16px; background: linear-gradient(135deg, #fff, #f8f8ff); padding: 0 8px; box-shadow: 0 7px 18px rgba(31,42,86,.055); }
+    body.wo-mobile-page .date-control > i,
+    body.wo-mobile-page .date-control > svg { width: 30px; height: 30px; margin-left: auto; border-radius: 10px; background: #eef0ff; padding: 7px; color: var(--nexora-brand); }
+    body.wo-mobile-page .date-control label { margin-right: auto; color: var(--nexora-text); font-size: 13px; font-weight: 900; }
+    body.wo-mobile-page .date-step { width: 36px; height: 36px; border-radius: 11px; color: var(--nexora-brand); }
+    body.wo-mobile-page .date-step:hover { background: #eef0ff; }
     body.wo-mobile-page .date-input { position: absolute; width: 1px; height: 1px; opacity: 0; pointer-events: none; }
-    body.wo-mobile-page .status-tabs { width: 100%; border: 1px solid #d6dfeb; border-radius: 12px; background: #fff; padding: 4px; }
-    body.wo-mobile-page .status-tab { min-height: 36px; flex: 1 0 auto; padding: 0 9px; font-size: 11px; }
-    body.wo-mobile-page .status-tab.is-active { background: var(--nexora-brand); color: #fff; }
+    body.wo-mobile-page .status-tabs { width: 100%; gap: 8px; border: 0; background: transparent; padding: 1px; }
+    body.wo-mobile-page .status-tab { min-height: 38px; flex: 0 0 auto; border-radius: 999px; padding: 0 12px; font-size: 11px; }
+    body.wo-mobile-page .status-tab.is-active { box-shadow: 0 7px 16px rgba(70,72,216,.1); }
     body.wo-mobile-page .orders-layout { display: block; }
     body.wo-mobile-page .orders-panel { border: 0; background: transparent; box-shadow: none; }
-    body.wo-mobile-page .orders-panel-head { border: 0; padding: 7px 2px 9px; }
+    body.wo-mobile-page .orders-panel-head { border: 0; padding: 0 0 11px; }
     body.wo-mobile-page .orders-panel-head h2,
     body.wo-mobile-page .orders-count { height: auto; background: transparent; padding: 0; color: #62708a; font-size: 11px; }
     body.wo-mobile-page .orders-list { max-height: none; gap: 9px; overflow: visible; padding: 0; }
-    body.wo-mobile-page .order-card { min-height: 108px; border-radius: 13px; padding: 16px 12px; }
+    body.wo-mobile-page .order-card { min-height: 84px; border-radius: 16px; padding: 14px; box-shadow: 0 8px 20px rgba(15,23,42,.055); }
     body.wo-mobile-page .order-card.is-active { border-color: var(--nexora-border); background: #fff; box-shadow: none; }
-    body.wo-mobile-page .order-card-top { grid-template-columns: 47px minmax(0, 1fr) auto 14px; gap: 8px; }
-    body.wo-mobile-page .order-meta { margin-left: 55px; }
-    body.wo-mobile-page .detail-panel { position: static; display: none; border: 0; border-radius: 0; box-shadow: none; }
+    body.wo-mobile-page .order-card-top { grid-template-columns: 52px minmax(0, 1fr) auto; gap: 9px; }
+    body.wo-mobile-page .detail-panel { position: static; display: none; min-height: 0; overflow: visible; border: 0; border-radius: 0; background: transparent; box-shadow: none; }
     body.wo-mobile-page .workspace-section.is-detail-mode .workspace-head,
     body.wo-mobile-page .workspace-section.is-detail-mode .summary-row,
     body.wo-mobile-page .workspace-section.is-detail-mode .filter-bar,
     body.wo-mobile-page .workspace-section.is-detail-mode .orders-panel { display: none; }
     body.wo-mobile-page .workspace-section.is-detail-mode .detail-panel { display: block; }
     body.wo-mobile-page .detail-back { display: inline-flex; }
-    body.wo-mobile-page.wo-detail-open .work-orders-page { background: #fff; padding: 0 0 48px; }
+    body.wo-mobile-page.wo-detail-open .work-orders-page { background: var(--nexora-canvas); padding: 14px 14px 48px; }
     body.wo-mobile-page.wo-detail-open .header { display: flex !important; }
-    body.wo-mobile-page .detail-head { padding: 12px 18px; }
-    body.wo-mobile-page .detail-body { padding: 18px; }
+    body.wo-mobile-page .detail-head { margin-bottom: 12px; border: 1px solid var(--nexora-border); border-radius: 15px; background: #fff; padding: 13px 16px; box-shadow: 0 8px 22px rgba(15,23,42,.055); }
+    body.wo-mobile-page .detail-body { border: 1px solid var(--nexora-border); border-radius: 17px; background: #fff; padding: 18px; box-shadow: 0 10px 26px rgba(15,23,42,.06); }
     body.wo-mobile-page .customer-phone { display: none; }
     body.wo-mobile-page .action-btn.is-primary { flex-basis: 100%; order: -1; }
     .service-name { display: flex; align-items: center; gap: 5px; }
@@ -401,16 +426,16 @@
             <div class="filter-bar">
               <div class="date-control"><button class="date-step" type="button" data-date-step="-1" aria-label="Previous day"><i data-lucide="chevron-left" aria-hidden="true"></i></button><i data-lucide="calendar-days" aria-hidden="true"></i><label for="work-date" data-date-label>Today</label><input class="date-input" id="work-date" type="date" data-date-filter><button class="date-step" type="button" data-date-step="1" aria-label="Next day"><i data-lucide="chevron-right" aria-hidden="true"></i></button></div>
               <div class="status-tabs" role="tablist" aria-label="Filter by status">
-                <button class="status-tab" type="button" role="tab" aria-selected="false" data-status-filter="all">All</button>
-                <button class="status-tab is-active" type="button" role="tab" aria-selected="true" data-status-filter="assigned">Assigned</button>
-                <button class="status-tab" type="button" role="tab" aria-selected="false" data-status-filter="in-service">In Service</button>
-                <button class="status-tab" type="button" role="tab" aria-selected="false" data-status-filter="completed">Completed</button>
+                <button class="status-tab is-active" type="button" role="tab" aria-selected="true" data-status-filter="assigned"><span>Assigned</span><span class="status-count" data-status-count="assigned">0</span></button>
+                <button class="status-tab" type="button" role="tab" aria-selected="false" data-status-filter="in-service"><span>In Service</span><span class="status-count" data-status-count="in-service">0</span></button>
+                <button class="status-tab" type="button" role="tab" aria-selected="false" data-status-filter="completed"><span>Completed</span><span class="status-count" data-status-count="completed">0</span></button>
               </div>
             </div>
 
             <div class="orders-layout">
               <section class="orders-panel" aria-label="Assigned work orders">
-                <div class="orders-panel-head"><h2 data-list-title>Assigned today</h2><span class="orders-count" data-orders-count>0</span></div>
+                <div class="featured-ticket-slot" data-featured-ticket hidden></div>
+                <div class="orders-panel-head"><h2 data-list-title>Up next</h2><button class="view-calendar-button" type="button" data-view-calendar>View calendar</button><span class="orders-count" data-orders-count hidden>0</span></div>
                 <div class="orders-list" data-orders-list></div>
               </section>
               <aside class="detail-panel" aria-live="polite" data-detail-panel></aside>
@@ -498,11 +523,11 @@
 
       var TODAY = dateOffset(0);
       var TICKETS = [
-        { id: 'WO-1048', salonId: 'golden', date: TODAY, time: '09:30', status: 'assigned', customer: 'Emma Williams', phone: '(305) 555-0184', station: '08', beeper: '21', note: 'Sensitive skin. Please use the fragrance-free lotion.', services: [
+        { id: 'WO-1048', salonId: 'golden', date: TODAY, time: '09:30', assignedAt: '2026-09-04T08:15:00-04:00', status: 'assigned', customer: 'Emma Williams', phone: '(305) 555-0184', station: '08', beeper: '21', note: 'Sensitive skin. Please use the fragrance-free lotion.', services: [
           { name: 'Deluxe Pedicure', duration: 45, price: 55, addons: [] },
           { name: 'Classic Manicure', duration: 30, price: 28, addons: [] }
         ] },
-        { id: 'WO-1051', salonId: 'golden', date: TODAY, time: '10:15', status: 'assigned', customer: 'Sophia Martinez', phone: '(305) 555-0127', station: '08', beeper: '24', note: 'Client prefers a short almond shape and neutral colors.', services: [
+        { id: 'WO-1051', salonId: 'golden', date: TODAY, time: '10:15', assignedAt: '2026-09-04T09:05:00-04:00', status: 'assigned', customer: 'Sophia Martinez', phone: '(305) 555-0127', station: '08', beeper: '24', note: 'Client prefers a short almond shape and neutral colors.', services: [
           { name: 'Acrylic Full Set', duration: 65, price: 68, addons: [{ name: 'French Design', price: 12, approval: 'pending' }] }
         ] },
         { id: 'WO-1042', salonId: 'golden', date: TODAY, time: '08:45', status: 'in-service', customer: 'Olivia Brown', phone: '(786) 555-0145', station: '08', beeper: '17', note: 'Remove existing gel before the new color.', services: [
@@ -514,7 +539,7 @@
         { id: 'WO-1025', salonId: 'golden', date: dateOffset(-1), time: '15:30', status: 'completed', customer: 'Mia Davis', phone: '(305) 555-0109', station: '08', beeper: '34', note: 'Regular customer.', completionNote: 'Service completed as requested.', services: [
           { name: 'Classic Pedicure', duration: 35, price: 38, addons: [] }
         ] },
-        { id: 'WO-2074', salonId: 'elite', date: TODAY, time: '11:00', status: 'assigned', customer: 'Isabella Moore', phone: '(713) 555-0133', station: '04', beeper: '09', note: 'First visit. Confirm length before shaping.', services: [
+        { id: 'WO-2074', salonId: 'elite', date: TODAY, time: '11:00', assignedAt: '2026-09-04T10:30:00-05:00', status: 'assigned', customer: 'Isabella Moore', phone: '(713) 555-0133', station: '04', beeper: '09', note: 'First visit. Confirm length before shaping.', services: [
           { name: 'Dip Powder', duration: 55, price: 52, addons: [{ name: 'Nail Art', price: 10, approval: 'approved' }] }
         ] },
         { id: 'WO-2070', salonId: 'elite', date: TODAY, time: '09:15', status: 'in-service', customer: 'Amelia Wilson', phone: '(832) 555-0198', station: '04', beeper: '05', note: 'Avoid cutting cuticles too close.', services: [
@@ -539,6 +564,7 @@
       var gateEl = document.querySelector('[data-salon-gate]');
       var workspaceEl = document.querySelector('[data-workspace]');
       var salonOptionsEl = document.querySelector('[data-salon-options]');
+      var featuredTicketEl = document.querySelector('[data-featured-ticket]');
       var ordersListEl = document.querySelector('[data-orders-list]');
       var detailPanelEl = document.querySelector('[data-detail-panel]');
       var dateFilterEl = document.querySelector('[data-date-filter]');
@@ -575,6 +601,15 @@
           var addons = service.addons.reduce(function (sum, addon) { return sum + (addon.approval === 'rejected' || addon.approval === 'pending' ? 0 : addon.price); }, 0);
           return total + (service.approval === 'pending' || service.approval === 'rejected' ? 0 : service.price) + addons;
         }, 0);
+      }
+
+      function displayTime(value) {
+        var parts = String(value || '00:00').split(':');
+        var hour = Number(parts[0]) || 0;
+        return {
+          value: String(hour % 12 || 12) + ':' + (parts[1] || '00'),
+          period: hour >= 12 ? 'PM' : 'AM'
+        };
       }
 
       function renderSalonOptions() {
@@ -620,37 +655,65 @@
       }
 
       function visibleTickets() {
-        return ticketsForDate().filter(function (ticket) { return currentStatus === 'all' || ticket.status === currentStatus; });
+        return ticketsForDate().filter(function (ticket) { return ticket.status === currentStatus; });
       }
 
       function renderSummary() {
         var dayTickets = ticketsForDate();
         ['assigned', 'in-service', 'completed'].forEach(function (status) {
           var key = status === 'in-service' ? 'service' : status;
-          document.querySelector('[data-summary-' + key + ']').textContent = dayTickets.filter(function (ticket) { return ticket.status === status; }).length;
+          var count = dayTickets.filter(function (ticket) { return ticket.status === status; }).length;
+          document.querySelector('[data-summary-' + key + ']').textContent = count;
+          document.querySelector('[data-status-count="' + status + '"]').textContent = count;
         });
       }
 
       function renderOrderCard(ticket) {
-        var serviceNames = ticket.services.map(function (service) { return service.name; }).join(' · ');
-        var salon = salonById(ticket.salonId);
+        var time = displayTime(ticket.time);
+        var primaryService = ticket.services[0] ? ticket.services[0].name : 'Service';
+        var totalDuration = ticket.services.reduce(function (total, service) { return total + Number(service.duration || 0); }, 0);
         return '<button class="order-card' + (selectedTicketId === ticket.id ? ' is-active' : '') + '" type="button" data-ticket-id="' + esc(ticket.id) + '">' +
-          '<span class="order-card-top"><span class="order-time">' + esc(ticket.time) + '</span><span class="order-card-copy"><span class="customer-name">' + esc(ticket.customer) + '</span><span class="order-service">' + esc(serviceNames) + '</span></span><span class="status-pill ' + statusClass(ticket.status) + '">' + statusLabel(ticket.status) + '</span><i class="order-chevron" data-lucide="chevron-right" aria-hidden="true"></i></span>' +
-          '<span class="order-meta"><span><i data-lucide="store" aria-hidden="true"></i>' + esc(salon ? salon.name : '') + '</span><span><i data-lucide="map-pin" aria-hidden="true"></i>Station ' + esc(ticket.station) + '</span><span><i data-lucide="radio" aria-hidden="true"></i>Beeper B' + esc(ticket.beeper) + '</span></span>' +
+          '<span class="order-card-top"><span class="order-time"><strong class="order-time-value">' + esc(time.value) + '</strong><small class="order-time-period">' + esc(time.period) + '</small></span><span class="order-card-copy"><span class="customer-name">' + esc(ticket.customer) + ' · ' + esc(primaryService) + '</span><span class="order-service">' + totalDuration + ' min · Station ' + esc(ticket.station) + '</span></span><span class="status-pill ' + statusClass(ticket.status) + '">' + statusLabel(ticket.status) + '</span></span>' +
         '</button>';
       }
 
+      function newestAssignedTicket(tickets) {
+        return tickets.reduce(function (newest, ticket, index) {
+          if (ticket.status !== 'assigned') return newest;
+          var assignedTime = Date.parse(ticket.assignedAt || '');
+          var rank = Number.isFinite(assignedTime) ? assignedTime : index;
+          return !newest || rank > newest.rank ? { ticket: ticket, rank: rank } : newest;
+        }, null);
+      }
+
+      function renderFeaturedTicket(ticket) {
+        var services = ticket.services.map(function (service) { return service.name; }).join(' · ');
+        return '<article class="featured-ticket-card" data-featured-ticket-id="' + esc(ticket.id) + '">' +
+          '<div class="featured-ticket-top"><span class="featured-ticket-eyebrow">New assignment</span><span class="featured-ticket-status">Assigned</span></div>' +
+          '<h2>Ticket ' + esc(ticket.id) + ' · ' + esc(ticket.customer) + '</h2>' +
+          '<p class="featured-ticket-service">' + esc(services) + ' · ' + money(serviceTotal(ticket)) + '</p>' +
+          '<p class="featured-ticket-note">“' + esc(ticket.note) + '”</p>' +
+          '<button class="featured-ticket-button" type="button" data-ticket-id="' + esc(ticket.id) + '">View ticket</button>' +
+        '</article>';
+      }
+
       function renderList() {
-        var tickets = visibleTickets();
-        document.querySelector('[data-list-title]').textContent = tickets.length + ' ticket' + (tickets.length === 1 ? '' : 's');
-        document.querySelector('[data-orders-count]').textContent = currentStatus === 'all' ? 'All' : statusLabel(currentStatus);
+        var tickets = visibleTickets().slice().sort(function (a, b) { return a.time.localeCompare(b.time); });
+        var featuredEntry = currentStatus === 'assigned' ? newestAssignedTicket(tickets) : null;
+        var featuredTicket = featuredEntry ? featuredEntry.ticket : null;
+        var upcomingTickets = featuredTicket ? tickets.filter(function (ticket) { return ticket.id !== featuredTicket.id; }) : tickets;
+        featuredTicketEl.hidden = !featuredTicket;
+        featuredTicketEl.innerHTML = featuredTicket ? renderFeaturedTicket(featuredTicket) : '';
+        document.querySelector('[data-list-title]').textContent = featuredTicket ? 'Up next' : (tickets.length + ' ticket' + (tickets.length === 1 ? '' : 's'));
+        document.querySelector('[data-orders-count]').textContent = statusLabel(currentStatus);
         document.querySelector('[data-workspace-count]').textContent = tickets.length;
         if (!tickets.length) {
-          selectedTicketId = '';
+          if (!workspaceEl.classList.contains('is-detail-mode')) selectedTicketId = '';
           ordersListEl.innerHTML = '<div class="empty-list"><i data-lucide="clipboard-x" aria-hidden="true"></i><strong>No work orders found</strong><span>Try another date or status.</span></div>';
         } else {
-          if (!tickets.some(function (ticket) { return ticket.id === selectedTicketId; })) selectedTicketId = tickets[0].id;
-          ordersListEl.innerHTML = tickets.map(renderOrderCard).join('');
+          var keepOpenDetail = workspaceEl.classList.contains('is-detail-mode') && ticketById(selectedTicketId);
+          if (!keepOpenDetail && !tickets.some(function (ticket) { return ticket.id === selectedTicketId; })) selectedTicketId = featuredTicket ? featuredTicket.id : tickets[0].id;
+          ordersListEl.innerHTML = upcomingTickets.length ? upcomingTickets.map(renderOrderCard).join('') : '<div class="empty-list"><strong>No more tickets</strong><span>Your newly assigned ticket is ready to view.</span></div>';
         }
       }
 
@@ -737,12 +800,19 @@
         toastTimer = window.setTimeout(function () { toast.hidden = true; }, 3200);
       }
 
+      function openTicketDetail(id) {
+        selectedTicketId = id;
+        renderWorkspace();
+        workspaceEl.classList.add('is-detail-mode');
+        document.body.classList.add('wo-detail-open');
+        window.scrollTo({ top: 0, behavior: 'smooth' });
+      }
+
       function startTicket(id) {
         var ticket = ticketById(id);
         if (!ticket || ticket.status !== 'assigned') return;
         ticket.status = 'in-service';
         selectedTicketId = id;
-        setActiveStatus('in-service');
         renderWorkspace();
         showToast(ticket.id + ' is now In Service.');
       }
@@ -972,6 +1042,12 @@
       });
       document.querySelector('[data-change-salon]').addEventListener('click', showSalonGate);
       document.querySelector('[data-change-salon-inline]').addEventListener('click', showSalonGate);
+      document.querySelector('[data-view-calendar]').addEventListener('click', function () {
+        dateFilterEl.focus();
+        if (typeof dateFilterEl.showPicker === 'function') {
+          try { dateFilterEl.showPicker(); } catch (error) { /* Keep the focused native date input as the fallback. */ }
+        }
+      });
       dateFilterEl.addEventListener('change', function () { currentDate = dateFilterEl.value || TODAY; selectedTicketId = ''; renderWorkspace(); });
       document.querySelector('.date-control').addEventListener('click', function (event) {
         var button = event.target.closest('[data-date-step]');
@@ -992,11 +1068,12 @@
       ordersListEl.addEventListener('click', function (event) {
         var button = event.target.closest('[data-ticket-id]');
         if (!button) return;
-        selectedTicketId = button.getAttribute('data-ticket-id');
-        renderWorkspace();
-        workspaceEl.classList.add('is-detail-mode');
-        document.body.classList.add('wo-detail-open');
-        window.scrollTo({ top: 0, behavior: 'smooth' });
+        openTicketDetail(button.getAttribute('data-ticket-id'));
+      });
+      featuredTicketEl.addEventListener('click', function (event) {
+        var button = event.target.closest('[data-ticket-id]');
+        if (!button) return;
+        openTicketDetail(button.getAttribute('data-ticket-id'));
       });
       detailPanelEl.addEventListener('click', function (event) {
         var backButton = event.target.closest('[data-detail-back]');
