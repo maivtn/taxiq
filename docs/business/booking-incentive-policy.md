@@ -298,6 +298,8 @@ A: Có. Cả hai màn hình chỉnh cùng lượt booking mặc định và bố
 
 ### Related Features
 
+- [Weighted Turn Settings](weighted-turn-settings.md)
+
 - [Technician Overview](technician-overview.md)
 - [Appointments Need Assignment](appointments-need-assignment.md)
 - [Technician Level](technician-level.md)
