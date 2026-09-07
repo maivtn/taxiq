@@ -78,10 +78,14 @@
       { label: 'Loyalty Activity', tab: 'loyalty-activity' },
       { label: 'Analytics', tab: 'analytics' }
     ] },
-    { type: 'item', key: 'pos', label: 'POS', icon: 'monitor', page: 'pos' },
-    { type: 'group', key: 'analytics', label: 'Analytics', icon: 'chart-no-axes-combined', page: 'analytics', items: [
-      { label: 'Store Income', tab: 'store-income', href: 'pos-shop-income-report.html' },
-      { label: 'Service Income', tab: 'service-income', href: 'pos-service-income-report.html' }
+    { type: 'group', key: 'pos', label: 'POS', icon: 'store', page: 'pos', items: [
+      { label: 'Front Desk', tab: 'front-desk', href: 'pos-front-desk.html' },
+      { label: 'Salon Settings', tab: 'management' },
+      { label: 'Report', tab: 'report', href: 'pos-shop-income-report.html' },
+      { label: 'Promotions', href: 'salon-setup-reward.html?tab=ai-offers' },
+      { label: 'Check-In Devices', href: 'qr-stations.html?tab=qr-stations' },
+      { label: 'Printer', tab: 'printer' },
+      { label: 'Public Check-In', href: '../customer/check-in-mobile.html' }
     ] },
     { type: 'item', key: 'settings', label: 'Settings', icon: 'settings', page: 'owner-settings' },
     { type: 'item', key: 'news-library', label: 'News & Library', icon: 'newspaper', page: 'news-library' },
@@ -189,9 +193,15 @@
     if (node.type !== 'group' || node.page !== activePage || !node.items) return;
     node.items.forEach(function (it) { if (it.tab) nativeTabs.push(it.tab); });
   });
+  function sidebarTab(tab) {
+    // The operational POS tabs all belong to the Front Desk submenu.
+    if (activePage === 'pos' && ['checkin', 'todaybooking', 'tickets', 'booking', 'customers', 'clock', 'dispatch', 'appointments'].indexOf(tab) !== -1) return 'front-desk';
+    return tab;
+  }
+  urlTab = sidebarTab(urlTab);
   if (urlTab && nativeTabs.length && nativeTabs.indexOf(urlTab) === -1) urlTab = '';
 
-  var activeTab = urlTab || cfg.activeTab || '';
+  var activeTab = urlTab || sidebarTab(cfg.activeTab) || (activePage === 'pos' ? 'front-desk' : '');
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
@@ -228,7 +238,7 @@
       var inner = '<span class="nav-subitem-dot" aria-hidden="true"></span><span>' + esc(it.label) + '</span>';
       if (it.href) {
         var hrefActive = isNative && it.tab === activeTab;
-        return '<a class="nav-subitem' + (hrefActive ? ' is-active' : '') + '" href="' + esc(it.href) + '">' + inner + '</a>';
+        return '<a class="nav-subitem' + (hrefActive ? ' is-active' : '') + '"' + (isNative && node.key === 'pos' && it.tab ? ' data-shell-active-tab="' + esc(it.tab) + '"' : '') + ' href="' + esc(it.href) + '">' + inner + '</a>';
       }
       if (node.page && !isNative) {
         // foreign group -> cross-page link
@@ -319,10 +329,11 @@
   }
 
   function setActiveTab(tab) {
+    tab = sidebarTab(tab);
     activeTab = tab;
-    var subs = document.querySelectorAll('.sidebar [data-shell-tab]');
+    var subs = document.querySelectorAll('.sidebar [data-shell-tab], .sidebar [data-shell-active-tab]');
     for (var i = 0; i < subs.length; i++) {
-      subs[i].classList.toggle('is-active', subs[i].getAttribute('data-shell-tab') === tab);
+      subs[i].classList.toggle('is-active', (subs[i].getAttribute('data-shell-tab') || subs[i].getAttribute('data-shell-active-tab')) === tab);
     }
   }
 

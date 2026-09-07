@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nexora Touch - Front Desk</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/pos-front-desk.css">
+</head>
+<body>
+<div class="shell"><aside class="sidebar" aria-label="Salon sidebar"></aside><div class="app-area"><header class="header"></header>
+<main class="content front-desk">
+  <h1>Front Desk</h1><p class="subtitle">Check in guests, manage open tickets, and run the turn board.</p>
+  <nav class="workflow" aria-label="Front Desk workflows">
+    <button type="button" disabled>Check-in</button>
+    <button type="button" disabled>Tickets</button>
+    <button type="button" disabled>Turn Board</button>
+    <button type="button" disabled>Checkout Customer</button>
+    <button type="button" disabled>Completed Services</button>
+    <a class="active" href="pos-front-desk.html" aria-current="page">Appointments</a>
+    <button type="button" disabled>Staffs Clock</button>
+    <button type="button" disabled>Customer History</button>
+  </nav>
+  <section id="appointments" aria-label="Appointments">
+    <div class="booking-link"><strong>YOUR BOOKING PAGE — SHARE THIS LINK WITH CUSTOMERS:</strong><a id="booking-url"></a><button id="copy-link">▢ COPY</button></div>
+    <div class="toolbar">
+      <div class="views" role="group" aria-label="Appointment view"><button class="active" data-view="table" aria-pressed="true">Table</button><button data-view="cards" aria-pressed="false">Cards</button><button data-view="calendar" aria-pressed="false">Calendar</button></div>
+      <button class="primary" id="new-booking">+ New Booking</button>
+      <select id="status-filter" aria-label="Filter by status"><option value="">All Statuses</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="checked-in">Checked In</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option><option value="no-show">No Show</option></select>
+      <select id="tech-filter" aria-label="Filter by technician"><option value="">All Technicians</option></select>
+      <input id="from-date" type="date" aria-label="From date"><input id="to-date" type="date" aria-label="To date"><span id="booking-count" aria-live="polite"></span>
+      <button id="calendar-reward-settings" type="button" hidden>⚙ Reward settings</button>
+    </div>
+    <div id="booking-results"></div>
+    <section id="team-calendar" aria-label="Team Calendar" hidden></section>
+  </section>
+  <p id="feedback" role="status"></p>
+</main></div></div>
+<dialog id="booking-dialog"><form id="booking-form"><div class="dialog-heading"><h2 id="dialog-title">New Booking</h2><button type="button" id="close-dialog" aria-label="Close">×</button></div><div id="booking-fields">
+<label>Customer<input name="customerName" required></label><label>Phone<input name="phone" type="tel" required></label><label>Date &amp; time<input name="startAt" type="datetime-local" required></label><label>Service<select name="service" required></select></label><label>Technician<select name="technicianId"><option value="">Unassigned</option></select></label></div><p id="form-error" role="alert"></p><button id="save-booking" class="primary" type="submit">Save Booking</button></form></dialog>
+<script src="../assets/salon-data.js"></script><script src="../assets/appointment-tickets.js"></script><script src="../assets/appointments-store.js"></script>
+<script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+<script>window.NEXORA_SHELL = {activePage: 'pos', activeTab: 'front-desk'};</script><script src="../assets/nexora-shell.js"></script>
+<script src="../assets/team-calendar-content.js"></script>
+<script src="../assets/pos-front-desk.js"></script>
+</body></html>

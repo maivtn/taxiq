@@ -1,0 +1,9 @@
+.pos-report-navigation{margin-bottom:24px}
+.pos-report-title{margin:0 0 5px;color:#0b1220;font-size:20px;font-weight:800;letter-spacing:-.5px}
+.pos-report-description{margin:0 0 16px;color:#4d5870;font-size:12px}
+.pos-report-tabs{display:flex;gap:6px;flex-wrap:wrap}
+.pos-report-tabs a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 16px;border:1px solid #dbe4f3;border-radius:9px;background:#fff;color:#52607b;font-size:12px;font-weight:700;text-decoration:none}
+.pos-report-tabs a:hover{border-color:#4648d8;color:#4648d8}
+.pos-report-tabs a.is-active{border-color:#4648d8;background:#4648d8;color:#fff}
+.pos-report-tabs a:focus-visible{outline:3px solid #8e4df8;outline-offset:3px}
+@media print{.pos-report-navigation{display:none}}

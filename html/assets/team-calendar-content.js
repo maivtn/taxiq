@@ -1,0 +1,745 @@
+/* Native Team Calendar content, isolated from the Front Desk styles and selectors. */
+window.NEXORA_TEAM_CALENDAR = {
+  mount(host) {
+    if (host.shadowRoot) {
+      host.dispatchEvent(new Event('calendar-show'));
+      return;
+    }
+    const shadow = host.attachShadow({mode: 'open'});
+    shadow.innerHTML = "<style>\n:host{--ink:#202331;--muted:#747a8c;--line:#e8e9f0;--bg:#f6f7fb;--card:#fff;--brand:#5b61e6;--brand-soft:#eef0ff;--green:#218b6b;--green-soft:#e9f7f1;--blue:#3975d4;--blue-soft:#edf4ff;--amber:#b56b14;--amber-soft:#fff5df;--red:#b74b55;--red-soft:#fff0f1;--slot:54px;--radius:16px}\n*{box-sizing:border-box}:host{margin:0;min-height:100%;font-family:\"DM Sans\",system-ui,sans-serif;color:var(--ink);background:var(--bg)}button,input,select{font:inherit}.app-shell{display:grid;grid-template-columns:232px minmax(0,1fr);min-height:100vh}.sidebar{position:sticky;top:0;height:100vh;background:#171926;color:#fff;padding:22px 14px;display:flex;flex-direction:column}.brand{display:flex;align-items:center;gap:11px;font-weight:700;font-size:15px;padding:0 8px 22px}.brand-mark,.mobile-logo{display:inline-grid;place-items:center;width:30px;height:30px;border-radius:9px;background:linear-gradient(145deg,#777df5,#4e53d8);color:#fff}.sidebar nav{display:flex;flex-direction:column;gap:3px}.sidebar nav a{color:#aeb2c2;text-decoration:none;padding:10px 12px;border-radius:9px;font-size:13px;display:flex;align-items:center;gap:10px}.sidebar nav a span{width:18px;text-align:center}.sidebar nav a:hover,.sidebar nav a.active{background:#292c3e;color:#fff}.sidebar-footer{margin-top:auto;border-top:1px solid #303345;padding:18px 8px 0;display:flex;gap:10px;align-items:center;font-size:11px}.sidebar-footer strong,.sidebar-footer small{display:block}.sidebar-footer small{color:#898e9f;margin-top:3px}.mini-avatar,.avatar{display:grid;place-items:center;border-radius:50%;background:#e7e8ff;color:#4f55c8;font-weight:700}.mini-avatar{width:34px;height:34px}.workspace{min-width:0;position:relative}.topbar{height:62px;background:rgba(255,255,255,.9);border-bottom:1px solid var(--line);display:flex;align-items:center;justify-content:space-between;padding:0 28px;position:sticky;top:0;z-index:10;backdrop-filter:blur(12px)}.topbar>div{display:flex;align-items:center;gap:10px}.profile button{border:0;background:transparent;font-size:20px;color:var(--muted)}.avatar{width:34px;height:34px;font-size:11px}.mobile-logo{display:none}.page-content{padding:26px 28px 34px;max-width:1700px;margin:auto}.intro{display:flex;justify-content:space-between;align-items:flex-end;margin-bottom:22px}.eyebrow{font-size:10px;letter-spacing:.14em;color:var(--brand);font-weight:700;margin:0 0 8px}.intro h1{font-size:28px;letter-spacing:-.04em;margin:0}.subtitle{color:var(--muted);font-size:13px;margin:7px 0 0}.primary-button{border:0;border-radius:10px;background:var(--brand);color:#fff;padding:11px 16px;font-weight:600;font-size:13px;box-shadow:0 7px 18px rgba(91,97,230,.24);cursor:pointer}.datebar{display:flex;align-items:center;gap:18px;margin-bottom:14px}.datebar>div:nth-child(2){display:flex;flex-direction:column;min-width:190px}.datebar strong{font-size:14px}.datebar span{font-size:11px;color:var(--muted);margin-top:2px}.date-controls,.view-switch{display:flex;background:#fff;border:1px solid var(--line);padding:3px;border-radius:10px}.date-controls button,.view-switch button{border:0;background:transparent;color:var(--muted);height:30px;padding:0 10px;border-radius:7px;cursor:pointer;font-size:12px}.date-controls button:first-child,.date-controls button:last-child{font-size:20px}.view-switch{margin-left:auto}.view-switch button.active{background:var(--brand-soft);color:var(--brand);font-weight:600}.summary{display:grid;grid-template-columns:1.55fr repeat(4,1fr);gap:10px;margin-bottom:14px}.summary-card{min-width:0;border:1px solid var(--line);background:var(--card);border-radius:var(--radius);padding:16px;text-align:left;cursor:pointer;transition:.18s ease;position:relative;overflow:hidden}.summary-card:hover{transform:translateY(-1px);box-shadow:0 8px 24px rgba(38,41,56,.07)}.summary-card.is-active{border-color:var(--brand);box-shadow:0 0 0 3px rgba(91,97,230,.1)}.summary-card strong{display:block;font-size:25px;letter-spacing:-.04em}.summary-card:first-child strong{font-size:34px}.summary-card span{display:block;color:var(--muted);font-size:11px;margin-top:4px}.summary-card small{display:block;color:var(--green);font-size:10px;margin-top:8px}.summary-card .status-icon{position:absolute;right:14px;top:14px;width:28px;height:28px;border-radius:9px;display:grid;place-items:center;font-size:12px}.status-icon.completed{background:var(--green-soft);color:var(--green)}.status-icon.upcoming{background:var(--blue-soft);color:var(--blue)}.status-icon.pending{background:var(--amber-soft);color:var(--amber)}.status-icon.cancelled{background:var(--red-soft);color:var(--red)}.calendar-panel{background:var(--card);border:1px solid var(--line);border-radius:var(--radius);overflow:hidden}.calendar-toolbar{height:58px;border-bottom:1px solid var(--line);display:flex;align-items:center;padding:0 14px;gap:10px}.search-field{display:flex;align-items:center;gap:7px;border:1px solid var(--line);border-radius:9px;padding:0 10px;height:35px;width:250px;color:var(--muted)}.search-field input{border:0;outline:0;width:100%;font-size:12px}.calendar-toolbar select{height:35px;border:1px solid var(--line);border-radius:9px;background:#fff;padding:0 30px 0 10px;font-size:12px;color:var(--ink)}#mobile-technician{display:none}.legend{margin-left:auto;display:flex;gap:13px;font-size:10px;color:var(--muted)}.legend span{display:flex;align-items:center;gap:5px}.dot{width:7px;height:7px;border-radius:50%}.dot.completed{background:var(--green)}.dot.upcoming{background:var(--blue)}.dot.pending{background:var(--amber)}.calendar-viewport{overflow:auto;max-height:630px}.calendar-grid{display:grid;grid-template-columns:70px repeat(var(--tech-count),180px);grid-template-rows:64px repeat(20,var(--slot));min-width:max-content;position:relative}.corner{position:sticky;top:0;left:0;z-index:8;background:#fbfbfd;border-right:1px solid var(--line);border-bottom:1px solid var(--line)}.technician-header{position:sticky;top:0;z-index:6;background:rgba(251,251,253,.96);border-right:1px solid var(--line);border-bottom:1px solid var(--line);padding:12px;display:flex;align-items:center;gap:9px;backdrop-filter:blur(8px)}.tech-avatar{width:32px;height:32px;border-radius:10px;background:linear-gradient(145deg,#f0edff,#e4e7ff);display:grid;place-items:center;font-size:10px;color:#555bc7;font-weight:700}.tech-meta{min-width:0}.tech-name{font-size:12px;font-weight:600;white-space:nowrap}.tech-meta small{display:flex;align-items:center;gap:4px;color:var(--muted);font-size:9px;margin-top:3px}.online{width:5px;height:5px;background:#4eb58c;border-radius:50%}.time-cell{position:sticky;left:0;z-index:4;background:#fff;border-right:1px solid var(--line);border-bottom:1px solid #f0f1f5;padding:8px 10px;text-align:right;color:var(--muted);font-size:9px}.slot-cell{border-right:1px solid var(--line);border-bottom:1px solid #f0f1f5;background-image:linear-gradient(to bottom,transparent 50%,#f6f6f9 50%);background-size:100% 27px}.appointment{z-index:3;margin:3px 5px;border-radius:8px;padding:7px 8px;border-left:3px solid;overflow:hidden;cursor:pointer;box-shadow:0 2px 7px rgba(27,30,47,.05);transition:.15s ease}.appointment:hover{transform:translateY(-1px);box-shadow:0 6px 12px rgba(27,30,47,.1)}.appointment.completed{background:var(--green-soft);border-color:var(--green);color:#176a51}.appointment.upcoming{background:var(--blue-soft);border-color:var(--blue);color:#295da9}.appointment.pending{background:var(--amber-soft);border-color:var(--amber);color:#8b5410}.appointment.cancelled{background:var(--red-soft);border-color:var(--red);color:#913942;opacity:.72}.appointment strong,.appointment span{display:block;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.appointment strong{font-size:10px}.appointment span{font-size:8px;margin-top:3px;opacity:.85}.drawer-backdrop{position:fixed;inset:0;background:rgba(24,27,40,.18);opacity:0;visibility:hidden;transition:.2s;z-index:20}.drawer-backdrop.is-open{opacity:1;visibility:visible}.drawer{position:fixed;z-index:21;right:0;top:0;height:100vh;width:390px;background:#fff;box-shadow:-18px 0 50px rgba(27,30,47,.13);transform:translateX(105%);transition:.25s ease;padding:24px}.drawer.drawer--open{transform:translateX(0)}.drawer-head{display:flex;justify-content:space-between;align-items:center;padding-bottom:18px;border-bottom:1px solid var(--line)}.drawer-head h2{font-size:18px;margin:0}.close-button{width:34px;height:34px;border:1px solid var(--line);border-radius:9px;background:#fff;cursor:pointer}.customer-card{display:flex;gap:12px;align-items:center;background:var(--bg);border-radius:13px;padding:14px;margin:20px 0}.customer-avatar{width:42px;height:42px;border-radius:13px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-weight:700}.customer-card strong,.customer-card span{display:block}.customer-card span{font-size:11px;color:var(--muted);margin-top:3px}.detail-list{display:grid;gap:18px}.detail-row{display:grid;grid-template-columns:110px 1fr;font-size:12px}.detail-row span:first-child{color:var(--muted)}.status-pill{display:inline-flex;width:max-content;padding:5px 8px;border-radius:999px;font-size:10px;font-weight:600}.status-pill.completed{background:var(--green-soft);color:var(--green)}.status-pill.upcoming{background:var(--blue-soft);color:var(--blue)}.status-pill.pending{background:var(--amber-soft);color:var(--amber)}.status-pill.cancelled{background:var(--red-soft);color:var(--red)}.empty-state{grid-column:2/-1;padding:50px;text-align:center;color:var(--muted);font-size:12px}\n@media(max-width:1050px){.app-shell{grid-template-columns:76px minmax(0,1fr)}.sidebar{padding:22px 10px}.brand span:last-child,.sidebar nav a:not(.active){font-size:0}.sidebar nav a span{font-size:15px}.sidebar nav a{justify-content:center}.sidebar nav a.active{font-size:0}.sidebar-footer>div:last-child{display:none}.summary{grid-template-columns:1.4fr repeat(4,1fr)}.summary-card{padding:13px}.legend{display:none}}\n@media(max-width:760px){.app-shell{display:block}.sidebar{display:none}.topbar{padding:0 16px}.mobile-logo{display:inline-grid;width:28px;height:28px}.page-content{padding:18px 14px 28px}.intro{align-items:flex-start}.intro h1{font-size:23px}.subtitle{max-width:210px}.primary-button{font-size:0;padding:10px;width:38px;height:38px}.primary-button:first-letter{font-size:18px}.datebar{gap:9px;flex-wrap:wrap}.datebar>div:nth-child(2){min-width:150px}.view-switch{display:none}.summary{display:flex;overflow-x:auto;padding:3px 2px 8px;scrollbar-width:none}.summary-card{min-width:142px}.summary-card:first-child{min-width:190px}.calendar-toolbar{height:auto;padding:10px;flex-wrap:wrap}.search-field{width:100%}#technician-filter{display:none}#mobile-technician{display:block;width:100%}.calendar-viewport{max-height:590px}.calendar-grid{grid-template-columns:62px minmax(260px,calc(100vw - 92px))}.drawer{width:100%;padding:20px}}\n\n.calendar-toolbar.overview-mode .search-field,.calendar-toolbar.overview-mode select{display:none}.calendar-toolbar.overview-mode:before{content:\"BOOKING LOAD BY DAY\";font-size:10px;letter-spacing:.12em;font-weight:700;color:var(--muted)}.overview-grid{min-width:850px}.overview-weekdays{display:grid;grid-template-columns:repeat(7,1fr);background:#fbfbfd;border-bottom:1px solid var(--line);position:sticky;top:0;z-index:4}.overview-weekdays span{padding:12px;text-align:center;color:var(--muted);font-size:9px;font-weight:700;letter-spacing:.12em;border-right:1px solid var(--line)}.overview-days{display:grid;grid-template-columns:repeat(7,1fr)}.overview-day{border:0;border-right:1px solid var(--line);border-bottom:1px solid var(--line);background:#fff;min-height:150px;padding:13px;text-align:left;cursor:pointer;transition:.16s}.overview-day:hover{background:#fafaff;box-shadow:inset 0 0 0 2px var(--brand-soft)}.overview-day.outside-month{background:#fafafa;opacity:.5}.overview-day-head{display:flex;justify-content:space-between;align-items:center}.overview-day-head span{font-size:10px;color:var(--muted);font-weight:600}.overview-day-head strong{font-size:21px}.capacity-track{height:5px;background:#edf0f5;border-radius:99px;overflow:hidden;margin:13px 0 6px}.capacity-track i{display:block;width:var(--load);height:100%;border-radius:inherit;background:linear-gradient(90deg,#777df5,#555bdc)}.capacity-label{display:flex;justify-content:space-between;color:var(--muted);font-size:8px}.day-footer{display:flex;justify-content:space-between;border-top:1px solid #f0f1f5;margin-top:20px;padding-top:9px;font-size:8px;color:var(--muted)}.day-footer strong{font-size:9px;color:var(--ink)}.day-preview{display:grid;gap:6px;margin:13px 0}.day-preview>div{display:grid;grid-template-columns:6px 42px 1fr;gap:5px;align-items:center;font-size:8px}.day-preview i{width:5px;height:5px;border-radius:50%;background:var(--blue)}.day-preview i.completed{background:var(--green)}.day-preview i.pending{background:var(--amber)}.day-preview i.cancelled{background:var(--red)}.day-preview span{color:var(--muted)}.day-preview strong{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.overview-grid.week .overview-day{min-height:250px}.overview-grid.twoWeeks .overview-day{min-height:170px}.overview-grid.threeWeeks .overview-day,.overview-grid.month .overview-day{min-height:140px}.view-switch{overflow-x:auto;max-width:480px}.view-switch button{white-space:nowrap}\n@media(max-width:760px){.datebar .view-switch{display:flex;order:3;margin:2px 0 0;width:100%;max-width:100%;scrollbar-width:none}.overview-grid{min-width:720px}.overview-day{min-height:135px;padding:10px}.calendar-toolbar.overview-mode{height:44px}.calendar-toolbar.overview-mode .legend{display:flex;margin-left:auto}.overview-day-head strong{font-size:18px}.day-footer{margin-top:14px}}\n\n.drawer{width:460px;overflow-y:auto}.customer-identity{flex:1;min-width:0}.customer-identity>div{display:flex;align-items:center;gap:8px}.guest-badge{display:inline-flex!important;width:max-content;padding:4px 7px;border-radius:999px;font-size:8px!important;font-weight:700;letter-spacing:.03em;margin:0!important}.guest-badge.returning{background:#e9f7f1;color:var(--green)}.guest-badge.new{background:var(--blue-soft);color:var(--blue)}.detail-list.compact{gap:12px}.total-row{border-top:1px solid var(--line);padding-top:12px}.total-row strong{font-size:15px}.intelligence{border-top:1px solid var(--line);margin-top:20px;padding-top:19px}.section-title{display:flex;align-items:center;justify-content:space-between}.section-title>div{display:flex;align-items:center;gap:7px;font-size:13px}.section-title i{width:24px;height:24px;border-radius:8px;background:var(--brand-soft);display:grid;place-items:center;color:var(--brand);font-style:normal}.section-title>span{font-size:8px;color:var(--muted)}.intel-stats{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:13px 0}.intel-stats>div{background:var(--bg);border:1px solid #eff0f5;border-radius:10px;padding:10px;min-width:0}.intel-stats strong,.intel-stats span{display:block;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.intel-stats strong{font-size:12px}.intel-stats span{font-size:8px;color:var(--muted);margin-top:3px}.history-head{display:flex;justify-content:space-between;align-items:center;margin:16px 0 8px}.history-head strong{font-size:10px}.history-head span{font-size:8px;color:var(--muted)}.service-history{border:1px solid var(--line);border-radius:10px;overflow:hidden}.service-history>div{display:grid;grid-template-columns:42px 1fr 32px;gap:8px;align-items:center;padding:9px;border-bottom:1px solid var(--line);font-size:9px}.service-history>div:last-child{border-bottom:0}.service-history>div>span,.service-history small{color:var(--muted)}.service-history strong,.service-history small{display:block}.service-history b{text-align:right}.smart-recommendation{margin-top:14px;border:1px solid #dfe1ff;background:linear-gradient(145deg,#f8f8ff,#f0f2ff);border-radius:12px;padding:13px}.smart-recommendation.is-added{border-color:#bfe7d8;background:var(--green-soft)}.recommendation-top{display:flex;justify-content:space-between;color:var(--brand);font-size:8px;font-weight:700;letter-spacing:.08em}.recommendation-top i{font-style:normal}.recommendation-main{display:flex;justify-content:space-between;align-items:center;margin-top:9px}.recommendation-main strong,.recommendation-main span{display:block}.recommendation-main strong{font-size:14px}.recommendation-main span{font-size:9px;color:var(--muted);margin-top:2px}.recommendation-main>b{font-size:15px}.smart-recommendation p{font-size:9px;line-height:1.45;color:#5e6375;margin:9px 0 12px}.recommendation-actions{display:flex;gap:7px}.recommendation-actions button{border-radius:8px;padding:8px 10px;font-size:9px;font-weight:600;cursor:pointer}.add-upsell{border:0;background:var(--brand);color:#fff}.add-upsell:disabled{background:var(--green)}.dismiss-upsell{border:1px solid var(--line);background:#fff;color:var(--muted)}.dismissed-note,.insight-note,.no-history{margin-top:13px;padding:12px;border-radius:10px;background:var(--bg);font-size:9px;color:var(--muted)}.no-history{display:grid;grid-template-columns:28px 1fr;gap:2px 8px;align-items:center}.no-history i{grid-row:1/3;width:28px;height:28px;border-radius:9px;background:#fff;display:grid;place-items:center;font-style:normal}.no-history strong,.no-history span{display:block}.no-history strong{color:var(--ink)}\n@media(max-width:760px){.drawer{width:100%;padding:18px}.intel-stats{grid-template-columns:repeat(3,minmax(0,1fr))}}\n\n.intro-actions{display:flex;gap:9px}.secondary-button{border:1px solid var(--line);border-radius:10px;background:#fff;color:var(--ink);padding:10px 14px;font-size:12px;font-weight:600;cursor:pointer}.secondary-button:hover{border-color:#cfd2e5;background:#fafaff}.technician-overview{background:#fff;border:1px solid var(--line);border-radius:var(--radius);margin-bottom:14px;overflow:hidden}.overview-title{display:flex;justify-content:space-between;align-items:center;padding:15px 17px;border-bottom:1px solid var(--line)}.overview-title h2{font-size:16px;margin:0}.overview-title>div>span{font-size:9px;color:var(--muted)}.policy-chip{display:flex!important;align-items:center;gap:8px;background:var(--green-soft);border-radius:10px;padding:8px 10px}.policy-chip>i{color:var(--green);font-size:8px}.policy-chip span,.policy-chip strong,.policy-chip small{display:block}.policy-chip strong{font-size:9px}.policy-chip small{font-size:7px;color:var(--green);margin-top:2px}.tech-overview-head,.tech-overview-row{display:grid;grid-template-columns:minmax(165px,1.5fr) repeat(5,minmax(78px,.75fr)) 76px 20px;align-items:center;gap:8px;padding:9px 15px}.tech-overview-head{background:#fafafd;border-bottom:1px solid var(--line);font-size:8px;color:var(--muted);font-weight:700;text-transform:uppercase;letter-spacing:.06em}.tech-overview-body{max-height:255px;overflow:auto}.tech-overview-row{width:100%;border:0;border-bottom:1px solid #f0f1f5;background:#fff;text-align:left;cursor:pointer;font-size:10px;color:var(--ink)}.tech-overview-row:hover{background:#fafaff}.tech-cell{display:flex;align-items:center;gap:8px;min-width:0}.tech-cell .tech-avatar{width:29px;height:29px;flex:0 0 auto;font-style:normal}.tech-cell span,.tech-cell strong,.tech-cell small{display:block;min-width:0}.tech-cell small{color:var(--muted);font-size:8px;margin-top:2px}.reward-value{color:var(--green)}.ledger-status{display:inline-flex;width:max-content;padding:4px 7px;border-radius:999px;font-size:8px;font-weight:700}.ledger-status.earned{background:var(--green-soft);color:var(--green)}.ledger-status.reversed{background:var(--red-soft);color:var(--red)}.row-arrow{font-style:normal;color:var(--muted);font-size:17px}.policy-drawer{position:fixed;z-index:31;top:0;right:0;width:620px;height:100vh;background:#fff;box-shadow:-20px 0 55px rgba(27,30,47,.16);transform:translateX(105%);transition:.25s ease;display:flex;flex-direction:column}.policy-drawer.is-open{transform:translateX(0)}#policy-backdrop{z-index:30}.policy-head{display:flex;justify-content:space-between;align-items:flex-start;padding:22px 24px;border-bottom:1px solid var(--line)}.policy-head h2{font-size:21px;margin:0}.policy-head>div>span{font-size:10px;color:var(--muted)}.close-policy{width:34px;height:34px;border:1px solid var(--line);border-radius:9px;background:#fff;cursor:pointer}.policy-scroll{overflow-y:auto;padding:0 24px 24px}.policy-section{padding:20px 0;border-bottom:1px solid var(--line)}.policy-section-title{display:flex;gap:10px;align-items:flex-start;margin-bottom:13px}.policy-section-title>span{width:22px;height:22px;border-radius:7px;background:var(--brand-soft);color:var(--brand);display:grid;place-items:center;font-size:9px;font-weight:700}.policy-section-title strong,.policy-section-title small{display:block}.policy-section-title strong{font-size:12px}.policy-section-title small{font-size:9px;color:var(--muted);margin-top:2px}.choice-cards{display:grid;grid-template-columns:1fr 1fr;gap:8px}.choice-card{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:11px;padding:11px;cursor:pointer}.choice-card:has(input:checked){border-color:var(--brand);background:var(--brand-soft)}.choice-card input{accent-color:var(--brand)}.choice-card span,.choice-card strong,.choice-card small{display:block}.choice-card strong{font-size:10px}.choice-card small{font-size:8px;color:var(--muted);margin-top:2px}.segmented{display:grid;grid-template-columns:repeat(3,1fr);padding:3px;background:var(--bg);border-radius:9px;margin-bottom:13px}.segmented button{border:0;background:transparent;border-radius:7px;padding:8px;font-size:9px;color:var(--muted);cursor:pointer}.segmented button.active{background:#fff;color:var(--brand);font-weight:700;box-shadow:0 2px 7px rgba(32,35,49,.08)}.structure-panel{background:#fafafd;border:1px solid var(--line);border-radius:11px;padding:12px}.structure-panel[hidden],.policy-section[hidden]{display:none}.field-label{display:grid;gap:6px;font-size:9px;color:var(--muted)}.money-input{display:flex;align-items:center;border:1px solid var(--line);border-radius:8px;background:#fff;overflow:hidden}.money-input span{padding-left:9px;color:var(--muted);font-size:10px}.money-input input{border:0;outline:0;width:100%;padding:8px;font-size:10px}.level-panel{display:grid;gap:7px}.level-rate{display:grid;grid-template-columns:1fr 100px;align-items:center;gap:10px}.level-rate span,.level-rate strong,.level-rate small{display:block}.level-rate strong{font-size:10px}.level-rate small{font-size:8px;color:var(--muted);margin-top:2px}.tier-method{display:flex;gap:15px;font-size:9px;margin-bottom:10px}.tier-method input{accent-color:var(--brand)}#tier-editor{display:grid;gap:7px}.tier-row{display:grid;grid-template-columns:22px 1fr 1fr 1fr 18px 25px;gap:6px;align-items:end}.tier-number{width:22px;height:22px;border-radius:6px;background:var(--brand-soft);display:grid;place-items:center;font-size:8px;color:var(--brand);margin-bottom:5px}.tier-row label{display:grid;gap:3px;font-size:7px;color:var(--muted)}.tier-row input{min-width:0;border:1px solid var(--line);border-radius:7px;padding:7px;font-size:9px}.money-prefix{margin-bottom:8px;color:var(--muted);font-size:9px}.remove-tier{border:0;background:transparent;color:var(--red);font-size:15px;margin-bottom:3px;cursor:pointer}.add-tier{border:1px dashed #cfd2e5;background:#fff;border-radius:8px;width:100%;padding:8px;margin-top:9px;color:var(--brand);font-size:9px;font-weight:600;cursor:pointer}.field-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.field-grid label{display:grid;gap:5px;color:var(--muted);font-size:8px}.field-grid select,.field-grid input{border:1px solid var(--line);border-radius:8px;background:#fff;padding:8px;font-size:9px;color:var(--ink)}.override-list{display:grid;gap:6px}.override-row{display:grid;grid-template-columns:1.5fr 90px 90px 80px;gap:7px;align-items:center;background:#fafafd;border-radius:9px;padding:7px}.override-row select{border:1px solid var(--line);border-radius:7px;background:#fff;padding:7px;font-size:8px}.preview-card{display:flex;align-items:center;justify-content:space-between;margin:16px 0;background:linear-gradient(145deg,#f7f7ff,#edf0ff);border:1px solid #dfe1ff;border-radius:12px;padding:14px}.preview-card span,.preview-card strong,.preview-card small{display:block}.preview-card span{font-size:8px;color:var(--brand);font-weight:700;letter-spacing:.08em}.preview-card strong{font-size:17px;margin-top:4px}.preview-card small{font-size:8px;color:var(--muted);margin-top:3px}.preview-card>i{font-style:normal;color:var(--brand);font-size:20px}.audit-card{padding:0 0 10px}.audit-card>strong{font-size:10px}.audit-card>div{display:flex;gap:8px;margin-top:9px}.audit-card>div>i{width:18px;height:18px;border-radius:6px;background:var(--green-soft);color:var(--green);display:grid;place-items:center;font-style:normal;font-size:8px}.audit-card span,.audit-card strong,.audit-card small{display:block}.audit-card strong{font-size:9px}.audit-card small{font-size:7px;color:var(--muted);margin-top:2px}.policy-footer{margin-top:auto;border-top:1px solid var(--line);padding:13px 20px;display:flex;align-items:center;gap:8px}.policy-footer>span{margin-right:auto;font-size:8px;color:var(--green)}.policy-footer>span.error{color:var(--red)}.policy-footer button{border-radius:8px;padding:9px 12px;font-size:9px;font-weight:600;cursor:pointer}.cancel-policy{border:1px solid var(--line);background:#fff}.policy-footer #save-policy{border:0;background:var(--brand);color:#fff}.policy-footer #save-policy:disabled{opacity:.4;cursor:not-allowed}.ledger-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:7px;margin:18px 0}.ledger-summary>div{background:var(--bg);border-radius:10px;padding:11px}.ledger-summary strong,.ledger-summary span{display:block}.ledger-summary strong{font-size:15px}.ledger-summary span{font-size:8px;color:var(--muted);margin-top:2px}.ledger-rule{display:flex;justify-content:space-between;padding:10px;border:1px solid var(--line);border-radius:9px;font-size:9px}.ledger-rule span{color:var(--muted)}.ledger-list{margin-top:15px;border:1px solid var(--line);border-radius:10px;overflow:hidden}.ledger-list-head,.ledger-row{display:grid;grid-template-columns:1fr 95px;gap:10px;padding:9px 10px}.ledger-list-head{background:#fafafd;color:var(--muted);font-size:8px}.ledger-row{border-top:1px solid var(--line)}.ledger-row>span:last-child{text-align:right}.ledger-row strong,.ledger-row small{display:block}.ledger-row strong{font-size:9px}.ledger-row small{font-size:7px;color:var(--muted);margin-top:2px}.ledger-row i{font-style:normal}.ledger-row i.earned{color:var(--green)}.ledger-row i.reversed{color:var(--red)}.ledger-row i.pending{color:var(--amber)}.ledger-total{display:flex;justify-content:space-between;margin-top:12px;padding:12px;background:var(--green-soft);border-radius:9px;font-size:10px;color:var(--green)}\n@media(max-width:760px){.intro-actions{gap:6px}.intro-actions .secondary-button{font-size:0;width:38px;height:38px;padding:0}.intro-actions .secondary-button:first-letter{font-size:16px}.technician-overview{overflow:visible}.overview-title{align-items:flex-start}.policy-chip{display:none!important}.tech-overview-head{display:none}.tech-overview-body{display:grid;gap:8px;padding:9px;max-height:340px}.tech-overview-row{grid-template-columns:1fr 1fr 1fr;padding:10px;border:1px solid var(--line);border-radius:10px;gap:10px}.tech-overview-row .tech-cell{grid-column:1/3}.tech-overview-row .row-arrow{grid-column:3;grid-row:1;text-align:right}.tech-overview-row>strong,.tech-overview-row>span:not(.tech-cell){font-size:9px}.policy-drawer{width:100%}.policy-head{padding:18px}.policy-scroll{padding:0 14px 18px}.choice-cards,.field-grid{grid-template-columns:1fr}.tier-row{grid-template-columns:22px 1fr 1fr;align-items:end}.tier-row label:nth-of-type(3){grid-column:2/3}.tier-row .money-prefix{display:none}.tier-row .remove-tier{grid-column:3;grid-row:2}.override-row{grid-template-columns:1fr 95px}.override-row .money-input,.override-row [data-override-turn]{grid-row:2}.policy-footer{padding:11px}.policy-footer>span{max-width:120px}.drawer{width:100%}}\n\n.unassigned-queue{background:#fff;border:1px solid var(--line);border-radius:var(--radius);margin-bottom:14px;overflow:hidden}.queue-head{display:flex;justify-content:space-between;align-items:center;padding:15px 17px;border-bottom:1px solid var(--line)}.queue-head h2{font-size:15px;margin:0}.queue-head h2 span{display:inline-grid;place-items:center;width:23px;height:23px;border-radius:8px;background:var(--amber-soft);color:var(--amber);margin-right:5px}.queue-head small{font-size:8px;color:var(--muted)}.assignment-notice{background:var(--green-soft);color:var(--green);border-radius:8px;padding:8px 10px;font-size:9px}.queue-list{display:grid}.queue-card{display:grid;grid-template-columns:85px minmax(150px,1fr) minmax(230px,1.5fr) 215px;align-items:center;gap:12px;padding:12px 16px;border-bottom:1px solid #f0f1f5}.queue-card:last-child{border-bottom:0}.queue-card.urgent{box-shadow:inset 3px 0 var(--amber);background:#fffdf8}.queue-time strong,.queue-time span{display:block}.queue-time strong{font-size:12px}.queue-time span{font-size:8px;color:var(--muted);margin-top:2px}.queue-customer strong,.queue-customer small{display:block}.queue-customer strong{font-size:10px;margin-top:5px}.queue-customer small{font-size:8px;color:var(--muted);margin-top:2px}.source-badge{display:inline-flex!important;width:max-content;border-radius:999px;padding:3px 6px;font-size:7px!important;font-style:normal;font-weight:700;margin-top:5px}.source-badge.anyone{background:var(--amber-soft);color:var(--amber)}.source-badge.requested{background:var(--green-soft);color:var(--green)}.suggested-tech{display:flex;align-items:center;gap:8px}.suggested-tech .tech-avatar{width:31px;height:31px;flex:0 0 auto}.suggested-tech span,.suggested-tech strong,.suggested-tech small,.suggested-tech em{display:block}.suggested-tech small{font-size:7px;color:var(--muted)}.suggested-tech strong{font-size:9px;margin-top:2px}.suggested-tech em{font-size:7px;color:var(--green);font-style:normal;margin-top:2px}.queue-actions{display:flex;gap:6px}.queue-actions button{border-radius:8px;padding:8px 10px;font-size:8px;font-weight:600;cursor:pointer}.assign-suggested{border:0;background:var(--brand);color:#fff}.view-technicians{border:1px solid var(--line);background:#fff;color:var(--muted)}.queue-empty{display:flex;align-items:center;justify-content:center;gap:9px;padding:18px}.queue-empty>i{width:29px;height:29px;border-radius:10px;background:var(--green-soft);color:var(--green);display:grid;place-items:center;font-style:normal}.queue-empty span,.queue-empty strong,.queue-empty small{display:block}.queue-empty strong{font-size:10px}.queue-empty small{font-size:8px;color:var(--muted);margin-top:2px}.assignment-choices{display:grid;gap:7px}.assignment-choice{display:flex;gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;padding:10px;cursor:pointer}.assignment-choice:has(input:checked){border-color:var(--brand);background:var(--brand-soft)}.assignment-choice input{accent-color:var(--brand)}.assignment-choice span,.assignment-choice strong,.assignment-choice small{display:block}.assignment-choice strong{font-size:10px}.assignment-choice small{font-size:8px;color:var(--muted);margin-top:2px}.assignment-rule-row{display:grid;grid-template-columns:155px 1fr;gap:9px;margin-top:10px}.assignment-rule-row>label{display:grid;gap:5px;font-size:8px;color:var(--muted)}.assignment-rule-row select{border:1px solid var(--line);border-radius:8px;background:#fff;padding:8px;font-size:9px}.fairness-rule{display:flex;gap:8px;align-items:center;background:var(--green-soft);border-radius:9px;padding:9px}.fairness-rule>i{width:21px;height:21px;border-radius:7px;background:#fff;color:var(--green);display:grid;place-items:center;font-style:normal}.fairness-rule span,.fairness-rule strong,.fairness-rule small{display:block}.fairness-rule strong{font-size:8px;color:var(--green)}.fairness-rule small{font-size:7px;color:#477866;margin-top:2px}.drawer-head>div>span{font-size:9px;color:var(--muted)}.picker-rule{display:flex;gap:8px;background:var(--brand-soft);border-radius:10px;padding:10px;margin:17px 0}.picker-rule>i{font-style:normal;color:var(--brand)}.picker-rule span,.picker-rule strong,.picker-rule small{display:block}.picker-rule strong{font-size:9px}.picker-rule small{font-size:7px;color:var(--muted);margin-top:2px}.candidate-list{display:grid;gap:6px}.candidate-row{display:grid;grid-template-columns:20px 32px 1fr 55px 65px;gap:8px;align-items:center;border:1px solid var(--line);border-radius:10px;background:#fff;padding:9px;text-align:left;cursor:pointer}.candidate-row:not(:disabled):hover{border-color:var(--brand);background:#fafaff}.candidate-row:disabled{opacity:.48;cursor:not-allowed}.candidate-row .rank{font-size:9px;color:var(--muted);text-align:center}.candidate-row .tech-avatar{width:30px;height:30px}.candidate-main strong,.candidate-main small,.candidate-score strong,.candidate-score small{display:block}.candidate-main strong{font-size:9px}.candidate-main small{font-size:7px;color:var(--muted);margin-top:2px}.candidate-score{text-align:right}.candidate-score strong{font-size:10px}.candidate-score small{font-size:6px;color:var(--muted)}.eligibility{border-radius:999px;padding:4px 6px;text-align:center;font-size:7px;font-weight:700}.eligibility.eligible{background:var(--green-soft);color:var(--green)}.eligibility.ineligible{background:var(--red-soft);color:var(--red)}.attribution-ledger .ledger-row>span:first-child{display:flex;flex-direction:column;align-items:flex-start}.attribution-ledger .ledger-row>span:last-child small{margin-top:3px}\n@media(max-width:900px){.queue-card{grid-template-columns:75px 1fr 1.3fr}.queue-actions{grid-column:2/4}.queue-actions button{flex:1}}\n@media(max-width:760px){.queue-head{align-items:flex-start}.assignment-notice{display:none}.queue-card{grid-template-columns:68px 1fr;padding:11px}.suggested-tech,.queue-actions{grid-column:1/3}.queue-actions button{flex:1}.assignment-rule-row{grid-template-columns:1fr}.candidate-row{grid-template-columns:18px 30px 1fr 58px}.candidate-score{display:none}.candidate-row .eligibility{grid-column:4}.attribution-ledger .ledger-list-head,.attribution-ledger .ledger-row{grid-template-columns:1fr 110px}}\n\n.language-switch{display:flex;align-items:center;padding:3px;background:#f0f1f6;border:1px solid var(--line);border-radius:9px}.language-switch button{min-width:31px;height:27px;padding:0 7px;border:0;border-radius:7px;background:transparent;color:var(--muted);font-size:9px;font-weight:700;cursor:pointer}.language-switch button.active{background:#fff;color:var(--brand);box-shadow:0 2px 7px rgba(32,35,49,.1)}\n@media(max-width:760px){.language-switch button{min-width:29px;padding:0 5px}}\n\n\n:host{display:block;min-width:0}:host([hidden]){display:none} .page-content{max-width:none;padding:16px 0 24px}\n</style><section class=\"workspace\" aria-label=\"Team Calendar\">\n\n      <div class=\"page-content\">\n        \n\n        <div class=\"datebar\">\n          <div class=\"date-controls\"><button id=\"prev-day\" aria-label=\"Previous day\">‹</button><button id=\"today-button\">Today</button><button id=\"next-day\" aria-label=\"Next day\">›</button></div>\n          <div><strong id=\"display-date\">Saturday, August 29</strong><span id=\"range-caption\">9:00 AM – 7:00 PM</span></div>\n          <div class=\"view-switch\" aria-label=\"Calendar range\">\n            <button class=\"active\" data-view=\"day\">Day</button><button data-view=\"week\">Week</button><button data-view=\"twoWeeks\">2 Weeks</button><button data-view=\"threeWeeks\">3 Weeks</button><button data-view=\"month\">Month</button>\n          </div>\n        </div>\n\n        <section id=\"status-summary\" class=\"summary\" aria-label=\"Today's appointment summary\"></section>\n        <section id=\"unassigned-queue\" class=\"unassigned-queue\" aria-label=\"Appointments needing assignment\"></section>\n        <section id=\"technician-overview\" class=\"technician-overview\" aria-label=\"Technician reward overview\"></section>\n\n        <section class=\"calendar-panel\">\n          <div class=\"calendar-toolbar\">\n            <div class=\"search-field\"><span>⌕</span><input id=\"technician-search\" type=\"search\" placeholder=\"Search customer or technician\"></div>\n            <select id=\"technician-filter\" aria-label=\"Technician visibility\"><option value=\"working\">Working today</option><option value=\"all\">All technicians</option></select>\n            <select id=\"mobile-technician\" aria-label=\"Choose technician\"></select>\n            <div class=\"legend\"><span><i class=\"dot completed\"></i>Completed</span><span><i class=\"dot upcoming\"></i>Upcoming</span><span><i class=\"dot pending\"></i>Pending</span></div>\n          </div>\n          <div id=\"calendar-grid\" class=\"calendar-viewport\" aria-label=\"Appointment calendar\"></div>\n        </section>\n      </div>\n      <div id=\"drawer-backdrop\" class=\"drawer-backdrop\"></div>\n      <aside id=\"drawer\" class=\"drawer\" aria-hidden=\"true\"></aside>\n      <div id=\"policy-backdrop\" class=\"drawer-backdrop\"></div>\n      <aside id=\"reward-settings-drawer\" class=\"policy-drawer\" aria-hidden=\"true\"></aside>\n    </section>";
+    const calendarRoot = shadow.querySelector('.workspace');
+
+const technicians = [
+  ["amanda", "Amanda", "AM", true], ["ann", "Ann", "AN", true],
+  ["anna", "Anna", "AA", true], ["anthony", "Anthony", "AT", true],
+  ["bella", "Bella", "BE", true], ["ben", "Ben", "BN", true],
+  ["elda", "Elda", "EL", true], ["esmi", "Esmi", "ES", true],
+  ["katie", "Katie", "KA", true], ["kayla", "Kayla", "KY", true],
+  ["lana", "Lana", "LA", true], ["lily", "Lily", "LI", true],
+  ["nikki", "Nikki", "NI", true], ["priscilla", "Priscilla", "PR", true],
+  ["prissy", "Prissy", "PS", false], ["sean", "Sean", "SE", true],
+  ["snow", "Snow", "SN", false], ["steven", "Steven", "ST", true],
+  ["tj", "TJ", "TJ", true], ["vy", "Vy", "VY", true],
+].map(([id, name, initials, working]) => ({ id, name, initials, working }));
+
+const seeds = [
+  ["Sophia Nguyen", "Gel Manicure", "09:00", 60, "amanda", "completed"],
+  ["Olivia Tran", "Classic Pedicure", "10:30", 60, "amanda", "completed"],
+  ["Emma Pham", "Acrylic Full Set", "13:00", 90, "amanda", "upcoming"],
+  ["Mia Vo", "Gel Pedicure", "15:30", 60, "amanda", "upcoming"],
+  ["Ava Le", "Nail Art", "17:00", 60, "amanda", "pending"],
+  ["Isabella Do", "Dip Powder", "09:30", 75, "ann", "completed"],
+  ["Luna Huynh", "Gel Manicure", "11:30", 60, "ann", "completed"],
+  ["Camila Bui", "Classic Pedicure", "14:00", 60, "ann", "upcoming"],
+  ["Harper Lam", "Acrylic Fill", "16:00", 75, "ann", "upcoming"],
+  ["Evelyn Ho", "Gel Manicure", "09:00", 60, "anna", "completed"],
+  ["Abigail Truong", "Luxury Pedicure", "10:30", 90, "anna", "completed"],
+  ["Ella Mai", "Gel-X Extensions", "13:30", 90, "anna", "upcoming"],
+  ["Elizabeth Dao", "Nail Art", "16:30", 60, "anna", "upcoming"],
+  ["Sofia Dang", "Acrylic Full Set", "09:30", 90, "anthony", "completed"],
+  ["Avery Ngo", "Gel Pedicure", "12:00", 60, "anthony", "completed"],
+  ["Scarlett Vu", "Dip Powder", "14:30", 75, "anthony", "upcoming"],
+  ["Emily Chau", "Classic Manicure", "17:00", 45, "anthony", "cancelled"],
+  ["Aria Ta", "Gel Manicure", "09:00", 60, "bella", "completed"],
+  ["Penelope Ly", "Spa Pedicure", "11:00", 75, "bella", "completed"],
+  ["Chloe Dinh", "Acrylic Fill", "13:30", 75, "bella", "upcoming"],
+  ["Layla Cao", "Gel Manicure", "16:00", 60, "bella", "pending"],
+  ["Mila Duong", "Classic Pedicure", "09:30", 60, "ben", "completed"],
+  ["Nora Thai", "Gel-X Extensions", "11:30", 90, "ben", "completed"],
+  ["Hazel Ha", "Gel Pedicure", "15:00", 60, "ben", "upcoming"],
+  ["Madison Lai", "Dip Powder", "10:00", 75, "elda", "completed"],
+  ["Ellie Van", "Nail Art", "13:00", 60, "elda", "upcoming"],
+  ["Lily Phan", "Classic Manicure", "16:00", 45, "elda", "cancelled"],
+  ["Nova Dam", "Gel Manicure", "09:00", 60, "esmi", "completed"],
+  ["Grace Luong", "Luxury Pedicure", "12:00", 90, "esmi", "completed"],
+  ["Zoe Nguyen", "Acrylic Full Set", "15:30", 90, "esmi", "upcoming"],
+  ["Riley Tran", "Gel Pedicure", "10:30", 60, "katie", "completed"],
+  ["Victoria Pham", "Dip Powder", "13:30", 75, "katie", "upcoming"],
+  ["Hannah Le", "Nail Art", "16:30", 60, "katie", "pending"],
+  ["Stella Vo", "Gel Manicure", "09:30", 60, "kayla", "completed"],
+  ["Aurora Do", "Spa Pedicure", "14:00", 75, "kayla", "upcoming"],
+  ["Natalie Bui", "Acrylic Fill", "17:00", 75, "kayla", "upcoming"],
+  ["Emilia Huynh", "Gel-X Extensions", "10:00", 90, "lana", "completed"],
+  ["Everly Lam", "Classic Pedicure", "13:00", 60, "lana", "upcoming"],
+  ["Leah Ho", "Gel Manicure", "15:30", 60, "lily", "pending"],
+  ["Lucy Truong", "Dip Powder", "11:00", 75, "nikki", "completed"],
+  ["Naomi Mai", "Luxury Pedicure", "14:30", 90, "priscilla", "pending"],
+  ["Maya Dao", "Acrylic Full Set", "16:00", 90, "sean", "cancelled"],
+];
+
+const appointments = seeds.map((seed, index) => ({
+  id: `apt-${index + 1}`,
+  customer: seed[0], service: seed[1], start: seed[2], duration: seed[3],
+  technicianId: seed[4], status: seed[5], phone: `(469) 555-${String(1200 + index).slice(-4)}`,
+}));
+
+function getStatusCounts(items) {
+  const counts = { completed: 0, upcoming: 0, pending: 0, cancelled: 0 };
+  for (const item of items) counts[item.status] += 1;
+  return counts;
+}
+
+function getTechnicianCounts(items) {
+  return items.reduce((counts, item) => {
+    counts[item.technicianId] = (counts[item.technicianId] || 0) + 1;
+    return counts;
+  }, {});
+}
+
+function filterAppointments(items, { status = "all", technicianIds = [], query = "" } = {}) {
+  const needle = query.trim().toLowerCase();
+  return items.filter((item) =>
+    (status === "all" || item.status === status) &&
+    (!technicianIds.length || technicianIds.includes(item.technicianId)) &&
+    (!needle || item.customer.toLowerCase().includes(needle))
+  );
+}
+
+function formatTime(time) {
+  const [hour24, minute] = time.split(":").map(Number);
+  const period = hour24 >= 12 ? "PM" : "AM";
+  const hour12 = hour24 % 12 || 12;
+  return `${hour12}:${String(minute).padStart(2, "0")} ${period}`;
+}
+
+function startOfWeek(date) {
+  const result = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+  result.setDate(result.getDate() - result.getDay());
+  return result;
+}
+
+function buildViewDates(anchor, view) {
+  if (view === "day") return [new Date(anchor.getFullYear(), anchor.getMonth(), anchor.getDate())];
+  let count = { week: 7, twoWeeks: 14, threeWeeks: 21 }[view];
+  let start = startOfWeek(anchor);
+  if (view === "month") {
+    count = 42;
+    start = startOfWeek(new Date(anchor.getFullYear(), anchor.getMonth(), 1));
+  }
+  return Array.from({ length: count }, (_, index) => {
+    const date = new Date(start);
+    date.setDate(start.getDate() + index);
+    return date;
+  });
+}
+
+function getDailyMetrics(date) {
+  const key = Math.floor(date.getTime() / 86400000);
+  const total = 24 + ((key * 17 + 11) % 34);
+  const completed = Math.floor(total * 0.43);
+  const upcoming = Math.floor(total * 0.39);
+  const pending = Math.max(1, Math.floor(total * 0.11));
+  const cancelled = total - completed - upcoming - pending;
+  return { total, completed, upcoming, pending, cancelled, capacity: Math.min(96, Math.round(total / 58 * 100)) };
+}
+
+const miaProfile = {
+  type: "returning", visits: 4, lifetimeSpend: 386, preferredTechnician: "Amanda", lastVisit: "Jul 18, 2026",
+  history: [
+    { date: "Jul 18", service: "Gel Manicure + Nail Art", technician: "Amanda", price: 68 },
+    { date: "Jun 22", service: "Classic Pedicure + Nail Art", technician: "Ann", price: 72 },
+    { date: "May 11", service: "Gel Manicure + Nail Art", technician: "Amanda", price: 65 },
+  ],
+  recommendation: { id: "nail-art", name: "Nail Art", price: 15, duration: 15, confidence: 92, reason: "Mia added Nail Art on 3 of her last 4 visits." },
+};
+
+function genericKnownProfile(customer, index) {
+  const appointment = appointments[index];
+  const technician = technicians.find((tech) => tech.id === appointment.technicianId)?.name || "Any technician";
+  const options = appointment.service.includes("Pedicure")
+    ? { id: "callus", name: "Callus Treatment", price: 18, duration: 15 }
+    : { id: "gel-upgrade", name: "Gel Polish Upgrade", price: 12, duration: 10 };
+  const visits = 2 + (index % 7);
+  return {
+    type: "returning", visits, lifetimeSpend: 145 + index * 17, preferredTechnician: technician,
+    lastVisit: ["Aug 2, 2026", "Jul 26, 2026", "Jul 12, 2026"][index % 3],
+    history: [
+      { date: "Aug 2", service: appointment.service, technician, price: 55 + (index % 4) * 8 },
+      { date: "Jul 12", service: index % 2 ? "Gel Manicure" : "Classic Pedicure", technician, price: 48 },
+      { date: "Jun 8", service: appointment.service, technician, price: 52 + (index % 3) * 7 },
+    ],
+    recommendation: { ...options, confidence: 84, reason: `${customer.split(" ")[0]} chose a similar add-on on 2 recent visits.` },
+  };
+}
+
+function getCustomerIntelligence(customer) {
+  if (customer === "Mia Vo") return miaProfile;
+  if (customer === "Sophia Nguyen") return { type: "new", visits: 0, lifetimeSpend: 0, preferredTechnician: null, lastVisit: null, history: [], recommendation: null };
+  const index = appointments.findIndex((appointment) => appointment.customer === customer);
+  if (index === -1) return { type: "new", visits: 0, lifetimeSpend: 0, preferredTechnician: null, lastVisit: null, history: [], recommendation: null };
+  return genericKnownProfile(customer, index);
+}
+
+
+const defaultRewardPolicy = {
+  enabled: true,
+  scope: "salon",
+  structure: "tiers",
+  period: "weekly",
+  calculation: "progressive",
+  turnCredit: 0.5,
+  flatRate: 2,
+  levelRates: { Junior: 1, Senior: 2, Master: 3 },
+  tiers: [
+    { min: 1, max: 20, rate: 1 },
+    { min: 21, max: 40, rate: 2 },
+    { min: 41, max: null, rate: 3 },
+  ],
+  overrides: {},
+  effectiveDate: "2026-09-01",
+};
+
+function validateTiers(tiers) {
+  if (!Array.isArray(tiers) || tiers.length === 0) return { valid: false, message: "Add at least one reward tier." };
+  let expectedMin = 1;
+  for (let index = 0; index < tiers.length; index += 1) {
+    const tier = tiers[index];
+    if (!Number.isFinite(tier.min) || tier.min !== expectedMin) return { valid: false, message: `Tier ${index + 1} must start at ${expectedMin}.` };
+    if (!Number.isFinite(tier.rate) || tier.rate < 0) return { valid: false, message: `Tier ${index + 1} needs a non-negative reward.` };
+    if (tier.max == null) {
+      if (index !== tiers.length - 1) return { valid: false, message: "The open-ended tier must be last." };
+      return { valid: true, message: "Reward tiers are valid." };
+    }
+    if (!Number.isFinite(tier.max) || tier.max < tier.min) return { valid: false, message: `Tier ${index + 1} ending count must be at least ${tier.min}.` };
+    expectedMin = tier.max + 1;
+  }
+  return { valid: true, message: "Reward tiers are valid." };
+}
+
+function calculateReward(count, policy, technician = {}) {
+  if (!policy.enabled || count <= 0) return 0;
+  if (policy.structure === "flat") return count * Number(policy.flatRate || 0);
+  if (policy.structure === "level") return count * Number(policy.levelRates?.[technician.level] || 0);
+  const tiers = policy.tiers || [];
+  if (!validateTiers(tiers).valid) return 0;
+  const reached = [...tiers].reverse().find((tier) => count >= tier.min);
+  if (policy.calculation === "final") return count * Number(reached?.rate || 0);
+  return tiers.reduce((total, tier) => {
+    const upper = tier.max == null ? count : Math.min(count, tier.max);
+    return total + Math.max(0, upper - tier.min + 1) * Number(tier.rate || 0);
+  }, 0);
+}
+
+function resolveTechnicianPolicy(policy, technician) {
+  if (policy.scope !== "technician") return policy;
+  const override = policy.overrides?.[technician.id];
+  return override?.enabled ? { ...policy, ...override, tiers: override.tiers || policy.tiers } : policy;
+}
+
+function technicianSeed(technician) {
+  return [...technician.id].reduce((sum, character) => sum + character.charCodeAt(0), 0);
+}
+
+function calculateTechnicianMetrics(technician, rangeDays, policy) {
+  const seed = technicianSeed(technician);
+  const scale = Math.max(1, rangeDays);
+  const completedBookings = Math.max(1, Math.round(scale * (2.6 + (seed % 4) * 0.45)));
+  const pendingBookings = Math.max(1, Math.round(scale * (0.35 + (seed % 3) * 0.08)));
+  const cancelledBookings = Math.max(1, Math.round(scale * 0.18));
+  const reversedBookings = scale >= 7 ? seed % 2 : 0;
+  const eligibleBookings = Math.max(0, completedBookings - reversedBookings);
+  const walkInTurns = Math.max(1, Math.round(scale * (1.25 + (seed % 4) * 0.15)));
+  const appliedPolicy = resolveTechnicianPolicy(policy, technician);
+  const reward = calculateReward(eligibleBookings, appliedPolicy, technician);
+  const bookingTurnCredit = eligibleBookings * Number(appliedPolicy.turnCredit);
+  return {
+    completedBookings, pendingBookings, cancelledBookings, reversedBookings, eligibleBookings,
+    reward, walkInTurns, bookingTurnCredit, effectiveTurns: walkInTurns + bookingTurnCredit,
+    status: reversedBookings ? "Reversed" : "Earned",
+    appliedRate: eligibleBookings ? reward / eligibleBookings : 0,
+  };
+}
+
+function generateTechnicianLedger(technician, rangeDays, policy) {
+  const metrics = calculateTechnicianMetrics(technician, rangeDays, policy);
+  const contribution = metrics.eligibleBookings ? metrics.reward / metrics.eligibleBookings : 0;
+  const services = ["Gel Manicure", "Classic Pedicure", "Dip Powder", "Acrylic Fill"];
+  const rows = Array.from({ length: Math.min(metrics.eligibleBookings, 8) }, (_, index) => ({
+    id: `${technician.id}-${index + 1}`,
+    customer: ["Mia Tran", "Sophia Nguyen", "Olivia Pham", "Ava Le", "Emma Vo"][index % 5],
+    date: `Aug ${29 - index}, 2026`,
+    service: services[index % services.length],
+    reward: contribution,
+    turnCredit: Number(resolveTechnicianPolicy(policy, technician).turnCredit),
+    status: "Earned",
+  }));
+  if (metrics.reversedBookings) rows.push({ id: `${technician.id}-reversed`, customer: "Refunded ticket", date: "Aug 20, 2026", service: "Gel Manicure", reward: 0, turnCredit: 0, status: "Reversed" });
+  rows.push({ id: `${technician.id}-pending`, customer: "Pending appointment", date: "Aug 30, 2026", service: "Classic Pedicure", reward: 0, turnCredit: 0, status: "Pending" });
+  return rows;
+}
+
+
+const defaultAssignmentPolicy = {
+  mode: "automatic",
+  alertHours: 24,
+};
+
+function getRewardAttribution(appointment) {
+  const completed = appointment.status === "completed";
+  const requested = appointment.bookingSource === "requested";
+  const reassigned = requested && appointment.assignedTechnicianId !== appointment.requestedTechnicianId;
+  const assignmentLabel = appointment.assignmentMethod === "system" ? "System Assigned" : "Manager Assigned";
+  return {
+    eligible: completed && requested,
+    rewardOwnerId: completed && requested ? appointment.requestedTechnicianId : null,
+    turnOwnerId: completed ? appointment.performedByTechnicianId : null,
+    badge: requested ? (reassigned ? "Reassigned Request" : "Customer Request") : `Anyone · ${assignmentLabel}`,
+    reason: requested ? "Customer selected this technician" : "Salon-assigned Anyone booking",
+  };
+}
+
+function rankEligibleTechnicians(appointment, technicians) {
+  return technicians.map((technician) => {
+    let disabledReason = "";
+    if (!technician.skills?.includes(appointment.service)) disabledReason = `Not qualified for ${appointment.service}`;
+    else if (!technician.working) disabledReason = "Not scheduled to work";
+    else if (technician.conflict) disabledReason = "Schedule conflict";
+    const eligible = !disabledReason;
+    return {
+      ...technician,
+      eligible,
+      disabledReason,
+      reasons: eligible ? ["Qualified for service", "Available for full duration", `Turn score ${Number(technician.turnScore).toFixed(1)}`, `${technician.workload} bookings today`] : [],
+    };
+  }).sort((a, b) => Number(b.eligible) - Number(a.eligible) || a.turnScore - b.turnScore || a.workload - b.workload).map((technician, index) => ({ ...technician, rank: index + 1 }));
+}
+
+function assignTechnician(appointment, technicianId, method, actor, reason = "Assigned from Anyone queue") {
+  return {
+    ...appointment,
+    assignmentMethod: method,
+    assignedTechnicianId: technicianId,
+    rewardOwnerTechnicianId: appointment.bookingSource === "requested" ? appointment.requestedTechnicianId : null,
+    assignmentHistory: [
+      ...(appointment.assignmentHistory || []),
+      { actor, previousTechnicianId: appointment.assignedTechnicianId || null, newTechnicianId: technicianId, method, timestamp: "Aug 29, 2026 · 5:35 PM", reason },
+    ],
+  };
+}
+
+
+const vi = {
+  "AI Hub": "Trung tâm AI",
+  "Booking": "Lịch hẹn",
+  "Customers": "Khách hàng",
+  "Call Log": "Nhật ký cuộc gọi",
+  "SMS Campaigns": "Chiến dịch SMS",
+  "Manage account": "Quản lý tài khoản",
+  "AI HUB · BOOKING": "TRUNG TÂM AI · LỊCH HẸN",
+  "Team calendar": "Lịch làm việc của đội ngũ",
+  "Every appointment, every technician — one clear view.": "Mọi lịch hẹn và mọi thợ — trong một giao diện rõ ràng.",
+  "Reward settings": "Cài đặt thưởng",
+  "⚙ Reward settings": "⚙ Cài đặt thưởng",
+  "New appointment": "Tạo lịch hẹn",
+  "Today": "Hôm nay",
+  "Day": "Ngày",
+  "Week": "Tuần",
+  "2 Weeks": "2 tuần",
+  "3 Weeks": "3 tuần",
+  "Month": "Tháng",
+  "Completed": "Đã hoàn thành",
+  "Upcoming": "Sắp tới",
+  "Pending": "Chờ xác nhận",
+  "Pending confirmation": "Chờ xác nhận",
+  "Cancelled": "Đã hủy",
+  "Working today": "Làm hôm nay",
+  "Off today": "Nghỉ hôm nay",
+  "Working today": "Đang làm hôm nay",
+  "All technicians": "Tất cả thợ",
+  "Search customer or technician": "Tìm khách hoặc thợ",
+  "Anyone appointments": "Lịch hẹn chọn bất kỳ thợ nào",
+  "ANYONE APPOINTMENTS": "LỊCH HẸN CHỌN BẤT KỲ THỢ NÀO",
+  "appointments need assignment": "lịch hẹn cần phân thợ",
+  "Anyone": "Bất kỳ thợ nào",
+  "Suggested technician": "Thợ được đề xuất",
+  "View others": "Xem thợ khác",
+  "Assignment due soon": "Sắp đến hạn phân thợ",
+  "Auto-assign immediately": "Tự động phân thợ ngay",
+  "System suggests · Manager confirms": "Hệ thống đề xuất · Quản lý xác nhận",
+  "Manager assigns manually": "Quản lý tự phân thợ",
+  "All Anyone appointments are assigned": "Tất cả lịch hẹn bất kỳ đã được phân thợ",
+  "No manager action needed right now.": "Hiện tại quản lý không cần xử lý.",
+  "Technician Overview": "Tổng quan thợ",
+  "Completed bookings": "Lịch hẹn hoàn thành",
+  "Booking reward": "Thưởng lịch hẹn",
+  "Booking turns": "Turn từ lịch hẹn",
+  "Effective turns": "Tổng turn được tính",
+  "Status": "Trạng thái",
+  "Earned": "Đã nhận",
+  "Only Customer Request earns reward": "Chỉ khách yêu cầu đích danh thợ mới được thưởng",
+  "Customer Request": "Khách yêu cầu đích danh",
+  "Reassigned Request": "Lịch yêu cầu đã đổi thợ",
+  "Not reward eligible": "Không đủ điều kiện nhận thưởng",
+  "Reward / turn owner": "Người nhận thưởng / turn",
+  "Reward": "Thưởng",
+  "Turn": "Turn",
+  "Customer Request reward total": "Tổng thưởng khách yêu cầu đích danh",
+  "Choose technician": "Chọn thợ",
+  "Ranked with explainable rules": "Xếp hạng theo quy tắc rõ ràng",
+  "Skills, availability, turn score, then daily workload.": "Dựa trên kỹ năng, lịch trống, điểm turn và lượng khách trong ngày.",
+  "Turn score": "Điểm turn",
+  "Eligible": "Đủ điều kiện",
+  "Unavailable": "Không phù hợp",
+  "Qualified for service": "Đủ kỹ năng làm dịch vụ",
+  "Available for full duration": "Trống trong toàn bộ thời gian dịch vụ",
+  "Reward policy": "Chính sách thưởng",
+  "Booking incentive settings": "Cài đặt thưởng lịch hẹn",
+  "Anyone assignment": "Phân thợ cho lịch hẹn bất kỳ",
+  "Choose how appointments without a requested technician are handled.": "Chọn cách xử lý lịch hẹn khi khách không yêu cầu thợ cụ thể.",
+  "System suggests, manager confirms": "Hệ thống đề xuất, quản lý xác nhận",
+  "Recommended · Fast with manager control": "Đề xuất · Nhanh và vẫn có quản lý kiểm soát",
+  "Assign the best eligible technician": "Phân ngay thợ phù hợp nhất",
+  "Manager assigns manually": "Quản lý tự phân thợ",
+  "Keep appointment Unassigned": "Giữ lịch hẹn ở trạng thái chưa phân thợ",
+  "Unassigned alert": "Cảnh báo chưa phân thợ",
+  "Consistent reward rule": "Quy tắc thưởng nhất quán",
+  "Anyone bookings earn $0.00 booking reward. Turn credit goes to the performer.": "Lịch hẹn bất kỳ không được thưởng booking. Turn được tính cho thợ thực hiện.",
+  "Cancel": "Hủy",
+  "Save policy": "Lưu chính sách",
+  "Monthly booking overview": "Tổng quan lịch hẹn theo tháng",
+  "Live range overview": "Tổng quan thời gian thực",
+  "No technicians match your search.": "Không có thợ phù hợp với tìm kiếm.",
+};
+
+function normalizeLanguage(value) { return value === "vi" ? "vi" : "en"; }
+
+function translateText(text, language) {
+  if (normalizeLanguage(language) === "en") return text;
+  const source = String(text);
+  if (vi[source] != null) return vi[source];
+  let match = source.match(/^(\d+) appointments need assignment$/);
+  if (match) return `${match[1]} lịch hẹn cần phân thợ`;
+  match = source.match(/^Auto-assign immediately · Alert (\d+) hours before$/);
+  if (match) return `Tự động phân thợ ngay · Cảnh báo trước ${match[1]} giờ`;
+  match = source.match(/^Assign (.+)$/);
+  if (match) return `Phân cho ${match[1]}`;
+  match = source.match(/^Alert (\d+) hours before$/);
+  if (match) return `Cảnh báo trước ${match[1]} giờ`;
+  match = source.match(/^(\d+)-day booking overview$/);
+  if (match) return `Tổng quan lịch hẹn ${match[1]} ngày`;
+  match = source.match(/^(\d+)% booked$/);
+  if (match) return `Đã đặt ${match[1]}%`;
+  match = source.match(/^(\d+) total$/);
+  if (match) return `Tổng ${match[1]}`;
+  match = source.match(/^(\d+) min$/);
+  if (match) return `${match[1]} phút`;
+  return source;
+}
+
+const originalText = new WeakMap();
+const originalPlaceholder = new WeakMap();
+
+function applyLanguage(root, language) {
+  const lang = normalizeLanguage(language);
+  host.lang = lang === "vi" ? "vi" : "en";
+  const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+  const nodes = [];
+  while (walker.nextNode()) nodes.push(walker.currentNode);
+  nodes.forEach((node) => {
+    if (!originalText.has(node)) originalText.set(node, node.nodeValue);
+    const raw = originalText.get(node);
+    const trimmed = raw.trim();
+    if (!trimmed) return;
+    const translated = translateText(trimmed, lang);
+    node.nodeValue = raw.replace(trimmed, translated);
+  });
+  root.querySelectorAll("[placeholder]").forEach((element) => {
+    if (!originalPlaceholder.has(element)) originalPlaceholder.set(element, element.placeholder);
+    element.placeholder = translateText(originalPlaceholder.get(element), lang);
+  });
+}
+
+
+
+
+
+
+const state = {
+  language: normalizeLanguage(localStorage.getItem("nexora-language")),
+  status: "all", technicianMode: "working", query: "", mobileTechnicianId: "amanda",
+  view: "day", anchorDate: new Date(2026, 7, 29), currentAppointmentId: null,
+  addedUpsells: new Set(), dismissedUpsells: new Set(),
+  rewardPolicy: structuredClone(defaultRewardPolicy),
+  policyDraft: null,
+  assignmentPolicy: structuredClone(defaultAssignmentPolicy), assignmentDraft: null,
+  assignmentNotice: "",
+  unassignedAppointments: [
+    { id: "unassigned-1", customer: "Mia Tran", phone: "(469) 555-0241", service: "Gel Manicure", start: "10:00", duration: 60, urgent: true, bookingSource: "anyone", requestedTechnicianId: null, assignedTechnicianId: null, assignmentMethod: "manager", assignmentHistory: [] },
+    { id: "unassigned-2", customer: "Olivia Pham", phone: "(469) 555-1180", service: "Classic Pedicure", start: "13:30", duration: 60, urgent: false, bookingSource: "anyone", requestedTechnicianId: null, assignedTechnicianId: null, assignmentMethod: "manager", assignmentHistory: [] },
+    { id: "unassigned-3", customer: "Emma Le", phone: "(469) 555-4412", service: "Dip Powder", start: "16:00", duration: 75, urgent: false, bookingSource: "anyone", requestedTechnicianId: null, assignedTechnicianId: null, assignmentMethod: "manager", assignmentHistory: [] },
+  ],
+  policyAudit: [{ action: "Booking incentive policy created", actor: "Quarry Nails Bar Owner", time: "Aug 29, 2026 · 4:30 PM", effectiveDate: "Sep 1, 2026" }],
+};
+const $ = (selector) => calendarRoot.querySelector(selector);
+const summary = $("#status-summary");
+const calendar = $("#calendar-grid");
+const search = $("#technician-search");
+const technicianFilter = $("#technician-filter");
+const mobileTechnician = $("#mobile-technician");
+const drawer = $("#drawer");
+const backdrop = $("#drawer-backdrop");
+const displayDate = $("#display-date");
+const rangeCaption = $("#range-caption");
+const toolbar = $(".calendar-toolbar");
+const technicianOverview = $("#technician-overview");
+const unassignedQueue = $("#unassigned-queue");
+const policyDrawer = $("#reward-settings-drawer");
+const policyBackdrop = $("#policy-backdrop");
+const statusLabels = { completed: "Completed", upcoming: "Upcoming", pending: "Pending confirmation", cancelled: "Cancelled" };
+
+function rangeDates() { return buildViewDates(state.anchorDate, state.view); }
+
+function rangeTotals() {
+  if (state.view === "day") return { ...getStatusCounts(appointments), total: appointments.length };
+  return rangeDates().reduce((sum, date) => {
+    const metrics = getDailyMetrics(date);
+    for (const key of ["total", "completed", "upcoming", "pending", "cancelled"]) sum[key] += metrics[key];
+    return sum;
+  }, { total: 0, completed: 0, upcoming: 0, pending: 0, cancelled: 0 });
+}
+
+function renderSummary() {
+  const counts = rangeTotals();
+  const rangeName = { day: "today", week: "this week", twoWeeks: "in 2 weeks", threeWeeks: "in 3 weeks", month: "this month" }[state.view];
+  const cards = [
+    ["all", `Appointments ${rangeName}`, counts.total, "↗", state.view === "day" ? "8% busier than last Saturday" : "Live range overview"],
+    ["completed", "Completed", counts.completed, "✓", ""], ["upcoming", "Upcoming", counts.upcoming, "→", ""],
+    ["pending", "Pending", counts.pending, "…", ""], ["cancelled", "Cancelled", counts.cancelled, "×", ""],
+  ];
+  summary.innerHTML = cards.map(([key, label, value, icon, note]) => `<button class="summary-card ${state.status === key ? "is-active" : ""}" data-status="${key}" aria-pressed="${state.status === key}"><strong>${value}</strong><span>${label}</span>${note ? `<small>${note}</small>` : ""}<i class="status-icon ${key === "all" ? "upcoming" : key}">${icon}</i></button>`).join("");
+}
+
+function visibleTechnicians() {
+  const isMobile = matchMedia("(max-width: 760px)").matches;
+  let visible = state.technicianMode === "all" ? technicians : technicians.filter((tech) => tech.working);
+  const needle = state.query.trim().toLowerCase();
+  if (needle) visible = visible.filter((tech) => tech.name.toLowerCase().includes(needle) || appointments.some((apt) => apt.technicianId === tech.id && apt.customer.toLowerCase().includes(needle)));
+  if (isMobile) visible = technicians.filter((tech) => tech.id === state.mobileTechnicianId);
+  return visible;
+}
+
+function timeToSlot(time) { const [hour, minute] = time.split(":").map(Number); return (hour - 9) * 2 + minute / 30; }
+
+function renderDay() {
+  toolbar.classList.remove("overview-mode");
+  const visible = visibleTechnicians();
+  const ids = visible.map((tech) => tech.id);
+  const filtered = filterAppointments(appointments, { status: state.status, technicianIds: ids, query: state.query });
+  const counts = getTechnicianCounts(appointments);
+  calendar.innerHTML = `<div class="calendar-grid" style="--tech-count:${Math.max(visible.length, 1)}"><div class="corner"></div>
+    ${visible.map((tech, index) => `<div class="technician-header" style="grid-column:${index + 2};grid-row:1"><div class="tech-avatar">${tech.initials}</div><div class="tech-meta"><div class="tech-name">${tech.name} · ${counts[tech.id] || 0}</div><small><i class="online"></i>${tech.working ? "Working today" : "Off today"}</small></div></div>`).join("")}
+    ${Array.from({ length: 20 }, (_, slot) => { const hour = 9 + Math.floor(slot / 2); const minute = slot % 2 ? "30" : "00"; const labelHour = hour > 12 ? hour - 12 : hour; const period = hour >= 12 ? "PM" : "AM"; return `<div class="time-cell" style="grid-column:1;grid-row:${slot + 2}">${minute === "00" ? `${labelHour} ${period}` : ":30"}</div>${visible.map((_, index) => `<div class="slot-cell" style="grid-column:${index + 2};grid-row:${slot + 2}"></div>`).join("")}`; }).join("")}
+    ${filtered.map((apt) => { const techIndex = visible.findIndex((tech) => tech.id === apt.technicianId); return `<button class="appointment ${apt.status}" data-appointment-id="${apt.id}" style="grid-column:${techIndex + 2};grid-row:${timeToSlot(apt.start) + 2}/span ${Math.max(1, apt.duration / 30)}"><strong>${formatTime(apt.start)} · ${apt.customer}</strong><span>${apt.service}</span></button>`; }).join("")}
+    ${visible.length === 0 ? `<div class="empty-state">No technicians match your search.</div>` : ""}</div>`;
+}
+
+function dayKey(date) { return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`; }
+function locale() { return state.language === "vi" ? "vi-VN" : "en-US"; }
+function shortDate(date) { return date.toLocaleDateString(locale(), { weekday: "short", month: "short", day: "numeric" }); }
+
+function renderOverview() {
+  toolbar.classList.add("overview-mode");
+  const dates = rangeDates();
+  const selectedMetric = state.status === "all" ? "total" : state.status;
+  const currentMonth = state.anchorDate.getMonth();
+  calendar.innerHTML = `<div class="overview-grid ${state.view}">
+    <div class="overview-weekdays">${["SUN","MON","TUE","WED","THU","FRI","SAT"].map((day) => `<span>${day}</span>`).join("")}</div>
+    <div class="overview-days">${dates.map((date, index) => {
+      const metrics = getDailyMetrics(date); const tech = technicians[(date.getDate() + date.getMonth()) % technicians.length];
+      const preview = [appointments[index % appointments.length], appointments[(index + 9) % appointments.length]];
+      return `<button class="overview-day ${date.getMonth() !== currentMonth && state.view === "month" ? "outside-month" : ""}" data-date="${dayKey(date)}" style="--load:${metrics.capacity}%">
+        <div class="overview-day-head"><span>${shortDate(date)}</span><strong>${metrics[selectedMetric]}</strong></div>
+        <div class="capacity-track"><i></i></div><div class="capacity-label"><span>${metrics.capacity}% booked</span><span>${metrics.total} total</span></div>
+        ${state.view === "week" ? `<div class="day-preview">${preview.map((apt) => `<div><i class="${apt.status}"></i><span>${formatTime(apt.start)}</span><strong>${apt.customer}</strong></div>`).join("")}</div>` : ""}
+        <div class="day-footer"><span>Top tech</span><strong>${tech.name}</strong></div>
+      </button>`;
+    }).join("")}</div></div>`;
+}
+
+function renderMobileOptions() { mobileTechnician.innerHTML = technicians.filter((tech) => tech.working).map((tech) => `<option value="${tech.id}" ${tech.id === state.mobileTechnicianId ? "selected" : ""}>${tech.name}</option>`).join(""); }
+
+function renderDate() {
+  const dates = rangeDates(); const first = dates[0]; const last = dates[dates.length - 1];
+  if (state.view === "day") { displayDate.textContent = state.anchorDate.toLocaleDateString(locale(), { weekday: "long", month: "long", day: "numeric" }); rangeCaption.textContent = "9:00 AM – 7:00 PM"; }
+  else if (state.view === "month") { displayDate.textContent = state.anchorDate.toLocaleDateString(locale(), { month: "long", year: "numeric" }); rangeCaption.textContent = "Monthly booking overview"; }
+  else { displayDate.textContent = `${first.toLocaleDateString(locale(), { month: "short", day: "numeric" })} – ${last.toLocaleDateString(locale(), { month: "short", day: "numeric", year: "numeric" })}`; rangeCaption.textContent = `${dates.length}-day booking overview`; }
+  calendarRoot.querySelectorAll("[data-view]").forEach((button) => button.classList.toggle("active", button.dataset.view === state.view));
+}
+
+const currency = new Intl.NumberFormat("en-US", { style: "currency", currency: "USD" });
+function technicianWithLevel(technician, index) { return { ...technician, level: ["Master", "Senior", "Senior", "Junior"][index % 4] }; }
+
+function assignmentCandidates(appointment) {
+  return rankEligibleTechnicians(appointment, technicians.map((technician, index) => {
+    const skills = index < 4 ? ["Gel Manicure", "Classic Pedicure", "Dip Powder"] : [index % 2 ? "Classic Pedicure" : "Gel Manicure", index % 3 ? "Dip Powder" : "Classic Pedicure"];
+    return { ...technicianWithLevel(technician, index), skills, working: technician.working, conflict: index === 7, turnScore: 2 + (index % 7) * 0.5, workload: 2 + (index % 6) };
+  }));
+}
+
+function assignmentModeLabel() { return { suggest_confirm: "System suggests · Manager confirms", automatic: "Auto-assign immediately", manual: "Manager assigns manually" }[state.assignmentPolicy.mode]; }
+
+function renderUnassignedQueue() {
+  if (!state.unassignedAppointments.length) { unassignedQueue.innerHTML = `<div class="queue-empty"><i>✓</i><span><strong>All Anyone appointments are assigned</strong><small>No manager action needed right now.</small></span></div>`; return; }
+  const cards = state.unassignedAppointments.map((appointment) => {
+    const suggestion = assignmentCandidates(appointment).find((candidate) => candidate.eligible);
+    return `<article class="queue-card ${appointment.urgent ? "urgent" : ""}" data-queue-id="${appointment.id}"><div class="queue-time"><strong>${formatTime(appointment.start)}</strong><span>${appointment.duration} min</span></div><div class="queue-customer"><span class="source-badge anyone">Anyone</span><strong>${appointment.customer}</strong><small>${appointment.service}${appointment.urgent ? " · Assignment due soon" : ""}</small></div><div class="suggested-tech"><i class="tech-avatar">${suggestion.initials}</i><span><small>Suggested technician</small><strong>${suggestion.name} · ${suggestion.level}</strong><em>Available · Turn ${suggestion.turnScore.toFixed(1)} · ${suggestion.workload} today</em></span></div><div class="queue-actions"><button class="assign-suggested" data-assign-suggested="${appointment.id}">Assign ${suggestion.name}</button><button class="view-technicians" data-view-candidates="${appointment.id}">View others</button></div></article>`;
+  }).join("");
+  unassignedQueue.innerHTML = `<div class="queue-head"><div><p class="eyebrow">ANYONE APPOINTMENTS</p><h2><span>${state.unassignedAppointments.length}</span> appointments need assignment</h2><small>${assignmentModeLabel()} · Alert ${state.assignmentPolicy.alertHours} hours before</small></div>${state.assignmentNotice ? `<div class="assignment-notice">✓ ${state.assignmentNotice}</div>` : ""}</div><div class="queue-list">${cards}</div>`;
+}
+
+function completeAssignment(appointmentId, technicianId, method = "manager") {
+  const index = state.unassignedAppointments.findIndex((appointment) => appointment.id === appointmentId); if (index < 0) return;
+  const appointment = state.unassignedAppointments[index]; const assigned = assignTechnician(appointment, technicianId, method, "Quarry Nails Bar Owner"); const technician = technicians.find((item) => item.id === technicianId);
+  state.unassignedAppointments.splice(index, 1); state.assignmentNotice = `${appointment.customer} assigned to ${technician.name}`; state.policyAudit.unshift({ action: `${appointment.customer} assigned to ${technician.name}`, actor: "Quarry Nails Bar Owner", time: assigned.assignmentHistory.at(-1).timestamp, effectiveDate: "Immediately" }); closeDrawer(); renderUnassignedQueue();
+}
+
+function openTechnicianPicker(appointmentId) {
+  const appointment = state.unassignedAppointments.find((item) => item.id === appointmentId); const candidates = assignmentCandidates(appointment);
+  drawer.innerHTML = `<div class="drawer-head"><div><p class="eyebrow">ANYONE ASSIGNMENT</p><h2>Choose technician</h2><span>${formatTime(appointment.start)} · ${appointment.customer} · ${appointment.service}</span></div><button class="close-button" aria-label="Close technician picker">×</button></div><div class="picker-rule"><i>✦</i><span><strong>Ranked with explainable rules</strong><small>Skills, availability, turn score, then daily workload.</small></span></div><div class="candidate-list">${candidates.map((candidate) => `<button class="candidate-row" data-candidate-id="${candidate.id}" data-appointment-id="${appointment.id}" ${candidate.eligible ? "" : "disabled"}><span class="rank">${candidate.rank}</span><i class="tech-avatar">${candidate.initials}</i><span class="candidate-main"><strong>${candidate.name} · ${candidate.level}</strong><small>${candidate.eligible ? candidate.reasons.slice(0, 2).join(" · ") : candidate.disabledReason}</small></span><span class="candidate-score"><strong>${candidate.turnScore.toFixed(1)}</strong><small>Turn score</small></span><span class="eligibility ${candidate.eligible ? "eligible" : "ineligible"}">${candidate.eligible ? "Eligible" : "Unavailable"}</span></button>`).join("")}</div>`;
+  drawer.classList.add("drawer--open"); backdrop.classList.add("is-open"); drawer.setAttribute("aria-hidden", "false");
+  translateUI();
+}
+
+function renderTechnicianOverview() {
+  const days = rangeDates().length;
+  const rows = technicians.map((technician, index) => {
+    const staff = technicianWithLevel(technician, index); const metrics = calculateTechnicianMetrics(staff, days, state.rewardPolicy);
+    return `<button class="tech-overview-row" data-tech-ledger="${staff.id}"><span class="tech-cell"><i class="tech-avatar">${staff.initials}</i><span><strong>${staff.name}</strong><small>${staff.level}</small></span></span><strong>${metrics.completedBookings}</strong><strong class="reward-value">${currency.format(metrics.reward)}</strong><span>${metrics.walkInTurns}</span><span>${metrics.bookingTurnCredit.toFixed(1)}</span><strong>${metrics.effectiveTurns.toFixed(1)}</strong><span class="ledger-status ${metrics.status.toLowerCase()}">${metrics.status}</span><i class="row-arrow">›</i></button>`;
+  }).join("");
+  technicianOverview.innerHTML = `<div class="overview-title"><div><p class="eyebrow">BOOKING INCENTIVES</p><h2>Technician Overview</h2><span>Completed bookings, rewards, and turn impact for this ${state.view === "day" ? "day" : state.view.replace("Weeks", " weeks")}.</span></div><div class="policy-chip"><i>●</i><span><strong>Policy active</strong><small>${state.rewardPolicy.period} · ${state.rewardPolicy.turnCredit} booking turn</small></span></div></div><div class="tech-overview-head"><span>Technician</span><span>Completed</span><span>Reward</span><span>Walk-in turns</span><span>Booking credit</span><span>Effective turns</span><span>Status</span><span></span></div><div class="tech-overview-body">${rows}</div>`;
+}
+
+function tierRows(tiers) {
+  return tiers.map((tier, index) => `<div class="tier-row" data-tier-index="${index}"><span class="tier-number">${index + 1}</span><label>From<input data-tier-field="min" type="number" min="1" value="${tier.min}"></label><label>To<input data-tier-field="max" type="number" min="1" value="${tier.max ?? ""}" placeholder="No limit"></label><label>Reward<input data-tier-field="rate" type="number" min="0" step="0.25" value="${tier.rate}"></label><span class="money-prefix">$</span><button class="remove-tier" aria-label="Remove tier ${index + 1}">×</button></div>`).join("");
+}
+
+function renderPolicyForm() {
+  const policy = state.policyDraft || state.rewardPolicy;
+  const assignment = state.assignmentDraft || state.assignmentPolicy;
+  policyDrawer.innerHTML = `<div class="policy-head"><div><p class="eyebrow">OWNER ACCESS</p><h2>Booking incentive policy</h2><span>Reward completed appointment business and control its turn impact.</span></div><button class="close-policy" aria-label="Close reward settings">×</button></div>
+    <div class="policy-scroll"><section class="policy-section"><div class="policy-section-title"><span>1</span><div><strong>Policy scope</strong><small>Choose one salon rule or technician-specific overrides.</small></div></div><div class="choice-cards"><label class="choice-card"><input type="radio" name="scope" value="salon" ${policy.scope === "salon" ? "checked" : ""}><span><strong>Same policy for all</strong><small>One rule for every technician</small></span></label><label class="choice-card"><input type="radio" name="scope" value="technician" ${policy.scope === "technician" ? "checked" : ""}><span><strong>Customize by technician</strong><small>Default policy with overrides</small></span></label></div></section>
+    <section class="policy-section"><div class="policy-section-title"><span>2</span><div><strong>Reward structure</strong><small>Only completed appointments qualify.</small></div></div><div class="segmented" id="reward-structure"><button data-structure="flat" class="${policy.structure === "flat" ? "active" : ""}">Flat reward</button><button data-structure="level" class="${policy.structure === "level" ? "active" : ""}">By level</button><button data-structure="tiers" class="${policy.structure === "tiers" ? "active" : ""}">Volume tiers</button></div>
+      <div class="structure-panel flat-panel" ${policy.structure !== "flat" ? "hidden" : ""}><label class="field-label">Reward per completed booking<div class="money-input"><span>$</span><input id="flat-rate" type="number" min="0" step="0.25" value="${policy.flatRate}"></div></label></div>
+      <div class="structure-panel level-panel" ${policy.structure !== "level" ? "hidden" : ""}>${Object.entries(policy.levelRates).map(([level, rate]) => `<label class="level-rate"><span><strong>${level}</strong><small>Per completed booking</small></span><div class="money-input"><span>$</span><input data-level="${level}" type="number" min="0" step="0.25" value="${rate}"></div></label>`).join("")}</div>
+      <div class="structure-panel tier-panel" ${policy.structure !== "tiers" ? "hidden" : ""}><div class="tier-method"><label><input type="radio" name="calculation" value="progressive" ${policy.calculation === "progressive" ? "checked" : ""}> Progressive</label><label><input type="radio" name="calculation" value="final" ${policy.calculation === "final" ? "checked" : ""}> Final tier</label></div><div id="tier-editor">${tierRows(policy.tiers)}</div><button class="add-tier">＋ Add tier</button></div>
+    </section>
+    <section class="policy-section"><div class="policy-section-title"><span>3</span><div><strong>Period & turn credit</strong><small>Define the earning window and booking turn impact.</small></div></div><div class="field-grid"><label>Reward period<select id="reward-period"><option value="daily" ${policy.period === "daily" ? "selected" : ""}>Daily</option><option value="weekly" ${policy.period === "weekly" ? "selected" : ""}>Weekly</option><option value="biweekly" ${policy.period === "biweekly" ? "selected" : ""}>Biweekly</option><option value="monthly" ${policy.period === "monthly" ? "selected" : ""}>Monthly</option></select></label><label>Booking turn credit<select id="turn-credit"><option value="0" ${policy.turnCredit === 0 ? "selected" : ""}>0 turn</option><option value="0.5" ${policy.turnCredit === .5 ? "selected" : ""}>0.5 turn</option><option value="1" ${policy.turnCredit === 1 ? "selected" : ""}>1 turn</option></select></label><label>Effective date<input id="effective-date" type="date" value="${policy.effectiveDate}"></label></div></section>
+    <section id="assignment-settings" class="policy-section"><div class="policy-section-title"><span>4</span><div><strong>Anyone assignment</strong><small>Choose how appointments without a requested technician are handled.</small></div></div><div class="assignment-choices"><label class="assignment-choice"><input type="radio" name="assignment-mode" value="suggest_confirm" ${assignment.mode === "suggest_confirm" ? "checked" : ""}><span><strong>System suggests, manager confirms</strong><small>Recommended · Fast with manager control</small></span></label><label class="assignment-choice"><input type="radio" name="assignment-mode" value="automatic" ${assignment.mode === "automatic" ? "checked" : ""}><span><strong>Auto-assign immediately</strong><small>Assign the best eligible technician</small></span></label><label class="assignment-choice"><input type="radio" name="assignment-mode" value="manual" ${assignment.mode === "manual" ? "checked" : ""}><span><strong>Manager assigns manually</strong><small>Keep appointment Unassigned</small></span></label></div><div class="assignment-rule-row"><label>Unassigned alert<select id="assignment-alert"><option value="2" ${assignment.alertHours === 2 ? "selected" : ""}>2 hours before</option><option value="6" ${assignment.alertHours === 6 ? "selected" : ""}>6 hours before</option><option value="12" ${assignment.alertHours === 12 ? "selected" : ""}>12 hours before</option><option value="24" ${assignment.alertHours === 24 ? "selected" : ""}>24 hours before</option><option value="48" ${assignment.alertHours === 48 ? "selected" : ""}>48 hours before</option></select></label><div class="fairness-rule"><i>✓</i><span><strong>Consistent reward rule</strong><small>Anyone bookings earn $0.00 booking reward. Turn credit goes to the performer.</small></span></div></div></section>
+    <section id="technician-overrides" class="policy-section" ${policy.scope !== "technician" ? "hidden" : ""}><div class="policy-section-title"><span>5</span><div><strong>Technician overrides</strong><small>Staff inherit the salon policy until customized.</small></div></div><div class="override-list">${technicians.slice(0, 6).map((tech, index) => { const staff = technicianWithLevel(tech, index); const override = policy.overrides?.[tech.id]; return `<div class="override-row" data-override-tech="${tech.id}"><span class="tech-cell"><i class="tech-avatar">${tech.initials}</i><span><strong>${tech.name}</strong><small>${staff.level}</small></span></span><select data-override-mode><option value="inherit" ${!override?.enabled ? "selected" : ""}>Use default</option><option value="custom" ${override?.enabled ? "selected" : ""}>Custom</option></select><div class="money-input"><span>$</span><input data-override-rate type="number" min="0" step="0.25" value="${override?.flatRate ?? policy.flatRate}"></div><select data-override-turn><option value="0">0 turn</option><option value="0.5" selected>0.5 turn</option><option value="1">1 turn</option></select></div>`; }).join("")}</div></section>
+    <section class="preview-card"><div><span>LIVE PAYOUT PREVIEW</span><strong id="policy-preview"></strong><small>Example: 45 completed bookings</small></div><i>↗</i></section><section class="audit-card"><strong>Policy history</strong>${state.policyAudit.map((item) => `<div><i>✓</i><span><strong>${item.action}</strong><small>${item.actor} · ${item.time} · Effective ${item.effectiveDate}</small></span></div>`).join("")}</section></div>
+    <div class="policy-footer"><span id="policy-validation"></span><button class="cancel-policy">Cancel</button><button id="save-policy">Save policy</button></div>`;
+  updatePolicyPreview();
+  translateUI();
+}
+
+function readPolicyForm() {
+  const policy = structuredClone(state.policyDraft || state.rewardPolicy); policy.scope = policyDrawer.querySelector('[name="scope"]:checked')?.value || policy.scope; policy.structure = policyDrawer.querySelector("[data-structure].active")?.dataset.structure || policy.structure; policy.calculation = policyDrawer.querySelector('[name="calculation"]:checked')?.value || policy.calculation; policy.period = $("#reward-period")?.value || policy.period; policy.turnCredit = Number($("#turn-credit")?.value ?? policy.turnCredit); policy.flatRate = Number($("#flat-rate")?.value ?? policy.flatRate); policy.effectiveDate = $("#effective-date")?.value || policy.effectiveDate;
+  policy.levelRates = { ...policy.levelRates }; policyDrawer.querySelectorAll("[data-level]").forEach((input) => { policy.levelRates[input.dataset.level] = Number(input.value); });
+  policy.tiers = [...policyDrawer.querySelectorAll(".tier-row")].map((row) => { const value = (field) => row.querySelector(`[data-tier-field="${field}"]`).value; return { min: Number(value("min")), max: value("max") === "" ? null : Number(value("max")), rate: Number(value("rate")) }; });
+  policy.overrides = { ...policy.overrides }; policyDrawer.querySelectorAll("[data-override-tech]").forEach((row) => { const id = row.dataset.overrideTech; if (row.querySelector("[data-override-mode]").value === "custom") policy.overrides[id] = { enabled: true, structure: "flat", flatRate: Number(row.querySelector("[data-override-rate]").value), turnCredit: Number(row.querySelector("[data-override-turn]").value) }; else delete policy.overrides[id]; });
+  return policy;
+}
+
+function readAssignmentForm() {
+  const assignment = structuredClone(state.assignmentDraft || state.assignmentPolicy);
+  assignment.mode = policyDrawer.querySelector('[name="assignment-mode"]:checked')?.value || assignment.mode;
+  assignment.alertHours = Number(policyDrawer.querySelector("#assignment-alert")?.value ?? assignment.alertHours);
+  return assignment;
+}
+
+function updatePolicyPreview() {
+  const draft = readPolicyForm(); const validation = draft.structure === "tiers" ? validateTiers(draft.tiers) : { valid: true, message: "Policy is ready to save." }; const amount = calculateReward(45, draft, { level: "Master" });
+  $("#policy-preview").textContent = validation.valid ? `45 bookings → ${currency.format(amount)}` : "Fix tier ranges"; $("#policy-validation").textContent = validation.message; $("#policy-validation").classList.toggle("error", !validation.valid); $("#save-policy").disabled = !validation.valid;
+}
+
+function openRewardSettings() { state.policyDraft = structuredClone(state.rewardPolicy); state.assignmentDraft = structuredClone(state.assignmentPolicy); renderPolicyForm(); policyDrawer.classList.add("is-open"); policyBackdrop.classList.add("is-open"); policyDrawer.setAttribute("aria-hidden", "false"); }
+function closeRewardSettings() { policyDrawer.classList.remove("is-open"); policyBackdrop.classList.remove("is-open"); policyDrawer.setAttribute("aria-hidden", "true"); }
+function savePolicy() { state.rewardPolicy = readPolicyForm(); state.assignmentPolicy = readAssignmentForm(); state.policyDraft = null; state.assignmentDraft = null; state.policyAudit.unshift({ action: `Policy updated · ${assignmentModeLabel()}`, actor: "Quarry Nails Bar Owner", time: "Aug 29, 2026 · 5:12 PM", effectiveDate: new Date(`${state.rewardPolicy.effectiveDate}T12:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) }); closeRewardSettings(); render(); }
+
+function openTechnicianLedger(technicianId) {
+  const index = technicians.findIndex((tech) => tech.id === technicianId); const staff = technicianWithLevel(technicians[index], index); const metrics = calculateTechnicianMetrics(staff, rangeDates().length, state.rewardPolicy); const rows = generateTechnicianLedger(staff, rangeDates().length, state.rewardPolicy);
+  const patterns = ["requested", "anyone-system", "requested-reassigned", "anyone-manager"];
+  const enriched = rows.map((row, rowIndex) => {
+    const pattern = row.status === "Earned" ? patterns[rowIndex % patterns.length] : row.status.toLowerCase();
+    const requested = pattern === "requested" || pattern === "requested-reassigned";
+    return { ...row, pattern, requested, source: pattern === "requested" ? "Customer Request" : pattern === "requested-reassigned" ? "Reassigned Request" : pattern === "anyone-system" ? "Anyone · System Assigned" : pattern === "anyone-manager" ? "Anyone · Manager Assigned" : row.status, performedBy: pattern === "requested-reassigned" ? "Ann" : staff.name, rewardOwner: requested ? staff.name : "None" };
+  });
+  const eligibleRows = enriched.filter((row) => row.status === "Earned" && row.requested); const attributedRate = eligibleRows.length ? metrics.reward / eligibleRows.length : 0;
+  drawer.innerHTML = `<div class="drawer-head"><div><p class="eyebrow">REWARD LEDGER · ${staff.level.toUpperCase()}</p><h2>${staff.name}</h2></div><button class="close-button" aria-label="Close reward ledger">×</button></div><div class="ledger-summary"><div><strong>${metrics.completedBookings}</strong><span>Completed</span></div><div><strong>${currency.format(metrics.reward)}</strong><span>Earned reward</span></div><div><strong>${metrics.effectiveTurns.toFixed(1)}</strong><span>Effective turns</span></div></div><div class="ledger-rule"><span>Fair reward rule</span><strong>Only Customer Request earns reward</strong></div><div class="ledger-list attribution-ledger"><div class="ledger-list-head"><span>Booking & source</span><span>Reward / turn owner</span></div>${enriched.map((row) => { const reward = row.status === "Earned" && row.requested ? attributedRate : 0; return `<div class="ledger-row"><span><strong>${row.customer}</strong><small>${row.date} · ${row.service}</small><em class="source-badge ${row.requested ? "requested" : "anyone"}">${row.source}</em></span><span><strong>${currency.format(reward)}</strong><small>${row.requested ? `Reward: ${row.rewardOwner}` : "Not reward eligible"}</small><small>Turn: ${row.performedBy} · ${row.turnCredit}</small></span></div>`; }).join("")}</div><div class="ledger-total"><span>Customer Request reward total</span><strong>${currency.format(metrics.reward)}</strong></div>`;
+  drawer.classList.add("drawer--open"); backdrop.classList.add("is-open"); drawer.setAttribute("aria-hidden", "false");
+  translateUI();
+}
+
+function translateUI() {
+  applyLanguage(calendarRoot, state.language);
+  calendarRoot.querySelectorAll("[data-language]").forEach((button) => button.classList.toggle("active", button.dataset.language === state.language));
+}
+
+function render() { renderDate(); renderSummary(); renderUnassignedQueue(); renderTechnicianOverview(); renderMobileOptions(); state.view === "day" ? renderDay() : renderOverview(); translateUI(); }
+
+function openDrawer(appointmentId) {
+  state.currentAppointmentId = appointmentId;
+  const apt = appointments.find((item) => item.id === appointmentId); const tech = technicians.find((item) => item.id === apt.technicianId); const initials = apt.customer.split(" ").map((part) => part[0]).slice(0, 2).join("");
+  const intel = getCustomerIntelligence(apt.customer); const rec = intel.recommendation;
+  const added = rec && state.addedUpsells.has(`${appointmentId}:${rec.id}`); const dismissed = rec && state.dismissedUpsells.has(`${appointmentId}:${rec.id}`);
+  const basePrice = 48 + (appointments.indexOf(apt) % 5) * 7; const total = basePrice + (added ? rec.price : 0);
+  drawer.innerHTML = `<div class="drawer-head"><div><p class="eyebrow">APPOINTMENT DETAILS</p><h2>${formatTime(apt.start)} · ${apt.duration + (added ? rec.duration : 0)} min</h2></div><button class="close-button" aria-label="Close appointment details">×</button></div>
+    <div class="customer-card"><div class="customer-avatar">${initials}</div><div class="customer-identity"><div><strong>${apt.customer}</strong><span class="guest-badge ${intel.type}">${intel.type === "returning" ? "Returning guest" : "New guest"}</span></div><span>${apt.phone}</span></div></div>
+    <div class="detail-list compact"><div class="detail-row"><span>Service</span><strong>${apt.service}${added ? ` + ${rec.name}` : ""}</strong></div><div class="detail-row"><span>Technician</span><strong>${tech.name}</strong></div><div class="detail-row"><span>Status</span><span class="status-pill ${apt.status}">${statusLabels[apt.status]}</span></div><div class="detail-row total-row"><span>Estimated total</span><strong>$${total}</strong></div></div>
+    <section class="intelligence"><div class="section-title"><div><i>✦</i><strong>Customer Intelligence</strong></div><span>Based on booking history</span></div>
+      ${intel.type === "returning" ? `<div class="intel-stats"><div><strong>${intel.visits}</strong><span>Visits</span></div><div><strong>$${intel.lifetimeSpend}</strong><span>Lifetime spend</span></div><div><strong>${intel.preferredTechnician}</strong><span>Preferred tech</span></div></div>
+      <div class="history-head"><strong>Recent services</strong><span>Last visit ${intel.lastVisit}</span></div><div class="service-history">${intel.history.map((item) => `<div><span>${item.date}</span><div><strong>${item.service}</strong><small>${item.technician}</small></div><b>$${item.price}</b></div>`).join("")}</div>`
+      : `<div class="no-history"><i>♙</i><strong>First visit</strong><span>No service history yet. Ask about preferences before recommending an add-on.</span></div>`}
+      ${rec && !dismissed ? `<div class="smart-recommendation ${added ? "is-added" : ""}"><div class="recommendation-top"><span>SMART UPSELL · ${rec.confidence}% MATCH</span><i>✦</i></div><div class="recommendation-main"><div><strong>${rec.name}</strong><span>+$${rec.price} · +${rec.duration} min</span></div><b>+$${rec.price}</b></div><p>${rec.reason}</p><div class="recommendation-actions"><button class="add-upsell" data-upsell="${rec.id}" ${added ? "disabled" : ""}>${added ? "Added ✓" : "Add to appointment"}</button><button class="dismiss-upsell" data-dismiss="${rec.id}" ${added ? "hidden" : ""}>Not relevant</button></div></div>` : rec && dismissed ? `<div class="dismissed-note">Recommendation dismissed for this visit.</div>` : `<div class="insight-note">No upsell generated — not enough history.</div>`}
+    </section>`;
+  drawer.classList.add("drawer--open"); backdrop.classList.add("is-open"); drawer.setAttribute("aria-hidden", "false");
+  translateUI();
+}
+function closeDrawer() { drawer.classList.remove("drawer--open"); backdrop.classList.remove("is-open"); drawer.setAttribute("aria-hidden", "true"); }
+
+function shiftRange(direction) {
+  const next = new Date(state.anchorDate);
+  if (state.view === "month") next.setMonth(next.getMonth() + direction);
+  else next.setDate(next.getDate() + direction * ({ day: 1, week: 7, twoWeeks: 14, threeWeeks: 21 }[state.view]));
+  state.anchorDate = next; render();
+}
+
+summary.addEventListener("click", (event) => { const card = event.target.closest("[data-status]"); if (card) { state.status = card.dataset.status; render(); } });
+unassignedQueue.addEventListener("click", (event) => {
+  const suggested = event.target.closest("[data-assign-suggested]"); if (suggested) { const appointment = state.unassignedAppointments.find((item) => item.id === suggested.dataset.assignSuggested); const technician = assignmentCandidates(appointment).find((candidate) => candidate.eligible); return completeAssignment(appointment.id, technician.id, state.assignmentPolicy.mode === "automatic" ? "system" : "manager"); }
+  const picker = event.target.closest("[data-view-candidates]"); if (picker) openTechnicianPicker(picker.dataset.viewCandidates);
+});
+calendar.addEventListener("click", (event) => {
+  const block = event.target.closest("[data-appointment-id]"); if (block) return openDrawer(block.dataset.appointmentId);
+  const day = event.target.closest("[data-date]"); if (day) { const [year, month, date] = day.dataset.date.split("-").map(Number); state.anchorDate = new Date(year, month - 1, date); state.view = "day"; state.status = "all"; render(); }
+});
+calendarRoot.querySelector(".view-switch").addEventListener("click", (event) => { const button = event.target.closest("[data-view]"); if (button) { state.view = button.dataset.view; state.status = "all"; render(); } });
+technicianOverview.addEventListener("click", (event) => { const row = event.target.closest("[data-tech-ledger]"); if (row) openTechnicianLedger(row.dataset.techLedger); });
+host.addEventListener('calendar-reward-settings', openRewardSettings);
+policyBackdrop.addEventListener("click", closeRewardSettings);
+policyDrawer.addEventListener("click", (event) => {
+  if (event.target.closest(".close-policy") || event.target.closest(".cancel-policy")) return closeRewardSettings();
+  const structure = event.target.closest("[data-structure]"); if (structure) { state.policyDraft = readPolicyForm(); state.assignmentDraft = readAssignmentForm(); state.policyDraft.structure = structure.dataset.structure; renderPolicyForm(); return; }
+  if (event.target.closest(".add-tier")) { state.policyDraft = readPolicyForm(); state.assignmentDraft = readAssignmentForm(); const last = state.policyDraft.tiers.at(-1); if (last.max == null) last.max = last.min + 19; state.policyDraft.tiers.push({ min: last.max + 1, max: null, rate: last.rate + 1 }); renderPolicyForm(); return; }
+  const remove = event.target.closest(".remove-tier"); if (remove) { state.policyDraft = readPolicyForm(); state.assignmentDraft = readAssignmentForm(); const index = Number(remove.closest("[data-tier-index]").dataset.tierIndex); state.policyDraft.tiers.splice(index, 1); renderPolicyForm(); return; }
+  if (event.target.closest("#save-policy")) savePolicy();
+});
+policyDrawer.addEventListener("change", (event) => { if (event.target.matches('[name="scope"]')) { state.policyDraft = readPolicyForm(); state.assignmentDraft = readAssignmentForm(); renderPolicyForm(); } else updatePolicyPreview(); });
+policyDrawer.addEventListener("input", updatePolicyPreview);
+search.addEventListener("input", () => { state.query = search.value; renderDay(); });
+technicianFilter.addEventListener("change", () => { state.technicianMode = technicianFilter.value; renderDay(); });
+mobileTechnician.addEventListener("change", () => { state.mobileTechnicianId = mobileTechnician.value; renderDay(); });
+drawer.addEventListener("click", (event) => {
+  if (event.target.closest(".close-button")) return closeDrawer();
+  const candidate = event.target.closest("[data-candidate-id]"); if (candidate) return completeAssignment(candidate.dataset.appointmentId, candidate.dataset.candidateId, "manager");
+  const add = event.target.closest("[data-upsell]"); if (add) { state.addedUpsells.add(`${state.currentAppointmentId}:${add.dataset.upsell}`); return openDrawer(state.currentAppointmentId); }
+  const dismiss = event.target.closest("[data-dismiss]"); if (dismiss) { state.dismissedUpsells.add(`${state.currentAppointmentId}:${dismiss.dataset.dismiss}`); return openDrawer(state.currentAppointmentId); }
+}); backdrop.addEventListener("click", closeDrawer); calendarRoot.addEventListener("keydown", (event) => { if (event.key === "Escape") closeDrawer(); });
+$("#prev-day").addEventListener("click", () => shiftRange(-1)); $("#next-day").addEventListener("click", () => shiftRange(1)); $("#today-button").addEventListener("click", () => { state.anchorDate = new Date(2026, 7, 29); render(); });
+calendarRoot.querySelector(".language-switch")?.addEventListener("click", (event) => { const button = event.target.closest("[data-language]"); if (!button) return; state.language = normalizeLanguage(button.dataset.language); localStorage.setItem("nexora-language", state.language); render(); });
+addEventListener("resize", () => { if (state.view === "day") renderDay(); }); render();
+
+
+    host.addEventListener('calendar-show', () => render());
+  }
+};

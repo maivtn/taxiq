@@ -123,8 +123,8 @@ test('renders inside the shared salon shell and identifies the active Analytics 
   assert.ok(window.document.querySelector('.shell > aside.sidebar'))
   assert.ok(window.document.querySelector('.app-area > header.header'))
   assert.ok(window.document.querySelector('main.content > .page'))
-  assert.equal(window.NEXORA_SHELL?.activePage, 'analytics')
-  assert.equal(window.NEXORA_SHELL?.activeTab, 'store-income')
+  assert.equal(window.NEXORA_SHELL?.activePage, 'pos')
+  assert.equal(window.NEXORA_SHELL?.activeTab, 'report')
 })
 
 test('shows every supported payment method when its amount is zero', () => {

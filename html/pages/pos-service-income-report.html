@@ -730,6 +730,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/pos-report-tabs.css">
 </head>
 <body>
   <div class="shell">
@@ -740,6 +741,15 @@
 
       <main class="content" aria-label="Service income report content">
         <div class="page">
+          <section class="pos-report-navigation" aria-label="POS reports">
+            <p class="pos-report-title">Report</p>
+            <p class="pos-report-description">Review store income and service performance.</p>
+            <nav class="pos-report-tabs" aria-label="Report type">
+              <a href="pos-shop-income-report.html">Store Income</a>
+              <a href="pos-service-income-report.html" class="is-active" aria-current="page">Service Income</a>
+            </nav>
+          </section>
+
     <header class="compact-header">
       <h1>Service Income</h1>
     </header>
@@ -882,7 +892,7 @@
     })
   </script>
   <script>
-    window.NEXORA_SHELL = { activePage: 'analytics', activeTab: 'service-income' }
+    window.NEXORA_SHELL = { activePage: 'pos', activeTab: 'report' }
   </script>
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script src="../assets/nexora-shell.js"></script>
