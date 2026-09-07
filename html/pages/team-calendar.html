@@ -28,6 +28,7 @@
 @media(max-width:760px){.language-switch button{min-width:29px;padding:0 5px}}
 
 </style>
+<link rel="stylesheet" href="../assets/pos-turn-settings.css">
 </head>
 <body>
     <main class="workspace">
@@ -62,6 +63,8 @@
       <div id="policy-backdrop" class="drawer-backdrop"></div>
       <aside id="reward-settings-drawer" class="policy-drawer" aria-hidden="true"></aside>
     </main>
+  <script src="../assets/salon-data.js"></script>
+  <script src="../assets/pos-turn-settings.js"></script>
   <script>
 const technicians = [
   ["amanda", "Amanda", "AM", true], ["ann", "Ann", "AN", true],
@@ -283,6 +286,8 @@ function resolveTechnicianPolicy(policy, technician) {
 function technicianSeed(technician) {
   return [...technician.id].reduce((sum, character) => sum + character.charCodeAt(0), 0);
 }
+
+const formatTurnCredit = value => value.toLocaleString("en-US", {minimumFractionDigits: 1, maximumFractionDigits: 4});
 
 function calculateTechnicianMetrics(technician, rangeDays, policy) {
   const seed = technicianSeed(technician);
@@ -513,7 +518,7 @@ const state = {
   status: "all", technicianMode: "working", query: "", mobileTechnicianId: "amanda",
   view: "day", anchorDate: new Date(2026, 7, 29), currentAppointmentId: null,
   addedUpsells: new Set(), dismissedUpsells: new Set(),
-  rewardPolicy: structuredClone(defaultRewardPolicy),
+  rewardPolicy: { ...structuredClone(defaultRewardPolicy), turnCredit: window.NEXORA_TURN_SETTINGS.load().bookingTurnCredit, serviceWeights: window.NEXORA_TURN_SETTINGS.load().serviceWeights },
   policyDraft: null,
   assignmentPolicy: structuredClone(defaultAssignmentPolicy), assignmentDraft: null,
   assignmentNotice: "",
@@ -658,7 +663,7 @@ function renderTechnicianOverview() {
   const days = rangeDates().length;
   const rows = technicians.map((technician, index) => {
     const staff = technicianWithLevel(technician, index); const metrics = calculateTechnicianMetrics(staff, days, state.rewardPolicy);
-    return `<button class="tech-overview-row" data-tech-ledger="${staff.id}"><span class="tech-cell"><i class="tech-avatar">${staff.initials}</i><span><strong>${staff.name}</strong><small>${staff.level}</small></span></span><strong>${metrics.completedBookings}</strong><strong class="reward-value">${currency.format(metrics.reward)}</strong><span>${metrics.walkInTurns}</span><span>${metrics.bookingTurnCredit.toFixed(1)}</span><strong>${metrics.effectiveTurns.toFixed(1)}</strong><span class="ledger-status ${metrics.status.toLowerCase()}">${metrics.status}</span><i class="row-arrow">›</i></button>`;
+    return `<button class="tech-overview-row" data-tech-ledger="${staff.id}"><span class="tech-cell"><i class="tech-avatar">${staff.initials}</i><span><strong>${staff.name}</strong><small>${staff.level}</small></span></span><strong>${metrics.completedBookings}</strong><strong class="reward-value">${currency.format(metrics.reward)}</strong><span>${metrics.walkInTurns}</span><span>${formatTurnCredit(metrics.bookingTurnCredit)}</span><strong>${formatTurnCredit(metrics.effectiveTurns)}</strong><span class="ledger-status ${metrics.status.toLowerCase()}">${metrics.status}</span><i class="row-arrow">›</i></button>`;
   }).join("");
   technicianOverview.innerHTML = `<div class="overview-title"><div><p class="eyebrow">BOOKING INCENTIVES</p><h2>Technician Overview</h2><span>Completed bookings, rewards, and turn impact for this ${state.view === "day" ? "day" : state.view.replace("Weeks", " weeks")}.</span></div><div class="policy-chip"><i>●</i><span><strong>Policy active</strong><small>${state.rewardPolicy.period} · ${state.rewardPolicy.turnCredit} booking turn</small></span></div></div><div class="tech-overview-head"><span>Technician</span><span>Completed</span><span>Reward</span><span>Walk-in turns</span><span>Booking credit</span><span>Effective turns</span><span>Status</span><span></span></div><div class="tech-overview-body">${rows}</div>`;
 }
@@ -677,9 +682,10 @@ function renderPolicyForm() {
       <div class="structure-panel level-panel" ${policy.structure !== "level" ? "hidden" : ""}>${Object.entries(policy.levelRates).map(([level, rate]) => `<label class="level-rate"><span><strong>${level}</strong><small>Per completed booking</small></span><div class="money-input"><span>$</span><input data-level="${level}" type="number" min="0" step="0.25" value="${rate}"></div></label>`).join("")}</div>
       <div class="structure-panel tier-panel" ${policy.structure !== "tiers" ? "hidden" : ""}><div class="tier-method"><label><input type="radio" name="calculation" value="progressive" ${policy.calculation === "progressive" ? "checked" : ""}> Progressive</label><label><input type="radio" name="calculation" value="final" ${policy.calculation === "final" ? "checked" : ""}> Final tier</label></div><div id="tier-editor">${tierRows(policy.tiers)}</div><button class="add-tier">＋ Add tier</button></div>
     </section>
-    <section class="policy-section"><div class="policy-section-title"><span>3</span><div><strong>Period & turn credit</strong><small>Define the earning window and booking turn impact.</small></div></div><div class="field-grid"><label>Reward period<select id="reward-period"><option value="daily" ${policy.period === "daily" ? "selected" : ""}>Daily</option><option value="weekly" ${policy.period === "weekly" ? "selected" : ""}>Weekly</option><option value="biweekly" ${policy.period === "biweekly" ? "selected" : ""}>Biweekly</option><option value="monthly" ${policy.period === "monthly" ? "selected" : ""}>Monthly</option></select></label><label>Booking turn credit<select id="turn-credit"><option value="0" ${policy.turnCredit === 0 ? "selected" : ""}>0 turn</option><option value="0.5" ${policy.turnCredit === .5 ? "selected" : ""}>0.5 turn</option><option value="1" ${policy.turnCredit === 1 ? "selected" : ""}>1 turn</option></select></label><label>Effective date<input id="effective-date" type="date" value="${policy.effectiveDate}"></label></div></section>
+    <section class="policy-section"><div class="policy-section-title"><span>3</span><div><strong>Period & turn credit</strong><small>Define the earning window and booking turn impact.</small></div></div><div class="field-grid"><label>Reward period<select id="reward-period"><option value="daily" ${policy.period === "daily" ? "selected" : ""}>Daily</option><option value="weekly" ${policy.period === "weekly" ? "selected" : ""}>Weekly</option><option value="biweekly" ${policy.period === "biweekly" ? "selected" : ""}>Biweekly</option><option value="monthly" ${policy.period === "monthly" ? "selected" : ""}>Monthly</option></select></label><label>Booking turn credit<input id="turn-credit" type="number" min="0" step="any" required value="${policy.turnCredit}"></label><label>Effective date<input id="effective-date" type="date" value="${policy.effectiveDate}"></label></div></section>
+    <section class="policy-section" id="weighted-turn-settings"><div class="policy-section-title"><span>↔</span><div><strong>Weighted Turn Settings</strong><small>Shared with Front Desk → Turn Board.</small></div></div><p class="shared-turn-note">Set service turn credits by service value after discounts, excluding tips, tax, products, and gift-card payments. Booking turn credit is configured above; technician overrides still apply.</p><div class="shared-turn-grid">${window.NEXORA_TURN_SETTINGS.labels.map((label, index) => `<label>${label} · service turns<input data-service-weight="${index}" type="number" min="0" step="any" required value="${policy.serviceWeights[index]}"></label>`).join("")}</div><p class="shared-turn-note">Saving here updates Turn Board settings. Existing recorded turns stay unchanged. <a href="pos-front-desk-turn-board.html?settings=weighted-turns">Open Turn Board settings</a></p></section>
     <section id="assignment-settings" class="policy-section"><div class="policy-section-title"><span>4</span><div><strong>Anyone assignment</strong><small>Choose how appointments without a requested technician are handled.</small></div></div><div class="assignment-choices"><label class="assignment-choice"><input type="radio" name="assignment-mode" value="suggest_confirm" ${assignment.mode === "suggest_confirm" ? "checked" : ""}><span><strong>System suggests, manager confirms</strong><small>Recommended · Fast with manager control</small></span></label><label class="assignment-choice"><input type="radio" name="assignment-mode" value="automatic" ${assignment.mode === "automatic" ? "checked" : ""}><span><strong>Auto-assign immediately</strong><small>Assign the best eligible technician</small></span></label><label class="assignment-choice"><input type="radio" name="assignment-mode" value="manual" ${assignment.mode === "manual" ? "checked" : ""}><span><strong>Manager assigns manually</strong><small>Keep appointment Unassigned</small></span></label></div><div class="assignment-rule-row"><label>Unassigned alert<select id="assignment-alert"><option value="2" ${assignment.alertHours === 2 ? "selected" : ""}>2 hours before</option><option value="6" ${assignment.alertHours === 6 ? "selected" : ""}>6 hours before</option><option value="12" ${assignment.alertHours === 12 ? "selected" : ""}>12 hours before</option><option value="24" ${assignment.alertHours === 24 ? "selected" : ""}>24 hours before</option><option value="48" ${assignment.alertHours === 48 ? "selected" : ""}>48 hours before</option></select></label><div class="fairness-rule"><i>✓</i><span><strong>Consistent reward rule</strong><small>Anyone bookings earn $0.00 booking reward. Turn credit goes to the performer.</small></span></div></div></section>
-    <section id="technician-overrides" class="policy-section" ${policy.scope !== "technician" ? "hidden" : ""}><div class="policy-section-title"><span>5</span><div><strong>Technician overrides</strong><small>Staff inherit the salon policy until customized.</small></div></div><div class="override-list">${technicians.slice(0, 6).map((tech, index) => { const staff = technicianWithLevel(tech, index); const override = policy.overrides?.[tech.id]; return `<div class="override-row" data-override-tech="${tech.id}"><span class="tech-cell"><i class="tech-avatar">${tech.initials}</i><span><strong>${tech.name}</strong><small>${staff.level}</small></span></span><select data-override-mode><option value="inherit" ${!override?.enabled ? "selected" : ""}>Use default</option><option value="custom" ${override?.enabled ? "selected" : ""}>Custom</option></select><div class="money-input"><span>$</span><input data-override-rate type="number" min="0" step="0.25" value="${override?.flatRate ?? policy.flatRate}"></div><select data-override-turn><option value="0">0 turn</option><option value="0.5" selected>0.5 turn</option><option value="1">1 turn</option></select></div>`; }).join("")}</div></section>
+    <section id="technician-overrides" class="policy-section" ${policy.scope !== "technician" ? "hidden" : ""}><div class="policy-section-title"><span>5</span><div><strong>Technician overrides</strong><small>Staff inherit the salon policy until customized.</small></div></div><div class="override-list">${technicians.slice(0, 6).map((tech, index) => { const staff = technicianWithLevel(tech, index); const override = policy.overrides?.[tech.id]; return `<div class="override-row" data-override-tech="${tech.id}"><span class="tech-cell"><i class="tech-avatar">${tech.initials}</i><span><strong>${tech.name}</strong><small>${staff.level}</small></span></span><select data-override-mode><option value="inherit" ${!override?.enabled ? "selected" : ""}>Use default</option><option value="custom" ${override?.enabled ? "selected" : ""}>Custom</option></select><div class="money-input"><span>$</span><input data-override-rate type="number" min="0" step="0.25" value="${override?.flatRate ?? policy.flatRate}"></div><input data-override-turn aria-label="Technician booking turn credit" type="number" min="0" step="any" value="${override?.turnCredit ?? policy.turnCredit}"></div>`; }).join("")}</div></section>
     <section class="preview-card"><div><span>LIVE PAYOUT PREVIEW</span><strong id="policy-preview"></strong><small>Example: 45 completed bookings</small></div><i>↗</i></section><section class="audit-card"><strong>Policy history</strong>${state.policyAudit.map((item) => `<div><i>✓</i><span><strong>${item.action}</strong><small>${item.actor} · ${item.time} · Effective ${item.effectiveDate}</small></span></div>`).join("")}</section></div>
     <div class="policy-footer"><span id="policy-validation"></span><button class="cancel-policy">Cancel</button><button id="save-policy">Save policy</button></div>`;
   updatePolicyPreview();
@@ -687,10 +693,10 @@ function renderPolicyForm() {
 }
 
 function readPolicyForm() {
-  const policy = structuredClone(state.policyDraft || state.rewardPolicy); policy.scope = policyDrawer.querySelector('[name="scope"]:checked')?.value || policy.scope; policy.structure = policyDrawer.querySelector("[data-structure].active")?.dataset.structure || policy.structure; policy.calculation = policyDrawer.querySelector('[name="calculation"]:checked')?.value || policy.calculation; policy.period = $("#reward-period")?.value || policy.period; policy.turnCredit = Number($("#turn-credit")?.value ?? policy.turnCredit); policy.flatRate = Number($("#flat-rate")?.value ?? policy.flatRate); policy.effectiveDate = $("#effective-date")?.value || policy.effectiveDate;
+  const policy = structuredClone(state.policyDraft || state.rewardPolicy); policy.scope = policyDrawer.querySelector('[name="scope"]:checked')?.value || policy.scope; policy.structure = policyDrawer.querySelector("[data-structure].active")?.dataset.structure || policy.structure; policy.calculation = policyDrawer.querySelector('[name="calculation"]:checked')?.value || policy.calculation; policy.period = $("#reward-period")?.value || policy.period; policy.turnCredit = window.NEXORA_TURN_SETTINGS.numberFrom($("#turn-credit")); policy.serviceWeights = [...policyDrawer.querySelectorAll("[data-service-weight]")].map(window.NEXORA_TURN_SETTINGS.numberFrom); policy.flatRate = Number($("#flat-rate")?.value ?? policy.flatRate); policy.effectiveDate = $("#effective-date")?.value || policy.effectiveDate;
   policy.levelRates = { ...policy.levelRates }; policyDrawer.querySelectorAll("[data-level]").forEach((input) => { policy.levelRates[input.dataset.level] = Number(input.value); });
   policy.tiers = [...policyDrawer.querySelectorAll(".tier-row")].map((row) => { const value = (field) => row.querySelector(`[data-tier-field="${field}"]`).value; return { min: Number(value("min")), max: value("max") === "" ? null : Number(value("max")), rate: Number(value("rate")) }; });
-  policy.overrides = { ...policy.overrides }; policyDrawer.querySelectorAll("[data-override-tech]").forEach((row) => { const id = row.dataset.overrideTech; if (row.querySelector("[data-override-mode]").value === "custom") policy.overrides[id] = { enabled: true, structure: "flat", flatRate: Number(row.querySelector("[data-override-rate]").value), turnCredit: Number(row.querySelector("[data-override-turn]").value) }; else delete policy.overrides[id]; });
+  policy.overrides = { ...policy.overrides }; policyDrawer.querySelectorAll("[data-override-tech]").forEach((row) => { const id = row.dataset.overrideTech; if (row.querySelector("[data-override-mode]").value === "custom") policy.overrides[id] = { enabled: true, structure: "flat", flatRate: Number(row.querySelector("[data-override-rate]").value), turnCredit: window.NEXORA_TURN_SETTINGS.numberFrom(row.querySelector("[data-override-turn]")) }; else delete policy.overrides[id]; });
   return policy;
 }
 
@@ -701,14 +707,49 @@ function readAssignmentForm() {
   return assignment;
 }
 
+function validatePolicyTurns(policy) {
+  const error = window.NEXORA_TURN_SETTINGS.validate({bookingTurnCredit: policy.turnCredit, serviceWeights: policy.serviceWeights});
+  if (error) return error;
+  if (Object.values(policy.overrides).some(override => !Number.isFinite(override.turnCredit) || override.turnCredit < 0)) return "Enter a non-negative technician booking turn credit.";
+  return "";
+}
+
 function updatePolicyPreview() {
-  const draft = readPolicyForm(); const validation = draft.structure === "tiers" ? validateTiers(draft.tiers) : { valid: true, message: "Policy is ready to save." }; const amount = calculateReward(45, draft, { level: "Master" });
-  $("#policy-preview").textContent = validation.valid ? `45 bookings → ${currency.format(amount)}` : "Fix tier ranges"; $("#policy-validation").textContent = validation.message; $("#policy-validation").classList.toggle("error", !validation.valid); $("#save-policy").disabled = !validation.valid;
+  const draft = readPolicyForm();
+  const turnError = validatePolicyTurns(draft);
+  const validation = turnError ? {valid: false, message: turnError} : draft.structure === "tiers" ? validateTiers(draft.tiers) : {valid: true, message: "Policy is ready to save."};
+  const amount = calculateReward(45, draft, {level: "Master"});
+  $("#policy-preview").textContent = validation.valid ? `45 bookings → ${currency.format(amount)}` : "Check policy settings";
+  $("#policy-validation").textContent = validation.message;
+  $("#policy-validation").classList.toggle("error", !validation.valid);
+  $("#save-policy").disabled = !validation.valid;
+  return validation.valid;
 }
 
 function openRewardSettings() { state.policyDraft = structuredClone(state.rewardPolicy); state.assignmentDraft = structuredClone(state.assignmentPolicy); renderPolicyForm(); policyDrawer.classList.add("is-open"); policyBackdrop.classList.add("is-open"); policyDrawer.setAttribute("aria-hidden", "false"); }
 function closeRewardSettings() { policyDrawer.classList.remove("is-open"); policyBackdrop.classList.remove("is-open"); policyDrawer.setAttribute("aria-hidden", "true"); }
-function savePolicy() { state.rewardPolicy = readPolicyForm(); state.assignmentPolicy = readAssignmentForm(); state.policyDraft = null; state.assignmentDraft = null; state.policyAudit.unshift({ action: `Policy updated · ${assignmentModeLabel()}`, actor: "Quarry Nails Bar Owner", time: "Aug 29, 2026 · 5:12 PM", effectiveDate: new Date(`${state.rewardPolicy.effectiveDate}T12:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) }); closeRewardSettings(); render(); }
+function savePolicy() {
+  if (!updatePolicyPreview()) return;
+  const policy = readPolicyForm();
+  const result = window.NEXORA_TURN_SETTINGS.save({bookingTurnCredit: policy.turnCredit, serviceWeights: policy.serviceWeights});
+  if (!result.ok) { $("#policy-validation").textContent = result.error; $("#policy-validation").classList.add("error"); return; }
+  state.rewardPolicy = policy; state.assignmentPolicy = readAssignmentForm(); state.policyDraft = null; state.assignmentDraft = null; state.policyAudit.unshift({ action: `Policy updated · ${assignmentModeLabel()}`, actor: "Quarry Nails Bar Owner", time: "Aug 29, 2026 · 5:12 PM", effectiveDate: new Date(`${state.rewardPolicy.effectiveDate}T12:00:00`).toLocaleDateString("en-US", { month: "short", day: "numeric", year: "numeric" }) }); closeRewardSettings(); render(); }
+
+
+window.NEXORA_TURN_SETTINGS.subscribe(settings => {
+  state.rewardPolicy.turnCredit = settings.bookingTurnCredit;
+  state.rewardPolicy.serviceWeights = settings.serviceWeights;
+  if (state.policyDraft) {
+    state.policyDraft.turnCredit = settings.bookingTurnCredit;
+    state.policyDraft.serviceWeights = [...settings.serviceWeights];
+  }
+  if (policyDrawer.classList.contains("is-open")) {
+    $("#turn-credit").value = settings.bookingTurnCredit;
+    policyDrawer.querySelectorAll("[data-service-weight]").forEach((input, index) => { input.value = settings.serviceWeights[index]; });
+    updatePolicyPreview();
+  }
+  renderTechnicianOverview();
+});
 
 function openTechnicianLedger(technicianId) {
   const index = technicians.findIndex((tech) => tech.id === technicianId); const staff = technicianWithLevel(technicians[index], index); const metrics = calculateTechnicianMetrics(staff, rangeDates().length, state.rewardPolicy); const rows = generateTechnicianLedger(staff, rangeDates().length, state.rewardPolicy);
@@ -719,7 +760,7 @@ function openTechnicianLedger(technicianId) {
     return { ...row, pattern, requested, source: pattern === "requested" ? "Customer Request" : pattern === "requested-reassigned" ? "Reassigned Request" : pattern === "anyone-system" ? "Anyone · System Assigned" : pattern === "anyone-manager" ? "Anyone · Manager Assigned" : row.status, performedBy: pattern === "requested-reassigned" ? "Ann" : staff.name, rewardOwner: requested ? staff.name : "None" };
   });
   const eligibleRows = enriched.filter((row) => row.status === "Earned" && row.requested); const attributedRate = eligibleRows.length ? metrics.reward / eligibleRows.length : 0;
-  drawer.innerHTML = `<div class="drawer-head"><div><p class="eyebrow">REWARD LEDGER · ${staff.level.toUpperCase()}</p><h2>${staff.name}</h2></div><button class="close-button" aria-label="Close reward ledger">×</button></div><div class="ledger-summary"><div><strong>${metrics.completedBookings}</strong><span>Completed</span></div><div><strong>${currency.format(metrics.reward)}</strong><span>Earned reward</span></div><div><strong>${metrics.effectiveTurns.toFixed(1)}</strong><span>Effective turns</span></div></div><div class="ledger-rule"><span>Fair reward rule</span><strong>Only Customer Request earns reward</strong></div><div class="ledger-list attribution-ledger"><div class="ledger-list-head"><span>Booking & source</span><span>Reward / turn owner</span></div>${enriched.map((row) => { const reward = row.status === "Earned" && row.requested ? attributedRate : 0; return `<div class="ledger-row"><span><strong>${row.customer}</strong><small>${row.date} · ${row.service}</small><em class="source-badge ${row.requested ? "requested" : "anyone"}">${row.source}</em></span><span><strong>${currency.format(reward)}</strong><small>${row.requested ? `Reward: ${row.rewardOwner}` : "Not reward eligible"}</small><small>Turn: ${row.performedBy} · ${row.turnCredit}</small></span></div>`; }).join("")}</div><div class="ledger-total"><span>Customer Request reward total</span><strong>${currency.format(metrics.reward)}</strong></div>`;
+  drawer.innerHTML = `<div class="drawer-head"><div><p class="eyebrow">REWARD LEDGER · ${staff.level.toUpperCase()}</p><h2>${staff.name}</h2></div><button class="close-button" aria-label="Close reward ledger">×</button></div><div class="ledger-summary"><div><strong>${metrics.completedBookings}</strong><span>Completed</span></div><div><strong>${currency.format(metrics.reward)}</strong><span>Earned reward</span></div><div><strong>${formatTurnCredit(metrics.effectiveTurns)}</strong><span>Effective turns</span></div></div><div class="ledger-rule"><span>Fair reward rule</span><strong>Only Customer Request earns reward</strong></div><div class="ledger-list attribution-ledger"><div class="ledger-list-head"><span>Booking & source</span><span>Reward / turn owner</span></div>${enriched.map((row) => { const reward = row.status === "Earned" && row.requested ? attributedRate : 0; return `<div class="ledger-row"><span><strong>${row.customer}</strong><small>${row.date} · ${row.service}</small><em class="source-badge ${row.requested ? "requested" : "anyone"}">${row.source}</em></span><span><strong>${currency.format(reward)}</strong><small>${row.requested ? `Reward: ${row.rewardOwner}` : "Not reward eligible"}</small><small>Turn: ${row.performedBy} · ${row.turnCredit}</small></span></div>`; }).join("")}</div><div class="ledger-total"><span>Customer Request reward total</span><strong>${currency.format(metrics.reward)}</strong></div>`;
   drawer.classList.add("drawer--open"); backdrop.classList.add("is-open"); drawer.setAttribute("aria-hidden", "false");
   translateUI();
 }

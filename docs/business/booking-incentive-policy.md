@@ -19,7 +19,8 @@
 | Volume tiers | Mức thưởng thay đổi theo bậc số lượng booking. |
 | Progressive | Tính riêng số booking thuộc từng bậc rồi cộng thưởng. |
 | Final tier | Áp mức thưởng của bậc đạt được cho toàn bộ số booking dùng tính thưởng. |
-| Booking turn credit | Số lượt quy đổi cho mỗi booking được tính lượt: 0, 0.5 hoặc 1. |
+| Booking turn credit | Số lượt quy đổi cho mỗi booking được tính lượt; cho phép số không âm, gồm cả số lẻ. Giá trị mặc định của salon dùng chung với Weighted Turn Settings. |
+| Weighted Turn Settings | Bốn mức lượt dịch vụ theo giá trị sau giảm giá; cùng bộ cấu hình với booking turn credit mặc định của salon. |
 | Effective date | Ngày người quản lý muốn chính sách bắt đầu áp dụng. Hiện mới được lưu trong phiên và hiển thị. |
 | Override | Cấu hình riêng của một thợ, thay thế một số giá trị mặc định. |
 | Live payout preview | Phần xem trước phép tính cho 45 booking mẫu; không thực hiện payout. |
@@ -50,13 +51,13 @@ Nhãn **Owner Access** thể hiện đối tượng sử dụng dự kiến. Pro
 
 **Acceptance Criteria — giao diện và hành vi hiện có:**
 
-1. Mở panel hiển thị cấu hình đang lưu trong phiên.
+1. Mở panel hiển thị cấu hình thưởng trong phiên và cấu hình lượt chung đã lưu trong trình duyệt cho salon.
 2. Policy scope có **Same policy for all** và **Customize by technician**.
 3. Reward structure có ba lựa chọn; chỉ phần nhập tương ứng với lựa chọn hiện tại được hiển thị.
 4. Flat reward cho nhập đơn giá; By level có mức riêng cho Junior, Senior và Master.
 5. Volume tiers cho nhập From, To và Reward; có Add tier, xóa bậc, Progressive và Final tier.
 6. Reward period có Daily, Weekly, Biweekly, Monthly.
-7. Booking turn credit có 0, 0.5 và 1 turn.
+7. Booking turn credit cho nhập số không âm, ví dụ 0, 0.5, 1 hoặc 1.25. Không chấp nhận ô trống hoặc số không hữu hạn.
 8. Có ô chọn Effective date.
 9. Chuyển cấu trúc thưởng trong cùng phiên chỉnh sửa giữ các giá trị đã nhập ở các cấu trúc khác.
 
@@ -101,13 +102,13 @@ flowchart TD
 4. Chọn Use default và lưu sẽ bỏ override của thợ đó.
 5. Chọn Same policy for all khiến phép tính sử dụng policy chung, dù trước đó đã có override.
 
-**Tiêu chí cần hoàn thiện:** Mở lại hoặc dựng lại form phải giữ đúng booking turn credit riêng đã lưu. Hiện dropdown override luôn khởi tạo ở 0.5 nên chưa đáp ứng tiêu chí này. Danh sách override hiện chỉ có sáu thợ đầu tiên của bộ dữ liệu mẫu.
+**Hành vi hiện có:** Mở lại hoặc dựng lại form giữ đúng booking turn credit riêng đã lưu trong phiên. Thay đổi lượt mặc định của salon không ghi đè lượt riêng của thợ. Danh sách override hiện chỉ có sáu thợ đầu tiên của bộ dữ liệu mẫu; override chưa lưu qua lần tải lại trang.
 
 | Step | Who | Action | System Response | Notes |
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Chủ salon | Chọn Customize by technician | Hiện danh sách override | Tối đa sáu thợ mẫu. |
 | 2 | Chủ salon | Chọn Custom hoặc Use default | Ghi nhận lựa chọn trong bản chỉnh sửa | Custom dùng thưởng cố định. |
-| 3 | Chủ salon | Nhập mức riêng và lưu | Tính lại kết quả theo scope đang chọn | Cần sửa lỗi khôi phục turn credit riêng. |
+| 3 | Chủ salon | Nhập mức riêng và lưu | Tính lại kết quả theo scope đang chọn | Giữ đúng turn credit riêng khi mở lại trong phiên. |
 
 ```mermaid
 flowchart TD
@@ -135,11 +136,11 @@ flowchart TD
 **Acceptance Criteria — hiện có:**
 
 1. Preview tính cho **45 booking**, và dùng cấp độ **Master** khi chọn By level.
-2. Khi Volume tiers không hợp lệ, preview hiện **Fix tier ranges**, có thông báo lỗi và nút Save policy bị vô hiệu hóa.
+2. Khi Volume tiers không hợp lệ, preview hiện **Check policy settings**, có thông báo lỗi và nút Save policy bị vô hiệu hóa.
 3. Danh sách bậc phải có ít nhất một bậc; bậc đầu bắt đầu từ 1; các bậc kế tiếp bắt đầu ngay sau giới hạn trên bậc trước.
 4. Giá trị To phải lớn hơn hoặc bằng From; mức Reward phải hữu hạn và không âm.
 5. To để trống nghĩa là không giới hạn; bậc này chỉ được nằm cuối.
-6. Save policy đóng panel, cập nhật Technician Overview và thêm dòng Policy history trong phiên.
+6. Save policy hợp lệ lưu cấu hình lượt chung vào trình duyệt, đóng panel, cập nhật Technician Overview và thêm dòng Policy history trong phiên. Nếu lưu trữ thất bại, panel giữ mở và báo lỗi; không áp dụng bản thưởng mới.
 7. Cancel, nút × hoặc bấm vùng nền đóng panel mà không áp dụng bản chỉnh sửa. Mở lại lấy cấu hình đã lưu trước đó.
 
 **Ví dụ nghiệm thu phép tính, với 45 booking đủ điều kiện mẫu:**
@@ -157,7 +158,7 @@ Preview không tính riêng từng override và không tự kiểm chứng rằn
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Manager | Thay đổi cấu hình | Cập nhật phép tính mẫu và thông báo kiểm tra | Không chi trả tiền. |
 | 2 | Manager | Sửa lỗi nếu có | Cho phép Save policy khi kiểm tra bậc đạt | Validation mức tiền khác còn thiếu. |
-| 3 | Manager | Save policy | Áp dụng ngay trong phiên, cập nhật lịch sử mẫu | Chưa lưu bền vững. |
+| 3 | Manager | Save policy | Lưu lượt chung trong trình duyệt; áp dụng phần thưởng trong phiên | Lịch sử vẫn là dữ liệu mẫu. |
 | 4 | Manager | Hoặc Cancel/đóng panel | Không áp dụng thay đổi chưa lưu | Mở lại lấy policy trước đó. |
 
 ```mermaid
@@ -174,13 +175,61 @@ flowchart TD
     H --> I
 ```
 
+#### Workflow: Đồng bộ cấu hình lượt với Turn Board
+
+**Primary Actor:** Chủ salon / Manager
+**Trigger:** Mở Booking Incentive Policy hoặc Weighted Turn Settings tại Turn Board.
+**Outcome:** Cả hai màn hình sử dụng cùng booking turn credit mặc định và bốn mức lượt dịch vụ của salon.
+
+**User Stories:**
+
+- **US-10 — Thiết lập lượt từ hai màn hình:** **As a** Manager, **I want to** sửa booking turn credit và các mức lượt dịch vụ từ một trong hai màn hình, **so that** tôi không phải nhập lại cùng cấu hình ở nhiều nơi.
+- **US-11 — Giữ cấu hình sau khi mở lại:** **As a** Chủ salon, **I want to** mở màn hình còn lại hoặc tải lại trang và thấy giá trị đã lưu, **so that** các thao tác tiếp theo dùng đúng cấu hình của salon.
+- **US-12 — Ngăn lưu lượt không hợp lệ:** **As a** Manager, **I want to** nhận thông báo khi thiếu số lượt, nhập số âm hoặc không thể lưu, **so that** cấu hình đang áp dụng không bị thay thế bởi dữ liệu lỗi.
+
+**Acceptance Criteria — hiện có:**
+
+1. Cả hai form có booking turn credit mặc định và bốn mức: $0–29.99, $30–69.99, $70–109.99, $110+. Chỉ thay đổi số lượt; các ngưỡng giá trị giữ cố định.
+2. Mặc định lượt dịch vụ lần lượt là 0.5, 1, 1.5, 2; lượt booking là 0.5.
+3. Save policy hoặc Save Rules lưu cả hai loại cấu hình chung. Có liên kết mở trực tiếp form ở màn hình còn lại.
+4. Các trang cùng salon trên cùng địa chỉ ứng dụng và trình duyệt nhận giá trị đã lưu, kể cả khi tải lại. Tab đang mở nhận cập nhật cho các ô lượt chung; các trường thưởng và override đang sửa vẫn giữ nguyên.
+5. Cancel hoặc đóng form không lưu bản chỉnh sửa. Mở lại form lấy giá trị đã lưu gần nhất.
+6. Ô trống, số âm hoặc số không hữu hạn bị từ chối. Lỗi lưu trữ giữ form mở và thông báo thất bại.
+7. Add Turn dùng mức lượt dịch vụ mới để gợi ý lượt, kể cả mức lẻ như 1.25; các lượt đã ghi trên Turn Board không tự tính lại.
+8. Technician Overview cập nhật booking credit từ mặc định mới; thợ có override đang áp dụng tiếp tục dùng lượt riêng.
+
+**Phạm vi tích hợp:** Đây là chia sẻ cấu hình trong prototype. Chưa có sổ lượt chung giữa Calendar và Turn Board, chưa tự ghi lượt từ booking hoàn thành, chưa cộng hoặc trừ lại lượt lịch sử. Không tự cộng cả lượt booking và lượt theo giá trị dịch vụ cho cùng booking. Số liệu Overview vẫn mô phỏng; các ngưỡng giá trị dịch vụ chưa dùng để tính lại Walk-in turns mô phỏng.
+
+| Step | Who | Action | System Response | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | Manager | Mở một trong hai form | Đọc cấu hình lượt chung của salon | Phần thưởng vẫn nằm trong Booking Incentive Policy. |
+| 2 | Manager | Nhập lượt booking và lượt dịch vụ | Giữ bản chỉnh sửa | Chưa đổi lượt đã ghi. |
+| 3 | Manager | Bấm lưu | Kiểm tra giá trị, lưu cấu hình | Nếu thất bại, giữ form mở. |
+| 4 | Hệ thống | Thông báo cấu hình mới | Đồng bộ các ô lượt chung và kết quả liên quan | Không ghi đè trường thưởng hoặc override đang sửa. |
+| 5 | Manager | Mở màn hình còn lại | Thấy các giá trị vừa lưu | Cùng trình duyệt và địa chỉ ứng dụng. |
+
+```mermaid
+flowchart TD
+    A([Mở cấu hình lượt]) --> B[Đọc cấu hình salon]
+    B --> C[Sửa các mức lượt]
+    C --> D{Lưu hay hủy?}
+    D -- Hủy --> E([Giữ cấu hình cũ])
+    D -- Lưu --> F{Giá trị hợp lệ?}
+    F -- Không --> G[Hiển thị lỗi]
+    G --> C
+    F -- Có --> H{Lưu trữ thành công?}
+    H -- Không --> G
+    H -- Có --> I[Cập nhật hai màn hình]
+    I --> J([Áp dụng cấu hình mới])
+```
+
 ### System Configuration & Administration
 
 **US-09 — Cấu hình Anyone assignment:** **As a** Chủ salon, **I want to** chọn cách phân công booking Anyone và mốc cảnh báo lịch chưa có thợ, **so that** tôi thống nhất quy trình điều phối trong salon.
 
 - Cách phân công: System suggests, manager confirms; Auto-assign immediately; Manager assigns manually.
 - Mốc Unassigned alert: 2, 6, 12, 24 hoặc 48 giờ trước lịch hẹn.
-- Save policy lưu cả cấu hình thưởng và cấu hình Anyone trong phiên. Auto-assign và cảnh báo theo thời gian thực chưa hoạt động; chi tiết được mô tả trong tài liệu Appointments Need Assignment.
+- Save policy lưu cấu hình thưởng và cấu hình Anyone trong phiên, đồng thời lưu cấu hình lượt chung trong trình duyệt theo salon. Auto-assign và cảnh báo theo thời gian thực chưa hoạt động; chi tiết được mô tả trong tài liệu Appointments Need Assignment.
 - Mặc định: thưởng theo bậc lũy tiến, kỳ Weekly, 0.5 booking turn credit; Anyone chọn Automatic và cảnh báo trước 24 giờ.
 - Panel hiện chưa có công tắc bật/tắt chương trình thưởng, dù mô hình tính toán có hỗ trợ trạng thái này.
 
@@ -209,6 +258,7 @@ stateDiagram-v2
 - Quy tắc nghiệp vụ hiển thị: chỉ booking Customer Request hoàn thành đủ điều kiện thưởng; Anyone nhận $0 booking reward và lượt thuộc người thực hiện.
 - **Giới hạn:** Phép tính Overview và preview vẫn dùng số booking mô phỏng, chưa kiểm chứng điều kiện thưởng trên từng booking thực tế.
 - Reward và booking turn credit là hai đại lượng riêng; không coi thưởng tiền bằng 0 đồng nghĩa lượt bằng 0.
+- Booking turn credit mặc định và các mức lượt dịch vụ dùng chung giữa hai màn hình; thay đổi không tự điều chỉnh các lượt đã ghi. Chưa đồng bộ cấu hình qua thiết bị khác hoặc tài khoản trên máy chủ.
 - Custom override hiện là mức thưởng cố định và turn credit riêng; không có bộ bậc thưởng riêng trên từng dòng thợ.
 - Lưu policy chỉ tính lại số liệu prototype; không tạo giao dịch, không chi trả và không xác nhận tiền đã được nhận.
 - Policy history hiện dùng người thao tác và thời gian mẫu. Không coi đây là audit bất biến hoặc lịch sử phiên bản chính thức.
@@ -222,8 +272,10 @@ stateDiagram-v2
 | Số âm ở Flat reward, By level hoặc override | Trường có giới hạn nhập nhưng chưa kiểm tra đầy đủ trước Save | Đội phát triển bổ sung validation tại bước lưu. |
 | Mốc From/To là số lẻ hoặc không bao phủ toàn bộ lượng booking | Prototype chưa kiểm tra đầy đủ tính nguyên và phạm vi cuối | Cần xác định quy tắc và bổ sung kiểm tra. |
 | Effective date ở tương lai | Lưu vẫn áp dụng ngay trên màn hình | Cần cơ chế ngày hiệu lực và policy theo kỳ. |
-| Mở lại override đã chọn 0 hoặc 1 turn | Form hiện khởi tạo dropdown về 0.5 | Đội phát triển sửa trước khi dùng thực tế. |
-| Tải lại trang sau Save | Khôi phục policy demo | Cần lưu bền vững và quản lý phiên bản. |
+| Mở lại override đã lưu trong phiên | Giữ đúng lượt riêng đã chọn | Không cần xử lý. |
+| Không thể ghi vào bộ nhớ trình duyệt | Báo lỗi và không đóng form | Người quản lý kiểm tra lưu trữ trình duyệt rồi thử lại. |
+| Cấu hình lưu trữ bị hỏng | Dùng bộ lượt mặc định của salon | Người quản lý kiểm tra và lưu lại cấu hình. |
+| Tải lại trang sau Save | Giữ lượt chung đã lưu; phần thưởng, override và Anyone trở về demo | Cần máy chủ để lưu toàn bộ chính sách và quản lý phiên bản. |
 | Hai quản lý cùng sửa hoặc sửa policy của kỳ đã chốt | Chưa có kiểm soát xung đột, khóa kỳ hay phê duyệt | Chủ salon xác định nghiệp vụ; đội phát triển triển khai. |
 | Giao dịch bị hoàn tiền | Chưa có quy tắc đảo thưởng thực tế hoặc gắn giao dịch với phiên bản policy | Cần hoàn thiện đối soát booking và reward. |
 
@@ -241,9 +293,14 @@ A: Chưa. Prototype hiện áp dụng ngay khi Save policy.
 **Q: Có thể cấu hình toàn bộ thợ và lưu lâu dài chưa?**  
 A: Chưa. Override chỉ hiển thị sáu thợ mẫu và dữ liệu mới lưu trong phiên.
 
+**Q: Weighted Turn Settings có chỉnh được lượt booking không?**
+A: Có. Cả hai màn hình chỉnh cùng lượt booking mặc định và bốn mức lượt dịch vụ. Lượt riêng của thợ vẫn được cấu hình trong Booking Incentive Policy; chỉ cấu hình chung được lưu qua lần tải lại trang.
+
 ### Related Features
 
 - [Technician Overview](technician-overview.md)
 - [Appointments Need Assignment](appointments-need-assignment.md)
 - [Technician Level](technician-level.md)
 - [Front Desk — Calendar](../../html/pages/pos-front-desk.html?tab=appointments&view=calendar)
+
+- [Weighted Turn Settings — Turn Board](../../html/pages/pos-front-desk-turn-board.html?settings=weighted-turns)

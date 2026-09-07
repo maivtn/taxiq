@@ -127,7 +127,7 @@ flowchart TD
 | Thưởng cố định | Số booking dùng tính thưởng nhân đơn giá cố định. |
 | Thưởng theo cấp độ | Số booking dùng tính thưởng nhân mức thưởng của Junior/Senior/Master demo. |
 | Thưởng theo bậc | Hỗ trợ tính lũy tiến từng bậc hoặc áp mức của bậc đạt được cho toàn bộ số booking. |
-| Booking turn credit | Dùng tính tổng Booking credit, sau đó cộng Walk-in turns. |
+| Booking turn credit | Dùng tính tổng Booking credit, sau đó cộng Walk-in turns. Giá trị mặc định dùng chung với Weighted Turn Settings; override trong phiên vẫn ưu tiên. |
 | Bật/tắt thưởng | Tắt thưởng làm giá trị Reward bằng 0; booking credit vẫn được tính riêng. |
 | Lưu chính sách | Cập nhật và tính lại Overview ngay trong phiên hiện tại. |
 
@@ -176,7 +176,7 @@ stateDiagram-v2
 | Chọn kỳ khác hoặc ngày khác | Tính lại theo độ dài kỳ, không lọc giao dịch theo ngày thực | Đội phát triển kết nối dữ liệu lịch hẹn. |
 | Ledger có ít dòng hơn tổng Completed | Danh sách chỉ là các dòng minh họa có giới hạn | Cần dữ liệu đầy đủ, phân trang và đối soát thực tế. |
 | Tổng Reward và nguồn booking | Tổng hiện tính trên booking đủ điều kiện demo rồi phân bổ cho các dòng Customer Request mẫu | Cần tính thưởng từ nguồn booking thực để bảo đảm quy tắc nhất quán. |
-| Tải lại trang | Khôi phục dữ liệu và chính sách demo; chưa lưu kết quả Overview bền vững | Đội phát triển. |
+| Tải lại trang | Giữ cấu hình lượt chung của salon; phần thưởng và override trở về demo, chưa lưu kết quả Overview bền vững | Đội phát triển. |
 | Tranh chấp phân bổ thưởng/lượt | Chưa có quy trình điều chỉnh hoặc phê duyệt trong panel này | Chủ salon xác định nghiệp vụ; đội phát triển bổ sung. |
 
 ### Frequently Asked Questions

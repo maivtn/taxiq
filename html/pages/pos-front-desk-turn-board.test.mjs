@@ -5,7 +5,7 @@ import {JSDOM,VirtualConsole} from 'jsdom';
 function boot(){
  const errors=[];const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
  const dom=new JSDOM(readFileSync(new URL('./pos-front-desk-turn-board.html',import.meta.url),'utf8'),{url:'https://example.test/pages/pos-front-desk-turn-board.html',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){w.structuredClone=structuredClone;}});
- dom.window.eval(readFileSync(new URL('../assets/pos-front-desk-turn-board.js',import.meta.url),'utf8'));
+ for(const name of ['salon-data','pos-turn-settings','pos-front-desk-turn-board']) dom.window.eval(readFileSync(new URL('../assets/'+name+'.js',import.meta.url),'utf8'));
  return {dom,w:dom.window,d:dom.window.document,errors};
 }
 test('Turn Board renders all three modes, filtering and the large-salon sample',()=>{
@@ -30,7 +30,7 @@ test('assignment advances rotation and prevents assigning a busy technician',()=
 });
 test('manual turns require a reason and use the configured weighted credit',()=>{
  const {dom,w,d,errors}=boot();
- d.querySelectorAll('#turn-rules-modal input')[1].value='1.5';w.saveTurnRules();
+ d.querySelectorAll('[data-service-weight]')[1].value='1.5';w.saveTurnRules();
  w.openAddTurn(0);assert.equal(d.querySelector('#add-turn-credit').value,'1.5');
  w.saveAddedTurn();assert.match(d.querySelector('#toast').textContent,/required/);
  d.querySelector('#add-turn-reason').value='Missing service';w.saveAddedTurn();

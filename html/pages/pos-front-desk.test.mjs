@@ -10,7 +10,7 @@ function boot(query = '') {
   w.confirm=()=>true;
   w.structuredClone=structuredClone;
   w.matchMedia=()=>({matches:false});
-  for(const name of ['salon-data','appointment-tickets','appointments-store']) w.eval(readFileSync(new URL('../assets/'+name+'.js',import.meta.url),'utf8'));
+  for(const name of ['salon-data','pos-turn-settings','appointment-tickets','appointments-store']) w.eval(readFileSync(new URL('../assets/'+name+'.js',import.meta.url),'utf8'));
   w.NEXORA_APPOINTMENTS_STORE.create({id:'test-1',customerName:'Jade <test>',phone:'1234567890',startAt:'2026-09-08T10:00:00',serviceNames:['Gel Manicure'],status:'confirmed'});
   w.eval(readFileSync(new URL('../assets/team-calendar-content.js',import.meta.url),'utf8'));
   w.eval(readFileSync(new URL('../assets/pos-front-desk.js',import.meta.url),'utf8'));
