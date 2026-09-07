@@ -80,7 +80,7 @@
     ] },
     { type: 'group', key: 'pos', label: 'POS', icon: 'store', page: 'pos', items: [
       { label: 'Front Desk', tab: 'front-desk', href: 'pos-front-desk.html' },
-      { label: 'Salon Settings', tab: 'management' },
+      { label: 'Salon Settings', tab: 'salon-settings', href: 'pos-salon-settings.html' },
       { label: 'Report', tab: 'report', href: 'pos-shop-income-report.html' },
       { label: 'Promotions', href: 'salon-setup-reward.html?tab=ai-offers' },
       { label: 'Check-In Devices', href: 'qr-stations.html?tab=qr-stations' },

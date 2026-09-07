@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nexora Touch - POS Staff</title>
+  <title>Nexora Touch - Salon Settings</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -140,7 +140,7 @@
       background: #e9edff;
       padding: 2px 7px;
       color: var(--nexora-brand);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
     }
 
@@ -199,7 +199,7 @@
       min-width: 0;
       overflow: hidden;
       color: var(--nexora-text);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 900;
       letter-spacing: .04em;
       text-overflow: ellipsis;
@@ -209,7 +209,7 @@
 
     .tech-service-category-all {
       color: var(--nexora-muted);
-      font-size: 10px;
+      font-size: 11px;
       font-weight: 800;
     }
 
@@ -323,7 +323,7 @@
 
     .settings-help {
       color: var(--nexora-muted);
-      font-size: 10.5px;
+      font-size: 11px;
       font-weight: 500;
       line-height: 1.45;
     }
@@ -397,7 +397,7 @@
 
     .tech-tin-choice-description {
       color: var(--nexora-muted);
-      font-size: 10.5px;
+      font-size: 11px;
       font-weight: 500;
       line-height: 1.4;
     }
@@ -469,6 +469,7 @@
     .tech-level-summary p { margin: 0; }
     @media (max-width: 640px) { .tech-level-layout { grid-template-columns: 1fr; } }
   </style>
+  <link rel="stylesheet" href="../assets/pos-salon-settings.css">
 </head>
 <body>
   <div class="shell">
@@ -480,18 +481,31 @@
       <main class="content" aria-label="POS Staff content">
         <div class="page-heading">
           <div class="page-title-row">
-            <h1 class="page-title">Staff</h1>
+            <h1 class="page-title">Salon Settings</h1>
           </div>
-          <p class="page-description">Bitcoin Nail Bar · Houston, TX — manage technician, front desk and manager profiles, pay setup, and tax filing.</p>
+          <p class="page-description">Manage salon information, staff, services, roles, and permissions.</p>
         </div>
 
+        <nav class="salon-tabs" aria-label="Salon settings sections">
+          <button type="button" data-settings-tab="information"><i data-lucide="building-2" aria-hidden="true"></i> Salon Information</button>
+          <button type="button" data-settings-tab="staff" class="active" aria-current="page"><i data-lucide="users-round" aria-hidden="true"></i> Staff</button>
+          <button type="button" data-settings-tab="services"><i data-lucide="list" aria-hidden="true"></i> Services</button>
+          <button type="button" data-settings-tab="roles"><i data-lucide="shield-check" aria-hidden="true"></i> Roles &amp; Permissions</button>
+        </nav>
+        <section data-settings-panel="staff">
         <div class="tech-intro">
-          <div class="tech-intro-text">A shared technician profile powers customer SMS, QR tips, Reviews and Rewards.</div>
-          <button class="booking-primary-button" type="button" data-tech-modal-open><i class="bi bi-plus-lg" aria-hidden="true"></i>Add Technician</button>
+          <div class="tech-intro-text">Set a staff member’s POS role, pay structure, and tip preference, and confirm their tax filing type.</div>
+          <input id="salon-staff-search" type="search" aria-label="Search staff by name" placeholder="Search staff by name...">
+          <button class="booking-primary-button" type="button" data-tech-modal-open><i class="bi bi-plus-lg" aria-hidden="true"></i>Add Staff</button>
         </div>
         <div class="settings-help staff-status" data-staff-status role="status" aria-live="polite"></div>
 
-        <div class="tech-grid" data-staff-grid></div>
+        <div class="salon-staff-table" data-staff-grid></div>
+        <div id="salon-staff-pagination" class="salon-pagination"></div>
+        </section>
+        <section data-settings-panel="information" hidden></section>
+        <section data-settings-panel="services" hidden></section>
+        <section data-settings-panel="roles" hidden></section>
 
         <div class="tech-modal" data-tech-modal hidden>
           <div class="tech-dialog" role="dialog" aria-modal="true" aria-labelledby="tech-modal-title">
@@ -701,7 +715,7 @@
   <script src="../assets/salon-data.js"></script>
   <script src="../assets/appointment-service-catalog.js"></script>
   <script>
-    window.NEXORA_SHELL = { activePage: 'pos' };
+    window.NEXORA_SHELL = { activePage: 'pos', activeTab: 'salon-settings' };
   </script>
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script src="../assets/nexora-shell.js"></script>
@@ -1252,7 +1266,6 @@
     syncTechTinField();
     renderStaffRoster();
     loadTechnicianServiceCatalog();
-    openNewTechModal();
 
     document.querySelectorAll('[data-tech-day-off]').forEach(function(dayOff) {
       syncTechDayOffRow(dayOff);
@@ -1356,5 +1369,6 @@
       }
     });
   </script>
+  <script src="../assets/pos-salon-settings.js"></script>
 </body>
 </html>

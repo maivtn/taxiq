@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nexora Touch - Front Desk Tickets</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/pos-front-desk.css">
+  <link rel="stylesheet" href="../assets/pos-front-desk-tickets.css">
+</head>
+<body>
+<div class="shell"><aside class="sidebar" aria-label="Salon sidebar"></aside><div class="app-area"><header class="header"></header>
+<main class="content front-desk tickets-page">
+<h1>Front Desk</h1><p class="subtitle">Check in guests, manage open tickets, and run the turn board.</p>
+  <nav class="workflow" aria-label="Front Desk workflows">
+    <button type="button" disabled>Check-in</button>
+    <a class="active" href="pos-front-desk-tickets.html" aria-current="page">Tickets <span id="ticket-nav-count"></span></a>
+    <a href="pos-front-desk-turn-board.html">Turn Board</a>
+    <button type="button" disabled>Checkout Customer</button>
+    <button type="button" disabled>Completed Services</button>
+    <a href="pos-front-desk.html">Appointments</a>
+    <button type="button" disabled>Staffs Clock</button>
+    <button type="button" disabled>Customer History</button>
+  </nav>
+
+<section aria-labelledby="tickets-title">
+  <div class="tickets-heading"><div><h2 id="tickets-title">Open Tickets</h2><p>Guests currently moving through the service workflow.</p></div><button id="checkin-summary"><strong>48 Check-ins Today</strong><span>12 New · 36 Returning → View overview</span></button></div>
+  <div id="ticket-filters" class="toolbar" role="group" aria-label="Filter tickets by status"></div>
+  <p id="assignment-alert" class="assignment-alert" role="status"></p>
+  <div class="table-wrap"><table><thead><tr><th>Number</th><th>Customer</th><th>Check-in at</th><th>Status</th><th>Technician</th><th>Services</th><th>Wait time</th><th>Actions</th></tr></thead><tbody id="ticket-body"></tbody></table><p class="empty" id="ticket-empty" hidden>No guests match this status.</p></div>
+  <p class="demo-note">Interactive prototype · Sample data only</p>
+</section><p id="feedback" role="status"></p>
+</main></div></div>
+<dialog id="ticket-dialog" aria-labelledby="ticket-dialog-title"><form id="ticket-form"><div class="dialog-heading"><h2 id="ticket-dialog-title"></h2><button type="button" data-close-dialog aria-label="Close">×</button></div><div id="ticket-dialog-content"></div><p id="ticket-error" role="alert"></p><div class="ticket-dialog-actions"><button type="button" data-close-dialog>Close</button><button type="submit" id="ticket-submit" class="primary">Save</button></div></form></dialog>
+<script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+<script>window.NEXORA_SHELL = {activePage:'pos',activeTab:'front-desk'};</script><script src="../assets/nexora-shell.js"></script>
+<script src="../assets/pos-front-desk-tickets.js"></script>
+</body></html>

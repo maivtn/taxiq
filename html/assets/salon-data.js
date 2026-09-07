@@ -11,6 +11,7 @@
   var STORAGE_KEY = 'nexora:salon-data:v1:' + SALON_ID;
   var MENU_SERVICE_SOURCE = 'html/menu/menu.json';
   var POS_PROFILE_DEFAULTS = {
+    level: 1,
     bnum: null,
     turns: 0,
     comm: 0,

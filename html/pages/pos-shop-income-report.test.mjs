@@ -110,10 +110,10 @@ test('prints only the report table with paper-safe table styles', () => {
   assert.equal(tableCells.style.getPropertyValue('position'), 'static')
   assert.equal(tableCells.style.getPropertyPriority('position'), 'important')
   assert.equal(tableCells.style.getPropertyValue('padding'), '4px 3px')
-  assert.equal(tableCells.style.getPropertyValue('font-size'), '9px')
+  assert.equal(tableCells.style.getPropertyValue('font-size'), '11px')
   assert.equal(tableCells.style.getPropertyPriority('font-size'), 'important')
   assert.equal(tableHeaders.style.getPropertyValue('white-space'), 'normal')
-  assert.equal(tableHeaders.style.getPropertyValue('font-size'), '8px')
+  assert.equal(tableHeaders.style.getPropertyValue('font-size'), '11px')
   assert.equal(edgeColumns.style.getPropertyValue('width'), 'auto')
 })
 

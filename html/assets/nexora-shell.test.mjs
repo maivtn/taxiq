@@ -271,7 +271,7 @@ test('renders the salon POS submenu with operational tabs under Front Desk', () 
   }
   const html = renderSidebar('pos', 'printer');
   assert.match(html, /class="nav-subitem is-active"[^>]*data-shell-tab="printer"/);
-  assert.match(html, /data-shell-tab="management"/);
+  assert.match(html, /href="pos-salon-settings\.html"/);
 });
 
 test('links salon POS submenu destinations from other shared sidebar pages', () => {
@@ -280,7 +280,7 @@ test('links salon POS submenu destinations from other shared sidebar pages', () 
   assert.match(html, /aria-expanded="false" aria-controls="nexora-subnav-pos"/);
   const destinations = [
     ['Front Desk', 'pos-front-desk.html'],
-    ['Salon Settings', 'pos-phase-1.html?tab=management'],
+    ['Salon Settings', 'pos-salon-settings.html'],
     ['Report', 'pos-shop-income-report.html'],
     ['Promotions', 'salon-setup-reward.html?tab=ai-offers'],
     ['Check-In Devices', 'qr-stations.html?tab=qr-stations'],
@@ -324,7 +324,7 @@ test('keeps inline shell pages on the same 1366px desktop breakpoint', () => {
 
 test('provides the shared two-line date time display class', () => {
   assert.match(shellCss, /\.credits-history-date\s*\{[\s\S]*?display:\s*grid;[\s\S]*?gap:\s*2px;/);
-  assert.match(shellCss, /\.credits-history-date small\s*\{[\s\S]*?display:\s*block;[\s\S]*?font-size:\s*10px;[\s\S]*?font-weight:\s*700;/);
+  assert.match(shellCss, /\.credits-history-date small\s*\{[\s\S]*?display:\s*block;[\s\S]*?font-size:\s*11px;[\s\S]*?font-weight:\s*700;/);
 });
 
 test('exposes an accessible hamburger drawer contract', () => {

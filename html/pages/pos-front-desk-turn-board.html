@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nexora Touch - Front Desk Turn Board</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/pos-front-desk.css">
+  <link rel="stylesheet" href="../assets/pos-front-desk-turn-board.css">
+</head>
+<body>
+<div class="shell"><aside class="sidebar" aria-label="Salon sidebar"></aside><div class="app-area"><header class="header"></header>
+<main class="content front-desk tickets-page">
+<h1>Front Desk</h1><p class="subtitle">Check in guests, manage open tickets, and run the turn board.</p>
+  <nav class="workflow" aria-label="Front Desk workflows">
+    <button type="button" disabled>Check-in</button>
+    <a href="pos-front-desk-tickets.html">Tickets</a>
+    <a class="active" href="pos-front-desk-turn-board.html" aria-current="page">Turn Board</a>
+    <button type="button" disabled>Checkout Customer</button>
+    <button type="button" disabled>Completed Services</button>
+    <a href="pos-front-desk.html">Appointments</a>
+    <button type="button" disabled>Staffs Clock</button>
+    <button type="button" disabled>Customer History</button>
+  </nav>
+
+<section id="turnboard-view" class="view">
+        <div class="section-head"><div><h2>Turn Board</h2><p>Manage technician rotation, availability, and active assignments.</p></div><button class="btn" onclick="window.location.href='pos-front-desk-tickets.html'">View Tickets</button></div>
+        <div class="turn-hero"><div><small>Next Turn</small><h2 id="next-turn-name">Kayla Bui</h2><p id="turn-waiting-copy">2 guests are waiting for a technician</p></div><button class="btn primary" onclick="openNextGuest()">Assign Next Guest</button></div>
+        <div id="peak-stats" class="peak-stats"><div class="peak-stat"><span>Total technicians</span><strong id="stat-total-techs">4</strong></div><div class="peak-stat"><span>Available</span><strong id="stat-available-techs">2</strong></div><div class="peak-stat"><span>Busy / Paused</span><strong id="stat-busy-techs">1</strong></div><div class="peak-stat"><span>Guests waiting</span><strong id="stat-waiting-guests">2</strong></div></div>
+        <div class="board-toolbar"><div class="mode-switch"><button id="mode-compact" class="active" onclick="setBoardMode('compact')">Compact</button><button id="mode-cards" onclick="setBoardMode('cards')">Cards</button><button id="mode-grid" onclick="setBoardMode('grid')">Turn Grid</button></div><select id="peak-mode-toggle" class="demo-select" onchange="setDemoMode(this.value)"><option value="normal">Normal Data</option><option value="peak">Large Salon Demo · 50 techs / 36 waiting</option></select><select id="tech-status-filter" class="demo-select" onchange="renderTurnBoard()"><option value="all">All statuses</option><option value="available">Available</option><option value="busy">Busy</option><option value="paused">Paused</option><option value="clocked-out">Clocked out</option></select><input class="tech-search" id="tech-search" placeholder="Search name or skill" oninput="renderTurnBoard()"><button class="btn" onclick="document.getElementById('turn-rules-modal').classList.add('show')">Weighted Turn Settings</button></div>
+        <div class="board-grid" id="turn-board-grid"></div>
+        <div class="prototype-note">Turn order updates when a technician is assigned or skipped.</div>
+      </section>
+<div class="modal-wrap" id="guest-picker" role="dialog" aria-modal="true" aria-labelledby="guest-picker-title"><div class="modal"><h3 id="guest-picker-title">Assign next waiting guest</h3><p>Select a guest for <strong id="guest-picker-tech">the next technician</strong>.</p><div id="guest-options"></div><div class="modal-actions"><button class="btn" onclick="closeGuestPicker()">Close</button></div></div></div>
+<div class="modal-wrap" id="boost-modal" role="dialog" aria-modal="true" aria-labelledby="boost-title"><div class="modal"><h3 id="boost-title">Boost This Technician</h3><p id="boost-copy">Create a short promotion for an under-goal technician.</p><div class="boost-box"><strong id="boost-suggestion">Suggested promotion</strong><p id="boost-reason">Based on skills, availability, and remaining goal.</p></div><div class="boost-form"><label>Service<select id="boost-service"><option>Gel Pedicure</option><option>Deluxe Pedicure</option><option>Gel Manicure</option><option>Eyebrow Waxing</option></select></label><label>Discount<input id="boost-discount" value="$10 off"></label><label>Valid until<input id="boost-until" type="time" value="17:00"></label><label>Booking limit<input id="boost-limit" type="number" value="3" min="1"></label></div><div class="modal-actions"><button class="btn" onclick="closeBoost()">Cancel</button><button class="btn primary" onclick="launchBoost()">Launch Promotion</button></div></div></div>
+<div class="modal-wrap" id="turn-rules-modal" role="dialog" aria-modal="true"><div class="modal"><h3>Weighted Turn Settings</h3><p>Manager-defined service value ranges. Discounts are included; tips, tax, products, and gift-card payments are excluded.</p><table class="rule-table"><tbody><tr><td>$0–29.99</td><td><input value="0.5"></td><td>0.5 turn</td></tr><tr><td>$30–69.99</td><td><input value="1.0"></td><td>1.0 turn</td></tr><tr><td>$70–109.99</td><td><input value="1.5"></td><td>1.5 turns</td></tr><tr><td>$110+</td><td><input value="2.0"></td><td>2.0 turns</td></tr></tbody></table><div class="modal-actions"><button class="btn" onclick="document.getElementById('turn-rules-modal').classList.remove('show')">Cancel</button><button class="btn primary" onclick="saveTurnRules()">Save Rules</button></div></div></div>
+<div class="modal-wrap" id="edit-turn-modal" role="dialog" aria-modal="true"><div class="modal"><h3>Edit Turn</h3><p id="edit-turn-copy">Adjust weighted credit with an audit reason.</p><div class="boost-form"><label>Turn credit<select id="edit-turn-credit"><option>0</option><option>0.5</option><option>1</option><option>1.5</option><option>2</option></select></label><label>Action<select><option>Adjust credit</option><option>Move to another tech</option><option>Skip / No turn</option></select></label><label style="grid-column:1/-1">Audit reason<input id="edit-turn-reason" placeholder="Required for manager edit"></label></div><div class="audit-note">The system records the manager, previous value, new value, reason, and timestamp.</div><div class="modal-actions"><button class="btn" onclick="document.getElementById('edit-turn-modal').classList.remove('show')">Cancel</button><button class="btn primary" onclick="saveTurnEdit()">Save Edit</button></div></div></div>
+<div class="modal-wrap" id="add-turn-modal" role="dialog" aria-modal="true" aria-labelledby="add-turn-title"><div class="modal"><h3 id="add-turn-title">＋ Add Turn</h3><p id="add-turn-copy">Add a missing service turn with a complete audit record.</p><div class="boost-form"><label>Service code<select id="add-turn-service"><option value="PED">PED · Pedicure</option><option value="MANI">MANI · Manicure</option><option value="GEL">GEL · Gel Polish</option><option value="DIP">DIP · Dipping Powder</option><option value="ACR-FS">ACR-FS · Acrylic Full Set</option><option value="WAX">WAX · Waxing</option></select></label><label>Service amount<input id="add-turn-amount" type="number" min="0" step="0.01" value="45" oninput="updateAddTurnPreview()"></label><label>Turn credit<select id="add-turn-credit"><option value="0.5">0.5</option><option value="1" selected="">1</option><option value="1.5">1.5</option><option value="2">2</option></select></label><label>Reason for adding turn<input id="add-turn-reason" placeholder="Required"></label></div><div id="add-turn-preview" class="turn-preview">$45.00 service · 1 turn</div><div class="audit-note">Audit saves manager, technician, timestamp, service amount, turn credit, and reason.</div><div class="modal-actions"><button class="btn" onclick="closeAddTurn()">Cancel</button><button class="btn primary" id="add-turn-save" onclick="saveAddedTurn()">Add Turn</button></div></div></div>
+<p id="toast" role="status"></p><p class="demo-note">Interactive prototype · Sample data only</p></main></div></div>
+<script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+<script>window.NEXORA_SHELL = {activePage:'pos',activeTab:'front-desk'};</script><script src="../assets/nexora-shell.js"></script>
+<script src="../assets/pos-front-desk-turn-board.js"></script>
+</body></html>
