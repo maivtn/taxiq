@@ -675,7 +675,12 @@ function translateUI() {
   calendarRoot.querySelectorAll("[data-language]").forEach((button) => button.classList.toggle("active", button.dataset.language === state.language));
 }
 
-function render() { renderDate(); renderSummary(); renderUnassignedQueue(); renderTechnicianOverview(); renderMobileOptions(); state.view === "day" ? renderDay() : renderOverview(); translateUI(); }
+function render() {
+  if (lastNavigationView !== state.view) {
+    lastNavigationView = state.view;
+    host.dispatchEvent(new CustomEvent('calendar-view-change', {detail: {view: state.view}}));
+  }
+  renderDate(); renderSummary(); renderUnassignedQueue(); renderTechnicianOverview(); renderMobileOptions(); state.view === "day" ? renderDay() : renderOverview(); translateUI(); }
 
 function openDrawer(appointmentId) {
   state.currentAppointmentId = appointmentId;
@@ -737,9 +742,17 @@ drawer.addEventListener("click", (event) => {
 }); backdrop.addEventListener("click", closeDrawer); calendarRoot.addEventListener("keydown", (event) => { if (event.key === "Escape") closeDrawer(); });
 $("#prev-day").addEventListener("click", () => shiftRange(-1)); $("#next-day").addEventListener("click", () => shiftRange(1)); $("#today-button").addEventListener("click", () => { state.anchorDate = new Date(2026, 7, 29); render(); });
 calendarRoot.querySelector(".language-switch")?.addEventListener("click", (event) => { const button = event.target.closest("[data-language]"); if (!button) return; state.language = normalizeLanguage(button.dataset.language); localStorage.setItem("nexora-language", state.language); render(); });
-addEventListener("resize", () => { if (state.view === "day") renderDay(); }); render();
+let lastNavigationView;
+function restoreCalendarView() {
+  const requested = new URLSearchParams(window.location.search).get('calendarView');
+  state.view = ['day','week','twoWeeks','threeWeeks','month'].includes(requested) ? requested : 'day';
+  lastNavigationView = state.view;
+  render();
+}
+addEventListener("resize", () => { if (state.view === "day" && !host.hidden) renderDay(); });
+restoreCalendarView();
 
 
-    host.addEventListener('calendar-show', () => render());
+    host.addEventListener('calendar-show', restoreCalendarView);
   }
 };

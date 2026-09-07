@@ -4,7 +4,26 @@
   const store = window.NEXORA_APPOINTMENTS_STORE;
   const catalog = window.NEXORA_SALON_DATA.loadCatalog();
   const labels = {pending:'Pending', confirmed:'Confirmed', 'checked-in':'Checked In', completed:'Completed', cancelled:'Cancelled', 'no-show':'No Show'};
+  const validViews = ['table', 'cards', 'calendar'];
   let view = 'table';
+  function syncNavigation(push) {
+    const url = new URL(window.location.href);
+    url.searchParams.set('tab', 'appointments');
+    url.searchParams.set('view', view);
+    if (view === 'calendar' && !['day','week','twoWeeks','threeWeeks','month'].includes(url.searchParams.get('calendarView'))) url.searchParams.set('calendarView', 'day');
+    if (url.href !== window.location.href) window.history[push ? 'pushState' : 'replaceState'](null, '', url);
+    document.querySelectorAll('.views [data-view]').forEach(button => {
+      const active = button.dataset.view === view;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+  }
+  function restoreNavigation() {
+    const requested = new URLSearchParams(window.location.search).get('view');
+    view = validViews.includes(requested) ? requested : 'table';
+    syncNavigation(false);
+    render();
+  }
   let editing = null;
   const esc = value => String(value == null ? '' : value).replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const date = value => value && Number.isFinite(new Date(value).getTime()) ? new Date(value).toLocaleDateString('en-US',{month:'short',day:'2-digit',year:'numeric'}) : '—';
@@ -48,11 +67,17 @@
   });
   catalog.services.filter(s=>s.active).forEach(s => $('[name="service"]').insertAdjacentHTML('beforeend','<option value="'+esc(s.id)+'">'+esc(s.name)+'</option>'));
   ['#status-filter','#tech-filter','#from-date','#to-date'].forEach(selector => $(selector).addEventListener('change',render));
-  document.querySelectorAll('[data-view]').forEach(button => button.addEventListener('click',()=>{
-    view=button.dataset.view;
-    document.querySelectorAll('[data-view]').forEach(b=>{b.classList.toggle('active',b===button);b.setAttribute('aria-pressed',String(b===button));});
+  document.querySelectorAll('.views [data-view]').forEach(button => button.addEventListener('click',()=>{
+    view = button.dataset.view;
+    syncNavigation(true);
     render();
   }));
+  $('#team-calendar').addEventListener('calendar-view-change', event => {
+    const url = new URL(window.location.href);
+    url.searchParams.set('calendarView', event.detail.view);
+    if (url.href !== window.location.href) window.history.pushState(null, '', url);
+  });
+  window.addEventListener('popstate', restoreNavigation);
   function openDialog(row, readonly) {
     editing=row || null;
     $('#booking-form').reset(); $('#form-error').textContent='';
@@ -93,5 +118,5 @@
   const bookingUrl=new URL('../customer/booking.html',window.location.href).href;
   $('#booking-url').href=bookingUrl;$('#booking-url').textContent=bookingUrl;
   $('#copy-link').addEventListener('click',async()=>{try{await navigator.clipboard.writeText(bookingUrl);$('#feedback').textContent='Booking link copied.';}catch(error){$('#feedback').textContent='Select and copy the booking link above.';}});
-  store.subscribe(render);render();
+  store.subscribe(render);restoreNavigation();
 })();

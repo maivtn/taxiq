@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {JSDOM} from 'jsdom';
-function boot() {
-  const dom=new JSDOM(readFileSync(new URL('./pos-front-desk.html',import.meta.url),'utf8'),{url:'https://example.test/pages/pos-front-desk.html',runScripts:'outside-only'});
+function boot(query = '') {
+  const dom=new JSDOM(readFileSync(new URL('./pos-front-desk.html',import.meta.url),'utf8'),{url:'https://example.test/pages/pos-front-desk.html'+query,runScripts:'outside-only'});
   const w=dom.window;
   w.HTMLDialogElement.prototype.showModal=function(){this.open=true;};
   w.HTMLDialogElement.prototype.close=function(){this.open=false;};
@@ -64,4 +64,30 @@ test('Front Desk creates, reschedules, checks in, and cancels appointments throu
   assert.equal(store.loadAll().length,2);
   d.querySelector('[data-action="cancel"]').click();assert.equal(store.loadAll().find(r=>r.customerName==='New guest').status,'cancelled');
   dom.window.close();
+});
+
+test('Front Desk deep links and browser history restore outer and calendar subtabs',async()=>{
+ const dom=boot('?tab=appointments&view=calendar&calendarView=week&source=salon'),w=dom.window,d=w.document;
+ assert.equal(d.querySelector('[data-view="calendar"]').getAttribute('aria-pressed'),'true');
+ const root=d.querySelector('#team-calendar').shadowRoot;
+ assert.ok(root.querySelector('[data-view="week"]').classList.contains('active'));
+ d.querySelector('[data-view="cards"]').click();
+ assert.equal(new URL(w.location.href).searchParams.get('view'),'cards');
+ d.querySelector('[data-view="calendar"]').click();root.querySelector('[data-view="month"]').click();
+ assert.equal(new URL(w.location.href).searchParams.get('calendarView'),'month');
+ const move=method=>new Promise(resolve=>{w.addEventListener('popstate',()=>resolve(),{once:true});w.history[method]();});
+ await move('back');assert.ok(root.querySelector('[data-view="week"]').classList.contains('active'));
+ await move('back');assert.equal(d.querySelector('#team-calendar').hidden,true);
+ assert.equal(d.querySelector('[data-view="cards"]').getAttribute('aria-pressed'),'true');
+ await move('forward');assert.equal(d.querySelector('#team-calendar').hidden,false);
+ assert.equal(new URL(w.location.href).searchParams.get('source'),'salon');
+ dom.window.close();
+});
+
+test('invalid Front Desk view falls back to Table with a canonical URL',()=>{
+ const dom=boot('?view=missing'),w=dom.window;
+ assert.equal(new URL(w.location.href).searchParams.get('view'),'table');
+ assert.equal(new URL(w.location.href).searchParams.get('tab'),'appointments');
+ assert.equal(w.document.querySelector('[data-view="table"]').getAttribute('aria-pressed'),'true');
+ dom.window.close();
 });
