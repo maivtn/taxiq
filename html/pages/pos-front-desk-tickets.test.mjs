@@ -2,8 +2,8 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {JSDOM} from 'jsdom';
-function boot(){
- const dom=new JSDOM(readFileSync(new URL('./pos-front-desk-tickets.html',import.meta.url),'utf8'),{url:'https://example.test/pages/pos-front-desk-tickets.html',runScripts:'outside-only'});
+function boot(url='https://example.test/pages/pos-front-desk-tickets.html'){
+ const dom=new JSDOM(readFileSync(new URL('./pos-front-desk-tickets.html',import.meta.url),'utf8'),{url,runScripts:'outside-only'});
  dom.window.HTMLDialogElement.prototype.showModal=function(){this.open=true;};dom.window.HTMLDialogElement.prototype.close=function(){this.open=false;};
  dom.window.eval(readFileSync(new URL('../assets/pos-front-desk-tickets.js',import.meta.url),'utf8'));
  dom.window.eval(readFileSync(new URL('../assets/pos-front-desk-overview.js',import.meta.url),'utf8'));return dom;
@@ -113,4 +113,30 @@ test('View Detail keeps the current overview search and status filter',()=>{
  assert.equal(d.querySelector('#overview-guests').innerHTML,before);
  assert.equal(filter.value,'cancelled');assert.equal(search.value,'Mia');
  dom.window.close();
+});
+
+test('view=overview opens Today’s Check-in Overview directly',()=>{
+ const dom=boot('https://example.test/pages/pos-front-desk-tickets.html?view=overview'),d=dom.window.document;
+ assert.equal(d.querySelector('#overview-view').hidden,false);
+ assert.equal(d.querySelector('#tickets-view').hidden,true);
+ assert.equal(d.querySelectorAll('#overview-guests tr').length,48);
+ d.querySelector('[data-checkin-detail="1"]').click();
+ assert.equal(d.querySelector('#checkin-detail-dialog').open,true);
+ dom.window.close();
+});
+test('switching views updates only the view parameter and preserves other URL parts',()=>{
+ const dom=boot('https://example.test/pages/pos-front-desk-tickets.html?source=pos#today'),w=dom.window,d=w.document;
+ d.querySelector('#checkin-summary').click();
+ let url=new URL(w.location.href);assert.equal(url.searchParams.get('view'),'overview');assert.equal(url.searchParams.get('source'),'pos');assert.equal(url.hash,'#today');
+ d.querySelector('[data-overview-back]').click();
+ url=new URL(w.location.href);assert.equal(url.searchParams.has('view'),false);assert.equal(url.searchParams.get('source'),'pos');assert.equal(url.hash,'#today');
+ assert.equal(d.querySelector('#tickets-view').hidden,false);dom.window.close();
+});
+test('unrecognized view values open Tickets, and history navigation restores the URL view',()=>{
+ const dom=boot('https://example.test/pages/pos-front-desk-tickets.html?view=unknown'),w=dom.window,d=w.document;
+ assert.equal(d.querySelector('#overview-view').hidden,true);
+ w.history.replaceState(null,'','?view=overview');w.dispatchEvent(new w.PopStateEvent('popstate'));
+ assert.equal(d.querySelector('#overview-view').hidden,false);
+ w.history.replaceState(null,'','?view=tickets');w.dispatchEvent(new w.PopStateEvent('popstate'));
+ assert.equal(d.querySelector('#overview-view').hidden,true);assert.equal(d.querySelector('#tickets-view').hidden,false);dom.window.close();
 });

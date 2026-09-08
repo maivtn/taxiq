@@ -38,12 +38,23 @@
   function restoreDetailFocus(){if(detailTrigger&&detailTrigger.isConnected)detailTrigger.focus();}
   detailDialog.addEventListener('close',restoreDetailFocus);
   detailDialog.querySelectorAll('[data-close-checkin-detail]').forEach(button=>button.addEventListener('click',()=>{detailDialog.close();restoreDetailFocus();}));
-  $('#checkin-summary').addEventListener('click',()=>{
-    renderGuests();$('#tickets-view').hidden=true;$('#overview-view').hidden=false;$('#overview-title').focus();
-  });
-  $('[data-overview-back]').addEventListener('click',()=>{
-    $('#overview-view').hidden=true;$('#tickets-view').hidden=false;$('#checkin-summary').focus();
-  });
+  function showView(overview,focus=false) {
+    if(detailDialog.open)detailDialog.close();
+    if(overview)renderGuests();
+    $('#tickets-view').hidden=overview;$('#overview-view').hidden=!overview;
+    if(focus)$(overview?'#overview-title':'#checkin-summary').focus();
+  }
+  function navigate(overview) {
+    const url=new URL(window.location.href);
+    if(overview)url.searchParams.set('view','overview');else url.searchParams.delete('view');
+    if(url.href!==window.location.href)window.history.pushState(window.history.state,'',url.href);
+    showView(overview,true);
+  }
+  function overviewFromUrl(){return new URL(window.location.href).searchParams.get('view')==='overview';}
+  $('#checkin-summary').addEventListener('click',()=>navigate(true));
+  $('[data-overview-back]').addEventListener('click',()=>navigate(false));
+  window.addEventListener('popstate',()=>showView(overviewFromUrl(),true));
+  showView(overviewFromUrl());
   $('#overview-filter').addEventListener('change',renderGuests);
   $('#overview-search').addEventListener('input',renderGuests);
 })();
