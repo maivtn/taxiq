@@ -80,3 +80,37 @@ test('Overview filters all statuses and searches names or phone numbers without 
  assert.deepEqual(Array.from(d.querySelectorAll('#overview-view .stat-card strong')).map(el=>el.textContent),['48','12','36','14m']);
  dom.window.close();
 });
+
+test('each overview row opens its own check-in details rather than an active ticket with the same number',()=>{
+ const dom=boot(),d=dom.window.document;
+ d.querySelector('#checkin-summary').click();
+ const buttons=Array.from(d.querySelectorAll('[data-checkin-detail]'));
+ assert.equal(buttons.length,48);
+ assert.deepEqual(buttons.map(button=>Number(button.dataset.checkinDetail)),Array.from({length:48},(_,index)=>index+1));
+ buttons[0].click();
+ assert.equal(d.querySelector('#checkin-detail-dialog').open,true);
+ assert.equal(d.querySelector('#checkin-detail-title').textContent,'Check-in #1');
+ const details=d.querySelector('#checkin-detail-content').textContent;
+ assert.match(details,/Anna/);assert.match(details,/\(555\) 010-1001/);assert.match(details,/Deluxe Pedicure/);assert.match(details,/Kayla Bui/);assert.doesNotMatch(details,/DJ/);
+ d.querySelector('[data-close-checkin-detail]').click();
+ assert.equal(d.querySelector('#checkin-detail-dialog').open,false);
+ assert.equal(d.querySelector('#overview-view').hidden,false);
+ dom.window.close();
+});
+
+test('View Detail keeps the current overview search and status filter',()=>{
+ const dom=boot(),w=dom.window,d=w.document;
+ d.querySelector('#checkin-summary').click();
+ const filter=d.querySelector('#overview-filter'),search=d.querySelector('#overview-search');
+ filter.value='cancelled';filter.dispatchEvent(new w.Event('change'));
+ search.value='Mia';search.dispatchEvent(new w.Event('input'));
+ const before=d.querySelector('#overview-guests').innerHTML;
+ d.querySelector('[data-checkin-detail="6"]').click();
+ assert.equal(d.querySelector('#checkin-detail-title').textContent,'Check-in #6');
+ assert.match(d.querySelector('#checkin-detail-content').textContent,/Mia/);
+ assert.match(d.querySelector('#checkin-detail-content').textContent,/Cancelled/);
+ d.querySelector('[data-close-checkin-detail]').click();
+ assert.equal(d.querySelector('#overview-guests').innerHTML,before);
+ assert.equal(filter.value,'cancelled');assert.equal(search.value,'Mia');
+ dom.window.close();
+});

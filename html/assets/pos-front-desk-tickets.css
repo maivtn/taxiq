@@ -38,3 +38,13 @@
 @media(max-width:760px) { .checkin-overview .overview-grid { grid-template-columns:minmax(0,1fr); }.checkin-overview .overview-stats { grid-template-columns:repeat(2,minmax(0,1fr)); } }
 @media(max-width:440px) { .checkin-overview .overview-tools { flex-wrap:wrap; }.checkin-overview .overview-tools input { flex-basis:100%; }.checkin-overview .source-row { grid-template-columns:120px minmax(0,1fr) 18px; gap:7px; font-size:11px; }.checkin-overview .overview-panel { padding:14px; } }
 @media(max-width:1100px) { .checkin-overview table { min-width:1160px; } }
+.checkin-overview table { min-width:1280px; }
+.checkin-overview th.overview-detail-action { width:110px; text-align:right; }
+.tickets-page .overview-list td.overview-detail-action { padding-right:0; text-align:right; }
+.checkin-overview [data-checkin-detail] { padding:7px 10px; font-size:11px; white-space:nowrap; border-color:#c7ddd5; color:#286b59; background:#f6fbf9; }
+#checkin-detail-dialog { width:min(560px,calc(100vw - 32px)); box-sizing:border-box; max-height:90dvh; }
+#checkin-detail-dialog .dialog-heading { gap:12px; }
+#checkin-detail-content { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:18px; margin:16px 0 0; }
+#checkin-detail-content dt { color:#66756f; font-size:11px; margin-bottom:5px; }
+#checkin-detail-content dd { margin:0; color:#19231f; font-size:14px; font-weight:600; overflow-wrap:anywhere; }
+@media(max-width:440px) { #checkin-detail-content { grid-template-columns:minmax(0,1fr); gap:14px; } }

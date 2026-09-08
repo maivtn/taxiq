@@ -21,8 +21,23 @@
     const rows=guests.filter(guest=>(status==='all'||guest.status===status)&&(!query||guest.name.toLowerCase().includes(query)||guest.phone.includes(query)||(digits&&/^[\d\s()+.-]+$/.test(query)&&guest.phone.replace(/\D/g,'').includes(digits))));
     $('#overview-result-count').textContent=rows.length;
     $('#overview-empty').hidden=rows.length>0;
-    $('#overview-guests').innerHTML=rows.map(g=>'<tr><td><strong>#'+g.sequence+'</strong></td><td>'+esc(g.time)+'</td><td><strong>'+esc(g.name)+'</strong><small class="phone">'+esc(g.phone)+'</small></td><td><span class="guest-tag '+(g.type==='RETURNING'?'returning':'')+'">'+g.type+'</span></td><td>'+esc(g.source)+'</td><td>'+esc(g.service)+'</td><td>'+esc(g.tech)+'</td><td><span class="status-text '+g.status+'">'+g.status.replace('-',' ')+'</span></td></tr>').join('');
+    $('#overview-guests').innerHTML=rows.map(g=>'<tr><td><strong>#'+g.sequence+'</strong></td><td>'+esc(g.time)+'</td><td><strong>'+esc(g.name)+'</strong><small class="phone">'+esc(g.phone)+'</small></td><td><span class="guest-tag '+(g.type==='RETURNING'?'returning':'')+'">'+g.type+'</span></td><td>'+esc(g.source)+'</td><td>'+esc(g.service)+'</td><td>'+esc(g.tech)+'</td><td><span class="status-text '+g.status+'">'+g.status.replace('-',' ')+'</span></td><td class="overview-detail-action"><button type="button" data-checkin-detail="'+g.sequence+'" aria-label="View Detail for check-in #'+g.sequence+' · '+esc(g.name)+'">View Detail</button></td></tr>').join('');
   }
+  const detailDialog=$('#checkin-detail-dialog');
+  let detailTrigger=null;
+  $('#overview-guests').addEventListener('click',event=>{
+    const button=event.target.closest('[data-checkin-detail]');if(!button)return;
+    const guest=guests.find(guest=>guest.sequence===Number(button.dataset.checkinDetail));if(!guest)return;
+    detailTrigger=button;
+    $('#checkin-detail-title').textContent='Check-in #'+guest.sequence;
+    const statusLabels={waiting:'Waiting','in-service':'In Service',completed:'Completed',cancelled:'Cancelled'};
+    const fields=[['Customer',guest.name],['Phone',guest.phone],['Check-in time',guest.time],['Guest type',guest.type==='RETURNING'?'Returning Guest':'New Guest'],['Source',guest.source],['Service',guest.service],['Technician',guest.tech],['Status',statusLabels[guest.status]]];
+    $('#checkin-detail-content').innerHTML=fields.map(([label,value])=>'<div><dt>'+label+'</dt><dd>'+esc(value)+'</dd></div>').join('');
+    detailDialog.showModal();
+  });
+  function restoreDetailFocus(){if(detailTrigger&&detailTrigger.isConnected)detailTrigger.focus();}
+  detailDialog.addEventListener('close',restoreDetailFocus);
+  detailDialog.querySelectorAll('[data-close-checkin-detail]').forEach(button=>button.addEventListener('click',()=>{detailDialog.close();restoreDetailFocus();}));
   $('#checkin-summary').addEventListener('click',()=>{
     renderGuests();$('#tickets-view').hidden=true;$('#overview-view').hidden=false;$('#overview-title').focus();
   });
