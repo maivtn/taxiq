@@ -460,3 +460,15 @@ test('cancelling service removal preserves the service and total', () => {
   assert.equal(window.document.querySelector('[data-customer-approval]'), null);
   dom.window.close();
 });
+
+test('Work Order uses saved services, prices and categories while excluding inactive services', async () => {
+  const {dom,window}=loadPage(SERVICE_CATALOG);
+  window.NEXORA_SERVICE_APPROVAL_SETTINGS.saveCatalog('golden',[{id:'new-category',name:'Specials',services:[{id:'new-service',name:'New treatment',price:21,durationMin:25},{id:'inactive',name:'Hidden treatment',price:10,durationMin:15,active:false}]}]);
+  await openAddServiceModal(window);
+  assert.ok(window.document.querySelector('[data-catalog-service="new-service"]'));
+  assert.equal(window.document.querySelector('[data-catalog-service="inactive"]'),null);
+  assert.equal(window.document.querySelector('[data-catalog-service="polish-change"]'),null);
+  click(window,'[data-catalog-service="new-service"]');click(window,'[data-confirm-service-picker]');
+  assert.match(window.document.querySelector('[data-detail-panel] .services').textContent,/New treatment\$21.0025 min/);
+  dom.window.close();
+});

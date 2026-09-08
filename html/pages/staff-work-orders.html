@@ -949,9 +949,16 @@
         showToast('Pending service approval was cancelled.');
       }
 
+      function workOrderServiceCategories() {
+        return window.NEXORA_SERVICE_APPROVAL_SETTINGS.loadCatalog(currentSalonId, SERVICE_CATEGORIES).map(function (category) {
+          return Object.assign({}, category, { services: category.services.filter(function (service) { return service.active !== false && service.id !== '__custom__'; }) });
+        }).filter(function (category) { return category.services.length; });
+      }
+
       function flatServiceCatalog() {
-        return SERVICE_CATEGORIES.reduce(function (items, category) {
-          return items.concat(category.services);
+        var seen = new Set();
+        return workOrderServiceCategories().reduce(function (items, category) {
+          return items.concat(category.services.filter(function (service) { if (seen.has(service.id)) return false; seen.add(service.id); return true; }));
         }, []);
       }
 
@@ -969,7 +976,7 @@
           servicePickerConfirmEl.disabled = true;
           return;
         }
-        servicePickerListEl.innerHTML = SERVICE_CATEGORIES.map(function (category) {
+        servicePickerListEl.innerHTML = workOrderServiceCategories().map(function (category) {
           var services = category.services.filter(function (service) {
             return !query || service.name.toLowerCase().indexOf(query) !== -1 || category.name.toLowerCase().indexOf(query) !== -1;
           });
