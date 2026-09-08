@@ -2,12 +2,13 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {JSDOM,VirtualConsole} from 'jsdom';
-function boot(){
+function boot(serviceCatalog = null){
  const errors=[];const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
  const dom=new JSDOM(readFileSync(new URL('./pos-salon-settings.html',import.meta.url),'utf8'),{url:'https://example.test/pages/pos-salon-settings.html',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){
  w.eval(readFileSync(new URL('../assets/salon-data.js',import.meta.url),'utf8'));
  const data=w.NEXORA_SALON_DATA.loadCatalog();data.technicians=Array.from({length:12},(_,i)=>({id:'staff-'+i,name:'Staff '+i,phone:'5551234567',active:true}));w.NEXORA_SALON_DATA.saveCatalog(data);
- w.NEXORA_APPOINTMENT_SERVICE_CATALOG={load:()=>new Promise(()=>{})};
+ w.eval(readFileSync(new URL('../assets/service-approval-settings.js',import.meta.url),'utf8'));
+ w.NEXORA_APPOINTMENT_SERVICE_CATALOG={load:()=>serviceCatalog ? Promise.resolve(serviceCatalog) : new Promise(()=>{})};
  }});
  dom.window.eval(readFileSync(new URL('../assets/pos-salon-settings.js',import.meta.url),'utf8'));
  return {dom,w:dom.window,d:dom.window.document,errors};
@@ -24,7 +25,7 @@ test('Salon Settings opens Staff, searches and paginates with working profile ac
 });
 test('unfinished Salon Settings tabs stay empty',()=>{
  const {dom,d,errors}=boot();
- for(const tab of ['services','roles','information']){
+ for(const tab of ['roles','information']){
   d.querySelector('[data-settings-tab="'+tab+'"]').click();
   const panel=d.querySelector('[data-settings-panel="'+tab+'"]');
   assert.equal(panel.hidden,false);assert.equal(panel.innerHTML.trim(),'');
@@ -64,5 +65,24 @@ test('technician level saves and reloads in the staff profile',()=>{
  assert.match(d.querySelector('[data-staff-grid]').textContent,/Level 2/);
  d.querySelector('[data-tech-detail-open="staff-0"]').click();assert.equal(level.value,'2');
  d.querySelector('[data-tech-modal-close]').click();d.querySelector('[data-tech-modal-open]').click();assert.equal(level.value,'1');
+ assert.deepEqual(errors,[]);dom.window.close();
+});
+
+test('service approval checkboxes default off, persist per salon and can be unchecked', async()=>{
+ const {dom,w,d,errors}=boot({categories:[{id:'nails',name:'Nails',services:[{id:'polish-change',name:'Polish Change',type:'service'}]}]});
+ await new Promise(resolve=>w.setTimeout(resolve,0));
+ d.querySelector('[data-settings-tab="services"]').click();
+ const salon=d.querySelector('[data-approval-salon]');
+ salon.value='golden';salon.dispatchEvent(new w.Event('change',{bubbles:true}));
+ let checkbox=d.querySelector('[data-service-approval="polish-change"]');
+ assert.equal(checkbox.checked,false);
+ checkbox.click();
+ assert.equal(w.NEXORA_SERVICE_APPROVAL_SETTINGS.requiresApproval('golden','polish-change'),true);
+ assert.equal(w.NEXORA_SERVICE_APPROVAL_SETTINGS.requiresApproval('elite','polish-change'),false);
+ salon.value='elite';salon.dispatchEvent(new w.Event('change',{bubbles:true}));
+ assert.equal(d.querySelector('[data-service-approval="polish-change"]').checked,false);
+ salon.value='golden';salon.dispatchEvent(new w.Event('change',{bubbles:true}));
+ checkbox=d.querySelector('[data-service-approval="polish-change"]');assert.equal(checkbox.checked,true);
+ checkbox.click();assert.equal(w.NEXORA_SERVICE_APPROVAL_SETTINGS.requiresApproval('golden','polish-change'),false);
  assert.deepEqual(errors,[]);dom.window.close();
 });

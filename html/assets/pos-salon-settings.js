@@ -26,5 +26,30 @@
   $('#salon-staff-search').addEventListener('input',()=>{page=1;drawStaff();});
   $('#salon-staff-pagination').addEventListener('click',e=>{const b=e.target.closest('[data-staff-page]');if(b&&!b.disabled){page=Number(b.dataset.staffPage);drawStaff();}});
   document.querySelectorAll('[data-settings-tab]').forEach(b=>b.addEventListener('click',()=>selectTab(b.dataset.settingsTab)));
+  const approvalSettings = window.NEXORA_SERVICE_APPROVAL_SETTINGS;
+  const servicePanel = $('[data-settings-panel="services"]');
+  const currentSalon = salonData.loadCatalog().salon;
+  const approvalSalons = [currentSalon, {id:'golden',name:'Golden Nails & Spa'}, {id:'elite',name:'Elite Beauty Lounge'}];
+  servicePanel.innerHTML = '<div class="salon-approval-settings"><h2>Service approval</h2><p>Choose which services require customer approval when a technician adds them to a Work Order. No services are selected by default.</p><p>Changing a service always requires the customer’s last 4 phone digits. Removing a service does not require approval.</p><label>Salon <select data-approval-salon>'+approvalSalons.map(salon=>'<option value="'+esc(salon.id)+'">'+esc(salon.name)+'</option>').join('')+'</select></label><div data-approval-services>Loading services…</div><p role="status" data-approval-status></p></div>';
+  let approvalCategories = [];
+  function renderApprovalServices() {
+    const checked = approvalSettings.load($('[data-approval-salon]').value);
+    $('[data-approval-services]').innerHTML = approvalCategories.map(category=>'<fieldset><legend>'+esc(category.name)+'</legend>'+category.services.map(service=>'<label class="salon-approval-option"><input type="checkbox" data-service-approval="'+esc(service.id)+'"'+(checked.includes(service.id)?' checked':'')+'> '+esc(service.name)+'</label>').join('')+'</fieldset>').join('');
+  }
+  $('[data-approval-salon]').addEventListener('change',()=>{renderApprovalServices();$('[data-approval-status]').textContent='';});
+  servicePanel.addEventListener('change',event=>{
+    const checkbox=event.target.closest('[data-service-approval]');
+    if(!checkbox)return;
+    const salonId=$('[data-approval-salon]').value;
+    const ids=new Set(approvalSettings.load(salonId));
+    if(checkbox.checked)ids.add(checkbox.dataset.serviceApproval);else ids.delete(checkbox.dataset.serviceApproval);
+    try {approvalSettings.save(salonId,Array.from(ids));$('[data-approval-status]').textContent='Saved.';}
+    catch(error){checkbox.checked=!checkbox.checked;$('[data-approval-status]').textContent='Unable to save. Please try again.';}
+  });
+  appointmentServiceCatalogLoader.load('../menu/menu.json').then(catalog=>{
+    approvalCategories=catalog.categories.map(category=>({name:category.name,services:category.services.filter(service=>service.type!=='add-on')})).filter(category=>category.services.length);
+    approvalCategories.push({name:'Other services',services:[{id:'__custom__',name:'Custom service'}]});
+    renderApprovalServices();
+  }).catch(()=>{$('[data-approval-services]').textContent='Unable to load services. Reload to try again.';});
   drawStaff();selectTab(new URLSearchParams(location.search).get('section')||'staff');
 })();

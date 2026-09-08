@@ -511,6 +511,7 @@
   <script>window.NEXORA_SHELL = { activePage: 'staff', activeTab: 'my-salons' };</script>
   <script src="../assets/nexora-shell.js"></script>
   <script src="../assets/appointment-service-catalog.js"></script>
+  <script src="../assets/service-approval-settings.js"></script>
   <script>
     (function () {
       'use strict';
@@ -747,10 +748,10 @@
         var lastFour = String(ticket.phone || '').replace(/\D/g, '').slice(-4);
         return '<section class="customer-approval" data-customer-approval>' +
           '<div class="customer-approval-head"><strong class="customer-approval-title"><i data-lucide="clock-3" aria-hidden="true"></i>Pending Approval</strong><button class="customer-approval-cancel" type="button" data-cancel-service-approval="' + esc(ticket.id) + '">Cancel</button></div>' +
-          '<p class="customer-approval-copy">New services are waiting for customer approval.</p>' +
+          '<p class="customer-approval-copy">Service requests are waiting for customer approval.</p>' +
           '<div class="customer-approval-services">' + services.map(function (service) { var label = service.requestType === 'remove' ? 'Remove · ' + service.previousService.name : service.previousService ? service.previousService.name + ' → ' + service.name : service.name; return '<span class="customer-approval-chip"><span class="customer-approval-chip-name">' + esc(label) + '</span><span class="customer-approval-chip-price">' + money(service.price) + '</span></span>'; }).join('') + '</div>' +
           '<div class="customer-approval-demo">Demo only · enter <strong>' + esc(lastFour) + '</strong></div>' +
-          '<p class="customer-approval-help">Customer enters the last 4 phone digits to approve the added service.</p>' +
+          '<p class="customer-approval-help">Customer enters the last 4 phone digits to approve these service requests.</p>' +
           '<div class="customer-approval-form"><input class="customer-approval-input" type="text" inputmode="numeric" maxlength="4" autocomplete="off" placeholder="Last 4 digits" aria-label="Last 4 phone digits" data-approval-code><button class="customer-approval-button" type="button" data-approve-services="' + esc(ticket.id) + '"><i data-lucide="shield-check" aria-hidden="true"></i>Approve</button></div>' +
           '<p class="customer-approval-error" data-approval-error hidden>The last 4 digits do not match this customer.</p>' +
         '</section>';
@@ -898,10 +899,11 @@
           customServiceErrorEl.hidden = false;
           return;
         }
-        ticket.services.push({ name: name, price: price, duration: duration, approval: 'pending' });
+        var needsApproval = window.NEXORA_SERVICE_APPROVAL_SETTINGS.requiresApproval(ticket.salonId, '__custom__');
+        ticket.services.push({ name: name, price: price, duration: duration, approval: needsApproval ? 'pending' : '', requestType: 'add' });
         closeCustomService();
         renderWorkspace();
-        showToast('Custom service sent to manager for approval.');
+        showToast(needsApproval ? 'Custom service is waiting for customer approval.' : 'Custom service added.');
       }
 
       function approvePendingServices(id) {
@@ -1029,17 +1031,10 @@
         var index = Number(serviceIndex);
         var existing = ticket && ticket.services[index];
         if (!ticket || !existing || ticket.status === 'completed' || existing.approval === 'pending') return;
-        ticket.services[index] = {
-          name: existing.name,
-          duration: existing.duration,
-          price: existing.price,
-          approval: 'pending',
-          requestType: 'remove',
-          previousService: Object.assign({}, existing)
-        };
+        ticket.services.splice(index, 1);
         selectedTicketId = id;
         renderWorkspace();
-        showToast('Service removal sent to customer for approval.');
+        showToast('Service removed.');
       }
 
       function closeServicePicker() {
@@ -1053,13 +1048,14 @@
       function confirmServicePicker() {
         var ticket = ticketById(servicePickerTicketId);
         var selectedServices = selectedCatalogServiceIds.map(catalogServiceById).filter(Boolean);
-        if (!ticket || !selectedServices.length) return;
+        if (!ticket || ticket.status === 'completed' || !selectedServices.length) return;
         function serviceData(selected) {
-          return { name: selected.name, duration: selected.durationMin || 30, price: Number(selected.price) || 0, approval: 'pending', requestType: 'add' };
+          var needsApproval = servicePickerMode === 'edit' || window.NEXORA_SERVICE_APPROVAL_SETTINGS.requiresApproval(ticket.salonId, selected.id);
+          return { id: selected.id, name: selected.name, duration: selected.durationMin || 30, price: Number(selected.price) || 0, approval: needsApproval ? 'pending' : '', requestType: 'add' };
         }
         if (servicePickerMode === 'edit') {
           var existing = ticket.services[servicePickerIndex];
-          if (!existing) return;
+          if (!existing || existing.approval === 'pending') return;
           var replacement = serviceData(selectedServices[0]);
           replacement.requestType = 'change';
           replacement.previousService = Object.assign({}, existing);
@@ -1067,7 +1063,8 @@
         } else {
           selectedServices.forEach(function (selected) { ticket.services.push(serviceData(selected)); });
         }
-        var toastMessage = servicePickerMode === 'edit' ? 'Service change sent to manager for approval.' : selectedServices.length + ' service' + (selectedServices.length === 1 ? '' : 's') + ' sent to manager for approval.';
+        var pendingCount = selectedServices.filter(function (selected) { return serviceData(selected).approval === 'pending'; }).length;
+        var toastMessage = servicePickerMode === 'edit' ? 'Service change is waiting for customer approval.' : (selectedServices.length - pendingCount) + ' service(s) added. ' + pendingCount + ' waiting for customer approval.';
         closeServicePicker();
         renderWorkspace();
         showToast(toastMessage);
