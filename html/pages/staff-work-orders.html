@@ -393,6 +393,7 @@
   </style>
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/staff-shell.css">
+  <link rel="stylesheet" href="../assets/service-assignments.css">
   <style>
     .staff-profile-id { font-size: 11px; }
   </style>
@@ -404,6 +405,13 @@
       <header class="header"></header>
       <main class="content work-orders-page" aria-label="Technician Work Orders">
         <div class="wo-shell">
+          <section class="assignment-inbox" data-assignment-inbox aria-label="Assignment notifications" hidden>
+            <header><h2>Notifications <span data-unread-count>0</span></h2><label>Preview technician <select data-assignment-technician aria-label="Preview technician"></select></label></header>
+            <p>Prototype · Open Front Desk in another tab on this browser to send assignments.</p>
+            <div class="assignment-inbox-list" data-assignment-notifications></div>
+            <div class="assignment-next-turn" data-my-turn role="status"></div>
+            <a href="pos-front-desk.html?section=tickets" target="_blank">Open Front Desk ↗</a>
+          </section>
           <section data-salon-gate>
             <div class="wo-page-head">
               <div>
@@ -512,6 +520,9 @@
   <script src="../assets/nexora-shell.js"></script>
   <script src="../assets/appointment-service-catalog.js"></script>
   <script src="../assets/service-approval-settings.js"></script>
+  <script src="../assets/salon-data.js"></script>
+  <script src="../assets/pos-turn-settings.js"></script>
+  <script src="../assets/service-assignments.js"></script>
   <script>
     (function () {
       'use strict';
@@ -563,6 +574,10 @@
         ] }
       ];
 
+      var assignmentStore = window.NEXORA_SERVICE_ASSIGNMENTS;
+      var technicianId = new URLSearchParams(window.location.search).get('technician') || 'kayla';
+      var assignmentBusy = false;
+      var assignmentSnapshot = '';
       var currentSalonId = '';
       var currentStatus = 'assigned';
       var currentDate = TODAY;
@@ -690,7 +705,7 @@
         var primaryService = ticket.services[0] ? ticket.services[0].name : 'Service';
         var totalDuration = ticket.services.reduce(function (total, service) { return total + Number(service.duration || 0); }, 0);
         return '<button class="order-card' + (selectedTicketId === ticket.id ? ' is-active' : '') + '" type="button" data-ticket-id="' + esc(ticket.id) + '">' +
-          '<span class="order-card-top"><span class="order-time"><strong class="order-time-value">' + esc(time.value) + '</strong><small class="order-time-period">' + esc(time.period) + '</small></span><span class="order-card-copy"><span class="customer-name">' + esc(ticket.customer) + ' · ' + esc(primaryService) + '</span><span class="order-service">' + totalDuration + ' min · Station ' + esc(ticket.station) + '</span></span><span class="status-pill ' + statusClass(ticket.status) + '">' + statusLabel(ticket.status) + '</span></span>' +
+          '<span class="order-card-top"><span class="order-time"><strong class="order-time-value">' + esc(time.value) + '</strong><small class="order-time-period">' + esc(time.period) + '</small></span><span class="order-card-copy"><span class="customer-name">' + esc(ticket.customer) + ' · ' + esc(primaryService) + '</span><span class="order-service">' + totalDuration + ' min · Station ' + esc(ticket.station) + '</span></span><span class="status-pill ' + statusClass(ticket.status) + '">' + statusLabel(ticket.lifecycle || ticket.status) + '</span></span>' +
         '</button>';
       }
 
@@ -706,7 +721,7 @@
       function renderFeaturedTicket(ticket) {
         var services = ticket.services.map(function (service) { return service.name; }).join(' · ');
         return '<article class="featured-ticket-card" data-featured-ticket-id="' + esc(ticket.id) + '">' +
-          '<div class="featured-ticket-top"><span class="featured-ticket-eyebrow">New assignment</span><span class="featured-ticket-status">Assigned</span></div>' +
+          '<div class="featured-ticket-top"><span class="featured-ticket-eyebrow">New assignment</span><span class="featured-ticket-status">' + statusLabel(ticket.lifecycle || ticket.status) + '</span></div>' +
           '<h2>Ticket ' + esc(ticket.id) + ' · ' + esc(ticket.customer) + '</h2>' +
           '<p class="featured-ticket-service">' + esc(services) + ' · ' + money(serviceTotal(ticket)) + '</p>' +
           '<p class="featured-ticket-note">“' + esc(ticket.note) + '”</p>' +
@@ -758,7 +773,7 @@
       }
 
       function renderService(ticket, service, serviceIndex, actionsEnabled) {
-        var canEdit = ticket.status !== 'completed' && actionsEnabled !== false;
+        var canEdit = !ticket.sharedAssignment && ticket.status !== 'completed' && actionsEnabled !== false;
         var actions = canEdit ? '<button class="service-edit-button" type="button" data-edit-service="' + esc(ticket.id) + '" data-service-index="' + serviceIndex + '" aria-label="Change ' + esc(service.name) + '">Change</button><button class="service-remove-button" type="button" data-remove-service="' + esc(ticket.id) + '" data-service-index="' + serviceIndex + '" aria-label="Remove ' + esc(service.name) + '">Remove</button>' : '';
         return '<div class="service-card"><div class="service-row"><div class="service-name"><span>' + esc(service.name) + approvalPill(service.approval) + '</span></div><span class="service-price">' + money(service.price) + '</span><span class="service-time">' + service.duration + ' min</span><span class="service-action">' + actions + '</span></div></div>';
       }
@@ -770,18 +785,22 @@
           return;
         }
         var actionHtml = '';
-        if (ticket.status === 'assigned') {
+        if (ticket.sharedAssignment && ticket.lifecycle === 'sent') {
+          actionHtml = '<div class="detail-actions"><button class="action-btn is-primary" type="button" data-view-assignment="' + esc(ticket.id) + '">View assignment</button></div>';
+        } else if (ticket.sharedAssignment && ticket.lifecycle === 'viewed') {
+          actionHtml = '<div class="detail-actions"><button class="action-btn is-primary" type="button" data-accept-assignment="' + esc(ticket.id) + '">Accept</button></div>';
+        } else if (ticket.status === 'assigned') {
           actionHtml = '<div class="detail-actions"><button class="action-btn is-primary" type="button" data-start-ticket="' + esc(ticket.id) + '"><i data-lucide="play" aria-hidden="true"></i>Start Service</button></div>';
         } else if (ticket.status === 'in-service') {
           actionHtml = '<div class="detail-actions"><button class="action-btn is-primary" type="button" data-complete-ticket="' + esc(ticket.id) + '"><i data-lucide="circle-check" aria-hidden="true"></i>Complete</button></div>';
         } else {
           actionHtml = '<div class="completed-note"><strong><i data-lucide="badge-check" aria-hidden="true"></i>Completed service notes</strong><p>' + esc(ticket.completionNote || 'Service completed.') + '</p></div>';
         }
-        var serviceButtons = ticket.status !== 'completed' ? '<div class="service-head-actions"><button class="service-add-button" type="button" data-request-service="' + esc(ticket.id) + '">Add service</button><button class="service-add-button" type="button" data-request-custom-service="' + esc(ticket.id) + '">Add custom service</button></div>' : '';
+        var serviceButtons = !ticket.sharedAssignment && ticket.status !== 'completed' ? '<div class="service-head-actions"><button class="service-add-button" type="button" data-request-service="' + esc(ticket.id) + '">Add service</button><button class="service-add-button" type="button" data-request-custom-service="' + esc(ticket.id) + '">Add custom service</button></div>' : '';
         var customerNoteHtml = '<div class="note-box"><i data-lucide="notebook-pen" aria-hidden="true"></i><span><span class="note-box-label">Important</span><strong>Customer notes</strong>' + esc(ticket.note) + '</span></div>';
         var detailTailHtml = ticket.status === 'in-service' ? customerNoteHtml + actionHtml : actionHtml + customerNoteHtml;
         var approvalHtml = customerApprovalHtml(ticket);
-        detailPanelEl.innerHTML = '<div class="detail-head"><div class="detail-head-main"><button class="detail-back" type="button" data-detail-back aria-label="Back to work orders"><i data-lucide="arrow-left" aria-hidden="true"></i></button><div><h2>Work Order</h2><div class="detail-code">' + esc(ticket.id) + '</div></div></div><span class="status-pill ' + statusClass(ticket.status) + '">' + statusLabel(ticket.status) + '</span></div>' +
+        detailPanelEl.innerHTML = '<div class="detail-head"><div class="detail-head-main"><button class="detail-back" type="button" data-detail-back aria-label="Back to work orders"><i data-lucide="arrow-left" aria-hidden="true"></i></button><div><h2>Work Order</h2><div class="detail-code">' + esc(ticket.id) + '</div></div></div><span class="status-pill ' + statusClass(ticket.status) + '">' + statusLabel(ticket.lifecycle || ticket.status) + '</span></div>' +
           '<div class="detail-body"><div class="detail-customer"><span class="detail-customer-avatar">' + initials(ticket.customer) + '</span><div class="detail-customer-copy"><div class="detail-customer-label">Customer</div><div class="detail-customer-name">' + esc(ticket.customer) + '</div><div class="detail-customer-meta"><span><i data-lucide="panel-top" aria-hidden="true"></i>Station ' + esc(ticket.station) + '</span><span><i data-lucide="radio" aria-hidden="true"></i>Beeper B' + esc(ticket.beeper) + '</span><span class="customer-phone">' + esc(ticket.phone) + '</span></div></div></div>' +
           '<div class="section-head"><h3>Services</h3>' + serviceButtons + '</div><div class="service-table-head"><span>Service</span><span>Price</span><span>Time</span><span></span></div>' +
           '<div class="services">' + ticket.services.map(function (service, index) { return { service: service, index: index }; }).filter(function (item) { return item.service.approval !== 'pending' || item.service.previousService; }).map(function (item) { return renderService(ticket, item.service.approval === 'pending' ? item.service.previousService : item.service, item.index, item.service.approval !== 'pending'); }).join('') + '</div><div class="ticket-total"><span>Service total</span><strong>' + money(serviceTotal(ticket)) + '</strong></div>' + approvalHtml + detailTailHtml + '</div>';
@@ -815,17 +834,32 @@
         toastTimer = window.setTimeout(function () { toast.hidden = true; }, 3200);
       }
 
-      function openTicketDetail(id) {
+      async function openTicketDetail(id) {
+        var target = ticketById(id);
+        if (target && target.sharedAssignment && target.lifecycle === 'sent') {
+          if (!await updateAssignment(target, 'view')) return;
+        }
         selectedTicketId = id;
-        renderWorkspace();
+        var opened = ticketById(id);
+        if (opened && opened.sharedAssignment) {
+          currentDate = opened.date;
+          setActiveStatus(opened.status);
+          var url = new URL(location.href); url.searchParams.set('technician', technicianId); url.searchParams.set('assignment', id); history.replaceState(null, '', url);
+        }
         workspaceEl.classList.add('is-detail-mode');
         document.body.classList.add('wo-detail-open');
+        renderWorkspace();
         window.scrollTo({ top: 0, behavior: 'smooth' });
       }
 
-      function startTicket(id) {
+      async function startTicket(id) {
         var ticket = ticketById(id);
         if (!ticket || ticket.status !== 'assigned') return;
+        if (ticket.sharedAssignment) {
+          if (!await updateAssignment(ticket, 'start')) return;
+          setActiveStatus('in-service'); renderWorkspace();
+          showToast('Service started.'); return;
+        }
         ticket.status = 'in-service';
         selectedTicketId = id;
         renderWorkspace();
@@ -835,6 +869,7 @@
       function openCompleteModal(id) {
         var ticket = ticketById(id);
         if (!ticket) return;
+        if (ticket.status !== 'in-service') return;
         completingTicketId = id;
         selectedSuggestedNote = '';
         completeNotesEl.value = '';
@@ -850,7 +885,7 @@
         completingTicketId = '';
       }
 
-      function completeTicket() {
+      async function completeTicket() {
         var ticket = ticketById(completingTicketId);
         if (!ticket) return;
         var customNote = completeNotesEl.value.trim();
@@ -858,6 +893,11 @@
         if (!finalNote) {
           document.querySelector('[data-notes-error]').hidden = false;
           return;
+        }
+        if (ticket.sharedAssignment) {
+          if (!await updateAssignment(ticket, 'complete', finalNote)) return;
+          closeCompleteModal(); setActiveStatus('completed'); renderWorkspace();
+          showToast('Service completed. Turn availability updated.'); return;
         }
         ticket.completionNote = finalNote;
         ticket.status = 'completed';
@@ -1226,6 +1266,76 @@
         if (!customServiceModalEl.hidden) closeCustomService();
       });
 
+      function syncAssignments(force) {
+        if (!assignmentStore) return;
+        try {
+          var state = assignmentStore.load();
+          var snapshot = JSON.stringify(state);
+          if (!force && snapshot === assignmentSnapshot) return;
+          assignmentSnapshot = snapshot;
+          if (!state.technicians.some(function (tech) { return tech.id === technicianId; })) technicianId = state.technicians[0].id;
+          var inbox = assignmentStore.inbox(technicianId, state);
+          TICKETS = inbox.map(function (item) {
+            var line = item.line, ticket = item.ticket;
+            return { id: line.id, sharedAssignment: true, revision: line.revision, lifecycle: line.status,
+              salonId: ticket.salonId, date: state.date, time: ticket.time, assignedAt: line.sentAt,
+              status: ['sent','viewed','accepted'].indexOf(line.status) !== -1 ? 'assigned' : line.status,
+              customer: ticket.customer, phone: ticket.phone, station: line.location || 'Not specified', beeper: '—',
+              note: line.note || 'No special instructions.', completionNote: line.completionNote,
+              services: [{name: line.name, price: line.price, duration: line.duration}]
+            };
+          });
+          var panel = document.querySelector('[data-assignment-inbox]'); panel.hidden = false;
+          document.querySelector('[data-assignment-technician]').innerHTML = state.technicians.map(function (tech) {
+            return '<option value="' + esc(tech.id) + '"' + (tech.id === technicianId ? ' selected' : '') + '>' + esc(tech.name) + '</option>';
+          }).join('');
+          document.querySelector('[data-unread-count]').textContent = inbox.filter(function (item) { return item.line.status === 'sent'; }).length;
+          var activeInbox = inbox.filter(function (item) { return item.line.status !== 'completed'; });
+          document.querySelector('[data-assignment-notifications]').innerHTML = activeInbox.length ? activeInbox.map(function (item) {
+            return '<button type="button" class="assignment-notification' + (item.line.status === 'sent' ? ' is-unread' : '') + '" data-open-notification="' + esc(item.line.id) + '"><span><strong>Ticket #' + item.ticket.number + ' · ' + esc(item.ticket.customer) + '</strong>' + esc(item.line.name) + '</span><span>' + assignmentStore.labels[item.line.status] + '</span></button>';
+          }).join('') : '<p>No pending notifications. New assignments will appear here.</p>';
+          var position = assignmentStore.queue(state).findIndex(function (tech) { return tech.id === technicianId; });
+          document.querySelector('[data-my-turn]').textContent = position >= 0 ? 'Available for turn · Queue #' + (position + 1) : 'Reserved for assigned services · Complete all active services to return to the turn queue.';
+          if (completingTicketId && !TICKETS.some(function (ticket) { return ticket.id === completingTicketId && ticket.status === 'in-service'; })) closeCompleteModal();
+          if (currentSalonId) renderWorkspace();
+        } catch (error) { showToast(error.message); }
+      }
+      async function updateAssignment(ticket, action, note) {
+        if (assignmentBusy) return false;
+        assignmentBusy = true;
+        try {
+          await assignmentStore.transition(ticket.id, technicianId, action, note, ticket.revision);
+          syncAssignments(true); return true;
+        } catch (error) { showToast(error.message); return false; }
+        finally { assignmentBusy = false; }
+      }
+      document.addEventListener('click', async function (event) {
+        var open = event.target.closest('[data-open-notification], [data-view-assignment]');
+        if (open) {
+          var id = open.dataset.openNotification || open.dataset.viewAssignment;
+          var ticket = ticketById(id);
+          if (ticket) { if (currentSalonId !== ticket.salonId) openSalon(ticket.salonId); currentDate = ticket.date; openTicketDetail(id); }
+        }
+        var accept = event.target.closest('[data-accept-assignment]');
+        if (accept) {
+          var assignment = ticketById(accept.dataset.acceptAssignment);
+          if (assignment && await updateAssignment(assignment, 'accept')) showToast('Assignment accepted. Start when you are ready.');
+        }
+      });
+      document.querySelector('[data-assignment-technician]').addEventListener('change', function (event) {
+        technicianId = event.target.value;
+        selectedTicketId = ''; closeCompleteModal();
+        var url = new URL(location.href); url.searchParams.set('technician', technicianId); url.searchParams.delete('assignment'); history.replaceState(null, '', url);
+        syncAssignments(true); openSalon('golden');
+      });
+      if (assignmentStore) {
+        syncAssignments(true);
+        assignmentStore.subscribe(function () { syncAssignments(false); });
+        window.addEventListener('focus', function () { syncAssignments(false); });
+        var assignmentPoll = window.setInterval(function () { syncAssignments(false); }, 3000);
+        window.addEventListener('pagehide', function () { window.clearInterval(assignmentPoll); });
+      }
+
       document.querySelector('[data-today-label]').textContent = new Date().toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
       dateFilterEl.value = TODAY;
       renderSalonOptions();
@@ -1234,8 +1344,8 @@
       var requestedTicket = '';
       try {
         var requestedParams = new URLSearchParams(window.location.search);
-        requestedSalon = requestedParams.get('salon') || '';
-        requestedTicket = requestedParams.get('ticket') || '';
+        requestedSalon = requestedParams.get('salon') || (assignmentStore ? 'golden' : '');
+        requestedTicket = requestedParams.get('assignment') || requestedParams.get('ticket') || '';
       } catch (error) {
         requestedSalon = '';
         requestedTicket = '';

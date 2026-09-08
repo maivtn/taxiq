@@ -7,6 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/pos-front-desk.css">
+  <link rel="stylesheet" href="../assets/service-assignments.css">
 </head>
 <body>
 <div class="shell"><aside class="sidebar" aria-label="Salon sidebar"></aside><div class="app-area"><header class="header"></header>
@@ -14,11 +15,11 @@
   <h1>Front Desk</h1><p class="subtitle">Check in guests, manage open tickets, and run the turn board.</p>
   <nav class="workflow" aria-label="Front Desk workflows">
     <button type="button" disabled>Check-in</button>
-    <a href="pos-front-desk-tickets.html">Tickets</a>
-    <a href="pos-front-desk-turn-board.html">Turn Board</a>
+    <a data-front-section="tickets" href="pos-front-desk.html?section=tickets">Tickets</a>
+    <a href="pos-front-desk.html?section=tickets#assignment-turn-queue">Turn Board</a>
     <button type="button" disabled>Checkout Customer</button>
     <button type="button" disabled>Completed Services</button>
-    <a class="active" href="pos-front-desk.html" aria-current="page">Appointments</a>
+    <a data-front-section="appointments" class="active" href="pos-front-desk.html?section=appointments" aria-current="page">Appointments</a>
     <button type="button" disabled>Staffs Clock</button>
     <button type="button" disabled>Customer History</button>
   </nav>
@@ -35,6 +36,12 @@
     <div id="booking-results"></div>
     <section id="team-calendar" aria-label="Team Calendar" hidden></section>
   </section>
+  <section id="service-assignments" aria-label="Ticket service assignments" hidden>
+    <div data-assignment-list></div><div data-assignment-detail hidden></div>
+    <p data-assignment-feedback role="status"></p>
+    <section id="assignment-turn-queue" class="assignment-turn-block" aria-label="Available technicians"><h3>Next turn · Available technicians</h3><div class="assignment-turns" data-assignment-turns></div></section>
+    <p class="assignment-prototype-note">Interactive prototype · Golden Nails &amp; Spa · Notifications sync with Work Orders in tabs on this browser. No device push is sent.</p>
+  </section>
   <p id="feedback" role="status"></p>
 </main></div></div>
 <dialog id="booking-dialog"><form id="booking-form"><div class="dialog-heading"><h2 id="dialog-title">New Booking</h2><button type="button" id="close-dialog" aria-label="Close">×</button></div><div id="booking-fields">
@@ -45,4 +52,6 @@
 <script src="../assets/pos-turn-settings.js"></script>
 <script src="../assets/team-calendar-content.js"></script>
 <script src="../assets/pos-front-desk.js"></script>
+<script src="../assets/service-assignments.js"></script>
+<script src="../assets/front-desk-assignments.js"></script>
 </body></html>
