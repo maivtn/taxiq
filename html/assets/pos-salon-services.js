@@ -6,13 +6,12 @@
   const $ = selector => panel.querySelector(selector);
   const clone = value => JSON.parse(JSON.stringify(value));
   const currentSalon = window.NEXORA_SALON_DATA.loadCatalog().salon;
-  const salons = [currentSalon, {id:'golden',name:'Golden Nails & Spa'}, {id:'elite',name:'Elite Beauty Lounge'}];
-  let base = [], categories = [], categoryDraft = [], editing = null, returnFocus = null, dragged = null, dirty = false, imageData = '', tags = [];
+  let base = [], categories = [], categoryDraft = [], editing = null, returnFocus = null, dragged = null, imageData = '', tags = [];
   const uid = () => 'custom-' + (window.crypto.randomUUID ? window.crypto.randomUUID() : Date.now() + '-' + Math.random().toString(36).slice(2));
   const icon = name => '<i class="bi bi-' + name + '" aria-hidden="true"></i>';
   const button = (attr, label, glyph, cls = '') => '<button type="button" '+attr+' class="'+cls+'">'+(glyph?icon(glyph):'')+label+'</button>';
   panel.innerHTML = `
-    <div class="salon-service-toolbar"><div>${button('data-categories-open disabled','Manage Categories','diagram-3')}<label class="salon-service-salon">Salon <select data-approval-salon>${salons.map(s=>'<option value="'+esc(s.id)+'">'+esc(s.name)+'</option>').join('')}</select></label></div>${button('data-services-save disabled','Save','check-circle-fill','is-primary')}</div>
+    <div class="salon-service-toolbar"><div>${button('data-categories-open disabled','Manage Categories','diagram-3')}</div>${button('data-services-save disabled','Save','check-circle-fill','is-primary')}</div>
     <p class="salon-service-status" role="status" data-approval-status></p>
     <div class="salon-services" data-approval-services><p class="salon-empty">Loading services…</p></div>
     <div class="salon-service-overlay" data-category-editor hidden><section class="salon-service-dialog" role="dialog" aria-modal="true" aria-labelledby="category-editor-title">
@@ -30,16 +29,16 @@
         <label class="salon-block-field">Description <small>(optional)</small><textarea data-service-edit-description maxlength="1000" rows="3" placeholder="Optional service description"></textarea></label><div class="salon-description-count" data-description-count>0/1000</div>
         <label class="salon-block-field">Supply Fee <small>(optional)</small><span class="salon-input-wrap"><span>$</span><input type="number" data-service-edit-fee min="0" step="0.01"></span></label>
         <label class="salon-block-field">Tags <small>(optional)</small><div class="salon-tag-list" data-tag-list></div><input data-service-edit-tags placeholder="Type a tag and press Enter" maxlength="60"></label>
+        <label class="salon-service-approval"><input type="checkbox" data-service-approval><span><strong>Require approval when staff adds this service</strong><small>Customer enters the last 4 phone digits to approve. Off by default.</small></span></label>
         <label class="salon-field-label">Service image <small>(optional)</small></label><div class="salon-service-image" data-image-preview>${icon('image')}</div>
         <div class="salon-photo-actions"><label>${icon('camera')}Take photo<input type="file" data-service-photo accept="image/jpeg,image/png,image/webp" capture="environment"></label><label>${icon('folder2-open')}Choose file<input type="file" data-service-file accept="image/jpeg,image/png,image/webp"></label></div><p class="salon-help">Upload a clear photo that represents this service.<br>JPG, JPEG, PNG, or WebP.<br>Maximum file size is 10MB.</p>
-        <label class="salon-service-approval"><input type="checkbox" data-service-approval><span><strong>Require approval when staff adds this service</strong><small>Customer enters the last 4 phone digits to approve. Off by default.</small></span></label>
+
         <p class="salon-service-error" role="alert" data-service-edit-error hidden></p>
       </div><footer>${button('data-service-editor-close','Cancel')}<button type="submit" class="is-primary">${icon('check-circle-fill')}Save changes</button></footer></form>
     </section></div>`;
-  const salonId = () => $('[data-approval-salon]').value;
-  let selectedSalon = salonId();
+  const selectedSalon = currentSalon.id;
   function status(message) {$('[data-approval-status]').textContent=message;}
-  function markDirty() {dirty=true;status('Unsaved changes');}
+  function markDirty() {status('Unsaved changes');}
   function serviceById(id) {for(const category of categories){const service=category.services.find(s=>s.id===id);if(service)return service;}}
   function eachService(id, change) {categories.forEach(c=>c.services.filter(s=>s.id===id).forEach(change));}
   function render() {
@@ -66,7 +65,7 @@
   function persist(next, approvals) {
     const message=valid(next);if(message)throw new Error(message);
     next.forEach(c=>{c.name=c.name.trim();c.services.forEach(s=>{delete s.isDraft;s.name=s.name.trim();if(s.id!=='__custom__'){s.price=Number(s.price);s.durationMin=Number(s.durationMin);}});});
-    try {api.saveCatalog(selectedSalon,next,approvals);} catch(failure) {throw new Error('Unable to save changes. Please try again or use a smaller service image.');}categories=next;dirty=false;status('Saved.');render();
+    try {api.saveCatalog(selectedSalon,next,approvals);} catch(failure) {throw new Error('Unable to save changes. Please try again or use a smaller service image.');}categories=next;status('Saved.');render();
   }
   function show(overlay, trigger) {returnFocus=trigger||document.activeElement;overlay.hidden=false;document.body.style.overflow='hidden';const control=overlay.querySelector('input:not(:disabled),button');if(control)control.focus();}
   function close(overlay) {overlay.hidden=true;document.body.style.overflow='';if(returnFocus?.isConnected)returnFocus.focus();if(overlay===$('[data-service-editor]'))editing=null;}
@@ -129,10 +128,6 @@
     const token=editing?.token;const reader=new FileReader();
     $('[data-service-editor-form] [type=submit]').disabled=true;
     reader.onload=()=>{if(editing?.token!==token)return;imageData=reader.result;renderImage();$('[data-service-editor-form] [type=submit]').disabled=false;};reader.onerror=()=>{if(editing?.token!==token)return;$('[data-service-editor-form] [type=submit]').disabled=false;error('Unable to read this image. Please try again.');};reader.readAsDataURL(file);
-  });
-  $('[data-approval-salon]').addEventListener('change',()=>{
-    if(dirty&&!window.confirm('Discard unsaved service changes?')){$('[data-approval-salon]').value=selectedSalon;return;}
-    selectedSalon=salonId();categories=api.loadCatalog(selectedSalon,base);dirty=false;render();status('');
   });
   function move(kind,id,offset,targetId,categoryId) {
     const list=kind==='category'?categoryDraft:categories.find(c=>c.id===categoryId)?.services;if(!list)return;

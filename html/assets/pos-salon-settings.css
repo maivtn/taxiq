@@ -12,8 +12,6 @@
 [data-settings-panel="services"] input:not([type=checkbox]):not([type=file]),[data-settings-panel="services"] textarea,[data-settings-panel="services"] select { min-width:0; width:100%; box-sizing:border-box; border:1px solid var(--svc-border); border-radius:9px; background:#fff; color:#101827; font:inherit; padding:11px 12px; outline:none; }
 [data-settings-panel="services"] input:focus-visible,[data-settings-panel="services"] textarea:focus-visible,[data-settings-panel="services"] button:focus-visible,[data-settings-panel="services"] summary:focus-visible { outline:2px solid #7770ff; outline-offset:2px; }
 [data-settings-panel="services"] input::placeholder,[data-settings-panel="services"] textarea::placeholder { color:#97a1b6; }
-.salon-service-salon { display:flex; align-items:center; gap:8px; color:var(--svc-muted); font-size:11px; }
-[data-settings-panel="services"] .salon-service-salon select { width:auto; max-width:220px; padding:8px; }
 .salon-service-status { margin:0 0 8px; color:var(--svc-muted); }
 .salon-service-status:empty { display:none; }
 .salon-services { width:100%; }
@@ -84,7 +82,7 @@
 .salon-photo-actions i { font-size:18px; }
 .salon-photo-actions input { position:absolute; inset:0; width:100%; height:100%; opacity:0; cursor:pointer; }
 .salon-photo-actions label:focus-within { outline:2px solid #7770ff; }
-.salon-service-approval { display:flex; gap:10px; align-items:flex-start; padding:13px; margin-top:16px; border:1px solid #d9d5ff; border-radius:10px; background:#faf9ff; cursor:pointer; }
+.salon-service-approval { display:flex; gap:10px; align-items:flex-start; padding:13px; margin:16px 0; border:1px solid #d9d5ff; border-radius:10px; background:#faf9ff; cursor:pointer; }
 .salon-service-approval input { flex-shrink:0; width:17px; height:17px; margin:0; }
 .salon-service-approval strong { display:block; font-size:12px; }
 .salon-service-approval small { display:block; margin-top:5px; line-height:1.5; color:#67738b; }
@@ -102,7 +100,7 @@
 [data-settings-panel="services"] .salon-category-row>button { padding:5px; border:0; background:transparent; color:#53617c; }
 [data-settings-panel="services"] .salon-category-row>.salon-drag { color:#5145f6; }
 @media(max-width:760px) {
- .salon-service-toolbar { flex-wrap:wrap; }.salon-service-salon { width:100%; }
+ .salon-service-toolbar { flex-wrap:wrap; }
  .settings-service-category-body { overflow-x:auto; }
  .settings-service-header,.settings-service-row { min-width:680px; }
  .salon-service-overlay { padding:10px; }.salon-service-dialog { max-height:calc(100dvh - 20px); }

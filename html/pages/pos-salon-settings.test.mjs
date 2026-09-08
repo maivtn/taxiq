@@ -76,14 +76,12 @@ async function servicesPage() {
  page.d.querySelector('[data-settings-tab="services"]').click();
  return page;
 }
-function selectSalon(page,id) {
- const field=page.d.querySelector('[data-approval-salon]');field.value=id;field.dispatchEvent(new page.w.Event('change',{bubbles:true}));
-}
 function editService(page) {page.d.querySelector('[data-salon-service-edit="polish-change"]').click();}
 function saveService(page) {page.d.querySelector('[data-service-editor-form]').dispatchEvent(new page.w.Event('submit',{bubbles:true,cancelable:true}));}
 
 test('Services uses category accordions and pricing rows, with approval only inside View / Edit',async()=>{
  const page=await servicesPage();const {d,dom}=page;
+ assert.equal(d.querySelector('[data-approval-salon]'),null);
  const category=d.querySelector('[data-approval-services] details');assert.equal(category.open,true);
  assert.match(category.querySelector('summary').textContent,/Nails.*1/);
  const row=d.querySelector('[data-salon-service-row="polish-change"]');
@@ -100,23 +98,20 @@ test('Services uses category accordions and pricing rows, with approval only ins
 
 test('View / Edit saves approval and pricing per salon, and Cancel discards changes',async()=>{
  const page=await servicesPage();const {w,d,dom,errors}=page;
- selectSalon(page,'golden');editService(page);
+ editService(page);
  d.querySelector('[data-service-approval]').click();
  d.querySelector('[data-service-editor-close]').click();
- assert.equal(w.NEXORA_SERVICE_APPROVAL_SETTINGS.requiresApproval('golden','polish-change'),false);
+ assert.equal(w.NEXORA_SERVICE_APPROVAL_SETTINGS.requiresApproval('bitcoin-nail-bar-houston','polish-change'),false);
  editService(page);assert.equal(d.querySelector('[data-service-approval]').checked,false);
  d.querySelector('[data-service-approval]').click();
  d.querySelector('[data-service-edit-price]').value='18';saveService(page);
- assert.equal(w.NEXORA_SERVICE_APPROVAL_SETTINGS.requiresApproval('golden','polish-change'),true);
+ assert.equal(w.NEXORA_SERVICE_APPROVAL_SETTINGS.requiresApproval('bitcoin-nail-bar-houston','polish-change'),true);
  assert.equal(d.querySelector('[data-salon-service-row="polish-change"] [data-inline-field="price"]').value,'18');
- selectSalon(page,'elite');editService(page);
- assert.equal(d.querySelector('[data-service-approval]').checked,false);
- assert.equal(d.querySelector('[data-service-edit-price]').value,'15');
- d.querySelector('[data-service-editor-close]').click();
- selectSalon(page,'golden');editService(page);
+ assert.equal(w.NEXORA_SERVICE_APPROVAL_SETTINGS.requiresApproval('elite','polish-change'),false);
+ editService(page);
  assert.equal(d.querySelector('[data-service-approval]').checked,true);
  d.querySelector('[data-service-approval]').click();saveService(page);
- assert.equal(w.NEXORA_SERVICE_APPROVAL_SETTINGS.requiresApproval('golden','polish-change'),false);
+ assert.equal(w.NEXORA_SERVICE_APPROVAL_SETTINGS.requiresApproval('bitcoin-nail-bar-houston','polish-change'),false);
  assert.deepEqual(errors,[]);dom.window.close();
 });
 
