@@ -1031,6 +1031,7 @@
         var index = Number(serviceIndex);
         var existing = ticket && ticket.services[index];
         if (!ticket || !existing || ticket.status === 'completed' || existing.approval === 'pending') return;
+        if (!window.confirm('Remove "' + existing.name + '" from Work Order ' + ticket.id + '?')) return;
         ticket.services.splice(index, 1);
         selectedTicketId = id;
         renderWorkspace();

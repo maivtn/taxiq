@@ -283,11 +283,16 @@ test('service rows expose Change and Remove as distinct buttons', () => {
   dom.window.close();
 });
 
-test('removing a service immediately deletes it and updates the total without approval', () => {
+test('confirming service removal deletes it and updates the total without customer approval', () => {
   const { dom, window } = loadPage();
   click(window, '[data-select-salon="golden"]');
   click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+  const prompts = [];
+  window.confirm = message => { prompts.push(message); return true; };
   click(window, '[data-remove-service="WO-1051"]');
+  assert.equal(prompts.length, 1);
+  assert.match(prompts[0], /Acrylic Full Set/);
+  assert.match(prompts[0], /WO-1051/);
   assert.equal(window.document.querySelectorAll('[data-detail-panel] .service-card').length, 0);
   assert.equal(window.document.querySelector('[data-detail-panel] .ticket-total strong').textContent.trim(), '$0.00');
   assert.equal(window.document.querySelector('[data-customer-approval]'), null);
@@ -441,3 +446,17 @@ for (const required of [false, true]) {
     dom.window.close();
   });
 }
+
+test('cancelling service removal preserves the service and total', () => {
+  const {dom, window} = loadPage();
+  click(window, '[data-select-salon="golden"]');
+  click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+  const before = window.document.querySelector('[data-detail-panel]').innerHTML;
+  let confirmations = 0;
+  window.confirm = () => { confirmations += 1; return false; };
+  click(window, '[data-remove-service="WO-1051"]');
+  assert.equal(confirmations, 1);
+  assert.equal(window.document.querySelector('[data-detail-panel]').innerHTML, before);
+  assert.equal(window.document.querySelector('[data-customer-approval]'), null);
+  dom.window.close();
+});
