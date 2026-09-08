@@ -38,9 +38,7 @@ function field(label,name,value='',type='text',required=false){return '<label>'+
 function open(kind,ticket){
  selected=ticket;action=kind;$('#ticket-form').reset();$('#ticket-error').textContent='';$('#ticket-submit').hidden=false;$('#ticket-submit').textContent='Save';
  let title='',content='';
- if(kind==='overview'){
-  title='Today’s Check-in Overview';content='<p class="ticket-detail-copy">Guest flow and new-customer acquisition for today.</p><div class="overview-metrics"><div><strong>48</strong><span>Check-ins Today</span></div><div><strong>12</strong><span>New Guests</span></div><div><strong>36</strong><span>Returning</span></div></div><h3>New guest sources</h3><div class="table-wrap"><table><tbody>'+[['Google Search/Maps',5],['Customer Referral',3],['Instagram',2],['Walk-in',1],['TikTok',1]].map(([name,count])=>'<tr><td>'+name+'</td><td>'+count+'</td></tr>').join('')+'</tbody></table></div>';$('#ticket-submit').hidden=true;
- }else if(kind==='cancel'){
+ if(kind==='cancel'){
   title='Cancel this ticket?';content='<p>'+esc(ticket.customer)+' will be removed from the active service queue.</p>';$('#ticket-submit').textContent='Cancel ticket';
  }else if(kind==='edit'){
   title='Edit ticket #'+ticket.id;content=field('Customer','customer',ticket.customer,'text',true)+field('Phone','phone',ticket.phone,'tel',true)+'<label>Services — one per line<textarea name="services">'+esc(ticket.services.join('\n'))+'</textarea></label>';
@@ -58,7 +56,6 @@ function open(kind,ticket){
 }
 $('#ticket-filters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(b){filter=b.dataset.filter;render();}});
 $('#ticket-body').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const t=tickets.find(t=>t.id===Number(b.dataset.id));if(!t)return;if(b.dataset.action==='start'){t.status='in-service';render();feedback('Service started for '+t.customer);return;}open(b.dataset.action,t);});
-$('#checkin-summary').addEventListener('click',()=>open('overview',null));
 document.querySelectorAll('[data-close-dialog]').forEach(b=>b.addEventListener('click',()=>$('#ticket-dialog').close()));
 $('#ticket-form').addEventListener('submit',e=>{
  e.preventDefault();const data=new FormData(e.currentTarget),t=selected;if(!t)return;

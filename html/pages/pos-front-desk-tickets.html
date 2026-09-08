@@ -24,16 +24,36 @@
     <button type="button" disabled>Customer History</button>
   </nav>
 
-<section aria-labelledby="tickets-title">
-  <div class="tickets-heading"><div><h2 id="tickets-title">Open Tickets</h2><p>Guests currently moving through the service workflow.</p></div><button id="checkin-summary"><strong>48 Check-ins Today</strong><span>12 New · 36 Returning → View overview</span></button></div>
+<section id="tickets-view" aria-labelledby="tickets-title">
+  <div class="tickets-heading"><div><h2 id="tickets-title">Open Tickets</h2><p>Guests currently moving through the service workflow.</p></div><button type="button" id="checkin-summary" aria-controls="overview-view"><strong>48 Check-ins Today</strong><span>12 New · 36 Returning → View overview</span></button></div>
   <div id="ticket-filters" class="toolbar" role="group" aria-label="Filter tickets by status"></div>
   <p id="assignment-alert" class="assignment-alert" role="status"></p>
   <div class="table-wrap"><table><thead><tr><th>Number</th><th>Customer</th><th>Check-in at</th><th>Status</th><th>Technician</th><th>Services</th><th>Wait time</th><th>Actions</th></tr></thead><tbody id="ticket-body"></tbody></table><p class="empty" id="ticket-empty" hidden>No guests match this status.</p></div>
   <p class="demo-note">Interactive prototype · Sample data only</p>
-</section><p id="feedback" role="status"></p>
+<p id="feedback" role="status"></p></section>
+<section id="overview-view" class="checkin-overview" aria-labelledby="overview-title" hidden>
+  <div class="tickets-heading"><div><h2 id="overview-title" tabindex="-1">Today’s Check-in Overview</h2><p>Guest flow and new-customer acquisition for today.</p></div><button type="button" data-overview-back>Back to Tickets</button></div>
+  <div class="overview-stats">
+    <div class="stat-card"><span>Total Check-ins</span><strong>48</strong></div>
+    <div class="stat-card"><span>New Guests</span><strong>12</strong></div>
+    <div class="stat-card"><span>Returning Guests</span><strong>36</strong></div>
+    <div class="stat-card"><span>Average Wait</span><strong>14m</strong></div>
+  </div>
+  <div class="overview-grid">
+    <section class="overview-panel" aria-labelledby="overview-sources-title"><h3 id="overview-sources-title">Guest Sources</h3><div id="source-breakdown"></div></section>
+    <section class="overview-panel" aria-labelledby="overview-order-title"><h3 id="overview-order-title">Guest Order Summary</h3><p>Every guest keeps the original check-in number through waiting, service, checkout, or cancellation.</p></section>
+    <section class="overview-panel full" aria-labelledby="overview-list-title">
+      <h3 id="overview-list-title">All Check-ins Today <span class="overview-count" id="overview-result-count" aria-live="polite">48</span></h3>
+      <div class="overview-tools"><select id="overview-filter" aria-label="Filter check-ins by status"><option value="all">All statuses</option><option value="waiting">Waiting</option><option value="in-service">In Service</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select><input type="search" id="overview-search" placeholder="Search name or phone" aria-label="Search check-ins by name or phone"></div>
+      <div class="overview-list" role="region" aria-label="Today's check-ins" tabindex="0"><table><thead><tr><th scope="col">#</th><th scope="col">Time</th><th scope="col">Customer</th><th scope="col">Type</th><th scope="col">Source</th><th scope="col">Service</th><th scope="col">Technician</th><th scope="col">Status</th></tr></thead><tbody id="overview-guests"></tbody></table></div>
+      <p class="overview-empty" id="overview-empty" hidden>No check-ins match this filter.</p>
+    </section>
+  </div>
+</section>
 </main></div></div>
 <dialog id="ticket-dialog" aria-labelledby="ticket-dialog-title"><form id="ticket-form"><div class="dialog-heading"><h2 id="ticket-dialog-title"></h2><button type="button" data-close-dialog aria-label="Close">×</button></div><div id="ticket-dialog-content"></div><p id="ticket-error" role="alert"></p><div class="ticket-dialog-actions"><button type="button" data-close-dialog>Close</button><button type="submit" id="ticket-submit" class="primary">Save</button></div></form></dialog>
 <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
 <script>window.NEXORA_SHELL = {activePage:'pos',activeTab:'front-desk'};</script><script src="../assets/nexora-shell.js"></script>
 <script src="../assets/pos-front-desk-tickets.js"></script>
+<script src="../assets/pos-front-desk-overview.js"></script>
 </body></html>
