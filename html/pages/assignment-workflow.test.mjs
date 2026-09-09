@@ -146,6 +146,11 @@ test('Work Orders keeps usable demo tickets when assignment storage loads and re
   assert.equal(d.querySelector('[data-status-count="in-service"]').textContent,'1');
   assert.equal(d.querySelector('[data-status-count="completed"]').textContent,'1');
   d.querySelector('[data-ticket-id="WO-1051"]').click();
+  assert.equal(d.querySelector('[data-start-ticket="WO-1051"]'),null);
+  const accept=d.querySelector('[data-accept-assignment="WO-1051"]');
+  assert.ok(accept,'Demo ticket must be accepted before starting');
+  accept.click();
+  assert.match(d.querySelector('[data-detail-panel] .status-pill').textContent,/Accepted/);
   d.querySelector('[data-start-ticket="WO-1051"]').click();
   const state=w.NEXORA_SERVICE_ASSIGNMENTS.load();
   state.revision=(state.revision||0)+1;

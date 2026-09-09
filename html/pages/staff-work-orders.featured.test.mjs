@@ -97,11 +97,39 @@ test('View ticket opens the highlighted assignment in the existing detail flow',
   dom.window.close();
 });
 
-test('starting the highlighted ticket promotes the next assigned ticket', () => {
+test('demo ticket requires acceptance before starting and keeps acceptance when reopened', async () => {
+  const { dom, window } = loadPage();
+  const { document } = window;
+
+  try {
+    click(window, '[data-select-salon="golden"]');
+    click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+
+    assert.ok(document.querySelector('[data-accept-assignment="WO-1051"]'));
+    assert.equal(document.querySelector('[data-start-ticket="WO-1051"]'), null);
+
+    click(window, '[data-accept-assignment="WO-1051"]');
+    await new Promise((resolve) => window.setTimeout(resolve, 0));
+    assert.equal(document.querySelector('[data-accept-assignment="WO-1051"]'), null);
+    assert.ok(document.querySelector('[data-start-ticket="WO-1051"]'));
+    assert.equal(document.querySelector('[data-status-count="assigned"]').textContent.trim(), '2');
+
+    click(window, '[data-detail-back]');
+    click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+    assert.equal(document.querySelector('[data-accept-assignment="WO-1051"]'), null);
+    assert.ok(document.querySelector('[data-start-ticket="WO-1051"]'));
+  } finally {
+    dom.window.close();
+  }
+});
+
+test('starting the highlighted ticket promotes the next assigned ticket', async () => {
   const { dom, window } = loadPage();
 
   click(window, '[data-select-salon="golden"]');
   click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+  click(window, '[data-accept-assignment="WO-1051"]');
+  await new Promise((resolve) => window.setTimeout(resolve, 0));
   click(window, '[data-start-ticket="WO-1051"]');
 
   assert.equal(window.document.querySelector('[data-featured-ticket-id]')?.getAttribute('data-featured-ticket-id'), 'WO-1048');

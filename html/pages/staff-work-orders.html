@@ -780,7 +780,7 @@
         var actionHtml = '';
         if (ticket.sharedAssignment && ticket.lifecycle === 'sent') {
           actionHtml = '<div class="detail-actions"><button class="action-btn is-primary" type="button" data-view-assignment="' + esc(ticket.id) + '">View assignment</button></div>';
-        } else if (ticket.sharedAssignment && ticket.lifecycle === 'viewed') {
+        } else if ((ticket.sharedAssignment && ticket.lifecycle === 'viewed') || (!ticket.sharedAssignment && ticket.status === 'assigned' && ticket.lifecycle !== 'accepted')) {
           actionHtml = '<div class="detail-actions"><button class="action-btn is-primary" type="button" data-accept-assignment="' + esc(ticket.id) + '">Accept</button></div>';
         } else if (ticket.status === 'assigned') {
           actionHtml = '<div class="detail-actions"><button class="action-btn is-primary" type="button" data-start-ticket="' + esc(ticket.id) + '"><i data-lucide="play" aria-hidden="true"></i>Start Service</button></div>';
@@ -832,6 +832,10 @@
         if (target && target.sharedAssignment && target.lifecycle === 'sent') {
           if (!await updateAssignment(target, 'view')) return;
         }
+        if (target && !target.sharedAssignment && target.status === 'assigned' && target.lifecycle !== 'accepted') {
+          target.lifecycle = 'viewed';
+          target.viewedAt = target.viewedAt || new Date().toISOString();
+        }
         selectedTicketId = id;
         var opened = ticketById(id);
         if (opened && opened.sharedAssignment) {
@@ -847,13 +851,15 @@
 
       async function startTicket(id) {
         var ticket = ticketById(id);
-        if (!ticket || ticket.status !== 'assigned') return;
+        if (!ticket || ticket.status !== 'assigned' || ticket.lifecycle !== 'accepted') return;
         if (ticket.sharedAssignment) {
           if (!await updateAssignment(ticket, 'start')) return;
           setActiveStatus('in-service'); renderWorkspace();
           showToast('Service started.'); return;
         }
         ticket.status = 'in-service';
+        ticket.lifecycle = 'in-service';
+        ticket.startedAt = new Date().toISOString();
         selectedTicketId = id;
         renderWorkspace();
         showToast(ticket.id + ' is now In Service.');
@@ -894,6 +900,7 @@
         }
         ticket.completionNote = finalNote;
         ticket.status = 'completed';
+        ticket.lifecycle = 'completed';
         selectedTicketId = ticket.id;
         closeCompleteModal();
         setActiveStatus('completed');
@@ -1301,7 +1308,17 @@
         var accept = event.target.closest('[data-accept-assignment]');
         if (accept) {
           var assignment = ticketById(accept.dataset.acceptAssignment);
-          if (assignment && await updateAssignment(assignment, 'accept')) showToast('Assignment accepted. Start when you are ready.');
+          if (!assignment || assignment.status !== 'assigned') return;
+          if (assignment.sharedAssignment) {
+            if (!await updateAssignment(assignment, 'accept')) return;
+          } else {
+            if (assignment.lifecycle === 'accepted') return;
+            assignment.lifecycle = 'accepted';
+            assignment.acceptedAt = new Date().toISOString();
+            selectedTicketId = assignment.id;
+            renderWorkspace();
+          }
+          showToast('Assignment accepted. Start when you are ready.');
         }
       });
       if (assignmentStore) {
