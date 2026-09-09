@@ -405,13 +405,6 @@
       <header class="header"></header>
       <main class="content work-orders-page" aria-label="Technician Work Orders">
         <div class="wo-shell">
-          <section class="assignment-inbox" data-assignment-inbox aria-label="Assignment notifications" hidden>
-            <header><h2>Notifications <span data-unread-count>0</span></h2><label>Preview technician <select data-assignment-technician aria-label="Preview technician"></select></label></header>
-            <p>Prototype · Open Front Desk in another tab on this browser to send assignments.</p>
-            <div class="assignment-inbox-list" data-assignment-notifications></div>
-            <div class="assignment-next-turn" data-my-turn role="status"></div>
-            <a href="pos-front-desk.html?section=tickets" target="_blank">Open Front Desk ↗</a>
-          </section>
           <section data-salon-gate>
             <div class="wo-page-head">
               <div>
@@ -1275,7 +1268,7 @@
           assignmentSnapshot = snapshot;
           if (!state.technicians.some(function (tech) { return tech.id === technicianId; })) technicianId = state.technicians[0].id;
           var inbox = assignmentStore.inbox(technicianId, state);
-          TICKETS = inbox.map(function (item) {
+          TICKETS = TICKETS.filter(function (ticket) { return !ticket.sharedAssignment; }).concat(inbox.map(function (item) {
             var line = item.line, ticket = item.ticket;
             return { id: line.id, sharedAssignment: true, revision: line.revision, lifecycle: line.status,
               salonId: ticket.salonId, date: state.date, time: ticket.time, assignedAt: line.sentAt,
@@ -1284,18 +1277,7 @@
               note: line.note || 'No special instructions.', completionNote: line.completionNote,
               services: [{name: line.name, price: line.price, duration: line.duration}]
             };
-          });
-          var panel = document.querySelector('[data-assignment-inbox]'); panel.hidden = false;
-          document.querySelector('[data-assignment-technician]').innerHTML = state.technicians.map(function (tech) {
-            return '<option value="' + esc(tech.id) + '"' + (tech.id === technicianId ? ' selected' : '') + '>' + esc(tech.name) + '</option>';
-          }).join('');
-          document.querySelector('[data-unread-count]').textContent = inbox.filter(function (item) { return item.line.status === 'sent'; }).length;
-          var activeInbox = inbox.filter(function (item) { return item.line.status !== 'completed'; });
-          document.querySelector('[data-assignment-notifications]').innerHTML = activeInbox.length ? activeInbox.map(function (item) {
-            return '<button type="button" class="assignment-notification' + (item.line.status === 'sent' ? ' is-unread' : '') + '" data-open-notification="' + esc(item.line.id) + '"><span><strong>Ticket #' + item.ticket.number + ' · ' + esc(item.ticket.customer) + '</strong>' + esc(item.line.name) + '</span><span>' + assignmentStore.labels[item.line.status] + '</span></button>';
-          }).join('') : '<p>No pending notifications. New assignments will appear here.</p>';
-          var position = assignmentStore.queue(state).findIndex(function (tech) { return tech.id === technicianId; });
-          document.querySelector('[data-my-turn]').textContent = position >= 0 ? 'Available for turn · Queue #' + (position + 1) : 'Reserved for assigned services · Complete all active services to return to the turn queue.';
+          }));
           if (completingTicketId && !TICKETS.some(function (ticket) { return ticket.id === completingTicketId && ticket.status === 'in-service'; })) closeCompleteModal();
           if (currentSalonId) renderWorkspace();
         } catch (error) { showToast(error.message); }
@@ -1310,9 +1292,9 @@
         finally { assignmentBusy = false; }
       }
       document.addEventListener('click', async function (event) {
-        var open = event.target.closest('[data-open-notification], [data-view-assignment]');
+        var open = event.target.closest('[data-view-assignment]');
         if (open) {
-          var id = open.dataset.openNotification || open.dataset.viewAssignment;
+          var id = open.dataset.viewAssignment;
           var ticket = ticketById(id);
           if (ticket) { if (currentSalonId !== ticket.salonId) openSalon(ticket.salonId); currentDate = ticket.date; openTicketDetail(id); }
         }
@@ -1321,12 +1303,6 @@
           var assignment = ticketById(accept.dataset.acceptAssignment);
           if (assignment && await updateAssignment(assignment, 'accept')) showToast('Assignment accepted. Start when you are ready.');
         }
-      });
-      document.querySelector('[data-assignment-technician]').addEventListener('change', function (event) {
-        technicianId = event.target.value;
-        selectedTicketId = ''; closeCompleteModal();
-        var url = new URL(location.href); url.searchParams.set('technician', technicianId); url.searchParams.delete('assignment'); history.replaceState(null, '', url);
-        syncAssignments(true); openSalon('golden');
       });
       if (assignmentStore) {
         syncAssignments(true);

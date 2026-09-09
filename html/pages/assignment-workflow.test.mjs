@@ -81,10 +81,10 @@ test('Front Desk sends a service and Work Orders opens, accepts, starts, complet
  }});
  try{
  const sw=staff.window,d=sw.document;
- assert.equal(d.querySelector('[data-unread-count]').textContent,'1');
+ assert.equal(d.querySelector('[data-assignment-inbox]'),null);
  assert.equal(sw.NEXORA_SERVICE_ASSIGNMENTS.inbox('kayla')[0].line.status,'sent','automatic detail rendering must not mark viewed');
- d.querySelector('[data-open-notification="jojo-1"]').click();await tick();
- assert.equal(d.querySelector('[data-unread-count]').textContent,'0');
+ d.querySelector('[data-ticket-id="jojo-1"]').click();await tick();
+ assert.equal(sw.NEXORA_SERVICE_ASSIGNMENTS.inbox('kayla')[0].line.status,'viewed');
  assert.ok(d.querySelector('[data-accept-assignment="jojo-1"]'));
  assert.equal(d.querySelector('[data-start-ticket="jojo-1"]'),null);
  d.querySelector('[data-accept-assignment="jojo-1"]').click();await tick();
@@ -94,7 +94,7 @@ test('Front Desk sends a service and Work Orders opens, accepts, starts, complet
  d.querySelector('[data-confirm-complete]').click();await tick();
  sync(sw,fw);
  assert.match(fw.document.querySelector('[data-assignment-detail]').textContent,/Completed/);
- assert.match(d.querySelector('[data-my-turn]').textContent,/Available for turn/);
+ assert.ok(sw.NEXORA_SERVICE_ASSIGNMENTS.queue().some(tech=>tech.id==='kayla'));
  assert.equal(sw.NEXORA_SERVICE_ASSIGNMENTS.load().turnEntries.length,1);
  assert.deepEqual(errors,[]);
  }finally{staff.window.close();fd.window.close();}
@@ -127,4 +127,33 @@ test('demo checkout waits for completed services and records one payment without
  await s.pay('jojo',{tip:10,method:'cash',cash:100,receipt:'none'});
  const t=s.load().tickets.find(t=>t.id==='jojo');assert.equal(t.payment.total,62);assert.equal(t.payment.change,38);assert.equal(s.load().turnEntries.length,1);
  dom.window.close();
+});
+
+test('Work Orders keeps usable demo tickets when assignment storage loads and refreshes',()=>{
+ const errors=[];
+ const dom=new JSDOM(readFileSync(new URL('./staff-work-orders.html',import.meta.url),'utf8'),{
+  url:'https://demo.test/pages/staff-work-orders.html',runScripts:'dangerously',beforeParse(w){
+   w.scrollTo=()=>{};
+   w.addEventListener('error',e=>errors.push(e.message));
+   w.eval(storeSource());
+   w.NEXORA_APPOINTMENT_SERVICE_CATALOG={load:()=>new Promise(()=>{})};
+  }
+ });
+ try{
+  const w=dom.window,d=w.document;
+  assert.equal(d.querySelector('[data-workspace]').hidden,false);
+  assert.equal(d.querySelector('[data-status-count="assigned"]').textContent,'2');
+  assert.equal(d.querySelector('[data-status-count="in-service"]').textContent,'1');
+  assert.equal(d.querySelector('[data-status-count="completed"]').textContent,'1');
+  d.querySelector('[data-ticket-id="WO-1051"]').click();
+  d.querySelector('[data-start-ticket="WO-1051"]').click();
+  const state=w.NEXORA_SERVICE_ASSIGNMENTS.load();
+  state.revision=(state.revision||0)+1;
+  w.localStorage.setItem('nexora-service-assignments-v1',JSON.stringify(state));
+  w.dispatchEvent(new w.Event('focus'));
+  assert.equal(d.querySelector('[data-status-count="assigned"]').textContent,'1');
+  assert.equal(d.querySelector('[data-status-count="in-service"]').textContent,'2');
+  assert.equal(d.querySelector('[data-assignment-inbox]'),null);
+  assert.deepEqual(errors,[]);
+ }finally{dom.window.close();}
 });
