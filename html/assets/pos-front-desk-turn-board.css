@@ -19,3 +19,27 @@
 .prototype-note,.demo-note{font-size:11px;color:#64748b;margin-top:16px}.modal-wrap{display:none;position:fixed;inset:0;background:#0c1b3b66;z-index:1000;padding:24px;align-items:center;justify-content:center}.modal-wrap.show{display:flex}.modal{background:#fff;padding:24px;border-radius:14px;width:min(560px,100%);max-height:90vh;overflow:auto;box-shadow:0 18px 55px #0c1b3b30}.modal h3{margin-top:0;font-size:18px}.modal p{font-size:12px;color:#52607b;line-height:1.6}.modal label{display:grid;gap:6px;font-size:12px}.modal input,.modal select{width:100%;min-width:0}.boost-form,.add-turn-form{display:grid;grid-template-columns:1fr 1fr;gap:12px}.modal-actions{display:flex;justify-content:flex-end;gap:8px;margin-top:20px}.audit-note,.turn-preview,.boost-box{background:#f5f3ff;padding:12px;border-radius:8px;margin-top:12px;font-size:11px;color:#52607b;line-height:1.6}.guest-choice{width:100%;display:grid;gap:6px;text-align:left;margin:8px 0}.guest-choice span{font-size:11px;font-weight:400;color:#52607b}.front-desk button:disabled{cursor:default;opacity:.5}@media(max-width:650px){.peak-stats{grid-template-columns:1fr 1fr}.turn-hero,.section-head{align-items:flex-start;flex-direction:column}.board-grid{grid-template-columns:1fr}.boost-form,.add-turn-form{grid-template-columns:1fr}.modal-wrap{padding:12px}.board-toolbar>.btn{margin-left:0}}
 .section-head-actions{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .front-desk .section-head-actions a{display:inline-flex;align-items:center;border:1px solid #dbe4f3;background:#fff;color:#101827;border-radius:8px;padding:9px 12px;font-size:12px;font-weight:700;text-decoration:none}
+.board-menu-wrap{position:relative}
+.front-desk #board-menu-toggle{display:inline-flex;align-items:center;gap:8px;background:#fff}
+.front-desk #board-menu-toggle[aria-expanded="true"]{border-color:#aaa1f4;background:#f4f2ff;color:#4c43df}
+.front-desk .board-menu svg{width:17px;height:17px;flex-shrink:0;color:#77849d}
+.front-desk #board-menu-toggle svg{width:16px;height:16px}
+.front-desk .board-menu{position:absolute;top:calc(100% + 8px);right:0;width:294px;max-width:calc(100vw - 36px);z-index:50;padding:6px;background:#fff;border:1px solid #dbe4f3;border-radius:14px;box-shadow:0 16px 44px #27365324}
+.front-desk .board-menu[hidden]{display:none}
+.board-menu-group{padding:8px 4px}
+.board-menu-group+.board-menu-group{border-top:1px solid #e7ebf3}
+.front-desk .board-menu h3{display:flex;align-items:center;gap:8px;margin:4px 10px 8px;font-size:10px;font-weight:800;text-transform:uppercase;letter-spacing:.07em;color:#77849d}
+.front-desk .board-menu h3 span{padding:3px 5px;border-radius:4px;background:#f3f4f9;font-size:9px;letter-spacing:0;text-transform:none;font-weight:500}
+.front-desk .board-menu button{display:flex;align-items:center;gap:11px;width:100%;padding:10px;border:0;border-radius:8px;background:transparent;text-align:left;color:#24314a;font-size:12px;font-weight:650;line-height:1.4}
+.front-desk .board-menu button small{display:block;margin-top:3px;color:#7a869b;font-size:10px;font-weight:400}
+.front-desk .board-menu button:hover:not(:disabled){background:#f5f3ff;color:#4c43df}
+.front-desk .board-menu button.board-danger,.front-desk .board-menu button.board-danger svg{color:#c64554}
+.front-desk .board-menu button.board-danger:hover{background:#fff3f4}
+.front-desk .btn.primary.board-danger-button{background:#c64554;border-color:#c64554}
+.front-desk .board-form-error{color:#c64554}
+.front-desk .board-form-error:empty{display:none}
+.board-empty{padding:48px 20px;border:1px dashed #cfd8e7;border-radius:12px;background:#fff;text-align:center;color:#52607b}
+.board-empty strong{font-size:16px;color:#24314a}.board-empty p{font-size:12px;margin:10px 0 18px}
+.front-desk .turn-grid button.grid-check-in{display:block;margin-top:5px;padding:3px 6px;font-size:10px;border:1px solid #dce3e0;color:#27705d}
+.front-desk .board-menu button:focus-visible,.front-desk #board-menu-toggle:focus-visible{outline:2px solid #7466df;outline-offset:2px}
+@media(max-width:650px){.front-desk .board-menu{right:auto;left:0}}

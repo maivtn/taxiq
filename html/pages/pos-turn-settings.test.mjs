@@ -13,13 +13,18 @@ function boot(page, saved = {}) {
   w.structuredClone = structuredClone;
   w.matchMedia = () => ({matches: false});
   for (const [key, value] of Object.entries(saved)) w.localStorage.setItem(key, value);
+  const boardScripts = [];
   for (const script of dom.window.document.querySelectorAll('script')) {
     if (script.src && !script.src.startsWith('https://example.test/')) continue;
     if (script.src.includes('nexora-shell')) continue;
     const path = script.src && new URL('../assets/' + script.src.split('/').at(-1), import.meta.url);
     if (path && !existsSync(path)) continue;
-    w.eval(path ? readFileSync(path, 'utf8') : script.textContent);
+    const source = path ? readFileSync(path, 'utf8') : script.textContent;
+    // Browser classic scripts share global lexical bindings across the board assets.
+    if (page === 'pos-front-desk-turn-board.html') boardScripts.push(source);
+    else w.eval(source);
   }
+  if (boardScripts.length) w.eval(boardScripts.join('\n'));
   for (const el of w.document.querySelectorAll("[onclick]")) el.onclick = w.Function("event", el.getAttribute("onclick"));
   return {dom, w, d: w.document, errors};
 }
