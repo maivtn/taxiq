@@ -464,7 +464,7 @@
 
   <div class="modal-backdrop" data-complete-modal hidden>
     <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="complete-title">
-      <div class="modal-head"><div><h2 id="complete-title">Complete Work Order</h2><p data-complete-ticket>Ticket</p></div><button class="modal-close" type="button" data-close-modal aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button></div>
+      <div class="modal-head"><div><h2 id="complete-title">Complete Work Order</h2><p data-complete-ticket-label>Ticket</p></div><button class="modal-close" type="button" data-close-modal aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button></div>
       <div class="modal-body">
         <label class="field-label">Suggested notes</label>
         <div class="suggested-notes">
@@ -872,7 +872,7 @@
         completingTicketId = id;
         selectedSuggestedNote = '';
         completeNotesEl.value = '';
-        document.querySelector('[data-complete-ticket]').textContent = ticket.id + ' · ' + ticket.customer;
+        completeModalEl.querySelector('[data-complete-ticket-label]').textContent = ticket.id + ' · ' + ticket.customer;
         document.querySelector('[data-notes-error]').hidden = true;
         document.querySelectorAll('[data-note-chip]').forEach(function (chip) { chip.classList.remove('is-selected'); });
         completeModalEl.hidden = false;

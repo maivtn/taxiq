@@ -500,3 +500,32 @@ test('Work Order uses saved services, prices and categories while excluding inac
   assert.match(window.document.querySelector('[data-detail-panel] .services').textContent,/New treatment\$21.0025 min/);
   dom.window.close();
 });
+
+test('Complete keeps its action label when the completion dialog is cancelled and reopened', async () => {
+  const { dom, window } = loadPage();
+  const document = window.document;
+  try {
+    click(window, '[data-select-salon="golden"]');
+    click(window, '[data-orders-list] [data-ticket-id="WO-1048"]');
+    click(window, '[data-accept-assignment="WO-1048"]');
+    await new Promise(resolve => window.setTimeout(resolve, 0));
+    click(window, '[data-start-ticket="WO-1048"]');
+    const complete = document.querySelector('button[data-complete-ticket="WO-1048"]');
+    assert.equal(complete.textContent.trim(), 'Complete');
+    complete.click();
+    assert.equal(complete.textContent.trim(), 'Complete');
+    assert.ok(complete.querySelector('[data-lucide="circle-check"]'));
+    assert.equal(document.querySelector('[data-complete-modal] .modal-head p').textContent.trim(), 'WO-1048 · Emma Williams');
+    click(window, '[data-complete-modal] [data-close-modal]');
+    assert.equal(complete.textContent.trim(), 'Complete');
+    complete.click();
+    assert.equal(document.querySelector('[data-complete-modal]').hidden, false);
+    click(window, '[data-note-chip="Service completed as requested."]');
+    click(window, '[data-confirm-complete]');
+    assert.equal(document.querySelector('[data-complete-modal]').hidden, true);
+    assert.equal(document.querySelector('button[data-complete-ticket="WO-1048"]'), null);
+    assert.match(document.querySelector('[data-detail-panel]').textContent, /Completed service notes/);
+  } finally {
+    dom.window.close();
+  }
+});
