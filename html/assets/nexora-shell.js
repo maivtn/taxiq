@@ -74,6 +74,7 @@
       { label: 'Earn Rules', tab: 'earn-rules' },
       { label: 'Reward Catalog', tab: 'reward-catalog' },
       { label: 'AI Offers', tab: 'ai-offers' },
+      { label: 'Promotions', tab: 'promotions', href: 'reward-promotions.html' },
       { label: 'Customers', tab: 'customers' },
       { label: 'Loyalty Activity', tab: 'loyalty-activity' },
       { label: 'Analytics', tab: 'analytics' }
@@ -238,7 +239,7 @@
       var inner = '<span class="nav-subitem-dot" aria-hidden="true"></span><span>' + esc(it.label) + '</span>';
       if (it.href) {
         var hrefActive = isNative && it.tab === activeTab;
-        return '<a class="nav-subitem' + (hrefActive ? ' is-active' : '') + '"' + (isNative && node.key === 'pos' && it.tab ? ' data-shell-active-tab="' + esc(it.tab) + '"' : '') + ' href="' + esc(it.href) + '">' + inner + '</a>';
+        return '<a class="nav-subitem' + (hrefActive ? ' is-active' : '') + '"' + (isNative && it.tab ? ' data-shell-active-tab="' + esc(it.tab) + '"' : '') + ' href="' + esc(it.href) + '">' + inner + '</a>';
       }
       if (node.page && !isNative) {
         // foreign group -> cross-page link

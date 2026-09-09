@@ -176,6 +176,21 @@ test('renders all Reward submenu buttons on the native Reward page', () => {
   assert.doesNotMatch(html, /data-shell-tab="create-reward"/);
 });
 
+test('links the standalone Promotions page from the Reward submenu on shared pages', () => {
+  for (const [page, tab] of [['booking', 'booking'], ['reward', 'overview']]) {
+    const html = renderSidebar(page, tab);
+    const reward = html.slice(html.indexOf('id="nexora-subnav-reward"'), html.indexOf('aria-controls="nexora-subnav-pos"'));
+    assert.match(reward, /<a class="nav-subitem"[^>]*href="reward-promotions\.html"[^>]*>[\s\S]*?<span>Promotions<\/span><\/a>/);
+  }
+});
+
+test('expands Reward and highlights Promotions on its standalone page', () => {
+  const html = renderSidebar('reward', 'promotions');
+  assert.match(html, /aria-expanded="true" aria-controls="nexora-subnav-reward"/);
+  assert.match(html, /<a class="nav-subitem is-active" data-shell-active-tab="promotions" href="reward-promotions\.html">/);
+  assert.doesNotMatch(html, /<button class="nav-subitem is-active"/);
+});
+
 test('links and activates Reviews on the native Review page', () => {
   const html = renderSidebar('review', '');
   assert.match(html, /<a class="nav-item is-active" href="nexora-review\.html">[\s\S]*?<span>Reviews<\/span>/);

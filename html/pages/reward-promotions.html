@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nexora Touch - Promotions</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/reward-promotions.css">
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+</head>
+<body>
+<div class="shell"><aside class="sidebar" id="sidebar"></aside><div class="app-area"><header class="header" id="header"></header>
+<main class="promotions-page">
+  <header class="promotions-heading">
+    <div><p class="promo-eyebrow">Reward / Promotions</p><h1>Promotions</h1><p>Create offers that bring customers back and grow revenue.</p></div>
+    <button class="promo-button primary" id="create-promotion"><span aria-hidden="true">＋</span> Create promotion</button>
+  </header>
+  <section class="promo-stats" aria-label="Promotion overview">
+    <article class="promo-stat"><span class="stat-icon mint" aria-hidden="true">↗</span><div><h2>Active promotions</h2><strong id="stat-active">2</strong><p>Running now</p></div></article>
+    <article class="promo-stat"><span class="stat-icon blue" aria-hidden="true">◷</span><div><h2>Scheduled</h2><strong id="stat-scheduled">1</strong><p id="schedule-caption">Starts next week</p></div></article>
+    <article class="promo-stat"><span class="stat-icon amber" aria-hidden="true">$</span><div><h2>Revenue generated</h2><strong id="stat-revenue">$1,245</strong><p>Across current and past offers</p></div></article>
+    <article class="promo-stat"><span class="stat-icon violet" aria-hidden="true">✓</span><div><h2>Redemptions</h2><strong id="stat-redemptions">87</strong><p>Across current and past offers</p></div></article>
+  </section>
+  <section class="promo-manager" aria-label="Promotions">
+    <div class="promo-toolbar">
+      <label class="promo-search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><input id="promotion-search" type="search" placeholder="Search promotions" aria-label="Search promotions"></label>
+      <div class="promo-filters" role="group" aria-label="Filter promotions">
+        <button data-filter="all" aria-pressed="true">All <span data-count="all">3</span></button>
+        <button data-filter="active" aria-pressed="false">Active <span data-count="active">2</span></button>
+        <button data-filter="scheduled" aria-pressed="false">Scheduled <span data-count="scheduled">1</span></button>
+        <button data-filter="paused" aria-pressed="false">Paused <span data-count="paused"></span></button>
+      </div>
+      <select id="promotion-sort" aria-label="Sort promotions"><option value="performance">Best performing</option><option value="newest">Newest first</option><option value="name">Name A–Z</option></select>
+    </div>
+    <div id="promotion-list"></div>
+    <div class="promo-empty" id="promotion-empty" hidden><span aria-hidden="true">⌕</span><h2>No promotions found</h2><p>Try another search or choose a different status.</p><button class="promo-button" id="clear-filters">Clear filters</button></div>
+  </section>
+  <p class="promo-demo-note">Interactive prototype · Sample promotion results</p>
+  <p id="promotion-feedback" class="promo-feedback" role="status" aria-live="polite"></p>
+</main></div></div>
+
+<dialog id="promotion-editor" class="promo-dialog" aria-labelledby="editor-title">
+  <form id="promotion-form" novalidate>
+    <header class="editor-header"><div><p class="promo-eyebrow">Build your next offer</p><h2 id="editor-title">Create promotion</h2></div><button type="button" class="promo-close" data-close-editor aria-label="Close promotion editor">×</button></header>
+    <ol class="promo-steps" aria-label="Create promotion steps"><li data-step-label="1" aria-current="step"><span>1</span> Offer details</li><li data-step-label="2"><span>2</span> Schedule &amp; rules</li><li data-step-label="3"><span>3</span> Review</li></ol>
+    <div class="editor-body">
+      <div class="editor-fields">
+        <section data-editor-step="1">
+          <div class="sample-heading"><div><p class="promo-eyebrow">Quick start</p><h3>Start with a sample</h3></div><button type="button" class="promo-text-button" id="toggle-samples" aria-expanded="false">View all</button></div>
+          <div id="promotion-samples" class="promo-samples"></div>
+          <div class="promo-divider"><span>Or customize</span></div>
+          <h3>What are you offering?</h3><p class="editor-description">Start with the customer-facing details.</p>
+          <label class="promo-field">Promotion name<input name="title" maxlength="80" required placeholder="e.g. New Customer"></label>
+          <div class="promo-field-row"><label class="promo-field">Discount type<select name="type"><option value="percent">Percentage off</option><option value="fixed">Amount off</option><option value="free">Free service or add-on</option><option value="custom">Custom offer</option></select></label><label class="promo-field" id="discount-field"><span id="discount-label">Discount value</span><div class="promo-input-prefix"><span id="discount-prefix">$</span><input name="value" type="number" min="0.01" step="0.01" required aria-label="Discount value"></div></label></div>
+          <label class="promo-field">Badge<input name="badge" maxlength="24" placeholder="e.g. WELCOME"></label>
+          <label class="promo-field">Description<textarea name="description" maxlength="180" rows="3" placeholder="Tell customers what makes this offer special."></textarea></label>
+          <label class="promo-check-card"><span><strong>Offer at checkout</strong><small>Staff can apply this promotion to eligible tickets.</small></span><input name="checkout" type="checkbox" checked></label>
+        </section>
+        <section data-editor-step="2" hidden>
+          <p class="promo-eyebrow">Make it yours</p><h3>When can customers use it?</h3><p class="editor-description">Choose the schedule and eligible services.</p>
+          <label class="promo-field">Availability<select name="timing"><option value="now">Start now</option><option value="scheduled">Schedule for later</option></select></label>
+          <div class="promo-field-row"><label class="promo-field">Start date<input name="startDate" type="date"></label><label class="promo-field">End date <span class="optional">Optional</span><input name="endDate" type="date"></label></div>
+          <fieldset class="promo-days"><legend>Available days</legend><div id="promotion-days"></div></fieldset>
+          <label class="promo-check-inline"><input name="allDay" type="checkbox" checked> Available all day</label>
+          <div class="promo-field-row" id="promotion-hours" hidden><label class="promo-field">From<input name="startTime" type="time" value="10:00"></label><label class="promo-field">Until<input name="endTime" type="time" value="14:00"></label></div>
+          <label class="promo-field">Eligible services<select name="services"><option>All services</option><option>Selected add-ons</option><option>Manicure</option><option>Pedicure</option><option>Nail enhancements</option></select></label>
+          <label class="promo-field">Who can use this offer?<select name="audience"><option>All customers</option><option>First-time customers</option><option>Returning customers</option></select></label>
+          <label class="promo-field">How is it redeemed?<select name="redemption"><option value="auto">Auto-applied</option><option value="checkout">At checkout</option><option value="code">Promotion code</option></select></label>
+          <label class="promo-field" id="promotion-code-field" hidden>Promotion code<input name="code" maxlength="24" placeholder="e.g. GLOW15"></label>
+        </section>
+        <section data-editor-step="3" hidden>
+          <p class="promo-eyebrow">Ready to go</p><h3>Review your promotion</h3><p class="editor-description">Check the details before adding your offer.</p><div id="promotion-review"></div>
+          <label class="promo-check-card"><span><strong>Keep paused</strong><small>Save the promotion and activate it when you are ready.</small></span><input name="paused" type="checkbox"></label>
+        </section>
+        <p id="promotion-error" class="promo-error" role="alert"></p>
+      </div>
+      <aside class="editor-preview"><p class="preview-label">Live preview</p><div id="promotion-preview" class="promo-poster theme-gold"><p data-preview-badge>WELCOME</p><h3 data-preview-title>New Customer</h3><strong data-preview-value>$10 OFF</strong><p data-preview-description>Save $10 on your first visit.</p><span class="poster-cta">View offer</span></div><p class="preview-caption">Customer view</p></aside>
+    </div>
+    <footer class="editor-footer"><button type="button" class="promo-button" id="editor-back">Cancel</button><span id="editor-step-caption">Step 1 of 3</span><button type="submit" class="promo-button primary" id="editor-next">Continue <span aria-hidden="true">→</span></button></footer>
+  </form>
+</dialog>
+<dialog id="promotion-poster-dialog" class="promo-poster-dialog" aria-labelledby="poster-title"><header class="editor-header"><div><p class="promo-eyebrow">Ready to share</p><h2 id="poster-title">Promotion poster</h2></div><button type="button" class="promo-close" id="close-poster" aria-label="Close poster">×</button></header><div id="poster-output"></div><footer class="editor-footer"><p>Print or save as PDF.</p><button class="promo-button primary" id="print-poster">Print poster</button></footer></dialog>
+<script>window.NEXORA_SHELL = {activePage: 'reward', activeTab: 'promotions', onNavigate: function(tab) { window.location.href = 'salon-setup-reward.html?tab=' + encodeURIComponent(tab); }};</script>
+<script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+<script src="../assets/nexora-shell.js"></script>
+<script src="../assets/reward-promotions.js"></script>
+</body>
+</html>
