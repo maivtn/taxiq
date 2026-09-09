@@ -17,7 +17,7 @@ function boot(t, {url = 'https://example.test/pages/pos-operating-standards.html
   let printCalls = 0;
   w.print = () => {printCalls += 1;};
   for (const [key, value] of Object.entries(storage)) w.localStorage.setItem(key, value);
-  for (const name of ['salon-data', 'pos-turn-settings', 'operating-standards-data', 'operating-standards']) w.eval(script(name));
+  for (const name of ['salon-data', 'pos-turn-settings', 'operating-standards-data', 'operating-standards-generator-data', 'operating-standards']) w.eval(script(name));
   t.after(() => {assert.deepEqual(errors, []); dom.window.close();});
   return {w, d, docs: w.NEXORA_OPERATING_STANDARDS_DATA.documents,
     get printCalls() {return printCalls;},

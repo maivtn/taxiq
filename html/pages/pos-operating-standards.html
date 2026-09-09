@@ -21,7 +21,7 @@
     <a class="active" href="pos-operating-standards.html" aria-current="page"><i data-lucide="book-open" aria-hidden="true"></i>Operating Standards</a>
   </nav>
   <section id="standards-library" aria-labelledby="library-title">
-    <header class="standards-heading"><div><p class="standards-eyebrow">Tài liệu của tiệm</p><h2 id="library-title">Bộ tiêu chuẩn vận hành</h2><p id="library-meta"></p></div><div class="standards-actions"><button class="standard-button" id="print-library"><i data-lucide="printer" aria-hidden="true"></i>In bộ tài liệu</button><button class="standard-button primary" id="add-standard"><span aria-hidden="true">＋</span>Thêm tài liệu</button></div></header>
+    <header class="standards-heading"><div><p class="standards-eyebrow">Tài liệu của tiệm</p><h2 id="library-title">Bộ tiêu chuẩn vận hành</h2><p id="library-meta"></p></div><div class="standards-actions"><button class="standard-button" id="print-library"><i data-lucide="printer" aria-hidden="true"></i>In bộ tài liệu</button><button class="standard-button" id="add-standard"><span aria-hidden="true">＋</span>Thêm tài liệu</button><button class="standard-button primary" id="create-standard-rules"><i data-lucide="sparkles" aria-hidden="true"></i>Tạo nội quy</button></div></header>
     <div class="standards-toolbar"><label class="standards-search"><i data-lucide="search" aria-hidden="true"></i><input id="standards-search" type="search" placeholder="Tìm tài liệu hoặc nội dung…" aria-label="Tìm tài liệu"></label><div class="standards-filters" role="group" aria-label="Loại tài liệu"><button data-standard-filter="all" aria-pressed="true">Tất cả <span data-filter-count="all">9</span></button><button data-standard-filter="rules" aria-pressed="false">Quy định</button><button data-standard-filter="agreement" aria-pressed="false">Thỏa thuận</button><button data-standard-filter="checklist" aria-pressed="false">Danh sách kiểm tra</button></div></div>
     <div class="standards-grid" id="standards-grid"></div>
     <div class="standards-empty" id="standards-empty" hidden><h3>Không tìm thấy tài liệu</h3><p>Thử từ khóa khác hoặc xem tất cả loại tài liệu.</p><button class="standard-button" id="reset-standards-filter">Xóa bộ lọc</button></div>
@@ -30,6 +30,11 @@
   <section id="standard-detail" hidden aria-labelledby="standard-title"></section>
   <p class="standards-feedback" id="standards-feedback" role="status" aria-live="polite"></p>
 </main></div></div>
+<dialog class="standard-generator" id="standard-generator" aria-labelledby="standard-generator-title" aria-describedby="standard-generator-description">
+  <header><div><p class="standards-eyebrow">Nội quy của tiệm</p><h2 id="standard-generator-title">Tạo nội quy tiệm</h2><p id="standard-generator-description">Chọn một trong ba cách. Sau đó vẫn sửa và bổ sung thoải mái.</p></div><button class="standard-close" type="button" data-close-standard-generator aria-label="Đóng cửa sổ tạo nội quy">×</button></header>
+  <div class="standard-generator-body" id="standard-generator-content"></div>
+  <footer id="standard-generator-footer"></footer>
+</dialog>
 <dialog class="standard-editor" id="standard-editor" aria-labelledby="standard-editor-title">
   <form id="standard-form" novalidate>
     <header><div><p class="standards-eyebrow">Tài liệu của tiệm</p><h2 id="standard-editor-title">Sửa tài liệu</h2></div><button class="standard-close" type="button" data-close-standard-editor aria-label="Đóng">×</button></header>
@@ -50,6 +55,6 @@
 <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
 <script src="../assets/nexora-shell.js"></script>
 <script src="../assets/salon-data.js"></script><script src="../assets/pos-turn-settings.js"></script>
-<script src="../assets/operating-standards-data.js"></script><script src="../assets/operating-standards.js"></script>
+<script src="../assets/operating-standards-data.js"></script><script src="../assets/operating-standards-generator-data.js"></script><script src="../assets/operating-standards.js"></script>
 </body>
 </html>

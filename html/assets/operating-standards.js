@@ -8,6 +8,8 @@
   const types = {rules:'Quy định', agreement:'Thỏa thuận', checklist:'Danh sách kiểm tra'};
   const key = 'nexora:operating-standards:v1:' + window.NEXORA_SALON_DATA.loadCatalog().salon.id;
   const editor = $('#standard-editor'), form = $('#standard-form');
+  const generator = $('#standard-generator'), generatorData = window.NEXORA_STANDARD_GENERATOR;
+  let generatorAnswers = null;
   let query = '', filter = 'all', editing = null, shown = null, selectedId = '', historical = false;
   const today = () => { const d = new Date(); return [d.getFullYear(), String(d.getMonth()+1).padStart(2,'0'), String(d.getDate()).padStart(2,'0')].join('-'); };
   const dateLabel = value => /^\d{4}-\d{2}-\d{2}$/.test(value || '') ? value.split('-').reverse().join('/') : '—';
@@ -63,7 +65,7 @@
   function renderDetail(doc, current, isHistory) {
     const sections = sectionsFor(doc,isHistory);
     const versions = [current,...(current.history || [])].sort((a,b) => b.version - a.version);
-    $('#standard-detail').innerHTML = '<a class="standard-back" data-standard-back href="' + esc(documentUrl()) + '">← Bộ tiêu chuẩn vận hành</a><header class="standards-heading standard-detail-heading"><div><p class="standards-eyebrow">Tài liệu của tiệm</p><h2 id="standard-title">' + esc(doc.title) + '</h2><div class="standard-detail-meta">' + badge(doc) + '<span>Bản ' + doc.version + ' · Cập nhật ' + dateLabel(doc.updatedAt) + '</span><span>· ' + sections.length + ' mục · ' + sections.reduce((n,section) => n + section.rules.length,0) + ' điều</span></div><p>' + esc(doc.description) + '</p></div><div class="standards-actions"><button class="standard-button" data-print-standard><i data-lucide="printer" aria-hidden="true"></i>In tài liệu</button>' + (!isHistory ? '<button class="standard-button primary" data-edit-standard><i data-lucide="pencil" aria-hidden="true"></i>Sửa tài liệu</button>' : '') + '</div></header>' + (isHistory ? '<p class="standard-history-note">Bạn đang xem bản ' + doc.version + '. <a href="' + esc(documentUrl(current.id)) + '" data-standard-id="' + esc(current.id) + '">Xem bản mới nhất →</a></p>' : '') + '<div class="standard-detail-layout"><aside class="standard-toc"><h3>Trong tài liệu này</h3><nav aria-label="Mục lục">' + sections.map((section,i) => '<a href="#standard-section-' + esc(section.id) + '"><span>' + (i+1) + '</span>' + esc(section.title) + '</a>').join('') + '</nav><label>Phiên bản<select id="standard-version" aria-label="Phiên bản tài liệu">' + versions.map(version => '<option value="' + version.version + '"' + (version.version === doc.version ? ' selected' : '') + '>Bản ' + version.version + (version.version === current.version ? ' · Hiện tại' : ' · ' + dateLabel(version.updatedAt)) + '</option>').join('') + '</select></label></aside><div class="standard-sections">' + sections.map((section,i) => '<section class="standard-section" id="standard-section-' + esc(section.id) + '"' + (section.synced && !isHistory ? ' data-live-turn-rules' : '') + '><div class="standard-section-heading"><span class="standard-section-number">' + (i+1) + '</span><h3>' + esc(section.title) + '</h3>' + (section.synced ? '<span class="standard-tag sync">' + (isHistory ? 'Cấu hình lúc lưu bản' : 'Theo cấu hình hiện tại') + '</span>' : '') + '</div><ul class="standard-rules' + (doc.type === 'checklist' ? ' is-checklist' : '') + '">' + section.rules.map(rule => '<li><span>' + esc(rule) + '</span></li>').join('') + '</ul>' + (section.synced ? '<p class="standard-sync-note">' + (isHistory ? 'Số turn được lưu cùng phiên bản tài liệu này.' : 'Đọc trực tiếp từ Weighted Turn Settings. Khi thay đổi mức turn, nội dung này cập nhật theo. <a href="pos-front-desk-turn-board.html">Mở Turn Board →</a>') + '</p>' : '') + '</section>').join('') + '</div></div>';
+    $('#standard-detail').innerHTML = '<a class="standard-back" data-standard-back href="' + esc(documentUrl()) + '">← Bộ tiêu chuẩn vận hành</a><header class="standards-heading standard-detail-heading"><div><p class="standards-eyebrow">Tài liệu của tiệm</p><h2 id="standard-title">' + esc(doc.title) + '</h2><div class="standard-detail-meta">' + badge(doc) + '<span>Bản ' + doc.version + ' · Cập nhật ' + dateLabel(doc.updatedAt) + '</span><span>· ' + sections.length + ' mục · ' + sections.reduce((n,section) => n + section.rules.length,0) + ' điều</span></div><p>' + esc(doc.description) + '</p></div><div class="standards-actions"><button class="standard-button" data-print-standard><i data-lucide="printer" aria-hidden="true"></i>In tài liệu</button>' + (!isHistory && doc.id === 'noiquy' ? '<button class="standard-button" data-generate-standard><i data-lucide="sparkles" aria-hidden="true"></i>Tạo lại / đổi mẫu</button>' : '') + (!isHistory ? '<button class="standard-button primary" data-edit-standard><i data-lucide="pencil" aria-hidden="true"></i>Sửa tài liệu</button>' : '') + '</div></header>' + (isHistory ? '<p class="standard-history-note">Bạn đang xem bản ' + doc.version + '. <a href="' + esc(documentUrl(current.id)) + '" data-standard-id="' + esc(current.id) + '">Xem bản mới nhất →</a></p>' : '') + '<div class="standard-detail-layout"><aside class="standard-toc"><h3>Trong tài liệu này</h3><nav aria-label="Mục lục">' + sections.map((section,i) => '<a href="#standard-section-' + esc(section.id) + '"><span>' + (i+1) + '</span>' + esc(section.title) + '</a>').join('') + '</nav><label>Phiên bản<select id="standard-version" aria-label="Phiên bản tài liệu">' + versions.map(version => '<option value="' + version.version + '"' + (version.version === doc.version ? ' selected' : '') + '>Bản ' + version.version + (version.version === current.version ? ' · Hiện tại' : ' · ' + dateLabel(version.updatedAt)) + '</option>').join('') + '</select></label></aside><div class="standard-sections">' + sections.map((section,i) => '<section class="standard-section" id="standard-section-' + esc(section.id) + '"' + (section.synced && !isHistory ? ' data-live-turn-rules' : '') + '><div class="standard-section-heading"><span class="standard-section-number">' + (i+1) + '</span><h3>' + esc(section.title) + '</h3>' + (section.synced ? '<span class="standard-tag sync">' + (isHistory ? 'Cấu hình lúc lưu bản' : 'Theo cấu hình hiện tại') + '</span>' : '') + '</div><ul class="standard-rules' + (doc.type === 'checklist' ? ' is-checklist' : '') + '">' + section.rules.map(rule => '<li><span>' + esc(rule) + '</span></li>').join('') + '</ul>' + (section.synced ? '<p class="standard-sync-note">' + (isHistory ? 'Số turn được lưu cùng phiên bản tài liệu này.' : 'Đọc trực tiếp từ Weighted Turn Settings. Khi thay đổi mức turn, nội dung này cập nhật theo. <a href="pos-front-desk-turn-board.html">Mở Turn Board →</a>') + '</p>' : '') + '</section>').join('') + '</div></div>';
     refreshIcons();
   }
   function renderRoute() {
@@ -80,14 +82,82 @@
   function editSection(section,index) {
     return '<div class="standard-edit-section" data-edit-section="' + esc(section.id) + '"><div class="standard-edit-section-top"><span>Mục <span data-section-number>' + (index+1) + '</span></span><button type="button" data-remove-section>Xóa mục</button></div><label class="standard-field">Tên mục<input data-section-title maxlength="140" value="' + esc(section.title) + '" required></label><label class="standard-field">Nội dung · mỗi dòng một điều<textarea data-section-rules rows="' + Math.min(10,Math.max(4,section.rules.length+1)) + '" required>' + esc(section.rules.join('\n')) + '</textarea></label></div>';
   }
-  function openEditor(doc) {
+  function openEditor(doc, generated = false) {
     editing = doc ? clone(doc) : {id:null,title:'',description:'',type:'rules',icon:'📄',version:0,sections:[{id:'section-1',title:'',rules:[]}]};
-    $('#standard-editor-title').textContent = doc ? 'Sửa tài liệu' : 'Thêm tài liệu';
+    $('#standard-editor-title').textContent = generated ? 'Bản nháp nội quy tiệm' : doc ? 'Sửa tài liệu' : 'Thêm tài liệu';
     form.elements.title.value = editing.title; form.elements.type.value = editing.type; form.elements.description.value = editing.description;
     $('#standard-editor-sections').innerHTML = editing.sections.map(editSection).join('');
     $('#standard-edit-sync').hidden = !editing.autoTurnRules; $('#standard-error').textContent = '';
     editor.showModal(); $('.standard-editor-body').scrollTop = 0;
   }
+  function generatorCount(sections) {
+    return sections.length + ' mục · ' + sections.reduce((total, section) => total + section.rules.length, 0) + ' điều';
+  }
+  function openGenerator() {
+    const current = state.documents.find(doc => doc.id === 'noiquy');
+    generatorAnswers = clone(generatorData.validateAnswers(current?.generatorAnswers) ? current.generatorAnswers : generatorData.defaultAnswers);
+    renderGenerator('pick');
+    generator.showModal();
+  }
+  function renderGenerator(step) {
+    generator.dataset.step = step;
+    const content = $('#standard-generator-content'), footer = $('#standard-generator-footer');
+    const back = '<button class="standard-button" type="button" id="generator-back">← Quay lại</button>';
+    $('#standard-generator-description').textContent = step === 'questions'
+      ? 'Trả lời 5 câu để chọn các điều phù hợp với cách vận hành của tiệm.'
+      : 'Chọn một trong ba cách. Sau đó vẫn sửa và bổ sung thoải mái.';
+    if (step === 'pick') {
+      content.innerHTML = '<div class="generator-choices">'
+        + '<button class="generator-choice" type="button" data-generator-step="templates"><span class="generator-choice-icon" aria-hidden="true">📋</span><span><strong>Dùng mẫu có sẵn</strong><span>4 mẫu viết sẵn cho tiệm nail: nhỏ, tiêu chuẩn, đông walk-in, spa cao cấp.</span></span><span class="generator-chevron" aria-hidden="true">›</span></button>'
+        + '<button class="generator-choice" type="button" data-generator-step="questions"><span class="generator-choice-icon" aria-hidden="true">✨</span><span><strong>Tạo riêng cho tiệm của bạn</strong><span>Trả lời 5 câu, hệ thống lắp bản nội quy hợp quy mô và cách vận hành của tiệm.</span></span><span class="generator-chevron" aria-hidden="true">›</span></button>'
+        + '<button class="generator-choice" type="button" id="generator-blank"><span class="generator-choice-icon" aria-hidden="true">✎</span><span><strong>Tự viết từ đầu</strong><span>Trang trắng, tự thêm mục và từng điều.</span></span><span class="generator-chevron" aria-hidden="true">›</span></button></div>';
+      footer.innerHTML = '<button class="standard-button" type="button" data-close-standard-generator>Đóng</button>';
+    } else if (step === 'templates') {
+      content.innerHTML = '<div class="generator-choices">' + generatorData.presets.map(preset =>
+        '<button class="generator-choice generator-template" type="button" data-generator-preset="' + esc(preset.id) + '"><span><strong>' + esc(preset.title) + '</strong><span>' + esc(preset.description) + '</span><small>' + generatorCount(generatorData.generate(preset.answers)) + '</small></span><span class="generator-chevron" aria-hidden="true">›</span></button>'
+      ).join('') + '</div><p class="generator-note">Chọn mẫu để xem và chỉnh sửa bản nháp. Luật tính turn sẽ tự đồng bộ theo cấu hình tiệm.</p>';
+      footer.innerHTML = back;
+    } else {
+      content.innerHTML = '<div class="generator-questions">' + generatorData.questions.map((question, index) =>
+        '<fieldset><legend><span>' + (index + 1) + '</span>' + esc(question.title) + '</legend><div class="generator-options">' + question.options.map(option => {
+          const checked = question.multiple ? generatorAnswers[question.id].includes(option.value) : generatorAnswers[question.id] === option.value;
+          return '<label><input type="' + (question.multiple ? 'checkbox' : 'radio') + '" name="' + esc(question.id) + '" value="' + esc(option.value) + '"' + (checked ? ' checked' : '') + '><span>' + esc(option.label) + '</span></label>';
+        }).join('') + '</div></fieldset>'
+      ).join('') + '</div><div class="generator-preview" role="status" aria-live="polite"><span>Bản sẽ tạo</span><strong id="generator-summary">' + generatorCount(generatorData.generate(generatorAnswers)) + '</strong><p>Có thể sửa từng điều trước khi lưu. Luật turn tự đồng bộ theo cấu hình tiệm.</p></div>';
+      footer.innerHTML = back + '<button class="standard-button primary" type="button" id="generator-generate">Tạo nội quy</button>';
+    }
+    content.scrollTop = 0;
+    if (generator.open) content.querySelector('button,input')?.focus();
+  }
+  function openGeneratedDraft(sections, answers) {
+    const current = state.documents.find(doc => doc.id === 'noiquy');
+    const doc = current ? clone(current) : {id:'noiquy',title:'Nội quy lao động',description:'Điều thợ phải tuân thủ. Có mục luật turn tự đồng bộ với hệ thống.',type:'rules',icon:'📋',version:0};
+    doc.sections = sections;
+    doc.autoTurnRules = true;
+    doc.generatorAnswers = clone(answers);
+    generator.close();
+    openEditor(doc, true);
+  }
+  generator.addEventListener('click', event => {
+    const target = event.target.closest('button');
+    if (!target) return;
+    if (target.matches('[data-close-standard-generator]')) generator.close();
+    else if (target.id === 'generator-back') renderGenerator('pick');
+    else if (target.dataset.generatorStep) renderGenerator(target.dataset.generatorStep);
+    else if (target.dataset.generatorPreset) {
+      const preset = generatorData.presets.find(item => item.id === target.dataset.generatorPreset);
+      if (preset) openGeneratedDraft(generatorData.generate(preset.answers), preset.answers);
+    } else if (target.id === 'generator-generate') openGeneratedDraft(generatorData.generate(generatorAnswers), generatorAnswers);
+    else if (target.id === 'generator-blank') openGeneratedDraft([{id:'section-1',title:'',rules:[]}], generatorAnswers);
+  });
+  generator.addEventListener('change', event => {
+    const question = generatorData.questions.find(item => item.id === event.target.name);
+    if (!question) return;
+    generatorAnswers[question.id] = question.multiple
+      ? [...generator.querySelectorAll('input[name="' + question.id + '"]:checked')].map(input => input.value)
+      : event.target.value;
+    $('#generator-summary').textContent = generatorCount(generatorData.generate(generatorAnswers));
+  });
   function readDraft() {
     return {title:form.elements.title.value.trim(),type:form.elements.type.value,description:form.elements.description.value.trim(),sections:Array.from(document.querySelectorAll('[data-edit-section]'),section => ({id:section.dataset.editSection,title:section.querySelector('[data-section-title]').value.trim(),rules:section.querySelector('[data-section-rules]').value.split('\n').map(rule => rule.trim()).filter(Boolean)}))};
   }
@@ -97,7 +167,7 @@
     if (!draft.title) { $('#standard-error').textContent = 'Nhập tên tài liệu.'; form.elements.title.focus(); return; }
     if (!draft.sections.length || draft.sections.some(section => !section.title || !section.rules.length)) { $('#standard-error').textContent = 'Mỗi mục cần có tên và ít nhất một điều.'; return; }
     const current = state.documents.find(doc => doc.id === editing.id);
-    if (editing.id && (!current || current.version !== editing.version)) { $('#standard-error').textContent = 'Tài liệu đã thay đổi ở cửa sổ khác. Đóng và mở lại bản mới trước khi sửa.'; return; }
+    if (editing.id && (editing.version ? !current || current.version !== editing.version : current)) { $('#standard-error').textContent = 'Tài liệu đã thay đổi ở cửa sổ khác. Đóng và mở lại bản mới trước khi sửa.'; return; }
     if (current && JSON.stringify(editable(current)) === JSON.stringify(draft)) { editor.close(); $('#standards-feedback').textContent = 'Nội dung không thay đổi.'; return; }
     const archived = current ? clone(current) : null;
     if (archived) { delete archived.history; if (archived.autoTurnRules) archived.turnRules = liveTurnRules(); }
@@ -121,8 +191,10 @@
   document.querySelectorAll('[data-standard-filter]').forEach(button => button.addEventListener('click', () => { filter = button.dataset.standardFilter; renderLibrary(); }));
   $('#reset-standards-filter').addEventListener('click', () => { filter = 'all'; query = ''; $('#standards-search').value = ''; renderLibrary(); });
   $('#add-standard').addEventListener('click', () => openEditor());
+  $('#create-standard-rules').addEventListener('click', openGenerator);
   $('#print-library').addEventListener('click', () => printDocuments(state.documents));
   $('#standard-detail').addEventListener('click', event => {
+    if (event.target.closest('[data-generate-standard]') && shown?.id === 'noiquy' && !historical) openGenerator();
     if (event.target.closest('[data-edit-standard]') && shown && !historical) openEditor(shown);
     if (event.target.closest('[data-print-standard]') && shown) printDocuments([shown],historical);
   });
@@ -140,7 +212,7 @@
     document.querySelectorAll('[data-section-number]').forEach((number,i) => { number.textContent = i+1; });
   });
   form.addEventListener('submit', event => { event.preventDefault(); saveDocument(); });
-  window.addEventListener('popstate', () => { if (editor.open) editor.close(); renderRoute(); });
+  window.addEventListener('popstate', () => { if (editor.open) editor.close(); if (generator.open) generator.close(); renderRoute(); });
   window.addEventListener('storage', event => { if (event.key === key || event.key === null) { state = load(); renderRoute(); } });
   window.NEXORA_TURN_SETTINGS.subscribe(() => { renderRoute(); });
   window.addEventListener('beforeprint', () => { preparePrint(shown ? [shown] : state.documents,historical); });
