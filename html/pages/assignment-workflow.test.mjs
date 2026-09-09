@@ -65,10 +65,9 @@ function sync(from,to){
  to.dispatchEvent(new to.StorageEvent('storage',{key}));
 }
 test('Front Desk sends a service and Work Orders opens, accepts, starts, completes and synchronizes progress',async()=>{
- const fd=new JSDOM(readFileSync(new URL('./pos-front-desk.html',import.meta.url),'utf8'),{url:'https://demo.test/pages/pos-front-desk.html?section=tickets&view=table',runScripts:'outside-only'});
+ const fd=new JSDOM(readFileSync(new URL('./pos-front-desk.html',import.meta.url),'utf8'),{url:'https://demo.test/pages/pos-front-desk.html?section=assign&ticket=jojo&view=table',runScripts:'outside-only'});
  const fw=fd.window;fw.eval(storeSource());fw.eval(readFileSync(asset('front-desk-assignments'),'utf8'));
- assert.equal(fw.document.querySelector('#service-assignments').hidden,false,'Tickets section takes precedence over appointment view parameter');
- fw.document.querySelector('[data-open-assignment="jojo"]').click();
+ assert.equal(fw.document.querySelector('#service-assignments').hidden,false,'Assignment section takes precedence over appointment view parameter');
  fw.document.querySelector('[data-send-assignments]').click();await tick();
  assert.match(fw.document.querySelector('[data-assignment-detail]').textContent,/Sent/);
  const errors=[];
@@ -99,11 +98,10 @@ test('Front Desk sends a service and Work Orders opens, accepts, starts, complet
  assert.deepEqual(errors,[]);
  }finally{staff.window.close();fd.window.close();}
 });
-test('assignment and checkout have independent reloadable ticket URLs and browser Back restores the list',()=>{
+test('assignment and checkout have independent reloadable ticket URLs and link back to the original Tickets page',()=>{
  const html=readFileSync(new URL('./pos-front-desk.html',import.meta.url),'utf8');
- const dom=new JSDOM(html,{url:'https://demo.test/pages/pos-front-desk.html?section=tickets&source=test',runScripts:'outside-only'});
+ const dom=new JSDOM(html,{url:'https://demo.test/pages/pos-front-desk.html?section=assign&ticket=brian&source=test',runScripts:'outside-only'});
  const w=dom.window;w.eval(storeSource());w.eval(readFileSync(asset('front-desk-assignments'),'utf8'));
- w.document.querySelector('[data-open-assignment="brian"]').click();
  assert.equal(new URL(w.location).searchParams.get('ticket'),'brian');
  assert.equal(new URL(w.location).searchParams.get('section'),'assign');
  assert.ok(w.document.querySelector('[data-service-catalog]'));
@@ -113,9 +111,7 @@ test('assignment and checkout have independent reloadable ticket URLs and browse
  assert.equal(w.document.querySelector('[data-demo-pay]').disabled,true);
  w.history.replaceState(null,'','?section=assign&ticket=jojo&source=test');w.dispatchEvent(new w.PopStateEvent('popstate'));
  assert.match(w.document.querySelector('[data-assignment-detail]').textContent,/Jojo/);
- w.document.querySelector('[data-assignment-back]').click();
- assert.equal(new URL(w.location).searchParams.has('ticket'),false);
- assert.equal(new URL(w.location).searchParams.get('source'),'test');
+ assert.equal(new URL(w.document.querySelector('[data-assignment-back]').href).pathname,'/pages/pos-front-desk-tickets.html');
  dom.window.close();
 });
 test('demo checkout waits for completed services and records one payment without another turn',async()=>{

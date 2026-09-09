@@ -1,5 +1,6 @@
 (function () {
   'use strict';
+  if (window.NEXORA_FRONT_DESK_REDIRECTING) return;
   const $ = selector => document.querySelector(selector);
   const store = window.NEXORA_APPOINTMENTS_STORE;
   const catalog = window.NEXORA_SALON_DATA.loadCatalog();

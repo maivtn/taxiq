@@ -3,6 +3,20 @@
 <head>
   <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Nexora Touch - Front Desk</title>
+  <script>
+    (function () {
+      const current = new URL(window.location.href);
+      const section = current.searchParams.get('section') || current.searchParams.get('tab');
+      const pages = {tickets: 'pos-front-desk-tickets.html', turnboard: 'pos-front-desk-turn-board.html', 'turn-board': 'pos-front-desk-turn-board.html'};
+      if (!Object.hasOwn(pages, section)) return;
+      const target = new URL(pages[section], current);
+      target.search = current.search;
+      ['section', 'tab', 'ticket', 'calendarView'].forEach(key => target.searchParams.delete(key));
+      if (target.searchParams.get('view') !== 'overview' || section !== 'tickets') target.searchParams.delete('view');
+      window.NEXORA_FRONT_DESK_REDIRECTING = true;
+      window.location.replace(target.href);
+    })();
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
@@ -15,7 +29,7 @@
   <h1>Front Desk</h1><p class="subtitle">Check in guests, manage open tickets, and run the turn board.</p>
   <nav class="workflow" aria-label="Front Desk workflows">
     <button type="button" disabled>Check-in</button>
-    <a data-front-section="tickets" href="pos-front-desk.html?section=tickets">Tickets</a>
+    <a data-front-section="tickets" href="pos-front-desk-tickets.html">Tickets</a>
     <a href="pos-front-desk-turn-board.html">Turn Board</a>
     <button type="button" disabled>Checkout Customer</button>
     <button type="button" disabled>Completed Services</button>
