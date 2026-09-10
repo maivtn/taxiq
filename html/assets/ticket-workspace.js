@@ -5,6 +5,34 @@
   const cents = value => Math.round(Number(value) * 100);
   const validMoney = value => value !== '' && value != null && Number.isFinite(Number(value)) && Number(value) >= 0;
   const discount = (base, rule) => Math.min(base, Math.round(rule?.type === 'fixed' ? Number(rule.value) * 100 : base * Number(rule?.value || 0) / 100));
+  const iconPaths = {
+    printer:'<path d="M6 9V3h12v6M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><path d="M6 14h12v8H6zM18 12h.01"/>',
+    play:'<path d="m8 5 11 7-11 7V5Z"/>',
+    check:'<path d="m5 12 4 4L19 6"/>',
+    back:'<path d="m12 19-7-7 7-7M5 12h14"/>',
+    forward:'<path d="m12 5 7 7-7 7M5 12h14"/>',
+    cash:'<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/>',
+    card:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20M6 15h3"/>',
+    gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v9h14v-9M12 8v13M12 8H7a3 3 0 1 1 3-3l2 3Zm0 0h5a3 3 0 1 0-3-3l-2 3Z"/>',
+    split:'<path d="M12 21v-7M12 14 5 7V3M12 14l7-7V3M2 6l3-3 3 3M16 6l3-3 3 3"/>',
+    more:'<circle cx="5" cy="12" r="1"/><circle cx="12" cy="12" r="1"/><circle cx="19" cy="12" r="1"/>',
+    message:'<path d="M21 15a3 3 0 0 1-3 3H7l-5 4V5a3 3 0 0 1 3-3h13a3 3 0 0 1 3 3Z"/><path d="M7 7h10M7 12h7"/>',
+    receipt:'<path d="M4 3 6 5l2-2 2 2 2-2 2 2 2-2 2 2 2-2v18l-2-2-2 2-2-2-2 2-2-2-2 2-2-2-2 2Z"/><path d="m9 9 6 6m0-6-6 6"/>',
+    eye:'<path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7S2 12 2 12Z"/><circle cx="12" cy="12" r="3"/>',
+    user:'<circle cx="9" cy="7" r="4"/><path d="M2 21v-2a7 7 0 0 1 11-5M16 16l5-5M17 11h4v4"/>',
+    tablet:'<rect x="4" y="2" width="16" height="20" rx="2"/><path d="M12 18h.01M8 10h8m-3-3 3 3-3 3"/>',
+    percent:'<path d="m19 5-14 14"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
+    plus:'<path d="M12 5v14M5 12h14"/>',
+    close:'<path d="m6 6 12 12M6 18 18 6"/>',
+    refresh:'<path d="M20 7v5h-5M4 17v-5h5"/><path d="M6 6a8 8 0 0 1 13 3M5 15a8 8 0 0 0 13 3"/>',
+    trash:'<path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/>'
+  };
+  const iconForLabel = {'Print Ticket':'printer','Print receipt':'printer',Print:'printer','Print preview':'eye',
+    'Start Service':'play',Start:'play',Complete:'check',Back:'back','Checkout Ticket':'forward',
+    Cash:'cash',Card:'card','Gift Card':'gift','Split Pay':'split',More:'more','Send SMS':'message',
+    'No Receipt':'receipt','Edit customer':'user','Hand to customer':'tablet','Discount all':'percent',
+    Discount:'percent','Custom':'plus',Close:'close','Change tech':'user','Change service':'refresh',Remove:'trash',Pay:'card'};
+  const icon = name => `<svg class="tw-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${iconPaths[name]}</svg>`;
   function totals(ticket) {
     if (!ticket.lines.length) return {error:'Add at least one service.'};
     if (ticket.lines.some(l => !validMoney(l.price))) return {error:'Enter a valid price for every service.'};
@@ -20,7 +48,7 @@
   function mount(root, options) {
     let ticket, mode='edit', category='All', search='', dialogAction='', dialogLine='';
     const $ = selector => root.querySelector(selector);
-    const button = (label,attr,style='') => `<button type="button" class="tw-button ${style}" ${attr}>${label}</button>`;
+    const button = (label,attr,style='') => `<button type="button" class="tw-button ${style}" ${attr}>${iconForLabel[label]?icon(iconForLabel[label]):''}<span>${label}</span></button>`;
     const input = (label,name,value='',type='text') => `<label>${label}<input name="${name}" type="${type}" value="${esc(value)}" ${type==='number'?'min="0" step="0.01"':''} required></label>`;
     const services = () => options.catalog().filter(s=>s.active!==false);
     const categoryOf = s => s.categoryName || s.requiredSkill || 'Other';
@@ -35,7 +63,7 @@
     function renderCatalog() {
       const list=services().filter(s=>(category==='All'||categoryOf(s)===category)&&s.name.toLowerCase().includes(search.toLowerCase()));
       $('[data-tw-categories]').innerHTML=['All',...new Set(services().map(categoryOf))].map(c=>button(esc(c),`data-tw-category="${esc(c)}" aria-pressed="${c===category}"`,c===category?'selected':'')).join('');
-      $('[data-tw-catalog]').innerHTML=[...new Set(list.map(categoryOf))].map(c=>`<section class="tw-category"><h4>${esc(c)}</h4><div class="tw-service-grid">${list.filter(s=>categoryOf(s)===c).map(s=>`<button type="button" class="tw-service" data-tw-add="${esc(s.id)}" ${ticket.payment?'disabled':''}><strong>${esc(s.name)}</strong><span>${s.price==null?'Enter price':money(cents(s.price))}<b aria-hidden="true">＋</b></span></button>`).join('')}</div></section>`).join('') || '<p class="tw-muted">No services found.</p>';
+      $('[data-tw-catalog]').innerHTML=[...new Set(list.map(categoryOf))].map(c=>`<section class="tw-category"><h4>${esc(c)}</h4><div class="tw-service-grid">${list.filter(s=>categoryOf(s)===c).map(s=>`<button type="button" class="tw-service" data-tw-add="${esc(s.id)}" ${ticket.payment?'disabled':''}><strong>${esc(s.name)}</strong><span>${s.price==null?'Enter price':money(cents(s.price))}<b aria-hidden="true">${icon('plus')}</b></span></button>`).join('')}</div></section>`).join('') || '<p class="tw-muted">No services found.</p>';
     }
     function renderTotals() {
       const t=totals(ticket);
@@ -45,24 +73,24 @@
       if ($('[data-tw-discount-total]')) $('[data-tw-discount-total]').textContent=t.error?'—':'−'+money(t.discountCents);
       if ($('[data-tw-tip-total]')) $('[data-tw-tip-total]').textContent=t.error?'—':money(t.tipCents);
       if ($('[data-tw-change]')) $('[data-tw-change]').textContent=t.error?'—':money(Math.max(0,cents(ticket.checkout.cash || 0)-t.totalCents));
-      if ($('[data-tw-pay]')) $('[data-tw-pay]').textContent='Pay · '+(t.error?'—':money(t.totalCents));
+      if ($('[data-tw-pay]')) $('[data-tw-pay] span').textContent='Pay · '+(t.error?'—':money(t.totalCents));
       return t;
     }
     function paymentHtml() {
       const p=ticket.checkout;
       if (ticket.payment) return `<section class="tw-card tw-receipt"><h3>PAYMENT RECORDED · DEMO</h3><p>Total <strong>${money(ticket.payment.totalCents)}</strong></p><p>Change due ${money(ticket.payment.changeCents)}</p><p>${esc(ticket.payment.method)} · ${esc(ticket.payment.receipt==='sms'?'SMS receipt simulated':ticket.payment.receipt==='print'?'Print receipt selected':'No receipt')}</p>${ticket.payment.method==='split'?`<p>Cash ${money(ticket.payment.cashCents)} · Card ${money(ticket.payment.cardCents)}</p>`:''}<p class="tw-muted">No money was charged. No SMS was sent.</p>${button('Print receipt','data-tw-print')}</section>`;
       return `<section class="tw-card"><div class="tw-card-title"><h3>TIP</h3>${button('Hand to customer','data-tw-hand','tw-small tw-purple')}</div><div class="tw-tip-row">${[[0,'No Tip','fixed'],[10,'$10','fixed'],[15,'$15','fixed'],[10,'10%','percent'],[20,'20%','percent']].map(([n,label,type])=>button(label,`data-tw-tip="${n}" data-tip-type="${type}"`,p.tipType===type&&Number(p.tip)===n?'selected':'')).join('')}<label class="tw-custom-tip"><span>$</span><input aria-label="Custom tip" placeholder="Custom" type="number" min="0" step="0.01" data-tw-field="tip" value="${p.tipType==='fixed'&&p.tip?esc(p.tip):''}"></label></div></section>
-      <section class="tw-card"><h3>PAYMENT METHOD</h3><div class="tw-methods">${[['cash','💵 Cash'],['card','💳 Card'],['gift-card','🎁 Gift Card'],['split','♧ Split Pay'],['other','⋯ More']].map(([id,label])=>button(label,`data-tw-method="${id}"`,p.method===id?'selected':'')).join('')}</div>
+      <section class="tw-card"><h3>PAYMENT METHOD</h3><div class="tw-methods">${[['cash','Cash'],['card','Card'],['gift-card','Gift Card'],['split','Split Pay'],['other','More']].map(([id,label])=>button(label,`data-tw-method="${id}"`,p.method===id?'selected':'')).join('')}</div>
       ${p.method==='cash'?`<div class="tw-cash"><label>Cash received <input aria-label="Cash received" type="number" min="0" step="0.01" data-tw-field="cash" value="${esc(p.cash)}"></label><span>Change due <strong data-tw-change>$0.00</strong></span></div>`:p.method==='split'?`<div class="tw-cash"><label>Cash portion ($)<input aria-label="Split cash amount" type="number" min="0" step="0.01" data-tw-field="splitCash" value="${esc(p.splitCash || '')}"></label><span>Remaining balance: card (demo)</span></div>`:p.method==='gift-card'?`<label class="tw-payment-info">Gift card reference<input aria-label="Gift card reference" data-tw-field="giftCode" value="${esc(p.giftCode || '')}" placeholder="Demo reference"></label>`:p.method==='other'?`<label class="tw-payment-info">Other method<select data-tw-field="otherMethod"><option ${p.otherMethod==='Zelle'?'selected':''}>Zelle</option><option ${p.otherMethod==='Venmo'?'selected':''}>Venmo</option><option ${p.otherMethod==='Other'?'selected':''}>Other</option></select></label>`:'<p class="tw-muted">Card payment is simulated. No card details are collected.</p>'}
       <h3 class="tw-receipt-label">RECEIPT</h3><div class="tw-receipt-options">${[['none','No Receipt'],['sms','Send SMS'],['print','Print']].map(([id,label])=>button(label,`data-tw-receipt="${id}"`,p.receipt===id?'selected':'')).join('')}</div><div class="tw-preview">${button('Print preview','data-tw-preview','tw-text')}</div></section>
       <section class="tw-card"><div class="tw-card-title"><h3>PAYMENT SUMMARY</h3>${button('Discount all','data-tw-discount-all','tw-small tw-orange')}</div><div class="tw-summary-label"><span>SERVICE</span><span>PRICE</span></div>${ticket.lines.map(l=>`<div class="tw-summary-row"><span>${esc(l.name)}</span><span>${validMoney(l.price)?money(cents(l.price)):'—'}</span></div>`).join('')}<div class="tw-summary-row tw-rule"><span>Subtotal</span><span data-tw-subtotal></span></div><div class="tw-summary-row"><span>Tip</span><span data-tw-tip-total></span></div><div class="tw-summary-row"><span>Discount</span><span class="tw-red" data-tw-discount-total></span></div><div class="tw-summary-row tw-rule"><strong>TOTAL</strong><strong data-tw-total></strong></div></section>${button('Pay','data-tw-pay','tw-primary tw-pay')}<p class="tw-demo">Prototype · Payment and SMS receipt are simulated.</p>`;
     }
     function render() {
       const paid=!!ticket.payment;
-      root.innerHTML=`<div class="tw-heading">${button('← Back','data-tw-back')}<h2>Ticket #${esc(ticket.id)} · ${esc(ticket.customer)}</h2>${!paid?button('Edit customer','data-tw-customer','tw-text'):''}</div><div class="tw-workspace"><section class="tw-card tw-catalog-panel"><h3>SERVICES</h3><input class="tw-search" data-tw-search type="search" placeholder="Search services…" aria-label="Search ticket services" value="${esc(search)}"><div class="tw-categories" data-tw-categories></div><div class="tw-catalog" data-tw-catalog></div></section><div class="tw-ticket-side"><section class="tw-card"><div class="tw-card-title"><h3>TICKET DETAIL (${ticket.lines.length} services)</h3>${!paid?button('+ Custom','data-tw-custom','tw-small tw-purple'):''}</div><div class="tw-lines">${ticket.lines.map(l=>{
+      root.innerHTML=`<div class="tw-heading">${button('Back','data-tw-back')}<h2>Ticket #${esc(ticket.id)} · ${esc(ticket.customer)}</h2>${!paid?button('Edit customer','data-tw-customer','tw-text'):''}</div><div class="tw-workspace"><section class="tw-card tw-catalog-panel"><h3>SERVICES</h3><input class="tw-search" data-tw-search type="search" placeholder="Search services…" aria-label="Search ticket services" value="${esc(search)}"><div class="tw-categories" data-tw-categories></div><div class="tw-catalog" data-tw-catalog></div></section><div class="tw-ticket-side"><section class="tw-card"><div class="tw-card-title"><h3>TICKET DETAIL (${ticket.lines.length} services)</h3>${!paid?button('Custom','data-tw-custom','tw-small tw-purple'):''}</div><div class="tw-lines">${ticket.lines.map(l=>{
         const status={'assigned':'ASSIGNED','in-service':'IN PROGRESS',completed:'COMPLETED'}[l.status] || 'UNASSIGNED';
         return `<article class="tw-line"><div class="tw-line-top"><div><strong>${esc(l.name)}</strong> <span class="tw-status ${esc(l.status)}">${status}</span><p>Tech. <b>${esc(l.tech || 'Unassigned')}</b></p></div><strong>${validMoney(l.price)?money(cents(l.price)):'Price required'}</strong></div>${l.discount?.value?`<p class="tw-discount-note">Discount: ${esc(l.discount.value)}${l.discount.type==='fixed'?' USD':'%'}</p>`:''}${!paid?`<div class="tw-line-actions">${l.status==='completed'?'<span class="tw-completed">✓ Completed</span>':button(l.status==='in-service'?'Complete':'Start',`data-tw-action="${l.status==='in-service'?'complete':'start'}" data-line="${esc(l.id)}"`,'tw-green')}${button('Change tech',`data-tw-action="tech" data-line="${esc(l.id)}"`,'tw-blue')}${button('Change service',`data-tw-action="service" data-line="${esc(l.id)}"`,'tw-purple')}${button('Discount',`data-tw-action="discount" data-line="${esc(l.id)}"`,'tw-orange')}${button('Remove',`data-tw-action="remove" data-line="${esc(l.id)}"`,'tw-red')}${!validMoney(l.price)?button('Set price',`data-tw-action="price" data-line="${esc(l.id)}"`,'tw-orange'):''}</div>`:''}</article>`;
-      }).join('') || '<p class="tw-muted">Choose a service to add it to this ticket.</p>'}</div>${mode==='edit'?'<div class="tw-summary-row tw-rule"><strong>ESTIMATED TOTAL</strong><strong data-tw-total></strong></div>':''}</section><section class="tw-card"><label class="tw-note">NOTE<textarea data-tw-note placeholder="Seat, customer preferences, color/powder used…" ${paid?'disabled':''}>${esc(ticket.note || '')}</textarea></label></section>${mode==='checkout'?paymentHtml():`<div class="tw-bottom">${button('♧ Print Ticket','data-tw-print')}${button('☑ Start Service','data-tw-start-all','tw-purple')}</div>${button('Checkout Ticket →','data-tw-checkout','tw-text')}` }<p data-tw-message role="status"></p></div></div><dialog class="tw-dialog" aria-labelledby="tw-dialog-title"><form data-tw-form><div class="tw-card-title"><h2 id="tw-dialog-title"></h2>${button('×','data-tw-close','tw-text')}</div><div data-tw-fields></div><p data-tw-error role="alert"></p><button type="submit" class="tw-button tw-primary" data-tw-save>Save</button></form></dialog>`;
+      }).join('') || '<p class="tw-muted">Choose a service to add it to this ticket.</p>'}</div>${mode==='edit'?'<div class="tw-summary-row tw-rule"><strong>ESTIMATED TOTAL</strong><strong data-tw-total></strong></div>':''}</section><section class="tw-card"><label class="tw-note">NOTE<textarea data-tw-note placeholder="Seat, customer preferences, color/powder used…" ${paid?'disabled':''}>${esc(ticket.note || '')}</textarea></label></section>${mode==='checkout'?paymentHtml():`<div class="tw-bottom">${button('Print Ticket','data-tw-print')}${button('Start Service','data-tw-start-all','tw-purple')}</div>${button('Checkout Ticket','data-tw-checkout','tw-text')}` }<p data-tw-message role="status"></p></div></div><dialog class="tw-dialog" aria-labelledby="tw-dialog-title"><form data-tw-form><div class="tw-card-title"><h2 id="tw-dialog-title"></h2>${button('Close','data-tw-close aria-label="Close dialog"','tw-text tw-icon-only')}</div><div data-tw-fields></div><p data-tw-error role="alert"></p><button type="submit" class="tw-button tw-primary" data-tw-save>Save</button></form></dialog>`;
       renderCatalog();renderTotals();
     }
     function openDialog(action,lineId) {
