@@ -8,6 +8,7 @@
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/pos-front-desk.css">
   <link rel="stylesheet" href="../assets/pos-front-desk-tickets.css">
+  <link rel="stylesheet" href="../assets/ticket-workspace.css">
 </head>
 <body>
 <div class="shell"><aside class="sidebar" aria-label="Salon sidebar"></aside><div class="app-area"><header class="header"></header>
@@ -25,6 +26,7 @@
     <button type="button" disabled>Customer History</button>
   </nav>
 
+<section id="ticket-workspace" class="ticket-workspace" aria-label="Edit and checkout ticket" hidden></section>
 <section id="tickets-view" aria-labelledby="tickets-title">
   <div class="tickets-heading"><div><h2 id="tickets-title">Open Tickets</h2><p>Guests currently moving through the service workflow.</p></div><button type="button" id="checkin-summary" aria-controls="overview-view"><strong>48 Check-ins Today</strong><span>12 New · 36 Returning → View overview</span></button></div>
   <div id="ticket-filters" class="toolbar" role="group" aria-label="Filter tickets by status"></div>
@@ -63,6 +65,7 @@
 <script src="../assets/salon-data.js"></script>
 <script src="../assets/appointment-tickets.js"></script>
 <script src="../assets/appointments-store.js"></script>
+<script src="../assets/ticket-workspace.js"></script>
 <script src="../assets/pos-front-desk-tickets.js"></script>
 <script src="../assets/pos-front-desk-overview.js"></script>
 </body></html>

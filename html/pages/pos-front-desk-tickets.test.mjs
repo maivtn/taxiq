@@ -5,7 +5,7 @@ import {JSDOM} from 'jsdom';
 function boot(url='https://example.test/pages/pos-front-desk-tickets.html'){
  const dom=new JSDOM(readFileSync(new URL('./pos-front-desk-tickets.html',import.meta.url),'utf8'),{url,runScripts:'outside-only'});
  dom.window.HTMLDialogElement.prototype.showModal=function(){this.open=true;};dom.window.HTMLDialogElement.prototype.close=function(){this.open=false;};
- dom.window.eval(readFileSync(new URL('../assets/pos-front-desk-tickets.js',import.meta.url),'utf8'));
+ for(const name of ['salon-data','ticket-workspace','pos-front-desk-tickets'])dom.window.eval(readFileSync(new URL('../assets/'+name+'.js',import.meta.url),'utf8'));
  dom.window.eval(readFileSync(new URL('../assets/pos-front-desk-overview.js',import.meta.url),'utf8'));return dom;
 }
 test('Tickets renders source content and filters the queue',()=>{
@@ -28,17 +28,18 @@ test('assignment, start, edit and cancellation update the ticket queue',()=>{
  assert.match(d.querySelector('#assignment-alert').textContent,/1 guest/);
  d.querySelector('[data-action="start"][data-id="7"]').click();
  assert.match(d.querySelector('[data-action="checkout"][data-id="7"]').closest('tr').textContent,/In Service/);
- d.querySelector('[data-action="edit"][data-id="9"]').click();d.querySelector('[name="customer"]').value='<img src=x onerror=alert(1)>';submit();assert.equal(d.querySelector('#ticket-body img'),null);
+ d.querySelector('[data-action="edit"][data-id="9"]').click();d.querySelector('[data-tw-customer]').click();d.querySelector('[name="customer"]').value='<img src=x onerror=alert(1)>';d.querySelector('[data-tw-form]').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));d.querySelector('[data-tw-back]').click();assert.equal(d.querySelector('#ticket-body img'),null);
  d.querySelector('[data-action="cancel"][data-id="9"]').click();submit();assert.equal(d.querySelectorAll('#ticket-body tr').length,3);
  dom.window.close();
 });
-test('checkout saves required service details without removing an unpaid ticket',()=>{
- const dom=boot(),w=dom.window,d=w.document;
+test('checkout shows the payment workspace without removing an unpaid ticket',()=>{
+ const dom=boot(),d=dom.window.document;
  d.querySelector('[data-action="checkout"][data-id="1"]').click();
- const submit=()=>d.querySelector('#ticket-form').dispatchEvent(new w.Event('submit',{cancelable:true}));
- submit();assert.match(d.querySelector('#ticket-error').textContent,/required/);
- d.querySelector('[name="brand"]').value='DND';d.querySelector('[name="colorCode"]').value='441';submit();
- assert.match(d.querySelector('#feedback').textContent,/Service details saved for DJ/);
+ assert.equal(d.querySelector('#ticket-dialog').open,false);
+ assert.equal(d.querySelector('#ticket-workspace').hidden,false);
+ d.querySelector('[data-tw-pay]').click();
+ assert.ok(d.querySelector('[data-tw-message]').textContent);
+ d.querySelector('[data-tw-back]').click();
  assert.equal(d.querySelectorAll('#ticket-body tr').length,4);
  dom.window.close();
 });

@@ -14,7 +14,7 @@ if(appointmentStore){
   const saved=r.metadata.frontDeskQueue || {};
   tickets.push({...saved,id:++nextId,bookingId:r.id,customer:r.customerName,phone:r.phone,
    time:new Date(r.metadata.checkedInAt || r.startAt).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}),
-   status:saved.status || 'waiting',tech:saved.tech || '',services:saved.services || r.serviceNames,
+   status:saved.status || 'waiting',tech:saved.tech || '',services:saved.services || r.serviceNames,lines:saved.lines || r.tickets.map(l=>({id:l.id,serviceId:l.serviceId,name:l.serviceName,price:l.price,tech:l.technicianName==='Anyone'?'':l.technicianName,status:l.technicianId?'assigned':'unassigned'})),
    wait:Math.max(0,Math.floor((Date.now()-new Date(r.metadata.checkedInAt || r.startAt).getTime())/60000)),estimateNote:r.note});
  });
 }
@@ -23,7 +23,16 @@ function saveEstimateTicket(t,cancel=false){
  const record=appointmentStore.loadAll().find(r=>r.id===t.bookingId);
  if(!record)return;
  if(cancel)appointmentStore.cancel(record.id);
- else appointmentStore.update(record.id,{customerName:t.customer,phone:t.phone,metadata:{...record.metadata,frontDeskQueue:{status:t.status,tech:t.tech,services:t.services,location:t.location,techNote:t.techNote}}});
+ else appointmentStore.update(record.id,{customerName:t.customer,phone:t.phone,status:t.payment?'completed':record.status,metadata:{...record.metadata,frontDeskQueue:{status:t.status,tech:t.tech,services:t.services,location:t.location,techNote:t.techNote,lines:t.lines,note:t.note,checkout:t.checkout,discount:t.discount,payment:t.payment}}});
+}
+const workspaceStorageKey='nexora:front-desk-ticket-workspaces:v1';
+let savedWorkspaces={};
+try{savedWorkspaces=JSON.parse(localStorage.getItem(workspaceStorageKey)||'{}');}catch(_){}
+tickets=tickets.map(t=>({...t,...savedWorkspaces[t.bookingId || String(t.id)],id:t.id,bookingId:t.bookingId})).filter(t=>!t.payment);
+function persistWorkspace(t){
+ savedWorkspaces[t.bookingId || String(t.id)]={...t};
+ try{localStorage.setItem(workspaceStorageKey,JSON.stringify(savedWorkspaces));}catch(_){}
+ saveEstimateTicket(t);
 }
 const technicians=[
  {name:'Kayla Bui',level:2,status:'available',turns:4,serviceCount:6,sales:180,minutes:205,codes:['PED','GEL','WAX'],commission:.6,dailyIncomeGoal:150,detail:'Available now · Nails & pedicure'},
@@ -52,32 +61,35 @@ function render(){
     return '<tr><td><span class="ticket-number">#'+t.id+'</span></td><td><strong>'+esc(t.customer)+'</strong><small>'+esc(t.phone)+'</small></td><td>'+esc(t.time)+'</td><td><span class="chip status '+t.status+'">'+labels[t.status]+'</span>'+(!t.services.length?'<span class="ticket-needed">● NEEDS SERVICE</span>':t.status==='waiting'&&!t.tech?'<span class="ticket-needed">● NEEDS TECHNICIAN</span>':'')+'</td><td>'+esc(t.tech||'—')+(t.location?'<small>'+esc(t.location)+'</small>':'')+(t.techNote?'<small title="'+esc(t.techNote)+'">Tech note</small>':'')+'</td><td>'+t.services.map(s=>'<span class="chip">'+esc(s)+'</span>').join(' ')+(t.estimateNote?'<small>'+esc(t.estimateNote)+'</small>':'')+'</td><td>'+(t.status==='waiting'?'<span class="wait-time">'+t.wait+' min</span>':'—')+'</td><td><div class="actions">'+actions+'</div></td></tr>';
   }).join('');
 }
+const workspace=window.NEXORA_TICKET_WORKSPACE.mount($('#ticket-workspace'),{
+ catalog:()=>window.NEXORA_SALON_DATA ? window.NEXORA_SALON_DATA.loadCatalog().services : [],
+ technicians:()=>technicians,
+ onChange(t){persistWorkspace(t);if(t.payment)tickets=tickets.filter(row=>row!==t);render();},
+ onBack(){$('#tickets-view').hidden=false;render();}
+});
 function field(label,name,value='',type='text',required=false){return '<label>'+label+'<input name="'+name+'" type="'+type+'" value="'+esc(value)+'"'+(required?' required':'')+'></label>';}
 function open(kind,ticket){
+ if(['edit','checkout'].includes(kind)){$('#tickets-view').hidden=true;workspace.open(ticket,kind);return;}
  selected=ticket;action=kind;$('#ticket-form').reset();$('#ticket-error').textContent='';$('#ticket-submit').hidden=false;$('#ticket-submit').textContent='Save';
  let title='',content='';
  if(kind==='cancel'){
   title='Cancel this ticket?';content='<p>'+esc(ticket.customer)+' will be removed from the active service queue.</p>';$('#ticket-submit').textContent='Cancel ticket';
- }else if(kind==='edit'){
-  title='Edit ticket #'+ticket.id;content=field('Customer','customer',ticket.customer,'text',true)+field('Phone','phone',ticket.phone,'tel',true)+'<label>Services — one per line<textarea name="services">'+esc(ticket.services.join('\n'))+'</textarea></label>';
  }else if(kind==='assign'){
   title=ticket.tech?'Reassign technician':'Assign technician';
   content='<p class="ticket-detail-copy">#'+ticket.id+' '+esc(ticket.customer)+' · Choose an available technician. The first available technician is next in rotation.</p>';
   content+=technicians.map(t=>'<label class="ticket-choice"><input type="radio" name="technician" value="'+esc(t.name)+'" required'+(ticket.tech===t.name?' checked':'')+(t.status!=='available'&&ticket.tech!==t.name?' disabled':'')+'><span><strong>'+esc(t.name)+'</strong><small>'+esc(t.detail)+'</small></span></label>').join('');
   content+='<label>Reason for skipping the next turn<select name="reason"><option value="">Select a reason if needed</option><option>Customer request</option><option>Skill match</option><option>Technician unavailable</option><option>Consultation</option></select></label><label>Service location<select name="locationType"><option>Spa Chair</option><option>Nail Table</option><option>Room</option><option>Other</option></select></label>'+field('Chair / table number','locationNumber','','text',true)+'<label>Note for technician<textarea name="note">'+esc(ticket.techNote||'')+'</textarea></label><label class="ticket-choice"><input type="checkbox" name="print">Print service ticket after assigning</label>';
   $('#ticket-submit').textContent='Assign technician';
- }else if(kind==='checkout'){
-  title='Complete service details';content='<p class="ticket-detail-copy">#'+ticket.id+' '+esc(ticket.customer)+' · '+esc(ticket.tech)+'<br>Save what was used before taking payment.</p>'+field('Product photo','photo','','file')+field('Brand','brand','','text',true)+field('Color name','colorName')+field('Color code','colorCode','','text',true)+'<label>Powder type<select name="powder"><option>Not used</option><option>SNS Clear</option><option>SNS Pink</option><option>Acrylic Clear</option><option>Acrylic Pink</option></select></label><label>Shape<select name="shape"><option>Not applicable</option><option>Almond</option><option>Square</option><option>Coffin</option><option>Oval</option></select></label><label>Length<select name="length"><option>Not applicable</option><option>Short</option><option>Medium</option><option>Long</option></select></label><label>Technician notes<textarea name="notes"></textarea></label>';
-  $('#ticket-submit').textContent='Save service details';
+
  }
  $('#ticket-dialog-title').textContent=title;$('#ticket-dialog-content').innerHTML=content;$('#ticket-dialog').showModal();
 }
 $('#ticket-filters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(b){filter=b.dataset.filter;render();}});
-$('#ticket-body').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const t=tickets.find(t=>t.id===Number(b.dataset.id));if(!t)return;if(b.dataset.action==='start'){t.status='in-service';saveEstimateTicket(t);render();feedback('Service started for '+t.customer);return;}open(b.dataset.action,t);});
+$('#ticket-body').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const t=tickets.find(t=>t.id===Number(b.dataset.id));if(!t)return;if(b.dataset.action==='start'){t.status='in-service';if(t.lines)t.lines.forEach(l=>{if(l.status!=='completed')l.status='in-service';});persistWorkspace(t);render();feedback('Service started for '+t.customer);return;}open(b.dataset.action,t);});
 document.querySelectorAll('[data-close-dialog]').forEach(b=>b.addEventListener('click',()=>$('#ticket-dialog').close()));
 $('#ticket-form').addEventListener('submit',e=>{
  e.preventDefault();const data=new FormData(e.currentTarget),t=selected;if(!t)return;
- if(action==='edit'){if(!data.get('customer').trim()||!data.get('phone').trim()){ $('#ticket-error').textContent='Customer and phone are required.';return;}t.customer=data.get('customer').trim();t.phone=data.get('phone').trim();t.services=data.get('services').split('\n').map(s=>s.trim()).filter(Boolean);}
+
  if(action==='cancel')tickets=tickets.filter(row=>row.id!==t.id);
  if(action==='assign'){
   const name=data.get('technician'),tech=technicians.find(tech=>tech.name===name),first=technicians.find(tech=>tech.status==='available');
@@ -86,18 +98,15 @@ $('#ticket-form').addEventListener('submit',e=>{
   const location=data.get('locationType')+' #'+data.get('locationNumber').trim();
   if(!data.get('locationNumber').trim()){$('#ticket-error').textContent='Enter a chair or table number.';return;}
   if(tickets.some(row=>row.id!==t.id&&row.status==='in-service'&&row.location===location)){$('#ticket-error').textContent='This service location is occupied.';return;}
-  t.tech=name;t.location=location;t.techNote=data.get('note').trim();
+  t.tech=name;t.location=location;t.techNote=data.get('note').trim();if(t.lines)t.lines.forEach(l=>{l.tech=name;if(l.status==='unassigned')l.status='assigned';});
   if(data.get('print')){
    const popup=window.open('','_blank','width=440,height=640');
    if(popup){popup.document.write('<!doctype html><title>Service Ticket</title><h1>Ticket #'+t.id+'</h1><p>'+esc(t.customer)+'</p><p>'+esc(t.tech)+' · '+esc(t.location)+'</p><p>'+t.services.map(esc).join('<br>')+'</p><p>'+esc(t.techNote)+'</p>');popup.document.close();popup.print();}
    else feedback('Technician assigned. Allow popups to print the service ticket.');
   }
  }
- if(action==='checkout'){
-  if(!data.get('brand').trim()||!data.get('colorCode').trim()){$('#ticket-error').textContent='Brand and color code are required.';return;}
-  t.serviceRecord=Object.fromEntries(data);feedback('Service details saved for '+t.customer+'. Payment is not processed in this prototype.');
- }else if(action!=='assign'||!data.get('print'))feedback(action==='cancel'?'Ticket removed from queue.':'Ticket updated.');
- saveEstimateTicket(t,action==='cancel');
+ if(action!=='assign'||!data.get('print'))feedback(action==='cancel'?'Ticket removed from queue.':'Ticket updated.');
+ if(action==='cancel'){delete savedWorkspaces[t.bookingId || String(t.id)];try{localStorage.setItem(workspaceStorageKey,JSON.stringify(savedWorkspaces));}catch(_){}saveEstimateTicket(t,true);}else persistWorkspace(t);
  $('#ticket-dialog').close();render();
 });
 render();

@@ -34,7 +34,7 @@ test('Front Desk Tickets shows guests checked in from Estimate',()=>{
  w.NEXORA_APPOINTMENTS_STORE.create({id:'estimate-queue',customerName:'Quote Queue Guest',phone:'5551112222',serviceIds:['mani','pedi'],status:'checked-in',metadata:{estimate:{totalCents:4160}},note:'Estimated service total: $41.60'});
  const queue=new JSDOM(readFileSync(new URL('./pos-front-desk-tickets.html',import.meta.url),'utf8'),{url:'https://example.test/pages/pos-front-desk-tickets.html',runScripts:'outside-only'});
  for(let i=0;i<w.localStorage.length;i++){const key=w.localStorage.key(i);queue.window.localStorage.setItem(key,w.localStorage.getItem(key));}
- for(const name of ['salon-data','appointment-tickets','appointments-store','pos-front-desk-tickets'])queue.window.eval(readFileSync(new URL('../assets/'+name+'.js',import.meta.url),'utf8'));
+ for(const name of ['salon-data','appointment-tickets','appointments-store','ticket-workspace','pos-front-desk-tickets'])queue.window.eval(readFileSync(new URL('../assets/'+name+'.js',import.meta.url),'utf8'));
  assert.match(queue.window.document.querySelector('#ticket-body').textContent,/Quote Queue Guest/);
  assert.match(queue.window.document.querySelector('#ticket-body').textContent,/41.60/);
  queue.window.close();dom.window.close();
