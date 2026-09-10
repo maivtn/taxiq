@@ -811,6 +811,7 @@
     }
   </style>
   <link rel="stylesheet" href="../assets/pos-booking.css">
+  <link rel="stylesheet" href="../assets/pos-estimate.css">
   <link rel="stylesheet" href="../assets/pos-printer-settings.css">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <style>
@@ -1048,6 +1049,7 @@
             <button class="page-tab is-active" type="button" role="tab" data-pos-tab="todaybooking"><i class="bi bi-calendar-event" aria-hidden="true"></i> Today Booking</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="tickets"><i class="bi bi-grid-1x2" aria-hidden="true"></i> Queue & Tech Assign</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="booking"><i class="bi bi-calendar-check" aria-hidden="true"></i> Booking</button>
+            <button class="page-tab" type="button" role="tab" data-pos-tab="estimate"><i class="bi bi-calculator" aria-hidden="true"></i> Estimate</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="customers"><i class="bi bi-person-vcard" aria-hidden="true"></i> Customers</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="clock"><i class="bi bi-clock-history" aria-hidden="true"></i> Staff Clock</button>
             <button class="page-tab" type="button" role="tab" data-pos-tab="management"><i class="bi bi-building-gear" aria-hidden="true"></i> Management</button>
@@ -1087,6 +1089,8 @@
         </div>
 
         <!-- ══════════ 🚪 CHECK-IN — HELP GUESTS ══════════ -->
+        <section class="pos-panel" data-pos-panel="estimate" aria-label="Service Estimate"></section>
+
         <section class="pos-panel" data-pos-panel="checkin" aria-label="Check-in">
           <div class="pos-stack">
             <iframe class="frontdesk-kiosk-frame" data-frontdesk-kiosk-frame src="https://pos-nexoratouch.vercel.app/mockups/phase1/kiosk.html" title="Customer kiosk check-in" loading="lazy"></iframe>
@@ -2535,6 +2539,7 @@
   <script src="../assets/pos-booking-runtime.js"></script>
   <script src="../assets/pos-customer-import.js"></script>
   <script src="../assets/pos-printer-settings.js"></script>
+  <script src="../assets/pos-estimate.js"></script>
   <script>
     (function () {
       'use strict';
@@ -7792,7 +7797,7 @@
       }
       // URL compatibility during the transition: old links keep working, pointed at their new home.
       var TAB_ALIASES = { dispatch: 'tickets', appointments: 'booking' };
-      var TABS = ['checkin', 'todaybooking', 'tickets', 'booking', 'customers', 'clock', 'management', 'printer'];
+      var TABS = ['checkin', 'todaybooking', 'tickets', 'booking', 'estimate', 'customers', 'clock', 'management', 'printer'];
       var tabBtns = document.querySelectorAll('[data-pos-tab]');
       var panels = document.querySelectorAll('[data-pos-panel]');
       function activateTab(id) {
@@ -7806,6 +7811,7 @@
         url.searchParams.set('tab', id);
         window.history.replaceState({ tab: id }, '', url.search);
         if (id === 'todaybooking' || id === 'tickets') renderFloor();
+        if (id === 'estimate') estimateView.refresh();
         if (id === 'clock') renderClock();
         if (id === 'management') {
           resetServiceCategoryCollapses();
@@ -7820,6 +7826,26 @@
 
       // The sidebar's POS sub-items drive this page's tabs through the shell's navigate hook.
       window.activateMainTab = activateTab;
+
+      var estimateView = window.NEXORA_POS_ESTIMATE.mount($('[data-pos-panel="estimate"]'), {
+        getServices: function () { return salonCatalog.services; },
+        checkIn: function (payload) {
+          var known = custByPhone(payload.phone);
+          var result = appointmentStore.create({
+            customerName: known ? known.name : payload.customerName, phone: payload.phone,
+            tickets: payload.tickets, status: 'confirmed', source: 'front-desk',
+            note: 'Service estimate: ' + money(payload.estimate.totalCents / 100) +
+              ' after ' + (payload.estimate.type === 'percent' ? payload.estimate.value + '%' : money(payload.estimate.value)) +
+              ' discount. Tax and tip excluded. Confirm discount at checkout.',
+            metadata: { estimate: payload.estimate }
+          }, null, salonCatalog);
+          if (!result.ok) return result;
+          reloadAppointmentSnapshot();
+          checkInBooking(posBookingById(result.record.id));
+          activateTab('tickets');
+          return result;
+        }
+      });
 
       /* ═══════════ boot ═══════════ */
       qclkRotate();

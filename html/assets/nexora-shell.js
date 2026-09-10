@@ -196,7 +196,7 @@
   });
   function sidebarTab(tab) {
     // The operational POS tabs all belong to the Front Desk submenu.
-    if (activePage === 'pos' && ['checkin', 'todaybooking', 'tickets', 'booking', 'customers', 'clock', 'dispatch', 'appointments'].indexOf(tab) !== -1) return 'front-desk';
+    if (activePage === 'pos' && ['checkin', 'todaybooking', 'tickets', 'booking', 'customers', 'clock', 'dispatch', 'appointments', 'estimate'].indexOf(tab) !== -1) return 'front-desk';
     return tab;
   }
   urlTab = sidebarTab(urlTab);
