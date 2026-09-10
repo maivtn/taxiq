@@ -42,7 +42,8 @@ function render(){
  if(checkout&&paid)detail.querySelector('.assignment-ticket-side').insertAdjacentHTML('beforeend','<button data-print-assignment>Print receipt</button>');
 }
 function section(){
- const params=new URLSearchParams(location.search),requested=params.get('section'),appointments=requested==='appointments'||(!['tickets','assign','checkout'].includes(requested)&&params.has('view'));
+ const params=new URLSearchParams(location.search),requested=params.get('section')||params.get('tab'),appointments=requested==='appointments'||(!['tickets','assign','checkout'].includes(requested)&&params.has('view'));
+ if(requested==='estimate'){root.hidden=true;document.querySelector('#appointments').hidden=true;return;}
  mode=requested||'tickets';
  if(['tickets','assign','checkout'].includes(mode)){const url=new URL(location.href);url.searchParams.delete('view');url.searchParams.delete('tab');history.replaceState(null,'',url);}
  root.hidden=appointments;document.querySelector('#appointments').hidden=!appointments;

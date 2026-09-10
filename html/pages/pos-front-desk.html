@@ -22,6 +22,7 @@
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/pos-front-desk.css">
   <link rel="stylesheet" href="../assets/service-assignments.css">
+  <link rel="stylesheet" href="../assets/pos-estimate.css">
 </head>
 <body>
 <div class="shell"><aside class="sidebar" aria-label="Salon sidebar"></aside><div class="app-area"><header class="header"></header>
@@ -34,9 +35,11 @@
     <button type="button" disabled>Checkout Customer</button>
     <button type="button" disabled>Completed Services</button>
     <a data-front-section="appointments" class="active" href="pos-front-desk.html?section=appointments" aria-current="page">Appointments</a>
+    <a data-front-section="estimate" href="pos-front-desk.html?section=estimate">Estimate</a>
     <button type="button" disabled>Staffs Clock</button>
     <button type="button" disabled>Customer History</button>
   </nav>
+  <section id="front-desk-estimate" aria-label="Service Estimate" hidden></section>
   <section id="appointments" aria-label="Appointments">
     <div class="booking-link"><strong>YOUR BOOKING PAGE — SHARE THIS LINK WITH CUSTOMERS:</strong><a id="booking-url"></a><button id="copy-link">▢ COPY</button></div>
     <div class="toolbar">
@@ -68,4 +71,6 @@
 <script src="../assets/pos-front-desk.js"></script>
 <script src="../assets/service-assignments.js"></script>
 <script src="../assets/front-desk-assignments.js"></script>
+<script src="../assets/pos-estimate.js"></script>
+<script src="../assets/front-desk-estimate.js"></script>
 </body></html>

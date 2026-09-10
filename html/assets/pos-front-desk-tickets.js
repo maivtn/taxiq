@@ -7,6 +7,24 @@ let tickets=[
  {id:1,customer:'DJ',phone:'(555) 019-5421',time:'10:56 AM',status:'in-service',tech:'Chloe',services:['Acrylic with Polish (Full Set)','Paris Pearl Pedicure'],wait:0},
  {id:8,customer:'Leo',phone:'(555) 017-8804',time:'9:07 AM',status:'waiting',tech:'Kayla Bui, Lana VMM',services:['Paris Pearl Pedicure','Eyebrow Waxing','Dipping Powder'],wait:25}
 ];
+const appointmentStore=window.NEXORA_APPOINTMENTS_STORE;
+if(appointmentStore){
+ let nextId=Math.max(...tickets.map(t=>t.id));
+ appointmentStore.loadAll().filter(r=>r.status==='checked-in'&&r.metadata?.estimate).forEach(r=>{
+  const saved=r.metadata.frontDeskQueue || {};
+  tickets.push({...saved,id:++nextId,bookingId:r.id,customer:r.customerName,phone:r.phone,
+   time:new Date(r.metadata.checkedInAt || r.startAt).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}),
+   status:saved.status || 'waiting',tech:saved.tech || '',services:saved.services || r.serviceNames,
+   wait:Math.max(0,Math.floor((Date.now()-new Date(r.metadata.checkedInAt || r.startAt).getTime())/60000)),estimateNote:r.note});
+ });
+}
+function saveEstimateTicket(t,cancel=false){
+ if(!t.bookingId||!appointmentStore)return;
+ const record=appointmentStore.loadAll().find(r=>r.id===t.bookingId);
+ if(!record)return;
+ if(cancel)appointmentStore.cancel(record.id);
+ else appointmentStore.update(record.id,{customerName:t.customer,phone:t.phone,metadata:{...record.metadata,frontDeskQueue:{status:t.status,tech:t.tech,services:t.services,location:t.location,techNote:t.techNote}}});
+}
 const technicians=[
  {name:'Kayla Bui',level:2,status:'available',turns:4,serviceCount:6,sales:180,minutes:205,codes:['PED','GEL','WAX'],commission:.6,dailyIncomeGoal:150,detail:'Available now · Nails & pedicure'},
  {name:'Lana VMM',level:3,status:'available',turns:4,serviceCount:4,sales:430,minutes:278,codes:['ACR-FS','REF','DIP'],commission:.6,dailyIncomeGoal:220,detail:'Available now · All services'},
@@ -31,7 +49,7 @@ function render(){
     if(!t.services.length)actions+=button('Add Service','edit',t.id)+button('Consultation','assign',t.id)+button('Cancel','cancel',t.id,'cancel');
     else if(t.status==='in-service')actions+=button('Reassign','assign',t.id)+button('Checkout','checkout',t.id,'checkin');
     else actions+=(t.tech?button('Reassign','assign',t.id)+button('Start Service','start',t.id,'checkin'):button('Assign Tech','assign',t.id))+button('Cancel','cancel',t.id,'cancel');
-    return '<tr><td><span class="ticket-number">#'+t.id+'</span></td><td><strong>'+esc(t.customer)+'</strong><small>'+esc(t.phone)+'</small></td><td>'+esc(t.time)+'</td><td><span class="chip status '+t.status+'">'+labels[t.status]+'</span>'+(!t.services.length?'<span class="ticket-needed">● NEEDS SERVICE</span>':t.status==='waiting'&&!t.tech?'<span class="ticket-needed">● NEEDS TECHNICIAN</span>':'')+'</td><td>'+esc(t.tech||'—')+(t.location?'<small>'+esc(t.location)+'</small>':'')+(t.techNote?'<small title="'+esc(t.techNote)+'">Tech note</small>':'')+'</td><td>'+t.services.map(s=>'<span class="chip">'+esc(s)+'</span>').join(' ')+'</td><td>'+(t.status==='waiting'?'<span class="wait-time">'+t.wait+' min</span>':'—')+'</td><td><div class="actions">'+actions+'</div></td></tr>';
+    return '<tr><td><span class="ticket-number">#'+t.id+'</span></td><td><strong>'+esc(t.customer)+'</strong><small>'+esc(t.phone)+'</small></td><td>'+esc(t.time)+'</td><td><span class="chip status '+t.status+'">'+labels[t.status]+'</span>'+(!t.services.length?'<span class="ticket-needed">● NEEDS SERVICE</span>':t.status==='waiting'&&!t.tech?'<span class="ticket-needed">● NEEDS TECHNICIAN</span>':'')+'</td><td>'+esc(t.tech||'—')+(t.location?'<small>'+esc(t.location)+'</small>':'')+(t.techNote?'<small title="'+esc(t.techNote)+'">Tech note</small>':'')+'</td><td>'+t.services.map(s=>'<span class="chip">'+esc(s)+'</span>').join(' ')+(t.estimateNote?'<small>'+esc(t.estimateNote)+'</small>':'')+'</td><td>'+(t.status==='waiting'?'<span class="wait-time">'+t.wait+' min</span>':'—')+'</td><td><div class="actions">'+actions+'</div></td></tr>';
   }).join('');
 }
 function field(label,name,value='',type='text',required=false){return '<label>'+label+'<input name="'+name+'" type="'+type+'" value="'+esc(value)+'"'+(required?' required':'')+'></label>';}
@@ -55,7 +73,7 @@ function open(kind,ticket){
  $('#ticket-dialog-title').textContent=title;$('#ticket-dialog-content').innerHTML=content;$('#ticket-dialog').showModal();
 }
 $('#ticket-filters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(b){filter=b.dataset.filter;render();}});
-$('#ticket-body').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const t=tickets.find(t=>t.id===Number(b.dataset.id));if(!t)return;if(b.dataset.action==='start'){t.status='in-service';render();feedback('Service started for '+t.customer);return;}open(b.dataset.action,t);});
+$('#ticket-body').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const t=tickets.find(t=>t.id===Number(b.dataset.id));if(!t)return;if(b.dataset.action==='start'){t.status='in-service';saveEstimateTicket(t);render();feedback('Service started for '+t.customer);return;}open(b.dataset.action,t);});
 document.querySelectorAll('[data-close-dialog]').forEach(b=>b.addEventListener('click',()=>$('#ticket-dialog').close()));
 $('#ticket-form').addEventListener('submit',e=>{
  e.preventDefault();const data=new FormData(e.currentTarget),t=selected;if(!t)return;
@@ -79,6 +97,7 @@ $('#ticket-form').addEventListener('submit',e=>{
   if(!data.get('brand').trim()||!data.get('colorCode').trim()){$('#ticket-error').textContent='Brand and color code are required.';return;}
   t.serviceRecord=Object.fromEntries(data);feedback('Service details saved for '+t.customer+'. Payment is not processed in this prototype.');
  }else if(action!=='assign'||!data.get('print'))feedback(action==='cancel'?'Ticket removed from queue.':'Ticket updated.');
+ saveEstimateTicket(t,action==='cancel');
  $('#ticket-dialog').close();render();
 });
 render();

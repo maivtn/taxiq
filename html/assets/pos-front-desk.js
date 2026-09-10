@@ -9,6 +9,7 @@
   let view = 'table';
   function syncNavigation(push) {
     const url = new URL(window.location.href);
+    if ((url.searchParams.get('section') || url.searchParams.get('tab')) === 'estimate') return;
     url.searchParams.set('tab', 'appointments');
     url.searchParams.set('view', view);
     if (view === 'calendar' && !['day','week','twoWeeks','threeWeeks','month'].includes(url.searchParams.get('calendarView'))) url.searchParams.set('calendarView', 'day');
@@ -85,7 +86,7 @@
     $('#dialog-title').textContent=readonly ? 'Appointment Details' : row ? 'Reschedule Appointment' : 'New Booking';
     $('#save-booking').hidden=!!readonly;
     document.querySelectorAll('#booking-fields input, #booking-fields select').forEach(input=>{input.disabled=!!readonly || (!!row && input.name!=='startAt');});
-    if(row) { ['customerName','phone','technicianId'].forEach(key=>{$('[name="'+key+'"]').value=row[key] || '';}); $('[name="startAt"]').value=row.startAt.slice(0,16); $('[name="service"]').value=row.serviceIds[0] || ''; }
+    if(row) { ['customerName','phone','technicianId'].forEach(key=>{$('#booking-fields [name="'+key+'"]').value=row[key] || '';}); $('[name="startAt"]').value=row.startAt.slice(0,16); $('[name="service"]').value=row.serviceIds[0] || ''; }
     $('#booking-dialog').showModal();
   }
   $('#calendar-reward-settings').addEventListener('click', () => {
