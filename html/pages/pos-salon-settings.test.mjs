@@ -230,7 +230,7 @@ test('steps default to one, add and remove without losing edits, and save separa
  d.querySelector('[data-service-materials]').innerHTML='<ul><li>Base coat</li></ul>';
  d.querySelector('[data-service-edit-categories]').tomselect.addItem('custom-service-settings');saveService(page);
  assert.equal(storedService(page).steps[0].description,'Clean nails\nApply <base> & polish');assert.equal(storedService(page).steps.length,2);assert.equal(storedService(page).steps[0].title,'Prepare');assert.equal(storedService(page).materialsHtml,'<ul><li>Base coat</li></ul>');
- editService(page);assert.equal(d.querySelector('[data-step-description]').value,'Clean nails\nApply <base> & polish');d.querySelector('[data-step-remove]').click();assert.equal(d.querySelector('[data-step-title]').value,'Polish');assert.equal(d.querySelector('[data-step-number]').textContent,'Step 1');
+ editService(page);assert.equal(d.querySelector('[data-step-description]').value,'Clean nails\nApply <base> & polish');d.querySelector('[data-step-remove]').click();assert.equal(d.querySelector('[data-step-title]').value,'Polish');assert.equal(d.querySelector('[data-step-drag]').getAttribute('aria-label'),'Reorder step 1');
  d.querySelector('[data-service-editor-close]').click();editService(page);assert.equal(d.querySelectorAll('[data-service-step]').length,2);
  d.querySelector('[data-step-remove]').click();d.querySelector('[data-step-remove]').click();assert.equal(d.querySelectorAll('[data-service-step]').length,1);assert.equal(d.querySelector('[data-step-title]').value,'');
  saveService(page);assert.equal(storedService(page).steps.length,1);dom.window.close();
@@ -268,4 +268,34 @@ test('step camera button opens its camera input and saves the photo to the corre
  let opened=false;camera.addEventListener('click',()=>{opened=true;});card.querySelector('[data-step-image-take]').click();assert.equal(opened,true);
  Object.defineProperty(camera,'files',{value:[imageFile(w)]});camera.dispatchEvent(new w.Event('change',{bubbles:true}));await settle(page);
  assert.equal(cards[0].querySelector('img'),null);assert.equal(card.querySelector('img').src,detailImage);saveService(page);assert.equal(storedService(page).steps[1].image,detailImage);dom.window.close();
+});
+
+
+test('step handles reorder complete cards, persist the order and cancel draft moves',async()=>{
+ const page=await servicesPage();const {d,w,dom}=page;editService(page);
+ d.querySelector('[data-step-title]').value='First';d.querySelector('[data-step-description]').value='First description';
+ uploadStep(page,d.querySelector('[data-service-step]'),imageFile(w));await settle(page);
+ d.querySelector('[data-step-add]').click();d.querySelectorAll('[data-step-title]')[1].value='Second';
+ d.querySelector('[data-step-add]').click();d.querySelectorAll('[data-step-title]')[2].value='Third';
+ d.querySelector('[data-service-materials]').innerHTML='<b>Materials</b>';
+ const cards=Array.from(d.querySelectorAll('[data-service-step]'));
+ assert.equal(d.querySelector('[data-step-number]'),null);
+ const handle=cards[0].querySelector('[data-step-drag]');assert.ok(handle);
+ handle.dispatchEvent(new w.Event('dragstart',{bubbles:true,cancelable:true}));
+ cards[2].dispatchEvent(new w.MouseEvent('dragover',{bubbles:true,cancelable:true,clientY:1}));
+ cards[2].dispatchEvent(new w.MouseEvent('drop',{bubbles:true,cancelable:true,clientY:1}));
+ assert.deepEqual(Array.from(d.querySelectorAll('[data-step-title]'),el=>el.value),['Second','Third','First']);
+ assert.equal(cards[0].querySelector('[data-step-description]').value,'First description');assert.equal(cards[0].querySelector('img').src,detailImage);
+ saveService(page);assert.deepEqual(Array.from(storedService(page).steps,s=>s.title),['Second','Third','First']);
+ editService(page);const last=d.querySelectorAll('[data-step-drag]')[2];last.dispatchEvent(new w.KeyboardEvent('keydown',{bubbles:true,altKey:true,key:'ArrowUp'}));
+ assert.deepEqual(Array.from(d.querySelectorAll('[data-step-title]'),el=>el.value),['Second','First','Third']);
+ d.querySelector('[data-service-editor-close]').click();editService(page);
+ assert.deepEqual(Array.from(d.querySelectorAll('[data-step-title]'),el=>el.value),['Second','Third','First']);
+ const current=Array.from(d.querySelectorAll('[data-service-step]'));
+ current[2].querySelector('[data-step-drag]').dispatchEvent(new w.Event('dragstart',{bubbles:true,cancelable:true}));
+ current[0].dispatchEvent(new w.MouseEvent('drop',{bubbles:true,cancelable:true,clientY:-1}));
+ assert.deepEqual(Array.from(d.querySelectorAll('[data-step-title]'),el=>el.value),['First','Second','Third']);
+ d.querySelector('[data-step-drag]').dispatchEvent(new w.KeyboardEvent('keydown',{bubbles:true,altKey:true,key:'ArrowUp'}));
+ assert.equal(d.querySelector('[data-step-title]').value,'First');
+ assert.equal(d.querySelector('[data-service-materials]').innerHTML,'<b>Materials</b>');dom.window.close();
 });

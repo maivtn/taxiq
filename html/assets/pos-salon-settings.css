@@ -156,3 +156,10 @@
 .salon-service-overview .salon-service-photo-field { flex-direction:column; align-items:stretch; gap:8px; margin-bottom:0; }
 .salon-service-overview .salon-label-row { margin-top:0; }
 @media(max-width:540px) { .salon-service-overview { grid-template-columns:1fr; gap:14px; }.salon-service-overview .salon-service-photo-field { flex-direction:row; align-items:center; gap:14px; } }
+
+[data-settings-panel="services"] .salon-step-drag { cursor:grab; padding:4px 8px; border:0; background:transparent; color:#8993a8; font-size:20px; }
+[data-settings-panel="services"] .salon-step-drag:active { cursor:grabbing; }
+[data-settings-panel="services"] .salon-step-drag:disabled { cursor:default; }
+.salon-step-card.is-step-dragging { opacity:.5; }
+.salon-step-card.step-drop-before { box-shadow:0 -3px 0 #5145f6; }
+.salon-step-card.step-drop-after { box-shadow:0 3px 0 #5145f6; }

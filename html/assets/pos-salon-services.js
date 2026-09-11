@@ -68,13 +68,14 @@
   }
   function renumberSteps() {
     panel.querySelectorAll('[data-service-step]').forEach((card,index)=>{
-      card.querySelector('[data-step-number]').textContent='Step '+(index+1);
+      card.setAttribute('aria-label','Step '+(index+1));
+      card.querySelector('[data-step-drag]').setAttribute('aria-label','Reorder step '+(index+1));
       card.querySelector('[data-step-remove]').setAttribute('aria-label','Remove step '+(index+1));
     });
   }
   function appendStep(step={}) {
     const card=document.createElement('section'),id=uid();card.className='salon-step-card';card.dataset.serviceStep=id;
-    card.innerHTML=`<header><strong data-step-number></strong>${button('data-step-remove','Remove','trash','salon-step-remove')}</header>
+    card.innerHTML=`<header>${button('data-step-drag draggable="true" title="Drag to reorder. Alt + arrow keys to move."','','grip-vertical','salon-step-drag')}${button('data-step-remove','Remove','trash','salon-step-remove')}</header>
       <div class="salon-step-layout"><div class="salon-step-photo"><label class="salon-field-label">Image</label><div data-step-image-preview></div>
       ${button('data-step-image-take','Take photo','camera')}${button('data-step-image-add','Choose image','folder2-open')}${button('data-step-image-remove hidden','Remove image')}
       <input type="file" data-step-image-camera accept="image/jpeg,image/png,image/webp" capture="environment" hidden><input type="file" data-step-image-file accept="image/jpeg,image/png,image/webp" hidden><p class="salon-help">JPG, PNG, WebP · Up to 10MB</p><p class="salon-help" role="status" data-step-image-status></p></div>
@@ -88,6 +89,42 @@
     card.querySelector('[data-step-description]').value=typeof step.description==='string'?step.description:legacy.content.textContent.trim();
     $('[data-service-steps]').appendChild(card);setStepImage(card,safeDetailImage(step.image)?step.image:'');renumberSteps();return card;
   }
+  let draggedStep=null;
+  function clearStepDrag() {
+    panel.querySelectorAll('.is-step-dragging,.step-drop-before,.step-drop-after').forEach(card=>card.classList.remove('is-step-dragging','step-drop-before','step-drop-after'));
+    draggedStep=null;
+  }
+  function stepDropTarget(event) {
+    const card=event.target.closest('[data-service-step]');
+    return draggedStep&&card&&card!==draggedStep&&card.parentElement===draggedStep.parentElement?card:null;
+  }
+  panel.addEventListener('dragstart',event=>{
+    const handle=event.target.closest('[data-step-drag]');if(!handle)return;
+    if(!editing||editing.id==='__custom__'||handle.disabled){event.preventDefault();return;}
+    clearStepDrag();draggedStep=handle.closest('[data-service-step]');draggedStep.classList.add('is-step-dragging');
+    if(event.dataTransfer){event.dataTransfer.effectAllowed='move';event.dataTransfer.setData('text/plain',draggedStep.dataset.serviceStep);event.dataTransfer.setDragImage?.(draggedStep,20,20);}
+  });
+  panel.addEventListener('dragover',event=>{
+    const card=stepDropTarget(event);if(!card)return;event.preventDefault();
+    panel.querySelectorAll('.step-drop-before,.step-drop-after').forEach(node=>node.classList.remove('step-drop-before','step-drop-after'));
+    const rect=card.getBoundingClientRect();card.classList.add(event.clientY<rect.top+rect.height/2?'step-drop-before':'step-drop-after');
+    if(event.dataTransfer)event.dataTransfer.dropEffect='move';
+    const body=card.closest('.salon-dialog-body'),bounds=body.getBoundingClientRect();
+    if(event.clientY<bounds.top+40)body.scrollTop-=12;else if(event.clientY>bounds.bottom-40)body.scrollTop+=12;
+  });
+  panel.addEventListener('drop',event=>{
+    if(!draggedStep)return;event.preventDefault();
+    const card=stepDropTarget(event),moving=draggedStep;
+    if(card){const rect=card.getBoundingClientRect();card.parentElement.insertBefore(moving,event.clientY<rect.top+rect.height/2?card:card.nextSibling);renumberSteps();}
+    clearStepDrag();moving.querySelector('[data-step-drag]').focus();
+  });
+  panel.addEventListener('dragend',clearStepDrag);
+  panel.addEventListener('keydown',event=>{
+    const handle=event.target.closest('[data-step-drag]');
+    if(!handle||handle.disabled||!event.altKey||!['ArrowUp','ArrowDown'].includes(event.key))return;
+    event.preventDefault();const card=handle.closest('[data-service-step]'),up=event.key==='ArrowUp',neighbor=up?card.previousElementSibling:card.nextElementSibling;
+    if(neighbor){card.parentElement.insertBefore(card,up?neighbor:neighbor.nextSibling);renumberSteps();handle.focus();}
+  });
   function setStepImage(card,src) {
     card.dataset.image=src;card.querySelector('[data-step-image-preview]').innerHTML=src?'<img src="'+esc(src)+'" alt="Step illustration">':'<span class="salon-step-image-empty">'+icon('image')+'</span>';
     card.querySelector('[data-step-image-remove]').hidden=!src;
@@ -206,11 +243,11 @@
       onInitialize() { this.control_input.setAttribute('aria-required','true'); }
     });
     for(const [field,key] of [['name','name'],['price','price'],['duration','durationMin'],['description','description'],['fee','supplyFee']]){$('[data-service-edit-'+field+']').value=service[key]??'';$('[data-service-edit-'+field+']').disabled=id==='__custom__';}
-    pendingStepImages=new Set();coverLoading=false;richRanges=new WeakMap();$('[data-service-steps]').innerHTML='';
+    clearStepDrag();pendingStepImages=new Set();coverLoading=false;richRanges=new WeakMap();$('[data-service-steps]').innerHTML='';
     const steps=Array.isArray(service.steps)?service.steps:[{title:'',image:'',descriptionHtml:service.detailsHtml||''}];
     (steps.length?steps:[{}]).forEach(step=>appendStep(step||{}));
     $('[data-service-materials]').innerHTML=cleanDetails(service.materialsHtml);
-    panel.querySelectorAll('[data-step-add],[data-step-remove],[data-step-image-take],[data-step-image-add],[data-step-image-remove],[data-step-title],[data-step-description],[data-rich-command]').forEach(control=>{control.disabled=id==='__custom__';});
+    panel.querySelectorAll('[data-step-add],[data-step-remove],[data-step-image-take],[data-step-image-add],[data-step-image-remove],[data-step-title],[data-step-description],[data-step-drag],[data-rich-command]').forEach(control=>{control.disabled=id==='__custom__';});
     panel.querySelectorAll('[data-rich-editor]').forEach(editor=>{editor.contentEditable=id==='__custom__'?'false':'true';});
     $('[data-service-edit-active]').checked=service.active!==false;
     $('[data-service-approval]').checked=api.requiresApproval(selectedSalon,id);

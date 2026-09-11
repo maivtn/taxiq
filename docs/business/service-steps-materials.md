@@ -18,7 +18,7 @@ Tài liệu mô tả hành vi của bản HTML hiện tại. Phạm vi là cấu
 
 | Thuật ngữ | Ý nghĩa |
 | :--- | :--- |
-| Steps | Danh sách bước thực hiện theo thứ tự hiển thị: Step 1, Step 2… |
+| Steps | Danh sách bước thực hiện theo thứ tự từ trên xuống; dùng tay nắm kéo để đổi vị trí, không hiện nhãn Step 1, Step 2… |
 | Step Image | Ảnh minh họa riêng của một bước, có thể chụp hoặc chọn từ thiết bị. |
 | Step Title | Tiêu đề ngắn của bước, tối đa 120 ký tự. |
 | Step Description | Mô tả thao tác bằng textarea nhiều dòng, chỉ nhập văn bản thường. |
@@ -35,7 +35,7 @@ Tài liệu mô tả hành vi của bản HTML hiện tại. Phạm vi là cấu
 | Step Description | Textarea nhiều dòng | Nhập văn bản thường, giữ xuống dòng; không có thanh định dạng hoặc chèn ảnh. |
 | Materials | Editor có định dạng | Một nội dung chung cho dịch vụ, nằm dưới Add step. |
 
-Form hiển thị sẵn Step 1; Add step thêm bước cuối danh sách. Tất cả các trường trên đều tùy chọn.
+Form hiển thị sẵn một bước trống; Add step thêm bước cuối danh sách. Tất cả các trường trên đều tùy chọn.
 
 ### User Roles
 
@@ -58,19 +58,21 @@ Bản HTML chưa bổ sung cơ chế phân quyền riêng cho Steps và Material
 
 **User Stories:**
 
-- **US-ST-01 — Nhập bước đầu tiên:** Là quản lý salon, tôi muốn form hiển thị sẵn Step 1 khi chưa có hướng dẫn, để nhập nội dung ngay mà không phải bấm thêm bước.
+- **US-ST-01 — Nhập bước đầu tiên:** Là quản lý salon, tôi muốn form hiển thị sẵn một bước trống khi chưa có hướng dẫn, để nhập nội dung ngay mà không phải bấm thêm bước.
 - **US-ST-02 — Soạn nội dung bước:** Là quản lý salon, tôi muốn nhập Title và Description dạng văn bản thường cho từng Step, để diễn đạt rõ thao tác và lưu ý thực hiện.
 - **US-ST-03 — Thêm bước:** Là quản lý salon, tôi muốn bấm Add step để thêm bước tiếp theo ở cuối danh sách, để mô tả đầy đủ trình tự dịch vụ.
-- **US-ST-04 — Xóa bước:** Là quản lý salon, tôi muốn xóa bước không còn sử dụng và để hệ thống đánh số lại, để danh sách hướng dẫn luôn liên tục.
+- **US-ST-04 — Xóa bước:** Là quản lý salon, tôi muốn xóa bước không còn sử dụng và để hệ thống cập nhật thứ tự, để danh sách hướng dẫn luôn liên tục.
+- **US-ST-05 — Sắp xếp bước:** Là quản lý salon, tôi muốn nắm kéo một bước đến vị trí mới, để điều chỉnh trình tự thực hiện mà không phải nhập lại ảnh, tiêu đề và mô tả.
 
 | Bước | Người thực hiện | Thao tác | Phản hồi hệ thống | Ghi chú |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | Quản lý | Mở Edit Service | Hiện các bước đã lưu; nếu chưa có thì hiện Step 1 trống | Không bắt buộc nhập Steps. |
+| 1 | Quản lý | Mở Edit Service | Hiện các bước đã lưu; nếu chưa có thì hiện một bước trống | Không bắt buộc nhập Steps. |
 | 2 | Quản lý | Nhập Title và Description | Hiển thị nội dung trong đúng bước | Ảnh bên trái, Title và Description bên phải trên màn hình đủ rộng. |
 | 3 | Quản lý | Nhập hoặc dán văn bản nhiều dòng vào Description | Giữ nội dung và xuống dòng trong textarea | Không có thanh định dạng; không đổi Materials hoặc bước khác. |
-| 4 | Quản lý | Bấm Add step | Thêm bước trống cuối danh sách, đánh số tiếp theo và đặt con trỏ vào Title mới | Giữ nguyên nội dung bước trước. |
-| 5 | Quản lý | Bấm Remove của một bước | Xóa cả bước cùng ảnh, tiêu đề và mô tả; đánh số lại | Xóa bước cuối cùng sẽ hiện Step 1 trống. |
-| 6 | Quản lý | Tiếp tục chỉnh sửa hoặc lưu | Giữ danh sách trong form cho đến khi Save changes | Lưu/hủy theo Workflow 4. |
+| 4 | Quản lý | Bấm Add step | Thêm bước trống cuối danh sách, đặt con trỏ vào Title mới | Giữ nguyên nội dung bước trước. |
+| 5 | Quản lý | Bấm Remove của một bước | Xóa cả bước cùng ảnh, tiêu đề và mô tả; cập nhật thứ tự | Xóa bước cuối cùng sẽ hiện một bước trống. |
+| 6 | Quản lý | Nắm kéo thả bước đến vị trí mới | Hiện vạch trước/sau bước đích; di chuyển toàn bộ bước khi thả | Thứ tự mới chưa lưu cho đến khi Save changes. |
+| 7 | Quản lý | Tiếp tục chỉnh sửa hoặc lưu | Giữ danh sách trong form cho đến khi Save changes | Lưu/hủy theo Workflow 4. |
 
 ```mermaid
 flowchart TD
@@ -79,8 +81,10 @@ flowchart TD
     C --> D{Thao tác tiếp theo?}
     D -- Thêm bước --> E[Thêm bước cuối danh sách]
     E --> C
-    D -- Xóa bước --> F[Xóa và đánh số lại]
+    D -- Xóa bước --> F[Xóa và cập nhật thứ tự]
     F --> C
+    D -- Sắp xếp --> H[Kéo thả bằng tay nắm]
+    H --> C
     D -- Hoàn tất --> G([Sẵn sàng lưu dịch vụ])
 ```
 
@@ -88,13 +92,23 @@ flowchart TD
 
 | ID | User story | Given — Điều kiện | When — Thao tác | Then — Kết quả |
 | :--- | :--- | :--- | :--- | :--- |
-| AC-ST-01 | US-ST-01 | Dịch vụ chưa có Steps hoặc danh sách rỗng | Mở Edit Service | Hiện Step 1 với Image, Title, Description và nút Remove; có Add step bên dưới. |
+| AC-ST-01 | US-ST-01 | Dịch vụ chưa có Steps hoặc danh sách rỗng | Mở Edit Service | Hiện một bước với Image, Title, Description, tay nắm kéo và nút Remove; không có nhãn số bước; có Add step bên dưới. |
 | AC-ST-02 | US-ST-02 | Đang sửa một Step | Nhập Title | Nhập được tối đa 120 ký tự; nội dung độc lập với tên dịch vụ. |
 | AC-ST-03 | US-ST-02 | Đang nhập Description | Nhập văn bản nhiều dòng rồi lưu và mở lại | Giữ chữ và xuống dòng; ký tự giống thẻ HTML được hiển thị như văn bản. Không có thanh định dạng. |
 | AC-ST-04 | US-ST-03 | Có nhiều bước đang nhập | Bấm Add step | Thêm một bước trống cuối danh sách; con trỏ ở Title mới; nội dung đã nhập giữ nguyên. |
-| AC-ST-05 | US-ST-04 | Có ba bước | Xóa Step 2 | Bước cũ thứ ba trở thành Step 2, giữ nguyên nội dung và ảnh của nó. |
-| AC-ST-06 | US-ST-04 | Chỉ còn một bước | Bấm Remove | Hiện Step 1 trống để tiếp tục nhập. |
+| AC-ST-05 | US-ST-04 | Có ba bước | Xóa bước thứ hai | Bước cũ thứ ba lên vị trí thứ hai, giữ nguyên nội dung và ảnh của nó. |
+| AC-ST-06 | US-ST-04 | Chỉ còn một bước | Bấm Remove | Hiện một bước trống để tiếp tục nhập. |
 | AC-ST-07 | US-ST-01, US-ST-02 | Các trường bắt buộc của dịch vụ hợp lệ | Để trống toàn bộ Step hoặc chỉ nhập một phần rồi lưu | Không báo lỗi bắt buộc nhập ảnh, Title hoặc Description. |
+
+**Tiêu chí nghiệm thu sắp xếp (US-ST-05):**
+
+| ID | Điều kiện / Thao tác | Kết quả |
+| :--- | :--- | :--- |
+| AC-ST-08 | Kéo bước đầu xuống cuối hoặc bước cuối lên đầu | Thứ tự đổi theo vị trí thả; ảnh, Title và Description đi cùng đúng bước; Materials giữ nguyên. |
+| AC-ST-09 | Sắp xếp, Save changes rồi mở lại | Giữ thứ tự mới. |
+| AC-ST-10 | Sắp xếp rồi Cancel và mở lại | Khôi phục thứ tự đã lưu trước đó. |
+| AC-ST-11 | Chọn tay nắm, bấm Alt + ↑/↓ | Di chuyển một vị trí lên/xuống; không vượt đầu hoặc cuối danh sách. |
+| AC-ST-12 | Thả ngoài bước đích hoặc kết thúc kéo mà không thả vào danh sách | Giữ nguyên thứ tự; bỏ hiệu ứng kéo. |
 
 #### Workflow 2: Chụp, chọn và thay ảnh từng Step
 
@@ -247,8 +261,8 @@ Steps và Materials không có vòng đời trạng thái nghiệp vụ hay quy 
 ### Business Rules
 
 1. **Tùy chọn:** Steps và Materials không bắt buộc. Mỗi Step cũng không bắt buộc đủ ảnh, Title và Description.
-2. **Bước mặc định:** Luôn hiển thị ít nhất một Step; xóa bước cuối sẽ tạo Step 1 trống.
-3. **Thứ tự:** Add step thêm cuối danh sách; Remove xóa bước và đánh số lại. Bản hiện tại chưa có kéo thả hoặc nút đổi vị trí Step.
+2. **Bước mặc định:** Luôn hiển thị ít nhất một Step; xóa bước cuối sẽ tạo một bước trống.
+3. **Thứ tự:** Add step thêm cuối danh sách. Nắm biểu tượng kéo ở đầu thẻ để thả trước/sau bước khác theo vạch chỉ vị trí. Cả ảnh, tiêu đề và mô tả di chuyển cùng bước. Có thể dùng Alt + ↑/↓ khi chọn tay nắm. Không hiện nhãn Step 1, Step 2…; thứ tự đọc từ trên xuống. Save changes lưu thứ tự mới; Cancel bỏ thay đổi. Custom service không cho sắp xếp bước.
 4. **Ảnh riêng:** Mỗi Step có một ô ảnh; ảnh mới thay ảnh cũ. Ảnh bước độc lập với Service image và ảnh bước khác.
 5. **Giới hạn ảnh:** Nhận JPG/JPEG, PNG, WebP tối đa 10 MB mỗi ảnh. Kết quả chụp ảnh phụ thuộc khả năng thiết bị/trình duyệt.
 6. **Ô nhập:** Step Description dùng textarea văn bản thường, hỗ trợ nhiều dòng, không có thanh định dạng hoặc chèn ảnh. Materials tiếp tục dùng editor có định dạng; nội dung dán vào Materials được lọc theo các định dạng được hỗ trợ.
@@ -274,7 +288,7 @@ Steps và Materials không có vòng đời trạng thái nghiệp vụ hay quy 
 
 **Có phải bấm Add step để bắt đầu không?**
 
-Không. Dịch vụ chưa có hướng dẫn sẽ hiện sẵn Step 1.
+Không. Dịch vụ chưa có hướng dẫn sẽ hiện sẵn một bước trống.
 
 **Có bắt buộc nhập ảnh và tiêu đề cho mỗi bước không?**
 
