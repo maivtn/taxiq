@@ -77,7 +77,7 @@ function assignBill(ctx,line,index){
 test('three guests pay their own services and tips, parent completes only after all bills are paid',()=>{
  const c=groupCheckout(),{d,ticket}=c;
  assert.ok(d.querySelector('[data-tw-split-bill]'),'Checkout offers service-based bill splitting');
- d.querySelector('[data-tw-split-bill]').click();d.querySelector('[data-tw-add-bill]').click();
+ d.querySelector('[data-tw-split-bill]').click();submit(c.w,d);d.querySelector('[data-tw-add-bill]').click();
  assignBill(c,'l2',1);assignBill(c,'l3',2);
  assert.equal(d.querySelectorAll('[data-tw-bill]').length,3);
  d.querySelector('[data-tw-tip="10"]').click();d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
@@ -93,14 +93,14 @@ test('three guests pay their own services and tips, parent completes only after 
 test('empty bills block payment and unpaid splits can be cancelled without losing the ticket',()=>{
  const c=groupCheckout(),{d,ticket}=c;
  assert.ok(d.querySelector('[data-tw-split-bill]'));
- d.querySelector('[data-tw-split-bill]').click();d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
+ d.querySelector('[data-tw-split-bill]').click();submit(c.w,d);d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
  assert.equal(ticket.payment,undefined);assert.match(d.querySelector('[data-tw-message]').textContent,/empty bill/i);
  d.querySelector('[data-tw-cancel-split]').click();assert.equal(d.querySelectorAll('.tw-line').length,3);assert.equal(d.querySelector('[data-tw-total]').textContent,'$90.00');c.w.close();
 });
 test('split bill progress survives serialization and paid bill cannot be charged again',()=>{
  const c=groupCheckout(),{d,api}=c;
  assert.ok(d.querySelector('[data-tw-split-bill]'));
- d.querySelector('[data-tw-split-bill]').click();assignBill(c,'l2',1);assignBill(c,'l3',1);
+ d.querySelector('[data-tw-split-bill]').click();submit(c.w,d);assignBill(c,'l2',1);assignBill(c,'l3',1);
  d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
  const restored=JSON.parse(JSON.stringify(c.ticket));api.open(restored,'edit');
  assert.match(d.querySelector('[data-tw-bill-progress]').textContent,/1\/2/);d.querySelectorAll('[data-tw-bill]')[0].click();
@@ -111,13 +111,36 @@ test('split bill progress survives serialization and paid bill cannot be charged
 test('fixed discount cents are conserved across three bills and guest names are escaped',()=>{
  const c=groupCheckout(),{d,ticket,api,w}=c;
  ticket.lines.forEach(l=>l.price=0.01);ticket.discount={type:'fixed',value:0.01};api.open(ticket,'checkout');
- d.querySelector('[data-tw-split-bill]').click();d.querySelector('[data-tw-add-bill]').click();assignBill(c,'l2',1);assignBill(c,'l3',2);
+ d.querySelector('[data-tw-split-bill]').click();submit(c.w,d);d.querySelector('[data-tw-add-bill]').click();assignBill(c,'l2',1);assignBill(c,'l3',2);
  const name=d.querySelector('[data-tw-bill-name]');name.value='<img src=x>';name.dispatchEvent(new w.Event('change',{bubbles:true}));assert.equal(d.querySelector('img'),null);
  for(let i=0;i<3;i++){d.querySelectorAll('[data-tw-bill]')[i].click();d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();}
  assert.equal(ticket.payment.totalCents,2);assert.equal(ticket.payment.discountCents,1);w.close();
 });
 test('an extra empty bill can be removed before payment',()=>{
- const c=groupCheckout(),{d}=c;d.querySelector('[data-tw-split-bill]').click();d.querySelector('[data-tw-add-bill]').click();
+ const c=groupCheckout(),{d}=c;d.querySelector('[data-tw-split-bill]').click();submit(c.w,d);d.querySelector('[data-tw-add-bill]').click();
  d.querySelectorAll('[data-tw-bill]')[2].click();assert.ok(d.querySelector('[data-tw-remove-bill]'));
  d.querySelector('[data-tw-remove-bill]').click();assert.equal(d.querySelectorAll('[data-tw-bill]').length,2);c.w.close();
+});
+
+test('Split bill opens setup for incomplete services and missing prices without changing the ticket',()=>{
+ const {w,d,ticket,api}=groupCheckout();ticket.lines[0].price=null;ticket.lines[0].status='in-service';api.open(ticket,'checkout');
+ d.querySelector('[data-tw-split-bill]').click();
+ assert.equal(d.querySelector('dialog').open,true);
+ assert.ok(d.querySelector('[name="billCount"]'));
+ assert.equal(ticket.splitBills,undefined);
+ submit(w,d);assert.equal(ticket.splitBills,undefined);assert.match(d.querySelector('[data-tw-error]').textContent,/price/i);
+ d.querySelector('[name="splitPrice0"]').value='40';d.querySelector('[data-tw-close]').click();
+ assert.equal(ticket.lines[0].price,null);assert.equal(ticket.splitBills,undefined);w.close();
+});
+test('setup creates three named bills before service completion and retains completion guard on payment',()=>{
+ const c=groupCheckout(),{w,d,ticket,api}=c;ticket.lines[0].status='in-service';ticket.lines[0].price=null;api.open(ticket,'checkout');
+ d.querySelector('[data-tw-split-bill]').click();
+ assert.equal(d.querySelector('dialog').open,true);
+ const count=d.querySelector('[name="billCount"]');count.value='3';count.dispatchEvent(new w.Event('change',{bubbles:true}));
+ d.querySelector('[name="guest1"]').value='Hoa';d.querySelector('[name="guest2"]').value='Mai';d.querySelector('[name="splitPrice0"]').value='45';submit(w,d);
+ assert.equal(d.querySelectorAll('[data-tw-bill]').length,3);assert.match(d.querySelectorAll('[data-tw-bill]')[1].textContent,/Hoa/);
+ assignBill(c,'l2',1);assignBill(c,'l3',2);d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
+ assert.equal(ticket.payment,undefined);assert.match(d.querySelector('[data-tw-message]').textContent,/Complete/);
+ d.querySelector('[data-tw-action="complete"]').click();d.querySelector('[data-tw-pay]').click();
+ assert.match(d.querySelector('[data-tw-bill-progress]').textContent,/1\/3/);w.close();
 });

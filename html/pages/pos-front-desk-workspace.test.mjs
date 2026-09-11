@@ -34,6 +34,7 @@ test('Front Desk retains a partially paid group after reload and removes it only
  }
  while(d.querySelector('[data-tw-action="complete"]'))d.querySelector('[data-tw-action="complete"]').click();
  d.querySelector('[data-tw-split-bill]').click();
+ d.querySelector('[data-tw-form]').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));
  const select=d.querySelectorAll('[data-tw-bill-line]')[1];select.value=select.options[1].value;select.dispatchEvent(new w.Event('change',{bubbles:true}));
  d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();d.querySelector('[data-tw-back]').click();
  assert.ok(d.querySelector('[data-action="checkout"][data-id="1"]'));
