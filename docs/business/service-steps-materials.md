@@ -26,6 +26,17 @@ Tài liệu mô tả hành vi của bản HTML hiện tại. Phạm vi là cấu
 | Service image | Ảnh đại diện dịch vụ, độc lập với ảnh từng Step. |
 | Supply Fee | Khoản phí cấu hình riêng; không tự tính từ nội dung Materials. |
 
+#### Các trường nhập trên form
+
+| Thành phần | Kiểu nhập | Hành vi |
+| :--- | :--- | :--- |
+| Step Image | Ô ảnh với Take photo và Choose image | Một ảnh mỗi bước; có thể thay hoặc xóa riêng ảnh. |
+| Step Title | Input một dòng | Tối đa 120 ký tự. |
+| Step Description | Textarea nhiều dòng | Nhập văn bản thường, giữ xuống dòng; không có thanh định dạng hoặc chèn ảnh. |
+| Materials | Editor có định dạng | Một nội dung chung cho dịch vụ, nằm dưới Add step. |
+
+Form hiển thị sẵn Step 1; Add step thêm bước cuối danh sách. Tất cả các trường trên đều tùy chọn.
+
 ### User Roles
 
 | Vai trò | Trách nhiệm |
