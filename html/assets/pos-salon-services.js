@@ -24,15 +24,22 @@
       <header><div><h2 id="service-editor-title">Edit Service</h2><p>Update the service details and categories.</p></div>${button('data-service-editor-close aria-label="Close service editor"','×')}</header>
       <form data-service-editor-form><div class="salon-dialog-body">
         <label for="service-edit-categories" class="salon-field-label">Categories <small>(required)</small></label><div class="salon-category-select"><select id="service-edit-categories" data-service-edit-categories multiple aria-required="true" placeholder="Select categories"></select></div><p class="salon-help">Select at least one category.</p>
+        <div class="salon-service-overview">
+          <div class="salon-service-overview-photo">
+        <label class="salon-field-label">Service image <small>(optional)</small></label><div class="salon-service-photo-field"><div class="salon-service-image" data-image-preview>${icon('image')}</div>
+        <div class="salon-service-photo-controls"><div class="salon-photo-actions"><label>${icon('camera')}Take photo<input type="file" data-service-photo accept="image/jpeg,image/png,image/webp" capture="environment"></label><label>${icon('folder2-open')}Choose image<input type="file" data-service-file accept="image/jpeg,image/png,image/webp"></label></div><p class="salon-help">JPG, PNG, WebP · Up to 10MB</p></div></div>
+          </div>
+          <div class="salon-service-overview-fields">
         <div class="salon-label-row"><label for="service-edit-name">Service name <small>(required)</small></label><label class="salon-active-toggle">Active<input type="checkbox" data-service-edit-active><span></span></label></div>
         <input id="service-edit-name" data-service-edit-name required maxlength="120">
         <div class="salon-service-fields"><label>Price <small>(required)</small><span class="salon-input-wrap"><span>$</span><input data-service-edit-price type="number" min="0" step="0.01" required></span></label><label>Minutes <small>(required)</small><span class="salon-input-wrap suffix"><input data-service-edit-duration type="number" min="1" step="1" required><span>min</span></span></label></div>
+          </div>
+        </div>
         <label class="salon-block-field">Description <small>(optional)</small><textarea data-service-edit-description maxlength="1000" rows="3" placeholder="Optional service description"></textarea></label><div class="salon-description-count" data-description-count>0/1000</div>
         <label class="salon-block-field">Supply Fee <small>(optional)</small><span class="salon-input-wrap"><span>$</span><input type="number" data-service-edit-fee min="0" step="0.01"></span></label>
         <label class="salon-block-field">Tags <small>(optional)</small><div class="salon-tag-list" data-tag-list></div><input data-service-edit-tags placeholder="Type a tag and press Enter" maxlength="60"></label>
         <label class="salon-service-approval"><input type="checkbox" data-service-approval><span><strong>Require approval when staff adds this service</strong><small>Customer enters the last 4 phone digits to approve. Off by default.</small></span></label>
-        <label class="salon-field-label">Service image <small>(optional)</small></label><div class="salon-service-photo-field"><div class="salon-service-image" data-image-preview>${icon('image')}</div>
-        <div class="salon-service-photo-controls"><div class="salon-photo-actions"><label>${icon('camera')}Take photo<input type="file" data-service-photo accept="image/jpeg,image/png,image/webp" capture="environment"></label><label>${icon('folder2-open')}Choose image<input type="file" data-service-file accept="image/jpeg,image/png,image/webp"></label></div><p class="salon-help">JPG, PNG, WebP · Up to 10MB</p></div></div>
+
 
         <section class="salon-service-steps" aria-labelledby="service-steps-label">
           <div class="salon-steps-heading"><h3 id="service-steps-label">Steps <small>(optional)</small></h3></div>
