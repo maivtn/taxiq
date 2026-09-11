@@ -106,7 +106,7 @@ test('split bill progress survives serialization and paid bill cannot be charged
  d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
  const restored=JSON.parse(JSON.stringify(c.ticket));api.open(restored,'edit');
  assert.match(d.querySelector('[data-tw-bill-progress]').textContent,/1\/2/);d.querySelectorAll('[data-tw-bill]')[0].click();
- assert.equal(d.querySelector('[data-tw-pay]'),null);assert.equal(d.querySelector('[data-tw-cancel-split]'),null);
+ assert.equal(d.querySelector('[data-tw-pay]'),null);assert.equal(d.querySelector('[data-tw-cancel-split]').disabled,true);
  d.querySelectorAll('[data-tw-bill]')[1].click();assert.equal(d.querySelector('[data-tw-total]').textContent,'$49.50');c.w.close();
 });
 
@@ -413,4 +413,18 @@ test('zero-total custom setup still asks for missing amounts before showing Read
  const c=groupCheckout(),{d,w,ticket,api}=c;ticket.discount={type:'percent',value:100};api.open(ticket,'checkout');amountSetup(c,2,'custom');
  const amount=d.querySelector('[name="amount0"]');amount.value='';amount.dispatchEvent(new w.Event('input',{bubbles:true}));
  assert.match(d.querySelector('[data-tw-setup-status]').textContent,/Enter an amount/);w.close();
+});
+
+for(const mode of ['services','amount'])test(`Cancel split stays visible and protects recorded payments for ${mode} splits`,()=>{
+ const c=groupCheckout(),{d,w,ticket}=c;
+ if(mode==='amount'){amountSetup(c,2);submit(w,d);}else{d.querySelector('[data-tw-split-bill]').click();submit(w,d);assignBill(c,'l2',1);assignBill(c,'l3',1);}
+ assert.equal(d.querySelector('[data-tw-cancel-split]').disabled,false);
+ for(let i=0;i<2;i++){
+  d.querySelectorAll('[data-tw-bill]')[i].click();d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
+  const cancel=d.querySelector('[data-tw-cancel-split]');
+  assert.ok(cancel,'Cancellation remains discoverable after payment');assert.equal(cancel.disabled,true);
+  const reason=d.getElementById(cancel.getAttribute('aria-describedby'));assert.ok(reason?.textContent.trim(),'The disabled action explains why cancellation is locked');
+  const saved=JSON.stringify(ticket);cancel.dispatchEvent(new w.MouseEvent('click',{bubbles:true}));assert.equal(JSON.stringify(ticket),saved);
+ }
+ assert.equal(ticket.payment.totalCents,9000);w.close();
 });

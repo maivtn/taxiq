@@ -54,6 +54,11 @@
 .tw-bill-tools{align-items:center;gap:12px;margin-top:14px}
 .ticket-workspace .tw-bill-tools .tw-button{min-height:36px;font-size:11px}
 .ticket-workspace .tw-cancel-split{margin-left:auto;color:#687386;font-size:11px}
+.tw-bill-tools{flex-wrap:wrap}
+.tw-cancel-split-group{display:flex;flex-direction:column;align-items:flex-end;gap:5px;margin-left:auto;max-width:100%}
+.ticket-workspace .tw-cancel-split-group .tw-cancel-split{background:#fff6f7;border-color:#f0d7de;color:#b42341;padding:8px 12px;text-decoration:none}
+.ticket-workspace .tw-cancel-split-group .tw-cancel-split:disabled{opacity:1;background:#f3f5f8;border-color:#e0e5ee;color:#69758a}
+.tw-cancel-split-group small{max-width:300px;font-size:11px;color:#626f85;text-align:right;line-height:1.5}
 .tw-paying-for{display:flex;align-items:center;gap:11px}
 .tw-paying-for h3{font-size:10px!important;letter-spacing:.5px;margin:0 0 5px}
 .tw-paying-for>div>strong{font-size:19px;overflow-wrap:anywhere;color:#172338}

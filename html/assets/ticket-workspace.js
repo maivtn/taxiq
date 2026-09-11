@@ -31,7 +31,7 @@
     'Start Service':'play',Start:'play',Complete:'check',Back:'back','Checkout Ticket':'forward',
     Cash:'cash',Card:'card','Gift Card':'gift','Split Pay':'split','Split bill':'split',More:'more','Send SMS':'message',
     'No Receipt':'receipt','Edit customer':'user','Hand to customer':'tablet','Discount all':'percent','Add service':'plus',
-    Discount:'percent','Custom':'plus',Close:'close','Change tech':'user','Change service':'refresh',Remove:'trash',Pay:'card'};
+    Discount:'percent','Custom':'plus','Cancel split bill':'close',Close:'close','Change tech':'user','Change service':'refresh',Remove:'trash',Pay:'card'};
   const icon = name => `<svg class="tw-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${iconPaths[name]}</svg>`;
   function totals(ticket) {
     if(ticket.amountTotals)return {...ticket.amountTotals};
@@ -269,7 +269,7 @@
         const t=b.payment || totals(billTicket(b)),lines=amountSplit()?parent.lines:parent.lines.filter(l=>group().assignments[l.id]===b.id),selected=b.id===activeBillId;
         const status=b.payment?'Paid':!lines.length?'Needs services':'Unpaid';
         return button(`<span class="tw-bill-card-top"><span class="tw-guest-avatar" aria-hidden="true">${i+1}</span><strong>Bill ${i+1} · ${esc(b.name)}</strong><span class="tw-bill-state ${b.payment?'is-paid':!lines.length?'needs-services':''}">${b.payment?'✓ ':''}${status}</span></span><span class="tw-bill-card-value"><strong data-tw-bill-total="${esc(b.id)}">${t.error?'—':money(t.totalCents)}</strong><small>${amountSplit()?'Shared ticket':lines.length+' service'+(lines.length===1?'':'s')}</small></span><small class="tw-bill-services">${!amountSplit()?(lines.map(l=>esc(l.name)).join(' · ')||'Choose services below'):'A share of the full ticket total'}</small>`,`data-tw-bill="${b.id}" data-tw-guest-color="${guestColor(b)}" aria-pressed="${selected}"`,'tw-bill-card '+(selected?'selected':''));
-      }).join('')}</div>${!parent.payment?`<div class="tw-bill-tools">${!amountSplit()&&group().bills.length<parent.lines.length?button('+ Add bill','data-tw-add-bill','tw-small'):''}${!amountSplit()&&group().bills.length>2&&!ticket.lines.length&&!ticket.payment?button('Remove empty bill','data-tw-remove-bill','tw-small'):''}${!paid?button('Cancel split','data-tw-cancel-split','tw-text tw-cancel-split'):''}</div>`:''}</section>`;
+      }).join('')}</div><div class="tw-bill-tools">${!parent.payment&&!amountSplit()&&group().bills.length<parent.lines.length?button('+ Add bill','data-tw-add-bill','tw-small'):''}${!parent.payment&&!amountSplit()&&group().bills.length>2&&!ticket.lines.length&&!ticket.payment?button('Remove empty bill','data-tw-remove-bill','tw-small'):''}<div class="tw-cancel-split-group">${button('Cancel split bill','data-tw-cancel-split'+(paid?' disabled aria-describedby="tw-cancel-split-reason"':''),'tw-small tw-cancel-split')}${paid?'<small id="tw-cancel-split-reason">Cannot cancel: a bill has already been paid.</small>':''}</div></div></section>`;
     }
 
     function message(text) {$('[data-tw-message]').textContent=text;}
