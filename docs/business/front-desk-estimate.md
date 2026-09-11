@@ -12,7 +12,7 @@ Front Desk sử dụng **Estimate** để tư vấn dịch vụ và cho khách x
 
 **Vị trí:** POS → Front Desk → Estimate.
 
-**Trình bày:** Khung Services và ô tìm kiếm dùng màu sắc, nền và viền đồng bộ với phần Edit của Tickets; các item dịch vụ giữ kiểu trình bày hiện có, giá cùng hàng với tên. Your estimate phân biệt rõ tên dịch vụ, đơn giá và số lượng; nhóm giảm giá riêng, nhấn mạnh Estimated total và nút check-in. Khi đủ rộng, phần giảm giá và tổng tiền nằm cạnh nhau; trên màn hẹp, hai phần xếp dọc.
+**Trình bày:** Khung Services và ô tìm kiếm dùng màu sắc, nền và viền đồng bộ với phần Edit của Tickets; các item dịch vụ giữ kiểu trình bày hiện có, giá cùng hàng với tên. Danh mục có nút All và từng category; dịch vụ được nhóm dưới tiêu đề category giống phần Edit. Your estimate phân biệt rõ tên dịch vụ, đơn giá và số lượng; nhóm giảm giá riêng, nhấn mạnh Estimated total và nút check-in. Khi đủ rộng, phần giảm giá và tổng tiền nằm cạnh nhau; trên màn hẹp, hai phần xếp dọc.
 
 Tài liệu mô tả yêu cầu nghiệp vụ của Estimate. **Đối chiếu triển khai:** bản HTML hiện lấy danh mục từ dữ liệu salon cục bộ, chưa tích hợp API dịch vụ và chưa có thao tác thêm dịch vụ custom. Cơ chế nhập giá cho dịch vụ danh mục thiếu giá trong HTML hiện tại không phải yêu cầu nghiệp vụ; cần thay bằng luồng thêm custom bên dưới. Estimate chỉ tính tiền dịch vụ; chưa bao gồm tax và tip. Việc xác nhận check-in không thu tiền. Giảm giá trong Estimate được lưu để tham chiếu và cần xác nhận lại tại checkout.
 
@@ -51,14 +51,14 @@ Tài liệu mô tả yêu cầu nghiệp vụ của Estimate. **Đối chiếu t
 
 **User Stories:**
 
-- **US-FDE-01 — Tìm và chọn dịch vụ:** Là nhân viên Front Desk, tôi muốn tìm dịch vụ theo tên và xem giá, thời lượng trước khi thêm vào Estimate, để tư vấn nhanh cho khách.
+- **US-FDE-01 — Tìm và chọn dịch vụ:** Là nhân viên Front Desk, tôi muốn lọc theo category, tìm dịch vụ theo tên và xem giá, thời lượng trước khi thêm vào Estimate, để tư vấn nhanh cho khách.
 - **US-FDE-02 — Thêm dịch vụ custom:** Là nhân viên Front Desk, tôi muốn thêm dịch vụ custom bằng tên dịch vụ và giá, để báo giá cho nhu cầu ngoài danh mục dịch vụ từ API.
 - **US-FDE-03 — Điều chỉnh danh sách:** Là nhân viên Front Desk, tôi muốn sửa số lượng, bỏ dịch vụ khách không chọn hoặc xóa toàn bộ Estimate, để báo giá phản ánh đúng nhu cầu hiện tại.
 
 | Bước | Người thực hiện | Thao tác | Phản hồi hệ thống | Ghi chú |
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Front Desk | Mở Estimate | Hiện danh mục dịch vụ, ô tìm kiếm và Your estimate | Lấy từ API dịch vụ; chỉ hiển thị dịch vụ đang hoạt động, luôn có giá sẵn. |
-| 2 | Front Desk | Nhập tên vào Search services | Lọc danh sách theo tên, không phân biệt hoa/thường | Không có kết quả thì hiện No services found. |
+| 2 | Front Desk | Chọn category hoặc All, nhập tên vào Search services | Lọc theo category và tên, không phân biệt hoa/thường; hiển thị tiêu đề từng nhóm | Không có kết quả thì hiện No services found. |
 | 3 | Front Desk | Chọn dịch vụ | Thêm dòng mới hoặc tăng số lượng của dòng đã có, cập nhật tổng | Cùng dịch vụ và đơn giá được gộp thành một dòng; chọn 4 lần hiển thị Quantity = 4. |
 | 4 | Front Desk | Nếu cần, thêm dịch vụ custom bằng tên và giá | Thêm dòng custom và tính lại tổng khi tên, giá hợp lệ | Không yêu cầu nhập thêm thông tin dịch vụ khác; không sửa giá dịch vụ từ API tại Estimate. |
 | 5 | Front Desk | Sửa Quantity, bỏ một dòng dịch vụ hoặc Clear estimate | Cập nhật danh sách và tổng | Xóa hết dịch vụ sẽ khóa nút check-in. |
@@ -84,7 +84,7 @@ flowchart TD
 | ID | User story | Given — Điều kiện | When — Thao tác | Then — Kết quả |
 | :--- | :--- | :--- | :--- | :--- |
 | AC-FDE-01 | US-FDE-01 | Đang ở Front Desk | Mở Estimate | Hiện Services, Your estimate, Discount on all services, Subtotal, Discount, Estimated total và nút check-in. |
-| AC-FDE-02 | US-FDE-01 | Danh mục có dịch vụ hoạt động và ngừng hoạt động | Tìm theo một phần tên | Chỉ hiện dịch vụ hoạt động khớp tên; không phân biệt hoa/thường; hiển thị tên, thời lượng và giá sẵn từ API; không yêu cầu nhập giá cho dịch vụ danh mục. |
+| AC-FDE-02 | US-FDE-01 | Danh mục có dịch vụ hoạt động và ngừng hoạt động | Chọn category và tìm theo một phần tên | Chỉ hiện dịch vụ hoạt động thuộc category đã chọn và khớp tên; All hiển thị tất cả category; mỗi nhóm có tiêu đề; đổi bộ lọc không xóa dịch vụ đã chọn; không phân biệt hoa/thường; hiển thị tên, thời lượng và giá sẵn từ API; không yêu cầu nhập giá cho dịch vụ danh mục. |
 | AC-FDE-03 | US-FDE-01 | Một dịch vụ đã được chọn | Xem lại danh mục | Nút thêm vẫn khả dụng; mỗi lần bấm tăng Quantity thêm 1 trên dòng cùng dịch vụ và đơn giá. Chọn 4 lần chỉ hiện một dòng với Quantity = 4; tổng tính theo đơn giá nhân số lượng. |
 | AC-FDE-04 | US-FDE-02 | Khách cần dịch vụ custom | Nhập tên dịch vụ và giá, xác nhận thêm | Thêm một dòng custom với đúng tên và giá đã nhập; cộng giá vào Subtotal và áp dụng giảm giá chung. |
 | AC-FDE-05 | US-FDE-02 | Đang thêm dịch vụ custom | Để tên trống hoặc chỉ có khoảng trắng; để giá trống, nhập giá âm hoặc không hợp lệ | Không thêm dòng custom; yêu cầu sửa tên hoặc giá. Giá là số không âm, gồm 0. |

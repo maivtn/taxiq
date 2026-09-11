@@ -13,17 +13,23 @@
     return {subtotalCents,discountCents,totalCents:subtotalCents-discountCents,type,value:amount};
   }
   function mount(root, options) {
-    let lines = [], pending = false;
+    let lines = [], pending = false, category = 'All';
+    const categoryOf = service => service.categoryName || service.requiredSkill || 'Other';
     root.innerHTML = `<div class="estimate-heading"><div><h2>Service Estimate</h2><p>Help your guest choose services and see the estimated total.</p></div><button type="button" class="pos-btn" data-est-reset>Clear estimate</button></div>
-    <div class="estimate-layout"><div class="pos-card estimate-services-panel"><h3>Services</h3><input class="pos-input" type="search" data-est-search aria-label="Search services" placeholder="Search services…"><div class="estimate-catalog" data-est-catalog></div></div>
+    <div class="estimate-layout"><div class="pos-card estimate-services-panel"><h3>Services</h3><input class="pos-input" type="search" data-est-search aria-label="Search services" placeholder="Search services…"><div class="estimate-categories" data-est-categories aria-label="Service categories"></div><div class="estimate-catalog" data-est-catalog></div></div>
     <div class="pos-card estimate-summary"><h3>Your estimate</h3><div data-est-lines></div><div class="estimate-details"><fieldset><legend>Discount on all services</legend><div class="estimate-discount"><select class="pos-input" data-est-type aria-label="Discount type"><option value="percent">Percentage (%)</option><option value="fixed">Amount ($)</option></select><input class="pos-input" data-est-value aria-label="Discount value" type="number" min="0" max="100" step="0.01" value="0"></div><div class="estimate-presets">${[0,5,10,15,20].map(n=>`<button type="button" class="pos-btn pos-btn-sm" data-est-preset="${n}">${n}%</button>`).join('')}</div></fieldset>
     <div class="estimate-totals" aria-live="polite"><p><span>Subtotal</span><strong data-est-subtotal>$0.00</strong></p><p><span>Discount</span><strong data-est-discount>$0.00</strong></p><p class="estimate-grand"><span>Estimated total</span><strong data-est-total>$0.00</strong></p></div></div><p class="pos-muted">Service estimate only. Tax and tip are not included. Confirm the final discount at checkout.</p><p data-est-error role="status"></p><button class="pos-btn pos-btn-primary" type="button" data-est-checkin disabled>Check in with these services</button></div></div>
     <dialog class="estimate-dialog"><form><h2>Check in guest</h2><p data-est-confirm></p><label>Customer name<input class="pos-input" name="customerName" required autocomplete="name"></label><label>Phone<input class="pos-input" name="phone" type="tel" required autocomplete="tel"></label><p data-est-submit-error role="alert"></p><div class="estimate-discount"><button class="pos-btn" type="button" data-est-cancel>Back to estimate</button><button class="pos-btn pos-btn-primary" type="submit">Confirm check-in</button></div></form></dialog>`;
     const $ = selector => root.querySelector(selector);
     function catalog() {
       const query = $('[data-est-search]').value.trim().toLowerCase();
-      const services = options.getServices().filter(s=>s.active !== false && s.name.toLowerCase().includes(query));
-      $('[data-est-catalog]').innerHTML = services.map(s=>`<button class="estimate-service" type="button" data-est-add="${esc(s.id)}"><span><strong>${esc(s.name)}</strong><small>${esc(s.durationMin || 0)} min</small></span><b>${s.price == null?'Enter price':money(Math.round(s.price*100))}</b><span aria-hidden="true">＋</span></button>`).join('') || '<p>No services found.</p>';
+      const active = options.getServices().filter(s=>s.active !== false);
+      const categories = [...new Set(active.map(categoryOf))];
+      if(category !== 'All' && !categories.includes(category)) category = 'All';
+      $('[data-est-categories]').innerHTML = ['All',...categories].map(c=>`<button type="button" class="pos-btn pos-btn-sm" data-est-category="${esc(c)}" aria-pressed="${c===category}">${esc(c)}</button>`).join('');
+      const services = active.filter(s=>(category==='All'||categoryOf(s)===category) && s.name.toLowerCase().includes(query));
+      const serviceButton = s=>`<button class="estimate-service" type="button" data-est-add="${esc(s.id)}"><span><strong>${esc(s.name)}</strong><small>${esc(s.durationMin || 0)} min</small></span><b>${s.price == null?'Enter price':money(Math.round(s.price*100))}</b><span aria-hidden="true">＋</span></button>`;
+      $('[data-est-catalog]').innerHTML = [...new Set(services.map(categoryOf))].map(c=>`<section class="estimate-category"><h4>${esc(c)}</h4><div class="estimate-service-grid">${services.filter(s=>categoryOf(s)===c).map(serviceButton).join('')}</div></section>`).join('') || '<p>No services found.</p>';
     }
     function totals() {
       const result = calculate(lines,$('[data-est-type]').value,$('[data-est-value]').value);
@@ -52,6 +58,8 @@
     });
     root.addEventListener('click',e=>{
       const add=e.target.closest('[data-est-add]'),remove=e.target.closest('[data-est-remove]'),preset=e.target.closest('[data-est-preset]');
+      const categoryButton=e.target.closest('[data-est-category]');
+      if(categoryButton){category=categoryButton.dataset.estCategory;catalog();}
       if(add){const s=options.getServices().find(s=>s.id===add.dataset.estAdd && s.active!==false);if(s){
         const existing=lines.find(l=>l.serviceId===s.id && l.serviceName===s.name && l.price===s.price && !l.customPrice);
         if(existing) existing.quantity=Number(existing.quantity)+1;

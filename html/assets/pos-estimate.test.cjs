@@ -37,3 +37,31 @@ test('estimate selection and discount survive cancelled check-in; confirmation c
  assert.equal(received[0].tickets[0].price,22);
  dom.window.close();
 });
+test('estimate groups services by category and combines category and name filters',()=>{
+ const dom=boot(),w=dom.window,d=w.document;
+ try {
+  w.NEXORA_POS_ESTIMATE.mount(d.querySelector('#estimate'),{getServices:()=>[
+   {id:'a',name:'Classic manicure',price:22,categoryName:'Manicure'},
+   {id:'b',name:'Classic pedicure',price:30,categoryName:'Pedicure'},
+   {id:'c',name:'Gel pedicure',price:40,categoryName:'Pedicure'},
+   {id:'d',name:'Retired',price:10,categoryName:'Hidden',active:false}
+  ],checkIn:()=>({ok:true})});
+  assert.equal(d.querySelectorAll('.estimate-category').length,2);
+  assert.equal(d.querySelector('[data-est-category="Hidden"]'),null);
+  d.querySelector('[data-est-add="a"]').click();
+  d.querySelector('[data-est-category="Pedicure"]').click();
+  assert.equal(d.querySelector('[data-est-add="a"]'),null);
+  assert.equal(d.querySelectorAll('[data-est-add]').length,2);
+  const search=d.querySelector('[data-est-search]');
+  search.value='GEL';search.dispatchEvent(new w.Event('input',{bubbles:true}));
+  assert.equal(d.querySelectorAll('[data-est-add]').length,1);
+  d.querySelector('[data-est-add="c"]').click();
+  assert.equal(d.querySelector('[data-est-subtotal]').textContent,'$62.00');
+  search.value='missing';search.dispatchEvent(new w.Event('input',{bubbles:true}));
+  assert.match(d.querySelector('[data-est-catalog]').textContent,/No services found/);
+  search.value='';search.dispatchEvent(new w.Event('input',{bubbles:true}));
+  d.querySelector('[data-est-category="All"]').click();
+  assert.equal(d.querySelectorAll('.estimate-category').length,2);
+  assert.equal(d.querySelectorAll('.estimate-line').length,2);
+ } finally {dom.window.close();}
+});
