@@ -148,9 +148,10 @@ test('setup creates three named bills before service completion and retains comp
 });
 
 function amountSetup(c,count=3,allocation='equal'){
- const {d,w}=c;d.querySelector('[data-tw-split-bill]').click();
- const change=(name,value)=>{const el=d.querySelector(`[name="${name}"]`);assert.ok(el,name+' available');el.value=value;el.dispatchEvent(new w.Event('change',{bubbles:true}));};
- d.querySelector('[name="splitMode"][value="amount"]').click();d.querySelector(`[name="billCount"][value="${count}"]`).click();change('amountAllocation',allocation);
+ const {d}=c;d.querySelector('[data-tw-split-bill]').click();
+ d.querySelector('[name="splitMode"][value="amount"]').click();d.querySelector(`[name="billCount"][value="${count}"]`).click();
+ d.querySelector(`input[type="radio"][name="amountAllocation"][value="${allocation}"]`).click();
+ assert.equal(d.querySelector('[name="amount0"]').readOnly,allocation==='equal');
 }
 test('amount split divides one service among three people with exact cents, tip and discount conserved',()=>{
  const c=boot('checkout'),{d,w,ticket,api}=c;ticket.lines[0].price=100;ticket.lines[0].status='completed';ticket.discount={type:'fixed',value:10};ticket.checkout.tip=10;api.open(ticket,'checkout');
@@ -219,7 +220,7 @@ test('amount setup summary shows discount, tip and remaining balance for custom 
  const c=boot('checkout'),{d,w,ticket,api}=c;ticket.lines[0].price=100;ticket.discount={type:'fixed',value:10};ticket.checkout.tip=10;api.open(ticket,'checkout');amountSetup(c);
  assert.ok(d.querySelector('[data-tw-split-summary]'));
  assert.equal(d.querySelector('[data-tw-setup-total]').textContent,'$100.00');
- const policy=d.querySelector('[name="amountAllocation"]');policy.value='custom';policy.dispatchEvent(new w.Event('change',{bubbles:true}));
+ d.querySelector('[name="amountAllocation"][value="custom"]').click();
  const amount=d.querySelector('[name="amount0"]');amount.value='10';amount.dispatchEvent(new w.Event('input',{bubbles:true}));
  assert.equal(d.querySelector('[data-tw-setup-bill-total="0"]').textContent,'$10.00');
  assert.equal(d.querySelector('[data-tw-setup-remaining]').textContent,'$23.34');w.close();
