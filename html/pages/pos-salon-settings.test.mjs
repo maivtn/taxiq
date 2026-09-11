@@ -259,3 +259,12 @@ test('invalid images and storage failures keep drafts, and rich content is sanit
  assert.equal(storedService(page).steps[0].descriptionHtml,'<p>Clean</p>');assert.equal(storedService(page).materialsHtml,'<b>Polish</b>');
  editService(page);d.querySelector('[data-step-title]').value='Keep draft';w.Storage.prototype.setItem=()=>{throw new Error('full');};saveService(page);assert.equal(d.querySelector('[data-service-editor]').hidden,false);assert.equal(d.querySelector('[data-step-title]').value,'Keep draft');dom.window.close();
 });
+
+test('step camera button opens its camera input and saves the photo to the correct step',async()=>{
+ const page=await servicesPage();const {d,w,dom}=page;editService(page);d.querySelector('[data-step-add]').click();
+ const cards=d.querySelectorAll('[data-service-step]'),card=cards[1],camera=card.querySelector('[data-step-image-camera]');
+ assert.ok(camera,'Camera input exists');assert.equal(camera.getAttribute('capture'),'environment');assert.equal(card.querySelector('[data-step-image-file]').hasAttribute('capture'),false);
+ let opened=false;camera.addEventListener('click',()=>{opened=true;});card.querySelector('[data-step-image-take]').click();assert.equal(opened,true);
+ Object.defineProperty(camera,'files',{value:[imageFile(w)]});camera.dispatchEvent(new w.Event('change',{bubbles:true}));await settle(page);
+ assert.equal(cards[0].querySelector('img'),null);assert.equal(card.querySelector('img').src,detailImage);saveService(page);assert.equal(storedService(page).steps[1].image,detailImage);dom.window.close();
+});

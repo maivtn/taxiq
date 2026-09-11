@@ -43,7 +43,7 @@ Bản HTML chưa bổ sung cơ chế phân quyền riêng cho chức năng này.
 
 - **US-01:** Là quản lý salon, tôi muốn thấy sẵn Step 1 với các ô Image, Title và Description, để bắt đầu soạn hướng dẫn ngay.
 - **US-02:** Là quản lý salon, tôi muốn bấm Add step để thêm bước và Remove để xóa bước, để mô tả đúng trình tự thực hiện dịch vụ.
-- **US-03:** Là quản lý salon, tôi muốn chọn hoặc thay ảnh minh họa riêng cho từng bước, để nhân viên dễ hiểu thao tác cần làm.
+- **US-03:** Là quản lý salon, tôi muốn chụp ảnh, chọn hoặc thay ảnh minh họa riêng cho từng bước, để nhân viên dễ hiểu thao tác cần làm.
 - **US-04:** Là quản lý salon, tôi muốn nhập Materials trong editor riêng, để phân biệt nguyên vật liệu chuẩn bị với các bước thực hiện.
 - **US-05:** Là quản lý salon, tôi muốn lưu toàn bộ Steps và Materials cùng dịch vụ và xem lại khi mở form, để tiếp tục cập nhật hướng dẫn.
 
@@ -51,7 +51,7 @@ Bản HTML chưa bổ sung cơ chế phân quyền riêng cho chức năng này.
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Quản lý | Mở Edit Service | Nạp dữ liệu đã lưu; hiện Step 1 nếu chưa có bước | Steps và Materials đều tùy chọn. |
 | 2 | Quản lý | Nhập Title và Description | Nhận tiêu đề và nội dung có định dạng | Title tối đa 120 ký tự. |
-| 3 | Quản lý | Bấm Choose image và chọn file | Kiểm tra file, hiển thị Adding image…, gắn ảnh vào đúng bước | Một ảnh riêng mỗi bước. |
+| 3 | Quản lý | Bấm Take photo để chụp hoặc Choose image để chọn file | Kiểm tra file, hiển thị Adding image…, gắn ảnh vào đúng bước | Một ảnh riêng mỗi bước. |
 | 4 | Quản lý | Bấm Add step | Thêm bước trống cuối danh sách, đánh số tiếp theo, đặt con trỏ vào Title | Giữ nội dung các bước trước. |
 | 5 | Quản lý | Bấm Remove ở một bước | Xóa bước và đánh số lại | Xóa bước cuối sẽ tạo Step 1 trống. |
 | 6 | Quản lý | Nhập Materials | Hiển thị nội dung nguyên vật liệu riêng bên dưới Steps | Áp dụng chung cho dịch vụ. |
@@ -115,7 +115,7 @@ Steps và Materials không có trạng thái nghiệp vụ hay quy trình phê d
 
 1. Luôn hiện ít nhất một bước. Bước trống và Materials trống không chặn lưu dịch vụ.
 2. Các bước được đánh số theo thứ tự hiển thị, tự cập nhật sau khi thêm/xóa.
-3. Mỗi bước có một ảnh riêng. Choose image thay ảnh hiện tại; Remove image chỉ xóa ảnh, giữ Title và Description.
+3. Mỗi bước có hai nút Take photo và Choose image, cùng cập nhật một ảnh riêng. Take photo yêu cầu camera sau trên thiết bị hỗ trợ; trên máy tính, trình duyệt có thể mở bộ chọn file. Ảnh mới thay ảnh hiện tại; Remove image chỉ xóa ảnh, giữ Title và Description.
 4. Chấp nhận JPG/JPEG, PNG, WebP tối đa 10 MB mỗi ảnh. Có thể dán một ảnh từ clipboard khi đặt con trỏ trong Description; ảnh được gắn vào ô Image của bước đó.
 5. Description và Materials hỗ trợ đậm, nghiêng, gạch chân, danh sách đánh số/gạch đầu dòng và xóa định dạng chữ.
 6. Ảnh trong nội dung cũ vẫn được giữ trong Description để không mất dữ liệu. Không tự tách ảnh/chữ cũ sang các bước hoặc Materials.
@@ -132,7 +132,7 @@ Steps và Materials không có trạng thái nghiệp vụ hay quy trình phê d
 | AC-02 | Bấm Add step | Thêm bước cuối, đánh số tiếp theo, không mất nội dung đang nhập. |
 | AC-03 | Xóa một bước giữa danh sách | Xóa đúng bước, giữ các bước còn lại và đánh số liên tục. |
 | AC-04 | Xóa bước cuối cùng | Hiện một Step 1 trống. |
-| AC-05 | Chọn/thay/xóa ảnh ở một bước | Chỉ ảnh của bước đó thay đổi; Title, Description và các bước khác giữ nguyên. |
+| AC-05 | Chụp/chọn/thay/xóa ảnh ở một bước | Chỉ ảnh của bước đó thay đổi; Title, Description và các bước khác giữ nguyên. |
 | AC-06 | Nhập và định dạng Description / Materials | Hai vùng nội dung độc lập; lưu/mở lại giữ định dạng được hỗ trợ. |
 | AC-07 | Lưu nhiều bước và Materials, mở lại | Giữ đúng thứ tự, tiêu đề, mô tả, ảnh và Materials. |
 | AC-08 | Cancel sau khi thêm/xóa bước hoặc ảnh | Mở lại thấy bản đã lưu trước đó. |

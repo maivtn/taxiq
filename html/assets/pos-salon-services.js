@@ -69,8 +69,8 @@
     const card=document.createElement('section'),id=uid();card.className='salon-step-card';card.dataset.serviceStep=id;
     card.innerHTML=`<header><strong data-step-number></strong>${button('data-step-remove','Remove','trash','salon-step-remove')}</header>
       <div class="salon-step-layout"><div class="salon-step-photo"><label class="salon-field-label">Image</label><div data-step-image-preview></div>
-      ${button('data-step-image-add','Choose image','image')}${button('data-step-image-remove hidden','Remove image')}
-      <input type="file" data-step-image-file accept="image/jpeg,image/png,image/webp" hidden><p class="salon-help">JPG, PNG, WebP · Up to 10MB</p><p class="salon-help" role="status" data-step-image-status></p></div>
+      ${button('data-step-image-take','Take photo','camera')}${button('data-step-image-add','Choose image','folder2-open')}${button('data-step-image-remove hidden','Remove image')}
+      <input type="file" data-step-image-camera accept="image/jpeg,image/png,image/webp" capture="environment" hidden><input type="file" data-step-image-file accept="image/jpeg,image/png,image/webp" hidden><p class="salon-help">JPG, PNG, WebP · Up to 10MB</p><p class="salon-help" role="status" data-step-image-status></p></div>
       <div class="salon-step-copy"><label class="salon-field-label" for="step-title-${id}">Title</label><input id="step-title-${id}" data-step-title maxlength="120" placeholder="e.g. Prepare the nails">
       <label id="step-description-${id}" class="salon-block-field">Description</label><div class="salon-rich-editor">${richToolbar('Step description')}<div class="salon-rich-content" data-step-description data-rich-editor contenteditable="true" role="textbox" aria-multiline="true" aria-labelledby="step-description-${id}" data-placeholder="Describe what to do in this step…"></div></div></div></div>`;
     card.querySelector('[data-step-title]').value=typeof step.title==='string'?step.title:'';
@@ -88,22 +88,22 @@
     if(!editing||editing.id==='__custom__'||!file||card.dataset.loading==='true')return;
     if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>10*1024*1024){error('Choose a JPG, PNG, or WebP image up to 10MB.');return;}
     const token=editing.token,job={},reader=new FileReader();pendingStepImages.add(job);card.dataset.loading='true';
-    card.querySelector('[data-step-image-status]').textContent='Adding image…';card.querySelector('[data-step-image-add]').disabled=true;card.querySelector('[data-step-image-remove]').disabled=true;updateImageBusy();
+    card.querySelector('[data-step-image-status]').textContent='Adding image…';card.querySelector('[data-step-image-add]').disabled=true;card.querySelector('[data-step-image-take]').disabled=true;card.querySelector('[data-step-image-remove]').disabled=true;updateImageBusy();
     const active=()=>editing?.token===token&&card.isConnected;
-    const finish=()=>{if(editing?.token!==token)return;pendingStepImages.delete(job);card.dataset.loading='false';card.querySelector('[data-step-image-status]').textContent='';card.querySelector('[data-step-image-add]').disabled=false;card.querySelector('[data-step-image-remove]').disabled=false;updateImageBusy();};
+    const finish=()=>{if(editing?.token!==token)return;pendingStepImages.delete(job);card.dataset.loading='false';card.querySelector('[data-step-image-status]').textContent='';card.querySelector('[data-step-image-add]').disabled=false;card.querySelector('[data-step-image-take]').disabled=false;card.querySelector('[data-step-image-remove]').disabled=false;updateImageBusy();};
     reader.onload=()=>{if(active()){if(safeDetailImage(reader.result)){setStepImage(card,reader.result);$('[data-service-edit-error]').hidden=true;}else error('This image could not be read. Choose a valid JPG, PNG, or WebP image.');}finish();};
     reader.onerror=()=>{if(active())error('Unable to read the image. Please try again.');finish();};reader.readAsDataURL(file);
   }
   panel.addEventListener('click',event=>{
-    const control=event.target.closest('[data-step-add],[data-step-remove],[data-step-image-add],[data-step-image-remove]');
+    const control=event.target.closest('[data-step-add],[data-step-remove],[data-step-image-take],[data-step-image-add],[data-step-image-remove]');
     if(!control||!editing||editing.id==='__custom__')return;
     if(control.hasAttribute('data-step-add')){appendStep().querySelector('[data-step-title]').focus();return;}
     const card=control.closest('[data-service-step]');
     if(control.hasAttribute('data-step-remove')){card.remove();if(!$('[data-service-steps]').children.length)appendStep();renumberSteps();return;}
     if(control.hasAttribute('data-step-image-remove')){setStepImage(card,'');return;}
-    const input=card.querySelector('[data-step-image-file]');input.value='';input.click();
+    const input=card.querySelector(control.hasAttribute('data-step-image-take')?'[data-step-image-camera]':'[data-step-image-file]');input.value='';input.click();
   });
-  panel.addEventListener('change',event=>{if(event.target.matches('[data-step-image-file]'))readStepImage(event.target.closest('[data-service-step]'),event.target.files[0]);});
+  panel.addEventListener('change',event=>{if(event.target.matches('[data-step-image-file],[data-step-image-camera]'))readStepImage(event.target.closest('[data-service-step]'),event.target.files[0]);});
   function cleanDetails(html) {
     const template = document.createElement('template');
     template.innerHTML = typeof html === 'string' ? html : '';
@@ -199,7 +199,7 @@
     const steps=Array.isArray(service.steps)?service.steps:[{title:'',image:'',descriptionHtml:service.detailsHtml||''}];
     (steps.length?steps:[{}]).forEach(step=>appendStep(step||{}));
     $('[data-service-materials]').innerHTML=cleanDetails(service.materialsHtml);
-    panel.querySelectorAll('[data-step-add],[data-step-remove],[data-step-image-add],[data-step-image-remove],[data-step-title],[data-rich-command]').forEach(control=>{control.disabled=id==='__custom__';});
+    panel.querySelectorAll('[data-step-add],[data-step-remove],[data-step-image-take],[data-step-image-add],[data-step-image-remove],[data-step-title],[data-rich-command]').forEach(control=>{control.disabled=id==='__custom__';});
     panel.querySelectorAll('[data-rich-editor]').forEach(editor=>{editor.contentEditable=id==='__custom__'?'false':'true';});
     $('[data-service-edit-active]').checked=service.active!==false;
     $('[data-service-approval]').checked=api.requiresApproval(selectedSalon,id);
