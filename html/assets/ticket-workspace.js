@@ -47,7 +47,7 @@
     return {subtotalCents:subtotal,discountCents:lineDiscount+orderDiscount,netCents:net,tipCents:tip,totalCents:net+tip};
   }
   function mount(root, options) {
-    let ticket, parent, activeBillId, mode='edit', category='All', search='', dialogAction='', dialogLine='';
+    let ticket, parent, activeBillId, mode='edit', category='All', search='', dialogAction='', dialogLine='', setupAssignments={};
     const $ = selector => root.querySelector(selector);
     const button = (label,attr,style='') => `<button type="button" class="tw-button ${style}" ${attr}>${iconForLabel[label]?icon(iconForLabel[label]):''}<span>${label}</span></button>`;
     const input = (label,name,value='',type='text') => `<label>${label}<input name="${name}" type="${type}" value="${esc(value)}" ${type==='number'?'min="0" step="0.01"':''} required></label>`;
@@ -120,7 +120,7 @@
       let running=0,allocated=0;
       parent.splitBills={mode:'services',bills,assignments:{},discounts:{}};
       parent.lines.forEach((l,i)=>{
-        group().assignments[l.id]=first.id;
+        group().assignments[l.id]=bills[setupAssignments[l.id]]?.id || null;
         running+=bases[i];
         const next=base?Math.round(amount*running/base):0;
         group().discounts[l.id]=next-allocated;allocated=next;
@@ -138,12 +138,21 @@
       const sum=inputs.reduce((n,el)=>n+(validMoney(el.value)?cents(el.value):0),0);
       summary.textContent=t.error?t.error:'Ticket total '+money(t.totalCents)+' · Assigned '+money(sum)+' · Remaining '+money(t.totalCents-sum)+'. Includes current discount and tip.';
     }
+    function renderSetupServices() {
+      const host=$('[data-tw-service-setup]');
+      const byAmount=$('[name="splitMode"]').value==='amount';
+      host.hidden=byAmount;if(byAmount)return;
+      const count=Number($('[name="billCount"]').value);
+      const guests=Array.from({length:count},(_,i)=>$('[name="guest'+i+'"]').value.trim()||'Guest '+(i+1));
+      parent.lines.forEach(l=>{if(setupAssignments[l.id]>=count)setupAssignments[l.id]=0;});
+      host.innerHTML=`<h3>TICKET DETAIL</h3><p class="tw-muted">Check each service under the guest who will pay for it. Each service belongs to one guest.</p><div class="tw-service-table"><table><thead><tr><th scope="col">Service</th>${guests.map((name,i)=>`<th scope="col">Bill ${i+1}<br>${esc(name)}</th>`).join('')}</tr></thead><tbody>${parent.lines.map(l=>`<tr><th scope="row">${esc(l.name)}<small>${esc(l.tech || 'Unassigned')} · ${validMoney(l.price)?money(cents(l.price)):'Price required'}</small></th>${guests.map((name,i)=>`<td><input type="checkbox" data-tw-setup-line="${esc(l.id)}" data-guest="${i}" aria-label="Assign ${esc(l.name)} to ${esc(name)}" ${setupAssignments[l.id]===i?'checked':''}></td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+    }
     function splitGuestFields(count) {
       const host=$('[data-tw-split-guests]');
       const previous=new Map([...host.querySelectorAll('input')].map(el=>[el.name,el.value]));
       const byAmount=$('[name="splitMode"]').value==='amount';
       host.innerHTML=Array.from({length:count},(_,i)=>`<div class="tw-split-person"><label>Bill ${i+1} · Guest name (optional)<input name="guest${i}" maxlength="80" value="${esc(previous.get('guest'+i)??(i===0?parent.customer:'Guest '+(i+1)))}"></label>${byAmount?`<label>Amount ($)<input name="amount${i}" data-tw-share type="number" min="0" step="0.01" required value="${esc(previous.get('amount'+i)||'')}"></label>`:''}</div>`).join('');
-      updateAmountPreview();
+      updateAmountPreview();renderSetupServices();
     }
     function configureSplitSetup() {
       const byAmount=$('[name="splitMode"]').value==='amount',select=$('[name="billCount"]');
@@ -152,7 +161,7 @@
       $('[data-tw-allocation]').hidden=!byAmount;
       $('[data-tw-amount-preview]').hidden=!byAmount;
       $('[data-tw-save]').hidden=maximum<2;
-      $('[data-tw-split-guidance]').textContent=byAmount?'Split the ticket total equally or enter each person’s amount. Services stay on the shared ticket.':maximum<2?'Add at least two services to split by service, or choose By amount.':'Create bills, then assign each service to its guest.';
+      $('[data-tw-split-guidance]').textContent=byAmount?'Split the ticket total equally or enter each person’s amount. Services stay on the shared ticket.':maximum<2?'Add at least two services to split by service, or choose By amount.':'Check services for each guest in Ticket Detail below, then create bills.';
       splitGuestFields(maximum<2?0:Number(select.value));
     }
     function billsHtml() {
@@ -215,7 +224,8 @@
       let title='',fields='';
       if(action==='split-bill'){
         title='Split bill by guest';
-        fields=`<label>Split method<select name="splitMode"><option value="services">By services</option><option value="amount">By amount</option></select></label><p data-tw-split-guidance></p><label>Number of bills<select name="billCount"></select></label><label data-tw-allocation hidden>Divide amount<select name="amountAllocation"><option value="equal">Split equally</option><option value="custom">Enter individual amounts</option></select></label><div data-tw-split-guests></div><p data-tw-amount-preview role="status" hidden></p><p class="tw-muted">Choose a payment method for each bill after creating it. Complete services before collecting payment.</p>`;
+        setupAssignments=Object.fromEntries(parent.lines.map(l=>[l.id,0]));
+        fields=`<label>Split method<select name="splitMode"><option value="services">By services</option><option value="amount">By amount</option></select></label><p data-tw-split-guidance></p><label>Number of bills<select name="billCount"></select></label><label data-tw-allocation hidden>Divide amount<select name="amountAllocation"><option value="equal">Split equally</option><option value="custom">Enter individual amounts</option></select></label><div data-tw-split-guests></div><section data-tw-service-setup></section><p data-tw-amount-preview role="status" hidden></p><p class="tw-muted">Choose a payment method for each bill after creating it. Complete services before collecting payment.</p>`;
       }
       if(action==='catalog'){title='Add service';fields=`<input class="tw-search" data-tw-search type="search" placeholder="Search services…" aria-label="Search ticket services" value="${esc(search)}"><div class="tw-categories" data-tw-categories></div><div class="tw-catalog" data-tw-catalog></div>`;}
       if(action==='tech'){title='Change technician';fields='<label>Technician<select name="tech" required><option value="">Choose technician</option>'+options.technicians().map(t=>`<option ${t.name===l.tech?'selected':''} ${t.status==='clocked-out'||(t.status&&t.status!=='available'&&t.name!==l.tech)?'disabled':''}>${esc(t.name)}</option>`).join('')+'</select></label>';}
@@ -230,7 +240,7 @@
       if(action==='split-bill'){
         configureSplitSetup();
       }
-      $('dialog').classList.toggle('tw-catalog-dialog',action==='catalog');renderCatalog();$('dialog').showModal();
+      $('dialog').classList.toggle('tw-catalog-dialog',action==='catalog'||action==='split-bill');renderCatalog();$('dialog').showModal();
     }
     function add(service) {
       ticket.lines.push({id:crypto.randomUUID(),serviceId:service.id || null,name:service.name,price:service.price,tech:'',status:'unassigned'});save();render();
@@ -238,11 +248,16 @@
     root.addEventListener('input',e=>{
       if(ticket.payment)return;
       if(dialogAction==='split-bill'&&$('dialog').open&&e.target.matches('[data-tw-share]'))updateAmountPreview();
+      if(dialogAction==='split-bill'&&$('dialog').open&&e.target.name?.startsWith('guest'))renderSetupServices();
       if(e.target.matches('[data-tw-search]')){search=e.target.value;renderCatalog();}
       if(e.target.matches('[data-tw-note]')){ticket.note=e.target.value;save();}
       if(e.target.matches('[data-tw-field]')){ticket.checkout[e.target.dataset.twField]=e.target.value;if(e.target.dataset.twField==='tip')ticket.checkout.tipType='fixed';save();renderTotals();}
     });
     root.addEventListener('change',e=>{
+      if(dialogAction==='split-bill'&&$('dialog').open&&e.target.matches('[data-tw-setup-line]')){
+        setupAssignments[e.target.dataset.twSetupLine]=e.target.checked?Number(e.target.dataset.guest):null;
+        renderSetupServices();return;
+      }
       if(dialogAction==='split-bill'&&e.target.matches('[name="splitMode"]')){configureSplitSetup();return;}
       if(dialogAction==='split-bill'&&e.target.matches('[name="amountAllocation"]')){updateAmountPreview();return;}
       if(e.target.matches('[name="billCount"]')&&dialogAction==='split-bill'){

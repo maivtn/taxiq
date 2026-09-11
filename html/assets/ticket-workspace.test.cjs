@@ -180,3 +180,25 @@ test('service split shows all services in Ticket Detail and checkboxes assign ex
  d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
  assert.equal(ticket.payment,undefined);assert.match(d.querySelector('[data-tw-message]').textContent,/every service/i);w.close();
 });
+
+test('By services exposes guest checkboxes in setup and creates bills with those selections',()=>{
+ const {d,w,ticket}=groupCheckout();d.querySelector('[data-tw-split-bill]').click();
+ assert.equal(d.querySelectorAll('dialog [data-tw-setup-line]').length,6);
+ d.querySelector('[data-tw-setup-line="l2"][data-guest="1"]').click();
+ assert.equal(d.querySelector('[data-tw-setup-line="l2"][data-guest="0"]').checked,false);
+ const name=d.querySelector('[name="guest1"]');name.value='Hoa';name.dispatchEvent(new w.Event('input',{bubbles:true}));
+ assert.match(d.querySelector('[data-tw-service-setup]').textContent,/Hoa/);
+ submit(w,d);
+ assert.equal(ticket.splitBills.assignments.l2,ticket.splitBills.bills[1].id);
+ d.querySelectorAll('[data-tw-bill]')[1].click();assert.equal(d.querySelector('[data-tw-total]').textContent,'$27.00');w.close();
+});
+test('service setup selections survive mode changes and cancel does not modify the ticket',()=>{
+ const {d,w,ticket}=groupCheckout();d.querySelector('[data-tw-split-bill]').click();
+ assert.ok(d.querySelector('[data-tw-setup-line="l2"][data-guest="1"]'));
+ d.querySelector('[data-tw-setup-line="l2"][data-guest="1"]').click();
+ const method=d.querySelector('[name="splitMode"]');method.value='amount';method.dispatchEvent(new w.Event('change',{bubbles:true}));
+ assert.equal(d.querySelector('[data-tw-service-setup]').hidden,true);
+ method.value='services';method.dispatchEvent(new w.Event('change',{bubbles:true}));
+ assert.equal(d.querySelector('[data-tw-setup-line="l2"][data-guest="1"]').checked,true);
+ d.querySelector('[data-tw-close]').click();assert.equal(ticket.splitBills,undefined);w.close();
+});
