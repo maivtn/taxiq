@@ -88,7 +88,7 @@ test('restores existing saved workspaces and fills missing catalog prices',()=>{
 for(const mode of ['services','amount'])test(`unpaid ${mode} split survives reload until Cancel split is clicked`,()=>{
  const dom=boot(),w=dom.window,d=w.document;
  d.querySelector('[data-action="checkout"][data-id="1"]').click();d.querySelector('[data-tw-split-bill]').click();
- const method=d.querySelector('[name="splitMode"]');method.value=mode;method.dispatchEvent(new w.Event('change',{bubbles:true}));
+ d.querySelector(`[name="splitMode"][value="${mode}"]`).click();
  d.querySelector('[name="guest1"]').value='Mai';
  if(mode==='services')d.querySelector('[data-tw-setup-line="line-1-1"][data-guest="1"]').click();
  d.querySelector('[data-tw-form]').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));

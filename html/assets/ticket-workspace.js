@@ -148,7 +148,7 @@
       const host=$('[data-tw-split-summary]');if(!host)return;
       const t=totals(parent);
       if(t.error){host.innerHTML='<h3>SUMMARY</h3><p>'+esc(t.error)+'</p>';return;}
-      const count=Number($('[name="billCount"]').value),byAmount=$('[name="splitMode"]').value==='amount',reductions=serviceDiscounts();
+      const count=Number($('[name="billCount"]:checked')?.value || 0),byAmount=$('[name="splitMode"]:checked').value==='amount',reductions=serviceDiscounts();
       let assigned=0,tipCents=byAmount?t.tipCents:0;
       const rows=Array.from({length:count},(_,i)=>{
         const guest=$('[name="guest'+i+'"]').value.trim()||'Guest '+(i+1);
@@ -164,7 +164,7 @@
       host.innerHTML=`<h3>SUMMARY</h3>${rows}<div class="tw-summary-row tw-rule"><span>Subtotal</span><span>${money(t.subtotalCents)}</span></div><div class="tw-summary-row"><span>Discount</span><span>−${money(t.discountCents)}</span></div><div class="tw-summary-row"><span>Tip</span><span>${money(tipCents)}</span></div><div class="tw-summary-row tw-rule"><strong>Ticket total</strong><strong data-tw-setup-total>${money(totalCents)}</strong></div><div class="tw-summary-row"><span>Assigned</span><strong>${money(assigned)}</strong></div><div class="tw-summary-row ${assigned!==totalCents?'tw-red':''}"><span>Remaining to assign</span><strong data-tw-setup-remaining>${money(totalCents-assigned)}</strong></div>${!byAmount&&tipCents?'<p class="tw-muted">The current tip is on Bill 1. You can adjust each guest’s tip after creating bills.</p>':''}`;
     }
     function updateAmountPreview() {
-      const t=totals(parent),count=Number($('[name="billCount"]').value),equal=$('[name="amountAllocation"]').value==='equal';
+      const t=totals(parent),count=Number($('[name="billCount"]:checked')?.value || 0),equal=$('[name="amountAllocation"]').value==='equal';
       root.querySelectorAll('[data-tw-share]').forEach((el,i)=>{
         el.readOnly=equal;
         if(equal)el.value=t.error?'':((Math.floor(t.totalCents/count)+(i<t.totalCents%count?1:0))/100).toFixed(2);
@@ -173,9 +173,9 @@
     }
     function renderSetupServices() {
       const host=$('[data-tw-service-setup]');
-      const byAmount=$('[name="splitMode"]').value==='amount';
+      const byAmount=$('[name="splitMode"]:checked').value==='amount';
       host.hidden=byAmount;if(byAmount){renderSplitSummary();return;}
-      const count=Number($('[name="billCount"]').value);
+      const count=Number($('[name="billCount"]:checked')?.value || 0);
       const guests=Array.from({length:count},(_,i)=>$('[name="guest'+i+'"]').value.trim()||'Guest '+(i+1));
       parent.lines.forEach(l=>{if(setupAssignments[l.id]>=count)setupAssignments[l.id]=0;});
       host.innerHTML=`<h3>TICKET DETAIL</h3><p class="tw-muted">Check each service under the guest who will pay for it. Each service belongs to one guest.</p><div class="tw-service-table"><table><thead><tr><th scope="col">Service</th>${guests.map((name,i)=>`<th scope="col">Bill ${i+1}<br>${esc(name)}</th>`).join('')}</tr></thead><tbody>${parent.lines.map(l=>`<tr><th scope="row">${esc(l.name)}<small>${esc(l.tech || 'Unassigned')} · ${validMoney(l.price)?money(cents(l.price)):'Price required'}</small></th>${guests.map((name,i)=>`<td><input type="checkbox" data-tw-setup-line="${esc(l.id)}" data-guest="${i}" aria-label="Assign ${esc(l.name)} to ${esc(name)}" ${setupAssignments[l.id]===i?'checked':''}></td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
@@ -184,18 +184,18 @@
     function splitGuestFields(count) {
       const host=$('[data-tw-split-guests]');
       const previous=new Map([...host.querySelectorAll('input')].map(el=>[el.name,el.value]));
-      const byAmount=$('[name="splitMode"]').value==='amount';
+      const byAmount=$('[name="splitMode"]:checked').value==='amount';
       host.innerHTML=Array.from({length:count},(_,i)=>`<div class="tw-split-person"><label>Bill ${i+1} · Guest name (optional)<input name="guest${i}" maxlength="80" value="${esc(previous.get('guest'+i)??(i===0?parent.customer:'Guest '+(i+1)))}"></label>${byAmount?`<label>Amount ($)<input name="amount${i}" data-tw-share type="number" min="0" step="0.01" required value="${esc(previous.get('amount'+i)||'')}"></label>`:''}</div>`).join('');
       updateAmountPreview();renderSetupServices();
     }
     function configureSplitSetup() {
-      const byAmount=$('[name="splitMode"]').value==='amount',select=$('[name="billCount"]');
-      const current=Number(select.value)||2,maximum=byAmount?20:parent.lines.length;
-      select.innerHTML=Array.from({length:Math.max(0,maximum-1)},(_,i)=>`<option value="${i+2}" ${i+2===Math.min(current,maximum)?'selected':''}>${i+2} bills</option>`).join('');
+      const byAmount=$('[name="splitMode"]:checked').value==='amount',choices=$('[data-tw-bill-count]');
+      const current=Number($('[name="billCount"]:checked')?.value)||2,maximum=byAmount?20:parent.lines.length;
+      choices.innerHTML=Array.from({length:Math.max(0,maximum-1)},(_,i)=>`<label class="tw-radio-choice"><input type="radio" name="billCount" value="${i+2}" ${i+2===Math.min(current,maximum)?'checked':''}><span>${i+2} bills</span></label>`).join('');
       $('[data-tw-allocation]').hidden=!byAmount;
       $('[data-tw-save]').hidden=maximum<2;
       $('[data-tw-split-guidance]').textContent=byAmount?'Split the ticket total equally or enter each person’s amount. Services stay on the shared ticket.':maximum<2?'Add at least two services to split by service, or choose By amount.':'Check services for each guest in Ticket Detail below, then create bills.';
-      splitGuestFields(maximum<2?0:Number(select.value));
+      splitGuestFields(maximum<2?0:Number($('[name="billCount"]:checked').value));
     }
     function billsHtml() {
       if(mode!=='checkout')return '';
@@ -258,7 +258,7 @@
       if(action==='split-bill'){
         title='Split bill by guest';
         setupAssignments=Object.fromEntries(parent.lines.map(l=>[l.id,0]));
-        fields=`<label>Split method<select name="splitMode"><option value="services">By services</option><option value="amount">By amount</option></select></label><p data-tw-split-guidance></p><label>Number of bills<select name="billCount"></select></label><label data-tw-allocation hidden>Divide amount<select name="amountAllocation"><option value="equal">Split equally</option><option value="custom">Enter individual amounts</option></select></label><div data-tw-split-guests></div><section data-tw-service-setup></section><section class="tw-split-summary" data-tw-split-summary role="status" aria-live="polite"></section><p class="tw-muted">Choose a payment method for each bill after creating it. Complete services before collecting payment.</p>`;
+        fields=`<fieldset class="tw-radio-field"><legend>Split method</legend><div class="tw-radio-options tw-method-options"><label class="tw-radio-choice"><input type="radio" name="splitMode" value="services" checked><span>By services</span></label><label class="tw-radio-choice"><input type="radio" name="splitMode" value="amount"><span>By amount</span></label></div></fieldset><p data-tw-split-guidance></p><fieldset class="tw-radio-field"><legend>Number of bills</legend><div class="tw-radio-options" data-tw-bill-count></div></fieldset><label data-tw-allocation hidden>Divide amount<select name="amountAllocation"><option value="equal">Split equally</option><option value="custom">Enter individual amounts</option></select></label><div data-tw-split-guests></div><section data-tw-service-setup></section><section class="tw-split-summary" data-tw-split-summary role="status" aria-live="polite"></section><p class="tw-muted">Choose a payment method for each bill after creating it. Complete services before collecting payment.</p>`;
       }
       if(action==='catalog'){title='Add service';fields=`<input class="tw-search" data-tw-search type="search" placeholder="Search services…" aria-label="Search ticket services" value="${esc(search)}"><div class="tw-categories" data-tw-categories></div><div class="tw-catalog" data-tw-catalog></div>`;}
       if(action==='tech'){title='Change technician';fields='<label>Technician<select name="tech" required><option value="">Choose technician</option>'+options.technicians().map(t=>`<option ${t.name===l.tech?'selected':''} ${t.status==='clocked-out'||(t.status&&t.status!=='available'&&t.name!==l.tech)?'disabled':''}>${esc(t.name)}</option>`).join('')+'</select></label>';}

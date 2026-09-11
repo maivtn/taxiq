@@ -138,7 +138,7 @@ test('setup creates three named bills before service completion and retains comp
  const c=groupCheckout(),{w,d,ticket,api}=c;ticket.lines[0].status='in-service';api.open(ticket,'checkout');
  d.querySelector('[data-tw-split-bill]').click();
  assert.equal(d.querySelector('dialog').open,true);
- const count=d.querySelector('[name="billCount"]');count.value='3';count.dispatchEvent(new w.Event('change',{bubbles:true}));
+ d.querySelector('[name="billCount"][value="3"]').click();
  d.querySelector('[name="guest1"]').value='Hoa';d.querySelector('[name="guest2"]').value='Mai';submit(w,d);
  assert.equal(d.querySelectorAll('[data-tw-bill]').length,3);assert.match(d.querySelectorAll('[data-tw-bill]')[1].textContent,/Hoa/);
  assignBill(c,'l2',1);assignBill(c,'l3',2);d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
@@ -150,7 +150,7 @@ test('setup creates three named bills before service completion and retains comp
 function amountSetup(c,count=3,allocation='equal'){
  const {d,w}=c;d.querySelector('[data-tw-split-bill]').click();
  const change=(name,value)=>{const el=d.querySelector(`[name="${name}"]`);assert.ok(el,name+' available');el.value=value;el.dispatchEvent(new w.Event('change',{bubbles:true}));};
- change('splitMode','amount');change('billCount',String(count));change('amountAllocation',allocation);
+ d.querySelector('[name="splitMode"][value="amount"]').click();d.querySelector(`[name="billCount"][value="${count}"]`).click();change('amountAllocation',allocation);
 }
 test('amount split divides one service among three people with exact cents, tip and discount conserved',()=>{
  const c=boot('checkout'),{d,w,ticket,api}=c;ticket.lines[0].price=100;ticket.lines[0].status='completed';ticket.discount={type:'fixed',value:10};ticket.checkout.tip=10;api.open(ticket,'checkout');
@@ -196,9 +196,9 @@ test('service setup selections survive mode changes and cancel does not modify t
  const {d,w,ticket}=groupCheckout();d.querySelector('[data-tw-split-bill]').click();
  assert.ok(d.querySelector('[data-tw-setup-line="l2"][data-guest="1"]'));
  d.querySelector('[data-tw-setup-line="l2"][data-guest="1"]').click();
- const method=d.querySelector('[name="splitMode"]');method.value='amount';method.dispatchEvent(new w.Event('change',{bubbles:true}));
+ d.querySelector('[name="splitMode"][value="amount"]').click();
  assert.equal(d.querySelector('[data-tw-service-setup]').hidden,true);
- method.value='services';method.dispatchEvent(new w.Event('change',{bubbles:true}));
+ d.querySelector('[name="splitMode"][value="services"]').click();
  assert.equal(d.querySelector('[data-tw-setup-line="l2"][data-guest="1"]').checked,true);
  d.querySelector('[data-tw-close]').click();assert.equal(ticket.splitBills,undefined);w.close();
 });
