@@ -54,7 +54,7 @@ Tài liệu mô tả hành vi của bản HTML hiện tại. Estimate chỉ tín
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Front Desk | Mở Estimate | Hiện danh mục dịch vụ, ô tìm kiếm và Your estimate | Chỉ hiển thị dịch vụ đang hoạt động. |
 | 2 | Front Desk | Nhập tên vào Search services | Lọc danh sách theo tên, không phân biệt hoa/thường | Không có kết quả thì hiện No services found. |
-| 3 | Front Desk | Chọn dịch vụ | Thêm một dòng vào Estimate, cập nhật tổng | Một dịch vụ chỉ được chọn một lần trong cùng Estimate. |
+| 3 | Front Desk | Chọn dịch vụ | Thêm một dòng vào Estimate, cập nhật tổng | Có thể chọn cùng một dịch vụ nhiều lần; mỗi lần thêm tạo một dòng riêng. |
 | 4 | Front Desk | Nhập Service price cho dịch vụ chưa có giá | Tính lại tổng khi giá hợp lệ | Dịch vụ đã có giá không có ô sửa giá tại Estimate. |
 | 5 | Front Desk | Bỏ một dịch vụ hoặc Clear estimate | Cập nhật danh sách và tổng | Xóa hết dịch vụ sẽ khóa nút check-in. |
 
@@ -77,10 +77,10 @@ flowchart TD
 | :--- | :--- | :--- | :--- | :--- |
 | AC-FDE-01 | US-FDE-01 | Đang ở Front Desk | Mở Estimate | Hiện Choose services, Your estimate, Discount on all services, Subtotal, Discount, Estimated total và nút check-in. |
 | AC-FDE-02 | US-FDE-01 | Danh mục có dịch vụ hoạt động và ngừng hoạt động | Tìm theo một phần tên | Chỉ hiện dịch vụ hoạt động khớp tên; không phân biệt hoa/thường; hiển thị tên, thời lượng và giá hoặc Enter price. |
-| AC-FDE-03 | US-FDE-01 | Một dịch vụ đã được chọn | Xem lại danh mục | Nút thêm dịch vụ đó bị khóa; bỏ dịch vụ khỏi Estimate sẽ cho phép chọn lại. Không có ô số lượng. |
+| AC-FDE-03 | US-FDE-01 | Một dịch vụ đã được chọn | Xem lại danh mục | Nút thêm vẫn khả dụng; mỗi lần bấm thêm tạo một dòng riêng và cộng giá dòng đó vào Subtotal. Không có ô số lượng. |
 | AC-FDE-04 | US-FDE-02 | Dịch vụ chưa có giá | Thêm dịch vụ | Hiện ô Service price; tổng hiển thị dấu “—” và chưa cho check-in cho đến khi giá hợp lệ. |
 | AC-FDE-05 | US-FDE-02 | Có ô Service price | Nhập giá | Chấp nhận số không âm, gồm 0; giá trống hoặc không hợp lệ chặn check-in. |
-| AC-FDE-06 | US-FDE-03 | Có nhiều dịch vụ đã chọn | Bấm nút bỏ của một dòng | Chỉ bỏ dòng đó; tính lại tổng theo các dịch vụ còn lại. |
+| AC-FDE-06 | US-FDE-03 | Có nhiều dịch vụ đã chọn | Bấm nút bỏ của một dòng | Chỉ bỏ dòng đó, kể cả khi có nhiều dòng cùng dịch vụ; giữ các dòng còn lại và tính lại tổng. |
 | AC-FDE-07 | US-FDE-03 | Có Estimate đang lập | Bấm Clear estimate | Xóa danh sách, đưa giá trị giảm giá về 0; giữ loại giảm giá và từ khóa tìm kiếm hiện tại; nút check-in bị khóa. |
 
 #### Workflow 2: Tính giảm giá và thống nhất giá dự kiến
@@ -174,7 +174,7 @@ flowchart TD
 | AC-FDE-15 | US-FDE-06 | Chưa chọn dịch vụ hoặc còn giá/giảm giá không hợp lệ | Xem nút check-in | Nút bị khóa; chỉ được check-in khi có ít nhất một dịch vụ và các giá trị hợp lệ. |
 | AC-FDE-16 | US-FDE-06 | Estimate hợp lệ | Mở Check in guest | Hiện các dịch vụ đã chọn, tổng tiền, Customer name và Phone. |
 | AC-FDE-17 | US-FDE-06 | Thiếu tên hoặc số điện thoại, kể cả chỉ có khoảng trắng | Xác nhận check-in | Không tạo lượt check-in; yêu cầu nhập đầy đủ thông tin. |
-| AC-FDE-18 | US-FDE-06 | Đã nhập đủ thông tin hợp lệ | Xác nhận thành công | Tạo lượt check-in với dịch vụ và giá đã chọn; lưu Subtotal, Discount, Estimated total, loại và mức giảm; ghi nhận thời điểm check-in. |
+| AC-FDE-18 | US-FDE-06 | Đã nhập đủ thông tin hợp lệ | Xác nhận thành công | Tạo lượt check-in với đầy đủ các dòng dịch vụ và giá đã chọn, kể cả các dòng cùng dịch vụ; mỗi dòng được lưu riêng, không gộp; lưu Subtotal, Discount, Estimated total, loại và mức giảm; ghi nhận thời điểm check-in. |
 | AC-FDE-19 | US-FDE-07 | Hộp thoại check-in đang mở | Bấm Back to estimate | Không tạo lượt check-in; giữ danh sách và giảm giá để chỉnh sửa. |
 | AC-FDE-20 | US-FDE-07 | Thao tác tạo check-in trả lỗi | Xác nhận | Hiện lỗi, giữ hộp thoại, thông tin khách và Estimate để thử lại. |
 | AC-FDE-21 | US-FDE-06 | Đã xác nhận check-in thành công | Gửi lại thao tác xác nhận từ hộp thoại vừa đóng | Không tạo thêm lượt từ lần xác nhận đó; form đã được đóng và đặt lại. Đây không phải quy tắc chống trùng khách theo số điện thoại. |
@@ -217,7 +217,7 @@ stateDiagram-v2
 
 ### Business Rules
 
-1. Một Estimate cần ít nhất một dịch vụ để check-in; mỗi dịch vụ được thêm tối đa một lần.
+1. Một Estimate cần ít nhất một dòng dịch vụ để check-in. Cùng một dịch vụ có thể được thêm nhiều lần; mỗi lần thêm tạo một dòng riêng, được tính tiền và xóa độc lập. Check-in giữ đầy đủ các dòng, không gộp dịch vụ trùng.
 2. Giá dịch vụ phải là số không âm. Chỉ dịch vụ chưa có giá niêm yết có ô nhập giá tại Estimate.
 3. Giảm giá áp dụng chung cho các dịch vụ; tỷ lệ từ 0 đến 100%, số tiền cố định không âm. Số tiền thực giảm không vượt Subtotal.
 4. Phép tính dùng đơn vị cent: làm tròn từng giá dịch vụ đến cent, cộng Subtotal, tính và làm tròn Discount, rồi trừ để ra Estimated total.
@@ -233,6 +233,7 @@ stateDiagram-v2
 | :--- | :--- | :--- |
 | Không tìm thấy dịch vụ | Hiện No services found; giữ các dịch vụ đã chọn. | Front Desk sửa từ khóa. |
 | Chưa có dịch vụ, thiếu giá hoặc giảm giá không hợp lệ | Hiện lỗi, tổng hiện “—”, khóa check-in. | Front Desk bổ sung hoặc sửa dữ liệu. |
+| Thêm cùng một dịch vụ nhiều lần | Mỗi lần thêm tạo một dòng riêng; Subtotal cộng giá của tất cả các dòng. Xóa một dòng không xóa các dòng cùng dịch vụ còn lại. | Front Desk. |
 | Giảm cố định vượt tổng dịch vụ | Giới hạn tiền giảm bằng Subtotal; tổng dự kiến bằng 0. | Hệ thống. |
 | Khách đổi ý trước xác nhận | Back to estimate giữ nội dung và không tạo lượt tiếp nhận. | Front Desk. |
 | Check-in thất bại | Hiện thông báo lỗi; giữ thông tin để thử lại. | Front Desk kiểm tra thông báo và thử lại. |
@@ -246,9 +247,13 @@ stateDiagram-v2
 
 Không. Chỉ bắt buộc khi xác nhận check-in.
 
-**Có thể sửa giá niêm yết hoặc thêm hai lần cùng một dịch vụ không?**
+**Có thể thêm nhiều lần cùng một dịch vụ không?**
 
-Bản Estimate hiện tại chưa hỗ trợ. Có thể nhập giá cho dịch vụ chưa có giá và áp dụng giảm giá chung.
+Có. Mỗi lần chọn tạo một dòng riêng trong Estimate. Có thể xóa từng dòng; khi check-in, hệ thống giữ đầy đủ các dòng cùng dịch vụ. Ví dụ, thêm ba lần dịch vụ giá $22.00 có Subtotal $66.00; xóa một dòng còn $44.00, giảm 20% còn $35.20.
+
+**Có thể sửa giá niêm yết không?**
+
+Chưa hỗ trợ sửa giá niêm yết tại Estimate. Có thể nhập giá riêng cho từng dòng dịch vụ chưa có giá và áp dụng giảm giá chung.
 
 **Giảm giá đã báo có tự chuyển thành giảm giá khi thanh toán không?**
 
