@@ -8,7 +8,7 @@
 
 ### Overview
 
-Quản lý salon nhập hướng dẫn thực hiện dịch vụ bằng danh sách **Steps** và nội dung chuẩn bị **Materials** riêng. Mỗi Step gồm ảnh minh họa, tiêu đề và mô tả bằng editor; Materials dùng một editor chung cho toàn bộ dịch vụ. Tính năng giúp quản lý trình bày rõ thứ tự thao tác và nguyên vật liệu cần chuẩn bị.
+Quản lý salon nhập hướng dẫn thực hiện dịch vụ bằng danh sách **Steps** và nội dung chuẩn bị **Materials** riêng. Mỗi Step gồm ảnh minh họa, tiêu đề và mô tả bằng textarea; Materials dùng một editor chung cho toàn bộ dịch vụ. Tính năng giúp quản lý trình bày rõ thứ tự thao tác và nguyên vật liệu cần chuẩn bị.
 
 **Vị trí:** POS → Salon Settings → Services → View / Edit → Edit Service. Steps nằm gần cuối form, sau Require approval; Materials nằm dưới danh sách Steps và nút Add step.
 
@@ -21,7 +21,7 @@ Tài liệu mô tả hành vi của bản HTML hiện tại. Phạm vi là cấu
 | Steps | Danh sách bước thực hiện theo thứ tự hiển thị: Step 1, Step 2… |
 | Step Image | Ảnh minh họa riêng của một bước, có thể chụp hoặc chọn từ thiết bị. |
 | Step Title | Tiêu đề ngắn của bước, tối đa 120 ký tự. |
-| Step Description | Mô tả thao tác chi tiết bằng editor có định dạng. |
+| Step Description | Mô tả thao tác bằng textarea nhiều dòng, chỉ nhập văn bản thường. |
 | Materials | Nội dung nguyên vật liệu, số lượng và lưu ý chuẩn bị chung cho dịch vụ. |
 | Service image | Ảnh đại diện dịch vụ, độc lập với ảnh từng Step. |
 | Supply Fee | Khoản phí cấu hình riêng; không tự tính từ nội dung Materials. |
@@ -48,7 +48,7 @@ Bản HTML chưa bổ sung cơ chế phân quyền riêng cho Steps và Material
 **User Stories:**
 
 - **US-ST-01 — Nhập bước đầu tiên:** Là quản lý salon, tôi muốn form hiển thị sẵn Step 1 khi chưa có hướng dẫn, để nhập nội dung ngay mà không phải bấm thêm bước.
-- **US-ST-02 — Soạn nội dung bước:** Là quản lý salon, tôi muốn nhập Title và Description có định dạng cho từng Step, để diễn đạt rõ thao tác và lưu ý thực hiện.
+- **US-ST-02 — Soạn nội dung bước:** Là quản lý salon, tôi muốn nhập Title và Description dạng văn bản thường cho từng Step, để diễn đạt rõ thao tác và lưu ý thực hiện.
 - **US-ST-03 — Thêm bước:** Là quản lý salon, tôi muốn bấm Add step để thêm bước tiếp theo ở cuối danh sách, để mô tả đầy đủ trình tự dịch vụ.
 - **US-ST-04 — Xóa bước:** Là quản lý salon, tôi muốn xóa bước không còn sử dụng và để hệ thống đánh số lại, để danh sách hướng dẫn luôn liên tục.
 
@@ -56,7 +56,7 @@ Bản HTML chưa bổ sung cơ chế phân quyền riêng cho Steps và Material
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Quản lý | Mở Edit Service | Hiện các bước đã lưu; nếu chưa có thì hiện Step 1 trống | Không bắt buộc nhập Steps. |
 | 2 | Quản lý | Nhập Title và Description | Hiển thị nội dung trong đúng bước | Ảnh bên trái, Title và Description bên phải trên màn hình đủ rộng. |
-| 3 | Quản lý | Dùng thanh định dạng Description | Áp dụng định dạng vào nội dung của editor đang thao tác | Không đổi Materials hoặc bước khác. |
+| 3 | Quản lý | Nhập hoặc dán văn bản nhiều dòng vào Description | Giữ nội dung và xuống dòng trong textarea | Không có thanh định dạng; không đổi Materials hoặc bước khác. |
 | 4 | Quản lý | Bấm Add step | Thêm bước trống cuối danh sách, đánh số tiếp theo và đặt con trỏ vào Title mới | Giữ nguyên nội dung bước trước. |
 | 5 | Quản lý | Bấm Remove của một bước | Xóa cả bước cùng ảnh, tiêu đề và mô tả; đánh số lại | Xóa bước cuối cùng sẽ hiện Step 1 trống. |
 | 6 | Quản lý | Tiếp tục chỉnh sửa hoặc lưu | Giữ danh sách trong form cho đến khi Save changes | Lưu/hủy theo Workflow 4. |
@@ -79,7 +79,7 @@ flowchart TD
 | :--- | :--- | :--- | :--- | :--- |
 | AC-ST-01 | US-ST-01 | Dịch vụ chưa có Steps hoặc danh sách rỗng | Mở Edit Service | Hiện Step 1 với Image, Title, Description và nút Remove; có Add step bên dưới. |
 | AC-ST-02 | US-ST-02 | Đang sửa một Step | Nhập Title | Nhập được tối đa 120 ký tự; nội dung độc lập với tên dịch vụ. |
-| AC-ST-03 | US-ST-02 | Đang nhập Description | Chọn định dạng | Hỗ trợ đậm, nghiêng, gạch chân, danh sách đánh số, danh sách gạch đầu dòng và xóa định dạng chữ. |
+| AC-ST-03 | US-ST-02 | Đang nhập Description | Nhập văn bản nhiều dòng rồi lưu và mở lại | Giữ chữ và xuống dòng; ký tự giống thẻ HTML được hiển thị như văn bản. Không có thanh định dạng. |
 | AC-ST-04 | US-ST-03 | Có nhiều bước đang nhập | Bấm Add step | Thêm một bước trống cuối danh sách; con trỏ ở Title mới; nội dung đã nhập giữ nguyên. |
 | AC-ST-05 | US-ST-04 | Có ba bước | Xóa Step 2 | Bước cũ thứ ba trở thành Step 2, giữ nguyên nội dung và ảnh của nó. |
 | AC-ST-06 | US-ST-04 | Chỉ còn một bước | Bấm Remove | Hiện Step 1 trống để tiếp tục nhập. |
@@ -133,7 +133,7 @@ flowchart TD
 | AC-IM-04 | US-IM-03 | Step có ảnh | Bấm Remove image | Vùng ảnh về trạng thái trống; tiêu đề và mô tả giữ nguyên. |
 | AC-IM-05 | US-IM-04 | Step có hoặc chưa có ảnh | Chọn ảnh sai định dạng, quá 10 MB hoặc không đọc được | Báo lỗi; không thay ảnh hiện tại; giữ nội dung đang nhập. |
 | AC-IM-06 | US-IM-02 | Đang đọc ảnh | Quan sát form | Hiện Adding image…; tạm khóa thao tác ảnh tại bước đó và Save changes đến khi xử lý xong. |
-| AC-IM-07 | US-IM-02 | Con trỏ trong Description của Step | Dán file ảnh từ clipboard | Đọc ảnh đầu tiên và gắn vào ô Image của Step; áp dụng cùng kiểm tra ảnh. |
+| AC-IM-07 | US-IM-02 | Đang nhập Description của Step | Muốn thêm ảnh minh họa | Dùng Take photo hoặc Choose image tại ô Image; textarea không hỗ trợ chèn ảnh. |
 | AC-IM-08 | US-IM-04 | Đang đọc ảnh | Xóa Step hoặc đóng form trước khi đọc xong | Bỏ kết quả đọc ảnh của bước/form cũ, không gắn nhầm sang nơi khác. |
 
 #### Workflow 3: Nhập Materials chung cho dịch vụ
@@ -191,11 +191,11 @@ flowchart TD
 
 | Bước | Người thực hiện | Thao tác | Phản hồi hệ thống | Ghi chú |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | Quản lý | Mở dịch vụ đã có hướng dẫn | Nạp Steps và Materials đã lưu | Nếu chỉ có nội dung chung cũ, đưa vào Description của Step 1; Materials trống. |
+| 1 | Quản lý | Mở dịch vụ đã có hướng dẫn | Nạp Steps và Materials đã lưu | Nếu chỉ có nội dung chung cũ, chuyển phần chữ vào textarea Description của Step 1; Materials trống. |
 | 2 | Quản lý | Chỉnh sửa nội dung | Giữ bản đang nhập trong form | Chưa tự lưu. |
 | 3a | Quản lý | Bấm Save changes | Kiểm tra form và lưu cùng dịch vụ | Các trường bắt buộc khác phải hợp lệ; chờ ảnh xử lý xong. |
 | 3b | Quản lý | Bấm Cancel hoặc đóng form | Bỏ thay đổi và đóng form | Không ghi đè bản đã lưu. |
-| 4a | Hệ thống | Lưu thành công | Đóng form; lần mở sau hiện nội dung mới | Giữ thứ tự bước, ảnh, tiêu đề và định dạng hỗ trợ. |
+| 4a | Hệ thống | Lưu thành công | Đóng form; lần mở sau hiện nội dung mới | Giữ thứ tự bước, ảnh, tiêu đề, xuống dòng của Description và định dạng Materials. |
 | 4b | Hệ thống | Lưu thất bại | Báo lỗi, giữ form và nội dung đang nhập | Quản lý xử lý nguyên nhân rồi thử lại. |
 
 ```mermaid
@@ -218,7 +218,7 @@ flowchart TD
 | AC-SV-02 | US-SV-01 | Thiếu category hoặc trường bắt buộc khác không hợp lệ | Lưu | Chặn lưu theo quy tắc của Edit Service; không bắt nhập Steps/Materials. |
 | AC-SV-03 | US-SV-02 | Đã thêm/xóa/sửa bước, ảnh hoặc Materials | Cancel hoặc đóng form rồi mở lại | Hiện dữ liệu đã lưu trước lần chỉnh sửa đó. |
 | AC-SV-04 | US-SV-03 | Bộ nhớ lưu trữ không đủ | Save changes | Báo lỗi, giữ form và bản đang nhập; không ghi đè danh mục dịch vụ đã lưu. |
-| AC-SV-05 | US-SV-04 | Dịch vụ chỉ có nội dung editor chung cũ | Mở Edit Service | Đưa chữ, ảnh hợp lệ và định dạng hỗ trợ vào Description của Step 1; không tự đoán cách chia Steps/Materials. |
+| AC-SV-05 | US-SV-04 | Dịch vụ chỉ có nội dung editor chung cũ | Mở Edit Service | Chuyển phần chữ vào textarea Description của Step 1, giữ xuống dòng; Materials trống. Bản nội dung định dạng cũ được giữ trong dữ liệu để đối chiếu, không hiển thị trong textarea. |
 | AC-SV-06 | US-SV-04 | Đã chuyển và lưu theo cấu trúc mới | Xóa nội dung, lưu rồi mở lại | Nội dung chung cũ không tự xuất hiện trở lại. |
 | AC-SV-07 | US-SV-01 | Một dịch vụ thuộc nhiều category | Lưu rồi mở từ category khác | Hiện cùng Steps và Materials của dịch vụ đó. |
 
@@ -240,11 +240,11 @@ Steps và Materials không có vòng đời trạng thái nghiệp vụ hay quy 
 3. **Thứ tự:** Add step thêm cuối danh sách; Remove xóa bước và đánh số lại. Bản hiện tại chưa có kéo thả hoặc nút đổi vị trí Step.
 4. **Ảnh riêng:** Mỗi Step có một ô ảnh; ảnh mới thay ảnh cũ. Ảnh bước độc lập với Service image và ảnh bước khác.
 5. **Giới hạn ảnh:** Nhận JPG/JPEG, PNG, WebP tối đa 10 MB mỗi ảnh. Kết quả chụp ảnh phụ thuộc khả năng thiết bị/trình duyệt.
-6. **Editor:** Description và Materials dùng editor riêng, hỗ trợ các định dạng đã nêu. Nội dung dán chỉ giữ phần được hỗ trợ và ảnh hợp lệ; không giữ mã thực thi hoặc nội dung nhúng không được hỗ trợ.
+6. **Ô nhập:** Step Description dùng textarea văn bản thường, hỗ trợ nhiều dòng, không có thanh định dạng hoặc chèn ảnh. Materials tiếp tục dùng editor có định dạng; nội dung dán vào Materials được lọc theo các định dạng được hỗ trợ.
 7. **Ảnh trong Materials:** Materials hiện không có nút chụp/chọn ảnh; dán trực tiếp file ảnh vào Materials không thêm ảnh. Ảnh hợp lệ nằm trong nội dung định dạng được hỗ trợ có thể được giữ lại. Luồng nhập ảnh mới được thiết kế ở ô Image của từng Step.
 8. **Lưu:** Lưu Steps và Materials cùng dịch vụ; không có nút lưu riêng từng bước và không tự lưu khi đang nhập. Save changes bị khóa trong lúc đọc ảnh bước hoặc ảnh dịch vụ.
 9. **Phí và tồn kho:** Materials chỉ là nội dung mô tả; không tự tính Supply Fee, giá dịch vụ, định mức hoặc trừ tồn kho.
-10. **Dữ liệu cũ:** Giữ nội dung chung cũ trong Description của Step 1 khi chưa có danh sách Steps mới. Người quản lý tự phân chia; sau khi lưu cấu trúc mới, sử dụng bản mới cho những lần mở tiếp theo.
+10. **Dữ liệu cũ:** Chuyển phần chữ của mô tả có định dạng sang textarea, giữ xuống dòng và bỏ định dạng khi hiển thị. Bản nội dung định dạng cũ cùng ảnh hợp lệ được giữ trong dữ liệu để đối chiếu, không hiển thị trong textarea và không tự chuyển ảnh sang ô Image. Nội dung văn bản mới luôn được ưu tiên, kể cả khi người dùng đã xóa trống.
 
 ### Edge Cases & Exception Handling
 
@@ -279,7 +279,7 @@ Materials áp dụng chung cho toàn bộ dịch vụ. Lưu ý sử dụng vật
 
 **Ảnh cũ trong editor chung có bị mất không?**
 
-Ảnh hợp lệ được giữ cùng nội dung cũ trong Description của Step 1. Ảnh này không tự chuyển sang ô Image riêng của bước.
+Bản nội dung cũ cùng ảnh hợp lệ được giữ trong dữ liệu để đối chiếu. Textarea chỉ hiển thị phần chữ; ảnh cũ không hiển thị trong textarea và không tự chuyển sang ô Image. Có thể chọn lại ảnh minh họa bằng Choose image.
 
 ### Related Features
 

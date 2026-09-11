@@ -144,7 +144,7 @@
 .salon-step-photo img,.salon-step-image-empty { width:100%; height:118px; object-fit:contain; border-radius:8px; background:#f7f8fc; }
 .salon-step-image-empty { display:flex; align-items:center; justify-content:center; border:1px dashed #cbd2e0; color:#8993a8; font-size:24px; box-sizing:border-box; }
 [data-settings-panel="services"] .salon-step-photo button { width:100%; padding:7px; margin-top:7px; font-size:11px; }
-.salon-step-copy .salon-rich-content { min-height:105px; }
+.salon-step-copy textarea { min-height:120px; resize:vertical; }
 [data-settings-panel="services"] .salon-step-add { width:100%; border-style:dashed; padding:10px; background:#faf9ff; }
 @media(max-width:540px) { .salon-step-layout { grid-template-columns:1fr; }.salon-step-photo { max-width:180px; } }
 [data-settings-panel="services"] .salon-step-photo button[hidden] { display:none; }

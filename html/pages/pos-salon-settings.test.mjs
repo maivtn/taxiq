@@ -224,12 +224,13 @@ function storedService(page) {return page.w.NEXORA_SERVICE_APPROVAL_SETTINGS.loa
 test('steps default to one, add and remove without losing edits, and save separately from materials',async()=>{
  const page=await servicesPage();const {d,dom}=page;editService(page);
  assert.equal(d.querySelectorAll('[data-service-step]').length,1);
- const first=d.querySelector('[data-service-step]');first.querySelector('[data-step-title]').value='Prepare';first.querySelector('[data-step-description]').innerHTML='<b>Clean nails</b>';
+ const first=d.querySelector('[data-service-step]');first.querySelector('[data-step-title]').value='Prepare';first.querySelector('[data-step-description]').value='Clean nails\nApply <base> & polish';
+ assert.equal(first.querySelector('[data-step-description]').tagName,'TEXTAREA');assert.equal(first.querySelector('[data-rich-command]'),null);
  d.querySelector('[data-step-add]').click();const second=d.querySelectorAll('[data-service-step]')[1];second.querySelector('[data-step-title]').value='Polish';
  d.querySelector('[data-service-materials]').innerHTML='<ul><li>Base coat</li></ul>';
  d.querySelector('[data-service-edit-categories]').tomselect.addItem('custom-service-settings');saveService(page);
- assert.equal(storedService(page).steps.length,2);assert.equal(storedService(page).steps[0].title,'Prepare');assert.equal(storedService(page).materialsHtml,'<ul><li>Base coat</li></ul>');
- editService(page);d.querySelector('[data-step-remove]').click();assert.equal(d.querySelector('[data-step-title]').value,'Polish');assert.equal(d.querySelector('[data-step-number]').textContent,'Step 1');
+ assert.equal(storedService(page).steps[0].description,'Clean nails\nApply <base> & polish');assert.equal(storedService(page).steps.length,2);assert.equal(storedService(page).steps[0].title,'Prepare');assert.equal(storedService(page).materialsHtml,'<ul><li>Base coat</li></ul>');
+ editService(page);assert.equal(d.querySelector('[data-step-description]').value,'Clean nails\nApply <base> & polish');d.querySelector('[data-step-remove]').click();assert.equal(d.querySelector('[data-step-title]').value,'Polish');assert.equal(d.querySelector('[data-step-number]').textContent,'Step 1');
  d.querySelector('[data-service-editor-close]').click();editService(page);assert.equal(d.querySelectorAll('[data-service-step]').length,2);
  d.querySelector('[data-step-remove]').click();d.querySelector('[data-step-remove]').click();assert.equal(d.querySelectorAll('[data-service-step]').length,1);assert.equal(d.querySelector('[data-step-title]').value,'');
  saveService(page);assert.equal(storedService(page).steps.length,1);dom.window.close();
@@ -237,10 +238,10 @@ test('steps default to one, add and remove without losing edits, and save separa
 test('legacy rich text and images migrate into Step 1 once, with no loss or resurrection after clearing',async()=>{
  const legacy='<p><b>Old instructions</b></p><img src="'+detailImage+'" width="160">';
  const page=boot({categories:[{id:'nails',name:'Nails',services:[{...serviceFixture.categories[0].services[0],detailsHtml:legacy}]}]});await settle(page);editService(page);
- assert.match(page.d.querySelector('[data-step-description]').innerHTML,/Old instructions/);assert.ok(page.d.querySelector('[data-step-description] img'));
+ assert.equal(page.d.querySelector('[data-step-description]').value,'Old instructions');
  assert.equal(page.d.querySelector('[data-service-materials]').innerHTML,'');saveService(page);
- assert.equal(storedService(page).detailsHtml,undefined);
- editService(page);page.d.querySelector('[data-step-description]').innerHTML='';saveService(page);editService(page);assert.equal(page.d.querySelector('[data-step-description]').innerHTML,'');page.dom.window.close();
+ assert.equal(storedService(page).detailsHtml,undefined);assert.match(storedService(page).steps[0].legacyDescriptionHtml,/img/);
+ editService(page);page.d.querySelector('[data-step-description]').value='';saveService(page);editService(page);assert.equal(page.d.querySelector('[data-step-description]').value,'');page.dom.window.close();
 });
 test('step image uploads persist on the correct step and discard late reads for deleted steps or closed forms',async()=>{
  const page=await servicesPage();const {d,w,dom}=page;editService(page);d.querySelector('[data-step-add]').click();
@@ -255,8 +256,8 @@ test('invalid images and storage failures keep drafts, and rich content is sanit
  const page=await servicesPage();const {d,w,dom}=page;editService(page);const card=d.querySelector('[data-service-step]');
  uploadStep(page,card,new w.File(['invalid'],'bad.svg',{type:'image/svg+xml'}));assert.match(d.querySelector('[data-service-edit-error]').textContent,/10MB/);
  uploadStep(page,card,new w.File(['broken'],'bad.png',{type:'image/png'}));await settle(page);assert.match(d.querySelector('[data-service-edit-error]').textContent,/read/);
- card.querySelector('[data-step-description]').innerHTML='<p onclick="x()">Clean<script>x()</script></p>';d.querySelector('[data-service-materials]').innerHTML='<b>Polish</b><img src="https://bad.test/a.png">';saveService(page);
- assert.equal(storedService(page).steps[0].descriptionHtml,'<p>Clean</p>');assert.equal(storedService(page).materialsHtml,'<b>Polish</b>');
+ card.querySelector('[data-step-description]').value='<p onclick="x()">Clean<script>x()</script></p>';d.querySelector('[data-service-materials]').innerHTML='<b>Polish</b><img src="https://bad.test/a.png">';saveService(page);
+ assert.equal(storedService(page).steps[0].description,'<p onclick="x()">Clean<script>x()</script></p>');assert.equal(storedService(page).materialsHtml,'<b>Polish</b>');
  editService(page);d.querySelector('[data-step-title]').value='Keep draft';w.Storage.prototype.setItem=()=>{throw new Error('full');};saveService(page);assert.equal(d.querySelector('[data-service-editor]').hidden,false);assert.equal(d.querySelector('[data-step-title]').value,'Keep draft');dom.window.close();
 });
 

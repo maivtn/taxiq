@@ -79,9 +79,13 @@
       ${button('data-step-image-take','Take photo','camera')}${button('data-step-image-add','Choose image','folder2-open')}${button('data-step-image-remove hidden','Remove image')}
       <input type="file" data-step-image-camera accept="image/jpeg,image/png,image/webp" capture="environment" hidden><input type="file" data-step-image-file accept="image/jpeg,image/png,image/webp" hidden><p class="salon-help">JPG, PNG, WebP · Up to 10MB</p><p class="salon-help" role="status" data-step-image-status></p></div>
       <div class="salon-step-copy"><label class="salon-field-label" for="step-title-${id}">Title</label><input id="step-title-${id}" data-step-title maxlength="120" placeholder="e.g. Prepare the nails">
-      <label id="step-description-${id}" class="salon-block-field">Description</label><div class="salon-rich-editor">${richToolbar('Step description')}<div class="salon-rich-content" data-step-description data-rich-editor contenteditable="true" role="textbox" aria-multiline="true" aria-labelledby="step-description-${id}" data-placeholder="Describe what to do in this step…"></div></div></div></div>`;
+      <label for="step-description-${id}" class="salon-block-field">Description</label><textarea id="step-description-${id}" data-step-description rows="5" placeholder="Describe what to do in this step…"></textarea></div></div>`;
     card.querySelector('[data-step-title]').value=typeof step.title==='string'?step.title:'';
-    card.querySelector('[data-step-description]').innerHTML=cleanDetails(step.descriptionHtml);
+    const legacy=document.createElement('template');legacy.innerHTML=cleanDetails(step.descriptionHtml);
+    card.dataset.legacyDescription=cleanDetails(step.legacyDescriptionHtml||step.descriptionHtml);
+    legacy.content.querySelectorAll('br').forEach(node=>node.replaceWith('\n'));
+    legacy.content.querySelectorAll('p,div,li').forEach(node=>node.append('\n'));
+    card.querySelector('[data-step-description]').value=typeof step.description==='string'?step.description:legacy.content.textContent.trim();
     $('[data-service-steps]').appendChild(card);setStepImage(card,safeDetailImage(step.image)?step.image:'');renumberSteps();return card;
   }
   function setStepImage(card,src) {
@@ -89,7 +93,7 @@
     card.querySelector('[data-step-image-remove]').hidden=!src;
   }
   function collectSteps() {
-    return Array.from(panel.querySelectorAll('[data-service-step]'),card=>({title:card.querySelector('[data-step-title]').value.trim(),descriptionHtml:cleanDetails(card.querySelector('[data-step-description]').innerHTML),image:safeDetailImage(card.dataset.image)?card.dataset.image:''}));
+    return Array.from(panel.querySelectorAll('[data-service-step]'),card=>({title:card.querySelector('[data-step-title]').value.trim(),description:card.querySelector('[data-step-description]').value,...(card.dataset.legacyDescription?{legacyDescriptionHtml:card.dataset.legacyDescription}:{}),image:safeDetailImage(card.dataset.image)?card.dataset.image:''}));
   }
   function readStepImage(card,file) {
     if(!editing||editing.id==='__custom__'||!file||card.dataset.loading==='true')return;
@@ -206,7 +210,7 @@
     const steps=Array.isArray(service.steps)?service.steps:[{title:'',image:'',descriptionHtml:service.detailsHtml||''}];
     (steps.length?steps:[{}]).forEach(step=>appendStep(step||{}));
     $('[data-service-materials]').innerHTML=cleanDetails(service.materialsHtml);
-    panel.querySelectorAll('[data-step-add],[data-step-remove],[data-step-image-take],[data-step-image-add],[data-step-image-remove],[data-step-title],[data-rich-command]').forEach(control=>{control.disabled=id==='__custom__';});
+    panel.querySelectorAll('[data-step-add],[data-step-remove],[data-step-image-take],[data-step-image-add],[data-step-image-remove],[data-step-title],[data-step-description],[data-rich-command]').forEach(control=>{control.disabled=id==='__custom__';});
     panel.querySelectorAll('[data-rich-editor]').forEach(editor=>{editor.contentEditable=id==='__custom__'?'false':'true';});
     $('[data-service-edit-active]').checked=service.active!==false;
     $('[data-service-approval]').checked=api.requiresApproval(selectedSalon,id);
