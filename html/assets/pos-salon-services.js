@@ -35,38 +35,97 @@
 
         <label id="service-details-label" class="salon-block-field">Steps / Materials <small>(optional)</small></label>
         <div class="salon-rich-editor">
-          <div class="salon-rich-toolbar" role="group" aria-label="Steps / Materials formatting">${[['bold','Bold','type-bold'],['italic','Italic','type-italic'],['underline','Underline','type-underline'],['insertOrderedList','Numbered list','list-ol'],['insertUnorderedList','Bulleted list','list-ul'],['removeFormat','Clear formatting','eraser']].map(([command,label,glyph])=>button('data-details-command="'+command+'" aria-label="'+label+'" title="'+label+'"','',glyph)).join('')}</div>
+          <div class="salon-rich-toolbar" role="group" aria-label="Steps / Materials formatting">${[['bold','Bold','type-bold'],['italic','Italic','type-italic'],['underline','Underline','type-underline'],['insertOrderedList','Numbered list','list-ol'],['insertUnorderedList','Bulleted list','list-ul'],['removeFormat','Clear formatting','eraser']].map(([command,label,glyph])=>button('data-details-command="'+command+'" aria-label="'+label+'" title="'+label+'"','',glyph)).join('')}${button('data-details-image-add aria-label="Insert image" title="Insert image"','Image','image')}</div>
+          <input type="file" data-details-image-file accept="image/jpeg,image/png,image/webp" multiple hidden>
           <div class="salon-rich-content" data-service-edit-details contenteditable="true" role="textbox" aria-multiline="true" aria-labelledby="service-details-label" aria-describedby="service-details-help" data-placeholder="Describe the service steps and materials used…"></div>
         </div>
-        <p id="service-details-help" class="salon-help">Add numbered steps and a list of materials, including quantities or usage notes.</p>
+        <div class="salon-details-image-actions" data-details-image-actions hidden role="group" aria-label="Selected image">
+          <span>Image size</span>${[['160','Small'],['320','Medium'],['480','Large']].map(([width,label])=>button('data-details-image-width="'+width+'"',label)).join('')}${button('data-details-image-remove','Remove image','trash')}
+        </div>
+        <p role="status" data-details-image-status class="salon-help"></p>
+        <p id="service-details-help" class="salon-help">Add numbered steps and materials. Insert or paste JPG, PNG, or WebP images (up to 10MB each). Select an image to resize or remove it.</p>
 
         <p class="salon-service-error" role="alert" data-service-edit-error hidden></p>
       </div><footer>${button('data-service-editor-close','Cancel')}<button type="submit" class="is-primary">${icon('check-circle-fill')}Save changes</button></footer></form>
     </section></div>`;
   const detailsEditor = $('[data-service-edit-details]');
-  let detailsRange = null;
+  let detailsRange = null, selectedDetailImage = null, detailsLoading = false, coverLoading = false;
+  function updateImageBusy() {
+    $('[data-service-editor-form] [type=submit]').disabled=detailsLoading||coverLoading;
+    $('[data-details-image-add]').disabled=detailsLoading||editing?.id==='__custom__';
+    $('[data-details-image-status]').textContent=detailsLoading?'Adding images…':'';
+  }
+  function safeDetailImage(value) {
+    if(typeof value!=='string'||value.length>14*1024*1024||!/^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(value))return false;
+    try {
+      const bytes=atob(value.split(',')[1]);
+      if(bytes.length>10*1024*1024)return false;
+      return value.startsWith('data:image/png;')?bytes.startsWith('\x89PNG\r\n\x1a\n'):value.startsWith('data:image/jpeg;')?bytes.startsWith('\xff\xd8\xff'):bytes.startsWith('RIFF')&&bytes.slice(8,12)==='WEBP';
+    }catch(failure){return false;}
+  }
+  function selectDetailImage(img) {
+    selectedDetailImage?.classList.remove('is-selected');selectedDetailImage=img;
+    img?.classList.add('is-selected');$('[data-details-image-actions]').hidden=!img;
+  }
+  function insertionRange() {
+    if(detailsRange&&detailsEditor.contains(detailsRange.commonAncestorContainer))return detailsRange.cloneRange();
+    const range=document.createRange();range.selectNodeContents(detailsEditor);range.collapse(false);return range;
+  }
+  async function addDetailImages(files) {
+    if(!editing||editing.id==='__custom__'||detailsLoading||!files.length)return;
+    if(files.some(file=>!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>10*1024*1024)) {error('Choose JPG, PNG, or WebP images up to 10MB each.');return;}
+    const token=editing.token, range=insertionRange();detailsLoading=true;updateImageBusy();
+    try {
+      const images=await Promise.all(files.map(file=>new Promise((resolve,reject)=>{
+        const reader=new FileReader();reader.onload=()=>safeDetailImage(reader.result)?resolve(reader.result):reject(new Error('This image could not be read. Choose a valid JPG, PNG, or WebP image.'));
+        reader.onerror=()=>reject(new Error('Unable to read the image. Please try again.'));reader.readAsDataURL(file);
+      })));
+      if(editing?.token!==token)return;
+      const fragment=document.createDocumentFragment();let last;
+      images.forEach(src=>{last=document.createElement('img');last.src=src;last.alt='Step / material illustration';last.width=320;fragment.appendChild(last);});
+      range.deleteContents();range.insertNode(fragment);range.setStartAfter(last);range.collapse(true);detailsRange=range;
+      detailsEditor.focus();const selection=window.getSelection();selection.removeAllRanges();selection.addRange(range);selectDetailImage(last);
+      $('[data-service-edit-error]').hidden=true;
+    }catch(failure){if(editing?.token===token)error(failure.message);}
+    finally{if(editing?.token===token){detailsLoading=false;updateImageBusy();}}
+  }
+  $('[data-details-image-add]').addEventListener('click',()=>{$('[data-details-image-file]').value='';$('[data-details-image-file]').click();});
+  $('[data-details-image-file]').addEventListener('change',event=>addDetailImages(Array.from(event.target.files||[])));
+  detailsEditor.addEventListener('click',event=>selectDetailImage(editing?.id!=='__custom__'&&event.target.tagName==='IMG'?event.target:null));
+  panel.addEventListener('click',event=>{
+    const control=event.target.closest('[data-details-image-width],[data-details-image-remove]');
+    if(!control||!selectedDetailImage||!detailsEditor.contains(selectedDetailImage))return;
+    if(control.hasAttribute('data-details-image-remove')){selectedDetailImage.remove();selectDetailImage(null);}
+    else selectedDetailImage.width=Number(control.dataset.detailsImageWidth);
+  });
   function cleanDetails(html) {
     const template = document.createElement('template');
     template.innerHTML = typeof html === 'string' ? html : '';
-    const allowed = new Set(['P','DIV','BR','B','STRONG','I','EM','U','OL','UL','LI']);
+    const allowed = new Set(['P','DIV','BR','B','STRONG','I','EM','U','OL','UL','LI','IMG']);
     function clean(parent) {
       Array.from(parent.childNodes).forEach(node => {
         if (node.nodeType === 3) return;
         if (node.nodeType !== 1 || ['SCRIPT','STYLE','IFRAME','OBJECT','SVG','MATH','TEMPLATE'].includes(node.nodeName)) { node.remove(); return; }
+        if(node.nodeName==='IMG') {
+          const src=node.getAttribute('src'),width=node.getAttribute('width'),alt=node.getAttribute('alt');
+          if(!safeDetailImage(src)){node.remove();return;}
+          Array.from(node.attributes).forEach(attr=>node.removeAttribute(attr.name));
+          node.setAttribute('src',src);node.setAttribute('alt',alt||'Step / material illustration');node.setAttribute('width',['160','320','480'].includes(width)?width:'320');return;
+        }
         clean(node);
         if (!allowed.has(node.nodeName)) { node.replaceWith(...node.childNodes); return; }
         Array.from(node.attributes).forEach(attr => node.removeAttribute(attr.name));
       });
     }
     clean(template.content);
-    return template.content.textContent.trim() ? template.innerHTML : '';
+    return template.content.textContent.trim()||template.content.querySelector('img') ? template.innerHTML : '';
   }
   document.addEventListener('selectionchange', () => {
     const selection = window.getSelection();
     if (selection.rangeCount && detailsEditor.contains(selection.anchorNode) && detailsEditor.contains(selection.focusNode)) detailsRange = selection.getRangeAt(0).cloneRange();
   });
   panel.addEventListener('mousedown', event => {
-    if (event.target.closest('[data-details-command]')) event.preventDefault();
+    if (event.target.closest('[data-details-command],[data-details-image-add],[data-details-image-width],[data-details-image-remove]')) event.preventDefault();
   });
   panel.addEventListener('click', event => {
     const control = event.target.closest('[data-details-command]');
@@ -79,6 +138,8 @@
     event.preventDefault();
     const clipboard = event.clipboardData;
     if (!clipboard) return;
+    const files=Array.from(clipboard.files||[]);
+    if(files.length){addDetailImages(files);return;}
     const html = clipboard.getData('text/html');
     document.execCommand('insertHTML', false, html ? cleanDetails(html) : esc(clipboard.getData('text/plain')).replace(/\r?\n/g, '<br>'));
   });
@@ -112,7 +173,7 @@
   function persist(next, approvals) {
     const message=valid(next);if(message)throw new Error(message);
     next.forEach(c=>{c.name=c.name.trim();c.services.forEach(s=>{delete s.isDraft;s.name=s.name.trim();if(s.id!=='__custom__'){s.price=Number(s.price);s.durationMin=Number(s.durationMin);}});});
-    try {api.saveCatalog(selectedSalon,next,approvals);} catch(failure) {throw new Error('Unable to save changes. Please try again or use a smaller service image.');}categories=next;status('Saved.');render();
+    try {api.saveCatalog(selectedSalon,next,approvals);} catch(failure) {throw new Error('Unable to save changes. Please try again or use fewer or smaller images.');}categories=next;status('Saved.');render();
   }
   function show(overlay, trigger) {returnFocus=trigger||document.activeElement;overlay.hidden=false;document.body.style.overflow='hidden';const control=overlay.querySelector('input:not(:disabled),button');if(control)control.focus();}
   function close(overlay) {$('[data-service-edit-categories]').tomselect?.close();overlay.hidden=true;document.body.style.overflow='';if(returnFocus?.isConnected)returnFocus.focus();if(overlay===$('[data-service-editor]'))editing=null;}
@@ -133,12 +194,12 @@
       onInitialize() { this.control_input.setAttribute('aria-required','true'); }
     });
     for(const [field,key] of [['name','name'],['price','price'],['duration','durationMin'],['description','description'],['fee','supplyFee']]){$('[data-service-edit-'+field+']').value=service[key]??'';$('[data-service-edit-'+field+']').disabled=id==='__custom__';}
-    detailsRange=null;detailsEditor.innerHTML=cleanDetails(service.detailsHtml);detailsEditor.contentEditable=id==='__custom__'?'false':'true';
+    detailsLoading=false;coverLoading=false;selectDetailImage(null);detailsRange=null;detailsEditor.innerHTML=cleanDetails(service.detailsHtml);detailsEditor.contentEditable=id==='__custom__'?'false':'true';
     panel.querySelectorAll('[data-details-command]').forEach(control=>{control.disabled=id==='__custom__';});
     $('[data-service-edit-active]').checked=service.active!==false;
     $('[data-service-approval]').checked=api.requiresApproval(selectedSalon,id);
     $('[data-description-count]').textContent=(service.description||'').length+'/1000';
-    $('[data-service-editor-form] [type=submit]').disabled=false;
+    updateImageBusy();
     $('[data-service-edit-error]').hidden=true;tags=(service.tags||[]).slice();imageData=service.image||'';
     $('[data-service-edit-tags]').value='';$('[data-service-photo]').value='';$('[data-service-file]').value='';renderTags();renderImage();show($('[data-service-editor]'),trigger);
   }
@@ -165,7 +226,7 @@
     if(target.matches('[data-image-remove]')){imageData='';renderImage();}
   });
   $('[data-service-editor-form]').addEventListener('submit',event=>{
-    event.preventDefault();if(!editing)return;
+    event.preventDefault();if(!editing||detailsLoading||coverLoading)return;
     const service=serviceById(editing.id),isCustom=editing.id==='__custom__';
     const categoryIds=Array.from($('[data-service-edit-categories]').selectedOptions, option=>option.value);
     if(!categoryIds.length){error('Select at least one category.');return;}
@@ -183,8 +244,8 @@
     const file=event.target.files[0];if(!file)return;
     if(!['image/jpeg','image/png','image/webp'].includes(file.type)||file.size>10*1024*1024){error('Choose a JPG, PNG, or WebP image up to 10MB.');return;}
     const token=editing?.token;const reader=new FileReader();
-    $('[data-service-editor-form] [type=submit]').disabled=true;
-    reader.onload=()=>{if(editing?.token!==token)return;imageData=reader.result;renderImage();$('[data-service-editor-form] [type=submit]').disabled=false;};reader.onerror=()=>{if(editing?.token!==token)return;$('[data-service-editor-form] [type=submit]').disabled=false;error('Unable to read this image. Please try again.');};reader.readAsDataURL(file);
+    coverLoading=true;updateImageBusy();
+    reader.onload=()=>{if(editing?.token!==token)return;imageData=reader.result;renderImage();coverLoading=false;updateImageBusy();};reader.onerror=()=>{if(editing?.token!==token)return;coverLoading=false;updateImageBusy();error('Unable to read this image. Please try again.');};reader.readAsDataURL(file);
   });
   function move(kind,id,offset,targetId,categoryId) {
     const list=kind==='category'?categoryDraft:categories.find(c=>c.id===categoryId)?.services;if(!list)return;

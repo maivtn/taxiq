@@ -241,3 +241,56 @@ test('category dropdown selects multiple categories, restores saved values and r
  assert.equal(d.querySelectorAll('.salon-category-select .ts-wrapper').length,1);
  dom.window.close();
 });
+
+const detailImage='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jN1kAAAAASUVORK5CYII=';
+function imageFile(w) {return new w.File([Uint8Array.from(Buffer.from(detailImage.split(',')[1],'base64'))],'step.png',{type:'image/png'});}
+function chooseDetailImage(page,file) {
+ const input=page.d.querySelector('[data-details-image-file]');assert.ok(input,'Insert image picker is available');
+ Object.defineProperty(input,'files',{configurable:true,value:[file]});input.dispatchEvent(new page.w.Event('change',{bubbles:true}));
+}
+async function waitForImage(page) {
+ for(let i=0;i<30&&!page.d.querySelector('[data-service-edit-details] img');i++)await new Promise(resolve=>page.w.setTimeout(resolve,10));
+ assert.ok(page.d.querySelector('[data-service-edit-details] img'),'Image was inserted');
+}
+test('inline images insert at the caret, resize, persist and can be removed',async()=>{
+ const page=await servicesPage();const {w,d,dom}=page;editService(page);
+ const editor=d.querySelector('[data-service-edit-details]');editor.textContent='Before After';
+ const range=d.createRange();range.setStart(editor.firstChild,7);range.collapse(true);w.getSelection().removeAllRanges();w.getSelection().addRange(range);d.dispatchEvent(new w.Event('selectionchange'));
+ chooseDetailImage(page,imageFile(w));await waitForImage(page);
+ assert.equal(editor.childNodes[0].textContent,'Before ');assert.equal(editor.childNodes[1].tagName,'IMG');assert.equal(editor.lastChild.textContent,'After');
+ editor.querySelector('img').click();d.querySelector('[data-details-image-width="160"]').click();saveService(page);editService(page);
+ assert.equal(editor.querySelector('img').getAttribute('width'),'160');assert.equal(editor.querySelector('img').src,detailImage);
+ editor.querySelector('img').click();d.querySelector('[data-details-image-remove]').click();assert.equal(editor.querySelector('img'),null);
+ d.querySelector('[data-service-editor-close]').click();editService(page);assert.ok(editor.querySelector('img'));
+ editor.querySelector('img').click();d.querySelector('[data-details-image-remove]').click();saveService(page);editService(page);assert.equal(editor.querySelector('img'),null);
+ dom.window.close();
+});
+test('image-only content survives saving while unsafe image sources and attributes are removed',async()=>{
+ const page=await servicesPage();const {d,dom}=page;editService(page);
+ const editor=d.querySelector('[data-service-edit-details]');editor.innerHTML='<img src="'+detailImage+'" width="320" onerror="alert(1)"><img src="https://example.test/tracker.png"><img src="data:image/svg+xml;base64,PHN2Zz4=">';
+ saveService(page);editService(page);assert.equal(editor.querySelectorAll('img').length,1);assert.equal(editor.querySelector('img').getAttribute('onerror'),null);assert.equal(editor.querySelector('img').src,detailImage);
+ dom.window.close();
+});
+test('clipboard images insert, unsupported files report an error, and late uploads cannot change another service',async()=>{
+ const page=await servicesPage();const {w,d,dom}=page;editService(page);
+ const editor=d.querySelector('[data-service-edit-details]');
+ const paste=new w.Event('paste',{bubbles:true,cancelable:true});Object.defineProperty(paste,'clipboardData',{value:{files:[imageFile(w)],getData:()=>''}});editor.dispatchEvent(paste);await waitForImage(page);
+ chooseDetailImage(page,new w.File(['<svg/>'],'bad.svg',{type:'image/svg+xml'}));assert.equal(d.querySelector('[data-service-edit-error]').hidden,false);assert.equal(editor.querySelectorAll('img').length,1);
+ chooseDetailImage(page,new w.File([new Uint8Array(10*1024*1024+1)],'big.png',{type:'image/png'}));assert.match(d.querySelector('[data-service-edit-error]').textContent,/10MB/);
+ chooseDetailImage(page,imageFile(w));d.querySelector('[data-service-editor-close]').click();editService(page);
+ await new Promise(resolve=>w.setTimeout(resolve,30));assert.equal(editor.querySelector('img'),null);dom.window.close();
+});
+
+test('image read failure restores Save and storage failure retains inline image draft',async()=>{
+ const page=await servicesPage();const {d,w,dom}=page;editService(page);
+ chooseDetailImage(page,new w.File(['not an image'],'broken.png',{type:'image/png'}));
+ assert.equal(d.querySelector('[data-service-editor-form] [type=submit]').disabled,true);
+ await new Promise(resolve=>w.setTimeout(resolve,30));
+ assert.equal(d.querySelector('[data-service-editor-form] [type=submit]').disabled,false);
+ assert.match(d.querySelector('[data-service-edit-error]').textContent,/could not be read/);
+ chooseDetailImage(page,imageFile(w));await waitForImage(page);
+ const before=w.NEXORA_SERVICE_APPROVAL_SETTINGS.loadCatalog('bitcoin-nail-bar-houston',serviceFixture.categories);
+ w.Storage.prototype.setItem=()=>{throw new Error('Storage full');};saveService(page);
+ assert.equal(d.querySelector('[data-service-editor]').hidden,false);assert.ok(d.querySelector('[data-service-edit-details] img'));
+ assert.deepEqual(w.NEXORA_SERVICE_APPROVAL_SETTINGS.loadCatalog('bitcoin-nail-bar-houston',serviceFixture.categories),before);dom.window.close();
+});

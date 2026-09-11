@@ -130,3 +130,9 @@
 .salon-category-select .ts-dropdown .active { background:#f6f5ff; color:#5044ff; }
 .salon-category-select .ts-dropdown .tomselect-checkbox { width:16px; height:16px; margin:0; flex-shrink:0; }
 .salon-category-select .ts-wrapper.focus .ts-control { border-color:#7770ff; outline:2px solid #7770ff; outline-offset:1px; }
+
+.salon-rich-content img { display:inline-block; max-width:100%; height:auto; margin:8px 0; vertical-align:middle; cursor:pointer; }
+.salon-rich-content img.is-selected { outline:2px solid #7770ff; outline-offset:2px; }
+.salon-details-image-actions { display:flex; align-items:center; flex-wrap:wrap; gap:6px; padding:8px 0; font-size:12px; }
+.salon-details-image-actions[hidden] { display:none; }
+[data-settings-panel="services"] .salon-details-image-actions button { padding:6px 9px; font-size:11px; }
