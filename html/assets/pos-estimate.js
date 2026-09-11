@@ -5,9 +5,10 @@
   function calculate(lines, type, value) {
     if (!lines.length) return {error:'Choose at least one service.'};
     if (lines.some(line => line.price == null || line.price === '' || !Number.isFinite(Number(line.price)) || Number(line.price) < 0)) return {error:'Enter a valid price for every selected service.'};
+    if (lines.some(line => !Number.isSafeInteger(Number(line.quantity ?? 1)) || Number(line.quantity ?? 1) < 1)) return {error:'Enter a positive whole number for every quantity.'};
     const amount = Number(value);
     if (!['percent','fixed'].includes(type) || value === '' || !Number.isFinite(amount) || amount < 0 || (type === 'percent' && amount > 100)) return {error:'Enter a valid discount (0–100% or a positive dollar amount).'};
-    const subtotalCents = lines.reduce((sum,line) => sum + Math.round(Number(line.price) * 100),0);
+    const subtotalCents = lines.reduce((sum,line) => sum + Math.round(Number(line.price) * 100) * Number(line.quantity ?? 1),0);
     const discountCents = Math.min(subtotalCents, Math.round(type === 'percent' ? subtotalCents * amount / 100 : amount * 100));
     return {subtotalCents,discountCents,totalCents:subtotalCents-discountCents,type,value:amount};
   }
@@ -33,12 +34,14 @@
     }
     function render() {
       catalog();
-      $('[data-est-lines]').innerHTML = lines.map((l,i)=>`<div class="estimate-line"><div><strong>${esc(l.serviceName)}</strong>${l.customPrice?`<label>Service price ($)<input class="pos-input" type="number" min="0" step="0.01" data-est-price="${i}" value="${esc(l.price ?? '')}"></label>`:`<small>${money(Math.round(l.price*100))}</small>`}</div><button class="pos-btn pos-btn-sm" type="button" data-est-remove="${i}" aria-label="Remove ${esc(l.serviceName)}">×</button></div>`).join('') || '<p class="pos-muted">Select services to start an estimate.</p>';
+      const rows = lines.map((l,i)=>`<div class="estimate-line"><div class="estimate-line-service"><strong>${esc(l.serviceName)}</strong>${l.customPrice?`<label>Service price ($)<input class="pos-input" type="number" min="0" step="0.01" data-est-price="${i}" value="${esc(l.price ?? '')}"></label>`:`<small>${money(Math.round(l.price*100))}</small>`}</div><input class="pos-input estimate-quantity" type="number" min="1" step="1" data-est-quantity="${i}" aria-label="Quantity for ${esc(l.serviceName)}" value="${esc(l.quantity)}"><button class="pos-btn pos-btn-sm" type="button" data-est-remove="${i}" aria-label="Remove ${esc(l.serviceName)}">×</button></div>`).join('');
+      $('[data-est-lines]').innerHTML = rows ? '<div class="estimate-line-heading"><span>Service / Unit price</span><span>Quantity</span><span></span></div>'+rows : '<p class="pos-muted">Select services to start an estimate.</p>';
       totals();
     }
     root.addEventListener('input', e=>{
       if(e.target.matches('[data-est-search]')) catalog();
       if(e.target.matches('[data-est-price]')) {lines[Number(e.target.dataset.estPrice)].price=e.target.value;totals();}
+      if(e.target.matches('[data-est-quantity]')) {lines[Number(e.target.dataset.estQuantity)].quantity=e.target.value;totals();}
       if(e.target.matches('[data-est-value]')) totals();
     });
     $('[data-est-type]').addEventListener('change',()=>{
@@ -49,11 +52,16 @@
     });
     root.addEventListener('click',e=>{
       const add=e.target.closest('[data-est-add]'),remove=e.target.closest('[data-est-remove]'),preset=e.target.closest('[data-est-preset]');
-      if(add){const s=options.getServices().find(s=>s.id===add.dataset.estAdd && s.active!==false);if(s){lines.push({serviceId:s.id,serviceName:s.name,price:s.price,customPrice:s.price==null,durationMin:s.durationMin || 30,technicianId:null,technicianName:'Anyone'});render();}}
+      if(add){const s=options.getServices().find(s=>s.id===add.dataset.estAdd && s.active!==false);if(s){
+        const existing=lines.find(l=>l.serviceId===s.id && l.serviceName===s.name && l.price===s.price && !l.customPrice);
+        if(existing) existing.quantity=Number(existing.quantity)+1;
+        else lines.push({serviceId:s.id,serviceName:s.name,price:s.price,quantity:1,customPrice:s.price==null,durationMin:s.durationMin || 30,technicianId:null,technicianName:'Anyone'});
+        render();
+      }}
       if(remove){lines.splice(Number(remove.dataset.estRemove),1);render();}
       if(preset){$('[data-est-value]').value=preset.dataset.estPreset;totals();}
       if(e.target.closest('[data-est-reset]')){lines=[];$('[data-est-value]').value='0';render();}
-      if(e.target.closest('[data-est-checkin]')){const result=totals();if(result.error)return;$('[data-est-confirm]').textContent=lines.map(l=>l.serviceName).join(' + ')+' · '+money(result.totalCents);$('[data-est-submit-error]').textContent='';$('dialog').showModal();}
+      if(e.target.closest('[data-est-checkin]')){const result=totals();if(result.error)return;$('[data-est-confirm]').textContent=lines.map(l=>l.serviceName+' × '+l.quantity).join(' + ')+' · '+money(result.totalCents);$('[data-est-submit-error]').textContent='';$('dialog').showModal();}
       if(e.target.closest('[data-est-cancel]'))$('dialog').close();
     });
     $('form').addEventListener('submit',e=>{
@@ -62,7 +70,7 @@
       if(!name||!phone||estimate.error){$('[data-est-submit-error]').textContent=estimate.error || 'Enter customer name and phone.';return;}
       pending=true;
       try {
-        const result=options.checkIn({customerName:name,phone,tickets:lines.map(l=>({...l,price:Number(l.price)})),estimate});
+        const result=options.checkIn({customerName:name,phone,tickets:lines.flatMap(({quantity,...line})=>Array.from({length:Number(quantity)},()=>({...line,price:Number(line.price)}))),estimate});
         if(!result || !result.ok){$('[data-est-submit-error]').textContent=result?.error?.message || 'Unable to check in. Please try again.';return;}
         $('dialog').close();$('form').reset();lines=[];$('[data-est-value]').value='0';render();
       } catch(error){$('[data-est-submit-error]').textContent='Unable to check in. Please try again.';} finally {pending=false;}
