@@ -12,6 +12,8 @@ Front Desk sử dụng **Estimate** để tư vấn dịch vụ và cho khách x
 
 **Vị trí:** POS → Front Desk → Estimate.
 
+**Trình bày:** Services dùng màu sắc, nền và viền đồng bộ với phần Edit của Tickets. Your estimate phân biệt rõ tên dịch vụ, đơn giá và số lượng; nhóm giảm giá riêng, nhấn mạnh Estimated total và nút check-in. Khi đủ rộng, phần giảm giá và tổng tiền nằm cạnh nhau; trên màn hẹp, hai phần xếp dọc.
+
 Tài liệu mô tả yêu cầu nghiệp vụ của Estimate. **Đối chiếu triển khai:** bản HTML hiện lấy danh mục từ dữ liệu salon cục bộ, chưa tích hợp API dịch vụ và chưa có thao tác thêm dịch vụ custom. Cơ chế nhập giá cho dịch vụ danh mục thiếu giá trong HTML hiện tại không phải yêu cầu nghiệp vụ; cần thay bằng luồng thêm custom bên dưới. Estimate chỉ tính tiền dịch vụ; chưa bao gồm tax và tip. Việc xác nhận check-in không thu tiền. Giảm giá trong Estimate được lưu để tham chiếu và cần xác nhận lại tại checkout.
 
 ### Key Concepts
@@ -81,7 +83,7 @@ flowchart TD
 
 | ID | User story | Given — Điều kiện | When — Thao tác | Then — Kết quả |
 | :--- | :--- | :--- | :--- | :--- |
-| AC-FDE-01 | US-FDE-01 | Đang ở Front Desk | Mở Estimate | Hiện Choose services, Your estimate, Discount on all services, Subtotal, Discount, Estimated total và nút check-in. |
+| AC-FDE-01 | US-FDE-01 | Đang ở Front Desk | Mở Estimate | Hiện Services, Your estimate, Discount on all services, Subtotal, Discount, Estimated total và nút check-in. |
 | AC-FDE-02 | US-FDE-01 | Danh mục có dịch vụ hoạt động và ngừng hoạt động | Tìm theo một phần tên | Chỉ hiện dịch vụ hoạt động khớp tên; không phân biệt hoa/thường; hiển thị tên, thời lượng và giá sẵn từ API; không yêu cầu nhập giá cho dịch vụ danh mục. |
 | AC-FDE-03 | US-FDE-01 | Một dịch vụ đã được chọn | Xem lại danh mục | Nút thêm vẫn khả dụng; mỗi lần bấm tăng Quantity thêm 1 trên dòng cùng dịch vụ và đơn giá. Chọn 4 lần chỉ hiện một dòng với Quantity = 4; tổng tính theo đơn giá nhân số lượng. |
 | AC-FDE-04 | US-FDE-02 | Khách cần dịch vụ custom | Nhập tên dịch vụ và giá, xác nhận thêm | Thêm một dòng custom với đúng tên và giá đã nhập; cộng giá vào Subtotal và áp dụng giảm giá chung. |
