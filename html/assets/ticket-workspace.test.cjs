@@ -305,3 +305,42 @@ test('invalid custom counts block creation and presets recover without stale gue
  assert.equal(d.querySelector('[data-tw-save]').disabled,false);assert.equal(d.querySelectorAll('[data-tw-split-guests] input').length,3);
  assert.equal(d.querySelector('[name="customBillCount"]').disabled,true);submit(w,d);assert.equal(ticket.splitBills.bills.length,3);w.close();
 });
+
+test('unpaid amount split can choose service payers while keeping guests and cancelling setup preserves the split',()=>{
+ const c=groupCheckout(),{d,w,ticket,api}=c;amountSetup(c,2);d.querySelector('[name="guest1"]').value='Hoa';submit(w,d);
+ const original=JSON.stringify(ticket.splitBills),lines=JSON.stringify(ticket.lines),billIds=Array.from(ticket.splitBills.bills,b=>b.id);
+ assert.ok(d.querySelector('[data-tw-assign-services]'));
+ d.querySelector('[data-tw-assign-services]').click();
+ assert.equal(d.querySelector('[name="splitMode"]:checked').value,'services');
+ assert.equal(d.querySelector('[name="billCount"]:checked').value,'2');
+ assert.equal(d.querySelector('[name="guest0"]').value,'Amy');assert.equal(d.querySelector('[name="guest1"]').value,'Hoa');
+ assert.equal(d.querySelectorAll('[data-tw-setup-line]').length,6);
+ assert.equal(d.querySelectorAll('[data-tw-setup-line]:checked').length,0);
+ d.querySelector('[data-tw-setup-line="l2"][data-guest="1"]').click();
+ d.querySelector('[data-tw-close]').click();assert.equal(JSON.stringify(ticket.splitBills),original);
+ d.querySelector('[data-tw-assign-services]').click();
+ for(const [line,guest] of [['l1',0],['l2',1],['l3',1]])d.querySelector(`[data-tw-setup-line="${line}"][data-guest="${guest}"]`).click();
+ submit(w,d);assert.equal(ticket.splitBills.mode,'services');assert.equal(JSON.stringify(ticket.lines),lines);
+ assert.deepEqual(Array.from(ticket.splitBills.bills,b=>b.name),['Amy','Hoa']);assert.deepEqual(Array.from(ticket.splitBills.bills,b=>b.id),billIds);
+ assert.equal(d.querySelector('[data-tw-bill-line="l2"]').checked,false);
+ assert.match(d.querySelector('[data-tw-bill-line="l2"]').parentElement.textContent,/Payer: Bill 2 · Hoa/);
+ assert.match(d.querySelectorAll('[data-tw-bill]')[1].textContent,/Pedicure.*Gel/);
+ d.querySelectorAll('[data-tw-bill]')[1].click();assert.equal(d.querySelector('[data-tw-total]').textContent,'$49.50');
+ const restored=JSON.parse(JSON.stringify(ticket));api.open(restored,'checkout');
+ assert.match(d.querySelector('[data-tw-bill-line="l2"]').parentElement.textContent,/Payer: Bill 2 · Hoa/);w.close();
+});
+test('switching to service payers validates excess guest counts without replacing the saved split',()=>{
+ const c=groupCheckout(),{d,w,ticket}=c;amountSetup(c,5);submit(w,d);
+ const original=JSON.stringify(ticket.splitBills);d.querySelector('[data-tw-assign-services]').click();
+ assert.equal(d.querySelector('[name="billCount"]:checked').value,'custom');
+ assert.equal(d.querySelector('[name="customBillCount"]').value,'5');
+ assert.equal(d.querySelector('[data-tw-save]').disabled,true);submit(w,d);assert.equal(JSON.stringify(ticket.splitBills),original);
+ d.querySelector('[name="billCount"][value="3"]').click();
+ assert.equal(d.querySelector('[data-tw-save]').disabled,false);assert.equal(d.querySelector('[name="guest2"]').value,'Guest 3');w.close();
+});
+test('paid amount split cannot change to service payers',()=>{
+ const c=groupCheckout(),{d,w,ticket}=c;amountSetup(c,2);submit(w,d);
+ d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
+ d.querySelectorAll('[data-tw-bill]')[1].click();assert.equal(d.querySelector('[data-tw-assign-services]'),null);
+ assert.equal(ticket.splitBills.mode,'amount');w.close();
+});
