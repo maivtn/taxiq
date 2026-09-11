@@ -71,8 +71,10 @@ function groupCheckout(){
  return ctx;
 }
 function assignBill(ctx,line,index){
- const select=ctx.d.querySelector(`[data-tw-bill-line="${line}"]`);
- select.value=select.options[index].value;select.dispatchEvent(new ctx.w.Event('change',{bubbles:true}));
+ const original=ctx.d.querySelector('[data-tw-bill][aria-pressed="true"]').getAttribute('data-tw-bill');
+ ctx.d.querySelectorAll('[data-tw-bill]')[index].click();
+ const check=ctx.d.querySelector(`[data-tw-bill-line="${line}"]`);if(!check.checked)check.click();
+ ctx.d.querySelector(`[data-tw-bill="${original}"]`).click();
 }
 test('three guests pay their own services and tips, parent completes only after all bills are paid',()=>{
  const c=groupCheckout(),{d,ticket}=c;
@@ -129,15 +131,15 @@ test('Split bill opens setup for incomplete services and missing prices without 
  assert.ok(d.querySelector('[name="billCount"]'));
  assert.equal(ticket.splitBills,undefined);
  submit(w,d);assert.equal(ticket.splitBills,undefined);assert.match(d.querySelector('[data-tw-error]').textContent,/price/i);
- d.querySelector('[name="splitPrice0"]').value='40';d.querySelector('[data-tw-close]').click();
+ assert.equal(d.querySelector('[name="splitPrice0"]'),null);d.querySelector('[data-tw-close]').click();
  assert.equal(ticket.lines[0].price,null);assert.equal(ticket.splitBills,undefined);w.close();
 });
 test('setup creates three named bills before service completion and retains completion guard on payment',()=>{
- const c=groupCheckout(),{w,d,ticket,api}=c;ticket.lines[0].status='in-service';ticket.lines[0].price=null;api.open(ticket,'checkout');
+ const c=groupCheckout(),{w,d,ticket,api}=c;ticket.lines[0].status='in-service';api.open(ticket,'checkout');
  d.querySelector('[data-tw-split-bill]').click();
  assert.equal(d.querySelector('dialog').open,true);
  const count=d.querySelector('[name="billCount"]');count.value='3';count.dispatchEvent(new w.Event('change',{bubbles:true}));
- d.querySelector('[name="guest1"]').value='Hoa';d.querySelector('[name="guest2"]').value='Mai';d.querySelector('[name="splitPrice0"]').value='45';submit(w,d);
+ d.querySelector('[name="guest1"]').value='Hoa';d.querySelector('[name="guest2"]').value='Mai';submit(w,d);
  assert.equal(d.querySelectorAll('[data-tw-bill]').length,3);assert.match(d.querySelectorAll('[data-tw-bill]')[1].textContent,/Hoa/);
  assignBill(c,'l2',1);assignBill(c,'l3',2);d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
  assert.equal(ticket.payment,undefined);assert.match(d.querySelector('[data-tw-message]').textContent,/Complete/);
@@ -165,4 +167,16 @@ test('custom amounts reject mismatch and persist a partly paid ticket with separ
  const cash=d.querySelector('[data-tw-field="cash"]');cash.value='35';cash.dispatchEvent(new w.Event('input',{bubbles:true}));d.querySelector('[data-tw-pay]').click();
  d.querySelectorAll('[data-tw-bill]')[2].click();d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
  assert.equal(restored.payment.totalCents,9000);assert.equal(restored.payment.cashCents,3000);assert.equal(restored.payment.cardCents,6000);assert.equal(restored.payment.changeCents,500);w.close();
+});
+
+test('service split shows all services in Ticket Detail and checkboxes assign exclusively to selected guest',()=>{
+ const c=groupCheckout(),{d,w,ticket}=c;d.querySelector('[data-tw-split-bill]').click();submit(w,d);
+ d.querySelectorAll('[data-tw-bill]')[1].click();
+ const checks=d.querySelectorAll('.tw-ticket-side .tw-lines input[type="checkbox"]');assert.equal(checks.length,3);
+ const check=d.querySelector('[data-tw-bill-line="l2"]');assert.equal(check.checked,false);check.click();
+ assert.equal(d.querySelector('[data-tw-total]').textContent,'$27.00');
+ d.querySelectorAll('[data-tw-bill]')[0].click();assert.equal(d.querySelector('[data-tw-bill-line="l2"]').checked,false);assert.equal(d.querySelector('[data-tw-total]').textContent,'$63.00');
+ d.querySelector('[data-tw-bill-line="l1"]').click();
+ d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
+ assert.equal(ticket.payment,undefined);assert.match(d.querySelector('[data-tw-message]').textContent,/every service/i);w.close();
 });
