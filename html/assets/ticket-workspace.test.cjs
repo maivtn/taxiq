@@ -278,3 +278,29 @@ test('Discount all preserves custom amount proportions and discount and tip tota
  assert.equal(ticket.splitBills.bills.reduce((sum,b)=>sum+b.amountTotals.discountCents,0),2000);
  assert.equal(ticket.splitBills.bills.reduce((sum,b)=>sum+b.amountTotals.tipCents,0),1000);w.close();
 });
+
+test('custom bill count creates six amount bills and preserves exact totals',()=>{
+ const c=groupCheckout(),{d,w,ticket}=c;amountSetup(c,2);
+ assert.ok(d.querySelector('[name="billCount"][value="custom"]'));
+ d.querySelector('[name="billCount"][value="custom"]').click();
+ const custom=d.querySelector('[name="customBillCount"]');custom.value='6';custom.dispatchEvent(new w.Event('input',{bubbles:true}));
+ assert.equal(d.querySelectorAll('[data-tw-share]').length,6);
+ assert.equal(d.querySelector('[data-tw-setup-bill-total="5"]').textContent,'$15.00');
+ submit(w,d);assert.equal(ticket.splitBills.bills.length,6);
+ assert.equal(ticket.splitBills.bills.reduce((sum,b)=>sum+b.amountTotals.totalCents,0),9000);w.close();
+});
+test('invalid custom counts block creation and presets recover without stale guest rows',()=>{
+ const c=groupCheckout(),{d,w,ticket}=c;amountSetup(c,2);
+ assert.ok(d.querySelector('[name="billCount"][value="custom"]'));
+ d.querySelector('[name="billCount"][value="custom"]').click();
+ const custom=d.querySelector('[name="customBillCount"]');
+ for(const value of ['','1','2.5','21']){
+  custom.value=value;custom.dispatchEvent(new w.Event('input',{bubbles:true}));
+  assert.equal(d.querySelector('[data-tw-save]').disabled,true);submit(w,d);assert.equal(ticket.splitBills,undefined);
+ }
+ custom.value='6';custom.dispatchEvent(new w.Event('input',{bubbles:true}));
+ d.querySelector('[name="splitMode"][value="services"]').click();assert.equal(d.querySelector('[data-tw-save]').disabled,true);
+ d.querySelector('[name="billCount"][value="3"]').click();
+ assert.equal(d.querySelector('[data-tw-save]').disabled,false);assert.equal(d.querySelectorAll('[data-tw-split-guests] input').length,3);
+ assert.equal(d.querySelector('[name="customBillCount"]').disabled,true);submit(w,d);assert.equal(ticket.splitBills.bills.length,3);w.close();
+});
