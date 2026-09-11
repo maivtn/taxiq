@@ -21,6 +21,13 @@
     vlink: null,
   };
 
+  var LEGACY_SERVICE_ALIASES = {
+    'acrylic-full-set-acrylic-with-polish-0': ['Acrylic with Polish (Full Set)'],
+    'pedicure-paris-pearl-2': ['Paris Pearl Pedicure'],
+    'pedicure-milk-and-honey-3': ['Milk and Honey Pedicure'],
+    'waxing-eyebrow-0': ['Eyebrow Waxing']
+  };
+
   var DEFAULT_CATALOG = {
     salon: {
       id: SALON_ID,
@@ -39,6 +46,11 @@
       { id: 'eyelash', name: 'Eyelash', kind: 'service', active: true },
     ],
     services: [
+      { id: 'acrylic-full-set-acrylic-with-polish-0', aliases: LEGACY_SERVICE_ALIASES['acrylic-full-set-acrylic-with-polish-0'] || [], name: 'Acrylic with polish', price: 50, durationMin: 90, categoryId: 'acrylic-full-set', categoryName: 'Acrylic Nail — Full Set', requiredSkill: 'Acrylic', active: true },
+      { id: 'pedicure-paris-pearl-2', aliases: LEGACY_SERVICE_ALIASES['pedicure-paris-pearl-2'] || [], name: 'Paris Pearl', price: 75, durationMin: 60, categoryId: 'pedicure', categoryName: 'Pedicure', requiredSkill: 'Pedicure', active: true },
+      { id: 'pedicure-milk-and-honey-3', aliases: LEGACY_SERVICE_ALIASES['pedicure-milk-and-honey-3'] || [], name: 'Milk and Honey', price: 55, durationMin: 45, categoryId: 'pedicure', categoryName: 'Pedicure', requiredSkill: 'Pedicure', active: true },
+      { id: 'dipping-nail-dipping-powder-0', aliases: LEGACY_SERVICE_ALIASES['dipping-nail-dipping-powder-0'] || [], name: 'Dipping Powder', price: 52, durationMin: 45, categoryId: 'dipping-nail', categoryName: 'Dipping Nail', requiredSkill: 'Dip', active: true },
+      { id: 'waxing-eyebrow-0', aliases: LEGACY_SERVICE_ALIASES['waxing-eyebrow-0'] || [], name: 'Eyebrow', price: 15, durationMin: 15, categoryId: 'waxing', categoryName: 'Waxing', requiredSkill: 'Waxing', active: true },
       { id: 'pedi', name: 'Pedicure', aliases: ['Classic Pedicure', 'Pedicure Gel Polish'], price: 30, durationMin: 60, requiredSkill: 'Pedicure', icon: '🦶', active: true },
       { id: 'mani', name: 'Manicure', aliases: ['Classic Manicure'], price: 22, durationMin: 45, requiredSkill: 'Manicure', icon: '🤲', active: true },
       { id: 'full', name: 'Acrylic — Full Set', aliases: ['Full Set Acrylic', 'Full Set Acrylic French Tip', 'Gel Full Set Removal'], price: 45, durationMin: 90, requiredSkill: 'Acrylic', icon: '✨', active: true },
@@ -98,7 +110,7 @@
     return {
       id: asString(service.id, 'service-' + Date.now()),
       name: asString(service.name, asString(service.id, 'Service')),
-      aliases: uniqueStrings(service.aliases),
+      aliases: uniqueStrings([...(Array.isArray(service.aliases)?service.aliases:[]), ...(LEGACY_SERVICE_ALIASES[service.id] || [])]),
       price: Number.isFinite(price) ? price : null,
       durationMin: Number.isFinite(duration) && duration > 0 ? duration : 60,
       requiredSkill: asString(service.requiredSkill),

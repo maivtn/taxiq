@@ -32,7 +32,7 @@ test('Checkout validates service completion, computes discounts and tip, rejects
  dom.window.close();
 });
 test('Unknown prices block payment and custom service text is escaped',()=>{
- const {dom,w,d,ticket,api}=boot('checkout');ticket.lines[0].price=null;ticket.lines[0].status='completed';api.open(ticket,'checkout');
+ const {dom,w,d,ticket,api}=boot('checkout');ticket.lines[0].price=null;ticket.lines[0].name='Unlisted service';ticket.lines[0].status='completed';api.open(ticket,'checkout');
  d.querySelector('[data-tw-pay]').click();assert.equal(ticket.payment,undefined);assert.match(d.querySelector('[data-tw-message]').textContent,/price/);
  d.querySelector('[data-tw-custom]').click();d.querySelector('[name="name"]').value='<img src=x>';d.querySelector('[name="price"]').value='12.50';submit(w,d);
  assert.equal(ticket.lines[1].price,12.5);assert.equal(d.querySelector('img'),null);
@@ -201,4 +201,80 @@ test('service setup selections survive mode changes and cancel does not modify t
  method.value='services';method.dispatchEvent(new w.Event('change',{bubbles:true}));
  assert.equal(d.querySelector('[data-tw-setup-line="l2"][data-guest="1"]').checked,true);
  d.querySelector('[data-tw-close]').click();assert.equal(ticket.splitBills,undefined);w.close();
+});
+
+test('setup summary updates per-guest totals and unassigned balance when checking services',()=>{
+ const {d,w,ticket,api}=groupCheckout();ticket.checkout.tip=5;api.open(ticket,'checkout');
+ d.querySelector('[data-tw-split-bill]').click();
+ assert.ok(d.querySelector('[data-tw-split-summary]'));
+ d.querySelector('[data-tw-setup-line="l2"][data-guest="1"]').click();
+ assert.equal(d.querySelector('[data-tw-setup-bill-total="0"]').textContent,'$68.00');
+ assert.equal(d.querySelector('[data-tw-setup-bill-total="1"]').textContent,'$27.00');
+ assert.equal(d.querySelector('[data-tw-setup-total]').textContent,'$95.00');
+ assert.equal(d.querySelector('[data-tw-setup-remaining]').textContent,'$0.00');
+ d.querySelector('[data-tw-setup-line="l2"][data-guest="1"]').click();
+ assert.equal(d.querySelector('[data-tw-setup-remaining]').textContent,'$27.00');w.close();
+});
+test('amount setup summary shows discount, tip and remaining balance for custom amounts',()=>{
+ const c=boot('checkout'),{d,w,ticket,api}=c;ticket.lines[0].price=100;ticket.discount={type:'fixed',value:10};ticket.checkout.tip=10;api.open(ticket,'checkout');amountSetup(c);
+ assert.ok(d.querySelector('[data-tw-split-summary]'));
+ assert.equal(d.querySelector('[data-tw-setup-total]').textContent,'$100.00');
+ const policy=d.querySelector('[name="amountAllocation"]');policy.value='custom';policy.dispatchEvent(new w.Event('change',{bubbles:true}));
+ const amount=d.querySelector('[name="amount0"]');amount.value='10';amount.dispatchEvent(new w.Event('input',{bubbles:true}));
+ assert.equal(d.querySelector('[data-tw-setup-bill-total="0"]').textContent,'$10.00');
+ assert.equal(d.querySelector('[data-tw-setup-remaining]').textContent,'$23.34');w.close();
+});
+
+test('service setup summary matches created bills with a percentage tip',()=>{
+ const {d,w,ticket,api}=groupCheckout();ticket.checkout.tip=10;ticket.checkout.tipType='percent';api.open(ticket,'checkout');
+ d.querySelector('[data-tw-split-bill]').click();d.querySelector('[data-tw-setup-line="l2"][data-guest="1"]').click();
+ assert.equal(d.querySelector('[data-tw-setup-bill-total="0"]').textContent,'$69.30');
+ assert.equal(d.querySelector('[data-tw-setup-total]').textContent,'$96.30');
+ submit(w,d);assert.equal(d.querySelector('[data-tw-total]').textContent,'$69.30');w.close();
+});
+test('Discount all remains available for an unpaid service split and locks after payment',()=>{
+ const c=groupCheckout(),{d,w,ticket}=c;d.querySelector('[data-tw-split-bill]').click();submit(w,d);assignBill(c,'l2',1);
+ assert.ok(d.querySelector('[data-tw-discount-all]'));
+ d.querySelector('[data-tw-discount-all]').click();d.querySelector('[name="value"]').value='20';submit(w,d);
+ assert.equal(d.querySelector('[data-tw-total]').textContent,'$56.00');
+ d.querySelectorAll('[data-tw-bill]')[1].click();assert.equal(d.querySelector('[data-tw-total]').textContent,'$24.00');
+ d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
+ d.querySelectorAll('[data-tw-bill]')[0].click();assert.equal(d.querySelector('[data-tw-discount-all]').disabled,true);
+ assert.equal(ticket.splitBills.bills[1].payment.totalCents,2400);w.close();
+});
+test('Discount all recalculates equal amount bills with exact cents',()=>{
+ const c=groupCheckout(),{d,w,ticket}=c;amountSetup(c);submit(w,d);
+ assert.ok(d.querySelector('[data-tw-discount-all]'));
+ d.querySelector('[data-tw-discount-all]').click();d.querySelector('[name="value"]').value='20';submit(w,d);
+ assert.deepEqual(Array.from(ticket.splitBills.bills,b=>b.amountTotals.totalCents),[2667,2667,2666]);w.close();
+});
+
+test('known service IDs restore missing prices without replacing valid price snapshots',()=>{
+ const {d,w,ticket,api}=boot('checkout');ticket.lines=[
+  {id:'missing',serviceId:'pedi',name:'Old name',price:null,tech:'Jade',status:'completed'},
+  {id:'agreed',serviceId:'pedi',name:'Pedicure',price:25,tech:'Jade',status:'completed'},
+  {id:'free',serviceId:'pedi',name:'Pedicure',price:0,tech:'Jade',status:'completed'}
+ ];api.open(ticket,'checkout');
+ assert.deepEqual(ticket.lines.map(l=>l.price),[30,25,0]);assert.equal(d.querySelector('[data-tw-total]').textContent,'$55.00');w.close();
+});
+test('Discount all supports fully discounted amount bills and restoring a price',()=>{
+ const c=groupCheckout(),{d,w,ticket}=c;amountSetup(c);submit(w,d);
+ d.querySelector('[data-tw-discount-all]').click();d.querySelector('[name="value"]').value='100';submit(w,d);
+ assert.deepEqual(Array.from(ticket.splitBills.bills,b=>b.amountTotals.totalCents),[0,0,0]);
+ d.querySelector('[data-tw-discount-all]').click();d.querySelector('[name="value"]').value='10';submit(w,d);
+ assert.deepEqual(Array.from(ticket.splitBills.bills,b=>b.amountTotals.totalCents),[3000,3000,3000]);w.close();
+});
+test('amount setup creates a zero-total split without losing the discount',()=>{
+ const c=groupCheckout(),{d,w,ticket,api}=c;ticket.discount={type:'percent',value:100};api.open(ticket,'checkout');amountSetup(c);submit(w,d);
+ assert.equal(ticket.splitBills.bills.length,3);
+ assert.deepEqual(Array.from(ticket.splitBills.bills,b=>b.amountTotals.totalCents),[0,0,0]);
+ assert.equal(ticket.splitBills.bills.reduce((sum,b)=>sum+b.amountTotals.discountCents,0),10000);w.close();
+});
+test('Discount all preserves custom amount proportions and discount and tip totals',()=>{
+ const c=groupCheckout(),{d,w,ticket,api}=c;ticket.checkout.tip=10;api.open(ticket,'checkout');amountSetup(c,3,'custom');
+ for(const [i,value] of ['50','30','20'].entries())d.querySelector(`[name="amount${i}"]`).value=value;
+ submit(w,d);d.querySelector('[data-tw-discount-all]').click();d.querySelector('[name="value"]').value='20';submit(w,d);
+ assert.deepEqual(Array.from(ticket.splitBills.bills,b=>b.amountTotals.totalCents),[4500,2700,1800]);
+ assert.equal(ticket.splitBills.bills.reduce((sum,b)=>sum+b.amountTotals.discountCents,0),2000);
+ assert.equal(ticket.splitBills.bills.reduce((sum,b)=>sum+b.amountTotals.tipCents,0),1000);w.close();
 });

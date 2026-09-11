@@ -11,28 +11,11 @@ const appointmentStore=window.NEXORA_APPOINTMENTS_STORE;
 if(appointmentStore){
  let nextId=Math.max(...tickets.map(t=>t.id));
  appointmentStore.loadAll().filter(r=>r.status==='checked-in'&&r.metadata?.estimate).forEach(r=>{
-  const saved=r.metadata.frontDeskQueue || {};
-  tickets.push({...saved,id:++nextId,bookingId:r.id,customer:r.customerName,phone:r.phone,
+  tickets.push({id:++nextId,bookingId:r.id,customer:r.customerName,phone:r.phone,
    time:new Date(r.metadata.checkedInAt || r.startAt).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}),
-   status:saved.status || 'waiting',tech:saved.tech || '',services:saved.services || r.serviceNames,lines:saved.lines || r.tickets.map(l=>({id:l.id,serviceId:l.serviceId,name:l.serviceName,price:l.price,tech:l.technicianName==='Anyone'?'':l.technicianName,status:l.technicianId?'assigned':'unassigned'})),
+   status:'waiting',tech:'',services:r.serviceNames,lines:r.tickets.map(l=>({id:l.id,serviceId:l.serviceId,name:l.serviceName,price:l.price,tech:l.technicianName==='Anyone'?'':l.technicianName,status:l.technicianId?'assigned':'unassigned'})),
    wait:Math.max(0,Math.floor((Date.now()-new Date(r.metadata.checkedInAt || r.startAt).getTime())/60000)),estimateNote:r.note});
  });
-}
-function saveEstimateTicket(t,cancel=false){
- if(!t.bookingId||!appointmentStore)return;
- const record=appointmentStore.loadAll().find(r=>r.id===t.bookingId);
- if(!record)return;
- if(cancel)appointmentStore.cancel(record.id);
- else appointmentStore.update(record.id,{customerName:t.customer,phone:t.phone,status:t.payment?'completed':record.status,metadata:{...record.metadata,frontDeskQueue:{status:t.status,tech:t.tech,services:t.services,location:t.location,techNote:t.techNote,lines:t.lines,note:t.note,checkout:t.checkout,discount:t.discount,payment:t.payment,splitBills:t.splitBills}}});
-}
-const workspaceStorageKey='nexora:front-desk-ticket-workspaces:v1';
-let savedWorkspaces={};
-try{savedWorkspaces=JSON.parse(localStorage.getItem(workspaceStorageKey)||'{}');}catch(_){}
-tickets=tickets.map(t=>({...t,...savedWorkspaces[t.bookingId || String(t.id)],id:t.id,bookingId:t.bookingId})).filter(t=>!t.payment);
-function persistWorkspace(t){
- savedWorkspaces[t.bookingId || String(t.id)]={...t};
- try{localStorage.setItem(workspaceStorageKey,JSON.stringify(savedWorkspaces));}catch(_){}
- saveEstimateTicket(t);
 }
 const technicians=[
  {name:'Kayla Bui',level:2,status:'available',turns:4,serviceCount:6,sales:180,minutes:205,codes:['PED','GEL','WAX'],commission:.6,dailyIncomeGoal:150,detail:'Available now · Nails & pedicure'},
@@ -64,7 +47,7 @@ function render(){
 const workspace=window.NEXORA_TICKET_WORKSPACE.mount($('#ticket-workspace'),{
  catalog:()=>window.NEXORA_SALON_DATA ? window.NEXORA_SALON_DATA.loadCatalog().services : [],
  technicians:()=>technicians,
- onChange(t){persistWorkspace(t);if(t.payment)tickets=tickets.filter(row=>row!==t);render();},
+ onChange(t){if(t.payment)tickets=tickets.filter(row=>row!==t);render();},
  onBack(){$('#tickets-view').hidden=false;render();}
 });
 function field(label,name,value='',type='text',required=false){return '<label>'+label+'<input name="'+name+'" type="'+type+'" value="'+esc(value)+'"'+(required?' required':'')+'></label>';}
@@ -86,7 +69,7 @@ function open(kind,ticket){
  $('#ticket-dialog-title').textContent=title;$('#ticket-dialog-content').innerHTML=content;$('#ticket-dialog').showModal();
 }
 $('#ticket-filters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(b){filter=b.dataset.filter;render();}});
-$('#ticket-body').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const t=tickets.find(t=>t.id===Number(b.dataset.id));if(!t)return;if(b.dataset.action==='start'){t.status='in-service';if(t.lines)t.lines.forEach(l=>{if(l.status!=='completed')l.status='in-service';});persistWorkspace(t);render();feedback('Service started for '+t.customer);return;}open(b.dataset.action,t);});
+$('#ticket-body').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const t=tickets.find(t=>t.id===Number(b.dataset.id));if(!t)return;if(b.dataset.action==='start'){t.status='in-service';if(t.lines)t.lines.forEach(l=>{if(l.status!=='completed')l.status='in-service';});render();feedback('Service started for '+t.customer);return;}open(b.dataset.action,t);});
 document.querySelectorAll('[data-close-dialog]').forEach(b=>b.addEventListener('click',()=>$('#ticket-dialog').close()));
 $('#ticket-form').addEventListener('submit',e=>{
  e.preventDefault();const data=new FormData(e.currentTarget),t=selected;if(!t)return;
@@ -107,7 +90,6 @@ $('#ticket-form').addEventListener('submit',e=>{
   }
  }
  if(action!=='assign'||!data.get('print'))feedback(action==='cancel'?'Ticket removed from queue.':'Ticket updated.');
- if(action==='cancel'){delete savedWorkspaces[t.bookingId || String(t.id)];try{localStorage.setItem(workspaceStorageKey,JSON.stringify(savedWorkspaces));}catch(_){}saveEstimateTicket(t,true);}else persistWorkspace(t);
  $('#ticket-dialog').close();render();
 });
 render();

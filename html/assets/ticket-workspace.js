@@ -102,50 +102,84 @@
         if(!['equal','custom'].includes(policy)){error('Choose equal or custom amounts.');return;}
         const amounts=bills.map((b,i)=>policy==='equal'?Math.floor(t.totalCents/count)+(i<t.totalCents%count?1:0):validMoney(data.get('amount'+i))?cents(data.get('amount'+i)):NaN);
         if(amounts.some(n=>!Number.isSafeInteger(n)||n<0)||amounts.reduce((sum,n)=>sum+n,0)!==t.totalCents){error('Enter valid amounts totaling '+money(t.totalCents)+'.');return;}
-        let cumulative=0,previousTip=0,previousDiscount=0;
-        bills.forEach((b,i)=>{
-          cumulative+=amounts[i];
-          const weight=t.totalCents?cumulative/t.totalCents:(i+1)/count;
-          const tip=Math.round(t.tipCents*weight),reduction=Math.round(t.discountCents*weight);
-          const tipCents=tip-previousTip,discountCents=reduction-previousDiscount,netCents=amounts[i]-tipCents;
-          b.amountTotals={subtotalCents:netCents+discountCents,discountCents,netCents,tipCents,totalCents:amounts[i]};
-          previousTip=tip;previousDiscount=reduction;
-        });
+        setAmountTotals(bills,amounts,t);
         parent.splitBills={mode:'amount',allocation:policy,bills};
         selectBill(first.id);save();render();return;
       }
       first.checkout={...parent.checkout};
-      const bases=parent.lines.map(l=>cents(l.price)-discount(cents(l.price),l.discount));
-      const base=bases.reduce((sum,n)=>sum+n,0),amount=discount(base,parent.discount);
-      let running=0,allocated=0;
-      parent.splitBills={mode:'services',bills,assignments:{},discounts:{}};
-      parent.lines.forEach((l,i)=>{
-        group().assignments[l.id]=bills[setupAssignments[l.id]]?.id || null;
-        running+=bases[i];
-        const next=base?Math.round(amount*running/base):0;
-        group().discounts[l.id]=next-allocated;allocated=next;
-      });
+      parent.splitBills={mode:'services',bills,assignments:{},discounts:serviceDiscounts()};
+      parent.lines.forEach(l=>{group().assignments[l.id]=bills[setupAssignments[l.id]]?.id || null;});
       selectBill(first.id);save();render();
     }
+    function setAmountTotals(bills,amounts,t) {
+      let cumulative=0,previousTip=0,previousDiscount=0;
+      bills.forEach((b,i)=>{
+        cumulative+=amounts[i];
+        const weight=t.totalCents?cumulative/t.totalCents:(i+1)/bills.length;
+        const tip=Math.round(t.tipCents*weight),reduction=Math.round(t.discountCents*weight);
+        const tipCents=tip-previousTip,discountCents=reduction-previousDiscount,netCents=amounts[i]-tipCents;
+        b.amountTotals={subtotalCents:netCents+discountCents,discountCents,netCents,tipCents,totalCents:amounts[i]};
+        previousTip=tip;previousDiscount=reduction;
+      });
+    }
+    function refreshSplitDiscount() {
+      if(amountSplit()){
+        const t=totals(parent),bills=group().bills,oldTotal=bills.reduce((sum,b)=>sum+b.amountTotals.totalCents,0);
+        let running=0,allocated=0;
+        const amounts=bills.map((b,i)=>{
+          if(group().allocation==='equal'||!oldTotal)return Math.floor(t.totalCents/bills.length)+(i<t.totalCents%bills.length?1:0);
+          running+=b.amountTotals.totalCents;const next=Math.round(t.totalCents*running/oldTotal),amount=next-allocated;allocated=next;return amount;
+        });
+        setAmountTotals(bills,amounts,t);
+      }else group().discounts=serviceDiscounts();
+      selectBill(activeBillId);
+    }
+    function serviceDiscounts() {
+      const bases=parent.lines.map(l=>cents(l.price)-discount(cents(l.price),l.discount));
+      const base=bases.reduce((sum,n)=>sum+n,0),amount=discount(base,parent.discount),result={};
+      let running=0,allocated=0;
+      parent.lines.forEach((l,i)=>{
+        running+=bases[i];const next=base?Math.round(amount*running/base):0;
+        result[l.id]=next-allocated;allocated=next;
+      });
+      return result;
+    }
+    function renderSplitSummary() {
+      const host=$('[data-tw-split-summary]');if(!host)return;
+      const t=totals(parent);
+      if(t.error){host.innerHTML='<h3>SUMMARY</h3><p>'+esc(t.error)+'</p>';return;}
+      const count=Number($('[name="billCount"]').value),byAmount=$('[name="splitMode"]').value==='amount',reductions=serviceDiscounts();
+      let assigned=0,tipCents=byAmount?t.tipCents:0;
+      const rows=Array.from({length:count},(_,i)=>{
+        const guest=$('[name="guest'+i+'"]').value.trim()||'Guest '+(i+1);
+        const lines=parent.lines.filter(l=>setupAssignments[l.id]===i);
+        const amountValue=byAmount?$('[name="amount'+i+'"]').value:null;
+        const net=lines.reduce((sum,l)=>sum+cents(l.price)-discount(cents(l.price),l.discount)-reductions[l.id],0);
+        if(!byAmount&&i===0)tipCents=parent.checkout.tipType==='percent'?Math.round(net*Number(parent.checkout.tip)/100):t.tipCents;
+        const total=byAmount?(validMoney(amountValue)?cents(amountValue):null):net+(i===0?tipCents:0);
+        assigned+=total || 0;
+        return `<div class="tw-summary-row"><span>Bill ${i+1} · ${esc(guest)}${byAmount?'':`<small>${lines.length} ${lines.length===1?'service':'services'}</small>`}</span><strong data-tw-setup-bill-total="${i}">${total==null?'—':money(total)}</strong></div>`;
+      }).join('');
+      const totalCents=t.netCents+tipCents;
+      host.innerHTML=`<h3>SUMMARY</h3>${rows}<div class="tw-summary-row tw-rule"><span>Subtotal</span><span>${money(t.subtotalCents)}</span></div><div class="tw-summary-row"><span>Discount</span><span>−${money(t.discountCents)}</span></div><div class="tw-summary-row"><span>Tip</span><span>${money(tipCents)}</span></div><div class="tw-summary-row tw-rule"><strong>Ticket total</strong><strong data-tw-setup-total>${money(totalCents)}</strong></div><div class="tw-summary-row"><span>Assigned</span><strong>${money(assigned)}</strong></div><div class="tw-summary-row ${assigned!==totalCents?'tw-red':''}"><span>Remaining to assign</span><strong data-tw-setup-remaining>${money(totalCents-assigned)}</strong></div>${!byAmount&&tipCents?'<p class="tw-muted">The current tip is on Bill 1. You can adjust each guest’s tip after creating bills.</p>':''}`;
+    }
     function updateAmountPreview() {
-      const summary=$('[data-tw-amount-preview]');if(!summary)return;
       const t=totals(parent),count=Number($('[name="billCount"]').value),equal=$('[name="amountAllocation"]').value==='equal';
       root.querySelectorAll('[data-tw-share]').forEach((el,i)=>{
         el.readOnly=equal;
         if(equal)el.value=t.error?'':((Math.floor(t.totalCents/count)+(i<t.totalCents%count?1:0))/100).toFixed(2);
       });
-      const inputs=[...root.querySelectorAll('[data-tw-share]')];
-      const sum=inputs.reduce((n,el)=>n+(validMoney(el.value)?cents(el.value):0),0);
-      summary.textContent=t.error?t.error:'Ticket total '+money(t.totalCents)+' · Assigned '+money(sum)+' · Remaining '+money(t.totalCents-sum)+'. Includes current discount and tip.';
+      renderSplitSummary();
     }
     function renderSetupServices() {
       const host=$('[data-tw-service-setup]');
       const byAmount=$('[name="splitMode"]').value==='amount';
-      host.hidden=byAmount;if(byAmount)return;
+      host.hidden=byAmount;if(byAmount){renderSplitSummary();return;}
       const count=Number($('[name="billCount"]').value);
       const guests=Array.from({length:count},(_,i)=>$('[name="guest'+i+'"]').value.trim()||'Guest '+(i+1));
       parent.lines.forEach(l=>{if(setupAssignments[l.id]>=count)setupAssignments[l.id]=0;});
       host.innerHTML=`<h3>TICKET DETAIL</h3><p class="tw-muted">Check each service under the guest who will pay for it. Each service belongs to one guest.</p><div class="tw-service-table"><table><thead><tr><th scope="col">Service</th>${guests.map((name,i)=>`<th scope="col">Bill ${i+1}<br>${esc(name)}</th>`).join('')}</tr></thead><tbody>${parent.lines.map(l=>`<tr><th scope="row">${esc(l.name)}<small>${esc(l.tech || 'Unassigned')} · ${validMoney(l.price)?money(cents(l.price)):'Price required'}</small></th>${guests.map((name,i)=>`<td><input type="checkbox" data-tw-setup-line="${esc(l.id)}" data-guest="${i}" aria-label="Assign ${esc(l.name)} to ${esc(name)}" ${setupAssignments[l.id]===i?'checked':''}></td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
+      renderSplitSummary();
     }
     function splitGuestFields(count) {
       const host=$('[data-tw-split-guests]');
@@ -159,7 +193,6 @@
       const current=Number(select.value)||2,maximum=byAmount?20:parent.lines.length;
       select.innerHTML=Array.from({length:Math.max(0,maximum-1)},(_,i)=>`<option value="${i+2}" ${i+2===Math.min(current,maximum)?'selected':''}>${i+2} bills</option>`).join('');
       $('[data-tw-allocation]').hidden=!byAmount;
-      $('[data-tw-amount-preview]').hidden=!byAmount;
       $('[data-tw-save]').hidden=maximum<2;
       $('[data-tw-split-guidance]').textContent=byAmount?'Split the ticket total equally or enter each person’s amount. Services stay on the shared ticket.':maximum<2?'Add at least two services to split by service, or choose By amount.':'Check services for each guest in Ticket Detail below, then create bills.';
       splitGuestFields(maximum<2?0:Number(select.value));
@@ -172,7 +205,7 @@
       return `<section class="tw-card tw-bills"><div class="tw-card-title"><h3>SPLIT BILL</h3><strong data-tw-bill-progress role="status">${paid}/${group().bills.length} bills paid</strong></div><p class="tw-muted">Ticket #${esc(parent.id)} · ${esc(parent.customer)} · Paid ${money(sumPaid)}</p><div class="tw-bill-tabs">${group().bills.map((b,i)=>{
         const t=b.payment || totals(billTicket(b));
         return button(`<strong>Bill ${i+1} · ${esc(b.name)}</strong><small>${b.payment?'Paid':t.error?'No services':'Unpaid'} · ${t.error?'—':money(t.totalCents)}</small>`,`data-tw-bill="${b.id}" aria-pressed="${b.id===activeBillId}"`,b.id===activeBillId?'selected':'');
-      }).join('')}</div>${!parent.payment?`<div class="tw-bill-tools">${!amountSplit()&&group().bills.length<parent.lines.length?button('+ Add bill','data-tw-add-bill','tw-small'):''}${!paid?button('Cancel split','data-tw-cancel-split','tw-text'):''}${!amountSplit()&&group().bills.length>2&&!ticket.lines.length&&!ticket.payment?button('Remove empty bill','data-tw-remove-bill','tw-small'):''}</div>`:''}<p class="tw-muted">${amountSplit()?'Split by amount. The services below belong to the shared ticket. Each payment includes its allocated discount and tip.': 'Select a guest above, then check their services in Ticket Detail. Each bill has its own tip and payment. Service prices and discounts stay fixed while split; cancel the unpaid split to edit them.'}</p></section>`;
+      }).join('')}</div>${!parent.payment?`<div class="tw-bill-tools">${!amountSplit()&&group().bills.length<parent.lines.length?button('+ Add bill','data-tw-add-bill','tw-small'):''}${!paid?button('Cancel split','data-tw-cancel-split','tw-text'):''}${!amountSplit()&&group().bills.length>2&&!ticket.lines.length&&!ticket.payment?button('Remove empty bill','data-tw-remove-bill','tw-small'):''}</div>`:''}<p class="tw-muted">${amountSplit()?'Split by amount. The services below belong to the shared ticket. Each payment includes its allocated discount and tip.': 'Select a guest above, then check their services in Ticket Detail. Each bill has its own tip and payment. Use Discount all to update the ticket discount before any bill is paid.'}</p></section>`;
     }
     function message(text) {$('[data-tw-message]').textContent=text;}
     function renderCatalog() {
@@ -199,7 +232,7 @@
       <section class="tw-card"><h3>PAYMENT METHOD</h3><div class="tw-methods">${[['cash','Cash'],['card','Card'],['gift-card','Gift Card'],['split','Split Pay'],['other','More']].map(([id,label])=>button(label,`data-tw-method="${id}"`,p.method===id?'selected':'')).join('')}</div>
       ${p.method==='cash'?`<div class="tw-cash"><label>Cash received <input aria-label="Cash received" type="number" min="0" step="0.01" data-tw-field="cash" value="${esc(p.cash)}"></label><span>Change due <strong data-tw-change>$0.00</strong></span></div>`:p.method==='split'?`<div class="tw-cash"><label>Cash portion ($)<input aria-label="Split cash amount" type="number" min="0" step="0.01" data-tw-field="splitCash" value="${esc(p.splitCash || '')}"></label><span>Remaining balance: card (demo)</span></div>`:p.method==='gift-card'?`<label class="tw-payment-info">Gift card reference<input aria-label="Gift card reference" data-tw-field="giftCode" value="${esc(p.giftCode || '')}" placeholder="Demo reference"></label>`:p.method==='other'?`<label class="tw-payment-info">Other method<select data-tw-field="otherMethod"><option ${p.otherMethod==='Zelle'?'selected':''}>Zelle</option><option ${p.otherMethod==='Venmo'?'selected':''}>Venmo</option><option ${p.otherMethod==='Other'?'selected':''}>Other</option></select></label>`:'<p class="tw-muted">Card payment is simulated. No card details are collected.</p>'}
       <h3 class="tw-receipt-label">RECEIPT</h3><div class="tw-receipt-options">${[['none','No Receipt'],['sms','Send SMS'],['print','Print']].map(([id,label])=>button(label,`data-tw-receipt="${id}"`,p.receipt===id?'selected':'')).join('')}</div><div class="tw-preview">${button('Print preview','data-tw-preview','tw-text')}</div></section>
-      <section class="tw-card"><div class="tw-card-title"><h3>PAYMENT SUMMARY</h3>${!group()?`<div class="tw-ticket-tools">${button('Discount all','data-tw-discount-all','tw-small tw-orange')}${button('Split bill','data-tw-split-bill aria-haspopup="dialog"','tw-small tw-purple')}</div>`:''}</div><div class="tw-summary-row tw-rule"><span>Subtotal</span><span data-tw-subtotal></span></div><div class="tw-summary-row"><span>Tip</span><span data-tw-tip-total></span></div><div class="tw-summary-row"><span>Discount</span><span class="tw-red" data-tw-discount-total></span></div><div class="tw-summary-row tw-rule"><strong>TOTAL</strong><strong data-tw-total></strong></div></section>${button('Pay','data-tw-pay','tw-primary tw-pay')}<p class="tw-demo">Prototype · Payment and SMS receipt are simulated.</p>`;
+      <section class="tw-card"><div class="tw-card-title"><h3>PAYMENT SUMMARY</h3><div class="tw-ticket-tools">${button('Discount all','data-tw-discount-all'+(group()?.bills.some(b=>b.payment)?' disabled title="Discount is locked after the first bill is paid"':''),'tw-small tw-orange')}${!group()?button('Split bill','data-tw-split-bill aria-haspopup="dialog"','tw-small tw-purple'):''}</div></div><div class="tw-summary-row tw-rule"><span>Subtotal</span><span data-tw-subtotal></span></div><div class="tw-summary-row"><span>Tip</span><span data-tw-tip-total></span></div><div class="tw-summary-row"><span>Discount</span><span class="tw-red" data-tw-discount-total></span></div><div class="tw-summary-row tw-rule"><strong>TOTAL</strong><strong data-tw-total></strong></div></section>${button('Pay','data-tw-pay','tw-primary tw-pay')}<p class="tw-demo">Prototype · Payment and SMS receipt are simulated.</p>`;
     }
     function render() {
       const paid=!!ticket.payment;
@@ -220,17 +253,17 @@
     }
     function openDialog(action,lineId) {
       dialogAction=action;dialogLine=lineId;
-      const l=ticket.lines.find(l=>l.id===lineId),rule=l?l.discount:ticket.discount;
+      const l=ticket.lines.find(l=>l.id===lineId),rule=l?l.discount:parent.discount;
       let title='',fields='';
       if(action==='split-bill'){
         title='Split bill by guest';
         setupAssignments=Object.fromEntries(parent.lines.map(l=>[l.id,0]));
-        fields=`<label>Split method<select name="splitMode"><option value="services">By services</option><option value="amount">By amount</option></select></label><p data-tw-split-guidance></p><label>Number of bills<select name="billCount"></select></label><label data-tw-allocation hidden>Divide amount<select name="amountAllocation"><option value="equal">Split equally</option><option value="custom">Enter individual amounts</option></select></label><div data-tw-split-guests></div><section data-tw-service-setup></section><p data-tw-amount-preview role="status" hidden></p><p class="tw-muted">Choose a payment method for each bill after creating it. Complete services before collecting payment.</p>`;
+        fields=`<label>Split method<select name="splitMode"><option value="services">By services</option><option value="amount">By amount</option></select></label><p data-tw-split-guidance></p><label>Number of bills<select name="billCount"></select></label><label data-tw-allocation hidden>Divide amount<select name="amountAllocation"><option value="equal">Split equally</option><option value="custom">Enter individual amounts</option></select></label><div data-tw-split-guests></div><section data-tw-service-setup></section><section class="tw-split-summary" data-tw-split-summary role="status" aria-live="polite"></section><p class="tw-muted">Choose a payment method for each bill after creating it. Complete services before collecting payment.</p>`;
       }
       if(action==='catalog'){title='Add service';fields=`<input class="tw-search" data-tw-search type="search" placeholder="Search services…" aria-label="Search ticket services" value="${esc(search)}"><div class="tw-categories" data-tw-categories></div><div class="tw-catalog" data-tw-catalog></div>`;}
       if(action==='tech'){title='Change technician';fields='<label>Technician<select name="tech" required><option value="">Choose technician</option>'+options.technicians().map(t=>`<option ${t.name===l.tech?'selected':''} ${t.status==='clocked-out'||(t.status&&t.status!=='available'&&t.name!==l.tech)?'disabled':''}>${esc(t.name)}</option>`).join('')+'</select></label>';}
       if(action==='service'){title='Change service';fields='<label>Service<select name="service" required>'+services().map(s=>`<option value="${esc(s.id)}">${esc(s.name)} · ${s.price==null?'Enter price':money(cents(s.price))}</option>`).join('')+'</select></label>';}
-      if(action==='discount'){title=l?'Service discount':'Discount all services';fields=`<label>Discount type<select name="type"><option value="percent">Percentage (%)</option><option value="fixed" ${rule?.type==='fixed'?'selected':''}>Amount ($)</option></select></label>${input('Discount value','value',rule?.value || 0,'number')}<div class="tw-discount-presets">${[0,5,10,15,20].map(n=>button(n,`data-tw-discount-preset="${n}"`)).join('')}</div><p class="tw-muted">Order discount applies after service discounts. Total cannot fall below zero.</p>`;}
+      if(action==='discount'){title=l?'Service discount':'Discount all services';fields=`<label>Discount type<select name="type"><option value="percent">Percentage (%)</option><option value="fixed" ${rule?.type==='fixed'?'selected':''}>Amount ($)</option></select></label>${input('Discount value','value',rule?.value || 0,'number')}<div class="tw-discount-presets">${[0,5,10,15,20].map(n=>button(n,`data-tw-discount-preset="${n}"`)).join('')}</div><p class="tw-muted">Order discount applies after service discounts. Total cannot fall below zero.</p>${group()?'<p class="tw-muted">Discount all applies to the whole ticket. Bill totals update automatically; custom amount splits keep their current proportions.</p>':''}`;}
       if(action==='custom'){title='Custom service';fields=input('Service name','name')+input('Price ($)','price','','number');}
       if(action==='price'){title='Set service price';fields=input('Price ($)','price',l.price ?? '','number');}
       if(action==='customer'){title='Edit customer';fields=input('Customer','customer',ticket.customer)+input('Phone','phone',ticket.phone,'tel');}
@@ -286,6 +319,7 @@
       if(b.hasAttribute('data-tw-remove-bill')&&group()&&!amountSplit()&&group().bills.length>2&&!ticket.lines.length&&!ticket.payment){group().bills=group().bills.filter(b=>b.id!==activeBillId);selectBill(group().bills[0].id);save();render();return;}
       if(b.hasAttribute('data-tw-cancel-split')&&group()&&!group().bills.some(b=>b.payment)){delete parent.splitBills;ticket=parent;save();render();return;}
       if(ticket.payment)return;
+      if(b.hasAttribute('data-tw-discount-all')&&group()?.bills.some(bill=>bill.payment))return;
       if(b.hasAttribute('data-tw-split-bill')&&!group()){openDialog('split-bill');return;}
       if(b.hasAttribute('data-tw-add-service')){openDialog('catalog');return;}
       if(b.hasAttribute('data-tw-category')){category=b.dataset.twCategory;renderCatalog();}
@@ -326,7 +360,9 @@
       if(dialogAction==='discount'){
         const value=data.get('value'),type=data.get('type');
         if(!validMoney(value)||(type==='percent'&&Number(value)>100)){error('Enter a discount from 0 to 100% or a valid dollar amount.');return;}
-        (l || ticket).discount={type,value:Number(value)};
+        if(group()?.bills.some(b=>b.payment)){error('Discount is locked after the first bill is paid.');return;}
+        (l || parent).discount={type,value:Number(value)};
+        if(group())refreshSplitDiscount();
       }
       if(dialogAction==='tech'){const tech=data.get('tech');const choice=options.technicians().find(t=>t.name===tech);if(!choice||choice.status==='clocked-out'||(choice.status&&choice.status!=='available'&&tech!==l.tech)){error('Choose an available technician.');return;}l.tech=tech;if(l.status==='unassigned')l.status='assigned';}
       if(dialogAction==='service'){const s=services().find(s=>s.id===data.get('service'));if(!s)return;l.name=s.name;l.serviceId=s.id;l.price=s.price;l.discount=null;l.status=l.tech?'assigned':'unassigned';}
@@ -341,12 +377,25 @@
     });
     return {open(value,requestedMode='edit') {
       parent=value;ticket=value;mode=parent.splitBills?'checkout':requestedMode;category='All';search='';
+      const catalog=options.catalog(),key=value=>String(value || '').trim().toLowerCase();
+      const resolveService=line=>{
+        if(line.serviceId)return catalog.find(s=>s.id===line.serviceId);
+        const matches=catalog.filter(s=>key(s.name)===key(line.name)||s.aliases?.some(a=>key(a)===key(line.name)));
+        return matches.length===1?matches[0]:undefined;
+      };
+      let changed=!ticket.lines;
       if(!ticket.lines)ticket.lines=ticket.services.map((name,index)=>{
-        const s=options.catalog().find(s=>s.name===name||s.aliases?.includes(name));
+        const s=resolveService({name});
         return {id:'line-'+ticket.id+'-'+index,serviceId:s?.id,name,price:s?.price ?? null,tech:ticket.tech || '',status:ticket.status==='in-service'?'in-service':ticket.tech?'assigned':'unassigned'};
+      });
+      if(!ticket.payment&&!group())ticket.lines.forEach(l=>{
+        if(validMoney(l.price))return;
+        const service=resolveService(l);
+        if(service&&validMoney(service.price)){l.serviceId=service.id;l.price=Number(service.price);changed=true;}
       });
       ticket.checkout=ticket.checkout || {tip:0,tipType:'fixed',method:'cash',cash:'',receipt:'none'};
       if(group())selectBill((group().bills.find(b=>!b.payment)||group().bills[0]).id);
+      if(changed)options.onChange(parent);
       root.hidden=false;render();
     }};
   }
