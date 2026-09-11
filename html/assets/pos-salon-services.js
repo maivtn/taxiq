@@ -22,7 +22,7 @@
     <div class="salon-service-overlay" data-service-editor hidden><section class="salon-service-dialog" role="dialog" aria-modal="true" aria-labelledby="service-editor-title">
       <header><div><h2 id="service-editor-title">Edit Service</h2><p>Update the service details and categories.</p></div>${button('data-service-editor-close aria-label="Close service editor"','×')}</header>
       <form data-service-editor-form><div class="salon-dialog-body">
-        <label class="salon-field-label">Categories <small>(required)</small></label><div class="salon-category-choices" data-service-edit-categories></div><p class="salon-help">Select at least one category.</p>
+        <label for="service-edit-categories" class="salon-field-label">Categories <small>(required)</small></label><div class="salon-category-select"><select id="service-edit-categories" data-service-edit-categories multiple aria-required="true" placeholder="Select categories"></select></div><p class="salon-help">Select at least one category.</p>
         <div class="salon-label-row"><label for="service-edit-name">Service name <small>(required)</small></label><label class="salon-active-toggle">Active<input type="checkbox" data-service-edit-active><span></span></label></div>
         <input id="service-edit-name" data-service-edit-name required maxlength="120">
         <div class="salon-service-fields"><label>Price <small>(required)</small><span class="salon-input-wrap"><span>$</span><input data-service-edit-price type="number" min="0" step="0.01" required></span></label><label>Minutes <small>(required)</small><span class="salon-input-wrap suffix"><input data-service-edit-duration type="number" min="1" step="1" required><span>min</span></span></label></div>
@@ -115,7 +115,7 @@
     try {api.saveCatalog(selectedSalon,next,approvals);} catch(failure) {throw new Error('Unable to save changes. Please try again or use a smaller service image.');}categories=next;status('Saved.');render();
   }
   function show(overlay, trigger) {returnFocus=trigger||document.activeElement;overlay.hidden=false;document.body.style.overflow='hidden';const control=overlay.querySelector('input:not(:disabled),button');if(control)control.focus();}
-  function close(overlay) {overlay.hidden=true;document.body.style.overflow='';if(returnFocus?.isConnected)returnFocus.focus();if(overlay===$('[data-service-editor]'))editing=null;}
+  function close(overlay) {$('[data-service-edit-categories]').tomselect?.close();overlay.hidden=true;document.body.style.overflow='';if(returnFocus?.isConnected)returnFocus.focus();if(overlay===$('[data-service-editor]'))editing=null;}
   function renderCategories() {
     $('[data-category-list]').innerHTML=categoryDraft.map(c=>'<div class="salon-category-row'+(c.isDraft?' is-draft':'')+'" data-category-row="'+esc(c.id)+'">'+button('data-category-drag="'+esc(c.id)+'" draggable="true" aria-label="Reorder '+esc(c.name||'category')+'" title="Drag or use Alt + arrow keys"','','grip-vertical','salon-drag')+'<input data-category-name="'+esc(c.id)+'" aria-label="Category name" placeholder="Category name" value="'+esc(c.name)+'">'+(c.isDraft?'':'<span class="settings-service-category-count">'+c.services.length+' services</span>')+button('data-category-remove="'+esc(c.id)+'" aria-label="Remove '+esc(c.name||'category')+'"','','x-lg')+'</div>').join('');
   }
@@ -123,7 +123,15 @@
   function renderImage() {$('[data-image-preview]').innerHTML=safeImage(imageData)?'<img src="'+esc(imageData)+'" alt="Service image preview">'+button('data-image-remove aria-label="Remove service image"','×'):icon('image');}
   function openService(id,trigger) {
     const service=serviceById(id);if(!service)return;editing={id,token:uid()};
-    $('[data-service-edit-categories]').innerHTML=categories.map(c=>'<label><input type="checkbox" data-service-category-choice="'+esc(c.id)+'"'+(c.services.some(s=>s.id===id)?' checked':'')+'>'+esc(c.name)+'</label>').join('');
+    const categorySelect = $('[data-service-edit-categories]');
+    categorySelect.tomselect?.destroy();
+    categorySelect.innerHTML=categories.map(c=>'<option value="'+esc(c.id)+'"'+(c.services.some(s=>s.id===id)?' selected':'')+'>'+esc(c.name)+'</option>').join('');
+    new window.TomSelect(categorySelect, {
+      plugins: {checkbox_options: {}, remove_button: {title: 'Remove category'}},
+      maxItems: null, hideSelected: false, closeAfterSelect: false,
+      placeholder: 'Select categories', create: false,
+      onInitialize() { this.control_input.setAttribute('aria-required','true'); }
+    });
     for(const [field,key] of [['name','name'],['price','price'],['duration','durationMin'],['description','description'],['fee','supplyFee']]){$('[data-service-edit-'+field+']').value=service[key]??'';$('[data-service-edit-'+field+']').disabled=id==='__custom__';}
     detailsRange=null;detailsEditor.innerHTML=cleanDetails(service.detailsHtml);detailsEditor.contentEditable=id==='__custom__'?'false':'true';
     panel.querySelectorAll('[data-details-command]').forEach(control=>{control.disabled=id==='__custom__';});
@@ -159,7 +167,7 @@
   $('[data-service-editor-form]').addEventListener('submit',event=>{
     event.preventDefault();if(!editing)return;
     const service=serviceById(editing.id),isCustom=editing.id==='__custom__';
-    const categoryIds=Array.from(panel.querySelectorAll('[data-service-category-choice]:checked')).map(c=>c.dataset.serviceCategoryChoice);
+    const categoryIds=Array.from($('[data-service-edit-categories]').selectedOptions, option=>option.value);
     if(!categoryIds.length){error('Select at least one category.');return;}
     const fee=$('[data-service-edit-fee]').value;
     if(fee!==''&&(!Number.isFinite(Number(fee))||Number(fee)<0)){error('Supply fee must be zero or greater.');return;}
@@ -195,8 +203,8 @@
   panel.querySelectorAll('.salon-service-overlay').forEach(overlay=>{
     overlay.addEventListener('click',event=>{if(event.target===overlay)close(overlay);});
     overlay.addEventListener('keydown',event=>{
-      if(event.key==='Escape'){event.preventDefault();close(overlay);return;}if(event.key!=='Tab')return;
-      const controls=Array.from(overlay.querySelectorAll('button,input,textarea,[contenteditable="true"]')).filter(c=>!c.disabled&&c.type!=='file');const first=controls[0],last=controls[controls.length-1];
+      if(event.key==='Escape'){event.preventDefault();const picker=$('[data-service-edit-categories]').tomselect;if(picker?.isOpen){picker.close();return;}close(overlay);return;}if(event.key!=='Tab')return;
+      const controls=Array.from(overlay.querySelectorAll('button,input,textarea,select,a[href],[contenteditable="true"]')).filter(c=>!c.disabled&&c.type!=='file'&&c.tabIndex!==-1);const first=controls[0],last=controls[controls.length-1];
       if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
     });
   });

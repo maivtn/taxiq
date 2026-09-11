@@ -11,6 +11,7 @@ function boot(serviceCatalog = null){
  w.NEXORA_APPOINTMENT_SERVICE_CATALOG={load:()=>serviceCatalog ? Promise.resolve(serviceCatalog) : new Promise(()=>{})};
  }});
  dom.window.eval(readFileSync(new URL('../assets/pos-salon-settings.js',import.meta.url),'utf8'));
+ dom.window.eval(readFileSync(new URL('../assets/vendor/tom-select/tom-select.complete.min.js',import.meta.url),'utf8'));
  dom.window.eval(readFileSync(new URL('../assets/pos-salon-services.js',import.meta.url),'utf8'));
  return {dom,w:dom.window,d:dom.window.document,errors};
 }
@@ -148,7 +149,7 @@ test('category manager supports draft cancel, add, rename, reorder and save',asy
 test('Edit Service saves categories, status, details and tags without losing approval',async()=>{
  const page=await servicesPage();const {w,d,dom}=page;
  editService(page);
- d.querySelectorAll('[data-service-category-choice]')[1].checked=true;
+ d.querySelector('[data-service-edit-categories]').tomselect.addItem('custom-service-settings');
  d.querySelector('[data-service-edit-active]').checked=false;
  d.querySelector('[data-service-edit-description]').value='Gentle polish removal.';
  d.querySelector('[data-service-edit-fee]').value='0.2';
@@ -196,7 +197,7 @@ test('Steps / Materials rich text persists across reload, Cancel discards edits,
  assert.equal(editor.innerHTML,'');
  const details='<p><b>Steps</b></p><ol><li>Clean nails</li><li>Apply polish</li></ol><p><i>Materials</i></p><ul><li>Base coat &amp; polish</li></ul>';
  editor.innerHTML=details;
- d.querySelectorAll('[data-service-category-choice]')[1].checked=true;
+ d.querySelector('[data-service-edit-categories]').tomselect.addItem('custom-service-settings');
  saveService(page);
  const stored=w.NEXORA_SERVICE_APPROVAL_SETTINGS.loadCatalog('bitcoin-nail-bar-houston',[]);
  for(const service of stored.flatMap(c=>c.services).filter(s=>s.id==='polish-change'))assert.equal(service.detailsHtml,details);
@@ -215,4 +216,28 @@ test('Steps / Materials strips unsafe HTML while retaining formatted text',async
  saveService(page);
  assert.equal(w.NEXORA_SERVICE_APPROVAL_SETTINGS.loadCatalog('bitcoin-nail-bar-houston',[])[0].services[0].detailsHtml,'<p><b>Clean</b></p>Polish');
  editService(page);assert.equal(editor.innerHTML,'<p><b>Clean</b></p>Polish');dom.window.close();
+});
+
+
+test('category dropdown selects multiple categories, restores saved values and rejects empty selection',async()=>{
+ const page=await servicesPage();const {d,w,dom}=page;
+ editService(page);
+ const select=d.querySelector('[data-service-edit-categories]');
+ assert.ok(select.tomselect,'Categories uses Tom Select');
+ const picker=select.tomselect;
+ picker.refreshOptions(false);picker.open();
+ const option=picker.dropdown.querySelector('[data-value="custom-service-settings"]');
+ assert.ok(option.querySelector('input[type="checkbox"]'));
+ option.dispatchEvent(new w.MouseEvent('click',{bubbles:true}));
+ saveService(page);
+ assert.equal(w.NEXORA_SERVICE_APPROVAL_SETTINGS.loadCatalog('bitcoin-nail-bar-houston',[]).filter(c=>c.services.some(s=>s.id==='polish-change')).length,2);
+ editService(page);
+ assert.deepEqual(Array.from(select.selectedOptions,o=>o.value),['nails','custom-service-settings']);
+ select.tomselect.clear();saveService(page);
+ assert.equal(d.querySelector('[data-service-editor]').hidden,false);
+ assert.equal(d.querySelector('[data-service-edit-error]').textContent,'Select at least one category.');
+ d.querySelector('[data-service-editor-close]').click();editService(page);
+ assert.deepEqual(Array.from(select.selectedOptions,o=>o.value),['nails','custom-service-settings']);
+ assert.equal(d.querySelectorAll('.salon-category-select .ts-wrapper').length,1);
+ dom.window.close();
 });
