@@ -344,3 +344,73 @@ test('paid amount split cannot change to service payers',()=>{
  d.querySelectorAll('[data-tw-bill]')[1].click();assert.equal(d.querySelector('[data-tw-assign-services]'),null);
  assert.equal(ticket.splitBills.mode,'amount');w.close();
 });
+
+test('service filters show the selected bill and unassigned services without changing assignments',()=>{
+ const c=groupCheckout(),{d,w,ticket}=c;d.querySelector('[data-tw-split-bill]').click();submit(w,d);assignBill(c,'l2',1);
+ const assigned=JSON.stringify(ticket.splitBills.assignments);
+ d.querySelector('[data-tw-service-filter="current"]').click();
+ assert.equal(d.querySelectorAll('.tw-line:not([hidden])').length,2);
+ d.querySelector('[data-tw-service-filter="unassigned"]').click();
+ assert.equal(d.querySelectorAll('.tw-line:not([hidden])').length,0);assert.match(d.querySelector('[data-tw-filter-empty]').textContent,/No unassigned services/);
+ assert.equal(JSON.stringify(ticket.splitBills.assignments),assigned);
+ d.querySelector('[data-tw-service-filter="all"]').click();d.querySelector('[data-tw-bill-line="l1"]').click();
+ d.querySelector('[data-tw-service-filter="unassigned"]').click();assert.equal(d.querySelectorAll('.tw-line:not([hidden])').length,1);
+ assert.match(d.querySelector('.tw-line:not([hidden])').textContent,/Manicure/);w.close();
+});
+test('undo restores the previous service payer and bill totals, then is cleared after payment',()=>{
+ const c=groupCheckout(),{d,w,ticket,api}=c;d.querySelector('[data-tw-split-bill]').click();submit(w,d);assignBill(c,'l2',1);api.open(ticket,'checkout');
+ const owners=JSON.stringify(ticket.splitBills.assignments);d.querySelector('[data-tw-bill-line="l2"]').click();
+ assert.equal(d.querySelector('[data-tw-total]').textContent,'$90.00');assert.match(d.querySelector('[data-tw-assignment-feedback]').textContent,/Pedicure/);
+ d.querySelector('[data-tw-undo-assignment]').click();
+ assert.equal(JSON.stringify(ticket.splitBills.assignments),owners);assert.equal(d.querySelector('[data-tw-total]').textContent,'$63.00');
+ assert.equal(d.querySelector('[data-tw-undo-assignment]'),null);
+ d.querySelector('[data-tw-bill-line="l3"]').click();d.querySelector('[data-tw-undo-assignment]').click();
+ d.querySelector('[data-tw-bill-line="l1"]').click();d.querySelector('[data-tw-bill-line="l1"]').click();
+ d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
+ assert.ok(ticket.splitBills.bills[0].payment);assert.equal(d.querySelector('[data-tw-undo-assignment]'),null);w.close();
+});
+test('checkout shows completion and cash requirements before payment and updates the sticky total',()=>{
+ const {d,w,ticket}=boot('checkout');
+ assert.match(d.querySelector('[data-tw-payment-hint]').textContent,/Complete 1 service/);
+ d.querySelector('[data-tw-action="start"]').click();d.querySelector('[data-tw-action="complete"]').click();
+ assert.match(d.querySelector('[data-tw-payment-hint]').textContent,/cash received/i);
+ const cash=d.querySelector('[data-tw-field="cash"]');cash.value='50';cash.dispatchEvent(new w.Event('input',{bubbles:true}));
+ assert.match(d.querySelector('[data-tw-payment-hint]').textContent,/Ready/);
+ assert.equal(d.querySelector('[data-tw-paybar] [data-tw-total]').textContent,'$45.00');
+ assert.equal(ticket.payment,undefined);w.close();
+});
+test('split setup footer reports assignments while the detailed summary remains available',()=>{
+ const {d,w}=groupCheckout();d.querySelector('[data-tw-split-bill]').click();
+ assert.match(d.querySelector('[data-tw-setup-status]').textContent,/3\/3 services assigned/);
+ d.querySelector('[data-tw-setup-line="l2"][data-guest="0"]').click();
+ assert.match(d.querySelector('[data-tw-setup-status]').textContent,/2\/3 services assigned/);
+ assert.equal(d.querySelector('[data-tw-setup-remaining]').textContent,'$27.00');
+ d.querySelector('[name="splitMode"][value="amount"]').click();assert.match(d.querySelector('[data-tw-setup-status]').textContent,/Ready/);w.close();
+});
+test('custom tip keeps the selected bill card, summary and collection amount in sync',()=>{
+ const c=groupCheckout(),{d,w}=c;d.querySelector('[data-tw-split-bill]').click();submit(w,d);assignBill(c,'l2',1);
+ const tip=d.querySelector('[data-tw-field="tip"]');tip.value='12';tip.dispatchEvent(new w.Event('input',{bubbles:true}));
+ assert.equal(d.querySelector('[data-tw-bill][aria-pressed="true"] [data-tw-bill-total]').textContent,'$75.00');
+ assert.equal(d.querySelector('[data-tw-paybar] [data-tw-total]').textContent,'$75.00');
+ assert.ok(d.querySelector('.tw-checkout-side [data-tw-paybar]'));w.close();
+});
+test('assignment and Undo keep keyboard focus on a visible control when a filtered row disappears',()=>{
+ const c=groupCheckout(),{d,w}=c;d.querySelector('[data-tw-split-bill]').click();submit(w,d);
+ d.querySelector('[data-tw-service-filter="current"]').click();d.querySelector('[data-tw-bill-line="l1"]').click();
+ assert.equal(d.activeElement,d.querySelector('[data-tw-service-filter="current"]'));
+ d.querySelector('[data-tw-undo-assignment]').click();assert.equal(d.activeElement,d.querySelector('[data-tw-bill-line="l1"]'));w.close();
+});
+test('assigning a service preserves scrolling through a long setup table',()=>{
+ const {d,w,ticket,api}=groupCheckout();
+ ticket.lines=Array.from({length:15},(_,i)=>({id:'long'+i,name:'Service '+i,price:10,tech:'Jade',status:'completed'}));api.open(ticket,'checkout');
+ d.querySelector('[data-tw-split-bill]').click();
+ const table=d.querySelector('.tw-service-table');table.scrollTop=450;table.scrollLeft=100;
+ d.querySelector('[data-tw-setup-line="long10"][data-guest="1"]').click();
+ assert.equal(d.querySelector('.tw-service-table').scrollTop,450);assert.equal(d.querySelector('.tw-service-table').scrollLeft,100);
+ assert.equal(d.activeElement,d.querySelector('[data-tw-setup-line="long10"][data-guest="1"]'));w.close();
+});
+test('zero-total custom setup still asks for missing amounts before showing Ready',()=>{
+ const c=groupCheckout(),{d,w,ticket,api}=c;ticket.discount={type:'percent',value:100};api.open(ticket,'checkout');amountSetup(c,2,'custom');
+ const amount=d.querySelector('[name="amount0"]');amount.value='';amount.dispatchEvent(new w.Event('input',{bubbles:true}));
+ assert.match(d.querySelector('[data-tw-setup-status]').textContent,/Enter an amount/);w.close();
+});
