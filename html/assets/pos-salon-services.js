@@ -37,8 +37,10 @@
           </div>
         </div>
         <label class="salon-block-field">Description <small>(optional)</small><textarea data-service-edit-description maxlength="1000" rows="3" placeholder="Optional service description"></textarea></label><div class="salon-description-count" data-description-count>0/1000</div>
+        <div class="salon-tags-approval-row">
         <label class="salon-block-field">Tags <small>(optional)</small><div class="salon-tag-list" data-tag-list></div><input data-service-edit-tags placeholder="Type a tag and press Enter" maxlength="60"></label>
         <label class="salon-service-approval"><input type="checkbox" data-service-approval><span><strong>Require approval when staff adds this service</strong><small>Customer enters the last 4 phone digits to approve. Off by default.</small></span></label>
+        </div>
 
 
         <section class="salon-service-steps" aria-labelledby="service-steps-label">
