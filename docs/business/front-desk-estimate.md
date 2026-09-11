@@ -8,17 +8,19 @@
 
 ### Overview
 
-Front Desk sử dụng **Estimate** để tư vấn dịch vụ và cho khách xem tổng tiền dự kiến trước khi check-in. Nhân viên chọn dịch vụ, nhập giá cho dịch vụ chưa có giá, áp dụng giảm giá chung và chuyển danh sách đã thống nhất thành một lượt check-in để tiếp tục phục vụ tại Tickets.
+Front Desk sử dụng **Estimate** để tư vấn dịch vụ và cho khách xem tổng tiền dự kiến trước khi check-in. Nhân viên chọn dịch vụ có giá sẵn từ API dịch vụ hoặc thêm dịch vụ custom bằng tên và giá, áp dụng giảm giá chung và chuyển danh sách đã thống nhất thành một lượt check-in để tiếp tục phục vụ tại Tickets.
 
 **Vị trí:** POS → Front Desk → Estimate.
 
-Tài liệu mô tả hành vi của bản HTML hiện tại. Estimate chỉ tính tiền dịch vụ; chưa bao gồm tax và tip. Việc xác nhận check-in không thu tiền. Giảm giá trong Estimate được lưu để tham chiếu và cần xác nhận lại tại checkout.
+Tài liệu mô tả yêu cầu nghiệp vụ của Estimate. **Đối chiếu triển khai:** bản HTML hiện lấy danh mục từ dữ liệu salon cục bộ, chưa tích hợp API dịch vụ và chưa có thao tác thêm dịch vụ custom. Cơ chế nhập giá cho dịch vụ danh mục thiếu giá trong HTML hiện tại không phải yêu cầu nghiệp vụ; cần thay bằng luồng thêm custom bên dưới. Estimate chỉ tính tiền dịch vụ; chưa bao gồm tax và tip. Việc xác nhận check-in không thu tiền. Giảm giá trong Estimate được lưu để tham chiếu và cần xác nhận lại tại checkout.
 
 ### Key Concepts
 
 | Thuật ngữ | Ý nghĩa |
 | :--- | :--- |
 | Service Estimate | Bản tạm tính cho các dịch vụ khách đang cân nhắc hoặc đã chọn. |
+| Dịch vụ từ API | Dịch vụ trong danh mục, luôn có tên và giá sẵn từ API dịch vụ; nhân viên chọn để thêm vào Estimate. |
+| Dịch vụ custom | Dịch vụ do Front Desk thêm trực tiếp vào Estimate bằng tên dịch vụ và giá. |
 | Subtotal | Tổng giá các dịch vụ đã chọn, trước giảm giá. |
 | Discount on all services | Giảm giá chung cho toàn bộ Estimate, theo tỷ lệ % hoặc số tiền USD. |
 | Estimated total | Subtotal trừ Discount; không nhỏ hơn 0. |
@@ -47,27 +49,29 @@ Tài liệu mô tả hành vi của bản HTML hiện tại. Estimate chỉ tín
 **User Stories:**
 
 - **US-FDE-01 — Tìm và chọn dịch vụ:** Là nhân viên Front Desk, tôi muốn tìm dịch vụ theo tên và xem giá, thời lượng trước khi thêm vào Estimate, để tư vấn nhanh cho khách.
-- **US-FDE-02 — Nhập giá còn thiếu:** Là nhân viên Front Desk, tôi muốn nhập giá cho dịch vụ chưa có giá niêm yết, để có thể báo tổng tiền đầy đủ trước khi check-in.
+- **US-FDE-02 — Thêm dịch vụ custom:** Là nhân viên Front Desk, tôi muốn thêm dịch vụ custom bằng tên dịch vụ và giá, để báo giá cho nhu cầu ngoài danh mục dịch vụ từ API.
 - **US-FDE-03 — Điều chỉnh danh sách:** Là nhân viên Front Desk, tôi muốn bỏ dịch vụ khách không chọn hoặc xóa toàn bộ Estimate, để báo giá phản ánh đúng nhu cầu hiện tại.
 
 | Bước | Người thực hiện | Thao tác | Phản hồi hệ thống | Ghi chú |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | Front Desk | Mở Estimate | Hiện danh mục dịch vụ, ô tìm kiếm và Your estimate | Chỉ hiển thị dịch vụ đang hoạt động. |
+| 1 | Front Desk | Mở Estimate | Hiện danh mục dịch vụ, ô tìm kiếm và Your estimate | Lấy từ API dịch vụ; chỉ hiển thị dịch vụ đang hoạt động, luôn có giá sẵn. |
 | 2 | Front Desk | Nhập tên vào Search services | Lọc danh sách theo tên, không phân biệt hoa/thường | Không có kết quả thì hiện No services found. |
 | 3 | Front Desk | Chọn dịch vụ | Thêm một dòng vào Estimate, cập nhật tổng | Có thể chọn cùng một dịch vụ nhiều lần; mỗi lần thêm tạo một dòng riêng. |
-| 4 | Front Desk | Nhập Service price cho dịch vụ chưa có giá | Tính lại tổng khi giá hợp lệ | Dịch vụ đã có giá không có ô sửa giá tại Estimate. |
+| 4 | Front Desk | Nếu cần, thêm dịch vụ custom bằng tên và giá | Thêm dòng custom và tính lại tổng khi tên, giá hợp lệ | Không yêu cầu nhập thêm thông tin dịch vụ khác; không sửa giá dịch vụ từ API tại Estimate. |
 | 5 | Front Desk | Bỏ một dịch vụ hoặc Clear estimate | Cập nhật danh sách và tổng | Xóa hết dịch vụ sẽ khóa nút check-in. |
 
 ```mermaid
 flowchart TD
     A([Khách cần báo giá]) --> B[Mở Estimate]
-    B --> C[Tìm và chọn dịch vụ]
-    C --> D{Đã có giá hợp lệ?}
-    D -- Chưa --> E[Nhập giá dịch vụ]
-    E --> D
-    D -- Có --> F[Xem danh sách và tổng]
+    B --> S{Loại dịch vụ?}
+    S -- Từ API --> C[Chọn dịch vụ có giá]
+    C --> F[Xem danh sách và tổng]
+    S -- Custom --> E[Nhập tên và giá]
+    E --> D{Tên và giá hợp lệ?}
+    D -- Chưa --> E
+    D -- Có --> F
     F --> G{Cần điều chỉnh?}
-    G -- Có --> C
+    G -- Có --> S
     G -- Không --> H([Sẵn sàng tính giảm giá])
 ```
 
@@ -76,10 +80,10 @@ flowchart TD
 | ID | User story | Given — Điều kiện | When — Thao tác | Then — Kết quả |
 | :--- | :--- | :--- | :--- | :--- |
 | AC-FDE-01 | US-FDE-01 | Đang ở Front Desk | Mở Estimate | Hiện Choose services, Your estimate, Discount on all services, Subtotal, Discount, Estimated total và nút check-in. |
-| AC-FDE-02 | US-FDE-01 | Danh mục có dịch vụ hoạt động và ngừng hoạt động | Tìm theo một phần tên | Chỉ hiện dịch vụ hoạt động khớp tên; không phân biệt hoa/thường; hiển thị tên, thời lượng và giá hoặc Enter price. |
+| AC-FDE-02 | US-FDE-01 | Danh mục có dịch vụ hoạt động và ngừng hoạt động | Tìm theo một phần tên | Chỉ hiện dịch vụ hoạt động khớp tên; không phân biệt hoa/thường; hiển thị tên, thời lượng và giá sẵn từ API; không yêu cầu nhập giá cho dịch vụ danh mục. |
 | AC-FDE-03 | US-FDE-01 | Một dịch vụ đã được chọn | Xem lại danh mục | Nút thêm vẫn khả dụng; mỗi lần bấm thêm tạo một dòng riêng và cộng giá dòng đó vào Subtotal. Không có ô số lượng. |
-| AC-FDE-04 | US-FDE-02 | Dịch vụ chưa có giá | Thêm dịch vụ | Hiện ô Service price; tổng hiển thị dấu “—” và chưa cho check-in cho đến khi giá hợp lệ. |
-| AC-FDE-05 | US-FDE-02 | Có ô Service price | Nhập giá | Chấp nhận số không âm, gồm 0; giá trống hoặc không hợp lệ chặn check-in. |
+| AC-FDE-04 | US-FDE-02 | Khách cần dịch vụ custom | Nhập tên dịch vụ và giá, xác nhận thêm | Thêm một dòng custom với đúng tên và giá đã nhập; cộng giá vào Subtotal và áp dụng giảm giá chung. |
+| AC-FDE-05 | US-FDE-02 | Đang thêm dịch vụ custom | Để tên trống hoặc chỉ có khoảng trắng; để giá trống, nhập giá âm hoặc không hợp lệ | Không thêm dòng custom; yêu cầu sửa tên hoặc giá. Giá là số không âm, gồm 0. |
 | AC-FDE-06 | US-FDE-03 | Có nhiều dịch vụ đã chọn | Bấm nút bỏ của một dòng | Chỉ bỏ dòng đó, kể cả khi có nhiều dòng cùng dịch vụ; giữ các dòng còn lại và tính lại tổng. |
 | AC-FDE-07 | US-FDE-03 | Có Estimate đang lập | Bấm Clear estimate | Xóa danh sách, đưa giá trị giảm giá về 0; giữ loại giảm giá và từ khóa tìm kiếm hiện tại; nút check-in bị khóa. |
 
@@ -174,7 +178,7 @@ flowchart TD
 | AC-FDE-15 | US-FDE-06 | Chưa chọn dịch vụ hoặc còn giá/giảm giá không hợp lệ | Xem nút check-in | Nút bị khóa; chỉ được check-in khi có ít nhất một dịch vụ và các giá trị hợp lệ. |
 | AC-FDE-16 | US-FDE-06 | Estimate hợp lệ | Mở Check in guest | Hiện các dịch vụ đã chọn, tổng tiền, Customer name và Phone. |
 | AC-FDE-17 | US-FDE-06 | Thiếu tên hoặc số điện thoại, kể cả chỉ có khoảng trắng | Xác nhận check-in | Không tạo lượt check-in; yêu cầu nhập đầy đủ thông tin. |
-| AC-FDE-18 | US-FDE-06 | Đã nhập đủ thông tin hợp lệ | Xác nhận thành công | Tạo lượt check-in với đầy đủ các dòng dịch vụ và giá đã chọn, kể cả các dòng cùng dịch vụ; mỗi dòng được lưu riêng, không gộp; lưu Subtotal, Discount, Estimated total, loại và mức giảm; ghi nhận thời điểm check-in. |
+| AC-FDE-18 | US-FDE-06 | Đã nhập đủ thông tin hợp lệ | Xác nhận thành công | Tạo lượt check-in với đầy đủ các dòng dịch vụ và giá đã chọn, gồm dịch vụ từ API, tên và giá dịch vụ custom, kể cả các dòng cùng dịch vụ; mỗi dòng được lưu riêng, không gộp; lưu Subtotal, Discount, Estimated total, loại và mức giảm; ghi nhận thời điểm check-in. |
 | AC-FDE-19 | US-FDE-07 | Hộp thoại check-in đang mở | Bấm Back to estimate | Không tạo lượt check-in; giữ danh sách và giảm giá để chỉnh sửa. |
 | AC-FDE-20 | US-FDE-07 | Thao tác tạo check-in trả lỗi | Xác nhận | Hiện lỗi, giữ hộp thoại, thông tin khách và Estimate để thử lại. |
 | AC-FDE-21 | US-FDE-06 | Đã xác nhận check-in thành công | Gửi lại thao tác xác nhận từ hộp thoại vừa đóng | Không tạo thêm lượt từ lần xác nhận đó; form đã được đóng và đặt lại. Đây không phải quy tắc chống trùng khách theo số điện thoại. |
@@ -182,8 +186,8 @@ flowchart TD
 
 ### System Configuration & Administration
 
-- **US-FDE-09 — Sử dụng danh mục hiện hành:** Là quản lý salon, tôi muốn Estimate lấy dịch vụ đang hoạt động từ danh mục salon, để Front Desk tư vấn theo cấu hình dịch vụ hiện hành.
-- **AC-FDE-23:** Khi mở hoặc quay lại Estimate, danh mục được làm mới từ cấu hình dịch vụ; dịch vụ ngừng hoạt động không xuất hiện để chọn mới. Giá của các dòng đã chọn không tự cập nhật theo thay đổi danh mục.
+- **US-FDE-09 — Sử dụng danh mục hiện hành:** Là quản lý salon, tôi muốn Estimate lấy dịch vụ đang hoạt động cùng giá sẵn từ API dịch vụ, để Front Desk tư vấn theo cấu hình dịch vụ hiện hành.
+- **AC-FDE-23:** Khi mở hoặc quay lại Estimate, danh mục được làm mới từ API dịch vụ; dịch vụ ngừng hoạt động không xuất hiện để chọn mới. Giá của các dòng đã chọn không tự cập nhật theo thay đổi danh mục.
 - Estimate chưa có màn hình cấu hình hoặc phân quyền giảm giá riêng. Không có bước duyệt giảm giá của quản lý trong luồng HTML này.
 
 ### State Lifecycle
@@ -192,7 +196,7 @@ Các trạng thái dưới đây mô tả tiến trình thao tác, không phải
 
 | Trạng thái hiện tại | Sự kiện | Trạng thái mới | Ghi chú |
 | :--- | :--- | :--- | :--- |
-| Chưa có Estimate | Chọn dịch vụ | Đang lập Estimate | Có thể còn thiếu giá hoặc giảm giá chưa hợp lệ. |
+| Chưa có Estimate | Chọn dịch vụ | Đang lập Estimate | Các dòng đã thêm có giá; giảm giá có thể chưa hợp lệ. |
 | Đang lập Estimate | Dữ liệu hợp lệ, mở check-in | Chờ xác nhận | Chưa tạo lượt tiếp nhận. |
 | Chờ xác nhận | Back to estimate | Đang lập Estimate | Giữ nội dung. |
 | Chờ xác nhận | Thông tin thiếu hoặc lưu thất bại | Chờ xác nhận | Hiển thị lỗi, cho phép sửa và thử lại. |
@@ -218,7 +222,7 @@ stateDiagram-v2
 ### Business Rules
 
 1. Một Estimate cần ít nhất một dòng dịch vụ để check-in. Cùng một dịch vụ có thể được thêm nhiều lần; mỗi lần thêm tạo một dòng riêng, được tính tiền và xóa độc lập. Check-in giữ đầy đủ các dòng, không gộp dịch vụ trùng.
-2. Giá dịch vụ phải là số không âm. Chỉ dịch vụ chưa có giá niêm yết có ô nhập giá tại Estimate.
+2. Dịch vụ danh mục luôn lấy từ API dịch vụ và có giá sẵn; không nhập hoặc sửa giá các dịch vụ này tại Estimate. Dịch vụ custom chỉ cần tên dịch vụ và giá: tên không được trống, giá là số không âm. Tên và giá custom được giữ lại khi check-in.
 3. Giảm giá áp dụng chung cho các dịch vụ; tỷ lệ từ 0 đến 100%, số tiền cố định không âm. Số tiền thực giảm không vượt Subtotal.
 4. Phép tính dùng đơn vị cent: làm tròn từng giá dịch vụ đến cent, cộng Subtotal, tính và làm tròn Discount, rồi trừ để ra Estimated total.
 5. **Estimate và Confirm check-in không thu tiền. Tổng dự kiến chưa gồm tax/tip; giảm giá phải được xác nhận lại tại checkout, không tự áp dụng vào thanh toán chỉ vì đã lưu trong Estimate.**
@@ -229,10 +233,11 @@ stateDiagram-v2
 
 ### Edge Cases & Exception Handling
 
-| Tình huống | Hành vi hiện tại | Người xử lý |
+| Tình huống | Hành vi yêu cầu | Người xử lý |
 | :--- | :--- | :--- |
 | Không tìm thấy dịch vụ | Hiện No services found; giữ các dịch vụ đã chọn. | Front Desk sửa từ khóa. |
-| Chưa có dịch vụ, thiếu giá hoặc giảm giá không hợp lệ | Hiện lỗi, tổng hiện “—”, khóa check-in. | Front Desk bổ sung hoặc sửa dữ liệu. |
+| Chưa có dịch vụ hoặc giảm giá không hợp lệ | Hiện lỗi, tổng hiện “—”, khóa check-in. | Front Desk bổ sung hoặc sửa dữ liệu. |
+| Custom thiếu tên hoặc có giá không hợp lệ | Không thêm dòng custom cho đến khi nhập tên và giá hợp lệ. | Front Desk. |
 | Thêm cùng một dịch vụ nhiều lần | Mỗi lần thêm tạo một dòng riêng; Subtotal cộng giá của tất cả các dòng. Xóa một dòng không xóa các dòng cùng dịch vụ còn lại. | Front Desk. |
 | Giảm cố định vượt tổng dịch vụ | Giới hạn tiền giảm bằng Subtotal; tổng dự kiến bằng 0. | Hệ thống. |
 | Khách đổi ý trước xác nhận | Back to estimate giữ nội dung và không tạo lượt tiếp nhận. | Front Desk. |
@@ -253,7 +258,7 @@ Có. Mỗi lần chọn tạo một dòng riêng trong Estimate. Có thể xóa 
 
 **Có thể sửa giá niêm yết không?**
 
-Chưa hỗ trợ sửa giá niêm yết tại Estimate. Có thể nhập giá riêng cho từng dòng dịch vụ chưa có giá và áp dụng giảm giá chung.
+Không. Dịch vụ từ API luôn có giá sẵn. Khi cần thêm dịch vụ custom, nhân viên nhập tên dịch vụ và giá; dòng custom được tính vào tổng và giảm giá chung như các dòng khác. Luồng thêm custom là yêu cầu cần triển khai trong bản HTML.
 
 **Giảm giá đã báo có tự chuyển thành giảm giá khi thanh toán không?**
 
