@@ -132,7 +132,17 @@
 .salon-category-select .ts-wrapper.focus .ts-control { border-color:#7770ff; outline:2px solid #7770ff; outline-offset:1px; }
 
 .salon-rich-content img { display:inline-block; max-width:100%; height:auto; margin:8px 0; vertical-align:middle; cursor:pointer; }
-.salon-rich-content img.is-selected { outline:2px solid #7770ff; outline-offset:2px; }
-.salon-details-image-actions { display:flex; align-items:center; flex-wrap:wrap; gap:6px; padding:8px 0; font-size:12px; }
-.salon-details-image-actions[hidden] { display:none; }
-[data-settings-panel="services"] .salon-details-image-actions button { padding:6px 9px; font-size:11px; }
+
+[data-service-editor] .salon-service-dialog { width:680px; }
+.salon-steps-heading h3 { margin:18px 0 0; font-size:14px; }
+.salon-step-card { border:1px solid var(--svc-border); border-radius:12px; margin:12px 0; background:#fff; overflow:hidden; }
+.salon-step-card>header { display:flex; align-items:center; justify-content:space-between; padding:10px 14px; background:#f8f9fd; border-bottom:1px solid var(--svc-border); font-size:13px; }
+[data-settings-panel="services"] .salon-step-remove { padding:5px 8px; font-size:11px; color:#b42318; background:transparent; border:0; }
+.salon-step-layout { display:grid; grid-template-columns:150px minmax(0,1fr); gap:16px; padding:14px; }
+.salon-step-photo img,.salon-step-image-empty { width:100%; height:118px; object-fit:contain; border-radius:8px; background:#f7f8fc; }
+.salon-step-image-empty { display:flex; align-items:center; justify-content:center; border:1px dashed #cbd2e0; color:#8993a8; font-size:24px; box-sizing:border-box; }
+[data-settings-panel="services"] .salon-step-photo button { width:100%; padding:7px; margin-top:7px; font-size:11px; }
+.salon-step-copy .salon-rich-content { min-height:105px; }
+[data-settings-panel="services"] .salon-step-add { width:100%; border-style:dashed; padding:10px; background:#faf9ff; }
+@media(max-width:540px) { .salon-step-layout { grid-template-columns:1fr; }.salon-step-photo { max-width:180px; } }
+[data-settings-panel="services"] .salon-step-photo button[hidden] { display:none; }

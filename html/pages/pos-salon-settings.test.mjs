@@ -189,36 +189,6 @@ test('saving the service catalog preserves previously saved approval selections'
  dom.window.close();
 });
 
-test('Steps / Materials rich text persists across reload, Cancel discards edits, and empty content clears it',async()=>{
- const page=await servicesPage();const {w,d,dom}=page;
- editService(page);
- const editor=d.querySelector('[data-service-edit-details]');
- assert.ok(editor,'Steps / Materials editor is available');
- assert.equal(editor.innerHTML,'');
- const details='<p><b>Steps</b></p><ol><li>Clean nails</li><li>Apply polish</li></ol><p><i>Materials</i></p><ul><li>Base coat &amp; polish</li></ul>';
- editor.innerHTML=details;
- d.querySelector('[data-service-edit-categories]').tomselect.addItem('custom-service-settings');
- saveService(page);
- const stored=w.NEXORA_SERVICE_APPROVAL_SETTINGS.loadCatalog('bitcoin-nail-bar-houston',[]);
- for(const service of stored.flatMap(c=>c.services).filter(s=>s.id==='polish-change'))assert.equal(service.detailsHtml,details);
- const reloaded=boot({categories:stored});await new Promise(resolve=>reloaded.w.setTimeout(resolve,0));
- editService(reloaded);assert.equal(reloaded.d.querySelector('[data-service-edit-details]').innerHTML,details);reloaded.dom.window.close();
- editService(page);editor.innerHTML='<p>Discard this</p>';d.querySelector('[data-service-editor-close]').click();
- editService(page);assert.equal(editor.innerHTML,details);
- editor.innerHTML='<p><br></p>';saveService(page);editService(page);assert.equal(editor.innerHTML,'');
- dom.window.close();
-});
-
-test('Steps / Materials strips unsafe HTML while retaining formatted text',async()=>{
- const page=await servicesPage();const {w,d,dom}=page;editService(page);
- const editor=d.querySelector('[data-service-edit-details]');assert.ok(editor);
- editor.innerHTML='<p onclick="alert(1)"><b>Clean</b><img src="x" onerror="alert(1)"></p><script>alert(1)</script><a href="javascript:alert(1)">Polish</a>';
- saveService(page);
- assert.equal(w.NEXORA_SERVICE_APPROVAL_SETTINGS.loadCatalog('bitcoin-nail-bar-houston',[])[0].services[0].detailsHtml,'<p><b>Clean</b></p>Polish');
- editService(page);assert.equal(editor.innerHTML,'<p><b>Clean</b></p>Polish');dom.window.close();
-});
-
-
 test('category dropdown selects multiple categories, restores saved values and rejects empty selection',async()=>{
  const page=await servicesPage();const {d,w,dom}=page;
  editService(page);
@@ -244,53 +214,48 @@ test('category dropdown selects multiple categories, restores saved values and r
 
 const detailImage='data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mP8/x8AAwMCAO+jN1kAAAAASUVORK5CYII=';
 function imageFile(w) {return new w.File([Uint8Array.from(Buffer.from(detailImage.split(',')[1],'base64'))],'step.png',{type:'image/png'});}
-function chooseDetailImage(page,file) {
- const input=page.d.querySelector('[data-details-image-file]');assert.ok(input,'Insert image picker is available');
+
+function uploadStep(page,card,file) {
+ const input=card.querySelector('[data-step-image-file]');
  Object.defineProperty(input,'files',{configurable:true,value:[file]});input.dispatchEvent(new page.w.Event('change',{bubbles:true}));
 }
-async function waitForImage(page) {
- for(let i=0;i<30&&!page.d.querySelector('[data-service-edit-details] img');i++)await new Promise(resolve=>page.w.setTimeout(resolve,10));
- assert.ok(page.d.querySelector('[data-service-edit-details] img'),'Image was inserted');
-}
-test('inline images insert at the caret, resize, persist and can be removed',async()=>{
- const page=await servicesPage();const {w,d,dom}=page;editService(page);
- const editor=d.querySelector('[data-service-edit-details]');editor.textContent='Before After';
- const range=d.createRange();range.setStart(editor.firstChild,7);range.collapse(true);w.getSelection().removeAllRanges();w.getSelection().addRange(range);d.dispatchEvent(new w.Event('selectionchange'));
- chooseDetailImage(page,imageFile(w));await waitForImage(page);
- assert.equal(editor.childNodes[0].textContent,'Before ');assert.equal(editor.childNodes[1].tagName,'IMG');assert.equal(editor.lastChild.textContent,'After');
- editor.querySelector('img').click();d.querySelector('[data-details-image-width="160"]').click();saveService(page);editService(page);
- assert.equal(editor.querySelector('img').getAttribute('width'),'160');assert.equal(editor.querySelector('img').src,detailImage);
- editor.querySelector('img').click();d.querySelector('[data-details-image-remove]').click();assert.equal(editor.querySelector('img'),null);
- d.querySelector('[data-service-editor-close]').click();editService(page);assert.ok(editor.querySelector('img'));
- editor.querySelector('img').click();d.querySelector('[data-details-image-remove]').click();saveService(page);editService(page);assert.equal(editor.querySelector('img'),null);
- dom.window.close();
-});
-test('image-only content survives saving while unsafe image sources and attributes are removed',async()=>{
+async function settle(page) {await new Promise(resolve=>page.w.setTimeout(resolve,40));}
+function storedService(page) {return page.w.NEXORA_SERVICE_APPROVAL_SETTINGS.loadCatalog('bitcoin-nail-bar-houston',[])[0].services[0];}
+test('steps default to one, add and remove without losing edits, and save separately from materials',async()=>{
  const page=await servicesPage();const {d,dom}=page;editService(page);
- const editor=d.querySelector('[data-service-edit-details]');editor.innerHTML='<img src="'+detailImage+'" width="320" onerror="alert(1)"><img src="https://example.test/tracker.png"><img src="data:image/svg+xml;base64,PHN2Zz4=">';
- saveService(page);editService(page);assert.equal(editor.querySelectorAll('img').length,1);assert.equal(editor.querySelector('img').getAttribute('onerror'),null);assert.equal(editor.querySelector('img').src,detailImage);
- dom.window.close();
+ assert.equal(d.querySelectorAll('[data-service-step]').length,1);
+ const first=d.querySelector('[data-service-step]');first.querySelector('[data-step-title]').value='Prepare';first.querySelector('[data-step-description]').innerHTML='<b>Clean nails</b>';
+ d.querySelector('[data-step-add]').click();const second=d.querySelectorAll('[data-service-step]')[1];second.querySelector('[data-step-title]').value='Polish';
+ d.querySelector('[data-service-materials]').innerHTML='<ul><li>Base coat</li></ul>';
+ d.querySelector('[data-service-edit-categories]').tomselect.addItem('custom-service-settings');saveService(page);
+ assert.equal(storedService(page).steps.length,2);assert.equal(storedService(page).steps[0].title,'Prepare');assert.equal(storedService(page).materialsHtml,'<ul><li>Base coat</li></ul>');
+ editService(page);d.querySelector('[data-step-remove]').click();assert.equal(d.querySelector('[data-step-title]').value,'Polish');assert.equal(d.querySelector('[data-step-number]').textContent,'Step 1');
+ d.querySelector('[data-service-editor-close]').click();editService(page);assert.equal(d.querySelectorAll('[data-service-step]').length,2);
+ d.querySelector('[data-step-remove]').click();d.querySelector('[data-step-remove]').click();assert.equal(d.querySelectorAll('[data-service-step]').length,1);assert.equal(d.querySelector('[data-step-title]').value,'');
+ saveService(page);assert.equal(storedService(page).steps.length,1);dom.window.close();
 });
-test('clipboard images insert, unsupported files report an error, and late uploads cannot change another service',async()=>{
- const page=await servicesPage();const {w,d,dom}=page;editService(page);
- const editor=d.querySelector('[data-service-edit-details]');
- const paste=new w.Event('paste',{bubbles:true,cancelable:true});Object.defineProperty(paste,'clipboardData',{value:{files:[imageFile(w)],getData:()=>''}});editor.dispatchEvent(paste);await waitForImage(page);
- chooseDetailImage(page,new w.File(['<svg/>'],'bad.svg',{type:'image/svg+xml'}));assert.equal(d.querySelector('[data-service-edit-error]').hidden,false);assert.equal(editor.querySelectorAll('img').length,1);
- chooseDetailImage(page,new w.File([new Uint8Array(10*1024*1024+1)],'big.png',{type:'image/png'}));assert.match(d.querySelector('[data-service-edit-error]').textContent,/10MB/);
- chooseDetailImage(page,imageFile(w));d.querySelector('[data-service-editor-close]').click();editService(page);
- await new Promise(resolve=>w.setTimeout(resolve,30));assert.equal(editor.querySelector('img'),null);dom.window.close();
+test('legacy rich text and images migrate into Step 1 once, with no loss or resurrection after clearing',async()=>{
+ const legacy='<p><b>Old instructions</b></p><img src="'+detailImage+'" width="160">';
+ const page=boot({categories:[{id:'nails',name:'Nails',services:[{...serviceFixture.categories[0].services[0],detailsHtml:legacy}]}]});await settle(page);editService(page);
+ assert.match(page.d.querySelector('[data-step-description]').innerHTML,/Old instructions/);assert.ok(page.d.querySelector('[data-step-description] img'));
+ assert.equal(page.d.querySelector('[data-service-materials]').innerHTML,'');saveService(page);
+ assert.equal(storedService(page).detailsHtml,undefined);
+ editService(page);page.d.querySelector('[data-step-description]').innerHTML='';saveService(page);editService(page);assert.equal(page.d.querySelector('[data-step-description]').innerHTML,'');page.dom.window.close();
 });
-
-test('image read failure restores Save and storage failure retains inline image draft',async()=>{
- const page=await servicesPage();const {d,w,dom}=page;editService(page);
- chooseDetailImage(page,new w.File(['not an image'],'broken.png',{type:'image/png'}));
- assert.equal(d.querySelector('[data-service-editor-form] [type=submit]').disabled,true);
- await new Promise(resolve=>w.setTimeout(resolve,30));
- assert.equal(d.querySelector('[data-service-editor-form] [type=submit]').disabled,false);
- assert.match(d.querySelector('[data-service-edit-error]').textContent,/could not be read/);
- chooseDetailImage(page,imageFile(w));await waitForImage(page);
- const before=w.NEXORA_SERVICE_APPROVAL_SETTINGS.loadCatalog('bitcoin-nail-bar-houston',serviceFixture.categories);
- w.Storage.prototype.setItem=()=>{throw new Error('Storage full');};saveService(page);
- assert.equal(d.querySelector('[data-service-editor]').hidden,false);assert.ok(d.querySelector('[data-service-edit-details] img'));
- assert.deepEqual(w.NEXORA_SERVICE_APPROVAL_SETTINGS.loadCatalog('bitcoin-nail-bar-houston',serviceFixture.categories),before);dom.window.close();
+test('step image uploads persist on the correct step and discard late reads for deleted steps or closed forms',async()=>{
+ const page=await servicesPage();const {d,w,dom}=page;editService(page);d.querySelector('[data-step-add]').click();
+ const cards=d.querySelectorAll('[data-service-step]');uploadStep(page,cards[1],imageFile(w));await settle(page);
+ assert.equal(cards[0].querySelector('[data-step-image-preview] img'),null);assert.equal(cards[1].querySelector('img').src,detailImage);
+ saveService(page);assert.equal(storedService(page).steps[1].image,detailImage);editService(page);
+ d.querySelectorAll('[data-step-image-remove]')[1].click();saveService(page);assert.equal(storedService(page).steps[1].image,'');
+ editService(page);const removed=d.querySelector('[data-service-step]');uploadStep(page,removed,imageFile(w));removed.querySelector('[data-step-remove]').click();await settle(page);assert.equal(d.querySelector('[data-step-image-preview] img'),null);
+ uploadStep(page,d.querySelector('[data-service-step]'),imageFile(w));d.querySelector('[data-service-editor-close]').click();editService(page);await settle(page);assert.equal(d.querySelector('[data-step-image-preview] img'),null);dom.window.close();
+});
+test('invalid images and storage failures keep drafts, and rich content is sanitized',async()=>{
+ const page=await servicesPage();const {d,w,dom}=page;editService(page);const card=d.querySelector('[data-service-step]');
+ uploadStep(page,card,new w.File(['invalid'],'bad.svg',{type:'image/svg+xml'}));assert.match(d.querySelector('[data-service-edit-error]').textContent,/10MB/);
+ uploadStep(page,card,new w.File(['broken'],'bad.png',{type:'image/png'}));await settle(page);assert.match(d.querySelector('[data-service-edit-error]').textContent,/read/);
+ card.querySelector('[data-step-description]').innerHTML='<p onclick="x()">Clean<script>x()</script></p>';d.querySelector('[data-service-materials]').innerHTML='<b>Polish</b><img src="https://bad.test/a.png">';saveService(page);
+ assert.equal(storedService(page).steps[0].descriptionHtml,'<p>Clean</p>');assert.equal(storedService(page).materialsHtml,'<b>Polish</b>');
+ editService(page);d.querySelector('[data-step-title]').value='Keep draft';w.Storage.prototype.setItem=()=>{throw new Error('full');};saveService(page);assert.equal(d.querySelector('[data-service-editor]').hidden,false);assert.equal(d.querySelector('[data-step-title]').value,'Keep draft');dom.window.close();
 });
