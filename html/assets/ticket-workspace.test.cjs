@@ -144,3 +144,25 @@ test('setup creates three named bills before service completion and retains comp
  d.querySelector('[data-tw-action="complete"]').click();d.querySelector('[data-tw-pay]').click();
  assert.match(d.querySelector('[data-tw-bill-progress]').textContent,/1\/3/);w.close();
 });
+
+function amountSetup(c,count=3,allocation='equal'){
+ const {d,w}=c;d.querySelector('[data-tw-split-bill]').click();
+ const change=(name,value)=>{const el=d.querySelector(`[name="${name}"]`);assert.ok(el,name+' available');el.value=value;el.dispatchEvent(new w.Event('change',{bubbles:true}));};
+ change('splitMode','amount');change('billCount',String(count));change('amountAllocation',allocation);
+}
+test('amount split divides one service among three people with exact cents, tip and discount conserved',()=>{
+ const c=boot('checkout'),{d,w,ticket,api}=c;ticket.lines[0].price=100;ticket.lines[0].status='completed';ticket.discount={type:'fixed',value:10};ticket.checkout.tip=10;api.open(ticket,'checkout');
+ amountSetup(c);submit(w,d);assert.equal(d.querySelectorAll('[data-tw-bill]').length,3);assert.equal(d.querySelector('[data-tw-bill-line]'),null);assert.equal(d.querySelector('[data-tw-total]').textContent,'$33.34');assert.equal(d.querySelector('[data-tw-field="tip"]'),null);
+ for(let i=0;i<3;i++){d.querySelectorAll('[data-tw-bill]')[i].click();d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();if(i<2)assert.equal(ticket.payment,undefined);}
+ assert.equal(ticket.payment.totalCents,10000);assert.equal(ticket.payment.subtotalCents,10000);assert.equal(ticket.payment.discountCents,1000);assert.equal(ticket.payment.tipCents,1000);assert.equal(ticket.lines.length,1);w.close();
+});
+test('custom amounts reject mismatch and persist a partly paid ticket with separate tenders',()=>{
+ const c=groupCheckout(),{d,w,ticket,api}=c;amountSetup(c,3,'custom');
+ const set=(i,value)=>{const el=d.querySelector(`[name="amount${i}"]`);el.value=value;el.dispatchEvent(new w.Event('input',{bubbles:true}));};
+ set(0,'40');set(1,'30');set(2,'10');submit(w,d);assert.equal(ticket.splitBills,undefined);assert.match(d.querySelector('[data-tw-error]').textContent,/90.00/);
+ set(2,'20');submit(w,d);d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
+ const restored=JSON.parse(JSON.stringify(ticket));api.open(restored,'checkout');assert.equal(d.querySelector('[data-tw-total]').textContent,'$30.00');
+ const cash=d.querySelector('[data-tw-field="cash"]');cash.value='35';cash.dispatchEvent(new w.Event('input',{bubbles:true}));d.querySelector('[data-tw-pay]').click();
+ d.querySelectorAll('[data-tw-bill]')[2].click();d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
+ assert.equal(restored.payment.totalCents,9000);assert.equal(restored.payment.cashCents,3000);assert.equal(restored.payment.cardCents,6000);assert.equal(restored.payment.changeCents,500);w.close();
+});
