@@ -29,6 +29,27 @@ test('Front Desk estimate checks in selected services with quote stored',()=>{
  assert.match(d.querySelector('#feedback').textContent,/checked in/);
  dom.window.close();
 });
+test('Front Desk estimate keeps repeated services as separate lines through check-in',()=>{
+ const dom=boot('?section=estimate'),w=dom.window,d=w.document;
+ try {
+  for(let i=0;i<3;i++)d.querySelector('[data-est-add="mani"]').click();
+  assert.equal(d.querySelectorAll('.estimate-line').length,3);
+  assert.equal(d.querySelector('[data-est-subtotal]').textContent,'$66.00');
+  d.querySelector('[data-est-remove="1"]').click();
+  assert.equal(d.querySelectorAll('.estimate-line').length,2);
+  d.querySelector('[data-est-preset="20"]').click();
+  assert.equal(d.querySelector('[data-est-total]').textContent,'$35.20');
+  d.querySelector('[data-est-checkin]').click();
+  d.querySelector('.estimate-dialog [name="customerName"]').value='Repeat Guest';
+  d.querySelector('.estimate-dialog [name="phone"]').value='5551234567';
+  d.querySelector('.estimate-dialog form').dispatchEvent(new w.Event('submit',{cancelable:true}));
+  const record=w.NEXORA_APPOINTMENTS_STORE.loadAll().find(r=>r.customerName==='Repeat Guest');
+  assert.equal(record.tickets.length,2);
+  assert.ok(record.tickets.every(ticket=>ticket.serviceId==='mani'));
+  assert.notEqual(record.tickets[0].id,record.tickets[1].id);
+  assert.equal(record.metadata.estimate.totalCents,3520);
+ } finally {dom.window.close();}
+});
 test('Front Desk Tickets shows guests checked in from Estimate',()=>{
  const dom=boot(),w=dom.window;
  w.NEXORA_APPOINTMENTS_STORE.create({id:'estimate-queue',customerName:'Quote Queue Guest',phone:'5551112222',serviceIds:['mani','pedi'],status:'checked-in',metadata:{estimate:{totalCents:4160}},note:'Estimated service total: $41.60'});

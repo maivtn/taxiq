@@ -22,7 +22,7 @@
     function catalog() {
       const query = $('[data-est-search]').value.trim().toLowerCase();
       const services = options.getServices().filter(s=>s.active !== false && s.name.toLowerCase().includes(query));
-      $('[data-est-catalog]').innerHTML = services.map(s=>`<button class="estimate-service" type="button" data-est-add="${esc(s.id)}" ${lines.some(l=>l.serviceId===s.id)?'disabled':''}><span><strong>${esc(s.name)}</strong><small>${esc(s.durationMin || 0)} min</small></span><b>${s.price == null?'Enter price':money(Math.round(s.price*100))}</b><span aria-hidden="true">＋</span></button>`).join('') || '<p>No services found.</p>';
+      $('[data-est-catalog]').innerHTML = services.map(s=>`<button class="estimate-service" type="button" data-est-add="${esc(s.id)}"><span><strong>${esc(s.name)}</strong><small>${esc(s.durationMin || 0)} min</small></span><b>${s.price == null?'Enter price':money(Math.round(s.price*100))}</b><span aria-hidden="true">＋</span></button>`).join('') || '<p>No services found.</p>';
     }
     function totals() {
       const result = calculate(lines,$('[data-est-type]').value,$('[data-est-value]').value);
@@ -49,7 +49,7 @@
     });
     root.addEventListener('click',e=>{
       const add=e.target.closest('[data-est-add]'),remove=e.target.closest('[data-est-remove]'),preset=e.target.closest('[data-est-preset]');
-      if(add){const s=options.getServices().find(s=>s.id===add.dataset.estAdd && s.active!==false);if(s&&!lines.some(l=>l.serviceId===s.id)){lines.push({serviceId:s.id,serviceName:s.name,price:s.price,customPrice:s.price==null,durationMin:s.durationMin || 30,technicianId:null,technicianName:'Anyone'});render();}}
+      if(add){const s=options.getServices().find(s=>s.id===add.dataset.estAdd && s.active!==false);if(s){lines.push({serviceId:s.id,serviceName:s.name,price:s.price,customPrice:s.price==null,durationMin:s.durationMin || 30,technicianId:null,technicianName:'Anyone'});render();}}
       if(remove){lines.splice(Number(remove.dataset.estRemove),1);render();}
       if(preset){$('[data-est-value]').value=preset.dataset.estPreset;totals();}
       if(e.target.closest('[data-est-reset]')){lines=[];$('[data-est-value]').value='0';render();}
