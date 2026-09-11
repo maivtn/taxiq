@@ -428,3 +428,20 @@ for(const mode of ['services','amount'])test(`Cancel split stays visible and pro
  }
  assert.equal(ticket.payment.totalCents,9000);w.close();
 });
+
+for(const mode of ['services','amount'])test(`Complete checkout becomes available only after all ${mode} bills are paid`,()=>{
+ const c=groupCheckout(),{d,w,ticket,api}=c;
+ if(mode==='amount'){amountSetup(c,2);submit(w,d);}else{d.querySelector('[data-tw-split-bill]').click();submit(w,d);assignBill(c,'l2',1);assignBill(c,'l3',1);}
+ assert.equal(d.querySelector('[data-tw-complete-checkout]'),null);
+ for(let i=0;i<2;i++){
+  d.querySelectorAll('[data-tw-bill]')[i].click();d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
+  if(i===0)assert.equal(d.querySelector('[data-tw-complete-checkout]'),null,'One paid bill does not finish the group');
+ }
+ const complete=d.querySelector('[data-tw-complete-checkout]');assert.ok(complete,'Fully paid tickets offer an explicit finish action');
+ assert.equal(d.activeElement,complete,'The final payment moves focus to the finish action');
+ assert.equal(d.querySelector('[data-tw-collected-total]').textContent,'$90.00');
+ d.querySelectorAll('[data-tw-bill]')[0].click();assert.equal(d.querySelector('[data-tw-collected-total]').textContent,'$90.00','Collection summary covers the entire ticket');
+ const paid=JSON.stringify(ticket);d.querySelector('[data-tw-complete-checkout]').click();
+ assert.equal(d.querySelector('#root').hidden,true);assert.equal(JSON.stringify(ticket),paid,'Finishing does not change recorded payments');
+ api.open(JSON.parse(paid),'checkout');assert.ok(d.querySelector('[data-tw-complete-checkout]'),'Restored paid tickets can also exit checkout');w.close();
+});

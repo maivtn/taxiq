@@ -135,4 +135,9 @@
 .tw-checkout-side .tw-paybar-guest{max-width:50%;flex:1}
 .tw-checkout-side .tw-paybar .tw-pay{margin-left:auto}
 .tw-checkout-side .tw-paybar [data-tw-payment-hint]{order:3;flex-basis:100%;padding-top:10px;border-top:1px solid #e7ebf2}
+.tw-checkout-side .tw-checkout-complete{background:#f2faf5;border-color:#c9e7d4}
+.tw-checkout-complete-status{display:flex;align-items:center;gap:10px;flex-basis:100%;color:#216b47}
+.tw-checkout-complete-status>.tw-icon{width:34px;height:34px;flex:0 0 34px;padding:8px;box-sizing:border-box;border-radius:50%;background:#ddf1e4}
+.tw-checkout-complete-status strong{font-size:14px}
+.tw-checkout-complete-status p{font-size:12px;line-height:1.5;margin:4px 0 0;color:#476653}
 @media print{.ticket-workspace .tw-line[hidden]:not([data-tw-other-bill]){display:block!important}.tw-edit-guest{display:none}}

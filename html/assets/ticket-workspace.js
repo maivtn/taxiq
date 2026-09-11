@@ -28,7 +28,7 @@
     trash:'<path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/>'
   };
   const iconForLabel = {'Print Ticket':'printer','Print receipt':'printer',Print:'printer','Print preview':'eye',
-    'Start Service':'play',Start:'play',Complete:'check',Back:'back','Checkout Ticket':'forward',
+    'Start Service':'play',Start:'play',Complete:'check',Back:'back','Checkout Ticket':'forward','Complete checkout':'check',
     Cash:'cash',Card:'card','Gift Card':'gift','Split Pay':'split','Split bill':'split',More:'more','Send SMS':'message',
     'No Receipt':'receipt','Edit customer':'user','Hand to customer':'tablet','Discount all':'percent','Add service':'plus',
     Discount:'percent','Custom':'plus','Cancel split bill':'close',Close:'close','Change tech':'user','Change service':'refresh',Remove:'trash',Pay:'card'};
@@ -55,6 +55,7 @@
     const categoryOf = s => s.categoryName || s.requiredSkill || 'Other';
     const clockedIn = name => {const tech=options.technicians().find(t=>t.name===name);return !!tech && tech.status!=='clocked-out';};
     const group = () => parent.splitBills;
+    const checkoutPaid = () => !!parent.payment&&(!group()||(group().bills.length>0&&group().bills.every(b=>b.payment)));
     const amountSplit = () => group()?.mode==='amount';
     const activeBill = () => group()?.bills.find(b => b.id === activeBillId);
     function billTicket(bill) {
@@ -257,7 +258,9 @@
       return 'Ready to collect payment';
     }
     function paybarHtml() {
-      if(mode!=='checkout'||ticket.payment)return '';
+      if(mode!=='checkout')return '';
+      if(checkoutPaid())return `<section class="tw-paybar tw-checkout-complete" aria-label="Checkout complete"><div class="tw-checkout-complete-status" role="status">${icon('check')}<div><strong>Payment complete</strong><p>${group()?group().bills.length+'/'+group().bills.length+' bills paid':'Paid in full'} · Remaining $0.00</p></div></div><div class="tw-paybar-guest"><small>Total collected</small><strong data-tw-collected-total>${money(parent.payment.totalCents)}</strong></div>${button('Complete checkout','data-tw-complete-checkout','tw-primary tw-pay')}</section>`;
+      if(ticket.payment)return '';
       return `<section class="tw-paybar" data-tw-paybar aria-label="Collect payment"><div class="tw-paybar-guest"><small>${group()?'Bill '+guestNumber(activeBill())+' · ':''}${esc(ticket.customer)}</small><strong data-tw-total></strong></div><p id="tw-payment-hint" data-tw-payment-hint role="status"></p>${button('Pay','data-tw-pay aria-describedby="tw-payment-hint"','tw-primary tw-pay')}</section>`;
     }
     function billsHtml() {
@@ -265,7 +268,7 @@
       if(!group())return '';
       const paid=group().bills.filter(b=>b.payment).length;
       const sumPaid=group().bills.reduce((sum,b)=>sum+(b.payment?.totalCents || 0),0);
-      return `<section class="tw-card tw-bills"><div class="tw-card-title"><div><h3>SPLIT BILL <span class="tw-mode-badge">${amountSplit()?'By amount':'By services'}</span></h3><p class="tw-muted">Choose a guest to review services and collect payment.</p></div><div class="tw-progress"><strong data-tw-bill-progress role="status">${paid}/${group().bills.length} bills paid</strong><progress value="${paid}" max="${group().bills.length}" aria-label="Bills paid"></progress><small>${money(sumPaid)} collected</small></div></div><div class="tw-bill-tabs" role="group" aria-label="Guest bills">${group().bills.map((b,i)=>{
+      return `<section class="tw-card tw-bills"><div class="tw-card-title"><div><h3>SPLIT BILL <span class="tw-mode-badge">${amountSplit()?'By amount':'By services'}</span></h3><p class="tw-muted">${checkoutPaid()?'All bills are paid. Complete checkout to return to Tickets.':'Choose a guest to review services and collect payment.'}</p></div><div class="tw-progress"><strong data-tw-bill-progress role="status">${paid}/${group().bills.length} bills paid</strong><progress value="${paid}" max="${group().bills.length}" aria-label="Bills paid"></progress><small>${money(sumPaid)} collected</small></div></div><div class="tw-bill-tabs" role="group" aria-label="Guest bills">${group().bills.map((b,i)=>{
         const t=b.payment || totals(billTicket(b)),lines=amountSplit()?parent.lines:parent.lines.filter(l=>group().assignments[l.id]===b.id),selected=b.id===activeBillId;
         const status=b.payment?'Paid':!lines.length?'Needs services':'Unpaid';
         return button(`<span class="tw-bill-card-top"><span class="tw-guest-avatar" aria-hidden="true">${i+1}</span><strong>Bill ${i+1} · ${esc(b.name)}</strong><span class="tw-bill-state ${b.payment?'is-paid':!lines.length?'needs-services':''}">${b.payment?'✓ ':''}${status}</span></span><span class="tw-bill-card-value"><strong data-tw-bill-total="${esc(b.id)}">${t.error?'—':money(t.totalCents)}</strong><small>${amountSplit()?'Shared ticket':lines.length+' service'+(lines.length===1?'':'s')}</small></span><small class="tw-bill-services">${!amountSplit()?(lines.map(l=>esc(l.name)).join(' · ')||'Choose services below'):'A share of the full ticket total'}</small>`,`data-tw-bill="${b.id}" data-tw-guest-color="${guestColor(b)}" aria-pressed="${selected}"`,'tw-bill-card '+(selected?'selected':''));
@@ -386,6 +389,7 @@
       if(e.target.matches('[data-tw-field]')){ticket.checkout[e.target.dataset.twField]=e.target.value;save();}});
     root.addEventListener('click',e=>{
       const b=e.target.closest('button');if(!b||b.disabled)return;
+      if(b.hasAttribute('data-tw-complete-checkout')){if(mode==='checkout'&&checkoutPaid()&&!root.hidden){root.hidden=true;options.onBack();}return;}
       if(b.hasAttribute('data-tw-back')){root.hidden=true;options.onBack();return;}
       if(b.hasAttribute('data-tw-close')){$('dialog').close();return;}
       if(b.hasAttribute('data-tw-print')){window.print();return;}
@@ -429,7 +433,7 @@
         if(p.method==='split'&&(!validMoney(p.splitCash)||cents(p.splitCash)>t.totalCents)){message('Enter a split cash amount between zero and the total.');return;}
         if(p.method==='gift-card'&&!p.giftCode?.trim()){message('Enter a gift card reference.');return;}
         lastAssignment=null;
-        ticket.payment={...t,method:p.method,receipt:p.receipt,cashCents:p.method==='split'?cents(p.splitCash):p.method==='cash'?t.totalCents:0,cardCents:p.method==='split'?t.totalCents-cents(p.splitCash):p.method==='card'?t.totalCents:0,giftCode:p.method==='gift-card'?p.giftCode:'',otherMethod:p.method==='other'?(p.otherMethod || 'Zelle'):'',changeCents:p.method==='cash'?cents(p.cash)-t.totalCents:0,paidAt:new Date().toISOString(),simulated:true};ticket.status='completed';save();render();
+        ticket.payment={...t,method:p.method,receipt:p.receipt,cashCents:p.method==='split'?cents(p.splitCash):p.method==='cash'?t.totalCents:0,cardCents:p.method==='split'?t.totalCents-cents(p.splitCash):p.method==='card'?t.totalCents:0,giftCode:p.method==='gift-card'?p.giftCode:'',otherMethod:p.method==='other'?(p.otherMethod || 'Zelle'):'',changeCents:p.method==='cash'?cents(p.cash)-t.totalCents:0,paidAt:new Date().toISOString(),simulated:true};ticket.status='completed';save();render();$('[data-tw-complete-checkout]')?.focus();
       }
     });
     root.addEventListener('submit',e=>{

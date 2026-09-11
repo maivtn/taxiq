@@ -48,7 +48,12 @@ test('Front Desk restores a partially paid group after reload and keeps complete
  r.querySelector('[data-action="checkout"][data-id="1"]').click();
  assert.match(r.querySelector('[data-tw-bill-progress]').textContent,/1\/2/);
  assert.equal(r.querySelector('[data-tw-total]').textContent,'$75.00');
- r.querySelector('[data-tw-method="card"]').click();r.querySelector('[data-tw-pay]').click();r.querySelector('[data-tw-back]').click();
+ r.querySelector('[data-tw-method="card"]').click();r.querySelector('[data-tw-pay]').click();
+ const finish=r.querySelector('[data-tw-complete-checkout]');assert.ok(finish);assert.equal(r.querySelector('#ticket-workspace').hidden,false);
+ const paymentBeforeFinish=restored.window.localStorage.getItem('nexora:front-desk-ticket-workspaces:v1');finish.click();
+ assert.equal(r.querySelector('#ticket-workspace').hidden,true);assert.equal(r.querySelector('#tickets-view').hidden,false);
+ assert.equal(new URL(restored.window.location.href).searchParams.has('ticketId'),false);assert.equal(new URL(restored.window.location.href).searchParams.has('mode'),false);
+ assert.equal(restored.window.localStorage.getItem('nexora:front-desk-ticket-workspaces:v1'),paymentBeforeFinish);
  assert.equal(r.querySelector('[data-action="checkout"][data-id="1"]'),null);
  const completed=restored.window.localStorage.getItem('nexora:front-desk-ticket-workspaces:v1');restored.window.close();
  const final=boot(completed);assert.equal(final.window.document.querySelector('[data-action="checkout"][data-id="1"]'),null);final.window.close();
