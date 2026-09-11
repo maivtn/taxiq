@@ -51,8 +51,6 @@
 .tw-bill-card-value>strong{font-size:23px;color:#172338;letter-spacing:-.5px}
 .tw-bill-tabs .tw-bill-card-value>small{font-size:11px;margin:0;white-space:nowrap}
 .tw-bill-tabs .tw-bill-services{font-size:11px;line-height:1.55;min-height:34px;margin-top:9px}
-.tw-bill-selected{display:block;border-top:1px solid #dce2ee;margin-top:10px;padding-top:9px;font-size:11px;font-weight:600;color:#607089}
-.selected .tw-bill-selected{color:var(--guest);border-color:var(--guest-border)}
 .tw-bill-tools{align-items:center;gap:12px;margin-top:14px}
 .ticket-workspace .tw-bill-tools .tw-button{min-height:36px;font-size:11px}
 .ticket-workspace .tw-cancel-split{margin-left:auto;color:#687386;font-size:11px}
