@@ -31,8 +31,8 @@
         <label class="salon-block-field">Supply Fee <small>(optional)</small><span class="salon-input-wrap"><span>$</span><input type="number" data-service-edit-fee min="0" step="0.01"></span></label>
         <label class="salon-block-field">Tags <small>(optional)</small><div class="salon-tag-list" data-tag-list></div><input data-service-edit-tags placeholder="Type a tag and press Enter" maxlength="60"></label>
         <label class="salon-service-approval"><input type="checkbox" data-service-approval><span><strong>Require approval when staff adds this service</strong><small>Customer enters the last 4 phone digits to approve. Off by default.</small></span></label>
-        <label class="salon-field-label">Service image <small>(optional)</small></label><div class="salon-service-image" data-image-preview>${icon('image')}</div>
-        <div class="salon-photo-actions"><label>${icon('camera')}Take photo<input type="file" data-service-photo accept="image/jpeg,image/png,image/webp" capture="environment"></label><label>${icon('folder2-open')}Choose file<input type="file" data-service-file accept="image/jpeg,image/png,image/webp"></label></div><p class="salon-help">Upload a clear photo that represents this service.<br>JPG, JPEG, PNG, or WebP.<br>Maximum file size is 10MB.</p>
+        <label class="salon-field-label">Service image <small>(optional)</small></label><div class="salon-service-photo-field"><div class="salon-service-image" data-image-preview>${icon('image')}</div>
+        <div class="salon-service-photo-controls"><div class="salon-photo-actions"><label>${icon('camera')}Take photo<input type="file" data-service-photo accept="image/jpeg,image/png,image/webp" capture="environment"></label><label>${icon('folder2-open')}Choose image<input type="file" data-service-file accept="image/jpeg,image/png,image/webp"></label></div><p class="salon-help">JPG, PNG, WebP · Up to 10MB</p></div></div>
 
         <section class="salon-service-steps" aria-labelledby="service-steps-label">
           <div class="salon-steps-heading"><h3 id="service-steps-label">Steps <small>(optional)</small></h3></div>
