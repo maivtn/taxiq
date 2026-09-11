@@ -33,10 +33,10 @@
         <div class="salon-label-row"><label for="service-edit-name">Service name <small>(required)</small></label><label class="salon-active-toggle">Active<input type="checkbox" data-service-edit-active><span></span></label></div>
         <input id="service-edit-name" data-service-edit-name required maxlength="120">
         <div class="salon-service-fields"><label>Price <small>(required)</small><span class="salon-input-wrap"><span>$</span><input data-service-edit-price type="number" min="0" step="0.01" required></span></label><label>Minutes <small>(required)</small><span class="salon-input-wrap suffix"><input data-service-edit-duration type="number" min="1" step="1" required><span>min</span></span></label></div>
+        <label class="salon-block-field">Supply Fee <small>(optional)</small><span class="salon-input-wrap"><span>$</span><input type="number" data-service-edit-fee min="0" step="0.01"></span></label>
           </div>
         </div>
         <label class="salon-block-field">Description <small>(optional)</small><textarea data-service-edit-description maxlength="1000" rows="3" placeholder="Optional service description"></textarea></label><div class="salon-description-count" data-description-count>0/1000</div>
-        <label class="salon-block-field">Supply Fee <small>(optional)</small><span class="salon-input-wrap"><span>$</span><input type="number" data-service-edit-fee min="0" step="0.01"></span></label>
         <label class="salon-block-field">Tags <small>(optional)</small><div class="salon-tag-list" data-tag-list></div><input data-service-edit-tags placeholder="Type a tag and press Enter" maxlength="60"></label>
         <label class="salon-service-approval"><input type="checkbox" data-service-approval><span><strong>Require approval when staff adds this service</strong><small>Customer enters the last 4 phone digits to approve. Off by default.</small></span></label>
 
