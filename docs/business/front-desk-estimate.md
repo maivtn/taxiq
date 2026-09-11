@@ -12,7 +12,7 @@ Front Desk sử dụng **Estimate** để tư vấn dịch vụ và cho khách x
 
 **Vị trí:** POS → Front Desk → Estimate.
 
-**Trình bày:** Services dùng màu sắc, nền và viền đồng bộ với phần Edit của Tickets. Your estimate phân biệt rõ tên dịch vụ, đơn giá và số lượng; nhóm giảm giá riêng, nhấn mạnh Estimated total và nút check-in. Khi đủ rộng, phần giảm giá và tổng tiền nằm cạnh nhau; trên màn hẹp, hai phần xếp dọc.
+**Trình bày:** Khung Services và ô tìm kiếm dùng màu sắc, nền và viền đồng bộ với phần Edit của Tickets; các item dịch vụ giữ kiểu trình bày hiện có, giá cùng hàng với tên. Your estimate phân biệt rõ tên dịch vụ, đơn giá và số lượng; nhóm giảm giá riêng, nhấn mạnh Estimated total và nút check-in. Khi đủ rộng, phần giảm giá và tổng tiền nằm cạnh nhau; trên màn hẹp, hai phần xếp dọc.
 
 Tài liệu mô tả yêu cầu nghiệp vụ của Estimate. **Đối chiếu triển khai:** bản HTML hiện lấy danh mục từ dữ liệu salon cục bộ, chưa tích hợp API dịch vụ và chưa có thao tác thêm dịch vụ custom. Cơ chế nhập giá cho dịch vụ danh mục thiếu giá trong HTML hiện tại không phải yêu cầu nghiệp vụ; cần thay bằng luồng thêm custom bên dưới. Estimate chỉ tính tiền dịch vụ; chưa bao gồm tax và tip. Việc xác nhận check-in không thu tiền. Giảm giá trong Estimate được lưu để tham chiếu và cần xác nhận lại tại checkout.
 

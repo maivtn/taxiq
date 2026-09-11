@@ -38,10 +38,5 @@
 .estimate-services-panel>h3{font-size:11px;font-weight:800;color:#52607b;letter-spacing:.3px;text-transform:uppercase;padding-bottom:14px;border-bottom:1px solid #d6e0f0;margin:0 0 16px}
 .estimate-services-panel [data-est-search]{height:43px;border:1px solid #d6e0f0;border-radius:9px;background:#f6f8fb;padding:10px 13px;color:#172b4d}
 .estimate-services-panel .estimate-catalog{gap:8px;scrollbar-color:#27ceff #f4f6fa;scrollbar-width:thin;padding:2px}
-.estimate-services-panel .estimate-service{border-color:#d6e0f0;border-radius:10px;padding:13px 12px;gap:10px;background:#fff;transition:background .15s,border-color .15s}
-.estimate-services-panel .estimate-service strong{font-size:13px;font-weight:650;line-height:1.4}
-.estimate-services-panel .estimate-service small{font-size:11px;color:#52607b;margin-top:5px}
-.estimate-services-panel .estimate-service b{font-size:13px;color:#4c43df;font-weight:700;font-variant-numeric:tabular-nums}
-.estimate-services-panel .estimate-service>span:last-child{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;flex:0 0 24px;background:#f5f7fb;color:#4c43df;border-radius:7px;font-size:16px}
-.estimate-services-panel .estimate-service:hover{border-color:#7970ff;background:#fbfaff}
-.estimate-services-panel .estimate-service:focus-visible,.estimate-services-panel [data-est-search]:focus-visible{outline:3px solid #ded9ff;outline-offset:2px}
+
+.estimate-services-panel [data-est-search]:focus-visible{outline:3px solid #ded9ff;outline-offset:2px}
