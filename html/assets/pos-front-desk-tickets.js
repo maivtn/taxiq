@@ -23,7 +23,7 @@ function saveEstimateTicket(t,cancel=false){
  const record=appointmentStore.loadAll().find(r=>r.id===t.bookingId);
  if(!record)return;
  if(cancel)appointmentStore.cancel(record.id);
- else appointmentStore.update(record.id,{customerName:t.customer,phone:t.phone,status:t.payment?'completed':record.status,metadata:{...record.metadata,frontDeskQueue:{status:t.status,tech:t.tech,services:t.services,location:t.location,techNote:t.techNote,lines:t.lines,note:t.note,checkout:t.checkout,discount:t.discount,payment:t.payment}}});
+ else appointmentStore.update(record.id,{customerName:t.customer,phone:t.phone,status:t.payment?'completed':record.status,metadata:{...record.metadata,frontDeskQueue:{status:t.status,tech:t.tech,services:t.services,location:t.location,techNote:t.techNote,lines:t.lines,note:t.note,checkout:t.checkout,discount:t.discount,payment:t.payment,splitBills:t.splitBills}}});
 }
 const workspaceStorageKey='nexora:front-desk-ticket-workspaces:v1';
 let savedWorkspaces={};
@@ -56,9 +56,9 @@ function render(){
   $('#ticket-body').innerHTML=rows.map(t=>{
     let actions=button('Edit','edit',t.id);
     if(!t.services.length)actions+=button('Add Service','edit',t.id)+button('Consultation','assign',t.id)+button('Cancel','cancel',t.id,'cancel');
-    else if(t.status==='in-service')actions+=button('Reassign','assign',t.id)+button('Checkout','checkout',t.id,'checkin');
+    else if(t.status==='in-service')actions+=(t.splitBills?'':button('Reassign','assign',t.id))+button('Checkout','checkout',t.id,'checkin');
     else actions+=(t.tech?button('Reassign','assign',t.id)+button('Start Service','start',t.id,'checkin'):button('Assign Tech','assign',t.id))+button('Cancel','cancel',t.id,'cancel');
-    return '<tr><td><span class="ticket-number">#'+t.id+'</span></td><td><strong>'+esc(t.customer)+'</strong><small>'+esc(t.phone)+'</small></td><td>'+esc(t.time)+'</td><td><span class="chip status '+t.status+'">'+labels[t.status]+'</span>'+(!t.services.length?'<span class="ticket-needed">● NEEDS SERVICE</span>':t.status==='waiting'&&!t.tech?'<span class="ticket-needed">● NEEDS TECHNICIAN</span>':'')+'</td><td>'+esc(t.tech||'—')+(t.location?'<small>'+esc(t.location)+'</small>':'')+(t.techNote?'<small title="'+esc(t.techNote)+'">Tech note</small>':'')+'</td><td>'+t.services.map(s=>'<span class="chip">'+esc(s)+'</span>').join(' ')+(t.estimateNote?'<small>'+esc(t.estimateNote)+'</small>':'')+'</td><td>'+(t.status==='waiting'?'<span class="wait-time">'+t.wait+' min</span>':'—')+'</td><td><div class="actions">'+actions+'</div></td></tr>';
+    return '<tr><td><span class="ticket-number">#'+t.id+'</span></td><td><strong>'+esc(t.customer)+'</strong><small>'+esc(t.phone)+'</small></td><td>'+esc(t.time)+'</td><td><span class="chip status '+t.status+'">'+labels[t.status]+'</span>'+(t.splitBills?'<small>'+t.splitBills.bills.filter(b=>b.payment).length+'/'+t.splitBills.bills.length+' bills paid</small>':'')+(!t.services.length?'<span class="ticket-needed">● NEEDS SERVICE</span>':t.status==='waiting'&&!t.tech?'<span class="ticket-needed">● NEEDS TECHNICIAN</span>':'')+'</td><td>'+esc(t.tech||'—')+(t.location?'<small>'+esc(t.location)+'</small>':'')+(t.techNote?'<small title="'+esc(t.techNote)+'">Tech note</small>':'')+'</td><td>'+t.services.map(s=>'<span class="chip">'+esc(s)+'</span>').join(' ')+(t.estimateNote?'<small>'+esc(t.estimateNote)+'</small>':'')+'</td><td>'+(t.status==='waiting'?'<span class="wait-time">'+t.wait+' min</span>':'—')+'</td><td><div class="actions">'+actions+'</div></td></tr>';
   }).join('');
 }
 const workspace=window.NEXORA_TICKET_WORKSPACE.mount($('#ticket-workspace'),{
@@ -69,6 +69,7 @@ const workspace=window.NEXORA_TICKET_WORKSPACE.mount($('#ticket-workspace'),{
 });
 function field(label,name,value='',type='text',required=false){return '<label>'+label+'<input name="'+name+'" type="'+type+'" value="'+esc(value)+'"'+(required?' required':'')+'></label>';}
 function open(kind,ticket){
+ if(ticket.splitBills&&!['edit','checkout'].includes(kind))return;
  if(['edit','checkout'].includes(kind)){$('#tickets-view').hidden=true;workspace.open(ticket,kind);return;}
  selected=ticket;action=kind;$('#ticket-form').reset();$('#ticket-error').textContent='';$('#ticket-submit').hidden=false;$('#ticket-submit').textContent='Save';
  let title='',content='';

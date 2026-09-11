@@ -25,3 +25,23 @@ test('Front Desk Checkout opens payment workspace with original services and ret
  d.querySelector('[data-tw-back]').click();assert.equal(d.querySelectorAll('#ticket-body tr').length,4);
  dom.window.close();
 });
+
+test('Front Desk retains a partially paid group after reload and removes it only after the final bill',()=>{
+ const dom=boot(),w=dom.window,d=w.document;
+ d.querySelector('[data-action="checkout"][data-id="1"]').click();
+ while(d.querySelector('[data-tw-action="price"]')) {
+  d.querySelector('[data-tw-action="price"]').click();d.querySelector('[name="price"]').value='40';d.querySelector('[data-tw-form]').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));
+ }
+ while(d.querySelector('[data-tw-action="complete"]'))d.querySelector('[data-tw-action="complete"]').click();
+ d.querySelector('[data-tw-split-bill]').click();
+ const select=d.querySelectorAll('[data-tw-bill-line]')[1];select.value=select.options[1].value;select.dispatchEvent(new w.Event('change',{bubbles:true}));
+ d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();d.querySelector('[data-tw-back]').click();
+ assert.ok(d.querySelector('[data-action="checkout"][data-id="1"]'));
+ assert.match(d.querySelector('#ticket-body').textContent,/1\/2 bills paid/);
+ assert.equal(d.querySelector('[data-action="assign"][data-id="1"]'),null,'Split bills keep their original technicians');
+ const saved=w.localStorage.getItem('nexora:front-desk-ticket-workspaces:v1');w.close();
+ const restored=boot(saved),r=restored.window.document;
+ r.querySelector('[data-action="checkout"][data-id="1"]').click();assert.match(r.querySelector('[data-tw-bill-progress]').textContent,/1\/2/);
+ r.querySelector('[data-tw-method="card"]').click();r.querySelector('[data-tw-pay]').click();r.querySelector('[data-tw-back]').click();
+ assert.equal(r.querySelector('[data-action="checkout"][data-id="1"]'),null);restored.window.close();
+});

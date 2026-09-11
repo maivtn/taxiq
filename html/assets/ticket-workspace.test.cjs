@@ -63,3 +63,61 @@ test('clocked-out technicians cannot receive or start a service',()=>{
  ticket.lines[0].tech='Mia';api.open(ticket,'edit');d.querySelector('[data-tw-start-all]').click();assert.equal(ticket.lines[0].status,'assigned');
  dom.window.close();
 });
+
+function groupCheckout(){
+ const ctx=boot('checkout');
+ ctx.ticket.lines=[{id:'l1',name:'Manicure',price:45,tech:'Jade',status:'completed'},{id:'l2',name:'Pedicure',price:30,tech:'Tina',status:'completed'},{id:'l3',name:'Gel',price:25,tech:'Jade',status:'completed'}];
+ ctx.ticket.discount={type:'fixed',value:10};ctx.api.open(ctx.ticket,'checkout');
+ return ctx;
+}
+function assignBill(ctx,line,index){
+ const select=ctx.d.querySelector(`[data-tw-bill-line="${line}"]`);
+ select.value=select.options[index].value;select.dispatchEvent(new ctx.w.Event('change',{bubbles:true}));
+}
+test('three guests pay their own services and tips, parent completes only after all bills are paid',()=>{
+ const c=groupCheckout(),{d,ticket}=c;
+ assert.ok(d.querySelector('[data-tw-split-bill]'),'Checkout offers service-based bill splitting');
+ d.querySelector('[data-tw-split-bill]').click();d.querySelector('[data-tw-add-bill]').click();
+ assignBill(c,'l2',1);assignBill(c,'l3',2);
+ assert.equal(d.querySelectorAll('[data-tw-bill]').length,3);
+ d.querySelector('[data-tw-tip="10"]').click();d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
+ assert.equal(ticket.payment,undefined);assert.match(d.querySelector('[data-tw-bill-progress]').textContent,/1\/3/);
+ assert.equal(d.querySelector('[data-tw-pay]'),null);assert.equal(d.querySelector('[data-tw-bill-line="l1"]').disabled,true);
+ d.querySelectorAll('[data-tw-bill]')[1].click();assert.equal(d.querySelector('[data-tw-total]').textContent,'$27.00');
+ d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();assert.equal(ticket.payment,undefined);
+ d.querySelectorAll('[data-tw-bill]')[2].click();d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
+ assert.equal(ticket.payment.totalCents,10000);assert.equal(ticket.payment.discountCents,1000);assert.equal(ticket.payment.tipCents,1000);
+ assert.equal(ticket.status,'completed');assert.deepEqual(ticket.lines.map(l=>l.tech),['Jade','Tina','Jade']);
+ assert.match(d.querySelector('[data-tw-bill-progress]').textContent,/3\/3/);c.w.close();
+});
+test('empty bills block payment and unpaid splits can be cancelled without losing the ticket',()=>{
+ const c=groupCheckout(),{d,ticket}=c;
+ assert.ok(d.querySelector('[data-tw-split-bill]'));
+ d.querySelector('[data-tw-split-bill]').click();d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
+ assert.equal(ticket.payment,undefined);assert.match(d.querySelector('[data-tw-message]').textContent,/empty bill/i);
+ d.querySelector('[data-tw-cancel-split]').click();assert.equal(d.querySelectorAll('.tw-line').length,3);assert.equal(d.querySelector('[data-tw-total]').textContent,'$90.00');c.w.close();
+});
+test('split bill progress survives serialization and paid bill cannot be charged again',()=>{
+ const c=groupCheckout(),{d,api}=c;
+ assert.ok(d.querySelector('[data-tw-split-bill]'));
+ d.querySelector('[data-tw-split-bill]').click();assignBill(c,'l2',1);assignBill(c,'l3',1);
+ d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();
+ const restored=JSON.parse(JSON.stringify(c.ticket));api.open(restored,'edit');
+ assert.match(d.querySelector('[data-tw-bill-progress]').textContent,/1\/2/);d.querySelectorAll('[data-tw-bill]')[0].click();
+ assert.equal(d.querySelector('[data-tw-pay]'),null);assert.equal(d.querySelector('[data-tw-cancel-split]'),null);
+ d.querySelectorAll('[data-tw-bill]')[1].click();assert.equal(d.querySelector('[data-tw-total]').textContent,'$49.50');c.w.close();
+});
+
+test('fixed discount cents are conserved across three bills and guest names are escaped',()=>{
+ const c=groupCheckout(),{d,ticket,api,w}=c;
+ ticket.lines.forEach(l=>l.price=0.01);ticket.discount={type:'fixed',value:0.01};api.open(ticket,'checkout');
+ d.querySelector('[data-tw-split-bill]').click();d.querySelector('[data-tw-add-bill]').click();assignBill(c,'l2',1);assignBill(c,'l3',2);
+ const name=d.querySelector('[data-tw-bill-name]');name.value='<img src=x>';name.dispatchEvent(new w.Event('change',{bubbles:true}));assert.equal(d.querySelector('img'),null);
+ for(let i=0;i<3;i++){d.querySelectorAll('[data-tw-bill]')[i].click();d.querySelector('[data-tw-method="card"]').click();d.querySelector('[data-tw-pay]').click();}
+ assert.equal(ticket.payment.totalCents,2);assert.equal(ticket.payment.discountCents,1);w.close();
+});
+test('an extra empty bill can be removed before payment',()=>{
+ const c=groupCheckout(),{d}=c;d.querySelector('[data-tw-split-bill]').click();d.querySelector('[data-tw-add-bill]').click();
+ d.querySelectorAll('[data-tw-bill]')[2].click();assert.ok(d.querySelector('[data-tw-remove-bill]'));
+ d.querySelector('[data-tw-remove-bill]').click();assert.equal(d.querySelectorAll('[data-tw-bill]').length,2);c.w.close();
+});

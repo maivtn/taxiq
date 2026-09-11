@@ -46,18 +46,74 @@
     return {subtotalCents:subtotal,discountCents:lineDiscount+orderDiscount,netCents:net,tipCents:tip,totalCents:net+tip};
   }
   function mount(root, options) {
-    let ticket, mode='edit', category='All', search='', dialogAction='', dialogLine='';
+    let ticket, parent, activeBillId, mode='edit', category='All', search='', dialogAction='', dialogLine='';
     const $ = selector => root.querySelector(selector);
     const button = (label,attr,style='') => `<button type="button" class="tw-button ${style}" ${attr}>${iconForLabel[label]?icon(iconForLabel[label]):''}<span>${label}</span></button>`;
     const input = (label,name,value='',type='text') => `<label>${label}<input name="${name}" type="${type}" value="${esc(value)}" ${type==='number'?'min="0" step="0.01"':''} required></label>`;
     const services = () => options.catalog().filter(s=>s.active!==false);
     const categoryOf = s => s.categoryName || s.requiredSkill || 'Other';
     const clockedIn = name => {const tech=options.technicians().find(t=>t.name===name);return !!tech && tech.status!=='clocked-out';};
+    const group = () => parent.splitBills;
+    const activeBill = () => group()?.bills.find(b => b.id === activeBillId);
+    function billTicket(bill) {
+      const lines = parent.lines.filter(l => group().assignments[l.id] === bill.id);
+      return {...parent, customer:bill.name, lines, checkout:bill.checkout, payment:bill.payment,
+        discount:{type:'fixed',value:lines.reduce((sum,l)=>sum + group().discounts[l.id],0)/100}};
+    }
+    function selectBill(id) {
+      activeBillId=id;
+      ticket=group()?billTicket(activeBill()):parent;
+    }
+    function newBill(name) {
+      return {id:crypto.randomUUID(),name,checkout:{tip:0,tipType:'fixed',method:'cash',cash:'',receipt:'none'}};
+    }
     function save() {
-      ticket.services=ticket.lines.map(l=>l.name);
-      ticket.tech=[...new Set(ticket.lines.map(l=>l.tech).filter(Boolean))].join(', ');
-      if (!ticket.payment) ticket.status=ticket.lines.some(l=>['in-service','completed'].includes(l.status))?'in-service':'waiting';
-      options.onChange(ticket);
+      if(group()) {
+        activeBill().checkout=ticket.checkout;
+        if(ticket.payment) activeBill().payment=ticket.payment;
+        if(group().bills.every(b=>b.payment)) {
+          const payments=group().bills.map(b=>b.payment);
+          parent.payment={method:'split-bills',receipt:'none',paidAt:new Date().toISOString(),simulated:true};
+          for(const key of ['subtotalCents','discountCents','netCents','tipCents','totalCents','cashCents','cardCents','changeCents']) parent.payment[key]=payments.reduce((sum,p)=>sum+p[key],0);
+          parent.status='completed';
+        }
+      }
+      parent.services=parent.lines.map(l=>l.name);
+      parent.tech=[...new Set(parent.lines.map(l=>l.tech).filter(Boolean))].join(', ');
+      if (!parent.payment) parent.status=parent.lines.some(l=>['in-service','completed'].includes(l.status))?'in-service':'waiting';
+      options.onChange(parent);
+    }
+    function startSplit() {
+      const t=totals(parent);
+      if(t.error){message(t.error);return;}
+      if(parent.lines.length<2){message('Add at least two services to split this ticket.');return;}
+      if(parent.lines.some(l=>l.status!=='completed')){message('Complete all services before splitting the bill.');return;}
+      const first=newBill(parent.customer),second=newBill('Guest 2');
+      first.checkout={...parent.checkout};
+      const bases=parent.lines.map(l=>cents(l.price)-discount(cents(l.price),l.discount));
+      const base=bases.reduce((sum,n)=>sum+n,0),amount=discount(base,parent.discount);
+      let running=0,allocated=0;
+      parent.splitBills={bills:[first,second],assignments:{},discounts:{}};
+      parent.lines.forEach((l,i)=>{
+        group().assignments[l.id]=first.id;
+        running+=bases[i];
+        const next=base?Math.round(amount*running/base):0;
+        group().discounts[l.id]=next-allocated;allocated=next;
+      });
+      selectBill(first.id);save();render();
+    }
+    function billsHtml() {
+      if(mode!=='checkout')return '';
+      if(!group())return parent.payment?'':`<section class="tw-card tw-bills"><div class="tw-card-title"><h3>PAYING SEPARATELY?</h3>${button('Split bill','data-tw-split-bill','tw-purple')}</div><p class="tw-muted">One group check-in. A separate bill for each guest’s services.</p></section>`;
+      const paid=group().bills.filter(b=>b.payment).length;
+      const sumPaid=group().bills.reduce((sum,b)=>sum+(b.payment?.totalCents || 0),0);
+      return `<section class="tw-card tw-bills"><div class="tw-card-title"><h3>SPLIT BILL</h3><strong data-tw-bill-progress role="status">${paid}/${group().bills.length} bills paid</strong></div><p class="tw-muted">Ticket #${esc(parent.id)} · ${esc(parent.customer)} · Paid ${money(sumPaid)}</p><div class="tw-bill-tabs">${group().bills.map((b,i)=>{
+        const t=b.payment || totals(billTicket(b));
+        return button(`<strong>Bill ${i+1} · ${esc(b.name)}</strong><small>${b.payment?'Paid':t.error?'No services':'Unpaid'} · ${t.error?'—':money(t.totalCents)}</small>`,`data-tw-bill="${b.id}" aria-pressed="${b.id===activeBillId}"`,b.id===activeBillId?'selected':'');
+      }).join('')}</div>${!parent.payment?`<div class="tw-bill-tools">${group().bills.length<parent.lines.length?button('+ Add bill','data-tw-add-bill','tw-small'):''}${!paid?button('Cancel split','data-tw-cancel-split','tw-text'):''}${group().bills.length>2&&!ticket.lines.length&&!ticket.payment?button('Remove empty bill','data-tw-remove-bill','tw-small'):''}</div>`:''}<div class="tw-bill-assignments">${parent.lines.map(l=>{
+        const owner=group().bills.find(b=>b.id===group().assignments[l.id]);
+        return `<label><span><strong>${esc(l.name)}</strong><small>${esc(l.tech)} · ${money(cents(l.price))}</small></span><select aria-label="Bill for ${esc(l.name)}" data-tw-bill-line="${esc(l.id)}" ${owner.payment?'disabled':''}>${group().bills.map((b,i)=>`<option value="${b.id}" ${owner===b?'selected':''} ${b.payment&&owner!==b?'disabled':''}>Bill ${i+1} · ${esc(b.name)}</option>`).join('')}</select></label>`;
+      }).join('')}</div><p class="tw-muted">Choose a bill for every service. Each bill has its own tip and payment. Service prices and discounts stay fixed while split; cancel the unpaid split to edit them.</p></section>`;
     }
     function message(text) {$('[data-tw-message]').textContent=text;}
     function renderCatalog() {
@@ -84,18 +140,19 @@
       <section class="tw-card"><h3>PAYMENT METHOD</h3><div class="tw-methods">${[['cash','Cash'],['card','Card'],['gift-card','Gift Card'],['split','Split Pay'],['other','More']].map(([id,label])=>button(label,`data-tw-method="${id}"`,p.method===id?'selected':'')).join('')}</div>
       ${p.method==='cash'?`<div class="tw-cash"><label>Cash received <input aria-label="Cash received" type="number" min="0" step="0.01" data-tw-field="cash" value="${esc(p.cash)}"></label><span>Change due <strong data-tw-change>$0.00</strong></span></div>`:p.method==='split'?`<div class="tw-cash"><label>Cash portion ($)<input aria-label="Split cash amount" type="number" min="0" step="0.01" data-tw-field="splitCash" value="${esc(p.splitCash || '')}"></label><span>Remaining balance: card (demo)</span></div>`:p.method==='gift-card'?`<label class="tw-payment-info">Gift card reference<input aria-label="Gift card reference" data-tw-field="giftCode" value="${esc(p.giftCode || '')}" placeholder="Demo reference"></label>`:p.method==='other'?`<label class="tw-payment-info">Other method<select data-tw-field="otherMethod"><option ${p.otherMethod==='Zelle'?'selected':''}>Zelle</option><option ${p.otherMethod==='Venmo'?'selected':''}>Venmo</option><option ${p.otherMethod==='Other'?'selected':''}>Other</option></select></label>`:'<p class="tw-muted">Card payment is simulated. No card details are collected.</p>'}
       <h3 class="tw-receipt-label">RECEIPT</h3><div class="tw-receipt-options">${[['none','No Receipt'],['sms','Send SMS'],['print','Print']].map(([id,label])=>button(label,`data-tw-receipt="${id}"`,p.receipt===id?'selected':'')).join('')}</div><div class="tw-preview">${button('Print preview','data-tw-preview','tw-text')}</div></section>
-      <section class="tw-card"><div class="tw-card-title"><h3>PAYMENT SUMMARY</h3>${button('Discount all','data-tw-discount-all','tw-small tw-orange')}</div><div class="tw-summary-row tw-rule"><span>Subtotal</span><span data-tw-subtotal></span></div><div class="tw-summary-row"><span>Tip</span><span data-tw-tip-total></span></div><div class="tw-summary-row"><span>Discount</span><span class="tw-red" data-tw-discount-total></span></div><div class="tw-summary-row tw-rule"><strong>TOTAL</strong><strong data-tw-total></strong></div></section>${button('Pay','data-tw-pay','tw-primary tw-pay')}<p class="tw-demo">Prototype · Payment and SMS receipt are simulated.</p>`;
+      <section class="tw-card"><div class="tw-card-title"><h3>PAYMENT SUMMARY</h3>${!group()?button('Discount all','data-tw-discount-all','tw-small tw-orange'):''}</div><div class="tw-summary-row tw-rule"><span>Subtotal</span><span data-tw-subtotal></span></div><div class="tw-summary-row"><span>Tip</span><span data-tw-tip-total></span></div><div class="tw-summary-row"><span>Discount</span><span class="tw-red" data-tw-discount-total></span></div><div class="tw-summary-row tw-rule"><strong>TOTAL</strong><strong data-tw-total></strong></div></section>${button('Pay','data-tw-pay','tw-primary tw-pay')}<p class="tw-demo">Prototype · Payment and SMS receipt are simulated.</p>`;
     }
     function render() {
       const paid=!!ticket.payment;
       const catalogHtml=`<section class="tw-card tw-catalog-panel"><h3>SERVICES</h3><input class="tw-search" data-tw-search type="search" placeholder="Search services…" aria-label="Search ticket services" value="${esc(search)}"><div class="tw-categories" data-tw-categories></div><div class="tw-catalog" data-tw-catalog></div></section>`;
+      const billHeading=group()?`<div class="tw-card tw-bill-heading"><h3>PAYMENT FOR ${esc(ticket.customer)}</h3>${!paid?`<label>Guest name (optional)<input data-tw-bill-name value="${esc(ticket.customer)}" maxlength="80"></label>`:''}</div>`:'';
       const leftColumn=mode==='checkout'
-        ? `<div class="tw-checkout-side" aria-label="Checkout actions">${paymentHtml()}<p data-tw-message role="status"></p></div>`
+        ? `<div class="tw-checkout-side" aria-label="Checkout actions">${billHeading}${paymentHtml()}<p data-tw-message role="status"></p></div>`
         : catalogHtml;
-      root.innerHTML=`<div class="tw-heading">${button('Back','data-tw-back')}<h2>Ticket #${esc(ticket.id)} · ${esc(ticket.customer)}</h2>${!paid?button('Edit customer','data-tw-customer','tw-text'):''}</div><div class="tw-workspace ${mode==='checkout'?'tw-checkout-layout':''}">${leftColumn}<div class="tw-ticket-side"><section class="tw-card"><div class="tw-card-title"><h3>TICKET DETAIL (${ticket.lines.length} services)</h3>${!paid?`<div class="tw-ticket-tools">${mode==='checkout'?button('Add service','data-tw-add-service','tw-small tw-purple'):''}${button('Custom','data-tw-custom','tw-small tw-purple')}</div>`:''}</div><div class="tw-lines">${ticket.lines.map(l=>{
+      root.innerHTML=`<div class="tw-heading">${button('Back','data-tw-back')}<h2>Ticket #${esc(ticket.id)} · ${esc(ticket.customer)}</h2>${!paid&&!group()?button('Edit customer','data-tw-customer','tw-text'):''}</div>${billsHtml()}<div class="tw-workspace ${mode==='checkout'?'tw-checkout-layout':''}">${leftColumn}<div class="tw-ticket-side"><section class="tw-card"><div class="tw-card-title"><h3>TICKET DETAIL (${ticket.lines.length} services)</h3>${!paid&&!group()?`<div class="tw-ticket-tools">${mode==='checkout'?button('Add service','data-tw-add-service','tw-small tw-purple'):''}${button('Custom','data-tw-custom','tw-small tw-purple')}</div>`:''}</div><div class="tw-lines">${ticket.lines.map(l=>{
         const status={'assigned':'ASSIGNED','in-service':'IN PROGRESS',completed:'COMPLETED'}[l.status] || 'UNASSIGNED';
-        return `<article class="tw-line"><div class="tw-line-top"><div><strong>${esc(l.name)}</strong> <span class="tw-status ${esc(l.status)}">${status}</span><p>Tech. <b>${esc(l.tech || 'Unassigned')}</b></p></div><strong>${validMoney(l.price)?money(cents(l.price)):'Price required'}</strong></div>${l.discount?.value?`<p class="tw-discount-note">Discount: ${esc(l.discount.value)}${l.discount.type==='fixed'?' USD':'%'}</p>`:''}${!paid?`<div class="tw-line-actions">${l.status==='completed'?'<span class="tw-completed">✓ Completed</span>':button(l.status==='in-service'?'Complete':'Start',`data-tw-action="${l.status==='in-service'?'complete':'start'}" data-line="${esc(l.id)}"`,'tw-green')}${button('Change tech',`data-tw-action="tech" data-line="${esc(l.id)}"`,'tw-blue')}${button('Change service',`data-tw-action="service" data-line="${esc(l.id)}"`,'tw-purple')}${button('Discount',`data-tw-action="discount" data-line="${esc(l.id)}"`,'tw-orange')}${button('Remove',`data-tw-action="remove" data-line="${esc(l.id)}"`,'tw-red')}${!validMoney(l.price)?button('Set price',`data-tw-action="price" data-line="${esc(l.id)}"`,'tw-orange'):''}</div>`:''}</article>`;
-      }).join('') || '<p class="tw-muted">Choose a service to add it to this ticket.</p>'}</div>${mode==='edit'?'<div class="tw-summary-row tw-rule"><strong>ESTIMATED TOTAL</strong><strong data-tw-total></strong></div>':''}</section><section class="tw-card"><label class="tw-note">NOTE<textarea data-tw-note placeholder="Seat, customer preferences, color/powder used…" ${paid?'disabled':''}>${esc(ticket.note || '')}</textarea></label></section>${mode==='checkout'?'':`<div class="tw-bottom">${button('Print Ticket','data-tw-print')}${button('Start Service','data-tw-start-all','tw-purple')}</div>${button('Checkout Ticket','data-tw-checkout','tw-text')}` }${mode==='checkout'?'':'<p data-tw-message role="status"></p>'}</div></div><dialog class="tw-dialog" aria-labelledby="tw-dialog-title"><form data-tw-form><div class="tw-card-title"><h2 id="tw-dialog-title"></h2>${button('Close','data-tw-close aria-label="Close dialog"','tw-text tw-icon-only')}</div><div data-tw-fields></div><p data-tw-error role="alert"></p><button type="submit" class="tw-button tw-primary" data-tw-save>Save</button></form></dialog>`;
+        return `<article class="tw-line"><div class="tw-line-top"><div><strong>${esc(l.name)}</strong> <span class="tw-status ${esc(l.status)}">${status}</span><p>Tech. <b>${esc(l.tech || 'Unassigned')}</b></p></div><strong>${validMoney(l.price)?money(cents(l.price)):'Price required'}</strong></div>${l.discount?.value?`<p class="tw-discount-note">Discount: ${esc(l.discount.value)}${l.discount.type==='fixed'?' USD':'%'}</p>`:''}${!paid&&!group()?`<div class="tw-line-actions">${l.status==='completed'?'<span class="tw-completed">✓ Completed</span>':button(l.status==='in-service'?'Complete':'Start',`data-tw-action="${l.status==='in-service'?'complete':'start'}" data-line="${esc(l.id)}"`,'tw-green')}${button('Change tech',`data-tw-action="tech" data-line="${esc(l.id)}"`,'tw-blue')}${button('Change service',`data-tw-action="service" data-line="${esc(l.id)}"`,'tw-purple')}${button('Discount',`data-tw-action="discount" data-line="${esc(l.id)}"`,'tw-orange')}${button('Remove',`data-tw-action="remove" data-line="${esc(l.id)}"`,'tw-red')}${!validMoney(l.price)?button('Set price',`data-tw-action="price" data-line="${esc(l.id)}"`,'tw-orange'):''}</div>`:''}</article>`;
+      }).join('') || '<p class="tw-muted">Choose a service to add it to this ticket.</p>'}</div>${mode==='edit'?'<div class="tw-summary-row tw-rule"><strong>ESTIMATED TOTAL</strong><strong data-tw-total></strong></div>':''}</section><section class="tw-card"><label class="tw-note">NOTE<textarea data-tw-note placeholder="Seat, customer preferences, color/powder used…" ${paid||group()?'disabled':''}>${esc(ticket.note || '')}</textarea></label></section>${mode==='checkout'?'':`<div class="tw-bottom">${button('Print Ticket','data-tw-print')}${button('Start Service','data-tw-start-all','tw-purple')}</div>${button('Checkout Ticket','data-tw-checkout','tw-text')}` }${mode==='checkout'?'':'<p data-tw-message role="status"></p>'}</div></div><dialog class="tw-dialog" aria-labelledby="tw-dialog-title"><form data-tw-form><div class="tw-card-title"><h2 id="tw-dialog-title"></h2>${button('Close','data-tw-close aria-label="Close dialog"','tw-text tw-icon-only')}</div><div data-tw-fields></div><p data-tw-error role="alert"></p><button type="submit" class="tw-button tw-primary" data-tw-save>Save</button></form></dialog>`;
       renderCatalog();renderTotals();
     }
     function openDialog(action,lineId) {
@@ -117,18 +174,34 @@
       ticket.lines.push({id:crypto.randomUUID(),serviceId:service.id || null,name:service.name,price:service.price,tech:'',status:'unassigned'});save();render();
     }
     root.addEventListener('input',e=>{
+      if(ticket.payment)return;
       if(e.target.matches('[data-tw-search]')){search=e.target.value;renderCatalog();}
       if(e.target.matches('[data-tw-note]')){ticket.note=e.target.value;save();}
       if(e.target.matches('[data-tw-field]')){ticket.checkout[e.target.dataset.twField]=e.target.value;if(e.target.dataset.twField==='tip')ticket.checkout.tipType='fixed';save();renderTotals();}
     });
-    root.addEventListener('change',e=>{if(e.target.matches('[data-tw-field]')){ticket.checkout[e.target.dataset.twField]=e.target.value;save();}});
+    root.addEventListener('change',e=>{
+      if(e.target.matches('[data-tw-bill-line]')&&group()) {
+        const lineId=e.target.dataset.twBillLine,owner=group().bills.find(b=>b.id===group().assignments[lineId]),target=group().bills.find(b=>b.id===e.target.value);
+        if(!owner||!target||owner.payment||target.payment)return;
+        group().assignments[lineId]=target.id;selectBill(activeBillId);save();render();return;
+      }
+      if(ticket.payment)return;
+      if(e.target.matches('[data-tw-bill-name]')&&group()) {
+        activeBill().name=e.target.value.trim().slice(0,80)||'Guest';selectBill(activeBillId);save();render();return;
+      }
+      if(e.target.matches('[data-tw-field]')){ticket.checkout[e.target.dataset.twField]=e.target.value;save();}});
     root.addEventListener('click',e=>{
       const b=e.target.closest('button');if(!b||b.disabled)return;
       if(b.hasAttribute('data-tw-back')){root.hidden=true;options.onBack();return;}
       if(b.hasAttribute('data-tw-close')){$('dialog').close();return;}
       if(b.hasAttribute('data-tw-print')){window.print();return;}
       if(b.hasAttribute('data-tw-preview')){openDialog('preview');return;}
+      if(b.hasAttribute('data-tw-bill')&&group()){selectBill(b.dataset.twBill);render();return;}
+      if(b.hasAttribute('data-tw-add-bill')&&group()&&!parent.payment&&group().bills.length<parent.lines.length){group().bills.push(newBill('Guest '+(group().bills.length+1)));save();render();return;}
+      if(b.hasAttribute('data-tw-remove-bill')&&group()&&group().bills.length>2&&!ticket.lines.length&&!ticket.payment){group().bills=group().bills.filter(b=>b.id!==activeBillId);selectBill(group().bills[0].id);save();render();return;}
+      if(b.hasAttribute('data-tw-cancel-split')&&group()&&!group().bills.some(b=>b.payment)){delete parent.splitBills;ticket=parent;save();render();return;}
       if(ticket.payment)return;
+      if(b.hasAttribute('data-tw-split-bill')&&!group()){startSplit();return;}
       if(b.hasAttribute('data-tw-add-service')){openDialog('catalog');return;}
       if(b.hasAttribute('data-tw-category')){category=b.dataset.twCategory;renderCatalog();}
       if(b.hasAttribute('data-tw-add')){const s=services().find(s=>s.id===b.dataset.twAdd);if(s)add(s);}
@@ -149,6 +222,7 @@
       if(b.hasAttribute('data-tw-receipt')){ticket.checkout.receipt=b.dataset.twReceipt;save();render();}
       if(b.hasAttribute('data-tw-customer-tip')){ticket.checkout.tip=b.dataset.twCustomerTip;ticket.checkout.tipType='percent';$('dialog').close();save();render();}
       if(b.hasAttribute('data-tw-pay')){
+        if(group()&&group().bills.some(b=>!parent.lines.some(l=>group().assignments[l.id]===b.id))){message('Assign services to every empty bill before payment.');return;}
         const t=totals(ticket),p=ticket.checkout;
         if(t.error){message(t.error);return;}
         if(ticket.lines.some(l=>l.status!=='completed')){message('Complete all services before payment.');return;}
@@ -178,12 +252,13 @@
       $('dialog').close();save();render();
     });
     return {open(value,requestedMode='edit') {
-      ticket=value;mode=requestedMode;category='All';search='';
+      parent=value;ticket=value;mode=parent.splitBills?'checkout':requestedMode;category='All';search='';
       if(!ticket.lines)ticket.lines=ticket.services.map((name,index)=>{
         const s=options.catalog().find(s=>s.name===name||s.aliases?.includes(name));
         return {id:'line-'+ticket.id+'-'+index,serviceId:s?.id,name,price:s?.price ?? null,tech:ticket.tech || '',status:ticket.status==='in-service'?'in-service':ticket.tech?'assigned':'unassigned'};
       });
       ticket.checkout=ticket.checkout || {tip:0,tipType:'fixed',method:'cash',cash:'',receipt:'none'};
+      if(group())selectBill((group().bills.find(b=>!b.payment)||group().bills[0]).id);
       root.hidden=false;render();
     }};
   }
