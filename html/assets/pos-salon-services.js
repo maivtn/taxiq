@@ -27,6 +27,12 @@
         <input id="service-edit-name" data-service-edit-name required maxlength="120">
         <div class="salon-service-fields"><label>Price <small>(required)</small><span class="salon-input-wrap"><span>$</span><input data-service-edit-price type="number" min="0" step="0.01" required></span></label><label>Minutes <small>(required)</small><span class="salon-input-wrap suffix"><input data-service-edit-duration type="number" min="1" step="1" required><span>min</span></span></label></div>
         <label class="salon-block-field">Description <small>(optional)</small><textarea data-service-edit-description maxlength="1000" rows="3" placeholder="Optional service description"></textarea></label><div class="salon-description-count" data-description-count>0/1000</div>
+        <label id="service-details-label" class="salon-block-field">Steps / Materials <small>(optional)</small></label>
+        <div class="salon-rich-editor">
+          <div class="salon-rich-toolbar" role="group" aria-label="Steps / Materials formatting">${[['bold','Bold','type-bold'],['italic','Italic','type-italic'],['underline','Underline','type-underline'],['insertOrderedList','Numbered list','list-ol'],['insertUnorderedList','Bulleted list','list-ul'],['removeFormat','Clear formatting','eraser']].map(([command,label,glyph])=>button('data-details-command="'+command+'" aria-label="'+label+'" title="'+label+'"','',glyph)).join('')}</div>
+          <div class="salon-rich-content" data-service-edit-details contenteditable="true" role="textbox" aria-multiline="true" aria-labelledby="service-details-label" aria-describedby="service-details-help" data-placeholder="Describe the service steps and materials used…"></div>
+        </div>
+        <p id="service-details-help" class="salon-help">Add numbered steps and a list of materials, including quantities or usage notes.</p>
         <label class="salon-block-field">Supply Fee <small>(optional)</small><span class="salon-input-wrap"><span>$</span><input type="number" data-service-edit-fee min="0" step="0.01"></span></label>
         <label class="salon-block-field">Tags <small>(optional)</small><div class="salon-tag-list" data-tag-list></div><input data-service-edit-tags placeholder="Type a tag and press Enter" maxlength="60"></label>
         <label class="salon-service-approval"><input type="checkbox" data-service-approval><span><strong>Require approval when staff adds this service</strong><small>Customer enters the last 4 phone digits to approve. Off by default.</small></span></label>
@@ -36,6 +42,46 @@
         <p class="salon-service-error" role="alert" data-service-edit-error hidden></p>
       </div><footer>${button('data-service-editor-close','Cancel')}<button type="submit" class="is-primary">${icon('check-circle-fill')}Save changes</button></footer></form>
     </section></div>`;
+  const detailsEditor = $('[data-service-edit-details]');
+  let detailsRange = null;
+  function cleanDetails(html) {
+    const template = document.createElement('template');
+    template.innerHTML = typeof html === 'string' ? html : '';
+    const allowed = new Set(['P','DIV','BR','B','STRONG','I','EM','U','OL','UL','LI']);
+    function clean(parent) {
+      Array.from(parent.childNodes).forEach(node => {
+        if (node.nodeType === 3) return;
+        if (node.nodeType !== 1 || ['SCRIPT','STYLE','IFRAME','OBJECT','SVG','MATH','TEMPLATE'].includes(node.nodeName)) { node.remove(); return; }
+        clean(node);
+        if (!allowed.has(node.nodeName)) { node.replaceWith(...node.childNodes); return; }
+        Array.from(node.attributes).forEach(attr => node.removeAttribute(attr.name));
+      });
+    }
+    clean(template.content);
+    return template.content.textContent.trim() ? template.innerHTML : '';
+  }
+  document.addEventListener('selectionchange', () => {
+    const selection = window.getSelection();
+    if (selection.rangeCount && detailsEditor.contains(selection.anchorNode) && detailsEditor.contains(selection.focusNode)) detailsRange = selection.getRangeAt(0).cloneRange();
+  });
+  panel.addEventListener('mousedown', event => {
+    if (event.target.closest('[data-details-command]')) event.preventDefault();
+  });
+  panel.addEventListener('click', event => {
+    const control = event.target.closest('[data-details-command]');
+    if (!control || detailsEditor.contentEditable === 'false') return;
+    detailsEditor.focus();
+    if (detailsRange) { const selection = window.getSelection(); selection.removeAllRanges(); selection.addRange(detailsRange); }
+    document.execCommand(control.dataset.detailsCommand, false, null);
+  });
+  detailsEditor.addEventListener('paste', event => {
+    event.preventDefault();
+    const clipboard = event.clipboardData;
+    if (!clipboard) return;
+    const html = clipboard.getData('text/html');
+    document.execCommand('insertHTML', false, html ? cleanDetails(html) : esc(clipboard.getData('text/plain')).replace(/\r?\n/g, '<br>'));
+  });
+  detailsEditor.addEventListener('drop', event => event.preventDefault());
   const selectedSalon = currentSalon.id;
   function status(message) {$('[data-approval-status]').textContent=message;}
   function markDirty() {status('Unsaved changes');}
@@ -78,6 +124,8 @@
     const service=serviceById(id);if(!service)return;editing={id,token:uid()};
     $('[data-service-edit-categories]').innerHTML=categories.map(c=>'<label><input type="checkbox" data-service-category-choice="'+esc(c.id)+'"'+(c.services.some(s=>s.id===id)?' checked':'')+'>'+esc(c.name)+'</label>').join('');
     for(const [field,key] of [['name','name'],['price','price'],['duration','durationMin'],['description','description'],['fee','supplyFee']]){$('[data-service-edit-'+field+']').value=service[key]??'';$('[data-service-edit-'+field+']').disabled=id==='__custom__';}
+    detailsRange=null;detailsEditor.innerHTML=cleanDetails(service.detailsHtml);detailsEditor.contentEditable=id==='__custom__'?'false':'true';
+    panel.querySelectorAll('[data-details-command]').forEach(control=>{control.disabled=id==='__custom__';});
     $('[data-service-edit-active]').checked=service.active!==false;
     $('[data-service-approval]').checked=api.requiresApproval(selectedSalon,id);
     $('[data-description-count]').textContent=(service.description||'').length+'/1000';
@@ -115,7 +163,7 @@
     const fee=$('[data-service-edit-fee]').value;
     if(fee!==''&&(!Number.isFinite(Number(fee))||Number(fee)<0)){error('Supply fee must be zero or greater.');return;}
     const tag=$('[data-service-edit-tags]').value.trim();if(tag&&!tags.includes(tag))tags.push(tag);
-    const updated=Object.assign({},service,isCustom?{}:{name:$('[data-service-edit-name]').value.trim(),price:$('[data-service-edit-price]').value===''?'':Number($('[data-service-edit-price]').value),durationMin:Number($('[data-service-edit-duration]').value),description:$('[data-service-edit-description]').value,supplyFee:fee===''?null:Number(fee),tags:tags.slice(),image:imageData},{active:$('[data-service-edit-active]').checked});
+    const updated=Object.assign({},service,isCustom?{}:{name:$('[data-service-edit-name]').value.trim(),price:$('[data-service-edit-price]').value===''?'':Number($('[data-service-edit-price]').value),durationMin:Number($('[data-service-edit-duration]').value),description:$('[data-service-edit-description]').value,detailsHtml:cleanDetails(detailsEditor.innerHTML),supplyFee:fee===''?null:Number(fee),tags:tags.slice(),image:imageData},{active:$('[data-service-edit-active]').checked});
     const next=clone(categories).map(c=>{const index=c.services.findIndex(s=>s.id===service.id);c.services=c.services.filter(s=>s.id!==service.id);if(categoryIds.includes(c.id))c.services.splice(index<0?c.services.length:index,0,clone(updated));return c;});
     const approvals=new Set(api.load(selectedSalon));if($('[data-service-approval]').checked)approvals.add(service.id);else approvals.delete(service.id);
     try{persist(next,Array.from(approvals));close($('[data-service-editor]'));const trigger=Array.from(panel.querySelectorAll('[data-salon-service-edit]')).find(b=>b.dataset.salonServiceEdit===service.id);if(trigger){trigger.closest('details').open=true;trigger.focus();}}catch(failure){error(failure.message);}
@@ -147,7 +195,7 @@
     overlay.addEventListener('click',event=>{if(event.target===overlay)close(overlay);});
     overlay.addEventListener('keydown',event=>{
       if(event.key==='Escape'){event.preventDefault();close(overlay);return;}if(event.key!=='Tab')return;
-      const controls=Array.from(overlay.querySelectorAll('button,input,textarea')).filter(c=>!c.disabled&&c.type!=='file');const first=controls[0],last=controls[controls.length-1];
+      const controls=Array.from(overlay.querySelectorAll('button,input,textarea,[contenteditable="true"]')).filter(c=>!c.disabled&&c.type!=='file');const first=controls[0],last=controls[controls.length-1];
       if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
     });
   });

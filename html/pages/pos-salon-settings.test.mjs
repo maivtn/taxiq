@@ -187,3 +187,32 @@ test('saving the service catalog preserves previously saved approval selections'
  assert.equal(w.NEXORA_SERVICE_APPROVAL_SETTINGS.loadCatalog('bitcoin-nail-bar-houston',[])[0].services[0].id,'polish-change');
  dom.window.close();
 });
+
+test('Steps / Materials rich text persists across reload, Cancel discards edits, and empty content clears it',async()=>{
+ const page=await servicesPage();const {w,d,dom}=page;
+ editService(page);
+ const editor=d.querySelector('[data-service-edit-details]');
+ assert.ok(editor,'Steps / Materials editor is available');
+ assert.equal(editor.innerHTML,'');
+ const details='<p><b>Steps</b></p><ol><li>Clean nails</li><li>Apply polish</li></ol><p><i>Materials</i></p><ul><li>Base coat &amp; polish</li></ul>';
+ editor.innerHTML=details;
+ d.querySelectorAll('[data-service-category-choice]')[1].checked=true;
+ saveService(page);
+ const stored=w.NEXORA_SERVICE_APPROVAL_SETTINGS.loadCatalog('bitcoin-nail-bar-houston',[]);
+ for(const service of stored.flatMap(c=>c.services).filter(s=>s.id==='polish-change'))assert.equal(service.detailsHtml,details);
+ const reloaded=boot({categories:stored});await new Promise(resolve=>reloaded.w.setTimeout(resolve,0));
+ editService(reloaded);assert.equal(reloaded.d.querySelector('[data-service-edit-details]').innerHTML,details);reloaded.dom.window.close();
+ editService(page);editor.innerHTML='<p>Discard this</p>';d.querySelector('[data-service-editor-close]').click();
+ editService(page);assert.equal(editor.innerHTML,details);
+ editor.innerHTML='<p><br></p>';saveService(page);editService(page);assert.equal(editor.innerHTML,'');
+ dom.window.close();
+});
+
+test('Steps / Materials strips unsafe HTML while retaining formatted text',async()=>{
+ const page=await servicesPage();const {w,d,dom}=page;editService(page);
+ const editor=d.querySelector('[data-service-edit-details]');assert.ok(editor);
+ editor.innerHTML='<p onclick="alert(1)"><b>Clean</b><img src="x" onerror="alert(1)"></p><script>alert(1)</script><a href="javascript:alert(1)">Polish</a>';
+ saveService(page);
+ assert.equal(w.NEXORA_SERVICE_APPROVAL_SETTINGS.loadCatalog('bitcoin-nail-bar-houston',[])[0].services[0].detailsHtml,'<p><b>Clean</b></p>Polish');
+ editService(page);assert.equal(editor.innerHTML,'<p><b>Clean</b></p>Polish');dom.window.close();
+});
