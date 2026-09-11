@@ -333,7 +333,7 @@
         else openDialog(action,l.id);
       }
       if(b.hasAttribute('data-tw-start-all')){ticket.lines.forEach(l=>{if(clockedIn(l.tech)&&l.status!=='completed')l.status='in-service';});save();render();if(ticket.lines.some(l=>!clockedIn(l.tech)))message('Assign a technician to each remaining service before starting.');}
-      if(b.hasAttribute('data-tw-checkout')){mode='checkout';render();}
+      if(b.hasAttribute('data-tw-checkout')){mode='checkout';options.onModeChange?.(mode);render();}
       for(const [hook,action] of [['custom','custom'],['customer','customer'],['discount-all','discount'],['hand','hand']])if(b.hasAttribute('data-tw-'+hook))openDialog(action);
       if(b.hasAttribute('data-tw-discount-preset'))$('[name="value"]').value=b.dataset.twDiscountPreset;
       if(b.hasAttribute('data-tw-tip')){ticket.checkout.tip=b.dataset.twTip;ticket.checkout.tipType=b.dataset.tipType;save();render();}

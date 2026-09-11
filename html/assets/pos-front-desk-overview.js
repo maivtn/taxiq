@@ -40,6 +40,7 @@
   detailDialog.querySelectorAll('[data-close-checkin-detail]').forEach(button=>button.addEventListener('click',()=>{detailDialog.close();restoreDetailFocus();}));
   function showView(overview,focus=false) {
     if(detailDialog.open)detailDialog.close();
+    if(!$('#ticket-workspace').hidden){$('#tickets-view').hidden=true;$('#overview-view').hidden=true;return;}
     if(overview)renderGuests();
     $('#tickets-view').hidden=overview;$('#overview-view').hidden=!overview;
     if(focus)$(overview?'#overview-title':'#checkin-summary').focus();

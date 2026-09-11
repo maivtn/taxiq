@@ -1,4 +1,4 @@
-/* Tickets content adapted from the supplied Front Desk prototype. Demo state stays on this page. */
+/* Tickets content adapted from the supplied Front Desk prototype. Ticket workspaces are saved locally between visits. */
 (function () {
 'use strict';
 let tickets=[
@@ -17,6 +17,20 @@ if(appointmentStore){
    wait:Math.max(0,Math.floor((Date.now()-new Date(r.metadata.checkedInAt || r.startAt).getTime())/60000)),estimateNote:r.note});
  });
 }
+const workspaceStorageKey='nexora:front-desk-ticket-workspaces:v1';
+let savedWorkspaces={};
+try{
+ const stored=JSON.parse(localStorage.getItem(workspaceStorageKey)||'{}');
+ if(stored&&typeof stored==='object'&&!Array.isArray(stored))savedWorkspaces=stored;
+}catch(_){}
+const ticketKey=t=>t.bookingId || String(t.id);
+const ticketRecords=tickets.map(t=>({...t,...savedWorkspaces[ticketKey(t)],id:t.id,bookingId:t.bookingId}));
+tickets=ticketRecords.filter(t=>!t.payment&&!t.cancelled);
+function persistWorkspace(t){
+ savedWorkspaces[ticketKey(t)]={...t};
+ try{localStorage.setItem(workspaceStorageKey,JSON.stringify(savedWorkspaces));}
+ catch(_){feedback('Unable to save this ticket locally. Keep this page open and try again.');}
+}
 const technicians=[
  {name:'Kayla Bui',level:2,status:'available',turns:4,serviceCount:6,sales:180,minutes:205,codes:['PED','GEL','WAX'],commission:.6,dailyIncomeGoal:150,detail:'Available now · Nails & pedicure'},
  {name:'Lana VMM',level:3,status:'available',turns:4,serviceCount:4,sales:430,minutes:278,codes:['ACR-FS','REF','DIP'],commission:.6,dailyIncomeGoal:220,detail:'Available now · All services'},
@@ -26,7 +40,7 @@ const technicians=[
 const $=selector=>document.querySelector(selector);
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const labels={'not-arrived':'Not Arrived',waiting:'Waiting','in-service':'In Service'};
-let filter='all',selected=null,action='';
+let filter='all',selected=null,action='',openedTicket=null;
 const feedback=message=>{$('#feedback').textContent=message;};
 function button(label,kind,id,extra=''){return '<button type="button" data-action="'+kind+'" data-id="'+id+'" class="'+extra+'">'+label+'</button>';}
 function render(){
@@ -47,13 +61,35 @@ function render(){
 const workspace=window.NEXORA_TICKET_WORKSPACE.mount($('#ticket-workspace'),{
  catalog:()=>window.NEXORA_SALON_DATA ? window.NEXORA_SALON_DATA.loadCatalog().services : [],
  technicians:()=>technicians,
- onChange(t){if(t.payment)tickets=tickets.filter(row=>row!==t);render();},
- onBack(){$('#tickets-view').hidden=false;render();}
+ onChange(t){persistWorkspace(t);if(t.payment)tickets=tickets.filter(row=>row!==t);render();},
+ onModeChange(kind){if(openedTicket)updateTicketUrl(openedTicket,kind);},
+ onBack(){openedTicket=null;updateTicketUrl(null);$('#tickets-view').hidden=false;render();}
 });
+function updateTicketUrl(ticket,kind,historyMode='push'){
+ const url=new URL(window.location.href);
+ if(ticket){url.searchParams.set('ticketId',ticketKey(ticket));url.searchParams.set('mode',kind);url.searchParams.delete('view');}
+ else{url.searchParams.delete('ticketId');url.searchParams.delete('mode');}
+ if(url.href!==window.location.href)window.history[historyMode==='replace'?'replaceState':'pushState'](window.history.state,'',url.href);
+}
+function restoreTicketUrl(){
+ const url=new URL(window.location.href),id=url.searchParams.get('ticketId'),kind=url.searchParams.get('mode');
+ const dialog=$('#ticket-workspace dialog');if(dialog?.open)dialog.close();
+ $('#ticket-workspace').hidden=true;openedTicket=null;
+ $('#tickets-view').hidden=url.searchParams.get('view')==='overview';
+ if(!id&&!kind)return;
+ const ticket=ticketRecords.find(t=>ticketKey(t)===id&&!t.cancelled);
+ if(ticket&&['edit','checkout'].includes(kind)){open(kind,ticket,'replace');return;}
+ updateTicketUrl(null,undefined,'replace');$('#tickets-view').hidden=false;$('#overview-view').hidden=true;
+ feedback('This ticket is not available or the ticket link is invalid.');
+}
 function field(label,name,value='',type='text',required=false){return '<label>'+label+'<input name="'+name+'" type="'+type+'" value="'+esc(value)+'"'+(required?' required':'')+'></label>';}
-function open(kind,ticket){
+function open(kind,ticket,historyMode='push'){
  if(ticket.splitBills&&!['edit','checkout'].includes(kind))return;
- if(['edit','checkout'].includes(kind)){$('#tickets-view').hidden=true;workspace.open(ticket,kind);return;}
+ if(['edit','checkout'].includes(kind)){
+  kind=ticket.splitBills||ticket.payment?'checkout':kind;
+  openedTicket=ticket;updateTicketUrl(ticket,kind,historyMode);
+  $('#tickets-view').hidden=true;$('#overview-view').hidden=true;workspace.open(ticket,kind);return;
+ }
  selected=ticket;action=kind;$('#ticket-form').reset();$('#ticket-error').textContent='';$('#ticket-submit').hidden=false;$('#ticket-submit').textContent='Save';
  let title='',content='';
  if(kind==='cancel'){
@@ -69,12 +105,12 @@ function open(kind,ticket){
  $('#ticket-dialog-title').textContent=title;$('#ticket-dialog-content').innerHTML=content;$('#ticket-dialog').showModal();
 }
 $('#ticket-filters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(b){filter=b.dataset.filter;render();}});
-$('#ticket-body').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const t=tickets.find(t=>t.id===Number(b.dataset.id));if(!t)return;if(b.dataset.action==='start'){t.status='in-service';if(t.lines)t.lines.forEach(l=>{if(l.status!=='completed')l.status='in-service';});render();feedback('Service started for '+t.customer);return;}open(b.dataset.action,t);});
+$('#ticket-body').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const t=tickets.find(t=>t.id===Number(b.dataset.id));if(!t)return;if(b.dataset.action==='start'){t.status='in-service';if(t.lines)t.lines.forEach(l=>{if(l.status!=='completed')l.status='in-service';});persistWorkspace(t);render();feedback('Service started for '+t.customer);return;}open(b.dataset.action,t);});
 document.querySelectorAll('[data-close-dialog]').forEach(b=>b.addEventListener('click',()=>$('#ticket-dialog').close()));
 $('#ticket-form').addEventListener('submit',e=>{
  e.preventDefault();const data=new FormData(e.currentTarget),t=selected;if(!t)return;
 
- if(action==='cancel')tickets=tickets.filter(row=>row.id!==t.id);
+ if(action==='cancel'){t.cancelled=true;tickets=tickets.filter(row=>row.id!==t.id);}
  if(action==='assign'){
   const name=data.get('technician'),tech=technicians.find(tech=>tech.name===name),first=technicians.find(tech=>tech.status==='available');
   if(!tech){$('#ticket-error').textContent='Choose a technician.';return;}
@@ -90,7 +126,8 @@ $('#ticket-form').addEventListener('submit',e=>{
   }
  }
  if(action!=='assign'||!data.get('print'))feedback(action==='cancel'?'Ticket removed from queue.':'Ticket updated.');
- $('#ticket-dialog').close();render();
+ persistWorkspace(t);$('#ticket-dialog').close();render();
 });
-render();
+render();restoreTicketUrl();
+window.addEventListener('popstate',restoreTicketUrl);
 })();
