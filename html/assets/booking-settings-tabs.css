@@ -72,7 +72,7 @@
   box-sizing: border-box;
 }
 
-@media (min-width: 1366px) {
+@media (min-width: 1024px) {
   #panel-settings #settings-section-information > .settings-card:has(.settings-salon-name-field),
   #panel-settings #settings-section-information > .settings-card:has(.settings-hours) {
     flex-basis: calc((100% - 14px) / 2);
