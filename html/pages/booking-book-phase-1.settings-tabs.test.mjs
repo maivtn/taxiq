@@ -6,11 +6,11 @@ import { JSDOM } from 'jsdom';
 const page = readFileSync(new URL('./booking-book-phase-1.html', import.meta.url), 'utf8');
 const runtimeUrl = new URL('../assets/booking-settings-tabs.js', import.meta.url);
 
-function loadFeature(hash = '') {
+function loadFeature(hash = '', query = '?tab=settings') {
   const dom = new JSDOM(page, {
     runScripts: 'outside-only',
     pretendToBeVisual: true,
-    url: `https://merchant.nexora.test/html/pages/booking-book-phase-1.html?tab=settings${hash}`,
+    url: `https://merchant.nexora.test/html/pages/booking-book-phase-1.html${query}${hash}`,
   });
   const { window } = dom;
   const cards = [...window.document.querySelectorAll('#panel-settings .settings-card')];
@@ -97,7 +97,65 @@ test('arrow keys wrap tabs while Home and End focus the first and last sections'
     assert.equal(event.defaultPrevented, true);
     assertActive(document, expected);
     assert.equal(document.activeElement, tab(document, expected));
+    assert.equal(window.location.hash, '#settings-' + expected);
   }
+});
+
+test('subtab clicks update shareable URLs without losing query parameters or duplicating history', (t) => {
+  const { dom, window, document } = loadFeature('', '?tab=settings&salon=demo');
+  t.after(() => dom.window.close());
+  window.history.replaceState({ tab: 'settings', source: 'sidebar' }, '', window.location.href);
+  const originalLength = window.history.length;
+  tab(document, 'hours').click();
+  assert.equal(window.location.search, '?tab=settings&salon=demo');
+  assert.equal(window.location.hash, '#settings-hours');
+  assert.equal(window.history.state.source, 'sidebar');
+  assert.equal(window.history.length, originalLength + 1);
+  tab(document, 'hours').click();
+  assert.equal(window.history.length, originalLength + 1);
+  tab(document, 'knowledge').click();
+  assert.equal(window.location.hash, '#settings-knowledge');
+  const reloaded = loadFeature(window.location.hash, window.location.search);
+  t.after(() => reloaded.dom.window.close());
+  assertActive(reloaded.document, 'knowledge');
+});
+
+test('Back and Forward restore each subtab including the default URL without adding history', { timeout: 3000 }, async (t) => {
+  const { dom, window, document } = loadFeature();
+  t.after(() => dom.window.close());
+  tab(document, 'hours').click();
+  tab(document, 'knowledge').click();
+  assert.equal(window.location.hash, '#settings-knowledge');
+  const historyLength = window.history.length;
+  async function travel(direction, expected) {
+    const changed = new Promise((resolve) => window.addEventListener('popstate', resolve, { once: true }));
+    window.history[direction]();
+    await changed;
+    assertActive(document, expected);
+    assert.equal(window.history.length, historyLength);
+  }
+  await travel('back', 'hours');
+  await travel('back', 'information');
+  assert.equal(window.location.hash, '');
+  await travel('forward', 'hours');
+  await travel('forward', 'knowledge');
+});
+
+test('a retained settings fragment restores the subtab without hijacking main navigation', (t) => {
+  const { dom, window, document } = loadFeature('#settings-hours', '?tab=booking');
+  t.after(() => dom.window.close());
+  const start = page.indexOf('    function getValidMainTab(');
+  const end = page.indexOf('    function activateSubTab(', start);
+  window.eval('var DEFAULT_MAIN_TAB = "booking"; function setBookingFilterOpen() {}\n' + page.slice(start, end));
+  window.activateMainTabFromUrl();
+  window.dispatchEvent(new window.HashChangeEvent('hashchange'));
+  assert.equal(window.location.search, '?tab=booking');
+  assert.equal(document.querySelector('[data-tab-target="booking"]').getAttribute('aria-selected'), 'true');
+  assert.equal(document.getElementById('panel-settings').classList.contains('is-active'), false);
+  window.activateMainTab('settings');
+  assertActive(document, 'hours');
+  assert.equal(window.location.hash, '#settings-hours');
+  assert.equal(document.getElementById('panel-settings').classList.contains('is-active'), true);
 });
 
 test('knowledge preview anchors select the right section and unrelated anchors are ignored', (t) => {

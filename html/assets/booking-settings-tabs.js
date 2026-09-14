@@ -36,7 +36,16 @@
     container.remove();
   });
 
-  function select(name, focus) {
+  function syncSectionUrl(name) {
+    var url = new URL(window.location.href);
+    url.searchParams.set('tab', 'settings');
+    url.hash = 'settings-' + name;
+    if (url.href === window.location.href) return;
+    var state = Object.assign({}, window.history.state, { tab: 'settings' });
+    window.history.pushState(state, '', url.search + url.hash);
+  }
+
+  function select(name, focus, updateUrl) {
     var selected = tabs.find(function (button) { return button.dataset.settingsTab === name; });
     if (!selected) return;
     tabs.forEach(function (button) {
@@ -49,22 +58,22 @@
       panel.hidden = panel.dataset.settingsTabPanel !== name;
     });
     shell.dataset.settingsActiveSection = name;
+    if (updateUrl) syncSectionUrl(name);
     if (focus) {
       selected.focus();
       if (selected.scrollIntoView) selected.scrollIntoView({ block: 'nearest', inline: 'nearest' });
     }
   }
 
-  function selectFromHash() {
-    var name = window.location.hash.replace(/^#settings-/, '');
+  function selectFromUrl() {
+    var name = window.location.hash ? window.location.hash.replace(/^#settings-/, '') : 'information';
     if (!tabs.some(function (button) { return button.dataset.settingsTab === name; })) return;
     select(name, false);
-    if (typeof window.activateMainTab === 'function') window.activateMainTab('settings', { replaceUrl: true });
   }
 
   tablist.addEventListener('click', function (event) {
     var button = event.target.closest('[data-settings-tab]');
-    if (button && tablist.contains(button)) select(button.dataset.settingsTab, false);
+    if (button && tablist.contains(button)) select(button.dataset.settingsTab, false, true);
   });
 
   tablist.addEventListener('keydown', function (event) {
@@ -77,12 +86,13 @@
     else if (event.key === 'End') index = tabs.length - 1;
     else return;
     event.preventDefault();
-    select(tabs[index].dataset.settingsTab, true);
+    select(tabs[index].dataset.settingsTab, true, true);
   });
 
   tablist.dataset.initialized = 'true';
   tablist.hidden = false;
   select('information', false);
-  selectFromHash();
-  window.addEventListener('hashchange', selectFromHash);
+  selectFromUrl();
+  window.addEventListener('hashchange', selectFromUrl);
+  window.addEventListener('popstate', selectFromUrl);
 })();
