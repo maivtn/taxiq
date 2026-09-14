@@ -31,8 +31,10 @@
     detailTrigger=button;
     $('#checkin-detail-title').textContent='Check-in #'+guest.sequence;
     const statusLabels={waiting:'Waiting','in-service':'In Service',completed:'Completed',cancelled:'Cancelled'};
-    const fields=[['Customer',guest.name],['Phone',guest.phone],['Check-in time',guest.time],['Guest type',guest.type==='RETURNING'?'Returning Guest':'New Guest'],['Source',guest.source],['Service',guest.service],['Technician',guest.tech],['Status',statusLabels[guest.status]]];
-    $('#checkin-detail-content').innerHTML=fields.map(([label,value])=>'<div><dt>'+label+'</dt><dd>'+esc(value)+'</dd></div>').join('');
+    const icons={clock:'<circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/>',guest:'<circle cx="12" cy="8" r="4"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/>',service:'<rect x="5" y="5" width="14" height="16" rx="2"/><path d="M9 5V3h6v2M9 11h6M9 15h4"/>',source:'<path d="M10 13a5 5 0 0 0 7 0l3-3a5 5 0 0 0-7-7l-2 2M14 11a5 5 0 0 0-7 0l-3 3a5 5 0 0 0 7 7l2-2"/>'};
+    const icon=name=>'<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">'+icons[name]+'</svg>';
+    const fields=[['Check-in time',guest.time,'clock'],['Guest type',guest.type==='RETURNING'?'Returning Guest':'New Guest','guest'],['Service',guest.service,'service'],['Technician',guest.tech,'guest'],['Source',guest.source,'source']];
+    $('#checkin-detail-content').innerHTML='<div class="checkin-customer"><span class="checkin-avatar" aria-hidden="true">'+esc(guest.name.charAt(0))+'</span><div class="checkin-customer-copy"><span class="checkin-eyebrow">Customer</span><h3>'+esc(guest.name)+'</h3><span class="checkin-phone"><span class="checkin-sr-only">Phone: </span>'+esc(guest.phone)+'</span></div><span class="checkin-status '+guest.status+'"><span class="checkin-sr-only">Status: </span>'+esc(statusLabels[guest.status])+'</span></div><dl class="checkin-detail-grid">'+fields.map(([label,value,symbol])=>'<div class="checkin-info'+(label==='Source'?' checkin-info-source':'')+'"><dt>'+icon(symbol)+label+'</dt><dd>'+esc(value)+'</dd></div>').join('')+'</dl>';
     detailDialog.showModal();
   });
   function restoreDetailFocus(){if(detailTrigger&&detailTrigger.isConnected)detailTrigger.focus();}
