@@ -16,7 +16,8 @@
 }
 
 #panel-settings .settings-section-tabs[hidden],
-#panel-settings .settings-section-panel[hidden] {
+#panel-settings .settings-section-panel[hidden],
+#panel-settings .settings-save-bar[hidden] {
   display: none !important;
 }
 

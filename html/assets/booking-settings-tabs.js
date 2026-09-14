@@ -11,9 +11,8 @@
   var saveBar = root.querySelector('.settings-save-bar');
 
   var sections = {
-    information: ['.settings-salon-name-field'],
+    information: ['.settings-salon-name-field', '.settings-hours', '[data-settings-holiday-card]', '[data-settings-booking-policies-card]'],
     services: ['.settings-service-pricing-card'],
-    hours: ['.settings-hours', '[data-settings-holiday-card]', '[data-settings-booking-policies-card]'],
     voice: ['[data-settings-ai-voice]', '[data-settings-booking-sms-card]'],
     knowledge: ['[data-settings-knowledge]'],
     team: ['.settings-team-card']
@@ -57,6 +56,7 @@
     panels.forEach(function (panel) {
       panel.hidden = panel.dataset.settingsTabPanel !== name;
     });
+    if (saveBar) saveBar.hidden = name === 'knowledge';
     shell.dataset.settingsActiveSection = name;
     if (updateUrl) syncSectionUrl(name);
     if (focus) {
@@ -67,6 +67,7 @@
 
   function selectFromUrl() {
     var name = window.location.hash ? window.location.hash.replace(/^#settings-/, '') : 'information';
+    if (name === 'hours') name = 'information';
     if (!tabs.some(function (button) { return button.dataset.settingsTab === name; })) return;
     select(name, false);
   }

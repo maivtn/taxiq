@@ -13,6 +13,9 @@ function loadFeature(hash = '', query = '?tab=settings') {
     url: `https://merchant.nexora.test/html/pages/booking-book-phase-1.html${query}${hash}`,
   });
   const { window } = dom;
+  const styles = window.document.createElement('style');
+  styles.textContent = readFileSync(new URL('../assets/booking-settings-tabs.css', import.meta.url), 'utf8');
+  window.document.head.appendChild(styles);
   const cards = [...window.document.querySelectorAll('#panel-settings .settings-card')];
   assert.ok(existsSync(runtimeUrl), 'Settings tabs runtime must exist');
   window.eval(readFileSync(runtimeUrl, 'utf8'));
@@ -26,6 +29,9 @@ function tab(document, name) {
 }
 
 function assertActive(document, name) {
+  const saveBar = document.querySelector('.settings-save-bar');
+  assert.equal(saveBar.hidden, name === 'knowledge');
+  assert.equal(document.defaultView.getComputedStyle(saveBar).display === 'none', name === 'knowledge');
   const selected = [...document.querySelectorAll('[data-settings-tab]')]
     .filter((button) => button.getAttribute('aria-selected') === 'true');
   assert.deepEqual(selected.map((button) => button.dataset.settingsTab), [name]);
@@ -39,16 +45,15 @@ function assertActive(document, name) {
   });
 }
 
-test('groups existing settings cards into six accessible tabs without cloning controls', (t) => {
+test('groups existing settings cards into five accessible tabs with business hours in Salon information', (t) => {
   const { dom, document, cards } = loadFeature();
   t.after(() => dom.window.close());
   assert.equal(document.querySelector('[data-settings-tabs]').getAttribute('role'), 'tablist');
   assert.equal(document.querySelector('[data-settings-tabs]').hidden, false);
   assertActive(document, 'information');
   const expected = [
-    ['information', ['Salon Info']],
+    ['information', ['Salon Info', 'Operating Hours', 'Holiday & Closures', 'Booking Policies']],
     ['services', ['Services & Pricing']],
-    ['hours', ['Operating Hours', 'Holiday & Closures', 'Booking Policies']],
     ['voice', ['AIAI Voice', 'Booking SMS Notifications']],
     ['knowledge', ['Knowledge files']],
     ['team', ['Team']],
@@ -58,6 +63,8 @@ test('groups existing settings cards into six accessible tabs without cloning co
     assert.deepEqual([...panel.querySelectorAll('.settings-card-title')].map((title) => title.textContent.trim()), titles);
     panel.querySelectorAll('.settings-card').forEach((card) => assert.ok(cards.includes(card)));
   }
+  assert.equal(document.querySelector('[data-settings-tab="hours"]'), null);
+  assert.equal(document.querySelector('[data-settings-tab-panel="hours"]'), null);
   assert.equal(document.querySelectorAll('#panel-settings .settings-card').length, cards.length);
   for (const selector of ['[data-service-modal]', '[data-settings-holiday-modal]', '.settings-save-bar']) {
     const node = document.querySelector(selector);
@@ -106,12 +113,12 @@ test('subtab clicks update shareable URLs without losing query parameters or dup
   t.after(() => dom.window.close());
   window.history.replaceState({ tab: 'settings', source: 'sidebar' }, '', window.location.href);
   const originalLength = window.history.length;
-  tab(document, 'hours').click();
+  tab(document, 'services').click();
   assert.equal(window.location.search, '?tab=settings&salon=demo');
-  assert.equal(window.location.hash, '#settings-hours');
+  assert.equal(window.location.hash, '#settings-services');
   assert.equal(window.history.state.source, 'sidebar');
   assert.equal(window.history.length, originalLength + 1);
-  tab(document, 'hours').click();
+  tab(document, 'services').click();
   assert.equal(window.history.length, originalLength + 1);
   tab(document, 'knowledge').click();
   assert.equal(window.location.hash, '#settings-knowledge');
@@ -123,7 +130,7 @@ test('subtab clicks update shareable URLs without losing query parameters or dup
 test('Back and Forward restore each subtab including the default URL without adding history', { timeout: 3000 }, async (t) => {
   const { dom, window, document } = loadFeature();
   t.after(() => dom.window.close());
-  tab(document, 'hours').click();
+  tab(document, 'services').click();
   tab(document, 'knowledge').click();
   assert.equal(window.location.hash, '#settings-knowledge');
   const historyLength = window.history.length;
@@ -134,14 +141,14 @@ test('Back and Forward restore each subtab including the default URL without add
     assertActive(document, expected);
     assert.equal(window.history.length, historyLength);
   }
-  await travel('back', 'hours');
+  await travel('back', 'services');
   await travel('back', 'information');
   assert.equal(window.location.hash, '');
-  await travel('forward', 'hours');
+  await travel('forward', 'services');
   await travel('forward', 'knowledge');
 });
 
-test('a retained settings fragment restores the subtab without hijacking main navigation', (t) => {
+test('legacy business-hours URLs open Salon information without hijacking main navigation', (t) => {
   const { dom, window, document } = loadFeature('#settings-hours', '?tab=booking');
   t.after(() => dom.window.close());
   const start = page.indexOf('    function getValidMainTab(');
@@ -153,7 +160,7 @@ test('a retained settings fragment restores the subtab without hijacking main na
   assert.equal(document.querySelector('[data-tab-target="booking"]').getAttribute('aria-selected'), 'true');
   assert.equal(document.getElementById('panel-settings').classList.contains('is-active'), false);
   window.activateMainTab('settings');
-  assertActive(document, 'hours');
+  assertActive(document, 'information');
   assert.equal(window.location.hash, '#settings-hours');
   assert.equal(document.getElementById('panel-settings').classList.contains('is-active'), true);
 });
@@ -164,10 +171,10 @@ test('knowledge preview anchors select the right section and unrelated anchors a
   assertActive(document, 'knowledge');
   window.history.replaceState(null, '', '?tab=settings#settings-hours');
   window.dispatchEvent(new window.HashChangeEvent('hashchange'));
-  assertActive(document, 'hours');
+  assertActive(document, 'information');
   window.history.replaceState(null, '', '?tab=settings#other-feature');
   window.dispatchEvent(new window.HashChangeEvent('hashchange'));
-  assertActive(document, 'hours');
+  assertActive(document, 'information');
 });
 
 test('initialization is idempotent and Team relocation keeps its existing panel', (t) => {
@@ -183,5 +190,5 @@ test('initialization is idempotent and Team relocation keeps its existing panel'
   assertActive(document, 'team');
   assert.equal(document.querySelector('[data-settings-team-slot]').firstElementChild, originalTeam);
   assert.equal(originalTeam.closest('[data-settings-tab-panel]').dataset.settingsTabPanel, 'team');
-  assert.equal(document.querySelectorAll('[data-settings-tab]').length, 6);
+  assert.equal(document.querySelectorAll('[data-settings-tab]').length, 5);
 });
