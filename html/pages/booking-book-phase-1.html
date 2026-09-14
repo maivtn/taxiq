@@ -11690,28 +11690,27 @@
                 <div class="settings-voice-toast" role="status" aria-live="polite" aria-hidden="true" data-settings-voice-toast><span class="settings-voice-toast-icon" aria-hidden="true"><i class="bi bi-check-lg"></i></span><span data-settings-voice-toast-message></span></div>
 
                 <article class="settings-card" id="settings-knowledge" data-settings-knowledge aria-labelledby="settings-knowledge-title">
-                  <div class="settings-card-head">
-                    <div>
-                      <h2 class="settings-card-title" id="settings-knowledge-title"><i class="bi bi-journal-text" aria-hidden="true"></i>Knowledge files</h2>
-                      <div class="settings-card-sub">Add salon policies, service details, and FAQs to your AI knowledge library.</div>
-                    </div>
-                    <div class="settings-card-actions">
-                      <button class="booking-primary-button" type="button" data-knowledge-upload disabled><i class="bi bi-upload" aria-hidden="true"></i>Upload files</button>
-                      <button class="settings-collapse-button" type="button" data-settings-collapse aria-expanded="true" aria-label="Collapse knowledge files"><i class="bi bi-chevron-up" aria-hidden="true"></i></button>
-                    </div>
-                  </div>
                   <div class="knowledge-layout">
                     <div class="knowledge-main">
+                      <div class="knowledge-card-heading">
+                        <div>
+                          <h2 class="settings-card-title" id="settings-knowledge-title">Knowledge files</h2>
+                          <div class="knowledge-card-description">Add salon policies, service details, and FAQs to your AI knowledge library.</div>
+                        </div>
+                        <button class="knowledge-upload-button" type="button" data-knowledge-upload disabled><i class="bi bi-upload" aria-hidden="true"></i>Upload files</button>
+                      </div>
                       <div class="knowledge-intro"><i class="bi bi-stars" aria-hidden="true"></i><div><strong>Your salon's reference library</strong><p>Keep useful answers in one place so your salon's information is easy to find and update.</p></div></div>
                       <div class="knowledge-capacity" aria-live="polite">
                         <div><strong data-knowledge-count>0 of 5 files</strong><span class="knowledge-capacity-bars" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span></div>
                         <span data-knowledge-availability>Loading sample files…</span>
                       </div>
                       <div class="knowledge-dropzone" data-knowledge-dropzone>
-                        <i class="bi bi-cloud-arrow-up" aria-hidden="true"></i>
-                        <strong data-knowledge-drop-title>Drag and drop your files here</strong>
-                        <span data-knowledge-drop-help>or <button class="knowledge-text-button" type="button" data-knowledge-browse disabled>Choose files</button></span>
-                        <small id="knowledge-file-limits">PDF, DOCX, TXT · Up to 5 MB per file · Maximum 5 files</small>
+                        <span class="knowledge-upload-icon"><i class="bi bi-cloud-arrow-up" aria-hidden="true"></i></span>
+                        <div class="knowledge-drop-copy">
+                          <strong data-knowledge-drop-title>Drag and drop your files here</strong>
+                          <span data-knowledge-drop-help>or <button class="knowledge-text-button" type="button" data-knowledge-browse disabled>Choose files</button></span>
+                          <small id="knowledge-file-limits">PDF, DOCX, TXT · Up to 5 MB per file · Maximum 5 files</small>
+                        </div>
                       </div>
                       <input type="file" data-knowledge-input multiple accept=".docx,.txt,.pdf" aria-label="Upload knowledge files" aria-describedby="knowledge-file-limits" hidden>
                       <div class="knowledge-errors" data-knowledge-errors role="alert" hidden></div>
@@ -11727,10 +11726,10 @@
                     </div>
                     <aside class="knowledge-guide" aria-label="Knowledge file tips">
                       <h3><i class="bi bi-lightbulb" aria-hidden="true"></i>What to upload</h3>
-                      <div><strong>Salon policies</strong><p>Cancellation, late arrival, deposits, and refund policies.</p></div>
-                      <div><strong>Service details &amp; aftercare</strong><p>What each service includes and how customers can care for their nails.</p></div>
-                      <div><strong>Frequently asked questions</strong><p>Parking, walk-ins, gift cards, and other common questions.</p></div>
-                      <div class="knowledge-guide-update"><strong>Keep your files up to date</strong><p>To replace a document, delete the old version, then upload the updated file.</p></div>
+                      <div class="knowledge-guide-item"><span class="knowledge-guide-icon"><i class="bi bi-shield-check" aria-hidden="true"></i></span><div><strong>Salon policies</strong><p>Cancellation, late arrival, deposits, and refund policies.</p></div></div>
+                      <div class="knowledge-guide-item"><span class="knowledge-guide-icon"><i class="bi bi-stars" aria-hidden="true"></i></span><div><strong>Service details &amp; aftercare</strong><p>What each service includes and how customers can care for their nails.</p></div></div>
+                      <div class="knowledge-guide-item"><span class="knowledge-guide-icon"><i class="bi bi-chat-square-text" aria-hidden="true"></i></span><div><strong>Frequently asked questions</strong><p>Parking, walk-ins, gift cards, and other common questions.</p></div></div>
+                      <div class="knowledge-guide-update"><i class="bi bi-arrow-clockwise" aria-hidden="true"></i><strong>Keep your files up to date</strong><p>To replace a document, delete the old version, then upload the updated file.</p></div>
                     </aside>
                   </div>
                 </article>
