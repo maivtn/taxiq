@@ -72,6 +72,13 @@
   box-sizing: border-box;
 }
 
+@media (min-width: 1366px) {
+  #panel-settings #settings-section-information > .settings-card:has(.settings-salon-name-field),
+  #panel-settings #settings-section-information > .settings-card:has(.settings-hours) {
+    flex-basis: calc((100% - 14px) / 2);
+  }
+}
+
 @media (max-width: 767px) {
   #panel-settings .settings-shell { gap: 12px; }
   #panel-settings .settings-section-tabs { gap: 2px; }
