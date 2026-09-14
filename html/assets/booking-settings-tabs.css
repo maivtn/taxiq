@@ -65,7 +65,8 @@
   min-width: 0;
 }
 
-#panel-settings .settings-section-panel > .settings-card {
+#panel-settings .settings-section-panel > .settings-card,
+#panel-settings .settings-section-panel > .settings-save-bar {
   flex: 1 1 100%;
   min-width: 0;
   margin: 0;
@@ -89,6 +90,6 @@
 
 @media (max-width: 650px) {
   #panel-settings .settings-section-tabs { flex-wrap: wrap; gap: 0 6px; overflow-x: visible; }
-  #panel-settings .settings-section-tab { flex: 1 1 calc((100% - 12px) / 3); min-width: 0; padding: 8px 4px; font-size: 10px; white-space: normal; text-align: center; }
+  #panel-settings .settings-section-tab { flex: 1 1 calc((100% - 6px) / 2); min-width: 0; padding: 8px 4px; font-size: 10px; white-space: normal; text-align: center; }
   #panel-settings .settings-section-tab .bi { flex-shrink: 0; }
 }

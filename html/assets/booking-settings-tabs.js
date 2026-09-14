@@ -9,12 +9,12 @@
   var tabs = Array.from(tablist.querySelectorAll('[data-settings-tab]'));
   var panels = Array.from(root.querySelectorAll('[data-settings-tab-panel]'));
   var saveBar = root.querySelector('.settings-save-bar');
+  var knowledge = root.querySelector('[data-settings-knowledge]');
 
   var sections = {
     information: ['.settings-salon-name-field', '.settings-hours', '[data-settings-holiday-card]', '[data-settings-booking-policies-card]'],
     services: ['.settings-service-pricing-card'],
-    voice: ['[data-settings-ai-voice]', '[data-settings-booking-sms-card]'],
-    knowledge: ['[data-settings-knowledge]'],
+    voice: ['[data-settings-ai-voice]', '[data-settings-booking-sms-card]', '[data-settings-knowledge]'],
     team: ['.settings-team-card']
   };
 
@@ -34,6 +34,9 @@
     while (container.firstChild) shell.insertBefore(container.firstChild, saveBar);
     container.remove();
   });
+
+  var saveBarAnchor = document.createComment('settings-save-bar');
+  if (saveBar) saveBar.parentNode.insertBefore(saveBarAnchor, saveBar);
 
   function syncSectionUrl(name) {
     var url = new URL(window.location.href);
@@ -56,7 +59,10 @@
     panels.forEach(function (panel) {
       panel.hidden = panel.dataset.settingsTabPanel !== name;
     });
-    if (saveBar) saveBar.hidden = name === 'knowledge';
+    if (saveBar) {
+      if (name === 'voice' && knowledge) knowledge.parentNode.insertBefore(saveBar, knowledge);
+      else saveBarAnchor.parentNode.insertBefore(saveBar, saveBarAnchor.nextSibling);
+    }
     shell.dataset.settingsActiveSection = name;
     if (updateUrl) syncSectionUrl(name);
     if (focus) {
@@ -68,6 +74,7 @@
   function selectFromUrl() {
     var name = window.location.hash ? window.location.hash.replace(/^#settings-/, '') : 'information';
     if (name === 'hours') name = 'information';
+    if (name === 'knowledge') name = 'voice';
     if (!tabs.some(function (button) { return button.dataset.settingsTab === name; })) return;
     select(name, false);
   }
