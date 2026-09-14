@@ -9,12 +9,12 @@
   var tabs = Array.from(tablist.querySelectorAll('[data-settings-tab]'));
   var panels = Array.from(root.querySelectorAll('[data-settings-tab-panel]'));
   var saveBar = root.querySelector('.settings-save-bar');
-  var knowledge = root.querySelector('[data-settings-knowledge]');
+  var voicePanel = root.querySelector('[data-settings-tab-panel="voice"]');
 
   var sections = {
     information: ['.settings-salon-name-field', '.settings-hours', '[data-settings-holiday-card]', '[data-settings-booking-policies-card]'],
     services: ['.settings-service-pricing-card'],
-    voice: ['[data-settings-ai-voice]', '[data-settings-booking-sms-card]', '[data-settings-knowledge]'],
+    voice: ['[data-settings-ai-voice]', '[data-settings-knowledge]', '[data-settings-booking-sms-card]'],
     team: ['.settings-team-card']
   };
 
@@ -60,7 +60,7 @@
       panel.hidden = panel.dataset.settingsTabPanel !== name;
     });
     if (saveBar) {
-      if (name === 'voice' && knowledge) knowledge.parentNode.insertBefore(saveBar, knowledge);
+      if (name === 'voice' && voicePanel) voicePanel.appendChild(saveBar);
       else saveBarAnchor.parentNode.insertBefore(saveBar, saveBarAnchor.nextSibling);
     }
     shell.dataset.settingsActiveSection = name;

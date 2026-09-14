@@ -56,7 +56,7 @@ test('groups existing settings cards into four accessible tabs with Knowledge fi
   const expected = [
     ['information', ['Salon Info', 'Operating Hours', 'Holiday & Closures', 'Booking Policies']],
     ['services', ['Services & Pricing']],
-    ['voice', ['AIAI Voice', 'Booking SMS Notifications', 'Knowledge files']],
+    ['voice', ['AIAI Voice', 'Knowledge files', 'Booking SMS Notifications']],
     ['team', ['Team']],
   ];
   for (const [name, titles] of expected) {
@@ -214,7 +214,7 @@ test('initialization is idempotent and Team relocation keeps its existing panel'
   assert.equal(document.querySelectorAll('[data-settings-tab]').length, 4);
 });
 
-test('moves the original Save Settings bar before Knowledge in AI voice and restores its shell position', (t) => {
+test('moves the original Save Settings bar after SMS in AI voice and restores its shell position', (t) => {
   let originalBar;
   let originalSave;
   let originalStatus;
@@ -245,8 +245,8 @@ test('moves the original Save Settings bar before Knowledge in AI voice and rest
     assert.equal(document.querySelector('[data-settings-status]'), originalStatus);
     assert.equal(originalBar.parentElement, voicePanel);
     assert.equal(originalBar.previousElementSibling, sms);
-    assert.equal(originalBar.nextElementSibling, knowledge);
-    assert.equal(knowledge.nextElementSibling, null);
+    assert.equal(originalBar.nextElementSibling, null);
+    assert.equal(knowledge.nextElementSibling, sms);
     assert.equal(knowledge.querySelector('[data-settings-action="save"]'), null);
     originalSave.click();
     assert.equal(originalStatus.textContent, `Saved ${saves}`);
