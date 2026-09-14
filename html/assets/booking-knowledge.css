@@ -56,13 +56,13 @@
 .knowledge-capacity-bars { display: inline-flex; gap: 3px; }
 .knowledge-capacity-bars i { width: 16px; height: 4px; border-radius: 3px; background: #e7ecf3; }
 .knowledge-capacity-bars .is-filled { background: var(--nexora-brand); }
-.knowledge-dropzone { display: flex; align-items: center; justify-content: center; gap: 18px; min-height: 136px; margin: 0 24px; padding: 27px 15px; border: 1.5px dashed #c8c9e8; border-radius: 8px; background: #fbfcfe; transition: background .15s, border-color .15s; }
-.knowledge-upload-icon { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 51px; width: 51px; height: 51px; border: 1px solid var(--nexora-border); border-radius: 12px; background: #fff; color: var(--nexora-brand); box-shadow: 0 3px 6px #0f172a05; }
-.knowledge-upload-icon .bi { font-size: 26px; }
+.knowledge-dropzone { display: flex; align-items: center; justify-content: center; gap: 12px; min-height: 88px; margin: 0 24px; padding: 14px 16px; border: 1.5px dashed #c8c9e8; border-radius: 8px; background: #fbfcfe; transition: background .15s, border-color .15s; }
+.knowledge-upload-icon { display: inline-flex; align-items: center; justify-content: center; flex: 0 0 36px; width: 36px; height: 36px; border: 1px solid var(--nexora-border); border-radius: 9px; background: #fff; color: var(--nexora-brand); box-shadow: 0 3px 6px #0f172a05; }
+.knowledge-upload-icon .bi { font-size: 20px; }
 .knowledge-drop-copy { min-width: 0; }
-.knowledge-drop-copy > strong { display: block; margin-bottom: 6px; font-size: 13px; font-weight: 550; }
+.knowledge-drop-copy > strong { display: inline; margin-right: 4px; font-size: 13px; font-weight: 550; }
 .knowledge-drop-copy > span { color: var(--nexora-muted); font-size: 12px; }
-.knowledge-drop-copy small { display: block; margin-top: 10px; color: var(--nexora-subtle); font-size: 10px; line-height: 1.7; }
+.knowledge-drop-copy small { display: block; margin-top: 6px; color: var(--nexora-subtle); font-size: 10px; line-height: 1.7; }
 .knowledge-dropzone.is-dragging { border-color: var(--nexora-brand); background: #eeeefe; }
 .knowledge-dropzone.is-full { background: var(--nexora-surface-muted); border-color: var(--nexora-border); }
 .knowledge-dropzone.is-full .knowledge-upload-icon { color: var(--nexora-muted); }
@@ -142,9 +142,9 @@
   .knowledge-capacity > div { gap: 8px; }
   .knowledge-capacity strong { font-size: 11px; }
   .knowledge-capacity-bars i { width: 12px; }
-  .knowledge-dropzone { flex-direction: column; gap: 11px; margin: 0 18px; padding: 22px 10px; text-align: center; }
-  .knowledge-upload-icon { flex-basis: 43px; width: 43px; height: 43px; border-radius: 10px; }
-  .knowledge-upload-icon .bi { font-size: 22px; }
+  .knowledge-dropzone { gap: 10px; margin: 0 18px; padding: 12px; text-align: left; }
+  .knowledge-upload-icon { flex-basis: 32px; width: 32px; height: 32px; border-radius: 8px; }
+  .knowledge-upload-icon .bi { font-size: 18px; }
   .knowledge-drop-copy > strong { font-size: 12px; }
   .knowledge-drop-copy small { font-size: 9px; }
   .knowledge-errors { margin-inline: 18px; }
