@@ -28,12 +28,12 @@
 .promo-template-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px}
 .promo-template{display:flex;flex-direction:column;min-width:0;background:var(--promo-surface);border:1px solid var(--promo-line);border-radius:12px;transition:box-shadow .15s,border-color .15s}
 .promo-template:hover{border-color:#cacbf0;box-shadow:0 3px 12px #4648d808}
-.template-art{position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;justify-content:flex-start;gap:10px;min-height:60px;margin:10px 10px 12px;padding:14px;border-radius:8px;color:var(--promo-brand);text-align:left}
+.template-art{position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;justify-content:flex-start;gap:9px;min-height:52px;margin:10px 10px 10px;padding:11px 12px;border-radius:8px;color:var(--promo-brand);text-align:left}
 .template-art::before,.promo-art:not(.image-art)::before{content:none}
 .template-art::after,.promo-art:not(.image-art)::after{content:none}
-.template-art>.promo-icon,.template-art>[data-icon]{width:22px;height:22px;flex-shrink:0}
-.template-art [data-icon] .promo-icon{width:22px;height:22px}
-.template-art strong{font-size:15px;font-weight:600;letter-spacing:-.2px;line-height:1.35;overflow-wrap:anywhere}
+.template-art>.promo-icon,.template-art>[data-icon]{width:20px;height:20px;flex-shrink:0}
+.template-art [data-icon] .promo-icon{width:20px;height:20px}
+.template-art strong{font-size:14px;font-weight:500;letter-spacing:0;line-height:1.35;overflow-wrap:anywhere}
 .promo-template>h3{font-size:13px;font-weight:600;line-height:1.4;margin:0 14px 5px;overflow-wrap:anywhere}
 .promo-template>p{font-size:11px;color:var(--promo-muted);line-height:1.5;margin:0 14px 10px;overflow-wrap:anywhere}
 .promo-template>.promo-button,.promo-template>button{width:calc(100% - 28px);margin:auto 14px 10px;min-height:34px;border:1px solid transparent;border-top-color:#eef0f6;border-radius:0;background:transparent;color:var(--promo-brand);box-shadow:none;padding:7px 0;font-size:11px;font-weight:500;justify-content:space-between}
@@ -145,10 +145,10 @@ body:has(.promo-dialog[open],.promo-poster-dialog[open]){overflow:hidden}
 .promo-check-card>.promo-icon,.promo-check-card>[data-icon]{color:var(--promo-subtle);flex:0 0 auto}
 .editor-preview{min-width:0;padding:18px;background:#fafbfe;border-left:1px solid var(--promo-line)}
 .editor-preview #promotion-preview{min-width:0;border-radius:9px}
-.editor-preview .promo-art{min-height:174px;padding:20px}
+.editor-preview .promo-art{min-height:128px;padding:16px 18px;gap:8px}
 .editor-preview .promo-art.image-art{min-height:0;padding:0}
-.editor-preview .promo-art h3{font-size:19px}
-.editor-preview .promo-art .art-saving{font-size:34px}
+.editor-preview .promo-art h3{font-size:15px;font-weight:500;line-height:1.35}
+.editor-preview .promo-art .art-saving{font-family:Georgia,"Times New Roman",serif;font-size:28px;font-weight:400;line-height:1.15;letter-spacing:-.35px}
 .promo-banner-list{display:grid;gap:6px;margin:12px 0}
 .banner-row{display:flex;align-items:center;gap:8px;min-width:0;border:1px solid var(--promo-line);border-radius:8px;padding:7px 9px;background:var(--promo-surface)}
 .banner-row[aria-current=true]{border-color:#c5c3eb;background:#f7f7fe;box-shadow:none}
@@ -202,13 +202,13 @@ body:has(.promo-dialog[open],.promo-poster-dialog[open]){overflow:hidden}
 .promotion-actions .promo-icon{width:14px;height:14px}
 .promotion-card>.promo-art.image-art{height:140px;min-height:140px;aspect-ratio:auto}
 .promotion-card>.promo-art.image-art img{height:100%;aspect-ratio:auto}
-.editor-preview .promo-art.image-art{height:174px;aspect-ratio:auto}
+.editor-preview .promo-art.image-art{height:128px;aspect-ratio:auto}
 .editor-preview .promo-art.image-art img{height:100%;aspect-ratio:auto}
 .editor-header-actions .promo-language select{width:80px;font-size:11px}
 .details-row{grid-template-columns:minmax(0,1.7fr) minmax(0,1fr)}
 @media(max-width:1100px){
   .promotions-page{padding:20px}
-  .template-art{padding:12px;gap:8px}
+  .template-art{padding:10px 12px;gap:8px}
   .template-art strong{font-size:14px}
   .promotion-actions{gap:3px}
   .promotion-actions>.promo-button{padding:6px;font-size:10px}
@@ -292,9 +292,9 @@ body:has(.promo-dialog[open],.promo-poster-dialog[open]){overflow:hidden}
   .promo-day span{padding:8px 5px;font-size:11px}
   .promo-check-card strong{font-size:12px}
   .promo-check-card small{font-size:11px}
-  .editor-preview .promo-art{padding:18px;min-height:164px}
-  .editor-preview .promo-art h3{font-size:18px}
-  .editor-preview .promo-art .art-saving{font-size:32px}
+  .editor-preview .promo-art{padding:14px 16px;min-height:128px}
+  .editor-preview .promo-art h3{font-size:15px}
+  .editor-preview .promo-art .art-saving{font-size:28px}
   .banner-row{flex-wrap:wrap}
   .banner-name{flex-basis:100%}
   .banner-actions{margin-left:auto;gap:4px}
