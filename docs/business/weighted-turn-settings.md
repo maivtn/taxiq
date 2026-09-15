@@ -49,7 +49,7 @@
 
 - **US-01 — Xem cấu hình hiện tại:** **As a** Manager, **I want to** mở form và xem các mức lượt đang áp dụng, **so that** tôi có cơ sở kiểm tra trước khi thay đổi.
 - **US-02 — Chỉnh sửa range số tiền:** **As a** Chủ salon / Manager, **I want to** nhập và chỉnh số tiền Up to cùng số turn của từng range ngay trong Weighted Turn Settings, **so that** tôi có thể điều chỉnh cách quy đổi giá trị dịch vụ thành lượt theo chính sách của salon.
-- **US-03 — Thiết lập lượt booking:** **As a** Chủ salon, **I want to** chỉnh booking turn credit mặc định ngay tại Turn Board, **so that** tôi có thể quản lý mức lượt chung mà không cần nhập lại ở Calendar.
+- **US-03 — Thiết lập Booking turn credit:** **As a** Chủ salon / Manager, **I want to** xem và chỉnh số lượt quy đổi mặc định cho mỗi booking tại Weighted Turn Settings, **so that** salon áp dụng thống nhất mức lượt booking với Booking Incentive Policy và giữ đúng mức riêng của thợ khi có tùy chỉnh đang áp dụng.
 - **US-04 — Lưu hoặc hủy chỉnh sửa:** **As a** Manager, **I want to** lưu các mức lượt sau khi kiểm tra hoặc hủy thay đổi, **so that** chỉ cấu hình tôi quyết định lưu mới được áp dụng.
 - **US-05 — Xử lý dữ liệu và lỗi lưu:** **As a** Manager, **I want to** nhận thông báo khi giá trị không hợp lệ hoặc không thể lưu, **so that** tôi biết cần sửa gì và không nhầm rằng cấu hình mới đã được áp dụng.
 - **US-10 — Thêm range và gợi ý lượt:** **As a** Chủ salon / Manager, **I want to** thêm range ngoài bốn range mặc định và được điền sẵn số turn bằng số turn của range cuối cộng 0.5, **so that** tôi có thể mở rộng các mức tiền với ít thao tác nhập lại.
@@ -72,6 +72,47 @@
 | AC-11 / US-04 | Tất cả mốc tiền và các ô lượt đều hợp lệ | Bấm Save Rules và lưu thành công | Lưu toàn bộ range, lượt dịch vụ và lượt booking cùng nhau; đóng modal và thông báo thành công. Mở lại hoặc tải lại cùng địa chỉ ứng dụng, trình duyệt và salon đọc cấu hình mới. Mức mới dùng cho gợi ý Add Turn; lượt đã ghi không tự tính lại. |
 | AC-12 / US-04 | Đã sửa tiền/lượt hoặc thêm/xóa range nhưng chưa lưu | Bấm Cancel, nút ×, nền ngoài modal hoặc Escape | Đóng form và bỏ bản chỉnh sửa. Mở lại lấy cấu hình đã lưu gần nhất. |
 | AC-13 / US-05 | Bản chỉnh sửa hợp lệ nhưng trình duyệt không ghi được cấu hình | Bấm Save Rules | Báo lỗi lưu trữ và giữ form cùng bản chỉnh sửa để thử lại; không báo lưu thành công. |
+
+**Chi tiết US-03 — Booking turn credit:**
+
+**Điểm truy cập:** POS → Front Desk → Turn Board → Weighted Turn Settings → Booking turn credit.
+
+**Điều kiện trước:** Người quản lý đã mở Weighted Turn Settings. Booking turn credit và cấu hình khoảng dịch vụ được lưu cùng một lần bằng Save Rules, nên toàn bộ form phải hợp lệ.
+
+| Thành phần | Yêu cầu |
+| :--- | :--- |
+| Ô nhập | Nhãn **Turns per booking**, trong phần **Booking turn credit**. |
+| Giá trị ban đầu | Giá trị mặc định của salon đã lưu gần nhất; dùng **0.5** nếu chưa có cấu hình hợp lệ. |
+| Giá trị cho phép | Bắt buộc nhập số hữu hạn không âm; chấp nhận 0, số nguyên và số lẻ như 0.5, 1.25. Không bắt buộc theo bước 0.5; hiện chưa quy định mức tối đa riêng. |
+| Phạm vi áp dụng | Mặc định chung của salon. Mức riêng của thợ được quản lý qua **Booking Incentive Policy**. |
+
+**Acceptance Criteria — hành vi hiện có của US-03:**
+
+| ID | Given — Điều kiện | When — Thao tác | Then — Kết quả mong đợi |
+| :--- | :--- | :--- | :--- |
+| AC-BTC-01 | Có cấu hình salon hợp lệ đã lưu hoặc chưa có cấu hình hợp lệ | Mở Weighted Turn Settings | Hiển thị Booking turn credit đã lưu hoặc 0.5 tương ứng; có ô Turns per booking, mô tả mức mặc định của salon và liên kết Booking Incentive Policy. |
+| AC-BTC-02 | Form đang mở, các khoảng dịch vụ hợp lệ | Nhập lần lượt 0, 0.5, 1 hoặc 1.25 và lưu từng giá trị | Chấp nhận từng giá trị. Mở lại form hiển thị đúng số lượt vừa lưu, không ép 1.25 thành bội số của 0.5. |
+| AC-BTC-03 | Đang chỉnh Booking turn credit | Để trống, nhập số âm hoặc giá trị không phải số hữu hạn rồi yêu cầu lưu | Báo dữ liệu không hợp lệ, giữ form mở và không ghi đè cấu hình đã lưu. Người quản lý có thể sửa giá trị và thử lại. |
+| AC-BTC-04 | Tất cả trường hợp lệ; chỉ Booking turn credit được sửa và không có cập nhật từ tab khác | Bấm Save Rules và lưu thành công | Lưu mức booking mới cùng bộ cấu hình; các khoảng tiền và lượt dịch vụ giữ giá trị đang có. Đóng form và thông báo đã lưu, dùng chung với Booking Incentive Policy. Mở lại hoặc tải lại cùng ứng dụng, trình duyệt và salon vẫn đọc được mức mới. |
+| AC-BTC-05 | Booking turn credit hợp lệ nhưng một khoảng dịch vụ hoặc lượt dịch vụ không hợp lệ | Bấm Save Rules | Từ chối lưu toàn bộ form, kể cả Booking turn credit. Hiển thị lỗi để người quản lý sửa phần cấu hình chưa hợp lệ. |
+| AC-BTC-06 | Đã sửa Booking turn credit nhưng chưa lưu | Bấm Cancel, nút ×, nền ngoài modal hoặc Escape | Đóng form và bỏ thay đổi chưa lưu. Mở lại lấy giá trị đã lưu gần nhất. |
+| AC-BTC-07 | Toàn bộ form hợp lệ nhưng trình duyệt không ghi được cấu hình | Bấm Save Rules | Báo lỗi lưu trữ, giữ form và giá trị đang nhập để thử lại; không áp dụng mức mới và không báo thành công. |
+| AC-BTC-08 | Weighted Turn Settings và Calendar thuộc cùng salon, địa chỉ ứng dụng và trình duyệt | Lưu Booking turn credit tại một màn hình rồi mở hoặc xem màn hình còn lại | Hai màn hình hiển thị cùng mức mặc định mới; áp dụng cho Calendar trong Front Desk và Calendar độc lập. Save policy từ Calendar giữ nguyên các khoảng tiền và lượt dịch vụ đã lưu mới nhất. |
+| AC-BTC-09 | Calendar đang áp dụng Customize by technician; một thợ có mức riêng, thợ khác dùng mặc định | Đổi Booking turn credit tại Weighted Turn Settings và lưu | Technician Overview tính lại phần booking credit của thợ dùng mặc định theo mức mới; thợ có tùy chỉnh đang áp dụng giữ mức riêng. Nếu policy dùng Same policy for all thì tất cả dùng mức chung. |
+| AC-BTC-10 | Một thợ dùng mức booking mặc định của salon | Đặt Booking turn credit bằng 0 và lưu | Phần booking credit của thợ đó trong Overview bằng 0. Mức thưởng booking, lượt dịch vụ và các lượt đã ghi trên Turn Board giữ nguyên. Thợ có mức riêng đang áp dụng vẫn dùng mức riêng. |
+| AC-BTC-11 | Form có thay đổi chưa lưu | Bấm liên kết Booking Incentive Policy | Điều hướng đến policy trong Calendar; không tự lưu Booking turn credit đang nhập. Muốn giữ thay đổi, người quản lý phải Save Rules trước khi điều hướng. |
+| AC-BTC-12 | Hai tab đang chỉnh cấu hình chung | Một tab lưu mức mới thành công | Weighted Turn Settings nhận lại bộ cấu hình chung mới nhất, kể cả khi form đang có thay đổi chưa lưu. Calendar cập nhật ô Booking turn credit và giữ các trường thưởng, Anyone assignment, override đang chỉnh. Chưa có cảnh báo xung đột; lần lưu sau cùng được áp dụng. |
+
+**Ví dụ nghiệm thu — đổi mặc định từ 0.5 thành 1.25:**
+
+Giả sử mỗi thợ có **3 booking dùng tính lượt trong dữ liệu mô phỏng**, Calendar đang áp dụng Customize by technician:
+
+| Thợ | Cấu hình lượt booking | Booking credit trước khi đổi | Booking credit sau khi lưu |
+| :--- | :--- | :--- | :--- |
+| Thợ A | Use default | 3 × 0.5 = 1.5 lượt | 3 × 1.25 = 3.75 lượt |
+| Thợ B | Custom: 0.75 lượt/booking | 3 × 0.75 = 2.25 lượt | 3 × 0.75 = 2.25 lượt |
+
+**Giới hạn nghiệm thu:** Ví dụ kiểm tra phép tính trong Technician Overview của prototype. Lưu Booking turn credit chưa tự ghi lượt khi booking hoàn thành, chưa thay đổi lượt lịch sử hoặc thứ tự thợ trên Turn Board. Cấu hình chung được giữ trong trình duyệt theo salon; override của thợ hiện chỉ được giữ trong phiên Calendar.
 
 **Ví dụ nghiệm thu US-02 — Đổi Up to của range đầu từ $29.99 thành $49.99:**
 
