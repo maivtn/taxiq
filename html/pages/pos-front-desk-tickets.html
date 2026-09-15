@@ -15,7 +15,7 @@
 <main class="content front-desk tickets-page">
 <h1>Front Desk</h1><p class="subtitle">Check in guests, manage open tickets, and run the turn board.</p>
   <nav class="workflow" aria-label="Front Desk workflows">
-    <button type="button" disabled>Check-in</button>
+    <a href="pos-front-desk.html?section=checkin">Check-in</a>
     <a class="active" href="pos-front-desk-tickets.html" aria-current="page">Tickets <span id="ticket-nav-count"></span></a>
     <a href="pos-front-desk-turn-board.html">Turn Board</a>
     <button type="button" disabled>Checkout Customer</button>
@@ -31,6 +31,7 @@
   <div class="tickets-heading"><div><h2 id="tickets-title">Open Tickets</h2><p>Guests currently moving through the service workflow.</p></div><button type="button" id="checkin-summary" aria-controls="overview-view"><strong>48 Check-ins Today</strong><span>12 New · 36 Returning → View overview</span></button></div>
   <div id="ticket-filters" class="toolbar" role="group" aria-label="Filter tickets by status"></div>
   <p id="assignment-alert" class="assignment-alert" role="status"></p>
+  <section id="family-checkin-groups" class="family-checkin-groups" aria-label="Family check-in groups" hidden></section>
   <div class="table-wrap"><table><thead><tr><th>Number</th><th>Customer</th><th>Check-in at</th><th>Status</th><th>Technician</th><th>Services</th><th>Wait time</th><th>Actions</th></tr></thead><tbody id="ticket-body"></tbody></table><p class="empty" id="ticket-empty" hidden>No guests match this status.</p></div>
   <p class="demo-note">Interactive prototype · Sample data only</p>
 <p id="feedback" role="status"></p></section>

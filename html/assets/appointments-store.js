@@ -361,6 +361,7 @@
 
   function hasConflict(records, candidate, excludeId) {
     if (!candidate) return false;
+    if (candidate.metadata && candidate.metadata.checkIn) return false;
     var candidateIntervals = Array.isArray(candidate.tickets) && candidate.tickets.length
       ? candidate.tickets.map(function (ticket) {
         return {
@@ -382,6 +383,7 @@
       if (!record) return false;
       if (excludeId != null && String(record.id) === String(excludeId)) return false;
       if (record.status === 'cancelled') return false;
+      if (record.metadata && record.metadata.checkIn) return false;
       var recordIntervals = Array.isArray(record.tickets) && record.tickets.length
         ? record.tickets.map(function (ticket) {
           return {
@@ -527,6 +529,133 @@
     return writeMutation(state, storage, record);
   }
 
+  function checkInPhone(value) {
+    var digits = String(value == null ? '' : value).replace(/\D/g, '');
+    if (digits.length === 11 && digits.charAt(0) === '1') digits = digits.slice(1);
+    return digits.length === 10 ? digits : '';
+  }
+
+  function checkIn(input, storage, catalog, now) {
+    input = input || {};
+    function error(code, field, message) {
+      return { ok: false, error: { code: code, field: field, message: message } };
+    }
+    var sessionId = String(input.id || '').trim();
+    if (!sessionId) return error('checkin-id-required', 'id', 'Start a new check-in and try again.');
+    var target = storageFor(storage);
+    if (!target) return error('storage-unavailable', 'storage', 'Browser storage is unavailable. Enable local storage and try again.');
+    var state;
+    try {
+      var raw = target.getItem(STORAGE_KEY);
+      state = raw == null ? emptyState() : JSON.parse(raw);
+      if (!state || state.version !== 1 || !Array.isArray(state.records) ||
+          !state.records.every(function (record) { return record && typeof record === 'object' && String(record.id || '').trim(); })) {
+        return error('storage-invalid', 'storage', 'Saved appointments cannot be read. Restore the saved data before checking in.');
+      }
+    } catch (readError) {
+      return error('storage-unavailable', 'storage', 'Saved appointments cannot be read. Check browser storage and try again.');
+    }
+    var existing = state.records.filter(function (record) {
+      return record.metadata && record.metadata.checkIn && record.metadata.checkIn.id === sessionId;
+    });
+    if (existing.length) return { ok: true, records: clone(existing), replayed: true };
+
+    var mode = input.mode;
+    var contact = {
+      name: String(input.contact && input.contact.name || '').trim(),
+      phone: checkInPhone(input.contact && input.contact.phone),
+    };
+    if (!contact.name) return error('name-required', 'contact.name', 'Enter the main guest name.');
+    if (!contact.phone) return error('phone-invalid', 'contact.phone', 'Enter a valid 10-digit phone number.');
+    var members = input.members;
+    if ((mode !== 'single' && mode !== 'family') || !Array.isArray(members) ||
+        (mode === 'single' ? members.length !== 1 : members.length < 2)) {
+      return error('members-invalid', 'members', 'Choose one guest for Single check-in or at least two for Family check-in.');
+    }
+    var date = new Date(now == null ? Date.now() : now);
+    if (!Number.isFinite(date.getTime())) return error('time-invalid', 'startAt', 'The check-in time is invalid. Try again.');
+    var timestamp = date.toISOString();
+    catalog = catalogFor(catalog);
+    var appointment = null;
+    if (input.appointmentId) {
+      appointment = state.records.find(function (record) { return String(record.id) === String(input.appointmentId); });
+      if (!appointment || ['pending', 'confirmed'].indexOf(appointment.status) < 0 || checkInPhone(appointment.phone) !== contact.phone) {
+        return error('appointment-unavailable', 'appointmentId', 'This appointment changed or no longer matches the phone. Choose the appointment again.');
+      }
+    }
+    var nextNumber = state.records.reduce(function (max, record) {
+      var number = Number(record.metadata && record.metadata.checkIn && record.metadata.checkIn.ticketNumber);
+      return Number.isSafeInteger(number) && number > max ? number : max;
+    }, 9);
+    nextNumber += state.records.filter(function (record) {
+      return record.metadata && record.metadata.estimate && !record.metadata.checkIn;
+    }).length;
+    var usedMembers = Object.create(null);
+    var records = [];
+    for (var index = 0; index < members.length; index += 1) {
+      var member = members[index] || {};
+      var memberId = String(member.id || '').trim();
+      if (!memberId || usedMembers[memberId] || !Array.isArray(member.tickets)) {
+        return error('member-invalid', 'members', 'Each guest needs a unique check-in entry and a valid service selection.');
+      }
+      usedMembers[memberId] = true;
+      var current = index === 0 ? appointment : null;
+      var recordId = current ? current.id : 'checkin:' + encodeURIComponent(sessionId) + ':' + encodeURIComponent(memberId);
+      if (!current && state.records.some(function (record) { return String(record.id) === recordId; })) {
+        return error('duplicate-id', 'id', 'This check-in entry already exists. Start a new check-in.');
+      }
+      var tickets = [];
+      for (var lineIndex = 0; lineIndex < member.tickets.length; lineIndex += 1) {
+        var line = member.tickets[lineIndex] || {};
+        var service = (catalog.services || []).find(function (item) { return item.id === line.serviceId && item.active !== false; });
+        if (!service) return error('service-unavailable', 'members', 'A selected service is no longer available. Choose services again.');
+        var technicianId = String(line.technicianId || '').trim();
+        var technician = technicianId ? (catalog.technicians || []).find(function (item) { return item.id === technicianId && item.active !== false; }) : null;
+        if (technicianId && !technician) return error('technician-unavailable', 'members', 'A selected technician is no longer available. Choose a technician again.');
+        var bookedLine = current && Array.isArray(current.tickets) && current.tickets.find(function (savedLine) {
+          return line.id && savedLine.id === line.id && savedLine.serviceId === service.id;
+        });
+        tickets.push({
+          id: String(line.id || recordId + ':service:' + (lineIndex + 1)),
+          serviceId: service.id, serviceName: service.name,
+          price: bookedLine ? bookedLine.price : service.price,
+          durationMin: bookedLine ? bookedLine.durationMin : service.durationMin,
+          technicianId: technician ? technician.id : null, technicianName: technician ? technician.name : 'Anyone',
+          status: 'checked-in',
+        });
+      }
+      var metadata = Object.assign({}, current && current.metadata || {}, {
+        checkedInAt: timestamp,
+        checkIn: {
+          id: sessionId, mode: mode, contact: clone(contact), memberId: memberId,
+          relationship: String(member.relationship || (index === 0 ? 'self' : 'other')).trim(),
+          ticketNumber: ++nextNumber, smsConsent: input.smsConsent === true,
+        },
+      });
+      var candidate = normalizeAppointment(Object.assign({}, current || {}, {
+        id: recordId, customerName: index === 0 ? contact.name : String(member.name || '').trim() || 'Guest ' + (index + 1),
+        phone: contact.phone, tickets: tickets,
+        serviceNames: tickets.map(function (ticket) { return ticket.serviceName; }),
+        serviceIds: tickets.map(function (ticket) { return ticket.serviceId; }), serviceDetails: [],
+        technicianId: undefined, technicianName: '', techId: undefined, tech: '',
+        startAt: date, endAt: '', end: '', durationMin: undefined, duration: undefined,
+        status: 'checked-in', source: 'front-desk', metadata: metadata,
+        createdAt: current ? current.createdAt : timestamp, updatedAt: timestamp,
+      }), catalog, timestamp);
+      var validation = validateRecord(candidate);
+      if (validation) return { ok: false, error: validation };
+      records.push(candidate);
+    }
+    var nextRecords = state.records.filter(function (record) { return !appointment || record.id !== appointment.id; }).concat(records);
+    try {
+      target.setItem(STORAGE_KEY, JSON.stringify({ version: 1, sources: Object.assign({}, state.sources || {}), records: nextRecords }));
+    } catch (writeError) {
+      return error('storage-write-failed', 'storage', 'Unable to save the check-in. Check browser storage and try again.');
+    }
+    notifySubscribers();
+    return { ok: true, records: clone(records) };
+  }
+
   function update(id, patch, storage, catalog, now) {
     var state = readState(storage, catalog);
     var index = findRecordIndex(state.records, id);
@@ -602,6 +731,7 @@
     loadAll: loadAll,
     ensureSource: ensureSource,
     create: create,
+    checkIn: checkIn,
     update: update,
     upsert: upsert,
     cancel: cancel,

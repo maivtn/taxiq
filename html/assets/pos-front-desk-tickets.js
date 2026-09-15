@@ -9,11 +9,17 @@ let tickets=[
 ];
 const appointmentStore=window.NEXORA_APPOINTMENTS_STORE;
 if(appointmentStore){
+ const records=appointmentStore.loadAll();
+ const reservedNumbers=new Set([...tickets.map(t=>t.id),...records.map(r=>r.metadata?.checkIn?.ticketNumber).filter(Number.isSafeInteger)]);
  let nextId=Math.max(...tickets.map(t=>t.id));
- appointmentStore.loadAll().filter(r=>r.status==='checked-in'&&r.metadata?.estimate).forEach(r=>{
-  tickets.push({id:++nextId,bookingId:r.id,customer:r.customerName,phone:r.phone,
+ records.filter(r=>r.status==='checked-in'&&(r.metadata?.estimate||r.metadata?.checkIn)).forEach(r=>{
+  const checkIn=r.metadata?.checkIn;
+  let number=checkIn?.ticketNumber;
+  if(!Number.isSafeInteger(number)){do{nextId++;}while(reservedNumbers.has(nextId));number=nextId;reservedNumbers.add(number);}
+  const lines=r.tickets.map(l=>({id:l.id,serviceId:l.serviceId,name:l.serviceName,price:l.price,tech:l.technicianName==='Anyone'?'':l.technicianName,status:l.technicianId?'assigned':'unassigned'}));
+  tickets.push({id:number,bookingId:r.id,customer:r.customerName,phone:r.phone,
    time:new Date(r.metadata.checkedInAt || r.startAt).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}),
-   status:'waiting',tech:'',services:r.serviceNames,lines:r.tickets.map(l=>({id:l.id,serviceId:l.serviceId,name:l.serviceName,price:l.price,tech:l.technicianName==='Anyone'?'':l.technicianName,status:l.technicianId?'assigned':'unassigned'})),
+   status:'waiting',tech:[...new Set(lines.map(l=>l.tech).filter(Boolean))].join(', '),services:lines.map(l=>l.name),lines,checkIn,
    wait:Math.max(0,Math.floor((Date.now()-new Date(r.metadata.checkedInAt || r.startAt).getTime())/60000)),estimateNote:r.note});
  });
 }
@@ -37,16 +43,38 @@ const technicians=[
  {name:'Chloe',level:3,status:'busy',turns:3,serviceCount:5,sales:365,minutes:250,codes:['MANI','GEL','PED'],commission:.6,dailyIncomeGoal:240,detail:'Busy · About 18 min remaining'},
  {name:'Mia',level:1,status:'clocked-out',turns:2,serviceCount:3,sales:155,minutes:120,codes:['MANI','WAX'],commission:.55,dailyIncomeGoal:120,detail:'Clocked out'}
 ];
+const salonTechnicians=window.NEXORA_SALON_DATA?.loadCatalog().technicians || [];
+salonTechnicians.forEach(t=>{if(!technicians.some(existing=>existing.name===t.name))technicians.push({name:t.name,status:t.active?'available':'clocked-out',detail:t.active?'Available for service':'Clocked out'});});
 const $=selector=>document.querySelector(selector);
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const labels={'not-arrived':'Not Arrived',waiting:'Waiting','in-service':'In Service'};
 let filter='all',selected=null,action='',openedTicket=null;
 const feedback=message=>{$('#feedback').textContent=message;};
 function button(label,kind,id,extra=''){return '<button type="button" data-action="'+kind+'" data-id="'+id+'" class="'+extra+'">'+label+'</button>';}
+function needsTechnician(t){return t.lines?t.lines.some(l=>!l.tech):!t.tech;}
+function ticketStatus(t){return t.cancelled?'Cancelled':t.payment?'Paid':labels[t.status] || 'Completed';}
+function renderFamilyGroups(){
+ const groups=new Map();
+ ticketRecords.filter(t=>t.checkIn?.mode==='family').forEach(t=>{
+  const id=t.checkIn.id;if(!groups.has(id))groups.set(id,[]);groups.get(id).push(t);
+ });
+ const host=$('#family-checkin-groups');host.hidden=!groups.size;
+ host.innerHTML=Array.from(groups,([id,members])=>{
+  const contact=members[0].checkIn.contact || {},paid=members.filter(t=>t.payment).length,cancelled=members.filter(t=>t.cancelled).length;
+  const reference='FG-'+String(Math.min(...members.map(t=>t.id))).padStart(4,'0');
+  return '<article class="family-checkin-group"><div class="family-checkin-heading"><div><h3>Family · '+esc(contact.name)+'</h3><p>Primary contact · '+esc(contact.phone)+'</p></div><p class="family-checkin-progress">'+members.length+' member tickets · '+paid+'/'+members.length+' paid · '+cancelled+' cancelled</p></div><p class="family-checkin-id">Group '+reference+'</p><ul>'+members.map(t=>{
+   const relationship=t.checkIn.relationship==='self'?'Primary guest':t.checkIn.relationship==='other'?'':t.checkIn.relationship;
+   const text='<strong>#'+t.id+' '+esc(t.customer)+'</strong><span>'+(relationship?esc(relationship)+' · ':'')+ticketStatus(t)+'</span>';
+   const url=new URL(window.location.href);url.searchParams.set('ticketId',ticketKey(t));url.searchParams.set('mode',t.payment?'checkout':'edit');url.searchParams.delete('view');
+   return '<li>'+(t.cancelled?'<span class="family-member cancelled">'+text+'</span>':'<a class="family-member" data-family-ticket="'+esc(ticketKey(t))+'" href="'+esc(url.href)+'">'+text+'</a>')+'</li>';
+  }).join('')+'</ul></article>';
+ }).join('');
+}
 function render(){
+  renderFamilyGroups();
   $('#ticket-nav-count').textContent=tickets.length;
   $('#ticket-filters').innerHTML=[['all','All'],...Object.entries(labels)].map(([key,label])=>'<button type="button" data-filter="'+key+'" class="'+(filter===key?'active':'')+'" aria-pressed="'+(filter===key)+'">'+label+' ('+tickets.filter(t=>key==='all'||t.status===key).length+')</button>').join('');
-  const waiting=tickets.filter(t=>t.status==='waiting'&&!t.tech).length;
+  const waiting=tickets.filter(t=>t.status==='waiting'&&needsTechnician(t)).length;
   $('#assignment-alert').hidden=!waiting;$('#assignment-alert').textContent='● '+waiting+' '+(waiting===1?'guest':'guests')+' awaiting technician assignment';
   const rows=tickets.filter(t=>filter==='all'||t.status===filter);
   $('#ticket-empty').hidden=rows.length>0;
@@ -55,7 +83,8 @@ function render(){
     if(!t.services.length)actions+=button('Add Service','edit',t.id)+button('Consultation','assign',t.id)+button('Cancel','cancel',t.id,'cancel');
     else if(t.status==='in-service')actions+=(t.splitBills?'':button('Reassign','assign',t.id))+button('Checkout','checkout',t.id,'checkin');
     else actions+=(t.tech?button('Reassign','assign',t.id)+button('Start Service','start',t.id,'checkin'):button('Assign Tech','assign',t.id))+button('Cancel','cancel',t.id,'cancel');
-    return '<tr><td><span class="ticket-number">#'+t.id+'</span></td><td><strong>'+esc(t.customer)+'</strong><small>'+esc(t.phone)+'</small></td><td>'+esc(t.time)+'</td><td><span class="chip status '+t.status+'">'+labels[t.status]+'</span>'+(t.splitBills?'<small>'+t.splitBills.bills.filter(b=>b.payment).length+'/'+t.splitBills.bills.length+' bills paid</small>':'')+(!t.services.length?'<span class="ticket-needed">● NEEDS SERVICE</span>':t.status==='waiting'&&!t.tech?'<span class="ticket-needed">● NEEDS TECHNICIAN</span>':'')+'</td><td>'+esc(t.tech||'—')+(t.location?'<small>'+esc(t.location)+'</small>':'')+(t.techNote?'<small title="'+esc(t.techNote)+'">Tech note</small>':'')+'</td><td>'+t.services.map(s=>'<span class="chip">'+esc(s)+'</span>').join(' ')+(t.estimateNote?'<small>'+esc(t.estimateNote)+'</small>':'')+'</td><td>'+(t.status==='waiting'?'<span class="wait-time">'+t.wait+' min</span>':'—')+'</td><td><div class="actions">'+actions+'</div></td></tr>';
+    const family=t.checkIn?.mode==='family'?'<small class="family-ticket-marker">Family · '+esc(t.checkIn.contact?.name)+'</small>':'';
+    return '<tr><td><span class="ticket-number">#'+t.id+'</span></td><td><strong>'+esc(t.customer)+'</strong><small>'+esc(t.phone)+'</small>'+family+'</td><td>'+esc(t.time)+'</td><td><span class="chip status '+t.status+'">'+labels[t.status]+'</span>'+(t.splitBills?'<small>'+t.splitBills.bills.filter(b=>b.payment).length+'/'+t.splitBills.bills.length+' bills paid</small>':'')+(!t.services.length?'<span class="ticket-needed">● NEEDS SERVICE</span>':needsTechnician(t)?'<span class="ticket-needed">● NEEDS TECHNICIAN</span>':'')+'</td><td>'+esc(t.tech||'—')+(t.location?'<small>'+esc(t.location)+'</small>':'')+(t.techNote?'<small title="'+esc(t.techNote)+'">Tech note</small>':'')+'</td><td>'+t.services.map(s=>'<span class="chip">'+esc(s)+'</span>').join(' ')+(t.estimateNote?'<small>'+esc(t.estimateNote)+'</small>':'')+'</td><td>'+(t.status==='waiting'?'<span class="wait-time">'+t.wait+' min</span>':'—')+'</td><td><div class="actions">'+actions+'</div></td></tr>';
   }).join('');
 }
 const workspace=window.NEXORA_TICKET_WORKSPACE.mount($('#ticket-workspace'),{
@@ -105,7 +134,8 @@ function open(kind,ticket,historyMode='push'){
  $('#ticket-dialog-title').textContent=title;$('#ticket-dialog-content').innerHTML=content;$('#ticket-dialog').showModal();
 }
 $('#ticket-filters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(b){filter=b.dataset.filter;render();}});
-$('#ticket-body').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const t=tickets.find(t=>t.id===Number(b.dataset.id));if(!t)return;if(b.dataset.action==='start'){t.status='in-service';if(t.lines)t.lines.forEach(l=>{if(l.status!=='completed')l.status='in-service';});persistWorkspace(t);render();feedback('Service started for '+t.customer);return;}open(b.dataset.action,t);});
+$('#family-checkin-groups').addEventListener('click',e=>{const link=e.target.closest('[data-family-ticket]');if(!link)return;const t=ticketRecords.find(t=>ticketKey(t)===link.dataset.familyTicket&&!t.cancelled);if(t){e.preventDefault();open(t.payment?'checkout':'edit',t);}});
+$('#ticket-body').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const t=tickets.find(t=>t.id===Number(b.dataset.id));if(!t)return;if(b.dataset.action==='start'){t.status='in-service';if(t.lines)t.lines.forEach(l=>{if(l.tech&&l.status!=='completed')l.status='in-service';});persistWorkspace(t);render();feedback('Service started for '+t.customer);return;}open(b.dataset.action,t);});
 document.querySelectorAll('[data-close-dialog]').forEach(b=>b.addEventListener('click',()=>$('#ticket-dialog').close()));
 $('#ticket-form').addEventListener('submit',e=>{
  e.preventDefault();const data=new FormData(e.currentTarget),t=selected;if(!t)return;
