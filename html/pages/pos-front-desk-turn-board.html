@@ -57,35 +57,42 @@
   <form class="modal turn-rules-dialog" id="turn-rules-form" novalidate>
     <div class="turn-rules-header">
       <span class="turn-rules-icon" aria-hidden="true"><i data-lucide="sliders-horizontal"></i></span>
-      <div><h3 id="turn-rules-title">Weighted Turn Settings</h3><p id="turn-rules-description">Set how service amounts convert into turns.</p></div>
-      <button type="button" class="turn-rules-close" aria-label="Close weighted turn settings" onclick="closeTurnRules()">×</button>
+      <div class="turn-rules-heading"><span class="turn-rules-eyebrow">Turn Board settings</span><h3 id="turn-rules-title">Weighted Turn Settings</h3><p id="turn-rules-description">Set how service amounts convert into turns.</p></div>
+      <button type="button" class="turn-rules-close" aria-label="Close weighted turn settings" onclick="closeTurnRules()"><i data-lucide="x" aria-hidden="true"></i></button>
     </div>
     <div class="turn-rules-body">
-      <section aria-labelledby="service-rules-title">
-        <div class="turn-rules-section-heading"><h4 id="service-rules-title">Service turn rules</h4><span>4 ranges · USD</span></div>
-        <p class="turn-rules-help" id="turn-range-help">Enter the Up to amounts and turn credits. Each next range starts $0.01 above the previous limit.</p>
+      <section class="turn-service-section" aria-labelledby="service-rules-title">
+        <div class="turn-rules-section-heading"><h4 id="service-rules-title">Service ranges</h4><span><i data-lucide="layers-2" aria-hidden="true"></i>4 ranges</span></div>
+        <p class="turn-rules-help" id="turn-range-help">Set an Up to amount for each range. The next range starts $0.01 above it.</p>
         <table class="turn-rule-table">
-          <thead><tr><th scope="col">Range</th><th scope="col">From ($)</th><th scope="col">Up to ($)</th><th scope="col">Turn credit</th></tr></thead>
+          <thead><tr><th scope="col">Range</th><th scope="col">From <span class="turn-auto-label">Auto</span></th><th scope="col">Up to</th><th scope="col">Turn credit</th></tr></thead>
           <tbody>
-            <tr><th scope="row"><span class="turn-range-number">1</span></th><td><span class="turn-range-fixed">$0.00 <small>Fixed start</small></span></td><td><input aria-label="Range 1 Up to amount" aria-describedby="turn-range-help turn-rules-error" data-service-upper-bound="0" type="number" min="0" step="0.01" required value="29.99" inputmode="decimal"></td><td><input aria-label="Range 1 turn credit" data-service-weight="0" type="number" min="0" step="any" required value="0.5" inputmode="decimal"></td></tr>
-            <tr><th scope="row"><span class="turn-range-number">2</span></th><td><output data-service-range-start="0">$30.00</output></td><td><input aria-label="Range 2 Up to amount" aria-describedby="turn-range-help turn-rules-error" data-service-upper-bound="1" type="number" min="0" step="0.01" required value="69.99" inputmode="decimal"></td><td><input aria-label="Range 2 turn credit" data-service-weight="1" type="number" min="0" step="any" required value="1" inputmode="decimal"></td></tr>
-            <tr><th scope="row"><span class="turn-range-number">3</span></th><td><output data-service-range-start="1">$70.00</output></td><td><input aria-label="Range 3 Up to amount" aria-describedby="turn-range-help turn-rules-error" data-service-upper-bound="2" type="number" min="0" step="0.01" required value="109.99" inputmode="decimal"></td><td><input aria-label="Range 3 turn credit" data-service-weight="2" type="number" min="0" step="any" required value="1.5" inputmode="decimal"></td></tr>
-            <tr><th scope="row"><span class="turn-range-number">4</span></th><td><output data-service-range-start="2">$110.00</output></td><td><span class="turn-range-unlimited">No limit</span></td><td><input aria-label="Range 4 turn credit" data-service-weight="3" type="number" min="0" step="any" required value="2" inputmode="decimal"></td></tr>
+            <tr><th scope="row"><span class="turn-range-number">1</span></th><td><span class="turn-range-fixed">$0.00</span></td><td><div class="turn-amount-input"><span aria-hidden="true">$</span><input aria-label="Range 1 Up to amount" aria-describedby="turn-range-help turn-rules-error" data-service-upper-bound="0" type="number" min="0" step="0.01" required value="29.99" inputmode="decimal"></div></td><td><div class="turn-credit-input"><input aria-label="Range 1 turn credit" data-service-weight="0" type="number" min="0" step="any" required value="0.5" inputmode="decimal"><span aria-hidden="true">turns</span></div></td></tr>
+            <tr><th scope="row"><span class="turn-range-number">2</span></th><td><output data-service-range-start="0">$30.00</output></td><td><div class="turn-amount-input"><span aria-hidden="true">$</span><input aria-label="Range 2 Up to amount" aria-describedby="turn-range-help turn-rules-error" data-service-upper-bound="1" type="number" min="0" step="0.01" required value="69.99" inputmode="decimal"></div></td><td><div class="turn-credit-input"><input aria-label="Range 2 turn credit" data-service-weight="1" type="number" min="0" step="any" required value="1" inputmode="decimal"><span aria-hidden="true">turns</span></div></td></tr>
+            <tr><th scope="row"><span class="turn-range-number">3</span></th><td><output data-service-range-start="1">$70.00</output></td><td><div class="turn-amount-input"><span aria-hidden="true">$</span><input aria-label="Range 3 Up to amount" aria-describedby="turn-range-help turn-rules-error" data-service-upper-bound="2" type="number" min="0" step="0.01" required value="109.99" inputmode="decimal"></div></td><td><div class="turn-credit-input"><input aria-label="Range 3 turn credit" data-service-weight="2" type="number" min="0" step="any" required value="1.5" inputmode="decimal"><span aria-hidden="true">turns</span></div></td></tr>
+            <tr><th scope="row"><span class="turn-range-number">4</span></th><td><output data-service-range-start="2">$110.00</output></td><td><span class="turn-range-unlimited"><i data-lucide="infinity" aria-hidden="true"></i>No limit</span></td><td><div class="turn-credit-input"><input aria-label="Range 4 turn credit" data-service-weight="3" type="number" min="0" step="any" required value="2" inputmode="decimal"><span aria-hidden="true">turns</span></div></td></tr>
           </tbody>
         </table>
-        <p class="turn-rules-basis">Use the service value after discounts. Exclude tips, tax, products, and gift-card payments.</p>
+        <div class="turn-rules-basis"><i data-lucide="receipt-text" aria-hidden="true"></i><p>Service value after discounts.<span>Excludes tips, tax, products, and gift-card payments.</span></p></div>
       </section>
       <section class="turn-rules-preview" aria-labelledby="turn-preview-title">
-        <div><h4 id="turn-preview-title">Try a service amount</h4><p>Preview these rules before saving.</p></div>
-        <div class="turn-preview-calculation"><label class="turn-preview-amount"><span aria-hidden="true">$</span><input id="turn-rules-preview-amount" aria-label="Preview service amount" type="number" min="0" step="0.01" inputmode="decimal" value="45"></label><span class="turn-preview-arrow" aria-hidden="true">→</span><output id="turn-rules-preview-result" aria-live="polite">1 turn</output></div>
+        <div class="turn-preview-header"><span class="turn-preview-icon"><i data-lucide="calculator" aria-hidden="true"></i></span><span class="turn-preview-live"><span aria-hidden="true"></span>Live preview</span></div>
+        <div><h4 id="turn-preview-title">Try your rules</h4><p>Enter a service amount to see how many turns it earns.</p></div>
+        <div class="turn-preview-calculation">
+          <label class="turn-preview-field" for="turn-rules-preview-amount">Service amount</label>
+          <div class="turn-preview-amount"><span aria-hidden="true">$</span><input id="turn-rules-preview-amount" aria-label="Preview service amount" placeholder="0.00" type="number" min="0" step="0.01" inputmode="decimal" value="45"></div>
+          <span class="turn-preview-arrow" aria-hidden="true"><i data-lucide="arrow-down"></i></span>
+          <div class="turn-preview-output"><span>Turn credit</span><output id="turn-rules-preview-result" aria-live="polite">1 turn</output><small>for this service amount</small></div>
+        </div>
+        <p class="turn-preview-note"><i data-lucide="info" aria-hidden="true"></i>Preview only. Save to apply your changes.</p>
       </section>
       <section class="turn-booking-section" aria-labelledby="booking-rules-title">
-        <div><h4 id="booking-rules-title">Booking turn credit</h4><p>Salon default shared with Booking Incentive Policy. Technician overrides still apply.</p><a href="pos-front-desk.html?tab=appointments&amp;view=calendar&amp;settings=booking-incentive">Open Booking Incentive Policy <span aria-hidden="true">↗</span></a></div>
+        <div class="turn-booking-copy"><div class="turn-booking-heading"><span><i data-lucide="calendar-check-2" aria-hidden="true"></i></span><h4 id="booking-rules-title">Booking turn credit</h4></div><p>Salon default. Technician overrides still apply.</p><a href="pos-front-desk.html?tab=appointments&amp;view=calendar&amp;settings=booking-incentive">Booking Incentive Policy <i data-lucide="arrow-up-right" aria-hidden="true"></i></a></div>
         <label class="turn-booking-input">Turns per booking<input id="booking-turn-credit" type="number" min="0" step="any" required value="0.5" inputmode="decimal"></label>
       </section>
       <p id="turn-rules-error" class="shared-turn-error" role="alert"></p>
     </div>
-    <div class="turn-rules-footer"><p><i data-lucide="info" aria-hidden="true"></i>Changes apply to new turns.<br>Existing recorded turns stay unchanged.</p><div class="modal-actions"><button class="btn" type="button" onclick="closeTurnRules()">Cancel</button><button class="btn primary" type="submit">Save Rules</button></div></div>
+    <div class="turn-rules-footer"><div class="turn-rules-save-note"><span><i data-lucide="shield-check" aria-hidden="true"></i></span><p><strong>Applies to new turns</strong>Existing recorded turns stay unchanged.</p></div><div class="modal-actions"><button class="btn" type="button" onclick="closeTurnRules()">Cancel</button><button class="btn primary" type="submit"><i data-lucide="check" aria-hidden="true"></i>Save Rules</button></div></div>
   </form>
 </div>
 <div class="modal-wrap" id="edit-turn-modal" role="dialog" aria-modal="true"><div class="modal"><h3>Edit Turn</h3><p id="edit-turn-copy">Adjust weighted credit with an audit reason.</p><div class="boost-form"><label>Turn credit<select id="edit-turn-credit"><option>0</option><option>0.5</option><option>1</option><option>1.5</option><option>2</option></select></label><label>Action<select><option>Adjust credit</option><option>Move to another tech</option><option>Skip / No turn</option></select></label><label style="grid-column:1/-1">Audit reason<input id="edit-turn-reason" placeholder="Required for manager edit"></label></div><div class="audit-note">The system records the manager, previous value, new value, reason, and timestamp.</div><div class="modal-actions"><button class="btn" onclick="document.getElementById('edit-turn-modal').classList.remove('show')">Cancel</button><button class="btn primary" onclick="saveTurnEdit()">Save Edit</button></div></div></div>
