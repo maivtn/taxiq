@@ -99,20 +99,60 @@ togglePause=function(index){
 function fillTurnRules(settings) {
  document.getElementById('booking-turn-credit').value=settings.bookingTurnCredit;
  document.querySelectorAll('[data-service-weight]').forEach((input,index)=>{input.value=settings.serviceWeights[index];});
- document.getElementById('turn-rules-error').textContent='';
+ document.querySelectorAll('[data-service-threshold]').forEach((input,index)=>{input.value=settings.serviceThresholds[index];});
+ updateTurnRulesPreview();
 }
+let turnRulesTrigger=null;
 function openTurnRules(){
+ turnRulesTrigger=document.activeElement;
+ document.getElementById('turn-rules-preview-amount').value='45';
  fillTurnRules(window.NEXORA_TURN_SETTINGS.load());
  document.getElementById('turn-rules-modal').classList.add('show');
+ document.querySelector('[data-service-threshold]').focus();
+}
+function closeTurnRules(){
+ document.getElementById('turn-rules-modal').classList.remove('show');
+ turnRulesTrigger?.focus();
+}
+function readTurnRules(){
+ const numberFrom=window.NEXORA_TURN_SETTINGS.numberFrom;
+ return {
+  bookingTurnCredit:numberFrom(document.getElementById('booking-turn-credit')),
+  serviceWeights:[...document.querySelectorAll('[data-service-weight]')].map(numberFrom),
+  serviceThresholds:[...document.querySelectorAll('[data-service-threshold]')].map(numberFrom)
+ };
+}
+function updateTurnRulesPreview(){
+ const settings=readTurnRules(),error=window.NEXORA_TURN_SETTINGS.validate(settings);
+ document.getElementById('turn-rules-error').textContent=error;
+ document.querySelectorAll('[data-service-range-end]').forEach((output,index)=>{
+  const start=settings.serviceThresholds[index],previous=index?settings.serviceThresholds[index-1]:0;
+  output.textContent=Number.isFinite(start)&&start>previous?'$'+((Math.round(start*100)-1)/100).toFixed(2):'—';
+ });
+ const amount=window.NEXORA_TURN_SETTINGS.numberFrom(document.getElementById('turn-rules-preview-amount'));
+ const output=document.getElementById('turn-rules-preview-result');
+ if(error){output.textContent='Check rules';return;}
+ if(!Number.isFinite(amount)||amount<0){output.textContent='Enter an amount';return;}
+ const credit=window.NEXORA_TURN_SETTINGS.serviceCredit(amount,settings);
+ output.textContent=credit+' turn'+(credit===1?'':'s');
 }
 function calculateTurnCredit(amount){return window.NEXORA_TURN_SETTINGS.serviceCredit(amount);}
 saveTurnRules=function(){
- const settings={bookingTurnCredit:window.NEXORA_TURN_SETTINGS.numberFrom(document.getElementById('booking-turn-credit')),serviceWeights:[...document.querySelectorAll('[data-service-weight]')].map(window.NEXORA_TURN_SETTINGS.numberFrom)};
+ const settings=readTurnRules();
  const result=window.NEXORA_TURN_SETTINGS.save(settings);
  if(!result.ok){document.getElementById('turn-rules-error').textContent=result.error;toast(result.error);return;}
- document.getElementById('turn-rules-modal').classList.remove('show');
+ closeTurnRules();
  toast('Turn settings saved and shared with Booking Incentive Policy.');
 };
+document.getElementById('turn-rules-form').addEventListener('input',updateTurnRulesPreview);
+document.getElementById('turn-rules-form').addEventListener('submit',event=>{event.preventDefault();saveTurnRules();});
+document.getElementById('turn-rules-modal').addEventListener('keydown',event=>{
+ if(event.key!=='Tab')return;
+ const controls=[...event.currentTarget.querySelectorAll('button, input, a[href]')].filter(control=>!control.disabled);
+ const first=controls[0],last=controls.at(-1);
+ if(event.shiftKey&&document.activeElement===first){event.preventDefault();last.focus();}
+ else if(!event.shiftKey&&document.activeElement===last){event.preventDefault();first.focus();}
+});
 window.NEXORA_TURN_SETTINGS.subscribe(settings=>{
  fillTurnRules(settings);
  if(document.getElementById('add-turn-modal').classList.contains('show'))updateAddTurnPreview();
@@ -129,7 +169,7 @@ saveTurnEdit=function(){
 // The imported prototype only supports adjusting credit in the Edit Turn dialog.
 const editAction=document.querySelector('#edit-turn-modal select:not([id])');if(editAction)editAction.closest('label').remove();
 document.querySelectorAll('.modal-wrap').forEach(modal=>{
- modal.addEventListener('click',event=>{if(event.target===modal)modal.classList.remove('show');});
+ modal.addEventListener('click',event=>{if(event.target===modal){if(modal.id==='turn-rules-modal')closeTurnRules();else modal.classList.remove('show');}});
 });
-document.addEventListener('keydown',event=>{if(event.key==='Escape')document.querySelectorAll('.modal-wrap.show').forEach(modal=>modal.classList.remove('show'));});
+document.addEventListener('keydown',event=>{if(event.key==='Escape')document.querySelectorAll('.modal-wrap.show').forEach(modal=>{if(modal.id==='turn-rules-modal')closeTurnRules();else modal.classList.remove('show');});});
 renderTurnBoard();

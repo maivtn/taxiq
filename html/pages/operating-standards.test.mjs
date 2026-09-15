@@ -193,6 +193,19 @@ test('shared turn settings update live rules without changing the document versi
   assert.equal(page.d.querySelector('#standard-edit-sync').hidden, false);
 });
 
+test('custom service amount ranges appear in live operating rules and their printed copy', t => {
+  const page = boot(t, {url: 'https://example.test/pages/pos-operating-standards.html?doc=noiquy'});
+  assert.equal(page.w.NEXORA_TURN_SETTINGS.save({
+    bookingTurnCredit: 0.5, serviceWeights: [0.5, 1, 1.5, 2], serviceThresholds: [50.25, 90, 150]
+  }).ok, true);
+  const expected = ['$0–50.24: 0.5 turn', '$50.25–89.99: 1 turn', '$90–149.99: 1.5 turn', '$150 trở lên: 2 turn'];
+  const live = page.d.querySelector('[data-live-turn-rules]').textContent;
+  for (const range of expected) assert.ok(live.includes(range), 'Missing live range ' + range);
+  page.d.querySelector('[data-print-standard]').click();
+  const printed = page.d.querySelector('#standards-print').textContent;
+  for (const range of expected) assert.ok(printed.includes(range), 'Missing printed range ' + range);
+});
+
 test('print builds the complete library or the selected document with current live turn settings', t => {
   const page = boot(t);
   page.d.querySelector('#print-library').click();

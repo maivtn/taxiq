@@ -1,6 +1,6 @@
 ## Weighted Turn Settings
 
-**Last Updated:** 2026-09-07
+**Last Updated:** 2026-09-15
 
 **Audience:** Chủ salon, Manager, Front Desk, Product Owner, BA, QA
 
@@ -8,7 +8,7 @@
 
 ### Overview
 
-**Weighted Turn Settings** cho phép người quản lý thiết lập số lượt quy đổi theo giá trị dịch vụ và lượt booking mặc định của salon tại **POS → Front Desk → Turn Board**. Cấu hình này dùng chung với **Booking Incentive Policy** trong Calendar, giúp hai màn hình sử dụng cùng giá trị đã lưu. Tài liệu mô tả hành vi hiện có của prototype; việc chia sẻ cấu hình chưa bao gồm sổ lượt chung hoặc tự động ghi lượt từ booking hoàn thành.
+**Weighted Turn Settings** cho phép người quản lý thiết lập khoảng giá trị dịch vụ, số lượt quy đổi cho từng khoảng và lượt booking mặc định của salon tại **POS → Front Desk → Turn Board**. Người quản lý có thể nhập số tiền mẫu để xem trước kết quả trước khi lưu. Cấu hình này dùng chung với **Booking Incentive Policy** trong Calendar, giúp hai màn hình sử dụng cùng giá trị đã lưu. Tài liệu mô tả hành vi hiện có của prototype; việc chia sẻ cấu hình chưa bao gồm sổ lượt chung hoặc tự động ghi lượt từ booking hoàn thành.
 
 ### Key Concepts
 
@@ -17,7 +17,8 @@
 | Turn credit | Số lượt quy đổi, có thể là 0 hoặc số lẻ như 0.5, 1.25. Không phải tiền thưởng. |
 | Service turn credit | Số lượt ứng với một khoảng giá trị dịch vụ. |
 | Booking turn credit | Lượt mặc định của salon cho mỗi booking được tính lượt trong Calendar. |
-| Weighted Turn Settings | Form chỉnh lượt booking mặc định và bốn mức lượt dịch vụ. |
+| Weighted Turn Settings | Form chỉnh lượt booking mặc định, ba mốc bắt đầu của bốn khoảng giá trị dịch vụ và số lượt tương ứng. |
+| Mốc giá trị dịch vụ | Số tiền bắt đầu một khoảng; mốc đầu luôn là $0, ba mốc còn lại được chỉnh sửa. |
 | Booking Incentive Policy | Chính sách thưởng booking; có cùng cấu hình lượt chung và phần tùy chỉnh riêng theo thợ. |
 | Technician override | Lượt booking riêng của thợ, được ưu tiên khi chính sách tùy chỉnh theo thợ đang áp dụng. |
 | Add Turn | Thao tác thêm một lượt dịch vụ còn thiếu; gợi ý lượt theo mức dịch vụ đã lưu. |
@@ -46,20 +47,23 @@
 **User Stories:**
 
 - **US-01 — Xem cấu hình hiện tại:** **As a** Manager, **I want to** mở form và xem các mức lượt đang áp dụng, **so that** tôi có cơ sở kiểm tra trước khi thay đổi.
-- **US-02 — Thiết lập lượt theo dịch vụ:** **As a** Chủ salon, **I want to** đặt số lượt cho từng khoảng giá trị dịch vụ, **so that** salon có thể quy đổi các dịch vụ thành lượt theo quy tắc đã thống nhất.
+- **US-02 — Thiết lập lượt theo dịch vụ:** **As a** Chủ salon, **I want to** chỉnh các mốc tiền và đặt số lượt cho từng khoảng giá trị dịch vụ, **so that** salon có thể quy đổi các dịch vụ thành lượt theo quy tắc đã thống nhất.
 - **US-03 — Thiết lập lượt booking:** **As a** Chủ salon, **I want to** chỉnh booking turn credit mặc định ngay tại Turn Board, **so that** tôi có thể quản lý mức lượt chung mà không cần nhập lại ở Calendar.
 - **US-04 — Lưu hoặc hủy chỉnh sửa:** **As a** Manager, **I want to** lưu các mức lượt sau khi kiểm tra hoặc hủy thay đổi, **so that** chỉ cấu hình tôi quyết định lưu mới được áp dụng.
 - **US-05 — Xử lý dữ liệu và lỗi lưu:** **As a** Manager, **I want to** nhận thông báo khi giá trị không hợp lệ hoặc không thể lưu, **so that** tôi biết cần sửa gì và không nhầm rằng cấu hình mới đã được áp dụng.
+- **US-10 — Thử số tiền trước khi lưu:** **As a** Manager, **I want to** nhập một giá trị dịch vụ mẫu và xem lượt theo bản đang chỉnh, **so that** tôi kiểm tra được ảnh hưởng của mốc tiền mới trước khi áp dụng.
 
 **Acceptance Criteria — hiện có:**
 
 1. Mở form đọc cấu hình đã lưu của salon. Nếu chưa có cấu hình hợp lệ, hiển thị bộ mặc định bên dưới.
-2. Có một ô Booking turn credit và bốn ô Service turns. Các ngưỡng giá trị dịch vụ giữ cố định; không có thêm, xóa hoặc sửa khoảng.
-3. Mọi ô lượt đều bắt buộc, chấp nhận số hữu hạn không âm, gồm cả 0 và số lẻ. Không yêu cầu mức lượt phải tăng dần theo giá trị dịch vụ; hiện chưa có giới hạn trên.
-4. Save Rules kiểm tra và lưu toàn bộ năm giá trị cùng nhau. Thành công thì đóng modal và thông báo cấu hình đã chia sẻ với Booking Incentive Policy.
-5. Ô trống, số âm hoặc số không hữu hạn khiến thao tác lưu bị từ chối. Form giữ mở, hiển thị thông báo lỗi và không ghi đè cấu hình cũ.
-6. Không thể ghi vào bộ nhớ trình duyệt thì báo lỗi lưu trữ và giữ form mở. Người quản lý có thể thử lưu lại sau khi xử lý nguyên nhân.
-7. Cancel, bấm nền ngoài modal hoặc Escape đóng form mà không lưu. Mở lại lấy giá trị đã lưu gần nhất.
+2. Có một ô Booking turn credit và bốn khoảng dịch vụ. Khoảng đầu bắt đầu tại $0; người quản lý chỉnh mốc bắt đầu của ba khoảng còn lại và số lượt của cả bốn khoảng. Không thêm hoặc xóa khoảng.
+3. Ba mốc tiền phải là số hữu hạn lớn hơn 0, tăng dần và có tối đa hai chữ số thập phân. Điểm cuối mỗi khoảng được tính bằng mốc bắt đầu khoảng tiếp theo trừ $0.01; khoảng cuối không giới hạn trên. Các khoảng không bị hở hoặc chồng lấn.
+4. Mọi ô lượt đều bắt buộc, chấp nhận số hữu hạn không âm, gồm cả 0 và số lẻ. Không yêu cầu mức lượt phải tăng dần theo giá trị dịch vụ; hiện chưa có giới hạn trên.
+5. Nhập số tiền dịch vụ mẫu sẽ cập nhật preview theo mốc tiền và lượt trong bản đang chỉnh. Preview chưa thay cấu hình đang áp dụng hoặc ghi thêm lượt.
+6. Save Rules kiểm tra và lưu lượt booking, ba mốc tiền và bốn mức lượt dịch vụ cùng nhau. Thành công thì đóng modal và thông báo cấu hình đã chia sẻ với Booking Incentive Policy.
+7. Ô bắt buộc bị trống, lượt không hợp lệ hoặc mốc tiền sai thứ tự/độ chính xác khiến thao tác lưu bị từ chối. Form giữ mở, hiển thị thông báo lỗi và không ghi đè cấu hình cũ.
+8. Không thể ghi vào bộ nhớ trình duyệt thì báo lỗi lưu trữ và giữ form mở. Người quản lý có thể thử lưu lại sau khi xử lý nguyên nhân.
+9. Cancel, nút ×, bấm nền ngoài modal hoặc Escape đóng form mà không lưu. Mở lại lấy giá trị đã lưu gần nhất.
 
 **Bộ cấu hình mặc định:**
 
@@ -74,16 +78,18 @@
 | Step | Who | Action | System Response | Notes |
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Manager | Mở Weighted Turn Settings | Hiển thị cấu hình đã lưu | Dùng mặc định nếu chưa có dữ liệu hợp lệ. |
-| 2 | Manager | Sửa các mức lượt | Giữ giá trị trong form | Chưa áp dụng thay đổi. |
-| 3 | Manager | Bấm Save Rules | Kiểm tra tất cả các ô lượt | Giá trị không hợp lệ được báo lỗi. |
-| 4 | Hệ thống | Lưu bộ cấu hình | Đóng form và thông báo thành công | Lỗi lưu trữ giữ form mở. |
-| 5 | Manager | Hoặc đóng form trước khi lưu | Bỏ bản chỉnh sửa | Giữ cấu hình đã lưu gần nhất. |
+| 2 | Manager | Sửa mốc tiền và các mức lượt | Tính lại điểm cuối từng khoảng | Chưa áp dụng thay đổi. |
+| 3 | Manager | Nhập số tiền mẫu | Xem trước lượt theo bản đang chỉnh | Không ghi lượt. |
+| 4 | Manager | Bấm Save Rules | Kiểm tra mốc tiền và tất cả các ô lượt | Giá trị không hợp lệ được báo lỗi. |
+| 5 | Hệ thống | Lưu bộ cấu hình | Đóng form và thông báo thành công | Lỗi lưu trữ giữ form mở. |
+| 6 | Manager | Hoặc đóng form trước khi lưu | Bỏ bản chỉnh sửa | Giữ cấu hình đã lưu gần nhất. |
 
 ```mermaid
 flowchart TD
     A([Mở cấu hình lượt]) --> B[Đọc mức đã lưu]
-    B --> C[Sửa các mức lượt]
-    C --> D{Lưu hay hủy?}
+    B --> C[Sửa mốc tiền và lượt]
+    C --> K[Xem trước số tiền mẫu]
+    K --> D{Lưu hay hủy?}
     D -- Hủy --> E([Giữ cấu hình cũ])
     D -- Lưu --> F{Giá trị hợp lệ?}
     F -- Không --> G[Hiển thị lỗi nhập]
@@ -109,9 +115,9 @@ flowchart TD
 
 **Acceptance Criteria — hiện có:**
 
-1. Save Rules trên Turn Board và Save policy trên Calendar đều cập nhật cùng booking turn credit mặc định và bốn mức lượt dịch vụ.
-2. Trong cùng trình duyệt, cùng địa chỉ ứng dụng và cùng salon, các tab đang mở nhận cập nhật cho các ô lượt chung. Mở lại hoặc tải lại trang cũng đọc các mức đã lưu.
-3. Khi nhận cập nhật trong lúc đang chỉnh form, các ô lượt chung được thay bằng giá trị mới nhất. Các trường thưởng, Anyone assignment và override đang chỉnh trên Calendar được giữ nguyên.
+1. Save Rules trên Turn Board lưu mốc tiền cùng booking turn credit mặc định và bốn mức lượt dịch vụ. Calendar hiển thị các khoảng tiền đã lưu và cho sửa số lượt; Save policy giữ nguyên các mốc tiền tùy chỉnh. Muốn đổi mốc tiền từ Calendar, mở liên kết sang Weighted Turn Settings.
+2. Trong cùng trình duyệt, cùng địa chỉ ứng dụng và cùng salon, các tab đang mở nhận cập nhật cho cấu hình lượt chung và khoảng tiền. Mở lại hoặc tải lại trang cũng đọc các mức đã lưu.
+3. Khi nhận cập nhật trong lúc đang chỉnh form, cấu hình lượt chung và khoảng tiền được thay bằng giá trị mới nhất. Các trường thưởng, Anyone assignment và override đang chỉnh trên Calendar được giữ nguyên.
 4. Technician Overview cập nhật kết quả booking credit theo mặc định mới. Thợ có override đang áp dụng tiếp tục dùng lượt riêng; thay đổi lượt chung không đổi mức tiền thưởng.
 5. Weighted Turn Settings có liên kết mở Booking Incentive Policy. Calendar có liên kết mở thẳng Weighted Turn Settings trên Turn Board.
 6. Các liên kết chỉ điều hướng, không tự lưu các giá trị đang nhập. Người dùng cần bấm Save trước nếu muốn giữ thay đổi.
@@ -152,13 +158,13 @@ flowchart TD
 **Acceptance Criteria — hiện có:**
 
 1. Add Turn tìm khoảng giá trị tương ứng với Service amount đang nhập và điền lượt gợi ý theo cấu hình đã lưu.
-2. Các mốc $30, $70 và $110 thuộc khoảng mới bắt đầu tại mốc đó. Với cấu hình mặc định: $29.99 → 0.5 lượt; $30 → 1; $70 → 1.5; $110 → 2.
+2. Số tiền đúng bằng mốc bắt đầu thuộc khoảng mới tại mốc đó. Với cấu hình mặc định: $29.99 → 0.5 lượt; $30 → 1; $70 → 1.5; $110 → 2. Nếu đổi mốc bắt đầu khoảng thứ hai thành $40 và giữ nguyên các mức lượt, $39.99 gợi ý 0.5 lượt còn $40 gợi ý 1 lượt.
 3. Nếu mức $30–69.99 được đổi thành 1.25, dịch vụ $45 gợi ý 1.25 lượt. Thêm lượt cho thợ đang có 4 lượt sẽ thành 5.25 khi dùng đúng mức gợi ý.
 4. Nếu cấu hình được lưu từ tab khác khi Add Turn đang mở, phần gợi ý được tính lại theo số tiền đang nhập. Ô Turn credit vẫn có thể được người dùng sửa trước khi thêm.
-5. Add Turn yêu cầu Service amount lớn hơn 0, lý do bổ sung và lượt hữu hạn không âm. Một khoảng cấu hình có thể bằng 0 dù số tiền dịch vụ phải lớn hơn 0.
+5. Add Turn yêu cầu Service amount hữu hạn không âm, lý do bổ sung và lượt hữu hạn không âm. Số tiền dịch vụ hoặc số lượt đều có thể bằng 0.
 6. Đổi cấu hình không tự sửa tổng lượt hoặc các ô lượt đã ghi trên Turn Grid, kể cả sau khi bảng được dựng lại.
 
-**Giới hạn:** Thao tác Assign Guest vẫn dùng quy tắc cộng lượt riêng của prototype. Chưa tự tính lượt theo giá trị checkout, chưa ghi lượt khi booking hoàn thành, chưa có sổ lượt chung giữa Calendar và Turn Board. Add Turn và lịch sử thao tác trên Turn Board hiện chỉ tồn tại trong phiên.
+**Giới hạn:** Assign Guest dùng cấu hình lượt đã lưu cho từng dịch vụ khi ticket mẫu có thông tin dịch vụ và số tiền. Chưa tự tính lượt theo giá trị checkout, chưa ghi lượt khi booking hoàn thành, chưa có sổ lượt chung giữa Calendar và Turn Board. Add Turn và lịch sử thao tác trên Turn Board hiện chỉ tồn tại trong phiên.
 
 | Step | Who | Action | System Response | Notes |
 | :--- | :--- | :--- | :--- | :--- |
@@ -186,6 +192,7 @@ flowchart TD
 - Cấu hình chung được lưu theo salon trong bộ nhớ trình duyệt. Đây chưa phải cấu hình được lưu trên máy chủ theo tài khoản đăng nhập.
 - Không có nút Reset mặc định, ngày hiệu lực, lịch áp dụng hoặc phê duyệt cấu hình tại Weighted Turn Settings.
 - Nếu chưa có dữ liệu, dữ liệu bị hỏng hoặc không đọc được lưu trữ, hệ thống dùng bộ mặc định. Nếu không thể ghi lưu trữ, thao tác Save báo thất bại.
+- Cấu hình cũ chỉ có số lượt vẫn giữ các lượt đã lưu và dùng ba mốc tiền mặc định $30, $70, $110.
 - Phần thưởng tiền và override của từng thợ được chỉnh trong Booking Incentive Policy, không có trường tương ứng trong modal Turn Board.
 
 ### State Lifecycle
@@ -198,7 +205,7 @@ flowchart TD
 | Đang chỉnh sửa | Cancel / đóng form | Đang áp dụng cấu hình | Bỏ thay đổi chưa lưu. |
 | Đang chỉnh sửa | Save không hợp lệ hoặc lỗi lưu trữ | Đang chỉnh sửa | Giữ form mở và báo lỗi. |
 | Đang chỉnh sửa | Save thành công | Đang áp dụng cấu hình mới | Đồng bộ các màn hình cùng trình duyệt. |
-| Đang chỉnh sửa | Tab khác lưu cấu hình | Đang chỉnh sửa | Các ô lượt chung nhận giá trị mới nhất. |
+| Đang chỉnh sửa | Tab khác lưu cấu hình | Đang chỉnh sửa | Cấu hình lượt chung và khoảng tiền nhận giá trị mới nhất. |
 
 ```mermaid
 stateDiagram-v2
@@ -207,7 +214,7 @@ stateDiagram-v2
     state "Form đang chỉnh sửa" as DangChinhSua
     DangApDung --> DangChinhSua : Mở form
     DangChinhSua --> DangChinhSua : Lỗi nhập hoặc lỗi lưu
-    DangChinhSua --> DangChinhSua : Nhận lượt mới từ tab khác
+    DangChinhSua --> DangChinhSua : Nhận cấu hình từ tab khác
     DangChinhSua --> DangApDung : Hủy chỉnh sửa
     DangChinhSua --> DangApDung : Lưu thành công
 ```
@@ -217,6 +224,7 @@ stateDiagram-v2
 - **Hai loại lượt riêng:** Booking turn credit dùng cho booking trong Calendar; Service turn credit dùng để gợi ý lượt dịch vụ tại Add Turn. Chia sẻ cấu hình không có nghĩa tự cộng cả hai cho cùng booking.
 - **Cơ sở giá trị dịch vụ:** Giao diện mô tả giá trị sau giảm giá, loại trừ tip, thuế, sản phẩm và thanh toán gift card. Prototype nhận Service amount nhập tay, chưa tự bóc tách các khoản này từ giao dịch hoặc xử lý quy tắc gift card ở checkout.
 - **Áp dụng cấu hình:** Mức mới được dùng ngay sau khi lưu thành công; Weighted Turn Settings không có lịch hiệu lực riêng.
+- **Khoảng tiền thống nhất:** Bốn khoảng tiền và lượt đã lưu được dùng cho gợi ý Add Turn, nhãn khoảng trong Calendar và phần quy tắc lượt theo cấu hình hiện tại của Operating Standards.
 - **Giữ lượt đã ghi:** Lưu cấu hình không phải thao tác sửa lượt của thợ. Việc điều chỉnh lượt đã ghi sử dụng thao tác khác trên Turn Board.
 - **Ưu tiên override:** Lượt booking riêng chỉ ưu tiên khi chế độ tùy chỉnh theo thợ và override tương ứng đang áp dụng trong Calendar.
 - **Phạm vi tiền:** Cấu hình lượt không thực hiện thu tiền, payout hoặc thay mức thưởng booking.
@@ -226,11 +234,12 @@ stateDiagram-v2
 | Scenario | What Happens | Who Resolves It |
 | :--- | :--- | :--- |
 | Một ô lượt bị bỏ trống, âm hoặc không hữu hạn | Không lưu; form báo lỗi | Người quản lý sửa giá trị. |
+| Mốc tiền trống, không dương, không hữu hạn, trùng/giảm hoặc có hơn hai chữ số thập phân | Không lưu; form giữ mở và báo lỗi | Người quản lý sửa mốc tiền. |
 | Mức lượt bằng 0 | Hợp lệ; lượt gợi ý của khoảng đó bằng 0 | Người quản lý xác nhận cấu hình phù hợp. |
 | Mức lượt không tăng theo giá trị dịch vụ hoặc rất lớn | Hiện vẫn hợp lệ nếu hữu hạn và không âm | Chủ salon quyết định mức phù hợp; giới hạn nghiệp vụ chưa có. |
 | Không thể ghi lưu trữ | Giữ form mở, báo lỗi; không thông báo lưu thành công | Người quản lý kiểm tra trình duyệt rồi thử lại. |
 | Dữ liệu đã lưu bị hỏng hoặc bị xóa | Quay về bộ mặc định | Người quản lý kiểm tra và lưu lại nếu cần. |
-| Hai tab cùng chỉnh sửa | Mức được lưu mới nhất thay các ô lượt chung; chưa có cảnh báo xung đột | Người quản lý kiểm tra trước khi lưu. |
+| Hai tab cùng chỉnh sửa | Mức được lưu mới nhất thay cấu hình lượt chung và khoảng tiền; chưa có cảnh báo xung đột | Người quản lý kiểm tra trước khi lưu. |
 | Bấm liên kết sang màn hình khác khi chưa lưu | Điều hướng không lưu bản chỉnh sửa | Người quản lý lưu trước nếu muốn giữ thay đổi. |
 | Mở từ trình duyệt, thiết bị hoặc địa chỉ ứng dụng khác | Không đọc được bộ cấu hình của phiên trình duyệt cũ | Cần tích hợp máy chủ để đồng bộ rộng hơn. |
 | Tải lại sau khi ghi thêm lượt | Cấu hình chung còn; các lượt bổ sung trong phiên không được lưu bền vững | Cần sổ lượt và lưu trữ giao dịch thực tế. |
@@ -243,7 +252,7 @@ A: Có. Đây là cùng giá trị mặc định với Booking Incentive Policy.
 
 **Q: Có thể đổi ngưỡng $30, $70 hoặc $110 không?**
 
-A: Chưa. Hiện chỉ chỉnh số lượt ứng với bốn khoảng cố định.
+A: Có. Chỉnh ba mốc bắt đầu tại Weighted Turn Settings; mốc đầu luôn là $0. Hệ thống tự tính điểm cuối để bốn khoảng liên tục. Có thể nhập số tiền mẫu để kiểm tra trước khi bấm Save Rules. Calendar hiển thị các khoảng này và có liên kết mở form chỉnh mốc tiền.
 
 **Q: Lưu mức lượt mới có làm thay đổi lượt cũ hoặc thứ tự thợ ngay không?**
 

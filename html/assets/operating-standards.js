@@ -24,7 +24,7 @@
   let state = load();
   function liveTurnRules() {
     const config = window.NEXORA_TURN_SETTINGS.load();
-    const ranges = ['$0–29.99', '$30–69.99', '$70–109.99', '$110 trở lên'];
+    const ranges = window.NEXORA_TURN_SETTINGS.labels.map(range => range.replace(/\+$/, ' trở lên'));
     return ranges.map((range,i) => 'Giá trị dịch vụ ' + range + ': ' + config.serviceWeights[i] + ' turn.').concat([
       'Booking: ' + config.bookingTurnCredit + ' turn theo Booking Incentive Policy; áp dụng mức riêng của thợ nếu có cấu hình.',
       'Giá trị tính turn đã trừ giảm giá; không bao gồm tip, thuế, sản phẩm và thanh toán gift card.',

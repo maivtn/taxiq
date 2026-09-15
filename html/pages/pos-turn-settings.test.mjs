@@ -185,3 +185,93 @@ test('changing service weights preserves existing Turn Grid credits after rerend
   app.w.openAddTurn(0);
   assert.equal(app.d.querySelector('#add-turn-credit').value, '8');
 });
+
+test('editable amount ranges preview drafts and apply exact cent boundaries after saving and reloading', t => {
+  const app = boot('pos-front-desk-turn-board.html'); t.after(() => app.w.close());
+  app.w.setBoardMode('grid');
+  const recorded = app.d.querySelector('.turn-cell.done').textContent;
+  app.w.openTurnRules();
+  const thresholds = [...app.d.querySelectorAll('[data-service-threshold]')];
+  assert.equal(thresholds.length, 3, 'starting amounts for the upper three ranges can be edited');
+  thresholds.forEach((input, index) => { input.value = ['50.25', '90', '150'][index]; });
+  thresholds[0].dispatchEvent(new app.w.Event('input', {bubbles: true}));
+  assert.equal(app.d.querySelector('[data-service-range-end="0"]').textContent, '$50.24');
+  assert.match(app.d.querySelector('#turn-rules-preview-result').textContent, /0\.5 turns/);
+  assert.equal(app.w.calculateTurnCredit(45), 1, 'a preview must not apply an unsaved rule');
+  app.w.saveTurnRules();
+  assert.equal(app.d.querySelector('#turn-rules-modal').classList.contains('show'), false);
+  const reloaded = boot('pos-front-desk-turn-board.html', saved(app)); t.after(() => reloaded.w.close());
+  for (const [amount, credit] of [[0, 0.5], [50.24, 0.5], [50.25, 1], [89.99, 1], [90, 1.5], [149.99, 1.5], [150, 2]]) {
+    assert.equal(reloaded.w.calculateTurnCredit(amount), credit, `credit for $${amount}`);
+  }
+  reloaded.w.openTurnRules();
+  assert.equal(reloaded.d.querySelector('[data-service-threshold]').value, '50.25');
+  app.w.renderTurnBoard();
+  assert.equal(app.d.querySelector('.turn-cell.done').textContent, recorded);
+  app.w.openAddTurn(0);
+  assert.equal(app.d.querySelector('#add-turn-credit').value, '0.5');
+  assert.deepEqual(app.errors, []); assert.deepEqual(reloaded.errors, []);
+});
+
+test('invalid or cancelled range edits never replace saved rules and storage errors keep the draft open', t => {
+  const app = boot('pos-front-desk-turn-board.html'); t.after(() => app.w.close());
+  app.w.openTurnRules();
+  const input = app.d.querySelector('[data-service-threshold]');
+  assert.ok(input, 'the amount field is available');
+  const original = JSON.stringify(app.w.NEXORA_TURN_SETTINGS.load());
+  for (const invalid of ['', '-1', '0', '70', '71', '30.001', 'Infinity']) {
+    input.value = invalid;
+    input.dispatchEvent(new app.w.Event('input', {bubbles: true}));
+    app.w.saveTurnRules();
+    assert.ok(app.d.querySelector('#turn-rules-modal').classList.contains('show'));
+    assert.ok(app.d.querySelector('#turn-rules-error').textContent);
+    assert.equal(JSON.stringify(app.w.NEXORA_TURN_SETTINGS.load()), original);
+  }
+  input.value = '50';
+  app.d.querySelector('#turn-rules-modal .modal-actions .btn').click();
+  app.w.openTurnRules();
+  assert.equal(input.value, '30');
+  input.value = '50';
+  app.w.Storage.prototype.setItem = () => { throw new Error('Storage full'); };
+  app.w.saveTurnRules();
+  assert.ok(app.d.querySelector('#turn-rules-modal').classList.contains('show'));
+  assert.equal(input.value, '50');
+  assert.match(app.d.querySelector('#turn-rules-error').textContent, /Could not save/);
+  assert.equal(app.w.calculateTurnCredit(45), 1);
+  assert.deepEqual(app.errors, []);
+});
+
+test('custom ranges synchronize Calendar labels and survive saving booking policy in both calendars', t => {
+  const board = boot('pos-front-desk-turn-board.html'); t.after(() => board.w.close());
+  const calendar = boot('pos-front-desk.html'); t.after(() => calendar.w.close());
+  const root = openCalendar(calendar);
+  const result = board.w.NEXORA_TURN_SETTINGS.save({bookingTurnCredit: 0.5, serviceWeights: [0.5, 1, 1.5, 2], serviceThresholds: [50, 90, 150]});
+  assert.equal(result.ok, true);
+  syncStorage(board, calendar);
+  assert.match(root.querySelector('[data-service-weight="0"]').closest('label').textContent, /\$0–49\.99/);
+  root.querySelector('#turn-credit').value = '2';
+  root.querySelector('#save-policy').click();
+  assert.equal(calendar.w.NEXORA_TURN_SETTINGS.serviceCredit(45), 0.5);
+  const standalone = boot('team-calendar.html', saved(calendar)); t.after(() => standalone.w.close());
+  standalone.d.querySelector('#reward-settings-button').click();
+  assert.match(standalone.d.querySelector('[data-service-weight="3"]').closest('label').textContent, /\$150\+/);
+  standalone.d.querySelector('#turn-credit').value = '3';
+  standalone.d.querySelector('#save-policy').click();
+  assert.equal(standalone.w.NEXORA_TURN_SETTINGS.serviceCredit(45), 0.5);
+  for (const app of [board, calendar, standalone]) assert.deepEqual(app.errors, []);
+});
+
+test('old saved credits migrate to default amounts and malformed ranges fall back safely', t => {
+  const source = boot('pos-front-desk-turn-board.html'); t.after(() => source.w.close());
+  source.w.saveTurnRules();
+  const key = Object.keys(saved(source)).find(key => key.includes('turn-settings'));
+  const old = {bookingTurnCredit: 1.25, serviceWeights: [0, 2, 3, 4]};
+  const migrated = boot('pos-front-desk-turn-board.html', {[key]: JSON.stringify(old)}); t.after(() => migrated.w.close());
+  assert.equal(migrated.w.NEXORA_TURN_SETTINGS.load().bookingTurnCredit, 1.25);
+  assert.equal(migrated.w.calculateTurnCredit(30), 2);
+  assert.deepEqual(Array.from(migrated.w.NEXORA_TURN_SETTINGS.load().serviceThresholds || []), [30, 70, 110]);
+  for (const thresholds of [[50, 40, 100], [0, 70, 110], [30, 70], [30, 70, null], [30.001, 70, 110]]) {
+    const broken = boot('pos-front-desk-turn-board.html', {[key]: JSON.stringify({...old, serviceThresholds: thresholds})});
+    try { assert.equal(broken.w.calculateTurnCredit(30), 1); } finally { broken.w.close(); }
+  }
+});

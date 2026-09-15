@@ -43,3 +43,77 @@
 .front-desk .turn-grid button.grid-check-in{display:block;margin-top:5px;padding:3px 6px;font-size:10px;border:1px solid #dce3e0;color:#27705d}
 .front-desk .board-menu button:focus-visible,.front-desk #board-menu-toggle:focus-visible{outline:2px solid #7466df;outline-offset:2px}
 @media(max-width:650px){.front-desk .board-menu{right:auto;left:0}}
+
+/* Weighted turn rules keep amount boundaries and their credits together. */
+.front-desk .turn-rules-dialog{width:min(740px,100%);max-height:calc(100dvh - 48px);padding:0;display:flex;flex-direction:column;overflow:hidden;border:1px solid #e2e6f0}
+.turn-rules-header{display:flex;align-items:center;gap:14px;padding:24px;border-bottom:1px solid #e8ebf2;flex-shrink:0}
+.turn-rules-icon{display:grid;place-items:center;width:42px;height:42px;flex-shrink:0;border-radius:12px;background:#f0edff;color:#6553d7}
+.turn-rules-icon svg{width:21px;height:21px}
+.front-desk .turn-rules-header h3{margin:0 0 5px;font-size:20px;letter-spacing:-.4px}
+.front-desk .turn-rules-header p{margin:0;font-size:12px;color:#6b7589}
+.front-desk .turn-rules-close{display:grid;place-items:center;margin-left:auto;width:32px;height:32px;flex-shrink:0;padding:0;border:0;border-radius:8px;background:transparent;color:#7b8495;font-size:25px;font-weight:400}
+.front-desk .turn-rules-close:hover{background:#f0edff;color:#5143c9}
+.turn-rules-body{padding:22px 24px;overflow:auto;min-height:0}
+.turn-rules-section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.front-desk .turn-rules-dialog h4{margin:0;font-size:14px;font-weight:700;color:#26314a}
+.turn-rules-section-heading>span{font-size:10px;font-weight:600;color:#69748a;background:#f4f6fa;padding:5px 8px;border-radius:5px;white-space:nowrap}
+.front-desk .turn-rules-help{margin:8px 0 16px;color:#69748a;font-size:12px}
+.front-desk .turn-rule-table{width:100%;min-width:0;margin:0;border:1px solid #e2e7f0;border-radius:10px;border-spacing:0;border-collapse:separate;table-layout:fixed;overflow:hidden}
+.front-desk .turn-rule-table tr{background:#fff}
+.front-desk .turn-rule-table th,.front-desk .turn-rule-table td{padding:10px 14px;border:0;border-bottom:1px solid #edf0f5;text-align:left;vertical-align:middle;white-space:normal}
+.front-desk .turn-rule-table thead th{background:#f7f8fb;color:#7a8496;font-size:10px;font-weight:700;letter-spacing:.035em;text-transform:uppercase}
+.front-desk .turn-rule-table th:first-child{width:64px;text-align:center}
+.front-desk .turn-rule-table tr:last-child>*{border-bottom:0}
+.front-desk .turn-rule-table td{font-size:13px;font-variant-numeric:tabular-nums}
+.turn-range-number{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:8px;background:#f2f3f8;font-size:11px;font-weight:600;color:#788298}
+.front-desk .turn-rules-dialog input{box-sizing:border-box;height:40px;padding:9px 11px;border:1px solid #d8dfea;border-radius:7px;background:#fff;font-family:inherit;font-size:13px;font-weight:600;color:#27334c;box-shadow:0 1px 2px #1b2c4510}
+.front-desk .turn-rule-table [data-service-weight]{background:#faf9ff;border-color:#ded9f4;color:#5745c4}
+.front-desk .turn-rules-dialog input:focus-visible,.front-desk .turn-rules-dialog button:focus-visible,.front-desk .turn-rules-dialog a:focus-visible{outline:2px solid #7964dc;outline-offset:2px}
+.turn-range-fixed{display:block;padding-left:11px;color:#59657a;line-height:1.5}
+.turn-range-fixed small{display:block;font-size:10px;font-weight:400;color:#8a93a4}
+.front-desk .turn-rule-table output{color:#637087}
+.turn-range-unlimited{font-size:12px;color:#8a93a4}
+.front-desk .turn-rules-basis{margin:11px 0 0;font-size:11px;color:#8790a1;line-height:1.6}
+.turn-rules-preview{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:16px;margin-top:20px;border:1px solid #dfd9f7;border-radius:10px;background:#f8f6ff}
+.front-desk .turn-rules-preview h4{font-size:12px;color:#5b49be}
+.front-desk .turn-rules-preview p{margin:5px 0 0;font-size:11px;color:#8a7fb0}
+.turn-preview-calculation{display:flex;align-items:center;gap:12px}
+.front-desk .turn-preview-amount{position:relative;width:106px;flex-shrink:0}
+.turn-preview-amount>span{position:absolute;top:12px;left:11px;font-size:13px;color:#9a91b7}
+.front-desk .turn-preview-amount input{padding-left:24px;border-color:#e0daf1}
+.turn-preview-arrow{color:#b1a7ce}
+#turn-rules-preview-result{min-width:74px;color:#5a44c2;font-size:17px;font-weight:700;white-space:nowrap}
+.turn-booking-section{display:flex;align-items:center;justify-content:space-between;gap:28px;padding-top:20px;margin-top:20px;border-top:1px solid #e8ebf2}
+.front-desk .turn-booking-section p{max-width:400px;margin:6px 0 8px;font-size:11px;color:#7d8799}
+.front-desk .turn-booking-section a{font-size:11px;font-weight:600;text-decoration:none;color:#6450cc}
+.front-desk .turn-booking-section a:hover{text-decoration:underline}
+.front-desk .turn-booking-input{width:138px;flex-shrink:0;font-size:10px;color:#788399}
+.front-desk #turn-rules-error{margin:16px 0 0;padding:10px 12px;border-radius:8px;background:#fff1f0;color:#b42318}
+.front-desk #turn-rules-error:empty{display:none}
+.turn-rules-footer{display:flex;align-items:center;justify-content:space-between;gap:20px;padding:18px 24px;border-top:1px solid #e8ebf2;background:#fafbfe;flex-shrink:0}
+.front-desk .turn-rules-footer>p{position:relative;margin:0;padding-left:23px;font-size:10px;color:#8892a4;line-height:1.6}
+.turn-rules-footer>p svg{position:absolute;top:2px;left:0;width:14px;height:14px;color:#a0a8b7}
+.turn-rules-footer .modal-actions{margin:0;flex-shrink:0}
+.front-desk .turn-rules-footer .btn{padding:10px 18px;font-size:12px}
+@media(max-width:600px){
+ .front-desk .turn-rules-dialog{max-height:calc(100dvh - 24px)}
+ .turn-rules-header{padding:18px 16px;gap:10px}
+ .turn-rules-icon{width:34px;height:34px;border-radius:9px}
+ .front-desk .turn-rules-header h3{font-size:17px}
+ .turn-rules-body{padding:18px 14px}
+ .front-desk .turn-rule-table th,.front-desk .turn-rule-table td{padding:9px 6px}
+ .front-desk .turn-rule-table th:first-child{width:40px}
+ .front-desk .turn-rule-table thead th{font-size:9px}
+ .front-desk .turn-rule-table input{padding:8px 6px}
+ .front-desk .turn-rule-table td{font-size:12px}
+ .turn-range-fixed{padding-left:6px}
+ .turn-range-fixed small{font-size:9px}
+ .turn-rules-preview{align-items:flex-start;flex-direction:column;gap:12px;padding:14px}
+ .turn-preview-calculation{width:100%}
+ .front-desk .turn-preview-amount{flex:1}
+ .turn-booking-section{gap:14px}
+ .front-desk .turn-booking-input{width:108px}
+ .turn-rules-footer{padding:14px;flex-direction:column;align-items:stretch;gap:12px}
+ .turn-rules-footer .modal-actions{display:grid;grid-template-columns:1fr 1fr}
+ .front-desk .turn-rules-footer>p{font-size:10px}
+}
