@@ -21,7 +21,7 @@
 | Progressive | Tính riêng số booking thuộc từng bậc rồi cộng thưởng. |
 | Final tier | Áp mức thưởng của bậc đạt được cho toàn bộ số booking dùng tính thưởng. |
 | Booking turn credit | Số lượt quy đổi cho mỗi booking được tính lượt; cho phép số không âm, gồm cả số lẻ. Giá trị mặc định của salon dùng chung với Weighted Turn Settings. |
-| Weighted Turn Settings | Bốn khoảng giá trị dịch vụ sau giảm giá và số lượt tương ứng; cùng bộ cấu hình với booking turn credit mặc định của salon. Mốc tiền được chỉnh tại Turn Board. |
+| Weighted Turn Settings | Bốn khoảng giá trị dịch vụ sau giảm giá và số lượt tương ứng; cùng bộ cấu hình với booking turn credit mặc định của salon. Up to của ba khoảng đầu được chỉnh tại Turn Board; From tự tính. |
 | Effective date | Ngày người quản lý muốn chính sách bắt đầu áp dụng. Hiện mới được lưu trong phiên và hiển thị. |
 | Override | Cấu hình riêng của một thợ, thay thế một số giá trị mặc định. |
 | Live payout preview | Phần xem trước phép tính cho 45 booking mẫu; không thực hiện payout. |
@@ -190,9 +190,9 @@ flowchart TD
 
 **Acceptance Criteria — hiện có:**
 
-1. Cả hai form có booking turn credit mặc định và bốn khoảng dịch vụ theo các mốc tiền đã lưu. Calendar cho sửa số lượt, hiển thị nhãn khoảng tiền và có liên kết mở Weighted Turn Settings tại Turn Board để chỉnh mốc tiền.
+1. Cả hai form có booking turn credit mặc định và bốn khoảng dịch vụ theo các mốc tiền đã lưu. Calendar cho sửa số lượt, hiển thị nhãn khoảng tiền và có liên kết mở Weighted Turn Settings tại Turn Board để chỉnh Up to của ba khoảng đầu. From tự tính, chỉ đọc; khoảng cuối có Up to là No limit.
 2. Mặc định bốn khoảng là $0–29.99, $30–69.99, $70–109.99, $110+; lượt dịch vụ lần lượt là 0.5, 1, 1.5, 2; lượt booking là 0.5. Cấu hình cũ chưa có mốc tiền vẫn giữ số lượt đã lưu và dùng các khoảng mặc định này.
-3. Save Rules lưu ba mốc tiền cùng các mức lượt. Save policy lưu booking turn credit và bốn mức lượt dịch vụ, giữ nguyên các mốc tiền tùy chỉnh. Có liên kết mở trực tiếp form ở màn hình còn lại; liên kết không tự lưu bản đang chỉnh.
+3. Save Rules lưu các khoảng tiền theo ba giá trị Up to cùng các mức lượt. Save policy lưu booking turn credit và bốn mức lượt dịch vụ, giữ nguyên các khoảng tiền tùy chỉnh. Có liên kết mở trực tiếp form ở màn hình còn lại; liên kết không tự lưu bản đang chỉnh.
 4. Các trang cùng salon trên cùng địa chỉ ứng dụng và trình duyệt nhận giá trị đã lưu, kể cả khi tải lại. Tab đang mở nhận cập nhật cho các ô lượt chung và khoảng tiền; các trường thưởng và override đang sửa vẫn giữ nguyên.
 5. Cancel hoặc đóng form không lưu bản chỉnh sửa. Mở lại form lấy giá trị đã lưu gần nhất.
 6. Ô trống, số âm hoặc số không hữu hạn bị từ chối. Lỗi lưu trữ giữ form mở và thông báo thất bại.
@@ -295,7 +295,7 @@ A: Chưa. Prototype hiện áp dụng ngay khi Save policy.
 A: Chưa. Override chỉ hiển thị sáu thợ mẫu và dữ liệu mới lưu trong phiên.
 
 **Q: Weighted Turn Settings có chỉnh được lượt booking không?**
-A: Có. Cả hai màn hình chỉnh cùng lượt booking mặc định và bốn mức lượt dịch vụ. Các mốc tiền được chỉnh trong Weighted Turn Settings tại Turn Board; Calendar hiển thị khoảng đã lưu và giữ nguyên các mốc khi Save policy. Lượt riêng của thợ vẫn được cấu hình trong Booking Incentive Policy; chỉ cấu hình chung được lưu qua lần tải lại trang.
+A: Có. Cả hai màn hình chỉnh cùng lượt booking mặc định và bốn mức lượt dịch vụ. Up to của ba khoảng đầu được chỉnh trong Weighted Turn Settings tại Turn Board; From tự tính. Calendar hiển thị khoảng đã lưu và giữ nguyên các khoảng khi Save policy. Lượt riêng của thợ vẫn được cấu hình trong Booking Incentive Policy; chỉ cấu hình chung được lưu qua lần tải lại trang.
 
 ### Related Features
 

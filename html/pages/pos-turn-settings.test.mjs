@@ -186,26 +186,26 @@ test('changing service weights preserves existing Turn Grid credits after rerend
   assert.equal(app.d.querySelector('#add-turn-credit').value, '8');
 });
 
-test('editable amount ranges preview drafts and apply exact cent boundaries after saving and reloading', t => {
+test('editable Up to amounts include their boundary and persist after saving and reloading', t => {
   const app = boot('pos-front-desk-turn-board.html'); t.after(() => app.w.close());
   app.w.setBoardMode('grid');
   const recorded = app.d.querySelector('.turn-cell.done').textContent;
   app.w.openTurnRules();
-  const thresholds = [...app.d.querySelectorAll('[data-service-threshold]')];
-  assert.equal(thresholds.length, 3, 'starting amounts for the upper three ranges can be edited');
+  const thresholds = [...app.d.querySelectorAll('[data-service-upper-bound]')];
+  assert.equal(thresholds.length, 3, 'Up to amounts for the first three ranges can be edited');
   thresholds.forEach((input, index) => { input.value = ['50.25', '90', '150'][index]; });
   thresholds[0].dispatchEvent(new app.w.Event('input', {bubbles: true}));
-  assert.equal(app.d.querySelector('[data-service-range-end="0"]').textContent, '$50.24');
+  assert.equal(app.d.querySelector('[data-service-range-start="0"]').textContent, '$50.26');
   assert.match(app.d.querySelector('#turn-rules-preview-result').textContent, /0\.5 turns/);
   assert.equal(app.w.calculateTurnCredit(45), 1, 'a preview must not apply an unsaved rule');
   app.w.saveTurnRules();
   assert.equal(app.d.querySelector('#turn-rules-modal').classList.contains('show'), false);
   const reloaded = boot('pos-front-desk-turn-board.html', saved(app)); t.after(() => reloaded.w.close());
-  for (const [amount, credit] of [[0, 0.5], [50.24, 0.5], [50.25, 1], [89.99, 1], [90, 1.5], [149.99, 1.5], [150, 2]]) {
+  for (const [amount, credit] of [[0, 0.5], [50.25, 0.5], [50.26, 1], [90, 1], [90.01, 1.5], [150, 1.5], [150.01, 2]]) {
     assert.equal(reloaded.w.calculateTurnCredit(amount), credit, `credit for $${amount}`);
   }
   reloaded.w.openTurnRules();
-  assert.equal(reloaded.d.querySelector('[data-service-threshold]').value, '50.25');
+  assert.equal(reloaded.d.querySelector('[data-service-upper-bound]').value, '50.25');
   app.w.renderTurnBoard();
   assert.equal(app.d.querySelector('.turn-cell.done').textContent, recorded);
   app.w.openAddTurn(0);
@@ -216,10 +216,10 @@ test('editable amount ranges preview drafts and apply exact cent boundaries afte
 test('invalid or cancelled range edits never replace saved rules and storage errors keep the draft open', t => {
   const app = boot('pos-front-desk-turn-board.html'); t.after(() => app.w.close());
   app.w.openTurnRules();
-  const input = app.d.querySelector('[data-service-threshold]');
+  const input = app.d.querySelector('[data-service-upper-bound]');
   assert.ok(input, 'the amount field is available');
   const original = JSON.stringify(app.w.NEXORA_TURN_SETTINGS.load());
-  for (const invalid of ['', '-1', '0', '70', '71', '30.001', 'Infinity']) {
+  for (const invalid of ['', '-1', '69.99', '70', '30.001', '-0.001', 'Infinity', '1e100']) {
     input.value = invalid;
     input.dispatchEvent(new app.w.Event('input', {bubbles: true}));
     app.w.saveTurnRules();
@@ -230,7 +230,7 @@ test('invalid or cancelled range edits never replace saved rules and storage err
   input.value = '50';
   app.d.querySelector('#turn-rules-modal .modal-actions .btn').click();
   app.w.openTurnRules();
-  assert.equal(input.value, '30');
+  assert.equal(input.value, '29.99');
   input.value = '50';
   app.w.Storage.prototype.setItem = () => { throw new Error('Storage full'); };
   app.w.saveTurnRules();
@@ -274,4 +274,23 @@ test('old saved credits migrate to default amounts and malformed ranges fall bac
     const broken = boot('pos-front-desk-turn-board.html', {[key]: JSON.stringify({...old, serviceThresholds: thresholds})});
     try { assert.equal(broken.w.calculateTurnCredit(30), 1); } finally { broken.w.close(); }
   }
+});
+
+
+test('Up to accepts zero and decimal cents without shifting the inclusive boundary', t => {
+  const app = boot('pos-front-desk-turn-board.html'); t.after(() => app.w.close());
+  app.w.openTurnRules();
+  const inputs = [...app.d.querySelectorAll('[data-service-upper-bound]')];
+  assert.equal(inputs.length, 3);
+  inputs.forEach((input, index) => { input.value = ['0', '0.29', '0.58'][index]; });
+  inputs[0].dispatchEvent(new app.w.Event('input', {bubbles: true}));
+  assert.deepEqual([...app.d.querySelectorAll('[data-service-range-start]')].map(output => output.textContent), ['$0.01', '$0.30', '$0.59']);
+  app.d.querySelector('#turn-rules-form button[type="submit"]').click();
+  assert.equal(app.d.querySelector('#turn-rules-modal').classList.contains('show'), false);
+  for (const [amount, credit] of [[0, 0.5], [0.01, 1], [0.29, 1], [0.30, 1.5], [0.58, 1.5], [0.59, 2]]) {
+    assert.equal(app.w.calculateTurnCredit(amount), credit, `credit for $${amount}`);
+  }
+  app.w.openTurnRules();
+  assert.deepEqual(inputs.map(input => input.value), ['0.00', '0.29', '0.58']);
+  assert.deepEqual(app.errors, []);
 });
