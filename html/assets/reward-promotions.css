@@ -31,8 +31,7 @@
 .template-art{position:relative;isolation:isolate;overflow:hidden;display:flex;align-items:center;justify-content:flex-start;gap:9px;min-height:52px;margin:10px 10px 10px;padding:11px 12px;border-radius:8px;color:var(--promo-brand);text-align:left}
 .template-art::before,.promo-art:not(.image-art)::before{content:none}
 .template-art::after,.promo-art:not(.image-art)::after{content:none}
-.template-art>.promo-icon,.template-art>[data-icon]{width:20px;height:20px;flex-shrink:0}
-.template-art [data-icon] .promo-icon{width:20px;height:20px}
+.template-symbol{display:inline-flex;align-items:center;justify-content:center;flex:0 0 26px;width:26px;font-size:24px;line-height:1;color:var(--promo-ink);font-family:"Apple Color Emoji","Segoe UI Emoji","Noto Color Emoji",sans-serif}
 .template-art strong{font-size:14px;font-weight:500;letter-spacing:0;line-height:1.35;overflow-wrap:anywhere}
 .promo-template>h3{font-size:13px;font-weight:600;line-height:1.4;margin:0 14px 5px;overflow-wrap:anywhere}
 .promo-template>p{font-size:11px;color:var(--promo-muted);line-height:1.5;margin:0 14px 10px;overflow-wrap:anywhere}
