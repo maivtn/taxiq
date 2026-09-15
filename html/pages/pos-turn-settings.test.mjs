@@ -305,13 +305,15 @@ test('adding multiple ranges preserves edits and saves their inclusive limits an
   assert.equal(app.d.querySelectorAll('[data-service-weight]').length, 5);
   assert.equal(app.d.querySelector('#turn-rules-count').textContent, '5 ranges');
   assert.equal(app.d.querySelector('[data-service-weight="0"]').value, '0.25');
+  assert.equal(app.d.querySelector('[data-service-weight="4"]').value, '2.5', 'new range earns half a turn more than the last range');
   assert.equal(app.d.querySelector('[data-service-upper-bound="3"]').value, '');
   app.w.saveTurnRules();
   assert.ok(app.d.querySelector('#turn-rules-modal').classList.contains('show'), 'new range requires its Up to amount');
   assert.equal(app.w.NEXORA_TURN_SETTINGS.load().serviceWeights.length, 4);
   app.d.querySelector('[data-service-upper-bound="3"]').value = '149.99';
-  app.d.querySelector('[data-service-weight="4"]').value = '2.5';
+  app.d.querySelector('[data-service-weight="4"]').value = '2.75';
   add.click();
+  assert.equal(app.d.querySelector('[data-service-weight="5"]').value, '3.25', 'the next suggestion follows the edited draft credit');
   app.d.querySelector('[data-service-upper-bound="4"]').value = '199.99';
   app.d.querySelector('[data-service-weight="5"]').value = '3';
   const preview = app.d.querySelector('#turn-rules-preview-amount');
@@ -323,10 +325,23 @@ test('adding multiple ranges preserves edits and saves their inclusive limits an
   reloaded.w.openTurnRules();
   assert.equal(reloaded.d.querySelectorAll('[data-service-weight]').length, 6);
   assert.equal(reloaded.d.querySelectorAll('.turn-range-unlimited').length, 1);
-  for (const [amount, credit] of [[20, 0.25], [149.99, 2], [150, 2.5], [199.99, 2.5], [200, 3]]) {
+  for (const [amount, credit] of [[20, 0.25], [149.99, 2], [150, 2.75], [199.99, 2.75], [200, 3]]) {
     assert.equal(reloaded.w.calculateTurnCredit(amount), credit, `credit for $${amount}`);
   }
   assert.deepEqual(app.errors, []); assert.deepEqual(reloaded.errors, []);
+});
+
+test('new range credit suggestions handle zero and decimals while keeping invalid drafts unsaved', t => {
+  const app = boot('pos-front-desk-turn-board.html'); t.after(() => app.w.close());
+  for (const [lastCredit, expected] of [['0', '0.5'], ['0.57', '1.07'], ['', ''], ['-1', '']]) {
+    app.w.openTurnRules();
+    app.d.querySelector('[data-service-weight="3"]').value = lastCredit;
+    app.d.querySelector('#turn-rules-add-range').click();
+    assert.equal(app.d.querySelector('[data-service-weight="4"]').value, expected);
+    assert.equal(app.d.querySelector('[data-service-weight="3"]').value, lastCredit);
+    assert.equal(app.w.NEXORA_TURN_SETTINGS.load().serviceWeights.length, 4);
+  }
+  assert.deepEqual(app.errors, []);
 });
 
 test('removing ranges merges coverage, cancel restores saved rows, and a single unlimited range is valid', t => {
@@ -354,6 +369,9 @@ test('removing ranges merges coverage, cancel restores saved rows, and a single 
   app.d.querySelector('#turn-rules-add-range').click();
   assert.equal(app.d.querySelectorAll('[data-service-weight]').length, 2);
   assert.equal(app.d.querySelector('[data-service-upper-bound="0"]').value, '');
+  assert.equal(app.d.querySelector('[data-service-weight="1"]').value, '2.5');
+  app.d.querySelector('#turn-rules-add-range').click();
+  assert.equal(app.d.querySelector('[data-service-weight="2"]').value, '3');
   assert.deepEqual(app.errors, []);
 });
 

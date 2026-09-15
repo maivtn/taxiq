@@ -66,7 +66,7 @@
 7. Ô bắt buộc bị trống, lượt không hợp lệ hoặc mốc tiền sai thứ tự/độ chính xác khiến thao tác lưu bị từ chối. Form giữ mở, hiển thị thông báo lỗi và không ghi đè cấu hình cũ.
 8. Không thể ghi vào bộ nhớ trình duyệt thì báo lỗi lưu trữ và giữ form mở. Người quản lý có thể thử lưu lại sau khi xử lý nguyên nhân.
 9. Cancel, nút ×, bấm nền ngoài modal hoặc Escape đóng form mà không lưu, gồm cả việc thêm hoặc xóa khoảng. Mở lại lấy danh sách và giá trị đã lưu gần nhất.
-10. Add range tách khoảng cuối: Up to của khoảng cuối hiện tại chuyển thành ô trống bắt buộc, đồng thời thêm một khoảng No limit mới với cùng số lượt đang nhập ở khoảng trước đó. Người quản lý nhập Up to còn thiếu và chỉnh lượt trước khi lưu.
+10. Add range tách khoảng cuối: Up to của khoảng cuối hiện tại chuyển thành ô trống bắt buộc, đồng thời thêm một khoảng No limit mới với số lượt bằng lượt đang nhập ở khoảng cuối trước đó cộng 0.5, ví dụ 2 → 2.5 → 3. Số lượt gợi ý vẫn chỉnh được; nếu lượt trước đó trống hoặc không hợp lệ, ô lượt mới để trống và cần được nhập hợp lệ trước khi lưu. Người quản lý nhập Up to còn thiếu và kiểm tra lượt trước khi lưu.
 11. Xóa một khoảng có Up to sẽ gộp phần giá trị của nó vào khoảng tiếp theo, giữ số lượt của khoảng tiếp theo. Xóa khoảng cuối sẽ bỏ ranh giới cuối, khiến khoảng trước đó trở thành No limit và giữ số lượt của khoảng trước đó. Khi chỉ còn một khoảng, không thể xóa tiếp; khoảng này bao phủ từ $0 đến No limit.
 
 **Bộ cấu hình mặc định:**

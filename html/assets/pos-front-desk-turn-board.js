@@ -135,8 +135,9 @@ function readTurnRuleRows(){
 }
 function addTurnRuleRange(){
  const draft=readTurnRuleRows();
+ const lastCredit=window.NEXORA_TURN_SETTINGS.numberFrom(document.querySelectorAll('[data-service-weight]').item(draft.weights.length-1));
  draft.upperBounds.push('');
- draft.weights.push(draft.weights.at(-1));
+ draft.weights.push(Number.isFinite(lastCredit)&&lastCredit>=0?Number((lastCredit+0.5).toPrecision(15)):'');
  renderTurnRuleRows(draft.weights,draft.upperBounds);
  updateTurnRulesPreview();
  document.querySelectorAll('[data-service-upper-bound]').item(draft.upperBounds.length-1).focus();
