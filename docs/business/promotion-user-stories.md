@@ -528,6 +528,6 @@ Không. Preview & print poster mở chức năng in của trình duyệt; có th
 - [Trang Promotions](../../html/pages/reward-promotions.html) — đối chiếu giao diện.
 - [Luồng và dữ liệu Promotions](../../html/assets/reward-promotions.js) — đối chiếu hành vi.
 - [Lưu và đọc ảnh banner](../../html/assets/promotion-banner-assets.js).
-- [Kiểm thử Promotions](../../html/pages/reward-promotions.test.mjs) và [kiểm thử ảnh banner](../../html/assets/promotion-banner-assets.test.cjs).
+- [Kiểm thử Promotions](../../tests/html/pages/reward-promotions.test.mjs) và [kiểm thử ảnh banner](../../tests/html/assets/promotion-banner-assets.test.cjs).
 - [Quy tắc giao diện hệ thống](../../nexora-design-system-colors.md#form-controls).
 - [Customer Rewards App](customer-rewards-app.md) — luồng phần thưởng phía khách hàng, cần đối chiếu riêng khi tích hợp.

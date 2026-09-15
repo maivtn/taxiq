@@ -280,4 +280,4 @@ Không. Hệ thống hiển thị thông báo thành công; Front Desk mở Tick
 - [Màn hình Front Desk](../../html/pages/pos-front-desk.html) — điểm vào Estimate.
 - [Màn hình Tickets](../../html/pages/pos-front-desk-tickets.html) — tiếp tục phục vụ sau check-in.
 
-**Nguồn đối chiếu nội bộ:** [Estimate](../../html/assets/pos-estimate.js), [tích hợp Front Desk](../../html/assets/front-desk-estimate.js), [Tickets](../../html/assets/pos-front-desk-tickets.js), [kiểm thử Estimate](../../html/assets/pos-estimate.test.cjs), [kiểm thử luồng Front Desk](../../html/pages/pos-front-desk-estimate.test.mjs).
+**Nguồn đối chiếu nội bộ:** [Estimate](../../html/assets/pos-estimate.js), [tích hợp Front Desk](../../html/assets/front-desk-estimate.js), [Tickets](../../html/assets/pos-front-desk-tickets.js), [kiểm thử Estimate](../../tests/html/assets/pos-estimate.test.cjs), [kiểm thử luồng Front Desk](../../tests/html/pages/pos-front-desk-estimate.test.mjs).

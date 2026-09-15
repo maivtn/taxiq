@@ -1,0 +1,148 @@
+const test = require('node:test');
+const assert = require('node:assert/strict');
+const {
+  SALON_ID,
+  DEFAULT_CATALOG,
+  MENU_SERVICE_SOURCE,
+  STORAGE_KEY,
+  seedServicesFromMenuCatalog,
+  findService,
+  findTechnician,
+  normalizeCatalog,
+  loadCatalog,
+  saveCatalog,
+  storageAvailable,
+} = require('../../../html/assets/salon-data.js');
+const serviceCatalog = require('../../../html/assets/appointment-service-catalog.js');
+const menu = require('../../../html/menu/menu.json');
+
+function storage(seed = {}) {
+  const values = new Map(Object.entries(seed));
+  return {
+    getItem(key) { return values.has(key) ? values.get(key) : null; },
+    setItem(key, value) { values.set(key, String(value)); },
+    removeItem(key) { values.delete(key); },
+  };
+}
+
+test('default catalog is scoped to one salon with unique services and technicians', () => {
+  assert.equal(SALON_ID, 'bitcoin-nail-bar-houston');
+  assert.equal(STORAGE_KEY, 'nexora:salon-data:v1:bitcoin-nail-bar-houston');
+  assert.equal(DEFAULT_CATALOG.salon.id, SALON_ID);
+  assert.ok(Array.isArray(DEFAULT_CATALOG.categories));
+  assert.equal(new Set(DEFAULT_CATALOG.categories.map((item) => item.id)).size, DEFAULT_CATALOG.categories.length);
+  assert.equal(new Set(DEFAULT_CATALOG.services.map((item) => item.id)).size, DEFAULT_CATALOG.services.length);
+  assert.equal(new Set(DEFAULT_CATALOG.technicians.map((item) => item.id)).size, DEFAULT_CATALOG.technicians.length);
+  assert.ok(DEFAULT_CATALOG.categories.some((item) => item.name === 'Pedicure'));
+  assert.ok(DEFAULT_CATALOG.services.some((item) => item.name === 'Eyelash'));
+  assert.ok(DEFAULT_CATALOG.technicians.some((item) => item.name === 'Mai P.'));
+});
+
+test('lookup resolves canonical IDs, names, and aliases', () => {
+  assert.equal(findTechnician(DEFAULT_CATALOG, 'Kim N.').id, 't2');
+  assert.equal(findTechnician(DEFAULT_CATALOG, 't8').name, 'Mai P.');
+  assert.equal(findService(DEFAULT_CATALOG, 'Classic Pedicure').id, 'pedi');
+  assert.equal(findService(DEFAULT_CATALOG, 'missing-service'), null);
+});
+
+test('normalizeCatalog removes duplicate IDs and supplies safe defaults', () => {
+  const catalog = normalizeCatalog({
+    salon: { id: SALON_ID, name: 'Test Salon', location: 'Houston, TX' },
+    categories: [{ id: 'pedi', name: 'Pedicure' }, { id: 'pedi', name: 'Duplicate' }],
+    services: [{ id: 'pedi', name: 'Pedicure' }, { id: 'pedi', name: 'Duplicate' }],
+    technicians: [{ id: 't1', name: 'Tina' }, { id: 't1', name: 'Duplicate' }],
+  });
+  assert.ok(catalog.categories.some((item) => item.name === 'Pedicure'));
+  assert.equal(catalog.services.length, 1);
+  assert.equal(catalog.technicians.length, 1);
+  assert.equal(catalog.services[0].active, true);
+  assert.deepEqual(catalog.technicians[0].skills, []);
+});
+
+test('seeds editable salon services from the menu JSON catalog once', () => {
+  const menuCatalog = serviceCatalog.normalize(menu);
+  const seeded = seedServicesFromMenuCatalog(DEFAULT_CATALOG, menuCatalog);
+
+  assert.equal(seeded.seeded, true);
+  assert.ok(seeded.catalog.categories.some((category) => category.id === 'pedicure' && category.name === 'Pedicure' && category.source === MENU_SERVICE_SOURCE));
+  assert.ok(seeded.catalog.categories.some((category) => category.id === 'additional' && category.kind === 'add-on'));
+  assert.equal(seeded.catalog.services.length, 96);
+  assert.deepEqual({
+    id: seeded.catalog.services[0].id,
+    name: seeded.catalog.services[0].name,
+    categoryId: seeded.catalog.services[0].categoryId,
+    categoryName: seeded.catalog.services[0].categoryName,
+    priceLabel: seeded.catalog.services[0].priceLabel,
+    price: seeded.catalog.services[0].price,
+    durationMin: seeded.catalog.services[0].durationMin,
+    requiredSkill: seeded.catalog.services[0].requiredSkill,
+    source: seeded.catalog.services[0].source,
+  }, {
+    id: 'pedicure-president-7-star-0',
+    name: 'President 7 Star',
+    categoryId: 'pedicure',
+    categoryName: 'Pedicure',
+    priceLabel: '$499',
+    price: 499,
+    durationMin: 70,
+    requiredSkill: 'Pedicure',
+    source: MENU_SERVICE_SOURCE,
+  });
+
+  seeded.catalog.services[0].price = 488;
+  const secondPass = seedServicesFromMenuCatalog(seeded.catalog, menuCatalog);
+  assert.equal(secondPass.seeded, false);
+  assert.equal(secondPass.catalog.services[0].price, 488);
+});
+
+test('catalog persistence falls back to defaults for missing or invalid JSON', () => {
+  const missing = loadCatalog(storage());
+  assert.equal(missing.salon.id, SALON_ID);
+
+  const invalid = loadCatalog(storage({
+    ['nexora:salon-data:v1:' + SALON_ID]: '{bad json',
+  }));
+  assert.equal(invalid.salon.id, SALON_ID);
+});
+
+test('saveCatalog writes a normalized clone under the salon-scoped key', () => {
+  const target = storage();
+  const result = saveCatalog({
+    salon: { id: SALON_ID, name: 'Saved Salon', location: 'Houston, TX' },
+    categories: [{ id: 'custom', name: 'Custom Category', kind: 'service' }],
+    services: [], technicians: [],
+  }, target);
+  assert.equal(result.salon.name, 'Saved Salon');
+  assert.equal(result.categories[0].name, 'Custom Category');
+  assert.equal(loadCatalog(target).categories[0].name, 'Custom Category');
+  assert.match(target.getItem('nexora:salon-data:v1:' + SALON_ID), /Saved Salon/);
+});
+
+test('technician roster changes persist and inactive technicians stay resolvable', () => {
+  const target = storage();
+  const catalog = saveCatalog({
+    salon: DEFAULT_CATALOG.salon,
+    services: DEFAULT_CATALOG.services,
+    technicians: DEFAULT_CATALOG.technicians.map((technician) => technician.id === 't8'
+      ? { ...technician, name: 'Mai Updated', phone: '(832) 555-0188' }
+      : technician.id === 't7'
+        ? { ...technician, active: false }
+        : technician),
+  }, target);
+  const loaded = loadCatalog(target);
+  assert.equal(findTechnician(loaded, 't8').name, 'Mai Updated');
+  assert.equal(findTechnician(loaded, 't8').phone, '(832) 555-0188');
+  assert.equal(findTechnician(loaded, 't7').active, false);
+  assert.deepEqual(loaded.technicians.filter((technician) => technician.active).map((technician) => technician.id).includes('t7'), false);
+  assert.equal(catalog.technicians.length, DEFAULT_CATALOG.technicians.length);
+});
+
+test('catalog storage failures fall back without throwing', () => {
+  const blocked = {
+    getItem() { throw new Error('storage blocked'); },
+    setItem() { throw new Error('storage blocked'); },
+  };
+  assert.equal(storageAvailable(blocked), false);
+  assert.equal(loadCatalog(blocked).salon.id, SALON_ID);
+  assert.equal(saveCatalog(DEFAULT_CATALOG, blocked).salon.id, SALON_ID);
+});

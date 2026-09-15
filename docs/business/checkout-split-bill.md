@@ -658,4 +658,4 @@ Có trong báo cáo tiền thu theo thời điểm nhận. Báo cáo dịch vụ
 - [Techs Pay Daily](techs-pay-daily.md).
 - [Màn hình Tickets](../../html/pages/pos-front-desk-tickets.html).
 
-**Nguồn đối chiếu triển khai:** [Workspace checkout](../../html/assets/ticket-workspace.js), [tích hợp Tickets](../../html/assets/pos-front-desk-tickets.js), [kiểm thử workspace](../../html/assets/ticket-workspace.test.cjs), [kiểm thử lưu và mở lại Tickets](../../html/pages/pos-front-desk-workspace.test.mjs). Nguồn này dùng để xác định khoảng cách triển khai; yêu cầu Draft 2 theo bản đề xuất nghiệp vụ.
+**Nguồn đối chiếu triển khai:** [Workspace checkout](../../html/assets/ticket-workspace.js), [tích hợp Tickets](../../html/assets/pos-front-desk-tickets.js), [kiểm thử workspace](../../tests/html/assets/ticket-workspace.test.cjs), [kiểm thử lưu và mở lại Tickets](../../tests/html/pages/pos-front-desk-workspace.test.mjs). Nguồn này dùng để xác định khoảng cách triển khai; yêu cầu Draft 2 theo bản đề xuất nghiệp vụ.

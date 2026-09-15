@@ -1,0 +1,533 @@
+import assert from 'node:assert/strict';
+import { readFileSync } from 'node:fs';
+import test from 'node:test';
+import { JSDOM } from 'jsdom';
+
+const SOURCE_DIR = new URL('../../../html/pages/', import.meta.url);
+
+const PAGE_URL = new URL('./staff-work-orders.html', SOURCE_DIR);
+const PAGE_HTML = readFileSync(PAGE_URL, 'utf8');
+
+function loadPage(serviceCatalog = null, requiredIds = []) {
+  const dom = new JSDOM(PAGE_HTML, {
+    pretendToBeVisual: true,
+    runScripts: 'dangerously',
+    url: 'https://staff.nexora.test/html/pages/staff-work-orders.html',
+    beforeParse(window) {
+      window.scrollTo = () => {};
+      window.eval(readFileSync(new URL('../assets/service-approval-settings.js', SOURCE_DIR), 'utf8'));
+      window.NEXORA_SERVICE_APPROVAL_SETTINGS.save('golden', requiredIds);
+      window.NEXORA_APPOINTMENT_SERVICE_CATALOG = {
+        load() { return serviceCatalog ? Promise.resolve(serviceCatalog) : new Promise(() => {}); },
+      };
+    },
+  });
+
+  return { dom, window: dom.window };
+}
+
+const SERVICE_CATALOG = {
+  categories: [
+    {
+      id: 'nails',
+      name: 'Nails',
+      services: [
+        { id: 'polish-change', name: 'Polish Change', type: 'service', price: 15, durationMin: 20 },
+        { id: 'nail-art', name: 'Nail Art', type: 'service', price: 12, durationMin: 15 },
+      ],
+    },
+    {
+      id: 'pedicure',
+      name: 'Pedicure',
+      services: [
+        { id: 'spa-pedicure', name: 'Spa Pedicure', type: 'service', price: 55, durationMin: 45 },
+      ],
+    },
+  ],
+};
+
+async function openAddServiceModal(window) {
+  click(window, '[data-select-salon="golden"]');
+  click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+  await new Promise((resolve) => window.setTimeout(resolve, 0));
+  click(window, '[data-request-service="WO-1051"]');
+}
+
+async function requestServiceChange(window, serviceId = 'polish-change') {
+  click(window, '[data-select-salon="golden"]');
+  click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+  await new Promise((resolve) => window.setTimeout(resolve, 0));
+  click(window, '[data-edit-service="WO-1051"]');
+  click(window, `[data-catalog-service="${serviceId}"]`);
+  click(window, '[data-confirm-service-picker]');
+}
+
+function click(window, selector) {
+  const element = window.document.querySelector(selector);
+  assert.ok(element, `Expected ${selector} to exist`);
+  element.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
+  return element;
+}
+
+test('highlights the most recently assigned ticket without duplicating it in Up next', () => {
+  const { dom, window } = loadPage();
+
+  click(window, '[data-select-salon="golden"]');
+
+  const featured = window.document.querySelector('[data-featured-ticket-id]');
+  const upcomingIds = [...window.document.querySelectorAll('[data-orders-list] [data-ticket-id]')]
+    .map((ticket) => ticket.getAttribute('data-ticket-id'));
+
+  assert.ok(featured, 'Newest assigned ticket must be highlighted');
+  assert.equal(featured.getAttribute('data-featured-ticket-id'), 'WO-1051');
+  assert.match(featured.textContent, /New assignment/);
+  assert.match(featured.textContent, /Sophia Martinez/);
+  assert.deepEqual(upcomingIds, ['WO-1048']);
+
+  dom.window.close();
+});
+
+test('View ticket opens the highlighted assignment in the existing detail flow', () => {
+  const { dom, window } = loadPage();
+
+  click(window, '[data-select-salon="golden"]');
+  click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+
+  assert.equal(window.document.querySelector('[data-workspace]').classList.contains('is-detail-mode'), true);
+  assert.equal(window.document.querySelector('[data-detail-panel] .detail-code')?.textContent.trim(), 'WO-1051');
+
+  dom.window.close();
+});
+
+test('demo ticket requires acceptance before starting and keeps acceptance when reopened', async () => {
+  const { dom, window } = loadPage();
+  const { document } = window;
+
+  try {
+    click(window, '[data-select-salon="golden"]');
+    click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+
+    assert.ok(document.querySelector('[data-accept-assignment="WO-1051"]'));
+    assert.equal(document.querySelector('[data-start-ticket="WO-1051"]'), null);
+
+    click(window, '[data-accept-assignment="WO-1051"]');
+    await new Promise((resolve) => window.setTimeout(resolve, 0));
+    assert.equal(document.querySelector('[data-accept-assignment="WO-1051"]'), null);
+    assert.ok(document.querySelector('[data-start-ticket="WO-1051"]'));
+    assert.equal(document.querySelector('[data-status-count="assigned"]').textContent.trim(), '2');
+
+    click(window, '[data-detail-back]');
+    click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+    assert.equal(document.querySelector('[data-accept-assignment="WO-1051"]'), null);
+    assert.ok(document.querySelector('[data-start-ticket="WO-1051"]'));
+  } finally {
+    dom.window.close();
+  }
+});
+
+test('starting the highlighted ticket promotes the next assigned ticket', async () => {
+  const { dom, window } = loadPage();
+
+  click(window, '[data-select-salon="golden"]');
+  click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+  click(window, '[data-accept-assignment="WO-1051"]');
+  await new Promise((resolve) => window.setTimeout(resolve, 0));
+  click(window, '[data-start-ticket="WO-1051"]');
+
+  assert.equal(window.document.querySelector('[data-featured-ticket-id]')?.getAttribute('data-featured-ticket-id'), 'WO-1048');
+  assert.equal(window.document.querySelector('[data-detail-panel] .detail-code')?.textContent.trim(), 'WO-1051');
+
+  dom.window.close();
+});
+
+test('View calendar carries the selected date and salon to My Calendar', () => {
+  const { dom, window } = loadPage();
+
+  click(window, '[data-select-salon="golden"]');
+  const calendarLink = window.document.querySelector('[data-view-calendar]');
+
+  assert.equal(calendarLink?.getAttribute('href'), `pos-calendar.html?date=${window.document.querySelector('[data-date-filter]')?.value}&salon=golden`);
+
+  dom.window.close();
+});
+
+test('Today returns the date filter to the current day', () => {
+  const { dom, window } = loadPage();
+
+  click(window, '[data-select-salon="golden"]');
+  const dateInput = window.document.querySelector('[data-date-filter]');
+  const today = dateInput?.value;
+
+  click(window, '[data-date-step="1"]');
+  assert.notEqual(dateInput?.value, today);
+
+  click(window, '[data-date-today]');
+  assert.equal(dateInput?.value, today);
+  assert.equal(window.document.querySelector('[data-date-label]')?.textContent.trim(), 'Today');
+
+  dom.window.close();
+});
+
+test('service search icon stays inside the input after Lucide renders the SVG', () => {
+  const { dom, window } = loadPage();
+  const { document } = window;
+  const sourceIcon = document.querySelector('.service-picker-search [data-lucide="search"]');
+  const renderedIcon = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+
+  assert.ok(sourceIcon, 'Expected the service search icon to exist');
+  renderedIcon.setAttribute('class', 'lucide lucide-search');
+  sourceIcon.replaceWith(renderedIcon);
+
+  assert.equal(window.getComputedStyle(renderedIcon).position, 'absolute');
+  assert.equal(window.getComputedStyle(renderedIcon).left, '12px');
+  assert.equal(window.getComputedStyle(document.querySelector('[data-service-picker-search]')).paddingLeft, '37px');
+
+  dom.window.close();
+});
+
+test('Add service selects and adds multiple catalog services in one confirmation', async () => {
+  const { dom, window } = loadPage(SERVICE_CATALOG, ['polish-change', 'nail-art']);
+  await openAddServiceModal(window);
+
+  click(window, '[data-catalog-service="polish-change"]');
+  click(window, '[data-catalog-service="nail-art"]');
+
+  assert.equal(window.document.querySelector('[data-confirm-service-picker]')?.textContent.trim(), 'Add services (2)');
+  assert.equal(window.document.querySelectorAll('[data-catalog-service][aria-pressed="true"]').length, 2);
+
+  click(window, '[data-confirm-service-picker]');
+  const serviceNames = [...window.document.querySelectorAll('[data-detail-panel] .service-name')].map((element) => element.textContent);
+  const pendingNames = [...window.document.querySelectorAll('[data-customer-approval] .customer-approval-chip-name')].map((element) => element.textContent);
+  assert.equal(serviceNames.filter((name) => name.includes('Polish Change')).length, 0);
+  assert.equal(serviceNames.filter((name) => name.includes('Nail Art')).length, 0);
+  assert.equal(pendingNames.filter((name) => name.includes('Polish Change')).length, 1);
+  assert.equal(pendingNames.filter((name) => name.includes('Nail Art')).length, 1);
+
+  dom.window.close();
+});
+
+test('Add service permits the same catalog service again in a later confirmation', async () => {
+  const { dom, window } = loadPage(SERVICE_CATALOG, ['polish-change', 'nail-art']);
+  await openAddServiceModal(window);
+
+  click(window, '[data-catalog-service="polish-change"]');
+  click(window, '[data-confirm-service-picker]');
+  click(window, '[data-request-service="WO-1051"]');
+  click(window, '[data-catalog-service="polish-change"]');
+  click(window, '[data-confirm-service-picker]');
+
+  const pendingNames = [...window.document.querySelectorAll('[data-customer-approval] .customer-approval-chip-name')].map((element) => element.textContent);
+  assert.equal(pendingNames.filter((name) => name.includes('Polish Change')).length, 2);
+
+  dom.window.close();
+});
+
+test('approved pending services move into the main service table', async () => {
+  const { dom, window } = loadPage(SERVICE_CATALOG, ['polish-change', 'nail-art']);
+  await openAddServiceModal(window);
+
+  click(window, '[data-catalog-service="polish-change"]');
+  click(window, '[data-confirm-service-picker]');
+  const approvalCode = window.document.querySelector('[data-approval-code]');
+  approvalCode.value = '0127';
+  click(window, '[data-approve-services="WO-1051"]');
+
+  const serviceNames = [...window.document.querySelectorAll('[data-detail-panel] .service-name')].map((element) => element.textContent);
+  assert.equal(serviceNames.filter((name) => name.includes('Polish Change')).length, 1);
+  assert.equal(window.document.querySelector('[data-customer-approval]'), null);
+
+  dom.window.close();
+});
+
+test('pending service change keeps the current service in the main table', async () => {
+  const { dom, window } = loadPage(SERVICE_CATALOG);
+  await requestServiceChange(window);
+
+  const serviceNames = [...window.document.querySelectorAll('[data-detail-panel] .service-name')].map((element) => element.textContent);
+  assert.equal(serviceNames.filter((name) => name.includes('Acrylic Full Set')).length, 1);
+  assert.equal(serviceNames.filter((name) => name.includes('Polish Change')).length, 0);
+  assert.match(window.document.querySelector('[data-customer-approval] .customer-approval-chip-name')?.textContent || '', /Acrylic Full Set.*Polish Change/);
+  assert.equal(window.document.querySelector('[data-detail-panel] .ticket-total strong')?.textContent.trim(), '$68.00');
+
+  dom.window.close();
+});
+
+test('cancelling a service change restores the current service without rejected rows', async () => {
+  const { dom, window } = loadPage(SERVICE_CATALOG);
+  await requestServiceChange(window);
+
+  click(window, '[data-cancel-service-approval="WO-1051"]');
+
+  const serviceNames = [...window.document.querySelectorAll('[data-detail-panel] .service-name')].map((element) => element.textContent);
+  assert.equal(serviceNames.filter((name) => name.includes('Acrylic Full Set')).length, 1);
+  assert.equal(serviceNames.filter((name) => name.includes('Polish Change')).length, 0);
+  assert.equal(window.document.querySelector('[data-customer-approval]'), null);
+  assert.equal(window.document.querySelectorAll('[data-detail-panel] .approval-pill.is-rejected').length, 0);
+
+  dom.window.close();
+});
+
+test('approving a service change replaces the current service', async () => {
+  const { dom, window } = loadPage(SERVICE_CATALOG);
+  await requestServiceChange(window);
+
+  const approvalCode = window.document.querySelector('[data-approval-code]');
+  approvalCode.value = '0127';
+  click(window, '[data-approve-services="WO-1051"]');
+
+  const serviceNames = [...window.document.querySelectorAll('[data-detail-panel] .service-name')].map((element) => element.textContent);
+  assert.equal(serviceNames.filter((name) => name.includes('Acrylic Full Set')).length, 0);
+  assert.equal(serviceNames.filter((name) => name.includes('Polish Change')).length, 1);
+
+  dom.window.close();
+});
+
+test('cancelling newly added services removes them without rejected rows', async () => {
+  const { dom, window } = loadPage(SERVICE_CATALOG, ['polish-change', 'nail-art']);
+  await openAddServiceModal(window);
+
+  click(window, '[data-catalog-service="polish-change"]');
+  click(window, '[data-confirm-service-picker]');
+  click(window, '[data-cancel-service-approval="WO-1051"]');
+
+  const detailText = window.document.querySelector('[data-detail-panel]')?.textContent || '';
+  assert.doesNotMatch(detailText, /Polish Change/);
+  assert.doesNotMatch(detailText, /REJECTED/i);
+
+  dom.window.close();
+});
+
+test('service rows expose Change and Remove as distinct buttons', () => {
+  const { dom, window } = loadPage();
+
+  click(window, '[data-select-salon="golden"]');
+  click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+  const changeButton = window.document.querySelector('[data-edit-service="WO-1051"]');
+  const removeButton = window.document.querySelector('[data-remove-service="WO-1051"]');
+
+  assert.equal(changeButton?.tagName, 'BUTTON');
+  assert.equal(removeButton?.tagName, 'BUTTON');
+  assert.equal(window.getComputedStyle(changeButton).borderStyle, 'solid');
+  assert.equal(window.getComputedStyle(removeButton).borderStyle, 'solid');
+
+  dom.window.close();
+});
+
+test('confirming service removal deletes it and updates the total without customer approval', () => {
+  const { dom, window } = loadPage();
+  click(window, '[data-select-salon="golden"]');
+  click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+  const prompts = [];
+  window.confirm = message => { prompts.push(message); return true; };
+  click(window, '[data-remove-service="WO-1051"]');
+  assert.equal(prompts.length, 1);
+  assert.match(prompts[0], /Acrylic Full Set/);
+  assert.match(prompts[0], /WO-1051/);
+  assert.equal(window.document.querySelectorAll('[data-detail-panel] .service-card').length, 0);
+  assert.equal(window.document.querySelector('[data-detail-panel] .ticket-total strong').textContent.trim(), '$0.00');
+  assert.equal(window.document.querySelector('[data-customer-approval]'), null);
+  dom.window.close();
+});
+
+test('service categories collapse so opening one closes the previous category', async () => {
+  const { dom, window } = loadPage(SERVICE_CATALOG);
+  await openAddServiceModal(window);
+  const categories = [...window.document.querySelectorAll('[data-service-picker-category]')];
+
+  assert.equal(categories.length, 2);
+  assert.equal(categories.every((category) => category.tagName === 'DETAILS'), true);
+  assert.equal(categories.every((category) => category.open === false), true);
+
+  categories[0].open = true;
+  categories[0].dispatchEvent(new window.Event('toggle'));
+  categories[1].open = true;
+  categories[1].dispatchEvent(new window.Event('toggle'));
+
+  assert.equal(categories[0].open, false);
+  assert.equal(categories[1].open, true);
+
+  dom.window.close();
+});
+
+test('service picker keeps each option compact without duration or category metadata', async () => {
+  const { dom, window } = loadPage(SERVICE_CATALOG);
+  await openAddServiceModal(window);
+
+  assert.equal(window.document.querySelectorAll('.service-picker-meta').length, 0);
+  assert.equal(window.document.querySelector('[data-catalog-service="polish-change"] .service-picker-name')?.textContent.trim(), 'Polish Change');
+  assert.equal(window.document.querySelector('[data-catalog-service="polish-change"] .service-picker-price')?.textContent.trim(), '$15.00');
+
+  dom.window.close();
+});
+
+test('work order details omit legacy add-ons and exclude them from the total', () => {
+  const { dom, window } = loadPage();
+
+  click(window, '[data-select-salon="golden"]');
+  click(window, '[data-status-filter="in-service"]');
+  click(window, '[data-orders-list] [data-ticket-id="WO-1042"]');
+
+  assert.equal(window.document.querySelectorAll('[data-detail-panel] .addon-row').length, 0);
+  assert.equal(window.document.querySelector('[data-detail-panel] .ticket-total strong')?.textContent.trim(), '$42.00');
+
+  dom.window.close();
+});
+
+test('Up next renders a compact readable appointment summary', () => {
+  const { dom, window } = loadPage();
+
+  click(window, '[data-select-salon="golden"]');
+  const upcoming = window.document.querySelector('[data-orders-list] [data-ticket-id="WO-1048"]');
+
+  assert.equal(upcoming?.querySelector('.order-time-value')?.textContent.trim(), '9:30');
+  assert.equal(upcoming?.querySelector('.order-time-period')?.textContent.trim(), 'AM');
+  assert.equal(upcoming?.querySelector('.customer-name')?.textContent.trim(), 'Emma Williams · Deluxe Pedicure');
+  assert.equal(upcoming?.querySelector('.order-service')?.textContent.trim(), '75 min · Station 08');
+
+  dom.window.close();
+});
+
+test('status filters omit All and show live counts with Assigned active by default', () => {
+  const { dom, window } = loadPage();
+
+  click(window, '[data-select-salon="golden"]');
+  const filters = [...window.document.querySelectorAll('[data-status-filter]')];
+
+  assert.deepEqual(filters.map((filter) => filter.getAttribute('data-status-filter')), ['assigned', 'in-service', 'completed']);
+  assert.equal(filters[0].getAttribute('aria-selected'), 'true');
+  assert.deepEqual(filters.map((filter) => filter.querySelector('[data-status-count]')?.textContent.trim()), ['2', '1', '1']);
+
+  dom.window.close();
+});
+
+test('each status chip has its own soft background color', () => {
+  const { dom, window } = loadPage();
+
+  click(window, '[data-select-salon="golden"]');
+  const backgrounds = [...window.document.querySelectorAll('[data-status-filter]')]
+    .map((filter) => window.getComputedStyle(filter).backgroundColor);
+
+  assert.equal(new Set(backgrounds).size, 3);
+
+  dom.window.close();
+});
+
+ test('added services need no approval by default and immediately update the total', async () => {
+  const { dom, window } = loadPage(SERVICE_CATALOG);
+  await openAddServiceModal(window);
+  const before = Number(window.document.querySelector('.ticket-total strong').textContent.replace(/[^0-9.]/g, ''));
+  click(window, '[data-catalog-service="polish-change"]');
+  click(window, '[data-confirm-service-picker]');
+  assert.equal(window.document.querySelector('[data-customer-approval]'), null);
+  assert.match(window.document.querySelector('[data-detail-panel] .services').textContent, /Polish Change/);
+  assert.equal(Number(window.document.querySelector('.ticket-total strong').textContent.replace(/[^0-9.]/g, '')), before + 15);
+  dom.window.close();
+ });
+ test('mixed additions only hold selected services for approval', async () => {
+  const { dom, window } = loadPage(SERVICE_CATALOG, ['nail-art']);
+  await openAddServiceModal(window);
+  click(window, '[data-catalog-service="polish-change"]');
+  click(window, '[data-catalog-service="nail-art"]');
+  click(window, '[data-confirm-service-picker]');
+  assert.match(window.document.querySelector('[data-detail-panel] .services').textContent, /Polish Change/);
+  assert.doesNotMatch(window.document.querySelector('[data-detail-panel] .services').textContent, /Nail Art/);
+  assert.equal(window.document.querySelectorAll('.customer-approval-chip').length, 1);
+  assert.match(window.document.querySelector('.customer-approval-chip').textContent, /Nail Art/);
+  click(window, '[data-cancel-service-approval="WO-1051"]');
+  assert.match(window.document.querySelector('[data-detail-panel] .services').textContent, /Polish Change/);
+  dom.window.close();
+ });
+
+test('a service change rejects incorrect phone digits and accepts the customer last four digits', async () => {
+  const {dom, window} = loadPage(SERVICE_CATALOG);
+  await requestServiceChange(window);
+  window.document.querySelector('[data-approval-code]').value = '9999';
+  click(window, '[data-approve-services="WO-1051"]');
+  assert.equal(window.document.querySelector('[data-approval-error]').hidden, false);
+  assert.match(window.document.querySelector('[data-detail-panel] .services').textContent, /Acrylic Full Set/);
+  window.document.querySelector('[data-approval-code]').value = '0127';
+  click(window, '[data-approve-services="WO-1051"]');
+  assert.equal(window.document.querySelector('[data-customer-approval]'), null);
+  assert.match(window.document.querySelector('[data-detail-panel] .services').textContent, /Polish Change/);
+  dom.window.close();
+});
+
+test('work order reads saved settings again for each addition', async () => {
+  const {dom, window} = loadPage(SERVICE_CATALOG);
+  await openAddServiceModal(window);
+  window.NEXORA_SERVICE_APPROVAL_SETTINGS.save('golden', ['polish-change']);
+  click(window, '[data-catalog-service="polish-change"]');
+  click(window, '[data-confirm-service-picker]');
+  assert.equal(window.document.querySelectorAll('.customer-approval-chip').length, 1);
+  dom.window.close();
+});
+
+for (const required of [false, true]) {
+  test('custom service approval follows the salon setting: ' + required, () => {
+    const {dom, window} = loadPage(null, required ? ['__custom__'] : []);
+    click(window, '[data-select-salon="golden"]');
+    click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+    click(window, '[data-request-custom-service="WO-1051"]');
+    window.document.querySelector('[data-custom-service-name]').value = 'Custom nail repair';
+    window.document.querySelector('[data-custom-service-price]').value = '10';
+    click(window, '[data-confirm-custom-service]');
+    assert.equal(Boolean(window.document.querySelector('[data-customer-approval]')), required);
+    assert.equal(window.document.querySelector('[data-detail-panel] .services').textContent.includes('Custom nail repair'), !required);
+    dom.window.close();
+  });
+}
+
+test('cancelling service removal preserves the service and total', () => {
+  const {dom, window} = loadPage();
+  click(window, '[data-select-salon="golden"]');
+  click(window, '[data-featured-ticket] [data-ticket-id="WO-1051"]');
+  const before = window.document.querySelector('[data-detail-panel]').innerHTML;
+  let confirmations = 0;
+  window.confirm = () => { confirmations += 1; return false; };
+  click(window, '[data-remove-service="WO-1051"]');
+  assert.equal(confirmations, 1);
+  assert.equal(window.document.querySelector('[data-detail-panel]').innerHTML, before);
+  assert.equal(window.document.querySelector('[data-customer-approval]'), null);
+  dom.window.close();
+});
+
+test('Work Order uses saved services, prices and categories while excluding inactive services', async () => {
+  const {dom,window}=loadPage(SERVICE_CATALOG);
+  window.NEXORA_SERVICE_APPROVAL_SETTINGS.saveCatalog('golden',[{id:'new-category',name:'Specials',services:[{id:'new-service',name:'New treatment',price:21,durationMin:25},{id:'inactive',name:'Hidden treatment',price:10,durationMin:15,active:false}]}]);
+  await openAddServiceModal(window);
+  assert.ok(window.document.querySelector('[data-catalog-service="new-service"]'));
+  assert.equal(window.document.querySelector('[data-catalog-service="inactive"]'),null);
+  assert.equal(window.document.querySelector('[data-catalog-service="polish-change"]'),null);
+  click(window,'[data-catalog-service="new-service"]');click(window,'[data-confirm-service-picker]');
+  assert.match(window.document.querySelector('[data-detail-panel] .services').textContent,/New treatment\$21.0025 min/);
+  dom.window.close();
+});
+
+test('Complete keeps its action label when the completion dialog is cancelled and reopened', async () => {
+  const { dom, window } = loadPage();
+  const document = window.document;
+  try {
+    click(window, '[data-select-salon="golden"]');
+    click(window, '[data-orders-list] [data-ticket-id="WO-1048"]');
+    click(window, '[data-accept-assignment="WO-1048"]');
+    await new Promise(resolve => window.setTimeout(resolve, 0));
+    click(window, '[data-start-ticket="WO-1048"]');
+    const complete = document.querySelector('button[data-complete-ticket="WO-1048"]');
+    assert.equal(complete.textContent.trim(), 'Complete');
+    complete.click();
+    assert.equal(complete.textContent.trim(), 'Complete');
+    assert.ok(complete.querySelector('[data-lucide="circle-check"]'));
+    assert.equal(document.querySelector('[data-complete-modal] .modal-head p').textContent.trim(), 'WO-1048 · Emma Williams');
+    click(window, '[data-complete-modal] [data-close-modal]');
+    assert.equal(complete.textContent.trim(), 'Complete');
+    complete.click();
+    assert.equal(document.querySelector('[data-complete-modal]').hidden, false);
+    click(window, '[data-note-chip="Service completed as requested."]');
+    click(window, '[data-confirm-complete]');
+    assert.equal(document.querySelector('[data-complete-modal]').hidden, true);
+    assert.equal(document.querySelector('button[data-complete-ticket="WO-1048"]'), null);
+    assert.match(document.querySelector('[data-detail-panel]').textContent, /Completed service notes/);
+  } finally {
+    dom.window.close();
+  }
+});
