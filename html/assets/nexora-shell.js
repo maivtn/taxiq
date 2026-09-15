@@ -444,7 +444,14 @@
       var technician = state.technicians.find(function (item) { return item.id === actorId; });
       var salonId = '';
       if (technician && technician.clockedIn) {
-        if (session === undefined) salonId = technician.clockedInSalonId;
+        if (session === undefined) {
+          salonId = technician.clockedInSalonId;
+          if (salonId === undefined) {
+            var assigned = state.tickets.filter(function (ticket) { return ticket.services.some(function (line) { return line.techId === actorId; }); });
+            var salonIds = Array.from(new Set((assigned.length ? assigned : state.tickets).map(function (ticket) { return ticket.salonId; }).filter(Boolean)));
+            if (salonIds.length === 1) salonId = salonIds[0];
+          }
+        }
         else {
           var clock = session && session.clockIn;
           if (clock && !clock.endedAt && (!clock.startedAt || Date.parse(clock.startedAt) <= Date.now())) salonId = clock.salonId;

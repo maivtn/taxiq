@@ -34,7 +34,7 @@ function staffShell(options = {}) {
         static now() { return new RealDate(instant).getTime(); }
       };
       if (Object.hasOwn(options, 'session')) window.NEXORA_STAFF_SESSION = options.session;
-      window.localStorage.setItem(ASSIGNMENTS_KEY, JSON.stringify(state));
+      if (!options.useDemo) window.localStorage.setItem(ASSIGNMENTS_KEY, JSON.stringify(state));
     },
   });
   dom.window.document.dispatchEvent(new dom.window.Event('DOMContentLoaded'));
@@ -158,4 +158,13 @@ test('staff sidebar links to My Tickets immediately above My Calendar and highli
   assert.equal(dom.window.getComputedStyle(count).color, 'rgb(255, 255, 255)');
 
   dom.window.close();
+});
+
+
+test('sidebar reads the existing Work Orders demo without changing its data', () => {
+  const dom = staffShell({useDemo:true, instant:'2026-09-15T16:00:00.000Z'});
+  try {
+    assert.equal(dom.window.document.querySelector('[data-staff-ticket-count]').textContent, '1');
+    assert.equal(dom.window.localStorage.getItem(ASSIGNMENTS_KEY), null);
+  } finally { dom.window.close(); }
 });

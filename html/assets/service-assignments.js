@@ -13,15 +13,13 @@
   function seed() {
     const line = (id,service,techId='') => ({...catalog[service],id,techId,status:'not-sent',location:'',note:'',revision:1});
     const today = new Date();
-    const parts = new Intl.DateTimeFormat('en-US',{timeZone:'America/New_York',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(today);
-    const datePart = type => parts.find(part=>part.type===type).value;
-    const date = [datePart('year'),datePart('month'),datePart('day')].join('-');
+    const date = [today.getFullYear(),String(today.getMonth()+1).padStart(2,'0'),String(today.getDate()).padStart(2,'0')].join('-');
     return {version:1,date,tickets:[
       {id:'dj',number:1,customer:'DJ',phone:'(555) 019-5421',newCustomer:true,time:'10:56',salonId:'golden',services:[]},
       {id:'brian',number:2,customer:'Brian',phone:'(555) 016-1092',time:'10:57',salonId:'golden',services:[line('brian-1',0),line('brian-2',1)]},
       {id:'jojo',number:3,customer:'Jojo',phone:'(555) 017-8804',time:'10:57',salonId:'golden',services:[line('jojo-1',2,'kayla')]},
       {id:'jj',number:4,customer:'Jj',phone:'(555) 012-2807',time:'10:58',salonId:'golden',services:[{...line('jj-1',0,'huu'),status:'in-service',sentAt:today.toISOString(),viewedAt:today.toISOString(),acceptedAt:today.toISOString(),startedAt:today.toISOString(),credit:1.5},{...line('jj-2',3,'michael'),status:'in-service',sentAt:today.toISOString(),viewedAt:today.toISOString(),acceptedAt:today.toISOString(),startedAt:today.toISOString(),credit:.5}]}
-    ],technicians:[{id:'kayla',name:'Kayla Bui',clockedIn:true,clockedInSalonId:'golden',paused:false},{id:'lana',name:'Lana VMM',clockedIn:true,clockedInSalonId:'golden',paused:false},{id:'huu',name:'HUU',clockedIn:true,clockedInSalonId:'golden',paused:false},{id:'michael',name:'Michael',clockedIn:true,clockedInSalonId:'golden',paused:false}],turnEntries:[]};
+    ],technicians:[{id:'kayla',name:'Kayla Bui',clockedIn:true,paused:false},{id:'lana',name:'Lana VMM',clockedIn:true,paused:false},{id:'huu',name:'HUU',clockedIn:true,paused:false},{id:'michael',name:'Michael',clockedIn:true,paused:false}],turnEntries:[]};
   }
   // Read the latest snapshot before every mutation; never silently overwrite damaged data.
   function load() {
@@ -29,13 +27,6 @@
     if (!raw) return seed();
     const state = JSON.parse(raw);
     if (state.version !== 1 || !Array.isArray(state.tickets) || !Array.isArray(state.technicians) || !Array.isArray(state.turnEntries)) throw new Error('Saved assignments cannot be read.');
-    const salonIds = tickets => [...new Set(tickets.map(ticket=>ticket&&ticket.salonId).filter(id=>typeof id==='string'&&id))];
-    state.technicians.forEach(tech=>{
-      if(!tech||!tech.clockedIn||tech.clockedInSalonId!==undefined)return;
-      const assigned=state.tickets.filter(ticket=>ticket&&Array.isArray(ticket.services)&&ticket.services.some(line=>line&&line.techId===tech.id));
-      const candidates=salonIds(assigned.length?assigned:state.tickets);
-      if(candidates.length===1)tech.clockedInSalonId=candidates[0];
-    });
     return state;
   }
   function publish(){listeners.forEach(fn=>fn());}
@@ -102,7 +93,7 @@
     }
     for(const line of unsent){line.status='sent';line.sentAt=new Date().toISOString();line.credit=root.NEXORA_TURN_SETTINGS?.serviceCredit(line.price) ?? (line.price<30?.5:line.price<70?1:line.price<110?1.5:2);}
   });}
-  function applyTransition(state,id,techId,action,note,revision){
+  function transition(id,techId,action,note,revision){return mutate(state=>{
     const {line}=find(state,id);
     if(line.techId!==techId)throw new Error('Only the assigned technician can update this service.');
     if(revision!==undefined&&line.revision!==revision)throw new Error('Assignment changed. Open the latest notification.');
@@ -118,66 +109,7 @@
       if(!state.turnEntries.some(e=>e.serviceId===line.id))state.turnEntries.push({serviceId:line.id,techId,credit:line.credit,amount:line.price,completedAt:line.completedAt});
       state.technicians.find(t=>t.id===techId).lastCompletedAt=line.completedAt;
     }
-  }
-  function transition(id,techId,action,note,revision){return mutate(state=>applyTransition(state,id,techId,action,note,revision));}
-  // Scoped prototype entry points reuse the Front Desk state; the real API must enforce the same ownership rules.
-  function staffScope(getTechnicianId) {
-    const copy = value => JSON.parse(JSON.stringify(value));
-    function fail(code,message){const error=new Error(message);error.code=code;throw error;}
-    function currentId(state){
-      let id;
-      try{id=getTechnicianId();}catch(_){fail('session','Sign in to view your tickets.');}
-      if(typeof id!=='string'||!id.trim()||!state.technicians.some(tech=>tech&&tech.id===id))fail('session','Sign in to view your tickets.');
-      return id;
-    }
-    function snapshot(){
-      let state;
-      try{state=load();}catch(_){fail('storage','Saved assignments cannot be read.');}
-      if(state.tickets.some(ticket=>!ticket||!Array.isArray(ticket.services)||ticket.services.some(line=>!line||typeof line.id!=='string'||typeof line.techId!=='string')))fail('storage','Saved assignments cannot be read.');
-      return state;
-    }
-    function owned(state,id,techId){
-      for(const ticket of state.tickets){const line=ticket.services.find(item=>item.id===id&&item.techId===techId);if(line)return {ticket,line};}
-      fail('forbidden','This ticket is no longer assigned to you.');
-    }
-    function present(item,techId){return copy({ticket:{...item.ticket,services:item.ticket.services.filter(line=>line.techId===techId)},line:item.line});}
-    function list(){
-      const state=snapshot(),techId=currentId(state);
-      return state.tickets.flatMap(ticket=>ticket.services.filter(line=>line.techId===techId).map(line=>present({ticket,line},techId)))
-        .sort((a,b)=>(b.line.sentAt||'').localeCompare(a.line.sentAt||''));
-    }
-    function get(id){const state=snapshot(),techId=currentId(state);return present(owned(state,id,techId),techId);}
-    function change(id,revision,apply){
-      let actor;
-      try{actor=currentId(snapshot());}catch(error){return Promise.reject(error);}
-      let result;
-      return mutate(state=>{
-        if(currentId(state)!==actor)fail('session','Your session changed. Open your tickets again.');
-        const item=owned(state,id,actor);
-        if(!Number.isSafeInteger(revision)||item.line.revision!==revision)fail('conflict','Assignment changed. Open the latest ticket.');
-        result=apply(state,item,actor);
-      }).then(()=>result);
-    }
-    function editable(item){if(item.ticket.payment||item.line.status==='completed')fail('closed','Completed tickets are view only.');}
-    function edit(id,patch,revision){
-      const entries=patch&&typeof patch==='object'&&!Array.isArray(patch)?Object.entries(patch):[];
-      return change(id,revision,(_state,item,techId)=>{
-        editable(item);
-        if(!entries.length||entries.some(([field,value])=>!['note','location'].includes(field)||typeof value!=='string'||value.length>(field==='note'?2000:80)))fail('validation','Update only the notes and location using valid values.');
-        entries.forEach(([field,value])=>{item.line[field]=value.trim();});
-        item.line.revision+=1;
-        return present(item,techId);
-      });
-    }
-    function remove(id,revision){return change(id,revision,(_state,item)=>{editable(item);item.ticket.services=item.ticket.services.filter(line=>line.id!==id);return {id};});}
-    function scopedTransition(id,action,note,revision){return change(id,revision,(state,item,techId)=>{
-      const previousStatus=item.line.status;
-      applyTransition(state,id,techId,action,note,revision);
-      if(item.line.status!==previousStatus)item.line.revision+=1;
-      return present(item,techId);
-    });}
-    return {list,get,edit,remove,transition:scopedTransition};
-  }
+  });}
   function resend(id){return mutate(state=>{const {line}=find(state,id);if(!['sent','viewed'].includes(line.status))throw new Error('Only pending assignments can be resent.');line.lastReminderAt=new Date().toISOString();});}
   function addService(ticketId,catalogId){return mutate(state=>{
     const ticket=state.tickets.find(t=>t.id===ticketId),service=catalog.find(s=>s.id===catalogId);
@@ -213,5 +145,5 @@
     ticket.note=String(note).trim();
   });}
   root.addEventListener('storage',event=>{if(event.key===key||event.key===null)publish();});
-  root.NEXORA_SERVICE_ASSIGNMENTS={load,assign,send,transition,resend,addService,editService,saveNote,pay,queue,inbox,staffScope,ticketStatus,labels,catalog,subscribe(fn){listeners.add(fn);return()=>listeners.delete(fn);}};
+  root.NEXORA_SERVICE_ASSIGNMENTS={load,assign,send,transition,resend,addService,editService,saveNote,pay,queue,inbox,ticketStatus,labels,catalog,subscribe(fn){listeners.add(fn);return()=>listeners.delete(fn);}};
 })(window);
