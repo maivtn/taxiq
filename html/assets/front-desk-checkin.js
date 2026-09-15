@@ -18,51 +18,56 @@
   }
   reset();
 
-  const icon = name => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ({
-    user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
-    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m20 0v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="9" cy="7" r="4"/>',
-    add: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m18-13v6m-3-3h6"/><circle cx="9" cy="7" r="4"/>',
-    trash: '<path d="M3 6h18M19 6l-1 14H6L5 6m4 0V3h6v3M10 10v6m4-6v6"/>',
-    search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
-    link: '<path d="M10 13a5 5 0 0 0 7 .2l3-3a5 5 0 0 0-7-7l-2 2m3 6a5 5 0 0 0-7-.2l-3 3a5 5 0 0 0 7 7l2-2"/>',
-    close: '<path d="m18 6-12 12M6 6l12 12"/>'
+  const icon = name => '<svg class="ci-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">' + ({
+    user: '<circle cx="12" cy="8" r="5"/><path d="M20 21a8 8 0 0 0-16 0"/>',
+    users: '<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0M16 4a4 4 0 0 1 0 8m6 9a7 7 0 0 0-4-6.3"/>',
+    add: '<circle cx="9" cy="8" r="4"/><path d="M2 21a7 7 0 0 1 14 0m4-14v6m-3-3h6"/>',
+    trash: '<path d="M3 6h18M19 6v14a1 1 0 0 1-1 1H6a1 1 0 0 1-1-1V6M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2m-5 4v7m4-7v7"/>',
+    search: '<circle cx="10.5" cy="10.5" r="7.5"/><path d="m16 16 5 5"/>',
+    link: '<path d="M9 17H7a5 5 0 0 1 0-10h2m6 0h2a5 5 0 0 1 0 10h-2M8 12h8"/>',
+    close: '<path d="m18 6-12 12M6 6l12 12"/>',
+    grid: '<rect x="3" y="3" width="7" height="7" rx="2"/><rect x="14" y="3" width="7" height="7" rx="2"/><rect x="3" y="14" width="7" height="7" rx="2"/><rect x="14" y="14" width="7" height="7" rx="2"/>',
+    receipt: '<path d="M4 3v18l4-2 4 2 4-2 4 2V3l-4 2-4-2-4 2-4-2Zm4 6h8m-8 4h5"/>',
+    plus: '<path d="M12 5v14M5 12h14"/>',
+    arrow: '<path d="M5 12h14m-6-6 6 6-6 6"/>',
+    check: '<path d="m5 12 4 4L19 6"/>'
   }[name] || '') + '</svg>';
   root.innerHTML = `
     <div class="ci-heading"><div><h2>Nice to meet you!</h2><p>Tell us who we’re checking in and add family members when needed.</p></div><span class="ci-step"><strong>1</strong> Build check-in</span></div>
     <div id="ci-entry" class="ci-layout">
       <div class="ci-main ci-surface">
         <section aria-labelledby="ci-contact-title">
-          <h3 id="ci-contact-title">Primary contact</h3><p class="ci-subcopy">Only this person needs a name and mobile phone.</p>
+          <h3 id="ci-contact-title">${icon('user')}Primary contact</h3><p class="ci-subcopy">Only this person needs a name and mobile phone.</p>
           <div class="ci-contact-fields"><label>Mobile phone <b>*</b><input id="ci-contact-phone" type="tel" autocomplete="tel" maxlength="24" required></label><label>Name <b>*</b><input id="ci-contact-name" autocomplete="name" maxlength="100" required></label></div>
           <label class="ci-consent"><input id="ci-consent" type="checkbox"><span>Text me offers, reminders &amp; rewards from Nexora Touch Nail Spa. Message and data rates may apply.</span></label>
         </section>
         <section class="ci-section" aria-labelledby="ci-mode-title">
-          <h3 id="ci-mode-title">Who are you checking in?</h3><p class="ci-subcopy">The single-guest flow stays fast. Family mode adds a separate ticket for each person.</p>
+          <h3 id="ci-mode-title">${icon('users')}Who are you checking in?</h3><p class="ci-subcopy">The single-guest flow stays fast. Family mode adds a separate ticket for each person.</p>
           <div class="ci-mode-grid" role="group" aria-label="Check-in mode">
-            <button type="button" data-ci-mode="single" aria-pressed="true">${icon('user')}<span><strong>Just me</strong><small>One guest, one ticket</small></span></button>
-            <button type="button" data-ci-mode="family" aria-pressed="false">${icon('users')}<span><strong>Family / Group</strong><small>Multiple linked tickets</small></span></button>
+            <button type="button" data-ci-mode="single" aria-pressed="true"><span class="ci-mode-icon">${icon('user')}</span><span><strong>Just me</strong><small>One guest, one ticket</small></span></button>
+            <button type="button" data-ci-mode="family" aria-pressed="false"><span class="ci-mode-icon">${icon('users')}</span><span><strong>Family / Group</strong><small>Multiple linked tickets</small></span></button>
           </div>
           <div id="ci-family" hidden><div class="ci-member-heading"><strong>Family members</strong><button type="button" data-ci-add-member>${icon('add')}Add Family Member</button></div><div id="ci-member-tabs" role="group" aria-label="Choose a member"></div><div id="ci-member-editor"></div></div>
           <div id="ci-single-selection" class="ci-selected-list" hidden></div>
         </section>
         <section class="ci-section" aria-labelledby="ci-services-title">
-          <div class="ci-active-guest"><div><span>Adding services for</span><strong id="ci-active-name"></strong></div><em>Unlimited services</em></div>
-          <h3 id="ci-services-title">Choose services</h3><p class="ci-subcopy">Tap as many services as needed. Every service stays with the active guest.</p>
+          <div class="ci-active-guest">${icon('user')}<div><span>Adding services for</span><strong id="ci-active-name"></strong></div><em>Unlimited services</em></div>
+          <h3 id="ci-services-title">${icon('grid')}Choose services</h3><p class="ci-subcopy">Tap as many services as needed. Every service stays with the active guest.</p>
           <label class="ci-search">${icon('search')}<input id="ci-service-search" type="search" placeholder="Search services" aria-label="Search services"></label>
           <div id="ci-categories" role="group" aria-label="Service categories"></div>
           <div id="ci-catalog-results" class="ci-service-grid"></div>
         </section>
       </div>
       <aside class="ci-summary ci-surface" aria-labelledby="ci-summary-title">
-        <div class="ci-summary-heading"><h3 id="ci-summary-title">Check-in summary</h3><span id="ci-mode-badge" class="ci-badge"></span></div>
+        <div class="ci-summary-heading"><h3 id="ci-summary-title">${icon('receipt')}Check-in summary</h3><span id="ci-mode-badge" class="ci-badge"></span></div>
         <div class="ci-summary-contact"><div class="ci-avatar" id="ci-contact-avatar" aria-hidden="true">G</div><div><strong id="ci-summary-name"></strong><span id="ci-summary-phone"></span></div></div>
         <div class="ci-summary-counts"><div class="ci-summary-row"><span>Guests</span><strong id="ci-summary-guests">1</strong></div><div class="ci-summary-row"><span>Selected services</span><strong id="ci-summary-services">0</strong></div></div>
         <div class="ci-summary-total"><span>Estimated total</span><strong id="ci-summary-total"></strong></div>
-        <button class="primary ci-review-button" type="button" data-ci-review>Review Check-in</button>
+        <button class="primary ci-review-button" type="button" data-ci-review><span>Review Check-in</span>${icon('arrow')}</button>
         <div class="ci-summary-note">${icon('link')}<span>Family members receive separate tickets linked to one primary contact.</span></div>
       </aside>
     </div>
-    <section id="ci-success" class="ci-success ci-surface" hidden aria-labelledby="ci-success-title"><span class="ci-success-icon" aria-hidden="true">✓</span><h2 id="ci-success-title" tabindex="-1">You’re checked in!</h2><p id="ci-success-copy"></p><div id="ci-success-tickets"></div><div class="ci-success-actions"><a class="ci-primary-link" href="pos-front-desk-tickets.html">View Tickets →</a><button type="button" data-ci-new>New Check-in</button></div></section>
+    <section id="ci-success" class="ci-success ci-surface" hidden aria-labelledby="ci-success-title"><span class="ci-success-icon" aria-hidden="true">${icon('check')}</span><h2 id="ci-success-title" tabindex="-1">You’re checked in!</h2><p id="ci-success-copy"></p><div id="ci-success-tickets"></div><div class="ci-success-actions"><a class="ci-primary-link" href="pos-front-desk-tickets.html"><span>View Tickets</span>${icon('arrow')}</a><button type="button" data-ci-new>${icon('plus')}<span>New Check-in</span></button></div></section>
     <dialog id="ci-review-dialog" aria-labelledby="ci-review-title">
       <header class="ci-review-heading"><h2 id="ci-review-title">Review family check-in</h2><button type="button" data-ci-close aria-label="Close review">${icon('close')}</button></header>
       <div class="ci-review-body"><div class="ci-review-contact"><div><strong id="ci-review-contact-name"></strong><span id="ci-review-contact-phone"></span></div><span id="ci-review-guest-count"></span></div><div id="ci-review-members"></div><p id="ci-review-error" class="ci-error" role="alert"></p></div>
@@ -97,7 +102,8 @@
     $('#ci-mode-badge').textContent = draft.mode === 'family' ? 'Family Group' : 'Single guest';
     $('#ci-summary-guests').textContent = list.length;
     $('#ci-summary-services').textContent = list.reduce((count, member) => count + member.tickets.length, 0);
-    $('#ci-summary-total').textContent = estimate(list);
+    const total = totals(list);
+    $('#ci-summary-total').innerHTML = money(total.cents) + (total.pending ? '<small> + pricing pending</small>' : '');
     $('#ci-active-name').textContent = memberName(active());
     $('#ci-member-tabs').innerHTML = draft.members.map((member, index) => `<button type="button" data-ci-member="${esc(member.id)}" aria-pressed="${member.id === activeId}"><strong>${esc(memberName(member))}</strong><small>${esc(index === 0 ? 'Primary contact' : member.relationship)}</small></button>`).join('');
     const editorName = $('#ci-editor-name');
@@ -121,7 +127,7 @@
     if (!categories.includes(category)) category = 'All';
     $('#ci-categories').innerHTML = categories.map(name => `<button type="button" data-ci-category="${esc(name)}" aria-pressed="${category === name}">${esc(name)}</button>`).join('');
     const matches = services.filter(service => (category === 'All' || categoryName(service) === category) && (service.name + ' ' + (service.aliases || []).join(' ')).toLowerCase().includes(search.toLowerCase().trim()));
-    $('#ci-catalog-results').innerHTML = matches.length ? matches.map(service => `<button type="button" class="ci-service-card" data-ci-add-service="${esc(service.id)}"><span class="ci-card-copy"><strong>${esc(service.name)}</strong><small>${service.durationMin} min</small></span><span class="ci-card-price">${esc(linePrice(service))}</span></button>`).join('') : '<p class="ci-services-empty">No services match your search and category.</p>';
+    $('#ci-catalog-results').innerHTML = matches.length ? matches.map(service => `<button type="button" class="ci-service-card" data-ci-add-service="${esc(service.id)}"><span class="ci-card-copy"><strong>${esc(service.name)}</strong><small>${service.durationMin} min</small></span><span class="ci-card-action"><span class="ci-card-price">${esc(linePrice(service))}</span><span class="ci-service-add">${icon('plus')}</span></span></button>`).join('') : '<p class="ci-services-empty">No services match your search and category.</p>';
   }
   function validation() {
     return !draft.contact.name.trim() || !/^\d{10}$/.test(phoneKey(draft.contact.phone)) ? 'Representative name and a complete mobile phone are required.' : '';
@@ -152,7 +158,7 @@
       $('#ci-entry').hidden = true;
       $('#ci-success').hidden = false;
       $('#ci-success-copy').textContent = result.records.length + ' guest' + (result.records.length === 1 ? ' is' : 's are') + ' in the waiting queue. Your tickets are ready.';
-      $('#ci-success-tickets').innerHTML = result.records.map(record => `<a class="ci-success-ticket" data-ci-ticket-link href="${esc(ticketLink(record.id))}"><span><small>Ticket</small><strong>#${esc(record.metadata.checkIn.ticketNumber)}</strong></span><span><strong>${esc(record.customerName)}</strong><small>${record.tickets.length} service${record.tickets.length === 1 ? '' : 's'} · Waiting</small></span><span aria-hidden="true">↗</span></a>`).join('');
+      $('#ci-success-tickets').innerHTML = result.records.map(record => `<a class="ci-success-ticket" data-ci-ticket-link href="${esc(ticketLink(record.id))}"><span><small>Ticket</small><strong>#${esc(record.metadata.checkIn.ticketNumber)}</strong></span><span><strong>${esc(record.customerName)}</strong><small>${record.tickets.length} service${record.tickets.length === 1 ? '' : 's'} · Waiting</small></span><span class="ci-ticket-arrow" aria-hidden="true">${icon('arrow')}</span></a>`).join('');
       $('#ci-success-title').focus();
     } catch (_) {
       $('#ci-review-error').textContent = 'Unable to save this check-in. Your details are still here. Please try again.';
