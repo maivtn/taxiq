@@ -7,7 +7,30 @@
   const $ = selector => root.querySelector(selector);
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]));
   const money = cents => '$' + (cents / 100).toFixed(2);
-  const phoneKey = value => String(value || '').replace(/\D/g, '').replace(/^1(?=\d{10}$)/, '');
+  const phoneKey = value => String(value || '').replace(/\D/g, '');
+  function maskPhoneInput(input, inputType) {
+    const raw = input.value;
+    let digits = raw.replace(/\D/g, '');
+    const countryCode = /^\s*\+1/.test(raw) || (/^\s*1/.test(raw) && /^1\d{10}$/.test(digits));
+    if (countryCode) digits = digits.slice(1);
+    const formatted = !digits ? '' : digits.length <= 3 ? '(' + digits :
+      '(' + digits.slice(0, 3) + ') ' + digits.slice(3, 6) + (digits.length > 6 ? '-' + digits.slice(6) : '');
+    if (formatted === raw) return;
+    const cursor = input.selectionStart;
+    const before = Math.max(0, raw.slice(0, cursor).replace(/\D/g, '').length - (countryCode ? 1 : 0));
+    input.value = formatted;
+    if (cursor != null && cursor < raw.length) {
+      let position = 0, count = 0;
+      while (position < formatted.length && count < before) {
+        if (/\d/.test(formatted[position])) count++;
+        position++;
+      }
+      if (inputType === 'deleteContentForward') {
+        while (position < formatted.length && /\D/.test(formatted[position])) position++;
+      }
+      input.setSelectionRange(position, position);
+    }
+  }
   const newMember = () => ({id: crypto.randomUUID(), name: '', relationship: 'Family member', tickets: []});
   let draft, activeId, category = 'All', search = '', catalog, submitted = false, toastTimer;
   function reset() {
@@ -38,7 +61,7 @@
       <div class="ci-main ci-surface">
         <section aria-labelledby="ci-contact-title">
           <h3 id="ci-contact-title">${icon('user')}Primary contact</h3><p class="ci-subcopy">Only this person needs a name and mobile phone.</p>
-          <div class="ci-contact-fields"><label>Mobile phone <b>*</b><input id="ci-contact-phone" type="tel" autocomplete="tel" maxlength="24" required></label><label>Name <b>*</b><input id="ci-contact-name" autocomplete="name" maxlength="100" required></label></div>
+          <div class="ci-contact-fields"><div><label for="ci-contact-phone">Mobile phone <b>*</b></label><div class="ci-phone-shell"><span class="ci-phone-prefix" id="ci-phone-country">+1</span><input id="ci-contact-phone" type="tel" inputmode="numeric" autocomplete="tel-national" maxlength="20" placeholder="(555) 555-5555" aria-describedby="ci-phone-country" required></div></div><label>Name <b>*</b><input id="ci-contact-name" autocomplete="name" maxlength="100" required></label></div>
           <label class="ci-consent"><input id="ci-consent" type="checkbox"><span>Text me offers, reminders &amp; rewards from Nexora Touch Nail Spa. Message and data rates may apply.</span></label>
         </section>
         <section class="ci-section" aria-labelledby="ci-mode-title">
@@ -173,7 +196,7 @@
       if (active() === draft.members[0] && $('#ci-member-name')) $('#ci-member-name').value = input.value;
       renderSummary();
     }
-    if (input.id === 'ci-contact-phone') {draft.contact.phone = input.value; renderSummary();}
+    if (input.id === 'ci-contact-phone') {maskPhoneInput(input, event.inputType); draft.contact.phone = input.value; renderSummary();}
     if (input.id === 'ci-member-name') {
       if (active() === draft.members[0]) {draft.contact.name = input.value; $('#ci-contact-name').value = input.value;}
       else active().name = input.value;

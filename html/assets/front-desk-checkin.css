@@ -26,6 +26,11 @@
 #front-desk-checkin input:not([type=checkbox]):hover,#front-desk-checkin select:hover{border-color:#b9c4d7}
 #front-desk-checkin input:not([type=checkbox]):focus,#front-desk-checkin select:focus{border-color:var(--ci-brand)}
 #front-desk-checkin input::placeholder{color:#8792a6}
+#front-desk-checkin .ci-phone-shell{display:flex;align-items:center;height:44px;margin-top:7px;border:1px solid var(--ci-border);border-radius:9px;background:var(--ci-surface);transition:border-color .15s,box-shadow .15s}
+#front-desk-checkin .ci-phone-shell:hover{border-color:#b9c4d7}
+#front-desk-checkin .ci-phone-shell:focus-within{border-color:var(--ci-brand);outline:3px solid #c7d2fe;outline-offset:3px}
+#front-desk-checkin .ci-phone-prefix{display:grid;place-items:center;align-self:stretch;width:58px;flex-shrink:0;border-right:1px solid var(--ci-border);color:var(--ci-slate);font-size:13px;font-weight:600}
+#front-desk-checkin .ci-phone-shell #ci-contact-phone{flex:1;min-width:0;width:0;height:100%;margin:0;border:0;border-radius:0 8px 8px 0;background:transparent;box-shadow:none;outline:none;padding:0 14px;font-variant-numeric:tabular-nums}
 #front-desk-checkin select{appearance:none;padding-right:32px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;background-size:16px}
 #front-desk-checkin .ci-consent{display:flex;gap:9px;align-items:flex-start;font-size:11px;font-weight:400;line-height:1.6;color:var(--ci-muted);margin:14px 0 0}
 #front-desk-checkin .ci-consent input{accent-color:var(--ci-brand);margin:2px 0 0;width:15px;height:15px;flex-shrink:0;padding:0}

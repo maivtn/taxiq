@@ -35,6 +35,82 @@ function contact(w) {
   fill(w, '#ci-contact-phone', '(806) 388-8899');
 }
 
+test('Mobile phone formats typing, pasted country codes and clearing like AI Hub', () => {
+  const dom = boot(), w = dom.window, d = w.document;
+  const input = d.querySelector('#ci-contact-phone');
+  try {
+    for (const [entered, expected] of [
+      ['2', '(2'], ['202', '(202'], ['2025', '(202) 5'],
+      ['202555', '(202) 555'], ['2025550147', '(202) 555-0147'],
+      ['+1 (202) 555-0147', '(202) 555-0147'], ['12025550147', '(202) 555-0147'],
+      ['202abc5550147', '(202) 555-0147'], ['', '']
+    ]) {
+      fill(w, '#ci-contact-phone', entered);
+      assert.equal(input.value, expected, entered);
+    }
+  } finally { w.close(); }
+});
+
+test('The formatted phone reaches summary and review while saving its canonical digits', () => {
+  const dom = boot(), w = dom.window, d = w.document;
+  try {
+    fill(w, '#ci-contact-name', 'Demo Family');
+    fill(w, '#ci-contact-phone', '+1 202 555 0147');
+    assert.equal(d.querySelector('#ci-summary-phone').textContent, '(202) 555-0147 · Primary contact');
+    d.querySelector('[data-ci-review]').click();
+    assert.equal(d.querySelector('#ci-review-contact-phone').textContent, '(202) 555-0147');
+    d.querySelector('[data-ci-submit]').click();
+    const [record] = w.NEXORA_APPOINTMENTS_STORE.loadAll();
+    assert.equal(record.phone, '2025550147');
+    assert.equal(record.metadata.checkIn.contact.phone, '2025550147');
+    d.querySelector('[data-ci-new]').click();
+    assert.equal(d.querySelector('#ci-contact-phone').value, '');
+  } finally { w.close(); }
+});
+
+test('Masking does not truncate an overlong phone into a valid check-in number', () => {
+  const dom = boot(), w = dom.window, d = w.document;
+  try {
+    contact(w);
+    fill(w, '#ci-contact-phone', '20255501478');
+    assert.equal(d.querySelector('#ci-contact-phone').value, '(202) 555-01478');
+    d.querySelector('[data-ci-review]').click();
+    d.querySelector('[data-ci-submit]').click();
+    assert.match(d.querySelector('#ci-review-error').textContent, /complete mobile phone/);
+    assert.equal(w.NEXORA_APPOINTMENTS_STORE.loadAll().length, 0);
+  } finally { w.close(); }
+});
+
+test('An explicit country code is removed only once from an overlong pasted phone', () => {
+  const dom = boot(), w = dom.window, d = w.document;
+  try {
+    contact(w);
+    fill(w, '#ci-contact-phone', '+1 12025550147');
+    assert.equal(d.querySelector('#ci-contact-phone').value, '(120) 255-50147');
+    d.querySelector('[data-ci-review]').click();
+    d.querySelector('[data-ci-submit]').click();
+    assert.equal(w.NEXORA_APPOINTMENTS_STORE.loadAll().length, 0);
+    d.querySelector('[data-ci-close]').click();
+    fill(w, '#ci-contact-phone', '(120) 255-50147');
+    assert.equal(d.querySelector('#ci-contact-phone').value, '(120) 255-50147');
+  } finally { w.close(); }
+});
+
+test('Delete advances past a mask separator so editing does not get stuck', () => {
+  const dom = boot(), w = dom.window, d = w.document;
+  try {
+    const input = d.querySelector('#ci-contact-phone');
+    fill(w, '#ci-contact-phone', '2025550147');
+    input.setRangeText('', 9, 10, 'start');
+    input.dispatchEvent(new w.InputEvent('input', {bubbles: true, inputType: 'deleteContentForward'}));
+    assert.equal(input.value, '(202) 555-0147');
+    assert.equal(input.selectionStart, 10);
+    input.setRangeText('', 10, 11, 'start');
+    input.dispatchEvent(new w.InputEvent('input', {bubbles: true, inputType: 'deleteContentForward'}));
+    assert.equal(input.value, '(202) 555-147');
+  } finally { w.close(); }
+});
+
 test('Check-in navigation opens its own section and preserves drafts through other tabs and history', () => {
   const dom = boot(), w = dom.window, d = w.document;
   assert.ok(d.querySelector('#front-desk-checkin'));
