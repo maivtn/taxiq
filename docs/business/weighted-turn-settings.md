@@ -8,7 +8,7 @@
 
 ### Overview
 
-**Weighted Turn Settings** cho phép người quản lý thiết lập khoảng giá trị dịch vụ, số lượt quy đổi cho từng khoảng và lượt booking mặc định của salon tại **POS → Front Desk → Turn Board**. Cấu hình này dùng chung với **Booking Incentive Policy** trong Calendar, giúp hai màn hình sử dụng cùng giá trị đã lưu. Tài liệu mô tả hành vi hiện có của prototype; việc chia sẻ cấu hình chưa bao gồm sổ lượt chung hoặc tự động ghi lượt từ booking hoàn thành.
+**Weighted Turn Settings** cho phép người quản lý thiết lập khoảng giá trị dịch vụ, số lượt quy đổi cho từng khoảng và lượt booking mặc định của salon tại **POS → Front Desk → Turn Board**. Booking turn credit dùng chung với **Booking Incentive Policy** trong Calendar; các khoảng tiền và lượt dịch vụ chỉ được chỉnh tại Turn Board. Tài liệu mô tả hành vi hiện có của prototype; việc chia sẻ cấu hình chưa bao gồm sổ lượt chung hoặc tự động ghi lượt từ booking hoàn thành.
 
 ### Key Concepts
 
@@ -20,7 +20,7 @@
 | Weighted Turn Settings | Form chỉnh lượt booking mặc định, thêm hoặc xóa khoảng dịch vụ, chỉnh giới hạn Up to và số lượt của từng khoảng. |
 | Up to | Số tiền cao nhất vẫn thuộc khoảng dịch vụ đó; chỉnh được ở mọi khoảng trừ khoảng cuối là No limit. |
 | From | Số tiền bắt đầu khoảng, chỉ đọc: khoảng đầu là $0, mỗi khoảng tiếp theo bằng Up to của khoảng trước cộng $0.01. |
-| Booking Incentive Policy | Chính sách thưởng booking; có cùng cấu hình lượt chung và phần tùy chỉnh riêng theo thợ. |
+| Booking Incentive Policy | Chính sách thưởng booking; dùng cùng booking turn credit mặc định và có phần tùy chỉnh riêng theo thợ. |
 | Technician override | Lượt booking riêng của thợ, được ưu tiên khi chính sách tùy chỉnh theo thợ đang áp dụng. |
 | Add Turn | Thao tác thêm một lượt dịch vụ còn thiếu; gợi ý lượt theo mức dịch vụ đã lưu. |
 | Lượt đã ghi | Lượt đã xuất hiện trên Turn Board; thay đổi cấu hình không tự tính lại các lượt này. |
@@ -124,34 +124,34 @@ flowchart TD
 
 **Trigger:** Lưu cấu hình từ Weighted Turn Settings hoặc Booking Incentive Policy.
 
-**Outcome:** Hai màn hình đọc cùng cấu hình lượt chung và vẫn giữ lượt riêng của thợ khi override đang áp dụng.
+**Outcome:** Hai màn hình đọc cùng booking turn credit mặc định và vẫn giữ lượt riêng của thợ khi override đang áp dụng.
 
 **User Stories:**
 
-- **US-06 — Đồng bộ hai chiều:** **As a** Manager, **I want to** lưu lượt ở một màn hình và thấy giá trị mới ở màn hình còn lại, **so that** tôi không phải duy trì hai bộ cấu hình giống nhau.
+- **US-06 — Đồng bộ hai chiều:** **As a** Manager, **I want to** lưu booking turn credit ở một màn hình và thấy giá trị mới ở màn hình còn lại, **so that** tôi không phải duy trì hai giá trị mặc định khác nhau.
 - **US-07 — Giữ cấu hình riêng của thợ:** **As a** Chủ salon, **I want to** thay đổi lượt mặc định mà không ghi đè lượt riêng đang áp dụng của thợ, **so that** các thỏa thuận riêng được giữ đúng.
 
 **Acceptance Criteria — hiện có:**
 
-1. Save Rules trên Turn Board lưu danh sách khoảng tiền theo các giá trị Up to cùng booking turn credit mặc định và số lượt của từng khoảng. Calendar hiển thị đủ các khoảng đã lưu và cho sửa số lượt; Save policy giữ nguyên số lượng và giới hạn các khoảng tiền tùy chỉnh. Muốn thêm/xóa khoảng hoặc đổi Up to từ Calendar, mở liên kết sang Weighted Turn Settings.
-2. Trong cùng trình duyệt, cùng địa chỉ ứng dụng và cùng salon, các tab đang mở nhận cập nhật cho cấu hình lượt chung và khoảng tiền. Mở lại hoặc tải lại trang cũng đọc các mức đã lưu.
-3. Khi nhận cập nhật trong lúc đang chỉnh form, danh sách khoảng tiền, số dòng nhập lượt và cấu hình lượt chung được thay bằng giá trị mới nhất. Các trường thưởng, Anyone assignment và override đang chỉnh trên Calendar được giữ nguyên.
+1. Save Rules trên Turn Board lưu danh sách khoảng tiền theo các giá trị Up to cùng booking turn credit mặc định và số lượt của từng khoảng. Phần cấu hình lượt chung trong Booking Incentive Policy chỉ chỉnh booking turn credit; Save policy giữ nguyên toàn bộ khoảng tiền và lượt dịch vụ đã lưu mới nhất. Việc thêm/xóa range, chỉnh Up to và lượt dịch vụ thực hiện tại Turn Board.
+2. Trong cùng trình duyệt, cùng địa chỉ ứng dụng và cùng salon, booking turn credit đã lưu được cập nhật giữa các tab. Turn Board cũng đọc các khoảng tiền và lượt dịch vụ đã lưu khi mở lại hoặc tải lại trang.
+3. Khi nhận cập nhật trong lúc đang chỉnh form, Turn Board nhận cấu hình lượt mới nhất; Calendar cập nhật ô booking turn credit. Các trường thưởng, Anyone assignment và override đang chỉnh trên Calendar được giữ nguyên.
 4. Technician Overview cập nhật kết quả booking credit theo mặc định mới. Thợ có override đang áp dụng tiếp tục dùng lượt riêng; thay đổi lượt chung không đổi mức tiền thưởng.
-5. Weighted Turn Settings có liên kết mở Booking Incentive Policy. Calendar có liên kết mở thẳng Weighted Turn Settings trên Turn Board.
-6. Các liên kết chỉ điều hướng, không tự lưu các giá trị đang nhập. Người dùng cần bấm Save trước nếu muốn giữ thay đổi.
+5. Weighted Turn Settings có liên kết mở Booking Incentive Policy.
+6. Liên kết này chỉ điều hướng, không tự lưu các giá trị đang nhập. Người dùng cần bấm Save trước nếu muốn giữ thay đổi.
 
 **Giới hạn:** Chỉ cấu hình lượt chung được giữ qua lần tải lại trang. Phần thưởng, Anyone assignment và override trong Calendar vẫn là dữ liệu trong phiên. Chưa đồng bộ qua máy khác, chưa có kiểm soát xung đột hoặc lịch sử phiên bản cấu hình chung; giá trị lưu sau cùng được áp dụng.
 
 | Step | Who | Action | System Response | Notes |
 | :--- | :--- | :--- | :--- | :--- |
-| 1 | Manager | Sửa và lưu từ một form | Ghi cấu hình lượt chung của salon | Chỉ sau khi kiểm tra và lưu thành công. |
-| 2 | Hệ thống | Phát hiện cấu hình mới | Cập nhật các ô lượt chung ở tab còn lại | Không thay trường thưởng hoặc override đang chỉnh. |
-| 3 | Manager | Mở màn hình còn lại | Hiển thị mức lượt vừa lưu | Có liên kết giữa hai form. |
+| 1 | Manager | Sửa và lưu booking turn credit từ một form | Ghi lượt booking mặc định của salon | Save policy giữ khoảng tiền và lượt dịch vụ mới nhất. |
+| 2 | Hệ thống | Phát hiện cấu hình mới | Cập nhật booking turn credit ở tab còn lại | Không thay trường thưởng hoặc override đang chỉnh. |
+| 3 | Manager | Mở màn hình còn lại | Hiển thị lượt booking vừa lưu | Có liên kết từ Turn Board sang Booking Incentive Policy. |
 | 4 | Hệ thống | Cập nhật Overview | Áp dụng mặc định hoặc override tương ứng | Số liệu vẫn là mô phỏng. |
 
 ```mermaid
 flowchart TD
-    A([Lưu từ một form]) --> B[Lưu lượt chung salon]
+    A([Lưu lượt booking]) --> B[Lưu mặc định salon]
     B --> C[Cập nhật form còn lại]
     C --> D{Có override áp dụng?}
     D -- Có --> E[Giữ lượt riêng thợ]
@@ -242,7 +242,7 @@ stateDiagram-v2
 - **Hai loại lượt riêng:** Booking turn credit dùng cho booking trong Calendar; Service turn credit dùng để gợi ý lượt dịch vụ tại Add Turn. Chia sẻ cấu hình không có nghĩa tự cộng cả hai cho cùng booking.
 - **Cơ sở giá trị dịch vụ:** Giao diện mô tả giá trị sau giảm giá, loại trừ tip, thuế, sản phẩm và thanh toán gift card. Prototype nhận Service amount nhập tay, chưa tự bóc tách các khoản này từ giao dịch hoặc xử lý quy tắc gift card ở checkout.
 - **Áp dụng cấu hình:** Mức mới được dùng ngay sau khi lưu thành công; Weighted Turn Settings không có lịch hiệu lực riêng.
-- **Khoảng tiền thống nhất:** Toàn bộ danh sách khoảng tiền và lượt đã lưu được dùng cho gợi ý Add Turn, nhãn khoảng trong Calendar và phần quy tắc lượt theo cấu hình hiện tại của Operating Standards.
+- **Khoảng tiền thống nhất:** Toàn bộ danh sách khoảng tiền và lượt dịch vụ được chỉnh tại Turn Board, dùng cho gợi ý Add Turn và phần quy tắc lượt theo cấu hình hiện tại của Operating Standards. Save policy trong Calendar giữ nguyên các khoảng tiền và lượt dịch vụ đã lưu mới nhất.
 - **Giữ lượt đã ghi:** Lưu cấu hình không phải thao tác sửa lượt của thợ. Việc điều chỉnh lượt đã ghi sử dụng thao tác khác trên Turn Board.
 - **Ưu tiên override:** Lượt booking riêng chỉ ưu tiên khi chế độ tùy chỉnh theo thợ và override tương ứng đang áp dụng trong Calendar.
 - **Phạm vi tiền:** Cấu hình lượt không thực hiện thu tiền, payout hoặc thay mức thưởng booking.
@@ -273,7 +273,7 @@ A: Có. Đây là cùng giá trị mặc định với Booking Incentive Policy.
 
 **Q: Chỉnh giới hạn tiền ở Up to hay From?**
 
-A: Chỉnh Up to của mọi khoảng trừ khoảng cuối là No limit. Bộ mặc định có bốn khoảng với Up to là $29.99, $69.99 và $109.99. From chỉ đọc và tự tính để các khoảng liên tục. Có thể thêm/xóa khoảng trước khi bấm Save Rules; Calendar có liên kết mở form này.
+A: Chỉnh Up to của mọi khoảng trừ khoảng cuối là No limit tại Weighted Turn Settings trên Turn Board. Bộ mặc định có bốn khoảng với Up to là $29.99, $69.99 và $109.99. From chỉ đọc và tự tính để các khoảng liên tục. Có thể thêm/xóa khoảng trước khi bấm Save Rules.
 
 **Q: Có thể thêm nhiều hơn bốn khoảng không?**
 

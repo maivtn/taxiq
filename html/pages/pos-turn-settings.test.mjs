@@ -35,12 +35,12 @@ function openCalendar(app) {
 }
 function saved(app) { return Object.fromEntries(Object.entries(app.w.localStorage)); }
 
-test('saved booking and service turns flow from Calendar to Turn Board and back after reload', t => {
+test('booking credits sync between Calendar and Turn Board while service settings stay on Turn Board', t => {
   const calendar = boot('pos-front-desk.html'); t.after(() => calendar.dom.window.close());
   const root = openCalendar(calendar);
-  assert.equal(root.querySelectorAll('[data-service-weight]').length, 4, 'Calendar exposes shared service turns');
+  assert.equal(root.querySelector('#weighted-turn-settings'), null, 'booking policy has no service-range section');
+  assert.equal(root.querySelectorAll('[data-service-weight]').length, 0);
   root.querySelector('#turn-credit').value = '1.5';
-  root.querySelectorAll('[data-service-weight]')[1].value = '2';
   root.querySelector('#turn-credit').dispatchEvent(new calendar.w.Event('input', {bubbles: true}));
   root.querySelector('#save-policy').click();
   assert.equal(root.querySelector('#reward-settings-drawer').getAttribute('aria-hidden'), 'true');
@@ -49,9 +49,9 @@ test('saved booking and service turns flow from Calendar to Turn Board and back 
   const board = boot('pos-front-desk-turn-board.html', saved(calendar)); t.after(() => board.dom.window.close());
   board.w.openTurnRules();
   assert.equal(board.d.querySelector('#booking-turn-credit').value, '1.5');
-  assert.equal(board.d.querySelectorAll('[data-service-weight]')[1].value, '2');
+  assert.equal(board.d.querySelectorAll('[data-service-weight]')[1].value, '1');
   board.w.openAddTurn(0);
-  assert.equal(board.d.querySelector('#add-turn-credit').value, '2');
+  assert.equal(board.d.querySelector('#add-turn-credit').value, '1');
   board.w.closeAddTurn();
   board.d.querySelector('#booking-turn-credit').value = '0';
   board.d.querySelectorAll('[data-service-weight]')[1].value = '0.5';
@@ -61,7 +61,7 @@ test('saved booking and service turns flow from Calendar to Turn Board and back 
   const reloaded = boot('pos-front-desk.html', saved(board)); t.after(() => reloaded.dom.window.close());
   const updated = openCalendar(reloaded);
   assert.equal(updated.querySelector('#turn-credit').value, '0');
-  assert.equal(updated.querySelectorAll('[data-service-weight]')[1].value, '0.5');
+  assert.equal(reloaded.w.NEXORA_TURN_SETTINGS.serviceCredit(45), 0.5);
   assert.equal(updated.querySelector('.tech-overview-row').children[4].textContent, '0.0');
   for (const app of [calendar, board, reloaded]) assert.deepEqual(app.errors, []);
 });
@@ -104,6 +104,7 @@ test('open forms synchronize shared turns across tabs while preserving reward dr
   override.querySelector('[data-override-turn]').value = '1.25';
   board.w.openTurnRules();
   board.d.querySelector('#booking-turn-credit').value = '2';
+  board.d.querySelectorAll('[data-service-weight]')[1].value = '1.25';
   board.w.saveTurnRules();
   syncStorage(board, calendar);
   assert.equal(root.querySelector('#turn-credit').value, '2');
@@ -113,9 +114,10 @@ test('open forms synchronize shared turns across tabs while preserving reward dr
   calendar.d.querySelector('#calendar-reward-settings').click();
   assert.equal(root.querySelector('[data-override-turn]').value, '1.25', 'custom credit survives reopening');
   board.w.openTurnRules();
-  root.querySelectorAll('[data-service-weight]')[1].value = '1.25';
+  root.querySelector('#turn-credit').value = '2.5';
   root.querySelector('#save-policy').click();
   syncStorage(calendar, board);
+  assert.equal(board.d.querySelector('#booking-turn-credit').value, '2.5');
   assert.equal(board.d.querySelectorAll('[data-service-weight]')[1].value, '1.25');
   board.w.openAddTurn(0);
   assert.equal(board.d.querySelector('#add-turn-credit').value, '1.25');
@@ -128,15 +130,12 @@ test('open forms synchronize shared turns across tabs while preserving reward dr
 test('Calendar rejects empty or negative turns and leaves its drawer open if storage fails', t => {
   const app = boot('pos-front-desk.html'); t.after(() => app.dom.window.close());
   const root = openCalendar(app);
-  for (const selector of ['#turn-credit', '[data-service-weight]']) {
-    const input = root.querySelector(selector), original = input.value;
-    for (const value of ['', '-1']) {
-      input.value = value;
-      input.dispatchEvent(new app.w.Event('input', {bubbles: true}));
-      assert.equal(root.querySelector('#save-policy').disabled, true);
-      assert.equal(app.w.NEXORA_TURN_SETTINGS.load().bookingTurnCredit, 0.5);
-    }
-    input.value = original;
+  const input = root.querySelector('#turn-credit');
+  for (const value of ['', '-1']) {
+    input.value = value;
+    input.dispatchEvent(new app.w.Event('input', {bubbles: true}));
+    assert.equal(root.querySelector('#save-policy').disabled, true);
+    assert.equal(app.w.NEXORA_TURN_SETTINGS.load().bookingTurnCredit, 0.5);
   }
   root.querySelector('#turn-credit').value = '1';
   root.querySelector('#turn-credit').dispatchEvent(new app.w.Event('input', {bubbles: true}));
@@ -241,23 +240,27 @@ test('invalid or cancelled range edits never replace saved rules and storage err
   assert.deepEqual(app.errors, []);
 });
 
-test('custom ranges synchronize Calendar labels and survive saving booking policy in both calendars', t => {
+test('saving booking policy preserves custom service ranges in both calendars', t => {
   const board = boot('pos-front-desk-turn-board.html'); t.after(() => board.w.close());
   const calendar = boot('pos-front-desk.html'); t.after(() => calendar.w.close());
   const root = openCalendar(calendar);
   const result = board.w.NEXORA_TURN_SETTINGS.save({bookingTurnCredit: 0.5, serviceWeights: [0.5, 1, 1.5, 2], serviceThresholds: [50, 90, 150]});
   assert.equal(result.ok, true);
   syncStorage(board, calendar);
-  assert.match(root.querySelector('[data-service-weight="0"]').closest('label').textContent, /\$0–49\.99/);
   root.querySelector('#turn-credit').value = '2';
   root.querySelector('#save-policy').click();
   assert.equal(calendar.w.NEXORA_TURN_SETTINGS.serviceCredit(45), 0.5);
+  assert.deepEqual(Array.from(calendar.w.NEXORA_TURN_SETTINGS.load().serviceThresholds), [50, 90, 150]);
+  assert.equal(calendar.w.NEXORA_TURN_SETTINGS.load().bookingTurnCredit, 2);
   const standalone = boot('team-calendar.html', saved(calendar)); t.after(() => standalone.w.close());
   standalone.d.querySelector('#reward-settings-button').click();
-  assert.match(standalone.d.querySelector('[data-service-weight="3"]').closest('label').textContent, /\$150\+/);
+  assert.equal(standalone.d.querySelector('#weighted-turn-settings'), null);
+  assert.equal(standalone.d.querySelectorAll('[data-service-weight]').length, 0);
   standalone.d.querySelector('#turn-credit').value = '3';
   standalone.d.querySelector('#save-policy').click();
   assert.equal(standalone.w.NEXORA_TURN_SETTINGS.serviceCredit(45), 0.5);
+  assert.deepEqual(Array.from(standalone.w.NEXORA_TURN_SETTINGS.load().serviceThresholds), [50, 90, 150]);
+  assert.equal(standalone.w.NEXORA_TURN_SETTINGS.load().bookingTurnCredit, 3);
   for (const app of [board, calendar, standalone]) assert.deepEqual(app.errors, []);
 });
 
@@ -375,29 +378,29 @@ test('removing ranges merges coverage, cancel restores saved rows, and a single 
   assert.deepEqual(app.errors, []);
 });
 
-test('range count changes synchronize open Calendar fields while preserving reward drafts', t => {
+test('range count changes preserve open Calendar reward drafts and survive saving booking policy', t => {
   const board = boot('pos-front-desk-turn-board.html'), calendar = boot('pos-front-desk.html');
   t.after(() => { board.w.close(); calendar.w.close(); });
   const root = openCalendar(calendar);
   root.querySelector('[data-structure="flat"]').click();
   root.querySelector('#flat-rate').value = '8';
-  const result = board.w.NEXORA_TURN_SETTINGS.save({bookingTurnCredit: 0.5, serviceWeights: [0.5, 1, 1.5, 2, 3], serviceThresholds: [30, 70, 110, 150]});
+  const result = board.w.NEXORA_TURN_SETTINGS.save({bookingTurnCredit: 0.5, serviceWeights: [0.5, 1, 1.5, 2, 3.5], serviceThresholds: [30, 70, 110, 150]});
   assert.equal(result.ok, true);
   syncStorage(board, calendar);
-  assert.equal(root.querySelectorAll('[data-service-weight]').length, 5);
-  assert.match(root.querySelector('[data-service-weight="4"]').closest('label').textContent, /\$150\+/);
   assert.equal(root.querySelector('#flat-rate').value, '8');
-  root.querySelector('[data-service-weight="4"]').value = '3.5';
   root.querySelector('#save-policy').click();
+  assert.equal(root.querySelector('#reward-settings-drawer').getAttribute('aria-hidden'), 'true');
   assert.equal(calendar.w.NEXORA_TURN_SETTINGS.serviceCredit(150), 3.5);
   const standalone = boot('team-calendar.html', saved(calendar)); t.after(() => standalone.w.close());
   standalone.d.querySelector('#reward-settings-button').click();
-  assert.equal(standalone.d.querySelectorAll('[data-service-weight]').length, 5);
+  assert.equal(standalone.w.NEXORA_TURN_SETTINGS.load().serviceWeights.length, 5);
   board.w.NEXORA_TURN_SETTINGS.save({bookingTurnCredit: 1, serviceWeights: [2], serviceThresholds: []});
   syncStorage(board, standalone);
-  assert.equal(standalone.d.querySelectorAll('[data-service-weight]').length, 1);
-  assert.match(standalone.d.querySelector('[data-service-weight]').closest('label').textContent, /\$0\+/);
+  assert.equal(standalone.d.querySelector('#turn-credit').value, '1');
+  standalone.d.querySelector('#turn-credit').value = '2.5';
   standalone.d.querySelector('#save-policy').click();
+  assert.equal(standalone.d.querySelector('#reward-settings-drawer').getAttribute('aria-hidden'), 'true');
+  assert.equal(standalone.w.NEXORA_TURN_SETTINGS.load().bookingTurnCredit, 2.5);
   assert.equal(standalone.w.NEXORA_TURN_SETTINGS.serviceCredit(500), 2);
   for (const app of [board, calendar, standalone]) assert.deepEqual(app.errors, []);
 });

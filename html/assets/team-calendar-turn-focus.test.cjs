@@ -28,25 +28,40 @@ function bootCalendar(t, page) {
   } else {
     root.querySelector('#reward-settings-button').click();
   }
-  return {model: w.NEXORA_TURN_SETTINGS, root, errors};
+  return {model: w.NEXORA_TURN_SETTINGS, storage: w.localStorage, root, errors};
 }
 
 for (const page of ['pos-front-desk.html', 'team-calendar.html']) {
-  test(page + ' retains keyboard focus when shared service ranges are added or removed', t => {
+  test(page + ' keeps booking and reward focus while shared service ranges change outside the policy', t => {
     const {model, root, errors} = bootCalendar(t, page);
-    root.querySelector('[data-service-weight="1"]').focus();
-    assert.equal(model.save({bookingTurnCredit: 0.5, serviceWeights: [0.5, 1, 1.5, 2, 3], serviceThresholds: [30, 70, 110, 200]}).ok, true);
-    assert.equal(root.activeElement, root.querySelector('[data-service-weight="1"]'), 'adding ranges preserves the focused credit');
-
-    root.querySelector('[data-service-weight="4"]').focus();
-    assert.equal(model.save({bookingTurnCredit: 0.5, serviceWeights: [0.5, 1], serviceThresholds: [30]}).ok, true);
-    assert.equal(root.activeElement, root.querySelector('[data-service-weight="1"]'), 'removing the focused range selects the nearest surviving credit');
+    assert.equal(root.querySelector('#weighted-turn-settings'), null, 'service ranges are managed outside booking policy');
+    assert.equal(root.querySelectorAll('[data-service-weight]').length, 0);
+    const booking = root.querySelector('#turn-credit');
+    booking.focus();
+    assert.equal(model.save({bookingTurnCredit: 1.25, serviceWeights: [0.5, 1, 1.5, 2, 3], serviceThresholds: [30, 70, 110, 200]}).ok, true);
+    assert.equal(root.activeElement, booking);
+    assert.equal(booking.value, '1.25', 'booking credit remains synchronized');
 
     const reward = root.querySelector('#flat-rate');
     reward.value = '7'; reward.focus();
     assert.equal(model.save({bookingTurnCredit: 0.5, serviceWeights: [0.75], serviceThresholds: []}).ok, true);
-    assert.equal(root.activeElement, reward, 'focus outside service ranges remains in place');
+    assert.equal(root.activeElement, reward);
     assert.equal(reward.value, '7');
+    assert.deepEqual(errors, []);
+  });
+
+  test(page + ' saves booking credit while preserving the latest service ranges even before storage events arrive', t => {
+    const {model, storage, root, errors} = bootCalendar(t, page);
+    assert.equal(model.save({bookingTurnCredit: 0.5, serviceWeights: [0.5, 1, 1.5, 2, 3], serviceThresholds: [30, 70, 110, 200]}).ok, true);
+    const key = Object.keys(storage).find(key => key.includes('turn-settings'));
+    const latest = {bookingTurnCredit: 0.5, serviceWeights: [0.25, 1.75], serviceThresholds: [50.25]};
+    storage.setItem(key, JSON.stringify(latest));
+    root.querySelector('#turn-credit').value = '3';
+    root.querySelector('#save-policy').click();
+    assert.equal(root.querySelector('#reward-settings-drawer').getAttribute('aria-hidden'), 'true');
+    assert.deepEqual(JSON.parse(storage.getItem(key)), {...latest, bookingTurnCredit: 3});
+    assert.equal(model.serviceCredit(50.24), 0.25);
+    assert.equal(model.serviceCredit(50.25), 1.75);
     assert.deepEqual(errors, []);
   });
 }
