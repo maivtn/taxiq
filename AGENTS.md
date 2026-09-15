@@ -7,6 +7,10 @@
 - Áp dụng cấu trúc, thuật ngữ nghiệp vụ, sơ đồ và quy định quản lý phiên bản theo hướng dẫn trong file đó. Kiểm tra nội dung với mã nguồn và tài liệu hiện có trước khi viết.
 - Nếu hướng dẫn mâu thuẫn với yêu cầu trực tiếp của người dùng, ưu tiên yêu cầu của người dùng.
 
+## Quy tắc giao diện
+
+- Khi tạo hoặc chỉnh sửa ô chọn (select/dropdown), tuân thủ [Form Controls](nexora-design-system-colors.md#form-controls): mũi tên cách mép phải 16px, icon rộng 16px, vùng đệm bên phải tối thiểu 44px. Áp dụng cả trên tablet, điện thoại và các ô chọn kích thước nhỏ.
+
 ## Commit sau khi hoàn tất
 
 - Sau mỗi yêu cầu đã hoàn tất có thay đổi file, tự động tạo Git commit cho các thay đổi thuộc yêu cầu đó; không cần hỏi lại người dùng.

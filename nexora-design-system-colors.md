@@ -1,6 +1,6 @@
 # Nexora Design System Colors
 
-Updated: 2026-07-10
+Updated: 2026-09-15
 
 This file documents the core Nexora color tokens used for light and dark themes.
 
@@ -71,6 +71,12 @@ Shape tokens make Nexora feel warmer and less rigid while keeping operational sc
 | `radius/card` | `14px` | Ticket cards, booking rows, metric cards |
 | `radius/panel` | `18px` | Main panels, side panels, large grouped surfaces |
 | `radius/pill` | `999px` | Status pills, count chips, segmented filters |
+
+## Form Controls
+
+- Position the select/dropdown expand arrow **16px from the right edge**, centered vertically.
+- Use a **16px icon** and reserve at least **44px of right padding** for the arrow and the gap between it and the selected text.
+- Keep this spacing in desktop, compact, tablet, and phone layouts.
 
 ## Elevation
 
