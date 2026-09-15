@@ -558,7 +558,11 @@
                     </select>
                   </label>
                   <label class="settings-field"><span class="settings-label">Commission (%)</span><input class="settings-input" type="number" min="0" max="100" step="1" data-tech-field="commission" placeholder="60"></label>
-                  <label class="settings-field"><span class="settings-label">Clean Fee ($)</span><input class="settings-input" type="number" min="0" step="0.01" inputmode="decimal" data-tech-field="cleanFee" placeholder="0.00"></label>
+                  <label class="settings-field">
+                    <span class="settings-label">Clean Fee ($)</span>
+                    <input class="settings-input" type="number" min="0" step="0.01" inputmode="decimal" data-tech-field="cleanFee" placeholder="0.00" aria-describedby="tech-clean-fee-help">
+                    <span class="settings-help" id="tech-clean-fee-help">Fixed amount for each day the technician works.</span>
+                  </label>
                 </div>
                 <div class="settings-toggle-row tech-tips-toggle-row">
                   <button class="toggle-pill is-on" type="button" data-tech-tips-toggle role="switch" aria-checked="true" aria-label="Toggle tips enabled at POS checkout"></button>
