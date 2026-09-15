@@ -48,8 +48,10 @@
       <div class="editor-fields">
         <section class="editor-section" aria-labelledby="details-title">
           <h3 class="section-number" id="details-title" data-i18n="detailsSection">01 / Promotion details</h3>
-          <label class="promo-field"><span data-i18n="name">Promotion name</span><input name="title" maxlength="100" required aria-describedby="promotion-error"></label>
-          <label class="promo-field"><span data-i18n="badge">Badge · optional</span><input name="badge" maxlength="50"></label>
+          <div class="promo-field-row details-row">
+            <label class="promo-field"><span data-i18n="name">Promotion name</span><input name="title" maxlength="100" required aria-describedby="promotion-error"></label>
+            <label class="promo-field"><span data-i18n="badge">Badge · optional</span><input name="badge" maxlength="50"></label>
+          </div>
           <p class="promo-note" data-i18n="detailsHint">Example: 15% off Classic Pedicure, Tue–Thu 10 AM–2 PM; cannot be combined. Clearly state who qualifies, eligible services and exclusions.</p>
           <label class="promo-field"><span data-i18n="description">Description · optional</span><textarea name="description" maxlength="1000" rows="3"></textarea></label>
         </section>
