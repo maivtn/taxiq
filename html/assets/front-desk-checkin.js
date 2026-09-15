@@ -8,8 +8,8 @@
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]));
   const money = cents => '$' + (cents / 100).toFixed(2);
   const phoneKey = value => String(value || '').replace(/\D/g, '').replace(/^1(?=\d{10}$)/, '');
-  const newMember = () => ({id: crypto.randomUUID(), name: '', relationship: '', tickets: []});
-  let draft, activeId, category = 'All', search = '', catalog, submitted = false;
+  const newMember = () => ({id: crypto.randomUUID(), name: '', relationship: 'Family member', tickets: []});
+  let draft, activeId, category = 'All', search = '', catalog, submitted = false, toastTimer;
   function reset() {
     draft = {id: crypto.randomUUID(), mode: 'single', contact: {name: '', phone: ''}, smsConsent: false, members: [newMember()]};
     activeId = draft.members[0].id;
@@ -18,48 +18,56 @@
   }
   reset();
 
+  const icon = name => '<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + ({
+    user: '<path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/>',
+    users: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m20 0v-2a4 4 0 0 0-3-3.87M16 3.13a4 4 0 0 1 0 7.75"/><circle cx="9" cy="7" r="4"/>',
+    add: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m18-13v6m-3-3h6"/><circle cx="9" cy="7" r="4"/>',
+    trash: '<path d="M3 6h18M19 6l-1 14H6L5 6m4 0V3h6v3M10 10v6m4-6v6"/>',
+    search: '<circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/>',
+    link: '<path d="M10 13a5 5 0 0 0 7 .2l3-3a5 5 0 0 0-7-7l-2 2m3 6a5 5 0 0 0-7-.2l-3 3a5 5 0 0 0 7 7l2-2"/>',
+    close: '<path d="m18 6-12 12M6 6l12 12"/>'
+  }[name] || '') + '</svg>';
   root.innerHTML = `
-    <div class="ci-heading"><div><span class="ci-eyebrow">WELCOME TO THE SALON</span><h2>Guest check-in</h2><p>One guest or the whole family. A personal ticket for everyone.</p></div><span class="ci-step">1 · Details <span>→</span> 2 · Review</span></div>
+    <div class="ci-heading"><div><h2>Nice to meet you!</h2><p>Tell us who we’re checking in and add family members when needed.</p></div><span class="ci-step"><strong>1</strong> Build check-in</span></div>
     <div id="ci-entry" class="ci-layout">
       <div class="ci-main ci-surface">
         <section aria-labelledby="ci-contact-title">
-          <div class="ci-section-title"><span class="ci-section-number">1</span><div><h3 id="ci-contact-title">Primary contact</h3><p>The person checking in and the contact for this visit.</p></div></div>
-          <div class="ci-contact-fields"><label>Mobile phone <span class="ci-required">*</span><div class="ci-phone-field"><input id="ci-contact-phone" type="tel" autocomplete="tel" placeholder="(555) 000-0000" maxlength="24" required><button type="button" data-ci-lookup>Find guest</button></div></label><label>Full name <span class="ci-required">*</span><input id="ci-contact-name" autocomplete="name" placeholder="Enter the primary contact’s name" maxlength="100" required></label></div>
-          <div id="ci-lookup-results" aria-live="polite"></div><div id="ci-selected-booking" hidden></div>
-          <label class="ci-consent"><input id="ci-consent" type="checkbox"><span>Guest agrees to receive text reminders and offers. <span class="ci-muted">Optional.</span></span></label>
+          <h3 id="ci-contact-title">Primary contact</h3><p class="ci-subcopy">Only this person needs a name and mobile phone.</p>
+          <div class="ci-contact-fields"><label>Mobile phone <b>*</b><input id="ci-contact-phone" type="tel" autocomplete="tel" maxlength="24" required></label><label>Name <b>*</b><input id="ci-contact-name" autocomplete="name" maxlength="100" required></label></div>
+          <label class="ci-consent"><input id="ci-consent" type="checkbox"><span>Text me offers, reminders &amp; rewards from Nexora Touch Nail Spa. Message and data rates may apply.</span></label>
         </section>
         <section class="ci-section" aria-labelledby="ci-mode-title">
-          <div class="ci-section-title"><span class="ci-section-number">2</span><div><h3 id="ci-mode-title">Who are you checking in?</h3><p>Choose a service and a preferred technician for each guest.</p></div></div>
+          <h3 id="ci-mode-title">Who are you checking in?</h3><p class="ci-subcopy">The single-guest flow stays fast. Family mode adds a separate ticket for each person.</p>
           <div class="ci-mode-grid" role="group" aria-label="Check-in mode">
-            <button type="button" data-ci-mode="single" aria-pressed="true"><span class="ci-mode-icon" aria-hidden="true">♙</span><span><strong>Just me</strong><small>One guest, one ticket</small></span><span class="ci-radio" aria-hidden="true"></span></button>
-            <button type="button" data-ci-mode="family" aria-pressed="false"><span class="ci-mode-icon" aria-hidden="true">♙♙</span><span><strong>Family / Group</strong><small>Multiple linked tickets</small></span><span class="ci-radio" aria-hidden="true"></span></button>
+            <button type="button" data-ci-mode="single" aria-pressed="true">${icon('user')}<span><strong>Just me</strong><small>One guest, one ticket</small></span></button>
+            <button type="button" data-ci-mode="family" aria-pressed="false">${icon('users')}<span><strong>Family / Group</strong><small>Multiple linked tickets</small></span></button>
           </div>
-          <div id="ci-family" hidden><div class="ci-member-heading"><h4>Group members</h4><button type="button" data-ci-add-member>＋ Add member</button></div><div id="ci-member-tabs" role="group" aria-label="Choose a member"></div><div id="ci-member-editor"></div></div>
+          <div id="ci-family" hidden><div class="ci-member-heading"><strong>Family members</strong><button type="button" data-ci-add-member>${icon('add')}Add Family Member</button></div><div id="ci-member-tabs" role="group" aria-label="Choose a member"></div><div id="ci-member-editor"></div></div>
+          <div id="ci-single-selection" class="ci-selected-list" hidden></div>
         </section>
         <section class="ci-section" aria-labelledby="ci-services-title">
-          <div class="ci-section-title"><span class="ci-section-number">3</span><div><h3 id="ci-services-title">Choose services</h3><p>Add services now, or let the front desk help later.</p></div></div>
-          <div class="ci-active-guest"><span>Adding services for <strong id="ci-active-name"></strong></span><span id="ci-active-count"></span></div>
-          <div id="ci-selected-services"></div>
-          <label class="ci-search"><span class="ci-sr-only">Search services</span><input id="ci-service-search" type="search" placeholder="Search services…"></label>
+          <div class="ci-active-guest"><div><span>Adding services for</span><strong id="ci-active-name"></strong></div><em>Unlimited services</em></div>
+          <h3 id="ci-services-title">Choose services</h3><p class="ci-subcopy">Tap as many services as needed. Every service stays with the active guest.</p>
+          <label class="ci-search">${icon('search')}<input id="ci-service-search" type="search" placeholder="Search services" aria-label="Search services"></label>
           <div id="ci-categories" role="group" aria-label="Service categories"></div>
           <div id="ci-catalog-results" class="ci-service-grid"></div>
         </section>
       </div>
       <aside class="ci-summary ci-surface" aria-labelledby="ci-summary-title">
         <div class="ci-summary-heading"><h3 id="ci-summary-title">Check-in summary</h3><span id="ci-mode-badge" class="ci-badge"></span></div>
-        <div class="ci-summary-contact"><span class="ci-avatar" id="ci-contact-avatar" aria-hidden="true">G</span><div><strong id="ci-summary-name"></strong><small id="ci-summary-phone"></small></div></div>
-        <div class="ci-summary-row"><span>Guests</span><strong id="ci-summary-guests">1</strong></div>
-        <div class="ci-summary-row"><span>Selected services</span><strong id="ci-summary-services">0</strong></div>
-        <div id="ci-summary-members"></div>
+        <div class="ci-summary-contact"><div class="ci-avatar" id="ci-contact-avatar" aria-hidden="true">G</div><div><strong id="ci-summary-name"></strong><span id="ci-summary-phone"></span></div></div>
+        <div class="ci-summary-counts"><div class="ci-summary-row"><span>Guests</span><strong id="ci-summary-guests">1</strong></div><div class="ci-summary-row"><span>Selected services</span><strong id="ci-summary-services">0</strong></div></div>
         <div class="ci-summary-total"><span>Estimated total</span><strong id="ci-summary-total"></strong></div>
-        <p class="ci-muted ci-price-note">Service estimate only. Tax, tip and discounts are confirmed at checkout.</p>
-        <p id="ci-error" class="ci-error" role="alert"></p>
-        <button class="primary ci-review-button" type="button" data-ci-review>Review Check-in <span aria-hidden="true">→</span></button>
-        <p class="ci-summary-note">Each guest receives a separate ticket linked to the primary contact.</p>
+        <button class="primary ci-review-button" type="button" data-ci-review>Review Check-in</button>
+        <div class="ci-summary-note">${icon('link')}<span>Family members receive separate tickets linked to one primary contact.</span></div>
       </aside>
     </div>
     <section id="ci-success" class="ci-success ci-surface" hidden aria-labelledby="ci-success-title"><span class="ci-success-icon" aria-hidden="true">✓</span><h2 id="ci-success-title" tabindex="-1">You’re checked in!</h2><p id="ci-success-copy"></p><div id="ci-success-tickets"></div><div class="ci-success-actions"><a class="ci-primary-link" href="pos-front-desk-tickets.html">View Tickets →</a><button type="button" data-ci-new>New Check-in</button></div></section>
-    <dialog id="ci-review-dialog" aria-labelledby="ci-review-title"><div class="ci-review-heading"><div><span class="ci-eyebrow">READY TO CHECK IN</span><h2 id="ci-review-title">Review check-in</h2></div><button type="button" data-ci-close aria-label="Close review">×</button></div><p id="ci-review-contact"></p><div id="ci-review-members"></div><div class="ci-review-total"><span>Estimated total</span><strong id="ci-review-total"></strong></div><p class="ci-muted">Tax, tip and discounts are confirmed at checkout.</p><p id="ci-review-error" class="ci-error" role="alert"></p><div class="ci-review-actions"><button type="button" data-ci-close>Back to edit</button><button type="button" class="primary" data-ci-submit></button></div></dialog>`;
+    <dialog id="ci-review-dialog" aria-labelledby="ci-review-title">
+      <header class="ci-review-heading"><h2 id="ci-review-title">Review family check-in</h2><button type="button" data-ci-close aria-label="Close review">${icon('close')}</button></header>
+      <div class="ci-review-body"><div class="ci-review-contact"><div><strong id="ci-review-contact-name"></strong><span id="ci-review-contact-phone"></span></div><span id="ci-review-guest-count"></span></div><div id="ci-review-members"></div><p id="ci-review-error" class="ci-error" role="alert"></p></div>
+      <footer class="ci-review-footer"><div class="ci-review-total"><strong id="ci-review-total"></strong><span>Payment is collected at checkout.</span></div><div class="ci-review-actions"><button type="button" data-ci-close>Back</button><button type="button" class="primary" data-ci-submit></button></div></footer>
+    </dialog><div id="ci-toast" class="ci-toast" role="status"></div>`;
 
   const members = () => draft.mode === 'family' ? draft.members : draft.members.slice(0, 1);
   const active = () => draft.members.find(member => member.id === activeId) || draft.members[0];
@@ -74,28 +82,37 @@
   const categoryName = service => service.categoryName || service.requiredSkill || 'Other services';
   const ticketLink = id => 'pos-front-desk-tickets.html?ticketId=' + encodeURIComponent(id) + '&mode=edit';
 
+  const initials = name => (name.trim() || 'Guest').split(/\s+/).slice(0, 2).map(word => word[0]).join('').toUpperCase();
+  function showToast(message) {
+    $('#ci-toast').textContent = message;
+    $('#ci-toast').classList.add('show');
+    window.clearTimeout(toastTimer);
+    toastTimer = window.setTimeout(() => $('#ci-toast').classList.remove('show'), 2100);
+  }
   function renderSummary() {
     const list = members();
     $('#ci-summary-name').textContent = draft.contact.name.trim() || 'Primary contact';
-    $('#ci-summary-phone').textContent = draft.contact.phone.trim() || 'Add a mobile phone';
-    $('#ci-contact-avatar').textContent = (draft.contact.name.trim() || 'Guest').split(/\s+/).slice(0, 2).map(word => word[0]).join('').toUpperCase();
-    $('#ci-mode-badge').textContent = draft.mode === 'family' ? 'Family / Group' : 'Single guest';
+    $('#ci-summary-phone').textContent = (draft.contact.phone.trim() || 'Phone required') + ' · Primary contact';
+    $('#ci-contact-avatar').textContent = initials(draft.contact.name);
+    $('#ci-mode-badge').textContent = draft.mode === 'family' ? 'Family Group' : 'Single guest';
     $('#ci-summary-guests').textContent = list.length;
     $('#ci-summary-services').textContent = list.reduce((count, member) => count + member.tickets.length, 0);
     $('#ci-summary-total').textContent = estimate(list);
-    $('#ci-summary-members').innerHTML = list.map(member => `<div class="ci-summary-member"><span>${esc(memberName(member))}<small>${member.tickets.length} service${member.tickets.length === 1 ? '' : 's'}</small></span><strong>${esc(estimate([member]))}</strong></div>`).join('');
     $('#ci-active-name').textContent = memberName(active());
-    $('#ci-active-count').textContent = active().tickets.length + ' selected';
-    $('[data-ci-remove-member]')?.setAttribute('aria-label', 'Remove ' + memberName(active()));
-    $('#ci-member-tabs').innerHTML = draft.members.map(member => `<button type="button" data-ci-member="${esc(member.id)}" aria-pressed="${member.id === activeId}">${esc(memberName(member))}<span>${member.tickets.length}</span></button>`).join('');
+    $('#ci-member-tabs').innerHTML = draft.members.map((member, index) => `<button type="button" data-ci-member="${esc(member.id)}" aria-pressed="${member.id === activeId}"><strong>${esc(memberName(member))}</strong><small>${esc(index === 0 ? 'Primary contact' : member.relationship)}</small></button>`).join('');
+    const editorName = $('#ci-editor-name');
+    if (editorName) {editorName.textContent = memberName(active()); $('#ci-editor-avatar').textContent = initials(memberName(active()));}
   }
   function renderMember() {
     const member = active();
-    $('#ci-family').hidden = draft.mode !== 'family';
+    const family = draft.mode === 'family';
+    $('#ci-family').hidden = !family;
     root.querySelectorAll('[data-ci-mode]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.ciMode === draft.mode)));
     const first = member === draft.members[0];
-    $('#ci-member-editor').innerHTML = first ? '<p class="ci-primary-member">Primary contact · Name and phone are entered above.</p>' : `<div class="ci-member-fields"><label>Member name <span class="ci-muted">(optional)</span><input id="ci-member-name" maxlength="100" value="${esc(member.name)}" placeholder="${esc(memberName(member))}"></label><label>Relationship <span class="ci-muted">(optional)</span><select id="ci-member-relationship">${['', 'Spouse / Partner', 'Child', 'Parent', 'Friend', 'Other'].map(value => `<option value="${esc(value)}" ${member.relationship === value ? 'selected' : ''}>${esc(value || 'Select relationship')}</option>`).join('')}</select></label><button type="button" data-ci-remove-member aria-label="Remove ${esc(memberName(member))}">Remove</button></div>`;
-    $('#ci-selected-services').innerHTML = member.tickets.length ? member.tickets.map((line, index) => `<article class="ci-service-line" data-ci-line="${esc(line.id)}"><span class="ci-line-number">${index + 1}</span><div class="ci-line-copy"><strong>${esc(line.serviceName)}</strong><small>${line.durationMin} min · ${esc(linePrice(line))}</small></div><label>Preferred technician<select data-ci-technician="${esc(line.id)}"><option value="">Anyone available</option>${catalog.technicians.filter(tech => tech.active).map(tech => `<option value="${esc(tech.id)}" ${line.technicianId === tech.id ? 'selected' : ''}>${esc(tech.name)}</option>`).join('')}</select></label><button type="button" data-ci-remove-service="${esc(line.id)}" aria-label="Remove ${esc(line.serviceName)} service ${index + 1}">×</button></article>`).join('') : '<p class="ci-services-empty">No services selected yet. You can check in now and choose later.</p>';
+    const lines = member.tickets.map((line, index) => `<div class="ci-service-line" data-ci-line="${esc(line.id)}"><div class="ci-line-copy"><strong>${esc(line.serviceName)}</strong><small>${line.durationMin} min · ${esc(linePrice(line))}</small></div><select data-ci-technician="${esc(line.id)}" aria-label="Technician for ${esc(line.serviceName)}"><option value="">Anyone</option>${catalog.technicians.filter(tech => tech.active).map(tech => `<option value="${esc(tech.id)}" ${line.technicianId === tech.id ? 'selected' : ''}>${esc(tech.name)}</option>`).join('')}</select><button type="button" data-ci-remove-service="${esc(line.id)}" aria-label="Remove ${esc(line.serviceName)}">${icon('close')}</button></div>`).join('');
+    $('#ci-member-editor').innerHTML = family ? `<div class="ci-editor-top"><div class="ci-editor-title"><div class="ci-avatar" id="ci-editor-avatar"></div><div><strong id="ci-editor-name"></strong><span>${first ? 'Required primary contact' : 'Name is optional'}</span></div></div>${first ? '' : `<button type="button" data-ci-remove-member aria-label="Remove member">${icon('trash')}</button>`}</div><div class="ci-member-fields"><label>Member name ${first ? '*' : '(optional)'}<input id="ci-member-name" maxlength="100" value="${esc(first ? draft.contact.name : member.name)}" ${first ? 'required' : ''}></label><label>Relationship (optional)<select id="ci-member-relationship">${['Family member', 'Adult', 'Child', 'Friend'].map(value => `<option ${member.relationship === value ? 'selected' : ''}>${value}</option>`).join('')}</select></label></div><div class="ci-selected-list" id="ci-selected-services">${lines || '<div class="ci-services-empty">No services yet. Choose from the catalog below.</div>'}</div><p class="ci-member-note">No additional phone number is required.</p>` : '';
+    $('#ci-single-selection').hidden = family || !member.tickets.length;
+    $('#ci-single-selection').innerHTML = family ? '' : lines;
     renderSummary();
   }
   function renderCatalog() {
@@ -104,55 +121,19 @@
     if (!categories.includes(category)) category = 'All';
     $('#ci-categories').innerHTML = categories.map(name => `<button type="button" data-ci-category="${esc(name)}" aria-pressed="${category === name}">${esc(name)}</button>`).join('');
     const matches = services.filter(service => (category === 'All' || categoryName(service) === category) && (service.name + ' ' + (service.aliases || []).join(' ')).toLowerCase().includes(search.toLowerCase().trim()));
-    $('#ci-catalog-results').innerHTML = matches.length ? matches.map(service => `<button type="button" class="ci-service-card" data-ci-add-service="${esc(service.id)}"><span class="ci-service-icon" aria-hidden="true">${esc(service.icon || '✦')}</span><span class="ci-card-copy"><strong>${esc(service.name)}</strong><small>${service.durationMin} min · ${esc(categoryName(service))}</small></span><span class="ci-card-price">${esc(linePrice(service))}<b aria-hidden="true">＋</b></span></button>`).join('') : '<p class="ci-services-empty">No services match your search and category.</p>';
-  }
-  function renderBooking() {
-    const selected = $('#ci-selected-booking');
-    selected.hidden = !draft.appointmentId;
-    selected.innerHTML = draft.appointmentId ? '<span>✓ Using the selected booking for the primary guest.</span><button type="button" data-ci-clear-booking>Use a new visit</button>' : '';
-  }
-  function detachBooking() {
-    if (!draft.appointmentId) return;
-    delete draft.appointmentId;
-    catalog = window.NEXORA_SALON_DATA.loadCatalog();
-    draft.members[0].tickets = draft.members[0].tickets.map(line => {
-      const service = catalog.services.find(item => item.id === line.serviceId);
-      return service ? {...line, serviceName: service.name, price: service.price, durationMin: service.durationMin} : line;
-    });
-    renderMember(); renderCatalog(); renderBooking();
-  }
-  function lookup() {
-    const phone = phoneKey(draft.contact.phone);
-    if (!/^\d{10}$/.test(phone)) {$('#ci-lookup-results').textContent = 'Enter a complete mobile phone to find a guest.'; return;}
-    const records = store.loadAll().filter(record => phoneKey(record.phone) === phone).sort((a, b) => b.updatedAt.localeCompare(a.updatedAt));
-    if (!records.length) {$('#ci-lookup-results').textContent = 'New guest — enter their name to continue.'; return;}
-    if (!draft.contact.name.trim()) {
-      draft.contact.name = records[0].metadata.checkIn?.contact?.name || records[0].customerName;
-      $('#ci-contact-name').value = draft.contact.name;
-      renderSummary();
-    }
-    const today = new Date();
-    const isToday = value => new Date(value).toDateString() === today.toDateString();
-    const bookings = records.filter(record => ['pending', 'confirmed'].includes(record.status) && isToday(record.startAt));
-    let saved = {};
-    try {saved = JSON.parse(localStorage.getItem('nexora:front-desk-ticket-workspaces:v1') || '{}');} catch (_) {}
-    const open = records.filter(record => record.status === 'checked-in' && record.metadata.checkIn && !saved?.[record.id]?.payment && !saved?.[record.id]?.cancelled);
-    $('#ci-lookup-results').innerHTML = `<p>Guest found: <strong>${esc(draft.contact.name)}</strong></p>` + bookings.map(record => `<div class="ci-lookup-row"><span>Today · ${esc(new Date(record.startAt).toLocaleTimeString('en-US', {hour: 'numeric', minute: '2-digit'}))} · ${esc(record.serviceNames.join(', ') || 'Services to be selected')}</span><button type="button" data-ci-booking="${esc(record.id)}">Use booking</button></div>`).join('') + (open.length ? `<div class="ci-open-visits"><strong>${open.length} open ticket${open.length === 1 ? '' : 's'} using this phone</strong>${open.map(record => `<a href="${esc(ticketLink(record.id))}">${esc(record.customerName)} · #${esc(record.metadata.checkIn.ticketNumber)}</a>`).join('')}<button type="button" data-ci-another>Check in another guest</button></div>` : '');
+    $('#ci-catalog-results').innerHTML = matches.length ? matches.map(service => `<button type="button" class="ci-service-card" data-ci-add-service="${esc(service.id)}"><span class="ci-card-copy"><strong>${esc(service.name)}</strong><small>${service.durationMin} min</small></span><span class="ci-card-price">${esc(linePrice(service))}</span></button>`).join('') : '<p class="ci-services-empty">No services match your search and category.</p>';
   }
   function validation() {
-    if (!draft.contact.name.trim()) return {message: 'Enter the primary contact’s name.', field: '#ci-contact-name'};
-    if (!/^\d{10}$/.test(phoneKey(draft.contact.phone))) return {message: 'Enter a complete 10-digit mobile phone.', field: '#ci-contact-phone'};
-    return null;
+    return !draft.contact.name.trim() || !/^\d{10}$/.test(phoneKey(draft.contact.phone)) ? 'Representative name and a complete mobile phone are required.' : '';
   }
   function review() {
     if (submitted) return;
-    const error = validation();
-    $('#ci-error').textContent = error?.message || '';
-    if (error) {$(error.field).focus(); return;}
-    $('#ci-review-contact').textContent = draft.contact.name.trim() + ' · ' + draft.contact.phone.trim() + ' · Primary contact';
-    $('#ci-review-members').innerHTML = members().map(member => `<article class="ci-review-member"><div><strong>${esc(memberName(member))}</strong><span>${esc(estimate([member]))}</span></div>${member.relationship ? '<p class="ci-muted">' + esc(member.relationship) + '</p>' : ''}${member.tickets.length ? member.tickets.map(line => `<p><span>${esc(line.serviceName)}<small>${esc(catalog.technicians.find(tech => tech.id === line.technicianId)?.name || 'Anyone available')} · ${line.durationMin} min</small></span><b>${esc(linePrice(line))}</b></p>`).join('') : '<p class="ci-muted">Services can be selected later at the front desk.</p>'}</article>`).join('');
-    $('#ci-review-total').textContent = estimate(members());
-    $('#ci-review-error').textContent = '';
+    $('#ci-review-contact-name').textContent = (draft.contact.name.trim() || 'Primary contact') + ' · Primary contact';
+    $('#ci-review-contact-phone').textContent = draft.contact.phone.trim() || 'Phone required';
+    $('#ci-review-guest-count').textContent = members().length + ' guest' + (members().length === 1 ? '' : 's');
+    $('#ci-review-members').innerHTML = members().map(member => `<article class="ci-review-member"><div><strong>${esc(memberName(member))}</strong><span>${esc(estimate([member]))}</span></div><div class="ci-review-services">${member.tickets.length ? member.tickets.map(line => `<p><span>${esc(line.serviceName)} · ${esc(catalog.technicians.find(tech => tech.id === line.technicianId)?.name || 'Anyone')}</span><b>${esc(linePrice(line))}</b></p>`).join('') : '<p class="ci-review-empty">Services can be selected later at the front desk.</p>'}</div></article>`).join('');
+    $('#ci-review-total').textContent = estimate(members()) + ' total';
+    $('#ci-review-error').textContent = validation();
     $('[data-ci-submit]').textContent = 'Check In ' + members().length + ' Guest' + (members().length === 1 ? '' : 's');
     $('[data-ci-submit]').disabled = false;
     $('#ci-review-dialog').showModal();
@@ -160,6 +141,8 @@
   function submit() {
     const button = $('[data-ci-submit]');
     if (submitted || button.disabled) return;
+    const error = validation();
+    if (error) {$('#ci-review-error').textContent = error; return;}
     button.disabled = true;
     try {
       const result = store.checkIn({...draft, members: members()});
@@ -179,18 +162,23 @@
 
   root.addEventListener('input', event => {
     const input = event.target;
-    if (input.id === 'ci-contact-name') {draft.contact.name = input.value; renderSummary();}
-    if (input.id === 'ci-contact-phone') {
-      if (phoneKey(draft.contact.phone) !== phoneKey(input.value)) {detachBooking(); $('#ci-lookup-results').textContent = '';}
-      draft.contact.phone = input.value; renderSummary();
+    if (input.id === 'ci-contact-name') {
+      draft.contact.name = input.value;
+      if (active() === draft.members[0] && $('#ci-member-name')) $('#ci-member-name').value = input.value;
+      renderSummary();
     }
-    if (input.id === 'ci-member-name') {active().name = input.value; renderSummary();}
+    if (input.id === 'ci-contact-phone') {draft.contact.phone = input.value; renderSummary();}
+    if (input.id === 'ci-member-name') {
+      if (active() === draft.members[0]) {draft.contact.name = input.value; $('#ci-contact-name').value = input.value;}
+      else active().name = input.value;
+      renderSummary();
+    }
     if (input.id === 'ci-service-search') {search = input.value; renderCatalog();}
   });
   root.addEventListener('change', event => {
     const input = event.target;
     if (input.id === 'ci-consent') draft.smsConsent = input.checked;
-    if (input.id === 'ci-member-relationship') active().relationship = input.value;
+    if (input.id === 'ci-member-relationship') {active().relationship = input.value; renderSummary();}
     if (input.hasAttribute('data-ci-technician')) {
       const line = active().tickets.find(ticket => ticket.id === input.dataset.ciTechnician);
       if (line) line.technicianId = input.value || null;
@@ -201,38 +189,24 @@
     if (!button || button.disabled) return;
     if (button.hasAttribute('data-ci-mode')) {
       draft.mode = button.dataset.ciMode;
-      if (draft.mode === 'family' && draft.members.length === 1) draft.members.push(newMember());
-      activeId = draft.members[draft.mode === 'family' ? 1 : 0].id;
+      activeId = draft.members[0].id;
       renderMember();
     }
-    if (button.hasAttribute('data-ci-add-member')) {const member = newMember(); draft.members.push(member); activeId = member.id; renderMember(); $('#ci-member-name').focus();}
+    if (button.hasAttribute('data-ci-add-member')) {const member = newMember(); member.name = 'Guest ' + (draft.members.length + 1); draft.members.push(member); activeId = member.id; renderMember(); $('#ci-member-name').focus();}
     if (button.hasAttribute('data-ci-member')) {activeId = button.dataset.ciMember; renderMember(); $('[data-ci-member="' + activeId + '"]').focus();}
     if (button.hasAttribute('data-ci-remove-member')) {
       if (active() === draft.members[0]) return;
+      if (active().tickets.length && !window.confirm('Remove ' + memberName(active()) + ' and selected services?')) return;
       draft.members = draft.members.filter(member => member.id !== activeId);
       activeId = draft.members[0].id;
-      if (draft.members.length === 1) draft.mode = 'single';
       renderMember();
     }
     if (button.hasAttribute('data-ci-add-service')) {
       const service = catalog.services.find(item => item.id === button.dataset.ciAddService && item.active);
-      if (service) {active().tickets.push({id: crypto.randomUUID(), serviceId: service.id, serviceName: service.name, price: service.price, durationMin: service.durationMin, technicianId: null}); renderMember();}
+      if (service) {active().tickets.push({id: crypto.randomUUID(), serviceId: service.id, serviceName: service.name, price: service.price, durationMin: service.durationMin, technicianId: null}); renderMember(); showToast(service.name + ' added to ' + memberName(active()));}
     }
     if (button.hasAttribute('data-ci-remove-service')) {active().tickets = active().tickets.filter(line => line.id !== button.dataset.ciRemoveService); renderMember();}
     if (button.hasAttribute('data-ci-category')) {category = button.dataset.ciCategory; renderCatalog(); [...root.querySelectorAll('[data-ci-category]')].find(item => item.dataset.ciCategory === category)?.focus();}
-    if (button.hasAttribute('data-ci-lookup')) lookup();
-    if (button.hasAttribute('data-ci-another')) {$('#ci-lookup-results').textContent = 'Checking in another guest with this contact phone.'; $('#ci-contact-name').focus();}
-    if (button.hasAttribute('data-ci-booking')) {
-      const record = store.loadAll().find(row => row.id === button.dataset.ciBooking);
-      if (!record) return;
-      draft.appointmentId = record.id;
-      draft.contact.name = record.customerName;
-      $('#ci-contact-name').value = record.customerName;
-      draft.members[0].tickets = record.tickets.map(line => ({...line}));
-      activeId = draft.members[0].id;
-      renderMember(); renderBooking();
-    }
-    if (button.hasAttribute('data-ci-clear-booking')) detachBooking();
     if (button.hasAttribute('data-ci-review')) review();
     if (button.hasAttribute('data-ci-close')) $('#ci-review-dialog').close();
     if (button.hasAttribute('data-ci-submit')) submit();
@@ -240,10 +214,9 @@
       reset();
       ['#ci-contact-name', '#ci-contact-phone', '#ci-service-search'].forEach(selector => {$(selector).value = '';});
       $('#ci-consent').checked = false;
-      $('#ci-lookup-results').textContent = ''; $('#ci-error').textContent = '';
       $('#ci-entry').hidden = false; $('#ci-success').hidden = true;
       catalog = window.NEXORA_SALON_DATA.loadCatalog();
-      renderBooking(); renderMember(); renderCatalog(); $('#ci-contact-phone').focus();
+      renderMember(); renderCatalog(); $('#ci-contact-phone').focus();
     }
   });
 

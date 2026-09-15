@@ -69,6 +69,28 @@ test('family check-in saves linked independent members together and supplies unn
   assert.equal(JSON.parse(target.writes[0]).records.length, 2);
 });
 
+test('family check-in can persist the primary guest before any companions are added', () => {
+  const target = storage();
+  const result = store.checkIn(payload({mode: 'family'}), target, catalog, now);
+  assert.equal(result.ok, true);
+  assert.equal(result.records.length, 1);
+  assert.equal(result.records[0].customerName, 'Linh');
+  assert.equal(result.records[0].metadata.checkIn.mode, 'family');
+  assert.equal(result.records[0].metadata.checkIn.memberId, 'member-a');
+  const saved = store.loadAll(target, catalog);
+  assert.equal(saved.length, 1);
+  assert.equal(saved[0].metadata.checkIn.mode, 'family');
+});
+
+test('family check-in rejects an empty group without persisting a visit', () => {
+  const target = storage();
+  const result = store.checkIn(family({members: []}), target, catalog, now);
+  assert.equal(result.ok, false);
+  assert.equal(result.error.code, 'members-invalid');
+  assert.equal(target.getItem(store.STORAGE_KEY), null);
+  assert.equal(target.writes.length, 0);
+});
+
 test('a repeated session returns the existing records without writing or changing the group', () => {
   const target = storage();
   const first = store.checkIn(family(), target, catalog, now);
@@ -96,7 +118,7 @@ test('invalid group/contact input is rejected without persisting any members', (
   const invalid = [
     payload({id: ''}), payload({mode: 'other'}), payload({contact: {name: ' ', phone: '8325550100'}}),
     payload({contact: {name: 'Linh', phone: '222'}}), payload({contact: {name: 'Linh', phone: '28325550100'}}),
-    family({members: [{id: 'a', tickets: []}]}), payload({members: []}),
+    payload({members: family().members}), payload({members: []}),
     payload({members: [{id: '', tickets: []}]}),
     family({members: [{id: 'same', tickets: []}, {id: 'same', tickets: []}]}),
     payload({members: [{id: 'a', tickets: 'pedi'}]}),

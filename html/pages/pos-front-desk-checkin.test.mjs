@@ -10,6 +10,7 @@ function boot(query = '?section=checkin', seed) {
   const w = dom.window;
   w.structuredClone = structuredClone;
   w.matchMedia = () => ({matches: false});
+  w.confirm = () => true;
   w.HTMLDialogElement.prototype.showModal = function () { this.open = true; };
   w.HTMLDialogElement.prototype.close = function () { this.open = false; };
   for (const name of ['salon-data', 'appointment-tickets', 'appointments-store']) {
@@ -68,7 +69,10 @@ test('Family members keep repeated services and individual technicians when swit
   fill(w, '[data-ci-line]:first-child select', 't1', 'change');
   fill(w, '[data-ci-line]:last-child select', 't2', 'change');
   d.querySelector('[data-ci-mode="family"]').click();
+  assert.equal(d.querySelectorAll('[data-ci-member]').length, 1);
+  d.querySelector('[data-ci-add-member]').click();
   assert.equal(d.querySelectorAll('[data-ci-member]').length, 2);
+  assert.equal(d.querySelector('#ci-member-name').value, 'Guest 2');
   fill(w, '#ci-member-name', 'Anna');
   fill(w, '#ci-member-relationship', 'Child', 'change');
   d.querySelector('[data-ci-add-service="pedi"]').click();
@@ -78,6 +82,7 @@ test('Family members keep repeated services and individual technicians when swit
   d.querySelector('[data-ci-mode="single"]').click();
   assert.equal(d.querySelector('#ci-summary-guests').textContent, '1');
   d.querySelector('[data-ci-mode="family"]').click();
+  d.querySelectorAll('[data-ci-member]')[1].click();
   assert.equal(d.querySelector('#ci-member-name').value, 'Anna');
   assert.equal(d.querySelector('#ci-member-relationship').value, 'Child');
   assert.equal(d.querySelectorAll('[data-ci-line]').length, 1);
@@ -92,14 +97,19 @@ test('Family members keep repeated services and individual technicians when swit
 test('Review validates the contact, supports guests without services and creates each member once', () => {
   const dom = boot(), w = dom.window, d = w.document;
   d.querySelector('[data-ci-review]').click();
-  assert.equal(d.querySelector('#ci-review-dialog').open, false);
-  assert.match(d.querySelector('#ci-error').textContent, /name/i);
+  assert.equal(d.querySelector('#ci-review-dialog').open, true);
+  assert.match(d.querySelector('#ci-review-error').textContent, /name/i);
+  d.querySelector('[data-ci-submit]').click();
+  assert.equal(w.NEXORA_APPOINTMENTS_STORE.loadAll().length, 0);
+  d.querySelector('[data-ci-close]').click();
   contact(w);
   fill(w, '#ci-contact-phone', '123');
   d.querySelector('[data-ci-review]').click();
-  assert.match(d.querySelector('#ci-error').textContent, /phone/i);
+  assert.match(d.querySelector('#ci-review-error').textContent, /phone/i);
+  d.querySelector('[data-ci-close]').click();
   fill(w, '#ci-contact-phone', '(806) 388-8899');
   d.querySelector('[data-ci-mode="family"]').click();
+  d.querySelector('[data-ci-add-member]').click();
   d.querySelector('[data-ci-add-service="mani"]').click();
   d.querySelector('[data-ci-review]').click();
   assert.equal(d.querySelector('#ci-review-dialog').open, true);
@@ -137,23 +147,22 @@ test('Search combines category and text and marks unknown prices as pending', ()
   w.close();
 });
 
-test('Lookup can use today’s booking and checks it in without duplicating the representative', () => {
-  const dom = boot('?section=checkin', w => {
-    w.NEXORA_APPOINTMENTS_STORE.create({id: 'booking-brian', customerName: 'Brian', phone: '8063888899', startAt: new Date(), tickets: [{id: 'booked-mani', serviceId: 'mani', technicianId: 't2', price: 18, durationMin: 30}], status: 'confirmed'});
-  }), w = dom.window, d = w.document;
-  fill(w, '#ci-contact-phone', '+1 (806) 388-8899');
-  d.querySelector('[data-ci-lookup]').click();
-  assert.equal(d.querySelector('#ci-contact-name').value, 'Brian');
-  d.querySelector('[data-ci-booking="booking-brian"]').click();
-  assert.equal(d.querySelector('[data-ci-line] select').value, 't2');
+test('The primary member editor keeps its name synchronized and can check in alone in family mode', () => {
+  const dom = boot(), w = dom.window, d = w.document;
+  contact(w);
+  d.querySelector('[data-ci-mode="family"]').click();
+  assert.equal(d.querySelectorAll('[data-ci-member]').length, 1);
+  fill(w, '#ci-member-name', 'Brian updated');
+  assert.equal(d.querySelector('#ci-contact-name').value, 'Brian updated');
+  fill(w, '#ci-contact-name', 'Brian again');
+  assert.equal(d.querySelector('#ci-member-name').value, 'Brian again');
+  d.querySelector('[data-ci-add-service="mani"]').click();
+  assert.ok(d.querySelector('#ci-member-editor [data-ci-line]'));
   d.querySelector('[data-ci-review]').click();
-  assert.match(d.querySelector('#ci-review-total').textContent, /18.00/);
   d.querySelector('[data-ci-submit]').click();
   assert.equal(w.NEXORA_APPOINTMENTS_STORE.loadAll().length, 1);
-  assert.equal(w.NEXORA_APPOINTMENTS_STORE.loadAll()[0].id, 'booking-brian');
-  assert.equal(w.NEXORA_APPOINTMENTS_STORE.loadAll()[0].status, 'checked-in');
-  assert.equal(w.NEXORA_APPOINTMENTS_STORE.loadAll()[0].tickets[0].price, 18);
-  assert.equal(w.NEXORA_APPOINTMENTS_STORE.loadAll()[0].tickets[0].durationMin, 30);
+  assert.equal(w.NEXORA_APPOINTMENTS_STORE.loadAll()[0].customerName, 'Brian again');
+  assert.equal(w.NEXORA_APPOINTMENTS_STORE.loadAll()[0].metadata.checkIn.mode, 'family');
   w.close();
 });
 
@@ -174,21 +183,19 @@ test('A failed save leaves review and draft intact for retry', () => {
   w.close();
 });
 
-for (const detach of ['new-visit', 'different-phone']) test('Leaving a booking refreshes the reviewed price: ' + detach, () => {
-  const dom = boot('?section=checkin', w => {
-    w.NEXORA_APPOINTMENTS_STORE.create({id: 'special-booking', customerName: 'Brian', phone: '8063888899', startAt: new Date(), tickets: [{id: 'special-mani', serviceId: 'mani', price: 18, durationMin: 30}], status: 'confirmed'});
-  }), w = dom.window, d = w.document;
-  fill(w, '#ci-contact-phone', '8063888899');
-  d.querySelector('[data-ci-lookup]').click();
-  d.querySelector('[data-ci-booking="special-booking"]').click();
-  if (detach === 'new-visit') d.querySelector('[data-ci-clear-booking]').click();
-  else fill(w, '#ci-contact-phone', '2025550147');
-  d.querySelector('[data-ci-review]').click();
-  assert.match(d.querySelector('#ci-review-total').textContent, /22.00/);
-  assert.match(d.querySelector('#ci-review-members').textContent, /45 min/);
-  d.querySelector('[data-ci-submit]').click();
-  const records = w.NEXORA_APPOINTMENTS_STORE.loadAll();
-  assert.equal(records.find(record => record.id === 'special-booking').status, 'confirmed');
-  assert.equal(records.find(record => record.metadata.checkIn).tickets[0].price, 22);
+test('Removing a member with services requires confirmation and keeps the draft when cancelled', () => {
+  const dom = boot(), w = dom.window, d = w.document;
+  contact(w);
+  d.querySelector('[data-ci-mode="family"]').click();
+  d.querySelector('[data-ci-add-member]').click();
+  d.querySelector('[data-ci-add-service="mani"]').click();
+  w.confirm = () => false;
+  d.querySelector('[data-ci-remove-member]').click();
+  assert.equal(d.querySelectorAll('[data-ci-member]').length, 2);
+  assert.equal(d.querySelectorAll('[data-ci-line]').length, 1);
+  w.confirm = () => true;
+  d.querySelector('[data-ci-remove-member]').click();
+  assert.equal(d.querySelectorAll('[data-ci-member]').length, 1);
+  assert.equal(d.querySelector('[data-ci-mode="family"]').getAttribute('aria-pressed'), 'true');
   w.close();
 });

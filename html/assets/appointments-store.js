@@ -569,8 +569,8 @@
     if (!contact.phone) return error('phone-invalid', 'contact.phone', 'Enter a valid 10-digit phone number.');
     var members = input.members;
     if ((mode !== 'single' && mode !== 'family') || !Array.isArray(members) ||
-        (mode === 'single' ? members.length !== 1 : members.length < 2)) {
-      return error('members-invalid', 'members', 'Choose one guest for Single check-in or at least two for Family check-in.');
+        (mode === 'single' ? members.length !== 1 : members.length < 1)) {
+      return error('members-invalid', 'members', 'Add at least one guest to check in.');
     }
     var date = new Date(now == null ? Date.now() : now);
     if (!Number.isFinite(date.getTime())) return error('time-invalid', 'startAt', 'The check-in time is invalid. Try again.');
