@@ -160,7 +160,7 @@ test('switching editor language keeps merchant text and the selected banner', as
   assert.equal(d.querySelector('#promotion-language').value, 'en');
   d.querySelector('[data-template="weekday"]').click();
   field('title', 'Merchant wording'); field('badge', 'MY BADGE'); field('description', 'Nội dung riêng của tiệm.');
-  input('#banner-theme', 'gold'); d.querySelector('#add-banner').click();
+  d.querySelector('#add-banner').click(); input('#banner-theme', 'gold');
   input('#editor-language', 'vi');
   assert.equal(d.querySelector('[name="title"]').value, 'Merchant wording');
   assert.equal(d.querySelector('[name="badge"]').value, 'MY BADGE');
@@ -224,7 +224,7 @@ test('enable and disable update persisted state and filtered cards', async t => 
 test('banner order sets the saved cover and the banner list stays between one and eight', async t => {
   const {d, card, input, submit, savedState} = await boot(t, catalog());
   card('offer-a').querySelector('[data-action="edit"]').click();
-  input('#banner-theme', 'gold'); d.querySelector('#add-banner').click();
+  d.querySelector('#add-banner').click(); input('#banner-theme', 'gold');
   d.querySelector('[data-banner-action="up"][data-index="1"]').click();
   submit();
   assert.deepEqual(savedState().offers[0].banners.map(banner => banner.theme), ['gold', 'purple']);
@@ -251,6 +251,65 @@ test('removing an earlier banner preserves the selected image and focuses its ne
   assert.equal(d.activeElement, selected);
   submit();
   assert.deepEqual(savedState().offers[0].banners.map(banner => banner.id), ['banner-b', 'banner-c']);
+});
+
+test('choosing a template immediately changes only the selected banner and persists its theme after reload', async t => {
+  const banners = [{id: 'banner-a', theme: 'purple'}, {id: 'banner-b', theme: 'gold'}];
+  const {w, d, card, input, submit, savedState} = await boot(t, catalog([offer({banners})]));
+  card('offer-a').querySelector('[data-action="edit"]').click();
+  d.querySelector('[data-banner-action="select"][data-index="1"]').click();
+  assert.equal(d.querySelector('#banner-theme').value, 'gold');
+  input('#banner-theme', 'rose');
+  assert.equal(d.querySelector('#banner-theme').value, 'rose');
+  assert.ok(d.querySelector('#promotion-preview .theme-rose'));
+  assert.equal(d.querySelectorAll('[data-banner-action="select"]').length, 2);
+  assert.equal(d.querySelector('.banner-row[aria-current="true"] [data-banner-action="select"]').dataset.index, '1');
+  assert.deepEqual(savedState().offers[0].banners, banners, 'preview does not save the draft');
+  d.querySelector('[data-banner-action="select"][data-index="0"]').click();
+  assert.equal(d.querySelector('#banner-theme').value, 'purple');
+  assert.ok(d.querySelector('#promotion-preview .theme-purple'));
+  submit();
+  assert.deepEqual(savedState().offers[0].banners, [{id: 'banner-a', theme: 'purple'}, {id: 'banner-b', theme: 'rose'}]);
+  const restored = await boot(t, w.localStorage.getItem(storageKey));
+  restored.card('offer-a').querySelector('[data-action="edit"]').click();
+  restored.d.querySelector('[data-banner-action="select"][data-index="1"]').click();
+  assert.equal(restored.d.querySelector('#banner-theme').value, 'rose');
+  assert.ok(restored.d.querySelector('#promotion-preview .theme-rose'));
+});
+
+test('cancel discards a selected banner theme change', async t => {
+  const banners = [{id: 'banner-a', theme: 'purple'}, {id: 'banner-b', theme: 'gold'}];
+  const {d, card, input, close, savedState} = await boot(t, catalog([offer({banners})]));
+  card('offer-a').querySelector('[data-action="edit"]').click();
+  d.querySelector('[data-banner-action="select"][data-index="1"]').click();
+  input('#banner-theme', 'rose');
+  assert.ok(d.querySelector('#promotion-preview .theme-rose'));
+  close();
+  assert.deepEqual(savedState().offers[0].banners, banners);
+  card('offer-a').querySelector('[data-action="edit"]').click();
+  d.querySelector('[data-banner-action="select"][data-index="1"]').click();
+  assert.equal(d.querySelector('#banner-theme').value, 'gold');
+  assert.ok(d.querySelector('#promotion-preview .theme-gold'));
+});
+
+test('choosing a theme replaces only the selected uploaded banner with a template', async t => {
+  const banners = [
+    {id: 'banner-a', theme: 'purple', assetId: 'asset-a', name: 'First upload.png'},
+    {id: 'banner-b', theme: 'purple', assetId: 'asset-b', name: 'Second upload.png'}
+  ];
+  const {d, card, input, submit, savedState} = await boot(t, catalog([offer({banners})]));
+  card('offer-a').querySelector('[data-action="edit"]').click();
+  await tick();
+  assert.equal(d.querySelector('#banner-theme').selectedOptions[0].disabled, true);
+  assert.match(d.querySelector('#banner-theme').selectedOptions[0].textContent, /uploaded/i);
+  assert.equal(d.querySelector('#promotion-preview img').getAttribute('src'), 'blob:asset-a');
+  input('#banner-theme', 'gold');
+  assert.ok(d.querySelector('#promotion-preview .theme-gold'));
+  assert.equal(d.querySelector('#promotion-preview img'), null);
+  assert.equal(d.querySelectorAll('[data-banner-action="select"]').length, 2);
+  submit();
+  assert.deepEqual(savedState().offers[0].banners[0], {id: 'banner-a', theme: 'gold'});
+  assert.deepEqual(savedState().offers[0].banners[1], banners[1]);
 });
 
 test('cancel restores focus to the matching template button after changing editor language', async t => {

@@ -240,7 +240,13 @@
   function renderBanners() {
     if (!current) return;
     const offer = readOffer();
-    $('#promotion-preview').innerHTML = artwork(offer,current.banners[selectedBanner]);
+    const banner = current.banners[selectedBanner];
+    const editableTheme = !banner.assetId && ['purple','gold','rose'].includes(banner.theme);
+    $('#banner-current-design').hidden = editableTheme;
+    $('#banner-current-design').textContent = banner.assetId ? t('uploaded') : banner.theme;
+    $('#banner-theme').value = editableTheme ? banner.theme : '';
+    $('#banner-theme').disabled = uploadPending;
+    $('#promotion-preview').innerHTML = artwork(offer,banner);
     $('#promotion-banners').innerHTML = current.banners.map((banner,index) => {
       const button = (action,symbol,label,disabled = false) => '<button type="button" class="promo-button icon-button" data-banner-action="' + action + '" data-index="' + index + '" aria-label="' + t(label) + ' ' + (index+1) + '"' + (disabled || uploadPending ? ' disabled' : '') + '>' + icon(symbol) + '</button>';
       return '<div class="banner-row" aria-current="' + (index === selectedBanner) + '"><span class="banner-name">' + (index+1) + '. ' + esc(banner.assetId ? banner.name || t('uploaded') : ({purple:t('themePurple'),gold:t('themeGold'),rose:t('themeRose')}[banner.theme] || banner.theme)) + (index === 0 ? '<small>' + t('cover') + '</small>' : '') + '</span><div class="banner-actions">' + button('select','eye','preview') + button('up','arrow-up','moveUp',index === 0) + button('down','arrow-down','moveDown',index === current.banners.length-1) + button('remove','x','removeBanner',current.banners.length === 1) + '</div></div>';
@@ -323,7 +329,7 @@
       if (window.confirm(t('confirmDelete') + '\n“' + offer.title + '”') && persist({...state,offers:state.offers.filter(item => item.id !== offer.id)})) feedback(t('deleted'));
     }
   });
-  form.addEventListener('input',event => { if (!current || event.target.type === 'file') return; showError(''); renderBanners(); });
+  form.addEventListener('input',event => { if (!current || event.target.type === 'file' || event.target.id === 'banner-theme') return; showError(''); renderBanners(); });
   form.addEventListener('change',event => { if (!current || !event.target.name) return; updateConditional(); renderBanners(); });
   form.addEventListener('submit',event => { event.preventDefault(); saveOffer(); });
   document.querySelectorAll('[data-close-editor]').forEach(button => button.addEventListener('click',() => editor.close()));
@@ -335,7 +341,15 @@
     (target || $('#create-promotion')).focus();
     editorOpener = null;
   });
-  $('#add-banner').addEventListener('click',() => { if (!current || uploadPending || current.banners.length >= 8) return; current.banners.push(newBanner($('#banner-theme').value)); selectedBanner = current.banners.length-1; renderBanners(); });
+  $('#banner-theme').addEventListener('change',event => {
+    if (!current || uploadPending || !['purple','gold','rose'].includes(event.target.value)) return;
+    const banner = current.banners[selectedBanner];
+    current.banners[selectedBanner] = {...banner,theme:event.target.value};
+    delete current.banners[selectedBanner].assetId;
+    delete current.banners[selectedBanner].name;
+    showError(''); renderBanners();
+  });
+  $('#add-banner').addEventListener('click',() => { if (!current || uploadPending || current.banners.length >= 8) return; current.banners.push(newBanner($('#banner-theme').value || 'purple')); selectedBanner = current.banners.length-1; renderBanners(); });
   $('#promotion-banners').addEventListener('click',event => {
     const button = event.target.closest('[data-banner-action]'); if (!button || button.disabled || !current || uploadPending) return;
     const index = Number(button.dataset.index), action = button.dataset.bannerAction;
