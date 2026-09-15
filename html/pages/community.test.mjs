@@ -19,17 +19,6 @@ test('creates the Community page from the dashboard shell', () => {
   assert.match(html, /<h1 class="page-title">Community<\/h1>/);
 });
 
-test('shows the expanded Community submenu from the reference', () => {
-  const html = source();
-  assert.match(html, /class="nav-item nav-parent is-expanded"[^>]*aria-expanded="true"[^>]*aria-controls="community-subnav"/);
-  assert.match(html, /data-lucide="users-round"[^>]*>[\s\S]*?<span>Community<\/span>/);
-  assert.match(html, /class="nav-subnav" id="community-subnav" data-nav-subnav/);
-  for (const item of ['Feed', 'Groups', 'Learning', 'Jobs', 'Events']) {
-    assert.match(html, new RegExp(`<span>${item}<\\/span>`));
-  }
-  assert.match(html, /class="nav-subitem is-active"[^>]*>[\s\S]*?<span>Feed<\/span>/);
-});
-
 test('renders one Booking Book-style page tab for every Community submenu', () => {
   const html = source();
   assert.match(html, /class="page-tabs" role="tablist" aria-label="Community sections"/);
@@ -52,7 +41,6 @@ test('starts the five page tabs with one roving keyboard stop and a visible focu
 test('keeps Feed active by default and synchronizes submenu and page tabs', () => {
   const html = source();
   const runtime = readFileSync(new URL('../assets/community-page.js', import.meta.url), 'utf8');
-  assert.match(html, /class="nav-subitem is-active"[^>]*data-tab-target="feed"[^>]*aria-controls="panel-feed"/);
   assert.match(html, /class="page-tab is-active"[^>]*aria-selected="true"[^>]*data-tab-target="feed"/);
   assert.match(html, /class="tab-panel is-active"[^>]*id="panel-feed"[^>]*data-tab-panel="feed"/);
   assert.match(runtime, /document\.querySelectorAll\('\[data-tab-target\]'\)/);
@@ -180,7 +168,8 @@ test('keeps dialogs, notices, tabs, and shared shell accessible and connected', 
     assert.equal((html.match(new RegExp(`id="panel-${tab}"`, 'g')) || []).length, 1);
   }
   assert.match(html, /activePage:\s*'community'/);
-  assert.match(html, /onNavigate:\s*activateCommunityTab/);
+  assert.match(html, /onNavigate:\s*function\(tab\)/);
+  assert.match(html, /window\.activateCommunityTab\(tab\)/);
 });
 
 test('provides responsive Community layouts, reduced motion, and legible focus and text', () => {

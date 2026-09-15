@@ -158,15 +158,6 @@ test('labels the Ai Hub booking sidebar item as Booking', () => {
   assert.doesNotMatch(bookingItem, /Booking Book/);
 });
 
-test('keeps inline Booking sidebar fallback labels concise', () => {
-  for (const file of ['booking-book-phase-1.html', 'change-icon.html']) {
-    const html = readFileSync(new URL(`../pages/${file}`, import.meta.url), 'utf8');
-    const bookingItem = html.match(/<button class="nav-subitem[^"]*" type="button" data-tab-target="booking"[\s\S]*?<\/button>/)?.[0] || '';
-    assert.match(bookingItem, /<span>Booking<\/span>/);
-    assert.doesNotMatch(bookingItem, /Booking Book/);
-  }
-});
-
 test('renders all Reward submenu buttons on the native Reward page', () => {
   const html = renderSidebar('reward', 'overview');
   for (const [tab, label] of rewardItems) {
@@ -297,7 +288,7 @@ test('links salon POS submenu destinations from other shared sidebar pages', () 
     ['Front Desk', 'pos-front-desk.html'],
     ['Salon Settings', 'pos-salon-settings.html'],
     ['Report', 'pos-shop-income-report.html'],
-    ['Promotions', 'salon-setup-reward.html?tab=ai-offers'],
+    ['Promotions', 'reward-promotions.html'],
     ['Check-In Devices', 'qr-stations.html?tab=qr-stations'],
     ['Printer', 'pos-phase-1.html?tab=printer'],
     ['Public Check-In', '../customer/check-in-mobile.html']

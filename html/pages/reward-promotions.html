@@ -11,6 +11,8 @@
 </head>
 <body>
 <div class="shell"><aside class="sidebar" id="sidebar"></aside><div class="app-area"><header class="header" id="header"></header>
+<script>window.NEXORA_SHELL = {activePage: 'reward', activeTab: 'promotions', onNavigate: function(tab) { window.location.href = 'salon-setup-reward.html?tab=' + encodeURIComponent(tab); }};</script>
+<script src="../assets/nexora-shell.js"></script>
 <main class="promotions-page">
   <header class="promotions-heading">
     <div><p class="promo-eyebrow">Reward / Promotions</p><h1>Promotions</h1><p data-i18n="subtitle">Compelling offers. Clear terms. The right places to share.</p></div>
@@ -99,9 +101,8 @@
   </form>
 </dialog>
 <dialog id="promotion-poster-dialog" class="promo-poster-dialog" aria-labelledby="poster-title"><header class="editor-header"><div><p class="promo-eyebrow" data-i18n="preview">Preview</p><h2 id="poster-title" data-i18n="promotionPoster">Promotion poster</h2></div><button type="button" class="promo-close" id="close-poster" data-label="closePreview" aria-label="Close preview"><span data-icon="x"></span></button></header><div class="poster-body"><div id="poster-output"></div><div class="poster-pager"><button type="button" class="promo-button" id="previous-banner" data-label="previousBanner" aria-label="Previous banner"><span data-icon="arrow-left"></span></button><span id="poster-page"></span><button type="button" class="promo-button" id="next-banner" data-label="nextBanner" aria-label="Next banner"><span data-icon="arrow-right"></span></button></div><div id="poster-details"></div></div><footer class="editor-footer"><p class="promo-note" data-i18n="printHint">Print or save as PDF.</p><button class="promo-button primary" id="print-poster"><span data-icon="printer"></span><span data-i18n="print">Print poster</span></button></footer></dialog>
-<script>window.NEXORA_SHELL = {activePage: 'reward', activeTab: 'promotions', onNavigate: function(tab) { window.location.href = 'salon-setup-reward.html?tab=' + encodeURIComponent(tab); }};</script>
 <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
-<script src="../assets/nexora-shell.js"></script>
+<script>if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();</script>
 <script src="../assets/promotion-banner-assets.js"></script>
 <script src="../assets/reward-promotions.js?v=20260915-banner-colors"></script>
 </body>

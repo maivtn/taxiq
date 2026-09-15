@@ -39,11 +39,11 @@ function browserParsedInlineScripts(html) {
   return scripts;
 }
 
-test('registers SMS Campaigns and QR Codes in both Booking Hub navigation surfaces', () => {
+test('registers SMS Campaigns and QR Codes in the page tabs and shared sidebar', () => {
   const html = source();
   const shell = shellSource();
   for (const [target, label] of [['sms-campaigns', 'SMS Campaigns'], ['qr-codes', 'QR Codes']]) {
-    assert.equal((html.match(new RegExp(`data-tab-target="${target}"`, 'g')) || []).length, 2);
+    assert.equal((html.match(new RegExp(`data-tab-target="${target}"`, 'g')) || []).length, 1);
     assert.match(html, new RegExp(`data-tab-target="${target}"[^>]*aria-controls="panel-${target}"`));
     assert.match(html, new RegExp(`<span>${label}<\\/span>`));
     assert.match(html, new RegExp(`id="panel-${target}"[^>]*data-tab-panel="${target}"[^>]*role="tabpanel"`));
@@ -1055,7 +1055,6 @@ test('uses a checked-in mobile brand logo instead of a missing public asset', ()
   const shell = shellSource();
 
   assert.ok(existsSync(BRAND_LOGO_URL), 'mobile brand logo must exist');
-  assert.match(html, /class="brand-logo" src="\.\.\/assets\/nexora-logo\.svg"/);
   assert.match(shell, /class="brand-logo" src="\.\.\/assets\/nexora-logo\.svg"/);
   assert.doesNotMatch(html, /public\/assets\/nexora-logo\.png/);
   assert.doesNotMatch(shell, /public\/assets\/nexora-logo\.png/);

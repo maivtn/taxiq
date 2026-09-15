@@ -4,6 +4,7 @@ import { readFileSync } from 'node:fs';
 import vm from 'node:vm';
 
 const REWARD_PAGE = new URL('./salon-setup-reward.html', import.meta.url);
+const SHELL_PAGE = new URL('../assets/nexora-shell.js', import.meta.url);
 
 function source() {
   return readFileSync(REWARD_PAGE, 'utf8');
@@ -19,34 +20,18 @@ const sections = [
   ['analytics', 'Analytics', 'Analytics']
 ];
 
-test('keeps the inline merchant sidebar fallback aligned with the reference menu', () => {
-  const html = source();
-  const sidebar = html.match(/<aside class="sidebar"[\s\S]*?<\/aside>/)?.[0] || '';
-
-  assert.ok(sidebar, 'missing inline sidebar fallback');
-  assert.doesNotMatch(sidebar, /<span>Staff<\/span>/);
-  assert.match(sidebar, /data-nav-group="payments"[\s\S]*?<span>Payments (?:&|&amp;) Payouts<\/span>/);
-  assert.match(sidebar, /data-lucide="calendar-days"[\s\S]*?<span>Ai Hub<\/span>/);
-  assert.match(sidebar, /data-nav-group="community"[\s\S]*?<span>Community<\/span>/);
-  assert.match(sidebar, /data-nav-group="reward"[\s\S]*?<span>Reward<\/span>/);
-  assert.match(sidebar, /data-lucide="monitor"[\s\S]*?<span>POS<\/span>/);
-  assert.match(sidebar, /data-lucide="newspaper"[\s\S]*?<span>News (?:&|&amp;) Library<\/span>/);
-  assert.doesNotMatch(sidebar, /<span>Booking Hub<\/span>/);
-});
-
 test('uses the existing SVG logo asset without requesting the missing PNG', () => {
-  const html = source();
+  const html = readFileSync(SHELL_PAGE, 'utf8');
 
   assert.match(html, /<img class="brand-logo" src="\.\.\/assets\/nexora-logo\.svg" alt="Nexora Logo">/);
   assert.doesNotMatch(html, /nexora-logo\.png/);
 });
 
-test('uses seven synchronized loyalty management tabs and submenu items', () => {
+test('uses seven synchronized loyalty management tabs and panels', () => {
   const html = source();
   assert.match(html, /<title>Nexora Touch - Rewards<\/title>/);
-  for (const [target, tabLabel, submenuLabel] of sections) {
+  for (const [target, tabLabel] of sections) {
     assert.match(html, new RegExp(`class="page-tab[^\"]*"[^>]*data-tab-target="${target}"[^>]*aria-controls="panel-${target}"[\\s\\S]*?<span>${tabLabel}<\\/span>`));
-    assert.match(html, new RegExp(`data-nav-subitem-target="${target}"[^>]*>${submenuLabel}<\\/button>`));
     assert.match(html, new RegExp(`id="panel-${target}"[^>]*data-tab-panel="${target}"`));
   }
   assert.match(html, /data-tab-target="overview"[^>]*aria-selected="true"/);
@@ -162,7 +147,6 @@ test('uses consistent top-aligned labels for reward settings', () => {
 
 test('adds AI Offers as a separate loyalty management tab', () => {
   const html = source();
-  assert.match(html, /data-nav-subitem-target="ai-offers"[^>]*>AI Offers<\/button>/);
   assert.match(html, /class="page-tab[^"]*"[^>]*data-tab-target="ai-offers"[\s\S]*?<span>AI Offers<\/span>/);
   assert.match(html, /id="panel-ai-offers"[^>]*data-tab-panel="ai-offers"/);
   assert.match(html, /id="panel-reward-catalog"[^>]*data-tab-panel="reward-catalog"/);

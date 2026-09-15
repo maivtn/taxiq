@@ -35,10 +35,11 @@
   };
 
   var SIDEBAR_VISIBILITY_STORAGE_KEY = 'nexora.sidebar.visibility.v1';
+  var SIDEBAR_EXPANDED_STORAGE_KEY = 'nexora.sidebar.expanded.v1';
 
   // Single source of truth for the whole sidebar.
   // group.page === activePage  -> native group: open, sub-items drive this page's tabs
-  // group.page (other page)     -> foreign group: collapsed, sub-items link across pages
+  // group.page (other page)     -> foreign group: keeps its state, links across pages
   // group without page          -> section links (no destination yet)
   var NAV = [
     { type: 'item', key: 'home', label: 'Home', icon: 'home' },
@@ -83,7 +84,7 @@
       { label: 'Front Desk', tab: 'front-desk', href: 'pos-front-desk.html' },
       { label: 'Salon Settings', tab: 'salon-settings', href: 'pos-salon-settings.html' },
       { label: 'Report', tab: 'report', href: 'pos-shop-income-report.html' },
-      { label: 'Promotions', href: 'salon-setup-reward.html?tab=ai-offers' },
+      { label: 'Promotions', href: 'reward-promotions.html' },
       { label: 'Check-In Devices', href: 'qr-stations.html?tab=qr-stations' },
       { label: 'Printer', tab: 'printer' },
       { label: 'Public Check-In', href: '../customer/check-in-mobile.html' }
@@ -92,6 +93,24 @@
     { type: 'item', key: 'news-library', label: 'News & Library', icon: 'newspaper', page: 'news-library' },
     { type: 'item', key: 'support', label: 'Support', icon: 'circle-question-mark' }
   ];
+
+  var expandedGroups = {};
+  try {
+    var savedGroups = JSON.parse(window.sessionStorage.getItem(SIDEBAR_EXPANDED_STORAGE_KEY) || '{}');
+    NAV.forEach(function (node) {
+      if (node.type === 'group' && savedGroups && typeof savedGroups[node.key] === 'boolean') {
+        expandedGroups[node.key] = savedGroups[node.key];
+      }
+    });
+  } catch (e) {}
+  NAV.forEach(function (node) {
+    if (node.type === 'group' && node.page === activePage) expandedGroups[node.key] = true;
+  });
+
+  function saveExpandedGroups() {
+    if (activePage === 'staff') return;
+    try { window.sessionStorage.setItem(SIDEBAR_EXPANDED_STORAGE_KEY, JSON.stringify(expandedGroups)); } catch (e) {}
+  }
 
   var LOCKED_SIDEBAR_KEYS = { settings: true };
 
@@ -228,7 +247,7 @@
 
   function renderGroup(node) {
     var isNative = node.page && node.page === activePage;
-    var expanded = !!isNative; // active page's own group starts open
+    var expanded = expandedGroups[node.key] === true;
     var subId = 'nexora-subnav-' + node.key;
 
     var btn = '<button class="nav-item nav-parent' + (expanded ? ' is-expanded' : '') + '" type="button"'
@@ -362,6 +381,8 @@
           var collapsed = sub.classList.toggle('is-collapsed');
           toggle.classList.toggle('is-expanded', !collapsed);
           toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
+          expandedGroups[sub.id.replace('nexora-subnav-', '')] = !collapsed;
+          saveExpandedGroups();
         });
       })(toggles[i]);
     }
@@ -512,6 +533,7 @@
     if (sidebar) sidebar.id = 'nexora-sidebar';
     if (sidebar) sidebar.innerHTML = activePage === 'staff' ? STAFF_SIDEBAR_HTML : renderMerchantSidebarHtml();
     if (header) header.innerHTML = HEADER_HTML;
+    saveExpandedGroups();
 
     // drawer backdrop (once)
     if (!document.querySelector('.nexora-shell-backdrop')) {
@@ -534,6 +556,7 @@
   cfg.setHiddenSidebarKeys = setHiddenSidebarKeys;
   cfg.refreshSidebar = refreshSidebar;
 
-  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', init);
+  var shellReady = activePage !== 'staff' && document.querySelector('aside.sidebar') && document.querySelector('header.header');
+  if (document.readyState === 'loading' && !shellReady) document.addEventListener('DOMContentLoaded', init);
   else init();
 })();
