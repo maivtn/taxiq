@@ -15,7 +15,7 @@
 | Completed | Số booking hoàn thành hiển thị cho thợ trong kỳ đang xem. |
 | Reward | Số tiền thưởng booking được tính theo chính sách trong prototype; không phải khoản đã chi trả. |
 | Walk-in turns | Số lượt walk-in được ghi nhận cho thợ. |
-| Booking credit | Tổng lượt quy đổi từ booking được tính credit. |
+| Booking credit | Tổng lượt quy đổi từ booking được tính credit. Theo quy tắc đã chốt, chỉ booking Customer Request thuộc phạm vi tính; số liệu prototype hiện chưa kiểm chứng điều kiện này. |
 | Effective turns | Tổng Walk-in turns và Booking credit. |
 | Customer Request | Booking mà khách chọn đích danh thợ. |
 | Anyone | Booking mà khách không chọn đích danh thợ, được hệ thống hoặc người quản lý phân công. |
@@ -159,6 +159,7 @@ stateDiagram-v2
 ### Business Rules
 
 - Quy tắc hiển thị trong Ledger là chỉ Customer Request đủ điều kiện thưởng; Anyone không được thưởng do khách yêu cầu đích danh.
+- **Điều kiện Booking turn credit — đã chốt:** Chỉ Customer Request thuộc phạm vi tính Booking turn credit; Anyone không được tính khoản lượt này. Overview hiện chưa lọc Customer Request từ từng booking thực tế. Xem tiêu chí nghiệm thu trong [Weighted Turn Settings](weighted-turn-settings.md).
 - Với booking được giao lại, việc ghi nhận thưởng và ghi nhận lượt có thể thuộc hai thợ khác nhau.
 - Completed và số booking dùng tính thưởng có thể khác nhau. Prototype trừ booking bị đảo trước khi tính thưởng và booking credit.
 - Tổng lượt hiệu dụng là phép cộng các thành phần, chưa trực tiếp thay đổi vị trí thợ trên Turn Board.

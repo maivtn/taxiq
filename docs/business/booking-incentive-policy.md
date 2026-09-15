@@ -20,7 +20,7 @@
 | Volume tiers | Mức thưởng thay đổi theo bậc số lượng booking. |
 | Progressive | Tính riêng số booking thuộc từng bậc rồi cộng thưởng. |
 | Final tier | Áp mức thưởng của bậc đạt được cho toàn bộ số booking dùng tính thưởng. |
-| Booking turn credit | Số lượt quy đổi cho mỗi booking được tính lượt; cho phép số không âm, gồm cả số lẻ. Giá trị mặc định của salon dùng chung với Weighted Turn Settings. |
+| Booking turn credit | Số lượt quy đổi cho mỗi booking được tính lượt; cho phép số không âm, gồm cả số lẻ. Theo quy tắc đã chốt, chỉ Customer Request thuộc phạm vi áp dụng. Giá trị mặc định của salon dùng chung với Weighted Turn Settings. |
 | Weighted Turn Settings | Màn hình tại Turn Board để thêm/xóa khoảng dịch vụ, chỉnh Up to và lượt dịch vụ, cùng booking turn credit mặc định. Phần lượt chung của Booking Incentive Policy chỉ có booking turn credit. |
 | Effective date | Ngày người quản lý muốn chính sách bắt đầu áp dụng. Hiện mới được lưu trong phiên và hiển thị. |
 | Override | Cấu hình riêng của một thợ, thay thế một số giá trị mặc định. |
@@ -256,8 +256,9 @@ stateDiagram-v2
 
 ### Business Rules
 
-- Quy tắc nghiệp vụ hiển thị: chỉ booking Customer Request hoàn thành đủ điều kiện thưởng; Anyone nhận $0 booking reward và lượt thuộc người thực hiện.
-- **Giới hạn:** Phép tính Overview và preview vẫn dùng số booking mô phỏng, chưa kiểm chứng điều kiện thưởng trên từng booking thực tế.
+- Quy tắc thưởng hiển thị: chỉ booking Customer Request hoàn thành đủ điều kiện thưởng; Anyone nhận $0 booking reward.
+- **Điều kiện Booking turn credit — đã chốt:** Chỉ booking khách yêu cầu đích danh thợ (Customer Request) thuộc phạm vi tính Booking turn credit; Anyone không được tính khoản lượt này. Điều kiện này không quyết định lượt dịch vụ hoặc người nhận khi booking được giao lại. Tiêu chí nghiệm thu nằm trong [Weighted Turn Settings](weighted-turn-settings.md).
+- **Giới hạn:** Phép tính Overview và preview vẫn dùng số booking mô phỏng, chưa kiểm chứng điều kiện thưởng hoặc lọc Customer Request để tính Booking turn credit trên từng booking thực tế.
 - Reward và booking turn credit là hai đại lượng riêng; không coi thưởng tiền bằng 0 đồng nghĩa lượt bằng 0.
 - Booking turn credit mặc định dùng chung giữa hai màn hình. Khoảng tiền và lượt dịch vụ chỉ được chỉnh tại Turn Board; Save policy giữ cấu hình dịch vụ mới nhất đã lưu. Thay đổi không tự điều chỉnh các lượt đã ghi. Chưa đồng bộ cấu hình qua thiết bị khác hoặc tài khoản trên máy chủ.
 - Custom override hiện là mức thưởng cố định và turn credit riêng; không có bộ bậc thưởng riêng trên từng dòng thợ.

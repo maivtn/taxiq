@@ -8,7 +8,7 @@
 
 ### Overview
 
-**Weighted Turn Settings** cho phép người quản lý thiết lập khoảng giá trị dịch vụ, số lượt quy đổi cho từng khoảng và lượt booking mặc định của salon tại **POS → Front Desk → Turn Board**. Booking turn credit dùng chung với **Booking Incentive Policy** trong Calendar; các khoảng tiền và lượt dịch vụ chỉ được chỉnh tại Turn Board. Tài liệu mô tả hành vi hiện có của prototype; việc chia sẻ cấu hình chưa bao gồm sổ lượt chung hoặc tự động ghi lượt từ booking hoàn thành.
+**Weighted Turn Settings** cho phép người quản lý thiết lập khoảng giá trị dịch vụ, số lượt quy đổi cho từng khoảng và lượt booking mặc định của salon tại **POS → Front Desk → Turn Board**. Booking turn credit dùng chung với **Booking Incentive Policy** trong Calendar; các khoảng tiền và lượt dịch vụ chỉ được chỉnh tại Turn Board. Tài liệu mô tả hành vi hiện có của prototype và điều kiện nguồn booking đã chốt: chỉ **Customer Request** thuộc phạm vi tính Booking turn credit. Điều kiện này cần được triển khai trên dữ liệu booking thực tế; việc chia sẻ cấu hình hiện chưa bao gồm sổ lượt chung hoặc tự động ghi lượt từ booking hoàn thành.
 
 ### Key Concepts
 
@@ -16,7 +16,9 @@
 | :--- | :--- |
 | Turn credit | Số lượt quy đổi, có thể là 0 hoặc số lẻ như 0.5, 1.25. Không phải tiền thưởng. |
 | Service turn credit | Số lượt ứng với một khoảng giá trị dịch vụ. |
-| Booking turn credit | Lượt mặc định của salon cho mỗi booking được tính lượt trong Calendar. |
+| Booking turn credit | Lượt mặc định của salon cho mỗi booking được tính lượt trong Calendar. Theo quy tắc đã chốt, chỉ booking Customer Request thuộc phạm vi áp dụng. |
+| Customer Request | Booking có yêu cầu đích danh thợ từ khách hàng. Đây là điều kiện nguồn booking để được xét Booking turn credit. |
+| Anyone | Booking không có yêu cầu đích danh thợ từ khách hàng; không thuộc phạm vi tính Booking turn credit theo quy tắc đã chốt. |
 | Weighted Turn Settings | Form chỉnh lượt booking mặc định, thêm hoặc xóa khoảng dịch vụ, chỉnh giới hạn Up to và số lượt của từng khoảng. |
 | Up to | Số tiền cao nhất vẫn thuộc khoảng dịch vụ đó; chỉnh được ở mọi khoảng trừ khoảng cuối là No limit. |
 | From | Số tiền bắt đầu khoảng, chỉ đọc: khoảng đầu là $0, mỗi khoảng tiếp theo bằng Up to của khoảng trước cộng $0.01. |
@@ -49,7 +51,7 @@
 
 - **US-01 — Xem cấu hình hiện tại:** **As a** Manager, **I want to** mở form và xem các mức lượt đang áp dụng, **so that** tôi có cơ sở kiểm tra trước khi thay đổi.
 - **US-02 — Chỉnh sửa range số tiền:** **As a** Chủ salon / Manager, **I want to** nhập và chỉnh số tiền Up to cùng số turn của từng range ngay trong Weighted Turn Settings, **so that** tôi có thể điều chỉnh cách quy đổi giá trị dịch vụ thành lượt theo chính sách của salon.
-- **US-03 — Thiết lập Booking turn credit:** **As a** Chủ salon / Manager, **I want to** xem và chỉnh số lượt quy đổi mặc định cho mỗi booking tại Weighted Turn Settings, **so that** salon áp dụng thống nhất mức lượt booking với Booking Incentive Policy và giữ đúng mức riêng của thợ khi có tùy chỉnh đang áp dụng.
+- **US-03 — Thiết lập Booking turn credit:** **As a** Chủ salon / Manager, **I want to** xem và chỉnh số lượt quy đổi mặc định cho booking khách yêu cầu đích danh thợ tại Weighted Turn Settings, **so that** salon áp dụng thống nhất mức lượt booking với Booking Incentive Policy và giữ đúng mức riêng của thợ khi có tùy chỉnh đang áp dụng.
 - **US-04 — Lưu hoặc hủy chỉnh sửa:** **As a** Manager, **I want to** lưu các mức lượt sau khi kiểm tra hoặc hủy thay đổi, **so that** chỉ cấu hình tôi quyết định lưu mới được áp dụng.
 - **US-05 — Xử lý dữ liệu và lỗi lưu:** **As a** Manager, **I want to** nhận thông báo khi giá trị không hợp lệ hoặc không thể lưu, **so that** tôi biết cần sửa gì và không nhầm rằng cấu hình mới đã được áp dụng.
 - **US-10 — Thêm range và gợi ý lượt:** **As a** Chủ salon / Manager, **I want to** thêm range ngoài bốn range mặc định và được điền sẵn số turn bằng số turn của range cuối cộng 0.5, **so that** tôi có thể mở rộng các mức tiền với ít thao tác nhập lại.
@@ -84,7 +86,7 @@
 | Ô nhập | Nhãn **Turns per booking**, trong phần **Booking turn credit**. |
 | Giá trị ban đầu | Giá trị mặc định của salon đã lưu gần nhất; dùng **0.5** nếu chưa có cấu hình hợp lệ. |
 | Giá trị cho phép | Bắt buộc nhập số hữu hạn không âm; chấp nhận 0, số nguyên và số lẻ như 0.5, 1.25. Không bắt buộc theo bước 0.5; hiện chưa quy định mức tối đa riêng. |
-| Phạm vi áp dụng | Mặc định chung của salon. Mức riêng của thợ được quản lý qua **Booking Incentive Policy**. |
+| Phạm vi áp dụng | Mặc định chung của salon dành cho booking **Customer Request** theo quy tắc đã chốt. Mức riêng của thợ được quản lý qua **Booking Incentive Policy**. |
 
 **Acceptance Criteria — hành vi hiện có của US-03:**
 
@@ -103,16 +105,25 @@
 | AC-BTC-11 | Form có thay đổi chưa lưu | Bấm liên kết Booking Incentive Policy | Điều hướng đến policy trong Calendar; không tự lưu Booking turn credit đang nhập. Muốn giữ thay đổi, người quản lý phải Save Rules trước khi điều hướng. |
 | AC-BTC-12 | Hai tab đang chỉnh cấu hình chung | Một tab lưu mức mới thành công | Weighted Turn Settings nhận lại bộ cấu hình chung mới nhất, kể cả khi form đang có thay đổi chưa lưu. Calendar cập nhật ô Booking turn credit và giữ các trường thưởng, Anyone assignment, override đang chỉnh. Chưa có cảnh báo xung đột; lần lưu sau cùng được áp dụng. |
 
+**Acceptance Criteria — điều kiện nguồn booking đã chốt, cần triển khai và nghiệm thu:**
+
+| ID | Given — Điều kiện | When — Thao tác | Then — Kết quả mong đợi |
+| :--- | :--- | :--- | :--- |
+| AC-BTC-13 | Booking có yêu cầu đích danh thợ từ khách hàng, được xác định là Customer Request | Xét điều kiện nguồn booking để tính Booking turn credit | Booking thuộc phạm vi được xét Booking turn credit. Việc ghi lượt còn phụ thuộc thời điểm và các điều kiện nghiệp vụ cần chốt riêng. |
+| AC-BTC-14 | Booking Anyone, khách không yêu cầu đích danh thợ | Xét điều kiện nguồn booking để tính Booking turn credit | Booking không được tính Booking turn credit. Việc salon phân công một thợ cho booking Anyone không tự biến booking đó thành Customer Request. |
+
+**Phạm vi quyết định:** Đã chốt điều kiện khách yêu cầu đích danh thợ. Chưa chốt cách kết hợp Booking turn credit với lượt dịch vụ, đơn vị tính khi có nhiều dịch vụ, người nhận khi đổi/nhiều thợ, thời điểm ghi hoặc thu hồi lượt và phạm vi áp dụng khi đổi cấu hình. Booking Anyone không có Booking turn credit không đồng nghĩa lượt dịch vụ của booking đó bằng 0.
+
 **Ví dụ nghiệm thu — đổi mặc định từ 0.5 thành 1.25:**
 
-Giả sử mỗi thợ có **3 booking dùng tính lượt trong dữ liệu mô phỏng**, Calendar đang áp dụng Customize by technician:
+Giả sử mỗi thợ có **3 booking Customer Request đủ điều kiện tính lượt**, Calendar đang áp dụng Customize by technician. Kết quả mong đợi theo quy tắc đã chốt:
 
 | Thợ | Cấu hình lượt booking | Booking credit trước khi đổi | Booking credit sau khi lưu |
 | :--- | :--- | :--- | :--- |
 | Thợ A | Use default | 3 × 0.5 = 1.5 lượt | 3 × 1.25 = 3.75 lượt |
 | Thợ B | Custom: 0.75 lượt/booking | 3 × 0.75 = 2.25 lượt | 3 × 0.75 = 2.25 lượt |
 
-**Giới hạn nghiệm thu:** Ví dụ kiểm tra phép tính trong Technician Overview của prototype. Lưu Booking turn credit chưa tự ghi lượt khi booking hoàn thành, chưa thay đổi lượt lịch sử hoặc thứ tự thợ trên Turn Board. Cấu hình chung được giữ trong trình duyệt theo salon; override của thợ hiện chỉ được giữ trong phiên Calendar.
+**Giới hạn nghiệm thu:** Technician Overview hiện tính trên số booking mô phỏng, chưa lọc Customer Request từ từng booking thực tế; kiểm tra phép nhân chưa đủ để xác nhận AC-BTC-13 và AC-BTC-14 đã được triển khai. Lưu Booking turn credit chưa tự ghi lượt khi booking hoàn thành, chưa thay đổi lượt lịch sử hoặc thứ tự thợ trên Turn Board. Cấu hình chung được giữ trong trình duyệt theo salon; override của thợ hiện chỉ được giữ trong phiên Calendar.
 
 **Ví dụ nghiệm thu US-02 — Đổi Up to của range đầu từ $29.99 thành $49.99:**
 
@@ -280,6 +291,7 @@ stateDiagram-v2
 
 ### Business Rules
 
+- **Điều kiện nguồn booking — đã chốt:** Chỉ booking khách yêu cầu đích danh thợ (Customer Request) thuộc phạm vi tính Booking turn credit; Anyone không được tính khoản lượt này. Prototype cần bổ sung kiểm tra nguồn trên từng booking thực tế.
 - **Hai loại lượt riêng:** Booking turn credit dùng cho booking trong Calendar; Service turn credit dùng để gợi ý lượt dịch vụ tại Add Turn. Chia sẻ cấu hình không có nghĩa tự cộng cả hai cho cùng booking.
 - **Cơ sở giá trị dịch vụ:** Giao diện mô tả giá trị sau giảm giá, loại trừ tip, thuế, sản phẩm và thanh toán gift card. Prototype nhận Service amount nhập tay, chưa tự bóc tách các khoản này từ giao dịch hoặc xử lý quy tắc gift card ở checkout.
 - **Áp dụng cấu hình:** Mức mới được dùng ngay sau khi lưu thành công; Weighted Turn Settings không có lịch hiệu lực riêng.
