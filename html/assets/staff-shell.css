@@ -116,6 +116,16 @@
   color: var(--nexora-brand);
 }
 
+.staff-sidebar .staff-nav-item [data-staff-ticket-count],
+.staff-sidebar .staff-nav-item.is-active [data-staff-ticket-count] {
+  background: #ef4b64;
+  color: #fff;
+}
+
+.staff-sidebar [data-staff-ticket-count][hidden] {
+  display: none;
+}
+
 .staff-sidebar .nav-subnav-inner {
   margin-left: 24px;
   padding-left: 18px;

@@ -125,7 +125,7 @@ test('demo checkout waits for completed services and records one payment without
  dom.window.close();
 });
 
-test('Work Orders keeps usable demo tickets when assignment storage loads and refreshes',()=>{
+test('Work Orders reuses only the current technician’s shared assignments on load and refresh',async()=>{
  const errors=[];
  const dom=new JSDOM(readFileSync(new URL('./staff-work-orders.html',import.meta.url),'utf8'),{
   url:'https://demo.test/pages/staff-work-orders.html',runScripts:'dangerously',beforeParse(w){
@@ -138,23 +138,23 @@ test('Work Orders keeps usable demo tickets when assignment storage loads and re
  try{
   const w=dom.window,d=w.document;
   assert.equal(d.querySelector('[data-workspace]').hidden,false);
-  assert.equal(d.querySelector('[data-status-count="assigned"]').textContent,'2');
-  assert.equal(d.querySelector('[data-status-count="in-service"]').textContent,'1');
-  assert.equal(d.querySelector('[data-status-count="completed"]').textContent,'1');
-  d.querySelector('[data-ticket-id="WO-1051"]').click();
-  assert.equal(d.querySelector('[data-start-ticket="WO-1051"]'),null);
-  const accept=d.querySelector('[data-accept-assignment="WO-1051"]');
-  assert.ok(accept,'Demo ticket must be accepted before starting');
-  accept.click();
-  assert.match(d.querySelector('[data-detail-panel] .status-pill').textContent,/Accepted/);
-  d.querySelector('[data-start-ticket="WO-1051"]').click();
+  assert.equal(d.querySelector('[data-status-count="assigned"]').textContent,'1');
+  assert.equal(d.querySelector('[data-status-count="in-service"]').textContent,'0');
+  assert.equal(d.querySelector('[data-status-count="completed"]').textContent,'0');
+  assert.equal(d.querySelector('[data-ticket-id="WO-1051"]'),null);
+  assert.equal(d.querySelector('[data-ticket-id="jj-1"]'),null);
+  d.querySelector('[data-ticket-id="jojo-1"]').click();
+  assert.equal(d.querySelector('[data-start-ticket="jojo-1"]'),null);
+  await w.NEXORA_SERVICE_ASSIGNMENTS.send('jojo');
+  d.querySelector('[data-view-assignment="jojo-1"]').click();await tick();
+  assert.ok(d.querySelector('[data-accept-assignment="jojo-1"]'));
   const state=w.NEXORA_SERVICE_ASSIGNMENTS.load();
-  state.revision=(state.revision||0)+1;
+  state.tickets.find(t=>t.id==='jojo').services[0].techId='lana';
   w.localStorage.setItem('nexora-service-assignments-v1',JSON.stringify(state));
   w.dispatchEvent(new w.Event('focus'));
-  assert.equal(d.querySelector('[data-status-count="assigned"]').textContent,'1');
-  assert.equal(d.querySelector('[data-status-count="in-service"]').textContent,'2');
-  assert.equal(d.querySelector('[data-assignment-inbox]'),null);
+  assert.equal(d.querySelector('[data-status-count="assigned"]').textContent,'0');
+  assert.equal(d.querySelector('[data-ticket-id="jojo-1"]'),null);
+  assert.doesNotMatch(d.querySelector('[data-detail-panel]').textContent,/Jojo/);
   assert.deepEqual(errors,[]);
  }finally{dom.window.close();}
 });

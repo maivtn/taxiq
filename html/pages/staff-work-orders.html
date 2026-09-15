@@ -390,9 +390,22 @@
     .service-picker-price { color: var(--nexora-text); font-size: 12px; font-weight: 900; }
     .service-picker-empty { padding: 32px 12px; color: var(--nexora-subtle); font-size: 11px; font-weight: 650; text-align: center; }
     .modal-btn:disabled { opacity: .5; cursor: not-allowed; }
+    body.my-tickets-page .status-tabs { gap:5px; }
+    body.my-tickets-page .status-tab { flex:1; min-height:34px; border-radius:9px; padding:0 7px; font-size:11px; }
+    body.my-tickets-page .status-count { display:none; }
+    body.my-tickets-page .workspace-ticket-badge { background:#e5f7f0; color:#00845c; font-size:11px; }
+    body.my-tickets-page .my-ticket-card { display:block; min-height:118px; padding:16px; }
+    .my-ticket-top,.my-ticket-bottom { display:flex; align-items:center; justify-content:space-between; gap:12px; }
+    .my-ticket-top strong { display:block; font-size:14px; color:var(--nexora-text); }
+    .my-ticket-top>span,.my-ticket-bottom>span:first-child { min-width:0; overflow-wrap:anywhere; }
+    .my-ticket-top>strong { flex-shrink:0; }
+    .my-ticket-status { display:block; color:#6b7894; font-size:11px; font-weight:700; letter-spacing:.07em; margin-bottom:8px; }
+    .my-ticket-bottom { margin-top:16px; border-top:1px solid var(--nexora-border); padding-top:11px; font-size:12px; color:var(--nexora-muted); }
+    .work-order-edit-label { display:block; margin:0 0 8px; font-size:12px; font-weight:700; }
+    .work-order-edit-location { width:100%; height:42px; margin-bottom:16px; border:1px solid var(--nexora-border); border-radius:9px; padding:0 12px; }
   </style>
   <link rel="stylesheet" href="../assets/nexora-shell.css">
-  <link rel="stylesheet" href="../assets/staff-shell.css">
+  <link rel="stylesheet" href="../assets/staff-shell.css?v=20260915-my-tickets">
   <link rel="stylesheet" href="../assets/service-assignments.css">
   <style>
     .staff-profile-id { font-size: 11px; }
@@ -508,22 +521,56 @@
 
   <div class="toast" role="status" data-toast hidden><i data-lucide="circle-check" aria-hidden="true"></i><span data-toast-message></span></div>
 
+  <div class="modal-backdrop" data-work-order-edit-modal hidden>
+    <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="work-order-edit-title">
+      <div class="modal-head"><div><h2 id="work-order-edit-title">Edit ticket</h2><p>Update the station and service notes.</p></div><button class="modal-close" type="button" data-close-work-order-edit aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button></div>
+      <div class="modal-body"><label class="work-order-edit-label" for="work-order-location">Station</label><input class="work-order-edit-location" id="work-order-location" data-work-order-location maxlength="80"><label class="work-order-edit-label" for="work-order-note">Notes</label><textarea class="notes-textarea" id="work-order-note" data-work-order-note maxlength="2000"></textarea><p class="field-error" data-work-order-edit-error role="alert" hidden></p></div>
+      <div class="modal-footer"><button class="modal-btn is-secondary" type="button" data-close-work-order-edit>Cancel</button><button class="modal-btn is-primary" type="button" data-save-work-order>Save changes</button></div>
+    </div>
+  </div>
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
-  <script>window.NEXORA_SHELL = { activePage: 'staff', activeTab: 'my-salons' };</script>
-  <script src="../assets/nexora-shell.js"></script>
+  <script>window.NEXORA_SHELL = { activePage: 'staff', activeTab: 'my-tickets' };</script>
+  <script src="../assets/nexora-shell.js?v=20260915-my-tickets"></script>
   <script src="../assets/appointment-service-catalog.js"></script>
   <script src="../assets/service-approval-settings.js"></script>
   <script src="../assets/salon-data.js"></script>
   <script src="../assets/pos-turn-settings.js"></script>
-  <script src="../assets/service-assignments.js"></script>
+  <script src="../assets/service-assignments.js?v=20260915-my-tickets"></script>
   <script>
     (function () {
       'use strict';
 
       var SALONS = [
-        { id: 'golden', name: 'Golden Nails & Spa', location: 'Miami, Florida', initials: 'GN', avatarClass: 'is-gold' },
-        { id: 'elite', name: 'Elite Beauty Lounge', location: 'Houston, Texas', initials: 'EB', avatarClass: 'is-rose' }
+        { id: 'golden', name: 'Golden Nails & Spa', location: 'Miami, Florida', initials: 'GN', avatarClass: 'is-gold', timeZone: 'America/New_York' },
+        { id: 'elite', name: 'Elite Beauty Lounge', location: 'Houston, Texas', initials: 'EB', avatarClass: 'is-rose', timeZone: 'America/Chicago' }
       ];
+
+      // Use the existing shared assignments whenever available; the standalone demo retains its fallback.
+      var myTicketsMode = !!window.NEXORA_SERVICE_ASSIGNMENTS;
+      function currentTechnicianId() {
+        if (!Object.prototype.hasOwnProperty.call(window, 'NEXORA_STAFF_SESSION')) return 'kayla';
+        var session = window.NEXORA_STAFF_SESSION;
+        return session && ((session.staff && session.staff.id) || session.technicianId) || '';
+      }
+      function salonToday(id) {
+        var salon = salonById(id);
+        if (!myTicketsMode || !salon) return dateOffset(0);
+        var parts = new Intl.DateTimeFormat('en-US', {timeZone:salon.timeZone, year:'numeric', month:'2-digit', day:'2-digit'}).formatToParts(new Date());
+        var values = {}; parts.forEach(function (part) { values[part.type] = part.value; });
+        return values.year + '-' + values.month + '-' + values.day;
+      }
+      function clockedInSalon() {
+        if (!assignmentStore) return '';
+        try {
+          var tech = assignmentStore.load().technicians.find(function (item) { return item.id === currentTechnicianId(); });
+          if (!tech || !tech.clockedIn) return '';
+          if (Object.prototype.hasOwnProperty.call(window, 'NEXORA_STAFF_SESSION')) {
+            var session = window.NEXORA_STAFF_SESSION, clock = session && session.clockIn;
+            return clock && !clock.endedAt && (!clock.startedAt || Date.parse(clock.startedAt) <= Date.now()) && salonById(clock.salonId) ? clock.salonId : '';
+          }
+          return salonById(tech.clockedInSalonId) ? tech.clockedInSalonId : '';
+        } catch (_) { return ''; }
+      }
 
       var SERVICE_CATEGORIES = [];
       var serviceCatalogStatus = 'loading';
@@ -568,7 +615,11 @@
       ];
 
       var assignmentStore = window.NEXORA_SERVICE_ASSIGNMENTS;
-      var technicianId = new URLSearchParams(window.location.search).get('technician') || 'kayla';
+      var technicianId = myTicketsMode ? currentTechnicianId() : new URLSearchParams(window.location.search).get('technician') || 'kayla';
+      var staffScope = myTicketsMode && assignmentStore ? assignmentStore.staffScope(currentTechnicianId) : null;
+      if (myTicketsMode) TICKETS = [];
+      var editingWorkOrderId = '';
+      var editingWorkOrderRevision = null;
       var assignmentBusy = false;
       var assignmentSnapshot = '';
       var currentSalonId = '';
@@ -617,7 +668,14 @@
         return esc(String(name || '').split(/\s+/).slice(0, 2).map(function (part) { return part.charAt(0); }).join('').toUpperCase());
       }
       function salonById(id) { return SALONS.find(function (salon) { return salon.id === id; }); }
-      function ticketById(id) { return TICKETS.find(function (ticket) { return ticket.id === id; }); }
+      function ticketById(id) {
+        var ticket = TICKETS.find(function (item) { return item.id === id; });
+        if (myTicketsMode && ticket) {
+          try { if (!staffScope || staffScope.get(id).line.techId !== currentTechnicianId()) return null; }
+          catch (_) { return null; }
+        }
+        return ticket;
+      }
       function statusLabel(status) { return status === 'in-service' ? 'In Service' : status.charAt(0).toUpperCase() + status.slice(1); }
       function statusClass(status) { return status === 'in-service' ? 'is-service' : 'is-' + status; }
 
@@ -651,7 +709,8 @@
         var salon = salonById(id);
         if (!salon) return;
         currentSalonId = id;
-        currentStatus = 'assigned';
+        currentStatus = myTicketsMode ? 'all' : 'assigned';
+        TODAY = salonToday(id);
         currentDate = TODAY;
         selectedTicketId = '';
         workspaceEl.classList.remove('is-detail-mode');
@@ -662,7 +721,7 @@
         document.querySelector('[data-workspace-name]').textContent = salon.name;
         document.querySelector('[data-workspace-avatar]').textContent = salon.initials;
         document.querySelector('[data-workspace-avatar]').className = 'workspace-avatar ' + salon.avatarClass;
-        setActiveStatus('assigned');
+        setActiveStatus(myTicketsMode ? 'all' : 'assigned');
         renderWorkspace();
       }
 
@@ -676,11 +735,11 @@
       }
 
       function ticketsForDate() {
-        return TICKETS.filter(function (ticket) { return ticket.salonId === currentSalonId && ticket.date === currentDate; });
+        return TICKETS.filter(function (ticket) { return ticket.salonId === currentSalonId && ticket.date === currentDate && (!myTicketsMode || ticketById(ticket.id)); });
       }
 
       function visibleTickets() {
-        return ticketsForDate().filter(function (ticket) { return ticket.status === currentStatus; });
+        return ticketsForDate().filter(function (ticket) { return currentStatus === 'all' || ticket.status === currentStatus; });
       }
 
       function renderSummary() {
@@ -697,6 +756,11 @@
         var time = displayTime(ticket.time);
         var primaryService = ticket.services[0] ? ticket.services[0].name : 'Service';
         var totalDuration = ticket.services.reduce(function (total, service) { return total + Number(service.duration || 0); }, 0);
+        if (myTicketsMode) {
+          return '<button class="order-card my-ticket-card" type="button" data-ticket-id="' + esc(ticket.id) + '">' +
+            '<span class="my-ticket-top"><span><span class="my-ticket-status">' + statusLabel(ticket.status) + '</span><strong>Ticket ' + esc(ticket.number || ticket.id) + ' · ' + esc(ticket.customer) + '</strong></span><strong>' + money(serviceTotal(ticket)) + '</strong></span>' +
+            '<span class="my-ticket-bottom"><span>' + esc(primaryService) + '</span><span class="status-pill ' + statusClass(ticket.status) + '">' + (ticket.status === 'completed' ? 'View only' : 'Open →') + '</span></span></button>';
+        }
         return '<button class="order-card' + (selectedTicketId === ticket.id ? ' is-active' : '') + '" type="button" data-ticket-id="' + esc(ticket.id) + '">' +
           '<span class="order-card-top"><span class="order-time"><strong class="order-time-value">' + esc(time.value) + '</strong><small class="order-time-period">' + esc(time.period) + '</small></span><span class="order-card-copy"><span class="customer-name">' + esc(ticket.customer) + ' · ' + esc(primaryService) + '</span><span class="order-service">' + totalDuration + ' min · Station ' + esc(ticket.station) + '</span></span><span class="status-pill ' + statusClass(ticket.status) + '">' + statusLabel(ticket.lifecycle || ticket.status) + '</span></span>' +
         '</button>';
@@ -724,14 +788,14 @@
 
       function renderList() {
         var tickets = visibleTickets().slice().sort(function (a, b) { return a.time.localeCompare(b.time); });
-        var featuredEntry = currentStatus === 'assigned' ? newestAssignedTicket(tickets) : null;
+        var featuredEntry = !myTicketsMode && currentStatus === 'assigned' ? newestAssignedTicket(tickets) : null;
         var featuredTicket = featuredEntry ? featuredEntry.ticket : null;
         var upcomingTickets = featuredTicket ? tickets.filter(function (ticket) { return ticket.id !== featuredTicket.id; }) : tickets;
         featuredTicketEl.hidden = !featuredTicket;
         featuredTicketEl.innerHTML = featuredTicket ? renderFeaturedTicket(featuredTicket) : '';
         document.querySelector('[data-list-title]').textContent = featuredTicket ? 'Up next' : (tickets.length + ' ticket' + (tickets.length === 1 ? '' : 's'));
         document.querySelector('[data-orders-count]').textContent = statusLabel(currentStatus);
-        document.querySelector('[data-workspace-count]').textContent = tickets.length;
+        document.querySelector('[data-workspace-count]').textContent = myTicketsMode ? ticketsForDate().filter(function (ticket) { return ticket.status !== 'completed'; }).length + ' active' : tickets.length;
         if (!tickets.length) {
           if (!workspaceEl.classList.contains('is-detail-mode')) selectedTicketId = '';
           ordersListEl.innerHTML = '<div class="empty-list"><i data-lucide="clipboard-x" aria-hidden="true"></i><strong>No work orders found</strong><span>Try another date or status.</span></div>';
@@ -778,7 +842,9 @@
           return;
         }
         var actionHtml = '';
-        if (ticket.sharedAssignment && ticket.lifecycle === 'sent') {
+        if (myTicketsMode && ticket.lifecycle === 'not-sent') {
+          actionHtml = '<div class="completed-note"><p>Waiting for the front desk to send this assignment.</p></div>';
+        } else if (ticket.sharedAssignment && ticket.lifecycle === 'sent') {
           actionHtml = '<div class="detail-actions"><button class="action-btn is-primary" type="button" data-view-assignment="' + esc(ticket.id) + '">View assignment</button></div>';
         } else if ((ticket.sharedAssignment && ticket.lifecycle === 'viewed') || (!ticket.sharedAssignment && ticket.status === 'assigned' && ticket.lifecycle !== 'accepted')) {
           actionHtml = '<div class="detail-actions"><button class="action-btn is-primary" type="button" data-accept-assignment="' + esc(ticket.id) + '">Accept</button></div>';
@@ -788,6 +854,9 @@
           actionHtml = '<div class="detail-actions"><button class="action-btn is-primary" type="button" data-complete-ticket="' + esc(ticket.id) + '"><i data-lucide="circle-check" aria-hidden="true"></i>Complete</button></div>';
         } else {
           actionHtml = '<div class="completed-note"><strong><i data-lucide="badge-check" aria-hidden="true"></i>Completed service notes</strong><p>' + esc(ticket.completionNote || 'Service completed.') + '</p></div>';
+        }
+        if (myTicketsMode && ticket.status !== 'completed') {
+          actionHtml += '<div class="detail-actions"><button class="action-btn" type="button" data-edit-work-order="' + esc(ticket.id) + '"><i data-lucide="pencil" aria-hidden="true"></i>Edit ticket</button><button class="action-btn is-danger" type="button" data-delete-work-order="' + esc(ticket.id) + '"><i data-lucide="trash-2" aria-hidden="true"></i>Delete ticket</button></div>';
         }
         var serviceButtons = !ticket.sharedAssignment && ticket.status !== 'completed' ? '<div class="service-head-actions"><button class="service-add-button" type="button" data-request-service="' + esc(ticket.id) + '">Add service</button><button class="service-add-button" type="button" data-request-custom-service="' + esc(ticket.id) + '">Add custom service</button></div>' : '';
         var customerNoteHtml = '<div class="note-box"><i data-lucide="notebook-pen" aria-hidden="true"></i><span><span class="note-box-label">Important</span><strong>Customer notes</strong>' + esc(ticket.note) + '</span></div>';
@@ -829,6 +898,7 @@
 
       async function openTicketDetail(id) {
         var target = ticketById(id);
+        if (!target) { if (myTicketsMode) { syncAssignments(true); showToast('Ticket unavailable. It is no longer assigned to you.'); } return; }
         if (target && target.sharedAssignment && target.lifecycle === 'sent') {
           if (!await updateAssignment(target, 'view')) return;
         }
@@ -841,7 +911,7 @@
         if (opened && opened.sharedAssignment) {
           currentDate = opened.date;
           setActiveStatus(opened.status);
-          var url = new URL(location.href); url.searchParams.set('technician', technicianId); url.searchParams.set('assignment', id); history.replaceState(null, '', url);
+          var url = new URL(location.href); if (!myTicketsMode) url.searchParams.set('technician', technicianId); url.searchParams.set('assignment', id); if (myTicketsMode) url.searchParams.set('salon', opened.salonId); history.replaceState(null, '', url);
         }
         workspaceEl.classList.add('is-detail-mode');
         document.body.classList.add('wo-detail-open');
@@ -1143,6 +1213,51 @@
         });
       }
 
+      function closeWorkOrderEdit() {
+        document.querySelector('[data-work-order-edit-modal]').hidden = true;
+        editingWorkOrderId = ''; editingWorkOrderRevision = null;
+      }
+      function editWorkOrder(id) {
+        var ticket = ticketById(id);
+        if (!myTicketsMode || !ticket || ticket.status === 'completed') return;
+        editingWorkOrderId = id; editingWorkOrderRevision = ticket.revision;
+        document.querySelector('[data-work-order-location]').value = ticket.station === 'Not specified' ? '' : ticket.station;
+        document.querySelector('[data-work-order-note]').value = staffScope.get(id).line.note || '';
+        document.querySelector('[data-work-order-edit-error]').hidden = true;
+        document.querySelector('[data-work-order-edit-modal]').hidden = false;
+        document.querySelector('[data-work-order-location]').focus();
+      }
+      async function saveWorkOrder() {
+        if (!myTicketsMode || !editingWorkOrderId || assignmentBusy) return;
+        assignmentBusy = true;
+        var button = document.querySelector('[data-save-work-order]'); button.disabled = true;
+        try {
+          await staffScope.edit(editingWorkOrderId, {location:document.querySelector('[data-work-order-location]').value, note:document.querySelector('[data-work-order-note]').value}, editingWorkOrderRevision);
+          closeWorkOrderEdit(); syncAssignments(true); showToast('Ticket updated.');
+        } catch (error) {
+          syncAssignments(true);
+          var errorEl = document.querySelector('[data-work-order-edit-error]'); errorEl.textContent = error.message; errorEl.hidden = false;
+          showToast(error.message);
+        } finally { assignmentBusy = false; button.disabled = false; }
+      }
+      async function deleteWorkOrder(id) {
+        var ticket = ticketById(id);
+        if (!myTicketsMode || !ticket || ticket.status === 'completed' || assignmentBusy) return;
+        if (!window.confirm('Delete this work order? Only your assigned service will be removed. This cannot be undone.')) return;
+        assignmentBusy = true;
+        try {
+          await staffScope.remove(id, ticket.revision);
+          selectedTicketId = ''; workspaceEl.classList.remove('is-detail-mode'); document.body.classList.remove('wo-detail-open');
+          syncAssignments(true); showToast('Ticket deleted.');
+        } catch (error) { syncAssignments(true); showToast(error.message); }
+        finally { assignmentBusy = false; }
+      }
+      document.querySelector('[data-work-order-edit-modal]').addEventListener('click', function (event) {
+        if (event.target.closest('[data-close-work-order-edit]') || event.target === this) closeWorkOrderEdit();
+        if (event.target.closest('[data-save-work-order]')) saveWorkOrder();
+      });
+      document.addEventListener('keydown', function (event) { if (event.key === 'Escape') closeWorkOrderEdit(); });
+
       function refreshIcons() {
         if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
       }
@@ -1154,6 +1269,7 @@
       document.querySelector('[data-change-salon]').addEventListener('click', showSalonGate);
       document.querySelector('[data-change-salon-inline]').addEventListener('click', showSalonGate);
       document.querySelector('[data-date-today]').addEventListener('click', function () {
+        TODAY = salonToday(currentSalonId);
         currentDate = TODAY;
         selectedTicketId = '';
         renderWorkspace();
@@ -1192,6 +1308,10 @@
         openTicketDetail(button.getAttribute('data-ticket-id'));
       });
       detailPanelEl.addEventListener('click', function (event) {
+        var editWorkOrderButton = event.target.closest('[data-edit-work-order]');
+        var deleteWorkOrderButton = event.target.closest('[data-delete-work-order]');
+        if (editWorkOrderButton) { editWorkOrder(editWorkOrderButton.getAttribute('data-edit-work-order')); return; }
+        if (deleteWorkOrderButton) { deleteWorkOrder(deleteWorkOrderButton.getAttribute('data-delete-work-order')); return; }
         var backButton = event.target.closest('[data-detail-back]');
         var startButton = event.target.closest('[data-start-ticket]');
         var completeButton = event.target.closest('[data-complete-ticket]');
@@ -1270,30 +1390,42 @@
         if (!assignmentStore) return;
         try {
           var state = assignmentStore.load();
-          var snapshot = JSON.stringify(state);
+          var snapshot = JSON.stringify(state) + (myTicketsMode ? currentTechnicianId() : '');
           if (!force && snapshot === assignmentSnapshot) return;
           assignmentSnapshot = snapshot;
-          if (!state.technicians.some(function (tech) { return tech.id === technicianId; })) technicianId = state.technicians[0].id;
-          var inbox = assignmentStore.inbox(technicianId, state);
+          if (!myTicketsMode && !state.technicians.some(function (tech) { return tech.id === technicianId; })) technicianId = state.technicians[0].id;
+          var inbox = myTicketsMode ? staffScope.list() : assignmentStore.inbox(technicianId, state);
           TICKETS = TICKETS.filter(function (ticket) { return !ticket.sharedAssignment; }).concat(inbox.map(function (item) {
             var line = item.line, ticket = item.ticket;
             return { id: line.id, sharedAssignment: true, revision: line.revision, lifecycle: line.status,
-              salonId: ticket.salonId, date: state.date, time: ticket.time, assignedAt: line.sentAt,
-              status: ['sent','viewed','accepted'].indexOf(line.status) !== -1 ? 'assigned' : line.status,
+              number: '#' + ticket.number, salonId: ticket.salonId, date: ticket.date || state.date, time: ticket.time, assignedAt: line.sentAt,
+              status: ['not-sent','sent','viewed','accepted'].indexOf(line.status) !== -1 ? 'assigned' : line.status,
               customer: ticket.customer, phone: ticket.phone, station: line.location || 'Not specified', beeper: '—',
               note: line.note || 'No special instructions.', completionNote: line.completionNote,
               services: [{name: line.name, price: line.price, duration: line.duration}]
             };
           }));
+          if (myTicketsMode && selectedTicketId && !ticketById(selectedTicketId)) {
+            selectedTicketId = ''; closeCompleteModal(); closeServicePicker(); closeCustomService(); closeWorkOrderEdit();
+            workspaceEl.classList.remove('is-detail-mode'); document.body.classList.remove('wo-detail-open');
+            detailPanelEl.innerHTML = ''; showToast('Ticket unavailable. It is no longer assigned to you.');
+          }
           if (completingTicketId && !TICKETS.some(function (ticket) { return ticket.id === completingTicketId && ticket.status === 'in-service'; })) closeCompleteModal();
           if (currentSalonId) renderWorkspace();
-        } catch (error) { showToast(error.message); }
+        } catch (error) {
+          if (myTicketsMode) {
+            TICKETS = []; selectedTicketId = ''; closeCompleteModal(); closeServicePicker(); closeCustomService(); closeWorkOrderEdit();
+            if (currentSalonId) renderWorkspace();
+          }
+          showToast(error.message);
+        }
       }
       async function updateAssignment(ticket, action, note) {
         if (assignmentBusy) return false;
         assignmentBusy = true;
         try {
-          await assignmentStore.transition(ticket.id, technicianId, action, note, ticket.revision);
+          if (myTicketsMode) await staffScope.transition(ticket.id, action, note, ticket.revision);
+          else await assignmentStore.transition(ticket.id, technicianId, action, note, ticket.revision);
           syncAssignments(true); return true;
         } catch (error) { showToast(error.message); return false; }
         finally { assignmentBusy = false; }
@@ -1337,16 +1469,34 @@
       var requestedTicket = '';
       try {
         var requestedParams = new URLSearchParams(window.location.search);
-        requestedSalon = requestedParams.get('salon') || (assignmentStore ? 'golden' : '');
+        requestedSalon = requestedParams.get('salon') || (myTicketsMode ? clockedInSalon() : (assignmentStore ? 'golden' : ''));
         requestedTicket = requestedParams.get('assignment') || requestedParams.get('ticket') || '';
       } catch (error) {
         requestedSalon = '';
         requestedTicket = '';
       }
+      if (myTicketsMode) {
+        document.body.classList.add('my-tickets-page');
+        document.title = 'Nexora Touch - My Tickets';
+        document.querySelector('.workspace-salon h1').textContent = 'My Tickets';
+        document.querySelector('.wo-title').textContent = 'My Tickets';
+        document.querySelector('.wo-description').textContent = clockedInSalon() ? 'Choose a salon to view your assigned tickets.' : 'You are not clocked in. Choose a salon to view your assigned tickets.';
+        var statusTabs = document.querySelector('.status-tabs');
+        var waiting = statusTabs.querySelector('[data-status-filter="assigned"]');
+        var active = statusTabs.querySelector('[data-status-filter="in-service"]');
+        waiting.querySelector('span').textContent = 'Waiting'; active.querySelector('span').textContent = 'Active';
+        statusTabs.insertBefore(active, waiting);
+        statusTabs.insertAdjacentHTML('beforeend', '<button class="status-tab" type="button" role="tab" aria-selected="false" data-status-filter="all"><span>All</span></button>');
+      }
+      if (myTicketsMode && requestedTicket && !new URLSearchParams(location.search).has('salon')) {
+        var directTicket = ticketById(requestedTicket);
+        if (directTicket) requestedSalon = directTicket.salonId;
+      }
       if (salonById(requestedSalon)) {
         openSalon(requestedSalon);
         var linkedTicket = ticketById(requestedTicket);
         if (linkedTicket && linkedTicket.salonId === requestedSalon) openTicketDetail(requestedTicket);
+        else if (myTicketsMode && requestedTicket) showToast('Ticket unavailable. It is not assigned to you.');
       }
     })();
   </script>

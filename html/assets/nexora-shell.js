@@ -299,6 +299,7 @@
         '<a class="nav-subitem" href="#" data-staff-nav="my-reviews"><span class="nav-subitem-dot" aria-hidden="true"></span><span>My Reviews</span></a>' +
         '<a class="nav-subitem' + (activeTab === 'my-salons' ? ' is-active' : '') + '" href="my-salons.html" data-staff-nav="my-salons"><span class="nav-subitem-dot" aria-hidden="true"></span><span>My Salons</span></a>' +
       '</div></div>' +
+      '<a class="nav-item staff-nav-item' + (activeTab === 'my-tickets' ? ' is-active' : '') + '" href="staff-work-orders.html" data-staff-nav="my-tickets">' + iconWrap('tickets') + '<span>My Tickets</span><span class="staff-nav-count" data-staff-ticket-count hidden></span></a>' +
       '<a class="nav-item staff-nav-item' + (activeTab === 'my-calendar' ? ' is-active' : '') + '" href="pos-calendar.html" data-staff-nav="my-calendar">' + iconWrap('calendar-days') + '<span>My Calendar</span><span class="staff-nav-count" data-staff-calendar-count>4</span></a>' +
       '<a class="nav-item staff-nav-item" href="#" data-staff-nav="tips">' + iconWrap('circle-dollar-sign') + '<span>Tips</span></a>' +
       '<a class="nav-item staff-nav-item" href="#" data-staff-nav="transactions">' + iconWrap('receipt') + '<span>Transactions</span></a>' +
@@ -428,6 +429,76 @@
     if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
   }
 
+  var staffAssignmentsApi;
+  var staffAssignmentsUnsubscribe;
+  var staffCountEventsBound = false;
+
+  function refreshStaffTicketCount() {
+    var count = document.querySelector('[data-staff-ticket-count]');
+    var api = window.NEXORA_SERVICE_ASSIGNMENTS;
+    if (!count || !api || typeof api.load !== 'function') return;
+    try {
+      var state = api.load();
+      var session = window.NEXORA_STAFF_SESSION;
+      var actorId = session === undefined ? 'kayla' : session && (session.staff && Object.prototype.hasOwnProperty.call(session.staff, 'id') ? session.staff.id : session.technicianId);
+      var technician = state.technicians.find(function (item) { return item.id === actorId; });
+      var salonId = '';
+      if (technician && technician.clockedIn) {
+        if (session === undefined) salonId = technician.clockedInSalonId;
+        else {
+          var clock = session && session.clockIn;
+          if (clock && !clock.endedAt && (!clock.startedAt || Date.parse(clock.startedAt) <= Date.now())) salonId = clock.salonId;
+        }
+      }
+      var timeZone = {golden: 'America/New_York', elite: 'America/Chicago'}[salonId];
+      var total = 0;
+      if (actorId && timeZone) {
+        var parts = new Intl.DateTimeFormat('en-US', {timeZone: timeZone, year: 'numeric', month: '2-digit', day: '2-digit'}).formatToParts(new Date());
+        var today = ['year', 'month', 'day'].map(function (type) { return parts.find(function (part) { return part.type === type; }).value; }).join('-');
+        state.tickets.forEach(function (ticket) {
+          if ((ticket.salonId || 'golden') !== salonId || (ticket.date || state.date) !== today || ticket.payment) return;
+          total += ticket.services.filter(function (service) { return service.techId === actorId && service.status !== 'completed'; }).length;
+        });
+      }
+      count.textContent = String(total);
+      count.removeAttribute('title');
+    } catch (_) {
+      count.textContent = '—';
+      count.title = 'Unable to load My Tickets';
+    }
+    count.hidden = false;
+  }
+
+  function initStaffTicketCount() {
+    if (activePage !== 'staff' || !document.querySelector('[data-staff-ticket-count]')) return;
+    function connect() {
+      var api = window.NEXORA_SERVICE_ASSIGNMENTS;
+      if (!api || typeof api.load !== 'function') return;
+      if (staffAssignmentsApi !== api) {
+        if (staffAssignmentsUnsubscribe) staffAssignmentsUnsubscribe();
+        staffAssignmentsApi = api;
+        staffAssignmentsUnsubscribe = typeof api.subscribe === 'function' ? api.subscribe(refreshStaffTicketCount) : null;
+      }
+      refreshStaffTicketCount();
+    }
+    if (!staffCountEventsBound) {
+      window.addEventListener('focus', connect);
+      window.addEventListener('storage', function (event) {
+        if (event.key === 'nexora-service-assignments-v1' || event.key === null) connect();
+      });
+      staffCountEventsBound = true;
+    }
+    if (window.NEXORA_SERVICE_ASSIGNMENTS) { connect(); return; }
+    var script = document.querySelector('script[data-staff-assignments-loader], script[src="../assets/service-assignments.js"]');
+    if (!script) {
+      script = document.createElement('script');
+      script.src = '../assets/service-assignments.js';
+      script.dataset.staffAssignmentsLoader = '';
+      script.addEventListener('load', connect, {once: true});
+      document.head.appendChild(script);
+    } else script.addEventListener('load', connect, {once: true});
+  }
+
   function init() {
     var sidebar = document.querySelector('aside.sidebar');
     var header = document.querySelector('header.header');
@@ -443,6 +514,7 @@
     }
 
     wire();
+    initStaffTicketCount();
     if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
   }
 
