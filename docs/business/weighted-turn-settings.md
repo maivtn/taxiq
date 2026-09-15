@@ -48,24 +48,41 @@
 **User Stories:**
 
 - **US-01 — Xem cấu hình hiện tại:** **As a** Manager, **I want to** mở form và xem các mức lượt đang áp dụng, **so that** tôi có cơ sở kiểm tra trước khi thay đổi.
-- **US-02 — Thiết lập lượt theo dịch vụ:** **As a** Chủ salon, **I want to** chỉnh giới hạn Up to và đặt số lượt cho từng khoảng giá trị dịch vụ, **so that** salon có thể quy đổi các dịch vụ thành lượt theo quy tắc đã thống nhất.
+- **US-02 — Chỉnh sửa range số tiền:** **As a** Chủ salon / Manager, **I want to** nhập và chỉnh số tiền Up to cùng số turn của từng range ngay trong Weighted Turn Settings, **so that** tôi có thể điều chỉnh cách quy đổi giá trị dịch vụ thành lượt theo chính sách của salon.
 - **US-03 — Thiết lập lượt booking:** **As a** Chủ salon, **I want to** chỉnh booking turn credit mặc định ngay tại Turn Board, **so that** tôi có thể quản lý mức lượt chung mà không cần nhập lại ở Calendar.
 - **US-04 — Lưu hoặc hủy chỉnh sửa:** **As a** Manager, **I want to** lưu các mức lượt sau khi kiểm tra hoặc hủy thay đổi, **so that** chỉ cấu hình tôi quyết định lưu mới được áp dụng.
 - **US-05 — Xử lý dữ liệu và lỗi lưu:** **As a** Manager, **I want to** nhận thông báo khi giá trị không hợp lệ hoặc không thể lưu, **so that** tôi biết cần sửa gì và không nhầm rằng cấu hình mới đã được áp dụng.
-- **US-10 — Thêm hoặc xóa khoảng dịch vụ:** **As a** Chủ salon, **I want to** thêm khoảng hoặc gộp bớt khoảng trước khi lưu, **so that** số mức quy đổi phù hợp với dịch vụ của salon.
+- **US-10 — Thêm range và gợi ý lượt:** **As a** Chủ salon / Manager, **I want to** thêm range ngoài bốn range mặc định và được điền sẵn số turn bằng số turn của range cuối cộng 0.5, **so that** tôi có thể mở rộng các mức tiền với ít thao tác nhập lại.
+- **US-11 — Xóa range không còn dùng:** **As a** Chủ salon / Manager, **I want to** xóa một range và tự gộp khoảng tiền của nó vào range liền kề, **so that** tôi có thể giảm số mức quy đổi mà vẫn bao phủ toàn bộ giá trị dịch vụ.
 
 **Acceptance Criteria — hiện có:**
 
-1. Mở form đọc cấu hình đã lưu của salon. Nếu chưa có cấu hình hợp lệ, hiển thị bộ mặc định bên dưới.
-2. Có một ô Booking turn credit và danh sách khoảng dịch vụ, mặc định bốn khoảng. Có thể thêm khoảng không giới hạn số lượng và xóa khi còn hơn một khoảng; luôn giữ ít nhất một khoảng. Bộ đếm hiển thị đúng số khoảng trong bản đang chỉnh.
-3. Người quản lý chỉnh Up to của mọi khoảng trừ khoảng cuối là No limit và chỉnh số lượt của từng khoảng. Các Up to bắt buộc phải hữu hạn, không âm, tăng dần và có tối đa hai chữ số thập phân; giá trị đầu tiên có thể bằng $0. From chỉ đọc: khoảng đầu là $0, mỗi khoảng tiếp theo bằng Up to của khoảng trước cộng $0.01. Số tiền đúng bằng Up to vẫn thuộc khoảng đó; các khoảng không bị hở hoặc chồng lấn.
-4. Mọi ô lượt đều bắt buộc, chấp nhận số hữu hạn không âm, gồm cả 0 và số lẻ. Không yêu cầu mức lượt phải tăng dần theo giá trị dịch vụ; hiện chưa có giới hạn trên.
-5. Save Rules kiểm tra và lưu lượt booking, toàn bộ danh sách khoảng tiền và số lượt tương ứng cùng nhau. Thành công thì đóng modal và thông báo cấu hình đã chia sẻ với Booking Incentive Policy.
-6. Ô bắt buộc bị trống, lượt không hợp lệ hoặc mốc tiền sai thứ tự/độ chính xác khiến thao tác lưu bị từ chối. Form giữ mở, hiển thị thông báo lỗi và không ghi đè cấu hình cũ.
-7. Không thể ghi vào bộ nhớ trình duyệt thì báo lỗi lưu trữ và giữ form mở. Người quản lý có thể thử lưu lại sau khi xử lý nguyên nhân.
-8. Cancel, nút ×, bấm nền ngoài modal hoặc Escape đóng form mà không lưu, gồm cả việc thêm hoặc xóa khoảng. Mở lại lấy danh sách và giá trị đã lưu gần nhất.
-9. Add range tách khoảng cuối: Up to của khoảng cuối hiện tại chuyển thành ô trống bắt buộc, đồng thời thêm một khoảng No limit mới với số lượt bằng lượt đang nhập ở khoảng cuối trước đó cộng 0.5, ví dụ 2 → 2.5 → 3. Số lượt gợi ý vẫn chỉnh được; nếu lượt trước đó trống hoặc không hợp lệ, ô lượt mới để trống và cần được nhập hợp lệ trước khi lưu. Người quản lý nhập Up to còn thiếu và kiểm tra lượt trước khi lưu.
-10. Xóa một khoảng có Up to sẽ gộp phần giá trị của nó vào khoảng tiếp theo, giữ số lượt của khoảng tiếp theo. Xóa khoảng cuối sẽ bỏ ranh giới cuối, khiến khoảng trước đó trở thành No limit và giữ số lượt của khoảng trước đó. Khi chỉ còn một khoảng, không thể xóa tiếp; khoảng này bao phủ từ $0 đến No limit.
+| ID / User story | Given — Điều kiện | When — Thao tác | Then — Kết quả mong đợi |
+| :--- | :--- | :--- | :--- |
+| AC-01 / US-01 | Salon có cấu hình đã lưu hoặc chưa có cấu hình hợp lệ | Mở Weighted Turn Settings | Hiển thị cấu hình đã lưu; nếu chưa hợp lệ thì dùng bốn range mặc định. Mỗi dòng có From, Up to, Turn credit và thao tác xóa; có ô Booking turn credit riêng. |
+| AC-02 / US-02 | Form đang mở | Nhập Up to hợp lệ cho một range có giới hạn | Cho nhập số tiền trực tiếp. From là chỉ đọc: range đầu bắt đầu tại $0; From của range tiếp theo tự cập nhật bằng Up to vừa nhập cộng $0.01. Range cuối luôn có Up to là No limit. |
+| AC-03 / US-02 | Các mốc tiền hợp lệ và đã lưu | Dùng một giá trị dịch vụ đúng bằng Up to | Số tiền vẫn thuộc range đó; số tiền bằng Up to + $0.01 thuộc range tiếp theo. Các range liên tục, không hở hoặc chồng lấn. |
+| AC-04 / US-02 | Đang chỉnh range đầu tiên có giới hạn | Nhập Up to bằng $0 | Chấp nhận: range đầu chỉ bao gồm $0; range kế tiếp bắt đầu từ $0.01. |
+| AC-05 / US-02, US-03 | Form đang mở | Chỉnh Turn credit của range hoặc Booking turn credit | Cho nhập số hữu hạn không âm, gồm 0 và số lẻ. Các mức turn vẫn chỉnh độc lập, không bắt buộc tăng dần theo số tiền. |
+| AC-06 / US-10 | Range cuối đang có lượt hợp lệ | Bấm Add range một hoặc nhiều lần | Không giới hạn ở bốn range. Up to của range cuối cũ trở thành ô trống bắt buộc; thêm một range No limit mới. Lượt mới bằng lượt cuối đang nhập cộng 0.5, ví dụ 2 → 2.5 → 3, và vẫn sửa được. Bộ đếm tăng theo số dòng; đặt con trỏ vào Up to cần nhập. |
+| AC-07 / US-10, US-05 | Lượt của range cuối đang trống hoặc không hợp lệ | Bấm Add range | Giữ các giá trị đang chỉnh và để trống ô lượt mới. Người quản lý phải nhập Up to mới và sửa các ô lượt không hợp lệ trước khi lưu. |
+| AC-08 / US-11 | Có ít nhất hai range | Xóa một range có Up to | Gộp khoảng tiền của range bị xóa vào range tiếp theo, giữ số lượt của range tiếp theo. Tự cập nhật From, số thứ tự và bộ đếm. |
+| AC-09 / US-11 | Có ít nhất hai range | Xóa range cuối | Range trước đó trở thành No limit và giữ số lượt của chính nó. Nếu chỉ còn một range thì bao phủ từ $0 đến No limit và vô hiệu hóa nút xóa. |
+| AC-10 / US-05 | Có Up to trống, âm, không hữu hạn, quá hai chữ số thập phân, trùng hoặc giảm; hoặc có ô lượt trống/không hợp lệ | Bấm Save Rules | Từ chối lưu, báo lỗi và giữ form cùng bản chỉnh sửa. Up to hợp lệ phải không âm và tăng dần; cấu hình đã lưu không bị ghi đè. |
+| AC-11 / US-04 | Tất cả mốc tiền và các ô lượt đều hợp lệ | Bấm Save Rules và lưu thành công | Lưu toàn bộ range, lượt dịch vụ và lượt booking cùng nhau; đóng modal và thông báo thành công. Mở lại hoặc tải lại cùng địa chỉ ứng dụng, trình duyệt và salon đọc cấu hình mới. Mức mới dùng cho gợi ý Add Turn; lượt đã ghi không tự tính lại. |
+| AC-12 / US-04 | Đã sửa tiền/lượt hoặc thêm/xóa range nhưng chưa lưu | Bấm Cancel, nút ×, nền ngoài modal hoặc Escape | Đóng form và bỏ bản chỉnh sửa. Mở lại lấy cấu hình đã lưu gần nhất. |
+| AC-13 / US-05 | Bản chỉnh sửa hợp lệ nhưng trình duyệt không ghi được cấu hình | Bấm Save Rules | Báo lỗi lưu trữ và giữ form cùng bản chỉnh sửa để thử lại; không báo lưu thành công. |
+
+**Ví dụ nghiệm thu US-02 — Đổi Up to của range đầu từ $29.99 thành $49.99:**
+
+| Range | Trước khi sửa | Sau khi lưu | Turn credit |
+| :--- | :--- | :--- | ---: |
+| 1 | $0–29.99 | $0–49.99 | 0.5 |
+| 2 | $30–69.99 | $50–69.99 | 1 |
+| 3 | $70–109.99 | $70–109.99 | 1.5 |
+| 4 | $110 trở lên | $110 trở lên | 2 |
+
+Sau khi lưu, Add Turn gợi ý **0.5 turn** cho dịch vụ **$49.99** và **1 turn** cho dịch vụ **$50**. Các lượt đã ghi trước đó giữ nguyên.
 
 **Bộ cấu hình mặc định:**
 
