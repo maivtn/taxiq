@@ -125,7 +125,7 @@ function renderTurnRuleRows(weights,upperBounds){
 function fillTurnRules(settings) {
  document.getElementById('booking-turn-credit').value=settings.bookingTurnCredit;
  renderTurnRuleRows(settings.serviceWeights,settings.serviceThresholds.map(amount=>((Math.round(amount*100)-1)/100).toFixed(2)));
- updateTurnRulesPreview();
+ updateTurnRuleRanges();
 }
 function readTurnRuleRows(){
  return {
@@ -139,7 +139,7 @@ function addTurnRuleRange(){
  draft.upperBounds.push('');
  draft.weights.push(Number.isFinite(lastCredit)&&lastCredit>=0?Number((lastCredit+0.5).toPrecision(15)):'');
  renderTurnRuleRows(draft.weights,draft.upperBounds);
- updateTurnRulesPreview();
+ updateTurnRuleRanges();
  document.querySelectorAll('[data-service-upper-bound]').item(draft.upperBounds.length-1).focus();
 }
 function removeTurnRuleRange(index){
@@ -148,13 +148,12 @@ function removeTurnRuleRange(index){
  draft.weights.splice(index,1);
  draft.upperBounds.splice(Math.min(index,draft.upperBounds.length-1),1);
  renderTurnRuleRows(draft.weights,draft.upperBounds);
- updateTurnRulesPreview();
+ updateTurnRuleRanges();
  document.querySelectorAll('[data-service-weight]').item(Math.min(index,draft.weights.length-1)).focus();
 }
 let turnRulesTrigger=null;
 function openTurnRules(){
  turnRulesTrigger=document.activeElement;
- document.getElementById('turn-rules-preview-amount').value='45';
  fillTurnRules(window.NEXORA_TURN_SETTINGS.load());
  document.getElementById('turn-rules-modal').classList.add('show');
  (document.querySelector('[data-service-upper-bound]')||document.querySelector('[data-service-weight]')).focus();
@@ -180,19 +179,13 @@ function turnRulesValidationError(settings){
  const invalidBounds=settings.serviceThresholds.some((amount,index)=>!Number.isFinite(amount)||(index>0&&amount<=settings.serviceThresholds[index-1]));
  return error&&invalidBounds?'Enter increasing Up to amounts of $0 or more, with no more than two decimal places.':error;
 }
-function updateTurnRulesPreview(){
+function updateTurnRuleRanges(){
  const settings=readTurnRules(),error=turnRulesValidationError(settings);
  document.getElementById('turn-rules-error').textContent=error;
  document.querySelectorAll('[data-service-range-start]').forEach((output,index)=>{
   const start=settings.serviceThresholds[index],previous=index?settings.serviceThresholds[index-1]:0;
   output.textContent=Number.isFinite(start)&&start>previous?'$'+start.toFixed(2):'—';
  });
- const amount=window.NEXORA_TURN_SETTINGS.numberFrom(document.getElementById('turn-rules-preview-amount'));
- const output=document.getElementById('turn-rules-preview-result');
- if(error){output.textContent='Check rules';return;}
- if(!Number.isFinite(amount)||amount<0){output.textContent='Enter an amount';return;}
- const credit=window.NEXORA_TURN_SETTINGS.serviceCredit(amount,settings);
- output.textContent=credit+' turn'+(credit===1?'':'s');
 }
 function calculateTurnCredit(amount){return window.NEXORA_TURN_SETTINGS.serviceCredit(amount);}
 saveTurnRules=function(){
@@ -202,7 +195,7 @@ saveTurnRules=function(){
  closeTurnRules();
  toast('Turn settings saved and shared with Booking Incentive Policy.');
 };
-document.getElementById('turn-rules-form').addEventListener('input',updateTurnRulesPreview);
+document.getElementById('turn-rules-form').addEventListener('input',updateTurnRuleRanges);
 document.getElementById('turn-rules-form').addEventListener('submit',event=>{event.preventDefault();saveTurnRules();});
 document.getElementById('turn-rules-add-range').addEventListener('click',addTurnRuleRange);
 document.getElementById('turn-rules-rows').addEventListener('click',event=>{

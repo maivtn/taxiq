@@ -196,8 +196,8 @@ test('editable Up to amounts include their boundary and persist after saving and
   thresholds.forEach((input, index) => { input.value = ['50.25', '90', '150'][index]; });
   thresholds[0].dispatchEvent(new app.w.Event('input', {bubbles: true}));
   assert.equal(app.d.querySelector('[data-service-range-start="0"]').textContent, '$50.26');
-  assert.match(app.d.querySelector('#turn-rules-preview-result').textContent, /0\.5 turns/);
-  assert.equal(app.w.calculateTurnCredit(45), 1, 'a preview must not apply an unsaved rule');
+  assert.equal(app.d.querySelector('#turn-rules-error').textContent, '');
+  assert.equal(app.w.calculateTurnCredit(45), 1, 'an unsaved rule must not apply');
   app.w.saveTurnRules();
   assert.equal(app.d.querySelector('#turn-rules-modal').classList.contains('show'), false);
   const reloaded = boot('pos-front-desk-turn-board.html', saved(app)); t.after(() => reloaded.w.close());
@@ -316,9 +316,9 @@ test('adding multiple ranges preserves edits and saves their inclusive limits an
   assert.equal(app.d.querySelector('[data-service-weight="5"]').value, '3.25', 'the next suggestion follows the edited draft credit');
   app.d.querySelector('[data-service-upper-bound="4"]').value = '199.99';
   app.d.querySelector('[data-service-weight="5"]').value = '3';
-  const preview = app.d.querySelector('#turn-rules-preview-amount');
-  preview.value = '200'; preview.dispatchEvent(new app.w.Event('input', {bubbles: true}));
-  assert.match(app.d.querySelector('#turn-rules-preview-result').textContent, /3 turns/);
+  app.d.querySelector('[data-service-weight="5"]').dispatchEvent(new app.w.Event('input', {bubbles: true}));
+  assert.equal(app.d.querySelector('[data-service-range-start="4"]').textContent, '$200.00');
+  assert.equal(app.d.querySelector('#turn-rules-error').textContent, '');
   assert.equal(app.w.calculateTurnCredit(200), 2, 'added rows remain a draft');
   app.d.querySelector('#turn-rules-form button[type="submit"]').click();
   const reloaded = boot('pos-front-desk-turn-board.html', saved(app)); t.after(() => reloaded.w.close());

@@ -8,7 +8,7 @@
 
 ### Overview
 
-**Weighted Turn Settings** cho phép người quản lý thiết lập khoảng giá trị dịch vụ, số lượt quy đổi cho từng khoảng và lượt booking mặc định của salon tại **POS → Front Desk → Turn Board**. Người quản lý có thể nhập số tiền mẫu để xem trước kết quả trước khi lưu. Cấu hình này dùng chung với **Booking Incentive Policy** trong Calendar, giúp hai màn hình sử dụng cùng giá trị đã lưu. Tài liệu mô tả hành vi hiện có của prototype; việc chia sẻ cấu hình chưa bao gồm sổ lượt chung hoặc tự động ghi lượt từ booking hoàn thành.
+**Weighted Turn Settings** cho phép người quản lý thiết lập khoảng giá trị dịch vụ, số lượt quy đổi cho từng khoảng và lượt booking mặc định của salon tại **POS → Front Desk → Turn Board**. Cấu hình này dùng chung với **Booking Incentive Policy** trong Calendar, giúp hai màn hình sử dụng cùng giá trị đã lưu. Tài liệu mô tả hành vi hiện có của prototype; việc chia sẻ cấu hình chưa bao gồm sổ lượt chung hoặc tự động ghi lượt từ booking hoàn thành.
 
 ### Key Concepts
 
@@ -52,8 +52,7 @@
 - **US-03 — Thiết lập lượt booking:** **As a** Chủ salon, **I want to** chỉnh booking turn credit mặc định ngay tại Turn Board, **so that** tôi có thể quản lý mức lượt chung mà không cần nhập lại ở Calendar.
 - **US-04 — Lưu hoặc hủy chỉnh sửa:** **As a** Manager, **I want to** lưu các mức lượt sau khi kiểm tra hoặc hủy thay đổi, **so that** chỉ cấu hình tôi quyết định lưu mới được áp dụng.
 - **US-05 — Xử lý dữ liệu và lỗi lưu:** **As a** Manager, **I want to** nhận thông báo khi giá trị không hợp lệ hoặc không thể lưu, **so that** tôi biết cần sửa gì và không nhầm rằng cấu hình mới đã được áp dụng.
-- **US-10 — Thử số tiền trước khi lưu:** **As a** Manager, **I want to** nhập một giá trị dịch vụ mẫu và xem lượt theo bản đang chỉnh, **so that** tôi kiểm tra được ảnh hưởng của mốc tiền mới trước khi áp dụng.
-- **US-11 — Thêm hoặc xóa khoảng dịch vụ:** **As a** Chủ salon, **I want to** thêm khoảng hoặc gộp bớt khoảng trước khi lưu, **so that** số mức quy đổi phù hợp với dịch vụ của salon.
+- **US-10 — Thêm hoặc xóa khoảng dịch vụ:** **As a** Chủ salon, **I want to** thêm khoảng hoặc gộp bớt khoảng trước khi lưu, **so that** số mức quy đổi phù hợp với dịch vụ của salon.
 
 **Acceptance Criteria — hiện có:**
 
@@ -61,13 +60,12 @@
 2. Có một ô Booking turn credit và danh sách khoảng dịch vụ, mặc định bốn khoảng. Có thể thêm khoảng không giới hạn số lượng và xóa khi còn hơn một khoảng; luôn giữ ít nhất một khoảng. Bộ đếm hiển thị đúng số khoảng trong bản đang chỉnh.
 3. Người quản lý chỉnh Up to của mọi khoảng trừ khoảng cuối là No limit và chỉnh số lượt của từng khoảng. Các Up to bắt buộc phải hữu hạn, không âm, tăng dần và có tối đa hai chữ số thập phân; giá trị đầu tiên có thể bằng $0. From chỉ đọc: khoảng đầu là $0, mỗi khoảng tiếp theo bằng Up to của khoảng trước cộng $0.01. Số tiền đúng bằng Up to vẫn thuộc khoảng đó; các khoảng không bị hở hoặc chồng lấn.
 4. Mọi ô lượt đều bắt buộc, chấp nhận số hữu hạn không âm, gồm cả 0 và số lẻ. Không yêu cầu mức lượt phải tăng dần theo giá trị dịch vụ; hiện chưa có giới hạn trên.
-5. Nhập số tiền dịch vụ mẫu sẽ cập nhật preview theo mốc tiền và lượt trong bản đang chỉnh. Preview chưa thay cấu hình đang áp dụng hoặc ghi thêm lượt.
-6. Save Rules kiểm tra và lưu lượt booking, toàn bộ danh sách khoảng tiền và số lượt tương ứng cùng nhau. Thành công thì đóng modal và thông báo cấu hình đã chia sẻ với Booking Incentive Policy.
-7. Ô bắt buộc bị trống, lượt không hợp lệ hoặc mốc tiền sai thứ tự/độ chính xác khiến thao tác lưu bị từ chối. Form giữ mở, hiển thị thông báo lỗi và không ghi đè cấu hình cũ.
-8. Không thể ghi vào bộ nhớ trình duyệt thì báo lỗi lưu trữ và giữ form mở. Người quản lý có thể thử lưu lại sau khi xử lý nguyên nhân.
-9. Cancel, nút ×, bấm nền ngoài modal hoặc Escape đóng form mà không lưu, gồm cả việc thêm hoặc xóa khoảng. Mở lại lấy danh sách và giá trị đã lưu gần nhất.
-10. Add range tách khoảng cuối: Up to của khoảng cuối hiện tại chuyển thành ô trống bắt buộc, đồng thời thêm một khoảng No limit mới với số lượt bằng lượt đang nhập ở khoảng cuối trước đó cộng 0.5, ví dụ 2 → 2.5 → 3. Số lượt gợi ý vẫn chỉnh được; nếu lượt trước đó trống hoặc không hợp lệ, ô lượt mới để trống và cần được nhập hợp lệ trước khi lưu. Người quản lý nhập Up to còn thiếu và kiểm tra lượt trước khi lưu.
-11. Xóa một khoảng có Up to sẽ gộp phần giá trị của nó vào khoảng tiếp theo, giữ số lượt của khoảng tiếp theo. Xóa khoảng cuối sẽ bỏ ranh giới cuối, khiến khoảng trước đó trở thành No limit và giữ số lượt của khoảng trước đó. Khi chỉ còn một khoảng, không thể xóa tiếp; khoảng này bao phủ từ $0 đến No limit.
+5. Save Rules kiểm tra và lưu lượt booking, toàn bộ danh sách khoảng tiền và số lượt tương ứng cùng nhau. Thành công thì đóng modal và thông báo cấu hình đã chia sẻ với Booking Incentive Policy.
+6. Ô bắt buộc bị trống, lượt không hợp lệ hoặc mốc tiền sai thứ tự/độ chính xác khiến thao tác lưu bị từ chối. Form giữ mở, hiển thị thông báo lỗi và không ghi đè cấu hình cũ.
+7. Không thể ghi vào bộ nhớ trình duyệt thì báo lỗi lưu trữ và giữ form mở. Người quản lý có thể thử lưu lại sau khi xử lý nguyên nhân.
+8. Cancel, nút ×, bấm nền ngoài modal hoặc Escape đóng form mà không lưu, gồm cả việc thêm hoặc xóa khoảng. Mở lại lấy danh sách và giá trị đã lưu gần nhất.
+9. Add range tách khoảng cuối: Up to của khoảng cuối hiện tại chuyển thành ô trống bắt buộc, đồng thời thêm một khoảng No limit mới với số lượt bằng lượt đang nhập ở khoảng cuối trước đó cộng 0.5, ví dụ 2 → 2.5 → 3. Số lượt gợi ý vẫn chỉnh được; nếu lượt trước đó trống hoặc không hợp lệ, ô lượt mới để trống và cần được nhập hợp lệ trước khi lưu. Người quản lý nhập Up to còn thiếu và kiểm tra lượt trước khi lưu.
+10. Xóa một khoảng có Up to sẽ gộp phần giá trị của nó vào khoảng tiếp theo, giữ số lượt của khoảng tiếp theo. Xóa khoảng cuối sẽ bỏ ranh giới cuối, khiến khoảng trước đó trở thành No limit và giữ số lượt của khoảng trước đó. Khi chỉ còn một khoảng, không thể xóa tiếp; khoảng này bao phủ từ $0 đến No limit.
 
 **Bộ cấu hình mặc định:**
 
@@ -83,18 +81,16 @@
 | :--- | :--- | :--- | :--- | :--- |
 | 1 | Manager | Mở Weighted Turn Settings | Hiển thị cấu hình đã lưu | Dùng mặc định nếu chưa có dữ liệu hợp lệ. |
 | 2 | Manager | Thêm/xóa khoảng nếu cần, sửa Up to và lượt | Cập nhật số khoảng và From tương ứng | Khoảng mới cần nhập Up to; chưa áp dụng thay đổi. |
-| 3 | Manager | Nhập số tiền mẫu | Xem trước lượt theo bản đang chỉnh | Không ghi lượt. |
-| 4 | Manager | Bấm Save Rules | Kiểm tra mốc tiền và tất cả các ô lượt | Giá trị không hợp lệ được báo lỗi. |
-| 5 | Hệ thống | Lưu bộ cấu hình | Đóng form và thông báo thành công | Lỗi lưu trữ giữ form mở. |
-| 6 | Manager | Hoặc đóng form trước khi lưu | Bỏ bản chỉnh sửa | Giữ cấu hình đã lưu gần nhất. |
+| 3 | Manager | Bấm Save Rules | Kiểm tra mốc tiền và tất cả các ô lượt | Giá trị không hợp lệ được báo lỗi. |
+| 4 | Hệ thống | Lưu bộ cấu hình | Đóng form và thông báo thành công | Lỗi lưu trữ giữ form mở. |
+| 5 | Manager | Hoặc đóng form trước khi lưu | Bỏ bản chỉnh sửa | Giữ cấu hình đã lưu gần nhất. |
 
 ```mermaid
 flowchart TD
     A([Mở cấu hình lượt]) --> B[Đọc mức đã lưu]
     B --> L[Thêm hoặc xóa khoảng]
     L --> C[Sửa Up to và lượt]
-    C --> K[Xem trước số tiền mẫu]
-    K --> D{Lưu hay hủy?}
+    C --> D{Lưu hay hủy?}
     D -- Hủy --> E([Giữ cấu hình cũ])
     D -- Lưu --> F{Giá trị hợp lệ?}
     F -- Không --> G[Hiển thị lỗi nhập]
@@ -260,7 +256,7 @@ A: Có. Đây là cùng giá trị mặc định với Booking Incentive Policy.
 
 **Q: Chỉnh giới hạn tiền ở Up to hay From?**
 
-A: Chỉnh Up to của mọi khoảng trừ khoảng cuối là No limit. Bộ mặc định có bốn khoảng với Up to là $29.99, $69.99 và $109.99. From chỉ đọc và tự tính để các khoảng liên tục. Có thể thêm/xóa khoảng và nhập số tiền mẫu để kiểm tra trước khi bấm Save Rules; Calendar có liên kết mở form này.
+A: Chỉnh Up to của mọi khoảng trừ khoảng cuối là No limit. Bộ mặc định có bốn khoảng với Up to là $29.99, $69.99 và $109.99. From chỉ đọc và tự tính để các khoảng liên tục. Có thể thêm/xóa khoảng trước khi bấm Save Rules; Calendar có liên kết mở form này.
 
 **Q: Có thể thêm nhiều hơn bốn khoảng không?**
 

@@ -44,9 +44,9 @@
 .front-desk .board-menu button:focus-visible,.front-desk #board-menu-toggle:focus-visible{outline:2px solid #7466df;outline-offset:2px}
 @media(max-width:650px){.front-desk .board-menu{right:auto;left:0}}
 
-/* Weighted turn settings: editable rules with a dedicated live preview. */
+/* Weighted turn settings: compact range editor. */
 .front-desk #turn-rules-modal{background:rgba(16,24,43,.42);backdrop-filter:blur(5px);-webkit-backdrop-filter:blur(5px)}
-.front-desk .turn-rules-dialog{width:min(1000px,100%);max-height:calc(100dvh - 48px);padding:0;display:flex;flex-direction:column;overflow:hidden;border:1px solid #ffffffb3;border-radius:20px;box-shadow:0 32px 100px #12213e38,0 4px 20px #12213e1a;animation:turn-rules-enter .18s ease-out}
+.front-desk .turn-rules-dialog{width:min(720px,100%);max-height:calc(100dvh - 48px);padding:0;display:flex;flex-direction:column;overflow:hidden;border:1px solid #ffffffb3;border-radius:20px;box-shadow:0 32px 100px #12213e38,0 4px 20px #12213e1a;animation:turn-rules-enter .18s ease-out}
 .turn-rules-header{display:flex;align-items:center;gap:16px;padding:20px 30px;border-bottom:1px solid #eaedf3;flex-shrink:0;background:#fff}
 .turn-rules-icon{display:grid;place-items:center;width:52px;height:52px;flex-shrink:0;border:1px solid #e2dcfa;border-radius:15px;background:#f4f0ff;color:#6a50cc;box-shadow:0 3px 8px #6750bd0a}
 .turn-rules-icon svg{width:24px;height:24px;stroke-width:1.7}
@@ -56,8 +56,8 @@
 .front-desk .turn-rules-close{display:grid;place-items:center;align-self:flex-start;margin-left:auto;width:36px;height:36px;flex-shrink:0;padding:0;border:1px solid #edf0f5;border-radius:10px;background:#fff;color:#8a91a3;transition:background .15s,color .15s}
 .turn-rules-close svg{width:18px;height:18px}
 .front-desk .turn-rules-close:hover{background:#f5f2fc;color:#5d46b4}
-.turn-rules-body{display:grid;grid-template-columns:minmax(0,1fr) 268px;grid-template-rows:auto auto;align-items:start;gap:20px 26px;padding:22px 30px;overflow:auto;min-height:0;background:#fff}
-.turn-service-section{grid-column:1;grid-row:1;min-width:0}
+.turn-rules-body{display:grid;grid-template-columns:minmax(0,1fr);align-items:start;gap:20px;padding:22px 30px;overflow:auto;min-height:0;background:#fff}
+.turn-service-section{min-width:0}
 .turn-rules-section-heading{display:flex;align-items:center;justify-content:space-between;gap:12px}
 .front-desk .turn-rules-dialog h4{margin:0;font-size:15px;font-weight:700;letter-spacing:-.2px;color:#2e354a}
 .turn-rules-section-heading>span{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:500;color:#69738a;white-space:nowrap}
@@ -103,29 +103,7 @@
 .turn-rules-basis>svg{width:15px;height:15px;flex-shrink:0;margin-top:2px;color:#a4aabc;stroke-width:1.5}
 .front-desk .turn-rules-basis p{margin:0;font-size:11px;color:#65728a;line-height:1.65}
 .turn-rules-basis p span{display:block;color:#65728a}
-.turn-rules-preview{grid-column:2;grid-row:1/span 2;display:flex;flex-direction:column;align-self:stretch;gap:20px;padding:23px 21px;border:1px solid #e7dff7;border-radius:15px;background:linear-gradient(155deg,#f6f2ff 0%,#faf8ff 65%,#f5f1fc 100%);min-width:0}
-.turn-preview-header{display:flex;align-items:center;justify-content:space-between;gap:8px}
-.turn-preview-icon{display:grid;place-items:center;width:35px;height:35px;border:1px solid #e5daf7;border-radius:10px;background:#fff9;color:#967bc9}
-.turn-preview-icon svg{width:18px;height:18px;stroke-width:1.7}
-.turn-preview-live{display:flex;align-items:center;gap:6px;font-size:10px;font-weight:600;color:#796689}
-.turn-preview-live>span{width:5px;height:5px;border-radius:50%;background:#ab92cf}
-.front-desk .turn-rules-preview h4{font-size:18px;letter-spacing:-.4px;color:#5d477e}
-.front-desk .turn-rules-preview p{margin:8px 0 0;font-size:12px;color:#796689;line-height:1.75}
-.turn-preview-calculation{display:flex;flex-direction:column;align-items:stretch;min-width:0}
-.front-desk .turn-preview-field{display:block;margin-bottom:8px;font-size:11px;font-weight:600;color:#796689}
-.turn-preview-amount{position:relative;min-width:0}
-.turn-preview-amount>span{position:absolute;top:50%;left:14px;transform:translateY(-50%);font-size:16px;color:#b0a2bf}
-.front-desk .turn-preview-amount input{height:48px;padding-left:32px;border-color:#ded4eb;font-size:17px;color:#614d7b;box-shadow:0 2px 5px #7b55a905}
-.turn-preview-arrow{display:grid;place-items:center;height:42px;color:#c5b4d7}
-.turn-preview-arrow svg{width:17px;height:17px;stroke-width:1.5}
-.turn-preview-output{display:flex;flex-direction:column;align-items:center;gap:11px;padding:26px 14px 24px;border:1px solid #e8dff1;border-radius:12px;background:#fff;box-shadow:0 4px 12px #66418505;text-align:center}
-.turn-preview-output>span{font-size:10px;font-weight:600;letter-spacing:.09em;text-transform:uppercase;color:#796689}
-#turn-rules-preview-result{display:block;max-width:100%;font-size:36px;font-weight:650;letter-spacing:-1.25px;line-height:1.15;color:#7450a6;overflow-wrap:anywhere}
-#turn-rules-form:has(#turn-rules-error:not(:empty)) #turn-rules-preview-result,.turn-rules-preview:has(#turn-rules-preview-amount:placeholder-shown) #turn-rules-preview-result,.turn-rules-preview:has(#turn-rules-preview-amount:invalid) #turn-rules-preview-result{font-size:20px;font-weight:600;letter-spacing:-.3px;line-height:1.4}
-.turn-preview-output small{font-size:10px;color:#796689;line-height:1.5}
-.front-desk .turn-rules-preview .turn-preview-note{display:flex;align-items:flex-start;gap:7px;margin:auto 0 0;padding-top:3px;font-size:10px;line-height:1.7;color:#796689}
-.turn-preview-note svg{flex-shrink:0;width:13px;height:13px;margin-top:2px}
-.turn-booking-section{grid-column:1;grid-row:2;display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px;border:1px solid #e7eaf1;border-radius:12px;background:#fcfcfe;min-width:0}
+.turn-booking-section{display:flex;align-items:center;justify-content:space-between;gap:18px;padding:18px;border:1px solid #e7eaf1;border-radius:12px;background:#fcfcfe;min-width:0}
 .turn-booking-copy{min-width:0}
 .turn-booking-heading{display:flex;align-items:center;gap:8px}
 .turn-booking-heading>span{display:grid;place-items:center;color:#8b7caa}
@@ -153,20 +131,6 @@
 .turn-rules-footer .btn svg{width:15px;height:15px;stroke-width:2}
 @keyframes turn-rules-enter{from{opacity:0;transform:translateY(7px) scale(.99)}to{opacity:1;transform:none}}
 @media(prefers-reduced-motion:reduce){.front-desk .turn-rules-dialog{animation:none}.front-desk .turn-rules-dialog *{transition:none}}
-@media(max-width:900px){
- .front-desk .turn-rules-dialog{width:min(700px,100%)}
- .turn-rules-body{grid-template-columns:1fr;gap:20px}
- .turn-service-section,.turn-booking-section,.turn-rules-preview{grid-column:1;grid-row:auto}
- .turn-rules-preview{gap:14px;padding:20px}
- .turn-preview-header{display:none}
- .turn-preview-calculation{display:grid;grid-template-columns:minmax(0,1fr) 36px minmax(0,1fr);grid-template-rows:auto 1fr;align-items:center;gap:6px 12px}
- .turn-preview-field{grid-column:1;grid-row:1}
- .turn-preview-amount{grid-column:1;grid-row:2}
- .turn-preview-arrow{grid-column:2;grid-row:2;transform:rotate(-90deg)}
- .turn-preview-output{grid-column:3;grid-row:1/span 2;padding:15px 8px;gap:8px}
- #turn-rules-preview-result{font-size:30px}
- .front-desk .turn-rules-preview .turn-preview-note{margin:0}
-}
 @media(max-width:600px){
  .front-desk .turn-rules-dialog{max-height:calc(100dvh - 24px);border-radius:16px}
  .turn-rules-header{padding:19px 18px;gap:12px}
@@ -195,14 +159,6 @@
  .turn-range-number{width:22px;height:24px;font-size:10px;border-radius:7px}
  .turn-range-unlimited{gap:4px;font-size:10px}
  .turn-range-unlimited svg{width:13px}
- .turn-rules-preview{padding:17px;gap:12px}
- .turn-preview-calculation{grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr);gap:5px 8px}
- .front-desk .turn-preview-amount input{padding-left:26px;font-size:16px}
- .turn-preview-amount>span{left:11px;font-size:14px}
- .turn-preview-output{padding:15px 7px;gap:8px}
- #turn-rules-preview-result{font-size:27px;letter-spacing:-.8px}
- .turn-preview-output>span{font-size:9px}
- .turn-preview-output small{font-size:9px}
  .turn-booking-section{padding:15px;gap:12px}
  .front-desk .turn-booking-heading h4{font-size:12px}
  .front-desk .turn-booking-input{width:95px}
