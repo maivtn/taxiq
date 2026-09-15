@@ -6,6 +6,7 @@
   const editor = $('#promotion-editor'), posterDialog = $('#promotion-poster-dialog');
   const key = 'nexora:reward-promotions:v1', languageKey = 'nexora:reward-promotions:language';
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+  const bannerThemes = {purple:'themePurple',gold:'themeGold',rose:'themeRose',ocean:'themeOcean',teal:'themeTeal',sage:'themeSage',peach:'themePeach',slate:'themeSlate'};
   const clone = value => JSON.parse(JSON.stringify(value));
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]));
   const uid = () => 'promotion-' + (typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
@@ -56,6 +57,7 @@
     publicNote:['A public request does not turn on paid advertising or referral rewards.','Public không tự bật quảng cáo trả phí hoặc thưởng giới thiệu.'], bannersSection:['04 / Banners & posters','04 / Banner & poster'],
     bannerHint:['Reorder banners to choose the cover image. Every banner opens the same promotion.','Mỗi chương trình có nhiều banner. Đổi thứ tự để chọn hình đầu; tất cả cùng mở đúng chương trình.'],
     chooseTheme:['Choose template','Chọn template'], themePurple:['Signature · Purple','Signature · Tím'], themeGold:['Luxury · Gold','Luxury · Vàng'], themeRose:['Soft · Rose','Soft · Hồng'],
+    themeOcean:['Ocean · Blue','Ocean · Xanh dương'], themeTeal:['Fresh · Teal','Fresh · Xanh ngọc'], themeSage:['Nature · Sage','Nature · Xanh lá'], themePeach:['Sunset · Peach','Sunset · Cam đào'], themeSlate:['Minimal · Slate','Minimal · Xám'],
     addBanner:['Add banner','Thêm banner'], upload:['Upload your design','Upload mẫu riêng'], chooseFile:['Choose an image','Chọn ảnh'], uploadHint:['PNG / JPG / WebP · up to 8 MB · up to 8 banners','PNG / JPG / WebP · tối đa 8 MB · tối đa 8 banner'],
     previewPrint:['Preview & print poster','Xem trước & in poster'], saveNote:['New promotions are saved disabled.','Chương trình mới được lưu ở trạng thái tắt.'], editNote:['Changes take effect after saving.','Thay đổi có hiệu lực sau khi lưu.'],
     cancel:['Cancel','Hủy'], save:['Save promotion','Lưu chương trình'], preview:['Preview','Xem trước'], promotionPoster:['Promotion poster','Poster chương trình'], closePreview:['Close preview','Đóng xem trước'],
@@ -79,6 +81,7 @@
   let language = 'en';
   try { language = localStorage.getItem(languageKey) === 'vi' ? 'vi' : 'en'; } catch (_) {}
   const t = name => (copy[name] || [name, name])[language === 'vi' ? 1 : 0];
+  const themeLabel = theme => Object.hasOwn(bannerThemes,theme) ? t(bannerThemes[theme]) : theme;
   const templates = [
     {id:'upgrade', icon:'sparkles', value:20, type:'percent', purpose:['Sell more services','Bán thêm dịch vụ'], offer:['20% off add-ons','Giảm 20% phần add-on'], hint:['Choose the add-ons and discount.','Sửa dịch vụ bổ sung và mức giảm.'], title:['Add-On Upgrade · Sample','Add-On Upgrade · Mẫu hướng dẫn'], badge:['UPGRADE','UPGRADE'], description:['20% off nail art or a foot massage with a main service. Applies to the add-on only, not the whole ticket. Confirm eligible services before use.','Giảm 20% giá phần nail art hoặc massage chân khi mua cùng dịch vụ chính. Không giảm giá toàn bộ hóa đơn; xác định dịch vụ áp dụng trước khi dùng.']},
     {id:'weekday', icon:'sun', value:15, type:'percent', days:['Tue','Wed','Thu'], startTime:'10:00', endTime:'14:00', purpose:['Fill quiet hours','Lấp giờ vắng'], offer:['15% off · Tue–Thu','Giảm 15% · Thứ 3–5'], hint:['Adjust days, hours and services.','Sửa ngày, khung giờ và dịch vụ.'], title:['Weekday Glow · Sample','Weekday Glow · Mẫu hướng dẫn'], badge:['HAPPY HOURS','GIỜ VÀNG'], description:['15% off Classic Pedicure, Tuesday–Thursday, 10 AM–2 PM. Excludes tips and tax; cannot be combined with other offers. Review these sample terms before use.','Giảm 15% cho Classic Pedicure từ thứ Ba đến thứ Năm, 10:00–14:00. Không áp dụng tip, thuế hoặc cộng dồn ưu đãi. Điều kiện mẫu cần kiểm tra lại trước khi dùng.']},
@@ -142,7 +145,7 @@
   }
   function artwork(offer, banner) {
     if (banner?.assetId) return '<div class="promo-art image-art" data-image-container="' + esc(banner.assetId) + '"><img data-asset-id="' + esc(banner.assetId) + '" alt="' + esc(banner.name || offer.title) + '"><p class="image-error" hidden>' + t('missingImage') + '</p></div>';
-    const theme = ['purple','gold','rose','teal','glow','ocean','spring'].includes(banner?.theme) ? banner.theme : 'purple';
+    const theme = Object.hasOwn(bannerThemes,banner?.theme) || ['glow','spring'].includes(banner?.theme) ? banner.theme : 'purple';
     return '<div class="promo-art theme-' + theme + '"><span class="art-badge">' + esc(offer.badge || 'SPECIAL OFFER') + '</span><h3>' + esc(offer.title) + '</h3><strong class="art-saving">' + esc(discount(offer)) + '</strong></div>';
   }
   function hydrateImages(scope = document) {
@@ -241,7 +244,7 @@
     if (!current) return;
     const offer = readOffer();
     const banner = current.banners[selectedBanner];
-    const editableTheme = !banner.assetId && ['purple','gold','rose'].includes(banner.theme);
+    const editableTheme = !banner.assetId && Object.hasOwn(bannerThemes,banner.theme);
     $('#banner-current-design').hidden = editableTheme;
     $('#banner-current-design').textContent = banner.assetId ? t('uploaded') : banner.theme;
     $('#banner-theme').value = editableTheme ? banner.theme : '';
@@ -249,7 +252,7 @@
     $('#promotion-preview').innerHTML = artwork(offer,banner);
     $('#promotion-banners').innerHTML = current.banners.map((banner,index) => {
       const button = (action,symbol,label,disabled = false) => '<button type="button" class="promo-button icon-button" data-banner-action="' + action + '" data-index="' + index + '" aria-label="' + t(label) + ' ' + (index+1) + '"' + (disabled || uploadPending ? ' disabled' : '') + '>' + icon(symbol) + '</button>';
-      return '<div class="banner-row" aria-current="' + (index === selectedBanner) + '"><span class="banner-name">' + (index+1) + '. ' + esc(banner.assetId ? banner.name || t('uploaded') : ({purple:t('themePurple'),gold:t('themeGold'),rose:t('themeRose')}[banner.theme] || banner.theme)) + (index === 0 ? '<small>' + t('cover') + '</small>' : '') + '</span><div class="banner-actions">' + button('select','eye','preview') + button('up','arrow-up','moveUp',index === 0) + button('down','arrow-down','moveDown',index === current.banners.length-1) + button('remove','x','removeBanner',current.banners.length === 1) + '</div></div>';
+      return '<div class="banner-row" aria-current="' + (index === selectedBanner) + '"><span class="banner-name">' + (index+1) + '. ' + esc(banner.assetId ? banner.name || t('uploaded') : themeLabel(banner.theme)) + (index === 0 ? '<small>' + t('cover') + '</small>' : '') + '</span><div class="banner-actions">' + button('select','eye','preview') + button('up','arrow-up','moveUp',index === 0) + button('down','arrow-down','moveDown',index === current.banners.length-1) + button('remove','x','removeBanner',current.banners.length === 1) + '</div></div>';
     }).join('');
     $('#add-banner').disabled = uploadPending || current.banners.length >= 8;
     $('#banner-upload').disabled = uploadPending || current.banners.length >= 8;
@@ -342,7 +345,7 @@
     editorOpener = null;
   });
   $('#banner-theme').addEventListener('change',event => {
-    if (!current || uploadPending || !['purple','gold','rose'].includes(event.target.value)) return;
+    if (!current || uploadPending || !Object.hasOwn(bannerThemes,event.target.value)) return;
     const banner = current.banners[selectedBanner];
     current.banners[selectedBanner] = {...banner,theme:event.target.value};
     delete current.banners[selectedBanner].assetId;

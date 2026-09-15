@@ -253,15 +253,27 @@ test('removing an earlier banner preserves the selected image and focuses its ne
   assert.deepEqual(savedState().offers[0].banners.map(banner => banner.id), ['banner-b', 'banner-c']);
 });
 
-test('choosing a template immediately changes only the selected banner and persists its theme after reload', async t => {
+for (const theme of ['rose', 'ocean', 'teal', 'sage', 'peach', 'slate']) {
+test('choosing template ' + theme + ' changes only the selected banner and persists through language changes and reload', async t => {
   const banners = [{id: 'banner-a', theme: 'purple'}, {id: 'banner-b', theme: 'gold'}];
   const {w, d, card, input, submit, savedState} = await boot(t, catalog([offer({banners})]));
   card('offer-a').querySelector('[data-action="edit"]').click();
   d.querySelector('[data-banner-action="select"][data-index="1"]').click();
   assert.equal(d.querySelector('#banner-theme').value, 'gold');
-  input('#banner-theme', 'rose');
-  assert.equal(d.querySelector('#banner-theme').value, 'rose');
-  assert.ok(d.querySelector('#promotion-preview .theme-rose'));
+  input('#banner-theme', theme);
+  assert.equal(d.querySelector('#banner-theme').value, theme);
+  assert.ok(d.querySelector('#promotion-preview .theme-' + theme));
+  const englishLabel = d.querySelector('#banner-theme').selectedOptions[0].textContent;
+  assert.ok(englishLabel.trim());
+  input('#editor-language', 'vi');
+  assert.equal(d.querySelector('#banner-theme').value, theme);
+  assert.ok(d.querySelector('#promotion-preview .theme-' + theme));
+  const vietnameseLabel = d.querySelector('#banner-theme').selectedOptions[0].textContent;
+  assert.ok(vietnameseLabel.trim());
+  assert.notEqual(vietnameseLabel, englishLabel);
+  input('#editor-language', 'en');
+  assert.equal(d.querySelector('#banner-theme').value, theme);
+  assert.equal(d.querySelector('#banner-theme').selectedOptions[0].textContent, englishLabel);
   assert.equal(d.querySelectorAll('[data-banner-action="select"]').length, 2);
   assert.equal(d.querySelector('.banner-row[aria-current="true"] [data-banner-action="select"]').dataset.index, '1');
   assert.deepEqual(savedState().offers[0].banners, banners, 'preview does not save the draft');
@@ -269,13 +281,14 @@ test('choosing a template immediately changes only the selected banner and persi
   assert.equal(d.querySelector('#banner-theme').value, 'purple');
   assert.ok(d.querySelector('#promotion-preview .theme-purple'));
   submit();
-  assert.deepEqual(savedState().offers[0].banners, [{id: 'banner-a', theme: 'purple'}, {id: 'banner-b', theme: 'rose'}]);
+  assert.deepEqual(savedState().offers[0].banners, [{id: 'banner-a', theme: 'purple'}, {id: 'banner-b', theme}]);
   const restored = await boot(t, w.localStorage.getItem(storageKey));
   restored.card('offer-a').querySelector('[data-action="edit"]').click();
   restored.d.querySelector('[data-banner-action="select"][data-index="1"]').click();
-  assert.equal(restored.d.querySelector('#banner-theme').value, 'rose');
-  assert.ok(restored.d.querySelector('#promotion-preview .theme-rose'));
+  assert.equal(restored.d.querySelector('#banner-theme').value, theme);
+  assert.ok(restored.d.querySelector('#promotion-preview .theme-' + theme));
 });
+}
 
 test('cancel discards a selected banner theme change', async t => {
   const banners = [{id: 'banner-a', theme: 'purple'}, {id: 'banner-b', theme: 'gold'}];

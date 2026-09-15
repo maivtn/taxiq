@@ -6,7 +6,7 @@
   <title>Nexora Touch - Promotions</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/reward-promotions.css?v=20260915-compact-banners-2">
+  <link rel="stylesheet" href="../assets/reward-promotions.css?v=20260915-banner-colors">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
 </head>
 <body>
@@ -76,7 +76,20 @@
         <div id="promotion-preview" aria-live="polite"></div>
         <p class="promo-note" data-i18n="bannerHint">Reorder banners to choose the cover image. Every banner opens the same promotion.</p>
         <div id="promotion-banners" class="promo-banner-list"></div>
-        <div class="promo-field-row banner-add-row"><label class="promo-field"><span data-i18n="chooseTheme">Choose template</span><select id="banner-theme"><option id="banner-current-design" value="" disabled hidden data-i18n="uploaded">Uploaded image</option><option value="purple" data-i18n="themePurple">Signature · Purple</option><option value="gold" data-i18n="themeGold">Luxury · Gold</option><option value="rose" data-i18n="themeRose">Soft · Rose</option></select></label><button type="button" class="promo-button" id="add-banner"><span data-icon="plus"></span><span data-i18n="addBanner">Add banner</span></button></div>
+        <div class="promo-field-row banner-add-row">
+          <label class="promo-field"><span data-i18n="chooseTheme">Choose template</span><select id="banner-theme">
+            <option id="banner-current-design" value="" disabled hidden data-i18n="uploaded">Uploaded image</option>
+            <option value="purple" data-i18n="themePurple">Signature · Purple</option>
+            <option value="gold" data-i18n="themeGold">Luxury · Gold</option>
+            <option value="rose" data-i18n="themeRose">Soft · Rose</option>
+            <option value="ocean" data-i18n="themeOcean">Ocean · Blue</option>
+            <option value="teal" data-i18n="themeTeal">Fresh · Teal</option>
+            <option value="sage" data-i18n="themeSage">Nature · Sage</option>
+            <option value="peach" data-i18n="themePeach">Sunset · Peach</option>
+            <option value="slate" data-i18n="themeSlate">Minimal · Slate</option>
+          </select></label>
+          <button type="button" class="promo-button" id="add-banner"><span data-icon="plus"></span><span data-i18n="addBanner">Add banner</span></button>
+        </div>
         <label class="promo-upload"><span data-icon="upload"></span><strong data-i18n="upload">Upload your design</strong><span class="promo-note" id="upload-file-name" data-i18n="chooseFile">Choose an image</span><input type="file" id="banner-upload" accept="image/png,image/jpeg,image/webp" aria-describedby="upload-info"></label>
         <p id="upload-info" class="promo-note" role="status" data-i18n="uploadHint">PNG / JPG / WebP · up to 8 MB · up to 8 banners</p>
         <button type="button" class="promo-text-button" id="preview-draft"><span data-icon="external-link"></span><span data-i18n="previewPrint">Preview & print poster</span></button>
@@ -90,6 +103,6 @@
 <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
 <script src="../assets/nexora-shell.js"></script>
 <script src="../assets/promotion-banner-assets.js"></script>
-<script src="../assets/reward-promotions.js?v=20260915-selected-banner-theme"></script>
+<script src="../assets/reward-promotions.js?v=20260915-banner-colors"></script>
 </body>
 </html>

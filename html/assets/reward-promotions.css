@@ -68,6 +68,9 @@
 .promo-art.theme-glow,.template-art.theme-glow{background:linear-gradient(115deg,#f0ebfa,#faf5fa);color:#775593}
 .promo-art.theme-ocean,.template-art.theme-ocean{background:linear-gradient(115deg,#eaf0fa,#f5f8fc);color:#416791}
 .promo-art.theme-spring,.template-art.theme-spring{background:linear-gradient(115deg,#faedf0,#fdf7f1);color:#925b6b}
+.promo-art.theme-sage,.template-art.theme-sage{background:linear-gradient(115deg,#eaf2e9,#f5f8f1);color:#4c6c43}
+.promo-art.theme-peach,.template-art.theme-peach{background:linear-gradient(115deg,#fff0e8,#fff8f3);color:#92512f}
+.promo-art.theme-slate,.template-art.theme-slate{background:linear-gradient(115deg,#edf0f4,#f7f8fa);color:#536174}
 .promo-art .art-badge{position:relative;display:inline-block;align-self:flex-start;max-width:100%;padding:3px 7px;border:0;border-radius:5px;background:#ffffffb3;color:inherit;font-size:9px;font-weight:500;line-height:1.45;letter-spacing:.025em;overflow-wrap:anywhere}
 .promo-art h3{position:relative;margin:0;font-size:16px;line-height:1.3;letter-spacing:-.2px;font-weight:600;max-width:100%;overflow-wrap:anywhere}
 .promo-art .art-saving{position:relative;font-size:29px;line-height:1.1;font-weight:600;letter-spacing:-.6px;max-width:100%;overflow-wrap:anywhere}
