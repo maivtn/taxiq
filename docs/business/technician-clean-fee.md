@@ -79,7 +79,7 @@ flowchart TD
 | AC-CF-07 | Thay đổi phí rồi đóng form trước khi lưu | Khi mở lại, hiển thị mức phí đã lưu trước đó. |
 | AC-CF-08 | Lưu Clean Fee của thợ A | Không thay đổi Clean Fee của thợ B; mức bảo đảm thu nhập đã lưu của thợ A được giữ nguyên. |
 | AC-CF-09 | Mở Add Staff sau khi vừa chỉnh sửa một thợ | Clean Fee bắt đầu từ $0.00, không lấy mức phí của thợ vừa sửa. |
-| AC-CF-10 | Xem trường Clean Fee trong form chỉnh sửa hoặc Add Staff | Ngay dưới trường có mô tả **“Fixed amount for each day the technician works.”**, giúp người quản lý hiểu mức phí áp dụng cho mỗi ngày thợ thực tế làm việc. |
+| AC-CF-10 | Xem trường Clean Fee trong form chỉnh sửa hoặc Add Staff | Ngay dưới trường có mô tả **“Set the tech’s cleaning fee per day worked. Enter 2 for $2/day.”**, giúp người quản lý hiểu mức phí áp dụng cho mỗi ngày thợ thực tế làm việc. |
 
 ### System Configuration & Administration
 
