@@ -96,11 +96,59 @@ togglePause=function(index){
  if(!['available','paused'].includes(tech.status)){toast('Only available or paused technicians can change pause status.');return;}
  tech.status=tech.status==='paused'?'available':'paused';if(index===nextTurnIndex&&tech.status==='paused')advanceTurn();renderTurnBoard();
 };
+function renderTurnRuleRows(weights,upperBounds){
+ const rows=document.getElementById('turn-rules-rows');
+ let focusedColumn=null,focusedIndex=0;
+ if(rows.children.length!==weights.length){
+  const active=document.activeElement;
+  if(rows.contains(active)){
+   focusedColumn=['data-service-upper-bound','data-service-weight','data-remove-service-range'].find(attribute=>active.hasAttribute(attribute));
+   if(focusedColumn)focusedIndex=Number(active.getAttribute(focusedColumn));
+  }
+  rows.innerHTML=weights.map((_,index)=>{
+   const number=index+1,last=index===weights.length-1;
+   const start=index?`<output data-service-range-start="${index-1}"></output>`:'<span class="turn-range-fixed">$0.00</span>';
+   const limit=last?'<span class="turn-range-unlimited"><i data-lucide="infinity" aria-hidden="true"></i>No limit</span>':`<div class="turn-amount-input"><span aria-hidden="true">$</span><input aria-label="Range ${number} Up to amount" aria-describedby="turn-range-help turn-rules-error" data-service-upper-bound="${index}" type="number" min="0" step="0.01" required placeholder="0.00" inputmode="decimal"></div>`;
+   return `<tr><th scope="row"><span class="turn-range-number">${number}</span></th><td>${start}</td><td>${limit}</td><td><div class="turn-credit-input"><input aria-label="Range ${number} turn credit" data-service-weight="${index}" type="number" min="0" step="any" required inputmode="decimal"><span aria-hidden="true">turns</span></div></td><td><button type="button" class="turn-range-remove" data-remove-service-range="${index}" aria-label="Remove range ${number}" title="Remove range ${number}" ${weights.length===1?'disabled':''}><i data-lucide="x" aria-hidden="true"></i></button></td></tr>`;
+  }).join('');
+  if(window.lucide)window.lucide.createIcons();
+ }
+ rows.querySelectorAll('[data-service-weight]').forEach((input,index)=>{input.value=weights[index];});
+ rows.querySelectorAll('[data-service-upper-bound]').forEach((input,index)=>{input.value=upperBounds[index];});
+ document.getElementById('turn-rules-count').textContent=weights.length+' range'+(weights.length===1?'':'s');
+ if(focusedColumn){
+  const controls=rows.querySelectorAll('['+focusedColumn+']');
+  const target=controls[Math.min(focusedIndex,controls.length-1)];
+  (target&&!target.disabled?target:rows.querySelectorAll('[data-service-weight]')[Math.min(focusedIndex,weights.length-1)]).focus();
+ }
+}
 function fillTurnRules(settings) {
  document.getElementById('booking-turn-credit').value=settings.bookingTurnCredit;
- document.querySelectorAll('[data-service-weight]').forEach((input,index)=>{input.value=settings.serviceWeights[index];});
- document.querySelectorAll('[data-service-upper-bound]').forEach((input,index)=>{input.value=((Math.round(settings.serviceThresholds[index]*100)-1)/100).toFixed(2);});
+ renderTurnRuleRows(settings.serviceWeights,settings.serviceThresholds.map(amount=>((Math.round(amount*100)-1)/100).toFixed(2)));
  updateTurnRulesPreview();
+}
+function readTurnRuleRows(){
+ return {
+  weights:[...document.querySelectorAll('[data-service-weight]')].map(input=>input.value),
+  upperBounds:[...document.querySelectorAll('[data-service-upper-bound]')].map(input=>input.value)
+ };
+}
+function addTurnRuleRange(){
+ const draft=readTurnRuleRows();
+ draft.upperBounds.push('');
+ draft.weights.push(draft.weights.at(-1));
+ renderTurnRuleRows(draft.weights,draft.upperBounds);
+ updateTurnRulesPreview();
+ document.querySelectorAll('[data-service-upper-bound]').item(draft.upperBounds.length-1).focus();
+}
+function removeTurnRuleRange(index){
+ const draft=readTurnRuleRows();
+ if(draft.weights.length<=1||!Number.isInteger(index)||index<0||index>=draft.weights.length)return;
+ draft.weights.splice(index,1);
+ draft.upperBounds.splice(Math.min(index,draft.upperBounds.length-1),1);
+ renderTurnRuleRows(draft.weights,draft.upperBounds);
+ updateTurnRulesPreview();
+ document.querySelectorAll('[data-service-weight]').item(Math.min(index,draft.weights.length-1)).focus();
 }
 let turnRulesTrigger=null;
 function openTurnRules(){
@@ -108,7 +156,7 @@ function openTurnRules(){
  document.getElementById('turn-rules-preview-amount').value='45';
  fillTurnRules(window.NEXORA_TURN_SETTINGS.load());
  document.getElementById('turn-rules-modal').classList.add('show');
- document.querySelector('[data-service-upper-bound]').focus();
+ (document.querySelector('[data-service-upper-bound]')||document.querySelector('[data-service-weight]')).focus();
 }
 function closeTurnRules(){
  document.getElementById('turn-rules-modal').classList.remove('show');
@@ -155,6 +203,11 @@ saveTurnRules=function(){
 };
 document.getElementById('turn-rules-form').addEventListener('input',updateTurnRulesPreview);
 document.getElementById('turn-rules-form').addEventListener('submit',event=>{event.preventDefault();saveTurnRules();});
+document.getElementById('turn-rules-add-range').addEventListener('click',addTurnRuleRange);
+document.getElementById('turn-rules-rows').addEventListener('click',event=>{
+ const button=event.target.closest('[data-remove-service-range]');
+ if(button)removeTurnRuleRange(Number(button.dataset.removeServiceRange));
+});
 document.getElementById('turn-rules-modal').addEventListener('keydown',event=>{
  if(event.key!=='Tab')return;
  const controls=[...event.currentTarget.querySelectorAll('button, input, a[href]')].filter(control=>!control.disabled);

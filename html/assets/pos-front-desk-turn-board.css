@@ -69,6 +69,14 @@
 .front-desk .turn-rule-table thead th{height:42px;padding-top:10px;padding-bottom:10px;background:#f8f9fc;color:#69738a;font-size:11px;font-weight:600;letter-spacing:0;text-transform:none;box-sizing:border-box}
 .front-desk .turn-rule-table th:first-child{width:48px;text-align:center}
 .front-desk .turn-rule-table th:nth-child(2){width:106px}
+.front-desk .turn-rule-table th:last-child{width:34px}
+.front-desk .turn-rule-table td:last-child{padding-left:0;padding-right:6px}
+.front-desk .turn-range-remove{display:grid;place-items:center;width:26px;height:30px;padding:0;border:0;border-radius:7px;background:transparent;color:#8b93a7}
+.turn-range-remove svg{width:14px;height:14px}
+.front-desk .turn-range-remove:hover:not(:disabled){background:#fff0f1;color:#bc5261}
+.front-desk .turn-rules-add{display:flex;align-items:center;justify-content:center;gap:7px;width:100%;min-height:40px;margin-top:10px;border:1px dashed #d5c9e9;border-radius:9px;background:#fbf9ff;color:#796689;font-size:12px;font-weight:600}
+.turn-rules-add svg{width:15px;height:15px}
+.front-desk .turn-rules-add:hover{border-color:#ad93cc;background:#f5effe;color:#7152bd}
 .front-desk .turn-rule-table tr:last-child>*{border-bottom:0}
 .front-desk .turn-rule-table tbody tr{transition:background .15s}
 .front-desk .turn-rule-table tbody tr:focus-within{background:#fcfbff}
@@ -173,6 +181,9 @@
  .front-desk .turn-rule-table th,.front-desk .turn-rule-table td{padding:9px 6px}
  .front-desk .turn-rule-table th:first-child{width:32px;font-size:0}
  .front-desk .turn-rule-table th:nth-child(2){width:76px}
+ .front-desk .turn-rule-table th:last-child{width:27px}
+ .front-desk .turn-rule-table td:last-child{padding-right:3px}
+ .front-desk .turn-range-remove{width:24px;min-height:32px}
  .front-desk .turn-rule-table thead th{font-size:10px}
  .turn-auto-label{display:none}
  .front-desk .turn-rule-table td{height:62px;font-size:12px}

@@ -294,3 +294,115 @@ test('Up to accepts zero and decimal cents without shifting the inclusive bounda
   assert.deepEqual(inputs.map(input => input.value), ['0.00', '0.29', '0.58']);
   assert.deepEqual(app.errors, []);
 });
+
+test('adding multiple ranges preserves edits and saves their inclusive limits and credits', t => {
+  const app = boot('pos-front-desk-turn-board.html'); t.after(() => app.w.close());
+  app.w.openTurnRules();
+  const add = app.d.querySelector('#turn-rules-add-range');
+  assert.ok(add, 'Add range is available');
+  app.d.querySelector('[data-service-weight="0"]').value = '0.25';
+  add.click();
+  assert.equal(app.d.querySelectorAll('[data-service-weight]').length, 5);
+  assert.equal(app.d.querySelector('#turn-rules-count').textContent, '5 ranges');
+  assert.equal(app.d.querySelector('[data-service-weight="0"]').value, '0.25');
+  assert.equal(app.d.querySelector('[data-service-upper-bound="3"]').value, '');
+  app.w.saveTurnRules();
+  assert.ok(app.d.querySelector('#turn-rules-modal').classList.contains('show'), 'new range requires its Up to amount');
+  assert.equal(app.w.NEXORA_TURN_SETTINGS.load().serviceWeights.length, 4);
+  app.d.querySelector('[data-service-upper-bound="3"]').value = '149.99';
+  app.d.querySelector('[data-service-weight="4"]').value = '2.5';
+  add.click();
+  app.d.querySelector('[data-service-upper-bound="4"]').value = '199.99';
+  app.d.querySelector('[data-service-weight="5"]').value = '3';
+  const preview = app.d.querySelector('#turn-rules-preview-amount');
+  preview.value = '200'; preview.dispatchEvent(new app.w.Event('input', {bubbles: true}));
+  assert.match(app.d.querySelector('#turn-rules-preview-result').textContent, /3 turns/);
+  assert.equal(app.w.calculateTurnCredit(200), 2, 'added rows remain a draft');
+  app.d.querySelector('#turn-rules-form button[type="submit"]').click();
+  const reloaded = boot('pos-front-desk-turn-board.html', saved(app)); t.after(() => reloaded.w.close());
+  reloaded.w.openTurnRules();
+  assert.equal(reloaded.d.querySelectorAll('[data-service-weight]').length, 6);
+  assert.equal(reloaded.d.querySelectorAll('.turn-range-unlimited').length, 1);
+  for (const [amount, credit] of [[20, 0.25], [149.99, 2], [150, 2.5], [199.99, 2.5], [200, 3]]) {
+    assert.equal(reloaded.w.calculateTurnCredit(amount), credit, `credit for $${amount}`);
+  }
+  assert.deepEqual(app.errors, []); assert.deepEqual(reloaded.errors, []);
+});
+
+test('removing ranges merges coverage, cancel restores saved rows, and a single unlimited range is valid', t => {
+  const app = boot('pos-front-desk-turn-board.html'); t.after(() => app.w.close());
+  app.w.openTurnRules();
+  const remove = app.d.querySelector('[data-remove-service-range="1"]');
+  assert.ok(remove, 'ranges can be removed from the draft');
+  remove.click();
+  assert.equal(app.d.querySelectorAll('[data-service-weight]').length, 3);
+  assert.equal(app.d.querySelector('[data-service-weight="1"]').value, '1.5');
+  assert.equal(app.d.querySelector('[data-service-upper-bound="1"]').value, '109.99');
+  assert.equal(app.d.querySelector('[data-service-range-start="0"]').textContent, '$30.00');
+  app.d.querySelector('[data-remove-service-range="2"]').click();
+  assert.equal(app.d.querySelectorAll('[data-service-upper-bound]').length, 1);
+  app.d.querySelector('#turn-rules-modal .modal-actions .btn').click();
+  app.w.openTurnRules();
+  assert.equal(app.d.querySelectorAll('[data-service-weight]').length, 4);
+  for (let index = 0; index < 3; index++) app.d.querySelector('[data-remove-service-range="0"]').click();
+  assert.equal(app.d.querySelector('#turn-rules-count').textContent, '1 range');
+  assert.equal(app.d.querySelector('[data-remove-service-range="0"]').disabled, true);
+  assert.equal(app.d.querySelectorAll('[data-service-upper-bound]').length, 0);
+  app.w.saveTurnRules(); app.w.openTurnRules();
+  assert.equal(app.w.calculateTurnCredit(0), 2);
+  assert.equal(app.w.calculateTurnCredit(500), 2);
+  app.d.querySelector('#turn-rules-add-range').click();
+  assert.equal(app.d.querySelectorAll('[data-service-weight]').length, 2);
+  assert.equal(app.d.querySelector('[data-service-upper-bound="0"]').value, '');
+  assert.deepEqual(app.errors, []);
+});
+
+test('range count changes synchronize open Calendar fields while preserving reward drafts', t => {
+  const board = boot('pos-front-desk-turn-board.html'), calendar = boot('pos-front-desk.html');
+  t.after(() => { board.w.close(); calendar.w.close(); });
+  const root = openCalendar(calendar);
+  root.querySelector('[data-structure="flat"]').click();
+  root.querySelector('#flat-rate').value = '8';
+  const result = board.w.NEXORA_TURN_SETTINGS.save({bookingTurnCredit: 0.5, serviceWeights: [0.5, 1, 1.5, 2, 3], serviceThresholds: [30, 70, 110, 150]});
+  assert.equal(result.ok, true);
+  syncStorage(board, calendar);
+  assert.equal(root.querySelectorAll('[data-service-weight]').length, 5);
+  assert.match(root.querySelector('[data-service-weight="4"]').closest('label').textContent, /\$150\+/);
+  assert.equal(root.querySelector('#flat-rate').value, '8');
+  root.querySelector('[data-service-weight="4"]').value = '3.5';
+  root.querySelector('#save-policy').click();
+  assert.equal(calendar.w.NEXORA_TURN_SETTINGS.serviceCredit(150), 3.5);
+  const standalone = boot('team-calendar.html', saved(calendar)); t.after(() => standalone.w.close());
+  standalone.d.querySelector('#reward-settings-button').click();
+  assert.equal(standalone.d.querySelectorAll('[data-service-weight]').length, 5);
+  board.w.NEXORA_TURN_SETTINGS.save({bookingTurnCredit: 1, serviceWeights: [2], serviceThresholds: []});
+  syncStorage(board, standalone);
+  assert.equal(standalone.d.querySelectorAll('[data-service-weight]').length, 1);
+  assert.match(standalone.d.querySelector('[data-service-weight]').closest('label').textContent, /\$0\+/);
+  standalone.d.querySelector('#save-policy').click();
+  assert.equal(standalone.w.NEXORA_TURN_SETTINGS.serviceCredit(500), 2);
+  for (const app of [board, calendar, standalone]) assert.deepEqual(app.errors, []);
+});
+
+test('synchronizing a different range count keeps keyboard focus inside the open turn rules', t => {
+  const source = boot('pos-front-desk-turn-board.html'), app = boot('pos-front-desk-turn-board.html');
+  t.after(() => { source.w.close(); app.w.close(); });
+  app.w.openTurnRules();
+  source.w.NEXORA_TURN_SETTINGS.save({bookingTurnCredit: 0.5, serviceWeights: [0.5, 1, 1.5, 2, 3], serviceThresholds: [30, 70, 110, 150]});
+  syncStorage(source, app);
+  assert.equal(app.d.activeElement, app.d.querySelector('[data-service-upper-bound="0"]'));
+  app.d.querySelector('[data-service-weight="4"]').focus();
+  source.w.NEXORA_TURN_SETTINGS.save({bookingTurnCredit: 0.5, serviceWeights: [2], serviceThresholds: []});
+  syncStorage(source, app);
+  assert.equal(app.d.activeElement, app.d.querySelector('[data-service-weight="0"]'));
+  const booking = app.d.querySelector('#booking-turn-credit');
+  booking.focus();
+  source.w.NEXORA_TURN_SETTINGS.save({bookingTurnCredit: 0.5, serviceWeights: [1, 2], serviceThresholds: [50]});
+  syncStorage(source, app);
+  assert.equal(app.d.activeElement, booking, 'sync leaves controls outside the rows focused');
+  app.d.querySelector('[data-service-upper-bound="0"]').focus();
+  source.w.NEXORA_TURN_SETTINGS.save({bookingTurnCredit: 0.5, serviceWeights: [2], serviceThresholds: []});
+  syncStorage(source, app);
+  assert.equal(app.d.activeElement, app.d.querySelector('[data-service-weight="0"]'), 'a removed amount field falls back to its remaining credit');
+  assert.deepEqual(app.errors, []);
+});

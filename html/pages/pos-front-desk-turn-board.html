@@ -62,17 +62,13 @@
     </div>
     <div class="turn-rules-body">
       <section class="turn-service-section" aria-labelledby="service-rules-title">
-        <div class="turn-rules-section-heading"><h4 id="service-rules-title">Service ranges</h4><span><i data-lucide="layers-2" aria-hidden="true"></i>4 ranges</span></div>
+        <div class="turn-rules-section-heading"><h4 id="service-rules-title">Service ranges</h4><span><i data-lucide="layers-2" aria-hidden="true"></i><span id="turn-rules-count" aria-live="polite">4 ranges</span></span></div>
         <p class="turn-rules-help" id="turn-range-help">Set an Up to amount for each range. The next range starts $0.01 above it.</p>
         <table class="turn-rule-table">
-          <thead><tr><th scope="col">Range</th><th scope="col">From <span class="turn-auto-label">Auto</span></th><th scope="col">Up to</th><th scope="col">Turn credit</th></tr></thead>
-          <tbody>
-            <tr><th scope="row"><span class="turn-range-number">1</span></th><td><span class="turn-range-fixed">$0.00</span></td><td><div class="turn-amount-input"><span aria-hidden="true">$</span><input aria-label="Range 1 Up to amount" aria-describedby="turn-range-help turn-rules-error" data-service-upper-bound="0" type="number" min="0" step="0.01" required value="29.99" inputmode="decimal"></div></td><td><div class="turn-credit-input"><input aria-label="Range 1 turn credit" data-service-weight="0" type="number" min="0" step="any" required value="0.5" inputmode="decimal"><span aria-hidden="true">turns</span></div></td></tr>
-            <tr><th scope="row"><span class="turn-range-number">2</span></th><td><output data-service-range-start="0">$30.00</output></td><td><div class="turn-amount-input"><span aria-hidden="true">$</span><input aria-label="Range 2 Up to amount" aria-describedby="turn-range-help turn-rules-error" data-service-upper-bound="1" type="number" min="0" step="0.01" required value="69.99" inputmode="decimal"></div></td><td><div class="turn-credit-input"><input aria-label="Range 2 turn credit" data-service-weight="1" type="number" min="0" step="any" required value="1" inputmode="decimal"><span aria-hidden="true">turns</span></div></td></tr>
-            <tr><th scope="row"><span class="turn-range-number">3</span></th><td><output data-service-range-start="1">$70.00</output></td><td><div class="turn-amount-input"><span aria-hidden="true">$</span><input aria-label="Range 3 Up to amount" aria-describedby="turn-range-help turn-rules-error" data-service-upper-bound="2" type="number" min="0" step="0.01" required value="109.99" inputmode="decimal"></div></td><td><div class="turn-credit-input"><input aria-label="Range 3 turn credit" data-service-weight="2" type="number" min="0" step="any" required value="1.5" inputmode="decimal"><span aria-hidden="true">turns</span></div></td></tr>
-            <tr><th scope="row"><span class="turn-range-number">4</span></th><td><output data-service-range-start="2">$110.00</output></td><td><span class="turn-range-unlimited"><i data-lucide="infinity" aria-hidden="true"></i>No limit</span></td><td><div class="turn-credit-input"><input aria-label="Range 4 turn credit" data-service-weight="3" type="number" min="0" step="any" required value="2" inputmode="decimal"><span aria-hidden="true">turns</span></div></td></tr>
-          </tbody>
+          <thead><tr><th scope="col">Range</th><th scope="col">From <span class="turn-auto-label">Auto</span></th><th scope="col">Up to</th><th scope="col">Turn credit</th><th scope="col" aria-label="Range actions"></th></tr></thead>
+          <tbody id="turn-rules-rows"></tbody>
         </table>
+        <button type="button" class="turn-rules-add" id="turn-rules-add-range"><i data-lucide="plus" aria-hidden="true"></i>Add range</button>
         <div class="turn-rules-basis"><i data-lucide="receipt-text" aria-hidden="true"></i><p>Service value after discounts.<span>Excludes tips, tax, products, and gift-card payments.</span></p></div>
       </section>
       <section class="turn-rules-preview" aria-labelledby="turn-preview-title">
