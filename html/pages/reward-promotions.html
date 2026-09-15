@@ -13,77 +13,81 @@
 <div class="shell"><aside class="sidebar" id="sidebar"></aside><div class="app-area"><header class="header" id="header"></header>
 <main class="promotions-page">
   <header class="promotions-heading">
-    <div><p class="promo-eyebrow">Reward / Promotions</p><h1>Promotions</h1><p>Create offers that bring customers back and grow revenue.</p></div>
-    <button class="promo-button primary" id="create-promotion"><span aria-hidden="true">＋</span> Create promotion</button>
+    <div><p class="promo-eyebrow">Reward / Promotions</p><h1>Promotions</h1><p data-i18n="subtitle">Compelling offers. Clear terms. The right places to share.</p></div>
+    <div class="heading-actions"><label class="promo-language"><span class="sr-only" data-i18n="language">Language</span><select id="promotion-language" aria-label="Language"><option value="en">English</option><option value="vi">Tiếng Việt</option></select></label><button class="promo-button primary" id="create-promotion"><span data-icon="plus"></span><span data-i18n="addPromotion">Add promotion</span></button></div>
   </header>
+  <section class="promo-library" aria-labelledby="templates-title">
+    <p class="promo-eyebrow" data-i18n="startTemplate">Start with a template</p><h2 id="templates-title" data-i18n="templateTitle">Choose a template. Make it yours. Preview.</h2>
+    <p class="section-description" data-i18n="templateDescription">Templates fill in the name, terms, discount and schedule. Offers are illustrative; new promotions start disabled and private.</p>
+    <div id="promotion-templates" class="promo-template-grid"></div>
+    <p class="promo-note" data-i18n="templateNote">Have your own design? Start with a template, then upload your banner. Choosing a template does not publish a promotion.</p>
+  </section>
   <section class="promo-stats" aria-label="Promotion overview">
-    <article class="promo-stat"><span class="stat-icon mint" aria-hidden="true">↗</span><div><h2>Active promotions</h2><strong id="stat-active">2</strong><p>Running now</p></div></article>
-    <article class="promo-stat"><span class="stat-icon blue" aria-hidden="true">◷</span><div><h2>Scheduled</h2><strong id="stat-scheduled">1</strong><p id="schedule-caption">Starts next week</p></div></article>
-    <article class="promo-stat"><span class="stat-icon amber" aria-hidden="true">$</span><div><h2>Revenue generated</h2><strong id="stat-revenue">$1,245</strong><p>Across current and past offers</p></div></article>
-    <article class="promo-stat"><span class="stat-icon violet" aria-hidden="true">✓</span><div><h2>Redemptions</h2><strong id="stat-redemptions">87</strong><p>Across current and past offers</p></div></article>
+    <article class="promo-stat"><span class="stat-icon" data-icon="layers"></span><div><h2 data-i18n="promotions">Promotions</h2><strong id="stat-total">0</strong></div></article>
+    <article class="promo-stat"><span class="stat-icon mint" data-icon="check-circle"></span><div><h2 data-i18n="enabled">Enabled</h2><strong id="stat-active">0</strong></div></article>
+    <article class="promo-stat"><span class="stat-icon blue" data-icon="image"></span><div><h2 data-i18n="bannersCreated">Banners created</h2><strong id="stat-banners">0</strong></div></article>
   </section>
-  <section class="promo-manager" aria-label="Promotions">
+  <section class="promo-manager" aria-label="Manage promotions">
     <div class="promo-toolbar">
-      <label class="promo-search"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5"/><path d="m16 16 4 4"/></svg><input id="promotion-search" type="search" placeholder="Search promotions" aria-label="Search promotions"></label>
-      <div class="promo-filters" role="group" aria-label="Filter promotions">
-        <button data-filter="all" aria-pressed="true">All <span data-count="all">3</span></button>
-        <button data-filter="active" aria-pressed="false">Active <span data-count="active">2</span></button>
-        <button data-filter="scheduled" aria-pressed="false">Scheduled <span data-count="scheduled">1</span></button>
-        <button data-filter="paused" aria-pressed="false">Paused <span data-count="paused"></span></button>
-      </div>
-      <select id="promotion-sort" aria-label="Sort promotions"><option value="performance">Best performing</option><option value="newest">Newest first</option><option value="name">Name A–Z</option></select>
+      <label class="promo-search"><span data-icon="search"></span><input id="promotion-search" type="search" data-placeholder="search" placeholder="Search promotion name or badge…" aria-label="Search promotion name or badge"></label>
+      <select id="promotion-filter" aria-label="Filter promotions"><option value="all" data-i18n="allStatuses">All statuses</option><option value="enabled" data-i18n="enabled">Enabled</option><option value="disabled" data-i18n="disabled">Disabled</option></select>
     </div>
-    <div id="promotion-list"></div>
-    <div class="promo-empty" id="promotion-empty" hidden><span aria-hidden="true">⌕</span><h2>No promotions found</h2><p>Try another search or choose a different status.</p><button class="promo-button" id="clear-filters">Clear filters</button></div>
+    <div id="promotion-list" class="promotion-grid"></div>
+    <div class="promo-empty" id="promotion-empty" hidden><span data-icon="search"></span><h2 id="empty-title"></h2><p id="empty-description"></p><button class="promo-button" id="clear-filters" data-i18n="clearFilters">Clear filters</button></div>
+    <div class="promo-empty" id="promotion-load-error" role="alert" hidden><span data-icon="alert-circle"></span><h2 data-i18n="loadError">Could not load promotions</h2><p data-i18n="loadErrorHint">Your saved data has been kept. Try loading it again.</p><button class="promo-button" id="retry-load" data-i18n="retry">Try again</button></div>
   </section>
-  <p class="promo-demo-note">Interactive prototype · Sample promotion results</p>
+  <p class="promo-demo-note" data-i18n="demoNote">Interactive prototype · Sample data · Changes are saved in this browser.</p>
   <p id="promotion-feedback" class="promo-feedback" role="status" aria-live="polite"></p>
 </main></div></div>
 
 <dialog id="promotion-editor" class="promo-dialog" aria-labelledby="editor-title">
   <form id="promotion-form" novalidate>
-    <header class="editor-header"><div><p class="promo-eyebrow">Build your next offer</p><h2 id="editor-title">Create promotion</h2></div><button type="button" class="promo-close" data-close-editor aria-label="Close promotion editor">×</button></header>
-    <ol class="promo-steps" aria-label="Create promotion steps"><li data-step-label="1" aria-current="step"><span>1</span> Offer details</li><li data-step-label="2"><span>2</span> Schedule &amp; rules</li><li data-step-label="3"><span>3</span> Review</li></ol>
+    <header class="editor-header"><div><p class="promo-eyebrow">Promotion studio</p><h2 id="editor-title">Create promotion</h2></div><div class="editor-header-actions"><label class="promo-language"><span class="sr-only" data-i18n="language">Language</span><select id="editor-language" aria-label="Language"><option value="en">EN</option><option value="vi">VI</option></select></label><button type="button" class="promo-close" data-close-editor data-label="closeEditor" aria-label="Close promotion editor"><span data-icon="x"></span></button></div></header>
+    <div class="editor-help"><strong data-i18n="helpTitle">Review these 4 parts before using your offer</strong><span data-i18n="helpSteps">① Name & eligible services → ② Discount → ③ Days & times → ④ Banners & placements</span><small data-i18n="helpNote">Preview as you edit. Save, then enable the promotion from your list when you are ready.</small></div>
     <div class="editor-body">
       <div class="editor-fields">
-        <section data-editor-step="1">
-          <div class="sample-heading"><div><p class="promo-eyebrow">Quick start</p><h3>Start with a sample</h3></div><button type="button" class="promo-text-button" id="toggle-samples" aria-expanded="false">View all</button></div>
-          <div id="promotion-samples" class="promo-samples"></div>
-          <div class="promo-divider"><span>Or customize</span></div>
-          <h3>What are you offering?</h3><p class="editor-description">Start with the customer-facing details.</p>
-          <label class="promo-field">Promotion name<input name="title" maxlength="80" required placeholder="e.g. New Customer"></label>
-          <div class="promo-field-row"><label class="promo-field">Discount type<select name="type"><option value="percent">Percentage off</option><option value="fixed">Amount off</option><option value="free">Free service or add-on</option><option value="custom">Custom offer</option></select></label><label class="promo-field" id="discount-field"><span id="discount-label">Discount value</span><div class="promo-input-prefix"><span id="discount-prefix">$</span><input name="value" type="number" min="0.01" step="0.01" required aria-label="Discount value"></div></label></div>
-          <label class="promo-field">Badge<input name="badge" maxlength="24" placeholder="e.g. WELCOME"></label>
-          <label class="promo-field">Description<textarea name="description" maxlength="180" rows="3" placeholder="Tell customers what makes this offer special."></textarea></label>
-          <label class="promo-check-card"><span><strong>Offer at checkout</strong><small>Staff can apply this promotion to eligible tickets.</small></span><input name="checkout" type="checkbox" checked></label>
+        <section class="editor-section" aria-labelledby="details-title">
+          <h3 class="section-number" id="details-title" data-i18n="detailsSection">01 / Promotion details</h3>
+          <label class="promo-field"><span data-i18n="name">Promotion name</span><input name="title" maxlength="100" required aria-describedby="promotion-error"></label>
+          <label class="promo-field"><span data-i18n="badge">Badge · optional</span><input name="badge" maxlength="50"></label>
+          <p class="promo-note" data-i18n="detailsHint">Example: 15% off Classic Pedicure, Tue–Thu 10 AM–2 PM; cannot be combined. Clearly state who qualifies, eligible services and exclusions.</p>
+          <label class="promo-field"><span data-i18n="description">Description · optional</span><textarea name="description" maxlength="1000" rows="3"></textarea></label>
         </section>
-        <section data-editor-step="2" hidden>
-          <p class="promo-eyebrow">Make it yours</p><h3>When can customers use it?</h3><p class="editor-description">Choose the schedule and eligible services.</p>
-          <label class="promo-field">Availability<select name="timing"><option value="now">Start now</option><option value="scheduled">Schedule for later</option></select></label>
-          <div class="promo-field-row"><label class="promo-field">Start date<input name="startDate" type="date"></label><label class="promo-field">End date <span class="optional">Optional</span><input name="endDate" type="date"></label></div>
-          <fieldset class="promo-days"><legend>Available days</legend><div id="promotion-days"></div></fieldset>
-          <label class="promo-check-inline"><input name="allDay" type="checkbox" checked> Available all day</label>
-          <div class="promo-field-row" id="promotion-hours" hidden><label class="promo-field">From<input name="startTime" type="time" value="10:00"></label><label class="promo-field">Until<input name="endTime" type="time" value="14:00"></label></div>
-          <label class="promo-field">Eligible services<select name="services"><option>All services</option><option>Selected add-ons</option><option>Manicure</option><option>Pedicure</option><option>Nail enhancements</option></select></label>
-          <label class="promo-field">Who can use this offer?<select name="audience"><option>All customers</option><option>First-time customers</option><option>Returning customers</option></select></label>
-          <label class="promo-field">How is it redeemed?<select name="redemption"><option value="auto">Auto-applied</option><option value="checkout">At checkout</option><option value="code">Promotion code</option></select></label>
-          <label class="promo-field" id="promotion-code-field" hidden>Promotion code<input name="code" maxlength="24" placeholder="e.g. GLOW15"></label>
+        <section class="editor-section" aria-labelledby="schedule-title">
+          <h3 class="section-number" id="schedule-title" data-i18n="scheduleSection">02 / Discount & schedule</h3>
+          <div class="promo-field-row"><label class="promo-field"><span data-i18n="discountType">Discount type</span><select name="type"><option value="percent" data-i18n="percent">Percent · %</option><option value="fixed" data-i18n="amount">Amount · $</option><option value="free" data-i18n="legacyFree" hidden>Free service or add-on</option><option value="custom" data-i18n="legacyCustom" hidden>Custom offer</option></select></label><label class="promo-field" id="discount-field"><span data-i18n="discountValue">Discount value</span><input name="value" type="number" min="0.01" step="0.01" required aria-describedby="promotion-error"></label></div>
+          <fieldset class="promo-days"><legend data-i18n="days">Days it runs</legend><div id="promotion-days"></div></fieldset>
+          <div class="promo-field-row"><label class="promo-field"><span data-i18n="startsAt">Starts at</span><input name="startTime" type="time" required value="00:00"></label><label class="promo-field"><span data-i18n="endsAt">Ends at</span><input name="endTime" type="time" required value="23:59"></label></div>
+          <p class="promo-note" data-i18n="timeHint">Shop local time · America/Chicago. Start and end times must be on the same day.</p>
+          <p class="promo-note legacy-schedule" id="legacy-schedule" hidden></p>
         </section>
-        <section data-editor-step="3" hidden>
-          <p class="promo-eyebrow">Ready to go</p><h3>Review your promotion</h3><p class="editor-description">Check the details before adding your offer.</p><div id="promotion-review"></div>
-          <label class="promo-check-card"><span><strong>Keep paused</strong><small>Save the promotion and activate it when you are ready.</small></span><input name="paused" type="checkbox"></label>
+        <section class="editor-section" aria-labelledby="placements-title">
+          <h3 class="section-number" id="placements-title" data-i18n="placementsSection">03 / Placements</h3>
+          <label class="promo-check-card"><input name="checkout" type="checkbox" checked><span><strong data-i18n="checkout">Offer this at checkout</strong><small data-i18n="checkoutHint">Available in the POS checkout.</small></span><span data-icon="shopping-bag"></span></label>
+          <label class="promo-check-card"><input name="hero" type="checkbox"><span><strong>OneQR hero</strong><small data-i18n="heroHint">Show this promotion’s banners.</small></span><span data-icon="scan"></span></label>
+          <label class="promo-check-card"><input name="public" type="checkbox"><span><strong data-i18n="public">Submit to Search Deals</strong><small data-i18n="publicHint">Public listing requires a separate review.</small></span><span data-icon="globe"></span></label>
+          <p class="promo-note" data-i18n="publicNote">A public request does not turn on paid advertising or referral rewards.</p>
         </section>
-        <p id="promotion-error" class="promo-error" role="alert"></p>
       </div>
-      <aside class="editor-preview"><p class="preview-label">Live preview</p><div id="promotion-preview" class="promo-poster theme-gold"><p data-preview-badge>WELCOME</p><h3 data-preview-title>New Customer</h3><strong data-preview-value>$10 OFF</strong><p data-preview-description>Save $10 on your first visit.</p><span class="poster-cta">View offer</span></div><p class="preview-caption">Customer view</p></aside>
+      <aside class="editor-preview" aria-labelledby="banners-title">
+        <h3 class="section-number" id="banners-title" data-i18n="bannersSection">04 / Banners & posters</h3>
+        <div id="promotion-preview" aria-live="polite"></div>
+        <p class="promo-note" data-i18n="bannerHint">Reorder banners to choose the cover image. Every banner opens the same promotion.</p>
+        <div id="promotion-banners" class="promo-banner-list"></div>
+        <div class="promo-field-row banner-add-row"><label class="promo-field"><span data-i18n="chooseTheme">Choose template</span><select id="banner-theme"><option value="purple" data-i18n="themePurple">Signature · Purple</option><option value="gold" data-i18n="themeGold">Luxury · Gold</option><option value="rose" data-i18n="themeRose">Soft · Rose</option></select></label><button type="button" class="promo-button" id="add-banner"><span data-icon="plus"></span><span data-i18n="addBanner">Add banner</span></button></div>
+        <label class="promo-upload"><span data-icon="upload"></span><strong data-i18n="upload">Upload your design</strong><span class="promo-note" id="upload-file-name" data-i18n="chooseFile">Choose an image</span><input type="file" id="banner-upload" accept="image/png,image/jpeg,image/webp" aria-describedby="upload-info"></label>
+        <p id="upload-info" class="promo-note" role="status" data-i18n="uploadHint">PNG / JPG / WebP · up to 8 MB · up to 8 banners</p>
+        <button type="button" class="promo-text-button" id="preview-draft"><span data-icon="external-link"></span><span data-i18n="previewPrint">Preview & print poster</span></button>
+      </aside>
     </div>
-    <footer class="editor-footer"><button type="button" class="promo-button" id="editor-back">Cancel</button><span id="editor-step-caption">Step 1 of 3</span><button type="submit" class="promo-button primary" id="editor-next">Continue <span aria-hidden="true">→</span></button></footer>
+    <footer class="editor-footer"><div><p id="promotion-error" class="promo-error" role="alert"></p><p class="promo-note" id="save-note" data-i18n="saveNote">New promotions are saved disabled.</p></div><div class="editor-footer-actions"><button type="button" class="promo-button" data-close-editor data-i18n="cancel">Cancel</button><button type="submit" class="promo-button primary" id="save-promotion" data-i18n="save">Save promotion</button></div></footer>
   </form>
 </dialog>
-<dialog id="promotion-poster-dialog" class="promo-poster-dialog" aria-labelledby="poster-title"><header class="editor-header"><div><p class="promo-eyebrow">Ready to share</p><h2 id="poster-title">Promotion poster</h2></div><button type="button" class="promo-close" id="close-poster" aria-label="Close poster">×</button></header><div id="poster-output"></div><footer class="editor-footer"><p>Print or save as PDF.</p><button class="promo-button primary" id="print-poster">Print poster</button></footer></dialog>
+<dialog id="promotion-poster-dialog" class="promo-poster-dialog" aria-labelledby="poster-title"><header class="editor-header"><div><p class="promo-eyebrow" data-i18n="preview">Preview</p><h2 id="poster-title" data-i18n="promotionPoster">Promotion poster</h2></div><button type="button" class="promo-close" id="close-poster" data-label="closePreview" aria-label="Close preview"><span data-icon="x"></span></button></header><div class="poster-body"><div id="poster-output"></div><div class="poster-pager"><button type="button" class="promo-button" id="previous-banner" data-label="previousBanner" aria-label="Previous banner"><span data-icon="arrow-left"></span></button><span id="poster-page"></span><button type="button" class="promo-button" id="next-banner" data-label="nextBanner" aria-label="Next banner"><span data-icon="arrow-right"></span></button></div><div id="poster-details"></div></div><footer class="editor-footer"><p class="promo-note" data-i18n="printHint">Print or save as PDF.</p><button class="promo-button primary" id="print-poster"><span data-icon="printer"></span><span data-i18n="print">Print poster</span></button></footer></dialog>
 <script>window.NEXORA_SHELL = {activePage: 'reward', activeTab: 'promotions', onNavigate: function(tab) { window.location.href = 'salon-setup-reward.html?tab=' + encodeURIComponent(tab); }};</script>
 <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
 <script src="../assets/nexora-shell.js"></script>
+<script src="../assets/promotion-banner-assets.js"></script>
 <script src="../assets/reward-promotions.js"></script>
 </body>
 </html>

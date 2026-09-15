@@ -1,250 +1,364 @@
 (function () {
   'use strict';
   const $ = selector => document.querySelector(selector);
-  const key = 'nexora:reward-promotions:v1';
   const form = $('#promotion-form');
   if (!form) return;
-  const editor = $('#promotion-editor');
-  const posterDialog = $('#promotion-poster-dialog');
+  const editor = $('#promotion-editor'), posterDialog = $('#promotion-poster-dialog');
+  const key = 'nexora:reward-promotions:v1', languageKey = 'nexora:reward-promotions:language';
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
-  const themes = ['gold', 'teal', 'glow', 'ocean', 'rose', 'spring'];
-  const money = value => new Intl.NumberFormat('en-US', {style: 'currency', currency: 'USD', maximumFractionDigits: 2}).format(value).replace(/\.00$/, '');
+  const clone = value => JSON.parse(JSON.stringify(value));
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]));
-  const localDate = (offset = 0) => { const date = new Date(); date.setDate(date.getDate() + offset); return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-'); };
-  const dateLabel = date => date ? new Date(date + 'T12:00:00').toLocaleDateString('en-US', {month:'short', day:'numeric', year: new Date(date + 'T12:00:00').getFullYear() !== new Date().getFullYear() ? 'numeric' : undefined}) : 'No end date';
+  const uid = () => 'promotion-' + (typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
+  const field = name => form.elements.namedItem(name);
+  const icons = {
+    plus:'M12 5v14M5 12h14', x:'m6 6 12 12M6 18 18 6', search:'M21 21l-4.3-4.3M19 11a8 8 0 1 1-16 0 8 8 0 0 1 16 0',
+    layers:'m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5', 'check-circle':'m8 12 3 3 5-6M22 12a10 10 0 1 1-4-8',
+    image:'M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm-1 14 5-5 4 4 3-3 6 6M8 8h.01',
+    sun:'M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0',
+    sparkles:'m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3ZM3 2v4M1 4h4',
+    calendar:'M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14H3V6a2 2 0 0 1 2-2ZM8 15l3 3 5-5',
+    gift:'M3 8h18v4H3V8Zm2 4v9h14v-9M12 8v13m0-13H8a3 3 0 1 1 3-3l1 3Zm0 0h4a3 3 0 1 0-3-3l-1 3Z',
+    utensils:'M4 3v7a3 3 0 0 0 6 0V3M7 3v18M20 3c-4 2-5 7-5 10h5m0-10v18',
+    'user-plus':'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Zm7 1v6m-3-3h6',
+    'shopping-bag':'M3 7h18l-1 14H4L3 7Zm5 0V6a4 4 0 0 1 8 0v1M8 11h.01M16 11h.01',
+    scan:'M8 3H3v5m13-5h5v5M3 16v5h5m8 0h5v-5M7 12h10',
+    globe:'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM3 12h18M12 3a18 18 0 0 0 0 18 18 18 0 0 0 0-18Z',
+    upload:'M12 16V3m-5 5 5-5 5 5M3 16v5h18v-5',
+    'external-link':'M15 3h6v6m0-6L10 14M9 3H3v18h18v-6',
+    'arrow-left':'M19 12H5m6-6-6 6 6 6', 'arrow-right':'M5 12h14m-6-6 6 6-6 6', 'arrow-up':'M12 19V5m-6 6 6-6 6 6', 'arrow-down':'M12 5v14m-6-6 6 6 6-6',
+    printer:'M6 9V3h12v6M6 17H3V9h18v8h-3M6 14h12v7H6v-7Zm11-2h.01',
+    edit:'m16 3 5 5-12 12-6 1 1-6L16 3Zm-3 3 5 5', copy:'M9 9h12v12H9V9ZM5 15H3V3h12v2',
+    eye:'M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Zm13 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0',
+    pause:'M8 5v14M16 5v14', play:'m7 4 14 8-14 8V4Z', more:'M5 12h.01M12 12h.01M19 12h.01',
+    'alert-circle':'M12 8v5m0 3h.01M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0'
+  };
+  const icon = name => '<svg class="promo-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + (icons[name] || icons.image) + '"/></svg>';
+  const copy = {
+    subtitle:['Compelling offers. Clear terms. The right places to share.','Chương trình hấp dẫn. Nội dung rõ ràng. Đúng nơi hiển thị.'], language:['Language','Ngôn ngữ'], addPromotion:['Add promotion','Tạo chương trình'],
+    startTemplate:['Start with a template','Bắt đầu từ mẫu'], templateTitle:['Choose a template. Make it yours. Preview.','Chọn mẫu. Sửa vài thông tin. Xem trước.'],
+    templateDescription:['Templates fill in the name, terms, discount and schedule. Offers are illustrative; new promotions start disabled and private.','Mẫu điền sẵn tên, mô tả, ưu đãi và lịch chạy. Giá chỉ minh họa; bản mới luôn tắt và chưa public.'],
+    templateNote:['Have your own design? Start with a template, then upload your banner. Choosing a template does not publish a promotion.','Có thiết kế riêng? Chọn mẫu để điền nội dung, sau đó upload banner. Chương trình mới chưa được xuất bản khi bấm Dùng mẫu.'],
+    promotions:['Promotions','Chương trình'], enabled:['Enabled','Đang bật'], disabled:['Disabled','Đang tắt'], bannersCreated:['Banners created','Banner đã tạo'],
+    search:['Search promotion name or badge…','Tìm tên chương trình hoặc badge...'], allStatuses:['All statuses','Tất cả trạng thái'], clearFilters:['Clear filters','Xóa bộ lọc'],
+    loadError:['Could not load promotions','Không tải được chương trình'], loadErrorHint:['Your saved data has been kept. Try loading it again.','Dữ liệu đã lưu vẫn được giữ nguyên. Vui lòng thử tải lại.'], retry:['Try again','Thử lại'],
+    demoNote:['Interactive prototype · Sample data · Changes are saved in this browser.','Bản mẫu tương tác · Dữ liệu minh họa · Thay đổi được lưu trong trình duyệt này.'],
+    closeEditor:['Close promotion editor','Đóng form chương trình'], helpTitle:['Review these 4 parts before using your offer','Chỉnh 4 phần trước khi dùng'],
+    helpSteps:['① Name & eligible services → ② Discount → ③ Days & times → ④ Banners & placements','① Tên & dịch vụ áp dụng → ② Mức giảm → ③ Ngày & giờ → ④ Banner & nơi hiển thị'],
+    helpNote:['Preview as you edit. Save, then enable the promotion from your list when you are ready.','Xem preview bên cạnh khi sửa. Lưu, sau đó chủ động bật chương trình tại danh sách.'],
+    detailsSection:['01 / Promotion details','01 / Thông tin chương trình'], name:['Promotion name','Tên chương trình'], badge:['Badge · optional','Badge · tùy chọn'],
+    detailsHint:['Example: 15% off Classic Pedicure, Tue–Thu 10 AM–2 PM; cannot be combined. Clearly state who qualifies, eligible services and exclusions.','Ví dụ: Giảm 15% Classic Pedicure, thứ Ba–thứ Năm 10–14h; không cộng dồn. Luôn ghi rõ ai được dùng, dịch vụ nào và điều kiện loại trừ.'],
+    description:['Description · optional','Mô tả · tùy chọn'], scheduleSection:['02 / Discount & schedule','02 / Ưu đãi & lịch chạy'], discountType:['Discount type','Discount type'],
+    percent:['Percent · %','Percent · %'], amount:['Amount · $','Amount · $'], discountValue:['Discount value','Mức giảm'], legacyFree:['Free service or add-on','Dịch vụ hoặc add-on miễn phí'], legacyCustom:['Custom offer','Ưu đãi tùy chỉnh'],
+    days:['Days it runs','Days it runs'], startsAt:['Starts at','Starts at'], endsAt:['Ends at','Ends at'],
+    timeHint:['Shop local time · America/Chicago. Start and end times must be on the same day.','Giờ địa phương của tiệm · America/Chicago. Khung giờ bắt đầu và kết thúc trong cùng ngày.'],
+    placementsSection:['03 / Placements','03 / Nơi hiển thị'], checkout:['Offer this at checkout','Offer this at checkout'], checkoutHint:['Available in the POS checkout.','Giữ chức năng POS hiện có.'],
+    heroHint:['Show this promotion’s banners.','Hiển thị các banner của chương trình.'], public:['Submit to Search Deals','Gửi public lên Search Deals'], publicHint:['Public listing requires a separate review.','Chờ duyệt trước khi hiển thị công khai.'],
+    publicNote:['A public request does not turn on paid advertising or referral rewards.','Public không tự bật quảng cáo trả phí hoặc thưởng giới thiệu.'], bannersSection:['04 / Banners & posters','04 / Banner & poster'],
+    bannerHint:['Reorder banners to choose the cover image. Every banner opens the same promotion.','Mỗi chương trình có nhiều banner. Đổi thứ tự để chọn hình đầu; tất cả cùng mở đúng chương trình.'],
+    chooseTheme:['Choose template','Chọn template'], themePurple:['Signature · Purple','Signature · Tím'], themeGold:['Luxury · Gold','Luxury · Vàng'], themeRose:['Soft · Rose','Soft · Hồng'],
+    addBanner:['Add banner','Thêm banner'], upload:['Upload your design','Upload mẫu riêng'], chooseFile:['Choose an image','Chọn ảnh'], uploadHint:['PNG / JPG / WebP · up to 8 MB · up to 8 banners','PNG / JPG / WebP · tối đa 8 MB · tối đa 8 banner'],
+    previewPrint:['Preview & print poster','Xem trước & in poster'], saveNote:['New promotions are saved disabled.','Chương trình mới được lưu ở trạng thái tắt.'], editNote:['Changes take effect after saving.','Thay đổi có hiệu lực sau khi lưu.'],
+    cancel:['Cancel','Hủy'], save:['Save promotion','Lưu chương trình'], preview:['Preview','Xem trước'], promotionPoster:['Promotion poster','Poster chương trình'], closePreview:['Close preview','Đóng xem trước'],
+    previousBanner:['Previous banner','Banner trước'], nextBanner:['Next banner','Banner tiếp theo'], printHint:['Print or save as PDF.','In hoặc lưu PDF.'], print:['Print poster','In poster'],
+    useTemplate:['Use this template','Dùng mẫu này'], edit:['Edit','Chỉnh sửa'], enable:['Enable promotion','Bật chương trình'], disable:['Disable','Tạm tắt'], duplicate:['Duplicate','Nhân bản'], delete:['Delete promotion','Xóa chương trình'],
+    createTitle:['Create promotion','Tạo chương trình'], editTitle:['Edit promotion','Chỉnh sửa chương trình'], pending:['Public · Pending review','Public · Chờ duyệt'], banner:['banner','banner'],
+    emptyTitle:['No promotions yet','Chưa có chương trình'], emptyHint:['Choose a template or add your first promotion.','Chọn mẫu hoặc tạo chương trình đầu tiên.'], noMatches:['No promotions found','Không tìm thấy chương trình'], noMatchesHint:['Try another search or choose a different status.','Thử tên khác hoặc chọn trạng thái khác.'],
+    moveUp:['Move banner up','Chuyển banner lên'], moveDown:['Move banner down','Chuyển banner xuống'], removeBanner:['Remove banner','Xóa banner'], cover:['Cover','Ảnh đầu'], uploaded:['Uploaded image','Ảnh upload'], missingImage:['Image unavailable. Upload it again.','Ảnh không còn khả dụng. Vui lòng upload lại.'],
+    saved:['Promotion saved disabled. Enable it from your list when ready.','Đã lưu chương trình ở trạng thái tắt. Bật tại danh sách khi sẵn sàng.'], updated:['Promotion updated.','Đã cập nhật chương trình.'], duplicated:['Copy created disabled and private.','Đã tạo bản sao ở trạng thái tắt và chưa public.'],
+    enabledMessage:['Promotion enabled.','Đã bật chương trình.'], disabledMessage:['Promotion disabled.','Đã tắt chương trình.'], deleted:['Promotion deleted.','Đã xóa chương trình.'], copySuffix:['Copy','Bản sao'],
+    saveError:['Could not save. Browser storage is unavailable or full. Your changes are still here.','Không lưu được. Bộ nhớ trình duyệt không khả dụng hoặc đã đầy. Nội dung đang sửa vẫn được giữ nguyên.'],
+    nameError:['Enter a promotion name.','Nhập tên chương trình.'], lengthError:['Keep the name within 100, badge within 50 and description within 1,000 characters.','Tên tối đa 100, badge 50 và mô tả 1.000 ký tự.'],
+    valueError:['Enter a discount greater than zero. Percentage discounts cannot exceed 100%.','Mức giảm phải lớn hơn 0; phần trăm không vượt 100.'], customError:['Enter an offer headline.','Nhập nội dung ưu đãi.'],
+    daysError:['Choose at least one day.','Chọn ít nhất một ngày chạy.'], timeError:['End time must be later than start time on the same day.','Giờ kết thúc phải sau giờ bắt đầu trong cùng ngày.'],
+    bannerError:['Keep between 1 and 8 banners.','Giữ từ 1 đến 8 banner.'], staleError:['This promotion changed in another tab. Close and reopen it to see the latest version.','Chương trình đã thay đổi ở tab khác. Đóng và mở lại để xem bản mới nhất.'],
+    busy:['Processing image…','Đang xử lý ảnh…'], busyError:['Wait for the image to finish processing before saving.','Chờ ảnh xử lý xong trước khi lưu.'], imageAdded:['Image added to your draft.','Đã thêm ảnh vào bản đang sửa.'],
+    imageType:['Choose a PNG, JPG or WebP image.','Chọn ảnh PNG, JPG hoặc WebP.'], imageSize:['Choose an image no larger than 8 MB.','Chọn ảnh không quá 8 MB.'], imageDecode:['Could not read this image. Choose another file.','Không đọc được ảnh. Vui lòng chọn file khác.'],
+    imageStorage:['Could not store this image. Free browser storage and try again.','Không lưu được ảnh. Giải phóng bộ nhớ trình duyệt rồi thử lại.'], confirmDelete:['Delete this promotion?','Xóa chương trình này?'], cannotDelete:['This promotion has been used. Disable it to keep its history.','Chương trình đã được sử dụng. Hãy tắt để giữ lịch sử.'],
+    invalidPreview:['Enter a valid discount','Nhập mức giảm hợp lệ'], more:['More actions','Thao tác khác'], legacyDates:['Saved date range','Khoảng ngày đã lưu'], useCode:['Use code','Dùng mã'], eligibleServices:['Eligible services','Dịch vụ áp dụng'], eligibleCustomers:['Eligible customers','Khách được áp dụng']
+  };
+  let language = 'en';
+  try { language = localStorage.getItem(languageKey) === 'vi' ? 'vi' : 'en'; } catch (_) {}
+  const t = name => (copy[name] || [name, name])[language === 'vi' ? 1 : 0];
   const templates = [
-    {id:'weekend', title:'Weekend Special', type:'percent', value:20, badge:'WEEKEND', description:'Enjoy 20% off your favorite services this weekend.', theme:'gold', category:'Weekend', hint:'Fri–Sat', days:['Fri','Sat']},
-    {id:'happy-hour', title:'Happy Hour', type:'percent', value:15, badge:'GLOW', description:'Make time for yourself with 15% off weekday services.', theme:'glow', category:'Happy hour', hint:'Weekday slow hours', days:['Mon','Tue','Wed','Thu'], allDay:false},
-    {id:'new-customer', title:'New Customer', type:'fixed', value:10, badge:'WELCOME', description:'Save $10 on your first visit.', theme:'teal', posterTheme:'gold', category:'Welcome', hint:'First visit', audience:'First-time customers'},
-    {id:'rebook', title:'Rebook & Save', type:'fixed', value:5, badge:'REBOOK', description:'Save $5 when customers schedule their next visit at checkout.', theme:'ocean', category:'Rebook', hint:'Next appointment', redemption:'checkout'},
-    {id:'birthday', title:'Birthday Reward', type:'free', value:'', badge:'CELEBRATE', description:'A complimentary add-on to celebrate your birthday month.', theme:'rose', category:'Birthday', hint:'Birthday month', services:'Selected add-ons'},
-    {id:'seasonal', title:'Seasonal Offer', type:'custom', value:'SPRING', badge:'A FRESH START', description:'Refresh your look with our seasonal service special.', theme:'spring', category:'Seasonal', hint:'Limited time'},
-    {id:'upgrade', title:'Add-On Upgrade', type:'percent', value:20, badge:'UPGRADE', description:'20% off selected nail-art and premium add-ons.', theme:'gold', category:'Upgrade', hint:'Selected add-ons', services:'Selected add-ons'},
-    {id:'friends', title:'Bring a Friend', type:'fixed', value:10, badge:'BETTER TOGETHER', description:'Enjoy $10 off when you book a visit with a friend.', theme:'teal', category:'Referral', hint:'Share the experience'},
-    {id:'loyalty', title:'A Little Thank You', type:'percent', value:10, badge:'JUST FOR YOU', description:'Our returning customers enjoy 10% off their next service.', theme:'rose', category:'Loyalty', hint:'Returning customers', audience:'Returning customers'}
+    {id:'upgrade', icon:'sparkles', value:20, type:'percent', purpose:['Sell more services','Bán thêm dịch vụ'], offer:['20% off add-ons','Giảm 20% phần add-on'], hint:['Choose the add-ons and discount.','Sửa dịch vụ bổ sung và mức giảm.'], title:['Add-On Upgrade · Sample','Add-On Upgrade · Mẫu hướng dẫn'], badge:['UPGRADE','UPGRADE'], description:['20% off nail art or a foot massage with a main service. Applies to the add-on only, not the whole ticket. Confirm eligible services before use.','Giảm 20% giá phần nail art hoặc massage chân khi mua cùng dịch vụ chính. Không giảm giá toàn bộ hóa đơn; xác định dịch vụ áp dụng trước khi dùng.']},
+    {id:'weekday', icon:'sun', value:15, type:'percent', days:['Tue','Wed','Thu'], startTime:'10:00', endTime:'14:00', purpose:['Fill quiet hours','Lấp giờ vắng'], offer:['15% off · Tue–Thu','Giảm 15% · Thứ 3–5'], hint:['Adjust days, hours and services.','Sửa ngày, khung giờ và dịch vụ.'], title:['Weekday Glow · Sample','Weekday Glow · Mẫu hướng dẫn'], badge:['HAPPY HOURS','GIỜ VÀNG'], description:['15% off Classic Pedicure, Tuesday–Thursday, 10 AM–2 PM. Excludes tips and tax; cannot be combined with other offers. Review these sample terms before use.','Giảm 15% cho Classic Pedicure từ thứ Ba đến thứ Năm, 10:00–14:00. Không áp dụng tip, thuế hoặc cộng dồn ưu đãi. Điều kiện mẫu cần kiểm tra lại trước khi dùng.']},
+    {id:'rebook', icon:'calendar', value:5, type:'fixed', purpose:['Bring customers back','Khách quay lại'], offer:['$5 off the next visit','Giảm $5 lần ghé sau'], hint:['Set the rebooking conditions.','Sửa điều kiện đặt lại lịch.'], title:['Rebook & Save · Sample','Rebook & Save · Mẫu hướng dẫn'], badge:['REBOOK','ĐẶT LẠI LỊCH'], description:['Save $5 on the next visit when the customer books before leaving. Confirm a qualifying appointment before applying this offer.','Giảm $5 cho lần ghé kế tiếp nếu đặt lịch trước khi rời tiệm. Xác minh lịch hẹn đủ điều kiện trước khi áp dụng.']},
+    {id:'welcome', icon:'user-plus', value:10, type:'percent', purpose:['Welcome new guests','Đón khách mới'], offer:['10% off the first visit','Giảm 10% lần đầu'], hint:['Choose services and first-visit terms.','Sửa dịch vụ và điều kiện khách mới.'], title:['New Guest Offer · Sample','Chào khách mới · Mẫu'], badge:['FIRST VISIT','LẦN ĐẦU'], description:['10% off Classic Pedicure on the first visit. Cannot be combined; excludes tax and tips. Verify first-visit eligibility and adjust services and terms before use.','Giảm 10% cho Classic Pedicure ở lần sử dụng đầu tiên. Không cộng dồn; không gồm thuế và tip. Xác minh khách mới. Sửa dịch vụ và điều kiện trước khi dùng.']},
+    {id:'food', icon:'utensils', value:3, type:'fixed', days:['Mon','Tue','Wed','Thu','Fri'], startTime:'11:00', endTime:'14:00', purpose:['Lunch offers','Ưu đãi bữa trưa'], offer:['$3 off a lunch combo','Giảm $3 combo trưa'], hint:['Adjust the combo and available hours.','Sửa combo và thời gian áp dụng.'], title:['Lunch Combo · Sample','Combo bữa trưa · Mẫu'], badge:['LUNCH','LUNCH'], description:['Save $3 on a main dish and drink combo, Monday–Friday, 11 AM–2 PM. Cannot be combined; excludes delivery fees. Choose the eligible combo before use.','Giảm $3 khi mua combo món chính và đồ uống, thứ Hai–thứ Sáu 11:00–14:00. Không cộng dồn, không gồm phí giao hàng. Sửa combo áp dụng trước khi dùng.']},
+    {id:'retail', icon:'gift', value:15, type:'percent', purpose:['Promote products','Khuyến mãi sản phẩm'], offer:['15% off a gift set','Giảm 15% bộ quà tặng'], hint:['Choose products and purchase terms.','Sửa sản phẩm và điều kiện mua.'], title:['Gift Set Offer · Sample','Bộ quà tặng · Mẫu'], badge:['GIFT SET','GIFT SET'], description:['15% off selected gift sets. Does not apply storewide; cannot be combined and excludes tax. Confirm eligible products and availability before use.','Giảm 15% bộ quà tặng được chọn. Không áp dụng toàn bộ cửa hàng; không cộng dồn, không gồm thuế. Xác định sản phẩm áp dụng và tồn kho trước khi dùng.']}
   ];
-  function baseOffer() {
-    return {title:'', type:'fixed', value:10, badge:'SPECIAL OFFER', description:'', checkout:true, timing:'now', startDate:localDate(), endDate:'', days:[...days], allDay:true, startTime:'10:00', endTime:'14:00', services:'All services', audience:'All customers', redemption:'auto', code:'', paused:false, theme:'gold', category:'Special offer', uses:0, revenue:0};
+  const localized = value => value[language === 'vi' ? 1 : 0];
+  const newBanner = (theme = 'purple') => ({id:uid(), theme});
+  function blankOffer() { return {id:null,title:'',badge:'',description:'',type:'percent',value:10,days:[...days],startTime:'00:00',endTime:'23:59',checkout:true,hero:false,public:'private',paused:true,banners:[newBanner()],uses:0,revenue:0}; }
+  function templateOffer(sample) {
+    return {...blankOffer(), templateId:sample.id, title:localized(sample.title), badge:localized(sample.badge), description:localized(sample.description),type:sample.type,value:sample.value,days:[...(sample.days || days)],startTime:sample.startTime || '00:00',endTime:sample.endTime || '23:59',hero:true};
   }
-  function sampleOffer(sample) { return {...baseOffer(), ...sample, id:null, theme:sample.posterTheme || sample.theme}; }
+  function normalize(offer) {
+    if (!offer || typeof offer.id !== 'string' || typeof offer.title !== 'string' || !Array.isArray(offer.days)) throw new Error('Invalid promotion');
+    const migrated = {...blankOffer(), ...offer};
+    migrated.banners = Array.isArray(offer.banners) && offer.banners.length ? clone(offer.banners) : [{id:'legacy-banner-' + offer.id,theme:offer.theme || 'purple'}];
+    if (migrated.banners.some(banner => !banner || typeof banner.id !== 'string') || offer.days.some(day => !days.includes(day))) throw new Error('Invalid promotion data');
+    if (offer.allDay === true) { migrated.startTime = '00:00'; migrated.endTime = '23:59'; }
+    migrated.paused = !!offer.paused;
+    return migrated;
+  }
   function seed() {
-    return {version:1, pastRevenue:220, pastUses:8, offers:[
-      {...sampleOffer(templates[6]), id:'add-on-upgrade', uses:48, revenue:620, createdAt:1},
-      {...sampleOffer(templates[3]), id:'rebook-save', theme:'teal', uses:31, revenue:405, createdAt:2},
-      {...sampleOffer(templates[1]), id:'weekday-glow', title:'Weekday Glow', description:'Fill quiet hours with 15% off weekday services.', startDate:localDate(6), timing:'scheduled', days:['Tue','Wed','Thu'], redemption:'code', code:'GLOW15', createdAt:3}
-    ]};
+    const offers = [templates[0],templates[2],templates[1]].map((sample,index) => ({...templateOffer(sample),id:['add-on-upgrade','rebook-save','weekday-glow'][index],title:['Add-On Upgrade — Nâng Cấp Móng','Rebook & Save — Đặt Lịch Kế Tiếp','Weekday Glow — Giờ Vàng Trong Tuần'][index],paused:false,banners:[newBanner(['purple','rose','gold'][index])],hero:index !== 2,createdAt:index+1}));
+    return {version:2,offers};
   }
+  let state = {version:2,offers:[]}, loadFailed = false, query = '', filter = 'all', current = null, selectedBanner = 0, uploadPending = false, editorSession = 0, feedbackTimer, posterOffer = null, posterIndex = 0, initialRevision = '', draftAssets = [], editorOpener = null;
+  const imageUrls = new Map();
   function load() {
     try {
-      const saved = JSON.parse(localStorage.getItem(key));
-      if (saved?.version === 1 && Array.isArray(saved.offers) && saved.offers.every(item => item && typeof item.id === 'string' && typeof item.title === 'string' && Array.isArray(item.days))) {
-        return {...saved, pastRevenue:Number(saved.pastRevenue) || 0, pastUses:Number(saved.pastUses) || 0, offers:saved.offers.map(item => ({...baseOffer(), ...item}))};
+      const raw = localStorage.getItem(key);
+      if (raw === null) { state = seed(); localStorage.setItem(key,JSON.stringify(state)); }
+      else {
+        const saved = JSON.parse(raw);
+        if (![1,2].includes(saved?.version) || !Array.isArray(saved.offers)) throw new Error('Invalid saved data');
+        const offers = saved.offers.map(normalize);
+        if (new Set(offers.map(offer => offer.id)).size !== offers.length) throw new Error('Duplicate IDs');
+        state = {...saved, version:2, offers};
       }
-    } catch (_) { /* Demo data remains available when browser storage is unavailable. */ }
-    const fresh = seed();
-    try { localStorage.setItem(key, JSON.stringify(fresh)); } catch (_) {}
-    return fresh;
+      loadFailed = false;
+    } catch (_) { loadFailed = true; }
   }
-  let state = load(), filter = 'all', query = '', sort = 'performance', step = 1, current = null, expandedSamples = false, selectedSample = '', feedbackTimer;
-  const field = name => form.elements.namedItem(name);
-  const status = offer => offer.paused ? 'paused' : offer.startDate > localDate() ? 'scheduled' : offer.endDate && offer.endDate < localDate() ? 'ended' : 'active';
-  const theme = offer => themes.includes(offer.theme) ? offer.theme : 'gold';
-  const discount = offer => offer.type === 'percent' ? Number(offer.value) + '% OFF' : offer.type === 'fixed' ? money(Number(offer.value)) + ' OFF' : offer.type === 'free' ? 'FREE' : String(offer.value || 'SPECIAL');
-  function dayLabel(offer) {
-    if (offer.days.length === 7) return 'Sun–Sat';
-    if (offer.days.length > 2 && offer.days.every((day, i) => i === 0 || days.indexOf(day) === days.indexOf(offer.days[i - 1]) + 1)) return offer.days[0] + '–' + offer.days.at(-1);
-    return offer.days.join(', ');
-  }
-  function timeLabel(time) { const [h,m] = (time || '00:00').split(':').map(Number); return (h % 12 || 12) + (m ? ':' + String(m).padStart(2,'0') : '') + (h < 12 ? ' AM' : ' PM'); }
-  const hours = offer => offer.allDay ? 'All day' : timeLabel(offer.startTime) + '–' + timeLabel(offer.endTime);
-  const redemptionLabel = offer => offer.redemption === 'code' ? 'Code: ' + offer.code : offer.redemption === 'checkout' ? 'At checkout' : 'Auto-applied';
-  function feedback(message) {
-    clearTimeout(feedbackTimer); $('#promotion-feedback').textContent = message;
-    feedbackTimer = setTimeout(() => { $('#promotion-feedback').textContent = ''; }, 5000);
-  }
+  function feedback(message) { clearTimeout(feedbackTimer); $('#promotion-feedback').textContent = message; feedbackTimer = setTimeout(() => { $('#promotion-feedback').textContent = ''; },5000); }
   function persist(next, inEditor = false) {
-    try { localStorage.setItem(key, JSON.stringify(next)); }
-    catch (_) {
-      const message = 'Could not save. Browser storage is unavailable or full. Please try again.';
-      if (inEditor) $('#promotion-error').textContent = message; else feedback(message);
-      return false;
-    }
+    try { localStorage.setItem(key,JSON.stringify(next)); }
+    catch (_) { if (inEditor) showError(t('saveError')); else feedback(t('saveError')); return false; }
     state = next; render(); return true;
   }
+  function validValue(offer) { return Number.isFinite(Number(offer.value)) && Number(offer.value) > 0 && (offer.type !== 'percent' || Number(offer.value) <= 100); }
+  function discount(offer) {
+    if (offer.type === 'free') return language === 'vi' ? 'Miễn phí' : 'FREE';
+    if (offer.type === 'custom') return String(offer.value || t('invalidPreview'));
+    if (!validValue(offer)) return t('invalidPreview');
+    return offer.type === 'percent' ? Number(offer.value) + '% off' : '$' + Number(offer.value).toFixed(2) + ' off';
+  }
+  function schedule(offer) {
+    const time = value => { if (language === 'vi') return value; const [h,m] = value.split(':').map(Number); return (h%12 || 12) + ':' + String(m).padStart(2,'0') + (h<12 ? ' AM' : ' PM'); };
+    const times = /^\d{2}:\d{2}$/.test(offer.startTime) && /^\d{2}:\d{2}$/.test(offer.endTime) ? time(offer.startTime) + '–' + time(offer.endTime) : '—';
+    return offer.days.join(' · ') + ' / ' + times;
+  }
+  function artwork(offer, banner) {
+    if (banner?.assetId) return '<div class="promo-art image-art" data-image-container="' + esc(banner.assetId) + '"><img data-asset-id="' + esc(banner.assetId) + '" alt="' + esc(banner.name || offer.title) + '"><p class="image-error" hidden>' + t('missingImage') + '</p></div>';
+    const theme = ['purple','gold','rose','teal','glow','ocean','spring'].includes(banner?.theme) ? banner.theme : 'purple';
+    return '<div class="promo-art theme-' + theme + '"><span class="art-badge">' + esc(offer.badge || 'SPECIAL OFFER') + '</span><h3>' + esc(offer.title) + '</h3><strong class="art-saving">' + esc(discount(offer)) + '</strong></div>';
+  }
+  function hydrateImages(scope = document) {
+    scope.querySelectorAll('[data-asset-id]').forEach(img => {
+      const id = img.dataset.assetId;
+      if (!imageUrls.has(id)) imageUrls.set(id,Promise.resolve().then(() => window.NEXORA_PROMOTION_ASSETS.getUrl(id)).catch(() => null));
+      imageUrls.get(id).then(url => {
+        if (!img.isConnected) return;
+        if (url) img.src = url;
+        else { img.hidden = true; img.nextElementSibling.hidden = false; }
+      });
+    });
+  }
+  function renderTemplates() {
+    $('#promotion-templates').innerHTML = templates.map(sample => '<article class="promo-template"><div class="template-art theme-purple">' + icon(sample.icon) + '<strong>' + esc(localized(sample.offer)) + '</strong></div><h3>' + esc(localized(sample.purpose)) + '</h3><p>' + esc(localized(sample.hint)) + '</p><button class="promo-button primary" data-template="' + sample.id + '">' + t('useTemplate') + icon('arrow-right') + '</button></article>').join('');
+  }
   function render() {
-    const counts = {all:state.offers.length, active:0, scheduled:0, paused:0};
-    state.offers.forEach(offer => { const s = status(offer); if (s in counts) counts[s]++; });
-    document.querySelectorAll('[data-count]').forEach(el => { const count = counts[el.dataset.count]; el.textContent = count || (el.dataset.count === 'all' ? '0' : ''); });
-    document.querySelectorAll('[data-filter]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.filter === filter)));
-    $('#stat-active').textContent = counts.active;
-    $('#stat-scheduled').textContent = counts.scheduled;
-    const nextScheduled = state.offers.filter(offer => status(offer) === 'scheduled').sort((a,b) => a.startDate.localeCompare(b.startDate))[0];
-    $('#schedule-caption').textContent = nextScheduled ? 'Next: ' + dateLabel(nextScheduled.startDate) : 'No upcoming offers';
-    $('#stat-revenue').textContent = money(state.pastRevenue + state.offers.reduce((sum,o) => sum + Number(o.revenue),0));
-    $('#stat-redemptions').textContent = (state.pastUses + state.offers.reduce((sum,o) => sum + Number(o.uses),0)).toLocaleString('en-US');
-    const visible = state.offers.filter(offer => (filter === 'all' || status(offer) === filter) && (offer.title + ' ' + offer.description + ' ' + offer.category).toLowerCase().includes(query.trim().toLowerCase()));
-    visible.sort(sort === 'name' ? (a,b) => a.title.localeCompare(b.title) : sort === 'newest' ? (a,b) => b.createdAt - a.createdAt : (a,b) => b.revenue - a.revenue);
+    $('#promotion-load-error').hidden = !loadFailed;
+    $('#create-promotion').disabled = loadFailed;
+    document.querySelectorAll('[data-template]').forEach(button => { button.disabled = loadFailed; });
+    const offers = loadFailed ? [] : state.offers;
+    $('#stat-total').textContent = loadFailed ? '—' : offers.length;
+    $('#stat-active').textContent = loadFailed ? '—' : offers.filter(o => !o.paused).length;
+    $('#stat-banners').textContent = loadFailed ? '—' : offers.reduce((sum,o) => sum + o.banners.length,0);
+    const visible = offers.filter(o => (filter === 'all' || (filter === 'disabled') === o.paused) && (o.title + ' ' + o.badge).toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
     $('#promotion-list').innerHTML = visible.map(offer => {
-      const s = status(offer), amount = discount(offer).replace(/ OFF$/, '');
-      const action = (name,label) => '<button class="promo-button" data-action="' + name + '" data-id="' + esc(offer.id) + '">' + label + '</button>';
-      return '<article class="promotion-row" data-promotion-id="' + esc(offer.id) + '"><div class="promo-thumb' + (offer.type === 'custom' ? ' is-custom' : '') + ' theme-' + theme(offer) + '" aria-hidden="true"><small>' + esc(offer.badge) + '</small><strong>' + esc(amount) + '</strong><span>' + (['fixed','percent'].includes(offer.type) ? 'OFF' : '') + '</span></div><div class="promotion-copy"><div class="promo-badges"><span class="promo-status ' + s + '">' + s[0].toUpperCase() + s.slice(1) + '</span><span class="promo-category">' + esc(offer.category) + '</span></div><h2>' + esc(offer.title) + '</h2><p>' + esc(offer.description) + '</p><div class="promotion-meta"><span>' + esc(dayLabel(offer)) + ' · ' + esc(hours(offer)) + '</span><span>' + esc(offer.services) + '</span><span>' + esc(redemptionLabel(offer)) + '</span></div></div><div class="promotion-results"><small>' + (s === 'scheduled' ? 'Starts ' + esc(dateLabel(offer.startDate)) : Number(offer.uses) + ' uses') + '</small><strong>' + (s === 'scheduled' && !offer.revenue ? '—' : money(offer.revenue)) + '</strong><p>' + (s === 'scheduled' && !offer.revenue ? 'Not started' : 'Revenue generated') + '</p><div class="promo-progress" aria-hidden="true"><span style="width:' + Math.min(100, Math.max(0, Number(offer.revenue) / 850 * 100)) + '%"></span></div></div><div class="promotion-actions">' + action('edit','Edit') + action('duplicate','Duplicate') + action('poster','Create poster') + '<details class="promo-more"><summary class="promo-button" aria-label="More actions for ' + esc(offer.title) + '">•••</summary><div class="promo-more-menu"><button data-action="toggle" data-id="' + esc(offer.id) + '">' + (offer.paused ? 'Resume promotion' : 'Pause promotion') + '</button><button class="danger" data-action="delete" data-id="' + esc(offer.id) + '">Delete promotion</button></div></details></div></article>';
+      const action = (name,label,symbol) => '<button class="promo-button" data-action="' + name + '" data-id="' + esc(offer.id) + '">' + icon(symbol) + '<span>' + esc(label) + '</span></button>';
+      return '<article class="promotion-card" data-promotion-id="' + esc(offer.id) + '">' + artwork(offer,offer.banners[0]) + '<div class="promotion-card-body"><h3>' + esc(offer.title) + '</h3><p class="promotion-schedule">' + esc(schedule(offer)) + '</p><div class="promo-badges"><span class="promo-status ' + (offer.paused ? 'disabled' : 'enabled') + '">' + t(offer.paused ? 'disabled' : 'enabled') + '</span>' + (offer.checkout ? '<span class="promo-chip">POS checkout</span>' : '') + (offer.hero ? '<span class="promo-chip">OneQR hero</span>' : '') + (offer.public === 'pending' ? '<span class="promo-chip">' + t('pending') + '</span>' : '') + '<span class="promo-chip">' + offer.banners.length + ' ' + t('banner') + '</span></div><div class="promotion-actions">' + action('edit',t('edit'),'edit') + action('toggle',t(offer.paused ? 'enable' : 'disable'),offer.paused ? 'play' : 'pause') + action('duplicate',t('duplicate'),'copy') + action('preview',t('preview'),'eye') + '<details class="promo-more"><summary class="promo-button icon-button" aria-label="' + t('more') + '">' + icon('more') + '</summary><div class="promo-more-menu"><button class="danger" data-action="delete" data-id="' + esc(offer.id) + '">' + t('delete') + '</button></div></details></div></div></article>';
     }).join('');
-    $('#promotion-empty').hidden = visible.length > 0;
+    $('#promotion-empty').hidden = loadFailed || visible.length > 0;
+    $('#empty-title').textContent = t(offers.length ? 'noMatches' : 'emptyTitle');
+    $('#empty-description').textContent = t(offers.length ? 'noMatchesHint' : 'emptyHint');
+    $('#clear-filters').hidden = !offers.length;
+    hydrateImages($('#promotion-list'));
   }
-  function renderSamples() {
-    $('#promotion-samples').innerHTML = templates.slice(0, expandedSamples ? templates.length : 6).map(sample => '<button type="button" class="promo-sample theme-' + sample.theme + '" data-sample="' + sample.id + '" aria-pressed="' + (selectedSample === sample.id) + '"><strong>' + esc(discount(sample)) + '</strong><span>' + esc(sample.title) + '</span><small>' + esc(sample.hint) + '</small></button>').join('');
-    $('#toggle-samples').textContent = expandedSamples ? 'Show less' : 'View all';
-    $('#toggle-samples').setAttribute('aria-expanded', String(expandedSamples));
-  }
-  function populate(offer) {
-    field('type').value = offer.type;
-    updateConditional();
-    ['title','type','value','badge','description','timing','startDate','endDate','startTime','endTime','services','audience','redemption','code'].forEach(name => { field(name).value = offer[name] ?? ''; });
-    ['checkout','allDay','paused'].forEach(name => { field(name).checked = !!offer[name]; });
-    document.querySelectorAll('[name="days"]').forEach(input => { input.checked = offer.days.includes(input.value); });
-    updateConditional(); updatePreview();
+  function applyLanguage() {
+    document.documentElement.lang = language;
+    document.querySelectorAll('[data-i18n]').forEach(el => { el.textContent = t(el.dataset.i18n); });
+    document.querySelectorAll('[data-label]').forEach(el => { el.setAttribute('aria-label',t(el.dataset.label)); });
+    document.querySelectorAll('[data-placeholder]').forEach(el => { el.placeholder = t(el.dataset.placeholder); el.setAttribute('aria-label',t(el.dataset.placeholder)); });
+    $('#promotion-filter').setAttribute('aria-label',language === 'vi' ? 'Lọc chương trình' : 'Filter promotions');
+    $('#promotion-language').value = $('#editor-language').value = language;
+    $('#promotion-language').setAttribute('aria-label',t('language')); $('#editor-language').setAttribute('aria-label',t('language'));
+    renderTemplates(); render();
+    if (current) { $('#editor-title').textContent = t(current.id ? 'editTitle' : 'createTitle'); $('#save-note').textContent = t(current.id ? 'editNote' : 'saveNote'); renderBanners(); if (uploadPending) $('#upload-info').textContent = t('busy'); }
+    if (posterOffer) renderPoster();
   }
   function readOffer() {
     const result = {...current};
-    ['title','type','value','badge','description','timing','startDate','endDate','startTime','endTime','services','audience','redemption','code'].forEach(name => { result[name] = field(name).value.trim(); });
-    ['checkout','allDay','paused'].forEach(name => { result[name] = field(name).checked; });
-    result.days = Array.from(document.querySelectorAll('[name="days"]:checked'), input => input.value);
-    if (['fixed','percent'].includes(result.type)) result.value = Number(result.value);
-    result.code = result.code.toUpperCase();
+    ['title','badge','description','type','value','startTime','endTime'].forEach(name => { result[name] = field(name).value.trim(); });
+    result.days = Array.from(form.querySelectorAll('[name="days"]:checked'),input => input.value);
+    result.checkout = field('checkout').checked; result.hero = field('hero').checked; result.public = field('public').checked ? 'pending' : 'private';
+    if (['percent','fixed'].includes(result.type)) result.value = Number(result.value);
+    result.allDay = result.startTime === '00:00' && result.endTime === '23:59';
     return result;
   }
   function updateConditional() {
-    const type = field('type').value, numeric = ['fixed','percent'].includes(type);
-    field('value').type = numeric ? 'number' : 'text';
-    field('value').required = type !== 'free';
-    field('value').maxLength = 24;
+    const type = field('type').value;
+    field('value').type = ['percent','fixed'].includes(type) ? 'number' : 'text';
     field('value').max = type === 'percent' ? '100' : '';
     $('#discount-field').hidden = type === 'free';
-    $('#discount-prefix').textContent = type === 'fixed' ? '$' : type === 'percent' ? '%' : '';
-    $('#discount-label').textContent = type === 'custom' ? 'Offer headline' : 'Discount value';
-    $('#promotion-hours').hidden = field('allDay').checked;
-    $('#promotion-code-field').hidden = field('redemption').value !== 'code';
-    field('startDate').disabled = field('timing').value === 'now';
+    field('value').required = type !== 'free';
   }
-  function updatePreview() {
+  function showError(message, name) {
+    $('#promotion-error').textContent = message;
+    form.querySelectorAll('[aria-invalid]').forEach(el => el.removeAttribute('aria-invalid'));
+    if (name) { const target = name === 'days' ? form.querySelector('[name="days"]') : field(name); target.setAttribute('aria-invalid','true'); target.focus(); }
+  }
+  function validation(offer) {
+    if (!offer.title) return ['nameError','title'];
+    for (const [name,max] of [['title',100],['badge',50],['description',1000]]) if ((offer[name] || '').length > max) return ['lengthError',name];
+    if (['percent','fixed'].includes(offer.type) && !validValue(offer)) return ['valueError','value'];
+    if (offer.type === 'custom' && !offer.value) return ['customError','value'];
+    if (!offer.days.length) return ['daysError','days'];
+    if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(offer.startTime) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(offer.endTime) || offer.endTime <= offer.startTime) return ['timeError','endTime'];
+    if (!offer.banners.length || offer.banners.length > 8) return ['bannerError'];
+    return null;
+  }
+  function openEditor(offer = blankOffer()) {
+    const active = document.activeElement;
+    editorOpener = {node:active,id:active?.id,template:active?.dataset.template,offerId:active?.dataset.id,action:active?.dataset.action};
+    current = clone(offer); selectedBanner = 0; uploadPending = false; draftAssets = []; editorSession++;
+    initialRevision = offer.id ? JSON.stringify(offer) : '';
+    form.reset(); $('#editor-language').value = language; field('type').value = current.type; updateConditional();
+    ['title','badge','description','value','startTime','endTime'].forEach(name => { field(name).value = current[name] ?? ''; });
+    ['free','custom'].forEach(type => { form.querySelector('option[value="' + type + '"]').hidden = current.type !== type; });
+    form.querySelectorAll('[name="days"]').forEach(input => { input.checked = current.days.includes(input.value); });
+    field('checkout').checked = !!current.checkout; field('hero').checked = !!current.hero; field('public').checked = current.public === 'pending';
+    $('#editor-title').textContent = t(current.id ? 'editTitle' : 'createTitle'); $('#save-note').textContent = t(current.id ? 'editNote' : 'saveNote');
+    $('#legacy-schedule').hidden = !(current.startDate || current.endDate);
+    $('#legacy-schedule').textContent = t('legacyDates') + ': ' + (current.startDate || '—') + ' → ' + (current.endDate || '—');
+    showError(''); $('#upload-info').textContent = t('uploadHint'); $('#upload-file-name').textContent = t('chooseFile');
+    renderBanners(); editor.showModal(); $('.editor-body').scrollTop = 0; field('title').focus();
+  }
+  function renderBanners() {
     if (!current) return;
     const offer = readOffer();
-    $('#promotion-preview').className = 'promo-poster theme-' + theme(offer);
-    $('[data-preview-badge]').textContent = offer.badge || 'SPECIAL OFFER';
-    $('[data-preview-title]').textContent = offer.title || 'Your promotion';
-    $('[data-preview-value]').textContent = discount(offer);
-    $('[data-preview-description]').textContent = offer.description;
-  }
-  function review(offer) {
-    const details = [['Promotion',offer.title], ['Offer',discount(offer)], ['Description',offer.description || '—'], ['Schedule',(offer.timing === 'now' ? 'Starts now' : dateLabel(offer.startDate)) + (offer.endDate ? ' – ' + dateLabel(offer.endDate) : ' · No end date')], ['Available',dayLabel(offer) + ' · ' + hours(offer)], ['Services',offer.services], ['Customers',offer.audience], ['Redemption',redemptionLabel(offer)], ['At checkout',offer.checkout ? 'Available to staff' : 'Not offered at checkout']];
-    $('#promotion-review').innerHTML = '<dl class="review-summary">' + details.map(([label,value]) => '<div><dt>' + label + '</dt><dd>' + esc(value) + '</dd></div>').join('') + '</dl>';
-  }
-  function showStep(next) {
-    step = next;
-    document.querySelectorAll('[data-editor-step]').forEach(section => { section.hidden = Number(section.dataset.editorStep) !== step; });
-    document.querySelectorAll('[data-step-label]').forEach(label => {
-      const number = Number(label.dataset.stepLabel);
-      if (number === step) label.setAttribute('aria-current','step'); else label.removeAttribute('aria-current');
-      label.classList.toggle('done', number < step);
-    });
-    $('#editor-back').textContent = step === 1 ? 'Cancel' : 'Back';
-    $('#editor-step-caption').textContent = 'Step ' + step + ' of 3';
-    $('#editor-next').textContent = step < 3 ? 'Continue →' : current.id ? 'Save changes' : field('paused').checked ? 'Save promotion' : field('timing').value === 'scheduled' ? 'Schedule promotion' : 'Create promotion';
-    $('#promotion-error').textContent = '';
-    if (step === 3) review(readOffer());
-    $('.editor-body').scrollTop = 0;
-  }
-  function openEditor(offer, duplicate = false) {
-    current = offer ? JSON.parse(JSON.stringify(offer)) : sampleOffer(templates[2]);
-    if (duplicate) current = {...current, id:null, title:current.title.slice(0,73) + ' (copy)', createdAt:0, uses:0, revenue:0, paused:false};
-    selectedSample = offer ? '' : 'new-customer'; expandedSamples = false;
-    $('#editor-title').textContent = duplicate ? 'Duplicate promotion' : offer ? 'Edit promotion' : 'Create promotion';
-    renderSamples(); populate(current); showStep(1); editor.showModal();
-  }
-  function validate(offer, targetStep) {
-    let message = '', invalidField;
-    const fail = (text, name) => { message = text; invalidField = name; };
-    if (targetStep === 1) {
-      if (!offer.title) fail('Enter a promotion name.','title');
-      else if (['fixed','percent'].includes(offer.type) && (!Number.isFinite(offer.value) || offer.value <= 0)) fail('Enter a discount greater than zero.','value');
-      else if (offer.type === 'percent' && offer.value > 100) fail('Percentage discounts must be between 0 and 100%.','value');
-      else if (offer.type === 'custom' && !offer.value) fail('Enter an offer headline.','value');
-    } else {
-      if (!offer.startDate || !Number.isFinite(Date.parse(offer.startDate))) fail('Choose a valid start date.','startDate');
-      else if (offer.timing === 'scheduled' && offer.startDate < localDate() && (!current.id || offer.startDate !== current.startDate)) fail('Choose today or a future date to schedule your promotion.','startDate');
-      else if (offer.endDate && offer.endDate < offer.startDate) fail('End date must be on or after the start date.','endDate');
-      else if (!offer.days.length) fail('Choose at least one available day.','days');
-      else if (!offer.allDay && (!offer.startTime || !offer.endTime || offer.endTime <= offer.startTime)) fail('End time must be later than start time.','endTime');
-      else if (offer.redemption === 'code' && !/^[A-Z0-9_-]{2,24}$/.test(offer.code)) fail('Enter a code with 2–24 letters, numbers, hyphens or underscores.','code');
-    }
-    if (!message) return true;
-    if (step !== targetStep) showStep(targetStep);
-    $('#promotion-error').textContent = message;
-    const target = invalidField === 'days' ? $('[name="days"]') : field(invalidField);
-    target.focus(); return false;
+    $('#promotion-preview').innerHTML = artwork(offer,current.banners[selectedBanner]);
+    $('#promotion-banners').innerHTML = current.banners.map((banner,index) => {
+      const button = (action,symbol,label,disabled = false) => '<button type="button" class="promo-button icon-button" data-banner-action="' + action + '" data-index="' + index + '" aria-label="' + t(label) + ' ' + (index+1) + '"' + (disabled || uploadPending ? ' disabled' : '') + '>' + icon(symbol) + '</button>';
+      return '<div class="banner-row" aria-current="' + (index === selectedBanner) + '"><span class="banner-name">' + (index+1) + '. ' + esc(banner.assetId ? banner.name || t('uploaded') : ({purple:t('themePurple'),gold:t('themeGold'),rose:t('themeRose')}[banner.theme] || banner.theme)) + (index === 0 ? '<small>' + t('cover') + '</small>' : '') + '</span><div class="banner-actions">' + button('select','eye','preview') + button('up','arrow-up','moveUp',index === 0) + button('down','arrow-down','moveDown',index === current.banners.length-1) + button('remove','x','removeBanner',current.banners.length === 1) + '</div></div>';
+    }).join('');
+    $('#add-banner').disabled = uploadPending || current.banners.length >= 8;
+    $('#banner-upload').disabled = uploadPending || current.banners.length >= 8;
+    $('#save-promotion').disabled = uploadPending;
+    hydrateImages($('#promotion-preview'));
   }
   function saveOffer() {
-    const offer = readOffer();
-    if (!validate(offer,1) || !validate(offer,2)) return;
-    if (offer.id && !state.offers.some(item => item.id === offer.id)) { $('#promotion-error').textContent = 'This promotion was deleted in another tab. Close this editor and create a new offer.'; return; }
-    const id = offer.id || ('promotion-' + (typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2)));
-    const record = {...offer, id, createdAt:offer.createdAt || Date.now()};
-    const next = {...state, offers:offer.id ? state.offers.map(item => item.id === id ? record : item) : [...state.offers,record]};
+    if (!current || !editor.open) return;
+    if (uploadPending) { showError(t('busyError')); return; }
+    const offer = readOffer(), error = validation(offer);
+    if (error) { showError(t(error[0]),error[1]); return; }
+    if (loadFailed || offer.id && JSON.stringify(state.offers.find(item => item.id === offer.id)) !== initialRevision) { showError(t('staleError')); return; }
+    const record = {...offer,id:offer.id || uid(),paused:offer.id ? offer.paused : true,createdAt:offer.createdAt || Date.now(),updatedAt:Date.now()};
+    const next = {...state,offers:offer.id ? state.offers.map(item => item.id === offer.id ? record : item) : [...state.offers,record]};
     if (persist(next,true)) {
-      editor.close(); filter = 'all'; query = ''; $('#promotion-search').value = ''; render();
-      feedback(offer.id ? 'Promotion updated.' : offer.paused ? 'Promotion saved as paused.' : status(offer) === 'scheduled' ? 'Promotion scheduled.' : 'Promotion created.');
+      draftAssets.filter(id => !record.banners.some(banner => banner.assetId === id)).forEach(id => { window.NEXORA_PROMOTION_ASSETS?.discard?.(id).catch(() => {}); imageUrls.delete(id); });
+      draftAssets = []; editor.close(); clearFilters(); feedback(t(offer.id ? 'updated' : 'saved'));
     }
   }
-  function openPoster(offer) {
-    $('#poster-output').innerHTML = '<div class="promo-poster theme-' + theme(offer) + '"><p>' + esc(offer.badge) + '</p><h3>' + esc(offer.title) + '</h3><strong>' + esc(discount(offer)) + '</strong><p class="poster-description">' + esc(offer.description) + '</p><span class="poster-cta">' + (offer.redemption === 'code' ? 'Use code ' + esc(offer.code) : 'Ask us about this offer') + '</span></div>';
-    posterDialog.showModal();
+  function clearFilters() { filter = 'all'; query = ''; $('#promotion-search').value = ''; $('#promotion-filter').value = 'all'; render(); }
+  function renderPoster() {
+    $('#poster-output').innerHTML = artwork(posterOffer,posterOffer.banners[posterIndex]);
+    const terms = [];
+    if (posterOffer.redemption === 'code' && posterOffer.code) terms.push(t('useCode') + ': ' + posterOffer.code);
+    if (posterOffer.startDate || posterOffer.endDate) terms.push(t('legacyDates') + ': ' + (posterOffer.startDate || '—') + ' → ' + (posterOffer.endDate || '—'));
+    if (posterOffer.services && posterOffer.services !== 'All services') terms.push(t('eligibleServices') + ': ' + posterOffer.services);
+    if (posterOffer.audience && posterOffer.audience !== 'All customers') terms.push(t('eligibleCustomers') + ': ' + posterOffer.audience);
+    $('#poster-details').innerHTML = '<h3>' + esc(posterOffer.title) + '</h3><p class="poster-description">' + esc(posterOffer.description) + '</p><p class="poster-schedule">' + esc(schedule(posterOffer)) + '</p>' + terms.map(term => '<p class="poster-schedule">' + esc(term) + '</p>').join('');
+    $('#poster-page').textContent = (posterIndex+1) + ' / ' + posterOffer.banners.length;
+    $('#previous-banner').disabled = posterIndex === 0; $('#next-banner').disabled = posterIndex === posterOffer.banners.length-1;
+    hydrateImages($('#poster-output'));
+  }
+  function openPoster(offer,index = 0) { posterOffer = clone(offer); posterIndex = index; renderPoster(); posterDialog.showModal(); }
+  async function uploadFile(event) {
+    const file = event.target.files?.[0]; event.target.value = '';
+    if (!file || !current || current.banners.length >= 8 || uploadPending) return;
+    const session = editorSession; uploadPending = true; showError(''); $('#upload-info').textContent = t('busy'); renderBanners();
+    try {
+      const asset = await window.NEXORA_PROMOTION_ASSETS.importFile(file);
+      if (session !== editorSession || !editor.open || !current) { await window.NEXORA_PROMOTION_ASSETS.discard?.(asset.id); return; }
+      draftAssets.push(asset.id); imageUrls.set(asset.id,Promise.resolve(asset.url));
+      current.banners.push({id:uid(),theme:'purple',assetId:asset.id,name:asset.name}); selectedBanner = current.banners.length-1;
+      $('#upload-info').textContent = t('imageAdded'); $('#upload-file-name').textContent = asset.name;
+    } catch (error) {
+      if (session !== editorSession || !editor.open) return;
+      const code = {type:'imageType',size:'imageSize',empty:'imageDecode',decode:'imageDecode',storage:'imageStorage'}[error.code] || 'imageDecode';
+      $('#upload-info').textContent = t(code); showError(t(code));
+    } finally { if (session === editorSession && current && editor.open) { uploadPending = false; renderBanners(); } }
   }
   $('#promotion-days').innerHTML = days.map(day => '<label class="promo-day"><input type="checkbox" name="days" value="' + day + '" checked><span>' + day + '</span></label>').join('');
-  $('#create-promotion').addEventListener('click', () => openEditor());
-  $('#promotion-search').addEventListener('input', event => { query = event.target.value; render(); });
-  document.querySelectorAll('[data-filter]').forEach(button => button.addEventListener('click', () => { filter = button.dataset.filter; render(); }));
-  $('#promotion-sort').addEventListener('change', event => { sort = event.target.value; render(); });
-  $('#clear-filters').addEventListener('click', () => { query = ''; filter = 'all'; $('#promotion-search').value = ''; render(); });
-  $('#promotion-list').addEventListener('click', event => {
+  document.querySelectorAll('[data-icon]').forEach(el => { el.innerHTML = icon(el.dataset.icon); el.setAttribute('aria-hidden','true'); });
+  $('#create-promotion').addEventListener('click',() => openEditor());
+  $('#promotion-templates').addEventListener('click',event => { const button = event.target.closest('[data-template]'); if (button) openEditor(templateOffer(templates.find(sample => sample.id === button.dataset.template))); });
+  $('#promotion-search').addEventListener('input',event => { query = event.target.value; render(); });
+  $('#promotion-filter').addEventListener('change',event => { filter = event.target.value; render(); });
+  $('#clear-filters').addEventListener('click',clearFilters);
+  $('#retry-load').addEventListener('click',() => { load(); render(); });
+  ['#promotion-language','#editor-language'].forEach(selector => $(selector).addEventListener('change',event => { language = event.target.value === 'vi' ? 'vi' : 'en'; try { localStorage.setItem(languageKey,language); } catch (_) {} applyLanguage(); }));
+  $('#promotion-list').addEventListener('click',event => {
     const button = event.target.closest('[data-action]'); if (!button) return;
     const offer = state.offers.find(item => item.id === button.dataset.id); if (!offer) return;
     const action = button.dataset.action;
-    if (action === 'edit' || action === 'duplicate') openEditor(offer, action === 'duplicate');
-    if (action === 'poster') openPoster(offer);
+    if (action === 'edit') openEditor(offer);
+    if (action === 'preview') openPoster(offer);
     if (action === 'toggle') {
-      if (persist({...state, offers:state.offers.map(item => item.id === offer.id ? {...item, paused:!item.paused} : item)})) feedback(offer.paused ? 'Promotion resumed.' : 'Promotion paused.');
+      const error = offer.paused && validation(offer);
+      if (error) { openEditor(offer); showError(t(error[0]),error[1]); return; }
+      if (persist({...state,offers:state.offers.map(item => item.id === offer.id ? {...item,paused:!item.paused,updatedAt:Date.now()} : item)})) feedback(t(offer.paused ? 'enabledMessage' : 'disabledMessage'));
     }
-    if (action === 'delete' && window.confirm('Delete “' + offer.title + '”? This promotion will be removed from your list.')) {
-      if (persist({...state, pastRevenue:state.pastRevenue + Number(offer.revenue), pastUses:state.pastUses + Number(offer.uses), offers:state.offers.filter(item => item.id !== offer.id)})) feedback('Promotion deleted. Past results are retained in the overview.');
+    if (action === 'duplicate') {
+      const duplicate = {...clone(offer),id:uid(),title:offer.title.slice(0,90) + ' · ' + t('copySuffix'),paused:true,public:'private',uses:0,revenue:0,canDelete:true,createdAt:Date.now(),updatedAt:Date.now()};
+      duplicate.banners.forEach(banner => { banner.id = uid(); });
+      if (persist({...state,offers:[...state.offers,duplicate]})) { clearFilters(); feedback(t('duplicated')); }
+    }
+    if (action === 'delete') {
+      if (offer.canDelete === false || Number(offer.uses) > 0) { feedback(t('cannotDelete')); return; }
+      if (window.confirm(t('confirmDelete') + '\n“' + offer.title + '”') && persist({...state,offers:state.offers.filter(item => item.id !== offer.id)})) feedback(t('deleted'));
     }
   });
-  $('#promotion-samples').addEventListener('click', event => {
-    const button = event.target.closest('[data-sample]'); if (!button) return;
-    const sample = templates.find(item => item.id === button.dataset.sample);
-    const previous = readOffer();
-    current = {...sampleOffer(sample), id:previous.id, uses:previous.uses, revenue:previous.revenue, createdAt:previous.createdAt};
-    selectedSample = sample.id; renderSamples(); populate(current);
+  form.addEventListener('input',event => { if (!current || event.target.type === 'file') return; showError(''); renderBanners(); });
+  form.addEventListener('change',event => { if (!current || !event.target.name) return; updateConditional(); renderBanners(); });
+  form.addEventListener('submit',event => { event.preventDefault(); saveOffer(); });
+  document.querySelectorAll('[data-close-editor]').forEach(button => button.addEventListener('click',() => editor.close()));
+  editor.addEventListener('close',() => {
+    editorSession++; current = null; uploadPending = false;
+    draftAssets.forEach(id => { window.NEXORA_PROMOTION_ASSETS?.discard?.(id).catch(() => {}); imageUrls.delete(id); }); draftAssets = [];
+    const opener = editorOpener;
+    const target = opener?.node.isConnected ? opener.node : opener?.id ? document.getElementById(opener.id) : Array.from(document.querySelectorAll('[data-template],[data-action]')).find(node => opener?.template ? node.dataset.template === opener.template : opener?.offerId && node.dataset.id === opener.offerId && node.dataset.action === opener.action);
+    (target || $('#create-promotion')).focus();
+    editorOpener = null;
   });
-  $('#toggle-samples').addEventListener('click', () => { expandedSamples = !expandedSamples; renderSamples(); });
-  form.addEventListener('input', () => { updatePreview(); $('#promotion-error').textContent = ''; });
-  form.addEventListener('change', event => {
-    if (event.target.name === 'timing' && field('timing').value === 'now') field('startDate').value = localDate();
-    if (event.target.name === 'type') { const value = field('value').value; if (['percent','fixed'].includes(field('type').value) && !Number.isFinite(Number(value))) field('value').value = 10; }
-    updateConditional(); updatePreview();
-    if (step === 3) showStep(3);
+  $('#add-banner').addEventListener('click',() => { if (!current || uploadPending || current.banners.length >= 8) return; current.banners.push(newBanner($('#banner-theme').value)); selectedBanner = current.banners.length-1; renderBanners(); });
+  $('#promotion-banners').addEventListener('click',event => {
+    const button = event.target.closest('[data-banner-action]'); if (!button || button.disabled || !current || uploadPending) return;
+    const index = Number(button.dataset.index), action = button.dataset.bannerAction;
+    if (action === 'select') selectedBanner = index;
+    if (action === 'remove' && current.banners.length > 1) {
+      const selectedId = current.banners[selectedBanner].id;
+      current.banners.splice(index,1);
+      const retainedIndex = current.banners.findIndex(banner => banner.id === selectedId);
+      selectedBanner = retainedIndex >= 0 ? retainedIndex : Math.min(index,current.banners.length-1);
+    }
+    if (action === 'up' || action === 'down') { const next = index + (action === 'up' ? -1 : 1); if (next < 0 || next >= current.banners.length) return; [current.banners[index],current.banners[next]] = [current.banners[next],current.banners[index]]; selectedBanner = next; }
+    renderBanners();
+    $('#promotion-banners [data-banner-action="select"][data-index="' + selectedBanner + '"]').focus();
   });
-  form.addEventListener('submit', event => {
-    event.preventDefault();
-    if (step < 3) { if (validate(readOffer(),step)) showStep(step + 1); }
-    else saveOffer();
-  });
-  $('#editor-back').addEventListener('click', () => { if (step === 1) editor.close(); else showStep(step - 1); });
-  $('[data-close-editor]').addEventListener('click', () => editor.close());
-  $('#close-poster').addEventListener('click', () => posterDialog.close());
-  $('#print-poster').addEventListener('click', () => window.print());
-  document.addEventListener('click', event => { document.querySelectorAll('.promo-more[open]').forEach(menu => { if (!menu.contains(event.target)) menu.open = false; }); });
-  document.addEventListener('keydown', event => { if (event.key === 'Escape') document.querySelectorAll('.promo-more[open]').forEach(menu => { menu.open = false; }); });
-  window.addEventListener('storage', event => { if (event.key === key || event.key === null) { state = load(); render(); } });
-  document.addEventListener('visibilitychange', () => { if (!document.hidden) render(); });
-  render();
+  $('#banner-upload').addEventListener('change',uploadFile);
+  $('#preview-draft').addEventListener('click',() => { if (current) openPoster(readOffer(),selectedBanner); });
+  $('#close-poster').addEventListener('click',() => posterDialog.close());
+  posterDialog.addEventListener('close',() => { posterOffer = null; });
+  $('#previous-banner').addEventListener('click',() => { if (posterIndex > 0) { posterIndex--; renderPoster(); } });
+  $('#next-banner').addEventListener('click',() => { if (posterIndex < posterOffer.banners.length-1) { posterIndex++; renderPoster(); } });
+  $('#print-poster').addEventListener('click',() => window.print());
+  document.addEventListener('click',event => { document.querySelectorAll('.promo-more[open]').forEach(menu => { if (!menu.contains(event.target)) menu.open = false; }); });
+  document.addEventListener('keydown',event => { if (event.key === 'Escape') document.querySelectorAll('.promo-more[open]').forEach(menu => { menu.open = false; }); });
+  window.addEventListener('storage',event => { if (event.key === key || event.key === null) { load(); render(); } });
+  load(); applyLanguage();
 })();
