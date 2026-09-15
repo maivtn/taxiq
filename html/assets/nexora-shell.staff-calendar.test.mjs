@@ -142,7 +142,7 @@ test('staff sidebar links to My Tickets immediately above My Calendar and highli
   const ticketsLink = dom.window.document.querySelector('[data-staff-nav="my-tickets"]');
   assert.equal(ticketsLink?.getAttribute('href'), 'staff-work-orders.html');
   assert.equal(ticketsLink?.textContent.trim(), 'My Tickets');
-  assert.ok(ticketsLink?.querySelector('[data-lucide="clipboard-list"]'));
+  assert.ok(ticketsLink?.querySelector('[data-lucide="list-checks"]'));
   assert.equal(ticketsLink?.classList.contains('is-active'), true);
   assert.equal(ticketsLink?.nextElementSibling?.getAttribute('data-staff-nav'), 'my-calendar');
   assert.equal(ticketsLink?.nextElementSibling?.classList.contains('is-active'), false);
