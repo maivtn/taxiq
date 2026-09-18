@@ -27,6 +27,7 @@
     if (estimate) {
       document.querySelector('#appointments').hidden = true;
       document.querySelector('#service-assignments').hidden = true;
+      document.querySelector('#front-desk-waitlist').hidden = true;
       view.refresh();
     }
     if (estimate || section === 'appointments') {

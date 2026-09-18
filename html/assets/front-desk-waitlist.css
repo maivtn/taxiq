@@ -1,0 +1,29 @@
+#front-desk-waitlist{max-width:900px}
+#front-desk-waitlist .wl-heading{margin-bottom:18px}
+#front-desk-waitlist .wl-heading h2{font-size:20px;margin:0 0 5px;letter-spacing:-.4px}
+#front-desk-waitlist .wl-heading p{margin:0;color:var(--nexora-muted,#52607b)}
+#front-desk-waitlist .wl-panel{background:#fff;border:1px solid var(--nexora-border,#dbe4f3);border-radius:14px;padding:20px}
+#front-desk-waitlist .wl-panel h3{margin:0 0 14px;font-size:15px}
+#front-desk-waitlist .wl-list{display:flex;flex-direction:column;gap:14px}
+#front-desk-waitlist .wl-card{display:flex;flex-direction:column;gap:14px;border:1px solid var(--nexora-border,#dbe4f3);border-radius:12px;padding:16px}
+#front-desk-waitlist .wl-card-top{display:flex;align-items:center;gap:12px}
+#front-desk-waitlist .wl-avatar{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:40px;height:40px;border-radius:50%;font-size:12px;font-weight:700}
+#front-desk-waitlist .wl-tone-a{background:#dbe9ff;color:#2554c7}
+#front-desk-waitlist .wl-tone-b{background:#ffe4cc;color:#b5651d}
+#front-desk-waitlist .wl-tone-c{background:#ffd9e8;color:#c23b73}
+#front-desk-waitlist .wl-id{display:flex;flex-direction:column;gap:2px}
+#front-desk-waitlist .wl-id strong{font-size:14px;color:var(--nexora-text,#101827)}
+#front-desk-waitlist .wl-id>span:first-of-type{color:var(--nexora-muted,#52607b);font-size:12px}
+#front-desk-waitlist .wl-status{color:var(--nexora-brand,#4c43df);font-size:12px;font-weight:700}
+#front-desk-waitlist .wl-stats{display:flex;flex-wrap:wrap;gap:10px}
+#front-desk-waitlist .wl-stats>div{flex:1 1 110px;background:#f6f8fc;border-radius:10px;padding:10px 12px;display:flex;flex-direction:column;gap:3px}
+#front-desk-waitlist .wl-stats strong{font-size:14px;color:var(--nexora-text,#101827)}
+#front-desk-waitlist .wl-stats span{font-size:11px;color:var(--nexora-muted,#52607b)}
+#front-desk-waitlist .wl-tags{display:flex;flex-wrap:wrap;gap:8px}
+#front-desk-waitlist .wl-tag{background:#f1f0fe;color:#4d48ef;border:1px solid #e0dbff;border-radius:20px;padding:4px 10px;font-size:11px;font-weight:600}
+#front-desk-waitlist .wl-actions{display:flex;flex-wrap:wrap;gap:8px}
+#front-desk-waitlist .wl-actions button{flex:1 1 130px}
+#front-desk-waitlist .wl-benefit{color:#9a6400;background:#fffaf0;border-color:#f1d59d}
+#front-desk-waitlist .wl-empty{text-align:center;padding:40px;color:var(--nexora-muted,#52607b)}
+#front-desk-waitlist .wl-note{font-size:11px;color:var(--nexora-muted,#52607b);margin-top:16px}
+@media(max-width:640px){#front-desk-waitlist .wl-actions button{flex:1 1 100%}}

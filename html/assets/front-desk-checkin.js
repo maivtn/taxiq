@@ -254,7 +254,7 @@
     const checkin = (params.get('section') || params.get('tab')) === 'checkin';
     root.hidden = !checkin;
     if (!checkin) {if ($('#ci-review-dialog').open) $('#ci-review-dialog').close(); return;}
-    ['#appointments', '#service-assignments', '#front-desk-estimate'].forEach(selector => {const section = document.querySelector(selector); if (section) section.hidden = true;});
+    ['#appointments', '#service-assignments', '#front-desk-estimate', '#front-desk-waitlist'].forEach(selector => {const section = document.querySelector(selector); if (section) section.hidden = true;});
     document.querySelectorAll('[data-front-section]').forEach(link => {
       const selected = link.dataset.frontSection === 'checkin';
       link.classList.toggle('active', selected);

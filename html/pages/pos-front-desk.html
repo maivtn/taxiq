@@ -24,6 +24,7 @@
   <link rel="stylesheet" href="../assets/front-desk-checkin.css">
   <link rel="stylesheet" href="../assets/service-assignments.css">
   <link rel="stylesheet" href="../assets/pos-estimate.css">
+  <link rel="stylesheet" href="../assets/front-desk-waitlist.css">
 </head>
 <body>
 <div class="shell"><aside class="sidebar" aria-label="Salon sidebar"></aside><div class="app-area"><header class="header"></header>
@@ -32,6 +33,7 @@
   <nav class="workflow" aria-label="Front Desk workflows">
     <a data-front-section="checkin" href="pos-front-desk.html?section=checkin">Check-in</a>
     <a data-front-section="tickets" href="pos-front-desk-tickets.html">Tickets</a>
+    <a data-front-section="waitlist" href="pos-front-desk.html?section=waitlist">Live Waitlist</a>
     <a href="pos-front-desk-turn-board.html">Turn Board</a>
     <button type="button" disabled>Checkout Customer</button>
     <button type="button" disabled>Completed Services</button>
@@ -42,6 +44,7 @@
   </nav>
   <section id="front-desk-checkin" aria-label="Guest Check-in" hidden></section>
   <section id="front-desk-estimate" aria-label="Service Estimate" hidden></section>
+  <section id="front-desk-waitlist" aria-label="Live Waitlist" hidden></section>
   <section id="appointments" aria-label="Appointments">
     <div class="booking-link"><strong>YOUR BOOKING PAGE — SHARE THIS LINK WITH CUSTOMERS:</strong><a id="booking-url"></a><button id="copy-link">▢ COPY</button></div>
     <div class="toolbar">
@@ -76,4 +79,5 @@
 <script src="../assets/pos-estimate.js"></script>
 <script src="../assets/front-desk-estimate.js"></script>
 <script src="../assets/front-desk-checkin.js"></script>
+<script src="../assets/front-desk-waitlist.js"></script>
 </body></html>

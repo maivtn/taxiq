@@ -9,7 +9,7 @@
   let view = 'table';
   function syncNavigation(push) {
     const url = new URL(window.location.href);
-    if (['estimate', 'checkin'].includes(url.searchParams.get('section') || url.searchParams.get('tab'))) return;
+    if (['estimate', 'checkin', 'waitlist'].includes(url.searchParams.get('section') || url.searchParams.get('tab'))) return;
     url.searchParams.set('tab', 'appointments');
     url.searchParams.set('view', view);
     if (view === 'calendar' && !['day','week','twoWeeks','threeWeeks','month'].includes(url.searchParams.get('calendarView'))) url.searchParams.set('calendarView', 'day');
