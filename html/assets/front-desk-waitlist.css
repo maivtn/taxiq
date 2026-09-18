@@ -1,11 +1,8 @@
-#front-desk-waitlist{max-width:900px}
 #front-desk-waitlist .wl-heading{margin-bottom:18px}
 #front-desk-waitlist .wl-heading h2{font-size:20px;margin:0 0 5px;letter-spacing:-.4px}
 #front-desk-waitlist .wl-heading p{margin:0;color:var(--nexora-muted,#52607b)}
-#front-desk-waitlist .wl-panel{background:#fff;border:1px solid var(--nexora-border,#dbe4f3);border-radius:14px;padding:20px}
-#front-desk-waitlist .wl-panel h3{margin:0 0 14px;font-size:15px}
 #front-desk-waitlist .wl-list{display:flex;flex-direction:column;gap:14px}
-#front-desk-waitlist .wl-card{display:flex;flex-direction:column;gap:14px;border:1px solid var(--nexora-border,#dbe4f3);border-radius:12px;padding:16px}
+#front-desk-waitlist .wl-card{display:flex;flex-direction:column;gap:14px;background:#fff;border:1px solid var(--nexora-border,#dbe4f3);border-radius:12px;padding:16px}
 #front-desk-waitlist .wl-card-top{display:flex;align-items:center;gap:12px}
 #front-desk-waitlist .wl-avatar{display:flex;align-items:center;justify-content:center;flex-shrink:0;width:40px;height:40px;border-radius:50%;font-size:12px;font-weight:700}
 #front-desk-waitlist .wl-tone-a{background:#dbe9ff;color:#2554c7}

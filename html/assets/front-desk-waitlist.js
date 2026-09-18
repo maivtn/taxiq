@@ -38,10 +38,8 @@
 
   root.innerHTML =
     '<div class="wl-heading"><div><h2>Live Waitlist</h2><p>' + esc(catalog.salon.name) + ' · ' + esc(catalog.salon.location) + '</p></div></div>' +
-    '<section class="wl-panel" aria-labelledby="wl-panel-title"><h3 id="wl-panel-title">Customers waiting</h3>' +
-      '<div id="wl-cards" class="wl-list"></div>' +
-      '<p id="wl-empty" class="wl-empty" hidden>No customers waiting right now.</p>' +
-    '</section>' +
+    '<div id="wl-cards" class="wl-list"></div>' +
+    '<p id="wl-empty" class="wl-empty" hidden>No customers waiting right now.</p>' +
     '<p class="wl-note">Interactive prototype · Sample data only. SMS, calls, and benefit offers are simulated and do not contact real customers.</p>';
   renderList();
 
