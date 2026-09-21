@@ -309,16 +309,17 @@ function smsPage(){
  return page;
 }
 
-test('SMS Settings tab defaults to Automation Settings and switches between its four sections',()=>{
+test('SMS Settings tab defaults to Welcome SMS Setup and switches between its four sections',()=>{
  const {dom,d,errors}=smsPage();
  assert.equal(d.querySelector('[data-settings-panel="sms"]').hidden,false);
- assert.equal(d.querySelector('[data-sms-tab].active')?.dataset.smsTab,'automation');
- assert.equal(d.querySelector('[data-sms-panel="automation"]').hidden,false);
- assert.equal(d.querySelector('[data-sms-panel="welcome"]').hidden,true);
- d.querySelector('[data-sms-tab="welcome"]').click();
+ assert.deepEqual(Array.from(d.querySelectorAll('[data-sms-tab]'),b=>b.dataset.smsTab),['welcome','after','templates','automation']);
  assert.equal(d.querySelector('[data-sms-tab].active')?.dataset.smsTab,'welcome');
  assert.equal(d.querySelector('[data-sms-panel="welcome"]').hidden,false);
  assert.equal(d.querySelector('[data-sms-panel="automation"]').hidden,true);
+ d.querySelector('[data-sms-tab="automation"]').click();
+ assert.equal(d.querySelector('[data-sms-tab].active')?.dataset.smsTab,'automation');
+ assert.equal(d.querySelector('[data-sms-panel="automation"]').hidden,false);
+ assert.equal(d.querySelector('[data-sms-panel="welcome"]').hidden,true);
  d.querySelector('[data-sms-tab="templates"]').click();
  assert.equal(d.querySelector('[data-sms-panel="templates"]').hidden,false);
  d.querySelector('[data-sms-tab="after"]').click();

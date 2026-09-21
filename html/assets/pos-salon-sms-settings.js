@@ -69,17 +69,17 @@
   panel.innerHTML =
     '<div class="sms-settings">' +
       '<div class="sms-settings-topbar">' +
-        '<nav class="salon-tabs sms-subtabs" aria-label="SMS setting sections">' +
-          '<button type="button" data-sms-tab="automation" class="active" aria-current="page">Automation Settings</button>' +
-          '<button type="button" data-sms-tab="templates">SMS Templates</button>' +
+        '<nav class="sms-subtabs" aria-label="SMS setting sections">' +
+          '<button type="button" data-sms-tab="welcome" class="active" aria-current="page">Welcome SMS Setup</button>' +
           '<button type="button" data-sms-tab="after">After Checkout Setup</button>' +
-          '<button type="button" data-sms-tab="welcome">Welcome SMS Setup</button>' +
+          '<button type="button" data-sms-tab="templates">SMS Templates</button>' +
+          '<button type="button" data-sms-tab="automation">Automation Settings</button>' +
         '</nav>' +
         '<span class="salon-status-pill" data-sms-automation-pill>Automation ON</span>' +
       '</div>' +
       '<p class="settings-help sms-settings-status" data-sms-status role="status" aria-live="polite"></p>' +
 
-      '<section data-sms-panel="automation">' +
+      '<section data-sms-panel="automation" hidden>' +
         '<div class="sms-columns">' +
           '<div class="sms-col sms-card"><h3>Waitlist communication</h3><div class="settings-field-grid">' +
             selectField('Welcome SMS', null, ['Automatic', 'Manual']) +
@@ -146,7 +146,7 @@
         '</div>' +
       '</section>' +
 
-      '<section data-sms-panel="welcome" hidden>' +
+      '<section data-sms-panel="welcome">' +
         '<div class="sms-columns">' +
           '<div class="sms-col sms-card"><h3>Welcome SMS Setup</h3>' +
             '<div class="settings-toggle-row"><span>Enable welcome message after check-in</span>' +
