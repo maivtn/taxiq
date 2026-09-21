@@ -47,14 +47,14 @@
 }
 
 [data-sms-panel] {
-  margin-top: 16px;
+  margin-top: 20px;
 }
 
 .sms-columns {
   display: flex;
   flex-wrap: wrap;
   align-items: flex-start;
-  gap: 16px;
+  gap: 20px;
 }
 
 .sms-col {
@@ -72,11 +72,11 @@
   border-radius: 14px;
   background: var(--nexora-surface, #fff);
   box-shadow: var(--nexora-card-shadow);
-  padding: 18px;
+  padding: 22px;
 }
 
 .sms-card h3 {
-  margin: 0 0 14px;
+  margin: 0 0 18px;
   color: var(--nexora-text);
   font-size: 15px;
   font-weight: 800;
@@ -85,7 +85,8 @@
 .settings-field-grid {
   display: flex;
   flex-wrap: wrap;
-  gap: 12px;
+  row-gap: 18px;
+  column-gap: 14px;
 }
 
 .settings-field-grid .settings-field {
@@ -95,6 +96,10 @@
 
 .settings-field-grid .sms-field-full {
   flex-basis: 100%;
+}
+
+.sms-card .settings-toggle-row {
+  margin: 0 0 20px;
 }
 
 .sms-textarea {
@@ -107,29 +112,29 @@
   display: flex;
   flex-wrap: wrap;
   gap: 10px;
-  margin-top: 16px;
+  margin-top: 20px;
 }
 
 .sms-notice {
-  margin: 16px 0 0;
+  margin: 20px 0 0;
   border: 1px solid #f3d99b;
   border-radius: 9px;
   background: #fff8e8;
-  padding: 10px 12px;
+  padding: 12px 14px;
   color: #765016;
   font-size: 12px;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .sms-tokens {
-  margin-top: 12px;
+  margin-top: 18px;
 }
 
 .sms-token-row {
   display: flex;
   flex-wrap: wrap;
-  gap: 7px;
-  margin-top: 6px;
+  gap: 8px;
+  margin-top: 8px;
 }
 
 .sms-token {
@@ -152,21 +157,21 @@
 .sms-journey {
   display: flex;
   flex-direction: column;
-  gap: 10px;
+  gap: 12px;
 }
 
 .sms-journey-item {
   border-left: 4px solid var(--nexora-electric);
   border-radius: 8px;
   background: var(--nexora-surface-muted);
-  padding: 12px 13px;
+  padding: 14px 16px;
 }
 
 .sms-journey-item p {
-  margin: 6px 0 0;
+  margin: 8px 0 0;
   color: var(--nexora-text);
   font-size: 12px;
-  line-height: 1.5;
+  line-height: 1.6;
 }
 
 .sms-journey-label {
@@ -211,7 +216,7 @@
 }
 
 .sms-phone-title {
-  padding: 14px 14px 2px;
+  padding: 16px 16px 4px;
   color: var(--nexora-text);
   font-size: 13px;
   font-weight: 800;
@@ -219,27 +224,28 @@
 }
 
 .sms-phone-bubble {
-  margin: 14px;
+  margin: 16px;
   border-radius: 14px 14px 4px 14px;
   background: #e7f1ff;
   padding: 12px 14px;
   color: var(--nexora-text);
   font-size: 12px;
-  line-height: 1.55;
+  line-height: 1.6;
 }
 
 .sms-phone-caption {
   margin: 0;
-  padding: 0 14px 16px;
+  padding: 0 16px 18px;
   color: var(--nexora-muted);
   font-size: 11px;
+  line-height: 1.5;
 }
 
 .sms-phone-body {
   display: flex;
   flex-direction: column;
-  gap: 8px;
-  padding: 0 14px 16px;
+  gap: 10px;
+  padding: 0 16px 18px;
 }
 
 .sms-phone-menu {
@@ -250,7 +256,7 @@
   border: 1px solid var(--nexora-border);
   border-radius: 12px;
   background: #fff;
-  padding: 10px 12px;
+  padding: 11px 13px;
 }
 
 .sms-phone-menu strong {
@@ -314,7 +320,7 @@
   }
 
   .sms-card {
-    padding: 14px;
+    padding: 16px;
   }
 }
 
