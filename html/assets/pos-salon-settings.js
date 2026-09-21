@@ -18,7 +18,7 @@
   }
   window.renderStaffRoster=function(){baseRender();drawStaff();};
   function selectTab(tab){
-    if(!['information','staff','services','roles'].includes(tab))tab='staff';
+    if(!['information','staff','services','roles','sms'].includes(tab))tab='staff';
     document.querySelectorAll('[data-settings-tab]').forEach(b=>{const on=b.dataset.settingsTab===tab;b.classList.toggle('active',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
     document.querySelectorAll('[data-settings-panel]').forEach(p=>p.hidden=p.dataset.settingsPanel!==tab);
     const url=new URL(location.href);url.searchParams.set('section',tab);history.replaceState(null,'',url);

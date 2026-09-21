@@ -1,0 +1,307 @@
+/* SMS Settings tab inside Salon Settings — Automation, Templates, After Checkout, Welcome SMS */
+
+.sms-settings-topbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  margin: 16px 0 0;
+}
+
+.salon-tabs.sms-subtabs {
+  margin: 0;
+}
+
+.sms-settings-status {
+  min-height: 16px;
+  margin: 8px 0 0;
+}
+
+[data-sms-panel] {
+  margin-top: 16px;
+}
+
+.sms-columns {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.sms-col {
+  flex: 1.6 1 380px;
+  min-width: 0;
+}
+
+.sms-col-side {
+  flex: 1 1 300px;
+  min-width: 0;
+}
+
+.sms-card {
+  border: 1px solid var(--nexora-border);
+  border-radius: 14px;
+  background: var(--nexora-surface, #fff);
+  box-shadow: var(--nexora-card-shadow);
+  padding: 18px;
+}
+
+.sms-card h3 {
+  margin: 0 0 14px;
+  color: var(--nexora-text);
+  font-size: 15px;
+  font-weight: 800;
+}
+
+.settings-field-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.settings-field-grid .settings-field {
+  flex: 1 1 220px;
+  min-width: 180px;
+}
+
+.settings-field-grid .sms-field-full {
+  flex-basis: 100%;
+}
+
+.sms-textarea {
+  min-height: 84px;
+  padding: 10px 12px;
+  resize: vertical;
+}
+
+.sms-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.sms-notice {
+  margin: 16px 0 0;
+  border: 1px solid #f3d99b;
+  border-radius: 9px;
+  background: #fff8e8;
+  padding: 10px 12px;
+  color: #765016;
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.sms-tokens {
+  margin-top: 12px;
+}
+
+.sms-token-row {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin-top: 6px;
+}
+
+.sms-token {
+  border: 1px solid #c9d9e8;
+  border-radius: 999px;
+  background: #f4f8fc;
+  padding: 6px 10px;
+  color: var(--nexora-text);
+  font-size: 11px;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.sms-token:hover {
+  border-color: var(--nexora-brand);
+  color: var(--nexora-brand);
+}
+
+/* SMS journey list */
+.sms-journey {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.sms-journey-item {
+  border-left: 4px solid var(--nexora-electric);
+  border-radius: 8px;
+  background: var(--nexora-surface-muted);
+  padding: 12px 13px;
+}
+
+.sms-journey-item p {
+  margin: 6px 0 0;
+  color: var(--nexora-text);
+  font-size: 12px;
+  line-height: 1.5;
+}
+
+.sms-journey-label {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--nexora-text);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.sms-journey-mode {
+  border-radius: 999px;
+  background: #e9edff;
+  padding: 2px 8px;
+  color: var(--nexora-brand);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+/* Phone preview mockup */
+.sms-phone {
+  display: flex;
+  justify-content: center;
+}
+
+.sms-phone-screen {
+  display: flex;
+  width: 100%;
+  max-width: 280px;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--nexora-border);
+  border-radius: 20px;
+  background: #fff;
+  box-shadow: var(--nexora-soft-shadow);
+}
+
+.sms-phone-bar {
+  height: 20px;
+  background: var(--nexora-sidebar);
+}
+
+.sms-phone-title {
+  padding: 14px 14px 2px;
+  color: var(--nexora-text);
+  font-size: 13px;
+  font-weight: 800;
+  text-align: center;
+}
+
+.sms-phone-bubble {
+  margin: 14px;
+  border-radius: 14px 14px 4px 14px;
+  background: #e7f1ff;
+  padding: 12px 14px;
+  color: var(--nexora-text);
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.sms-phone-caption {
+  margin: 0;
+  padding: 0 14px 16px;
+  color: var(--nexora-muted);
+  font-size: 11px;
+}
+
+.sms-phone-body {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 0 14px 16px;
+}
+
+.sms-phone-menu {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  border: 1px solid var(--nexora-border);
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px 12px;
+}
+
+.sms-phone-menu strong {
+  display: block;
+  color: var(--nexora-text);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.sms-phone-menu span {
+  display: block;
+}
+
+.sms-phone-menu span span {
+  margin-top: 2px;
+  color: var(--nexora-muted);
+  font-size: 10px;
+  font-weight: 500;
+}
+
+.sms-phone-menu button {
+  flex-shrink: 0;
+  border: 0;
+  border-radius: 8px;
+  background: #eef1ff;
+  padding: 6px 10px;
+  color: var(--nexora-brand);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.sms-phone-back {
+  width: 100%;
+  border: 1px solid var(--nexora-border);
+  border-radius: 10px;
+  background: #fff;
+  padding: 9px;
+  color: var(--nexora-text);
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+/* Select arrow: 16px icon, 16px from the right edge, 44px right padding (desktop, tablet, phone) */
+[data-settings-panel="sms"] select {
+  appearance: none;
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m7 10 5 5 5-5'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px;
+  padding-right: 44px;
+}
+
+@media (max-width: 860px) {
+  .sms-col,
+  .sms-col-side {
+    flex-basis: 100%;
+  }
+
+  .sms-card {
+    padding: 14px;
+  }
+}
+
+@media (max-width: 480px) {
+  .sms-settings-topbar {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+
+  .sms-actions {
+    flex-direction: column;
+  }
+
+  .sms-actions .booking-primary-button,
+  .sms-actions .booking-secondary-button {
+    width: 100%;
+  }
+}

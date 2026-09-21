@@ -15,6 +15,7 @@ function boot(serviceCatalog = null){
  dom.window.eval(readFileSync(new URL('../assets/pos-salon-settings.js', SOURCE_DIR),'utf8'));
  dom.window.eval(readFileSync(new URL('../assets/vendor/tom-select/tom-select.complete.min.js', SOURCE_DIR),'utf8'));
  dom.window.eval(readFileSync(new URL('../assets/pos-salon-services.js', SOURCE_DIR),'utf8'));
+ dom.window.eval(readFileSync(new URL('../assets/pos-salon-sms-settings.js', SOURCE_DIR),'utf8'));
  return {dom,w:dom.window,d:dom.window.document,errors};
 }
 test('Salon Settings opens Staff, searches and paginates with working profile actions',()=>{
@@ -300,4 +301,74 @@ test('step handles reorder complete cards, persist the order and cancel draft mo
  d.querySelector('[data-step-drag]').dispatchEvent(new w.KeyboardEvent('keydown',{bubbles:true,altKey:true,key:'ArrowUp'}));
  assert.equal(d.querySelector('[data-step-title]').value,'First');
  assert.equal(d.querySelector('[data-service-materials]').innerHTML,'<b>Materials</b>');dom.window.close();
+});
+
+function smsPage(){
+ const page=boot();
+ page.d.querySelector('[data-settings-tab="sms"]').click();
+ return page;
+}
+
+test('SMS Settings tab defaults to Automation Settings and switches between its four sections',()=>{
+ const {dom,d,errors}=smsPage();
+ assert.equal(d.querySelector('[data-settings-panel="sms"]').hidden,false);
+ assert.equal(d.querySelector('[data-sms-tab].active')?.dataset.smsTab,'automation');
+ assert.equal(d.querySelector('[data-sms-panel="automation"]').hidden,false);
+ assert.equal(d.querySelector('[data-sms-panel="welcome"]').hidden,true);
+ d.querySelector('[data-sms-tab="welcome"]').click();
+ assert.equal(d.querySelector('[data-sms-tab].active')?.dataset.smsTab,'welcome');
+ assert.equal(d.querySelector('[data-sms-panel="welcome"]').hidden,false);
+ assert.equal(d.querySelector('[data-sms-panel="automation"]').hidden,true);
+ d.querySelector('[data-sms-tab="templates"]').click();
+ assert.equal(d.querySelector('[data-sms-panel="templates"]').hidden,false);
+ d.querySelector('[data-sms-tab="after"]').click();
+ assert.equal(d.querySelector('[data-sms-panel="after"]').hidden,false);
+ assert.deepEqual(errors,[]);dom.window.close();
+});
+
+test('Welcome SMS Setup live-updates its preview on edit, template change and token insert',()=>{
+ const {dom,w,d,errors}=smsPage();
+ d.querySelector('[data-sms-tab="welcome"]').click();
+ const textarea=d.querySelector('[data-sms-field="welcomeMessage"]');
+ const preview=d.querySelector('[data-sms-preview="welcomeMessage"]');
+ assert.match(preview.textContent,/Welcome back, Sarah!/);
+ d.querySelector('[data-sms-field="welcomeTemplate"]').value='birthday';
+ d.querySelector('[data-sms-field="welcomeTemplate"]').dispatchEvent(new w.Event('change'));
+ assert.match(textarea.value,/Happy Birthday/);
+ assert.match(preview.textContent,/Happy Birthday, Sarah!/);
+ textarea.value='Hi there';textarea.dispatchEvent(new w.Event('input'));
+ assert.equal(preview.textContent,'Hi there');
+ d.querySelector('[data-sms-insert-token="[Salon Name]"]').click();
+ assert.equal(textarea.value,'Hi there [Salon Name]');
+ assert.equal(preview.textContent,'Hi there Bitcoin Nail Bar');
+ assert.deepEqual(errors,[]);dom.window.close();
+});
+
+test('After Checkout Setup preview mirrors edits to the Thank You message',()=>{
+ const {dom,w,d,errors}=smsPage();
+ d.querySelector('[data-sms-tab="after"]').click();
+ const textarea=d.querySelector('[data-sms-field="afterMessage"]');
+ const preview=d.querySelector('[data-sms-preview="afterMessage"]');
+ assert.match(preview.textContent,/Thank you for visiting Bitcoin Nail Bar, Sarah!/);
+ textarea.value='See you soon, [Customer Name]!';textarea.dispatchEvent(new w.Event('input'));
+ assert.equal(preview.textContent,'See you soon, Sarah!');
+ assert.deepEqual(errors,[]);dom.window.close();
+});
+
+test('Pause automation toggles the Automation pill, and Save/Send actions post a status message',()=>{
+ const {dom,d,errors}=smsPage();
+ const pill=d.querySelector('[data-sms-automation-pill]');
+ const pauseButton=d.querySelector('[data-sms-action="pause-automation"]');
+ assert.equal(pill.textContent,'Automation ON');
+ pauseButton.click();
+ assert.equal(pill.textContent,'Automation OFF');
+ assert.equal(pauseButton.textContent,'Resume automation');
+ pauseButton.click();
+ assert.equal(pill.textContent,'Automation ON');
+ d.querySelector('[data-sms-action="save-automation"]').click();
+ assert.equal(d.querySelector('[data-sms-status]').textContent,'Automation settings saved.');
+ d.querySelector('[data-sms-tab="welcome"]').click();
+ d.querySelector('[data-sms-action="save-welcome"]').click();
+ assert.equal(d.querySelector('[data-sms-status]').textContent,'Welcome SMS settings saved.');
+ assert.deepEqual(errors,[]);dom.window.close();
 });
