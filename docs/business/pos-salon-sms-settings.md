@@ -10,7 +10,7 @@
 
 **SMS Settings** là khu vực cấu hình trong Salon Settings, cho phép quản lý salon thiết lập toàn bộ tin nhắn SMS tự động gửi tới khách qua **Smart Link (OneQR)** xuyên suốt một chuyến ghé: từ lúc khách check-in (Welcome SMS Setup), trong lúc khách đang chờ (Automation Settings, gồm Waitlist communication và Wait Care), đến sau khi thanh toán xong (After Checkout Setup — Thank You SMS), cùng một nơi xem lại toàn bộ chuỗi tin nhắn mẫu theo hành trình khách (SMS Templates).
 
-**Vị trí:** POS → Salon Settings → SMS Settings (tab cạnh Roles & Permissions, trước Operating Standards).
+**Vị trí:** POS → Salon Settings → SMS Settings (tab thứ 2, ngay sau Salon Information, trước Staff/Services/Roles & Permissions/Operating Standards). Bên trong tab có 4 sub-tab dạng underline, theo đúng thứ tự: **Welcome SMS Setup** (mở mặc định) → **After Checkout Setup** → **SMS Templates** → **Automation Settings**.
 
 **Giá trị nghiệp vụ:** giảm khách bỏ lượt trong lúc chờ nhờ Wait Care đúng lúc, tăng tỷ lệ khách để lại đánh giá/tip/đặt lịch tiếp theo sau khi thanh toán, và giữ nội dung tin nhắn nhất quán, đúng chính sách bảo vệ khách mà không cần nhân viên soạn tay từng tin.
 
@@ -22,7 +22,7 @@ Tài liệu mô tả yêu cầu nghiệp vụ của SMS Settings. **Đối chi�
 
 | Term | Definition |
 | :--- | :--- |
-| SMS Settings | Khu vực cấu hình 4 nhóm SMS tự động của một salon: Automation Settings, SMS Templates, After Checkout Setup, Welcome SMS Setup. |
+| SMS Settings | Khu vực cấu hình 4 nhóm SMS tự động của một salon, theo đúng thứ tự sub-tab trên màn hình: Welcome SMS Setup (mặc định), After Checkout Setup, SMS Templates, Automation Settings. |
 | Automation Settings | Nhóm cấu hình Waitlist communication và Wait Care — các ngưỡng thời gian và chính sách ưu đãi áp dụng khi khách đang chờ. |
 | Wait Care | Chính sách ưu đãi theo từng mốc thời gian khách đã chờ (10–19, 20–29, 30–44, 45+ phút), có thể là Automatic hoặc cần Approval, nhằm giữ chân khách chờ lâu. |
 | Welcome SMS | Tin nhắn gửi ngay sau khi khách check-in, xác nhận đã vào hàng chờ và giới thiệu Benefit khả dụng qua Smart Link. |
@@ -50,96 +50,7 @@ Tài liệu mô tả yêu cầu nghiệp vụ của SMS Settings. **Đối chi�
 
 ### End-to-End Workflows
 
-#### Workflow 1: Cấu hình Automation Settings và Wait Care
-
-**Primary Actor:** Quản lý salon
-
-**Trigger:** Cần điều chỉnh ngưỡng thời gian hoặc chính sách ưu đãi cho khách đang chờ.
-
-**Outcome:** Automation Settings được xác nhận lưu (theo giới hạn ở mục Đối chiếu triển khai), và Automation ON/OFF phản ánh đúng trạng thái mong muốn.
-
-**User Stories:**
-
-- **US-SMS-01 — Cấu hình Waitlist communication:** Là quản lý salon, tôi muốn đặt Welcome SMS, Welcome wait time, Return notice, No response grace và Internal ETA threshold, để kiểm soát khi nào và nội dung gì được gửi cho khách trong lúc chờ.
-- **US-SMS-02 — Cấu hình Wait Care theo mốc thời gian chờ:** Là quản lý salon, tôi muốn đặt chính sách ưu đãi riêng cho từng mốc chờ (10–19, 20–29, 30–44, 45+ phút), để tự động hoặc duyệt thủ công ưu đãi giữ chân khách chờ lâu.
-- **US-SMS-03 — Tạm dừng/khôi phục automation:** Là quản lý salon, tôi muốn tạm dừng toàn bộ SMS tự động khi cần (ví dụ sự cố, bảo trì) và khôi phục lại khi sẵn sàng, để kiểm soát rủi ro gửi nhầm.
-
-| Step | Who | Action | System Response | Notes |
-| :--- | :--- | :--- | :--- | :--- |
-| 1 | Quản lý salon | Mở SMS Settings → Automation Settings | Hiện 2 khối: Waitlist communication và Wait Care với giá trị mặc định | Automation ON/OFF hiển thị chung cho cả 4 sub-tab. |
-| 2 | Quản lý salon | Chọn lại giá trị từng trường trong Waitlist communication | Form cập nhật lựa chọn, chưa gửi lên hệ thống | Cần bấm Save settings để xác nhận. |
-| 3 | Quản lý salon | Chọn lại chính sách cho từng mốc delay trong Wait Care | Form cập nhật lựa chọn | 4 mốc độc lập, không tự suy ra từ nhau. |
-| 4 | Quản lý salon | Bấm Save settings | Hiện thông báo "Automation settings saved." | Xem mục Đối chiếu triển khai. |
-| 5 | Quản lý salon | Bấm Pause automation | Pill Automation ON → OFF, nút đổi thành Resume automation | Áp dụng cho toàn bộ SMS Settings, không riêng Automation Settings. |
-
-```mermaid
-flowchart TD
-    A([Quản lý mở Automation Settings]) --> B[Chỉnh Waitlist communication]
-    B --> C[Chỉnh Wait Care theo từng mốc delay]
-    C --> D{Bấm hành động nào?}
-    D -- Save settings --> E[Hệ thống xác nhận đã lưu]
-    D -- Pause automation --> F{Automation đang bật?}
-    F -- Có --> G[Chuyển sang Automation OFF]
-    F -- Không --> H[Chuyển lại Automation ON]
-    E --> I([Hoàn tất])
-    G --> I
-    H --> I
-```
-
-**Acceptance Criteria:**
-
-| ID | User story | Given — Điều kiện | When — Thao tác | Then — Kết quả |
-| :--- | :--- | :--- | :--- | :--- |
-| AC-SMS-01 | US-SMS-01 | Đang mở Automation Settings | Đổi Welcome wait time sang "Show estimated range" | Trường hiển thị đúng giá trị mới; các trường khác không đổi. |
-| AC-SMS-02 | US-SMS-02 | Đang mở Automation Settings | Đổi mốc "45+ min delay" sang "Auto · $10 voucher" | Chỉ mốc 45+ đổi giá trị; 3 mốc còn lại giữ nguyên. |
-| AC-SMS-03 | US-SMS-03 | Automation đang ở trạng thái ON | Bấm Pause automation | Pill đổi thành "Automation OFF", nút đổi thành "Resume automation", hiện thông báo "Automation paused." |
-| AC-SMS-04 | US-SMS-03 | Automation đang ở trạng thái OFF | Bấm Resume automation | Pill đổi lại "Automation ON", nút đổi lại "Pause automation", hiện thông báo "Automation resumed." |
-| AC-SMS-05 | US-SMS-01, US-SMS-02 | Đang mở Automation Settings | Bấm Save settings | Hiện thông báo "Automation settings saved."; không đổi Automation ON/OFF. |
-
----
-
-#### Workflow 2: Xem và kiểm thử SMS Templates (SMS journey)
-
-**Primary Actor:** Quản lý salon / QA
-
-**Trigger:** Cần rà soát toàn bộ nội dung và cách gửi của chuỗi tin nhắn trước khi phát hành, hoặc khi khách phản hồi sai nội dung.
-
-**Outcome:** Người dùng xác nhận đúng nội dung và Send mode (Auto/Manager approval/Manual) của từng mốc trong hành trình, và gửi thử một tin nếu cần.
-
-**User Stories:**
-
-- **US-SMS-04 — Xem toàn bộ SMS journey:** Là quản lý salon, tôi muốn xem cả 5 tin nhắn mẫu (Welcome with benefits, Return soon, Wait Care, Ready now, Thank you) cùng cách gửi của từng tin, để hiểu toàn bộ hành trình nhắn tin khách sẽ nhận.
-- **US-SMS-05 — Gửi thử tin nhắn theo khách mẫu:** Là quản lý salon, tôi muốn nhập tên một khách xem trước và bấm Send test, để kiểm tra luồng gửi hoạt động trước khi áp dụng thật.
-
-| Step | Who | Action | System Response | Notes |
-| :--- | :--- | :--- | :--- | :--- |
-| 1 | Quản lý salon | Mở SMS Templates | Hiện danh sách SMS journey (5 mục) kèm nhãn cách gửi (Auto, Auto at 15 min, Manager approval, Manual, Auto after checkout) | Nội dung mẫu cố định, không đổi theo Preview customer. |
-| 2 | Quản lý salon | Nhập tên khách vào Preview customer, chọn Language/Send mode | Template controls cập nhật giá trị | Chưa liên kết ngược lại nội dung SMS journey — xem Đối chiếu triển khai. |
-| 3 | Quản lý salon | Bấm Send test | Hiện thông báo "Test SMS queued." | Không gửi SMS thật ở bản hiện tại. |
-| 4 | Quản lý salon | Bấm Save template | Hiện thông báo "Template saved." | Không lưu vào hệ thống thật ở bản hiện tại. |
-
-```mermaid
-flowchart TD
-    A([Mở SMS Templates]) --> B[Đọc SMS journey: 5 tin nhắn mẫu theo mốc]
-    B --> C[Chỉnh Language / Send mode / Preview customer]
-    C --> D{Bấm hành động nào?}
-    D -- Send test --> E[Hệ thống xác nhận đã gửi thử]
-    D -- Save template --> F[Hệ thống xác nhận đã lưu]
-    E --> G([Hoàn tất])
-    F --> G
-```
-
-**Acceptance Criteria:**
-
-| ID | User story | Given — Điều kiện | When — Thao tác | Then — Kết quả |
-| :--- | :--- | :--- | :--- | :--- |
-| AC-SMS-06 | US-SMS-04 | Đang mở SMS Templates | Đọc mục "Wait Care" trong SMS journey | Hiển thị đúng nhãn "Manager approval" và nội dung ưu đãi hot-stone upgrade. |
-| AC-SMS-07 | US-SMS-05 | Preview customer để trống hoặc có tên bất kỳ | Bấm Send test | Hiện thông báo "Test SMS queued." không phụ thuộc giá trị đã nhập. |
-| AC-SMS-08 | US-SMS-05 | Đang mở SMS Templates | Bấm Save template | Hiện thông báo "Template saved." |
-
----
-
-#### Workflow 3: Cấu hình Welcome SMS sau check-in
+#### Workflow 1: Cấu hình Welcome SMS sau check-in
 
 **Primary Actor:** Quản lý salon
 
@@ -189,7 +100,7 @@ flowchart TD
 
 ---
 
-#### Workflow 4: Cấu hình After Checkout Setup (Thank You SMS)
+#### Workflow 2: Cấu hình After Checkout Setup (Thank You SMS)
 
 **Primary Actor:** Quản lý salon
 
@@ -239,10 +150,99 @@ flowchart TD
 
 ---
 
+#### Workflow 3: Xem và kiểm thử SMS Templates (SMS journey)
+
+**Primary Actor:** Quản lý salon / QA
+
+**Trigger:** Cần rà soát toàn bộ nội dung và cách gửi của chuỗi tin nhắn trước khi phát hành, hoặc khi khách phản hồi sai nội dung.
+
+**Outcome:** Người dùng xác nhận đúng nội dung và Send mode (Auto/Manager approval/Manual) của từng mốc trong hành trình, và gửi thử một tin nếu cần.
+
+**User Stories:**
+
+- **US-SMS-04 — Xem toàn bộ SMS journey:** Là quản lý salon, tôi muốn xem cả 5 tin nhắn mẫu (Welcome with benefits, Return soon, Wait Care, Ready now, Thank you) cùng cách gửi của từng tin, để hiểu toàn bộ hành trình nhắn tin khách sẽ nhận.
+- **US-SMS-05 — Gửi thử tin nhắn theo khách mẫu:** Là quản lý salon, tôi muốn nhập tên một khách xem trước và bấm Send test, để kiểm tra luồng gửi hoạt động trước khi áp dụng thật.
+
+| Step | Who | Action | System Response | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | Quản lý salon | Mở SMS Templates | Hiện danh sách SMS journey (5 mục) kèm nhãn cách gửi (Auto, Auto at 15 min, Manager approval, Manual, Auto after checkout) | Nội dung mẫu cố định, không đổi theo Preview customer. |
+| 2 | Quản lý salon | Nhập tên khách vào Preview customer, chọn Language/Send mode | Template controls cập nhật giá trị | Chưa liên kết ngược lại nội dung SMS journey — xem Đối chiếu triển khai. |
+| 3 | Quản lý salon | Bấm Send test | Hiện thông báo "Test SMS queued." | Không gửi SMS thật ở bản hiện tại. |
+| 4 | Quản lý salon | Bấm Save template | Hiện thông báo "Template saved." | Không lưu vào hệ thống thật ở bản hiện tại. |
+
+```mermaid
+flowchart TD
+    A([Mở SMS Templates]) --> B[Đọc SMS journey: 5 tin nhắn mẫu theo mốc]
+    B --> C[Chỉnh Language / Send mode / Preview customer]
+    C --> D{Bấm hành động nào?}
+    D -- Send test --> E[Hệ thống xác nhận đã gửi thử]
+    D -- Save template --> F[Hệ thống xác nhận đã lưu]
+    E --> G([Hoàn tất])
+    F --> G
+```
+
+**Acceptance Criteria:**
+
+| ID | User story | Given — Điều kiện | When — Thao tác | Then — Kết quả |
+| :--- | :--- | :--- | :--- | :--- |
+| AC-SMS-06 | US-SMS-04 | Đang mở SMS Templates | Đọc mục "Wait Care" trong SMS journey | Hiển thị đúng nhãn "Manager approval" và nội dung ưu đãi hot-stone upgrade. |
+| AC-SMS-07 | US-SMS-05 | Preview customer để trống hoặc có tên bất kỳ | Bấm Send test | Hiện thông báo "Test SMS queued." không phụ thuộc giá trị đã nhập. |
+| AC-SMS-08 | US-SMS-05 | Đang mở SMS Templates | Bấm Save template | Hiện thông báo "Template saved." |
+
+---
+
+#### Workflow 4: Cấu hình Automation Settings và Wait Care
+
+**Primary Actor:** Quản lý salon
+
+**Trigger:** Cần điều chỉnh ngưỡng thời gian hoặc chính sách ưu đãi cho khách đang chờ.
+
+**Outcome:** Automation Settings được xác nhận lưu (theo giới hạn ở mục Đối chiếu triển khai), và Automation ON/OFF phản ánh đúng trạng thái mong muốn.
+
+**User Stories:**
+
+- **US-SMS-01 — Cấu hình Waitlist communication:** Là quản lý salon, tôi muốn đặt Welcome SMS, Welcome wait time, Return notice, No response grace và Internal ETA threshold, để kiểm soát khi nào và nội dung gì được gửi cho khách trong lúc chờ.
+- **US-SMS-02 — Cấu hình Wait Care theo mốc thời gian chờ:** Là quản lý salon, tôi muốn đặt chính sách ưu đãi riêng cho từng mốc chờ (10–19, 20–29, 30–44, 45+ phút), để tự động hoặc duyệt thủ công ưu đãi giữ chân khách chờ lâu.
+- **US-SMS-03 — Tạm dừng/khôi phục automation:** Là quản lý salon, tôi muốn tạm dừng toàn bộ SMS tự động khi cần (ví dụ sự cố, bảo trì) và khôi phục lại khi sẵn sàng, để kiểm soát rủi ro gửi nhầm.
+
+| Step | Who | Action | System Response | Notes |
+| :--- | :--- | :--- | :--- | :--- |
+| 1 | Quản lý salon | Mở SMS Settings → Automation Settings | Hiện 2 khối: Waitlist communication và Wait Care với giá trị mặc định | Automation ON/OFF hiển thị chung cho cả 4 sub-tab. |
+| 2 | Quản lý salon | Chọn lại giá trị từng trường trong Waitlist communication | Form cập nhật lựa chọn, chưa gửi lên hệ thống | Cần bấm Save settings để xác nhận. |
+| 3 | Quản lý salon | Chọn lại chính sách cho từng mốc delay trong Wait Care | Form cập nhật lựa chọn | 4 mốc độc lập, không tự suy ra từ nhau. |
+| 4 | Quản lý salon | Bấm Save settings | Hiện thông báo "Automation settings saved." | Xem mục Đối chiếu triển khai. |
+| 5 | Quản lý salon | Bấm Pause automation | Pill Automation ON → OFF, nút đổi thành Resume automation | Áp dụng cho toàn bộ SMS Settings, không riêng Automation Settings. |
+
+```mermaid
+flowchart TD
+    A([Quản lý mở Automation Settings]) --> B[Chỉnh Waitlist communication]
+    B --> C[Chỉnh Wait Care theo từng mốc delay]
+    C --> D{Bấm hành động nào?}
+    D -- Save settings --> E[Hệ thống xác nhận đã lưu]
+    D -- Pause automation --> F{Automation đang bật?}
+    F -- Có --> G[Chuyển sang Automation OFF]
+    F -- Không --> H[Chuyển lại Automation ON]
+    E --> I([Hoàn tất])
+    G --> I
+    H --> I
+```
+
+**Acceptance Criteria:**
+
+| ID | User story | Given — Điều kiện | When — Thao tác | Then — Kết quả |
+| :--- | :--- | :--- | :--- | :--- |
+| AC-SMS-01 | US-SMS-01 | Đang mở Automation Settings | Đổi Welcome wait time sang "Show estimated range" | Trường hiển thị đúng giá trị mới; các trường khác không đổi. |
+| AC-SMS-02 | US-SMS-02 | Đang mở Automation Settings | Đổi mốc "45+ min delay" sang "Auto · $10 voucher" | Chỉ mốc 45+ đổi giá trị; 3 mốc còn lại giữ nguyên. |
+| AC-SMS-03 | US-SMS-03 | Automation đang ở trạng thái ON | Bấm Pause automation | Pill đổi thành "Automation OFF", nút đổi thành "Resume automation", hiện thông báo "Automation paused." |
+| AC-SMS-04 | US-SMS-03 | Automation đang ở trạng thái OFF | Bấm Resume automation | Pill đổi lại "Automation ON", nút đổi lại "Pause automation", hiện thông báo "Automation resumed." |
+| AC-SMS-05 | US-SMS-01, US-SMS-02 | Đang mở Automation Settings | Bấm Save settings | Hiện thông báo "Automation settings saved."; không đổi Automation ON/OFF. |
+
+---
+
 ### System Configuration & Administration
 
 - **US-SMS-13 — Kiểm soát trạng thái automation toàn cục:** Là quản lý salon, tôi muốn thấy rõ trạng thái Automation ON/OFF ở mọi sub-tab của SMS Settings, để biết ngay SMS tự động có đang hoạt động hay không, bất kể đang xem tab nào.
-- 4 sub-tab (Automation Settings, SMS Templates, After Checkout Setup, Welcome SMS Setup) dùng chung một trạng thái Automation ON/OFF và một vùng thông báo trạng thái (status message) ở đầu panel; hành động Save/Send Test ở bất kỳ sub-tab nào cũng ghi đè vào cùng vùng thông báo này.
+- 4 sub-tab (Welcome SMS Setup, After Checkout Setup, SMS Templates, Automation Settings) dùng chung một trạng thái Automation ON/OFF và một vùng thông báo trạng thái (status message) ở đầu panel; hành động Save/Send Test ở bất kỳ sub-tab nào cũng ghi đè vào cùng vùng thông báo này.
 - SMS Settings hiện chưa có màn hình phân quyền riêng — mặc định mọi tài khoản có quyền vào Salon Settings đều thấy và chỉnh được tab này; quy tắc phân quyền chi tiết theo Role cần đối chiếu thêm với Roles & Permissions khi triển khai thật.
 
 ---
