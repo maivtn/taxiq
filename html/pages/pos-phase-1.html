@@ -685,6 +685,17 @@
     .swap-tech-option .pos-chip, .swap-tech-option .match-badge { flex-shrink: 0; }
     .swap-tech-option .match-badge { margin-left: 0; }
     .swap-tech-empty { border: 1px dashed var(--nexora-border); border-radius: 10px; padding: 14px; color: var(--nexora-muted); font-size: 12px; font-weight: 700; text-align: center; }
+    .queue-service-list { max-height: min(60vh, 480px); overflow-y: auto; padding: 2px; }
+    .queue-service-option[aria-selected="true"] { border-color: var(--nexora-brand); background: #f2f3ff; }
+    .queue-service-option.is-selected { box-shadow: inset 0 0 0 1px var(--nexora-brand); }
+    .queue-service-option[disabled] { cursor: not-allowed; opacity: .62; }
+    .queue-service-price { min-width: 58px; color: var(--nexora-text); font-size: 13px; font-weight: 900; text-align: right; }
+    .queue-service-check { color: var(--nexora-brand); font-size: 18px; }
+    .queue-service-selection { margin-top: 12px; color: var(--nexora-text); font-size: 13px; font-weight: 800; }
+    .queue-service-error { margin: 8px 0 0; color: var(--nexora-danger); font-size: 12px; font-weight: 700; }
+    .queue-ticket-services { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
+    .queue-ticket-service-line { display: block; overflow-wrap: anywhere; }
+    .queue-ticket-services-compact { display: inline; white-space: normal; overflow-wrap: anywhere; }
 
     .pos-mode-dialog { max-width: 560px; }
     .pos-mode-copy { margin: 0; line-height: 1.6; }
@@ -1213,6 +1224,29 @@
             </div>
             <div class="sms-mfoot" style="justify-content:flex-end">
               <button class="pos-btn pos-btn-sm" type="button" data-swap-tech-close>Cancel</button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Edit the service and billing details for an open Queue ticket -->
+        <div class="sms-modal" data-queue-service-modal role="dialog" aria-modal="true" aria-labelledby="queue-service-title">
+          <div class="sms-dialog swap-tech-dialog">
+            <div class="sms-mhead">
+              <h3 id="queue-service-title"><i class="bi bi-pencil-square" aria-hidden="true"></i> Edit service</h3>
+              <button class="pos-icon-btn" type="button" data-queue-service-close aria-label="Close"><i class="bi bi-x-lg" aria-hidden="true"></i></button>
+            </div>
+            <div class="sms-mbody">
+              <p class="pos-muted swap-tech-copy">Choose one or more services for <strong data-queue-service-guest>this guest</strong>. Current: <strong data-queue-service-current>—</strong>.</p>
+              <div class="swap-tech-list queue-service-list" data-queue-service-list role="listbox" aria-multiselectable="true" aria-label="Available services"></div>
+              <div class="queue-service-selection" aria-live="polite" data-queue-service-summary>0 services · 0 min · $0.00</div>
+              <p class="queue-service-error" data-queue-service-error hidden>At least one service is required.</p>
+            </div>
+            <div class="sms-mfoot" style="justify-content:space-between;align-items:center">
+              <span class="pos-muted">Changes apply to this technician ticket.</span>
+              <span class="pos-inline">
+                <button class="pos-btn pos-btn-sm" type="button" data-queue-service-close>Cancel</button>
+                <button class="pos-btn pos-btn-primary pos-btn-sm" type="button" data-queue-service-save><i class="bi bi-floppy" aria-hidden="true"></i> Save services</button>
+              </span>
             </div>
           </div>
         </div>
@@ -2789,13 +2823,67 @@
         var service = queueServiceForName(svc);
         return service ? service.durationMin || 0 : 0;
       }
+      function queueItemForService(service, techId, serviceTicketId) {
+        var serviceName = posServiceDisplayName(service && (service.label || service.name) || '');
+        return {
+          serviceId: service && service.id ? String(service.id) : '',
+          serviceTicketId: serviceTicketId == null ? null : String(serviceTicketId),
+          name: serviceName,
+          price: Number(service && service.price) || 0,
+          durationMin: Number(service && service.durationMin) || 0,
+          techId: techId || null,
+          cat: queueServiceCategory(service, serviceName)
+        };
+      }
       function queueItemsForService(svc, techId) {
         var service = salonData.findService(salonCatalog, svc);
-        var name = service ? posServiceDisplayName(service.name) : posServiceDisplayName(svc || '');
-        if (!name) return [];
-        var price = service && service.price != null ? service.price : 0;
-        var cat = queueServiceCategory(service, svc);
-        return [{ name: name, price: price, techId: techId || null, cat: cat }];
+        if (!service) service = { id: '', label: posServiceDisplayName(svc || ''), price: 0, durationMin: 0 };
+        return service.label || service.name ? [queueItemForService(service, techId || null, null)] : [];
+      }
+      function queueTicketServiceIds(w) {
+        var ids = [];
+        (w && w.items || []).forEach(function (item) {
+          var id = item && item.serviceTicketId;
+          if (id != null && ids.indexOf(String(id)) === -1) ids.push(String(id));
+        });
+        (w && w.serviceTicketIds || []).forEach(function (id) {
+          if (id != null && ids.indexOf(String(id)) === -1) ids.push(String(id));
+        });
+        if (w && w.serviceTicketId != null && ids.indexOf(String(w.serviceTicketId)) === -1) ids.push(String(w.serviceTicketId));
+        return ids;
+      }
+      function normalizeQueueTicketServices(w) {
+        var legacyDuration = Number(w.durationMin) || 0;
+        if (!Array.isArray(w.items)) w.items = [];
+        if (!w.items.length && w.svc) w.items = queueItemsForService(w.svc, w.techId || w.reqTech || null);
+        w.items = w.items.map(function (item) {
+          var service = salonData.findService(salonCatalog, item.serviceId || item.name);
+          return {
+            serviceId: String(item.serviceId || (service && service.id) || ''),
+            serviceTicketId: item.serviceTicketId == null ? null : String(item.serviceTicketId),
+            name: posServiceDisplayName(item.name || (service && (service.label || service.name)) || ''),
+            price: Number(item.price != null ? item.price : service && service.price) || 0,
+            durationMin: Number(item.durationMin != null ? item.durationMin : service && service.durationMin) || 0,
+            techId: w.techId || w.reqTech || item.techId || null,
+            cat: item.cat || queueServiceCategory(service, item.name)
+          };
+        }).filter(function (item) { return !!item.name; });
+        w.serviceTicketIds = queueTicketServiceIds(w);
+        w.items.forEach(function (item, index) {
+          if (!item.serviceTicketId && w.serviceTicketIds[index]) item.serviceTicketId = w.serviceTicketIds[index];
+        });
+        if (legacyDuration && w.items.length && !w.items.some(function (item) { return item.durationMin > 0; })) w.items[0].durationMin = legacyDuration;
+        w.serviceTicketIds = queueTicketServiceIds(w);
+        w.serviceTicketId = w.serviceTicketIds[0] || null;
+        w.svc = w.items[0] ? w.items[0].name : '';
+        w.durationMin = w.items.reduce(function (sum, item) { return sum + item.durationMin; }, 0);
+        return w;
+      }
+      function queueTicketHasServiceTicket(w, serviceTicketId) {
+        return serviceTicketId != null && queueTicketServiceIds(w).indexOf(String(serviceTicketId)) !== -1;
+      }
+      function queueTicketAssignment(w) {
+        return String(w && (w.techId || w.reqTech) || 'anyone');
       }
 
       // #73 — match weights, read live by the dispatch board
@@ -2825,27 +2913,26 @@
             { at: Date.now() - 4 * 60000, msg: '✋ Kim finished — guest waiting to pay' }
           ] }
       ];
-      // Operational ticket links (#pos-nail-salon-ops Phase 3): every WAITLIST row is one service ticket.
-      // orderId groups tickets that bill together; bookingId/serviceTicketId trace back to the shared
-      // appointment store when the guest came from a Booking. Legacy/walk-in rows get a synthetic orderId
-      // so the grouped Tickets view always has something to group on.
+      // Operational ticket links: every WAITLIST row is one technician ticket with one or more services.
+      // orderId groups tickets that bill together; serviceTicketIds trace each item back to Booking.
       WAITLIST.forEach(function (w) {
         if (w.orderId == null) w.orderId = 'walkin-' + w.id;
         if (w.bookingId === undefined) w.bookingId = null;
         if (w.serviceTicketId === undefined) w.serviceTicketId = null;
+        if (!Array.isArray(w.serviceTicketIds)) w.serviceTicketIds = [];
         if (w.customerId === undefined) w.customerId = w.name;
-        if (!Array.isArray(w.items)) w.items = [];
-        if (!w.items.length && w.svc) w.items = queueItemsForService(w.svc, w.techId || w.reqTech || null);
-        if (w.durationMin === undefined) w.durationMin = 0;
-        if (!w.durationMin && w.svc) w.durationMin = queueDurationForService(w.svc);
+        normalizeQueueTicketServices(w);
       });
       var wlSeq = 4;
       function wlog(w, msg) { if (w) (w.log || (w.log = [])).push({ at: Date.now(), msg: msg }); }
       function floorCount(st) { return WAITLIST.filter(function (w) { return w.status === st; }).length; }
       function ticketOpen(w) { return w.status !== 'completed' && w.status !== 'cancelled'; }
-      function hasOpenTicketForServiceTicket(serviceTicketId) {
+      function hasOperationalTicketForServiceTicket(serviceTicketId) {
         if (!serviceTicketId) return false;
-        return WAITLIST.some(function (w) { return w.serviceTicketId === serviceTicketId && ticketOpen(w); });
+        return WAITLIST.some(function (w) { return w.status !== 'cancelled' && queueTicketHasServiceTicket(w, serviceTicketId); });
+      }
+      function hasOpenTicketForServiceTicket(serviceTicketId) {
+        return hasOperationalTicketForServiceTicket(serviceTicketId);
       }
       // Groups tickets by orderId so Tickets can render one card per guest/order with a service
       // line per ticket, while still billing and completing the whole order together. Defaults to
@@ -2873,9 +2960,10 @@
         var bookingTicket = groupTickets.find(function (w) { return !!w.bookingId; }) || null;
         var techTicket = groupTickets.find(function (w) { return !!(w.techId || w.reqTech); }) || null;
         var serviceDetails = [];
+        var checkoutTickets = [];
         groupTickets.forEach(function (w) {
           var billItems = (Array.isArray(w.items) && w.items.length) ? w.items : queueItemsForService(w.svc, w.techId || w.reqTech || null);
-          if (!billItems.length && w.svc) billItems = [{ name: posServiceDisplayName(w.svc), price: 0, techId: w.techId || w.reqTech || null, cat: '' }];
+          if (!billItems.length && w.svc) billItems = [{ name: posServiceDisplayName(w.svc), price: 0, durationMin: w.durationMin || 0, techId: w.techId || w.reqTech || null, cat: '' }];
           billItems.forEach(function (item) {
             var tid = item.techId || w.techId || w.reqTech || null;
             serviceDetails.push({
@@ -2883,9 +2971,18 @@
               price: Number(item.price) || 0,
               technicianId: tid,
               technicianName: tid ? techName(tid) : 'Anyone',
-              serviceTicketId: w.serviceTicketId || null,
-              durationMin: w.durationMin || null,
+              serviceTicketId: item.serviceTicketId || null,
+              durationMin: item.durationMin || null,
               category: item.cat || ''
+            });
+            checkoutTickets.push({
+              id: item.serviceTicketId || ('queue-ticket-' + w.id + '-' + checkoutTickets.length),
+              serviceName: item.name || w.svc || 'Service',
+              price: Number(item.price) || 0,
+              technicianId: tid,
+              technicianName: tid ? techName(tid) : 'Anyone',
+              status: w.status,
+              queueTicketId: w.id
             });
           });
         });
@@ -2900,17 +2997,7 @@
           startAt: first.atMs ? new Date(first.atMs).toISOString() : new Date().toISOString(),
           technicianName: techTicket ? techName(techTicket.techId || techTicket.reqTech) : 'Anyone',
           serviceDetails: serviceDetails,
-          tickets: groupTickets.map(function (w) {
-            return {
-              id: w.serviceTicketId || ('queue-ticket-' + w.id),
-              serviceName: w.svc || '',
-              price: (w.items && w.items[0] && Number(w.items[0].price)) || 0,
-              technicianId: w.techId || w.reqTech || null,
-              technicianName: (w.techId || w.reqTech) ? techName(w.techId || w.reqTech) : 'Anyone',
-              status: w.status,
-              queueTicketId: w.id
-            };
-          }),
+          tickets: checkoutTickets,
           metadata: { queueCheckout: true, orderId: orderKey, checkedOut: false }
         };
       }
@@ -2933,24 +3020,78 @@
         persistQueueCheckoutSnapshot(snapshot);
         window.location.href = queueCheckoutUrl(snapshot);
       }
-      // Builds one operational ticket for one booking service ticket — shared by check-in and rehydrate
-      // so both paths create the exact same shape and never diverge.
-      function createOperationalTicket(booking, ticket) {
-        return {
-          id: ++wlSeq, bookingId: booking.id, orderId: booking.id, serviceTicketId: ticket.id, customerId: booking.name,
-          name: booking.name, phone: booking.phone, customerGroup: booking.customerGroup || 'New', badge: 'blue', badgeTxt: booking.time ? 'Booking' : '', bookingTime: booking.time || '',
-          svc: ticket.serviceName, note: booking.note || '', at: nowTime(), atMs: Date.now(), status: 'waiting',
-          techId: ticket.technicianId || null, reqTech: ticket.technicianId || null,
-          durationMin: ticket.durationMin || 0,
-          items: [{ name: ticket.serviceName, price: ticket.price || 0, techId: ticket.technicianId, cat: '' }],
+      function bookingTicketGroups(booking) {
+        var order = [], groups = {};
+        (booking && booking.tickets || []).filter(function (ticket) { return ticket.status !== 'cancelled'; }).forEach(function (ticket) {
+          var key = String(ticket.technicianId || 'anyone');
+          if (!groups[key]) { groups[key] = []; order.push(groups[key]); }
+          groups[key].push(ticket);
+        });
+        return order;
+      }
+      // Builds one operational technician ticket for one or more canonical Booking service tickets.
+      function createOperationalTicket(booking, tickets) {
+        tickets = Array.isArray(tickets) ? tickets : [tickets];
+        var techId = tickets[0] && tickets[0].technicianId || null;
+        var w = {
+          id: ++wlSeq, bookingId: booking.id, orderId: booking.id,
+          serviceTicketId: tickets[0] ? tickets[0].id : null,
+          serviceTicketIds: tickets.map(function (ticket) { return String(ticket.id); }),
+          customerId: booking.name, name: booking.name, phone: booking.phone,
+          customerGroup: booking.customerGroup || 'New', badge: 'blue',
+          badgeTxt: booking.time ? 'Booking' : '', bookingTime: booking.time || '',
+          svc: '', note: booking.note || '', at: nowTime(), atMs: Date.now(), status: 'waiting',
+          techId: techId, reqTech: techId,
+          items: tickets.map(function (ticket) {
+            var found = salonData.findService(salonCatalog, ticket.serviceId || ticket.serviceName);
+            var service = {
+              id: ticket.serviceId || (found && found.id) || '',
+              label: ticket.serviceName || (found && (found.label || found.name)) || '',
+              price: ticket.price != null ? ticket.price : found && found.price,
+              durationMin: ticket.durationMin != null ? ticket.durationMin : found && found.durationMin
+            };
+            return queueItemForService(service, techId, ticket.id);
+          }),
           log: [], appt: true
         };
+        return normalizeQueueTicketServices(w);
+      }
+      function syncBookingOperationalTickets(booking) {
+        var touched = [];
+        bookingTicketGroups(booking).forEach(function (tickets) {
+          var missing = tickets.filter(function (ticket) { return !hasOperationalTicketForServiceTicket(ticket.id); });
+          if (!missing.length) return;
+          var assignment = String(tickets[0].technicianId || 'anyone');
+          var existing = WAITLIST.find(function (w) {
+            return ticketOpen(w) && String(w.orderId) === String(booking.id) && queueTicketAssignment(w) === assignment;
+          });
+          if (!existing) {
+            existing = createOperationalTicket(booking, missing);
+            WAITLIST.push(existing);
+          } else {
+            var added = createOperationalTicket(booking, missing);
+            existing.items = existing.items.concat(added.items);
+            existing.serviceTicketIds = queueTicketServiceIds(existing).concat(added.serviceTicketIds);
+            normalizeQueueTicketServices(existing);
+          }
+          if (touched.indexOf(existing) === -1) touched.push(existing);
+        });
+        return touched;
+      }
+      function walkInTicketGroups(tickets) {
+        var source = tickets && tickets.length ? tickets : [null];
+        var order = [], groups = {};
+        source.forEach(function (ticket) {
+          var key = String(ticket && ticket.technicianId || 'anyone');
+          if (!groups[key]) { groups[key] = []; order.push(groups[key]); }
+          groups[key].push(ticket);
+        });
+        return order;
       }
       // Walk-in order — no prior booking, so it becomes a single operational ticket directly in
       // Tickets. Shared by the inline Add form and the Check-in modal's "no booking found" path.
-      // tickets is an optional array of {serviceName, price, durationMin, technicianId, technicianName} —
-      // one operational ticket is created per entry, all sharing one orderId. No tickets falls back to
-      // the original bare walk-in row (no service chosen yet).
+      // tickets is an optional array of {serviceId, serviceName, price, durationMin, technicianId,
+      // technicianName}. Services assigned to the same technician share one operational ticket.
       function addWalkIn(name, phone, tickets) {
         phone = (phone || '').trim();
         var known = phone ? custByPhone(phone) : null;
@@ -2958,17 +3099,28 @@
         var badge = known ? (known.seg === 'vip' ? 'gold' : 'blue') : 'gray';
         var badgeTxt = known ? (known.seg === 'vip' ? '⭐ VIP · ' + known.visits + ' visits' : '↩️ ' + known.visits + ' visits') : '🆕 New';
         var orderId = 'walkin-' + (wlSeq + 1);
-        var list = (tickets && tickets.length) ? tickets : [null];
-        list.forEach(function (t) {
+        walkInTicketGroups(tickets).forEach(function (group) {
+          var first = group[0];
+          var techId = first && first.technicianId || null;
           var wlId = ++wlSeq;
-          WAITLIST.push({
-            id: wlId, orderId: orderId, bookingId: null, serviceTicketId: null, customerId: name, durationMin: t ? (t.durationMin || 0) : 0,
-            name: name, phone: phone, customerGroup: known ? (CUST_SEG_META[known.seg] ? CUST_SEG_META[known.seg].label : 'New') : 'New', badge: badge, badgeTxt: badgeTxt,
-            svc: t ? t.serviceName : '', at: nowTime(), atMs: Date.now(), status: 'waiting',
-            techId: t ? (t.technicianId || null) : null, reqTech: t ? (t.technicianId || null) : (known ? known.prefTech : null),
-            items: t ? [{ name: t.serviceName, price: t.price || 0, techId: t.technicianId, cat: '' }] : [],
+          var w = {
+            id: wlId, orderId: orderId, bookingId: null, serviceTicketId: null, serviceTicketIds: [], customerId: name,
+            name: name, phone: phone, customerGroup: known ? (CUST_SEG_META[known.seg] ? CUST_SEG_META[known.seg].label : 'New') : 'New',
+            badge: badge, badgeTxt: badgeTxt, svc: '', at: nowTime(), atMs: Date.now(), status: 'waiting',
+            techId: techId, reqTech: techId || (known ? known.prefTech : null),
+            items: group.filter(Boolean).map(function (ticket) {
+              var found = salonData.findService(salonCatalog, ticket.serviceId || ticket.serviceName);
+              var service = {
+                id: ticket.serviceId || (found && found.id) || '',
+                label: ticket.serviceName || (found && (found.label || found.name)) || '',
+                price: ticket.price != null ? ticket.price : found && found.price,
+                durationMin: ticket.durationMin != null ? ticket.durationMin : found && found.durationMin
+              };
+              return queueItemForService(service, techId, null);
+            }),
             log: []
-          });
+          };
+          WAITLIST.push(normalizeQueueTicketServices(w));
         });
         renderFloor(); renderManagement();
         toast(name + ' added to the queue');
@@ -3048,9 +3200,7 @@
         var modal = $('[data-ci-modal]'); if (modal) modal.classList.remove('open');
         document.body.style.overflow = '';
       }
-      // Atomic check-in (#pos-nail-salon-ops Phase 3): moves the Booking to checked-in and creates one
-      // operational ticket per non-cancelled service ticket that doesn't already have one — never a
-      // single flattened row, and never a duplicate for a service ticket that's already open or done.
+      // Atomic check-in: persist the Booking state, then create one Queue ticket per technician group.
       function checkInBooking(eb) {
         if (!eb) return;
         if (eb.status === 'completed' || eb.status === 'no-show') { toast('This booking is already closed', 'info'); return; }
@@ -3058,15 +3208,9 @@
         if (!result.ok) { toast(result.error.message, 'error'); return; }
         reloadAppointmentSnapshot();
         var booking = posBookingById(eb.id);
-        var created = 0;
-        (booking && booking.tickets || []).forEach(function (ticket) {
-          if (ticket.status === 'cancelled') return;
-          if (WAITLIST.some(function (w) { return w.serviceTicketId === ticket.id; })) return;
-          WAITLIST.push(createOperationalTicket(booking, ticket));
-          created++;
-        });
+        var created = syncBookingOperationalTickets(booking);
         renderFloor(); renderManagement();
-        if (created) toast(booking.name + ' checked in — ' + created + ' service' + (created > 1 ? 's' : '') + ' added to Tickets');
+        if (created.length) toast(booking.name + ' checked in — ' + created.length + ' technician ticket' + (created.length > 1 ? 's' : '') + ' added to Tickets');
         else toast(booking.name + ' is already checked in');
       }
       window.NEXORA_POS_BOOKING_CHECKIN = function (bookingId) {
@@ -3083,12 +3227,40 @@
         var relevantTickets = (booking.tickets || []).filter(function (t) { return t.status !== 'cancelled'; });
         if (!relevantTickets.length) return;
         var allDone = relevantTickets.every(function (t) {
-          var w = WAITLIST.find(function (x) { return x.serviceTicketId === t.id; });
+          var w = WAITLIST.find(function (candidate) { return queueTicketHasServiceTicket(candidate, t.id); });
           return w && w.status === 'completed';
         });
         if (!allDone) return;
         var result = appointmentStore.update(bookingId, { status: 'completed' }, null, salonCatalog);
         if (result.ok) reloadAppointmentSnapshot();
+      }
+      function cancelQueueTicket(w) {
+        if (!w) return { ok: false, error: { message: 'Queue ticket not found.' } };
+        if (w.bookingId) {
+          var booking = posBookingById(w.bookingId);
+          var ids = queueTicketServiceIds(w);
+          var missingLink = !booking || !ids.length || ids.some(function (id) {
+            return !(booking.tickets || []).some(function (ticket) { return String(ticket.id) === String(id); });
+          });
+          if (missingLink) return { ok: false, error: { message: 'The linked booking ticket could not be found.' } };
+          var nextTickets = (booking.tickets || []).map(function (ticket) {
+            return ids.indexOf(String(ticket.id)) === -1 ? ticket : Object.assign({}, ticket, { status: 'cancelled' });
+          });
+          var activeTickets = nextTickets.filter(function (ticket) { return ticket.status !== 'cancelled'; });
+          var result = appointmentStore.update(booking.id, {
+            tickets: nextTickets,
+            serviceIds: activeTickets.map(function (ticket) { return ticket.serviceId || ''; }),
+            serviceNames: activeTickets.map(function (ticket) { return ticket.serviceName || ''; }),
+            serviceDetails: activeTickets.map(function (ticket) {
+              return { id: ticket.serviceId || '', name: ticket.serviceName || '', price: ticket.price, durationMin: ticket.durationMin, icon: '✨' };
+            })
+          }, null, salonCatalog);
+          if (!result.ok) return result;
+          reloadAppointmentSnapshot();
+        }
+        w.status = 'cancelled';
+        wlog(w, 'Cancelled technician ticket and all linked services');
+        return { ok: true };
       }
       // Rehydrate (#pos-nail-salon-ops Phase 3): WAITLIST is in-memory only, BOOKINGS persist. On boot
       // (and after any store sync), regenerate operational tickets for every checked-in booking so a
@@ -3096,11 +3268,7 @@
       function rehydrateOperationalTickets() {
         BOOKINGS.forEach(function (b) {
           if (b.status !== 'checked-in') return;
-          (b.tickets || []).forEach(function (ticket) {
-            if (ticket.status === 'cancelled') return;
-            if (WAITLIST.some(function (w) { return w.serviceTicketId === ticket.id; })) return;
-            WAITLIST.push(createOperationalTicket(b, ticket));
-          });
+          syncBookingOperationalTickets(b);
         });
       }
 
@@ -3440,26 +3608,26 @@
 
       /* ═══════════ 🪑 DISPATCH — skill match engine ═══════════ */
       var SVC_PRI = ['full', 'fill', 'dip', 'gel', 'wax', 'pedi', 'mani', 'addon', 'kid'];
-      // Which skill a job needs: the SVC_REQ table first (owner-configured), regex on free text as a fallback.
-      function reqSkill(w) {
-        for (var i = 0; i < SVC_PRI.length; i++) {
-          var cid = SVC_PRI[i];
-          if (!SVC_REQ[cid]) continue;
-          var cat = catById(cid); if (!cat) continue;
-          var hitSvc = (w.svc || '').indexOf(cat.label) !== -1;
-          var hitItem = (w.items || []).some(function (it) { return it.cat === cid; });
-          if (hitSvc || hitItem) return SVC_REQ[cid];
-        }
-        var txt = ((w.svc || '') + ' ' + (w.items || []).map(function (i) { return i.name; }).join(' ')).toLowerCase();
-        if (/acrylic|full set|fill|ombre|sculpt/.test(txt)) return 'Acrylic';
-        if (/dip/.test(txt)) return 'Dip';
-        if (/pedicure|pedi/.test(txt)) return 'Pedicure';
-        if (/design|nail art|chrome|cat eye/.test(txt)) return 'Design';
-        if (/wax/.test(txt)) return 'Waxing';
-        if (/gel|shellac/.test(txt)) return 'Gel';
-        if (/manicure|mani/.test(txt)) return 'Manicure';
-        return null;   // can't tell → anyone can take it
+      // A technician must cover every distinct requirement represented by the ticket's service items.
+      function reqSkills(w) {
+        var requirements = [];
+        (w.items && w.items.length ? w.items : [{ name: w.svc || '', cat: '' }]).forEach(function (item) {
+          var req = item.cat && SVC_REQ[item.cat] ? SVC_REQ[item.cat] : null;
+          if (!req) {
+            var txt = String(item.name || '').toLowerCase();
+            if (/acrylic|full set|fill|ombre|sculpt/.test(txt)) req = 'Acrylic';
+            else if (/dip/.test(txt)) req = 'Dip';
+            else if (/pedicure|pedi/.test(txt)) req = 'Pedicure';
+            else if (/design|nail art|chrome|cat eye/.test(txt)) req = 'Design';
+            else if (/wax/.test(txt)) req = 'Waxing';
+            else if (/gel|shellac/.test(txt)) req = 'Gel';
+            else if (/manicure|mani/.test(txt)) req = 'Manicure';
+          }
+          if (req && requirements.indexOf(req) === -1) requirements.push(req);
+        });
+        return requirements;
       }
+      function reqSkill(w) { return reqSkills(w)[0] || null; }
       function custOf(name) { return CUSTOMERS.find(function (c) { return c.name === name; }) || null; }
       function custByPhone(phone) {
         var digits = String(phone || '').replace(/\D/g, '');
@@ -3468,10 +3636,11 @@
       }
       function matchScore(t, w) {
         var R = MATCH_RULES;
-        var req = reqSkill(w);
-        var okSkill = !req || (t.skills || []).indexOf(req) !== -1;
+        var reqs = reqSkills(w);
+        var missing = reqs.filter(function (req) { return (t.skills || []).indexOf(req) === -1; });
+        var okSkill = missing.length === 0;
         var sc = okSkill ? R.wSkill : R.wMiss;                                   // the skill dominates
-        if (okSkill && req && (t.exp || []).indexOf(req) !== -1) sc += R.wExp;   // ★ expert on the needed skill
+        if (okSkill) sc += reqs.filter(function (req) { return (t.exp || []).indexOf(req) !== -1; }).length * R.wExp;
         if (R.useTurn) {
           var avg = TECHS.reduce(function (s, x) { return s + x.turns; }, 0) / (TECHS.length || 1);
           sc += Math.max(-10, Math.min(R.wTurn, Math.round((avg - t.turns) * 8)));  // turn fairness
@@ -3480,11 +3649,16 @@
         var c = custOf(w.name);
         if (c && c.prefTech === t.id) sc += R.wPref;                             // regular tech on the profile
         if (c && (t.fit || []).some(function (f) { return (c.tags || []).indexOf(f) !== -1 || (f === 'VIP' && c.seg === 'vip'); })) sc += R.wFit;
-        return { sc: Math.max(5, Math.min(99, sc)), req: req, okSkill: okSkill };
+        return { sc: Math.max(5, Math.min(99, sc)), req: reqs.join(', ') || null, reqs: reqs, missing: missing, okSkill: missing.length === 0 };
       }
       function busyName(tid) {
         var w = WAITLIST.find(function (x) { return x.status === 'service' && x.techId === tid; });
         return w ? w.name : null;
+      }
+      function techAvailableForQueueTicket(tid, w) {
+        return !WAITLIST.some(function (candidate) {
+          return candidate.status === 'service' && candidate.techId === tid && (!w || String(candidate.orderId) !== String(w.orderId));
+        });
       }
       function freeTechs() { return TECHS.filter(function (t) { return !busyName(t.id); }); }
       function nextTech() {
@@ -3494,12 +3668,11 @@
       // ▶ one-tap: the requested tech if free and qualified, otherwise the qualified tech with the fewest turns
       function fAutoTech(w) {
         var free = freeTechs();
-        var req = reqSkill(w);
         if (w.reqTech) {
           var r = free.find(function (t) { return t.id === w.reqTech; });
-          if (r && (!req || (r.skills || []).indexOf(req) !== -1)) return r;
+          if (r && matchScore(r, w).okSkill) return r;
         }
-        var elig = req ? free.filter(function (t) { return (t.skills || []).indexOf(req) !== -1; }) : free;
+        var elig = free.filter(function (t) { return matchScore(t, w).okSkill; });
         var pool = elig.length ? elig : free;   // nobody qualified → fall back to any free tech (manual assign still warns)
         return pool.length ? pool.slice().sort(function (a, b) { return a.turns - b.turns; })[0] : null;
       }
@@ -3518,17 +3691,67 @@
 
       var fSel = null;    // guest picked for the two-tap assign
       var fWarn = null;   // {wid, tid} — showing the missing-skill warning; a second tap overrides
+      function mergeQueueTicketForAssignment(w) {
+        if (!w || !ticketOpen(w)) return w;
+        var collisions = WAITLIST.filter(function (candidate) {
+          return candidate !== w && ticketOpen(candidate) &&
+            String(candidate.orderId) === String(w.orderId) &&
+            queueTicketAssignment(candidate) === queueTicketAssignment(w);
+        });
+        var statusRank = { service: 3, waiting: 2, ready: 1 };
+        collisions.forEach(function (collision) {
+          var itemKeys = {};
+          var mergedItems = [];
+          (w.items || []).concat(collision.items || []).forEach(function (item) {
+            var key = String(item.serviceTicketId || item.serviceId || item.name || '');
+            if (!key || itemKeys[key]) return;
+            itemKeys[key] = true;
+            mergedItems.push(item);
+          });
+          w.items = mergedItems;
+          w.serviceTicketIds = queueTicketServiceIds(w).concat(queueTicketServiceIds(collision)).filter(function (id, index, ids) {
+            return ids.indexOf(id) === index;
+          });
+          if ((statusRank[collision.status] || 0) > (statusRank[w.status] || 0)) w.status = collision.status;
+          if (w.atMs && collision.atMs) w.atMs = Math.min(w.atMs, collision.atMs);
+          else w.atMs = w.atMs || collision.atMs;
+          if (w.svcAtMs && collision.svcAtMs) w.svcAtMs = Math.min(w.svcAtMs, collision.svcAtMs);
+          else w.svcAtMs = w.svcAtMs || collision.svcAtMs;
+          if (w.readyAtMs && collision.readyAtMs) w.readyAtMs = Math.min(w.readyAtMs, collision.readyAtMs);
+          else w.readyAtMs = w.readyAtMs || collision.readyAtMs;
+          w.log = (w.log || []).concat(collision.log || []);
+          collision.status = 'cancelled';
+          collision.supersededBy = w.id;
+          collision.items = [];
+          collision.serviceTicketIds = [];
+          collision.serviceTicketId = null;
+          collision.svc = '';
+          collision.durationMin = 0;
+          wlog(w, 'Merged technician ticket #' + collision.id + ' into this ticket');
+        });
+        normalizeQueueTicketServices(w);
+        return w;
+      }
+      function applyQueueTechnician(w, tid) {
+        if (!w) return null;
+        w.techId = tid || null;
+        w.reqTech = tid || null;
+        (w.items || []).forEach(function (item) { item.techId = tid || null; });
+        return mergeQueueTicketForAssignment(w);
+      }
       function assignWaitingTech(w, tid) {
         fWarn = null;
-        if (!w) return;
+        if (!w) return null;
         var prev = w.techId;
-        w.techId = tid;
+        w = applyQueueTechnician(w, tid);
         fSel = null;
         wlog(w, prev && prev !== tid ? 'Changed tech ' + techName(prev) + ' to ' + techName(tid) : 'Assigned ' + techName(tid) + ' - ready to start');
         renderFloor(); renderClock();
+        return w;
       }
       function fAssign(w, tid) {
         fWarn = null;
+        if (!w) return null;
         if (w.status === 'waiting') {
           w.status = 'service'; w.svcAtMs = Date.now();
           wlog(w, '💺 Assigned ' + techName(tid) + ' — service started');
@@ -3537,9 +3760,10 @@
           wlog(w, '⇄ Swapped tech ' + techName(w.techId) + ' → ' + techName(tid));
           pageTech(tid, 'Taking over: ' + w.name + (w.svc ? ' · ' + w.svc : ''));
         }
-        w.techId = tid;   // mid-service swap keeps the status and start time, and does not count another turn
+        w = applyQueueTechnician(w, tid);   // mid-service swap keeps the status and start time, and does not count another turn
         fSel = null;
         renderFloor(); renderClock();
+        return w;
       }
 
       /* ── guest profile lines (internal — the guest never sees these) ── */
@@ -4175,9 +4399,8 @@
         var rows = items.map(function (r) {
           var w = WAITLIST.find(function (x) { return x.id === r.wid; });
           var t = techById(r.tid);
-          var req = reqSkill(w);
-          var ok = !req || (t.skills || []).indexOf(req) !== -1;
-          return { r: r, w: w, t: t, req: req, ok: ok };
+          var match = matchScore(t, w);
+          return { r: r, w: w, t: t, req: match.req, ok: match.okSkill };
         });
         html('[data-arq-list]', arqViewMode === 'table' ? renderArqTable(rows) : rows.map(arqCardHtml).join(''));
       }
@@ -4340,7 +4563,20 @@
         if (w.reqTech) return '<span class="' + cls + ' is-requested">' + esc(techName(w.reqTech)) + '</span>';
         return '<span class="' + cls + ' is-anyone">Anyone</span>';
       }
-      // Table mode: one row per service ticket (not per order), same actions as the card view.
+      function queueServiceNames(w) {
+        var names = (w.items || []).map(function (item) { return posServiceDisplayName(item.name || ''); }).filter(Boolean);
+        return names.length ? names : [posServiceDisplayName(w.svc || 'No service chosen')];
+      }
+      function queueServicesHtml(w, variant) {
+        var names = queueServiceNames(w);
+        if (variant === 'card') {
+          return '<span class="queue-ticket-services">' + names.map(function (name) {
+            return '<span class="queue-ticket-service-line">' + esc(name) + '</span>';
+          }).join('') + '</span>';
+        }
+        return '<span class="queue-ticket-services queue-ticket-services-compact">' + esc(names.join(', ')) + '</span>';
+      }
+      // Table mode: one row per technician ticket (not per order), same actions as the card view.
       // Table mode carries the operational fields as separate columns so the queue can be scanned
       // quickly: appointment hour, customer group, note, service, tech, status, elapsed time, total.
       function renderTicketsTable(groups, now) {
@@ -4362,7 +4598,7 @@
               '<td>' + esc(w.phone || '—') + '</td>' +
               '<td>' + esc(w.bookingTime || w.at || '—') + '</td>' +
               '<td>' + ticketCustomerGroupHtml(w) + '</td>' +
-              '<td>' + esc(posServiceDisplayName(w.svc || 'No service chosen')) + '</td>' +
+              '<td>' + queueServicesHtml(w, 'table') + '</td>' +
               '<td>' + ticketTechHtml(w) + '</td>' +
               '<td>' + ticketStatusBadge(w.status) + '</td>' +
               '<td>' + elapsedLabel + '</td>' +
@@ -4371,31 +4607,39 @@
               '<td><div class="wl-actions">' + ticketActionsHtml(w) + '</div></td></tr>';
           }).join('') + '</tbody></table></div>';
       }
+      function queueServiceEditButtonHtml(w, variant) {
+        var cls = variant === 'card' ? 'perf-cta-btn perf-cta-btn-muted' : 'pos-btn pos-btn-sm queue-action-muted';
+        return '<button class="' + cls + '" type="button" data-wservice="' + w.id + '" title="Edit service"><i class="bi bi-pencil-square" aria-hidden="true"></i> Edit service</button>';
+      }
       function ticketActionsHtml(w) {
         if (w.status === 'waiting') {
           if (ticketNeedsTechPicker(w)) {
             return '<button class="pos-btn pos-btn-primary pos-btn-sm queue-action-primary" data-wswap="' + w.id + '"><i class="bi bi-person-plus" aria-hidden="true"></i> Assign tech</button>' +
+              queueServiceEditButtonHtml(w, 'compact') +
               '<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button>';
           }
           var startTech = waitingStartTech(w);
           return '<button class="pos-btn pos-btn-primary pos-btn-sm queue-action-primary" data-wstart="' + w.id + '"' + (startTech ? '' : ' disabled') + '><i class="bi bi-play-fill" aria-hidden="true"></i> ' + (startTech ? esc(startTech.name) : 'No tech') + '</button>' +
             '<button class="pos-btn pos-btn-sm queue-action-muted" data-wswap="' + w.id + '" title="Change tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i> Change tech</button>' +
+            queueServiceEditButtonHtml(w, 'compact') +
             '<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button>';
         }
         if (w.status === 'service') {
           return '<button class="pos-btn pos-btn-sm queue-action-muted" data-wswap="' + w.id + '" title="Change tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i> Change tech</button>' +
+            queueServiceEditButtonHtml(w, 'compact') +
             '<button class="pos-btn pos-btn-sm queue-action-progress" data-wdone="' + w.id + '" title="Tech finished — guest waits to pay"><i class="bi bi-check2" aria-hidden="true"></i> Done</button>' +
             '<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button>';
         }
         if (w.status === 'ready') {
           return '<span class="pos-chip pos-chip-green"><i class="bi bi-check-circle-fill" aria-hidden="true"></i> Ready</span>' +
+            queueServiceEditButtonHtml(w, 'compact') +
             '<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button>';
         }
         // completed/cancelled tickets only show up here via the Tickets status-chip filter — read-only
         return ticketStatusBadge(w.status);
       }
       function ticketLabelHtml(w) {
-        var svcName = esc(posServiceDisplayName(w.svc || 'No service chosen'));
+        var svcName = esc(queueServiceNames(w).join(', '));
         var techLbl = w.status === 'waiting' ? (w.techId ? 'waiting on ' + esc(techName(w.techId)) : (w.reqTech ? 'requested ' + esc(techName(w.reqTech)) : 'Anyone'))
           : w.status === 'service' ? esc(techName(w.techId)) + ' — in service'
           : w.status === 'ready' ? esc(techName(w.techId)) + ' — ready'
@@ -4422,7 +4666,7 @@
           (groupHtml ? '<div style="margin-top:10px">' + groupHtml + '</div>' : '') +
           '<div class="perf-divider"></div>' +
           '<div class="perf-stat-row">' +
-            '<div class="perf-stat-col"><span class="perf-section-label">Service</span><span class="perf-stat-value">' + esc(posServiceDisplayName(w.svc || 'No service chosen')) + '</span></div>' +
+            '<div class="perf-stat-col"><span class="perf-section-label">Service</span><span class="perf-stat-value">' + queueServicesHtml(w, 'card') + '</span></div>' +
             '<div class="perf-stat-col"><span class="perf-section-label">Tech</span><span class="perf-stat-value">' + ticketTechHtml(w, 'card') + (techExtra || '') + '</span></div>' +
           '</div>' +
           '<div class="perf-divider"></div>' +
@@ -4434,7 +4678,7 @@
           '<div><span class="perf-section-label">Total</span><span class="perf-stat-value">' + money(total) + '</span></div>' +
           (noteText ? '<div class="perf-divider"></div><div><span class="perf-section-label">Note</span><span class="perf-stat-value" style="font-weight:600">' + esc(noteText) + '</span></div>' : '');
       }
-      // One WAITLIST row = one service ticket (#pos-nail-salon-ops Phase 3). A single-ticket order
+      // One WAITLIST row = one technician ticket. A single-ticket order
       // renders exactly like the original floor card, so the common walk-in path is unchanged.
       function renderSingleTicketCard(w, now, selW) {
         var sel = selW && selW.id === w.id ? ' is-sel' : '';
@@ -4453,6 +4697,7 @@
                 ? '<button class="perf-cta-btn perf-cta-btn-muted" data-wswap="' + w.id + '"><i class="bi bi-person-plus" aria-hidden="true"></i> Assign tech</button>'
                 : '<button class="perf-cta-btn perf-cta-btn-primary" data-wstart="' + w.id + '"' + (startTech ? '' : ' disabled') + '><i class="bi bi-play-fill" aria-hidden="true"></i> ' + (startTech ? esc(startTech.name) : 'No tech') + '</button>') +
               (needsTechPicker ? '' : '<button class="perf-cta-btn perf-cta-btn-muted" data-wswap="' + w.id + '" title="Change tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i> Change tech</button>') +
+              queueServiceEditButtonHtml(w, 'card') +
               '<button class="perf-cta-btn perf-cta-btn-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button>' +
             '</div></article>';
         }
@@ -4463,6 +4708,7 @@
             '<div class="perf-divider"></div>' +
             '<div class="perf-cta-row">' +
               '<button class="perf-cta-btn perf-cta-btn-success-fill" data-wpay="' + esc(w.orderId) + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Checkout</button>' +
+              queueServiceEditButtonHtml(w, 'card') +
               '<button class="perf-cta-btn perf-cta-btn-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button>' +
             '</div></article>';
         }
@@ -4473,6 +4719,7 @@
             '<div class="perf-divider"></div>' +
             '<div class="perf-cta-row">' +
               '<button class="perf-cta-btn perf-cta-btn-muted" data-wswap="' + w.id + '" title="Change tech"><i class="bi bi-arrow-left-right" aria-hidden="true"></i> Change tech</button>' +
+              queueServiceEditButtonHtml(w, 'card') +
               '<button class="perf-cta-btn perf-cta-btn-primary" data-wdone="' + w.id + '" title="Tech finished — guest waits to pay"><i class="bi bi-check2" aria-hidden="true"></i> Done</button>' +
               '<button class="perf-cta-btn perf-cta-btn-success" data-wpay="' + esc(w.orderId) + '"><i class="bi bi-credit-card" aria-hidden="true"></i> Checkout</button>' +
               '<button class="perf-cta-btn perf-cta-btn-danger" data-wcancel="' + w.id + '" title="Cancel"><i class="bi bi-x-lg" aria-hidden="true"></i> Cancel</button>' +
@@ -4559,7 +4806,7 @@
       /* ── swap technician picker ── */
       var swapTechFor = null;
       function swapTechOptionsHtml(w) {
-        var options = freeTechs()
+        var options = TECHS.filter(function (t) { return techAvailableForQueueTicket(t.id, w); })
           .filter(function (t) { return t.id !== w.techId; })
           .map(function (t) { return { t: t, match: matchScore(t, w) }; })
           .sort(function (a, b) { return b.match.sc - a.match.sc || a.t.turns - b.t.turns; });
@@ -4600,29 +4847,254 @@
       function chooseSwapTech(tid) {
         var w = WAITLIST.find(function (x) { return x.id === swapTechFor; });
         var t = techById(tid);
-        if (!w || !t || busyName(tid) || w.techId === tid) return;
+        if (!w || !t || !techAvailableForQueueTicket(tid, w) || w.techId === tid) return;
         var match = matchScore(t, w);
         var apply = function (override) {
           if (w.status === 'waiting') {
-            if (override) wlog(w, '⚠ Skill override: assigned to ' + t.name + ' without the ' + match.req + ' skill');
-            assignWaitingTech(w, tid);
+            if (override) wlog(w, '⚠ Skill override: assigned to ' + t.name + ' without: ' + match.missing.join(', '));
+            w = assignWaitingTech(w, tid);
             closeSwapTechModal();
             followQueueTicketAfterAction(w, 'waiting');
             toast(w.name + ' assigned to ' + t.name + (override ? ' (override logged)' : ''));
             return;
           }
-          if (override) wlog(w, '⚠ Skill override: swapped to ' + t.name + ' without the ' + match.req + ' skill');
-          fAssign(w, tid);
+          if (override) wlog(w, '⚠ Skill override: swapped to ' + t.name + ' without: ' + match.missing.join(', '));
+          w = fAssign(w, tid);
           closeSwapTechModal();
           followQueueTicketAfterAction(w, w.status);
           toast(w.name + ' → ' + t.name + (override ? ' (override logged)' : ''));
         };
         if (!match.okSkill) {
           closeSwapTechModal();
-          confirmBox('Swap to ' + t.name + ' anyway?', t.name + ' does not have the ' + match.req + ' skill required for ' + (w.svc || 'this service') + '.').then(function (ok) { if (ok) apply(true); });
+          confirmBox('Swap to ' + t.name + ' anyway?', t.name + ' is missing ' + match.missing.join(', ') + ' for ' + queueServiceNames(w).join(', ') + '.').then(function (ok) { if (ok) apply(true); });
           return;
         }
         apply(false);
+      }
+
+      /* ── Queue service picker ── */
+      var queueServiceFor = null, queueServiceDraftIds = [];
+      var queueServiceOriginalServices = [];
+      var queueServiceCatalogReady = false;
+      function nextBookingServiceTicketId(usedIds) {
+        var used = {};
+        (usedIds || []).forEach(function (id) { used[String(id)] = true; });
+        var index = 1;
+        while (used['ticket-' + index]) index++;
+        return 'ticket-' + index;
+      }
+      function queueBookingServicesPatch(booking, w, services) {
+        var sourceTickets = (booking.tickets || []).slice();
+        var linkedIds = queueTicketServiceIds(w);
+        var missingLink = linkedIds.some(function (id) {
+          return !sourceTickets.some(function (ticket) { return String(ticket.id) === String(id); });
+        });
+        if (missingLink) return { ok: false, error: { message: 'The linked booking ticket could not be found.' } };
+        var techId = w.techId || w.reqTech || null;
+        var usedIds = sourceTickets.map(function (ticket) { return String(ticket.id); });
+        var retainedIds = {};
+        var selectedById = {};
+        var additions = [];
+        var selectedTickets = services.map(function (service) {
+          var requestedLink = service._serviceTicketId == null ? null : String(service._serviceTicketId);
+          var currentItem = (w.items || []).find(function (item) {
+            if (requestedLink && String(item.serviceTicketId) === requestedLink) return true;
+            if (service.id && String(item.serviceId) === String(service.id)) return true;
+            return !service.id && posServiceDisplayName(item.name) === posServiceDisplayName(service.label || service.name);
+          });
+          var retainedId = requestedLink || (currentItem && currentItem.serviceTicketId != null ? String(currentItem.serviceTicketId) : null);
+          if (retainedId && (linkedIds.indexOf(retainedId) === -1 || retainedIds[retainedId])) retainedId = null;
+          var original = retainedId ? sourceTickets.find(function (ticket) { return String(ticket.id) === retainedId; }) : null;
+          var id = original ? String(original.id) : nextBookingServiceTicketId(usedIds);
+          if (!original) usedIds.push(id);
+          else retainedIds[id] = true;
+          var serviceName = posServiceDisplayName(service.label || service.name || (original && original.serviceName) || '');
+          var ticket = Object.assign({}, original || {}, {
+            id: id,
+            serviceId: String(service.id || (original && original.serviceId) || ''),
+            serviceName: serviceName,
+            price: Number(service.price) || 0,
+            durationMin: Number(service.durationMin) || 0,
+            technicianId: techId,
+            technicianName: techId ? techName(techId) : 'Anyone',
+            status: original && original.status !== 'cancelled' ? original.status : 'confirmed'
+          });
+          selectedById[id] = ticket;
+          if (!original) additions.push(ticket);
+          return ticket;
+        });
+        var nextTickets = sourceTickets.map(function (ticket) {
+          var id = String(ticket.id);
+          if (selectedById[id]) return selectedById[id];
+          if (linkedIds.indexOf(id) !== -1) return Object.assign({}, ticket, { status: 'cancelled' });
+          return ticket;
+        }).concat(additions);
+        var activeTickets = nextTickets.filter(function (ticket) { return ticket.status !== 'cancelled'; });
+        return {
+          ok: true,
+          patch: {
+            tickets: nextTickets,
+            serviceIds: activeTickets.map(function (ticket) { return ticket.serviceId || ''; }),
+            serviceNames: activeTickets.map(function (ticket) { return ticket.serviceName || ''; }),
+            serviceDetails: activeTickets.map(function (ticket) {
+              return { id: ticket.serviceId || '', name: ticket.serviceName || '', price: ticket.price, durationMin: ticket.durationMin, icon: '✨' };
+            })
+          },
+          items: selectedTickets.map(function (ticket, index) { return queueItemForService(services[index], techId, ticket.id); }),
+          serviceTicketIds: selectedTickets.map(function (ticket) { return String(ticket.id); })
+        };
+      }
+      function queueSelectedServices() {
+        var selected = (MENU || []).filter(function (service) {
+          return queueServiceDraftIds.indexOf(String(service.id)) !== -1;
+        });
+        queueServiceOriginalServices.forEach(function (service) {
+          if (queueServiceDraftIds.indexOf(String(service._draftId)) === -1) return;
+          var duplicate = selected.some(function (candidate) {
+            return String(candidate.id) === String(service.id) || String(candidate.id) === String(service._draftId);
+          });
+          if (!duplicate) selected.push(service);
+        });
+        return selected;
+      }
+      function queueServiceOptionsHtml(w) {
+        var options = MENU || [];
+        var activeOptions = options.map(function (service) {
+          var selected = queueServiceDraftIds.indexOf(String(service.id)) !== -1;
+          var meta = [service.categoryName || service.requiredSkill || 'Service'];
+          if (service.durationMin) meta.push(service.durationMin + ' min');
+          return '<button class="swap-tech-option queue-service-option' + (selected ? ' is-selected' : '') + '" type="button" role="option" data-queue-service-pick="' + esc(service.id) + '" aria-selected="' + (selected ? 'true' : 'false') + '">' +
+            '<span class="pos-avatar"><i class="bi bi-stars" aria-hidden="true"></i></span>' +
+            '<span class="swap-tech-option-main"><span class="swap-tech-option-name">' + esc(service.label || service.name) + '</span>' +
+            '<span class="swap-tech-option-meta">' + esc(meta.join(' · ')) + '</span></span>' +
+            (selected ? '<i class="bi bi-check-circle-fill queue-service-check" aria-hidden="true"></i>' : '') +
+            '<span class="queue-service-price">' + money(service.price || 0) + '</span>' +
+            '</button>';
+        }).join('');
+        var unavailableOptions = queueServiceOriginalServices.filter(function (service) { return service._unavailable; }).map(function (service) {
+          var selected = queueServiceDraftIds.indexOf(String(service._draftId)) !== -1;
+          return '<button class="swap-tech-option queue-service-option' + (selected ? ' is-selected' : '') + '" type="button" role="option" data-queue-service-pick="' + esc(service._draftId) + '" aria-selected="' + (selected ? 'true' : 'false') + '"' + (selected ? '' : ' disabled') + '>' +
+            '<span class="pos-avatar"><i class="bi bi-exclamation-triangle" aria-hidden="true"></i></span>' +
+            '<span class="swap-tech-option-main"><span class="swap-tech-option-name">' + esc(service.label || service.name) + '</span>' +
+            '<span class="swap-tech-option-meta">Current service unavailable</span></span>' +
+            (selected ? '<i class="bi bi-check-circle-fill queue-service-check" aria-hidden="true"></i>' : '') +
+            '<span class="queue-service-price">' + money(service.price || 0) + '</span>' +
+            '</button>';
+        }).join('');
+        if (!activeOptions && !unavailableOptions) return '<div class="swap-tech-empty"><i class="bi bi-card-checklist" aria-hidden="true"></i> No active services are available.</div>';
+        return activeOptions + unavailableOptions;
+      }
+      function renderQueueServiceDraft(w) {
+        var selected = queueSelectedServices();
+        html('[data-queue-service-list]', queueServiceOptionsHtml(w));
+        var duration = selected.reduce(function (sum, service) { return sum + (Number(service.durationMin) || 0); }, 0);
+        var total = selected.reduce(function (sum, service) { return sum + (Number(service.price) || 0); }, 0);
+        set('[data-queue-service-summary]', selected.length + ' ' + (selected.length === 1 ? 'service' : 'services') + ' · ' + duration + ' min · ' + money(total));
+        var saveButton = $('[data-queue-service-save]');
+        if (saveButton) saveButton.disabled = !selected.length || !queueServiceCatalogReady;
+        var error = $('[data-queue-service-error]');
+        if (error) {
+          error.textContent = !queueServiceCatalogReady ? 'The service catalog is unavailable. Current services were kept.' : 'At least one service is required.';
+          error.hidden = !!selected.length && queueServiceCatalogReady;
+        }
+      }
+      function toggleQueueServiceDraft(serviceId) {
+        serviceId = String(serviceId);
+        var index = queueServiceDraftIds.indexOf(serviceId);
+        var unavailable = queueServiceOriginalServices.find(function (service) { return service._unavailable && String(service._draftId) === serviceId; });
+        if (index === -1) {
+          if (unavailable) return;
+          queueServiceDraftIds.push(serviceId);
+        } else {
+          queueServiceDraftIds.splice(index, 1);
+        }
+        var w = WAITLIST.find(function (ticket) { return ticket.id === queueServiceFor; });
+        if (w) renderQueueServiceDraft(w);
+      }
+      function openQueueServiceModal(wid) {
+        var w = WAITLIST.find(function (ticket) { return ticket.id == wid && ticketOpen(ticket); });
+        var modal = $('[data-queue-service-modal]');
+        if (!w || !modal) return;
+        queueServiceFor = w.id;
+        queueServiceCatalogReady = (MENU || []).length > 0;
+        queueServiceOriginalServices = (w.items || []).map(function (item, index) {
+          var catalogService = (MENU || []).find(function (service) {
+            return String(service.id) === String(item.serviceId) || posServiceDisplayName(service.label || service.name) === posServiceDisplayName(item.name);
+          });
+          var serviceId = String(item.serviceId || (catalogService && catalogService.id) || '');
+          var draftId = serviceId || (item.serviceTicketId ? 'linked:' + item.serviceTicketId : 'legacy:' + index);
+          return {
+            id: serviceId,
+            label: item.name,
+            name: item.name,
+            price: Number(item.price) || 0,
+            durationMin: Number(item.durationMin) || 0,
+            _draftId: draftId,
+            _serviceTicketId: item.serviceTicketId || null,
+            _unavailable: !catalogService
+          };
+        });
+        queueServiceDraftIds = queueServiceOriginalServices.map(function (service) { return String(service._draftId); });
+        set('[data-queue-service-guest]', w.name);
+        set('[data-queue-service-current]', queueServiceOriginalServices.length ? queueServiceOriginalServices.map(function (service) { return service.label; }).join(', ') : 'No service chosen');
+        renderQueueServiceDraft(w);
+        modal.classList.add('open');
+        document.body.style.overflow = 'hidden';
+      }
+      function closeQueueServiceModal() {
+        var modal = $('[data-queue-service-modal]');
+        if (modal) modal.classList.remove('open');
+        document.body.style.overflow = '';
+        queueServiceFor = null;
+        queueServiceDraftIds = [];
+        queueServiceOriginalServices = [];
+        queueServiceCatalogReady = false;
+      }
+      function changeQueueTicketServices(w, services) {
+        if (!w || !services || !services.length) return { ok: false, error: { message: 'At least one service is required.' } };
+        var previousNames = (w.items || []).map(function (item) { return item.name; });
+        var techId = w.techId || w.reqTech || null;
+        var nextItems, nextIds;
+        if (w.bookingId) {
+          var booking = posBookingById(w.bookingId);
+          if (!booking) return { ok: false, error: { message: 'The linked booking could not be found.' } };
+          var prepared = queueBookingServicesPatch(booking, w, services);
+          if (!prepared.ok) return prepared;
+          var updateResult = appointmentStore.update(booking.id, prepared.patch, null, salonCatalog);
+          if (!updateResult.ok) return updateResult;
+          nextItems = prepared.items;
+          nextIds = prepared.serviceTicketIds;
+          reloadAppointmentSnapshot();
+        } else {
+          nextItems = services.map(function (service) { return queueItemForService(service, techId, null); });
+          nextIds = [];
+        }
+        w.items = nextItems;
+        w.serviceTicketIds = nextIds;
+        normalizeQueueTicketServices(w);
+        wlog(w, 'Changed services from ' + (previousNames.join(', ') || 'none') + ' to ' + w.items.map(function (item) { return item.name; }).join(', '));
+        return { ok: true };
+      }
+      function saveQueueServices() {
+        var w = WAITLIST.find(function (ticket) { return ticket.id === queueServiceFor && ticketOpen(ticket); });
+        var services = queueSelectedServices();
+        var error = $('[data-queue-service-error]');
+        if (!services.length) {
+          if (error) { error.textContent = 'At least one service is required.'; error.hidden = false; }
+          return;
+        }
+        if (!queueServiceCatalogReady) {
+          if (error) { error.textContent = 'The service catalog is unavailable. Current services were kept.'; error.hidden = false; }
+          return;
+        }
+        var result = changeQueueTicketServices(w, services);
+        if (!result.ok) {
+          if (error) { error.textContent = result.error && result.error.message || 'Services could not be updated.'; error.hidden = false; }
+          return;
+        }
+        closeQueueServiceModal();
+        followQueueTicketAfterAction(w, w.status);
+        toast(w.name + ' · ' + w.items.length + ' services updated');
       }
 
       document.addEventListener('click', function (e) {
@@ -4655,6 +5127,15 @@
           chooseSwapTech(swapPick.getAttribute('data-swap-tech-pick'));
           return;
         }
+
+        /* queue service modal */
+        if (e.target.closest('[data-queue-service-close]') || e.target.matches('[data-queue-service-modal]')) { closeQueueServiceModal(); return; }
+        var servicePick = e.target.closest('[data-queue-service-pick]');
+        if (servicePick) {
+          toggleQueueServiceDraft(servicePick.getAttribute('data-queue-service-pick'));
+          return;
+        }
+        if (e.target.closest('[data-queue-service-save]')) { saveQueueServices(); return; }
 
         /* check-in modal: search a phone number against today's bookings, or add a walk-in */
         if (e.target.closest('[data-ci-close]') || e.target.matches('[data-ci-modal]')) { closeCheckinModal(); return; }
@@ -4767,10 +5248,10 @@
           var aw = WAITLIST.find(function (x) { return x.id === ar.wid; });
           if (aok && aw) {
             var at = techById(ar.tid);
-            var areq = reqSkill(aw);
-            if (areq && at && (at.skills || []).indexOf(areq) === -1) wlog(aw, '⚠ Skill override: approved ' + at.name + ' without the ' + areq + ' skill');
+            var accessMatch = at ? matchScore(at, aw) : null;
+            if (accessMatch && !accessMatch.okSkill) wlog(aw, '⚠ Skill override: approved ' + at.name + ' without: ' + accessMatch.missing.join(', '));
             wlog(aw, '🔐 Front desk approved the access request — ' + techName(ar.tid) + ' takes the ticket');
-            fAssign(aw, ar.tid);
+            aw = fAssign(aw, ar.tid);
             followQueueTicketAfterAction(aw, 'service');
             toast(techName(ar.tid) + ' now owns ticket #' + aw.id);
             return;
@@ -4811,6 +5292,10 @@
           return;
         }
 
+        /* edit queue service */
+        var serviceEdit = e.target.closest('[data-wservice]');
+        if (serviceEdit) { openQueueServiceModal(+serviceEdit.getAttribute('data-wservice')); return; }
+
         /* ▶ one-tap assign */
         var st = e.target.closest('[data-wstart]');
         if (st) {
@@ -4819,7 +5304,7 @@
           var sw = WAITLIST.find(function (x) { return x.id == st.getAttribute('data-wstart'); });
           var stech = sw && waitingStartTech(sw);
           if (!stech) { toast('No free tech right now', 'info'); return; }
-          fAssign(sw, stech.id);
+          sw = fAssign(sw, stech.id);
           followQueueTicketAfterAction(sw, 'service');
           serviceStartedModal(sw, stech);
           return;
@@ -4852,7 +5337,11 @@
           if (!xw) return;
           confirmBox('Remove ' + xw.name + ' from the queue?', 'The ticket is dropped — production keeps it as a cancelled record.').then(function (ok) {
             if (!ok) return;
-            xw.status = 'cancelled';
+            var result = cancelQueueTicket(xw);
+            if (!result.ok) {
+              toast(result.error && result.error.message ? result.error.message : 'The Queue ticket could not be cancelled.', 'error');
+              return;
+            }
             followQueueTicketAfterAction(xw, 'cancelled');
           });
           return;
@@ -4873,15 +5362,15 @@
           if (!aw2) return;
           var tid = fa.getAttribute('data-fassign');
           var t2 = techById(tid);
-          var req2 = reqSkill(aw2);
-          var ok2 = !req2 || (t2.skills || []).indexOf(req2) !== -1;
+          var assignMatch = matchScore(t2, aw2);
+          var ok2 = assignMatch.okSkill;
           if (!ok2 && !(fWarn && fWarn.wid === aw2.id && fWarn.tid === tid)) {
             fWarn = { wid: aw2.id, tid: tid };   // first tap: block and warn
             renderFloor();
             return;
           }
-          if (!ok2) wlog(aw2, '⚠ Skill override: assigned ' + techName(tid) + ' without the ' + req2 + ' skill');
-          fAssign(aw2, tid);                     // second tap (or qualified): assign
+          if (!ok2) wlog(aw2, '⚠ Skill override: assigned ' + techName(tid) + ' without: ' + assignMatch.missing.join(', '));
+          aw2 = fAssign(aw2, tid);               // second tap (or qualified): assign
           followQueueTicketAfterAction(aw2, 'service');
           toast(aw2.name + ' → ' + techName(tid) + (ok2 ? '' : ' (override logged)'));
           return;
@@ -7770,6 +8259,8 @@
         if (e.key === 'Escape' && $('[data-ci-modal]').classList.contains('open')) closeCheckinModal();
         var swapModal = $('[data-swap-tech-modal]');
         if (e.key === 'Escape' && swapModal && swapModal.classList.contains('open')) closeSwapTechModal();
+        var queueServiceModal = $('[data-queue-service-modal]');
+        if (e.key === 'Escape' && queueServiceModal && queueServiceModal.classList.contains('open')) closeQueueServiceModal();
         var mgTechSelectMenu = $('[data-mg-tech-select-menu]');
         if (e.key === 'Escape' && mgTechSelectMenu && !mgTechSelectMenu.hidden) { setMgTechSelectOpen(false); return; }
         var mgTechModal = $('[data-mg-tech-modal]');

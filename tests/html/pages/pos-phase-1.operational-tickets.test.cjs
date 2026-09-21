@@ -11,13 +11,27 @@ const bookingCss = fs.readFileSync(path.join(SOURCE_DIR, '..', 'assets', 'pos-bo
 test('POS gives every WAITLIST row operational-ticket links back to the booking/order', () => {
   assert.match(html, /if \(w\.orderId == null\) w\.orderId = 'walkin-' \+ w\.id;/);
   assert.match(html, /if \(w\.bookingId === undefined\) w\.bookingId = null;/);
-  assert.match(html, /if \(w\.serviceTicketId === undefined\) w\.serviceTicketId = null;/);
+  assert.match(html, /if \(!Array\.isArray\(w\.serviceTicketIds\)\) w\.serviceTicketIds = \[\];/);
+  assert.match(html, /normalizeQueueTicketServices\(w\);/);
   assert.match(html, /if \(w\.customerId === undefined\) w\.customerId = w\.name;/);
 });
 
-test('POS treats "open" as not completed and not cancelled, and never lets two open tickets share a serviceTicketId', () => {
+test('POS treats "open" as not completed and not cancelled, and recognizes every linked service ticket id', () => {
   assert.match(html, /function ticketOpen\(w\) \{ return w\.status !== 'completed' && w\.status !== 'cancelled'; \}/);
-  assert.match(html, /function hasOpenTicketForServiceTicket\(serviceTicketId\) \{/);
+  assert.match(html, /function queueTicketHasServiceTicket\(w, serviceTicketId\) \{/);
+  const duplicateFn = html.match(/function hasOperationalTicketForServiceTicket\(serviceTicketId\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(duplicateFn, /queueTicketHasServiceTicket\(w, serviceTicketId\)/);
+  assert.match(duplicateFn, /w\.status !== 'cancelled'/);
+});
+
+test('Queue normalizes legacy and multi-service rows around items', () => {
+  assert.match(html, /function queueItemForService\(service, techId, serviceTicketId\) \{/);
+  assert.match(html, /function queueTicketServiceIds\(w\) \{/);
+  assert.match(html, /function normalizeQueueTicketServices\(w\) \{/);
+  assert.match(html, /w\.serviceTicketIds = queueTicketServiceIds\(w\);/);
+  assert.match(html, /w\.serviceTicketId = w\.serviceTicketIds\[0\] \|\| null;/);
+  assert.match(html, /w\.svc = w\.items\[0\] \? w\.items\[0\]\.name : '';/);
+  assert.match(html, /w\.durationMin = w\.items\.reduce/);
 });
 
 test('POS groups WAITLIST by orderId for the Tickets card view', () => {
@@ -27,27 +41,59 @@ test('POS groups WAITLIST by orderId for the Tickets card view', () => {
   assert.match(html, /g\.tickets\.length === 1 \? renderSingleTicketCard\(g\.tickets\[0\], now, selW\) : renderTicketGroupCard\(g, now, selW\)/);
 });
 
-test('POS check-in is atomic: one operational ticket per service ticket, never a flattened row, never a duplicate', () => {
-  assert.match(html, /function createOperationalTicket\(booking, ticket\) \{/);
+test('POS check-in groups Booking services by technician without losing canonical ticket ids', () => {
+  assert.match(html, /function bookingTicketGroups\(booking\) \{/);
+  assert.match(html, /function createOperationalTicket\(booking, tickets\) \{/);
+  assert.match(html, /function syncBookingOperationalTickets\(booking\) \{/);
   assert.match(html, /function checkInBooking\(eb\) \{/);
   const checkIn = html.match(/function checkInBooking\(eb\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(checkIn, /if \(eb\.status === 'completed' \|\| eb\.status === 'no-show'\)/);
   assert.match(checkIn, /status: 'checked-in'/);
-  assert.match(checkIn, /\(booking && booking\.tickets \|\| \[\]\)\.forEach\(function \(ticket\) \{/);
-  assert.match(checkIn, /if \(WAITLIST\.some\(function \(w\) \{ return w\.serviceTicketId === ticket\.id; \}\)\) return;/);
-  assert.match(checkIn, /WAITLIST\.push\(createOperationalTicket\(booking, ticket\)\);/);
+  assert.match(checkIn, /var created = syncBookingOperationalTickets\(booking\);/);
+  const create = html.match(/function createOperationalTicket\(booking, tickets\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(create, /serviceTicketIds: tickets\.map/);
+  assert.match(create, /items: tickets\.map/);
   assert.match(html, /checkInBooking\(posBookingById\(ei\.getAttribute\('data-eta-in'\)\)\);/);
+});
+
+test('Booking ticket grouping creates one group per technician assignment', () => {
+  const groupSource = html.match(/function bookingTicketGroups\(booking\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.ok(groupSource);
+  const bookingTicketGroups = new Function(groupSource + '\nreturn bookingTicketGroups;')();
+  const groups = bookingTicketGroups({ tickets: [
+    { id: 'a', technicianId: 't1', status: 'confirmed' },
+    { id: 'b', technicianId: 't1', status: 'confirmed' },
+    { id: 'c', technicianId: 't2', status: 'confirmed' },
+    { id: 'd', technicianId: 't2', status: 'cancelled' }
+  ] });
+  assert.deepEqual(groups.map((group) => group.map((ticket) => ticket.id)), [['a', 'b'], ['c']]);
 });
 
 test('POS rehydrates operational tickets from checked-in bookings after every store reload, so a page refresh cannot drop a guest', () => {
   assert.match(html, /function rehydrateOperationalTickets\(\) \{/);
   const rehydrate = html.match(/function rehydrateOperationalTickets\(\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(rehydrate, /if \(b\.status !== 'checked-in'\) return;/);
-  assert.match(rehydrate, /WAITLIST\.push\(createOperationalTicket\(b, ticket\)\);/);
+  assert.match(rehydrate, /syncBookingOperationalTickets\(b\);/);
+  assert.doesNotMatch(rehydrate, /createOperationalTicket\(b, ticket\)/);
 
   assert.match(html, /reloadAppointmentSnapshot\(\);\s*\n\s*rehydrateOperationalTickets\(\);\s*\n\s*appointmentStore\.subscribe/);
   assert.match(html, /reloadAppointmentSnapshot\(\);\s*\n\s*rehydrateOperationalTickets\(\);\s*\n\s*renderFloor\(\);\s*\n\s*\}, window\);/);
   assert.match(html, /reloadAppointmentSnapshot\(\);\s*\n\s*rehydrateOperationalTickets\(\);\s*\n\s*renderManagement\(\);/);
+});
+
+test('Walk-in services assigned to the same technician share one Queue ticket', () => {
+  assert.match(html, /function walkInTicketGroups\(tickets\) \{/);
+  const groupSource = html.match(/function walkInTicketGroups\(tickets\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const walkInTicketGroups = new Function(groupSource + '\nreturn walkInTicketGroups;')();
+  const groups = walkInTicketGroups([
+    { serviceName: 'Manicure', technicianId: 't1' },
+    { serviceName: 'Gel', technicianId: 't1' },
+    { serviceName: 'Pedicure', technicianId: 't2' }
+  ]);
+  assert.deepEqual(groups.map((group) => group.map((ticket) => ticket.serviceName)), [['Manicure', 'Gel'], ['Pedicure']]);
+  const addWalkIn = html.match(/function addWalkIn\(name, phone, tickets\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(addWalkIn, /walkInTicketGroups\(tickets\)\.forEach/);
+  assert.match(addWalkIn, /items: group\.filter\(Boolean\)\.map/);
 });
 
 test('Queue Checkout opens the shared checkout page instead of charging in place', () => {
@@ -63,6 +109,34 @@ test('Queue Checkout opens the shared checkout page instead of charging in place
   assert.doesNotMatch(pay, /No items on this order yet/);
 });
 
+test('Queue Checkout emits one canonical detail and ticket per Queue item', () => {
+  const snapshotSource = html.match(/function queueCheckoutSnapshot\(orderKey, groupTickets\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(snapshotSource, /serviceTicketId: item\.serviceTicketId \|\| null/);
+  assert.match(snapshotSource, /durationMin: item\.durationMin \|\| null/);
+  assert.match(snapshotSource, /var checkoutTickets = \[\];/);
+  assert.match(snapshotSource, /checkoutTickets\.push/);
+  assert.match(snapshotSource, /tickets: checkoutTickets/);
+  const queueCheckoutSnapshot = new Function(
+    'queueItemsForService', 'posServiceDisplayName', 'techName',
+    snapshotSource + '\nreturn queueCheckoutSnapshot;'
+  )(
+    () => [],
+    (value) => String(value || '').trim(),
+    (id) => id === 't1' ? 'Kim' : 'Anyone'
+  );
+  const snapshot = queueCheckoutSnapshot('order-1', [{
+    id: 7, orderId: 'order-1', bookingId: 'booking-1', name: 'Guest', phone: '555', status: 'ready', techId: 't1',
+    items: [
+      { serviceId: 'svc-1', serviceTicketId: 'ticket-1', name: 'Manicure', price: 25, durationMin: 30, techId: 't1', cat: 'mani' },
+      { serviceId: 'svc-2', serviceTicketId: 'ticket-2', name: 'Gel', price: 20, durationMin: 20, techId: 't1', cat: 'gel' }
+    ]
+  }]);
+  assert.equal(snapshot.serviceDetails.length, 2);
+  assert.equal(snapshot.tickets.length, 2);
+  assert.deepEqual(snapshot.serviceDetails.map((detail) => detail.serviceTicketId), ['ticket-1', 'ticket-2']);
+  assert.equal(snapshot.serviceDetails.reduce((sum, detail) => sum + detail.price, 0), 45);
+});
+
 test('Queue tickets with a service name hydrate billable line items before Checkout', () => {
   const helper = html.match(/function queueItemsForService\(svc, techId\) \{[\s\S]*?\n      \}/)?.[0] || '';
   const waitlistInit = html.match(/WAITLIST\.forEach\(function \(w\) \{[\s\S]*?\n      \}\);/)?.[0] || '';
@@ -70,10 +144,9 @@ test('Queue tickets with a service name hydrate billable line items before Check
 
   assert.match(html, /name: 'Lisa Trương'[\s\S]*svc: 'Acrylic — Full Set'/);
   assert.match(helper, /salonData\.findService\(salonCatalog, svc\)/);
-  assert.match(helper, /return \[\{ name: name, price: price, techId: techId \|\| null, cat: cat \}\]/);
-  assert.match(waitlistInit, /if \(!Array\.isArray\(w\.items\)\) w\.items = \[\]/);
-  assert.match(waitlistInit, /if \(!w\.items\.length && w\.svc\) w\.items = queueItemsForService\(w\.svc, w\.techId \|\| w\.reqTech \|\| null\)/);
-  assert.match(waitlistInit, /if \(!w\.durationMin && w\.svc\) w\.durationMin = queueDurationForService\(w\.svc\)/);
+  assert.match(helper, /queueItemForService\(service, techId \|\| null, null\)/);
+  assert.match(waitlistInit, /if \(!Array\.isArray\(w\.serviceTicketIds\)\) w\.serviceTicketIds = \[\]/);
+  assert.match(waitlistInit, /normalizeQueueTicketServices\(w\)/);
   assert.match(acceptHandler, /durationMin: queueDurationForService\(r\.svc\)/);
   assert.match(acceptHandler, /items: queueItemsForService\(r\.svc, r\.reqTech \|\| null\)/);
 });
@@ -93,12 +166,35 @@ test('POS completes a booking only once every non-cancelled service ticket has b
   assert.match(html, /function checkBookingOrderComplete\(bookingId\) \{/);
   const complete = html.match(/function checkBookingOrderComplete\(bookingId\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(complete, /var relevantTickets = \(booking\.tickets \|\| \[\]\)\.filter\(function \(t\) \{ return t\.status !== 'cancelled'; \}\);/);
+  assert.match(complete, /queueTicketHasServiceTicket\(candidate, t\.id\)/);
   assert.match(complete, /return w && w\.status === 'completed';/);
   assert.match(complete, /appointmentStore\.update\(bookingId, \{ status: 'completed' \}, null, salonCatalog\);/);
 });
 
-test('POS marks a removed ticket cancelled instead of deleting it, so rehydrate never resurrects a duplicate', () => {
-  assert.match(html, /xw\.status = 'cancelled';/);
+test('Queue cancellation persists every linked Booking service before mutating Queue state', () => {
+  const cancelSource = html.match(/function cancelQueueTicket\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.ok(cancelSource);
+  assert.match(cancelSource, /queueTicketServiceIds\(w\)/);
+  assert.match(cancelSource, /appointmentStore\.update/);
+  assert.match(cancelSource, /if \(!result\.ok\) return result;/);
+  assert.match(cancelSource, /w\.status = 'cancelled'/);
+  const booking = { id: 'booking-1', tickets: [{ id: 'ticket-1', serviceId: 'svc-1', serviceName: 'Manicure', status: 'confirmed' }, { id: 'ticket-2', serviceId: 'svc-2', serviceName: 'Gel', status: 'confirmed' }] };
+  const ticket = { bookingId: booking.id, status: 'ready', serviceTicketIds: ['ticket-1', 'ticket-2'], log: [] };
+  const before = structuredClone(ticket);
+  const cancelQueueTicket = new Function(
+    'posBookingById', 'queueTicketServiceIds', 'appointmentStore', 'salonCatalog', 'reloadAppointmentSnapshot', 'wlog',
+    cancelSource + '\nreturn cancelQueueTicket;'
+  )(
+    () => booking,
+    (row) => row.serviceTicketIds.slice(),
+    { update() { return { ok: false, error: { message: 'Store unavailable' } }; } },
+    { services: [] },
+    () => assert.fail('reload must not run'),
+    () => assert.fail('log must not run')
+  );
+  const result = cancelQueueTicket(ticket);
+  assert.equal(result.ok, false);
+  assert.deepEqual(ticket, before);
   assert.doesNotMatch(html, /WAITLIST = WAITLIST\.filter\(function \(x\) \{ return x\.id !== xw\.id; \}\);/);
 });
 
@@ -208,7 +304,7 @@ test('Queue table separates hour, customer group, note, technician, and elapsed 
   assert.match(bookingCss, /\.queue-table \.queue-customer-group \{[\s\S]*gap:\s*4px/);
   assert.match(html, /name: 'Lisa Trương',[\s\S]*?customerGroup: 'New'/);
   assert.doesNotMatch(table, /esc\(w\.badgeTxt\)/);
-  const createTicket = html.match(/function createOperationalTicket\(booking, ticket\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
+  const createTicket = html.match(/function createOperationalTicket\(booking, tickets\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
   assert.match(createTicket, /note: booking\.note \|\| ''/);
   assert.match(createTicket, /bookingTime: booking\.time \|\| ''/);
   assert.match(createTicket, /badgeTxt: booking\.time \? 'Booking' : ''/);
@@ -223,6 +319,32 @@ test('Queue table mode stays full-width and is not constrained by the card row',
   assert.match(html, /\[data-wait-list\]:has\(> \.wl-card\) \{[\s\S]*display: flex;[\s\S]*flex-wrap: wrap/);
   assert.match(html, /\[data-wait-list\] > \.booking-table-wrap \{[\s\S]*flex: 1 1 100%/);
   assert.doesNotMatch(html, /\[data-wait-list\][^{]*\{ display: grid/);
+});
+
+test('Queue card, table, and grouped labels render every service item', () => {
+  assert.match(html, /function queueServiceNames\(w\) \{/);
+  assert.match(html, /function queueServicesHtml\(w, variant\) \{/);
+  const table = html.match(/function renderTicketsTable\(groups, now\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
+  const card = html.match(/function ticketCardBodyHtml\(w, elapsedLabel, statusChipHtml, techExtra\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
+  const label = html.match(/function ticketLabelHtml\(w\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
+  assert.match(table, /queueServicesHtml\(w, 'table'\)/);
+  assert.match(card, /queueServicesHtml\(w, 'card'\)/);
+  assert.match(label, /queueServiceNames\(w\)\.join\(', '\)/);
+  const namesSource = html.match(/function queueServiceNames\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const queueServiceNames = new Function('posServiceDisplayName', namesSource + '\nreturn queueServiceNames;')((value) => String(value || '').trim());
+  assert.deepEqual(queueServiceNames({ svc: 'Fallback', items: [{ name: 'Manicure' }, { name: 'Gel polish' }] }), ['Manicure', 'Gel polish']);
+});
+
+test('Technician matching requires skills for every Queue item', () => {
+  const reqSource = html.match(/function reqSkills\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.ok(reqSource);
+  const reqSkills = new Function('SVC_REQ', reqSource + '\nreturn reqSkills;')({ mani: 'Manicure', gel: 'Gel' });
+  assert.deepEqual(reqSkills({ items: [{ name: 'Classic manicure', cat: 'mani' }, { name: 'Gel polish', cat: 'gel' }] }), ['Manicure', 'Gel']);
+  const score = html.match(/function matchScore\(t, w\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(score, /var reqs = reqSkills\(w\);/);
+  assert.match(score, /var missing = reqs\.filter/);
+  assert.match(score, /okSkill: missing\.length === 0/);
+  assert.match(score, /missing: missing/);
 });
 
 test('Queue single-ticket cards have a clear identity, details, note, status, and action hierarchy', () => {
@@ -262,14 +384,186 @@ test('Queue service tickets label the swap action as Change tech', () => {
   assert.doesNotMatch(singleCard, /> Swap<\/button>/);
 });
 
+test('Queue exposes Edit service for every open ticket view and routes it to the service picker', () => {
+  const ticketActions = html.match(/function ticketActionsHtml\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const singleCard = html.match(/function renderSingleTicketCard\(w, now, selW\) \{[\s\S]*?\n      \}\n      \/\/ Multi-ticket order card/)?.[0] || '';
+  const clickHandler = html.match(/\/\* edit queue service \*\/[\s\S]*?\/\* ▶ one-tap assign \*\//)?.[0] || '';
+
+  assert.match(html, /data-queue-service-modal/);
+  assert.match(html, /function queueServiceEditButtonHtml\(w, variant\) \{/);
+  assert.equal((ticketActions.match(/queueServiceEditButtonHtml\(w, 'compact'\)/g) || []).length, 4);
+  assert.equal((singleCard.match(/queueServiceEditButtonHtml\(w, 'card'\)/g) || []).length, 3);
+  assert.match(clickHandler, /closest\('\[data-wservice\]'\)/);
+  assert.match(clickHandler, /openQueueServiceModal\(\+serviceEdit\.getAttribute\('data-wservice'\)\)/);
+  assert.match(html, /data-queue-service-pick/);
+  assert.match(html, /toggleQueueServiceDraft\(servicePick\.getAttribute\('data-queue-service-pick'\)\)/);
+  assert.match(html, /if \(e\.target\.closest\('\[data-queue-service-save\]'\)\) \{ saveQueueServices\(\); return; \}/);
+  assert.doesNotMatch(html, /chooseQueueService\(servicePick\.getAttribute/);
+});
+
+test('Edit service is a multi-select draft that saves explicitly', () => {
+  assert.match(html, /data-queue-service-summary/);
+  assert.match(html, /data-queue-service-error/);
+  assert.match(html, /data-queue-service-save/);
+  assert.match(html, /var queueServiceFor = null, queueServiceDraftIds = \[\];/);
+  assert.match(html, /function queueSelectedServices\(\) \{/);
+  assert.match(html, /function toggleQueueServiceDraft\(serviceId\) \{/);
+  assert.match(html, /function renderQueueServiceDraft\(w\) \{/);
+  assert.match(html, /function saveQueueServices\(\) \{/);
+  const open = html.match(/function openQueueServiceModal\(wid\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(open, /queueServiceOriginalServices = \(w\.items \|\| \[\]\)\.map/);
+  assert.match(open, /queueServiceDraftIds = queueServiceOriginalServices\.map/);
+});
+
+test('Edit service rejects empty selection and preserves current rows when catalog is unavailable', () => {
+  assert.match(html, /var queueServiceCatalogReady = false;/);
+  assert.match(html, /var queueServiceOriginalServices = \[\];/);
+  const save = html.match(/function saveQueueServices\(\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(save, /if \(!services\.length\)/);
+  assert.match(save, /At least one service is required\./);
+  const render = html.match(/function renderQueueServiceDraft\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(render, /saveButton\.disabled = !selected\.length \|\| !queueServiceCatalogReady/);
+  assert.match(html, /Current service unavailable/);
+});
+
+test('Explicit Save updates all selected services on a session-only walk-in', () => {
+  const changeSource = html.match(/function changeQueueTicketServices\(w, services\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const logs = [];
+  const changeQueueTicketServices = new Function(
+    'queueItemForService', 'normalizeQueueTicketServices', 'wlog',
+    changeSource + '\nreturn changeQueueTicketServices;'
+  )(
+    (service, techId) => ({ serviceId: service.id, serviceTicketId: null, name: service.label, price: service.price, durationMin: service.durationMin, techId, cat: '' }),
+    (ticket) => {
+      ticket.serviceTicketId = null;
+      ticket.svc = ticket.items[0] ? ticket.items[0].name : '';
+      ticket.durationMin = ticket.items.reduce((sum, item) => sum + item.durationMin, 0);
+      return ticket;
+    },
+    (ticket, message) => logs.push(message)
+  );
+  const ticket = { name: 'Walk-in', bookingId: null, techId: 't1', reqTech: null, svc: 'Old', items: [{ name: 'Old' }] };
+  const result = changeQueueTicketServices(ticket, [
+    { id: 'svc-1', label: 'Manicure', price: 25, durationMin: 30 },
+    { id: 'svc-2', label: 'Gel', price: 20, durationMin: 20 }
+  ]);
+  assert.equal(result.ok, true);
+  assert.deepEqual(ticket.items.map((item) => item.serviceId), ['svc-1', 'svc-2']);
+  assert.equal(ticket.durationMin, 50);
+  assert.match(logs[0], /Manicure, Gel/);
+});
+
+test('Queue multi-service edit preserves, creates, and cancels linked Booking tickets atomically', () => {
+  const idSource = html.match(/function nextBookingServiceTicketId\(usedIds\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const bookingPatchSource = html.match(/function queueBookingServicesPatch\(booking, w, services\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const changeSource = html.match(/function changeQueueTicketServices\(w, services\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const booking = {
+    id: 'booking-1',
+    tickets: [
+      { id: 'ticket-1', serviceId: 'svc-keep', serviceName: 'Keep', price: 20, durationMin: 20, technicianId: 't1', status: 'confirmed' },
+      { id: 'ticket-2', serviceId: 'svc-remove', serviceName: 'Remove', price: 15, durationMin: 15, technicianId: 't1', status: 'confirmed' },
+      { id: 'ticket-3', serviceId: 'svc-other', serviceName: 'Other tech', price: 30, durationMin: 30, technicianId: 't2', status: 'confirmed' }
+    ]
+  };
+  const selected = [
+    { id: 'svc-keep', label: 'Keep', price: 20, durationMin: 20 },
+    { id: 'svc-new', label: 'New', price: 40, durationMin: 45 }
+  ];
+  const updates = [];
+  const logs = [];
+  let reloads = 0;
+  const changeQueueTicketServices = new Function(
+    'queueTicketServiceIds',
+    'posServiceDisplayName',
+    'queueItemForService',
+    'techName',
+    'posBookingById',
+    'appointmentStore',
+    'salonCatalog',
+    'reloadAppointmentSnapshot',
+    'normalizeQueueTicketServices',
+    'wlog',
+    idSource + '\n' + bookingPatchSource + '\n' + changeSource + '\nreturn changeQueueTicketServices;'
+  )(
+    (ticket) => ticket.serviceTicketIds.slice(),
+    (value) => String(value || '').trim(),
+    (service, techId, serviceTicketId) => ({ serviceId: service.id, serviceTicketId, name: service.label, price: service.price, durationMin: service.durationMin, techId, cat: '' }),
+    (id) => id === 't1' ? 'Kim' : 'Anyone',
+    (id) => id === booking.id ? booking : null,
+    { update(id, patch) { updates.push({ id, patch }); return { ok: true }; } },
+    { services: [] },
+    () => { reloads += 1; },
+    (ticket) => {
+      ticket.serviceTicketId = ticket.serviceTicketIds[0] || null;
+      ticket.svc = ticket.items[0] ? ticket.items[0].name : '';
+      ticket.durationMin = ticket.items.reduce((sum, item) => sum + item.durationMin, 0);
+      return ticket;
+    },
+    (ticket, message) => { logs.push(message); }
+  );
+  const ticket = {
+    id: 7,
+    bookingId: booking.id,
+    serviceTicketId: 'ticket-1',
+    serviceTicketIds: ['ticket-1', 'ticket-2'],
+    svc: 'Keep',
+    durationMin: 35,
+    techId: 't1',
+    reqTech: 't1',
+    items: [
+      { serviceId: 'svc-keep', serviceTicketId: 'ticket-1', name: 'Keep', price: 20, durationMin: 20, techId: 't1', cat: 'mani' },
+      { serviceId: 'svc-remove', serviceTicketId: 'ticket-2', name: 'Remove', price: 15, durationMin: 15, techId: 't1', cat: 'gel' }
+    ]
+  };
+
+  assert.equal(changeQueueTicketServices(ticket, selected).ok, true);
+  assert.deepEqual(ticket.serviceTicketIds, ['ticket-1', 'ticket-4']);
+  assert.deepEqual(ticket.items.map((item) => item.serviceId), ['svc-keep', 'svc-new']);
+  assert.equal(ticket.durationMin, 65);
+  assert.equal(reloads, 1);
+  assert.equal(updates[0].patch.tickets.find((item) => item.id === 'ticket-2').status, 'cancelled');
+  assert.equal(updates[0].patch.tickets.find((item) => item.id === 'ticket-3').status, 'confirmed');
+  assert.equal(updates[0].patch.tickets.find((item) => item.id === 'ticket-4').serviceId, 'svc-new');
+  assert.match(logs[0], /Keep, New/);
+});
+
+test('Queue multi-service edit leaves Queue state unchanged when Booking persistence fails', () => {
+  const idSource = html.match(/function nextBookingServiceTicketId\(usedIds\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const bookingPatchSource = html.match(/function queueBookingServicesPatch\(booking, w, services\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const changeSource = html.match(/function changeQueueTicketServices\(w, services\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const booking = { id: 'booking-2', tickets: [{ id: 'ticket-1', serviceId: 'svc-old', serviceName: 'Old', price: 20, durationMin: 20, technicianId: 't1', status: 'confirmed' }] };
+  const ticket = { id: 8, bookingId: booking.id, serviceTicketId: 'ticket-1', serviceTicketIds: ['ticket-1'], svc: 'Old', durationMin: 20, techId: 't1', reqTech: 't1', items: [{ serviceId: 'svc-old', serviceTicketId: 'ticket-1', name: 'Old', price: 20, durationMin: 20, techId: 't1', cat: '' }], log: [] };
+  const before = structuredClone(ticket);
+  const changeQueueTicketServices = new Function(
+    'queueTicketServiceIds', 'posServiceDisplayName', 'queueItemForService', 'techName', 'posBookingById',
+    'appointmentStore', 'salonCatalog', 'reloadAppointmentSnapshot', 'normalizeQueueTicketServices', 'wlog',
+    idSource + '\n' + bookingPatchSource + '\n' + changeSource + '\nreturn changeQueueTicketServices;'
+  )(
+    (row) => row.serviceTicketIds.slice(),
+    (value) => String(value || '').trim(),
+    (service, techId, serviceTicketId) => ({ serviceId: service.id, serviceTicketId, name: service.label, price: service.price, durationMin: service.durationMin, techId, cat: '' }),
+    () => 'Kim',
+    () => booking,
+    { update() { return { ok: false, error: { message: 'Store unavailable' } }; } },
+    { services: [] },
+    () => assert.fail('reload must not run'),
+    () => assert.fail('normalize must not run'),
+    () => assert.fail('log must not run')
+  );
+  const result = changeQueueTicketServices(ticket, [{ id: 'svc-new', label: 'New', price: 40, durationMin: 45 }]);
+  assert.equal(result.ok, false);
+  assert.equal(result.error.message, 'Store unavailable');
+  assert.deepEqual(ticket, before);
+});
+
 test('Queue waiting tickets with a technician also expose Change tech before service starts', () => {
   const ticketActions = html.match(/function ticketActionsHtml\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
   const singleCard = html.match(/function renderSingleTicketCard\(w, now, selW\) \{[\s\S]*?\n      \}\n      \/\/ Multi-ticket order card/)?.[0] || '';
 
-  assert.match(ticketActions, /data-wstart[\s\S]*?<\/button>' \+\n\s*'<button class="pos-btn pos-btn-sm queue-action-muted" data-wswap[\s\S]*?title="Change tech"[\s\S]*?Change tech<\/button>' \+\n\s*'<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel/);
+  assert.match(ticketActions, /data-wstart[\s\S]*?<\/button>' \+\n\s*'<button class="pos-btn pos-btn-sm queue-action-muted" data-wswap[\s\S]*?title="Change tech"[\s\S]*?Change tech<\/button>' \+\n\s*queueServiceEditButtonHtml\(w, 'compact'\) \+\n\s*'<button class="pos-btn pos-btn-sm queue-action-danger" data-wcancel/);
   assert.match(singleCard, /class="perf-cta-btn perf-cta-btn-primary" data-wstart/);
   assert.doesNotMatch(singleCard, /class="perf-cta-btn perf-cta-btn-primary" data-wswap[\s\S]{0,120}Assign tech/);
-  assert.match(singleCard, /data-wstart[\s\S]*?<\/button>'\) \+\n\s*\(needsTechPicker \? '' : '<button class="perf-cta-btn perf-cta-btn-muted" data-wswap[\s\S]*?title="Change tech"[\s\S]*?Change tech<\/button>'\) \+\n\s*'<button class="perf-cta-btn perf-cta-btn-danger" data-wcancel/);
+  assert.match(singleCard, /data-wstart[\s\S]*?<\/button>'\) \+\n\s*\(needsTechPicker \? '' : '<button class="perf-cta-btn perf-cta-btn-muted" data-wswap[\s\S]*?title="Change tech"[\s\S]*?Change tech<\/button>'\) \+\n\s*queueServiceEditButtonHtml\(w, 'card'\) \+\n\s*'<button class="perf-cta-btn perf-cta-btn-danger" data-wcancel/);
 });
 
 test('Assign tech keeps the ticket waiting and makes Start use the assigned technician', () => {
@@ -280,7 +574,7 @@ test('Assign tech keeps the ticket waiting and makes Start use the assigned tech
   const chooseSwap = html.match(/function chooseSwapTech\(tid\) \{[\s\S]*?\n      \}\n\n      document\.addEventListener/)?.[0] || '';
   const startHandler = html.match(/\/\* ▶ one-tap assign \*\/[\s\S]*?\/\* ⇄ swap tech \*\//)?.[0] || '';
 
-  assert.match(assignWaiting, /w\.techId = tid/);
+  assert.match(assignWaiting, /w = applyQueueTechnician\(w, tid\)/);
   assert.doesNotMatch(assignWaiting, /w\.status = 'service'/);
   assert.doesNotMatch(assignWaiting, /pageTech/);
   assert.match(waitingStart, /if \(w\.techId\) return techById\(w\.techId\)/);
@@ -294,6 +588,61 @@ test('Assign tech keeps the ticket waiting and makes Start use the assigned tech
   assert.match(chooseSwap, /if \(w\.status === 'waiting'\) \{[\s\S]*assignWaitingTech\(w, tid\);[\s\S]*return;/);
   assert.match(startHandler, /var stech = sw && waitingStartTech\(sw\)/);
   assert.match(startHandler, /fAssign\(sw, stech\.id\)/);
+});
+
+test('Changing technician merges same-order Queue tickets without losing services', () => {
+  const mergeSource = html.match(/function mergeQueueTicketForAssignment\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const applySource = html.match(/function applyQueueTechnician\(w, tid\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.ok(mergeSource);
+  assert.ok(applySource);
+  assert.match(mergeSource, /String\(candidate\.orderId\) === String\(w\.orderId\)/);
+  assert.match(mergeSource, /queueTicketAssignment\(candidate\) === queueTicketAssignment\(w\)/);
+  assert.match(mergeSource, /serviceTicketId \|\| item\.serviceId/);
+  assert.match(mergeSource, /service: 3, waiting: 2, ready: 1/);
+  assert.match(mergeSource, /Math\.min/);
+  assert.match(mergeSource, /Merged technician ticket/);
+  const waitlist = [
+    {
+      id: 1, orderId: 'order-1', status: 'ready', techId: 't2', reqTech: 't2', atMs: 200, readyAtMs: 500,
+      serviceTicketIds: ['ticket-a'], items: [{ serviceId: 'svc-a', serviceTicketId: 'ticket-a', name: 'A', techId: 't2' }], log: []
+    },
+    {
+      id: 2, orderId: 'order-1', status: 'service', techId: 't2', reqTech: 't2', atMs: 100, svcAtMs: 300,
+      serviceTicketIds: ['ticket-b'], items: [{ serviceId: 'svc-b', serviceTicketId: 'ticket-b', name: 'B', techId: 't2' }], log: []
+    }
+  ];
+  const mergeQueueTicketForAssignment = new Function(
+    'WAITLIST', 'ticketOpen', 'queueTicketAssignment', 'queueTicketServiceIds', 'normalizeQueueTicketServices', 'wlog',
+    mergeSource + '\nreturn mergeQueueTicketForAssignment;'
+  )(
+    waitlist,
+    (ticket) => ticket.status !== 'completed' && ticket.status !== 'cancelled',
+    (ticket) => String(ticket.techId || ticket.reqTech || 'anyone'),
+    (ticket) => ticket.serviceTicketIds.slice(),
+    (ticket) => { ticket.serviceTicketId = ticket.serviceTicketIds[0] || null; return ticket; },
+    (ticket, message) => ticket.log.push({ message })
+  );
+  const survivor = mergeQueueTicketForAssignment(waitlist[0]);
+  assert.equal(survivor.status, 'service');
+  assert.deepEqual(survivor.items.map((item) => item.serviceId), ['svc-a', 'svc-b']);
+  assert.deepEqual(survivor.serviceTicketIds, ['ticket-a', 'ticket-b']);
+  assert.equal(survivor.atMs, 100);
+  assert.equal(survivor.svcAtMs, 300);
+  assert.equal(waitlist[1].status, 'cancelled');
+  assert.equal(waitlist[1].items.length, 0);
+  assert.match(survivor.log.at(-1).message, /Merged technician ticket #2/);
+  const assignWaiting = html.match(/function assignWaitingTech\(w, tid\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  const assignService = html.match(/function fAssign\(w, tid\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(assignWaiting, /applyQueueTechnician\(w, tid\)/);
+  assert.match(assignService, /applyQueueTechnician\(w, tid\)/);
+  assert.match(html, /function techAvailableForQueueTicket\(tid, w\) \{/);
+  const swapOptions = html.match(/function swapTechOptionsHtml\(w\) \{[\s\S]*?\n      \}/)?.[0] || '';
+  assert.match(swapOptions, /techAvailableForQueueTicket\(t\.id, w\)/);
+  const chooseSwap = html.match(/function chooseSwapTech\(tid\) \{[\s\S]*?\n      \}\n\n      \/\* ── Queue service picker/)?.[0] || '';
+  assert.match(chooseSwap, /w = assignWaitingTech\(w, tid\)/);
+  assert.match(chooseSwap, /w = fAssign\(w, tid\)/);
+  const startHandler = html.match(/\/\* ▶ one-tap assign \*\/[\s\S]*?\/\* ⇄ swap tech \*\//)?.[0] || '';
+  assert.match(startHandler, /sw = fAssign\(sw, stech\.id\)/);
 });
 
 test('Start button click is isolated from the change-tech modal route', () => {
@@ -487,7 +836,8 @@ test('Check-in "no booking found" path has a service/technician ticket picker li
   assert.match(html, /data-ci-ticket-add/);
   assert.match(html, /data-ci-ticket-remove/);
   const addWalkInFn = html.match(/function addWalkIn\(name, phone, tickets\) \{[\s\S]*?\n {6}\}/)?.[0] || '';
-  assert.match(addWalkInFn, /var list = \(tickets && tickets\.length\) \? tickets : \[null\];/);
+  assert.match(addWalkInFn, /walkInTicketGroups\(tickets\)\.forEach/);
+  assert.match(addWalkInFn, /WAITLIST\.push\(normalizeQueueTicketServices\(w\)\);/);
 });
 
 test('Check-in request inbox has App/QR sample data and a Card/Table view switch', () => {
