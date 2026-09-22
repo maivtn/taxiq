@@ -77,7 +77,7 @@ test('renders Sidebar Config settings for hiding shared sidebar items', () => {
     ['dashboard', 'Dashboard'],
     ['payments', 'Payments &amp; Payouts'],
     ['review', 'Reviews'],
-    ['stations', 'Stations &amp; QR Codes'],
+    ['stations', 'One QR'],
     ['booking', 'Ai Hub'],
     ['community', 'Community'],
     ['reward', 'Reward'],

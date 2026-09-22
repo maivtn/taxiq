@@ -53,7 +53,7 @@
       { label: 'Direct Savings' }
     ] },
     { type: 'item', key: 'review', label: 'Reviews', icon: 'star', page: 'review' },
-    { type: 'item', key: 'stations', label: 'Stations & QR Codes', icon: 'qr-code', page: 'stations' },
+    { type: 'item', key: 'stations', label: 'One QR', icon: 'qr-code', page: 'stations' },
     { type: 'group', key: 'booking', label: 'Ai Hub', icon: 'calendar-days', page: 'booking', items: [
       { label: 'Booking', tab: 'booking' },
       { label: 'Customers', tab: 'customers' },

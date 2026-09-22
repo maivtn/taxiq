@@ -183,7 +183,7 @@ test('renders module permissions as sidebar parent and child menus', () => {
 
   assert.doesNotMatch(html, /data-permission-parent="home"|data-module="home"|Toggle Home access|<span class="permission-title">Home<\/span>|'home'/);
 
-  for (const [parent, label] of [['dashboard', 'Dashboard'], ['staff', 'Sub Account'], ['payments', 'Payments &amp; Payouts'], ['stations', 'Stations &amp; QR Codes'], ['booking', 'Ai Hub'], ['community', 'Community'], ['reward', 'Reward'], ['pos', 'POS'], ['settings', 'Settings'], ['support', 'Support']]) {
+  for (const [parent, label] of [['dashboard', 'Dashboard'], ['staff', 'Sub Account'], ['payments', 'Payments &amp; Payouts'], ['stations', 'One QR'], ['booking', 'Ai Hub'], ['community', 'Community'], ['reward', 'Reward'], ['pos', 'POS'], ['settings', 'Settings'], ['support', 'Support']]) {
     assert.match(html, new RegExp(`<section class="permission-group[^"]*" data-permission-parent="${parent}"[\\s\\S]*?<span class="permission-title">${label}<\\/span>`));
   }
   assert.doesNotMatch(html, /data-permission-parent="packages"|data-module="packages(?:Overview|Subscriptions|AiVoicePlans|History)?"|Toggle Package Management access|<span class="permission-title">Package Management<\/span>/);
