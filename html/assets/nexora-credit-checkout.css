@@ -1,0 +1,114 @@
+    #package-credit-checkout .sms-credit-modal { position:fixed; inset:0; z-index:150; display:grid; place-items:center; padding:18px; background:rgba(8,31,73,.48); backdrop-filter:blur(8px); }
+    #package-credit-checkout .sms-credit-modal[hidden] { display:none; }
+    #package-credit-checkout .sms-credit-dialog { display:flex; width:min(100%,720px); max-height:min(90vh,760px); flex-direction:column; overflow:hidden; border:1px solid var(--nexora-border); border-radius:16px; background:#fff; box-shadow:0 28px 80px rgba(8,31,73,.28); }
+    #package-credit-checkout .sms-credit-modal-head { display:flex; flex:0 0 auto; align-items:center; justify-content:space-between; gap:16px; border-bottom:1px solid var(--nexora-rule); background:linear-gradient(180deg,#fff,#f8fbff); padding:17px 20px; }
+    #package-credit-checkout .sms-credit-modal-title { display:flex; align-items:center; gap:9px; color:var(--nexora-text); font-size:17px; font-weight:900; }
+    #package-credit-checkout .sms-credit-modal-title .marketing-icon { color:var(--nexora-brand); }
+    #package-credit-checkout .sms-credit-modal-sub { margin-top:4px; color:var(--nexora-muted); font-size:12px; font-weight:600; }
+    #package-credit-checkout .sms-credit-close { display:grid; width:34px; height:34px; flex:0 0 34px; place-items:center; border:1px solid var(--nexora-border); border-radius:50%; background:#fff; color:var(--nexora-muted); cursor:pointer; transition:.18s ease; }
+    #package-credit-checkout .sms-credit-close:hover { border-color:rgba(70,72,216,.35); background:var(--nexora-surface-muted); color:var(--nexora-text); }
+    #package-credit-checkout .sms-credit-modal-body { overflow-y:auto; background:#f8fafc; padding:18px 20px 20px; }
+    #package-credit-checkout .sms-credit-section + .sms-credit-section { margin-top:22px; }
+    #package-credit-checkout .sms-credit-section-label { margin-bottom:10px; color:var(--nexora-subtle); font-size:12px; font-weight:900; letter-spacing:.08em; text-transform:uppercase; }
+    #package-credit-checkout .sms-credit-package-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:10px; }
+    #package-credit-checkout .sms-credit-package { position:relative; min-width:0; border:1px solid var(--nexora-border); border-radius:12px; background:#fff; padding:13px; color:var(--nexora-text); text-align:left; cursor:pointer; transition:border-color .18s ease, box-shadow .18s ease, transform .18s ease; }
+    #package-credit-checkout .sms-credit-package:hover { border-color:rgba(70,72,216,.45); transform:translateY(-1px); }
+    #package-credit-checkout .sms-credit-package.is-selected { border-color:var(--nexora-brand); background:rgba(70,72,216,.055); box-shadow:0 8px 18px rgba(70,72,216,.12); }
+    #package-credit-checkout .sms-credit-package.is-featured::after { position:absolute; top:9px; right:10px; border-radius:999px; background:var(--nexora-brand); padding:3px 6px; color:#fff; content:'Best value'; font-size:12px; font-weight:900; letter-spacing:.04em; text-transform:uppercase; }
+    #package-credit-checkout .sms-credit-package-name { display:block; color:var(--nexora-muted); font-size:12px; font-weight:800; letter-spacing:.04em; text-transform:uppercase; }
+    #package-credit-checkout .sms-credit-package-amount { display:block; margin-top:5px; color:var(--nexora-text); font-size:21px; font-weight:900; line-height:1.1; }
+    #package-credit-checkout .sms-credit-package-price { display:block; margin-top:6px; color:var(--nexora-brand); font-size:14px; font-weight:900; }
+    #package-credit-checkout .sms-credit-package-note { display:block; margin-top:4px; color:var(--nexora-subtle); font-size:12px; font-weight:600; }
+    #package-credit-checkout .sms-credit-package-check { position:absolute; right:11px; bottom:10px; display:grid; width:20px; height:20px; place-items:center; border:1px solid var(--nexora-border); border-radius:50%; background:#fff; color:transparent; font-size:12px; font-weight:900; opacity:.75; transition:background .18s ease, border-color .18s ease, color .18s ease, transform .18s ease; }
+    #package-credit-checkout .sms-credit-package.is-selected .sms-credit-package-check { border-color:var(--nexora-brand); background:var(--nexora-brand); color:#fff; opacity:1; transform:scale(1.05); }
+    #package-credit-checkout .sms-credit-payment-list { display:grid; gap:8px; }
+    #package-credit-checkout .sms-credit-payment { display:flex; width:100%; align-items:center; justify-content:space-between; gap:12px; border:1px solid var(--nexora-border); border-radius:11px; background:#fff; padding:8px 11px; color:var(--nexora-text); text-align:left; cursor:pointer; transition:.18s ease; }
+    #package-credit-checkout .sms-credit-payment:hover { border-color:rgba(70,72,216,.45); }
+    #package-credit-checkout .sms-credit-payment.is-selected { border-color:var(--nexora-brand); background:rgba(70,72,216,.065); box-shadow:0 5px 12px rgba(70,72,216,.08); }
+    #package-credit-checkout .sms-credit-payment-main { display:flex; min-width:0; align-items:center; gap:9px; }
+    #package-credit-checkout .sms-credit-radio { display:grid; width:15px; height:15px; flex:0 0 15px; place-items:center; border:2px solid #cbd5e1; border-radius:50%; }
+    #package-credit-checkout .sms-credit-payment.is-selected .sms-credit-radio { border-color:var(--nexora-brand); }
+    #package-credit-checkout .sms-credit-payment.is-selected .sms-credit-radio::after { width:7px; height:7px; border-radius:50%; background:var(--nexora-brand); content:''; }
+    #package-credit-checkout .sms-credit-token { display:block; width:28px; height:28px; flex:0 0 28px; border:1px solid rgba(15,23,42,.08); border-radius:50%; background:#fff; object-fit:contain; padding:1px; }
+    #package-credit-checkout .sms-credit-payment-name { font-size:12px; font-weight:800; }
+    #package-credit-checkout .sms-credit-payment-balance { flex:0 0 auto; color:var(--nexora-muted); text-align:right; }
+    #package-credit-checkout .sms-credit-payment-balance span { display:block; color:var(--nexora-subtle); font-size:12px; font-weight:800; letter-spacing:.05em; text-transform:uppercase; }
+    #package-credit-checkout .sms-credit-payment-balance strong { display:block; margin-top:2px; color:var(--nexora-text); font-size:12px; font-weight:900; }
+    #package-credit-checkout .sms-credit-card-form { margin-top:12px; border:1px solid #f97316; border-radius:9px; background:#fff; padding:12px; }
+    #package-credit-checkout .sms-credit-card-form[hidden] { display:none; }
+    #package-credit-checkout .sms-credit-card-form-head { display:flex; align-items:center; gap:7px; color:var(--nexora-text); font-size:14px; font-weight:800; }
+    #package-credit-checkout .sms-credit-card-form-head .marketing-icon { color:#64748b; }
+    #package-credit-checkout .sms-credit-card-required-note { margin-top:12px; color:var(--nexora-muted); font-size:12px; }
+    #package-credit-checkout .sms-credit-card-required-note strong,
+    #package-credit-checkout .sms-credit-card-label span { color:#dc2626; }
+    #package-credit-checkout .sms-credit-card-fields { display:grid; gap:11px; margin-top:12px; }
+    #package-credit-checkout .sms-credit-card-field { display:grid; gap:6px; min-width:0; }
+    #package-credit-checkout .sms-credit-card-label { color:#273244; font-size:12px; font-weight:800; }
+    #package-credit-checkout .sms-credit-card-input,
+    #package-credit-checkout .sms-credit-card-select { width:100%; min-height:35px; border:1px solid #d8dee8; border-radius:8px; background:#fff; padding:8px 10px; color:var(--nexora-text); font-size:12px; outline:0; }
+    #package-credit-checkout .sms-credit-card-input:focus,
+    #package-credit-checkout .sms-credit-card-select:focus { border-color:var(--nexora-brand); box-shadow:0 0 0 3px rgba(70,72,216,.1); }
+    #package-credit-checkout .sms-credit-card-input::placeholder { color:#94a3b8; }
+    #package-credit-checkout .sms-credit-card-input-wrap { position:relative; }
+    #package-credit-checkout .sms-credit-card-input-wrap .marketing-icon { position:absolute; top:50%; left:10px; width:17px; height:17px; transform:translateY(-50%); color:#64748b; pointer-events:none; }
+    #package-credit-checkout .sms-credit-card-input-wrap .sms-credit-card-input { padding-left:34px; }
+    #package-credit-checkout .sms-credit-card-row { display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    #package-credit-checkout .sms-credit-card-error { min-height:16px; color:#b91c1c; font-size:12px; font-weight:700; }
+    #package-credit-checkout .sms-credit-invoice { border:1px solid var(--nexora-border); border-radius:12px; background:#fff; padding:13px; }
+    #package-credit-checkout .sms-credit-invoice-row { display:flex; align-items:center; justify-content:space-between; gap:12px; color:var(--nexora-muted); font-size:12px; font-weight:600; }
+    #package-credit-checkout .sms-credit-invoice-row + .sms-credit-invoice-row { margin-top:8px; }
+    #package-credit-checkout .sms-credit-invoice-row strong { color:var(--nexora-text); font-weight:900; }
+    #package-credit-checkout .sms-credit-invoice-total { margin-top:10px; border-top:1px solid var(--nexora-rule); padding-top:10px; color:var(--nexora-text); font-size:14px; font-weight:900; }
+    #package-credit-checkout .sms-credit-invoice-total strong { color:var(--nexora-brand); font-size:16px; }
+    #package-credit-checkout .sms-credit-modal-foot { display:flex; flex:0 0 auto; align-items:center; gap:10px; border-top:1px solid var(--nexora-rule); background:#fff; padding:14px 20px; }
+    #package-credit-checkout .sms-credit-modal-foot .btn-outline { flex:1; color:var(--nexora-muted); }
+    #package-credit-checkout .sms-credit-modal-foot .btn-primary { flex:2; justify-content:center; }
+    @media (max-width:560px) {
+      #package-credit-checkout .sms-credit-card-row { grid-template-columns:1fr; }
+    }
+
+#package-credit-checkout .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      border: 0;
+      border-radius: 8px;
+      background: var(--nx-brand);
+      padding: 10px 16px;
+      color: #fff;
+      font-size: 13px;
+      font-weight: 900;
+      cursor: pointer;
+      font-family: inherit;
+      box-shadow: 0 10px 22px rgba(70, 72, 216, 0.2);
+      transition: transform 0.15s, background 0.2s, opacity 0.2s;
+    }
+#package-credit-checkout .btn-outline {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid var(--nexora-border);
+      border-radius: 8px;
+      background: #fff;
+      padding: 10px 16px;
+      color: var(--nexora-brand);
+      font-size: 13px;
+      font-weight: 800;
+      cursor: pointer;
+      font-family: inherit;
+      text-decoration: none;
+      transition: all 0.15s;
+    }
+#package-credit-checkout .sms-credit-card-select {
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%2364748b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 16px center;
+  background-size: 16px;
+  padding-right: 44px;
+}
+#package-credit-checkout .sms-credit-modal-foot button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 40px; border-radius: 9px; padding: 10px 16px; font: 600 13px Inter, sans-serif; cursor: pointer; }
+#package-credit-checkout .btn-primary { border: 0; background: linear-gradient(90deg, var(--nexora-electric), var(--nexora-violet)); color: #fff; }
+#package-credit-checkout .btn-outline { border: 1px solid var(--nexora-border); background: #fff; }
+#package-credit-checkout .marketing-icon { width: 18px; height: 18px; flex-shrink: 0; }
+#package-credit-checkout :focus-visible { outline: 3px solid #aeb4ff; outline-offset: 2px; }

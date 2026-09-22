@@ -1,0 +1,98 @@
+.ads-credit-section { margin-top: 28px; }
+.ads-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 16px; }
+.ads-heading h2, .ads-dialog h2 { margin: 5px 0 0; color: var(--nexora-text); font-size: 22px; font-weight: 600; }
+.ads-heading h3 { margin: 0; color: var(--nexora-text); font-size: 16px; font-weight: 600; }
+.ads-heading p { margin: 6px 0 0; color: var(--nexora-muted); font-size: 13px; line-height: 1.5; }
+.ads-demo-badge { display: inline-flex; flex-shrink: 0; border: 1px solid var(--nexora-border); border-radius: 999px; padding: 6px 10px; background: #fff; color: var(--nexora-muted); font-size: 11px; }
+.ads-summary { display: grid; grid-template-columns: minmax(260px, .9fr) minmax(0, 1.5fr); overflow: hidden; border: 1px solid var(--nexora-border); border-radius: 16px; background: #fff; box-shadow: var(--nexora-card-shadow); }
+.ads-wallet { padding: 26px; color: #fff; background: linear-gradient(130deg, #3436ac, #4648d8 60%, #6252db); }
+.ads-wallet-label { display: flex; align-items: center; gap: 10px; font-size: 13px; }
+.ads-wallet-label svg { width: 20px; height: 20px; }
+.ads-wallet-value { display: block; margin-top: 17px; font-size: 40px; font-weight: 600; letter-spacing: -.04em; font-variant-numeric: tabular-nums; }
+.ads-wallet p { margin: 6px 0 22px; font-size: 12px; color: #eeefff; }
+.ads-button { display: inline-flex; align-items: center; justify-content: center; gap: 8px; min-height: 42px; border: 1px solid transparent; border-radius: 9px; padding: 10px 16px; background: var(--nexora-brand); color: #fff; font: 600 13px Inter, sans-serif; cursor: pointer; }
+.ads-button svg { width: 16px; height: 16px; }
+.ads-button-light { background: #fff; color: #393bc8; }
+.ads-button-secondary { background: #fff; border-color: var(--nexora-border); color: var(--nexora-text); }
+.ads-button:disabled { opacity: .45; cursor: not-allowed; }
+.ads-wallet-note { display: block; margin-top: 12px; color: #eeefff; font-size: 11px; }
+.ads-summary-detail { padding: 26px; }
+.ads-metrics { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; padding-bottom: 20px; border-bottom: 1px solid var(--nexora-border); }
+.ads-metrics span, .ads-metrics small { display: block; color: var(--nexora-muted); font-size: 12px; }
+.ads-metrics strong { display: block; margin: 7px 0; color: var(--nexora-text); font-size: 26px; font-weight: 600; }
+.ads-metrics small { font-size: 11px; line-height: 1.5; }
+.ads-info { display: flex; align-items: flex-start; gap: 10px; margin-top: 18px; }
+.ads-info svg { flex-shrink: 0; width: 18px; height: 18px; color: var(--nexora-brand); }
+.ads-info p { margin: 0; color: var(--nexora-text); font-size: 13px; line-height: 1.65; }
+.ads-muted { color: var(--nexora-muted); font-size: 12px; line-height: 1.65; }
+.ads-status:empty { display: none; }
+.ads-status { margin-top: 14px; border: 1px solid #a7dfc8; border-radius: 10px; padding: 14px; background: #f0fcf5; color: #176143; font-size: 13px; }
+.ads-explainer { margin-top: 16px; border: 1px solid var(--nexora-border); border-radius: 12px; padding: 16px 20px; background: #fff; }
+.ads-explainer summary, .ads-terms summary { color: var(--nexora-brand); font-size: 13px; font-weight: 600; cursor: pointer; }
+.ads-modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; margin: 20px 0; }
+.ads-modes h3 { margin: 0 0 8px; font-size: 13px; }
+.ads-modes p, .ads-terms p { margin: 8px 0; color: var(--nexora-muted); font-size: 12px; line-height: 1.65; }
+.ads-models { display: flex; flex-wrap: wrap; gap: 8px; }
+.ads-models span { border-radius: 7px; padding: 8px 10px; background: #f3f4ff; color: var(--nexora-muted); font-size: 11px; }
+.ads-models b { color: var(--nexora-brand); margin-right: 4px; }
+.ads-history { margin-top: 22px; overflow: hidden; border: 1px solid var(--nexora-border); border-radius: 14px; background: #fff; }
+.ads-history > .ads-heading { margin: 0; padding: 20px; }
+.ads-table-scroll { overflow-x: auto; }
+.ads-table { width: 100%; border-collapse: collapse; text-align: left; font-size: 12px; color: var(--nexora-text); }
+.ads-table th { background: #f8f9fc; color: var(--nexora-muted); font-size: 11px; font-weight: 500; }
+.ads-table th, .ads-table td { padding: 14px 20px; border-top: 1px solid var(--nexora-border); vertical-align: top; }
+.ads-table td:nth-child(2), .ads-table td:nth-child(3), .ads-table td:nth-child(4) { white-space: nowrap; }
+.ads-table td:first-child strong { font-weight: 500; }
+.ads-table summary { color: var(--nexora-brand); cursor: pointer; white-space: nowrap; }
+.ads-table details p { min-width: 150px; max-width: 240px; line-height: 1.65; }
+.ads-row-status { display: block; margin-top: 6px; color: var(--nexora-muted); font-size: 10px; }
+.ads-positive { color: #168554; font-weight: 600; }
+.ads-history-note { margin: 0; padding: 12px 20px; border-top: 1px solid var(--nexora-border); background: #fcfcff; }
+.ads-dialog { width: min(640px, calc(100% - 32px)); max-height: calc(100dvh - 32px); border: 1px solid var(--nexora-border); border-radius: 18px; padding: 0; color: var(--nexora-text); background: #fff; box-shadow: 0 24px 80px #081f4940; }
+.ads-dialog::backdrop { background: #10182880; backdrop-filter: blur(4px); }
+.ads-dialog [hidden] { display: none; }
+.ads-dialog-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; padding: 22px 24px; border-bottom: 1px solid var(--nexora-border); }
+.ads-close { display: grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px; border: 1px solid var(--nexora-border); border-radius: 50%; color: var(--nexora-muted); background: #fff; cursor: pointer; }
+.ads-close svg { width: 18px; height: 18px; }
+.ads-dialog-body { display: grid; gap: 20px; padding: 20px 24px; }
+.ads-demo-notice { margin: 0; padding: 12px; border-radius: 9px; background: #f3f4ff; color: var(--nexora-muted); font-size: 12px; line-height: 1.6; }
+.ads-amount-fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
+.ads-amount-fieldset legend { margin-bottom: 12px; font-size: 13px; font-weight: 600; }
+.ads-amount-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+.ads-amount-options button { min-height: 46px; border: 1px solid var(--nexora-border); border-radius: 9px; background: #fff; color: var(--nexora-text); font: 600 14px Inter, sans-serif; cursor: pointer; }
+.ads-amount-options button:last-child { grid-column: 1 / -1; min-height: 38px; font-size: 12px; }
+.ads-amount-options button[aria-pressed="true"] { border-color: var(--nexora-brand); background: #f0f0ff; color: var(--nexora-brand); box-shadow: inset 0 0 0 1px var(--nexora-brand); }
+.ads-custom-label { display: block; margin-bottom: 8px; font-size: 12px; font-weight: 600; }
+.ads-custom-input { width: 100%; min-height: 42px; border: 1px solid var(--nexora-border); border-radius: 8px; padding: 10px 12px; font: inherit; }
+.ads-custom-input[aria-invalid="true"] { border-color: #c93838; }
+.ads-error { margin: 6px 0 0; color: #b42318; font-size: 12px; }
+.ads-card-method { display: flex; align-items: center; gap: 12px; border: 1px solid var(--nexora-border); border-radius: 10px; padding: 14px; }
+.ads-card-method > svg { width: 24px; height: 24px; color: var(--nexora-brand); }
+.ads-card-method > div { flex: 1; }
+.ads-card-method strong { display: block; font-size: 13px; font-weight: 600; }
+.ads-card-method div span { display: block; margin-top: 5px; color: var(--nexora-muted); font-size: 12px; }
+.ads-invoice { display: grid; gap: 12px; border-radius: 10px; padding: 16px; background: #f8f9fc; font-size: 12px; }
+.ads-invoice > div { display: flex; justify-content: space-between; gap: 12px; }
+.ads-invoice span { color: var(--nexora-muted); }
+.ads-invoice-total { border-top: 1px solid var(--nexora-border); padding-top: 12px; font-size: 14px; }
+.ads-consent { display: flex; align-items: flex-start; gap: 10px; font-size: 12px; line-height: 1.65; cursor: pointer; }
+.ads-consent input { flex-shrink: 0; width: 17px; height: 17px; margin-top: 3px; accent-color: var(--nexora-brand); }
+.ads-dialog-foot { display: flex; justify-content: flex-end; gap: 10px; padding: 18px 24px; border-top: 1px solid var(--nexora-border); background: #fafbff; }
+.ads-dialog :focus-visible, .ads-credit-section :focus-visible { outline: 3px solid #aeb4ff; outline-offset: 3px; }
+@media (max-width: 900px) {
+  .ads-summary { grid-template-columns: 1fr; }
+  .ads-wallet { padding: 22px; }
+  .ads-wallet-value { font-size: 36px; }
+}
+@media (max-width: 600px) {
+  .ads-heading { align-items: flex-start; flex-direction: column; gap: 10px; }
+  .ads-modes { grid-template-columns: 1fr; gap: 12px; }
+  .ads-summary-detail { padding: 20px; }
+  .ads-table { min-width: 690px; }
+  .ads-table th, .ads-table td { padding: 12px 16px; }
+  .ads-dialog-head, .ads-dialog-body, .ads-dialog-foot { padding: 16px; }
+  .ads-dialog-foot { flex-wrap: wrap; }
+  .ads-dialog-foot .ads-button { flex: 1; }
+  .ads-dialog h2 { font-size: 20px; }
+  .ads-card-method { flex-wrap: wrap; }
+}

@@ -8,7 +8,11 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="../assets/nexora-credits.css">
+  <link rel="stylesheet" href="../assets/nexora-credit-checkout.css">
   <link rel="stylesheet" href="../assets/nexora-packages.css">
+  <link rel="stylesheet" href="../assets/nexora-ads-credit.css">
 </head>
 <body>
   <div class="shell">
@@ -20,17 +24,59 @@
         <section class="package-page" aria-labelledby="package-page-title">
           <div class="page-heading package-heading">
             <h1 class="page-title" id="package-page-title">Package Management</h1>
-            <p class="page-description">Manage NEXORA and AI Voice plans for your salon.</p>
+            <p class="page-description">Manage your plans, Voice and SMS usage, and Ads Credit in one place.</p>
 
             <div class="package-tabs" role="tablist" aria-label="Package management tabs">
               <button id="package-tab-overview" class="package-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="package-panel-overview" data-package-tab="overview"><span class="package-tab-icon"><i data-lucide="layout-dashboard" aria-hidden="true"></i></span><span>Overview</span></button>
               <button id="package-tab-nexora" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-nexora" data-package-tab="nexora" tabindex="-1"><span class="package-tab-icon"><i data-lucide="gem" aria-hidden="true"></i></span><span>Subscriptions</span></button>
               <button id="package-tab-voice" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-voice" data-package-tab="voice" tabindex="-1"><span class="package-tab-icon package-tab-icon-dual"><svg viewBox="0 0 28 28" fill="none" aria-hidden="true" focusable="false" data-package-icon="phone-sparkles"><path data-phone-shape="handset" d="M22 16.92v3a2 2 0 0 1-2.18 2 19.8 19.8 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.8 19.8 0 0 1 2.12 4.2 2 2 0 0 1 4.1 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"></path><path d="m22.25 4.5.8 2.2 2.2.8-2.2.8-.8 2.2-.8-2.2-2.2-.8 2.2-.8.8-2.2Z" fill="currentColor"></path><path d="m24.5 13 .45 1.2 1.2.45-1.2.45-.45 1.2-.45-1.2-1.2-.45 1.2-.45.45-1.2Z" fill="currentColor"></path></svg></span><span>AI Voice Plans</span></button>
+              <button id="package-tab-usage" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-usage" data-package-tab="usage" tabindex="-1"><span class="package-tab-icon"><i class="bi bi-wallet2" aria-hidden="true"></i></span><span>Credit Usage</span></button>
               <button id="package-tab-history" class="package-tab" type="button" role="tab" aria-selected="false" aria-controls="package-panel-history" data-package-tab="history" tabindex="-1"><span class="package-tab-icon"><i data-lucide="receipt" aria-hidden="true"></i></span><span>Package History</span></button>
             </div>
           </div>
 
-          <section id="package-panel-overview" class="package-panel" role="tabpanel" aria-labelledby="package-tab-overview" data-package-panel="overview" data-package-overview></section>
+          <section id="package-panel-overview" class="package-panel" role="tabpanel" aria-labelledby="package-tab-overview" data-package-panel="overview">
+            <div data-package-overview></div>
+            <section class="ads-credit-section" aria-labelledby="ads-credit-title">
+              <div class="ads-heading">
+                <div><span class="package-overview-kicker">Grow across Nexora</span><h2 id="ads-credit-title">Ads Credit</h2><p>Fund paid promotion campaigns across the Nexora network.</p></div>
+                <span class="ads-demo-badge">Demo data · Owner view</span>
+              </div>
+              <div class="ads-summary">
+                <article class="ads-wallet">
+                  <div class="ads-wallet-label"><i data-lucide="megaphone" aria-hidden="true"></i><span>Available Ads Credit</span></div>
+                  <strong class="ads-wallet-value" data-ads-balance>$320.00</strong>
+                  <p>USD · Your Ads Credit does not expire.</p>
+                  <button class="ads-button ads-button-light" type="button" data-ads-open><i data-lucide="plus" aria-hidden="true"></i>Add Ads Credit</button>
+                  <span class="ads-wallet-note">One-time card top-up · No auto top-up</span>
+                </article>
+                <div class="ads-summary-detail">
+                  <div class="ads-metrics">
+                    <div><span>Credit on hold</span><strong>$30.00</strong><small>Reserved for pending activity</small></div>
+                    <div><span>Recorded spend</span><strong>$150.00</strong><small>Approved advertising activity</small></div>
+                  </div>
+                  <div class="ads-info"><i data-lucide="circle-check" aria-hidden="true"></i><p>Choose <strong>Ads Credit</strong> as the payment source when setting up a Paid Boost campaign. Only eligible, approved activity is charged.</p></div>
+                  <p class="ads-muted">After a top-up, campaigns paused for insufficient credit resume automatically only if their approvals, schedules and budgets still allow them to run.</p>
+                </div>
+              </div>
+              <div class="ads-status" data-ads-status role="status" aria-live="polite"></div>
+              <details class="ads-explainer">
+                <summary>Where can I use Ads Credit?</summary>
+                <div class="ads-modes">
+                  <div><h3>Internal</h3><p>Your own website, OneQR and menu. No network advertising charge.</p></div>
+                  <div><h3>Public</h3><p>Organic discovery in Nearby, Explore and Search Deals. Turning on Public does not automatically spend Ads Credit.</p></div>
+                  <div><h3>Paid Boost</h3><p>Sponsored banners and cards on eligible placements. Requires Public, approval and your chosen budget; competitor filters still apply.</p></div>
+                </div>
+                <div class="ads-models"><span><b>CPC</b> Valid clicks</span><span><b>CPL</b> Qualified leads or bookings</span><span><b>CPA</b> Eligible tracked transactions</span><span><b>Sponsored Placement</b> Agreed delivery</span></div>
+                <p class="ads-muted">Placement determines where an ad appears; the billing model determines when credit is spent. Invalid activity is rejected or adjusted. Any Public performance fee requires a separately accepted payment arrangement.</p>
+              </details>
+              <section class="ads-history" aria-labelledby="ads-history-title">
+                <div class="ads-heading"><div><h3 id="ads-history-title">Ads Credit activity</h3><p>Top-ups, campaign spend and receipts · USD</p></div><span class="ads-demo-badge">Sample transactions</span></div>
+                <div class="ads-table-scroll"><table class="ads-table"><caption class="visually-hidden">Ads Credit transaction history, separate from subscription and Voice/SMS credits</caption><thead><tr><th scope="col">Activity</th><th scope="col">Date</th><th scope="col">Amount</th><th scope="col">Balance after</th><th scope="col">Details</th></tr></thead><tbody data-ads-history></tbody></table></div>
+                <p class="ads-muted ads-history-note">Balance after includes credit on hold. Available credit = balance after − current hold. Ads Credit is separate from Voice/SMS credits, subscriptions and earnings.</p>
+              </section>
+            </section>
+          </section>
           <section id="package-panel-nexora" class="package-panel" role="tabpanel" aria-labelledby="package-tab-nexora" data-package-panel="nexora" hidden>
             <div class="nexora-package-content package-plan-content">
               <div class="nexora-package-heading">
@@ -225,11 +271,333 @@
               </article>
             </div>
           </section>
+          <section id="package-panel-usage" class="package-panel" role="tabpanel" aria-labelledby="package-tab-usage" data-package-panel="usage" hidden>
+            <section class="credits-page" data-credits-page aria-label="Credit Usage">
+                  <div class="credits-balance-grid">
+                    <article class="credits-card credits-card-plan" data-credits-card="plan" aria-labelledby="plan-credits-title">
+                      <div class="credits-card-head">
+                        <div class="credits-card-icon credits-card-icon-plan"><i data-lucide="crown" aria-hidden="true"></i></div>
+                        <div>
+                          <h2 id="plan-credits-title">Pro</h2>
+                          <p class="credits-plan-subtitle">AI Voice Plan</p>
+                        </div>
+                        <span class="credits-reset-action"><i data-lucide="refresh-cw" aria-hidden="true"></i><span>Expires <time data-credits-plan-expiry datetime="2026-07-31">Jul 31, 2026</time></span></span>
+                      </div>
+
+                      <div class="credits-plan-remaining" aria-label="Remaining plan credits">
+                        <span class="credits-label">Còn lại</span>
+                        <div class="credits-plan-remaining-values">
+                          <strong data-credits-voice-remaining>380</strong><span class="credits-plan-remaining-unit">min</span>
+                          <span class="credits-plan-remaining-separator" aria-hidden="true">·</span>
+                          <strong data-credits-sms-plan-remaining>0</strong><span class="credits-plan-remaining-unit">SMS</span>
+                        </div>
+                      </div>
+
+                      <div class="credits-plan-usage" hidden>
+                        <div class="credits-usage-row credits-usage-row-minutes">
+                          <div class="credits-usage-icon credits-usage-icon-minutes"><i data-lucide="phone" aria-hidden="true"></i></div>
+                          <div class="credits-usage-main">
+                            <div class="credits-usage-heading"><span>Minutes used</span><strong><span data-credits-voice-used>620</span> <small>/ <span data-credits-voice-total>1,000</span></small></strong></div>
+                            <div class="credits-usage-progress" role="progressbar" aria-label="Minutes used" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="620" data-credits-voice-progress-track><span class="credits-usage-fill credits-usage-fill-minutes" data-credits-voice-progress style="width:62%"></span></div>
+                          </div>
+                        </div>
+
+                        <div class="credits-usage-row credits-usage-row-sms">
+                          <div class="credits-usage-icon credits-usage-icon-sms"><i data-lucide="messages-square" aria-hidden="true"></i></div>
+                          <div class="credits-usage-main">
+                            <div class="credits-usage-heading"><span>SMS used</span><strong><span data-credits-sms-plan-used>1,000</span> <small>/ <span data-credits-sms-plan-total>1,000</span></small></strong></div>
+                            <div class="credits-usage-progress" role="progressbar" aria-label="SMS used" aria-valuemin="0" aria-valuemax="1000" aria-valuenow="1000" data-credits-sms-plan-progress-track><span class="credits-usage-fill credits-usage-fill-sms" data-credits-sms-plan-progress style="width:100%"></span></div>
+                          </div>
+                        </div>
+                      </div>
+
+                    </article>
+
+                    <article class="credits-card credits-card-topup" data-credits-card="sms-topup" aria-labelledby="voice-sms-credits-title">
+                      <div class="credits-card-head">
+                        <div class="credits-card-icon credits-card-icon-topup"><i data-lucide="layers-3" aria-hidden="true"></i></div>
+                        <div>
+                          <h2 id="voice-sms-credits-title">Voice and SMS Credits</h2>
+                          <p class="credits-topup-subtitle">Credit mua thêm, không hết hạn</p>
+                        </div>
+                        <span class="credits-rollover-badge"><i data-lucide="shield-check" aria-hidden="true"></i><span>Không hết hạn</span></span>
+                      </div>
+
+                      <div class="credits-topup-balance-row">
+                        <div class="credits-plan-remaining" aria-label="Remaining Voice and SMS credits">
+                          <span class="credits-label">Còn lại</span>
+                          <div class="credits-plan-remaining-values">
+                            <strong data-credits-voice-topup-balance>0</strong><span class="credits-plan-remaining-unit">min</span>
+                            <span class="credits-plan-remaining-separator" aria-hidden="true">·</span>
+                            <strong data-credits-sms-topup-balance>450</strong><span class="credits-plan-remaining-unit">SMS</span>
+                          </div>
+                        </div>
+
+                        <div class="credits-actions credits-topup-actions" aria-label="Buy Voice and SMS credits">
+                          <button class="credits-action credits-action-secondary credits-action-voice" data-credits-action="voice-buy" type="button"><span>Mua Voice credit</span></button>
+                          <button class="credits-action credits-action-secondary credits-action-sms" data-credits-action="sms-buy" type="button"><span>Mua SMS credit</span></button>
+                        </div>
+                      </div>
+
+                    </article>
+                  </div>
+
+                  <div class="credits-voice-warning" data-credits-voice-warning role="status" aria-live="polite" hidden>
+                    <div class="credits-voice-warning-content">
+                      <div class="credits-voice-warning-icon"><i data-lucide="triangle-alert" aria-hidden="true"></i></div>
+                      <div>
+                        <strong>AI Voice sắp hết</strong>
+                        <p>Bạn chỉ còn <span data-credits-voice-warning-remaining>380</span> phút Voice. Mua thêm credit hoặc nâng cấp gói để tránh gián đoạn.</p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <section class="credits-history-section" data-credits-usage-history aria-labelledby="credits-history-title">
+                    <div class="credits-section-heading">
+                      <div>
+                        <span class="credits-kicker">Activity</span>
+                        <h2 id="credits-history-title">Usage history</h2>
+                      </div>
+                      <div class="credits-history-tools">
+                        <div class="credits-history-filters" role="group" aria-label="Filter usage history">
+                          <button class="credits-history-filter is-active" type="button" data-credits-history-filter="all" aria-pressed="true">All</button>
+                          <button class="credits-history-filter" type="button" data-credits-history-filter="sms" aria-pressed="false">SMS</button>
+                          <button class="credits-history-filter" type="button" data-credits-history-filter="voice" aria-pressed="false">Voice</button>
+                        </div>
+                      </div>
+                    </div>
+                    <div class="credits-history-scroll">
+                      <table class="credits-history-table">
+                        <caption class="visually-hidden">Recent SMS and Voice credit usage</caption>
+                        <thead>
+                          <tr>
+                            <th scope="col">Product</th>
+                            <th scope="col">Activity</th>
+                            <th scope="col">Change</th>
+                            <th scope="col">Date</th>
+                          </tr>
+                        </thead>
+                        <tbody data-credits-history>
+                          <tr><td><span class="credits-product-badge credits-product-badge-sms">SMS</span></td><td>All customers campaign</td><td class="credits-amount-negative">−1,284 SMS</td><td><span class="credits-history-date">Jul 28, 2026<small>2:15 PM</small></span></td></tr>
+                          <tr><td><span class="credits-product-badge credits-product-badge-voice">Voice</span></td><td><span class="credits-history-activity"><strong>Incoming call</strong></span></td><td class="credits-amount-negative">−18 min</td><td><span class="credits-history-date">Jul 28, 2026<small>10:42 AM</small></span></td></tr>
+                          <tr><td><span class="credits-product-badge credits-product-badge-voice">Voice</span></td><td><span class="credits-history-activity"><strong>Incoming call</strong></span></td><td class="credits-amount-negative">−27 min</td><td><span class="credits-history-date">Jul 28, 2026<small>9:18 AM</small></span></td></tr>
+                          <tr><td><span class="credits-product-badge credits-product-badge-voice">Voice</span></td><td><span class="credits-history-activity"><strong>Incoming call</strong></span></td><td class="credits-amount-negative">−31 min</td><td><span class="credits-history-date">Jul 27, 2026<small>5:50 PM</small></span></td></tr>
+                          <tr><td><span class="credits-product-badge credits-product-badge-sms">SMS</span></td><td>VIP comeback campaign</td><td class="credits-amount-negative">−320 SMS</td><td><span class="credits-history-date">Jul 26, 2026<small>11:05 AM</small></span></td></tr>
+                          <tr><td><span class="credits-product-badge credits-product-badge-sms">SMS</span></td><td>Buy SMS credit</td><td class="credits-amount-positive">+1,500 SMS</td><td><span class="credits-history-date">Jul 25, 2026<small>9:20 AM</small></span></td></tr>
+                        </tbody>
+                      </table>
+                    </div>
+                  </section>
+                </section>
+          </section>
           <section id="package-panel-history" class="package-panel" role="tabpanel" aria-labelledby="package-tab-history" data-package-panel="history" data-purchase-history hidden></section>
         </section>
       </main>
     </div>
   </div>
+
+  <div id="package-credit-checkout">
+      <div class="sms-credit-modal" data-sms-credit-modal hidden>
+        <div class="sms-credit-dialog" role="dialog" aria-modal="true" aria-labelledby="sms-credit-modal-title" aria-describedby="sms-credit-modal-description">
+          <div class="sms-credit-modal-head">
+            <div>
+              <div class="sms-credit-modal-title" id="sms-credit-modal-title"><i class="marketing-icon" data-lucide="wallet-cards" aria-hidden="true"></i><span>Mua SMS Credits</span></div>
+              <div class="sms-credit-modal-sub" id="sms-credit-modal-description">Chọn gói SMS phù hợp, sau đó thanh toán bằng ví hoặc thẻ của bạn.</div>
+            </div>
+            <button class="sms-credit-close" type="button" data-sms-credit-close aria-label="Đóng mua SMS credits"><i class="marketing-icon is-compact" data-lucide="x" aria-hidden="true"></i></button>
+          </div>
+          <div class="sms-credit-modal-body">
+            <section class="sms-credit-section" aria-labelledby="sms-credit-package-title">
+              <div class="sms-credit-section-label" id="sms-credit-package-title">Chọn gói SMS</div>
+              <div class="sms-credit-package-grid" data-sms-credit-package-list></div>
+            </section>
+            <section class="sms-credit-section" aria-labelledby="sms-credit-payment-title">
+              <div class="sms-credit-section-label" id="sms-credit-payment-title">Phương thức thanh toán</div>
+              <div class="sms-credit-payment-list" data-sms-credit-payment-list></div>
+              <div class="sms-credit-card-form" data-sms-credit-card-form hidden>
+                <div class="sms-credit-card-form-head"><i class="marketing-icon" data-lucide="credit-card" aria-hidden="true"></i><span>Credit or Debit Card</span></div>
+                <div class="sms-credit-card-required-note"><strong>*</strong> required</div>
+                <div class="sms-credit-card-fields">
+                  <div class="sms-credit-card-row">
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Cardholder name <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" autocomplete="cc-name" placeholder="Name on card" data-sms-credit-card-field="name" data-sms-credit-card-required>
+                    </label>
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Card number <span>*</span></span>
+                      <span class="sms-credit-card-input-wrap">
+                        <i class="marketing-icon" data-lucide="credit-card" aria-hidden="true"></i>
+                        <input class="sms-credit-card-input" type="text" inputmode="numeric" autocomplete="cc-number" maxlength="19" placeholder="1234 1234 1234 1234" data-sms-credit-card-field="number" data-sms-credit-card-required>
+                      </span>
+                    </label>
+                  </div>
+                  <div class="sms-credit-card-row">
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Expiration Date <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" inputmode="numeric" autocomplete="cc-exp" maxlength="5" placeholder="MM/YY" data-sms-credit-card-field="expiry" data-sms-credit-card-required>
+                    </label>
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Security Code <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" inputmode="numeric" autocomplete="cc-csc" maxlength="4" placeholder="CVC" data-sms-credit-card-field="cvc" data-sms-credit-card-required>
+                    </label>
+                  </div>
+                  <label class="sms-credit-card-field">
+                    <span class="sms-credit-card-label">Address<span>*</span></span>
+                    <input class="sms-credit-card-input" type="text" autocomplete="address-line1" placeholder="Street address" data-sms-credit-card-field="address1" data-sms-credit-card-required>
+                  </label>
+                  <div class="sms-credit-card-row">
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">City <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" autocomplete="address-level2" placeholder="City" data-sms-credit-card-field="city" data-sms-credit-card-required>
+                    </label>
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">State <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" autocomplete="address-level1" placeholder="State" data-sms-credit-card-field="state" data-sms-credit-card-required>
+                    </label>
+                  </div>
+                  <div class="sms-credit-card-row">
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Zip code <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="Zip code" data-sms-credit-card-field="zip" data-sms-credit-card-required>
+                    </label>
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Country <span>*</span></span>
+                      <select class="sms-credit-card-select" autocomplete="country" data-sms-credit-card-field="country" data-sms-credit-card-required>
+                        <option value="US" selected>United States</option>
+                        <option value="CA">Canada</option>
+                        <option value="MX">Mexico</option>
+                        <option value="VN">Vietnam</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div class="sms-credit-card-error" data-sms-credit-card-error role="alert" aria-live="polite"></div>
+                </div>
+              </div>
+            </section>
+            <section class="sms-credit-section sms-credit-invoice" aria-labelledby="sms-credit-invoice-title">
+              <div class="sms-credit-section-label" id="sms-credit-invoice-title">Tóm tắt hoá đơn</div>
+              <div class="sms-credit-invoice-row"><span>Gói SMS:</span><strong data-sms-credit-invoice-package></strong></div>
+              <div class="sms-credit-invoice-row"><span>Phương thức:</span><strong data-sms-credit-invoice-payment></strong></div>
+              <div class="sms-credit-invoice-row sms-credit-invoice-total"><span>Tổng thanh toán:</span><strong data-sms-credit-invoice-total></strong></div>
+            </section>
+            <div class="sr-only" aria-live="polite" data-sms-credit-checkout-status></div>
+          </div>
+          <div class="sms-credit-modal-foot">
+            <button class="btn-outline" type="button" data-sms-credit-close>Huỷ</button>
+            <button class="btn-primary" type="button" data-sms-credit-confirm><i class="marketing-icon is-compact" data-lucide="shield-check" aria-hidden="true"></i><span>Xác nhận thanh toán</span></button>
+          </div>
+        </div>
+      </div>
+      <div class="sms-credit-modal" data-voice-credit-modal hidden>
+        <div class="sms-credit-dialog" role="dialog" aria-modal="true" aria-labelledby="voice-credit-modal-title" aria-describedby="voice-credit-modal-description">
+          <div class="sms-credit-modal-head">
+            <div>
+              <div class="sms-credit-modal-title" id="voice-credit-modal-title"><i class="marketing-icon" data-lucide="phone-call" aria-hidden="true"></i><span>Mua Voice Credits</span></div>
+              <div class="sms-credit-modal-sub" id="voice-credit-modal-description">Chọn gói phút Voice phù hợp, sau đó thanh toán bằng ví hoặc thẻ của bạn.</div>
+            </div>
+            <button class="sms-credit-close" type="button" data-voice-credit-close aria-label="Đóng mua Voice credits"><i class="marketing-icon is-compact" data-lucide="x" aria-hidden="true"></i></button>
+          </div>
+          <div class="sms-credit-modal-body">
+            <section class="sms-credit-section" aria-labelledby="voice-credit-package-title">
+              <div class="sms-credit-section-label" id="voice-credit-package-title">Chọn gói Voice</div>
+              <div class="sms-credit-package-grid" data-voice-credit-package-list></div>
+            </section>
+            <section class="sms-credit-section" aria-labelledby="voice-credit-payment-title">
+              <div class="sms-credit-section-label" id="voice-credit-payment-title">Phương thức thanh toán</div>
+              <div class="sms-credit-payment-list" data-voice-credit-payment-list></div>
+              <div class="sms-credit-card-form" data-voice-credit-card-form hidden>
+                <div class="sms-credit-card-form-head"><i class="marketing-icon" data-lucide="credit-card" aria-hidden="true"></i><span>Credit or Debit Card</span></div>
+                <div class="sms-credit-card-required-note"><strong>*</strong> required</div>
+                <div class="sms-credit-card-fields">
+                  <div class="sms-credit-card-row">
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Cardholder name <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" autocomplete="cc-name" placeholder="Name on card" data-voice-credit-card-field="name" data-voice-credit-card-required>
+                    </label>
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Card number <span>*</span></span>
+                      <span class="sms-credit-card-input-wrap">
+                        <i class="marketing-icon" data-lucide="credit-card" aria-hidden="true"></i>
+                        <input class="sms-credit-card-input" type="text" inputmode="numeric" autocomplete="cc-number" maxlength="19" placeholder="1234 1234 1234 1234" data-voice-credit-card-field="number" data-voice-credit-card-required>
+                      </span>
+                    </label>
+                  </div>
+                  <div class="sms-credit-card-row">
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Expiration Date <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" inputmode="numeric" autocomplete="cc-exp" maxlength="5" placeholder="MM/YY" data-voice-credit-card-field="expiry" data-voice-credit-card-required>
+                    </label>
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Security Code <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" inputmode="numeric" autocomplete="cc-csc" maxlength="4" placeholder="CVC" data-voice-credit-card-field="cvc" data-voice-credit-card-required>
+                    </label>
+                  </div>
+                  <label class="sms-credit-card-field">
+                    <span class="sms-credit-card-label">Address<span>*</span></span>
+                    <input class="sms-credit-card-input" type="text" autocomplete="address-line1" placeholder="Street address" data-voice-credit-card-field="address1" data-voice-credit-card-required>
+                  </label>
+                  <div class="sms-credit-card-row">
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">City <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" autocomplete="address-level2" placeholder="City" data-voice-credit-card-field="city" data-voice-credit-card-required>
+                    </label>
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">State <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" autocomplete="address-level1" placeholder="State" data-voice-credit-card-field="state" data-voice-credit-card-required>
+                    </label>
+                  </div>
+                  <div class="sms-credit-card-row">
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Zip code <span>*</span></span>
+                      <input class="sms-credit-card-input" type="text" inputmode="numeric" autocomplete="postal-code" placeholder="Zip code" data-voice-credit-card-field="zip" data-voice-credit-card-required>
+                    </label>
+                    <label class="sms-credit-card-field">
+                      <span class="sms-credit-card-label">Country <span>*</span></span>
+                      <select class="sms-credit-card-select" autocomplete="country" data-voice-credit-card-field="country" data-voice-credit-card-required>
+                        <option value="US" selected>United States</option>
+                        <option value="CA">Canada</option>
+                        <option value="MX">Mexico</option>
+                        <option value="VN">Vietnam</option>
+                      </select>
+                    </label>
+                  </div>
+                  <div class="sms-credit-card-error" data-voice-credit-card-error role="alert" aria-live="polite"></div>
+                </div>
+              </div>
+            </section>
+            <section class="sms-credit-section sms-credit-invoice" aria-labelledby="voice-credit-invoice-title">
+              <div class="sms-credit-section-label" id="voice-credit-invoice-title">Tóm tắt hoá đơn</div>
+              <div class="sms-credit-invoice-row"><span>Gói Voice:</span><strong data-voice-credit-invoice-package></strong></div>
+              <div class="sms-credit-invoice-row"><span>Phương thức:</span><strong data-voice-credit-invoice-payment></strong></div>
+              <div class="sms-credit-invoice-row sms-credit-invoice-total"><span>Tổng thanh toán:</span><strong data-voice-credit-invoice-total></strong></div>
+            </section>
+            <div class="sr-only" aria-live="polite" data-voice-credit-checkout-status></div>
+          </div>
+          <div class="sms-credit-modal-foot">
+            <button class="btn-outline" type="button" data-voice-credit-close>Huỷ</button>
+            <button class="btn-primary" type="button" data-voice-credit-confirm><i class="marketing-icon is-compact" data-lucide="shield-check" aria-hidden="true"></i><span>Xác nhận thanh toán</span></button>
+          </div>
+        </div>
+      </div>
+  </div>
+
+  <dialog class="ads-dialog" data-ads-dialog aria-labelledby="ads-dialog-title" aria-describedby="ads-dialog-description">
+    <form data-ads-form novalidate>
+      <div class="ads-dialog-head"><div><span class="package-overview-kicker">One-time top-up</span><h2 id="ads-dialog-title">Add Ads Credit</h2></div><button class="ads-close" type="button" data-ads-close aria-label="Close Ads Credit top-up"><i data-lucide="x" aria-hidden="true"></i></button></div>
+      <div class="ads-dialog-body">
+        <p id="ads-dialog-description" class="ads-demo-notice">Interactive demo only. Amounts, limits, fees and taxes are illustrative. No card is charged; demo balances reset on reload.</p>
+        <fieldset class="ads-amount-fieldset"><legend>Choose your Ads Credit amount</legend><div class="ads-amount-options" role="group" aria-label="Top-up amount">
+          <button type="button" data-ads-amount="50" aria-pressed="false">$50</button><button type="button" data-ads-amount="100" aria-pressed="true">$100</button><button type="button" data-ads-amount="250" aria-pressed="false">$250</button><button type="button" data-ads-amount="500" aria-pressed="false">$500</button><button type="button" data-ads-amount="custom" aria-pressed="false">Custom amount</button>
+        </div></fieldset>
+        <div data-ads-custom-wrap hidden><label class="ads-custom-label" for="ads-custom-amount">Ads Credit amount (USD)</label><input id="ads-custom-amount" class="ads-custom-input" type="text" inputmode="decimal" placeholder="Enter an amount" autocomplete="off" data-ads-custom aria-describedby="ads-amount-hint ads-amount-error"><p id="ads-amount-hint" class="ads-muted">Demo range: $1.00–$10,000.00, up to two decimal places.</p><p id="ads-amount-error" class="ads-error" data-ads-error role="alert"></p></div>
+        <div class="ads-card-method"><i data-lucide="credit-card" aria-hidden="true"></i><div><strong>Credit or debit card</strong><span>Demo Visa ···· 4242</span></div><span class="ads-demo-badge">Test card</span></div>
+        <div class="ads-invoice" aria-live="polite"><div><span>Ads Credit you receive</span><strong data-ads-receive>$100.00</strong></div><div><span>Processing fee (demo)</span><strong>$0.00</strong></div><div><span>Tax (demo)</span><strong>$0.00</strong></div><div class="ads-invoice-total"><span>Total card charge (demo)</span><strong data-ads-total>$100.00</strong></div></div>
+        <details class="ads-terms"><summary>Ads Credit Terms</summary><p>Ads Credit is prepaid value only for advertising within Nexora. It is not a bank account or deposit, does not earn interest, does not expire, and cannot be withdrawn, transferred or used outside Nexora.</p><p>Purchases are non-refundable unless required by law or approved by Nexora under its policy. Credit is spent only on eligible activity or agreed delivery under your selected CPC, CPL, CPA or Sponsored Placement model. Invalid activity may be rejected or adjusted.</p><p>Top-ups are manual. Adding credit does not publish, approve or start a draft campaign. Eligible campaigns paused for insufficient credit may resume within their existing schedules and budgets.</p></details>
+        <label class="ads-consent"><input type="checkbox" data-ads-consent><span>I agree to the Ads Credit Terms and the total shown above. I understand credit cannot be withdrawn or transferred, and purchases are non-refundable except as stated in the terms.</span></label>
+      </div>
+      <div class="ads-dialog-foot"><button class="ads-button ads-button-secondary" type="button" data-ads-close>Cancel</button><button class="ads-button" type="submit" data-ads-submit disabled>Add Ads Credit · Demo</button></div>
+    </form>
+  </dialog>
 
   <div class="package-payment-modal" data-package-payment-modal hidden aria-hidden="true">
     <div class="package-payment-dialog" role="dialog" aria-modal="true" aria-labelledby="package-payment-modal-title" aria-describedby="package-payment-modal-description">
@@ -417,6 +785,9 @@
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="../assets/nexora-package-billing-data.js"></script>
   <script src="../assets/nexora-packages.js"></script>
+  <script src="../assets/nexora-credits.js"></script>
+  <script src="../assets/nexora-credit-checkout.js"></script>
+  <script src="../assets/nexora-ads-credit.js"></script>
   <script>
     window.NEXORA_SHELL = {
       activePage: 'packages',

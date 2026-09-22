@@ -273,9 +273,9 @@ test('creates the empty Package Management page from the shared shell', () => {
 test('adds the package heading and ordered management tabs', () => {
   const html = source();
   assert.match(html, /<h1 class="page-title"[^>]*>Package Management<\/h1>/);
-  assert.match(html, /<p class="page-description"[^>]*>Manage NEXORA and AI Voice plans for your salon\.<\/p>/);
+  assert.match(html, /<p class="page-description"[^>]*>Manage your plans, Voice and SMS usage, and Ads Credit in one place\.<\/p>/);
   const tabs = [...html.matchAll(/data-package-tab="([^"]+)"/g)].map((match) => match[1]);
-  assert.deepEqual(tabs, ['overview', 'nexora', 'voice', 'history']);
+  assert.deepEqual(tabs, ['overview', 'nexora', 'voice', 'usage', 'history']);
   assert.match(html, /role="tablist"/);
   assert.match(html, /Overview/);
   assert.match(html, /<span>Subscriptions<\/span>/);
@@ -288,7 +288,7 @@ test('adds the package heading and ordered management tabs', () => {
   assert.doesNotMatch(voiceTab, /<rect\b/);
   assert.doesNotMatch(voiceTab, /data-lucide="(?:phone|sparkles)"/);
   assert.doesNotMatch(html, /<span>Voice \+ SMS<\/span>/);
-  assert.doesNotMatch(html, /<span>Credit Usage<\/span>/);
+  assert.match(html, /<span>Credit Usage<\/span>/);
   assert.doesNotMatch(html, /data-package-tab="credits"/);
   assert.doesNotMatch(html, /data-package-panel="credits"/);
   const historyTab = html.match(/<button[^>]*data-package-tab="history"[\s\S]*?<\/button>/)?.[0] || '';
@@ -699,7 +699,7 @@ test('keeps package page body copy, metadata, and tables at regular weight', () 
 test('matches the Booking Hub tab treatment', () => {
   const html = source();
   const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
-  assert.equal((html.match(/class="package-tab-icon(?: package-tab-icon-dual)?"/g) || []).length, 4);
+  assert.equal((html.match(/class="package-tab-icon(?: package-tab-icon-dual)?"/g) || []).length, 5);
   assert.match(css, /\.package-tab\s*\{[\s\S]*?border:\s*1px\s+solid\s+var\(--nexora-border\)/);
   assert.match(css, /\.package-tab\s*\{[\s\S]*?border-radius:\s*12px/);
   assert.match(css, /\.package-tab-icon\s*\{[\s\S]*?width:\s*28px[\s\S]*?height:\s*28px/);
