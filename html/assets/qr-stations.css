@@ -3166,3 +3166,11 @@
     display: none !important;
   }
 }
+
+/* Business earnings entry stays separate from QR configuration and tip revenue. */
+.oneqr-earnings-entry { display: flex; align-items: center; justify-content: space-between; gap: 20px; padding: 18px 20px; border: 1px solid #d5d5fb; border-radius: 12px; background: linear-gradient(110deg, #f1f1ff, #fff); }
+.oneqr-earnings-entry h3 { margin: 8px 0 4px; font-size: 17px; color: #0b1c30; }
+.oneqr-earnings-entry p { margin: 0; max-width: 660px; font-size: 13px; line-height: 1.5; color: #565e74; }
+.oneqr-earnings-entry a { flex-shrink: 0; text-decoration: none; text-transform: none; }
+.oneqr-earnings-entry .oneqr-pill { text-transform: none; }
+@media (max-width: 650px) { .oneqr-earnings-entry { align-items: flex-start; flex-direction: column; gap: 12px; padding: 16px; } }
