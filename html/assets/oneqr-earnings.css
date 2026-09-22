@@ -23,6 +23,14 @@
 .eq-badge.hold, .eq-badge.pending, .eq-badge.reconciling { background: #fff7e5; color: #92400e; }
 .eq-badge.failed, .eq-badge.rejected { background: #fff1f2; color: #be123c; }
 .eq-badge.sending, .eq-badge.reserve { background: #eeeeff; color: #4648d4; }
+.eq-monetization-off { display: grid; grid-template-columns: 44px minmax(0, 1fr) auto; align-items: center; gap: 16px; padding: 18px 20px; border: 1px solid #f2c66d; border-left: 4px solid #d97706; border-radius: 12px; background: #fffbeb; color: #78350f; }
+.eq-monetization-off-icon { display: grid; place-items: center; width: 44px; height: 44px; border-radius: 12px; background: #fef3c7; color: #b45309; }
+.eq-monetization-off-icon svg { width: 26px; height: 26px; }
+.earnings-page .eq-monetization-off h2 { margin: 0 0 4px; font-size: 18px; font-weight: 800; }
+.earnings-page .eq-monetization-off p { margin: 0; }
+.earnings-page .eq-monetization-off .eq-monetization-off-note { margin-top: 6px; color: #855308; font-size: 12px; }
+.eq-monetization-off > button { white-space: nowrap; }
+@media (max-width: 650px) { .eq-monetization-off { grid-template-columns: 36px minmax(0, 1fr); gap: 12px; padding: 14px; } .eq-monetization-off-icon { width: 36px; height: 36px; align-self: start; } .eq-monetization-off-icon svg { width: 23px; height: 23px; } .eq-monetization-off > button { grid-column: 2; justify-self: start; } .earnings-page .eq-monetization-off h2 { font-size: 16px; } }
 .eq-nav { display: flex; gap: 6px; border-bottom: 1px solid #dde5ef; margin: 20px 0; overflow-x: auto; padding-bottom: 8px; }
 .eq-nav button { flex-shrink: 0; border: 0; background: transparent; color: #565e74; }
 .eq-nav button[aria-current="page"] { background: #eeeeff; color: #4648d4; }
