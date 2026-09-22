@@ -46,7 +46,7 @@
     .promotion-section { margin: 0 0 14px; padding: 0; border: 0; background: transparent; box-shadow: none; }
     .promotion-swiper { padding-bottom: 24px; }
     .promotion-list { align-items: stretch; }
-    .promotion-card { display: grid; grid-template-columns: minmax(0, 1fr) auto auto; height: auto; min-width: 0; align-items: center; gap: 8px; padding: 8px 10px; overflow: hidden; border: 1px solid #eadcf6; border-radius: 16px; background: linear-gradient(145deg, #fff7fc, #f7f2ff); }
+    .promotion-card { display: grid; grid-template-columns: minmax(0, 1fr) auto; height: auto; min-width: 0; align-content: start; align-items: center; gap: 8px; padding: 8px 10px; overflow: hidden; border: 1px solid #eadcf6; border-radius: 16px; background: linear-gradient(145deg, #fff7fc, #f7f2ff); }
     .promotion-card:nth-child(even) { border-color: #ded8fa; background: linear-gradient(145deg, #f8f5ff, #fff9fd); }
     .promotion-card.theme-first-visit { border-color: #f2c7df; background: linear-gradient(145deg, #fff5fb, #fff9ee); }
     .promotion-card.theme-quiet-days, .promotion-card.theme-weekday { border-color: #cfe8df; background: linear-gradient(145deg, #f3fcf8, #f7f4ff); }
@@ -61,8 +61,8 @@
     .promotion-highlight strong { max-width: 108px; font-size: 17px; line-height: 1.15; }
     .promotion-highlight small { color: var(--muted); font-size: 9px; font-weight: 800; }
     .promotion-highlight-wide strong { font-size: 14px; }
-    .promotion-visual { display: grid; width: 52px; height: 42px; place-items: center; overflow: hidden; border-radius: 10px; }
-    .promotion-art { display: block; width: 100%; height: 100%; object-fit: cover; }
+    .promotion-visual { grid-column: 1 / -1; width: 100%; aspect-ratio: 16 / 7; overflow: hidden; border-radius: 10px; background: #fff; }
+    .promotion-art { display: block; width: 100%; height: 100%; object-fit: contain; }
     .promotion-tier-list { display: grid; min-width: 96px; gap: 4px; }
     .promotion-tier { display: flex; align-items: baseline; justify-content: space-between; gap: 6px; }
     .promotion-tier strong { color: var(--pink-dark); font-size: 12px; white-space: nowrap; }
@@ -652,13 +652,14 @@
         list.innerHTML = offers.map((offer) => {
           const visual = promotionStore.presentation(offer);
           const visualMarkup = visual.image
-            ? `<div class="promotion-visual"><img class="promotion-art" src="${escapePromotionHtml(visual.image)}" alt=""></div>`
+            ? `<div class="promotion-visual"><img class="promotion-art" src="${escapePromotionHtml(visual.image)}" alt="${escapePromotionHtml(offer.title)}" decoding="async"></div>`
             : '';
           return `<article class="promotion-card swiper-slide theme-${escapePromotionHtml(visual.theme)}" data-promotion-id="${escapePromotionHtml(offer.id)}">` +
+            visualMarkup +
             `<div class="promotion-copy"><div class="promotion-title-row"><span class="promotion-badge">${escapePromotionHtml(offer.badge)}</span>` +
             `<h3>${escapePromotionHtml(offer.title)}</h3></div><p>${escapePromotionHtml(offer.description)}</p></div>` +
             `<div class="promotion-highlight promotion-highlight-wide"><strong>${escapePromotionHtml(offer.value)}</strong></div>` +
-            `${visualMarkup}</article>`;
+            `</article>`;
         }).join('');
         if (section.dataset) section.dataset.promotionCount = String(offers.length);
         section.hidden = offers.length === 0;
