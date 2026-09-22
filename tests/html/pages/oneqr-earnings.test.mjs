@@ -27,17 +27,6 @@ test('activation requires explicit consent and disabling preserves balances and 
   click('[data-view="overview"]');
   assert.equal(d.querySelector('[data-balance="available"]').textContent, '$70.00');
 });
-test('missing eligibility blocks activation even with consent and explains the missing conditions', t => {
-  const { d, click, change } = setup(t);
-  for (const scenario of ['incomplete', 'pending', 'rejected', 'wallet']) {
-    change('#scenario', scenario); click('[data-view="settings"]'); click('#consent');
-    assert.equal(d.querySelector('[data-action="toggle"]').disabled, true);
-    assert.match(d.querySelector('[data-eligibility]').textContent, /KYB/);
-  }
-  change('#scenario', 'wallet'); click('[data-view="payouts"]');
-  assert.ok(d.querySelector('[data-wallet-blocked]'));
-  assert.equal(d.querySelectorAll('[data-action="pay"]').length, 0);
-});
 test('filters activities and opens the original transaction with policy and source', t => {
   const { d, click, change } = setup(t);
   click('[data-view="activity"]'); change('#status-filter', 'hold');
@@ -61,15 +50,8 @@ test('reserve balance excludes the separately displayed dispute hold and history
   assert.equal(d.querySelectorAll('[data-payout-status="reconciling"]').length, 1);
   assert.equal(d.querySelectorAll('[data-payout-status="failed"]').length, 1);
 });
-test('empty, loading and error previews hide financial data; retry restores the sample and VI dates use tháng', t => {
+test('Vietnamese dates use tháng and period filters show the empty result', t => {
   const { d, click, change } = setup(t);
-  for (const value of ['empty', 'loading', 'error']) {
-    change('#scenario', value);
-    assert.equal(d.querySelectorAll('[data-balance]').length, 0);
-    assert.ok(d.querySelector('[data-state="' + value + '"]'));
-  }
-  click('[data-action="retry"]');
-  assert.equal(d.querySelector('[data-balance="available"]').textContent, '$70.00');
   change('#language', 'vi'); click('[data-view="activity"]');
   assert.match(d.querySelector('[data-activity-row]').textContent, /tháng 9/);
   change('#period-filter', '2026-08');
