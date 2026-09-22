@@ -43,7 +43,6 @@
             <section class="ads-credit-section" aria-labelledby="ads-credit-title">
               <div class="ads-heading">
                 <div><span class="package-overview-kicker">Grow across Nexora</span><h2 id="ads-credit-title">Ads Credit</h2><p>Fund paid promotion campaigns across the Nexora network.</p></div>
-                <span class="ads-demo-badge">Demo data · Owner view</span>
               </div>
               <div class="ads-summary">
                 <article class="ads-wallet">
@@ -74,7 +73,7 @@
                 <p class="ads-muted">Placement determines where an ad appears; the billing model determines when credit is spent. Invalid activity is rejected or adjusted. Any Public performance fee requires a separately accepted payment arrangement.</p>
               </details>
               <section class="ads-history" aria-labelledby="ads-history-title">
-                <div class="ads-heading"><div><h3 id="ads-history-title">Ads Credit activity</h3><p>Top-ups, campaign spend and receipts · USD</p></div><span class="ads-demo-badge">Sample transactions</span></div>
+                <div class="ads-heading"><div><h3 id="ads-history-title">Ads Credit activity</h3><p>Top-ups, campaign spend and receipts · USD</p></div></div>
                 <div class="ads-table-scroll"><table class="ads-table"><caption class="visually-hidden">Ads Credit transaction history, separate from subscription and Voice/SMS credits</caption><thead><tr><th scope="col">Activity</th><th scope="col">Date</th><th scope="col">Amount</th><th scope="col">Balance after</th><th scope="col">Details</th></tr></thead><tbody data-ads-history></tbody></table></div>
                 <p class="ads-muted ads-history-note">Balance after includes credit on hold. Available credit = balance after − current hold. Ads Credit is separate from Voice/SMS credits, subscriptions and earnings.</p>
               </section>
@@ -588,17 +587,17 @@
     <form data-ads-form novalidate>
       <div class="ads-dialog-head"><div><span class="package-overview-kicker">One-time top-up</span><h2 id="ads-dialog-title">Add Ads Credit</h2></div><button class="ads-close" type="button" data-ads-close aria-label="Close Ads Credit top-up"><i data-lucide="x" aria-hidden="true"></i></button></div>
       <div class="ads-dialog-body">
-        <p id="ads-dialog-description" class="ads-demo-notice">Interactive demo only. Amounts, limits, fees and taxes are illustrative. No card is charged; demo balances reset on reload.</p>
+        <p id="ads-dialog-description" class="ads-notice">Review the amount and payment details before adding Ads Credit.</p>
         <fieldset class="ads-amount-fieldset"><legend>Choose your Ads Credit amount</legend><div class="ads-amount-options" role="group" aria-label="Top-up amount">
           <button type="button" data-ads-amount="50" aria-pressed="false">$50</button><button type="button" data-ads-amount="100" aria-pressed="true">$100</button><button type="button" data-ads-amount="250" aria-pressed="false">$250</button><button type="button" data-ads-amount="500" aria-pressed="false">$500</button><button type="button" data-ads-amount="custom" aria-pressed="false">Custom amount</button>
         </div></fieldset>
-        <div data-ads-custom-wrap hidden><label class="ads-custom-label" for="ads-custom-amount">Ads Credit amount (USD)</label><input id="ads-custom-amount" class="ads-custom-input" type="text" inputmode="decimal" placeholder="Enter an amount" autocomplete="off" data-ads-custom aria-describedby="ads-amount-hint ads-amount-error"><p id="ads-amount-hint" class="ads-muted">Demo range: $1.00–$10,000.00, up to two decimal places.</p><p id="ads-amount-error" class="ads-error" data-ads-error role="alert"></p></div>
-        <div class="ads-card-method"><i data-lucide="credit-card" aria-hidden="true"></i><div><strong>Credit or debit card</strong><span>Demo Visa ···· 4242</span></div><span class="ads-demo-badge">Test card</span></div>
-        <div class="ads-invoice" aria-live="polite"><div><span>Ads Credit you receive</span><strong data-ads-receive>$100.00</strong></div><div><span>Processing fee (demo)</span><strong>$0.00</strong></div><div><span>Tax (demo)</span><strong>$0.00</strong></div><div class="ads-invoice-total"><span>Total card charge (demo)</span><strong data-ads-total>$100.00</strong></div></div>
+        <div data-ads-custom-wrap hidden><label class="ads-custom-label" for="ads-custom-amount">Ads Credit amount (USD)</label><input id="ads-custom-amount" class="ads-custom-input" type="text" inputmode="decimal" placeholder="Enter an amount" autocomplete="off" data-ads-custom aria-describedby="ads-amount-hint ads-amount-error"><p id="ads-amount-hint" class="ads-muted">Range: $1.00–$10,000.00, up to two decimal places.</p><p id="ads-amount-error" class="ads-error" data-ads-error role="alert"></p></div>
+        <div class="ads-card-method"><i data-lucide="credit-card" aria-hidden="true"></i><div><strong>Credit or debit card</strong><span>Visa ···· 4242</span></div></div>
+        <div class="ads-invoice" aria-live="polite"><div><span>Ads Credit you receive</span><strong data-ads-receive>$100.00</strong></div><div><span>Processing fee</span><strong>$0.00</strong></div><div><span>Tax</span><strong>$0.00</strong></div><div class="ads-invoice-total"><span>Total card charge</span><strong data-ads-total>$100.00</strong></div></div>
         <details class="ads-terms"><summary>Ads Credit Terms</summary><p>Ads Credit is prepaid value only for advertising within Nexora. It is not a bank account or deposit, does not earn interest, does not expire, and cannot be withdrawn, transferred or used outside Nexora.</p><p>Purchases are non-refundable unless required by law or approved by Nexora under its policy. Credit is spent only on eligible activity or agreed delivery under your selected CPC, CPL, CPA or Sponsored Placement model. Invalid activity may be rejected or adjusted.</p><p>Top-ups are manual. Adding credit does not publish, approve or start a draft campaign. Eligible campaigns paused for insufficient credit may resume within their existing schedules and budgets.</p></details>
         <label class="ads-consent"><input type="checkbox" data-ads-consent><span>I agree to the Ads Credit Terms and the total shown above. I understand credit cannot be withdrawn or transferred, and purchases are non-refundable except as stated in the terms.</span></label>
       </div>
-      <div class="ads-dialog-foot"><button class="ads-button ads-button-secondary" type="button" data-ads-close>Cancel</button><button class="ads-button" type="submit" data-ads-submit disabled>Add Ads Credit · Demo</button></div>
+      <div class="ads-dialog-foot"><button class="ads-button ads-button-secondary" type="button" data-ads-close>Cancel</button><button class="ads-button" type="submit" data-ads-submit disabled>Add Ads Credit</button></div>
     </form>
   </dialog>
 

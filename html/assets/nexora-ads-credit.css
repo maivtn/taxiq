@@ -3,7 +3,6 @@
 .ads-heading h2, .ads-dialog h2 { margin: 5px 0 0; color: var(--nexora-text); font-size: 22px; font-weight: 600; }
 .ads-heading h3 { margin: 0; color: var(--nexora-text); font-size: 16px; font-weight: 600; }
 .ads-heading p { margin: 6px 0 0; color: var(--nexora-muted); font-size: 13px; line-height: 1.5; }
-.ads-demo-badge { display: inline-flex; flex-shrink: 0; border: 1px solid var(--nexora-border); border-radius: 999px; padding: 6px 10px; background: #fff; color: var(--nexora-muted); font-size: 11px; }
 .ads-summary { display: grid; grid-template-columns: minmax(260px, .9fr) minmax(0, 1.5fr); overflow: hidden; border: 1px solid var(--nexora-border); border-radius: 16px; background: #fff; box-shadow: var(--nexora-card-shadow); }
 .ads-wallet { padding: 26px; color: #fff; background: linear-gradient(130deg, #3436ac, #4648d8 60%, #6252db); }
 .ads-wallet-label { display: flex; align-items: center; gap: 10px; font-size: 13px; }
@@ -55,7 +54,7 @@
 .ads-close { display: grid; place-items: center; flex-shrink: 0; width: 36px; height: 36px; border: 1px solid var(--nexora-border); border-radius: 50%; color: var(--nexora-muted); background: #fff; cursor: pointer; }
 .ads-close svg { width: 18px; height: 18px; }
 .ads-dialog-body { display: grid; gap: 20px; padding: 20px 24px; }
-.ads-demo-notice { margin: 0; padding: 12px; border-radius: 9px; background: #f3f4ff; color: var(--nexora-muted); font-size: 12px; line-height: 1.6; }
+.ads-notice { margin: 0; padding: 12px; border-radius: 9px; background: #f3f4ff; color: var(--nexora-muted); font-size: 12px; line-height: 1.6; }
 .ads-amount-fieldset { min-width: 0; margin: 0; padding: 0; border: 0; }
 .ads-amount-fieldset legend { margin-bottom: 12px; font-size: 13px; font-weight: 600; }
 .ads-amount-options { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }

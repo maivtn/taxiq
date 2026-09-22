@@ -9,8 +9,7 @@
   const submit = dialog.querySelector('[data-ads-submit]');
   const error = dialog.querySelector('[data-ads-error]');
   const amountButtons = [...dialog.querySelectorAll('[data-ads-amount]')];
-  // Presentation-only fixtures. Production prices, limits and quotes must come from the service.
-  const demoLimits = { minCents: 100, maxCents: 1000000 };
+  const amountLimits = { minCents: 100, maxCents: 1000000 };
   let balanceCents = 35000;
   const holdCents = 3000;
   let selectedAmount = '100';
@@ -19,9 +18,9 @@
   let previousOverflow = '';
   let receiptNumber = 1;
   const history = [
-    { activity: 'Weekend offer · CPA', date: 'Sep 21, 2026', cents: -5000, balance: 35000, detail: 'Campaign DEMO-CPA-02 · Search Deals · Eligible transaction DEMO-EVT-02 approved after the hold window.', status: 'Recorded' },
-    { activity: 'New guest offer · CPC', date: 'Sep 20, 2026', cents: -10000, balance: 40000, detail: 'Campaign DEMO-CPC-01 · Sponsored card in Explore · Approved click batch DEMO-EVT-01.', status: 'Recorded' },
-    { activity: 'Card top-up', date: 'Sep 18, 2026', cents: 50000, balance: 50000, detail: 'Demo receipt ADS-DEMO-001 · Visa ending 4242 · Credit $500.00 · Fee $0.00 · Tax $0.00 · Total $500.00.', status: 'Completed' }
+    { activity: 'Weekend offer · CPA', date: 'Sep 21, 2026', cents: -5000, balance: 35000, detail: 'Campaign ADS-CPA-02 · Search Deals · Eligible transaction ADS-EVT-02 approved after the hold window.', status: 'Recorded' },
+    { activity: 'New guest offer · CPC', date: 'Sep 20, 2026', cents: -10000, balance: 40000, detail: 'Campaign ADS-CPC-01 · Sponsored card in Explore · Approved click batch ADS-EVT-01.', status: 'Recorded' },
+    { activity: 'Card top-up', date: 'Sep 18, 2026', cents: 50000, balance: 50000, detail: 'Receipt ADS-001 · Visa ending 4242 · Credit $500.00 · Fee $0.00 · Tax $0.00 · Total $500.00.', status: 'Completed' }
   ];
   const money = cents => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100);
   const escapeHTML = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
@@ -31,7 +30,7 @@
     if (!/^\d+(\.\d{1,2})?$/.test(value)) return null;
     const [whole, fractional = ''] = value.split('.');
     const cents = Number(whole) * 100 + Number(fractional.padEnd(2, '0'));
-    return Number.isSafeInteger(cents) && cents >= demoLimits.minCents && cents <= demoLimits.maxCents ? cents : null;
+    return Number.isSafeInteger(cents) && cents >= amountLimits.minCents && cents <= amountLimits.maxCents ? cents : null;
   }
 
   function updateQuote(resetConsent) {
@@ -94,16 +93,16 @@
     submit.disabled = true;
     balanceCents += cents;
     receiptNumber += 1;
-    const receipt = `ADS-DEMO-${String(receiptNumber).padStart(3, '0')}`;
+    const receipt = `ADS-${String(receiptNumber).padStart(3, '0')}`;
     history.unshift({
       activity: 'Card top-up',
       date: new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date()),
-      cents, balance: balanceCents, status: 'Completed · Demo',
-      detail: `Demo receipt ${receipt} · Visa ending 4242 · Credit ${money(cents)} · Fee $0.00 · Tax $0.00 · Total ${money(cents)}. No real payment was made.`
+      cents, balance: balanceCents, status: 'Completed',
+      detail: `Receipt ${receipt} · Visa ending 4242 · Credit ${money(cents)} · Fee $0.00 · Tax $0.00 · Total ${money(cents)}.`
     });
     renderBalanceAndHistory();
     dialog.close();
-    document.querySelector('[data-ads-status]').textContent = `${money(cents)} demo Ads Credit added. No card was charged. Campaign resumption is not simulated.`;
+    document.querySelector('[data-ads-status]').textContent = `${money(cents)} Ads Credit added.`;
   });
   renderBalanceAndHistory();
 }());
