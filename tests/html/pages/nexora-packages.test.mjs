@@ -111,8 +111,8 @@ function createPackageActionRuntime(options = {}) {
   const buyButton = fakeInteractiveElement({ planSelect: options.plan || 'Pro' }, { attributes: ['data-plan-select'] });
   const overview = fakeInteractiveElement();
   const purchaseHistory = fakeInteractiveElement();
-  const tabs = ['overview', 'nexora', 'voice', 'history'].map((packageTab) => fakeInteractiveElement({ packageTab }));
-  const panels = ['overview', 'nexora', 'voice', 'history'].map((packagePanel) => fakeInteractiveElement({ packagePanel }));
+  const tabs = ['overview', 'nexora', 'voice', 'usage', 'ads-credit', 'history'].map((packageTab) => fakeInteractiveElement({ packageTab }));
+  const panels = ['overview', 'nexora', 'voice', 'usage', 'ads-credit', 'history'].map((packagePanel) => fakeInteractiveElement({ packagePanel }));
   const priceElements = [
     fakeInteractiveElement({ monthlyAmount: '29', billingPeriodFormat: 'spaced' }),
     fakeInteractiveElement({ monthlyAmount: '79', billingPeriodFormat: 'spaced' }),
@@ -209,8 +209,8 @@ function createPackageActionRuntime(options = {}) {
 function renderPackageHistoryHTML() {
   const purchaseHistory = fakeElement();
   const overview = fakeElement();
-  const tabs = ['overview', 'nexora', 'voice', 'history'].map((packageTab) => fakeElement({ packageTab }));
-  const panels = ['overview', 'nexora', 'voice', 'history'].map((packagePanel) => fakeElement({ packagePanel }));
+  const tabs = ['overview', 'nexora', 'voice', 'usage', 'ads-credit', 'history'].map((packageTab) => fakeElement({ packageTab }));
+  const panels = ['overview', 'nexora', 'voice', 'usage', 'ads-credit', 'history'].map((packagePanel) => fakeElement({ packagePanel }));
   const fixedNow = new Date('2026-08-04T12:00:00+07:00');
   class FixedDate extends Date {
     constructor(...args) {
@@ -275,7 +275,7 @@ test('adds the package heading and ordered management tabs', () => {
   assert.match(html, /<h1 class="page-title"[^>]*>Package Management<\/h1>/);
   assert.match(html, /<p class="page-description"[^>]*>Manage your plans, Voice and SMS usage, and Ads Credit in one place\.<\/p>/);
   const tabs = [...html.matchAll(/data-package-tab="([^"]+)"/g)].map((match) => match[1]);
-  assert.deepEqual(tabs, ['overview', 'nexora', 'voice', 'usage', 'history']);
+  assert.deepEqual(tabs, ['overview', 'nexora', 'voice', 'usage', 'ads-credit', 'history']);
   assert.match(html, /role="tablist"/);
   assert.match(html, /Overview/);
   assert.match(html, /<span>Subscriptions<\/span>/);
@@ -289,6 +289,7 @@ test('adds the package heading and ordered management tabs', () => {
   assert.doesNotMatch(voiceTab, /data-lucide="(?:phone|sparkles)"/);
   assert.doesNotMatch(html, /<span>Voice \+ SMS<\/span>/);
   assert.match(html, /<span>Credit Usage<\/span>/);
+  assert.match(html, /data-package-tab="ads-credit"[\s\S]*?data-lucide="badge-dollar-sign"[\s\S]*?<span>Ads Credit<\/span>/);
   assert.doesNotMatch(html, /data-package-tab="credits"/);
   assert.doesNotMatch(html, /data-package-panel="credits"/);
   const historyTab = html.match(/<button[^>]*data-package-tab="history"[\s\S]*?<\/button>/)?.[0] || '';
@@ -699,7 +700,7 @@ test('keeps package page body copy, metadata, and tables at regular weight', () 
 test('matches the Booking Hub tab treatment', () => {
   const html = source();
   const css = readFileSync(PACKAGE_CSS_URL, 'utf8');
-  assert.equal((html.match(/class="package-tab-icon(?: package-tab-icon-dual)?"/g) || []).length, 5);
+  assert.equal((html.match(/class="package-tab-icon(?: package-tab-icon-dual)?"/g) || []).length, 6);
   assert.match(css, /\.package-tab\s*\{[\s\S]*?border:\s*1px\s+solid\s+var\(--nexora-border\)/);
   assert.match(css, /\.package-tab\s*\{[\s\S]*?border-radius:\s*12px/);
   assert.match(css, /\.package-tab-icon\s*\{[\s\S]*?width:\s*28px[\s\S]*?height:\s*28px/);

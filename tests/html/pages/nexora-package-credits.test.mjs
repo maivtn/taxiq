@@ -38,9 +38,17 @@ test('Usage opens by URL, filters shared AI Hub history, and returns to Overview
   assert.equal(q('[data-package-panel="overview"]').hidden, false);
 });
 
+test('Ads Credit opens as its own tab and stays out of Overview', t => {
+  const { q } = setup(t, 'ads-credit');
+  assert.equal(q('[data-package-panel="ads-credit"]').hidden, false);
+  assert.equal(q('[data-package-tab="ads-credit"]').getAttribute('aria-selected'), 'true');
+  assert.ok(q('[data-package-panel="ads-credit"] [data-ads-open]'));
+  assert.equal(q('[data-package-panel="overview"] [data-ads-open]'), null);
+});
+
 test('Ads top-up requires fresh consent after amount changes and rejects invalid custom amounts', t => {
-  const { q, input, consent } = setup(t);
-  assert.ok(q('[data-ads-open]'), 'Ads Credit entry is available in Overview');
+  const { q, input, consent } = setup(t, 'ads-credit');
+  assert.ok(q('[data-ads-open]'), 'Ads Credit entry is available in its tab');
   q('[data-ads-open]').click();
   assert.equal(q('[data-ads-submit]').disabled, true);
   consent();
@@ -59,8 +67,8 @@ test('Ads top-up requires fresh consent after amount changes and rejects invalid
 });
 
 test('Demo credit is added once, recorded with a receipt, and isolated from Voice/SMS', t => {
-  const { q, window, consent } = setup(t);
-  assert.ok(q('[data-ads-open]'), 'Ads Credit entry is available in Overview');
+  const { q, window, consent } = setup(t, 'ads-credit');
+  assert.ok(q('[data-ads-open]'), 'Ads Credit entry is available in its tab');
   const smsBefore = window.NEXORA_CREDITS.readSmsCredits();
   q('[data-ads-open]').click();
   q('[data-ads-amount="100"]').click();
