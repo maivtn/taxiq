@@ -33,7 +33,7 @@ test('seeds structured booking promotions for a new salon', () => {
   assert.deepEqual(
     offers.map(({ id, type, eligibility, status, image }) => ({ id, type, eligibility, status, image })),
     [
-      { id: 'happy-hours', type: 'percent', eligibility: 'weekday', status: 'active', image: '' },
+      { id: 'happy-hours', type: 'percent', eligibility: 'weekday', status: 'active', image: api.DEFAULT_PROMOTIONS[0].image },
       { id: 'mani-pedi-combo', type: 'fixed', eligibility: 'combo', status: 'active', image: '' },
       { id: 'quiet-day-savings', type: 'percent', eligibility: 'quiet-days', status: 'active', image: '' },
       { id: 'first-visit', type: 'percent', eligibility: 'first-visit', status: 'active', image: '' },
@@ -41,6 +41,39 @@ test('seeds structured booking promotions for a new salon', () => {
     ]
   );
   assert.ok(storage.snapshot(), 'seeding must persist the initial offers');
+  assert.equal(offers[0].image, '../assets/promotions/gel-pedicure-glow-demo.png');
+  assert.ok(require('node:fs').existsSync(require('node:path').resolve(__dirname, '../../../html/customer', offers[0].image)));
+});
+
+test('adds demo photos to unchanged legacy samples while preserving salon edits', () => {
+  const api = requirePromotions();
+  const offers = api.DEFAULT_PROMOTIONS.map(offer => api.normalize({ ...offer, image: '' }));
+  offers[1].title = 'Salon custom combo';
+  const storage = memoryStorage(JSON.stringify({ version: 1, offers }));
+
+  const loaded = api.load(storage);
+
+  assert.ok(loaded[0].image, 'the unchanged sample should gain its demo photo');
+  assert.equal(loaded[1].image, '');
+  assert.equal(loaded[1].title, 'Salon custom combo');
+  assert.ok(JSON.parse(storage.snapshot()).offers[0].image);
+  api.upsert({ ...loaded[0], image: '' }, storage);
+  assert.equal(api.load(storage)[0].image, '', 'removing a demo photo must persist');
+});
+
+test('does not add the demo image to a sample customized by the salon', () => {
+  const api = requirePromotions();
+  const offer = { ...api.DEFAULT_PROMOTIONS[0], title: 'My salon offer', image: '' };
+  const storage = memoryStorage(JSON.stringify({ version: 1, offers: [offer] }));
+  assert.equal(api.load(storage)[0].image, '');
+});
+
+test('preserves uploaded salon photos when loading legacy demo data', () => {
+  const api = requirePromotions();
+  const image = 'data:image/png;base64,AAAA';
+  const offers = api.DEFAULT_PROMOTIONS.map(offer => ({ ...offer, image }));
+  const storage = memoryStorage(JSON.stringify({ version: 1, offers }));
+  assert.ok(api.load(storage).every(offer => offer.image === image));
 });
 
 test('normalizes salon input and rejects unsafe image sources', () => {

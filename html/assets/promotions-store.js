@@ -26,6 +26,7 @@
       description: 'Khung giờ 10:00 AM–2:00 PM',
       startTime: '10:00',
       endTime: '14:00',
+      image: '../assets/promotions/gel-pedicure-glow-demo.png',
       status: 'active'
     },
     {
@@ -100,6 +101,7 @@
     var result = String(value == null ? '' : value).trim();
     if (/^https:\/\//i.test(result)) return result;
     if (/^data:image\/(?:jpeg|png|webp);base64,/i.test(result)) return result;
+    if (/^\.\.\/assets\/promotions\/[a-z0-9-]+\.(?:png|jpg|webp)$/i.test(result)) return result;
     return '';
   }
 
@@ -147,7 +149,7 @@
     var normalized = (Array.isArray(offers) ? offers : []).map(normalize);
     if (!target || typeof target.setItem !== 'function') return false;
     try {
-      target.setItem(STORAGE_KEY, JSON.stringify({ version: VERSION, offers: normalized }));
+      target.setItem(STORAGE_KEY, JSON.stringify({ version: VERSION, demoImagesVersion: 1, offers: normalized }));
       notify(normalized);
       return true;
     } catch (_error) {
@@ -163,7 +165,18 @@
       if (raw) {
         var parsed = JSON.parse(raw);
         if (parsed && parsed.version === VERSION && Array.isArray(parsed.offers)) {
-          return parsed.offers.map(normalize);
+          var offers = parsed.offers.map(normalize);
+          if (!parsed.demoImagesVersion) {
+            offers.forEach(function (offer) {
+              var sample = DEFAULT_PROMOTIONS.find(function (item) { return item.id === offer.id && item.image; });
+              if (!sample || offer.image) return;
+              var original = normalize(sample);
+              original.image = '';
+              if (JSON.stringify(offer) === JSON.stringify(original)) offer.image = sample.image;
+            });
+            save(offers, target);
+          }
+          return offers;
         }
       }
     } catch (_error) {}
