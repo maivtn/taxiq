@@ -5,6 +5,8 @@ import { JSDOM } from 'jsdom';
 
 const page = new URL('../../../html/pages/nexora-packages.html', import.meta.url);
 const assets = new URL('../../../html/assets/', import.meta.url);
+const packageCss = new URL('nexora-packages.css', assets);
+const adsCreditCss = new URL('nexora-ads-credit.css', assets);
 function setup(t, tab = 'overview') {
   const dom = new JSDOM(readFileSync(page, 'utf8'), { url: `https://example.test/nexora-packages.html?tab=${tab}`, runScripts: 'outside-only' });
   t.after(() => dom.window.close());
@@ -45,6 +47,16 @@ test('Ads Credit opens as its own tab and stays out of Overview', t => {
   assert.ok(q('[data-package-panel="ads-credit"] [data-ads-open]'));
   assert.equal(q('[data-package-panel="overview"] [data-ads-open]'), null);
   assert.doesNotMatch(window.document.body.textContent, /demo/i);
+});
+
+test('Package Management never renders text below 11px', () => {
+  for (const stylesheet of [packageCss, adsCreditCss]) {
+    const css = readFileSync(stylesheet, 'utf8');
+    const undersized = [...css.matchAll(/font-size:\s*(\d+(?:\.\d+)?)px/g)]
+      .map(match => Number(match[1]))
+      .filter(size => size < 11);
+    assert.deepEqual(undersized, [], `${stylesheet.pathname} contains text smaller than 11px`);
+  }
 });
 
 test('Ads top-up requires fresh consent after amount changes and rejects invalid custom amounts', t => {

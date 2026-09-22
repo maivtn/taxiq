@@ -239,7 +239,7 @@
   background: rgba(239, 68, 68, 0.12);
   padding: 0 7px;
   color: var(--nexora-danger);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
 }
 
@@ -288,7 +288,7 @@
   background: #eef1ff;
   padding: 5px 9px;
   color: var(--nexora-brand);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -368,7 +368,7 @@
 .package-countdown-label {
   display: block;
   color: var(--nexora-subtle);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 400;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -535,7 +535,7 @@
   right: 6px;
   transform: translateY(-50%);
   color: #64748b;
-  font-size: 8px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.03em;
   transition: color .18s ease, right .18s ease, left .18s ease;
@@ -558,7 +558,7 @@
 .package-countdown-unit span {
   margin-top: 6px;
   color: var(--nexora-subtle);
-  font-size: 9px;
+  font-size: 11px;
   font-weight: 400;
   line-height: 1;
   white-space: nowrap;
@@ -948,7 +948,7 @@
 
 .package-plan-content .card-meta {
   color: var(--nexora-brand);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 400;
   letter-spacing: 0.06em;
   text-transform: uppercase;
@@ -1195,7 +1195,7 @@
   flex-shrink: 0;
   border-radius: 999px;
   padding: 5px 9px;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.05em;
 }
@@ -1211,7 +1211,7 @@
   background: linear-gradient(90deg, var(--nexora-brand), var(--nexora-violet));
   padding: 8px 14px;
   color: #fff;
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.08em;
   text-align: center;
@@ -1453,7 +1453,7 @@ body.package-trial-open {
   background: rgba(70, 72, 216, 0.07);
   padding: 7px 12px;
   color: var(--nexora-brand);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   letter-spacing: 0.04em;
   text-transform: uppercase;
@@ -1529,7 +1529,7 @@ body.package-trial-open {
   background: #fff;
   padding: 6px 10px;
   color: var(--nexora-text);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 400;
 }
 
@@ -1562,7 +1562,7 @@ body.package-trial-open {
 
 .package-trial-label {
   color: var(--nexora-subtle);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 400;
   letter-spacing: 0.03em;
   text-transform: uppercase;
@@ -1574,7 +1574,7 @@ body.package-trial-open {
 
 .package-trial-label em {
   color: var(--nexora-subtle);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 400;
   letter-spacing: 0;
   text-transform: none;
@@ -1606,7 +1606,7 @@ body.package-trial-open {
 
 .package-trial-field small {
   color: var(--nexora-muted);
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.35;
 }
 
@@ -1624,7 +1624,7 @@ body.package-trial-open {
   background: #fff;
   padding: 7px 10px;
   color: var(--nexora-muted);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 600;
   cursor: pointer;
 }
@@ -1688,7 +1688,7 @@ body.package-trial-open {
   margin: 11px 0 0;
   color: var(--nexora-subtle);
   text-align: center;
-  font-size: 10px;
+  font-size: 11px;
   line-height: 1.45;
 }
 
@@ -1900,7 +1900,7 @@ body.package-payment-open {
 .package-payment-balance span {
   display: block;
   color: var(--nexora-subtle);
-  font-size: 10px;
+  font-size: 11px;
   font-weight: 400;
   letter-spacing: 0.05em;
   text-transform: uppercase;
@@ -2182,7 +2182,7 @@ body.package-payment-open {
   .package-history-table td::before {
     color: var(--nexora-subtle);
     content: attr(data-label);
-    font-size: 10px;
+    font-size: 11px;
     font-weight: 400;
     letter-spacing: 0.04em;
     text-align: left;
@@ -2309,6 +2309,6 @@ body.package-payment-open {
   }
 
   .package-countdown-unit span {
-    font-size: 8px;
+    font-size: 11px;
   }
 }

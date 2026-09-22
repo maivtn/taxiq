@@ -44,7 +44,7 @@
 .ads-table td:first-child strong { font-weight: 500; }
 .ads-table summary { color: var(--nexora-brand); cursor: pointer; white-space: nowrap; }
 .ads-table details p { min-width: 150px; max-width: 240px; line-height: 1.65; }
-.ads-row-status { display: block; margin-top: 6px; color: var(--nexora-muted); font-size: 10px; }
+.ads-row-status { display: block; margin-top: 6px; color: var(--nexora-muted); font-size: 11px; }
 .ads-positive { color: #168554; font-weight: 600; }
 .ads-history-note { margin: 0; padding: 12px 20px; border-top: 1px solid var(--nexora-border); background: #fcfcff; }
 .ads-dialog { width: min(640px, calc(100% - 32px)); max-height: calc(100dvh - 32px); border: 1px solid var(--nexora-border); border-radius: 18px; padding: 0; color: var(--nexora-text); background: #fff; box-shadow: 0 24px 80px #081f4940; }
