@@ -58,6 +58,39 @@ test('Vietnamese dates use tháng and period filters show the empty result', t =
   assert.equal(d.querySelectorAll('[data-activity-row]').length, 0);
 });
 
+test('phone navigation switches sections and resets filters without accepting policy', t => {
+  const { d, change } = setup(t);
+  change('#earnings-view', 'activity');
+  change('#status-filter', 'hold');
+  assert.equal(d.querySelectorAll('[data-activity-row]').length, 1);
+  change('#earnings-view', 'payouts');
+  assert.equal(d.querySelectorAll('[data-payout-status]').length, 3);
+  assert.equal(d.querySelector('[aria-current="page"]').dataset.view, 'payouts');
+  change('#earnings-view', 'activity');
+  assert.equal(d.querySelectorAll('[data-activity-row]').length, 5);
+  change('#earnings-view', 'settings');
+  assert.equal(d.querySelector('#consent').checked, false);
+  assert.equal(d.querySelector('[data-action="toggle"]').disabled, true);
+});
+
+test('phone earnings cards retain column labels after filtering and changing language', t => {
+  const { d, click, change } = setup(t);
+  change('#language', 'vi');
+  for (const view of ['activity', 'reserves', 'payouts', 'settings']) {
+    click('.eq-nav [data-view="' + view + '"]');
+    const table = d.querySelector('table');
+    const headers = Array.from(table.querySelectorAll('th'), th => th.textContent.trim());
+    for (const row of table.querySelectorAll('tbody tr')) {
+      Array.from(row.cells).forEach((cell, i) => assert.equal(cell.dataset.label, headers[i]));
+    }
+  }
+  click('.eq-nav [data-view="activity"]');
+  change('#status-filter', 'hold');
+  assert.equal(d.querySelector('[data-activity-row] td').dataset.label, 'Hoạt động / chiến dịch');
+  change('#period-filter', '2026-08');
+  assert.equal(d.querySelector('td[colspan]').hasAttribute('data-label'), false);
+});
+
 test('policy links open a readable page in the current language without accepting consent', t => {
   const { d, click, change } = setup(t);
   click('[data-view="settings"]');
@@ -98,4 +131,26 @@ test('policy language switching preserves the section and returns to monetizatio
   earnings.window.eval(readFileSync(script, 'utf8'));
   assert.equal(earnings.window.document.querySelector('[aria-current="page"]').dataset.view, 'settings');
   assert.equal(earnings.window.document.querySelector('#consent').checked, false);
+});
+
+test('phone policy contents start collapsed and rate cards keep the correct language labels', t => {
+  const dom = new JSDOM(readFileSync(new URL('../../../html/pages/oneqr-policy.html', import.meta.url), 'utf8'), { url: 'https://example.test/html/pages/oneqr-policy.html?lang=vi', runScripts: 'outside-only' });
+  t.after(() => dom.window.close());
+  let onResize;
+  const media = { matches: true, addEventListener: (event, handler) => { onResize = handler; } };
+  dom.window.matchMedia = () => media;
+  dom.window.eval(readFileSync(new URL('../../../html/assets/oneqr-policy.js', import.meta.url), 'utf8'));
+  const d = dom.window.document;
+  assert.equal(d.querySelector('.policy-contents').open, false);
+  d.querySelector('.policy-contents').open = true;
+  assert.equal(d.querySelectorAll('.policy-toc a').length, 12);
+  for (const lang of ['vi', 'en']) {
+    const table = d.querySelector('[data-policy-lang="' + lang + '"] table');
+    const headers = Array.from(table.querySelectorAll('th'), th => th.textContent.trim());
+    Array.from(table.querySelector('tbody tr').cells).forEach((cell, i) => assert.equal(cell.dataset.label, headers[i]));
+  }
+  media.matches = false; onResize();
+  assert.equal(d.querySelector('.policy-contents').open, true);
+  media.matches = true; onResize();
+  assert.equal(d.querySelector('.policy-contents').open, false);
 });

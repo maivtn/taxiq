@@ -3,6 +3,7 @@ import assert from 'node:assert/strict';
 import { existsSync, readFileSync } from 'node:fs';
 import { createRequire } from 'node:module';
 import { fileURLToPath } from 'node:url';
+import { JSDOM } from 'jsdom';
 
 const SOURCE_DIR = new URL('../../../html/pages/', import.meta.url);
 
@@ -13,6 +14,33 @@ const ONEQR_URL = new URL('../assets/qr-stations-oneqr.js', SOURCE_DIR);
 const QRCODE_URL = new URL('../assets/qr-stations-qrcode.js', SOURCE_DIR);
 const WORKFLOWS_URL = new URL('../assets/qr-stations-workflows.js', SOURCE_DIR);
 const require = createRequire(import.meta.url);
+
+test('reorders OneQR modules with buttons while preserving enabled state and role isolation', t => {
+  const dom = new JSDOM(source(), { url: 'https://example.test/html/pages/qr-stations.html?tab=one-qr', runScripts: 'outside-only' });
+  t.after(() => dom.window.close());
+  dom.window.eval(oneqrSource());
+  const d = dom.window.document;
+  const order = () => Array.from(d.querySelectorAll('[data-module-row]'), row => row.dataset.moduleRow);
+  const original = order();
+  const first = d.querySelector('[data-module-row]');
+  assert.equal(first.querySelector('[data-move="up"]').disabled, true);
+  first.querySelector('.oneqr-switch').click();
+  first.querySelector('[data-move="down"]').click();
+  assert.deepEqual(order().slice(0, 2), [original[1], original[0]]);
+  assert.equal(d.querySelector('[data-module="' + original[0] + '"]').getAttribute('aria-pressed'), 'false');
+  assert.equal(d.querySelector('#oneqrPreviewTiles b').textContent, original[1]);
+  assert.equal(d.activeElement.closest('[data-module-row]').dataset.moduleRow, original[0]);
+  d.querySelector('.oneqr-role-tab[data-role="staff"]').click();
+  const staffOrder = order();
+  d.querySelector('[data-module-row] [data-move="down"]').click();
+  assert.deepEqual(order().slice(0, 2), [staffOrder[1], staffOrder[0]]);
+  d.querySelector('.oneqr-role-tab[data-role="customer"]').click();
+  assert.deepEqual(order().slice(0, 2), [original[1], original[0]]);
+  d.querySelectorAll('[data-module-row]')[1].querySelector('[data-move="up"]').click();
+  assert.deepEqual(order(), original);
+  assert.equal(d.activeElement.dataset.move, 'down');
+  assert.equal(d.querySelector('[data-module-row]:last-child [data-move="down"]').disabled, true);
+});
 
 function source() {
   assert.ok(existsSync(PAGE_URL), 'qr-stations.html must exist');

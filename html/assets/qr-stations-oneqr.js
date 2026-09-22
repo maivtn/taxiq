@@ -255,12 +255,13 @@
   function renderModules() {
     var order = moduleOrderByRole[currentRole] || [];
     var enabledSet = enabledByRole[currentRole] || new Set();
-    moduleListEl.innerHTML = order.map(function (name) {
+    moduleListEl.innerHTML = order.map(function (name, index) {
       var on = enabledSet.has(name);
       return '<div class="oneqr-module" data-module-row="' + name + '" draggable="false">' +
         '<span class="oneqr-module-drag" aria-hidden="true" title="Drag to reorder"><i data-lucide="grip-vertical"></i></span>' +
         '<span class="oneqr-module-icon">' + iconHtml(name) + '</span>' +
         '<strong>' + name + '</strong>' +
+        '<span class="oneqr-module-moves"><button type="button" data-move="up" aria-label="Move ' + name + ' up"' + (index === 0 ? ' disabled' : '') + '>↑</button><button type="button" data-move="down" aria-label="Move ' + name + ' down"' + (index === order.length - 1 ? ' disabled' : '') + '>↓</button></span>' +
         '<button type="button" class="oneqr-switch' + (on ? ' is-on' : '') + '" data-module="' + name + '" aria-pressed="' + on + '" aria-label="Toggle ' + name + ' module"></button>' +
         '</div>';
     }).join('');
@@ -366,6 +367,23 @@
   });
 
   moduleListEl.addEventListener('click', function (event) {
+    var move = event.target.closest('[data-move]');
+    if (move) {
+      var row = move.closest('[data-module-row]');
+      var order = moduleOrderByRole[currentRole];
+      var from = order.indexOf(row.getAttribute('data-module-row'));
+      var to = from + (move.dataset.move === 'up' ? -1 : 1);
+      if (from < 0 || to < 0 || to >= order.length) return;
+      var direction = move.dataset.move;
+      order.splice(to, 0, order.splice(from, 1)[0]);
+      renderModules();
+      renderPreview();
+      var movedRow = moduleListEl.children[to];
+      var nextFocus = movedRow.querySelector('[data-move="' + direction + '"]');
+      if (nextFocus.disabled) nextFocus = movedRow.querySelector('[data-move]:not(:disabled)');
+      nextFocus.focus();
+      return;
+    }
     var btn = event.target.closest('.oneqr-switch');
     if (!btn) return;
     var name = btn.getAttribute('data-module');

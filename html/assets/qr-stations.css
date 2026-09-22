@@ -3180,3 +3180,61 @@
 .oneqr-earnings-entry a { flex-shrink: 0; text-decoration: none; text-transform: none; }
 .oneqr-earnings-entry .oneqr-pill { text-transform: none; }
 @media (max-width: 650px) { .oneqr-earnings-entry { align-items: flex-start; flex-direction: column; gap: 10px; padding: 12px; } }
+
+/* Button controls also support touch and keyboard reordering. */
+.oneqr-module-moves { display: inline-flex; flex-shrink: 0; gap: 2px; }
+.oneqr-module-moves button { width: 32px; min-height: 32px; border: 1px solid #dde5ef; border-radius: 6px; color: #4b48e7; background: #f7f7ff; cursor: pointer; }
+.oneqr-module-moves button:disabled { opacity: .3; cursor: default; }
+.oneqr-module-moves button:focus-visible { outline: 2px solid #635bff; outline-offset: 2px; }
+
+@media screen and (max-width: 650px) {
+  .qr-stations-shell, .qr-stations-heading, .qr-panel, .oneqr-panel { min-width: 0; }
+  .qr-stations-shell { gap: 16px; }
+  .qr-stations-heading { gap: 12px; }
+  .qr-stations-heading p, .oneqr-heading p, .oneqr-qrcard-detail p { font-size: 13px; line-height: 1.5; }
+  .qr-tabs { flex-wrap: nowrap; overflow-x: auto; padding: 2px 0 6px; gap: 8px; }
+  .qr-tab { flex-shrink: 0; min-height: 44px; font-size: 13px; }
+  .oneqr-stats-bar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .oneqr-stat { min-width: 0; padding: 12px; gap: 4px; }
+  .oneqr-qrcard { gap: 12px; padding: 12px; align-items: center; }
+  .oneqr-qrcard-frame { align-self: center; }
+  .oneqr-qrcard-detail { flex: 1 1 auto; width: 100%; max-width: 100%; }
+  .oneqr-qrcard-title-row { align-items: flex-start; }
+  .oneqr-qrcard-title-row h3 { align-self: center; }
+  .oneqr-qrcard-url { font-size: 12px; }
+  .oneqr-qrcard-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
+  .oneqr-qrcard-btn { min-height: 44px; padding: 8px; font-size: 12px; text-transform: none; }
+  .oneqr-qrcard-btn svg { flex-shrink: 0; }
+  .oneqr-earnings-entry a { align-self: stretch; }
+  .oneqr-panel { flex-basis: 100%; padding: 12px; }
+  .oneqr-panel-head h3 { font-size: 15px; }
+  .oneqr-module { gap: 6px; padding: 6px; min-height: 56px; }
+  .oneqr-module-drag, .oneqr-module-icon { display: none; }
+  .oneqr-module strong { min-width: 0; font-size: 13px; overflow-wrap: anywhere; }
+  .oneqr-module-moves button { width: 44px; min-height: 44px; font-size: 18px; }
+  .oneqr-switch { width: 44px; height: 44px; background: transparent; }
+  .oneqr-switch::before { content: ''; position: absolute; inset: 12px 4px; background: #d8dce6; border-radius: 999px; }
+  .oneqr-switch::after { top: 15px; left: 7px; }
+  .oneqr-switch.is-on { background: transparent; }
+  .oneqr-switch.is-on::before { background: #4b48e7; }
+  .oneqr-switch.is-on::after { left: 23px; }
+  .oneqr-role-tab, .oneqr-add-module, .oneqr-save-btn, .oneqr-phone-viewall, .oneqr-modal-item { min-height: 44px; font-size: 13px; }
+  .oneqr-field label { font-size: 13px; }
+  .oneqr-field input, .oneqr-field select { min-width: 0; width: 100%; min-height: 44px; font-size: 16px; }
+  .oneqr-field select { appearance: none; padding-right: 44px; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%23565e74' stroke-width='1.5'/%3E%3C/svg%3E") no-repeat right 16px center / 16px 16px; }
+  .oneqr-modal-close, .oneqr-qrcard .qr-open-link { min-width: 44px; min-height: 44px; display: grid; place-items: center; }
+  [data-salon-modal-close] { min-width: 52px; min-height: 52px; }
+  [data-salon-modal-actions] button { min-height: 44px; font-size: 12px; }
+  .oneqr-modal-dialog { max-height: calc(100dvh - 24px); }
+}
+
+@media screen and (max-width: 650px), screen and (max-width: 950px) and (max-height: 500px) {
+  [data-salon-qr-modal] > div { max-height: calc(100dvh - 24px); overflow: hidden; display: flex; flex-direction: column; }
+  [data-salon-qr-modal] > div > div { display: flex; flex-direction: column; min-height: 0; }
+  [data-salon-qr-modal] [data-salon-print-card] { transform: none; margin-bottom: 0; min-height: 0; overflow-y: auto; padding: 12px; }
+  [data-salon-qr-modal] [data-salon-modal-qr] { width: min(255px, calc(100vw - 100px)); max-width: 100%; }
+  [data-salon-qr-modal] [data-print-rewarded] { font-size: 26px; }
+  [data-salon-qr-modal] [data-salon-modal-close] { position: sticky; top: 0; right: auto; float: right; margin-left: -44px; min-width: 44px; min-height: 44px; z-index: 20; background: #202331; }
+  [data-salon-modal-actions] { flex-shrink: 0; padding: 8px; }
+  [data-salon-modal-actions] button { min-height: 44px; font-size: 12px; }
+}

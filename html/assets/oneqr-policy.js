@@ -2,6 +2,23 @@
   'use strict';
   const selector = document.getElementById('policy-language');
   if (!selector) return;
+  const contents = document.querySelector('.policy-contents');
+  const phone = window.matchMedia ? window.matchMedia('(max-width: 650px)') : null;
+  if (contents && phone) {
+    const syncContents = () => { contents.open = !phone.matches; };
+    syncContents();
+    phone.addEventListener('change', syncContents);
+  }
+  document.querySelectorAll('.policy-table table').forEach(table => {
+    table.setAttribute('role', 'table');
+    const headers = Array.from(table.querySelectorAll('th'), th => th.textContent.trim());
+    table.querySelectorAll('tr').forEach(row => row.setAttribute('role', 'row'));
+    table.querySelectorAll('th').forEach(th => th.setAttribute('role', 'columnheader'));
+    table.querySelectorAll('tbody tr').forEach(row => Array.from(row.cells).forEach((cell, i) => {
+      cell.setAttribute('role', 'cell');
+      cell.dataset.label = headers[i];
+    }));
+  });
   function setLanguage(value) {
     const lang = value === 'en' ? 'en' : 'vi';
     selector.value = lang;
