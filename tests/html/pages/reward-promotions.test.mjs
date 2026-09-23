@@ -37,7 +37,7 @@ async function boot(t, saved, beforeEval) {
   if (saved !== undefined) w.localStorage.setItem(storageKey, typeof saved === 'string' ? saved : JSON.stringify(saved));
   await new Promise(resolve => w.addEventListener('load', resolve, {once: true}));
   if (beforeEval) beforeEval(w);
-  w.eval(readFileSync(new URL('../assets/reward-promotions.js', SOURCE_DIR), 'utf8'));
+  for (const script of ['promotion-studio.js','promotion-campaigns.js','reward-promotions.js']) w.eval(readFileSync(new URL('../assets/'+script, SOURCE_DIR), 'utf8'));
   await tick();
   const cards = () => [...d.querySelectorAll('.promotion-card[data-promotion-id]')];
   const card = id => cards().find(element => element.dataset.promotionId === id);
@@ -511,4 +511,166 @@ test('upload completion from a closed draft cannot attach to the next promotion'
   assert.equal(savedState().offers.length, 1);
   assert.equal(savedState().offers[0].title, 'Current offer');
   assert.equal(savedState().offers[0].banners.some(banner => banner.assetId === 'stale-asset'), false);
+});
+
+test('structured salon conditions and CTA persist and are included in the poster', async t => {
+  const {d, card, field, submit, savedState} = await boot(t, catalog());
+  card('offer-a').querySelector('[data-action="edit"]').click();
+  field('serviceScope', 'selected'); field('serviceIds', 'classic-pedicure');
+  field('customerGroup', 'new'); field('stacking', 'exclusive');
+  field('startDate', '2099-10-01'); field('endDate', '2099-10-31');
+  field('exclusions', 'Not valid with gift cards'); field('cta', 'booking');
+  submit();
+  const saved = savedState().offers[0];
+  assert.equal(saved.serviceScope, 'selected');
+  assert.deepEqual(saved.serviceIds, ['classic-pedicure']);
+  assert.equal(saved.customerGroup, 'new');
+  assert.equal(saved.stacking, 'exclusive');
+  assert.equal(saved.endDate, '2099-10-31');
+  card('offer-a').querySelector('[data-action="preview"]').click();
+  const details = d.querySelector('#poster-details').textContent;
+  assert.match(details, /Classic Pedicure/); assert.match(details, /New customers/);
+  assert.match(details, /Not valid with gift cards/); assert.match(details, /2099-10-31/);
+});
+
+test('invalid effective dates and missing selected services cannot be saved', async t => {
+  const {d, card, field, submit, savedState} = await boot(t, catalog());
+  card('offer-a').querySelector('[data-action="edit"]').click();
+  field('endDate', '2026-09-01'); submit();
+  assert.equal(d.activeElement.name, 'endDate');
+  assert.equal(savedState().offers[0].endDate, '');
+  field('endDate', '2099-10-31'); field('serviceScope', 'selected'); submit();
+  assert.equal(d.activeElement.name, 'serviceIds');
+  assert.equal(d.querySelector('#promotion-editor').open, true);
+});
+
+test('unchanged Public approval is preserved but content edits create a new pending revision', async t => {
+  const {d, card, field, submit, savedState} = await boot(t, catalog([offer({public:'approved', publicationVersion:3})]));
+  card('offer-a').querySelector('[data-action="edit"]').click(); submit();
+  assert.equal(savedState().offers[0].public, 'approved');
+  card('offer-a').querySelector('[data-action="edit"]').click(); field('title','Revised offer'); submit();
+  const saved = savedState().offers[0];
+  assert.equal(saved.public, 'pending'); assert.equal(saved.publicationVersion, 4);
+  assert.equal(saved.publicationHistory.at(-1).snapshot.title, 'Revised offer');
+  card('offer-a').querySelector('[data-action="edit"]').click(); field('public', false); submit();
+  assert.equal(savedState().offers[0].public, 'private');
+  assert.equal(savedState().offers[0].hero, true);
+  assert.equal(savedState().offers[0].checkout, true);
+});
+
+test('campaign configuration validates budgets and schedule, saves a draft and survives reload', async t => {
+  const {w, d, input, savedState} = await boot(t, catalog([offer({startDate:'2099-10-01',endDate:'2099-10-31'})]));
+  assert.ok(d.querySelector('#create-campaign'));
+  d.querySelector('#create-campaign').click();
+  const set = (name, value) => input('#campaign-form [name="'+name+'"]', value);
+  set('name', 'October bookings'); set('promotionId', 'offer-a');
+  set('startDate','2099-09-30'); set('endDate','2099-10-20');
+  set('area', 'Austin'); set('dailyBudget','20'); set('totalBudget','100');
+  d.querySelector('#save-campaign').click();
+  assert.equal(d.querySelector('#campaign-editor').open, true);
+  assert.match(d.querySelector('#campaign-error').textContent, /schedule|dates|within/i);
+  set('startDate','2099-10-01'); set('dailyBudget','101'); d.querySelector('#save-campaign').click();
+  assert.match(d.querySelector('#campaign-error').textContent, /budget/i);
+  set('dailyBudget','20'); d.querySelector('#save-campaign').click();
+  assert.equal(d.querySelector('#campaign-editor').open, false);
+  assert.equal(savedState().campaigns[0].status, 'draft');
+  assert.equal(savedState().campaigns[0].dailyBudget, 20);
+  assert.equal(savedState().campaigns[0].source, 'ads-credit');
+  const restored = await boot(t, w.localStorage.getItem(storageKey));
+  assert.match(restored.d.querySelector('#campaign-list').textContent, /October bookings/);
+  assert.match(restored.d.querySelector('#campaign-list').textContent, /Public/);
+});
+
+const campaignFixture = (patch = {}) => ({id:'campaign-a',name:'Autumn traffic',promotionId:'offer-a',creativeId:'banner-a',objective:'traffic',area:'Austin',radius:10,category:'beauty',audience:'local',placements:['search'],startDate:'2099-10-01',endDate:'2099-10-20',dailyBudget:20,totalBudget:100,billing:'cpc',source:'ads-credit',status:'draft',...patch});
+
+test('review requires explicit consent and pause never changes the source promotion', async t => {
+  const fixture = {...catalog(),campaigns:[campaignFixture()]};
+  const {d,input,savedState} = await boot(t,fixture);
+  d.querySelector('[data-campaign-action="edit"]').click();
+  d.querySelector('#submit-campaign').click();
+  assert.equal(savedState().campaigns[0].status,'draft');
+  assert.equal(d.activeElement.name,'consent');
+  input('#campaign-form [name="consent"]',true); d.querySelector('#submit-campaign').click();
+  assert.equal(savedState().campaigns[0].status,'pending');
+  assert.equal(savedState().campaigns[0].consent.totalBudget,100);
+  d.querySelector('[data-campaign-action="pause"]').click();
+  assert.equal(savedState().campaigns[0].status,'paused');
+  assert.deepEqual(savedState().offers,fixture.offers);
+  d.querySelector('[data-campaign-action="edit"]').click();
+  assert.equal(d.querySelector('#campaign-form [name="consent"]').checked,false);
+});
+
+test('campaign edits keep the draft on failed storage and reject a remotely changed promotion', async t => {
+  const {w,d,input,savedState} = await boot(t,{...catalog(),campaigns:[campaignFixture()]});
+  d.querySelector('[data-campaign-action="edit"]').click();
+  input('#campaign-form [name="name"]','Unsaved change');
+  const write = w.Storage.prototype.setItem;
+  w.Storage.prototype.setItem = () => { throw new Error('full'); };
+  d.querySelector('#save-campaign').click();
+  assert.equal(d.querySelector('#campaign-editor').open,true);
+  assert.equal(savedState().campaigns[0].name,'Autumn traffic');
+  assert.match(d.querySelector('#campaign-error').textContent,/storage|save/i);
+  w.Storage.prototype.setItem = write;
+  const next = {...savedState(),offers:[offer({title:'New source content'})]};
+  w.localStorage.setItem(storageKey,JSON.stringify(next));
+  w.dispatchEvent(new w.StorageEvent('storage',{key:storageKey,newValue:JSON.stringify(next)}));
+  d.querySelector('#save-campaign').click();
+  assert.match(d.querySelector('#campaign-error').textContent,/changed/i);
+  assert.equal(savedState().campaigns[0].name,'Autumn traffic');
+});
+
+test('new drafts have explicit eligibility while legacy promotions retain existing terms', async t => {
+  const {d,field,submit,savedState} = await boot(t,catalog([]));
+  d.querySelector('#create-promotion').click(); field('title','New offer'); submit();
+  const saved = savedState().offers[0];
+  assert.equal(saved.serviceScope,'all'); assert.equal(saved.customerGroup,'all'); assert.equal(saved.stacking,'exclusive');
+});
+
+test('invalid campaign data does not overwrite stored data and exposes retry', async t => {
+  const raw = JSON.stringify({...catalog(),campaigns:[null]});
+  const {w,d} = await boot(t,raw);
+  assert.equal(w.localStorage.getItem(storageKey),raw);
+  assert.equal(d.querySelector('#promotion-load-error').hidden,false);
+  assert.equal(d.querySelector('#create-campaign').disabled,true);
+});
+
+test('changing only a Public creative invalidates its old approval', async t => {
+  const {d,card,input,submit,savedState} = await boot(t,catalog([offer({public:'approved',publicationVersion:2})]));
+  card('offer-a').querySelector('[data-action="edit"]').click(); input('#banner-theme','gold'); submit();
+  assert.equal(savedState().offers[0].public,'pending');
+  assert.equal(savedState().offers[0].publicationVersion,3);
+  assert.equal(savedState().offers[0].publicationHistory.at(-1).snapshot.banners[0].theme,'gold');
+});
+
+test('promotions referenced by campaigns keep their source and can be disabled instead of deleted', async t => {
+  const {d,card,savedState} = await boot(t,{...catalog([offer({uses:0})]),campaigns:[campaignFixture()]});
+  card('offer-a').querySelector('[data-action="delete"]').click();
+  assert.equal(savedState().offers.length,1);
+  assert.match(d.querySelector('#promotion-feedback').textContent,/campaign/i);
+  card('offer-a').querySelector('[data-action="toggle"]').click();
+  assert.equal(savedState().offers[0].paused,true);
+});
+
+test('ended campaign retains a read-only configuration and its history', async t => {
+  const {d,savedState} = await boot(t,{...catalog(),campaigns:[campaignFixture({status:'ended',history:[{at:1,status:'ended'}]})]});
+  const before = savedState();
+  assert.ok(d.querySelector('[data-campaign-action="view"]'));
+  d.querySelector('[data-campaign-action="view"]').click();
+  assert.equal(d.querySelector('#campaign-editor').open,true);
+  assert.equal(d.querySelector('#campaign-form [name="name"]').disabled,true);
+  assert.equal(d.querySelector('#save-campaign').hidden,true);
+  assert.match(d.querySelector('#campaign-history').textContent,/Ended/);
+  d.querySelector('#campaign-form').dispatchEvent(new d.defaultView.Event('submit',{bubbles:true,cancelable:true}));
+  assert.deepEqual(savedState(),before);
+});
+
+test('salon templates carry their service and customer conditions into configuration', async t => {
+  const {d,close} = await boot(t,catalog([]));
+  for (const [template,group,ids] of [['weekday','all',['classic-pedicure']],['welcome','new',['classic-pedicure']],['upgrade','all',['nail-art','foot-massage']]]) {
+    d.querySelector('[data-template="'+template+'"]').click();
+    assert.equal(d.querySelector('[name="serviceScope"]').value,'selected');
+    assert.equal(d.querySelector('[name="customerGroup"]').value,group);
+    assert.deepEqual([...d.querySelector('[name="serviceIds"]').selectedOptions].map(option=>option.value),ids);
+    close();
+  }
 });

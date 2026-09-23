@@ -3,10 +3,10 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Nexora Touch - Promotions</title>
+  <title>Nexora Touch - Promotion Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/reward-promotions.css?v=20260915-template-symbols">
+  <link rel="stylesheet" href="../assets/reward-promotions.css?v=20260923-studio">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
 </head>
 <body>
@@ -15,9 +15,12 @@
 <script src="../assets/nexora-shell.js"></script>
 <main class="promotions-page">
   <header class="promotions-heading">
-    <div><p class="promo-eyebrow">Reward / Promotions</p><h1>Promotions</h1><p data-i18n="subtitle">Compelling offers. Clear terms. The right places to share.</p></div>
+    <div><p class="promo-eyebrow">Reward / Promotions</p><h1>Promotion Studio</h1><p data-i18n="subtitle">Compelling offers. Clear terms. The right places to share.</p></div>
     <div class="heading-actions"><label class="promo-language"><span class="sr-only" data-i18n="language">Language</span><select id="promotion-language" aria-label="Language"><option value="en">English</option><option value="vi">Tiếng Việt</option></select></label><button class="promo-button primary" id="create-promotion"><span data-icon="plus"></span><span data-i18n="addPromotion">Add promotion</span></button></div>
   </header>
+  <p class="studio-context" data-i18n="salonContext"></p>
+  <nav class="studio-tabs" aria-label="Promotion Studio"><button class="active" type="button" data-studio-tab="offers" aria-pressed="true" data-i18n="offersTab"></button><button type="button" data-studio-tab="campaigns" aria-pressed="false" data-i18n="campaignsTab"></button><button type="button" data-studio-tab="results" aria-pressed="false" data-i18n="reportsTab"></button></nav>
+  <div id="studio-offers">
   <section class="promo-library" aria-labelledby="templates-title">
     <p class="promo-eyebrow" data-i18n="startTemplate">Start with a template</p><h2 id="templates-title" data-i18n="templateTitle">Choose a template. Make it yours. Preview.</h2>
     <p class="section-description" data-i18n="templateDescription">Templates fill in the name, terms, discount and schedule. Offers are illustrative; new promotions start disabled and private.</p>
@@ -38,6 +41,9 @@
     <div class="promo-empty" id="promotion-empty" hidden><span data-icon="search"></span><h2 id="empty-title"></h2><p id="empty-description"></p><button class="promo-button" id="clear-filters" data-i18n="clearFilters">Clear filters</button></div>
     <div class="promo-empty" id="promotion-load-error" role="alert" hidden><span data-icon="alert-circle"></span><h2 data-i18n="loadError">Could not load promotions</h2><p data-i18n="loadErrorHint">Your saved data has been kept. Try loading it again.</p><button class="promo-button" id="retry-load" data-i18n="retry">Try again</button></div>
   </section>
+  </div>
+  <div id="studio-campaigns" hidden></div>
+  <div id="studio-results" hidden></div>
   <p class="promo-demo-note" data-i18n="demoNote">Interactive prototype · Sample data · Changes are saved in this browser.</p>
   <p id="promotion-feedback" class="promo-feedback" role="status" aria-live="polite"></p>
 </main></div></div>
@@ -56,26 +62,35 @@
           </div>
           <p class="promo-note" data-i18n="detailsHint">Example: 15% off Classic Pedicure, Tue–Thu 10 AM–2 PM; cannot be combined. Clearly state who qualifies, eligible services and exclusions.</p>
           <label class="promo-field"><span data-i18n="description">Description · optional</span><textarea name="description" maxlength="1000" rows="3"></textarea></label>
+
+          <div class="promo-field-row"><label class="promo-field"><span data-i18n="servicesScope"></span><select name="serviceScope"><option value="legacy" data-i18n="legacyScope"></option><option value="all" data-i18n="allServices"></option><option value="selected" data-i18n="selectedServices"></option></select></label><label class="promo-field"><span data-i18n="customerGroup"></span><select name="customerGroup"><option value="legacy" data-i18n="legacyScope"></option><option value="all" data-i18n="allCustomers"></option><option value="new" data-i18n="newCustomers"></option><option value="returning" data-i18n="returningCustomers"></option></select></label></div>
+          <label class="promo-field" id="studio-services" hidden><span data-i18n="selectServices"></span><select name="serviceIds" multiple size="5"><option value="classic-pedicure">Classic Pedicure</option><option value="gel-manicure">Gel Manicure</option><option value="nail-art">Nail Art</option><option value="foot-massage">Foot Massage</option><option value="mani-pedi">Manicure + Pedicure Package</option></select><small data-i18n="serviceHelp"></small></label>
+          <div class="promo-field-row"><label class="promo-field"><span data-i18n="stacking"></span><select name="stacking"><option value="legacy" data-i18n="legacyScope"></option><option value="exclusive" data-i18n="exclusive"></option><option value="combinable" data-i18n="combinable"></option></select></label><label class="promo-field"><span data-i18n="cta"></span><select name="cta"><option value="details" data-i18n="detailsCta"></option><option value="booking" data-i18n="bookingCta"></option></select></label></div>
+          <label class="promo-field"><span data-i18n="exclusions"></span><textarea name="exclusions" maxlength="1000" rows="2"></textarea></label>
+          <p class="promo-note" data-i18n="conditionsHelp"></p><p class="promo-note" data-i18n="destinationHint"></p>
         </section>
         <section class="editor-section" aria-labelledby="schedule-title">
           <h3 class="section-number" id="schedule-title" data-i18n="scheduleSection">02 / Discount & schedule</h3>
           <div class="promo-field-row"><label class="promo-field"><span data-i18n="discountType">Discount type</span><select name="type"><option value="percent" data-i18n="percent">Percent · %</option><option value="fixed" data-i18n="amount">Amount · $</option><option value="free" data-i18n="legacyFree" hidden>Free service or add-on</option><option value="custom" data-i18n="legacyCustom" hidden>Custom offer</option></select></label><label class="promo-field" id="discount-field"><span data-i18n="discountValue">Discount value</span><input name="value" type="number" min="0.01" step="0.01" required aria-describedby="promotion-error"></label></div>
+          <div class="promo-field-row"><label class="promo-field"><span data-i18n="effectiveStart"></span><input type="date" name="startDate"></label><label class="promo-field"><span data-i18n="effectiveEnd"></span><input type="date" name="endDate"></label></div>
           <fieldset class="promo-days"><legend data-i18n="days">Days it runs</legend><div id="promotion-days"></div></fieldset>
           <div class="promo-field-row"><label class="promo-field"><span data-i18n="startsAt">Starts at</span><input name="startTime" type="time" required value="00:00"></label><label class="promo-field"><span data-i18n="endsAt">Ends at</span><input name="endTime" type="time" required value="23:59"></label></div>
           <p class="promo-note" data-i18n="timeHint">Shop local time · America/Chicago. Start and end times must be on the same day.</p>
-          <p class="promo-note legacy-schedule" id="legacy-schedule" hidden></p>
+
         </section>
         <section class="editor-section" aria-labelledby="placements-title">
           <h3 class="section-number" id="placements-title" data-i18n="placementsSection">03 / Placements</h3>
+          <p class="promo-note" data-i18n="internalHint"></p>
           <label class="promo-check-card"><input name="checkout" type="checkbox" checked><span><strong data-i18n="checkout">Offer this at checkout</strong><small data-i18n="checkoutHint">Available in the POS checkout.</small></span><span data-icon="shopping-bag"></span></label>
           <label class="promo-check-card"><input name="hero" type="checkbox"><span><strong>OneQR hero</strong><small data-i18n="heroHint">Show this promotion’s banners.</small></span><span data-icon="scan"></span></label>
           <label class="promo-check-card"><input name="public" type="checkbox"><span><strong data-i18n="public">Submit to Search Deals</strong><small data-i18n="publicHint">Public listing requires a separate review.</small></span><span data-icon="globe"></span></label>
+          <p class="promo-note" data-i18n="publicFree"></p><div class="studio-notice" id="publication-summary"></div><details class="studio-history"><summary data-i18n="history"></summary><ol id="publication-history"></ol></details>
           <p class="promo-note" data-i18n="publicNote">A public request does not turn on paid advertising or referral rewards.</p>
         </section>
       </div>
       <aside class="editor-preview" aria-labelledby="banners-title">
         <h3 class="section-number" id="banners-title" data-i18n="bannersSection">04 / Banners & posters</h3>
-        <div id="promotion-preview" aria-live="polite"></div>
+        <div id="promotion-preview" aria-live="polite"></div><div class="studio-preview-terms" id="studio-preview-terms"></div>
         <p class="promo-note" data-i18n="bannerHint">Reorder banners to choose the cover image. Every banner opens the same promotion.</p>
         <div id="promotion-banners" class="promo-banner-list"></div>
         <div class="promo-field-row banner-add-row">
@@ -104,6 +119,8 @@
 <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
 <script>if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();</script>
 <script src="../assets/promotion-banner-assets.js"></script>
-<script src="../assets/reward-promotions.js?v=20260915-template-symbols"></script>
+<script src="../assets/promotion-studio.js?v=20260923-studio"></script>
+<script src="../assets/promotion-campaigns.js?v=20260923-studio"></script>
+<script src="../assets/reward-promotions.js?v=20260923-studio"></script>
 </body>
 </html>
