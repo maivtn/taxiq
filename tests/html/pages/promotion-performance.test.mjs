@@ -53,6 +53,9 @@ test('provides a dedicated Salon Owner performance page in the merchant shell', 
   assert.match(html, /activePage:\s*'reward'/);
   assert.match(html, /activeTab:\s*'promotions'/);
   assert.match(html, /href="reward-promotions\.html"/);
+  assert.match(html, /class="performance-tabs"[^>]*>[\s\S]*?href="reward-promotions\.html"[^>]*>Promotions<\/a>/);
+  assert.match(html, /class="performance-tabs"[^>]*>[\s\S]*?href="reward-promotions\.html\?tab=campaigns"[^>]*>Paid Boost<\/a>/);
+  assert.match(html, /class="performance-tabs"[^>]*>[\s\S]*?aria-current="page"[^>]*>Performance<\/a>/);
   for (const label of ['Views', 'Clicks', 'Bookings', 'POS uses', 'Discount given', 'Related revenue']) {
     assert.match(html, new RegExp(label, 'i'));
   }
