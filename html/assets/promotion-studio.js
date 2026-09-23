@@ -17,6 +17,20 @@
     localReview:['Prototype: requests are saved locally; no review request is sent to Nexora.','Bản mẫu: yêu cầu lưu trong trình duyệt; chưa gửi yêu cầu duyệt đến Nexora.'],
     internalHint:['Internal · Your own channels. No network advertising fee.','Internal · Kênh riêng của salon. Không có phí quảng cáo mạng.'],
     publicFree:['Public · Organic clicks are free. Review is separate from Paid Boost.','Public · Click tự nhiên miễn phí. Duyệt riêng với Paid Boost.'],
+    whereDisplay:['Where should it appear?','Hiển thị ở đâu?'],
+    ownPlacement:['Your website & OneQR','Website & OneQR của tiệm'], ownPlacementHint:['Branch homepage and Promotions page.','Homepage và trang Promotions của chi nhánh.'],
+    publicPlacement:['Public on Nexora','Public trên Nexora'], publicPlacementHint:['Customers can find it in Explore, Nearby and Search Deals after review.','Khách tìm thấy trong Khám phá, Nearby và Search Deals sau khi duyệt.'],
+    paidPlacement:['Paid advertising','Quảng cáo trả phí'], paidPlacementHint:['Sponsored placement in Explore. Public is required; this never inserts ads on another salon’s homepage.','Vị trí tài trợ trong Khám phá. Cần bật Public; không chèn vào homepage tiệm khác.'],
+    viewOwnPlacement:['View Website & OneQR placement','Xem vị trí Website & OneQR'], viewPublicPlacement:['View Public placement on Nexora','Xem vị trí Public trên Nexora'], viewPaidPlacement:['View paid advertising placement','Xem vị trí Quảng cáo trả phí'],
+    boostArea:['Advertising area','Khu vực quảng bá'], boostBudget:['Maximum total campaign budget (USD)','Ngân sách tối đa toàn chiến dịch (USD)'],
+    boostHint:['Only applies when paid advertising is selected. It follows the effective dates above. This prototype does not charge Ads Credit.','Chỉ áp dụng khi chọn quảng cáo. Lịch chạy theo ngày bắt đầu/kết thúc phía trên. Bản demo không trừ tiền.'],
+    boostBudgetError:['Enter a total campaign budget greater than zero.','Nhập ngân sách toàn chiến dịch lớn hơn 0.'],
+    placementPreview:['Placement preview','Xem trước vị trí'], previewAction:['Preview','Xem trước'],
+    ownPreviewTitle:['Website & OneQR placement','Vị trí Website & OneQR'], publicPreviewTitle:['Public placement on Nexora','Vị trí Public trên Nexora'], paidPreviewTitle:['Paid advertising placement','Vị trí Quảng cáo trả phí'],
+    ownPreviewPath:['Homepage / OneQR → promotion banner and branch Promotions page.','Homepage / OneQR → banner ưu đãi và trang Promotions của chi nhánh.'],
+    publicPreviewPath:['Explore → Nearby / Search Deals → eligible results.','Khám phá → Nearby / Search Deals → kết quả phù hợp.'],
+    paidPreviewPath:['Explore → Nearby / Search Deals → Sponsored placement.','Khám phá → Nearby / Search Deals → vị trí Được tài trợ.'],
+    previewNotPublished:['Preview only · This draft has not been published.','Chỉ xem trước · Bản nháp chưa được xuất bản.'], sponsoredPreview:['Sponsored · Preview','Được tài trợ · Xem trước'],
     scheduled:['Scheduled','Chờ ngày hiệu lực'], expired:['Expired','Hết hiệu lực'], draft:['Draft','Nháp'], pendingCampaign:['Pending review · local','Chờ duyệt · lưu cục bộ'], paused:['Paused by owner','Owner tạm dừng'], ended:['Ended','Đã kết thúc'],
     createCampaign:['Create campaign','Tạo campaign'], campaignTitle:['Paid Boost campaigns','Campaign Paid Boost'], campaignIntro:['Promote a Public offer with its own schedule and budget. Saving a draft does not spend Ads Credit.','Quảng bá ưu đãi Public với lịch và ngân sách riêng. Lưu nháp không tiêu Ads Credit.'],
     campaignLinked:['This promotion belongs to a campaign. Disable it to preserve campaign history.','Ưu đãi thuộc một campaign. Hãy tắt để giữ lịch sử campaign.'], campaignHistory:['Campaign history','Lịch sử campaign'], viewCampaign:['View configuration','Xem cấu hình'], rejectedCampaign:['Changes required','Cần chỉnh sửa'], approvedCampaign:['Approved · awaiting distribution','Đã duyệt · chờ phân phối'],
@@ -79,7 +93,7 @@
   }
   function snapshot(offer) {
     const data = {};
-    ['title','badge','description','type','value','days','startTime','endTime','banners','services','audience','redemption','code','serviceIds',...keys].forEach(key => { data[key] = offer[key] ?? defaults[key] ?? null; });
+    ['title','badge','description','type','value','days','startTime','endTime','banners','services','audience','redemption','code','serviceIds','paidBoost','boostArea','boostBudget',...keys].forEach(key => { data[key] = offer[key] ?? defaults[key] ?? null; });
     return data;
   }
   function publication(offer, previous) {

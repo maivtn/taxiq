@@ -3,7 +3,7 @@
   const $ = selector => document.querySelector(selector);
   const form = $('#promotion-form');
   if (!form) return;
-  const editor = $('#promotion-editor'), posterDialog = $('#promotion-poster-dialog');
+  const editor = $('#promotion-editor'), posterDialog = $('#promotion-poster-dialog'), placementDialog = $('#placement-preview-dialog');
   const key = 'nexora:reward-promotions:v1', languageKey = 'nexora:reward-promotions:language';
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const bannerThemes = {purple:'themePurple',gold:'themeGold',rose:'themeRose',ocean:'themeOcean',teal:'themeTeal',sage:'themeSage',peach:'themePeach',slate:'themeSlate'};
@@ -94,7 +94,7 @@
   ];
   const localized = value => value[language === 'vi' ? 1 : 0];
   const newBanner = (theme = 'purple') => ({id:uid(), theme});
-  function blankOffer() { return {id:null,title:'',badge:'',description:'',type:'percent',value:10,days:[...days],startTime:'00:00',endTime:'23:59',checkout:true,hero:false,public:'private',paused:true,banners:[newBanner()],uses:0,revenue:0}; }
+  function blankOffer() { return {id:null,title:'',badge:'',description:'',type:'percent',value:10,days:[...days],startTime:'00:00',endTime:'23:59',checkout:true,hero:true,public:'private',paidBoost:false,boostArea:'Houston',boostBudget:100,paused:true,banners:[newBanner()],uses:0,revenue:0}; }
   function templateOffer(sample) {
     const templateConditions = {
       upgrade:{serviceScope:'selected',serviceIds:['nail-art','foot-massage'],customerGroup:'all',stacking:'exclusive'},
@@ -106,6 +106,7 @@
   function normalize(offer) {
     if (!offer || typeof offer.id !== 'string' || typeof offer.title !== 'string' || !Array.isArray(offer.days)) throw new Error('Invalid promotion');
     const migrated = {...blankOffer(), ...offer};
+    for (const key of ['paidBoost','boostArea','boostBudget']) if (!Object.hasOwn(offer,key)) delete migrated[key];
     migrated.banners = Array.isArray(offer.banners) && offer.banners.length ? clone(offer.banners) : [{id:'legacy-banner-' + offer.id,theme:offer.theme || 'purple'}];
     if (migrated.banners.some(banner => !banner || typeof banner.id !== 'string') || offer.days.some(day => !days.includes(day))) throw new Error('Invalid promotion data');
     if (offer.allDay === true) { migrated.startTime = '00:00'; migrated.endTime = '23:59'; }
@@ -116,7 +117,7 @@
     const offers = [templates[0],templates[2],templates[1]].map((sample,index) => ({...templateOffer(sample),id:['add-on-upgrade','rebook-save','weekday-glow'][index],title:['Add-On Upgrade — Nâng Cấp Móng','Rebook & Save — Đặt Lịch Kế Tiếp','Weekday Glow — Giờ Vàng Trong Tuần'][index],paused:false,banners:[newBanner(['purple','rose','gold'][index])],hero:index !== 2,createdAt:index+1}));
     return {version:2,offers};
   }
-  let state = {version:2,offers:[]}, loadFailed = false, query = '', filter = 'all', current = null, selectedBanner = 0, uploadPending = false, editorSession = 0, feedbackTimer, posterOffer = null, posterIndex = 0, initialRevision = '', draftAssets = [], editorOpener = null;
+  let state = {version:2,offers:[]}, loadFailed = false, query = '', filter = 'all', current = null, selectedBanner = 0, uploadPending = false, editorSession = 0, feedbackTimer, posterOffer = null, posterIndex = 0, placementMode = null, initialRevision = '', draftAssets = [], editorOpener = null;
   const imageUrls = new Map();
   function load() {
     try {
@@ -181,7 +182,7 @@
     const visible = offers.filter(o => (filter === 'all' || (filter === 'disabled') === o.paused) && (o.title + ' ' + o.badge).toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
     $('#promotion-list').innerHTML = visible.map(offer => {
       const action = (name,label,symbol) => '<button class="promo-button" data-action="' + name + '" data-id="' + esc(offer.id) + '">' + icon(symbol) + '<span>' + esc(label) + '</span></button>';
-      return '<article class="promotion-card" data-promotion-id="' + esc(offer.id) + '">' + artwork(offer,offer.banners[0]) + '<div class="promotion-card-body"><h3>' + esc(offer.title) + '</h3><p class="promotion-schedule">' + esc(schedule(offer)) + '</p><div class="promo-badges"><span class="promo-status ' + (offer.paused ? 'disabled' : 'enabled') + '">' + t(studio.lifecycle(offer)) + '</span>' + (offer.checkout ? '<span class="promo-chip">POS checkout</span>' : '') + (offer.hero ? '<span class="promo-chip">OneQR hero</span>' : '') + '<span class="promo-chip">' + esc(studio.status(offer,t)) + '</span>' + '<span class="promo-chip">' + offer.banners.length + ' ' + t('banner') + '</span></div><div class="promotion-actions">' + action('edit',t('edit'),'edit') + action('toggle',t(offer.paused ? 'enable' : 'disable'),offer.paused ? 'play' : 'pause') + action('duplicate',t('duplicate'),'copy') + action('preview',t('preview'),'eye') + '<details class="promo-more"><summary class="promo-button icon-button" aria-label="' + t('more') + '">' + icon('more') + '</summary><div class="promo-more-menu"><button class="danger" data-action="delete" data-id="' + esc(offer.id) + '">' + t('delete') + '</button></div></details></div></div></article>';
+      return '<article class="promotion-card" data-promotion-id="' + esc(offer.id) + '">' + artwork(offer,offer.banners[0]) + '<div class="promotion-card-body"><h3>' + esc(offer.title) + '</h3><p class="promotion-schedule">' + esc(schedule(offer)) + '</p><div class="promo-badges"><span class="promo-status ' + (offer.paused ? 'disabled' : 'enabled') + '">' + t(studio.lifecycle(offer)) + '</span>' + (offer.checkout ? '<span class="promo-chip">POS checkout</span>' : '') + (offer.hero ? '<span class="promo-chip">Website & OneQR</span>' : '') + '<span class="promo-chip">' + esc(studio.status(offer,t)) + '</span>' + (offer.paidBoost ? '<span class="promo-chip">Paid Boost · ' + esc(offer.boostArea) + '</span>' : '') + '<span class="promo-chip">' + offer.banners.length + ' ' + t('banner') + '</span></div><div class="promotion-actions">' + action('edit',t('edit'),'edit') + action('toggle',t(offer.paused ? 'enable' : 'disable'),offer.paused ? 'play' : 'pause') + action('duplicate',t('duplicate'),'copy') + action('preview',t('preview'),'eye') + '<details class="promo-more"><summary class="promo-button icon-button" aria-label="' + t('more') + '">' + icon('more') + '</summary><div class="promo-more-menu"><button class="danger" data-action="delete" data-id="' + esc(offer.id) + '">' + t('delete') + '</button></div></details></div></div></article>';
     }).join('');
     $('#promotion-empty').hidden = loadFailed || visible.length > 0;
     $('#empty-title').textContent = t(offers.length ? 'noMatches' : 'emptyTitle');
@@ -201,6 +202,7 @@
     renderTemplates(); render();
     if (current) { $('#editor-title').textContent = t(current.id ? 'editTitle' : 'createTitle'); $('#save-note').textContent = t(current.id ? 'editNote' : 'saveNote'); renderBanners(); if (uploadPending) $('#upload-info').textContent = t('busy'); }
     if (posterOffer) renderPoster();
+    if (placementMode) renderPlacementPreview(placementMode);
     window.NEXORA_CAMPAIGNS?.translate();
   }
   function readOffer() {
@@ -208,6 +210,10 @@
     ['title','badge','description','type','value','startTime','endTime'].forEach(name => { result[name] = field(name).value.trim(); });
     result.days = Array.from(form.querySelectorAll('[name="days"]:checked'),input => input.value);
     result.checkout = field('checkout').checked; result.hero = field('hero').checked; result.public = field('public').checked ? (current.public !== 'private' ? current.public : 'pending') : 'private';
+    const paidBoost = field('paidBoost').checked;
+    if (!result.id || paidBoost || Object.hasOwn(current,'paidBoost')) result.paidBoost = paidBoost;
+    if (!result.id || paidBoost || Object.hasOwn(current,'boostArea')) result.boostArea = field('boostArea').value;
+    if (!result.id || paidBoost || Object.hasOwn(current,'boostBudget')) result.boostBudget = Number(field('boostBudget').value);
     if (['percent','fixed'].includes(result.type)) result.value = Number(result.value);
     result.allDay = result.startTime === '00:00' && result.endTime === '23:59';
     return studio.read(form,result);
@@ -233,6 +239,7 @@
     if (!offer.days.length) return ['daysError','days'];
     if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(offer.startTime) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(offer.endTime) || offer.endTime <= offer.startTime) return ['timeError','endTime'];
     if (!offer.banners.length || offer.banners.length > 8) return ['bannerError'];
+    if (offer.paidBoost && (offer.public === 'private' || !offer.boostArea || !Number.isFinite(offer.boostBudget) || offer.boostBudget <= 0)) return ['boostBudgetError','boostBudget'];
     return studio.validate(offer);
   }
   function openEditor(offer = blankOffer()) {
@@ -247,6 +254,7 @@
     ['free','custom'].forEach(type => { form.querySelector('option[value="' + type + '"]').hidden = current.type !== type; });
     form.querySelectorAll('[name="days"]').forEach(input => { input.checked = current.days.includes(input.value); });
     field('checkout').checked = !!current.checkout; field('hero').checked = !!current.hero; field('public').checked = current.public !== 'private';
+    field('paidBoost').checked = !!current.paidBoost; field('boostArea').value = current.boostArea || 'Houston'; field('boostBudget').value = Number(current.boostBudget) > 0 ? current.boostBudget : 100;
     $('#editor-title').textContent = t(current.id ? 'editTitle' : 'createTitle'); $('#save-note').textContent = t(current.id ? 'editNote' : 'saveNote');
     studio.renderPublication(current,t);
     showError(''); $('#upload-info').textContent = t('uploadHint'); $('#upload-file-name').textContent = t('chooseFile');
@@ -298,6 +306,24 @@
     hydrateImages($('#poster-output'));
   }
   function openPoster(offer,index = 0) { posterOffer = clone(offer); posterIndex = index; renderPoster(); posterDialog.showModal(); }
+  function renderPlacementPreview(mode) {
+    if (!current) return;
+    const offer = readOffer();
+    const definitions = {
+      own:['ownPreviewTitle','ownPreviewPath'],
+      public:['publicPreviewTitle','publicPreviewPath'],
+      paid:['paidPreviewTitle','paidPreviewPath']
+    };
+    const definition = definitions[mode] || definitions.own;
+    $('#placement-preview-title').textContent = t(definition[0]);
+    $('#placement-preview-body').innerHTML = '<p class="placement-path">' + esc(t(definition[1])) + '</p>' +
+      (mode === 'paid' ? '<span class="promo-chip sponsored-chip">' + esc(t('sponsoredPreview')) + '</span>' : '') +
+      '<div class="placement-preview-art">' + artwork(offer,offer.banners[selectedBanner]) + '</div>' +
+      '<div class="studio-preview-terms">' + studio.terms(offer,t).map(term => '<p>' + esc(term) + '</p>').join('') + '</div>' +
+      '<p class="promo-note">' + esc(t('previewNotPublished')) + '</p>';
+    hydrateImages($('#placement-preview-body'));
+  }
+  function openPlacementPreview(mode) { placementMode = mode; renderPlacementPreview(mode); placementDialog.showModal(); }
   async function uploadFile(event) {
     const file = event.target.files?.[0]; event.target.value = '';
     if (!file || !current || current.banners.length >= 8 || uploadPending) return;
@@ -335,7 +361,7 @@
       if (persist({...state,offers:state.offers.map(item => item.id === offer.id ? {...item,paused:!item.paused,updatedAt:Date.now()} : item)})) feedback(t(offer.paused ? 'enabledMessage' : 'disabledMessage'));
     }
     if (action === 'duplicate') {
-      const duplicate = {...clone(offer),id:uid(),title:offer.title.slice(0,90) + ' · ' + t('copySuffix'),paused:true,public:'private',uses:0,revenue:0,canDelete:true,createdAt:Date.now(),updatedAt:Date.now()};
+      const duplicate = {...clone(offer),id:uid(),title:offer.title.slice(0,90) + ' · ' + t('copySuffix'),paused:true,public:'private',paidBoost:false,uses:0,revenue:0,canDelete:true,createdAt:Date.now(),updatedAt:Date.now()};
       delete duplicate.publicationVersion; delete duplicate.publicationHistory; delete duplicate.rejectionReason;
       duplicate.banners.forEach(banner => { banner.id = uid(); });
       if (persist({...state,offers:[...state.offers,duplicate]})) { clearFilters(); feedback(t('duplicated')); }
@@ -347,7 +373,12 @@
     }
   });
   form.addEventListener('input',event => { if (!current || event.target.type === 'file' || event.target.id === 'banner-theme') return; showError(''); renderBanners(); });
-  form.addEventListener('change',event => { if (!current || !event.target.name) return; updateConditional(); renderBanners(); });
+  form.addEventListener('change',event => {
+    if (!current || !event.target.name) return;
+    if (event.target.name === 'paidBoost' && event.target.checked) field('public').checked = true;
+    if (event.target.name === 'public' && !event.target.checked) field('paidBoost').checked = false;
+    updateConditional(); renderBanners();
+  });
   form.addEventListener('submit',event => { event.preventDefault(); saveOffer(); });
   document.querySelectorAll('[data-close-editor]').forEach(button => button.addEventListener('click',() => editor.close()));
   editor.addEventListener('close',() => {
@@ -383,6 +414,15 @@
   });
   $('#banner-upload').addEventListener('change',uploadFile);
   $('#preview-draft').addEventListener('click',() => { if (current) openPoster(readOffer(),selectedBanner); });
+  $('#preview-promotion').addEventListener('click',() => {
+    if (!current) return;
+    const offer = readOffer(), error = validation(offer);
+    if (error) { showError(t(error[0]),error[1]); return; }
+    openPoster(offer,selectedBanner);
+  });
+  document.querySelectorAll('[data-placement-preview]').forEach(button => button.addEventListener('click',() => { if (current) openPlacementPreview(button.dataset.placementPreview); }));
+  $('#close-placement-preview').addEventListener('click',() => placementDialog.close());
+  placementDialog.addEventListener('close',() => { placementMode = null; });
   $('#close-poster').addEventListener('click',() => posterDialog.close());
   posterDialog.addEventListener('close',() => { posterOffer = null; });
   $('#previous-banner').addEventListener('click',() => { if (posterIndex > 0) { posterIndex--; renderPoster(); } });

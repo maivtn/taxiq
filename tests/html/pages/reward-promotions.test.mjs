@@ -119,7 +119,7 @@ test('blank creation saves once as disabled and restores the selected placements
   assert.equal(d.querySelector('[name="endTime"]').value, '23:59');
   assert.equal(d.querySelectorAll('[name="days"]:checked').length, 7);
   assert.equal(d.querySelector('[name="checkout"]').checked, true);
-  assert.equal(d.querySelector('[name="hero"]').checked, false);
+  assert.equal(d.querySelector('[name="hero"]').checked, true);
   field('title', 'Welcome September'); field('hero', true); field('checkout', false); field('public', true);
   submit(); submit();
   assert.equal(d.querySelector('#promotion-editor').open, false);
@@ -673,4 +673,67 @@ test('salon templates carry their service and customer conditions into configura
     assert.deepEqual([...d.querySelector('[name="serviceIds"]').selectedOptions].map(option=>option.value),ids);
     close();
   }
+});
+
+test('promotion editor includes the three reference placement choices and previews each location', async t => {
+  const {d, savedState} = await boot(t, catalog([]));
+  d.querySelector('#create-promotion').click();
+
+  assert.equal(d.querySelector('[name="hero"]').checked, true);
+  assert.equal(d.querySelector('[name="public"]').checked, false);
+  assert.equal(d.querySelector('[name="paidBoost"]').checked, false);
+  assert.equal(d.querySelector('[name="boostArea"]').value, 'Houston');
+  assert.equal(d.querySelector('[name="boostBudget"]').value, '100');
+
+  for (const [placement, title] of [
+    ['own', 'Website & OneQR'],
+    ['public', 'Public'],
+    ['paid', 'Paid advertising']
+  ]) {
+    d.querySelector('[data-placement-preview="' + placement + '"]').click();
+    assert.equal(d.querySelector('#placement-preview-dialog').open, true);
+    assert.match(d.querySelector('#placement-preview-title').textContent, new RegExp(title, 'i'));
+    assert.match(d.querySelector('#placement-preview-body').textContent, /preview|promotion|offer/i);
+    d.querySelector('#close-placement-preview').click();
+  }
+
+  assert.equal(savedState().offers.length, 0, 'placement previews must not save the draft');
+});
+
+test('paid advertising selects Public and persists its area and total budget', async t => {
+  const {w, d, field, input, submit, savedState} = await boot(t, catalog([]));
+  d.querySelector('#create-promotion').click();
+  field('title', 'Houston sponsored offer');
+  field('paidBoost', true);
+  assert.equal(d.querySelector('[name="public"]').checked, true);
+  field('boostArea', 'Katy');
+  field('boostBudget', '250');
+  submit();
+
+  const saved = savedState().offers[0];
+  assert.equal(saved.paidBoost, true);
+  assert.equal(saved.public, 'pending');
+  assert.equal(saved.boostArea, 'Katy');
+  assert.equal(saved.boostBudget, 250);
+
+  const restored = await boot(t, w.localStorage.getItem(storageKey));
+  restored.card(saved.id).querySelector('[data-action="edit"]').click();
+  assert.equal(restored.d.querySelector('[name="paidBoost"]').checked, true);
+  assert.equal(restored.d.querySelector('[name="boostArea"]').value, 'Katy');
+  assert.equal(restored.d.querySelector('[name="boostBudget"]').value, '250');
+});
+
+test('paid advertising requires a positive total budget and turns off when Public is removed', async t => {
+  const {d, field, submit, savedState} = await boot(t, catalog([]));
+  d.querySelector('#create-promotion').click();
+  field('title', 'Paid offer');
+  field('paidBoost', true);
+  field('boostBudget', '0');
+  submit();
+  assert.equal(d.activeElement.name, 'boostBudget');
+  assert.equal(savedState().offers.length, 0);
+
+  field('boostBudget', '100');
+  field('public', false);
+  assert.equal(d.querySelector('[name="paidBoost"]').checked, false);
 });

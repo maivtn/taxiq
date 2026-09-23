@@ -6,7 +6,7 @@
   <title>Nexora Touch - Promotion Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/reward-promotions.css?v=20260923-studio">
+  <link rel="stylesheet" href="../assets/reward-promotions.css?v=20260923-placement-ui">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
 </head>
 <body>
@@ -80,10 +80,19 @@
         </section>
         <section class="editor-section" aria-labelledby="placements-title">
           <h3 class="section-number" id="placements-title" data-i18n="placementsSection">03 / Placements</h3>
-          <p class="promo-note" data-i18n="internalHint"></p>
           <label class="promo-check-card"><input name="checkout" type="checkbox" checked><span><strong data-i18n="checkout">Offer this at checkout</strong><small data-i18n="checkoutHint">Available in the POS checkout.</small></span><span data-icon="shopping-bag"></span></label>
-          <label class="promo-check-card"><input name="hero" type="checkbox"><span><strong>OneQR hero</strong><small data-i18n="heroHint">Show this promotion’s banners.</small></span><span data-icon="scan"></span></label>
-          <label class="promo-check-card"><input name="public" type="checkbox"><span><strong data-i18n="public">Submit to Search Deals</strong><small data-i18n="publicHint">Public listing requires a separate review.</small></span><span data-icon="globe"></span></label>
+          <h3 class="placement-heading" data-i18n="whereDisplay">Where should it appear?</h3>
+          <label class="promo-check-card placement-card"><input name="hero" type="checkbox" checked><span><strong data-i18n="ownPlacement">Your website & OneQR</strong><small data-i18n="ownPlacementHint">Branch homepage and Promotions page.</small></span><span data-icon="scan"></span></label>
+          <button type="button" class="promo-button placement-preview-button" data-placement-preview="own"><span data-i18n="viewOwnPlacement">View Website & OneQR placement</span><span aria-hidden="true">→</span></button>
+          <label class="promo-check-card placement-card"><input name="public" type="checkbox"><span><strong data-i18n="publicPlacement">Public on Nexora</strong><small data-i18n="publicPlacementHint">Customers can find it in Explore, Nearby and Search Deals after review.</small></span><span data-icon="globe"></span></label>
+          <button type="button" class="promo-button placement-preview-button" data-placement-preview="public"><span data-i18n="viewPublicPlacement">View Public placement on Nexora</span><span aria-hidden="true">→</span></button>
+          <label class="promo-check-card placement-card"><input name="paidBoost" type="checkbox"><span><strong data-i18n="paidPlacement">Paid advertising</strong><small data-i18n="paidPlacementHint">Sponsored placement in Explore. Public is required; this never inserts ads on another salon’s homepage.</small></span><span data-icon="sparkles"></span></label>
+          <button type="button" class="promo-button placement-preview-button" data-placement-preview="paid"><span data-i18n="viewPaidPlacement">View paid advertising placement</span><span aria-hidden="true">→</span></button>
+          <div class="paid-placement-config">
+            <label class="promo-field"><span data-i18n="boostArea">Advertising area</span><select name="boostArea"><option>Houston</option><option>Katy</option><option>Austin</option><option>Dallas</option></select></label>
+            <label class="promo-field"><span data-i18n="boostBudget">Maximum total campaign budget (USD)</span><input name="boostBudget" type="number" min="1" step="0.01" value="100"></label>
+            <p class="promo-note" data-i18n="boostHint">Only applies when paid advertising is selected. It follows the effective dates above. This prototype does not charge Ads Credit.</p>
+          </div>
           <p class="promo-note" data-i18n="publicFree"></p><div class="studio-notice" id="publication-summary"></div><details class="studio-history"><summary data-i18n="history"></summary><ol id="publication-history"></ol></details>
           <p class="promo-note" data-i18n="publicNote">A public request does not turn on paid advertising or referral rewards.</p>
         </section>
@@ -112,15 +121,16 @@
         <button type="button" class="promo-text-button" id="preview-draft"><span data-icon="external-link"></span><span data-i18n="previewPrint">Preview & print poster</span></button>
       </aside>
     </div>
-    <footer class="editor-footer"><div><p id="promotion-error" class="promo-error" role="alert"></p><p class="promo-note" id="save-note" data-i18n="saveNote">New promotions are saved disabled.</p></div><div class="editor-footer-actions"><button type="button" class="promo-button" data-close-editor data-i18n="cancel">Cancel</button><button type="submit" class="promo-button primary" id="save-promotion" data-i18n="save">Save promotion</button></div></footer>
+    <footer class="editor-footer"><div><p id="promotion-error" class="promo-error" role="alert"></p><p class="promo-note" id="save-note" data-i18n="saveNote">New promotions are saved disabled.</p></div><div class="editor-footer-actions"><button type="submit" class="promo-button" id="save-promotion" data-i18n="saveDraft">Save draft</button><button type="button" class="promo-button primary" id="preview-promotion"><span data-i18n="previewAction">Preview</span><span aria-hidden="true">→</span></button></div></footer>
   </form>
 </dialog>
+<dialog id="placement-preview-dialog" class="promo-poster-dialog placement-preview-dialog" aria-labelledby="placement-preview-title"><header class="editor-header"><div><p class="promo-eyebrow" data-i18n="placementPreview">Placement preview</p><h2 id="placement-preview-title"></h2></div><button type="button" class="promo-close" id="close-placement-preview" data-label="closePreview" aria-label="Close preview"><span data-icon="x"></span></button></header><div class="poster-body" id="placement-preview-body"></div></dialog>
 <dialog id="promotion-poster-dialog" class="promo-poster-dialog" aria-labelledby="poster-title"><header class="editor-header"><div><p class="promo-eyebrow" data-i18n="preview">Preview</p><h2 id="poster-title" data-i18n="promotionPoster">Promotion poster</h2></div><button type="button" class="promo-close" id="close-poster" data-label="closePreview" aria-label="Close preview"><span data-icon="x"></span></button></header><div class="poster-body"><div id="poster-output"></div><div class="poster-pager"><button type="button" class="promo-button" id="previous-banner" data-label="previousBanner" aria-label="Previous banner"><span data-icon="arrow-left"></span></button><span id="poster-page"></span><button type="button" class="promo-button" id="next-banner" data-label="nextBanner" aria-label="Next banner"><span data-icon="arrow-right"></span></button></div><div id="poster-details"></div></div><footer class="editor-footer"><p class="promo-note" data-i18n="printHint">Print or save as PDF.</p><button class="promo-button primary" id="print-poster"><span data-icon="printer"></span><span data-i18n="print">Print poster</span></button></footer></dialog>
 <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
 <script>if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();</script>
 <script src="../assets/promotion-banner-assets.js"></script>
-<script src="../assets/promotion-studio.js?v=20260923-studio"></script>
+<script src="../assets/promotion-studio.js?v=20260923-placement-ui"></script>
 <script src="../assets/promotion-campaigns.js?v=20260923-studio"></script>
-<script src="../assets/reward-promotions.js?v=20260923-studio"></script>
+<script src="../assets/reward-promotions.js?v=20260923-placement-ui"></script>
 </body>
 </html>

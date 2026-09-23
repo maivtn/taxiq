@@ -145,6 +145,19 @@ body:has(.promo-dialog[open],.promo-poster-dialog[open]){overflow:hidden}
 .promo-check-card strong{display:block;font-size:11px;font-weight:500;line-height:1.5;color:var(--promo-ink)}
 .promo-check-card small{display:block;font-size:10px;line-height:1.5;margin:0;overflow-wrap:anywhere}
 .promo-check-card>.promo-icon,.promo-check-card>[data-icon]{color:var(--promo-subtle);flex:0 0 auto}
+.placement-heading{font-family:Georgia,"Times New Roman",serif;font-size:22px;font-weight:400;line-height:1.25;margin:22px 0 10px;color:var(--promo-ink)}
+.placement-card{min-height:62px;border-color:var(--promo-line);background:var(--promo-surface);padding:12px}
+.placement-card:has(input:checked){border-color:#c8c7e8;background:#f8f8fd}
+.placement-card strong{font-size:12px;color:var(--promo-ink)}
+.placement-preview-button{margin:6px 0 8px;justify-content:space-between}
+.paid-placement-config{display:grid;gap:10px;margin-top:12px}
+.paid-placement-config .promo-field,.paid-placement-config .promo-note{margin:0}
+.placement-preview-dialog[open]{display:flex;flex-direction:column}
+.placement-preview-dialog .poster-body{background:var(--promo-surface)}
+.placement-path{margin:0 0 14px;color:var(--promo-muted);font-size:12px}
+.placement-preview-art{padding:12px;border:2px dashed #9fa6bd;border-radius:12px;background:var(--promo-canvas);margin:10px 0}
+.placement-preview-art .promo-art{min-height:180px}
+.sponsored-chip{display:inline-flex;margin-bottom:4px}
 .editor-preview{min-width:0;padding:18px;background:#fafbfe;border-left:1px solid var(--promo-line)}
 .editor-preview #promotion-preview{min-width:0;border-radius:9px}
 .editor-preview .promo-art{min-height:128px;padding:16px 18px;gap:8px}
@@ -335,6 +348,7 @@ body:has(.promo-dialog[open],.promo-poster-dialog[open]){overflow:hidden}
 .studio-section-heading p{margin:0;color:var(--promo-muted);font-size:12px;max-width:680px}
 .studio-setup-links{display:flex;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:20px}
 .studio-notice,.studio-preview-terms{background:#f7f7fc;border:1px solid var(--promo-line);padding:12px;border-radius:8px;font-size:12px;line-height:1.6;margin:10px 0}
+.studio-notice strong{display:block;margin-bottom:3px}
 .studio-notice p:empty{display:none}.studio-notice p{margin:5px 0}.studio-notice small{color:var(--promo-muted)}
 .studio-preview-terms p{margin:3px 0;overflow-wrap:anywhere}.studio-preview-terms strong{color:var(--promo-brand)}
 .studio-history{font-size:12px;margin:12px 0}.studio-history summary{font-weight:600}.studio-history ol{padding-left:20px;color:var(--promo-muted)}
