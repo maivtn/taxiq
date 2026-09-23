@@ -655,10 +655,10 @@
             ? `<div class="promotion-visual"><img class="promotion-art" src="${escapePromotionHtml(visual.image)}" alt="${escapePromotionHtml(offer.title)}" decoding="async"></div>`
             : '';
           return `<article class="promotion-card swiper-slide theme-${escapePromotionHtml(visual.theme)}" data-promotion-id="${escapePromotionHtml(offer.id)}">` +
-            visualMarkup +
+            (visualMarkup ||
             `<div class="promotion-copy"><div class="promotion-title-row"><span class="promotion-badge">${escapePromotionHtml(offer.badge)}</span>` +
             `<h3>${escapePromotionHtml(offer.title)}</h3></div><p>${escapePromotionHtml(offer.description)}</p></div>` +
-            `<div class="promotion-highlight promotion-highlight-wide"><strong>${escapePromotionHtml(offer.value)}</strong></div>` +
+            `<div class="promotion-highlight promotion-highlight-wide"><strong>${escapePromotionHtml(offer.value)}</strong></div>`) +
             `</article>`;
         }).join('');
         if (section.dataset) section.dataset.promotionCount = String(offers.length);
