@@ -7,6 +7,7 @@
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c]));
   const initials = name => name.trim().split(/\s+/).slice(0, 2).map(word => word[0]).join('').toUpperCase();
   const TONES = ['wl-tone-a', 'wl-tone-b', 'wl-tone-c'];
+  let view = 'table';
 
   let guests = [
     {id: 'sarah-nguyen', name: 'Sarah Nguyen', service: 'Classic Pedicure', status: 'Returning', eta: '12–18 min', elapsed: '28 min', points: 620, benefitCount: 2, tags: ['Birthday gift', '$10 voucher']},
@@ -14,36 +15,81 @@
     {id: 'jessica-lee', name: 'Jessica Lee', service: 'Gel Manicure', status: 'No Response', eta: 'Ready soon', elapsed: '41 min', points: 505, benefitCount: 2, tags: ['$5 reward', 'Wait Care eligible']}
   ];
 
+  function identity(guest, index) {
+    return '<div class="wl-card-top">' +
+      '<span class="wl-avatar ' + TONES[index % TONES.length] + '" aria-hidden="true">' + esc(initials(guest.name)) + '</span>' +
+      '<div class="wl-id"><strong>' + esc(guest.name) + '</strong><span>' + esc(guest.service) + '</span></div></div>';
+  }
+
+  function tags(guest) {
+    return guest.tags.length ? '<div class="wl-tags">' + guest.tags.map(tag => '<span class="wl-tag">' + esc(tag) + '</span>').join('') + '</div>' : '';
+  }
+
+  function actions() {
+    return '<div class="wl-actions">' +
+      '<button type="button" class="primary" data-wl-action="sms">Send SMS</button>' +
+      '<button type="button" data-wl-action="call">Call Customer</button>' +
+      '<button type="button" class="wl-benefit" data-wl-action="benefit">Offer Benefit</button>' +
+      '<button type="button" data-wl-action="arrived">Mark Arrived</button></div>';
+  }
+
   function card(guest, index) {
     const stats = [['ETA', guest.eta], ['Elapsed', guest.elapsed], ['Points', guest.points], ['Benefits', guest.benefitCount]];
     return '<article class="wl-card" data-wl-guest="' + esc(guest.id) + '">' +
-      '<div class="wl-card-top">' +
-        '<span class="wl-avatar ' + TONES[index % TONES.length] + '" aria-hidden="true">' + esc(initials(guest.name)) + '</span>' +
-        '<div class="wl-id"><strong>' + esc(guest.name) + '</strong><span>' + esc(guest.service) + '</span><span class="wl-status">' + esc(guest.status) + '</span></div>' +
-      '</div>' +
+      '<div class="wl-card-heading">' + identity(guest, index) + '<span class="wl-status">' + esc(guest.status) + '</span></div>' +
       '<div class="wl-stats">' + stats.map(([label, value]) => '<div><strong>' + esc(value) + '</strong><span>' + esc(label) + '</span></div>').join('') + '</div>' +
-      (guest.tags.length ? '<div class="wl-tags">' + guest.tags.map(tag => '<span class="wl-tag">' + esc(tag) + '</span>').join('') + '</div>' : '') +
-      '<div class="wl-actions">' +
-        '<button type="button" class="primary" data-wl-action="sms">Send SMS</button>' +
-        '<button type="button" data-wl-action="call">Call Customer</button>' +
-        '<button type="button" class="wl-benefit" data-wl-action="benefit">Offer Benefit</button>' +
-        '<button type="button" data-wl-action="arrived">Mark Arrived</button>' +
-      '</div></article>';
+      tags(guest) + actions() + '</article>';
+  }
+
+  function table() {
+    return '<table aria-label="Waiting customers"><thead><tr>' +
+      ['Customer / Service', 'Status', 'ETA', 'Elapsed', 'Points', 'Benefits', 'Actions'].map(label => '<th scope="col">' + label + '</th>').join('') +
+      '</tr></thead><tbody>' + guests.map((guest, index) =>
+        '<tr data-wl-guest="' + esc(guest.id) + '"><td>' + identity(guest, index) + '</td>' +
+        '<td><span class="wl-status">' + esc(guest.status) + '</span></td>' +
+        '<td>' + esc(guest.eta) + '</td><td>' + esc(guest.elapsed) + '</td><td>' + esc(guest.points) + '</td>' +
+        '<td><span class="wl-benefit-count">' + esc(guest.benefitCount) + (guest.benefitCount === 1 ? ' benefit' : ' benefits') + '</span>' + tags(guest) + '</td>' +
+        '<td>' + actions() + '</td></tr>'
+      ).join('') + '</tbody></table>';
   }
 
   function renderList() {
-    root.querySelector('#wl-cards').innerHTML = guests.map(card).join('');
+    const list = root.querySelector('#wl-cards');
+    list.className = view === 'table' ? 'wl-table-wrap' : 'wl-list';
+    list.innerHTML = guests.length ? (view === 'table' ? table() : guests.map(card).join('')) : '';
+    if (view === 'table' && guests.length) {
+      list.tabIndex = 0;
+      list.setAttribute('role', 'region');
+      list.setAttribute('aria-label', 'Waiting customers table');
+    } else {
+      ['tabindex', 'role', 'aria-label'].forEach(name => list.removeAttribute(name));
+    }
+    list.hidden = !guests.length;
     root.querySelector('#wl-empty').hidden = !!guests.length;
+    root.querySelectorAll('[data-wl-view]').forEach(button => {
+      const active = button.dataset.wlView === view;
+      button.classList.toggle('active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
   }
 
   root.innerHTML =
-    '<div class="wl-heading"><div><h2>Live Waitlist</h2><p>' + esc(catalog.salon.name) + ' · ' + esc(catalog.salon.location) + '</p></div></div>' +
+    '<div class="wl-heading"><div><h2>Live Waitlist</h2><p>' + esc(catalog.salon.name) + ' · ' + esc(catalog.salon.location) + '</p></div>' +
+    '<div class="views wl-views" role="group" aria-label="Waitlist view">' +
+      '<button type="button" data-wl-view="table" aria-controls="wl-cards">Table</button>' +
+      '<button type="button" data-wl-view="card" aria-controls="wl-cards">Cards</button></div></div>' +
     '<div id="wl-cards" class="wl-list"></div>' +
     '<p id="wl-empty" class="wl-empty" hidden>No customers waiting right now.</p>' +
     '<p class="wl-note">Interactive prototype · Sample data only. SMS, calls, and benefit offers are simulated and do not contact real customers.</p>';
   renderList();
 
   root.addEventListener('click', event => {
+    const viewButton = event.target.closest('[data-wl-view]');
+    if (viewButton) {
+      view = viewButton.dataset.wlView;
+      renderList();
+      return;
+    }
     const button = event.target.closest('[data-wl-action]');
     if (!button) return;
     const cardEl = button.closest('[data-wl-guest]');
