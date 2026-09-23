@@ -1,18 +1,69 @@
 ## Booking Incentive Policy
 
-**Last Updated:** 2026-09-15
+**Last Updated:** 2026-09-23
 
-**Audience:** Chủ salon, Manager, Product Owner, BA, QA  
+**Audience:** Leader, Chủ salon, Manager, Product Owner, BA, QA
+
 **Status:** Draft
 
 ### Overview
 
-**Booking incentive policy** được mở bằng nút **Reward settings** tại **POS → Front Desk → Appointments → Calendar**. Chủ salon cấu hình cách thưởng booking, booking turn credit, phạm vi áp dụng và cách phân công lịch Anyone. Tài liệu này mô tả user stories và tiêu chí nghiệm thu, đồng thời nêu rõ các giới hạn của prototype; lưu policy hiện chưa tạo ra khoản chi trả hay một phiên bản chính sách vận hành bền vững.
+**Booking Incentive Policy là chính sách thưởng cho thợ có khách đặt lịch đích danh.** Mục tiêu nghiệp vụ là khuyến khích thợ tạo được khách quay lại và chủ động đặt mình, thông qua mức thưởng do chủ salon thiết lập cho booking hoàn thành đủ điều kiện. Chủ salon cũng quy định mỗi booking được tính bao nhiêu lượt để người quản lý xem ảnh hưởng đến tổng lượt của thợ.
+
+#### Salon muốn giải quyết việc gì?
+
+Salon cần phân biệt hai tình huống: **khách chọn đích danh thợ** và **khách chọn Anyone rồi salon phân công thợ**. Chính sách này giúp chủ salon trả lời rõ: booking nào được thưởng, mức thưởng là bao nhiêu, áp dụng chung hay riêng từng thợ, và booking được quy đổi thành bao nhiêu lượt.
+
+| Nội dung chủ salon quyết định | Ý nghĩa nghiệp vụ | Kết quả cần xem |
+| :--- | :--- | :--- |
+| Tiền thưởng booking | Khuyến khích thợ có booking khách yêu cầu đích danh, hoàn thành đủ điều kiện. Có thể đặt mức cố định, theo cấp độ hoặc theo số booking. | Số tiền thưởng tính được cho từng thợ; đây chưa phải tiền đã chi trả. |
+| Lượt quy đổi booking | Quy định một booking được tính bao nhiêu lượt, ví dụ 0.5 lượt, để thể hiện phần booking trong tổng lượt của thợ. | Booking credit và tổng Effective turns trong Technician Overview. |
+| Chính sách chung hoặc riêng | Áp dụng một mức chung cho salon, hoặc mức riêng cho thợ có thỏa thuận khác. | Thợ dùng đúng mức mặc định hoặc mức riêng đang áp dụng. |
+
+**Tiền thưởng và lượt quy đổi được tính riêng.** Ví dụ, mức thưởng $2 và mức lượt 0.5 nghĩa là một booking đủ điều kiện tạo ra $2 tiền thưởng tính được và 0.5 lượt quy đổi. Lượt này không phải tiền hoặc số lượt khách mới được bảo đảm giao cho thợ. Việc dùng lượt để thay đổi thứ tự chia khách trên Turn Board chưa được triển khai từ policy này.
+
+#### Ví dụ để hình dung kết quả
+
+Giả sử salon chọn thưởng cố định **$2/booking**, lượt quy đổi **0.5/booking**, áp dụng chung. Trong kỳ minh họa, Lan có **10 booking khách yêu cầu đích danh đã hoàn thành**, đều đủ điều kiện tính thưởng và lượt; Lan cũng trực tiếp thực hiện cả 10 booking. Lan còn thực hiện 4 booking Anyone do salon phân công.
+
+| Booking của Lan | Tiền thưởng booking | Lượt quy đổi booking |
+| :--- | :--- | :--- |
+| 10 Customer Request đủ điều kiện | 10 × $2 = **$20** | 10 × 0.5 = **5 lượt** |
+| 4 Anyone | **$0** | **0 lượt booking** |
+
+Đây là kết quả minh họa theo quy tắc nghiệp vụ, chưa phải kết quả đối soát từ dữ liệu thực tế trong prototype. **Anyone không có lượt booking không đồng nghĩa không có lượt dịch vụ**; quy tắc kết hợp hai loại lượt còn cần chốt. $20 là tiền thưởng tính được, chưa có thao tác chuyển tiền cho Lan.
+
+#### Người quản lý thao tác ở đâu và nhận được gì?
+
+Mở **POS → Front Desk → Appointments → Calendar → Reward settings**, nhập chính sách, xem trước cách tính rồi bấm **Save policy**. Sau khi lưu, **Technician Overview** hiển thị lại số tiền thưởng và lượt quy đổi; bấm từng thợ để xem **Reward Ledger**. Hiện các kết quả này dùng dữ liệu mô phỏng.
+
+Mục **Anyone assignment** nằm cùng panel để cấu hình cách phân công lịch không chọn đích danh thợ. Mục này phục vụ điều phối lịch; việc phân công một booking Anyone cho Lan không biến booking đó thành Customer Request để nhận thưởng. Chi tiết điều phối nằm trong [Appointments Need Assignment](appointments-need-assignment.md).
+
+#### Phạm vi hiện tại và các quyết định còn thiếu
+
+| Nội dung | Trạng thái |
+| :--- | :--- |
+| Điều kiện nguồn booking | Quy tắc thưởng hiển thị dành cho Customer Request hoàn thành đủ điều kiện. Điều kiện nguồn để xét lượt booking đã chốt là Customer Request; Anyone không được tính khoản lượt này. |
+| Cấu hình và xem trước | Đã có giao diện chọn cách tính, mức chung/riêng và phép tính mẫu; preview dùng 45 booking giả định. |
+| Lưu cấu hình | Lượt booking mặc định được giữ trong trình duyệt theo salon và dùng chung với Turn Board. Phần thưởng, mức riêng của thợ và Anyone assignment chỉ giữ trong phiên. |
+| Tính trên dữ liệu vận hành | Chưa lọc và đối soát từng booking thực tế để tính thưởng/lượt, chưa tự ghi lượt lên Turn Board, chưa chi trả. |
+
+**Các quyết định nghiệp vụ cần chốt trước khi triển khai vận hành:**
+
+- **Điều kiện và thời điểm ghi nhận:** “Hoàn thành đủ điều kiện” có yêu cầu thanh toán hay không; khi nào ghi thưởng/lượt và xử lý hủy hoặc hoàn tiền như thế nào.
+- **Đơn vị tính và người nhận:** Một booking có nhiều dịch vụ hoặc nhiều thợ được tính thế nào; khi đổi thợ, ai nhận thưởng và ai nhận lượt. Reward Ledger hiện có ví dụ phân bổ, chưa đủ để coi là quy tắc vận hành hoàn chỉnh.
+- **Cách tính lượt khi chia khách:** Lượt booking thay thế hay kết hợp với lượt dịch vụ, và được dùng thế nào để điều phối trên Turn Board.
+- **Kỳ áp dụng và chốt thưởng:** Mốc bắt đầu/kết thúc kỳ, cách áp dụng ngày hiệu lực và xử lý booking cũ khi đổi chính sách.
+
+Các workflow và tiêu chí nghiệm thu bên dưới mô tả chi tiết giao diện hiện có để BA, QA và đội phát triển đối chiếu.
 
 ### Key Concepts
 
 | Thuật ngữ | Ý nghĩa |
 | :--- | :--- |
+| Customer Request | Booking mà khách yêu cầu đích danh một thợ; là điều kiện nguồn để được xét thưởng và lượt booking. |
+| Anyone | Booking mà khách không yêu cầu đích danh thợ. Salon phân công thợ thực hiện; booking này không có thưởng hoặc lượt booking theo quy tắc nêu trên. |
+| Booking reward | Tiền thưởng tính theo chính sách cho booking đủ điều kiện; tách riêng với lượt quy đổi. |
 | Same policy for all | Một chính sách chung cho các thợ. |
 | Customize by technician | Chính sách mặc định kèm cấu hình riêng cho từng thợ. |
 | Flat reward | Một mức tiền cho mỗi booking được tính thưởng. |
