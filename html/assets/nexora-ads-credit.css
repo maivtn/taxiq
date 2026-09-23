@@ -26,6 +26,11 @@
 .ads-muted { color: var(--nexora-muted); font-size: 12px; line-height: 1.65; }
 .ads-status:empty { display: none; }
 .ads-status { margin-top: 14px; border: 1px solid #a7dfc8; border-radius: 10px; padding: 14px; background: #f0fcf5; color: #176143; font-size: 13px; }
+.ads-return-context { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin: 14px 0; padding: 14px 16px; border: 1px solid #d9d7ef; border-radius: 12px; background: #f8f7fd; }
+.ads-return-context[hidden] { display: none; }
+.ads-return-context strong { display: block; font-size: 13px; color: #383578; }
+.ads-return-context p { margin: 4px 0 0; color: #697289; font-size: 11px; line-height: 1.5; }
+.ads-return-context .ads-button { flex: 0 0 auto; text-decoration: none; white-space: nowrap; }
 .ads-explainer { margin-top: 16px; border: 1px solid var(--nexora-border); border-radius: 12px; padding: 16px 20px; background: #fff; }
 .ads-explainer summary, .ads-terms summary { color: var(--nexora-brand); font-size: 13px; font-weight: 600; cursor: pointer; }
 .ads-modes { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 22px; margin: 20px 0; }

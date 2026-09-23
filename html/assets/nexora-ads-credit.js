@@ -9,21 +9,59 @@
   const submit = dialog.querySelector('[data-ads-submit]');
   const error = dialog.querySelector('[data-ads-error]');
   const amountButtons = [...dialog.querySelectorAll('[data-ads-amount]')];
+  const returnContext = document.querySelector('[data-ads-return-context]');
+  const returnLink = document.querySelector('[data-ads-return]');
+  const returnCampaign = document.querySelector('[data-ads-return-campaign]');
+  const STORAGE_KEY = 'nexora:ads-credit:v1';
   const amountLimits = { minCents: 100, maxCents: 1000000 };
   let balanceCents = 35000;
-  const holdCents = 3000;
+  let holdCents = 3000;
   let selectedAmount = '100';
   let completed = false;
   let opener;
   let previousOverflow = '';
   let receiptNumber = 1;
-  const history = [
+  let history = [
     { activity: 'Weekend offer · CPA', date: 'Sep 21, 2026', cents: -5000, balance: 35000, detail: 'Campaign ADS-CPA-02 · Search Deals · Eligible transaction ADS-EVT-02 approved after the hold window.', status: 'Recorded' },
     { activity: 'New guest offer · CPC', date: 'Sep 20, 2026', cents: -10000, balance: 40000, detail: 'Campaign ADS-CPC-01 · Sponsored card in Explore · Approved click batch ADS-EVT-01.', status: 'Recorded' },
     { activity: 'Card top-up', date: 'Sep 18, 2026', cents: 50000, balance: 50000, detail: 'Receipt ADS-001 · Visa ending 4242 · Credit $500.00 · Fee $0.00 · Tax $0.00 · Total $500.00.', status: 'Completed' }
   ];
   const money = cents => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100);
   const escapeHTML = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
+
+  function safeReturnContext() {
+    const params = new URLSearchParams(window.location.search);
+    const href = params.get('returnTo') || '';
+    if (!/^reward-promotions\.html\?/.test(href) || href.includes('://') || href.includes('\\')) return null;
+    return { href, campaignId: params.get('campaignId') || new URLSearchParams(href.split('?')[1] || '').get('campaignId') || 'saved draft' };
+  }
+
+  function loadSavedCredit() {
+    try {
+      const saved = JSON.parse(localStorage.getItem(STORAGE_KEY));
+      if (!saved || !Number.isFinite(saved.balanceCents) || !Number.isFinite(saved.holdCents) || !Array.isArray(saved.history)) return;
+      balanceCents = saved.balanceCents;
+      holdCents = saved.holdCents;
+      history = saved.history;
+      receiptNumber = Math.max(1, history.filter(item => Number(item.cents) > 0).length + 1);
+    } catch (_) {}
+  }
+
+  function persistCredit() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify({ balanceCents, holdCents, history })); } catch (_) {}
+  }
+
+  function renderReturnContext() {
+    const context = safeReturnContext();
+    if (!returnContext || !returnLink || !returnCampaign || !context) {
+      if (returnContext) returnContext.hidden = true;
+      return;
+    }
+    returnContext.hidden = false;
+    returnLink.hidden = false;
+    returnLink.href = context.href;
+    returnCampaign.textContent = context.campaignId;
+  }
 
   function amountCents() {
     const value = selectedAmount === 'custom' ? custom.value.trim() : selectedAmount;
@@ -100,9 +138,12 @@
       cents, balance: balanceCents, status: 'Completed',
       detail: `Receipt ${receipt} · Visa ending 4242 · Credit ${money(cents)} · Fee $0.00 · Tax $0.00 · Total ${money(cents)}.`
     });
+    persistCredit();
     renderBalanceAndHistory();
     dialog.close();
-    document.querySelector('[data-ads-status]').textContent = `${money(cents)} Ads Credit added.`;
+    document.querySelector('[data-ads-status]').textContent = `${money(cents)} Ads Credit added.${safeReturnContext() ? ' Return to campaign when ready.' : ''}`;
   });
+  loadSavedCredit();
+  renderReturnContext();
   renderBalanceAndHistory();
 }());

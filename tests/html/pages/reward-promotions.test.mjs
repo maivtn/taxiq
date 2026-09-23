@@ -19,9 +19,9 @@ const offer = (patch = {}) => ({
 });
 const catalog = (offers = [offer()]) => ({version: 2, pastRevenue: 220, pastUses: 8, offers});
 
-async function boot(t, saved, beforeEval) {
+async function boot(t, saved, beforeEval, pageUrl = 'https://example.test/pages/reward-promotions.html') {
   const dom = new JSDOM(readFileSync(new URL('./reward-promotions.html', SOURCE_DIR), 'utf8'), {
-    url: 'https://example.test/pages/reward-promotions.html', runScripts: 'outside-only'
+    url: pageUrl, runScripts: 'outside-only'
   });
   t.after(() => dom.window.close());
   const w = dom.window, d = w.document;
@@ -736,4 +736,40 @@ test('paid advertising requires a positive total budget and turns off when Publi
   field('boostBudget', '100');
   field('public', false);
   assert.equal(d.querySelector('[name="paidBoost"]').checked, false);
+});
+
+test('opens Promotion Performance as a separate page and keeps the selected promotion', async t => {
+  const {d, card} = await boot(t, catalog());
+  const resultLink = d.querySelector('[data-studio-tab="results"]');
+  assert.equal(resultLink.tagName, 'A');
+  assert.equal(resultLink.getAttribute('href'), 'promotion-performance.html');
+  assert.equal(card('offer-a').querySelector('[data-action="performance"]').getAttribute('href'), 'promotion-performance.html?promotionId=offer-a');
+});
+
+test('saves a campaign draft before sending the owner to top up Ads Credit', async t => {
+  let destination = '';
+  const {w, d, input, savedState} = await boot(t, catalog([offer({public: 'approved', startDate: '2099-10-01', endDate: '2099-10-31'})]), window => {
+    window.NEXORA_NAVIGATE = href => { destination = href; };
+  });
+  w.localStorage.setItem('nexora:ads-credit:v1', JSON.stringify({balanceCents: 0, holdCents: 0, history: []}));
+  d.querySelector('#create-campaign').click();
+  const set = (name, value) => input('#campaign-form [name="' + name + '"]', value);
+  set('name', 'Credit return campaign');
+  set('startDate', '2099-10-01'); set('endDate', '2099-10-20');
+  set('area', 'Houston'); set('dailyBudget', '20'); set('totalBudget', '100');
+  d.querySelector('#campaign-add-credit').click();
+  const saved = savedState().campaigns[0];
+  assert.equal(saved.status, 'draft');
+  assert.equal(saved.name, 'Credit return campaign');
+  assert.match(destination, /^nexora-packages\.html\?tab=ads-credit&/);
+  assert.match(decodeURIComponent(destination), /returnTo=reward-promotions\.html\?tab=campaigns&campaignId=/);
+  assert.match(destination, new RegExp('campaignId=' + saved.id));
+});
+
+test('returns from Ads Credit to the preserved campaign editor', async t => {
+  const fixture = {...catalog(), campaigns: [campaignFixture()]};
+  const {d} = await boot(t, fixture, undefined, 'https://example.test/pages/reward-promotions.html?tab=campaigns&campaignId=campaign-a');
+  assert.equal(d.querySelector('[data-studio-tab="campaigns"]').classList.contains('active'), true);
+  assert.equal(d.querySelector('#campaign-editor').open, true);
+  assert.equal(d.querySelector('#campaign-form [name="name"]').value, 'Autumn traffic');
 });
