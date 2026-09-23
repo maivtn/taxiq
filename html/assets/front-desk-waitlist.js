@@ -73,14 +73,32 @@
     });
   }
 
+  function notify(message, icon = 'success') {
+    const feedback = document.querySelector('#feedback');
+    if (window.Swal && typeof window.Swal.fire === 'function') {
+      feedback.textContent = '';
+      window.Swal.fire({
+        toast: true,
+        position: 'top-end',
+        icon,
+        titleText: message,
+        showConfirmButton: false,
+        showCloseButton: true,
+        timer: 3000,
+        timerProgressBar: true
+      });
+    } else {
+      feedback.textContent = message;
+    }
+  }
+
   root.innerHTML =
     '<div class="wl-heading"><div><h2>Live Waitlist</h2><p>' + esc(catalog.salon.name) + ' · ' + esc(catalog.salon.location) + '</p></div>' +
     '<div class="views wl-views" role="group" aria-label="Waitlist view">' +
       '<button type="button" data-wl-view="table" aria-controls="wl-cards">Table</button>' +
       '<button type="button" data-wl-view="card" aria-controls="wl-cards">Cards</button></div></div>' +
     '<div id="wl-cards" class="wl-list"></div>' +
-    '<p id="wl-empty" class="wl-empty" hidden>No customers waiting right now.</p>' +
-    '<p class="wl-note">Interactive prototype · Sample data only. SMS, calls, and benefit offers are simulated and do not contact real customers.</p>';
+    '<p id="wl-empty" class="wl-empty" hidden>No customers waiting right now.</p>';
   renderList();
 
   root.addEventListener('click', event => {
@@ -95,15 +113,14 @@
     const cardEl = button.closest('[data-wl-guest]');
     const guest = guests.find(item => item.id === cardEl.dataset.wlGuest);
     if (!guest) return;
-    const feedback = document.querySelector('#feedback');
     const action = button.dataset.wlAction;
-    if (action === 'sms') feedback.textContent = 'SMS sent to ' + guest.name + ' (demo).';
-    else if (action === 'call') feedback.textContent = 'Calling ' + guest.name + '... (demo).';
-    else if (action === 'benefit') feedback.textContent = 'Benefit offer sent to ' + guest.name + ' (demo).';
+    if (action === 'sms') notify('SMS sent to ' + guest.name + '.');
+    else if (action === 'call') notify('Calling ' + guest.name + '...', 'info');
+    else if (action === 'benefit') notify('Benefit offer sent to ' + guest.name + '.');
     else if (action === 'arrived') {
       guests = guests.filter(item => item.id !== guest.id);
-      feedback.textContent = guest.name + ' marked as arrived.';
       renderList();
+      notify(guest.name + ' marked as arrived.');
     }
   });
 

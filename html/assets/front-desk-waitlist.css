@@ -34,6 +34,5 @@
 #front-desk-waitlist .wl-benefit-count{display:block;font-weight:600;margin-bottom:4px}
 #front-desk-waitlist .wl-table-wrap .wl-actions{min-width:208px}
 #front-desk-waitlist .wl-empty{text-align:center;padding:40px;color:var(--nexora-muted,#52607b)}
-#front-desk-waitlist .wl-note{font-size:11px;color:var(--nexora-muted,#52607b);margin-top:14px}
 #front-desk-waitlist [hidden]{display:none!important}
 @media(max-width:640px){#front-desk-waitlist .wl-list{grid-template-columns:minmax(0,1fr)}#front-desk-waitlist .wl-actions button{min-height:40px}#front-desk-waitlist .wl-views button{min-height:40px}}

@@ -62,3 +62,31 @@ test('table actions target the right guest and arrivals stay removed when switch
   assert.equal(root.querySelectorAll('[data-wl-guest]').length, 0);
   assert.equal(root.querySelector('#wl-empty').hidden, false);
 });
+
+for (const view of ['table', 'card']) {
+  test(`waitlist ${view} actions show non-blocking SweetAlert feedback for the selected customer`, t => {
+    const d = boot(t);
+    const alerts = [];
+    d.defaultView.Swal = {fire: options => alerts.push(options)};
+    d.querySelector(`[data-wl-view="${view}"]`).click();
+    const guest = d.querySelector('[data-wl-guest="maria-lopez"]');
+    for (const [action, title, icon] of [
+      ['sms', 'SMS sent to Maria Lopez.', 'success'],
+      ['benefit', 'Benefit offer sent to Maria Lopez.', 'success'],
+      ['call', 'Calling Maria Lopez...', 'info'],
+      ['arrived', 'Maria Lopez marked as arrived.', 'success']
+    ]) {
+      guest.querySelector(`[data-wl-action="${action}"]`).click();
+      const notification = alerts.at(-1);
+      assert.ok(notification, 'The action sends feedback to SweetAlert');
+      assert.equal(notification.titleText, title);
+      assert.equal(notification.icon, icon);
+      assert.equal(notification.toast, true);
+      assert.equal(notification.showConfirmButton, false);
+      assert.ok(notification.timer > 0, 'Toast dismisses automatically');
+      assert.equal(d.querySelector('#feedback').textContent, '');
+    }
+    assert.equal(alerts.length, 4);
+    assert.equal(d.querySelector('[data-wl-guest="maria-lopez"]'), null);
+  });
+}
