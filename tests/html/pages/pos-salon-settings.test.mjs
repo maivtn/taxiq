@@ -367,7 +367,9 @@ test('After Checkout Setup preview mirrors edits to the Thank You message',()=>{
  assert.equal(templates.find(button=>button.dataset.templateKey==='receipt-only').getAttribute('aria-pressed'),'true');
  const insertBar=textarea.closest('[data-sms-composer]');
  assert.equal(insertBar.querySelector('[data-sms-insert-token="[Customer Name]"]'),null);
- assert.ok(insertBar.querySelector('[data-sms-insert-token="[Receipt Link]"]'));
+ assert.deepEqual(Array.from(insertBar.querySelectorAll('[data-sms-insert-token]'),button=>button.dataset.smsInsertToken),[
+  '[Salon Name]','[Ticket Number]','[Ticket Total]','[Review Link]','[Tip Link]','[Feedback Link]','[Rewards Link]','[Booking Link]','[Receipt Link]'
+ ]);
  assert.equal(insertBar.querySelector('[data-sms-insert-token="[OneQR Link]"]'),null);
  textarea.value='See you soon, [Customer Name]!';textarea.dispatchEvent(new w.Event('input'));
  assert.equal(preview.textContent,'See you soon, Sarah!');
@@ -378,6 +380,10 @@ test('After Checkout Setup preview mirrors edits to the Thank You message',()=>{
  assert.equal(d.querySelector('[data-sms-count="afterMessage"]').textContent,'41 chars — 1 SMS');
  assert.equal(d.activeElement,textarea);
  assert.equal(textarea.selectionStart,18);
+ textarea.value='Review: ';textarea.setSelectionRange(8,8);
+ insertBar.querySelector('[data-sms-insert-token="[Review Link]"]').click();
+ assert.equal(textarea.value,'Review: [Review Link]');
+ assert.equal(preview.textContent,'Review: nexora.app/review/••••');
  assert.deepEqual(errors,[]);dom.window.close();
 });
 

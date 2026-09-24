@@ -17,6 +17,11 @@
     '[OneQR Link]': 'nexora.app/q/••••',
     '[Ticket Number]': '#12',
     '[Ticket Total]': '$45.00',
+    '[Review Link]': 'nexora.app/review/••••',
+    '[Tip Link]': 'nexora.app/tip/••••',
+    '[Feedback Link]': 'nexora.app/feedback/••••',
+    '[Rewards Link]': 'nexora.app/rewards/••••',
+    '[Booking Link]': 'nexora.app/book/••••',
     '[Receipt Link]': 'nexora.app/r/••••',
     '[Salon Phone]': '(713) 555-0123'
   };
@@ -52,6 +57,11 @@
     { token: '[Salon Name]', label: 'Shop name', icon: 'bi-shop' },
     { token: '[Ticket Number]', label: 'Ticket number', icon: 'bi-receipt' },
     { token: '[Ticket Total]', label: 'Ticket total', icon: 'bi-currency-dollar' },
+    { token: '[Review Link]', label: 'Review link', icon: 'bi-star' },
+    { token: '[Tip Link]', label: 'Tip link', icon: 'bi-cash-coin' },
+    { token: '[Feedback Link]', label: 'Feedback link', icon: 'bi-chat-left-text' },
+    { token: '[Rewards Link]', label: 'Rewards link', icon: 'bi-gift' },
+    { token: '[Booking Link]', label: 'Booking link', icon: 'bi-calendar-check' },
     { token: '[Receipt Link]', label: 'Receipt link', icon: 'bi-receipt-cutoff' }
   ];
   var GENERAL_MESSAGE_TOKENS = [
