@@ -33,7 +33,7 @@
     member: 'Welcome back, [Customer Name]! Your check-in is confirmed. Member benefits available. Tap here: [OneQR Link]',
     birthday: 'Happy Birthday, [Customer Name]! Your check-in is confirmed. Birthday benefits available. Tap here: [OneQR Link]'
   };
-  var AFTER_CHECKOUT_DEFAULT = 'Thanks for visiting [Salon Name]! Your ticket [Ticket Number] total is [Ticket Total]. View your receipt: [Receipt Link]. See offers & rewards: [OneQR Link]';
+  var AFTER_CHECKOUT_DEFAULT = 'Thanks for visiting [Salon Name]! Ticket [Ticket Number]: [Ticket Total]. Receipt: [Receipt Link]. Offers: [OneQR Link]';
 
   var AFTER_CHECKOUT_TOKENS = [
     { token: '[Salon Name]', label: 'Shop name', icon: 'bi-shop' },
@@ -57,7 +57,7 @@
     { label: 'Return soon', mode: 'Auto at 15 min', text: 'Your turn is getting close. Reply 1 or tap I’m Coming to confirm your return.' },
     { label: 'Wait Care', mode: 'Manager approval', text: 'We’re sorry your wait is taking longer than expected. To thank you for your patience, Bitcoin Nail Bar is offering a complimentary hot-stone upgrade.' },
     { label: 'Ready now', mode: 'Manual', text: 'We’re ready for you now! Please return within 10 minutes and tap I’m Here when you arrive.' },
-    { label: 'Thank you', mode: 'Auto after checkout', text: 'Thanks for visiting Bitcoin Nail Bar! Your ticket #12 total is $45.00. View your receipt: nexora.app/r/••••. See offers & rewards: nexora.app/q/••••' }
+    { label: 'Thank you', mode: 'Auto after checkout', text: 'Thanks for visiting Bitcoin Nail Bar! Ticket #12: $45.00. Receipt: nexora.app/r/••••. Offers: nexora.app/q/••••' }
   ];
 
   function smsComposerMarkup(field, value, tokens) {
