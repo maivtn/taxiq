@@ -18,8 +18,7 @@
     '[Ticket Number]': '#12',
     '[Ticket Total]': '$45.00',
     '[Receipt Link]': 'nexora.app/r/••••',
-    '[Salon Phone]': '(713) 555-0123',
-    '[Benefits Status]': 'Benefits available.'
+    '[Salon Phone]': '(713) 555-0123'
   };
   function renderTokens(text) {
     return Object.keys(TOKENS).reduce(function (out, token) {
@@ -28,12 +27,26 @@
   }
 
   var WELCOME_TEMPLATES = {
-    new: 'Hi [Customer Name], welcome to [Salon Name]! Your check-in is confirmed. Benefits available. Tap here: [OneQR Link]',
-    returning: 'Welcome back, [Customer Name]! Your check-in is confirmed. Benefits available. Tap here: [OneQR Link]',
-    member: 'Welcome back, [Customer Name]! Your check-in is confirmed. Member benefits available. Tap here: [OneQR Link]',
-    birthday: 'Happy Birthday, [Customer Name]! Your check-in is confirmed. Birthday benefits available. Tap here: [OneQR Link]'
+    new: 'Hi [Customer Name], welcome to [Salon Name]! You’re checked in. View your visit: [OneQR Link]',
+    returning: 'Welcome back, [Customer Name]! You’re checked in at [Salon Name]. View your visit: [OneQR Link]',
+    birthday: 'Happy Birthday, [Customer Name]! You’re checked in at [Salon Name]. Birthday perks: [OneQR Link]'
   };
-  var AFTER_CHECKOUT_DEFAULT = 'Thanks for visiting [Salon Name]! Ticket [Ticket Number]: [Ticket Total]. Receipt: [Receipt Link]';
+  var WELCOME_TEMPLATE_OPTIONS = [
+    { key: 'new', label: 'New customer' },
+    { key: 'returning', label: 'Returning customer' },
+    { key: 'birthday', label: 'Birthday greeting' }
+  ];
+  var AFTER_CHECKOUT_TEMPLATES = {
+    'ticket-receipt': 'Thanks for visiting [Salon Name]! Ticket [Ticket Number]: [Ticket Total]. Receipt: [Receipt Link]',
+    'receipt-only': 'Thanks for visiting [Salon Name]! Receipt: [Receipt Link]',
+    'thank-you': 'Thanks for visiting [Salon Name]! We hope to see you again soon.'
+  };
+  var AFTER_CHECKOUT_TEMPLATE_OPTIONS = [
+    { key: 'ticket-receipt', label: 'Ticket & receipt' },
+    { key: 'receipt-only', label: 'Receipt only' },
+    { key: 'thank-you', label: 'Warm thank you' }
+  ];
+  var AFTER_CHECKOUT_DEFAULT = AFTER_CHECKOUT_TEMPLATES['ticket-receipt'];
 
   var AFTER_CHECKOUT_TOKENS = [
     { token: '[Salon Name]', label: 'Shop name', icon: 'bi-shop' },
@@ -60,6 +73,18 @@
       '<textarea class="settings-input sms-textarea" data-sms-field="' + esc(field) + '" rows="4">' + esc(value) + '</textarea>' +
       '<div class="sms-composer-footer"><span>Dynamic fields fill automatically when sent</span><strong data-sms-count="' + esc(field) + '">' + value.length + ' chars — ' + Math.max(1, Math.ceil(value.length / 160)) + ' SMS</strong></div>' +
     '</div>';
+  }
+
+  function quickTemplateMarkup(group, options, messages, selectedKey) {
+    var cards = options.map(function (option) {
+      var selected = option.key === selectedKey;
+      return '<button type="button" class="sms-template-card' + (selected ? ' is-selected' : '') + '" data-sms-template="' + esc(group) + '" data-template-key="' + esc(option.key) + '" aria-pressed="' + selected + '">' +
+        '<span class="sms-template-card-title"><i class="bi bi-stars" aria-hidden="true"></i>' + esc(option.label) + '</span>' +
+        '<span class="sms-template-card-copy">' + esc(messages[option.key]) + '</span>' +
+      '</button>';
+    }).join('');
+    return '<div class="settings-field sms-field-full sms-template-picker"><span class="settings-label">Quick template</span>' +
+      '<div class="sms-template-card-grid">' + cards + '</div></div>';
   }
 
   function testSendMarkup(action, primary) {
@@ -137,6 +162,7 @@
             '<div class="settings-field-grid">' +
               selectField('Send mode', null, ['Automatic after checkout', 'Manual review before sending']) +
               selectField('Smart Link destination', null, ['Personalized OneQR After Visit', 'OneQR Main Menu']) +
+              quickTemplateMarkup('after', AFTER_CHECKOUT_TEMPLATE_OPTIONS, AFTER_CHECKOUT_TEMPLATES, 'ticket-receipt') +
               '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('afterMessage', AFTER_CHECKOUT_DEFAULT, AFTER_CHECKOUT_TOKENS) + '</label>' +
               selectField('Review', null, ['Show to every customer', 'Hide']) +
               selectField('Tip', null, ['Show only when no tip was completed', 'Hide tip after checkout']) +
@@ -165,12 +191,10 @@
             '<div class="settings-toggle-row"><span>Enable welcome message after check-in</span>' +
             '<button class="toggle-pill is-on" type="button" role="switch" aria-checked="true" aria-label="Toggle welcome message after check-in"></button></div>' +
             '<div class="settings-field-grid">' +
-              '<label class="settings-field"><span class="settings-label">Customer template</span><select class="settings-select" data-sms-field="welcomeTemplate">' +
-                '<option value="new">New Customer</option><option value="returning" selected>Returning Customer</option><option value="member">Member</option><option value="birthday">Birthday Customer</option>' +
-              '</select></label>' +
               selectField('Send mode', null, ['Automatic after check-in', 'Manual review before sending']) +
               selectField('Wait-time visibility', null, ['Do not show wait time', 'Show estimated range', 'Staff decides per customer']) +
               selectField('Smart Link destination', null, ['Personalized OneQR Menu', 'OneQR Main Menu', 'Service Menu', 'Rewards & Benefits']) +
+              quickTemplateMarkup('welcome', WELCOME_TEMPLATE_OPTIONS, WELCOME_TEMPLATES, 'returning') +
               '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('welcomeMessage', WELCOME_TEMPLATES.returning, WELCOME_MESSAGE_TOKENS) + '</label>' +
             '</div>' +
             '<p class="sms-notice"><strong>Marketing consent required:</strong> If OneQR highlights a promotional offer, the customer must have valid marketing consent. Without consent, the same link opens the standard OneQR menu and existing customer benefits only.</p>' +
@@ -230,16 +254,22 @@
     textarea.addEventListener('input', function () { refreshPreview(textarea.dataset.smsField); });
   });
 
-  var welcomeTemplateSelect = $('[data-sms-field="welcomeTemplate"]');
-  if (welcomeTemplateSelect) {
-    welcomeTemplateSelect.addEventListener('change', function () {
-      var textarea = $('[data-sms-field="welcomeMessage"]');
-      if (textarea) {
-        textarea.value = WELCOME_TEMPLATES[welcomeTemplateSelect.value] || WELCOME_TEMPLATES.returning;
-        refreshPreview('welcomeMessage');
-      }
+  $$('[data-sms-template]').forEach(function (button) {
+    button.addEventListener('click', function () {
+      var group = button.dataset.smsTemplate;
+      var messages = group === 'after' ? AFTER_CHECKOUT_TEMPLATES : WELCOME_TEMPLATES;
+      var field = group === 'after' ? 'afterMessage' : 'welcomeMessage';
+      var textarea = $('[data-sms-field="' + field + '"]');
+      if (!textarea || !messages[button.dataset.templateKey]) return;
+      $$('[data-sms-template="' + group + '"]').forEach(function (card) {
+        var selected = card === button;
+        card.classList.toggle('is-selected', selected);
+        card.setAttribute('aria-pressed', String(selected));
+      });
+      textarea.value = messages[button.dataset.templateKey];
+      refreshPreview(field);
     });
-  }
+  });
 
   $$('[data-sms-insert-token]').forEach(function (button) {
     button.addEventListener('click', function () {

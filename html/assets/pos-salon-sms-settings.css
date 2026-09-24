@@ -187,6 +187,64 @@
   color: #4148df;
 }
 
+.sms-template-picker {
+  min-width: 100%;
+}
+
+.sms-template-card-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 9px;
+  margin-top: 7px;
+}
+
+.sms-template-card {
+  min-width: 0;
+  border: 1px solid var(--nexora-border);
+  border-radius: 10px;
+  background: #fff;
+  padding: 11px 13px;
+  color: var(--nexora-text);
+  font: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.sms-template-card:hover,
+.sms-template-card:focus-visible {
+  border-color: #aeb5f5;
+  background: #fafaff;
+}
+
+.sms-template-card.is-selected {
+  border-color: #7076ee;
+  background: #f5f5ff;
+  box-shadow: 0 0 0 1px #7076ee;
+}
+
+.sms-template-card-title,
+.sms-template-card-copy {
+  display: block;
+}
+
+.sms-template-card-title {
+  color: #4148df;
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.sms-template-card-title i {
+  margin-right: 6px;
+}
+
+.sms-template-card-copy {
+  margin-top: 5px;
+  overflow-wrap: anywhere;
+  color: var(--nexora-muted);
+  font-size: 11px;
+  line-height: 1.45;
+}
+
 .sms-actions {
   display: flex;
   flex-wrap: wrap;
@@ -373,6 +431,10 @@
   .sms-col,
   .sms-col-side {
     flex-basis: 100%;
+  }
+
+  .sms-template-card-grid {
+    grid-template-columns: 1fr;
   }
 
   .sms-card {
