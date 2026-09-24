@@ -411,12 +411,12 @@ test('Wait Care tab owns its delay rules and complete SMS workflow',()=>{
  ]);
  d.querySelector('[data-sms-tab="automation"]').click();
  const automationPanel=d.querySelector('[data-sms-panel="automation"]');
- const waitlistTimingCard=Array.from(automationPanel.querySelectorAll('h3')).find(heading=>heading.textContent==='Waitlist timing').closest('.sms-card');
- assert.ok(waitlistTimingCard);
- assert.equal(Array.from(automationPanel.querySelectorAll('h3'),heading=>heading.textContent).some(text=>text.includes('Wait Care')),false);
+ const waitlistTimingHeading=Array.from(automationPanel.querySelectorAll('h3,h4')).find(heading=>heading.textContent==='Waitlist timing');
+ assert.ok(waitlistTimingHeading);
+ assert.equal(Array.from(automationPanel.querySelectorAll('h3,h4'),heading=>heading.textContent).some(text=>text.includes('Wait Care')),false);
  assert.equal(Array.from(automationPanel.querySelectorAll('.settings-label'),label=>label.textContent).includes('Welcome SMS'),false);
  assert.equal(Array.from(automationPanel.querySelectorAll('.settings-label'),label=>label.textContent).includes('Welcome wait time'),false);
- assert.deepEqual(Array.from(waitlistTimingCard.querySelectorAll('.settings-label'),label=>label.textContent),[
+ assert.deepEqual(Array.from(waitlistTimingHeading.nextElementSibling.querySelectorAll('.settings-label'),label=>label.textContent),[
   'Return notice','No response grace','Internal ETA threshold'
  ]);
  d.querySelector('[data-sms-tab="wait-care"]').click();
@@ -467,6 +467,30 @@ test('each SMS journey lets the salon configure and preview Smart Link validity'
  assert.deepEqual(errors,[]);dom.window.close();
 });
 
+test('Automation Settings configures Return Soon and Ready Now messages',()=>{
+ const {dom,w,d,errors}=smsPage();
+ d.querySelector('[data-sms-tab="automation"]').click();
+ const panel=d.querySelector('[data-sms-panel="automation"]');
+ const returnTextarea=panel.querySelector('[data-sms-field="returnSoonMessage"]');
+ const readyTextarea=panel.querySelector('[data-sms-field="readyNowMessage"]');
+ const returnPreview=panel.querySelector('[data-sms-preview="returnSoonMessage"]');
+ const readyPreview=panel.querySelector('[data-sms-preview="readyNowMessage"]');
+ assert.ok(returnTextarea);assert.ok(readyTextarea);assert.ok(returnPreview);assert.ok(readyPreview);
+ assert.deepEqual(Array.from(panel.querySelectorAll('[data-sms-template="return-soon"]'),button=>button.dataset.templateKey),['return-reminder','head-back']);
+ assert.deepEqual(Array.from(panel.querySelectorAll('[data-sms-template="ready-now"]'),button=>button.dataset.templateKey),['ready-now','your-turn']);
+ assert.ok(panel.querySelector('[data-sms-field="returnSoonSendMode"]'));
+ assert.ok(panel.querySelector('[data-sms-field="readyNowSendMode"]'));
+ assert.equal(panel.querySelectorAll('[data-sms-action="save-automation"]').length,1);
+ assert.match(returnPreview.textContent,/coming up in 15 minutes/);
+ const returnNotice=panel.querySelector('[data-sms-field="returnNotice"]');
+ returnNotice.value='10 minutes before';returnNotice.dispatchEvent(new w.Event('change'));
+ assert.match(returnPreview.textContent,/coming up in 10 minutes/);
+ panel.querySelector('[data-sms-template="ready-now"][data-template-key="your-turn"]').click();
+ assert.match(readyTextarea.value,/it’s your turn at \[Salon Name\]/);
+ assert.match(readyPreview.textContent,/it’s your turn at Bitcoin Nail Bar/);
+ assert.deepEqual(errors,[]);dom.window.close();
+});
+
 test('tablet SMS previews stay compact while mobile previews use the available width',()=>{
  const css=readFileSync(new URL('../assets/pos-salon-sms-settings.css', SOURCE_DIR),'utf8');
  assert.match(css,/@media \(min-width: 641px\) and \(max-width: 1180px\)[\s\S]*?\.sms-col-side\s*\{[\s\S]*?flex:\s*0 1 320px;[\s\S]*?max-width:\s*320px;/);
@@ -493,7 +517,7 @@ test('Pause automation toggles the Automation pill, and Save/Send actions post a
 
 test('each Send Test action requires a valid recipient phone number',()=>{
  const {dom,d,errors}=smsPage();
- for(const [tab,action] of [['welcome','send-test-welcome'],['after','send-test-after'],['wait-care','send-test-wait-care']]){
+ for(const [tab,action] of [['welcome','send-test-welcome'],['after','send-test-after'],['wait-care','send-test-wait-care'],['automation','send-test-return-soon'],['automation','send-test-ready-now']]){
   d.querySelector('[data-sms-tab="'+tab+'"]').click();
   const phone=d.querySelector('[data-sms-test-phone="'+action+'"]');
   const country=d.querySelector('[data-sms-test-country="'+action+'"]');

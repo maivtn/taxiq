@@ -67,10 +67,6 @@
   min-width: 0;
 }
 
-.sms-automation-timing-card {
-  flex: 1 1 100%;
-}
-
 .sms-card {
   border: 1px solid var(--nexora-border);
   border-radius: 14px;
@@ -266,6 +262,15 @@
   align-items: flex-end;
   gap: 10px;
   margin-top: 20px;
+}
+
+.sms-message-test {
+  margin-top: 12px;
+}
+
+.sms-preview-stack {
+  display: grid;
+  gap: 24px;
 }
 
 .sms-test-send {

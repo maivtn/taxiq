@@ -25,7 +25,8 @@
     '[Receipt Link]': 'nexora.app/r/••••',
     '[Salon Phone]': '(713) 555-0123',
     '[Wait Time]': '15–20 minutes',
-    '[Wait Care Benefit]': 'a complimentary hot-stone upgrade'
+    '[Wait Care Benefit]': 'a complimentary hot-stone upgrade',
+    '[Return Notice]': '15 minutes'
   };
   function renderTokens(text) {
     return Object.keys(TOKENS).reduce(function (out, token) {
@@ -71,6 +72,22 @@
     { key: 'visit-preparation', label: 'Preparing your visit' }
   ];
   var WAIT_CARE_DEFAULT = WAIT_CARE_TEMPLATES['care-benefit'];
+  var RETURN_SOON_TEMPLATES = {
+    'return-reminder': 'Hi [Customer Name], your turn at [Salon Name] is coming up in [Return Notice]. Please return soon: [OneQR Link]',
+    'head-back': 'Hi [Customer Name], please head back to [Salon Name]. Your estimated turn is in [Return Notice]. Details: [OneQR Link]'
+  };
+  var RETURN_SOON_TEMPLATE_OPTIONS = [
+    { key: 'return-reminder', label: 'Return reminder' },
+    { key: 'head-back', label: 'Head back now' }
+  ];
+  var READY_NOW_TEMPLATES = {
+    'ready-now': 'Hi [Customer Name], we’re ready for you at [Salon Name]. Please come to the front desk now. Details: [OneQR Link]',
+    'your-turn': 'Hi [Customer Name], it’s your turn at [Salon Name]. Please come to the front desk now: [OneQR Link]'
+  };
+  var READY_NOW_TEMPLATE_OPTIONS = [
+    { key: 'ready-now', label: 'Ready now' },
+    { key: 'your-turn', label: 'Your turn' }
+  ];
   var LIVE_LINK_VALIDITY_OPTIONS = ['Until checkout + 24 hours', 'Until checkout', 'Until checkout + 48 hours', '7 days after check-in'];
   var AFTER_LINK_VALIDITY_OPTIONS = ['30 days after checkout', '7 days after checkout', '14 days after checkout', '90 days after checkout'];
   var LINK_VALIDITY_CAPTIONS = {
@@ -110,6 +127,9 @@
     { token: '[Wait Care Benefit]', label: 'Wait Care benefit', icon: 'bi-gift' },
     { token: '[OneQR Link]', label: 'Smart link', icon: 'bi-link-45deg' }
   ];
+  var RETURN_SOON_TOKENS = GENERAL_MESSAGE_TOKENS.concat([
+    { token: '[Return Notice]', label: 'Return notice', icon: 'bi-clock' }
+  ]);
 
   function smsComposerMarkup(field, value, tokens) {
     var buttons = tokens.map(function (item) {
@@ -170,14 +190,35 @@
 
       '<section data-sms-panel="automation" hidden>' +
         '<div class="sms-columns">' +
-          '<div class="sms-card sms-automation-timing-card"><h3>Waitlist timing</h3><div class="settings-field-grid">' +
-            selectField('Return notice', null, ['15 minutes before', '10 minutes before', '20 minutes before']) +
+          '<div class="sms-col sms-card"><h3>Waitlist Automation Setup</h3>' +
+          '<h4 class="sms-section-title">Waitlist timing</h4><div class="settings-field-grid">' +
+            selectField('Return notice', 'returnNotice', ['15 minutes before', '10 minutes before', '20 minutes before']) +
             selectField('No response grace', null, ['10 minutes', '5 minutes', '15 minutes']) +
             selectField('Internal ETA threshold', null, ['10 minutes', '5 minutes', '15 minutes']) +
           '</div>' +
+          '<h4 class="sms-section-title">Return Soon SMS</h4><div class="settings-field-grid">' +
+            selectField('Send mode', 'returnSoonSendMode', ['Automatic at return notice', 'Manager approval', 'Manual']) +
+            quickTemplateMarkup('return-soon', RETURN_SOON_TEMPLATE_OPTIONS, RETURN_SOON_TEMPLATES, 'return-reminder') +
+            '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('returnSoonMessage', RETURN_SOON_TEMPLATES['return-reminder'], RETURN_SOON_TOKENS) + '</label>' +
+          '</div><div class="sms-message-test">' + testSendMarkup('send-test-return-soon', false) + '</div>' +
+          '<h4 class="sms-section-title">Ready Now SMS</h4><div class="settings-field-grid">' +
+            selectField('Send mode', 'readyNowSendMode', ['Manual', 'Automatic', 'Manager approval']) +
+            quickTemplateMarkup('ready-now', READY_NOW_TEMPLATE_OPTIONS, READY_NOW_TEMPLATES, 'ready-now') +
+            '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('readyNowMessage', READY_NOW_TEMPLATES['ready-now'], GENERAL_MESSAGE_TOKENS) + '</label>' +
+          '</div><div class="sms-message-test">' + testSendMarkup('send-test-ready-now', false) + '</div>' +
           '<div class="sms-actions">' +
-            '<button type="button" class="booking-primary-button" data-sms-action="save-automation"><i class="bi bi-check2" aria-hidden="true"></i>Save settings</button>' +
+            '<button type="button" class="booking-primary-button" data-sms-action="save-automation"><i class="bi bi-check2" aria-hidden="true"></i>Save Automation Settings</button>' +
             '<button type="button" class="booking-secondary-button" data-sms-action="pause-automation">Pause automation</button>' +
+          '</div></div>' +
+          '<div class="sms-col-side sms-card"><h3>Waitlist previews</h3><div class="sms-preview-stack">' +
+            '<div><h4 class="sms-section-title">Return Soon</h4><div class="sms-phone"><div class="sms-phone-screen"><div class="sms-phone-bar"></div>' +
+              '<div class="sms-phone-title">Messages</div>' +
+              '<div class="sms-phone-bubble" data-sms-preview="returnSoonMessage">' + esc(renderTokens(RETURN_SOON_TEMPLATES['return-reminder'])) + '</div>' +
+            '</div></div></div>' +
+            '<div><h4 class="sms-section-title">Ready Now</h4><div class="sms-phone"><div class="sms-phone-screen"><div class="sms-phone-bar"></div>' +
+              '<div class="sms-phone-title">Messages</div>' +
+              '<div class="sms-phone-bubble" data-sms-preview="readyNowMessage">' + esc(renderTokens(READY_NOW_TEMPLATES['ready-now'])) + '</div>' +
+            '</div></div></div>' +
           '</div></div>' +
         '</div>' +
       '</section>' +
@@ -313,8 +354,14 @@
       count.textContent = length + ' chars — ' + Math.max(1, Math.ceil(length / 160)) + ' SMS';
     }
   }
-  $$('[data-sms-field="afterMessage"], [data-sms-field="welcomeMessage"], [data-sms-field="waitCareMessage"]').forEach(function (textarea) {
+  $$('[data-sms-field="afterMessage"], [data-sms-field="welcomeMessage"], [data-sms-field="waitCareMessage"], [data-sms-field="returnSoonMessage"], [data-sms-field="readyNowMessage"]').forEach(function (textarea) {
     textarea.addEventListener('input', function () { refreshPreview(textarea.dataset.smsField); });
+  });
+
+  var returnNotice = $('[data-sms-field="returnNotice"]');
+  if (returnNotice) returnNotice.addEventListener('change', function () {
+    TOKENS['[Return Notice]'] = returnNotice.value.replace(/\s+before$/, '');
+    refreshPreview('returnSoonMessage');
   });
 
   $$('[data-sms-link-validity-preview]').forEach(function (preview) {
@@ -329,8 +376,16 @@
   $$('[data-sms-template]').forEach(function (button) {
     button.addEventListener('click', function () {
       var group = button.dataset.smsTemplate;
-      var messages = group === 'after' ? AFTER_CHECKOUT_TEMPLATES : (group === 'wait-care' ? WAIT_CARE_TEMPLATES : WELCOME_TEMPLATES);
-      var field = group === 'after' ? 'afterMessage' : (group === 'wait-care' ? 'waitCareMessage' : 'welcomeMessage');
+      var config = {
+        after: { messages: AFTER_CHECKOUT_TEMPLATES, field: 'afterMessage' },
+        'wait-care': { messages: WAIT_CARE_TEMPLATES, field: 'waitCareMessage' },
+        'return-soon': { messages: RETURN_SOON_TEMPLATES, field: 'returnSoonMessage' },
+        'ready-now': { messages: READY_NOW_TEMPLATES, field: 'readyNowMessage' },
+        welcome: { messages: WELCOME_TEMPLATES, field: 'welcomeMessage' }
+      }[group];
+      if (!config) return;
+      var messages = config.messages;
+      var field = config.field;
       var textarea = $('[data-sms-field="' + field + '"]');
       if (!textarea || !messages[button.dataset.templateKey]) return;
       $$('[data-sms-template="' + group + '"]').forEach(function (card) {
@@ -390,7 +445,9 @@
     'send-test-after': 'Thank You test SMS queued.',
     'save-welcome': 'Welcome SMS settings saved.',
     'send-test-welcome': 'Test SMS queued.',
-    'send-test-wait-care': 'Wait Care test SMS queued.'
+    'send-test-wait-care': 'Wait Care test SMS queued.',
+    'send-test-return-soon': 'Return Soon test SMS queued.',
+    'send-test-ready-now': 'Ready Now test SMS queued.'
   };
   function formatTestPhone(value, country) {
     var digits = String(value || '').replace(/\D/g, '');
