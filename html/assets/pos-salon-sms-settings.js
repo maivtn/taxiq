@@ -61,17 +61,13 @@
   var AFTER_CHECKOUT_DEFAULT = AFTER_CHECKOUT_TEMPLATES['ticket-receipt'];
   var WAIT_CARE_TEMPLATES = {
     'delay-update': 'Hi [Customer Name], we\'re sorry for the wait at [Salon Name]. Current estimate: [Wait Time]. Track your visit: [OneQR Link]',
-    'wait-estimate': 'Hi [Customer Name], thanks for your patience at [Salon Name]. Estimated wait: [Wait Time]. Updates: [OneQR Link]',
-    'comfort-check-in': 'Hi [Customer Name], we\'re checking in while you wait at [Salon Name]. Need anything to feel more comfortable? Please let our team know.',
-    'visit-preparation': 'Hi [Customer Name], thanks for waiting at [Salon Name]. Follow your visit: [OneQR Link]'
+    'wait-estimate': 'Hi [Customer Name], thanks for your patience at [Salon Name]. Estimated wait: [Wait Time]. Updates: [OneQR Link]'
   };
   var WAIT_CARE_TEMPLATE_OPTIONS = [
-    { key: 'visit-preparation', label: 'Thanks for waiting' },
-    { key: 'comfort-check-in', label: 'Comfort check-in' },
     { key: 'delay-update', label: 'Delay update' },
     { key: 'wait-estimate', label: 'Wait time update' }
   ];
-  var WAIT_CARE_DEFAULT = WAIT_CARE_TEMPLATES['visit-preparation'];
+  var WAIT_CARE_DEFAULT = WAIT_CARE_TEMPLATES['wait-estimate'];
   var RETURN_SOON_TEMPLATES = {
     'return-reminder': 'Hi [Customer Name], your turn at [Salon Name] is coming up in [Return Notice]. Please return soon: [OneQR Link]',
     'head-back': 'Hi [Customer Name], please head back to [Salon Name]. Your estimated turn is in [Return Notice]. Details: [OneQR Link]'
@@ -232,7 +228,7 @@
               selectField('Send mode', 'waitCareSendMode', ['Manager approval', 'Automatic', 'Manual']) +
               '<div class="sms-care-trigger" data-sms-care-trigger>' + selectField('Waiting time since check-in', 'waitCareDelay', ['10 minutes', '15 minutes', '20 minutes', '30 minutes', '45 minutes', '60 minutes'], 1) + '</div>' +
               '<div class="sms-field-full sms-care-delivery"><p class="settings-help" data-sms-care-summary aria-live="polite"></p><p class="settings-help">Only for customers still waiting to be served. Send at most once per visit; skip if service has started, the visit has ended or the customer has left.</p></div>' +
-              quickTemplateMarkup('wait-care', WAIT_CARE_TEMPLATE_OPTIONS, WAIT_CARE_TEMPLATES, 'visit-preparation') +
+              quickTemplateMarkup('wait-care', WAIT_CARE_TEMPLATE_OPTIONS, WAIT_CARE_TEMPLATES, 'wait-estimate') +
               '<div class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('waitCareMessage', WAIT_CARE_DEFAULT, WAIT_CARE_TOKENS) + '</div>' +
               '<p class="settings-help sms-field-full" data-sms-care-benefit-required hidden>This message requires a benefit already granted to this visit. If no benefit is granted, skip the message. Including this field does not grant a benefit.</p>' +
             '</div>' +

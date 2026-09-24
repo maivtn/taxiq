@@ -437,16 +437,13 @@ test('Wait Care tab contains only its SMS setup and no benefit rules',()=>{
  enabled.click();assert.equal(enabled.getAttribute('aria-checked'),'false');
  enabled.click();assert.equal(enabled.getAttribute('aria-checked'),'true');
  assert.ok(d.querySelector('[data-sms-field="waitCareSendMode"]'));
- assert.deepEqual(templates.map(button=>button.dataset.templateKey),['visit-preparation','comfort-check-in','delay-update','wait-estimate']);
+ assert.deepEqual(templates.map(button=>button.dataset.templateKey),['delay-update','wait-estimate']);
  assert.equal(templates.filter(button=>button.textContent.includes('sorry')).length,1);
- assert.equal(templates.find(button=>button.dataset.templateKey==='visit-preparation').getAttribute('aria-pressed'),'true');
+ assert.equal(templates.find(button=>button.dataset.templateKey==='wait-estimate').getAttribute('aria-pressed'),'true');
  assert.deepEqual(Array.from(textarea.closest('[data-sms-composer]').querySelectorAll('[data-sms-insert-token]'),button=>button.dataset.smsInsertToken),[
   '[Customer Name]','[Salon Name]','[Wait Time]','[Wait Care Benefit]','[OneQR Link]'
  ]);
- assert.equal(preview.textContent,'Hi Sarah, thanks for waiting at Bitcoin Nail Bar. Follow your visit: nexora.app/q/demo');
- templates.find(button=>button.dataset.templateKey==='comfort-check-in').click();
- assert.equal(textarea.value,'Hi [Customer Name], we\'re checking in while you wait at [Salon Name]. Need anything to feel more comfortable? Please let our team know.');
- assert.equal(preview.textContent,'Hi Sarah, we\'re checking in while you wait at Bitcoin Nail Bar. Need anything to feel more comfortable? Please let our team know.');
+ assert.equal(preview.textContent,'Hi Sarah, thanks for your patience at Bitcoin Nail Bar. Estimated wait: 15-20 minutes. Updates: nexora.app/q/demo');
  templates.find(button=>button.dataset.templateKey==='delay-update').click();
  assert.equal(preview.textContent,'Hi Sarah, we\'re sorry for the wait at Bitcoin Nail Bar. Current estimate: 15-20 minutes. Track your visit: nexora.app/q/demo');
  templates.find(button=>button.dataset.templateKey==='wait-estimate').click();
