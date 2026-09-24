@@ -1,6 +1,6 @@
 ## POS — Cấu hình Steps và Materials cho dịch vụ
 
-**Last Updated:** 2026-09-11
+**Last Updated:** 2026-09-24
 
 **Audience:** Product Owner, BA, QA, quản lý salon, đội phát triển
 
@@ -8,11 +8,7 @@
 
 ### Overview
 
-Quản lý salon nhập hướng dẫn thực hiện dịch vụ bằng danh sách **Steps** và nội dung chuẩn bị **Materials** riêng. Mỗi Step gồm ảnh minh họa, tiêu đề và mô tả bằng textarea; Materials dùng một editor chung cho toàn bộ dịch vụ. Tính năng giúp quản lý trình bày rõ thứ tự thao tác và nguyên vật liệu cần chuẩn bị.
-
-**Vị trí:** POS → Salon Settings → Services → View / Edit → Edit Service. Steps nằm gần cuối form, sau Require approval; Materials nằm dưới danh sách Steps và nút Add step.
-
-Tài liệu mô tả hành vi của bản HTML hiện tại. Phạm vi là cấu hình hướng dẫn trong Edit Service; chưa có màn hình hướng dẫn riêng cho nhân viên hoặc khách hàng.
+**Steps và Materials** giúp salon chuẩn hóa hướng dẫn thực hiện dịch vụ bằng cách tách trình tự thao tác khỏi nội dung nguyên vật liệu cần chuẩn bị. Hệ thống cho phép soạn danh sách Steps với ảnh minh họa, tiêu đề và mô tả văn bản thường cho từng bước; thêm, xóa, sắp xếp các bước; và nhập Materials có định dạng dùng chung cho toàn bộ dịch vụ. Người quản lý cấu hình dịch vụ soạn, điều chỉnh và lưu các nội dung này trong Edit Service để duy trì hướng dẫn phù hợp với quy trình của salon.
 
 ### Key Concepts
 
@@ -52,16 +48,16 @@ Bản HTML chưa bổ sung cơ chế phân quyền riêng cho Steps và Material
 
 **Primary Actor:** Người quản lý cấu hình dịch vụ.
 
-**Trigger:** Mở View / Edit của một dịch vụ thông thường.
+**Trigger:** Mở View / Edit của một dịch vụ thông thường và đến phần Steps trong Edit Service.
 
-**Outcome:** Có danh sách bước để lưu cùng dịch vụ.
+**Outcome:** Danh sách Steps trong form phản ánh đúng nội dung và thứ tự thao tác quản lý muốn áp dụng, sẵn sàng lưu cùng dịch vụ theo Workflow 4.
 
 **User Stories:**
 
 - **US-ST-01 — Nhập bước đầu tiên:** Là quản lý salon, tôi muốn form hiển thị sẵn một bước trống khi chưa có hướng dẫn, để nhập nội dung ngay mà không phải bấm thêm bước.
 - **US-ST-02 — Soạn nội dung bước:** Là quản lý salon, tôi muốn nhập Title và Description dạng văn bản thường cho từng Step, để diễn đạt rõ thao tác và lưu ý thực hiện.
 - **US-ST-03 — Thêm bước:** Là quản lý salon, tôi muốn bấm Add step để thêm bước tiếp theo ở cuối danh sách, để mô tả đầy đủ trình tự dịch vụ.
-- **US-ST-04 — Xóa bước:** Là quản lý salon, tôi muốn xóa bước không còn sử dụng và để hệ thống cập nhật thứ tự, để danh sách hướng dẫn luôn liên tục.
+- **US-ST-04 — Xóa bước:** Là quản lý salon, tôi muốn xóa bước không còn sử dụng và giữ nguyên nội dung các bước còn lại, để danh sách chỉ còn các thao tác cần thực hiện; nếu xóa bước cuối cùng, tôi muốn có sẵn một bước trống để soạn lại.
 - **US-ST-05 — Sắp xếp bước:** Là quản lý salon, tôi muốn nắm kéo một bước đến vị trí mới, để điều chỉnh trình tự thực hiện mà không phải nhập lại ảnh, tiêu đề và mô tả.
 
 | Bước | Người thực hiện | Thao tác | Phản hồi hệ thống | Ghi chú |
@@ -76,13 +72,18 @@ Bản HTML chưa bổ sung cơ chế phân quyền riêng cho Steps và Material
 
 ```mermaid
 flowchart TD
-    A([Mở Edit Service]) --> B[Hiện danh sách Steps]
-    B --> C[Soạn nội dung bước]
+    A([Mở Edit Service]) --> B{Đã có Steps?}
+    B -- Có --> B1[Hiện các bước đã lưu]
+    B -- Chưa --> B2[Hiện một bước trống]
+    B1 --> C[Soạn nội dung bước]
+    B2 --> C
     C --> D{Thao tác tiếp theo?}
     D -- Thêm bước --> E[Thêm bước cuối danh sách]
     E --> C
     D -- Xóa bước --> F[Xóa và cập nhật thứ tự]
-    F --> C
+    F --> F1{Còn bước nào?}
+    F1 -- Có --> C
+    F1 -- Không --> B2
     D -- Sắp xếp --> H[Kéo thả bằng tay nắm]
     H --> C
     D -- Hoàn tất --> G([Sẵn sàng lưu dịch vụ])
@@ -167,7 +168,7 @@ flowchart TD
 
 **Trigger:** Cần ghi nguyên vật liệu chuẩn bị cho dịch vụ.
 
-**Outcome:** Nội dung Materials được soạn độc lập với danh sách Steps.
+**Outcome:** Có nội dung Materials chung cho dịch vụ, độc lập với danh sách Steps và sẵn sàng lưu theo Workflow 4.
 
 **User Stories:**
 
@@ -248,6 +249,10 @@ flowchart TD
 | AC-SV-07 | US-SV-01 | Một dịch vụ thuộc nhiều category | Lưu rồi mở từ category khác | Hiện cùng Steps và Materials của dịch vụ đó. |
 
 ### System Configuration & Administration
+
+**Vị trí:** POS → Salon Settings → Services → View / Edit → Edit Service. Steps nằm gần cuối form, sau Require approval; Materials nằm dưới danh sách Steps và nút Add step.
+
+**Phạm vi:** Tài liệu mô tả cấu hình hướng dẫn trong Edit Service của bản HTML hiện tại. Bản này chưa có màn hình hướng dẫn riêng cho nhân viên hoặc khách hàng.
 
 - **US-AD-01:** Là quản lý salon, tôi muốn hướng dẫn thuộc về dịch vụ và được dùng chung khi dịch vụ xuất hiện ở nhiều category, để không phải cập nhật nhiều bản nội dung.
 - **US-AD-02:** Là quản lý salon, tôi muốn các trường hướng dẫn của Custom service được khóa theo cấu hình hiện có, để giữ hành vi riêng của dịch vụ này.
