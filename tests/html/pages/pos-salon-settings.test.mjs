@@ -309,17 +309,16 @@ function smsPage(){
  return page;
 }
 
-test('SMS Settings separates Welcome, After Checkout, Wait Care and Automation setup sections',()=>{
+test('SMS Settings groups all waiting messages in one Waitlist SMS tab',()=>{
  const {dom,d,errors}=smsPage();
  assert.equal(d.querySelector('[data-settings-panel="sms"]').hidden,false);
- assert.deepEqual(Array.from(d.querySelectorAll('[data-sms-tab]'),b=>b.dataset.smsTab),['welcome','after','wait-care','automation','links']);
- assert.deepEqual(Array.from(d.querySelectorAll('[data-sms-tab]'),b=>b.textContent),['Welcome SMS','After Checkout','Wait Care','Waitlist SMS','Link Settings']);
+ assert.deepEqual(Array.from(d.querySelectorAll('[data-sms-tab]'),b=>b.dataset.smsTab),['welcome','after','automation','links']);
+ assert.deepEqual(Array.from(d.querySelectorAll('[data-sms-tab]'),b=>b.textContent),['Welcome SMS','After Checkout','Waitlist SMS','Link Settings']);
  assert.equal(d.querySelector('[data-sms-tab].active')?.dataset.smsTab,'welcome');
  assert.equal(d.querySelector('[data-sms-panel="welcome"]').hidden,false);
  assert.equal(d.querySelector('[data-sms-panel="automation"]').hidden,true);
- d.querySelector('[data-sms-tab="wait-care"]').click();
- assert.equal(d.querySelector('[data-sms-panel="wait-care"]').hidden,false);
- assert.equal(d.querySelector('[data-sms-panel="automation"]').hidden,true);
+ assert.equal(d.querySelector('[data-sms-tab="wait-care"]'),null);
+ assert.equal(d.querySelector('[data-sms-panel="wait-care"]'),null);
  d.querySelector('[data-sms-tab="automation"]').click();
  assert.equal(d.querySelector('[data-sms-tab].active')?.dataset.smsTab,'automation');
  assert.equal(d.querySelector('[data-sms-panel="automation"]').hidden,false);
@@ -405,25 +404,18 @@ test('After Checkout Setup preview mirrors edits to the Thank You message',()=>{
  assert.deepEqual(errors,[]);dom.window.close();
 });
 
-test('Wait Care tab contains only its SMS setup and no benefit rules',()=>{
+test('Waitlist SMS contains three message groups, two templates each and one Save Templates action',()=>{
  const {dom,w,d,errors}=smsPage();
- d.querySelector('[data-sms-tab="wait-care"]').click();
- const waitCarePanel=d.querySelector('[data-sms-panel="wait-care"]');
- assert.deepEqual(Array.from(waitCarePanel.querySelectorAll(':scope > .sms-columns > .sms-card'),card=>card.querySelector('h3').textContent),['Wait Care Setup','Wait Care preview']);
- const waitCareSetup=waitCarePanel.querySelector('[data-sms-field="waitCareMessage"]').closest('.sms-card');
- const waitCareToggle=waitCareSetup.querySelector('[data-sms-wait-care-enabled]').closest('.settings-toggle-row');
- assert.equal(waitCareSetup.querySelector('h3').nextElementSibling,waitCareToggle);
- assert.ok(waitCareSetup.querySelector('[data-sms-action="save-wait-care"]'));
- assert.equal(waitCarePanel.querySelectorAll('[data-sms-action="save-wait-care"]').length,1);
- assert.equal(waitCarePanel.querySelector('.sms-automation-message-grid'),null);
- assert.equal(waitCarePanel.querySelector('[data-sms-field^="careRule"]'),null);
- assert.equal(waitCarePanel.textContent.includes('Wait Care rules'),false);
  d.querySelector('[data-sms-tab="automation"]').click();
- const automationPanel=d.querySelector('[data-sms-panel="automation"]');
- assert.equal(automationPanel.querySelector('h3').textContent,'Waitlist SMS Templates');
- assert.equal(automationPanel.querySelector('select[data-sms-field]'),null);
- assert.doesNotMatch(automationPanel.textContent,/Waitlist timing|Pause automation/);
- d.querySelector('[data-sms-tab="wait-care"]').click();
+ const panel=d.querySelector('[data-sms-panel="automation"]');
+ const main=panel.querySelector('.sms-col');
+ assert.deepEqual(Array.from(main.querySelectorAll('h4'),heading=>heading.textContent),['Wait Update SMS','Return Soon SMS','Ready Now SMS']);
+ assert.equal(panel.querySelectorAll('[data-sms-action^="save-"]').length,1);
+ assert.equal(panel.querySelector('[data-sms-action="save-automation"]').textContent,'Save Templates');
+ assert.equal(d.querySelector('[data-sms-action="save-wait-care"]'),null);
+ for(const group of ['wait-care','return-soon','ready-now'])assert.equal(panel.querySelectorAll(`[data-sms-template="${group}"]`).length,2);
+ assert.equal(panel.querySelector('select[data-sms-field]'),null);
+ assert.doesNotMatch(panel.textContent,/Wait Care|Waitlist timing|Pause automation/);
  const textarea=d.querySelector('[data-sms-field="waitCareMessage"]');
  const preview=d.querySelector('[data-sms-preview="waitCareMessage"]');
  const templates=Array.from(d.querySelectorAll('[data-sms-template="wait-care"]'));
@@ -447,8 +439,8 @@ test('Wait Care tab contains only its SMS setup and no benefit rules',()=>{
  assert.equal(preview.hidden,false);
  textarea.value='x'.repeat(161);textarea.dispatchEvent(new w.Event('input'));
  assert.equal(d.querySelector('[data-sms-count="waitCareMessage"]').textContent,'161 chars — ~2 SMS (GSM-7)');
- d.querySelector('[data-sms-action="save-wait-care"]').click();
- assert.equal(d.querySelector('[data-sms-status]').textContent,'Wait Care settings saved.');
+ d.querySelector('[data-sms-action="save-automation"]').click();
+ assert.equal(d.querySelector('[data-sms-status]').textContent,'Waitlist templates saved.');
  assert.deepEqual(errors,[]);dom.window.close();
 });
 
@@ -510,7 +502,7 @@ test('manual waitlist templates save without any automation controls',()=>{
 
 test('each Send Test action requires a valid recipient phone number',()=>{
  const {dom,d,errors}=smsPage();
- for(const [tab,action] of [['welcome','send-test-welcome'],['after','send-test-after'],['wait-care','send-test-wait-care'],['automation','send-test-return-soon'],['automation','send-test-ready-now']]){
+ for(const [tab,action] of [['welcome','send-test-welcome'],['after','send-test-after'],['automation','send-test-wait-care'],['automation','send-test-return-soon'],['automation','send-test-ready-now']]){
   d.querySelector('[data-sms-tab="'+tab+'"]').click();
   const phone=d.querySelector('[data-sms-test-phone="'+action+'"]');
   const country=d.querySelector('[data-sms-test-country="'+action+'"]');
@@ -548,13 +540,13 @@ test('SMS saves each section independently and restores fields and switches afte
  assert.equal(d.querySelector('[data-sms-field="welcomeMessage"]').value,'Welcome [Customer Name]!');
  assert.equal(d.querySelector('[data-sms-panel="welcome"] [role="switch"]').getAttribute('aria-checked'),'false');
  assert.notEqual(d.querySelector('[data-sms-field="afterMessage"]').value,'Unsaved checkout');
- for(const tab of ['after','wait-care','automation']){
+ for(const tab of ['after','automation']){
   const section=d.querySelector(`[data-sms-panel="${tab}"]`);
   for(const field of section.querySelectorAll('select[data-sms-field]'))field.selectedIndex=1;
   section.querySelector(`[data-sms-action="save-${tab}"]`).click();
  }
  reloadSms(w);
- for(const tab of ['after','wait-care','automation']){
+ for(const tab of ['after','automation']){
   for(const field of d.querySelectorAll(`[data-sms-panel="${tab}"] select[data-sms-field]`))assert.equal(field.selectedIndex,1,field.dataset.smsField);
  }
  dom.window.close();
@@ -611,21 +603,18 @@ test('SMS rejects empty or unsupported messages and test sends are explicitly si
 });
 
 
-test('SMS switches persist independently of manual waitlist templates',()=>{
+test('Wait Update switch persists with the unified save independently of other SMS settings',()=>{
  const {dom,w,d}=smsPage();
- for(const tab of ['after','wait-care']){
-  const toggle=d.querySelector(`[data-sms-panel="${tab}"] [role="switch"]`);
-  toggle.click();assert.equal(toggle.getAttribute('aria-checked'),'false');
-  assert.equal(toggle.classList.contains('is-on'),false);
-  d.querySelector(`[data-sms-action="save-${tab}"]`).click();
- }
+ d.querySelector('[data-sms-panel="after"] [role="switch"]').click();
+ d.querySelector('[data-sms-action="save-after"]').click();
+ d.querySelector('[data-sms-wait-care-enabled]').click();
  d.querySelector('[data-sms-action="save-automation"]').click();reloadSms(w);
- for(const tab of ['after','wait-care'])assert.equal(d.querySelector(`[data-sms-panel="${tab}"] [role="switch"]`).getAttribute('aria-checked'),'false');
+ assert.equal(d.querySelector('[data-sms-panel="after"] [role="switch"]').getAttribute('aria-checked'),'false');
+ assert.equal(d.querySelector('[data-sms-wait-care-enabled]').getAttribute('aria-checked'),'false');
  assert.equal(d.querySelector('[data-sms-panel="welcome"] [role="switch"]').getAttribute('aria-checked'),'true');
  assert.equal(d.querySelector('[data-sms-automation-pill]'),null);
  dom.window.close();
 });
-
 
 test('shared link expiry saves independently and survives other SMS saves',()=>{
  const {dom,w,d}=smsPage();
@@ -668,10 +657,46 @@ test('Wait Care stays manual even when legacy automation settings were saved',()
 
 test('obsolete timing and benefit placeholders must be corrected before saving',()=>{
  const {dom,d}=smsPage();
- for(const [field,token,action] of [['returnSoonMessage','[Return Notice]','save-automation'],['waitCareMessage','[Wait Care Benefit]','save-wait-care']]){
+ for(const [field,token,action] of [['returnSoonMessage','[Return Notice]','save-automation'],['waitCareMessage','[Wait Care Benefit]','save-automation']]){
   d.querySelector(`[data-sms-field="${field}"]`).value='Message '+token;
   d.querySelector(`[data-sms-action="${action}"]`).click();
   assert.match(d.querySelector('[data-sms-status]').textContent,/Unsupported field/);
+  d.querySelector(`[data-sms-field="${field}"]`).value='Valid message';
  }
+ dom.window.close();
+});
+
+test('one Waitlist save persists all three templates atomically and preserves legacy Wait Update settings',()=>{
+ const {dom,w,d}=smsPage();
+ const saved={version:1,sections:{
+  'wait-care':{enabled:false,fields:{waitCareMessage:'Old wait update [Wait Time].'}},
+  automation:{enabled:true,fields:{returnSoonMessage:'Old return.',readyNowMessage:'Old ready.'}}
+ }};
+ w.localStorage.setItem(smsStorageKey,JSON.stringify(saved));reloadSms(w);
+ assert.equal(d.querySelector('[data-sms-field="waitCareMessage"]').value,'Old wait update [Wait Time].');
+ assert.equal(d.querySelector('[data-sms-wait-care-enabled]').getAttribute('aria-checked'),'false');
+ for(const field of ['waitCareMessage','returnSoonMessage','readyNowMessage'])d.querySelector(`[data-sms-field="${field}"]`).value='New '+field;
+ d.querySelector('[data-sms-action="save-automation"]').click();
+ const persisted=w.localStorage.getItem(smsStorageKey);
+ const data=JSON.parse(persisted);
+ assert.equal(data.sections['wait-care'].fields.waitCareMessage,'New waitCareMessage');
+ assert.equal(data.sections['wait-care'].enabled,false);
+ assert.deepEqual(data.sections.automation.fields,{returnSoonMessage:'New returnSoonMessage',readyNowMessage:'New readyNowMessage'});
+ // Disabling Wait Update must not skip validation of the other message groups.
+ d.querySelector('[data-sms-field="returnSoonMessage"]').value='';
+ d.querySelector('[data-sms-action="save-automation"]').click();
+ assert.match(d.querySelector('[data-sms-status]').textContent,/Enter a message/);
+ assert.equal(w.localStorage.getItem(smsStorageKey),persisted);
+ d.querySelector('[data-sms-field="returnSoonMessage"]').value='Another draft';
+ const setItem=w.Storage.prototype.setItem;
+ w.Storage.prototype.setItem=()=>{throw new Error('quota');};
+ d.querySelector('[data-sms-action="save-automation"]').click();
+ assert.match(d.querySelector('[data-sms-status]').textContent,/Could not save/);
+ w.Storage.prototype.setItem=setItem;
+ assert.equal(w.localStorage.getItem(smsStorageKey),persisted);
+ reloadSms(w);
+ assert.equal(d.querySelector('[data-sms-field="waitCareMessage"]').value,'New waitCareMessage');
+ assert.equal(d.querySelector('[data-sms-field="returnSoonMessage"]').value,'New returnSoonMessage');
+ assert.equal(d.querySelector('[data-sms-field="readyNowMessage"]').value,'New readyNowMessage');
  dom.window.close();
 });

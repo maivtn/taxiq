@@ -161,7 +161,6 @@
         '<nav class="sms-subtabs" aria-label="SMS setting sections">' +
           '<button type="button" data-sms-tab="welcome" class="active" aria-current="page">Welcome SMS</button>' +
           '<button type="button" data-sms-tab="after">After Checkout</button>' +
-          '<button type="button" data-sms-tab="wait-care">Wait Care</button>' +
           '<button type="button" data-sms-tab="automation">Waitlist SMS</button>' +
           '<button type="button" data-sms-tab="links">Link Settings</button>' +
         '</nav>' +
@@ -181,6 +180,16 @@
           '<div class="sms-col sms-card"><h3>Waitlist SMS Templates</h3>' +
           '<p class="settings-help">Save templates for the front desk. Staff selects a customer in Live Waitlist, reviews the message and sends it manually.</p>' +
           '<p class="settings-help"><a href="pos-front-desk.html?section=waitlist&amp;tab=waitlist">Open Live Waitlist →</a></p>' +
+          '<div data-sms-group="wait-care"><h4 class="sms-section-title">Wait Update SMS</h4>' +
+            '<div class="settings-toggle-row"><span>Enable Wait Update SMS</span>' +
+            '<button class="toggle-pill is-on" type="button" role="switch" aria-checked="true" aria-label="Toggle Wait Update SMS" data-sms-enabled="wait-care" data-sms-wait-care-enabled></button></div>' +
+            '<p class="settings-help">Update customers who still need to wait. Confirm the current waiting estimate before sending.</p>' +
+            '<p class="settings-help" data-sms-care-summary aria-live="polite"></p>' +
+            '<div class="settings-field-grid">' +
+              quickTemplateMarkup('wait-care', WAIT_CARE_TEMPLATE_OPTIONS, WAIT_CARE_TEMPLATES, 'wait-estimate') +
+              '<div class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('waitCareMessage', WAIT_CARE_DEFAULT, WAIT_CARE_TOKENS) + '</div>' +
+            '</div><div class="sms-message-test">' + testSendMarkup('send-test-wait-care', false) + '</div>' +
+          '</div>' +
           '<h4 class="sms-section-title">Return Soon SMS</h4><div class="settings-field-grid">' +
             quickTemplateMarkup('return-soon', RETURN_SOON_TEMPLATE_OPTIONS, RETURN_SOON_TEMPLATES, 'return-reminder') +
             '<div class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('returnSoonMessage', RETURN_SOON_TEMPLATES['return-reminder'], RETURN_SOON_TOKENS) + '</div>' +
@@ -193,6 +202,11 @@
             '<button type="button" class="booking-primary-button" data-sms-action="save-automation"><i class="bi bi-check2" aria-hidden="true"></i>Save Templates</button>' +
           '</div></div>' +
           '<div class="sms-col-side sms-card"><h3>Waitlist previews</h3><div class="sms-preview-stack">' +
+            '<div><h4 class="sms-section-title">Wait Update</h4><div class="sms-phone"><div class="sms-phone-screen"><div class="sms-phone-bar"></div>' +
+              '<div class="sms-phone-title">Messages</div>' +
+              '<div class="sms-phone-bubble" data-sms-preview="waitCareMessage">' + esc(renderTokens(WAIT_CARE_DEFAULT)) + '</div>' +
+              '<p class="sms-phone-caption" data-sms-link-validity-preview="waitCareLinkValidity"></p>' +
+            '</div></div></div>' +
             '<div><h4 class="sms-section-title">Return Soon</h4><div class="sms-phone"><div class="sms-phone-screen"><div class="sms-phone-bar"></div>' +
               '<div class="sms-phone-title">Messages</div>' +
               '<div class="sms-phone-bubble" data-sms-preview="returnSoonMessage">' + esc(renderTokens(RETURN_SOON_TEMPLATES['return-reminder'])) + '</div>' +
@@ -204,31 +218,6 @@
               '<p class="sms-phone-caption" data-sms-link-validity-preview="readyNowLinkValidity"></p>' +
             '</div></div></div>' +
           '</div></div>' +
-        '</div>' +
-      '</section>' +
-
-      '<section data-sms-panel="wait-care" hidden>' +
-        '<div class="sms-columns">' +
-          '<div class="sms-col sms-card"><h3>Wait Care Setup</h3>' +
-            '<div class="settings-toggle-row"><span>Enable Wait Care SMS</span>' +
-            '<button class="toggle-pill is-on" type="button" role="switch" aria-checked="true" aria-label="Toggle Wait Care SMS" data-sms-enabled="wait-care" data-sms-wait-care-enabled></button></div>' +
-            '<div class="settings-field-grid">' +
-              '<div class="sms-field-full sms-care-delivery"><p class="settings-help" data-sms-care-summary aria-live="polite"></p><p class="settings-help">Check the latest waiting time before sending. Review previous messages before contacting the same customer again.</p></div>' +
-              quickTemplateMarkup('wait-care', WAIT_CARE_TEMPLATE_OPTIONS, WAIT_CARE_TEMPLATES, 'wait-estimate') +
-              '<div class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('waitCareMessage', WAIT_CARE_DEFAULT, WAIT_CARE_TOKENS) + '</div>' +
-            '</div>' +
-            '<div class="sms-actions">' +
-              '<button type="button" class="booking-primary-button" data-sms-action="save-wait-care"><i class="bi bi-check2" aria-hidden="true"></i>Save Wait Care Settings</button>' +
-              testSendMarkup('send-test-wait-care', false) +
-            '</div>' +
-          '</div>' +
-          '<div class="sms-col-side sms-card"><h3>Wait Care preview</h3>' +
-            '<div class="sms-phone"><div class="sms-phone-screen"><div class="sms-phone-bar"></div>' +
-              '<div class="sms-phone-title">Messages</div>' +
-              '<div class="sms-phone-bubble" data-sms-preview="waitCareMessage">' + esc(renderTokens(WAIT_CARE_DEFAULT)) + '</div>' +
-              '<p class="sms-phone-caption" data-sms-link-validity-preview="waitCareLinkValidity"></p>' +
-            '</div></div>' +
-          '</div>' +
         '</div>' +
       '</section>' +
 
@@ -348,8 +337,8 @@
   function refreshCareDelivery() {
     var enabled = $('[data-sms-wait-care-enabled]').getAttribute('aria-checked') === 'true';
     $('[data-sms-care-summary]').textContent = enabled
-      ? 'Front desk staff can select Wait Care in Live Waitlist, review the message and send it manually. No timed trigger.'
-      : 'Wait Care is unavailable to front desk staff. Save to apply changes.';
+      ? 'Front desk staff can select Wait Update in Live Waitlist, review the message and send it manually. No timed trigger.'
+      : 'Wait Update is unavailable to front desk staff. Save to apply changes.';
   }
 
   function refreshPreview(field) {
@@ -440,7 +429,6 @@
   /* ── Save / send test actions ── */
   var ACTION_MESSAGES = {
     'save-automation': 'Waitlist templates saved.',
-    'save-wait-care': 'Wait Care settings saved.',
     'save-after': 'After Checkout settings saved.',
     'send-test-after': '',
     'save-welcome': 'Welcome SMS settings saved.',
@@ -485,13 +473,24 @@
     return true;
   }
   function saveSection(section) {
-    var toggle = section.querySelector('[data-sms-enabled]');
+    var isWaitlist = section.dataset.smsPanel === 'automation';
+    var toggle = isWaitlist ? null : section.querySelector('[data-sms-enabled]');
     var enabled = toggle ? toggle.getAttribute('aria-checked') === 'true' : true;
-    if (enabled && !Array.from(section.querySelectorAll('textarea[data-sms-field]')).every(function (textarea) { return validateMessage(textarea, section); })) return false;
+    var careEnabled = $('[data-sms-wait-care-enabled]').getAttribute('aria-checked') === 'true';
+    if (enabled && !Array.from(section.querySelectorAll('textarea[data-sms-field]')).every(function (textarea) {
+      return isWaitlist && textarea.dataset.smsField === 'waitCareMessage' && !careEnabled || validateMessage(textarea, section);
+    })) return false;
     try {
       var saved = readSettings(), fields = {};
-      section.querySelectorAll('[data-sms-field]').forEach(function (field) { fields[field.dataset.smsField] = field.value; });
+      section.querySelectorAll('[data-sms-field]').forEach(function (field) {
+        if (!isWaitlist || field.dataset.smsField !== 'waitCareMessage') fields[field.dataset.smsField] = field.value;
+      });
       saved.sections[section.dataset.smsPanel] = { fields: fields, enabled: enabled };
+      // Keep the existing storage keys so older saved templates still load in Front Desk.
+      // Both groups are written together by the single Save Templates action.
+      if (isWaitlist) saved.sections['wait-care'] = {
+        fields: { waitCareMessage: $('[data-sms-field="waitCareMessage"]').value }, enabled: careEnabled
+      };
       localStorage.setItem(storageKey, JSON.stringify(saved));
       return true;
     } catch (_) { setSmsStatus('Could not save settings. Your edits are still here; saved data has not been replaced.', section); return false; }
@@ -540,8 +539,8 @@
     else if (Object.values(saved.sections).some(function (section) { return Object.keys(section.fields).some(function (key) { return /LinkValidity$/.test(key); }); })) {
       setSmsStatus('Visit link expiry is now shared. Review and save the common setting; previous per-message expiry choices no longer apply.', $('[data-sms-shared-links]'));
     }
-    $$('[data-sms-panel]').forEach(function (section) {
-      var settings = saved.sections[section.dataset.smsPanel];
+    $$('[data-sms-panel], [data-sms-group]').forEach(function (section) {
+      var settings = saved.sections[section.dataset.smsGroup || section.dataset.smsPanel];
       if (!settings) return;
       if (!settings.fields || typeof settings.fields !== 'object' || typeof settings.enabled !== 'boolean') throw new Error('Invalid section');
       section.querySelectorAll('[data-sms-field]').forEach(function (field) {
@@ -549,7 +548,7 @@
         if (typeof value !== 'string') return;
         if (field.tagName !== 'SELECT' || Array.from(field.options).some(function (option) { return option.value === value; })) field.value = value;
       });
-      var toggle = section.querySelector('[data-sms-enabled]');
+      var toggle = section.dataset.smsPanel === 'automation' ? null : section.querySelector('[data-sms-enabled]');
       if (toggle) { toggle.setAttribute('aria-checked', String(settings.enabled)); toggle.classList.toggle('is-on', settings.enabled); }
 
     });

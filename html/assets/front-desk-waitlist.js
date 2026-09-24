@@ -174,7 +174,7 @@
       '<div class="wl-sms-heading"><h2 id="wl-sms-title">Send Waitlist SMS</h2><button type="button" data-wl-sms-close aria-label="Close SMS composer">×</button></div>' +
       '<p class="wl-sms-help">Prototype · Sample customers and phone numbers. No real SMS is sent.</p>' +
       '<p class="wl-sms-recipient" data-wl-sms-recipient></p><p class="wl-sms-help" data-wl-sms-visit></p>' +
-      '<label class="wl-sms-field">Message type<select data-wl-sms-type><option value="return-soon">Return Soon</option><option value="ready-now">Ready Now</option><option value="wait-care">Wait Care</option></select></label>' +
+      '<label class="wl-sms-field">Message type<select data-wl-sms-type><option value="return-soon">Return Soon</option><option value="ready-now">Ready Now</option><option value="wait-care">Wait Update</option></select></label>' +
       '<p class="wl-sms-help">Uses the owner’s saved template. Edits here apply only to this message. Changing the message type loads that template.</p>' +
       '<label class="wl-sms-field">Message<textarea data-wl-sms-message rows="4"></textarea></label>' +
       '<div data-wl-sms-wait-group hidden><label class="wl-sms-field">Current estimated wait<input data-wl-sms-wait maxlength="50" placeholder="e.g. 15–20 minutes"></label>' +
@@ -206,7 +206,7 @@
     if (!guests.some(guest => guest.id === smsGuest.id)) { smsStatus.textContent = 'This customer is no longer waiting. Close this message.'; return; }
     try {
       if (smsType.value === 'wait-care' && smsSettings().sections['wait-care']?.enabled === false) {
-        smsStatus.textContent = 'Wait Care has been disabled in SMS Settings.'; return;
+        smsStatus.textContent = 'Wait Update has been disabled in SMS Settings.'; return;
       }
     } catch (_) { smsStatus.textContent = 'Could not check SMS settings. Please try again.'; return; }
     const text = updateSmsPreview();

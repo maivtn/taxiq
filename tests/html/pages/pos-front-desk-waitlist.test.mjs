@@ -131,10 +131,12 @@ test('front desk loads owner templates, ignores legacy automation pause, and nev
   assert.equal(d.defaultView.localStorage.getItem(smsKey),saved);
 });
 
-test('Wait Care requires a fresh confirmed estimate and respects owner disabling it', t => {
+test('Wait Update requires a fresh confirmed estimate and respects owner disabling it', t => {
   const d = boot(t);
   d.querySelector('[data-wl-action="sms"]').click();
-  const type=d.querySelector('[data-wl-sms-type]');type.value='wait-care';change(d,type);
+  const type=d.querySelector('[data-wl-sms-type]');
+  assert.equal(type.querySelector('[value="wait-care"]').textContent,'Wait Update');
+  type.value='wait-care';change(d,type);
   const submit=d.querySelector('[data-wl-sms-submit]'), status=d.querySelector('[data-wl-sms-status]');
   const wait=d.querySelector('[data-wl-sms-wait]'), confirmed=d.querySelector('[data-wl-sms-wait-confirmed]');
   assert.equal(wait.value,'');
