@@ -61,14 +61,14 @@
   var WAIT_CARE_TEMPLATES = {
     'delay-update': 'Hi [Customer Name], we’re sorry for the wait at [Salon Name]. Current estimate: [Wait Time]. Track your visit: [OneQR Link]',
     'care-benefit': 'Hi [Customer Name], thanks for your patience. [Salon Name] added [Wait Care Benefit] to your visit. Details: [OneQR Link]',
-    'manager-follow-up': 'Hi [Customer Name], we’re sorry for the delay. A manager at [Salon Name] is reviewing your visit and will update you shortly.',
-    'simple-apology': 'Hi [Customer Name], we’re sorry for the delay at [Salon Name]. Thanks for your patience—we’ll keep you updated.'
+    'comfort-check-in': 'Hi [Customer Name], we’re checking in while you wait at [Salon Name]. Need anything to feel more comfortable? Please let our team know.',
+    'visit-preparation': 'Hi [Customer Name], thanks for waiting. The [Salon Name] team is preparing for your visit. Current estimate: [Wait Time]. Updates: [OneQR Link]'
   };
   var WAIT_CARE_TEMPLATE_OPTIONS = [
     { key: 'delay-update', label: 'Delay update' },
     { key: 'care-benefit', label: 'Wait Care benefit' },
-    { key: 'manager-follow-up', label: 'Manager follow-up' },
-    { key: 'simple-apology', label: 'Simple apology' }
+    { key: 'comfort-check-in', label: 'Comfort check-in' },
+    { key: 'visit-preparation', label: 'Preparing your visit' }
   ];
   var WAIT_CARE_DEFAULT = WAIT_CARE_TEMPLATES['care-benefit'];
 

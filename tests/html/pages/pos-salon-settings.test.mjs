@@ -411,7 +411,8 @@ test('Automation Settings provides a complete Wait Care SMS workflow',()=>{
  enabled.click();assert.equal(enabled.getAttribute('aria-checked'),'false');
  enabled.click();assert.equal(enabled.getAttribute('aria-checked'),'true');
  assert.ok(d.querySelector('[data-sms-field="waitCareSendMode"]'));
- assert.deepEqual(templates.map(button=>button.dataset.templateKey),['delay-update','care-benefit','manager-follow-up','simple-apology']);
+ assert.deepEqual(templates.map(button=>button.dataset.templateKey),['delay-update','care-benefit','comfort-check-in','visit-preparation']);
+ assert.equal(templates.filter(button=>button.textContent.includes('sorry')).length,1);
  assert.equal(templates.find(button=>button.dataset.templateKey==='care-benefit').getAttribute('aria-pressed'),'true');
  assert.deepEqual(Array.from(textarea.closest('[data-sms-composer]').querySelectorAll('[data-sms-insert-token]'),button=>button.dataset.smsInsertToken),[
   '[Customer Name]','[Salon Name]','[Wait Time]','[Wait Care Benefit]','[OneQR Link]'
