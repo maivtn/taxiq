@@ -343,8 +343,8 @@ test('Welcome SMS Setup live-updates its preview on edit, template change and to
  assert.ok(textarea.closest('[data-sms-composer]').querySelector('[data-sms-insert-token="[Salon Phone]"]'));
  assert.match(preview.textContent,/welcome to Bitcoin Nail Bar/);
  templates.find(button=>button.dataset.templateKey==='check-in').click();
- assert.match(textarea.value,/you’re checked in at \[Salon Name\]/);
- assert.match(preview.textContent,/you’re checked in at Bitcoin Nail Bar/);
+ assert.match(textarea.value,/you\'re checked in at \[Salon Name\]/);
+ assert.match(preview.textContent,/you\'re checked in at Bitcoin Nail Bar/);
  textarea.value='Hi there';textarea.dispatchEvent(new w.Event('input'));
  assert.equal(preview.textContent,'Hi there');
  d.querySelector('[data-sms-target="welcomeMessage"][data-sms-insert-token="[Salon Name]"]').click();
@@ -370,10 +370,10 @@ test('After Checkout Setup preview mirrors edits to the Thank You message',()=>{
   assert.ok(templates.some(button=>button.textContent.includes(token)),token+' is represented by a quick template');
  }
  assert.equal(templates[0].getAttribute('aria-pressed'),'true');
- assert.equal(preview.textContent,'Thanks for visiting Bitcoin Nail Bar! Ticket #12: $45.00. Receipt: nexora.app/r/••••');
+ assert.equal(preview.textContent,'Thanks for visiting Bitcoin Nail Bar! Ticket #12: $45.00. Receipt: nexora.app/r/demo');
  templates.find(button=>button.dataset.templateKey==='feedback').click();
  assert.equal(textarea.value,'Thanks for visiting [Salon Name]! Share private feedback: [Feedback Link]');
- assert.equal(preview.textContent,'Thanks for visiting Bitcoin Nail Bar! Share private feedback: nexora.app/feedback/••••');
+ assert.equal(preview.textContent,'Thanks for visiting Bitcoin Nail Bar! Share private feedback: nexora.app/feedback/demo');
  assert.equal(templates.find(button=>button.dataset.templateKey==='feedback').getAttribute('aria-pressed'),'true');
  const insertBar=textarea.closest('[data-sms-composer]');
  assert.equal(insertBar.querySelector('[data-sms-insert-token="[Customer Name]"]'),null);
@@ -386,14 +386,14 @@ test('After Checkout Setup preview mirrors edits to the Thank You message',()=>{
  textarea.setSelectionRange(4,7);
  insertBar.querySelector('[data-sms-insert-token="[Receipt Link]"]').click();
  assert.equal(textarea.value,'See [Receipt Link] soon, [Customer Name]!');
- assert.equal(preview.textContent,'See nexora.app/r/•••• soon, Sarah!');
- assert.equal(d.querySelector('[data-sms-count="afterMessage"]').textContent,'41 chars — 1 SMS');
+ assert.equal(preview.textContent,'See nexora.app/r/demo soon, Sarah!');
+ assert.equal(d.querySelector('[data-sms-count="afterMessage"]').textContent,'34 chars — ~1 SMS (GSM-7)');
  assert.equal(d.activeElement,textarea);
  assert.equal(textarea.selectionStart,18);
  textarea.value='Review: ';textarea.setSelectionRange(8,8);
  insertBar.querySelector('[data-sms-insert-token="[Review Link]"]').click();
  assert.equal(textarea.value,'Review: [Review Link]');
- assert.equal(preview.textContent,'Review: nexora.app/review/••••');
+ assert.equal(preview.textContent,'Review: nexora.app/review/demo');
  assert.deepEqual(errors,[]);dom.window.close();
 });
 
@@ -436,16 +436,16 @@ test('Wait Care tab owns its delay rules and complete SMS workflow',()=>{
  assert.deepEqual(Array.from(textarea.closest('[data-sms-composer]').querySelectorAll('[data-sms-insert-token]'),button=>button.dataset.smsInsertToken),[
   '[Customer Name]','[Salon Name]','[Wait Time]','[Wait Care Benefit]','[OneQR Link]'
  ]);
- assert.equal(preview.textContent,'Hi Sarah, thanks for your patience. Bitcoin Nail Bar added a complimentary hot-stone upgrade to your visit. Details: nexora.app/q/••••');
+ assert.equal(preview.textContent,'Hi Sarah, thanks for your patience. Bitcoin Nail Bar added a complimentary hot-stone upgrade to your visit. Details: nexora.app/q/demo');
  templates.find(button=>button.dataset.templateKey==='delay-update').click();
- assert.equal(textarea.value,'Hi [Customer Name], we’re sorry for the wait at [Salon Name]. Current estimate: [Wait Time]. Track your visit: [OneQR Link]');
- assert.equal(preview.textContent,'Hi Sarah, we’re sorry for the wait at Bitcoin Nail Bar. Current estimate: 15–20 minutes. Track your visit: nexora.app/q/••••');
+ assert.equal(textarea.value,'Hi [Customer Name], we\'re sorry for the wait at [Salon Name]. Current estimate: [Wait Time]. Track your visit: [OneQR Link]');
+ assert.equal(preview.textContent,'Hi Sarah, we\'re sorry for the wait at Bitcoin Nail Bar. Current estimate: 15-20 minutes. Track your visit: nexora.app/q/demo');
  textarea.value='Benefit: ';textarea.setSelectionRange(9,9);
  textarea.closest('[data-sms-composer]').querySelector('[data-sms-insert-token="[Wait Care Benefit]"]').click();
  assert.equal(textarea.value,'Benefit: [Wait Care Benefit]');
  assert.equal(preview.textContent,'Benefit: a complimentary hot-stone upgrade');
  textarea.value='x'.repeat(161);textarea.dispatchEvent(new w.Event('input'));
- assert.equal(d.querySelector('[data-sms-count="waitCareMessage"]').textContent,'161 chars — 2 SMS');
+ assert.equal(d.querySelector('[data-sms-count="waitCareMessage"]').textContent,'161 chars — ~2 SMS (GSM-7)');
  d.querySelector('[data-sms-action="save-wait-care"]').click();
  assert.equal(d.querySelector('[data-sms-status]').textContent,'Wait Care settings saved.');
  assert.deepEqual(errors,[]);dom.window.close();
@@ -456,7 +456,9 @@ test('each SMS journey lets the salon configure and preview Smart Link validity'
  const cases=[
   ['welcome','welcomeLinkValidity','Until checkout + 24 hours','Until checkout + 48 hours','Link remains active until 48 hours after checkout.'],
   ['after','afterLinkValidity','30 days after checkout','90 days after checkout','Link remains active for 90 days after checkout.'],
-  ['wait-care','waitCareLinkValidity','Until checkout + 24 hours','Until checkout','Link remains active until checkout is completed.']
+  ['wait-care','waitCareLinkValidity','Until checkout + 24 hours','Until checkout','Link remains active until checkout is completed.'],
+  ['automation','returnSoonLinkValidity','Until checkout + 24 hours','Until checkout','Link remains active until checkout is completed.'],
+  ['automation','readyNowLinkValidity','Until checkout + 24 hours','Until checkout','Link remains active until checkout is completed.']
  ];
  for(const [tab,field,initial,next,caption] of cases){
   d.querySelector(`[data-sms-tab="${tab}"]`).click();
@@ -488,8 +490,8 @@ test('Automation Settings configures Return Soon and Ready Now messages',()=>{
  returnNotice.value='10 minutes before';returnNotice.dispatchEvent(new w.Event('change'));
  assert.match(returnPreview.textContent,/coming up in 10 minutes/);
  panel.querySelector('[data-sms-template="ready-now"][data-template-key="your-turn"]').click();
- assert.match(readyTextarea.value,/it’s your turn at \[Salon Name\]/);
- assert.match(readyPreview.textContent,/it’s your turn at Bitcoin Nail Bar/);
+ assert.match(readyTextarea.value,/it\'s your turn at \[Salon Name\]/);
+ assert.match(readyPreview.textContent,/it\'s your turn at Bitcoin Nail Bar/);
  assert.deepEqual(errors,[]);dom.window.close();
 });
 
@@ -503,12 +505,12 @@ test('Pause automation toggles the Automation pill, and Save/Send actions post a
  const {dom,d,errors}=smsPage();
  const pill=d.querySelector('[data-sms-automation-pill]');
  const pauseButton=d.querySelector('[data-sms-action="pause-automation"]');
- assert.equal(pill.textContent,'Automation ON');
+ assert.equal(pill.textContent,'Waitlist automation ON');
  pauseButton.click();
- assert.equal(pill.textContent,'Automation OFF');
+ assert.equal(pill.textContent,'Waitlist automation OFF');
  assert.equal(pauseButton.textContent,'Resume automation');
  pauseButton.click();
- assert.equal(pill.textContent,'Automation ON');
+ assert.equal(pill.textContent,'Waitlist automation ON');
  d.querySelector('[data-sms-action="save-automation"]').click();
  assert.equal(d.querySelector('[data-sms-status]').textContent,'Automation settings saved.');
  d.querySelector('[data-sms-tab="welcome"]').click();
@@ -531,12 +533,107 @@ test('each Send Test action requires a valid recipient phone number',()=>{
   assert.equal(d.querySelector('[data-sms-status]').textContent,'Enter a valid test phone number.');
   assert.equal(d.activeElement,phone);
   phone.value='713-555-0123';send.click();
-  assert.equal(d.querySelector('[data-sms-status]').textContent,'Test SMS queued for +1 (713) 555-0123.');
+  assert.equal(d.querySelector('[data-sms-status]').textContent,'Preview only for +1 (713) 555-0123 — no SMS was sent.');
  }
  const afterCountry=d.querySelector('[data-sms-test-country="send-test-after"]');
  const afterPhone=d.querySelector('[data-sms-test-phone="send-test-after"]');
  afterCountry.value='+84';afterPhone.value='0912345678';
  d.querySelector('[data-sms-action="send-test-after"]').click();
- assert.equal(d.querySelector('[data-sms-status]').textContent,'Test SMS queued for +84 912 345 678.');
+ assert.equal(d.querySelector('[data-sms-status]').textContent,'Preview only for +84 912 345 678 — no SMS was sent.');
  assert.deepEqual(errors,[]);dom.window.close();
+});
+
+const smsStorageKey='nexora:salon-sms-settings:v1:bitcoin-nail-bar-houston';
+function reloadSms(w){w.eval(readFileSync(new URL('../assets/pos-salon-sms-settings.js', SOURCE_DIR),'utf8'));}
+
+test('SMS saves each section independently and restores fields and switches after reload',()=>{
+ const {dom,w,d}=smsPage();
+ const welcome=d.querySelector('[data-sms-field="welcomeMessage"]');
+ welcome.value='Welcome [Customer Name]!';
+ const after=d.querySelector('[data-sms-field="afterMessage"]');after.value='Unsaved checkout';
+ const toggle=d.querySelector('[data-sms-panel="welcome"] [role="switch"]');toggle.click();
+ assert.equal(toggle.getAttribute('aria-checked'),'false');
+ d.querySelector('[data-sms-action="save-welcome"]').click();
+ assert.ok(w.localStorage.getItem(smsStorageKey));
+ reloadSms(w);
+ assert.equal(d.querySelector('[data-sms-field="welcomeMessage"]').value,'Welcome [Customer Name]!');
+ assert.equal(d.querySelector('[data-sms-panel="welcome"] [role="switch"]').getAttribute('aria-checked'),'false');
+ assert.notEqual(d.querySelector('[data-sms-field="afterMessage"]').value,'Unsaved checkout');
+ for(const tab of ['after','wait-care','automation']){
+  const section=d.querySelector(`[data-sms-panel="${tab}"]`);
+  for(const field of section.querySelectorAll('select[data-sms-field]'))field.selectedIndex=1;
+  section.querySelector(`[data-sms-action="save-${tab}"]`).click();
+ }
+ reloadSms(w);
+ for(const tab of ['after','wait-care','automation']){
+  for(const field of d.querySelectorAll(`[data-sms-panel="${tab}"] select[data-sms-field]`))assert.equal(field.selectedIndex,1,field.dataset.smsField);
+ }
+ dom.window.close();
+});
+
+test('SMS save failures retain drafts and never claim success',()=>{
+ const {dom,w,d}=smsPage();
+ const message=d.querySelector('[data-sms-field="welcomeMessage"]');message.value='Draft';
+ const original=w.Storage.prototype.setItem;
+ w.Storage.prototype.setItem=()=>{throw new Error('full');};
+ d.querySelector('[data-sms-action="save-welcome"]').click();
+ assert.match(d.querySelector('[data-sms-status]').textContent,/Could not save/);
+ assert.equal(message.value,'Draft');
+ w.Storage.prototype.setItem=original;
+ w.localStorage.setItem(smsStorageKey,'{broken');reloadSms(w);
+ d.querySelector('[data-sms-action="save-welcome"]').click();
+ assert.equal(w.localStorage.getItem(smsStorageKey),'{broken');
+ assert.match(d.querySelector('[data-sms-status]').textContent,/Could not/);
+ dom.window.close();
+});
+
+test('SMS edits clear selected templates, hide unused link expiry and estimate rendered segments',()=>{
+ const {dom,w,d}=smsPage();const message=d.querySelector('[data-sms-field="welcomeMessage"]');
+ const count=d.querySelector('[data-sms-count="welcomeMessage"]');
+ const edit=text=>{message.value=text;message.dispatchEvent(new w.Event('input'));};
+ edit('Hi [Customer Name]');
+ assert.equal(d.querySelectorAll('[data-sms-template="welcome"][aria-pressed="true"]').length,0);
+ assert.match(count.textContent,/8 chars.*1 SMS.*GSM-7/);
+ assert.equal(d.querySelector('[data-sms-field="welcomeLinkValidity"]').closest('.settings-field').hidden,true);
+ assert.equal(d.querySelector('[data-sms-link-validity-preview="welcomeLinkValidity"]').hidden,true);
+ edit('x'.repeat(307));assert.match(count.textContent,/3 SMS/);
+ edit('ế'.repeat(71));assert.match(count.textContent,/2 SMS.*Unicode/);
+ edit('^'.repeat(81));assert.match(count.textContent,/2 SMS.*GSM-7/);
+ edit('😊'.repeat(67));assert.match(count.textContent,/3 SMS.*Unicode/);
+ edit('');assert.match(count.textContent,/0 chars.*0 SMS/);
+ d.querySelector('[data-sms-template="welcome"]').click();
+ assert.equal(d.querySelector('[data-sms-field="welcomeLinkValidity"]').closest('.settings-field').hidden,false);
+ dom.window.close();
+});
+
+test('SMS rejects empty or unsupported messages and test sends are explicitly simulated',()=>{
+ const {dom,w,d}=smsPage();const message=d.querySelector('[data-sms-field="welcomeMessage"]');
+ const status=d.querySelector('[data-sms-status]');
+ for(const value of ['', 'Hi [Unknown Field]']){
+  message.value=value;d.querySelector('[data-sms-action="save-welcome"]').click();
+  assert.match(status.textContent,/Enter a message|Unsupported field/);
+  assert.equal(w.localStorage.getItem(smsStorageKey),null);
+ }
+ message.value='Welcome!';const phone=d.querySelector('[data-sms-test-phone="send-test-welcome"]');
+ const send=d.querySelector('[data-sms-action="send-test-welcome"]');
+ phone.value='abc7135550123';send.click();assert.match(status.textContent,/valid test phone/);
+ phone.value='7135550123';send.click();assert.match(status.textContent,/Preview only.*no SMS was sent/);
+ dom.window.close();
+});
+
+
+test('SMS switches persist independently and pausing waitlist does not pause Welcome',()=>{
+ const {dom,w,d}=smsPage();
+ for(const tab of ['after','wait-care']){
+  const toggle=d.querySelector(`[data-sms-panel="${tab}"] [role="switch"]`);
+  toggle.click();assert.equal(toggle.getAttribute('aria-checked'),'false');
+  assert.equal(toggle.classList.contains('is-on'),false);
+  d.querySelector(`[data-sms-action="save-${tab}"]`).click();
+ }
+ d.querySelector('[data-sms-action="pause-automation"]').click();
+ d.querySelector('[data-sms-action="save-automation"]').click();reloadSms(w);
+ for(const tab of ['after','wait-care'])assert.equal(d.querySelector(`[data-sms-panel="${tab}"] [role="switch"]`).getAttribute('aria-checked'),'false');
+ assert.equal(d.querySelector('[data-sms-panel="welcome"] [role="switch"]').getAttribute('aria-checked'),'true');
+ assert.equal(d.querySelector('[data-sms-automation-pill]').textContent,'Waitlist automation OFF');
+ dom.window.close();
 });

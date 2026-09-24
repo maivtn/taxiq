@@ -431,3 +431,15 @@
     width: 100%;
   }
 }
+
+/* Keep long drafts and action feedback within the SMS card. */
+.sms-local-status { flex-basis: 100%; margin: 4px 0 0; overflow-wrap: anywhere; }
+.sms-automation-state { margin-bottom: 20px; }
+.sms-phone-bubble { white-space: pre-wrap; overflow-wrap: anywhere; }
+[data-settings-panel="sms"] [hidden] { display: none !important; }
+@media (max-width: 480px) {
+  .sms-test-phone-control { min-width: 0; }
+  .sms-test-phone-fields .settings-input { min-width: 0; width: 100%; }
+  .sms-test-send, .sms-actions { width: 100%; }
+  .settings-field-grid .settings-field { min-width: 0; }
+}

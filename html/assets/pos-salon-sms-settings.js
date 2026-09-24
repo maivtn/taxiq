@@ -14,17 +14,17 @@
   var TOKENS = {
     '[Customer Name]': 'Sarah',
     '[Salon Name]': 'Bitcoin Nail Bar',
-    '[OneQR Link]': 'nexora.app/q/••••',
+    '[OneQR Link]': 'nexora.app/q/demo',
     '[Ticket Number]': '#12',
     '[Ticket Total]': '$45.00',
-    '[Review Link]': 'nexora.app/review/••••',
-    '[Tip Link]': 'nexora.app/tip/••••',
-    '[Feedback Link]': 'nexora.app/feedback/••••',
-    '[Rewards Link]': 'nexora.app/rewards/••••',
-    '[Booking Link]': 'nexora.app/book/••••',
-    '[Receipt Link]': 'nexora.app/r/••••',
+    '[Review Link]': 'nexora.app/review/demo',
+    '[Tip Link]': 'nexora.app/tip/demo',
+    '[Feedback Link]': 'nexora.app/feedback/demo',
+    '[Rewards Link]': 'nexora.app/rewards/demo',
+    '[Booking Link]': 'nexora.app/book/demo',
+    '[Receipt Link]': 'nexora.app/r/demo',
     '[Salon Phone]': '(713) 555-0123',
-    '[Wait Time]': '15–20 minutes',
+    '[Wait Time]': '15-20 minutes',
     '[Wait Care Benefit]': 'a complimentary hot-stone upgrade',
     '[Return Notice]': '15 minutes'
   };
@@ -35,8 +35,8 @@
   }
 
   var WELCOME_TEMPLATES = {
-    welcome: 'Hi [Customer Name], welcome to [Salon Name]! You’re checked in. View your visit: [OneQR Link]',
-    'check-in': 'Hi [Customer Name], you’re checked in at [Salon Name]. Follow your visit: [OneQR Link]'
+    welcome: 'Hi [Customer Name], welcome to [Salon Name]! You\'re checked in. View your visit: [OneQR Link]',
+    'check-in': 'Hi [Customer Name], you\'re checked in at [Salon Name]. Follow your visit: [OneQR Link]'
   };
   var WELCOME_TEMPLATE_OPTIONS = [
     { key: 'welcome', label: 'Welcome message' },
@@ -45,7 +45,7 @@
   var AFTER_CHECKOUT_TEMPLATES = {
     'ticket-receipt': 'Thanks for visiting [Salon Name]! Ticket [Ticket Number]: [Ticket Total]. Receipt: [Receipt Link]',
     review: 'Thanks for visiting [Salon Name]! How was your visit? Leave a review: [Review Link]',
-    tip: 'Thanks for visiting [Salon Name]! If you haven’t tipped yet, add one here: [Tip Link]',
+    tip: 'Thanks for visiting [Salon Name]! If you haven\'t tipped yet, add one here: [Tip Link]',
     feedback: 'Thanks for visiting [Salon Name]! Share private feedback: [Feedback Link]',
     rewards: 'Thanks for visiting [Salon Name]! View rewards earned today: [Rewards Link]',
     booking: 'Thanks for visiting [Salon Name]! Book your next visit: [Booking Link]'
@@ -60,9 +60,9 @@
   ];
   var AFTER_CHECKOUT_DEFAULT = AFTER_CHECKOUT_TEMPLATES['ticket-receipt'];
   var WAIT_CARE_TEMPLATES = {
-    'delay-update': 'Hi [Customer Name], we’re sorry for the wait at [Salon Name]. Current estimate: [Wait Time]. Track your visit: [OneQR Link]',
+    'delay-update': 'Hi [Customer Name], we\'re sorry for the wait at [Salon Name]. Current estimate: [Wait Time]. Track your visit: [OneQR Link]',
     'care-benefit': 'Hi [Customer Name], thanks for your patience. [Salon Name] added [Wait Care Benefit] to your visit. Details: [OneQR Link]',
-    'comfort-check-in': 'Hi [Customer Name], we’re checking in while you wait at [Salon Name]. Need anything to feel more comfortable? Please let our team know.',
+    'comfort-check-in': 'Hi [Customer Name], we\'re checking in while you wait at [Salon Name]. Need anything to feel more comfortable? Please let our team know.',
     'visit-preparation': 'Hi [Customer Name], thanks for waiting. The [Salon Name] team is preparing for your visit. Current estimate: [Wait Time]. Updates: [OneQR Link]'
   };
   var WAIT_CARE_TEMPLATE_OPTIONS = [
@@ -81,8 +81,8 @@
     { key: 'head-back', label: 'Head back now' }
   ];
   var READY_NOW_TEMPLATES = {
-    'ready-now': 'Hi [Customer Name], we’re ready for you at [Salon Name]. Please come to the front desk now. Details: [OneQR Link]',
-    'your-turn': 'Hi [Customer Name], it’s your turn at [Salon Name]. Please come to the front desk now: [OneQR Link]'
+    'ready-now': 'Hi [Customer Name], we\'re ready for you at [Salon Name]. Please come to the front desk now. Details: [OneQR Link]',
+    'your-turn': 'Hi [Customer Name], it\'s your turn at [Salon Name]. Please come to the front desk now: [OneQR Link]'
   };
   var READY_NOW_TEMPLATE_OPTIONS = [
     { key: 'ready-now', label: 'Ready now' },
@@ -115,7 +115,7 @@
   var GENERAL_MESSAGE_TOKENS = [
     { token: '[Customer Name]', label: 'Customer name', icon: 'bi-person' },
     { token: '[Salon Name]', label: 'Shop name', icon: 'bi-shop' },
-    { token: '[OneQR Link]', label: 'Offer link', icon: 'bi-link-45deg' }
+    { token: '[OneQR Link]', label: 'Visit link', icon: 'bi-link-45deg' }
   ];
   var WELCOME_MESSAGE_TOKENS = GENERAL_MESSAGE_TOKENS.concat([
     { token: '[Wait Time]', label: 'Wait time', icon: 'bi-clock' },
@@ -126,7 +126,7 @@
     { token: '[Salon Name]', label: 'Shop name', icon: 'bi-shop' },
     { token: '[Wait Time]', label: 'Wait time', icon: 'bi-clock' },
     { token: '[Wait Care Benefit]', label: 'Wait Care benefit', icon: 'bi-gift' },
-    { token: '[OneQR Link]', label: 'Smart link', icon: 'bi-link-45deg' }
+    { token: '[OneQR Link]', label: 'Visit link', icon: 'bi-link-45deg' }
   ];
   var RETURN_SOON_TOKENS = GENERAL_MESSAGE_TOKENS.concat([
     { token: '[Return Notice]', label: 'Return notice', icon: 'bi-clock' }
@@ -139,8 +139,8 @@
     }).join('');
     return '<div class="sms-composer" data-sms-composer>' +
       '<div class="sms-composer-toolbar"><span>Insert:</span><div class="sms-insert-list">' + buttons + '</div></div>' +
-      '<textarea class="settings-input sms-textarea" data-sms-field="' + esc(field) + '" rows="4">' + esc(value) + '</textarea>' +
-      '<div class="sms-composer-footer"><span>Dynamic fields fill automatically when sent</span><strong data-sms-count="' + esc(field) + '">' + value.length + ' chars — ' + Math.max(1, Math.ceil(value.length / 160)) + ' SMS</strong></div>' +
+      '<textarea aria-label="Message" class="settings-input sms-textarea" data-sms-field="' + esc(field) + '" rows="4">' + esc(value) + '</textarea>' +
+      '<div class="sms-composer-footer"><span>Estimate uses sample customer details; actual length may vary</span><strong data-sms-count="' + esc(field) + '">—</strong></div>' +
     '</div>';
   }
 
@@ -185,27 +185,30 @@
           '<button type="button" data-sms-tab="wait-care">Wait Care</button>' +
           '<button type="button" data-sms-tab="automation">Automation Settings</button>' +
         '</nav>' +
-        '<span class="salon-status-pill" data-sms-automation-pill>Automation ON</span>' +
       '</div>' +
       '<p class="settings-help sms-settings-status" data-sms-status role="status" aria-live="polite"></p>' +
 
+      '<p class="settings-help">Prototype: settings are saved in this browser. Send Test previews a message; no SMS is sent.</p>' +
       '<section data-sms-panel="automation" hidden>' +
         '<div class="sms-columns">' +
           '<div class="sms-col sms-card"><h3>Waitlist Automation Setup</h3>' +
+          '<div class="sms-automation-state"><span class="salon-status-pill" data-sms-automation-pill>Waitlist automation ON</span><p class="settings-help">Applies to Return Soon and Ready Now automatic messages. Save to apply changes.</p></div>' +
           '<h4 class="sms-section-title">Waitlist timing</h4><div class="settings-field-grid">' +
             selectField('Return notice', 'returnNotice', ['15 minutes before', '10 minutes before', '20 minutes before']) +
-            selectField('No response grace', null, ['10 minutes', '5 minutes', '15 minutes']) +
-            selectField('Internal ETA threshold', null, ['10 minutes', '5 minutes', '15 minutes']) +
+            selectField('No response grace', 'noResponseGrace', ['10 minutes', '5 minutes', '15 minutes']) +
+            selectField('Internal ETA threshold', 'etaThreshold', ['10 minutes', '5 minutes', '15 minutes']) +
           '</div>' +
           '<h4 class="sms-section-title">Return Soon SMS</h4><div class="settings-field-grid">' +
             selectField('Send mode', 'returnSoonSendMode', ['Automatic at return notice', 'Manager approval', 'Manual']) +
+            selectField('Link availability', 'returnSoonLinkValidity', LIVE_LINK_VALIDITY_OPTIONS) +
             quickTemplateMarkup('return-soon', RETURN_SOON_TEMPLATE_OPTIONS, RETURN_SOON_TEMPLATES, 'return-reminder') +
-            '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('returnSoonMessage', RETURN_SOON_TEMPLATES['return-reminder'], RETURN_SOON_TOKENS) + '</label>' +
+            '<div class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('returnSoonMessage', RETURN_SOON_TEMPLATES['return-reminder'], RETURN_SOON_TOKENS) + '</div>' +
           '</div><div class="sms-message-test">' + testSendMarkup('send-test-return-soon', false) + '</div>' +
           '<h4 class="sms-section-title">Ready Now SMS</h4><div class="settings-field-grid">' +
             selectField('Send mode', 'readyNowSendMode', ['Manual', 'Automatic', 'Manager approval']) +
+            selectField('Link availability', 'readyNowLinkValidity', LIVE_LINK_VALIDITY_OPTIONS) +
             quickTemplateMarkup('ready-now', READY_NOW_TEMPLATE_OPTIONS, READY_NOW_TEMPLATES, 'ready-now') +
-            '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('readyNowMessage', READY_NOW_TEMPLATES['ready-now'], GENERAL_MESSAGE_TOKENS) + '</label>' +
+            '<div class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('readyNowMessage', READY_NOW_TEMPLATES['ready-now'], GENERAL_MESSAGE_TOKENS) + '</div>' +
           '</div><div class="sms-message-test">' + testSendMarkup('send-test-ready-now', false) + '</div>' +
           '<div class="sms-actions">' +
             '<button type="button" class="booking-primary-button" data-sms-action="save-automation"><i class="bi bi-check2" aria-hidden="true"></i>Save Automation Settings</button>' +
@@ -215,10 +218,12 @@
             '<div><h4 class="sms-section-title">Return Soon</h4><div class="sms-phone"><div class="sms-phone-screen"><div class="sms-phone-bar"></div>' +
               '<div class="sms-phone-title">Messages</div>' +
               '<div class="sms-phone-bubble" data-sms-preview="returnSoonMessage">' + esc(renderTokens(RETURN_SOON_TEMPLATES['return-reminder'])) + '</div>' +
+              '<p class="sms-phone-caption" data-sms-link-validity-preview="returnSoonLinkValidity">' + esc(LINK_VALIDITY_CAPTIONS[LIVE_LINK_VALIDITY_OPTIONS[0]]) + '</p>' +
             '</div></div></div>' +
             '<div><h4 class="sms-section-title">Ready Now</h4><div class="sms-phone"><div class="sms-phone-screen"><div class="sms-phone-bar"></div>' +
               '<div class="sms-phone-title">Messages</div>' +
               '<div class="sms-phone-bubble" data-sms-preview="readyNowMessage">' + esc(renderTokens(READY_NOW_TEMPLATES['ready-now'])) + '</div>' +
+              '<p class="sms-phone-caption" data-sms-link-validity-preview="readyNowLinkValidity">' + esc(LINK_VALIDITY_CAPTIONS[LIVE_LINK_VALIDITY_OPTIONS[0]]) + '</p>' +
             '</div></div></div>' +
           '</div></div>' +
         '</div>' +
@@ -228,19 +233,19 @@
         '<div class="sms-columns">' +
           '<div class="sms-col sms-card"><h3>Wait Care Setup</h3>' +
             '<div class="settings-toggle-row"><span>Send Wait Care messages when a delay threshold is reached</span>' +
-            '<button class="toggle-pill is-on" type="button" role="switch" aria-checked="true" aria-label="Toggle Wait Care SMS" data-sms-wait-care-enabled></button></div>' +
+            '<button class="toggle-pill is-on" type="button" role="switch" aria-checked="true" aria-label="Toggle Wait Care SMS" data-sms-enabled="wait-care" data-sms-wait-care-enabled></button></div>' +
             '<h4 class="sms-section-title">Wait Care rules</h4><div class="settings-field-grid">' +
-            selectField('10–19 min delay', null, ['Auto · 50 points', 'Approval required']) +
-            selectField('20–29 min delay', null, ['Auto · Free add-on', 'Approval required']) +
-            selectField('30–44 min delay', null, ['Approval · $5 voucher', 'Automatic']) +
-            selectField('45+ min delay', null, ['Manager selects benefit', 'Auto · $10 voucher']) +
+            selectField('10–19 min delay', 'careRule10', ['Auto · 50 points', 'Approval required']) +
+            selectField('20–29 min delay', 'careRule20', ['Auto · Free add-on', 'Approval required']) +
+            selectField('30–44 min delay', 'careRule30', ['Approval · $5 voucher', 'Automatic']) +
+            selectField('45+ min delay', 'careRule45', ['Manager selects benefit', 'Auto · $10 voucher']) +
           '</div>' +
             '<h4 class="sms-section-title">Wait Care SMS</h4>' +
             '<div class="settings-field-grid">' +
               selectField('Send mode', 'waitCareSendMode', ['Manager approval', 'Automatic', 'Manual']) +
               selectField('Link availability', 'waitCareLinkValidity', LIVE_LINK_VALIDITY_OPTIONS) +
               quickTemplateMarkup('wait-care', WAIT_CARE_TEMPLATE_OPTIONS, WAIT_CARE_TEMPLATES, 'care-benefit') +
-              '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('waitCareMessage', WAIT_CARE_DEFAULT, WAIT_CARE_TOKENS) + '</label>' +
+              '<div class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('waitCareMessage', WAIT_CARE_DEFAULT, WAIT_CARE_TOKENS) + '</div>' +
             '</div>' +
             '<div class="sms-actions">' +
               '<button type="button" class="booking-primary-button" data-sms-action="save-wait-care"><i class="bi bi-check2" aria-hidden="true"></i>Save Wait Care Settings</button>' +
@@ -261,18 +266,14 @@
         '<div class="sms-columns">' +
           '<div class="sms-col sms-card"><h3>Thank You SMS Setup</h3>' +
             '<div class="settings-toggle-row"><span>Send after checkout is completed</span>' +
-            '<button class="toggle-pill is-on" type="button" role="switch" aria-checked="true" aria-label="Toggle Thank You SMS after checkout"></button></div>' +
+            '<button class="toggle-pill is-on" type="button" role="switch" aria-checked="true" data-sms-enabled="after" aria-label="Toggle Thank You SMS after checkout"></button></div>' +
             '<div class="settings-field-grid">' +
-              selectField('Send mode', null, ['Automatic after checkout', 'Manual review before sending']) +
+              selectField('Send mode', 'afterSendMode', ['Automatic after checkout', 'Manual review before sending']) +
               selectField('Link availability', 'afterLinkValidity', AFTER_LINK_VALIDITY_OPTIONS) +
               quickTemplateMarkup('after', AFTER_CHECKOUT_TEMPLATE_OPTIONS, AFTER_CHECKOUT_TEMPLATES, 'ticket-receipt') +
-              '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('afterMessage', AFTER_CHECKOUT_DEFAULT, AFTER_CHECKOUT_TOKENS) + '</label>' +
-              selectField('Review', null, ['Show to every customer', 'Hide']) +
-              selectField('Tip', null, ['Show only when no tip was completed', 'Hide tip after checkout']) +
-              selectField('Private feedback', null, ['Show to every customer', 'Hide']) +
-              selectField('Promotion', null, ['Show only with marketing consent', 'Hide promotion']) +
+              '<div class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('afterMessage', AFTER_CHECKOUT_DEFAULT, AFTER_CHECKOUT_TOKENS) + '</div>' +
             '</div>' +
-            '<p class="sms-notice"><strong>Customer protection:</strong> Never ask for a second tip when one was already completed. Do not reward only positive public reviews. Promotion visibility requires valid marketing consent.</p>' +
+            '<p class="sms-notice"><strong>Customer protection:</strong> Never ask for a second tip when one was already completed. Do not reward only positive public reviews. Marketing messages require valid consent.</p>' +
             '<div class="sms-actions">' +
               '<button type="button" class="booking-primary-button" data-sms-action="save-after"><i class="bi bi-check2" aria-hidden="true"></i>Save After Checkout Setup</button>' +
               testSendMarkup('send-test-after', false) +
@@ -292,12 +293,12 @@
         '<div class="sms-columns">' +
           '<div class="sms-col sms-card"><h3>Welcome SMS Setup</h3>' +
             '<div class="settings-toggle-row"><span>Enable welcome message after check-in</span>' +
-            '<button class="toggle-pill is-on" type="button" role="switch" aria-checked="true" aria-label="Toggle welcome message after check-in"></button></div>' +
+            '<button class="toggle-pill is-on" type="button" role="switch" aria-checked="true" data-sms-enabled="welcome" aria-label="Toggle welcome message after check-in"></button></div>' +
             '<div class="settings-field-grid">' +
-              selectField('Send mode', null, ['Automatic after check-in', 'Manual review before sending']) +
+              selectField('Send mode', 'welcomeSendMode', ['Automatic after check-in', 'Manual review before sending']) +
               selectField('Link availability', 'welcomeLinkValidity', LIVE_LINK_VALIDITY_OPTIONS) +
               quickTemplateMarkup('welcome', WELCOME_TEMPLATE_OPTIONS, WELCOME_TEMPLATES, 'welcome') +
-              '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('welcomeMessage', WELCOME_TEMPLATES.welcome, WELCOME_MESSAGE_TOKENS) + '</label>' +
+              '<div class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('welcomeMessage', WELCOME_TEMPLATES.welcome, WELCOME_MESSAGE_TOKENS) + '</div>' +
             '</div>' +
             '<p class="sms-notice"><strong>Marketing consent required:</strong> If OneQR highlights a promotional offer, the customer must have valid marketing consent. Without consent, the same link opens the standard OneQR menu and existing customer benefits only.</p>' +
             '<div class="sms-actions">' +
@@ -332,25 +333,69 @@
   });
 
   /* ── Status message ── */
-  var statusTimer = null;
-  function setSmsStatus(message) {
-    var status = $('[data-sms-status]');
-    if (!status) return;
-    status.textContent = message;
-    if (statusTimer) clearTimeout(statusTimer);
-    statusTimer = setTimeout(function () { status.textContent = ''; }, 3200);
+  function setSmsStatus(message, section) {
+    $('[data-sms-status]').textContent = message;
+    $$('[data-sms-local-status]').forEach(function (status) { status.textContent = ''; });
+    var target = section || $('[data-sms-panel]:not([hidden])');
+    if (target) target.querySelector('[data-sms-local-status]').textContent = message;
   }
+  $$('[data-sms-panel]').forEach(function (section) {
+    var status = document.createElement('p');
+    status.className = 'settings-help sms-local-status';
+    status.setAttribute('data-sms-local-status', '');
+    status.setAttribute('role', 'status');
+    section.querySelector('.sms-actions').appendChild(status);
+  });
 
   /* ── Live message previews ── */
+  var templateGroups = {
+    welcomeMessage: ['welcome', WELCOME_TEMPLATES], afterMessage: ['after', AFTER_CHECKOUT_TEMPLATES],
+    waitCareMessage: ['wait-care', WAIT_CARE_TEMPLATES], returnSoonMessage: ['return-soon', RETURN_SOON_TEMPLATES],
+    readyNowMessage: ['ready-now', READY_NOW_TEMPLATES]
+  };
+  // GSM-7 extension characters use two septets. Unicode uses UTF-16 units.
+  var gsmBasic = '@£$¥èéùìòÇ\nØø\rÅåΔ_ΦΓΛΩΠΨΣΘΞÆæßÉ !"#¤%&\'()*+,-./0123456789:;<=>?¡ABCDEFGHIJKLMNOPQRSTUVWXYZÄÖÑÜ§¿abcdefghijklmnopqrstuvwxyzäöñüà';
+  var gsmExtended = '^{}\\[~]|€\f';
+  function messageEstimate(text) {
+    var units = 0, unicode = false;
+    Array.from(text).forEach(function (char) {
+      if (gsmBasic.indexOf(char) >= 0) units++;
+      else if (gsmExtended.indexOf(char) >= 0) units += 2;
+      else unicode = true;
+    });
+    if (unicode) units = text.length;
+    var single = unicode ? 70 : 160, multi = unicode ? 67 : 153;
+    var parts = units === 0 ? 0 : 1;
+    if (units > single) {
+      var used = 0;
+      Array.from(text).forEach(function (char) {
+        var size = unicode ? char.length : gsmExtended.indexOf(char) >= 0 ? 2 : 1;
+        if (used + size > multi) { parts++; used = 0; }
+        used += size;
+      });
+    }
+    return Array.from(text).length + ' chars — ~' + parts + ' SMS (' + (unicode ? 'Unicode' : 'GSM-7') + ')';
+  }
   function refreshPreview(field) {
     var textarea = $('[data-sms-field="' + field + '"]');
+    if (!textarea) return;
+    var rendered = renderTokens(textarea.value);
     var preview = $('[data-sms-preview="' + field + '"]');
-    if (textarea && preview) preview.textContent = renderTokens(textarea.value);
+    if (preview) preview.textContent = rendered || 'Your message will appear here…';
     var count = $('[data-sms-count="' + field + '"]');
-    if (textarea && count) {
-      var length = textarea.value.length;
-      count.textContent = length + ' chars — ' + Math.max(1, Math.ceil(length / 160)) + ' SMS';
-    }
+    if (count) count.textContent = messageEstimate(rendered);
+    var group = templateGroups[field];
+    if (group) $$('[data-sms-template="' + group[0] + '"]').forEach(function (button) {
+      var selected = group[1][button.dataset.templateKey] === textarea.value;
+      button.classList.toggle('is-selected', selected);
+      button.setAttribute('aria-pressed', String(selected));
+    });
+    var validity = field.replace('Message', 'LinkValidity');
+    var select = $('[data-sms-field="' + validity + '"]');
+    var caption = $('[data-sms-link-validity-preview="' + validity + '"]');
+    var hasLink = /\[(?:OneQR|Review|Tip|Feedback|Rewards|Booking|Receipt) Link\]/.test(textarea.value);
+    if (select) select.closest('.settings-field').hidden = !hasLink;
+    if (caption) { caption.hidden = !hasLink; caption.textContent = LINK_VALIDITY_CAPTIONS[select.value] || ''; }
   }
   $$('[data-sms-field="afterMessage"], [data-sms-field="welcomeMessage"], [data-sms-field="waitCareMessage"], [data-sms-field="returnSoonMessage"], [data-sms-field="readyNowMessage"]').forEach(function (textarea) {
     textarea.addEventListener('input', function () { refreshPreview(textarea.dataset.smsField); });
@@ -396,16 +441,15 @@
     });
   });
 
-  var waitCareEnabled = $('[data-sms-wait-care-enabled]');
-  if (waitCareEnabled) {
-    waitCareEnabled.addEventListener('click', function (event) {
+  $$('[data-sms-enabled]').forEach(function (toggle) {
+    toggle.addEventListener('click', function (event) {
       event.stopPropagation();
-      var enabled = waitCareEnabled.getAttribute('aria-checked') !== 'true';
-      waitCareEnabled.setAttribute('aria-checked', String(enabled));
-      waitCareEnabled.classList.toggle('is-on', enabled);
-      setSmsStatus(enabled ? 'Wait Care SMS enabled.' : 'Wait Care SMS paused.');
+      var enabled = toggle.getAttribute('aria-checked') !== 'true';
+      toggle.setAttribute('aria-checked', String(enabled));
+      toggle.classList.toggle('is-on', enabled);
+      setSmsStatus((enabled ? 'SMS enabled.' : 'SMS paused.') + ' Save to apply changes.', toggle.closest('[data-sms-panel]'));
     });
-  }
+  });
 
   $$('[data-sms-insert-token]').forEach(function (button) {
     button.addEventListener('click', function () {
@@ -429,10 +473,10 @@
   $('[data-sms-action="pause-automation"]').addEventListener('click', function (event) {
     automationOn = !automationOn;
     var pill = $('[data-sms-automation-pill]');
-    pill.textContent = automationOn ? 'Automation ON' : 'Automation OFF';
+    pill.textContent = automationOn ? 'Waitlist automation ON' : 'Waitlist automation OFF';
     pill.classList.toggle('is-inactive', !automationOn);
     event.currentTarget.textContent = automationOn ? 'Pause automation' : 'Resume automation';
-    setSmsStatus(automationOn ? 'Automation resumed.' : 'Automation paused.');
+    setSmsStatus((automationOn ? 'Waitlist automation resumed.' : 'Waitlist automation paused.') + ' Save to apply changes.');
   });
 
   /* ── Save / send test actions ── */
@@ -440,17 +484,19 @@
     'save-automation': 'Automation settings saved.',
     'save-wait-care': 'Wait Care settings saved.',
     'save-after': 'After Checkout settings saved.',
-    'send-test-after': 'Thank You test SMS queued.',
+    'send-test-after': '',
     'save-welcome': 'Welcome SMS settings saved.',
-    'send-test-welcome': 'Test SMS queued.',
-    'send-test-wait-care': 'Wait Care test SMS queued.',
-    'send-test-return-soon': 'Return Soon test SMS queued.',
-    'send-test-ready-now': 'Ready Now test SMS queued.'
+    'send-test-welcome': '',
+    'send-test-wait-care': '',
+    'send-test-return-soon': '',
+    'send-test-ready-now': ''
   };
   function formatTestPhone(value, country) {
-    var digits = String(value || '').replace(/\D/g, '');
+    var raw = String(value || '').trim();
+    if (!/^\+?[\d\s().-]+$/.test(raw) || (raw.indexOf('+') >= 0 && !raw.startsWith(country))) return null;
+    var digits = raw.replace(/\D/g, '');
     if (country === '+84') {
-      if (digits.slice(0, 2) === '84') digits = digits.slice(2);
+      if (digits.length === 11 && digits.slice(0, 2) === '84') digits = digits.slice(2);
       if (digits.charAt(0) === '0') digits = digits.slice(1);
       if (digits.length !== 9) return null;
       var vietnam = digits.slice(0, 3) + ' ' + digits.slice(3, 6) + ' ' + digits.slice(6);
@@ -461,10 +507,48 @@
     var us = '(' + digits.slice(0, 3) + ') ' + digits.slice(3, 6) + '-' + digits.slice(6);
     return { input: us, full: '+1 ' + us };
   }
+  var storageKey = 'nexora:salon-sms-settings:v1:' + (window.NEXORA_SALON_DATA?.SALON_ID || 'bitcoin-nail-bar-houston');
+  function readSettings() {
+    var raw = localStorage.getItem(storageKey);
+    if (!raw) return { version: 1, sections: {} };
+    var value = JSON.parse(raw);
+    if (!value || value.version !== 1 || !value.sections || typeof value.sections !== 'object' || Array.isArray(value.sections)) throw new Error('Invalid saved settings');
+    Object.values(value.sections).forEach(function (section) {
+      if (!section || !section.fields || typeof section.fields !== 'object' || Array.isArray(section.fields) || typeof section.enabled !== 'boolean' || Object.values(section.fields).some(function (field) { return typeof field !== 'string'; })) throw new Error('Invalid saved section');
+    });
+    return value;
+  }
+  function validateMessage(textarea, section) {
+    var unknown = (textarea.value.match(/\[[^\]\n]+\]/g) || []).find(function (token) { return !Object.hasOwn(TOKENS, token); });
+    var error = !textarea.value.trim() ? 'Enter a message before saving or testing.' : unknown ? 'Unsupported field: ' + unknown : '';
+    textarea.setAttribute('aria-invalid', String(!!error));
+    if (error) { setSmsStatus(error, section); textarea.focus(); return false; }
+    return true;
+  }
+  function saveSection(section) {
+    var toggle = section.querySelector('[data-sms-enabled]');
+    var enabled = toggle ? toggle.getAttribute('aria-checked') === 'true' : automationOn;
+    if (enabled && !Array.from(section.querySelectorAll('textarea[data-sms-field]')).every(function (textarea) { return validateMessage(textarea, section); })) return false;
+    try {
+      var saved = readSettings(), fields = {};
+      section.querySelectorAll('[data-sms-field]').forEach(function (field) { fields[field.dataset.smsField] = field.value; });
+      saved.sections[section.dataset.smsPanel] = { fields: fields, enabled: enabled };
+      localStorage.setItem(storageKey, JSON.stringify(saved));
+      return true;
+    } catch (_) { setSmsStatus('Could not save settings. Your edits are still here; saved data has not been replaced.', section); return false; }
+  }
+  $$('[data-sms-test-country]').forEach(function (country) {
+    country.addEventListener('change', function () {
+      $('[data-sms-test-phone="' + country.dataset.smsTestCountry + '"]').placeholder = country.value === '+84' ? '0912 345 678' : '(713) 555-0123';
+    });
+  });
   Object.keys(ACTION_MESSAGES).forEach(function (action) {
     var button = $('[data-sms-action="' + action + '"]');
     if (button) button.addEventListener('click', function () {
+      var section = button.closest('[data-sms-panel]');
       if (action.indexOf('send-test-') === 0) {
+        var messageField = { 'send-test-welcome':'welcomeMessage', 'send-test-after':'afterMessage', 'send-test-wait-care':'waitCareMessage', 'send-test-return-soon':'returnSoonMessage', 'send-test-ready-now':'readyNowMessage' }[action];
+        if (!validateMessage($('[data-sms-field="' + messageField + '"]'), section)) return;
         var phone = $('[data-sms-test-phone="' + action + '"]');
         var country = $('[data-sms-test-country="' + action + '"]');
         var formatted = phone ? formatTestPhone(phone.value, country ? country.value : '+1') : null;
@@ -474,10 +558,33 @@
           return;
         }
         phone.value = formatted.input;
-        setSmsStatus('Test SMS queued for ' + formatted.full + '.');
+        setSmsStatus('Preview only for ' + formatted.full + ' — no SMS was sent.', section);
         return;
       }
-      setSmsStatus(ACTION_MESSAGES[action]);
+      if (saveSection(section)) setSmsStatus(ACTION_MESSAGES[action], section);
     });
   });
+  try {
+    var saved = readSettings();
+    $$('[data-sms-panel]').forEach(function (section) {
+      var settings = saved.sections[section.dataset.smsPanel];
+      if (!settings) return;
+      if (!settings.fields || typeof settings.fields !== 'object' || typeof settings.enabled !== 'boolean') throw new Error('Invalid section');
+      section.querySelectorAll('[data-sms-field]').forEach(function (field) {
+        var value = settings.fields[field.dataset.smsField];
+        if (typeof value !== 'string') return;
+        if (field.tagName !== 'SELECT' || Array.from(field.options).some(function (option) { return option.value === value; })) field.value = value;
+      });
+      var toggle = section.querySelector('[data-sms-enabled]');
+      if (toggle) { toggle.setAttribute('aria-checked', String(settings.enabled)); toggle.classList.toggle('is-on', settings.enabled); }
+      if (section.dataset.smsPanel === 'automation') {
+        automationOn = settings.enabled;
+        $('[data-sms-automation-pill]').textContent = automationOn ? 'Waitlist automation ON' : 'Waitlist automation OFF';
+        $('[data-sms-automation-pill]').classList.toggle('is-inactive', !automationOn);
+        $('[data-sms-action="pause-automation"]').textContent = automationOn ? 'Pause automation' : 'Resume automation';
+      }
+    });
+  } catch (_) { setSmsStatus('Could not load saved SMS settings. Stored data is preserved.'); }
+  TOKENS['[Return Notice]'] = returnNotice.value.replace(/\s+before$/, '');
+  Object.keys(templateGroups).forEach(refreshPreview);
 })();
