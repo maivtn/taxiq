@@ -19,6 +19,18 @@ const offer = (patch = {}) => ({
 });
 const catalog = (offers = [offer()]) => ({version: 2, pastRevenue: 220, pastUses: 8, offers});
 
+test('includes the PO promotion workspace and integrated share, outreach and partner controls', () => {
+  const html = readFileSync(new URL('./reward-promotions.html', SOURCE_DIR), 'utf8');
+  for (const label of ['Overview', 'Templates', 'Manage', 'Strategy', 'Analytics', 'Settings']) assert.match(html, new RegExp('>' + label + '<'));
+  assert.match(html, /id="promotion-goal-guide"/);
+  assert.match(html, /id="promotion-share-channels"/);
+  assert.match(html, /Quick Actions/);
+  assert.match(html, /Target audience recommendation/);
+  assert.match(html, /Customer outreach/);
+  assert.match(html, /Local Partner Network/);
+  assert.match(html, /Tracked channel links/);
+});
+
 async function boot(t, saved, beforeEval, pageUrl = 'https://example.test/pages/reward-promotions.html') {
   const dom = new JSDOM(readFileSync(new URL('./reward-promotions.html', SOURCE_DIR), 'utf8'), {
     url: pageUrl, runScripts: 'outside-only'
@@ -682,6 +694,7 @@ test('promotion editor includes the three reference placement choices and previe
   assert.equal(d.querySelector('[name="hero"]').checked, true);
   assert.equal(d.querySelector('[name="public"]').checked, false);
   assert.equal(d.querySelector('[name="paidBoost"]').checked, false);
+  assert.equal(d.querySelector('.paid-placement-config').hidden, true);
   assert.equal(d.querySelector('[name="boostArea"]').value, 'Houston');
   assert.equal(d.querySelector('[name="boostBudget"]').value, '100');
 
@@ -700,12 +713,13 @@ test('promotion editor includes the three reference placement choices and previe
   assert.equal(savedState().offers.length, 0, 'placement previews must not save the draft');
 });
 
-test('paid advertising selects Public and persists its area and total budget', async t => {
+test('paid advertising reveals its budget and creates one linked Paid Boost draft', async t => {
   const {w, d, field, input, submit, savedState} = await boot(t, catalog([]));
   d.querySelector('#create-promotion').click();
   field('title', 'Houston sponsored offer');
   field('paidBoost', true);
   assert.equal(d.querySelector('[name="public"]').checked, true);
+  assert.equal(d.querySelector('.paid-placement-config').hidden, false);
   field('boostArea', 'Katy');
   field('boostBudget', '250');
   submit();
@@ -715,12 +729,23 @@ test('paid advertising selects Public and persists its area and total budget', a
   assert.equal(saved.public, 'pending');
   assert.equal(saved.boostArea, 'Katy');
   assert.equal(saved.boostBudget, 250);
+  assert.equal(savedState().campaigns.length, 1);
+  assert.equal(savedState().campaigns[0].promotionId, saved.id);
+  assert.equal(savedState().campaigns[0].area, 'Katy');
+  assert.equal(savedState().campaigns[0].totalBudget, 250);
+  assert.equal(savedState().campaigns[0].status, 'draft');
+  assert.equal(savedState().campaigns[0].quickSetup, true);
 
   const restored = await boot(t, w.localStorage.getItem(storageKey));
+  assert.match(restored.d.querySelector('#campaign-list').textContent, /Houston sponsored offer/);
   restored.card(saved.id).querySelector('[data-action="edit"]').click();
   assert.equal(restored.d.querySelector('[name="paidBoost"]').checked, true);
   assert.equal(restored.d.querySelector('[name="boostArea"]').value, 'Katy');
   assert.equal(restored.d.querySelector('[name="boostBudget"]').value, '250');
+  restored.field('boostBudget', '300');
+  restored.submit();
+  assert.equal(restored.savedState().campaigns.length, 1, 'editing the promotion must update its quick campaign');
+  assert.equal(restored.savedState().campaigns[0].totalBudget, 300);
 });
 
 test('paid advertising requires a positive total budget and turns off when Public is removed', async t => {
@@ -736,6 +761,7 @@ test('paid advertising requires a positive total budget and turns off when Publi
   field('boostBudget', '100');
   field('public', false);
   assert.equal(d.querySelector('[name="paidBoost"]').checked, false);
+  assert.equal(d.querySelector('.paid-placement-config').hidden, true);
 });
 
 test('opens Promotion Performance as a separate page and keeps the selected promotion', async t => {

@@ -23,7 +23,7 @@
     paidPlacement:['Paid advertising','Quảng cáo trả phí'], paidPlacementHint:['Sponsored placement in Explore. Public is required; this never inserts ads on another salon’s homepage.','Vị trí tài trợ trong Khám phá. Cần bật Public; không chèn vào homepage tiệm khác.'],
     viewOwnPlacement:['View Website & OneQR placement','Xem vị trí Website & OneQR'], viewPublicPlacement:['View Public placement on Nexora','Xem vị trí Public trên Nexora'], viewPaidPlacement:['View paid advertising placement','Xem vị trí Quảng cáo trả phí'],
     boostArea:['Advertising area','Khu vực quảng bá'], boostBudget:['Maximum total campaign budget (USD)','Ngân sách tối đa toàn chiến dịch (USD)'],
-    boostHint:['Only applies when paid advertising is selected. It follows the effective dates above. This prototype does not charge Ads Credit.','Chỉ áp dụng khi chọn quảng cáo. Lịch chạy theo ngày bắt đầu/kết thúc phía trên. Bản demo không trừ tiền.'],
+    boostHint:['Saving creates one linked Paid Boost draft. It follows the effective dates above and does not charge Ads Credit.','Khi lưu, hệ thống tạo một Paid Boost nháp được liên kết. Campaign dùng ngày hiệu lực phía trên và chưa trừ Ads Credit.'],
     boostBudgetError:['Enter a total campaign budget greater than zero.','Nhập ngân sách toàn chiến dịch lớn hơn 0.'],
     placementPreview:['Placement preview','Xem trước vị trí'], previewAction:['Preview','Xem trước'],
     ownPreviewTitle:['Website & OneQR placement','Vị trí Website & OneQR'], publicPreviewTitle:['Public placement on Nexora','Vị trí Public trên Nexora'], paidPreviewTitle:['Paid advertising placement','Vị trí Quảng cáo trả phí'],
@@ -93,7 +93,7 @@
   }
   function snapshot(offer) {
     const data = {};
-    ['title','badge','description','type','value','days','startTime','endTime','banners','services','audience','redemption','code','serviceIds','paidBoost','boostArea','boostBudget',...keys].forEach(key => { data[key] = offer[key] ?? defaults[key] ?? null; });
+    ['title','badge','description','type','value','days','startTime','endTime','banners','services','audience','redemption','code','serviceIds','paidBoost','boostArea','boostBudget','goal','shareDestinations','outreachSegment','outreachChannel','partnerMode',...keys].forEach(key => { data[key] = offer[key] ?? defaults[key] ?? null; });
     return data;
   }
   function publication(offer, previous) {

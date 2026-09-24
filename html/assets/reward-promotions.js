@@ -43,8 +43,8 @@
     search:['Search promotion name or badge…','Tìm tên chương trình hoặc badge...'], allStatuses:['All statuses','Tất cả trạng thái'], clearFilters:['Clear filters','Xóa bộ lọc'],
     loadError:['Could not load promotions','Không tải được chương trình'], loadErrorHint:['Your saved data has been kept. Try loading it again.','Dữ liệu đã lưu vẫn được giữ nguyên. Vui lòng thử tải lại.'], retry:['Try again','Thử lại'],
     demoNote:['Interactive prototype · Sample data · Changes are saved in this browser.','Bản mẫu tương tác · Dữ liệu minh họa · Thay đổi được lưu trong trình duyệt này.'],
-    closeEditor:['Close promotion editor','Đóng form chương trình'], helpTitle:['Review these 4 parts before using your offer','Chỉnh 4 phần trước khi dùng'],
-    helpSteps:['① Name & eligible services → ② Discount → ③ Days & times → ④ Banners & placements','① Tên & dịch vụ áp dụng → ② Mức giảm → ③ Ngày & giờ → ④ Banner & nơi hiển thị'],
+    closeEditor:['Close promotion editor','Đóng form chương trình'], helpTitle:['Review these 7 parts before using your offer','Kiểm tra 7 phần trước khi dùng'],
+    helpSteps:['⓪ Goal → ① Details → ② Discount → ③ Placements → ④ Banners → ⑤ Share & ads → ⑥ Tracking','⓪ Mục tiêu → ① Thông tin → ② Ưu đãi → ③ Nơi hiển thị → ④ Banner → ⑤ Chia sẻ & quảng cáo → ⑥ Theo dõi'],
     helpNote:['Preview as you edit. Save, then enable the promotion from your list when you are ready.','Xem preview bên cạnh khi sửa. Lưu, sau đó chủ động bật chương trình tại danh sách.'],
     detailsSection:['01 / Promotion details','01 / Thông tin chương trình'], name:['Promotion name','Tên chương trình'], badge:['Badge · optional','Badge · tùy chọn'],
     detailsHint:['Example: 15% off Classic Pedicure, Tue–Thu 10 AM–2 PM; cannot be combined. Clearly state who qualifies, eligible services and exclusions.','Ví dụ: Giảm 15% Classic Pedicure, thứ Ba–thứ Năm 10–14h; không cộng dồn. Luôn ghi rõ ai được dùng, dịch vụ nào và điều kiện loại trừ.'],
@@ -62,7 +62,7 @@
     previewPrint:['Preview & print poster','Xem trước & in poster'], saveNote:['New promotions are saved disabled.','Chương trình mới được lưu ở trạng thái tắt.'], editNote:['Changes take effect after saving.','Thay đổi có hiệu lực sau khi lưu.'],
     cancel:['Cancel','Hủy'], save:['Save promotion','Lưu chương trình'], preview:['Preview','Xem trước'], promotionPoster:['Promotion poster','Poster chương trình'], closePreview:['Close preview','Đóng xem trước'],
     previousBanner:['Previous banner','Banner trước'], nextBanner:['Next banner','Banner tiếp theo'], printHint:['Print or save as PDF.','In hoặc lưu PDF.'], print:['Print poster','In poster'],
-    useTemplate:['Use this template','Dùng mẫu này'], edit:['Edit','Chỉnh sửa'], enable:['Enable promotion','Bật chương trình'], disable:['Disable','Tạm tắt'], duplicate:['Duplicate','Nhân bản'], delete:['Delete promotion','Xóa chương trình'],
+    useTemplate:['Use this template','Dùng mẫu này'], edit:['Edit','Chỉnh sửa'], share:['Share','Chia sẻ'], enable:['Enable promotion','Bật chương trình'], disable:['Disable','Tạm tắt'], duplicate:['Duplicate','Nhân bản'], delete:['Delete promotion','Xóa chương trình'],
     createTitle:['Create promotion','Tạo chương trình'], editTitle:['Edit promotion','Chỉnh sửa chương trình'], pending:['Public · Pending review','Public · Chờ duyệt'], banner:['banner','banner'],
     emptyTitle:['No promotions yet','Chưa có chương trình'], emptyHint:['Choose a template or add your first promotion.','Chọn mẫu hoặc tạo chương trình đầu tiên.'], noMatches:['No promotions found','Không tìm thấy chương trình'], noMatchesHint:['Try another search or choose a different status.','Thử tên khác hoặc chọn trạng thái khác.'],
     moveUp:['Move banner up','Chuyển banner lên'], moveDown:['Move banner down','Chuyển banner xuống'], removeBanner:['Remove banner','Xóa banner'], cover:['Cover','Ảnh đầu'], uploaded:['Uploaded image','Ảnh upload'], missingImage:['Image unavailable. Upload it again.','Ảnh không còn khả dụng. Vui lòng upload lại.'],
@@ -94,7 +94,7 @@
   ];
   const localized = value => value[language === 'vi' ? 1 : 0];
   const newBanner = (theme = 'purple') => ({id:uid(), theme});
-  function blankOffer() { return {id:null,title:'',badge:'',description:'',type:'percent',value:10,days:[...days],startTime:'00:00',endTime:'23:59',checkout:true,hero:true,public:'private',paidBoost:false,boostArea:'Houston',boostBudget:100,paused:true,banners:[newBanner()],uses:0,revenue:0}; }
+  function blankOffer() { return {id:null,title:'',badge:'',description:'',type:'percent',value:10,days:[...days],startTime:'00:00',endTime:'23:59',checkout:true,hero:true,public:'private',paidBoost:false,boostArea:'Houston',boostBudget:100,goal:'slow-hours',shareDestinations:['oneqr','nearby','search'],outreachSegment:'pedicure',outreachChannel:'sms-email',partnerMode:'off',paused:true,banners:[newBanner()],uses:0,revenue:0}; }
   function templateOffer(sample) {
     const templateConditions = {
       upgrade:{serviceScope:'selected',serviceIds:['nail-art','foot-massage'],customerGroup:'all',stacking:'exclusive'},
@@ -106,7 +106,7 @@
   function normalize(offer) {
     if (!offer || typeof offer.id !== 'string' || typeof offer.title !== 'string' || !Array.isArray(offer.days)) throw new Error('Invalid promotion');
     const migrated = {...blankOffer(), ...offer};
-    for (const key of ['paidBoost','boostArea','boostBudget']) if (!Object.hasOwn(offer,key)) delete migrated[key];
+    for (const key of ['paidBoost','boostArea','boostBudget','goal','shareDestinations','outreachSegment','outreachChannel','partnerMode']) if (!Object.hasOwn(offer,key)) delete migrated[key];
     migrated.banners = Array.isArray(offer.banners) && offer.banners.length ? clone(offer.banners) : [{id:'legacy-banner-' + offer.id,theme:offer.theme || 'purple'}];
     if (migrated.banners.some(banner => !banner || typeof banner.id !== 'string') || offer.days.some(day => !days.includes(day))) throw new Error('Invalid promotion data');
     if (offer.allDay === true) { migrated.startTime = '00:00'; migrated.endTime = '23:59'; }
@@ -183,7 +183,7 @@
     $('#promotion-list').innerHTML = visible.map(offer => {
       const action = (name,label,symbol) => '<button class="promo-button" data-action="' + name + '" data-id="' + esc(offer.id) + '">' + icon(symbol) + '<span>' + esc(label) + '</span></button>';
       const performance = '<a class="promo-button" data-action="performance" data-id="' + esc(offer.id) + '" href="promotion-performance.html?promotionId=' + encodeURIComponent(offer.id) + '">' + icon('chart') + '<span>' + esc(t('performance')) + '</span></a>';
-      return '<article class="promotion-card" data-promotion-id="' + esc(offer.id) + '">' + artwork(offer,offer.banners[0]) + '<div class="promotion-card-body"><h3>' + esc(offer.title) + '</h3><p class="promotion-schedule">' + esc(schedule(offer)) + '</p><div class="promo-badges"><span class="promo-status ' + (offer.paused ? 'disabled' : 'enabled') + '">' + t(studio.lifecycle(offer)) + '</span>' + (offer.checkout ? '<span class="promo-chip">POS checkout</span>' : '') + (offer.hero ? '<span class="promo-chip">Website & OneQR</span>' : '') + '<span class="promo-chip">' + esc(studio.status(offer,t)) + '</span>' + (offer.paidBoost ? '<span class="promo-chip">Paid Boost · ' + esc(offer.boostArea) + '</span>' : '') + '<span class="promo-chip">' + offer.banners.length + ' ' + t('banner') + '</span></div><div class="promotion-actions">' + action('edit',t('edit'),'edit') + action('toggle',t(offer.paused ? 'enable' : 'disable'),offer.paused ? 'play' : 'pause') + performance + action('duplicate',t('duplicate'),'copy') + action('preview',t('preview'),'eye') + '<details class="promo-more"><summary class="promo-button icon-button" aria-label="' + t('more') + '">' + icon('more') + '</summary><div class="promo-more-menu"><button class="danger" data-action="delete" data-id="' + esc(offer.id) + '">' + t('delete') + '</button></div></details></div></div></article>';
+      return '<article class="promotion-card" data-promotion-id="' + esc(offer.id) + '">' + artwork(offer,offer.banners[0]) + '<div class="promotion-card-body"><h3>' + esc(offer.title) + '</h3><p class="promotion-schedule">' + esc(schedule(offer)) + '</p><div class="promo-badges"><span class="promo-status ' + (offer.paused ? 'disabled' : 'enabled') + '">' + t(studio.lifecycle(offer)) + '</span>' + (offer.checkout ? '<span class="promo-chip">POS checkout</span>' : '') + (offer.hero ? '<span class="promo-chip">Website & OneQR</span>' : '') + '<span class="promo-chip">' + esc(studio.status(offer,t)) + '</span>' + (offer.paidBoost ? '<span class="promo-chip">Paid Boost · ' + esc(offer.boostArea) + '</span>' : '') + '<span class="promo-chip">' + offer.banners.length + ' ' + t('banner') + '</span></div><div class="promotion-actions">' + action('edit',t('edit'),'edit') + action('share',t('share'),'external-link') + action('toggle',t(offer.paused ? 'enable' : 'disable'),offer.paused ? 'play' : 'pause') + performance + action('duplicate',t('duplicate'),'copy') + action('preview',t('preview'),'eye') + '<details class="promo-more"><summary class="promo-button icon-button" aria-label="' + t('more') + '">' + icon('more') + '</summary><div class="promo-more-menu"><button class="danger" data-action="delete" data-id="' + esc(offer.id) + '">' + t('delete') + '</button></div></details></div></div></article>';
     }).join('');
     $('#promotion-empty').hidden = loadFailed || visible.length > 0;
     $('#empty-title').textContent = t(offers.length ? 'noMatches' : 'emptyTitle');
@@ -215,6 +215,14 @@
     if (!result.id || paidBoost || Object.hasOwn(current,'paidBoost')) result.paidBoost = paidBoost;
     if (!result.id || paidBoost || Object.hasOwn(current,'boostArea')) result.boostArea = field('boostArea').value;
     if (!result.id || paidBoost || Object.hasOwn(current,'boostBudget')) result.boostBudget = Number(field('boostBudget').value);
+    const goal = form.querySelector('[name="goal"]:checked')?.value || 'slow-hours';
+    const shareDestinations = Array.from(form.querySelectorAll('[name="shareDestination"]:checked'),input => input.value);
+    const outreachSegment = field('outreachSegment').value, outreachChannel = field('outreachChannel').value, partnerMode = field('partnerMode').value;
+    if (!result.id || Object.hasOwn(current,'goal') || goal !== 'slow-hours') result.goal = goal;
+    if (!result.id || Object.hasOwn(current,'shareDestinations') || shareDestinations.join() !== 'oneqr,nearby,search') result.shareDestinations = shareDestinations;
+    if (!result.id || Object.hasOwn(current,'outreachSegment') || outreachSegment !== 'pedicure') result.outreachSegment = outreachSegment;
+    if (!result.id || Object.hasOwn(current,'outreachChannel') || outreachChannel !== 'sms-email') result.outreachChannel = outreachChannel;
+    if (!result.id || Object.hasOwn(current,'partnerMode') || partnerMode !== 'off') result.partnerMode = partnerMode;
     if (['percent','fixed'].includes(result.type)) result.value = Number(result.value);
     result.allDay = result.startTime === '00:00' && result.endTime === '23:59';
     return studio.read(form,result);
@@ -226,6 +234,7 @@
     field('value').max = type === 'percent' ? '100' : '';
     $('#discount-field').hidden = type === 'free';
     field('value').required = type !== 'free';
+    $('.paid-placement-config').hidden = !field('paidBoost').checked;
   }
   function showError(message, name) {
     $('#promotion-error').textContent = message;
@@ -243,7 +252,7 @@
     if (offer.paidBoost && (offer.public === 'private' || !offer.boostArea || !Number.isFinite(offer.boostBudget) || offer.boostBudget <= 0)) return ['boostBudgetError','boostBudget'];
     return studio.validate(offer);
   }
-  function openEditor(offer = blankOffer()) {
+  function openEditor(offer = blankOffer(), section = '') {
     const active = document.activeElement;
     editorOpener = {node:active,id:active?.id,template:active?.dataset.template,offerId:active?.dataset.id,action:active?.dataset.action};
     current = clone(offer);
@@ -256,10 +265,16 @@
     form.querySelectorAll('[name="days"]').forEach(input => { input.checked = current.days.includes(input.value); });
     field('checkout').checked = !!current.checkout; field('hero').checked = !!current.hero; field('public').checked = current.public !== 'private';
     field('paidBoost').checked = !!current.paidBoost; field('boostArea').value = current.boostArea || 'Houston'; field('boostBudget').value = Number(current.boostBudget) > 0 ? current.boostBudget : 100;
+    const goal = form.querySelector('[name="goal"][value="' + (current.goal || 'slow-hours') + '"]'); if (goal) goal.checked = true;
+    form.querySelectorAll('[name="shareDestination"]').forEach(input => { input.checked = (current.shareDestinations || ['oneqr','nearby','search']).includes(input.value); });
+    field('outreachSegment').value = current.outreachSegment || 'pedicure'; field('outreachChannel').value = current.outreachChannel || 'sms-email'; field('partnerMode').value = current.partnerMode || 'off';
+    updateConditional();
     $('#editor-title').textContent = t(current.id ? 'editTitle' : 'createTitle'); $('#save-note').textContent = t(current.id ? 'editNote' : 'saveNote');
     studio.renderPublication(current,t);
     showError(''); $('#upload-info').textContent = t('uploadHint'); $('#upload-file-name').textContent = t('chooseFile');
-    renderBanners(); editor.showModal(); $('.editor-body').scrollTop = 0; field('title').focus();
+    renderBanners(); editor.showModal(); $('.editor-body').scrollTop = 0;
+    if (section === 'share') { const target = $('#promotion-share-channels'); if (typeof target.scrollIntoView === 'function') target.scrollIntoView({block:'start'}); target.querySelector('summary')?.focus(); }
+    else field('title').focus();
   }
   function renderBanners() {
     if (!current) return;
@@ -282,6 +297,16 @@
     $('#save-promotion').disabled = uploadPending;
     hydrateImages($('#promotion-preview'));
   }
+  function quickCampaigns(record) {
+    const campaigns = state.campaigns || [];
+    const existing = campaigns.find(campaign => campaign.quickSetup === true && campaign.promotionId === record.id);
+    if (!record.paidBoost) return existing && existing.status === 'draft' && !Number(existing.spent) && !Number(existing.held) ? campaigns.filter(campaign => campaign.id !== existing.id) : campaigns;
+    if (existing && existing.status !== 'draft') return campaigns;
+    const totalBudget = Number(record.boostBudget);
+    const dailyBudget = existing ? Math.min(Number(existing.dailyBudget) || totalBudget,totalBudget) : Math.min(totalBudget,Math.max(0.01,Math.round(totalBudget / 7 * 100) / 100));
+    const campaign = {...(existing || {}),id:existing?.id || 'campaign-' + uid().replace('promotion-',''),name:record.title + ' · Paid Boost',promotionId:record.id,creativeId:record.banners[0].id,objective:'traffic',area:record.boostArea,radius:existing?.radius || 10,category:'beauty',audience:'local',placements:existing?.placements?.length ? existing.placements : ['search','explore'],startDate:record.startDate || '',endDate:record.endDate || '',dailyBudget,totalBudget,billing:'cpc',source:'ads-credit',status:'draft',quickSetup:true,updatedAt:Date.now(),history:existing?.history || [{at:Date.now(),status:'draft',source:'promotion'}]};
+    return existing ? campaigns.map(item => item.id === existing.id ? campaign : item) : [...campaigns,campaign];
+  }
   function saveOffer() {
     if (!current || !editor.open) return;
     if (uploadPending) { showError(t('busyError')); return; }
@@ -291,6 +316,7 @@
     studio.publication(offer, current.id ? JSON.parse(initialRevision) : null);
     const record = {...offer,id:offer.id || uid(),paused:offer.id ? offer.paused : true,createdAt:offer.createdAt || Date.now(),updatedAt:Date.now()};
     const next = {...state,offers:offer.id ? state.offers.map(item => item.id === offer.id ? record : item) : [...state.offers,record]};
+    next.campaigns = quickCampaigns(record);
     if (persist(next,true)) {
       draftAssets.filter(id => !record.banners.some(banner => banner.assetId === id)).forEach(id => { window.NEXORA_PROMOTION_ASSETS?.discard?.(id).catch(() => {}); imageUrls.delete(id); });
       draftAssets = []; editor.close(); clearFilters(); feedback(t(offer.id ? 'updated' : 'saved'));
@@ -355,6 +381,7 @@
     const offer = state.offers.find(item => item.id === button.dataset.id); if (!offer) return;
     const action = button.dataset.action;
     if (action === 'edit') openEditor(offer);
+    if (action === 'share') openEditor(offer,'share');
     if (action === 'preview') openPoster(offer);
     if (action === 'toggle') {
       const error = offer.paused && validation(offer);
@@ -429,6 +456,7 @@
   $('#previous-banner').addEventListener('click',() => { if (posterIndex > 0) { posterIndex--; renderPoster(); } });
   $('#next-banner').addEventListener('click',() => { if (posterIndex < posterOffer.banners.length-1) { posterIndex++; renderPoster(); } });
   $('#print-poster').addEventListener('click',() => window.print());
+  document.querySelectorAll('[data-share-action],[data-prototype-action]').forEach(button => button.addEventListener('click',() => feedback('Prototype · ' + button.textContent.trim())));
   document.addEventListener('click',event => { document.querySelectorAll('.promo-more[open]').forEach(menu => { if (!menu.contains(event.target)) menu.open = false; }); });
   document.addEventListener('keydown',event => { if (event.key === 'Escape') document.querySelectorAll('.promo-more[open]').forEach(menu => { menu.open = false; }); });
   window.addEventListener('storage',event => { if (event.key === key || event.key === null) { load(); render(); } });

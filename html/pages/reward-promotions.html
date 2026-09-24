@@ -6,7 +6,7 @@
   <title>Nexora Touch - Promotion Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/reward-promotions.css?v=20260923-placement-ui">
+  <link rel="stylesheet" href="../assets/reward-promotions.css?v=20260924-po-integrated">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
 </head>
 <body>
@@ -21,18 +21,21 @@
   <p class="studio-context" data-i18n="salonContext"></p>
   <nav class="studio-tabs" aria-label="Promotion Studio"><button class="active" type="button" data-studio-tab="offers" aria-pressed="true" data-i18n="offersTab"></button><button type="button" data-studio-tab="campaigns" aria-pressed="false" data-i18n="campaignsTab"></button><a href="promotion-performance.html" data-studio-tab="results" data-i18n="reportsTab"></a></nav>
   <div id="studio-offers">
-  <section class="promo-library" aria-labelledby="templates-title">
+  <nav class="promotion-workspace-nav" aria-label="Promotion workspace">
+    <a href="#promotion-overview">Overview</a><a href="#promotion-templates-section">Templates</a><a href="#promotion-manage">Manage</a><a href="#promotion-strategy">Strategy</a><a href="promotion-performance.html">Analytics</a><a href="#promotion-settings">Settings</a>
+  </nav>
+  <section class="promo-library" id="promotion-templates-section" aria-labelledby="templates-title">
     <p class="promo-eyebrow" data-i18n="startTemplate">Start with a template</p><h2 id="templates-title" data-i18n="templateTitle">Choose a template. Make it yours. Preview.</h2>
     <p class="section-description" data-i18n="templateDescription">Templates fill in the name, terms, discount and schedule. Offers are illustrative; new promotions start disabled and private.</p>
     <div id="promotion-templates" class="promo-template-grid"></div>
     <p class="promo-note" data-i18n="templateNote">Have your own design? Start with a template, then upload your banner. Choosing a template does not publish a promotion.</p>
   </section>
-  <section class="promo-stats" aria-label="Promotion overview">
+  <section class="promo-stats" id="promotion-overview" aria-label="Promotion overview">
     <article class="promo-stat"><span class="stat-icon" data-icon="layers"></span><div><h2 data-i18n="promotions">Promotions</h2><strong id="stat-total">0</strong></div></article>
     <article class="promo-stat"><span class="stat-icon mint" data-icon="check-circle"></span><div><h2 data-i18n="enabled">Enabled</h2><strong id="stat-active">0</strong></div></article>
     <article class="promo-stat"><span class="stat-icon blue" data-icon="image"></span><div><h2 data-i18n="bannersCreated">Banners created</h2><strong id="stat-banners">0</strong></div></article>
   </section>
-  <section class="promo-manager" aria-label="Manage promotions">
+  <section class="promo-manager" id="promotion-manage" aria-label="Manage promotions">
     <div class="promo-toolbar">
       <label class="promo-search"><span data-icon="search"></span><input id="promotion-search" type="search" data-placeholder="search" placeholder="Search promotion name or badge…" aria-label="Search promotion name or badge"></label>
       <select id="promotion-filter" aria-label="Filter promotions"><option value="all" data-i18n="allStatuses">All statuses</option><option value="enabled" data-i18n="enabled">Enabled</option><option value="disabled" data-i18n="disabled">Disabled</option></select>
@@ -40,6 +43,14 @@
     <div id="promotion-list" class="promotion-grid"></div>
     <div class="promo-empty" id="promotion-empty" hidden><span data-icon="search"></span><h2 id="empty-title"></h2><p id="empty-description"></p><button class="promo-button" id="clear-filters" data-i18n="clearFilters">Clear filters</button></div>
     <div class="promo-empty" id="promotion-load-error" role="alert" hidden><span data-icon="alert-circle"></span><h2 data-i18n="loadError">Could not load promotions</h2><p data-i18n="loadErrorHint">Your saved data has been kept. Try loading it again.</p><button class="promo-button" id="retry-load" data-i18n="retry">Try again</button></div>
+  </section>
+  <section class="po-workspace-panel" id="promotion-strategy" aria-labelledby="strategy-title">
+    <div class="po-panel-heading"><div><p class="promo-eyebrow">Plan and reuse</p><h2 id="strategy-title">Campaign strategy</h2><p>Prepare seasonal drafts, define slow-hour rules and run a successful promotion again without changing its history.</p></div><span class="promo-chip">Owner approval required</span></div>
+    <div class="po-card-grid"><article><strong>Seasonal calendar</strong><span>Prepare promotions for holidays and local events.</span><button type="button" class="promo-button" data-prototype-action="strategy">Plan year</button></article><article><strong>Slow-hour rules</strong><span>Create drafts when booking availability meets an Owner-defined rule.</span><button type="button" class="promo-button" data-prototype-action="strategy">Set rules</button></article><article><strong>Winning promotions</strong><span>Duplicate a strong offer with fresh dates, banners and approvals.</span><button type="button" class="promo-button" data-prototype-action="strategy">Suggest winners</button></article></div>
+  </section>
+  <section class="po-workspace-panel" id="promotion-settings" aria-labelledby="settings-title">
+    <div class="po-panel-heading"><div><p class="promo-eyebrow">Controls</p><h2 id="settings-title">Promotion settings</h2><p>Review consent, spending limits, approval rules, partner eligibility and channel connections.</p></div><span class="promo-chip">Prototype</span></div>
+    <div class="po-card-grid"><article><strong>Consent center</strong><span>SMS and email opt-in, STOP and unsubscribe records.</span></article><article><strong>Budget controls</strong><span>Campaign, daily, outreach and partner spending caps.</span></article><article><strong>Partner rules</strong><span>Allowed categories, blocked competitors and approval mode.</span></article></div>
   </section>
   </div>
   <div id="studio-campaigns" hidden></div>
@@ -50,9 +61,19 @@
 <dialog id="promotion-editor" class="promo-dialog" aria-labelledby="editor-title">
   <form id="promotion-form" novalidate>
     <header class="editor-header"><div><p class="promo-eyebrow">Promotion studio</p><h2 id="editor-title">Create promotion</h2></div><div class="editor-header-actions"><label class="promo-language"><span class="sr-only" data-i18n="language">Language</span><select id="editor-language" aria-label="Language"><option value="en">EN</option><option value="vi">VI</option></select></label><button type="button" class="promo-close" data-close-editor data-label="closeEditor" aria-label="Close promotion editor"><span data-icon="x"></span></button></div></header>
-    <div class="editor-help"><strong data-i18n="helpTitle">Review these 4 parts before using your offer</strong><span data-i18n="helpSteps">① Name & eligible services → ② Discount → ③ Days & times → ④ Banners & placements</span><small data-i18n="helpNote">Preview as you edit. Save, then enable the promotion from your list when you are ready.</small></div>
+    <div class="editor-help"><strong data-i18n="helpTitle">Review these 7 parts before using your offer</strong><span data-i18n="helpSteps">⓪ Goal → ① Details → ② Discount → ③ Placements → ④ Banners → ⑤ Share & ads → ⑥ Tracking</span><small data-i18n="helpNote">Preview as you edit. Save, then enable the promotion from your list when you are ready.</small></div>
     <div class="editor-body">
       <div class="editor-fields">
+        <section class="editor-section" id="promotion-goal-guide" aria-labelledby="goal-guide-title">
+          <h3 class="section-number" id="goal-guide-title">00 / Campaign guide</h3>
+          <p class="promo-note">Choose a goal to keep the offer, schedule and channels focused. Suggestions never publish or spend automatically.</p>
+          <div class="promotion-goal-grid">
+            <label><input type="radio" name="goal" value="slow-hours" checked><span><strong>Fill slow hours</strong><small>Use quiet appointment windows.</small></span></label>
+            <label><input type="radio" name="goal" value="new-customers"><span><strong>Bring in new customers</strong><small>Pair a first-visit offer with Discovery.</small></span></label>
+            <label><input type="radio" name="goal" value="service"><span><strong>Promote a service</strong><small>Feature one service and matching creative.</small></span></label>
+            <label><input type="radio" name="goal" value="rebook"><span><strong>Rebook clients</strong><small>Encourage the next appointment.</small></span></label>
+          </div>
+        </section>
         <section class="editor-section" aria-labelledby="details-title">
           <h3 class="section-number" id="details-title" data-i18n="detailsSection">01 / Promotion details</h3>
           <div class="promo-field-row details-row">
@@ -87,13 +108,23 @@
           <button type="button" class="promo-button placement-preview-button" data-placement-preview="public"><span data-i18n="viewPublicPlacement">View Public placement on Nexora</span><span aria-hidden="true">→</span></button>
           <label class="promo-check-card placement-card"><input name="paidBoost" type="checkbox"><span><strong data-i18n="paidPlacement">Paid advertising</strong><small data-i18n="paidPlacementHint">Sponsored placement in Explore. Public is required; this never inserts ads on another salon’s homepage.</small></span><span data-icon="sparkles"></span></label>
           <button type="button" class="promo-button placement-preview-button" data-placement-preview="paid"><span data-i18n="viewPaidPlacement">View paid advertising placement</span><span aria-hidden="true">→</span></button>
-          <div class="paid-placement-config">
+          <div class="paid-placement-config" hidden>
             <label class="promo-field"><span data-i18n="boostArea">Advertising area</span><select name="boostArea"><option>Houston</option><option>Katy</option><option>Austin</option><option>Dallas</option></select></label>
             <label class="promo-field"><span data-i18n="boostBudget">Maximum total campaign budget (USD)</span><input name="boostBudget" type="number" min="1" step="0.01" value="100"></label>
-            <p class="promo-note" data-i18n="boostHint">Only applies when paid advertising is selected. It follows the effective dates above. This prototype does not charge Ads Credit.</p>
+            <p class="promo-note" data-i18n="boostHint">Saving creates one linked Paid Boost draft. It follows the effective dates above and does not charge Ads Credit.</p>
           </div>
           <p class="promo-note" data-i18n="publicFree"></p><div class="studio-notice" id="publication-summary"></div><details class="studio-history"><summary data-i18n="history"></summary><ol id="publication-history"></ol></details>
           <p class="promo-note" data-i18n="publicNote">A public request does not turn on paid advertising or referral rewards.</p>
+        </section>
+        <section class="editor-section po-share-section" id="promotion-share-channels" aria-labelledby="share-channels-title">
+          <h3 class="section-number" id="share-channels-title">05 / Share, channels &amp; ads</h3>
+          <div class="po-quick-actions"><div><strong>Quick Actions</strong><small>Available after a banner exists. Live links require a saved promotion.</small></div><div><button type="button" class="promo-button" data-share-action="banner">Download Banner</button><button type="button" class="promo-button" data-share-action="social">Social Sizes</button><button type="button" class="promo-button" data-share-action="qr">QR Code</button><button type="button" class="promo-button" data-share-action="caption">Copy Caption</button><button type="button" class="promo-button" data-share-action="link">Copy Link</button><button type="button" class="promo-button" data-share-action="booking">Booking Link</button></div></div>
+          <details class="po-subpanel" open><summary>Share kit and tracked links</summary><div class="po-subpanel-body"><div class="po-share-grid"><article><strong>Public deal page</strong><span>Banner, terms, salon details and the selected CTA.</span></article><article><strong>Social media kit</strong><span>Square, story, landscape, poster, caption and QR.</span></article><article><strong>Paid ads handoff</strong><span>Assets and tracked URLs for Meta, Google or an agency.</span></article></div><h4>Tracked channel links</h4><div class="po-tracked-links"><span>Facebook · social</span><span>Instagram · social</span><span>Google Business · local</span><span>SMS · text</span><span>Email · email</span><span>Paid ads · CPC</span></div></div></details>
+          <details class="po-subpanel"><summary>Target audience recommendation</summary><div class="po-subpanel-body"><p>Suggestions may use eligible services, location, search intent and permitted visit history. Estimated reach is sample data until connected.</p><button type="button" class="promo-button" data-prototype-action="audience">Let Nexora choose</button></div></details>
+          <details class="po-subpanel"><summary>Run destinations &amp; approval</summary><div class="po-subpanel-body po-destination-grid"><label><input type="checkbox" name="shareDestination" value="oneqr" checked><span>OneQR Hero</span></label><label><input type="checkbox" name="shareDestination" value="nearby" checked><span>Discover Deals Nearby</span></label><label><input type="checkbox" name="shareDestination" value="search" checked><span>Search Deals</span></label><label><input type="checkbox" name="shareDestination" value="merchant-atm"><span>Merchant ATM app</span></label><label><input type="checkbox" name="shareDestination" value="mobile-atm"><span>Mobile ATM app</span></label><label><input type="checkbox" name="shareDestination" value="cryptomap"><span>CryptoMap360</span></label><label><input type="checkbox" name="shareDestination" value="meta"><span>Facebook / Instagram handoff</span></label><label><input type="checkbox" name="shareDestination" value="google"><span>Google Ads handoff</span></label></div></details>
+          <details class="po-subpanel"><summary>Customer outreach</summary><div class="po-subpanel-body"><div class="promo-field-row"><label class="promo-field"><span>Customer segment</span><select name="outreachSegment"><option value="pedicure">Pedicure customers</option><option value="inactive">Haven't visited in 60 days</option><option value="birthday">Birthday this month</option><option value="vip">VIP customers</option><option value="sms-opt-in">All SMS opt-in customers</option></select></label><label class="promo-field"><span>Send channel</span><select name="outreachChannel"><option value="sms-email">SMS + Email</option><option value="sms">SMS only</option><option value="email">Email only</option><option value="push">Push notification</option></select></label></div><p class="promo-note">Consent, recipient eligibility, provider limits and approval are checked again before sending. Outreach does not use Ads Credit by default.</p></div></details>
+          <details class="po-subpanel"><summary>Local Partner Network</summary><div class="po-subpanel-body"><label class="promo-field"><span>Cross-promotion</span><select name="partnerMode"><option value="off">Off · only my promotions</option><option value="manual">Review each non-competing partner</option><option value="eligible">Allow eligible partners after review</option></select></label><p class="promo-note">Partner invitations, receipt placements, redemption tokens and commercial terms require separate approval. Competitors remain blocked by the salon's category rules.</p></div></details>
+          <div class="studio-notice"><strong>06 / Performance &amp; tracking</strong><p>After saving, open Performance to compare Internal, Public, outreach and Paid results. Preview and copied assets do not count as delivery.</p></div>
         </section>
       </div>
       <aside class="editor-preview" aria-labelledby="banners-title">
@@ -129,7 +160,7 @@
 <script>if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();</script>
 <script src="../assets/promotion-banner-assets.js"></script>
 <script src="../assets/promotion-studio.js?v=20260923-placement-ui"></script>
-<script src="../assets/promotion-campaigns.js?v=20260923-studio"></script>
-<script src="../assets/reward-promotions.js?v=20260923-placement-ui"></script>
+<script src="../assets/promotion-campaigns.js?v=20260924-po-integrated"></script>
+<script src="../assets/reward-promotions.js?v=20260924-po-integrated"></script>
 </body>
 </html>
