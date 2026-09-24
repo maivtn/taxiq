@@ -157,9 +157,7 @@
 
       '<section data-sms-panel="automation" hidden>' +
         '<div class="sms-columns">' +
-          '<div class="sms-col sms-card"><h3>Waitlist communication</h3><div class="settings-field-grid">' +
-            selectField('Welcome SMS', null, ['Automatic', 'Manual']) +
-            selectField('Welcome wait time', null, ['Do not show wait time', 'Show estimated range', 'Staff decides per customer']) +
+          '<div class="sms-col sms-card"><h3>Waitlist timing</h3><div class="settings-field-grid">' +
             selectField('Return notice', null, ['15 minutes before', '10 minutes before', '20 minutes before']) +
             selectField('No response grace', null, ['10 minutes', '5 minutes', '15 minutes']) +
             selectField('Internal ETA threshold', null, ['10 minutes', '5 minutes', '15 minutes']) +

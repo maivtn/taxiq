@@ -395,6 +395,14 @@ test('After Checkout Setup preview mirrors edits to the Thank You message',()=>{
 test('Automation Settings provides a complete Wait Care SMS workflow',()=>{
  const {dom,w,d,errors}=smsPage();
  d.querySelector('[data-sms-tab="automation"]').click();
+ const automationPanel=d.querySelector('[data-sms-panel="automation"]');
+ const waitlistTimingCard=Array.from(automationPanel.querySelectorAll('h3')).find(heading=>heading.textContent==='Waitlist timing').closest('.sms-card');
+ assert.ok(waitlistTimingCard);
+ assert.equal(Array.from(automationPanel.querySelectorAll('.settings-label'),label=>label.textContent).includes('Welcome SMS'),false);
+ assert.equal(Array.from(automationPanel.querySelectorAll('.settings-label'),label=>label.textContent).includes('Welcome wait time'),false);
+ assert.deepEqual(Array.from(waitlistTimingCard.querySelectorAll('.settings-label'),label=>label.textContent),[
+  'Return notice','No response grace','Internal ETA threshold'
+ ]);
  const textarea=d.querySelector('[data-sms-field="waitCareMessage"]');
  const preview=d.querySelector('[data-sms-preview="waitCareMessage"]');
  const templates=Array.from(d.querySelectorAll('[data-sms-template="wait-care"]'));
