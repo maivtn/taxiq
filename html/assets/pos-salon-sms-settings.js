@@ -173,12 +173,13 @@
           '<button type="button" data-sms-tab="after">After Checkout</button>' +
           '<button type="button" data-sms-tab="wait-care">Wait Care</button>' +
           '<button type="button" data-sms-tab="automation">Automation Settings</button>' +
+          '<button type="button" data-sms-tab="links">Link Settings</button>' +
         '</nav>' +
       '</div>' +
       '<p class="settings-help sms-settings-status" data-sms-status role="status" aria-live="polite"></p>' +
 
       '<p class="settings-help">Prototype: settings are saved in this browser. Send Test previews a message; no SMS is sent.</p>' +
-      '<section class="sms-card sms-shared-links" data-sms-shared-links aria-labelledby="sms-link-settings-title">' +
+      '<section class="sms-card sms-shared-links" data-sms-panel="links" data-sms-shared-links aria-labelledby="sms-link-settings-title" hidden>' +
         '<div><h3 id="sms-link-settings-title">Visit link settings</h3><p class="settings-help">One expiry for the OneQR visit link in every SMS. Active during the visit; the countdown starts at checkout. Sending the link again does not restart it.</p>' +
         '<p class="settings-help">After checkout, the same link opens the after-visit page. Receipt, review and other separate links follow their own expiry rules.</p></div>' +
         '<div class="sms-shared-link-controls">' + selectField('Link availability', 'visitLinkValidity', VISIT_LINK_VALIDITY_OPTIONS) +
@@ -331,6 +332,7 @@
     if (target) target.querySelector('[data-sms-local-status]').textContent = message;
   }
   $$('[data-sms-panel]').forEach(function (section) {
+    if (section.querySelector('[data-sms-local-status]')) return;
     var status = document.createElement('p');
     status.className = 'settings-help sms-local-status';
     status.setAttribute('data-sms-local-status', '');

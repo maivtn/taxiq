@@ -312,8 +312,8 @@ function smsPage(){
 test('SMS Settings separates Welcome, After Checkout, Wait Care and Automation setup sections',()=>{
  const {dom,d,errors}=smsPage();
  assert.equal(d.querySelector('[data-settings-panel="sms"]').hidden,false);
- assert.deepEqual(Array.from(d.querySelectorAll('[data-sms-tab]'),b=>b.dataset.smsTab),['welcome','after','wait-care','automation']);
- assert.deepEqual(Array.from(d.querySelectorAll('[data-sms-tab]'),b=>b.textContent),['Welcome SMS','After Checkout','Wait Care','Automation Settings']);
+ assert.deepEqual(Array.from(d.querySelectorAll('[data-sms-tab]'),b=>b.dataset.smsTab),['welcome','after','wait-care','automation','links']);
+ assert.deepEqual(Array.from(d.querySelectorAll('[data-sms-tab]'),b=>b.textContent),['Welcome SMS','After Checkout','Wait Care','Automation Settings','Link Settings']);
  assert.equal(d.querySelector('[data-sms-tab].active')?.dataset.smsTab,'welcome');
  assert.equal(d.querySelector('[data-sms-panel="welcome"]').hidden,false);
  assert.equal(d.querySelector('[data-sms-panel="automation"]').hidden,true);
@@ -326,6 +326,14 @@ test('SMS Settings separates Welcome, After Checkout, Wait Care and Automation s
  assert.equal(d.querySelector('[data-sms-panel="welcome"]').hidden,true);
  d.querySelector('[data-sms-tab="after"]').click();
  assert.equal(d.querySelector('[data-sms-panel="after"]').hidden,false);
+ const links=d.querySelector('[data-sms-panel="links"]');
+ assert.equal(links.hidden,true);
+ d.querySelector('[data-sms-tab="links"]').click();
+ assert.equal(links.hidden,false);
+ assert.equal(d.querySelector('[data-sms-panel="after"]').hidden,true);
+ assert.ok(links.querySelector('[data-sms-field="visitLinkValidity"]'));
+ d.querySelector('[data-sms-tab="welcome"]').click();
+ assert.equal(links.hidden,true);
  assert.deepEqual(errors,[]);dom.window.close();
 });
 
@@ -456,7 +464,7 @@ test('one shared visit-link expiry updates every OneQR preview and excludes rece
  const select=d.querySelector('[data-sms-field="visitLinkValidity"]');
  assert.ok(select);
  assert.deepEqual(Array.from(select.options,option=>option.value),['1 day after checkout','2 days after checkout','7 days after checkout','30 days after checkout']);
- assert.equal(d.querySelectorAll('[data-sms-panel] select[data-sms-field$="LinkValidity"]').length,0);
+ assert.equal(d.querySelectorAll('[data-sms-panel]:not([data-sms-panel="links"]) select[data-sms-field$="LinkValidity"]').length,0);
  select.value='2 days after checkout';select.dispatchEvent(new w.Event('change'));
  for(const field of ['welcomeLinkValidity','waitCareLinkValidity','returnSoonLinkValidity','readyNowLinkValidity']){
   const preview=d.querySelector(`[data-sms-link-validity-preview="${field}"]`);
