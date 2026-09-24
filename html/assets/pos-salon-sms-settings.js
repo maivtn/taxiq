@@ -34,12 +34,12 @@
   }
 
   var WELCOME_TEMPLATES = {
-    welcome: 'Hi [Customer Name], welcome to [Salon Name]! You’re checked in. View your visit: [OneQR Link]',
-    'check-in': 'Hi [Customer Name], you’re checked in at [Salon Name]. Follow your visit: [OneQR Link]'
+    welcome: 'Hi [Customer Name], welcome to [Salon Name]! We’re happy to have you. Explore more: [OneQR Link]',
+    'simple-welcome': 'Welcome to [Salon Name], [Customer Name]! We’re glad you’re here. Learn more: [OneQR Link]'
   };
   var WELCOME_TEMPLATE_OPTIONS = [
     { key: 'welcome', label: 'Welcome message' },
-    { key: 'check-in', label: 'Check-in confirmed' }
+    { key: 'simple-welcome', label: 'Simple welcome' }
   ];
   var AFTER_CHECKOUT_TEMPLATES = {
     'ticket-receipt': 'Thanks for visiting [Salon Name]! Ticket [Ticket Number]: [Ticket Total]. Receipt: [Receipt Link]',
