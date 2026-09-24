@@ -33,13 +33,11 @@
 
   var WELCOME_TEMPLATES = {
     new: 'Hi [Customer Name], welcome to [Salon Name]! You’re checked in. View your visit: [OneQR Link]',
-    returning: 'Welcome back, [Customer Name]! You’re checked in at [Salon Name]. View your visit: [OneQR Link]',
-    birthday: 'Happy Birthday, [Customer Name]! You’re checked in at [Salon Name]. Birthday perks: [OneQR Link]'
+    returning: 'Welcome back, [Customer Name]! You’re checked in at [Salon Name]. View your visit: [OneQR Link]'
   };
   var WELCOME_TEMPLATE_OPTIONS = [
     { key: 'new', label: 'New customer' },
-    { key: 'returning', label: 'Returning customer' },
-    { key: 'birthday', label: 'Birthday greeting' }
+    { key: 'returning', label: 'Returning customer' }
   ];
   var AFTER_CHECKOUT_TEMPLATES = {
     'ticket-receipt': 'Thanks for visiting [Salon Name]! Ticket [Ticket Number]: [Ticket Total]. Receipt: [Receipt Link]',
