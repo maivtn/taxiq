@@ -355,6 +355,8 @@ test('Welcome SMS Setup live-updates its preview on edit, template change and to
 test('SMS Templates provides the same quick-insert composer and live SMS count',()=>{
  const {dom,w,d,errors}=smsPage();
  d.querySelector('[data-sms-tab="templates"]').click();
+ const language=Array.from(d.querySelectorAll('[data-sms-panel="templates"] select'))[0];
+ assert.deepEqual(Array.from(language.options,option=>option.textContent),['English','Vietnamese']);
  const textarea=d.querySelector('[data-sms-field="templateMessage"]');
  const composer=textarea.closest('[data-sms-composer]');
  assert.ok(composer);

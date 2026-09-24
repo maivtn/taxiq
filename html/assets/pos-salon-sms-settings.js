@@ -140,7 +140,7 @@
             '<div class="sms-template-compose"><h4>Template message</h4>' + smsComposerMarkup('templateMessage', TEMPLATE_MESSAGE_DEFAULT, GENERAL_MESSAGE_TOKENS) + '</div>' +
           '</div>' +
           '<div class="sms-col-side sms-card"><h3>Template controls</h3><div class="settings-field-grid">' +
-            selectField('Language', null, ['English', 'Vietnamese', 'Spanish']) +
+            selectField('Language', null, ['English', 'Vietnamese']) +
             selectField('Send mode', null, ['Automatic', 'Manager approval', 'Manual']) +
             '<label class="settings-field sms-field-full"><span class="settings-label">Preview customer</span><input class="settings-input" type="text" value="Sarah Nguyen"></label>' +
           '</div>' +
