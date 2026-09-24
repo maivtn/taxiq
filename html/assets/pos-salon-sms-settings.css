@@ -108,6 +108,85 @@
   resize: vertical;
 }
 
+.sms-composer {
+  overflow: hidden;
+  border: 1px solid #d7e0ee;
+  border-radius: 11px;
+  background: #fff;
+}
+
+.sms-composer-toolbar {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 12px;
+  border-bottom: 1px solid #e5eaf2;
+  color: var(--nexora-muted);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.sms-composer-toolbar > span {
+  flex: 0 0 auto;
+  padding-top: 7px;
+}
+
+.sms-insert-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.sms-insert-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border: 1px solid #c9cffb;
+  border-radius: 7px;
+  background: #f0f1ff;
+  padding: 6px 9px;
+  color: #4148df;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.sms-insert-chip:hover,
+.sms-insert-chip:focus-visible {
+  border-color: #7076ee;
+  background: #e8eaff;
+}
+
+.sms-composer .sms-textarea {
+  display: block;
+  width: 100%;
+  min-height: 112px;
+  border: 0;
+  border-radius: 0;
+  box-shadow: none;
+}
+
+.sms-composer .sms-textarea:focus {
+  outline: 2px solid color-mix(in srgb, var(--nexora-brand) 30%, transparent);
+  outline-offset: -2px;
+}
+
+.sms-composer-footer {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 8px 16px;
+  border-top: 1px solid #e5eaf2;
+  padding: 9px 12px;
+  color: var(--nexora-muted);
+  font-size: 11px;
+}
+
+.sms-composer-footer strong {
+  color: #4148df;
+}
+
 .sms-actions {
   display: flex;
   flex-wrap: wrap;

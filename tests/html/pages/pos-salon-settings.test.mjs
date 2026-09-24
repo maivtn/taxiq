@@ -339,7 +339,7 @@ test('Welcome SMS Setup live-updates its preview on edit, template change and to
  assert.match(preview.textContent,/Happy Birthday, Sarah!/);
  textarea.value='Hi there';textarea.dispatchEvent(new w.Event('input'));
  assert.equal(preview.textContent,'Hi there');
- d.querySelector('[data-sms-insert-token="[Salon Name]"]').click();
+ d.querySelector('[data-sms-target="welcomeMessage"][data-sms-insert-token="[Salon Name]"]').click();
  assert.equal(textarea.value,'Hi there [Salon Name]');
  assert.equal(preview.textContent,'Hi there Bitcoin Nail Bar');
  assert.deepEqual(errors,[]);dom.window.close();
@@ -350,9 +350,20 @@ test('After Checkout Setup preview mirrors edits to the Thank You message',()=>{
  d.querySelector('[data-sms-tab="after"]').click();
  const textarea=d.querySelector('[data-sms-field="afterMessage"]');
  const preview=d.querySelector('[data-sms-preview="afterMessage"]');
- assert.match(preview.textContent,/Thank you for visiting Bitcoin Nail Bar, Sarah!/);
+ assert.equal(preview.textContent,'Bitcoin Nail Bar: thanks for visiting! Ticket #12 total $45.00. View receipt: nexora.app/r/••••! Tap here: nexora.app/q/••••');
+ const insertBar=textarea.closest('[data-sms-composer]');
+ assert.ok(insertBar.querySelector('[data-sms-insert-token="[Customer Name]"]'));
+ assert.ok(insertBar.querySelector('[data-sms-insert-token="[Receipt Link]"]'));
+ assert.ok(insertBar.querySelector('[data-sms-insert-token="[OneQR Link]"]'));
  textarea.value='See you soon, [Customer Name]!';textarea.dispatchEvent(new w.Event('input'));
  assert.equal(preview.textContent,'See you soon, Sarah!');
+ textarea.setSelectionRange(4,7);
+ insertBar.querySelector('[data-sms-insert-token="[Receipt Link]"]').click();
+ assert.equal(textarea.value,'See [Receipt Link] soon, [Customer Name]!');
+ assert.equal(preview.textContent,'See nexora.app/r/•••• soon, Sarah!');
+ assert.equal(d.querySelector('[data-sms-count="afterMessage"]').textContent,'41 chars — 1 SMS');
+ assert.equal(d.activeElement,textarea);
+ assert.equal(textarea.selectionStart,18);
  assert.deepEqual(errors,[]);dom.window.close();
 });
 

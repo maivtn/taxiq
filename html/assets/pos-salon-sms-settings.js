@@ -15,8 +15,12 @@
     '[Customer Name]': 'Sarah',
     '[Salon Name]': 'Bitcoin Nail Bar',
     '[OneQR Link]': 'nexora.app/q/••••',
+    '[Ticket Number]': '#12',
+    '[Ticket Total]': '$45.00',
+    '[Receipt Link]': 'nexora.app/r/••••',
     '[Benefits Status]': 'Benefits available.'
   };
+  var WELCOME_TOKENS = ['[Customer Name]', '[Salon Name]', '[OneQR Link]', '[Benefits Status]'];
   function renderTokens(text) {
     return Object.keys(TOKENS).reduce(function (out, token) {
       return out.split(token).join(TOKENS[token]);
@@ -29,15 +33,36 @@
     member: 'Welcome back, [Customer Name]! Your check-in is confirmed. Member benefits available. Tap here: [OneQR Link]',
     birthday: 'Happy Birthday, [Customer Name]! Your check-in is confirmed. Birthday benefits available. Tap here: [OneQR Link]'
   };
-  var AFTER_CHECKOUT_DEFAULT = 'Thank you for visiting [Salon Name], [Customer Name]! Tap here: [OneQR Link]';
+  var AFTER_CHECKOUT_DEFAULT = '[Salon Name]: thanks for visiting! Ticket [Ticket Number] total [Ticket Total]. View receipt: [Receipt Link]! Tap here: [OneQR Link]';
+
+  var AFTER_CHECKOUT_TOKENS = [
+    { token: '[Customer Name]', label: 'Customer name', icon: 'bi-person' },
+    { token: '[Salon Name]', label: 'Shop name', icon: 'bi-shop' },
+    { token: '[Ticket Number]', label: 'Ticket number', icon: 'bi-receipt' },
+    { token: '[Ticket Total]', label: 'Ticket total', icon: 'bi-currency-dollar' },
+    { token: '[Receipt Link]', label: 'Receipt link', icon: 'bi-receipt-cutoff' },
+    { token: '[OneQR Link]', label: 'Offer link', icon: 'bi-link-45deg' }
+  ];
 
   var SMS_JOURNEY = [
     { label: 'Welcome with benefits', mode: 'Auto', text: 'Welcome back, Sarah! Your check-in is confirmed. Benefits available. Tap here: nexora.app/q/••••' },
     { label: 'Return soon', mode: 'Auto at 15 min', text: 'Your turn is getting close. Reply 1 or tap I’m Coming to confirm your return.' },
     { label: 'Wait Care', mode: 'Manager approval', text: 'We’re sorry your wait is taking longer than expected. To thank you for your patience, Bitcoin Nail Bar is offering a complimentary hot-stone upgrade.' },
     { label: 'Ready now', mode: 'Manual', text: 'We’re ready for you now! Please return within 10 minutes and tap I’m Here when you arrive.' },
-    { label: 'Thank you', mode: 'Auto after checkout', text: 'Thank you for visiting Bitcoin Nail Bar, Sarah! Tap here: nexora.app/q/••••' }
+    { label: 'Thank you', mode: 'Auto after checkout', text: 'Bitcoin Nail Bar: thanks for visiting! Ticket #12 total $45.00. View receipt: nexora.app/r/••••! Tap here: nexora.app/q/••••' }
   ];
+
+  function smsComposerMarkup(field, value, tokens) {
+    var buttons = tokens.map(function (item) {
+      return '<button type="button" class="sms-insert-chip" data-sms-insert-token="' + esc(item.token) + '" data-sms-target="' + esc(field) + '">' +
+        '<i class="bi ' + esc(item.icon) + '" aria-hidden="true"></i>' + esc(item.label) + '</button>';
+    }).join('');
+    return '<div class="sms-composer" data-sms-composer>' +
+      '<div class="sms-composer-toolbar"><span>Insert:</span><div class="sms-insert-list">' + buttons + '</div></div>' +
+      '<textarea class="settings-input sms-textarea" data-sms-field="' + esc(field) + '" rows="4">' + esc(value) + '</textarea>' +
+      '<div class="sms-composer-footer"><span>Dynamic fields fill automatically when sent</span><strong data-sms-count="' + esc(field) + '">' + value.length + ' chars — ' + Math.max(1, Math.ceil(value.length / 160)) + ' SMS</strong></div>' +
+    '</div>';
+  }
 
   function selectField(label, dataField, options, selectedIndex) {
     var optionsHtml = options.map(function (option, index) {
@@ -124,7 +149,7 @@
             '<div class="settings-field-grid">' +
               selectField('Send mode', null, ['Automatic after checkout', 'Manual review before sending']) +
               selectField('Smart Link destination', null, ['Personalized OneQR After Visit', 'OneQR Main Menu']) +
-              '<label class="settings-field sms-field-full"><span class="settings-label">Message</span><textarea class="settings-input sms-textarea" data-sms-field="afterMessage" rows="3">' + esc(AFTER_CHECKOUT_DEFAULT) + '</textarea></label>' +
+              '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('afterMessage', AFTER_CHECKOUT_DEFAULT, AFTER_CHECKOUT_TOKENS) + '</label>' +
               selectField('Review', null, ['Show to every customer', 'Hide']) +
               selectField('Tip', null, ['Show only when no tip was completed', 'Hide tip after checkout']) +
               selectField('Private feedback', null, ['Show to every customer', 'Hide']) +
@@ -161,8 +186,8 @@
               '<label class="settings-field sms-field-full"><span class="settings-label">Message</span><textarea class="settings-input sms-textarea" data-sms-field="welcomeMessage" rows="3">' + esc(WELCOME_TEMPLATES.returning) + '</textarea></label>' +
             '</div>' +
             '<div class="sms-tokens"><span class="settings-help">Insert a dynamic field</span><div class="sms-token-row">' +
-              Object.keys(TOKENS).map(function (token) {
-                return '<button type="button" class="sms-token" data-sms-insert-token="' + esc(token) + '">' + esc(token.replace(/[\[\]]/g, '')) + '</button>';
+              WELCOME_TOKENS.map(function (token) {
+                return '<button type="button" class="sms-token" data-sms-insert-token="' + esc(token) + '" data-sms-target="welcomeMessage">' + esc(token.replace(/[\[\]]/g, '')) + '</button>';
               }).join('') +
             '</div></div>' +
             '<p class="sms-notice"><strong>Marketing consent required:</strong> If OneQR highlights a promotional offer, the customer must have valid marketing consent. Without consent, the same link opens the standard OneQR menu and existing customer benefits only.</p>' +
@@ -212,6 +237,11 @@
     var textarea = $('[data-sms-field="' + field + '"]');
     var preview = $('[data-sms-preview="' + field + '"]');
     if (textarea && preview) preview.textContent = renderTokens(textarea.value);
+    var count = $('[data-sms-count="' + field + '"]');
+    if (textarea && count) {
+      var length = textarea.value.length;
+      count.textContent = length + ' chars — ' + Math.max(1, Math.ceil(length / 160)) + ' SMS';
+    }
   }
   $$('[data-sms-field="afterMessage"], [data-sms-field="welcomeMessage"]').forEach(function (textarea) {
     textarea.addEventListener('input', function () { refreshPreview(textarea.dataset.smsField); });
@@ -230,11 +260,18 @@
 
   $$('[data-sms-insert-token]').forEach(function (button) {
     button.addEventListener('click', function () {
-      var textarea = $('[data-sms-field="welcomeMessage"]');
+      var field = button.dataset.smsTarget || 'welcomeMessage';
+      var textarea = $('[data-sms-field="' + field + '"]');
       if (!textarea) return;
       var token = button.dataset.smsInsertToken;
-      textarea.value += (textarea.value && !/\s$/.test(textarea.value) ? ' ' : '') + token;
-      refreshPreview('welcomeMessage');
+      var start = typeof textarea.selectionStart === 'number' ? textarea.selectionStart : textarea.value.length;
+      var end = typeof textarea.selectionEnd === 'number' ? textarea.selectionEnd : start;
+      var insertText = token;
+      if (start === end && start > 0 && !/\s/.test(textarea.value.charAt(start - 1))) insertText = ' ' + insertText;
+      textarea.value = textarea.value.slice(0, start) + insertText + textarea.value.slice(end);
+      textarea.focus();
+      textarea.setSelectionRange(start + insertText.length, start + insertText.length);
+      refreshPreview(field);
     });
   });
 
