@@ -213,12 +213,12 @@
   gap: 8px;
 }
 
-.sms-test-send label {
-  flex: 1 1 160px;
-  min-width: 160px;
+.sms-test-phone-control {
+  flex: 1 1 260px;
+  min-width: 240px;
 }
 
-.sms-test-send label > span {
+.sms-test-phone-control > span {
   display: block;
   margin-bottom: 5px;
   color: var(--nexora-muted);
@@ -228,7 +228,23 @@
   text-transform: uppercase;
 }
 
-.sms-test-send .settings-input {
+.sms-test-phone-fields {
+  display: flex;
+  gap: 6px;
+}
+
+.sms-test-phone-fields .settings-select {
+  flex: 0 0 112px;
+  width: 112px;
+}
+
+.sms-test-phone-fields .settings-input {
+  flex: 1 1 150px;
+  min-width: 130px;
+}
+
+.sms-test-phone-fields .settings-input,
+.sms-test-phone-fields .settings-select {
   min-height: 38px;
 }
 

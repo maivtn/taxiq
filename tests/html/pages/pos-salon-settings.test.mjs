@@ -418,13 +418,21 @@ test('each Send Test action requires a valid recipient phone number',()=>{
  for(const [tab,action] of [['welcome','send-test-welcome'],['after','send-test-after'],['templates','send-test-template']]){
   d.querySelector('[data-sms-tab="'+tab+'"]').click();
   const phone=d.querySelector('[data-sms-test-phone="'+action+'"]');
+  const country=d.querySelector('[data-sms-test-country="'+action+'"]');
   const send=d.querySelector('[data-sms-action="'+action+'"]');
-  assert.ok(phone);assert.equal(phone.type,'tel');assert.equal(phone.value,'');
+  assert.ok(phone);assert.ok(country);assert.equal(country.value,'+1');
+  assert.deepEqual(Array.from(country.options,option=>option.value),['+1','+84']);
+  assert.equal(phone.type,'tel');assert.equal(phone.value,'');
   send.click();
   assert.equal(d.querySelector('[data-sms-status]').textContent,'Enter a valid test phone number.');
   assert.equal(d.activeElement,phone);
   phone.value='713-555-0123';send.click();
-  assert.equal(d.querySelector('[data-sms-status]').textContent,'Test SMS queued for (713) 555-0123.');
+  assert.equal(d.querySelector('[data-sms-status]').textContent,'Test SMS queued for +1 (713) 555-0123.');
  }
+ const templateCountry=d.querySelector('[data-sms-test-country="send-test-template"]');
+ const templatePhone=d.querySelector('[data-sms-test-phone="send-test-template"]');
+ templateCountry.value='+84';templatePhone.value='0912345678';
+ d.querySelector('[data-sms-action="send-test-template"]').click();
+ assert.equal(d.querySelector('[data-sms-status]').textContent,'Test SMS queued for +84 912 345 678.');
  assert.deepEqual(errors,[]);dom.window.close();
 });

@@ -74,7 +74,11 @@
 
   function testSendMarkup(action, primary) {
     return '<div class="sms-test-send">' +
-      '<label><span>Test phone number</span><input class="settings-input" type="tel" inputmode="tel" autocomplete="tel" placeholder="(713) 555-0123" data-sms-test-phone="' + esc(action) + '"></label>' +
+      '<div class="sms-test-phone-control"><span>Test phone number</span><div class="sms-test-phone-fields">' +
+        '<select class="settings-select" aria-label="Country code" data-sms-test-country="' + esc(action) + '">' +
+          '<option value="+1">US +1</option><option value="+84">VN +84</option></select>' +
+        '<input class="settings-input" aria-label="Test phone number" type="tel" inputmode="tel" autocomplete="tel" placeholder="(713) 555-0123" data-sms-test-phone="' + esc(action) + '">' +
+      '</div></div>' +
       '<button type="button" class="' + (primary ? 'booking-primary-button' : 'booking-secondary-button') + '" data-sms-action="' + esc(action) + '">' +
         (primary ? '<i class="bi bi-send" aria-hidden="true"></i>' : '') + 'Send Test</button>' +
     '</div>';
@@ -309,25 +313,34 @@
     'save-welcome': 'Welcome SMS settings saved.',
     'send-test-welcome': 'Test SMS queued.'
   };
-  function formatTestPhone(value) {
+  function formatTestPhone(value, country) {
     var digits = String(value || '').replace(/\D/g, '');
+    if (country === '+84') {
+      if (digits.slice(0, 2) === '84') digits = digits.slice(2);
+      if (digits.charAt(0) === '0') digits = digits.slice(1);
+      if (digits.length !== 9) return null;
+      var vietnam = digits.slice(0, 3) + ' ' + digits.slice(3, 6) + ' ' + digits.slice(6);
+      return { input: vietnam, full: '+84 ' + vietnam };
+    }
     if (digits.length === 11 && digits.charAt(0) === '1') digits = digits.slice(1);
-    if (digits.length !== 10) return '';
-    return '(' + digits.slice(0, 3) + ') ' + digits.slice(3, 6) + '-' + digits.slice(6);
+    if (digits.length !== 10) return null;
+    var us = '(' + digits.slice(0, 3) + ') ' + digits.slice(3, 6) + '-' + digits.slice(6);
+    return { input: us, full: '+1 ' + us };
   }
   Object.keys(ACTION_MESSAGES).forEach(function (action) {
     var button = $('[data-sms-action="' + action + '"]');
     if (button) button.addEventListener('click', function () {
       if (action.indexOf('send-test-') === 0) {
         var phone = $('[data-sms-test-phone="' + action + '"]');
-        var formatted = phone ? formatTestPhone(phone.value) : '';
+        var country = $('[data-sms-test-country="' + action + '"]');
+        var formatted = phone ? formatTestPhone(phone.value, country ? country.value : '+1') : null;
         if (!formatted) {
           setSmsStatus('Enter a valid test phone number.');
           if (phone) phone.focus();
           return;
         }
-        phone.value = formatted;
-        setSmsStatus('Test SMS queued for ' + formatted + '.');
+        phone.value = formatted.input;
+        setSmsStatus('Test SMS queued for ' + formatted.full + '.');
         return;
       }
       setSmsStatus(ACTION_MESSAGES[action]);
