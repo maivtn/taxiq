@@ -451,3 +451,10 @@
 @media (max-width: 480px) {
   .sms-shared-link-controls .settings-field, .sms-shared-link-controls button { flex-basis: 100%; width: 100%; }
 }
+
+.sms-care-trigger { flex: 1 1 220px; min-width: 0; }
+.sms-care-trigger > .settings-field { min-width: 0; }
+.sms-care-delivery { flex-basis: 100%; padding: 12px; border: 1px solid var(--nexora-border); border-radius: 9px; background: var(--nexora-bg, #f7f9fc); }
+.sms-care-delivery p { margin: 0; }
+.sms-care-delivery p + p { margin-top: 6px; }
+.sms-care-scenario { margin-bottom: 12px; }

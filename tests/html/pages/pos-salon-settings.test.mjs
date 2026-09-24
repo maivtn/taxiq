@@ -437,13 +437,13 @@ test('Wait Care tab contains only its SMS setup and no benefit rules',()=>{
  enabled.click();assert.equal(enabled.getAttribute('aria-checked'),'false');
  enabled.click();assert.equal(enabled.getAttribute('aria-checked'),'true');
  assert.ok(d.querySelector('[data-sms-field="waitCareSendMode"]'));
- assert.deepEqual(templates.map(button=>button.dataset.templateKey),['delay-update','care-benefit','comfort-check-in','visit-preparation']);
+ assert.deepEqual(templates.map(button=>button.dataset.templateKey),['visit-preparation','comfort-check-in','delay-update','care-benefit']);
  assert.equal(templates.filter(button=>button.textContent.includes('sorry')).length,1);
- assert.equal(templates.find(button=>button.dataset.templateKey==='care-benefit').getAttribute('aria-pressed'),'true');
+ assert.equal(templates.find(button=>button.dataset.templateKey==='visit-preparation').getAttribute('aria-pressed'),'true');
  assert.deepEqual(Array.from(textarea.closest('[data-sms-composer]').querySelectorAll('[data-sms-insert-token]'),button=>button.dataset.smsInsertToken),[
   '[Customer Name]','[Salon Name]','[Wait Time]','[Wait Care Benefit]','[OneQR Link]'
  ]);
- assert.equal(preview.textContent,'Hi Sarah, thanks for your patience. Bitcoin Nail Bar added a complimentary hot-stone upgrade to your visit. Details: nexora.app/q/demo');
+ assert.equal(preview.textContent,'Hi Sarah, thanks for waiting at Bitcoin Nail Bar. Follow your visit: nexora.app/q/demo');
  templates.find(button=>button.dataset.templateKey==='delay-update').click();
  assert.equal(textarea.value,'Hi [Customer Name], we\'re sorry for the wait at [Salon Name]. Current estimate: [Wait Time]. Track your visit: [OneQR Link]');
  assert.equal(preview.textContent,'Hi Sarah, we\'re sorry for the wait at Bitcoin Nail Bar. Current estimate: 15-20 minutes. Track your visit: nexora.app/q/demo');
@@ -661,5 +661,52 @@ test('shared link expiry saves independently and survives other SMS saves',()=>{
  assert.match(d.querySelector('[data-sms-status]').textContent,/Could not save/);
  w.Storage.prototype.setItem=original;reloadSms(w);
  assert.equal(d.querySelector('[data-sms-field="visitLinkValidity"]').value,'7 days after checkout');
+ dom.window.close();
+});
+
+test('Wait Care defines its waiting trigger and distinguishes automatic, approval and manual sending',()=>{
+ const {dom,w,d}=smsPage();
+ const field=name=>d.querySelector(`[data-sms-field="${name}"]`);
+ const mode=field('waitCareSendMode'), threshold=field('waitCareDelay');
+ const trigger=d.querySelector('[data-sms-care-trigger]');
+ const summary=d.querySelector('[data-sms-care-summary]');
+ assert.ok(threshold);assert.equal(threshold.value,'15 minutes');
+ mode.value='Automatic';mode.dispatchEvent(new w.Event('change'));
+ assert.equal(trigger.hidden,false);assert.match(summary.textContent,/Automatically send.*15 minutes after check-in/);
+ threshold.value='30 minutes';threshold.dispatchEvent(new w.Event('change'));
+ assert.match(summary.textContent,/30 minutes after check-in/);
+ mode.value='Manager approval';mode.dispatchEvent(new w.Event('change'));
+ assert.match(summary.textContent,/Request manager approval.*30 minutes after check-in/);
+ mode.value='Manual';mode.dispatchEvent(new w.Event('change'));
+ assert.equal(trigger.hidden,true);assert.match(summary.textContent,/Staff selects.*no timed trigger/i);
+ d.querySelector('[data-sms-action="save-wait-care"]').click();reloadSms(w);
+ assert.equal(field('waitCareSendMode').value,'Manual');assert.equal(field('waitCareDelay').value,'30 minutes');
+ assert.equal(d.querySelector('[data-sms-care-trigger]').hidden,true);
+ d.querySelector('[data-sms-wait-care-enabled]').click();
+ assert.match(d.querySelector('[data-sms-care-summary]').textContent,/disabled/i);
+ dom.window.close();
+});
+
+test('Wait Care defaults to a caring message and benefit previews require a granted benefit',()=>{
+ const {dom,w,d}=smsPage();
+ const message=d.querySelector('[data-sms-field="waitCareMessage"]');
+ assert.doesNotMatch(message.value,/added|sorry|Wait Care Benefit/);
+ const preview=d.querySelector('[data-sms-preview="waitCareMessage"]');
+ d.querySelector('[data-sms-template="wait-care"][data-template-key="care-benefit"]').click();
+ const scenario=d.querySelector('[data-sms-care-benefit-preview]');
+ assert.equal(preview.hidden,true);
+ assert.equal(d.querySelector('[data-sms-care-benefit-required]').hidden,false);
+ assert.match(d.querySelector('[data-sms-care-benefit-status]').textContent,/no benefit has been granted/i);
+ d.querySelector('[data-sms-test-phone="send-test-wait-care"]').value='7135550123';
+ d.querySelector('[data-sms-action="send-test-wait-care"]').click();
+ assert.match(d.querySelector('[data-sms-status]').textContent,/No benefit granted in this preview/);
+ scenario.value='granted';scenario.dispatchEvent(new w.Event('change'));
+ assert.equal(preview.hidden,false);assert.match(preview.textContent,/added a complimentary/);
+ d.querySelector('[data-sms-action="send-test-wait-care"]').click();
+ assert.match(d.querySelector('[data-sms-status]').textContent,/Preview only.*no SMS was sent/);
+ message.value='Thanks for waiting!';message.dispatchEvent(new w.Event('input'));
+ assert.equal(d.querySelector('[data-sms-care-benefit-required]').hidden,true);
+ assert.equal(scenario.closest('.settings-field').hidden,true);
+ assert.equal(preview.hidden,false);assert.equal(preview.textContent,'Thanks for waiting!');
  dom.window.close();
 });
