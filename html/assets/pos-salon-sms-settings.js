@@ -43,13 +43,19 @@
   ];
   var AFTER_CHECKOUT_TEMPLATES = {
     'ticket-receipt': 'Thanks for visiting [Salon Name]! Ticket [Ticket Number]: [Ticket Total]. Receipt: [Receipt Link]',
-    'receipt-only': 'Thanks for visiting [Salon Name]! Receipt: [Receipt Link]',
-    'thank-you': 'Thanks for visiting [Salon Name]! We hope to see you again soon.'
+    review: 'Thanks for visiting [Salon Name]! How was your visit? Leave a review: [Review Link]',
+    tip: 'Thanks for visiting [Salon Name]! If you haven’t tipped yet, add one here: [Tip Link]',
+    feedback: 'Thanks for visiting [Salon Name]! Share private feedback: [Feedback Link]',
+    rewards: 'Thanks for visiting [Salon Name]! View rewards earned today: [Rewards Link]',
+    booking: 'Thanks for visiting [Salon Name]! Book your next visit: [Booking Link]'
   };
   var AFTER_CHECKOUT_TEMPLATE_OPTIONS = [
     { key: 'ticket-receipt', label: 'Ticket & receipt' },
-    { key: 'receipt-only', label: 'Receipt only' },
-    { key: 'thank-you', label: 'Warm thank you' }
+    { key: 'review', label: 'Review request' },
+    { key: 'tip', label: 'Tip follow-up · no tip yet' },
+    { key: 'feedback', label: 'Private feedback' },
+    { key: 'rewards', label: 'Rewards earned' },
+    { key: 'booking', label: 'Book next visit' }
   ];
   var AFTER_CHECKOUT_DEFAULT = AFTER_CHECKOUT_TEMPLATES['ticket-receipt'];
 

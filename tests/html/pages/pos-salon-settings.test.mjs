@@ -358,13 +358,16 @@ test('After Checkout Setup preview mirrors edits to the Thank You message',()=>{
  const textarea=d.querySelector('[data-sms-field="afterMessage"]');
  const preview=d.querySelector('[data-sms-preview="afterMessage"]');
  const templates=Array.from(d.querySelectorAll('[data-sms-template="after"]'));
- assert.deepEqual(templates.map(button=>button.dataset.templateKey),['ticket-receipt','receipt-only','thank-you']);
+ assert.deepEqual(templates.map(button=>button.dataset.templateKey),['ticket-receipt','review','tip','feedback','rewards','booking']);
+ for(const token of ['[Receipt Link]','[Review Link]','[Tip Link]','[Feedback Link]','[Rewards Link]','[Booking Link]']){
+  assert.ok(templates.some(button=>button.textContent.includes(token)),token+' is represented by a quick template');
+ }
  assert.equal(templates[0].getAttribute('aria-pressed'),'true');
  assert.equal(preview.textContent,'Thanks for visiting Bitcoin Nail Bar! Ticket #12: $45.00. Receipt: nexora.app/r/••••');
- templates.find(button=>button.dataset.templateKey==='receipt-only').click();
- assert.equal(textarea.value,'Thanks for visiting [Salon Name]! Receipt: [Receipt Link]');
- assert.equal(preview.textContent,'Thanks for visiting Bitcoin Nail Bar! Receipt: nexora.app/r/••••');
- assert.equal(templates.find(button=>button.dataset.templateKey==='receipt-only').getAttribute('aria-pressed'),'true');
+ templates.find(button=>button.dataset.templateKey==='feedback').click();
+ assert.equal(textarea.value,'Thanks for visiting [Salon Name]! Share private feedback: [Feedback Link]');
+ assert.equal(preview.textContent,'Thanks for visiting Bitcoin Nail Bar! Share private feedback: nexora.app/feedback/••••');
+ assert.equal(templates.find(button=>button.dataset.templateKey==='feedback').getAttribute('aria-pressed'),'true');
  const insertBar=textarea.closest('[data-sms-composer]');
  assert.equal(insertBar.querySelector('[data-sms-insert-token="[Customer Name]"]'),null);
  assert.deepEqual(Array.from(insertBar.querySelectorAll('[data-sms-insert-token]'),button=>button.dataset.smsInsertToken),[
