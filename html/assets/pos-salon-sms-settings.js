@@ -118,6 +118,7 @@
     { token: '[OneQR Link]', label: 'Offer link', icon: 'bi-link-45deg' }
   ];
   var WELCOME_MESSAGE_TOKENS = GENERAL_MESSAGE_TOKENS.concat([
+    { token: '[Wait Time]', label: 'Wait time', icon: 'bi-clock' },
     { token: '[Salon Phone]', label: 'Phone number', icon: 'bi-telephone' }
   ]);
   var WAIT_CARE_TOKENS = [
@@ -294,7 +295,6 @@
             '<button class="toggle-pill is-on" type="button" role="switch" aria-checked="true" aria-label="Toggle welcome message after check-in"></button></div>' +
             '<div class="settings-field-grid">' +
               selectField('Send mode', null, ['Automatic after check-in', 'Manual review before sending']) +
-              selectField('Wait-time visibility', null, ['Do not show wait time', 'Show estimated range', 'Staff decides per customer']) +
               selectField('Link availability', 'welcomeLinkValidity', LIVE_LINK_VALIDITY_OPTIONS) +
               quickTemplateMarkup('welcome', WELCOME_TEMPLATE_OPTIONS, WELCOME_TEMPLATES, 'welcome') +
               '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('welcomeMessage', WELCOME_TEMPLATES.welcome, WELCOME_MESSAGE_TOKENS) + '</label>' +
