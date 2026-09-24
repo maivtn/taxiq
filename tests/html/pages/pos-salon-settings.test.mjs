@@ -309,12 +309,15 @@ function smsPage(){
  return page;
 }
 
-test('SMS Settings tab defaults to Welcome SMS Setup and switches between its setup sections',()=>{
+test('SMS Settings separates Welcome, After Checkout, Wait Care and Automation setup sections',()=>{
  const {dom,d,errors}=smsPage();
  assert.equal(d.querySelector('[data-settings-panel="sms"]').hidden,false);
- assert.deepEqual(Array.from(d.querySelectorAll('[data-sms-tab]'),b=>b.dataset.smsTab),['welcome','after','automation']);
+ assert.deepEqual(Array.from(d.querySelectorAll('[data-sms-tab]'),b=>b.dataset.smsTab),['welcome','after','wait-care','automation']);
  assert.equal(d.querySelector('[data-sms-tab].active')?.dataset.smsTab,'welcome');
  assert.equal(d.querySelector('[data-sms-panel="welcome"]').hidden,false);
+ assert.equal(d.querySelector('[data-sms-panel="automation"]').hidden,true);
+ d.querySelector('[data-sms-tab="wait-care"]').click();
+ assert.equal(d.querySelector('[data-sms-panel="wait-care"]').hidden,false);
  assert.equal(d.querySelector('[data-sms-panel="automation"]').hidden,true);
  d.querySelector('[data-sms-tab="automation"]').click();
  assert.equal(d.querySelector('[data-sms-tab].active')?.dataset.smsTab,'automation');
@@ -359,7 +362,7 @@ test('After Checkout Setup preview mirrors edits to the Thank You message',()=>{
  const preview=d.querySelector('[data-sms-preview="afterMessage"]');
  const templates=Array.from(d.querySelectorAll('[data-sms-template="after"]'));
  assert.equal(d.querySelector('[data-sms-panel="after"] .sms-phone-menu'),null);
- assert.equal(preview.nextElementSibling.textContent,'One short message. Links open the selected after-visit action.');
+ assert.equal(preview.nextElementSibling.textContent,'Link remains active for 30 days after checkout.');
  assert.deepEqual(templates.map(button=>button.dataset.templateKey),['ticket-receipt','review','tip','feedback','rewards','booking']);
  for(const token of ['[Receipt Link]','[Review Link]','[Tip Link]','[Feedback Link]','[Rewards Link]','[Booking Link]']){
   assert.ok(templates.some(button=>button.textContent.includes(token)),token+' is represented by a quick template');
@@ -392,17 +395,25 @@ test('After Checkout Setup preview mirrors edits to the Thank You message',()=>{
  assert.deepEqual(errors,[]);dom.window.close();
 });
 
-test('Automation Settings provides a complete Wait Care SMS workflow',()=>{
+test('Wait Care tab owns its delay rules and complete SMS workflow',()=>{
  const {dom,w,d,errors}=smsPage();
+ d.querySelector('[data-sms-tab="wait-care"]').click();
+ const waitCarePanel=d.querySelector('[data-sms-panel="wait-care"]');
+ assert.ok(Array.from(waitCarePanel.querySelectorAll('h3'),heading=>heading.textContent).includes('Wait Care rules'));
+ assert.deepEqual(Array.from(waitCarePanel.querySelectorAll('.settings-label'),label=>label.textContent).slice(0,4),[
+  '10–19 min delay','20–29 min delay','30–44 min delay','45+ min delay'
+ ]);
  d.querySelector('[data-sms-tab="automation"]').click();
  const automationPanel=d.querySelector('[data-sms-panel="automation"]');
  const waitlistTimingCard=Array.from(automationPanel.querySelectorAll('h3')).find(heading=>heading.textContent==='Waitlist timing').closest('.sms-card');
  assert.ok(waitlistTimingCard);
+ assert.equal(Array.from(automationPanel.querySelectorAll('h3'),heading=>heading.textContent).some(text=>text.includes('Wait Care')),false);
  assert.equal(Array.from(automationPanel.querySelectorAll('.settings-label'),label=>label.textContent).includes('Welcome SMS'),false);
  assert.equal(Array.from(automationPanel.querySelectorAll('.settings-label'),label=>label.textContent).includes('Welcome wait time'),false);
  assert.deepEqual(Array.from(waitlistTimingCard.querySelectorAll('.settings-label'),label=>label.textContent),[
   'Return notice','No response grace','Internal ETA threshold'
  ]);
+ d.querySelector('[data-sms-tab="wait-care"]').click();
  const textarea=d.querySelector('[data-sms-field="waitCareMessage"]');
  const preview=d.querySelector('[data-sms-preview="waitCareMessage"]');
  const templates=Array.from(d.querySelectorAll('[data-sms-template="wait-care"]'));
@@ -427,6 +438,26 @@ test('Automation Settings provides a complete Wait Care SMS workflow',()=>{
  assert.equal(preview.textContent,'Benefit: a complimentary hot-stone upgrade');
  textarea.value='x'.repeat(161);textarea.dispatchEvent(new w.Event('input'));
  assert.equal(d.querySelector('[data-sms-count="waitCareMessage"]').textContent,'161 chars — 2 SMS');
+ d.querySelector('[data-sms-action="save-wait-care"]').click();
+ assert.equal(d.querySelector('[data-sms-status]').textContent,'Wait Care settings saved.');
+ assert.deepEqual(errors,[]);dom.window.close();
+});
+
+test('each SMS journey lets the salon configure and preview Smart Link validity',()=>{
+ const {dom,w,d,errors}=smsPage();
+ const cases=[
+  ['welcome','welcomeLinkValidity','Until checkout + 24 hours','Until checkout + 48 hours','Link remains active until 48 hours after checkout.'],
+  ['after','afterLinkValidity','30 days after checkout','90 days after checkout','Link remains active for 90 days after checkout.'],
+  ['wait-care','waitCareLinkValidity','Until checkout + 24 hours','Until checkout','Link remains active until checkout is completed.']
+ ];
+ for(const [tab,field,initial,next,caption] of cases){
+  d.querySelector(`[data-sms-tab="${tab}"]`).click();
+  const select=d.querySelector(`[data-sms-field="${field}"]`);
+  const preview=d.querySelector(`[data-sms-link-validity-preview="${field}"]`);
+  assert.ok(select);assert.equal(select.value,initial);assert.ok(preview);
+  select.value=next;select.dispatchEvent(new w.Event('change'));
+  assert.equal(preview.textContent,caption);
+ }
  assert.deepEqual(errors,[]);dom.window.close();
 });
 
@@ -450,7 +481,7 @@ test('Pause automation toggles the Automation pill, and Save/Send actions post a
 
 test('each Send Test action requires a valid recipient phone number',()=>{
  const {dom,d,errors}=smsPage();
- for(const [tab,action] of [['welcome','send-test-welcome'],['after','send-test-after'],['automation','send-test-wait-care']]){
+ for(const [tab,action] of [['welcome','send-test-welcome'],['after','send-test-after'],['wait-care','send-test-wait-care']]){
   d.querySelector('[data-sms-tab="'+tab+'"]').click();
   const phone=d.querySelector('[data-sms-test-phone="'+action+'"]');
   const country=d.querySelector('[data-sms-test-country="'+action+'"]');

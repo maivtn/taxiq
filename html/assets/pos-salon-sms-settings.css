@@ -67,6 +67,11 @@
   min-width: 0;
 }
 
+.sms-automation-timing-card,
+.sms-wait-care-rules {
+  flex: 1 1 100%;
+}
+
 .sms-card {
   border: 1px solid var(--nexora-border);
   border-radius: 14px;

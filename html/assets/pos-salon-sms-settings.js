@@ -71,6 +71,18 @@
     { key: 'visit-preparation', label: 'Preparing your visit' }
   ];
   var WAIT_CARE_DEFAULT = WAIT_CARE_TEMPLATES['care-benefit'];
+  var LIVE_LINK_VALIDITY_OPTIONS = ['Until checkout + 24 hours', 'Until checkout', 'Until checkout + 48 hours', '7 days after check-in'];
+  var AFTER_LINK_VALIDITY_OPTIONS = ['30 days after checkout', '7 days after checkout', '14 days after checkout', '90 days after checkout'];
+  var LINK_VALIDITY_CAPTIONS = {
+    'Until checkout': 'Link remains active until checkout is completed.',
+    'Until checkout + 24 hours': 'Link remains active until 24 hours after checkout.',
+    'Until checkout + 48 hours': 'Link remains active until 48 hours after checkout.',
+    '7 days after check-in': 'Link remains active for 7 days after check-in.',
+    '7 days after checkout': 'Link remains active for 7 days after checkout.',
+    '14 days after checkout': 'Link remains active for 14 days after checkout.',
+    '30 days after checkout': 'Link remains active for 30 days after checkout.',
+    '90 days after checkout': 'Link remains active for 90 days after checkout.'
+  };
 
   var AFTER_CHECKOUT_TOKENS = [
     { token: '[Salon Name]', label: 'Shop name', icon: 'bi-shop' },
@@ -149,6 +161,7 @@
         '<nav class="sms-subtabs" aria-label="SMS setting sections">' +
           '<button type="button" data-sms-tab="welcome" class="active" aria-current="page">Welcome SMS Setup</button>' +
           '<button type="button" data-sms-tab="after">After Checkout Setup</button>' +
+          '<button type="button" data-sms-tab="wait-care">Wait Care</button>' +
           '<button type="button" data-sms-tab="automation">Automation Settings</button>' +
         '</nav>' +
         '<span class="salon-status-pill" data-sms-automation-pill>Automation ON</span>' +
@@ -157,20 +170,28 @@
 
       '<section data-sms-panel="automation" hidden>' +
         '<div class="sms-columns">' +
-          '<div class="sms-col sms-card"><h3>Waitlist timing</h3><div class="settings-field-grid">' +
+          '<div class="sms-card sms-automation-timing-card"><h3>Waitlist timing</h3><div class="settings-field-grid">' +
             selectField('Return notice', null, ['15 minutes before', '10 minutes before', '20 minutes before']) +
             selectField('No response grace', null, ['10 minutes', '5 minutes', '15 minutes']) +
             selectField('Internal ETA threshold', null, ['10 minutes', '5 minutes', '15 minutes']) +
+          '</div>' +
+          '<div class="sms-actions">' +
+            '<button type="button" class="booking-primary-button" data-sms-action="save-automation"><i class="bi bi-check2" aria-hidden="true"></i>Save settings</button>' +
+            '<button type="button" class="booking-secondary-button" data-sms-action="pause-automation">Pause automation</button>' +
           '</div></div>' +
-          '<div class="sms-col sms-card"><h3>Wait Care</h3><div class="settings-field-grid">' +
+        '</div>' +
+      '</section>' +
+
+      '<section data-sms-panel="wait-care" hidden>' +
+        '<div class="sms-columns">' +
+          '<div class="sms-card sms-wait-care-rules"><h3>Wait Care rules</h3><div class="settings-field-grid">' +
             selectField('10–19 min delay', null, ['Auto · 50 points', 'Approval required']) +
             selectField('20–29 min delay', null, ['Auto · Free add-on', 'Approval required']) +
             selectField('30–44 min delay', null, ['Approval · $5 voucher', 'Automatic']) +
             selectField('45+ min delay', null, ['Manager selects benefit', 'Auto · $10 voucher']) +
           '</div>' +
           '<div class="sms-actions">' +
-            '<button type="button" class="booking-primary-button" data-sms-action="save-automation"><i class="bi bi-check2" aria-hidden="true"></i>Save settings</button>' +
-            '<button type="button" class="booking-secondary-button" data-sms-action="pause-automation">Pause automation</button>' +
+            '<button type="button" class="booking-primary-button" data-sms-action="save-wait-care"><i class="bi bi-check2" aria-hidden="true"></i>Save Wait Care Settings</button>' +
           '</div></div>' +
           '<div class="sms-automation-message-grid">' +
             '<div class="sms-card"><h3>Wait Care SMS</h3>' +
@@ -178,6 +199,7 @@
               '<button class="toggle-pill is-on" type="button" role="switch" aria-checked="true" aria-label="Toggle Wait Care SMS" data-sms-wait-care-enabled></button></div>' +
               '<div class="settings-field-grid">' +
                 selectField('Send mode', 'waitCareSendMode', ['Manager approval', 'Automatic', 'Manual']) +
+                selectField('Link availability', 'waitCareLinkValidity', LIVE_LINK_VALIDITY_OPTIONS) +
                 quickTemplateMarkup('wait-care', WAIT_CARE_TEMPLATE_OPTIONS, WAIT_CARE_TEMPLATES, 'care-benefit') +
                 '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('waitCareMessage', WAIT_CARE_DEFAULT, WAIT_CARE_TOKENS) + '</label>' +
               '</div>' +
@@ -187,7 +209,7 @@
               '<div class="sms-phone"><div class="sms-phone-screen"><div class="sms-phone-bar"></div>' +
                 '<div class="sms-phone-title">Messages</div>' +
                 '<div class="sms-phone-bubble" data-sms-preview="waitCareMessage">' + esc(renderTokens(WAIT_CARE_DEFAULT)) + '</div>' +
-                '<p class="sms-phone-caption">Sent only after the configured delay and approval rules are met.</p>' +
+                '<p class="sms-phone-caption" data-sms-link-validity-preview="waitCareLinkValidity">' + esc(LINK_VALIDITY_CAPTIONS[LIVE_LINK_VALIDITY_OPTIONS[0]]) + '</p>' +
               '</div></div>' +
             '</div>' +
           '</div>' +
@@ -202,6 +224,7 @@
             '<div class="settings-field-grid">' +
               selectField('Send mode', null, ['Automatic after checkout', 'Manual review before sending']) +
               selectField('Smart Link destination', null, ['Personalized OneQR After Visit', 'OneQR Main Menu']) +
+              selectField('Link availability', 'afterLinkValidity', AFTER_LINK_VALIDITY_OPTIONS) +
               quickTemplateMarkup('after', AFTER_CHECKOUT_TEMPLATE_OPTIONS, AFTER_CHECKOUT_TEMPLATES, 'ticket-receipt') +
               '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('afterMessage', AFTER_CHECKOUT_DEFAULT, AFTER_CHECKOUT_TOKENS) + '</label>' +
               selectField('Review', null, ['Show to every customer', 'Hide']) +
@@ -219,7 +242,7 @@
             '<div class="sms-phone"><div class="sms-phone-screen"><div class="sms-phone-bar"></div>' +
               '<div class="sms-phone-title">Messages</div>' +
               '<div class="sms-phone-bubble" data-sms-preview="afterMessage">' + esc(renderTokens(AFTER_CHECKOUT_DEFAULT)) + '</div>' +
-              '<p class="sms-phone-caption">One short message. Links open the selected after-visit action.</p>' +
+              '<p class="sms-phone-caption" data-sms-link-validity-preview="afterLinkValidity">' + esc(LINK_VALIDITY_CAPTIONS[AFTER_LINK_VALIDITY_OPTIONS[0]]) + '</p>' +
             '</div></div>' +
           '</div>' +
         '</div>' +
@@ -234,6 +257,7 @@
               selectField('Send mode', null, ['Automatic after check-in', 'Manual review before sending']) +
               selectField('Wait-time visibility', null, ['Do not show wait time', 'Show estimated range', 'Staff decides per customer']) +
               selectField('Smart Link destination', null, ['Personalized OneQR Menu', 'OneQR Main Menu', 'Service Menu', 'Rewards & Benefits']) +
+              selectField('Link availability', 'welcomeLinkValidity', LIVE_LINK_VALIDITY_OPTIONS) +
               quickTemplateMarkup('welcome', WELCOME_TEMPLATE_OPTIONS, WELCOME_TEMPLATES, 'returning') +
               '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('welcomeMessage', WELCOME_TEMPLATES.returning, WELCOME_MESSAGE_TOKENS) + '</label>' +
             '</div>' +
@@ -247,7 +271,7 @@
             '<div class="sms-phone"><div class="sms-phone-screen"><div class="sms-phone-bar"></div>' +
               '<div class="sms-phone-title">Messages</div>' +
               '<div class="sms-phone-bubble" data-sms-preview="welcomeMessage">' + esc(renderTokens(WELCOME_TEMPLATES.returning)) + '</div>' +
-              '<p class="sms-phone-caption">One short message. One smart link. No wait time shown.</p>' +
+              '<p class="sms-phone-caption" data-sms-link-validity-preview="welcomeLinkValidity">' + esc(LINK_VALIDITY_CAPTIONS[LIVE_LINK_VALIDITY_OPTIONS[0]]) + '</p>' +
             '</div></div>' +
           '</div>' +
         '</div>' +
@@ -292,6 +316,15 @@
   }
   $$('[data-sms-field="afterMessage"], [data-sms-field="welcomeMessage"], [data-sms-field="waitCareMessage"]').forEach(function (textarea) {
     textarea.addEventListener('input', function () { refreshPreview(textarea.dataset.smsField); });
+  });
+
+  $$('[data-sms-link-validity-preview]').forEach(function (preview) {
+    var field = preview.dataset.smsLinkValidityPreview;
+    var select = $('[data-sms-field="' + field + '"]');
+    if (!select) return;
+    select.addEventListener('change', function () {
+      preview.textContent = LINK_VALIDITY_CAPTIONS[select.value] || '';
+    });
   });
 
   $$('[data-sms-template]').forEach(function (button) {
@@ -353,6 +386,7 @@
   /* ── Save / send test actions ── */
   var ACTION_MESSAGES = {
     'save-automation': 'Automation settings saved.',
+    'save-wait-care': 'Wait Care settings saved.',
     'save-after': 'After Checkout settings saved.',
     'send-test-after': 'Thank You test SMS queued.',
     'save-welcome': 'Welcome SMS settings saved.',
