@@ -21,7 +21,9 @@ const catalog = (offers = [offer()]) => ({version: 2, pastRevenue: 220, pastUses
 
 test('includes the PO promotion workspace and integrated share, outreach and partner controls', () => {
   const html = readFileSync(new URL('./reward-promotions.html', SOURCE_DIR), 'utf8');
-  for (const label of ['Overview', 'Templates', 'Manage', 'Strategy', 'Analytics', 'Settings']) assert.match(html, new RegExp('>' + label + '<'));
+  const document = new JSDOM(html).window.document;
+  assert.equal(document.querySelector('.promotion-workspace-nav'), null);
+  assert.deepEqual([...document.querySelectorAll('.studio-tabs [data-studio-tab]')].map(tab => tab.dataset.studioTab), ['offers', 'campaigns', 'results']);
   assert.match(html, /id="promotion-goal-guide"/);
   assert.match(html, /id="promotion-share-channels"/);
   assert.match(html, /Quick Actions/);
