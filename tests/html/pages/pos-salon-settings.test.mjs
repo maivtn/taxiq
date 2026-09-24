@@ -405,7 +405,7 @@ test('After Checkout Setup preview mirrors edits to the Thank You message',()=>{
  assert.deepEqual(errors,[]);dom.window.close();
 });
 
-test('Wait Care tab owns its delay rules and complete SMS workflow',()=>{
+test('Wait Care tab contains only its SMS setup and no benefit rules',()=>{
  const {dom,w,d,errors}=smsPage();
  d.querySelector('[data-sms-tab="wait-care"]').click();
  const waitCarePanel=d.querySelector('[data-sms-panel="wait-care"]');
@@ -416,9 +416,8 @@ test('Wait Care tab owns its delay rules and complete SMS workflow',()=>{
  assert.ok(waitCareSetup.querySelector('[data-sms-action="save-wait-care"]'));
  assert.equal(waitCarePanel.querySelectorAll('[data-sms-action="save-wait-care"]').length,1);
  assert.equal(waitCarePanel.querySelector('.sms-automation-message-grid'),null);
- assert.deepEqual(Array.from(waitCarePanel.querySelectorAll('.settings-label'),label=>label.textContent).slice(0,4),[
-  '10–19 min delay','20–29 min delay','30–44 min delay','45+ min delay'
- ]);
+ assert.equal(waitCarePanel.querySelector('[data-sms-field^="careRule"]'),null);
+ assert.equal(waitCarePanel.textContent.includes('Wait Care rules'),false);
  d.querySelector('[data-sms-tab="automation"]').click();
  const automationPanel=d.querySelector('[data-sms-panel="automation"]');
  const waitlistTimingHeading=Array.from(automationPanel.querySelectorAll('h3,h4')).find(heading=>heading.textContent==='Waitlist timing');

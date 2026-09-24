@@ -229,12 +229,6 @@
           '<div class="sms-col sms-card"><h3>Wait Care Setup</h3>' +
             '<div class="settings-toggle-row"><span>Send Wait Care messages when a delay threshold is reached</span>' +
             '<button class="toggle-pill is-on" type="button" role="switch" aria-checked="true" aria-label="Toggle Wait Care SMS" data-sms-enabled="wait-care" data-sms-wait-care-enabled></button></div>' +
-            '<h4 class="sms-section-title">Wait Care rules</h4><div class="settings-field-grid">' +
-            selectField('10–19 min delay', 'careRule10', ['Auto · 50 points', 'Approval required']) +
-            selectField('20–29 min delay', 'careRule20', ['Auto · Free add-on', 'Approval required']) +
-            selectField('30–44 min delay', 'careRule30', ['Approval · $5 voucher', 'Automatic']) +
-            selectField('45+ min delay', 'careRule45', ['Manager selects benefit', 'Auto · $10 voucher']) +
-          '</div>' +
             '<h4 class="sms-section-title">Wait Care SMS</h4>' +
             '<div class="settings-field-grid">' +
               selectField('Send mode', 'waitCareSendMode', ['Manager approval', 'Automatic', 'Manual']) +
