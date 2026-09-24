@@ -34,12 +34,12 @@
   }
 
   var WELCOME_TEMPLATES = {
-    new: 'Hi [Customer Name], welcome to [Salon Name]! You’re checked in. View your visit: [OneQR Link]',
-    returning: 'Welcome back, [Customer Name]! You’re checked in at [Salon Name]. View your visit: [OneQR Link]'
+    welcome: 'Hi [Customer Name], welcome to [Salon Name]! You’re checked in. View your visit: [OneQR Link]',
+    'check-in': 'Hi [Customer Name], you’re checked in at [Salon Name]. Follow your visit: [OneQR Link]'
   };
   var WELCOME_TEMPLATE_OPTIONS = [
-    { key: 'new', label: 'New customer' },
-    { key: 'returning', label: 'Returning customer' }
+    { key: 'welcome', label: 'Welcome message' },
+    { key: 'check-in', label: 'Check-in confirmed' }
   ];
   var AFTER_CHECKOUT_TEMPLATES = {
     'ticket-receipt': 'Thanks for visiting [Salon Name]! Ticket [Ticket Number]: [Ticket Total]. Receipt: [Receipt Link]',
@@ -257,8 +257,8 @@
               selectField('Wait-time visibility', null, ['Do not show wait time', 'Show estimated range', 'Staff decides per customer']) +
               selectField('Smart Link destination', null, ['Personalized OneQR Menu', 'OneQR Main Menu', 'Service Menu', 'Rewards & Benefits']) +
               selectField('Link availability', 'welcomeLinkValidity', LIVE_LINK_VALIDITY_OPTIONS) +
-              quickTemplateMarkup('welcome', WELCOME_TEMPLATE_OPTIONS, WELCOME_TEMPLATES, 'returning') +
-              '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('welcomeMessage', WELCOME_TEMPLATES.returning, WELCOME_MESSAGE_TOKENS) + '</label>' +
+              quickTemplateMarkup('welcome', WELCOME_TEMPLATE_OPTIONS, WELCOME_TEMPLATES, 'welcome') +
+              '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('welcomeMessage', WELCOME_TEMPLATES.welcome, WELCOME_MESSAGE_TOKENS) + '</label>' +
             '</div>' +
             '<p class="sms-notice"><strong>Marketing consent required:</strong> If OneQR highlights a promotional offer, the customer must have valid marketing consent. Without consent, the same link opens the standard OneQR menu and existing customer benefits only.</p>' +
             '<div class="sms-actions">' +
@@ -269,7 +269,7 @@
           '<div class="sms-col-side sms-card"><h3>Customer preview</h3>' +
             '<div class="sms-phone"><div class="sms-phone-screen"><div class="sms-phone-bar"></div>' +
               '<div class="sms-phone-title">Messages</div>' +
-              '<div class="sms-phone-bubble" data-sms-preview="welcomeMessage">' + esc(renderTokens(WELCOME_TEMPLATES.returning)) + '</div>' +
+              '<div class="sms-phone-bubble" data-sms-preview="welcomeMessage">' + esc(renderTokens(WELCOME_TEMPLATES.welcome)) + '</div>' +
               '<p class="sms-phone-caption" data-sms-link-validity-preview="welcomeLinkValidity">' + esc(LINK_VALIDITY_CAPTIONS[LIVE_LINK_VALIDITY_OPTIONS[0]]) + '</p>' +
             '</div></div>' +
           '</div>' +
