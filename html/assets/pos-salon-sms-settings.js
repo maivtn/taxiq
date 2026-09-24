@@ -60,12 +60,16 @@
   ];
   var AFTER_CHECKOUT_DEFAULT = AFTER_CHECKOUT_TEMPLATES['ticket-receipt'];
   var WAIT_CARE_TEMPLATES = {
+    'delay-update': 'Hi [Customer Name], we\'re sorry for the wait at [Salon Name]. Current estimate: [Wait Time]. Track your visit: [OneQR Link]',
+    'care-benefit': 'Hi [Customer Name], thanks for your patience. [Salon Name] added [Wait Care Benefit] to your visit. Details: [OneQR Link]',
     'comfort-check-in': 'Hi [Customer Name], we\'re checking in while you wait at [Salon Name]. Need anything to feel more comfortable? Please let our team know.',
     'visit-preparation': 'Hi [Customer Name], thanks for waiting at [Salon Name]. Follow your visit: [OneQR Link]'
   };
   var WAIT_CARE_TEMPLATE_OPTIONS = [
     { key: 'visit-preparation', label: 'Thanks for waiting' },
-    { key: 'comfort-check-in', label: 'Comfort check-in' }
+    { key: 'comfort-check-in', label: 'Comfort check-in' },
+    { key: 'delay-update', label: 'Delay update' },
+    { key: 'care-benefit', label: 'Benefit already granted' }
   ];
   var WAIT_CARE_DEFAULT = WAIT_CARE_TEMPLATES['visit-preparation'];
   var RETURN_SOON_TEMPLATES = {
