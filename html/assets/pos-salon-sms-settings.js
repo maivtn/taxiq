@@ -93,7 +93,6 @@
     { token: '[Review Link]', label: 'Review link', icon: 'bi-star' },
     { token: '[Tip Link]', label: 'Tip link', icon: 'bi-cash-coin' },
     { token: '[Feedback Link]', label: 'Feedback link', icon: 'bi-chat-left-text' },
-    { token: '[Rewards Link]', label: 'Rewards link', icon: 'bi-gift' },
     { token: '[Booking Link]', label: 'Booking link', icon: 'bi-calendar-check' },
     { token: '[Receipt Link]', label: 'Receipt link', icon: 'bi-receipt-cutoff' }
   ];

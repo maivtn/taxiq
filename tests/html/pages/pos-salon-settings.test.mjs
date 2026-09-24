@@ -386,7 +386,7 @@ test('After Checkout Setup preview mirrors edits to the Thank You message',()=>{
  const insertBar=textarea.closest('[data-sms-composer]');
  assert.equal(insertBar.querySelector('[data-sms-insert-token="[Customer Name]"]'),null);
  assert.deepEqual(Array.from(insertBar.querySelectorAll('[data-sms-insert-token]'),button=>button.dataset.smsInsertToken),[
-  '[Salon Name]','[Ticket Number]','[Ticket Total]','[Review Link]','[Tip Link]','[Feedback Link]','[Rewards Link]','[Booking Link]','[Receipt Link]'
+  '[Salon Name]','[Ticket Number]','[Ticket Total]','[Review Link]','[Tip Link]','[Feedback Link]','[Booking Link]','[Receipt Link]'
  ]);
  assert.equal(insertBar.querySelector('[data-sms-insert-token="[OneQR Link]"]'),null);
  textarea.value='See you soon, [Customer Name]!';textarea.dispatchEvent(new w.Event('input'));
