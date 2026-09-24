@@ -403,6 +403,8 @@ test('Wait Care tab owns its delay rules and complete SMS workflow',()=>{
  const waitCarePanel=d.querySelector('[data-sms-panel="wait-care"]');
  assert.deepEqual(Array.from(waitCarePanel.querySelectorAll(':scope > .sms-columns > .sms-card'),card=>card.querySelector('h3').textContent),['Wait Care Setup','Wait Care preview']);
  const waitCareSetup=waitCarePanel.querySelector('[data-sms-field="waitCareMessage"]').closest('.sms-card');
+ const waitCareToggle=waitCareSetup.querySelector('[data-sms-wait-care-enabled]').closest('.settings-toggle-row');
+ assert.equal(waitCareSetup.querySelector('h3').nextElementSibling,waitCareToggle);
  assert.ok(waitCareSetup.querySelector('[data-sms-action="save-wait-care"]'));
  assert.equal(waitCarePanel.querySelectorAll('[data-sms-action="save-wait-care"]').length,1);
  assert.equal(waitCarePanel.querySelector('.sms-automation-message-grid'),null);
