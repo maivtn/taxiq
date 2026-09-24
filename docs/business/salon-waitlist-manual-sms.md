@@ -6,10 +6,11 @@
 
 **Status:** Draft
 
-**Version:** 1.0
+**Version:** 1.1
 
 | Version | Date | Changes |
 | :--- | :--- | :--- |
+| 1.1 | 2026-09-24 | Cập nhật HTML Settings sang thủ công và bổ sung hộp soạn SMS demo tại Live Waitlist. |
 | 1.0 | 2026-09-24 | Mô tả hướng chuyển SMS hàng chờ sang gửi thủ công; tách cấu hình mẫu của Owner và thao tác gửi của lễ tân. |
 
 ### Overview
@@ -18,7 +19,9 @@ Tiệm hiện cần lễ tân chủ động quyết định khi nào liên hệ 
 
 Phạm vi gồm **Return Soon**, **Ready Now** và **Wait Care**. Welcome SMS và After Checkout giữ cấu hình riêng, không bị thay đổi bởi đề xuất này.
 
-**Đối chiếu triển khai:** Đây là mô tả thay đổi cần triển khai, chưa phải chức năng đã hoàn tất. HTML SMS Settings hiện còn Waitlist timing, Send mode và Pause automation; Wait Care còn mốc thời gian và cách gửi. Settings lưu trong trình duyệt và Send Test chỉ mô phỏng. Nút Send SMS tại Live Waitlist hiện chỉ hiện thông báo demo, chưa có màn hình chọn mẫu hoặc gửi SMS thật. Các quy tắc automation trong tài liệu SMS Settings cũ không đại diện cho hướng thủ công được đề xuất tại đây.
+**Đối chiếu triển khai:** HTML đã đổi Automation Settings thành Waitlist SMS, bỏ timing/cách gửi tự động và Pause automation. Wait Care chỉ giữ mẫu và công tắc cho phép lễ tân sử dụng. Live Waitlist đã có hộp chọn loại tin, nạp mẫu Owner lưu trong cùng trình duyệt, chỉnh tin cho từng khách, xác nhận thời gian chờ hoặc tình trạng sẵn sàng phục vụ và mô phỏng gửi. Settings và Front Desk cần chạy trên cùng origin để dùng chung mẫu lưu.
+
+**Giới hạn prototype:** Danh sách khách, số điện thoại và Visit link là dữ liệu mẫu. Send Test không gửi thật; Send SMS (demo) chỉ ghi nhận lần mô phỏng gần nhất của từng khách trong phiên trang, không thay đổi hàng chờ. Chưa tích hợp dịch vụ SMS, dữ liệu khách thật, kiểm tra quyền nhận tin, lịch sử bền vững hoặc kết quả giao tin. Các quy tắc nghiệp vụ bên dưới mô tả đích triển khai; không suy ra các trạng thái gửi thật đã hoạt động. Các quy tắc automation trong tài liệu SMS Settings cũ không còn đại diện cho hướng thủ công này.
 
 ### Key Concepts
 
@@ -225,7 +228,7 @@ Không. Bật chỉ cho phép lễ tân sử dụng nhóm tin Wait Care.
 
 **Phần này đã có trên HTML chưa?**
 
-Chưa đầy đủ. Tài liệu mô tả hướng điều chỉnh; cần sửa Settings và bổ sung hộp soạn/gửi ở Live Waitlist. Gửi SMS thật cần tích hợp dịch vụ gửi và dữ liệu khách/lượt ghé.
+Đã có cấu hình mẫu thủ công và hộp soạn/gửi demo ở Live Waitlist. Gửi SMS thật, dữ liệu khách/lượt ghé, phân quyền và lịch sử gửi bền vững vẫn cần tích hợp; xem giới hạn prototype ở đầu tài liệu.
 
 ### Related Features
 
