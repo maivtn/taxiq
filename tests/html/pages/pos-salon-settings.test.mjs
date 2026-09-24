@@ -334,6 +334,7 @@ test('Welcome SMS Setup live-updates its preview on edit, template change and to
  const preview=d.querySelector('[data-sms-preview="welcomeMessage"]');
  assert.ok(textarea.closest('[data-sms-composer]'));
  assert.ok(textarea.closest('[data-sms-composer]').querySelector('[data-sms-insert-token="[OneQR Link]"]'));
+ assert.ok(textarea.closest('[data-sms-composer]').querySelector('[data-sms-insert-token="[Salon Phone]"]'));
  assert.match(preview.textContent,/Welcome back, Sarah!/);
  d.querySelector('[data-sms-field="welcomeTemplate"]').value='birthday';
  d.querySelector('[data-sms-field="welcomeTemplate"]').dispatchEvent(new w.Event('change'));
@@ -344,6 +345,10 @@ test('Welcome SMS Setup live-updates its preview on edit, template change and to
  d.querySelector('[data-sms-target="welcomeMessage"][data-sms-insert-token="[Salon Name]"]').click();
  assert.equal(textarea.value,'Hi there [Salon Name]');
  assert.equal(preview.textContent,'Hi there Bitcoin Nail Bar');
+ textarea.value='Call us: ';textarea.setSelectionRange(9,9);
+ d.querySelector('[data-sms-target="welcomeMessage"][data-sms-insert-token="[Salon Phone]"]').click();
+ assert.equal(textarea.value,'Call us: [Salon Phone]');
+ assert.equal(preview.textContent,'Call us: (713) 555-0123');
  assert.deepEqual(errors,[]);dom.window.close();
 });
 
@@ -356,6 +361,7 @@ test('SMS Templates provides the same quick-insert composer and live SMS count',
  assert.ok(composer.querySelector('[data-sms-insert-token="[Customer Name]"]'));
  assert.ok(composer.querySelector('[data-sms-insert-token="[Salon Name]"]'));
  assert.ok(composer.querySelector('[data-sms-insert-token="[OneQR Link]"]'));
+ assert.equal(composer.querySelector('[data-sms-insert-token="[Salon Phone]"]'),null);
  textarea.value='Hello';textarea.setSelectionRange(5,5);
  composer.querySelector('[data-sms-insert-token="[Customer Name]"]').click();
  assert.equal(textarea.value,'Hello [Customer Name]');

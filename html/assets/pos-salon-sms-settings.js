@@ -18,6 +18,7 @@
     '[Ticket Number]': '#12',
     '[Ticket Total]': '$45.00',
     '[Receipt Link]': 'nexora.app/r/••••',
+    '[Salon Phone]': '(713) 555-0123',
     '[Benefits Status]': 'Benefits available.'
   };
   function renderTokens(text) {
@@ -46,6 +47,9 @@
     { token: '[Salon Name]', label: 'Shop name', icon: 'bi-shop' },
     { token: '[OneQR Link]', label: 'Offer link', icon: 'bi-link-45deg' }
   ];
+  var WELCOME_MESSAGE_TOKENS = GENERAL_MESSAGE_TOKENS.concat([
+    { token: '[Salon Phone]', label: 'Phone number', icon: 'bi-telephone' }
+  ]);
   var TEMPLATE_MESSAGE_DEFAULT = 'Hi [Customer Name], welcome to [Salon Name]! Tap here: [OneQR Link]';
 
   var SMS_JOURNEY = [
@@ -189,7 +193,7 @@
               selectField('Send mode', null, ['Automatic after check-in', 'Manual review before sending']) +
               selectField('Wait-time visibility', null, ['Do not show wait time', 'Show estimated range', 'Staff decides per customer']) +
               selectField('Smart Link destination', null, ['Personalized OneQR Menu', 'OneQR Main Menu', 'Service Menu', 'Rewards & Benefits']) +
-              '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('welcomeMessage', WELCOME_TEMPLATES.returning, GENERAL_MESSAGE_TOKENS) + '</label>' +
+              '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('welcomeMessage', WELCOME_TEMPLATES.returning, WELCOME_MESSAGE_TOKENS) + '</label>' +
             '</div>' +
             '<p class="sms-notice"><strong>Marketing consent required:</strong> If OneQR highlights a promotional offer, the customer must have valid marketing consent. Without consent, the same link opens the standard OneQR menu and existing customer benefits only.</p>' +
             '<div class="sms-actions">' +
