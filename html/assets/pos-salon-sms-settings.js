@@ -20,7 +20,6 @@
     '[Receipt Link]': 'nexora.app/r/••••',
     '[Benefits Status]': 'Benefits available.'
   };
-  var WELCOME_TOKENS = ['[Customer Name]', '[Salon Name]', '[OneQR Link]', '[Benefits Status]'];
   function renderTokens(text) {
     return Object.keys(TOKENS).reduce(function (out, token) {
       return out.split(token).join(TOKENS[token]);
@@ -36,13 +35,18 @@
   var AFTER_CHECKOUT_DEFAULT = '[Salon Name]: thanks for visiting! Ticket [Ticket Number] total [Ticket Total]. View receipt: [Receipt Link]! Tap here: [OneQR Link]';
 
   var AFTER_CHECKOUT_TOKENS = [
-    { token: '[Customer Name]', label: 'Customer name', icon: 'bi-person' },
     { token: '[Salon Name]', label: 'Shop name', icon: 'bi-shop' },
     { token: '[Ticket Number]', label: 'Ticket number', icon: 'bi-receipt' },
     { token: '[Ticket Total]', label: 'Ticket total', icon: 'bi-currency-dollar' },
     { token: '[Receipt Link]', label: 'Receipt link', icon: 'bi-receipt-cutoff' },
     { token: '[OneQR Link]', label: 'Offer link', icon: 'bi-link-45deg' }
   ];
+  var GENERAL_MESSAGE_TOKENS = [
+    { token: '[Customer Name]', label: 'Customer name', icon: 'bi-person' },
+    { token: '[Salon Name]', label: 'Shop name', icon: 'bi-shop' },
+    { token: '[OneQR Link]', label: 'Offer link', icon: 'bi-link-45deg' }
+  ];
+  var TEMPLATE_MESSAGE_DEFAULT = 'Hi [Customer Name], welcome to [Salon Name]! Tap here: [OneQR Link]';
 
   var SMS_JOURNEY = [
     { label: 'Welcome with benefits', mode: 'Auto', text: 'Welcome back, Sarah! Your check-in is confirmed. Benefits available. Tap here: nexora.app/q/••••' },
@@ -128,7 +132,9 @@
 
       '<section data-sms-panel="templates" hidden>' +
         '<div class="sms-columns">' +
-          '<div class="sms-col sms-card"><h3>SMS journey</h3><div class="sms-journey">' + SMS_JOURNEY.map(journeyItemMarkup).join('') + '</div></div>' +
+          '<div class="sms-col sms-card"><h3>SMS journey</h3><div class="sms-journey">' + SMS_JOURNEY.map(journeyItemMarkup).join('') + '</div>' +
+            '<div class="sms-template-compose"><h4>Template message</h4>' + smsComposerMarkup('templateMessage', TEMPLATE_MESSAGE_DEFAULT, GENERAL_MESSAGE_TOKENS) + '</div>' +
+          '</div>' +
           '<div class="sms-col-side sms-card"><h3>Template controls</h3><div class="settings-field-grid">' +
             selectField('Language', null, ['English', 'Vietnamese', 'Spanish']) +
             selectField('Send mode', null, ['Automatic', 'Manager approval', 'Manual']) +
@@ -183,13 +189,8 @@
               selectField('Send mode', null, ['Automatic after check-in', 'Manual review before sending']) +
               selectField('Wait-time visibility', null, ['Do not show wait time', 'Show estimated range', 'Staff decides per customer']) +
               selectField('Smart Link destination', null, ['Personalized OneQR Menu', 'OneQR Main Menu', 'Service Menu', 'Rewards & Benefits']) +
-              '<label class="settings-field sms-field-full"><span class="settings-label">Message</span><textarea class="settings-input sms-textarea" data-sms-field="welcomeMessage" rows="3">' + esc(WELCOME_TEMPLATES.returning) + '</textarea></label>' +
+              '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('welcomeMessage', WELCOME_TEMPLATES.returning, GENERAL_MESSAGE_TOKENS) + '</label>' +
             '</div>' +
-            '<div class="sms-tokens"><span class="settings-help">Insert a dynamic field</span><div class="sms-token-row">' +
-              WELCOME_TOKENS.map(function (token) {
-                return '<button type="button" class="sms-token" data-sms-insert-token="' + esc(token) + '" data-sms-target="welcomeMessage">' + esc(token.replace(/[\[\]]/g, '')) + '</button>';
-              }).join('') +
-            '</div></div>' +
             '<p class="sms-notice"><strong>Marketing consent required:</strong> If OneQR highlights a promotional offer, the customer must have valid marketing consent. Without consent, the same link opens the standard OneQR menu and existing customer benefits only.</p>' +
             '<div class="sms-actions">' +
               '<button type="button" class="booking-primary-button" data-sms-action="save-welcome"><i class="bi bi-check2" aria-hidden="true"></i>Save Welcome Setup</button>' +
@@ -243,7 +244,7 @@
       count.textContent = length + ' chars — ' + Math.max(1, Math.ceil(length / 160)) + ' SMS';
     }
   }
-  $$('[data-sms-field="afterMessage"], [data-sms-field="welcomeMessage"]').forEach(function (textarea) {
+  $$('[data-sms-field="afterMessage"], [data-sms-field="welcomeMessage"], [data-sms-field="templateMessage"]').forEach(function (textarea) {
     textarea.addEventListener('input', function () { refreshPreview(textarea.dataset.smsField); });
   });
 

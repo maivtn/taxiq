@@ -187,6 +187,17 @@
   color: #4148df;
 }
 
+.sms-template-compose {
+  margin-top: 22px;
+}
+
+.sms-template-compose h4 {
+  margin: 0 0 10px;
+  color: var(--nexora-text);
+  font-size: 12px;
+  font-weight: 800;
+}
+
 .sms-actions {
   display: flex;
   flex-wrap: wrap;
