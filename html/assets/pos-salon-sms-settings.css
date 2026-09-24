@@ -398,6 +398,20 @@
   }
 }
 
+@media (min-width: 641px) and (max-width: 1180px) {
+  .sms-col-side {
+    flex: 0 1 320px;
+    max-width: 320px;
+  }
+}
+
+@media (max-width: 640px) {
+  .sms-col-side {
+    flex: 1 1 100%;
+    max-width: none;
+  }
+}
+
 @media (max-width: 480px) {
   .sms-settings-topbar {
     flex-direction: column;

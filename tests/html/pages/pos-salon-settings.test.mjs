@@ -461,6 +461,12 @@ test('each SMS journey lets the salon configure and preview Smart Link validity'
  assert.deepEqual(errors,[]);dom.window.close();
 });
 
+test('tablet SMS previews stay compact while mobile previews use the available width',()=>{
+ const css=readFileSync(new URL('../assets/pos-salon-sms-settings.css', SOURCE_DIR),'utf8');
+ assert.match(css,/@media \(min-width: 641px\) and \(max-width: 1180px\)[\s\S]*?\.sms-col-side\s*\{[\s\S]*?flex:\s*0 1 320px;[\s\S]*?max-width:\s*320px;/);
+ assert.match(css,/@media \(max-width: 640px\)[\s\S]*?\.sms-col-side\s*\{[\s\S]*?flex:\s*1 1 100%;[\s\S]*?max-width:\s*none;/);
+});
+
 test('Pause automation toggles the Automation pill, and Save/Send actions post a status message',()=>{
  const {dom,d,errors}=smsPage();
  const pill=d.querySelector('[data-sms-automation-pill]');
