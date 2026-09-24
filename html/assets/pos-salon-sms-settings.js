@@ -143,19 +143,6 @@
       '<select class="settings-select"' + (dataField ? ' data-sms-field="' + esc(dataField) + '"' : '') + '>' + optionsHtml + '</select></label>';
   }
 
-  function afterCheckoutMenuMarkup() {
-    return [
-      ['Leave a Review', 'Share your visit experience', 'Open'],
-      ['Add a Tip', 'Visible only when no tip was completed', 'Add'],
-      ['Private Feedback', 'Send a private note to the salon', 'Send'],
-      ['Rewards Earned', 'View points from today’s visit', 'View'],
-      ['Book Your Next Visit', 'Reserve your next service', 'Book'],
-      ['Receipt', 'View today’s receipt', 'View']
-    ].map(function (row) {
-      return '<div class="sms-phone-menu"><span><strong>' + esc(row[0]) + '</strong><span>' + esc(row[1]) + '</span></span><button type="button">' + esc(row[2]) + '</button></div>';
-    }).join('');
-  }
-
   panel.innerHTML =
     '<div class="sms-settings">' +
       '<div class="sms-settings-topbar">' +
@@ -234,7 +221,7 @@
             '<div class="sms-phone"><div class="sms-phone-screen"><div class="sms-phone-bar"></div>' +
               '<div class="sms-phone-title">Messages</div>' +
               '<div class="sms-phone-bubble" data-sms-preview="afterMessage">' + esc(renderTokens(AFTER_CHECKOUT_DEFAULT)) + '</div>' +
-              '<div class="sms-phone-body">' + afterCheckoutMenuMarkup() + '<button type="button" class="sms-phone-back">← Back to Main Menu</button></div>' +
+              '<p class="sms-phone-caption">One short message. Links open the selected after-visit action.</p>' +
             '</div></div>' +
           '</div>' +
         '</div>' +

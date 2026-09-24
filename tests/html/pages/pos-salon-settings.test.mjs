@@ -358,6 +358,8 @@ test('After Checkout Setup preview mirrors edits to the Thank You message',()=>{
  const textarea=d.querySelector('[data-sms-field="afterMessage"]');
  const preview=d.querySelector('[data-sms-preview="afterMessage"]');
  const templates=Array.from(d.querySelectorAll('[data-sms-template="after"]'));
+ assert.equal(d.querySelector('[data-sms-panel="after"] .sms-phone-menu'),null);
+ assert.equal(preview.nextElementSibling.textContent,'One short message. Links open the selected after-visit action.');
  assert.deepEqual(templates.map(button=>button.dataset.templateKey),['ticket-receipt','review','tip','feedback','rewards','booking']);
  for(const token of ['[Receipt Link]','[Review Link]','[Tip Link]','[Feedback Link]','[Rewards Link]','[Booking Link]']){
   assert.ok(templates.some(button=>button.textContent.includes(token)),token+' is represented by a quick template');

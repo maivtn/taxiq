@@ -362,66 +362,6 @@
   line-height: 1.5;
 }
 
-.sms-phone-body {
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-  padding: 0 16px 18px;
-}
-
-.sms-phone-menu {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 10px;
-  border: 1px solid var(--nexora-border);
-  border-radius: 12px;
-  background: #fff;
-  padding: 11px 13px;
-}
-
-.sms-phone-menu strong {
-  display: block;
-  color: var(--nexora-text);
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.sms-phone-menu span {
-  display: block;
-}
-
-.sms-phone-menu span span {
-  margin-top: 2px;
-  color: var(--nexora-muted);
-  font-size: 10px;
-  font-weight: 500;
-}
-
-.sms-phone-menu button {
-  flex-shrink: 0;
-  border: 0;
-  border-radius: 8px;
-  background: #eef1ff;
-  padding: 6px 10px;
-  color: var(--nexora-brand);
-  font-size: 11px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
-.sms-phone-back {
-  width: 100%;
-  border: 1px solid var(--nexora-border);
-  border-radius: 10px;
-  background: #fff;
-  padding: 9px;
-  color: var(--nexora-text);
-  font-size: 11px;
-  font-weight: 800;
-  cursor: pointer;
-}
-
 /* Select arrow: 16px icon, 16px from the right edge, 44px right padding (desktop, tablet, phone) */
 [data-settings-panel="sms"] select {
   appearance: none;
