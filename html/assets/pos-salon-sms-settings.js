@@ -23,7 +23,9 @@
     '[Rewards Link]': 'nexora.app/rewards/••••',
     '[Booking Link]': 'nexora.app/book/••••',
     '[Receipt Link]': 'nexora.app/r/••••',
-    '[Salon Phone]': '(713) 555-0123'
+    '[Salon Phone]': '(713) 555-0123',
+    '[Wait Time]': '15–20 minutes',
+    '[Wait Care Benefit]': 'a complimentary hot-stone upgrade'
   };
   function renderTokens(text) {
     return Object.keys(TOKENS).reduce(function (out, token) {
@@ -56,6 +58,17 @@
     { key: 'booking', label: 'Book next visit' }
   ];
   var AFTER_CHECKOUT_DEFAULT = AFTER_CHECKOUT_TEMPLATES['ticket-receipt'];
+  var WAIT_CARE_TEMPLATES = {
+    'delay-update': 'Hi [Customer Name], we’re sorry for the wait at [Salon Name]. Current estimate: [Wait Time]. Track your visit: [OneQR Link]',
+    'care-benefit': 'Hi [Customer Name], thanks for your patience. [Salon Name] added [Wait Care Benefit] to your visit. Details: [OneQR Link]',
+    'manager-follow-up': 'Hi [Customer Name], we’re sorry for the delay. A manager at [Salon Name] is reviewing your visit and will update you shortly.'
+  };
+  var WAIT_CARE_TEMPLATE_OPTIONS = [
+    { key: 'delay-update', label: 'Delay update' },
+    { key: 'care-benefit', label: 'Wait Care benefit' },
+    { key: 'manager-follow-up', label: 'Manager follow-up' }
+  ];
+  var WAIT_CARE_DEFAULT = WAIT_CARE_TEMPLATES['care-benefit'];
 
   var AFTER_CHECKOUT_TOKENS = [
     { token: '[Salon Name]', label: 'Shop name', icon: 'bi-shop' },
@@ -76,6 +89,13 @@
   var WELCOME_MESSAGE_TOKENS = GENERAL_MESSAGE_TOKENS.concat([
     { token: '[Salon Phone]', label: 'Phone number', icon: 'bi-telephone' }
   ]);
+  var WAIT_CARE_TOKENS = [
+    { token: '[Customer Name]', label: 'Customer name', icon: 'bi-person' },
+    { token: '[Salon Name]', label: 'Shop name', icon: 'bi-shop' },
+    { token: '[Wait Time]', label: 'Wait time', icon: 'bi-clock' },
+    { token: '[Wait Care Benefit]', label: 'Wait Care benefit', icon: 'bi-gift' },
+    { token: '[OneQR Link]', label: 'Smart link', icon: 'bi-link-45deg' }
+  ];
 
   function smsComposerMarkup(field, value, tokens) {
     var buttons = tokens.map(function (item) {
@@ -165,6 +185,25 @@
             '<button type="button" class="booking-primary-button" data-sms-action="save-automation"><i class="bi bi-check2" aria-hidden="true"></i>Save settings</button>' +
             '<button type="button" class="booking-secondary-button" data-sms-action="pause-automation">Pause automation</button>' +
           '</div></div>' +
+          '<div class="sms-automation-message-grid">' +
+            '<div class="sms-card"><h3>Wait Care SMS</h3>' +
+              '<div class="settings-toggle-row"><span>Send Wait Care messages when a delay threshold is reached</span>' +
+              '<button class="toggle-pill is-on" type="button" role="switch" aria-checked="true" aria-label="Toggle Wait Care SMS" data-sms-wait-care-enabled></button></div>' +
+              '<div class="settings-field-grid">' +
+                selectField('Send mode', 'waitCareSendMode', ['Manager approval', 'Automatic', 'Manual']) +
+                quickTemplateMarkup('wait-care', WAIT_CARE_TEMPLATE_OPTIONS, WAIT_CARE_TEMPLATES, 'care-benefit') +
+                '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('waitCareMessage', WAIT_CARE_DEFAULT, WAIT_CARE_TOKENS) + '</label>' +
+              '</div>' +
+              '<div class="sms-actions">' + testSendMarkup('send-test-wait-care', false) + '</div>' +
+            '</div>' +
+            '<div class="sms-card"><h3>Wait Care preview</h3>' +
+              '<div class="sms-phone"><div class="sms-phone-screen"><div class="sms-phone-bar"></div>' +
+                '<div class="sms-phone-title">Messages</div>' +
+                '<div class="sms-phone-bubble" data-sms-preview="waitCareMessage">' + esc(renderTokens(WAIT_CARE_DEFAULT)) + '</div>' +
+                '<p class="sms-phone-caption">Sent only after the configured delay and approval rules are met.</p>' +
+              '</div></div>' +
+            '</div>' +
+          '</div>' +
         '</div>' +
       '</section>' +
 
@@ -264,15 +303,15 @@
       count.textContent = length + ' chars — ' + Math.max(1, Math.ceil(length / 160)) + ' SMS';
     }
   }
-  $$('[data-sms-field="afterMessage"], [data-sms-field="welcomeMessage"]').forEach(function (textarea) {
+  $$('[data-sms-field="afterMessage"], [data-sms-field="welcomeMessage"], [data-sms-field="waitCareMessage"]').forEach(function (textarea) {
     textarea.addEventListener('input', function () { refreshPreview(textarea.dataset.smsField); });
   });
 
   $$('[data-sms-template]').forEach(function (button) {
     button.addEventListener('click', function () {
       var group = button.dataset.smsTemplate;
-      var messages = group === 'after' ? AFTER_CHECKOUT_TEMPLATES : WELCOME_TEMPLATES;
-      var field = group === 'after' ? 'afterMessage' : 'welcomeMessage';
+      var messages = group === 'after' ? AFTER_CHECKOUT_TEMPLATES : (group === 'wait-care' ? WAIT_CARE_TEMPLATES : WELCOME_TEMPLATES);
+      var field = group === 'after' ? 'afterMessage' : (group === 'wait-care' ? 'waitCareMessage' : 'welcomeMessage');
       var textarea = $('[data-sms-field="' + field + '"]');
       if (!textarea || !messages[button.dataset.templateKey]) return;
       $$('[data-sms-template="' + group + '"]').forEach(function (card) {
@@ -284,6 +323,17 @@
       refreshPreview(field);
     });
   });
+
+  var waitCareEnabled = $('[data-sms-wait-care-enabled]');
+  if (waitCareEnabled) {
+    waitCareEnabled.addEventListener('click', function (event) {
+      event.stopPropagation();
+      var enabled = waitCareEnabled.getAttribute('aria-checked') !== 'true';
+      waitCareEnabled.setAttribute('aria-checked', String(enabled));
+      waitCareEnabled.classList.toggle('is-on', enabled);
+      setSmsStatus(enabled ? 'Wait Care SMS enabled.' : 'Wait Care SMS paused.');
+    });
+  }
 
   $$('[data-sms-insert-token]').forEach(function (button) {
     button.addEventListener('click', function () {
@@ -319,7 +369,8 @@
     'save-after': 'After Checkout settings saved.',
     'send-test-after': 'Thank You test SMS queued.',
     'save-welcome': 'Welcome SMS settings saved.',
-    'send-test-welcome': 'Test SMS queued.'
+    'send-test-welcome': 'Test SMS queued.',
+    'send-test-wait-care': 'Wait Care test SMS queued.'
   };
   function formatTestPhone(value, country) {
     var digits = String(value || '').replace(/\D/g, '');

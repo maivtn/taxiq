@@ -390,6 +390,35 @@ test('After Checkout Setup preview mirrors edits to the Thank You message',()=>{
  assert.deepEqual(errors,[]);dom.window.close();
 });
 
+test('Automation Settings provides a complete Wait Care SMS workflow',()=>{
+ const {dom,w,d,errors}=smsPage();
+ d.querySelector('[data-sms-tab="automation"]').click();
+ const textarea=d.querySelector('[data-sms-field="waitCareMessage"]');
+ const preview=d.querySelector('[data-sms-preview="waitCareMessage"]');
+ const templates=Array.from(d.querySelectorAll('[data-sms-template="wait-care"]'));
+ const enabled=d.querySelector('[data-sms-wait-care-enabled][role="switch"]');
+ assert.ok(enabled);assert.equal(enabled.getAttribute('aria-checked'),'true');
+ enabled.click();assert.equal(enabled.getAttribute('aria-checked'),'false');
+ enabled.click();assert.equal(enabled.getAttribute('aria-checked'),'true');
+ assert.ok(d.querySelector('[data-sms-field="waitCareSendMode"]'));
+ assert.deepEqual(templates.map(button=>button.dataset.templateKey),['delay-update','care-benefit','manager-follow-up']);
+ assert.equal(templates.find(button=>button.dataset.templateKey==='care-benefit').getAttribute('aria-pressed'),'true');
+ assert.deepEqual(Array.from(textarea.closest('[data-sms-composer]').querySelectorAll('[data-sms-insert-token]'),button=>button.dataset.smsInsertToken),[
+  '[Customer Name]','[Salon Name]','[Wait Time]','[Wait Care Benefit]','[OneQR Link]'
+ ]);
+ assert.equal(preview.textContent,'Hi Sarah, thanks for your patience. Bitcoin Nail Bar added a complimentary hot-stone upgrade to your visit. Details: nexora.app/q/••••');
+ templates.find(button=>button.dataset.templateKey==='delay-update').click();
+ assert.equal(textarea.value,'Hi [Customer Name], we’re sorry for the wait at [Salon Name]. Current estimate: [Wait Time]. Track your visit: [OneQR Link]');
+ assert.equal(preview.textContent,'Hi Sarah, we’re sorry for the wait at Bitcoin Nail Bar. Current estimate: 15–20 minutes. Track your visit: nexora.app/q/••••');
+ textarea.value='Benefit: ';textarea.setSelectionRange(9,9);
+ textarea.closest('[data-sms-composer]').querySelector('[data-sms-insert-token="[Wait Care Benefit]"]').click();
+ assert.equal(textarea.value,'Benefit: [Wait Care Benefit]');
+ assert.equal(preview.textContent,'Benefit: a complimentary hot-stone upgrade');
+ textarea.value='x'.repeat(161);textarea.dispatchEvent(new w.Event('input'));
+ assert.equal(d.querySelector('[data-sms-count="waitCareMessage"]').textContent,'161 chars — 2 SMS');
+ assert.deepEqual(errors,[]);dom.window.close();
+});
+
 test('Pause automation toggles the Automation pill, and Save/Send actions post a status message',()=>{
  const {dom,d,errors}=smsPage();
  const pill=d.querySelector('[data-sms-automation-pill]');
@@ -410,7 +439,7 @@ test('Pause automation toggles the Automation pill, and Save/Send actions post a
 
 test('each Send Test action requires a valid recipient phone number',()=>{
  const {dom,d,errors}=smsPage();
- for(const [tab,action] of [['welcome','send-test-welcome'],['after','send-test-after']]){
+ for(const [tab,action] of [['welcome','send-test-welcome'],['after','send-test-after'],['automation','send-test-wait-care']]){
   d.querySelector('[data-sms-tab="'+tab+'"]').click();
   const phone=d.querySelector('[data-sms-test-phone="'+action+'"]');
   const country=d.querySelector('[data-sms-test-country="'+action+'"]');

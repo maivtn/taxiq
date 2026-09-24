@@ -245,6 +245,13 @@
   line-height: 1.45;
 }
 
+.sms-automation-message-grid {
+  display: grid;
+  flex: 1 0 100%;
+  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr);
+  gap: 20px;
+}
+
 .sms-actions {
   display: flex;
   flex-wrap: wrap;
@@ -434,6 +441,10 @@
   }
 
   .sms-template-card-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .sms-automation-message-grid {
     grid-template-columns: 1fr;
   }
 
