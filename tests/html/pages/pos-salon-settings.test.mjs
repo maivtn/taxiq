@@ -313,6 +313,7 @@ test('SMS Settings separates Welcome, After Checkout, Wait Care and Automation s
  const {dom,d,errors}=smsPage();
  assert.equal(d.querySelector('[data-settings-panel="sms"]').hidden,false);
  assert.deepEqual(Array.from(d.querySelectorAll('[data-sms-tab]'),b=>b.dataset.smsTab),['welcome','after','wait-care','automation']);
+ assert.deepEqual(Array.from(d.querySelectorAll('[data-sms-tab]'),b=>b.textContent),['Welcome SMS','After Checkout','Wait Care','Automation Settings']);
  assert.equal(d.querySelector('[data-sms-tab].active')?.dataset.smsTab,'welcome');
  assert.equal(d.querySelector('[data-sms-panel="welcome"]').hidden,false);
  assert.equal(d.querySelector('[data-sms-panel="automation"]').hidden,true);

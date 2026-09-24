@@ -159,8 +159,8 @@
     '<div class="sms-settings">' +
       '<div class="sms-settings-topbar">' +
         '<nav class="sms-subtabs" aria-label="SMS setting sections">' +
-          '<button type="button" data-sms-tab="welcome" class="active" aria-current="page">Welcome SMS Setup</button>' +
-          '<button type="button" data-sms-tab="after">After Checkout Setup</button>' +
+          '<button type="button" data-sms-tab="welcome" class="active" aria-current="page">Welcome SMS</button>' +
+          '<button type="button" data-sms-tab="after">After Checkout</button>' +
           '<button type="button" data-sms-tab="wait-care">Wait Care</button>' +
           '<button type="button" data-sms-tab="automation">Automation Settings</button>' +
         '</nav>' +
