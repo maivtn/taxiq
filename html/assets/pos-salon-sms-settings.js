@@ -263,7 +263,6 @@
             '<button class="toggle-pill is-on" type="button" role="switch" aria-checked="true" aria-label="Toggle Thank You SMS after checkout"></button></div>' +
             '<div class="settings-field-grid">' +
               selectField('Send mode', null, ['Automatic after checkout', 'Manual review before sending']) +
-              selectField('Smart Link destination', null, ['After-visit page', 'OneQR Main Menu']) +
               selectField('Link availability', 'afterLinkValidity', AFTER_LINK_VALIDITY_OPTIONS) +
               quickTemplateMarkup('after', AFTER_CHECKOUT_TEMPLATE_OPTIONS, AFTER_CHECKOUT_TEMPLATES, 'ticket-receipt') +
               '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('afterMessage', AFTER_CHECKOUT_DEFAULT, AFTER_CHECKOUT_TOKENS) + '</label>' +
@@ -296,7 +295,6 @@
             '<div class="settings-field-grid">' +
               selectField('Send mode', null, ['Automatic after check-in', 'Manual review before sending']) +
               selectField('Wait-time visibility', null, ['Do not show wait time', 'Show estimated range', 'Staff decides per customer']) +
-              selectField('Smart Link destination', null, ['Personalized OneQR Menu', 'OneQR Main Menu', 'Service Menu', 'Rewards & Benefits']) +
               selectField('Link availability', 'welcomeLinkValidity', LIVE_LINK_VALIDITY_OPTIONS) +
               quickTemplateMarkup('welcome', WELCOME_TEMPLATE_OPTIONS, WELCOME_TEMPLATES, 'welcome') +
               '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('welcomeMessage', WELCOME_TEMPLATES.welcome, WELCOME_MESSAGE_TOKENS) + '</label>' +
