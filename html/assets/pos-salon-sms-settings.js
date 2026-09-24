@@ -184,34 +184,33 @@
 
       '<section data-sms-panel="wait-care" hidden>' +
         '<div class="sms-columns">' +
-          '<div class="sms-card sms-wait-care-rules"><h3>Wait Care rules</h3><div class="settings-field-grid">' +
+          '<div class="sms-col sms-card"><h3>Wait Care Setup</h3>' +
+            '<h4 class="sms-section-title">Wait Care rules</h4><div class="settings-field-grid">' +
             selectField('10–19 min delay', null, ['Auto · 50 points', 'Approval required']) +
             selectField('20–29 min delay', null, ['Auto · Free add-on', 'Approval required']) +
             selectField('30–44 min delay', null, ['Approval · $5 voucher', 'Automatic']) +
             selectField('45+ min delay', null, ['Manager selects benefit', 'Auto · $10 voucher']) +
           '</div>' +
-          '<div class="sms-actions">' +
-            '<button type="button" class="booking-primary-button" data-sms-action="save-wait-care"><i class="bi bi-check2" aria-hidden="true"></i>Save Wait Care Settings</button>' +
-          '</div></div>' +
-          '<div class="sms-automation-message-grid">' +
-            '<div class="sms-card"><h3>Wait Care SMS</h3>' +
-              '<div class="settings-toggle-row"><span>Send Wait Care messages when a delay threshold is reached</span>' +
-              '<button class="toggle-pill is-on" type="button" role="switch" aria-checked="true" aria-label="Toggle Wait Care SMS" data-sms-wait-care-enabled></button></div>' +
-              '<div class="settings-field-grid">' +
-                selectField('Send mode', 'waitCareSendMode', ['Manager approval', 'Automatic', 'Manual']) +
-                selectField('Link availability', 'waitCareLinkValidity', LIVE_LINK_VALIDITY_OPTIONS) +
-                quickTemplateMarkup('wait-care', WAIT_CARE_TEMPLATE_OPTIONS, WAIT_CARE_TEMPLATES, 'care-benefit') +
-                '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('waitCareMessage', WAIT_CARE_DEFAULT, WAIT_CARE_TOKENS) + '</label>' +
-              '</div>' +
-              '<div class="sms-actions">' + testSendMarkup('send-test-wait-care', false) + '</div>' +
+            '<h4 class="sms-section-title">Wait Care SMS</h4>' +
+            '<div class="settings-toggle-row"><span>Send Wait Care messages when a delay threshold is reached</span>' +
+            '<button class="toggle-pill is-on" type="button" role="switch" aria-checked="true" aria-label="Toggle Wait Care SMS" data-sms-wait-care-enabled></button></div>' +
+            '<div class="settings-field-grid">' +
+              selectField('Send mode', 'waitCareSendMode', ['Manager approval', 'Automatic', 'Manual']) +
+              selectField('Link availability', 'waitCareLinkValidity', LIVE_LINK_VALIDITY_OPTIONS) +
+              quickTemplateMarkup('wait-care', WAIT_CARE_TEMPLATE_OPTIONS, WAIT_CARE_TEMPLATES, 'care-benefit') +
+              '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('waitCareMessage', WAIT_CARE_DEFAULT, WAIT_CARE_TOKENS) + '</label>' +
             '</div>' +
-            '<div class="sms-card"><h3>Wait Care preview</h3>' +
-              '<div class="sms-phone"><div class="sms-phone-screen"><div class="sms-phone-bar"></div>' +
-                '<div class="sms-phone-title">Messages</div>' +
-                '<div class="sms-phone-bubble" data-sms-preview="waitCareMessage">' + esc(renderTokens(WAIT_CARE_DEFAULT)) + '</div>' +
-                '<p class="sms-phone-caption" data-sms-link-validity-preview="waitCareLinkValidity">' + esc(LINK_VALIDITY_CAPTIONS[LIVE_LINK_VALIDITY_OPTIONS[0]]) + '</p>' +
-              '</div></div>' +
+            '<div class="sms-actions">' +
+              '<button type="button" class="booking-primary-button" data-sms-action="save-wait-care"><i class="bi bi-check2" aria-hidden="true"></i>Save Wait Care Settings</button>' +
+              testSendMarkup('send-test-wait-care', false) +
             '</div>' +
+          '</div>' +
+          '<div class="sms-col-side sms-card"><h3>Wait Care preview</h3>' +
+            '<div class="sms-phone"><div class="sms-phone-screen"><div class="sms-phone-bar"></div>' +
+              '<div class="sms-phone-title">Messages</div>' +
+              '<div class="sms-phone-bubble" data-sms-preview="waitCareMessage">' + esc(renderTokens(WAIT_CARE_DEFAULT)) + '</div>' +
+              '<p class="sms-phone-caption" data-sms-link-validity-preview="waitCareLinkValidity">' + esc(LINK_VALIDITY_CAPTIONS[LIVE_LINK_VALIDITY_OPTIONS[0]]) + '</p>' +
+            '</div></div>' +
           '</div>' +
         '</div>' +
       '</section>' +

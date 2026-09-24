@@ -400,7 +400,11 @@ test('Wait Care tab owns its delay rules and complete SMS workflow',()=>{
  const {dom,w,d,errors}=smsPage();
  d.querySelector('[data-sms-tab="wait-care"]').click();
  const waitCarePanel=d.querySelector('[data-sms-panel="wait-care"]');
- assert.ok(Array.from(waitCarePanel.querySelectorAll('h3'),heading=>heading.textContent).includes('Wait Care rules'));
+ assert.deepEqual(Array.from(waitCarePanel.querySelectorAll(':scope > .sms-columns > .sms-card'),card=>card.querySelector('h3').textContent),['Wait Care Setup','Wait Care preview']);
+ const waitCareSetup=waitCarePanel.querySelector('[data-sms-field="waitCareMessage"]').closest('.sms-card');
+ assert.ok(waitCareSetup.querySelector('[data-sms-action="save-wait-care"]'));
+ assert.equal(waitCarePanel.querySelectorAll('[data-sms-action="save-wait-care"]').length,1);
+ assert.equal(waitCarePanel.querySelector('.sms-automation-message-grid'),null);
  assert.deepEqual(Array.from(waitCarePanel.querySelectorAll('.settings-label'),label=>label.textContent).slice(0,4),[
   '10–19 min delay','20–29 min delay','30–44 min delay','45+ min delay'
  ]);

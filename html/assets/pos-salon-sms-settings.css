@@ -67,8 +67,7 @@
   min-width: 0;
 }
 
-.sms-automation-timing-card,
-.sms-wait-care-rules {
+.sms-automation-timing-card {
   flex: 1 1 100%;
 }
 
@@ -85,6 +84,17 @@
   color: var(--nexora-text);
   font-size: 15px;
   font-weight: 800;
+}
+
+.sms-section-title {
+  margin: 22px 0 12px;
+  color: var(--nexora-text);
+  font-size: 13px;
+  font-weight: 800;
+}
+
+.sms-card h3 + .sms-section-title {
+  margin-top: 0;
 }
 
 .settings-field-grid {
@@ -250,13 +260,6 @@
   line-height: 1.45;
 }
 
-.sms-automation-message-grid {
-  display: grid;
-  flex: 1 0 100%;
-  grid-template-columns: minmax(0, 1.6fr) minmax(280px, 1fr);
-  gap: 20px;
-}
-
 .sms-actions {
   display: flex;
   flex-wrap: wrap;
@@ -386,10 +389,6 @@
   }
 
   .sms-template-card-grid {
-    grid-template-columns: 1fr;
-  }
-
-  .sms-automation-message-grid {
     grid-template-columns: 1fr;
   }
 
