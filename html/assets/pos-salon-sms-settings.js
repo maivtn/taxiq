@@ -263,7 +263,7 @@
             '<button class="toggle-pill is-on" type="button" role="switch" aria-checked="true" aria-label="Toggle Thank You SMS after checkout"></button></div>' +
             '<div class="settings-field-grid">' +
               selectField('Send mode', null, ['Automatic after checkout', 'Manual review before sending']) +
-              selectField('Smart Link destination', null, ['Personalized OneQR After Visit', 'OneQR Main Menu']) +
+              selectField('Smart Link destination', null, ['After-visit page', 'OneQR Main Menu']) +
               selectField('Link availability', 'afterLinkValidity', AFTER_LINK_VALIDITY_OPTIONS) +
               quickTemplateMarkup('after', AFTER_CHECKOUT_TEMPLATE_OPTIONS, AFTER_CHECKOUT_TEMPLATES, 'ticket-receipt') +
               '<label class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('afterMessage', AFTER_CHECKOUT_DEFAULT, AFTER_CHECKOUT_TOKENS) + '</label>' +
