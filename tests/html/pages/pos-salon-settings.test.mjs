@@ -412,3 +412,19 @@ test('Pause automation toggles the Automation pill, and Save/Send actions post a
  assert.equal(d.querySelector('[data-sms-status]').textContent,'Welcome SMS settings saved.');
  assert.deepEqual(errors,[]);dom.window.close();
 });
+
+test('each Send Test action requires a valid recipient phone number',()=>{
+ const {dom,d,errors}=smsPage();
+ for(const [tab,action] of [['welcome','send-test-welcome'],['after','send-test-after'],['templates','send-test-template']]){
+  d.querySelector('[data-sms-tab="'+tab+'"]').click();
+  const phone=d.querySelector('[data-sms-test-phone="'+action+'"]');
+  const send=d.querySelector('[data-sms-action="'+action+'"]');
+  assert.ok(phone);assert.equal(phone.type,'tel');assert.equal(phone.value,'');
+  send.click();
+  assert.equal(d.querySelector('[data-sms-status]').textContent,'Enter a valid test phone number.');
+  assert.equal(d.activeElement,phone);
+  phone.value='713-555-0123';send.click();
+  assert.equal(d.querySelector('[data-sms-status]').textContent,'Test SMS queued for (713) 555-0123.');
+ }
+ assert.deepEqual(errors,[]);dom.window.close();
+});

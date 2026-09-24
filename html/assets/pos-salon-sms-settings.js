@@ -72,6 +72,14 @@
     '</div>';
   }
 
+  function testSendMarkup(action, primary) {
+    return '<div class="sms-test-send">' +
+      '<label><span>Test phone number</span><input class="settings-input" type="tel" inputmode="tel" autocomplete="tel" placeholder="(713) 555-0123" data-sms-test-phone="' + esc(action) + '"></label>' +
+      '<button type="button" class="' + (primary ? 'booking-primary-button' : 'booking-secondary-button') + '" data-sms-action="' + esc(action) + '">' +
+        (primary ? '<i class="bi bi-send" aria-hidden="true"></i>' : '') + 'Send Test</button>' +
+    '</div>';
+  }
+
   function selectField(label, dataField, options, selectedIndex) {
     var optionsHtml = options.map(function (option, index) {
       return '<option' + (index === (selectedIndex || 0) ? ' selected' : '') + '>' + esc(option) + '</option>';
@@ -145,7 +153,7 @@
             '<label class="settings-field sms-field-full"><span class="settings-label">Preview customer</span><input class="settings-input" type="text" value="Sarah Nguyen"></label>' +
           '</div>' +
           '<div class="sms-actions">' +
-            '<button type="button" class="booking-primary-button" data-sms-action="send-test-template"><i class="bi bi-send" aria-hidden="true"></i>Send test</button>' +
+            testSendMarkup('send-test-template', true) +
             '<button type="button" class="booking-secondary-button" data-sms-action="save-template">Save template</button>' +
           '</div></div>' +
         '</div>' +
@@ -168,7 +176,7 @@
             '<p class="sms-notice"><strong>Customer protection:</strong> Never ask for a second tip when one was already completed. Do not reward only positive public reviews. Promotion visibility requires valid marketing consent.</p>' +
             '<div class="sms-actions">' +
               '<button type="button" class="booking-primary-button" data-sms-action="save-after"><i class="bi bi-check2" aria-hidden="true"></i>Save After Checkout Setup</button>' +
-              '<button type="button" class="booking-secondary-button" data-sms-action="send-test-after">Send Test</button>' +
+              testSendMarkup('send-test-after', false) +
             '</div>' +
           '</div>' +
           '<div class="sms-col-side sms-card"><h3>After Checkout preview</h3>' +
@@ -198,7 +206,7 @@
             '<p class="sms-notice"><strong>Marketing consent required:</strong> If OneQR highlights a promotional offer, the customer must have valid marketing consent. Without consent, the same link opens the standard OneQR menu and existing customer benefits only.</p>' +
             '<div class="sms-actions">' +
               '<button type="button" class="booking-primary-button" data-sms-action="save-welcome"><i class="bi bi-check2" aria-hidden="true"></i>Save Welcome Setup</button>' +
-              '<button type="button" class="booking-secondary-button" data-sms-action="send-test-welcome">Send Test</button>' +
+              testSendMarkup('send-test-welcome', false) +
             '</div>' +
           '</div>' +
           '<div class="sms-col-side sms-card"><h3>Customer preview</h3>' +
@@ -301,8 +309,28 @@
     'save-welcome': 'Welcome SMS settings saved.',
     'send-test-welcome': 'Test SMS queued.'
   };
+  function formatTestPhone(value) {
+    var digits = String(value || '').replace(/\D/g, '');
+    if (digits.length === 11 && digits.charAt(0) === '1') digits = digits.slice(1);
+    if (digits.length !== 10) return '';
+    return '(' + digits.slice(0, 3) + ') ' + digits.slice(3, 6) + '-' + digits.slice(6);
+  }
   Object.keys(ACTION_MESSAGES).forEach(function (action) {
     var button = $('[data-sms-action="' + action + '"]');
-    if (button) button.addEventListener('click', function () { setSmsStatus(ACTION_MESSAGES[action]); });
+    if (button) button.addEventListener('click', function () {
+      if (action.indexOf('send-test-') === 0) {
+        var phone = $('[data-sms-test-phone="' + action + '"]');
+        var formatted = phone ? formatTestPhone(phone.value) : '';
+        if (!formatted) {
+          setSmsStatus('Enter a valid test phone number.');
+          if (phone) phone.focus();
+          return;
+        }
+        phone.value = formatted;
+        setSmsStatus('Test SMS queued for ' + formatted + '.');
+        return;
+      }
+      setSmsStatus(ACTION_MESSAGES[action]);
+    });
   });
 })();
