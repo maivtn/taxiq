@@ -281,7 +281,7 @@
 }
 
 .sms-test-phone-control {
-  flex: 1 1 260px;
+  flex: 0 1 300px;
   min-width: 240px;
 }
 
