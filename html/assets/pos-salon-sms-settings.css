@@ -443,3 +443,11 @@
   .sms-test-send, .sms-actions { width: 100%; }
   .settings-field-grid .settings-field { min-width: 0; }
 }
+
+.sms-shared-links { margin-top: 18px; }
+.sms-shared-links h3 { margin-bottom: 8px; }
+.sms-shared-link-controls { display: flex; flex-wrap: wrap; align-items: flex-end; gap: 12px; margin: 16px 0 12px; }
+.sms-shared-link-controls .settings-field { flex: 0 1 280px; min-width: 0; }
+@media (max-width: 480px) {
+  .sms-shared-link-controls .settings-field, .sms-shared-link-controls button { flex-basis: 100%; width: 100%; }
+}

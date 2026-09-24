@@ -88,18 +88,7 @@
     { key: 'ready-now', label: 'Ready now' },
     { key: 'your-turn', label: 'Your turn' }
   ];
-  var LIVE_LINK_VALIDITY_OPTIONS = ['Until checkout + 24 hours', 'Until checkout', 'Until checkout + 48 hours', '7 days after check-in'];
-  var AFTER_LINK_VALIDITY_OPTIONS = ['30 days after checkout', '7 days after checkout', '14 days after checkout', '90 days after checkout'];
-  var LINK_VALIDITY_CAPTIONS = {
-    'Until checkout': 'Link remains active until checkout is completed.',
-    'Until checkout + 24 hours': 'Link remains active until 24 hours after checkout.',
-    'Until checkout + 48 hours': 'Link remains active until 48 hours after checkout.',
-    '7 days after check-in': 'Link remains active for 7 days after check-in.',
-    '7 days after checkout': 'Link remains active for 7 days after checkout.',
-    '14 days after checkout': 'Link remains active for 14 days after checkout.',
-    '30 days after checkout': 'Link remains active for 30 days after checkout.',
-    '90 days after checkout': 'Link remains active for 90 days after checkout.'
-  };
+  var VISIT_LINK_VALIDITY_OPTIONS = ['1 day after checkout', '2 days after checkout', '7 days after checkout', '30 days after checkout'];
 
   var AFTER_CHECKOUT_TOKENS = [
     { token: '[Salon Name]', label: 'Shop name', icon: 'bi-shop' },
@@ -189,6 +178,13 @@
       '<p class="settings-help sms-settings-status" data-sms-status role="status" aria-live="polite"></p>' +
 
       '<p class="settings-help">Prototype: settings are saved in this browser. Send Test previews a message; no SMS is sent.</p>' +
+      '<section class="sms-card sms-shared-links" data-sms-shared-links aria-labelledby="sms-link-settings-title">' +
+        '<div><h3 id="sms-link-settings-title">Visit link settings</h3><p class="settings-help">One expiry for the OneQR visit link in every SMS. Active during the visit; the countdown starts at checkout. Sending the link again does not restart it.</p>' +
+        '<p class="settings-help">After checkout, the same link opens the after-visit page. Receipt, review and other separate links follow their own expiry rules.</p></div>' +
+        '<div class="sms-shared-link-controls">' + selectField('Link availability', 'visitLinkValidity', VISIT_LINK_VALIDITY_OPTIONS) +
+          '<button type="button" class="booking-primary-button" data-sms-action="save-link-settings">Save link settings</button></div>' +
+        '<p class="settings-help" data-sms-link-example></p><p class="settings-help" data-sms-local-status role="status"></p>' +
+      '</section>' +
       '<section data-sms-panel="automation" hidden>' +
         '<div class="sms-columns">' +
           '<div class="sms-col sms-card"><h3>Waitlist Automation Setup</h3>' +
@@ -200,13 +196,11 @@
           '</div>' +
           '<h4 class="sms-section-title">Return Soon SMS</h4><div class="settings-field-grid">' +
             selectField('Send mode', 'returnSoonSendMode', ['Automatic at return notice', 'Manager approval', 'Manual']) +
-            selectField('Link availability', 'returnSoonLinkValidity', LIVE_LINK_VALIDITY_OPTIONS) +
             quickTemplateMarkup('return-soon', RETURN_SOON_TEMPLATE_OPTIONS, RETURN_SOON_TEMPLATES, 'return-reminder') +
             '<div class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('returnSoonMessage', RETURN_SOON_TEMPLATES['return-reminder'], RETURN_SOON_TOKENS) + '</div>' +
           '</div><div class="sms-message-test">' + testSendMarkup('send-test-return-soon', false) + '</div>' +
           '<h4 class="sms-section-title">Ready Now SMS</h4><div class="settings-field-grid">' +
             selectField('Send mode', 'readyNowSendMode', ['Manual', 'Automatic', 'Manager approval']) +
-            selectField('Link availability', 'readyNowLinkValidity', LIVE_LINK_VALIDITY_OPTIONS) +
             quickTemplateMarkup('ready-now', READY_NOW_TEMPLATE_OPTIONS, READY_NOW_TEMPLATES, 'ready-now') +
             '<div class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('readyNowMessage', READY_NOW_TEMPLATES['ready-now'], GENERAL_MESSAGE_TOKENS) + '</div>' +
           '</div><div class="sms-message-test">' + testSendMarkup('send-test-ready-now', false) + '</div>' +
@@ -218,12 +212,12 @@
             '<div><h4 class="sms-section-title">Return Soon</h4><div class="sms-phone"><div class="sms-phone-screen"><div class="sms-phone-bar"></div>' +
               '<div class="sms-phone-title">Messages</div>' +
               '<div class="sms-phone-bubble" data-sms-preview="returnSoonMessage">' + esc(renderTokens(RETURN_SOON_TEMPLATES['return-reminder'])) + '</div>' +
-              '<p class="sms-phone-caption" data-sms-link-validity-preview="returnSoonLinkValidity">' + esc(LINK_VALIDITY_CAPTIONS[LIVE_LINK_VALIDITY_OPTIONS[0]]) + '</p>' +
+              '<p class="sms-phone-caption" data-sms-link-validity-preview="returnSoonLinkValidity"></p>' +
             '</div></div></div>' +
             '<div><h4 class="sms-section-title">Ready Now</h4><div class="sms-phone"><div class="sms-phone-screen"><div class="sms-phone-bar"></div>' +
               '<div class="sms-phone-title">Messages</div>' +
               '<div class="sms-phone-bubble" data-sms-preview="readyNowMessage">' + esc(renderTokens(READY_NOW_TEMPLATES['ready-now'])) + '</div>' +
-              '<p class="sms-phone-caption" data-sms-link-validity-preview="readyNowLinkValidity">' + esc(LINK_VALIDITY_CAPTIONS[LIVE_LINK_VALIDITY_OPTIONS[0]]) + '</p>' +
+              '<p class="sms-phone-caption" data-sms-link-validity-preview="readyNowLinkValidity"></p>' +
             '</div></div></div>' +
           '</div></div>' +
         '</div>' +
@@ -243,7 +237,6 @@
             '<h4 class="sms-section-title">Wait Care SMS</h4>' +
             '<div class="settings-field-grid">' +
               selectField('Send mode', 'waitCareSendMode', ['Manager approval', 'Automatic', 'Manual']) +
-              selectField('Link availability', 'waitCareLinkValidity', LIVE_LINK_VALIDITY_OPTIONS) +
               quickTemplateMarkup('wait-care', WAIT_CARE_TEMPLATE_OPTIONS, WAIT_CARE_TEMPLATES, 'care-benefit') +
               '<div class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('waitCareMessage', WAIT_CARE_DEFAULT, WAIT_CARE_TOKENS) + '</div>' +
             '</div>' +
@@ -256,7 +249,7 @@
             '<div class="sms-phone"><div class="sms-phone-screen"><div class="sms-phone-bar"></div>' +
               '<div class="sms-phone-title">Messages</div>' +
               '<div class="sms-phone-bubble" data-sms-preview="waitCareMessage">' + esc(renderTokens(WAIT_CARE_DEFAULT)) + '</div>' +
-              '<p class="sms-phone-caption" data-sms-link-validity-preview="waitCareLinkValidity">' + esc(LINK_VALIDITY_CAPTIONS[LIVE_LINK_VALIDITY_OPTIONS[0]]) + '</p>' +
+              '<p class="sms-phone-caption" data-sms-link-validity-preview="waitCareLinkValidity"></p>' +
             '</div></div>' +
           '</div>' +
         '</div>' +
@@ -269,7 +262,6 @@
             '<button class="toggle-pill is-on" type="button" role="switch" aria-checked="true" data-sms-enabled="after" aria-label="Toggle Thank You SMS after checkout"></button></div>' +
             '<div class="settings-field-grid">' +
               selectField('Send mode', 'afterSendMode', ['Automatic after checkout', 'Manual review before sending']) +
-              selectField('Link availability', 'afterLinkValidity', AFTER_LINK_VALIDITY_OPTIONS) +
               quickTemplateMarkup('after', AFTER_CHECKOUT_TEMPLATE_OPTIONS, AFTER_CHECKOUT_TEMPLATES, 'ticket-receipt') +
               '<div class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('afterMessage', AFTER_CHECKOUT_DEFAULT, AFTER_CHECKOUT_TOKENS) + '</div>' +
             '</div>' +
@@ -283,7 +275,7 @@
             '<div class="sms-phone"><div class="sms-phone-screen"><div class="sms-phone-bar"></div>' +
               '<div class="sms-phone-title">Messages</div>' +
               '<div class="sms-phone-bubble" data-sms-preview="afterMessage">' + esc(renderTokens(AFTER_CHECKOUT_DEFAULT)) + '</div>' +
-              '<p class="sms-phone-caption" data-sms-link-validity-preview="afterLinkValidity">' + esc(LINK_VALIDITY_CAPTIONS[AFTER_LINK_VALIDITY_OPTIONS[0]]) + '</p>' +
+              '<p class="sms-phone-caption" data-sms-link-validity-preview="afterLinkValidity"></p>' +
             '</div></div>' +
           '</div>' +
         '</div>' +
@@ -296,7 +288,6 @@
             '<button class="toggle-pill is-on" type="button" role="switch" aria-checked="true" data-sms-enabled="welcome" aria-label="Toggle welcome message after check-in"></button></div>' +
             '<div class="settings-field-grid">' +
               selectField('Send mode', 'welcomeSendMode', ['Automatic after check-in', 'Manual review before sending']) +
-              selectField('Link availability', 'welcomeLinkValidity', LIVE_LINK_VALIDITY_OPTIONS) +
               quickTemplateMarkup('welcome', WELCOME_TEMPLATE_OPTIONS, WELCOME_TEMPLATES, 'welcome') +
               '<div class="settings-field sms-field-full"><span class="settings-label">Message</span>' + smsComposerMarkup('welcomeMessage', WELCOME_TEMPLATES.welcome, WELCOME_MESSAGE_TOKENS) + '</div>' +
             '</div>' +
@@ -310,7 +301,7 @@
             '<div class="sms-phone"><div class="sms-phone-screen"><div class="sms-phone-bar"></div>' +
               '<div class="sms-phone-title">Messages</div>' +
               '<div class="sms-phone-bubble" data-sms-preview="welcomeMessage">' + esc(renderTokens(WELCOME_TEMPLATES.welcome)) + '</div>' +
-              '<p class="sms-phone-caption" data-sms-link-validity-preview="welcomeLinkValidity">' + esc(LINK_VALIDITY_CAPTIONS[LIVE_LINK_VALIDITY_OPTIONS[0]]) + '</p>' +
+              '<p class="sms-phone-caption" data-sms-link-validity-preview="welcomeLinkValidity"></p>' +
             '</div></div>' +
           '</div>' +
         '</div>' +
@@ -390,12 +381,11 @@
       button.classList.toggle('is-selected', selected);
       button.setAttribute('aria-pressed', String(selected));
     });
-    var validity = field.replace('Message', 'LinkValidity');
-    var select = $('[data-sms-field="' + validity + '"]');
-    var caption = $('[data-sms-link-validity-preview="' + validity + '"]');
-    var hasLink = /\[(?:OneQR|Review|Tip|Feedback|Rewards|Booking|Receipt) Link\]/.test(textarea.value);
-    if (select) select.closest('.settings-field').hidden = !hasLink;
-    if (caption) { caption.hidden = !hasLink; caption.textContent = LINK_VALIDITY_CAPTIONS[select.value] || ''; }
+    var caption = $('[data-sms-link-validity-preview="' + field.replace('Message', 'LinkValidity') + '"]');
+    if (caption) {
+      caption.hidden = textarea.value.indexOf('[OneQR Link]') < 0;
+      caption.textContent = caption.hidden ? '' : 'Visit link remains active for ' + $('[data-sms-field="visitLinkValidity"]').value + '.';
+    }
   }
   $$('[data-sms-field="afterMessage"], [data-sms-field="welcomeMessage"], [data-sms-field="waitCareMessage"], [data-sms-field="returnSoonMessage"], [data-sms-field="readyNowMessage"]').forEach(function (textarea) {
     textarea.addEventListener('input', function () { refreshPreview(textarea.dataset.smsField); });
@@ -407,14 +397,13 @@
     refreshPreview('returnSoonMessage');
   });
 
-  $$('[data-sms-link-validity-preview]').forEach(function (preview) {
-    var field = preview.dataset.smsLinkValidityPreview;
-    var select = $('[data-sms-field="' + field + '"]');
-    if (!select) return;
-    select.addEventListener('change', function () {
-      preview.textContent = LINK_VALIDITY_CAPTIONS[select.value] || '';
-    });
-  });
+  function refreshLinkSettings() {
+    var validity = $('[data-sms-field="visitLinkValidity"]').value;
+    var days = parseInt(validity, 10);
+    $('[data-sms-link-example]').textContent = 'Example: check in at 10:00, check out at 11:00 → the visit link expires at 11:00 ' + (days === 1 ? 'the next day.' : days + ' days later.');
+    Object.keys(templateGroups).forEach(refreshPreview);
+  }
+  $('[data-sms-field="visitLinkValidity"]').addEventListener('change', refreshLinkSettings);
 
   $$('[data-sms-template]').forEach(function (button) {
     button.addEventListener('click', function () {
@@ -513,6 +502,7 @@
     if (!raw) return { version: 1, sections: {} };
     var value = JSON.parse(raw);
     if (!value || value.version !== 1 || !value.sections || typeof value.sections !== 'object' || Array.isArray(value.sections)) throw new Error('Invalid saved settings');
+    if (value.visitLinkValidity !== undefined && !VISIT_LINK_VALIDITY_OPTIONS.includes(value.visitLinkValidity)) throw new Error('Invalid link expiry');
     Object.values(value.sections).forEach(function (section) {
       if (!section || !section.fields || typeof section.fields !== 'object' || Array.isArray(section.fields) || typeof section.enabled !== 'boolean' || Object.values(section.fields).some(function (field) { return typeof field !== 'string'; })) throw new Error('Invalid saved section');
     });
@@ -542,6 +532,17 @@
       $('[data-sms-test-phone="' + country.dataset.smsTestCountry + '"]').placeholder = country.value === '+84' ? '0912 345 678' : '(713) 555-0123';
     });
   });
+  $('[data-sms-action="save-link-settings"]').addEventListener('click', function () {
+    var section = $('[data-sms-shared-links]');
+    try {
+      var saved = readSettings();
+      var validity = $('[data-sms-field="visitLinkValidity"]').value;
+      if (!VISIT_LINK_VALIDITY_OPTIONS.includes(validity)) throw new Error('Invalid link expiry');
+      saved.visitLinkValidity = validity;
+      localStorage.setItem(storageKey, JSON.stringify(saved));
+      setSmsStatus('Visit link settings saved.', section);
+    } catch (_) { setSmsStatus('Could not save link settings. Your edits are still here; saved data has not been replaced.', section); }
+  });
   Object.keys(ACTION_MESSAGES).forEach(function (action) {
     var button = $('[data-sms-action="' + action + '"]');
     if (button) button.addEventListener('click', function () {
@@ -566,6 +567,10 @@
   });
   try {
     var saved = readSettings();
+    if (saved.visitLinkValidity) $('[data-sms-field="visitLinkValidity"]').value = saved.visitLinkValidity;
+    else if (Object.values(saved.sections).some(function (section) { return Object.keys(section.fields).some(function (key) { return /LinkValidity$/.test(key); }); })) {
+      setSmsStatus('Visit link expiry is now shared. Review and save the common setting; previous per-message expiry choices no longer apply.', $('[data-sms-shared-links]'));
+    }
     $$('[data-sms-panel]').forEach(function (section) {
       var settings = saved.sections[section.dataset.smsPanel];
       if (!settings) return;
@@ -586,5 +591,5 @@
     });
   } catch (_) { setSmsStatus('Could not load saved SMS settings. Stored data is preserved.'); }
   TOKENS['[Return Notice]'] = returnNotice.value.replace(/\s+before$/, '');
-  Object.keys(templateGroups).forEach(refreshPreview);
+  refreshLinkSettings();
 })();

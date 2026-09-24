@@ -364,7 +364,7 @@ test('After Checkout Setup preview mirrors edits to the Thank You message',()=>{
  const preview=d.querySelector('[data-sms-preview="afterMessage"]');
  const templates=Array.from(d.querySelectorAll('[data-sms-template="after"]'));
  assert.equal(d.querySelector('[data-sms-panel="after"] .sms-phone-menu'),null);
- assert.equal(preview.nextElementSibling.textContent,'Link remains active for 30 days after checkout.');
+ assert.equal(preview.nextElementSibling.hidden,true);
  assert.deepEqual(templates.map(button=>button.dataset.templateKey),['ticket-receipt','review','tip','feedback','rewards','booking']);
  for(const token of ['[Receipt Link]','[Review Link]','[Tip Link]','[Feedback Link]','[Rewards Link]','[Booking Link]']){
   assert.ok(templates.some(button=>button.textContent.includes(token)),token+' is represented by a quick template');
@@ -451,23 +451,22 @@ test('Wait Care tab owns its delay rules and complete SMS workflow',()=>{
  assert.deepEqual(errors,[]);dom.window.close();
 });
 
-test('each SMS journey lets the salon configure and preview Smart Link validity',()=>{
+test('one shared visit-link expiry updates every OneQR preview and excludes receipt links',()=>{
  const {dom,w,d,errors}=smsPage();
- const cases=[
-  ['welcome','welcomeLinkValidity','Until checkout + 24 hours','Until checkout + 48 hours','Link remains active until 48 hours after checkout.'],
-  ['after','afterLinkValidity','30 days after checkout','90 days after checkout','Link remains active for 90 days after checkout.'],
-  ['wait-care','waitCareLinkValidity','Until checkout + 24 hours','Until checkout','Link remains active until checkout is completed.'],
-  ['automation','returnSoonLinkValidity','Until checkout + 24 hours','Until checkout','Link remains active until checkout is completed.'],
-  ['automation','readyNowLinkValidity','Until checkout + 24 hours','Until checkout','Link remains active until checkout is completed.']
- ];
- for(const [tab,field,initial,next,caption] of cases){
-  d.querySelector(`[data-sms-tab="${tab}"]`).click();
-  const select=d.querySelector(`[data-sms-field="${field}"]`);
+ const select=d.querySelector('[data-sms-field="visitLinkValidity"]');
+ assert.ok(select);
+ assert.deepEqual(Array.from(select.options,option=>option.value),['1 day after checkout','2 days after checkout','7 days after checkout','30 days after checkout']);
+ assert.equal(d.querySelectorAll('[data-sms-panel] select[data-sms-field$="LinkValidity"]').length,0);
+ select.value='2 days after checkout';select.dispatchEvent(new w.Event('change'));
+ for(const field of ['welcomeLinkValidity','waitCareLinkValidity','returnSoonLinkValidity','readyNowLinkValidity']){
   const preview=d.querySelector(`[data-sms-link-validity-preview="${field}"]`);
-  assert.ok(select);assert.equal(select.value,initial);assert.ok(preview);
-  select.value=next;select.dispatchEvent(new w.Event('change'));
-  assert.equal(preview.textContent,caption);
+  assert.equal(preview.hidden,false);assert.match(preview.textContent,/2 days after checkout/);
  }
+ const afterCaption=d.querySelector('[data-sms-link-validity-preview="afterLinkValidity"]');
+ assert.equal(afterCaption.hidden,true);
+ const after=d.querySelector('[data-sms-field="afterMessage"]');
+ after.value='Your visit: [OneQR Link]';after.dispatchEvent(new w.Event('input'));
+ assert.equal(afterCaption.hidden,false);assert.match(afterCaption.textContent,/2 days after checkout/);
  assert.deepEqual(errors,[]);dom.window.close();
 });
 
@@ -594,7 +593,7 @@ test('SMS edits clear selected templates, hide unused link expiry and estimate r
  edit('Hi [Customer Name]');
  assert.equal(d.querySelectorAll('[data-sms-template="welcome"][aria-pressed="true"]').length,0);
  assert.match(count.textContent,/8 chars.*1 SMS.*GSM-7/);
- assert.equal(d.querySelector('[data-sms-field="welcomeLinkValidity"]').closest('.settings-field').hidden,true);
+ assert.equal(d.querySelector('[data-sms-field="visitLinkValidity"]').closest('.settings-field').hidden,false);
  assert.equal(d.querySelector('[data-sms-link-validity-preview="welcomeLinkValidity"]').hidden,true);
  edit('x'.repeat(307));assert.match(count.textContent,/3 SMS/);
  edit('ế'.repeat(71));assert.match(count.textContent,/2 SMS.*Unicode/);
@@ -602,7 +601,7 @@ test('SMS edits clear selected templates, hide unused link expiry and estimate r
  edit('😊'.repeat(67));assert.match(count.textContent,/3 SMS.*Unicode/);
  edit('');assert.match(count.textContent,/0 chars.*0 SMS/);
  d.querySelector('[data-sms-template="welcome"]').click();
- assert.equal(d.querySelector('[data-sms-field="welcomeLinkValidity"]').closest('.settings-field').hidden,false);
+ assert.equal(d.querySelector('[data-sms-link-validity-preview="welcomeLinkValidity"]').hidden,false);
  dom.window.close();
 });
 
@@ -635,5 +634,25 @@ test('SMS switches persist independently and pausing waitlist does not pause Wel
  for(const tab of ['after','wait-care'])assert.equal(d.querySelector(`[data-sms-panel="${tab}"] [role="switch"]`).getAttribute('aria-checked'),'false');
  assert.equal(d.querySelector('[data-sms-panel="welcome"] [role="switch"]').getAttribute('aria-checked'),'true');
  assert.equal(d.querySelector('[data-sms-automation-pill]').textContent,'Waitlist automation OFF');
+ dom.window.close();
+});
+
+
+test('shared link expiry saves independently and survives other SMS saves',()=>{
+ const {dom,w,d}=smsPage();
+ const welcome=d.querySelector('[data-sms-field="welcomeMessage"]');welcome.value='Unsaved welcome';
+ const select=d.querySelector('[data-sms-field="visitLinkValidity"]');select.value='7 days after checkout';
+ d.querySelector('[data-sms-action="save-link-settings"]').click();reloadSms(w);
+ assert.equal(d.querySelector('[data-sms-field="visitLinkValidity"]').value,'7 days after checkout');
+ assert.notEqual(d.querySelector('[data-sms-field="welcomeMessage"]').value,'Unsaved welcome');
+ d.querySelector('[data-sms-action="save-welcome"]').click();reloadSms(w);
+ assert.equal(d.querySelector('[data-sms-field="visitLinkValidity"]').value,'7 days after checkout');
+ const original=w.Storage.prototype.setItem;
+ w.Storage.prototype.setItem=()=>{throw new Error('full');};
+ d.querySelector('[data-sms-field="visitLinkValidity"]').value='30 days after checkout';
+ d.querySelector('[data-sms-action="save-link-settings"]').click();
+ assert.match(d.querySelector('[data-sms-status]').textContent,/Could not save/);
+ w.Storage.prototype.setItem=original;reloadSms(w);
+ assert.equal(d.querySelector('[data-sms-field="visitLinkValidity"]').value,'7 days after checkout');
  dom.window.close();
 });
