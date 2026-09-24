@@ -378,7 +378,7 @@ test('After Checkout Setup preview mirrors edits to the Thank You message',()=>{
  d.querySelector('[data-sms-tab="after"]').click();
  const textarea=d.querySelector('[data-sms-field="afterMessage"]');
  const preview=d.querySelector('[data-sms-preview="afterMessage"]');
- assert.equal(preview.textContent,'Bitcoin Nail Bar: thanks for visiting! Ticket #12 total $45.00. View receipt: nexora.app/r/••••! Tap here: nexora.app/q/••••');
+ assert.equal(preview.textContent,'Thanks for visiting Bitcoin Nail Bar! Your ticket #12 total is $45.00. View your receipt: nexora.app/r/••••. See offers & rewards: nexora.app/q/••••');
  const insertBar=textarea.closest('[data-sms-composer]');
  assert.equal(insertBar.querySelector('[data-sms-insert-token="[Customer Name]"]'),null);
  assert.ok(insertBar.querySelector('[data-sms-insert-token="[Receipt Link]"]'));
