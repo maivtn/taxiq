@@ -49,15 +49,6 @@
   var WELCOME_MESSAGE_TOKENS = GENERAL_MESSAGE_TOKENS.concat([
     { token: '[Salon Phone]', label: 'Phone number', icon: 'bi-telephone' }
   ]);
-  var TEMPLATE_MESSAGE_DEFAULT = 'Hi [Customer Name], welcome to [Salon Name]! Tap here: [OneQR Link]';
-
-  var SMS_JOURNEY = [
-    { label: 'Welcome with benefits', mode: 'Auto', text: 'Welcome back, Sarah! Your check-in is confirmed. Benefits available. Tap here: nexora.app/q/••••' },
-    { label: 'Return soon', mode: 'Auto at 15 min', text: 'Your turn is getting close. Reply 1 or tap I’m Coming to confirm your return.' },
-    { label: 'Wait Care', mode: 'Manager approval', text: 'We’re sorry your wait is taking longer than expected. To thank you for your patience, Bitcoin Nail Bar is offering a complimentary hot-stone upgrade.' },
-    { label: 'Ready now', mode: 'Manual', text: 'We’re ready for you now! Please return within 10 minutes and tap I’m Here when you arrive.' },
-    { label: 'Thank you', mode: 'Auto after checkout', text: 'Thanks for visiting Bitcoin Nail Bar! Ticket #12: $45.00. Receipt: nexora.app/r/••••' }
-  ];
 
   function smsComposerMarkup(field, value, tokens) {
     var buttons = tokens.map(function (item) {
@@ -91,12 +82,6 @@
       '<select class="settings-select"' + (dataField ? ' data-sms-field="' + esc(dataField) + '"' : '') + '>' + optionsHtml + '</select></label>';
   }
 
-  function journeyItemMarkup(item) {
-    return '<div class="sms-journey-item">' +
-      '<div class="sms-journey-label">' + esc(item.label) + '<span class="sms-journey-mode">' + esc(item.mode) + '</span></div>' +
-      '<p>' + esc(item.text) + '</p></div>';
-  }
-
   function afterCheckoutMenuMarkup() {
     return [
       ['Leave a Review', 'Share your visit experience', 'Open'],
@@ -116,7 +101,6 @@
         '<nav class="sms-subtabs" aria-label="SMS setting sections">' +
           '<button type="button" data-sms-tab="welcome" class="active" aria-current="page">Welcome SMS Setup</button>' +
           '<button type="button" data-sms-tab="after">After Checkout Setup</button>' +
-          '<button type="button" data-sms-tab="templates">SMS Templates</button>' +
           '<button type="button" data-sms-tab="automation">Automation Settings</button>' +
         '</nav>' +
         '<span class="salon-status-pill" data-sms-automation-pill>Automation ON</span>' +
@@ -141,23 +125,6 @@
           '<div class="sms-actions">' +
             '<button type="button" class="booking-primary-button" data-sms-action="save-automation"><i class="bi bi-check2" aria-hidden="true"></i>Save settings</button>' +
             '<button type="button" class="booking-secondary-button" data-sms-action="pause-automation">Pause automation</button>' +
-          '</div></div>' +
-        '</div>' +
-      '</section>' +
-
-      '<section data-sms-panel="templates" hidden>' +
-        '<div class="sms-columns">' +
-          '<div class="sms-col sms-card"><h3>SMS journey</h3><div class="sms-journey">' + SMS_JOURNEY.map(journeyItemMarkup).join('') + '</div>' +
-            '<div class="sms-template-compose"><h4>Template message</h4>' + smsComposerMarkup('templateMessage', TEMPLATE_MESSAGE_DEFAULT, GENERAL_MESSAGE_TOKENS) + '</div>' +
-          '</div>' +
-          '<div class="sms-col-side sms-card"><h3>Template controls</h3><div class="settings-field-grid">' +
-            selectField('Language', null, ['English', 'Vietnamese']) +
-            selectField('Send mode', null, ['Automatic', 'Manager approval', 'Manual']) +
-            '<label class="settings-field sms-field-full"><span class="settings-label">Preview customer</span><input class="settings-input" type="text" value="Sarah Nguyen"></label>' +
-          '</div>' +
-          '<div class="sms-actions">' +
-            testSendMarkup('send-test-template', true) +
-            '<button type="button" class="booking-secondary-button" data-sms-action="save-template">Save template</button>' +
           '</div></div>' +
         '</div>' +
       '</section>' +
@@ -259,7 +226,7 @@
       count.textContent = length + ' chars — ' + Math.max(1, Math.ceil(length / 160)) + ' SMS';
     }
   }
-  $$('[data-sms-field="afterMessage"], [data-sms-field="welcomeMessage"], [data-sms-field="templateMessage"]').forEach(function (textarea) {
+  $$('[data-sms-field="afterMessage"], [data-sms-field="welcomeMessage"]').forEach(function (textarea) {
     textarea.addEventListener('input', function () { refreshPreview(textarea.dataset.smsField); });
   });
 
@@ -305,8 +272,6 @@
   /* ── Save / send test actions ── */
   var ACTION_MESSAGES = {
     'save-automation': 'Automation settings saved.',
-    'save-template': 'Template saved.',
-    'send-test-template': 'Test SMS queued.',
     'save-after': 'After Checkout settings saved.',
     'send-test-after': 'Thank You test SMS queued.',
     'save-welcome': 'Welcome SMS settings saved.',

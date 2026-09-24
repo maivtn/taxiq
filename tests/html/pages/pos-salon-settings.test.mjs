@@ -309,10 +309,10 @@ function smsPage(){
  return page;
 }
 
-test('SMS Settings tab defaults to Welcome SMS Setup and switches between its four sections',()=>{
+test('SMS Settings tab defaults to Welcome SMS Setup and switches between its setup sections',()=>{
  const {dom,d,errors}=smsPage();
  assert.equal(d.querySelector('[data-settings-panel="sms"]').hidden,false);
- assert.deepEqual(Array.from(d.querySelectorAll('[data-sms-tab]'),b=>b.dataset.smsTab),['welcome','after','templates','automation']);
+ assert.deepEqual(Array.from(d.querySelectorAll('[data-sms-tab]'),b=>b.dataset.smsTab),['welcome','after','automation']);
  assert.equal(d.querySelector('[data-sms-tab].active')?.dataset.smsTab,'welcome');
  assert.equal(d.querySelector('[data-sms-panel="welcome"]').hidden,false);
  assert.equal(d.querySelector('[data-sms-panel="automation"]').hidden,true);
@@ -320,8 +320,6 @@ test('SMS Settings tab defaults to Welcome SMS Setup and switches between its fo
  assert.equal(d.querySelector('[data-sms-tab].active')?.dataset.smsTab,'automation');
  assert.equal(d.querySelector('[data-sms-panel="automation"]').hidden,false);
  assert.equal(d.querySelector('[data-sms-panel="welcome"]').hidden,true);
- d.querySelector('[data-sms-tab="templates"]').click();
- assert.equal(d.querySelector('[data-sms-panel="templates"]').hidden,false);
  d.querySelector('[data-sms-tab="after"]').click();
  assert.equal(d.querySelector('[data-sms-panel="after"]').hidden,false);
  assert.deepEqual(errors,[]);dom.window.close();
@@ -349,27 +347,6 @@ test('Welcome SMS Setup live-updates its preview on edit, template change and to
  d.querySelector('[data-sms-target="welcomeMessage"][data-sms-insert-token="[Salon Phone]"]').click();
  assert.equal(textarea.value,'Call us: [Salon Phone]');
  assert.equal(preview.textContent,'Call us: (713) 555-0123');
- assert.deepEqual(errors,[]);dom.window.close();
-});
-
-test('SMS Templates provides the same quick-insert composer and live SMS count',()=>{
- const {dom,w,d,errors}=smsPage();
- d.querySelector('[data-sms-tab="templates"]').click();
- const language=Array.from(d.querySelectorAll('[data-sms-panel="templates"] select'))[0];
- assert.deepEqual(Array.from(language.options,option=>option.textContent),['English','Vietnamese']);
- const textarea=d.querySelector('[data-sms-field="templateMessage"]');
- const composer=textarea.closest('[data-sms-composer]');
- assert.ok(composer);
- assert.ok(composer.querySelector('[data-sms-insert-token="[Customer Name]"]'));
- assert.ok(composer.querySelector('[data-sms-insert-token="[Salon Name]"]'));
- assert.ok(composer.querySelector('[data-sms-insert-token="[OneQR Link]"]'));
- assert.equal(composer.querySelector('[data-sms-insert-token="[Salon Phone]"]'),null);
- textarea.value='Hello';textarea.setSelectionRange(5,5);
- composer.querySelector('[data-sms-insert-token="[Customer Name]"]').click();
- assert.equal(textarea.value,'Hello [Customer Name]');
- assert.equal(d.querySelector('[data-sms-count="templateMessage"]').textContent,'21 chars — 1 SMS');
- textarea.value='x'.repeat(161);textarea.dispatchEvent(new w.Event('input'));
- assert.equal(d.querySelector('[data-sms-count="templateMessage"]').textContent,'161 chars — 2 SMS');
  assert.deepEqual(errors,[]);dom.window.close();
 });
 
@@ -415,7 +392,7 @@ test('Pause automation toggles the Automation pill, and Save/Send actions post a
 
 test('each Send Test action requires a valid recipient phone number',()=>{
  const {dom,d,errors}=smsPage();
- for(const [tab,action] of [['welcome','send-test-welcome'],['after','send-test-after'],['templates','send-test-template']]){
+ for(const [tab,action] of [['welcome','send-test-welcome'],['after','send-test-after']]){
   d.querySelector('[data-sms-tab="'+tab+'"]').click();
   const phone=d.querySelector('[data-sms-test-phone="'+action+'"]');
   const country=d.querySelector('[data-sms-test-country="'+action+'"]');
@@ -429,10 +406,10 @@ test('each Send Test action requires a valid recipient phone number',()=>{
   phone.value='713-555-0123';send.click();
   assert.equal(d.querySelector('[data-sms-status]').textContent,'Test SMS queued for +1 (713) 555-0123.');
  }
- const templateCountry=d.querySelector('[data-sms-test-country="send-test-template"]');
- const templatePhone=d.querySelector('[data-sms-test-phone="send-test-template"]');
- templateCountry.value='+84';templatePhone.value='0912345678';
- d.querySelector('[data-sms-action="send-test-template"]').click();
+ const afterCountry=d.querySelector('[data-sms-test-country="send-test-after"]');
+ const afterPhone=d.querySelector('[data-sms-test-phone="send-test-after"]');
+ afterCountry.value='+84';afterPhone.value='0912345678';
+ d.querySelector('[data-sms-action="send-test-after"]').click();
  assert.equal(d.querySelector('[data-sms-status]').textContent,'Test SMS queued for +84 912 345 678.');
  assert.deepEqual(errors,[]);dom.window.close();
 });

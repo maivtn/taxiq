@@ -187,17 +187,6 @@
   color: #4148df;
 }
 
-.sms-template-compose {
-  margin-top: 22px;
-}
-
-.sms-template-compose h4 {
-  margin: 0 0 10px;
-  color: var(--nexora-text);
-  font-size: 12px;
-  font-weight: 800;
-}
-
 .sms-actions {
   display: flex;
   flex-wrap: wrap;
@@ -257,72 +246,6 @@
   color: #765016;
   font-size: 12px;
   line-height: 1.6;
-}
-
-.sms-tokens {
-  margin-top: 18px;
-}
-
-.sms-token-row {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  margin-top: 8px;
-}
-
-.sms-token {
-  border: 1px solid #c9d9e8;
-  border-radius: 999px;
-  background: #f4f8fc;
-  padding: 6px 10px;
-  color: var(--nexora-text);
-  font-size: 11px;
-  font-weight: 700;
-  cursor: pointer;
-}
-
-.sms-token:hover {
-  border-color: var(--nexora-brand);
-  color: var(--nexora-brand);
-}
-
-/* SMS journey list */
-.sms-journey {
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-.sms-journey-item {
-  border-left: 4px solid var(--nexora-electric);
-  border-radius: 8px;
-  background: var(--nexora-surface-muted);
-  padding: 14px 16px;
-}
-
-.sms-journey-item p {
-  margin: 8px 0 0;
-  color: var(--nexora-text);
-  font-size: 12px;
-  line-height: 1.6;
-}
-
-.sms-journey-label {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  color: var(--nexora-text);
-  font-size: 12px;
-  font-weight: 800;
-}
-
-.sms-journey-mode {
-  border-radius: 999px;
-  background: #e9edff;
-  padding: 2px 8px;
-  color: var(--nexora-brand);
-  font-size: 10px;
-  font-weight: 800;
 }
 
 /* Phone preview mockup */
