@@ -52,18 +52,17 @@ test('organic Search Deals and paid placements are distinct and placement overvi
   preview.click();
   const dialog = d.querySelector('#paid-placement-overview-dialog');
   assert.equal(dialog.open, true);
-  assert.deepEqual([...dialog.querySelectorAll('[data-paid-placement-overview] h3')].map(heading => heading.textContent.trim()), [
-    'Explore & Nearby', 'Search Deals', 'Network banner'
+  const overviewScreen = dialog.querySelector('[data-placement-overview-screen]');
+  assert.ok(overviewScreen, 'a single compact OneQR screen shows placement context');
+  assert.deepEqual([...overviewScreen.querySelectorAll('[data-placement-marker]')].map(marker => marker.dataset.placementMarker), [
+    'nearby', 'search', 'banner'
   ]);
-  const oneQrDestinations = [...dialog.querySelectorAll('[data-oneqr-destination]')].map(destination => ({
-    id: destination.dataset.oneqrDestination,
-    title: destination.querySelector('strong').textContent.trim(),
-    description: destination.querySelector('small').textContent.trim()
-  }));
-  assert.deepEqual(oneQrDestinations, [
-    {id: 'nearby', title: 'Deals Nearby / Explore', description: 'Khám phá địa điểm quanh bạn'},
-    {id: 'search', title: 'Search Deals', description: 'Tìm ưu đãi theo dịch vụ'}
+  assert.deepEqual([...dialog.querySelectorAll('[data-placement-legend]')].map(item => item.dataset.placementLegend), [
+    'nearby', 'search', 'banner'
   ]);
+  assert.match(overviewScreen.textContent, /Deals Nearby \/ Explore/);
+  assert.match(overviewScreen.textContent, /Search Deals/);
+  assert.match(overviewScreen.textContent, /Nâng cấp trải nghiệm pedicure/);
   d.querySelector('#close-paid-placement-overview').click();
   assert.equal(dialog.open, false);
 });
