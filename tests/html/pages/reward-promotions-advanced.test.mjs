@@ -37,6 +37,38 @@ test('advanced settings remain visible when the heading is clicked', async t => 
   assert.equal(d.querySelector('#paid-advertising-fields').closest('details:not([open])'), null);
 });
 
+test('paid advertising heading shows the stored campaign status', async t => {
+  const initial = await boot(t);
+  const state = initial.saved();
+  const offer = state.offers[0];
+  offer.paidBoost = true;
+  state.campaigns ||= [];
+  state.campaigns.push({
+    id: 'campaign-status-test', name: 'Status test', promotionId: offer.id,
+    creativeId: offer.banners[0].id, area: 'Katy', startDate: '', endDate: '',
+    placements: ['search'], dailyBudget: 15, totalBudget: 100, radius: 10,
+    quickSetup: true, status: 'pending'
+  });
+  const {d} = await boot(t, state);
+  d.querySelector('[data-promotion-id="' + offer.id + '"] [data-action="edit"]').click();
+  await tick();
+  assert.equal(d.querySelector('#advanced-settings-title').textContent.trim(), 'Paid advertising');
+  assert.match(d.querySelector('.phase-advanced-heading small').textContent, /Set a budget and choose sponsored placements/i);
+  const status = d.querySelector('#paid-campaign-status');
+  assert.equal(status.textContent.trim(), 'Pending review');
+  assert.equal(status.dataset.status, 'pending');
+  assert.doesNotMatch(status.textContent, /running/i);
+});
+
+test('new paid advertising setup starts with an Off status', async t => {
+  const {d} = await boot(t);
+  d.querySelector('#create-promotion').click();
+  await tick();
+  const status = d.querySelector('#paid-campaign-status');
+  assert.equal(status.textContent.trim(), 'Off');
+  assert.equal(status.dataset.status, 'off');
+});
+
 test('promotion footer exposes one contextual save action', async t => {
   const {d} = await boot(t);
   d.querySelector('#create-promotion').click();
@@ -59,7 +91,7 @@ test('Paid Boost shows a balanced switch state while keeping settings editable',
   const {d, form} = await boot(t);
   d.querySelector('#create-promotion').click();
   await tick();
-  const status = d.querySelector('#paid-boost-status');
+  const status = d.querySelector('#paid-campaign-status');
   const note = d.querySelector('#paid-boost-state-note');
   assert.equal(status.textContent.trim(), 'Off');
   assert.match(note.textContent, /promotion can still run in free placements.*Paid ads will not run until Paid Boost is enabled/i);
@@ -67,7 +99,7 @@ test('Paid Boost shows a balanced switch state while keeping settings editable',
   assert.equal(form.elements.boostBudget.disabled, false);
 
   form.elements.paidBoost.click();
-  assert.equal(status.textContent.trim(), 'On');
+  assert.equal(status.textContent.trim(), 'Draft');
   assert.match(note.textContent, /submitted settings require approval/i);
   assert.equal(d.querySelector('#paid-advertising-fields').hidden, false);
 });
