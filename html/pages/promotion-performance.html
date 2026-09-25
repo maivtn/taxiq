@@ -6,7 +6,7 @@
   <title>Nexora Touch - Promotion Performance</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/promotion-performance.css?v=20260923">
+  <link rel="stylesheet" href="../assets/promotion-performance.css?v=20260925-back">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
 </head>
 <body>
@@ -14,17 +14,11 @@
 <script>window.NEXORA_SHELL = {activePage: 'reward', activeTab: 'promotions', onNavigate: function(tab) { window.location.href = 'salon-setup-reward.html?tab=' + encodeURIComponent(tab); }};</script>
 
 <main class="performance-page">
-  <nav class="performance-breadcrumb" aria-label="Breadcrumb"><a href="reward-promotions.html">Promotion Studio</a><span aria-hidden="true">/</span><span>Performance</span></nav>
+  <a class="performance-back" href="reward-promotions.html"><i data-lucide="arrow-left" aria-hidden="true"></i><span>Back to promotions</span></a>
   <header class="performance-heading">
     <div><p class="performance-eyebrow">Salon Owner / Promotions</p><h1>Promotion Performance</h1><p>See how each offer is discovered, booked and used, then compare Paid Boost results with its cost.</p></div>
     <span class="performance-demo">Prototype data</span>
   </header>
-
-  <nav class="performance-tabs" aria-label="Promotion Studio">
-    <a href="reward-promotions.html">Promotions</a>
-    <a href="reward-promotions.html?tab=campaigns">Paid Boost</a>
-    <a class="active" href="promotion-performance.html" aria-current="page">Performance</a>
-  </nav>
 
   <section class="performance-filters" aria-label="Performance filters">
     <label><span>Promotion</span><select id="performance-promotion"></select></label>
