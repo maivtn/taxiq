@@ -8,6 +8,17 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/reward-promotions.css?v=20260924-studio-tabs">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <style>
+    .phase-tracking{margin-top:18px;padding:20px;border:1px solid var(--promo-line);border-radius:12px;background:var(--promo-surface);box-shadow:var(--promo-shadow)}
+    .phase-section-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:16px}.phase-section-heading h2{margin:0}.phase-tracking-filters{display:grid;grid-template-columns:repeat(3,minmax(150px,1fr));gap:10px;min-width:min(620px,55%)}
+    .phase-metrics{display:grid;grid-template-columns:repeat(6,minmax(0,1fr));gap:10px;margin-bottom:14px}.phase-metrics article{padding:14px;border:1px solid var(--promo-line);border-radius:9px;background:var(--promo-canvas)}.phase-metrics span,.phase-metrics small{display:block;color:var(--promo-muted);font-size:11px}.phase-metrics strong{display:block;margin:4px 0;font-size:22px;color:var(--promo-ink)}
+    .phase-channel-table{overflow:auto;border:1px solid var(--promo-line);border-radius:9px}.phase-channel-table table{width:100%;border-collapse:collapse}.phase-channel-table th,.phase-channel-table td{padding:11px 12px;border-bottom:1px solid var(--promo-line);text-align:left;font-size:12px}.phase-channel-table th{background:var(--promo-canvas);color:var(--promo-muted);font-size:10px;text-transform:uppercase;letter-spacing:.04em}.phase-empty-data{display:grid;gap:3px;padding:18px;text-align:center}.phase-empty-data span,.phase-insight p{color:var(--promo-muted)}.phase-insight{margin-top:12px;padding:12px 14px;border:1px solid var(--promo-line);border-radius:9px;background:var(--promo-canvas)}.phase-insight p{margin:3px 0 0;font-size:12px}
+    .phase-advanced{padding:0!important}.phase-advanced>summary{display:flex;justify-content:space-between;align-items:center;padding:14px;cursor:pointer;list-style:none}.phase-advanced>summary::-webkit-details-marker{display:none}.phase-advanced>summary span:first-child{display:grid;gap:3px}.phase-advanced>summary small{color:var(--promo-muted);font-weight:400}.phase-advanced-body{display:grid;gap:12px;padding:14px;border-top:1px solid var(--promo-line)}
+    .phase-ai-button{width:100%;margin-top:10px}.phase-ai-dialog{width:min(820px,calc(100vw - 32px))}.phase-ai-body{padding:18px}.phase-ai-options{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px;margin-top:14px}.phase-ai-option{padding:0 0 10px;overflow:hidden;border:2px solid transparent;border-radius:10px;background:#fff;color:var(--promo-ink);text-align:left}.phase-ai-option.selected{border-color:var(--promo-primary)}.phase-ai-option>b{display:block;padding:9px 10px 0}.phase-ai-art{display:grid;min-height:145px;padding:16px;align-content:center;gap:4px}.phase-ai-art small{font-size:9px;font-style:normal;letter-spacing:.08em}.phase-ai-art strong{font-size:24px}.phase-ai-art em{font-size:11px}.phase-ai-art.purple{background:linear-gradient(135deg,#eeeaff,#dcdcff);color:#4d3bb5}.phase-ai-art.gold{background:linear-gradient(135deg,#fff4d9,#f4ddb2);color:#855a10}.phase-ai-art.rose{background:linear-gradient(135deg,#ffe8ef,#f5d7e4);color:#943d62}
+    [data-action="share"]{display:none!important}
+    @media(max-width:1100px){.phase-section-heading{align-items:flex-start;flex-direction:column}.phase-tracking-filters{width:100%;min-width:0}.phase-metrics{grid-template-columns:repeat(3,minmax(0,1fr))}}
+    @media(max-width:700px){.phase-tracking{padding:14px}.phase-tracking-filters,.phase-metrics,.phase-ai-options{grid-template-columns:1fr}.phase-channel-table table{min-width:680px}}
+  </style>
 </head>
 <body>
 <div class="shell"><aside class="sidebar" id="sidebar"></aside><div class="app-area"><header class="header" id="header"></header>
@@ -41,6 +52,12 @@
     <div class="promo-empty" id="promotion-empty" hidden><span data-icon="search"></span><h2 id="empty-title"></h2><p id="empty-description"></p><button class="promo-button" id="clear-filters" data-i18n="clearFilters">Clear filters</button></div>
     <div class="promo-empty" id="promotion-load-error" role="alert" hidden><span data-icon="alert-circle"></span><h2 data-i18n="loadError">Could not load promotions</h2><p data-i18n="loadErrorHint">Your saved data has been kept. Try loading it again.</p><button class="promo-button" id="retry-load" data-i18n="retry">Try again</button></div>
   </section>
+  <section class="phase-tracking" id="tracking-performance" aria-labelledby="tracking-title">
+    <div class="phase-section-heading"><div><p class="promo-eyebrow">Promotion insights</p><h2 id="tracking-title">Tracking &amp; performance</h2><p class="section-description" id="tracking-description">All promotions · Tracking data is not connected in this prototype.</p></div><div class="phase-tracking-filters"><label class="promo-field"><span>Promotion</span><select id="tracking-promotion" aria-label="Promotion"><option>All promotions</option></select></label><label class="promo-field"><span>Reporting period</span><select aria-label="Reporting period"><option>Last 30 days</option><option>Last 7 days</option><option>Last 90 days</option></select></label><label class="promo-field"><span>Channel</span><select aria-label="Channel"><option>All channels</option><option>POS checkout</option><option>OneQR hero</option><option>Search Deals</option><option>Check-in screen</option></select></label></div></div>
+    <div class="phase-metrics"><article><span>Total views</span><strong>0</strong><small>Awaiting tracking data</small></article><article><span>Clicks / QR scans</span><strong>0</strong><small>Awaiting tracking data</small></article><article><span>Booking taps</span><strong>0</strong><small>Awaiting tracking data</small></article><article><span>POS redemptions</span><strong>0</strong><small>Awaiting tracking data</small></article><article><span>Promo revenue</span><strong>$0</strong><small>Completed orders only</small></article><article><span>New customers</span><strong>0</strong><small>Awaiting tracking data</small></article></div>
+    <div class="phase-channel-table"><table><thead><tr><th>Channel</th><th>Views</th><th>Clicks</th><th>Redeems</th><th>Revenue</th><th>Cost</th></tr></thead><tbody><tr><td colspan="6"><div class="phase-empty-data"><strong>No tracking data yet</strong><span>Channel results will appear after tracking is connected.</span></div></td></tr></tbody></table></div>
+    <div class="phase-insight"><strong>Insights</strong><p>Recommendations will appear when enough real promotion activity is available.</p></div>
+  </section>
   </div>
   <div id="studio-campaigns" hidden></div>
   <p class="promo-demo-note" data-i18n="demoNote">Interactive prototype · Sample data · Changes are saved in this browser.</p>
@@ -50,19 +67,9 @@
 <dialog id="promotion-editor" class="promo-dialog" aria-labelledby="editor-title">
   <form id="promotion-form" novalidate>
     <header class="editor-header"><div><p class="promo-eyebrow">Promotion studio</p><h2 id="editor-title">Create promotion</h2></div><div class="editor-header-actions"><label class="promo-language"><span class="sr-only" data-i18n="language">Language</span><select id="editor-language" aria-label="Language"><option value="en">EN</option><option value="vi">VI</option></select></label><button type="button" class="promo-close" data-close-editor data-label="closeEditor" aria-label="Close promotion editor"><span data-icon="x"></span></button></div></header>
-    <div class="editor-help"><strong data-i18n="helpTitle">Review these 7 parts before using your offer</strong><span data-i18n="helpSteps">⓪ Goal → ① Details → ② Discount → ③ Placements → ④ Banners → ⑤ Share & ads → ⑥ Tracking</span><small data-i18n="helpNote">Preview as you edit. Save, then enable the promotion from your list when you are ready.</small></div>
+    <div class="editor-help"><strong data-i18n="helpTitle">Review these 4 parts before using your offer</strong><span data-i18n="helpSteps">① Name & eligible services → ② Discount → ③ Days & times → ④ Banners & placements</span><small data-i18n="helpNote">Preview as you edit. Save, then enable the promotion from your list when you are ready.</small></div>
     <div class="editor-body">
       <div class="editor-fields">
-        <section class="editor-section" id="promotion-goal-guide" aria-labelledby="goal-guide-title">
-          <h3 class="section-number" id="goal-guide-title">00 / Campaign guide</h3>
-          <p class="promo-note">Choose a goal to keep the offer, schedule and channels focused. Suggestions never publish or spend automatically.</p>
-          <div class="promotion-goal-grid">
-            <label><input type="radio" name="goal" value="slow-hours" checked><span><strong>Fill slow hours</strong><small>Use quiet appointment windows.</small></span></label>
-            <label><input type="radio" name="goal" value="new-customers"><span><strong>Bring in new customers</strong><small>Pair a first-visit offer with Discovery.</small></span></label>
-            <label><input type="radio" name="goal" value="service"><span><strong>Promote a service</strong><small>Feature one service and matching creative.</small></span></label>
-            <label><input type="radio" name="goal" value="rebook"><span><strong>Rebook clients</strong><small>Encourage the next appointment.</small></span></label>
-          </div>
-        </section>
         <section class="editor-section" aria-labelledby="details-title">
           <h3 class="section-number" id="details-title" data-i18n="detailsSection">01 / Promotion details</h3>
           <div class="promo-field-row details-row">
@@ -81,7 +88,6 @@
         <section class="editor-section" aria-labelledby="schedule-title">
           <h3 class="section-number" id="schedule-title" data-i18n="scheduleSection">02 / Discount & schedule</h3>
           <div class="promo-field-row"><label class="promo-field"><span data-i18n="discountType">Discount type</span><select name="type"><option value="percent" data-i18n="percent">Percent · %</option><option value="fixed" data-i18n="amount">Amount · $</option><option value="free" data-i18n="legacyFree" hidden>Free service or add-on</option><option value="custom" data-i18n="legacyCustom" hidden>Custom offer</option></select></label><label class="promo-field" id="discount-field"><span data-i18n="discountValue">Discount value</span><input name="value" type="number" min="0.01" step="0.01" required aria-describedby="promotion-error"></label></div>
-          <div class="promo-field-row"><label class="promo-field"><span data-i18n="effectiveStart"></span><input type="date" name="startDate"></label><label class="promo-field"><span data-i18n="effectiveEnd"></span><input type="date" name="endDate"></label></div>
           <fieldset class="promo-days"><legend data-i18n="days">Days it runs</legend><div id="promotion-days"></div></fieldset>
           <div class="promo-field-row"><label class="promo-field"><span data-i18n="startsAt">Starts at</span><input name="startTime" type="time" required value="00:00"></label><label class="promo-field"><span data-i18n="endsAt">Ends at</span><input name="endTime" type="time" required value="23:59"></label></div>
           <p class="promo-note" data-i18n="timeHint">Shop local time · America/Chicago. Start and end times must be on the same day.</p>
@@ -89,32 +95,28 @@
         </section>
         <section class="editor-section" aria-labelledby="placements-title">
           <h3 class="section-number" id="placements-title" data-i18n="placementsSection">03 / Placements</h3>
+          <p class="promo-note" data-i18n="internalHint"></p>
           <label class="promo-check-card"><input name="checkout" type="checkbox" checked><span><strong data-i18n="checkout">Offer this at checkout</strong><small data-i18n="checkoutHint">Available in the POS checkout.</small></span><span data-icon="shopping-bag"></span></label>
-          <h3 class="placement-heading" data-i18n="whereDisplay">Where should it appear?</h3>
-          <label class="promo-check-card placement-card"><input name="hero" type="checkbox" checked><span><strong data-i18n="ownPlacement">Your website & OneQR</strong><small data-i18n="ownPlacementHint">Branch homepage and Promotions page.</small></span><span data-icon="scan"></span></label>
-          <button type="button" class="promo-button placement-preview-button" data-placement-preview="own"><span data-i18n="viewOwnPlacement">View Website & OneQR placement</span><span aria-hidden="true">→</span></button>
-          <label class="promo-check-card placement-card"><input name="public" type="checkbox"><span><strong data-i18n="publicPlacement">Public on Nexora</strong><small data-i18n="publicPlacementHint">Customers can find it in Explore, Nearby and Search Deals after review.</small></span><span data-icon="globe"></span></label>
-          <button type="button" class="promo-button placement-preview-button" data-placement-preview="public"><span data-i18n="viewPublicPlacement">View Public placement on Nexora</span><span aria-hidden="true">→</span></button>
-          <label class="promo-check-card placement-card"><input name="paidBoost" type="checkbox"><span><strong data-i18n="paidPlacement">Paid advertising</strong><small data-i18n="paidPlacementHint">Sponsored placement in Explore. Public is required; this never inserts ads on another salon’s homepage.</small></span><span data-icon="sparkles"></span></label>
-          <button type="button" class="promo-button placement-preview-button" data-placement-preview="paid"><span data-i18n="viewPaidPlacement">View paid advertising placement</span><span aria-hidden="true">→</span></button>
-          <div class="paid-placement-config" hidden>
-            <label class="promo-field"><span data-i18n="boostArea">Advertising area</span><select name="boostArea"><option>Houston</option><option>Katy</option><option>Austin</option><option>Dallas</option></select></label>
-            <label class="promo-field"><span data-i18n="boostBudget">Maximum total campaign budget (USD)</span><input name="boostBudget" type="number" min="1" step="0.01" value="100"></label>
-            <p class="promo-note" data-i18n="boostHint">Saving creates one linked Paid Boost draft. It follows the effective dates above and does not charge Ads Credit.</p>
-          </div>
+          <label class="promo-check-card"><input name="hero" type="checkbox"><span><strong>OneQR hero</strong><small data-i18n="heroHint">Show this promotion’s banners.</small></span><span data-icon="scan"></span></label>
+          <label class="promo-check-card"><input name="public" type="checkbox"><span><strong data-i18n="public">Submit to Search Deals</strong><small data-i18n="publicHint">Public listing requires a separate review.</small></span><span data-icon="globe"></span></label>
+          <label class="promo-check-card"><input name="checkIn" type="checkbox"><span><strong>Check-in screen</strong><small>Show the promotion while customers check in.</small></span><span data-icon="user-plus"></span></label>
           <p class="promo-note" data-i18n="publicFree"></p><div class="studio-notice" id="publication-summary"></div><details class="studio-history"><summary data-i18n="history"></summary><ol id="publication-history"></ol></details>
           <p class="promo-note" data-i18n="publicNote">A public request does not turn on paid advertising or referral rewards.</p>
         </section>
-        <section class="editor-section po-share-section" id="promotion-share-channels" aria-labelledby="share-channels-title">
-          <h3 class="section-number" id="share-channels-title">05 / Share, channels &amp; ads</h3>
-          <div class="po-quick-actions"><div><strong>Quick Actions</strong><small>Available after a banner exists. Live links require a saved promotion.</small></div><div><button type="button" class="promo-button" data-share-action="banner">Download Banner</button><button type="button" class="promo-button" data-share-action="social">Social Sizes</button><button type="button" class="promo-button" data-share-action="qr">QR Code</button><button type="button" class="promo-button" data-share-action="caption">Copy Caption</button><button type="button" class="promo-button" data-share-action="link">Copy Link</button><button type="button" class="promo-button" data-share-action="booking">Booking Link</button></div></div>
-          <details class="po-subpanel" open><summary>Share kit and tracked links</summary><div class="po-subpanel-body"><div class="po-share-grid"><article><strong>Public deal page</strong><span>Banner, terms, salon details and the selected CTA.</span></article><article><strong>Social media kit</strong><span>Square, story, landscape, poster, caption and QR.</span></article><article><strong>Paid ads handoff</strong><span>Assets and tracked URLs for Meta, Google or an agency.</span></article></div><h4>Tracked channel links</h4><div class="po-tracked-links"><span>Facebook · social</span><span>Instagram · social</span><span>Google Business · local</span><span>SMS · text</span><span>Email · email</span><span>Paid ads · CPC</span></div></div></details>
-          <details class="po-subpanel"><summary>Target audience recommendation</summary><div class="po-subpanel-body"><p>Suggestions may use eligible services, location, search intent and permitted visit history. Estimated reach is sample data until connected.</p><button type="button" class="promo-button" data-prototype-action="audience">Let Nexora choose</button></div></details>
-          <details class="po-subpanel"><summary>Run destinations &amp; approval</summary><div class="po-subpanel-body po-destination-grid"><label><input type="checkbox" name="shareDestination" value="oneqr" checked><span>OneQR Hero</span></label><label><input type="checkbox" name="shareDestination" value="nearby" checked><span>Discover Deals Nearby</span></label><label><input type="checkbox" name="shareDestination" value="search" checked><span>Search Deals</span></label><label><input type="checkbox" name="shareDestination" value="merchant-atm"><span>Merchant ATM app</span></label><label><input type="checkbox" name="shareDestination" value="mobile-atm"><span>Mobile ATM app</span></label><label><input type="checkbox" name="shareDestination" value="cryptomap"><span>CryptoMap360</span></label><label><input type="checkbox" name="shareDestination" value="meta"><span>Facebook / Instagram handoff</span></label><label><input type="checkbox" name="shareDestination" value="google"><span>Google Ads handoff</span></label></div></details>
-          <details class="po-subpanel"><summary>Customer outreach</summary><div class="po-subpanel-body"><div class="promo-field-row"><label class="promo-field"><span>Customer segment</span><select name="outreachSegment"><option value="pedicure">Pedicure customers</option><option value="inactive">Haven't visited in 60 days</option><option value="birthday">Birthday this month</option><option value="vip">VIP customers</option><option value="sms-opt-in">All SMS opt-in customers</option></select></label><label class="promo-field"><span>Send channel</span><select name="outreachChannel"><option value="sms-email">SMS + Email</option><option value="sms">SMS only</option><option value="email">Email only</option><option value="push">Push notification</option></select></label></div><p class="promo-note">Consent, recipient eligibility, provider limits and approval are checked again before sending. Outreach does not use Ads Credit by default.</p></div></details>
-          <details class="po-subpanel"><summary>Local Partner Network</summary><div class="po-subpanel-body"><label class="promo-field"><span>Cross-promotion</span><select name="partnerMode"><option value="off">Off · only my promotions</option><option value="manual">Review each non-competing partner</option><option value="eligible">Allow eligible partners after review</option></select></label><p class="promo-note">Partner invitations, receipt placements, redemption tokens and commercial terms require separate approval. Competitors remain blocked by the salon's category rules.</p></div></details>
-          <div class="studio-notice"><strong>06 / Performance &amp; tracking</strong><p>After saving, open Performance to compare Internal, Public, outreach and Paid results. Preview and copied assets do not count as delivery.</p></div>
-        </section>
+        <details class="editor-section phase-advanced">
+          <summary><span><strong>Advanced settings</strong><small>Set campaign dates, limits and audience.</small></span><span aria-hidden="true">⌄</span></summary>
+          <div class="phase-advanced-body">
+            <div class="promo-field-row"><label class="promo-field"><span>Start date</span><input type="date" name="startDate"></label><label class="promo-field"><span>End date</span><input type="date" name="endDate"></label></div>
+            <div class="promo-field-row"><label class="promo-field"><span>Redemption cap</span><input type="number" name="redemptionCap" min="1" placeholder="Unlimited"></label><label class="promo-field"><span>Budget cap (USD)</span><input type="number" name="budgetCap" min="0" step="0.01" placeholder="No limit"></label></div>
+            <label class="promo-field"><span>Audience</span><select name="audiencePhase1"><option value="recommended">Let Nexora recommend</option><option value="existing">Existing customers</option><option value="nearby-oneqr">Nearby OneQR visitors</option><option value="inactive-45">Inactive 45+ days</option></select></label>
+          </div>
+        </details>
+        <div class="phase-compat-fields" hidden>
+          <input type="radio" name="goal" value="slow-hours" checked><input type="checkbox" name="paidBoost"><select name="boostArea"><option>Houston</option></select><input name="boostBudget" type="number" value="100">
+          <input type="checkbox" name="shareDestination" value="oneqr" checked><input type="checkbox" name="shareDestination" value="nearby" checked><input type="checkbox" name="shareDestination" value="search" checked>
+          <select name="outreachSegment"><option value="pedicure">Pedicure customers</option></select><select name="outreachChannel"><option value="sms-email">SMS + Email</option></select><select name="partnerMode"><option value="off">Off</option></select>
+          <div class="paid-placement-config" hidden></div><section id="promotion-share-channels"><details><summary>Share</summary></details></section><button type="button" id="preview-promotion">Preview</button>
+        </div>
       </div>
       <aside class="editor-preview" aria-labelledby="banners-title">
         <h3 class="section-number" id="banners-title" data-i18n="bannersSection">04 / Banners & posters</h3>
@@ -137,12 +139,15 @@
         </div>
         <label class="promo-upload"><span data-icon="upload"></span><strong data-i18n="upload">Upload your design</strong><span class="promo-note" id="upload-file-name" data-i18n="chooseFile">Choose an image</span><input type="file" id="banner-upload" accept="image/png,image/jpeg,image/webp" aria-describedby="upload-info"></label>
         <p id="upload-info" class="promo-note" role="status" data-i18n="uploadHint">PNG / JPG / WebP · up to 8 MB · up to 8 banners</p>
+        <button type="button" class="promo-button phase-ai-button" id="generate-ai-banner"><span data-icon="sparkles"></span><span>Generate banner with AI</span></button>
+        <p class="promo-note" id="ai-banner-status">Describe the promotion and let AI Ads create banner options.</p>
         <button type="button" class="promo-text-button" id="preview-draft"><span data-icon="external-link"></span><span data-i18n="previewPrint">Preview & print poster</span></button>
       </aside>
     </div>
-    <footer class="editor-footer"><div><p id="promotion-error" class="promo-error" role="alert"></p><p class="promo-note" id="save-note" data-i18n="saveNote">New promotions are saved disabled.</p></div><div class="editor-footer-actions"><button type="submit" class="promo-button" id="save-promotion" data-i18n="saveDraft">Save draft</button><button type="button" class="promo-button primary" id="preview-promotion"><span data-i18n="previewAction">Preview</span><span aria-hidden="true">→</span></button></div></footer>
+    <footer class="editor-footer"><div><p id="promotion-error" class="promo-error" role="alert"></p><p class="promo-note" id="save-note" data-i18n="saveNote">New promotions are saved disabled.</p></div><div class="editor-footer-actions"><button type="button" class="promo-button" data-close-editor data-i18n="cancel">Cancel</button><button type="submit" class="promo-button" id="save-promotion">Save draft</button><button type="button" class="promo-button primary" id="submit-promotion-approval">Submit for approval</button></div></footer>
   </form>
 </dialog>
+<dialog id="ai-banner-dialog" class="promo-poster-dialog phase-ai-dialog" aria-labelledby="ai-banner-title"><header class="editor-header"><div><p class="promo-eyebrow">AI Ads</p><h2 id="ai-banner-title">Create banner with AI</h2></div><button type="button" class="promo-close" id="close-ai-banner" aria-label="Close AI banner generator"><span data-icon="x"></span></button></header><div class="phase-ai-body"><label class="promo-field"><span>What should the banner communicate?</span><textarea id="ai-banner-prompt" rows="3" placeholder="Example: Promote 20% off nail art add-ons with a premium purple look."></textarea></label><div class="phase-ai-options" role="radiogroup" aria-label="Generated banner options"><button type="button" class="phase-ai-option selected" data-ai-theme="purple" role="radio" aria-checked="true"><span class="phase-ai-art purple"><small>LIMITED OFFER</small><strong>20% OFF</strong><em>Premium add-ons</em></span><b>Signature Purple</b></button><button type="button" class="phase-ai-option" data-ai-theme="gold" role="radio" aria-checked="false"><span class="phase-ai-art gold"><small>JUST FOR YOU</small><strong>SAVE MORE</strong><em>Book your next visit</em></span><b>Luxury Gold</b></button><button type="button" class="phase-ai-option" data-ai-theme="rose" role="radio" aria-checked="false"><span class="phase-ai-art rose"><small>NEW GUEST</small><strong>WELCOME</strong><em>Your first visit offer</em></span><b>Soft Rose</b></button></div></div><footer class="editor-footer"><p class="promo-note">Prototype preview. No image is generated or published.</p><div class="editor-footer-actions"><button type="button" class="promo-button" id="cancel-ai-banner">Cancel</button><button type="button" class="promo-button primary" id="use-ai-banner">Use selected banner</button></div></footer></dialog>
 <dialog id="placement-preview-dialog" class="promo-poster-dialog placement-preview-dialog" aria-labelledby="placement-preview-title"><header class="editor-header"><div><p class="promo-eyebrow" data-i18n="placementPreview">Placement preview</p><h2 id="placement-preview-title"></h2></div><button type="button" class="promo-close" id="close-placement-preview" data-label="closePreview" aria-label="Close preview"><span data-icon="x"></span></button></header><div class="poster-body" id="placement-preview-body"></div></dialog>
 <dialog id="promotion-poster-dialog" class="promo-poster-dialog" aria-labelledby="poster-title"><header class="editor-header"><div><p class="promo-eyebrow" data-i18n="preview">Preview</p><h2 id="poster-title" data-i18n="promotionPoster">Promotion poster</h2></div><button type="button" class="promo-close" id="close-poster" data-label="closePreview" aria-label="Close preview"><span data-icon="x"></span></button></header><div class="poster-body"><div id="poster-output"></div><div class="poster-pager"><button type="button" class="promo-button" id="previous-banner" data-label="previousBanner" aria-label="Previous banner"><span data-icon="arrow-left"></span></button><span id="poster-page"></span><button type="button" class="promo-button" id="next-banner" data-label="nextBanner" aria-label="Next banner"><span data-icon="arrow-right"></span></button></div><div id="poster-details"></div></div><footer class="editor-footer"><p class="promo-note" data-i18n="printHint">Print or save as PDF.</p><button class="promo-button primary" id="print-poster"><span data-icon="printer"></span><span data-i18n="print">Print poster</span></button></footer></dialog>
 <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
@@ -151,5 +156,74 @@
 <script src="../assets/promotion-studio.js?v=20260923-placement-ui"></script>
 <script src="../assets/promotion-campaigns.js?v=20260924-po-integrated"></script>
 <script src="../assets/reward-promotions.js?v=20260924-po-integrated"></script>
+<script>
+(function () {
+  const catalog = [
+    {id:'weekday-pedicure',symbol:'☀︎',purpose:'Fill quiet hours',offer:'15% off · Weekdays',hint:'Pedicure + Gel Polish during selected weekday hours.',title:'Weekday Pedicure Glow · Sample',badge:'HAPPY HOURS',description:'15% off Pedicure + Gel Polish during selected weekday hours.',type:'percent',value:'15',days:['Tue','Wed','Thu'],start:'10:00',end:'14:00'},
+    {id:'add-on-upgrade',symbol:'✨',purpose:'Increase ticket value',offer:'20% off add-ons',hint:'Nail art or massage add-on with a main service.',title:'Add-On Upgrade · Sample',badge:'UPGRADE',description:'20% off an eligible nail art or massage add-on with a main service.',type:'percent',value:'20'},
+    {id:'rebook-save',symbol:'↻',purpose:'Bring customers back',offer:'$5 off next visit',hint:'Reward customers who book their next visit.',title:'Rebook & Save · Sample',badge:'REBOOK',description:'Save $5 on the next eligible visit when the customer rebooks.',type:'fixed',value:'5'},
+    {id:'gift-card',symbol:'🎁',purpose:'Grow gift card sales',offer:'$15 gift card bonus',hint:'Seasonal bonus with an eligible gift card purchase.',title:'Gift Card Bonus · Sample',badge:'BONUS',description:'Receive a $15 bonus with an eligible gift card purchase.',type:'fixed',value:'15'},
+    {id:'lunch-combo',symbol:'🍽',purpose:'Increase lunch traffic',offer:'$3 off lunch combo',hint:'Main dish and drink during lunch hours.',title:'Lunch Combo · Sample',badge:'LUNCH',description:'Save $3 on an eligible lunch combo during selected hours.',type:'fixed',value:'3',days:['Mon','Tue','Wed','Thu','Fri'],start:'11:00',end:'14:00'},
+    {id:'coffee-hour',symbol:'☕',purpose:'Fill afternoon hours',offer:'BOGO 50%',hint:'Afternoon offer for an eligible second drink.',title:'Coffee Happy Hour · Sample',badge:'HAPPY HOUR',description:'Buy one eligible drink and get the second drink 50% off during happy hour.',type:'percent',value:'50',start:'14:00',end:'17:00'},
+    {id:'retail-bundle',symbol:'◫',purpose:'Sell product bundles',offer:'15% off a bundle',hint:'Gift set or selected product bundle.',title:'Retail Bundle · Sample',badge:'BUNDLE',description:'15% off an eligible gift set or selected product bundle.',type:'percent',value:'15'},
+    {id:'oil-return',symbol:'⚙',purpose:'Drive repeat service',offer:'$10 off next oil change',hint:'Return offer for an eligible oil change.',title:'Oil Change Return · Sample',badge:'COME BACK',description:'Save $10 on the next eligible oil change.',type:'fixed',value:'10'},
+    {id:'fitness-trial',symbol:'◉',purpose:'Attract new members',offer:'7-day trial',hint:'Trial week or introductory fitness class.',title:'Fitness Trial Week · Sample',badge:'7-DAY TRIAL',description:'Try eligible classes for seven days. Review participation terms before use.',type:'custom',value:'7-day trial'},
+    {id:'wellness-first',symbol:'✦',purpose:'Welcome first visits',offer:'$25 off first visit',hint:'Consultation or eligible wellness service.',title:'Wellness First Visit · Sample',badge:'FIRST VISIT',description:'Save $25 on an eligible first consultation or wellness service.',type:'fixed',value:'25'},
+    {id:'event-night',symbol:'♬',purpose:'Promote an event',offer:'2-for-1 event night',hint:'Eligible admission during a selected event.',title:'Event Night Promo · Sample',badge:'EVENT NIGHT',description:'Two-for-one admission for the selected event night.',type:'custom',value:'2-for-1'},
+    {id:'build-year',symbol:'▦',purpose:'Plan seasonal offers',offer:'Build My Year',hint:'Spring, Summer, Fall and Holiday starter set.',title:'Spring Refresh · Build My Year',badge:'SPRING',description:'The first of four seasonal promotion drafts. Review Spring, Summer, Fall and Holiday offers before enabling.',type:'percent',value:'15'}
+  ];
+  const templateHost = document.getElementById('promotion-templates');
+  const esc = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+  function renderPhaseTemplates() {
+    if (templateHost.querySelectorAll('[data-phase-template]').length === catalog.length) return;
+    templateHost.innerHTML = catalog.map(item => '<article class="promo-template"><div class="template-art theme-purple"><span class="template-symbol" aria-hidden="true">' + esc(item.symbol) + '</span><strong>' + esc(item.offer) + '</strong></div><h3>' + esc(item.purpose) + '</h3><p>' + esc(item.hint) + '</p><button type="button" class="promo-button primary" data-phase-template="' + esc(item.id) + '">Use this template<span aria-hidden="true">→</span></button></article>').join('');
+  }
+  renderPhaseTemplates();
+  new MutationObserver(renderPhaseTemplates).observe(templateHost,{childList:true});
+  templateHost.addEventListener('click',event => {
+    const button = event.target.closest('[data-phase-template]'); if (!button) return;
+    const item = catalog.find(entry => entry.id === button.dataset.phaseTemplate); if (!item) return;
+    document.getElementById('create-promotion').click();
+    const form = document.getElementById('promotion-form');
+    const set = (name,value) => { const control = form.elements.namedItem(name); if (control) control.value = value; };
+    set('title',item.title); set('badge',item.badge); set('description',item.description); set('type',item.type); set('value',item.value); set('startTime',item.start || '00:00'); set('endTime',item.end || '23:59');
+    form.querySelectorAll('[name="days"]').forEach(input => { input.checked = (item.days || ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']).includes(input.value); });
+    form.dispatchEvent(new Event('input',{bubbles:true}));
+  });
+
+  const list = document.getElementById('promotion-list');
+  function syncTrackingActions() {
+    list.querySelectorAll('[data-action="performance"]').forEach(action => { action.href = '#tracking-performance'; const label = action.querySelector('span'); if (label) label.textContent = 'Tracking'; });
+  }
+  new MutationObserver(syncTrackingActions).observe(list,{childList:true,subtree:true}); syncTrackingActions();
+  list.addEventListener('click',event => {
+    const action = event.target.closest('[data-action="performance"]'); if (!action) return;
+    event.preventDefault();
+    const title = action.closest('.promotion-card')?.querySelector('h3')?.textContent?.trim() || 'Selected promotion';
+    const select = document.getElementById('tracking-promotion'); select.innerHTML = '<option>' + esc(title) + '</option><option>All promotions</option>';
+    document.getElementById('tracking-description').textContent = title + ' · Tracking data is not connected in this prototype.';
+    document.getElementById('tracking-performance').scrollIntoView({behavior:'smooth',block:'start'});
+  });
+
+  const aiDialog = document.getElementById('ai-banner-dialog');
+  document.getElementById('generate-ai-banner').addEventListener('click',() => aiDialog.showModal());
+  ['close-ai-banner','cancel-ai-banner'].forEach(id => document.getElementById(id).addEventListener('click',() => aiDialog.close()));
+  aiDialog.querySelectorAll('[data-ai-theme]').forEach(option => option.addEventListener('click',() => {
+    aiDialog.querySelectorAll('[data-ai-theme]').forEach(item => { const selected = item === option; item.classList.toggle('selected',selected); item.setAttribute('aria-checked',String(selected)); });
+  }));
+  document.getElementById('use-ai-banner').addEventListener('click',() => {
+    const theme = aiDialog.querySelector('.phase-ai-option.selected')?.dataset.aiTheme || 'purple';
+    const themeSelect = document.getElementById('banner-theme'); themeSelect.value = theme; document.getElementById('add-banner').click();
+    document.getElementById('ai-banner-status').textContent = 'AI banner added to this promotion. You can reorder or remove it with the existing banner controls.';
+    aiDialog.close();
+  });
+  document.getElementById('submit-promotion-approval').addEventListener('click',() => {
+    const publicPlacement = document.querySelector('#promotion-form [name="public"]');
+    publicPlacement.checked = true;
+    publicPlacement.dispatchEvent(new Event('change',{bubbles:true}));
+    document.getElementById('promotion-form').requestSubmit(document.getElementById('save-promotion'));
+  });
+})();
+</script>
 </body>
 </html>
