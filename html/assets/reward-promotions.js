@@ -5,6 +5,7 @@
   if (!form) return;
   const editor = $('#promotion-editor'), posterDialog = $('#promotion-poster-dialog'), placementDialog = $('#placement-preview-dialog');
   const key = 'nexora:reward-promotions:v1', languageKey = 'nexora:reward-promotions:language';
+  const demoSeedVersion = 1;
   const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
   const bannerThemes = {purple:'themePurple',gold:'themeGold',rose:'themeRose',ocean:'themeOcean',teal:'themeTeal',sage:'themeSage',peach:'themePeach',slate:'themeSlate'};
   const clone = value => JSON.parse(JSON.stringify(value));
@@ -115,7 +116,7 @@
   }
   function seed() {
     const offers = [templates[0],templates[2],templates[1]].map((sample,index) => ({...templateOffer(sample),id:['add-on-upgrade','rebook-save','weekday-glow'][index],title:['Add-On Upgrade — Nâng Cấp Móng','Rebook & Save — Đặt Lịch Kế Tiếp','Weekday Glow — Giờ Vàng Trong Tuần'][index],paused:false,banners:[newBanner(['purple','rose','gold'][index])],hero:index !== 2,createdAt:index+1}));
-    return {version:2,offers};
+    return {version:2,demoSeedVersion,offers};
   }
   let state = {version:2,offers:[]}, loadFailed = false, query = '', filter = 'all', current = null, selectedBanner = 0, uploadPending = false, editorSession = 0, feedbackTimer, posterOffer = null, posterIndex = 0, placementMode = null, initialRevision = '', draftAssets = [], editorOpener = null;
   const imageUrls = new Map();
@@ -129,7 +130,9 @@
         if (saved.campaigns !== undefined && !window.NEXORA_CAMPAIGNS.validSaved(saved.campaigns)) throw new Error('Invalid campaigns');
         const offers = saved.offers.map(normalize);
         if (new Set(offers.map(offer => offer.id)).size !== offers.length) throw new Error('Duplicate IDs');
-        state = {...saved, version:2, offers};
+        const needsDemoSeed = offers.length === 0 && saved.demoSeedVersion !== demoSeedVersion;
+        state = {...saved, version:2, demoSeedVersion, offers:needsDemoSeed ? seed().offers : offers};
+        if (needsDemoSeed || saved.demoSeedVersion !== demoSeedVersion) localStorage.setItem(key,JSON.stringify(state));
       }
       loadFailed = false;
     } catch (_) { loadFailed = true; }

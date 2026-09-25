@@ -33,7 +33,8 @@
       '<aside class="editor-preview"><h3 class="section-number">04 / '+tr('creative')+'</h3>'+select('creativeId','creative',[])+'<div class="studio-sponsored-label">Sponsored · '+tr('preview')+'</div><div id="campaign-preview"></div><div class="studio-preview-terms" id="campaign-offer-terms"></div><section class="studio-eligibility"><h3>'+tr('eligibility')+'</h3><ul id="campaign-eligibility"></ul><a href="owner-setting.html?tab=business-verification" target="_blank" rel="noopener">'+tr('kybLink')+' ↗</a><a href="nexora-packages.html?tab=ads-credit" target="_blank" rel="noopener">'+tr('creditLink')+' ↗</a></section><div class="studio-budget-summary" id="campaign-budget-summary" aria-live="polite"></div><label class="promo-check-card"><input name="consent" type="checkbox"><span>'+tr('consent')+'</span></label><details class="studio-history"><summary>'+tr('campaignHistory')+'</summary><ol id="campaign-history"></ol></details></aside></div>'+
       '<footer class="editor-footer"><p class="promo-error" id="campaign-error" role="alert"></p><div class="editor-footer-actions"><button class="promo-button" type="button" id="campaign-add-credit">'+tr('saveAddCredit')+'</button><button class="promo-button" type="submit" id="save-campaign" value="draft">'+tr('saveDraft')+'</button><button class="promo-button primary" type="submit" id="submit-campaign" value="pending">'+tr('requestReview')+'</button></div></footer></form>';
     document.body.append(dialog);
-    $('[data-studio-tab="offers"]').parentElement.addEventListener('click', event => {
+    const tabList = $('[data-studio-tab="offers"]')?.parentElement;
+    tabList?.addEventListener('click', event => {
       const button = event.target.closest('[data-studio-tab]'); if (button) tab(button.dataset.studioTab);
     });
     $('#create-campaign').addEventListener('click', () => open());
@@ -65,7 +66,11 @@
   }
   function tab(name) {
     activeTab = name;
-    ['offers','campaigns'].forEach(key => { $('#studio-'+key).hidden = key !== name; const button = $('[data-studio-tab="'+key+'"]'); button.classList.toggle('active',key === name); button.setAttribute('aria-pressed',String(key === name)); });
+    ['offers','campaigns'].forEach(key => {
+      $('#studio-'+key).hidden = key !== name;
+      const button = $('[data-studio-tab="'+key+'"]');
+      if (button) { button.classList.toggle('active',key === name); button.setAttribute('aria-pressed',String(key === name)); }
+    });
     $('#create-promotion').hidden = name !== 'offers';
   }
   function translate() {
