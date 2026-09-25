@@ -38,16 +38,13 @@
     <div class="phase-template-filters" id="template-category-filters" aria-label="Filter promotion templates by industry"></div>
     <div id="promotion-templates" class="promo-template-grid"></div>
   </section>
-  <div class="promotion-manage-heading"><h2 class="promotion-manage-title" data-i18n="managePromotions">Manage promotions</h2><select class="promotion-manage-filter" id="promotion-filter" aria-label="Filter promotions"><option value="all" data-i18n="allStatuses">All statuses</option><option value="enabled" data-i18n="enabled">Enabled</option><option value="disabled" data-i18n="disabled">Disabled</option></select></div>
+  <div class="promotion-manage-heading"><h2 class="promotion-manage-title" data-i18n="managePromotions">Manage promotions</h2><div class="promotion-manage-tools"><label class="promo-search"><span data-icon="search"></span><input id="promotion-search" type="search" data-placeholder="search" placeholder="Search promotion name or badge…" aria-label="Search promotion name or badge"></label><select class="promotion-manage-filter" id="promotion-filter" aria-label="Filter promotions"><option value="all" data-i18n="allStatuses">All statuses</option><option value="enabled" data-i18n="enabled">Enabled</option><option value="disabled" data-i18n="disabled">Disabled</option></select></div></div>
   <section class="promo-stats" id="promotion-overview" aria-label="Promotion overview">
     <article class="promo-stat"><span class="stat-icon" data-icon="layers"></span><div><h2 data-i18n="promotions">Promotions</h2><strong id="stat-total">0</strong></div></article>
     <article class="promo-stat"><span class="stat-icon mint" data-icon="check-circle"></span><div><h2 data-i18n="enabled">Enabled</h2><strong id="stat-active">0</strong></div></article>
     <article class="promo-stat"><span class="stat-icon blue" data-icon="image"></span><div><h2 data-i18n="bannersCreated">Banners created</h2><strong id="stat-banners">0</strong></div></article>
   </section>
   <section class="promo-manager" id="promotion-manage" aria-label="Manage promotions">
-    <div class="promo-toolbar">
-      <label class="promo-search"><span data-icon="search"></span><input id="promotion-search" type="search" data-placeholder="search" placeholder="Search promotion name or badge…" aria-label="Search promotion name or badge"></label>
-    </div>
     <div id="promotion-list" class="promotion-grid"></div>
     <div class="promo-empty" id="promotion-empty" hidden><span data-icon="search"></span><h2 id="empty-title"></h2><p id="empty-description"></p><button class="promo-button" id="clear-filters" data-i18n="clearFilters">Clear filters</button></div>
     <div class="promo-empty" id="promotion-load-error" role="alert" hidden><span data-icon="alert-circle"></span><h2 data-i18n="loadError">Could not load promotions</h2><p data-i18n="loadErrorHint">Your saved data has been kept. Try loading it again.</p><button class="promo-button" id="retry-load" data-i18n="retry">Try again</button></div>
