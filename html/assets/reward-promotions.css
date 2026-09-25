@@ -201,10 +201,11 @@ body:has(.promo-dialog[open],.promo-poster-dialog[open]){overflow:hidden}
 .promo-poster-dialog .editor-header,.promo-poster-dialog .editor-footer{flex:0 0 auto}
 .poster-body{overflow:auto;min-height:0;padding:18px;background:var(--promo-canvas);overscroll-behavior:contain}
 #poster-output{min-width:0;background:#fff;border-radius:12px;box-shadow:0 4px 16px #1720330a}
-#poster-output .promo-art{min-height:280px;padding:28px}
+#poster-output .promo-art{aspect-ratio:3/1;min-height:0;padding:28px}
 #poster-output .promo-art h3{font-size:26px}
 #poster-output .promo-art .art-saving{font-size:46px}
-#poster-output .promo-art.image-art{min-height:0;padding:0}
+#poster-output .promo-art.image-art{aspect-ratio:3/1;min-height:0;padding:0}
+#poster-output .promo-art.image-art img{aspect-ratio:3/1;object-fit:cover}
 .poster-pager{display:flex;align-items:center;justify-content:center;gap:18px;margin:18px 0}
 .poster-pager .promo-button{width:44px;padding:10px}
 #poster-page{font-size:12px;color:var(--promo-muted);font-variant-numeric:tabular-nums}
@@ -321,7 +322,7 @@ body:has(.promo-dialog[open],.promo-poster-dialog[open]){overflow:hidden}
   .editor-footer-actions .promo-button{flex:1}
   .promo-poster-dialog{width:calc(100vw - 20px);max-height:calc(100vh - 20px);max-height:calc(100dvh - 20px)}
   .poster-body{padding:14px}
-  #poster-output .promo-art{min-height:220px;padding:22px}
+  #poster-output .promo-art{aspect-ratio:3/1;min-height:0;padding:22px}
   #poster-output .promo-art h3{font-size:22px}
   #poster-output .promo-art .art-saving{font-size:40px}
   .promo-poster-dialog .editor-footer{flex-direction:row;align-items:center}
@@ -338,7 +339,7 @@ body:has(.promo-dialog[open],.promo-poster-dialog[open]){overflow:hidden}
   .promo-more{min-width:44px}
 }
 @media(prefers-reduced-motion:reduce){:is(.promotions-page,.promo-dialog,.promo-poster-dialog) button,.promo-template{transition:none}}
-@media print{body:has(#promotion-poster-dialog[open])>.shell,body:has(#promotion-poster-dialog[open])>#promotion-editor{display:none!important}#promotion-poster-dialog[open]{position:static;display:block;width:100%;max-width:100%;max-height:none;height:auto;margin:0;border:0;border-radius:0;box-shadow:none;overflow:visible}#promotion-poster-dialog .editor-header,#promotion-poster-dialog .editor-footer,#promotion-poster-dialog .poster-pager{display:none}#promotion-poster-dialog .poster-body{padding:0;background:white;overflow:visible}#promotion-poster-dialog #poster-output{margin:0 auto;max-width:640px;background:white;box-shadow:none}#promotion-poster-dialog .promo-art{min-height:420px;print-color-adjust:exact;-webkit-print-color-adjust:exact}#promotion-poster-dialog .promo-art.image-art{min-height:0}#promotion-poster-dialog #poster-details{max-width:640px;margin:20px auto 0;break-inside:avoid;border:0;padding:0}#promotion-poster-dialog .poster-description,#promotion-poster-dialog .poster-schedule{color:#111827}}
+@media print{body:has(#promotion-poster-dialog[open])>.shell,body:has(#promotion-poster-dialog[open])>#promotion-editor{display:none!important}#promotion-poster-dialog[open]{position:static;display:block;width:100%;max-width:100%;max-height:none;height:auto;margin:0;border:0;border-radius:0;box-shadow:none;overflow:visible}#promotion-poster-dialog .editor-header,#promotion-poster-dialog .editor-footer,#promotion-poster-dialog .poster-pager{display:none}#promotion-poster-dialog .poster-body{padding:0;background:white;overflow:visible}#promotion-poster-dialog #poster-output{margin:0 auto;max-width:640px;background:white;box-shadow:none}#promotion-poster-dialog .promo-art{aspect-ratio:3/1;min-height:0;print-color-adjust:exact;-webkit-print-color-adjust:exact}#promotion-poster-dialog .promo-art.image-art{aspect-ratio:3/1;min-height:0}#promotion-poster-dialog #poster-details{max-width:640px;margin:20px auto 0;break-inside:avoid;border:0;padding:0}#promotion-poster-dialog .poster-description,#promotion-poster-dialog .poster-schedule{color:#111827}}
 
 /* Salon Promotion Studio */
 .studio-tabs{display:flex;gap:6px;border-bottom:1px solid var(--promo-line);margin-bottom:22px;padding-bottom:8px}

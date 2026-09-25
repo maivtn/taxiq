@@ -4,8 +4,14 @@ import {readFileSync} from 'node:fs';
 import {JSDOM} from 'jsdom';
 
 const page = new URL('../../../html/pages/reward-promotions.html', import.meta.url);
+const styles = readFileSync(new URL('../../../html/assets/reward-promotions.css', import.meta.url), 'utf8');
 const key = 'nexora:reward-promotions:v1';
 const tick = () => new Promise(resolve => setImmediate(resolve));
+
+test('Promotion poster renders template and uploaded banners at a 3:1 ratio', () => {
+  assert.match(styles, /#poster-output \.promo-art\{[^}]*aspect-ratio:3\/1[^}]*min-height:0/);
+  assert.match(styles, /#poster-output \.promo-art\.image-art img\{[^}]*object-fit:cover/);
+});
 
 async function boot(t, saved) {
   const dom = new JSDOM(readFileSync(page, 'utf8'), {
