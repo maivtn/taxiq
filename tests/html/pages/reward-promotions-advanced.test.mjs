@@ -26,6 +26,17 @@ async function boot(t, saved) {
   return {w, d, form: d.querySelector('#promotion-form'), saved: () => JSON.parse(w.localStorage.getItem(key))};
 }
 
+test('advanced settings remain visible when the heading is clicked', async t => {
+  const {d} = await boot(t);
+  d.querySelector('#create-promotion').click();
+  await tick();
+  const advanced = d.querySelector('.phase-advanced');
+  const heading = advanced.querySelector('.phase-advanced-heading, summary');
+  assert.ok(heading, 'advanced settings heading exists');
+  heading.click();
+  assert.equal(d.querySelector('#paid-advertising-fields').closest('details:not([open])'), null);
+});
+
 test('simplified paid settings retain schedule, targeting and budget when saved and reopened', async t => {
   const {d, form, saved} = await boot(t);
   d.querySelector('#create-promotion').click();
@@ -33,7 +44,7 @@ test('simplified paid settings retain schedule, targeting and budget when saved 
   const controls = form.elements;
   assert.equal(controls.namedItem('budgetCap'), null);
   assert.equal(controls.namedItem('audiencePhase1'), null);
-  assert.equal(d.querySelector('.phase-advanced').open, true);
+  assert.equal(d.querySelector('#paid-advertising-fields').closest('details:not([open])'), null);
   assert.equal(d.querySelector('#paid-advertising-fields').hidden, false);
   controls.title.value = 'Simple paid promotion';
   controls.startDate.value = '2026-10-01';
@@ -75,7 +86,7 @@ test('paid advertising still requires a sponsored channel with all settings visi
   form.elements.paidBoost.click();
   form.querySelectorAll('[name="paidPlacement"]').forEach(input => { input.checked = false; });
   d.querySelector('#save-promotion-draft').click();
-  assert.equal(d.querySelector('.phase-advanced').open, true);
+  assert.equal(d.querySelector('#paid-advertising-fields').closest('details:not([open])'), null);
   assert.equal(d.activeElement.name, 'paidPlacement');
   assert.equal(d.querySelector('#promotion-editor').open, true);
   await tick();
