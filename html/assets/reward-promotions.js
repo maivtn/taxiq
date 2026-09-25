@@ -42,10 +42,9 @@
   };
   const icon = name => '<svg class="promo-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + (icons[name] || icons.image) + '"/></svg>';
   const copy = {
-    subtitle:['Compelling offers. Clear terms. The right places to share.','Chương trình hấp dẫn. Nội dung rõ ràng. Đúng nơi hiển thị.'], language:['Language','Ngôn ngữ'], addPromotion:['Add promotion','Tạo chương trình'],
-    startTemplate:['Start with a template','Bắt đầu từ mẫu'], templateTitle:['Choose a template. Make it yours. Preview.','Chọn mẫu. Sửa vài thông tin. Xem trước.'],
-    templateDescription:['Templates fill in the name, terms, discount and schedule. Offers are illustrative; new promotions start disabled and private.','Mẫu điền sẵn tên, mô tả, ưu đãi và lịch chạy. Giá chỉ minh họa; bản mới luôn tắt và chưa public.'],
-    templateNote:['Have your own design? Start with a template, then upload your banner. Choosing a template does not publish a promotion.','Có thiết kế riêng? Chọn mẫu để điền nội dung, sau đó upload banner. Chương trình mới chưa được xuất bản khi bấm Dùng mẫu.'],
+    subtitle:['Create and manage promotions.','Tạo và quản lý chương trình.'], language:['Language','Ngôn ngữ'], addPromotion:['Add promotion','Tạo chương trình'],
+    templateTitle:['Promotion templates','Mẫu chương trình'],
+    templateDescription:['Choose a template to prefill the promotion.','Chọn mẫu để điền sẵn thông tin chương trình.'],
     promotions:['Promotions','Chương trình'], enabled:['Enabled','Đang bật'], disabled:['Disabled','Đang tắt'], bannersCreated:['Banners created','Banner đã tạo'],
     search:['Search promotion name or badge…','Tìm tên chương trình hoặc badge...'], allStatuses:['All statuses','Tất cả trạng thái'], clearFilters:['Clear filters','Xóa bộ lọc'],
     loadError:['Could not load promotions','Không tải được chương trình'], loadErrorHint:['Your saved data has been kept. Try loading it again.','Dữ liệu đã lưu vẫn được giữ nguyên. Vui lòng thử tải lại.'], retry:['Try again','Thử lại'],

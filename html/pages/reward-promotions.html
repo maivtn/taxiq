@@ -6,7 +6,7 @@
   <title>Nexora Touch - Promotion Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/reward-promotions.css?v=20260924-studio-tabs">
+  <link rel="stylesheet" href="../assets/reward-promotions.css?v=20260925-compact">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <style>
     .phase-tracking{margin-top:18px;padding:20px;border:1px solid var(--promo-line);border-radius:12px;background:var(--promo-surface);box-shadow:var(--promo-shadow)}
@@ -28,16 +28,14 @@
 <script src="../assets/nexora-shell.js"></script>
 <main class="promotions-page">
   <header class="promotions-heading">
-    <div><p class="promo-eyebrow">Reward / Promotions</p><h1>Promotion Studio</h1><p data-i18n="subtitle">Compelling offers. Clear terms. The right places to share.</p></div>
+    <div><h1>Promotion Studio</h1><p data-i18n="subtitle">Create and manage promotions.</p></div>
     <div class="heading-actions"><label class="promo-language"><span class="sr-only" data-i18n="language">Language</span><select id="promotion-language" aria-label="Language"><option value="en">English</option><option value="vi">Tiếng Việt</option></select></label><button class="promo-button primary" id="create-promotion"><span data-icon="plus"></span><span data-i18n="addPromotion">Add promotion</span></button></div>
   </header>
-  <p class="studio-context" data-i18n="salonContext"></p>
   <div id="studio-offers">
   <section class="promo-library" id="promotion-templates-section" aria-labelledby="templates-title">
-    <p class="promo-eyebrow" data-i18n="startTemplate">Start with a template</p><h2 id="templates-title" data-i18n="templateTitle">Choose a template. Make it yours. Preview.</h2>
-    <p class="section-description" data-i18n="templateDescription">Templates fill in the name, terms, discount and schedule. Offers are illustrative; new promotions start disabled and private.</p>
+    <h2 id="templates-title" data-i18n="templateTitle">Promotion templates</h2>
+    <p class="section-description" data-i18n="templateDescription">Choose a template to prefill the promotion.</p>
     <div id="promotion-templates" class="promo-template-grid"></div>
-    <p class="promo-note" data-i18n="templateNote">Have your own design? Start with a template, then upload your banner. Choosing a template does not publish a promotion.</p>
   </section>
   <section class="promo-stats" id="promotion-overview" aria-label="Promotion overview">
     <article class="promo-stat"><span class="stat-icon" data-icon="layers"></span><div><h2 data-i18n="promotions">Promotions</h2><strong id="stat-total">0</strong></div></article>
