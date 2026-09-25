@@ -248,22 +248,25 @@
   const templateCategories = [
     {id:'all',label:'All'},
     {id:'beauty',label:'💄 Beauty'},
-    {id:'restaurant',label:'🍽️ Restaurant'},
-    {id:'retail',label:'🛍️ Retail'},
-    {id:'automotive',label:'🚗 Automotive'},
-    {id:'fitness',label:'🏋️ Fitness'},
-    {id:'wellness',label:'💚 Wellness'},
+    {id:'restaurant',label:'🍝 Restaurant'},
+    {id:'apparel',label:'👗 Apparel'},
+    {id:'e-gift-code',label:'🎟️ E-Gift Code'},
+    {id:'prepaid-cards',label:'💳 Prepaid Cards'},
+    {id:'destination',label:'✈️ Destination'},
     {id:'entertainment',label:'🎮 Entertainment'},
-    {id:'seasonal',label:'🍂 Seasonal'}
+    {id:'home',label:'🏠 Home'},
+    {id:'lifestyle',label:'📷 Lifestyle'},
+    {id:'shopping',label:'🛍️ Shopping'},
+    {id:'wellness',label:'💗 Wellness'}
   ];
-  const templateCategory = {'weekday-pedicure':'beauty','add-on-upgrade':'beauty','rebook-save':'beauty','gift-card':'retail','lunch-combo':'restaurant','coffee-hour':'restaurant','retail-bundle':'retail','oil-return':'automotive','fitness-trial':'fitness','wellness-first':'wellness','event-night':'entertainment','build-year':'seasonal'};
+  const templateCategory = {'weekday-pedicure':['beauty'],'add-on-upgrade':['beauty'],'rebook-save':['beauty'],'gift-card':['e-gift-code','prepaid-cards'],'lunch-combo':['restaurant'],'coffee-hour':['restaurant'],'retail-bundle':['apparel','shopping'],'oil-return':['lifestyle'],'fitness-trial':['lifestyle','wellness'],'wellness-first':['wellness','beauty'],'event-night':['destination','entertainment'],'build-year':['home','lifestyle']};
   let activeTemplateCategory = 'all';
   const esc = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   function renderTemplateFilters() {
     templateFilterHost.innerHTML = templateCategories.map(item => '<button type="button" class="phase-template-filter' + (item.id === activeTemplateCategory ? ' active' : '') + '" data-template-category="' + item.id + '" aria-pressed="' + (item.id === activeTemplateCategory) + '">' + item.label + '</button>').join('');
   }
   function renderPhaseTemplates() {
-    const visibleCatalog = activeTemplateCategory === 'all' ? catalog : catalog.filter(item => templateCategory[item.id] === activeTemplateCategory);
+    const visibleCatalog = activeTemplateCategory === 'all' ? catalog : catalog.filter(item => templateCategory[item.id]?.includes(activeTemplateCategory));
     if (templateHost.dataset.templateFilter === activeTemplateCategory && templateHost.querySelectorAll('[data-phase-template]').length === visibleCatalog.length) return;
     templateHost.dataset.templateFilter = activeTemplateCategory;
     templateHost.innerHTML = visibleCatalog.map((item,index) => '<article class="promo-template phase-template-card"><div class="phase-template-visual phase-template-' + esc(item.theme) + '"><div class="phase-template-visual-copy"><strong>' + esc(item.visualTitle) + '</strong><span>' + esc(item.offer) + '</span></div><span class="phase-template-symbol" aria-hidden="true">' + esc(item.symbol) + '</span></div><div class="phase-template-body"><div class="phase-template-top"><strong>' + esc(item.bodyTitle) + '</strong><span class="phase-template-category">' + esc(item.category) + '</span></div><p>' + esc(item.detail) + '</p><button type="button" class="promo-button' + (index === 0 ? ' primary' : '') + '" data-phase-template="' + esc(item.id) + '">' + esc(item.buttonLabel || 'Use template') + '<span aria-hidden="true">→</span></button></div></article>').join('');
