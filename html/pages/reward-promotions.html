@@ -107,8 +107,8 @@
           <summary><span><strong>Advanced settings</strong><small>Set campaign dates, limits and audience.</small></span><span aria-hidden="true">⌄</span></summary>
           <div class="phase-advanced-body">
             <div class="promo-field-row"><label class="promo-field"><span>Start date</span><input type="date" name="startDate"></label><label class="promo-field"><span>End date</span><input type="date" name="endDate"></label></div>
-            <div class="promo-field-row"><label class="promo-field"><span>Redemption cap</span><input type="number" name="redemptionCap" min="1" placeholder="Unlimited"></label><label class="promo-field"><span>Budget cap (USD)</span><input type="number" name="budgetCap" min="0" step="0.01" placeholder="No limit"></label></div>
-            <label class="promo-field"><span>Audience</span><select name="audiencePhase1"><option value="recommended">Let Nexora recommend</option><option value="existing">Existing customers</option><option value="nearby-oneqr">Nearby OneQR visitors</option><option value="inactive-45">Inactive 45+ days</option></select></label>
+            <div class="promo-field-row"><label class="promo-field"><span>Redemption cap</span><input type="number" name="redemptionCap" min="1" step="1" placeholder="Unlimited"></label><label class="promo-field"><span>Budget cap (USD)</span><input type="number" name="budgetCap" min="0.01" step="0.01" placeholder="No limit"></label></div>
+            <div class="promo-field-row"><label class="promo-field"><span>Audience</span><select name="audiencePhase1"><option value="recommended">Let Nexora recommend</option><option value="existing">Existing customers</option><option value="nearby-oneqr">Nearby OneQR visitors</option><option value="inactive-45">Inactive 45+ days</option></select></label><label class="promo-field"><span>Promotion area</span><select name="promotionArea"><option value="Katy">Katy</option><option value="Houston">Houston</option><option value="Austin">Austin</option><option value="Dallas">Dallas</option></select></label></div>
           </div>
         </details>
         <div class="phase-compat-fields" hidden>
@@ -158,6 +158,28 @@
 <script src="../assets/reward-promotions.js?v=20260924-po-integrated"></script>
 <script>
 (function () {
+  const promotionStudio = window.NEXORA_STUDIO;
+  const fillExistingFields = promotionStudio.fill.bind(promotionStudio);
+  const readExistingFields = promotionStudio.read.bind(promotionStudio);
+  promotionStudio.fill = (form,offer) => {
+    fillExistingFields(form,offer);
+    form.elements.checkIn.checked = !!offer.checkIn;
+    form.elements.redemptionCap.value = offer.redemptionCap ?? '';
+    form.elements.budgetCap.value = offer.budgetCap ?? '';
+    form.elements.audiencePhase1.value = offer.audiencePhase1 || 'recommended';
+    form.elements.promotionArea.value = offer.promotionArea || 'Katy';
+  };
+  promotionStudio.read = (form,offer) => {
+    const result = readExistingFields(form,offer);
+    result.checkIn = form.elements.checkIn.checked;
+    for (const key of ['redemptionCap','budgetCap']) {
+      const raw = form.elements[key].value;
+      if (raw === '') delete result[key]; else result[key] = Number(raw);
+    }
+    result.audiencePhase1 = form.elements.audiencePhase1.value;
+    result.promotionArea = form.elements.promotionArea.value;
+    return result;
+  };
   const catalog = [
     {id:'weekday-pedicure',symbol:'☀︎',purpose:'Fill quiet hours',offer:'15% off · Weekdays',hint:'Pedicure + Gel Polish during selected weekday hours.',title:'Weekday Pedicure Glow · Sample',badge:'HAPPY HOURS',description:'15% off Pedicure + Gel Polish during selected weekday hours.',type:'percent',value:'15',days:['Tue','Wed','Thu'],start:'10:00',end:'14:00'},
     {id:'add-on-upgrade',symbol:'✨',purpose:'Increase ticket value',offer:'20% off add-ons',hint:'Nail art or massage add-on with a main service.',title:'Add-On Upgrade · Sample',badge:'UPGRADE',description:'20% off an eligible nail art or massage add-on with a main service.',type:'percent',value:'20'},
