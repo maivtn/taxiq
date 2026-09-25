@@ -250,11 +250,14 @@
   const readExistingFields = promotionStudio.read.bind(promotionStudio);
   promotionStudio.fill = (form,offer) => {
     fillExistingFields(form,offer);
+    delete form.dataset.saveMode;
+    form.dataset.initialPublic = offer.public || 'private';
     form.elements.checkIn.checked = !!offer.checkIn;
-    form.elements.promotionArea.value = offer.promotionArea || 'Katy';
+    form.elements.promotionArea.value = offer.promotionArea || offer.boostArea || 'Katy';
     form.elements.paidObjective.value = offer.paidObjective || 'traffic';
     form.querySelectorAll('[name="paidPlacement"]').forEach(input => { input.checked = (offer.paidPlacements || ['search','explore']).includes(input.value); });
-    form.elements.paidDailyBudget.value = Number(offer.paidDailyBudget) > 0 ? offer.paidDailyBudget : 15;
+    const totalBudget = Number(offer.boostBudget);
+    form.elements.paidDailyBudget.value = Number(offer.paidDailyBudget) > 0 ? offer.paidDailyBudget : Math.min(15, totalBudget > 0 ? totalBudget : 15);
     queueMicrotask(syncPaidAdvertisingUI);
   };
   promotionStudio.read = (form,offer) => {
@@ -524,9 +527,10 @@
     document.getElementById('promotion-form').requestSubmit(document.getElementById('save-promotion'));
   });
   const saveWithoutApproval = () => {
-    document.getElementById('promotion-form').dataset.saveMode = 'save';
-    const publicPlacement = document.querySelector('#promotion-form [name="public"]');
-    publicPlacement.checked = false;
+    const form = document.getElementById('promotion-form');
+    form.dataset.saveMode = 'save';
+    const publicPlacement = form.querySelector('[name="public"]');
+    if (form.dataset.initialPublic === 'private') publicPlacement.checked = false;
     publicPlacement.dispatchEvent(new Event('change',{bubbles:true}));
   };
   document.getElementById('save-promotion').addEventListener('click',saveWithoutApproval);

@@ -160,3 +160,42 @@ test('editing a legacy promotion preserves its stored promotion budget cap', asy
   assert.equal(updated.budgetCap, 350);
   assert.equal(updated.audiencePhase1, 'existing');
 });
+
+test('editing a legacy paid promotion preserves its area and derives a valid daily limit', async t => {
+  const initial = await boot(t);
+  const state = initial.saved();
+  const offer = state.offers[0];
+  offer.paidBoost = true;
+  offer.boostArea = 'Dallas';
+  offer.boostBudget = 10;
+  delete offer.promotionArea;
+  delete offer.paidDailyBudget;
+  const {d, form, saved} = await boot(t, state);
+  d.querySelector('[data-promotion-id="' + offer.id + '"] [data-action="edit"]').click();
+  await tick();
+  assert.equal(form.elements.promotionArea.value, 'Dallas');
+  assert.equal(form.elements.paidDailyBudget.value, '10');
+  d.querySelector('#save-promotion-draft').click();
+  await tick();
+  const updated = saved().offers.find(item => item.id === offer.id);
+  assert.equal(updated.promotionArea, 'Dallas');
+  assert.equal(updated.boostArea, 'Dallas');
+  assert.equal(updated.paidDailyBudget, 10);
+});
+
+test('reopening an approval request clears the prior submit mode and preserves its listing on save', async t => {
+  const {d, form, saved} = await boot(t);
+  d.querySelector('#create-promotion').click();
+  await tick();
+  form.elements.title.value = 'Approval state test';
+  d.querySelector('#submit-promotion-approval').click();
+  await tick();
+  const offer = saved().offers.find(item => item.title === 'Approval state test');
+  assert.equal(offer.public, 'pending');
+  d.querySelector('[data-promotion-id="' + offer.id + '"] [data-action="edit"]').click();
+  await tick();
+  assert.equal(form.dataset.saveMode || '', '');
+  d.querySelector('#save-promotion').click();
+  await tick();
+  assert.equal(saved().offers.find(item => item.id === offer.id).public, 'pending');
+});

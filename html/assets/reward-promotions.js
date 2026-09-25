@@ -114,6 +114,7 @@
   function normalize(offer) {
     if (!offer || typeof offer.id !== 'string' || typeof offer.title !== 'string' || !Array.isArray(offer.days)) throw new Error('Invalid promotion');
     const migrated = {...blankOffer(), ...offer};
+    if (!Object.hasOwn(offer,'paidDailyBudget') && Number(migrated.boostBudget) > 0) migrated.paidDailyBudget = Math.min(15,Number(migrated.boostBudget));
     for (const key of ['paidBoost','boostArea','boostBudget','goal','shareDestinations','outreachSegment','outreachChannel','partnerMode']) if (!Object.hasOwn(offer,key)) delete migrated[key];
     migrated.banners = Array.isArray(offer.banners) && offer.banners.length ? clone(offer.banners) : [{id:'legacy-banner-' + offer.id,theme:offer.theme || 'purple'}];
     if (migrated.banners.some(banner => !banner || typeof banner.id !== 'string') || offer.days.some(day => !days.includes(day))) throw new Error('Invalid promotion data');
