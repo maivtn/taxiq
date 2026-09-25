@@ -36,6 +36,8 @@
     gauge:'M12 14l4-4M3.34 19a10 10 0 1 1 17.32 0',
     history:'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2',
     lightbulb:'M9 18h6M10 22h4M8.5 14.5a6 6 0 1 1 7 0c-.9.7-1.5 1.6-1.5 2.5h-4c0-.9-.6-1.8-1.5-2.5Z',
+    megaphone:'M3 11v2l18 5V6L3 11Zm4 3 1.5 7H5l-1.5-8',
+    'wallet-cards':'M3 7h18v12H3V7Zm3 0V5h12v2M3 11h18M7 15h4',
     check:'m5 12 4 4L19 6',
     'loader-2':'M21 12a9 9 0 1 1-6.2-8.6',
     'alert-circle':'M12 8v5m0 3h.01M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0'
@@ -100,7 +102,7 @@
   ];
   const localized = value => value[language === 'vi' ? 1 : 0];
   const newBanner = (theme = 'purple') => ({id:uid(), theme});
-  function blankOffer() { return {id:null,title:'',badge:'',description:'',type:'percent',value:10,days:[...days],startTime:'00:00',endTime:'23:59',checkout:true,hero:true,public:'private',paidBoost:false,boostArea:'Houston',boostBudget:100,goal:'slow-hours',shareDestinations:['oneqr','nearby','search'],outreachSegment:'pedicure',outreachChannel:'sms-email',partnerMode:'off',paused:true,banners:[newBanner()],uses:0,revenue:0}; }
+  function blankOffer() { return {id:null,title:'',badge:'',description:'',type:'percent',value:10,days:[...days],startTime:'00:00',endTime:'23:59',checkout:true,hero:true,public:'private',paidBoost:false,paidUsePromotionSettings:true,paidObjective:'traffic',paidPlacements:['search','explore'],paidStartDate:'',paidEndDate:'',paidDailyBudget:15,paidCreative:'cover',boostArea:'Katy',boostBudget:100,goal:'slow-hours',shareDestinations:['oneqr','nearby','search'],outreachSegment:'pedicure',outreachChannel:'sms-email',partnerMode:'off',paused:true,banners:[newBanner()],uses:0,revenue:0}; }
   function templateOffer(sample) {
     const templateConditions = {
       upgrade:{serviceScope:'selected',serviceIds:['nail-art','foot-massage'],customerGroup:'all',stacking:'exclusive'},
@@ -247,7 +249,7 @@
   function showError(message, name) {
     $('#promotion-error').textContent = message;
     form.querySelectorAll('[aria-invalid]').forEach(el => el.removeAttribute('aria-invalid'));
-    if (name) { const target = name === 'days' ? form.querySelector('[name="days"]') : field(name); target.setAttribute('aria-invalid','true'); target.focus(); }
+    if (name) { const target = form.querySelector('[name="' + name + '"]') || field(name); target.setAttribute('aria-invalid','true'); target.focus(); }
   }
   function validation(offer) {
     if (!offer.title) return ['nameError','title'];
@@ -257,7 +259,10 @@
     if (!offer.days.length) return ['daysError','days'];
     if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(offer.startTime) || !/^([01]\d|2[0-3]):[0-5]\d$/.test(offer.endTime) || offer.endTime <= offer.startTime) return ['timeError','endTime'];
     if (!offer.banners.length || offer.banners.length > 8) return ['bannerError'];
-    if (offer.paidBoost && (offer.public === 'private' || !offer.boostArea || !Number.isFinite(offer.boostBudget) || offer.boostBudget <= 0)) return ['boostBudgetError','boostBudget'];
+    if (offer.paidBoost && (!offer.boostArea || !Number.isFinite(offer.boostBudget) || offer.boostBudget <= 0)) return ['boostBudgetError','boostBudget'];
+    if (offer.paidBoost && (!Number.isFinite(offer.paidDailyBudget) || offer.paidDailyBudget <= 0 || offer.paidDailyBudget > offer.boostBudget)) return ['paidDailyBudgetError','paidDailyBudget'];
+    if (offer.paidBoost && !(offer.paidPlacements || []).length) return ['paidPlacementError','paidPlacement'];
+    if (offer.paidBoost && offer.paidStartDate && offer.paidEndDate && offer.paidEndDate < offer.paidStartDate) return ['paidDateError','paidEndDate'];
     return studio.validate(offer);
   }
   function openEditor(offer = blankOffer(), section = '') {
@@ -311,8 +316,11 @@
     if (!record.paidBoost) return existing && existing.status === 'draft' && !Number(existing.spent) && !Number(existing.held) ? campaigns.filter(campaign => campaign.id !== existing.id) : campaigns;
     if (existing && existing.status !== 'draft') return campaigns;
     const totalBudget = Number(record.boostBudget);
-    const dailyBudget = existing ? Math.min(Number(existing.dailyBudget) || totalBudget,totalBudget) : Math.min(totalBudget,Math.max(0.01,Math.round(totalBudget / 7 * 100) / 100));
-    const campaign = {...(existing || {}),id:existing?.id || 'campaign-' + uid().replace('promotion-',''),name:record.title + ' · Paid Boost',promotionId:record.id,creativeId:record.banners[0].id,objective:'traffic',area:record.boostArea,radius:existing?.radius || 10,category:'beauty',audience:'local',placements:existing?.placements?.length ? existing.placements : ['search','explore'],startDate:record.startDate || '',endDate:record.endDate || '',dailyBudget,totalBudget,billing:'cpc',source:'ads-credit',status:'draft',quickSetup:true,updatedAt:Date.now(),history:existing?.history || [{at:Date.now(),status:'draft',source:'promotion'}]};
+    const dailyBudget = Math.min(Number(record.paidDailyBudget) || totalBudget,totalBudget);
+    const status = record.paidApprovalRequested ? 'pending' : 'draft';
+    const priorHistory = existing?.history || [];
+    const history = !existing ? [{at:Date.now(),status,source:'promotion'}] : existing.status !== status ? [...priorHistory,{at:Date.now(),status,source:'promotion'}] : priorHistory;
+    const campaign = {...(existing || {}),id:existing?.id || 'campaign-' + uid().replace('promotion-',''),name:record.title + ' · Paid Boost',promotionId:record.id,creativeId:record.banners[0].id,objective:record.paidObjective || 'traffic',area:record.boostArea,radius:existing?.radius || 10,category:'beauty',audience:'local',placements:record.paidPlacements?.length ? record.paidPlacements : ['search','explore'],startDate:record.paidStartDate || record.startDate || '',endDate:record.paidEndDate || record.endDate || '',dailyBudget,totalBudget,billing:'cpc',source:'ads-credit',status,quickSetup:true,updatedAt:Date.now(),history};
     return existing ? campaigns.map(item => item.id === existing.id ? campaign : item) : [...campaigns,campaign];
   }
   function saveOffer() {
@@ -322,9 +330,11 @@
     if (error) { showError(t(error[0]),error[1]); return; }
     if (loadFailed || offer.id && JSON.stringify(state.offers.find(item => item.id === offer.id)) !== initialRevision) { showError(t('staleError')); return; }
     studio.publication(offer, current.id ? JSON.parse(initialRevision) : null);
+    const paidApprovalRequested = !!offer.paidApprovalRequested;
+    delete offer.paidApprovalRequested;
     const record = {...offer,id:offer.id || uid(),paused:offer.id ? offer.paused : true,createdAt:offer.createdAt || Date.now(),updatedAt:Date.now()};
     const next = {...state,offers:offer.id ? state.offers.map(item => item.id === offer.id ? record : item) : [...state.offers,record]};
-    next.campaigns = quickCampaigns(record);
+    next.campaigns = quickCampaigns({...record,paidApprovalRequested});
     if (persist(next,true)) {
       draftAssets.filter(id => !record.banners.some(banner => banner.assetId === id)).forEach(id => { window.NEXORA_PROMOTION_ASSETS?.discard?.(id).catch(() => {}); imageUrls.delete(id); });
       draftAssets = []; editor.close(); clearFilters(); feedback(t(offer.id ? 'updated' : 'saved'));
@@ -411,8 +421,6 @@
   form.addEventListener('input',event => { if (!current || event.target.type === 'file' || event.target.id === 'banner-theme') return; showError(''); renderBanners(); });
   form.addEventListener('change',event => {
     if (!current || !event.target.name) return;
-    if (event.target.name === 'paidBoost' && event.target.checked) field('public').checked = true;
-    if (event.target.name === 'public' && !event.target.checked) field('paidBoost').checked = false;
     updateConditional(); renderBanners();
   });
   form.addEventListener('submit',event => { event.preventDefault(); saveOffer(); });
