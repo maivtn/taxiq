@@ -53,7 +53,16 @@ test('organic Search Deals and paid placements are distinct and placement overvi
   const dialog = d.querySelector('#paid-placement-overview-dialog');
   assert.equal(dialog.open, true);
   assert.deepEqual([...dialog.querySelectorAll('[data-paid-placement-overview] h3')].map(heading => heading.textContent.trim()), [
-    'Search Deals', 'Explore & Nearby', 'Network banner'
+    'Explore & Nearby', 'Search Deals', 'Network banner'
+  ]);
+  const oneQrDestinations = [...dialog.querySelectorAll('[data-oneqr-destination]')].map(destination => ({
+    id: destination.dataset.oneqrDestination,
+    title: destination.querySelector('strong').textContent.trim(),
+    description: destination.querySelector('small').textContent.trim()
+  }));
+  assert.deepEqual(oneQrDestinations, [
+    {id: 'nearby', title: 'Deals Nearby / Explore', description: 'Khám phá địa điểm quanh bạn'},
+    {id: 'search', title: 'Search Deals', description: 'Tìm ưu đãi theo dịch vụ'}
   ]);
   d.querySelector('#close-paid-placement-overview').click();
   assert.equal(dialog.open, false);
