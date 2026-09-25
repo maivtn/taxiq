@@ -72,6 +72,19 @@ test('Paid Boost shows a balanced switch state while keeping settings editable',
   assert.equal(d.querySelector('#paid-advertising-fields').hidden, false);
 });
 
+test('Ads Credit timing is explained beside the campaign budget', async t => {
+  const {d} = await boot(t);
+  d.querySelector('#create-promotion').click();
+  await tick();
+  const fields = d.querySelector('#paid-advertising-fields');
+  const credit = fields.querySelector('.phase-paid-credit');
+  const budgetHint = fields.querySelector('.phase-paid-budget-hint');
+  const placements = fields.querySelector('.phase-paid-placement-heading');
+  assert.match(credit.textContent, /Saving is free.*charged only after approval.*starts running/i);
+  assert.ok(budgetHint.compareDocumentPosition(credit) & d.defaultView.Node.DOCUMENT_POSITION_FOLLOWING);
+  assert.ok(credit.compareDocumentPosition(placements) & d.defaultView.Node.DOCUMENT_POSITION_FOLLOWING);
+});
+
 test('submitting does not silently change Search Deals or Paid Boost selections', async t => {
   const {d, form, saved} = await boot(t);
   d.querySelector('#create-promotion').click();
