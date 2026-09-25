@@ -37,6 +37,69 @@ test('advanced settings remain visible when the heading is clicked', async t => 
   assert.equal(d.querySelector('#paid-advertising-fields').closest('details:not([open])'), null);
 });
 
+test('promotion footer exposes one contextual save action', async t => {
+  const {d} = await boot(t);
+  d.querySelector('#create-promotion').click();
+  await tick();
+  const footer = d.querySelector('.editor-footer-actions');
+  assert.equal(footer.querySelector('#save-promotion-draft'), null);
+  assert.deepEqual([...footer.querySelectorAll('button')].map(button => button.textContent.trim()), [
+    'Cancel', 'Save draft', 'Submit for approval'
+  ]);
+
+  d.querySelector('[data-close-editor]').click();
+  d.querySelector('[data-promotion-id] [data-action="edit"]').click();
+  await tick();
+  assert.deepEqual([...footer.querySelectorAll('button')].map(button => button.textContent.trim()), [
+    'Cancel', 'Save changes', 'Submit changes for approval'
+  ]);
+});
+
+test('Paid Boost shows a balanced switch state while keeping settings editable', async t => {
+  const {d, form} = await boot(t);
+  d.querySelector('#create-promotion').click();
+  await tick();
+  const status = d.querySelector('#paid-boost-status');
+  const note = d.querySelector('#paid-boost-state-note');
+  assert.equal(status.textContent.trim(), 'Off');
+  assert.match(note.textContent, /ads will not run until Paid Boost is enabled/i);
+  assert.equal(d.querySelector('#paid-advertising-fields').hidden, false);
+  assert.equal(form.elements.boostBudget.disabled, false);
+
+  form.elements.paidBoost.click();
+  assert.equal(status.textContent.trim(), 'On');
+  assert.match(note.textContent, /submitted settings require approval/i);
+  assert.equal(d.querySelector('#paid-advertising-fields').hidden, false);
+});
+
+test('submitting does not silently change Search Deals or Paid Boost selections', async t => {
+  const {d, form, saved} = await boot(t);
+  d.querySelector('#create-promotion').click();
+  await tick();
+  form.elements.title.value = 'Paid only approval';
+  form.elements.paidBoost.checked = true;
+  form.elements.public.checked = false;
+  d.querySelector('#submit-promotion-approval').click();
+  await tick();
+  const offer = saved().offers.find(item => item.title === 'Paid only approval');
+  assert.equal(offer.public, 'private');
+  assert.equal(offer.paidBoost, true);
+  assert.equal(saved().campaigns.find(item => item.promotionId === offer.id).status, 'pending');
+});
+
+test('approval action explains when no reviewable placement is selected', async t => {
+  const {d, form, saved} = await boot(t);
+  d.querySelector('#create-promotion').click();
+  await tick();
+  form.elements.title.value = 'Nothing selected';
+  form.elements.public.checked = false;
+  form.elements.paidBoost.checked = false;
+  d.querySelector('#submit-promotion-approval').click();
+  assert.match(d.querySelector('#promotion-error').textContent, /select Search Deals or enable Paid Boost/i);
+  assert.equal(d.querySelector('#promotion-editor').open, true);
+  assert.equal(saved().offers.some(item => item.title === 'Nothing selected'), false);
+});
+
 test('organic Search Deals and paid placements are distinct and placement overview opens', async t => {
   const {d} = await boot(t);
   d.querySelector('#create-promotion').click();
@@ -107,7 +170,7 @@ test('simplified paid settings retain schedule, targeting and budget when saved 
   controls.boostBudget.value = '200';
   controls.paidDailyBudget.value = '20';
   controls.paidObjective.value = 'bookings';
-  d.querySelector('#save-promotion-draft').click();
+  d.querySelector('#save-promotion').click();
   await tick();
   const offer = saved().offers.find(item => item.title === 'Simple paid promotion');
   assert.ok(offer);
@@ -124,7 +187,7 @@ test('simplified paid settings retain schedule, targeting and budget when saved 
   restored.form.elements.paidBoost.click();
   assert.equal(restored.d.querySelector('#paid-advertising-fields').hidden, false);
   assert.equal(restored.form.elements.paidBoost.checked, false);
-  restored.d.querySelector('#save-promotion-draft').click();
+  restored.d.querySelector('#save-promotion').click();
   await tick();
   assert.equal(restored.saved().offers.find(item => item.id === offer.id).paidBoost, false);
   assert.equal(restored.saved().campaigns.some(item => item.promotionId === offer.id), false);
@@ -137,7 +200,7 @@ test('paid advertising still requires a sponsored channel with all settings visi
   form.elements.title.value = 'Needs a channel';
   form.elements.paidBoost.click();
   form.querySelectorAll('[name="paidPlacement"]').forEach(input => { input.checked = false; });
-  d.querySelector('#save-promotion-draft').click();
+  d.querySelector('#save-promotion').click();
   assert.equal(d.querySelector('#paid-advertising-fields').closest('details:not([open])'), null);
   assert.equal(d.activeElement.name, 'paidPlacement');
   assert.equal(d.querySelector('#promotion-editor').open, true);
@@ -154,7 +217,7 @@ test('editing a legacy promotion preserves its stored promotion budget cap', asy
   d.querySelector('[data-promotion-id="' + offer.id + '"] [data-action="edit"]').click();
   await tick();
   form.elements.title.value = 'Updated legacy title';
-  d.querySelector('#save-promotion-draft').click();
+  d.querySelector('#save-promotion').click();
   await tick();
   const updated = saved().offers.find(item => item.id === offer.id);
   assert.equal(updated.budgetCap, 350);
@@ -175,7 +238,7 @@ test('editing a legacy paid promotion preserves its area and derives a valid dai
   await tick();
   assert.equal(form.elements.promotionArea.value, 'Dallas');
   assert.equal(form.elements.paidDailyBudget.value, '10');
-  d.querySelector('#save-promotion-draft').click();
+  d.querySelector('#save-promotion').click();
   await tick();
   const updated = saved().offers.find(item => item.id === offer.id);
   assert.equal(updated.promotionArea, 'Dallas');
@@ -188,6 +251,7 @@ test('reopening an approval request clears the prior submit mode and preserves i
   d.querySelector('#create-promotion').click();
   await tick();
   form.elements.title.value = 'Approval state test';
+  form.elements.public.checked = true;
   d.querySelector('#submit-promotion-approval').click();
   await tick();
   const offer = saved().offers.find(item => item.title === 'Approval state test');
