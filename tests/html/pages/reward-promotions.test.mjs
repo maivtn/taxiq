@@ -1,6 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
+import {spawnSync} from 'node:child_process';
 import {JSDOM} from 'jsdom';
 
 const SOURCE_DIR = new URL('../../../html/pages/', import.meta.url);
@@ -8,6 +9,55 @@ const SOURCE_DIR = new URL('../../../html/pages/', import.meta.url);
 const storageKey = 'nexora:reward-promotions:v1';
 const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
 const tick = () => new Promise(resolve => setImmediate(resolve));
+
+test('the full promotions page stays responsive after startup and list rerenders', () => {
+  // Isolate the page so an infinite MutationObserver loop fails by timeout.
+  const result = spawnSync(process.execPath, ['--input-type=module', '-e', `
+    import assert from 'node:assert/strict';
+    import {readFileSync} from 'node:fs';
+    import {JSDOM} from ${JSON.stringify(import.meta.resolve('jsdom'))};
+    const source = new URL(${JSON.stringify(SOURCE_DIR.href)});
+    const dom = new JSDOM(readFileSync(new URL('reward-promotions.html', source), 'utf8'), {
+      url: 'https://nexora.test/pages/reward-promotions.html', runScripts: 'outside-only'
+    });
+    const w = dom.window, d = w.document;
+    const tick = () => new Promise(resolve => setImmediate(resolve));
+    try {
+      await new Promise(resolve => w.addEventListener('load', resolve, {once: true}));
+      for (const script of d.scripts) {
+        const src = script.getAttribute('src');
+        if (src && !src.startsWith('../assets/')) continue;
+        w.eval(src ? readFileSync(new URL(src, source), 'utf8') : script.textContent);
+      }
+      await tick();
+      const checkActions = () => {
+        const actions = [...d.querySelectorAll('[data-action="performance"]')];
+        assert.ok(actions.length > 0, 'promotions render');
+        for (const action of actions) {
+          assert.equal(action.getAttribute('href'), '#tracking-performance');
+          assert.equal(action.querySelector('span').textContent, 'Tracking');
+        }
+      };
+      checkActions();
+      const search = d.querySelector('#promotion-search');
+      search.value = 'no matching promotion';
+      search.dispatchEvent(new w.Event('input', {bubbles: true}));
+      await tick();
+      assert.equal(d.querySelectorAll('.promotion-card[data-promotion-id]').length, 0);
+      d.querySelector('#clear-filters').click();
+      await tick();
+      checkActions();
+      const language = d.querySelector('#promotion-language');
+      language.value = 'vi';
+      language.dispatchEvent(new w.Event('change', {bubbles: true}));
+      await tick();
+      checkActions();
+    } finally { dom.window.close(); }
+  `], {encoding: 'utf8', timeout: 10000});
+  assert.equal(result.error?.code, undefined, 'page must yield to the event loop: ' + result.error?.message);
+  assert.equal(result.status, 0, result.stderr);
+});
+
 const offer = (patch = {}) => ({
   id: 'offer-a', title: 'Add-On Upgrade', badge: 'UPGRADE', description: 'Selected add-ons only.',
   type: 'percent', value: 20, days: [...days], startTime: '00:00', endTime: '23:59',

@@ -193,7 +193,11 @@
 
   const list = document.getElementById('promotion-list');
   function syncTrackingActions() {
-    list.querySelectorAll('[data-action="performance"]').forEach(action => { action.href = '#tracking-performance'; const label = action.querySelector('span'); if (label) label.textContent = 'Tracking'; });
+    list.querySelectorAll('[data-action="performance"]').forEach(action => {
+      if (action.getAttribute('href') !== '#tracking-performance') action.href = '#tracking-performance';
+      const label = action.querySelector('span');
+      if (label && label.textContent !== 'Tracking') label.textContent = 'Tracking';
+    });
   }
   new MutationObserver(syncTrackingActions).observe(list,{childList:true,subtree:true}); syncTrackingActions();
   list.addEventListener('click',event => {
