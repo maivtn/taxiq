@@ -169,7 +169,7 @@ test('approval action explains when no reviewable placement is selected', async 
   form.elements.public.checked = false;
   form.elements.paidBoost.checked = false;
   d.querySelector('#submit-promotion-approval').click();
-  assert.match(d.querySelector('#promotion-error').textContent, /select Search Deals or enable Paid Boost/i);
+  assert.match(d.querySelector('#promotion-error').textContent, /select Search Deals listing or enable Paid Boost/i);
   assert.equal(d.querySelector('#promotion-editor').open, true);
   assert.equal(saved().offers.some(item => item.title === 'Nothing selected'), false);
 });
@@ -184,6 +184,7 @@ test('organic Search Deals and paid placements are distinct and placement overvi
   const sponsored = [...d.querySelectorAll('[name="paidPlacement"]')].map(input => input.closest('label').textContent.trim());
   assert.equal(sponsored.length, 3);
   sponsored.forEach(label => assert.match(label, /Sponsored/i));
+  assert.match(sponsored[0], /Search Deals · Sponsored/i);
   const preview = d.querySelector('#preview-paid-placements');
   assert.ok(preview, 'placement overview action is available');
   preview.click();
@@ -200,6 +201,7 @@ test('organic Search Deals and paid placements are distinct and placement overvi
   assert.equal(dialog.querySelector('.phase-placement-marker, .phase-placement-legend-number'), null);
   assert.match(overviewScreen.textContent, /Deals Nearby \/ Explore/);
   assert.match(overviewScreen.textContent, /Search Deals/);
+  assert.match(dialog.querySelector('[data-placement-legend="search"]').textContent, /Search Deals · Sponsored/i);
   d.querySelector('#close-paid-placement-overview').click();
   assert.equal(dialog.open, false);
 });

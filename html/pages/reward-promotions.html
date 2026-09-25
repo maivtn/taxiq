@@ -229,7 +229,7 @@
       </div>
       <div class="phase-placement-legend" aria-label="Sponsored placement legend">
         <div class="phase-placement-legend-item" data-placement-legend="nearby"><div><strong>Deals Nearby / Explore</strong><p>Reaches customers browsing places and offers near the target area.</p><span class="promo-chip">Paid · Sponsored</span></div></div>
-        <div class="phase-placement-legend-item" data-placement-legend="search"><div><strong>Search Deals</strong><p>Appears when customers search for relevant services and offers.</p><span class="promo-chip">Paid · Sponsored</span></div></div>
+        <div class="phase-placement-legend-item" data-placement-legend="search"><div><strong>Search Deals · Sponsored</strong><p>Appears above eligible organic results when customers search for relevant services and offers.</p><span class="promo-chip">Paid placement</span></div></div>
         <div class="phase-placement-legend-item" data-placement-legend="banner"><div><strong>Network banner</strong><p>Uses the promotion cover banner in eligible Nexora placements.</p><span class="promo-chip">Paid · Sponsored</span></div></div>
       </div>
     </div>
@@ -545,7 +545,7 @@
     const form = document.getElementById('promotion-form');
     const publicPlacement = form.querySelector('[name="public"]');
     if (!publicPlacement.checked && !form.elements.paidBoost.checked) {
-      document.getElementById('promotion-error').textContent = 'Select Search Deals or enable Paid Boost before submitting for approval.';
+      document.getElementById('promotion-error').textContent = 'Select Search Deals listing or enable Paid Boost before submitting for approval.';
       publicPlacement.focus();
       return;
     }
