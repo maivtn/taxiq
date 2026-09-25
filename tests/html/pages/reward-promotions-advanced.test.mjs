@@ -37,6 +37,28 @@ test('advanced settings remain visible when the heading is clicked', async t => 
   assert.equal(d.querySelector('#paid-advertising-fields').closest('details:not([open])'), null);
 });
 
+test('organic Search Deals and paid placements are distinct and placement overview opens', async t => {
+  const {d} = await boot(t);
+  d.querySelector('#create-promotion').click();
+  await tick();
+  const organic = d.querySelector('[name="public"]').closest('label');
+  assert.match(organic.textContent, /Search Deals listing/i);
+  assert.match(organic.textContent, /Free/i);
+  const sponsored = [...d.querySelectorAll('[name="paidPlacement"]')].map(input => input.closest('label').textContent.trim());
+  assert.equal(sponsored.length, 3);
+  sponsored.forEach(label => assert.match(label, /Sponsored/i));
+  const preview = d.querySelector('#preview-paid-placements');
+  assert.ok(preview, 'placement overview action is available');
+  preview.click();
+  const dialog = d.querySelector('#paid-placement-overview-dialog');
+  assert.equal(dialog.open, true);
+  assert.deepEqual([...dialog.querySelectorAll('[data-paid-placement-overview] h3')].map(heading => heading.textContent.trim()), [
+    'Search Deals', 'Explore & Nearby', 'Network banner'
+  ]);
+  d.querySelector('#close-paid-placement-overview').click();
+  assert.equal(dialog.open, false);
+});
+
 test('simplified paid settings retain schedule, targeting and budget when saved and reopened', async t => {
   const {d, form, saved} = await boot(t);
   d.querySelector('#create-promotion').click();
