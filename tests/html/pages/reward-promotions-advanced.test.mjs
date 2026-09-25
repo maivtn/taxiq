@@ -62,9 +62,30 @@ test('organic Search Deals and paid placements are distinct and placement overvi
   ]);
   assert.match(overviewScreen.textContent, /Deals Nearby \/ Explore/);
   assert.match(overviewScreen.textContent, /Search Deals/);
-  assert.match(overviewScreen.textContent, /Nâng cấp trải nghiệm pedicure/);
   d.querySelector('#close-paid-placement-overview').click();
   assert.equal(dialog.open, false);
+});
+
+test('placement overview uses the banner currently being created', async t => {
+  const {w, d, form} = await boot(t);
+  d.querySelector('#create-promotion').click();
+  await tick();
+  form.elements.title.value = 'Summer Pedicure Upgrade';
+  form.elements.badge.value = 'SUMMER SPECIAL';
+  form.elements.value.value = '25';
+  form.elements.title.dispatchEvent(new w.Event('input', {bubbles: true}));
+  const theme = d.querySelector('#banner-theme');
+  theme.value = 'gold';
+  theme.dispatchEvent(new w.Event('change', {bubbles: true}));
+  const editorArtwork = d.querySelector('#promotion-preview .promo-art');
+  assert.ok(editorArtwork, 'current banner artwork is rendered in the editor');
+  d.querySelector('#preview-paid-placements').click();
+  const overviewArtwork = d.querySelector('#paid-placement-banner-preview .promo-art');
+  assert.ok(overviewArtwork, 'current banner artwork is copied into the placement overview');
+  assert.equal(overviewArtwork.className, editorArtwork.className);
+  assert.equal(overviewArtwork.textContent.trim(), editorArtwork.textContent.trim());
+  assert.match(overviewArtwork.textContent, /Summer Pedicure Upgrade/);
+  assert.match(overviewArtwork.textContent, /25% off/);
 });
 
 test('simplified paid settings retain schedule, targeting and budget when saved and reopened', async t => {
