@@ -251,8 +251,7 @@
     {id:'beauty',label:'💄 Beauty'},
     {id:'restaurant',label:'🍝 Restaurant'},
     {id:'apparel',label:'👗 Apparel'},
-    {id:'e-gift-code',label:'🎟️ E-Gift Code'},
-    {id:'prepaid-cards',label:'💳 Prepaid Cards'},
+    {id:'gift-card',label:'🎁 Gift Card'},
     {id:'destination',label:'✈️ Destination'},
     {id:'entertainment',label:'🎮 Entertainment'},
     {id:'home',label:'🏠 Home'},
@@ -260,7 +259,7 @@
     {id:'shopping',label:'🛍️ Shopping'},
     {id:'wellness',label:'💗 Wellness'}
   ];
-  const templateCategory = {'weekday-pedicure':['beauty'],'add-on-upgrade':['beauty'],'rebook-save':['beauty'],'gift-card':['e-gift-code','prepaid-cards'],'lunch-combo':['restaurant'],'coffee-hour':['restaurant'],'retail-bundle':['apparel','shopping'],'oil-return':['lifestyle'],'fitness-trial':['lifestyle','wellness'],'wellness-first':['wellness','beauty'],'event-night':['destination','entertainment'],'build-year':['home','lifestyle']};
+  const templateCategory = {'weekday-pedicure':['beauty'],'add-on-upgrade':['beauty'],'rebook-save':['beauty'],'gift-card':['gift-card'],'lunch-combo':['restaurant'],'coffee-hour':['restaurant'],'retail-bundle':['apparel','shopping'],'oil-return':['lifestyle'],'fitness-trial':['lifestyle','wellness'],'wellness-first':['wellness','beauty'],'event-night':['destination','entertainment'],'build-year':['home','lifestyle']};
   let activeTemplateCategory = 'all';
   const esc = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   function renderTemplateFilters() {
