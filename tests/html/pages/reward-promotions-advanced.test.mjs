@@ -62,7 +62,7 @@ test('Paid Boost shows a balanced switch state while keeping settings editable',
   const status = d.querySelector('#paid-boost-status');
   const note = d.querySelector('#paid-boost-state-note');
   assert.equal(status.textContent.trim(), 'Off');
-  assert.match(note.textContent, /ads will not run until Paid Boost is enabled/i);
+  assert.match(note.textContent, /promotion can still run in free placements.*Paid ads will not run until Paid Boost is enabled/i);
   assert.equal(d.querySelector('#paid-advertising-fields').hidden, false);
   assert.equal(form.elements.boostBudget.disabled, false);
 

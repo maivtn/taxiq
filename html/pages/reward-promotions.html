@@ -102,7 +102,7 @@
             <section class="phase-paid-integrated" id="paid-advertising-section" aria-label="Paid advertising">
             <label class="phase-paid-enable"><span class="phase-paid-enable-copy"><span data-icon="megaphone"></span><span><strong>Paid Boost</strong><span class="phase-paid-status" id="paid-boost-status">Off</span><small>Promote this offer in sponsored placements.</small></span></span><span class="phase-switch"><input name="paidBoost" type="checkbox" role="switch" aria-label="Enable Paid Boost" aria-controls="paid-advertising-fields"><span class="phase-switch-track" aria-hidden="true"></span></span></label>
             <div class="phase-paid-fields" id="paid-advertising-fields">
-              <p class="promo-note" id="paid-boost-state-note">Settings are saved, but ads will not run until Paid Boost is enabled.</p>
+              <p class="promo-note" id="paid-boost-state-note">This promotion can still run in free placements. Paid ads will not run until Paid Boost is enabled.</p>
               <p class="promo-note">Uses the promotion schedule and cover banner.</p>
               <div class="promo-field-row"><label class="promo-field"><span>Target area</span><select name="promotionArea"><option value="Katy">Katy</option><option value="Houston">Houston</option><option value="Austin">Austin</option><option value="Dallas">Dallas</option></select></label><label class="promo-field"><span>Campaign goal</span><select name="paidObjective"><option value="traffic">Promotion visits</option><option value="bookings">Bookings</option><option value="checkins">Check-in visits</option></select></label></div>
               <div class="promo-field-row"><label class="promo-field"><span>Total campaign budget (USD)</span><input name="boostBudget" type="number" min="0.01" step="0.01" value="100"></label><label class="promo-field"><span>Daily spending limit (USD)</span><input type="number" name="paidDailyBudget" min="0.01" step="0.01" value="15"></label></div>
@@ -287,7 +287,7 @@
     status.classList.toggle('is-on',enabled);
     document.getElementById('paid-boost-state-note').textContent = enabled
       ? 'Paid Boost is on. Submitted settings require approval before ads can run.'
-      : 'Settings are saved, but ads will not run until Paid Boost is enabled.';
+      : 'This promotion can still run in free placements. Paid ads will not run until Paid Boost is enabled.';
     document.getElementById('save-promotion').textContent = editing ? 'Save changes' : 'Save draft';
     const submitButton = document.getElementById('submit-promotion-approval');
     submitButton.textContent = editing ? 'Submit changes for approval' : 'Submit for approval';
