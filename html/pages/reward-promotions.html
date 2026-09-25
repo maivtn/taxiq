@@ -154,7 +154,7 @@
         <button type="button" class="promo-text-button" id="preview-draft"><span data-icon="external-link"></span><span data-i18n="previewPrint">Preview & print poster</span></button>
       </aside>
     </div>
-    <footer class="editor-footer"><div><p id="promotion-error" class="promo-error" role="alert"></p><p class="promo-note" id="save-note" data-i18n="saveNote">New promotions are saved disabled.</p></div><div class="editor-footer-actions"><button type="button" class="promo-button promotion-footer-cancel" data-close-editor data-i18n="cancel">Cancel</button><button type="submit" class="promo-button promotion-footer-save" id="save-promotion">Save draft</button><button type="button" class="promo-button primary promotion-footer-submit" id="submit-promotion-approval">Submit for approval</button></div></footer>
+    <footer class="editor-footer"><div><p id="promotion-error" class="promo-error" role="alert"></p><p class="promo-note" id="save-note" data-i18n="saveNote">New promotions are saved disabled.</p></div><div class="editor-footer-actions"><button type="button" class="promo-button promotion-footer-cancel" data-close-editor data-i18n="cancel">Cancel</button><button type="submit" class="promo-button promotion-footer-save" id="save-promotion">Save promotion</button><button type="button" class="promo-button primary promotion-footer-submit" id="submit-promotion-approval">Submit for approval</button></div></footer>
   </form>
 </dialog>
 <dialog id="ai-banner-dialog" class="promo-poster-dialog phase-ai-dialog" aria-labelledby="ai-banner-title">
@@ -299,7 +299,7 @@
     document.getElementById('paid-boost-state-note').textContent = enabled
       ? 'Paid Boost is on. Submitted settings require approval before ads can run.'
       : 'This promotion can still run in free placements. Paid ads will not run until Paid Boost is enabled.';
-    document.getElementById('save-promotion').textContent = editing ? 'Save changes' : 'Save draft';
+    document.getElementById('save-promotion').textContent = editing ? 'Save changes' : 'Save promotion';
     const submitButton = document.getElementById('submit-promotion-approval');
     submitButton.textContent = editing ? 'Submit changes for approval' : 'Submit for approval';
     submitButton.setAttribute('aria-label',enabled ? 'Submit selected promotion and paid advertising settings for approval' : 'Submit selected promotion settings for approval');

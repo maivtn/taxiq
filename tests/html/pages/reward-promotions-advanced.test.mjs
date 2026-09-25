@@ -76,7 +76,7 @@ test('promotion footer exposes one contextual save action', async t => {
   const footer = d.querySelector('.editor-footer-actions');
   assert.equal(footer.querySelector('#save-promotion-draft'), null);
   assert.deepEqual([...footer.querySelectorAll('button')].map(button => button.textContent.trim()), [
-    'Cancel', 'Save draft', 'Submit for approval'
+    'Cancel', 'Save promotion', 'Submit for approval'
   ]);
 
   d.querySelector('[data-close-editor]').click();
