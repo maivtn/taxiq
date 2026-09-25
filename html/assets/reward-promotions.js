@@ -45,7 +45,7 @@
     subtitle:['Create and manage promotions.','Tạo và quản lý chương trình.'], language:['Language','Ngôn ngữ'], addPromotion:['Add promotion','Tạo chương trình'],
     templateTitle:['Promotion templates','Mẫu chương trình'],
     templateDescription:['Choose a template to prefill the promotion.','Chọn mẫu để điền sẵn thông tin chương trình.'],
-    promotions:['Promotions','Chương trình'], enabled:['Enabled','Đang bật'], disabled:['Disabled','Đang tắt'], bannersCreated:['Banners created','Banner đã tạo'],
+    managePromotions:['Manage promotions','Quản lý chương trình'], promotions:['Promotions','Chương trình'], enabled:['Enabled','Đang bật'], disabled:['Disabled','Đang tắt'], bannersCreated:['Banners created','Banner đã tạo'],
     search:['Search promotion name or badge…','Tìm tên chương trình hoặc badge...'], allStatuses:['All statuses','Tất cả trạng thái'], clearFilters:['Clear filters','Xóa bộ lọc'],
     loadError:['Could not load promotions','Không tải được chương trình'], loadErrorHint:['Your saved data has been kept. Try loading it again.','Dữ liệu đã lưu vẫn được giữ nguyên. Vui lòng thử tải lại.'], retry:['Try again','Thử lại'],
     demoNote:['Interactive prototype · Sample data · Changes are saved in this browser.','Bản mẫu tương tác · Dữ liệu minh họa · Thay đổi được lưu trong trình duyệt này.'],
