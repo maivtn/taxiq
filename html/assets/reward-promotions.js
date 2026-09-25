@@ -32,6 +32,12 @@
     edit:'m16 3 5 5-12 12-6 1 1-6L16 3Zm-3 3 5 5', copy:'M9 9h12v12H9V9ZM5 15H3V3h12v2',
     eye:'M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Zm13 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0',
     pause:'M8 5v14M16 5v14', play:'m7 4 14 8-14 8V4Z', more:'M5 12h.01M12 12h.01M19 12h.01',
+    'settings-2':'M20 7h-9M14 17H5M17 4v6M8 14v6M4 7h3M18 17h2',
+    gauge:'M12 14l4-4M3.34 19a10 10 0 1 1 17.32 0',
+    history:'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2',
+    lightbulb:'M9 18h6M10 22h4M8.5 14.5a6 6 0 1 1 7 0c-.9.7-1.5 1.6-1.5 2.5h-4c0-.9-.6-1.8-1.5-2.5Z',
+    check:'m5 12 4 4L19 6',
+    'loader-2':'M21 12a9 9 0 1 1-6.2-8.6',
     'alert-circle':'M12 8v5m0 3h.01M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0'
   };
   const icon = name => '<svg class="promo-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + (icons[name] || icons.image) + '"/></svg>';
