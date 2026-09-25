@@ -6,7 +6,7 @@
   <title>Nexora Touch - Promotion Performance</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/promotion-performance.css?v=20260925-back">
+  <link rel="stylesheet" href="../assets/promotion-performance.css?v=20260925-phase1">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
 </head>
 <body>
@@ -16,51 +16,45 @@
 <main class="performance-page">
   <a class="performance-back" href="reward-promotions.html"><i data-lucide="arrow-left" aria-hidden="true"></i><span>Back to promotions</span></a>
   <header class="performance-heading">
-    <div><p class="performance-eyebrow">Salon Owner / Promotions</p><h1>Promotion Performance</h1><p>See how each offer is discovered, booked and used, then compare Paid Boost results with its cost.</p></div>
+    <div><p class="performance-eyebrow">Salon Owner / Promotions</p><h1>Promotion Performance</h1><p>See where customers viewed, opened and redeemed this promotion across your active placements.</p></div>
     <span class="performance-demo">Prototype data</span>
   </header>
 
   <section class="performance-filters" aria-label="Performance filters">
     <label><span>Promotion</span><select id="performance-promotion"></select></label>
     <label><span>Period</span><select id="performance-period"><option value="7">Last 7 days</option><option value="30" selected>Last 30 days</option><option value="90">Last 90 days</option></select></label>
-    <label><span>Source</span><select id="performance-source"><option value="all">All sources</option><option value="internal">Internal</option><option value="organic">Public organic</option><option value="paid">Paid Boost</option><option value="unknown">Unknown source</option></select></label>
+    <label><span>Channel</span><select id="performance-channel"><option value="all">All channels</option><option value="checkout">POS checkout</option><option value="oneqr">OneQR Hero</option><option value="search">Search Deals</option><option value="checkin">Check-in screen</option></select></label>
     <p id="performance-updated" aria-live="polite"></p>
   </section>
 
-  <div class="performance-empty" id="performance-empty" hidden><strong>No performance data yet</strong><p>This promotion has not reported measurable activity for the selected period.</p></div>
+  <div class="performance-empty" id="performance-empty" hidden><strong>No tracking data yet</strong><p>This promotion has no tracked views, clicks or redemptions for the selected period and channel.</p></div>
 
   <section class="performance-metrics" aria-label="Promotion totals">
-    <article><span>Views</span><strong data-metric="impressions">No data</strong><small>Promotion or creative views</small></article>
-    <article><span>Clicks</span><strong data-metric="clicks">No data</strong><small>Offer and CTA clicks</small></article>
-    <article><span>Bookings</span><strong data-metric="bookings">No data</strong><small>Bookings with a valid source</small></article>
-    <article><span>POS uses</span><strong data-metric="posUses">No data</strong><small>Paid tickets using this promotion</small></article>
-    <article><span>Discount given</span><strong data-metric="discount">No data</strong><small>Promotion discount on paid tickets</small></article>
-    <article><span>Related revenue</span><strong data-metric="revenue">No data</strong><small>Eligible service revenue after discount</small></article>
+    <article><span>Total views</span><strong data-metric="views">No data</strong><small>Valid views on tracked placements</small></article>
+    <article><span>Clicks / QR scans</span><strong data-metric="clicks">No data</strong><small>Valid promotion opens and QR scans</small></article>
+    <article><span>Booking taps</span><strong data-metric="bookingTaps">No data</strong><small>Booking CTA taps, not completed bookings</small></article>
+    <article><span>POS redemptions</span><strong data-metric="redeems">No data</strong><small>Successful uses on completed tickets</small></article>
+    <article><span>Promo revenue</span><strong data-metric="revenue">No data</strong><small>Revenue from completed promotion orders</small></article>
+    <article><span>New customers</span><strong data-metric="newCustomers">No data</strong><small>Customers new at conversion time</small></article>
   </section>
 
   <div class="performance-layout">
-    <section class="performance-panel source-panel" aria-labelledby="source-title">
-      <header><div><p class="performance-eyebrow">Promotion</p><h2 id="source-title">Results by source</h2></div><p>Internal, Public and Paid describe acquisition. POS uses describe redemption.</p></header>
-      <div class="performance-table-scroll"><table><thead><tr><th scope="col">Source</th><th scope="col">Views</th><th scope="col">Clicks</th><th scope="col">Bookings</th><th scope="col">POS uses</th><th scope="col">Discount</th><th scope="col">Revenue</th></tr></thead><tbody id="performance-source-body"></tbody></table></div>
+    <section class="performance-panel source-panel" aria-labelledby="channel-title">
+      <header><div><p class="performance-eyebrow">Promotion</p><h2 id="channel-title">Results by channel</h2></div><p>Only placements with tracking data are included.</p></header>
+      <div class="performance-table-scroll"><table><thead><tr><th scope="col">Channel</th><th scope="col">Views</th><th scope="col">Clicks</th><th scope="col">Redeems</th><th scope="col">Revenue</th><th scope="col">Cost</th></tr></thead><tbody id="performance-channel-body"></tbody></table></div>
     </section>
 
-    <section class="performance-panel" aria-labelledby="campaign-title">
-      <header><div><p class="performance-eyebrow">Paid Boost</p><h2 id="campaign-title">Related campaigns</h2></div><a class="performance-link" href="reward-promotions.html?tab=campaigns">Manage campaigns</a></header>
-      <div id="performance-campaigns" class="performance-campaigns"></div>
+    <section class="performance-panel performance-insights" aria-labelledby="insights-title">
+      <header><div><p class="performance-eyebrow">Insights</p><h2 id="insights-title">What needs attention</h2></div></header>
+      <div id="performance-insights" class="performance-insight-list"></div>
     </section>
   </div>
-
-  <section class="performance-panel" aria-labelledby="events-title">
-    <header><div><p class="performance-eyebrow">Ads Credit</p><h2 id="events-title">Billable activity</h2><p>Every charge, rejection and adjustment shows its campaign and accounting reference.</p></div><a class="performance-link" href="nexora-packages.html?tab=ads-credit">Open Ads Credit</a></header>
-    <div class="performance-table-scroll"><table><thead><tr><th scope="col">Time</th><th scope="col">Activity</th><th scope="col">Campaign</th><th scope="col">Placement</th><th scope="col">Result and reason</th><th scope="col">Cost</th><th scope="col">Status / ledger</th></tr></thead><tbody id="performance-events"></tbody></table></div>
-  </section>
-
-  <p class="performance-footnote">Prototype only. Preview and Studio test activity are excluded. Data marked “No data” has not been collected; a measured zero is shown as 0.</p>
+  <p class="performance-footnote">Prototype sample data. Production reporting must use valid tracking events and completed POS orders; preview and Studio test activity are excluded.</p>
 </main>
 </div></div>
 
 <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
-<script src="../assets/promotion-performance.js?v=20260923"></script>
+<script src="../assets/promotion-performance.js?v=20260925-phase1"></script>
 <script src="../assets/nexora-shell.js"></script>
 </body>
 </html>
