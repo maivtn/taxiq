@@ -110,7 +110,6 @@
               </div></div>
               <div class="promo-field-row"><label class="promo-field"><span>Daily ad budget (USD)</span><input type="number" name="paidDailyBudget" min="0.01" step="0.01" value="15"></label><label class="promo-field"><span>Total ad budget (USD)</span><input name="boostBudget" type="number" min="0.01" step="0.01" value="100"></label></div>
               <p class="phase-paid-budget-hint">Ad budget is separate from the promotion budget cap.</p>
-              <label class="promo-field"><span>Banner creative</span><select name="paidCreative"><option value="cover">Use promotion cover banner</option></select></label>
               <div class="phase-paid-credit"><span data-icon="wallet-cards"></span><span><strong>Ads Credit · $250 available</strong><br>Ads Credit is charged only after the campaign is approved and starts delivering.</span></div>
             </div>
             </section>
@@ -234,7 +233,6 @@
     form.elements.paidObjective.value = offer.paidObjective || 'traffic';
     form.querySelectorAll('[name="paidPlacement"]').forEach(input => { input.checked = (offer.paidPlacements || ['search','explore']).includes(input.value); });
     form.elements.paidDailyBudget.value = Number(offer.paidDailyBudget) > 0 ? offer.paidDailyBudget : 15;
-    form.elements.paidCreative.value = offer.paidCreative || 'cover';
     queueMicrotask(syncPaidAdvertisingUI);
   };
   promotionStudio.read = (form,offer) => {
@@ -253,7 +251,7 @@
     result.paidEndDate = result.endDate || '';
     result.boostArea = result.promotionArea;
     result.paidDailyBudget = Number(form.elements.paidDailyBudget.value);
-    result.paidCreative = form.elements.paidCreative.value;
+    result.paidCreative = 'cover';
     result.paidApprovalRequested = form.dataset.saveMode === 'approval';
     return result;
   };
