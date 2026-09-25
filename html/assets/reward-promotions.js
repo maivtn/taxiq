@@ -67,7 +67,7 @@
     chooseTheme:['Choose template','Chọn template'], themePurple:['Signature · Purple','Signature · Tím'], themeGold:['Luxury · Gold','Luxury · Vàng'], themeRose:['Soft · Rose','Soft · Hồng'],
     themeOcean:['Ocean · Blue','Ocean · Xanh dương'], themeTeal:['Fresh · Teal','Fresh · Xanh ngọc'], themeSage:['Nature · Sage','Nature · Xanh lá'], themePeach:['Sunset · Peach','Sunset · Cam đào'], themeSlate:['Minimal · Slate','Minimal · Xám'],
     addBanner:['Add banner','Thêm banner'], upload:['Upload your design','Upload mẫu riêng'], chooseFile:['Choose an image','Chọn ảnh'], uploadHint:['PNG / JPG / WebP · up to 8 MB · up to 8 banners','PNG / JPG / WebP · tối đa 8 MB · tối đa 8 banner'],
-    previewPrint:['Preview & print poster','Xem trước & in poster'], saveNote:['New promotions are saved disabled.','Chương trình mới được lưu ở trạng thái tắt.'], editNote:['Changes take effect after saving.','Thay đổi có hiệu lực sau khi lưu.'],
+    previewPrint:['Preview & print poster','Xem trước & in poster'], saveNote:['Save draft keeps the promotion disabled.','Lưu nháp giữ chương trình ở trạng thái tắt.'], editNote:['Changes take effect after saving.','Thay đổi có hiệu lực sau khi lưu.'],
     cancel:['Cancel','Hủy'], save:['Save promotion','Lưu chương trình'], preview:['Preview','Xem trước'], promotionPoster:['Promotion poster','Poster chương trình'], closePreview:['Close preview','Đóng xem trước'],
     previousBanner:['Previous banner','Banner trước'], nextBanner:['Next banner','Banner tiếp theo'], printHint:['Print or save as PDF.','In hoặc lưu PDF.'], print:['Print poster','In poster'],
     useTemplate:['Use this template','Dùng mẫu này'], edit:['Edit','Chỉnh sửa'], share:['Share','Chia sẻ'], enable:['Enable promotion','Bật chương trình'], disable:['Disable','Tạm tắt'], duplicate:['Duplicate','Nhân bản'], delete:['Delete promotion','Xóa chương trình'],
@@ -309,6 +309,7 @@
     $('#add-banner').disabled = uploadPending || current.banners.length >= 8;
     $('#banner-upload').disabled = uploadPending || current.banners.length >= 8;
     $('#save-promotion').disabled = uploadPending;
+    $('#save-promotion-draft').disabled = uploadPending;
     hydrateImages($('#promotion-preview'));
   }
   function quickCampaigns(record) {
@@ -327,13 +328,13 @@
   function saveOffer() {
     if (!current || !editor.open) return;
     if (uploadPending) { showError(t('busyError')); return; }
-    const offer = readOffer(), error = validation(offer);
+    const offer = readOffer(), error = validation(offer), saveMode = form.dataset.saveMode || 'save';
     if (error) { showError(t(error[0]),error[1]); return; }
     if (loadFailed || offer.id && JSON.stringify(state.offers.find(item => item.id === offer.id)) !== initialRevision) { showError(t('staleError')); return; }
     studio.publication(offer, current.id ? JSON.parse(initialRevision) : null);
     const paidApprovalRequested = !!offer.paidApprovalRequested;
     delete offer.paidApprovalRequested;
-    const record = {...offer,id:offer.id || uid(),paused:offer.id ? offer.paused : true,createdAt:offer.createdAt || Date.now(),updatedAt:Date.now()};
+    const record = {...offer,id:offer.id || uid(),paused:offer.id ? offer.paused : saveMode === 'draft',createdAt:offer.createdAt || Date.now(),updatedAt:Date.now()};
     const next = {...state,offers:offer.id ? state.offers.map(item => item.id === offer.id ? record : item) : [...state.offers,record]};
     next.campaigns = quickCampaigns({...record,paidApprovalRequested});
     if (persist(next,true)) {

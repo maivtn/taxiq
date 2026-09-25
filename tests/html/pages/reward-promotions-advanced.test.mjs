@@ -75,22 +75,44 @@ test('new paid advertising setup starts with an Off status', async t => {
   assert.equal(status.dataset.status, 'off');
 });
 
-test('promotion footer exposes one contextual save action', async t => {
+test('promotion footer separates draft, save and approval actions', async t => {
   const {d} = await boot(t);
   d.querySelector('#create-promotion').click();
   await tick();
   const footer = d.querySelector('.editor-footer-actions');
-  assert.equal(footer.querySelector('#save-promotion-draft'), null);
-  assert.deepEqual([...footer.querySelectorAll('button')].map(button => button.textContent.trim()), [
-    'Cancel', 'Save promotion', 'Submit for approval'
+  assert.ok(footer.querySelector('#save-promotion-draft'));
+  assert.deepEqual([...footer.querySelectorAll('button:not([hidden])')].map(button => button.textContent.trim()), [
+    'Cancel', 'Save draft', 'Save promotion', 'Submit for approval'
   ]);
 
   d.querySelector('[data-close-editor]').click();
   d.querySelector('[data-promotion-id] [data-action="edit"]').click();
   await tick();
-  assert.deepEqual([...footer.querySelectorAll('button')].map(button => button.textContent.trim()), [
+  assert.deepEqual([...footer.querySelectorAll('button:not([hidden])')].map(button => button.textContent.trim()), [
     'Cancel', 'Save changes', 'Submit changes for approval'
   ]);
+});
+
+test('Save draft keeps a new promotion disabled while Save promotion enables free placements', async t => {
+  const draftRuntime = await boot(t);
+  draftRuntime.d.querySelector('#create-promotion').click();
+  await tick();
+  draftRuntime.form.elements.title.value = 'Draft only promotion';
+  draftRuntime.d.querySelector('#save-promotion-draft').click();
+  await tick();
+  const draft = draftRuntime.saved().offers.find(item => item.title === 'Draft only promotion');
+  assert.equal(draft.paused, true);
+  assert.equal(draft.public, 'private');
+
+  const saveRuntime = await boot(t);
+  saveRuntime.d.querySelector('#create-promotion').click();
+  await tick();
+  saveRuntime.form.elements.title.value = 'Active free promotion';
+  saveRuntime.d.querySelector('#save-promotion').click();
+  await tick();
+  const active = saveRuntime.saved().offers.find(item => item.title === 'Active free promotion');
+  assert.equal(active.paused, false);
+  assert.equal(active.public, 'private');
 });
 
 test('Paid Boost shows a balanced switch state while keeping settings editable', async t => {
@@ -135,6 +157,7 @@ test('submitting does not silently change Search Deals or Paid Boost selections'
   const offer = saved().offers.find(item => item.title === 'Paid only approval');
   assert.equal(offer.public, 'private');
   assert.equal(offer.paidBoost, true);
+  assert.equal(offer.paused, false);
   assert.equal(saved().campaigns.find(item => item.promotionId === offer.id).status, 'pending');
 });
 
