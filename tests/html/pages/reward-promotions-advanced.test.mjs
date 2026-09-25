@@ -60,6 +60,7 @@ test('organic Search Deals and paid placements are distinct and placement overvi
   assert.deepEqual([...dialog.querySelectorAll('[data-placement-legend]')].map(item => item.dataset.placementLegend), [
     'nearby', 'search', 'banner'
   ]);
+  assert.equal(dialog.querySelector('.phase-placement-marker, .phase-placement-legend-number'), null);
   assert.match(overviewScreen.textContent, /Deals Nearby \/ Explore/);
   assert.match(overviewScreen.textContent, /Search Deals/);
   d.querySelector('#close-paid-placement-overview').click();
