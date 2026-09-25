@@ -144,7 +144,7 @@
         <button type="button" class="promo-text-button" id="preview-draft"><span data-icon="external-link"></span><span data-i18n="previewPrint">Preview & print poster</span></button>
       </aside>
     </div>
-    <footer class="editor-footer"><div><p id="promotion-error" class="promo-error" role="alert"></p><p class="promo-note" id="save-note" data-i18n="saveNote">New promotions are saved disabled.</p></div><div class="editor-footer-actions"><button type="button" class="promo-button" data-close-editor data-i18n="cancel">Cancel</button><button type="submit" class="promo-button" id="save-promotion">Save draft</button><button type="button" class="promo-button primary" id="submit-promotion-approval">Submit for approval</button></div></footer>
+    <footer class="editor-footer"><div><p id="promotion-error" class="promo-error" role="alert"></p><p class="promo-note" id="save-note" data-i18n="saveNote">New promotions are saved disabled.</p></div><div class="editor-footer-actions"><button type="button" class="promo-button" data-close-editor data-i18n="cancel">Cancel</button><button type="button" class="promo-button" id="save-promotion-draft">Save draft</button><button type="submit" class="promo-button" id="save-promotion">Save promotion</button><button type="button" class="promo-button primary" id="submit-promotion-approval">Submit for approval</button></div></footer>
   </form>
 </dialog>
 <dialog id="ai-banner-dialog" class="promo-poster-dialog phase-ai-dialog" aria-labelledby="ai-banner-title"><header class="editor-header"><div><p class="promo-eyebrow">AI Ads</p><h2 id="ai-banner-title">Create banner with AI</h2></div><button type="button" class="promo-close" id="close-ai-banner" aria-label="Close AI banner generator"><span data-icon="x"></span></button></header><div class="phase-ai-body"><label class="promo-field"><span>What should the banner communicate?</span><textarea id="ai-banner-prompt" rows="3" placeholder="Example: Promote 20% off nail art add-ons with a premium purple look."></textarea></label><div class="phase-ai-options" role="radiogroup" aria-label="Generated banner options"><button type="button" class="phase-ai-option selected" data-ai-theme="purple" role="radio" aria-checked="true"><span class="phase-ai-art purple"><small>LIMITED OFFER</small><strong>20% OFF</strong><em>Premium add-ons</em></span><b>Signature Purple</b></button><button type="button" class="phase-ai-option" data-ai-theme="gold" role="radio" aria-checked="false"><span class="phase-ai-art gold"><small>JUST FOR YOU</small><strong>SAVE MORE</strong><em>Book your next visit</em></span><b>Luxury Gold</b></button><button type="button" class="phase-ai-option" data-ai-theme="rose" role="radio" aria-checked="false"><span class="phase-ai-art rose"><small>NEW GUEST</small><strong>WELCOME</strong><em>Your first visit offer</em></span><b>Soft Rose</b></button></div></div><footer class="editor-footer"><p class="promo-note">Prototype preview. No image is generated or published.</p><div class="editor-footer-actions"><button type="button" class="promo-button" id="cancel-ai-banner">Cancel</button><button type="button" class="promo-button primary" id="use-ai-banner">Use selected banner</button></div></footer></dialog>
@@ -221,6 +221,16 @@
     const publicPlacement = document.querySelector('#promotion-form [name="public"]');
     publicPlacement.checked = true;
     publicPlacement.dispatchEvent(new Event('change',{bubbles:true}));
+    document.getElementById('promotion-form').requestSubmit(document.getElementById('save-promotion'));
+  });
+  const saveWithoutApproval = () => {
+    const publicPlacement = document.querySelector('#promotion-form [name="public"]');
+    publicPlacement.checked = false;
+    publicPlacement.dispatchEvent(new Event('change',{bubbles:true}));
+  };
+  document.getElementById('save-promotion').addEventListener('click',saveWithoutApproval);
+  document.getElementById('save-promotion-draft').addEventListener('click',() => {
+    saveWithoutApproval();
     document.getElementById('promotion-form').requestSubmit(document.getElementById('save-promotion'));
   });
 })();
