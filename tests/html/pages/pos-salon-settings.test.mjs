@@ -33,6 +33,11 @@ test('Staff Schedule is a real section with team coverage and compliant selector
  assert.match(readFileSync(new URL('../assets/pos-salon-settings.css',SOURCE_DIR),'utf8'),/\.schedule-select[^}]*padding-right:\s*44px/);
  assert.deepEqual(errors,[]);dom.window.close();
 });
+test('Staff Schedule escapes quoted staff data with a complete HTML entity',()=>{
+ const source=readFileSync(new URL('../assets/staff-schedule-settings.js',SOURCE_DIR),'utf8');
+ assert.match(source,/['"]&quot;['"]/);
+ assert.doesNotMatch(source,/['"]&quot['"]/);
+});
 test('manager drafts, validates and publishes a staff schedule',()=>{
  const {dom,w,d}=boot(null,'?section=staff-schedule&staff=staff-0');
  d.querySelector('[data-schedule-staff="staff-0"] [data-schedule-day]').click();

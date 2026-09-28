@@ -3,7 +3,7 @@
   var host=document.querySelector('[data-staff-schedule-settings]'),store=window.NEXORA_STAFF_SCHEDULE_STORE,salonData=window.NEXORA_SALON_DATA,appointmentStore=window.NEXORA_APPOINTMENTS_STORE;
   if(!host||!store||!salonData)return;
   var selectedStaff='',selectedDate='',drawerOpen=false,impactIds=[],dayKeys=['sun','mon','tue','wed','thu','fri','sat'];
-  function esc(value){return String(value==null?'':value).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot',"'":'&#39;'}[c];});}
+  function esc(value){return String(value==null?'':value).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
   function dateKey(date){return date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');}
   function week(){var anchor=new Date();anchor.setHours(12,0,0,0);anchor.setDate(anchor.getDate()-anchor.getDay());return Array.from({length:7},function(_,i){var day=new Date(anchor);day.setDate(anchor.getDate()+i);return day;});}
   function appointments(){try{return appointmentStore?appointmentStore.loadAll():[];}catch(_){return [];}}
