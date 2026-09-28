@@ -224,7 +224,8 @@
     const ids = currentReviewIds();
     $('#review-actions').innerHTML = ids.map((id, index) => {
       const action = MODULES[id];
-      return `<div class="review-action" data-review-action="${id}"><span class="review-action-icon"><i data-lucide="${action.icon}"></i></span><div><strong>${actionLabel(action)}</strong><small>${actionDescription(action)}</small></div><span class="review-action-order"><button type="button" data-action-move="up" aria-label="Move ${action.en} up" ${index === 0 ? 'disabled' : ''}><i data-lucide="chevron-up"></i></button><button type="button" data-action-move="down" aria-label="Move ${action.en} down" ${index === ids.length - 1 ? 'disabled' : ''}><i data-lucide="chevron-down"></i></button></span><button class="review-action-remove" type="button" data-action-remove aria-label="Remove ${action.en}"><i data-lucide="x"></i></button><label class="toggle"><input type="checkbox" data-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${actionLabel(action)}"><span></span></label></div>`;
+      const dragLabel = state.language === 'vi' ? `Kéo để sắp xếp ${action.vi}` : `Drag to reorder ${action.en}`;
+      return `<div class="review-action" data-review-action="${id}"><button class="drag-handle" type="button" draggable="true" data-drag-handle="${id}" aria-label="${dragLabel}" title="${dragLabel}"><i data-lucide="grip-vertical"></i></button><span class="review-action-icon"><i data-lucide="${action.icon}"></i></span><div><strong>${actionLabel(action)}</strong><small>${actionDescription(action)}</small></div><span class="review-action-order"><button type="button" data-action-move="up" aria-label="Move ${action.en} up" ${index === 0 ? 'disabled' : ''}><i data-lucide="chevron-up"></i></button><button type="button" data-action-move="down" aria-label="Move ${action.en} down" ${index === ids.length - 1 ? 'disabled' : ''}><i data-lucide="chevron-down"></i></button></span><button class="review-action-remove" type="button" data-action-remove aria-label="Remove ${action.en}"><i data-lucide="x"></i></button><label class="toggle"><input type="checkbox" data-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${actionLabel(action)}"><span></span></label></div>`;
     }).join('');
     $('#review-actions').querySelectorAll('[data-action-toggle]').forEach((input) => input.addEventListener('change', () => {
       if (input.checked) state.enabled.add(input.dataset.actionToggle);
@@ -243,6 +244,7 @@
       renderReviewActions();
       renderPreview();
     }));
+    bindDragReorder();
     renderPhoneActions();
     updateActiveCount();
     refreshIcons();
@@ -251,8 +253,8 @@
   function updateActiveCount() {
     const count = currentReviewIds().filter((id) => state.enabled.has(id)).length;
     $('#review-active-count').textContent = state.language === 'vi'
-      ? `${count} hành động đang bật · Kéo thứ tự bằng nút mũi tên`
-      : `${count} active ${count === 1 ? 'action' : 'actions'} · Use the arrows to set display order`;
+      ? `${count} hành động đang bật · Kéo tay nắm hoặc dùng nút mũi tên để sắp xếp`
+      : `${count} active ${count === 1 ? 'action' : 'actions'} · Drag the handle or use the arrows to reorder`;
   }
 
   function moveAction(id, direction) {
@@ -262,6 +264,60 @@
     [state.reviewIds[from], state.reviewIds[to]] = [state.reviewIds[to], state.reviewIds[from]];
     renderReviewActions();
     renderPreview();
+  }
+
+  let draggedActionId = null;
+
+  function moveActionTo(id, targetId, placeAfter) {
+    if (!id || !targetId || id === targetId) return false;
+    const nextIds = state.reviewIds.filter((actionId) => actionId !== id);
+    const targetIndex = nextIds.indexOf(targetId);
+    if (targetIndex < 0) return false;
+    nextIds.splice(targetIndex + (placeAfter ? 1 : 0), 0, id);
+    state.reviewIds = nextIds;
+    return true;
+  }
+
+  function bindDragReorder() {
+    const container = $('#review-actions');
+    container.querySelectorAll('[data-drag-handle]').forEach((handle) => {
+      handle.addEventListener('dragstart', (event) => {
+        draggedActionId = handle.dataset.dragHandle;
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('text/plain', draggedActionId);
+        handle.closest('[data-review-action]').classList.add('is-dragging');
+      });
+      handle.addEventListener('dragend', () => {
+        draggedActionId = null;
+        container.querySelectorAll('.is-dragging, .is-drag-over').forEach((item) => item.classList.remove('is-dragging', 'is-drag-over'));
+      });
+      handle.addEventListener('keydown', (event) => {
+        if (!['ArrowUp', 'ArrowDown'].includes(event.key)) return;
+        event.preventDefault();
+        moveAction(handle.dataset.dragHandle, event.key === 'ArrowUp' ? 'up' : 'down');
+        document.querySelector(`[data-drag-handle="${handle.dataset.dragHandle}"]`)?.focus();
+      });
+    });
+    container.querySelectorAll('[data-review-action]').forEach((row) => {
+      row.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+        container.querySelectorAll('.is-drag-over').forEach((item) => item.classList.remove('is-drag-over'));
+        if (row.dataset.reviewAction !== draggedActionId) row.classList.add('is-drag-over');
+      });
+      row.addEventListener('dragleave', () => row.classList.remove('is-drag-over'));
+      row.addEventListener('drop', (event) => {
+        event.preventDefault();
+        const bounds = row.getBoundingClientRect();
+        const placeAfter = event.clientY > bounds.top + bounds.height / 2;
+        const sourceId = draggedActionId || event.dataTransfer.getData('text/plain');
+        if (moveActionTo(sourceId, row.dataset.reviewAction, placeAfter)) {
+          renderReviewActions();
+          renderPreview();
+          showToast(state.language === 'vi' ? 'Đã cập nhật thứ tự hiển thị.' : 'Display order updated.');
+        }
+      });
+    });
   }
 
   function renderPhoneActions() {

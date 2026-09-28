@@ -216,13 +216,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .review-template-card em { margin-top: 2px; color: #7a8496; font-size: 9px; font-style: normal; }
 .review-actions { display: grid; gap: 7px; }
 .review-action { display: flex; align-items: center; gap: 10px; padding: 10px 11px; border: 1px solid var(--oq-line); border-radius: 11px; }
-.review-action { transition: border-color .16s, box-shadow .16s, opacity .16s, transform .16s; }
-.review-action.is-dragging { opacity: .42; transform: scale(.985); }
-.review-action.is-drag-over { border-color: var(--oq-primary); box-shadow: 0 0 0 2px rgba(79,70,229,.1); }
-.drag-handle { display: grid; flex: 0 0 24px; height: 31px; place-items: center; border: 0; border-radius: 7px; background: transparent; color: #98a2b3; cursor: grab; }
-.drag-handle:active { cursor: grabbing; }
-.drag-handle:hover, .drag-handle:focus-visible { background: #f2f0ff; color: var(--oq-primary); outline: none; }
-.drag-handle svg { width: 15px; }
 .review-action-icon { display: grid; width: 31px; height: 31px; place-items: center; border-radius: 8px; background: #f2f0ff; color: var(--oq-primary); }
 .review-action-icon svg { width: 15px; }
 .review-action div { flex: 1; }
@@ -351,8 +344,8 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .industry-grid { grid-template-columns: 1fr; }
   .action-library-grid { grid-template-columns: 1fr; }
   .review-action { align-items: flex-start; flex-wrap: wrap; }
-  .review-action div { min-width: calc(100% - 75px); }
-  .review-action-order { margin-left: 75px; }
+  .review-action div { min-width: calc(100% - 55px); }
+  .review-action-order { margin-left: 41px; }
   .industry-close span { display: none; }
   .template-modal { padding: 12px; }
   .modal-actions { display: grid; grid-template-columns: 1fr; }
