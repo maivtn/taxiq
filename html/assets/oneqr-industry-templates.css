@@ -299,7 +299,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .customer-quick-actions svg { width: 11px; }
 .phone-preview.is-live-customer .phone-action { position: relative; display: grid; min-height: 78px; grid-template-columns: 30px 1fr; align-content: space-between; padding: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(16,24,40,.06); }
 .phone-preview.is-live-customer .phone-action > strong { grid-column: 1 / -1; font-size: 11px; }
-.phone-preview.is-live-customer .phone-action > svg { position: absolute; top: 11px; right: 9px; width: 12px; transform: rotate(-45deg); }
 .phone-preview.is-live-customer .phone-action span { width: 30px; height: 30px; color: var(--oq-primary); background: transparent; }
 .customer-business-info { display: grid; gap: 9px; margin: 2px 11px 15px; padding: 12px; border-radius: 11px; background: #f6f8fc; }
 .customer-business-info span { display: flex; align-items: flex-start; gap: 7px; color: #56617b; font-size: 11px; line-height: 1.45; }
@@ -487,7 +486,6 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .phone-action span { display: grid; width: 25px; height: 25px; place-items: center; border-radius: 7px; background: #f0eeff; color: var(--oq-primary); }
 .phone-action svg { width: 12px; }
 .phone-action strong { flex: 1; font-size: 11px; }
-.phone-action > svg { color: #98a2b3; }
 .phone-screen footer { padding: 9px; color: #98a2b3; text-align: center; font-size: 11px; }
 .phone-screen footer strong { color: var(--oq-primary); }
 .change-policy { display: grid; grid-template-columns: 1fr 1fr; gap: 9px; margin-top: 20px; }

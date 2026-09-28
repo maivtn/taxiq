@@ -907,7 +907,7 @@
       const action = MODULES[id];
       const tag = id === 'contactcard' ? 'button' : 'div';
       const attribute = id === 'contactcard' ? ' type="button" data-phone-contact-card' : '';
-      return `<${tag} class="phone-action"${attribute}><span>${actionIconMarkup(id)}</span><strong>${escapeAttribute(displayActionTitle(id))}</strong><i data-lucide="chevron-right"></i></${tag}>`;
+      return `<${tag} class="phone-action"${attribute}><span>${actionIconMarkup(id)}</span><strong>${escapeAttribute(displayActionTitle(id))}</strong></${tag}>`;
     }).join('') : `<div class="no-results"><p>${state.language === 'vi' ? 'Bật ít nhất một hành động cho khách.' : 'Turn on at least one customer action.'}</p></div>`;
   }
 
