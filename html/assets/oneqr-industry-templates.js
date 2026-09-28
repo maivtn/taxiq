@@ -67,6 +67,17 @@
     retail: ['shop', 'promotion', 'giftcard', 'directions', 'review']
   };
 
+  const TILE_BACKGROUNDS = [
+    'linear-gradient(135deg, #F472B6, #BE185D)',
+    'linear-gradient(135deg, #60A5FA, #1D4ED8)',
+    'linear-gradient(135deg, #34D399, #047857)',
+    'linear-gradient(135deg, #FBBF24, #B45309)',
+    'linear-gradient(135deg, #A78BFA, #6D28D9)',
+    'linear-gradient(135deg, #FB923C, #C2410C)',
+    'linear-gradient(135deg, #22D3EE, #0E7490)',
+    'linear-gradient(135deg, #F87171, #B91C1C)'
+  ];
+
   const industries = GROUPS.flatMap((group) => group.items.split('|').map((raw) => {
     const [id, en, vi] = raw.split('~');
     return { id, en, vi, groupId: group.id, icon: group.icon, color: group.color };
@@ -150,7 +161,10 @@
     grid.innerHTML = matches.map((industry) => {
       const group = groupById(industry.groupId);
       const selected = state.selected === industry.id;
-      return `<button class="industry-card ${selected ? 'is-selected' : ''}" type="button" data-industry="${industry.id}" aria-pressed="${selected}" style="--card-soft:${industry.color}"><span class="industry-card-icon">${industry.icon}</span><div><strong>${label(industry)}</strong><small>${label(group)}</small></div><span class="selected-check"><i data-lucide="check"></i></span></button>`;
+      const actionCount = actionIds(industry).length;
+      const actionCopy = state.language === 'vi' ? `${actionCount} hành động sẵn có` : `${actionCount} actions ready`;
+      const tileBackground = TILE_BACKGROUNDS[industries.indexOf(industry) % TILE_BACKGROUNDS.length];
+      return `<button class="industry-card ${selected ? 'is-selected' : ''}" type="button" data-industry="${industry.id}" aria-pressed="${selected}" style="--card-gradient:${tileBackground}"><span class="industry-card-icon">${industry.icon}</span><div><strong>${label(industry)}</strong><small>${label(group)} · ${actionCopy}</small></div><span class="selected-check"><i data-lucide="check"></i></span></button>`;
     }).join('');
     grid.querySelectorAll('[data-industry]').forEach((button) => button.addEventListener('click', () => selectIndustry(button.dataset.industry)));
     refreshIcons();
