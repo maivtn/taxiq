@@ -176,6 +176,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .industry-picker-view[hidden] { display: none; }
 .picker-heading-actions { display: flex; align-items: center; gap: 12px; }
 .picker-heading-actions .secondary-action { min-height: 36px; }
+.picker-title-row { display: flex; align-items: center; gap: 12px; }
+.picker-back-link { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 5px; min-height: 34px; padding: 0 10px; border: 1px solid #d0d5dd; border-radius: 9px; background: #fff; color: var(--oq-primary); font-size: 12px; font-weight: 750; text-decoration: none; }
+.picker-back-link:hover { color: var(--oq-primary-dark); }
+.picker-back-link svg { width: 16px; }
 .template-workspace.is-picker-mode { grid-template-columns: 1fr; }
 .template-workspace.is-picker-mode .template-preview { display: none; }
 .industry-page.is-editor-mode .industry-hero,
