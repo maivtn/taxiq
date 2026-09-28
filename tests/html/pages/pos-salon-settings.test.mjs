@@ -99,6 +99,41 @@ test('manager chooses date scope and preserves editable breaks',()=>{
  assert.equal(draft.exceptions[monday.dataset.scheduleDate].start,'10:00');assert.equal(draft.weekly.mon.start,'09:00');assert.deepEqual(JSON.parse(JSON.stringify(draft.exceptions[monday.dataset.scheduleDate].breaks)),[{start:'13:00',end:'13:30'}]);dom.window.close();
 });
 
+test('date editor formats US dates while preserving ISO values and rejects impossible typed dates',()=>{
+ const {dom,w,d}=boot(null,'?section=staff-schedule');
+ d.querySelector('[data-schedule-staff="staff-0"] [data-schedule-day]').click();
+ const native=d.querySelector('[data-schedule-edit-date]');native.value='2026-09-29';native.dispatchEvent(new w.Event('change',{bubbles:true}));
+ const display=()=>d.querySelector('.schedule-date-controls [data-date-display]');
+ assert.equal(display().value,'Sep 29, 2026');
+ display().value='Oct 1, 2026';display().dispatchEvent(new w.Event('change',{bubbles:true}));
+ assert.equal(d.querySelector('[data-schedule-edit-date]').value,'2026-10-01');
+ assert.equal(d.querySelector('[data-schedule-calendar] .tech-schedule-day').textContent,'Oct 1, 2026');
+ display().value='Feb 30, 2026';display().dispatchEvent(new w.Event('change',{bubbles:true}));
+ assert.equal(display().validity.valid,false);
+ d.querySelector('[data-schedule-save-draft]').click();
+ assert.equal(w.NEXORA_STAFF_SCHEDULE_STORE.loadState().drafts['bitcoin-nail-bar-houston'],undefined);
+ assert.equal(d.querySelector('[data-schedule-edit-date]').value,'2026-10-01');
+ display().value='Oct 1, 2026';display().dispatchEvent(new w.Event('change',{bubbles:true}));
+ d.querySelector('[data-break-add="date"]').click();
+ assert.equal(d.querySelector('[data-break-form] [data-date-display]').value,'Oct 1, 2026');
+ const breakDate=d.querySelector('[data-break-target]');breakDate.value='2026-10-02';breakDate.dispatchEvent(new w.Event('change',{bubbles:true}));
+ assert.equal(d.querySelector('[data-break-form] [data-date-display]').value,'Oct 2, 2026');
+ dom.window.close();
+});
+test('editing a saved date draft immediately replaces stale saved status with unsaved status',()=>{
+ const {dom,w,d}=boot(null,'?section=staff-schedule');
+ d.querySelector('[data-schedule-staff="staff-0"] [data-schedule-day]').click();
+ d.querySelector('[data-schedule-save-draft]').click();
+ const changeMode=value=>{const mode=d.querySelector('[data-date-mode]');mode.value=value;mode.dispatchEvent(new w.Event('change',{bubbles:true}));};
+ changeMode('day-off');assert.match(d.querySelector('.schedule-editor-message').textContent,/Unsaved changes/);
+ d.querySelector('[data-schedule-save-draft]').click();assert.match(d.querySelector('.schedule-editor-message').textContent,/Draft saved/);
+ d.querySelector('[data-date-reset]').click();assert.match(d.querySelector('.schedule-editor-message').textContent,/Unsaved changes/);
+ changeMode('custom-hours');d.querySelector('[data-schedule-save-draft]').click();
+ const start=d.querySelector('[data-schedule-start]');start.value='10:00';start.dispatchEvent(new w.Event('change',{bubbles:true}));
+ assert.match(d.querySelector('.schedule-editor-message').textContent,/Unsaved changes/);
+ d.querySelector('[data-schedule-save-draft]').click();assert.match(d.querySelector('.schedule-editor-message').textContent,/Draft saved/);
+ dom.window.close();
+});
 test('Edit schedule opens the staff weekly calendar modal and saves days, breaks and permission together',()=>{
  const {dom,w,d,errors}=boot();
  const trigger=d.querySelector('[data-staff-schedule-open="staff-0"]');assert.equal(trigger.textContent,'Edit schedule');trigger.click();

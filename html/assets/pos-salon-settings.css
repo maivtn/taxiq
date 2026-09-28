@@ -58,10 +58,17 @@
 .schedule-break-chip{display:inline-flex;align-items:center;gap:5px;min-height:36px;box-sizing:border-box;flex-wrap:wrap;background:#f1f5f9;border-radius:8px;padding:0 4px 0 9px;color:#334155}
 .schedule-break-chip button{border:0;background:transparent;color:#4648d4}
 .schedule-date-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:start;gap:12px}
-.schedule-date-controls>label{align-content:start;min-width:0}
+.schedule-date-controls>label{grid-template-rows:20px 44px;align-content:start;min-width:0;line-height:20px}
 .schedule-date-controls input,.schedule-date-controls select{height:44px;box-sizing:border-box;width:100%;min-width:0}
 .schedule-date-controls input,.schedule-break-dialog input{width:100%;min-width:0;min-height:44px;box-sizing:border-box;border:1px solid #dbe4f3;border-radius:8px;padding:10px;background:#fff;color:inherit;font:inherit}
 .schedule-date-controls small,.schedule-break-target small{font-size:12px;font-weight:500;color:#64748b}
+.schedule-formatted-date{position:relative;display:block;min-width:0;width:100%;height:44px}
+.schedule-formatted-date input[data-date-display]{display:block;width:100%;height:44px;min-height:44px;box-sizing:border-box;border:1px solid #dbe4f3;border-radius:8px;padding:0 44px 0 12px;background:#fff;color:#101827;font:inherit;line-height:normal}
+.schedule-formatted-date input[data-date-display]:disabled{background:#f1f5f9;color:#64748b}
+.schedule-formatted-date input.schedule-native-date{position:absolute;right:0;top:0;width:44px;height:44px;min-height:44px;margin:0;padding:0;border:0;opacity:0;cursor:pointer}
+.schedule-native-date::-webkit-calendar-picker-indicator{position:absolute;inset:0;width:100%;height:100%;margin:0;padding:0;cursor:pointer}
+.schedule-date-icon{position:absolute;right:14px;top:14px;width:16px;height:16px;color:#52607b;pointer-events:none}
+.schedule-formatted-date:focus-within{outline:2px solid #4648d4;outline-offset:2px;border-radius:8px}
 .schedule-permission-note{border-left:3px solid #4648d4;padding:12px;background:#f8faff;font-size:12px;line-height:1.5}
 .schedule-date-list{border-top:1px solid #e2e8f0;padding-top:12px}
 .schedule-date-list h3{font-size:13px;margin:0 0 8px}
