@@ -132,6 +132,7 @@
     reviewIds: [],
     enabled: new Set(),
     customActionIds: new Set(),
+    actionTitles: {},
     actionLinks: {},
     reviewSnapshot: null,
     applied: null
@@ -162,6 +163,14 @@
       state.actionLinks[id] = DEFAULT_ACTION_LINKS[id] || `https://nexoratouch.com/o/bitcoin-nail-bar/${id}`;
     }
     return state.actionLinks[id];
+  }
+
+  function actionTitleValue(id) {
+    return typeof state.actionTitles[id] === 'string' ? state.actionTitles[id] : actionLabel(MODULES[id]);
+  }
+
+  function displayActionTitle(id) {
+    return actionTitleValue(id).trim() || actionLabel(MODULES[id]);
   }
 
   function savedCustomActionIds(saved) {
@@ -305,7 +314,7 @@
       const action = MODULES[id];
       const custom = state.customActionIds.has(id);
       const source = custom ? (state.language === 'vi' ? 'Bạn đã thêm' : 'Added by you') : (state.language === 'vi' ? 'Đề xuất' : 'Recommended');
-      return `<div class="starter-action"><span><i data-lucide="${action.icon}"></i></span><strong>${actionLabel(action)}</strong><small class="${custom ? 'is-custom' : ''}">${source}</small></div>`;
+      return `<div class="starter-action"><span><i data-lucide="${action.icon}"></i></span><strong>${escapeAttribute(displayActionTitle(id))}</strong><small class="${custom ? 'is-custom' : ''}">${source}</small></div>`;
     }).join('');
     $('#review-template-button-label').textContent = state.applied && state.applied.industryId === industry.id
       ? (state.language === 'vi' ? 'Chỉnh sửa mẫu đang dùng' : 'Edit applied template')
@@ -331,9 +340,15 @@
     container.innerHTML = state.reviewIds.map((id, index) => {
       const action = MODULES[id];
       const dragLabel = state.language === 'vi' ? `Kéo để sắp xếp ${action.vi}` : `Drag to reorder ${action.en}`;
-      const linkLabel = state.language === 'vi' ? `Đường dẫn cho ${action.vi}` : `Link for ${action.en}`;
-      return `<article class="template-editor-action" data-editor-action="${id}"><button class="editor-drag-handle" type="button" draggable="true" data-editor-drag-handle="${id}" aria-label="${dragLabel}" title="${dragLabel}"><i data-lucide="grip-vertical"></i></button><span class="template-editor-action-icon"><i data-lucide="${action.icon}"></i></span><div class="template-editor-action-copy"><strong>${actionLabel(action)}</strong><label class="editor-action-link"><i data-lucide="link-2" aria-hidden="true"></i><input type="text" inputmode="url" data-editor-action-link="${id}" value="${escapeAttribute(actionLink(id))}" aria-label="${linkLabel}" spellcheck="false"></label></div><span class="editor-action-controls"><button type="button" data-editor-action-move="up" aria-label="Move ${action.en} up" ${index === 0 ? 'disabled' : ''}><i data-lucide="chevron-up"></i></button><button type="button" data-editor-action-move="down" aria-label="Move ${action.en} down" ${index === state.reviewIds.length - 1 ? 'disabled' : ''}><i data-lucide="chevron-down"></i></button><button class="editor-action-remove" type="button" data-editor-action-remove aria-label="Remove ${action.en}"><i data-lucide="x"></i></button></span><label class="toggle"><input type="checkbox" data-editor-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${actionLabel(action)}"><span></span></label></article>`;
+      const linkLabel = state.language === 'vi' ? `Đường dẫn cho ${displayActionTitle(id)}` : `Link for ${displayActionTitle(id)}`;
+      const titleLabel = state.language === 'vi' ? `Tên hiển thị cho ${action.vi}` : `Display title for ${action.en}`;
+      return `<article class="template-editor-action" data-editor-action="${id}"><button class="editor-drag-handle" type="button" draggable="true" data-editor-drag-handle="${id}" aria-label="${dragLabel}" title="${dragLabel}"><i data-lucide="grip-vertical"></i></button><span class="template-editor-action-icon"><i data-lucide="${action.icon}"></i></span><div class="template-editor-action-copy"><input class="editor-action-title" type="text" data-editor-action-title="${id}" value="${escapeAttribute(actionTitleValue(id))}" aria-label="${titleLabel}"><label class="editor-action-link"><i data-lucide="link-2" aria-hidden="true"></i><input type="text" inputmode="url" data-editor-action-link="${id}" value="${escapeAttribute(actionLink(id))}" aria-label="${escapeAttribute(linkLabel)}" spellcheck="false"></label></div><span class="editor-action-controls"><button type="button" data-editor-action-move="up" aria-label="Move ${action.en} up" ${index === 0 ? 'disabled' : ''}><i data-lucide="chevron-up"></i></button><button type="button" data-editor-action-move="down" aria-label="Move ${action.en} down" ${index === state.reviewIds.length - 1 ? 'disabled' : ''}><i data-lucide="chevron-down"></i></button><button class="editor-action-remove" type="button" data-editor-action-remove aria-label="Remove ${action.en}"><i data-lucide="x"></i></button></span><label class="toggle"><input type="checkbox" data-editor-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${escapeAttribute(displayActionTitle(id))}"><span></span></label></article>`;
     }).join('');
+    container.querySelectorAll('[data-editor-action-title]').forEach((input) => input.addEventListener('input', () => {
+      state.actionTitles[input.dataset.editorActionTitle] = input.value;
+      renderCustomerLivePreview();
+      renderPerformance();
+    }));
     container.querySelectorAll('[data-editor-action-link]').forEach((input) => input.addEventListener('input', () => {
       state.actionLinks[input.dataset.editorActionLink] = input.value;
     }));
@@ -363,7 +378,8 @@
     container.innerHTML = active.map((id, index) => {
       const clicks = demoClicks[index];
       const width = Math.max(10, Math.round((clicks / maximum) * 100));
-      return `<div class="performance-action-row"><span title="${actionLabel(MODULES[id])}">${actionLabel(MODULES[id])}</span><i style="--performance-width:${width}%" aria-hidden="true"></i><strong>${clicks}</strong></div>`;
+      const title = escapeAttribute(displayActionTitle(id));
+      return `<div class="performance-action-row"><span title="${title}">${title}</span><i style="--performance-width:${width}%" aria-hidden="true"></i><strong>${clicks}</strong></div>`;
     }).join('');
   }
 
@@ -395,6 +411,7 @@
         reviewIds: state.reviewIds,
         enabledIds: [...state.enabled],
         customActionIds: [...state.customActionIds],
+        actionTitles: state.actionTitles,
         actionLinks: state.actionLinks,
         language: state.language
       }));
@@ -782,7 +799,7 @@
       const action = MODULES[id];
       const tag = id === 'contactcard' ? 'button' : 'div';
       const attribute = id === 'contactcard' ? ' type="button" data-phone-contact-card' : '';
-      return `<${tag} class="phone-action"${attribute}><span><i data-lucide="${action.icon}"></i></span><strong>${actionLabel(action)}</strong><i data-lucide="chevron-right"></i></${tag}>`;
+      return `<${tag} class="phone-action"${attribute}><span><i data-lucide="${action.icon}"></i></span><strong>${escapeAttribute(displayActionTitle(id))}</strong><i data-lucide="chevron-right"></i></${tag}>`;
     }).join('') : `<div class="no-results"><p>${state.language === 'vi' ? 'Bật ít nhất một hành động cho khách.' : 'Turn on at least one customer action.'}</p></div>`;
   }
 
@@ -903,8 +920,9 @@
       actionIds: activeIds,
       reviewIds: currentReviewIds(),
       customActionIds: [...state.customActionIds].filter((id) => state.reviewIds.includes(id)),
+      actionTitles: Object.fromEntries(currentReviewIds().map((id) => [id, actionTitleValue(id)])),
       actionLinks: Object.fromEntries(currentReviewIds().map((id) => [id, actionLink(id)])),
-      actions: activeIds.map((id) => ({ id, label: MODULES[id].en, icon: MODULES[id].icon, url: actionLink(id) })),
+      actions: activeIds.map((id) => ({ id, label: displayActionTitle(id), icon: MODULES[id].icon, url: actionLink(id) })),
       appliedAt: new Date().toISOString()
     };
     state.applied = payload;
@@ -1141,6 +1159,7 @@
     state.reviewIds = (draftState.reviewIds || []).filter((id) => MODULES[id]);
     state.enabled = new Set((draftState.enabledIds || []).filter((id) => MODULES[id]));
     state.customActionIds = new Set((draftState.customActionIds || []).filter((id) => MODULES[id]));
+    state.actionTitles = draftState.actionTitles && typeof draftState.actionTitles === 'object' ? { ...draftState.actionTitles } : {};
     state.actionLinks = draftState.actionLinks && typeof draftState.actionLinks === 'object' ? { ...draftState.actionLinks } : {};
     state.language = draftState.language === 'vi' ? 'vi' : 'en';
   } else if (state.applied) {
@@ -1149,6 +1168,7 @@
     state.reviewIds = (state.applied.reviewIds || state.applied.actionIds).filter((id) => MODULES[id]);
     state.enabled = new Set(state.applied.actionIds.filter((id) => MODULES[id]));
     state.customActionIds = new Set(savedCustomActionIds(state.applied));
+    state.actionTitles = state.applied.actionTitles && typeof state.applied.actionTitles === 'object' ? { ...state.applied.actionTitles } : {};
     state.actionLinks = state.applied.actionLinks && typeof state.applied.actionLinks === 'object' ? { ...state.applied.actionLinks } : {};
   } else {
     const defaultIndustry = industryById('nails');
