@@ -870,6 +870,40 @@
     }
   }
 
+  function loadIndustryTemplateConfig() {
+    try {
+      var raw = window.localStorage.getItem('taxiq:oneqr-industry-template');
+      var saved = raw ? JSON.parse(raw) : null;
+      return saved && Array.isArray(saved.actions) ? saved : null;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function applySavedIndustryTemplate() {
+    var savedIndustryTemplate = loadIndustryTemplateConfig();
+    if (!savedIndustryTemplate || !savedIndustryTemplate.actions.length) return;
+    var customerModules = [];
+    savedIndustryTemplate.actions.forEach(function (action) {
+      if (!action || !action.label) return;
+      customerModules.push(action.label);
+      MODULE_ICONS[action.label] = action.icon || 'square';
+    });
+    if (!customerModules.length) return;
+    currentPreset.modules = Array.from(new Set((currentPreset.modules || []).concat(customerModules)));
+    moduleOrderByRole.customer = customerModules;
+    enabledByRole.customer = new Set(customerModules);
+
+    var heading = document.querySelector('.oneqr-heading');
+    if (heading && !heading.querySelector('[data-industry-template-status]')) {
+      var status = document.createElement('span');
+      status.className = 'oneqr-pill';
+      status.setAttribute('data-industry-template-status', '');
+      status.textContent = 'Template: ' + (savedIndustryTemplate.industryLabel || 'Industry');
+      heading.appendChild(status);
+    }
+  }
+
   var savedConfig = loadSavedConfig();
   var initialTemplate = DEFAULT_TEMPLATE;
   if (savedConfig) {
@@ -896,5 +930,8 @@
   }
 
   applyTemplate(initialTemplate);
+  applySavedIndustryTemplate();
+  renderModules();
+  renderPreview();
   syncConfigFieldsToRole(currentRole);
 })();

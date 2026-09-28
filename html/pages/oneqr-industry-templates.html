@@ -78,6 +78,17 @@
           <li data-progress-step="3"><span>3</span><div><strong>Apply template</strong><small>Your QR URL stays the same</small></div></li>
         </ol>
 
+        <section class="applied-template-bar" id="applied-template-bar" hidden aria-live="polite">
+          <span class="applied-template-icon" id="applied-template-icon">✨</span>
+          <div>
+            <small>Currently applied template</small>
+            <strong id="applied-template-name">Nail salon &amp; spa</strong>
+            <span id="applied-template-meta">5 active customer actions</span>
+          </div>
+          <button class="secondary-action" type="button" id="edit-applied-template">Edit template</button>
+          <a class="primary-action" href="qr-stations.html?tab=one-qr">Open OneQR builder<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+        </section>
+
         <section class="industry-summary" aria-label="Template library summary">
           <article><span class="summary-icon is-indigo"><i data-lucide="building-2" aria-hidden="true"></i></span><div><strong>115</strong><small>Business templates</small></div></article>
           <article><span class="summary-icon is-cyan"><i data-lucide="layers-3" aria-hidden="true"></i></span><div><strong>14</strong><small>Industry groups</small></div></article>
@@ -155,7 +166,7 @@
               <div class="starter-actions" id="starter-actions"></div>
 
               <button class="primary-action" type="button" id="review-template-button">
-                Review this starter menu
+                <span id="review-template-button-label">Review this starter menu</span>
                 <i data-lucide="arrow-right" aria-hidden="true"></i>
               </button>
               <p class="preview-footnote">Nothing is published until you confirm the template.</p>
@@ -183,6 +194,7 @@
             <div><small>Template</small><strong id="review-template-name">Nail &amp; spa</strong><em id="review-template-name-secondary">Nail &amp; spa</em></div>
           </div>
           <div class="review-actions" id="review-actions"></div>
+          <p class="review-active-count" id="review-active-count" aria-live="polite"></p>
           <button class="add-action-button" type="button" id="add-action-button"><i data-lucide="plus" aria-hidden="true"></i>Add another action</button>
         </div>
         <div class="phone-preview" aria-label="Customer OneQR preview">
@@ -206,6 +218,25 @@
     </section>
   </div>
 
+  <div class="template-modal" id="template-action-modal" hidden aria-hidden="true">
+    <button class="template-modal-backdrop" type="button" data-close-action-modal aria-label="Close action library"></button>
+    <section class="template-modal-dialog is-action-library" role="dialog" aria-modal="true" aria-labelledby="action-modal-title">
+      <div class="modal-head">
+        <div><span class="section-step">Customer menu</span><h2 id="action-modal-title">Add an action</h2></div>
+        <button class="icon-button" type="button" data-close-action-modal aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button>
+      </div>
+      <p class="modal-lead">Choose any action to add to this template. You can reorder or turn it off before applying.</p>
+      <label class="industry-search action-search" for="action-search-input">
+        <i data-lucide="search" aria-hidden="true"></i>
+        <input id="action-search-input" type="search" placeholder="Search actions" autocomplete="off">
+      </label>
+      <div class="action-library-grid" id="action-library-grid"></div>
+      <div class="modal-actions">
+        <button class="secondary-action" type="button" data-close-action-modal>Done</button>
+      </div>
+    </section>
+  </div>
+
   <div class="template-modal" id="template-success-modal" hidden aria-hidden="true">
     <button class="template-modal-backdrop" type="button" data-close-success-modal aria-label="Close confirmation"></button>
     <section class="template-modal-dialog is-success" role="dialog" aria-modal="true" aria-labelledby="success-modal-title">
@@ -215,7 +246,7 @@
       <p id="success-message">The Nail &amp; spa template has been applied. Review links and labels before sharing your QR.</p>
       <div class="success-summary">
         <div><span id="success-action-count">5</span><small>Customer actions</small></div>
-        <div><span>0</span><small>Custom actions removed</small></div>
+        <div><span id="success-template-name">Nail &amp; spa</span><small>Applied template</small></div>
         <div><span>Same</span><small>QR URL</small></div>
       </div>
       <div class="modal-actions">

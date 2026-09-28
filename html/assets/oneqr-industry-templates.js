@@ -72,7 +72,17 @@
     return { id, en, vi, groupId: group.id, icon: group.icon, color: group.color };
   }));
 
-  const state = { language: 'en', group: 'all', query: '', selected: null, enabled: new Set(), extraAdded: false };
+  const STORAGE_KEY = 'taxiq:oneqr-industry-template';
+  const state = {
+    language: 'en',
+    group: 'all',
+    query: '',
+    actionQuery: '',
+    selected: null,
+    reviewIds: [],
+    enabled: new Set(),
+    applied: null
+  };
   const $ = (selector) => document.querySelector(selector);
   const $$ = (selector) => Array.from(document.querySelectorAll(selector));
   const groupById = (id) => GROUPS.find((group) => group.id === id);
@@ -81,6 +91,24 @@
   const actionLabel = (record) => state.language === 'vi' ? record.vi : record.en;
   const actionDescription = (record) => state.language === 'vi' ? record.descVi : record.descEn;
   const actionIds = (industry) => [...(SPECIAL_DEFAULTS[industry.id] || DEFAULTS[industry.groupId])];
+
+  function loadAppliedTemplate() {
+    try {
+      const saved = JSON.parse(window.localStorage.getItem(STORAGE_KEY) || 'null');
+      if (!saved || !industryById(saved.industryId) || !Array.isArray(saved.actionIds)) return null;
+      return saved;
+    } catch (error) {
+      return null;
+    }
+  }
+
+  function saveAppliedTemplate(payload) {
+    try {
+      window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
+    } catch (error) {
+      showToast(state.language === 'vi' ? 'Không thể lưu trên trình duyệt này.' : 'This browser could not save the template.');
+    }
+  }
 
   function refreshIcons() {
     if (window.lucide) window.lucide.createIcons();
@@ -131,10 +159,11 @@
   function selectIndustry(id) {
     const industry = industryById(id);
     state.selected = id;
-    state.enabled = new Set(actionIds(industry));
-    state.extraAdded = false;
+    state.reviewIds = actionIds(industry);
+    state.enabled = new Set(state.reviewIds);
     renderIndustries();
     renderPreview();
+    setProgress(1);
   }
 
   function renderPreview() {
@@ -145,7 +174,7 @@
     $('#preview-state').classList.toggle('is-ready', Boolean(industry));
     if (!industry) return;
     const group = groupById(industry.groupId);
-    const ids = actionIds(industry);
+    const ids = state.reviewIds.length ? state.reviewIds : actionIds(industry);
     $('#preview-title').textContent = state.language === 'vi' ? 'Xem trước mẫu' : 'Template preview';
     $('#selected-template-icon').textContent = industry.icon;
     $('#selected-template-name').textContent = label(industry);
@@ -155,6 +184,9 @@
       const action = MODULES[id];
       return `<div class="starter-action"><span><i data-lucide="${action.icon}"></i></span><strong>${actionLabel(action)}</strong><small>${state.language === 'vi' ? 'Đề xuất' : 'Recommended'}</small></div>`;
     }).join('');
+    $('#review-template-button-label').textContent = state.applied && state.applied.industryId === industry.id
+      ? (state.language === 'vi' ? 'Chỉnh sửa mẫu đang dùng' : 'Edit applied template')
+      : (state.language === 'vi' ? 'Xem lại menu khởi đầu' : 'Review this starter menu');
     refreshIcons();
   }
 
@@ -167,29 +199,55 @@
     $('#review-template-name-secondary').textContent = secondary;
     renderReviewActions();
     openModal($('#template-review-modal'));
-    $$('[data-progress-step]').forEach((item) => item.classList.toggle('is-complete', item.dataset.progressStep === '1'));
-    $('[data-progress-step="2"]').classList.add('is-active');
+    setProgress(2);
   }
 
   function currentReviewIds() {
-    const ids = actionIds(industryById(state.selected));
-    if (state.extraAdded && !ids.includes('promotion')) ids.push('promotion');
-    return ids;
+    return [...state.reviewIds];
   }
 
   function renderReviewActions() {
     const ids = currentReviewIds();
-    $('#review-actions').innerHTML = ids.map((id) => {
+    $('#review-actions').innerHTML = ids.map((id, index) => {
       const action = MODULES[id];
-      return `<div class="review-action"><span class="review-action-icon"><i data-lucide="${action.icon}"></i></span><div><strong>${actionLabel(action)}</strong><small>${actionDescription(action)}</small></div><label class="toggle"><input type="checkbox" data-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${actionLabel(action)}"><span></span></label></div>`;
+      return `<div class="review-action" data-review-action="${id}"><span class="review-action-icon"><i data-lucide="${action.icon}"></i></span><div><strong>${actionLabel(action)}</strong><small>${actionDescription(action)}</small></div><span class="review-action-order"><button type="button" data-action-move="up" aria-label="Move ${action.en} up" ${index === 0 ? 'disabled' : ''}><i data-lucide="chevron-up"></i></button><button type="button" data-action-move="down" aria-label="Move ${action.en} down" ${index === ids.length - 1 ? 'disabled' : ''}><i data-lucide="chevron-down"></i></button></span><button class="review-action-remove" type="button" data-action-remove aria-label="Remove ${action.en}"><i data-lucide="x"></i></button><label class="toggle"><input type="checkbox" data-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${actionLabel(action)}"><span></span></label></div>`;
     }).join('');
     $('#review-actions').querySelectorAll('[data-action-toggle]').forEach((input) => input.addEventListener('change', () => {
       if (input.checked) state.enabled.add(input.dataset.actionToggle);
       else state.enabled.delete(input.dataset.actionToggle);
       renderPhoneActions();
+      updateActiveCount();
+    }));
+    $('#review-actions').querySelectorAll('[data-action-move]').forEach((button) => button.addEventListener('click', () => {
+      const row = button.closest('[data-review-action]');
+      moveAction(row.dataset.reviewAction, button.dataset.actionMove);
+    }));
+    $('#review-actions').querySelectorAll('[data-action-remove]').forEach((button) => button.addEventListener('click', () => {
+      const id = button.closest('[data-review-action]').dataset.reviewAction;
+      state.reviewIds = state.reviewIds.filter((actionId) => actionId !== id);
+      state.enabled.delete(id);
+      renderReviewActions();
+      renderPreview();
     }));
     renderPhoneActions();
+    updateActiveCount();
     refreshIcons();
+  }
+
+  function updateActiveCount() {
+    const count = currentReviewIds().filter((id) => state.enabled.has(id)).length;
+    $('#review-active-count').textContent = state.language === 'vi'
+      ? `${count} hành động đang bật · Kéo thứ tự bằng nút mũi tên`
+      : `${count} active ${count === 1 ? 'action' : 'actions'} · Use the arrows to set display order`;
+  }
+
+  function moveAction(id, direction) {
+    const from = state.reviewIds.indexOf(id);
+    const to = direction === 'up' ? from - 1 : from + 1;
+    if (from < 0 || to < 0 || to >= state.reviewIds.length) return;
+    [state.reviewIds[from], state.reviewIds[to]] = [state.reviewIds[to], state.reviewIds[from]];
+    renderReviewActions();
+    renderPreview();
   }
 
   function renderPhoneActions() {
@@ -201,46 +259,110 @@
     refreshIcons();
   }
 
-  function addAction() {
-    if (state.extraAdded) {
-      showToast(state.language === 'vi' ? 'Hành động ưu đãi đã có trong menu.' : 'Current offers is already in the menu.');
+  function renderActionLibrary() {
+    const query = state.actionQuery.trim().toLocaleLowerCase();
+    const available = Object.entries(MODULES).filter(([id, action]) => {
+      if (state.reviewIds.includes(id)) return false;
+      return !query || `${action.en} ${action.vi} ${action.descEn} ${action.descVi}`.toLocaleLowerCase().includes(query);
+    });
+    const grid = $('#action-library-grid');
+    if (!available.length) {
+      grid.innerHTML = `<div class="no-results"><span><i data-lucide="${state.reviewIds.length === Object.keys(MODULES).length ? 'check-circle-2' : 'search-x'}"></i></span><h3>${state.language === 'vi' ? 'Không còn hành động phù hợp' : 'No available actions found'}</h3><p>${state.language === 'vi' ? 'Thử từ khóa khác hoặc đóng thư viện.' : 'Try another search or close the library.'}</p></div>`;
+      refreshIcons();
       return;
     }
-    state.extraAdded = true;
-    state.enabled.add('promotion');
+    grid.innerHTML = available.map(([id, action]) => `<button class="action-library-item" type="button" data-add-action="${id}"><span><i data-lucide="${action.icon}"></i></span><div><strong>${actionLabel(action)}</strong><small>${actionDescription(action)}</small></div><i data-lucide="plus"></i></button>`).join('');
+    grid.querySelectorAll('[data-add-action]').forEach((button) => button.addEventListener('click', () => addAction(button.dataset.addAction)));
+    refreshIcons();
+  }
+
+  function openActionLibrary() {
+    state.actionQuery = '';
+    $('#action-search-input').value = '';
+    renderActionLibrary();
+    openModal($('#template-action-modal'));
+  }
+
+  function addAction(id) {
+    if (!MODULES[id] || state.reviewIds.includes(id)) return;
+    state.reviewIds.push(id);
+    state.enabled.add(id);
     renderReviewActions();
-    showToast(state.language === 'vi' ? 'Đã thêm “Xem ưu đãi”. Bạn vẫn có thể tắt hành động này.' : '“See current offers” added. You can still turn it off.');
+    renderPreview();
+    renderActionLibrary();
+    showToast(state.language === 'vi' ? `Đã thêm “${MODULES[id].vi}”.` : `“${MODULES[id].en}” added to the menu.`);
   }
 
   function applyTemplate() {
-    if (!state.enabled.size) {
+    const activeIds = currentReviewIds().filter((id) => state.enabled.has(id));
+    if (!activeIds.length) {
       showToast(state.language === 'vi' ? 'Hãy bật ít nhất một hành động trước khi áp dụng.' : 'Turn on at least one action before applying.');
       return;
     }
     const industry = industryById(state.selected);
+    const payload = {
+      version: 1,
+      industryId: industry.id,
+      industryLabel: industry.en,
+      groupId: industry.groupId,
+      language: state.language,
+      actionIds: activeIds,
+      reviewIds: currentReviewIds(),
+      actions: activeIds.map((id) => ({ id, label: MODULES[id].en, icon: MODULES[id].icon })),
+      appliedAt: new Date().toISOString()
+    };
+    state.applied = payload;
+    saveAppliedTemplate(payload);
     closeModal($('#template-review-modal'));
-    $('#success-action-count').textContent = state.enabled.size;
+    $('#success-action-count').textContent = activeIds.length;
+    $('#success-template-name').textContent = label(industry);
     $('#success-message').textContent = state.language === 'vi'
       ? `Mẫu ${industry.vi} đã được áp dụng. Hãy kiểm tra đường dẫn và nhãn trước khi chia sẻ mã QR.`
       : `The ${industry.en} template has been applied. Review links and labels before sharing your QR.`;
-    $$('[data-progress-step]').forEach((item) => {
-      item.classList.add('is-complete');
-      item.classList.toggle('is-active', item.dataset.progressStep === '3');
-    });
+    setProgress(3);
+    renderAppliedTemplate();
+    renderPreview();
     openModal($('#template-success-modal'));
   }
 
+  function setProgress(step) {
+    $$('[data-progress-step]').forEach((item) => {
+      const itemStep = Number(item.dataset.progressStep);
+      item.classList.toggle('is-active', itemStep === step);
+      item.classList.toggle('is-complete', itemStep < step || (step === 3 && itemStep === 3));
+    });
+  }
+
+  function renderAppliedTemplate() {
+    const bar = $('#applied-template-bar');
+    const industry = state.applied && industryById(state.applied.industryId);
+    bar.hidden = !industry;
+    if (!industry) return;
+    const count = state.applied.actionIds.length;
+    $('#applied-template-icon').textContent = industry.icon;
+    $('#applied-template-name').textContent = state.language === 'vi' ? industry.vi : industry.en;
+    $('#applied-template-meta').textContent = state.language === 'vi'
+      ? `${count} hành động khách hàng đang bật`
+      : `${count} active customer ${count === 1 ? 'action' : 'actions'}`;
+    refreshIcons();
+  }
+
+  const modalOpeners = new WeakMap();
+
   function openModal(modal) {
+    modalOpeners.set(modal, document.activeElement);
     modal.hidden = false;
     modal.setAttribute('aria-hidden', 'false');
     document.body.style.overflow = 'hidden';
-    window.setTimeout(() => modal.querySelector('button, a, input')?.focus(), 0);
+    window.setTimeout(() => modal.querySelector('.template-modal-dialog button, .template-modal-dialog a, .template-modal-dialog input')?.focus(), 0);
   }
 
   function closeModal(modal) {
     modal.hidden = true;
     modal.setAttribute('aria-hidden', 'true');
     if (!$$('.template-modal:not([hidden])').length) document.body.style.overflow = '';
+    const opener = modalOpeners.get(modal);
+    if (opener && opener.offsetParent !== null && typeof opener.focus === 'function') opener.focus();
   }
 
   let toastTimer;
@@ -262,12 +384,32 @@
     renderGroups();
     renderIndustries();
     renderPreview();
+    renderAppliedTemplate();
     if (!$('#template-review-modal').hidden) {
       const industry = industryById(state.selected);
       $('#review-template-name').textContent = label(industry);
       $('#review-template-name-secondary').textContent = language === 'vi' ? industry.en : industry.vi;
       renderReviewActions();
     }
+    if (!$('#template-action-modal').hidden) renderActionLibrary();
+  }
+
+  function closeReview() {
+    closeModal($('#template-review-modal'));
+    setProgress(1);
+  }
+
+  function editAppliedTemplate() {
+    if (!state.applied) return;
+    const industry = industryById(state.applied.industryId);
+    if (!industry) return;
+    state.selected = industry.id;
+    state.reviewIds = (state.applied.reviewIds || state.applied.actionIds).filter((id) => MODULES[id]);
+    state.enabled = new Set(state.applied.actionIds.filter((id) => MODULES[id]));
+    renderGroups();
+    renderIndustries();
+    renderPreview();
+    openReview();
   }
 
   function bindEvents() {
@@ -284,26 +426,48 @@
     });
     $$('[data-language]').forEach((button) => button.addEventListener('click', () => setLanguage(button.dataset.language)));
     $('#review-template-button').addEventListener('click', openReview);
-    $('#add-action-button').addEventListener('click', addAction);
+    $('#add-action-button').addEventListener('click', openActionLibrary);
+    $('#action-search-input').addEventListener('input', (event) => {
+      state.actionQuery = event.target.value;
+      renderActionLibrary();
+    });
     $('#apply-template-button').addEventListener('click', applyTemplate);
-    $$('[data-close-template-modal]').forEach((button) => button.addEventListener('click', () => closeModal($('#template-review-modal'))));
+    $$('[data-close-template-modal]').forEach((button) => button.addEventListener('click', closeReview));
+    $$('[data-close-action-modal]').forEach((button) => button.addEventListener('click', () => closeModal($('#template-action-modal'))));
     $$('[data-close-success-modal]').forEach((button) => button.addEventListener('click', () => closeModal($('#template-success-modal'))));
     $$('[data-show-business-rule]').forEach((button) => button.addEventListener('click', () => openModal($('#template-help-modal'))));
     $$('[data-close-help-modal]').forEach((button) => button.addEventListener('click', () => closeModal($('#template-help-modal'))));
-    $$('[data-change-template]').forEach((button) => button.addEventListener('click', () => $('#industry-search-input').focus()));
+    $$('[data-change-template]').forEach((button) => button.addEventListener('click', () => {
+      $('.template-library').scrollIntoView({ behavior: 'smooth', block: 'start' });
+      window.setTimeout(() => $('#industry-search-input').focus(), 350);
+    }));
+    $('#edit-applied-template').addEventListener('click', editAppliedTemplate);
     document.addEventListener('keydown', (event) => {
       const typing = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName);
       if (event.key === '/' && !typing) {
         event.preventDefault();
         $('#industry-search-input').focus();
       }
-      if (event.key === 'Escape') $$('.template-modal:not([hidden])').forEach(closeModal);
+      if (event.key === 'Escape') {
+        const openModals = $$('.template-modal:not([hidden])');
+        const topModal = openModals[openModals.length - 1];
+        if (topModal === $('#template-review-modal')) closeReview();
+        else if (topModal) closeModal(topModal);
+      }
     });
   }
 
+  state.applied = loadAppliedTemplate();
+  if (state.applied) {
+    const appliedIndustry = industryById(state.applied.industryId);
+    state.selected = appliedIndustry.id;
+    state.reviewIds = (state.applied.reviewIds || state.applied.actionIds).filter((id) => MODULES[id]);
+    state.enabled = new Set(state.applied.actionIds.filter((id) => MODULES[id]));
+  }
   bindEvents();
   renderGroups();
   renderIndustries();
   renderPreview();
+  renderAppliedTemplate();
   refreshIcons();
 }());

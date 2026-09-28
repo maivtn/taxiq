@@ -924,6 +924,11 @@
   color: #4b48e7;
 }
 
+.oneqr-heading [data-industry-template-status] {
+  align-self: flex-start;
+  margin-top: 4px;
+}
+
 .oneqr-badge {
   background: #e4fbf1;
   color: #12a871;
