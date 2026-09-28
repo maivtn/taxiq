@@ -76,7 +76,7 @@
       var key = dateKey(date), day = store.scheduleForDate(schedule, key), selected = key === selectedDate;
       return '<li class="personal-week-row' + (day.working ? '' : ' is-off') + (selected ? ' is-selected' : '') + '"' + (selected ? ' aria-current="date"' : '') + '><div class="personal-week-day"><strong>' + esc(date.toLocaleDateString('en-US', {weekday:'long'})) + '</strong><small>' + esc(titleDate(key)) + '</small></div><div class="personal-week-hours"><strong>' + esc(day.working ? day.start + '–' + day.end : 'Day off') + '</strong>' + (selected ? '<small>Selected day</small>' : '') + '</div>' + (day.working && day.breaks.length ? '<p class="personal-week-breaks">Break: ' + day.breaks.map(function (pause) { return esc(pause.start + '–' + pause.end); }).join(' · ') + '</p>' : '') + (day.source === 'exception' ? '<small class="personal-week-exception">Date-specific change</small>' : '') + '</li>';
     }).join('');
-    return '<section class="schedule-source personal-week-card"><strong>My work schedule</strong><small class="personal-week-range">' + esc(titleDate(dateKey(days[0])) + ' – ' + titleDate(dateKey(days[6]))) + '</small><ul class="personal-week-list" aria-label="My work schedule for this week">' + rows + '</ul>' + approvalNotice() + (schedulePermission() === 'none' ? '' : '<button type="button" class="schedule-edit-button" data-edit-my-schedule>Edit my schedule</button>') + '</section>';
+    return '<section class="schedule-source personal-week-card"><strong>My work schedule</strong><small class="personal-week-range">' + esc(titleDate(dateKey(days[0])) + ' – ' + titleDate(dateKey(days[6]))) + '</small><ul class="personal-week-list" aria-label="My work schedule for this week">' + rows + '</ul>' + approvalNotice() + '</section>';
   }
   function syncUrl() {
     var url = new URL(location.href);
@@ -264,7 +264,6 @@
     var tab = event.target.closest('[data-calendar-tab]');
     if (tab) { activeTab = tab.dataset.calendarTab; requestType = ''; feedback = ''; render(); return; }
     if (event.target.closest('[data-calendar-today]')) { selectedDate = dateKey(new Date()); render(); return; }
-    if (event.target.closest('[data-edit-my-schedule]')) { openWeeklySchedule(); return; }
     if (event.target.closest('[data-request-day-off]')) { openRequest('day-off'); return; }
     if (event.target.closest('[data-request-change-hours]')) { openRequest('change-hours'); return; }
     if (event.target.closest('[data-request-break]')) { openRequest('break'); return; }
