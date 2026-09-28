@@ -4,7 +4,7 @@
 
 **Audience:** Product Owner, Business Analyst, Owner/Manager, Staff, QA, Developer
 
-**Status:** Review
+**Status:** Approved
 
 ## Tổng quan
 
