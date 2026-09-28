@@ -16,6 +16,7 @@
   var activeTab = 'appointments';
   var requestType = '';
   var feedback = '';
+  var actionMessage = '';
 
   function esc(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, function (character) {
@@ -59,6 +60,16 @@
     if (schedulePermission() === 'none') return '';
     return '<section class="request-options"><h3>Edit my schedule</h3><div class="quick-action-grid"><button type="button" data-request-day-off>Day off</button><button type="button" data-request-change-hours>Change hours</button><button type="button" data-request-break>Take break</button></div></section>';
   }
+  function approvalNotice() {
+    var permission = schedulePermission();
+    var mode = permission === 'none' ? 'readonly' : permission === 'self' ? 'direct' : 'approval';
+    var title = mode === 'readonly' ? 'View only' : mode === 'direct' ? 'No approval needed' : 'Approval required';
+    var detail = mode === 'readonly' ? 'Contact your manager to change your schedule.' : mode === 'direct' ? 'Save → applies immediately. Booking conflicts still need manager review.' : 'Submit → pending review → manager approves. Your current schedule stays active until approval.';
+    return '<div class="schedule-approval-notice is-' + mode + '"><strong>' + title + '</strong><p>' + detail + '</p><small>Permission set by your salon.</small></div>';
+  }
+  function personalScheduleCard(day) {
+    return '<section class="schedule-source"><strong>My work schedule</strong><span>' + esc(day.working ? day.start + '–' + day.end : 'Day off') + '</span>' + approvalNotice() + (schedulePermission() === 'none' ? '' : '<button type="button" class="schedule-edit-button" data-edit-my-schedule>Edit my schedule</button>') + '</section>';
+  }
   function syncUrl() {
     var url = new URL(location.href);
     url.searchParams.set('salon', salonId);
@@ -89,13 +100,13 @@
   function workSchedulePanel() {
     var schedule = store.getStaffSchedule(salonId, staffId, {});
     var availability = store.availabilityForDay({staffSchedule:schedule, technicianId:staffId, date:selectedDate, appointments:appointmentRows()});
-    if (!availability.working) return '<div class="calendar-view"><section class="schedule-source"><strong>My work schedule</strong><span>Day off</span><small>' + esc(permissionNote()) + '</small></section><div class="calendar-empty"><strong>Day off</strong><p>You are not scheduled to work on this date.</p></div>' + scheduleActions() + '</div>';
+    if (!availability.working) return '<div class="calendar-view">' + personalScheduleCard(availability) + '<div class="calendar-empty"><strong>Day off</strong><p>You are not scheduled to work on this date.</p></div></div>';
     var items = [{at:availability.start, title:'Work starts', meta:'My scheduled hours', kind:'boundary'}];
     availability.breaks.forEach(function (item) { items.push({at:item.start, title:'Break', meta:item.start + '–' + item.end + ' · Not bookable', kind:'break'}); });
     availability.openSlots.slice(0, 8).forEach(function (item) { items.push({at:item.time, title:'Open slot', meta:'Customer can book eligible services', kind:'open'}); });
     items.push({at:availability.end, title:'Work ends', meta:'Hidden from Booking after this time', kind:'boundary'});
     items.sort(function (left, right) { return left.at.localeCompare(right.at); });
-    return '<div class="calendar-view"><section class="schedule-source"><strong>My work schedule</strong><span>' + esc(availability.start + '–' + availability.end) + '</span><small>' + esc(permissionNote()) + '</small></section>' + scheduleActions() + '<div class="timeline">' + items.map(function (item) {
+    return '<div class="calendar-view">' + personalScheduleCard(availability) + '<div class="timeline">' + items.map(function (item) {
       return '<div class="timeline-item ' + item.kind + '"><span>' + esc(item.at) + '</span><div class="timeline-card"><strong>' + esc(item.title) + '</strong><small>' + esc(item.meta) + '</small></div></div>';
     }).join('') + '</div></div>';
   }
@@ -117,12 +128,12 @@
     var timed = requestType !== 'day-off';
     var day = currentDay();
     var defaults = requestType === 'break' ? ['13:00','13:30'] : [day.start || '09:00',day.end || '19:00'];
-    return '<form class="request-form" data-request-form><header><div><strong>' + esc(requestLabel(requestType)) + '</strong><p>' + (direct ? 'Save changes to your own schedule. No approval is needed unless existing bookings are affected.' : 'Send your schedule change for approval. Your current hours stay unchanged until approved.') + '</p></div><button type="button" data-request-form-close aria-label="Close">×</button></header><label>Date<input type="date" data-request-date value="' + esc(selectedDate) + '" required></label>' + (timed ? '<div class="request-time-fields"><label>Start time<input type="time" data-request-start value="' + defaults[0] + '" required></label><label>End time<input type="time" data-request-end value="' + defaults[1] + '" required></label></div>' : '') + '<label>Reason<select class="staff-calendar-select" data-request-reason><option>Personal</option><option>Sick</option><option>Vacation</option><option>Appointment</option><option>Other</option></select></label><p class="request-feedback" data-request-feedback>' + esc(feedback) + '</p><button class="staff-primary-button" type="submit">' + (direct ? 'Save my schedule' : 'Send for approval') + '</button></form>';
+    return '<form class="request-form ' + (direct ? 'is-direct' : 'is-approval') + '" data-request-form><header><div><strong>' + esc(requestLabel(requestType)) + '</strong><p>' + (direct ? 'Save changes to your own schedule. No approval is needed unless existing bookings are affected.' : 'Send your schedule change for approval. Your current hours stay unchanged until approved.') + '</p></div><button type="button" data-request-form-close aria-label="Close">×</button></header>' + approvalNotice() + '<label>Date<input type="date" data-request-date value="' + esc(selectedDate) + '" required></label>' + (timed ? '<div class="request-time-fields"><label>Start time<input type="time" data-request-start value="' + defaults[0] + '" required></label><label>End time<input type="time" data-request-end value="' + defaults[1] + '" required></label></div>' : '') + '<label>Reason<select class="staff-calendar-select" data-request-reason><option>Personal</option><option>Sick</option><option>Vacation</option><option>Appointment</option><option>Other</option></select></label><p class="request-feedback" data-request-feedback>' + esc(feedback) + '</p><button class="staff-primary-button" type="submit">' + (direct ? 'Save changes' : 'Send for approval') + '</button></form>';
   }
   function requestsPanel() {
     var permission = store.getStaffSchedule(salonId, staffId, {}).permission;
     if (permission === 'none') return '<div class="calendar-empty"><strong>Requests disabled</strong><p>Contact your manager to change availability.</p></div>' + requestList();
-    return '<div class="calendar-view">' + scheduleActions() + requestForm() + '<section class="calendar-section"><h3>Schedule change history</h3>' + requestList() + '</section></div>';
+    return '<div class="calendar-view">' + (actionMessage ? '<div class="schedule-action-message" role="status">' + esc(actionMessage) + '</div>' : '') + scheduleActions() + requestForm() + '<section class="calendar-section"><h3>Schedule change history</h3>' + requestList() + '</section></div>';
   }
   function contextualSide() {
     var day = currentDay();
@@ -154,7 +165,9 @@
     activeTab = 'requests';
     requestType = type;
     feedback = '';
+    actionMessage = '';
     render();
+    root.querySelector('[data-request-date]')?.focus();
   }
 
   function openAppointment(id) {
@@ -186,6 +199,7 @@
     var tab = event.target.closest('[data-calendar-tab]');
     if (tab) { activeTab = tab.dataset.calendarTab; requestType = ''; feedback = ''; render(); return; }
     if (event.target.closest('[data-calendar-today]')) { selectedDate = dateKey(new Date()); render(); return; }
+    if (event.target.closest('[data-edit-my-schedule]')) { openRequest('change-hours'); return; }
     if (event.target.closest('[data-request-day-off]')) { openRequest('day-off'); return; }
     if (event.target.closest('[data-request-change-hours]')) { openRequest('change-hours'); return; }
     if (event.target.closest('[data-request-break]')) { openRequest('break'); return; }
@@ -207,7 +221,10 @@
         render(); return;
       }
     }
-    if (result.ok) { requestType = ''; feedback = ''; render(); return; }
+    if (result.ok) {
+      actionMessage = applied ? (applied.ok ? 'Changes saved. Your personal schedule is updated — no approval needed.' : 'Manager review needed: existing bookings are affected. Your schedule has not changed.') : 'Request sent — pending manager approval. Your current schedule has not changed.';
+      requestType = ''; feedback = ''; render(); return;
+    }
     feedback = result.error.code === 'request-not-allowed' ? 'Salon policy does not allow requests.' : 'Check the date and time, then try again.';
     render();
   });
