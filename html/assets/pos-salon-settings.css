@@ -116,6 +116,37 @@
   .schedule-break-dialog{padding:16px}
 }
 
+/* Schedule type scale, scoped away from other Salon Settings sections. */
+[data-staff-schedule-settings],.schedule-drawer,.schedule-break-dialog,.schedule-impact{font-size:13px;line-height:1.5}
+[data-staff-schedule-settings] strong,.schedule-drawer strong,.schedule-break-dialog strong,.schedule-impact strong{font-weight:700}
+.schedule-heading h2{font-size:22px;line-height:1.3;font-weight:700;letter-spacing:-.02em}
+.schedule-heading p,.schedule-request-queue>header p{font-size:13px;line-height:1.5}
+.schedule-request-queue>header h3{font-size:16px;line-height:1.4;font-weight:700}
+.schedule-card strong{font-size:22px;line-height:1.3;font-variant-numeric:tabular-nums}
+.schedule-card span{font-size:12px}
+[data-staff-schedule-settings] small,.schedule-drawer small,.schedule-break-dialog small,.schedule-impact small{font-size:11px;line-height:1.5}
+[data-staff-schedule-settings] button,.schedule-drawer button,.schedule-break-dialog button,.schedule-impact button{font-family:inherit;font-size:12px;line-height:1.4;font-weight:600}
+[data-staff-schedule-settings] input,[data-staff-schedule-settings] select,.schedule-drawer input,.schedule-drawer select,.schedule-break-dialog input{font-family:inherit;font-size:13px;font-weight:500;line-height:1.4}
+.schedule-row>strong,.schedule-request-main>header strong{font-size:13px}
+.schedule-row>span{font-size:11px;font-weight:600}
+.schedule-day strong{font-size:12px;font-variant-numeric:tabular-nums}
+.schedule-request p{font-size:13px;line-height:1.5}
+.schedule-request .request-status{font-size:11px;font-weight:600}
+.schedule-adjust-form label,.schedule-drawer label,.schedule-break-fields label{font-size:12px;font-weight:600}
+.schedule-drawer h2,.schedule-break-dialog h2,.schedule-impact h2{font-size:18px;line-height:1.35;font-weight:700}
+.schedule-drawer .schedule-staff-name{font-size:18px;font-weight:700}
+.schedule-staff-salon{font-size:12px;font-weight:500}
+.schedule-explainer strong{font-size:14px}
+.schedule-drawer .tech-schedule-day{font-size:13px;font-weight:700}
+.schedule-drawer .tech-schedule-off{font-size:12px;font-weight:500}
+.schedule-drawer .tech-schedule-time>span{font-size:11px;font-weight:600}
+.schedule-drawer .tech-schedule-time input,.schedule-drawer input[data-date-display]{font-size:13px;font-weight:500;font-variant-numeric:tabular-nums}
+.schedule-shift-breaks,.schedule-shift-breaks button,.schedule-date-list button{font-size:11px}
+.schedule-editor-tabs button{font-size:12px;font-weight:600}
+.schedule-explainer p,.schedule-help,.schedule-permission-note p{font-size:12px;line-height:1.5}
+.schedule-break-dialog header p,.schedule-date-controls small,.schedule-break-target small{font-size:12px}
+@media(max-width:480px){.schedule-heading h2{font-size:20px}.schedule-editor-tabs button{font-size:11px}}
+
 [data-settings-panel="services"] { --svc-border:#d9e2f2; --svc-muted:#7a86a2; --svc-brand:#4840e2; color:#111827; font-size:12px; }
 .salon-service-toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:16px 0 12px; }
 .salon-service-toolbar>div { display:flex; align-items:center; gap:12px; flex-wrap:wrap; }

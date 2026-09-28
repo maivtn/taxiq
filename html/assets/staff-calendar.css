@@ -21,3 +21,28 @@
 @media(max-width:390px){.calendar-tabs button{font-size:11px}.quick-action-grid,.request-time-fields{grid-template-columns:1fr}.calendar-panel{padding:11px}.calendar-booking{padding:10px 8px}}
 .request-options .quick-action-grid{grid-template-columns:repeat(3,minmax(0,1fr));gap:6px}
 .request-options .quick-action-grid button{min-width:0;min-height:44px;padding:8px 4px;font-size:11px;line-height:1.35;border-radius:8px}
+
+/* Calendar type scale: title 24/22, section 16/14, body 13, labels 12, metadata 11. */
+.staff-calendar-page{font-size:13px;line-height:1.5}
+.staff-calendar-page strong{font-weight:700}
+.staff-calendar-heading h1{font-size:24px;line-height:1.25;font-weight:700;letter-spacing:-.02em}
+.staff-calendar-heading>div>span{font-size:11px;font-weight:600;letter-spacing:.06em}
+.staff-calendar-heading p{font-size:13px;line-height:1.5}
+.calendar-panel h2{font-size:16px;line-height:1.4;font-weight:700}
+.calendar-side h3,.calendar-section h3,.request-options h3,.request-form header strong{font-size:14px;line-height:1.4;font-weight:700}
+.staff-calendar-page small{font-size:11px;line-height:1.5}
+.staff-calendar-tools label,.request-form label{font-size:12px;font-weight:600}
+.staff-calendar-page input,.staff-calendar-page select{font-family:inherit;font-size:13px;font-weight:500;line-height:1.4}
+.staff-calendar-tools button,.calendar-tabs button,.quick-action-grid button,.request-card button,.calendar-empty button,.staff-primary-button{font-size:12px;line-height:1.4;font-weight:600}
+.calendar-tabs button{padding:10px 12px}
+.calendar-status{font-size:11px;line-height:1.5;font-weight:600}
+.calendar-panel>header span{font-size:11px;font-weight:500}
+.calendar-day span,.calendar-booking-status,.request-status{font-size:11px;line-height:1.4;font-weight:600}
+.calendar-day strong{font-size:13px}
+.timeline-card strong,.calendar-booking strong,.request-card header strong{font-size:13px;line-height:1.45}
+.timeline-item>span,.calendar-booking-time{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums}
+.calendar-side p,.calendar-side li,.request-card p{font-size:13px;line-height:1.55}
+.availability-card p,.calendar-warning p,.request-form header p{font-size:12px;line-height:1.5}
+.sync-pill{font-size:11px;font-weight:600}
+.request-options .quick-action-grid button{font-size:11px;font-weight:600}
+@media(max-width:760px){.staff-calendar-heading h1{font-size:22px}}
