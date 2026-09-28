@@ -724,9 +724,13 @@
 
 .oneqr-heading {
   display: flex;
-  flex-direction: column;
-  gap: 4px;
+  flex-direction: row;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
 }
+
+.oneqr-heading-copy { display: flex; min-width: 0; flex-direction: column; gap: 4px; }
 
 .oneqr-heading h2 {
   margin: 0;
@@ -741,6 +745,10 @@
   font-size: 11px;
   font-weight: 600;
 }
+
+.oneqr-template-link { display: inline-flex; flex: 0 0 auto; align-items: center; justify-content: center; gap: 8px; min-height: 38px; padding: 0 14px; border: 1px solid #d5d5fb; border-radius: 10px; background: #f7f7ff; color: #4b48e7; font-size: 12px; font-weight: 800; text-decoration: none; transition: border-color .16s, background .16s, box-shadow .16s; }
+.oneqr-template-link:hover, .oneqr-template-link:focus-visible { border-color: #aaa5e5; background: #efedff; outline: none; box-shadow: 0 0 0 3px rgba(79,70,229,.09); }
+.oneqr-template-link svg { width: 16px; height: 16px; }
 
 .oneqr-stats-bar {
   display: flex;
@@ -3198,6 +3206,8 @@
   .qr-stations-shell { gap: 16px; }
   .qr-stations-heading { gap: 12px; }
   .qr-stations-heading p, .oneqr-heading p, .oneqr-qrcard-detail p { font-size: 13px; line-height: 1.5; }
+  .oneqr-heading { flex-direction: column; }
+  .oneqr-template-link { width: 100%; min-height: 44px; }
   .qr-tabs { flex-wrap: nowrap; overflow-x: auto; padding: 2px 0 6px; gap: 8px; }
   .qr-tab { flex-shrink: 0; min-height: 44px; font-size: 13px; }
   .oneqr-stats-bar { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }

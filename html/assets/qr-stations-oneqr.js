@@ -894,7 +894,7 @@
     moduleOrderByRole.customer = customerModules;
     enabledByRole.customer = new Set(customerModules);
 
-    var heading = document.querySelector('.oneqr-heading');
+    var heading = document.querySelector('.oneqr-heading-copy');
     if (heading && !heading.querySelector('[data-industry-template-status]')) {
       var status = document.createElement('span');
       status.className = 'oneqr-pill';
@@ -902,6 +902,8 @@
       status.textContent = 'Template: ' + (savedIndustryTemplate.industryLabel || 'Industry');
       heading.appendChild(status);
     }
+    var templateLinkLabel = document.getElementById('oneqrIndustryTemplateLinkLabel');
+    if (templateLinkLabel) templateLinkLabel.textContent = 'Change Industry Template';
   }
 
   var savedConfig = loadSavedConfig();
