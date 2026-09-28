@@ -248,6 +248,7 @@
     renderIndustries();
     renderPreview();
     setProgress(1);
+    showTemplateEditor();
   }
 
   function renderPreview() {
@@ -274,7 +275,61 @@
     $('#review-template-button-label').textContent = state.applied && state.applied.industryId === industry.id
       ? (state.language === 'vi' ? 'Chỉnh sửa mẫu đang dùng' : 'Edit applied template')
       : (state.language === 'vi' ? 'Xem lại menu khởi đầu' : 'Review this starter menu');
+    renderEditorActions();
     refreshIcons();
+  }
+
+  function renderEditorActions() {
+    const container = $('#template-editor-actions');
+    const industry = industryById(state.selected);
+    if (!container || !industry) return;
+    const group = groupById(industry.groupId);
+    const activeCount = state.reviewIds.filter((id) => state.enabled.has(id)).length;
+    $('#editor-template-name').textContent = label(industry);
+    $('#editor-template-meta').textContent = `${label(group)} · ${state.language === 'vi' ? 'Bản nháp menu khách hàng' : 'Customer menu draft'}`;
+    $('#editor-action-count').textContent = state.language === 'vi'
+      ? `${activeCount}/${state.reviewIds.length} hành động đang bật`
+      : `${activeCount}/${state.reviewIds.length} active ${state.reviewIds.length === 1 ? 'action' : 'actions'}`;
+    container.innerHTML = state.reviewIds.map((id) => {
+      const action = MODULES[id];
+      const custom = state.customActionIds.has(id);
+      const source = custom ? (state.language === 'vi' ? 'Bạn đã thêm' : 'Added by you') : (state.language === 'vi' ? 'Theo mẫu ngành' : 'From industry template');
+      return `<article class="template-editor-action"><span class="template-editor-action-icon"><i data-lucide="${action.icon}"></i></span><div><strong>${actionLabel(action)}</strong><small>${source} · ${actionDescription(action)}</small></div><label class="toggle"><input type="checkbox" data-editor-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${actionLabel(action)}"><span></span></label></article>`;
+    }).join('');
+    container.querySelectorAll('[data-editor-action-toggle]').forEach((input) => input.addEventListener('change', () => {
+      if (input.checked) state.enabled.add(input.dataset.editorActionToggle);
+      else state.enabled.delete(input.dataset.editorActionToggle);
+      renderPreview();
+    }));
+    refreshIcons();
+  }
+
+  function showIndustryPicker() {
+    $('#template-editor-view').hidden = true;
+    $('#industry-picker-view').hidden = false;
+    $('.template-workspace').classList.add('is-picker-mode');
+    $('.industry-page').classList.remove('is-editor-mode');
+    setProgress(1);
+    window.setTimeout(() => $('#industry-search-input').focus(), 0);
+  }
+
+  function showTemplateEditor() {
+    $('#template-editor-view').hidden = false;
+    $('#industry-picker-view').hidden = true;
+    $('.template-workspace').classList.remove('is-picker-mode');
+    $('.industry-page').classList.add('is-editor-mode');
+    renderEditorActions();
+  }
+
+  function addPastedLink() {
+    const input = $('#editor-link-input');
+    if (!input.value.trim()) {
+      input.focus();
+      showToast(state.language === 'vi' ? 'Dán một đường dẫn trước khi thêm.' : 'Paste a link before adding it.');
+      return;
+    }
+    openActionLibrary();
+    showToast(state.language === 'vi' ? 'Chọn loại hành động cho đường dẫn này.' : 'Choose an action type for this link.');
   }
 
   function openReview() {
@@ -313,6 +368,7 @@
       else state.enabled.delete(input.dataset.actionToggle);
       renderPhoneActions();
       updateActiveCount();
+      renderPreview();
     }));
     $('#review-actions').querySelectorAll('[data-action-move]').forEach((button) => button.addEventListener('click', () => {
       const row = button.closest('[data-review-action]');
@@ -842,12 +898,20 @@
     $$('[data-close-success-modal]').forEach((button) => button.addEventListener('click', () => closeModal($('#template-success-modal'))));
     $$('[data-show-business-rule]').forEach((button) => button.addEventListener('click', () => openModal($('#template-help-modal'))));
     $$('[data-close-help-modal]').forEach((button) => button.addEventListener('click', () => closeModal($('#template-help-modal'))));
-    $$('[data-change-template]').forEach((button) => button.addEventListener('click', () => {
-      $('.template-library').scrollIntoView({ behavior: 'smooth', block: 'start' });
-      window.setTimeout(() => $('#industry-search-input').focus(), 350);
-    }));
+    $$('[data-change-template], [data-open-industry-picker]').forEach((button) => button.addEventListener('click', showIndustryPicker));
+    $('#close-industry-picker').addEventListener('click', showTemplateEditor);
     $('#edit-applied-template').addEventListener('click', editAppliedTemplate);
     $('#open-contact-card-button').addEventListener('click', openContactCard);
+    $('#editor-contact-card').addEventListener('click', openContactCard);
+    $('#editor-add-action').addEventListener('click', openActionLibrary);
+    $('#editor-review-template').addEventListener('click', openReview);
+    $('#editor-add-link').addEventListener('click', addPastedLink);
+    $('#editor-link-input').addEventListener('keydown', (event) => {
+      if (event.key === 'Enter') {
+        event.preventDefault();
+        addPastedLink();
+      }
+    });
     $$('[data-close-contact-card]').forEach((button) => button.addEventListener('click', () => closeModal($('#contact-card-modal'))));
     $('#contact-card-form').addEventListener('submit', saveContactCard);
     $('#contact-card-form').addEventListener('input', () => { readContactForm(); renderContactPreview(); });
@@ -866,7 +930,8 @@
       const typing = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName);
       if (event.key === '/' && !typing) {
         event.preventDefault();
-        $('#industry-search-input').focus();
+        const pickerOpen = !$('#industry-picker-view').hidden;
+        $(pickerOpen ? '#industry-search-input' : '#editor-link-input').focus();
       }
       if (event.key === 'Escape') {
         const openModals = $$('.template-modal:not([hidden])');
@@ -884,6 +949,11 @@
     state.reviewIds = (state.applied.reviewIds || state.applied.actionIds).filter((id) => MODULES[id]);
     state.enabled = new Set(state.applied.actionIds.filter((id) => MODULES[id]));
     state.customActionIds = new Set(savedCustomActionIds(state.applied));
+  } else {
+    const defaultIndustry = industryById('nails');
+    state.selected = defaultIndustry.id;
+    state.reviewIds = actionIds(defaultIndustry);
+    state.enabled = new Set(state.reviewIds);
   }
   bindEvents();
   renderGroups();
@@ -891,5 +961,6 @@
   renderPreview();
   renderAppliedTemplate();
   renderContactStatus();
+  showTemplateEditor();
   refreshIcons();
 }());

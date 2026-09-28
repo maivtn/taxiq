@@ -94,16 +94,49 @@
 
         <section class="template-workspace">
           <div class="template-library">
+            <section class="template-editor-view" id="template-editor-view">
+              <div class="template-editor-toolbar">
+                <div>
+                  <span class="section-step">Current template</span>
+                  <h2 id="editor-template-name">Nail salon &amp; spa</h2>
+                  <p id="editor-template-meta">Beauty &amp; care · Customer menu draft</p>
+                </div>
+                <div class="template-editor-toolbar-actions">
+                  <button class="secondary-action" type="button" id="editor-contact-card"><i data-lucide="contact-round" aria-hidden="true"></i>Contact card · Danh thiếp</button>
+                  <button class="secondary-action" type="button" data-open-industry-picker><i data-lucide="refresh-cw" aria-hidden="true"></i>Change industry</button>
+                </div>
+              </div>
+
+              <div class="editor-link-row">
+                <i data-lucide="link-2" aria-hidden="true"></i>
+                <input id="editor-link-input" type="url" placeholder="Paste any link — website, Google review, YouTube, Instagram..." autocomplete="off">
+                <button type="button" id="editor-add-link">Add</button>
+              </div>
+              <p class="editor-link-hint">Add a destination first, then choose what customers will see this action as.</p>
+
+              <div class="editor-action-heading">
+                <div><span class="section-step">On your OneQR page</span><strong id="editor-action-count">0 active actions</strong></div>
+                <button class="add-action-button" type="button" id="editor-add-action"><i data-lucide="plus" aria-hidden="true"></i>Add action</button>
+              </div>
+              <div class="template-editor-actions" id="template-editor-actions"></div>
+
+              <div class="template-editor-footer">
+                <p>Changes stay in draft until you review and apply the template.</p>
+                <button class="primary-action" type="button" id="editor-review-template">Review &amp; apply<i data-lucide="arrow-right" aria-hidden="true"></i></button>
+              </div>
+            </section>
+
+            <section class="industry-picker-view" id="industry-picker-view" hidden>
             <div class="library-heading">
               <div>
                 <span class="section-step">Step 1 of 3</span>
                 <h2>What kind of business is this?</h2>
                 <p>Select the closest match. A template is only a starting point—you can use actions from any industry.</p>
               </div>
-              <button class="text-button" type="button" data-show-business-rule>
-                <i data-lucide="circle-help" aria-hidden="true"></i>
-                How templates work
-              </button>
+              <div class="picker-heading-actions">
+                <button class="text-button" type="button" data-show-business-rule><i data-lucide="circle-help" aria-hidden="true"></i>How templates work</button>
+                <button class="secondary-action" type="button" id="close-industry-picker"><i data-lucide="arrow-left" aria-hidden="true"></i>Back to editor</button>
+              </div>
             </div>
 
             <label class="industry-search" for="industry-search-input">
@@ -122,6 +155,7 @@
             </div>
 
             <div class="industry-grid" id="industry-grid" aria-live="polite"></div>
+            </section>
           </div>
 
           <aside class="template-preview" aria-labelledby="preview-title">
