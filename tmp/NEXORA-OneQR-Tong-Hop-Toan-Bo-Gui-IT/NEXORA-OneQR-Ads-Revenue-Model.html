@@ -1,0 +1,153 @@
+<!doctype html>
+<html lang="vi">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEXORA OneQR · Ads Revenue Model</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f7fb;color:#202338;font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}button,select,input{font:inherit}button{cursor:pointer;border:1px solid #d8dce8;background:white;color:#25283d;border-radius:8px;padding:10px 13px}header{background:#111a31;color:white;padding:22px 4%;display:flex;justify-content:space-between;align-items:center;gap:16px}header b{letter-spacing:2px}header button{background:#1b294a;color:white;border-color:#405074}main{max-width:1300px;margin:auto;padding:26px 22px 70px}.eyebrow{font-size:12px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7357c8}h1{font-size:38px;line-height:1.08;letter-spacing:-1px;margin:8px 0}h2{font-size:22px;margin:0 0 12px}h3{font-size:16px;margin:0 0 8px}p{color:#686a7a;margin:8px 0}.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;margin-bottom:22px}.panel,.card{background:white;border:1px solid #e1e4ee;border-radius:10px;padding:20px}.panel{margin-bottom:18px}.grid{display:grid;grid-template-columns:.95fr 1.1fr 1fr;gap:18px;align-items:start}.status{display:inline-block;border-radius:999px;background:#eaf7ef;color:#216043;padding:5px 10px;font-size:12px;font-weight:800}.warning{background:#fff6df;color:#815d13}.locked{background:#f3eefa;color:#6542be}.options{display:grid;gap:10px}.option{border:1px solid #e1e4ee;border-radius:10px;padding:15px;text-align:left}.option.active{border-color:#684be0;background:#f5f2ff}.option b{display:block}.event{display:grid;gap:12px}.field label{display:block;font-weight:700;margin-bottom:6px}.field select,.field input{width:100%;border:1px solid #d8dce8;border-radius:8px;padding:10px;background:white}.split{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.money{border:1px solid #e1e4ee;border-radius:10px;padding:16px;background:#fbfcff}.money strong{display:block;font-size:28px;letter-spacing:-.5px}.money small{color:#777b8a}.bar{height:12px;background:#eceef5;border-radius:999px;overflow:hidden;display:flex;margin:14px 0}.bar i{height:100%;display:block}.b{background:#36a46d}.a{background:#684be0}.n{background:#18233e}.table{overflow:auto}table{width:100%;border-collapse:collapse;font-size:14px}td,th{border-bottom:1px solid #edf0f6;padding:11px;text-align:left}th{color:#6d7180;background:#fafbfe}.rule{border-left:4px solid #684be0;background:#f3efff;padding:14px 16px;border-radius:8px;color:#34324a}.bad{border-left-color:#c25b3a;background:#fff3ed}.toggle{display:flex;gap:8px;align-items:center;margin:8px 0}.flow{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}.flow div{border:1px solid #e5e7f0;border-radius:8px;padding:13px;background:#fbfcff}.flow b{display:block;color:#684be0}@media(max-width:1000px){.hero,.grid,.split,.flow{grid-template-columns:1fr}h1{font-size:30px}}
+</style>
+<body>
+<header>
+  <b>NEXORA ONEQR</b>
+  <div>
+    <button onclick="goHome()">← Về OneQR</button>
+    <button onclick="help()">Hướng dẫn</button>
+  </div>
+</header>
+<main>
+  <section class="hero">
+    <div>
+      <span class="eyebrow">Ads + Referral + Platform Policy</span>
+      <h1>Tiền quảng cáo đi đâu?</h1>
+      <p>Màn hình này mô phỏng ba nơi khách nhìn thấy trong OneQR: banner, Deal Nearby/Explore và Search Deals. Chọn event để thấy advertiser trả bao nhiêu, B là QR Host nhận bao nhiêu, A sponsor nhận overall bao nhiêu và Nexora giữ platform fee bao nhiêu.</p>
+    </div>
+    <div class="panel">
+      <span class="status">Nguyên tắc chốt</span>
+      <p><b>Mở Deal Nearby/Search Deals không tính tiền.</b> Chỉ tính khi khách bấm banner/card/pin quảng cáo hợp lệ hoặc khi bán/redeem deal đủ điều kiện.</p>
+      <p><b>Paid Ads không vượt bộ lọc đối thủ.</b> QR của doanh nghiệp vẫn bảo vệ khách khỏi quảng cáo cùng ngành cạnh tranh.</p>
+    </div>
+  </section>
+
+  <div class="grid">
+    <section>
+      <div class="panel">
+        <h2>1. Merchant chọn gì?</h2>
+        <div class="options">
+          <button class="option" id="optInternal" onclick="mode='internal';render()"><b>Internal</b><span>Website & OneQR của chính tiệm. Không tính network fee.</span></button>
+          <button class="option" id="optPublic" onclick="mode='public';render()"><b>Public</b><span>Xuất hiện organic sau duyệt. Click organic $0; sale mới tính.</span></button>
+          <button class="option" id="optPaid" onclick="mode='paid';render()"><b>Paid Boost</b><span>Banner/card tài trợ có budget và ledger phân bổ.</span></button>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>2. Event khách tạo ra</h2>
+        <div class="event">
+          <div class="field"><label>Loại event</label><select id="event" onchange="render()">
+            <option value="open">Mở Deal Nearby / Search Deals</option>
+            <option value="banner">Click banner quảng cáo</option>
+            <option value="explore">Click Sponsored Card · Explore</option>
+            <option value="search">Click Sponsored Card · Search Deals</option>
+            <option value="service">Completed service / redeem</option>
+            <option value="voucher">Bán prepaid deal / voucher</option>
+          </select></div>
+          <div class="field"><label>Giá trị dịch vụ/deal nếu có</label><input id="base" type="number" min="0" step="1" value="80" oninput="render()"></div>
+          <label class="toggle"><input id="sponsor" type="checkbox" checked onchange="render()"> B có Sponsor A đủ level</label>
+          <label class="toggle"><input id="validHost" type="checkbox" checked onchange="render()"> Khách đến từ OneQR của B</label>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>3. Vị trí trong OneQR</h2>
+        <div class="flow">
+          <div><b>Banner</b>CTA hình ảnh, ưu tiên cao, CPC cao hơn.</div>
+          <div><b>Nearby / Explore</b>Khám phá quanh khách; click card mới tính.</div>
+          <div><b>Search Deals</b>Khách có nhu cầu rõ; CPC card cao hơn Explore.</div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="panel">
+        <h2>Phân bổ tiền</h2>
+        <p id="summary"></p>
+        <div class="bar" id="bar"></div>
+        <div class="split">
+          <div class="money"><small>QR Host B</small><strong id="hostMoney">$0.00</strong><span class="status">Publisher share</span></div>
+          <div class="money"><small>Sponsor A</small><strong id="sponsorMoney">$0.00</strong><span id="sponsorStatus" class="status locked"></span></div>
+          <div class="money"><small>Nexora</small><strong id="nexoraMoney">$0.00</strong><span class="status">Platform fee</span></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Ledger mẫu</h2>
+        <div class="table"><table><thead><tr><th>Bên</th><th>Dòng tiền</th><th>Lý do</th></tr></thead><tbody id="ledger"></tbody></table></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="panel">
+        <h2>Chính sách theo nút</h2>
+        <div id="policy"></div>
+      </div>
+      <div class="panel">
+        <h2>Quy tắc tránh hiểu sai</h2>
+        <div class="rule bad">Bấm mở mục Deal Nearby/Search Deals chỉ là mở tính năng, không charge advertiser và không trả tiền cho B/A.</div>
+        <div class="rule">Nếu advertiser tự hiện promotion trong OneQR của chính mình, đó là Internal, không tạo payout vòng tròn cho chính họ hoặc sponsor.</div>
+        <div class="rule">Nếu có refund/reversal, hệ thống đảo lại publisher share, sponsor override và platform fee theo cùng event_id.</div>
+      </div>
+    </section>
+  </div>
+</main>
+<script>
+let mode='paid';
+const rates={
+  open:{gross:0,host:.0,sponsor:.0,nexora:1,label:'Mở mục discovery'},
+  banner:{gross:.40,host:.40,sponsor:.10,nexora:.50,label:'Click banner quảng cáo'},
+  explore:{gross:.25,host:.35,sponsor:.10,nexora:.55,label:'Click Sponsored Card trong Explore'},
+  search:{gross:.30,host:.35,sponsor:.10,nexora:.55,label:'Click Sponsored Card trong Search Deals'},
+  service:{host:.50,sponsor:.10,nexora:.40,label:'Completed service / redeem'},
+  voucher:{host:.40,sponsor:.10,nexora:.50,label:'Prepaid voucher marketplace'}
+};
+function money(v){return v.toLocaleString('en-US',{style:'currency',currency:'USD'})}
+function compute(){
+  const ev=document.getElementById('event').value;
+  const base=Number(document.getElementById('base').value||0);
+  const hasSponsor=document.getElementById('sponsor').checked;
+  const validHost=document.getElementById('validHost').checked;
+  const r=rates[ev];
+  let gross=0,note='';
+  if(mode==='internal'){gross=0;note='Internal là kênh của chính doanh nghiệp nên không tính phí network.'}
+  else if(ev==='open'){gross=0;note='Mở menu khám phá không phải billable event.'}
+  else if(mode==='public'&&(ev==='banner'||ev==='explore'||ev==='search')){gross=0;note='Public organic click không tính CPC trong pilot. Muốn ưu tiên vị trí cần Paid Boost.'}
+  else if(ev==='service'){gross=base*.10;note='Ví dụ khách mới: performance fee 10% trên giá trị đủ điều kiện.'}
+  else if(ev==='voucher'){gross=mode==='internal'?0:base*.15;note='Marketplace voucher 15% là giai đoạn sau, chưa bật trong pilot.'}
+  else {gross=r.gross;note='Paid Boost tính theo valid click sau dedupe/fraud.'}
+  let host=validHost?gross*r.host:0;
+  let sponsor=(validHost&&hasSponsor)?gross*r.sponsor:0;
+  let nexora=Math.max(0,gross-host-sponsor);
+  if(!validHost&&gross>0){nexora=gross;host=0;sponsor=0;note+=' Không có QR Host hợp lệ nên không có publisher/sponsor share.'}
+  return {ev,gross,host,sponsor,nexora,note,label:r.label};
+}
+function render(){
+  optInternal.classList.toggle('active',mode==='internal'); optPublic.classList.toggle('active',mode==='public'); optPaid.classList.toggle('active',mode==='paid');
+  const x=compute();
+  summary.textContent=`${x.label}: Advertiser trả ${money(x.gross)}. ${x.note}`;
+  hostMoney.textContent=money(x.host); sponsorMoney.textContent=money(x.sponsor); nexoraMoney.textContent=money(x.nexora);
+  sponsorStatus.textContent=x.sponsor>0?'Override đủ điều kiện':'Không có override';
+  const total=Math.max(x.gross,.01);
+  bar.innerHTML=`<i class="b" style="width:${x.host/total*100}%"></i><i class="a" style="width:${x.sponsor/total*100}%"></i><i class="n" style="width:${x.nexora/total*100}%"></i>`;
+  ledger.innerHTML=[
+    ['Advertiser',`-${money(x.gross)}`,'Phí billable event nếu đủ điều kiện'],
+    ['QR Host B',`+${money(x.host)}`,'Publisher share từ khách bắt đầu ở OneQR của B'],
+    ['Sponsor A',`+${money(x.sponsor)}`,'Override khi B active và A đủ level'],
+    ['Nexora',`+${money(x.nexora)}`,'Platform fee cho hệ thống, moderation, tracking, payout']
+  ].map(r=>`<tr><td><b>${r[0]}</b></td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('');
+  policy.innerHTML={
+    internal:'<p><b>Internal</b> chỉ hiện trong kênh của chính doanh nghiệp. Không network fee, không publisher payout, không sponsor override.</p>',
+    public:'<p><b>Public</b> cần duyệt để vào discovery organic. Click organic $0; chỉ performance fee khi có completed service hoặc voucher theo chính sách.</p>',
+    paid:'<p><b>Paid Boost</b> cần Public, budget, khu vực và lịch chạy. Banner/card/pin có thể tính CPC; sale/redeem có thể tính performance fee.</p>'
+  }[mode];
+}
+function help(){alert('Chọn Internal/Public/Paid Boost, chọn event, rồi xem tiền chia cho B, A và Nexora. Mở menu khám phá luôn là $0; chỉ click quảng cáo hoặc giao dịch đủ điều kiện mới tính tiền.')}
+function goHome(){if(window.parent!==window)parent.postMessage({kind:'oq-nav',action:'home'},'*');else location.href='NEXORA-OneQR-Menu-Placement.html'}
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="vi">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEXORA OneQR · Tổng quan mô hình tiền</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f7fb;color:#202338;font:15px/1.55 system-ui,-apple-system,Segoe UI,sans-serif}button{font:inherit;cursor:pointer;border:1px solid #d8dce8;background:white;color:#25283d;border-radius:8px;padding:10px 13px}header{background:#10182e;color:white;padding:22px 4%;display:flex;justify-content:space-between;align-items:center;gap:16px}header b{letter-spacing:2px}header button{background:#1b294a;color:white;border-color:#405074}main{max-width:1280px;margin:auto;padding:26px 22px 70px}.eyebrow{font-size:12px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7357c8}h1{font-size:40px;line-height:1.08;letter-spacing:-1px;margin:8px 0}h2{font-size:22px;margin:0 0 12px}h3{font-size:16px;margin:0 0 8px}p{color:#676a7b;margin:8px 0}.hero{display:grid;grid-template-columns:1.05fr .95fr;gap:22px;margin-bottom:22px}.panel,.card{background:white;border:1px solid #e1e4ee;border-radius:10px;padding:20px}.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}.card b{display:block;color:#202338;font-size:18px}.num{display:inline-grid;place-items:center;width:34px;height:34px;border-radius:50%;background:#ece7ff;color:#6240c4;font-weight:800;margin-bottom:10px}.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;margin:20px 0}.flow div{background:white;border:1px solid #e1e4ee;border-radius:10px;padding:15px;text-align:center}.arrow{display:grid;place-items:center;color:#684be0;font-size:24px;font-weight:800}.split{display:grid;grid-template-columns:1fr 1fr;gap:18px}.table{overflow:auto}table{width:100%;border-collapse:collapse;background:white;border:1px solid #e1e4ee;border-radius:10px;overflow:hidden}td,th{border-bottom:1px solid #edf0f6;padding:12px;text-align:left;vertical-align:top}th{background:#fafbfe;color:#626779}.tag{display:inline-block;border-radius:999px;background:#eaf7ef;color:#216043;padding:5px 10px;font-size:12px;font-weight:800}.warn{background:#fff6df;color:#815d13}.purple{background:#f1edff;color:#6240c4}.rule{border-left:4px solid #684be0;background:#f3efff;padding:14px 16px;border-radius:8px;color:#34324a;margin:14px 0}.money{font-size:22px;font-weight:800;color:#202338}.cta{display:flex;gap:8px;flex-wrap:wrap;margin-top:15px}.primary{background:#684be0;color:white;border-color:#684be0}@media(max-width:980px){.hero,.split,.grid4,.flow{grid-template-columns:1fr}.arrow{display:none}h1{font-size:30px}}
+</style>
+<body>
+<header>
+  <b>NEXORA ONEQR</b>
+  <div>
+    <button onclick="goHome()">← Về OneQR</button>
+    <button onclick="openPolicy()">Xem policy chi tiết</button>
+  </div>
+</header>
+<main>
+  <section class="hero">
+    <div>
+      <span class="eyebrow">Tổng quan mô hình</span>
+      <h1>Một mã QR, bốn bên cùng tạo giá trị.</h1>
+      <p>Doanh nghiệp B dùng OneQR để phục vụ khách. Khách có tiện ích và khám phá deal. Advertiser trả tiền khi có click quảng cáo hoặc giao dịch đủ điều kiện. B nhận Publisher Share, A nhận Sponsor Override nếu đủ level, Nexora nhận Platform Share.</p>
+      <div class="cta"><button class="primary" onclick="openCalc()">Mở bảng tính tiền</button><button onclick="openSponsor()">Xem Level A tuyển B</button></div>
+    </div>
+    <div class="panel">
+      <span class="tag">Câu chốt</span>
+      <p><b>Mở Deal Nearby/Search Deals = $0.</b> Chỉ khi khách bấm vào banner/card quảng cáo hoặc mua/redeem deal đủ điều kiện mới tính tiền.</p>
+      <p><b>OneQR doanh nghiệp vẫn bảo vệ khách.</b> Quảng cáo trả phí không được chen đối thủ cùng ngành vào phiên QR của doanh nghiệp.</p>
+    </div>
+  </section>
+
+  <section class="grid4">
+    <div class="card"><span class="num">1</span><b>Nexora Platform</b><p>Cung cấp OneQR, discovery, tracking, moderation, fraud, ledger, dashboard và payout.</p></div>
+    <div class="card"><span class="num">2</span><b>Partner A</b><p>Tuyển và hỗ trợ B. A chỉ nhận override khi B active và tạo event hợp lệ.</p></div>
+    <div class="card"><span class="num">3</span><b>Doanh nghiệp B</b><p>Dùng OneQR cho khách. Nếu khách của B khám phá deal, B là QR Host/Publisher.</p></div>
+    <div class="card"><span class="num">4</span><b>Khách hàng</b><p>Quét mã, check-in, xem menu, booking, promotion, rồi khám phá deal khi có nhu cầu.</p></div>
+  </section>
+
+  <section class="panel">
+    <h2>Luồng tiền khi khách của B khám phá quảng cáo</h2>
+    <div class="flow">
+      <div><b>Khách quét QR của B</b><p>B là QR Host</p></div>
+      <div class="arrow">→</div>
+      <div><b>Khách bấm quảng cáo</b><p>Banner / Explore / Search</p></div>
+      <div class="arrow">→</div>
+      <div><b>Advertiser trả phí</b><p>Ledger chia B / A / Nexora</p></div>
+    </div>
+    <div class="rule">Nếu khách chỉ mở menu khám phá nhưng chưa bấm deal nào, advertiser không bị tính phí và B/A/Nexora không có billable revenue.</div>
+  </section>
+
+  <section class="split">
+    <div class="panel">
+      <h2>Ba nút khi tạo promotion</h2>
+      <table>
+        <thead><tr><th>Nút</th><th>Ý nghĩa</th><th>Tiền</th></tr></thead>
+        <tbody>
+          <tr><td><span class="tag">Internal</span></td><td>Chỉ hiện trong OneQR/website/promotion của chính tiệm.</td><td>$0 network fee, không payout.</td></tr>
+          <tr><td><span class="tag purple">Public</span></td><td>Được duyệt để vào discovery organic.</td><td>Click organic $0; sale/redeem mới có thể tính.</td></tr>
+          <tr><td><span class="tag warn">Paid Boost</span></td><td>Trả phí để được ưu tiên ở banner/card/pin tài trợ.</td><td>CPC hoặc performance fee theo event.</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="panel">
+      <h2>Ví dụ chia tiền</h2>
+      <table>
+        <thead><tr><th>Event</th><th>Advertiser trả</th><th>B nhận</th><th>A nhận</th><th>Nexora</th></tr></thead>
+        <tbody>
+          <tr><td>Click banner</td><td>$0.40</td><td>$0.16</td><td>$0.04</td><td>$0.20</td></tr>
+          <tr><td>Click Explore card</td><td>$0.25</td><td>$0.0875</td><td>$0.025</td><td>$0.1375</td></tr>
+          <tr><td>Click Search card</td><td>$0.30</td><td>$0.105</td><td>$0.03</td><td>$0.165</td></tr>
+          <tr><td>Completed service $80</td><td>$8.00</td><td>$4.00</td><td>$0.80</td><td>$3.20</td></tr>
+        </tbody>
+      </table>
+      <p><small>Con số là đề xuất pilot để IT hiểu ledger; cần chủ sản phẩm duyệt trước production.</small></p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2>A nhận overall như thế nào?</h2>
+    <p>A không nhận tiền chỉ vì B đăng ký. A nhận Sponsor Override khi B đã active, B là QR Host của event hợp lệ, A đủ level, và event đó tạo publisher share/performance fee thật.</p>
+    <div class="rule">Level chỉ mở quyền nhận override. Tiền trực tiếp từ QR của A là ví riêng, không cần chờ level sponsor.</div>
+  </section>
+</main>
+<script>
+function goHome(){if(window.parent!==window)parent.postMessage({kind:'oq-nav',action:'home'},'*');else location.href='NEXORA-OneQR-Menu-Placement.html'}
+function openPolicy(){if(window.parent!==window)parent.postMessage({kind:'oneqr-route',file:'NEXORA-OneQR-Ads-Referral-Revenue-Policy.html'},'*');else location.href='NEXORA-OneQR-Ads-Referral-Revenue-Policy.html'}
+function openCalc(){if(window.parent!==window)parent.postMessage({kind:'oneqr-route',file:'NEXORA-OneQR-Ads-Revenue-Model.html'},'*');else location.href='NEXORA-OneQR-Ads-Revenue-Model.html'}
+function openSponsor(){if(window.parent!==window)parent.postMessage({kind:'oneqr-route',file:'NEXORA-OneQR-Sponsor-Level-Flow.html'},'*');else location.href='NEXORA-OneQR-Sponsor-Level-Flow.html'}
+</script>
+</body>
+</html>

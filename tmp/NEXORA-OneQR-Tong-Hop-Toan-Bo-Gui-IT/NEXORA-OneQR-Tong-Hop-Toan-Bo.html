@@ -1,0 +1,143 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>NEXORA OneQR · Tổng hợp toàn bộ</title>
+  <style>
+    :root{--nav:#101a37;--nav2:#172449;--ink:#20263a;--muted:#7c849b;--line:#e5e8f1;--purple:#7445e8;--blue:#2563eb;--green:#15966c;--gold:#d68b12;--bg:#f5f6fb}
+    *{box-sizing:border-box}html,body{height:100%}body{margin:0;font:14px/1.45 Inter,ui-sans-serif,system-ui,-apple-system,"Segoe UI",sans-serif;background:var(--bg);color:var(--ink)}
+    button,input{font:inherit}button{cursor:pointer}.app{display:grid;grid-template-columns:290px minmax(0,1fr);height:100vh;overflow:hidden}
+    aside{background:linear-gradient(180deg,var(--nav),#0a1127);color:#cbd4f0;padding:22px 15px;overflow:auto;border-right:1px solid #25345e}
+    .brand{padding:5px 9px 20px}.brand b{display:block;color:#fff;font-size:22px;letter-spacing:.13em}.brand span{font-size:12px;color:#9ca9ce}
+    .search{width:100%;border:1px solid #34446f;background:#121e40;color:#fff;border-radius:12px;padding:11px 12px;margin-bottom:18px}.search::placeholder{color:#8492ba}
+    .group{margin:18px 7px 7px;color:#7f8db6;font-size:10px;font-weight:900;letter-spacing:.16em;text-transform:uppercase}
+    .navbtn{display:block;width:100%;border:0;background:transparent;color:#c5cee8;text-align:left;border-radius:12px;padding:11px 12px;margin:3px 0}.navbtn:hover{background:#1a2952;color:#fff}.navbtn.active{background:linear-gradient(115deg,#5f46df,#8b47ef);color:#fff;box-shadow:0 8px 28px #6e46e73b}.navbtn small{display:block;color:#8fa0ca;margin-top:2px}.navbtn.active small{color:#e3ddff}
+    .workspace{min-width:0;display:grid;grid-template-rows:auto 1fr;height:100vh}header{display:flex;align-items:center;justify-content:space-between;gap:16px;background:#fff;border-bottom:1px solid var(--line);padding:14px 20px}.crumb b{display:block;font-size:16px}.crumb span{color:var(--muted);font-size:12px}.actions{display:flex;gap:8px}.actions button{border:1px solid var(--line);background:#fff;border-radius:10px;padding:9px 12px;color:#4c5672}.actions .primary{border-color:transparent;background:var(--purple);color:#fff}
+    main{position:relative;overflow:hidden}.screen{display:none;height:100%;overflow:auto}.screen.active{display:block}.frame{width:100%;height:100%;border:0;background:#fff}.overview{padding:28px;max-width:1380px;margin:auto}
+    .hero{border-radius:26px;padding:30px;color:#fff;background:radial-gradient(circle at 90% 0,#b94bdb 0,transparent 32%),linear-gradient(125deg,#5b3bd3,#1e5de8);box-shadow:0 20px 60px #334eb426}.eyebrow{font-size:11px;font-weight:900;letter-spacing:.16em;text-transform:uppercase;opacity:.82}.hero h1{font-size:clamp(34px,5vw,64px);line-height:1;margin:12px 0;letter-spacing:-.05em}.hero p{font-size:18px;max-width:900px;color:#e5e9ff}.heroBtns{display:flex;gap:9px;flex-wrap:wrap;margin-top:20px}.heroBtns button{border:1px solid #ffffff44;background:#ffffff18;color:#fff;border-radius:999px;padding:11px 15px;font-weight:800}.heroBtns .solid{background:#fff;color:#5138c0}
+    .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin:18px 0}.kpi,.panel{background:#fff;border:1px solid var(--line);border-radius:18px;padding:19px}.kpi b{display:block;font-size:25px;margin:5px 0}.kpi span{color:var(--muted)}
+    .flow{display:grid;grid-template-columns:repeat(5,1fr);gap:10px;align-items:stretch}.flowCard{border-radius:16px;padding:16px;background:#f4f1ff;border:1px solid #ddd4fb}.flowCard b{display:block;color:#6540d3;margin-bottom:5px}.flowCard p{margin:0;color:#646d84}.arrow{display:none}.two{display:grid;grid-template-columns:1.2fr .8fr;gap:16px}.money{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin-top:14px}.money div{border-radius:14px;padding:15px}.host{background:#e8f8f0;color:#146747}.sponsor{background:#fff4d9;color:#8b5b04}.nexora{background:#eee9ff;color:#5d3ac2}.money b{display:block;font-size:25px}.checklist{margin:0;padding-left:20px}.checklist li{margin:10px 0}.notice{margin-top:18px;border:1px solid #efd9a5;background:#fff8e7;color:#7b5b16;border-radius:14px;padding:14px}.catalog{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.cat{border:1px solid var(--line);border-radius:15px;padding:16px;background:#fff}.cat b{display:block;margin-bottom:4px}.cat p{margin:0;color:var(--muted);font-size:13px}.cat button{margin-top:12px;border:0;border-radius:9px;padding:8px 10px;background:#eee9ff;color:#5e3bd0;font-weight:800}
+    .empty{padding:30px;color:var(--muted)}
+    @media(max-width:1000px){.app{grid-template-columns:230px minmax(0,1fr)}.kpis{grid-template-columns:repeat(2,1fr)}.flow{grid-template-columns:repeat(2,1fr)}.two,.catalog{grid-template-columns:1fr}}
+    @media(max-width:720px){.app{display:block;height:auto;min-height:100vh}aside{position:sticky;top:0;z-index:5;padding:10px;max-height:245px}.brand{padding:3px 7px 8px}.brand b{font-size:17px}.group{display:none}.navarea{display:flex;gap:5px;overflow:auto}.navbtn{min-width:180px}.search{margin:4px 0 8px}.workspace{height:calc(100vh - 210px)}header{padding:10px}.actions button:not(.primary){display:none}.overview{padding:14px}.hero{padding:22px}.hero h1{font-size:38px}.kpis{grid-template-columns:1fr 1fr}.flow,.money{grid-template-columns:1fr}.catalog{grid-template-columns:1fr}}
+  </style>
+</head>
+<body>
+<div class="app">
+  <aside>
+    <div class="brand"><b>NEXORA ONEQR</b><span>Một file xem toàn bộ hệ thống</span></div>
+    <input id="search" class="search" placeholder="Tìm màn hình…" aria-label="Tìm màn hình">
+    <div class="navarea" id="nav"></div>
+  </aside>
+  <section class="workspace">
+    <header>
+      <div class="crumb"><b id="title">Tổng quan OneQR</b><span id="subtitle">Luồng sản phẩm, quảng cáo, kiếm tiền và vận hành</span></div>
+      <div class="actions"><button onclick="goHome()">⌂ Tổng quan</button><button onclick="openCurrent()">Mở riêng ↗</button><button class="primary" onclick="toggleFull()">Toàn màn hình</button></div>
+    </header>
+    <main>
+      <section id="overview" class="screen active"><div class="overview">
+        <div class="hero">
+          <div class="eyebrow">ONEQR MASTER VIEW · BA / PRODUCT / DEV</div>
+          <h1>Một mã QR.<br>Một hệ sinh thái.</h1>
+          <p>Doanh nghiệp phục vụ khách bằng OneQR, có thể chạy quảng cáo hoặc bật kiếm tiền. Khách quét để check-in, xem dịch vụ, ưu đãi và khám phá. Sponsor A nhận overall khi doanh nghiệp B đủ điều kiện tạo doanh thu.</p>
+          <div class="heroBtns"><button class="solid" onclick="openPage('NEXORA-OneQR-Menu-Placement.html')">Xem menu hệ thống</button><button onclick="openPage('NEXORA-OneQR-Money-Flow-Diagram.html')">Xem luồng tiền</button><button onclick="openPage('NEXORA-OneQR-Advertiser-Ads-Dashboard.html')">Xem dashboard Ads</button></div>
+        </div>
+        <div class="kpis">
+          <div class="kpi"><span>Ba chế độ Promotion</span><b>Internal · Public · Paid</b><small>Phân biệt rõ nơi hiển thị và cách tính phí</small></div>
+          <div class="kpi"><span>Hai bên tham gia</span><b>Advertiser ↔ QR Host</b><small>Một bên trả để tiếp cận, một bên nhận chia sẻ</small></div>
+          <div class="kpi"><span>Người bảo trợ</span><b>Sponsor A → B</b><small>Overall chỉ phát sinh từ doanh thu hợp lệ</small></div>
+          <div class="kpi"><span>Bảo vệ doanh nghiệp</span><b>Chặn cùng ngành</b><small>Áp dụng khi khách đi vào từ QR của doanh nghiệp</small></div>
+        </div>
+        <div class="panel">
+          <div class="eyebrow" style="color:#7250d3">LUỒNG TỔNG QUAN</div>
+          <h2>Từ nạp Ads Credit đến phân bổ tiền</h2>
+          <div class="flow">
+            <div class="flowCard"><b>1 · Advertiser</b><p>Tạo promotion, chọn Public/Paid và nạp Ads Credit.</p></div>
+            <div class="flowCard"><b>2 · Nexora</b><p>Duyệt nội dung, mục tiêu, ngân sách và điều kiện.</p></div>
+            <div class="flowCard"><b>3 · OneQR</b><p>Banner, Deal Nearby và Search Deals tạo lượt tiếp cận.</p></div>
+            <div class="flowCard"><b>4 · Khách hàng</b><p>Xem, click, lưu, đặt lịch hoặc mua deal.</p></div>
+            <div class="flowCard"><b>5 · Đối soát</b><p>Ghi ledger, hold, chia tiền và payout.</p></div>
+          </div>
+        </div>
+        <div class="two" style="margin-top:16px">
+          <div class="panel">
+            <div class="eyebrow" style="color:#7250d3">VÍ DỤ $40 QUẢNG CÁO ĐÃ CHẠY</div>
+            <h2>Phân bổ minh họa</h2>
+            <div class="money"><div class="host"><span>QR Host B · 60%</span><b>$24</b></div><div class="sponsor"><span>Sponsor A · 10%</span><b>$4</b></div><div class="nexora"><span>Nexora · 30%</span><b>$12</b></div></div>
+            <p style="color:var(--muted)">$60 còn lại trong khoản nạp $100 vẫn là Ads Credit chưa sử dụng. Tỷ lệ là chính sách mẫu để IT cấu hình theo phiên bản, không hard-code.</p>
+            <button onclick="openPage('NEXORA-OneQR-Money-Flow-Diagram.html')" style="border:0;border-radius:10px;background:#7445e8;color:#fff;padding:10px 13px;font-weight:800">Mở biểu đồ chi tiết →</button>
+          </div>
+          <div class="panel">
+            <div class="eyebrow" style="color:#7250d3">RECORD BẮT BUỘC</div>
+            <h2>Hệ thống phải lưu gì?</h2>
+            <ul class="checklist"><li>Nguồn QR, Sponsor A, QR Host B, campaign và promotion.</li><li>Impression, click, booking, sale, refund và fraud decision.</li><li>Ads Credit: top-up, hold, spend, adjustment, balance.</li><li>Earning: pending, available, held, reversed, paid.</li><li>Rule version và bằng chứng dùng để tính tiền.</li></ul>
+          </div>
+        </div>
+        <div class="panel" style="margin-top:16px">
+          <div class="eyebrow" style="color:#7250d3">DANH MỤC TÀI LIỆU & MÀN HÌNH</div>
+          <h2>Chọn phần cần xem</h2>
+          <div class="catalog" id="catalog"></div>
+        </div>
+        <div class="notice"><b>Lưu ý:</b> số tiền, tỷ lệ chia và ngưỡng level trong prototype là chính sách minh họa. Trước khi triển khai thật cần chốt rule version, hợp đồng, thuế, payout và quy trình tranh chấp.</div>
+      </div></section>
+      <section id="viewer" class="screen"><iframe id="frame" class="frame" title="Màn hình OneQR"></iframe></section>
+    </main>
+  </section>
+</div>
+<script>
+const groups=[
+  {name:'Tổng quan',items:[
+    ['overview','Tổng quan toàn hệ thống','Luồng sản phẩm và dòng tiền'],
+    ['NEXORA-OneQR-Master-Ba-Dev-QR.html','Master BA / Dev','Bộ prototype master trước đây'],
+    ['NEXORA-OneQR-Menu-Placement.html','Bố trí menu OneQR','Vị trí từng chức năng trong Nexora']
+  ]},
+  {name:'Khách quét & trải nghiệm',items:[
+    ['OneQR-2.2/NEXORA-OneQR-Guest-Builder.html','Web khách quét QR','Không cần đăng nhập app'],
+    ['OneQR-2.2/NEXORA-Customer-App-OneQR.html','Customer App OneQR','Khách đã có app'],
+    ['OneQR-2.2/NEXORA-OneQR-Referral-Journey.html','Hành trình giới thiệu','Nguồn QR và đối soát'],
+    ['NEXORA-OneQR-Bo-Loc-Nganh-Nghe.html','Bộ lọc ngành nghề','Bảo vệ khỏi quảng cáo cùng ngành'],
+    ['OneQR-2.2/NEXORA-Salon-Template-Studio.html','Trang doanh nghiệp mẫu','Dịch vụ, gallery, review, promotion']
+  ]},
+  {name:'Promotion & quảng cáo',items:[
+    ['OneQR-2.2/NEXORA-Promotions-Redesign.html','Tạo Promotion','Mẫu nhanh, Internal, Public, Paid'],
+    ['NEXORA-Promotion-Studio.html','Promotion Studio','Tạo và xem trước chương trình'],
+    ['NEXORA-OneQR-Advertiser-Ads-Dashboard.html','Dashboard Ads','Campaign, ngân sách và kết quả'],
+    ['NEXORA-OneQR-Ads-Credit-Terms.html','Điều khoản Ads Credit','Nạp tiền và sử dụng credit'],
+    ['NEXORA-OneQR-Ads-Credit-Accounting.html','Hạch toán Ads Credit','Deferred revenue và ghi nhận doanh thu'],
+    ['NEXORA-OneQR-Business-Verification-KYB.html','Xác minh doanh nghiệp','KYB, quyền chạy Ads và nhận payout']
+  ]},
+  {name:'Kiếm tiền & Sponsor',items:[
+    ['NEXORA-OneQR-Two-Sided-Growth-Flow.html','Hai luồng tăng trưởng','Người trả quảng cáo và người bật kiếm tiền'],
+    ['NEXORA-OneQR-Monetization-Sponsor-Terms.html','Điều khoản kiếm tiền','QR Host B và Sponsor A'],
+    ['NEXORA-OneQR-Chinh-Sach-Gioi-Thieu.html','Chính sách giới thiệu','A bảo trợ B và điều kiện nhận tiền'],
+    ['NEXORA-OneQR-Sponsor-Level-Flow.html','Sponsor Level Flow','Level, tích lũy và quyền lợi'],
+    ['NEXORA-OneQR-Ads-Referral-Revenue-Policy.html','Chính sách chia doanh thu','Click, khám phá và deal sale'],
+    ['NEXORA-OneQR-Ads-Revenue-Model.html','Mô hình doanh thu Ads','Cách Nexora thu và phân bổ']
+  ]},
+  {name:'Vận hành & bàn giao IT',items:[
+    ['NEXORA-OneQR-Money-Flow-Diagram.html','Biểu đồ luồng tiền','Ads Credit → Host B → Sponsor A → Nexora'],
+    ['NEXORA-OneQR-Ledger-Payout-CRM-Operations.html','Ledger, payout & CRM','Record, trạng thái và kiểm tra'],
+    ['NEXORA-OneQR-Merchant-Onboarding-Guide.html','Merchant onboarding','Hướng dẫn doanh nghiệp bắt đầu'],
+    ['NEXORA-OneQR-Tong-Quan-Mo-Hinh-Tien.html','Tổng quan mô hình tiền','Các ví và nguồn doanh thu'],
+    ['NEXORA-OneQR-Five-Part-Pilot.html','Pilot 5 phần','Phạm vi thử nghiệm ban đầu']
+  ]}
+];
+let current='overview';
+const nav=document.getElementById('nav'),catalog=document.getElementById('catalog'),frame=document.getElementById('frame');
+function esc(v){return v.replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+function renderNav(filter=''){
+  nav.innerHTML=''; const q=filter.trim().toLowerCase();
+  groups.forEach(g=>{const rows=g.items.filter(x=>(x[1]+' '+x[2]).toLowerCase().includes(q));if(!rows.length)return;const h=document.createElement('div');h.className='group';h.textContent=g.name;nav.append(h);rows.forEach(x=>{const b=document.createElement('button');b.className='navbtn'+(current===x[0]?' active':'');b.dataset.page=x[0];b.innerHTML=esc(x[1])+'<small>'+esc(x[2])+'</small>';b.onclick=()=>openPage(x[0]);nav.append(b)})})
+}
+function renderCatalog(){catalog.innerHTML=groups.slice(1).flatMap(g=>g.items).map(x=>`<div class="cat"><b>${esc(x[1])}</b><p>${esc(x[2])}</p><button onclick="openPage('${x[0]}')">Xem màn hình →</button></div>`).join('')}
+function findItem(file){for(const g of groups)for(const x of g.items)if(x[0]===file)return x;return [file,file,'Màn hình OneQR']}
+function openPage(file){current=file;renderNav(document.getElementById('search').value);const item=findItem(file);document.getElementById('title').textContent=item[1];document.getElementById('subtitle').textContent=item[2];document.getElementById('overview').classList.toggle('active',file==='overview');document.getElementById('viewer').classList.toggle('active',file!=='overview');if(file!=='overview')frame.src=file;else frame.removeAttribute('src')}
+function goHome(){openPage('overview')}
+function openCurrent(){if(current==='overview')return;window.open(current,'_blank')}
+function toggleFull(){if(!document.fullscreenElement)document.documentElement.requestFullscreen?.();else document.exitFullscreen?.()}
+document.getElementById('search').addEventListener('input',e=>renderNav(e.target.value));
+renderNav();renderCatalog();
+</script>
+</body>
+</html>

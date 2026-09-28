@@ -1,0 +1,127 @@
+<!doctype html>
+<html lang="vi">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEXORA OneQR · Sponsor Level Flow</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f7fb;color:#202338;font:15px/1.5 system-ui,-apple-system,Segoe UI,sans-serif}button,input{font:inherit}button{cursor:pointer;border:1px solid #d8dce8;background:white;color:#25283d;border-radius:8px;padding:10px 13px}header{background:#111a31;color:white;padding:22px 4%;display:flex;justify-content:space-between;align-items:center;gap:16px}header b{letter-spacing:2px}header button{background:#1b294a;color:white;border-color:#405074}main{max-width:1280px;margin:auto;padding:26px 22px 70px}.eyebrow{font-size:12px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7357c8}h1{font-size:38px;line-height:1.08;letter-spacing:-1px;margin:8px 0}h2{font-size:22px;margin:0 0 12px}h3{font-size:16px;margin:0 0 8px}p{color:#686a7a;margin:8px 0}.hero{display:grid;grid-template-columns:1.1fr .9fr;gap:22px;margin-bottom:22px}.panel,.card{background:white;border:1px solid #e1e4ee;border-radius:10px;padding:20px}.panel{margin-bottom:18px}.grid{display:grid;grid-template-columns:1fr 1.1fr .95fr;gap:18px;align-items:start}.status{display:inline-block;border-radius:999px;background:#eaf7ef;color:#216043;padding:5px 10px;font-size:12px;font-weight:800}.warning{background:#fff6df;color:#815d13}.locked{background:#f3eefa;color:#6542be}.flow{display:grid;gap:10px}.step{display:grid;grid-template-columns:34px 1fr;gap:12px;align-items:start;border:1px solid #e5e7f0;border-radius:8px;padding:13px;background:#fbfcff}.num{width:34px;height:34px;border-radius:50%;background:#ece7ff;color:#6240c4;text-align:center;font-weight:800;padding-top:6px}.levels{display:grid;gap:12px}.level{border:1px solid #e3e5ee;border-radius:10px;padding:16px;position:relative}.level.active{border-color:#36a46d;background:#f0fbf5}.level.current{border-color:#684be0;background:#f5f2ff}.level.lock{opacity:.8}.bar{height:10px;background:#e9ebf2;border-radius:999px;overflow:hidden;margin:10px 0}.bar i{display:block;height:100%;background:#684be0;border-radius:999px}.active .bar i{background:#2f9f68}.metric{display:grid;grid-template-columns:1fr auto;gap:8px;border-bottom:1px solid #edf0f6;padding:10px 0}.metric:last-child{border-bottom:0}.metric b{font-size:19px}.wallet{display:grid;grid-template-columns:1fr 1fr;gap:10px}.money{border:1px solid #e1e4ee;border-radius:10px;padding:16px;background:#fbfcff}.money strong{display:block;font-size:30px;letter-spacing:-.5px}.money small{color:#777b8a}.controls{display:grid;gap:14px}.range label{display:flex;justify-content:space-between;margin-bottom:6px}.range input{width:100%}.tabs{display:flex;gap:8px;flex-wrap:wrap}.tabs button.active{background:#684be0;color:white;border-color:#684be0}.table{overflow:auto}table{width:100%;border-collapse:collapse;font-size:14px}td,th{border-bottom:1px solid #edf0f6;padding:11px;text-align:left}th{color:#6d7180;background:#fafbfe}.rule{border-left:4px solid #684be0;background:#f3efff;padding:14px 16px;border-radius:8px;color:#34324a}.bad{border-left-color:#c25b3a;background:#fff3ed}.cta{display:flex;gap:8px;flex-wrap:wrap}.cta .primary{background:#684be0;color:white;border-color:#684be0}@media(max-width:980px){.hero,.grid{grid-template-columns:1fr}.wallet{grid-template-columns:1fr}h1{font-size:30px}}
+</style>
+<body>
+<header>
+  <b>NEXORA ONEQR</b>
+  <div>
+    <button onclick="goHome()">← Về OneQR</button>
+    <button onclick="help()">Hướng dẫn</button>
+  </div>
+</header>
+<main>
+  <section class="hero">
+    <div>
+      <span class="eyebrow">Sponsor Level Flow · bản minh họa</span>
+      <h1>A tuyển B, B active, A mới mở tiền override.</h1>
+      <p>Luồng này giúp người tham gia hiểu rõ: tiền trực tiếp từ QR của mình có thể nhận khi đủ điều kiện cơ bản; tiền Sponsor Override từ B chỉ mở khi A đạt level và B tạo giá trị thật.</p>
+    </div>
+    <div class="panel">
+      <span class="status">Nguyên tắc chốt</span>
+      <p><b>Không trả tiền chỉ vì đăng ký.</b> B phải active bằng OneQR thật: có khách quét, có booking/deal/giao dịch đủ điều kiện hoặc reward hợp lệ.</p>
+      <p><b>Level là quyền nhận override.</b> Level không khóa tiền trực tiếp của chính A.</p>
+    </div>
+  </section>
+
+  <div class="grid">
+    <section>
+      <div class="panel">
+        <h2>1. Hành trình của A</h2>
+        <div class="flow">
+          <div class="step"><div class="num">1</div><div><b>Đăng ký Partner</b><p>A xác minh hồ sơ, chấp thuận chính sách và nhận QR/link riêng.</p></div></div>
+          <div class="step"><div class="num">2</div><div><b>Tạo giá trị trực tiếp</b><p>A dùng QR/link của mình. Thu nhập trực tiếp không cần chờ level sponsor.</p></div></div>
+          <div class="step"><div class="num">3</div><div><b>Mời B tham gia</b><p>B đăng ký qua link/QR sponsor của A hoặc admin gắn sponsor có audit.</p></div></div>
+          <div class="step"><div class="num">4</div><div><b>B active</b><p>B dùng OneQR thật và tạo event hợp lệ. Lúc này mới tính vào level.</p></div></div>
+          <div class="step"><div class="num">5</div><div><b>A mở override</b><p>Khi đủ level, override mới chuyển từ locked sang pending/available sau đối soát.</p></div></div>
+        </div>
+      </div>
+      <div class="panel">
+        <h2>Điều gì không được tính?</h2>
+        <div class="rule bad">B chỉ đăng ký, chỉ nạp ví, chưa dùng OneQR, tự tạo tài khoản vòng quanh, hoặc cùng chủ sở hữu để lấy level đều không được tính active.</div>
+      </div>
+    </section>
+
+    <section>
+      <div class="panel">
+        <h2>2. Điều kiện level</h2>
+        <div class="levels" id="levels"></div>
+      </div>
+      <div class="panel">
+        <h2>Thử số liệu</h2>
+        <div class="controls">
+          <div class="range"><label><span>B trực tiếp đã active</span><b id="directText"></b></label><input id="direct" type="range" min="0" max="20" value="7" oninput="render()"></div>
+          <div class="range"><label><span>B active trong nhóm</span><b id="groupText"></b></label><input id="group" type="range" min="0" max="140" value="38" oninput="render()"></div>
+          <div class="range"><label><span>Event đủ điều kiện tháng này</span><b id="eventText"></b></label><input id="events" type="range" min="0" max="80" value="21" oninput="render()"></div>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <div class="panel">
+        <h2>3. Ví của A</h2>
+        <div class="wallet">
+          <div class="money"><small>Tiền trực tiếp từ QR của A</small><strong id="directMoney">$0.00</strong><span class="status">Có thể pending</span></div>
+          <div class="money"><small>Sponsor Override từ B</small><strong id="overrideMoney">$0.00</strong><span id="overrideStatus" class="status locked"></span></div>
+        </div>
+        <p id="moneyExplain"></p>
+      </div>
+      <div class="panel">
+        <h2>Bảng trạng thái B</h2>
+        <div class="tabs">
+          <button id="tabAll" class="active" onclick="filter='all';render()">Tất cả</button>
+          <button id="tabActive" onclick="filter='active';render()">Active</button>
+          <button id="tabHold" onclick="filter='hold';render()">Chưa tính</button>
+        </div>
+        <div class="table"><table><thead><tr><th>B</th><th>Trạng thái</th><th>Tính level</th></tr></thead><tbody id="rows"></tbody></table></div>
+      </div>
+    </section>
+  </div>
+</main>
+<script>
+let filter='all';
+const levelDefs=[
+  {name:'Level 0 · New Partner',needDirect:0,needGroup:0,needEvents:0,rate:0,desc:'Nhận tiền trực tiếp từ QR của chính mình nếu đủ điều kiện cơ bản.'},
+  {name:'Level 1 · Active Partner',needDirect:10,needGroup:10,needEvents:10,rate:.10,desc:'Mở Sponsor Override từ B trực tiếp active.'},
+  {name:'Level 2 · Community Builder',needDirect:10,needGroup:50,needEvents:30,rate:.04,desc:'Mở quyền nhóm sâu hơn khi cộng đồng có hoạt động thật.'},
+  {name:'Level 3 · Community Leader',needDirect:10,needGroup:100,needEvents:60,rate:.02,desc:'Mở sau khi hệ sinh thái đủ lớn và ít rủi ro.'}
+];
+const sampleB=[
+  ['Rose Nails','active','Có khách quét + 2 booking'],
+  ['Viet Coffee','active','Có Search Deals event'],
+  ['Luna Spa','hold','Chưa có giao dịch đủ điều kiện'],
+  ['Queen Nails','active','Có promotion public'],
+  ['Auto Care 99','hold','Chỉ mới đăng ký'],
+  ['Golden Glow','active','Có reward pending']
+];
+function n(id){return Number(document.getElementById(id).value)}
+function currentLevel(d,g,e){let index=0;levelDefs.forEach((l,i)=>{if(d>=l.needDirect&&g>=l.needGroup&&e>=l.needEvents)index=i});return index}
+function money(v){return v.toLocaleString('en-US',{style:'currency',currency:'USD'})}
+function render(){
+  const d=n('direct'),g=n('group'),e=n('events'),idx=currentLevel(d,g,e),cur=levelDefs[idx];
+  directText.textContent=d; groupText.textContent=g; eventText.textContent=e;
+  document.getElementById('levels').innerHTML=levelDefs.map((l,i)=>{
+    const pass=d>=l.needDirect&&g>=l.needGroup&&e>=l.needEvents;
+    const pct=Math.min(100,Math.round(((Math.min(d,l.needDirect||d)/Math.max(1,l.needDirect||d))+(Math.min(g,l.needGroup||g)/Math.max(1,l.needGroup||g))+(Math.min(e,l.needEvents||e)/Math.max(1,l.needEvents||e)))/3*100));
+    return `<div class="level ${pass?'active':i===idx+1?'current':'lock'}"><span class="status ${pass?'':'locked'}">${pass?'Đã mở':i===idx+1?'Đang tiến tới':'Chưa mở'}</span><h3>${l.name}</h3><p>${l.desc}</p><div class="bar"><i style="width:${pct}%"></i></div><p>Cần: ${l.needDirect} B trực tiếp active · ${l.needGroup} B active nhóm · ${l.needEvents} event/tháng</p></div>`
+  }).join('');
+  const directIncome=e*1.8;
+  const possibleBase=g*5.6;
+  const override=cur.rate?possibleBase*cur.rate:0;
+  directMoney.textContent=money(directIncome);
+  overrideMoney.textContent=money(override);
+  overrideStatus.textContent=cur.rate?'Đã mở level '+idx:'Đang khóa';
+  moneyExplain.textContent=cur.rate?'A đang đủ '+cur.name+'. Override vẫn phải pending và qua đối soát từng event của B.':'A có thể nhận tiền trực tiếp, nhưng Sponsor Override từ B đang khóa vì chưa đạt Level 1.';
+  tabAll.classList.toggle('active',filter==='all');tabActive.classList.toggle('active',filter==='active');tabHold.classList.toggle('active',filter==='hold');
+  rows.innerHTML=sampleB.filter(r=>filter==='all'||r[1]===filter).map(r=>`<tr><td><b>${r[0]}</b><br><small>${r[2]}</small></td><td>${r[1]==='active'?'<span class="status">Active</span>':'<span class="status warning">Chưa tính</span>'}</td><td>${r[1]==='active'?'Có':'Không'}</td></tr>`).join('');
+}
+function help(){alert('Màn hình này cho thấy: tiền trực tiếp của A và Sponsor Override là hai ví khác nhau. Level chỉ mở quyền nhận override từ B active; không trả tiền chỉ vì B đăng ký.')}
+function goHome(){if(window.parent!==window)parent.postMessage({kind:'oq-nav',action:'home'},'*');else location.href='NEXORA-OneQR-Menu-Placement.html'}
+render();
+</script>
+</body>
+</html>

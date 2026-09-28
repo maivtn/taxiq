@@ -17,10 +17,18 @@ When invoked with `/document [feature or topic]` — or whenever creating/updati
 2. Search the codebase and existing docs (`docs/business/`, `docs/screnshot/`, `docs/mockup-rules-vi.md`) to understand the feature before writing.
 3. Use **business names** throughout — never expose internal code names unless annotated (e.g., "Live Ticket (`pos_tickets`)").
 4. Ask one clarifying question if the scope is ambiguous. Do not ask what you can look up.
-5. Produce the document using the Standard Output Template below.
-6. After writing, note the recommended save path: `docs/business/{feature-slug}.md`.
-7. Language: team làm việc bằng tiếng Việt — viết tiếng Việt với thuật ngữ nghiệp vụ tiếng Anh (Live Ticket, checkout, booking…), trừ khi user yêu cầu tiếng Anh.
-8. **Versioned release docs** (tên dạng `POS_Nexoratouch_<Scope>_vX.Y.md`, ví dụ `POS_Nexoratouch_Phase1_v1.0.md`): là bản snapshot phát hành — KHÔNG sửa đè; mỗi lần thay đổi tạo file mới tăng version (v1.0 → v1.1 → …), thêm dòng vào bảng **Version History** ở đầu tài liệu mô tả thay đổi, và cập nhật header `Version:`.
+5. Apply the Output Format rules below before creating the document file.
+6. Produce the document in Markdown by default, or in the format explicitly requested by the user, using the Standard Output Template below.
+7. After writing, note the recommended save path: `docs/business/{feature-slug}.{selected-extension}`.
+8. Language: team làm việc bằng tiếng Việt — viết tiếng Việt với thuật ngữ nghiệp vụ tiếng Anh (Live Ticket, checkout, booking…), trừ khi user yêu cầu tiếng Anh.
+9. **Versioned release docs** (tên dạng `POS_Nexoratouch_<Scope>_vX.Y.md`, ví dụ `POS_Nexoratouch_Phase1_v1.0.md`): là bản snapshot phát hành — KHÔNG sửa đè; mỗi lần thay đổi tạo file mới tăng version (v1.0 → v1.1 → …), thêm dòng vào bảng **Version History** ở đầu tài liệu mô tả thay đổi, và cập nhật header `Version:`.
+
+## Output Format
+
+Before creating every new document file:
+
+1. **Default to Markdown (.md).** When the user does not specify an output format, create the Markdown file directly without asking them to choose or confirm the format.
+2. **Follow an explicit format request.** If the user requests another format, such as Word (.docx), produce that format instead of the Markdown default.
 
 ## Diagram Rules
 
@@ -100,7 +108,7 @@ sequenceDiagram
 
 ## Standard Output Template
 
-Every generated document must follow this Markdown structure:
+Every generated document must follow this content structure. For Markdown, use the headings below directly. For Word, map the same hierarchy to equivalent Word heading styles:
 
 ---
 
@@ -114,7 +122,14 @@ Every generated document must follow this Markdown structure:
 
 ### Overview
 
-> One short paragraph: what this feature does, who it serves, and the core business value it delivers.
+> One short paragraph, written in this order — purpose first, capabilities after:
+> 1. **Purpose** — open with the feature name and why it exists: "[Feature] aims to [business goal] by [core mechanism]."
+> 2. **What the system enables** — what the system lets the business configure or do to achieve that goal.
+> 3. **Who does what** — which roles set up, adjust, or operate the feature.
+>
+> Do not add a separate Goal line — the opening sentence carries the goal.
+>
+> Example: "Booking Incentive Policy aims to encourage technicians to bring more customers to the salon by recognizing tickets from bookings or walk-ins where the customer requests a specific technician. The system lets the salon configure how incentives are calculated in settings, as the basis for reconciling and paying technicians. The Owner can set a salon-wide policy or a per-technician rate; the Manager and Owner adjust the shared turn configuration. The Manager and Front Desk assign customers manually on the Turn Board."
 
 ---
 

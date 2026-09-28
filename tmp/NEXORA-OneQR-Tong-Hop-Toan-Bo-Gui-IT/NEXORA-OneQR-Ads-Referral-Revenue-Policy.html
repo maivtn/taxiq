@@ -1,0 +1,287 @@
+<!doctype html>
+<html lang="vi">
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEXORA OneQR · Ads Referral Revenue Policy</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f6f7fb;color:#202338;font:16px/1.62 system-ui,-apple-system,Segoe UI,sans-serif}button{font:inherit;cursor:pointer;border:1px solid #d8dce8;background:white;color:#25283d;border-radius:8px;padding:10px 13px}header{background:#111a31;color:white;padding:22px 4%;display:flex;justify-content:space-between;align-items:center;gap:16px}header b{letter-spacing:2px}header button{background:#1b294a;color:white;border-color:#405074}main{max-width:1180px;margin:auto;padding:28px 22px 70px}.layout{display:grid;grid-template-columns:270px minmax(0,1fr);gap:24px;align-items:start}.hero{border-bottom:1px solid #dde1ec;padding-bottom:22px;margin-bottom:22px}.eyebrow{font-size:12px;font-weight:800;letter-spacing:1.6px;text-transform:uppercase;color:#7357c8}h1{font-size:38px;line-height:1.1;letter-spacing:-1px;margin:8px 0 12px}h2{font-size:24px;margin:0 0 12px}h3{font-size:18px;margin:20px 0 8px}p{color:#606374;margin:8px 0 12px}nav{position:sticky;top:18px;background:white;border:1px solid #e1e4ee;border-radius:10px;padding:12px}nav a{display:block;color:#32364c;text-decoration:none;padding:9px 10px;border-radius:8px;font-size:14px}nav a:hover{background:#f1edff;color:#684be0}.section{background:white;border:1px solid #e1e4ee;border-radius:10px;padding:22px;margin-bottom:16px}.quick{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:18px}.quick div{background:white;border:1px solid #e1e4ee;border-radius:10px;padding:15px}.quick b{display:block;color:#202338}.tag{display:inline-block;border-radius:999px;background:#eaf7ef;color:#216043;padding:5px 10px;font-size:12px;font-weight:800}.rule{border-left:4px solid #684be0;background:#f3efff;padding:14px 16px;border-radius:8px;color:#34324a;margin:14px 0}ul,ol{padding-left:24px;color:#52566a}li{margin:7px 0}.cta{display:flex;gap:8px;flex-wrap:wrap;margin-top:16px}.primary{background:#684be0;color:white;border-color:#684be0}.moneyline{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin:16px 0}.moneyline div{border:1px solid #e1e4ee;border-radius:10px;background:#fbfcff;padding:14px}.moneyline strong{display:block;font-size:24px}@media(max-width:900px){.layout{grid-template-columns:1fr}nav{position:static}.quick,.moneyline{grid-template-columns:1fr}h1{font-size:30px}}
+</style>
+<body>
+<header><b>NEXORA ONEQR</b><div><button onclick="goHome()">← Về OneQR</button><button onclick="openCalc()">Mở bảng tính tiền</button></div></header>
+<main>
+  <section class="hero">
+    <span class="eyebrow">ONEQR-ADS-REF-REV-2026-09-21-v1 · Đề xuất</span>
+    <h1>Chính sách quảng cáo, giới thiệu và phân bổ doanh thu</h1>
+    <p>Định nghĩa Internal, Public, Paid Boost; khi nào advertiser bị charge; QR Host B nhận publisher share; Sponsor A nhận override; và Nexora nhận platform share.</p>
+    <div class="quick"><div><b>Internal</b><span>$0 network fee</span></div><div><b>Public</b><span>Organic, click $0 trong pilot</span></div><div><b>Paid Boost</b><span>CPC / performance fee</span></div><div><b>Platform</b><span>Ledger, moderation, payout</span></div></div>
+    <div class="cta"><button class="primary" onclick="openCalc()">Xem mô hình chia tiền Ads</button><button onclick="location.hash='nghiem-thu-p0'">Xem nghiệm thu P0</button></div>
+  </section>
+  <div class="layout"><nav><a href="#muc-tieu">Mục tiêu</a>
+<a href="#vai-tro-trong-mot-su-kien">Vai trò trong một sự kiện</a>
+<a href="#ba-lua-chon-khi-tao-promotion">Ba lựa chọn khi tạo promotion</a>
+<a href="#su-kien-nao-tinh-tien">Sự kiện nào tính tiền</a>
+<a href="#khi-qr-host-b-nhan-tien">Khi QR Host B nhận tiền</a>
+<a href="#khi-sponsor-a-nhan-overall-tu-b">Khi Sponsor A nhận overall từ B</a>
+<a href="#nexora-platform-nhan-gi">Nexora Platform nhận gì</a>
+<a href="#ngan-sach-va-vi-ads">Ngân sách và ví Ads</a>
+<a href="#dedupe-va-valid-click">Dedupe và valid click</a>
+<a href="#chinh-sach-nut-trong-promotion-studio">Chính sách nút trong Promotion Studio</a>
+<a href="#vi-du-tong-hop">Ví dụ tổng hợp</a>
+<a href="#nghiem-thu-p0">Nghiệm thu P0</a></nav><article><h1>NEXORA OneQR — Chính sách quảng cáo, giới thiệu và phân bổ doanh thu</h1>
+<p>Phiên bản đề xuất: ONEQR-ADS-REF-REV-2026-09-21-v1 Trạng thái: bản sản phẩm để BA/Dev/IT duyệt, chưa kích hoạt thu phí hoặc trả thưởng thật.</p>
+</section>
+<section id="muc-tieu" class="section"><h2>Mục tiêu</h2>
+<p>OneQR của doanh nghiệp có ba vùng tạo giá trị mạng lưới:</p>
+<ol>
+<li>Banner/Promotion trên OneQR.</li>
+<li>Deal Nearby / Explore.</li>
+<li>Search Deals.</li>
+</ol>
+<p>Doanh nghiệp tạo promotion có ba lựa chọn hiển thị:</p>
+<ol>
+<li>Internal: chỉ hiện trong website/OneQR/trang promotion của chính doanh nghiệp.</li>
+<li>Public: được duyệt để xuất hiện tự nhiên trong mạng lưới Nexora.</li>
+<li>Paid Boost: trả phí để được ưu tiên trong banner/card tài trợ đủ điều kiện.</li>
+</ol>
+<p>Chính sách này định nghĩa người đăng quảng cáo trả tiền khi nào, chủ QR nhận gì khi khách của họ khám phá, Sponsor A nhận overall từ B ra sao, và Nexora giữ platform fee như thế nào.</p>
+</section>
+<section id="vai-tro-trong-mot-su-kien" class="section"><h2>Vai trò trong một sự kiện</h2>
+<p><b>Advertiser</b> là doanh nghiệp đăng promotion hoặc chạy quảng cáo.</p>
+<p><b>Publisher / QR Host</b> là doanh nghiệp hoặc Partner sở hữu OneQR, menu hoặc link tạo ra phiên khách đang xem. Ví dụ khách quét OneQR tại tiệm B rồi bấm Deal Nearby; B là QR Host của phiên đó.</p>
+<p><b>Sponsor A</b> là người đã giới thiệu QR Host B vào Nexora và còn đủ điều kiện Sponsor Override.</p>
+<p><b>Nexora Platform</b> là nền tảng cung cấp OneQR, discovery, moderation, tracking, chống gian lận, dashboard, ledger và payout.</p>
+<p>Một tài khoản có thể vừa là Advertiser vừa là Publisher trong các chiến dịch khác nhau. Nếu advertiser tự hiển thị promotion của chính mình trong OneQR của chính mình, đó là Internal/Own placement, không phát sinh phí quảng cáo hoặc publisher payout.</p>
+</section>
+<section id="ba-lua-chon-khi-tao-promotion" class="section"><h2>Ba lựa chọn khi tạo promotion</h2>
+<h3>1. Internal</h3>
+<p>Internal hiển thị trong:</p>
+<ul>
+<li>OneQR của chính doanh nghiệp</li>
+<li>website/homepage của chính doanh nghiệp</li>
+<li>trang Promotions của chi nhánh</li>
+<li>banner/menu promotion của chính doanh nghiệp</li>
+</ul>
+<p>Phí quảng cáo: $0 theo chính sách network. Publisher payout: $0 vì đây là nội dung của chính host. Sponsor Override: $0 vì chưa có sự kiện network tạo tiền. Nexora Platform: không tính phí phân phối trong pilot; phí SaaS/POS nếu có là hợp đồng riêng.</p>
+<h3>2. Public</h3>
+<p>Public là organic network listing sau khi được duyệt. Public có thể xuất hiện trong:</p>
+<ul>
+<li>Deal Nearby / Explore</li>
+<li>Search Deals</li>
+<li>bản đồ discovery</li>
+<li>danh sách ngành/khu vực phù hợp</li>
+</ul>
+<p>Public không đảm bảo vị trí, lượt xem, lượt click hoặc doanh số. Public không tự động là quảng cáo trả phí.</p>
+<p>Phí click: $0 cho click organic trong pilot. Phí bán deal/giao dịch: chỉ tính khi khách mua/redeem/hoàn tất dịch vụ đủ điều kiện theo mô hình performance đã được merchant chấp thuận. Publisher payout: chỉ có khi giao dịch đủ điều kiện phát sinh từ phiên có QR Host hợp lệ. Sponsor Override: chỉ có khi QR Host có Sponsor A đủ level và event đủ điều kiện.</p>
+<h3>3. Paid Boost</h3>
+<p>Paid Boost là quảng cáo trả phí có ngân sách, khu vực, lịch chạy, placement và nhãn tài trợ.</p>
+<p>Paid Boost có thể chạy ở:</p>
+<ul>
+<li>Sponsored Banner trong vùng OneQR/Explore đủ điều kiện</li>
+<li>Sponsored Card trong Deal Nearby / Explore</li>
+<li>Sponsored Card trong Search Deals</li>
+<li>Sponsored Pin trong bản đồ khi bản đồ được triển khai</li>
+</ul>
+<p>Paid Boost không được vượt bộ lọc đối thủ. Khi khách đang ở phiên OneQR của doanh nghiệp nail, quảng cáo nail đối thủ không được chèn vào phiên đó dù advertiser trả tiền.</p>
+</section>
+<section id="su-kien-nao-tinh-tien" class="section"><h2>Sự kiện nào tính tiền</h2>
+<h3>Mở Deal Nearby / Search Deals</h3>
+<p>Khách bấm vào nút Deal Nearby, Explore hoặc Search Deals trên OneQR chỉ là mở tính năng hệ thống.</p>
+<p>Advertiser trả: $0. Publisher nhận: $0 trực tiếp. Nexora ghi nhận: traffic/intent để báo cáo, không phải billable event.</p>
+<p>Chỉ khi khách bấm vào một banner/card/pin cụ thể hoặc mua/redeem deal thì mới xét tính tiền.</p>
+<h3>Click banner quảng cáo</h3>
+<p>Click banner quảng cáo là khi khách bấm vào banner hoặc CTA của banner được tài trợ để mở chi tiết deal/doanh nghiệp.</p>
+<p>Mức pilot đề xuất: $0.40 mỗi valid click. Không tính impression. Không tính click lặp trong cửa sổ dedupe. Không tính click bị bot/fraud/invalid.</p>
+<p>Phân bổ từ $0.40:</p>
+<ul>
+<li>QR Host / Publisher: 40% = $0.16</li>
+<li>Sponsor A của QR Host, nếu đủ điều kiện: 10% = $0.04</li>
+<li>Nexora Platform: 50% = $0.20</li>
+</ul>
+<p>Nếu không có Sponsor A đủ điều kiện, phần 10% giữ trong Nexora Platform hoặc network reserve theo cấu hình tài chính đã duyệt. Không tự chuyển cho sponsor khác.</p>
+<h3>Click Sponsored Card trong Deal Nearby / Explore</h3>
+<p>Đây là khi khách bấm vào một card được tài trợ trong Deal Nearby hoặc Explore.</p>
+<p>Mức pilot đề xuất: $0.25 mỗi valid click.</p>
+<p>Phân bổ từ $0.25:</p>
+<ul>
+<li>QR Host / Publisher: 35% = $0.0875, làm tròn theo cent</li>
+<li>Sponsor A của QR Host, nếu đủ điều kiện: 10% = $0.025</li>
+<li>Nexora Platform: 55% = $0.1375</li>
+</ul>
+<p>Nếu khách truy cập trực tiếp từ app/web/social mà không có QR Host hợp lệ, Publisher và Sponsor share không phát sinh; Nexora Platform nhận phần còn lại sau chi phí mạng/đối tác nếu có.</p>
+<h3>Click Sponsored Card trong Search Deals</h3>
+<p>Search Deals có intent cao hơn vì khách đang tìm theo nhu cầu. Click hợp lệ là mở chi tiết deal/doanh nghiệp từ kết quả được tài trợ.</p>
+<p>Mức pilot đề xuất: $0.30 mỗi valid click.</p>
+<p>Phân bổ từ $0.30:</p>
+<ul>
+<li>QR Host / Publisher: 35% = $0.105</li>
+<li>Sponsor A của QR Host, nếu đủ điều kiện: 10% = $0.03</li>
+<li>Nexora Platform: 55% = $0.165</li>
+</ul>
+<h3>Bán được deal / redeem / completed service</h3>
+<p>Có hai loại:</p>
+<p><b>Completed service</b>: khách đặt lịch hoặc đến sử dụng dịch vụ, dịch vụ hoàn tất và thanh toán được xác minh.</p>
+<p>Mức pilot đề xuất:</p>
+<ul>
+<li>khách mới: 10% giá trị dịch vụ đủ điều kiện sau giảm giá</li>
+<li>khách quay lại sau 90 ngày nếu campaign bật: 5%</li>
+<li>không tính thuế, tip, phụ phí, retail, gift card lúc bán hoặc phần hoàn tiền</li>
+</ul>
+<p>Phân bổ performance fee:</p>
+<ul>
+<li>QR Host / Publisher: 50%</li>
+<li>Sponsor A của QR Host, nếu đủ điều kiện: 10%</li>
+<li>Nexora Platform: 40%</li>
+</ul>
+<p>Ví dụ: dịch vụ sau giảm giá là $80, khách mới. Advertiser trả performance fee $8.</p>
+<ul>
+<li>QR Host B nhận $4.00</li>
+<li>Sponsor A của B nhận $0.80 nếu đủ điều kiện</li>
+<li>Nexora Platform nhận $3.20</li>
+</ul>
+<p><b>Prepaid deal / voucher marketplace</b>: khách mua deal trả trước trên Nexora, giống giai đoạn marketplace/Groupon sau này.</p>
+<p>Mức đề xuất giai đoạn sau: platform marketplace fee 15% trên giá voucher đã thanh toán, sau refund window và sau khi trừ payment processing nếu policy quyết định trừ trước. Chưa bật trong pilot.</p>
+<p>Phân bổ marketplace fee khi bật:</p>
+<ul>
+<li>QR Host / Publisher: 40%</li>
+<li>Sponsor A của QR Host, nếu đủ điều kiện: 10%</li>
+<li>Nexora Platform: 50%</li>
+</ul>
+<p>Doanh thu voucher, tiền merchant nhận, refund window, breakage, redemption và thuế cần chính sách riêng trước khi bán voucher thật.</p>
+</section>
+<section id="khi-qr-host-b-nhan-tien" class="section"><h2>Khi QR Host B nhận tiền</h2>
+<p>B nhận Publisher Share khi cả bốn điều kiện đúng:</p>
+<ol>
+<li>Khách bắt đầu từ OneQR/link/menu hợp lệ của B.</li>
+<li>Khách bấm một quảng cáo/deal đủ điều kiện hoặc tạo giao dịch đủ điều kiện.</li>
+<li>Event không bị loại bởi dedupe, fraud, cùng chủ sở hữu, đối thủ bị chặn hoặc campaign hết ngân sách.</li>
+<li>B đã bật kiếm tiền hoặc thuộc chương trình publisher đủ điều kiện.</li>
+</ol>
+<p>B không nhận tiền khi khách chỉ mở menu Deal Nearby/Search Deals, khi khách chỉ xem danh sách, khi advertiser là chính B trong placement Internal, hoặc khi event bị hủy/hoàn tiền/toàn bộ.</p>
+</section>
+<section id="khi-sponsor-a-nhan-overall-tu-b" class="section"><h2>Khi Sponsor A nhận overall từ B</h2>
+<p>A nhận Sponsor Override từ hoạt động của B khi:</p>
+<ul>
+<li>A đã giới thiệu B bằng sponsor link/QR hợp lệ hoặc admin gắn sponsor có audit.</li>
+<li>B đã active.</li>
+<li>A đạt level được nhận override.</li>
+<li>B là QR Host/Publisher của event hợp lệ.</li>
+<li>Event tạo publisher share hoặc performance fee thật.</li>
+</ul>
+<p>Sponsor Override đề xuất là 10% trên gross billable event hoặc 10% trên event fee tùy loại như bảng trên. Pilot ưu tiên trả từ phần platform/network pool, không trừ trực tiếp vào Publisher Share của B.</p>
+<p>A không nhận khi B chỉ đăng ký, chỉ nạp ví Ads, chưa có event hợp lệ, tự giao dịch, cùng chủ sở hữu gian lận, hoặc event bị refund/reversal.</p>
+<p>Nếu B vừa là Advertiser vừa là Publisher của chính mình, không tạo payout vòng tròn cho B hoặc Sponsor A trên cùng Internal placement. Nếu B chạy Paid Boost để quảng bá ra ngoài, A chỉ nhận override nếu chính sách campaign bật sponsor override và event được đối soát.</p>
+</section>
+<section id="nexora-platform-nhan-gi" class="section"><h2>Nexora Platform nhận gì</h2>
+<p>Nexora nhận Platform Share để chi trả:</p>
+<ul>
+<li>hosting OneQR và discovery</li>
+<li>AI/menu/promotion tools</li>
+<li>moderation nội dung</li>
+<li>fraud detection</li>
+<li>tracking/ledger</li>
+<li>dashboard hai phía</li>
+<li>payout/đối soát</li>
+<li>support và vận hành marketplace</li>
+</ul>
+<p>Platform Share không phải doanh thu đã chắc chắn cho đến khi event đủ điều kiện, không bị refund/reversal và đã qua đối soát. Tiền nạp ví Ads chưa tiêu không được ghi là doanh thu platform.</p>
+</section>
+<section id="ngan-sach-va-vi-ads" class="section"><h2>Ngân sách và ví Ads</h2>
+<p>Advertiser nạp hoặc cấp ngân sách vào ví Ads. Ví Ads có:</p>
+<ul>
+<li>available</li>
+<li>reserved</li>
+<li>spent</li>
+<li>refunded</li>
+<li>expired/closed nếu campaign kết thúc và merchant yêu cầu hoàn</li>
+</ul>
+<p>Click event debit ngay khi valid click được xác nhận sau dedupe/fraud sơ bộ. Performance sale giữ chỗ khi booking/order đủ dữ liệu và debit khi dịch vụ/voucher đủ điều kiện.</p>
+<p>Hết ngân sách thì ngừng phân phối Paid Boost và ngừng tạo reservation mới. Event đã reserved hợp lệ vẫn xử lý theo policy snapshot.</p>
+</section>
+<section id="dedupe-va-valid-click" class="section"><h2>Dedupe và valid click</h2>
+<p>Valid click cần:</p>
+<ul>
+<li>campaign active</li>
+<li>placement hợp lệ</li>
+<li>không bị competitor filter</li>
+<li>user/session hợp lệ</li>
+<li>không lặp cùng advertiser/deal/placement trong cửa sổ dedupe</li>
+<li>không do bot, preload, crawler, double tap hoặc refresh</li>
+<li>mở chi tiết thật hoặc CTA thật, không chỉ impression</li>
+</ul>
+<p>Cửa sổ pilot đề xuất:</p>
+<ul>
+<li>banner click: một valid click mỗi customer/session × advertiser × 24 giờ</li>
+<li>sponsored card click: một valid click mỗi customer/session × deal × 24 giờ</li>
+<li>sale/redeem: theo booking/order idempotency, không theo click</li>
+</ul>
+</section>
+<section id="chinh-sach-nut-trong-promotion-studio" class="section"><h2>Chính sách nút trong Promotion Studio</h2>
+<p>Khi merchant tạo promotion, UI có ba nhóm rõ ràng:</p>
+<ol>
+<li>Internal — “Hiển thị cho khách của tôi”</li>
+</ol>
+<ul>
+<li>miễn phí network</li>
+<li>không publisher payout</li>
+<li>không sponsor override</li>
+</ul>
+<ol>
+<li>Public — “Đưa vào mạng lưới Nexora”</li>
+</ol>
+<ul>
+<li>cần duyệt nội dung</li>
+<li>không cam kết vị trí</li>
+<li>click organic $0</li>
+<li>performance fee chỉ tính khi có giao dịch đủ điều kiện</li>
+</ul>
+<ol>
+<li>Paid Boost — “Trả phí để được ưu tiên”</li>
+</ol>
+<ul>
+<li>cần Public</li>
+<li>chọn budget, khu vực, thời gian, placement</li>
+<li>banner/card/pin có thể tính CPC</li>
+<li>sale/redeem có thể tính performance fee</li>
+<li>dashboard hiển thị ngân sách, click, sale, publisher share, sponsor override và platform share</li>
+</ul>
+<p>UI phải hiển thị bảng “tiền đi đâu” trước khi merchant xác nhận Paid Boost.</p>
+</section>
+<section id="vi-du-tong-hop" class="section"><h2>Ví dụ tổng hợp</h2>
+<p>Khách quét OneQR tại B. B do A giới thiệu và đã active. Khách bấm Search Deals và mở sponsored card của Salon X.</p>
+<p>Salon X bị charge $0.30 valid Search Deals click.</p>
+<ul>
+<li>B nhận Publisher Share $0.105</li>
+<li>A nhận Sponsor Override $0.03 nếu đủ level</li>
+<li>Nexora nhận Platform Share $0.165</li>
+</ul>
+<p>Sau đó khách mua dịch vụ của Salon X, giá đủ điều kiện $80, khách mới. Salon X bị charge performance fee $8.</p>
+<ul>
+<li>B nhận $4.00</li>
+<li>A nhận $0.80 nếu đủ level</li>
+<li>Nexora nhận $3.20</li>
+</ul>
+<p>Nếu khách chỉ bấm vào menu Search Deals nhưng không mở card nào, tất cả là $0.</p>
+</section>
+<section id="nghiem-thu-p0" class="section"><h2>Nghiệm thu P0</h2>
+<ol>
+<li>Internal promotion không tạo phí quảng cáo, publisher payout hoặc sponsor override.</li>
+<li>Public organic click không tính phí CPC trong pilot.</li>
+<li>Paid banner click tạo ledger theo split banner.</li>
+<li>Paid Search/Explore click tạo ledger theo split card.</li>
+<li>Completed service tạo performance fee theo 10%/5% và split sale.</li>
+<li>Mở menu Deal Nearby/Search Deals không tạo billable event.</li>
+<li>QR Host B chỉ nhận publisher share khi event bắt đầu từ phiên/source của B.</li>
+<li>Sponsor A chỉ nhận override khi B active và A đủ level.</li>
+<li>Competitor filter chặn quảng cáo đối thủ trong phiên OneQR doanh nghiệp dù advertiser trả tiền.</li>
+<li>Refund/reversal đảo publisher share, sponsor override và platform share tương ứng.</li>
+<li>Ví Ads không ghi spent khi chỉ reserved hoặc khi event bị loại.</li>
+<li>Dashboard merchant, publisher, sponsor và Nexora nhìn cùng một event_id nhưng theo đúng quyền dữ liệu.</li>
+</ol>
+</section></article></div>
+</main>
+<script>
+function goHome(){if(window.parent!==window)parent.postMessage({kind:'oq-nav',action:'home'},'*');else location.href='NEXORA-OneQR-Menu-Placement.html'}
+function openCalc(){if(window.parent!==window)parent.postMessage({kind:'oneqr-route',file:'NEXORA-OneQR-Ads-Revenue-Model.html'},'*');else location.href='NEXORA-OneQR-Ads-Revenue-Model.html'}
+</script>
+</body>
+</html>
