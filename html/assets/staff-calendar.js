@@ -67,8 +67,16 @@
     var detail = mode === 'readonly' ? 'Contact your manager to change your schedule.' : mode === 'direct' ? 'Save → applies immediately. Booking conflicts still need manager review.' : 'Submit → pending review → manager approves. Your current schedule stays active until approval.';
     return '<div class="schedule-approval-notice is-' + mode + '"><strong>' + title + '</strong><p>' + detail + '</p><small>Permission set by your salon.</small></div>';
   }
-  function personalScheduleCard(day) {
-    return '<section class="schedule-source"><strong>My work schedule</strong><span>' + esc(day.working ? day.start + '–' + day.end : 'Day off') + '</span>' + approvalNotice() + (schedulePermission() === 'none' ? '' : '<button type="button" class="schedule-edit-button" data-edit-my-schedule>Edit my schedule</button>') + '</section>';
+  function personalScheduleCard() {
+    var schedule = store.getStaffSchedule(salonId, staffId, {});
+    var monday = new Date(selectedDate + 'T12:00:00');
+    monday.setDate(monday.getDate() - (monday.getDay() + 6) % 7);
+    var days = Array.from({length:7}, function (_, index) { var date = new Date(monday); date.setDate(date.getDate() + index); return date; });
+    var rows = days.map(function (date) {
+      var key = dateKey(date), day = store.scheduleForDate(schedule, key), selected = key === selectedDate;
+      return '<li class="personal-week-row' + (day.working ? '' : ' is-off') + (selected ? ' is-selected' : '') + '"' + (selected ? ' aria-current="date"' : '') + '><div class="personal-week-day"><strong>' + esc(date.toLocaleDateString('en-US', {weekday:'long'})) + '</strong><small>' + esc(titleDate(key)) + '</small></div><div class="personal-week-hours"><strong>' + esc(day.working ? day.start + '–' + day.end : 'Day off') + '</strong>' + (selected ? '<small>Selected day</small>' : '') + '</div>' + (day.working && day.breaks.length ? '<p class="personal-week-breaks">Break: ' + day.breaks.map(function (pause) { return esc(pause.start + '–' + pause.end); }).join(' · ') + '</p>' : '') + (day.source === 'exception' ? '<small class="personal-week-exception">Date-specific change</small>' : '') + '</li>';
+    }).join('');
+    return '<section class="schedule-source personal-week-card"><strong>My work schedule</strong><small class="personal-week-range">' + esc(titleDate(dateKey(days[0])) + ' – ' + titleDate(dateKey(days[6]))) + '</small><ul class="personal-week-list" aria-label="My work schedule for this week">' + rows + '</ul>' + approvalNotice() + (schedulePermission() === 'none' ? '' : '<button type="button" class="schedule-edit-button" data-edit-my-schedule>Edit my schedule</button>') + '</section>';
   }
   function syncUrl() {
     var url = new URL(location.href);
@@ -100,13 +108,13 @@
   function workSchedulePanel() {
     var schedule = store.getStaffSchedule(salonId, staffId, {});
     var availability = store.availabilityForDay({staffSchedule:schedule, technicianId:staffId, date:selectedDate, appointments:appointmentRows()});
-    if (!availability.working) return '<div class="calendar-view">' + personalScheduleCard(availability) + '<div class="calendar-empty"><strong>Day off</strong><p>You are not scheduled to work on this date.</p></div></div>';
+    if (!availability.working) return '<div class="calendar-view">' + personalScheduleCard() + '<div class="calendar-empty"><strong>Day off</strong><p>You are not scheduled to work on this date.</p></div></div>';
     var items = [{at:availability.start, title:'Work starts', meta:'My scheduled hours', kind:'boundary'}];
     availability.breaks.forEach(function (item) { items.push({at:item.start, title:'Break', meta:item.start + '–' + item.end + ' · Not bookable', kind:'break'}); });
     availability.openSlots.slice(0, 8).forEach(function (item) { items.push({at:item.time, title:'Open slot', meta:'Customer can book eligible services', kind:'open'}); });
     items.push({at:availability.end, title:'Work ends', meta:'Hidden from Booking after this time', kind:'boundary'});
     items.sort(function (left, right) { return left.at.localeCompare(right.at); });
-    return '<div class="calendar-view">' + personalScheduleCard(availability) + '<div class="timeline">' + items.map(function (item) {
+    return '<div class="calendar-view">' + personalScheduleCard() + '<div class="timeline">' + items.map(function (item) {
       return '<div class="timeline-item ' + item.kind + '"><span>' + esc(item.at) + '</span><div class="timeline-card"><strong>' + esc(item.title) + '</strong><small>' + esc(item.meta) + '</small></div></div>';
     }).join('') + '</div></div>';
   }

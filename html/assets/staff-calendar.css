@@ -49,6 +49,20 @@
 
 .calendar-appointment-trigger{display:block;width:100%;min-width:0;padding:0;border:0;border-radius:10px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
 .schedule-source .schedule-approval-notice,.schedule-source .schedule-edit-button{grid-column:1/-1}
+.personal-week-card{grid-template-columns:minmax(0,1fr)}
+.personal-week-card>strong{font-size:14px}
+.personal-week-range{font-size:12px}
+.personal-week-list{display:grid;gap:6px;list-style:none;padding:0;margin:10px 0 0;min-width:0}
+.personal-week-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 12px;align-items:start;padding:11px 12px;border:1px solid #e1e6ef;border-radius:9px;background:#fff}
+.personal-week-day,.personal-week-hours{display:grid;gap:3px;min-width:0}
+.personal-week-row strong{font-size:14px;line-height:1.4}
+.personal-week-row small{font-size:11px;line-height:1.4}
+.personal-week-hours{text-align:right;font-variant-numeric:tabular-nums}
+.personal-week-breaks{grid-column:1/-1;margin:2px 0 0;font-size:12px;color:#64748b;line-height:1.5}
+.personal-week-row.is-off{background:#f8fafc;color:#64748b}
+.personal-week-row.is-selected{border-color:#8a82ee;background:#f5f3ff;box-shadow:inset 3px 0 #4c43df}
+.personal-week-row.is-selected .personal-week-hours small{color:#4c43df;font-weight:600}
+.personal-week-exception{grid-column:1/-1;color:#854d0e!important}
 .schedule-approval-notice{padding:12px;border:1px solid #e2e8f0;border-radius:9px;background:#f8fafc;color:#475569;margin-top:8px}
 .schedule-approval-notice strong{display:block;font-size:14px}
 .schedule-approval-notice p{margin:4px 0;font-size:12px;line-height:1.5}
