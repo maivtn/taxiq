@@ -80,6 +80,9 @@
 .staff-weekly-times input:disabled{background:#f1f5f9;color:#94a3b8}
 .staff-weekly-row small{grid-column:1/-1;font-size:11px;color:#64748b}
 .staff-weekly-row.is-off small{display:none}
+.staff-weekly-reason{grid-column:1/-1;display:grid;gap:6px;font-size:12px;font-weight:600;color:#334155}
+.staff-weekly-reason textarea{width:100%;min-width:0;box-sizing:border-box;min-height:72px;resize:vertical;border:1px solid #dbe4f3;border-radius:8px;padding:10px;background:#fff;color:#18212f;font:400 14px/1.5 Inter,sans-serif}
+.staff-weekly-reason textarea:focus-visible{outline:2px solid #4c43df;outline-offset:2px}
 .staff-weekly-dialog footer{position:sticky;bottom:-20px;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid #dbe4f3;padding:12px 0;background:#fff}
 .staff-weekly-dialog .staff-primary-button.is-approval{background:#854d0e;border-color:#854d0e;color:#fff}
 .staff-weekly-dialog .staff-primary-button.is-direct{background:#15877b;border-color:#15877b;color:#fff}

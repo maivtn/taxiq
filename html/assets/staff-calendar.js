@@ -118,7 +118,7 @@
     if (!list.length) return '<div class="calendar-empty"><strong>No requests yet</strong><p>Your schedule requests and manager decisions appear here.</p></div>';
     return '<div class="request-list" data-request-list>' + list.map(function (item) {
       var detail = item.type === 'day-off' ? item.reason : item.start + '–' + item.end + (item.reason ? ' · ' + item.reason : '');
-      if (item.type === 'weekly-schedule') detail = ['mon','tue','wed','thu','fri','sat','sun'].map(function (key) { var day = item.weekly[key]; return key[0].toUpperCase() + key.slice(1) + ': ' + (day.working ? day.start + '–' + day.end : 'Day off'); }).join(' · ');
+      if (item.type === 'weekly-schedule') detail = ['mon','tue','wed','thu','fri','sat','sun'].map(function (key) { var day = item.weekly[key]; return key[0].toUpperCase() + key.slice(1) + ': ' + (day.working ? day.start + '–' + day.end : 'Day off' + (day.dayOffReason ? ' — ' + day.dayOffReason : '')); }).join(' · ');
       var cancellable = ['pending', 'adjusted'].includes(item.status);
       return '<article class="request-card"><header><div><strong>' + esc(requestLabel(item.type)) + '</strong><small>' + esc(titleDate(item.date)) + '</small></div><span class="request-status is-' + esc(item.status) + '">' + esc(item.status[0].toUpperCase() + item.status.slice(1)) + '</span></header><p>' + esc(detail) + '</p>' + (item.status === 'blocked' ? '<small>Manager must resolve affected bookings before approval.</small>' : '') + (cancellable ? '<button type="button" data-request-cancel="' + esc(item.id) + '">Cancel request</button>' : '') + '</article>';
     }).join('') + '</div>';
@@ -209,6 +209,8 @@
         if (!event.target.matches('[data-weekly-off]')) return;
         var row = event.target.closest('[data-weekly-day]');
         row.classList.toggle('is-off', event.target.checked);
+        row.querySelector('[data-weekly-reason-field]').hidden = !event.target.checked;
+        row.querySelector('[data-weekly-reason]').disabled = !event.target.checked;
         row.querySelectorAll('input[type="time"]').forEach(function (input) {
           input.disabled = event.target.checked;
           if (!input.disabled && !input.value) input.value = input.hasAttribute('data-weekly-start') ? '09:00' : '19:00';
@@ -218,7 +220,7 @@
     }
     dialog.innerHTML = '<form data-staff-weekly-form><header><div><span>' + esc(staff.name || 'My schedule') + '</span><h2 id="staff-weekly-title">Edit my weekly schedule</h2></div><button type="button" data-weekly-close aria-label="Close weekly schedule" autofocus>×</button></header><p class="staff-weekly-help">Regular hours, repeated every week. One-date changes stay unchanged.</p>' + approvalNotice() + '<section class="staff-weekly-rows" aria-label="Weekly schedule">' + days.map(function (entry) {
       var key = entry[0], name = entry[1], day = schedule.weekly[key];
-      return '<div class="staff-weekly-row' + (day.working ? '' : ' is-off') + '" data-weekly-day="' + key + '"><strong>' + name + '</strong><label class="staff-weekly-off"><input type="checkbox" data-weekly-off ' + (day.working ? '' : 'checked') + '>Day off</label><div class="staff-weekly-times"><input type="time" data-weekly-start aria-label="' + name + ' start time" value="' + esc(day.start) + '" required ' + (day.working ? '' : 'disabled') + '><span>TO</span><input type="time" data-weekly-end aria-label="' + name + ' end time" value="' + esc(day.end) + '" required ' + (day.working ? '' : 'disabled') + '></div>' + ((day.breaks || []).length ? '<small>Breaks: ' + day.breaks.map(function (pause) { return esc(pause.start + '–' + pause.end); }).join(', ') + ' (kept when working)</small>' : '') + '</div>';
+      return '<div class="staff-weekly-row' + (day.working ? '' : ' is-off') + '" data-weekly-day="' + key + '"><strong>' + name + '</strong><label class="staff-weekly-off"><input type="checkbox" data-weekly-off ' + (day.working ? '' : 'checked') + '>Day off</label><div class="staff-weekly-times"><input type="time" data-weekly-start aria-label="' + name + ' start time" value="' + esc(day.start) + '" required ' + (day.working ? '' : 'disabled') + '><span>TO</span><input type="time" data-weekly-end aria-label="' + name + ' end time" value="' + esc(day.end) + '" required ' + (day.working ? '' : 'disabled') + '></div>' + ((day.breaks || []).length ? '<small>Breaks: ' + day.breaks.map(function (pause) { return esc(pause.start + '–' + pause.end); }).join(', ') + ' (kept when working)</small>' : '') + '<label class="staff-weekly-reason" data-weekly-reason-field ' + (day.working ? 'hidden' : '') + '>Reason for day off (optional)<textarea data-weekly-reason aria-label="' + name + ' day off reason" maxlength="240" rows="2" placeholder="e.g. Family appointment, personal day" ' + (day.working ? 'disabled' : '') + '>' + esc(day.dayOffReason || '') + '</textarea></label></div>';
     }).join('') + '</section><p class="request-feedback" data-weekly-error role="alert"></p><footer><button type="button" data-weekly-close>Cancel</button><button class="staff-primary-button ' + (schedule.permission === 'self' ? 'is-direct' : 'is-approval') + '" type="submit">' + (schedule.permission === 'self' ? 'Save changes' : 'Send for approval') + '</button></footer></form>';
     dialog.showModal();
   }
@@ -230,6 +232,7 @@
     form.querySelectorAll('[data-weekly-day]').forEach(function (row) {
       var key = row.dataset.weeklyDay, working = !row.querySelector('[data-weekly-off]').checked;
       next.weekly[key] = {working:working,start:working ? row.querySelector('[data-weekly-start]').value : '',end:working ? row.querySelector('[data-weekly-end]').value : '',breaks:working ? schedule.weekly[key].breaks : []};
+      if (!working) next.weekly[key].dayOffReason = row.querySelector('[data-weekly-reason]').value.trim();
     });
     var error = form.querySelector('[data-weekly-error]');
     if (!store.validateSchedule(next).ok) { error.textContent = 'Check each working day: end time must be after start time, and existing breaks must fit within the shift.'; return; }

@@ -19,7 +19,7 @@
   function resolveStorage(target) { if (target) return target; try { return root && root.localStorage || null; } catch (_) { return null; } }
   function validTime(value) { return /^([01]\d|2[0-3]):[0-5]\d$/.test(String(value || '')); }
   function normalizeBreak(item) { return {start:validTime(item && item.start)?item.start:'',end:validTime(item && item.end)?item.end:''}; }
-  function normalizeDay(value, day) { value=value||{}; var working=value.working!==false && validTime(value.start) && validTime(value.end); return {working:working,start:working?value.start:'',end:working?value.end:'',breaks:working?(Array.isArray(value.breaks)?value.breaks.map(normalizeBreak):[]):[]}; }
+  function normalizeDay(value, day) { value=value||{}; var working=value.working!==false && validTime(value.start) && validTime(value.end); return Object.assign({working:working,start:working?value.start:'',end:working?value.end:'',breaks:working?(Array.isArray(value.breaks)?value.breaks.map(normalizeBreak):[]):[]},!working&&value.dayOffReason?{dayOffReason:String(value.dayOffReason).trim().slice(0,240)}:{}); }
   function normalizeStaff(value) { value=value||{}; var weekly={}; DAYS.forEach(function(day){weekly[day]=normalizeDay(value.weekly&&value.weekly[day]||defaultDay(day),day);}); return {permission:['none','request','same-day','self'].includes(value.permission)?value.permission:'request',weekly:weekly,exceptions:value.exceptions&&typeof value.exceptions==='object'?clone(value.exceptions):{}}; }
   function normalizeState(value) {
     var base=defaultState(); if(!value||typeof value!=='object') return base;
