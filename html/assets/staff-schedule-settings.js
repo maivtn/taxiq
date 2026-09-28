@@ -13,6 +13,7 @@
 
   var selectedStaff = '';
   var selectedDate = '';
+  var boardDate = dateKey(new Date());
   var drawerOpen = false;
   var editorScope = 'weekly';
   var editorValues = null;
@@ -39,10 +40,24 @@
   function shiftLabel(day) { return day.working ? displayTime(day.start) + '–' + displayTime(day.end) : 'Day off'; }
   function selectedDayKey() { return dayKeys[new Date(selectedDate + 'T12:00:00').getDay()]; }
   function week() {
-    var anchor = new Date();
-    anchor.setHours(12, 0, 0, 0);
-    anchor.setDate(anchor.getDate() - anchor.getDay());
+    var anchor = new Date(boardDate + 'T12:00:00');
+    anchor.setDate(anchor.getDate() - (anchor.getDay() + 6) % 7);
     return Array.from({length:7}, function (_, index) { var day = new Date(anchor); day.setDate(anchor.getDate() + index); return day; });
+  }
+  function weekControls(days) {
+    var range = displayDate(dateKey(days[0])) + ' – ' + displayDate(dateKey(days[6]));
+    return '<section class="schedule-week-toolbar" aria-label="Choose schedule week"><div class="schedule-week-navigation"><span class="schedule-week-mode">Weekly</span><button type="button" data-schedule-week-step="-1" aria-label="Previous week">‹</button><label class="schedule-week-picker"><span class="schedule-week-picker-label">Choose a date</span><input type="date" data-schedule-week-date value="' + esc(boardDate) + '" aria-label="Choose a date to view its week" aria-describedby="schedule-week-help" required></label><button type="button" data-schedule-week-step="1" aria-label="Next week">›</button><button type="button" data-schedule-this-week>This week</button></div><div class="schedule-week-caption"><strong data-schedule-week-range aria-live="polite">' + esc(range) + '</strong><small id="schedule-week-help">Pick any date to view its Monday–Sunday week.</small></div></section>';
+  }
+  function changeWeek(value, focusSelector) {
+    var date = new Date(value + 'T12:00:00');
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(value) || Number.isNaN(date.getTime()) || dateKey(date) !== value) {
+      host.querySelector('[data-schedule-week-date]').value = boardDate;
+      return;
+    }
+    boardDate = value;
+    boardMessage = '';
+    render(selectedStaff);
+    host.querySelector(focusSelector)?.focus();
   }
   function appointments() { try { return appointmentStore ? appointmentStore.loadAll() : []; } catch (_) { return []; } }
   function statusLabel(status) { return {pending:'Pending review', adjusted:'Adjusted by manager', blocked:'Booking conflict', applied:'Approved & synced', rejected:'Rejected', cancelled:'Cancelled'}[status] || status; }
@@ -137,14 +152,15 @@
       var cells = days.map(function (date) {
         var key = dateKey(date);
         var availability = store.availabilityForDay({staffSchedule:schedule, technicianId:person.id, date:key, appointments:appointmentList});
+        var dayConflicts = availability.conflicts.filter(function (item) { return item.startAt.slice(0, 10) === key; });
         if (availability.working) working++;
         slots += availability.openSlots.length;
-        conflicts += availability.conflicts.length;
-        return '<button type="button" class="schedule-day' + (!availability.working ? ' is-off' : '') + (availability.conflicts.length ? ' has-conflict' : '') + '" data-schedule-day data-schedule-staff="' + esc(person.id) + '" data-schedule-date="' + key + '"><strong>' + (availability.working ? esc(availability.start + '–' + availability.end) : 'Day off') + '</strong><small>' + availability.openSlots.length + ' open · ' + availability.appointments.length + ' booked</small></button>';
+        conflicts += dayConflicts.length;
+        return '<button type="button" class="schedule-day' + (!availability.working ? ' is-off' : '') + (dayConflicts.length ? ' has-conflict' : '') + '" data-schedule-day data-schedule-staff="' + esc(person.id) + '" data-schedule-date="' + key + '"><strong>' + (availability.working ? esc(availability.start + '–' + availability.end) : 'Day off') + '</strong><small>' + availability.openSlots.length + ' open · ' + availability.appointments.length + ' booked</small></button>';
       }).join('');
       return '<div class="schedule-row" data-schedule-staff="' + esc(person.id) + '"><strong>' + esc(person.name) + '</strong>' + cells + '</div>';
     }).join('');
-    host.innerHTML = '<header class="schedule-heading"><div><h2>Staff Schedule &amp; Booking Availability</h2><p>Manager publishes working hours. Staff changes arrive as requests.</p></div><div class="schedule-actions"><select class="schedule-select" aria-label="Salon"><option>Bitcoin Nail Bar</option></select><span data-schedule-sync-status>' + (state.salons[store.SALON_ID]?.syncedAt ? 'Synced to Booking' : 'Ready to sync') + '</span></div></header><div class="schedule-summary"><div class="schedule-card" data-schedule-summary="working"><strong>' + working + '</strong><span>Working staff-days</span></div><div class="schedule-card"><strong>' + slots + '</strong><span>Open slots</span></div><div class="schedule-card"><strong>' + conflicts + '</strong><span>Booking conflicts</span></div><div class="schedule-card"><strong>' + people.length + '</strong><span>Staff members</span></div></div><div class="schedule-week" data-schedule-week><div class="schedule-row"><span>Staff</span>' + days.map(function (date) { return '<span>' + date.toLocaleDateString('en-US', {weekday:'short'}) + '<br>' + displayDate(dateKey(date)) + '</span>'; }).join('') + '</div>' + body + '</div><aside class="schedule-request-queue" data-schedule-requests><header><div><h3>Schedule requests</h3><p>Compare, adjust, approve and sync staff availability.</p></div><span>' + state.requests.filter(function (request) { return ['pending','adjusted','blocked'].includes(request.status); }).length + ' open</span></header>' + requestQueue(state, catalog) + '</aside>' + editor() + impactDialog();
+    host.innerHTML = '<header class="schedule-heading"><div><h2>Staff Schedule &amp; Booking Availability</h2><p>Manager publishes working hours. Staff changes arrive as requests.</p></div><div class="schedule-actions"><select class="schedule-select" aria-label="Salon"><option>Bitcoin Nail Bar</option></select><span data-schedule-sync-status>' + (state.salons[store.SALON_ID]?.syncedAt ? 'Synced to Booking' : 'Ready to sync') + '</span></div></header>' + weekControls(days) + '<div class="schedule-summary"><div class="schedule-card" data-schedule-summary="working"><strong>' + working + '</strong><span>Working staff-days</span></div><div class="schedule-card"><strong>' + slots + '</strong><span>Open slots</span></div><div class="schedule-card"><strong>' + conflicts + '</strong><span>Booking conflicts</span></div><div class="schedule-card"><strong>' + people.length + '</strong><span>Staff members</span></div></div><div class="schedule-week" data-schedule-week><div class="schedule-row"><span>Staff</span>' + days.map(function (date) { return '<span>' + date.toLocaleDateString('en-US', {weekday:'short'}) + '<br>' + displayDate(dateKey(date)) + '</span>'; }).join('') + '</div>' + body + '</div><aside class="schedule-request-queue" data-schedule-requests><header><div><h3>Schedule requests</h3><p>Compare, adjust, approve and sync staff availability.</p></div><span>' + state.requests.filter(function (request) { return ['pending','adjusted','blocked'].includes(request.status); }).length + ' open</span></header>' + requestQueue(state, catalog) + '</aside>' + editor() + impactDialog();
     modalHost.replaceChildren();
     Array.from(host.querySelectorAll('.schedule-backdrop,.schedule-drawer,.schedule-impact-backdrop,[data-request-impact],.schedule-break-backdrop,[data-break-form]')).forEach(function (node) { modalHost.appendChild(node); });
     if (drawerOpen && store.loadState().drafts[store.SALON_ID]?.[selectedStaff]) {
@@ -301,6 +317,14 @@
     render(selectedStaff);
   });
   function handleClick(event) {
+    var weekStep = event.target.closest('[data-schedule-week-step]');
+    if (weekStep) {
+      var nextWeek = new Date(boardDate + 'T12:00:00');
+      nextWeek.setDate(nextWeek.getDate() + Number(weekStep.dataset.scheduleWeekStep) * 7);
+      changeWeek(dateKey(nextWeek), '[data-schedule-week-step="' + weekStep.dataset.scheduleWeekStep + '"]');
+      return;
+    }
+    if (event.target.closest('[data-schedule-this-week]')) { changeWeek(dateKey(new Date()), '[data-schedule-this-week]'); return; }
     if (event.target.closest('[data-schedule-toast-close]')) { boardMessage = ''; modalHost.querySelector('.schedule-toast')?.remove(); return; }
     var day = event.target.closest('[data-schedule-day]');
     if (day) { opener = day; selectedStaff = day.dataset.scheduleStaff; selectedDate = day.dataset.scheduleDate; editorScope = 'date'; drawerOpen = true; loadEditorDay(); render(selectedStaff); return; }
@@ -351,6 +375,9 @@
     if (approve) review(approve.dataset.requestApprove, 'approve');
   }
   host.addEventListener('click', handleClick);
+  host.addEventListener('change', function (event) {
+    if (event.target.matches('[data-schedule-week-date]')) changeWeek(event.target.value, '[data-schedule-week-date]');
+  });
   modalHost.addEventListener('click', handleClick);
   function closeEditor() {
     drawerOpen = false;

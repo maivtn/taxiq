@@ -34,6 +34,35 @@ test('Staff Schedule is a real section with team coverage and compliant selector
  assert.match(readFileSync(new URL('../assets/pos-salon-settings.css',SOURCE_DIR),'utf8'),/\.schedule-select[^}]*padding-right:\s*44px/);
  assert.deepEqual(errors,[]);dom.window.close();
 });
+test('week picker shows seven Monday–Sunday dates and navigates across month and year boundaries',()=>{
+ const {dom,w,d,errors}=boot(null,'?section=staff-schedule');
+ const choose=value=>{const input=d.querySelector('[data-schedule-week-date]');input.value=value;input.dispatchEvent(new w.Event('change',{bubbles:true}));};
+ const dates=()=>Array.from(d.querySelectorAll('[data-schedule-staff="staff-0"] [data-schedule-day]'),el=>el.dataset.scheduleDate);
+ choose('2026-09-30');
+ assert.deepEqual(dates(),['2026-09-28','2026-09-29','2026-09-30','2026-10-01','2026-10-02','2026-10-03','2026-10-04']);
+ assert.equal(d.querySelector('[data-schedule-week-range]').textContent,'Sep 28, 2026 – Oct 4, 2026');
+ d.querySelector('[data-schedule-week-step="1"]').click();
+ assert.equal(dates()[0],'2026-10-05');assert.equal(dates()[6],'2026-10-11');
+ d.querySelector('[data-schedule-week-step="-1"]').click();assert.equal(dates()[0],'2026-09-28');
+ choose('2026-12-31');assert.equal(dates()[0],'2026-12-28');assert.equal(dates()[6],'2027-01-03');
+ d.querySelector('[data-schedule-week-step="1"]').click();assert.equal(dates()[0],'2027-01-04');
+ choose('');assert.equal(dates()[0],'2027-01-04');
+ d.querySelector('[data-schedule-this-week]').click();
+ const today=new Date();const todayKey=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+ assert.ok(dates().includes(todayKey));
+ assert.deepEqual(errors,[]);dom.window.close();
+});
+test('week navigation counts booking conflicts only in the displayed week',()=>{
+ const {dom,w,d}=boot(null,'?section=staff-schedule');
+ const created=w.NEXORA_APPOINTMENTS_STORE.create({id:'week-conflict',customerName:'Week Test',phone:'8325550198',date:'2026-10-04',time:'10:00',serviceNames:['Gel Manicure'],technicianId:'staff-0',tickets:[{id:'week-ticket',serviceId:'gel',serviceName:'Gel Manicure',technicianId:'staff-0',technicianName:'Staff 0',durationMin:60}]});
+ assert.equal(created.ok,true);
+ const input=d.querySelector('[data-schedule-week-date]');input.value='2026-10-04';input.dispatchEvent(new w.Event('change',{bubbles:true}));
+ const conflicts=()=>d.querySelectorAll('.schedule-summary .schedule-card strong')[2].textContent;
+ assert.equal(conflicts(),'1');
+ assert.equal(d.querySelectorAll('[data-schedule-week] .has-conflict').length,1);
+ d.querySelector('[data-schedule-week-step="1"]').click();assert.equal(conflicts(),'0');
+ dom.window.close();
+});
 test('Staff Schedule escapes quoted staff data with a complete HTML entity',()=>{
  const source=readFileSync(new URL('../assets/staff-schedule-settings.js',SOURCE_DIR),'utf8');
  assert.match(source,/['"]&quot;['"]/);
@@ -57,7 +86,7 @@ test('manager drafts, validates and publishes a staff schedule',()=>{
 
 test('manager chooses date scope and preserves editable breaks',()=>{
  const {dom,w,d}=boot(null,'?section=staff-schedule&staff=staff-0');
- const monday=d.querySelectorAll('[data-schedule-staff="staff-0"] [data-schedule-day]')[1];monday.click();
+ const monday=d.querySelectorAll('[data-schedule-staff="staff-0"] [data-schedule-day]')[0];monday.click();
  const formattedDate=new Date(monday.dataset.scheduleDate+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
  assert.equal(d.querySelector('[data-schedule-scope="date"]').getAttribute('aria-selected'),'true');
  assert.ok(d.querySelector('[data-schedule-scope="date"]'));assert.ok(d.querySelector('[data-schedule-scope="weekly"]'));
