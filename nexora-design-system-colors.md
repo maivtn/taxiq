@@ -1,6 +1,6 @@
 # Nexora Design System Colors
 
-Updated: 2026-09-15
+Updated: Sep 28, 2026
 
 This file documents the core Nexora color tokens used for light and dark themes.
 
@@ -77,6 +77,14 @@ Shape tokens make Nexora feel warmer and less rigid while keeping operational sc
 - Position the select/dropdown expand arrow **16px from the right edge**, centered vertically.
 - Use a **16px icon** and reserve at least **44px of right padding** for the arrow and the gap between it and the selected text.
 - Keep this spacing in desktop, compact, tablet, and phone layouts.
+
+## Date Format
+
+- Display full dates in US English as `MMM D, YYYY`, for example `Sep 20, 2026` or `Jan 5, 2027`. Use an abbreviated English month, an unpadded day, and a four-digit year.
+- Apply this rule across POS, Booking, the staff app, and HTML prototypes, including headings, lists, requests, dialogs, and booking-impact notices. Do not display raw ISO dates or ambiguous numeric dates as full-date labels.
+- Compact calendar cells may show only the weekday/day when the full selected date is visible nearby; give interactive cells a full-date accessible label.
+- Keep storage, API, URL, and native date-input values in ISO `YYYY-MM-DD`. Native date-picker appearance follows the browser/device locale; do not change its value format to a display string.
+- Format with the explicit `en-US` locale and `{ month: 'short', day: 'numeric', year: 'numeric' }`. Parse date-only values as local calendar dates, not UTC timestamps, to avoid shifting to the previous day in US time zones.
 
 ## Elevation
 

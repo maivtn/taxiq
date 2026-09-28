@@ -26,7 +26,7 @@
     return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2, '0') + '-' + String(date.getDate()).padStart(2, '0');
   }
   function time(value) { return value ? value.slice(11, 16) : ''; }
-  function titleDate(value) { return new Date(value + 'T12:00:00').toLocaleDateString('en-US', {weekday:'long', month:'short', day:'numeric'}); }
+  function titleDate(value) { return new Date(value + 'T12:00:00').toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'}); }
   function appointmentRows() {
     try { return appointmentStore ? appointmentStore.loadAll() : []; } catch (_) { return []; }
   }
@@ -99,7 +99,7 @@
     return '<div class="request-list" data-request-list>' + list.map(function (item) {
       var detail = item.type === 'day-off' ? item.reason : item.start + '–' + item.end + (item.reason ? ' · ' + item.reason : '');
       var cancellable = ['pending', 'adjusted'].includes(item.status);
-      return '<article class="request-card"><header><div><strong>' + esc(requestLabel(item.type)) + '</strong><small>' + esc(item.date) + '</small></div><span class="request-status is-' + esc(item.status) + '">' + esc(item.status[0].toUpperCase() + item.status.slice(1)) + '</span></header><p>' + esc(detail) + '</p>' + (item.status === 'blocked' ? '<small>Manager must resolve affected bookings before approval.</small>' : '') + (cancellable ? '<button type="button" data-request-cancel="' + esc(item.id) + '">Cancel request</button>' : '') + '</article>';
+      return '<article class="request-card"><header><div><strong>' + esc(requestLabel(item.type)) + '</strong><small>' + esc(titleDate(item.date)) + '</small></div><span class="request-status is-' + esc(item.status) + '">' + esc(item.status[0].toUpperCase() + item.status.slice(1)) + '</span></header><p>' + esc(detail) + '</p>' + (item.status === 'blocked' ? '<small>Manager must resolve affected bookings before approval.</small>' : '') + (cancellable ? '<button type="button" data-request-cancel="' + esc(item.id) + '">Cancel request</button>' : '') + '</article>';
     }).join('') + '</div>';
   }
   function requestForm() {
@@ -125,7 +125,7 @@
     document.querySelector('[data-calendar-salon]').innerHTML = '<option value="' + esc(salonId) + '">' + esc(catalog.salon.name) + '</option>';
     document.querySelector('[data-calendar-week]').innerHTML = week().map(function (date) {
       var key = dateKey(date);
-      return '<button type="button" class="calendar-day' + (key === selectedDate ? ' is-selected' : '') + '" data-calendar-day data-date="' + key + '"><span>' + date.toLocaleDateString('en-US', {weekday:'short'}) + '</span><strong>' + date.getDate() + '</strong></button>';
+      return '<button type="button" class="calendar-day' + (key === selectedDate ? ' is-selected' : '') + '" aria-label="' + esc(titleDate(key)) + '" data-calendar-day data-date="' + key + '"><span>' + date.toLocaleDateString('en-US', {weekday:'short'}) + '</span><strong>' + date.getDate() + '</strong></button>';
     }).join('');
     document.querySelectorAll('[data-calendar-tab]').forEach(function (button) {
       var active = button.dataset.calendarTab === activeTab;

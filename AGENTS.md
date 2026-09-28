@@ -9,6 +9,7 @@
 
 ## Quy tắc giao diện
 
+- Ngày hiển thị phải theo định dạng Mỹ `MMM D, YYYY`, ví dụ `Sep 20, 2026`: tháng viết tắt tiếng Anh, ngày không thêm số 0, năm đủ 4 chữ số. Áp dụng chung cho POS, Booking, app thợ và prototype; xem [Date Format](nexora-design-system-colors.md#date-format). Không đổi định dạng ISO của dữ liệu lưu trữ/API.
 - Khi tạo hoặc chỉnh sửa ô chọn (select/dropdown), tuân thủ [Form Controls](nexora-design-system-colors.md#form-controls): mũi tên cách mép phải 16px, icon rộng 16px, vùng đệm bên phải tối thiểu 44px. Áp dụng cả trên tablet, điện thoại và các ô chọn kích thước nhỏ.
 
 ## Tổ chức kiểm thử JavaScript

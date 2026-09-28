@@ -24,6 +24,8 @@ test('My Calendar keeps personal IA with salon, tabs and booking sync',()=>{
 });
 test('three tabs render distinct staff workflows',()=>{
  const {dom,d}=boot('?staff=t1&date=2026-09-28');
+ assert.equal(d.querySelector('[data-calendar-heading]').textContent,'Sep 28, 2026');
+ assert.equal(d.querySelector('[data-date="2026-09-28"]').getAttribute('aria-label'),'Sep 28, 2026');
  assert.match(d.querySelector('[data-calendar-panel]').textContent,/Mary Smith/);assert.match(d.querySelector('[data-calendar-panel]').textContent,/Work starts/);
  d.querySelector('[data-calendar-tab="work-schedule"]').click();assert.match(d.querySelector('[data-calendar-panel]').textContent,/Salon schedule/);assert.doesNotMatch(d.querySelector('[data-calendar-panel]').textContent,/Mary Smith/);
  d.querySelector('[data-calendar-tab="requests"]').click();assert.match(d.querySelector('[data-calendar-panel]').textContent,/Request day off/);assert.match(d.querySelector('[data-calendar-panel]').textContent,/Change hours/);assert.match(d.querySelector('[data-calendar-panel]').textContent,/Take break/);dom.window.close();
@@ -50,6 +52,8 @@ test('staff submits and cancels a pending day-off request without changing publi
  const {dom,w,d}=boot('?staff=t1&date=2026-10-02');d.querySelector('[data-calendar-tab="requests"]').click();d.querySelector('[data-request-day-off]').click();
  d.querySelector('[data-request-date]').value='2026-10-02';d.querySelector('[data-request-reason]').value='Personal';d.querySelector('[data-request-form]').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));
  let state=w.NEXORA_STAFF_SCHEDULE_STORE.loadState();assert.equal(state.requests.at(-1).status,'pending');assert.equal(state.salons['bitcoin-nail-bar-houston'].staff.t1.exceptions['2026-10-02'],undefined);assert.match(d.querySelector('[data-request-list]').textContent,/Pending/);
+ assert.equal(state.requests.at(-1).date,'2026-10-02');
+ assert.match(d.querySelector('[data-request-list]').textContent,/Oct 2, 2026/);
  d.querySelector('[data-request-cancel]').click();state=w.NEXORA_STAFF_SCHEDULE_STORE.loadState();assert.equal(state.requests.at(-1).status,'cancelled');dom.window.close();
 });
 
