@@ -74,9 +74,9 @@
     var days = Array.from({length:7}, function (_, index) { var date = new Date(monday); date.setDate(date.getDate() + index); return date; });
     var rows = days.map(function (date) {
       var key = dateKey(date), day = store.scheduleForDate(schedule, key), selected = key === selectedDate;
-      return '<li class="personal-week-row' + (day.working ? '' : ' is-off') + (selected ? ' is-selected' : '') + '"' + (selected ? ' aria-current="date"' : '') + '><div class="personal-week-day"><strong>' + esc(date.toLocaleDateString('en-US', {weekday:'long'})) + '</strong><small>' + esc(titleDate(key)) + '</small></div><div class="personal-week-hours"><strong>' + esc(day.working ? day.start + '–' + day.end : 'Day off') + '</strong>' + (selected ? '<small>Selected day</small>' : '') + '</div>' + (day.working && day.breaks.length ? '<p class="personal-week-breaks">Break: ' + day.breaks.map(function (pause) { return esc(pause.start + '–' + pause.end); }).join(' · ') + '</p>' : '') + (day.source === 'exception' ? '<small class="personal-week-exception">Date-specific change</small>' : '') + '</li>';
+      return '<li class="personal-week-row' + (day.working ? '' : ' is-off') + (selected ? ' is-selected' : '') + '"' + (selected ? ' aria-current="date"' : '') + '><div class="personal-week-day"><strong>' + esc(date.toLocaleDateString('en-US', {weekday:'short'})) + '</strong><small>' + esc(titleDate(key)) + '</small></div><div class="personal-week-hours"><strong>' + esc(day.working ? day.start + '–' + day.end : 'Day off') + '</strong>' + '</div>' + (day.working && day.breaks.length ? '<p class="personal-week-breaks">Break: ' + day.breaks.map(function (pause) { return esc(pause.start + '–' + pause.end); }).join(' · ') + '</p>' : '') + (day.source === 'exception' ? '<small class="personal-week-exception">Changed</small>' : '') + '</li>';
     }).join('');
-    return '<section class="schedule-source personal-week-card"><strong>My schedule</strong><small class="personal-week-range">' + esc(titleDate(dateKey(days[0])) + ' – ' + titleDate(dateKey(days[6]))) + '</small><ul class="personal-week-list" aria-label="My work schedule for this week">' + rows + '</ul>' + approvalNotice() + '</section>';
+    return '<section class="schedule-source personal-week-card"><strong>My schedule</strong><small class="personal-week-range">' + esc(titleDate(dateKey(days[0])) + ' – ' + titleDate(dateKey(days[6]))) + '</small><ul class="personal-week-list" aria-label="My work schedule for this week">' + rows + '</ul></section>';
   }
   function syncUrl() {
     var url = new URL(location.href);
@@ -165,9 +165,12 @@
     var panel = document.querySelector('[data-calendar-panel]');
     var count = visibleAppointments().length;
     panel.querySelector('[data-calendar-heading]').textContent = activeTab === 'requests' ? 'My schedule changes' : titleDate(selectedDate);
-    panel.querySelector('[data-calendar-duration]').textContent = activeTab === 'appointments' ? count + ' appointment' + (count === 1 ? '' : 's') : (schedulePermission() === 'none' ? 'View only' : schedulePermission() === 'self' ? 'No approval needed' : 'Approval required');
+    panel.querySelector('[data-calendar-duration]').textContent = activeTab === 'work-schedule' ? '' : activeTab === 'appointments' ? count + ' appointment' + (count === 1 ? '' : 's') : (schedulePermission() === 'none' ? 'View only' : schedulePermission() === 'self' ? 'No approval needed' : 'Approval required');
     panel.querySelector('[data-calendar-timeline]').innerHTML = activeTab === 'appointments' ? appointmentsPanel() : (activeTab === 'work-schedule' ? workSchedulePanel() : requestsPanel());
-    document.querySelector('[data-calendar-side]').innerHTML = contextualSide();
+    var side = document.querySelector('[data-calendar-side]');
+    side.hidden = activeTab === 'work-schedule';
+    side.innerHTML = side.hidden ? '' : contextualSide();
+    root.querySelector('.calendar-layout').classList.toggle('is-schedule-overview', activeTab === 'work-schedule');
   }
   function openRequest(type) {
     if (schedulePermission() === 'none') return;
