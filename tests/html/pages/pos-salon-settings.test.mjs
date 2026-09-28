@@ -8,6 +8,7 @@ function boot(serviceCatalog = null, search = ''){
  const errors=[];const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
  const dom=new JSDOM(readFileSync(new URL('./pos-salon-settings.html', SOURCE_DIR),'utf8'),{url:'https://example.test/pages/pos-salon-settings.html'+search,runScripts:'dangerously',virtualConsole:vc,beforeParse(w){
  w.eval(readFileSync(new URL('../assets/salon-data.js', SOURCE_DIR),'utf8'));
+ w.eval(readFileSync(new URL('../assets/appointment-tickets.js', SOURCE_DIR),'utf8'));
  w.eval(readFileSync(new URL('../assets/appointments-store.js', SOURCE_DIR),'utf8'));
  w.eval(readFileSync(new URL('../assets/staff-schedule-store.js', SOURCE_DIR),'utf8'));
  const data=w.NEXORA_SALON_DATA.loadCatalog();data.technicians=Array.from({length:12},(_,i)=>({id:'staff-'+i,name:'Staff '+i,phone:'5551234567',active:true}));w.NEXORA_SALON_DATA.saveCatalog(data);
@@ -51,6 +52,32 @@ test('manager drafts, validates and publishes a staff schedule',()=>{
  assert.equal(w.NEXORA_STAFF_SCHEDULE_STORE.loadState().drafts['bitcoin-nail-bar-houston'],undefined);
  assert.match(d.querySelector('[data-schedule-sync-status]').textContent,/Synced/);
  dom.window.close();
+});
+
+test('manager chooses date scope and preserves editable breaks',()=>{
+ const {dom,w,d}=boot(null,'?section=staff-schedule&staff=staff-0');
+ const monday=d.querySelectorAll('[data-schedule-staff="staff-0"] [data-schedule-day]')[1];monday.click();
+ assert.ok(d.querySelector('[data-schedule-scope="date"]'));assert.ok(d.querySelector('[data-schedule-scope="weekly"]'));
+ assert.equal(d.querySelectorAll('[data-schedule-break-row]').length,1);
+ d.querySelector('[data-schedule-scope="date"]').checked=true;d.querySelector('[data-schedule-start]').value='10:00';d.querySelector('[data-schedule-save-draft]').click();
+ const draft=w.NEXORA_STAFF_SCHEDULE_STORE.loadState().drafts['bitcoin-nail-bar-houston']['staff-0'];
+ assert.equal(draft.exceptions[monday.dataset.scheduleDate].start,'10:00');assert.equal(draft.weekly.mon.start,'09:00');assert.deepEqual(JSON.parse(JSON.stringify(draft.exceptions[monday.dataset.scheduleDate].breaks)),[{start:'13:00',end:'13:30'}]);dom.window.close();
+});
+
+test('manager approval with affected booking opens impact review and stays blocked',()=>{
+ const {dom,w,d}=boot(null,'?section=staff-schedule');const date='2026-09-28';
+ const created=w.NEXORA_APPOINTMENTS_STORE.create({id:'impact-booking',customerName:'Mary',phone:'8325550198',date,time:'10:00',serviceNames:['Gel Manicure'],technicianId:'staff-0',tickets:[{id:'impact-ticket',serviceId:'gel',serviceName:'Gel Manicure',technicianId:'staff-0',technicianName:'Staff 0',durationMin:60}]});assert.equal(created.ok,true);
+ const request=w.NEXORA_STAFF_SCHEDULE_STORE.createRequest({salonId:'bitcoin-nail-bar-houston',staffId:'staff-0',type:'day-off',date,reason:'Personal'}).request;w.NEXORA_STAFF_SCHEDULE_SETTINGS.refresh();
+ d.querySelector('[data-request-approve="'+request.id+'"]').click();assert.equal(d.querySelector('[data-request-impact]').hidden,false);assert.match(d.querySelector('[data-request-impact]').textContent,/Mary/);
+ assert.equal(w.NEXORA_STAFF_SCHEDULE_STORE.loadState().requests.find(item=>item.id===request.id).status,'blocked');dom.window.close();
+});
+
+test('manager adjusts a request before approving and syncing it',()=>{
+ const {dom,w,d}=boot(null,'?section=staff-schedule');const date='2026-09-29';
+ const request=w.NEXORA_STAFF_SCHEDULE_STORE.createRequest({salonId:'bitcoin-nail-bar-houston',staffId:'staff-0',type:'change-hours',date,start:'10:00',end:'16:00',reason:'Personal'}).request;w.NEXORA_STAFF_SCHEDULE_SETTINGS.refresh();
+ d.querySelector('[data-request-adjust="'+request.id+'"]').click();const form=d.querySelector('[data-request-adjust-form="'+request.id+'"]');form.querySelector('[data-adjust-start]').value='11:00';form.querySelector('[data-adjust-end]').value='17:00';form.dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));
+ let saved=w.NEXORA_STAFF_SCHEDULE_STORE.loadState().requests.find(item=>item.id===request.id);assert.equal(saved.status,'adjusted');assert.equal(saved.start,'11:00');assert.equal(w.NEXORA_STAFF_SCHEDULE_STORE.getStaffSchedule('bitcoin-nail-bar-houston','staff-0').exceptions[date],undefined);
+ d.querySelector('[data-request-approve="'+request.id+'"]').click();saved=w.NEXORA_STAFF_SCHEDULE_STORE.loadState().requests.find(item=>item.id===request.id);assert.equal(saved.status,'applied');assert.equal(w.NEXORA_STAFF_SCHEDULE_STORE.getStaffSchedule('bitcoin-nail-bar-houston','staff-0').exceptions[date].start,'11:00');dom.window.close();
 });
 
 test('manager sees and rejects pending day-off requests without changing schedule',()=>{

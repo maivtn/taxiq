@@ -72,3 +72,34 @@ test('rejects malformed schedule requests instead of reporting a lost success', 
   assert.equal(result.ok,false);assert.equal(result.error.code,'invalid-request');
   assert.equal(store.loadState(target).requests.length,0);
 });
+
+test('all staff changes remain requests until a manager applies them', () => {
+  const target = storage();
+  const before = store.getStaffSchedule(store.SALON_ID, 't1', {}, target);
+  const change = store.createRequest({salonId:store.SALON_ID,staffId:'t1',type:'change-hours',date:'2026-09-28',start:'10:00',end:'17:00',reason:'School'}, target, '2026-09-20T09:00:00.000Z');
+  const rest = store.createRequest({salonId:store.SALON_ID,staffId:'t1',type:'break',date:'2026-09-28',start:'14:00',end:'14:30',reason:'Lunch'}, target, '2026-09-20T09:01:00.000Z');
+  assert.equal(change.ok, true);assert.equal(rest.ok, true);
+  assert.deepEqual(store.getStaffSchedule(store.SALON_ID, 't1', {}, target), before);
+  assert.deepEqual(store.loadState(target).requests.map(item=>item.status), ['pending','pending']);
+});
+
+test('manager approval persists booking-blocked state and can retry after resolution', () => {
+  const target = storage();
+  const request = store.createRequest({salonId:store.SALON_ID,staffId:'t1',type:'day-off',date:'2026-09-28',reason:'Personal'}, target, '2026-09-20T09:00:00.000Z').request;
+  const rows=[{id:'a1',customerName:'Mary',technicianId:'t1',startAt:'2026-09-28T10:00:00',endAt:'2026-09-28T11:00:00',status:'confirmed'}];
+  const blocked=store.reviewRequest(request.id,'approve',rows,target,'2026-09-20T10:00:00.000Z');
+  assert.equal(blocked.ok,false);assert.equal(blocked.error.code,'booking-impact');
+  let saved=store.loadState(target).requests.find(item=>item.id===request.id);
+  assert.equal(saved.status,'blocked');assert.deepEqual(saved.bookingImpactIds,['a1']);
+  const retried=store.reviewRequest(request.id,'approve',[],target,'2026-09-20T11:00:00.000Z');
+  assert.equal(retried.ok,true);assert.equal(retried.request.status,'applied');
+  assert.equal(store.getStaffSchedule(store.SALON_ID,'t1',{},target).exceptions['2026-09-28'].type,'day-off');
+});
+
+test('manager adjusts a pending request without publishing it', () => {
+  const target = storage();
+  const request=store.createRequest({salonId:store.SALON_ID,staffId:'t1',type:'change-hours',date:'2026-09-28',start:'10:00',end:'16:00',reason:'Personal'},target).request;
+  const result=store.adjustRequest(request.id,{start:'11:00',end:'17:00',reason:'Adjusted with staff'},'manager',target,'2026-09-20T10:00:00.000Z');
+  assert.equal(result.ok,true);assert.equal(result.request.status,'adjusted');assert.equal(result.request.start,'11:00');
+  assert.equal(store.getStaffSchedule(store.SALON_ID,'t1',{},target).exceptions['2026-09-28'],undefined);
+});

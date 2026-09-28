@@ -22,9 +22,11 @@ test('My Calendar keeps personal IA with salon, tabs and booking sync',()=>{
  assert.equal(d.querySelectorAll('[data-calendar-day]').length,7);assert.equal(d.querySelector('[data-calendar]').dataset.staffId,'t1');
  assert.deepEqual(errors,[]);dom.window.close();
 });
-test('timeline shows work boundaries, breaks and open slots',()=>{
- const {dom,d}=boot('?staff=t1&date=2026-09-28');const text=d.querySelector('[data-calendar-timeline]').textContent;
- assert.match(text,/Work starts/);assert.match(text,/Break/);assert.match(text,/Open slot/);assert.match(text,/Work ends/);dom.window.close();
+test('three tabs render distinct staff workflows',()=>{
+ const {dom,d}=boot('?staff=t1&date=2026-09-28');
+ assert.match(d.querySelector('[data-calendar-panel]').textContent,/Mary Smith/);assert.match(d.querySelector('[data-calendar-panel]').textContent,/Work starts/);
+ d.querySelector('[data-calendar-tab="work-schedule"]').click();assert.match(d.querySelector('[data-calendar-panel]').textContent,/Salon schedule/);assert.doesNotMatch(d.querySelector('[data-calendar-panel]').textContent,/Mary Smith/);
+ d.querySelector('[data-calendar-tab="requests"]').click();assert.match(d.querySelector('[data-calendar-panel]').textContent,/Request day off/);assert.match(d.querySelector('[data-calendar-panel]').textContent,/Change hours/);assert.match(d.querySelector('[data-calendar-panel]').textContent,/Take break/);dom.window.close();
 });
 test('empty personal calendar shows one clearly labelled demo booking',()=>{
  const {dom,d}=boot('?staff=t1&date=2026-09-28');const demo=d.querySelector('[data-demo-booking]');
@@ -49,4 +51,12 @@ test('staff submits and cancels a pending day-off request without changing publi
  d.querySelector('[data-request-date]').value='2026-10-02';d.querySelector('[data-request-reason]').value='Personal';d.querySelector('[data-request-form]').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));
  let state=w.NEXORA_STAFF_SCHEDULE_STORE.loadState();assert.equal(state.requests.at(-1).status,'pending');assert.equal(state.salons['bitcoin-nail-bar-houston'].staff.t1.exceptions['2026-10-02'],undefined);assert.match(d.querySelector('[data-request-list]').textContent,/Pending/);
  d.querySelector('[data-request-cancel]').click();state=w.NEXORA_STAFF_SCHEDULE_STORE.loadState();assert.equal(state.requests.at(-1).status,'cancelled');dom.window.close();
+});
+
+test('staff submits change-hours and break requests without changing published schedule',()=>{
+ const {dom,w,d}=boot('?staff=t1&date=2026-09-28');const before=w.NEXORA_STAFF_SCHEDULE_STORE.getStaffSchedule('bitcoin-nail-bar-houston','t1');
+ d.querySelector('[data-calendar-tab="requests"]').click();d.querySelector('[data-request-change-hours]').click();
+ d.querySelector('[data-request-start]').value='10:00';d.querySelector('[data-request-end]').value='17:00';d.querySelector('[data-request-form]').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));
+ d.querySelector('[data-request-break]').click();d.querySelector('[data-request-start]').value='15:00';d.querySelector('[data-request-end]').value='15:30';d.querySelector('[data-request-form]').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));
+ const state=w.NEXORA_STAFF_SCHEDULE_STORE.loadState();assert.deepEqual(Array.from(state.requests,item=>item.type),['change-hours','break']);assert.deepEqual(JSON.parse(JSON.stringify(w.NEXORA_STAFF_SCHEDULE_STORE.getStaffSchedule('bitcoin-nail-bar-houston','t1'))),JSON.parse(JSON.stringify(before)));dom.window.close();
 });
