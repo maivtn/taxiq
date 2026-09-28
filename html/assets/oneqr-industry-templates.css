@@ -156,7 +156,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .no-results h3 { margin: 0 0 6px; font-size: 15px; }
 .no-results p { margin: 0; color: var(--oq-muted); font-size: 12px; }
 
-.template-preview { position: sticky; top: 20px; overflow: hidden; }
+.template-preview { overflow: hidden; }
 .preview-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; padding: 22px 22px 17px; border-bottom: 1px solid var(--oq-line); }
 .preview-heading h2 { margin-bottom: 0; }
 .preview-state { padding: 5px 8px; border-radius: 999px; background: #f2f4f7; color: #7a8496; font-size: 11px; font-weight: 800; letter-spacing: .04em; text-transform: uppercase; }
