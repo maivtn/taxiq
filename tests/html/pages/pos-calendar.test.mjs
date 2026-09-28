@@ -1,67 +1,35 @@
 import assert from 'node:assert/strict';
-import { existsSync, readFileSync } from 'node:fs';
+import {readFileSync} from 'node:fs';
 import test from 'node:test';
-import { JSDOM } from 'jsdom';
-
-const SOURCE_DIR = new URL('../../../html/pages/', import.meta.url);
-
-const PAGE_URL = new URL('./pos-calendar.html', SOURCE_DIR);
-
-function loadPage(query = '') {
-  assert.equal(existsSync(PAGE_URL), true, 'pos-calendar.html must exist');
-  const html = readFileSync(PAGE_URL, 'utf8');
-  const dom = new JSDOM(html, {
-    pretendToBeVisual: true,
-    runScripts: 'dangerously',
-    url: `https://staff.nexora.test/html/pages/pos-calendar.html${query}`,
-  });
-  return { dom, window: dom.window };
+import {JSDOM,VirtualConsole} from 'jsdom';
+const SOURCE_DIR=new URL('../../../html/pages/',import.meta.url);
+function boot(query=''){
+ const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
+ const dom=new JSDOM(readFileSync(new URL('./pos-calendar.html',SOURCE_DIR),'utf8'),{url:'https://staff.test/html/pages/pos-calendar.html'+query,runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
+ const w=dom.window;
+ for(const file of ['salon-data.js','appointments-store.js','staff-schedule-store.js','staff-calendar.js'])w.eval(readFileSync(new URL('../assets/'+file,SOURCE_DIR),'utf8'));
+ return {dom,w,d:w.document,errors};
 }
-
-function click(window, selector) {
-  const element = window.document.querySelector(selector);
-  assert.ok(element, `Expected ${selector} to exist`);
-  element.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
-  return element;
-}
-
-test('My Calendar renders a seven-day selector and today schedule', () => {
-  const { dom, window } = loadPage('?salon=golden');
-
-  assert.equal(window.document.querySelectorAll('[data-calendar-day]').length, 7);
-  assert.equal(window.document.querySelectorAll('[data-calendar-day].is-selected').length, 1);
-  assert.equal(window.document.querySelectorAll('[data-calendar-appointment]').length, 4);
-  assert.match(window.document.querySelector('[data-calendar-heading]')?.textContent || '', /4 appointments/);
-
-  const firstTicket = window.document.querySelector('[data-calendar-appointment]');
-  assert.match(firstTicket?.getAttribute('href') || '', /^staff-work-orders\.html\?salon=golden&ticket=WO-/);
-
-  dom.window.close();
+test('My Calendar keeps personal IA with salon, tabs and booking sync',()=>{
+ const {dom,d,errors}=boot('?salon=bitcoin-nail-bar-houston&staff=t1');
+ assert.equal(d.querySelector('h1').textContent,'My Calendar');
+ assert.deepEqual(Array.from(d.querySelectorAll('[data-calendar-tab]'),n=>n.dataset.calendarTab),['appointments','work-schedule','requests']);
+ assert.ok(d.querySelector('[data-calendar-salon]'));assert.match(d.querySelector('[data-calendar-sync]').textContent,/Booking/);
+ assert.equal(d.querySelectorAll('[data-calendar-day]').length,7);assert.equal(d.querySelector('[data-calendar]').dataset.staffId,'t1');
+ assert.deepEqual(errors,[]);dom.window.close();
 });
-
-test('Today restores the selected date after another day is chosen', () => {
-  const { dom, window } = loadPage();
-  const calendar = window.document.querySelector('[data-calendar]');
-  const today = calendar?.getAttribute('data-selected-date');
-  const otherDay = [...window.document.querySelectorAll('[data-calendar-day]')]
-    .find((day) => day.getAttribute('data-date') !== today);
-
-  assert.ok(otherDay, 'Expected a non-today day in the visible week');
-  otherDay.dispatchEvent(new window.MouseEvent('click', { bubbles: true }));
-  assert.notEqual(calendar?.getAttribute('data-selected-date'), today);
-
-  click(window, '[data-calendar-today]');
-  assert.equal(calendar?.getAttribute('data-selected-date'), today);
-  assert.equal(window.document.querySelector('[data-calendar-day].is-selected')?.getAttribute('data-date'), today);
-
-  dom.window.close();
+test('timeline shows work boundaries, breaks and open slots',()=>{
+ const {dom,d}=boot('?staff=t1&date=2026-09-28');const text=d.querySelector('[data-calendar-timeline]').textContent;
+ assert.match(text,/Work starts/);assert.match(text,/Break/);assert.match(text,/Open slot/);assert.match(text,/Work ends/);dom.window.close();
 });
-
-test('date query selects that date and preserves the salon in the back link', () => {
-  const { dom, window } = loadPage('?date=2030-02-14&salon=elite');
-
-  assert.equal(window.document.querySelector('[data-calendar]')?.getAttribute('data-selected-date'), '2030-02-14');
-  assert.equal(window.document.querySelector('[data-work-orders-link]')?.getAttribute('href'), 'staff-work-orders.html?salon=elite');
-
-  dom.window.close();
+test('invalid staff falls back to personal scope and preserves salon in back link',()=>{
+ const {dom,w,d}=boot('?salon=missing&staff=missing&date=2030-02-14');
+ assert.equal(d.querySelector('[data-calendar]').dataset.staffId,'t1');assert.equal(new URL(w.location.href).searchParams.get('staff'),'t1');
+ assert.match(d.querySelector('[data-work-orders-link]').href,/salon=bitcoin-nail-bar-houston/);dom.window.close();
+});
+test('staff submits and cancels a pending day-off request without changing published schedule',()=>{
+ const {dom,w,d}=boot('?staff=t1&date=2026-10-02');d.querySelector('[data-calendar-tab="requests"]').click();d.querySelector('[data-request-day-off]').click();
+ d.querySelector('[data-request-date]').value='2026-10-02';d.querySelector('[data-request-reason]').value='Personal';d.querySelector('[data-request-form]').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));
+ let state=w.NEXORA_STAFF_SCHEDULE_STORE.loadState();assert.equal(state.requests.at(-1).status,'pending');assert.equal(state.salons['bitcoin-nail-bar-houston'].staff.t1.exceptions['2026-10-02'],undefined);assert.match(d.querySelector('[data-request-list]').textContent,/Pending/);
+ d.querySelector('[data-request-cancel]').click();state=w.NEXORA_STAFF_SCHEDULE_STORE.loadState();assert.equal(state.requests.at(-1).status,'cancelled');dom.window.close();
 });
