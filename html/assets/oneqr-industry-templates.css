@@ -232,11 +232,12 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .review-action small { margin-top: 2px; color: #8a94a6; font-size: 11px; }
 .review-action-source { display: inline-flex; margin-left: 5px; padding: 2px 5px; border-radius: 999px; background: #eef2f6; color: #667085; font-size: 7px; font-style: normal; font-weight: 800; letter-spacing: .02em; vertical-align: 1px; text-transform: uppercase; }
 .review-action-source.is-custom { background: #f1eafe; color: #7c3aed; }
-.review-action-order { display: grid; grid-template-columns: repeat(2, 24px); gap: 3px; }
-.review-action-order button, .review-action-remove { display: grid; width: 24px; height: 24px; place-items: center; border: 1px solid var(--oq-line); border-radius: 7px; background: #fff; color: #7a8496; cursor: pointer; }
-.review-action-order button:hover, .review-action-remove:hover { border-color: #b9b4fa; color: var(--oq-primary); }
-.review-action-order button:disabled { opacity: .35; cursor: default; }
-.review-action-order svg, .review-action-remove svg { width: 13px; }
+.review-action-controls { display: grid; flex: 0 0 auto; grid-template-columns: repeat(3, 28px); gap: 6px; }
+.review-action-controls button { display: grid; width: 28px; height: 28px; padding: 0; place-items: center; border: 1px solid #dbe0e8; border-radius: 8px; background: #fff; color: #667085; cursor: pointer; transition: border-color .16s, background .16s, color .16s, box-shadow .16s; }
+.review-action-controls button:hover:not(:disabled), .review-action-controls button:focus-visible { border-color: #aaa5e5; background: #f8f7ff; color: var(--oq-primary); outline: none; box-shadow: 0 0 0 2px rgba(79,70,229,.08); }
+.review-action-controls .review-action-remove:hover, .review-action-controls .review-action-remove:focus-visible { border-color: #f3b4b4; background: #fff5f5; color: #dc2626; box-shadow: 0 0 0 2px rgba(220,38,38,.06); }
+.review-action-controls button:disabled { border-color: #e8ebf0; background: #fafbfc; color: #c4cad4; cursor: default; }
+.review-action-controls svg { width: 14px; height: 14px; stroke-width: 1.8; }
 .review-active-count { margin: 9px 2px 0; color: #7a8496; font-size: 11px; }
 .toggle { position: relative; width: 35px; height: 20px; }
 .toggle input { position: absolute; opacity: 0; }
@@ -359,7 +360,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   .action-library-grid { grid-template-columns: 1fr; }
   .review-action { align-items: flex-start; flex-wrap: wrap; }
   .review-action div { min-width: calc(100% - 75px); }
-  .review-action-order { margin-left: 75px; }
+  .review-action-controls { margin-left: 75px; }
   .review-menu-actions { grid-template-columns: 1fr; }
   .industry-close span { display: none; }
   .template-modal { padding: 12px; }
