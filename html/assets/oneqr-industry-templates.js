@@ -37,14 +37,15 @@
     consult: { icon: 'messages-square', en: 'Book a consultation', vi: 'Đặt lịch tư vấn', descEn: 'Schedule an introduction', descVi: 'Đặt lịch trao đổi ban đầu' },
     apply: { icon: 'file-check-2', en: 'Start an application', vi: 'Bắt đầu đăng ký', descEn: 'Share information securely', descVi: 'Gửi thông tin an toàn' },
     promotion: { icon: 'megaphone', en: 'See current offers', vi: 'Xem ưu đãi', descEn: 'Show active promotions', descVi: 'Hiển thị khuyến mãi hiện tại' },
-    contact: { icon: 'message-circle', en: 'Send a message', vi: 'Gửi tin nhắn', descEn: 'Ask a quick question', descVi: 'Gửi câu hỏi nhanh' }
+    contact: { icon: 'message-circle', en: 'Send a message', vi: 'Gửi tin nhắn', descEn: 'Ask a quick question', descVi: 'Gửi câu hỏi nhanh' },
+    contactcard: { icon: 'contact-round', en: 'Save contact', vi: 'Lưu liên hệ', descEn: 'Open the business contact card', descVi: 'Mở danh thiếp doanh nghiệp' }
   };
 
   const DEFAULTS = {
     beauty: ['booking', 'services', 'tip', 'review', 'giftcard'],
     food: ['menu', 'order', 'reservation', 'directions', 'review'],
-    personal: ['portfolio', 'booking', 'consult', 'tip', 'contact'],
-    showbiz: ['portfolio', 'tickets', 'booking', 'tip', 'contact'],
+    personal: ['portfolio', 'booking', 'consult', 'tip', 'contactcard'],
+    showbiz: ['portfolio', 'tickets', 'booking', 'tip', 'contactcard'],
     service: ['services', 'booking', 'quote', 'call', 'review'],
     store: ['shop', 'promotion', 'directions', 'call', 'review'],
     houseauto: ['services', 'quote', 'booking', 'call', 'review'],
@@ -63,7 +64,7 @@
     nonprofit: ['donate', 'tickets', 'contact', 'directions', 'review'],
     legal: ['consult', 'services', 'contact', 'directions', 'review'],
     carwash: ['services', 'booking', 'promotion', 'directions', 'review'],
-    artist: ['portfolio', 'tickets', 'tip', 'booking', 'contact'],
+    artist: ['portfolio', 'tickets', 'tip', 'booking', 'contactcard'],
     retail: ['shop', 'promotion', 'giftcard', 'directions', 'review']
   };
 
@@ -84,6 +85,25 @@
   }));
 
   const STORAGE_KEY = 'taxiq:oneqr-industry-template';
+  const CONTACT_STORAGE_KEY = 'taxiq:oneqr-contact-card';
+  const DEFAULT_CONTACT_CARD = {
+    name: 'Bitcoin Nail Bar',
+    title: 'Nail salon · Houston',
+    phone: '(346) 802-4906',
+    email: 'hello@bitcoinnailbar.com',
+    website: 'https://bitcoinnailbar.com',
+    address: '9793 Westheimer Rd, Suite A',
+    city: 'Houston',
+    region: 'TX',
+    bio: 'Beauty, care, and a better booking experience.',
+    addressMode: 'full',
+    showPhone: true,
+    showHours: true,
+    openTime: '09:30',
+    closeTime: '19:00',
+    theme: 'indigo',
+    configured: false
+  };
   const state = {
     language: 'en',
     group: 'all',
@@ -104,6 +124,8 @@
   const actionLabel = (record) => state.language === 'vi' ? record.vi : record.en;
   const actionDescription = (record) => state.language === 'vi' ? record.descVi : record.descEn;
   const actionIds = (industry) => [...(SPECIAL_DEFAULTS[industry.id] || DEFAULTS[industry.groupId])];
+  let contactCard = loadContactCard();
+  let contactDraft = { ...contactCard };
 
   function savedCustomActionIds(saved) {
     if (!saved) return [];
@@ -128,6 +150,23 @@
       window.localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
     } catch (error) {
       showToast(state.language === 'vi' ? 'Không thể lưu trên trình duyệt này.' : 'This browser could not save the template.');
+    }
+  }
+
+  function loadContactCard() {
+    try {
+      const saved = JSON.parse(window.localStorage.getItem(CONTACT_STORAGE_KEY) || 'null');
+      return saved && typeof saved === 'object' ? { ...DEFAULT_CONTACT_CARD, ...saved } : { ...DEFAULT_CONTACT_CARD };
+    } catch (error) {
+      return { ...DEFAULT_CONTACT_CARD };
+    }
+  }
+
+  function persistContactCard() {
+    try {
+      window.localStorage.setItem(CONTACT_STORAGE_KEY, JSON.stringify(contactCard));
+    } catch (error) {
+      showToast('This browser could not save the contact card.');
     }
   }
 
@@ -382,12 +421,161 @@
     }
   }
 
+  function setContactFormValues() {
+    const values = {
+      '#contact-name': contactDraft.name,
+      '#contact-title': contactDraft.title,
+      '#contact-phone': contactDraft.phone,
+      '#contact-email': contactDraft.email,
+      '#contact-website': contactDraft.website,
+      '#contact-address': contactDraft.address,
+      '#contact-city': contactDraft.city,
+      '#contact-state': contactDraft.region,
+      '#contact-bio': contactDraft.bio,
+      '#contact-open-time': contactDraft.openTime,
+      '#contact-close-time': contactDraft.closeTime
+    };
+    Object.entries(values).forEach(([selector, value]) => { $(selector).value = value || ''; });
+    $$('#contact-card-form [name="contact-address-mode"]').forEach((input) => { input.checked = input.value === contactDraft.addressMode; });
+    $('#contact-show-phone').checked = Boolean(contactDraft.showPhone);
+    $('#contact-show-hours').checked = Boolean(contactDraft.showHours);
+    $('#contact-add-action').checked = true;
+    $$('[data-contact-theme]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.contactTheme === contactDraft.theme)));
+  }
+
+  function readContactForm() {
+    contactDraft = {
+      ...contactDraft,
+      name: $('#contact-name').value.trim(),
+      title: $('#contact-title').value.trim(),
+      phone: $('#contact-phone').value.trim(),
+      email: $('#contact-email').value.trim(),
+      website: $('#contact-website').value.trim(),
+      address: $('#contact-address').value.trim(),
+      city: $('#contact-city').value.trim(),
+      region: $('#contact-state').value.trim(),
+      bio: $('#contact-bio').value.trim(),
+      addressMode: $('#contact-card-form [name="contact-address-mode"]:checked')?.value || 'full',
+      showPhone: $('#contact-show-phone').checked,
+      showHours: $('#contact-show-hours').checked,
+      openTime: $('#contact-open-time').value,
+      closeTime: $('#contact-close-time').value
+    };
+  }
+
+  function displayTime(value) {
+    if (!value || !value.includes(':')) return '';
+    const [hours, minutes] = value.split(':').map(Number);
+    const suffix = hours >= 12 ? 'PM' : 'AM';
+    return `${hours % 12 || 12}:${String(minutes).padStart(2, '0')} ${suffix}`;
+  }
+
+  function contactAddress() {
+    if (contactDraft.addressMode === 'hidden') return '';
+    const area = [contactDraft.city, contactDraft.region].filter(Boolean).join(', ');
+    return contactDraft.addressMode === 'area' ? area : [contactDraft.address, area].filter(Boolean).join(', ');
+  }
+
+  function renderContactPreview() {
+    const name = contactDraft.name || 'Your business';
+    $('#contact-card-preview').dataset.theme = contactDraft.theme;
+    $('#contact-preview-avatar').textContent = name.charAt(0).toUpperCase();
+    $('#contact-preview-name').textContent = name;
+    $('#contact-preview-title').textContent = contactDraft.title || 'Business contact';
+    $('#contact-preview-bio').textContent = contactDraft.bio || 'Your official OneQR contact card.';
+    $('#contact-preview-phone').textContent = contactDraft.phone || 'Phone not added';
+    $('#contact-preview-email').textContent = contactDraft.email || 'Email not added';
+    $('#contact-preview-address').textContent = contactAddress() || 'Address hidden';
+    $('#contact-preview-hours').textContent = `${displayTime(contactDraft.openTime)}–${displayTime(contactDraft.closeTime)}`;
+    $('#contact-preview-phone-row').hidden = !contactDraft.showPhone || !contactDraft.phone;
+    $('#contact-preview-email-row').hidden = !contactDraft.email;
+    $('#contact-preview-address-row').hidden = !contactAddress();
+    $('#contact-preview-hours-row').hidden = !contactDraft.showHours || !contactDraft.openTime || !contactDraft.closeTime;
+    $('#contact-hours-row').hidden = !contactDraft.showHours;
+    refreshIcons();
+  }
+
+  function renderContactStatus() {
+    const status = $('#contact-card-status');
+    if (!status) return;
+    status.textContent = contactCard.configured
+      ? (state.language === 'vi' ? 'Đã thiết lập · Chỉnh sửa' : 'Ready · Edit details')
+      : (state.language === 'vi' ? 'Cần thiết lập' : 'Needs setup');
+  }
+
+  function openContactCard() {
+    contactDraft = { ...contactCard };
+    setContactFormValues();
+    renderContactPreview();
+    openModal($('#contact-card-modal'));
+  }
+
+  function importContactDemo() {
+    if (!$('#contact-google-url').value.trim()) {
+      showToast('Paste a Google Business Profile URL first.');
+      return;
+    }
+    contactDraft = { ...contactDraft, ...DEFAULT_CONTACT_CARD, configured: contactDraft.configured, theme: contactDraft.theme };
+    setContactFormValues();
+    renderContactPreview();
+    showToast('Business details imported for this prototype.');
+  }
+
+  function vCardValue(value) {
+    return String(value || '').replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
+  }
+
+  function downloadVCard() {
+    readContactForm();
+    const includeAddress = contactDraft.addressMode !== 'hidden' && (contactDraft.address || contactDraft.city || contactDraft.region);
+    const street = contactDraft.addressMode === 'area' ? '' : contactDraft.address;
+    const lines = [
+      'BEGIN:VCARD', 'VERSION:3.0', `FN:${vCardValue(contactDraft.name)}`,
+      contactDraft.title ? `TITLE:${vCardValue(contactDraft.title)}` : '',
+      contactDraft.showPhone && contactDraft.phone ? `TEL;TYPE=CELL:${vCardValue(contactDraft.phone)}` : '',
+      contactDraft.email ? `EMAIL:${vCardValue(contactDraft.email)}` : '',
+      contactDraft.website ? `URL:${vCardValue(contactDraft.website)}` : '',
+      includeAddress ? `ADR;TYPE=WORK:;;${vCardValue(street)};${vCardValue(contactDraft.city)};${vCardValue(contactDraft.region)};;` : '',
+      contactDraft.bio ? `NOTE:${vCardValue(contactDraft.bio)}` : '', 'END:VCARD'
+    ].filter(Boolean).join('\r\n');
+    const url = URL.createObjectURL(new Blob([lines], { type: 'text/vcard;charset=utf-8' }));
+    const link = document.createElement('a');
+    link.href = url;
+    link.download = `${(contactDraft.name || 'oneqr-contact').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'oneqr-contact'}.vcf`;
+    document.body.appendChild(link);
+    link.click();
+    link.remove();
+    URL.revokeObjectURL(url);
+    showToast('vCard downloaded.');
+  }
+
+  function saveContactCard(event) {
+    event.preventDefault();
+    readContactForm();
+    contactCard = { ...contactDraft, configured: true };
+    persistContactCard();
+    let actionAdded = false;
+    if ($('#contact-add-action').checked && state.selected && !state.reviewIds.includes('contactcard')) {
+      state.reviewIds.push('contactcard');
+      state.enabled.add('contactcard');
+      if (!actionIds(industryById(state.selected)).includes('contactcard')) state.customActionIds.add('contactcard');
+      actionAdded = true;
+      renderPreview();
+    }
+    renderContactStatus();
+    closeModal($('#contact-card-modal'));
+    showToast(actionAdded ? 'Contact card saved and added to the menu draft.' : 'Contact card saved.');
+  }
+
   function renderPhoneActions() {
     const active = currentReviewIds().filter((id) => state.enabled.has(id));
     $('#phone-actions').innerHTML = active.length ? active.map((id) => {
       const action = MODULES[id];
-      return `<div class="phone-action"><span><i data-lucide="${action.icon}"></i></span><strong>${actionLabel(action)}</strong><i data-lucide="chevron-right"></i></div>`;
+      const tag = id === 'contactcard' ? 'button' : 'div';
+      const attribute = id === 'contactcard' ? ' type="button" data-phone-contact-card' : '';
+      return `<${tag} class="phone-action"${attribute}><span><i data-lucide="${action.icon}"></i></span><strong>${actionLabel(action)}</strong><i data-lucide="chevron-right"></i></${tag}>`;
     }).join('') : `<div class="no-results"><p>${state.language === 'vi' ? 'Bật ít nhất một hành động cho khách.' : 'Turn on at least one customer action.'}</p></div>`;
+    $('#phone-actions').querySelector('[data-phone-contact-card]')?.addEventListener('click', openContactCard);
     refreshIcons();
   }
 
@@ -540,6 +728,7 @@
     renderIndustries();
     renderPreview();
     renderAppliedTemplate();
+    renderContactStatus();
     if (!$('#template-review-modal').hidden) {
       const industry = industryById(state.selected);
       $('#review-template-name').textContent = label(industry);
@@ -608,6 +797,18 @@
       window.setTimeout(() => $('#industry-search-input').focus(), 350);
     }));
     $('#edit-applied-template').addEventListener('click', editAppliedTemplate);
+    $('#open-contact-card-button').addEventListener('click', openContactCard);
+    $$('[data-close-contact-card]').forEach((button) => button.addEventListener('click', () => closeModal($('#contact-card-modal'))));
+    $('#contact-card-form').addEventListener('submit', saveContactCard);
+    $('#contact-card-form').addEventListener('input', () => { readContactForm(); renderContactPreview(); });
+    $('#contact-card-form').addEventListener('change', () => { readContactForm(); renderContactPreview(); });
+    $$('[data-contact-theme]').forEach((button) => button.addEventListener('click', () => {
+      contactDraft.theme = button.dataset.contactTheme;
+      $$('[data-contact-theme]').forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+      renderContactPreview();
+    }));
+    $('#contact-import-button').addEventListener('click', importContactDemo);
+    $('#download-vcard-button').addEventListener('click', downloadVCard);
     document.addEventListener('pointermove', updatePointerDrag, { passive: false });
     document.addEventListener('pointerup', () => finishPointerDrag(true));
     document.addEventListener('pointercancel', () => finishPointerDrag(false));
@@ -639,5 +840,6 @@
   renderIndustries();
   renderPreview();
   renderAppliedTemplate();
+  renderContactStatus();
   refreshIcons();
 }());

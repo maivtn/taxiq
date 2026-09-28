@@ -155,6 +155,12 @@
                 <div><strong>Your existing business information is protected</strong><span>Name, logo, contact details, and permanent QR URL will not change.</span></div>
               </div>
 
+              <button class="contact-card-entry" type="button" id="open-contact-card-button">
+                <span><i data-lucide="contact-round" aria-hidden="true"></i></span>
+                <div><small>Business profile</small><strong>Contact card · Danh thiếp</strong><em id="contact-card-status">Needs setup</em></div>
+                <i data-lucide="chevron-right" aria-hidden="true"></i>
+              </button>
+
               <div class="starter-menu-heading">
                 <div><strong>Recommended customer menu</strong><span id="starter-action-count"></span></div>
                 <span class="starter-tag">Editable</span>
@@ -213,6 +219,88 @@
       <div class="modal-actions">
         <button class="secondary-action" type="button" data-close-template-modal>Back</button>
         <button class="primary-action" type="button" id="apply-template-button">Apply template<i data-lucide="sparkles" aria-hidden="true"></i></button>
+      </div>
+    </section>
+  </div>
+
+  <div class="template-modal" id="contact-card-modal" hidden aria-hidden="true">
+    <button class="template-modal-backdrop" type="button" data-close-contact-card aria-label="Close contact card"></button>
+    <section class="template-modal-dialog is-contact-card" role="dialog" aria-modal="true" aria-labelledby="contact-card-title">
+      <div class="modal-head">
+        <div><span class="section-step">Business profile</span><h2 id="contact-card-title">Contact card · Danh thiếp</h2></div>
+        <button class="icon-button" type="button" data-close-contact-card aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button>
+      </div>
+      <p class="modal-lead">Enter it once. OneQR uses this information wherever customers save or contact your business.</p>
+
+      <div class="contact-card-layout">
+        <form class="contact-card-form" id="contact-card-form">
+          <div class="contact-import">
+            <i data-lucide="map-pinned" aria-hidden="true"></i>
+            <input id="contact-google-url" type="text" inputmode="url" placeholder="Paste Google Business Profile URL" aria-label="Google Business Profile URL">
+            <button type="button" id="contact-import-button">Import</button>
+          </div>
+
+          <div class="contact-field-grid">
+            <label class="contact-field"><span>Display name</span><input id="contact-name" type="text" maxlength="100" required></label>
+            <label class="contact-field"><span>Title or short introduction</span><input id="contact-title" type="text" maxlength="100"></label>
+            <label class="contact-field"><span>Phone</span><input id="contact-phone" type="tel" inputmode="tel"></label>
+            <label class="contact-field"><span>Email</span><input id="contact-email" type="email" inputmode="email"></label>
+            <label class="contact-field is-wide"><span>Website or social profile</span><input id="contact-website" type="url" inputmode="url"></label>
+            <label class="contact-field is-wide"><span>Street address</span><input id="contact-address" type="text"></label>
+            <label class="contact-field"><span>City</span><input id="contact-city" type="text"></label>
+            <label class="contact-field"><span>State</span><input id="contact-state" type="text" maxlength="30"></label>
+            <label class="contact-field is-wide"><span>Short bio</span><textarea id="contact-bio" rows="2" maxlength="220"></textarea></label>
+          </div>
+
+          <fieldset class="contact-choice-group">
+            <legend>Address visibility</legend>
+            <label><input type="radio" name="contact-address-mode" value="full" checked><span>Full address</span></label>
+            <label><input type="radio" name="contact-address-mode" value="area"><span>Service area only</span></label>
+            <label><input type="radio" name="contact-address-mode" value="hidden"><span>Hidden</span></label>
+          </fieldset>
+
+          <div class="contact-switches">
+            <label><input id="contact-show-phone" type="checkbox" checked><span><strong>Show phone actions</strong><small>Customers can call or text.</small></span></label>
+            <label><input id="contact-show-hours" type="checkbox" checked><span><strong>Show business hours</strong><small>Display open and close times.</small></span></label>
+            <label><input id="contact-add-action" type="checkbox" checked><span><strong>Add “Save contact”</strong><small>Add it to the current customer menu.</small></span></label>
+          </div>
+
+          <div class="contact-hours" id="contact-hours-row">
+            <label class="contact-field"><span>Opens</span><input id="contact-open-time" type="time"></label>
+            <label class="contact-field"><span>Closes</span><input id="contact-close-time" type="time"></label>
+          </div>
+
+          <fieldset class="contact-theme-picker">
+            <legend>Card style</legend>
+            <button type="button" data-contact-theme="indigo" aria-label="Indigo theme"><span></span>Indigo</button>
+            <button type="button" data-contact-theme="emerald" aria-label="Emerald theme"><span></span>Emerald</button>
+            <button type="button" data-contact-theme="charcoal" aria-label="Charcoal theme"><span></span>Charcoal</button>
+          </fieldset>
+        </form>
+
+        <aside class="contact-card-preview-wrap" aria-label="Contact card preview">
+          <span class="contact-preview-label">Customer preview</span>
+          <div class="contact-card-preview" id="contact-card-preview" data-theme="indigo">
+            <div class="contact-card-brand"><span id="contact-preview-avatar">B</span><small>ONEQR CONTACT</small></div>
+            <h3 id="contact-preview-name">Bitcoin Nail Bar</h3>
+            <p id="contact-preview-title">Nail salon · Houston</p>
+            <p class="contact-preview-bio" id="contact-preview-bio">Beauty, care, and a better booking experience.</p>
+            <div class="contact-preview-details">
+              <span id="contact-preview-phone-row"><i data-lucide="phone"></i><b id="contact-preview-phone">(346) 802-4906</b></span>
+              <span id="contact-preview-email-row"><i data-lucide="mail"></i><b id="contact-preview-email">hello@example.com</b></span>
+              <span id="contact-preview-address-row"><i data-lucide="map-pin"></i><b id="contact-preview-address">Houston, TX</b></span>
+              <span id="contact-preview-hours-row"><i data-lucide="clock-3"></i><b id="contact-preview-hours">9:30 AM–7:00 PM</b></span>
+            </div>
+            <div class="contact-preview-actions"><button type="button"><i data-lucide="phone"></i>Call</button><button type="button"><i data-lucide="navigation"></i>Directions</button></div>
+          </div>
+          <button class="download-vcard-button" type="button" id="download-vcard-button"><i data-lucide="download" aria-hidden="true"></i>Download vCard preview</button>
+          <p>The downloaded `.vcf` can be saved directly to a customer’s contacts.</p>
+        </aside>
+      </div>
+
+      <div class="modal-actions">
+        <button class="secondary-action" type="button" data-close-contact-card>Cancel</button>
+        <button class="primary-action" type="submit" form="contact-card-form" id="save-contact-card-button">Save contact card<i data-lucide="save" aria-hidden="true"></i></button>
       </div>
     </section>
   </div>
