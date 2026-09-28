@@ -429,6 +429,22 @@
     </section>
   </div>
 
+  <div class="template-modal" id="action-icon-modal" hidden aria-hidden="true">
+    <button class="template-modal-backdrop" type="button" data-close-icon-modal aria-label="Close icon picker"></button>
+    <section class="template-modal-dialog is-icon-picker" role="dialog" aria-modal="true" aria-labelledby="icon-picker-title">
+      <div class="modal-head">
+        <div><span class="section-step">Action appearance</span><h2 id="icon-picker-title">Choose an icon</h2></div>
+        <button class="icon-button" type="button" data-close-icon-modal aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button>
+      </div>
+      <p class="modal-lead">Choose an icon for <strong id="icon-picker-action-name">this action</strong>.</p>
+      <div class="action-icon-grid" id="action-icon-grid"></div>
+      <div class="action-icon-upload-row">
+        <button class="secondary-action" type="button" id="reset-action-icon"><i data-lucide="rotate-ccw" aria-hidden="true"></i>Use default</button>
+      </div>
+      <input id="action-icon-upload" type="file" accept=".png,.jpg,.jpeg,.webp,.gif,image/png,image/jpeg,image/webp,image/gif" hidden>
+    </section>
+  </div>
+
   <div class="template-modal" id="template-success-modal" hidden aria-hidden="true">
     <button class="template-modal-backdrop" type="button" data-close-success-modal aria-label="Close confirmation"></button>
     <section class="template-modal-dialog is-success" role="dialog" aria-modal="true" aria-labelledby="success-modal-title">

@@ -94,6 +94,11 @@
     'linear-gradient(135deg, #A855F7, #4338CA)',
     'linear-gradient(135deg, #2DD4BF, #155E75)'
   ];
+  const ACTION_ICON_CHOICES = [
+    'link-2', 'calendar-check', 'star', 'heart', 'phone', 'message-circle',
+    'map-pin', 'shopping-bag', 'image', 'briefcase', 'sparkles', 'gift',
+    'dollar-sign', 'utensils', 'ticket', 'globe-2', 'user', 'music', 'camera', 'home'
+  ];
 
   const industries = GROUPS.flatMap((group) => group.items.split('|').map((raw) => {
     const [id, en, vi] = raw.split('~');
@@ -134,6 +139,8 @@
     customActionIds: new Set(),
     actionTitles: {},
     actionLinks: {},
+    actionIcons: {},
+    editingIconId: null,
     reviewSnapshot: null,
     applied: null
   };
@@ -171,6 +178,21 @@
 
   function displayActionTitle(id) {
     return actionTitleValue(id).trim() || actionLabel(MODULES[id]);
+  }
+
+  function actionIconValue(id) {
+    return typeof state.actionIcons[id] === 'string' && state.actionIcons[id] ? state.actionIcons[id] : MODULES[id].icon;
+  }
+
+  function isUploadedIcon(value) {
+    return /^data:image\/(?:png|jpeg|webp|gif);base64,/i.test(value);
+  }
+
+  function actionIconMarkup(id) {
+    const icon = actionIconValue(id);
+    return isUploadedIcon(icon)
+      ? `<img src="${escapeAttribute(icon)}" alt="">`
+      : `<i data-lucide="${escapeAttribute(icon)}" aria-hidden="true"></i>`;
   }
 
   function isCustomLinkId(id) {
@@ -331,7 +353,7 @@
       const action = MODULES[id];
       const custom = state.customActionIds.has(id);
       const source = custom ? (state.language === 'vi' ? 'Bạn đã thêm' : 'Added by you') : (state.language === 'vi' ? 'Đề xuất' : 'Recommended');
-      return `<div class="starter-action"><span><i data-lucide="${action.icon}"></i></span><strong>${escapeAttribute(displayActionTitle(id))}</strong><small class="${custom ? 'is-custom' : ''}">${source}</small></div>`;
+      return `<div class="starter-action"><span>${actionIconMarkup(id)}</span><strong>${escapeAttribute(displayActionTitle(id))}</strong><small class="${custom ? 'is-custom' : ''}">${source}</small></div>`;
     }).join('');
     $('#review-template-button-label').textContent = state.applied && state.applied.industryId === industry.id
       ? (state.language === 'vi' ? 'Chỉnh sửa mẫu đang dùng' : 'Edit applied template')
@@ -359,8 +381,13 @@
       const dragLabel = state.language === 'vi' ? `Kéo để sắp xếp ${action.vi}` : `Drag to reorder ${action.en}`;
       const linkLabel = state.language === 'vi' ? `Đường dẫn cho ${displayActionTitle(id)}` : `Link for ${displayActionTitle(id)}`;
       const titleLabel = state.language === 'vi' ? `Tên hiển thị cho ${action.vi}` : `Display title for ${action.en}`;
-      return `<article class="template-editor-action" data-editor-action="${id}"><button class="editor-drag-handle" type="button" draggable="true" data-editor-drag-handle="${id}" aria-label="${dragLabel}" title="${dragLabel}"><i data-lucide="grip-vertical"></i></button><span class="template-editor-action-icon"><i data-lucide="${action.icon}"></i></span><div class="template-editor-action-copy"><input class="editor-action-title" type="text" data-editor-action-title="${id}" value="${escapeAttribute(actionTitleValue(id))}" aria-label="${titleLabel}"><label class="editor-action-link"><i data-lucide="link-2" aria-hidden="true"></i><input type="text" inputmode="url" data-editor-action-link="${id}" value="${escapeAttribute(actionLink(id))}" aria-label="${escapeAttribute(linkLabel)}" spellcheck="false"></label></div><span class="editor-action-controls"><button type="button" data-editor-action-move="up" aria-label="Move ${action.en} up" ${index === 0 ? 'disabled' : ''}><i data-lucide="chevron-up"></i></button><button type="button" data-editor-action-move="down" aria-label="Move ${action.en} down" ${index === state.reviewIds.length - 1 ? 'disabled' : ''}><i data-lucide="chevron-down"></i></button><button class="editor-action-remove" type="button" data-editor-action-remove aria-label="Remove ${action.en}"><i data-lucide="x"></i></button></span><label class="toggle"><input type="checkbox" data-editor-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${escapeAttribute(displayActionTitle(id))}"><span></span></label></article>`;
+      return `<article class="template-editor-action" data-editor-action="${id}"><button class="editor-drag-handle" type="button" draggable="true" data-editor-drag-handle="${id}" aria-label="${dragLabel}" title="${dragLabel}"><i data-lucide="grip-vertical"></i></button><div class="editor-action-icon-tools"><span class="template-editor-action-icon">${actionIconMarkup(id)}</span><span><button type="button" data-choose-action-icon="${id}" aria-label="Choose icon for ${escapeAttribute(displayActionTitle(id))}" title="Choose icon"><i data-lucide="palette"></i></button><button type="button" data-upload-action-icon="${id}" aria-label="Upload icon for ${escapeAttribute(displayActionTitle(id))}" title="Upload icon"><i data-lucide="upload"></i></button></span></div><div class="template-editor-action-copy"><input class="editor-action-title" type="text" data-editor-action-title="${id}" value="${escapeAttribute(actionTitleValue(id))}" aria-label="${titleLabel}"><label class="editor-action-link"><i data-lucide="link-2" aria-hidden="true"></i><input type="text" inputmode="url" data-editor-action-link="${id}" value="${escapeAttribute(actionLink(id))}" aria-label="${escapeAttribute(linkLabel)}" spellcheck="false"></label></div><span class="editor-action-controls"><button type="button" data-editor-action-move="up" aria-label="Move ${action.en} up" ${index === 0 ? 'disabled' : ''}><i data-lucide="chevron-up"></i></button><button type="button" data-editor-action-move="down" aria-label="Move ${action.en} down" ${index === state.reviewIds.length - 1 ? 'disabled' : ''}><i data-lucide="chevron-down"></i></button><button class="editor-action-remove" type="button" data-editor-action-remove aria-label="Remove ${action.en}"><i data-lucide="x"></i></button></span><label class="toggle"><input type="checkbox" data-editor-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${escapeAttribute(displayActionTitle(id))}"><span></span></label></article>`;
     }).join('');
+    container.querySelectorAll('[data-choose-action-icon]').forEach((button) => button.addEventListener('click', () => openActionIconPicker(button.dataset.chooseActionIcon)));
+    container.querySelectorAll('[data-upload-action-icon]').forEach((button) => button.addEventListener('click', () => {
+      state.editingIconId = button.dataset.uploadActionIcon;
+      $('#action-icon-upload').click();
+    }));
     container.querySelectorAll('[data-editor-action-title]').forEach((input) => input.addEventListener('input', () => {
       state.actionTitles[input.dataset.editorActionTitle] = input.value;
       renderCustomerLivePreview();
@@ -430,6 +457,7 @@
         customActionIds: [...state.customActionIds],
         actionTitles: state.actionTitles,
         actionLinks: state.actionLinks,
+        actionIcons: state.actionIcons,
         language: state.language
       }));
     } catch (error) {
@@ -496,7 +524,7 @@
       const dragLabel = state.language === 'vi' ? `Kéo để sắp xếp ${action.vi}` : `Drag to reorder ${action.en}`;
       const custom = state.customActionIds.has(id);
       const source = custom ? (state.language === 'vi' ? 'Bạn thêm' : 'Your action') : (state.language === 'vi' ? 'Đề xuất' : 'Recommended');
-      return `<div class="review-action" data-review-action="${id}"><button class="drag-handle" type="button" draggable="true" data-drag-handle="${id}" aria-label="${dragLabel}" title="${dragLabel}"><i data-lucide="grip-vertical"></i></button><span class="review-action-icon"><i data-lucide="${action.icon}"></i></span><div><strong>${actionLabel(action)} <em class="review-action-source ${custom ? 'is-custom' : ''}">${source}</em></strong><small>${actionDescription(action)}</small></div><span class="review-action-controls"><button type="button" data-action-move="up" aria-label="Move ${action.en} up" ${index === 0 ? 'disabled' : ''}><i data-lucide="chevron-up"></i></button><button type="button" data-action-move="down" aria-label="Move ${action.en} down" ${index === ids.length - 1 ? 'disabled' : ''}><i data-lucide="chevron-down"></i></button><button class="review-action-remove" type="button" data-action-remove aria-label="Remove ${action.en}"><i data-lucide="x"></i></button></span><label class="toggle"><input type="checkbox" data-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${actionLabel(action)}"><span></span></label></div>`;
+      return `<div class="review-action" data-review-action="${id}"><button class="drag-handle" type="button" draggable="true" data-drag-handle="${id}" aria-label="${dragLabel}" title="${dragLabel}"><i data-lucide="grip-vertical"></i></button><span class="review-action-icon">${actionIconMarkup(id)}</span><div><strong>${escapeAttribute(displayActionTitle(id))} <em class="review-action-source ${custom ? 'is-custom' : ''}">${source}</em></strong><small>${actionDescription(action)}</small></div><span class="review-action-controls"><button type="button" data-action-move="up" aria-label="Move ${action.en} up" ${index === 0 ? 'disabled' : ''}><i data-lucide="chevron-up"></i></button><button type="button" data-action-move="down" aria-label="Move ${action.en} down" ${index === ids.length - 1 ? 'disabled' : ''}><i data-lucide="chevron-down"></i></button><button class="review-action-remove" type="button" data-action-remove aria-label="Remove ${action.en}"><i data-lucide="x"></i></button></span><label class="toggle"><input type="checkbox" data-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${escapeAttribute(displayActionTitle(id))}"><span></span></label></div>`;
     }).join('');
     $('#review-actions').querySelectorAll('[data-action-toggle]').forEach((input) => input.addEventListener('change', () => {
       if (input.checked) state.enabled.add(input.dataset.actionToggle);
@@ -541,6 +569,7 @@
     if (isCustomLinkId(id)) {
       delete state.actionTitles[id];
       delete state.actionLinks[id];
+      delete state.actionIcons[id];
       delete MODULES[id];
     }
     renderReviewActions();
@@ -835,7 +864,7 @@
       const action = MODULES[id];
       const tag = id === 'contactcard' ? 'button' : 'div';
       const attribute = id === 'contactcard' ? ' type="button" data-phone-contact-card' : '';
-      return `<${tag} class="phone-action"${attribute}><span><i data-lucide="${action.icon}"></i></span><strong>${escapeAttribute(displayActionTitle(id))}</strong><i data-lucide="chevron-right"></i></${tag}>`;
+      return `<${tag} class="phone-action"${attribute}><span>${actionIconMarkup(id)}</span><strong>${escapeAttribute(displayActionTitle(id))}</strong><i data-lucide="chevron-right"></i></${tag}>`;
     }).join('') : `<div class="no-results"><p>${state.language === 'vi' ? 'Bật ít nhất một hành động cho khách.' : 'Turn on at least one customer action.'}</p></div>`;
   }
 
@@ -959,7 +988,8 @@
       customActionIds: [...state.customActionIds].filter((id) => state.reviewIds.includes(id)),
       actionTitles: Object.fromEntries(currentReviewIds().map((id) => [id, actionTitleValue(id)])),
       actionLinks: Object.fromEntries(currentReviewIds().map((id) => [id, actionLink(id)])),
-      actions: activeIds.map((id) => ({ id, label: displayActionTitle(id), icon: MODULES[id].icon, url: actionLink(id) })),
+      actionIcons: Object.fromEntries(currentReviewIds().filter((id) => state.actionIcons[id]).map((id) => [id, state.actionIcons[id]])),
+      actions: activeIds.map((id) => ({ id, label: displayActionTitle(id), icon: actionIconValue(id), url: actionLink(id) })),
       appliedAt: new Date().toISOString()
     };
     state.applied = payload;
@@ -998,6 +1028,57 @@
       ? `${count} hành động đang bật${customCount ? ` · ${customCount} action tự thêm` : ''}`
       : `${count} active customer ${count === 1 ? 'action' : 'actions'}${customCount ? ` · ${customCount} added by you` : ''}`;
     refreshIcons();
+  }
+
+  function setActionIcon(id, icon) {
+    if (!MODULES[id]) return;
+    if (icon) state.actionIcons[id] = icon;
+    else delete state.actionIcons[id];
+    renderPreview();
+  }
+
+  function renderActionIconPicker() {
+    const id = state.editingIconId;
+    if (!id || !MODULES[id]) return;
+    $('#icon-picker-action-name').textContent = displayActionTitle(id);
+    const selected = actionIconValue(id);
+    $('#action-icon-grid').innerHTML = ACTION_ICON_CHOICES.map((icon) => `<button type="button" data-action-icon-choice="${icon}" class="${selected === icon ? 'is-selected' : ''}" aria-label="Use ${icon} icon" aria-pressed="${selected === icon}"><i data-lucide="${icon}" aria-hidden="true"></i></button>`).join('');
+    $('#reset-action-icon').disabled = !state.actionIcons[id];
+    $('#action-icon-grid').querySelectorAll('[data-action-icon-choice]').forEach((button) => button.addEventListener('click', () => {
+      setActionIcon(id, button.dataset.actionIconChoice);
+      closeModal($('#action-icon-modal'));
+    }));
+    refreshIcons();
+  }
+
+  function openActionIconPicker(id) {
+    if (!MODULES[id]) return;
+    state.editingIconId = id;
+    renderActionIconPicker();
+    openModal($('#action-icon-modal'));
+  }
+
+  function uploadActionIcon(event) {
+    const file = event.target.files?.[0];
+    const id = state.editingIconId;
+    event.target.value = '';
+    if (!file || !id || !MODULES[id]) return;
+    if (!['image/png', 'image/jpeg', 'image/webp', 'image/gif'].includes(file.type)) {
+      showToast(state.language === 'vi' ? 'Chỉ hỗ trợ PNG, JPG, WebP hoặc GIF.' : 'Use a PNG, JPG, WebP, or GIF image.');
+      return;
+    }
+    if (file.size > 1024 * 1024) {
+      showToast(state.language === 'vi' ? 'Icon phải nhỏ hơn 1 MB.' : 'Icon must be smaller than 1 MB.');
+      return;
+    }
+    const reader = new FileReader();
+    reader.addEventListener('load', () => {
+      if (typeof reader.result !== 'string' || !isUploadedIcon(reader.result)) return;
+      setActionIcon(id, reader.result);
+      closeModal($('#action-icon-modal'));
+      showToast(state.language === 'vi' ? 'Đã tải icon lên.' : 'Icon uploaded.');
+    });
+    reader.readAsDataURL(file);
   }
 
   const modalOpeners = new WeakMap();
@@ -1085,6 +1166,7 @@
     $('#apply-template-button').addEventListener('click', applyTemplate);
     $$('[data-close-template-modal]').forEach((button) => button.addEventListener('click', closeReview));
     $$('[data-close-action-modal]').forEach((button) => button.addEventListener('click', () => closeModal($('#template-action-modal'))));
+    $$('[data-close-icon-modal]').forEach((button) => button.addEventListener('click', () => closeModal($('#action-icon-modal'))));
     $$('[data-close-success-modal]').forEach((button) => button.addEventListener('click', () => closeModal($('#template-success-modal'))));
     $$('[data-show-business-rule]').forEach((button) => button.addEventListener('click', () => openModal($('#template-help-modal'))));
     $$('[data-close-help-modal]').forEach((button) => button.addEventListener('click', () => closeModal($('#template-help-modal'))));
@@ -1095,6 +1177,13 @@
     $('#editor-add-action').addEventListener('click', openActionLibrary);
     $('#editor-reset-actions').addEventListener('click', resetReviewActions);
     $('#editor-review-template').addEventListener('click', applyTemplate);
+    $('#action-icon-upload').addEventListener('change', uploadActionIcon);
+    $('#reset-action-icon').addEventListener('click', () => {
+      const id = state.editingIconId;
+      if (!id) return;
+      setActionIcon(id, null);
+      closeModal($('#action-icon-modal'));
+    });
     $('#editor-add-link').addEventListener('click', addPastedLink);
     $('#editor-link-input').addEventListener('keydown', (event) => {
       if (event.key === 'Enter') {
@@ -1200,6 +1289,7 @@
     state.customActionIds = new Set((draftState.customActionIds || []).filter((id) => MODULES[id]));
     state.actionTitles = draftState.actionTitles && typeof draftState.actionTitles === 'object' ? { ...draftState.actionTitles } : {};
     state.actionLinks = draftState.actionLinks && typeof draftState.actionLinks === 'object' ? { ...draftState.actionLinks } : {};
+    state.actionIcons = draftState.actionIcons && typeof draftState.actionIcons === 'object' ? { ...draftState.actionIcons } : {};
     state.language = draftState.language === 'vi' ? 'vi' : 'en';
   } else if (state.applied) {
     const appliedIndustry = industryById(state.applied.industryId);
@@ -1209,6 +1299,7 @@
     state.customActionIds = new Set(savedCustomActionIds(state.applied));
     state.actionTitles = state.applied.actionTitles && typeof state.applied.actionTitles === 'object' ? { ...state.applied.actionTitles } : {};
     state.actionLinks = state.applied.actionLinks && typeof state.applied.actionLinks === 'object' ? { ...state.applied.actionLinks } : {};
+    state.actionIcons = state.applied.actionIcons && typeof state.applied.actionIcons === 'object' ? { ...state.applied.actionIcons } : {};
   } else {
     const defaultIndustry = industryById('nails');
     state.selected = defaultIndustry.id;
