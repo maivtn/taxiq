@@ -3,11 +3,15 @@ import {readFileSync} from 'node:fs';
 import test from 'node:test';
 import {JSDOM,VirtualConsole} from 'jsdom';
 const SOURCE_DIR=new URL('../../../html/pages/',import.meta.url);
-function boot(query=''){
+function boot(query='',setup){
  const errors=[],vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
- const dom=new JSDOM(readFileSync(new URL('./pos-calendar.html',SOURCE_DIR),'utf8'),{url:'https://staff.test/html/pages/pos-calendar.html'+query,runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
+ const html=readFileSync(new URL('./pos-calendar.html',SOURCE_DIR),'utf8');
+ const dom=new JSDOM(html,{url:'https://staff.test/html/pages/pos-calendar.html'+query,runScripts:'outside-only',pretendToBeVisual:true,virtualConsole:vc});
  const w=dom.window;
- for(const file of ['salon-data.js','appointments-store.js','staff-schedule-store.js','staff-calendar.js'])w.eval(readFileSync(new URL('../assets/'+file,SOURCE_DIR),'utf8'));
+ const dependencies=['salon-data.js','appointment-tickets.js','appointments-store.js','staff-schedule-store.js'];
+ for(const file of dependencies.filter(file=>html.includes(`../assets/${file}`)))w.eval(readFileSync(new URL('../assets/'+file,SOURCE_DIR),'utf8'));
+ setup?.(w);
+ w.eval(readFileSync(new URL('../assets/staff-calendar.js',SOURCE_DIR),'utf8'));
  return {dom,w,d:w.document,errors};
 }
 test('My Calendar keeps personal IA with salon, tabs and booking sync',()=>{
@@ -21,6 +25,19 @@ test('My Calendar keeps personal IA with salon, tabs and booking sync',()=>{
 test('timeline shows work boundaries, breaks and open slots',()=>{
  const {dom,d}=boot('?staff=t1&date=2026-09-28');const text=d.querySelector('[data-calendar-timeline]').textContent;
  assert.match(text,/Work starts/);assert.match(text,/Break/);assert.match(text,/Open slot/);assert.match(text,/Work ends/);dom.window.close();
+});
+test('empty personal calendar shows one clearly labelled demo booking',()=>{
+ const {dom,d}=boot('?staff=t1&date=2026-09-28');const demo=d.querySelector('[data-demo-booking]');
+ assert.ok(demo);assert.match(demo.textContent,/Mary Smith/);assert.match(demo.textContent,/Demo booking/);
+ assert.equal(d.querySelector('[data-calendar-duration]').textContent,'1 appointment');dom.window.close();
+});
+test('real personal appointment replaces the demo booking',()=>{
+ const {dom,d}=boot('?staff=t1&date=2026-09-28',w=>{
+  const result=w.NEXORA_APPOINTMENTS_STORE.create({id:'real-calendar-booking',customerName:'Jessica Nguyen',phone:'8325550188',serviceNames:['Gel Manicure'],technicianId:'t1',date:'2026-09-28',time:'10:30',status:'confirmed',tickets:[{id:'ticket-real-calendar-booking',serviceId:'gel',serviceName:'Gel Manicure',technicianId:'t1',technicianName:'Tina',durationMin:60}]});
+  assert.equal(result.ok,true);
+ });
+ assert.equal(d.querySelector('[data-demo-booking]'),null);assert.match(d.querySelector('[data-calendar-timeline]').textContent,/Jessica Nguyen/);
+ assert.ok(d.querySelector('[data-calendar-appointment]'));dom.window.close();
 });
 test('invalid staff falls back to personal scope and preserves salon in back link',()=>{
  const {dom,w,d}=boot('?salon=missing&staff=missing&date=2030-02-14');
