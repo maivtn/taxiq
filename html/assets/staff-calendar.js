@@ -108,13 +108,14 @@
   function workSchedulePanel() {
     var schedule = store.getStaffSchedule(salonId, staffId, {});
     var availability = store.availabilityForDay({staffSchedule:schedule, technicianId:staffId, date:selectedDate, appointments:appointmentRows()});
-    if (!availability.working) return '<div class="calendar-view">' + personalScheduleCard() + '<div class="calendar-empty"><strong>Day off</strong><p>You are not scheduled to work on this date.</p></div></div>';
+    var weeklyLink = '<div class="calendar-weekly-toolbar"><button type="button" data-view-weekly-schedule aria-haspopup="dialog"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.75" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M16 3v4M8 3v4M3 11h18"/></svg>View weekly schedule</button></div>';
+    if (!availability.working) return '<div class="calendar-view">' + weeklyLink + '<div class="calendar-empty"><strong>Day off</strong><p>You are not scheduled to work on this date.</p></div></div>';
     var items = [{at:availability.start, title:'Work starts', meta:'My scheduled hours', kind:'boundary'}];
     availability.breaks.forEach(function (item) { items.push({at:item.start, title:'Break', meta:item.start + '–' + item.end + ' · Not bookable', kind:'break'}); });
     availability.openSlots.slice(0, 8).forEach(function (item) { items.push({at:item.time, title:'Open slot', meta:'Customer can book eligible services', kind:'open'}); });
     items.push({at:availability.end, title:'Work ends', meta:'Hidden from Booking after this time', kind:'boundary'});
     items.sort(function (left, right) { return left.at.localeCompare(right.at); });
-    return '<div class="calendar-view">' + personalScheduleCard() + '<div class="timeline">' + items.map(function (item) {
+    return '<div class="calendar-view">' + weeklyLink + '<div class="timeline">' + items.map(function (item) {
       return '<div class="timeline-item ' + item.kind + '"><span>' + esc(item.at) + '</span><div class="timeline-card"><strong>' + esc(item.title) + '</strong><small>' + esc(item.meta) + '</small></div></div>';
     }).join('') + '</div></div>';
   }
@@ -203,6 +204,19 @@
     dialog.showModal();
   }
 
+  function openWeeklyOverview() {
+    var dialog = document.querySelector('[data-weekly-overview]');
+    if (!dialog) {
+      dialog = document.createElement('dialog');
+      dialog.className = 'calendar-appointment-detail weekly-overview-dialog';
+      dialog.setAttribute('data-weekly-overview', '');
+      dialog.setAttribute('aria-labelledby', 'weekly-overview-title');
+      document.body.appendChild(dialog);
+    }
+    dialog.innerHTML = '<header><h2 id="weekly-overview-title">My schedule</h2><form method="dialog"><button class="calendar-detail-close" aria-label="Close weekly schedule" autofocus>×</button></form></header>' + personalScheduleCard() + '<footer><form method="dialog"><button>Back to calendar</button></form></footer>';
+    dialog.showModal();
+  }
+
   function openWeeklySchedule() {
     if (schedulePermission() === 'none') return;
     var schedule = store.getStaffSchedule(salonId, staffId, {});
@@ -267,6 +281,7 @@
     var tab = event.target.closest('[data-calendar-tab]');
     if (tab) { activeTab = tab.dataset.calendarTab; requestType = ''; feedback = ''; render(); return; }
     if (event.target.closest('[data-calendar-today]')) { selectedDate = dateKey(new Date()); render(); return; }
+    if (event.target.closest('[data-view-weekly-schedule]')) { openWeeklyOverview(); return; }
     if (event.target.closest('[data-request-day-off]')) { openRequest('day-off'); return; }
     if (event.target.closest('[data-request-change-hours]')) { openRequest('change-hours'); return; }
     if (event.target.closest('[data-request-break]')) { openRequest('break'); return; }
