@@ -706,41 +706,23 @@
     const active = currentReviewIds().filter((id) => state.enabled.has(id));
     const businessName = contactCard.name || 'Bitcoin Nail Bar';
     const address = cardAddress(contactCard);
-    const group = groupById(industry.groupId);
-    const isPersonal = industry.groupId === 'personal' || industry.groupId === 'showbiz';
     const hours = contactCard.showHours && contactCard.openTime && contactCard.closeTime
       ? `${displayTime(contactCard.openTime)}–${displayTime(contactCard.closeTime)}`
       : '';
-    $('#customer-live-business-type').textContent = isPersonal
-      ? (state.language === 'vi' ? 'Hồ sơ cá nhân' : 'Personal profile')
-      : (state.language === 'vi' ? 'Doanh nghiệp' : 'Business');
-    $('#customer-live-logo').textContent = industry.icon;
     $('#customer-live-business-name').textContent = businessName;
-    $('#customer-live-business-title').textContent = contactCard.title || label(industry);
-    $('#customer-live-phone').lastChild.textContent = contactCard.phone || (state.language === 'vi' ? 'Chưa có số điện thoại' : 'Phone not added');
-    $('#customer-live-phone').hidden = !contactCard.showPhone || !contactCard.phone;
+    $('#customer-live-featured-name').textContent = businessName;
+    $('#customer-live-help-title').textContent = state.language === 'vi' ? 'Hôm nay chúng tôi có thể giúp gì?' : 'How can we help you today?';
     $('#customer-live-call').hidden = !contactCard.showPhone || !contactCard.phone;
     $('#customer-live-text').hidden = !contactCard.showPhone || !contactCard.phone;
-    $('#customer-live-location').lastChild.textContent = address || label(group);
-    $('#customer-live-location').hidden = !address;
     $('#customer-live-directions').hidden = !address;
-    $('#customer-live-open-state').textContent = hours
-      ? (state.language === 'vi' ? `Đang mở · đóng ${displayTime(contactCard.closeTime)}` : `Open · closes ${displayTime(contactCard.closeTime)}`)
-      : (state.language === 'vi' ? 'Xem thông tin doanh nghiệp' : 'View business details');
     $('#customer-live-template').textContent = label(industry);
     $('#customer-live-count').textContent = state.language === 'vi'
       ? `${active.length} hành động đang bật`
       : `${active.length} active ${active.length === 1 ? 'action' : 'actions'}`;
-    $('#customer-live-about').textContent = contactCard.bio || (state.language === 'vi'
-      ? `Đây là trang chính thức của ${businessName}. Mỗi nút phía trên mở đúng một tác vụ. Không cần tải ứng dụng.`
-      : `This is the official page for ${businessName}. Each button above opens one useful action. No app needed.`);
-    $('#customer-live-hours').lastChild.textContent = `${state.language === 'vi' ? 'Giờ mở cửa' : 'Hours'}: ${hours}`;
-    $('#customer-live-hours').hidden = !hours;
-    $('#customer-live-about-address').lastChild.textContent = address;
-    $('#customer-live-about-address').hidden = !address;
-    $('#customer-live-about-phone').lastChild.textContent = contactCard.phone;
-    $('#customer-live-about-phone').hidden = !contactCard.showPhone || !contactCard.phone;
-    $('#customer-live-url').textContent = `oneqr.com/o/${industry.id}`;
+    $('#customer-live-info-address').lastChild.textContent = address;
+    $('#customer-live-info-address').hidden = !address;
+    $('#customer-live-info-hours').lastChild.textContent = `${state.language === 'vi' ? 'Mở cửa hằng ngày' : 'Open daily'} · ${hours}`;
+    $('#customer-live-info-hours').hidden = !hours;
     renderActionContainer($('#customer-live-actions'), active);
     refreshIcons();
   }
