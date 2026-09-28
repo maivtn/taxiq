@@ -102,7 +102,8 @@
 
   const STORAGE_KEY = 'taxiq:oneqr-industry-template';
   const CONTACT_STORAGE_KEY = 'taxiq:oneqr-contact-card';
-  const INDUSTRY_PICKER_HASH = '#choose-industry';
+  const INDUSTRY_SELECTION_KEY = 'taxiq:oneqr-industry-selection';
+  const INDUSTRY_DRAFT_KEY = 'taxiq:oneqr-industry-draft';
   const EDITOR_DOCUMENT_TITLE = document.title;
   const DEFAULT_CONTACT_CARD = {
     name: 'Bitcoin Nail Bar',
@@ -238,7 +239,25 @@
   }
 
   function selectIndustry(id) {
+    applyIndustrySelection(id);
+    if (document.body.dataset.oneqrScreen === 'industry-picker') {
+      try {
+        window.localStorage.setItem(INDUSTRY_SELECTION_KEY, id);
+      } catch (error) {
+        // Navigation still works when storage is unavailable.
+      }
+      window.location.href = 'oneqr-industry-templates.html';
+      return;
+    }
+    renderIndustries();
+    renderPreview();
+    setProgress(1);
+    returnToTemplateEditor();
+  }
+
+  function applyIndustrySelection(id) {
     const industry = industryById(id);
+    if (!industry) return;
     const recommendedIds = actionIds(industry);
     const recommendedSet = new Set(recommendedIds);
     const customIds = [...state.customActionIds].filter((actionId) => MODULES[actionId] && !recommendedSet.has(actionId));
@@ -247,10 +266,6 @@
     state.reviewIds = [...recommendedIds, ...customIds];
     state.customActionIds = new Set(customIds);
     state.enabled = new Set([...recommendedIds, ...enabledCustomIds]);
-    renderIndustries();
-    renderPreview();
-    setProgress(1);
-    returnToTemplateEditor();
   }
 
   function renderPreview() {
@@ -354,20 +369,22 @@
   }
 
   function openIndustryPickerPage() {
-    if (window.location.hash !== INDUSTRY_PICKER_HASH) {
-      window.history.pushState({ ...window.history.state, oneqrView: 'industry-picker' }, '', `${window.location.pathname}${window.location.search}${INDUSTRY_PICKER_HASH}`);
+    try {
+      window.sessionStorage.setItem(INDUSTRY_DRAFT_KEY, JSON.stringify({
+        selected: state.selected,
+        reviewIds: state.reviewIds,
+        enabledIds: [...state.enabled],
+        customActionIds: [...state.customActionIds],
+        language: state.language
+      }));
+    } catch (error) {
+      // The separate picker page can still open without draft persistence.
     }
-    showIndustryPicker();
+    window.location.href = 'oneqr-industry-picker.html';
   }
 
   function returnToTemplateEditor() {
     showTemplateEditor();
-    if (window.location.hash !== INDUSTRY_PICKER_HASH) return;
-    if (window.history.state?.oneqrView === 'industry-picker') {
-      window.history.back();
-      return;
-    }
-    window.history.replaceState({ ...window.history.state, oneqrView: 'editor' }, '', `${window.location.pathname}${window.location.search}`);
   }
 
   function addPastedLink() {
@@ -1052,14 +1069,74 @@
         else if (topModal) closeModal(topModal);
       }
     });
-    window.addEventListener('popstate', () => {
-      if (window.location.hash === INDUSTRY_PICKER_HASH) showIndustryPicker();
-      else showTemplateEditor();
+  }
+
+  function initIndustryPickerPage() {
+    state.applied = loadAppliedTemplate();
+    try {
+      const draft = JSON.parse(window.sessionStorage.getItem(INDUSTRY_DRAFT_KEY) || 'null');
+      state.selected = industryById(draft?.selected)?.id || industryById(state.applied?.industryId)?.id || 'nails';
+      state.language = draft?.language === 'vi' ? 'vi' : 'en';
+    } catch (error) {
+      state.selected = industryById(state.applied?.industryId)?.id || 'nails';
+    }
+    $('#industry-search-input').addEventListener('input', (event) => {
+      state.query = event.target.value;
+      renderIndustries();
     });
+    $('#clear-industry-filter').addEventListener('click', () => {
+      state.group = 'all';
+      state.query = '';
+      $('#industry-search-input').value = '';
+      renderGroups();
+      renderIndustries();
+    });
+    $$('[data-language]').forEach((button) => button.addEventListener('click', () => {
+      state.language = button.dataset.language;
+      $$('[data-language]').forEach((item) => {
+        const active = item.dataset.language === state.language;
+        item.classList.toggle('is-active', active);
+        item.setAttribute('aria-pressed', String(active));
+      });
+      renderGroups();
+      renderIndustries();
+    }));
+    $$('[data-language]').forEach((button) => {
+      const active = button.dataset.language === state.language;
+      button.classList.toggle('is-active', active);
+      button.setAttribute('aria-pressed', String(active));
+    });
+    document.addEventListener('keydown', (event) => {
+      if (event.key === '/' && !['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName)) {
+        event.preventDefault();
+        $('#industry-search-input').focus();
+      }
+    });
+    renderGroups();
+    renderIndustries();
+    refreshIcons();
+  }
+
+  if (document.body.dataset.oneqrScreen === 'industry-picker') {
+    initIndustryPickerPage();
+    return;
   }
 
   state.applied = loadAppliedTemplate();
-  if (state.applied) {
+  let draftState = null;
+  try {
+    draftState = JSON.parse(window.sessionStorage.getItem(INDUSTRY_DRAFT_KEY) || 'null');
+    window.sessionStorage.removeItem(INDUSTRY_DRAFT_KEY);
+  } catch (error) {
+    draftState = null;
+  }
+  if (draftState && industryById(draftState.selected)) {
+    state.selected = draftState.selected;
+    state.reviewIds = (draftState.reviewIds || []).filter((id) => MODULES[id]);
+    state.enabled = new Set((draftState.enabledIds || []).filter((id) => MODULES[id]));
+    state.customActionIds = new Set((draftState.customActionIds || []).filter((id) => MODULES[id]));
+    state.language = draftState.language === 'vi' ? 'vi' : 'en';
+  } else if (state.applied) {
     const appliedIndustry = industryById(state.applied.industryId);
     state.selected = appliedIndustry.id;
     state.reviewIds = (state.applied.reviewIds || state.applied.actionIds).filter((id) => MODULES[id]);
@@ -1071,13 +1148,19 @@
     state.reviewIds = actionIds(defaultIndustry);
     state.enabled = new Set(state.reviewIds);
   }
+  try {
+    const pendingIndustryId = window.localStorage.getItem(INDUSTRY_SELECTION_KEY);
+    window.localStorage.removeItem(INDUSTRY_SELECTION_KEY);
+    if (industryById(pendingIndustryId)) applyIndustrySelection(pendingIndustryId);
+  } catch (error) {
+    // Keep the restored editor state when storage is unavailable.
+  }
   bindEvents();
   renderGroups();
   renderIndustries();
   renderPreview();
   renderAppliedTemplate();
   renderContactStatus();
-  if (window.location.hash === INDUSTRY_PICKER_HASH) showIndustryPicker();
-  else showTemplateEditor();
+  showTemplateEditor();
   refreshIcons();
 }());
