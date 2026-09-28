@@ -4,10 +4,12 @@ import {readFileSync} from 'node:fs';
 import {JSDOM,VirtualConsole} from 'jsdom';
 const SOURCE_DIR = new URL('../../../html/pages/', import.meta.url);
 
-function boot(serviceCatalog = null){
+function boot(serviceCatalog = null, search = ''){
  const errors=[];const vc=new VirtualConsole();vc.on('jsdomError',e=>errors.push(e.message));
- const dom=new JSDOM(readFileSync(new URL('./pos-salon-settings.html', SOURCE_DIR),'utf8'),{url:'https://example.test/pages/pos-salon-settings.html',runScripts:'dangerously',virtualConsole:vc,beforeParse(w){
+ const dom=new JSDOM(readFileSync(new URL('./pos-salon-settings.html', SOURCE_DIR),'utf8'),{url:'https://example.test/pages/pos-salon-settings.html'+search,runScripts:'dangerously',virtualConsole:vc,beforeParse(w){
  w.eval(readFileSync(new URL('../assets/salon-data.js', SOURCE_DIR),'utf8'));
+ w.eval(readFileSync(new URL('../assets/appointments-store.js', SOURCE_DIR),'utf8'));
+ w.eval(readFileSync(new URL('../assets/staff-schedule-store.js', SOURCE_DIR),'utf8'));
  const data=w.NEXORA_SALON_DATA.loadCatalog();data.technicians=Array.from({length:12},(_,i)=>({id:'staff-'+i,name:'Staff '+i,phone:'5551234567',active:true}));w.NEXORA_SALON_DATA.saveCatalog(data);
  w.eval(readFileSync(new URL('../assets/service-approval-settings.js', SOURCE_DIR),'utf8'));
  w.NEXORA_APPOINTMENT_SERVICE_CATALOG={load:()=>serviceCatalog ? Promise.resolve(serviceCatalog) : new Promise(()=>{})};
@@ -16,8 +18,21 @@ function boot(serviceCatalog = null){
  dom.window.eval(readFileSync(new URL('../assets/vendor/tom-select/tom-select.complete.min.js', SOURCE_DIR),'utf8'));
  dom.window.eval(readFileSync(new URL('../assets/pos-salon-services.js', SOURCE_DIR),'utf8'));
  dom.window.eval(readFileSync(new URL('../assets/pos-salon-sms-settings.js', SOURCE_DIR),'utf8'));
+ dom.window.eval(readFileSync(new URL('../assets/staff-schedule-settings.js', SOURCE_DIR),'utf8'));
  return {dom,w:dom.window,d:dom.window.document,errors};
 }
+test('Staff Schedule is a real section with team coverage and compliant selectors',()=>{
+ const {dom,w,d,errors}=boot(null,'?section=staff-schedule');
+ assert.equal(d.querySelector('[data-settings-tab="staff-schedule"]')?.classList.contains('active'),true);
+ assert.equal(d.querySelector('[data-settings-panel="staff-schedule"]')?.hidden,false);
+ assert.ok(d.querySelector('[data-schedule-week]'));
+ assert.ok(d.querySelector('[data-schedule-summary="working"]'));
+ assert.ok(d.querySelector('[data-schedule-staff="staff-0"] [data-schedule-day]'));
+ assert.ok(d.querySelector('[data-schedule-sync-status]'));
+ assert.equal(new URL(w.location.href).searchParams.get('section'),'staff-schedule');
+ assert.match(readFileSync(new URL('../assets/pos-salon-settings.css',SOURCE_DIR),'utf8'),/\.schedule-select[^}]*padding-right:\s*44px/);
+ assert.deepEqual(errors,[]);dom.window.close();
+});
 test('Salon Settings opens Staff, searches and paginates with working profile actions',()=>{
  const {dom,w,d,errors}=boot();
  assert.equal(d.querySelector('[data-settings-tab].active')?.dataset.settingsTab,'staff');

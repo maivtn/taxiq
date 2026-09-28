@@ -493,6 +493,7 @@
           <button type="button" data-settings-tab="information"><i data-lucide="building-2" aria-hidden="true"></i> Salon Information</button>
           <button type="button" data-settings-tab="sms"><i data-lucide="message-square" aria-hidden="true"></i> SMS Settings</button>
           <button type="button" data-settings-tab="staff" class="active" aria-current="page"><i data-lucide="users-round" aria-hidden="true"></i> Staff</button>
+          <button type="button" data-settings-tab="staff-schedule"><i data-lucide="calendar-range" aria-hidden="true"></i> Staff Schedule</button>
           <button type="button" data-settings-tab="services"><i data-lucide="list" aria-hidden="true"></i> Services</button>
           <button type="button" data-settings-tab="roles"><i data-lucide="shield-check" aria-hidden="true"></i> Roles &amp; Permissions</button>
           <a href="pos-operating-standards.html"><i data-lucide="clipboard-check" aria-hidden="true"></i> Operating Standards</a>
@@ -508,6 +509,7 @@
         <div class="salon-staff-table" data-staff-grid></div>
         <div id="salon-staff-pagination" class="salon-pagination"></div>
         </section>
+        <section data-settings-panel="staff-schedule" hidden><div data-staff-schedule-settings aria-live="polite"></div></section>
         <section data-settings-panel="information" hidden></section>
         <section data-settings-panel="services" hidden></section>
         <section data-settings-panel="roles" hidden></section>
@@ -724,6 +726,8 @@
   </div>
 
   <script src="../assets/salon-data.js"></script>
+  <script src="../assets/appointments-store.js"></script>
+  <script src="../assets/staff-schedule-store.js"></script>
   <script src="../assets/appointment-service-catalog.js"></script>
   <script src="../assets/service-approval-settings.js"></script>
   <script>
@@ -1388,6 +1392,7 @@
     });
   </script>
   <script src="../assets/pos-salon-settings.js"></script>
+  <script src="../assets/staff-schedule-settings.js"></script>
   <script src="../assets/vendor/tom-select/tom-select.complete.min.js"></script>
   <script src="../assets/pos-salon-services.js?v=20260911-step-reorder"></script>
   <script src="../assets/pos-salon-sms-settings.js?v=20260924-merged-waitlist"></script>

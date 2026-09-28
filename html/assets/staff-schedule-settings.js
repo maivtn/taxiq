@@ -1,0 +1,19 @@
+(function(){
+  'use strict';
+  var host=document.querySelector('[data-staff-schedule-settings]');
+  var store=window.NEXORA_STAFF_SCHEDULE_STORE, salonData=window.NEXORA_SALON_DATA, appointments=window.NEXORA_APPOINTMENTS_STORE;
+  if(!host||!store||!salonData)return;
+  var selectedStaff='';
+  function esc(value){return String(value==null?'':value).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+  function dateKey(date){return date.getFullYear()+'-'+String(date.getMonth()+1).padStart(2,'0')+'-'+String(date.getDate()).padStart(2,'0');}
+  function week(){var anchor=new Date();anchor.setHours(12,0,0,0);anchor.setDate(anchor.getDate()-anchor.getDay());return Array.from({length:7},function(_,index){var day=new Date(anchor);day.setDate(anchor.getDate()+index);return day;});}
+  function appointmentRows(){try{return appointments?appointments.loadAll():[];}catch(_){return [];}}
+  function render(preselect){if(preselect)selectedStaff=preselect;var catalog=salonData.loadCatalog(),staff=catalog.technicians.filter(function(item){return item.active!==false;}),days=week(),rows=appointmentRows();var working=0,slots=0,conflicts=0;
+    var body=staff.map(function(person){var schedule=store.getStaffSchedule(store.SALON_ID,person.id,{});var cells=days.map(function(date){var key=dateKey(date),availability=store.availabilityForDay({staffSchedule:schedule,technicianId:person.id,date:key,appointments:rows});if(availability.working)working+=1;slots+=availability.openSlots.length;conflicts+=availability.conflicts.length;var klass='schedule-day'+(!availability.working?' is-off':'')+(availability.conflicts.length?' has-conflict':'');return '<button type="button" class="'+klass+'" data-schedule-day data-schedule-staff="'+esc(person.id)+'" data-schedule-date="'+key+'"><strong>'+(availability.working?esc(availability.start+'–'+availability.end):'Day off')+'</strong><small>'+availability.openSlots.length+' open · '+availability.appointments.length+' booked</small></button>';}).join('');return '<div class="schedule-row" data-schedule-staff="'+esc(person.id)+'"><strong>'+esc(person.name)+'</strong>'+cells+'</div>';}).join('');
+    host.innerHTML='<header class="schedule-heading"><div><h2>Staff Schedule &amp; Booking Availability</h2><p>Manage published working hours, breaks and booking coverage.</p></div><div class="schedule-actions"><select class="schedule-select" aria-label="Salon"><option>Bitcoin Nail Bar</option></select><span data-schedule-sync-status>Synced to Booking</span></div></header><div class="schedule-summary"><div class="schedule-card" data-schedule-summary="working"><strong>'+working+'</strong><span>Working staff-days</span></div><div class="schedule-card"><strong>'+slots+'</strong><span>Open slots</span></div><div class="schedule-card"><strong>'+conflicts+'</strong><span>Booking conflicts</span></div><div class="schedule-card"><strong>'+staff.length+'</strong><span>Staff members</span></div></div><div class="schedule-week" data-schedule-week><div class="schedule-row"><span>Staff</span>'+days.map(function(date){return '<span>'+date.toLocaleDateString('en-US',{weekday:'short',day:'numeric'})+'</span>';}).join('')+'</div>'+body+'</div><aside class="schedule-request-queue" data-schedule-requests><h3>Schedule requests</h3><div class="schedule-empty">No pending requests.</div></aside>';
+  }
+  host.addEventListener('click',function(event){var button=event.target.closest('[data-schedule-day]');if(button){selectedStaff=button.dataset.scheduleStaff;var url=new URL(location.href);url.searchParams.set('staff',selectedStaff);history.replaceState(null,'',url);}});
+  var unsubscribe=store.subscribe(function(){render(selectedStaff);});window.addEventListener('pagehide',unsubscribe,{once:true});
+  window.NEXORA_STAFF_SCHEDULE_SETTINGS={refresh:render};
+  render(new URLSearchParams(location.search).get('staff')||'');
+})();
