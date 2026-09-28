@@ -147,9 +147,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .template-editor-action-icon { display: grid; flex: 0 0 36px; height: 36px; place-items: center; border-radius: 10px; background: #f0eeff; color: var(--oq-primary); }
 .template-editor-action-icon svg { width: 17px; }
 .template-editor-action > div { min-width: 0; flex: 1; }
-.template-editor-action strong, .template-editor-action small { display: block; }
-.template-editor-action strong { font-size: 12px; }
-.template-editor-action small { margin-top: 3px; overflow: hidden; color: #8a94a6; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.template-editor-action strong { display: block; font-size: 12px; }
 .editor-action-link { display: flex; height: 34px; align-items: center; gap: 7px; margin-top: 9px; padding: 0 10px; border: 1px solid #dfe3eb; border-radius: 8px; background: #fafbfc; color: #8a94a6; transition: border-color .16s, background .16s, box-shadow .16s; }
 .editor-action-link:focus-within { border-color: #aaa5e5; background: #fff; box-shadow: 0 0 0 2px rgba(79,70,229,.08); }
 .editor-action-link svg { flex: 0 0 14px; width: 14px; }
