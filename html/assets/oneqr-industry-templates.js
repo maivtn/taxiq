@@ -132,6 +132,7 @@
     reviewIds: [],
     enabled: new Set(),
     customActionIds: new Set(),
+    actionLinks: {},
     reviewSnapshot: null,
     applied: null
   };
@@ -143,8 +144,25 @@
   const actionLabel = (record) => state.language === 'vi' ? record.vi : record.en;
   const actionDescription = (record) => state.language === 'vi' ? record.descVi : record.descEn;
   const actionIds = (industry) => [...(SPECIAL_DEFAULTS[industry.id] || DEFAULTS[industry.groupId])];
+  const escapeAttribute = (value) => String(value).replace(/&/g, '&amp;').replace(/"/g, '&quot;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+  const DEFAULT_ACTION_LINKS = {
+    booking: 'https://booking.nexoratouch.com/bitcoin-nail-bar',
+    tip: 'https://pay.nexoratouch.com/bitcoin-nail-bar',
+    review: 'https://g.page/r/bitcoin-nail-bar/review',
+    call: 'tel:+13468024906',
+    directions: 'https://maps.google.com/?q=Bitcoin+Nail+Bar',
+    contact: 'sms:+13468024906',
+    contactcard: 'https://nexoratouch.com/c/bitcoin-nail-bar'
+  };
   let contactCard = loadContactCard();
   let contactDraft = { ...contactCard };
+
+  function actionLink(id) {
+    if (typeof state.actionLinks[id] !== 'string') {
+      state.actionLinks[id] = DEFAULT_ACTION_LINKS[id] || `https://nexoratouch.com/o/bitcoin-nail-bar/${id}`;
+    }
+    return state.actionLinks[id];
+  }
 
   function savedCustomActionIds(saved) {
     if (!saved) return [];
@@ -315,8 +333,12 @@
       const custom = state.customActionIds.has(id);
       const source = custom ? (state.language === 'vi' ? 'Bạn đã thêm' : 'Added by you') : (state.language === 'vi' ? 'Theo mẫu ngành' : 'From industry template');
       const dragLabel = state.language === 'vi' ? `Kéo để sắp xếp ${action.vi}` : `Drag to reorder ${action.en}`;
-      return `<article class="template-editor-action" data-editor-action="${id}"><button class="editor-drag-handle" type="button" draggable="true" data-editor-drag-handle="${id}" aria-label="${dragLabel}" title="${dragLabel}"><i data-lucide="grip-vertical"></i></button><span class="template-editor-action-icon"><i data-lucide="${action.icon}"></i></span><div><strong>${actionLabel(action)}</strong><small>${source} · ${actionDescription(action)}</small></div><span class="editor-action-controls"><button type="button" data-editor-action-move="up" aria-label="Move ${action.en} up" ${index === 0 ? 'disabled' : ''}><i data-lucide="chevron-up"></i></button><button type="button" data-editor-action-move="down" aria-label="Move ${action.en} down" ${index === state.reviewIds.length - 1 ? 'disabled' : ''}><i data-lucide="chevron-down"></i></button><button class="editor-action-remove" type="button" data-editor-action-remove aria-label="Remove ${action.en}"><i data-lucide="x"></i></button></span><label class="toggle"><input type="checkbox" data-editor-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${actionLabel(action)}"><span></span></label></article>`;
+      const linkLabel = state.language === 'vi' ? `Đường dẫn cho ${action.vi}` : `Link for ${action.en}`;
+      return `<article class="template-editor-action" data-editor-action="${id}"><button class="editor-drag-handle" type="button" draggable="true" data-editor-drag-handle="${id}" aria-label="${dragLabel}" title="${dragLabel}"><i data-lucide="grip-vertical"></i></button><span class="template-editor-action-icon"><i data-lucide="${action.icon}"></i></span><div class="template-editor-action-copy"><strong>${actionLabel(action)}</strong><small>${source} · ${actionDescription(action)}</small><label class="editor-action-link"><i data-lucide="link-2" aria-hidden="true"></i><input type="text" inputmode="url" data-editor-action-link="${id}" value="${escapeAttribute(actionLink(id))}" aria-label="${linkLabel}" spellcheck="false"></label></div><span class="editor-action-controls"><button type="button" data-editor-action-move="up" aria-label="Move ${action.en} up" ${index === 0 ? 'disabled' : ''}><i data-lucide="chevron-up"></i></button><button type="button" data-editor-action-move="down" aria-label="Move ${action.en} down" ${index === state.reviewIds.length - 1 ? 'disabled' : ''}><i data-lucide="chevron-down"></i></button><button class="editor-action-remove" type="button" data-editor-action-remove aria-label="Remove ${action.en}"><i data-lucide="x"></i></button></span><label class="toggle"><input type="checkbox" data-editor-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${actionLabel(action)}"><span></span></label></article>`;
     }).join('');
+    container.querySelectorAll('[data-editor-action-link]').forEach((input) => input.addEventListener('input', () => {
+      state.actionLinks[input.dataset.editorActionLink] = input.value;
+    }));
     container.querySelectorAll('[data-editor-action-toggle]').forEach((input) => input.addEventListener('change', () => {
       if (input.checked) state.enabled.add(input.dataset.editorActionToggle);
       else state.enabled.delete(input.dataset.editorActionToggle);
@@ -375,6 +397,7 @@
         reviewIds: state.reviewIds,
         enabledIds: [...state.enabled],
         customActionIds: [...state.customActionIds],
+        actionLinks: state.actionLinks,
         language: state.language
       }));
     } catch (error) {
@@ -882,7 +905,8 @@
       actionIds: activeIds,
       reviewIds: currentReviewIds(),
       customActionIds: [...state.customActionIds].filter((id) => state.reviewIds.includes(id)),
-      actions: activeIds.map((id) => ({ id, label: MODULES[id].en, icon: MODULES[id].icon })),
+      actionLinks: Object.fromEntries(currentReviewIds().map((id) => [id, actionLink(id)])),
+      actions: activeIds.map((id) => ({ id, label: MODULES[id].en, icon: MODULES[id].icon, url: actionLink(id) })),
       appliedAt: new Date().toISOString()
     };
     state.applied = payload;
@@ -1119,6 +1143,7 @@
     state.reviewIds = (draftState.reviewIds || []).filter((id) => MODULES[id]);
     state.enabled = new Set((draftState.enabledIds || []).filter((id) => MODULES[id]));
     state.customActionIds = new Set((draftState.customActionIds || []).filter((id) => MODULES[id]));
+    state.actionLinks = draftState.actionLinks && typeof draftState.actionLinks === 'object' ? { ...draftState.actionLinks } : {};
     state.language = draftState.language === 'vi' ? 'vi' : 'en';
   } else if (state.applied) {
     const appliedIndustry = industryById(state.applied.industryId);
@@ -1126,6 +1151,7 @@
     state.reviewIds = (state.applied.reviewIds || state.applied.actionIds).filter((id) => MODULES[id]);
     state.enabled = new Set(state.applied.actionIds.filter((id) => MODULES[id]));
     state.customActionIds = new Set(savedCustomActionIds(state.applied));
+    state.actionLinks = state.applied.actionLinks && typeof state.applied.actionLinks === 'object' ? { ...state.applied.actionLinks } : {};
   } else {
     const defaultIndustry = industryById('nails');
     state.selected = defaultIndustry.id;
