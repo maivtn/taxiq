@@ -267,6 +267,7 @@
   }
 
   let draggedActionId = null;
+  let pointerDrag = null;
 
   function moveActionTo(id, targetId, placeAfter) {
     if (!id || !targetId || id === targetId) return false;
@@ -297,6 +298,16 @@
         moveAction(handle.dataset.dragHandle, event.key === 'ArrowUp' ? 'up' : 'down');
         document.querySelector(`[data-drag-handle="${handle.dataset.dragHandle}"]`)?.focus();
       });
+      handle.addEventListener('pointerdown', (event) => {
+        if (event.pointerType === 'mouse') return;
+        event.preventDefault();
+        pointerDrag = {
+          id: handle.dataset.dragHandle,
+          targetId: handle.dataset.dragHandle,
+          placeAfter: false
+        };
+        handle.closest('[data-review-action]').classList.add('is-dragging');
+      });
     });
     container.querySelectorAll('[data-review-action]').forEach((row) => {
       row.addEventListener('dragover', (event) => {
@@ -318,6 +329,31 @@
         }
       });
     });
+  }
+
+  function updatePointerDrag(event) {
+    if (!pointerDrag) return;
+    event.preventDefault();
+    const container = $('#review-actions');
+    const row = document.elementFromPoint(event.clientX, event.clientY)?.closest('[data-review-action]');
+    container.querySelectorAll('.is-drag-over').forEach((item) => item.classList.remove('is-drag-over'));
+    if (!row || row.dataset.reviewAction === pointerDrag.id) return;
+    const bounds = row.getBoundingClientRect();
+    pointerDrag.targetId = row.dataset.reviewAction;
+    pointerDrag.placeAfter = event.clientY > bounds.top + bounds.height / 2;
+    row.classList.add('is-drag-over');
+  }
+
+  function finishPointerDrag(applyMove) {
+    if (!pointerDrag) return;
+    const pending = pointerDrag;
+    pointerDrag = null;
+    $('#review-actions').querySelectorAll('.is-dragging, .is-drag-over').forEach((item) => item.classList.remove('is-dragging', 'is-drag-over'));
+    if (applyMove && moveActionTo(pending.id, pending.targetId, pending.placeAfter)) {
+      renderReviewActions();
+      renderPreview();
+      showToast(state.language === 'vi' ? 'Đã cập nhật thứ tự hiển thị.' : 'Display order updated.');
+    }
   }
 
   function renderPhoneActions() {
@@ -361,6 +397,16 @@
     renderPreview();
     renderActionLibrary();
     showToast(state.language === 'vi' ? `Đã thêm “${MODULES[id].vi}”.` : `“${MODULES[id].en}” added to the menu.`);
+  }
+
+  function resetReviewActions() {
+    const industry = industryById(state.selected);
+    if (!industry) return;
+    state.reviewIds = actionIds(industry);
+    state.enabled = new Set(state.reviewIds);
+    renderReviewActions();
+    renderPreview();
+    showToast(state.language === 'vi' ? 'Đã khôi phục menu đề xuất của ngành.' : 'Recommended industry menu restored.');
   }
 
   function applyTemplate() {
@@ -497,6 +543,7 @@
     $$('[data-language]').forEach((button) => button.addEventListener('click', () => setLanguage(button.dataset.language)));
     $('#review-template-button').addEventListener('click', openReview);
     $('#add-action-button').addEventListener('click', openActionLibrary);
+    $('#reset-actions-button').addEventListener('click', resetReviewActions);
     $('#action-search-input').addEventListener('input', (event) => {
       state.actionQuery = event.target.value;
       renderActionLibrary();
@@ -512,6 +559,9 @@
       window.setTimeout(() => $('#industry-search-input').focus(), 350);
     }));
     $('#edit-applied-template').addEventListener('click', editAppliedTemplate);
+    document.addEventListener('pointermove', updatePointerDrag, { passive: false });
+    document.addEventListener('pointerup', () => finishPointerDrag(true));
+    document.addEventListener('pointercancel', () => finishPointerDrag(false));
     document.addEventListener('keydown', (event) => {
       const typing = ['INPUT', 'TEXTAREA'].includes(document.activeElement?.tagName);
       if (event.key === '/' && !typing) {
