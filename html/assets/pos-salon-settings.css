@@ -13,7 +13,8 @@
 .schedule-week-navigation{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
 .schedule-week-mode{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:0 16px;box-sizing:border-box;background:#4648d4;color:#fff;border-radius:8px;font-size:12px;font-weight:800}
 .schedule-week-navigation button{min-width:44px;min-height:44px;padding:0 12px;border:1px solid #dbe4f3;border-radius:8px;background:#fff;color:#52607b;font:inherit;font-size:12px;font-weight:700;cursor:pointer}
-.schedule-week-navigation [data-schedule-week-step]{padding:0;font-size:24px;line-height:1}
+.schedule-week-navigation [data-schedule-week-step]{display:inline-flex;align-items:center;justify-content:center;padding:0;line-height:1}
+.schedule-week-navigation [data-schedule-week-step] svg{display:block;flex-shrink:0;pointer-events:none}
 .schedule-week-navigation button:hover{background:#eef2ff;color:#3730a3}
 .schedule-week-navigation button:focus-visible,.schedule-week-picker input:focus-visible{outline:2px solid #4648d4;outline-offset:2px}
 .schedule-week-picker{position:relative;min-width:0;display:block}
