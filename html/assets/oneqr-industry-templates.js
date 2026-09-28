@@ -92,6 +92,8 @@
     selected: null,
     reviewIds: [],
     enabled: new Set(),
+    customActionIds: new Set(),
+    reviewSnapshot: null,
     applied: null
   };
   const $ = (selector) => document.querySelector(selector);
@@ -102,6 +104,14 @@
   const actionLabel = (record) => state.language === 'vi' ? record.vi : record.en;
   const actionDescription = (record) => state.language === 'vi' ? record.descVi : record.descEn;
   const actionIds = (industry) => [...(SPECIAL_DEFAULTS[industry.id] || DEFAULTS[industry.groupId])];
+
+  function savedCustomActionIds(saved) {
+    if (!saved) return [];
+    if (Array.isArray(saved.customActionIds)) return saved.customActionIds.filter((id) => MODULES[id]);
+    const industry = industryById(saved.industryId);
+    const recommended = new Set(industry ? actionIds(industry) : []);
+    return (saved.reviewIds || saved.actionIds || []).filter((id) => MODULES[id] && !recommended.has(id));
+  }
 
   function loadAppliedTemplate() {
     try {
@@ -172,9 +182,14 @@
 
   function selectIndustry(id) {
     const industry = industryById(id);
+    const recommendedIds = actionIds(industry);
+    const recommendedSet = new Set(recommendedIds);
+    const customIds = [...state.customActionIds].filter((actionId) => MODULES[actionId] && !recommendedSet.has(actionId));
+    const enabledCustomIds = customIds.filter((actionId) => state.enabled.has(actionId));
     state.selected = id;
-    state.reviewIds = actionIds(industry);
-    state.enabled = new Set(state.reviewIds);
+    state.reviewIds = [...recommendedIds, ...customIds];
+    state.customActionIds = new Set(customIds);
+    state.enabled = new Set([...recommendedIds, ...enabledCustomIds]);
     renderIndustries();
     renderPreview();
     setProgress(1);
@@ -196,7 +211,9 @@
     $('#starter-action-count').textContent = state.language === 'vi' ? `${ids.length} hành động khởi đầu` : `${ids.length} starter actions`;
     $('#starter-actions').innerHTML = ids.map((id) => {
       const action = MODULES[id];
-      return `<div class="starter-action"><span><i data-lucide="${action.icon}"></i></span><strong>${actionLabel(action)}</strong><small>${state.language === 'vi' ? 'Đề xuất' : 'Recommended'}</small></div>`;
+      const custom = state.customActionIds.has(id);
+      const source = custom ? (state.language === 'vi' ? 'Bạn đã thêm' : 'Added by you') : (state.language === 'vi' ? 'Đề xuất' : 'Recommended');
+      return `<div class="starter-action"><span><i data-lucide="${action.icon}"></i></span><strong>${actionLabel(action)}</strong><small class="${custom ? 'is-custom' : ''}">${source}</small></div>`;
     }).join('');
     $('#review-template-button-label').textContent = state.applied && state.applied.industryId === industry.id
       ? (state.language === 'vi' ? 'Chỉnh sửa mẫu đang dùng' : 'Edit applied template')
@@ -207,6 +224,12 @@
   function openReview() {
     const industry = industryById(state.selected);
     if (!industry) return;
+    state.reviewSnapshot = {
+      selected: state.selected,
+      reviewIds: [...state.reviewIds],
+      enabled: new Set(state.enabled),
+      customActionIds: new Set(state.customActionIds)
+    };
     const secondary = state.language === 'vi' ? industry.en : industry.vi;
     $('#review-template-icon').textContent = industry.icon;
     $('#review-template-name').textContent = label(industry);
@@ -225,7 +248,9 @@
     $('#review-actions').innerHTML = ids.map((id, index) => {
       const action = MODULES[id];
       const dragLabel = state.language === 'vi' ? `Kéo để sắp xếp ${action.vi}` : `Drag to reorder ${action.en}`;
-      return `<div class="review-action" data-review-action="${id}"><button class="drag-handle" type="button" draggable="true" data-drag-handle="${id}" aria-label="${dragLabel}" title="${dragLabel}"><i data-lucide="grip-vertical"></i></button><span class="review-action-icon"><i data-lucide="${action.icon}"></i></span><div><strong>${actionLabel(action)}</strong><small>${actionDescription(action)}</small></div><span class="review-action-order"><button type="button" data-action-move="up" aria-label="Move ${action.en} up" ${index === 0 ? 'disabled' : ''}><i data-lucide="chevron-up"></i></button><button type="button" data-action-move="down" aria-label="Move ${action.en} down" ${index === ids.length - 1 ? 'disabled' : ''}><i data-lucide="chevron-down"></i></button></span><button class="review-action-remove" type="button" data-action-remove aria-label="Remove ${action.en}"><i data-lucide="x"></i></button><label class="toggle"><input type="checkbox" data-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${actionLabel(action)}"><span></span></label></div>`;
+      const custom = state.customActionIds.has(id);
+      const source = custom ? (state.language === 'vi' ? 'Bạn thêm' : 'Your action') : (state.language === 'vi' ? 'Đề xuất' : 'Recommended');
+      return `<div class="review-action" data-review-action="${id}"><button class="drag-handle" type="button" draggable="true" data-drag-handle="${id}" aria-label="${dragLabel}" title="${dragLabel}"><i data-lucide="grip-vertical"></i></button><span class="review-action-icon"><i data-lucide="${action.icon}"></i></span><div><strong>${actionLabel(action)} <em class="review-action-source ${custom ? 'is-custom' : ''}">${source}</em></strong><small>${actionDescription(action)}</small></div><span class="review-action-order"><button type="button" data-action-move="up" aria-label="Move ${action.en} up" ${index === 0 ? 'disabled' : ''}><i data-lucide="chevron-up"></i></button><button type="button" data-action-move="down" aria-label="Move ${action.en} down" ${index === ids.length - 1 ? 'disabled' : ''}><i data-lucide="chevron-down"></i></button></span><button class="review-action-remove" type="button" data-action-remove aria-label="Remove ${action.en}"><i data-lucide="x"></i></button><label class="toggle"><input type="checkbox" data-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${actionLabel(action)}"><span></span></label></div>`;
     }).join('');
     $('#review-actions').querySelectorAll('[data-action-toggle]').forEach((input) => input.addEventListener('change', () => {
       if (input.checked) state.enabled.add(input.dataset.actionToggle);
@@ -241,6 +266,7 @@
       const id = button.closest('[data-review-action]').dataset.reviewAction;
       state.reviewIds = state.reviewIds.filter((actionId) => actionId !== id);
       state.enabled.delete(id);
+      state.customActionIds.delete(id);
       renderReviewActions();
       renderPreview();
     }));
@@ -393,6 +419,8 @@
     if (!MODULES[id] || state.reviewIds.includes(id)) return;
     state.reviewIds.push(id);
     state.enabled.add(id);
+    if (actionIds(industryById(state.selected)).includes(id)) state.customActionIds.delete(id);
+    else state.customActionIds.add(id);
     renderReviewActions();
     renderPreview();
     renderActionLibrary();
@@ -402,11 +430,19 @@
   function resetReviewActions() {
     const industry = industryById(state.selected);
     if (!industry) return;
-    state.reviewIds = actionIds(industry);
-    state.enabled = new Set(state.reviewIds);
+    const recommendedIds = actionIds(industry);
+    const recommendedSet = new Set(recommendedIds);
+    const customIds = [...state.customActionIds].filter((id) => MODULES[id] && !recommendedSet.has(id));
+    const enabledCustomIds = customIds.filter((id) => state.enabled.has(id));
+    state.reviewIds = [...recommendedIds, ...customIds];
+    state.customActionIds = new Set(customIds);
+    state.enabled = new Set([...recommendedIds, ...enabledCustomIds]);
     renderReviewActions();
     renderPreview();
-    showToast(state.language === 'vi' ? 'Đã khôi phục menu đề xuất của ngành.' : 'Recommended industry menu restored.');
+    const customCount = customIds.length;
+    showToast(state.language === 'vi'
+      ? `Đã khôi phục đề xuất${customCount ? ` và giữ ${customCount} action bạn tự thêm` : ''}.`
+      : `Recommendations restored${customCount ? `; ${customCount} added ${customCount === 1 ? 'action was' : 'actions were'} kept` : ''}.`);
   }
 
   function applyTemplate() {
@@ -417,17 +453,19 @@
     }
     const industry = industryById(state.selected);
     const payload = {
-      version: 1,
+      version: 2,
       industryId: industry.id,
       industryLabel: industry.en,
       groupId: industry.groupId,
       language: state.language,
       actionIds: activeIds,
       reviewIds: currentReviewIds(),
+      customActionIds: [...state.customActionIds].filter((id) => state.reviewIds.includes(id)),
       actions: activeIds.map((id) => ({ id, label: MODULES[id].en, icon: MODULES[id].icon })),
       appliedAt: new Date().toISOString()
     };
     state.applied = payload;
+    state.reviewSnapshot = null;
     saveAppliedTemplate(payload);
     closeModal($('#template-review-modal'));
     $('#success-action-count').textContent = activeIds.length;
@@ -455,11 +493,12 @@
     bar.hidden = !industry;
     if (!industry) return;
     const count = state.applied.actionIds.length;
+    const customCount = savedCustomActionIds(state.applied).filter((id) => state.applied.actionIds.includes(id)).length;
     $('#applied-template-icon').textContent = industry.icon;
     $('#applied-template-name').textContent = state.language === 'vi' ? industry.vi : industry.en;
     $('#applied-template-meta').textContent = state.language === 'vi'
-      ? `${count} hành động khách hàng đang bật`
-      : `${count} active customer ${count === 1 ? 'action' : 'actions'}`;
+      ? `${count} hành động đang bật${customCount ? ` · ${customCount} action tự thêm` : ''}`
+      : `${count} active customer ${count === 1 ? 'action' : 'actions'}${customCount ? ` · ${customCount} added by you` : ''}`;
     refreshIcons();
   }
 
@@ -512,6 +551,15 @@
 
   function closeReview() {
     closeModal($('#template-review-modal'));
+    if (state.reviewSnapshot) {
+      state.selected = state.reviewSnapshot.selected;
+      state.reviewIds = [...state.reviewSnapshot.reviewIds];
+      state.enabled = new Set(state.reviewSnapshot.enabled);
+      state.customActionIds = new Set(state.reviewSnapshot.customActionIds);
+      state.reviewSnapshot = null;
+      renderIndustries();
+      renderPreview();
+    }
     setProgress(1);
   }
 
@@ -522,6 +570,7 @@
     state.selected = industry.id;
     state.reviewIds = (state.applied.reviewIds || state.applied.actionIds).filter((id) => MODULES[id]);
     state.enabled = new Set(state.applied.actionIds.filter((id) => MODULES[id]));
+    state.customActionIds = new Set(savedCustomActionIds(state.applied));
     renderGroups();
     renderIndustries();
     renderPreview();
@@ -583,6 +632,7 @@
     state.selected = appliedIndustry.id;
     state.reviewIds = (state.applied.reviewIds || state.applied.actionIds).filter((id) => MODULES[id]);
     state.enabled = new Set(state.applied.actionIds.filter((id) => MODULES[id]));
+    state.customActionIds = new Set(savedCustomActionIds(state.applied));
   }
   bindEvents();
   renderGroups();
