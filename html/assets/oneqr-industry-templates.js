@@ -76,7 +76,23 @@
     'linear-gradient(135deg, #A78BFA, #6D28D9)',
     'linear-gradient(135deg, #FB923C, #C2410C)',
     'linear-gradient(135deg, #22D3EE, #0E7490)',
-    'linear-gradient(135deg, #F87171, #B91C1C)'
+    'linear-gradient(135deg, #F87171, #B91C1C)',
+    'linear-gradient(135deg, #EC4899, #7E22CE)',
+    'linear-gradient(135deg, #6366F1, #312E81)',
+    'linear-gradient(135deg, #14B8A6, #0F766E)',
+    'linear-gradient(135deg, #06B6D4, #0369A1)',
+    'linear-gradient(135deg, #84CC16, #3F6212)',
+    'linear-gradient(135deg, #EAB308, #A16207)',
+    'linear-gradient(135deg, #F97316, #9A3412)',
+    'linear-gradient(135deg, #EF4444, #991B1B)',
+    'linear-gradient(135deg, #D946EF, #86198F)',
+    'linear-gradient(135deg, #8B5CF6, #5B21B6)',
+    'linear-gradient(135deg, #0EA5E9, #075985)',
+    'linear-gradient(135deg, #10B981, #065F46)',
+    'linear-gradient(135deg, #F43F5E, #9F1239)',
+    'linear-gradient(135deg, #64748B, #334155)',
+    'linear-gradient(135deg, #A855F7, #4338CA)',
+    'linear-gradient(135deg, #2DD4BF, #155E75)'
   ];
 
   const industries = GROUPS.flatMap((group) => group.items.split('|').map((raw) => {
