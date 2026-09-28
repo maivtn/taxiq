@@ -1,0 +1,218 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexora Touch - OneQR Industry Templates</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/oneqr-industry-templates.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Dashboard sidebar"></aside>
+
+    <div class="app-area">
+      <header class="header"></header>
+
+      <main class="content industry-page" aria-labelledby="industry-page-title">
+        <nav class="industry-breadcrumb" aria-label="Breadcrumb">
+          <a href="qr-stations.html">Stations &amp; QR Codes</a>
+          <i data-lucide="chevron-right" aria-hidden="true"></i>
+          <span>OneQR templates</span>
+        </nav>
+
+        <section class="industry-hero">
+          <div>
+            <span class="industry-eyebrow">OneQR setup</span>
+            <h1 id="industry-page-title">Start with a template built for your business</h1>
+            <p>Choose what you do and OneQR will prepare the most useful customer actions. You can change every button before customers see it.</p>
+          </div>
+          <div class="industry-hero-actions">
+            <div class="language-switch" role="group" aria-label="Template language">
+              <button type="button" class="is-active" data-language="en" aria-pressed="true">EN</button>
+              <button type="button" data-language="vi" aria-pressed="false">VI</button>
+            </div>
+            <a class="industry-close" href="qr-stations.html">
+              <i data-lucide="x" aria-hidden="true"></i>
+              <span>Exit setup</span>
+            </a>
+          </div>
+        </section>
+
+        <ol class="setup-progress" aria-label="OneQR template setup progress">
+          <li class="is-active" data-progress-step="1"><span>1</span><div><strong>Choose industry</strong><small>Tell us what you do</small></div></li>
+          <li data-progress-step="2"><span>2</span><div><strong>Review starter menu</strong><small>Keep or adjust suggestions</small></div></li>
+          <li data-progress-step="3"><span>3</span><div><strong>Apply template</strong><small>Your QR URL stays the same</small></div></li>
+        </ol>
+
+        <section class="industry-summary" aria-label="Template library summary">
+          <article><span class="summary-icon is-indigo"><i data-lucide="building-2" aria-hidden="true"></i></span><div><strong>115</strong><small>Business templates</small></div></article>
+          <article><span class="summary-icon is-cyan"><i data-lucide="layers-3" aria-hidden="true"></i></span><div><strong>14</strong><small>Industry groups</small></div></article>
+          <article><span class="summary-icon is-amber"><i data-lucide="blocks" aria-hidden="true"></i></span><div><strong>68</strong><small>Actions used by templates</small></div></article>
+          <article><span class="summary-icon is-green"><i data-lucide="qr-code" aria-hidden="true"></i></span><div><strong>1</strong><small>Permanent OneQR link</small></div></article>
+        </section>
+
+        <section class="template-workspace">
+          <div class="template-library">
+            <div class="library-heading">
+              <div>
+                <span class="section-step">Step 1 of 3</span>
+                <h2>What kind of business is this?</h2>
+                <p>Select the closest match. A template is only a starting point—you can use actions from any industry.</p>
+              </div>
+              <button class="text-button" type="button" data-show-business-rule>
+                <i data-lucide="circle-help" aria-hidden="true"></i>
+                How templates work
+              </button>
+            </div>
+
+            <label class="industry-search" for="industry-search-input">
+              <i data-lucide="search" aria-hidden="true"></i>
+              <input id="industry-search-input" type="search" placeholder="Search by industry, service, or keyword" autocomplete="off">
+              <kbd>/</kbd>
+            </label>
+
+            <div class="group-tabs-wrap">
+              <div class="group-tabs" role="tablist" aria-label="Industry groups" id="industry-group-tabs"></div>
+            </div>
+
+            <div class="library-result-row">
+              <p id="industry-result-count" aria-live="polite"></p>
+              <button type="button" class="clear-filter" id="clear-industry-filter" hidden>Clear filters</button>
+            </div>
+
+            <div class="industry-grid" id="industry-grid" aria-live="polite"></div>
+          </div>
+
+          <aside class="template-preview" aria-labelledby="preview-title">
+            <div class="preview-heading">
+              <div>
+                <span class="section-step">Live preview</span>
+                <h2 id="preview-title">Choose a template</h2>
+              </div>
+              <span class="preview-state" id="preview-state">Not selected</span>
+            </div>
+
+            <div class="preview-empty" id="preview-empty">
+              <span><i data-lucide="sparkles" aria-hidden="true"></i></span>
+              <h3>Your starter menu will appear here</h3>
+              <p>Select an industry to preview the customer actions OneQR recommends.</p>
+            </div>
+
+            <div class="preview-selected" id="preview-selected" hidden>
+              <div class="selected-template-summary">
+                <span class="selected-template-icon" id="selected-template-icon">💅</span>
+                <div>
+                  <small>Selected template</small>
+                  <strong id="selected-template-name">Nail &amp; spa</strong>
+                  <span id="selected-template-group">Beauty &amp; care</span>
+                </div>
+                <button type="button" class="change-link" data-change-template>Change</button>
+              </div>
+
+              <div class="business-safety-note">
+                <i data-lucide="shield-check" aria-hidden="true"></i>
+                <div><strong>Your existing business information is protected</strong><span>Name, logo, contact details, and permanent QR URL will not change.</span></div>
+              </div>
+
+              <div class="starter-menu-heading">
+                <div><strong>Recommended customer menu</strong><span id="starter-action-count"></span></div>
+                <span class="starter-tag">Editable</span>
+              </div>
+              <div class="starter-actions" id="starter-actions"></div>
+
+              <button class="primary-action" type="button" id="review-template-button">
+                Review this starter menu
+                <i data-lucide="arrow-right" aria-hidden="true"></i>
+              </button>
+              <p class="preview-footnote">Nothing is published until you confirm the template.</p>
+            </div>
+          </aside>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <div class="template-modal" id="template-review-modal" hidden aria-hidden="true">
+    <button class="template-modal-backdrop" type="button" data-close-template-modal aria-label="Close review"></button>
+    <section class="template-modal-dialog" role="dialog" aria-modal="true" aria-labelledby="review-modal-title">
+      <div class="modal-head">
+        <div><span class="section-step">Step 2 of 3</span><h2 id="review-modal-title">Review your starter menu</h2></div>
+        <button class="icon-button" type="button" data-close-template-modal aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button>
+      </div>
+      <p class="modal-lead">Turn off anything you do not offer today. You can add actions from any industry after setup.</p>
+      <div class="review-layout">
+        <div>
+          <div class="review-template-card">
+            <span id="review-template-icon">💅</span>
+            <div><small>Template</small><strong id="review-template-name">Nail &amp; spa</strong><em id="review-template-name-secondary">Nail &amp; spa</em></div>
+          </div>
+          <div class="review-actions" id="review-actions"></div>
+          <button class="add-action-button" type="button" id="add-action-button"><i data-lucide="plus" aria-hidden="true"></i>Add another action</button>
+        </div>
+        <div class="phone-preview" aria-label="Customer OneQR preview">
+          <div class="phone-speaker"></div>
+          <div class="phone-screen">
+            <header><span class="phone-logo">B</span><div><strong>Bitcoin Nail Bar</strong><small>Houston, TX</small></div><button type="button">EN</button></header>
+            <div class="phone-welcome"><small>WELCOME</small><h3>How can we help today?</h3><p>Your OneQR menu is ready for customers.</p></div>
+            <nav id="phone-actions" aria-label="Customer actions"></nav>
+            <footer>Powered by <strong>NEXORA</strong></footer>
+          </div>
+        </div>
+      </div>
+      <div class="change-policy">
+        <div><i data-lucide="link-2" aria-hidden="true"></i><span><strong>Your QR code and URL stay the same</strong><small>Printed signs and saved links continue to work.</small></span></div>
+        <div><i data-lucide="user-round-check" aria-hidden="true"></i><span><strong>Your custom actions stay</strong><small>Changing industries only replaces template-managed suggestions.</small></span></div>
+      </div>
+      <div class="modal-actions">
+        <button class="secondary-action" type="button" data-close-template-modal>Back</button>
+        <button class="primary-action" type="button" id="apply-template-button">Apply template<i data-lucide="sparkles" aria-hidden="true"></i></button>
+      </div>
+    </section>
+  </div>
+
+  <div class="template-modal" id="template-success-modal" hidden aria-hidden="true">
+    <button class="template-modal-backdrop" type="button" data-close-success-modal aria-label="Close confirmation"></button>
+    <section class="template-modal-dialog is-success" role="dialog" aria-modal="true" aria-labelledby="success-modal-title">
+      <span class="success-mark"><i data-lucide="check" aria-hidden="true"></i></span>
+      <span class="section-step">Step 3 of 3</span>
+      <h2 id="success-modal-title">Your OneQR starter menu is ready</h2>
+      <p id="success-message">The Nail &amp; spa template has been applied. Review links and labels before sharing your QR.</p>
+      <div class="success-summary">
+        <div><span id="success-action-count">5</span><small>Customer actions</small></div>
+        <div><span>0</span><small>Custom actions removed</small></div>
+        <div><span>Same</span><small>QR URL</small></div>
+      </div>
+      <div class="modal-actions">
+        <button class="secondary-action" type="button" data-close-success-modal>Keep browsing</button>
+        <a class="primary-action" href="qr-stations.html#one-qr">Open OneQR builder<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+      </div>
+    </section>
+  </div>
+
+  <div class="template-modal" id="template-help-modal" hidden aria-hidden="true">
+    <button class="template-modal-backdrop" type="button" data-close-help-modal aria-label="Close help"></button>
+    <section class="template-modal-dialog is-compact" role="dialog" aria-modal="true" aria-labelledby="help-modal-title">
+      <div class="modal-head"><h2 id="help-modal-title">Templates give you a faster start</h2><button class="icon-button" type="button" data-close-help-modal aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button></div>
+      <ol class="help-list">
+        <li><span>1</span><div><strong>Choose the closest industry</strong><p>It does not lock your business into a category.</p></div></li>
+        <li><span>2</span><div><strong>Review suggested actions</strong><p>Turn off anything you do not use and add actions from other industries.</p></div></li>
+        <li><span>3</span><div><strong>Apply without changing your QR</strong><p>Your permanent link, profile, and user-added actions stay in place.</p></div></li>
+      </ol>
+      <button class="primary-action" type="button" data-close-help-modal>Got it</button>
+    </section>
+  </div>
+
+  <div class="template-toast" id="template-toast" role="status" aria-live="polite" hidden></div>
+
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script>
+    window.NEXORA_SHELL = { activePage: 'stations', activeTab: 'one-qr' };
+  </script>
+  <script src="../assets/nexora-shell.js"></script>
+  <script src="../assets/oneqr-industry-templates.js"></script>
+</body>
+</html>
