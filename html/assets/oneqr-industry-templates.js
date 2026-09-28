@@ -225,6 +225,12 @@
     });
   }
 
+  function sortActionsByActive() {
+    const activeIds = state.reviewIds.filter((id) => state.enabled.has(id));
+    const inactiveIds = state.reviewIds.filter((id) => !state.enabled.has(id));
+    state.reviewIds = [...activeIds, ...inactiveIds];
+  }
+
   function savedCustomActionIds(saved) {
     if (!saved) return [];
     if (Array.isArray(saved.customActionIds)) return saved.customActionIds.filter((id) => MODULES[id]);
@@ -345,6 +351,7 @@
     state.reviewIds = [...recommendedIds, ...customIds];
     state.customActionIds = new Set(customIds);
     state.enabled = new Set([...recommendedIds, ...enabledCustomIds]);
+    sortActionsByActive();
   }
 
   function renderPreview() {
@@ -394,7 +401,9 @@
       const dragLabel = state.language === 'vi' ? `Kéo để sắp xếp ${action.vi}` : `Drag to reorder ${action.en}`;
       const linkLabel = state.language === 'vi' ? `Đường dẫn cho ${displayActionTitle(id)}` : `Link for ${displayActionTitle(id)}`;
       const titleLabel = state.language === 'vi' ? `Tên hiển thị cho ${action.vi}` : `Display title for ${action.en}`;
-      return `<article class="template-editor-action" data-editor-action="${id}"><button class="editor-drag-handle" type="button" draggable="true" data-editor-drag-handle="${id}" aria-label="${dragLabel}" title="${dragLabel}"><i data-lucide="grip-vertical"></i></button><div class="editor-action-icon-tools"><span class="template-editor-action-icon">${actionIconMarkup(id)}</span><span><button type="button" data-choose-action-icon="${id}" aria-label="Choose icon for ${escapeAttribute(displayActionTitle(id))}">Change icon</button><button type="button" data-upload-action-icon="${id}" aria-label="Upload icon for ${escapeAttribute(displayActionTitle(id))}">Upload</button></span></div><div class="template-editor-action-copy"><input class="editor-action-title" type="text" data-editor-action-title="${id}" value="${escapeAttribute(actionTitleValue(id))}" aria-label="${titleLabel}"><label class="editor-action-link"><i data-lucide="link-2" aria-hidden="true"></i><input type="text" inputmode="url" data-editor-action-link="${id}" value="${escapeAttribute(actionLink(id))}" aria-label="${escapeAttribute(linkLabel)}" spellcheck="false"></label></div><span class="editor-action-controls"><button type="button" data-editor-action-move="up" aria-label="Move ${action.en} up" ${index === 0 ? 'disabled' : ''}><i data-lucide="chevron-up"></i></button><button type="button" data-editor-action-move="down" aria-label="Move ${action.en} down" ${index === state.reviewIds.length - 1 ? 'disabled' : ''}><i data-lucide="chevron-down"></i></button><button class="editor-action-remove" type="button" data-editor-action-remove aria-label="Remove ${action.en}"><i data-lucide="x"></i></button></span><label class="toggle"><input type="checkbox" data-editor-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${escapeAttribute(displayActionTitle(id))}"><span></span></label></article>`;
+      const canMoveUp = index > 0 && state.enabled.has(state.reviewIds[index - 1]) === state.enabled.has(id);
+      const canMoveDown = index < state.reviewIds.length - 1 && state.enabled.has(state.reviewIds[index + 1]) === state.enabled.has(id);
+      return `<article class="template-editor-action" data-editor-action="${id}"><button class="editor-drag-handle" type="button" draggable="true" data-editor-drag-handle="${id}" aria-label="${dragLabel}" title="${dragLabel}"><i data-lucide="grip-vertical"></i></button><div class="editor-action-icon-tools"><span class="template-editor-action-icon">${actionIconMarkup(id)}</span><span><button type="button" data-choose-action-icon="${id}" aria-label="Choose icon for ${escapeAttribute(displayActionTitle(id))}">Change icon</button><button type="button" data-upload-action-icon="${id}" aria-label="Upload icon for ${escapeAttribute(displayActionTitle(id))}">Upload</button></span></div><div class="template-editor-action-copy"><input class="editor-action-title" type="text" data-editor-action-title="${id}" value="${escapeAttribute(actionTitleValue(id))}" aria-label="${titleLabel}"><label class="editor-action-link"><i data-lucide="link-2" aria-hidden="true"></i><input type="text" inputmode="url" data-editor-action-link="${id}" value="${escapeAttribute(actionLink(id))}" aria-label="${escapeAttribute(linkLabel)}" spellcheck="false"></label></div><span class="editor-action-controls"><button type="button" data-editor-action-move="up" aria-label="Move ${action.en} up" ${canMoveUp ? '' : 'disabled'}><i data-lucide="chevron-up"></i></button><button type="button" data-editor-action-move="down" aria-label="Move ${action.en} down" ${canMoveDown ? '' : 'disabled'}><i data-lucide="chevron-down"></i></button><button class="editor-action-remove" type="button" data-editor-action-remove aria-label="Remove ${action.en}"><i data-lucide="x"></i></button></span><label class="toggle"><input type="checkbox" data-editor-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${escapeAttribute(displayActionTitle(id))}"><span></span></label></article>`;
     }).join('');
     container.querySelectorAll('[data-choose-action-icon]').forEach((button) => button.addEventListener('click', () => openActionIconPicker(button.dataset.chooseActionIcon)));
     container.querySelectorAll('[data-upload-action-icon]').forEach((button) => button.addEventListener('click', () => {
@@ -412,6 +421,7 @@
     container.querySelectorAll('[data-editor-action-toggle]').forEach((input) => input.addEventListener('change', () => {
       if (input.checked) state.enabled.add(input.dataset.editorActionToggle);
       else state.enabled.delete(input.dataset.editorActionToggle);
+      sortActionsByActive();
       renderPreview();
     }));
     container.querySelectorAll('[data-editor-action-move]').forEach((button) => button.addEventListener('click', () => {
@@ -499,6 +509,7 @@
     state.customActionIds.add(id);
     state.actionTitles[id] = state.language === 'vi' ? 'Liên kết mới' : 'New link';
     state.actionLinks[id] = url;
+    sortActionsByActive();
     input.value = '';
     renderPreview();
     const titleInput = $(`[data-editor-action-title="${id}"]`);
@@ -537,11 +548,14 @@
       const dragLabel = state.language === 'vi' ? `Kéo để sắp xếp ${action.vi}` : `Drag to reorder ${action.en}`;
       const custom = state.customActionIds.has(id);
       const source = custom ? (state.language === 'vi' ? 'Bạn thêm' : 'Your action') : (state.language === 'vi' ? 'Đề xuất' : 'Recommended');
-      return `<div class="review-action" data-review-action="${id}"><button class="drag-handle" type="button" draggable="true" data-drag-handle="${id}" aria-label="${dragLabel}" title="${dragLabel}"><i data-lucide="grip-vertical"></i></button><span class="review-action-icon">${actionIconMarkup(id)}</span><div><strong>${escapeAttribute(displayActionTitle(id))} <em class="review-action-source ${custom ? 'is-custom' : ''}">${source}</em></strong><small>${actionDescription(action)}</small></div><span class="review-action-controls"><button type="button" data-action-move="up" aria-label="Move ${action.en} up" ${index === 0 ? 'disabled' : ''}><i data-lucide="chevron-up"></i></button><button type="button" data-action-move="down" aria-label="Move ${action.en} down" ${index === ids.length - 1 ? 'disabled' : ''}><i data-lucide="chevron-down"></i></button><button class="review-action-remove" type="button" data-action-remove aria-label="Remove ${action.en}"><i data-lucide="x"></i></button></span><label class="toggle"><input type="checkbox" data-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${escapeAttribute(displayActionTitle(id))}"><span></span></label></div>`;
+      const canMoveUp = index > 0 && state.enabled.has(ids[index - 1]) === state.enabled.has(id);
+      const canMoveDown = index < ids.length - 1 && state.enabled.has(ids[index + 1]) === state.enabled.has(id);
+      return `<div class="review-action" data-review-action="${id}"><button class="drag-handle" type="button" draggable="true" data-drag-handle="${id}" aria-label="${dragLabel}" title="${dragLabel}"><i data-lucide="grip-vertical"></i></button><span class="review-action-icon">${actionIconMarkup(id)}</span><div><strong>${escapeAttribute(displayActionTitle(id))} <em class="review-action-source ${custom ? 'is-custom' : ''}">${source}</em></strong><small>${actionDescription(action)}</small></div><span class="review-action-controls"><button type="button" data-action-move="up" aria-label="Move ${action.en} up" ${canMoveUp ? '' : 'disabled'}><i data-lucide="chevron-up"></i></button><button type="button" data-action-move="down" aria-label="Move ${action.en} down" ${canMoveDown ? '' : 'disabled'}><i data-lucide="chevron-down"></i></button><button class="review-action-remove" type="button" data-action-remove aria-label="Remove ${action.en}"><i data-lucide="x"></i></button></span><label class="toggle"><input type="checkbox" data-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${escapeAttribute(displayActionTitle(id))}"><span></span></label></div>`;
     }).join('');
     $('#review-actions').querySelectorAll('[data-action-toggle]').forEach((input) => input.addEventListener('change', () => {
       if (input.checked) state.enabled.add(input.dataset.actionToggle);
       else state.enabled.delete(input.dataset.actionToggle);
+      sortActionsByActive();
       renderPhoneActions();
       updateActiveCount();
       renderPreview();
@@ -570,6 +584,7 @@
     const from = state.reviewIds.indexOf(id);
     const to = direction === 'up' ? from - 1 : from + 1;
     if (from < 0 || to < 0 || to >= state.reviewIds.length) return;
+    if (state.enabled.has(id) !== state.enabled.has(state.reviewIds[to])) return;
     [state.reviewIds[from], state.reviewIds[to]] = [state.reviewIds[to], state.reviewIds[from]];
     renderReviewActions();
     renderPreview();
@@ -594,6 +609,7 @@
 
   function moveActionTo(id, targetId, placeAfter) {
     if (!id || !targetId || id === targetId) return false;
+    if (state.enabled.has(id) !== state.enabled.has(targetId)) return false;
     const nextIds = state.reviewIds.filter((actionId) => actionId !== id);
     const targetIndex = nextIds.indexOf(targetId);
     if (targetIndex < 0) return false;
@@ -863,6 +879,7 @@
       state.reviewIds.push('contactcard');
       state.enabled.add('contactcard');
       if (!actionIds(industryById(state.selected)).includes('contactcard')) state.customActionIds.add('contactcard');
+      sortActionsByActive();
       actionAdded = true;
       renderPreview();
     }
@@ -959,6 +976,7 @@
     state.enabled.add(id);
     if (actionIds(industryById(state.selected)).includes(id)) state.customActionIds.delete(id);
     else state.customActionIds.add(id);
+    sortActionsByActive();
     renderReviewActions();
     renderPreview();
     renderActionLibrary();
@@ -975,6 +993,7 @@
     state.reviewIds = [...recommendedIds, ...customIds];
     state.customActionIds = new Set(customIds);
     state.enabled = new Set([...recommendedIds, ...enabledCustomIds]);
+    sortActionsByActive();
     renderReviewActions();
     renderPreview();
     const customCount = customIds.length;
@@ -1326,6 +1345,7 @@
   } catch (error) {
     // Keep the restored editor state when storage is unavailable.
   }
+  sortActionsByActive();
   bindEvents();
   renderGroups();
   renderIndustries();
