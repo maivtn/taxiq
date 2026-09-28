@@ -102,6 +102,8 @@
 
   const STORAGE_KEY = 'taxiq:oneqr-industry-template';
   const CONTACT_STORAGE_KEY = 'taxiq:oneqr-contact-card';
+  const INDUSTRY_PICKER_HASH = '#choose-industry';
+  const EDITOR_DOCUMENT_TITLE = document.title;
   const DEFAULT_CONTACT_CARD = {
     name: 'Bitcoin Nail Bar',
     title: 'Nail salon · Houston',
@@ -248,7 +250,7 @@
     renderIndustries();
     renderPreview();
     setProgress(1);
-    showTemplateEditor();
+    returnToTemplateEditor();
   }
 
   function renderPreview() {
@@ -323,6 +325,8 @@
     $('#industry-picker-view').hidden = false;
     $('.template-workspace').classList.add('is-picker-mode');
     $('.industry-page').classList.remove('is-editor-mode');
+    $('.industry-page').classList.add('is-picker-page');
+    document.title = 'Choose Industry | One QR';
     setProgress(1);
     window.setTimeout(() => $('#industry-search-input').focus(), 0);
   }
@@ -331,8 +335,27 @@
     $('#template-editor-view').hidden = false;
     $('#industry-picker-view').hidden = true;
     $('.template-workspace').classList.remove('is-picker-mode');
+    $('.industry-page').classList.remove('is-picker-page');
     $('.industry-page').classList.add('is-editor-mode');
+    document.title = EDITOR_DOCUMENT_TITLE;
     renderEditorActions();
+  }
+
+  function openIndustryPickerPage() {
+    if (window.location.hash !== INDUSTRY_PICKER_HASH) {
+      window.history.pushState({ ...window.history.state, oneqrView: 'industry-picker' }, '', `${window.location.pathname}${window.location.search}${INDUSTRY_PICKER_HASH}`);
+    }
+    showIndustryPicker();
+  }
+
+  function returnToTemplateEditor() {
+    showTemplateEditor();
+    if (window.location.hash !== INDUSTRY_PICKER_HASH) return;
+    if (window.history.state?.oneqrView === 'industry-picker') {
+      window.history.back();
+      return;
+    }
+    window.history.replaceState({ ...window.history.state, oneqrView: 'editor' }, '', `${window.location.pathname}${window.location.search}`);
   }
 
   function addPastedLink() {
@@ -942,8 +965,8 @@
     $$('[data-close-success-modal]').forEach((button) => button.addEventListener('click', () => closeModal($('#template-success-modal'))));
     $$('[data-show-business-rule]').forEach((button) => button.addEventListener('click', () => openModal($('#template-help-modal'))));
     $$('[data-close-help-modal]').forEach((button) => button.addEventListener('click', () => closeModal($('#template-help-modal'))));
-    $$('[data-change-template], [data-open-industry-picker]').forEach((button) => button.addEventListener('click', showIndustryPicker));
-    $('#close-industry-picker').addEventListener('click', showTemplateEditor);
+    $$('[data-change-template], [data-open-industry-picker]').forEach((button) => button.addEventListener('click', openIndustryPickerPage));
+    $('#close-industry-picker').addEventListener('click', returnToTemplateEditor);
     $('#edit-applied-template').addEventListener('click', editAppliedTemplate);
     $('#open-contact-card-button').addEventListener('click', openContactCard);
     $('#editor-contact-card').addEventListener('click', openContactCard);
@@ -984,6 +1007,10 @@
         else if (topModal) closeModal(topModal);
       }
     });
+    window.addEventListener('popstate', () => {
+      if (window.location.hash === INDUSTRY_PICKER_HASH) showIndustryPicker();
+      else showTemplateEditor();
+    });
   }
 
   state.applied = loadAppliedTemplate();
@@ -1005,6 +1032,7 @@
   renderPreview();
   renderAppliedTemplate();
   renderContactStatus();
-  showTemplateEditor();
+  if (window.location.hash === INDUSTRY_PICKER_HASH) showIndustryPicker();
+  else showTemplateEditor();
   refreshIcons();
 }());

@@ -167,6 +167,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .industry-page.is-editor-mode .industry-hero,
 .industry-page.is-editor-mode .setup-progress,
 .industry-page.is-editor-mode .industry-summary { display: none; }
+.industry-page.is-picker-page .industry-hero,
+.industry-page.is-picker-page .setup-progress,
+.industry-page.is-picker-page .industry-summary,
+.industry-page.is-picker-page .applied-template-bar { display: none !important; }
+.industry-page.is-picker-page .template-library { padding: 30px; }
 .industry-page.is-editor-mode .template-preview .selected-template-summary,
 .industry-page.is-editor-mode .template-preview .business-safety-note,
 .industry-page.is-editor-mode .template-preview .contact-card-entry,
