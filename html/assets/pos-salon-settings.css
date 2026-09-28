@@ -146,6 +146,14 @@
 .schedule-explainer p,.schedule-help,.schedule-permission-note p{font-size:12px;line-height:1.5}
 .schedule-break-dialog header p,.schedule-date-controls small,.schedule-break-target small{font-size:12px}
 @media(max-width:480px){.schedule-heading h2{font-size:20px}.schedule-editor-tabs button{font-size:11px}}
+@media(max-width:600px){
+  [data-staff-schedule-settings],.schedule-drawer,.schedule-break-dialog,.schedule-impact{font-size:14px}
+  .schedule-heading p,.schedule-request-queue>header p,.schedule-row>strong,.schedule-day strong,.schedule-request-main>header strong,.schedule-request p,.schedule-request-compare strong,.schedule-drawer .tech-schedule-day{font-size:14px}
+  [data-staff-schedule-settings] button,.schedule-drawer button,.schedule-drawer>footer>div>button,.schedule-break-dialog button,.schedule-impact button{font-size:14px}
+  [data-staff-schedule-settings] input,[data-staff-schedule-settings] select,.schedule-drawer input,.schedule-drawer select,.schedule-drawer .tech-schedule-time input,.schedule-drawer input[data-date-display],.schedule-break-dialog input{font-size:14px}
+  .schedule-adjust-form label,.schedule-drawer label,.schedule-break-fields label{font-size:14px}
+  .schedule-shift-breaks button,.schedule-date-list button{font-size:12px}
+}
 
 [data-settings-panel="services"] { --svc-border:#d9e2f2; --svc-muted:#7a86a2; --svc-brand:#4840e2; color:#111827; font-size:12px; }
 .salon-service-toolbar { display:flex; align-items:center; justify-content:space-between; gap:12px; margin:16px 0 12px; }
