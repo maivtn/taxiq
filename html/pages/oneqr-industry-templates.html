@@ -155,6 +155,22 @@
                 <div><strong>Your existing business information is protected</strong><span>Name, logo, contact details, and permanent QR URL will not change.</span></div>
               </div>
 
+              <section class="customer-live-preview" id="customer-live-preview" hidden aria-label="Live customer OneQR view" aria-live="polite">
+                <div class="customer-live-preview-head">
+                  <div><span>Customer view</span><strong id="customer-live-template">Selected template</strong></div>
+                  <em id="customer-live-count">0 active actions</em>
+                </div>
+                <div class="phone-preview is-live-customer" aria-label="What customers see after scanning OneQR">
+                  <div class="phone-speaker"></div>
+                  <div class="phone-screen">
+                    <header><span class="phone-logo" id="customer-live-logo">B</span><div><strong id="customer-live-business-name">Bitcoin Nail Bar</strong><small id="customer-live-location">Houston, TX</small></div><button type="button" tabindex="-1">EN</button></header>
+                    <div class="phone-welcome"><small>ONEQR</small><h3 id="customer-live-welcome-title">How can we help today?</h3><p id="customer-live-welcome-copy">Choose an action below to get started.</p></div>
+                    <nav id="customer-live-actions" aria-label="Live customer actions"></nav>
+                    <footer>Powered by <strong>NEXORA</strong></footer>
+                  </div>
+                </div>
+              </section>
+
               <button class="contact-card-entry" type="button" id="open-contact-card-button">
                 <span><i data-lucide="contact-round" aria-hidden="true"></i></span>
                 <div><small>Business profile</small><strong>Contact card · Danh thiếp</strong><em id="contact-card-status">Needs setup</em></div>

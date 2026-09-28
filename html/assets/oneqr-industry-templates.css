@@ -178,6 +178,16 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .business-safety-note strong, .business-safety-note span { display: block; }
 .business-safety-note strong { font-size: 11px; line-height: 1.4; }
 .business-safety-note span { margin-top: 3px; color: #4b7b62; font-size: 11px; line-height: 1.4; }
+.customer-live-preview[hidden] { display: none; }
+.customer-live-preview { margin: 16px -4px; padding: 13px 8px 15px; border: 1px solid #ddd9ff; border-radius: 15px; background: linear-gradient(150deg, #f7f6ff, #f1fbff); }
+.customer-live-preview-head { display: flex; align-items: flex-end; justify-content: space-between; gap: 10px; margin: 0 6px 11px; }
+.customer-live-preview-head span, .customer-live-preview-head strong { display: block; }
+.customer-live-preview-head span { color: var(--oq-primary); font-size: 9px; font-weight: 850; letter-spacing: .08em; text-transform: uppercase; }
+.customer-live-preview-head strong { margin-top: 3px; font-size: 12px; }
+.customer-live-preview-head em { color: #7a8496; font-size: 9px; font-style: normal; font-weight: 750; }
+.phone-preview.is-live-customer { width: min(265px, 100%); box-shadow: 0 14px 32px rgba(49,46,129,.16); }
+.phone-preview.is-live-customer .phone-screen { min-height: 390px; }
+.phone-preview.is-live-customer .phone-screen nav { max-height: 230px; overflow-y: auto; }
 .contact-card-entry { display: flex; width: 100%; align-items: center; gap: 10px; margin: 0 0 16px; padding: 11px; border: 1px solid #ddd9ff; border-radius: 11px; background: linear-gradient(135deg, #faf9ff, #f1fbff); color: #344054; text-align: left; cursor: pointer; }
 .contact-card-entry > span { display: grid; flex: 0 0 34px; height: 34px; place-items: center; border-radius: 9px; background: #e8e5ff; color: var(--oq-primary); }
 .contact-card-entry > span svg, .contact-card-entry > svg { width: 16px; }

@@ -254,6 +254,7 @@
     const industry = industryById(state.selected);
     $('#preview-empty').hidden = Boolean(industry);
     $('#preview-selected').hidden = !industry;
+    renderCustomerLivePreview();
     $('#preview-state').textContent = industry ? (state.language === 'vi' ? 'Sẵn sàng xem' : 'Ready to review') : (state.language === 'vi' ? 'Chưa chọn' : 'Not selected');
     $('#preview-state').classList.toggle('is-ready', Boolean(industry));
     if (!industry) return;
@@ -579,19 +580,52 @@
       renderPreview();
     }
     renderContactStatus();
+    renderCustomerLivePreview();
     closeModal($('#contact-card-modal'));
     showToast(actionAdded ? 'Contact card saved and added to the menu draft.' : 'Contact card saved.');
   }
 
-  function renderPhoneActions() {
-    const active = currentReviewIds().filter((id) => state.enabled.has(id));
-    $('#phone-actions').innerHTML = active.length ? active.map((id) => {
+  function customerActionMarkup(active) {
+    return active.length ? active.map((id) => {
       const action = MODULES[id];
       const tag = id === 'contactcard' ? 'button' : 'div';
       const attribute = id === 'contactcard' ? ' type="button" data-phone-contact-card' : '';
       return `<${tag} class="phone-action"${attribute}><span><i data-lucide="${action.icon}"></i></span><strong>${actionLabel(action)}</strong><i data-lucide="chevron-right"></i></${tag}>`;
     }).join('') : `<div class="no-results"><p>${state.language === 'vi' ? 'Bật ít nhất một hành động cho khách.' : 'Turn on at least one customer action.'}</p></div>`;
-    $('#phone-actions').querySelector('[data-phone-contact-card]')?.addEventListener('click', openContactCard);
+  }
+
+  function renderActionContainer(container, active) {
+    if (!container) return;
+    container.innerHTML = customerActionMarkup(active);
+    container.querySelector('[data-phone-contact-card]')?.addEventListener('click', openContactCard);
+  }
+
+  function renderCustomerLivePreview() {
+    const preview = $('#customer-live-preview');
+    const industry = industryById(state.selected);
+    if (!preview) return;
+    preview.hidden = !industry;
+    if (!industry) return;
+    const active = currentReviewIds().filter((id) => state.enabled.has(id));
+    const businessName = contactCard.name || 'Bitcoin Nail Bar';
+    const location = [contactCard.city, contactCard.region].filter(Boolean).join(', ') || 'Houston, TX';
+    $('#customer-live-logo').textContent = businessName.charAt(0).toUpperCase();
+    $('#customer-live-business-name').textContent = businessName;
+    $('#customer-live-location').textContent = location;
+    $('#customer-live-template').textContent = label(industry);
+    $('#customer-live-count').textContent = state.language === 'vi'
+      ? `${active.length} hành động đang bật`
+      : `${active.length} active ${active.length === 1 ? 'action' : 'actions'}`;
+    $('#customer-live-welcome-title').textContent = state.language === 'vi' ? 'Hôm nay chúng tôi có thể giúp gì?' : 'How can we help today?';
+    $('#customer-live-welcome-copy').textContent = state.language === 'vi' ? 'Chọn một hành động bên dưới để bắt đầu.' : 'Choose an action below to get started.';
+    renderActionContainer($('#customer-live-actions'), active);
+    refreshIcons();
+  }
+
+  function renderPhoneActions() {
+    const active = currentReviewIds().filter((id) => state.enabled.has(id));
+    renderActionContainer($('#phone-actions'), active);
+    renderCustomerLivePreview();
     refreshIcons();
   }
 
