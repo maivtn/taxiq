@@ -50,6 +50,7 @@
     $('#calendar-reward-settings').hidden = !isCalendar;
     if (isCalendar) {
       window.NEXORA_TEAM_CALENDAR.mount(calendar);
+      window.NEXORA_FRONT_DESK_SCHEDULE?.syncCalendar(calendar);
       return;
     }
     const from = $('#from-date').value, to = $('#to-date').value;
@@ -98,6 +99,9 @@
     event.preventDefault();
     const fields=new FormData(event.currentTarget);
     const startAt=fields.get('startAt');
+    const selectedService=catalog.services.find(service=>service.id===fields.get('service'));
+    const availability=window.NEXORA_FRONT_DESK_SCHEDULE?.validateBooking({salonId:catalog.salon.id,technicianId:fields.get('technicianId')||null,startAt,durationMin:selectedService?.durationMin||60});
+    if(availability&&!availability.ok){$('#form-error').textContent=availability.error.message;return;}
     let result;
     if(editing) {
       const shift=new Date(startAt).getTime()-new Date(editing.startAt).getTime();

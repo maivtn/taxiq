@@ -12,12 +12,24 @@ function boot(query = '') {
   w.confirm=()=>true;
   w.structuredClone=structuredClone;
   w.matchMedia=()=>({matches:false});
-  for(const name of ['salon-data','pos-turn-settings','appointment-tickets','appointments-store']) w.eval(readFileSync(new URL('../assets/'+name+'.js', SOURCE_DIR),'utf8'));
+  for(const name of ['salon-data','pos-turn-settings','appointment-tickets','appointments-store','staff-schedule-store']) w.eval(readFileSync(new URL('../assets/'+name+'.js', SOURCE_DIR),'utf8'));
   w.NEXORA_APPOINTMENTS_STORE.create({id:'test-1',customerName:'Jade <test>',phone:'1234567890',startAt:'2026-09-08T10:00:00',serviceNames:['Gel Manicure'],status:'confirmed'});
   w.eval(readFileSync(new URL('../assets/team-calendar-content.js', SOURCE_DIR),'utf8'));
+  w.eval(readFileSync(new URL('../assets/front-desk-schedule.js', SOURCE_DIR),'utf8'));
   w.eval(readFileSync(new URL('../assets/pos-front-desk.js', SOURCE_DIR),'utf8'));
   return dom;
 }
+test('Front Desk shows schedule coverage and links management to Salon Settings',()=>{
+ const dom=boot(),d=dom.window.document;
+ assert.ok(d.querySelector('[data-front-schedule]'));assert.ok(d.querySelector('[data-front-schedule-conflicts]'));
+ assert.equal(d.querySelector('[data-manage-staff-schedule]').getAttribute('href'),'pos-salon-settings.html?section=staff-schedule');dom.window.close();
+});
+test('New Booking blocks a technician outside published availability',()=>{
+ const dom=boot(),w=dom.window,d=w.document;d.querySelector('#new-booking').click();
+ d.querySelector('[name="customerName"]').value='Outside shift';d.querySelector('[name="phone"]').value='5551234567';d.querySelector('[name="startAt"]').value='2026-09-28T22:00';d.querySelector('[name="technicianId"]').value='t1';
+ d.querySelector('#booking-form').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));
+ assert.match(d.querySelector('#form-error').textContent,/outside.*availability/i);assert.equal(w.NEXORA_APPOINTMENTS_STORE.loadAll().some(x=>x.customerName==='Outside shift'),false);dom.window.close();
+});
 test('Front Desk filters shared appointments and switches views without losing records',()=>{
   const dom=boot(),d=dom.window.document;
   assert.match(d.querySelector('tbody').textContent,/Jade <test>/);
@@ -32,6 +44,8 @@ test('Front Desk filters shared appointments and switches views without losing r
   assert.equal(d.querySelector('iframe'),null);
   const calendarRoot=d.querySelector('#team-calendar').shadowRoot;
   assert.ok(calendarRoot.querySelector('.calendar-grid'));
+  assert.ok(calendarRoot.querySelector('.schedule-unavailable'));
+  assert.ok(calendarRoot.querySelector('.schedule-break'));
   assert.equal(d.querySelector('#calendar-reward-settings').hidden,false);
   assert.equal(calendarRoot.querySelector('#reward-settings-button'),null);
   d.querySelector('#calendar-reward-settings').click();
