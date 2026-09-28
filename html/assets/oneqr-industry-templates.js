@@ -985,20 +985,6 @@
     setProgress(1);
   }
 
-  function editAppliedTemplate() {
-    if (!state.applied) return;
-    const industry = industryById(state.applied.industryId);
-    if (!industry) return;
-    state.selected = industry.id;
-    state.reviewIds = (state.applied.reviewIds || state.applied.actionIds).filter((id) => MODULES[id]);
-    state.enabled = new Set(state.applied.actionIds.filter((id) => MODULES[id]));
-    state.customActionIds = new Set(savedCustomActionIds(state.applied));
-    renderGroups();
-    renderIndustries();
-    renderPreview();
-    openReview();
-  }
-
   function bindEvents() {
     $('#industry-search-input').addEventListener('input', (event) => {
       state.query = event.target.value;
@@ -1027,7 +1013,6 @@
     $$('[data-close-help-modal]').forEach((button) => button.addEventListener('click', () => closeModal($('#template-help-modal'))));
     $$('[data-change-template], [data-open-industry-picker]').forEach((button) => button.addEventListener('click', openIndustryPickerPage));
     $('#close-industry-picker').addEventListener('click', returnToTemplateEditor);
-    $('#edit-applied-template').addEventListener('click', editAppliedTemplate);
     $('#open-contact-card-button').addEventListener('click', openContactCard);
     $('#editor-contact-card').addEventListener('click', openContactCard);
     $('#editor-add-action').addEventListener('click', openActionLibrary);
