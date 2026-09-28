@@ -65,3 +65,10 @@ test('day-off request changes schedule only after approval and supports rejectio
   const cancelled=store.createRequest({salonId:store.SALON_ID,staffId:'t1',type:'day-off',date:'2026-10-04',reason:'Vacation'},target).request;
   assert.equal(store.cancelRequest(cancelled.id,'t1',target).request.status,'cancelled');
 });
+
+test('rejects malformed schedule requests instead of reporting a lost success', () => {
+  const target=storage();
+  const result=store.createRequest({salonId:store.SALON_ID,staffId:'t1',type:'day-off',date:'not-a-date',reason:'Personal'},target);
+  assert.equal(result.ok,false);assert.equal(result.error.code,'invalid-request');
+  assert.equal(store.loadState(target).requests.length,0);
+});

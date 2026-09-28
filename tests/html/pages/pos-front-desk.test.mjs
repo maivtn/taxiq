@@ -30,6 +30,12 @@ test('New Booking blocks a technician outside published availability',()=>{
  d.querySelector('#booking-form').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));
  assert.match(d.querySelector('#form-error').textContent,/outside.*availability/i);assert.equal(w.NEXORA_APPOINTMENTS_STORE.loadAll().some(x=>x.customerName==='Outside shift'),false);dom.window.close();
 });
+test('reschedule availability ignores the appointment being edited',()=>{
+ const dom=boot(),w=dom.window,store=w.NEXORA_APPOINTMENTS_STORE;
+ store.create({id:'self-slot',customerName:'Self',phone:'5551112222',startAt:'2026-09-28T10:00:00',endAt:'2026-09-28T11:00:00',serviceIds:['pedi'],technicianId:'t1',status:'confirmed'});
+ const result=w.NEXORA_FRONT_DESK_SCHEDULE.validateBooking({salonId:'bitcoin-nail-bar-houston',appointmentId:'self-slot',technicianId:'t1',startAt:'2026-09-28T10:00',durationMin:60});
+ assert.equal(result.ok,true);dom.window.close();
+});
 test('Front Desk filters shared appointments and switches views without losing records',()=>{
   const dom=boot(),d=dom.window.document;
   assert.match(d.querySelector('tbody').textContent,/Jade <test>/);
