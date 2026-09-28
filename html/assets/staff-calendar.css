@@ -53,10 +53,12 @@
 .personal-week-card>strong{font-size:14px}
 .personal-week-range{font-size:12px}
 .calendar-layout.is-schedule-overview{grid-template-columns:minmax(0,1fr)}
-.calendar-weekly-toolbar{display:flex;justify-content:flex-end}
-.calendar-weekly-toolbar button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:8px 12px;border:1px solid #dbe4f3;border-radius:8px;background:#fff;color:#4c43df;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
-.calendar-weekly-toolbar svg{flex-shrink:0}
-.calendar-weekly-toolbar button:focus-visible{outline:2px solid #4c43df;outline-offset:2px}
+.is-schedule-overview .calendar-panel>header{flex-wrap:nowrap;gap:8px}
+.is-schedule-overview .calendar-panel>header h2{font-size:14px;white-space:nowrap}
+.is-schedule-overview .calendar-panel>header>span{flex-shrink:0}
+.calendar-weekly-link{display:inline-flex;align-items:center;min-height:44px;color:#4c43df;font-size:12px;font-weight:600;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
+.calendar-weekly-link:hover{color:#3730a3}
+.calendar-weekly-link:focus-visible{outline:2px solid #4c43df;outline-offset:2px;border-radius:3px}
 .weekly-overview-dialog .personal-week-card{padding:0;border:0;margin:12px 0 20px}
 .weekly-overview-dialog .personal-week-card>strong{display:none}
 .personal-week-list{display:grid;gap:0;list-style:none;padding:0;margin:6px 0 0;min-width:0}
