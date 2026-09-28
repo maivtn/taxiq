@@ -144,11 +144,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .editor-drag-handle:active { cursor: grabbing; }
 .editor-drag-handle:hover, .editor-drag-handle:focus-visible { background: #f2f0ff; color: var(--oq-primary); outline: none; }
 .editor-drag-handle svg { width: 15px; }
-.editor-action-icon-tools { display: grid; flex: 0 0 72px; justify-items: center; gap: 3px; }
+.editor-action-icon-tools { display: grid; flex: 0 0 72px; grid-template-columns: 34px 29px; align-items: center; justify-content: center; justify-items: center; gap: 3px 5px; }
 .template-editor-action-icon { display: grid; width: 34px; height: 34px; overflow: hidden; place-items: center; border-radius: 9px; background: #f0eeff; color: var(--oq-primary); }
 .template-editor-action-icon svg { width: 17px; }
 .template-editor-action-icon img { width: 100%; height: 100%; object-fit: cover; }
-.editor-action-icon-tools > span:last-child { display: grid; width: 72px; gap: 2px; }
+.editor-action-icon-tools > span:last-child { display: grid; width: 72px; grid-column: 1 / -1; gap: 2px; }
 .editor-action-icon-tools > span:last-child button { min-height: 18px; padding: 0 4px; border: 1px solid #dfe3eb; border-radius: 5px; background: #fff; color: #667085; cursor: pointer; font-size: 11px; font-weight: 700; line-height: 1; white-space: nowrap; }
 .editor-action-icon-tools > span:last-child button:hover, .editor-action-icon-tools > span:last-child button:focus-visible { border-color: #aaa5e5; color: var(--oq-primary); outline: none; }
 .template-editor-action > .template-editor-action-copy { min-width: 0; flex: 1; }
@@ -164,7 +164,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .editor-action-controls .editor-action-remove:hover, .editor-action-controls .editor-action-remove:focus-visible { border-color: #f3b4b4; background: #fff5f5; color: #dc2626; }
 .editor-action-controls button:disabled { border-color: #e8ebf0; background: #fafbfc; color: #c4cad4; cursor: default; }
 .editor-action-controls svg { width: 14px; }
-.editor-action-background { display: grid; flex: 0 0 29px; width: 29px; height: 29px; padding: 3px; place-items: center; border: 1px solid #dbe0e8; border-radius: 8px; background: #fff; cursor: pointer; }
+.editor-action-background { display: grid; width: 29px; height: 29px; padding: 3px; place-items: center; border: 1px solid #dbe0e8; border-radius: 8px; background: #fff; cursor: pointer; }
 .editor-action-background > span { width: 100%; height: 100%; border: 1px dashed #cbd1dc; border-radius: 5px; background: #fff; }
 .editor-action-background.has-color > span { border: 0; background: var(--action-swatch); }
 .editor-action-background:hover, .editor-action-background:focus-visible { border-color: #aaa5e5; outline: none; box-shadow: 0 0 0 2px rgba(79,70,229,.08); }
