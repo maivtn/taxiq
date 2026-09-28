@@ -155,6 +155,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .editor-action-controls button:disabled { border-color: #e8ebf0; background: #fafbfc; color: #c4cad4; cursor: default; }
 .editor-action-controls svg { width: 14px; }
 .template-editor-action .toggle { flex: 0 0 35px; }
+.editor-module-actions { margin-top: -8px; }
 .template-editor-footer { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding-top: 17px; border-top: 1px solid var(--oq-line); }
 .template-editor-footer p { margin: 0; color: #7a8496; font-size: 11px; }
 .editor-performance { display: grid; gap: 15px; margin-top: 2px; padding: 17px; border: 1px solid var(--oq-line); border-radius: 14px; background: #fbfbfe; }

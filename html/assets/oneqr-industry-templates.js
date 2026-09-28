@@ -292,6 +292,9 @@
     $('#editor-action-count').textContent = state.language === 'vi'
       ? `${activeCount}/${state.reviewIds.length} hành động đang bật`
       : `${activeCount}/${state.reviewIds.length} active ${state.reviewIds.length === 1 ? 'action' : 'actions'}`;
+    $('#editor-list-status').textContent = state.language === 'vi'
+      ? `${activeCount} hành động đang bật · Kéo tay nắm hoặc dùng nút mũi tên để sắp xếp`
+      : `${activeCount} active ${activeCount === 1 ? 'action' : 'actions'} · Drag the handle or use the arrows to reorder`;
     container.innerHTML = state.reviewIds.map((id, index) => {
       const action = MODULES[id];
       const custom = state.customActionIds.has(id);
@@ -1012,6 +1015,7 @@
     $('#open-contact-card-button').addEventListener('click', openContactCard);
     $('#editor-contact-card').addEventListener('click', openContactCard);
     $('#editor-add-action').addEventListener('click', openActionLibrary);
+    $('#editor-reset-actions').addEventListener('click', resetReviewActions);
     $('#editor-review-template').addEventListener('click', openReview);
     $('#editor-add-link').addEventListener('click', addPastedLink);
     $('#editor-link-input').addEventListener('keydown', (event) => {
