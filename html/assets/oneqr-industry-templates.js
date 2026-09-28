@@ -228,11 +228,6 @@
     return TILE_BACKGROUNDS.includes(background) ? background : '';
   }
 
-  function actionBackgroundBorder(background) {
-    const colors = background.match(/#[0-9a-f]{6}/gi) || [];
-    return colors[colors.length - 1] || '#4f46e5';
-  }
-
   function isCustomLinkId(id) {
     return typeof id === 'string' && id.startsWith('custom-link-');
   }
@@ -925,7 +920,7 @@
       const tag = id === 'contactcard' ? 'button' : 'div';
       const attribute = id === 'contactcard' ? ' type="button" data-phone-contact-card' : '';
       const background = actionBackgroundValue(id);
-      const backgroundAttribute = background ? ` style="--action-background:${escapeAttribute(background)};--action-border:${actionBackgroundBorder(background)}"` : '';
+      const backgroundAttribute = background ? ` style="--action-background:${escapeAttribute(background)}"` : '';
       return `<${tag} class="phone-action${background ? ' has-custom-background' : ''}"${attribute}${backgroundAttribute}><span>${actionIconMarkup(id)}</span><strong>${escapeAttribute(displayActionTitle(id))}</strong></${tag}>`;
     }).join('') : `<div class="no-results"><p>${state.language === 'vi' ? 'Bật ít nhất một hành động cho khách.' : 'Turn on at least one customer action.'}</p></div>`;
   }
