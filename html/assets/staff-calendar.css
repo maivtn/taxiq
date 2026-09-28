@@ -46,3 +46,25 @@
 .sync-pill{font-size:11px;font-weight:600}
 .request-options .quick-action-grid button{font-size:11px;font-weight:600}
 @media(max-width:760px){.staff-calendar-heading h1{font-size:22px}}
+
+.calendar-appointment-trigger{display:block;width:100%;min-width:0;padding:0;border:0;border-radius:10px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
+.calendar-appointment-trigger:hover .timeline-card{border-color:#8178f0;background:#faf7ff}
+.calendar-appointment-trigger:focus-visible{outline:2px solid #4c43df;outline-offset:3px}
+.calendar-appointment-detail{width:min(480px,calc(100% - 32px));max-height:calc(100dvh - 32px);box-sizing:border-box;padding:22px;border:1px solid #dbe4f3;border-radius:16px;background:#fff;color:#18212f;font-family:Inter,sans-serif;font-size:13px;line-height:1.5;box-shadow:0 24px 64px #0f172a29;overflow-y:auto}
+.calendar-appointment-detail::backdrop{background:#0f172a66}
+.calendar-appointment-detail>header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.calendar-detail-eyebrow,.calendar-detail-customer>span:first-child{font-size:11px;color:#64748b;font-weight:600}
+.calendar-appointment-detail h2{font-size:18px;line-height:1.35;margin:4px 0 0}
+.calendar-appointment-detail button{min-height:44px;border:1px solid #dbe4f3;border-radius:8px;padding:8px 14px;background:#fff;color:inherit;font:inherit;font-size:12px;font-weight:600;cursor:pointer}
+.calendar-appointment-detail .calendar-detail-close{width:44px;padding:0;font-size:22px}
+.calendar-detail-customer{margin-top:20px;padding:16px;border:1px solid #e1e6ef;border-radius:12px;background:#f8faff}
+.calendar-detail-customer h3{margin:3px 0 10px;font-size:16px;line-height:1.4;overflow-wrap:anywhere}
+.calendar-appointment-detail dl{display:grid;grid-template-columns:1fr 1fr;gap:16px 20px;margin:20px 0}
+.calendar-appointment-detail dt{font-size:11px;color:#64748b}
+.calendar-appointment-detail dd{margin:3px 0 0;font-size:13px;font-weight:600;overflow-wrap:anywhere}
+.calendar-detail-services{border-top:1px solid #e1e6ef;padding-top:16px}
+.calendar-detail-services h3{margin:0 0 8px;font-size:14px}
+.calendar-detail-services ul{padding-left:20px;margin:0;overflow-wrap:anywhere}
+.calendar-detail-note{font-size:11px;color:#64748b;margin:20px 0}
+.calendar-appointment-detail footer button{width:100%;background:#4c43df;color:#fff;border-color:#4c43df}
+@media(max-width:600px){.calendar-appointment-detail{width:100%;height:100dvh;max-width:none;max-height:none;margin:0;border:0;border-radius:0;padding:20px 16px;padding-bottom:max(20px,env(safe-area-inset-bottom))}}

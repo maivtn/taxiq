@@ -39,7 +39,7 @@
   function visibleAppointments() {
     var appointments = personalAppointments();
     if (appointments.length) return appointments;
-    return [{customerName:'Mary Smith', serviceNames:['Gel Manicure'], startAt:selectedDate + 'T10:30:00', endAt:selectedDate + 'T11:30:00', status:'Demo booking', demo:true}];
+    return [{id:'calendar-demo-appointment',customerName:'Mary Smith', serviceNames:['Gel Manicure'], startAt:selectedDate + 'T10:30:00', endAt:selectedDate + 'T11:30:00', status:'Demo booking', demo:true}];
   }
   function week() {
     var active = new Date(selectedDate + 'T12:00:00');
@@ -74,7 +74,7 @@
     items.sort(function (left, right) { return left.at.localeCompare(right.at); });
     return '<div class="timeline">' + items.map(function (item) {
       var body = '<div class="timeline-card"><strong>' + esc(item.title) + '</strong><small>' + esc(item.meta) + '</small></div>';
-      return '<div class="timeline-item ' + esc(item.kind) + '"' + (item.demo ? ' data-demo-booking' : '') + '><span>' + esc(item.at) + '</span>' + (item.id ? '<a href="staff-work-orders.html?salon=' + encodeURIComponent(salonId) + '&ticket=' + encodeURIComponent(item.id) + '" data-calendar-appointment>' + body + '</a>' : body) + '</div>';
+      return '<div class="timeline-item ' + esc(item.kind) + '"' + (item.demo ? ' data-demo-booking' : '') + '><span>' + esc(item.at) + '</span>' + (item.id ? '<button type="button" class="calendar-appointment-trigger" data-calendar-appointment="' + esc(item.id) + '" aria-haspopup="dialog">' + body + '</button>' : body) + '</div>';
     }).join('') + '</div>';
   }
   function workSchedulePanel() {
@@ -146,7 +146,30 @@
     render();
   }
 
+  function openAppointment(id) {
+    var appointment = visibleAppointments().find(function (item) { return item.id === id; });
+    if (!appointment) return;
+    var staff = catalog.technicians.find(function (item) { return item.id === (appointment.technicianId || staffId); }) || {};
+    var status = String(appointment.status || 'Confirmed').replace(/-/g, ' ');
+    var dialog = document.querySelector('[data-calendar-detail]');
+    if (!dialog) {
+      dialog = document.createElement('dialog');
+      dialog.className = 'calendar-appointment-detail';
+      dialog.setAttribute('data-calendar-detail', '');
+      dialog.setAttribute('aria-labelledby', 'calendar-detail-title');
+      document.body.appendChild(dialog);
+    }
+    dialog.innerHTML = '<header><div><span class="calendar-detail-eyebrow">BOOKING PREVIEW · DEMO</span><h2 id="calendar-detail-title">Appointment details</h2></div><form method="dialog"><button class="calendar-detail-close" aria-label="Close appointment details" autofocus>×</button></form></header>' +
+      '<section class="calendar-detail-customer"><span>Customer</span><h3>' + esc(appointment.customerName || 'Guest') + '</h3><span class="request-status">' + esc(status[0].toUpperCase() + status.slice(1)) + '</span></section>' +
+      '<dl><div><dt>Date</dt><dd>' + esc(titleDate(appointment.startAt.slice(0,10))) + '</dd></div><div><dt>Time</dt><dd>' + esc(time(appointment.startAt) + (appointment.endAt ? '–' + time(appointment.endAt) : '')) + '</dd></div><div><dt>Staff</dt><dd>' + esc(staff.name || 'Assigned staff') + '</dd></div><div><dt>Salon</dt><dd>' + esc(catalog.salon.name) + '</dd></div></dl>' +
+      '<section class="calendar-detail-services"><h3>Services</h3><ul>' + (appointment.serviceNames || []).map(function (name) { return '<li>' + esc(name) + '</li>'; }).join('') + '</ul></section>' +
+      '<p class="calendar-detail-note">Demo preview only. No booking changes are made here.</p><footer><form method="dialog"><button>Back to calendar</button></form></footer>';
+    dialog.showModal();
+  }
+
   root.addEventListener('click', function (event) {
+    var appointment = event.target.closest('[data-calendar-appointment]');
+    if (appointment) { openAppointment(appointment.dataset.calendarAppointment); return; }
     var day = event.target.closest('[data-calendar-day]');
     if (day) { selectedDate = day.dataset.date; requestType = ''; render(); return; }
     var tab = event.target.closest('[data-calendar-tab]');
