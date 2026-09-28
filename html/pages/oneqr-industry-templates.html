@@ -116,7 +116,7 @@
 
               <div class="editor-action-heading">
                 <div><span class="section-step">On your OneQR page</span><strong id="editor-action-count">0 active actions</strong></div>
-                <button class="add-action-button" type="button" id="editor-add-action"><i data-lucide="plus" aria-hidden="true"></i>Add action</button>
+                <button class="add-action-button" type="button" id="editor-add-action"><i data-lucide="plus" aria-hidden="true"></i>Add module</button>
               </div>
               <div class="template-editor-actions" id="template-editor-actions"></div>
 
@@ -270,7 +270,36 @@
       </div>
       <p class="modal-lead">Turn off anything you do not offer today, then drag the handle to arrange the order customers will see.</p>
       <div class="review-layout">
-        <div>
+        <div class="review-customer-column">
+          <span class="section-step">Customer view</span>
+          <div class="phone-preview is-live-customer review-customer-preview" aria-label="Customer view">
+          <div class="phone-speaker"></div>
+          <div class="phone-screen">
+            <header class="customer-welcome-head">
+              <span class="customer-brand-logo" aria-hidden="true"><b>ONE</b><small>NAIL BAR</small></span>
+              <div class="customer-brand-copy"><span>Welcome to</span><strong id="review-live-business-name">Bitcoin Nail Bar</strong></div>
+              <button class="customer-language-button" type="button" tabindex="-1" aria-label="Preview language: English"><i data-lucide="globe-2"></i><small>EN</small></button>
+            </header>
+            <div class="customer-featured-brand"><i data-lucide="sparkles"></i><span id="review-live-featured-name">Bitcoin Nail Bar</span></div>
+            <div class="customer-quick-actions">
+              <button class="is-primary" type="button" id="review-live-call" tabindex="-1"><i data-lucide="phone"></i>Call</button>
+              <button type="button" id="review-live-text" tabindex="-1"><i data-lucide="message-square"></i>Text</button>
+              <button type="button" tabindex="-1"><i data-lucide="contact-round"></i>Save contact</button>
+              <button type="button" tabindex="-1"><i data-lucide="wallet-cards"></i>Add to Wallet</button>
+              <button type="button" id="review-live-directions" tabindex="-1"><i data-lucide="navigation"></i>Directions</button>
+              <button type="button" tabindex="-1"><i data-lucide="share-2"></i>Share card</button>
+            </div>
+            <h3 class="customer-help-title" id="review-live-help-title">How can we help you today?</h3>
+            <nav id="phone-actions" aria-label="Customer actions"></nav>
+            <section class="customer-business-info">
+              <span id="review-live-info-address"><i data-lucide="map-pin"></i><b>9793 Westheimer Rd, Suite A, Houston, TX</b></span>
+              <span id="review-live-info-hours"><i data-lucide="clock-3"></i><b>Open daily · 9:30 AM–7:00 PM</b></span>
+            </section>
+            <footer>Powered by <strong>Nexora Touch</strong><i data-lucide="arrow-up-right"></i></footer>
+          </div>
+          </div>
+        </div>
+        <div class="review-editor-panel">
           <div class="review-template-card">
             <span id="review-template-icon">💅</span>
             <div><small>Template</small><strong id="review-template-name">Nail &amp; spa</strong><em id="review-template-name-secondary">Nail &amp; spa</em></div>
@@ -280,15 +309,6 @@
           <div class="review-menu-actions">
             <button class="add-action-button" type="button" id="add-action-button"><i data-lucide="plus" aria-hidden="true"></i>Add another action</button>
             <button class="reset-actions-button" type="button" id="reset-actions-button"><i data-lucide="rotate-ccw" aria-hidden="true"></i>Reset to recommended</button>
-          </div>
-        </div>
-        <div class="phone-preview" aria-label="Customer OneQR preview">
-          <div class="phone-speaker"></div>
-          <div class="phone-screen">
-            <header><span class="phone-logo">B</span><div><strong>Bitcoin Nail Bar</strong><small>Houston, TX</small></div><button type="button">EN</button></header>
-            <div class="phone-welcome"><small>WELCOME</small><h3>How can we help today?</h3><p>Your OneQR menu is ready for customers.</p></div>
-            <nav id="phone-actions" aria-label="Customer actions"></nav>
-            <footer>Powered by <strong>NEXORA</strong></footer>
           </div>
         </div>
       </div>

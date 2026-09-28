@@ -292,17 +292,26 @@
     $('#editor-action-count').textContent = state.language === 'vi'
       ? `${activeCount}/${state.reviewIds.length} hành động đang bật`
       : `${activeCount}/${state.reviewIds.length} active ${state.reviewIds.length === 1 ? 'action' : 'actions'}`;
-    container.innerHTML = state.reviewIds.map((id) => {
+    container.innerHTML = state.reviewIds.map((id, index) => {
       const action = MODULES[id];
       const custom = state.customActionIds.has(id);
       const source = custom ? (state.language === 'vi' ? 'Bạn đã thêm' : 'Added by you') : (state.language === 'vi' ? 'Theo mẫu ngành' : 'From industry template');
-      return `<article class="template-editor-action"><span class="template-editor-action-icon"><i data-lucide="${action.icon}"></i></span><div><strong>${actionLabel(action)}</strong><small>${source} · ${actionDescription(action)}</small></div><label class="toggle"><input type="checkbox" data-editor-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${actionLabel(action)}"><span></span></label></article>`;
+      const dragLabel = state.language === 'vi' ? `Kéo để sắp xếp ${action.vi}` : `Drag to reorder ${action.en}`;
+      return `<article class="template-editor-action" data-editor-action="${id}"><button class="editor-drag-handle" type="button" draggable="true" data-editor-drag-handle="${id}" aria-label="${dragLabel}" title="${dragLabel}"><i data-lucide="grip-vertical"></i></button><span class="template-editor-action-icon"><i data-lucide="${action.icon}"></i></span><div><strong>${actionLabel(action)}</strong><small>${source} · ${actionDescription(action)}</small></div><span class="editor-action-controls"><button type="button" data-editor-action-move="up" aria-label="Move ${action.en} up" ${index === 0 ? 'disabled' : ''}><i data-lucide="chevron-up"></i></button><button type="button" data-editor-action-move="down" aria-label="Move ${action.en} down" ${index === state.reviewIds.length - 1 ? 'disabled' : ''}><i data-lucide="chevron-down"></i></button><button class="editor-action-remove" type="button" data-editor-action-remove aria-label="Remove ${action.en}"><i data-lucide="x"></i></button></span><label class="toggle"><input type="checkbox" data-editor-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${actionLabel(action)}"><span></span></label></article>`;
     }).join('');
     container.querySelectorAll('[data-editor-action-toggle]').forEach((input) => input.addEventListener('change', () => {
       if (input.checked) state.enabled.add(input.dataset.editorActionToggle);
       else state.enabled.delete(input.dataset.editorActionToggle);
       renderPreview();
     }));
+    container.querySelectorAll('[data-editor-action-move]').forEach((button) => button.addEventListener('click', () => {
+      const row = button.closest('[data-editor-action]');
+      moveAction(row.dataset.editorAction, button.dataset.editorActionMove);
+    }));
+    container.querySelectorAll('[data-editor-action-remove]').forEach((button) => button.addEventListener('click', () => {
+      removeAction(button.closest('[data-editor-action]').dataset.editorAction);
+    }));
+    bindEditorDragReorder();
     renderPerformance();
     refreshIcons();
   }
@@ -412,12 +421,7 @@
       moveAction(row.dataset.reviewAction, button.dataset.actionMove);
     }));
     $('#review-actions').querySelectorAll('[data-action-remove]').forEach((button) => button.addEventListener('click', () => {
-      const id = button.closest('[data-review-action]').dataset.reviewAction;
-      state.reviewIds = state.reviewIds.filter((actionId) => actionId !== id);
-      state.enabled.delete(id);
-      state.customActionIds.delete(id);
-      renderReviewActions();
-      renderPreview();
+      removeAction(button.closest('[data-review-action]').dataset.reviewAction);
     }));
     bindDragReorder();
     renderPhoneActions();
@@ -437,6 +441,14 @@
     const to = direction === 'up' ? from - 1 : from + 1;
     if (from < 0 || to < 0 || to >= state.reviewIds.length) return;
     [state.reviewIds[from], state.reviewIds[to]] = [state.reviewIds[to], state.reviewIds[from]];
+    renderReviewActions();
+    renderPreview();
+  }
+
+  function removeAction(id) {
+    state.reviewIds = state.reviewIds.filter((actionId) => actionId !== id);
+    state.enabled.delete(id);
+    state.customActionIds.delete(id);
     renderReviewActions();
     renderPreview();
   }
@@ -498,6 +510,48 @@
         const placeAfter = event.clientY > bounds.top + bounds.height / 2;
         const sourceId = draggedActionId || event.dataTransfer.getData('text/plain');
         if (moveActionTo(sourceId, row.dataset.reviewAction, placeAfter)) {
+          renderReviewActions();
+          renderPreview();
+          showToast(state.language === 'vi' ? 'Đã cập nhật thứ tự hiển thị.' : 'Display order updated.');
+        }
+      });
+    });
+  }
+
+  function bindEditorDragReorder() {
+    const container = $('#template-editor-actions');
+    container.querySelectorAll('[data-editor-drag-handle]').forEach((handle) => {
+      handle.addEventListener('dragstart', (event) => {
+        draggedActionId = handle.dataset.editorDragHandle;
+        event.dataTransfer.effectAllowed = 'move';
+        event.dataTransfer.setData('text/plain', draggedActionId);
+        handle.closest('[data-editor-action]').classList.add('is-dragging');
+      });
+      handle.addEventListener('dragend', () => {
+        draggedActionId = null;
+        container.querySelectorAll('.is-dragging, .is-drag-over').forEach((item) => item.classList.remove('is-dragging', 'is-drag-over'));
+      });
+      handle.addEventListener('keydown', (event) => {
+        if (!['ArrowUp', 'ArrowDown'].includes(event.key)) return;
+        event.preventDefault();
+        moveAction(handle.dataset.editorDragHandle, event.key === 'ArrowUp' ? 'up' : 'down');
+        document.querySelector(`[data-editor-drag-handle="${handle.dataset.editorDragHandle}"]`)?.focus();
+      });
+    });
+    container.querySelectorAll('[data-editor-action]').forEach((row) => {
+      row.addEventListener('dragover', (event) => {
+        event.preventDefault();
+        event.dataTransfer.dropEffect = 'move';
+        container.querySelectorAll('.is-drag-over').forEach((item) => item.classList.remove('is-drag-over'));
+        if (row.dataset.editorAction !== draggedActionId) row.classList.add('is-drag-over');
+      });
+      row.addEventListener('dragleave', () => row.classList.remove('is-drag-over'));
+      row.addEventListener('drop', (event) => {
+        event.preventDefault();
+        const bounds = row.getBoundingClientRect();
+        const placeAfter = event.clientY > bounds.top + bounds.height / 2;
+        const sourceId = draggedActionId || event.dataTransfer.getData('text/plain');
+        if (moveActionTo(sourceId, row.dataset.editorAction, placeAfter)) {
           renderReviewActions();
           renderPreview();
           showToast(state.language === 'vi' ? 'Đã cập nhật thứ tự hiển thị.' : 'Display order updated.');
@@ -697,6 +751,24 @@
     container.querySelector('[data-phone-contact-card]')?.addEventListener('click', openContactCard);
   }
 
+  function renderCustomerFrame(prefix) {
+    const businessName = contactCard.name || 'Bitcoin Nail Bar';
+    const address = cardAddress(contactCard);
+    const hours = contactCard.showHours && contactCard.openTime && contactCard.closeTime
+      ? `${displayTime(contactCard.openTime)}–${displayTime(contactCard.closeTime)}`
+      : '';
+    $(`#${prefix}-business-name`).textContent = businessName;
+    $(`#${prefix}-featured-name`).textContent = businessName;
+    $(`#${prefix}-help-title`).textContent = state.language === 'vi' ? 'Hôm nay chúng tôi có thể giúp gì?' : 'How can we help you today?';
+    $(`#${prefix}-call`).hidden = !contactCard.showPhone || !contactCard.phone;
+    $(`#${prefix}-text`).hidden = !contactCard.showPhone || !contactCard.phone;
+    $(`#${prefix}-directions`).hidden = !address;
+    $(`#${prefix}-info-address`).lastChild.textContent = address;
+    $(`#${prefix}-info-address`).hidden = !address;
+    $(`#${prefix}-info-hours`).lastChild.textContent = `${state.language === 'vi' ? 'Mở cửa hằng ngày' : 'Open daily'} · ${hours}`;
+    $(`#${prefix}-info-hours`).hidden = !hours;
+  }
+
   function renderCustomerLivePreview() {
     const preview = $('#customer-live-preview');
     const industry = industryById(state.selected);
@@ -704,31 +776,18 @@
     preview.hidden = !industry;
     if (!industry) return;
     const active = currentReviewIds().filter((id) => state.enabled.has(id));
-    const businessName = contactCard.name || 'Bitcoin Nail Bar';
-    const address = cardAddress(contactCard);
-    const hours = contactCard.showHours && contactCard.openTime && contactCard.closeTime
-      ? `${displayTime(contactCard.openTime)}–${displayTime(contactCard.closeTime)}`
-      : '';
-    $('#customer-live-business-name').textContent = businessName;
-    $('#customer-live-featured-name').textContent = businessName;
-    $('#customer-live-help-title').textContent = state.language === 'vi' ? 'Hôm nay chúng tôi có thể giúp gì?' : 'How can we help you today?';
-    $('#customer-live-call').hidden = !contactCard.showPhone || !contactCard.phone;
-    $('#customer-live-text').hidden = !contactCard.showPhone || !contactCard.phone;
-    $('#customer-live-directions').hidden = !address;
+    renderCustomerFrame('customer-live');
     $('#customer-live-template').textContent = label(industry);
     $('#customer-live-count').textContent = state.language === 'vi'
       ? `${active.length} hành động đang bật`
       : `${active.length} active ${active.length === 1 ? 'action' : 'actions'}`;
-    $('#customer-live-info-address').lastChild.textContent = address;
-    $('#customer-live-info-address').hidden = !address;
-    $('#customer-live-info-hours').lastChild.textContent = `${state.language === 'vi' ? 'Mở cửa hằng ngày' : 'Open daily'} · ${hours}`;
-    $('#customer-live-info-hours').hidden = !hours;
     renderActionContainer($('#customer-live-actions'), active);
     refreshIcons();
   }
 
   function renderPhoneActions() {
     const active = currentReviewIds().filter((id) => state.enabled.has(id));
+    renderCustomerFrame('review-live');
     renderActionContainer($('#phone-actions'), active);
     renderCustomerLivePreview();
     refreshIcons();
