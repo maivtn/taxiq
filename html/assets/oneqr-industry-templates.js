@@ -1032,7 +1032,7 @@
     $('#editor-contact-card').addEventListener('click', openContactCard);
     $('#editor-add-action').addEventListener('click', openActionLibrary);
     $('#editor-reset-actions').addEventListener('click', resetReviewActions);
-    $('#editor-review-template').addEventListener('click', openReview);
+    $('#editor-review-template').addEventListener('click', applyTemplate);
     $('#editor-add-link').addEventListener('click', addPastedLink);
     $('#editor-link-input').addEventListener('keydown', (event) => {
       if (event.key === 'Enter') {
