@@ -197,10 +197,35 @@
                 <div class="phone-preview is-live-customer" aria-label="What customers see after scanning OneQR">
                   <div class="phone-speaker"></div>
                   <div class="phone-screen">
-                    <header><span class="phone-logo" id="customer-live-logo">B</span><div><strong id="customer-live-business-name">Bitcoin Nail Bar</strong><small id="customer-live-location">Houston, TX</small></div><button type="button" tabindex="-1">EN</button></header>
-                    <div class="phone-welcome"><small>ONEQR</small><h3 id="customer-live-welcome-title">How can we help today?</h3><p id="customer-live-welcome-copy">Choose an action below to get started.</p></div>
+                    <header class="customer-profile-head">
+                      <span class="customer-business-type" id="customer-live-business-type">BUSINESS</span>
+                      <span class="customer-qr-mark" aria-hidden="true"><i data-lucide="qr-code"></i></span>
+                      <span class="customer-profile-avatar" id="customer-live-logo">💅</span>
+                      <strong id="customer-live-business-name">Bitcoin Nail Bar</strong>
+                      <small id="customer-live-business-title">Nail salon · Houston</small>
+                      <b id="customer-live-phone"><i data-lucide="phone"></i>(346) 802-4906</b>
+                      <small class="customer-profile-address" id="customer-live-location"><i data-lucide="map-pin"></i>9793 Westheimer Rd, Suite A, Houston, TX</small>
+                      <span class="customer-open-state"><i></i><span id="customer-live-open-state">Open · closes 7:00 PM</span></span>
+                      <div class="customer-language-pills" aria-label="Preview languages"><button class="is-active" type="button" tabindex="-1">VI</button><button type="button" tabindex="-1">EN</button><button type="button" tabindex="-1">ES</button></div>
+                      <div class="customer-quick-actions">
+                        <button class="is-primary" type="button" id="customer-live-call" tabindex="-1"><i data-lucide="phone"></i>Call</button>
+                        <button type="button" id="customer-live-text" tabindex="-1"><i data-lucide="message-square"></i>Text</button>
+                        <button type="button" tabindex="-1"><i data-lucide="contact-round"></i>Save contact</button>
+                        <button type="button" tabindex="-1"><i data-lucide="wallet-cards"></i>Add to Wallet</button>
+                        <button type="button" id="customer-live-directions" tabindex="-1"><i data-lucide="navigation"></i>Directions</button>
+                        <button type="button" tabindex="-1"><i data-lucide="share-2"></i>Share card</button>
+                      </div>
+                    </header>
                     <nav id="customer-live-actions" aria-label="Live customer actions"></nav>
-                    <footer>Powered by <strong>NEXORA</strong></footer>
+                    <section class="customer-about-card">
+                      <strong>About this page</strong>
+                      <p id="customer-live-about">This is the official page for Bitcoin Nail Bar. Each button above opens one useful action. No app needed.</p>
+                      <span id="customer-live-hours"><i data-lucide="clock-3"></i>Hours: 9:30 AM–7:00 PM</span>
+                      <span id="customer-live-about-address"><i data-lucide="map-pin"></i>9793 Westheimer Rd, Suite A, Houston, TX</span>
+                      <span id="customer-live-about-phone"><i data-lucide="phone"></i>(346) 802-4906</span>
+                    </section>
+                    <button class="customer-home-button" type="button" tabindex="-1"><i data-lucide="circle-plus"></i>Add to Home Screen</button>
+                    <footer><span id="customer-live-url">oneqr.com/o/bitcoin-nail-bar</span> · QR &amp; NFC</footer>
                   </div>
                 </div>
               </section>
