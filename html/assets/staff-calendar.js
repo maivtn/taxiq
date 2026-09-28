@@ -212,8 +212,13 @@
       dialog.setAttribute('data-weekly-overview', '');
       dialog.setAttribute('aria-labelledby', 'weekly-overview-title');
       document.body.appendChild(dialog);
+      dialog.addEventListener('click', function (event) {
+        if (!event.target.closest('[data-overview-edit]')) return;
+        dialog.close();
+        openWeeklySchedule();
+      });
     }
-    dialog.innerHTML = '<header><h2 id="weekly-overview-title">My schedule</h2><form method="dialog"><button class="calendar-detail-close" aria-label="Close weekly schedule" autofocus>×</button></form></header>' + personalScheduleCard() + '<footer><form method="dialog"><button>Back to calendar</button></form></footer>';
+    dialog.innerHTML = '<header><h2 id="weekly-overview-title">My schedule</h2><form method="dialog"><button class="calendar-detail-close" aria-label="Close weekly schedule" autofocus>×</button></form></header>' + approvalNotice() + personalScheduleCard() + '<footer><form method="dialog"><button>Back to calendar</button></form>' + (schedulePermission() === 'none' ? '' : '<button type="button" data-overview-edit>Edit my schedule</button>') + '</footer>';
     dialog.showModal();
   }
 
