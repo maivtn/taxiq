@@ -3,11 +3,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nexora Touch - OneQR Industry Templates</title>
+  <title>Nexora Touch - One QR</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/qr-stations.css?v=phone-1">
   <link rel="stylesheet" href="../assets/oneqr-industry-templates.css">
 </head>
 <body>
@@ -17,17 +18,46 @@
     <div class="app-area">
       <header class="header"></header>
 
-      <main class="content industry-page" aria-labelledby="industry-page-title">
-        <nav class="industry-breadcrumb" aria-label="Breadcrumb">
-          <a href="qr-stations.html">Stations &amp; QR Codes</a>
-          <i data-lucide="chevron-right" aria-hidden="true"></i>
-          <span>OneQR templates</span>
-        </nav>
+      <main class="content qr-stations-page" aria-labelledby="qr-stations-title">
+        <section class="qr-stations-shell">
+          <div class="qr-stations-heading">
+            <h1 id="qr-stations-title">One QR</h1>
+            <p>Create and manage tip stations. Customers scan to tip your staff.</p>
+
+            <div class="qr-tabs" role="tablist" aria-label="Stations and QR tabs">
+              <a class="qr-tab" href="qr-stations.html?tab=one-qr" role="tab" aria-selected="false">
+                <span class="qr-tab-icon"><i data-lucide="scan-line" aria-hidden="true"></i></span>
+                <span>OneQR</span>
+              </a>
+              <a class="qr-tab" href="qr-stations.html?tab=qr-stations" role="tab" aria-selected="false">
+                <span class="qr-tab-icon"><i data-lucide="hand-coins" aria-hidden="true"></i></span>
+                <span>Receive Tips</span>
+              </a>
+              <a class="qr-tab" href="qr-stations.html?tab=accept-payment" role="tab" aria-selected="false">
+                <span class="qr-tab-icon"><i data-lucide="credit-card" aria-hidden="true"></i></span>
+                <span>Accept Payment</span>
+              </a>
+              <a class="qr-tab" href="qr-stations.html?tab=referral-link" role="tab" aria-selected="false">
+                <span class="qr-tab-icon"><i data-lucide="share-2" aria-hidden="true"></i></span>
+                <span>Referral Link</span>
+              </a>
+              <a class="qr-tab" href="qr-stations.html?tab=staff-invite-qr" role="tab" aria-selected="false">
+                <span class="qr-tab-icon"><i data-lucide="user-plus" aria-hidden="true"></i></span>
+                <span>Staff Invite QR</span>
+              </a>
+              <a class="qr-tab is-active" href="oneqr-industry-templates.html" role="tab" aria-selected="true" aria-current="page">
+                <span class="qr-tab-icon"><i data-lucide="layout-template" aria-hidden="true"></i></span>
+                <span>Industry Templates</span>
+              </a>
+            </div>
+          </div>
+
+          <div class="industry-page">
 
         <section class="industry-hero">
           <div>
             <span class="industry-eyebrow">OneQR setup</span>
-            <h1 id="industry-page-title">Start with a template built for your business</h1>
+            <h2 id="industry-page-title">Start with a template built for your business</h2>
             <p>Choose what you do and OneQR will prepare the most useful customer actions. You can change every button before customers see it.</p>
           </div>
           <div class="industry-hero-actions">
@@ -132,6 +162,8 @@
             </div>
           </aside>
         </section>
+          </div>
+        </section>
       </main>
     </div>
   </div>
@@ -188,7 +220,7 @@
       </div>
       <div class="modal-actions">
         <button class="secondary-action" type="button" data-close-success-modal>Keep browsing</button>
-        <a class="primary-action" href="qr-stations.html#one-qr">Open OneQR builder<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
+        <a class="primary-action" href="qr-stations.html?tab=one-qr">Open OneQR builder<i data-lucide="arrow-up-right" aria-hidden="true"></i></a>
       </div>
     </section>
   </div>
@@ -210,7 +242,7 @@
 
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script>
-    window.NEXORA_SHELL = { activePage: 'stations', activeTab: 'one-qr' };
+    window.NEXORA_SHELL = { activePage: 'stations', activeTab: 'industry-templates' };
   </script>
   <script src="../assets/nexora-shell.js"></script>
   <script src="../assets/oneqr-industry-templates.js"></script>

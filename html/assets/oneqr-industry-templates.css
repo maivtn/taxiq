@@ -19,7 +19,7 @@ body {
 button, input { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 
-.industry-page { max-width: 1540px; margin: 0 auto; padding-bottom: 72px; }
+.industry-page { width: 100%; max-width: 1540px; margin: 0 auto; padding-bottom: 72px; }
 
 .industry-breadcrumb {
   display: flex;
@@ -66,7 +66,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
   letter-spacing: .09em;
   text-transform: uppercase;
 }
-.industry-hero h1 { max-width: 720px; margin: 8px 0 9px; font-size: clamp(27px, 3vw, 40px); line-height: 1.1; letter-spacing: -.035em; }
+.industry-hero h2 { max-width: 720px; margin: 8px 0 9px; font-size: clamp(27px, 3vw, 40px); line-height: 1.1; letter-spacing: -.035em; }
 .industry-hero p { max-width: 720px; margin: 0; color: var(--oq-muted); font-size: 15px; line-height: 1.65; }
 .industry-hero-actions { z-index: 1; display: flex; align-items: flex-start; gap: 12px; }
 .language-switch { display: flex; padding: 3px; border: 1px solid #d6d4f3; border-radius: 10px; background: rgba(255,255,255,.8); }
@@ -300,7 +300,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 }
 
 @media (max-width: 520px) {
-  .industry-hero h1 { font-size: 27px; }
+  .industry-hero h2 { font-size: 27px; }
   .industry-summary { grid-template-columns: 1fr 1fr; }
   .industry-summary article { padding: 12px; }
   .industry-summary small { line-height: 1.3; }
