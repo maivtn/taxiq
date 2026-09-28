@@ -42,6 +42,7 @@ test('Staff Schedule escapes quoted staff data with a complete HTML entity',()=>
 test('manager drafts, validates and publishes a staff schedule',()=>{
  const {dom,w,d}=boot(null,'?section=staff-schedule&staff=staff-0');
  d.querySelector('[data-schedule-staff="staff-0"] [data-schedule-day]').click();
+ d.querySelector('[data-schedule-scope="weekly"]').click();
  const start=d.querySelector('[data-schedule-start]'),end=d.querySelector('[data-schedule-end]');
  d.querySelector('[data-schedule-off="mon"]').checked=false;
  start.value='18:00';end.value='09:00';d.querySelector('[data-schedule-save-draft]').click();
@@ -58,12 +59,13 @@ test('manager chooses date scope and preserves editable breaks',()=>{
  const {dom,w,d}=boot(null,'?section=staff-schedule&staff=staff-0');
  const monday=d.querySelectorAll('[data-schedule-staff="staff-0"] [data-schedule-day]')[1];monday.click();
  const formattedDate=new Date(monday.dataset.scheduleDate+'T12:00:00').toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});
- assert.equal(d.querySelector('[data-schedule-scope="date"]').parentElement.textContent.trim(),formattedDate+' only');
+ assert.equal(d.querySelector('[data-schedule-scope="date"]').getAttribute('aria-selected'),'true');
  assert.ok(d.querySelector('[data-schedule-scope="date"]'));assert.ok(d.querySelector('[data-schedule-scope="weekly"]'));
  d.querySelector('[data-schedule-scope="date"]').click();
  assert.equal(d.querySelector('[data-schedule-calendar] .tech-schedule-day').textContent,formattedDate);
- assert.equal(d.querySelectorAll('[data-schedule-break-row]').length,1);
- d.querySelector('[data-schedule-scope="date"]').checked=true;d.querySelector('[data-schedule-start]').value='10:00';d.querySelector('[data-schedule-save-draft]').click();
+ assert.equal(d.querySelectorAll('.schedule-break-chip').length,1);
+ const mode=d.querySelector('[data-date-mode]');mode.value='custom-hours';mode.dispatchEvent(new w.Event('change',{bubbles:true}));
+ d.querySelector('[data-schedule-start]').value='10:00';d.querySelector('[data-schedule-save-draft]').click();
  const draft=w.NEXORA_STAFF_SCHEDULE_STORE.loadState().drafts['bitcoin-nail-bar-houston']['staff-0'];
  assert.equal(draft.exceptions[monday.dataset.scheduleDate].start,'10:00');assert.equal(draft.weekly.mon.start,'09:00');assert.deepEqual(JSON.parse(JSON.stringify(draft.exceptions[monday.dataset.scheduleDate].breaks)),[{start:'13:00',end:'13:30'}]);dom.window.close();
 });
@@ -77,14 +79,14 @@ test('Edit schedule opens the staff weekly calendar modal and saves days, breaks
  d.querySelector('[data-schedule-start="mon"]').value='10:00';
  d.querySelector('[data-schedule-off="tue"]').click();
  assert.equal(d.querySelector('[data-schedule-start="tue"]').disabled,true);
- const pickDay=day=>{const select=d.querySelector('[data-break-day]');select.value=day;select.dispatchEvent(new w.Event('change',{bubbles:true}));};
- pickDay('mon');d.querySelector('[data-break-start]').value='14:00';d.querySelector('[data-break-end]').value='14:30';
- pickDay('wed');d.querySelector('[data-break-start]').value='15:00';d.querySelector('[data-break-end]').value='15:30';
- pickDay('mon');assert.equal(d.querySelector('[data-break-start]').value,'14:00');assert.equal(d.querySelector('[data-schedule-start="mon"]').value,'10:00');
+ const editBreak=(day,start,end)=>{d.querySelector('[data-break-key="'+day+'"][data-break-edit="0"]').click();d.querySelector('[data-break-start]').value=start;d.querySelector('[data-break-end]').value=end;d.querySelector('[data-break-form]').dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));};
+ editBreak('mon','14:00','14:30');editBreak('wed','15:00','15:30');
+ assert.match(d.querySelector('[data-schedule-edit-day="mon"]').textContent,/2:00 PM/);assert.equal(d.querySelector('[data-schedule-start="mon"]').value,'10:00');
+ d.querySelector('[data-schedule-scope="permissions"]').click();
  d.querySelector('[data-schedule-permission]').value='none';d.querySelector('[data-schedule-save-draft]').click();
  const draft=w.NEXORA_STAFF_SCHEDULE_STORE.loadState().drafts['bitcoin-nail-bar-houston']['staff-0'];
  assert.equal(draft.weekly.mon.start,'10:00');assert.equal(draft.weekly.tue.working,false);assert.equal(draft.weekly.mon.breaks[0].start,'14:00');assert.equal(draft.weekly.wed.breaks[0].start,'15:00');assert.equal(draft.permission,'none');
- d.querySelector('[data-schedule-publish]').click();trigger.click();assert.equal(d.querySelector('[data-schedule-start="mon"]').value,'10:00');assert.equal(d.querySelector('[data-schedule-permission]').value,'none');
+ d.querySelector('[data-schedule-publish]').click();trigger.click();assert.equal(d.querySelector('[data-schedule-start="mon"]').value,'10:00');d.querySelector('[data-schedule-scope="permissions"]').click();assert.equal(d.querySelector('[data-schedule-permission]').value,'none');
  d.querySelector('[data-schedule-close][aria-label]').click();assert.equal(d.querySelector('[data-schedule-drawer]'),null);assert.equal(d.activeElement,trigger);assert.deepEqual(errors,[]);dom.window.close();
 });
 
