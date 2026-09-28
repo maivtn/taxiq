@@ -111,13 +111,14 @@
     }).join('') + '</div></div>';
   }
   function requestLabel(type) {
-    return {'day-off':'Day off', 'change-hours':'Change hours', 'break':'Take break'}[type] || 'Schedule request';
+    return {'day-off':'Day off', 'change-hours':'Change hours', 'break':'Take break', 'weekly-schedule':'Weekly schedule'}[type] || 'Schedule request';
   }
   function requestList() {
     var list = store.loadState().requests.filter(function (item) { return item.salonId === salonId && item.staffId === staffId; }).sort(function (left, right) { return String(right.createdAt).localeCompare(String(left.createdAt)); });
     if (!list.length) return '<div class="calendar-empty"><strong>No requests yet</strong><p>Your schedule requests and manager decisions appear here.</p></div>';
     return '<div class="request-list" data-request-list>' + list.map(function (item) {
       var detail = item.type === 'day-off' ? item.reason : item.start + '–' + item.end + (item.reason ? ' · ' + item.reason : '');
+      if (item.type === 'weekly-schedule') detail = ['mon','tue','wed','thu','fri','sat','sun'].map(function (key) { var day = item.weekly[key]; return key[0].toUpperCase() + key.slice(1) + ': ' + (day.working ? day.start + '–' + day.end : 'Day off'); }).join(' · ');
       var cancellable = ['pending', 'adjusted'].includes(item.status);
       return '<article class="request-card"><header><div><strong>' + esc(requestLabel(item.type)) + '</strong><small>' + esc(titleDate(item.date)) + '</small></div><span class="request-status is-' + esc(item.status) + '">' + esc(item.status[0].toUpperCase() + item.status.slice(1)) + '</span></header><p>' + esc(detail) + '</p>' + (item.status === 'blocked' ? '<small>Manager must resolve affected bookings before approval.</small>' : '') + (cancellable ? '<button type="button" data-request-cancel="' + esc(item.id) + '">Cancel request</button>' : '') + '</article>';
     }).join('') + '</div>';
@@ -191,6 +192,62 @@
     dialog.showModal();
   }
 
+  function openWeeklySchedule() {
+    if (schedulePermission() === 'none') return;
+    var schedule = store.getStaffSchedule(salonId, staffId, {});
+    var staff = catalog.technicians.find(function (person) { return person.id === staffId; }) || {};
+    var days = [['mon','Monday'],['tue','Tuesday'],['wed','Wednesday'],['thu','Thursday'],['fri','Friday'],['sat','Saturday'],['sun','Sunday']];
+    var dialog = document.querySelector('[data-staff-weekly-dialog]');
+    if (!dialog) {
+      dialog = document.createElement('dialog');
+      dialog.className = 'staff-weekly-dialog';
+      dialog.setAttribute('data-staff-weekly-dialog', '');
+      dialog.setAttribute('aria-labelledby', 'staff-weekly-title');
+      document.body.appendChild(dialog);
+      dialog.addEventListener('click', function (event) { if (event.target.closest('[data-weekly-close]')) dialog.close(); });
+      dialog.addEventListener('change', function (event) {
+        if (!event.target.matches('[data-weekly-off]')) return;
+        var row = event.target.closest('[data-weekly-day]');
+        row.classList.toggle('is-off', event.target.checked);
+        row.querySelectorAll('input[type="time"]').forEach(function (input) {
+          input.disabled = event.target.checked;
+          if (!input.disabled && !input.value) input.value = input.hasAttribute('data-weekly-start') ? '09:00' : '19:00';
+        });
+      });
+      dialog.addEventListener('submit', saveWeeklySchedule);
+    }
+    dialog.innerHTML = '<form data-staff-weekly-form><header><div><span>' + esc(staff.name || 'My schedule') + '</span><h2 id="staff-weekly-title">Edit my weekly schedule</h2></div><button type="button" data-weekly-close aria-label="Close weekly schedule" autofocus>×</button></header><p class="staff-weekly-help">Regular hours, repeated every week. One-date changes stay unchanged.</p>' + approvalNotice() + '<section class="staff-weekly-rows" aria-label="Weekly schedule">' + days.map(function (entry) {
+      var key = entry[0], name = entry[1], day = schedule.weekly[key];
+      return '<div class="staff-weekly-row' + (day.working ? '' : ' is-off') + '" data-weekly-day="' + key + '"><strong>' + name + '</strong><label class="staff-weekly-off"><input type="checkbox" data-weekly-off ' + (day.working ? '' : 'checked') + '>Day off</label><div class="staff-weekly-times"><input type="time" data-weekly-start aria-label="' + name + ' start time" value="' + esc(day.start) + '" required ' + (day.working ? '' : 'disabled') + '><span>TO</span><input type="time" data-weekly-end aria-label="' + name + ' end time" value="' + esc(day.end) + '" required ' + (day.working ? '' : 'disabled') + '></div>' + ((day.breaks || []).length ? '<small>Breaks: ' + day.breaks.map(function (pause) { return esc(pause.start + '–' + pause.end); }).join(', ') + ' (kept when working)</small>' : '') + '</div>';
+    }).join('') + '</section><p class="request-feedback" data-weekly-error role="alert"></p><footer><button type="button" data-weekly-close>Cancel</button><button class="staff-primary-button ' + (schedule.permission === 'self' ? 'is-direct' : 'is-approval') + '" type="submit">' + (schedule.permission === 'self' ? 'Save changes' : 'Send for approval') + '</button></footer></form>';
+    dialog.showModal();
+  }
+  function saveWeeklySchedule(event) {
+    event.preventDefault();
+    var form = event.target;
+    var schedule = store.getStaffSchedule(salonId, staffId, {});
+    var next = JSON.parse(JSON.stringify(schedule));
+    form.querySelectorAll('[data-weekly-day]').forEach(function (row) {
+      var key = row.dataset.weeklyDay, working = !row.querySelector('[data-weekly-off]').checked;
+      next.weekly[key] = {working:working,start:working ? row.querySelector('[data-weekly-start]').value : '',end:working ? row.querySelector('[data-weekly-end]').value : '',breaks:working ? schedule.weekly[key].breaks : []};
+    });
+    var error = form.querySelector('[data-weekly-error]');
+    if (!store.validateSchedule(next).ok) { error.textContent = 'Check each working day: end time must be after start time, and existing breaks must fit within the shift.'; return; }
+    var result = store.createRequest({salonId:salonId,staffId:staffId,type:'weekly-schedule',date:selectedDate,weekly:next.weekly,reason:'Update my regular weekly schedule'});
+    if (!result.ok) { error.textContent = 'Unable to save. Check your schedule permission and try again.'; return; }
+    if (schedule.permission === 'self') {
+      var applied = store.reviewRequest(result.request.id,'approve',appointmentRows());
+      if (!applied.ok && applied.error.code !== 'booking-impact') {
+        store.cancelRequest(result.request.id,staffId);
+        error.textContent = 'Unable to apply this weekly schedule. Your current hours have not changed. Please try again.';
+        return;
+      }
+      actionMessage = applied.ok ? 'Weekly schedule saved — no approval needed.' : 'Weekly schedule sent for manager review because existing bookings are affected. Current hours stay unchanged.';
+    } else actionMessage = 'Weekly schedule sent — pending manager approval. Current hours stay unchanged.';
+    form.closest('dialog').close();
+    activeTab = 'requests'; requestType = ''; feedback = ''; render();
+  }
+
   root.addEventListener('click', function (event) {
     var appointment = event.target.closest('[data-calendar-appointment]');
     if (appointment) { openAppointment(appointment.dataset.calendarAppointment); return; }
@@ -199,7 +256,7 @@
     var tab = event.target.closest('[data-calendar-tab]');
     if (tab) { activeTab = tab.dataset.calendarTab; requestType = ''; feedback = ''; render(); return; }
     if (event.target.closest('[data-calendar-today]')) { selectedDate = dateKey(new Date()); render(); return; }
-    if (event.target.closest('[data-edit-my-schedule]')) { openRequest('change-hours'); return; }
+    if (event.target.closest('[data-edit-my-schedule]')) { openWeeklySchedule(); return; }
     if (event.target.closest('[data-request-day-off]')) { openRequest('day-off'); return; }
     if (event.target.closest('[data-request-change-hours]')) { openRequest('change-hours'); return; }
     if (event.target.closest('[data-request-break]')) { openRequest('break'); return; }

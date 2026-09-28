@@ -61,6 +61,30 @@
 .request-form.is-direct{border-color:#15877b;background:#f7fcfa}
 .request-form .schedule-approval-notice{margin-top:0}
 .schedule-action-message{padding:12px;border:1px solid #c7d2fe;border-radius:9px;background:#eef2ff;color:#3730a3;font-size:14px;line-height:1.5}
+.staff-weekly-dialog{width:min(760px,calc(100% - 24px));max-height:calc(100dvh - 24px);box-sizing:border-box;border:1px solid #dbe4f3;border-radius:16px;padding:20px;background:#fff;color:#18212f;font:13px/1.5 Inter,sans-serif;overflow-y:auto}
+.staff-weekly-dialog::backdrop{background:#0f172a66}
+.staff-weekly-dialog form>header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
+.staff-weekly-dialog header span{font-size:16px;font-weight:700;color:#3730a3}
+.staff-weekly-dialog h2{margin:3px 0;font-size:18px;line-height:1.4}
+.staff-weekly-dialog button{min-height:44px;border:1px solid #dbe4f3;border-radius:8px;padding:8px 14px;background:#fff;color:inherit;font:inherit;font-weight:600;cursor:pointer}
+.staff-weekly-dialog header>button{font-size:22px;padding:0;width:44px;flex-shrink:0}
+.staff-weekly-help{margin:6px 0 12px;color:#64748b;font-size:12px}
+.staff-weekly-rows{display:grid;gap:8px;margin-top:16px}
+.staff-weekly-row{display:grid;grid-template-columns:minmax(100px,1fr) auto minmax(0,280px);gap:8px 12px;align-items:center;border:1px solid #dbe4f3;border-radius:10px;padding:10px}
+.staff-weekly-row.is-off{background:#f8fafc;color:#64748b}
+.staff-weekly-off{display:flex;align-items:center;gap:8px;min-height:44px;white-space:nowrap;font-size:12px}
+.staff-weekly-off input{width:16px;height:16px;accent-color:#4c43df}
+.staff-weekly-times{display:grid;grid-template-columns:minmax(0,1fr) 20px minmax(0,1fr);gap:6px;align-items:center}
+.staff-weekly-times span{font-size:11px;text-align:center;color:#64748b}
+.staff-weekly-times input{width:100%;min-width:0;height:44px;box-sizing:border-box;border:1px solid #dbe4f3;border-radius:8px;padding:6px;background:#fff;color:#18212f;font:inherit}
+.staff-weekly-times input:disabled{background:#f1f5f9;color:#94a3b8}
+.staff-weekly-row small{grid-column:1/-1;font-size:11px;color:#64748b}
+.staff-weekly-row.is-off small{display:none}
+.staff-weekly-dialog footer{position:sticky;bottom:-20px;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid #dbe4f3;padding:12px 0;background:#fff}
+.staff-weekly-dialog .staff-primary-button.is-approval{background:#854d0e;border-color:#854d0e;color:#fff}
+.staff-weekly-dialog .staff-primary-button.is-direct{background:#15877b;border-color:#15877b;color:#fff}
+.staff-weekly-dialog .request-feedback:empty{display:none}
+@media(max-width:600px){.staff-weekly-dialog{padding:16px;font-size:14px}.staff-weekly-row{grid-template-columns:1fr auto}.staff-weekly-times{grid-column:1/-1}.staff-weekly-dialog footer{bottom:-16px}.staff-weekly-dialog footer button{flex:1;min-width:0}.staff-weekly-off{font-size:14px}}
 .calendar-appointment-trigger:hover .timeline-card{border-color:#8178f0;background:#faf7ff}
 .calendar-appointment-trigger:focus-visible{outline:2px solid #4c43df;outline-offset:3px}
 .calendar-appointment-detail{width:min(480px,calc(100% - 32px));max-height:calc(100dvh - 32px);box-sizing:border-box;padding:22px;border:1px solid #dbe4f3;border-radius:16px;background:#fff;color:#18212f;font-family:Inter,sans-serif;font-size:13px;line-height:1.5;box-shadow:0 24px 64px #0f172a29;overflow-y:auto}
