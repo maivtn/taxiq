@@ -95,9 +95,22 @@
     'linear-gradient(135deg, #2DD4BF, #155E75)'
   ];
   const ACTION_ICON_CHOICES = [
-    'link-2', 'calendar-check', 'star', 'heart', 'phone', 'message-circle',
-    'map-pin', 'shopping-bag', 'image', 'briefcase', 'sparkles', 'gift',
-    'dollar-sign', 'utensils', 'ticket', 'globe-2', 'user', 'music', 'camera', 'home'
+    'link-2', 'globe-2', 'external-link', 'qr-code', 'mouse-pointer-click',
+    'calendar-check', 'calendar-check-2', 'calendar-days', 'calendar-range', 'clock-3',
+    'phone', 'phone-call', 'mail', 'message-circle', 'message-square',
+    'messages-square', 'send', 'navigation', 'map-pin', 'map-pinned',
+    'home', 'building-2', 'store', 'briefcase-business', 'user',
+    'users', 'contact-round', 'id-card', 'user-check', 'user-plus',
+    'star', 'heart', 'gift', 'crown', 'gem',
+    'sparkles', 'badge-check', 'shield-check', 'check-circle', 'circle-plus',
+    'shopping-bag', 'credit-card', 'wallet', 'wallet-cards', 'coins',
+    'dollar-sign', 'circle-dollar-sign', 'receipt', 'receipt-text', 'hand-coins',
+    'image', 'video', 'play', 'monitor', 'smartphone',
+    'tablet', 'radio', 'menu', 'list', 'tags',
+    'ticket-percent', 'megaphone', 'bell', 'book-open', 'graduation-cap',
+    'file-text', 'folder', 'clipboard-list', 'calculator', 'code-2',
+    'printer', 'newspaper', 'rocket', 'zap', 'settings',
+    'activity', 'bar-chart-3', 'chart-no-axes-combined', 'trending-up', 'sprout', 'infinity'
   ];
 
   const industries = GROUPS.flatMap((group) => group.items.split('|').map((raw) => {

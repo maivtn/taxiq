@@ -398,11 +398,11 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .reset-actions-button svg { width: 14px; }
 
 .template-modal-dialog.is-action-library { width: min(680px, 100%); }
-.template-modal-dialog.is-icon-picker { width: min(510px, 100%); }
-.action-icon-grid { display: grid; grid-template-columns: repeat(5, 1fr); gap: 9px; margin-top: 18px; }
-.action-icon-grid button { display: grid; aspect-ratio: 1; min-width: 0; place-items: center; border: 1px solid var(--oq-line); border-radius: 11px; background: #fff; color: #596376; cursor: pointer; }
+.template-modal-dialog.is-icon-picker { width: min(620px, 100%); }
+.action-icon-grid { display: grid; max-height: min(330px, 48vh); grid-template-columns: repeat(auto-fill, minmax(40px, 1fr)); gap: 6px; margin-top: 16px; overflow-y: auto; padding: 2px 4px 2px 2px; }
+.action-icon-grid button { display: grid; min-width: 0; height: 40px; place-items: center; border: 1px solid var(--oq-line); border-radius: 9px; background: #fff; color: #596376; cursor: pointer; }
 .action-icon-grid button:hover, .action-icon-grid button:focus-visible, .action-icon-grid button.is-selected { border-color: #8d85f2; background: #f2f0ff; color: var(--oq-primary); outline: none; box-shadow: 0 0 0 2px rgba(79,70,229,.08); }
-.action-icon-grid svg { width: 20px; height: 20px; }
+.action-icon-grid svg { width: 17px; height: 17px; }
 .action-icon-upload-row { display: flex; justify-content: flex-end; margin-top: 18px; padding-top: 16px; border-top: 1px solid var(--oq-line); }
 .action-icon-upload-row .secondary-action svg { width: 14px; }
 .action-search { margin-top: 0; }
