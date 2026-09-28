@@ -93,7 +93,7 @@
   function appointments() { try { return appointmentStore ? appointmentStore.loadAll() : []; } catch (_) { return []; } }
   function statusLabel(status) { return {pending:'Pending review', adjusted:'Adjusted by manager', blocked:'Booking conflict', applied:'Approved & synced', rejected:'Rejected', cancelled:'Cancelled'}[status] || status; }
   function typeLabel(type) { return {'day-off':'Day off', 'change-hours':'Change hours', 'break':'Extra break', 'weekly-schedule':'Weekly schedule'}[type] || type; }
-  function weeklySummary(weekly) { return ['mon','tue','wed','thu','fri','sat','sun'].map(function (key) { var day = weekly[key]; return key[0].toUpperCase() + key.slice(1) + ': ' + (day.working ? day.start + '–' + day.end : 'Day off' + (day.dayOffReason ? ' — ' + day.dayOffReason : '')); }).join(' · '); }
+  function weeklySummary(weekly) { return ['mon','tue','wed','thu','fri','sat','sun'].map(function (key) { var day = weekly[key]; return key[0].toUpperCase() + key.slice(1) + ': ' + (day.working ? day.start + '–' + day.end : 'Day off'); }).join(' · '); }
   function requestProposal(request) { if (request.type === 'weekly-schedule') return weeklySummary(request.weekly); return request.type === 'day-off' ? 'Not working' : request.start + '–' + request.end; }
   function requestQueue(state, catalog) {
     var names = Object.fromEntries(catalog.technicians.map(function (person) { return [person.id, person.name]; }));

@@ -60,6 +60,8 @@
 .request-form.is-approval .staff-primary-button{background:#854d0e}
 .request-form.is-direct{border-color:#15877b;background:#f7fcfa}
 .request-form .schedule-approval-notice{margin-top:0}
+.request-form textarea{width:100%;min-width:0;box-sizing:border-box;min-height:96px;resize:vertical;border:1px solid #dbe4f3;border-radius:8px;padding:10px;background:#fff;color:#18212f;font:400 14px/1.5 Inter,sans-serif}
+.request-form textarea:focus-visible{outline:2px solid #4c43df;outline-offset:2px}
 .schedule-action-message{padding:12px;border:1px solid #c7d2fe;border-radius:9px;background:#eef2ff;color:#3730a3;font-size:14px;line-height:1.5}
 .staff-weekly-dialog{width:min(760px,calc(100% - 24px));max-height:calc(100dvh - 24px);box-sizing:border-box;border:1px solid #dbe4f3;border-radius:16px;padding:20px;background:#fff;color:#18212f;font:13px/1.5 Inter,sans-serif;overflow-y:auto}
 .staff-weekly-dialog::backdrop{background:#0f172a66}
@@ -80,9 +82,6 @@
 .staff-weekly-times input:disabled{background:#f1f5f9;color:#94a3b8}
 .staff-weekly-row small{grid-column:1/-1;font-size:11px;color:#64748b}
 .staff-weekly-row.is-off small{display:none}
-.staff-weekly-reason{grid-column:1/-1;display:grid;gap:6px;font-size:12px;font-weight:600;color:#334155}
-.staff-weekly-reason textarea{width:100%;min-width:0;box-sizing:border-box;min-height:72px;resize:vertical;border:1px solid #dbe4f3;border-radius:8px;padding:10px;background:#fff;color:#18212f;font:400 14px/1.5 Inter,sans-serif}
-.staff-weekly-reason textarea:focus-visible{outline:2px solid #4c43df;outline-offset:2px}
 .staff-weekly-dialog footer{position:sticky;bottom:-20px;display:flex;justify-content:flex-end;gap:8px;border-top:1px solid #dbe4f3;padding:12px 0;background:#fff}
 .staff-weekly-dialog .staff-primary-button.is-approval{background:#854d0e;border-color:#854d0e;color:#fff}
 .staff-weekly-dialog .staff-primary-button.is-direct{background:#15877b;border-color:#15877b;color:#fff}
