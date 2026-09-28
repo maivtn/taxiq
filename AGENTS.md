@@ -1,11 +1,18 @@
 # Quy tắc chung của dự án
 
-## Viết tài liệu và mô tả
+## IMPORTANT — Làm trực tiếp cho HTML prototype demo
 
-- Trước mỗi lần viết mới hoặc chỉnh sửa tài liệu hay nội dung mô tả, bắt buộc đọc và tuân thủ [.claude/SKIL_Doc.md](.claude/SKIL_Doc.md).
-- Quy tắc áp dụng trên toàn dự án, không chỉ trong `docs/business/`; bao gồm tài liệu nghiệp vụ, mô tả tính năng, quy trình và mô tả PR.
-- Áp dụng cấu trúc, thuật ngữ nghiệp vụ, sơ đồ và quy định quản lý phiên bản theo hướng dẫn trong file đó. Kiểm tra nội dung với mã nguồn và tài liệu hiện có trước khi viết.
-- Nếu hướng dẫn mâu thuẫn với yêu cầu trực tiếp của người dùng, ưu tiên yêu cầu của người dùng.
+- Đây là dự án HTML prototype/demo. Ưu tiên triển khai trực tiếp giao diện và luồng demo theo yêu cầu; không áp dụng quy trình tài liệu nặng như dự án production.
+- Khi yêu cầu đã rõ, cứ làm luôn: bỏ qua bước viết spec, design doc, implementation plan, tài liệu nghiệp vụ, mô tả tính năng và vòng chờ duyệt thiết kế. Không dừng để hỏi lại “chốt cách này nhé?” cho thay đổi đã được yêu cầu.
+- Người dùng chủ động yêu cầu bỏ qua các bước tài liệu và phê duyệt thiết kế của skill/workflow cho dự án này. Không dùng các bước đó làm điều kiện chặn triển khai.
+- Chỉ hỏi khi thiếu thông tin quan trọng không thể suy ra từ mã nguồn hoặc ngữ cảnh, hay thao tác có nguy cơ mất dữ liệu/vượt phạm vi yêu cầu. Giữ thay đổi gọn, bám UI hiện có và bảo toàn thay đổi không liên quan.
+- Làm trên nhánh `main`, không tự tạo worktree hoặc nhánh mới, trừ khi người dùng yêu cầu khác.
+- Không tự chạy test; tuân thủ mục “Thời điểm kiểm thử” bên dưới. Báo kết quả ngắn gọn, không viết thêm tài liệu mô tả sau mỗi thay đổi.
+
+## Tài liệu chỉ khi được yêu cầu
+
+- Không tự tạo hoặc cập nhật tài liệu/spec/mô tả như một bước bắt buộc khi chỉnh prototype. Nội dung UI và cập nhật trạng thái ngắn gọn không cần quy trình tài liệu.
+- Chỉ khi người dùng yêu cầu viết hoặc sửa tài liệu, đọc và áp dụng [.claude/SKIL_Doc.md](.claude/SKIL_Doc.md) trong phạm vi tài liệu đó. Yêu cầu trực tiếp của người dùng được ưu tiên khi có mâu thuẫn.
 
 ## Quy tắc giao diện
 
