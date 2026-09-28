@@ -166,7 +166,9 @@
     actionTitles: {},
     actionLinks: {},
     actionIcons: {},
+    actionBackgrounds: {},
     editingIconId: null,
+    editingBackgroundId: null,
     reviewSnapshot: null,
     applied: null
   };
@@ -219,6 +221,11 @@
     return isUploadedIcon(icon)
       ? `<img src="${escapeAttribute(icon)}" alt="">`
       : `<i data-lucide="${escapeAttribute(icon)}" aria-hidden="true"></i>`;
+  }
+
+  function actionBackgroundValue(id) {
+    const background = state.actionBackgrounds[id];
+    return TILE_BACKGROUNDS.includes(background) ? background : '';
   }
 
   function isCustomLinkId(id) {
@@ -416,13 +423,16 @@
       const titleLabel = state.language === 'vi' ? `Tên hiển thị cho ${action.vi}` : `Display title for ${action.en}`;
       const canMoveUp = index > 0 && state.enabled.has(state.reviewIds[index - 1]) === state.enabled.has(id);
       const canMoveDown = index < state.reviewIds.length - 1 && state.enabled.has(state.reviewIds[index + 1]) === state.enabled.has(id);
-      return `<article class="template-editor-action" data-editor-action="${id}"><button class="editor-drag-handle" type="button" draggable="true" data-editor-drag-handle="${id}" aria-label="${dragLabel}" title="${dragLabel}"><i data-lucide="grip-vertical"></i></button><div class="editor-action-icon-tools"><span class="template-editor-action-icon">${actionIconMarkup(id)}</span><span><button type="button" data-choose-action-icon="${id}" aria-label="Choose icon for ${escapeAttribute(displayActionTitle(id))}">Change icon</button><button type="button" data-upload-action-icon="${id}" aria-label="Upload icon for ${escapeAttribute(displayActionTitle(id))}">Upload</button></span></div><div class="template-editor-action-copy"><input class="editor-action-title" type="text" data-editor-action-title="${id}" value="${escapeAttribute(actionTitleValue(id))}" aria-label="${titleLabel}"><label class="editor-action-link"><i data-lucide="link-2" aria-hidden="true"></i><input type="text" inputmode="url" data-editor-action-link="${id}" value="${escapeAttribute(actionLink(id))}" aria-label="${escapeAttribute(linkLabel)}" spellcheck="false"></label></div><span class="editor-action-controls"><button type="button" data-editor-action-move="up" aria-label="Move ${action.en} up" ${canMoveUp ? '' : 'disabled'}><i data-lucide="chevron-up"></i></button><button type="button" data-editor-action-move="down" aria-label="Move ${action.en} down" ${canMoveDown ? '' : 'disabled'}><i data-lucide="chevron-down"></i></button><button class="editor-action-remove" type="button" data-editor-action-remove aria-label="Remove ${action.en}"><i data-lucide="x"></i></button></span><label class="toggle"><input type="checkbox" data-editor-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${escapeAttribute(displayActionTitle(id))}"><span></span></label></article>`;
+      const background = actionBackgroundValue(id);
+      const backgroundStyle = background ? ` style="--action-swatch:${escapeAttribute(background)}"` : '';
+      return `<article class="template-editor-action" data-editor-action="${id}"><button class="editor-drag-handle" type="button" draggable="true" data-editor-drag-handle="${id}" aria-label="${dragLabel}" title="${dragLabel}"><i data-lucide="grip-vertical"></i></button><div class="editor-action-icon-tools"><span class="template-editor-action-icon">${actionIconMarkup(id)}</span><span><button type="button" data-choose-action-icon="${id}" aria-label="Choose icon for ${escapeAttribute(displayActionTitle(id))}">Change icon</button><button type="button" data-upload-action-icon="${id}" aria-label="Upload icon for ${escapeAttribute(displayActionTitle(id))}">Upload</button></span></div><div class="template-editor-action-copy"><input class="editor-action-title" type="text" data-editor-action-title="${id}" value="${escapeAttribute(actionTitleValue(id))}" aria-label="${titleLabel}"><label class="editor-action-link"><i data-lucide="link-2" aria-hidden="true"></i><input type="text" inputmode="url" data-editor-action-link="${id}" value="${escapeAttribute(actionLink(id))}" aria-label="${escapeAttribute(linkLabel)}" spellcheck="false"></label></div><span class="editor-action-controls"><button type="button" data-editor-action-move="up" aria-label="Move ${action.en} up" ${canMoveUp ? '' : 'disabled'}><i data-lucide="chevron-up"></i></button><button type="button" data-editor-action-move="down" aria-label="Move ${action.en} down" ${canMoveDown ? '' : 'disabled'}><i data-lucide="chevron-down"></i></button><button class="editor-action-remove" type="button" data-editor-action-remove aria-label="Remove ${action.en}"><i data-lucide="x"></i></button></span><button class="editor-action-background${background ? ' has-color' : ''}" type="button" data-edit-action-background="${id}" aria-label="Choose card background for ${escapeAttribute(displayActionTitle(id))}" title="Card background"${backgroundStyle}><span></span></button><label class="toggle"><input type="checkbox" data-editor-action-toggle="${id}" ${state.enabled.has(id) ? 'checked' : ''} aria-label="${escapeAttribute(displayActionTitle(id))}"><span></span></label></article>`;
     }).join('');
     container.querySelectorAll('[data-choose-action-icon]').forEach((button) => button.addEventListener('click', () => openActionIconPicker(button.dataset.chooseActionIcon)));
     container.querySelectorAll('[data-upload-action-icon]').forEach((button) => button.addEventListener('click', () => {
       state.editingIconId = button.dataset.uploadActionIcon;
       $('#action-icon-upload').click();
     }));
+    container.querySelectorAll('[data-edit-action-background]').forEach((button) => button.addEventListener('click', () => openActionBackgroundPicker(button.dataset.editActionBackground)));
     container.querySelectorAll('[data-editor-action-title]').forEach((input) => input.addEventListener('input', () => {
       state.actionTitles[input.dataset.editorActionTitle] = input.value;
       renderCustomerLivePreview();
@@ -494,6 +504,7 @@
         actionTitles: state.actionTitles,
         actionLinks: state.actionLinks,
         actionIcons: state.actionIcons,
+        actionBackgrounds: state.actionBackgrounds,
         language: state.language
       }));
     } catch (error) {
@@ -611,6 +622,7 @@
       delete state.actionTitles[id];
       delete state.actionLinks[id];
       delete state.actionIcons[id];
+      delete state.actionBackgrounds[id];
       delete MODULES[id];
     }
     renderReviewActions();
@@ -907,7 +919,9 @@
       const action = MODULES[id];
       const tag = id === 'contactcard' ? 'button' : 'div';
       const attribute = id === 'contactcard' ? ' type="button" data-phone-contact-card' : '';
-      return `<${tag} class="phone-action"${attribute}><span>${actionIconMarkup(id)}</span><strong>${escapeAttribute(displayActionTitle(id))}</strong></${tag}>`;
+      const background = actionBackgroundValue(id);
+      const backgroundAttribute = background ? ` style="--action-background:${escapeAttribute(background)}"` : '';
+      return `<${tag} class="phone-action${background ? ' has-custom-background' : ''}"${attribute}${backgroundAttribute}><span>${actionIconMarkup(id)}</span><strong>${escapeAttribute(displayActionTitle(id))}</strong></${tag}>`;
     }).join('') : `<div class="no-results"><p>${state.language === 'vi' ? 'Bật ít nhất một hành động cho khách.' : 'Turn on at least one customer action.'}</p></div>`;
   }
 
@@ -1034,7 +1048,8 @@
       actionTitles: Object.fromEntries(currentReviewIds().map((id) => [id, actionTitleValue(id)])),
       actionLinks: Object.fromEntries(currentReviewIds().map((id) => [id, actionLink(id)])),
       actionIcons: Object.fromEntries(currentReviewIds().filter((id) => state.actionIcons[id]).map((id) => [id, state.actionIcons[id]])),
-      actions: activeIds.map((id) => ({ id, label: displayActionTitle(id), icon: actionIconValue(id), url: actionLink(id) })),
+      actionBackgrounds: Object.fromEntries(currentReviewIds().filter((id) => actionBackgroundValue(id)).map((id) => [id, actionBackgroundValue(id)])),
+      actions: activeIds.map((id) => ({ id, label: displayActionTitle(id), icon: actionIconValue(id), url: actionLink(id), background: actionBackgroundValue(id) })),
       appliedAt: new Date().toISOString()
     };
     state.applied = payload;
@@ -1126,6 +1141,33 @@
     reader.readAsDataURL(file);
   }
 
+  function setActionBackground(id, background) {
+    if (!MODULES[id]) return;
+    if (TILE_BACKGROUNDS.includes(background)) state.actionBackgrounds[id] = background;
+    else delete state.actionBackgrounds[id];
+    renderPreview();
+  }
+
+  function renderActionBackgroundPicker() {
+    const id = state.editingBackgroundId;
+    if (!id || !MODULES[id]) return;
+    const selected = actionBackgroundValue(id);
+    $('#background-picker-action-name').textContent = displayActionTitle(id);
+    $('#action-background-grid').innerHTML = TILE_BACKGROUNDS.map((background, index) => `<button type="button" data-action-background-choice="${index}" class="${selected === background ? 'is-selected' : ''}" style="--background-choice:${background}" aria-label="Use gradient ${index + 1}" aria-pressed="${selected === background}"><span></span></button>`).join('');
+    $('#reset-action-background').disabled = !selected;
+    $('#action-background-grid').querySelectorAll('[data-action-background-choice]').forEach((button) => button.addEventListener('click', () => {
+      setActionBackground(id, TILE_BACKGROUNDS[Number(button.dataset.actionBackgroundChoice)]);
+      closeModal($('#action-background-modal'));
+    }));
+  }
+
+  function openActionBackgroundPicker(id) {
+    if (!MODULES[id]) return;
+    state.editingBackgroundId = id;
+    renderActionBackgroundPicker();
+    openModal($('#action-background-modal'));
+  }
+
   const modalOpeners = new WeakMap();
 
   function openModal(modal) {
@@ -1212,6 +1254,7 @@
     $$('[data-close-template-modal]').forEach((button) => button.addEventListener('click', closeReview));
     $$('[data-close-action-modal]').forEach((button) => button.addEventListener('click', () => closeModal($('#template-action-modal'))));
     $$('[data-close-icon-modal]').forEach((button) => button.addEventListener('click', () => closeModal($('#action-icon-modal'))));
+    $$('[data-close-background-modal]').forEach((button) => button.addEventListener('click', () => closeModal($('#action-background-modal'))));
     $$('[data-close-success-modal]').forEach((button) => button.addEventListener('click', () => closeModal($('#template-success-modal'))));
     $$('[data-show-business-rule]').forEach((button) => button.addEventListener('click', () => openModal($('#template-help-modal'))));
     $$('[data-close-help-modal]').forEach((button) => button.addEventListener('click', () => closeModal($('#template-help-modal'))));
@@ -1228,6 +1271,12 @@
       if (!id) return;
       setActionIcon(id, null);
       closeModal($('#action-icon-modal'));
+    });
+    $('#reset-action-background').addEventListener('click', () => {
+      const id = state.editingBackgroundId;
+      if (!id) return;
+      setActionBackground(id, null);
+      closeModal($('#action-background-modal'));
     });
     $('#editor-add-link').addEventListener('click', addPastedLink);
     $('#editor-link-input').addEventListener('keydown', (event) => {
@@ -1335,6 +1384,7 @@
     state.actionTitles = draftState.actionTitles && typeof draftState.actionTitles === 'object' ? { ...draftState.actionTitles } : {};
     state.actionLinks = draftState.actionLinks && typeof draftState.actionLinks === 'object' ? { ...draftState.actionLinks } : {};
     state.actionIcons = draftState.actionIcons && typeof draftState.actionIcons === 'object' ? { ...draftState.actionIcons } : {};
+    state.actionBackgrounds = draftState.actionBackgrounds && typeof draftState.actionBackgrounds === 'object' ? { ...draftState.actionBackgrounds } : {};
     state.language = draftState.language === 'vi' ? 'vi' : 'en';
   } else if (state.applied) {
     const appliedIndustry = industryById(state.applied.industryId);
@@ -1345,6 +1395,7 @@
     state.actionTitles = state.applied.actionTitles && typeof state.applied.actionTitles === 'object' ? { ...state.applied.actionTitles } : {};
     state.actionLinks = state.applied.actionLinks && typeof state.applied.actionLinks === 'object' ? { ...state.applied.actionLinks } : {};
     state.actionIcons = state.applied.actionIcons && typeof state.applied.actionIcons === 'object' ? { ...state.applied.actionIcons } : {};
+    state.actionBackgrounds = state.applied.actionBackgrounds && typeof state.applied.actionBackgrounds === 'object' ? { ...state.applied.actionBackgrounds } : {};
   } else {
     const defaultIndustry = industryById('nails');
     state.selected = defaultIndustry.id;

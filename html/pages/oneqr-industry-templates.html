@@ -445,6 +445,21 @@
     </section>
   </div>
 
+  <div class="template-modal" id="action-background-modal" hidden aria-hidden="true">
+    <button class="template-modal-backdrop" type="button" data-close-background-modal aria-label="Close background picker"></button>
+    <section class="template-modal-dialog is-background-picker" role="dialog" aria-modal="true" aria-labelledby="background-picker-title">
+      <div class="modal-head">
+        <div><span class="section-step">Action appearance</span><h2 id="background-picker-title">Choose a card background</h2></div>
+        <button class="icon-button" type="button" data-close-background-modal aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button>
+      </div>
+      <p class="modal-lead">Choose an industry-style gradient for <strong id="background-picker-action-name">this action</strong>.</p>
+      <div class="action-background-grid" id="action-background-grid"></div>
+      <div class="action-icon-upload-row">
+        <button class="secondary-action" type="button" id="reset-action-background"><i data-lucide="rotate-ccw" aria-hidden="true"></i>Use white</button>
+      </div>
+    </section>
+  </div>
+
   <div class="template-modal" id="template-success-modal" hidden aria-hidden="true">
     <button class="template-modal-backdrop" type="button" data-close-success-modal aria-label="Close confirmation"></button>
     <section class="template-modal-dialog is-success" role="dialog" aria-modal="true" aria-labelledby="success-modal-title">
