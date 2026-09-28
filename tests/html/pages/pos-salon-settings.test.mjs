@@ -33,6 +33,31 @@ test('Staff Schedule is a real section with team coverage and compliant selector
  assert.match(readFileSync(new URL('../assets/pos-salon-settings.css',SOURCE_DIR),'utf8'),/\.schedule-select[^}]*padding-right:\s*44px/);
  assert.deepEqual(errors,[]);dom.window.close();
 });
+test('manager drafts, validates and publishes a staff schedule',()=>{
+ const {dom,w,d}=boot(null,'?section=staff-schedule&staff=staff-0');
+ d.querySelector('[data-schedule-staff="staff-0"] [data-schedule-day]').click();
+ const start=d.querySelector('[data-schedule-start]'),end=d.querySelector('[data-schedule-end]');
+ d.querySelector('[data-schedule-working]').checked=true;
+ start.value='18:00';end.value='09:00';d.querySelector('[data-schedule-save-draft]').click();
+ assert.match(d.querySelector('[data-schedule-error]').textContent,/end time/i);
+ start.value='10:00';end.value='17:00';d.querySelector('[data-schedule-working]').checked=true;d.querySelector('[data-schedule-save-draft]').click();
+ assert.ok(w.NEXORA_STAFF_SCHEDULE_STORE.loadState().drafts['bitcoin-nail-bar-houston']['staff-0']);
+ d.querySelector('[data-schedule-publish]').click();
+ assert.equal(w.NEXORA_STAFF_SCHEDULE_STORE.loadState().drafts['bitcoin-nail-bar-houston'],undefined);
+ assert.match(d.querySelector('[data-schedule-sync-status]').textContent,/Synced/);
+ dom.window.close();
+});
+
+test('manager sees and rejects pending day-off requests without changing schedule',()=>{
+ const {dom,w,d}=boot(null,'?section=staff-schedule');
+ const pending=w.NEXORA_STAFF_SCHEDULE_STORE.createRequest({salonId:'bitcoin-nail-bar-houston',staffId:'staff-0',type:'day-off',date:'2026-10-02',reason:'Personal'}).request;
+ w.NEXORA_STAFF_SCHEDULE_SETTINGS.refresh();
+ assert.match(d.querySelector('[data-schedule-requests]').textContent,/Personal/);
+ d.querySelector('[data-request-reject="'+pending.id+'"]').click();
+ assert.equal(w.NEXORA_STAFF_SCHEDULE_STORE.loadState().requests.find(item=>item.id===pending.id).status,'rejected');
+ assert.equal(w.NEXORA_STAFF_SCHEDULE_STORE.getStaffSchedule('bitcoin-nail-bar-houston','staff-0').exceptions['2026-10-02'],undefined);
+ dom.window.close();
+});
 test('Salon Settings opens Staff, searches and paginates with working profile actions',()=>{
  const {dom,w,d,errors}=boot();
  assert.equal(d.querySelector('[data-settings-tab].active')?.dataset.settingsTab,'staff');
