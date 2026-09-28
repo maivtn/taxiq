@@ -301,7 +301,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .customer-quick-actions button[hidden] { display: none !important; }
 .customer-quick-actions button.is-primary { background: var(--oq-primary) !important; color: #fff !important; }
 .customer-quick-actions svg { width: 11px; }
-.phone-preview.is-live-customer .phone-action { position: relative; display: grid; min-height: 78px; grid-template-columns: 22px 1fr; align-content: space-between; gap: 4px; padding: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(16,24,40,.06); }
+.phone-preview.is-live-customer .phone-action { position: relative; display: grid; min-height: 68px; grid-template-columns: 22px 1fr; align-content: space-between; gap: 4px; padding: 10px; border-radius: 10px; box-shadow: 0 2px 5px rgba(16,24,40,.06); }
 .phone-preview.is-live-customer .phone-action > strong { grid-column: 1 / -1; font-size: 11px; }
 .phone-preview.is-live-customer .phone-action span { width: auto; height: auto; border-radius: 0; color: var(--oq-primary); background: transparent; }
 .phone-preview.is-live-customer .phone-action span svg { width: 22px; height: 22px; stroke-width: 1.9; }
