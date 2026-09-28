@@ -173,6 +173,23 @@
     return actionTitleValue(id).trim() || actionLabel(MODULES[id]);
   }
 
+  function isCustomLinkId(id) {
+    return typeof id === 'string' && id.startsWith('custom-link-');
+  }
+
+  function ensureCustomLinkModules(ids) {
+    (Array.isArray(ids) ? ids : []).forEach((id) => {
+      if (!isCustomLinkId(id) || MODULES[id]) return;
+      MODULES[id] = {
+        icon: 'link-2',
+        en: 'New link',
+        vi: 'Liên kết mới',
+        descEn: 'Open your custom destination',
+        descVi: 'Mở đường dẫn tùy chỉnh'
+      };
+    });
+  }
+
   function savedCustomActionIds(saved) {
     if (!saved) return [];
     if (Array.isArray(saved.customActionIds)) return saved.customActionIds.filter((id) => MODULES[id]);
@@ -427,13 +444,27 @@
 
   function addPastedLink() {
     const input = $('#editor-link-input');
-    if (!input.value.trim()) {
+    const url = input.value.trim();
+    if (!url) {
       input.focus();
       showToast(state.language === 'vi' ? 'Dán một đường dẫn trước khi thêm.' : 'Paste a link before adding it.');
       return;
     }
-    openActionLibrary();
-    showToast(state.language === 'vi' ? 'Chọn loại hành động cho đường dẫn này.' : 'Choose an action type for this link.');
+    let id = `custom-link-${Date.now().toString(36)}`;
+    while (MODULES[id]) id = `${id}-1`;
+    ensureCustomLinkModules([id]);
+    state.reviewIds.push(id);
+    state.enabled.add(id);
+    state.customActionIds.add(id);
+    state.actionTitles[id] = state.language === 'vi' ? 'Liên kết mới' : 'New link';
+    state.actionLinks[id] = url;
+    input.value = '';
+    renderPreview();
+    const titleInput = $(`[data-editor-action-title="${id}"]`);
+    titleInput?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    titleInput?.focus({ preventScroll: true });
+    titleInput?.select();
+    showToast(state.language === 'vi' ? 'Đã thêm liên kết mới vào trang OneQR.' : 'New link added to your OneQR page.');
   }
 
   function openReview() {
@@ -507,6 +538,11 @@
     state.reviewIds = state.reviewIds.filter((actionId) => actionId !== id);
     state.enabled.delete(id);
     state.customActionIds.delete(id);
+    if (isCustomLinkId(id)) {
+      delete state.actionTitles[id];
+      delete state.actionLinks[id];
+      delete MODULES[id];
+    }
     renderReviewActions();
     renderPreview();
   }
@@ -853,6 +889,7 @@
   function renderActionLibrary() {
     const query = state.actionQuery.trim().toLocaleLowerCase();
     const available = Object.entries(MODULES).filter(([id, action]) => {
+      if (isCustomLinkId(id)) return false;
       if (state.reviewIds.includes(id)) return false;
       return !query || `${action.en} ${action.vi} ${action.descEn} ${action.descVi}`.toLocaleLowerCase().includes(query);
     });
@@ -1154,6 +1191,8 @@
   } catch (error) {
     draftState = null;
   }
+  ensureCustomLinkModules(draftState?.reviewIds);
+  ensureCustomLinkModules(state.applied?.reviewIds || state.applied?.actionIds);
   if (draftState && industryById(draftState.selected)) {
     state.selected = draftState.selected;
     state.reviewIds = (draftState.reviewIds || []).filter((id) => MODULES[id]);
