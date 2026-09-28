@@ -797,7 +797,6 @@
     if (!industry) return;
     const active = currentReviewIds().filter((id) => state.enabled.has(id));
     renderCustomerFrame('customer-live');
-    $('#customer-live-template').textContent = label(industry);
     $('#customer-live-count').textContent = state.language === 'vi'
       ? `${active.length} hành động đang bật`
       : `${active.length} active ${active.length === 1 ? 'action' : 'actions'}`;
