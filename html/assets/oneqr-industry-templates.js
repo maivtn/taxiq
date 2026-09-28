@@ -110,7 +110,20 @@
     'ticket-percent', 'megaphone', 'bell', 'book-open', 'graduation-cap',
     'file-text', 'folder', 'clipboard-list', 'calculator', 'code-2',
     'printer', 'newspaper', 'rocket', 'zap', 'settings',
-    'activity', 'bar-chart-3', 'chart-no-axes-combined', 'trending-up', 'sprout', 'infinity'
+    'activity', 'bar-chart-3', 'chart-no-axes-combined', 'trending-up', 'sprout', 'infinity',
+    'badge', 'badge-dollar-sign', 'blocks', 'apple', 'list-checks',
+    'utensils', 'heart-handshake', 'ticket', 'images', 'file-check-2',
+    'clipboard-check', 'clipboard-x', 'file-question', 'folder-tree', 'notebook-pen',
+    'pencil', 'square-pen', 'save', 'download', 'upload-cloud',
+    'copy', 'eye', 'search', 'scan-line', 'share-2',
+    'refresh-cw', 'rotate-ccw', 'undo-2', 'sliders-horizontal', 'settings-2',
+    'shield', 'shield-plus', 'info', 'circle-help', 'circle-question-mark',
+    'alert-triangle', 'triangle-alert', 'octagon-alert', 'check', 'circle-check',
+    'circle-check-big', 'x-circle', 'trash-2', 'inbox', 'voicemail',
+    'phone-forwarded', 'phone-off', 'message-circle-question', 'message-circle-off', 'users-round',
+    'user-circle', 'user-round-check', 'user-x', 'key-round', 'languages',
+    'layers', 'layers-2', 'layers-3', 'layout-dashboard', 'layout-grid',
+    'layout-template', 'list-filter', 'panel-left', 'panel-top', 'arrow-left-right'
   ];
 
   const industries = GROUPS.flatMap((group) => group.items.split('|').map((raw) => {
