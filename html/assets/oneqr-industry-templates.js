@@ -301,7 +301,21 @@
       else state.enabled.delete(input.dataset.editorActionToggle);
       renderPreview();
     }));
+    renderPerformance();
     refreshIcons();
+  }
+
+  function renderPerformance() {
+    const container = $('#performance-action-list');
+    if (!container) return;
+    const active = state.reviewIds.filter((id) => state.enabled.has(id)).slice(0, 4);
+    const demoClicks = [68, 52, 29, 14];
+    const maximum = demoClicks[0];
+    container.innerHTML = active.map((id, index) => {
+      const clicks = demoClicks[index];
+      const width = Math.max(10, Math.round((clicks / maximum) * 100));
+      return `<div class="performance-action-row"><span title="${actionLabel(MODULES[id])}">${actionLabel(MODULES[id])}</span><i style="--performance-width:${width}%" aria-hidden="true"></i><strong>${clicks}</strong></div>`;
+    }).join('');
   }
 
   function showIndustryPicker() {
