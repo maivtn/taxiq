@@ -6,11 +6,16 @@
   var salonData = window.NEXORA_SALON_DATA;
   var appointmentStore = window.NEXORA_APPOINTMENTS_STORE;
   if (!host || !store || !salonData) return;
+  var modalHost = document.createElement('div');
+  modalHost.setAttribute('data-schedule-modal-host', '');
+  document.body.appendChild(modalHost);
+  var opener = null;
 
   var selectedStaff = '';
   var selectedDate = '';
   var drawerOpen = false;
-  var editorScope = 'date';
+  var editorScope = 'weekly';
+  var breakDay = 'mon';
   var editorBreaks = [];
   var editorValues = null;
   var impactReview = null;
@@ -52,14 +57,46 @@
       return '<div class="schedule-break-row" data-schedule-break-row><label>Start<input type="time" data-break-start value="' + esc(item.start) + '"></label><label>End<input type="time" data-break-end value="' + esc(item.end) + '"></label><button type="button" data-break-remove="' + index + '" aria-label="Remove break">Remove</button></div>';
     }).join('');
   }
+  function weeklyEditor() {
+    var template = document.querySelector('[data-tech-modal] .tech-schedule');
+    var calendar = template.cloneNode(true);
+    calendar.removeAttribute('data-tech-field');
+    calendar.setAttribute('data-schedule-calendar', '');
+    calendar.querySelectorAll('.tech-schedule-row').forEach(function (row) {
+      var off = row.querySelector('[data-tech-day-off]');
+      var key = off.dataset.techDayOff;
+      if (editorScope === 'date' && key !== selectedDayKey()) { row.remove(); return; }
+      var day = editorScope === 'weekly' ? editorValues.weekly[key] : editorValues.date;
+      var name = row.querySelector('.tech-schedule-day').textContent;
+      row.dataset.scheduleEditDay = key;
+      if (editorScope === 'date') row.querySelector('.tech-schedule-day').textContent = selectedDate;
+      off.removeAttribute('data-tech-day-off');
+      off.setAttribute('data-schedule-off', key);
+      off.setAttribute('aria-label', name + ' day off');
+      off.checked = !day.working;
+      if (off.checked) off.setAttribute('checked', ''); else off.removeAttribute('checked');
+      row.classList.toggle('is-day-off', off.checked);
+      ['start', 'end'].forEach(function (field) {
+        var input = row.querySelector('[data-tech-schedule-' + field + ']');
+        input.removeAttribute('data-tech-schedule-' + field);
+        input.setAttribute('data-schedule-' + field, key);
+        input.setAttribute('aria-label', name + ' ' + field + ' time');
+        input.setAttribute('value', day[field]);
+        input.disabled = off.checked;
+      });
+    });
+    return calendar.outerHTML;
+  }
   function editor() {
     if (!drawerOpen) return '';
-    var schedule = store.getStaffSchedule(store.SALON_ID, selectedStaff, {includeDraft:true});
-    var source = editorValues || (editorScope === 'date' ? store.scheduleForDate(schedule, selectedDate) : schedule.weekly[selectedDayKey()]);
-    return '<div class="schedule-backdrop" data-schedule-close></div><aside class="schedule-drawer" data-schedule-drawer role="dialog" aria-modal="true" aria-labelledby="schedule-drawer-title"><header><div><small>' + esc(selectedDate) + '</small><h2 id="schedule-drawer-title" tabindex="-1">Edit staff schedule</h2></div><button type="button" data-schedule-close aria-label="Close schedule editor">×</button></header>' +
-      '<fieldset class="schedule-scope"><legend>Apply change to</legend><label><input type="radio" name="schedule-scope" value="date" data-schedule-scope="date" ' + (editorScope === 'date' ? 'checked' : '') + '> This date only</label><label><input type="radio" name="schedule-scope" value="weekly" data-schedule-scope="weekly" ' + (editorScope === 'weekly' ? 'checked' : '') + '> Every ' + esc(selectedDayKey().toUpperCase()) + '</label></fieldset>' +
-      '<label class="schedule-check"><input type="checkbox" data-schedule-working ' + (source.working ? 'checked' : '') + '> Working day</label><div class="schedule-time-fields"><label>Start<input type="time" data-schedule-start value="' + esc(source.start) + '"></label><label>End<input type="time" data-schedule-end value="' + esc(source.end) + '"></label></div>' +
-      '<section class="schedule-break-editor"><header><div><strong>Breaks</strong><small>Break time is hidden from Booking.</small></div><button type="button" data-break-add>+ Add break</button></header><div data-break-list>' + breakRows() + '</div></section>' +
+    var source = editorValues;
+    var staff = salonData.loadCatalog().technicians.find(function (person) { return person.id === selectedStaff; });
+    var names = {mon:'Monday',tue:'Tuesday',wed:'Wednesday',thu:'Thursday',fri:'Friday',sat:'Saturday',sun:'Sunday'};
+    var breakShift = editorScope === 'weekly' ? source.weekly[breakDay] : source.date;
+    return '<div class="schedule-backdrop" data-schedule-close></div><aside class="schedule-drawer" data-schedule-drawer role="dialog" aria-modal="true" aria-labelledby="schedule-drawer-title"><header><div><small>' + esc(staff ? staff.name : selectedStaff) + '</small><h2 id="schedule-drawer-title" tabindex="-1">Edit staff schedule</h2></div><button type="button" data-schedule-close aria-label="Close schedule editor">×</button></header>' +
+      '<fieldset class="schedule-scope"><legend>Apply change to</legend><label><input type="radio" name="schedule-scope" value="weekly" data-schedule-scope="weekly" ' + (editorScope === 'weekly' ? 'checked' : '') + '> Weekly schedule</label><label><input type="radio" name="schedule-scope" value="date" data-schedule-scope="date" ' + (editorScope === 'date' ? 'checked' : '') + '> ' + esc(selectedDate) + ' only</label></fieldset>' +
+      '<section class="tech-modal-section"><div class="tech-modal-section-title"><i class="bi bi-calendar-week" aria-hidden="true"></i>' + (editorScope === 'weekly' ? 'Weekly schedule' : 'Date exception') + '</div>' + weeklyEditor() + '</section>' +
+      '<section class="schedule-break-editor"><header><div><strong>Breaks</strong><small>Break time is hidden from Booking.</small></div><button type="button" data-break-add ' + (!breakShift.working ? 'disabled' : '') + '>+ Add break</button></header>' + (editorScope === 'weekly' ? '<label>Day<select class="schedule-select" data-break-day>' + Object.keys(names).map(function (key) { return '<option value="' + key + '" ' + (key === breakDay ? 'selected' : '') + '>' + names[key] + '</option>'; }).join('') + '</select></label>' : '') + '<div data-break-list>' + (breakShift.working ? breakRows() : '<p class="schedule-no-breaks">Day off — no breaks.</p>') + '</div></section>' +
       '<label>Staff availability permission<select class="schedule-select" data-schedule-permission><option value="none" ' + (source.permission === 'none' ? 'selected' : '') + '>Not allowed</option><option value="request" ' + (source.permission !== 'none' ? 'selected' : '') + '>Manager approval required</option></select></label><p class="schedule-form-error" data-schedule-error role="alert"></p><footer><button type="button" data-schedule-discard>Discard draft</button><button type="button" data-schedule-save-draft>Save draft</button><button type="button" class="booking-primary-button" data-schedule-publish>Publish &amp; Sync Booking</button></footer></aside>';
   }
   function impactDialog() {
@@ -88,31 +125,41 @@
       return '<div class="schedule-row" data-schedule-staff="' + esc(person.id) + '"><strong>' + esc(person.name) + '</strong>' + cells + '</div>';
     }).join('');
     host.innerHTML = '<header class="schedule-heading"><div><h2>Staff Schedule &amp; Booking Availability</h2><p>Manager publishes working hours. Staff changes arrive as requests.</p></div><div class="schedule-actions"><select class="schedule-select" aria-label="Salon"><option>Bitcoin Nail Bar</option></select><span data-schedule-sync-status>' + (state.salons[store.SALON_ID]?.syncedAt ? 'Synced to Booking' : 'Ready to sync') + '</span></div></header><div class="schedule-summary"><div class="schedule-card" data-schedule-summary="working"><strong>' + working + '</strong><span>Working staff-days</span></div><div class="schedule-card"><strong>' + slots + '</strong><span>Open slots</span></div><div class="schedule-card"><strong>' + conflicts + '</strong><span>Booking conflicts</span></div><div class="schedule-card"><strong>' + people.length + '</strong><span>Staff members</span></div></div><div class="schedule-week" data-schedule-week><div class="schedule-row"><span>Staff</span>' + days.map(function (date) { return '<span>' + date.toLocaleDateString('en-US', {weekday:'short', day:'numeric'}) + '</span>'; }).join('') + '</div>' + body + '</div><aside class="schedule-request-queue" data-schedule-requests><header><div><h3>Schedule requests</h3><p>Compare, adjust, approve and sync staff availability.</p></div><span>' + state.requests.filter(function (request) { return ['pending','adjusted','blocked'].includes(request.status); }).length + ' open</span></header>' + requestQueue(state, catalog) + '</aside>' + editor() + impactDialog();
-    if (drawerOpen) host.querySelector('#schedule-drawer-title')?.focus();
+    modalHost.replaceChildren();
+    Array.from(host.querySelectorAll('.schedule-backdrop,.schedule-drawer,.schedule-impact-backdrop,[data-request-impact]')).forEach(function (node) { modalHost.appendChild(node); });
+    // The editor lives outside hidden settings panels so Staff can open it directly.
+    if (drawerOpen) modalHost.querySelector('#schedule-drawer-title')?.focus();
   }
   function readBreaks() {
-    return Array.from(host.querySelectorAll('[data-schedule-break-row]')).map(function (row) { return {start:row.querySelector('[data-break-start]').value, end:row.querySelector('[data-break-end]').value}; });
+    return Array.from(modalHost.querySelectorAll('[data-schedule-break-row]')).map(function (row) { return {start:row.querySelector('[data-break-start]').value, end:row.querySelector('[data-break-end]').value}; });
   }
   function snapshotEditor() {
-    if (!drawerOpen || !host.querySelector('[data-schedule-working]')) return;
-    editorValues = {
-      working:host.querySelector('[data-schedule-working]').checked,
-      start:host.querySelector('[data-schedule-start]').value,
-      end:host.querySelector('[data-schedule-end]').value,
-      permission:host.querySelector('[data-schedule-permission]').value
-    };
+    if (!drawerOpen || !modalHost.querySelector('[data-schedule-calendar]')) return;
+    modalHost.querySelectorAll('[data-schedule-edit-day]').forEach(function (row) {
+      var day = editorScope === 'weekly' ? editorValues.weekly[row.dataset.scheduleEditDay] : editorValues.date;
+      day.working = !row.querySelector('[data-schedule-off]').checked;
+      day.start = row.querySelector('[data-schedule-start]').value;
+      day.end = row.querySelector('[data-schedule-end]').value;
+    });
+    editorValues.permission = modalHost.querySelector('[data-schedule-permission]').value;
     editorBreaks = readBreaks();
+    (editorScope === 'weekly' ? editorValues.weekly[breakDay] : editorValues.date).breaks = editorBreaks;
   }
   function editorSchedule() {
     var schedule = store.getStaffSchedule(store.SALON_ID, selectedStaff, {includeDraft:true});
-    var working = host.querySelector('[data-schedule-working]').checked;
-    var day = {working:working, start:working ? host.querySelector('[data-schedule-start]').value : '', end:working ? host.querySelector('[data-schedule-end]').value : '', breaks:working ? readBreaks() : []};
-    schedule.permission = host.querySelector('[data-schedule-permission]').value;
-    if (editorScope === 'weekly') schedule.weekly[selectedDayKey()] = day;
-    else schedule.exceptions[selectedDate] = working ? {type:'custom-hours', start:day.start, end:day.end, breaks:day.breaks} : {type:'day-off', start:'', end:'', breaks:[]};
+    schedule.permission = editorValues.permission;
+    if (editorScope === 'weekly') {
+      dayKeys.forEach(function (key) {
+        var day = editorValues.weekly[key];
+        schedule.weekly[key] = day.working ? JSON.parse(JSON.stringify(day)) : {working:false,start:'',end:'',breaks:[]};
+      });
+    } else {
+      var day = editorValues.date;
+      schedule.exceptions[selectedDate] = day.working ? {type:'custom-hours', start:day.start, end:day.end, breaks:day.breaks} : {type:'day-off', start:'', end:'', breaks:[]};
+    }
     return schedule;
   }
-  function showError(text) { var target = host.querySelector('[data-schedule-error]'); if (target) target.textContent = text; }
+  function showError(text) { var target = modalHost.querySelector('[data-schedule-error]'); if (target) target.textContent = text; }
   function saveDraft() {
     snapshotEditor();
     var schedule = editorSchedule();
@@ -138,17 +185,29 @@
   }
   function loadEditorDay() {
     var schedule = store.getStaffSchedule(store.SALON_ID, selectedStaff, {includeDraft:true});
-    var day = editorScope === 'date' ? store.scheduleForDate(schedule, selectedDate) : schedule.weekly[selectedDayKey()];
-    editorBreaks = (day.breaks || []).map(function (item) { return {start:item.start, end:item.end}; });
-    editorValues = {working:day.working, start:day.start, end:day.end, permission:schedule.permission};
+    editorValues = {weekly:schedule.weekly,date:store.scheduleForDate(schedule, selectedDate),permission:schedule.permission};
+    breakDay = selectedDayKey();
+    editorBreaks = editorValues.weekly[breakDay].breaks;
   }
 
-  host.addEventListener('change', function (event) {
+  modalHost.addEventListener('change', function (event) {
     var scope = event.target.closest('[data-schedule-scope]');
-    if (!scope) return;
-    editorScope = scope.value;
-    loadEditorDay();
-    render(selectedStaff);
+    if (scope) {
+      snapshotEditor();
+      editorScope = scope.value;
+      editorBreaks = (editorScope === 'weekly' ? editorValues.weekly[breakDay] : editorValues.date).breaks;
+      render(selectedStaff);
+      return;
+    }
+    if (event.target.matches('[data-break-day]')) {
+      var nextDay = event.target.value;
+      snapshotEditor();
+      breakDay = nextDay;
+      editorBreaks = editorValues.weekly[breakDay].breaks;
+      render(selectedStaff);
+      return;
+    }
+    if (event.target.matches('[data-schedule-off]')) { snapshotEditor(); render(selectedStaff); }
   });
   host.addEventListener('submit', function (event) {
     var form = event.target.closest('[data-request-adjust-form]');
@@ -160,10 +219,10 @@
     if (result.ok) adjustId = '';
     render(selectedStaff);
   });
-  host.addEventListener('click', function (event) {
+  function handleClick(event) {
     var day = event.target.closest('[data-schedule-day]');
-    if (day) { selectedStaff = day.dataset.scheduleStaff; selectedDate = day.dataset.scheduleDate; editorScope = 'date'; drawerOpen = true; loadEditorDay(); render(selectedStaff); return; }
-    if (event.target.closest('[data-schedule-close]')) { drawerOpen = false; editorValues = null; render(selectedStaff); return; }
+    if (day) { selectedStaff = day.dataset.scheduleStaff; selectedDate = day.dataset.scheduleDate; editorScope = 'weekly'; drawerOpen = true; loadEditorDay(); render(selectedStaff); return; }
+    if (event.target.closest('[data-schedule-close]')) { closeEditor(); return; }
     if (event.target.closest('[data-schedule-save-draft]')) { saveDraft(); return; }
     if (event.target.closest('[data-schedule-publish]')) { if (saveDraft()) publish(); return; }
     if (event.target.closest('[data-schedule-discard]')) { store.discardDraft(store.SALON_ID, selectedStaff); drawerOpen = false; editorValues = null; render(selectedStaff); return; }
@@ -178,10 +237,37 @@
     if (reject) { review(reject.dataset.requestReject, 'reject'); return; }
     var approve = event.target.closest('[data-request-approve]');
     if (approve) review(approve.dataset.requestApprove, 'approve');
+  }
+  host.addEventListener('click', handleClick);
+  modalHost.addEventListener('click', handleClick);
+  function closeEditor() {
+    drawerOpen = false;
+    editorValues = null;
+    render(selectedStaff);
+    if (opener && opener.isConnected) opener.focus();
+  }
+  function openEditor(staffId, trigger) {
+    selectedStaff = staffId;
+    selectedDate = dateKey(new Date());
+    editorScope = 'weekly';
+    drawerOpen = true;
+    opener = trigger;
+    loadEditorDay();
+    render(selectedStaff);
+  }
+  modalHost.addEventListener('keydown', function (event) {
+    if (event.key === 'Escape') { event.preventDefault(); if (impactReview) { impactReview = null; render(selectedStaff); } else closeEditor(); }
+    if (event.key !== 'Tab') return;
+    var dialog = modalHost.querySelector('[data-request-impact]:not([hidden])') || modalHost.querySelector('[data-schedule-drawer]');
+    if (!dialog) return;
+    var controls = Array.from(dialog.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),a[href]'));
+    var first = controls[0], last = controls[controls.length - 1];
+    if (event.shiftKey && (document.activeElement === first || document.activeElement.id === 'schedule-drawer-title')) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
   });
 
   var unsubscribe = store.subscribe(function () { render(selectedStaff); });
   window.addEventListener('pagehide', unsubscribe, {once:true});
-  window.NEXORA_STAFF_SCHEDULE_SETTINGS = {refresh:render};
+  window.NEXORA_STAFF_SCHEDULE_SETTINGS = {refresh:render,open:openEditor};
   render(new URLSearchParams(location.search).get('staff') || '');
 })();

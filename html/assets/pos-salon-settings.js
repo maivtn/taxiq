@@ -9,7 +9,7 @@
     const staff=salonData.loadCatalog().technicians.filter(t=>t.active&&t.name.toLowerCase().includes($('#salon-staff-search').value.trim().toLowerCase()));
     const pages=Math.max(1,Math.ceil(staff.length/pageSize));page=Math.min(page,pages);
     const visible=staff.slice((page-1)*pageSize,page*pageSize);
-    $('[data-staff-grid]').innerHTML=visible.length?table(['Staff','Position','Level','Contact','Actions'],visible.map(t=>'<tr><td><div class="salon-person"><span class="salon-avatar">'+esc(t.name.charAt(0).toUpperCase())+'</span>'+esc(t.name)+'</div></td><td>'+esc(ROLE_LABELS[t.posProfile?.posRole]||'Nail Technician')+'</td><td>Level '+esc(t.posProfile?.level||1)+'</td><td>'+esc(t.phone||t.email||'—')+'</td><td><button type="button" data-tech-detail-open="'+esc(t.id)+'">View &amp; Edit</button> <button type="button" data-staff-schedule-open="'+esc(t.id)+'">Open full schedule</button></td></tr>')):'<p class="salon-empty">No staff match your search.</p>';
+    $('[data-staff-grid]').innerHTML=visible.length?table(['Staff','Position','Level','Contact','Actions'],visible.map(t=>'<tr><td><div class="salon-person"><span class="salon-avatar">'+esc(t.name.charAt(0).toUpperCase())+'</span>'+esc(t.name)+'</div></td><td>'+esc(ROLE_LABELS[t.posProfile?.posRole]||'Nail Technician')+'</td><td>Level '+esc(t.posProfile?.level||1)+'</td><td>'+esc(t.phone||t.email||'—')+'</td><td><button type="button" data-tech-detail-open="'+esc(t.id)+'">View &amp; Edit</button> <button type="button" data-staff-schedule-open="'+esc(t.id)+'">Edit schedule</button></td></tr>')):'<p class="salon-empty">No staff match your search.</p>';
     let buttons='<button type="button" data-staff-page="'+(page-1)+'" aria-label="Previous page"'+(page===1?' disabled':'')+'>‹</button>';
     const wanted=[...new Set([1,page-1,page,page+1,pages])].filter(n=>n>0&&n<=pages).sort((a,b)=>a-b);let previous=0;
     wanted.forEach(n=>{if(previous&&n>previous+1)buttons+='<span>…</span>';buttons+='<button type="button" data-staff-page="'+n+'"'+(n===page?' aria-current="page"':'')+'>'+n+'</button>';previous=n;});
@@ -26,6 +26,6 @@
   $('#salon-staff-search').addEventListener('input',()=>{page=1;drawStaff();});
   $('#salon-staff-pagination').addEventListener('click',e=>{const b=e.target.closest('[data-staff-page]');if(b&&!b.disabled){page=Number(b.dataset.staffPage);drawStaff();}});
   document.querySelectorAll('[data-settings-tab]').forEach(b=>b.addEventListener('click',()=>selectTab(b.dataset.settingsTab)));
-  document.addEventListener('click',event=>{const button=event.target.closest('[data-staff-schedule-open]');if(!button)return;selectTab('staff-schedule');const url=new URL(location.href);url.searchParams.set('staff',button.dataset.staffScheduleOpen);history.replaceState(null,'',url);window.NEXORA_STAFF_SCHEDULE_SETTINGS?.refresh(button.dataset.staffScheduleOpen);});
+  document.addEventListener('click',event=>{const button=event.target.closest('[data-staff-schedule-open]');if(!button)return;window.NEXORA_STAFF_SCHEDULE_SETTINGS?.open(button.dataset.staffScheduleOpen,button);});
   drawStaff();selectTab(new URLSearchParams(location.search).get('section')||'staff');
 })();
