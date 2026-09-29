@@ -10,12 +10,11 @@
 *{box-sizing:border-box;margin:0;padding:0}
 body{font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--page);color:var(--ink);font-size:14px;-webkit-font-smoothing:antialiased}
 button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}input,select{font:inherit}
-.top{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:10px 16px;flex-wrap:wrap}
+.top{position:static;z-index:20;background:#fff;border:1px solid var(--line);border-radius:12px;display:flex;align-items:center;gap:10px;padding:10px 16px;flex-wrap:wrap}
 .top b{font-size:15px}.top small{display:block;color:var(--mute);font-size:12px}.sp{flex:1}
-.qr-page-tabs{display:flex;flex-basis:100%;gap:10px;overflow-x:auto;padding:2px 0 4px}.qr-page-tab{display:inline-flex;min-height:40px;flex-shrink:0;align-items:center;gap:8px;border:1px solid #E2E8F0;border-radius:8px;background:#fff;padding:8px 14px 8px 10px;color:#53617A;font-size:12px;font-weight:800;text-decoration:none;white-space:nowrap}.qr-page-tab:hover{border-color:#CBD2FF;color:var(--ink)}.qr-page-tab.on{border-color:transparent;background:linear-gradient(90deg,#4D4CF5,#9B22FF);color:#fff}.qr-page-tab svg{width:15px;height:15px;margin:3px}
 .btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 13px;border-radius:12px;font-weight:700;background:var(--p2);color:#fff}.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn.sm{padding:6px 10px;font-size:12.5px}.btn.full{width:100%}
-main{max-width:1100px;min-width:0;margin:0 auto;padding:14px 14px 130px;display:grid;grid-template-columns:400px minmax(0,1fr);gap:16px;align-items:start}
-.phone{background:#0B1220;border-radius:34px;padding:10px;position:sticky;top:128px}
+.qr-advertising-shell{display:grid;max-width:1440px;margin:0 auto;gap:20px}.advertising-demo{max-width:1100px;min-width:0;width:100%;margin:0 auto;padding:0 0 102px;display:grid;grid-template-columns:400px minmax(0,1fr);gap:16px;align-items:start}
+.phone{background:#0B1220;border-radius:34px;padding:10px;position:sticky;top:84px}
 .scr{background:#FAFAFC;border-radius:26px;height:760px;overflow:hidden;position:relative;display:flex;flex-direction:column}
 .body{flex:1;overflow:auto;padding:0 12px 16px}
 .nav{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);background:#fff}.nav button{padding:9px 0 12px;font-size:11.5px;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:3px}.nav button.on{color:var(--p1);font-weight:800}.nav i{font-style:normal;font-size:17px}
@@ -95,20 +94,32 @@ code{font:12px ui-monospace,Menlo,monospace;background:#F1F5F9;padding:1px 5px;b
 .hidden{display:none!important}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:110px;background:#0B1220;color:#fff;padding:10px 16px;border-radius:12px;font-weight:700;font-size:13px;z-index:95;display:none;max-width:90vw}
 .wn{position:fixed;inset:0;background:rgba(15,27,61,.55);z-index:80;display:grid;place-items:center;padding:16px}.wn .bx{background:#fff;border-radius:18px;max-width:560px;padding:22px}.wn li{margin:6px 0 6px 18px;font-size:13.5px;line-height:1.5}
-@media(max-width:900px){main{grid-template-columns:minmax(0,1fr)}main>*{min-width:0}.phone{position:static;max-width:400px;margin:0 auto;width:100%}.qr-page-tabs{gap:8px}.qr-page-tab{min-height:44px;font-size:13px}}
+@media(max-width:900px){.advertising-demo{grid-template-columns:minmax(0,1fr)}.advertising-demo>*{min-width:0}.phone{position:static;max-width:400px;margin:0 auto;width:100%}}
 </style>
+<link rel="stylesheet" href="../assets/qr-stations.css?v=industry-module-library-8">
+<link rel="stylesheet" href="../assets/nexora-shell.css">
 </head>
 <body>
-<div class="top"><div><b>📱 OneQR tại tiệm — khách chưa có tài khoản</b><small>Deals Nearby: vị trí tiệm (mặc định) hoặc vị trí khách (tuỳ chọn) · Search Deals: khách gõ điều mình muốn</small></div><span class="sp"></span><button class="btn ghost sm" id="tourBtn">✦ AI Tour</button>
-<nav class="qr-page-tabs" aria-label="Stations and QR tabs">
- <a class="qr-page-tab" href="qr-stations.html?tab=one-qr"><i data-lucide="scan-line" aria-hidden="true"></i><span>OneQR</span></a>
- <a class="qr-page-tab on" href="qr-advertising.html" aria-current="page"><i data-lucide="megaphone" aria-hidden="true"></i><span>Quảng cáo</span></a>
- <a class="qr-page-tab" href="qr-stations.html?tab=qr-stations"><i data-lucide="hand-coins" aria-hidden="true"></i><span>Receive Tips</span></a>
- <a class="qr-page-tab" href="qr-stations.html?tab=accept-payment"><i data-lucide="credit-card" aria-hidden="true"></i><span>Accept Payment</span></a>
- <a class="qr-page-tab" href="qr-stations.html?tab=referral-link"><i data-lucide="share-2" aria-hidden="true"></i><span>Referral Link</span></a>
- <a class="qr-page-tab" href="qr-stations.html?tab=staff-invite-qr"><i data-lucide="user-plus" aria-hidden="true"></i><span>Staff Invite QR</span></a>
-</nav></div>
-<main>
+<div class="shell">
+<aside class="sidebar" aria-label="Dashboard sidebar"></aside>
+<div class="app-area">
+<header class="header"></header>
+<main class="content qr-stations-page" aria-label="OneQR advertising content">
+<section class="qr-advertising-shell">
+<div class="qr-stations-heading">
+ <h1>One QR</h1>
+ <p>Create and manage tip stations. Customers scan to tip your staff.</p>
+ <div class="qr-tabs" role="tablist" aria-label="Stations and QR tabs">
+  <a class="qr-tab" href="qr-stations.html?tab=one-qr" role="tab" aria-selected="false"><span class="qr-tab-icon"><i data-lucide="scan-line" aria-hidden="true"></i></span><span>OneQR</span></a>
+  <a class="qr-tab is-active" href="qr-advertising.html" role="tab" aria-selected="true" aria-current="page"><span class="qr-tab-icon"><i data-lucide="megaphone" aria-hidden="true"></i></span><span>Quảng cáo</span></a>
+  <a class="qr-tab" href="qr-stations.html?tab=qr-stations" role="tab" aria-selected="false"><span class="qr-tab-icon"><i data-lucide="hand-coins" aria-hidden="true"></i></span><span>Receive Tips</span></a>
+  <a class="qr-tab" href="qr-stations.html?tab=accept-payment" role="tab" aria-selected="false"><span class="qr-tab-icon"><i data-lucide="credit-card" aria-hidden="true"></i></span><span>Accept Payment</span></a>
+  <a class="qr-tab" href="qr-stations.html?tab=referral-link" role="tab" aria-selected="false"><span class="qr-tab-icon"><i data-lucide="share-2" aria-hidden="true"></i></span><span>Referral Link</span></a>
+  <a class="qr-tab" href="qr-stations.html?tab=staff-invite-qr" role="tab" aria-selected="false"><span class="qr-tab-icon"><i data-lucide="user-plus" aria-hidden="true"></i></span><span>Staff Invite QR</span></a>
+ </div>
+</div>
+<div class="top"><div><b>📱 OneQR tại tiệm — khách chưa có tài khoản</b><small>Deals Nearby: vị trí tiệm (mặc định) hoặc vị trí khách (tuỳ chọn) · Search Deals: khách gõ điều mình muốn</small></div><span class="sp"></span><button class="btn ghost sm" id="tourBtn">✦ AI Tour</button></div>
+<div class="advertising-demo">
 <div class="phone" id="phone"><div class="scr" id="scr">
  <div class="body" id="body"></div>
  <div class="nav" id="nav"><button data-s="home" class="on"><i>⌂</i>Main Menu</button><button data-s="near"><i>⌖</i>Nearby</button><button data-s="book"><i>▦</i>Booking</button></div>
@@ -194,12 +205,18 @@ code{font:12px ui-monospace,Menlo,monospace;background:#F1F5F9;padding:1px 5px;b
   <p class="note" style="margin-top:8px"><code>qr_id</code> · <code>biz_id</code> · <code>anchor</code> · <code>loc_source</code> (qr_anchor / gps / zip) · <code>zip_bucket</code> · <code>screen</code> · <code>query</code> + <code>parsed</code> · <code>filtered_out</code> (số deal bị bộ lọc đối thủ ẩn) · <code>claim_id</code>.</p></div>
  <div class="panel" id="pOpen"><h3>❓ Còn chờ Brian chốt</h3><ol style="padding-left:18px;font-size:13px;line-height:1.7"><li>Bộ lọc đối thủ mặc định: cả nhóm hay chỉ cùng ngành.</li><li>Search có được hiện deal tiệm cùng ngành khi khách gõ đúng ngành đó không.</li><li>Bán kính mặc định của Deals Nearby.</li><li>Thứ tự trang chính: ① bản hiện tại, ② khám phá xuống dưới, hay ③ thanh gọn + 1 ô tài trợ + màn chờ (đề xuất).</li><li>Thêm ô “Cần đặt lịch trước” vào POS › Tạo khuyến mãi (để hệ thống kiểm được).</li><li>Chủ tiệm có được tắt ô tài trợ trên QR của mình không (đổi lại không nhận phần QR Host).</li><li>Tỷ lệ banner: giữ 50/50 hay cho tiệm chọn; đối tác chéo có trả phí không hay chỉ đổi chỗ cho nhau.</li></ol></div>
 </div>
+</div>
+</section>
 </main>
+</div>
+</div>
 
 <div class="wn" id="wn"><div class="bx"><div style="font-size:12px;font-weight:800;color:var(--p1)">MỚI · OneQR tại tiệm</div><h2 style="font-size:20px;margin:6px 0 8px">Deals Nearby & Search Deals cho khách chưa có tài khoản</h2><ul><li><b>Deals Nearby</b> mặc định lấy <b>vị trí tiệm tạo QR</b> — không cần xin quyền.</li><li>Khách có thể <b>tự bật vị trí của mình</b> (tuỳ chọn) hoặc nhập ZIP.</li><li><b>Search Deals</b>: gõ điều mình muốn — hệ thống hiểu ngành, giá, thời gian.</li><li>Bộ lọc đối thủ để QR của tiệm không đẩy khách sang tiệm cạnh tranh.</li></ul><div style="display:flex;gap:8px;margin-top:12px"><button class="btn" id="wnGo">✦ Xem AI Tour</button><button class="btn ghost" id="wnX">Tự xem</button></div></div></div>
 <div class="stour hidden" id="tb"><div class="hd2">✦ AI SMART TOUR <span id="tStep"></span><span class="sp"></span><button id="tPause">⏸</button><button id="tNext">⏭</button><button id="tClose">✕</button></div><div id="tVi"></div><div id="tEn"></div><div class="bar2"><i id="tBar"></i></div></div>
 <div id="toast"></div>
 <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+<script>window.NEXORA_SHELL={activePage:'stations',activeTab:'advertising'};</script>
+<script src="../assets/nexora-shell.js"></script>
 <script>
 const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];let tt;const toast=m=>{const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(tt);tt=setTimeout(()=>t.style.display='none',2600)};
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
@@ -516,9 +533,7 @@ const saveStatus = document.createElement('span');
 saveStatus.setAttribute('role', 'status');
 saveStatus.setAttribute('aria-live', 'polite');
 saveStatus.style.fontSize = '12px';
-const pageTabs = $('.qr-page-tabs');
-$('.top').insertBefore(saveButton, pageTabs);
-$('.top').insertBefore(saveStatus, pageTabs);
+$('.top').append(saveButton, saveStatus);
 try {
   const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || 'null');
   if (saved && saved.controls) {
