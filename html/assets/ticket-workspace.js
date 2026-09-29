@@ -25,13 +25,15 @@
     plus:'<path d="M12 5v14M5 12h14"/>',
     close:'<path d="m6 6 12 12M6 18 18 6"/>',
     refresh:'<path d="M20 7v5h-5M4 17v-5h5"/><path d="M6 6a8 8 0 0 1 13 3M5 15a8 8 0 0 0 13 3"/>',
-    trash:'<path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/>'
+    trash:'<path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/>',
+    coupon:'<path d="M20 12a2 2 0 0 0 0-4V4H4v4a2 2 0 0 0 0 4v4a2 2 0 0 0 0 4h16v-4a2 2 0 0 0 0-4Z"/><path d="M12 4v16M12 8h.01M12 12h.01M12 16h.01"/>',
+    scan:'<path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="3" height="3"/><rect x="14" y="7" width="3" height="3"/><rect x="7" y="14" width="3" height="3"/><path d="M14 14h3v3h-3z"/>'
   };
   const iconForLabel = {'Print Ticket':'printer','Print receipt':'printer',Print:'printer','Print preview':'eye',
     'Start Service':'play',Start:'play',Complete:'check',Back:'back','Checkout Ticket':'forward','Complete checkout':'check',
     Cash:'cash',Card:'card','Gift Card':'gift','Split Pay':'split','Split bill':'split',More:'more','Send SMS':'message',
     'No Receipt':'receipt','Edit customer':'user','Hand to customer':'tablet','Discount all':'percent','Add service':'plus',
-    Discount:'percent','Custom':'plus','Cancel split bill':'close',Close:'close','Change tech':'user','Change service':'refresh',Remove:'trash',Pay:'card'};
+    Discount:'percent',Coupon:'coupon','Scan QR':'scan','Start camera':'scan','Custom':'plus','Cancel split bill':'close',Close:'close','Change tech':'user','Change service':'refresh',Remove:'trash',Pay:'card'};
   const icon = name => `<svg class="tw-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${iconPaths[name]}</svg>`;
   function totals(ticket) {
     if(ticket.amountTotals)return {...ticket.amountTotals};
@@ -47,7 +49,7 @@
     return {subtotalCents:subtotal,discountCents:lineDiscount+orderDiscount,netCents:net,tipCents:tip,totalCents:net+tip};
   }
   function mount(root, options) {
-    let ticket, parent, activeBillId, mode='edit', category='All', search='', dialogAction='', dialogLine='', setupAssignments={}, serviceFilter='all', lastAssignment=null;
+    let ticket, parent, activeBillId, mode='edit', category='All', search='', dialogAction='', dialogLine='', setupAssignments={}, serviceFilter='all', lastAssignment=null, qrStream=null, qrFrame=null;
     const $ = selector => root.querySelector(selector);
     const button = (label,attr,style='') => `<button type="button" class="tw-button ${style}" ${attr}>${iconForLabel[label]?icon(iconForLabel[label]):''}<span>${label}</span></button>`;
     const input = (label,name,value='',type='text') => `<label>${label}<input name="${name}" type="${type}" value="${esc(value)}" ${type==='number'?'min="0" step="0.01"':''} required></label>`;
@@ -58,6 +60,50 @@
     const checkoutPaid = () => !!parent.payment&&(!group()||(group().bills.length>0&&group().bills.every(b=>b.payment)));
     const amountSplit = () => group()?.mode==='amount';
     const activeBill = () => group()?.bills.find(b => b.id === activeBillId);
+    const couponCatalog = {
+      WELCOME10:{type:'percent',value:10,label:'10% off'},
+      SAVE5:{type:'fixed',value:5,label:'$5.00 off'}
+    };
+    function stopQrScanner() {
+      if(qrFrame)cancelAnimationFrame(qrFrame);
+      qrFrame=null;
+      qrStream?.getTracks().forEach(track=>track.stop());
+      qrStream=null;
+    }
+    function setCouponMode(next) {
+      const codePanel=$('[data-tw-coupon-code-panel]'),scanPanel=$('[data-tw-coupon-scan-panel]');
+      if(!codePanel||!scanPanel)return;
+      const scanning=next==='scan';
+      codePanel.hidden=scanning;scanPanel.hidden=!scanning;
+      root.querySelectorAll('[data-tw-coupon-mode]').forEach(button=>{const selected=button.dataset.twCouponMode===next;button.setAttribute('aria-pressed',String(selected));button.classList.toggle('selected',selected);});
+      if(!scanning){stopQrScanner();$('[name="couponCode"]')?.focus();}
+    }
+    async function startQrScanner() {
+      const status=$('[data-tw-qr-status]'),video=$('[data-tw-qr-video]');
+      if(!status||!video)return;
+      stopQrScanner();
+      if(!navigator.mediaDevices?.getUserMedia||!('BarcodeDetector' in window)){
+        status.textContent='QR camera scanning is not supported in this browser. Use the demo QR button instead.';return;
+      }
+      try{
+        status.textContent='Requesting camera access…';
+        const detector=new BarcodeDetector({formats:['qr_code']});
+        qrStream=await navigator.mediaDevices.getUserMedia({video:{facingMode:{ideal:'environment'}},audio:false});
+        video.srcObject=qrStream;await video.play();status.textContent='Hold the coupon QR code inside the frame.';
+        const detect=async()=>{
+          if(!qrStream||!$('dialog')?.open)return;
+          try{
+            const codes=await detector.detect(video);
+            if(codes[0]?.rawValue){
+              const field=$('[name="couponCode"]');if(field)field.value=codes[0].rawValue;
+              status.textContent='Coupon found. Applying…';stopQrScanner();$('[data-tw-form]')?.requestSubmit();return;
+            }
+          }catch(error){status.textContent='Keep the QR code steady inside the frame.';}
+          qrFrame=requestAnimationFrame(detect);
+        };
+        qrFrame=requestAnimationFrame(detect);
+      }catch(error){stopQrScanner();status.textContent='Camera access was unavailable. Enter a code or use the demo QR button.';}
+    }
     function billTicket(bill) {
       if(amountSplit())return {...parent,customer:bill.name,checkout:bill.checkout,payment:bill.payment,amountTotals:bill.amountTotals};
       const lines = parent.lines.filter(l => group().assignments[l.id] === bill.id);
@@ -302,7 +348,7 @@
       <section class="tw-card"><h3>PAYMENT METHOD</h3><div class="tw-methods">${[['cash','Cash'],['card','Card'],['gift-card','Gift Card'],['split','Split Pay'],['other','More']].map(([id,label])=>button(label,`data-tw-method="${id}"`,p.method===id?'selected':'')).join('')}</div>
       ${p.method==='cash'?`<div class="tw-cash"><label>Cash received <input aria-label="Cash received" type="number" min="0" step="0.01" data-tw-field="cash" value="${esc(p.cash)}"></label><span>Change due <strong data-tw-change>$0.00</strong></span></div>`:p.method==='split'?`<div class="tw-cash"><label>Cash portion ($)<input aria-label="Split cash amount" type="number" min="0" step="0.01" data-tw-field="splitCash" value="${esc(p.splitCash || '')}"></label><span>Remaining balance: card (demo)</span></div>`:p.method==='gift-card'?`<label class="tw-payment-info">Gift card reference<input aria-label="Gift card reference" data-tw-field="giftCode" value="${esc(p.giftCode || '')}" placeholder="Demo reference"></label>`:p.method==='other'?`<label class="tw-payment-info">Other method<select data-tw-field="otherMethod"><option ${p.otherMethod==='Zelle'?'selected':''}>Zelle</option><option ${p.otherMethod==='Venmo'?'selected':''}>Venmo</option><option ${p.otherMethod==='Other'?'selected':''}>Other</option></select></label>`:'<p class="tw-muted">Card payment is simulated. No card details are collected.</p>'}
       <h3 class="tw-receipt-label">RECEIPT</h3><div class="tw-receipt-options">${[['none','No Receipt'],['sms','Send SMS'],['print','Print']].map(([id,label])=>button(label,`data-tw-receipt="${id}"`,p.receipt===id?'selected':'')).join('')}</div><div class="tw-preview">${button('Print preview','data-tw-preview','tw-text')}</div></section>
-      <section class="tw-card tw-payment-summary"><div class="tw-card-title"><h3>PAYMENT SUMMARY</h3><div class="tw-ticket-tools">${button('Discount all','data-tw-discount-all'+(group()?.bills.some(b=>b.payment)?' disabled title="Discount is locked after the first bill is paid"':''),'tw-small tw-orange')}${!group()?button('Split bill','data-tw-split-bill aria-haspopup="dialog"','tw-small tw-purple'):''}</div></div><div class="tw-summary-row tw-rule"><span>Subtotal</span><span data-tw-subtotal></span></div><div class="tw-summary-row"><span>Tip</span><span data-tw-tip-total></span></div><div class="tw-summary-row"><span>Discount</span><span class="tw-red" data-tw-discount-total></span></div><div class="tw-summary-row tw-rule"><strong>TOTAL</strong><strong data-tw-total></strong></div></section><p class="tw-demo">Prototype · Payment and SMS receipt are simulated.</p>`;
+      <section class="tw-card tw-payment-summary"><div class="tw-card-title"><h3>PAYMENT SUMMARY</h3><div class="tw-ticket-tools">${button('Discount all','data-tw-discount-all'+(group()?.bills.some(b=>b.payment)?' disabled title="Discount is locked after the first bill is paid"':''),'tw-small tw-orange')}${button('Coupon','data-tw-coupon aria-haspopup="dialog"'+(group()?.bills.some(b=>b.payment)?' disabled title="Coupon is locked after the first bill is paid"':''),'tw-small tw-coupon-button')}${!group()?button('Split bill','data-tw-split-bill aria-haspopup="dialog"','tw-small tw-purple'):''}</div></div>${parent.coupon?`<div class="tw-applied-coupon" role="status">${icon('coupon')}<span><strong>${esc(parent.coupon.code)}</strong><small>${esc(parent.coupon.label)} applied</small></span>${button('Remove','data-tw-remove-coupon aria-label="Remove coupon '+esc(parent.coupon.code)+'"','tw-text tw-small')}</div>`:''}<div class="tw-summary-row tw-rule"><span>Subtotal</span><span data-tw-subtotal></span></div><div class="tw-summary-row"><span>Tip</span><span data-tw-tip-total></span></div><div class="tw-summary-row"><span>Discount</span><span class="tw-red" data-tw-discount-total></span></div><div class="tw-summary-row tw-rule"><strong>TOTAL</strong><strong data-tw-total></strong></div></section><p class="tw-demo">Prototype · Payment and SMS receipt are simulated.</p>`;
     }
     function render() {
       const paid=!!ticket.payment;
@@ -321,6 +367,7 @@
         return `<article class="tw-line ${serviceSplit?(owner?.id===activeBillId?'tw-line-selected':!owner?'tw-line-unassigned':''):''}" data-tw-service-line="${esc(l.id)}" ${serviceSplit?`data-tw-guest-color="${owner?guestColor(owner):'none'}"`:''} ${hidden?'hidden':''} ${serviceSplit&&owner?.id!==activeBillId?'data-tw-other-bill':''}>${selection}<div class="tw-line-top"><div><strong>${esc(l.name)}</strong> <span class="tw-status ${esc(l.status)}">${status}</span><p>Tech. <b>${esc(l.tech || 'Unassigned')}</b></p></div><strong>${validMoney(l.price)?money(cents(l.price)):'Price required'}</strong></div>${l.discount?.value?`<p class="tw-discount-note">Discount: ${esc(l.discount.value)}${l.discount.type==='fixed'?' USD':'%'}</p>`:''}${!paid&&!group()?`<div class="tw-line-actions">${l.status==='completed'?'<span class="tw-completed">✓ Completed</span>':button(l.status==='in-service'?'Complete':'Start',`data-tw-action="${l.status==='in-service'?'complete':'start'}" data-line="${esc(l.id)}"`,'tw-green')}${button('Change tech',`data-tw-action="tech" data-line="${esc(l.id)}"`,'tw-blue')}${button('Change service',`data-tw-action="service" data-line="${esc(l.id)}"`,'tw-purple')}${button('Discount',`data-tw-action="discount" data-line="${esc(l.id)}"`,'tw-orange')}${button('Remove',`data-tw-action="remove" data-line="${esc(l.id)}"`,'tw-red')}${!validMoney(l.price)?button('Set price',`data-tw-action="price" data-line="${esc(l.id)}"`,'tw-orange'):''}</div>`:canManage&&group()&&l.status!=='completed'?`<div class="tw-line-actions">${button(l.status==='in-service'?'Complete':'Start',`data-tw-action="${l.status==='in-service'?'complete':'start'}" data-line="${esc(l.id)}"`,'tw-green')}${button('Change tech',`data-tw-action="tech" data-line="${esc(l.id)}"`,'tw-blue')}</div>`:''}</article>`;
       }).join('') || '<p class="tw-muted">Choose a service to add it to this ticket.</p>'}</div>${mode==='edit'?'<div class="tw-summary-row tw-rule"><strong>ESTIMATED TOTAL</strong><strong data-tw-total></strong></div>':''}</section><section class="tw-card"><label class="tw-note">NOTE<textarea data-tw-note placeholder="Seat, customer preferences, color/powder used…" ${paid||group()?'disabled':''}>${esc(ticket.note || '')}</textarea></label></section>${mode==='checkout'?'':`<div class="tw-bottom">${button('Print Ticket','data-tw-print')}${button('Start Service','data-tw-start-all','tw-purple')}</div>${button('Checkout Ticket','data-tw-checkout','tw-text')}` }${mode==='checkout'?'':'<p data-tw-message role="status"></p>'}</div></div><dialog class="tw-dialog" aria-labelledby="tw-dialog-title"><form data-tw-form><div class="tw-card-title"><h2 id="tw-dialog-title"></h2>${button('Close','data-tw-close aria-label="Close dialog"','tw-text tw-icon-only')}</div><div data-tw-fields></div><footer class="tw-dialog-actions"><p data-tw-error role="alert"></p><span data-tw-setup-status role="status" hidden></span><div>${button('Cancel','data-tw-close','tw-dialog-cancel')}<button type="submit" class="tw-button tw-primary" data-tw-save>Save</button></div></footer></form></dialog>`;
       if(serviceSplit&&serviceFilter!=='all'&&!root.querySelector('.tw-line:not([hidden])'))$('.tw-lines').insertAdjacentHTML('beforeend',`<p class="tw-filter-empty" data-tw-filter-empty>${serviceFilter==='unassigned'?'No unassigned services.':'No services on this bill yet.'} Choose All services to review the full ticket.</p>`);
+      $('dialog').addEventListener('close',stopQrScanner);
       renderCatalog();renderTotals();
     }
     function openDialog(action,lineId) {
@@ -336,12 +383,13 @@
       if(action==='tech'){title='Change technician';fields='<label>Technician<select name="tech" required><option value="">Choose technician</option>'+options.technicians().map(t=>`<option ${t.name===l.tech?'selected':''} ${t.status==='clocked-out'||(t.status&&t.status!=='available'&&t.name!==l.tech)?'disabled':''}>${esc(t.name)}</option>`).join('')+'</select></label>';}
       if(action==='service'){title='Change service';fields='<label>Service<select name="service" required>'+services().map(s=>`<option value="${esc(s.id)}">${esc(s.name)} · ${s.price==null?'Enter price':money(cents(s.price))}</option>`).join('')+'</select></label>';}
       if(action==='discount'){title=l?'Service discount':'Discount all services';fields=`<label>Discount type<select name="type"><option value="percent">Percentage (%)</option><option value="fixed" ${rule?.type==='fixed'?'selected':''}>Amount ($)</option></select></label>${input('Discount value','value',rule?.value || 0,'number')}<div class="tw-discount-presets">${[0,5,10,15,20].map(n=>button(n,`data-tw-discount-preset="${n}"`)).join('')}</div><p class="tw-muted">Order discount applies after service discounts. Total cannot fall below zero.</p>${group()?'<p class="tw-muted">Discount all applies to the whole ticket. Bill totals update automatically; custom amount splits keep their current proportions.</p>':''}`;}
+      if(action==='coupon'){title='Apply coupon';fields=`<div class="tw-coupon-modes" role="group" aria-label="Coupon entry method">${button('Enter code','data-tw-coupon-mode="code" aria-pressed="true"','selected')}${button('Scan QR','data-tw-coupon-mode="scan" aria-pressed="false"')}</div><div data-tw-coupon-code-panel><label>Coupon code<input name="couponCode" value="${esc(parent.coupon?.code || '')}" placeholder="Enter coupon code" autocomplete="off" required></label><p class="tw-muted">Demo codes: <button type="button" class="tw-code-link" data-tw-demo-code="WELCOME10">WELCOME10</button> for 10% off or <button type="button" class="tw-code-link" data-tw-demo-code="SAVE5">SAVE5</button> for $5 off.</p></div><div class="tw-coupon-scan" data-tw-coupon-scan-panel hidden><div class="tw-qr-frame"><video data-tw-qr-video playsinline muted></video><div class="tw-qr-corners" aria-hidden="true"></div></div><p data-tw-qr-status role="status">Start the camera and hold the coupon QR code inside the frame.</p><div class="tw-qr-actions">${button('Start camera','data-tw-start-qr')}${button('Use demo QR','data-tw-demo-qr','tw-purple')}</div></div><p class="tw-muted">Coupons apply after service discounts. Only one order coupon or order discount can be active.</p>`;}
       if(action==='custom'){title='Custom service';fields=input('Service name','name')+input('Price ($)','price','','number');}
       if(action==='price'){title='Set service price';fields=input('Price ($)','price',l.price ?? '','number');}
       if(action==='customer'){title='Edit customer';fields=input('Customer','customer',ticket.customer)+input('Phone','phone',ticket.phone,'tel');}
       if(action==='hand'){title='Choose your tip';fields=`<p>Thank you, ${esc(ticket.customer)}.</p><div class="tw-tip-row">${[0,10,15,20].map(n=>button(n?n+'%':'No Tip',`data-tw-customer-tip="${n}"`)).join('')}</div>${input('Custom tip ($)','tip',0,'number')}`;}
       if(action==='preview'){const t=totals(ticket);title='Receipt preview';fields=`${amountSplit()?'<p>Shared ticket services shown below. The total is this guest’s allocated payment, including their share of discount and tip.</p>':''}<p>Ticket #${esc(ticket.id)} · ${esc(ticket.customer)}</p>${ticket.lines.map(l=>`<div class="tw-summary-row"><span>${esc(l.name)}</span><span>${validMoney(l.price)?money(cents(l.price)):'—'}</span></div>`).join('')}<p>Discount ${money(t.discountCents || 0)} · Tip ${money(t.tipCents || 0)}</p><h3>Total ${t.error?'—':money(t.totalCents)}</h3><p>Demo receipt · ${ticket.payment?'Payment recorded':'Not paid'}</p>`;}
-      $('#tw-dialog-title').textContent=title;$('[data-tw-fields]').innerHTML=fields;$('[data-tw-error]').textContent='';$('[data-tw-save]').disabled=false;$('[data-tw-save]').hidden=['preview','catalog'].includes(action);$('[data-tw-save]').textContent=action==='split-bill'?'Create bills':'Save';
+      $('#tw-dialog-title').textContent=title;$('[data-tw-fields]').innerHTML=fields;$('[data-tw-error]').textContent='';$('[data-tw-save]').disabled=false;$('[data-tw-save]').hidden=['preview','catalog'].includes(action);$('[data-tw-save]').textContent=action==='split-bill'?'Create bills':action==='coupon'?'Apply coupon':'Save';
       $('dialog').classList.toggle('tw-split-dialog',action==='split-bill');$('[data-tw-setup-status]').hidden=action!=='split-bill';
       if(action==='split-bill'){
         if(amountSplit()&&group().allocation==='custom')$('[name="amountAllocation"][value="custom"]').checked=true;
@@ -391,7 +439,7 @@
       const b=e.target.closest('button');if(!b||b.disabled)return;
       if(b.hasAttribute('data-tw-complete-checkout')){if(mode==='checkout'&&checkoutPaid()&&!root.hidden){root.hidden=true;options.onBack();}return;}
       if(b.hasAttribute('data-tw-back')){root.hidden=true;options.onBack();return;}
-      if(b.hasAttribute('data-tw-close')){$('dialog').close();return;}
+      if(b.hasAttribute('data-tw-close')){stopQrScanner();$('dialog').close();return;}
       if(b.hasAttribute('data-tw-print')){window.print();return;}
       if(b.hasAttribute('data-tw-preview')){openDialog('preview');return;}
       if(b.hasAttribute('data-tw-bill')&&group()){selectBill(b.dataset.twBill);render();[...root.querySelectorAll('[data-tw-bill]')].find(el=>el.dataset.twBill===activeBillId)?.focus({preventScroll:true});return;}
@@ -402,6 +450,13 @@
       if(b.hasAttribute('data-tw-cancel-split')&&group()&&!group().bills.some(b=>b.payment)){delete parent.splitBills;ticket=parent;lastAssignment=null;serviceFilter='all';save();render();return;}
       if(ticket.payment)return;
       if(b.hasAttribute('data-tw-discount-all')&&group()?.bills.some(bill=>bill.payment))return;
+      if(b.hasAttribute('data-tw-coupon')&&group()?.bills.some(bill=>bill.payment))return;
+      if(b.hasAttribute('data-tw-coupon')){openDialog('coupon');return;}
+      if(b.hasAttribute('data-tw-coupon-mode')){setCouponMode(b.dataset.twCouponMode);return;}
+      if(b.hasAttribute('data-tw-start-qr')){startQrScanner();return;}
+      if(b.hasAttribute('data-tw-demo-code')){const field=$('[name="couponCode"]');if(field){field.value=b.dataset.twDemoCode;field.focus();}return;}
+      if(b.hasAttribute('data-tw-demo-qr')){const field=$('[name="couponCode"]');if(field)field.value='WELCOME10';$('[data-tw-qr-status]').textContent='Demo QR found. Applying WELCOME10…';stopQrScanner();$('[data-tw-form]').requestSubmit();return;}
+      if(b.hasAttribute('data-tw-remove-coupon')){delete parent.coupon;delete parent.discount;if(group())refreshSplitDiscount();save();render();return;}
       if(b.hasAttribute('data-tw-assign-services')&&amountSplit()&&!group().bills.some(bill=>bill.payment)){openDialog('split-bill');return;}
       if(b.hasAttribute('data-tw-split-bill')&&!group()){openDialog('split-bill');return;}
       if(b.hasAttribute('data-tw-add-service')){openDialog('catalog');return;}
@@ -446,6 +501,14 @@
         if(!validMoney(value)||(type==='percent'&&Number(value)>100)){error('Enter a discount from 0 to 100% or a valid dollar amount.');return;}
         if(group()?.bills.some(b=>b.payment)){error('Discount is locked after the first bill is paid.');return;}
         (l || parent).discount={type,value:Number(value)};
+        if(!l)delete parent.coupon;
+        if(group())refreshSplitDiscount();
+      }
+      if(dialogAction==='coupon'){
+        const code=String(data.get('couponCode') || '').trim().toUpperCase(),coupon=couponCatalog[code];
+        if(!coupon){error('Coupon not found. Try WELCOME10 or SAVE5.');return;}
+        if(group()?.bills.some(b=>b.payment)){error('Coupon is locked after the first bill is paid.');return;}
+        parent.coupon={code,label:coupon.label};parent.discount={type:coupon.type,value:coupon.value};
         if(group())refreshSplitDiscount();
       }
       if(dialogAction==='tech'){const tech=data.get('tech');const choice=options.technicians().find(t=>t.name===tech);if(!choice||choice.status==='clocked-out'||(choice.status&&choice.status!=='available'&&tech!==l.tech)){error('Choose an available technician.');return;}l.tech=tech;if(l.status==='unassigned')l.status='assigned';}
@@ -457,7 +520,7 @@
       }
       if(dialogAction==='customer'){if(!data.get('customer').trim()||!data.get('phone').trim()){error('Customer and phone are required.');return;}ticket.customer=data.get('customer').trim();ticket.phone=data.get('phone').trim();}
       if(dialogAction==='hand'){if(!validMoney(data.get('tip'))){error('Enter a valid tip.');return;}ticket.checkout.tip=Number(data.get('tip'));ticket.checkout.tipType='fixed';}
-      $('dialog').close();save();render();
+      stopQrScanner();$('dialog').close();save();render();
     });
     return {open(value,requestedMode='edit') {
       parent=value;ticket=value;mode=parent.splitBills?'checkout':requestedMode;category='All';search='';serviceFilter='all';lastAssignment=null;
