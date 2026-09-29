@@ -27,12 +27,13 @@
     refresh:'<path d="M20 7v5h-5M4 17v-5h5"/><path d="M6 6a8 8 0 0 1 13 3M5 15a8 8 0 0 0 13 3"/>',
     trash:'<path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/>',
     coupon:'<path d="M20 12a2 2 0 0 0 0-4V4H4v4a2 2 0 0 0 0 4v4a2 2 0 0 0 0 4h16v-4a2 2 0 0 0 0-4Z"/><path d="M12 4v16M12 8h.01M12 12h.01M12 16h.01"/>',
-    scan:'<path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="3" height="3"/><rect x="14" y="7" width="3" height="3"/><rect x="7" y="14" width="3" height="3"/><path d="M14 14h3v3h-3z"/>'
+    scan:'<path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="3" height="3"/><rect x="14" y="7" width="3" height="3"/><rect x="7" y="14" width="3" height="3"/><path d="M14 14h3v3h-3z"/>',
+    dollar:'<path d="M12 2v20M17 5.5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>'
   };
   const iconForLabel = {'Print Ticket':'printer','Print receipt':'printer',Print:'printer','Print preview':'eye',
     'Start Service':'play',Start:'play',Complete:'check',Back:'back','Checkout Ticket':'forward','Complete checkout':'check',
     Cash:'cash',Card:'card','Gift Card':'gift','Split Pay':'split','Split bill':'split',More:'more','Send SMS':'message',
-    'No Receipt':'receipt','Edit customer':'user','Hand to customer':'tablet','Discount all':'percent','Add tip':'plus','Add service':'plus',
+    'No Receipt':'receipt','Edit customer':'user','Hand to customer':'tablet','Discount all':'percent','Add tip':'dollar','Add service':'plus',
     Discount:'percent',Coupon:'coupon','Scan QR':'scan','Start camera':'scan','Custom':'plus','Cancel split bill':'close',Close:'close','Change tech':'user','Change service':'refresh',Remove:'trash',Pay:'card'};
   const icon = name => `<svg class="tw-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${iconPaths[name]}</svg>`;
   function totals(ticket) {
