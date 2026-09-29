@@ -235,6 +235,7 @@
   var heroTaglineEl = document.getElementById('oneqrHeroTagline');
   var saveSettingsBtn = document.getElementById('oneqrSaveSettings');
   var ONEQR_CONFIG_STORAGE_KEY = 'taxiq:oneqr-config';
+  var ONEQR_EDITOR_DRAFT_KEY = 'taxiq:oneqr-editor-draft';
 
   var addModuleModal = document.getElementById('oneqrAddModuleModal');
   var addModuleListEl = document.getElementById('oneqrAddModuleList');
@@ -1134,7 +1135,38 @@
     if (templateLinkLabel) templateLinkLabel.textContent = 'Change Industry Template';
   }
 
+  function currentOneQRConfig() {
+    var industryTemplate = loadIndustryTemplateConfig();
+    return {
+      name: nameInput ? nameInput.value.trim() : '',
+      template: templateSelect ? templateSelect.value : DEFAULT_TEMPLATE,
+      roleConfig: roleConfig,
+      moduleOrderByRole: moduleOrderByRole,
+      enabledByRole: Object.fromEntries(ROLES.map(function (role) { return [role, Array.from(enabledByRole[role])]; })),
+      moduleDetailsByRole: moduleDetailsByRole,
+      industryAppliedAt: industryTemplate ? industryTemplate.appliedAt : null,
+      currentRole: currentRole
+    };
+  }
+
+  document.querySelectorAll('[data-oneqr-editor-link]').forEach(function (link) {
+    link.addEventListener('click', function (event) {
+      if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
+      try {
+        window.sessionStorage.setItem(ONEQR_EDITOR_DRAFT_KEY, JSON.stringify(currentOneQRConfig()));
+      } catch (error) {
+        event.preventDefault();
+        moduleStatusEl.textContent = 'Could not keep your draft while opening this editor. Save Settings before continuing.';
+      }
+    });
+  });
+
   var savedConfig = loadSavedConfig();
+  try {
+    var editorDraft = JSON.parse(window.sessionStorage.getItem(ONEQR_EDITOR_DRAFT_KEY) || 'null');
+    if (editorDraft && editorDraft.moduleOrderByRole) savedConfig = editorDraft;
+    window.sessionStorage.removeItem(ONEQR_EDITOR_DRAFT_KEY);
+  } catch (error) { /* Keep the saved configuration when draft storage is unavailable. */ }
   var initialTemplate = DEFAULT_TEMPLATE;
   if (savedConfig) {
     if (savedConfig.name && nameInput) { nameInput.value = savedConfig.name; if (cardTitleEl) cardTitleEl.textContent = savedConfig.name; if (heroNameEl) heroNameEl.textContent = savedConfig.name; }
@@ -1167,16 +1199,7 @@
         return;
       }
       try {
-        var industryTemplate = loadIndustryTemplateConfig();
-        window.localStorage.setItem(ONEQR_CONFIG_STORAGE_KEY, JSON.stringify({
-          name: nameInput ? nameInput.value.trim() : '',
-          template: templateSelect ? templateSelect.value : DEFAULT_TEMPLATE,
-          roleConfig: roleConfig,
-          moduleOrderByRole: moduleOrderByRole,
-          enabledByRole: Object.fromEntries(ROLES.map(function (role) { return [role, Array.from(enabledByRole[role])]; })),
-          moduleDetailsByRole: moduleDetailsByRole,
-          industryAppliedAt: industryTemplate ? industryTemplate.appliedAt : null
-        }));
+        window.localStorage.setItem(ONEQR_CONFIG_STORAGE_KEY, JSON.stringify(currentOneQRConfig()));
       } catch (error) {
         moduleStatusEl.textContent = 'Could not save changes. Browser storage is unavailable.';
         return;
@@ -1209,7 +1232,5 @@
       });
     });
   }
-  renderModules();
-  renderPreview();
-  syncConfigFieldsToRole(currentRole);
+  setActiveRole(savedConfig && ROLES.includes(savedConfig.currentRole) ? savedConfig.currentRole : currentRole);
 })();

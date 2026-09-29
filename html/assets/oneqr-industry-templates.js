@@ -80,6 +80,8 @@
   const CONTACT_STORAGE_KEY = 'taxiq:oneqr-contact-card';
   const INDUSTRY_SELECTION_KEY = 'taxiq:oneqr-industry-selection';
   const INDUSTRY_DRAFT_KEY = 'taxiq:oneqr-industry-draft';
+  const enteredFromOneQR = new URLSearchParams(window.location.search).get('from') === 'oneqr';
+  const contactCardEntry = enteredFromOneQR && window.location.hash === '#contact-card';
   const EDITOR_DOCUMENT_TITLE = document.title;
   const DEFAULT_CONTACT_CARD = {
     name: 'Bitcoin Nail Bar',
@@ -296,7 +298,7 @@
       } catch (error) {
         // Navigation still works when storage is unavailable.
       }
-      window.location.href = 'oneqr-industry-templates.html';
+      window.location.href = 'oneqr-industry-templates.html' + (enteredFromOneQR ? '?from=oneqr' : '');
       return;
     }
     renderIndustries();
@@ -439,7 +441,7 @@
     } catch (error) {
       // The separate picker page can still open without draft persistence.
     }
-    window.location.href = 'oneqr-industry-picker.html';
+    window.location.href = 'oneqr-industry-picker.html' + (enteredFromOneQR ? '?from=oneqr' : '');
   }
 
   function returnToTemplateEditor() {
@@ -1291,6 +1293,7 @@
   }
 
   if (document.body.dataset.oneqrScreen === 'industry-picker') {
+    if (enteredFromOneQR) $('.picker-back-link').href = 'qr-stations.html?tab=one-qr';
     initIndustryPickerPage();
     return;
   }
@@ -1346,5 +1349,7 @@
   renderAppliedTemplate();
   renderContactStatus();
   showTemplateEditor();
+  $('#editor-back-to-oneqr').hidden = !enteredFromOneQR;
+  if (contactCardEntry) openContactCard();
   refreshIcons();
 }());

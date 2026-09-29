@@ -20,6 +20,7 @@ button, input { font: inherit; }
 button, a { -webkit-tap-highlight-color: transparent; }
 
 .industry-page { width: 100%; max-width: 1540px; margin: 0 auto; padding-bottom: 72px; }
+#editor-back-to-oneqr[hidden] { display: none; }
 
 .industry-breadcrumb {
   display: flex;
