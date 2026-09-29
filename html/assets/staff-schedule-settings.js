@@ -34,7 +34,6 @@
   var boardMessage = '';
   var names = {mon:'Monday',tue:'Tuesday',wed:'Wednesday',thu:'Thursday',fri:'Friday',sat:'Saturday',sun:'Sunday'};
   var impactReview = null;
-  var adjustId = '';
   var rejectId = '';
   var rejectionReason = '';
   var dayKeys = ['sun','mon','tue','wed','thu','fri','sat'];
@@ -114,9 +113,8 @@
       var active = ['pending','adjusted','blocked'].includes(request.status);
       var schedule = store.getStaffSchedule(request.salonId, request.staffId, {});
       var current = store.scheduleForDate(schedule, request.date);
-      var adjust = adjustId === request.id ? '<form class="schedule-adjust-form" data-request-adjust-form="' + esc(request.id) + '"><label>Date<input type="date" data-adjust-date value="' + esc(request.date) + '" required></label>' + (request.type === 'day-off' ? '' : '<label>Start<input type="time" data-adjust-start value="' + esc(request.start) + '" required></label><label>End<input type="time" data-adjust-end value="' + esc(request.end) + '" required></label>') + '<label>Manager note<input type="text" data-adjust-reason value="' + esc(request.reason) + '"></label><button type="submit">Save adjustment</button><button type="button" data-adjust-close>Cancel</button></form>' : '';
       var rejection = active && rejectId === request.id ? '<form class="schedule-reject-form" data-request-reject-form="' + esc(request.id) + '"><label>Reason for rejection (required)<textarea data-rejection-reason rows="3" maxlength="500" required placeholder="Explain why this request cannot be approved">' + esc(rejectionReason) + '</textarea></label><small>The staff member will see this reason. Their schedule will stay unchanged.</small><div><button type="submit" class="schedule-reject-confirm">Confirm rejection</button><button type="button" data-reject-cancel>Cancel</button></div></form>' : '';
-      return '<article class="schedule-request"><div class="schedule-request-main"><header><div><strong>' + esc(names[request.staffId] || request.staffId) + '</strong><small>' + esc(typeLabel(request.type)) + ' · ' + esc(displayDate(request.date)) + '</small></div><span class="request-status is-' + esc(request.status) + '">' + esc(statusLabel(request.status)) + '</span></header><div class="schedule-request-compare"><p><small>Current</small><strong>' + esc(request.type === 'weekly-schedule' ? weeklySummary(schedule.weekly) : current.working ? current.start + '–' + current.end : 'Day off') + '</strong></p><span>→</span><p><small>Requested</small><strong>' + esc(requestProposal(request)) + '</strong></p></div><p>' + esc(request.reason || 'No reason provided') + '</p>' + (request.status === 'blocked' ? '<small class="schedule-conflict-note">' + (request.bookingImpactIds || []).length + ' booking(s) must be resolved before approval.</small>' : '') + (request.status === 'rejected' && request.rejectionReason ? '<p class="schedule-rejection-note"><strong>Rejection reason:</strong> ' + esc(request.rejectionReason) + '</p>' : '') + adjust + rejection + '</div>' + (active && rejectId !== request.id ? '<div class="schedule-request-actions"><button type="button" data-request-reject="' + esc(request.id) + '">Reject</button><button type="button" class="booking-primary-button" data-request-approve="' + esc(request.id) + '">' + (request.status === 'blocked' ? 'Check & approve again' : 'Approve & sync') + '</button></div>' : '') + '</article>';
+      return '<article class="schedule-request"><div class="schedule-request-main"><header><div><strong>' + esc(names[request.staffId] || request.staffId) + '</strong><small>' + esc(typeLabel(request.type)) + ' · ' + esc(displayDate(request.date)) + '</small></div><span class="request-status is-' + esc(request.status) + '">' + esc(statusLabel(request.status)) + '</span></header><div class="schedule-request-compare"><p><small>Current</small><strong>' + esc(request.type === 'weekly-schedule' ? weeklySummary(schedule.weekly) : current.working ? current.start + '–' + current.end : 'Day off') + '</strong></p><span>→</span><p><small>Requested</small><strong>' + esc(requestProposal(request)) + '</strong></p></div><p>' + esc(request.reason || 'No reason provided') + '</p>' + (request.status === 'blocked' ? '<small class="schedule-conflict-note">' + (request.bookingImpactIds || []).length + ' booking(s) must be resolved before approval.</small>' : '') + (request.status === 'rejected' && request.rejectionReason ? '<p class="schedule-rejection-note"><strong>Rejection reason:</strong> ' + esc(request.rejectionReason) + '</p>' : '') + rejection + '</div>' + (active && rejectId !== request.id ? '<div class="schedule-request-actions"><button type="button" data-request-reject="' + esc(request.id) + '">Reject</button><button type="button" class="booking-primary-button" data-request-approve="' + esc(request.id) + '">' + (request.status === 'blocked' ? 'Check & approve again' : 'Approve & sync') + '</button></div>' : '') + '</article>';
     }).join('');
   }
   function matchesRequestFilter(item, filter) {
@@ -318,7 +316,6 @@
     if (!result.ok && result.error.code === 'booking-impact') { showImpacts('request', id, result.error.impacts); return; }
     boardMessage = result.ok ? (decision === 'reject' ? 'Request rejected. The staff schedule is unchanged.' : 'Request approved. The staff schedule is updated in this demo.') : 'Unable to review this request. Please check its current status.';
     impactReview = null;
-    adjustId = '';
     if (result.ok) { rejectId = ''; rejectionReason = ''; if (decision === 'reject') requestFilter = 'rejected'; }
     render(selectedStaff);
   }
@@ -426,14 +423,6 @@
       review(rejectionForm.dataset.requestRejectForm, 'reject', rejectionReason.trim());
       return;
     }
-    var form = event.target.closest('[data-request-adjust-form]');
-    if (!form) return;
-    event.preventDefault();
-    var patch = {date:form.querySelector('[data-adjust-date]').value, reason:form.querySelector('[data-adjust-reason]').value};
-    if (form.querySelector('[data-adjust-start]')) { patch.start = form.querySelector('[data-adjust-start]').value; patch.end = form.querySelector('[data-adjust-end]').value; }
-    var result = store.adjustRequest(form.dataset.requestAdjustForm, patch, 'manager');
-    if (result.ok) adjustId = '';
-    render(selectedStaff);
   }
   function handleRejectionInput(event) {
     if (!event.target.matches('[data-rejection-reason]')) return;
@@ -449,7 +438,7 @@
     if (inlineStaff) { openEditor(inlineStaff.dataset.inlineStaff,inlineStaff); return; }
     if (event.target.closest('[data-add-request-demo]')) { addRequestDemo(); return; }
     var filter = event.target.closest('[data-request-filter]');
-    if (filter) { requestFilter = filter.dataset.requestFilter; adjustId = ''; rejectId = ''; rejectionReason = ''; render(selectedStaff); requestsHost?.querySelector('[data-request-filter="' + requestFilter + '"]')?.focus(); return; }
+    if (filter) { requestFilter = filter.dataset.requestFilter; rejectId = ''; rejectionReason = ''; render(selectedStaff); requestsHost?.querySelector('[data-request-filter="' + requestFilter + '"]')?.focus(); return; }
     var picker = event.target.closest('.schedule-native-date');
     if (picker && typeof picker.showPicker === 'function') {
       try { picker.showPicker(); event.preventDefault(); } catch (_) { /* Keep the native picker fallback. */ }
@@ -504,11 +493,8 @@
       render(selectedStaff); return;
     }
     if (event.target.closest('[data-impact-close]')) { impactReview = null; render(selectedStaff); return; }
-    var adjust = event.target.closest('[data-request-adjust]');
-    if (adjust) { rejectId = ''; rejectionReason = ''; adjustId = adjust.dataset.requestAdjust; render(selectedStaff); return; }
-    if (event.target.closest('[data-adjust-close]')) { adjustId = ''; render(selectedStaff); return; }
     var reject = event.target.closest('[data-request-reject]');
-    if (reject) { rejectId = reject.dataset.requestReject; rejectionReason = ''; adjustId = ''; render(selectedStaff); (requestsHost || host).querySelector('[data-rejection-reason]')?.focus(); return; }
+    if (reject) { rejectId = reject.dataset.requestReject; rejectionReason = ''; render(selectedStaff); (requestsHost || host).querySelector('[data-rejection-reason]')?.focus(); return; }
     if (event.target.closest('[data-reject-cancel]')) { rejectId = ''; rejectionReason = ''; render(selectedStaff); return; }
     var approve = event.target.closest('[data-request-approve]');
     if (approve) review(approve.dataset.requestApprove, 'approve');

@@ -12,6 +12,18 @@
   var marker = 'nexora:' + batch;
   function dateAt(offset) { var date = new Date(monday); date.setDate(date.getDate() + offset); return dateKey(date); }
   try {
+    // Update old demo requests even when this week's samples were already seeded.
+    var saved = JSON.parse(localStorage.getItem(schedules.STORAGE_KEY) || 'null');
+    var changed = false;
+    if (saved && Array.isArray(saved.requests)) saved.requests.forEach(function (request) {
+      if (request.demo !== true || request.status !== 'adjusted') return;
+      request.status = 'pending';
+      if (request.reason === 'Demo · Manager suggested an earlier finish') request.reason = 'Demo · Requesting an earlier finish for a personal appointment';
+      delete request.adjustedBy;
+      delete request.adjustedAt;
+      changed = true;
+    });
+    if (changed) localStorage.setItem(schedules.STORAGE_KEY,JSON.stringify(saved));
     if (localStorage.getItem(marker)) return;
     var people = catalog.technicians.filter(function (person) { return person.active !== false; }).slice(0,4);
     var state = schedules.loadState();
@@ -47,7 +59,7 @@
     }
     var samples = [
       {offset:2,type:'day-off',status:'pending',reason:'Family appointment'},
-      {offset:3,type:'change-hours',start:'10:00',end:'17:00',status:'adjusted',reason:'Manager suggested an earlier finish'},
+      {offset:3,type:'change-hours',start:'10:00',end:'17:00',status:'pending',reason:'Requesting an earlier finish for a personal appointment'},
       {offset:4,type:'break',start:'15:00',end:'15:30',status:'pending',reason:'Personal appointment'},
       {offset:5,type:'day-off',status:'rejected',reason:'Busy Saturday — please choose another date'},
       {offset:8,type:'change-hours',start:'10:00',end:'18:00',status:'cancelled',reason:'Staff withdrew the request'}
