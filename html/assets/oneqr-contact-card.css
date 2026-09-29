@@ -1,0 +1,78 @@
+.oneqr-contact-dialog { --oq-primary: #4f46e5; --oq-ink: #172033; --oq-line: #e4e7ec; width: min(980px, calc(100vw - 32px)); max-height: calc(100dvh - 32px); margin: auto; padding: 24px; border: 0; border-radius: 18px; background: #fff; color: #172033; box-shadow: 0 24px 60px rgba(15,23,42,.25); }
+.oneqr-contact-dialog::backdrop { background: rgba(15,23,42,.45); backdrop-filter: blur(3px); }
+.oneqr-contact-dialog * { box-sizing: border-box; }
+.oneqr-contact-dialog [hidden] { display: none !important; }
+.oneqr-contact-dialog .modal-head { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; }
+.oneqr-contact-dialog h2 { margin: 5px 0; font-size: 22px; font-weight: 800; }
+.oneqr-contact-dialog .section-step { color: #4f46e5; font-size: 11px; font-weight: 800; text-transform: uppercase; }
+.oneqr-contact-dialog .modal-lead { margin: 10px 0 20px; color: #667085; font-size: 13px; }
+.oneqr-contact-dialog .icon-button { display: grid; width: 32px; height: 32px; place-items: center; border: 1px solid #e4e7ec; border-radius: 8px; background: #fff; cursor: pointer; }
+.oneqr-contact-dialog .icon-button svg { width: 16px; height: 16px; }
+.oneqr-contact-dialog .modal-actions { display: flex; justify-content: flex-end; gap: 9px; margin-top: 20px; padding-top: 16px; border-top: 1px solid #e4e7ec; }
+.oneqr-contact-dialog .modal-actions button { display: inline-flex; align-items: center; gap: 8px; min-height: 38px; padding: 8px 14px; border: 1px solid #d0d5dd; border-radius: 8px; background: #fff; color: #344054; font-size: 12px; font-weight: 700; cursor: pointer; }
+.oneqr-contact-dialog .modal-actions .primary-action { border-color: #4f46e5; background: #4f46e5; color: #fff; }
+.oneqr-contact-dialog .modal-actions svg { width: 14px; height: 14px; }
+.oneqr-contact-dialog #contact-feedback { margin: 8px 0 0; font-size: 12px; color: #475467; }
+.oneqr-contact-dialog .contact-card-layout { display: grid; grid-template-columns: minmax(0, 1fr) 310px; gap: 26px; align-items: start; }
+.oneqr-contact-dialog .contact-card-form { min-width: 0; }
+.oneqr-contact-dialog .contact-import { display: flex; align-items: center; gap: 8px; margin-bottom: 15px; padding: 6px 7px 6px 11px; border: 1px solid #d0d5dd; border-radius: 11px; background: #fbfcfe; }
+.oneqr-contact-dialog .contact-import > svg { flex: 0 0 17px; width: 17px; color: #667085; }
+.oneqr-contact-dialog .contact-import input { min-width: 0; flex: 1; height: 34px; border: 0; outline: 0; background: transparent; color: var(--oq-ink); font-size: 11px; }
+.oneqr-contact-dialog .contact-import button { min-height: 32px; padding: 0 12px; border: 1px solid #c8c4f4; border-radius: 8px; background: #f2f0ff; color: var(--oq-primary); cursor: pointer; font-size: 11px; font-weight: 800; }
+.oneqr-contact-dialog .contact-field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
+.oneqr-contact-dialog .contact-field { display: grid; gap: 5px; }
+.oneqr-contact-dialog .contact-field.is-wide { grid-column: 1 / -1; }
+.oneqr-contact-dialog .contact-field > span, .oneqr-contact-dialog .contact-choice-group legend, .oneqr-contact-dialog .contact-theme-picker legend { color: #596376; font-size: 11px; font-weight: 800; letter-spacing: .02em; }
+.oneqr-contact-dialog .contact-field input, .oneqr-contact-dialog .contact-field textarea { width: 100%; min-height: 39px; padding: 9px 10px; border: 1px solid #d0d5dd; border-radius: 9px; outline: 0; background: #fff; color: var(--oq-ink); font-size: 11px; resize: vertical; }
+.oneqr-contact-dialog .contact-field input:focus, .oneqr-contact-dialog .contact-field textarea:focus { border-color: #7c73ee; box-shadow: 0 0 0 3px rgba(79,70,229,.1); }
+.oneqr-contact-dialog .contact-choice-group, .oneqr-contact-dialog .contact-theme-picker { display: flex; flex-wrap: wrap; gap: 7px; margin: 15px 0 0; padding: 0; border: 0; }
+.oneqr-contact-dialog .contact-choice-group legend, .oneqr-contact-dialog .contact-theme-picker legend { width: 100%; margin-bottom: 1px; }
+.oneqr-contact-dialog .contact-choice-group label { cursor: pointer; }
+.oneqr-contact-dialog .contact-choice-group input { position: absolute; opacity: 0; }
+.oneqr-contact-dialog .contact-choice-group span { display: inline-flex; min-height: 32px; align-items: center; padding: 0 10px; border: 1px solid #d0d5dd; border-radius: 8px; color: #667085; font-size: 11px; font-weight: 700; }
+.oneqr-contact-dialog .contact-choice-group input:checked + span { border-color: #aaa5e5; background: #f2f0ff; color: var(--oq-primary); box-shadow: 0 0 0 2px rgba(79,70,229,.07); }
+.oneqr-contact-dialog .contact-switches { display: grid; grid-template-columns: repeat(3, 1fr); gap: 7px; margin-top: 15px; }
+.oneqr-contact-dialog .contact-switches label { display: flex; align-items: flex-start; gap: 8px; padding: 9px; border: 1px solid var(--oq-line); border-radius: 9px; cursor: pointer; }
+.oneqr-contact-dialog .contact-switches input { width: 14px; height: 14px; margin: 1px 0 0; accent-color: var(--oq-primary); }
+.oneqr-contact-dialog .contact-switches strong, .oneqr-contact-dialog .contact-switches small { display: block; }
+.oneqr-contact-dialog .contact-switches strong { font-size: 11px; }
+.oneqr-contact-dialog .contact-switches small { margin-top: 2px; color: #8a94a6; font-size: 11px; line-height: 1.35; }
+.oneqr-contact-dialog .contact-hours { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; margin-top: 13px; }
+.oneqr-contact-dialog .contact-theme-picker button { display: inline-flex; align-items: center; gap: 7px; min-height: 32px; padding: 0 10px; border: 1px solid #d0d5dd; border-radius: 8px; background: #fff; color: #596376; cursor: pointer; font-size: 11px; font-weight: 750; }
+.oneqr-contact-dialog .contact-theme-picker button[aria-pressed="true"] { border-color: var(--oq-primary); background: #f8f7ff; color: var(--oq-primary); box-shadow: 0 0 0 2px rgba(79,70,229,.08); }
+.oneqr-contact-dialog .contact-theme-picker button span { width: 14px; height: 14px; border-radius: 50%; background: linear-gradient(145deg, #4f46e5, #8b5cf6); }
+.oneqr-contact-dialog .contact-theme-picker button[data-contact-theme="emerald"] span { background: linear-gradient(145deg, #059669, #34d399); }
+.oneqr-contact-dialog .contact-theme-picker button[data-contact-theme="charcoal"] span { background: linear-gradient(145deg, #111827, #475467); }
+.oneqr-contact-dialog .contact-card-preview-wrap { position: static; }
+.oneqr-contact-dialog .contact-preview-label { display: block; margin-bottom: 7px; color: #8a94a6; font-size: 11px; font-weight: 800; text-align: center; text-transform: uppercase; }
+.oneqr-contact-dialog .contact-card-preview { --card-accent: #a5b4fc; min-height: 365px; padding: 20px; border-radius: 20px; background: linear-gradient(145deg, #312e81, #4f46e5); color: #fff; box-shadow: 0 18px 36px rgba(49,46,129,.23); }
+.oneqr-contact-dialog .contact-card-preview[data-theme="emerald"] { --card-accent: #6ee7b7; background: linear-gradient(145deg, #064e3b, #059669); box-shadow: 0 18px 36px rgba(6,78,59,.22); }
+.oneqr-contact-dialog .contact-card-preview[data-theme="charcoal"] { --card-accent: #cbd5e1; background: linear-gradient(145deg, #111827, #344054); box-shadow: 0 18px 36px rgba(17,24,39,.25); }
+.oneqr-contact-dialog .contact-card-brand { display: flex; align-items: center; justify-content: space-between; }
+.oneqr-contact-dialog .contact-card-brand > span { display: grid; width: 42px; height: 42px; place-items: center; border: 1px solid rgba(255,255,255,.35); border-radius: 12px; background: rgba(255,255,255,.15); font-size: 17px; font-weight: 900; }
+.oneqr-contact-dialog .contact-card-brand small { color: var(--card-accent); font-size: 11px; font-weight: 900; letter-spacing: .12em; }
+.oneqr-contact-dialog .contact-card-preview h3 { margin: 20px 0 4px; font-size: 20px; letter-spacing: -.025em; }
+.oneqr-contact-dialog .contact-card-preview > p { margin: 0; color: rgba(255,255,255,.72); font-size: 11px; }
+.oneqr-contact-dialog .contact-card-preview .contact-preview-bio { min-height: 30px; margin-top: 12px; line-height: 1.5; }
+.oneqr-contact-dialog .contact-preview-details { display: grid; gap: 7px; margin-top: 18px; }
+.oneqr-contact-dialog .contact-preview-details > span { display: flex; align-items: center; gap: 7px; min-width: 0; color: rgba(255,255,255,.84); }
+.oneqr-contact-dialog .contact-preview-details > span[hidden] { display: none; }
+.oneqr-contact-dialog .contact-preview-details svg { flex: 0 0 13px; width: 13px; }
+.oneqr-contact-dialog .contact-preview-details b { overflow: hidden; font-size: 11px; font-weight: 650; text-overflow: ellipsis; white-space: nowrap; }
+.oneqr-contact-dialog .contact-preview-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; margin-top: 19px; }
+.oneqr-contact-dialog .contact-preview-actions button { display: inline-flex; min-height: 34px; align-items: center; justify-content: center; gap: 5px; border: 1px solid rgba(255,255,255,.32); border-radius: 9px; background: rgba(255,255,255,.14); color: #fff; font-size: 11px; font-weight: 800; }
+.oneqr-contact-dialog .contact-preview-actions svg { width: 12px; }
+.oneqr-contact-dialog .download-vcard-button { display: inline-flex; width: 100%; min-height: 39px; align-items: center; justify-content: center; gap: 7px; margin-top: 12px; border: 1px solid #c8c4f4; border-radius: 9px; background: #f8f7ff; color: var(--oq-primary); cursor: pointer; font-size: 11px; font-weight: 800; }
+.oneqr-contact-dialog .download-vcard-button svg { width: 14px; }
+.oneqr-contact-dialog .contact-card-preview-wrap > p { margin: 7px 4px 0; color: #8a94a6; font-size: 11px; line-height: 1.45; text-align: center; }
+
+
+@media (max-width: 760px) {
+  .oneqr-contact-dialog .contact-card-layout { grid-template-columns: 1fr; }
+  .oneqr-contact-dialog .contact-card-preview-wrap { width: min(310px, 100%); margin: 0 auto; }
+}
+@media (max-width: 520px) {
+  .oneqr-contact-dialog { padding: 18px; }
+  .oneqr-contact-dialog .contact-field-grid, .oneqr-contact-dialog .contact-switches { grid-template-columns: 1fr; }
+  .oneqr-contact-dialog .contact-field input, .oneqr-contact-dialog .contact-field textarea { font-size: 16px; }
+}

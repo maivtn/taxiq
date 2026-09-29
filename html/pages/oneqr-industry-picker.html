@@ -25,12 +25,11 @@
             <p>Create and manage your customer-facing OneQR experience.</p>
 
             <div class="qr-tabs" role="tablist" aria-label="Stations and QR tabs">
-              <a class="qr-tab" href="qr-stations.html?tab=one-qr" role="tab" aria-selected="false"><span class="qr-tab-icon"><i data-lucide="scan-line" aria-hidden="true"></i></span><span>OneQR</span></a>
+              <a class="qr-tab is-active" href="qr-stations.html?tab=one-qr" role="tab" aria-selected="true"><span class="qr-tab-icon"><i data-lucide="scan-line" aria-hidden="true"></i></span><span>OneQR</span></a>
               <a class="qr-tab" href="qr-stations.html?tab=qr-stations" role="tab" aria-selected="false"><span class="qr-tab-icon"><i data-lucide="hand-coins" aria-hidden="true"></i></span><span>Receive Tips</span></a>
               <a class="qr-tab" href="qr-stations.html?tab=accept-payment" role="tab" aria-selected="false"><span class="qr-tab-icon"><i data-lucide="credit-card" aria-hidden="true"></i></span><span>Accept Payment</span></a>
               <a class="qr-tab" href="qr-stations.html?tab=referral-link" role="tab" aria-selected="false"><span class="qr-tab-icon"><i data-lucide="share-2" aria-hidden="true"></i></span><span>Referral Link</span></a>
               <a class="qr-tab" href="qr-stations.html?tab=staff-invite-qr" role="tab" aria-selected="false"><span class="qr-tab-icon"><i data-lucide="user-plus" aria-hidden="true"></i></span><span>Staff Invite QR</span></a>
-              <a class="qr-tab is-active" href="oneqr-industry-templates.html" role="tab" aria-selected="true" aria-current="page"><span class="qr-tab-icon"><i data-lucide="layout-template" aria-hidden="true"></i></span><span>Industry Templates</span></a>
             </div>
           </div>
 
@@ -41,7 +40,7 @@
                   <div class="library-heading">
                     <div>
                       <span class="section-step">Industry templates</span>
-                      <div class="picker-title-row"><a class="picker-back-link" href="oneqr-industry-templates.html"><i data-lucide="arrow-left" aria-hidden="true"></i>Back</a><h2>Choose your business industry</h2></div>
+                      <div class="picker-title-row"><a class="picker-back-link" href="qr-stations.html?tab=one-qr"><i data-lucide="arrow-left" aria-hidden="true"></i>Back</a><h2>Choose your business industry</h2></div>
                       <p>Select the closest match. Your current custom modules stay in place when you switch templates.</p>
                     </div>
                     <div class="picker-heading-actions">
@@ -74,9 +73,10 @@
   </div>
 
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
-  <script>window.NEXORA_SHELL = { activePage: 'stations', activeTab: 'industry-templates' };</script>
+  <script>window.NEXORA_SHELL = { activePage: 'stations', activeTab: 'one-qr' };</script>
   <script src="../assets/nexora-shell.js"></script>
   <script src="../assets/oneqr-action-appearance.js"></script>
-  <script src="../assets/oneqr-industry-templates.js"></script>
+  <script src="../assets/oneqr-industries.js"></script>
+  <script src="../assets/oneqr-industry-picker.js"></script>
 </body>
 </html>

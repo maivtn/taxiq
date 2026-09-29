@@ -55,6 +55,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/qr-stations.css?v=phone-1">
+  <link rel="stylesheet" href="../assets/oneqr-contact-card.css">
 </head>
 <body>
   <div class="shell">
@@ -90,10 +91,6 @@
                 <span class="qr-tab-icon"><i data-lucide="user-plus" aria-hidden="true"></i></span>
                 <span>Staff Invite QR</span>
               </button>
-              <a class="qr-tab" href="oneqr-industry-templates.html" role="tab" aria-selected="false">
-                <span class="qr-tab-icon"><i data-lucide="layout-template" aria-hidden="true"></i></span>
-                <span>Industry Templates</span>
-              </a>
             </div>
           </div>
 
@@ -229,7 +226,7 @@
                 <h2 id="oneqr-title">OneQR Configuration</h2>
                 <p>One QR code that connects the entire customer journey and back-of-house operations.</p>
               </div>
-              <a class="oneqr-template-link" href="oneqr-industry-templates.html">
+              <a class="oneqr-template-link" href="oneqr-industry-picker.html" data-oneqr-editor-link>
                 <i data-lucide="layout-template" aria-hidden="true"></i>
                 <span id="oneqrIndustryTemplateLinkLabel">Choose Industry Template</span>
               </a>
@@ -294,8 +291,8 @@
                 <div class="oneqr-panel-head oneqr-module-heading">
                   <h3>Modules</h3>
                   <div class="oneqr-module-toolbar">
-                    <a href="oneqr-industry-templates.html?from=oneqr#contact-card" data-oneqr-editor-link><i data-lucide="contact-round" aria-hidden="true"></i>Contact card</a>
-                    <a href="oneqr-industry-picker.html?from=oneqr" data-oneqr-editor-link><i data-lucide="refresh-cw" aria-hidden="true"></i>Change industry</a>
+                    <button type="button" id="oneqrContactCard"><i data-lucide="contact-round" aria-hidden="true"></i>Contact card</button>
+                    <a href="oneqr-industry-picker.html" data-oneqr-editor-link><i data-lucide="refresh-cw" aria-hidden="true"></i>Change industry</a>
                   </div>
                 </div>
                 <div class="oneqr-role-tabs" role="tablist" aria-label="Configure role">
@@ -716,6 +713,86 @@
     </div>
   </div>
 
+  <dialog class="oneqr-contact-dialog" id="contact-card-modal" aria-labelledby="contact-card-title">
+      <div class="modal-head">
+        <div><span class="section-step">Business profile</span><h2 id="contact-card-title">Contact card</h2></div>
+        <button class="icon-button" type="button" data-close-contact-card aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button>
+      </div>
+      <p class="modal-lead">Enter it once. OneQR uses this information wherever customers save or contact your business.</p>
+
+      <div class="contact-card-layout">
+        <form class="contact-card-form" id="contact-card-form">
+          <div class="contact-import">
+            <i data-lucide="map-pinned" aria-hidden="true"></i>
+            <input id="contact-google-url" type="text" inputmode="url" placeholder="Paste Google Business Profile URL" aria-label="Google Business Profile URL">
+            <button type="button" id="contact-import-button">Import</button>
+          </div>
+
+          <div class="contact-field-grid">
+            <label class="contact-field"><span>Display name</span><input id="contact-name" type="text" maxlength="100" required></label>
+            <label class="contact-field"><span>Title or short introduction</span><input id="contact-title" type="text" maxlength="100"></label>
+            <label class="contact-field"><span>Phone</span><input id="contact-phone" type="tel" inputmode="tel"></label>
+            <label class="contact-field"><span>Email</span><input id="contact-email" type="email" inputmode="email"></label>
+            <label class="contact-field is-wide"><span>Website or social profile</span><input id="contact-website" type="url" inputmode="url"></label>
+            <label class="contact-field is-wide"><span>Street address</span><input id="contact-address" type="text"></label>
+            <label class="contact-field"><span>City</span><input id="contact-city" type="text"></label>
+            <label class="contact-field"><span>State</span><input id="contact-state" type="text" maxlength="30"></label>
+            <label class="contact-field is-wide"><span>Short bio</span><textarea id="contact-bio" rows="2" maxlength="220"></textarea></label>
+          </div>
+
+          <fieldset class="contact-choice-group">
+            <legend>Address visibility</legend>
+            <label><input type="radio" name="contact-address-mode" value="full" checked><span>Full address</span></label>
+            <label><input type="radio" name="contact-address-mode" value="area"><span>Service area only</span></label>
+            <label><input type="radio" name="contact-address-mode" value="hidden"><span>Hidden</span></label>
+          </fieldset>
+
+          <div class="contact-switches">
+            <label><input id="contact-show-phone" type="checkbox" checked><span><strong>Show phone actions</strong><small>Customers can call or text.</small></span></label>
+            <label><input id="contact-show-hours" type="checkbox" checked><span><strong>Show business hours</strong><small>Display open and close times.</small></span></label>
+            <label><input id="contact-add-action" type="checkbox" checked><span><strong>Add “Save contact”</strong><small>Add it to the current customer menu.</small></span></label>
+          </div>
+
+          <div class="contact-hours" id="contact-hours-row">
+            <label class="contact-field"><span>Opens</span><input id="contact-open-time" type="time"></label>
+            <label class="contact-field"><span>Closes</span><input id="contact-close-time" type="time"></label>
+          </div>
+
+          <fieldset class="contact-theme-picker">
+            <legend>Card style</legend>
+            <button type="button" data-contact-theme="indigo" aria-label="Indigo theme"><span></span>Indigo</button>
+            <button type="button" data-contact-theme="emerald" aria-label="Emerald theme"><span></span>Emerald</button>
+            <button type="button" data-contact-theme="charcoal" aria-label="Charcoal theme"><span></span>Charcoal</button>
+          </fieldset>
+        </form>
+
+        <aside class="contact-card-preview-wrap" aria-label="Contact card preview">
+          <span class="contact-preview-label">Customer preview</span>
+          <div class="contact-card-preview" id="contact-card-preview" data-theme="indigo">
+            <div class="contact-card-brand"><span id="contact-preview-avatar">B</span><small>ONEQR CONTACT</small></div>
+            <h3 id="contact-preview-name">Bitcoin Nail Bar</h3>
+            <p id="contact-preview-title">Nail salon · Houston</p>
+            <p class="contact-preview-bio" id="contact-preview-bio">Beauty, care, and a better booking experience.</p>
+            <div class="contact-preview-details">
+              <span id="contact-preview-phone-row"><i data-lucide="phone"></i><b id="contact-preview-phone">(346) 802-4906</b></span>
+              <span id="contact-preview-email-row"><i data-lucide="mail"></i><b id="contact-preview-email">hello@example.com</b></span>
+              <span id="contact-preview-address-row"><i data-lucide="map-pin"></i><b id="contact-preview-address">Houston, TX</b></span>
+              <span id="contact-preview-hours-row"><i data-lucide="clock-3"></i><b id="contact-preview-hours">9:30 AM–7:00 PM</b></span>
+            </div>
+            <div class="contact-preview-actions"><button type="button"><i data-lucide="phone"></i>Call</button><button type="button"><i data-lucide="navigation"></i>Directions</button></div>
+          </div>
+          <button class="download-vcard-button" type="button" id="download-vcard-button"><i data-lucide="download" aria-hidden="true"></i>Download vCard preview</button>
+          <p>The downloaded `.vcf` can be saved directly to a customer’s contacts.</p>
+        </aside>
+      </div>
+
+      <div class="modal-actions">
+        <button class="secondary-action" type="button" data-close-contact-card>Cancel</button>
+        <button class="primary-action" type="submit" form="contact-card-form" id="save-contact-card-button">Save contact card<i data-lucide="save" aria-hidden="true"></i></button>
+      </div>
+    <p id="contact-feedback" role="status" aria-live="polite"></p>
+  </dialog>
+
   <dialog class="oneqr-appearance-dialog" id="oneqrAppearanceDialog" aria-labelledby="oneqrAppearanceTitle">
     <div class="oneqr-appearance-heading">
       <div><span>Module appearance</span><h2 id="oneqrAppearanceTitle">Choose an icon</h2></div>
@@ -742,6 +819,8 @@
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="../assets/nexora-shell.js"></script>
   <script src="../assets/oneqr-action-appearance.js"></script>
+  <script src="../assets/oneqr-industries.js"></script>
+  <script src="../assets/oneqr-contact-card.js"></script>
   <script src="../assets/qr-stations-oneqr.js?v=phone-1"></script>
   <script src="../assets/qr-stations-workflows.js"></script>
 </body>

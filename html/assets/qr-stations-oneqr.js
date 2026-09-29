@@ -241,6 +241,8 @@
   var addModuleModal = document.getElementById('oneqrAddModuleModal');
   var addModuleListEl = document.getElementById('oneqrAddModuleList');
   var currentPreset = null;
+  var currentIndustry = null;
+  var industryCatalog = window.ONEQR_INDUSTRIES;
 
   if (!moduleListEl || !welcomeEl || !tilesEl) return;
 
@@ -248,6 +250,10 @@
     var preset = TEMPLATE_PRESETS[templateName] || TEMPLATE_PRESETS[DEFAULT_TEMPLATE];
     currentPreset = preset;
     MODULE_ICONS = preset.icons;
+    Object.values(industryCatalog.modules).forEach(function (action) {
+      if (!currentPreset.modules.includes(action.en)) currentPreset.modules.push(action.en);
+      if (!MODULE_ICONS[action.en]) MODULE_ICONS[action.en] = action.icon;
+    });
     ROLES.forEach(function (role) {
       var roleModules = (preset.roles[role] || []).slice();
       recommendedModulesByRole[role] = roleModules.slice();
@@ -350,10 +356,15 @@
     if (!Object.prototype.hasOwnProperty.call(details, name)) {
       Object.defineProperty(details, name, { enumerable: true, configurable: true, writable: true, value: {
         title: name,
-        url: 'https://nexoratouch.com/o/bitcoin-nail-bar/' + encodeURIComponent(name.toLowerCase().replace(/\s+/g, '-'))
+        url: defaultModuleUrl(name)
       } });
     }
     return details[name];
+  }
+
+  function defaultModuleUrl(name) {
+    var entry = Object.entries(industryCatalog.modules).find(function (entry) { return entry[1].en === name; });
+    return entry ? industryCatalog.actionUrl(entry[0]) : 'https://nexoratouch.com/o/bitcoin-nail-bar/' + encodeURIComponent(name.toLowerCase().replace(/\s+/g, '-'));
   }
 
   function moduleTitle(name, role) {
@@ -491,6 +502,7 @@
       var saved = JSON.parse(window.localStorage.getItem('taxiq:oneqr-contact-card') || 'null');
       if (saved && typeof saved === 'object') card = Object.assign(card, saved);
     } catch (error) { /* Use the default business profile if storage is unavailable. */ }
+    if (card.configured && card.name) heroNameEl.textContent = card.name;
     var address = card.addressMode === 'hidden' ? '' : [card.addressMode === 'area' ? '' : card.address, card.city, card.region].filter(Boolean).join(', ');
     function displayTime(value) {
       var match = /^(\d{2}):(\d{2})$/.exec(value || '');
@@ -510,6 +522,20 @@
     document.getElementById('oneqrPreviewText').hidden = !card.showPhone || !card.phone;
     document.getElementById('oneqrPreviewDirections').hidden = !address;
   }
+
+  document.getElementById('oneqrContactCard').addEventListener('click', function () { window.NEXORA_CONTACT_CARD.open(); });
+  document.addEventListener('oneqr:contact-saved', function (event) {
+    if (event.detail.addAction) {
+      var name = 'Save contact';
+      if (!moduleOrderByRole.customer.includes(name)) moduleOrderByRole.customer.push(name);
+      enabledByRole.customer.add(name);
+      MODULE_ICONS[name] = 'contact-round';
+      moduleDetails(name, 'customer').url = industryCatalog.actionUrl('contactcard');
+    }
+    renderModules();
+    renderPreview();
+    moduleStatusEl.textContent = event.detail.addAction ? 'Contact card saved. Select Save Settings to keep the Save contact module.' : 'Contact card saved.';
+  });
 
   function clearDragOverMarkers() {
     moduleListEl.querySelectorAll('.oneqr-module').forEach(function (row) {
@@ -1135,38 +1161,65 @@
   }
 
   function applySavedIndustryTemplate() {
-    var savedIndustryTemplate = loadIndustryTemplateConfig();
-    if (!savedIndustryTemplate || !savedIndustryTemplate.actions.length) return;
+    var savedIndustryTemplate = savedConfig && savedConfig.industrySelection || loadIndustryTemplateConfig();
+    currentIndustry = savedIndustryTemplate;
+    if (!savedIndustryTemplate || !Array.isArray(savedIndustryTemplate.actions)) return;
+    var savedActions = savedIndustryTemplate.actions;
+    if (Array.isArray(savedIndustryTemplate.reviewIds)) {
+      savedActions = savedIndustryTemplate.reviewIds.map(function (id) {
+        var activeAction = savedIndustryTemplate.actions.find(function (action) { return action.id === id; }) || {};
+        var base = industryCatalog.modules[id] || { en: 'New link', icon: 'link-2' };
+        var title = savedIndustryTemplate.actionTitles && savedIndustryTemplate.actionTitles[id];
+        return {
+          id: id, label: typeof title === 'string' && title.trim() ? title.trim() : activeAction.label || base.en,
+          icon: savedIndustryTemplate.actionIcons && savedIndustryTemplate.actionIcons[id] || activeAction.icon || base.icon,
+          url: savedIndustryTemplate.actionLinks && savedIndustryTemplate.actionLinks[id] || activeAction.url || industryCatalog.actionUrl(id),
+          background: savedIndustryTemplate.actionBackgrounds && savedIndustryTemplate.actionBackgrounds[id] || activeAction.background || ''
+        };
+      });
+    }
     var customerModules = [];
-    savedIndustryTemplate.actions.forEach(function (action) {
+    var enabledModules = [];
+    savedActions.forEach(function (action) {
       if (!action || !action.label) return;
       customerModules.push(action.label);
+      if (!Array.isArray(savedIndustryTemplate.actionIds) || savedIndustryTemplate.actionIds.includes(action.id)) enabledModules.push(action.label);
       MODULE_ICONS[action.label] = action.icon || 'square';
       var details = moduleDetails(action.label, 'customer');
       details.title = action.label;
+      if (typeof action.icon === 'string') details.icon = action.icon;
       if (action.url) details.url = action.url;
       if (appearanceChoices.backgrounds.includes(action.background)) details.background = action.background;
     });
-    if (!customerModules.length) return;
     currentPreset.modules = Array.from(new Set((currentPreset.modules || []).concat(customerModules)));
-    moduleOrderByRole.customer = customerModules;
-    recommendedModulesByRole.customer = customerModules.slice();
-    enabledByRole.customer = new Set(customerModules);
+    moduleOrderByRole.customer = Array.from(new Set(customerModules));
+    var industry = industryCatalog.industries.find(function (item) { return item.id === savedIndustryTemplate.industryId; });
+    recommendedModulesByRole.customer = industry ? industryCatalog.recommended(industry).map(function (id) {
+      var action = savedActions.find(function (item) { return item.id === id; });
+      return action ? action.label : industryCatalog.modules[id].en;
+    }) : customerModules.slice();
+    enabledByRole.customer = new Set(enabledModules);
 
+    renderIndustryStatus();
+  }
+
+  function renderIndustryStatus() {
+    if (!currentIndustry) return;
     var heading = document.querySelector('.oneqr-heading-copy');
-    if (heading && !heading.querySelector('[data-industry-template-status]')) {
-      var status = document.createElement('span');
+    var status = heading.querySelector('[data-industry-template-status]');
+    if (!status) {
+      status = document.createElement('span');
       status.className = 'oneqr-pill';
       status.setAttribute('data-industry-template-status', '');
-      status.textContent = 'Template: ' + (savedIndustryTemplate.industryLabel || 'Industry');
       heading.appendChild(status);
     }
+    status.textContent = 'Template: ' + (currentIndustry.industryLabel || 'Industry');
     var templateLinkLabel = document.getElementById('oneqrIndustryTemplateLinkLabel');
     if (templateLinkLabel) templateLinkLabel.textContent = 'Change Industry Template';
   }
 
   function currentOneQRConfig() {
-    var industryTemplate = loadIndustryTemplateConfig();
+    var industryTemplate = currentIndustry;
     return {
       name: nameInput ? nameInput.value.trim() : '',
       template: templateSelect ? templateSelect.value : DEFAULT_TEMPLATE,
@@ -1175,6 +1228,7 @@
       enabledByRole: Object.fromEntries(ROLES.map(function (role) { return [role, Array.from(enabledByRole[role])]; })),
       moduleDetailsByRole: moduleDetailsByRole,
       industryAppliedAt: industryTemplate ? industryTemplate.appliedAt : null,
+      industrySelection: currentIndustry,
       currentRole: currentRole
     };
   }
@@ -1243,7 +1297,7 @@
 
   applyTemplate(initialTemplate);
   applySavedIndustryTemplate();
-  var latestIndustryTemplate = loadIndustryTemplateConfig();
+  var latestIndustryTemplate = currentIndustry;
   if (savedConfig && savedConfig.moduleOrderByRole) {
     ROLES.forEach(function (role) {
       if (role === 'customer' && latestIndustryTemplate && savedConfig.industryAppliedAt !== latestIndustryTemplate.appliedAt) return;
@@ -1256,11 +1310,44 @@
         var details = moduleDetails(name, role);
         if (typeof savedDetails[name].title === 'string') details.title = savedDetails[name].title;
         if (typeof savedDetails[name].url === 'string') details.url = savedDetails[name].url;
-        if (typeof savedDetails[name].icon === 'string' && (appearanceChoices.icons.includes(savedDetails[name].icon) || isModuleImage(savedDetails[name].icon))) details.icon = savedDetails[name].icon;
+        if (typeof savedDetails[name].icon === 'string' && (/^[a-z0-9-]+$/.test(savedDetails[name].icon) || isModuleImage(savedDetails[name].icon))) details.icon = savedDetails[name].icon;
         if (appearanceChoices.backgrounds.includes(savedDetails[name].background)) details.background = savedDetails[name].background;
         else if (savedDetails[name].background === '') details.background = '';
       });
     });
   }
+  try {
+    var pendingIndustryId = window.sessionStorage.getItem('taxiq:oneqr-pending-industry');
+    var selectedIndustry = industryCatalog.industries.find(function (industry) { return industry.id === pendingIndustryId; });
+    if (selectedIndustry) {
+      var retainedModules = moduleOrderByRole.customer.filter(function (name) { return !recommendedModulesByRole.customer.includes(name); });
+      var retainedEnabled = retainedModules.filter(function (name) { return enabledByRole.customer.has(name); });
+      var recommendedIds = industryCatalog.recommended(selectedIndustry);
+      var recommended = recommendedIds.map(function (id) {
+        var action = industryCatalog.modules[id];
+        MODULE_ICONS[action.en] = action.icon;
+        moduleDetails(action.en, 'customer');
+        return action.en;
+      });
+      retainedModules = retainedModules.filter(function (name) { return !recommended.includes(name); });
+      moduleOrderByRole.customer = recommended.concat(retainedModules);
+      enabledByRole.customer = new Set(recommended.concat(retainedEnabled));
+      recommendedModulesByRole.customer = recommended.slice();
+      currentIndustry = {
+        industryId: selectedIndustry.id, industryLabel: selectedIndustry.en, groupId: selectedIndustry.groupId,
+        appliedAt: new Date().toISOString(), actionIds: recommendedIds,
+        actions: recommendedIds.map(function (id) {
+          var action = industryCatalog.modules[id];
+          return { id: id, label: action.en, icon: action.icon, url: industryCatalog.actionUrl(id) };
+        })
+      };
+      renderIndustryStatus();
+      currentRole = 'customer';
+      if (savedConfig) savedConfig.currentRole = 'customer';
+      moduleStatusEl.textContent = 'Industry updated. Your added modules were kept. Select Save Settings to apply.';
+    }
+    window.sessionStorage.removeItem('taxiq:oneqr-pending-industry');
+  } catch (error) { /* Keep the current modules if selection storage is unavailable. */ }
   setActiveRole(savedConfig && ROLES.includes(savedConfig.currentRole) ? savedConfig.currentRole : currentRole);
+  if (window.location.hash === '#contact-card') window.NEXORA_CONTACT_CARD.open();
 })();

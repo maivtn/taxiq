@@ -1069,9 +1069,9 @@
 .oneqr-modules { flex: 3 1 540px; min-width: 0; }
 .oneqr-module-heading { flex-wrap: wrap; gap: 10px; }
 .oneqr-module-toolbar { display: flex; flex-wrap: wrap; gap: 8px; }
-.oneqr-module-toolbar a { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 36px; padding: 7px 10px; border: 1px solid #d0d5dd; border-radius: 8px; background: #fff; color: #344054; font-size: 12px; font-weight: 700; text-decoration: none; }
-.oneqr-module-toolbar a svg { width: 15px; height: 15px; }
-.oneqr-module-toolbar a:hover, .oneqr-module-toolbar a:focus-visible { border-color: #aaa5e5; background: #f8f7ff; color: #4b48e7; }
+.oneqr-module-toolbar a, .oneqr-module-toolbar > button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 36px; padding: 7px 10px; border: 1px solid #d0d5dd; border-radius: 8px; background: #fff; color: #344054; font-size: 12px; font-weight: 700; text-decoration: none; cursor: pointer; }
+.oneqr-module-toolbar svg { width: 15px; height: 15px; }
+.oneqr-module-toolbar a:hover, .oneqr-module-toolbar a:focus-visible, .oneqr-module-toolbar > button:hover, .oneqr-module-toolbar > button:focus-visible { border-color: #aaa5e5; background: #f8f7ff; color: #4b48e7; }
 .oneqr-config { flex: .6 1 220px; min-width: 0; }
 .oneqr-preview { flex: .8 1 250px; min-width: 0; }
 .oneqr-config .oneqr-panel-head, .oneqr-preview .oneqr-panel-head { flex-wrap: wrap; gap: 8px; }
