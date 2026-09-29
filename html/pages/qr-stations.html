@@ -54,7 +54,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
-  <link rel="stylesheet" href="../assets/qr-stations.css?v=module-drag-only-5">
+  <link rel="stylesheet" href="../assets/qr-stations.css?v=industry-module-library-6">
   <link rel="stylesheet" href="../assets/oneqr-contact-card.css">
 </head>
 <body>
@@ -700,12 +700,15 @@
     <div class="oneqr-modal-backdrop" data-oneqr-add-module-close></div>
     <div class="oneqr-modal-dialog">
       <div class="oneqr-modal-head">
-        <h3>Add Module</h3>
+        <div><span class="oneqr-library-kicker" id="oneqrModuleIndustry">Customer menu</span><h3>Add Module</h3></div>
         <button type="button" class="oneqr-modal-close" data-oneqr-add-module-close aria-label="Close">
           <i data-lucide="x" aria-hidden="true"></i>
         </button>
       </div>
+      <p class="oneqr-library-lead">Choose an action to add to this template. You can reorder or turn it off before saving.</p>
+      <label class="oneqr-library-search"><i data-lucide="search" aria-hidden="true"></i><input id="oneqrModuleSearch" type="search" placeholder="Search actions" aria-label="Search actions" autocomplete="off"></label>
       <div class="oneqr-modal-list" id="oneqrAddModuleList"></div>
+      <div class="oneqr-library-footer"><button type="button" data-oneqr-add-module-close>Done</button></div>
     </div>
   </div>
 
@@ -817,7 +820,7 @@
   <script src="../assets/oneqr-action-appearance.js"></script>
   <script src="../assets/oneqr-industries.js"></script>
   <script src="../assets/oneqr-contact-card.js"></script>
-  <script src="../assets/qr-stations-oneqr.js?v=preview-four-6"></script>
+  <script src="../assets/qr-stations-oneqr.js?v=industry-module-library-7"></script>
   <script src="../assets/qr-stations-workflows.js"></script>
 </body>
 </html>

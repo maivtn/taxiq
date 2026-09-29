@@ -760,29 +760,41 @@
   function renderAddModuleList() {
     if (!addModuleListEl || !currentPreset) return;
     var order = moduleOrderByRole[currentRole] || [];
-    var catalog = Array.from(new Set(currentPreset.modules || []));
-    addModuleListEl.innerHTML = catalog.map(function (name) {
-      var checked = order.indexOf(name) !== -1;
-      return '<button type="button" class="oneqr-modal-item' + (checked ? ' is-checked' : '') + '" data-add-module="' + escapeModuleText(name) + '">' +
-        '<span class="oneqr-modal-item-check">' + (checked ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>' : '') + '</span>' +
-        '<span class="oneqr-modal-item-icon">' + iconHtml(name) + '</span>' +
-        '<span>' + escapeModuleText(moduleTitle(name)) + '</span>' +
-        '</button>';
-    }).join('');
+    var query = document.getElementById('oneqrModuleSearch').value.trim().toLocaleLowerCase();
+    var industry = currentIndustry && industryCatalog.industries.find(function (item) { return item.id === currentIndustry.industryId; });
+    var recommended = industry ? industryCatalog.recommended(industry) : [];
+    var catalog = Object.entries(industryCatalog.modules).filter(function (entry) {
+      var action = entry[1];
+      var alreadyAdded = order.some(function (name) {
+        return name === action.en || moduleDetails(name).url === industryCatalog.actionUrl(entry[0]);
+      });
+      return !alreadyAdded && (!query || [action.en, action.vi, action.descEn, action.descVi].join(' ').toLocaleLowerCase().includes(query));
+    }).sort(function (a, b) { return Number(recommended.includes(b[0])) - Number(recommended.includes(a[0])); });
+    addModuleListEl.innerHTML = catalog.map(function (entry) {
+      var action = entry[1];
+      return '<button type="button" class="oneqr-modal-item" data-add-module="' + escapeModuleText(action.en) + '">' +
+        '<span class="oneqr-modal-item-icon"><i data-lucide="' + escapeModuleText(action.icon) + '" aria-hidden="true"></i></span>' +
+        '<div><strong>' + escapeModuleText(action.en) + '</strong><small>' + escapeModuleText(action.descEn) + '</small></div>' +
+        '<i data-lucide="plus" aria-hidden="true"></i></button>';
+    }).join('') || '<p class="oneqr-library-empty">No available actions found. Try another search or close the library.</p>';
     refreshIcons();
   }
 
   function openAddModuleModal() {
     if (!addModuleModal) return;
+    document.getElementById('oneqrModuleSearch').value = '';
+    document.getElementById('oneqrModuleIndustry').textContent = currentRole + ' menu' + (currentIndustry ? ' · ' + currentIndustry.industryLabel : '');
     renderAddModuleList();
     addModuleModal.hidden = false;
     addModuleModal.setAttribute('aria-hidden', 'false');
+    document.getElementById('oneqrModuleSearch').focus();
   }
 
   function closeAddModuleModal() {
     if (!addModuleModal) return;
     addModuleModal.hidden = true;
     addModuleModal.setAttribute('aria-hidden', 'true');
+    addModuleBtn.focus();
   }
 
   if (addModuleBtn) {
@@ -804,6 +816,7 @@
   }
 
   if (addModuleModal) {
+    document.getElementById('oneqrModuleSearch').addEventListener('input', renderAddModuleList);
     addModuleModal.addEventListener('click', function (event) {
       if (event.target.closest('[data-oneqr-add-module-close]')) closeAddModuleModal();
     });
@@ -818,9 +831,6 @@
       if (index === -1) {
         order.push(name);
         enabledSet.add(name);
-      } else {
-        order.splice(index, 1);
-        enabledSet.delete(name);
       }
       renderAddModuleList();
       renderModules();

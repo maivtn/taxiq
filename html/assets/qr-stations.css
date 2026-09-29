@@ -1395,6 +1395,39 @@
   height: 14px;
 }
 
+#oneqrAddModuleModal { z-index: 1200; padding: 24px; }
+#oneqrAddModuleModal .oneqr-modal-backdrop { background: rgba(17,24,39,.58); backdrop-filter: blur(3px); }
+#oneqrAddModuleModal .oneqr-modal-dialog { max-width: 680px; max-height: calc(100dvh - 48px); padding: 27px; border-radius: 19px; box-shadow: 0 30px 80px rgba(16,24,40,.28); }
+#oneqrAddModuleModal .oneqr-modal-head { padding: 0; border: 0; align-items: flex-start; gap: 20px; }
+#oneqrAddModuleModal h3 { margin-top: 5px; font-size: 22px; letter-spacing: -.025em; }
+.oneqr-library-kicker { color: #4f46e5; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
+#oneqrAddModuleModal .oneqr-modal-close { width: 36px; height: 36px; border: 1px solid #e4e7ec; border-radius: 10px; background: #fff; color: #667085; }
+.oneqr-library-lead { margin: 8px 0 20px; color: #667085; font-size: 12px; }
+.oneqr-library-search { display: flex; flex-shrink: 0; align-items: center; gap: 10px; padding: 0 13px; min-height: 44px; border: 1px solid #e4e7ec; border-radius: 10px; }
+.oneqr-library-search svg { width: 17px; height: 17px; color: #8a94a6; flex-shrink: 0; }
+.oneqr-library-search input { width: 100%; min-width: 0; border: 0; background: transparent; outline: none; font: inherit; font-size: 13px; }
+.oneqr-library-search:focus-within { border-color: #8d85f2; }
+#oneqrAddModuleList { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; max-height: min(430px,55vh); margin-top: 15px; padding: 2px; }
+#oneqrAddModuleList .oneqr-modal-item { gap: 10px; min-width: 0; padding: 12px; border: 1px solid #e4e7ec; border-radius: 11px; background: #fff; }
+#oneqrAddModuleList .oneqr-modal-item:hover { border-color: #b9b4fa; background: #faf9ff; }
+#oneqrAddModuleList .oneqr-modal-item-icon { width: 34px; height: 34px; border-radius: 9px; background: #f0eeff; color: #4f46e5; }
+#oneqrAddModuleList .oneqr-modal-item-icon svg { width: 16px; height: 16px; }
+#oneqrAddModuleList .oneqr-modal-item div { min-width: 0; flex: 1; }
+#oneqrAddModuleList strong, #oneqrAddModuleList small { display: block; font-size: 11px; }
+#oneqrAddModuleList strong { color: #344054; }
+#oneqrAddModuleList small { margin-top: 3px; overflow: hidden; color: #8a94a6; font-weight: 400; text-overflow: ellipsis; white-space: nowrap; }
+#oneqrAddModuleList .oneqr-modal-item > svg { width: 16px; height: 16px; flex-shrink: 0; color: #4f46e5; }
+.oneqr-library-empty { grid-column: 1 / -1; padding: 24px; text-align: center; color: #667085; font-size: 13px; }
+.oneqr-library-footer { display: flex; flex-shrink: 0; justify-content: flex-end; margin-top: 20px; padding-top: 17px; border-top: 1px solid #e4e7ec; }
+.oneqr-library-footer button { min-height: 40px; padding: 0 18px; border: 1px solid #e4e7ec; border-radius: 9px; background: #fff; color: #344054; font-weight: 700; cursor: pointer; }
+@media (max-width: 650px) {
+  #oneqrAddModuleModal { padding: 12px; }
+  #oneqrAddModuleModal .oneqr-modal-dialog { max-height: calc(100dvh - 24px); padding: 21px; }
+  #oneqrAddModuleList { grid-template-columns: 1fr; }
+  .oneqr-library-search input { font-size: 16px; }
+  .oneqr-library-footer button { width: 100%; min-height: 44px; }
+}
+
 .oneqr-field {
   display: flex;
   flex-direction: column;
