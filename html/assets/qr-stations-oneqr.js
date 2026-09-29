@@ -186,6 +186,7 @@
   // roles never leaks another role's modules. Adding a module (once wired up)
   // adds to whichever role list is currently active, not a shared pool.
   var moduleOrderByRole = {};
+  var recommendedModulesByRole = {};
   var enabledByRole = {};
   var moduleDetailsByRole = { customer: {}, staff: {}, owner: {} };
 
@@ -209,6 +210,7 @@
   var welcomeEl = document.getElementById('oneqrWelcomeText');
   var tilesEl = document.getElementById('oneqrPreviewTiles');
   var addModuleBtn = document.getElementById('oneqrAddModule');
+  var resetModulesBtn = document.getElementById('oneqrResetModules');
   var previewViewAllBtn = document.getElementById('oneqrPreviewViewAll');
   var performanceActionListEl = document.getElementById('oneqrPerformanceActionList');
   var moduleLinkForm = document.getElementById('oneqrModuleLinkForm');
@@ -239,6 +241,7 @@
     MODULE_ICONS = preset.icons;
     ROLES.forEach(function (role) {
       var roleModules = (preset.roles[role] || []).slice();
+      recommendedModulesByRole[role] = roleModules.slice();
       moduleOrderByRole[role] = roleModules;
       enabledByRole[role] = new Set(roleModules);
     });
@@ -566,6 +569,20 @@
 
   if (addModuleBtn) {
     addModuleBtn.addEventListener('click', openAddModuleModal);
+  }
+
+  if (resetModulesBtn) {
+    resetModulesBtn.addEventListener('click', function () {
+      var recommended = recommendedModulesByRole[currentRole] || [];
+      var customModules = moduleOrderByRole[currentRole].filter(function (name) { return recommended.indexOf(name) === -1; });
+      var enabledCustomModules = customModules.filter(function (name) { return enabledByRole[currentRole].has(name); });
+      moduleOrderByRole[currentRole] = recommended.concat(customModules);
+      enabledByRole[currentRole] = new Set(recommended.concat(enabledCustomModules));
+      previewExpanded = false;
+      renderModules();
+      renderPreview();
+      moduleStatusEl.textContent = 'Recommendations restored. Your added modules and edits were kept. Select Save Settings to keep this change.';
+    });
   }
 
   if (addModuleModal) {
@@ -1005,6 +1022,7 @@
     if (!customerModules.length) return;
     currentPreset.modules = Array.from(new Set((currentPreset.modules || []).concat(customerModules)));
     moduleOrderByRole.customer = customerModules;
+    recommendedModulesByRole.customer = customerModules.slice();
     enabledByRole.customer = new Set(customerModules);
 
     var heading = document.querySelector('.oneqr-heading-copy');
