@@ -1397,7 +1397,7 @@
 
 #oneqrAddModuleModal { z-index: 1200; padding: 24px; }
 #oneqrAddModuleModal .oneqr-modal-backdrop { background: rgba(17,24,39,.58); backdrop-filter: blur(3px); }
-#oneqrAddModuleModal .oneqr-modal-dialog { max-width: 680px; max-height: calc(100dvh - 48px); padding: 27px; border-radius: 19px; box-shadow: 0 30px 80px rgba(16,24,40,.28); }
+#oneqrAddModuleModal .oneqr-modal-dialog { max-width: 860px; max-height: calc(100dvh - 48px); padding: 27px; border-radius: 19px; box-shadow: 0 30px 80px rgba(16,24,40,.28); }
 #oneqrAddModuleModal .oneqr-modal-head { padding: 0; border: 0; align-items: flex-start; gap: 20px; }
 #oneqrAddModuleModal h3 { margin-top: 5px; font-size: 22px; letter-spacing: -.025em; }
 .oneqr-library-kicker { color: #4f46e5; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: .08em; }
