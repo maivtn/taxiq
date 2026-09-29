@@ -224,7 +224,7 @@
   var appearanceTarget = null;
   var uploadTarget = null;
   var appearanceChoices = window.ONEQR_ACTION_APPEARANCE;
-  var PREVIEW_COLLAPSED_MODULE_LIMIT = 6;
+  var PREVIEW_COLLAPSED_MODULE_LIMIT = 4;
   var previewExpanded = false;
 
   var nameInput = document.getElementById('oneqr-name');
