@@ -436,7 +436,6 @@
     container.querySelectorAll('[data-editor-action-title]').forEach((input) => input.addEventListener('input', () => {
       state.actionTitles[input.dataset.editorActionTitle] = input.value;
       renderCustomerLivePreview();
-      renderPerformance();
     }));
     container.querySelectorAll('[data-editor-action-link]').forEach((input) => input.addEventListener('input', () => {
       state.actionLinks[input.dataset.editorActionLink] = input.value;
@@ -455,22 +454,7 @@
       removeAction(button.closest('[data-editor-action]').dataset.editorAction);
     }));
     bindEditorDragReorder();
-    renderPerformance();
     refreshIcons();
-  }
-
-  function renderPerformance() {
-    const container = $('#performance-action-list');
-    if (!container) return;
-    const active = state.reviewIds.filter((id) => state.enabled.has(id)).slice(0, 4);
-    const demoClicks = [68, 52, 29, 14];
-    const maximum = demoClicks[0];
-    container.innerHTML = active.map((id, index) => {
-      const clicks = demoClicks[index];
-      const width = Math.max(10, Math.round((clicks / maximum) * 100));
-      const title = escapeAttribute(displayActionTitle(id));
-      return `<div class="performance-action-row"><span title="${title}">${title}</span><i style="--performance-width:${width}%" aria-hidden="true"></i><strong>${clicks}</strong></div>`;
-    }).join('');
   }
 
   function showIndustryPicker() {

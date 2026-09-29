@@ -209,6 +209,7 @@
   var tilesEl = document.getElementById('oneqrPreviewTiles');
   var addModuleBtn = document.getElementById('oneqrAddModule');
   var previewViewAllBtn = document.getElementById('oneqrPreviewViewAll');
+  var performanceActionListEl = document.getElementById('oneqrPerformanceActionList');
   var PREVIEW_COLLAPSED_MODULE_LIMIT = 6;
   var previewExpanded = false;
 
@@ -268,6 +269,20 @@
     refreshIcons();
   }
 
+  function renderPerformance() {
+    if (!performanceActionListEl) return;
+    var order = moduleOrderByRole.customer || [];
+    var enabledSet = enabledByRole.customer || new Set();
+    var activeModules = order.filter(function (name) { return enabledSet.has(name); }).slice(0, 4);
+    var demoClicks = [68, 52, 29, 14];
+    var maximum = demoClicks[0];
+    performanceActionListEl.innerHTML = activeModules.map(function (name, index) {
+      var clicks = demoClicks[index];
+      var width = Math.max(10, Math.round((clicks / maximum) * 100));
+      return '<div class="oneqr-performance-action-row"><span title="' + name + '">' + name + '</span><i style="--performance-width:' + width + '%" aria-hidden="true"></i><strong>' + clicks + '</strong></div>';
+    }).join('');
+  }
+
   function renderPreview() {
     var order = moduleOrderByRole[currentRole] || [];
     var enabledSet = enabledByRole[currentRole] || new Set();
@@ -293,6 +308,7 @@
       previewViewAllBtn.textContent = previewExpanded ? 'View Less' : 'View All';
       previewViewAllBtn.setAttribute('aria-expanded', String(previewExpanded));
     }
+    renderPerformance();
     refreshIcons();
   }
 
