@@ -1122,6 +1122,7 @@
 
 .oneqr-module-drag {
   order: -2;
+  touch-action: none;
   display: grid;
   flex: 0 0 25px;
   height: 34px;
@@ -3447,14 +3448,6 @@
 .oneqr-earnings-entry .oneqr-pill { text-transform: none; }
 @media (max-width: 650px) { .oneqr-earnings-entry { align-items: flex-start; flex-direction: column; gap: 10px; padding: 12px; } }
 
-/* Button controls also support touch and keyboard reordering. */
-.oneqr-module-moves { display: grid; flex: 0 0 auto; grid-template-columns: 29px; gap: 5px; order: -1; }
-.oneqr-module-moves button { display: grid; width: 29px; height: 29px; padding: 0; place-items: center; border: 1px solid #dbe0e8; border-radius: 8px; color: #667085; background: #fff; cursor: pointer; }
-.oneqr-module-moves svg { width: 14px; height: 14px; }
-.oneqr-module-moves button:hover:not(:disabled) { border-color: #aaa5e5; background: #f8f7ff; color: #4b48e7; }
-.oneqr-module-moves button[data-remove-module]:hover { border-color: #f3b4b4; background: #fff5f5; color: #dc2626; }
-.oneqr-module-moves button:disabled { border-color: #e8ebf0; background: #fafbfc; color: #c4cad4; cursor: default; }
-.oneqr-module-moves button:focus-visible { outline: 2px solid #635bff; outline-offset: 2px; }
 
 @media screen and (max-width: 650px) {
   .qr-stations-shell, .qr-stations-heading, .qr-panel, .oneqr-panel { min-width: 0; }
@@ -3480,14 +3473,14 @@
   .oneqr-panel { flex-basis: 100%; padding: 12px; }
   .oneqr-panel-head h3 { font-size: 15px; }
   .oneqr-modules, .oneqr-module-list { min-width: 0; max-width: 100%; }
-  .oneqr-module { display: grid; grid-template-columns: minmax(0, 1fr) 64px; gap: 10px; padding: 12px; }
-  .oneqr-module-drag { display: none; }
-  .oneqr-module-icon-tools { grid-column: 1; grid-row: 1; min-width: 0; grid-template-columns: 44px 44px; justify-content: start; gap: 6px; }
+  .oneqr-module { display: grid; grid-template-columns: 44px minmax(0, 1fr) 64px; gap: 8px; padding: 10px; }
+  .oneqr-module .oneqr-module-drag { display: grid; grid-column: 1; grid-row: 1; align-self: start; width: 44px; height: 44px; touch-action: none; }
+  .oneqr-module-icon-tools { grid-column: 2; grid-row: 1; min-width: 0; grid-template-columns: 44px 44px; justify-content: start; gap: 6px; }
   .oneqr-module-icon { width: 44px; height: 44px; }
   .oneqr-module-background { width: 44px; height: 44px; padding: 8px; }
   .oneqr-module-icon-tools > span:last-child { width: auto; max-width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; justify-self: stretch; }
   .oneqr-module-icon-tools > span:last-child button { min-height: 44px; padding: 6px 3px; white-space: normal; line-height: 1.3; }
-  .oneqr-module-side { grid-column: 2; grid-row: 1; align-self: start; width: 64px; gap: 6px; padding: 0; }
+  .oneqr-module-side { grid-column: 3; grid-row: 1; align-self: start; width: 64px; gap: 6px; padding: 0; }
   .oneqr-module-side > .oneqr-module-remove { margin-top: 6px; margin-bottom: 12px; }
   .oneqr-module-remove::after { content: ''; position: absolute; inset: -12px 0; }
   .oneqr-module-fields { grid-column: 1 / -1; grid-row: 2; min-width: 0; }
@@ -3496,8 +3489,6 @@
   .oneqr-module-url-field input { height: 44px; }
   .oneqr-module-url-field button { flex-basis: 44px; width: 44px; height: 44px; }
   .oneqr-module-url-field svg { width: 16px; height: 16px; }
-  .oneqr-module .oneqr-module-moves { grid-column: 1 / -1; grid-row: 3; grid-template-columns: repeat(2, 44px); justify-content: end; gap: 8px; margin: 0; padding-top: 8px; border-top: 1px solid #edf0f5; order: 0; }
-  .oneqr-module-moves button { width: 44px; height: 44px; }
   .oneqr-module button { touch-action: manipulation; }
   .oneqr-module-toolbar { width: 100%; }
   .oneqr-module-toolbar a, .oneqr-module-toolbar > button { flex: 1; min-height: 44px; padding: 8px; }

@@ -430,7 +430,7 @@
   function renderModules() {
     var order = moduleOrderByRole[currentRole] || [];
     var enabledSet = enabledByRole[currentRole] || new Set();
-    moduleListEl.innerHTML = order.map(function (name, index) {
+    moduleListEl.innerHTML = order.map(function (name) {
       var on = enabledSet.has(name);
       var key = escapeModuleText(name);
       var details = moduleDetails(name);
@@ -440,7 +440,6 @@
         '<button class="oneqr-module-drag" type="button" aria-label="Drag to reorder ' + title + '" title="Drag to reorder"><i data-lucide="grip-vertical" aria-hidden="true"></i></button>' +
         '<div class="oneqr-module-icon-tools"><span class="oneqr-module-icon">' + iconHtml(name) + '</span><button class="oneqr-module-background' + (background ? ' has-color' : '') + '" type="button" data-module-background aria-label="Choose card background for ' + title + '" title="Card background"' + (background ? ' style="--action-swatch:' + escapeModuleText(background) + '"' : '') + '><span></span></button><span><button type="button" data-module-icon aria-label="Choose icon for ' + title + '">Change icon</button><button type="button" data-module-upload aria-label="Upload icon for ' + title + '">Upload</button></span></div>' +
         '<div class="oneqr-module-fields"><input class="oneqr-module-title-input" data-module-title value="' + escapeModuleText(details.title) + '" aria-label="Module title: ' + title + '"><div class="oneqr-module-url-field"><i data-lucide="link-2" aria-hidden="true"></i><input data-module-url type="text" inputmode="url" value="' + escapeModuleText(details.url) + '" aria-label="Link for ' + title + '" spellcheck="false"><button type="button" data-copy-module-url aria-label="Copy link for ' + title + '" title="Copy link"><i data-lucide="copy" aria-hidden="true"></i></button><button type="button" data-open-module-url aria-label="Open link for ' + title + ' in a new tab" title="Open link"><i data-lucide="external-link" aria-hidden="true"></i></button></div></div>' +
-        '<span class="oneqr-module-moves"><button type="button" data-move="up" aria-label="Move ' + title + ' up"' + (index === 0 ? ' disabled' : '') + '><i data-lucide="chevron-up" aria-hidden="true"></i></button><button type="button" data-move="down" aria-label="Move ' + title + ' down"' + (index === order.length - 1 ? ' disabled' : '') + '><i data-lucide="chevron-down" aria-hidden="true"></i></button></span>' +
         '<div class="oneqr-module-side"><button type="button" class="oneqr-switch' + (on ? ' is-on' : '') + '" data-module="' + key + '" aria-pressed="' + on + '" aria-label="Toggle ' + title + ' module"></button><button class="oneqr-module-remove" type="button" data-remove-module aria-label="Remove ' + title + '">Remove</button></div>' +
         '</div>';
     }).join('');
@@ -544,6 +543,65 @@
   }
 
   var draggedModuleName = null;
+  var touchDrag = null;
+
+  moduleListEl.addEventListener('pointerdown', function (event) {
+    var handle = event.target.closest('.oneqr-module-drag');
+    if (!handle || event.pointerType === 'mouse' || !event.isPrimary) return;
+    event.preventDefault();
+    var row = handle.closest('[data-module-row]');
+    touchDrag = { id: event.pointerId, name: row.dataset.moduleRow, role: currentRole, target: null, after: false };
+    handle.setPointerCapture(event.pointerId);
+    row.classList.add('is-dragging');
+  });
+  moduleListEl.addEventListener('pointermove', function (event) {
+    if (!touchDrag || event.pointerId !== touchDrag.id) return;
+    event.preventDefault();
+    clearDragOverMarkers();
+    touchDrag.target = null;
+    var hit = document.elementFromPoint(event.clientX, event.clientY);
+    var row = hit && hit.closest('[data-module-row]');
+    if (row && moduleListEl.contains(row) && row.dataset.moduleRow !== touchDrag.name) {
+      touchDrag.target = row.dataset.moduleRow;
+      touchDrag.after = event.clientY > row.getBoundingClientRect().top + row.getBoundingClientRect().height / 2;
+      row.classList.add(touchDrag.after ? 'is-drag-over-bottom' : 'is-drag-over-top');
+    }
+    if (event.clientY < 80 || event.clientY > window.innerHeight - 80) {
+      window.scrollBy(0, event.clientY < 80 ? -14 : 14);
+    }
+  });
+  function finishTouchDrag(event) {
+    if (!touchDrag || event.pointerId !== touchDrag.id) return;
+    var drag = touchDrag;
+    touchDrag = null;
+    clearDragOverMarkers();
+    moduleListEl.querySelectorAll('.is-dragging').forEach(function (row) { row.classList.remove('is-dragging'); });
+    if (event.type !== 'pointerup' || drag.role !== currentRole || !drag.target) return;
+    var order = moduleOrderByRole[currentRole];
+    var from = order.indexOf(drag.name);
+    if (from < 0 || order.indexOf(drag.target) < 0) return;
+    order.splice(from, 1);
+    order.splice(order.indexOf(drag.target) + (drag.after ? 1 : 0), 0, drag.name);
+    renderModules();
+    renderPreview();
+    moduleStatusEl.textContent = 'Module order changed. Select Save Settings to keep it.';
+  }
+  moduleListEl.addEventListener('pointerup', finishTouchDrag);
+  moduleListEl.addEventListener('pointercancel', finishTouchDrag);
+  moduleListEl.addEventListener('lostpointercapture', finishTouchDrag);
+  moduleListEl.addEventListener('keydown', function (event) {
+    var handle = event.target.closest('.oneqr-module-drag');
+    if (!handle || !['ArrowUp', 'ArrowDown'].includes(event.key)) return;
+    event.preventDefault();
+    var order = moduleOrderByRole[currentRole];
+    var from = order.indexOf(handle.closest('[data-module-row]').dataset.moduleRow);
+    var to = from + (event.key === 'ArrowUp' ? -1 : 1);
+    if (from < 0 || to < 0 || to >= order.length) return;
+    order.splice(to, 0, order.splice(from, 1)[0]);
+    renderModules(); renderPreview();
+    moduleListEl.children[to].querySelector('.oneqr-module-drag').focus();
+    moduleStatusEl.textContent = 'Module order changed. Select Save Settings to keep it.';
+  });
 
   moduleListEl.addEventListener('mousedown', function (event) {
     var handle = event.target.closest('.oneqr-module-drag');
@@ -653,24 +711,6 @@
       renderModules();
       renderPreview();
       moduleStatusEl.textContent = 'Module removed. Select Save Settings to keep this change.';
-      return;
-    }
-    var move = event.target.closest('[data-move]');
-    if (move) {
-      var row = move.closest('[data-module-row]');
-      var order = moduleOrderByRole[currentRole];
-      var from = order.indexOf(row.getAttribute('data-module-row'));
-      var to = from + (move.dataset.move === 'up' ? -1 : 1);
-      if (from < 0 || to < 0 || to >= order.length) return;
-      var direction = move.dataset.move;
-      order.splice(to, 0, order.splice(from, 1)[0]);
-      renderModules();
-      renderPreview();
-      moduleStatusEl.textContent = 'Module order changed. Select Save Settings to keep it.';
-      var movedRow = moduleListEl.children[to];
-      var nextFocus = movedRow.querySelector('[data-move="' + direction + '"]');
-      if (nextFocus.disabled) nextFocus = movedRow.querySelector('[data-move]:not(:disabled)');
-      nextFocus.focus();
       return;
     }
     var btn = event.target.closest('.oneqr-switch');
