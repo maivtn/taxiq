@@ -1090,7 +1090,7 @@
 .oneqr-module-url-field button:hover { background: #e9edfa; }
 .oneqr-module-url-field button:focus-visible, .oneqr-module-remove:focus-visible { outline: 2px solid #635bff; outline-offset: 2px; }
 .oneqr-module-side { display: flex; flex: 0 0 58px; flex-direction: column; align-items: center; align-self: flex-start; gap: 10px; padding-top: 2px; }
-.oneqr-module-remove { padding: 2px 8px; border: 1px solid #dbe4f3; border-radius: 5px; background: #fff; color: #52607b; font: inherit; font-size: 10px; font-weight: 600; line-height: 1.3; cursor: pointer; }
+.oneqr-module-side > .oneqr-module-remove { display: inline-flex; align-items: center; justify-content: center; position: relative; box-sizing: border-box; width: 56px; min-width: 0; height: 20px; min-height: 0; padding: 0 8px; border: 1px solid #dbe4f3; border-radius: 5px; background: #fff; color: #52607b; font-family: inherit; font-size: 10px; font-weight: 600; line-height: 1.3; cursor: pointer; }
 .oneqr-module-remove:hover { border-color: #f3b4b4; background: #fff5f5; color: #dc2626; }
 .oneqr-module-url-field svg { flex: 0 0 14px; width: 14px; height: 14px; color: #8a94a6; }
 .oneqr-module-url-field input { min-width: 0; width: 100%; border: 0; outline: 0; background: transparent; color: #344054; font-size: 11px; }
@@ -1121,6 +1121,7 @@
 }
 
 .oneqr-module-drag {
+  order: -2;
   display: grid;
   flex: 0 0 25px;
   height: 34px;
@@ -3487,7 +3488,8 @@
   .oneqr-module-icon-tools > span:last-child { width: auto; max-width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; justify-self: stretch; }
   .oneqr-module-icon-tools > span:last-child button { min-height: 44px; padding: 6px 3px; white-space: normal; line-height: 1.3; }
   .oneqr-module-side { grid-column: 2; grid-row: 1; align-self: start; width: 64px; gap: 6px; padding: 0; }
-  .oneqr-module-remove { min-width: 64px; min-height: 44px; font-size: 12px; }
+  .oneqr-module-side > .oneqr-module-remove { margin-top: 6px; margin-bottom: 12px; }
+  .oneqr-module-remove::after { content: ''; position: absolute; inset: -12px 0; }
   .oneqr-module-fields { grid-column: 1 / -1; grid-row: 2; min-width: 0; }
   .oneqr-module-title-input { height: 44px; }
   .oneqr-module-url-field { height: 50px; gap: 4px; padding-right: 3px; }
