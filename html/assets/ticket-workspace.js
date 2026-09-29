@@ -28,13 +28,16 @@
     trash:'<path d="M3 6h18M9 6V3h6v3M5 6l1 15h12l1-15M10 10v7M14 10v7"/>',
     coupon:'<path d="M20 12a2 2 0 0 0 0-4V4H4v4a2 2 0 0 0 0 4v4a2 2 0 0 0 0 4h16v-4a2 2 0 0 0 0-4Z"/><path d="M12 4v16M12 8h.01M12 12h.01M12 16h.01"/>',
     scan:'<path d="M3 7V5a2 2 0 0 1 2-2h2M17 3h2a2 2 0 0 1 2 2v2M21 17v2a2 2 0 0 1-2 2h-2M7 21H5a2 2 0 0 1-2-2v-2"/><rect x="7" y="7" width="3" height="3"/><rect x="14" y="7" width="3" height="3"/><rect x="7" y="14" width="3" height="3"/><path d="M14 14h3v3h-3z"/>',
-    dollar:'<path d="M12 2v20M17 5.5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>'
+    dollar:'<path d="M12 2v20M17 5.5H9.5a3.5 3.5 0 0 0 0 7h5a3.5 3.5 0 0 1 0 7H6"/>',
+    camera:'<path d="M14.5 4 16 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2h3l1.5-3h5Z"/><circle cx="12" cy="13" r="3"/>',
+    image:'<rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m21 15-5-5L5 21"/>',
+    phone:'<path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6A19.79 19.79 0 0 1 2.12 4.18 2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72c.12.9.33 1.78.62 2.63a2 2 0 0 1-.45 2.11L8 9.73a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45c.85.29 1.73.5 2.63.62A2 2 0 0 1 22 16.92Z"/>'
   };
   const iconForLabel = {'Print Ticket':'printer','Print receipt':'printer',Print:'printer','Print preview':'eye',
     'Start Service':'play',Start:'play',Complete:'check',Back:'back','Checkout Ticket':'forward','Complete checkout':'check',
     Cash:'cash',Card:'card','Gift Card':'gift','Split Pay':'split','Split bill':'split',More:'more','Send SMS':'message',
     'No Receipt':'receipt','Edit customer':'user','Hand to customer':'tablet','Discount all':'percent','Add tip':'dollar','Add service':'plus',
-    Discount:'percent',Coupon:'coupon','Scan QR':'scan','Start camera':'scan','Custom':'plus','Cancel split bill':'close',Close:'close','Change tech':'user','Change service':'refresh',Remove:'trash',Pay:'card'};
+    Discount:'percent',Coupon:'coupon','Scan QR':'scan','Start camera':'scan','Take a photo':'camera','Upload image':'image','Custom':'plus','Cancel split bill':'close',Close:'close','Change tech':'user','Change service':'refresh',Remove:'trash',Pay:'card'};
   const icon = name => `<svg class="tw-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${iconPaths[name]}</svg>`;
   function totals(ticket) {
     if(ticket.amountTotals)return {...ticket.amountTotals};
@@ -52,7 +55,7 @@
     return {subtotalCents:subtotal,discountCents:lineDiscount+orderDiscount+couponDiscount,netCents:net,tipCents:tip,totalCents:net+tip};
   }
   function mount(root, options) {
-    let ticket, parent, activeBillId, mode='edit', category='All', search='', dialogAction='', dialogLine='', setupAssignments={}, serviceFilter='all', lastAssignment=null, qrStream=null, qrFrame=null;
+    let ticket, parent, activeBillId, mode='edit', category='All', search='', dialogAction='', dialogLine='', setupAssignments={}, serviceFilter='all', lastAssignment=null, qrStream=null, qrFrame=null, tipMode='even', tipType='fixed', tipValue=0, tipPerTech={}, tipCustomerMode=false, discountType='fixed', discountValue=0, discountAbsorber='salon', discountReason='';
     const $ = selector => root.querySelector(selector);
     const button = (label,attr,style='') => `<button type="button" class="tw-button ${style}" ${attr}>${iconForLabel[label]?icon(iconForLabel[label]):''}<span>${label}</span></button>`;
     const input = (label,name,value='',type='text') => `<label>${label}<input name="${name}" type="${type}" value="${esc(value)}" ${type==='number'?'min="0" step="0.01"':''} required></label>`;
@@ -91,6 +94,40 @@
         return share;
       }
       return couponTotal;
+    }
+    function tipTechnicians() {
+      const names=[...new Set((ticket.lines || []).flatMap(line=>String(line.tech || '').split(',')).map(name=>name.trim()).filter(Boolean))];
+      return names.length?names:['Unassigned'];
+    }
+    function tipFieldsHtml() {
+      const technicians=tipTechnicians(),multiple=technicians.length>1,perTech=multiple&&tipMode==='technician';
+      const presets=[5,10,15,20],prefix=tipType==='percent'?'%':'$',customValue=presets.includes(Number(tipValue))?'':tipValue || '';
+      const topAction=tipCustomerMode
+        ? button('Back to staff','data-tw-tip-back-staff','tw-small')
+        : button('Hand to customer','data-tw-tip-customer','tw-small tw-purple');
+      const modeTabs=multiple&&!tipCustomerMode?`<div class="tw-tip-tabs" role="group" aria-label="Tip distribution"><button type="button" data-tw-tip-mode="even" aria-pressed="${!perTech}" class="${!perTech?'selected':''}">Split evenly</button><button type="button" data-tw-tip-mode="technician" aria-pressed="${perTech}" class="${perTech?'selected':''}">Tip per technician</button></div>`:'';
+      const evenFields=`${tipCustomerMode?'<div class="tw-tip-customer-heading"><h3>Add a tip?</h3><p>Tap an amount, then hand the device back to the front desk.</p></div>':''}<fieldset class="tw-tip-fieldset"><legend>TIP AS</legend><div class="tw-tip-tabs"><button type="button" data-tw-tip-type="fixed" aria-pressed="${tipType==='fixed'}" class="${tipType==='fixed'?'selected':''}">Amount</button><button type="button" data-tw-tip-type="percent" aria-pressed="${tipType==='percent'}" class="${tipType==='percent'?'selected':''}">Percent</button></div></fieldset><fieldset class="tw-tip-fieldset"><legend>VALUE</legend><div class="tw-tip-values">${presets.map(value=>`<button type="button" data-tw-tip-value="${value}" class="${Number(tipValue)===value?'selected':''}">${tipType==='percent'?value+'%':'$'+value}</button>`).join('')}<label class="tw-tip-custom"><span>${prefix}</span><input name="tipValue" data-tw-tip-custom type="number" min="0" ${tipType==='percent'?'max="100"':''} step="0.01" placeholder="Custom" value="${esc(customValue)}" aria-label="Custom ${tipType==='percent'?'tip percentage':'tip amount'}"></label></div></fieldset>`;
+      const techFields=`<div class="tw-tip-tech-list">${technicians.map((name,index)=>{const value=Number(tipPerTech[name] || 0),custom=presets.includes(value)?'':value || '';return `<section class="tw-tip-tech-row"><span class="tw-tip-avatar" data-index="${index}">${esc(name.charAt(0).toUpperCase())}</span><strong>${esc(name)}</strong><div class="tw-tip-tech-values">${presets.map(amount=>`<button type="button" data-tw-tip-tech-value="${amount}" data-tw-tip-tech="${index}" class="${value===amount?'selected':''}">$${amount}</button>`).join('')}<label class="tw-tip-custom"><span>$</span><input data-tw-tip-tech-custom="${index}" type="number" min="0" step="0.01" placeholder="Custom" value="${custom}" aria-label="Custom tip for ${esc(name)}"></label></div></section>`;}).join('')}</div><div class="tw-tip-total"><span>TOTAL</span><strong data-tw-tip-split-total>${money(technicians.reduce((sum,name)=>sum+cents(tipPerTech[name] || 0),0))}</strong></div>`;
+      return `<div class="tw-tip-top-action">${topAction}</div>${modeTabs}${perTech?techFields:evenFields}`;
+    }
+    function renderTipFields() {
+      const fields=$('[data-tw-fields]');if(!fields||dialogAction!=='hand')return;
+      fields.innerHTML=tipFieldsHtml();
+      const perTech=tipTechnicians().length>1&&tipMode==='technician'&&!tipCustomerMode;
+      $('[data-tw-save]').textContent=perTech?'Save Split':'Save Tip';
+      $('dialog').classList.toggle('tw-customer-tip-dialog',tipCustomerMode);
+    }
+    function updateTipSplitTotal() {
+      const total=$('[data-tw-tip-split-total]');if(!total)return;
+      total.textContent=money(tipTechnicians().reduce((sum,name)=>sum+cents(tipPerTech[name] || 0),0));
+    }
+    function discountAllFieldsHtml() {
+      const subtotal=parent.lines.reduce((sum,line)=>sum+(validMoney(line.price)?cents(line.price):0),0),presets=[5,10,15,20],prefix=discountType==='percent'?'%':'$',custom=presets.includes(Number(discountValue))?'':discountValue || '';
+      return `<p class="tw-discount-subtotal">Services subtotal <strong>${money(subtotal)}</strong></p><p class="tw-muted">Amount and percent discounts use the eligible services subtotal. The combined Discount all and Coupon value cannot exceed the ticket subtotal.</p><fieldset class="tw-tip-fieldset"><legend>DISCOUNT AS</legend><div class="tw-tip-tabs"><button type="button" data-tw-discount-type="fixed" aria-pressed="${discountType==='fixed'}" class="${discountType==='fixed'?'selected':''}">Amount</button><button type="button" data-tw-discount-type="percent" aria-pressed="${discountType==='percent'}" class="${discountType==='percent'?'selected':''}">Percent</button></div></fieldset><fieldset class="tw-tip-fieldset"><legend>VALUE</legend><div class="tw-tip-values">${presets.map(value=>`<button type="button" data-tw-discount-value="${value}" class="${Number(discountValue)===value?'selected':''}">${discountType==='percent'?value+'%':'$'+value}</button>`).join('')}<label class="tw-tip-custom"><span>${prefix}</span><input data-tw-discount-custom type="number" min="0" ${discountType==='percent'?'max="100"':''} step="0.01" placeholder="Custom" value="${esc(custom)}" aria-label="Custom discount value"></label></div></fieldset><fieldset class="tw-tip-fieldset"><legend>WHO ABSORBS THE COST</legend><div class="tw-discount-absorbers">${[['salon','Salon'],['technician','Technician'],['split','50/50']].map(([value,label])=>`<button type="button" data-tw-discount-absorber="${value}" class="${discountAbsorber===value?'selected':''}" aria-pressed="${discountAbsorber===value}">${label}</button>`).join('')}</div><p class="tw-muted">Technician cost is allocated in proportion to completed services. Hourly or salaried technicians are skipped and the salon covers their part.</p></fieldset><label class="tw-discount-reason">REASON (OPTIONAL)<input data-tw-discount-reason maxlength="120" placeholder="e.g. customer loyalty" value="${esc(discountReason)}"></label><section class="tw-discount-offer"><h3>OFFERS THIS VISIT QUALIFIES FOR</h3><button type="button" data-tw-discount-offer><small>UPGRADE</small><strong>Add-On Upgrade · Sample</strong><b>20% off</b><span>Tap to use this offer</span></button></section>`;
+    }
+    function renderDiscountFields() {
+      const fields=$('[data-tw-fields]');if(!fields||dialogAction!=='discount'||dialogLine)return;
+      fields.innerHTML=discountAllFieldsHtml();
     }
     function stopQrScanner() {
       if(qrFrame)cancelAnimationFrame(qrFrame);
@@ -379,14 +416,18 @@
       const leftColumn=mode==='checkout'
         ? `<div class="tw-checkout-side" aria-label="Checkout actions">${billHeading}${paymentHtml()}<p data-tw-message role="status"></p>${paybarHtml()}</div>`
         : catalogHtml;
-      root.innerHTML=`<div class="tw-heading">${button('Back','data-tw-back')}<h2>Ticket #${esc(parent.id)} · ${esc(parent.customer)}</h2>${!paid&&!group()?button('Edit customer','data-tw-customer','tw-text'):''}</div>${billsHtml()}<div class="tw-workspace ${mode==='checkout'?'tw-checkout-layout':''}">${leftColumn}<div class="tw-ticket-side"><section class="tw-card"><div class="tw-card-title"><h3>${amountSplit()?'SHARED TICKET':'TICKET DETAIL'} (${detailLines.length} services)</h3>${amountSplit()&&!group().bills.some(b=>b.payment)?button('Assign services','data-tw-assign-services aria-haspopup="dialog"','tw-small tw-purple'):''}${!paid&&!group()?`<div class="tw-ticket-tools">${mode==='checkout'?button('Add service','data-tw-add-service','tw-small tw-purple'):''}${button('Custom','data-tw-custom','tw-small tw-purple')}</div>`:''}</div>${amountSplit()?`<p class="tw-service-pick-note">This ticket is split by amount. ${group().bills.some(b=>b.payment)?'Each bill pays a share of the ticket total.':'Choose Assign services to select who pays for each service. Bill totals will follow the selected services.'}</p>`:''}<div class="tw-lines">${serviceSplit?serviceToolbarHtml():''}${detailLines.map(l=>{
+      const customerKind=parent.bookingId?'Booked customer':parent.checkIn?'Checked-in customer':'Walk-in customer';
+      const customerHtml=mode==='checkout'?`<section class="tw-card tw-customer-card"><h3>CUSTOMER</h3><div class="tw-customer-name"><strong>${esc(parent.customer)}</strong><span>${customerKind}</span>${!paid&&!group()?button('View','data-tw-customer','tw-text tw-small'):''}</div><p>${icon('phone')}<span>${esc(parent.phone || 'No phone number')}</span></p></section>`:'';
+      const notePhotos=parent.notePhotos || [];
+      const noteHtml=`<section class="tw-card tw-note-card"><label class="tw-note">NOTE<textarea data-tw-note placeholder="Seat, customer preferences, color/powder used…" ${paid||group()?'disabled':''}>${esc(parent.note || '')}</textarea></label><div class="tw-note-tools">${button('Take a photo','data-tw-take-photo'+(paid||group()||notePhotos.length>=5?' disabled':''),'tw-small')}${button('Upload image','data-tw-upload-image'+(paid||group()||notePhotos.length>=5?' disabled':''),'tw-small')}<input type="file" accept="image/*" data-tw-note-upload hidden><span data-tw-photo-count>${notePhotos.length}/5 photos</span></div></section>`;
+      root.innerHTML=`<div class="tw-heading">${button('Back','data-tw-back')}<h2>Ticket #${esc(parent.id)} · ${esc(parent.customer)}</h2>${!paid&&!group()?button('Edit customer','data-tw-customer','tw-text'):''}</div>${billsHtml()}<div class="tw-workspace ${mode==='checkout'?'tw-checkout-layout':''}">${leftColumn}<div class="tw-ticket-side">${customerHtml}<section class="tw-card"><div class="tw-card-title"><h3>${amountSplit()?'SHARED TICKET':'TICKET DETAIL'} (${detailLines.length} services)</h3>${amountSplit()&&!group().bills.some(b=>b.payment)?button('Assign services','data-tw-assign-services aria-haspopup="dialog"','tw-small tw-purple'):''}${!paid&&!group()?`<div class="tw-ticket-tools">${mode==='checkout'?button('Add service','data-tw-add-service','tw-small tw-purple'):''}${button('Custom','data-tw-custom','tw-small tw-purple')}</div>`:''}</div>${amountSplit()?`<p class="tw-service-pick-note">This ticket is split by amount. ${group().bills.some(b=>b.payment)?'Each bill pays a share of the ticket total.':'Choose Assign services to select who pays for each service. Bill totals will follow the selected services.'}</p>`:''}<div class="tw-lines">${serviceSplit?serviceToolbarHtml():''}${detailLines.map(l=>{
         const owner=serviceSplit?group().bills.find(b=>b.id===group().assignments[l.id]):null;
         const canManage=!paid&&(!serviceSplit||owner?.id===activeBillId);
         const selection=serviceSplit?`<label class="tw-service-pick"><input type="checkbox" data-tw-bill-line="${esc(l.id)}" aria-label="Assign ${esc(l.name)} to ${esc(ticket.customer)}" ${owner?.id===activeBillId?'checked':''} ${paid||owner?.payment?'disabled':''}><span class="tw-payer-badge" data-tw-guest-color="${owner?guestColor(owner):'none'}">${owner?'Payer: Bill '+guestNumber(owner)+' · '+esc(owner.name)+(owner.payment?' · Paid':''):'Not assigned'}</span><small>${paid||owner?.payment?'Locked':owner?.id===activeBillId?'On this bill':'Check to assign here'}</small></label>`:'';
         const status={'assigned':'ASSIGNED','in-service':'IN PROGRESS',completed:'COMPLETED'}[l.status] || 'UNASSIGNED';
         const hidden=serviceSplit&&((serviceFilter==='current'&&owner?.id!==activeBillId)||(serviceFilter==='unassigned'&&owner));
         return `<article class="tw-line ${serviceSplit?(owner?.id===activeBillId?'tw-line-selected':!owner?'tw-line-unassigned':''):''}" data-tw-service-line="${esc(l.id)}" ${serviceSplit?`data-tw-guest-color="${owner?guestColor(owner):'none'}"`:''} ${hidden?'hidden':''} ${serviceSplit&&owner?.id!==activeBillId?'data-tw-other-bill':''}>${selection}<div class="tw-line-top"><div><strong>${esc(l.name)}</strong> <span class="tw-status ${esc(l.status)}">${status}</span><p>Tech. <b>${esc(l.tech || 'Unassigned')}</b></p></div><strong>${validMoney(l.price)?money(cents(l.price)):'Price required'}</strong></div>${l.discount?.value?`<p class="tw-discount-note">Discount: ${esc(l.discount.value)}${l.discount.type==='fixed'?' USD':'%'}</p>`:''}${!paid&&!group()?`<div class="tw-line-actions">${l.status==='completed'?'<span class="tw-completed">✓ Completed</span>':button(l.status==='in-service'?'Complete':'Start',`data-tw-action="${l.status==='in-service'?'complete':'start'}" data-line="${esc(l.id)}"`,'tw-green')}${button('Change tech',`data-tw-action="tech" data-line="${esc(l.id)}"`,'tw-blue')}${button('Change service',`data-tw-action="service" data-line="${esc(l.id)}"`,'tw-purple')}${button('Discount',`data-tw-action="discount" data-line="${esc(l.id)}"`,'tw-orange')}${button('Remove',`data-tw-action="remove" data-line="${esc(l.id)}"`,'tw-red')}${!validMoney(l.price)?button('Set price',`data-tw-action="price" data-line="${esc(l.id)}"`,'tw-orange'):''}</div>`:canManage&&group()&&l.status!=='completed'?`<div class="tw-line-actions">${button(l.status==='in-service'?'Complete':'Start',`data-tw-action="${l.status==='in-service'?'complete':'start'}" data-line="${esc(l.id)}"`,'tw-green')}${button('Change tech',`data-tw-action="tech" data-line="${esc(l.id)}"`,'tw-blue')}</div>`:''}</article>`;
-      }).join('') || '<p class="tw-muted">Choose a service to add it to this ticket.</p>'}</div>${mode==='edit'?'<div class="tw-summary-row tw-rule"><strong>ESTIMATED TOTAL</strong><strong data-tw-total></strong></div>':''}</section><section class="tw-card"><label class="tw-note">NOTE<textarea data-tw-note placeholder="Seat, customer preferences, color/powder used…" ${paid||group()?'disabled':''}>${esc(ticket.note || '')}</textarea></label></section>${mode==='checkout'?'':`<div class="tw-bottom">${button('Print Ticket','data-tw-print')}${button('Start Service','data-tw-start-all','tw-purple')}</div>${button('Checkout Ticket','data-tw-checkout','tw-text')}` }${mode==='checkout'?'':'<p data-tw-message role="status"></p>'}</div></div><dialog class="tw-dialog" aria-labelledby="tw-dialog-title"><form data-tw-form><div class="tw-card-title"><h2 id="tw-dialog-title"></h2>${button('Close','data-tw-close aria-label="Close dialog"','tw-text tw-icon-only')}</div><div data-tw-fields></div><footer class="tw-dialog-actions"><p data-tw-error role="alert"></p><span data-tw-setup-status role="status" hidden></span><div>${button('Cancel','data-tw-close','tw-dialog-cancel')}<button type="submit" class="tw-button tw-primary" data-tw-save>Save</button></div></footer></form></dialog>`;
+      }).join('') || '<p class="tw-muted">Choose a service to add it to this ticket.</p>'}</div>${mode==='edit'?'<div class="tw-summary-row tw-rule"><strong>ESTIMATED TOTAL</strong><strong data-tw-total></strong></div>':''}</section>${noteHtml}${mode==='checkout'?'':`<div class="tw-bottom">${button('Print Ticket','data-tw-print')}${button('Start Service','data-tw-start-all','tw-purple')}</div>${button('Checkout Ticket','data-tw-checkout','tw-text')}` }${mode==='checkout'?'':'<p data-tw-message role="status"></p>'}</div></div><dialog class="tw-dialog" aria-labelledby="tw-dialog-title"><form data-tw-form><div class="tw-card-title"><h2 id="tw-dialog-title"></h2>${button('Close','data-tw-close aria-label="Close dialog"','tw-text tw-icon-only')}</div><div data-tw-fields></div><footer class="tw-dialog-actions"><p data-tw-error role="alert"></p><span data-tw-setup-status role="status" hidden></span><div>${button('Cancel','data-tw-close','tw-dialog-cancel')}<button type="submit" class="tw-button tw-primary" data-tw-save>Save</button></div></footer></form></dialog>`;
       if(serviceSplit&&serviceFilter!=='all'&&!root.querySelector('.tw-line:not([hidden])'))$('.tw-lines').insertAdjacentHTML('beforeend',`<p class="tw-filter-empty" data-tw-filter-empty>${serviceFilter==='unassigned'?'No unassigned services.':'No services on this bill yet.'} Choose All services to review the full ticket.</p>`);
       $('dialog').addEventListener('close',stopQrScanner);
       renderCatalog();renderTotals();
@@ -403,19 +444,31 @@
       if(action==='catalog'){title='Add service';fields=`<input class="tw-search" data-tw-search type="search" placeholder="Search services…" aria-label="Search ticket services" value="${esc(search)}"><div class="tw-categories" data-tw-categories></div><div class="tw-catalog" data-tw-catalog></div>`;}
       if(action==='tech'){title='Change technician';fields='<label>Technician<select name="tech" required><option value="">Choose technician</option>'+options.technicians().map(t=>`<option ${t.name===l.tech?'selected':''} ${t.status==='clocked-out'||(t.status&&t.status!=='available'&&t.name!==l.tech)?'disabled':''}>${esc(t.name)}</option>`).join('')+'</select></label>';}
       if(action==='service'){title='Change service';fields='<label>Service<select name="service" required>'+services().map(s=>`<option value="${esc(s.id)}">${esc(s.name)} · ${s.price==null?'Enter price':money(cents(s.price))}</option>`).join('')+'</select></label>';}
-      if(action==='discount'){title=l?'Service discount':'Discount all services';fields=`<label>Discount type<select name="type"><option value="percent">Percentage (%)</option><option value="fixed" ${rule?.type==='fixed'?'selected':''}>Amount ($)</option></select></label>${input('Discount value','value',rule?.value || 0,'number')}<div class="tw-discount-presets">${[0,5,10,15,20].map(n=>button(n,`data-tw-discount-preset="${n}"`)).join('')}</div><p class="tw-muted">Order discount applies after service discounts. Total cannot fall below zero.</p>${group()?'<p class="tw-muted">Discount all applies to the whole ticket. Bill totals update automatically; custom amount splits keep their current proportions.</p>':''}`;}
+      if(action==='discount'){
+        title=l?'Service discount':'Discount all services';
+        if(l)fields=`<label>Discount type<select name="type"><option value="percent">Percentage (%)</option><option value="fixed" ${rule?.type==='fixed'?'selected':''}>Amount ($)</option></select></label>${input('Discount value','value',rule?.value || 0,'number')}<div class="tw-discount-presets">${[0,5,10,15,20].map(n=>button(n,`data-tw-discount-preset="${n}"`)).join('')}</div><p class="tw-muted">Service discount applies before ticket-level Discount all and Coupon.</p>`;
+        else{discountType=rule?.type || 'fixed';discountValue=Number(rule?.value || 0);discountAbsorber=rule?.absorber || 'salon';discountReason=rule?.reason || '';fields=discountAllFieldsHtml();}
+      }
       if(action==='coupon'){title='Apply coupon';fields=`<div class="tw-coupon-entry"><input name="couponCode" value="${esc(parent.coupon?.code || '')}" placeholder="Enter coupon code or scan..." aria-label="Coupon code" autocomplete="off" required><button type="button" data-tw-start-qr aria-label="Scan coupon QR code" title="Scan coupon QR code">${icon('scan')}</button></div><p class="tw-coupon-help">Enter a coupon code or tap the QR icon to scan the customer’s coupon. Discount all and Coupon are calculated together from the same eligible subtotal.</p><div class="tw-coupon-demo"><strong>Demo codes</strong><button type="button" data-tw-demo-code="WELCOME10"><b>WELCOME10</b><span>10% off the eligible ticket subtotal</span></button><button type="button" data-tw-demo-code="SAVE5"><b>SAVE5</b><span>$5 off the eligible ticket subtotal</span></button></div><div class="tw-coupon-scan" data-tw-coupon-scan-panel hidden><div class="tw-qr-frame"><video data-tw-qr-video playsinline muted></video><div class="tw-qr-corners" aria-hidden="true"></div></div><p data-tw-qr-status role="status">Hold the coupon QR code inside the frame.</p><div class="tw-qr-actions">${button('Use demo QR','data-tw-demo-qr','tw-purple')}</div></div>`;}
       if(action==='custom'){title='Custom service';fields=input('Service name','name')+input('Price ($)','price','','number');}
       if(action==='price'){title='Set service price';fields=input('Price ($)','price',l.price ?? '','number');}
       if(action==='customer'){title='Edit customer';fields=input('Customer','customer',ticket.customer)+input('Phone','phone',ticket.phone,'tel');}
-      if(action==='hand'){title='Add tip';fields=`<p>Choose a tip for ${esc(ticket.customer)}.</p><div class="tw-tip-row">${[0,10,15,20].map(n=>button(n?n+'%':'No Tip',`data-tw-customer-tip="${n}"`,ticket.checkout.tipType==='percent'&&Number(ticket.checkout.tip)===n?'selected':'')).join('')}</div>${input('Custom tip ($)','tip',ticket.checkout.tipType==='fixed'?ticket.checkout.tip || 0:0,'number')}`;}
+      if(action==='hand'){
+        title='Tip';tipMode=ticket.checkout.tipMode || 'even';tipType=ticket.checkout.tipType || 'fixed';tipValue=Number(ticket.checkout.tip || 0);tipPerTech={...(ticket.checkout.tipAllocations || {})};tipCustomerMode=false;
+        tipTechnicians().forEach(name=>{if(!validMoney(tipPerTech[name]))tipPerTech[name]=0;});
+        if(tipTechnicians().length<2)tipMode='even';
+        fields=tipFieldsHtml();
+      }
       if(action==='preview'){const t=totals(ticket);title='Receipt preview';fields=`${amountSplit()?'<p>Shared ticket services shown below. The total is this guest’s allocated payment, including their share of discount and tip.</p>':''}<p>Ticket #${esc(ticket.id)} · ${esc(ticket.customer)}</p>${ticket.lines.map(l=>`<div class="tw-summary-row"><span>${esc(l.name)}</span><span>${validMoney(l.price)?money(cents(l.price)):'—'}</span></div>`).join('')}<p>Discount ${money(t.discountCents || 0)} · Tip ${money(t.tipCents || 0)}</p><h3>Total ${t.error?'—':money(t.totalCents)}</h3><p>Demo receipt · ${ticket.payment?'Payment recorded':'Not paid'}</p>`;}
-      $('#tw-dialog-title').textContent=title;$('[data-tw-fields]').innerHTML=fields;$('[data-tw-error]').textContent='';$('[data-tw-save]').disabled=false;$('[data-tw-save]').hidden=['preview','catalog'].includes(action);$('[data-tw-save]').textContent=action==='split-bill'?'Create bills':action==='coupon'?'Apply coupon':'Save';
+      $('#tw-dialog-title').textContent=title;$('[data-tw-fields]').innerHTML=fields;$('[data-tw-error]').textContent='';$('[data-tw-save]').disabled=false;$('[data-tw-save]').hidden=['preview','catalog'].includes(action);$('[data-tw-save]').textContent=action==='split-bill'?'Create bills':action==='coupon'?'Apply coupon':action==='hand'?'Save Tip':action==='discount'?'Save discount':'Save';
       $('dialog').classList.toggle('tw-split-dialog',action==='split-bill');$('[data-tw-setup-status]').hidden=action!=='split-bill';
+      $('dialog').classList.toggle('tw-tip-dialog',action==='hand');$('dialog').classList.remove('tw-customer-tip-dialog');
+      $('dialog').classList.toggle('tw-discount-dialog',action==='discount'&&!l);
       if(action==='split-bill'){
         if(amountSplit()&&group().allocation==='custom')$('[name="amountAllocation"][value="custom"]').checked=true;
         configureSplitSetup(group()?.bills.length);
       }
+      if(action==='hand')renderTipFields();
       $('dialog').classList.toggle('tw-catalog-dialog',action==='catalog'||action==='split-bill');renderCatalog();$('dialog').showModal();
     }
     function add(service) {
@@ -426,8 +479,12 @@
       if(dialogAction==='split-bill'&&$('dialog').open&&e.target.matches('[name="customBillCount"]'))updateSplitCount();
       if(dialogAction==='split-bill'&&$('dialog').open&&e.target.matches('[data-tw-share]'))updateAmountPreview();
       if(dialogAction==='split-bill'&&$('dialog').open&&e.target.name?.startsWith('guest'))renderSetupServices();
+      if(dialogAction==='hand'&&e.target.matches('[data-tw-tip-custom]')){tipValue=e.target.value;return;}
+      if(dialogAction==='hand'&&e.target.matches('[data-tw-tip-tech-custom]')){const name=tipTechnicians()[Number(e.target.dataset.twTipTechCustom)];if(name)tipPerTech[name]=e.target.value;updateTipSplitTotal();return;}
+      if(dialogAction==='discount'&&!dialogLine&&e.target.matches('[data-tw-discount-custom]')){discountValue=e.target.value;return;}
+      if(dialogAction==='discount'&&!dialogLine&&e.target.matches('[data-tw-discount-reason]')){discountReason=e.target.value;return;}
       if(e.target.matches('[data-tw-search]')){search=e.target.value;renderCatalog();}
-      if(e.target.matches('[data-tw-note]')){ticket.note=e.target.value;save();}
+      if(e.target.matches('[data-tw-note]')){parent.note=e.target.value;save();}
       if(e.target.matches('[data-tw-field]')){ticket.checkout[e.target.dataset.twField]=e.target.value;if(e.target.dataset.twField==='tip')ticket.checkout.tipType='fixed';save();renderTotals();}
     });
     root.addEventListener('change',e=>{
@@ -438,6 +495,11 @@
       }
       if(dialogAction==='split-bill'&&e.target.matches('[name="splitMode"]')){configureSplitSetup();return;}
       if(dialogAction==='split-bill'&&e.target.matches('[name="amountAllocation"]')){updateAmountPreview();return;}
+      if(e.target.matches('[data-tw-note-upload]')&&e.target.files?.length){
+        parent.notePhotos=parent.notePhotos || [];
+        [...e.target.files].slice(0,5-parent.notePhotos.length).forEach(file=>parent.notePhotos.push({name:file.name,source:'upload'}));
+        save();render();message('Image added to the ticket note.');return;
+      }
       if(e.target.matches('[name="billCount"]')&&dialogAction==='split-bill'){
         updateSplitCount();
         if(e.target.value==='custom')$('[name="customBillCount"]').focus();
@@ -470,6 +532,12 @@
       if(b.hasAttribute('data-tw-remove-bill')&&group()&&!amountSplit()&&group().bills.length>2&&!ticket.lines.length&&!ticket.payment){group().bills=group().bills.filter(b=>b.id!==activeBillId);selectBill(group().bills[0].id);save();render();return;}
       if(b.hasAttribute('data-tw-cancel-split')&&group()&&!group().bills.some(b=>b.payment)){delete parent.splitBills;ticket=parent;lastAssignment=null;serviceFilter='all';save();render();return;}
       if(ticket.payment)return;
+      if(b.hasAttribute('data-tw-take-photo')&&!group()){
+        parent.notePhotos=parent.notePhotos || [];
+        if(parent.notePhotos.length<5)parent.notePhotos.push({name:'Photo '+(parent.notePhotos.length+1),source:'camera'});
+        save();render();message('Demo photo added to the ticket note.');return;
+      }
+      if(b.hasAttribute('data-tw-upload-image')&&!group()){$('[data-tw-note-upload]')?.click();return;}
       if(b.hasAttribute('data-tw-discount-all')&&group()?.bills.some(bill=>bill.payment))return;
       if(b.hasAttribute('data-tw-coupon')&&group()?.bills.some(bill=>bill.payment))return;
       if(b.hasAttribute('data-tw-coupon')){openDialog('coupon');return;}
@@ -477,6 +545,16 @@
       if(b.hasAttribute('data-tw-demo-code')){const field=$('[name="couponCode"]');if(field){field.value=b.dataset.twDemoCode;field.focus();}return;}
       if(b.hasAttribute('data-tw-demo-qr')){const field=$('[name="couponCode"]');if(field)field.value='WELCOME10';$('[data-tw-qr-status]').textContent='Demo QR found. Applying WELCOME10…';stopQrScanner();$('[data-tw-form]').requestSubmit();return;}
       if(b.hasAttribute('data-tw-remove-coupon')){delete parent.coupon;if(group())refreshSplitDiscount();save();render();return;}
+      if(b.hasAttribute('data-tw-tip-customer')){tipCustomerMode=true;if(!tipValue)tipType='percent';renderTipFields();return;}
+      if(b.hasAttribute('data-tw-tip-back-staff')){tipCustomerMode=false;renderTipFields();return;}
+      if(b.hasAttribute('data-tw-tip-mode')){tipMode=b.dataset.twTipMode;renderTipFields();return;}
+      if(b.hasAttribute('data-tw-tip-type')){tipType=b.dataset.twTipType;tipValue=0;renderTipFields();return;}
+      if(b.hasAttribute('data-tw-tip-value')){tipValue=Number(b.dataset.twTipValue);renderTipFields();return;}
+      if(b.hasAttribute('data-tw-tip-tech-value')){const name=tipTechnicians()[Number(b.dataset.twTipTech)];if(name)tipPerTech[name]=Number(b.dataset.twTipTechValue);renderTipFields();return;}
+      if(b.hasAttribute('data-tw-discount-type')){discountType=b.dataset.twDiscountType;discountValue=0;renderDiscountFields();return;}
+      if(b.hasAttribute('data-tw-discount-value')){discountValue=Number(b.dataset.twDiscountValue);renderDiscountFields();return;}
+      if(b.hasAttribute('data-tw-discount-absorber')){discountAbsorber=b.dataset.twDiscountAbsorber;renderDiscountFields();return;}
+      if(b.hasAttribute('data-tw-discount-offer')){discountType='percent';discountValue=20;discountReason='Add-On Upgrade offer';renderDiscountFields();return;}
       if(b.hasAttribute('data-tw-assign-services')&&amountSplit()&&!group().bills.some(bill=>bill.payment)){openDialog('split-bill');return;}
       if(b.hasAttribute('data-tw-split-bill')&&!group()){openDialog('split-bill');return;}
       if(b.hasAttribute('data-tw-add-service')){openDialog('catalog');return;}
@@ -497,7 +575,6 @@
       if(b.hasAttribute('data-tw-tip')){ticket.checkout.tip=b.dataset.twTip;ticket.checkout.tipType=b.dataset.tipType;save();render();}
       if(b.hasAttribute('data-tw-method')){ticket.checkout.method=b.dataset.twMethod;save();render();}
       if(b.hasAttribute('data-tw-receipt')){ticket.checkout.receipt=b.dataset.twReceipt;save();render();}
-      if(b.hasAttribute('data-tw-customer-tip')){ticket.checkout.tip=b.dataset.twCustomerTip;ticket.checkout.tipType='percent';$('dialog').close();save();render();}
       if(b.hasAttribute('data-tw-pay')){
         if(group()&&!amountSplit()&&parent.lines.some(l=>!group().bills.some(b=>b.id===group().assignments[l.id]))){message('Assign every service to a guest before payment.');return;}
         if(group()&&!amountSplit()&&group().bills.some(b=>!parent.lines.some(l=>group().assignments[l.id]===b.id))){message('Assign services to every empty bill before payment.');return;}
@@ -517,10 +594,10 @@
       if(dialogAction==='split-bill'){startSplit(new FormData(e.target));return;}
       const data=new FormData(e.target),l=ticket.lines.find(l=>l.id===dialogLine),error=text=>{$('[data-tw-error]').textContent=text;};
       if(dialogAction==='discount'){
-        const value=data.get('value'),type=data.get('type');
+        const value=l?data.get('value'):discountValue,type=l?data.get('type'):discountType;
         if(!validMoney(value)||(type==='percent'&&Number(value)>100)){error('Enter a discount from 0 to 100% or a valid dollar amount.');return;}
         if(group()?.bills.some(b=>b.payment)){error('Discount is locked after the first bill is paid.');return;}
-        (l || parent).discount={type,value:Number(value)};
+        (l || parent).discount=l?{type,value:Number(value)}:{type,value:Number(value),absorber:discountAbsorber,reason:discountReason.trim()};
         if(group())refreshSplitDiscount();
       }
       if(dialogAction==='coupon'){
@@ -538,7 +615,16 @@
         l.price=Number(data.get('price'));
       }
       if(dialogAction==='customer'){if(!data.get('customer').trim()||!data.get('phone').trim()){error('Customer and phone are required.');return;}ticket.customer=data.get('customer').trim();ticket.phone=data.get('phone').trim();}
-      if(dialogAction==='hand'){if(!validMoney(data.get('tip'))){error('Enter a valid tip.');return;}ticket.checkout.tip=Number(data.get('tip'));ticket.checkout.tipType='fixed';}
+      if(dialogAction==='hand'){
+        const technicians=tipTechnicians(),perTech=technicians.length>1&&tipMode==='technician'&&!tipCustomerMode;
+        if(perTech){
+          if(technicians.some(name=>!validMoney(tipPerTech[name]))){error('Enter a valid tip for every technician.');return;}
+          ticket.checkout.tip=technicians.reduce((sum,name)=>sum+Number(tipPerTech[name] || 0),0);ticket.checkout.tipType='fixed';ticket.checkout.tipMode='technician';ticket.checkout.tipAllocations={...tipPerTech};
+        }else{
+          if(!validMoney(tipValue)||(tipType==='percent'&&Number(tipValue)>100)){error('Enter a valid tip from 0 to 100% or a valid dollar amount.');return;}
+          ticket.checkout.tip=Number(tipValue);ticket.checkout.tipType=tipType;ticket.checkout.tipMode='even';delete ticket.checkout.tipAllocations;
+        }
+      }
       stopQrScanner();$('dialog').close();save();render();
     });
     return {open(value,requestedMode='edit') {
