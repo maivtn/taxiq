@@ -75,6 +75,10 @@
                 <span class="qr-tab-icon"><i data-lucide="scan-line" aria-hidden="true"></i></span>
                 <span>OneQR</span>
               </button>
+              <button id="qr-tab-advertising" class="qr-tab" type="button" role="tab" aria-selected="false" aria-controls="qr-panel-advertising" data-qr-tab="advertising" tabindex="-1">
+                <span class="qr-tab-icon"><i data-lucide="megaphone" aria-hidden="true"></i></span>
+                <span>Quảng cáo</span>
+              </button>
               <button id="qr-tab-qr-stations" class="qr-tab" type="button" role="tab" aria-selected="false" aria-controls="qr-panel-qr-stations" data-qr-tab="qr-stations" tabindex="-1">
                 <span class="qr-tab-icon"><i data-lucide="hand-coins" aria-hidden="true"></i></span>
                 <span>Receive Tips</span>
@@ -406,6 +410,10 @@
               <div class="oneqr-performance-action-list" id="oneqrPerformanceActionList" aria-label="Action click distribution"></div>
             </section>
           </section>
+          </section>
+
+          <section id="qr-panel-advertising" class="qr-panel qr-advertising-panel" role="tabpanel" aria-labelledby="qr-tab-advertising" data-qr-panel="advertising" hidden>
+            <iframe class="qr-advertising-frame" src="oneqr-in-salon.html" title="Cấu hình quảng cáo OneQR tại tiệm" lang="vi"></iframe>
           </section>
 
           <section id="qr-panel-accept-payment" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-accept-payment" data-qr-panel="accept-payment" hidden>

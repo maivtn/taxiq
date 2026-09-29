@@ -89,6 +89,19 @@
   display: none;
 }
 
+.qr-advertising-panel {
+  min-width: 0;
+}
+
+.qr-advertising-frame {
+  display: block;
+  width: 100%;
+  height: max(900px, calc(100dvh - 190px));
+  border: 1px solid var(--nexora-border);
+  border-radius: 12px;
+  background: #f4f6fa;
+}
+
 .qr-workflow-placeholder {
   display: grid;
   min-height: 220px;
@@ -3552,6 +3565,13 @@
   .oneqr-module-link-form { grid-template-columns: 16px minmax(0, 1fr); }
   .oneqr-module-link-form button { grid-column: 1 / -1; width: 100%; }
   .oneqr-module-toolbar { flex-direction: column; }
+}
+
+@media (max-width: 650px) {
+  .qr-advertising-frame {
+    height: 85dvh;
+    min-height: 650px;
+  }
 }
 
 @media screen and (max-width: 650px), screen and (max-width: 950px) and (max-height: 500px) {
