@@ -269,9 +269,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .phone-preview.is-live-customer .phone-screen { min-height: 590px; border-radius: 0; background: #fff; }
 .phone-preview.is-live-customer .phone-screen nav { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding: 0 11px 10px; }
 .customer-welcome-head { display: grid !important; grid-template-columns: 47px minmax(0, 1fr) 43px; gap: 10px !important; padding: 14px 11px !important; border-bottom: 1px solid #e4e7ec; background: linear-gradient(135deg, #f8f8ff, #f5f8ff) !important; text-align: left; }
-.customer-brand-logo { display: grid; width: 47px; height: 47px; align-content: center; justify-items: center; border-radius: 8px; background: #fff; color: #9b8157; box-shadow: inset 0 0 0 1px #eee6d8; }
-.customer-brand-logo b { font-size: 15px; letter-spacing: -.08em; line-height: 1; }
-.customer-brand-logo small { margin-top: 2px; font-size: 11px !important; letter-spacing: -.08em; }
+.customer-brand-logo { display: block; box-sizing: border-box; width: 47px; height: 47px; flex-shrink: 0; padding: 5px; border-radius: 8px; background: #fff; object-fit: contain; }
 .customer-brand-copy { min-width: 0; }
 .customer-brand-copy span { display: block; color: var(--oq-primary); font-size: 11px; font-weight: 800; letter-spacing: .09em; text-transform: uppercase; }
 .customer-brand-copy strong { display: block; overflow: hidden; margin-top: 5px; color: #151928; font-size: 16px !important; text-overflow: ellipsis; white-space: nowrap; }
