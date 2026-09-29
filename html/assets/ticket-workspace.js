@@ -70,14 +70,6 @@
       qrStream?.getTracks().forEach(track=>track.stop());
       qrStream=null;
     }
-    function setCouponMode(next) {
-      const codePanel=$('[data-tw-coupon-code-panel]'),scanPanel=$('[data-tw-coupon-scan-panel]');
-      if(!codePanel||!scanPanel)return;
-      const scanning=next==='scan';
-      codePanel.hidden=scanning;scanPanel.hidden=!scanning;
-      root.querySelectorAll('[data-tw-coupon-mode]').forEach(button=>{const selected=button.dataset.twCouponMode===next;button.setAttribute('aria-pressed',String(selected));button.classList.toggle('selected',selected);});
-      if(!scanning){stopQrScanner();$('[name="couponCode"]')?.focus();}
-    }
     async function startQrScanner() {
       const status=$('[data-tw-qr-status]'),video=$('[data-tw-qr-video]');
       if(!status||!video)return;
@@ -382,7 +374,7 @@
       if(action==='tech'){title='Change technician';fields='<label>Technician<select name="tech" required><option value="">Choose technician</option>'+options.technicians().map(t=>`<option ${t.name===l.tech?'selected':''} ${t.status==='clocked-out'||(t.status&&t.status!=='available'&&t.name!==l.tech)?'disabled':''}>${esc(t.name)}</option>`).join('')+'</select></label>';}
       if(action==='service'){title='Change service';fields='<label>Service<select name="service" required>'+services().map(s=>`<option value="${esc(s.id)}">${esc(s.name)} · ${s.price==null?'Enter price':money(cents(s.price))}</option>`).join('')+'</select></label>';}
       if(action==='discount'){title=l?'Service discount':'Discount all services';fields=`<label>Discount type<select name="type"><option value="percent">Percentage (%)</option><option value="fixed" ${rule?.type==='fixed'?'selected':''}>Amount ($)</option></select></label>${input('Discount value','value',rule?.value || 0,'number')}<div class="tw-discount-presets">${[0,5,10,15,20].map(n=>button(n,`data-tw-discount-preset="${n}"`)).join('')}</div><p class="tw-muted">Order discount applies after service discounts. Total cannot fall below zero.</p>${group()?'<p class="tw-muted">Discount all applies to the whole ticket. Bill totals update automatically; custom amount splits keep their current proportions.</p>':''}`;}
-      if(action==='coupon'){title='Apply coupon';fields=`<div class="tw-coupon-modes" role="group" aria-label="Coupon entry method">${button('Enter code','data-tw-coupon-mode="code" aria-pressed="true"','selected')}${button('Scan QR','data-tw-coupon-mode="scan" aria-pressed="false"')}</div><div data-tw-coupon-code-panel><label>Coupon code<input name="couponCode" value="${esc(parent.coupon?.code || '')}" placeholder="Enter coupon code" autocomplete="off" required></label><p class="tw-muted">Demo codes: <button type="button" class="tw-code-link" data-tw-demo-code="WELCOME10">WELCOME10</button> for 10% off or <button type="button" class="tw-code-link" data-tw-demo-code="SAVE5">SAVE5</button> for $5 off.</p></div><div class="tw-coupon-scan" data-tw-coupon-scan-panel hidden><div class="tw-qr-frame"><video data-tw-qr-video playsinline muted></video><div class="tw-qr-corners" aria-hidden="true"></div></div><p data-tw-qr-status role="status">Start the camera and hold the coupon QR code inside the frame.</p><div class="tw-qr-actions">${button('Start camera','data-tw-start-qr')}${button('Use demo QR','data-tw-demo-qr','tw-purple')}</div></div><p class="tw-muted">Coupons apply after service discounts. Only one order coupon or order discount can be active.</p>`;}
+      if(action==='coupon'){title='Apply coupon';fields=`<div class="tw-coupon-entry"><input name="couponCode" value="${esc(parent.coupon?.code || '')}" placeholder="Enter coupon code or scan..." aria-label="Coupon code" autocomplete="off" required><button type="button" data-tw-start-qr aria-label="Scan coupon QR code" title="Scan coupon QR code">${icon('scan')}</button></div><p class="tw-coupon-help">Enter a coupon code or tap the QR icon to scan the customer’s coupon.</p><div class="tw-coupon-demo"><strong>Demo codes</strong><button type="button" data-tw-demo-code="WELCOME10"><b>WELCOME10</b><span>10% off the entire ticket</span></button><button type="button" data-tw-demo-code="SAVE5"><b>SAVE5</b><span>$5 off the entire ticket</span></button></div><div class="tw-coupon-scan" data-tw-coupon-scan-panel hidden><div class="tw-qr-frame"><video data-tw-qr-video playsinline muted></video><div class="tw-qr-corners" aria-hidden="true"></div></div><p data-tw-qr-status role="status">Hold the coupon QR code inside the frame.</p><div class="tw-qr-actions">${button('Use demo QR','data-tw-demo-qr','tw-purple')}</div></div>`;}
       if(action==='custom'){title='Custom service';fields=input('Service name','name')+input('Price ($)','price','','number');}
       if(action==='price'){title='Set service price';fields=input('Price ($)','price',l.price ?? '','number');}
       if(action==='customer'){title='Edit customer';fields=input('Customer','customer',ticket.customer)+input('Phone','phone',ticket.phone,'tel');}
@@ -451,8 +443,7 @@
       if(b.hasAttribute('data-tw-discount-all')&&group()?.bills.some(bill=>bill.payment))return;
       if(b.hasAttribute('data-tw-coupon')&&group()?.bills.some(bill=>bill.payment))return;
       if(b.hasAttribute('data-tw-coupon')){openDialog('coupon');return;}
-      if(b.hasAttribute('data-tw-coupon-mode')){setCouponMode(b.dataset.twCouponMode);return;}
-      if(b.hasAttribute('data-tw-start-qr')){startQrScanner();return;}
+      if(b.hasAttribute('data-tw-start-qr')){$('[data-tw-coupon-scan-panel]').hidden=false;startQrScanner();return;}
       if(b.hasAttribute('data-tw-demo-code')){const field=$('[name="couponCode"]');if(field){field.value=b.dataset.twDemoCode;field.focus();}return;}
       if(b.hasAttribute('data-tw-demo-qr')){const field=$('[name="couponCode"]');if(field)field.value='WELCOME10';$('[data-tw-qr-status]').textContent='Demo QR found. Applying WELCOME10…';stopQrScanner();$('[data-tw-form]').requestSubmit();return;}
       if(b.hasAttribute('data-tw-remove-coupon')){delete parent.coupon;delete parent.discount;if(group())refreshSplitDiscount();save();render();return;}
