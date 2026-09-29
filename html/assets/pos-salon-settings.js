@@ -20,7 +20,7 @@
   function selectTab(tab){
     const showRequests=tab==='staff-requests';
     if(showRequests)tab='staff-schedule';
-    if(!['information','staff','staff-schedule','services','roles','sms'].includes(tab))tab='staff';
+    if(!['information','staff','staff-schedule','services','oneqr-ads','roles','sms'].includes(tab))tab='staff';
     document.querySelectorAll('[data-settings-tab]').forEach(b=>{const on=b.dataset.settingsTab===tab;b.classList.toggle('active',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
     document.querySelectorAll('[data-settings-panel]').forEach(p=>p.hidden=p.dataset.settingsPanel!==tab);
     const url=new URL(location.href);url.searchParams.set('section',tab);history.replaceState(null,'',url);
@@ -30,5 +30,36 @@
   $('#salon-staff-pagination').addEventListener('click',e=>{const b=e.target.closest('[data-staff-page]');if(b&&!b.disabled){page=Number(b.dataset.staffPage);drawStaff();}});
   document.querySelectorAll('[data-settings-tab]').forEach(b=>b.addEventListener('click',()=>selectTab(b.dataset.settingsTab)));
   document.addEventListener('click',event=>{const button=event.target.closest('[data-staff-schedule-open]');if(!button)return;window.NEXORA_STAFF_SCHEDULE_SETTINGS?.open(button.dataset.staffScheduleOpen,button);});
+  const adsPanel=$('[data-settings-panel="oneqr-ads"]');
+  if(adsPanel){
+    const storageKey='nexora_oneqr_ad_settings_v1';
+    const defaults={enabled:false,crossPromo:true,placements:{hero:true,nearby:true,wait:true,complete:true},distribution:'split',radius:'auto',competitor:'group',discovery:'rich'};
+    let adsState=defaults;
+    try{const saved=JSON.parse(localStorage.getItem(storageKey)||'null');if(saved)adsState={...defaults,...saved,placements:{...defaults.placements,...saved.placements}};}catch(error){adsState=defaults;}
+    const enabled=$('[data-oneqr-ads-enabled]');
+    const crossPromo=$('[data-oneqr-cross-promo]');
+    const message=$('[data-oneqr-ads-message]');
+    function syncAds(){
+      enabled.checked=adsState.enabled;crossPromo.checked=adsState.crossPromo;
+      adsPanel.querySelectorAll('[data-oneqr-ad-placement]').forEach(input=>{input.checked=adsState.placements[input.dataset.oneqrAdPlacement]!==false;input.disabled=!adsState.enabled;});
+      adsPanel.querySelectorAll('[data-oneqr-setting]').forEach(input=>{input.value=adsState[input.dataset.oneqrSetting];input.disabled=!adsState.enabled||(input.dataset.oneqrSetting==='distribution'&&!adsState.crossPromo)||(input.dataset.oneqrSetting==='radius'&&!adsState.crossPromo);});
+      crossPromo.disabled=!adsState.enabled;
+      const status=$('[data-oneqr-ads-status]');status.textContent=adsState.enabled?'Monetization on':'Monetization off';status.classList.toggle('is-off',!adsState.enabled);status.classList.toggle('is-on',adsState.enabled);
+      $('[data-oneqr-preview-off]').hidden=adsState.enabled;
+      $('[data-oneqr-preview-hero]').hidden=!adsState.enabled||!adsState.placements.hero;
+      $('[data-oneqr-preview-partner]').hidden=!adsState.crossPromo;
+      $('[data-oneqr-preview-sponsored]').hidden=!adsState.enabled||!adsState.placements.nearby;
+      const discovery=$('[data-oneqr-preview-discovery]');discovery.classList.toggle('is-basic',adsState.discovery==='plain');
+      discovery.querySelector('button:first-child strong').textContent=adsState.discovery==='plain'?'Deals Nearby':'12 Deals Nearby';
+      discovery.querySelector('button:first-child small').textContent=adsState.discovery==='plain'?'Explore around you':'Lunch deals around here';
+      message.textContent=adsState.enabled?'Ads are enabled. Save to keep these placement choices.':'Turn on monetization to configure sponsored placements.';
+      if(window.lucide)window.lucide.createIcons();
+    }
+    enabled.addEventListener('change',()=>{adsState.enabled=enabled.checked;syncAds();});
+    crossPromo.addEventListener('change',()=>{adsState.crossPromo=crossPromo.checked;syncAds();});
+    adsPanel.addEventListener('change',event=>{const placement=event.target.dataset.oneqrAdPlacement;const setting=event.target.dataset.oneqrSetting;if(placement)adsState.placements[placement]=event.target.checked;if(setting)adsState[setting]=event.target.value;syncAds();});
+    $('[data-oneqr-ads-save]').addEventListener('click',event=>{localStorage.setItem(storageKey,JSON.stringify(adsState));message.textContent='Ad settings saved for Bitcoin Nail Bar.';event.currentTarget.focus();});
+    syncAds();
+  }
   drawStaff();selectTab(new URLSearchParams(location.search).get('section')||'staff');
 })();
