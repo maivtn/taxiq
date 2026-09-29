@@ -1084,7 +1084,14 @@
 .oneqr-module-hint { margin: 8px 0 12px; color: #7a8496; font-size: 11px; line-height: 1.5; }
 .oneqr-module-fields { flex: 1; min-width: 0; }
 .oneqr-module-title-input { display: block; box-sizing: border-box; width: 100%; min-width: 0; height: 30px; padding: 0 9px; border: 1px solid #dfe3eb; border-radius: 8px; background: #fff; color: #172033; font-size: 12px; font-weight: 750; }
-.oneqr-module-url-field { display: flex; align-items: center; gap: 7px; height: 34px; margin-top: 7px; padding: 0 10px; border: 1px solid #dfe3eb; border-radius: 8px; background: #fafbfc; }
+.oneqr-module-url-field { display: flex; align-items: center; gap: 7px; height: 32px; margin-top: 6px; padding: 0 8px 0 10px; border: 1px solid #dbe4f3; border-radius: 8px; background: #f4f6fb; }
+.oneqr-module-url-field input { flex: 1; text-overflow: ellipsis; }
+.oneqr-module-url-field button { display: grid; place-items: center; flex: 0 0 25px; width: 25px; height: 28px; padding: 0; border: 0; border-radius: 5px; background: transparent; cursor: pointer; }
+.oneqr-module-url-field button:hover { background: #e9edfa; }
+.oneqr-module-url-field button:focus-visible, .oneqr-module-remove:focus-visible { outline: 2px solid #635bff; outline-offset: 2px; }
+.oneqr-module-side { display: flex; flex: 0 0 58px; flex-direction: column; align-items: center; align-self: flex-start; gap: 10px; padding-top: 2px; }
+.oneqr-module-remove { padding: 2px 8px; border: 1px solid #dbe4f3; border-radius: 5px; background: #fff; color: #52607b; font: inherit; font-size: 10px; font-weight: 600; line-height: 1.3; cursor: pointer; }
+.oneqr-module-remove:hover { border-color: #f3b4b4; background: #fff5f5; color: #dc2626; }
 .oneqr-module-url-field svg { flex: 0 0 14px; width: 14px; height: 14px; color: #8a94a6; }
 .oneqr-module-url-field input { min-width: 0; width: 100%; border: 0; outline: 0; background: transparent; color: #344054; font-size: 11px; }
 .oneqr-module-title-input:focus, .oneqr-module-url-field:focus-within { border-color: #aaa5e5; outline: 0; box-shadow: 0 0 0 2px rgba(79,70,229,.08); }
@@ -3440,7 +3447,7 @@
 @media (max-width: 650px) { .oneqr-earnings-entry { align-items: flex-start; flex-direction: column; gap: 10px; padding: 12px; } }
 
 /* Button controls also support touch and keyboard reordering. */
-.oneqr-module-moves { display: grid; flex: 0 0 auto; grid-template-columns: repeat(3, 29px); gap: 5px; }
+.oneqr-module-moves { display: grid; flex: 0 0 auto; grid-template-columns: 29px; gap: 5px; order: -1; }
 .oneqr-module-moves button { display: grid; width: 29px; height: 29px; padding: 0; place-items: center; border: 1px solid #dbe0e8; border-radius: 8px; color: #667085; background: #fff; cursor: pointer; }
 .oneqr-module-moves svg { width: 14px; height: 14px; }
 .oneqr-module-moves button:hover:not(:disabled) { border-color: #aaa5e5; background: #f8f7ff; color: #4b48e7; }
@@ -3472,7 +3479,10 @@
   .oneqr-panel { flex-basis: 100%; padding: 12px; }
   .oneqr-panel-head h3 { font-size: 15px; }
   .oneqr-module { gap: 6px; padding: 10px; min-height: 56px; flex-wrap: wrap; }
-  .oneqr-module-fields { min-width: calc(100% - 123px); }
+  .oneqr-module-fields { min-width: 0; flex-basis: calc(100% - 70px); order: 1; }
+  .oneqr-module-side { order: 2; gap: 4px; }
+  .oneqr-module-remove { min-height: 32px; }
+  .oneqr-module-url-field button { min-width: 32px; min-height: 36px; }
   .oneqr-module .oneqr-module-moves { margin-left: auto; }
   .oneqr-module-title-input, .oneqr-module-url-field { min-height: 40px; }
   .oneqr-module-link-form input, .oneqr-module-title-input, .oneqr-module-url-field input { font-size: 16px; }

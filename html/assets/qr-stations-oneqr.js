@@ -439,9 +439,9 @@
       return '<div class="oneqr-module" data-module-row="' + key + '" draggable="false">' +
         '<button class="oneqr-module-drag" type="button" aria-label="Drag to reorder ' + title + '" title="Drag to reorder"><i data-lucide="grip-vertical" aria-hidden="true"></i></button>' +
         '<div class="oneqr-module-icon-tools"><span class="oneqr-module-icon">' + iconHtml(name) + '</span><button class="oneqr-module-background' + (background ? ' has-color' : '') + '" type="button" data-module-background aria-label="Choose card background for ' + title + '" title="Card background"' + (background ? ' style="--action-swatch:' + escapeModuleText(background) + '"' : '') + '><span></span></button><span><button type="button" data-module-icon aria-label="Choose icon for ' + title + '">Change icon</button><button type="button" data-module-upload aria-label="Upload icon for ' + title + '">Upload</button></span></div>' +
-        '<div class="oneqr-module-fields"><input class="oneqr-module-title-input" data-module-title value="' + escapeModuleText(details.title) + '" aria-label="Module title: ' + title + '"><label class="oneqr-module-url-field"><i data-lucide="link-2" aria-hidden="true"></i><input data-module-url type="text" inputmode="url" value="' + escapeModuleText(details.url) + '" aria-label="Link for ' + title + '" spellcheck="false"></label></div>' +
-        '<span class="oneqr-module-moves"><button type="button" data-move="up" aria-label="Move ' + title + ' up"' + (index === 0 ? ' disabled' : '') + '><i data-lucide="chevron-up" aria-hidden="true"></i></button><button type="button" data-move="down" aria-label="Move ' + title + ' down"' + (index === order.length - 1 ? ' disabled' : '') + '><i data-lucide="chevron-down" aria-hidden="true"></i></button><button type="button" data-remove-module aria-label="Remove ' + title + '"><i data-lucide="x" aria-hidden="true"></i></button></span>' +
-        '<button type="button" class="oneqr-switch' + (on ? ' is-on' : '') + '" data-module="' + key + '" aria-pressed="' + on + '" aria-label="Toggle ' + title + ' module"></button>' +
+        '<div class="oneqr-module-fields"><input class="oneqr-module-title-input" data-module-title value="' + escapeModuleText(details.title) + '" aria-label="Module title: ' + title + '"><div class="oneqr-module-url-field"><i data-lucide="link-2" aria-hidden="true"></i><input data-module-url type="text" inputmode="url" value="' + escapeModuleText(details.url) + '" aria-label="Link for ' + title + '" spellcheck="false"><button type="button" data-copy-module-url aria-label="Copy link for ' + title + '" title="Copy link"><i data-lucide="copy" aria-hidden="true"></i></button><button type="button" data-open-module-url aria-label="Open link for ' + title + ' in a new tab" title="Open link"><i data-lucide="external-link" aria-hidden="true"></i></button></div></div>' +
+        '<span class="oneqr-module-moves"><button type="button" data-move="up" aria-label="Move ' + title + ' up"' + (index === 0 ? ' disabled' : '') + '><i data-lucide="chevron-up" aria-hidden="true"></i></button><button type="button" data-move="down" aria-label="Move ' + title + ' down"' + (index === order.length - 1 ? ' disabled' : '') + '><i data-lucide="chevron-down" aria-hidden="true"></i></button></span>' +
+        '<div class="oneqr-module-side"><button type="button" class="oneqr-switch' + (on ? ' is-on' : '') + '" data-module="' + key + '" aria-pressed="' + on + '" aria-label="Toggle ' + title + ' module"></button><button class="oneqr-module-remove" type="button" data-remove-module aria-label="Remove ' + title + '">Remove</button></div>' +
         '</div>';
     }).join('');
     refreshIcons();
@@ -609,6 +609,31 @@
   });
 
   moduleListEl.addEventListener('click', function (event) {
+    var linkAction = event.target.closest('[data-copy-module-url], [data-open-module-url]');
+    if (linkAction) {
+      var linkInput = linkAction.closest('[data-module-row]').querySelector('[data-module-url]');
+      var rawLink = linkInput.value.trim();
+      var linkUrl = normalizedModuleUrl(/^(\.\.?\/|\/|#|\?)/.test(rawLink) ? resolveUrl(rawLink) : rawLink);
+      if (!linkUrl) {
+        moduleStatusEl.textContent = 'Enter a valid link first.';
+        linkInput.focus();
+        return;
+      }
+      if (linkAction.hasAttribute('data-open-module-url')) {
+        window.open(linkUrl, '_blank', 'noopener,noreferrer');
+      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(linkUrl).then(function () {
+          moduleStatusEl.textContent = 'Module link copied.';
+        }, function () {
+          moduleStatusEl.textContent = 'Could not copy. Select the link and copy it manually.';
+          linkInput.focus(); linkInput.select();
+        });
+      } else {
+        linkInput.focus(); linkInput.select();
+        moduleStatusEl.textContent = 'Select and copy this link manually.';
+      }
+      return;
+    }
     var appearanceButton = event.target.closest('[data-module-icon], [data-module-background], [data-module-upload]');
     if (appearanceButton) {
       var appearanceName = appearanceButton.closest('[data-module-row]').dataset.moduleRow;
