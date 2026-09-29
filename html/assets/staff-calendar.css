@@ -144,3 +144,4 @@
   .calendar-tabs button{padding-inline:8px}
   .calendar-day strong,.timeline-item>span,.calendar-booking-time{font-size:14px}
 }
+.request-card .request-rejection-reason{color:#b42318;white-space:pre-wrap;overflow-wrap:anywhere}

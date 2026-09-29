@@ -17,6 +17,12 @@
 [data-staff-requests-settings] .schedule-request-main>p{overflow-wrap:anywhere;white-space:pre-wrap}
 [data-staff-requests-settings] .schedule-request-main>header strong{font-size:14px}
 [data-staff-requests-settings] .request-status{font-size:11px}
+.schedule-reject-form{display:grid;gap:8px;margin-top:12px;padding:12px;border:1px solid #fecaca;border-radius:10px;background:#fff7f7}
+.schedule-reject-form label{display:grid;gap:6px;font-size:inherit;font-weight:600}
+.schedule-reject-form textarea{width:100%;min-height:88px;box-sizing:border-box;resize:vertical;border:1px solid #dbe4f3;border-radius:8px;padding:10px;font:inherit}
+.schedule-reject-form>div{display:flex;flex-wrap:wrap;gap:8px}
+.schedule-request .schedule-reject-confirm{background:#b42318;border-color:#b42318;color:#fff}
+.schedule-request .schedule-rejection-note{color:#b42318;white-space:pre-wrap;overflow-wrap:anywhere}
 [data-add-request-demo],.staff-request-filters button{border:1px solid #dbe4f3;border-radius:8px;padding:8px 12px;background:#fff;color:#475569;cursor:pointer}
 .staff-request-filters{display:flex;flex-wrap:wrap;gap:8px;margin-top:18px}
 .staff-request-filters button[aria-pressed="true"]{background:#4c43df;border-color:#4c43df;color:#fff}
