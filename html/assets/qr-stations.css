@@ -1066,7 +1066,11 @@
   gap: 8px;
 }
 
-.oneqr-modules { flex: 2 1 480px; min-width: 0; }
+.oneqr-modules { flex: 3 1 540px; min-width: 0; }
+.oneqr-config { flex: .6 1 220px; min-width: 0; }
+.oneqr-preview { flex: .8 1 250px; min-width: 0; }
+.oneqr-config .oneqr-panel-head, .oneqr-preview .oneqr-panel-head { flex-wrap: wrap; gap: 8px; }
+.oneqr-config .oneqr-field input, .oneqr-config .oneqr-field select { min-width: 0; max-width: 100%; }
 .oneqr-module-link-form { display: flex; align-items: center; gap: 8px; padding: 7px; border: 1px solid #cec9ff; border-radius: 10px; background: #faf9ff; }
 .oneqr-module-link-form > svg { flex: 0 0 16px; width: 16px; color: #4b48e7; margin-left: 4px; }
 .oneqr-module-link-form input { width: 100%; min-width: 0; border: 0; background: transparent; outline: 0; color: #344054; font-size: 12px; }
