@@ -3478,13 +3478,31 @@
   .oneqr-earnings-entry a { align-self: stretch; }
   .oneqr-panel { flex-basis: 100%; padding: 12px; }
   .oneqr-panel-head h3 { font-size: 15px; }
-  .oneqr-module { gap: 6px; padding: 10px; min-height: 56px; flex-wrap: wrap; }
-  .oneqr-module-fields { min-width: 0; flex-basis: calc(100% - 70px); order: 1; }
-  .oneqr-module-side { order: 2; gap: 4px; }
-  .oneqr-module-remove { min-height: 32px; }
-  .oneqr-module-url-field button { min-width: 32px; min-height: 36px; }
-  .oneqr-module .oneqr-module-moves { margin-left: auto; }
-  .oneqr-module-title-input, .oneqr-module-url-field { min-height: 40px; }
+  .oneqr-modules, .oneqr-module-list { min-width: 0; max-width: 100%; }
+  .oneqr-module { display: grid; grid-template-columns: minmax(0, 1fr) 64px; gap: 10px; padding: 12px; }
+  .oneqr-module-drag { display: none; }
+  .oneqr-module-icon-tools { grid-column: 1; grid-row: 1; min-width: 0; grid-template-columns: 44px 44px; justify-content: start; gap: 6px; }
+  .oneqr-module-icon { width: 44px; height: 44px; }
+  .oneqr-module-background { width: 44px; height: 44px; padding: 8px; }
+  .oneqr-module-icon-tools > span:last-child { width: auto; max-width: 100%; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; justify-self: stretch; }
+  .oneqr-module-icon-tools > span:last-child button { min-height: 44px; padding: 6px 3px; white-space: normal; line-height: 1.3; }
+  .oneqr-module-side { grid-column: 2; grid-row: 1; align-self: start; width: 64px; gap: 6px; padding: 0; }
+  .oneqr-module-remove { min-width: 64px; min-height: 44px; font-size: 12px; }
+  .oneqr-module-fields { grid-column: 1 / -1; grid-row: 2; min-width: 0; }
+  .oneqr-module-title-input { height: 44px; }
+  .oneqr-module-url-field { height: 50px; gap: 4px; padding-right: 3px; }
+  .oneqr-module-url-field input { height: 44px; }
+  .oneqr-module-url-field button { flex-basis: 44px; width: 44px; height: 44px; }
+  .oneqr-module-url-field svg { width: 16px; height: 16px; }
+  .oneqr-module .oneqr-module-moves { grid-column: 1 / -1; grid-row: 3; grid-template-columns: repeat(2, 44px); justify-content: end; gap: 8px; margin: 0; padding-top: 8px; border-top: 1px solid #edf0f5; order: 0; }
+  .oneqr-module-moves button { width: 44px; height: 44px; }
+  .oneqr-module button { touch-action: manipulation; }
+  .oneqr-module-toolbar { width: 100%; }
+  .oneqr-module-toolbar a, .oneqr-module-toolbar > button { flex: 1; min-height: 44px; padding: 8px; }
+  .oneqr-module-link-form { display: grid; grid-template-columns: 16px minmax(0, 1fr) auto; }
+  .oneqr-module-link-form input { min-height: 44px; }
+  .oneqr-module-actions { grid-template-columns: 1fr; }
+  .oneqr-module-hint { font-size: 12px; overflow-wrap: anywhere; }
   .oneqr-module-link-form input, .oneqr-module-title-input, .oneqr-module-url-field input { font-size: 16px; }
   .oneqr-module-link-form button { min-height: 44px; }
   .oneqr-module strong { min-width: 0; font-size: 13px; overflow-wrap: anywhere; }
@@ -3502,6 +3520,12 @@
   [data-salon-modal-close] { min-width: 52px; min-height: 52px; }
   [data-salon-modal-actions] button { min-height: 44px; font-size: 12px; }
   .oneqr-modal-dialog { max-height: calc(100dvh - 24px); }
+}
+
+@media (max-width: 380px) {
+  .oneqr-module-link-form { grid-template-columns: 16px minmax(0, 1fr); }
+  .oneqr-module-link-form button { grid-column: 1 / -1; width: 100%; }
+  .oneqr-module-toolbar { flex-direction: column; }
 }
 
 @media screen and (max-width: 650px), screen and (max-width: 950px) and (max-height: 500px) {
