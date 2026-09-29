@@ -62,78 +62,11 @@
 .eq-consent { display: flex; gap: 10px; align-items: flex-start; padding: 16px 0; }
 .eq-consent input { width: 20px; height: 20px; flex-shrink: 0; accent-color: #4648d4; margin-top: 3px; }
 
-/* OneQR in-salon advertising settings — follows the supplied phone + controls prototype. */
-.eq-ad-page { --ad-purple: #7c3aed; --ad-purple-dark: #4c1d95; --ad-line: #e5e7eb; --ad-muted: #5b6b82; }
-.eq-ad-heading { display: flex; align-items: flex-start; justify-content: space-between; gap: 18px; margin-bottom: 16px; }
-.eq-ad-heading > div:first-child > span { color: #6d28d9; font-size: 10px; font-weight: 900; letter-spacing: .12em; }
-.earnings-page .eq-ad-heading h2 { margin: 4px 0; font-size: 24px; }
-.eq-ad-heading p { margin: 0; color: var(--ad-muted); }
-.eq-ad-heading > div:last-child { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; justify-content: flex-end; }
-.eq-ad-layout { display: grid; grid-template-columns: minmax(330px, 400px) minmax(0, 1fr); gap: 16px; align-items: start; }
-.eq-ad-phone-wrap { position: sticky; top: 76px; border-radius: 34px; background: #0b1220; padding: 10px; box-shadow: 0 22px 46px rgb(15 23 42 / .2); }
-.eq-ad-phone { overflow: hidden; border-radius: 26px; background: #fafafc; }
-.eq-ad-screen { display: flex; height: 720px; flex-direction: column; }
-.eq-ad-phone-body { position: relative; min-height: 0; flex: 1; overflow-y: auto; padding: 0 12px 18px; }
-.eq-ad-phone-head { position: sticky; top: 0; z-index: 3; display: flex; justify-content: space-between; padding: 10px 2px 6px; background: #fafafc; color: var(--ad-muted); font-size: 11px; }
-.eq-ad-phone-head b { color: #6d28d9; }
-.eq-ad-account { display: flex; justify-content: flex-end; gap: 6px; margin: 4px 0; }
-.earnings-page .eq-ad-account button { min-height: 30px; border-color: #c4b5fd; padding: 4px 9px; color: #4c1d95; font-size: 10px; }
-.earnings-page .eq-ad-account button:last-child { border-color: var(--ad-purple); background: var(--ad-purple); color: #fff; }
-.eq-ad-business { display: flex; align-items: center; gap: 10px; margin: 8px 0 12px; }
-.eq-ad-business > span { display: grid; width: 48px; height: 48px; place-items: center; border-radius: 13px; background: #111; color: #fff; font-size: 17px; font-weight: 900; }
-.eq-ad-business strong, .eq-ad-business small { display: block; }
-.eq-ad-business strong { font-size: 17px; }.eq-ad-business small { color: var(--ad-muted); font-size: 10px; }
-.eq-ad-preview { display: flex; flex-direction: column; gap: 11px; }
-.eq-ad-hero { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; }
-.eq-ad-hero.own-only { grid-template-columns: 1fr; }
-.eq-ad-hero article { display: flex; min-width: 0; min-height: 160px; flex-direction: column; border-radius: 16px; background: linear-gradient(145deg, #4c1d95, #7c3aed 65%, #a78bfa); padding: 12px 11px; color: #fff; }
-.eq-ad-hero article + article { background: linear-gradient(145deg, #0f766e, #14b8a6); }
-.eq-ad-hero article > span { font-size: 8px; font-weight: 900; letter-spacing: .08em; opacity: .9; }
-.eq-ad-hero article h3 { margin: 6px 0 4px; color: #fff; font-size: 13px; line-height: 1.25; }
-.eq-ad-hero article p { margin: 0; color: #fff; font-size: 9px; line-height: 1.35; opacity: .9; }
-.eq-ad-hero article > div { display: flex; align-items: center; justify-content: space-between; gap: 6px; margin-top: auto; padding-top: 9px; }
-.earnings-page .eq-ad-hero article button { min-height: 28px; border: 0; padding: 4px 7px; color: #4c1d95; font-size: 9px; }
-.eq-ad-hero article b { border-radius: 8px; background: #fcd34d; padding: 4px 6px; color: #111; font-size: 11px; white-space: nowrap; }
-.eq-ad-discovery { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
-.earnings-page .eq-ad-discovery button { display: flex; min-width: 0; min-height: 66px; align-items: center; gap: 7px; border-radius: 13px; padding: 9px; text-align: left; }
-.eq-ad-discovery-icon { color: #6d28d9; font-size: 18px; }
-.eq-ad-discovery button strong, .eq-ad-discovery button small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.eq-ad-discovery button strong { font-size: 10px; }.eq-ad-discovery button small { margin-top: 2px; color: var(--ad-muted); font-size: 8px; }
-.eq-ad-discovery.is-plain button { min-height: 52px; }.eq-ad-discovery.is-plain button small { display: none; }
-.eq-ad-preview.is-recommended .eq-ad-discovery { padding: 8px; border: 1px dashed #c4b5fd; border-radius: 14px; background: #fff; }
-.eq-ad-section-label { display: block; margin: 2px 2px 7px; color: #6b7280; font-size: 8px; font-weight: 900; letter-spacing: .1em; }
-.eq-ad-menu { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
-.earnings-page .eq-ad-menu button { display: flex; min-width: 0; min-height: 58px; flex-direction: column; align-items: center; gap: 4px; border-radius: 13px; padding: 8px 2px; color: #374151; font-size: 8px; }
-.eq-ad-menu i { color: #6d28d9; font-size: 16px; font-style: normal; }
-.earnings-page .eq-ad-sponsored { display: grid; width: 100%; min-height: 72px; grid-template-columns: 52px minmax(0, 1fr); gap: 9px; border-radius: 13px; padding: 9px; text-align: left; }
-.eq-ad-sponsored > span:first-child { display: grid; place-items: center; border-radius: 10px; background: #0f766e; color: #fff; font-weight: 900; }
-.eq-ad-sponsored strong, .eq-ad-sponsored small, .eq-ad-sponsored em { display: block; }
-.eq-ad-sponsored strong { font-size: 11px; }.eq-ad-sponsored small { color: var(--ad-muted); font-size: 9px; }.eq-ad-sponsored em { width: max-content; margin-top: 4px; border-radius: 5px; background: #ede9fe; padding: 1px 5px; color: #6d28d9; font-size: 8px; font-style: normal; font-weight: 900; }
-.eq-ad-off { position: sticky; bottom: 4px; z-index: 2; display: grid; gap: 2px; margin-top: 12px; border: 1px solid #f2c66d; border-radius: 11px; background: #fffbebf2; padding: 9px 10px; color: #78350f; font-size: 10px; box-shadow: 0 6px 16px rgb(120 53 15 / .1); }
-.eq-ad-off small { line-height: 1.4; }
-.eq-ad-screen > nav { display: grid; grid-template-columns: repeat(3, 1fr); border-top: 1px solid var(--ad-line); background: #fff; }
-.earnings-page .eq-ad-screen > nav button { display: flex; min-height: 58px; flex-direction: column; align-items: center; gap: 2px; border: 0; border-radius: 0; padding: 7px 0 9px; color: var(--ad-muted); font-size: 16px; }
-.earnings-page .eq-ad-screen > nav button.on { color: #6d28d9; }.eq-ad-screen > nav small { font-size: 9px; }
-.eq-ad-controls { display: grid; gap: 12px; }
-.eq-ad-panel { border: 1px solid var(--ad-line); border-radius: 16px; background: #fff; padding: 15px; }
-.earnings-page .eq-ad-panel h3 { margin: 0 0 10px; font-size: 15px; }
-.eq-ad-panel > label { display: block; margin: 10px 0 6px; color: var(--ad-muted); font-size: 11px; font-weight: 700; }
-.eq-ad-panel > p { margin: 0 0 10px; color: var(--ad-muted); font-size: 12px; line-height: 1.55; }
-.eq-ad-choices { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 8px; }
-.earnings-page .eq-ad-choices button { min-height: 34px; border-radius: 10px; padding: 6px 10px; font-size: 11px; }
-.earnings-page .eq-ad-choices button.on { border-color: #111827; background: #111827; color: #fff; }
-.eq-ad-days { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; }
-.eq-ad-radius { display: flex; align-items: center; justify-content: space-between; gap: 10px; border-radius: 10px; background: #f8fafc; padding: 10px 12px; color: var(--ad-muted); font-size: 11px; }
-.eq-ad-radius span { text-align: right; }.eq-ad-panel ul { margin: 10px 0 0; padding-left: 18px; color: #475569; font-size: 11px; line-height: 1.65; }
-.eq-ad-placement-list { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 7px; }
-.eq-ad-placement-list label { display: flex; align-items: center; gap: 8px; border: 1px solid var(--ad-line); border-radius: 10px; padding: 10px; cursor: pointer; font-size: 11px; font-weight: 700; }
-.eq-ad-placement-list label:has(input:checked) { border-color: #c4b5fd; background: #faf5ff; color: #5b21b6; }
-.eq-ad-placement-list input { width: 16px; height: 16px; accent-color: #7c3aed; }
-.eq-ad-rule { margin: 10px 0!important; border-radius: 9px; background: #f8fafc; padding: 9px 10px; color: var(--ad-muted)!important; font-size: 11px!important; }
-.eq-ad-save-status { display: inline-block; margin-left: 10px; color: var(--ad-muted); font-size: 11px; }
-@media (max-width: 1050px) { .eq-ad-layout { grid-template-columns: 360px minmax(0, 1fr); }.eq-ad-screen { height: 680px; } }
-@media (max-width: 850px) { .eq-ad-layout { grid-template-columns: 1fr; }.eq-ad-phone-wrap { position: static; width: min(400px, 100%); margin: auto; } }
-@media (max-width: 650px) { .eq-ad-heading { flex-direction: column; }.eq-ad-heading > div:last-child { justify-content: flex-start; }.eq-ad-phone-wrap { border-radius: 28px; }.eq-ad-screen { height: 650px; }.eq-ad-placement-list { grid-template-columns: 1fr; }.eq-ad-save-status { display: block; margin: 8px 0 0; }.eq-ad-days button { flex: 1 0 46px; } }
+/* Keep the reference experience independent of earnings styles. */
+.eq-ad-page { min-width: 0; }
+.eq-ad-page > .eq-note { display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.eq-ad-reference { display: block; width: 100%; height: 900px; height: max(760px, calc(100dvh - 140px)); border: 1px solid #dde5ef; border-radius: 14px; background: #f4f6fa; }
+@media (max-width: 650px) { .eq-ad-reference { height: 85dvh; min-height: 650px; } }
 #earning-detail { border: 1px solid #dde5ef; border-radius: 14px; padding: 24px; width: min(620px, calc(100% - 24px)); max-height: 85vh; color: #0b1c30; font: 14px/1.6 Inter, sans-serif; }
 #earning-detail::backdrop { background: rgb(11 28 48 / .45); }
 #earning-detail dd { max-width: 65%; }

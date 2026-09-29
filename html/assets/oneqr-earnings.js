@@ -13,14 +13,8 @@
     consent: false,
     audit: null,
     period: 'all',
-    status: 'all',
-    adSaved: false,
-    ads: { order: 'ad', cross: 'on', mode: 'split', discovery: 'rich', day: '2', time: 'lunch', competitor: 'group', radius: 'auto', scan: 1, placements: { hero: true, nearby: true, wait: true, complete: true } }
+    status: 'all'
   };
-  try {
-    const savedAds = JSON.parse(localStorage.getItem('nexora_oneqr_earnings_ads_v1') || 'null');
-    if (savedAds) state.ads = { ...state.ads, ...savedAds, placements: { ...state.ads.placements, ...savedAds.placements } };
-  } catch (error) { /* Keep prototype defaults when storage is unavailable. */ }
   const t = (vi, en) => state.lang === 'vi' ? vi : en;
   const money = cents => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100);
   const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -106,27 +100,10 @@
         [t('Khách quay lại ≥ 90 ngày, campaign cho phép', 'Returning ≥ 90 days, campaign enabled'), '5%', t('50% phí dịch vụ hợp lệ', '50% of performance fee')]
       ].map(row => `<tr>${row.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div><p class="eq-small eq-muted">${t('Cơ sở phí dịch vụ là giá sau giảm giá, không gồm thuế, tip, phụ phí, retail, gift card lúc bán hoặc phần hoàn. Phần chia lẻ dưới một cent hiển thị theo kết quả đối soát; chưa tự đặt quy tắc làm tròn. Không mặc định cộng cả phí click và dịch vụ trên cùng hành trình.', 'Service fees use discounted eligible service value, excluding tax, tips, surcharges, retail, gift card sales and refunds. Fractional-cent shares use confirmed settlement results; rounding is not assumed. Click and service fees are not automatically stacked on one journey.')}</p><p>${t('Không cần nạp Ads Credit hoặc mời thêm tài khoản để tham gia. Bảo vệ đối thủ vẫn áp dụng cho quảng cáo trả phí.', 'No Ads Credit purchase or account referrals are required. Competitor protection also applies to paid advertisements.')}</p></section>`;
   }
-  function adChoice(key, value, vi, en) {
-    return `<button type="button" data-ad-setting="${key}" data-value="${value}" class="${state.ads[key] === value ? 'on' : ''}" aria-pressed="${state.ads[key] === value}">${t(vi, en)}</button>`;
-  }
   function ads() {
-    const a = state.ads;
-    const partner = a.scan % 2 ? ['Saigon Kitchen', '$5 lunch combo', '0.7 mi'] : ['Boba House', 'Buy 1 get 1 milk tea', '0.4 mi'];
-    const discovery = `<div class="eq-ad-discovery ${a.discovery === 'plain' ? 'is-plain' : ''}"><button type="button"><span class="eq-ad-discovery-icon">⌖</span><span><strong>${a.discovery === 'rich' ? '12 ' : ''}${t('Ưu đãi gần đây', 'Deals Nearby')}</strong><small>${a.discovery === 'rich' ? t(a.time === 'morning' ? '☕ Cà phê, bánh quanh đây' : a.time === 'lunch' ? '🍜 Ăn trưa quanh đây' : a.time === 'aft' ? '🧋 Giải khát quanh đây' : '🌙 Tối nay quanh đây', a.time === 'morning' ? '☕ Coffee & breakfast nearby' : a.time === 'lunch' ? '🍜 Lunch deals around here' : a.time === 'aft' ? '🧋 Afternoon treats nearby' : '🌙 Deals for tonight') : t('Khám phá quanh bạn', 'Explore around you')}</small></span></button><button type="button"><span class="eq-ad-discovery-icon">⌕</span><span><strong>${t('Tìm ưu đãi', 'Search Deals')}</strong><small>${a.discovery === 'rich' ? t(a.time === 'eve' ? 'Thử “ăn tối nay”' : 'Thử “massage dưới $50”', a.time === 'eve' ? 'Try “dinner tonight”' : 'Try “massage under $50”') : t('Tìm theo nhu cầu', 'Search what you need')}</small></span></button></div>`;
-    const hero = a.placements.hero ? `<div class="eq-ad-hero ${a.cross === 'off' ? 'own-only' : ''}"><article><span>${t('ƯU ĐÃI CỦA TIỆM', 'AT THIS SALON')}</span><h3>${t('Nâng cấp pedicure: đá nóng + mặt nạ', 'Hot stone pedicure upgrade')}</h3><p>${t('Đang áp dụng · T3–T5', 'Available · Tue–Thu')}</p><div><button type="button">${t('Xem ưu đãi', 'View deal')}</button><b>+$15</b></div></article>${a.cross === 'on' ? `<article><span>${a.mode === 'split' ? t('ĐỐI TÁC GẦN ĐÂY', 'NEARBY PARTNER') : t('ĐANG XOAY VÒNG 50/50', 'ROTATING 50/50')}</span><h3>${partner[0]} · ${partner[1]}</h3><p>${t('Đã qua bộ lọc đối thủ', 'Competitor filter applied')}</p><div><button type="button">${t('Xem ưu đãi', 'View deal')}</button><b>${partner[2]}</b></div></article>` : ''}</div>` : '';
-    const menu = `<div><span class="eq-ad-section-label">${t('MENU TIỆM', 'SALON MENU')}</span><div class="eq-ad-menu"><button type="button"><i>✓</i>${t('Check-in', 'Check-in')}</button><button type="button"><i>▦</i>${t('Đặt lịch', 'Booking')}</button><button type="button"><i>≡</i>${t('Dịch vụ', 'Services')}</button><button type="button"><i>☆</i>${t('Đánh giá', 'Review')}</button></div></div>`;
-    const sponsored = a.placements.nearby ? `<div><span class="eq-ad-section-label">⭐ ${t('ĐƯỢC TÀI TRỢ · GẦN ĐÂY', 'SPONSORED · NEARBY')}</span><button type="button" class="eq-ad-sponsored"><span>SK</span><span><strong>${t('$5 giảm combo ăn trưa', '$5 off lunch combo')}</strong><small>Saigon Kitchen · 0.7 mi</small><em>${t('Được tài trợ', 'Sponsored')}</em></span></button></div>` : '';
-    const ordered = a.order === 'cur' ? discovery + hero + menu + sponsored : hero + menu + sponsored + discovery;
     return `<section class="eq-ad-page">
-      <header class="eq-ad-heading"><div><span>ONEQR · ${t('TẠI TIỆM', 'IN-SALON')}</span><h2>${t('Cấu hình quảng cáo & kiếm tiền', 'Advertising & monetization settings')}</h2><p>${t('Điều chỉnh trải nghiệm khách quét OneQR tại Bitcoin Nail Bar.', 'Control the experience for guests scanning Bitcoin Nail Bar’s OneQR.')}</p></div><div>${badge(state.enabled ? 'enabled' : 'disabled')}${state.enabled ? `<button type="button" data-action="toggle">${t('Tắt kiếm tiền', 'Turn off monetization')}</button>` : `<button type="button" class="eq-primary" data-view="settings">${t('Bật kiếm tiền', 'Enable monetization')}</button>`}</div></header>
-      <div class="eq-ad-layout">
-        <div class="eq-ad-phone-wrap"><div class="eq-ad-phone"><div class="eq-ad-screen"><div class="eq-ad-phone-body"><div class="eq-ad-phone-head"><span>9:41</span><b>OneQR</b><span>●●●</span></div><div class="eq-ad-account"><button type="button">${t('Đăng nhập', 'Log in')}</button><button type="button">${t('Đăng ký', 'Sign up')}</button></div><div class="eq-ad-business"><span>BN</span><div><strong>Bitcoin Nail Bar</strong><small>Houston · Westheimer</small></div></div><div class="eq-ad-preview ${a.order === 'ad' ? 'is-recommended' : ''}">${ordered}</div>${!state.enabled ? `<div class="eq-ad-off"><strong>${t('Quảng cáo đang tắt', 'Sponsored ads are off')}</strong><small>${t('Bạn vẫn có thể xem trước cấu hình trước khi bật.', 'You can still preview the setup before enabling it.')}</small></div>` : ''}</div><nav><button type="button" class="on">⌂<small>${t('Menu chính', 'Main Menu')}</small></button><button type="button">⌖<small>${t('Gần đây', 'Nearby')}</small></button><button type="button">▦<small>${t('Đặt lịch', 'Booking')}</small></button></nav></div></div></div>
-        <div class="eq-ad-controls">
-          <section class="eq-ad-panel"><h3>🎛️ ${t('Điều khiển màn hình', 'Experience controls')}</h3><label>${t('Thứ tự trang chính', 'Main page order')}</label><div class="eq-ad-choices">${adChoice('order', 'cur', '① Bản hiện tại · khám phá lên trên', '① Current · discovery first')}${adChoice('order', 'rec', '② Khám phá xuống dưới', '② Discovery below')}${adChoice('order', 'ad', '③ Đề xuất · thanh gọn + tài trợ', '③ Recommended · compact + sponsored')}</div><label>${t('Banner hero — quảng cáo chéo', 'Hero banner — cross-promotion')}</label><div class="eq-ad-choices">${adChoice('cross', 'on', 'Tiệm bật quảng cáo chéo', 'Cross-promotion on')}${adChoice('cross', 'off', 'Chỉ quảng cáo của tiệm', 'Salon promotions only')}</div><div class="eq-ad-choices">${adChoice('mode', 'split', '50/50 chia đôi', '50/50 split')}${adChoice('mode', 'rotate', '50/50 xoay vòng', '50/50 rotation')}<button type="button" data-ad-action="scan">↻ ${t('Lượt quét mới', 'New scan')}</button></div><label>${t('Deals Nearby · Search Deals', 'Deals Nearby · Search Deals')}</label><div class="eq-ad-choices">${adChoice('discovery', 'plain', 'Cơ bản', 'Basic')}${adChoice('discovery', 'rich', 'Hấp dẫn · nội dung thật', 'Rich · live content')}</div><label>${t('Ngày khách quét (demo)', 'Guest scan day (demo)')}</label><div class="eq-ad-choices eq-ad-days">${[['1','T2','Mon'],['2','T3','Tue'],['3','T4','Wed'],['4','T5','Thu'],['5','T6','Fri'],['6','T7','Sat'],['0','CN','Sun']].map(([value,vi,en])=>adChoice('day',value,vi,en)).join('')}</div><label>${t('Giờ khách quét (demo)', 'Guest scan time (demo)')}</label><div class="eq-ad-choices">${adChoice('time', 'morning', '☕ Sáng 9:30', '☕ Morning 9:30')}${adChoice('time', 'lunch', '🍜 Trưa 12:30', '🍜 Lunch 12:30')}${adChoice('time', 'aft', '🧋 Chiều 3:30', '🧋 Afternoon 3:30')}${adChoice('time', 'eve', '🌙 Tối 6:30', '🌙 Evening 6:30')}</div><label>${t('Bộ lọc đối thủ trên QR của tiệm', 'Competitor filter on this salon QR')}</label><div class="eq-ad-choices">${adChoice('competitor', 'group', 'Chặn nhóm Làm đẹp', 'Block Beauty group')}${adChoice('competitor', 'industry', 'Chỉ chặn ngành Nail', 'Block Nail only')}${adChoice('competitor', 'off', 'Tắt', 'Off')}</div></section>
-          <section class="eq-ad-panel"><h3>🤖 ${t('Quảng cáo chéo tự động', 'Automatic cross-promotion')}</h3><p>${t('Chủ tiệm chỉ bật một lần. Nexora ghép các doanh nghiệp gần đó cũng đã bật, tự loại đối thủ và ngành nhạy cảm.', 'Opt in once. Nexora matches nearby businesses that also opted in, filtering competitors and sensitive categories.')}</p><div class="eq-ad-choices">${adChoice('radius', 'auto', 'Tự động: 1 mi → 2 mi', 'Automatic: 1 mi → 2 mi')}${adChoice('radius', '1', 'Chỉ 1 mi', 'Only 1 mi')}${adChoice('radius', '2', 'Tối đa 2 mi', 'Up to 2 mi')}</div><div class="eq-ad-radius"><strong>${t('Bán kính đang dùng', 'Active radius')}</strong><span>${a.radius === 'auto' ? t('1 mi · tự nới khi chưa đủ đối tác', '1 mi · expands when more partners are needed') : a.radius + ' mi'}</span></div><ul><li>${t('Mỗi đối tác một deal đang áp dụng.', 'One active deal per partner.')}</li><li>${t('Paid Boost lấp chỗ khi chưa đủ đối tác.', 'Paid Boost fills empty partner slots.')}</li><li>${t('Tiệm luôn có thể ẩn một doanh nghiệp.', 'The salon can always hide a business.')}</li></ul></section>
-          <section class="eq-ad-panel"><h3>💰 ${t('Vị trí tạo thu nhập', 'Earning placements')}</h3><div class="eq-ad-placement-list">${[['hero','Banner hero 50/50'],['nearby',t('Ô tài trợ dưới menu','Sponsored card below menu')],['wait',t('Màn chờ sau check-in','Waiting screen after check-in')],['complete',t('Sau booking · review · tip','After booking · review · tip')]].map(([key,label])=>`<label><input type="checkbox" data-ad-placement="${key}"${a.placements[key] ? ' checked' : ''}><span>${label}</span></label>`).join('')}</div><p class="eq-ad-rule">${t('Quảng cáo không bao giờ tự chuyển khách đi và không xuất hiện khi khách đang chọn dịch vụ của tiệm.', 'Ads never auto-redirect guests and never appear while they are choosing salon services.')}</p><button type="button" class="eq-primary" data-ad-action="save">${t('Lưu cài đặt quảng cáo', 'Save ad settings')}</button><span class="eq-ad-save-status" role="status">${state.adSaved ? t('Đã lưu cho Bitcoin Nail Bar.', 'Saved for Bitcoin Nail Bar.') : t('Thay đổi chỉ áp dụng sau khi lưu.', 'Changes apply after saving.')}</span></section>
-        </div>
-      </div>
+      <div class="eq-note">${t('Bản xem trước tương tác: dữ liệu và thao tác bên dưới là mô phỏng. Trạng thái kiếm tiền được quản lý tại Điều kiện & chính sách.', 'Interactive preview: the data and actions below are simulated. Monetization is managed in Eligibility & policy.')} ${button('settings', t('Quản lý kiếm tiền', 'Manage monetization'))}</div>
+      <iframe class="eq-ad-reference" src="oneqr-in-salon.html" title="OneQR tại tiệm — cài đặt và trải nghiệm khách" lang="vi"></iframe>
     </section>`;
   }
   function render() {
@@ -173,19 +150,6 @@
       (mobileNav.offsetParent ? mobileNav : root.querySelector('.eq-nav [aria-current]')).focus();
     }
     if (target.dataset.detail) detail(target.dataset.detail);
-    if (target.dataset.adSetting) {
-      state.ads[target.dataset.adSetting] = target.dataset.value;
-      state.adSaved = false;
-      const selector = `[data-ad-setting="${target.dataset.adSetting}"][data-value="${target.dataset.value}"]`;
-      render(); root.querySelector(selector)?.focus();
-    }
-    if (target.dataset.adAction === 'scan') {
-      state.ads.scan += 1; state.adSaved = false; render(); root.querySelector('[data-ad-action="scan"]')?.focus();
-    }
-    if (target.dataset.adAction === 'save') {
-      try { localStorage.setItem('nexora_oneqr_earnings_ads_v1', JSON.stringify(state.ads)); } catch (error) { /* Demo still works without storage. */ }
-      state.adSaved = true; render(); root.querySelector('[data-ad-action="save"]')?.focus();
-    }
     if (target.dataset.action === 'toggle') {
       if (!state.enabled && !(state.consent && eligible())) return;
       state.enabled = !state.enabled;
@@ -203,11 +167,9 @@
     else if (id === 'consent') state.consent = checked;
     else if (id === 'period-filter') state.period = value;
     else if (id === 'status-filter') state.status = value;
-    else if (event.target.dataset.adPlacement) { state.ads.placements[event.target.dataset.adPlacement] = checked; state.adSaved = false; }
     else return;
     render();
     if (id) root.querySelector('#' + id)?.focus();
-    else if (event.target.dataset.adPlacement) root.querySelector(`[data-ad-placement="${event.target.dataset.adPlacement}"]`)?.focus();
   });
   dialog.addEventListener('click', event => {
     if (event.target.closest('[data-action="close"]')) {
