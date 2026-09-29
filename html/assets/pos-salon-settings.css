@@ -16,6 +16,12 @@
 [data-staff-requests-settings] .schedule-request-compare>p{flex:1;min-width:0;overflow-wrap:anywhere}
 [data-staff-requests-settings] .schedule-request-main>p{overflow-wrap:anywhere;white-space:pre-wrap}
 [data-staff-requests-settings] .schedule-request-main>header strong{font-size:14px}
+.schedule-request-staff-name{text-transform:uppercase;letter-spacing:.3px;overflow-wrap:anywhere}
+.schedule-request-meta{display:flex;align-items:center;flex-wrap:wrap;gap:6px 8px;margin-top:3px}
+.schedule-request-type{display:inline-flex;align-items:center;border:1px solid #dbe4f3;border-radius:999px;padding:3px 9px;background:#f1f5f9;color:#475569;font-size:11px;font-weight:600;line-height:1.5;white-space:nowrap}
+.schedule-request-type.is-day-off{background:#f5f3ff;border-color:#ddd6fe;color:#6d28d9}
+.schedule-request-type.is-change-hours{background:#eff6ff;border-color:#bfdbfe;color:#1d4ed8}
+.schedule-request-type.is-break{background:#f0fdfa;border-color:#99f6e4;color:#0f766e}
 [data-staff-requests-settings] .request-status{font-size:11px}
 .schedule-reject-form{display:grid;gap:8px;margin-top:12px;padding:12px;border:1px solid #fecaca;border-radius:10px;background:#fff7f7}
 .schedule-reject-form label{display:grid;gap:6px;font-size:inherit;font-weight:600}
