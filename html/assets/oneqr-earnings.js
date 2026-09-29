@@ -103,7 +103,7 @@
   function ads() {
     return `<section class="eq-ad-page">
       <div class="eq-note">${t('Bản xem trước tương tác: dữ liệu và thao tác bên dưới là mô phỏng. Trạng thái kiếm tiền được quản lý tại Điều kiện & chính sách.', 'Interactive preview: the data and actions below are simulated. Monetization is managed in Eligibility & policy.')} ${button('settings', t('Quản lý kiếm tiền', 'Manage monetization'))}</div>
-      <iframe class="eq-ad-reference" src="oneqr-in-salon.html" title="OneQR tại tiệm — cài đặt và trải nghiệm khách" lang="vi"></iframe>
+      <iframe class="eq-ad-reference" src="qr-advertising.html" title="OneQR tại tiệm — cài đặt và trải nghiệm khách" lang="vi"></iframe>
     </section>`;
   }
   function render() {

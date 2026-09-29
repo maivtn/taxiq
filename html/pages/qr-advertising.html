@@ -1,0 +1,552 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<script>window.__EMBED = true;</script>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>OneQR tại tiệm — Deals Nearby & Search Deals</title>
+<style>
+:root{--ink:#0B1220;--mute:#5B6B82;--line:#E5E7EB;--page:#F4F6FA;--p1:#6D28D9;--p2:#7C3AED;--grad:linear-gradient(135deg,#4C1D95,#7C3AED 60%,#C4B5FD);--ok:#047857;--okbg:#D1FAE5;--warn:#B45309;--warnbg:#FEF3C7;--teal:#0F766E}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--page);color:var(--ink);font-size:14px;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}input,select{font:inherit}
+.top{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line);display:flex;align-items:center;gap:10px;padding:10px 16px;flex-wrap:wrap}
+.top b{font-size:15px}.top small{display:block;color:var(--mute);font-size:12px}.sp{flex:1}
+.qr-page-tabs{display:flex;flex-basis:100%;gap:10px;overflow-x:auto;padding:2px 0 4px}.qr-page-tab{display:inline-flex;min-height:40px;flex-shrink:0;align-items:center;gap:8px;border:1px solid #E2E8F0;border-radius:8px;background:#fff;padding:8px 14px 8px 10px;color:#53617A;font-size:12px;font-weight:800;text-decoration:none;white-space:nowrap}.qr-page-tab:hover{border-color:#CBD2FF;color:var(--ink)}.qr-page-tab.on{border-color:transparent;background:linear-gradient(90deg,#4D4CF5,#9B22FF);color:#fff}.qr-page-tab svg{width:15px;height:15px;margin:3px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 13px;border-radius:12px;font-weight:700;background:var(--p2);color:#fff}.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn.sm{padding:6px 10px;font-size:12.5px}.btn.full{width:100%}
+main{max-width:1100px;min-width:0;margin:0 auto;padding:14px 14px 130px;display:grid;grid-template-columns:400px minmax(0,1fr);gap:16px;align-items:start}
+.phone{background:#0B1220;border-radius:34px;padding:10px;position:sticky;top:128px}
+.scr{background:#FAFAFC;border-radius:26px;height:760px;overflow:hidden;position:relative;display:flex;flex-direction:column}
+.body{flex:1;overflow:auto;padding:0 12px 16px}
+.nav{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid var(--line);background:#fff}.nav button{padding:9px 0 12px;font-size:11.5px;color:var(--mute);display:flex;flex-direction:column;align-items:center;gap:3px}.nav button.on{color:var(--p1);font-weight:800}.nav i{font-style:normal;font-size:17px}
+.hd{display:flex;justify-content:space-between;align-items:center;font-size:12.5px;color:var(--mute);padding:10px 2px 6px}.hd b{color:var(--p1)}
+.hd.sub{position:sticky;top:0;z-index:6;background:#FAFAFC;margin:0 -12px 6px;padding:10px 12px;border-bottom:1px solid var(--line);box-shadow:0 2px 8px rgba(15,23,42,.05)}
+.hd .back{display:inline-flex;align-items:center;gap:6px;min-height:40px;padding:0 14px;border-radius:12px;background:#EDE9FE;color:#4C1D95;font-weight:900;font-size:13.5px;border:1.5px solid #C4B5FD}
+.hd .back:active{background:#DDD6FE}
+.acct{display:flex;gap:6px}.acct button{min-height:34px;padding:0 12px;border-radius:10px;font-weight:800;font-size:12.5px}.acct .li{background:#fff;border:1.5px solid #C4B5FD;color:#4C1D95}.acct .su{background:var(--p2);color:#fff}
+.me{display:inline-flex;align-items:center;gap:6px;background:#ECFDF5;color:#065F46;border:1px solid #A7F3D0;border-radius:10px;padding:6px 10px;font-weight:800;font-size:12.5px}
+.ref{display:flex;align-items:center;gap:8px;background:#F5F3FF;border:1px dashed #A78BFA;border-radius:12px;padding:9px 11px;font-size:12.5px;margin:8px 0}.ref b{font-family:ui-monospace,Menlo,monospace;color:#4C1D95}
+.biz{display:flex;gap:12px;align-items:center;margin:6px 0 12px}.biz .lg{width:52px;height:52px;border-radius:14px;background:#111;color:#fff;display:grid;place-items:center;font-weight:900;font-size:22px}.biz b{font-size:19px;display:block}.biz small{color:var(--mute)}
+.disc{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px}.disc button{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px;text-align:left;display:flex;gap:9px;align-items:center}.disc button b{display:block;font-size:14px}.disc button small{color:var(--mute);font-size:11.5px}.disc .ic{font-size:18px;color:var(--p1)}
+.goal{font-size:11.5px;color:var(--mute);margin:0 0 10px}.goal span{background:#EDE9FE;color:var(--p1);font-weight:800;border-radius:8px;padding:3px 7px;margin-right:6px}
+.hero{background:var(--grad);color:#fff;border-radius:18px;padding:16px;margin-bottom:14px}.hero .k{font-size:10.5px;letter-spacing:1.4px;font-weight:800;opacity:.85}.hero h2{font-size:21px;margin:6px 0}.hero p{font-size:13px;opacity:.95}.hero .row{display:flex;justify-content:space-between;align-items:center;margin-top:12px}.hero .cta{background:#fff;color:#4C1D95;border-radius:11px;padding:8px 12px;font-weight:800;font-size:13px}.hero .pr{background:#FCD34D;color:#111;border-radius:11px;padding:7px 11px;font-weight:900}
+.sec{font-size:11px;font-weight:900;letter-spacing:1.2px;color:#6B7280;margin:12px 2px 8px}
+.menu{display:grid;grid-template-columns:repeat(4,1fr);gap:7px}.menu button{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px 4px;font-weight:700;font-size:12px;display:flex;flex-direction:column;align-items:center;gap:5px}.menu i{font-style:normal;font-size:18px;color:var(--p1)}
+.more{background:#EEEEF3;border-radius:12px;padding:10px;text-align:center;font-weight:700;font-size:12.5px;color:#4B5563;margin-top:8px}
+.explore{background:#fff;border:1px dashed #C4B5FD;border-radius:16px;padding:12px;margin-top:14px}.explore b{font-size:13.5px}
+.anchor{display:flex;gap:8px;align-items:center;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px 12px;margin:4px 0 8px}.anchor .pin{font-size:18px}.anchor b{display:block;font-size:13px}.anchor small{color:var(--mute);font-size:11.5px}
+.locbtn{display:flex;align-items:center;gap:8px;width:100%;border:1px solid #DDD6FE;background:#F5F3FF;color:var(--p1);border-radius:12px;padding:9px 11px;font-weight:800;font-size:12.5px;margin-bottom:8px}
+.tgl{position:relative;width:38px;height:22px;border-radius:11px;background:#CBD5E1;flex:0 0 38px;margin-left:auto}.tgl::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s}.tgl.on{background:var(--p2)}.tgl.on::after{left:19px}
+.chips{display:flex;gap:6px;overflow-x:auto;padding-bottom:4px;margin-bottom:6px}.chip{white-space:nowrap;padding:6px 10px;border-radius:18px;border:1px solid var(--line);background:#fff;font-weight:700;font-size:12px}.chip.on{background:#EDE9FE;border-color:var(--p2);color:var(--p1)}
+.card{display:grid;grid-template-columns:62px 1fr;gap:10px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px;margin-bottom:8px;text-align:left;width:100%}
+.card .st{border-radius:12px;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:15px;min-height:62px}.card .st small{font-size:9.5px;font-weight:800;opacity:.9}
+.card b{font-size:13.5px;display:block}.card .m{font-size:11.5px;color:var(--mute);margin-top:2px}.card .tg{display:inline-block;font-size:10px;font-weight:900;border-radius:6px;padding:1px 6px;margin-top:4px}
+.tg.deal{background:#CCFBF1;color:var(--teal)}.tg.cp{background:#EDE9FE;color:var(--p1)}.tg.own{background:#111;color:#fff}
+.note{font-size:11.5px;color:var(--mute);background:#F8FAFC;border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin:6px 0 10px;line-height:1.45}
+.sbox{display:flex;gap:6px;margin:6px 0}.sbox input{flex:1;border:1.5px solid #C4B5FD;border-radius:12px;padding:11px 12px;font-size:14px;background:#fff}
+.parsed{display:flex;flex-wrap:wrap;gap:5px;margin:4px 0 8px}.parsed span{font-size:11px;font-weight:800;background:#EEF2FF;color:#3730A3;border-radius:7px;padding:3px 7px}
+.empty{background:#fff;border:1px solid var(--line);border-radius:14px;padding:14px;text-align:center}
+.sheet{position:absolute;left:0;right:0;bottom:0;background:#fff;border-radius:22px 22px 0 0;box-shadow:0 -12px 40px rgba(0,0,0,.25);padding:16px;z-index:10}
+.dim{position:absolute;inset:0;background:rgba(15,23,42,.45);z-index:9}
+.perm{position:absolute;left:12px;right:12px;top:70px;background:#fff;border-radius:16px;box-shadow:0 20px 50px rgba(0,0,0,.35);padding:16px;z-index:12}.perm b{display:block;margin-bottom:4px}.perm .row{display:flex;gap:8px;margin-top:12px;justify-content:flex-end}
+.in{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
+/* side */
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}.panel h3{font-size:15px;margin-bottom:6px}
+.ctl{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}.ctl button{border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-weight:700;font-size:12.5px;background:#fff}.ctl button.on{background:#111827;color:#fff;border-color:#111827}
+table.t{width:100%;border-collapse:collapse;font-size:12.5px}table.t th,table.t td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}table.t th{font-size:11px;color:var(--mute);text-transform:uppercase}
+code{font:12px ui-monospace,Menlo,monospace;background:#F1F5F9;padding:1px 5px;border-radius:5px}
+.log{word-break:break-all;overflow-wrap:anywhere;font:12px ui-monospace,Menlo,monospace;background:#0B1220;color:#A7F3D0;border-radius:12px;padding:10px;white-space:pre-wrap;min-height:70px;max-height:190px;overflow:auto}
+.tag2{display:inline-block;font-size:10.5px;font-weight:800;border-radius:7px;padding:2px 7px;background:#EDE9FE;color:#6D28D9}
+.spot{outline:3px solid #F59E0B;outline-offset:3px;border-radius:16px}
+.stour{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;width:min(680px,94vw);background:#0B1220;color:#fff;border-radius:16px;padding:12px 14px;z-index:90;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.stour .hd2{font-size:11px;font-weight:800;letter-spacing:1px;color:#C4B5FD;display:flex;gap:8px;align-items:center;margin-bottom:6px}.stour .hd2 .sp{flex:1}.stour .hd2 button{background:#1E293B;border-radius:8px;padding:4px 9px;color:#fff}
+.stour #tVi{font-size:14px;font-weight:700}.stour #tEn{font-size:12px;color:#94A3B8;margin-top:2px}.stour .bar2{height:3px;background:#1E293B;border-radius:2px;margin-top:8px;overflow:hidden}.stour .bar2 i{display:block;height:100%;background:#C4B5FD;width:0}
+.rd{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:0 0 12px}
+.rdc{background:linear-gradient(180deg,#fff,#FAF5FF);border:1px solid #DDD6FE;border-radius:16px;padding:10px;text-align:left;cursor:pointer;min-width:0}
+.rdc .t1{display:flex;align-items:center;gap:6px;font-weight:900;font-size:13.5px;color:var(--ink)}.rdc .t1 i{font-style:normal;color:var(--p1)}
+.rdc .n{margin-left:auto;background:var(--p2);color:#fff;border-radius:10px;font-size:11px;padding:1px 7px;position:relative}
+.rdc .n::after{content:'';position:absolute;inset:-3px;border-radius:12px;border:2px solid #A78BFA;animation:pl 2s ease-out infinite}
+@keyframes pl{0%{opacity:.9;transform:scale(.9)}100%{opacity:0;transform:scale(1.25)}}
+.rdc .ctx{font-size:11.5px;color:#4C1D95;font-weight:800;margin-top:5px}
+.rdc .tick{font-size:11.5px;color:var(--mute);margin-top:2px;height:16px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;transition:opacity .35s}
+.rdc .urg{display:inline-block;margin-top:5px;font-size:10.5px;font-weight:800;background:#FEF3C7;color:#92400E;border-radius:7px;padding:2px 6px}
+.rdc .qs{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}.rdc .qs span{font-size:10.5px;font-weight:700;border:1px solid #DDD6FE;border-radius:10px;padding:2px 7px;background:#fff;color:var(--p1);cursor:pointer}
+@media(prefers-reduced-motion:reduce){.rdc .n::after{animation:none}}
+.ab{margin-top:12px}.abst{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 8px}.abst span{font-size:11.5px;font-weight:800;border-radius:9px;padding:4px 8px;background:#fff;border:1px solid var(--line)}
+.abst .open{background:#ECFDF5;border-color:#A7F3D0;color:#065F46}.abst .wait{background:#FFF7ED;border-color:#FED7AA;color:#9A3412}
+.abrow{display:flex;gap:8px;overflow-x:auto;scroll-snap-type:x mandatory;padding-bottom:4px}.abrow::-webkit-scrollbar{display:none}
+.abc{flex:0 0 150px;scroll-snap-align:start;background:#fff;border:1px solid var(--line);border-radius:14px;padding:10px;text-align:left;min-height:118px;display:flex;flex-direction:column;gap:4px}
+.abc b{font-size:12.5px}.abc small{font-size:11px;color:var(--mute);line-height:1.35}.abc .li{font-size:11.5px;display:flex;justify-content:space-between;gap:4px}.abc .li s{color:var(--mute)}
+.av3{display:flex}.av3 i{width:28px;height:28px;border-radius:50%;border:2px solid #fff;margin-left:-6px;display:grid;place-items:center;font-style:normal;font-size:11px;font-weight:900;color:#fff}.av3 i:first-child{margin-left:0}
+.th4{display:grid;grid-template-columns:1fr 1fr;gap:3px}.th4 i{height:34px;border-radius:7px}
+.hero{position:relative;touch-action:pan-y;user-select:none;cursor:pointer;transition:background .3s}.hero .hc{transition:opacity .25s}.hero .hc.fade{opacity:0}
+.hero .dots{display:flex;gap:4px;margin-top:10px}.hero .dots i{height:4px;flex:1;border-radius:2px;background:rgba(255,255,255,.35);overflow:hidden;position:relative}.hero .dots i b{position:absolute;inset:0;width:0;background:#fff}.hero .dots i.done b{width:100%}
+.hero .who{display:inline-flex;align-items:center;gap:5px}.hero .kind{font-size:9.5px;font-weight:900;letter-spacing:.5px;background:rgba(255,255,255,.22);border-radius:6px;padding:2px 6px;margin-left:6px}
+.sheet .st{width:62px;flex:0 0 62px;border-radius:12px;color:#fff;display:flex;flex-direction:column;align-items:center;justify-content:center;font-weight:900;font-size:15px;min-height:62px}.sheet .st small{font-size:9.5px}
+.hero2{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:14px}
+.hh{border-radius:16px;padding:12px 11px;color:#fff;position:relative;cursor:pointer;user-select:none;touch-action:pan-y;display:flex;flex-direction:column;min-height:176px;min-width:0}
+.hh .k{font-size:9.5px;letter-spacing:.8px;font-weight:900;opacity:.9;line-height:1.3}.hh h3{font-size:15.5px;line-height:1.25;margin:5px 0 4px}.hh p{font-size:11.5px;opacity:.95;line-height:1.35}
+.hh .row2{display:flex;justify-content:space-between;align-items:center;margin-top:auto;padding-top:8px;gap:4px}.hh .cta{background:#fff;color:#111;border-radius:10px;padding:6px 9px;font-weight:800;font-size:12px;white-space:nowrap}.hh .pr{background:#FCD34D;color:#111;border-radius:10px;padding:5px 8px;font-weight:900;font-size:13px}
+.hh .kind{display:inline-block;font-size:9px;font-weight:900;background:rgba(255,255,255,.25);border-radius:6px;padding:2px 6px;margin-bottom:4px}
+.hh .pc{transition:opacity .25s;display:flex;flex-direction:column;flex:1}.hh .pc.fade{opacity:0}
+.hh .dots{display:flex;gap:3px;margin-top:8px}.hh .dots i{height:3px;flex:1;border-radius:2px;background:rgba(255,255,255,.35);position:relative;overflow:hidden}.hh .dots i b{position:absolute;inset:0;width:0;background:#fff}.hh .dots i.done b{width:100%}
+.tg.okc{background:#DCFCE7;color:#166534}.tg.waitc{background:#FEF3C7;color:#92400E}.tg.bkc{background:#DBEAFE;color:#1E40AF}.tg.nwc{background:#FCE7F3;color:#9D174D}
+.hh .cond{font-size:10.5px;font-weight:800;background:rgba(255,255,255,.22);border-radius:6px;padding:2px 6px;align-self:flex-start;margin-top:2px}
+.hidden{display:none!important}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:110px;background:#0B1220;color:#fff;padding:10px 16px;border-radius:12px;font-weight:700;font-size:13px;z-index:95;display:none;max-width:90vw}
+.wn{position:fixed;inset:0;background:rgba(15,27,61,.55);z-index:80;display:grid;place-items:center;padding:16px}.wn .bx{background:#fff;border-radius:18px;max-width:560px;padding:22px}.wn li{margin:6px 0 6px 18px;font-size:13.5px;line-height:1.5}
+@media(max-width:900px){main{grid-template-columns:minmax(0,1fr)}main>*{min-width:0}.phone{position:static;max-width:400px;margin:0 auto;width:100%}.qr-page-tabs{gap:8px}.qr-page-tab{min-height:44px;font-size:13px}}
+</style>
+</head>
+<body>
+<div class="top"><div><b>📱 OneQR tại tiệm — khách chưa có tài khoản</b><small>Deals Nearby: vị trí tiệm (mặc định) hoặc vị trí khách (tuỳ chọn) · Search Deals: khách gõ điều mình muốn</small></div><span class="sp"></span><button class="btn ghost sm" id="tourBtn">✦ AI Tour</button>
+<nav class="qr-page-tabs" aria-label="Stations and QR tabs">
+ <a class="qr-page-tab" href="qr-stations.html?tab=one-qr"><i data-lucide="scan-line" aria-hidden="true"></i><span>OneQR</span></a>
+ <a class="qr-page-tab on" href="qr-advertising.html" aria-current="page"><i data-lucide="megaphone" aria-hidden="true"></i><span>Quảng cáo</span></a>
+ <a class="qr-page-tab" href="qr-stations.html?tab=qr-stations"><i data-lucide="hand-coins" aria-hidden="true"></i><span>Receive Tips</span></a>
+ <a class="qr-page-tab" href="qr-stations.html?tab=accept-payment"><i data-lucide="credit-card" aria-hidden="true"></i><span>Accept Payment</span></a>
+ <a class="qr-page-tab" href="qr-stations.html?tab=referral-link"><i data-lucide="share-2" aria-hidden="true"></i><span>Referral Link</span></a>
+ <a class="qr-page-tab" href="qr-stations.html?tab=staff-invite-qr"><i data-lucide="user-plus" aria-hidden="true"></i><span>Staff Invite QR</span></a>
+</nav></div>
+<main>
+<div class="phone" id="phone"><div class="scr" id="scr">
+ <div class="body" id="body"></div>
+ <div class="nav" id="nav"><button data-s="home" class="on"><i>⌂</i>Main Menu</button><button data-s="near"><i>⌖</i>Nearby</button><button data-s="book"><i>▦</i>Booking</button></div>
+ <div id="layer"></div>
+</div></div>
+
+<div>
+ <div class="panel" id="pCtl"><h3>🎛️ Điều khiển demo</h3>
+  <div class="muted" style="font-size:12.5px;color:var(--mute)">Thứ tự trang chính</div>
+  <div class="ctl" id="cOrder"><button data-o="cur">① Bản hiện tại (khám phá lên trên)</button><button data-o="rec">② Khám phá xuống dưới</button><button data-o="ad" class="on">③ Đề xuất: thanh gọn + 1 ô tài trợ + màn chờ</button></div>
+  <div style="font-size:12.5px;color:var(--mute)">Banner hero — quảng cáo chéo</div>
+  <div class="ctl" id="cCross"><button data-x="1" class="on">Tiệm bật quảng cáo chéo</button><button data-x="0">Chỉ quảng cáo của tiệm</button></div>
+  <div class="ctl" id="cMode"><button data-m="split" class="on">50/50 chia đôi — luôn thấy cả hai</button><button data-m="rotate">50/50 xoay vòng</button><button data-m="scan">↻ Lượt quét mới</button></div>
+  <div style="font-size:12.5px;color:var(--mute)">2 nút Deals Nearby · Search Deals</div>
+  <div class="ctl" id="cBtn"><button data-b="plain">Cơ bản (như bản hiện tại)</button><button data-b="rich" class="on">Hấp dẫn — nội dung thật, đổi theo giờ</button></div>
+  <div style="font-size:12.5px;color:var(--mute)">Ngày khách quét (demo)</div>
+  <div class="ctl" id="cDay"><button data-dy="1">T2</button><button data-dy="2" class="on">T3</button><button data-dy="3">T4</button><button data-dy="4">T5</button><button data-dy="5">T6</button><button data-dy="6">T7</button><button data-dy="0">CN</button></div>
+  <div style="font-size:12.5px;color:var(--mute)">Giờ khách quét (demo)</div>
+  <div class="ctl" id="cTod"><button data-t="morning">☕ Sáng 9:30</button><button data-t="lunch" class="on">🍜 Trưa 12:30</button><button data-t="aft">🧋 Chiều 3:30</button><button data-t="eve">🌙 Tối 6:30</button></div>
+  <div style="font-size:12.5px;color:var(--mute)">Bộ lọc đối thủ trên QR của tiệm (chủ tiệm cài)</div>
+  <div class="ctl" id="cComp"><button data-c="group" class="on">Chặn cả nhóm Làm đẹp</button><button data-c="ind">Chỉ chặn ngành Nail</button><button data-c="off">Tắt</button></div>
+  <div style="font-size:12.5px;color:var(--mute)">Khi trình duyệt hỏi vị trí, khách sẽ…</div>
+  <div class="ctl" id="cPerm"><button data-p="ask" class="on">Tự bấm trong điện thoại</button><button data-p="allow">Luôn cho phép</button><button data-p="deny">Luôn từ chối</button></div>
+ </div>
+ <div class="panel" id="pRich"><h3>✨ Làm 2 nút hấp dẫn thế nào</h3><table class="t"><tbody>
+  <tr><td><b>Số thật</b></td><td>Badge = số deal đang chạy quanh đây. Không có deal nào → ẩn cả khối, không để nút rỗng.</td></tr>
+  <tr><td><b>Đổi theo giờ</b></td><td>Sáng “☕ cà phê, bánh” · trưa “🍜 ăn trưa” · chiều “🧋 giải khát” · tối “🌙 ăn tối” — cùng dữ liệu, dòng mời khác.</td></tr>
+  <tr><td><b>Ticker</b></td><td>Tên deal thật + khoảng cách lướt qua mỗi vài giây — khách thấy “có cái gì” trước khi bấm.</td></tr>
+  <tr><td><b>Gấp thật</b></td><td>“⏳ N deal sắp hết suất” chỉ đếm coupon còn ít suất thật. Không bịa đồng hồ đếm ngược.</td></tr>
+  <tr><td><b>Gõ 1 chạm</b></td><td>Search có 3 câu mẫu theo giờ — bấm là ra kết quả, không phải gõ.</td></tr></tbody></table>
+  <p class="note" style="margin-top:8px">Đo bằng <code>disc_click</code> (target · variant · tod) chia cho số lượt mở trang → tỷ lệ bấm của từng kiểu nút. Chạy A/B “Cơ bản” vs “Hấp dẫn” trên cùng loại tiệm trước khi chốt.</p></div>
+ <div class="panel" id="pNav"><h3>🧭 Sau khi khách bấm Check-in / Booking / Services…</h3><table class="t"><thead><tr><th>Khách bấm</th><th>Đưa tới</th><th>Quảng cáo?</th></tr></thead><tbody>
+  <tr><td>✓ Check-in</td><td>Màn <b>Đã check-in</b>: số thứ tự, thời gian chờ</td><td>✅ “Trong lúc chờ” — nhiều nhất</td></tr>
+  <tr><td>▦ Booking</td><td>Chọn dịch vụ → giờ → thợ → SĐT → màn <b>Đã đặt lịch</b></td><td>Chỉ ở màn xác nhận: “Trước / sau giờ hẹn · gần tiệm”</td></tr>
+  <tr><td>≡ Services</td><td>Danh sách dịch vụ + giá, nút <b>Đặt</b> → Booking</td><td>❌ Không — khách đang chọn dịch vụ của tiệm</td></tr>
+  <tr><td>▧ Gallery</td><td>Lưới mẫu → “Làm mẫu này” gắn vào lượt check-in</td><td>❌ Không</td></tr>
+  <tr><td>⭐ Review · 💵 Tip</td><td>Gửi xong → màn <b>Cảm ơn</b></td><td>✅ “Đi đâu tiếp? · gần tiệm”</td></tr></tbody></table>
+  <p class="note" style="margin-top:8px"><b>Quy tắc:</b> không bao giờ <b>tự chuyển</b> khách sang quảng cáo. Quảng cáo chỉ nằm <b>trên màn “xong việc”</b> (check-in, đặt lịch, đánh giá, tip) — lúc khách đã làm xong việc chính. Mọi màn con có <b>“← Menu chính”</b> ở đầu, màn xong việc có thêm nút <b>“← Về menu chính”</b> ở cuối, và thanh dưới luôn có <b>Main Menu</b>. Slot quảng cáo: <code>wait_feed</code> · <code>book_done</code> · <code>review_done</code> · <code>tip_done</code>.</p></div>
+ <div class="panel" id="pAcct"><h3>👤 Đăng nhập · Đăng ký từ QR + mã giới thiệu</h3><table class="t"><tbody>
+  <tr><td><b>Vị trí</b></td><td>Góc trên, 2 nút nhỏ cạnh nhau: <b>Đăng nhập</b> (viền) · <b>Đăng ký</b> (tô màu). Đã đăng nhập → thay bằng “👤 Tên · thành viên”.</td></tr>
+  <tr><td><b>Không bắt buộc</b></td><td>Khách vẫn check-in, lấy coupon bằng SĐT, xem deal mà không cần tài khoản. Tài khoản chỉ là lựa chọn.</td></tr>
+  <tr><td><b>Đăng ký</b></td><td>SĐT → mã SMS → tên (tuỳ chọn). Không tải app. Một màn trượt từ dưới lên, có “Để sau”.</td></tr>
+  <tr><td><b>Mã giới thiệu</b></td><td><b>Tự gắn</b> theo QR đang quét (<code>ref_code</code>, <code>referrer_biz</code>, <code>source_qr</code>) — khách không phải nhập. Tính cho tiệm có QR, kể cả khi khách bấm Đăng ký từ màn con.</td></tr>
+  <tr><td><b>Nút quay lại</b></td><td>Mọi màn con: thanh trên <b>dính cố định</b> khi cuộn, nút “← Menu chính” to (cao 40px), nền tím nhạt viền đậm — không bị nội dung hay banner che.</td></tr></tbody></table>
+  <p class="note" style="margin-top:8px">Quyền lợi khi được giới thiệu (tiệm / NEXORA thưởng gì) chưa chốt — prototype không ghi số.</p></div>
+ <div class="panel" id="pAuto"><h3>🤖 Quảng cáo chéo — NEXORA điều phối tự động</h3>
+  <p style="font-size:13px;line-height:1.55">Chủ tiệm chỉ <b>bật 1 lần</b> (“Cho quảng cáo chéo”) — vừa đồng ý <b>hiện</b> deal của tiệm gần, vừa đồng ý <b>được hiện</b> trên QR của họ. Không mời, không duyệt từng deal. Mỗi lần khách mở QR, hệ thống tự chọn:</p>
+  <div class="ctl" id="cRad"><button data-rad="auto" class="on">Tự động: 1 mi → nới 2 mi</button><button data-rad="1">Chỉ 1 mi</button><button data-rad="2">Tối đa 2 mi</button></div>
+  <div class="note" style="margin:0 0 8px">Bán kính đang dùng: <b id="autoR"></b></div>
+  <table class="t"><thead><tr><th>Doanh nghiệp đã bật</th><th>Cách</th><th>Trạng thái</th><th>Chủ tiệm</th></tr></thead><tbody id="autoList"></tbody></table>
+  <ol style="padding-left:18px;font-size:12.5px;line-height:1.65;margin-top:8px"><li><b>Chỉ tiệm cũng đã bật</b> quảng cáo chéo (hai chiều) · trong <b>1 mi</b>; chưa đủ đối tác thì nới <b>tối đa 2 mi</b>.</li><li><b>Hàng rào mặc định</b>: bộ lọc đối thủ (cùng nhóm ngành) · chặn ngành nhạy cảm (bar, thuốc lá, cannabis, người lớn).</li><li>Mỗi tiệm đối tác <b>1 deal</b> trong vòng xoay; ưu tiên deal <b>đang áp dụng</b> giờ này, rồi gần hơn.</li><li>Chưa đủ đối tác → <b>⭐ Paid Boost</b> lấp chỗ; không có gì → banner nguyên khổ của tiệm.</li><li><b>Sổ đổi lượt</b> tự cân: tiệm nhận nhiều hơn cho thì deal của họ xoay ít đi — chủ tiệm không phải làm gì.</li><li>Chủ tiệm chỉ có <b>1 nút “Ẩn tiệm này”</b> (trong báo cáo tuần gửi SMS / app) — bấm ở cột phải để thử.</li></ol>
+  <p class="note">Số tối thiểu <b>3 đối tác</b> trước khi nới 2 mi là số tạm — chờ Brian chốt. 1 mi / 2 mi theo Brian.</p></div>
+ <div class="panel" id="pCond"><h3>📏 Điều kiện ưu đãi — tiệm đặt, hệ thống tự kiểm</h3><table class="t"><thead><tr><th>Điều kiện (tiệm chọn trong POS)</th><th>Khách thấy</th><th>Nút đổi thế nào</th></tr></thead><tbody>
+  <tr><td>Ngày trong tuần + giờ</td><td>✅ “Đang áp dụng · T3–T5 · 10AM–3PM” hoặc ⏰ “T3–T5 · 10AM–3PM”</td><td>Trong giờ → dùng ngay. Ngoài giờ → “Đặt lịch vào giờ áp dụng” / “Nhắc tôi khi tới giờ”</td></tr>
+  <tr><td>Phải đặt lịch trước</td><td>📅 “Cần đặt lịch”</td><td>“Đặt lịch để dùng ưu đãi” → Booking <b>chỉ hiện ngày/giờ hợp lệ</b>, ưu đãi gắn vào lịch hẹn</td></tr>
+  <tr><td>Chỉ khách mới</td><td>👋 “Khách mới”</td><td>Kiểm bằng SĐT lúc lấy / đặt / check-in</td></tr>
+  <tr><td>Dịch vụ áp dụng</td><td>“Dịch vụ: Gel-X”</td><td>Booking chọn sẵn dịch vụ đó</td></tr></tbody></table>
+  <p class="note" style="margin-top:8px">NEXORA không tự đặt điều kiện — chỉ <b>làm đúng yêu cầu của tiệm</b>. Điều kiện phải là <b>ô chọn có cấu trúc</b> trong POS › Tạo khuyến mãi (ngày, giờ, dịch vụ, khách mới, <b>cần đặt lịch</b>, số lượng) — chữ tự do máy không kiểm được. Đổi <b>Ngày / Giờ khách quét</b> ở trên để thấy nút thay đổi.</p></div>
+ <div class="panel" id="pSheet"><h3>👆 Bấm vào ưu đãi thì nút là gì</h3><table class="t"><thead><tr><th>Loại</th><th>Nút chính</th><th>Không có</th></tr></thead><tbody>
+  <tr><td>🏷️ Deal <b>của tiệm đang ở</b></td><td>“Check-in & dùng ưu đãi này” (đã check-in → “Báo tiệm: tôi muốn dùng”) — gắn vào lượt, thợ & thu ngân thấy</td><td>Chỉ đường</td></tr>
+  <tr><td>🎟️ Coupon <b>của tiệm đang ở</b></td><td>Nhập SĐT → “Lấy coupon & check-in luôn” · phụ: “Chỉ lấy — dùng lần sau”</td><td>Chỉ đường</td></tr>
+  <tr><td>🎟️ Coupon tiệm khác (đối tác / tài trợ / gần đây)</td><td>Nhập SĐT → “Lấy coupon” · phụ: 📍 Chỉ đường</td><td>—</td></tr>
+  <tr><td>🏷️ Deal tiệm khác</td><td>📍 Chỉ đường · phụ: 🔔 Lưu & nhắc tôi</td><td>—</td></tr></tbody></table></div>
+ <div class="panel" id="pAds"><h3>💰 Banner hero = chỗ quảng cáo chính</h3><table class="t"><tbody>
+  <tr><td><b>50/50 chia đôi (mặc định)</b></td><td>Banner chia 2 nửa: <b>nửa trái luôn là quảng cáo của tiệm</b> — tiệm có nhiều chương trình thì <b>nửa trái tự đổi qua lại</b> (lệch nhịp với nửa phải để 2 nửa không đổi cùng lúc); nửa phải xoay các đối tác. Khách <b>luôn thấy cả hai cùng lúc</b>. Mỗi nửa có nút riêng.</td></tr>
+  <tr><td><b>50/50 xoay vòng</b> (so sánh)</td><td>Cả banner đổi qua lại tiệm ↔ đối tác. Lượt quét chẵn mở bằng tiệm, lẻ mở bằng đối tác để công bằng slide đầu.</td></tr>
+  <tr><td><b>Ai được lên banner</b></td><td>🤝 <b>Đối tác chéo</b>: doanh nghiệp gần đó tiệm chọn và duyệt — tiệm hiện quảng cáo của họ, họ hiện quảng cáo của tiệm. ⭐ <b>Được tài trợ</b>: deal Paid Boost của NEXORA lấp chỗ trống khi chưa đủ đối tác. Bộ lọc đối thủ luôn áp.</td></tr>
+  <tr><td><b>Nút bấm “khoá” slide</b></td><td>Chạm vào banner là <b>dừng xoay và ghi lại slide đang thấy</b> ngay lúc ngón tay chạm — dù slide đổi đúng lúc đó, khách vẫn vào đúng chi tiết của slide mình đã thấy. Vuốt ngang để chuyển slide, không mở nhầm.</td></tr>
+  <tr><td><b>Đếm lượt thấy</b></td><td>Chỉ tính <code>hero_impression</code> khi slide hiện đủ 1 giây; bấm ghi <code>hero_click</code> kèm <code>slide</code> · <code>kind</code> (own / cross / paid) · <code>qr_id</code>.</td></tr>
+  <tr><td><b>Màn chờ sau check-in</b></td><td>Vẫn giữ: deal tài trợ lên đầu trong lúc khách ngồi chờ.</td></tr></tbody></table>
+  <p class="note" style="margin-top:8px">Đã bỏ khối “Về tiệm”. Mục “Ưu đãi của tiệm” đã bỏ vì chương trình của tiệm đã chạy trên nửa trái banner. Chỗ đó nhường cho <b>⭐ Được tài trợ · gần đây</b> ngay dưới menu (3 deal trả phí, ưu tiên deal <b>chưa có trên banner</b> để không lặp) — ghi <code>ad_impression</code> với slot <code>home_below_own</code>.</p></div>
+ <div class="panel" id="pLoc"><h3>📍 Hệ thống lấy vị trí từ đâu</h3>
+  <table class="t"><thead><tr><th>Thứ tự</th><th>Nguồn</th><th>Khi nào</th></tr></thead><tbody>
+  <tr><td><b>Mặc định</b></td><td>🏪 <b>Vị trí tiệm tạo QR</b> (<code>qr_anchor</code>)</td><td>Luôn có sẵn, không cần xin quyền. Lấy từ địa chỉ trong hồ sơ tiệm khi tạo OneQR.</td></tr>
+  <tr><td><b>Tuỳ chọn</b></td><td>📡 <b>Vị trí của khách</b> (<code>gps</code>)</td><td>Chỉ khi khách <b>tự bật</b> “Dùng vị trí của tôi”. Trình duyệt hỏi; khách có quyền từ chối. Không hỏi khi vừa mở trang.</td></tr>
+  <tr><td>Dự phòng</td><td>✍️ ZIP / thành phố (<code>zip</code>)</td><td>Khách từ chối vị trí nhưng muốn xem nơi khác (ví dụ gần nhà).</td></tr>
+  </tbody></table>
+  <p class="note" style="margin-top:8px">Khách chưa có tài khoản: vị trí chỉ giữ <b>trong lượt xem này</b>. Nhật ký lượt quét chỉ lưu vị trí <b>làm tròn</b> (theo ZIP), không lưu toạ độ chính xác.</p></div>
+ <div class="panel" id="pSearch"><h3>🔎 Search Deals hiểu câu gõ thế nào</h3>
+  <p style="font-size:13px;line-height:1.55">Khách gõ tự nhiên — “<i>trà sữa gần đây</i>”, “<i>massage dưới $50</i>”, “<i>ăn tối nay</i>”. Hệ thống tách ra: <span class="tag2">ngành</span> <span class="tag2">giá tối đa</span> <span class="tag2">thời gian</span> rồi tìm trong deal đang chạy, xếp theo <b>khớp nhu cầu</b> trước, <b>gần</b> sau. Không có kết quả → mời <b>đăng mong muốn</b> bằng SĐT (✦ Deal Match), tiệm gần đó sẽ thấy nhu cầu.</p>
+  <p class="note">Bộ lọc đối thủ vẫn áp khi tìm. Khách gõ đúng ngành của tiệm (vd “pedicure” ở tiệm nail) → hiện <b>ưu đãi của chính tiệm</b> trước; deal tiệm cùng ngành khác bị ẩn nếu chủ tiệm bật bộ lọc. <b>Quyết định mở cho Brian.</b></p></div>
+ <div class="panel" id="pLog"><h3>🧾 Dữ liệu ghi lại (mô phỏng)</h3><div class="log" id="log"></div>
+  <p class="note" style="margin-top:8px"><code>qr_id</code> · <code>biz_id</code> · <code>anchor</code> · <code>loc_source</code> (qr_anchor / gps / zip) · <code>zip_bucket</code> · <code>screen</code> · <code>query</code> + <code>parsed</code> · <code>filtered_out</code> (số deal bị bộ lọc đối thủ ẩn) · <code>claim_id</code>.</p></div>
+ <div class="panel" id="pOpen"><h3>❓ Còn chờ Brian chốt</h3><ol style="padding-left:18px;font-size:13px;line-height:1.7"><li>Bộ lọc đối thủ mặc định: cả nhóm hay chỉ cùng ngành.</li><li>Search có được hiện deal tiệm cùng ngành khi khách gõ đúng ngành đó không.</li><li>Bán kính mặc định của Deals Nearby.</li><li>Thứ tự trang chính: ① bản hiện tại, ② khám phá xuống dưới, hay ③ thanh gọn + 1 ô tài trợ + màn chờ (đề xuất).</li><li>Thêm ô “Cần đặt lịch trước” vào POS › Tạo khuyến mãi (để hệ thống kiểm được).</li><li>Chủ tiệm có được tắt ô tài trợ trên QR của mình không (đổi lại không nhận phần QR Host).</li><li>Tỷ lệ banner: giữ 50/50 hay cho tiệm chọn; đối tác chéo có trả phí không hay chỉ đổi chỗ cho nhau.</li></ol></div>
+</div>
+</main>
+
+<div class="wn" id="wn"><div class="bx"><div style="font-size:12px;font-weight:800;color:var(--p1)">MỚI · OneQR tại tiệm</div><h2 style="font-size:20px;margin:6px 0 8px">Deals Nearby & Search Deals cho khách chưa có tài khoản</h2><ul><li><b>Deals Nearby</b> mặc định lấy <b>vị trí tiệm tạo QR</b> — không cần xin quyền.</li><li>Khách có thể <b>tự bật vị trí của mình</b> (tuỳ chọn) hoặc nhập ZIP.</li><li><b>Search Deals</b>: gõ điều mình muốn — hệ thống hiểu ngành, giá, thời gian.</li><li>Bộ lọc đối thủ để QR của tiệm không đẩy khách sang tiệm cạnh tranh.</li></ul><div style="display:flex;gap:8px;margin-top:12px"><button class="btn" id="wnGo">✦ Xem AI Tour</button><button class="btn ghost" id="wnX">Tự xem</button></div></div></div>
+<div class="stour hidden" id="tb"><div class="hd2">✦ AI SMART TOUR <span id="tStep"></span><span class="sp"></span><button id="tPause">⏸</button><button id="tNext">⏭</button><button id="tClose">✕</button></div><div id="tVi"></div><div id="tEn"></div><div class="bar2"><i id="tBar"></i></div></div>
+<div id="toast"></div>
+<script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];let tt;const toast=m=>{const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(tt);tt=setTimeout(()=>t.style.display='none',2600)};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rmD=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').toLowerCase();
+/* ---------- dữ liệu mẫu ---------- */
+const HOST={id:'biz_btc',name:'Bitcoin Nail Bar',area:'Houston · Westheimer',lat:29.7373,lng:-95.4636,ind:'nail',grp:'beauty',zip:'77056',qr:'qr_btc_counter_01'};
+const ME={lat:29.7056,lng:-95.4192,zip:'77401',label:'Bellaire (vị trí của bạn)'};
+const ZIPS={'77401':[29.7056,-95.4630,'Bellaire'],'77036':[29.7010,-95.5360,'Sharpstown'],'77002':[29.7560,-95.3650,'Downtown'],'77494':[29.7440,-95.8130,'Katy']};
+const GRP={beauty:'Làm đẹp',food:'Ăn uống',shop:'Mua sắm',health:'Sức khoẻ',auto:'Xe',family:'Gia đình & thú cưng'};
+const D=[
+ {id:'own1',own:1,biz:'Bitcoin Nail Bar',ind:'nail',grp:'beauty',t:'Nâng cấp pedicure: đá nóng + mặt nạ',big:'+$15',sm:'thêm',qty:null,price:null,cond:'Khi làm pedicure',lat:29.7373,lng:-95.4636,kw:'pedicure chan nail',th:'#6D28D9'},
+ {id:'own2',own:1,biz:'Bitcoin Nail Bar',ind:'nail',grp:'beauty',t:'Khách mới giảm 20% Gel-X',big:'20%',sm:'giảm',qty:50,left:31,price:48,cond:'Khách mới · 1 lần/khách',lat:29.7373,lng:-95.4636,kw:'gel-x gel nail mong',th:'#DB2777'},
+ {id:'n1',optin:1,biz:'Golden Nails & Spa',ind:'nail',grp:'beauty',t:'Pedicure spa giảm $10 thứ 2–4',big:'$10',sm:'giảm',qty:null,price:30,cond:'Thứ 2–4',lat:29.7400,lng:-95.4700,kw:'pedicure nail chan',th:'#0EA5E9'},
+ {id:'h1',biz:'Saigon Hair Studio',ind:'hair',grp:'beauty',t:'Cắt tóc tặng gội sấy',big:'1+1',sm:'tặng',qty:null,price:25,cond:'Khách mới & quen',lat:29.7290,lng:-95.4550,kw:'toc cat hair',th:'#F59E0B'},
+ {id:'s1',biz:'Lotus Spa Bellaire',ind:'spa',grp:'beauty',t:'Massage 60 phút giá $49',big:'$49',sm:'giá',qty:20,left:3,price:49,cond:'Đặt lịch trước',lat:29.7060,lng:-95.4600,kw:'massage spa xoa bop',th:'#10B981',eve:1},
+ {id:'f1',optin:1,spon:1,biz:'Phở 24 Bellaire',ind:'food',grp:'food',t:'Combo phở + nước $9',big:'$9',sm:'combo',qty:null,price:9,cond:'11h–14h',lat:29.7058,lng:-95.4280,kw:'pho an trua an toi mon viet food',th:'#EF4444',lunch:1},
+ {id:'f2',optin:1,aft:1,spon:1,biz:'Saigon Boba Westheimer',ind:'drink',grp:'food',t:'Trà sữa mua 1 tặng 1',big:'1+1',sm:'tặng',qty:100,left:62,price:6,cond:'Sau 3pm',lat:29.7330,lng:-95.4600,kw:'tra sua boba milk tea do uong',th:'#8B5CF6',eve:1},
+ {id:'f3',optin:1,morning:1,aft:1,biz:'Le Petit Bakery',ind:'bakery',grp:'food',t:'Giảm 15% bánh sinh nhật',big:'15%',sm:'giảm',qty:null,price:null,cond:'Đặt trước 1 ngày',lat:29.7420,lng:-95.4480,kw:'banh ngot cake bakery sinh nhat',th:'#F472B6'},
+ {id:'f4',optin:1,biz:'Crawfish Cafe Westheimer',ind:'food',grp:'food',t:'Tối nay: 2 lb tôm hùm đất giá $25',big:'$25',sm:'giá',qty:30,left:12,price:25,cond:'Sau 5pm',lat:29.7350,lng:-95.4750,kw:'an toi crawfish tom hai san dinner',th:'#DC2626',eve:1},
+ {id:'a1',optin:1,spon:1,biz:'Sparkle Car Wash',ind:'carwash',grp:'auto',t:'Rửa xe + hút bụi $12',big:'$12',sm:'giá',qty:null,price:12,cond:'Thứ 2–5',lat:29.7310,lng:-95.4400,kw:'rua xe car wash',th:'#0284C7'},
+ {id:'p1',spon:1,biz:'Paws Grooming',ind:'pet',grp:'family',t:'Tắm & cắt lông chó giảm $10',big:'$10',sm:'giảm',qty:40,left:18,price:45,cond:'Chó dưới 25 lb',lat:29.7120,lng:-95.4250,kw:'cho meo thu cung pet grooming',th:'#65A30D'},
+ {id:'d1',optin:1,biz:'Smile Dental Bellaire',ind:'dental',grp:'health',t:'Khám + cạo vôi $79',big:'$79',sm:'giá',qty:25,left:9,price:79,cond:'Khách mới',lat:29.7070,lng:-95.4650,kw:'nha si rang dental',th:'#14B8A6'},
+ {id:'x1',optin:1,biz:'The Tap Room',ind:'bar',grp:'food',t:'Happy hour: bia $3',big:'$3',sm:'bia',qty:null,price:3,cond:'4–7pm',lat:29.7400,lng:-95.4540,kw:'bia bar beer happy hour',th:'#78350F'},
+ {id:'m1',biz:'Viet Market Hillcroft',ind:'market',grp:'shop',t:'Giảm $5 đơn từ $50',big:'$5',sm:'giảm',qty:null,price:null,cond:'Đơn từ $50',lat:29.7015,lng:-95.5350,kw:'cho sieu thi di cho market grocery',th:'#16A34A'},
+];
+/* ---------- trạng thái ---------- */
+let oIdx=0,oT=null,oLock=null,MODE50='split',pIdx=0,pT=null,pLock=null,CROSS=1,SCAN=0,hIdx=0,heroT=null,hLock=null,hDown=null,heroSrc=null,ABOUT=0,info=null,BTN='rich',TOD='lunch',tickT=null,scr='home',ORDER='ad',COMP='group',PERM='ask',useGPS=false,zip='',radius=5,cat='all',q='',sheet=null,permOpen=false;
+const hav=(a,b,c,d)=>{const R=3958.8,r=x=>x*Math.PI/180;const dl=r(c-a),dn=r(d-b);const h=Math.sin(dl/2)**2+Math.cos(r(a))*Math.cos(r(c))*Math.sin(dn/2)**2;return 2*R*Math.asin(Math.sqrt(h))};
+function anchor(){if(useGPS)return{lat:ME.lat,lng:ME.lng,src:'gps',label:ME.label,zip:ME.zip};if(zip&&ZIPS[zip])return{lat:ZIPS[zip][0],lng:ZIPS[zip][1],src:'zip',label:'ZIP '+zip+' · '+ZIPS[zip][2],zip};return{lat:HOST.lat,lng:HOST.lng,src:'qr_anchor',label:'Quanh '+HOST.name,zip:HOST.zip}}
+function compHidden(d){if(d.own)return false;if(COMP==='off')return false;if(COMP==='ind')return d.ind===HOST.ind;return d.grp===HOST.grp}
+function withDist(){const A=anchor();return D.map(d=>({...d,mi:hav(A.lat,A.lng,d.lat,d.lng)}))}
+function log(o){const A=anchor();const rec={t:new Date().toLocaleTimeString('vi-VN'),qr_id:HOST.qr,biz_id:HOST.id,loc_source:A.src,zip_bucket:A.zip,...o};const el=$('#log');el.textContent=JSON.stringify(rec)+'\n'+el.textContent}
+/* ---------- render ---------- */
+function stub(d){return`<div class="st" style="background:${d.th}">${esc(d.big)}<small>${esc(d.sm).toUpperCase()}</small></div>`}
+function card(d,slot){if(d.spon&&slot)log({event:'ad_impression',slot,deal:d.id});const type=d.qty?`<span class="tg cp">🎟️ COUPON · còn ${d.left}/${d.qty}</span>`:`<span class="tg deal">🏷️ DEAL</span>`;
+ return`<button class="card" data-d="${d.id}">${stub(d)}<div>${d.spon&&slot?'<span class="tg" style="background:#FEF3C7;color:#92400E">⭐ Được tài trợ</span> ':''}<b>${esc(d.t)}</b><div class="m">${d.own?'<span class="tg own">Tiệm bạn đang ở</span> ':''}${esc(d.biz)}${d.own?'':' · '+d.mi.toFixed(1)+' mi'}</div><div class="m">${esc(d.cond)}</div>${type}${ruleChips(d)}</div></button>`}
+let DAY=2;const HOURS={morning:9.5,lunch:12.5,aft:15.5,eve:18.5};const HOUR=()=>HOURS[TOD];
+const DN=['CN','T2','T3','T4','T5','T6','T7'];
+const RULES={own1:{days:[1,2,3,4,5,6],from:10,to:19,svc:'Pedicure'},own2:{days:[2,3,4],from:10,to:15,svc:'Gel-X',book:1,newOnly:1},
+ n1:{days:[1,2,3],from:10,to:19},h1:{},s1:{book:1},f1:{from:11,to:14},f2:{from:15,to:22},f3:{book:1},f4:{from:17,to:22},a1:{days:[1,2,3,4]},p1:{book:1},d1:{book:1,newOnly:1},m1:{}};
+const hfmt=h=>{const hh=Math.floor(h),m=Math.round((h-hh)*60),ap=hh>=12?'PM':'AM';return (hh%12||12)+(m?':'+String(m).padStart(2,'0'):'')+ap};
+function daysTxt(ds){if(!ds||ds.length===7)return '';const o=[...ds].sort((a,b)=>(a||7)-(b||7));const cons=o.every((v,i)=>!i||((v||7)-(o[i-1]||7))===1);return cons&&o.length>2?DN[o[0]]+'–'+DN[o[o.length-1]]:o.map(x=>DN[x]).join('·')}
+function evalR(d){const r=RULES[d.id]||{};const dayOk=!r.days||r.days.includes(DAY),h=HOUR(),timeOk=r.from==null||(h>=r.from&&h<r.to);
+ const win=[daysTxt(r.days),r.from!=null?hfmt(r.from)+'–'+hfmt(r.to):''].filter(Boolean).join(' · ');return{r,now:dayOk&&timeOk,dayOk,timeOk,win,book:!!r.book,newOnly:!!r.newOnly}}
+function ruleChips(d){const e=evalR(d);return `<div style="margin-top:3px">${e.book?'<span class="tg bkc">📅 Cần đặt lịch</span> ':''}${e.newOnly?'<span class="tg nwc">👋 Khách mới</span> ':''}${e.win?(e.now?`<span class="tg okc">✅ Đang áp dụng · ${e.win}</span>`:`<span class="tg waitc">⏰ ${e.win}</span>`):(!e.book?'<span class="tg okc">✅ Áp dụng bây giờ</span>':'')}</div>`}
+function condShort(id){const d=D.find(x=>x.id===id);if(!d)return '';const e=evalR(d);return e.book?'📅 Cần đặt lịch':e.win?(e.now?'✅ Đang áp dụng':'⏰ '+e.win):'✅ Áp dụng bây giờ'}
+const TODX={morning:['☕ Sáng nay quanh đây',d=>d.morning],lunch:['🍜 Ăn trưa quanh đây',d=>d.lunch],aft:['🧋 Giải khát chiều nay',d=>d.aft],eve:['🌙 Tối nay quanh đây',d=>d.eve]};
+const QS={morning:['cà phê','bánh ngọt','rửa xe'],lunch:['ăn trưa dưới $10','trà sữa','rửa xe'],aft:['trà sữa','bánh sinh nhật','thú cưng'],eve:['ăn tối nay','trà sữa tối nay','hải sản']};
+function discList(){const fn=TODX[TOD][1];return withDist().filter(d=>!d.own&&!compHidden(d)&&d.mi<=radius).sort((a,b)=>(fn(b)?1:0)-(fn(a)?1:0)||a.mi-b.mi)}
+function richDisc(){const L=discList();if(!L.length)return '';const [lab,fn]=TODX[TOD];const ctx=L.filter(fn);const urg=L.filter(d=>d.qty&&d.left<=12).length;
+ return `<div class="rd" id="discBox"><div class="rdc" data-s="near" data-dc="near"><div class="t1"><i>⌖</i>Deals Nearby<span class="n">${L.length}</span></div>${ctx.length?`<div class="ctx">${lab} · ${ctx.length}</div>`:`<div class="ctx">Gần ${HOST.name}</div>`}<div class="tick" id="tickN">${esc(L[0].t)} · ${L[0].mi.toFixed(1)} mi</div>${urg?`<span class="urg">⏳ ${urg} deal sắp hết suất</span>`:''}</div>
+ <div class="rdc" data-s="search" data-dc="search"><div class="t1"><i>⌕</i>Search Deals</div><div class="ctx">Gõ điều bạn muốn</div><div class="tick" id="tickS">“${esc(QS[TOD][0])}”</div><div class="qs">${QS[TOD].map(x=>`<span data-q="${esc(x)}">${esc(x)}</span>`).join('')}</div></div></div>`}
+function startTick(){clearInterval(tickT);const n=$('#tickN'),sb=$('#tickS');if(!n&&!sb)return;const L=discList();let i=0;tickT=setInterval(()=>{i++;if(!document.body.contains(n||sb))return clearInterval(tickT);[n,sb].forEach(x=>x&&(x.style.opacity=0));setTimeout(()=>{if(n&&L.length){const d=L[i%L.length];n.textContent=d.t+' · '+d.mi.toFixed(1)+' mi'}if(sb){sb.textContent='“'+QS[TOD][i%QS[TOD].length]+'”'}[n,sb].forEach(x=>x&&(x.style.opacity=1))},350)},2600)}
+const SVC=[['Pedicure',35],['Gel-X',60],['Dip powder',45],['Manicure',25],['Nail art','từ 10']];
+const TECHS=[['J','Jessica','Gel-X · nail art','#DB2777'],['T','Tâm','Pedicure · massage chân','#0EA5E9'],['A','Ann','Dip · bột','#F59E0B']];
+function about(){if(!ABOUT)return '';return `<div class="ab" id="aboutBox"><div class="sec" style="margin-top:0">VỀ ${HOST.name.toUpperCase()}</div>
+ <div class="abst"><span class="open">🟢 Đang mở · đóng 7:00 PM</span><span class="wait">⏱ Đang chờ: 2 khách</span><span>⭐ 4.8 · 126 đánh giá</span></div>
+ <div class="abrow">
+  <button class="abc" data-info="svc"><b>💅 Dịch vụ & giá</b>${SVC.slice(0,3).map(x=>`<div class="li"><span>${x[0]}</span><b>$${x[1]}</b></div>`).join('')}<small>Xem đủ ${SVC.length} dịch vụ ›</small></button>
+  <button class="abc" data-info="team"><b>👩‍🎨 Thợ hôm nay</b><div class="av3">${TECHS.map(t=>`<i style="background:${t[3]}">${t[0]}</i>`).join('')}</div><small>${TECHS.map(t=>t[1]).join(' · ')}</small><small>Chọn thợ khi check-in ›</small></button>
+  <button class="abc" data-info="gal"><b>📸 Mẫu móng</b><div class="th4"><i style="background:linear-gradient(135deg,#F9A8D4,#DB2777)"></i><i style="background:linear-gradient(135deg,#C4B5FD,#6D28D9)"></i><i style="background:linear-gradient(135deg,#FDE68A,#F59E0B)"></i><i style="background:linear-gradient(135deg,#99F6E4,#0F766E)"></i></div><small>Chụp màn hình mẫu → đưa thợ ›</small></button>
+  <button class="abc" data-info="wifi"><b>📶 Wi-Fi & tiện nghi</b><small>Wi-Fi: BitcoinNailBar</small><small>Bấm để chép mật khẩu</small><small>🅿️ Đậu xe trước tiệm · ☕ Nước miễn phí</small></button>
+  <button class="abc" data-info="rev"><b>⭐ Khách nói gì</b><small>“Pedicure đá nóng rất thư giãn, Tâm làm kỹ.” — Linh</small><small>Viết đánh giá sau khi làm xong ›</small></button>
+  <button class="abc" data-info="pol"><b>ℹ️ Cần biết</b><small>Thanh toán: thẻ · tiền mặt · (tiệm cài)</small><small>Huỷ lịch trước 2 giờ</small><small>📍 Chỉ đường · 📞 Gọi</small></button>
+ </div></div>`}
+const HS_OWN=[{id:'own1',kind:'own',k:'CHƯƠNG TRÌNH CỦA BITCOIN NAIL BAR',h:'Nâng cấp trải nghiệm pedicure',p:'Thêm massage đá nóng và mặt nạ dưỡng ẩm vào gói pedicure của bạn.',pr:'Thêm $15',cta:'Xem ưu đãi',bg:'linear-gradient(135deg,#4C1D95,#7C3AED 60%,#C4B5FD)'},
+ {id:'own2',kind:'own',k:'CHƯƠNG TRÌNH CỦA BITCOIN NAIL BAR',h:'Khách mới giảm 20% Gel-X',p:'Lần đầu làm Gel-X tại tiệm · còn 31/50 suất.',pr:'−20%',cta:'Lấy coupon',bg:'linear-gradient(135deg,#9D174D,#DB2777 60%,#F9A8D4)'}];
+let HS_PART=[],AUTO={mode:'auto',R:1,why:[]};const BLOCKCAT=['bar','tobacco','cannabis','adult'];const BLOCKBIZ=new Set();const MINP=3;
+function refreshPart(){const cand=D.filter(d=>!d.own&&(d.optin||d.spon)).map(d=>({d,mi:hav(HOST.lat,HOST.lng,d.lat,d.lng)}));
+ const why=cand.map(({d,mi})=>{let st='ok';if(!d.optin)st='notopt';else if(compHidden(d))st='comp';else if(BLOCKCAT.includes(d.ind))st='cat';else if(BLOCKBIZ.has(d.biz))st='owner';return{d,mi,st}});
+ const valid=R=>why.filter(x=>x.st==='ok'&&x.mi<=R);let R=AUTO.mode==='auto'?(valid(1).length>=MINP?1:2):+AUTO.mode;AUTO.R=R;
+ why.forEach(x=>{if(x.st==='ok'&&x.mi>R)x.st='far'});
+ const seen=new Set();const pick=why.filter(x=>x.st==='ok').sort((a,b)=>(evalR(b.d).now-evalR(a.d).now)||a.mi-b.mi).filter(x=>!seen.has(x.d.biz)&&seen.add(x.d.biz));
+ let slides=pick.map(x=>({id:x.d.id,kind:'cross',mi:x.mi,d:x.d}));
+ if(slides.length<MINP){why.filter(x=>x.st==='notopt'&&x.d.spon&&x.mi<=2&&!compHidden(x.d)&&!BLOCKCAT.includes(x.d.ind)).slice(0,MINP-slides.length).forEach(x=>{x.st='paidfill';slides.push({id:x.d.id,kind:'paid',mi:x.mi,d:x.d})})}
+ pick.forEach(x=>x.st='on');AUTO.why=why;
+ HS_PART=slides.map(x=>({id:x.id,kind:x.kind,k:x.d.biz.toUpperCase()+' · '+x.mi.toFixed(1)+' MI',h:x.d.t,p:x.d.cond,pr:x.d.big,bg:`linear-gradient(135deg,${x.d.th},${x.d.th}CC 60%,#ffffff55)`}));
+ drawAuto()}
+const ST_TXT={on:'✅ Đang lên banner',far:'↔️ Xa hơn bán kính',comp:'🛡️ Cùng nhóm ngành — bộ lọc đối thủ',cat:'🚫 Ngành chặn mặc định (bar)',owner:'🙈 Chủ tiệm đã ẩn',notopt:'— Chưa bật quảng cáo chéo',paidfill:'⭐ Tài trợ lấp chỗ'};
+function drawAuto(){const el=$('#autoList');if(!el)return;$('#autoR').textContent=AUTO.R+' mi'+(AUTO.mode==='auto'?(AUTO.R===2?' (tự nới vì trong 1 mi chưa đủ '+MINP+' đối tác)':' (trong 1 mi đã đủ đối tác)'):'');
+ el.innerHTML=AUTO.why.sort((a,b)=>a.mi-b.mi).map(x=>`<tr><td><b>${esc(x.d.biz)}</b><div style="font-size:11px;color:var(--mute)">${esc(x.d.t)}</div></td><td>${x.mi.toFixed(1)} mi</td><td>${ST_TXT[x.st]||x.st}</td><td>${['on','far','owner'].includes(x.st)?`<button class="btn ghost sm" data-blk="${esc(x.d.biz)}">${x.st==='owner'?'Hiện lại':'Ẩn'}</button>`:''}</td></tr>`).join('');
+ $$('#autoList [data-blk]').forEach(b=>b.onclick=()=>{const n=b.dataset.blk;BLOCKBIZ.has(n)?BLOCKBIZ.delete(n):BLOCKBIZ.add(n);pIdx=0;log({event:'owner_block_toggle',biz:n,blocked:BLOCKBIZ.has(n)});draw()})}
+const KIND={own:'',cross:'🤝 GẦN TIỆM',paid:'⭐ ĐƯỢC TÀI TRỢ'};
+function isSplit(){return CROSS&&MODE50==='split'}
+function partList(){return HS_PART.filter(x=>!compHidden(D.find(d=>d.id===x.id)))}
+function splitHTML(){const P=partList();const x=P.length?P[pIdx%P.length]:null;const o=HS_OWN[oIdx%HS_OWN.length];
+ return `<div class="hero2" id="heroBox"><div class="hh" id="heroOwn" data-hid="${o.id}" style="background:${o.bg}">${ownInner(o)}</div>
+ ${x?`<div class="hh" id="heroPart" data-hid="${x.id}" style="background:${x.bg}">${partInner(x,P)}</div>`:''}</div>`}
+function ownInner(o){const n=HS_OWN.length;return `<div class="pc"><div class="k">CỦA ${HOST.name.toUpperCase()}</div><h3>${esc(o.h)}</h3><span class="cond">${condShort(o.id)}</span><div class="row2"><span class="cta">Xem →</span><span class="pr">${esc(o.pr)}</span></div></div>${n>1?`<div class="dots">${HS_OWN.map((y,i)=>`<i class="${i<oIdx%n?'done':''}"><b ${i===oIdx%n?'id="oBar"':''}></b></i>`).join('')}</div>`:''}`}
+function ownShow(){const el=$('#heroOwn');if(!el)return;const o=HS_OWN[oIdx%HS_OWN.length];el.dataset.hid=o.id;el.style.background=o.bg;el.innerHTML=ownInner(o);setTimeout(()=>{if($('#heroOwn')&&$('#heroOwn').dataset.hid===o.id)log({event:'hero_impression',slide:o.id,kind:'own',half:'shop'})},1000)}
+function partInner(x,P){return `<div class="pc"><span class="kind">${KIND[x.kind]}</span><div class="k">${esc(x.k)}</div><h3>${esc(x.h)}</h3><div class="row2"><span class="cta">Xem →</span><span class="pr">${esc(x.pr)}</span></div></div><div class="dots">${P.map((y,i)=>`<i class="${i<pIdx%P.length?'done':''}"><b ${i===pIdx%P.length?'id="pBar"':''}></b></i>`).join('')}</div>`}
+function partShow(){const P=partList(),el=$('#heroPart');if(!el||!P.length)return;const x=P[pIdx%P.length];el.dataset.hid=x.id;el.style.background=x.bg;el.innerHTML=partInner(x,P);clearTimeout(hImpT);hImpT=setTimeout(()=>{if($('#heroPart')&&$('#heroPart').dataset.hid===x.id)log({event:'hero_impression',slide:x.id,kind:x.kind,half:'partner'})},1000)}
+function splitStart(){clearInterval(pT);clearInterval(oT);if(!$('#heroOwn'))return;ownShow();if($('#heroPart'))partShow();if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ if(HS_OWN.length>1){let o0=performance.now()-2000;const DO=5000;oT=setInterval(()=>{if(!$('#heroOwn'))return clearInterval(oT);if(oLock)return(o0=performance.now());const p=Math.min(1,(performance.now()-o0)/DO);const b=$('#oBar');if(b)b.style.width=p*100+'%';if(p>=1){const pc=$('#heroOwn .pc');pc&&pc.classList.add('fade');o0=performance.now()+300;setTimeout(()=>{oIdx++;ownShow()},250)}},80)}
+ if(!$('#heroPart'))return;let t0=performance.now();const DP=4000;
+ pT=setInterval(()=>{if(!$('#heroPart'))return clearInterval(pT);if(pLock)return(t0=performance.now());const p=Math.min(1,(performance.now()-t0)/DP);const b=$('#pBar');if(b)b.style.width=p*100+'%';if(p>=1){const pc=$('#heroPart .pc');pc&&pc.classList.add('fade');t0=performance.now()+300;setTimeout(()=>{pIdx++;partShow()},250)}},80)}
+function bindSplit(){const own=$('#heroOwn'),pt=$('#heroPart');
+ if(own){let o0=null;own.onpointerdown=e=>{oLock=own.dataset.hid;o0=e.clientX};own.onpointerup=e=>{if(o0==null)return;const dx=e.clientX-o0;o0=null;const n=HS_OWN.length;if(Math.abs(dx)>30&&n>1){oIdx=(oIdx+(dx<0?1:n-1))%n;oLock=null;ownShow();return}const id=oLock;log({event:'hero_click',slide:id,kind:'own',half:'shop'});heroSrc='own';sheet=id;drawLayer()};own.onpointerleave=()=>{if(!sheet){oLock=null;o0=null}}}
+ if(pt){let d0=null;pt.onpointerdown=e=>{pLock=pt.dataset.hid;d0=e.clientX};
+  pt.onpointerup=e=>{if(d0==null)return;const dx=e.clientX-d0;d0=null;const P=partList();if(Math.abs(dx)>30){pIdx=(pIdx+(dx<0?1:P.length-1))%P.length;pLock=null;partShow();return}
+   const id=pLock;const sl=P.find(y=>y.id===id);log({event:'hero_click',slide:id,kind:sl.kind,half:'partner'});heroSrc=sl.kind;sheet=id;drawLayer()};
+  pt.onpointerleave=()=>{if(!sheet){pLock=null;d0=null}}}}
+function heroSeq(){if(!CROSS)return HS_OWN.slice();const P=HS_PART.filter(x=>!compHidden(D.find(d=>d.id===x.id)));const n=Math.max(HS_OWN.length,P.length);const out=[];for(let i=0;i<n;i++){out.push(HS_OWN[i%HS_OWN.length]);if(P.length)out.push(P[i%P.length])}if(SCAN%2&&P.length){out.push(out.shift())}return out}
+function heroHTML(){const S=heroSeq();const x=S[hIdx%S.length];return`<div class="hero" id="heroBox" style="background:${x.bg}" data-hid="${x.id}"><div class="hc"><div class="k"><span class="who">${esc(x.k)}</span>${x.kind!=='own'?`<span class="kind">${KIND[x.kind]}</span>`:''}</div><h2>${esc(x.h)}</h2><p>${esc(x.p)}</p><div class="row"><span class="cta">${esc(x.cta)} →</span><span class="pr">${esc(x.pr)}</span></div></div><div class="dots">${S.map((y,i)=>`<i class="${i<hIdx%S.length?'done':''}"><b ${i===hIdx%S.length?'id="hBar"':''}></b></i>`).join('')}</div></div>`}
+let hImpT=null;
+function heroShow(){const S=heroSeq(),x=S[hIdx%S.length],hb=$('#heroBox');if(!hb)return;hb.outerHTML=heroHTML();bindHero();clearTimeout(hImpT);hImpT=setTimeout(()=>{if($('#heroBox')&&$('#heroBox').dataset.hid===x.id)log({event:'hero_impression',slide:x.id,kind:x.kind,pos:hIdx%S.length})},1000)}
+function heroStart(){clearInterval(heroT);if(!$('#heroBox'))return;{const S=heroSeq(),x=S[hIdx%S.length];clearTimeout(hImpT);hImpT=setTimeout(()=>{if($('#heroBox')&&$('#heroBox').dataset.hid===x.id)log({event:'hero_impression',slide:x.id,kind:x.kind,pos:hIdx%S.length})},1000)}const bar=()=>$('#hBar');let t0=performance.now();const DURH=4500;if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
+ heroT=setInterval(()=>{if(!$('#heroBox'))return clearInterval(heroT);if(hLock)return(t0=performance.now());const p=Math.min(1,(performance.now()-t0)/DURH);const b=bar();if(b)b.style.width=(p*100)+'%';if(p>=1){const hc=$('#heroBox .hc');hc&&hc.classList.add('fade');setTimeout(()=>{hIdx++;heroShow();t0=performance.now()},250)}},80)}
+function bindHero(){const hb=$('#heroBox');if(!hb)return;
+ hb.onpointerdown=e=>{hLock=hb.dataset.hid;hDown={x:e.clientX,t:Date.now()}};
+ hb.onpointerup=e=>{if(!hDown)return;const dx=e.clientX-hDown.x;const S=heroSeq();if(Math.abs(dx)>40){hIdx=(hIdx+(dx<0?1:S.length-1))%S.length;hDown=null;hLock=null;heroShow();return}
+  const id=hLock;hDown=null;const sl=heroSeq().find(y=>y.id===id);log({event:'hero_click',slide:id,kind:sl.kind});heroSrc=sl.kind;sheet=id;drawLayer()};
+ hb.onpointerleave=()=>{if(!sheet){hLock=null;hDown=null}}}
+function home(){const own=D.filter(d=>d.own);
+ const disc=BTN==='rich'?richDisc():`<div class="disc" id="discBox"><button data-s="near" data-dc="near"><span class="ic">⌖</span><span><b>Deals Nearby</b><small>Quanh tiệm · hoặc vị trí bạn</small></span></button><button data-s="search" data-dc="search"><span class="ic">⌕</span><span><b>Search Deals</b><small>Gõ điều bạn muốn</small></span></button></div>`;
+ const hero=isSplit()?splitHTML():heroHTML();const heroOld=`<div class="hero" id="heroBoxOld"><div class="k">CHƯƠNG TRÌNH CỦA ${HOST.name.toUpperCase()}</div><h2>Nâng cấp trải nghiệm pedicure</h2><p>Thêm massage đá nóng và mặt nạ dưỡng ẩm vào gói pedicure của bạn.</p><div class="row"><button class="cta" data-d="own1">Xem ưu đãi →</button><span class="pr">Thêm $15</span></div></div>`;
+ const menu=`<div class="sec">MENU CỦA ${HOST.name.toUpperCase()}</div><div class="menu" id="shopMenu"><button data-ci="1"><i>✓</i>Check-in</button><button data-s="book"><i>▦</i>Booking</button><button data-s="svc"><i>≡</i>Services</button><button data-s="gal"><i>▧</i>Gallery</button></div><button class="more" data-s="more" style="width:100%">Xem thêm 4 tiện ích · Review, Tip, Rewards, Gift Card</button>`;
+ const ownList=`<div class="sec">ƯU ĐÃI CỦA TIỆM</div>`+own.map(d=>card({...d,mi:0})).join('');
+ const exploreRec=`<div class="explore" id="exploreBox"><b>🧭 Khám phá quanh đây</b><div class="goal" style="margin:4px 0 8px">Deal của tiệm khác gần ${HOST.name} — không cần tài khoản</div>${disc}</div>`;
+ const head=`<div class="hd"><span>${USER?'':'Khách · không cần app'}</span>${USER?`<span class="me" id="meChip">👤 ${esc(USER.name)} · thành viên</span>`:`<div class="acct" id="acctBtns"><button class="li" data-acct="login">Đăng nhập</button><button class="su" data-acct="signup">Đăng ký</button></div>`}</div><div class="biz"><div class="lg">B</div><div><b>${HOST.name}</b><small>${HOST.area}</small></div></div>`;
+ if(ORDER==='ad'){const A=withDist().filter(d=>d.spon&&!compHidden(d)).sort((a,b)=>a.mi-b.mi);const slim=BTN==='rich'?richDisc():`<div class="chips" id="slimBar" style="margin:-4px 0 10px"><button class="chip" data-s="near" data-dc="near">⌖ Deals Nearby</button><button class="chip" data-s="search" data-dc="search">⌕ Search Deals</button><span style="font-size:11px;color:var(--mute);align-self:center;white-space:nowrap">Nexora</span></div>`;
+  const ad=A[0]?`<div class="sec" style="display:flex;justify-content:space-between"><span>GẦN ĐÂY</span><button data-s="near" style="color:var(--p1);font-weight:800;letter-spacing:0">Xem thêm ›</button></div><div id="adSlot">${card(A[0],'home_inline')}</div>`:'';
+  const menuCI=menu.replace('<button><i>✓</i>Check-in</button>','<button data-ci="1"><i>✓</i>Check-in</button>');
+  const inHero=new Set(isSplit()||CROSS?HS_PART.map(x=>x.id):[]);const SP=withDist().filter(d=>d.spon&&!compHidden(d)).sort((a,b)=>(inHero.has(a.id)-inHero.has(b.id))||a.mi-b.mi).slice(0,3);
+  const spon=SP.length?`<div class="sec" style="display:flex;justify-content:space-between"><span>⭐ ĐƯỢC TÀI TRỢ · GẦN ĐÂY</span><button data-s="near" style="color:var(--p1);font-weight:800;letter-spacing:0">Xem thêm ›</button></div><div id="adSlot">${SP.map(d=>card(d,'home_below_own')).join('')}</div>`:'';
+  return head+slim+hero+menuCI+spon}
+ return ORDER==='cur'?head+disc+`<div class="goal"><span>Mục tiêu: Tăng đánh giá</span>Trải nghiệm được ưu tiên tự động</div>`+hero+menu:head+hero+menu+ownList+exploreRec}
+function near(){const A=anchor();let L=withDist().filter(d=>!d.own&&d.mi<=radius);const hid=L.filter(compHidden).length;L=L.filter(d=>!compHidden(d));
+ const cats=[...new Set(L.map(d=>d.grp))];if(cat!=='all'&&!cats.includes(cat))cat='all';if(cat!=='all')L=L.filter(d=>d.grp===cat);L.sort((a,b)=>a.mi-b.mi);
+ return`<div class="hd sub"><button class="back" data-s="home" aria-label="Về menu chính">← Menu chính</button><b>Deals Nearby</b></div>
+ <div class="anchor" id="anchorBox"><span class="pin">${A.src==='gps'?'📡':A.src==='zip'?'✍️':'🏪'}</span><div><b>${esc(A.label)}</b><small>${A.src==='qr_anchor'?'Mặc định theo vị trí tiệm tạo QR — không cần bật định vị':A.src==='gps'?'Đang dùng vị trí của bạn · chỉ trong lượt xem này':'Theo ZIP bạn nhập'}</small></div></div>
+ <button class="locbtn" id="gpsBtn">📡 Dùng vị trí của tôi <small style="font-weight:600;color:var(--mute)">(tuỳ chọn)</small><span class="tgl ${useGPS?'on':''}"></span></button>
+ ${A.src!=='gps'?`<div style="display:flex;gap:6px;margin-bottom:8px"><input class="in" id="zipIn" placeholder="Hoặc nhập ZIP (vd 77036)" value="${esc(zip)}" inputmode="numeric" style="padding:8px 10px"><button class="btn sm" id="zipGo">Xem</button>${zip?'<button class="btn ghost sm" id="zipX">✕</button>':''}</div>`:''}
+ <div class="chips" id="radChips">${[1,3,5,10].map(r=>`<button class="chip ${radius===r?'on':''}" data-r="${r}">${r} mi</button>`).join('')}</div>
+ <div class="chips" id="catChips"><button class="chip ${cat==='all'?'on':''}" data-c="all">Tất cả ${L.length&&cat==='all'?L.length:''}</button>${cats.map(g=>`<button class="chip ${cat===g?'on':''}" data-c="${g}">${GRP[g]}</button>`).join('')}</div>
+ ${hid?`<div class="note" id="compNote">🛡️ ${hid} deal ${COMP==='group'?'nhóm '+GRP[HOST.grp]:'ngành Nail'} gần đây được ẩn theo cài đặt của ${HOST.name}.</div>`:''}
+ <div id="nearList">${L.map(d=>card(d)).join('')||`<div class="empty">Chưa có deal trong ${radius} mi.<br><button class="btn sm" style="margin-top:8px" data-r="10">Mở rộng 10 mi</button></div>`}</div>`}
+const DICT=[['nail','nail|mong|gel|pedicure|pedi|chan|manicure|dip'],['hair','toc|hair|cat toc|nhuom'],['spa','massage|spa|xoa bop|facial'],['food','an|pho|com|bun|food|dinner|lunch|an toi|an trua|nha hang|tom|crawfish'],['drink','tra sua|boba|cafe|ca phe|coffee|nuoc|milk tea|do uong'],['bakery','banh|cake|bakery'],['carwash','rua xe|car wash|xe'],['pet','cho|meo|pet|thu cung|grooming'],['dental','rang|nha si|dental'],['market','cho|sieu thi|market|grocery']];
+function parse(s){const t=rmD(s);const out={inds:[],max:null,time:null};DICT.forEach(([k,re])=>{if(new RegExp('(^|\\s)('+re+')(\\s|$)').test(t))out.inds.push(k)});
+ const m=t.match(/(duoi|under|<|toi da|max)\s*\$?\s*(\d+)/)||t.match(/\$\s*(\d+)\s*(tro xuong|or less)/);if(m)out.max=+(m[2]||m[1]);
+ if(/toi nay|tonight|buoi toi|dinner|an toi/.test(t))out.time='eve';else if(/trua|lunch/.test(t))out.time='lunch';
+ if(out.inds.includes('pet')&&out.inds.includes('market')&&!/sieu thi|market/.test(t))out.inds=out.inds.filter(x=>x!=='market');
+ if(out.inds.includes('market')&&!/sieu thi|market|grocery|di cho/.test(t))out.inds=out.inds.filter(x=>x!=='market');
+ if(out.inds.includes('carwash')&&!/rua xe|car wash/.test(t))out.inds=out.inds.filter(x=>x!=='carwash');
+ return out}
+function search(){const P=q?parse(q):null;let L=[],hid=0;
+ if(P){const A=withDist();L=A.filter(d=>{const w=rmD(d.t+' '+d.kw+' '+d.biz);const indOk=P.inds.length?P.inds.includes(d.ind)||(P.inds.includes('food')&&d.grp==='food'):rmD(q).split(/\s+/).some(x=>x.length>3&&w.includes(x));const pOk=P.max==null||d.price!=null&&d.price<=P.max;const tOk=!P.time||(P.time==='eve'?d.eve:d.lunch);return indOk&&pOk&&tOk});
+  hid=L.filter(compHidden).length;L=L.filter(d=>!compHidden(d)).sort((a,b)=>(b.own||0)-(a.own||0)||a.mi-b.mi)}
+ const A=anchor();
+ return`<div class="hd sub"><button class="back" data-s="home" aria-label="Về menu chính">← Menu chính</button><b>Search Deals</b></div>
+ <div class="sbox" id="sBox"><input id="qIn" placeholder="Bạn muốn gì? vd: trà sữa gần đây" value="${esc(q)}"><button class="btn sm" id="qGo">Tìm</button></div>
+ ${!q?`<div class="chips" id="sugg">${['trà sữa gần đây','massage dưới $50','ăn tối nay','rửa xe','pedicure','bánh sinh nhật'].map(x=>`<button class="chip" data-q="${x}">${x}</button>`).join('')}</div><div class="note">Tìm quanh: <b>${esc(A.label)}</b>. Muốn đổi? Vào Deals Nearby để bật vị trí của bạn hoặc nhập ZIP.</div>`:''}
+ ${P?`<div class="parsed" id="parsed">${P.inds.map(i=>`<span>ngành: ${i}</span>`).join('')}${P.max!=null?`<span>giá ≤ $${P.max}</span>`:''}${P.time?`<span>${P.time==='eve'?'tối nay':'buổi trưa'}</span>`:''}<span>quanh: ${esc(A.label)}</span></div>`:''}
+ ${hid?`<div class="note">🛡️ ${hid} kết quả của tiệm cùng ${COMP==='group'?'nhóm '+GRP[HOST.grp]:'ngành Nail'} được ẩn theo cài đặt của ${HOST.name}.</div>`:''}
+ <div id="sList">${P?(L.map(d=>card(d)).join('')||`<div class="empty" id="wishBox"><b>Chưa có deal khớp “${esc(q)}”</b><div class="m" style="margin:6px 0 10px;color:var(--mute);font-size:12.5px">Để lại SĐT — khi tiệm gần đây có deal đúng ý, bạn nhận 1 tin nhắn. Tiệm gần đó cũng thấy nhu cầu này.</div><input class="in" placeholder="(713) 555-0142" inputmode="tel"><button class="btn full" style="margin-top:8px" id="wishGo">✦ Đăng mong muốn</button></div>`):''}</div>`}
+function wait(){const L=withDist().filter(d=>!d.own&&!compHidden(d)&&d.mi<=radius).sort((a,b)=>(b.spon||0)-(a.spon||0)||a.mi-b.mi).slice(0,5);
+ return`<div class="hd sub"><button class="back" data-s="home" aria-label="Về menu chính">← Menu chính</button><b>Đã check-in</b></div><div class="hero" id="waitHero" style="background:linear-gradient(135deg,#065F46,#10B981)"><div class="k">✅ ĐÃ CHECK-IN · ${HOST.name.toUpperCase()}</div><h2>Bạn là số 3</h2><p>Chờ khoảng 15 phút (số mẫu). Tiệm sẽ nhắn khi tới lượt.</p></div>${ATTACH.length?`<div class="sec">ƯU ĐÃI ĐÃ GẮN VÀO LƯỢT CỦA BẠN</div><div id="attList">${ATTACH.map(id=>{const d=D.find(x=>x.id===id);return `<div class="card" style="grid-template-columns:1fr"><div><b>✅ ${esc(d.t)}</b><div class="m">Thợ & thu ngân thấy khi tính tiền · ${esc(d.cond)}</div></div></div>`}).join('')}</div>`:''}
+ <div class="sec">TRONG LÚC CHỜ · GẦN ${HOST.name.toUpperCase()}</div><div id="waitFeed">${L.map(d=>card(d,'wait_feed')).join('')}</div><button class="btn ghost full" data-s="search">⌕ Tìm deal khác</button><div class="note" style="margin-top:8px">Deal tiệm cùng nhóm ${GRP[HOST.grp]} không hiện ở đây (bộ lọc đối thủ).</div>`}
+let BK={svc:'Pedicure',time:'2:30 PM',tech:'Bất kỳ'},DONE=null;
+const HD=t=>`<div class="hd sub"><button class="back" data-s="home" aria-label="Về menu chính">← Menu chính</button><b>${t}</b></div>`;
+function nearAds(slot,title){const L=withDist().filter(d=>!d.own&&!compHidden(d)&&d.mi<=radius).sort((a,b)=>(b.spon||0)-(a.spon||0)||a.mi-b.mi).slice(0,3);return L.length?`<div class="sec">${title}</div><div id="doneFeed">${L.map(d=>card(d,slot)).join('')}</div>`:''}
+function book(){const TT=[[10,'10:00 AM'],[11.5,'11:30 AM'],[14,'2:00 PM'],[14.5,'2:30 PM'],[15.5,'3:30 PM'],[16,'4:00 PM'],[17.5,'5:30 PM']];const off=BK.offer?D.find(x=>x.id===BK.offer):null,r=off?(RULES[off.id]||{}):{};
+ const days=[0,1,2,3,4,5,6].map(k=>(DAY+k)%7).filter(x=>!r.days||r.days.includes(x)).slice(0,4);if(BK.day==null||!days.includes(BK.day))BK.day=days[0];
+ const T=TT.filter(t=>(r.from==null||(t[0]>=r.from&&t[0]<r.to))&&(BK.day!==DAY||t[0]>HOUR())).map(t=>t[1]);if(!T.includes(BK.time))BK.time=T[0]||null;
+ const offBox=off?`<div class="note" style="background:#EFF6FF;border-color:#BFDBFE;margin-top:0">🎟️ <b>Đặt để dùng: ${esc(off.t)}</b><br>Chỉ hiện ngày/giờ hợp lệ: ${evalR(off).win||'mọi lúc'}${r.svc?' · dịch vụ '+r.svc:''} <button data-clroff="1" style="color:var(--p1);font-weight:800">✕ bỏ ưu đãi</button></div>`:'';
+ const dayRow=`<div class="sec">NGÀY</div><div class="chips" id="bkDay" style="flex-wrap:wrap">${days.map(x=>`<button class="chip ${BK.day===x?'on':''}" data-bd="${x}">${x===DAY?'Hôm nay ('+DN[x]+')':DN[x]}</button>`).join('')}</div>`;
+ return HD('Booking')+offBox+dayRow+`<div class="sec">1 · DỊCH VỤ</div><div class="chips" id="bkSvc" style="flex-wrap:wrap">${SVC.map(x=>`<button class="chip ${BK.svc===x[0]?'on':''}" data-bs="${x[0]}">${x[0]} · $${x[1]}</button>`).join('')}</div>
+ <div class="sec">2 · GIỜ</div><div class="chips" id="bkTime" style="flex-wrap:wrap">${T.length?'':'<span style="font-size:12px;color:var(--mute)">Hết giờ hợp lệ trong ngày này — chọn ngày khác.</span>'}${T.map(x=>`<button class="chip ${BK.time===x?'on':''}" data-bt="${x}">${x}</button>`).join('')}</div>
+ <div class="sec">3 · THỢ</div><div class="chips" id="bkTech" style="flex-wrap:wrap">${['Bất kỳ',...TECHS.map(t=>t[1])].map(x=>`<button class="chip ${BK.tech===x?'on':''}" data-bh="${x}">${x}</button>`).join('')}</div>
+ <div class="sec">4 · SỐ ĐIỆN THOẠI</div><input class="in" value="(713) 555-0142" inputmode="tel"><button class="btn full" style="margin-top:10px" id="bkGo" ${BK.time?'':'disabled'}>Đặt ${BK.svc} · ${DN[BK.day]} ${BK.time||''}${off?' + ưu đãi':''}</button><div class="note">Giờ và giá là số mẫu — bản thật lấy từ lịch Booking và danh mục POS.</div>`}
+function svcScr(){return HD('Services')+`<div id="svcList">${SVC.map(x=>`<div class="card" style="grid-template-columns:1fr auto;align-items:center"><div><b>${x[0]}</b><div class="m">Giá từ danh mục POS</div></div><div style="text-align:right"><b>$${x[1]}</b><button class="btn sm" style="margin-top:4px" data-bookx="${x[0]}">Đặt</button></div></div>`).join('')}</div><div class="note">Không có quảng cáo ở màn này — khách đang chọn dịch vụ của tiệm.</div>`}
+function galScr(){const G=[['#F9A8D4','#DB2777'],['#C4B5FD','#6D28D9'],['#FDE68A','#F59E0B'],['#99F6E4','#0F766E'],['#FECACA','#DC2626'],['#BAE6FD','#0284C7']];return HD('Gallery')+`<div class="th4" id="galGrid" style="grid-template-columns:1fr 1fr">${G.map((g,i)=>`<button data-galx="${i+1}" style="height:120px;border-radius:12px;background:linear-gradient(135deg,${g[0]},${g[1]});color:#fff;font-weight:800;display:flex;align-items:flex-end;padding:8px">Mẫu #${i+1}</button>`).join('')}</div><div class="note">Bấm một mẫu → “Làm mẫu này” gắn vào lượt check-in hoặc lịch hẹn.</div>`}
+function moreScr(){return HD('Tiện ích')+[['rev','⭐ Viết đánh giá','Làm xong rồi? 30 giây thôi'],['tip','💵 Tip cho thợ','Gửi tip trực tiếp cho thợ'],['rew','🎁 Rewards','Điểm tích luỹ của bạn'],['gift','🎀 Gift Card','Mua thẻ quà tặng']].map(x=>`<button class="card" data-s="${x[0]}" style="grid-template-columns:1fr"><div><b>${x[1]}</b><div class="m">${x[2]}</div></div></button>`).join('')}
+function revScr(){return HD('Viết đánh giá')+`<div class="empty"><div style="font-size:30px;letter-spacing:4px" id="stars">★★★★★</div><textarea class="in" style="margin-top:10px;min-height:80px" placeholder="Bạn thấy dịch vụ thế nào?"></textarea><button class="btn full" style="margin-top:10px" data-done="rev">Gửi đánh giá</button></div>`}
+function tipScr(){return HD('Tip cho thợ')+`<div class="chips" style="flex-wrap:wrap">${TECHS.map((t,i)=>`<button class="chip ${i?'':'on'}">${t[1]}</button>`).join('')}</div><div class="chips" style="flex-wrap:wrap">${['$5','$10','$15','Khác'].map((x,i)=>`<button class="chip ${i===1?'on':''}">${x}</button>`).join('')}</div><button class="btn full" data-done="tip">Gửi tip</button><div class="note">Số tiền là ví dụ — tiệm tự cài mức gợi ý.</div>`}
+function simpleScr(t,m){return HD(t)+`<div class="empty">${m}</div>`}
+function doneScr(){const D0={book:['📅 ĐÃ ĐẶT LỊCH',`${BK.svc} · ${DN[BK.day]} ${BK.time}`,`Thợ: ${BK.tech}.${BK.offer?' Ưu đãi “'+(D.find(x=>x.id===BK.offer)||{}).t+'” đã gắn vào lịch hẹn.':''} Tiệm sẽ nhắn nhắc trước giờ hẹn.`,'#1E40AF,#3B82F6','book_done','TRƯỚC / SAU GIỜ HẸN · GẦN TIỆM','<button class="btn ghost full" style="margin-top:8px">📆 Thêm vào lịch</button>'],
+ rev:['⭐ CẢM ƠN BẠN','Đã gửi đánh giá','Đánh giá giúp tiệm được nhiều khách biết hơn.','#92400E,#F59E0B','review_done','ĐI ĐÂU TIẾP? · GẦN TIỆM',''],
+ tip:['💵 ĐÃ GỬI TIP','Cảm ơn bạn','Thợ đã nhận được tip của bạn.','#065F46,#10B981','tip_done','ĐI ĐÂU TIẾP? · GẦN TIỆM','']}[DONE];
+ return HD('Xong')+`<div class="hero" id="doneHero" style="background:linear-gradient(135deg,${D0[3]})"><div class="k">${D0[0]}</div><h2>${esc(D0[1])}</h2><p>${esc(D0[2])}</p></div>${D0[6]}${nearAds(D0[4],D0[5])}<button class="btn ghost full" data-s="home" style="margin-top:8px">← Về menu chính</button>`}
+function draw(){refreshPart();const X={svc:svcScr,gal:galScr,more:moreScr,rev:revScr,tip:tipScr,done:doneScr,rew:()=>simpleScr('Rewards','🎁 Điểm tích luỹ — cần số điện thoại / NEXORA ID.'),gift:()=>simpleScr('Gift Card','🎀 Mua thẻ quà tặng của tiệm.')};$('#body').innerHTML=X[scr]?X[scr]():scr==='wait'?wait():scr==='home'?home():scr==='near'?near():scr==='search'?search():book();$$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.s===(scr==='search'?'near':['home','near','book'].includes(scr)?scr:'home')));drawLayer();bind();startTick();clearInterval(heroT);clearInterval(pT);clearInterval(oT);if(isSplit()){bindSplit();splitStart()}else{bindHero();heroStart()}}
+const INFO={svc:['💅 Dịch vụ & giá',()=>SVC.map(x=>`<div class="li" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)"><span>${x[0]}</span><b>$${x[1]}</b></div>`).join('')+'<p class="note">Lấy từ danh mục dịch vụ trong POS — tiệm sửa giá một chỗ, QR tự cập nhật.</p>'],
+ team:['👩‍🎨 Thợ hôm nay',()=>TECHS.map(t=>`<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)"><i style="width:36px;height:36px;border-radius:50%;background:${t[3]};color:#fff;display:grid;place-items:center;font-style:normal;font-weight:900">${t[0]}</i><div><b>${t[1]}</b><div style="font-size:12px;color:var(--mute)">${t[2]}</div></div></div>`).join('')+'<p class="note">Lấy từ lịch làm hôm nay. Bấm tên thợ → trang cá nhân của thợ (nếu thợ bật).</p>'],
+ gal:['📸 Mẫu móng',()=>'<div class="th4" style="grid-template-columns:1fr 1fr 1fr"><i style="height:90px;background:linear-gradient(135deg,#F9A8D4,#DB2777)"></i><i style="height:90px;background:linear-gradient(135deg,#C4B5FD,#6D28D9)"></i><i style="height:90px;background:linear-gradient(135deg,#FDE68A,#F59E0B)"></i><i style="height:90px;background:linear-gradient(135deg,#99F6E4,#0F766E)"></i><i style="height:90px;background:linear-gradient(135deg,#FECACA,#DC2626)"></i><i style="height:90px;background:linear-gradient(135deg,#BAE6FD,#0284C7)"></i></div><p class="note">Ảnh từ Gallery của tiệm. Khách chọn mẫu → “Làm mẫu này” gửi cho thợ lúc check-in.</p>'],
+ wifi:['📶 Wi-Fi & tiện nghi',()=>'<div class="note" style="font-size:13px">Tên mạng: <b>BitcoinNailBar</b><br>Mật khẩu: <b>••••••••</b></div><button class="btn full" id="wifiCopy">Chép mật khẩu Wi-Fi</button><p class="note">🅿️ Đậu xe trước tiệm · ☕ Nước miễn phí · 🔌 Ổ sạc tại ghế</p>'],
+ rev:['⭐ Khách nói gì',()=>'<div class="note" style="font-size:13px">“Pedicure đá nóng rất thư giãn, Tâm làm kỹ.” — Linh<br><br>“Gel-X bền 3 tuần, Jessica vẽ đẹp.” — Mai</div><p class="note">Làm xong, trang này tự hiện nút “Viết đánh giá” (khớp mục tiêu “Tăng đánh giá” của tiệm).</p>'],
+ pol:['ℹ️ Cần biết',()=>'<div class="note" style="font-size:13px">Thanh toán: tiệm cài trong hồ sơ<br>Huỷ lịch: trước 2 giờ<br>Walk-in: nhận khi còn thợ trống</div><button class="btn full">📍 Chỉ đường</button><button class="btn ghost full" style="margin-top:6px">📞 Gọi tiệm</button>']};
+let CHECKED=false,ATTACH=[],USER=null,ACCT=null,OTP=false;const REF='BTC-'+HOST.qr.split('_').pop().toUpperCase();
+function acctSheet(){const su=ACCT==='signup';return `<div class="dim" data-close="1"></div><div class="sheet" id="acctSheet"><b style="font-size:17px;display:block">${su?'Tạo tài khoản NEXORA':'Đăng nhập'}</b><div style="font-size:12.5px;color:var(--mute);margin:2px 0 8px">${su?'30 giây · chỉ cần số điện thoại · không cần tải app':'Bằng số điện thoại · mã gửi qua SMS'}</div>
+ ${su?`<div class="ref" id="refBox">🎁 <span>Mã giới thiệu <b>${REF}</b> · từ ${HOST.name}<br><small style="color:var(--mute)">Tự gắn vì bạn đăng ký từ QR của tiệm — không cần nhập</small></span></div>`:''}
+ <input class="in" id="acPh" value="(713) 555-0142" inputmode="tel">
+ ${OTP?`<input class="in" id="acOtp" placeholder="Mã 6 số trong SMS" inputmode="numeric" style="margin-top:8px" value="482913">${su?'<input class="in" id="acName" placeholder="Tên (không bắt buộc)" style="margin-top:8px" value="Linh">':''}<button class="btn full" style="margin-top:8px" id="acDone">${su?'Tạo tài khoản':'Đăng nhập'}</button>`:`<button class="btn full" style="margin-top:8px" id="acSend">Gửi mã SMS</button>`}
+ <div style="font-size:11.5px;color:var(--mute);margin-top:8px;line-height:1.45">${su?'Đã có tài khoản? <button data-acct="login" style="color:var(--p1);font-weight:800">Đăng nhập</button> · ':'Chưa có? <button data-acct="signup" style="color:var(--p1);font-weight:800">Đăng ký</button> · '}Tiếp tục nghĩa là đồng ý Điều khoản & Quyền riêng tư của NEXORA.</div>
+ <button class="btn ghost full" style="margin-top:8px" data-close="1">Để sau</button></div>`}
+function condBox(d){const e=evalR(d);const L=[];if(e.win)L.push(`🗓️ Áp dụng: <b>${e.win}</b> — ${e.now?'<b style="color:#166534">đang trong giờ</b>':'<b style="color:#92400E">ngoài giờ áp dụng</b>'}`);if(e.book)L.push('📅 <b>Phải đặt lịch trước</b> để dùng ưu đãi này');if(e.newOnly)L.push('👋 Chỉ <b>khách mới</b> — hệ thống kiểm tra bằng SĐT');if(e.r.svc)L.push('💅 Dịch vụ: <b>'+e.r.svc+'</b>');L.push('📝 '+esc(d.cond));return `<div class="note" style="margin-top:10px;line-height:1.6">${L.join('<br>')}<br><span style="color:var(--mute)">Điều kiện do ${esc(d.biz)} đặt — hệ thống tự kiểm.</span></div>`}
+function sheetActions(d){const att=ATTACH.includes(d.id),e=evalR(d);let h=condBox(d);
+ if(att)return h+'<div class="note" style="background:#ECFDF5;border-color:#A7F3D0">✅ Đã gắn vào lượt của bạn — thợ và thu ngân sẽ thấy.</div>';
+ if(d.own){
+  if(e.book)return h+`<button class="btn full" id="bookOffer">📅 Đặt lịch để dùng ưu đãi này</button>${d.qty?'<button class="btn ghost full" style="margin-top:6px" id="claimLater">Chỉ lấy coupon — đặt lịch sau</button>':''}`;
+  if(e.now)return h+(d.qty?`<input class="in" id="phIn" value="(713) 555-0142" inputmode="tel"><button class="btn full" style="margin-top:8px" id="claimUse">${CHECKED?'Lấy coupon & dùng ngay':'Lấy coupon & check-in luôn'}</button><button class="btn ghost full" style="margin-top:6px" id="claimLater">Chỉ lấy — dùng lần sau</button>`:`<button class="btn full" id="useOwn">${CHECKED?'✓ Báo tiệm: tôi muốn dùng ưu đãi này':'✓ Check-in & dùng ưu đãi này'}</button>`);
+  return h+`<button class="btn full" id="bookOffer">📅 Đặt lịch vào giờ áp dụng</button>${d.qty?'<button class="btn ghost full" style="margin-top:6px" id="claimLater">Lấy coupon — dùng khi tới giờ</button>':'<button class="btn ghost full" style="margin-top:6px" id="saveGo">🔔 Nhắc tôi khi tới giờ</button>'}`}
+ const dir=`<button class="btn ghost full" style="margin-top:6px" id="dirGo">📍 Chỉ đường · ${d.mi.toFixed(1)} mi</button>`;
+ if(e.book)return h+`<button class="btn full" id="bookOther">📅 Đặt lịch tại ${esc(d.biz)}</button>${dir}`;
+ return h+(d.qty?`<input class="in" id="phIn" value="(713) 555-0142" inputmode="tel"><button class="btn full" style="margin-top:8px" id="claimGo">Lấy coupon bằng SĐT</button>${dir}`:`<button class="btn full" id="dirGo">📍 Chỉ đường · ${d.mi.toFixed(1)} mi</button><button class="btn ghost full" style="margin-top:6px" id="saveGo">🔔 ${e.now?'Lưu & nhắc tôi':'Nhắc tôi khi tới giờ'}</button>`)}
+function drawLayer(){let h='';if(ACCT){h=acctSheet()}else if(info){const I=INFO[info];h=`<div class="dim" data-close="1"></div><div class="sheet" style="max-height:75%;overflow:auto"><b style="font-size:16px;display:block;margin-bottom:6px">${I[0]}</b>${I[1]()}<button class="btn ghost full" style="margin-top:8px" data-close="1">Đóng</button></div>`}else if(sheet){const d=withDist().find(x=>x.id===sheet);h=`<div class="dim" data-close="1"></div><div class="sheet">${heroSrc==='cross'?`<div class="note" style="margin:0 0 8px">🤝 ${HOST.name} giới thiệu đối tác gần tiệm</div>`:heroSrc==='paid'?`<div class="note" style="margin:0 0 8px">⭐ Được tài trợ · hiện trên QR của ${HOST.name}</div>`:''}<div style="display:flex;gap:10px">${stub(d)}<div><b style="font-size:16px">${esc(d.t)}</b><div class="m" style="color:var(--mute);font-size:12.5px;margin-top:2px">${esc(d.biz)}${d.own?'':' · '+d.mi.toFixed(1)+' mi'} · ${esc(d.cond)}</div></div></div>
+ ${sheetActions(d)}<button class="btn ghost full" style="margin-top:8px" data-close="1">Đóng</button></div>`}
+ if(permOpen)h+=`<div class="dim"></div><div class="perm" id="permBox"><b>🌐 nexora.link muốn biết vị trí của bạn</b><div style="font-size:12.5px;color:var(--mute)">Hộp thoại này do trình duyệt hiển thị. Khách có thể chặn.</div><div class="row"><button class="btn ghost sm" id="pDeny">Chặn</button><button class="btn sm" id="pAllow">Cho phép</button></div></div>`;
+ $('#layer').innerHTML=h;
+ $$('#layer [data-acct]').forEach(b=>b.onclick=()=>{ACCT=b.dataset.acct;OTP=false;drawLayer()});
+ const as=$('#acSend');if(as)as.onclick=()=>{OTP=true;log({event:ACCT+'_otp_sent',ref:ACCT==='signup'?REF:null});drawLayer()};
+ const ad=$('#acDone');if(ad)ad.onclick=()=>{const nm=($('#acName')||{}).value||'Linh';USER={name:nm};log(ACCT==='signup'?{event:'signup',ref_code:REF,referrer_biz:HOST.id,source_qr:HOST.qr}:{event:'login'});toast(ACCT==='signup'?'✅ Đã tạo tài khoản — mã giới thiệu '+REF+' đã gắn':'✅ Đã đăng nhập');ACCT=null;OTP=false;draw()};
+ $$('#layer [data-close]').forEach(x=>x.onclick=()=>{ACCT=null;OTP=false;sheet=null;info=null;heroSrc=null;hLock=null;pLock=null;oLock=null;drawLayer()});
+ const wc=$('#wifiCopy');if(wc)wc.onclick=()=>{log({event:'about_action',action:'wifi_copy'});toast('Đã chép mật khẩu Wi-Fi')};
+ const cg=$('#claimGo');if(cg)cg.onclick=()=>{log({screen:'claim',claim_id:'cl_'+Date.now().toString(36),deal:sheet});sheet=null;drawLayer();toast('✅ Đã lấy coupon — mã gửi qua SMS')};
+ const bo=$('#bookOffer');if(bo)bo.onclick=()=>{const r=RULES[sheet]||{};BK.offer=sheet;if(r.svc)BK.svc=r.svc;BK.day=null;BK.time=null;log({event:'offer_book_start',deal:sheet});sheet=null;heroSrc=null;hLock=null;pLock=null;oLock=null;scr='book';draw();$('#body').scrollTop=0};
+ const bx=$('#bookOther');if(bx)bx.onclick=()=>{log({event:'partner_book',deal:sheet});toast('Mở trang đặt lịch của tiệm đối tác (mẫu)')};
+ const uo=$('#useOwn');if(uo)uo.onclick=()=>{ATTACH.push(sheet);log({event:'own_offer_attach',deal:sheet,checked_in:CHECKED});sheet=null;heroSrc=null;hLock=null;pLock=null;if(!CHECKED){CHECKED=true;log({screen:'checkin',event:'checked_in'})}else toast('Đã báo tiệm — thợ sẽ áp ưu đãi');scr='wait';draw();$('#body').scrollTop=0};
+ const cu=$('#claimUse');if(cu)cu.onclick=()=>{ATTACH.push(sheet);log({event:'own_coupon_claim_use',deal:sheet});sheet=null;heroSrc=null;hLock=null;pLock=null;toast('✅ Đã lấy coupon — gắn vào lượt của bạn');if(!CHECKED){CHECKED=true;log({screen:'checkin',event:'checked_in'})}scr='wait';draw();$('#body').scrollTop=0};
+ const cl=$('#claimLater');if(cl)cl.onclick=()=>{log({event:'own_coupon_claim_later',deal:sheet});sheet=null;drawLayer();toast('✅ Đã lấy — mã gửi qua SMS, dùng lần sau')};
+ const sv=$('#saveGo');if(sv)sv.onclick=()=>{log({event:'save_remind',deal:sheet});sheet=null;drawLayer();toast('🔔 Sẽ nhắn bạn khi deal còn hiệu lực gần giờ này')};
+ const dg=$('#dirGo');if(dg)dg.onclick=()=>{log({screen:'directions',deal:sheet});toast('Mở bản đồ chỉ đường (mẫu)')};
+ const pa=$('#pAllow');if(pa)pa.onclick=()=>gpsResult(true);const pd=$('#pDeny');if(pd)pd.onclick=()=>gpsResult(false)}
+function gpsResult(ok){permOpen=false;if(ok){useGPS=true;zip='';toast('📡 Đang dùng vị trí của bạn');log({screen:'nearby',event:'gps_granted'})}else{useGPS=false;toast('Đã chặn — vẫn xem quanh tiệm, hoặc nhập ZIP');log({screen:'nearby',event:'gps_denied'})}draw()}
+function bind(){
+ $$('#body [data-s],#nav [data-s]').forEach(b=>b.onclick=()=>{if(b.dataset.dc)log({event:'disc_click',target:b.dataset.dc,variant:BTN,tod:TOD});scr=b.dataset.s;if(scr==='near')log({screen:'nearby',shown:null});draw();$('#body').scrollTop=0});
+ $$('#body [data-d]').forEach(b=>b.onclick=()=>{sheet=b.dataset.d;const dd=D.find(x=>x.id===sheet);if(dd&&dd.spon)log({event:'ad_click',deal:sheet,slot:b.closest('#waitFeed')?'wait_feed':b.closest('#adSlot')?'home_below_own':'list'});drawLayer()});
+ $$('#body [data-acct]').forEach(b=>b.onclick=()=>{ACCT=b.dataset.acct;OTP=false;log({event:'acct_open',which:ACCT});drawLayer()});
+ $$('#body [data-info]').forEach(b=>b.onclick=()=>{info=b.dataset.info;log({event:'about_open',block:info});drawLayer()});
+ $$('#bkDay [data-bd]').forEach(b=>b.onclick=()=>{BK.day=+b.dataset.bd;BK.time=null;draw()});const co=$('[data-clroff]');if(co)co.onclick=()=>{BK.offer=null;draw()};
+ $$('#bkSvc [data-bs]').forEach(b=>b.onclick=()=>{BK.svc=b.dataset.bs;draw()});$$('#bkTime [data-bt]').forEach(b=>b.onclick=()=>{BK.time=b.dataset.bt;draw()});$$('#bkTech [data-bh]').forEach(b=>b.onclick=()=>{BK.tech=b.dataset.bh;draw()});
+ const bg=$('#bkGo');if(bg)bg.onclick=()=>{if(BK.offer&&!ATTACH.includes(BK.offer))ATTACH.push(BK.offer);log({screen:'booking',event:'booked',svc:BK.svc,day:DN[BK.day],time:BK.time,offer:BK.offer||null});DONE='book';scr='done';draw();$('#body').scrollTop=0};
+ $$('#body [data-bookx]').forEach(b=>b.onclick=()=>{BK.svc=b.dataset.bookx;scr='book';draw();$('#body').scrollTop=0});
+ $$('#body [data-galx]').forEach(b=>b.onclick=()=>{log({event:'gallery_pick',pick:b.dataset.galx});toast('Đã chọn mẫu #'+b.dataset.galx+' — gắn vào lượt check-in');scr='home';draw();$('#body').scrollTop=0});
+ $$('#body [data-done]').forEach(b=>b.onclick=()=>{DONE=b.dataset.done;log({event:DONE+'_done'});scr='done';draw();$('#body').scrollTop=0});
+ $$('#body [data-ci]').forEach(b=>b.onclick=()=>{CHECKED=true;log({screen:'checkin',event:'checked_in'});scr='wait';draw();$('#body').scrollTop=0});
+ const g=$('#gpsBtn');if(g)g.onclick=()=>{if(useGPS){useGPS=false;toast('Đã tắt — quay về vị trí tiệm');draw();return}if(PERM==='allow')return gpsResult(true);if(PERM==='deny')return gpsResult(false);permOpen=true;drawLayer()};
+ const zi=$('#zipGo');if(zi)zi.onclick=()=>{const v=$('#zipIn').value.trim();if(!ZIPS[v]){toast('Demo có ZIP: 77401, 77036, 77002, 77494');return}zip=v;log({screen:'nearby',event:'zip',zip:v});draw()};
+ const zx=$('#zipX');if(zx)zx.onclick=()=>{zip='';draw()};
+ $$('#radChips [data-r],#nearList [data-r]').forEach(b=>b.onclick=()=>{radius=+b.dataset.r;draw()});
+ $$('#catChips [data-c]').forEach(b=>b.onclick=()=>{cat=b.dataset.c;draw()});
+ const qi=$('#qIn');if(qi){const go=()=>{q=qi.value.trim();const P=q?parse(q):null;log({screen:'search',query:q,parsed:P});draw()};$('#qGo').onclick=go;qi.onkeydown=e=>{if(e.key==='Enter')go()}}
+ $$('#discBox [data-q]').forEach(b=>b.onclick=e=>{e.stopPropagation();q=b.dataset.q;scr='search';log({event:'disc_click',target:'quick_query',query:q,variant:BTN,tod:TOD});log({screen:'search',query:q,parsed:parse(q)});draw();$('#body').scrollTop=0});
+ $$('#sugg [data-q]').forEach(b=>b.onclick=()=>{q=b.dataset.q;log({screen:'search',query:q,parsed:parse(q)});draw()});
+ const w=$('#wishGo');if(w)w.onclick=()=>{log({screen:'search',event:'wish',query:q});toast('✦ Đã đăng mong muốn — tiệm gần đây sẽ thấy')};
+}
+$('#cOrder').onclick=e=>{const b=e.target.closest('[data-o]');if(!b)return;ORDER=b.dataset.o;$$('#cOrder button').forEach(x=>x.classList.toggle('on',x===b));scr='home';draw()};
+$('#cCross').onclick=e=>{const b=e.target.closest('[data-x]');if(!b)return;CROSS=+b.dataset.x;hIdx=0;pIdx=0;$$('#cCross button').forEach(x=>x.classList.toggle('on',x===b));scr='home';draw()};
+$('#cMode').onclick=e=>{const b=e.target.closest('[data-m]');if(!b)return;if(b.dataset.m==='scan'){SCAN++;hIdx=0;pIdx=SCAN;toast('Lượt quét #'+(SCAN+1)+(isSplit()?' — nửa đối tác mở bằng đối tác khác':' — mở bằng slide '+(SCAN%2&&CROSS?'đối tác':'của tiệm')));log({event:'scan',scan_no:SCAN+1})}else{MODE50=b.dataset.m;hIdx=0;$$('#cMode [data-m=split],#cMode [data-m=rotate]').forEach(x=>x.classList.toggle('on',x===b))}scr='home';draw()};
+$('#cBtn').onclick=e=>{const b=e.target.closest('[data-b]');if(!b)return;BTN=b.dataset.b;$$('#cBtn button').forEach(x=>x.classList.toggle('on',x===b));scr='home';draw()};
+$('#cRad').onclick=e=>{const b=e.target.closest('[data-rad]');if(!b)return;AUTO.mode=b.dataset.rad;pIdx=0;$$('#cRad button').forEach(x=>x.classList.toggle('on',x===b));draw()};
+$('#cDay').onclick=e=>{const b=e.target.closest('[data-dy]');if(!b)return;DAY=+b.dataset.dy;$$('#cDay button').forEach(x=>x.classList.toggle('on',x===b));draw()};
+$('#cTod').onclick=e=>{const b=e.target.closest('[data-t]');if(!b)return;TOD=b.dataset.t;$$('#cTod button').forEach(x=>x.classList.toggle('on',x===b));scr='home';draw()};
+$('#cComp').onclick=e=>{const b=e.target.closest('[data-c]');if(!b)return;COMP=b.dataset.c;$$('#cComp button').forEach(x=>x.classList.toggle('on',x===b));draw()};
+$('#cPerm').onclick=e=>{const b=e.target.closest('[data-p]');if(!b)return;PERM=b.dataset.p;$$('#cPerm button').forEach(x=>x.classList.toggle('on',x===b))};
+/* ---------- tour ---------- */
+function set(o){Object.assign(window,o)}
+const TOUR=[
+ {sel:'#phone',do:()=>{ORDER='ad';scr='home';draw()},vi:'Khách quét QR tại tiệm, chưa có tài khoản. Việc chính của khách là check-in / xem menu — nên ưu đãi và menu của tiệm đứng đầu.',en:'Guest scans the in-store QR, no account. The shop’s own offer and menu come first; “Explore nearby” sits below.'},
+ {sel:'#heroBox',do:()=>{ORDER='ad';CROSS=1;MODE50='split';pIdx=0;SCAN=0;scr='home';draw()},vi:'Banner hero chia đôi 50/50: nửa trái luôn là quảng cáo của tiệm, nửa phải là doanh nghiệp đối tác gần đó, tự đổi mỗi vài giây. Khách luôn thấy cả hai.',en:'Split 50/50 hero: the shop’s ad always on the left, nearby partners rotate on the right.'},
+ {sel:'#heroPart',do:()=>{pIdx=1;partShow()},vi:'Slide đối tác: 🤝 doanh nghiệp gần đó tiệm chọn để quảng cáo chéo (họ cũng hiện quảng cáo của tiệm), hoặc ⭐ được tài trợ khi chưa đủ đối tác. Bộ lọc đối thủ luôn áp.',en:'Partner slide: a nearby cross-promo partner or a sponsored deal; competitor filter applies.'},
+ {sel:'#adSlot',do:()=>{sheet=null;scr='home';draw();setTimeout(()=>{const a=$('#adSlot');a&&$('#body').scrollTo({top:a.offsetTop-120,behavior:'smooth'})},200)},vi:'Ngay dưới menu: ⭐ Được tài trợ · gần đây — 3 deal trả phí, ưu tiên deal chưa có trên banner. Chương trình của tiệm đã nằm trên nửa trái banner nên không lặp lại ở đây.',en:'Below the shop’s offers: two sponsored nearby deals, preferring ones not already on the banner.'},
+ {sel:'#acctBtns',do:()=>{sheet=null;USER=null;scr='home';draw()},vi:'Góc trên có 2 nút nhỏ: Đăng nhập và Đăng ký. Không bắt buộc — khách vẫn check-in, lấy coupon bằng SĐT mà không cần tài khoản.',en:'Two small buttons top-right: Log in and Sign up — optional.'},
+ {sel:'#refBox',do:()=>{ACCT='signup';OTP=false;drawLayer()},vi:'Đăng ký từ QR: chỉ cần SĐT và mã SMS, không tải app. Mã giới thiệu của tiệm tự gắn theo QR đang quét — khách không phải nhập.',en:'Sign-up from the QR: phone + SMS code; the shop’s referral code attaches automatically.'},
+ {sel:'.hd.sub',do:()=>{ACCT=null;drawLayer();scr='svc';draw()},vi:'Nút “← Menu chính” ở mọi màn con: to, nền tím nhạt, dính cố định trên cùng khi cuộn — không bao giờ bị che.',en:'The “← Main menu” button is large, tinted and sticky on every sub-screen.'},
+ {sel:'#pAuto',do:()=>{sheet=null;scr='home';AUTO.mode='auto';draw()},vi:'Quảng cáo chéo tự động: chủ tiệm chỉ bật 1 lần. NEXORA tìm tiệm cũng đã bật trong 1 mile, chưa đủ thì nới 2 mile; tự bỏ tiệm cùng nhóm ngành và ngành nhạy cảm như bar; mỗi tiệm 1 deal đang áp dụng.',en:'Auto cross-promo: opt in once; NEXORA matches opted-in shops within 1 mile (up to 2), filtering competitors and sensitive categories.'},
+ {sel:'#heroPart',do:()=>{pIdx=0;partShow()},vi:'Kết quả hiện ngay trên nửa phải banner. Chủ tiệm không phải mời, không phải duyệt — chỉ có nút “Ẩn tiệm này” nếu không thích.',en:'Results go straight into the partner half; the owner only has a “hide this business” button.'},
+ {sel:'#heroOwn',do:()=>{sheet=null;DAY=2;TOD='lunch';scr='home';oIdx=1;draw()},vi:'Tiệm có nhiều chương trình: nửa trái banner tự đổi qua lại giữa các chương trình của tiệm, lệch nhịp với nửa đối tác. Mỗi chương trình ghi điều kiện ngắn: “📅 Cần đặt lịch”, “✅ Đang áp dụng”.',en:'Several shop programs rotate in the left half, out of phase with the partner half, each with a short condition tag.'},
+ {sel:'#pCond',do:()=>{scr='home';draw();setTimeout(()=>{sheet='own2';drawLayer()},300)},vi:'Mọi ưu đãi theo điều kiện tiệm đặt: ngày, giờ, dịch vụ, khách mới, cần đặt lịch. Coupon Gel-X này cần đặt lịch, chỉ T3–T5, 10AM–3PM — nút chính là “Đặt lịch để dùng ưu đãi này”.',en:'Every offer follows the shop’s conditions; this Gel-X coupon needs a booking, Tue–Thu 10AM–3PM.'},
+ {sel:'#bkDay',do:()=>{sheet=null;BK.offer='own2';BK.svc='Gel-X';BK.day=null;BK.time=null;scr='book';draw()},vi:'Đặt lịch từ ưu đãi: Booking chỉ hiện ngày và giờ hợp lệ, chọn sẵn Gel-X; đặt xong ưu đãi tự gắn vào lịch hẹn.',en:'Booking from an offer shows only valid days and times and pre-selects the service.'},
+ {sel:'#pSheet',do:()=>{scr='home';draw();setTimeout(()=>{sheet='own2';drawLayer()},300)},vi:'Bấm ưu đãi của chính tiệm: không có Chỉ đường — khách đang ở đây. Coupon: nhập SĐT → “Lấy & check-in luôn”; Deal: “Check-in & dùng ưu đãi này”. Chỉ đường chỉ dành cho deal của tiệm khác.',en:'Own-shop offers: no directions — the guest is here. Claim & check in, or attach the deal. Directions only for other businesses.'},
+ {sel:'#svcList',do:()=>{scr='svc';draw()},vi:'Bấm Services: danh sách dịch vụ và giá, mỗi dòng có nút Đặt. Màn này không có quảng cáo — khách đang chọn dịch vụ của tiệm. Đầu màn luôn có “← Menu chính”.',en:'Services: list with prices and Book buttons; no ads here; “← Main menu” at the top.'},
+ {sel:'#doneFeed',do:()=>{BK.svc='Pedicure';DONE='book';scr='done';draw()},vi:'Đặt lịch xong → màn xác nhận. Quảng cáo chỉ xuất hiện ở đây, sau khi khách đã xong việc: “Trước / sau giờ hẹn · gần tiệm”. Không bao giờ tự chuyển khách sang quảng cáo.',en:'After booking: confirmation screen with nearby deals — ads only after the task is done, never an auto-redirect.'},
+ {sel:'#heroPart',do:()=>{scr='home';draw();pIdx=0;partShow();setTimeout(()=>{sheet='f2';heroSrc='cross';drawLayer()},600)},vi:'Chạm nửa đối tác: xoay dừng và slide đang thấy bị “khoá” ngay lúc chạm — khách vào đúng chi tiết của slide mình thấy, kể cả khi slide vừa đổi. Vuốt ngang để chuyển slide.',en:'Tap locks the visible slide at touch time, so the detail always matches what was seen; swipe to change.'},
+ {sel:'#discBox',do:()=>{BTN='rich';TOD='lunch';$$('#cBtn button').forEach(x=>x.classList.toggle('on',x.dataset.b==='rich'));$$('#cTod button').forEach(x=>x.classList.toggle('on',x.dataset.t==='lunch'));scr='home';draw()},vi:'2 nút được làm hấp dẫn bằng nội dung thật: số deal quanh đây, dòng mời theo giờ (trưa: “🍜 Ăn trưa quanh đây”), tên deal lướt qua, và coupon sắp hết suất thật.',en:'The two buttons show real content: nearby count, a time-of-day line, a rotating deal ticker, real low-stock count.'},
+ {sel:'#discBox',do:()=>{TOD='eve';$$('#cTod button').forEach(x=>x.classList.toggle('on',x.dataset.t==='eve'));draw()},vi:'Buổi tối dòng mời đổi thành “🌙 Tối nay quanh đây”, câu mẫu của Search đổi thành “ăn tối nay”. Bấm câu mẫu là ra kết quả luôn, không phải gõ.',en:'Evening: the invite line and quick queries change; tap a quick query for instant results.'},
+ {sel:'#waitFeed',do:()=>{scr='wait';draw()},vi:'Chỗ kiếm tiền tốt nhất: màn chờ sau khi check-in. Khách đang ngồi chờ, rảnh, cầm điện thoại — deal tài trợ lên đầu. Không giành khách của tiệm vì khách đã check-in xong.',en:'Best ad moment: the waiting screen after check-in — sponsored deals first, no conflict with the shop.'},
+ {sel:'#pAds',vi:'4 chỗ quảng cáo và lý do. Mỗi lần hiện / bấm ghi ad_impression / ad_click theo slot và qr_id để tính tiền Paid Boost và phần QR Host.',en:'Four ad placements; impressions and clicks are logged per slot and qr_id.'},
+ {sel:'#pCtl',do:()=>{ORDER='cur';$$('#cOrder button').forEach(x=>x.classList.toggle('on',x.dataset.o==='cur'));draw()},vi:'So sánh: bản hiện tại đưa Deals Nearby và Search lên trên cùng — cao hơn cả ưu đãi của tiệm. Bấm nút để đổi qua lại.',en:'Compare: the current layout puts Deals Nearby and Search above the shop’s own offer.'},
+ {sel:'#anchorBox',do:()=>{ORDER='ad';$$('#cOrder button').forEach(x=>x.classList.toggle('on',x.dataset.o==='ad'));useGPS=false;zip='';scr='near';draw()},vi:'Deals Nearby — hướng 1 (mặc định): lấy vị trí tiệm tạo QR. Không hỏi quyền, không làm phiền khách, có kết quả ngay.',en:'Deals Nearby — default: the QR’s shop location. No permission prompt, instant results.'},
+ {sel:'#gpsBtn',vi:'Hướng 2 (tuỳ chọn): khách tự bật “Dùng vị trí của tôi”. Trình duyệt hỏi quyền; khách cho phép thì deal xếp lại theo vị trí khách.',en:'Option: the guest turns on “Use my location”; the browser asks; results re-rank.'},
+ {sel:'#anchorBox',do:()=>{useGPS=true;draw()},vi:'Đã bật vị trí khách: khoảng cách tính từ chỗ khách đang đứng. Vị trí chỉ giữ trong lượt xem này, nhật ký chỉ lưu theo ZIP.',en:'Now using the guest’s location; kept only for this visit, logged at ZIP level.'},
+ {sel:'#compNote',do:()=>{useGPS=false;draw()},vi:'Bộ lọc đối thủ: trên QR của tiệm nail, deal cùng nhóm Làm đẹp gần đó được ẩn — QR của tiệm không đẩy khách sang tiệm cạnh tranh.',en:'Competitor filter: same-group deals nearby are hidden on the shop’s QR.'},
+ {sel:'#sBox',do:()=>{scr='search';q='';draw()},vi:'Search Deals: khách gõ điều mình muốn bằng câu tự nhiên.',en:'Search Deals: the guest types what they want in plain words.'},
+ {sel:'#parsed',do:()=>{q='ăn tối dưới $30';draw()},vi:'Hệ thống tách câu thành ngành, giá tối đa, thời gian — rồi tìm deal khớp, gần trước. “ăn tối dưới $30” → ăn uống, buổi tối, giá ≤ $30 → tôm hùm đất $25.',en:'The query is parsed into industry, max price, time; “dinner under $30” → crawfish $25.'},
+ {sel:'#sList',do:()=>{q='massage dưới $50';draw()},vi:'“massage dưới $50” trên QR tiệm nail: spa cùng nhóm Làm đẹp nên bị bộ lọc đối thủ ẩn — hệ thống báo rõ số kết quả bị ẩn và mời đăng mong muốn.',en:'“massage under $50” on a nail salon QR: same-group spa is hidden by the competitor filter; the count is shown.'},
+ {sel:'#sList',do:()=>{q='trà sữa tối nay';draw()},vi:'“trà sữa tối nay” → đồ uống, buổi tối → ra deal trà sữa mua 1 tặng 1 sau 3pm.',en:'“milk tea tonight” → drinks, evening → BOGO boba after 3pm.'},
+ {sel:'#wishBox',do:()=>{q='học piano';draw()},vi:'Không có deal khớp → mời để lại SĐT đăng mong muốn (Deal Match). Tiệm gần đó thấy nhu cầu, khách nhận 1 tin khi có deal.',en:'No match → leave a phone number as a wish (Deal Match).'},
+ {sel:'#pLog',vi:'Mỗi lượt ghi: qr_id, nguồn vị trí (qr_anchor / gps / zip), câu tìm và cách hiểu, số deal bị bộ lọc ẩn — đủ để đo QR nào, câu tìm nào ra khách.',en:'Each event logs qr_id, location source, query + parse, filtered count.'},
+ {sel:'#pOpen',vi:'4 quyết định cho Brian: mức bộ lọc đối thủ, Search có hiện tiệm cùng ngành không, bán kính mặc định, thứ tự trang chính.',en:'Four open decisions for Brian.'},
+];
+let ti=0,tRun=false,tPaused=false,tStart=0,raf,DUR=9000;
+function spot(el){$$('.spot').forEach(x=>x.classList.remove('spot'));if(el){el.classList.add('spot');el.scrollIntoView({behavior:'smooth',block:'center'})}}
+function showStep(){const s=TOUR[ti];sheet=null;permOpen=false;s.do&&s.do();setTimeout(()=>spot($(s.sel)),250);$('#tVi').textContent=s.vi;$('#tEn').textContent=s.en;$('#tStep').textContent=`${ti+1}/${TOUR.length}`;tStart=performance.now();$('#tBar').dataset.p=0;loop()}
+function loop(){cancelAnimationFrame(raf);const f=t=>{if(!tRun)return;const bar=$('#tBar');if(tPaused){tStart=t-(+bar.dataset.p)*DUR;raf=requestAnimationFrame(f);return}const p=Math.min(1,(t-tStart)/DUR);bar.style.width=p*100+'%';bar.dataset.p=p;if(p>=1)return nextStep();raf=requestAnimationFrame(f)};raf=requestAnimationFrame(f)}
+function nextStep(){ti=(ti+1)%TOUR.length;showStep()}
+function startTour(){$('#wn').classList.add('hidden');tRun=true;tPaused=false;ti=0;$('#tPause').textContent='⏸';$('#tb').classList.remove('hidden');showStep()}
+function stopTour(){if(!tRun)return;tRun=false;cancelAnimationFrame(raf);$('#tb').classList.add('hidden');spot(null)}
+$('#tPause').onclick=()=>{tPaused=!tPaused;$('#tPause').textContent=tPaused?'▶':'⏸'};$('#tNext').onclick=nextStep;$('#tClose').onclick=stopTour;$('#tourBtn').onclick=startTour;$('#wnGo').onclick=startTour;$('#wnX').onclick=()=>$('#wn').classList.add('hidden');
+['touchstart','wheel','keydown','mousedown'].forEach(ev=>window.addEventListener(ev,e=>{if(tRun&&e.isTrusted&&!e.target.closest('.stour'))stopTour()},{passive:true}));
+window.addEventListener('message',e=>{const d=e.data||{};try{if(d.cmd==='view'){scr=d.v||'home';draw()}if(d.cmd==='tour')startTour();if(d.cmd==='stopTour')stopTour()}catch(err){}});
+draw();log({screen:'home',event:'scan'});
+if(!window.__EMBED)setTimeout(()=>{if(!$('#wn').classList.contains('hidden'))startTour()},7000);
+</script>
+<script>
+// Embedded by OneQR Earnings; the tour remains available on demand.
+$('#wn').classList.add('hidden');
+const SETTINGS_KEY = 'nexora_oneqr_in_salon_settings_v1';
+const CONTROL_KEYS = {cOrder:'o',cCross:'x',cMode:'m',cBtn:'b',cDay:'dy',cTod:'t',cComp:'c',cPerm:'p',cRad:'rad'};
+const saveButton = document.createElement('button');
+saveButton.type = 'button';
+saveButton.className = 'btn ghost sm';
+saveButton.textContent = 'Lưu cài đặt';
+const saveStatus = document.createElement('span');
+saveStatus.setAttribute('role', 'status');
+saveStatus.setAttribute('aria-live', 'polite');
+saveStatus.style.fontSize = '12px';
+const pageTabs = $('.qr-page-tabs');
+$('.top').insertBefore(saveButton, pageTabs);
+$('.top').insertBefore(saveStatus, pageTabs);
+try {
+  const saved = JSON.parse(localStorage.getItem(SETTINGS_KEY) || 'null');
+  if (saved && saved.controls) {
+    Object.entries(CONTROL_KEYS).forEach(([id, key]) => {
+      const match = [...document.querySelectorAll('#' + id + ' button')].find(button => button.dataset[key] === saved.controls[id]);
+      if (match) match.click();
+    });
+    if (Array.isArray(saved.hiddenBusinesses)) saved.hiddenBusinesses.forEach(id => { if (typeof id === 'string') BLOCKBIZ.add(id); });
+    draw();
+  }
+} catch (error) { /* Storage is optional for this prototype. */ }
+saveButton.onclick = () => {
+  const controls = {};
+  Object.entries(CONTROL_KEYS).forEach(([id, key]) => {
+    const active = document.querySelector('#' + id + ' button.on');
+    if (active) controls[id] = active.dataset[key];
+  });
+  try {
+    localStorage.setItem(SETTINGS_KEY, JSON.stringify({controls, hiddenBusinesses:[...BLOCKBIZ]}));
+    saveStatus.textContent = 'Đã lưu cài đặt trên trình duyệt này.';
+  } catch (error) {
+    saveStatus.textContent = 'Không thể lưu cài đặt trên trình duyệt này.';
+  }
+};
+document.addEventListener('click', event => {
+  if (event.target.closest('.ctl, #autoList')) saveStatus.textContent = 'Có thay đổi chưa lưu.';
+});
+if (window.lucide) window.lucide.createIcons();
+</script>
+</body>
+</html>
