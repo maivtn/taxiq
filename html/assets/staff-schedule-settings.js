@@ -11,6 +11,13 @@
   var modalHost = document.createElement('div');
   modalHost.setAttribute('data-schedule-modal-host', '');
   document.body.appendChild(modalHost);
+  var inlineHost = document.createElement('div');
+  inlineHost.setAttribute('data-schedule-inline-host', '');
+  var editorUi = {
+    querySelector:function (selector) { return inlineHost.querySelector(selector) || modalHost.querySelector(selector); },
+    querySelectorAll:function (selector) { return Array.from(inlineHost.querySelectorAll(selector)).concat(Array.from(modalHost.querySelectorAll(selector))); }
+  };
+  function onEditorEvent(type, listener) { inlineHost.addEventListener(type,listener); modalHost.addEventListener(type,listener); }
   var opener = null;
 
   var selectedStaff = '';
@@ -47,7 +54,7 @@
     return !Number.isNaN(date.getTime()) && dateKey(date) === iso ? iso : '';
   }
   function formatEditorDateFields() {
-    modalHost.querySelectorAll('input[type="date"]').forEach(function (native) {
+    editorUi.querySelectorAll('input[type="date"]').forEach(function (native) {
       var field = document.createElement('span');
       field.className = 'schedule-formatted-date';
       var text = document.createElement('input');
@@ -175,12 +182,12 @@
     return calendar.outerHTML;
   }
   function editor() {
-    if (!drawerOpen) return '';
+    if (!drawerOpen) return '<section class="schedule-editor-empty" data-schedule-inline aria-label="Edit staff schedule"><h2>Edit staff schedule</h2><p>Choose a staff member below, or select a day in the weekly schedule above.</p><div>' + salonData.loadCatalog().technicians.filter(function (person) { return person.active !== false; }).map(function (person) { return '<button type="button" data-inline-staff="' + esc(person.id) + '">' + esc(person.name) + '</button>'; }).join('') + '</div></section>';
     var source = editorValues;
     var staff = salonData.loadCatalog().technicians.find(function (person) { return person.id === selectedStaff; });
     var tabs = {weekly:'Weekly schedule',date:'Date changes',permissions:'Staff permissions'};
     var content = editorScope === 'weekly' ? '<div class="schedule-explainer"><strong>Regular hours, repeated every week</strong><p>Set each working day and its breaks. For a vacation, late start or extra break on one date, use Date changes.</p></div><section class="tech-modal-section">' + weeklyEditor() + '</section><p class="schedule-help">Date changes override these hours on their selected dates.</p>' : (editorScope === 'date' ? datePanel() : '<div class="schedule-explainer"><strong>Who can change this staff member’s availability?</strong><p>This controls changes to this staff member’s own hours, days off and breaks — not the salon’s opening hours or other staff schedules.</p></div><label>Staff availability permission<select class="schedule-select" data-schedule-permission><option value="none" ' + (source.permission === 'none' ? 'selected' : '') + '>View only — manager edits staff schedule</option><option value="request" ' + (source.permission !== 'none' && source.permission !== 'self' ? 'selected' : '') + '>Edit own schedule — approval required</option><option value="self" ' + (source.permission === 'self' ? 'selected' : '') + '>Edit own schedule — no approval needed</option></select></label><div class="schedule-permission-note"><strong>Your salon sets the approval rule</strong><p>Approval required: changes stay pending until a manager approves. No approval needed: staff changes apply directly. Changes affecting existing bookings still need manager resolution; bookings are never automatically cancelled or reassigned.</p></div>');
-    return '<div class="schedule-backdrop" data-schedule-close></div><aside class="schedule-drawer" data-schedule-drawer role="dialog" aria-modal="true" aria-labelledby="schedule-drawer-title" ' + (breakForm || impactReview ? 'inert' : '') + '><header><div class="schedule-editor-heading"><div class="schedule-staff-identity"><strong class="schedule-staff-name">' + esc(staff ? staff.name : selectedStaff) + '</strong><span class="schedule-staff-salon">' + esc(salonData.loadCatalog().salon.name) + '</span></div><h2 id="schedule-drawer-title" tabindex="-1">Edit staff schedule</h2></div><button type="button" data-schedule-close aria-label="Close schedule editor">×</button></header><div class="schedule-editor-tabs" role="tablist" aria-label="Schedule settings">' + Object.keys(tabs).map(function (key) { return '<button type="button" role="tab" id="schedule-tab-' + key + '" aria-controls="schedule-editor-panel" aria-selected="' + (editorScope === key) + '" data-schedule-scope="' + key + '">' + tabs[key] + '</button>'; }).join('') + '</div><section id="schedule-editor-panel" role="tabpanel" aria-labelledby="schedule-tab-' + editorScope + '">' + content + '</section><p class="schedule-form-error" data-schedule-error role="alert">' + esc(editorError) + '</p><p class="schedule-editor-message" role="status">' + esc(editorMessage) + '</p><footer><small>Save draft keeps edits private. Publish applies all three sections to Booking (demo).</small><div><button type="button" data-schedule-close>Cancel</button><button type="button" data-schedule-save-draft>Save draft</button><button type="button" class="booking-primary-button" data-schedule-publish>Publish schedule</button></div></footer></aside>' + breakDialog();
+    return '<aside class="schedule-drawer schedule-inline-editor" data-schedule-inline data-schedule-drawer role="region" aria-labelledby="schedule-drawer-title" ' + (breakForm || impactReview ? 'inert' : '') + '><header><div class="schedule-editor-heading"><div class="schedule-staff-identity"><strong class="schedule-staff-name">' + esc(staff ? staff.name : selectedStaff) + '</strong><span class="schedule-staff-salon">' + esc(salonData.loadCatalog().salon.name) + '</span></div><h2 id="schedule-drawer-title" tabindex="-1">Edit staff schedule</h2></div><button type="button" data-schedule-close aria-label="Close schedule editor">×</button></header><div class="schedule-editor-tabs" role="tablist" aria-label="Schedule settings">' + Object.keys(tabs).map(function (key) { return '<button type="button" role="tab" id="schedule-tab-' + key + '" aria-controls="schedule-editor-panel" aria-selected="' + (editorScope === key) + '" data-schedule-scope="' + key + '">' + tabs[key] + '</button>'; }).join('') + '</div><section id="schedule-editor-panel" role="tabpanel" aria-labelledby="schedule-tab-' + editorScope + '">' + content + '</section><p class="schedule-form-error" data-schedule-error role="alert">' + esc(editorError) + '</p><p class="schedule-editor-message" role="status">' + esc(editorMessage) + '</p><footer><small>Save draft keeps edits private. Publish applies all three sections to Booking (demo).</small><div><button type="button" data-schedule-close>Cancel</button><button type="button" data-schedule-save-draft>Save draft</button><button type="button" class="booking-primary-button" data-schedule-publish>Publish schedule</button></div></footer></aside>' + breakDialog();
   }
   function datePanel() {
     var dates = Object.keys(editorValues.exceptions).sort();
@@ -225,21 +232,23 @@
       requestsHost.replaceChildren(host.querySelector('[data-schedule-requests]'));
       host.querySelector('.schedule-heading').insertAdjacentHTML('afterend','<button type="button" class="staff-requests-shortcut" data-open-staff-requests>Staff Requests <strong>' + openCount + ' need review</strong><span>View requests →</span></button>');
     }
+    inlineHost.replaceChildren(host.querySelector('[data-schedule-inline]'));
     modalHost.replaceChildren();
-    Array.from(host.querySelectorAll('.schedule-backdrop,.schedule-drawer,.schedule-impact-backdrop,[data-request-impact],.schedule-break-backdrop,[data-break-form]')).forEach(function (node) { modalHost.appendChild(node); });
+    Array.from(host.querySelectorAll('.schedule-impact-backdrop,[data-request-impact],.schedule-break-backdrop,[data-break-form]')).forEach(function (node) { modalHost.appendChild(node); });
+    host.appendChild(inlineHost);
     formatEditorDateFields();
     if (drawerOpen && store.loadState().drafts[store.SALON_ID]?.[selectedStaff]) {
-      modalHost.querySelector('[data-schedule-save-draft]').insertAdjacentHTML('beforebegin', '<button type="button" data-schedule-discard>Discard saved draft</button>');
+      editorUi.querySelector('[data-schedule-save-draft]').insertAdjacentHTML('beforebegin', '<button type="button" data-schedule-discard>Discard saved draft</button>');
     }
     if (boardMessage) modalHost.insertAdjacentHTML('beforeend', '<div class="schedule-toast" role="status">' + esc(boardMessage) + '<button type="button" data-schedule-toast-close aria-label="Dismiss message">×</button></div>');
-    // The editor lives outside hidden settings panels so Staff can open it directly.
-    if (breakForm) modalHost.querySelector('[data-break-form] input:not(:disabled),[data-break-form] select:not(:disabled)')?.focus();
-    else if (impactReview) modalHost.querySelector('[data-impact-close]')?.focus();
-    else if (drawerOpen) modalHost.querySelector('#schedule-drawer-title')?.focus();
+    // The editor is inline; only break and booking-impact dialogs live outside the panel.
+    if (breakForm) editorUi.querySelector('[data-break-form] input:not(:disabled),[data-break-form] select:not(:disabled)')?.focus();
+    else if (impactReview) editorUi.querySelector('[data-impact-close]')?.focus();
+    else if (drawerOpen) editorUi.querySelector('#schedule-drawer-title')?.focus({preventScroll:true});
   }
   function snapshotEditor() {
     if (!drawerOpen || !editorValues) return;
-    modalHost.querySelectorAll('[data-schedule-edit-day]').forEach(function (row) {
+    editorUi.querySelectorAll('[data-schedule-edit-day]').forEach(function (row) {
       if (editorScope === 'date' && dateMode !== 'custom-hours') return;
       var day = editorScope === 'weekly' ? editorValues.weekly[row.dataset.scheduleEditDay] : dateDraft;
       var off = row.querySelector('[data-schedule-off]');
@@ -247,7 +256,7 @@
       day.start = row.querySelector('[data-schedule-start]').value;
       day.end = row.querySelector('[data-schedule-end]').value;
     });
-    var permission = modalHost.querySelector('[data-schedule-permission]');
+    var permission = editorUi.querySelector('[data-schedule-permission]');
     if (permission) editorValues.permission = permission.value;
     if (editorScope === 'date') updateDateDraft();
   }
@@ -265,17 +274,17 @@
     dayKeys.forEach(function (key) { if (!schedule.weekly[key].working) schedule.weekly[key] = {working:false,start:'',end:'',breaks:[]}; });
     return schedule;
   }
-  function showError(text) { editorError = text; var target = modalHost.querySelector('[data-schedule-error]'); if (target) { target.textContent = text; target.scrollIntoView?.({block:'nearest'}); } }
+  function showError(text) { editorError = text; var target = editorUi.querySelector('[data-schedule-error]'); if (target) { target.textContent = text; target.scrollIntoView?.({block:'nearest'}); } }
   function markEditorChanged() {
     editorMessage = 'Unsaved changes. Save draft or publish when ready.';
     editorError = '';
-    var message = modalHost.querySelector('.schedule-editor-message');
-    var error = modalHost.querySelector('[data-schedule-error]');
+    var message = editorUi.querySelector('.schedule-editor-message');
+    var error = editorUi.querySelector('[data-schedule-error]');
     if (message) message.textContent = editorMessage;
     if (error) error.textContent = '';
   }
   function saveDraft() {
-    var invalidDate = modalHost.querySelector('[data-date-display]:invalid');
+    var invalidDate = editorUi.querySelector('[data-date-display]:invalid');
     if (invalidDate) { invalidDate.reportValidity(); return false; }
     snapshotEditor();
     var schedule = editorSchedule();
@@ -319,12 +328,12 @@
     loadDate();
   }
 
-  modalHost.addEventListener('input', function (event) {
+  onEditorEvent('input', function (event) {
     if (event.target.matches('[data-date-display]')) {
       event.target.setCustomValidity(parseDisplayDate(event.target.value) ? '' : 'Enter a valid date, for example Sep 29, 2026.');
     }
   });
-  modalHost.addEventListener('change', function (event) {
+  onEditorEvent('change', function (event) {
     if (event.target.matches('[data-date-display]')) {
       var iso = parseDisplayDate(event.target.value);
       event.target.setCustomValidity(iso ? '' : 'Enter a valid date, for example Sep 29, 2026.');
@@ -402,7 +411,7 @@
     editorMessage = 'Break saved in this edit. Publish to update Booking.';
     render(selectedStaff);
   }
-  modalHost.addEventListener('submit', function (event) { if (event.target.matches('[data-break-form]')) { event.preventDefault(); saveBreak(event.target); } });
+  onEditorEvent('submit', function (event) { if (event.target.matches('[data-break-form]')) { event.preventDefault(); saveBreak(event.target); } });
   function handleRequestSubmit(event) {
     var form = event.target.closest('[data-request-adjust-form]');
     if (!form) return;
@@ -416,6 +425,8 @@
   host.addEventListener('submit', handleRequestSubmit);
   if (requestsHost) requestsHost.addEventListener('submit', handleRequestSubmit);
   function handleClick(event) {
+    var inlineStaff = event.target.closest('[data-inline-staff]');
+    if (inlineStaff) { openEditor(inlineStaff.dataset.inlineStaff,inlineStaff); return; }
     if (event.target.closest('[data-open-staff-requests]')) { document.querySelector('[data-settings-tab="staff-requests"]')?.click(); return; }
     if (event.target.closest('[data-add-request-demo]')) { addRequestDemo(); return; }
     var filter = event.target.closest('[data-request-filter]');
@@ -433,11 +444,11 @@
       return;
     }
     if (event.target.closest('[data-schedule-this-week]')) { changeWeek(dateKey(new Date()), '[data-schedule-this-week]'); return; }
-    if (event.target.closest('[data-schedule-toast-close]')) { boardMessage = ''; modalHost.querySelector('.schedule-toast')?.remove(); return; }
+    if (event.target.closest('[data-schedule-toast-close]')) { boardMessage = ''; editorUi.querySelector('.schedule-toast')?.remove(); return; }
     var day = event.target.closest('[data-schedule-day]');
-    if (day) { opener = day; selectedStaff = day.dataset.scheduleStaff; selectedDate = day.dataset.scheduleDate; editorScope = 'date'; drawerOpen = true; loadEditorDay(); render(selectedStaff); return; }
+    if (day) { opener = day; selectedStaff = day.dataset.scheduleStaff; selectedDate = day.dataset.scheduleDate; editorScope = 'date'; drawerOpen = true; loadEditorDay(); render(selectedStaff); inlineHost.scrollIntoView({block:'start',behavior:'smooth'}); return; }
     var tab = event.target.closest('[data-schedule-scope]');
-    if (tab) { snapshotEditor(); editorScope = tab.dataset.scheduleScope; if (editorScope === 'date') loadDate(); render(selectedStaff); modalHost.querySelector('[data-schedule-scope="' + editorScope + '"]')?.focus(); return; }
+    if (tab) { snapshotEditor(); editorScope = tab.dataset.scheduleScope; if (editorScope === 'date') loadDate(); render(selectedStaff); editorUi.querySelector('[data-schedule-scope="' + editorScope + '"]')?.focus(); return; }
     var dateAction = event.target.closest('[data-date-edit],[data-date-reset]');
     if (dateAction) {
       snapshotEditor();
@@ -482,12 +493,12 @@
     var approve = event.target.closest('[data-request-approve]');
     if (approve) review(approve.dataset.requestApprove, 'approve');
   }
-  host.addEventListener('click', handleClick);
+  host.addEventListener('click', function (event) { if (!event.composedPath().includes(inlineHost)) handleClick(event); });
   if (requestsHost) requestsHost.addEventListener('click', handleClick);
   host.addEventListener('change', function (event) {
     if (event.target.matches('[data-schedule-week-date]')) changeWeek(event.target.value, '[data-schedule-week-date]');
   });
-  modalHost.addEventListener('click', handleClick);
+  onEditorEvent('click', handleClick);
   function closeEditor() {
     drawerOpen = false;
     editorValues = null;
@@ -497,6 +508,7 @@
     if (opener && opener.isConnected) opener.focus();
   }
   function openEditor(staffId, trigger) {
+    document.querySelector('[data-settings-tab="staff-schedule"]')?.click();
     selectedStaff = staffId;
     selectedDate = dateKey(new Date());
     editorScope = 'weekly';
@@ -504,18 +516,19 @@
     opener = trigger;
     loadEditorDay();
     render(selectedStaff);
+    inlineHost.scrollIntoView({block:'start',behavior:'smooth'});
   }
-  modalHost.addEventListener('keydown', function (event) {
+  onEditorEvent('keydown', function (event) {
     if (event.target.matches('[data-schedule-scope]') && ['ArrowLeft','ArrowRight','Home','End'].includes(event.key)) {
       event.preventDefault();
-      var tabs = Array.from(modalHost.querySelectorAll('[data-schedule-scope]'));
+      var tabs = Array.from(editorUi.querySelectorAll('[data-schedule-scope]'));
       var index = tabs.indexOf(event.target);
       var next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length;
       tabs[next].click(); return;
     }
     if (event.key === 'Escape') { event.preventDefault(); if (breakForm) { breakForm = null; render(selectedStaff); } else if (impactReview) { impactReview = null; render(selectedStaff); } else closeEditor(); }
     if (event.key !== 'Tab') return;
-    var dialog = modalHost.querySelector('[data-break-form]') || modalHost.querySelector('[data-request-impact]:not([hidden])') || modalHost.querySelector('[data-schedule-drawer]');
+    var dialog = editorUi.querySelector('[data-break-form]') || editorUi.querySelector('[data-request-impact]:not([hidden])');
     if (!dialog) return;
     var controls = Array.from(dialog.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),a[href]'));
     var first = controls[0], last = controls[controls.length - 1];

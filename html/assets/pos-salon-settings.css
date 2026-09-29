@@ -136,6 +136,15 @@
   .schedule-break-dialog{padding:16px}
 }
 
+[data-schedule-inline-host]{margin-top:20px;scroll-margin-top:90px}
+.schedule-drawer.schedule-inline-editor{position:static;inset:auto;transform:none;width:100%;height:auto;max-height:none;overflow:visible;box-shadow:none;border:1px solid #dbe4f3;box-sizing:border-box;z-index:auto}
+.schedule-drawer.schedule-inline-editor>footer{position:static;padding-bottom:0}
+.schedule-editor-empty{padding:20px;border:1px solid #dbe4f3;border-radius:14px;background:#fff}
+.schedule-editor-empty h2{margin:0 0 6px;font-size:18px}
+.schedule-editor-empty p{margin:0 0 14px;color:#64748b;font-size:13px}
+.schedule-editor-empty>div{display:flex;flex-wrap:wrap;gap:8px}
+.schedule-editor-empty button{min-height:44px;border:1px solid #dbe4f3;border-radius:8px;background:#fff;color:#3730a3;padding:8px 14px;cursor:pointer}
+
 /* Schedule type scale, scoped away from other Salon Settings sections. */
 [data-staff-schedule-settings],.schedule-drawer,.schedule-break-dialog,.schedule-impact{font-size:13px;line-height:1.5}
 [data-staff-schedule-settings] strong,.schedule-drawer strong,.schedule-break-dialog strong,.schedule-impact strong{font-weight:700}
