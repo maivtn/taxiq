@@ -471,7 +471,7 @@
     @media (max-width: 640px) { .tech-level-layout { grid-template-columns: 1fr; } }
   </style>
   <link rel="stylesheet" href="../assets/vendor/tom-select/tom-select.css">
-  <link rel="stylesheet" href="../assets/pos-salon-settings.css?v=20260929-oneqr-ads">
+  <link rel="stylesheet" href="../assets/pos-salon-settings.css?v=20260911-step-reorder">
   <link rel="stylesheet" href="../assets/pos-salon-sms-settings.css?v=20260924-care-two-templates">
 </head>
 <body>
@@ -495,7 +495,6 @@
           <button type="button" data-settings-tab="staff" class="active" aria-current="page"><i data-lucide="users-round" aria-hidden="true"></i> Staff</button>
           <button type="button" data-settings-tab="staff-schedule"><i data-lucide="calendar-range" aria-hidden="true"></i> Staff Schedule</button>
           <button type="button" data-settings-tab="services"><i data-lucide="list" aria-hidden="true"></i> Services</button>
-          <button type="button" data-settings-tab="oneqr-ads"><i data-lucide="badge-dollar-sign" aria-hidden="true"></i> OneQR Ads</button>
           <button type="button" data-settings-tab="roles"><i data-lucide="shield-check" aria-hidden="true"></i> Roles &amp; Permissions</button>
           <a href="pos-operating-standards.html"><i data-lucide="clipboard-check" aria-hidden="true"></i> Operating Standards</a>
         </nav>
@@ -513,87 +512,6 @@
         <section data-settings-panel="staff-schedule" hidden><div data-staff-schedule-settings aria-live="polite"></div><div data-staff-requests-settings aria-live="polite"></div></section>
         <section data-settings-panel="information" hidden></section>
         <section data-settings-panel="services" hidden></section>
-        <section data-settings-panel="oneqr-ads" hidden>
-          <div class="oneqr-ads-heading">
-            <div>
-              <span class="oneqr-ads-eyebrow">ONEQR · IN-SALON ADVERTISING</span>
-              <h2>Earn from sponsored activity</h2>
-              <p>Show relevant nearby offers after customers complete their main task. Your salon promotions stay first and competitor protection remains active.</p>
-            </div>
-            <span class="oneqr-ads-status is-off" data-oneqr-ads-status>Monetization off</span>
-          </div>
-
-          <div class="oneqr-ads-layout">
-            <div class="oneqr-ads-settings">
-              <article class="oneqr-ads-card oneqr-ads-enable-card">
-                <div class="oneqr-ads-card-icon"><i data-lucide="circle-dollar-sign" aria-hidden="true"></i></div>
-                <div>
-                  <h3>Enable ads &amp; earnings</h3>
-                  <p>Allow labeled sponsored offers on this salon's OneQR and earn from eligible customer activity.</p>
-                  <a href="oneqr-earnings.html#settings">Review eligibility, policy &amp; payouts →</a>
-                </div>
-                <label class="oneqr-ads-switch">
-                  <input type="checkbox" data-oneqr-ads-enabled>
-                  <span aria-hidden="true"></span>
-                  <span class="sr-only">Enable OneQR ads and earnings</span>
-                </label>
-              </article>
-
-              <article class="oneqr-ads-card">
-                <div class="oneqr-ads-section-heading">
-                  <div><span>01</span><h3>Customer experience</h3></div>
-                  <small>Ads never interrupt services or checkout.</small>
-                </div>
-                <div class="oneqr-ads-options">
-                  <label class="oneqr-ads-option"><input type="checkbox" data-oneqr-ad-placement="hero" checked><span><strong>Split hero banner</strong><small>Salon promotion on the left, partner or sponsored offer on the right.</small></span></label>
-                  <label class="oneqr-ads-option"><input type="checkbox" data-oneqr-ad-placement="nearby" checked><span><strong>Sponsored nearby card</strong><small>One labeled paid offer below the salon menu.</small></span></label>
-                  <label class="oneqr-ads-option"><input type="checkbox" data-oneqr-ad-placement="wait" checked><span><strong>After check-in</strong><small>Nearby offers appear while the customer is waiting.</small></span></label>
-                  <label class="oneqr-ads-option"><input type="checkbox" data-oneqr-ad-placement="complete" checked><span><strong>Completion screens</strong><small>Show offers after booking, review, or tip is finished.</small></span></label>
-                </div>
-              </article>
-
-              <article class="oneqr-ads-card">
-                <div class="oneqr-ads-section-heading">
-                  <div><span>02</span><h3>Cross-promotion</h3></div>
-                  <label class="oneqr-ads-inline-switch"><input type="checkbox" data-oneqr-cross-promo checked><span aria-hidden="true"></span><b>Automatic matching</b></label>
-                </div>
-                <p class="oneqr-ads-help">Nexora matches nearby businesses that also opted in. Sensitive categories and direct competitors are filtered automatically.</p>
-                <div class="oneqr-ads-fields">
-                  <label><span>Hero distribution</span><select data-oneqr-setting="distribution"><option value="split">50/50 split · always show both</option><option value="rotate">50/50 rotation</option></select></label>
-                  <label><span>Partner radius</span><select data-oneqr-setting="radius"><option value="auto">Automatic · 1 mi, expand to 2 mi</option><option value="1">Only 1 mi</option><option value="2">Up to 2 mi</option></select></label>
-                  <label><span>Competitor protection</span><select data-oneqr-setting="competitor"><option value="group">Block Beauty group</option><option value="industry">Block Nail salons only</option><option value="off">Off</option></select></label>
-                  <label><span>Discovery buttons</span><select data-oneqr-setting="discovery"><option value="rich">Live deal count &amp; time-based copy</option><option value="plain">Basic buttons</option></select></label>
-                </div>
-                <div class="oneqr-ads-note"><i data-lucide="shield-check" aria-hidden="true"></i><span><strong>Salon protection stays on.</strong> Paid placements follow the same competitor rules as organic offers.</span></div>
-              </article>
-
-              <div class="oneqr-ads-actions">
-                <span data-oneqr-ads-message role="status" aria-live="polite">Changes are saved for this prototype.</span>
-                <button type="button" class="booking-primary-button" data-oneqr-ads-save><i data-lucide="save" aria-hidden="true"></i>Save ad settings</button>
-              </div>
-            </div>
-
-            <aside class="oneqr-ads-preview-card" aria-label="Customer OneQR preview">
-              <div class="oneqr-ads-preview-head"><div><span>LIVE PREVIEW</span><strong>What customers see</strong></div><span class="oneqr-preview-live"><i></i> Guest view</span></div>
-              <div class="oneqr-preview-phone">
-                <div class="oneqr-preview-top"><span>Bitcoin Nail Bar</span><small>Houston · Westheimer</small></div>
-                <div class="oneqr-preview-hero" data-oneqr-preview-hero>
-                  <div><small>AT THIS SALON</small><strong>Hot stone pedicure</strong><b>+$15</b></div>
-                  <div data-oneqr-preview-partner><small>NEARBY PARTNER</small><strong>BOGO milk tea</strong><b>0.4 mi</b></div>
-                </div>
-                <div class="oneqr-preview-discovery" data-oneqr-preview-discovery>
-                  <button type="button"><i data-lucide="map-pin" aria-hidden="true"></i><span><strong>12 Deals Nearby</strong><small>Lunch deals around here</small></span></button>
-                  <button type="button"><i data-lucide="search" aria-hidden="true"></i><span><strong>Search Deals</strong><small>Try “massage under $50”</small></span></button>
-                </div>
-                <span class="oneqr-preview-label">SALON MENU</span>
-                <div class="oneqr-preview-menu"><span>✓<small>Check-in</small></span><span>▦<small>Booking</small></span><span>≡<small>Services</small></span><span>☆<small>Review</small></span></div>
-                <div class="oneqr-preview-sponsored" data-oneqr-preview-sponsored><span>SPONSORED · NEARBY</span><strong>$5 off lunch combo</strong><small>Saigon Kitchen · 0.7 mi</small></div>
-                <div class="oneqr-preview-off" data-oneqr-preview-off><i data-lucide="pause-circle" aria-hidden="true"></i><strong>Sponsored placements are off</strong><small>Salon features and your own promotions still work.</small></div>
-              </div>
-              <p>Sponsored content is labeled and appears only in the placements selected on this page.</p>
-            </aside>
-          </div>
-        </section>
         <section data-settings-panel="roles" hidden></section>
         <section data-settings-panel="sms" hidden></section>
 
