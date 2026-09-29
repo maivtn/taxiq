@@ -209,6 +209,7 @@
   var moduleListEl = document.getElementById('oneqrModuleList');
   var welcomeEl = document.getElementById('oneqrWelcomeText');
   var tilesEl = document.getElementById('oneqrPreviewTiles');
+  var customerActionsEl = document.getElementById('oneqrCustomerActions');
   var addModuleBtn = document.getElementById('oneqrAddModule');
   var resetModulesBtn = document.getElementById('oneqrResetModules');
   var previewViewAllBtn = document.getElementById('oneqrPreviewViewAll');
@@ -454,6 +455,8 @@
     var order = moduleOrderByRole[currentRole] || [];
     var enabledSet = enabledByRole[currentRole] || new Set();
     var identityValue = identitySelect ? identitySelect.value : 'Public first, verify when needed';
+    customerActionsEl.hidden = currentRole !== 'customer';
+    welcomeEl.hidden = currentRole === 'customer' && identityValue !== 'Always sign in';
     if (identityValue === 'Always sign in') {
       welcomeEl.innerHTML = '<strong>🔒 Sign in required</strong><small>Verify your identity to continue</small>';
     } else {
@@ -477,8 +480,35 @@
       previewViewAllBtn.textContent = previewExpanded ? 'View Less' : 'View All';
       previewViewAllBtn.setAttribute('aria-expanded', String(previewExpanded));
     }
+    renderPreviewBusinessInfo();
     renderPerformance();
     refreshIcons();
+  }
+
+  function renderPreviewBusinessInfo() {
+    var card = { address: '9793 Westheimer Rd, Suite A', city: 'Houston', region: 'TX', addressMode: 'full', phone: '(346) 802-4906', showPhone: true, showHours: true, openTime: '09:30', closeTime: '19:00' };
+    try {
+      var saved = JSON.parse(window.localStorage.getItem('taxiq:oneqr-contact-card') || 'null');
+      if (saved && typeof saved === 'object') card = Object.assign(card, saved);
+    } catch (error) { /* Use the default business profile if storage is unavailable. */ }
+    var address = card.addressMode === 'hidden' ? '' : [card.addressMode === 'area' ? '' : card.address, card.city, card.region].filter(Boolean).join(', ');
+    function displayTime(value) {
+      var match = /^(\d{2}):(\d{2})$/.exec(value || '');
+      if (!match) return '';
+      var hour = Number(match[1]);
+      return (hour % 12 || 12) + ':' + match[2] + (hour >= 12 ? ' PM' : ' AM');
+    }
+    var hours = card.showHours && card.openTime && card.closeTime ? 'Open daily · ' + displayTime(card.openTime) + '–' + displayTime(card.closeTime) : '';
+    var addressEl = document.getElementById('oneqrPreviewAddress');
+    var hoursEl = document.getElementById('oneqrPreviewHours');
+    addressEl.querySelector('b').textContent = address;
+    addressEl.hidden = !address;
+    hoursEl.querySelector('b').textContent = hours;
+    hoursEl.hidden = !hours;
+    document.getElementById('oneqrPreviewBusinessInfo').hidden = !address && !hours;
+    document.getElementById('oneqrPreviewCall').hidden = !card.showPhone || !card.phone;
+    document.getElementById('oneqrPreviewText').hidden = !card.showPhone || !card.phone;
+    document.getElementById('oneqrPreviewDirections').hidden = !address;
   }
 
   function clearDragOverMarkers() {
