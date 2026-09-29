@@ -67,6 +67,29 @@
 .oneqr-contact-dialog .contact-card-preview-wrap > p { margin: 7px 4px 0; color: #8a94a6; font-size: 11px; line-height: 1.45; text-align: center; }
 
 
+.oneqr-contact-dialog [data-contact-theme="ocean"], .oneqr-contact-dialog [data-theme="ocean"] { --style-bg: linear-gradient(145deg, #0c4a6e, #0e7490); --style-accent: #a5f3fc; }
+.oneqr-contact-dialog [data-contact-theme="sunset"], .oneqr-contact-dialog [data-theme="sunset"] { --style-bg: linear-gradient(145deg, #7c2d12, #be185d); --style-accent: #fed7aa; }
+.oneqr-contact-dialog [data-contact-theme="rose"], .oneqr-contact-dialog [data-theme="rose"] { --style-bg: linear-gradient(145deg, #831843, #9d174d); --style-accent: #fbcfe8; }
+.oneqr-contact-dialog [data-contact-theme="midnight"], .oneqr-contact-dialog [data-theme="midnight"] { --style-bg: linear-gradient(145deg, #18181b, #3e3423); --style-accent: #f4d58d; }
+.oneqr-contact-dialog [data-contact-theme="minimal"], .oneqr-contact-dialog [data-theme="minimal"] { --style-bg: linear-gradient(145deg, #fff, #f1f5f9); --style-accent: #475569; }
+.oneqr-contact-dialog [data-contact-theme="ivory"], .oneqr-contact-dialog [data-theme="ivory"] { --style-bg: linear-gradient(145deg, #fffbeb, #f5e7ce); --style-accent: #78552d; }
+.oneqr-contact-dialog .contact-theme-picker { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 8px; }
+.oneqr-contact-dialog .contact-theme-picker button { flex-direction: column; justify-content: center; gap: 7px; min-height: 76px; padding: 9px 5px; text-align: center; }
+.oneqr-contact-dialog .contact-theme-picker button span { width: 100%; height: 30px; border-radius: 6px; border: 1px solid rgba(15,23,42,.08); background: var(--style-bg, linear-gradient(145deg, #4f46e5, #8b5cf6)); }
+.oneqr-contact-dialog .contact-theme-picker button:focus-visible { outline: 2px solid #4f46e5; outline-offset: 3px; }
+.oneqr-contact-dialog .contact-card-preview[data-theme="ocean"],
+.oneqr-contact-dialog .contact-card-preview[data-theme="sunset"],
+.oneqr-contact-dialog .contact-card-preview[data-theme="rose"],
+.oneqr-contact-dialog .contact-card-preview[data-theme="midnight"],
+.oneqr-contact-dialog .contact-card-preview[data-theme="minimal"],
+.oneqr-contact-dialog .contact-card-preview[data-theme="ivory"] { --card-accent: var(--style-accent); background: var(--style-bg); box-shadow: 0 18px 36px rgba(15,23,42,.16); }
+.oneqr-contact-dialog .contact-card-preview[data-theme="midnight"] { border: 1px solid #9b8051; }
+.oneqr-contact-dialog .contact-card-preview:is([data-theme="minimal"], [data-theme="ivory"]) { color: #292524; border: 1px solid #ddd6cb; }
+.oneqr-contact-dialog .contact-card-preview:is([data-theme="minimal"], [data-theme="ivory"]) > p,
+.oneqr-contact-dialog .contact-card-preview:is([data-theme="minimal"], [data-theme="ivory"]) .contact-preview-details > span { color: #57534e; }
+.oneqr-contact-dialog .contact-card-preview:is([data-theme="minimal"], [data-theme="ivory"]) .contact-card-brand > span,
+.oneqr-contact-dialog .contact-card-preview:is([data-theme="minimal"], [data-theme="ivory"]) .contact-preview-actions button { color: var(--card-accent); border-color: #d6d3d1; background: rgba(255,255,255,.7); }
+
 @media (max-width: 760px) {
   .oneqr-contact-dialog .contact-card-layout { grid-template-columns: 1fr; }
   .oneqr-contact-dialog .contact-card-preview-wrap { width: min(310px, 100%); margin: 0 auto; }
