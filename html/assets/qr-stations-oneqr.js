@@ -216,6 +216,13 @@
   var moduleLinkForm = document.getElementById('oneqrModuleLinkForm');
   var moduleLinkInput = document.getElementById('oneqrModuleLinkInput');
   var moduleStatusEl = document.getElementById('oneqrModuleStatus');
+  var appearanceDialog = document.getElementById('oneqrAppearanceDialog');
+  var appearanceGrid = document.getElementById('oneqrAppearanceGrid');
+  var appearanceReset = document.getElementById('oneqrAppearanceReset');
+  var moduleIconUpload = document.getElementById('oneqrModuleIconUpload');
+  var appearanceTarget = null;
+  var uploadTarget = null;
+  var appearanceChoices = window.ONEQR_ACTION_APPEARANCE;
   var PREVIEW_COLLAPSED_MODULE_LIMIT = 6;
   var previewExpanded = false;
 
@@ -251,8 +258,84 @@
   }
 
   function iconHtml(name) {
-    return '<i data-lucide="' + escapeModuleText(MODULE_ICONS[name] || 'link-2') + '" aria-hidden="true"></i>';
+    var icon = moduleDetails(name).icon || MODULE_ICONS[name] || 'link-2';
+    return isModuleImage(icon)
+      ? '<img src="' + escapeModuleText(icon) + '" alt="">'
+      : '<i data-lucide="' + escapeModuleText(icon) + '" aria-hidden="true"></i>';
   }
+
+  function isModuleImage(value) {
+    return /^data:image\/(?:png|jpeg|webp|gif);base64,/i.test(value || '');
+  }
+
+  function moduleBackground(name) {
+    var background = moduleDetails(name).background;
+    return appearanceChoices.backgrounds.includes(background) ? background : '';
+  }
+
+  function openModuleAppearance(name, mode) {
+    appearanceTarget = { name: name, role: currentRole, mode: mode };
+    var isIcon = mode === 'icon';
+    var selected = isIcon ? (moduleDetails(name).icon || MODULE_ICONS[name]) : moduleBackground(name);
+    document.getElementById('oneqrAppearanceTitle').textContent = isIcon ? 'Choose an icon' : 'Choose a card background';
+    document.getElementById('oneqrAppearanceDescription').textContent = (isIcon ? 'Choose an icon for ' : 'Choose an industry-style gradient for ') + moduleTitle(name) + '.';
+    appearanceGrid.classList.toggle('is-backgrounds', !isIcon);
+    appearanceGrid.innerHTML = (isIcon ? appearanceChoices.icons : appearanceChoices.backgrounds).map(function (value, index) {
+      return '<button type="button" data-appearance-choice="' + index + '" class="' + (value === selected ? 'is-selected' : '') + '" aria-pressed="' + (value === selected) + '" aria-label="' + (isIcon ? 'Use ' + value + ' icon' : 'Use gradient ' + (index + 1)) + '">' +
+        (isIcon ? '<i data-lucide="' + value + '" aria-hidden="true"></i>' : '<span style="background:' + value + '"></span>') + '</button>';
+    }).join('');
+    appearanceReset.querySelector('span').textContent = isIcon ? 'Use default' : 'Use white';
+    refreshIcons();
+    appearanceDialog.showModal();
+  }
+
+  function updateModuleAppearance(target, value) {
+    if (!target || !moduleOrderByRole[target.role].includes(target.name)) return;
+    moduleDetails(target.name, target.role)[target.mode] = value;
+    renderModules();
+    renderPreview();
+    moduleStatusEl.textContent = 'Module appearance updated. Select Save Settings to keep it.';
+  }
+
+  appearanceGrid.addEventListener('click', function (event) {
+    var choice = event.target.closest('[data-appearance-choice]');
+    if (!choice || !appearanceTarget) return;
+    var values = appearanceTarget.mode === 'icon' ? appearanceChoices.icons : appearanceChoices.backgrounds;
+    updateModuleAppearance(appearanceTarget, values[Number(choice.dataset.appearanceChoice)]);
+    appearanceDialog.close();
+  });
+  appearanceReset.addEventListener('click', function () {
+    updateModuleAppearance(appearanceTarget, '');
+    appearanceDialog.close();
+  });
+  appearanceDialog.addEventListener('click', function (event) {
+    if (event.target === appearanceDialog) {
+      var bounds = appearanceDialog.getBoundingClientRect();
+      if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) appearanceDialog.close();
+    }
+  });
+  appearanceDialog.addEventListener('close', function () {
+    if (!appearanceTarget || appearanceTarget.role !== currentRole) return;
+    var index = moduleOrderByRole[currentRole].indexOf(appearanceTarget.name);
+    var row = moduleListEl.children[index];
+    if (row) row.querySelector(appearanceTarget.mode === 'icon' ? '[data-module-icon]' : '[data-module-background]').focus();
+  });
+  moduleIconUpload.addEventListener('change', function () {
+    var file = moduleIconUpload.files[0];
+    var target = uploadTarget;
+    moduleIconUpload.value = '';
+    if (!file || !target) return;
+    if (!['image/png', 'image/jpeg', 'image/webp', 'image/gif'].includes(file.type) || file.size > 1024 * 1024) {
+      moduleStatusEl.textContent = 'Use a PNG, JPG, WebP, or GIF image smaller than 1 MB.';
+      return;
+    }
+    var reader = new FileReader();
+    reader.addEventListener('load', function () {
+      if (isModuleImage(reader.result)) updateModuleAppearance(target, reader.result);
+    });
+    reader.addEventListener('error', function () { moduleStatusEl.textContent = 'Could not read this image. Please try another file.'; });
+    reader.readAsDataURL(file);
+  });
 
   function escapeModuleText(value) {
     return String(value == null ? '' : value).replace(/[&<>"']/g, function (character) {
@@ -339,11 +422,12 @@
       var key = escapeModuleText(name);
       var details = moduleDetails(name);
       var title = escapeModuleText(moduleTitle(name));
+      var background = moduleBackground(name);
       return '<div class="oneqr-module" data-module-row="' + key + '" draggable="false">' +
-        '<span class="oneqr-module-drag" aria-hidden="true" title="Drag to reorder"><i data-lucide="grip-vertical"></i></span>' +
-        '<span class="oneqr-module-icon">' + iconHtml(name) + '</span>' +
+        '<button class="oneqr-module-drag" type="button" aria-label="Drag to reorder ' + title + '" title="Drag to reorder"><i data-lucide="grip-vertical" aria-hidden="true"></i></button>' +
+        '<div class="oneqr-module-icon-tools"><span class="oneqr-module-icon">' + iconHtml(name) + '</span><button class="oneqr-module-background' + (background ? ' has-color' : '') + '" type="button" data-module-background aria-label="Choose card background for ' + title + '" title="Card background"' + (background ? ' style="--action-swatch:' + escapeModuleText(background) + '"' : '') + '><span></span></button><span><button type="button" data-module-icon aria-label="Choose icon for ' + title + '">Change icon</button><button type="button" data-module-upload aria-label="Upload icon for ' + title + '">Upload</button></span></div>' +
         '<div class="oneqr-module-fields"><input class="oneqr-module-title-input" data-module-title value="' + escapeModuleText(details.title) + '" aria-label="Module title: ' + title + '"><label class="oneqr-module-url-field"><i data-lucide="link-2" aria-hidden="true"></i><input data-module-url type="text" inputmode="url" value="' + escapeModuleText(details.url) + '" aria-label="Link for ' + title + '" spellcheck="false"></label></div>' +
-        '<span class="oneqr-module-moves"><button type="button" data-move="up" aria-label="Move ' + title + ' up"' + (index === 0 ? ' disabled' : '') + '>↑</button><button type="button" data-move="down" aria-label="Move ' + title + ' down"' + (index === order.length - 1 ? ' disabled' : '') + '>↓</button><button type="button" data-remove-module aria-label="Remove ' + title + '">×</button></span>' +
+        '<span class="oneqr-module-moves"><button type="button" data-move="up" aria-label="Move ' + title + ' up"' + (index === 0 ? ' disabled' : '') + '><i data-lucide="chevron-up" aria-hidden="true"></i></button><button type="button" data-move="down" aria-label="Move ' + title + ' down"' + (index === order.length - 1 ? ' disabled' : '') + '><i data-lucide="chevron-down" aria-hidden="true"></i></button><button type="button" data-remove-module aria-label="Remove ' + title + '"><i data-lucide="x" aria-hidden="true"></i></button></span>' +
         '<button type="button" class="oneqr-switch' + (on ? ' is-on' : '') + '" data-module="' + key + '" aria-pressed="' + on + '" aria-label="Toggle ' + title + ' module"></button>' +
         '</div>';
     }).join('');
@@ -384,7 +468,8 @@
 
     tilesEl.innerHTML = previewModules.map(function (name) {
       var url = normalizedModuleUrl(moduleDetails(name).url);
-      return '<a class="oneqr-phone-tile"' + (url ? ' href="' + escapeModuleText(url) + '" target="_blank" rel="noopener noreferrer"' : ' aria-disabled="true"') + '>' + iconHtml(name) + '<b>' + escapeModuleText(moduleTitle(name)) + '</b></a>';
+      var background = moduleBackground(name);
+      return '<a class="oneqr-phone-tile' + (background ? ' has-custom-background' : '') + '"' + (background ? ' style="background:' + escapeModuleText(background) + '"' : '') + (url ? ' href="' + escapeModuleText(url) + '" target="_blank" rel="noopener noreferrer"' : ' aria-disabled="true"') + '>' + iconHtml(name) + '<b>' + escapeModuleText(moduleTitle(name)) + '</b></a>';
     }).join('');
     if (previewViewAllBtn) {
       previewViewAllBtn.hidden = !canExpand;
@@ -467,6 +552,17 @@
   });
 
   moduleListEl.addEventListener('click', function (event) {
+    var appearanceButton = event.target.closest('[data-module-icon], [data-module-background], [data-module-upload]');
+    if (appearanceButton) {
+      var appearanceName = appearanceButton.closest('[data-module-row]').dataset.moduleRow;
+      if (appearanceButton.hasAttribute('data-module-upload')) {
+        uploadTarget = { name: appearanceName, role: currentRole, mode: 'icon' };
+        moduleIconUpload.click();
+      } else {
+        openModuleAppearance(appearanceName, appearanceButton.hasAttribute('data-module-icon') ? 'icon' : 'background');
+      }
+      return;
+    }
     var remove = event.target.closest('[data-remove-module]');
     if (remove) {
       var removedName = remove.closest('[data-module-row]').dataset.moduleRow;
@@ -1018,6 +1114,7 @@
       var details = moduleDetails(action.label, 'customer');
       details.title = action.label;
       if (action.url) details.url = action.url;
+      if (appearanceChoices.backgrounds.includes(action.background)) details.background = action.background;
     });
     if (!customerModules.length) return;
     currentPreset.modules = Array.from(new Set((currentPreset.modules || []).concat(customerModules)));
@@ -1106,6 +1203,9 @@
         var details = moduleDetails(name, role);
         if (typeof savedDetails[name].title === 'string') details.title = savedDetails[name].title;
         if (typeof savedDetails[name].url === 'string') details.url = savedDetails[name].url;
+        if (typeof savedDetails[name].icon === 'string' && (appearanceChoices.icons.includes(savedDetails[name].icon) || isModuleImage(savedDetails[name].icon))) details.icon = savedDetails[name].icon;
+        if (appearanceChoices.backgrounds.includes(savedDetails[name].background)) details.background = savedDetails[name].background;
+        else if (savedDetails[name].background === '') details.background = '';
       });
     });
   }

@@ -695,6 +695,17 @@
     </div>
   </div>
 
+  <dialog class="oneqr-appearance-dialog" id="oneqrAppearanceDialog" aria-labelledby="oneqrAppearanceTitle">
+    <div class="oneqr-appearance-heading">
+      <div><span>Module appearance</span><h2 id="oneqrAppearanceTitle">Choose an icon</h2></div>
+      <form method="dialog"><button class="oneqr-modal-close" aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button></form>
+    </div>
+    <p id="oneqrAppearanceDescription"></p>
+    <div class="oneqr-appearance-grid" id="oneqrAppearanceGrid"></div>
+    <button class="oneqr-appearance-reset" type="button" id="oneqrAppearanceReset"><i data-lucide="rotate-ccw" aria-hidden="true"></i><span>Use default</span></button>
+  </dialog>
+  <input type="file" id="oneqrModuleIconUpload" accept=".png,.jpg,.jpeg,.webp,.gif,image/png,image/jpeg,image/webp,image/gif" hidden>
+
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script>
     window.NEXORA_SHELL = {
@@ -709,6 +720,7 @@
   <script src="../assets/qr-stations-qrcode.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="../assets/nexora-shell.js"></script>
+  <script src="../assets/oneqr-action-appearance.js"></script>
   <script src="../assets/qr-stations-oneqr.js?v=phone-1"></script>
   <script src="../assets/qr-stations-workflows.js"></script>
 </body>
