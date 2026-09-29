@@ -42,8 +42,9 @@
     if (ticket.lines.some(l => !validMoney(l.price))) return {error:'Enter a valid price for every service.'};
     const subtotal = ticket.lines.reduce((sum,l) => sum + cents(l.price),0);
     const lineDiscount = ticket.lines.reduce((sum,l) => sum + discount(cents(l.price),l.discount),0);
-    const orderDiscount = discount(subtotal - lineDiscount,ticket.discount);
-    const couponDiscount = discount(subtotal - lineDiscount - orderDiscount,ticket.coupon);
+    const eligibleSubtotal = subtotal - lineDiscount;
+    const orderDiscount = discount(eligibleSubtotal,ticket.discount);
+    const couponDiscount = Math.min(discount(eligibleSubtotal,ticket.coupon),eligibleSubtotal-orderDiscount);
     const net = subtotal - lineDiscount - orderDiscount - couponDiscount;
     const p = ticket.checkout;
     if (!validMoney(p.tip)) return {error:'Enter a valid tip.'};
@@ -70,7 +71,7 @@
       if(!parent.coupon)return 0;
       const bases=parent.lines.map(line=>cents(line.price)-discount(cents(line.price),line.discount));
       const base=bases.reduce((sum,value)=>sum+value,0),orderDiscount=discount(base,parent.discount);
-      const couponTotal=discount(base-orderDiscount,parent.coupon);
+      const couponTotal=Math.min(discount(base,parent.coupon),base-orderDiscount);
       if(amountSplit()){
         const lineDiscount=parent.lines.reduce((sum,line)=>sum+discount(cents(line.price),line.discount),0);
         const totalDiscount=lineDiscount+orderDiscount+couponTotal;
@@ -207,7 +208,7 @@
     }
     function serviceDiscounts() {
       const bases=parent.lines.map(l=>cents(l.price)-discount(cents(l.price),l.discount));
-      const base=bases.reduce((sum,n)=>sum+n,0),orderDiscount=discount(base,parent.discount),couponDiscount=discount(base-orderDiscount,parent.coupon),amount=orderDiscount+couponDiscount,result={};
+      const base=bases.reduce((sum,n)=>sum+n,0),orderDiscount=discount(base,parent.discount),couponDiscount=Math.min(discount(base,parent.coupon),base-orderDiscount),amount=orderDiscount+couponDiscount,result={};
       let running=0,allocated=0;
       parent.lines.forEach((l,i)=>{
         running+=bases[i];const next=base?Math.round(amount*running/base):0;
@@ -403,7 +404,7 @@
       if(action==='tech'){title='Change technician';fields='<label>Technician<select name="tech" required><option value="">Choose technician</option>'+options.technicians().map(t=>`<option ${t.name===l.tech?'selected':''} ${t.status==='clocked-out'||(t.status&&t.status!=='available'&&t.name!==l.tech)?'disabled':''}>${esc(t.name)}</option>`).join('')+'</select></label>';}
       if(action==='service'){title='Change service';fields='<label>Service<select name="service" required>'+services().map(s=>`<option value="${esc(s.id)}">${esc(s.name)} · ${s.price==null?'Enter price':money(cents(s.price))}</option>`).join('')+'</select></label>';}
       if(action==='discount'){title=l?'Service discount':'Discount all services';fields=`<label>Discount type<select name="type"><option value="percent">Percentage (%)</option><option value="fixed" ${rule?.type==='fixed'?'selected':''}>Amount ($)</option></select></label>${input('Discount value','value',rule?.value || 0,'number')}<div class="tw-discount-presets">${[0,5,10,15,20].map(n=>button(n,`data-tw-discount-preset="${n}"`)).join('')}</div><p class="tw-muted">Order discount applies after service discounts. Total cannot fall below zero.</p>${group()?'<p class="tw-muted">Discount all applies to the whole ticket. Bill totals update automatically; custom amount splits keep their current proportions.</p>':''}`;}
-      if(action==='coupon'){title='Apply coupon';fields=`<div class="tw-coupon-entry"><input name="couponCode" value="${esc(parent.coupon?.code || '')}" placeholder="Enter coupon code or scan..." aria-label="Coupon code" autocomplete="off" required><button type="button" data-tw-start-qr aria-label="Scan coupon QR code" title="Scan coupon QR code">${icon('scan')}</button></div><p class="tw-coupon-help">Enter a coupon code or tap the QR icon to scan the customer’s coupon. Discount all applies first, then the coupon applies to the remaining balance.</p><div class="tw-coupon-demo"><strong>Demo codes</strong><button type="button" data-tw-demo-code="WELCOME10"><b>WELCOME10</b><span>10% off the remaining ticket balance</span></button><button type="button" data-tw-demo-code="SAVE5"><b>SAVE5</b><span>$5 off the remaining ticket balance</span></button></div><div class="tw-coupon-scan" data-tw-coupon-scan-panel hidden><div class="tw-qr-frame"><video data-tw-qr-video playsinline muted></video><div class="tw-qr-corners" aria-hidden="true"></div></div><p data-tw-qr-status role="status">Hold the coupon QR code inside the frame.</p><div class="tw-qr-actions">${button('Use demo QR','data-tw-demo-qr','tw-purple')}</div></div>`;}
+      if(action==='coupon'){title='Apply coupon';fields=`<div class="tw-coupon-entry"><input name="couponCode" value="${esc(parent.coupon?.code || '')}" placeholder="Enter coupon code or scan..." aria-label="Coupon code" autocomplete="off" required><button type="button" data-tw-start-qr aria-label="Scan coupon QR code" title="Scan coupon QR code">${icon('scan')}</button></div><p class="tw-coupon-help">Enter a coupon code or tap the QR icon to scan the customer’s coupon. Discount all and Coupon are calculated together from the same eligible subtotal.</p><div class="tw-coupon-demo"><strong>Demo codes</strong><button type="button" data-tw-demo-code="WELCOME10"><b>WELCOME10</b><span>10% off the eligible ticket subtotal</span></button><button type="button" data-tw-demo-code="SAVE5"><b>SAVE5</b><span>$5 off the eligible ticket subtotal</span></button></div><div class="tw-coupon-scan" data-tw-coupon-scan-panel hidden><div class="tw-qr-frame"><video data-tw-qr-video playsinline muted></video><div class="tw-qr-corners" aria-hidden="true"></div></div><p data-tw-qr-status role="status">Hold the coupon QR code inside the frame.</p><div class="tw-qr-actions">${button('Use demo QR','data-tw-demo-qr','tw-purple')}</div></div>`;}
       if(action==='custom'){title='Custom service';fields=input('Service name','name')+input('Price ($)','price','','number');}
       if(action==='price'){title='Set service price';fields=input('Price ($)','price',l.price ?? '','number');}
       if(action==='customer'){title='Edit customer';fields=input('Customer','customer',ticket.customer)+input('Phone','phone',ticket.phone,'tel');}
