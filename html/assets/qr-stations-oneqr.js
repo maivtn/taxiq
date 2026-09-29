@@ -1214,8 +1214,6 @@
       heading.appendChild(status);
     }
     status.textContent = 'Template: ' + (currentIndustry.industryLabel || 'Industry');
-    var templateLinkLabel = document.getElementById('oneqrIndustryTemplateLinkLabel');
-    if (templateLinkLabel) templateLinkLabel.textContent = 'Change Industry Template';
   }
 
   function currentOneQRConfig() {
