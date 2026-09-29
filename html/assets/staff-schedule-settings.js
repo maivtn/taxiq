@@ -230,7 +230,6 @@
     document.querySelectorAll('[data-staff-requests-count]').forEach(function (badge) { badge.textContent = openCount; badge.setAttribute('aria-label',openCount + ' requests need review'); });
     if (requestsHost) {
       requestsHost.replaceChildren(host.querySelector('[data-schedule-requests]'));
-      host.querySelector('.schedule-heading').insertAdjacentHTML('afterend','<button type="button" class="staff-requests-shortcut" data-open-staff-requests>Staff Requests <strong>' + openCount + ' need review</strong><span>View requests →</span></button>');
     }
     inlineHost.replaceChildren(host.querySelector('[data-schedule-inline]'));
     modalHost.replaceChildren();
@@ -427,7 +426,6 @@
   function handleClick(event) {
     var inlineStaff = event.target.closest('[data-inline-staff]');
     if (inlineStaff) { openEditor(inlineStaff.dataset.inlineStaff,inlineStaff); return; }
-    if (event.target.closest('[data-open-staff-requests]')) { document.querySelector('[data-settings-tab="staff-requests"]')?.click(); return; }
     if (event.target.closest('[data-add-request-demo]')) { addRequestDemo(); return; }
     var filter = event.target.closest('[data-request-filter]');
     if (filter) { requestFilter = filter.dataset.requestFilter; adjustId = ''; render(selectedStaff); requestsHost?.querySelector('[data-request-filter="' + requestFilter + '"]')?.focus(); return; }

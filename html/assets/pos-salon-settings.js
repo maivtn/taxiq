@@ -18,10 +18,13 @@
   }
   window.renderStaffRoster=function(){baseRender();drawStaff();};
   function selectTab(tab){
-    if(!['information','staff','staff-schedule','staff-requests','services','roles','sms'].includes(tab))tab='staff';
+    const showRequests=tab==='staff-requests';
+    if(showRequests)tab='staff-schedule';
+    if(!['information','staff','staff-schedule','services','roles','sms'].includes(tab))tab='staff';
     document.querySelectorAll('[data-settings-tab]').forEach(b=>{const on=b.dataset.settingsTab===tab;b.classList.toggle('active',on);if(on)b.setAttribute('aria-current','page');else b.removeAttribute('aria-current');});
     document.querySelectorAll('[data-settings-panel]').forEach(p=>p.hidden=p.dataset.settingsPanel!==tab);
     const url=new URL(location.href);url.searchParams.set('section',tab);history.replaceState(null,'',url);
+    if(showRequests)requestAnimationFrame(()=>$('[data-staff-requests-settings]')?.scrollIntoView({block:'start'}));
   }
   $('#salon-staff-search').addEventListener('input',()=>{page=1;drawStaff();});
   $('#salon-staff-pagination').addEventListener('click',e=>{const b=e.target.closest('[data-staff-page]');if(b&&!b.disabled){page=Number(b.dataset.staffPage);drawStaff();}});
