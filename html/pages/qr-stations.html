@@ -300,11 +300,18 @@
                   <button class="oneqr-role-tab" type="button" data-role="staff">Staff</button>
                   <button class="oneqr-role-tab" type="button" data-role="owner">Owner</button>
                 </div>
+                <form class="oneqr-module-link-form" id="oneqrModuleLinkForm">
+                  <i data-lucide="link-2" aria-hidden="true"></i>
+                  <input id="oneqrModuleLinkInput" type="text" inputmode="url" placeholder="Paste any link — website, Google review, YouTube, Instagram..." aria-label="Paste a link to add a module" autocomplete="off" required>
+                  <button type="submit">Add</button>
+                </form>
+                <p class="oneqr-module-hint">Add a link, then edit the title and destination below.</p>
                 <div class="oneqr-module-list" id="oneqrModuleList"></div>
                 <button class="oneqr-add-module" type="button" id="oneqrAddModule">
                   <i data-lucide="plus" aria-hidden="true"></i>
                   <span>Add Module</span>
                 </button>
+                <p class="oneqr-module-hint" role="status" id="oneqrModuleStatus">Save Settings to keep your module changes.</p>
               </div>
 
               <div class="oneqr-panel oneqr-config">

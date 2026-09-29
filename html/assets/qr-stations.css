@@ -1066,6 +1066,20 @@
   gap: 8px;
 }
 
+.oneqr-modules { flex: 2 1 480px; min-width: 0; }
+.oneqr-module-link-form { display: flex; align-items: center; gap: 8px; padding: 7px; border: 1px solid #cec9ff; border-radius: 10px; background: #faf9ff; }
+.oneqr-module-link-form > svg { flex: 0 0 16px; width: 16px; color: #4b48e7; margin-left: 4px; }
+.oneqr-module-link-form input { width: 100%; min-width: 0; border: 0; background: transparent; outline: 0; color: #344054; font-size: 12px; }
+.oneqr-module-link-form:focus-within { border-color: #635bff; box-shadow: 0 0 0 2px rgba(99,91,255,.1); }
+.oneqr-module-link-form button { flex-shrink: 0; min-height: 36px; padding: 0 16px; border: 0; border-radius: 8px; background: #4b48e7; color: #fff; font-size: 12px; font-weight: 800; cursor: pointer; }
+.oneqr-module-hint { margin: 8px 0 12px; color: #7a8496; font-size: 11px; line-height: 1.5; }
+.oneqr-module-fields { flex: 1; min-width: 0; }
+.oneqr-module-title-input { box-sizing: border-box; width: 100%; min-width: 0; min-height: 32px; padding: 6px 9px; border: 1px solid #dfe3eb; border-radius: 7px; background: #fff; color: #172033; font-size: 12px; font-weight: 800; }
+.oneqr-module-url-field { display: flex; align-items: center; gap: 6px; min-height: 32px; margin-top: 6px; padding: 0 9px; border: 1px solid #dfe3eb; border-radius: 7px; background: #fafbfc; }
+.oneqr-module-url-field svg { flex: 0 0 13px; width: 13px; height: 13px; color: #8a94a6; }
+.oneqr-module-url-field input { min-width: 0; width: 100%; border: 0; outline: 0; background: transparent; color: #344054; font-size: 11px; }
+.oneqr-module-title-input:focus, .oneqr-module-url-field:focus-within { border-color: #aaa5e5; outline: 0; box-shadow: 0 0 0 2px rgba(79,70,229,.08); }
+
 .oneqr-module {
   display: flex;
   align-items: center;
@@ -1489,6 +1503,8 @@
   background: #fff;
   padding: 12px;
   color: #4b48e7;
+  text-decoration: none;
+  overflow-wrap: anywhere;
 }
 
 .oneqr-phone-tile svg {
@@ -3360,7 +3376,12 @@
   .oneqr-earnings-entry a { align-self: stretch; }
   .oneqr-panel { flex-basis: 100%; padding: 12px; }
   .oneqr-panel-head h3 { font-size: 15px; }
-  .oneqr-module { gap: 6px; padding: 6px; min-height: 56px; }
+  .oneqr-module { gap: 6px; padding: 10px; min-height: 56px; flex-wrap: wrap; }
+  .oneqr-module-fields { flex-basis: 100%; }
+  .oneqr-module .oneqr-module-moves { margin-left: auto; }
+  .oneqr-module-title-input, .oneqr-module-url-field { min-height: 40px; }
+  .oneqr-module-link-form input, .oneqr-module-title-input, .oneqr-module-url-field input { font-size: 16px; }
+  .oneqr-module-link-form button { min-height: 44px; }
   .oneqr-module-drag, .oneqr-module-icon { display: none; }
   .oneqr-module strong { min-width: 0; font-size: 13px; overflow-wrap: anywhere; }
   .oneqr-module-moves button { width: 44px; min-height: 44px; font-size: 18px; }

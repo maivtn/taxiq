@@ -187,6 +187,7 @@
   // adds to whichever role list is currently active, not a shared pool.
   var moduleOrderByRole = {};
   var enabledByRole = {};
+  var moduleDetailsByRole = { customer: {}, staff: {}, owner: {} };
 
   // Configuration (Welcome Message, Landing View, Identity) is also
   // role-specific — switching the active role swaps these field values too.
@@ -210,6 +211,9 @@
   var addModuleBtn = document.getElementById('oneqrAddModule');
   var previewViewAllBtn = document.getElementById('oneqrPreviewViewAll');
   var performanceActionListEl = document.getElementById('oneqrPerformanceActionList');
+  var moduleLinkForm = document.getElementById('oneqrModuleLinkForm');
+  var moduleLinkInput = document.getElementById('oneqrModuleLinkInput');
+  var moduleStatusEl = document.getElementById('oneqrModuleStatus');
   var PREVIEW_COLLAPSED_MODULE_LIMIT = 6;
   var previewExpanded = false;
 
@@ -244,8 +248,79 @@
   }
 
   function iconHtml(name) {
-    return '<i data-lucide="' + (MODULE_ICONS[name] || 'square') + '" aria-hidden="true"></i>';
+    return '<i data-lucide="' + escapeModuleText(MODULE_ICONS[name] || 'link-2') + '" aria-hidden="true"></i>';
   }
+
+  function escapeModuleText(value) {
+    return String(value == null ? '' : value).replace(/[&<>"']/g, function (character) {
+      return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character];
+    });
+  }
+
+  function moduleDetails(name, role) {
+    var details = moduleDetailsByRole[role || currentRole];
+    if (!Object.prototype.hasOwnProperty.call(details, name)) {
+      Object.defineProperty(details, name, { enumerable: true, configurable: true, writable: true, value: {
+        title: name,
+        url: 'https://nexoratouch.com/o/bitcoin-nail-bar/' + encodeURIComponent(name.toLowerCase().replace(/\s+/g, '-'))
+      } });
+    }
+    return details[name];
+  }
+
+  function moduleTitle(name, role) {
+    return moduleDetails(name, role).title.trim() || (name.indexOf('custom-') === 0 ? 'New link' : name);
+  }
+
+  function normalizedModuleUrl(value) {
+    var raw = value.trim();
+    if (!raw) return '';
+    if (!/^[a-z][a-z\d+.-]*:/i.test(raw)) raw = 'https://' + raw;
+    try {
+      var url = new URL(raw);
+      return ['https:', 'http:', 'mailto:', 'tel:'].includes(url.protocol) ? url.href : '';
+    } catch (error) { return ''; }
+  }
+
+  if (moduleLinkForm && moduleLinkInput) {
+    moduleLinkInput.addEventListener('input', function () { moduleLinkInput.setCustomValidity(''); });
+    moduleLinkForm.addEventListener('submit', function (event) {
+      event.preventDefault();
+      var url = normalizedModuleUrl(moduleLinkInput.value);
+      if (!url) {
+        moduleLinkInput.setCustomValidity('Enter a valid website, email, or phone link.');
+        moduleLinkInput.reportValidity();
+        return;
+      }
+      var parsed = new URL(url);
+      var name = 'custom-' + Date.now() + '-' + Math.random().toString(36).slice(2, 8);
+      moduleDetailsByRole[currentRole][name] = { title: parsed.hostname.replace(/^www\./, '') || 'New link', url: url };
+      moduleOrderByRole[currentRole].push(name);
+      enabledByRole[currentRole].add(name);
+      MODULE_ICONS[name] = 'link-2';
+      moduleLinkInput.value = '';
+      renderModules();
+      renderPreview();
+      var titleInput = moduleListEl.lastElementChild.querySelector('[data-module-title]');
+      titleInput.focus();
+      titleInput.select();
+      moduleStatusEl.textContent = 'Module added. Edit its title, then Save Settings.';
+    });
+  }
+
+  moduleListEl.addEventListener('input', function (event) {
+    var input = event.target;
+    var row = input.closest('[data-module-row]');
+    if (!row) return;
+    var details = moduleDetails(row.dataset.moduleRow);
+    if (input.matches('[data-module-title]')) details.title = input.value;
+    else if (input.matches('[data-module-url]')) {
+      details.url = input.value;
+      input.setCustomValidity('');
+    } else return;
+    renderPreview();
+    moduleStatusEl.textContent = 'Unsaved module changes. Select Save Settings to keep them.';
+  });
 
   function refreshIcons() {
     if (window.lucide && typeof window.lucide.createIcons === 'function') {
@@ -258,12 +333,15 @@
     var enabledSet = enabledByRole[currentRole] || new Set();
     moduleListEl.innerHTML = order.map(function (name, index) {
       var on = enabledSet.has(name);
-      return '<div class="oneqr-module" data-module-row="' + name + '" draggable="false">' +
+      var key = escapeModuleText(name);
+      var details = moduleDetails(name);
+      var title = escapeModuleText(moduleTitle(name));
+      return '<div class="oneqr-module" data-module-row="' + key + '" draggable="false">' +
         '<span class="oneqr-module-drag" aria-hidden="true" title="Drag to reorder"><i data-lucide="grip-vertical"></i></span>' +
         '<span class="oneqr-module-icon">' + iconHtml(name) + '</span>' +
-        '<strong>' + name + '</strong>' +
-        '<span class="oneqr-module-moves"><button type="button" data-move="up" aria-label="Move ' + name + ' up"' + (index === 0 ? ' disabled' : '') + '>↑</button><button type="button" data-move="down" aria-label="Move ' + name + ' down"' + (index === order.length - 1 ? ' disabled' : '') + '>↓</button></span>' +
-        '<button type="button" class="oneqr-switch' + (on ? ' is-on' : '') + '" data-module="' + name + '" aria-pressed="' + on + '" aria-label="Toggle ' + name + ' module"></button>' +
+        '<div class="oneqr-module-fields"><input class="oneqr-module-title-input" data-module-title value="' + escapeModuleText(details.title) + '" aria-label="Module title: ' + title + '"><label class="oneqr-module-url-field"><i data-lucide="link-2" aria-hidden="true"></i><input data-module-url type="text" inputmode="url" value="' + escapeModuleText(details.url) + '" aria-label="Link for ' + title + '" spellcheck="false"></label></div>' +
+        '<span class="oneqr-module-moves"><button type="button" data-move="up" aria-label="Move ' + title + ' up"' + (index === 0 ? ' disabled' : '') + '>↑</button><button type="button" data-move="down" aria-label="Move ' + title + ' down"' + (index === order.length - 1 ? ' disabled' : '') + '>↓</button><button type="button" data-remove-module aria-label="Remove ' + title + '">×</button></span>' +
+        '<button type="button" class="oneqr-switch' + (on ? ' is-on' : '') + '" data-module="' + key + '" aria-pressed="' + on + '" aria-label="Toggle ' + title + ' module"></button>' +
         '</div>';
     }).join('');
     refreshIcons();
@@ -279,7 +357,8 @@
     performanceActionListEl.innerHTML = activeModules.map(function (name, index) {
       var clicks = demoClicks[index];
       var width = Math.max(10, Math.round((clicks / maximum) * 100));
-      return '<div class="oneqr-performance-action-row"><span title="' + name + '">' + name + '</span><i style="--performance-width:' + width + '%" aria-hidden="true"></i><strong>' + clicks + '</strong></div>';
+      var title = escapeModuleText(moduleTitle(name, 'customer'));
+      return '<div class="oneqr-performance-action-row"><span title="' + title + '">' + title + '</span><i style="--performance-width:' + width + '%" aria-hidden="true"></i><strong>' + clicks + '</strong></div>';
     }).join('');
   }
 
@@ -301,7 +380,8 @@
     var canExpand = allEnabledModules.length > PREVIEW_COLLAPSED_MODULE_LIMIT;
 
     tilesEl.innerHTML = previewModules.map(function (name) {
-      return '<div class="oneqr-phone-tile">' + iconHtml(name) + '<b>' + name + '</b></div>';
+      var url = normalizedModuleUrl(moduleDetails(name).url);
+      return '<a class="oneqr-phone-tile"' + (url ? ' href="' + escapeModuleText(url) + '" target="_blank" rel="noopener noreferrer"' : ' aria-disabled="true"') + '>' + iconHtml(name) + '<b>' + escapeModuleText(moduleTitle(name)) + '</b></a>';
     }).join('');
     if (previewViewAllBtn) {
       previewViewAllBtn.hidden = !canExpand;
@@ -333,7 +413,7 @@
 
   moduleListEl.addEventListener('dragstart', function (event) {
     var row = event.target.closest('.oneqr-module');
-    if (!row) return;
+    if (!row || row.getAttribute('draggable') !== 'true') return;
     draggedModuleName = row.getAttribute('data-module-row');
     row.classList.add('is-dragging');
     if (event.dataTransfer) {
@@ -370,6 +450,7 @@
     order.splice(isAfter ? toIndex + 1 : toIndex, 0, draggedModuleName);
     renderModules();
     renderPreview();
+    moduleStatusEl.textContent = 'Module order changed. Select Save Settings to keep it.';
   });
 
   moduleListEl.addEventListener('dragend', function (event) {
@@ -383,6 +464,16 @@
   });
 
   moduleListEl.addEventListener('click', function (event) {
+    var remove = event.target.closest('[data-remove-module]');
+    if (remove) {
+      var removedName = remove.closest('[data-module-row]').dataset.moduleRow;
+      moduleOrderByRole[currentRole] = moduleOrderByRole[currentRole].filter(function (name) { return name !== removedName; });
+      enabledByRole[currentRole].delete(removedName);
+      renderModules();
+      renderPreview();
+      moduleStatusEl.textContent = 'Module removed. Select Save Settings to keep this change.';
+      return;
+    }
     var move = event.target.closest('[data-move]');
     if (move) {
       var row = move.closest('[data-module-row]');
@@ -394,6 +485,7 @@
       order.splice(to, 0, order.splice(from, 1)[0]);
       renderModules();
       renderPreview();
+      moduleStatusEl.textContent = 'Module order changed. Select Save Settings to keep it.';
       var movedRow = moduleListEl.children[to];
       var nextFocus = movedRow.querySelector('[data-move="' + direction + '"]');
       if (nextFocus.disabled) nextFocus = movedRow.querySelector('[data-move]:not(:disabled)');
@@ -412,6 +504,7 @@
     btn.classList.toggle('is-on');
     btn.setAttribute('aria-pressed', enabledSet.has(name));
     renderPreview();
+    moduleStatusEl.textContent = 'Unsaved module changes. Select Save Settings to keep them.';
   });
 
   function syncConfigFieldsToRole(role) {
@@ -449,10 +542,10 @@
     var catalog = Array.from(new Set(currentPreset.modules || []));
     addModuleListEl.innerHTML = catalog.map(function (name) {
       var checked = order.indexOf(name) !== -1;
-      return '<button type="button" class="oneqr-modal-item' + (checked ? ' is-checked' : '') + '" data-add-module="' + name + '">' +
+      return '<button type="button" class="oneqr-modal-item' + (checked ? ' is-checked' : '') + '" data-add-module="' + escapeModuleText(name) + '">' +
         '<span class="oneqr-modal-item-check">' + (checked ? '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12.5l4.5 4.5L19 7.5"></path></svg>' : '') + '</span>' +
         '<span class="oneqr-modal-item-icon">' + iconHtml(name) + '</span>' +
-        '<span>' + name + '</span>' +
+        '<span>' + escapeModuleText(moduleTitle(name)) + '</span>' +
         '</button>';
     }).join('');
     refreshIcons();
@@ -497,6 +590,7 @@
       renderAddModuleList();
       renderModules();
       renderPreview();
+      moduleStatusEl.textContent = 'Unsaved module changes. Select Save Settings to keep them.';
     });
 
     document.addEventListener('keydown', function (event) {
@@ -904,6 +998,9 @@
       if (!action || !action.label) return;
       customerModules.push(action.label);
       MODULE_ICONS[action.label] = action.icon || 'square';
+      var details = moduleDetails(action.label, 'customer');
+      details.title = action.label;
+      if (action.url) details.url = action.url;
     });
     if (!customerModules.length) return;
     currentPreset.modules = Array.from(new Set((currentPreset.modules || []).concat(customerModules)));
@@ -936,19 +1033,64 @@
 
   if (saveSettingsBtn) {
     saveSettingsBtn.addEventListener('click', function () {
+      var invalidModule = null;
+      ROLES.some(function (role) {
+        return moduleOrderByRole[role].some(function (name) {
+          var details = moduleDetails(name, role);
+          var url = normalizedModuleUrl(details.url);
+          if (!url) { invalidModule = { role: role, name: name }; return true; }
+          details.url = url;
+          return false;
+        });
+      });
+      if (invalidModule) {
+        setActiveRole(invalidModule.role);
+        var rowIndex = moduleOrderByRole[invalidModule.role].indexOf(invalidModule.name);
+        var input = moduleListEl.children[rowIndex].querySelector('[data-module-url]');
+        input.setCustomValidity('Enter a valid website, email, or phone link.');
+        input.reportValidity();
+        return;
+      }
       try {
+        var industryTemplate = loadIndustryTemplateConfig();
         window.localStorage.setItem(ONEQR_CONFIG_STORAGE_KEY, JSON.stringify({
           name: nameInput ? nameInput.value.trim() : '',
           template: templateSelect ? templateSelect.value : DEFAULT_TEMPLATE,
-          roleConfig: roleConfig
+          roleConfig: roleConfig,
+          moduleOrderByRole: moduleOrderByRole,
+          enabledByRole: Object.fromEntries(ROLES.map(function (role) { return [role, Array.from(enabledByRole[role])]; })),
+          moduleDetailsByRole: moduleDetailsByRole,
+          industryAppliedAt: industryTemplate ? industryTemplate.appliedAt : null
         }));
-      } catch (error) { /* storage unavailable */ }
+      } catch (error) {
+        moduleStatusEl.textContent = 'Could not save changes. Browser storage is unavailable.';
+        return;
+      }
+      moduleStatusEl.textContent = 'Module changes saved.';
+      renderModules();
+      renderPreview();
       flashButtonLabel(saveSettingsBtn, 'Saved!');
     });
   }
 
   applyTemplate(initialTemplate);
   applySavedIndustryTemplate();
+  var latestIndustryTemplate = loadIndustryTemplateConfig();
+  if (savedConfig && savedConfig.moduleOrderByRole) {
+    ROLES.forEach(function (role) {
+      if (role === 'customer' && latestIndustryTemplate && savedConfig.industryAppliedAt !== latestIndustryTemplate.appliedAt) return;
+      if (!Array.isArray(savedConfig.moduleOrderByRole[role])) return;
+      moduleOrderByRole[role] = savedConfig.moduleOrderByRole[role].filter(function (name) { return typeof name === 'string'; });
+      enabledByRole[role] = new Set((savedConfig.enabledByRole && savedConfig.enabledByRole[role]) || moduleOrderByRole[role]);
+      var savedDetails = savedConfig.moduleDetailsByRole && savedConfig.moduleDetailsByRole[role];
+      moduleOrderByRole[role].forEach(function (name) {
+        if (!savedDetails || !Object.prototype.hasOwnProperty.call(savedDetails, name) || !savedDetails[name]) return;
+        var details = moduleDetails(name, role);
+        if (typeof savedDetails[name].title === 'string') details.title = savedDetails[name].title;
+        if (typeof savedDetails[name].url === 'string') details.url = savedDetails[name].url;
+      });
+    });
+  }
   renderModules();
   renderPreview();
   syncConfigFieldsToRole(currentRole);
