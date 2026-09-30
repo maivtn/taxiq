@@ -9,6 +9,7 @@
   var types = {rules: 'Rules', agreement: 'Agreement', checklist: 'Checklist'};
   var searchInput = document.querySelector('[data-handbook-search]');
   var typeSelect = document.querySelector('[data-handbook-type]');
+  var salonSelect = document.querySelector('[data-handbook-salon]');
   var page = document.querySelector('.handbook-page');
   var layout = document.querySelector('.handbook-layout');
   var selectedId = '';
@@ -23,21 +24,26 @@
     return JSON.parse(JSON.stringify(value));
   }
 
-  function currentSalonId() {
-    try { return window.NEXORA_SALON_DATA.loadCatalog().salon.id; } catch (error) { return ''; }
+  function linkedSalons() {
+    return [
+      {id:'golden-nails-spa', name:'Golden Nails & Spa'},
+      {id:'elite-beauty-lounge', name:'Elite Beauty Lounge'}
+    ];
   }
 
-  function currentSalonName() {
-    try { return window.NEXORA_SALON_DATA.loadCatalog().salon.name || 'Current salon'; } catch (error) { return 'Lavender Nail Spa'; }
-  }
-
-  function storedDocuments() {
-    var salonId = currentSalonId();
+  function storedDocuments(salonId) {
     try {
       var saved = JSON.parse(localStorage.getItem('nexora:operating-standards:v2:' + salonId));
       if (saved && Array.isArray(saved.documents)) return saved.documents;
     } catch (error) {}
-    return clone(source.documents || []);
+    var demoPublishedIds = {
+      'golden-nails-spa':['noiquy', 'khan', 'vesinh', 'donban', 'mocua'],
+      'elite-beauty-lounge':['noiquy', 'vesinh', 'phannan', 'thomoi']
+    };
+    var allowed = demoPublishedIds[salonId];
+    return clone((source.documents || []).filter(function (document) {
+      return !allowed || allowed.indexOf(document.id) !== -1;
+    }));
   }
 
   function publishedDocument(document) {
@@ -49,9 +55,19 @@
     return Object.assign({}, clone(document), {status:'published'});
   }
 
-  var documents = storedDocuments().map(publishedDocument).filter(function (document) {
-    return document && document.title && Array.isArray(document.sections) && document.sections.length;
-  });
+  function documentsForSalon(salonId) {
+    return storedDocuments(salonId).map(publishedDocument).filter(function (document) {
+      return document && document.title && Array.isArray(document.sections) && document.sections.length;
+    });
+  }
+
+  var salons = linkedSalons();
+  var activeSalonId = salons[0].id;
+  try {
+    var savedSalonId = sessionStorage.getItem('nexora:staff-handbook:salon');
+    if (salons.some(function (salon) { return salon.id === savedSalonId; })) activeSalonId = savedSalonId;
+  } catch (error) {}
+  var documents = documentsForSalon(activeSalonId);
 
   function formatDate(value) {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return '—';
@@ -153,7 +169,19 @@
     }
   });
 
-  document.querySelector('[data-handbook-salon]').textContent = currentSalonName();
+  salonSelect.innerHTML = salons.map(function (salon) {
+    return '<option value="' + escapeHtml(salon.id) + '"' + (salon.id === activeSalonId ? ' selected' : '') + '>' + escapeHtml(salon.name) + '</option>';
+  }).join('');
+  salonSelect.addEventListener('change', function () {
+    activeSalonId = salonSelect.value;
+    try { sessionStorage.setItem('nexora:staff-handbook:salon', activeSalonId); } catch (error) {}
+    documents = documentsForSalon(activeSalonId);
+    selectedId = documents.length ? documents[0].id : '';
+    searchInput.value = '';
+    typeSelect.value = 'all';
+    setMobileReading(false);
+    renderList();
+  });
   var params = new URLSearchParams(window.location.search);
   var requestedDocument = params.get('doc');
   if (documents.some(function (document) { return document.id === requestedDocument; })) {
