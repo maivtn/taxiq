@@ -1,0 +1,82 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexora Touch - Staff Handbook</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/staff-shell.css">
+  <link rel="stylesheet" href="../assets/staff-handbook.css">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar staff-sidebar" id="nexora-sidebar" data-shell-sidebar></aside>
+    <div class="sidebar-overlay" data-shell-overlay></div>
+    <div class="app-area">
+      <header class="header" data-shell-header></header>
+      <main class="main-content handbook-page">
+        <section class="handbook-hero" aria-labelledby="handbook-title">
+          <div>
+            <p class="handbook-eyebrow">Salon resources</p>
+            <h1 id="handbook-title">Staff Handbook</h1>
+            <p>Read the current operating standards published by your salon.</p>
+          </div>
+          <div class="handbook-salon">
+            <span class="handbook-salon-icon"><i data-lucide="store" aria-hidden="true"></i></span>
+            <span><small>Current salon</small><strong data-handbook-salon>Lavender Nail Spa</strong></span>
+          </div>
+        </section>
+
+        <section class="handbook-toolbar" aria-label="Find handbook documents">
+          <label class="handbook-search">
+            <i data-lucide="search" aria-hidden="true"></i>
+            <input type="search" data-handbook-search placeholder="Search documents or content..." aria-label="Search handbook documents">
+          </label>
+          <label class="handbook-filter">
+            <span>Document type</span>
+            <select data-handbook-type aria-label="Filter by document type">
+              <option value="all">All types</option>
+              <option value="rules">Rules</option>
+              <option value="agreement">Agreement</option>
+              <option value="checklist">Checklist</option>
+            </select>
+          </label>
+        </section>
+
+        <div class="handbook-status" role="status" aria-live="polite">
+          <span><i data-lucide="badge-check" aria-hidden="true"></i><strong data-handbook-count>0</strong> published documents</span>
+          <span>Only the latest published content is shown here.</span>
+        </div>
+
+        <section class="handbook-layout">
+          <div class="handbook-library" aria-label="Published documents">
+            <div class="handbook-library-heading">
+              <div><h2>Published documents</h2><p>Select a document to read.</p></div>
+              <span data-handbook-result-count></span>
+            </div>
+            <div class="handbook-list" data-handbook-list></div>
+            <div class="handbook-empty" data-handbook-empty hidden>
+              <i data-lucide="search-x" aria-hidden="true"></i>
+              <h3>No documents found</h3>
+              <p>Try another keyword or document type.</p>
+              <button type="button" data-handbook-reset>Clear filters</button>
+            </div>
+          </div>
+
+          <article class="handbook-reader" data-handbook-reader aria-live="polite"></article>
+        </section>
+      </main>
+    </div>
+  </div>
+
+  <script>window.NEXORA_SHELL = {activePage:'staff', activeTab:'staff-handbook'};</script>
+  <script src="https://unpkg.com/lucide@latest"></script>
+  <script src="../assets/nexora-shell.js"></script>
+  <script src="../assets/salon-data.js"></script>
+  <script src="../assets/operating-standards-data.js"></script>
+  <script src="../assets/staff-handbook.js"></script>
+</body>
+</html>
