@@ -248,7 +248,7 @@
   .handbook-filter > span { display: none; }
   .handbook-status { padding: 11px 2px; }
   .handbook-status > span:last-child { display: none; }
-  .handbook-layout { grid-template-columns: 1fr; }
+  .handbook-layout { min-width: 0; grid-template-columns: minmax(0, 1fr); }
   .handbook-library { border: 0; background: transparent; box-shadow: none; }
   .handbook-library-heading { border: 0; padding: 1px 2px 12px; }
   .handbook-library-heading h2 { font-size: 16px; }
@@ -257,7 +257,7 @@
   .handbook-card.is-active { border-color: var(--nexora-border); background: #fff; box-shadow: var(--nexora-card-shadow); }
   .handbook-card-copy strong { font-size: 13px; }
   .handbook-card-icon { width: 44px; height: 44px; }
-  .handbook-reader { position: static; display: none; min-height: 0; overflow: visible; border: 0; background: transparent; box-shadow: none; }
+  .handbook-reader { position: static; display: none; width: 100%; min-width: 0; min-height: 0; overflow: visible; border: 0; background: transparent; box-shadow: none; }
   .handbook-layout.is-reading .handbook-library { display: none; }
   .handbook-layout.is-reading .handbook-reader { display: block; }
   .handbook-page.is-reading { padding-top: 0; }
