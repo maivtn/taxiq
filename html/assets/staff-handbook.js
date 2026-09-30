@@ -9,6 +9,8 @@
   var types = {rules: 'Rules', agreement: 'Agreement', checklist: 'Checklist'};
   var searchInput = document.querySelector('[data-handbook-search]');
   var typeSelect = document.querySelector('[data-handbook-type]');
+  var page = document.querySelector('.handbook-page');
+  var layout = document.querySelector('.handbook-layout');
   var selectedId = '';
 
   function escapeHtml(value) {
@@ -79,9 +81,17 @@
     if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
   }
 
+  function setMobileReading(reading) {
+    page.classList.toggle('is-reading', reading);
+    layout.classList.toggle('is-reading', reading);
+  }
+
   function renderList() {
     var filtered = filteredDocuments();
-    if (selectedId && !filtered.some(function (document) { return document.id === selectedId; })) selectedId = '';
+    if (selectedId && !filtered.some(function (document) { return document.id === selectedId; })) {
+      selectedId = '';
+      setMobileReading(false);
+    }
     document.querySelector('[data-handbook-count]').textContent = documents.length;
     document.querySelector('[data-handbook-result-count]').textContent = filtered.length;
     document.querySelector('[data-handbook-empty]').hidden = filtered.length > 0;
@@ -114,7 +124,7 @@
       return '<section class="handbook-section" id="handbook-section-' + escapeHtml(document.id) + '-' + index + '"><h3><span class="handbook-section-number">' + (index + 1) + '</span>' + escapeHtml(section.title) + '</h3><ul class="handbook-rules' + (document.type === 'checklist' ? ' is-checklist' : '') + '">' + rules + '</ul></section>';
     }).join('');
 
-    reader.innerHTML = '<header class="handbook-reader-head"><div class="handbook-reader-title"><span class="handbook-reader-icon" aria-hidden="true">' + escapeHtml(document.icon || '📄') + '</span><div><h2>' + escapeHtml(document.title) + '</h2><p>' + escapeHtml(document.description || '') + '</p><div class="handbook-reader-meta"><span class="handbook-published"><i data-lucide="badge-check" aria-hidden="true"></i>Published</span>' + typeBadge(document) + '<span>Updated ' + escapeHtml(formatDate(document.updatedAt)) + '</span><span>' + sectionCount + ' sections · ' + itemCount + ' items</span></div></div></div><button class="handbook-print" type="button" data-handbook-print><i data-lucide="printer" aria-hidden="true"></i>Print</button></header><div class="handbook-reader-body"><div class="handbook-toc"><strong>In this document</strong><nav aria-label="Document sections">' + toc + '</nav></div>' + sections + '</div>';
+    reader.innerHTML = '<button class="handbook-reader-back" type="button" data-handbook-back><i data-lucide="arrow-left" aria-hidden="true"></i>All documents</button><header class="handbook-reader-head"><div class="handbook-reader-title"><span class="handbook-reader-icon" aria-hidden="true">' + escapeHtml(document.icon || '📄') + '</span><div><h2>' + escapeHtml(document.title) + '</h2><p>' + escapeHtml(document.description || '') + '</p><div class="handbook-reader-meta"><span class="handbook-published"><i data-lucide="badge-check" aria-hidden="true"></i>Published</span>' + typeBadge(document) + '<span>Updated ' + escapeHtml(formatDate(document.updatedAt)) + '</span><span>' + sectionCount + ' sections · ' + itemCount + ' items</span></div></div></div><button class="handbook-print" type="button" data-handbook-print><i data-lucide="printer" aria-hidden="true"></i>Print</button></header><div class="handbook-reader-body"><div class="handbook-toc"><strong>In this document</strong><nav aria-label="Document sections">' + toc + '</nav></div>' + sections + '</div>';
     refreshIcons();
   }
 
@@ -122,8 +132,9 @@
     var button = event.target.closest('[data-handbook-document]');
     if (!button) return;
     selectedId = button.dataset.handbookDocument;
+    setMobileReading(true);
     renderList();
-    if (window.matchMedia('(max-width: 760px)').matches) reader.scrollIntoView({behavior:'smooth', block:'start'});
+    if (window.matchMedia('(max-width: 760px)').matches) window.scrollTo({top:0, behavior:'smooth'});
   });
 
   searchInput.addEventListener('input', renderList);
@@ -136,12 +147,19 @@
   });
   reader.addEventListener('click', function (event) {
     if (event.target.closest('[data-handbook-print]')) window.print();
+    if (event.target.closest('[data-handbook-back]')) {
+      setMobileReading(false);
+      window.scrollTo({top:0, behavior:'smooth'});
+    }
   });
 
   document.querySelector('[data-handbook-salon]').textContent = currentSalonName();
   var params = new URLSearchParams(window.location.search);
   var requestedDocument = params.get('doc');
-  if (documents.some(function (document) { return document.id === requestedDocument; })) selectedId = requestedDocument;
+  if (documents.some(function (document) { return document.id === requestedDocument; })) {
+    selectedId = requestedDocument;
+    setMobileReading(true);
+  }
   else if (documents.length) selectedId = documents[0].id;
   renderList();
 })();

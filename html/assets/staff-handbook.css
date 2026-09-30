@@ -174,6 +174,7 @@
 .handbook-empty button { min-height: 36px; border: 1px solid var(--nexora-border); border-radius: 9px; background: #fff; padding: 0 14px; color: var(--nexora-brand); font-size: 11px; font-weight: 800; cursor: pointer; }
 
 .handbook-reader { position: sticky; top: 80px; min-height: 440px; overflow: hidden; }
+.handbook-reader-back { display: none; }
 .handbook-reader-empty { display: flex; min-height: 440px; flex-direction: column; align-items: center; justify-content: center; padding: 40px; color: var(--nexora-subtle); text-align: center; }
 .handbook-reader-empty span { display: inline-flex; width: 58px; height: 58px; align-items: center; justify-content: center; border-radius: 18px; background: #f0f1ff; color: var(--nexora-brand); }
 .handbook-reader-empty svg { width: 27px; height: 27px; }
@@ -215,20 +216,57 @@
 }
 
 @media (max-width: 760px) {
-  .handbook-page { padding: 20px 16px 88px; }
-  .handbook-hero { align-items: stretch; flex-direction: column; }
-  .handbook-salon { min-width: 0; }
-  .handbook-toolbar { align-items: stretch; flex-direction: column; }
+  .handbook-page { padding: 18px 14px 88px; }
+  .handbook-hero { align-items: stretch; flex-direction: column; gap: 13px; margin-bottom: 16px; }
+  .handbook-eyebrow { margin-bottom: 5px; font-size: 10px; }
+  .handbook-hero h1 { font-size: 28px; }
+  .handbook-hero > div > p:last-child { margin-top: 6px; font-size: 12px; }
+  .handbook-salon { min-width: 0; border-radius: 12px; padding: 9px 11px; }
+  .handbook-salon-icon { width: 34px; height: 34px; }
+  .handbook-toolbar { align-items: stretch; flex-direction: column; gap: 9px; border-radius: 14px; padding: 10px; }
+  .handbook-search input, .handbook-filter select { height: 48px; font-size: 14px; }
   .handbook-filter { width: 100%; }
-  .handbook-status { align-items: flex-start; flex-direction: column; }
+  .handbook-filter > span { display: none; }
+  .handbook-status { padding: 11px 2px; }
+  .handbook-status > span:last-child { display: none; }
   .handbook-layout { grid-template-columns: 1fr; }
-  .handbook-list { max-height: none; }
-  .handbook-reader { position: static; min-height: 0; }
-  .handbook-reader-body { max-height: none; }
+  .handbook-library { border: 0; background: transparent; box-shadow: none; }
+  .handbook-library-heading { border: 0; padding: 1px 2px 12px; }
+  .handbook-library-heading h2 { font-size: 16px; }
+  .handbook-list { max-height: none; gap: 10px; padding: 0; }
+  .handbook-card { min-height: 76px; border-color: var(--nexora-border); border-radius: 14px; background: #fff; padding: 13px; box-shadow: var(--nexora-card-shadow); }
+  .handbook-card.is-active { border-color: var(--nexora-border); background: #fff; box-shadow: var(--nexora-card-shadow); }
+  .handbook-card-copy strong { font-size: 13px; }
+  .handbook-card-icon { width: 44px; height: 44px; }
+  .handbook-reader { position: static; display: none; min-height: 0; overflow: visible; border: 0; background: transparent; box-shadow: none; }
+  .handbook-layout.is-reading .handbook-library { display: none; }
+  .handbook-layout.is-reading .handbook-reader { display: block; }
+  .handbook-page.is-reading { padding-top: 0; }
+  .handbook-page.is-reading .handbook-hero,
+  .handbook-page.is-reading .handbook-toolbar,
+  .handbook-page.is-reading .handbook-status { display: none; }
+  .handbook-reader-back { position: sticky; top: 64px; z-index: 9; display: flex; width: calc(100% + 28px); min-height: 48px; align-items: center; gap: 8px; border: 0; border-bottom: 1px solid var(--nexora-border); background: rgba(255,255,255,.96); margin: 0 -14px 16px; padding: 0 16px; color: var(--nexora-brand); font-size: 12px; font-weight: 850; backdrop-filter: blur(12px); cursor: pointer; }
+  .handbook-reader-back svg { width: 17px; height: 17px; }
+  .handbook-reader-head { gap: 15px; border: 0; padding: 0 0 18px; }
+  .handbook-reader-title { gap: 11px; }
+  .handbook-reader-icon { width: 42px; height: 42px; }
+  .handbook-reader-title h2 { font-size: 18px; line-height: 1.35; }
+  .handbook-reader-title p { font-size: 12px; }
+  .handbook-reader-meta { gap: 6px; line-height: 1.6; }
+  .handbook-print { min-height: 44px; }
+  .handbook-reader-body { max-height: none; overflow: visible; border-top: 1px solid var(--nexora-rule); padding: 18px 0 0; }
+  .handbook-toc { padding: 12px; }
+  .handbook-toc nav { flex-wrap: nowrap; overflow-x: auto; padding-bottom: 2px; scrollbar-width: none; }
+  .handbook-toc nav::-webkit-scrollbar { display: none; }
+  .handbook-toc a { flex: 0 0 auto; min-height: 30px; }
+  .handbook-section h3 { align-items: flex-start; font-size: 15px; line-height: 1.45; }
+  .handbook-rules li { padding-top: 11px; padding-bottom: 11px; font-size: 13px; line-height: 1.7; }
+  .handbook-rules li::before { top: 19px; }
+  .handbook-rules.is-checklist li::before { top: 16px; }
 }
 
 @media print {
-  .sidebar, .header, .handbook-hero, .handbook-toolbar, .handbook-status, .handbook-library, .handbook-print, .nexora-shell-backdrop { display: none !important; }
+  .sidebar, .header, .handbook-hero, .handbook-toolbar, .handbook-status, .handbook-library, .handbook-print, .handbook-reader-back, .nexora-shell-backdrop { display: none !important; }
   html, body, .shell, .app-area { background: #fff !important; }
   .app-area { padding: 0 !important; }
   .handbook-page { max-width: none; padding: 0; }
