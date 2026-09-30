@@ -1,225 +1,347 @@
 (function () {
   'use strict';
-  const $ = selector => document.querySelector(selector);
-  const source = window.NEXORA_OPERATING_STANDARDS_DATA;
-  if (!source || !$('#standards-library')) return;
-  const clone = value => JSON.parse(JSON.stringify(value));
-  const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]));
-  const types = {rules:'Quy định', agreement:'Thỏa thuận', checklist:'Danh sách kiểm tra'};
-  const key = 'nexora:operating-standards:v1:' + window.NEXORA_SALON_DATA.loadCatalog().salon.id;
-  const editor = $('#standard-editor'), form = $('#standard-form');
-  const generator = $('#standard-generator'), generatorData = window.NEXORA_STANDARD_GENERATOR;
-  let generatorAnswers = null;
-  let query = '', filter = 'all', editing = null, shown = null, selectedId = '', historical = false;
-  const today = () => { const d = new Date(); return [d.getFullYear(), String(d.getMonth()+1).padStart(2,'0'), String(d.getDate()).padStart(2,'0')].join('-'); };
-  const dateLabel = value => /^\d{4}-\d{2}-\d{2}$/.test(value || '') ? value.split('-').reverse().join('/') : '—';
-  const validDoc = doc => doc && typeof doc.id === 'string' && typeof doc.title === 'string' && Object.hasOwn(types,doc.type) && Number.isInteger(doc.version) && doc.version > 0 && Array.isArray(doc.sections) && doc.sections.length && doc.sections.every(section => section && typeof section.id === 'string' && typeof section.title === 'string' && Array.isArray(section.rules) && section.rules.every(rule => typeof rule === 'string'));
-  function load() {
+
+  var source = window.NEXORA_OPERATING_STANDARDS_DATA;
+  var library = document.querySelector('#standards-library');
+  if (!source || !library) return;
+
+  var $ = function (selector) { return document.querySelector(selector); };
+  var clone = function (value) { return JSON.parse(JSON.stringify(value)); };
+  var DAY = 86400000;
+  var types = {rules:'Rules', agreement:'Agreement', checklist:'Checklist'};
+  var salonId = window.NEXORA_SALON_DATA.loadCatalog().salon.id;
+  var storageKey = 'nexora:operating-standards:v2:' + salonId;
+  var templates = clone(source.documents || []);
+  var view = 'documents';
+  var query = '';
+  var statusFilter = 'all';
+  var typeFilter = 'all';
+  var editingId = '';
+  var feedbackTimer = 0;
+
+  function esc(value) {
+    return String(value == null ? '' : value).replace(/[&<>"']/g, function (character) {
+      return {'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[character];
+    });
+  }
+
+  function today() {
+    var date = new Date();
+    return [date.getFullYear(), String(date.getMonth() + 1).padStart(2, '0'), String(date.getDate()).padStart(2, '0')].join('-');
+  }
+
+  function dateLabel(value) {
+    if (!value) return '—';
+    var date = /^\d{4}-\d{2}-\d{2}$/.test(value) ? new Date(value + 'T12:00:00') : new Date(value);
+    if (Number.isNaN(date.getTime())) return '—';
+    return new Intl.DateTimeFormat('en-US', {month:'short', day:'numeric', year:'numeric'}).format(date);
+  }
+
+  function documentContent(document) {
+    var clean = clone(document);
+    delete clean.publishedSnapshot;
+    delete clean.deletedAt;
+    return clean;
+  }
+
+  function makeDocument(template, status) {
+    var document = clone(template);
+    document.id = 'salon-' + template.id + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+    document.sourceTemplateId = template.id === 'custom' ? null : template.id;
+    document.status = status || 'draft';
+    document.createdAt = today();
+    document.updatedAt = today();
+    document.publishedAt = document.status === 'published' ? today() : '';
+    document.publishedSnapshot = document.status === 'published' ? documentContent(document) : null;
+    document.deletedAt = null;
+    return document;
+  }
+
+  function templateById(id) {
+    return templates.find(function (item) { return item.id === id; });
+  }
+
+  function seedState() {
+    return {version:2, documents:[makeDocument(templateById('noiquy'), 'published'), makeDocument(templateById('vesinh'), 'published'), makeDocument(templateById('mocua'), 'draft')]};
+  }
+
+  function loadState() {
     try {
-      const saved = JSON.parse(localStorage.getItem(key));
-      if (saved?.version === 1 && Array.isArray(saved.documents) && saved.documents.length && saved.documents.every(doc => validDoc(doc) && (!doc.history || Array.isArray(doc.history) && doc.history.every(validDoc)))) return saved;
-    } catch (_) {}
-    return {version:1, documents:clone(source.documents)};
+      var saved = JSON.parse(localStorage.getItem(storageKey));
+      if (saved && saved.version === 2 && Array.isArray(saved.documents)) return saved;
+    } catch (error) {}
+    return seedState();
   }
-  let state = load();
-  function liveTurnRules() {
-    const config = window.NEXORA_TURN_SETTINGS.load();
-    const ranges = window.NEXORA_TURN_SETTINGS.labels.map(range => range.replace(/\+$/, ' trở lên'));
-    return ranges.map((range,i) => 'Giá trị dịch vụ ' + range + ': ' + config.serviceWeights[i] + ' turn.').concat([
-      'Booking: ' + config.bookingTurnCredit + ' turn theo Booking Incentive Policy; áp dụng mức riêng của thợ nếu có cấu hình.',
-      'Giá trị tính turn đã trừ giảm giá; không bao gồm tip, thuế, sản phẩm và thanh toán gift card.',
-      'Thay đổi cấu hình chỉ áp dụng cho lượt mới. Các lượt đã ghi nhận giữ nguyên số turn.'
-    ]);
+
+  var state = loadState();
+  state.documents = state.documents.filter(function (document) { return !document.deletedAt || Date.now() - new Date(document.deletedAt).getTime() < 30 * DAY; });
+
+  function saveState() {
+    try { localStorage.setItem(storageKey, JSON.stringify(state)); } catch (error) {}
   }
-  function sectionsFor(doc, isHistory = false) {
-    const sections = clone(doc.sections);
-    if (doc.autoTurnRules) sections.splice(2,0,{id:'turn-rules', title:'Luật tính turn của tiệm', rules:isHistory ? (doc.turnRules || []) : liveTurnRules(), synced:true});
-    return sections;
+
+  function notify(message) {
+    clearTimeout(feedbackTimer);
+    $('#standards-feedback').textContent = message;
+    feedbackTimer = window.setTimeout(function () { $('#standards-feedback').textContent = ''; }, 3200);
   }
-  function documentUrl(id = '', version = '') {
-    const url = new URL(location.href); url.hash = '';
-    url.searchParams.delete('doc'); url.searchParams.delete('version');
-    if (id) url.searchParams.set('doc',id);
-    if (version) url.searchParams.set('version',version);
-    return url.pathname + url.search;
+
+  function refreshIcons() {
+    if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
   }
-  function navigate(id = '', version = '') {
-    history.pushState(null,'',documentUrl(id,version)); renderRoute();
-    document.documentElement.scrollTop = 0; document.body.scrollTop = 0;
+
+  function typeBadge(document) {
+    return '<span class="standard-tag ' + esc(document.type) + '">' + esc(types[document.type] || 'Document') + '</span>';
   }
-  const badge = doc => '<span class="standard-tag ' + doc.type + '">' + types[doc.type] + '</span>';
-  function refreshIcons() { if (window.lucide) window.lucide.createIcons(); }
+
+  function statusBadge(document) {
+    return document.status === 'published'
+      ? '<span class="standard-state published"><i data-lucide="badge-check" aria-hidden="true"></i>Published</span>'
+      : '<span class="standard-state draft"><i data-lucide="pencil-line" aria-hidden="true"></i>Draft</span>';
+  }
+
+  function searchable(document) {
+    return [document.title, document.description].concat((document.sections || []).reduce(function (items, section) { return items.concat(section.title, section.rules || []); }, [])).join(' ').toLocaleLowerCase('vi');
+  }
+
+  function activeItems() {
+    if (view === 'templates') return templates;
+    return state.documents.filter(function (document) { return view === 'deleted' ? !!document.deletedAt : !document.deletedAt; });
+  }
+
+  function filteredItems() {
+    var normalizedQuery = query.trim().toLocaleLowerCase('vi');
+    return activeItems().filter(function (document) {
+      return (view !== 'documents' || statusFilter === 'all' || document.status === statusFilter) && (typeFilter === 'all' || document.type === typeFilter) && (!normalizedQuery || searchable(document).includes(normalizedQuery));
+    });
+  }
+
+  function daysRemaining(document) {
+    return Math.max(0, 30 - Math.floor((Date.now() - new Date(document.deletedAt).getTime()) / DAY));
+  }
+
+  function actionButton(action, id, label, icon, className) {
+    return '<button type="button" class="standard-card-action ' + (className || '') + '" data-standard-action="' + action + '" data-standard-id="' + esc(id) + '"><i data-lucide="' + icon + '" aria-hidden="true"></i>' + label + '</button>';
+  }
+
+  function card(document) {
+    var sections = document.sections || [];
+    var itemCount = sections.reduce(function (total, section) { return total + (section.rules || []).length; }, 0);
+    var topBadge = view === 'templates' ? '<span class="standard-state template">System template</span>' : view === 'deleted' ? '<span class="standard-state deleted">' + daysRemaining(document) + ' days left</span>' : statusBadge(document);
+    var actions = view === 'templates'
+      ? actionButton('preview-template', document.id, 'Preview', 'eye', '') + actionButton('use-template', document.id, 'Use template', 'copy-plus', 'primary')
+      : view === 'deleted'
+        ? actionButton('restore', document.id, 'Restore', 'rotate-ccw', '') + actionButton('delete-forever', document.id, 'Delete forever', 'trash-2', 'danger')
+        : actionButton('open', document.id, 'View document', 'arrow-right', 'primary');
+    return '<article class="standard-card"><div class="standard-card-top"><span class="standard-icon" aria-hidden="true">' + esc(document.icon || '📄') + '</span>' + topBadge + '</div><h3>' + esc(document.title) + '</h3><p>' + esc(document.description || '') + '</p><div class="standard-card-footer"><div class="standard-tags">' + typeBadge(document) + (document.sourceTemplateId ? '<span class="standard-tag sync">From template</span>' : '') + '</div><div class="standard-card-count"><span>' + sections.length + ' sections · ' + itemCount + ' items</span><span>' + (view === 'deleted' ? 'Deleted ' + esc(dateLabel(document.deletedAt)) : 'Updated ' + esc(dateLabel(document.updatedAt))) + '</span></div><div class="standard-card-actions">' + actions + '</div></div></article>';
+  }
+
+  function introCopy() {
+    if (view === 'templates') return '<div><strong>Start with a proven salon template</strong><span>Templates are read-only. Using one creates a new Draft you can customize before publishing.</span></div><span class="standards-intro-count">9 templates from the reference handbook</span>';
+    if (view === 'deleted') return '<div><strong>Recently Deleted</strong><span>Deleted documents are kept for 30 days. Restored documents always return as Draft.</span></div>';
+    return '<div><strong>Your salon documents</strong><span>Only Published content is visible in Staff Handbook. Draft changes stay private until published.</span></div>';
+  }
+
   function renderLibrary() {
-    const updated = state.documents.map(doc => doc.updatedAt).filter(Boolean).sort().at(-1) || source.sourceUpdatedAt;
-    $('#library-meta').textContent = state.documents.length + ' tài liệu · Cập nhật ' + dateLabel(updated) + ' · Chọn tài liệu để đọc hoặc chỉnh sửa.';
-    $('[data-filter-count="all"]').textContent = state.documents.length;
-    document.querySelectorAll('[data-standard-filter]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.standardFilter === filter)));
-    const search = query.trim().toLocaleLowerCase('vi');
-    const docs = state.documents.filter(doc => (filter === 'all' || doc.type === filter) && [doc.title,doc.description,...sectionsFor(doc).flatMap(section => [section.title,...section.rules])].join(' ').toLocaleLowerCase('vi').includes(search));
-    $('#standards-grid').innerHTML = docs.map(doc => {
-      const sections = sectionsFor(doc), count = sections.reduce((n,section) => n + section.rules.length,0);
-      return '<a class="standard-card" data-standard-id="' + esc(doc.id) + '" href="' + esc(documentUrl(doc.id)) + '"><div class="standard-card-top"><span class="standard-icon" aria-hidden="true">' + esc(doc.icon || '📄') + '</span><span class="standard-open-icon" aria-hidden="true">↗</span></div><h3>' + esc(doc.title) + '</h3><p>' + esc(doc.description) + '</p><div class="standard-card-footer"><div class="standard-tags">' + badge(doc) + (doc.autoTurnRules ? '<span class="standard-tag sync">Turn tự đồng bộ</span>' : '') + '</div><div class="standard-card-count"><span>' + sections.length + ' mục · ' + count + ' điều</span><span>Bản ' + doc.version + '</span></div></div></a>';
-    }).join('');
-    $('#standards-empty').hidden = docs.length > 0;
-  }
-  function renderDetail(doc, current, isHistory) {
-    const sections = sectionsFor(doc,isHistory);
-    const versions = [current,...(current.history || [])].sort((a,b) => b.version - a.version);
-    $('#standard-detail').innerHTML = '<a class="standard-back" data-standard-back href="' + esc(documentUrl()) + '">← Bộ tiêu chuẩn vận hành</a><header class="standards-heading standard-detail-heading"><div><p class="standards-eyebrow">Tài liệu của tiệm</p><h2 id="standard-title">' + esc(doc.title) + '</h2><div class="standard-detail-meta">' + badge(doc) + '<span>Bản ' + doc.version + ' · Cập nhật ' + dateLabel(doc.updatedAt) + '</span><span>· ' + sections.length + ' mục · ' + sections.reduce((n,section) => n + section.rules.length,0) + ' điều</span></div><p>' + esc(doc.description) + '</p></div><div class="standards-actions"><button class="standard-button" data-print-standard><i data-lucide="printer" aria-hidden="true"></i>In tài liệu</button>' + (!isHistory && doc.id === 'noiquy' ? '<button class="standard-button" data-generate-standard><i data-lucide="sparkles" aria-hidden="true"></i>Tạo lại / đổi mẫu</button>' : '') + (!isHistory ? '<button class="standard-button primary" data-edit-standard><i data-lucide="pencil" aria-hidden="true"></i>Sửa tài liệu</button>' : '') + '</div></header>' + (isHistory ? '<p class="standard-history-note">Bạn đang xem bản ' + doc.version + '. <a href="' + esc(documentUrl(current.id)) + '" data-standard-id="' + esc(current.id) + '">Xem bản mới nhất →</a></p>' : '') + '<div class="standard-detail-layout"><aside class="standard-toc"><h3>Trong tài liệu này</h3><nav aria-label="Mục lục">' + sections.map((section,i) => '<a href="#standard-section-' + esc(section.id) + '"><span>' + (i+1) + '</span>' + esc(section.title) + '</a>').join('') + '</nav><label>Phiên bản<select id="standard-version" aria-label="Phiên bản tài liệu">' + versions.map(version => '<option value="' + version.version + '"' + (version.version === doc.version ? ' selected' : '') + '>Bản ' + version.version + (version.version === current.version ? ' · Hiện tại' : ' · ' + dateLabel(version.updatedAt)) + '</option>').join('') + '</select></label></aside><div class="standard-sections">' + sections.map((section,i) => '<section class="standard-section" id="standard-section-' + esc(section.id) + '"' + (section.synced && !isHistory ? ' data-live-turn-rules' : '') + '><div class="standard-section-heading"><span class="standard-section-number">' + (i+1) + '</span><h3>' + esc(section.title) + '</h3>' + (section.synced ? '<span class="standard-tag sync">' + (isHistory ? 'Cấu hình lúc lưu bản' : 'Theo cấu hình hiện tại') + '</span>' : '') + '</div><ul class="standard-rules' + (doc.type === 'checklist' ? ' is-checklist' : '') + '">' + section.rules.map(rule => '<li><span>' + esc(rule) + '</span></li>').join('') + '</ul>' + (section.synced ? '<p class="standard-sync-note">' + (isHistory ? 'Số turn được lưu cùng phiên bản tài liệu này.' : 'Đọc trực tiếp từ Weighted Turn Settings. Khi thay đổi mức turn, nội dung này cập nhật theo. <a href="pos-front-desk-turn-board.html">Mở Turn Board →</a>') + '</p>' : '') + '</section>').join('') + '</div></div>';
+    var active = state.documents.filter(function (document) { return !document.deletedAt; });
+    var deleted = state.documents.filter(function (document) { return !!document.deletedAt; });
+    $('[data-view-count="documents"]').textContent = active.length;
+    $('[data-view-count="templates"]').textContent = templates.length;
+    $('[data-view-count="deleted"]').textContent = deleted.length;
+    document.querySelectorAll('[data-standards-view]').forEach(function (button) { button.setAttribute('aria-pressed', String(button.dataset.standardsView === view)); });
+    $('#standards-status').closest('label').hidden = view !== 'documents';
+    $('#standards-section-intro').innerHTML = introCopy();
+    var items = filteredItems();
+    $('#standards-grid').innerHTML = items.map(card).join('');
+    $('#standards-empty').hidden = items.length > 0;
+    $('#standards-grid').hidden = items.length === 0;
     refreshIcons();
   }
-  function renderRoute() {
-    const params = new URLSearchParams(location.search); selectedId = params.get('doc') || '';
-    const current = state.documents.find(doc => doc.id === selectedId), version = params.get('version');
-    historical = !!(current && version && Number(version) !== current.version);
-    shown = current && (historical ? current.history?.find(doc => doc.version === Number(version)) : current);
-    $('#standards-library').hidden = !!selectedId; $('#standard-detail').hidden = !selectedId;
+
+  function sectionsHtml(document) {
+    return (document.sections || []).map(function (section, index) {
+      return '<section class="standard-section" id="standard-section-' + index + '"><div class="standard-section-heading"><span class="standard-section-number">' + (index + 1) + '</span><h3>' + esc(section.title) + '</h3></div><ul class="standard-rules' + (document.type === 'checklist' ? ' is-checklist' : '') + '">' + (section.rules || []).map(function (rule) { return '<li><span>' + esc(rule) + '</span></li>'; }).join('') + '</ul></section>';
+    }).join('');
+  }
+
+  function detailActions(document, isTemplate) {
+    if (isTemplate) return '<button class="standard-button primary" type="button" data-standard-action="use-template" data-standard-id="' + esc(document.id) + '"><i data-lucide="copy-plus" aria-hidden="true"></i>Use template</button>';
+    var buttons = '<button class="standard-button" type="button" data-standard-action="print" data-standard-id="' + esc(document.id) + '"><i data-lucide="printer" aria-hidden="true"></i>Print</button><button class="standard-button" type="button" data-standard-action="edit" data-standard-id="' + esc(document.id) + '"><i data-lucide="pencil" aria-hidden="true"></i>Edit draft</button>';
+    if (document.status === 'published') buttons += '<button class="standard-button" type="button" data-standard-action="unpublish" data-standard-id="' + esc(document.id) + '">Unpublish</button>';
+    buttons += '<button class="standard-button primary" type="button" data-standard-action="publish" data-standard-id="' + esc(document.id) + '"><i data-lucide="send" aria-hidden="true"></i>' + (document.status === 'published' ? 'Publish changes' : 'Publish') + '</button><button class="standard-button danger" type="button" data-standard-action="delete" data-standard-id="' + esc(document.id) + '"><i data-lucide="trash-2" aria-hidden="true"></i>Delete</button>';
+    return buttons;
+  }
+
+  function showDetail(document, isTemplate) {
+    if (!document) return;
+    library.hidden = true;
+    $('#standard-detail').hidden = false;
+    var snapshotNote = !isTemplate && document.status === 'published' && document.publishedSnapshot ? '<p class="standard-published-note"><i data-lucide="eye" aria-hidden="true"></i>Staff currently see the published copy. Saved edits stay private until you publish changes.</p>' : '';
+    $('#standard-detail').innerHTML = '<button class="standard-back" type="button" data-standard-back><i data-lucide="arrow-left" aria-hidden="true"></i>Back to ' + (isTemplate ? 'System Templates' : 'Salon Documents') + '</button><header class="standards-heading standard-detail-heading"><div><p class="standards-eyebrow">' + (isTemplate ? 'Read-only system template' : 'Salon document') + '</p><h2 id="standard-title">' + esc(document.title) + '</h2><div class="standard-detail-meta">' + (isTemplate ? '<span class="standard-state template">System template</span>' : statusBadge(document)) + typeBadge(document) + '<span>Updated ' + esc(dateLabel(document.updatedAt)) + '</span></div><p>' + esc(document.description || '') + '</p></div><div class="standards-actions">' + detailActions(document, isTemplate) + '</div></header>' + snapshotNote + '<div class="standard-detail-layout"><aside class="standard-toc"><h3>In this document</h3><nav>' + (document.sections || []).map(function (section, index) { return '<a href="#standard-section-' + index + '"><span>' + (index + 1) + '</span>' + esc(section.title) + '</a>'; }).join('') + '</nav></aside><div class="standard-sections">' + sectionsHtml(document) + '</div></div>';
+    refreshIcons();
+    window.scrollTo({top:0, behavior:'smooth'});
+  }
+
+  function closeDetail() {
+    $('#standard-detail').hidden = true;
+    library.hidden = false;
     renderLibrary();
-    if (!selectedId) return;
-    if (!shown) { $('#standard-detail').innerHTML = '<a class="standard-back" data-standard-back href="' + esc(documentUrl()) + '">← Bộ tiêu chuẩn vận hành</a><div class="standards-empty"><h2 id="standard-title">Không tìm thấy tài liệu hoặc phiên bản</h2><p>Về bộ tài liệu để chọn một nội dung khác.</p></div>'; return; }
-    renderDetail(shown,current,historical);
   }
-  function editSection(section,index) {
-    return '<div class="standard-edit-section" data-edit-section="' + esc(section.id) + '"><div class="standard-edit-section-top"><span>Mục <span data-section-number>' + (index+1) + '</span></span><button type="button" data-remove-section>Xóa mục</button></div><label class="standard-field">Tên mục<input data-section-title maxlength="140" value="' + esc(section.title) + '" required></label><label class="standard-field">Nội dung · mỗi dòng một điều<textarea data-section-rules rows="' + Math.min(10,Math.max(4,section.rules.length+1)) + '" required>' + esc(section.rules.join('\n')) + '</textarea></label></div>';
+
+  function editSection(section, index) {
+    return '<div class="standard-edit-section" data-edit-section><div class="standard-edit-section-top"><span>Section <span data-section-number>' + (index + 1) + '</span></span><button type="button" data-remove-section>Remove</button></div><label class="standard-field">Section name<input data-section-title maxlength="140" value="' + esc(section.title || '') + '" required></label><label class="standard-field">Content · one item per line<textarea data-section-rules rows="' + Math.min(10, Math.max(4, (section.rules || []).length + 1)) + '" required>' + esc((section.rules || []).join('\n')) + '</textarea></label></div>';
   }
-  function openEditor(doc, generated = false) {
-    editing = doc ? clone(doc) : {id:null,title:'',description:'',type:'rules',icon:'📄',version:0,sections:[{id:'section-1',title:'',rules:[]}]};
-    $('#standard-editor-title').textContent = generated ? 'Bản nháp nội quy tiệm' : doc ? 'Sửa tài liệu' : 'Thêm tài liệu';
-    form.elements.title.value = editing.title; form.elements.type.value = editing.type; form.elements.description.value = editing.description;
-    $('#standard-editor-sections').innerHTML = editing.sections.map(editSection).join('');
-    $('#standard-edit-sync').hidden = !editing.autoTurnRules; $('#standard-error').textContent = '';
-    editor.showModal(); $('.standard-editor-body').scrollTop = 0;
+
+  function openEditor(document) {
+    editingId = document ? document.id : '';
+    var draft = document ? clone(document) : {title:'', description:'', type:'rules', sections:[{title:'', rules:[]}]};
+    $('#standard-editor-title').textContent = document ? 'Edit draft' : 'New document';
+    var form = $('#standard-form');
+    form.elements.title.value = draft.title || '';
+    form.elements.type.value = draft.type || 'rules';
+    form.elements.description.value = draft.description || '';
+    $('#standard-editor-sections').innerHTML = draft.sections.map(editSection).join('');
+    $('#standard-error').textContent = '';
+    $('#standard-editor').showModal();
   }
-  function generatorCount(sections) {
-    return sections.length + ' mục · ' + sections.reduce((total, section) => total + section.rules.length, 0) + ' điều';
+
+  function readEditor() {
+    var form = $('#standard-form');
+    var title = form.elements.title.value.trim();
+    var sections = Array.from(document.querySelectorAll('[data-edit-section]')).map(function (row, index) {
+      return {id:'section-' + (index + 1), title:row.querySelector('[data-section-title]').value.trim(), rules:row.querySelector('[data-section-rules]').value.split('\n').map(function (rule) { return rule.trim(); }).filter(Boolean)};
+    });
+    if (!title) throw new Error('Document name is required.');
+    if (!sections.length) throw new Error('Add at least one section.');
+    if (sections.some(function (section) { return !section.title || !section.rules.length; })) throw new Error('Every section needs a name and at least one content item.');
+    return {title:title, description:form.elements.description.value.trim(), type:form.elements.type.value, sections:sections};
   }
-  function openGenerator() {
-    const current = state.documents.find(doc => doc.id === 'noiquy');
-    generatorAnswers = clone(generatorData.validateAnswers(current?.generatorAnswers) ? current.generatorAnswers : generatorData.defaultAnswers);
-    renderGenerator('pick');
-    generator.showModal();
+
+  function useTemplate(id) {
+    var template = templateById(id);
+    if (!template) return;
+    var document = makeDocument(template, 'draft');
+    state.documents.unshift(document);
+    saveState();
+    view = 'documents';
+    notify('Draft created from “' + template.title + '”.');
+    showDetail(document, false);
   }
-  function renderGenerator(step) {
-    generator.dataset.step = step;
-    const content = $('#standard-generator-content'), footer = $('#standard-generator-footer');
-    const back = '<button class="standard-button" type="button" id="generator-back">← Quay lại</button>';
-    $('#standard-generator-description').textContent = step === 'questions'
-      ? 'Trả lời 5 câu để chọn các điều phù hợp với cách vận hành của tiệm.'
-      : 'Chọn một trong ba cách. Sau đó vẫn sửa và bổ sung thoải mái.';
-    if (step === 'pick') {
-      content.innerHTML = '<div class="generator-choices">'
-        + '<button class="generator-choice" type="button" data-generator-step="templates"><span class="generator-choice-icon" aria-hidden="true">📋</span><span><strong>Dùng mẫu có sẵn</strong><span>4 mẫu viết sẵn cho tiệm nail: nhỏ, tiêu chuẩn, đông walk-in, spa cao cấp.</span></span><span class="generator-chevron" aria-hidden="true">›</span></button>'
-        + '<button class="generator-choice" type="button" data-generator-step="questions"><span class="generator-choice-icon" aria-hidden="true">✨</span><span><strong>Tạo riêng cho tiệm của bạn</strong><span>Trả lời 5 câu, hệ thống lắp bản nội quy hợp quy mô và cách vận hành của tiệm.</span></span><span class="generator-chevron" aria-hidden="true">›</span></button>'
-        + '<button class="generator-choice" type="button" id="generator-blank"><span class="generator-choice-icon" aria-hidden="true">✎</span><span><strong>Tự viết từ đầu</strong><span>Trang trắng, tự thêm mục và từng điều.</span></span><span class="generator-chevron" aria-hidden="true">›</span></button></div>';
-      footer.innerHTML = '<button class="standard-button" type="button" data-close-standard-generator>Đóng</button>';
-    } else if (step === 'templates') {
-      content.innerHTML = '<div class="generator-choices">' + generatorData.presets.map(preset =>
-        '<button class="generator-choice generator-template" type="button" data-generator-preset="' + esc(preset.id) + '"><span><strong>' + esc(preset.title) + '</strong><span>' + esc(preset.description) + '</span><small>' + generatorCount(generatorData.generate(preset.answers)) + '</small></span><span class="generator-chevron" aria-hidden="true">›</span></button>'
-      ).join('') + '</div><p class="generator-note">Chọn mẫu để xem và chỉnh sửa bản nháp. Luật tính turn sẽ tự đồng bộ theo cấu hình tiệm.</p>';
-      footer.innerHTML = back;
-    } else {
-      content.innerHTML = '<div class="generator-questions">' + generatorData.questions.map((question, index) =>
-        '<fieldset><legend><span>' + (index + 1) + '</span>' + esc(question.title) + '</legend><div class="generator-options">' + question.options.map(option => {
-          const checked = question.multiple ? generatorAnswers[question.id].includes(option.value) : generatorAnswers[question.id] === option.value;
-          return '<label><input type="' + (question.multiple ? 'checkbox' : 'radio') + '" name="' + esc(question.id) + '" value="' + esc(option.value) + '"' + (checked ? ' checked' : '') + '><span>' + esc(option.label) + '</span></label>';
-        }).join('') + '</div></fieldset>'
-      ).join('') + '</div><div class="generator-preview" role="status" aria-live="polite"><span>Bản sẽ tạo</span><strong id="generator-summary">' + generatorCount(generatorData.generate(generatorAnswers)) + '</strong><p>Có thể sửa từng điều trước khi lưu. Luật turn tự đồng bộ theo cấu hình tiệm.</p></div>';
-      footer.innerHTML = back + '<button class="standard-button primary" type="button" id="generator-generate">Tạo nội quy</button>';
-    }
-    content.scrollTop = 0;
-    if (generator.open) content.querySelector('button,input')?.focus();
+
+  function findDocument(id) {
+    return state.documents.find(function (document) { return document.id === id; });
   }
-  function openGeneratedDraft(sections, answers) {
-    const current = state.documents.find(doc => doc.id === 'noiquy');
-    const doc = current ? clone(current) : {id:'noiquy',title:'Nội quy lao động',description:'Điều thợ phải tuân thủ. Có mục luật turn tự đồng bộ với hệ thống.',type:'rules',icon:'📋',version:0};
-    doc.sections = sections;
-    doc.autoTurnRules = true;
-    doc.generatorAnswers = clone(answers);
-    generator.close();
-    openEditor(doc, true);
+
+  function publish(id) {
+    var document = findDocument(id);
+    if (!document) return;
+    document.status = 'published';
+    document.publishedAt = today();
+    document.updatedAt = today();
+    document.publishedSnapshot = documentContent(document);
+    saveState();
+    notify('Published to Staff Handbook.');
+    showDetail(document, false);
   }
-  generator.addEventListener('click', event => {
-    const target = event.target.closest('button');
-    if (!target) return;
-    if (target.matches('[data-close-standard-generator]')) generator.close();
-    else if (target.id === 'generator-back') renderGenerator('pick');
-    else if (target.dataset.generatorStep) renderGenerator(target.dataset.generatorStep);
-    else if (target.dataset.generatorPreset) {
-      const preset = generatorData.presets.find(item => item.id === target.dataset.generatorPreset);
-      if (preset) openGeneratedDraft(generatorData.generate(preset.answers), preset.answers);
-    } else if (target.id === 'generator-generate') openGeneratedDraft(generatorData.generate(generatorAnswers), generatorAnswers);
-    else if (target.id === 'generator-blank') openGeneratedDraft([{id:'section-1',title:'',rules:[]}], generatorAnswers);
+
+  function unpublish(id) {
+    var document = findDocument(id);
+    if (!document) return;
+    document.status = 'draft';
+    document.publishedSnapshot = null;
+    document.publishedAt = '';
+    document.updatedAt = today();
+    saveState();
+    notify('Unpublished. Staff can no longer see this document.');
+    showDetail(document, false);
+  }
+
+  function softDelete(id) {
+    var document = findDocument(id);
+    if (!document) return;
+    document.deletedAt = new Date().toISOString();
+    saveState();
+    closeDetail();
+    notify('Moved to Recently Deleted.');
+  }
+
+  function restore(id) {
+    var document = findDocument(id);
+    if (!document) return;
+    document.deletedAt = null;
+    document.status = 'draft';
+    document.publishedSnapshot = null;
+    document.publishedAt = '';
+    document.updatedAt = today();
+    saveState();
+    renderLibrary();
+    notify('Document restored as Draft.');
+  }
+
+  function deleteForever(id) {
+    var document = findDocument(id);
+    if (!document || !window.confirm('Permanently delete “' + document.title + '”? This cannot be undone.')) return;
+    state.documents = state.documents.filter(function (item) { return item.id !== id; });
+    saveState();
+    renderLibrary();
+    notify('Document permanently deleted.');
+  }
+
+  function preparePrint(document) {
+    $('#standards-print').innerHTML = '<article class="print-document"><h1>' + esc(document.title) + '</h1><p class="print-meta">' + esc(types[document.type]) + ' · Updated ' + esc(dateLabel(document.updatedAt)) + '</p><p class="print-description">' + esc(document.description || '') + '</p>' + (document.sections || []).map(function (section) { return '<section><h2>' + esc(section.title) + '</h2><ul class="' + (document.type === 'checklist' ? 'print-checklist' : '') + '">' + (section.rules || []).map(function (rule) { return '<li>' + esc(rule) + '</li>'; }).join('') + '</ul></section>'; }).join('') + '</article>';
+  }
+
+  function handleAction(action, id) {
+    if (action === 'use-template') return useTemplate(id);
+    if (action === 'preview-template') return showDetail(templateById(id), true);
+    if (action === 'open') return showDetail(findDocument(id), false);
+    if (action === 'edit') return openEditor(findDocument(id));
+    if (action === 'publish') return publish(id);
+    if (action === 'unpublish') return unpublish(id);
+    if (action === 'delete') return softDelete(id);
+    if (action === 'restore') return restore(id);
+    if (action === 'delete-forever') return deleteForever(id);
+    if (action === 'print') { preparePrint(findDocument(id)); window.print(); }
+  }
+
+  document.addEventListener('click', function (event) {
+    var viewButton = event.target.closest('[data-standards-view]');
+    if (viewButton) { view = viewButton.dataset.standardsView; renderLibrary(); return; }
+    var action = event.target.closest('[data-standard-action]');
+    if (action) { handleAction(action.dataset.standardAction, action.dataset.standardId); return; }
+    if (event.target.closest('[data-standard-back]')) { closeDetail(); return; }
+    if (event.target.closest('[data-close-standard-editor]')) { $('#standard-editor').close(); return; }
+    var remove = event.target.closest('[data-remove-section]');
+    if (remove) remove.closest('[data-edit-section]').remove();
   });
-  generator.addEventListener('change', event => {
-    const question = generatorData.questions.find(item => item.id === event.target.name);
-    if (!question) return;
-    generatorAnswers[question.id] = question.multiple
-      ? [...generator.querySelectorAll('input[name="' + question.id + '"]:checked')].map(input => input.value)
-      : event.target.value;
-    $('#generator-summary').textContent = generatorCount(generatorData.generate(generatorAnswers));
+
+  $('#standards-search').addEventListener('input', function (event) { query = event.target.value; renderLibrary(); });
+  $('#standards-status').addEventListener('change', function (event) { statusFilter = event.target.value; renderLibrary(); });
+  $('#standards-type').addEventListener('change', function (event) { typeFilter = event.target.value; renderLibrary(); });
+  $('#reset-standards-filter').addEventListener('click', function () { query = ''; statusFilter = 'all'; typeFilter = 'all'; $('#standards-search').value = ''; $('#standards-status').value = 'all'; $('#standards-type').value = 'all'; renderLibrary(); });
+  $('#add-standard').addEventListener('click', function () { openEditor(null); });
+  $('#add-standard-section').addEventListener('click', function () {
+    var host = $('#standard-editor-sections');
+    host.insertAdjacentHTML('beforeend', editSection({title:'', rules:[]}, host.children.length));
   });
-  function readDraft() {
-    return {title:form.elements.title.value.trim(),type:form.elements.type.value,description:form.elements.description.value.trim(),sections:Array.from(document.querySelectorAll('[data-edit-section]'),section => ({id:section.dataset.editSection,title:section.querySelector('[data-section-title]').value.trim(),rules:section.querySelector('[data-section-rules]').value.split('\n').map(rule => rule.trim()).filter(Boolean)}))};
-  }
-  const editable = doc => ({title:doc.title,type:doc.type,description:doc.description,sections:doc.sections});
-  function saveDocument() {
-    const draft = readDraft();
-    if (!draft.title) { $('#standard-error').textContent = 'Nhập tên tài liệu.'; form.elements.title.focus(); return; }
-    if (!draft.sections.length || draft.sections.some(section => !section.title || !section.rules.length)) { $('#standard-error').textContent = 'Mỗi mục cần có tên và ít nhất một điều.'; return; }
-    const current = state.documents.find(doc => doc.id === editing.id);
-    if (editing.id && (editing.version ? !current || current.version !== editing.version : current)) { $('#standard-error').textContent = 'Tài liệu đã thay đổi ở cửa sổ khác. Đóng và mở lại bản mới trước khi sửa.'; return; }
-    if (current && JSON.stringify(editable(current)) === JSON.stringify(draft)) { editor.close(); $('#standards-feedback').textContent = 'Nội dung không thay đổi.'; return; }
-    const archived = current ? clone(current) : null;
-    if (archived) { delete archived.history; if (archived.autoTurnRules) archived.turnRules = liveTurnRules(); }
-    const id = editing.id || 'doc-' + (typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : Date.now().toString(36));
-    const nextDoc = {...editing,...draft,id,version:(current?.version || 0)+1,updatedAt:today(),history:current ? [...(current.history || []),archived] : []};
-    const next = {version:1,documents:current ? state.documents.map(doc => doc.id === id ? nextDoc : doc) : [...state.documents,nextDoc]};
-    try { localStorage.setItem(key,JSON.stringify(next)); }
-    catch (_) { $('#standard-error').textContent = 'Chưa lưu được tài liệu. Bộ nhớ trình duyệt không khả dụng hoặc đã đầy. Vui lòng thử lại.'; return; }
-    state = next; editor.close(); navigate(id); $('#standards-feedback').textContent = 'Đã lưu ' + nextDoc.title + ' · Bản ' + nextDoc.version + '.';
-  }
-  function preparePrint(docs, isHistory = false) {
-    $('#standards-print').innerHTML = docs.map(doc => '<article class="print-document"><h1>' + esc(doc.title) + '</h1><p class="print-meta">' + types[doc.type] + ' · Bản ' + doc.version + ' · ' + dateLabel(doc.updatedAt) + '</p><p class="print-description">' + esc(doc.description) + '</p>' + sectionsFor(doc,isHistory).map((section,i) => '<section><h2>' + (i+1) + '. ' + esc(section.title) + '</h2><ul' + (doc.type === 'checklist' ? ' class="print-checklist"' : '') + '>' + section.rules.map(rule => '<li>' + esc(rule) + '</li>').join('') + '</ul>' + (section.synced ? '<p class="print-sync-note">' + (isHistory ? 'Cấu hình đã lưu cùng phiên bản tài liệu.' : 'Theo cấu hình turn tại thời điểm in: ' + dateLabel(today()) + '.') + '</p>' : '') + '</section>').join('') + '</article>').join('');
-  }
-  function printDocuments(docs,isHistory = false) { preparePrint(docs,isHistory); window.print(); }
-  document.addEventListener('click', event => {
-    const link = event.target.closest('[data-standard-id], [data-standard-back]');
-    if (!link || event.ctrlKey || event.metaKey || event.shiftKey || event.altKey || event.button > 0) return;
-    event.preventDefault(); navigate(link.dataset.standardId || '');
+  $('#standard-form').addEventListener('submit', function (event) {
+    event.preventDefault();
+    try {
+      var values = readEditor();
+      var document = editingId ? findDocument(editingId) : null;
+      if (document) Object.assign(document, values, {updatedAt:today()});
+      else {
+        document = Object.assign(makeDocument({id:'custom', icon:'📄', title:values.title, description:values.description, type:values.type, sections:values.sections}, 'draft'), values);
+        state.documents.unshift(document);
+      }
+      saveState();
+      $('#standard-editor').close();
+      view = 'documents';
+      notify('Draft saved. Staff cannot see it until published.');
+      showDetail(document, false);
+    } catch (error) { $('#standard-error').textContent = error.message; }
   });
-  $('#standards-search').addEventListener('input', event => { query = event.target.value; renderLibrary(); });
-  document.querySelectorAll('[data-standard-filter]').forEach(button => button.addEventListener('click', () => { filter = button.dataset.standardFilter; renderLibrary(); }));
-  $('#reset-standards-filter').addEventListener('click', () => { filter = 'all'; query = ''; $('#standards-search').value = ''; renderLibrary(); });
-  $('#add-standard').addEventListener('click', () => openEditor());
-  $('#create-standard-rules').addEventListener('click', openGenerator);
-  $('#print-library').addEventListener('click', () => printDocuments(state.documents));
-  $('#standard-detail').addEventListener('click', event => {
-    if (event.target.closest('[data-generate-standard]') && shown?.id === 'noiquy' && !historical) openGenerator();
-    if (event.target.closest('[data-edit-standard]') && shown && !historical) openEditor(shown);
-    if (event.target.closest('[data-print-standard]') && shown) printDocuments([shown],historical);
-  });
-  $('#standard-detail').addEventListener('change', event => { if (event.target.id === 'standard-version') navigate(selectedId,event.target.value); });
-  document.querySelectorAll('[data-close-standard-editor]').forEach(button => button.addEventListener('click', () => editor.close()));
-  $('#add-standard-section').addEventListener('click', () => {
-    const count = document.querySelectorAll('[data-edit-section]').length;
-    const id = 'section-' + Date.now().toString(36) + '-' + count;
-    $('#standard-editor-sections').insertAdjacentHTML('beforeend',editSection({id,title:'',rules:[]},count));
-    document.querySelector('[data-edit-section="' + id + '"] [data-section-title]').focus();
-  });
-  $('#standard-editor-sections').addEventListener('click', event => {
-    const button = event.target.closest('[data-remove-section]'); if (!button) return;
-    button.closest('[data-edit-section]').remove();
-    document.querySelectorAll('[data-section-number]').forEach((number,i) => { number.textContent = i+1; });
-  });
-  form.addEventListener('submit', event => { event.preventDefault(); saveDocument(); });
-  window.addEventListener('popstate', () => { if (editor.open) editor.close(); if (generator.open) generator.close(); renderRoute(); });
-  window.addEventListener('storage', event => { if (event.key === key || event.key === null) { state = load(); renderRoute(); } });
-  window.NEXORA_TURN_SETTINGS.subscribe(() => { renderRoute(); });
-  window.addEventListener('beforeprint', () => { preparePrint(shown ? [shown] : state.documents,historical); });
-  function revealActiveSettingsTab() {
-    const nav = $('.salon-tabs'), active = nav.querySelector('[aria-current="page"]');
-    if (nav.scrollWidth > nav.clientWidth && active) nav.scrollLeft = active.offsetLeft - nav.offsetLeft;
-  }
-  window.addEventListener('resize', revealActiveSettingsTab);
-  renderRoute(); revealActiveSettingsTab();
+
+  saveState();
+  renderLibrary();
 })();

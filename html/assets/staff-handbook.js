@@ -26,6 +26,7 @@
 
   function linkedSalons() {
     return [
+      {id:'bitcoin-nail-bar-houston', name:'Bitcoin Nail Bar'},
       {id:'golden-nails-spa', name:'Golden Nails & Spa'},
       {id:'elite-beauty-lounge', name:'Elite Beauty Lounge'}
     ];
@@ -37,6 +38,7 @@
       if (saved && Array.isArray(saved.documents)) return saved.documents;
     } catch (error) {}
     var demoPublishedIds = {
+      'bitcoin-nail-bar-houston':['noiquy', 'vesinh'],
       'golden-nails-spa':['noiquy', 'khan', 'vesinh', 'donban', 'mocua'],
       'elite-beauty-lounge':['noiquy', 'vesinh', 'phannan', 'thomoi']
     };
