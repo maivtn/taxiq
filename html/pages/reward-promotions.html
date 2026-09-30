@@ -233,12 +233,6 @@
           </div>
         </section>
 
-        <div>
-          <div class="phase-ai-suggestion-title"><span data-icon="lightbulb"></span><span class="phase-ai-label">Suggested design ideas</span></div>
-          <div class="phase-ai-suggestions" id="ai-prompt-suggestions"></div>
-          <p class="phase-ai-help">Click a suggestion chip above to fill the editor. You can edit the text freely before asking AI to generate.</p>
-        </div>
-
         <div class="phase-ai-loading" id="ai-generation-loading" hidden><span class="phase-ai-loader-icon"><span data-icon="loader-2"></span></span><strong>AI is analyzing and designing your banner</strong><span class="promo-note" id="ai-loading-cost">Using 2 credit for this design.</span><span class="phase-ai-progress" aria-hidden="true"></span></div>
         <div class="phase-ai-result" id="ai-generation-result" hidden>
           <div class="phase-ai-result-art purple" id="ai-result-art"><small id="ai-result-badge">SPECIAL OFFER</small><strong id="ai-result-title">Your promotion</strong><span id="ai-result-copy">Created from your prompt</span></div>
@@ -489,26 +483,7 @@
 
   const aiDialog = document.getElementById('ai-banner-dialog');
   const AI_QUALITY_COST = {low:1,medium:2,high:4};
-  const aiPromptSuggestions = [
-    {label:'Luxury Nail',prompt:'Create a luxury nail salon promotion banner with elegant gold accents, soft pink tones, premium typography, and a clear Book Now call-to-action.'},
-    {label:'Crypto Payment',prompt:'Create a dark fintech banner with blue and purple neon accents, secure crypto payment messaging, and a Pay with Crypto call-to-action.'},
-    {label:'Gift Card Discount',prompt:'Create a bright premium gift card promotion with an eye-catching discount, festive details, and a Buy Gift Card call-to-action.'},
-    {label:'Featured Merchant',prompt:'Create a polished featured merchant banner with confident branding, product focus, and a Visit Us Today call-to-action.'},
-    {label:'Grand Opening',prompt:'Create a festive modern grand opening banner with bold typography, a limited-time offer, and a Learn More call-to-action.'},
-    {label:'Limited Offer',prompt:'Create an urgent limited-time offer banner with strong contrast, a clear savings message, and a Claim Offer call-to-action.'},
-    {label:'Minimalist',prompt:'Create a minimalist banner with generous white space, one accent color, clean typography, and a Discover More call-to-action.'},
-    {label:'Retro Vintage',prompt:'Create a retro vintage promotion banner with warm muted colors, classic lettering, and a Shop Now call-to-action.'},
-    {label:'Neon Dark',prompt:'Create a near-black banner with vivid neon pink and cyan glow, futuristic typography, and a Get Started call-to-action.'},
-    {label:'Art Deco',prompt:'Create an elegant Art Deco banner with geometric gold details, deep jewel tones, refined typography, and a Reserve Now call-to-action.'},
-    {label:'Glassmorphism',prompt:'Create a modern glassmorphism banner with translucent panels, soft gradients, clean layout, and a View Offer call-to-action.'},
-    {label:'Pastel Kawaii',prompt:'Create a playful pastel kawaii promotion banner with friendly illustrations, rounded type, and a Get This Deal call-to-action.'},
-    {label:'Bauhaus Bold',prompt:'Create a bold Bauhaus banner with primary colors, geometric forms, strong typography, and a Learn More call-to-action.'},
-    {label:'Japanese Zen',prompt:'Create a calm Japanese Zen banner with natural textures, balanced whitespace, subtle typography, and a Book Now call-to-action.'}
-  ];
   let aiQuality = 'medium', aiCredits = 50, aiResultTheme = 'purple', aiGenerationTimer;
-  function renderPromptSuggestions() {
-    document.getElementById('ai-prompt-suggestions').innerHTML = aiPromptSuggestions.map((item,index) => '<button type="button" class="phase-ai-chip" data-ai-prompt="' + index + '"># ' + esc(item.label) + '</button>').join('');
-  }
   function syncAIBrandIndustry() {
     document.getElementById('ai-brand-industry-summary').textContent = document.getElementById('ai-brand-industry').value;
   }
@@ -556,7 +531,7 @@
     document.getElementById('ai-banner-status').textContent = 'AI banner added to this promotion. You can reorder or remove it with the existing banner controls.';
     aiDialog.close();
   }
-  renderPromptSuggestions(); updateAICost();
+  updateAICost();
   document.getElementById('ai-brand-industry').addEventListener('change',syncAIBrandIndustry);
   [['ai-content-types','.phase-ai-content-option'],['ai-tone-options','.phase-ai-tone-option']].forEach(([id,selector]) => {
     document.getElementById(id).addEventListener('click',event => {
@@ -574,7 +549,6 @@
   document.getElementById('close-ai-banner').addEventListener('click',() => { resetAIGenerator(); aiDialog.close(); });
   document.getElementById('ai-quality-trigger').addEventListener('click',() => { const menu = document.getElementById('ai-quality-menu'); menu.hidden = !menu.hidden; });
   document.querySelectorAll('[data-ai-quality]').forEach(button => button.addEventListener('click',() => { aiQuality = button.dataset.aiQuality; updateAICost(); document.getElementById('ai-quality-menu').hidden = true; }));
-  document.getElementById('ai-prompt-suggestions').addEventListener('click',event => { const button = event.target.closest('[data-ai-prompt]'); if (button) document.getElementById('ai-banner-prompt').value = aiPromptSuggestions[Number(button.dataset.aiPrompt)].prompt; });
   document.getElementById('ai-reference-history').addEventListener('click',() => { const list = document.getElementById('ai-reference-history-list'); list.hidden = !list.hidden; });
   document.getElementById('ai-reference-history-list').addEventListener('click',event => { const swatch = event.target.closest('[data-ai-history]'); if (!swatch) return; document.getElementById('ai-reference-text').textContent = 'Generated ' + swatch.dataset.aiHistory + ' banner selected'; document.getElementById('ai-reference-history-list').hidden = true; });
   document.getElementById('ai-reference-file').addEventListener('change',event => {
