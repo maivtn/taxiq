@@ -50,19 +50,9 @@
 @media(max-width:760px){.staff-calendar-heading h1{font-size:22px}}
 
 .calendar-appointment-trigger{display:block;width:100%;min-width:0;padding:0;border:0;border-radius:10px;background:transparent;color:inherit;font:inherit;text-align:left;cursor:pointer}
-.schedule-source .schedule-approval-notice,.schedule-source .schedule-edit-button{grid-column:1/-1}
 .personal-week-card{grid-template-columns:minmax(0,1fr)}
 .personal-week-card>strong{font-size:14px}
 .personal-week-range{font-size:12px}
-.calendar-weekly-link{display:inline-flex;align-items:center;min-height:44px;color:#4c43df;font-size:12px;font-weight:600;text-decoration:underline;text-underline-offset:3px;white-space:nowrap}
-.calendar-weekly-link:hover{color:#3730a3}
-.calendar-weekly-link:focus-visible{outline:2px solid #4c43df;outline-offset:2px;border-radius:3px}
-.weekly-overview-dialog .personal-week-card{padding:0;border:0;margin:12px 0 20px}
-.weekly-overview-dialog .personal-week-card>strong{display:none}
-.weekly-overview-dialog footer{display:flex;gap:8px}
-.weekly-overview-dialog footer>form,.weekly-overview-dialog footer>button{flex:1;min-width:0}
-.weekly-overview-dialog footer form button{background:#fff;border-color:#dbe4f3;color:#475569}
-.weekly-overview-dialog footer [data-overview-edit]{background:#4c43df;border-color:#4c43df;color:#fff;font-size:14px}
 .personal-week-list{display:grid;gap:0;list-style:none;padding:0;margin:6px 0 0;min-width:0}
 .personal-week-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:2px 8px;align-items:center;padding:8px 6px;border:0;border-bottom:1px solid #e1e6ef;background:#fff}
 .personal-week-row:last-child{border-bottom:0}

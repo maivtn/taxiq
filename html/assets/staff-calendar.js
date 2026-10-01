@@ -131,6 +131,9 @@
     if (permission === 'none') return '<div class="calendar-view">' + (actionMessage ? '<div class="schedule-action-message" role="status">' + esc(actionMessage) + '</div>' : '') + '<div class="calendar-empty"><strong>Requests disabled</strong><p>Contact your manager to change availability.</p></div>' + scheduleActions() + requestList() + '</div>';
     return '<div class="calendar-view">' + (actionMessage ? '<div class="schedule-action-message" role="status">' + esc(actionMessage) + '</div>' : '') + scheduleActions() + requestForm() + '<section class="calendar-section"><h3>Schedule change history</h3>' + requestList() + '</section></div>';
   }
+  function mySchedulePanel() {
+    return '<div class="calendar-view">' + approvalNotice() + personalScheduleCard() + (schedulePermission() === 'none' ? '' : '<button type="button" class="schedule-edit-button" data-edit-weekly-schedule>Edit my schedule</button>') + '</div>';
+  }
   function availabilityCard() {
     var day = currentDay();
     var permission = schedulePermission();
@@ -142,7 +145,7 @@
   function contextualSide() {
     var day = currentDay();
     var staff = catalog.technicians.find(function (item) { return item.id === staffId; }) || {};
-    if (activeTab === 'appointments') return availabilityCard() + '<section class="calendar-side-summary"><h3>Work Schedule</h3><p><strong>' + (day.working ? esc(day.start + '–' + day.end) : 'Day off') + '</strong></p><p>' + (day.breaks || []).length + ' break · ' + visibleAppointments().length + ' appointment' + (visibleAppointments().length === 1 ? '' : 's') + '</p><p>Eligible services: ' + esc((staff.skills || []).join(', ') || 'Set by salon') + '</p><a href="#weekly-overview" class="calendar-weekly-link" data-view-weekly-schedule aria-haspopup="dialog">View weekly schedule</a></section>';
+    if (activeTab === 'appointments') return availabilityCard() + '<section class="calendar-side-summary"><h3>Work Schedule</h3><p><strong>' + (day.working ? esc(day.start + '–' + day.end) : 'Day off') + '</strong></p><p>' + (day.breaks || []).length + ' break · ' + visibleAppointments().length + ' appointment' + (visibleAppointments().length === 1 ? '' : 's') + '</p><p>Eligible services: ' + esc((staff.skills || []).join(', ') || 'Set by salon') + '</p></section>';
     return '<h3>My schedule permissions</h3><p>' + esc(permissionNote()) + '</p><p>Changes apply only to your hours, days off and breaks at this salon — not the salon’s opening hours or other staff schedules.</p>';
   }
   function render() {
@@ -159,9 +162,9 @@
     });
     var panel = document.querySelector('[data-calendar-panel]');
     var count = visibleAppointments().length;
-    panel.querySelector('[data-calendar-heading]').textContent = activeTab === 'requests' ? 'My schedule changes' : titleDate(selectedDate);
-    panel.querySelector('[data-calendar-duration]').textContent = activeTab === 'appointments' ? count + ' appointment' + (count === 1 ? '' : 's') : (schedulePermission() === 'none' ? 'View only' : schedulePermission() === 'self' ? 'No approval needed' : 'Approval required');
-    panel.querySelector('[data-calendar-timeline]').innerHTML = activeTab === 'appointments' ? appointmentsPanel() : requestsPanel();
+    panel.querySelector('[data-calendar-heading]').textContent = activeTab === 'requests' ? 'My schedule changes' : activeTab === 'my-schedule' ? 'My schedule' : titleDate(selectedDate);
+    panel.querySelector('[data-calendar-duration]').textContent = activeTab === 'appointments' ? count + ' appointment' + (count === 1 ? '' : 's') : activeTab === 'my-schedule' ? '' : (schedulePermission() === 'none' ? 'View only' : schedulePermission() === 'self' ? 'No approval needed' : 'Approval required');
+    panel.querySelector('[data-calendar-timeline]').innerHTML = activeTab === 'appointments' ? appointmentsPanel() : activeTab === 'my-schedule' ? mySchedulePanel() : requestsPanel();
     var side = document.querySelector('[data-calendar-side]');
     side.innerHTML = contextualSide();
   }
@@ -238,24 +241,6 @@
     dialog.showModal();
   }
 
-  function openWeeklyOverview() {
-    var dialog = document.querySelector('[data-weekly-overview]');
-    if (!dialog) {
-      dialog = document.createElement('dialog');
-      dialog.className = 'calendar-appointment-detail weekly-overview-dialog';
-      dialog.setAttribute('data-weekly-overview', '');
-      dialog.setAttribute('aria-labelledby', 'weekly-overview-title');
-      document.body.appendChild(dialog);
-      dialog.addEventListener('click', function (event) {
-        if (!event.target.closest('[data-overview-edit]')) return;
-        dialog.close();
-        openWeeklySchedule();
-      });
-    }
-    dialog.innerHTML = '<header><h2 id="weekly-overview-title">My schedule</h2><form method="dialog"><button class="calendar-detail-close" aria-label="Close weekly schedule" autofocus>×</button></form></header>' + approvalNotice() + personalScheduleCard() + '<footer><form method="dialog"><button>Back to calendar</button></form>' + (schedulePermission() === 'none' ? '' : '<button type="button" data-overview-edit>Edit my schedule</button>') + '</footer>';
-    dialog.showModal();
-  }
-
   function openWeeklySchedule() {
     if (schedulePermission() === 'none') return;
     var schedule = store.getStaffSchedule(salonId, staffId, {});
@@ -320,7 +305,7 @@
     var tab = event.target.closest('[data-calendar-tab]');
     if (tab) { activeTab = tab.dataset.calendarTab; requestType = ''; feedback = ''; render(); return; }
     if (event.target.closest('[data-calendar-today]')) { selectedDate = dateKey(new Date()); render(); return; }
-    if (event.target.closest('[data-view-weekly-schedule]')) { event.preventDefault(); openWeeklyOverview(); return; }
+    if (event.target.closest('[data-edit-weekly-schedule]')) { openWeeklySchedule(); return; }
     if (event.target.closest('[data-availability-toggle]')) { toggleAvailability(); return; }
     if (event.target.closest('[data-request-day-off]')) { openRequest('day-off'); return; }
     if (event.target.closest('[data-request-change-hours]')) { openRequest('change-hours'); return; }
