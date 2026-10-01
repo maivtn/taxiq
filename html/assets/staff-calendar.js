@@ -57,8 +57,8 @@
     return permission === 'none' ? 'View only. Your salon manages changes to your work schedule.' : permission === 'self' ? 'You can edit your own schedule without approval. Existing bookings stay protected.' : 'You can edit your own schedule. Changes need manager approval, as set by your salon.';
   }
   function scheduleActions() {
-    if (schedulePermission() === 'none') return '';
-    return '<section class="request-options"><h3>Edit my schedule</h3><div class="quick-action-grid"><button type="button" data-request-day-off>Day off</button><button type="button" data-request-change-hours>Change hours</button><button type="button" data-request-break>Take break</button></div></section>';
+    if (schedulePermission() === 'none') return '<section class="request-options"><h3>Need a schedule change?</h3><div class="quick-action-grid"><button type="button" data-message-manager>Message manager</button></div></section>';
+    return '<section class="request-options"><h3>Edit my schedule</h3><div class="quick-action-grid"><button type="button" data-request-day-off>Day off</button><button type="button" data-request-change-hours>Change hours</button><button type="button" data-request-break>Take break</button><button type="button" data-message-manager>Message manager</button></div></section>';
   }
   function approvalNotice() {
     var permission = schedulePermission();
@@ -141,13 +141,21 @@
   }
   function requestsPanel() {
     var permission = store.getStaffSchedule(salonId, staffId, {}).permission;
-    if (permission === 'none') return '<div class="calendar-empty"><strong>Requests disabled</strong><p>Contact your manager to change availability.</p></div>' + requestList();
+    if (permission === 'none') return '<div class="calendar-view">' + (actionMessage ? '<div class="schedule-action-message" role="status">' + esc(actionMessage) + '</div>' : '') + '<div class="calendar-empty"><strong>Requests disabled</strong><p>Contact your manager to change availability.</p></div>' + scheduleActions() + requestList() + '</div>';
     return '<div class="calendar-view">' + (actionMessage ? '<div class="schedule-action-message" role="status">' + esc(actionMessage) + '</div>' : '') + scheduleActions() + requestForm() + '<section class="calendar-section"><h3>Schedule change history</h3>' + requestList() + '</section></div>';
+  }
+  function availabilityCard() {
+    var day = currentDay();
+    var permission = schedulePermission();
+    var bookings = personalAppointments().length;
+    var disabled = permission === 'none';
+    var bookingLabel = bookings + ' existing booking' + (bookings === 1 ? '' : 's');
+    return '<section class="availability-card"><div><strong>' + (day.working ? 'Available on ' : 'Unavailable on ') + esc(titleDate(selectedDate)) + '</strong><p>' + (day.working ? esc(day.start + '–' + day.end) + ' · Online booking visible' : 'Hidden from new online bookings') + '</p></div><button type="button" class="availability-toggle' + (day.working ? ' is-on' : '') + '" role="switch" aria-checked="' + (day.working ? 'true' : 'false') + '" aria-label="' + (day.working ? 'Make unavailable on ' : 'Make available on ') + esc(titleDate(selectedDate)) + '" data-availability-toggle ' + (disabled ? 'disabled' : '') + '><span></span></button><span class="sync-pill">Synced to Booking</span></section><section class="calendar-warning"><strong>Booking protection on</strong><p>' + esc(bookingLabel) + '. Availability changes that affect booked appointments require manager review; the current schedule stays active until resolved.</p></section>';
   }
   function contextualSide() {
     var day = currentDay();
     var staff = catalog.technicians.find(function (item) { return item.id === staffId; }) || {};
-    if (activeTab === 'appointments') return '<h3>Work Schedule</h3><p><strong>' + (day.working ? esc(day.start + '–' + day.end) : 'Day off') + '</strong></p><p>' + (day.breaks || []).length + ' break · ' + visibleAppointments().length + ' appointment' + (visibleAppointments().length === 1 ? '' : 's') + '</p><p>Eligible services: ' + esc((staff.skills || []).join(', ') || 'Set by salon') + '</p>';
+    if (activeTab === 'appointments') return availabilityCard() + '<section class="calendar-side-summary"><h3>Work Schedule</h3><p><strong>' + (day.working ? esc(day.start + '–' + day.end) : 'Day off') + '</strong></p><p>' + (day.breaks || []).length + ' break · ' + visibleAppointments().length + ' appointment' + (visibleAppointments().length === 1 ? '' : 's') + '</p><p>Eligible services: ' + esc((staff.skills || []).join(', ') || 'Set by salon') + '</p></section>';
     return '<h3>My schedule permissions</h3><p>' + esc(permissionNote()) + '</p><p>Changes apply only to your hours, days off and breaks at this salon — not the salon’s opening hours or other staff schedules.</p>';
   }
   function render() {
@@ -181,6 +189,33 @@
     actionMessage = '';
     render();
     root.querySelector('[data-request-date]')?.focus();
+  }
+  function toggleAvailability() {
+    var schedule = store.getStaffSchedule(salonId, staffId, {});
+    if (schedule.permission === 'none') return;
+    var day = store.scheduleForDate(schedule, selectedDate);
+    var input = {salonId:salonId, staffId:staffId, date:selectedDate, reason:day.working ? 'Availability turned off by staff' : 'Availability turned on by staff'};
+    if (day.working) input.type = 'day-off';
+    else {
+      var weekday = ['sun','mon','tue','wed','thu','fri','sat'][new Date(selectedDate + 'T12:00:00').getDay()];
+      var regular = schedule.weekly[weekday] || {};
+      input.type = 'change-hours';
+      input.start = regular.start || '09:00';
+      input.end = regular.end || '19:00';
+    }
+    var result = store.createRequest(input);
+    if (!result.ok) {
+      actionMessage = 'Availability could not be changed. Contact your manager for help.';
+    } else if (schedule.permission === 'self') {
+      var applied = store.reviewRequest(result.request.id, 'approve', appointmentRows());
+      actionMessage = applied.ok ? 'Availability updated and synced to Booking.' : applied.error.code === 'booking-impact' ? 'Manager review needed: existing bookings are protected and your current availability has not changed.' : 'Availability could not be changed. Your current schedule has not changed.';
+    } else {
+      actionMessage = 'Availability request sent — pending manager approval. Your current schedule has not changed.';
+    }
+    activeTab = 'requests';
+    requestType = '';
+    feedback = '';
+    render();
   }
 
   function openAppointment(id) {
@@ -287,11 +322,12 @@
     if (tab) { activeTab = tab.dataset.calendarTab; requestType = ''; feedback = ''; render(); return; }
     if (event.target.closest('[data-calendar-today]')) { selectedDate = dateKey(new Date()); render(); return; }
     if (event.target.closest('[data-view-weekly-schedule]')) { event.preventDefault(); openWeeklyOverview(); return; }
+    if (event.target.closest('[data-availability-toggle]')) { toggleAvailability(); return; }
     if (event.target.closest('[data-request-day-off]')) { openRequest('day-off'); return; }
     if (event.target.closest('[data-request-change-hours]')) { openRequest('change-hours'); return; }
     if (event.target.closest('[data-request-break]')) { openRequest('break'); return; }
     if (event.target.closest('[data-request-form-close]')) { requestType = ''; feedback = ''; render(); return; }
-    if (event.target.closest('[data-message-manager]')) { feedback = 'Demo: manager notified.'; activeTab = 'requests'; render(); return; }
+    if (event.target.closest('[data-message-manager]')) { actionMessage = 'Manager notified about your schedule request.'; requestType = ''; activeTab = 'requests'; render(); return; }
     var cancel = event.target.closest('[data-request-cancel]');
     if (cancel) { store.cancelRequest(cancel.dataset.requestCancel, staffId); render(); }
   });
