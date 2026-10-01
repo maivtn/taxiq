@@ -91,7 +91,7 @@
   function appointmentsPanel() {
     var schedule = store.getStaffSchedule(salonId, staffId, {});
     var availability = store.availabilityForDay({staffSchedule:schedule, technicianId:staffId, date:selectedDate, appointments:appointmentRows()});
-    if (!availability.working) return '<div class="calendar-view">' + availabilityCard() + '<div class="calendar-empty"><strong>Day off</strong><p>No published working hours.</p></div></div>';
+    if (!availability.working) return '<div class="calendar-empty"><strong>Day off</strong><p>No published working hours.</p></div>';
     var items = [{at:availability.start, title:'Work starts', meta:'Published by salon', kind:'boundary'}];
     availability.breaks.forEach(function (item) { items.push({at:item.start, title:'Break', meta:item.start + '–' + item.end + ' · Not bookable', kind:'break'}); });
     visibleAppointments().forEach(function (item) {
@@ -100,10 +100,10 @@
     availability.openSlots.slice(0, 8).forEach(function (item) { items.push({at:item.time, title:'Open slot', meta:'Customer can book eligible services', kind:'open'}); });
     items.push({at:availability.end, title:'Work ends', meta:'Hidden from Booking after this time', kind:'boundary'});
     items.sort(function (left, right) { return left.at.localeCompare(right.at); });
-    return '<div class="calendar-view">' + availabilityCard() + '<div class="timeline">' + items.map(function (item) {
+    return '<div class="timeline">' + items.map(function (item) {
       var body = '<div class="timeline-card"><strong>' + esc(item.title) + '</strong><small>' + esc(item.meta) + '</small></div>';
       return '<div class="timeline-item ' + esc(item.kind) + '"' + (item.demo ? ' data-demo-booking' : '') + '><span>' + esc(item.at) + '</span>' + (item.id ? '<button type="button" class="calendar-appointment-trigger" data-calendar-appointment="' + esc(item.id) + '" aria-haspopup="dialog">' + body + '</button>' : body) + '</div>';
-    }).join('') + '</div></div>';
+    }).join('') + '</div>';
   }
   function requestLabel(type) {
     return {'day-off':'Day off', 'change-hours':'Change hours', 'break':'Take break', 'weekly-schedule':'Weekly schedule'}[type] || 'Schedule request';
@@ -135,10 +135,11 @@
     return '<div class="calendar-view">' + approvalNotice() + personalScheduleCard() + (schedulePermission() === 'none' ? '' : '<button type="button" class="schedule-edit-button" data-edit-weekly-schedule>Edit my schedule</button>') + '</div>';
   }
   function availabilityCard() {
-    var day = currentDay();
+    var today = dateKey(new Date());
+    var day = store.scheduleForDate(store.getStaffSchedule(salonId, staffId, {}), today);
     var permission = schedulePermission();
     var disabled = permission === 'none';
-    return '<section class="availability-card"><div><strong>' + (day.working ? 'Available on ' : 'Unavailable on ') + esc(titleDate(selectedDate)) + '</strong><p>' + (day.working ? esc(day.start + '–' + day.end) + ' · Online booking visible' : 'Hidden from new online bookings') + '</p></div><button type="button" class="availability-toggle' + (day.working ? ' is-on' : '') + '" role="switch" aria-checked="' + (day.working ? 'true' : 'false') + '" aria-label="' + (day.working ? 'Make unavailable on ' : 'Make available on ') + esc(titleDate(selectedDate)) + '" data-availability-toggle ' + (disabled ? 'disabled' : '') + '><span></span></button><span class="sync-pill">Synced to Booking</span></section>';
+    return '<section class="availability-card"><div><strong>' + (day.working ? 'Available today' : 'Unavailable today') + '</strong><p>' + (day.working ? esc(day.start + '–' + day.end) + ' · Online booking visible' : 'Hidden from new online bookings') + '</p></div><button type="button" class="availability-toggle' + (day.working ? ' is-on' : '') + '" role="switch" aria-checked="' + (day.working ? 'true' : 'false') + '" aria-label="' + (day.working ? 'Make unavailable today' : 'Make available today') + '" data-availability-toggle ' + (disabled ? 'disabled' : '') + '><span></span></button><span class="sync-pill">Synced to Booking</span></section>';
   }
   function availabilityWarning() {
     var bookings = personalAppointments().length;
@@ -154,6 +155,7 @@
   function render() {
     syncUrl();
     document.querySelector('[data-calendar-salon]').innerHTML = '<option value="' + esc(salonId) + '">' + esc(catalog.salon.name) + '</option>';
+    document.querySelector('[data-today-availability]').innerHTML = availabilityCard();
     document.querySelector('[data-calendar-week]').innerHTML = week().map(function (date) {
       var key = dateKey(date);
       return '<button type="button" class="calendar-day' + (key === selectedDate ? ' is-selected' : '') + '" aria-label="' + esc(titleDate(key)) + '" data-calendar-day data-date="' + key + '"><span>' + date.toLocaleDateString('en-US', {weekday:'short'}) + '</span><strong>' + date.getDate() + '</strong></button>';
@@ -198,11 +200,12 @@
   function toggleAvailability() {
     var schedule = store.getStaffSchedule(salonId, staffId, {});
     if (schedule.permission === 'none') return;
-    var day = store.scheduleForDate(schedule, selectedDate);
-    var input = {salonId:salonId, staffId:staffId, date:selectedDate, reason:day.working ? 'Availability turned off by staff' : 'Availability turned on by staff'};
+    var today = dateKey(new Date());
+    var day = store.scheduleForDate(schedule, today);
+    var input = {salonId:salonId, staffId:staffId, date:today, reason:day.working ? 'Availability turned off by staff' : 'Availability turned on by staff'};
     if (day.working) input.type = 'day-off';
     else {
-      var weekday = ['sun','mon','tue','wed','thu','fri','sat'][new Date(selectedDate + 'T12:00:00').getDay()];
+      var weekday = ['sun','mon','tue','wed','thu','fri','sat'][new Date(today + 'T12:00:00').getDay()];
       var regular = schedule.weekly[weekday] || {};
       input.type = 'change-hours';
       input.start = regular.start || '09:00';

@@ -6,6 +6,7 @@
 .staff-calendar-tools{display:flex;gap:10px;align-items:flex-end}.staff-calendar-tools label{display:grid;gap:5px;font-size:10px;font-weight:800}
 .staff-calendar-tools button,.calendar-tabs button,.quick-action-grid button,.request-card button,.calendar-empty button{min-height:44px;border:1px solid #dbe4f3;border-radius:10px;background:#fff;padding:10px 13px;font:inherit;font-weight:750;cursor:pointer}
 .staff-calendar-select{appearance:none;min-width:200px;min-height:44px;border:1px solid #dbe4f3;border-radius:9px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2352607b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 16px center;background-size:16px;padding:10px 44px 10px 12px;padding-right:44px}
+.today-availability{margin-top:18px}
 .calendar-status{display:flex;justify-content:space-between;margin:18px 0;color:#16815f;font-size:12px;font-weight:750}.calendar-status a{color:#4c43df}
 .calendar-tabs{display:flex;gap:6px;margin-bottom:12px}.calendar-tabs button.is-active{background:#4c43df;color:#fff;border-color:#4c43df}
 .calendar-week{display:grid;grid-template-columns:repeat(7,1fr);gap:5px;border:1px solid #e0e5f0;border-radius:16px;padding:7px;background:#fff}
