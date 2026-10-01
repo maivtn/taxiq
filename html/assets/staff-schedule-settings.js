@@ -16,6 +16,7 @@
   var selectedStaff = '';
   var selectedDate = '';
   var boardDate = dateKey(new Date());
+  var boardView = 'staff';
   var drawerOpen = false;
   var editorScope = 'weekly';
   var editorValues = null;
@@ -198,6 +199,51 @@
     var rows = impactReview.impacts || [];
     return '<div class="schedule-impact-backdrop"></div><section class="schedule-impact" data-request-impact role="dialog" aria-modal="true"><header><div><small>Approval paused</small><h2>Resolve affected bookings</h2></div><button type="button" data-impact-close aria-label="Close">×</button></header><p>This change has not been published. Reassign or reschedule these bookings, then approve again.</p><div class="schedule-impact-list">' + rows.map(function (item) { return '<a href="booking-book-phase-1.html?tab=booking&appointment=' + encodeURIComponent(item.appointmentId) + '"><strong>' + esc(item.customerName) + '</strong><span>' + esc(displayDate(item.startAt.slice(0, 10)) + ' · ' + item.startAt.slice(11, 16)) + '</span><small>Open booking →</small></a>'; }).join('') + '</div><footer><button type="button" data-impact-close>Keep request blocked</button><a class="booking-primary-button" href="booking-book-phase-1.html?tab=booking">Open Booking Book</a></footer></section>';
   }
+  function boardHeader(label, days) {
+    return '<div class="schedule-row"><span>' + esc(label) + '</span>' + days.map(function (date) { return '<span>' + date.toLocaleDateString('en-US', {weekday:'short'}) + '<br>' + displayDate(dateKey(date)) + '</span>'; }).join('') + '</div>';
+  }
+  function staffBoard(people, days, availabilityByStaff) {
+    var rows = people.map(function (person) {
+      var cells = days.map(function (date) {
+        var key = dateKey(date);
+        var item = availabilityByStaff[person.id][key];
+        var availability = item.availability;
+        return '<button type="button" class="schedule-day' + (!availability.working ? ' is-off' : '') + (item.conflicts.length ? ' has-conflict' : '') + '" data-schedule-day data-schedule-staff="' + esc(person.id) + '" data-schedule-date="' + key + '"><strong>' + (availability.working ? esc(availability.start + '–' + availability.end) : 'Day off') + '</strong><small>' + availability.openSlots.length + ' open · ' + availability.appointments.length + ' booked</small></button>';
+      }).join('');
+      return '<div class="schedule-row" data-schedule-staff="' + esc(person.id) + '"><strong>' + esc(person.name) + '</strong>' + cells + '</div>';
+    }).join('');
+    return '<div class="schedule-week" data-schedule-week>' + boardHeader('Staff', days) + rows + '</div>';
+  }
+  function skillBoard(catalog, people, days, availabilityByStaff) {
+    var skills = [];
+    function addSkill(skill) {
+      skill = String(skill || '').trim();
+      if (skill && skills.indexOf(skill) < 0) skills.push(skill);
+    }
+    (catalog.services || []).forEach(function (service) { if (service.active !== false) addSkill(service.requiredSkill); });
+    people.forEach(function (person) { (person.skills || []).forEach(addSkill); });
+    skills.sort(function (a, b) { return a.localeCompare(b); });
+    var rows = skills.map(function (skill) {
+      var qualified = people.filter(function (person) { return (person.skills || []).indexOf(skill) >= 0; });
+      var cells = days.map(function (date) {
+        var key = dateKey(date);
+        var available = qualified.filter(function (person) { return availabilityByStaff[person.id][key].availability.working; });
+        var chips = available.map(function (person) {
+          var day = availabilityByStaff[person.id][key].availability;
+          return '<button type="button" class="schedule-skill-chip" data-schedule-day data-schedule-staff="' + esc(person.id) + '" data-schedule-date="' + key + '" aria-label="Open ' + esc(person.name) + ' schedule for ' + esc(displayDate(key)) + '"><strong>' + esc(person.name) + '</strong><small>' + esc(day.start + '–' + day.end) + '</small></button>';
+        }).join('');
+        var warning = available.length === 0 ? '<span class="schedule-coverage-warning is-empty">No coverage</span>' : (available.length === 1 ? '<span class="schedule-coverage-warning">Limited · 1 tech</span>' : '');
+        return '<div class="schedule-skill-cell">' + chips + warning + '</div>';
+      }).join('');
+      return '<div class="schedule-row schedule-skill-row"><strong>' + esc(skill) + '</strong>' + cells + '</div>';
+    }).join('');
+    var totals = days.map(function (date) {
+      var key = dateKey(date);
+      var count = people.filter(function (person) { return availabilityByStaff[person.id][key].availability.working; }).length;
+      return '<div class="schedule-skill-total"><strong>' + count + '</strong><small>techs</small></div>';
+    }).join('');
+    return '<p class="schedule-coverage-help">Coverage is calculated from each staff member’s assigned skills and published schedule. Select a staff chip to edit that person’s hours.</p><div class="schedule-week schedule-skill-week" data-schedule-week>' + boardHeader('Skill / Day', days) + (rows || '<div class="schedule-empty">Assign skills to staff to see coverage.</div>') + '<div class="schedule-row schedule-skill-row schedule-total-row"><strong>Total working</strong>' + totals + '</div></div>';
+  }
   function render(preselect) {
     if (preselect) selectedStaff = preselect;
     var catalog = salonData.loadCatalog();
@@ -206,20 +252,24 @@
     var appointmentList = appointments();
     var state = store.loadState();
     var working = 0, slots = 0, conflicts = 0;
-    var body = people.map(function (person) {
+    var availabilityByStaff = {};
+    people.forEach(function (person) {
       var schedule = store.getStaffSchedule(store.SALON_ID, person.id, {});
-      var cells = days.map(function (date) {
+      availabilityByStaff[person.id] = {};
+      days.forEach(function (date) {
         var key = dateKey(date);
         var availability = store.availabilityForDay({staffSchedule:schedule, technicianId:person.id, date:key, appointments:appointmentList});
         var dayConflicts = availability.conflicts.filter(function (item) { return item.startAt.slice(0, 10) === key; });
         if (availability.working) working++;
         slots += availability.openSlots.length;
         conflicts += dayConflicts.length;
-        return '<button type="button" class="schedule-day' + (!availability.working ? ' is-off' : '') + (dayConflicts.length ? ' has-conflict' : '') + '" data-schedule-day data-schedule-staff="' + esc(person.id) + '" data-schedule-date="' + key + '"><strong>' + (availability.working ? esc(availability.start + '–' + availability.end) : 'Day off') + '</strong><small>' + availability.openSlots.length + ' open · ' + availability.appointments.length + ' booked</small></button>';
-      }).join('');
-      return '<div class="schedule-row" data-schedule-staff="' + esc(person.id) + '"><strong>' + esc(person.name) + '</strong>' + cells + '</div>';
-    }).join('');
-    host.innerHTML = '<header class="schedule-heading"><div><h2>Staff Schedule &amp; Booking Availability</h2><p>Manager publishes working hours. Staff changes arrive as requests.</p></div><div class="schedule-actions"><select class="schedule-select" aria-label="Salon"><option>Bitcoin Nail Bar</option></select><span data-schedule-sync-status>' + (state.salons[store.SALON_ID]?.syncedAt ? 'Synced to Booking' : 'Ready to sync') + '</span></div></header>' + weekControls(days) + '<div class="schedule-summary"><div class="schedule-card" data-schedule-summary="working"><strong>' + working + '</strong><span>Working staff-days</span></div><div class="schedule-card"><strong>' + slots + '</strong><span>Open slots</span></div><div class="schedule-card"><strong>' + conflicts + '</strong><span>Booking conflicts</span></div><div class="schedule-card"><strong>' + people.length + '</strong><span>Staff members</span></div></div><div class="schedule-week" data-schedule-week><div class="schedule-row"><span>Staff</span>' + days.map(function (date) { return '<span>' + date.toLocaleDateString('en-US', {weekday:'short'}) + '<br>' + displayDate(dateKey(date)) + '</span>'; }).join('') + '</div>' + body + '</div>' + requestInbox(state,catalog) + editor() + impactDialog();
+        availabilityByStaff[person.id][key] = {availability:availability, conflicts:dayConflicts};
+      });
+    });
+    var unassigned = people.filter(function (person) { return !(person.skills || []).length; }).length;
+    var viewControls = '<section class="schedule-view-toolbar"><div class="schedule-view-toggle" role="group" aria-label="Group schedule by"><button type="button" data-schedule-view="staff" aria-pressed="' + (boardView === 'staff') + '">By Staff</button><button type="button" data-schedule-view="skill" aria-pressed="' + (boardView === 'skill') + '">By Skill</button></div><p>' + (boardView === 'staff' ? 'Edit the source schedule for each staff member.' : 'Read-only coverage view derived from staff schedules.') + (unassigned ? ' <strong>' + unassigned + ' staff</strong> need skill assignments.' : '') + '</p></section>';
+    var board = boardView === 'skill' ? skillBoard(catalog, people, days, availabilityByStaff) : staffBoard(people, days, availabilityByStaff);
+    host.innerHTML = '<header class="schedule-heading"><div><h2>Staff Schedule &amp; Booking Availability</h2><p>Manager publishes working hours. Staff changes arrive as requests.</p></div><div class="schedule-actions"><select class="schedule-select" aria-label="Salon"><option>Bitcoin Nail Bar</option></select><span data-schedule-sync-status>' + (state.salons[store.SALON_ID]?.syncedAt ? 'Synced to Booking' : 'Ready to sync') + '</span></div></header>' + weekControls(days) + viewControls + '<div class="schedule-summary"><div class="schedule-card" data-schedule-summary="working"><strong>' + working + '</strong><span>Working staff-days</span></div><div class="schedule-card"><strong>' + slots + '</strong><span>Open slots</span></div><div class="schedule-card"><strong>' + conflicts + '</strong><span>Booking conflicts</span></div><div class="schedule-card"><strong>' + people.length + '</strong><span>Staff members</span></div></div>' + board + requestInbox(state,catalog) + editor() + impactDialog();
     var openCount = state.requests.filter(function (item) { return item.salonId === store.SALON_ID && matchesRequestFilter(item,'open'); }).length;
     document.querySelectorAll('[data-staff-requests-count]').forEach(function (badge) { badge.textContent = openCount; badge.setAttribute('aria-label',openCount + ' requests need review'); });
     if (requestsHost) {
@@ -442,6 +492,8 @@
     }
     if (event.target.closest('[data-schedule-this-week]')) { changeWeek(dateKey(new Date()), '[data-schedule-this-week]'); return; }
     if (event.target.closest('[data-schedule-toast-close]')) { boardMessage = ''; modalHost.querySelector('.schedule-toast')?.remove(); return; }
+    var view = event.target.closest('[data-schedule-view]');
+    if (view) { boardView = view.dataset.scheduleView; render(selectedStaff); host.querySelector('[data-schedule-view="' + boardView + '"]')?.focus(); return; }
     var day = event.target.closest('[data-schedule-day]');
     if (day) { opener = day; selectedStaff = day.dataset.scheduleStaff; selectedDate = day.dataset.scheduleDate; editorScope = 'date'; drawerOpen = true; loadEditorDay(); render(selectedStaff); return; }
     var tab = event.target.closest('[data-schedule-scope]');
