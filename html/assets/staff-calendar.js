@@ -91,7 +91,7 @@
   function appointmentsPanel() {
     var schedule = store.getStaffSchedule(salonId, staffId, {});
     var availability = store.availabilityForDay({staffSchedule:schedule, technicianId:staffId, date:selectedDate, appointments:appointmentRows()});
-    if (!availability.working) return '<div class="calendar-empty"><strong>Day off</strong><p>No published working hours.</p></div>';
+    if (!availability.working) return '<div class="calendar-view">' + availabilityCard() + '<div class="calendar-empty"><strong>Day off</strong><p>No published working hours.</p></div></div>';
     var items = [{at:availability.start, title:'Work starts', meta:'Published by salon', kind:'boundary'}];
     availability.breaks.forEach(function (item) { items.push({at:item.start, title:'Break', meta:item.start + '–' + item.end + ' · Not bookable', kind:'break'}); });
     visibleAppointments().forEach(function (item) {
@@ -100,10 +100,10 @@
     availability.openSlots.slice(0, 8).forEach(function (item) { items.push({at:item.time, title:'Open slot', meta:'Customer can book eligible services', kind:'open'}); });
     items.push({at:availability.end, title:'Work ends', meta:'Hidden from Booking after this time', kind:'boundary'});
     items.sort(function (left, right) { return left.at.localeCompare(right.at); });
-    return '<div class="timeline">' + items.map(function (item) {
+    return '<div class="calendar-view">' + availabilityCard() + '<div class="timeline">' + items.map(function (item) {
       var body = '<div class="timeline-card"><strong>' + esc(item.title) + '</strong><small>' + esc(item.meta) + '</small></div>';
       return '<div class="timeline-item ' + esc(item.kind) + '"' + (item.demo ? ' data-demo-booking' : '') + '><span>' + esc(item.at) + '</span>' + (item.id ? '<button type="button" class="calendar-appointment-trigger" data-calendar-appointment="' + esc(item.id) + '" aria-haspopup="dialog">' + body + '</button>' : body) + '</div>';
-    }).join('') + '</div>';
+    }).join('') + '</div></div>';
   }
   function requestLabel(type) {
     return {'day-off':'Day off', 'change-hours':'Change hours', 'break':'Take break', 'weekly-schedule':'Weekly schedule'}[type] || 'Schedule request';
@@ -137,15 +137,18 @@
   function availabilityCard() {
     var day = currentDay();
     var permission = schedulePermission();
-    var bookings = personalAppointments().length;
     var disabled = permission === 'none';
+    return '<section class="availability-card"><div><strong>' + (day.working ? 'Available on ' : 'Unavailable on ') + esc(titleDate(selectedDate)) + '</strong><p>' + (day.working ? esc(day.start + '–' + day.end) + ' · Online booking visible' : 'Hidden from new online bookings') + '</p></div><button type="button" class="availability-toggle' + (day.working ? ' is-on' : '') + '" role="switch" aria-checked="' + (day.working ? 'true' : 'false') + '" aria-label="' + (day.working ? 'Make unavailable on ' : 'Make available on ') + esc(titleDate(selectedDate)) + '" data-availability-toggle ' + (disabled ? 'disabled' : '') + '><span></span></button><span class="sync-pill">Synced to Booking</span></section>';
+  }
+  function availabilityWarning() {
+    var bookings = personalAppointments().length;
     var bookingLabel = bookings + ' existing booking' + (bookings === 1 ? '' : 's');
-    return '<section class="availability-card"><div><strong>' + (day.working ? 'Available on ' : 'Unavailable on ') + esc(titleDate(selectedDate)) + '</strong><p>' + (day.working ? esc(day.start + '–' + day.end) + ' · Online booking visible' : 'Hidden from new online bookings') + '</p></div><button type="button" class="availability-toggle' + (day.working ? ' is-on' : '') + '" role="switch" aria-checked="' + (day.working ? 'true' : 'false') + '" aria-label="' + (day.working ? 'Make unavailable on ' : 'Make available on ') + esc(titleDate(selectedDate)) + '" data-availability-toggle ' + (disabled ? 'disabled' : '') + '><span></span></button><span class="sync-pill">Synced to Booking</span></section><section class="calendar-warning"><strong>Booking protection on</strong><p>' + esc(bookingLabel) + '. Availability changes that affect booked appointments require manager review; the current schedule stays active until resolved.</p></section>';
+    return '<section class="calendar-warning"><strong>Booking protection on</strong><p>' + esc(bookingLabel) + '. Availability changes that affect booked appointments require manager review; the current schedule stays active until resolved.</p></section>';
   }
   function contextualSide() {
     var day = currentDay();
     var staff = catalog.technicians.find(function (item) { return item.id === staffId; }) || {};
-    if (activeTab === 'appointments') return availabilityCard() + '<section class="calendar-side-summary"><h3>Work Schedule</h3><p><strong>' + (day.working ? esc(day.start + '–' + day.end) : 'Day off') + '</strong></p><p>' + (day.breaks || []).length + ' break · ' + visibleAppointments().length + ' appointment' + (visibleAppointments().length === 1 ? '' : 's') + '</p><p>Eligible services: ' + esc((staff.skills || []).join(', ') || 'Set by salon') + '</p></section>';
+    if (activeTab === 'appointments') return '<section class="calendar-side-summary"><h3>Work Schedule</h3><p><strong>' + (day.working ? esc(day.start + '–' + day.end) : 'Day off') + '</strong></p><p>' + (day.breaks || []).length + ' break · ' + visibleAppointments().length + ' appointment' + (visibleAppointments().length === 1 ? '' : 's') + '</p><p>Eligible services: ' + esc((staff.skills || []).join(', ') || 'Set by salon') + '</p></section>' + availabilityWarning();
     return '<h3>My schedule permissions</h3><p>' + esc(permissionNote()) + '</p><p>Changes apply only to your hours, days off and breaks at this salon — not the salon’s opening hours or other staff schedules.</p>';
   }
   function render() {
