@@ -228,11 +228,11 @@
       var cells = days.map(function (date) {
         var key = dateKey(date);
         var available = qualified.filter(function (person) { return availabilityByStaff[person.id][key].availability.working; });
-        var chips = available.map(function (person) {
+        var chips = qualified.map(function (person) {
           var day = availabilityByStaff[person.id][key].availability;
-          return '<button type="button" class="schedule-skill-chip" data-schedule-day data-schedule-staff="' + esc(person.id) + '" data-schedule-date="' + key + '" aria-label="Open ' + esc(person.name) + ' schedule for ' + esc(displayDate(key)) + '"><strong>' + esc(person.name) + '</strong><small>' + esc(day.start + '–' + day.end) + '</small></button>';
+          return '<button type="button" class="schedule-skill-chip' + (!day.working ? ' is-off' : '') + '" data-schedule-day data-schedule-staff="' + esc(person.id) + '" data-schedule-date="' + key + '" aria-label="Open ' + esc(person.name) + ' schedule for ' + esc(displayDate(key)) + '"><strong>' + esc(person.name) + '</strong><small>' + (day.working ? esc(day.start + '–' + day.end) : 'Off') + '</small></button>';
         }).join('');
-        var warning = available.length === 0 ? '<span class="schedule-coverage-warning is-empty">No coverage</span>' : (available.length === 1 ? '<span class="schedule-coverage-warning">Limited · 1 tech</span>' : '');
+        var warning = qualified.length === 0 ? '<span class="schedule-coverage-warning is-unassigned">No qualified staff</span>' : (available.length === 0 ? '<span class="schedule-coverage-warning is-empty">No coverage</span>' : (available.length === 1 ? '<span class="schedule-coverage-warning">Limited · 1 tech</span>' : ''));
         return '<div class="schedule-skill-cell">' + chips + warning + '</div>';
       }).join('');
       return '<div class="schedule-row schedule-skill-row"><strong>' + esc(skill) + '</strong>' + cells + '</div>';
@@ -242,7 +242,7 @@
       var count = people.filter(function (person) { return availabilityByStaff[person.id][key].availability.working; }).length;
       return '<div class="schedule-skill-total"><strong>' + count + '</strong><small>techs</small></div>';
     }).join('');
-    return '<p class="schedule-coverage-help">Coverage is calculated from each staff member’s assigned skills and published schedule. Select a staff chip to edit that person’s hours.</p><div class="schedule-week schedule-skill-week" data-schedule-week>' + boardHeader('Skill / Day', days) + (rows || '<div class="schedule-empty">Assign skills to staff to see coverage.</div>') + '<div class="schedule-row schedule-skill-row schedule-total-row"><strong>Total working</strong>' + totals + '</div></div>';
+    return '<div class="schedule-coverage-intro"><p class="schedule-coverage-help">Coverage is calculated from each staff member’s assigned skills and published schedule. Select any staff chip, including an off chip, to edit that person’s hours.</p><div class="schedule-coverage-legend" aria-label="Coverage status examples"><span class="schedule-legend-chip is-working">Working · 09:00–19:00</span><span class="schedule-legend-chip is-off">Tech off</span><span class="schedule-legend-chip is-limited">Limited · 1 tech</span><span class="schedule-legend-chip is-empty">No coverage</span><span class="schedule-legend-chip is-unassigned">No qualified staff</span></div></div><div class="schedule-week schedule-skill-week" data-schedule-week>' + boardHeader('Skill / Day', days) + (rows || '<div class="schedule-empty">Assign skills to staff to see coverage.</div>') + '<div class="schedule-row schedule-skill-row schedule-total-row"><strong>Total working</strong>' + totals + '</div></div>';
   }
   function render(preselect) {
     if (preselect) selectedStaff = preselect;
