@@ -52,10 +52,6 @@
     return store.scheduleForDate(store.getStaffSchedule(salonId, staffId, {}), selectedDate);
   }
   function schedulePermission() { return store.getStaffSchedule(salonId, staffId, {}).permission; }
-  function permissionNote() {
-    var permission = schedulePermission();
-    return permission === 'none' ? 'View only. Your salon manages changes to your work schedule.' : permission === 'self' ? 'You can edit your own schedule without approval. Existing bookings stay protected.' : 'You can edit your own schedule. Changes need manager approval, as set by your salon.';
-  }
   function scheduleActions() {
     if (schedulePermission() === 'none') return '<section class="request-options"><h3>Need a schedule change?</h3><div class="quick-action-grid"><button type="button" data-chat-salon>Chat with salon</button></div></section>';
     return '<section class="request-options"><h3>Edit my schedule</h3><div class="quick-action-grid"><button type="button" data-request-day-off>Day off</button><button type="button" data-request-change-hours>Change hours</button><button type="button" data-request-break>Take break</button><button type="button" data-chat-salon>Chat with salon</button></div></section>';
@@ -149,8 +145,7 @@
   function contextualSide() {
     var day = currentDay();
     var staff = catalog.technicians.find(function (item) { return item.id === staffId; }) || {};
-    if (activeTab === 'appointments') return '<section class="calendar-side-summary"><h3>Work Schedule</h3><p><strong>' + (day.working ? esc(day.start + '–' + day.end) : 'Day off') + '</strong></p><p>' + (day.breaks || []).length + ' break · ' + visibleAppointments().length + ' appointment' + (visibleAppointments().length === 1 ? '' : 's') + '</p><p>Eligible services: ' + esc((staff.skills || []).join(', ') || 'Set by salon') + '</p></section>' + availabilityWarning();
-    return '<section class="calendar-side-summary"><h3>My schedule permissions</h3><p>' + esc(permissionNote()) + '</p><p>Changes apply only to your hours, days off and breaks at this salon — not the salon’s opening hours or other staff schedules.</p></section>';
+    return '<section class="calendar-side-summary"><h3>Work Schedule</h3><p><strong>' + (day.working ? esc(day.start + '–' + day.end) : 'Day off') + '</strong></p><p>' + (day.breaks || []).length + ' break · ' + visibleAppointments().length + ' appointment' + (visibleAppointments().length === 1 ? '' : 's') + '</p><p>Eligible services: ' + esc((staff.skills || []).join(', ') || 'Set by salon') + '</p></section>' + availabilityWarning();
   }
   function render() {
     syncUrl();
@@ -171,7 +166,10 @@
     panel.querySelector('[data-calendar-duration]').textContent = activeTab === 'appointments' ? count + ' appointment' + (count === 1 ? '' : 's') : activeTab === 'my-schedule' ? '' : (schedulePermission() === 'none' ? 'View only' : schedulePermission() === 'self' ? 'No approval needed' : 'Approval required');
     panel.querySelector('[data-calendar-timeline]').innerHTML = activeTab === 'appointments' ? appointmentsPanel() : activeTab === 'my-schedule' ? mySchedulePanel() : requestsPanel();
     var side = document.querySelector('[data-calendar-side]');
-    side.innerHTML = contextualSide();
+    var showSide = activeTab === 'appointments';
+    side.hidden = !showSide;
+    side.innerHTML = showSide ? contextualSide() : '';
+    root.querySelector('.calendar-layout').classList.toggle('is-single-column', !showSide);
   }
   function openRequest(type) {
     if (schedulePermission() === 'none') return;
