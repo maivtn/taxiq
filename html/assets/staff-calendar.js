@@ -105,19 +105,6 @@
       return '<div class="timeline-item ' + esc(item.kind) + '"' + (item.demo ? ' data-demo-booking' : '') + '><span>' + esc(item.at) + '</span>' + (item.id ? '<button type="button" class="calendar-appointment-trigger" data-calendar-appointment="' + esc(item.id) + '" aria-haspopup="dialog">' + body + '</button>' : body) + '</div>';
     }).join('') + '</div>';
   }
-  function workSchedulePanel() {
-    var schedule = store.getStaffSchedule(salonId, staffId, {});
-    var availability = store.availabilityForDay({staffSchedule:schedule, technicianId:staffId, date:selectedDate, appointments:appointmentRows()});
-    if (!availability.working) return '<div class="calendar-view"><div class="calendar-empty"><strong>Day off</strong><p>You are not scheduled to work on this date.</p></div></div>';
-    var items = [{at:availability.start, title:'Work starts', meta:'My scheduled hours', kind:'boundary'}];
-    availability.breaks.forEach(function (item) { items.push({at:item.start, title:'Break', meta:item.start + '–' + item.end + ' · Not bookable', kind:'break'}); });
-    availability.openSlots.slice(0, 8).forEach(function (item) { items.push({at:item.time, title:'Open slot', meta:'Customer can book eligible services', kind:'open'}); });
-    items.push({at:availability.end, title:'Work ends', meta:'Hidden from Booking after this time', kind:'boundary'});
-    items.sort(function (left, right) { return left.at.localeCompare(right.at); });
-    return '<div class="calendar-view"><div class="timeline">' + items.map(function (item) {
-      return '<div class="timeline-item ' + item.kind + '"><span>' + esc(item.at) + '</span><div class="timeline-card"><strong>' + esc(item.title) + '</strong><small>' + esc(item.meta) + '</small></div></div>';
-    }).join('') + '</div></div>';
-  }
   function requestLabel(type) {
     return {'day-off':'Day off', 'change-hours':'Change hours', 'break':'Take break', 'weekly-schedule':'Weekly schedule'}[type] || 'Schedule request';
   }
@@ -155,7 +142,7 @@
   function contextualSide() {
     var day = currentDay();
     var staff = catalog.technicians.find(function (item) { return item.id === staffId; }) || {};
-    if (activeTab === 'appointments') return availabilityCard() + '<section class="calendar-side-summary"><h3>Work Schedule</h3><p><strong>' + (day.working ? esc(day.start + '–' + day.end) : 'Day off') + '</strong></p><p>' + (day.breaks || []).length + ' break · ' + visibleAppointments().length + ' appointment' + (visibleAppointments().length === 1 ? '' : 's') + '</p><p>Eligible services: ' + esc((staff.skills || []).join(', ') || 'Set by salon') + '</p></section>';
+    if (activeTab === 'appointments') return availabilityCard() + '<section class="calendar-side-summary"><h3>Work Schedule</h3><p><strong>' + (day.working ? esc(day.start + '–' + day.end) : 'Day off') + '</strong></p><p>' + (day.breaks || []).length + ' break · ' + visibleAppointments().length + ' appointment' + (visibleAppointments().length === 1 ? '' : 's') + '</p><p>Eligible services: ' + esc((staff.skills || []).join(', ') || 'Set by salon') + '</p><a href="#weekly-overview" class="calendar-weekly-link" data-view-weekly-schedule aria-haspopup="dialog">View weekly schedule</a></section>';
     return '<h3>My schedule permissions</h3><p>' + esc(permissionNote()) + '</p><p>Changes apply only to your hours, days off and breaks at this salon — not the salon’s opening hours or other staff schedules.</p>';
   }
   function render() {
@@ -173,13 +160,10 @@
     var panel = document.querySelector('[data-calendar-panel]');
     var count = visibleAppointments().length;
     panel.querySelector('[data-calendar-heading]').textContent = activeTab === 'requests' ? 'My schedule changes' : titleDate(selectedDate);
-    panel.querySelector('[data-calendar-duration]').textContent = activeTab === 'work-schedule' ? '' : activeTab === 'appointments' ? count + ' appointment' + (count === 1 ? '' : 's') : (schedulePermission() === 'none' ? 'View only' : schedulePermission() === 'self' ? 'No approval needed' : 'Approval required');
-    if (activeTab === 'work-schedule') panel.querySelector('[data-calendar-duration]').innerHTML = '<a href="#weekly-overview" class="calendar-weekly-link" data-view-weekly-schedule aria-haspopup="dialog">View weekly schedule</a>';
-    panel.querySelector('[data-calendar-timeline]').innerHTML = activeTab === 'appointments' ? appointmentsPanel() : (activeTab === 'work-schedule' ? workSchedulePanel() : requestsPanel());
+    panel.querySelector('[data-calendar-duration]').textContent = activeTab === 'appointments' ? count + ' appointment' + (count === 1 ? '' : 's') : (schedulePermission() === 'none' ? 'View only' : schedulePermission() === 'self' ? 'No approval needed' : 'Approval required');
+    panel.querySelector('[data-calendar-timeline]').innerHTML = activeTab === 'appointments' ? appointmentsPanel() : requestsPanel();
     var side = document.querySelector('[data-calendar-side]');
-    side.hidden = activeTab === 'work-schedule';
-    side.innerHTML = side.hidden ? '' : contextualSide();
-    root.querySelector('.calendar-layout').classList.toggle('is-schedule-overview', activeTab === 'work-schedule');
+    side.innerHTML = contextualSide();
   }
   function openRequest(type) {
     if (schedulePermission() === 'none') return;
