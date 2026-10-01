@@ -51,6 +51,33 @@ body:has(.standard-generator[open]){overflow:hidden}
 @media(max-width:700px){.standards-page{padding:22px 16px 32px}.standards-settings-heading h1{font-size:22px}.standards-page .salon-tabs{flex-wrap:nowrap;overflow:auto;margin:20px 0 25px;padding-bottom:5px}.standards-page .salon-tabs a{white-space:nowrap;padding:11px 12px;font-size:11px}.standards-heading{flex-direction:column;gap:16px;margin-bottom:20px}.standards-heading h2,.standard-detail-heading h2{font-size:24px}.standards-actions{gap:7px}.standard-button{font-size:11px;padding:10px 12px}.standards-toolbar{gap:14px}.standards-search{width:100%}.standards-filters{gap:3px}.standards-filters button{font-size:10px;padding:9px}.standards-grid{grid-template-columns:1fr;gap:12px}.standard-card{padding:20px}.standard-card>p{min-height:0;margin-bottom:14px}.standard-card h3{font-size:16px}.standard-card-top{margin-bottom:12px}.standard-detail-layout{grid-template-columns:1fr;gap:15px}.standard-toc{position:static;padding:16px}.standard-toc nav{display:grid;grid-template-columns:1fr 1fr;gap:0 10px}.standard-section{padding:18px 16px}.standard-section-heading{gap:9px;flex-wrap:wrap}.standard-section h3{font-size:16px;flex:1;min-width:180px}.standard-section-heading .standard-tag{margin-left:38px}.standard-rules li{font-size:12px;gap:10px;line-height:1.85}.standard-section-number{min-width:27px;height:27px}.standard-editor{max-height:calc(100dvh - 20px);width:calc(100% - 20px)}.standard-editor form{max-height:calc(100dvh - 22px)}.standard-editor header,.standard-editor-body{padding:18px}.standard-editor footer{padding:14px 18px}.standard-field-row{grid-template-columns:1fr;gap:0}.standard-editor header h2{font-size:20px}.standard-edit-section{padding:13px}.standard-sync-note{font-size:10px}}
 @media print{body>.shell,body>.standard-editor,body>.standard-generator{display:none!important}body>#standards-print{display:block!important;color:#182133;font-family:Inter,Arial,sans-serif;font-size:11pt}#standards-print .print-document{break-after:page}#standards-print .print-document:last-child{break-after:auto}#standards-print h1{font-size:22pt;margin:0 0 8px}#standards-print .print-meta{color:#64748b;font-size:9pt;line-height:1.6;margin-bottom:20px}#standards-print h2{font-size:13pt;margin:20px 0 9px;break-after:avoid}#standards-print li{line-height:1.7;margin-bottom:6px;break-inside:avoid}#standards-print .print-checklist{list-style-type:square}#standards-print .print-sync-note{font-size:9pt;color:#64748b}#standards-print .print-description{line-height:1.7;margin:0 0 20px}}
 
+/* Detail navigation shares the page typography instead of native button styling. */
+.standard-back{
+  appearance:none;
+  max-width:100%;
+  min-height:44px;
+  gap:8px;
+  margin:0 0 16px -12px;
+  padding:10px 12px;
+  border:0;
+  border-radius:10px;
+  background:transparent;
+  color:var(--standard-muted);
+  font:inherit;
+  font-size:12px;
+  font-weight:600;
+  line-height:1.5;
+  text-align:left;
+  cursor:pointer;
+  transition:background-color .15s,color .15s;
+}
+.standard-back svg{width:16px;height:16px;flex:0 0 16px}
+.standard-back:hover{background:#eeecff;color:var(--standard-brand)}
+.standard-back:active{background:#e5e1ff}
+.standard-back:focus-visible{outline:2px solid var(--standard-brand);outline-offset:2px}
+.standard-detail-heading>div:first-child{min-width:0}
+.standard-detail-heading .standards-eyebrow{color:var(--standard-muted);font-weight:600;letter-spacing:1px}
+
 /* Operating Standards v2 — Salon Documents, read-only templates and trash. */
 .standards-view-tabs{display:flex;gap:5px;overflow-x:auto;margin:0 0 20px;border-bottom:1px solid var(--standard-border);scrollbar-width:none}.standards-view-tabs::-webkit-scrollbar{display:none}.standards-view-tabs button{display:inline-flex;min-height:44px;flex:0 0 auto;align-items:center;gap:8px;border:0;border-bottom:2px solid transparent;background:transparent;padding:0 14px;color:var(--standard-muted);font-size:12px;font-weight:750;cursor:pointer}.standards-view-tabs button svg{width:16px;height:16px}.standards-view-tabs button[aria-pressed=true]{border-bottom-color:var(--standard-brand);color:var(--standard-brand)}.standards-view-tabs button span{display:inline-flex;min-width:21px;height:21px;align-items:center;justify-content:center;border-radius:999px;background:#eef1f6;padding:0 6px;color:#66748b;font-size:10px}.standards-view-tabs button[aria-pressed=true] span{background:#eceaff;color:var(--standard-brand)}
 .standards-filter-selects{display:flex;align-items:flex-end;gap:9px}.standards-filter-selects label{display:grid;gap:5px;color:var(--standard-muted);font-size:9px;font-weight:800;text-transform:uppercase}.standards-filter-selects select,.standard-field select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%2364748b' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;background-size:16px;padding-right:44px!important}.standards-filter-selects select{min-width:150px;height:43px;border:1px solid var(--standard-border);border-radius:9px;outline:0;background-color:#fff;padding-left:12px;color:var(--standard-ink);font:inherit;font-size:11px;text-transform:none}.standards-filter-selects select:focus{border-color:var(--standard-brand);box-shadow:0 0 0 3px #4c43df18}
