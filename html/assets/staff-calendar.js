@@ -57,8 +57,8 @@
     return permission === 'none' ? 'View only. Your salon manages changes to your work schedule.' : permission === 'self' ? 'You can edit your own schedule without approval. Existing bookings stay protected.' : 'You can edit your own schedule. Changes need manager approval, as set by your salon.';
   }
   function scheduleActions() {
-    if (schedulePermission() === 'none') return '<section class="request-options"><h3>Need a schedule change?</h3><div class="quick-action-grid"><button type="button" data-message-manager>Message manager</button></div></section>';
-    return '<section class="request-options"><h3>Edit my schedule</h3><div class="quick-action-grid"><button type="button" data-request-day-off>Day off</button><button type="button" data-request-change-hours>Change hours</button><button type="button" data-request-break>Take break</button><button type="button" data-message-manager>Message manager</button></div></section>';
+    if (schedulePermission() === 'none') return '<section class="request-options"><h3>Need a schedule change?</h3><div class="quick-action-grid"><button type="button" data-chat-salon>Chat with salon</button></div></section>';
+    return '<section class="request-options"><h3>Edit my schedule</h3><div class="quick-action-grid"><button type="button" data-request-day-off>Day off</button><button type="button" data-request-change-hours>Change hours</button><button type="button" data-request-break>Take break</button><button type="button" data-chat-salon>Chat with salon</button></div></section>';
   }
   function approvalNotice() {
     var permission = schedulePermission();
@@ -173,6 +173,21 @@
     actionMessage = '';
     render();
     root.querySelector('[data-request-date]')?.focus();
+  }
+  function showToast(message) {
+    var toast = document.querySelector('[data-staff-calendar-toast]');
+    if (!toast) {
+      toast = document.createElement('div');
+      toast.className = 'staff-calendar-toast';
+      toast.setAttribute('data-staff-calendar-toast', '');
+      toast.setAttribute('role', 'status');
+      toast.setAttribute('aria-live', 'polite');
+      document.body.appendChild(toast);
+    }
+    toast.textContent = message;
+    toast.hidden = false;
+    clearTimeout(toast._hideTimer);
+    toast._hideTimer = setTimeout(function () { toast.hidden = true; }, 2400);
   }
   function toggleAvailability() {
     var schedule = store.getStaffSchedule(salonId, staffId, {});
@@ -311,7 +326,7 @@
     if (event.target.closest('[data-request-change-hours]')) { openRequest('change-hours'); return; }
     if (event.target.closest('[data-request-break]')) { openRequest('break'); return; }
     if (event.target.closest('[data-request-form-close]')) { requestType = ''; feedback = ''; render(); return; }
-    if (event.target.closest('[data-message-manager]')) { actionMessage = 'Manager notified about your schedule request.'; requestType = ''; activeTab = 'requests'; render(); return; }
+    if (event.target.closest('[data-chat-salon]')) { showToast('Chat with salon opened.'); return; }
     var cancel = event.target.closest('[data-request-cancel]');
     if (cancel) { store.cancelRequest(cancel.dataset.requestCancel, staffId); render(); }
   });

@@ -90,6 +90,8 @@
 .request-form textarea{width:100%;min-width:0;box-sizing:border-box;min-height:96px;resize:vertical;border:1px solid #dbe4f3;border-radius:8px;padding:10px;background:#fff;color:#18212f;font:400 14px/1.5 Inter,sans-serif}
 .request-form textarea:focus-visible{outline:2px solid #4c43df;outline-offset:2px}
 .schedule-action-message{padding:12px;border:1px solid #c7d2fe;border-radius:9px;background:#eef2ff;color:#3730a3;font-size:14px;line-height:1.5}
+.staff-calendar-toast{position:fixed;right:22px;bottom:22px;z-index:1100;max-width:min(360px,calc(100vw - 32px));box-sizing:border-box;border-radius:11px;background:#102241;padding:12px 16px;color:#fff;box-shadow:0 16px 36px #08132d47;font-size:13px;font-weight:700}
+.staff-calendar-toast[hidden]{display:none}
 .staff-weekly-dialog{width:min(760px,calc(100% - 24px));max-height:calc(100dvh - 24px);box-sizing:border-box;border:1px solid #dbe4f3;border-radius:16px;padding:20px;background:#fff;color:#18212f;font:13px/1.5 Inter,sans-serif;overflow-y:auto}
 .staff-weekly-dialog::backdrop{background:#0f172a66}
 .staff-weekly-dialog form>header{display:flex;justify-content:space-between;align-items:flex-start;gap:12px}
@@ -142,4 +144,5 @@
   .calendar-tabs button{padding-inline:8px}
   .calendar-day strong,.timeline-item>span,.calendar-booking-time{font-size:14px}
 }
+@media(max-width:600px){.staff-calendar-toast{right:16px;bottom:16px;left:16px;max-width:none;text-align:center}}
 .request-card .request-rejection-reason{color:#b42318;white-space:pre-wrap;overflow-wrap:anywhere}
