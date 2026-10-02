@@ -41,6 +41,17 @@
   // group.page === activePage  -> native group: open, sub-items drive this page's tabs
   // group.page (other page)     -> foreign group: keeps its state, links across pages
   // group without page          -> section links (no destination yet)
+  var COMMUNITY_ITEMS = [
+      { label: 'Feed', tab: 'feed' },
+      { label: 'Groups & Market', tab: 'groups' },
+      { label: 'Extra Shifts', tab: 'shift' },
+      { label: 'Deals & Coupons', tab: 'deals' },
+      { label: 'Messages & Calls', tab: 'connect' },
+      { label: 'Learning', tab: 'learning' },
+      { label: 'Jobs', tab: 'jobs' },
+      { label: 'Events', tab: 'events' }
+    ];
+
   var NAV = [
     { type: 'item', key: 'home', label: 'Home', icon: 'home' },
     { type: 'divider' },
@@ -63,16 +74,7 @@
       { label: 'Plans', tab: 'plans' },
       { label: 'Salon Settings', tab: 'settings' }
     ] },
-    { type: 'group', key: 'community', label: 'Community', icon: 'users-round', page: 'community', items: [
-      { label: 'Feed', tab: 'feed' },
-      { label: 'Groups & Market', tab: 'groups' },
-      { label: 'Extra Shifts', tab: 'shift' },
-      { label: 'Deals & Coupons', tab: 'deals' },
-      { label: 'Messages & Calls', tab: 'connect' },
-      { label: 'Learning', tab: 'learning' },
-      { label: 'Jobs', tab: 'jobs' },
-      { label: 'Events', tab: 'events' }
-    ] },
+    { type: 'group', key: 'community', label: 'Community', icon: 'users-round', page: 'community', items: COMMUNITY_ITEMS },
     { type: 'group', key: 'reward', label: 'Reward', icon: 'gift', page: 'reward', items: [
       { label: 'Overview', tab: 'overview' },
       { label: 'Earn Rules', tab: 'earn-rules' },
@@ -216,6 +218,9 @@
     if (node.type !== 'group' || node.page !== activePage || !node.items) return;
     node.items.forEach(function (it) { if (it.tab) nativeTabs.push(it.tab); });
   });
+  if (cfg.isCommunity && activePage === 'staff') {
+    nativeTabs = COMMUNITY_ITEMS.map(function (item) { return item.tab; }).concat(['profile']);
+  }
   function sidebarTab(tab) {
     // The operational POS tabs all belong to the Front Desk submenu.
     if (activePage === 'pos' && ['checkin', 'todaybooking', 'tickets', 'booking', 'customers', 'clock', 'dispatch', 'appointments', 'estimate'].indexOf(tab) !== -1) return 'front-desk';
@@ -302,6 +307,20 @@
       '<div class="sidebar-footer"><button class="logout-button" type="button"><span class="logout-icon"><i data-lucide="log-out" aria-hidden="true"></i></span><span>Sign out</span></button></div>';
   }
 
+  function renderStaffCommunityMenu() {
+    var open = !!cfg.isCommunity;
+    var items = COMMUNITY_ITEMS.slice();
+    items.splice(3, 0, { label: 'Tech Profile', tab: 'profile' });
+    return '<button class="nav-item nav-parent staff-nav-item' + (open ? ' is-expanded is-active' : '') + '" type="button" data-nav-group aria-expanded="' + open + '" aria-controls="staff-subnav-community">' +
+      iconWrap('users-round') + '<span>Community</span>' + CARET + '</button>' +
+      '<div class="nav-subnav' + (open ? '' : ' is-collapsed') + '" id="staff-subnav-community" data-nav-subnav><div class="nav-subnav-inner">' +
+      items.map(function (item) {
+        var content = '<span class="nav-subitem-dot" aria-hidden="true"></span><span>' + item.label + '</span>';
+        if (open) return '<button class="nav-subitem' + (activeTab === item.tab ? ' is-active' : '') + '" type="button" data-shell-tab="' + item.tab + '">' + content + '</button>';
+        return '<a class="nav-subitem" href="community.html?role=tech&amp;tab=' + item.tab + '">' + content + '</a>';
+      }).join('') + '</div></div>';
+  }
+
   var STAFF_SIDEBAR_HTML =
     '<div class="sidebar-panel staff-profile-panel">' +
       '<div class="staff-profile-row"><div class="staff-avatar">N2</div><div class="staff-profile-copy">' +
@@ -310,7 +329,7 @@
       '</div><i class="staff-profile-chevron" data-lucide="chevron-down" aria-hidden="true"></i></div>' +
     '</div>' +
     '<nav class="sidebar-nav staff-sidebar-nav" aria-label="Staff menu">' +
-      '<a class="nav-item staff-nav-item' + (activeTab === 'community' ? ' is-active' : '') + '" href="community.html?role=tech" data-staff-nav="community">' + iconWrap('users-round') + '<span>Community</span></a>' +
+      renderStaffCommunityMenu() +
       '<a class="nav-item staff-nav-item" href="#" data-staff-nav="home">' + iconWrap('home') + '<span>Home</span></a>' +
       '<a class="nav-item staff-nav-item' + (activeTab === 'dashboard' ? ' is-active' : '') + '" href="staff-dashboard.html" data-staff-nav="dashboard">' + iconWrap('layout-dashboard') + '<span>Dashboard</span></a>' +
       '<button class="nav-item nav-parent is-expanded staff-nav-item" type="button" data-nav-group aria-expanded="true" aria-controls="staff-subnav-workspace">' +

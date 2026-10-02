@@ -24,7 +24,7 @@ test('renders Jobs inside the existing Staff App shell', () => {
   assert.match(html, /data-jobs-root/);
   assert.match(html, /data-staff-shell[^>]*data-staff-menu-active="jobs"/);
   assert.match(html, /data-menu-key="jobs"[^>]*>Jobs<\/a>/);
-  assert.match(html, /href="#staff-jobs-screen"/);
+  assert.match(html, /href="community\.html\?role=tech&amp;tab=jobs"/);
   assert.match(html, /Community<\/a>/);
 });
 

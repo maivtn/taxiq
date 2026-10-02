@@ -13,9 +13,8 @@
   }
 
   function sidebarTab(tab) {
-    if (role === 'tech') return 'community';
     if (tab === 'mkt') return 'groups';
-    if (tab === 'profile') return 'jobs';
+    if (tab === 'profile') return role === 'tech' ? 'profile' : 'jobs';
     if (['chatgroups', 'calls', 'privacy'].indexOf(tab) !== -1) return 'connect';
     if (tab.charAt(0) === 'd' || ['pos', 'kiosk', 'tlib'].indexOf(tab) !== -1) return 'deals';
     return tab;

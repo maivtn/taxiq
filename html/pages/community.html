@@ -6659,15 +6659,19 @@
       <header class="header"></header>
       <script>
         window.NEXORA_SHELL = {
-          activePage: new URLSearchParams(location.search).get('role') === 'tech' ? 'staff' : 'community',
-          activeTab: new URLSearchParams(location.search).get('role') === 'tech' ? 'community' : 'feed',
+          activePage: 'community',
+          isCommunity: true,
+          activeTab: 'feed',
           onNavigate: function(tab) {
             if (typeof window.activateCommunityTab === 'function') window.activateCommunityTab(tab);
           }
         };
       </script>
       <script>
-        if (window.NEXORA_SHELL.activePage === 'staff') document.querySelector('aside.sidebar').classList.add('staff-sidebar');
+        if (new URLSearchParams(location.search).get('role') === 'tech') {
+          window.NEXORA_SHELL.activePage = 'staff';
+          document.querySelector('aside.sidebar').classList.add('staff-sidebar');
+        }
       </script>
       <script src="../assets/nexora-shell.js"></script>
 
