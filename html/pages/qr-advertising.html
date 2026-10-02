@@ -54,7 +54,6 @@ button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}input,
 .ctl{display:flex;flex-wrap:wrap;gap:6px;margin:6px 0 10px}.ctl button{border:1px solid var(--line);border-radius:10px;padding:6px 10px;font-weight:700;font-size:12.5px;background:#fff}.ctl button.on{background:#111827;color:#fff;border-color:#111827}
 table.t{width:100%;border-collapse:collapse;font-size:12.5px}table.t th,table.t td{padding:7px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}table.t th{font-size:11px;color:var(--mute);text-transform:uppercase}
 code{font:12px ui-monospace,Menlo,monospace;background:#F1F5F9;padding:1px 5px;border-radius:5px}
-.log{word-break:break-all;overflow-wrap:anywhere;font:12px ui-monospace,Menlo,monospace;background:#0B1220;color:#A7F3D0;border-radius:12px;padding:10px;white-space:pre-wrap;min-height:70px;max-height:190px;overflow:auto}
 .tag2{display:inline-block;font-size:10.5px;font-weight:800;border-radius:7px;padding:2px 7px;background:#EDE9FE;color:#6D28D9}
 .spot{outline:3px solid #F59E0B;outline-offset:3px;border-radius:16px}
 .stour{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;width:min(680px,94vw);background:#0B1220;color:#fff;border-radius:16px;padding:12px 14px;z-index:90;box-shadow:0 12px 40px rgba(0,0,0,.35)}
@@ -201,9 +200,6 @@ code{font:12px ui-monospace,Menlo,monospace;background:#F1F5F9;padding:1px 5px;b
  <div class="panel" id="pSearch"><h3>🔎 Search Deals hiểu câu gõ thế nào</h3>
   <p style="font-size:13px;line-height:1.55">Khách gõ tự nhiên — “<i>trà sữa gần đây</i>”, “<i>massage dưới $50</i>”, “<i>ăn tối nay</i>”. Hệ thống tách ra: <span class="tag2">ngành</span> <span class="tag2">giá tối đa</span> <span class="tag2">thời gian</span> rồi tìm trong deal đang chạy, xếp theo <b>khớp nhu cầu</b> trước, <b>gần</b> sau. Không có kết quả → mời <b>đăng mong muốn</b> bằng SĐT (✦ Deal Match), tiệm gần đó sẽ thấy nhu cầu.</p>
   <p class="note">Bộ lọc đối thủ vẫn áp khi tìm. Khách gõ đúng ngành của tiệm (vd “pedicure” ở tiệm nail) → hiện <b>ưu đãi của chính tiệm</b> trước; deal tiệm cùng ngành khác bị ẩn nếu chủ tiệm bật bộ lọc. <b>Quyết định mở cho Brian.</b></p></div>
- <div class="panel" id="pLog"><h3>🧾 Dữ liệu ghi lại (mô phỏng)</h3><div class="log" id="log"></div>
-  <p class="note" style="margin-top:8px"><code>qr_id</code> · <code>biz_id</code> · <code>anchor</code> · <code>loc_source</code> (qr_anchor / gps / zip) · <code>zip_bucket</code> · <code>screen</code> · <code>query</code> + <code>parsed</code> · <code>filtered_out</code> (số deal bị bộ lọc đối thủ ẩn) · <code>claim_id</code>.</p></div>
- <div class="panel" id="pOpen"><h3>❓ Còn chờ Brian chốt</h3><ol style="padding-left:18px;font-size:13px;line-height:1.7"><li>Bộ lọc đối thủ mặc định: cả nhóm hay chỉ cùng ngành.</li><li>Search có được hiện deal tiệm cùng ngành khi khách gõ đúng ngành đó không.</li><li>Bán kính mặc định của Deals Nearby.</li><li>Thứ tự trang chính: ① bản hiện tại, ② khám phá xuống dưới, hay ③ thanh gọn + 1 ô tài trợ + màn chờ (đề xuất).</li><li>Thêm ô “Cần đặt lịch trước” vào POS › Tạo khuyến mãi (để hệ thống kiểm được).</li><li>Chủ tiệm có được tắt ô tài trợ trên QR của mình không (đổi lại không nhận phần QR Host).</li><li>Tỷ lệ banner: giữ 50/50 hay cho tiệm chọn; đối tác chéo có trả phí không hay chỉ đổi chỗ cho nhau.</li></ol></div>
 </div>
 </div>
 </section>
@@ -248,7 +244,7 @@ const hav=(a,b,c,d)=>{const R=3958.8,r=x=>x*Math.PI/180;const dl=r(c-a),dn=r(d-b
 function anchor(){if(useGPS)return{lat:ME.lat,lng:ME.lng,src:'gps',label:ME.label,zip:ME.zip};if(zip&&ZIPS[zip])return{lat:ZIPS[zip][0],lng:ZIPS[zip][1],src:'zip',label:'ZIP '+zip+' · '+ZIPS[zip][2],zip};return{lat:HOST.lat,lng:HOST.lng,src:'qr_anchor',label:'Quanh '+HOST.name,zip:HOST.zip}}
 function compHidden(d){if(d.own)return false;if(COMP==='off')return false;if(COMP==='ind')return d.ind===HOST.ind;return d.grp===HOST.grp}
 function withDist(){const A=anchor();return D.map(d=>({...d,mi:hav(A.lat,A.lng,d.lat,d.lng)}))}
-function log(o){const A=anchor();const rec={t:new Date().toLocaleTimeString('vi-VN'),qr_id:HOST.qr,biz_id:HOST.id,loc_source:A.src,zip_bucket:A.zip,...o};const el=$('#log');el.textContent=JSON.stringify(rec)+'\n'+el.textContent}
+function log(){}
 /* ---------- render ---------- */
 function stub(d){return`<div class="st" style="background:${d.th}">${esc(d.big)}<small>${esc(d.sm).toUpperCase()}</small></div>`}
 function card(d,slot){if(d.spon&&slot)log({event:'ad_impression',slot,deal:d.id});const type=d.qty?`<span class="tg cp">🎟️ COUPON · còn ${d.left}/${d.qty}</span>`:`<span class="tg deal">🏷️ DEAL</span>`;
@@ -504,8 +500,6 @@ const TOUR=[
  {sel:'#sList',do:()=>{q='massage dưới $50';draw()},vi:'“massage dưới $50” trên QR tiệm nail: spa cùng nhóm Làm đẹp nên bị bộ lọc đối thủ ẩn — hệ thống báo rõ số kết quả bị ẩn và mời đăng mong muốn.',en:'“massage under $50” on a nail salon QR: same-group spa is hidden by the competitor filter; the count is shown.'},
  {sel:'#sList',do:()=>{q='trà sữa tối nay';draw()},vi:'“trà sữa tối nay” → đồ uống, buổi tối → ra deal trà sữa mua 1 tặng 1 sau 3pm.',en:'“milk tea tonight” → drinks, evening → BOGO boba after 3pm.'},
  {sel:'#wishBox',do:()=>{q='học piano';draw()},vi:'Không có deal khớp → mời để lại SĐT đăng mong muốn (Deal Match). Tiệm gần đó thấy nhu cầu, khách nhận 1 tin khi có deal.',en:'No match → leave a phone number as a wish (Deal Match).'},
- {sel:'#pLog',vi:'Mỗi lượt ghi: qr_id, nguồn vị trí (qr_anchor / gps / zip), câu tìm và cách hiểu, số deal bị bộ lọc ẩn — đủ để đo QR nào, câu tìm nào ra khách.',en:'Each event logs qr_id, location source, query + parse, filtered count.'},
- {sel:'#pOpen',vi:'4 quyết định cho Brian: mức bộ lọc đối thủ, Search có hiện tiệm cùng ngành không, bán kính mặc định, thứ tự trang chính.',en:'Four open decisions for Brian.'},
 ];
 let ti=0,tRun=false,tPaused=false,tStart=0,raf,DUR=9000;
 function spot(el){$$('.spot').forEach(x=>x.classList.remove('spot'));if(el){el.classList.add('spot');el.scrollIntoView({behavior:'smooth',block:'center'})}}
