@@ -1598,6 +1598,7 @@
   }
 
   function activateCommunityTab(tabId) {
+    if (window.navigateCommunityHub && window.navigateCommunityHub(tabId)) return tabId;
     var tabs = document.querySelectorAll('[data-tab-target]');
     var pageTabs = document.querySelectorAll('.page-tabs [role="tab"]');
     var panels = document.querySelectorAll('[data-tab-panel]');

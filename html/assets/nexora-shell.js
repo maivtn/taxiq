@@ -65,7 +65,10 @@
     ] },
     { type: 'group', key: 'community', label: 'Community', icon: 'users-round', page: 'community', items: [
       { label: 'Feed', tab: 'feed' },
-      { label: 'Groups', tab: 'groups' },
+      { label: 'Groups & Market', tab: 'groups' },
+      { label: 'Extra Shifts', tab: 'shift' },
+      { label: 'Deals & Coupons', tab: 'deals' },
+      { label: 'Messages & Calls', tab: 'connect' },
       { label: 'Learning', tab: 'learning' },
       { label: 'Jobs', tab: 'jobs' },
       { label: 'Events', tab: 'events' }
@@ -307,6 +310,7 @@
       '</div><i class="staff-profile-chevron" data-lucide="chevron-down" aria-hidden="true"></i></div>' +
     '</div>' +
     '<nav class="sidebar-nav staff-sidebar-nav" aria-label="Staff menu">' +
+      '<a class="nav-item staff-nav-item' + (activeTab === 'community' ? ' is-active' : '') + '" href="community.html?role=tech" data-staff-nav="community">' + iconWrap('users-round') + '<span>Community</span></a>' +
       '<a class="nav-item staff-nav-item" href="#" data-staff-nav="home">' + iconWrap('home') + '<span>Home</span></a>' +
       '<a class="nav-item staff-nav-item' + (activeTab === 'dashboard' ? ' is-active' : '') + '" href="staff-dashboard.html" data-staff-nav="dashboard">' + iconWrap('layout-dashboard') + '<span>Dashboard</span></a>' +
       '<button class="nav-item nav-parent is-expanded staff-nav-item" type="button" data-nav-group aria-expanded="true" aria-controls="staff-subnav-workspace">' +

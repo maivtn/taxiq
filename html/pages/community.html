@@ -6644,6 +6644,12 @@
   </style>
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/community-page.css">
+  <link rel="stylesheet" href="../assets/staff-shell.css">
+  <style>
+    #community-hub { display:block; width:100%; height:calc(100dvh - 110px); min-height:520px; border:0; border-radius:16px; }
+    #community-hub[hidden], body.community-hub-active .blank-stage { display:none; }
+    @media (max-width:767px) { #community-hub { height:calc(100dvh - 90px); min-height:420px; } }
+  </style>
 </head>
 <body>
   <div class="shell">
@@ -6653,16 +6659,20 @@
       <header class="header"></header>
       <script>
         window.NEXORA_SHELL = {
-          activePage: 'community',
-          activeTab: 'feed',
+          activePage: new URLSearchParams(location.search).get('role') === 'tech' ? 'staff' : 'community',
+          activeTab: new URLSearchParams(location.search).get('role') === 'tech' ? 'community' : 'feed',
           onNavigate: function(tab) {
             if (typeof window.activateCommunityTab === 'function') window.activateCommunityTab(tab);
           }
         };
       </script>
+      <script>
+        if (window.NEXORA_SHELL.activePage === 'staff') document.querySelector('aside.sidebar').classList.add('staff-sidebar');
+      </script>
       <script src="../assets/nexora-shell.js"></script>
 
       <main class="content" aria-label="Community content">
+        <iframe id="community-hub" title="Nexora Community" hidden></iframe>
         <section class="blank-stage">
           <div class="page-heading">
             <div class="community-heading-row">
@@ -7081,16 +7091,6 @@
   </script>
 
   <script src="../assets/community-page.js"></script>
-  <script>
-    var communityTab = 'feed';
-    try {
-      var requestedCommunityTab = new URLSearchParams(window.location.search).get('tab');
-      if (['feed', 'groups', 'learning', 'jobs', 'events'].indexOf(requestedCommunityTab) !== -1) {
-        communityTab = requestedCommunityTab;
-      }
-    } catch (error) {}
-    activateCommunityTab(communityTab);
-    if (window.NEXORA_SHELL && window.NEXORA_SHELL.setActiveTab) window.NEXORA_SHELL.setActiveTab(communityTab);
-  </script>
+  <script src="../assets/community-integration.js"></script>
 </body>
 </html>
