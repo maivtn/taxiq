@@ -2485,6 +2485,15 @@
   window.activateCommunityTab = activateCommunityTab;
   window.showCommunityNotice = showCommunityNotice;
 
+  if (window.NEXORA_COMMUNITY_MODULE === 'learning-events') {
+    bindDialogControls();
+    bindLearningControls();
+    bindEventControls();
+    renderCourses();
+    renderEvents();
+    return;
+  }
+
   bindDialogControls();
   bindFeedControls();
   bindGroupControls();

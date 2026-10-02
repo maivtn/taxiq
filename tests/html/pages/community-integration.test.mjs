@@ -73,21 +73,53 @@ for (const role of ['owner', 'tech']) {
   });
 }
 
-test('Learning stays visible during iframe load and routes preserve staff role', () => {
+test('Learning and Events keep the new hub visible and preserve the staff role', () => {
   const dom = new JSDOM('<iframe id="community-hub" hidden></iframe><section class="blank-stage"></section>', {url:'https://demo.test/html/pages/community.html?role=tech&tab=learning',runScripts:'outside-only'});
   const {window} = dom;
   window.NEXORA_SHELL = {setActiveTab() {}};
   window.activateCommunityTab = tab => window.navigateCommunityHub(tab);
   window.eval(read('../assets/community-integration.js'));
   const frame = window.document.getElementById('community-hub');
-  assert.equal(frame.hidden, true);
-  assert.equal(frame.getAttribute('src'), null);
-  window.activateCommunityTab('jobs');
+  const initialSource = frame.src;
   assert.equal(frame.hidden, false);
   assert.equal(new URL(frame.src).searchParams.get('role'), 'tech');
-  window.activateCommunityTab('learning');
-  window.dispatchEvent(new window.MessageEvent('message', {source:frame.contentWindow, origin:window.location.origin, data:{type:'nexora-community-route',route:'feed'}}));
-  assert.equal(frame.hidden, true);
+  assert.equal(new URL(frame.src).searchParams.get('tab'), 'learning');
+  for (const tab of ['events', 'jobs', 'learning']) {
+    window.activateCommunityTab(tab);
+    assert.equal(frame.hidden, false);
+    assert.equal(frame.src, initialSource, 'switching sections must retain the same hub');
+    assert.equal(window.document.body.classList.contains('community-hub-active'), true);
+    assert.equal(new URL(window.location.href).searchParams.get('tab'), tab);
+  }
+  window.dispatchEvent(new window.MessageEvent('message', {source:frame.contentWindow, origin:window.location.origin, data:{type:'nexora-community-route',route:'learn'}}));
   assert.equal(new URL(window.location.href).searchParams.get('tab'), 'learning');
+  dom.window.close();
+});
+
+test('the embedded Learning and Events module retains course progress across section changes', () => {
+  const dom = new JSDOM(read('community-learning-events.html'), {url:'https://demo.test/html/pages/community-learning-events.html?role=tech&view=learning',runScripts:'outside-only'});
+  const {window} = dom;
+  window.NEXORA_COMMUNITY_MODULE = 'learning-events';
+  window.eval(read('../assets/community-page.js'));
+  window.eval(read('../assets/community-learning-events.js'));
+  const learning = window.document.getElementById('panel-learning');
+  const events = window.document.getElementById('panel-events');
+  assert.equal(learning.hidden, false);
+  assert.equal(events.hidden, true);
+  assert.match(learning.textContent, /Career development/);
+  const progress = () => Number(learning.querySelector('[role="progressbar"]').getAttribute('aria-valuenow'));
+  const before = progress();
+  learning.querySelector('[data-course-grid] [data-course-continue]').click();
+  assert.equal(progress(), Math.min(100, before + 10));
+  function show(view) {
+    window.dispatchEvent(new window.MessageEvent('message', {source:window.parent, origin:window.location.origin, data:{cmd:'view',v:view}}));
+  }
+  show('events');
+  assert.equal(learning.hidden, true);
+  assert.equal(events.hidden, false);
+  assert.ok(events.querySelector('[data-event-select]'));
+  show('learning');
+  assert.equal(learning.hidden, false);
+  assert.equal(progress(), Math.min(100, before + 10));
   dom.window.close();
 });

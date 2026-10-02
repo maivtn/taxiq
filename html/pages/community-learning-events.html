@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nexora Community — Learning & Events</title>
+  <script>
+    if (window.parent === window) {
+      const params = new URLSearchParams(window.location.search);
+      const page = new URL('community.html', window.location.href);
+      page.searchParams.set('role', params.get('role') === 'tech' ? 'tech' : 'owner');
+      page.searchParams.set('tab', params.get('view') === 'events' ? 'events' : 'learning');
+      window.location.replace(page.href);
+    }
+  </script>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/community-page.css">
+  <link rel="stylesheet" href="../assets/community-learning-events.css">
+</head>
+<body>
+  <main class="community-module" aria-label="Community Learning and Events">
+<section class="tab-panel" id="panel-learning" data-tab-panel="learning" role="tabpanel" aria-label="Community Learning" hidden="">
+              <div class="community-panel-head"><div><span class="community-eyebrow">Owner education</span><h2>Learning</h2><p>Build stronger operations, marketing, and teams.</p></div></div>
+              <article class="learning-hero community-card"><div><span>Recommended for your salon</span><h3>Turn first-time guests into regulars</h3><p>Build a follow-up rhythm that improves retention without discounting.</p><button class="community-primary" type="button" data-course-continue="course-retention">Continue learning</button></div><strong>65%</strong></article>
+              <div class="community-filter-row" aria-label="Course filters"><button class="is-active" type="button" aria-pressed="true" data-course-filter="all">All</button><button type="button" aria-pressed="false" data-course-filter="operations">Operations</button><button type="button" aria-pressed="false" data-course-filter="marketing">Marketing</button><button type="button" aria-pressed="false" data-course-filter="team-management">Team Management</button><button type="button" aria-pressed="false" data-course-filter="customer-experience">Customer Experience</button></div>
+              <div class="learning-layout"><div><h3>Continue Learning</h3><div class="course-grid" data-course-grid=""></div></div><aside class="community-side-stack"><section class="community-card learning-workshop"><h3>Upcoming live workshop</h3><strong>Build a high-performing front desk</strong><p>Aug 12, 2026 · 10:00 AM · 45 min</p><button type="button" data-learning-workshop="">Reserve seat</button></section><section class="community-card learning-saved"><h3>Saved resources</h3><div data-saved-course-list=""></div></section></aside></div>
+              <div class="community-dialog-backdrop" data-share-course-dialog="" hidden=""><section class="community-dialog" role="dialog" aria-modal="true" aria-labelledby="share-course-title"><header><h2 id="share-course-title">Share to Staff Group</h2><button type="button" aria-label="Close Share Course" data-share-course-close="" data-dialog-close="">×</button></header><form data-share-course-form=""><label>Staff group<select name="courseGroup" data-staff-group-options=""></select></label><p class="community-field-error" data-share-course-error="" aria-live="polite"></p><footer><button type="button" data-share-course-close="" data-dialog-close="">Cancel</button><button class="community-primary" type="submit">Share course</button></footer></form></section></div>
+            </section>
+<section class="tab-panel" id="panel-events" data-tab-panel="events" role="tabpanel" aria-label="Community Events" hidden="">
+              <div class="community-panel-head"><div><span class="community-eyebrow">Salon calendar</span><h2>Events</h2><p>Plan training, customer experiences, promotions, and networking.</p></div><button class="community-primary" type="button" data-create-event-open="">Create Event</button></div>
+              <div class="event-toolbar"><div class="community-filter-row"><button class="is-active" type="button" aria-pressed="true" data-event-filter="all">All</button><button type="button" aria-pressed="false" data-event-filter="staff-training">Staff Training</button><button type="button" aria-pressed="false" data-event-filter="customer-event">Customer Event</button><button type="button" aria-pressed="false" data-event-filter="promotion">Promotion</button><button type="button" aria-pressed="false" data-event-filter="industry">Industry</button></div><div class="event-view-switch"><button class="is-active" type="button" aria-pressed="true" data-event-view="list">List</button><button type="button" aria-pressed="false" data-event-view="calendar">Calendar</button></div></div>
+              <div class="event-layout"><div data-event-list=""></div><div data-event-calendar="" hidden=""></div><aside class="community-card event-detail" data-event-detail=""><h3>Event details</h3><p>Select an event to view RSVP, Attendees, Linked group, and Reminder status.</p></aside></div>
+              <div class="community-dialog-backdrop" data-create-event-dialog="" hidden=""><section class="community-dialog" role="dialog" aria-modal="true" aria-labelledby="create-event-title"><header><h2 id="create-event-title">Create Event</h2><button type="button" aria-label="Close Create Event" data-dialog-close="">×</button></header><form data-create-event-form=""><label>Title<input name="eventTitle" required=""></label><label>Description<textarea name="eventDescription"></textarea></label><label>Type<select name="eventType"><option value="staff-training">Staff Training</option><option value="customer-event">Customer Event</option><option value="promotion">Promotion</option><option value="industry">Industry</option></select></label><label>Starts<input name="eventStart" type="datetime-local" required=""></label><label>Ends<input name="eventEnd" type="datetime-local" required=""></label><label>Mode<select name="eventMode"><option value="in-person">In person</option><option value="online">Online</option></select></label><label>Location<input name="eventLocation"></label><label>Audience<select name="eventAudience" data-event-group-options=""></select></label><label>Capacity<input name="eventCapacity" type="number" min="1" value="20"></label><label class="event-check"><input name="eventRsvp" type="checkbox" checked=""> RSVP required</label><label class="event-check"><input name="eventReminder" type="checkbox" checked=""> Send reminder</label><p class="community-field-error" data-event-form-error="" aria-live="polite"></p><footer><button type="button" data-dialog-close="">Cancel</button><button class="community-primary" type="submit">Create Event</button></footer></form></section></div>
+            </section>
+  </main>
+  <div class="community-notice" data-community-notice role="status" aria-live="polite" hidden></div>
+  <script>window.NEXORA_COMMUNITY_MODULE = 'learning-events';</script>
+  <script src="../assets/community-page.js"></script>
+  <script src="../assets/community-learning-events.js"></script>
+</body>
+</html>

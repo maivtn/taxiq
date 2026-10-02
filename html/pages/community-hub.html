@@ -173,8 +173,6 @@ body.lang-en #wn ul{display:none}body.lang-en #wn p{font-size:13.5px!important;c
       <div style="font-size:34px">📜</div><h3 style="font-size:17px;margin-top:6px">Đồng ý Điều khoản cộng đồng để dùng mục này</h3>
       <p style="color:var(--mute);margin-top:6px;font-size:13.5px">Chỉ cần đồng ý <b>một lần</b> — dùng được Bảng tin, Nhóm & Chợ, Việc làm, Ca làm thêm, Tin nhắn & Gọi.</p>
       <button class="btn" id="gateBtn" style="margin-top:14px">Xem & đồng ý điều khoản</button></div></div>
-    <div class="ph hidden" id="phLearn"><div class="card"><h3 style="font-size:16px">📚 Học tập</h3><p style="color:var(--mute);margin-top:6px">Giữ nguyên module Học tập đang có trong app. Bản gộp này chỉ thêm các phần mới đã thảo luận.</p></div></div>
-    <div class="ph hidden" id="phEvents"><div class="card"><h3 style="font-size:16px">📅 Sự kiện</h3><p style="color:var(--mute);margin-top:6px">Giữ nguyên module Sự kiện đang có trong app.</p></div></div>
   </div>
 </main>
 </div>
@@ -352,7 +350,7 @@ const dec=b=>new TextDecoder().decode(Uint8Array.from(atob(b),c=>c.charCodeAt(0)
 /* route → module + in-module view */
 const ROUTES={feed:{m:'feed',v:'feed',t:'Bảng tin'},groups:{m:'feed',v:'groups',seg:'market'},mkt:{m:'feed',v:'mkt',seg:'market'},profile:{m:'profile',v:'profile',seg:'jobs'},
  chatgroups:{m:'connect',v:'group',seg:'msgs'},deals:{m:'deals',v:'explore',seg:'deals'},dcats:{m:'deals',v:'cats',seg:'deals'},dwish:{m:'deals',v:'wish',seg:'deals'},dmatch:{m:'match',seg:'deals'},dopen:{m:()=>role==='owner'?'open':'deals',v:'openings',seg:'deals'},dcamp:{m:'camp',seg:'deals'},dwallet:{m:'deals',v:'wallet',seg:'deals'},dcreate:{m:'promo',v:'create',seg:'deals'},dlast:{m:'lastmin',v:'cust',seg:'deals',t:'⚡ Last minute'},dlastb:{m:'lastmin',v:'biz',seg:'deals',t:'⚡ Last minute · tiệm'},dlastt:{m:'lastmin',v:'ind',seg:'deals',t:'⚡ Giờ trống của tôi'},pos:{m:'promo',v:'home',seg:'pos'},kiosk:{m:'kiosk',v:'checkin',seg:'pos'},tlib:{m:'tlib',v:'lib',seg:'pos'},dmanage:{m:'promo',v:'prog',seg:'deals',alt:'dcamp'},dredeem:{m:'deals',v:'redeem',seg:'deals'},calls:{m:'connect',v:'calls',seg:'msgs'},privacy:{m:'connect',v:'me',seg:'msgs'},
- jobs:{m:()=>role==='owner'?'jobsOwner':'jobsTech',seg:'jobs'},shift:{m:'shift',t:'Ca làm thêm'},connect:{m:'connect',v:'dm',seg:'msgs'},learn:{ph:'#phLearn'},events:{ph:'#phEvents'}};
+ jobs:{m:()=>role==='owner'?'jobsOwner':'jobsTech',seg:'jobs'},shift:{m:'shift',t:'Ca làm thêm'},connect:{m:'connect',v:'dm',seg:'msgs'},learn:{m:'learningEvents',v:'learning'},events:{m:'learningEvents',v:'events'}};
 const SEGS={pos:[['pos','🏷️ POS · Promotions'],['kiosk','📱 Máy check-in'],['tlib','🧩 Template Library · admin NEXORA']],deals:[['deals','🔥 Deal gần bạn'],['dcats','🏷️ Coupon theo ngành'],['dmatch','✦ Deal Match'],['dopen','🎊 Khai trương'],['dlast','⚡ Last minute'],['dlastb','⚡ Last minute · tiệm','o'],['dlastt','⚡ Giờ trống của tôi','t'],['dcamp','📈 Chiến dịch','o'],['dwallet','🎟️ Ví coupon','t'],['dcreate','🧾 Tạo trong POS ↗','o'],['dredeem','🧾 Quầy redeem','o']],market:[['groups','👥 Nhóm ngành'],['mkt','🛍️ Rao vặt · Mua bán']],jobs:[['jobs','💼 Việc làm'],['profile','🪪 Hồ sơ thợ']],msgs:[['connect','💬 Tin nhắn'],['chatgroups','👥 Nhóm chat'],['calls','📞 Cuộc gọi'],['privacy','🛡️ Riêng tư & NEXORA ID']]};
 const SRC={lastmin:'lastmin',promo:'promo',kiosk:'kiosk',tlib:'tlib',match:'match',open:'open',camp:'camp',deals:'deals',profile:'jobsOwner',feed:'feed',jobsTech:'jobsTech',jobsOwner:'jobsOwner',shift:'shift',connect:'connect'};
 const accountRole=new URLSearchParams(location.search).get('role')==='tech'?'tech':'owner';
@@ -360,7 +358,7 @@ let role=accountRole,route='feed',frames={};
 function frame(key){if(frames[key])return frames[key];const f=document.createElement('iframe');f.dataset.key=key;f.title=key;f.className='hidden';
   const load=document.createElement('div');load.className='loading';load.textContent='Đang tải…';$('#stage').appendChild(load);
   f.onload=()=>{f._ready=true;load.remove();post(f,{cmd:'lang',lang});post(f,{cmd:'role',role});post(f,{cmd:'admin',on:admin});if(consent)post(f,{cmd:'consentSync'});(f._q||[]).forEach(m=>post(f,m));f._q=[]};
-  f.srcdoc=dec(MODS[SRC[key]]);$('#stage').appendChild(f);frames[key]=f;return f}
+  if(key==='learningEvents'){f.title='Community — Học tập & Sự kiện';f.src='community-learning-events.html?role='+role+'&view='+(route==='events'?'events':'learning')}else f.srcdoc=dec(MODS[SRC[key]]);$('#stage').appendChild(f);frames[key]=f;return f}
 function bcast(m){Object.values(frames).forEach(f=>post(f,m))}
 function post(f,m){if(!f._ready){(f._q=f._q||[]).push(m);return}try{f.contentWindow.postMessage(m,'*')}catch(e){}}
 let curFrame=null;
@@ -686,13 +684,10 @@ badge();
 (function () {
   const originalGo = go;
   go = function (requested) {
+    if (requested === 'learning') requested = 'learn';
     if (!Object.prototype.hasOwnProperty.call(ROUTES, requested)) requested = 'feed';
-    if (requested === 'learn' || requested === 'events') {
-      parent.postMessage({type:'nexora-community-route', route:requested === 'learn' ? 'learning' : requested}, location.origin);
-      return;
-    }
     originalGo(requested);
-    parent.postMessage({type:'nexora-community-route', route:route}, location.origin);
+    parent.postMessage({type:'nexora-community-route', route:route==='learn'?'learning':route}, location.origin);
   };
   window.addEventListener('message', function (event) {
     if (event.source !== parent || event.origin !== location.origin) return;

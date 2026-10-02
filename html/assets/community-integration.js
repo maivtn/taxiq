@@ -9,6 +9,7 @@
   var current = validRoute(params.get('tab'));
 
   function validRoute(tab) {
+    if (tab === 'learn') tab = 'learning';
     return routes.indexOf(tab) === -1 ? 'feed' : tab;
   }
 
@@ -30,16 +31,15 @@
 
   function show(tab, fromFrame) {
     current = validRoute(tab);
-    var legacy = current === 'learning' || current === 'events';
-    frame.hidden = legacy;
-    document.body.classList.toggle('community-hub-active', !legacy);
+    frame.hidden = false;
+    document.body.classList.add('community-hub-active');
     syncLocation(current);
-    if (!legacy && !frame.getAttribute('src')) {
+    if (!frame.getAttribute('src')) {
       frame.src = 'community-hub.html?role=' + role + '&tab=' + encodeURIComponent(current);
-    } else if (!legacy && ready && !fromFrame) {
+    } else if (ready && !fromFrame) {
       frame.contentWindow.postMessage({type: 'nexora-community-navigate', route: current}, window.location.origin);
     }
-    return !legacy;
+    return true;
   }
 
   window.navigateCommunityHub = function (tab) { return show(tab, false); };
@@ -47,12 +47,12 @@
     if (event.source !== frame.contentWindow || event.origin !== window.location.origin) return;
     if (frame.hidden || !event.data || event.data.type !== 'nexora-community-route') return;
     var tab = validRoute(event.data.route);
-    if (!show(tab, true)) window.activateCommunityTab(tab);
+    show(tab, true);
   });
   frame.addEventListener('load', function () {
     ready = true;
     if (!frame.hidden) show(current, false);
   });
-  // Load lazily when opening an existing Learning or Events deep link.
+  // Every Community section stays inside the same hub.
   window.activateCommunityTab(current);
 })();
