@@ -159,7 +159,7 @@
     <footer class="editor-footer"><div><p id="promotion-error" class="promo-error" role="alert"></p><p class="promo-note" id="save-note" data-i18n="saveNote">Save draft keeps the promotion disabled.</p></div><div class="editor-footer-actions"><button type="button" class="promo-button promotion-footer-cancel" data-close-editor data-i18n="cancel">Cancel</button><button type="button" class="promo-button promotion-footer-draft" id="save-promotion-draft">Save draft</button><button type="submit" class="promo-button promotion-footer-save" id="save-promotion">Save promotion</button><button type="button" class="promo-button primary promotion-footer-submit" id="submit-promotion-approval">Submit for approval</button></div></footer>
   </form>
 </dialog>
-<dialog id="ai-banner-dialog" class="promo-poster-dialog phase-ai-dialog" aria-labelledby="ai-banner-title">
+<dialog id="ai-banner-dialog" lang="en-US" class="promo-poster-dialog phase-ai-dialog" aria-labelledby="ai-banner-title">
   <header class="editor-header"><div><p class="promo-eyebrow">AI Ads · Quick Create</p><h2 id="ai-banner-title">AI Banner Generator</h2></div><button type="button" class="promo-close" id="close-ai-banner" aria-label="Close AI banner generator"><span data-icon="x"></span></button></header>
   <div class="phase-ai-body">
     <div class="phase-ai-layout">
@@ -167,12 +167,12 @@
         <div class="phase-ai-card-heading">
           <h3 class="phase-ai-title"><span data-icon="sparkles"></span>AI Banner Generator</h3>
           <div class="phase-ai-quality">
-            <button type="button" class="phase-ai-quality-trigger" id="ai-quality-trigger"><span data-icon="settings-2"></span><span>Effort:</span><b id="ai-quality-label">Medium</b></button>
+            <button type="button" class="phase-ai-quality-trigger" id="ai-quality-trigger"><span data-icon="settings-2"></span><span>Quality:</span><b id="ai-quality-label">Medium</b></button>
             <div class="phase-ai-quality-menu" id="ai-quality-menu" hidden>
               <span class="phase-ai-quality-menu-title">Image quality</span>
               <button type="button" data-ai-quality="low"><span data-icon="gauge"></span><span>Low · 1 credit</span></button>
-              <button type="button" class="selected" data-ai-quality="medium"><span data-icon="gauge"></span><span>Medium · 2 credit</span></button>
-              <button type="button" data-ai-quality="high"><span data-icon="sparkles"></span><span>High · 4 credit</span></button>
+              <button type="button" class="selected" data-ai-quality="medium"><span data-icon="gauge"></span><span>Medium · 2 credits</span></button>
+              <button type="button" data-ai-quality="high"><span data-icon="sparkles"></span><span>High · 4 credits</span></button>
             </div>
           </div>
         </div>
@@ -185,68 +185,68 @@
             <button type="button" class="phase-ai-history-swatch phase-template-rose" data-ai-history="rose" aria-label="Use rose generated image"></button>
             <button type="button" class="phase-ai-history-swatch phase-template-blue" data-ai-history="blue" aria-label="Use blue generated image"></button>
           </div>
-          <label class="phase-ai-reference-upload" id="ai-reference-upload"><span data-icon="image"></span><span id="ai-reference-text">Choose or upload a reference image</span><span class="phase-ai-file-meta">JPG, PNG, WEBP up to 5MB · 3:1 ratio crop</span><input type="file" id="ai-reference-file" accept="image/png,image/jpeg,image/webp"></label>
+          <label class="phase-ai-reference-upload" id="ai-reference-upload"><span data-icon="image"></span><span id="ai-reference-text">Choose or upload a reference image</span><span class="phase-ai-file-meta">JPG, PNG, or WebP up to 5 MB · 3:1 crop</span><input type="file" id="ai-reference-file" accept="image/png,image/jpeg,image/webp"></label>
           <div class="phase-ai-reference-preview" id="ai-reference-preview" hidden><img id="ai-reference-preview-image" alt="Selected reference"><strong id="ai-reference-name"></strong><button type="button" id="remove-ai-reference">Remove</button></div>
         </div>
 
-        <label class="phase-ai-prompt"><span class="phase-ai-label">Describe your ad idea (Prompt) *</span><textarea id="ai-banner-prompt" rows="4" placeholder="Describe colors, text, layout, industry, style..."></textarea></label>
+        <label class="phase-ai-prompt"><span class="phase-ai-label">Describe your ad idea (prompt) *</span><textarea id="ai-banner-prompt" rows="4" placeholder="Describe colors, text, layout, industry, style..."></textarea></label>
 
         <section class="phase-ai-brand" aria-labelledby="ai-brand-title">
-          <h3 class="phase-ai-brand-title" id="ai-brand-title">🎨 Thương hiệu &amp; ngành</h3>
-          <label class="phase-ai-brand-field"><span>Ngành (từ Salon Settings)</span><select id="ai-brand-industry">
-            <optgroup label="💅 Làm đẹp &amp; chăm sóc cá nhân">
-              <option value="💅 Nail" selected>💅 Nail</option><option value="🦶 Pedicure / chân">🦶 Pedicure / chân</option><option value="💆 Spa &amp; Massage">💆 Spa &amp; Massage</option><option value="👁️ Mi &amp; chân mày">👁️ Mi &amp; chân mày</option><option value="💇 Tóc &amp; salon">💇 Tóc &amp; salon</option><option value="💈 Barber / tóc nam">💈 Barber / tóc nam</option><option value="🧖 Da &amp; facial">🧖 Da &amp; facial</option><option value="🖊️ Phun xăm / PMU / xăm">🖊️ Phun xăm / PMU / xăm</option><option value="🧴 Thẩm mỹ y khoa">🧴 Thẩm mỹ y khoa</option><option value="🪒 Wax / tẩy lông">🪒 Wax / tẩy lông</option><option value="🏋️ Gym &amp; thể hình">🏋️ Gym &amp; thể hình</option><option value="🧘 Yoga &amp; pilates">🧘 Yoga &amp; pilates</option><option value="🥗 Giảm cân &amp; dinh dưỡng">🥗 Giảm cân &amp; dinh dưỡng</option><option value="➕ Khác (Làm đẹp)">➕ Khác (Làm đẹp)</option>
+          <h3 class="phase-ai-brand-title" id="ai-brand-title">🎨 Brand &amp; industry</h3>
+          <label class="phase-ai-brand-field"><span>Industry (from Salon Settings)</span><select id="ai-brand-industry">
+            <optgroup label="💅 Beauty &amp; personal care">
+              <option value="💅 Nail" selected>💅 Nail salons</option><option value="🦶 Pedicure / chân">🦶 Pedicures &amp; foot care</option><option value="💆 Spa &amp; Massage">💆 Spas &amp; massage</option><option value="👁️ Mi &amp; chân mày">👁️ Lashes &amp; brows</option><option value="💇 Tóc &amp; salon">💇 Hair salons</option><option value="💈 Barber / tóc nam">💈 Barbershops</option><option value="🧖 Da &amp; facial">🧖 Skin care &amp; facials</option><option value="🖊️ Phun xăm / PMU / xăm">🖊️ Permanent makeup &amp; tattoos</option><option value="🧴 Thẩm mỹ y khoa">🧴 Medical spas</option><option value="🪒 Wax / tẩy lông">🪒 Waxing &amp; hair removal</option><option value="🏋️ Gym &amp; thể hình">🏋️ Gyms &amp; fitness</option><option value="🧘 Yoga &amp; pilates">🧘 Yoga &amp; Pilates</option><option value="🥗 Giảm cân &amp; dinh dưỡng">🥗 Weight loss &amp; nutrition</option><option value="➕ Khác (Làm đẹp)">➕ Other beauty services</option>
             </optgroup>
-            <optgroup label="🍜 Ăn uống">
-              <option value="🍜 Nhà hàng / quán ăn">🍜 Nhà hàng / quán ăn</option><option value="🥖 Bánh mì / ăn nhanh">🥖 Bánh mì / ăn nhanh</option><option value="🧋 Cà phê / trà sữa">🧋 Cà phê / trà sữa</option><option value="🎂 Bánh / tiệc ngọt">🎂 Bánh / tiệc ngọt</option><option value="🍲 Lẩu · nướng · buffet">🍲 Lẩu · nướng · buffet</option><option value="🍗 Hải sản">🍗 Hải sản</option><option value="🌿 Chay">🌿 Chay</option><option value="🚚 Food truck">🚚 Food truck</option><option value="🍻 Bar · pub · karaoke">🍻 Bar · pub · karaoke</option><option value="🏛️ Nhà hàng tiệc cưới">🏛️ Nhà hàng tiệc cưới</option><option value="🍽️ Catering / đặt tiệc">🍽️ Catering / đặt tiệc</option><option value="🥡 Đồ ăn nhà làm / online">🥡 Đồ ăn nhà làm / online</option><option value="➕ Khác (Ăn uống)">➕ Khác (Ăn uống)</option>
+            <optgroup label="🍜 Food &amp; beverage">
+              <option value="🍜 Nhà hàng / quán ăn">🍜 Restaurants &amp; eateries</option><option value="🥖 Bánh mì / ăn nhanh">🥖 Sandwiches &amp; fast food</option><option value="🧋 Cà phê / trà sữa">🧋 Coffee &amp; bubble tea</option><option value="🎂 Bánh / tiệc ngọt">🎂 Bakeries &amp; desserts</option><option value="🍲 Lẩu · nướng · buffet">🍲 Hot pot, BBQ &amp; buffets</option><option value="🍗 Hải sản">🍗 Seafood</option><option value="🌿 Chay">🌿 Vegetarian &amp; vegan</option><option value="🚚 Food truck">🚚 Food trucks</option><option value="🍻 Bar · pub · karaoke">🍻 Bars, pubs &amp; karaoke</option><option value="🏛️ Nhà hàng tiệc cưới">🏛️ Wedding &amp; banquet venues</option><option value="🍽️ Catering / đặt tiệc">🍽️ Catering &amp; events</option><option value="🥡 Đồ ăn nhà làm / online">🥡 Home-based &amp; online food businesses</option><option value="➕ Khác (Ăn uống)">➕ Other food &amp; beverage</option>
             </optgroup>
-            <optgroup label="🛍️ Mua sắm">
-              <option value="🛒 Chợ / siêu thị">🛒 Chợ / siêu thị</option><option value="🏪 Tiện lợi / tạp hoá">🏪 Tiện lợi / tạp hoá</option><option value="📦 Supply nail &amp; spa / đồ nghề">📦 Supply nail &amp; spa / đồ nghề</option><option value="💄 Mỹ phẩm / nước hoa">💄 Mỹ phẩm / nước hoa</option><option value="🧳 Hàng xách tay">🧳 Hàng xách tay</option><option value="👗 Thời trang / áo dài">👗 Thời trang / áo dài</option><option value="👜 Giày / túi xách">👜 Giày / túi xách</option><option value="💍 Vàng bạc / trang sức">💍 Vàng bạc / trang sức</option><option value="📱 Điện thoại / điện tử">📱 Điện thoại / điện tử</option><option value="🛋️ Nội thất / gia dụng">🛋️ Nội thất / gia dụng</option><option value="💐 Hoa tươi / quà tặng">💐 Hoa tươi / quà tặng</option>
+            <optgroup label="🛍️ Retail">
+              <option value="🛒 Chợ / siêu thị">🛒 Grocery stores &amp; supermarkets</option><option value="🏪 Tiện lợi / tạp hoá">🏪 Convenience stores</option><option value="📦 Supply nail &amp; spa / đồ nghề">📦 Nail &amp; spa supplies</option><option value="💄 Mỹ phẩm / nước hoa">💄 Cosmetics &amp; fragrances</option><option value="🧳 Hàng xách tay">🧳 Imported goods</option><option value="👗 Thời trang / áo dài">👗 Fashion &amp; traditional clothing</option><option value="👜 Giày / túi xách">👜 Shoes &amp; handbags</option><option value="💍 Vàng bạc / trang sức">💍 Jewelry &amp; precious metals</option><option value="📱 Điện thoại / điện tử">📱 Phones &amp; electronics</option><option value="🛋️ Nội thất / gia dụng">🛋️ Furniture &amp; home goods</option><option value="💐 Hoa tươi / quà tặng">💐 Flowers &amp; gifts</option>
             </optgroup>
           </select></label>
           <div class="phase-ai-brand-colors">
-            <strong>Màu thương hiệu</strong>
+            <strong>Brand colors</strong>
             <div class="phase-ai-brand-swatches">
-              <label class="phase-ai-brand-color"><span>Màu 1</span><input type="color" id="ai-brand-color-primary" value="#6d28d9" aria-label="Màu thương hiệu 1"></label>
-              <label class="phase-ai-brand-color"><span>Màu 2</span><input type="color" id="ai-brand-color-secondary" value="#f59e0b" aria-label="Màu thương hiệu 2"></label>
-              <label class="phase-ai-brand-color"><span>Màu 3</span><input type="color" id="ai-brand-color-3" value="#ec4899" aria-label="Màu thương hiệu 3"></label>
-              <label class="phase-ai-brand-color"><span>Màu 4</span><input type="color" id="ai-brand-color-4" value="#2563eb" aria-label="Màu thương hiệu 4"></label>
-              <label class="phase-ai-brand-color"><span>Màu 5</span><input type="color" id="ai-brand-color-5" value="#10b981" aria-label="Màu thương hiệu 5"></label>
-              <label class="phase-ai-brand-color"><span>Màu 6</span><input type="color" id="ai-brand-color-6" value="#ef4444" aria-label="Màu thương hiệu 6"></label>
-              <label class="phase-ai-brand-color"><span>Màu 7</span><input type="color" id="ai-brand-color-7" value="#111827" aria-label="Màu thương hiệu 7"></label>
-              <label class="phase-ai-brand-color"><span>Màu 8</span><input type="color" id="ai-brand-color-8" value="#ffffff" aria-label="Màu thương hiệu 8"></label>
+              <label class="phase-ai-brand-color"><span>Color 1</span><input type="color" id="ai-brand-color-primary" value="#6d28d9" aria-label="Brand color 1"></label>
+              <label class="phase-ai-brand-color"><span>Color 2</span><input type="color" id="ai-brand-color-secondary" value="#f59e0b" aria-label="Brand color 2"></label>
+              <label class="phase-ai-brand-color"><span>Color 3</span><input type="color" id="ai-brand-color-3" value="#ec4899" aria-label="Brand color 3"></label>
+              <label class="phase-ai-brand-color"><span>Color 4</span><input type="color" id="ai-brand-color-4" value="#2563eb" aria-label="Brand color 4"></label>
+              <label class="phase-ai-brand-color"><span>Color 5</span><input type="color" id="ai-brand-color-5" value="#10b981" aria-label="Brand color 5"></label>
+              <label class="phase-ai-brand-color"><span>Color 6</span><input type="color" id="ai-brand-color-6" value="#ef4444" aria-label="Brand color 6"></label>
+              <label class="phase-ai-brand-color"><span>Color 7</span><input type="color" id="ai-brand-color-7" value="#111827" aria-label="Brand color 7"></label>
+              <label class="phase-ai-brand-color"><span>Color 8</span><input type="color" id="ai-brand-color-8" value="#ffffff" aria-label="Brand color 8"></label>
             </div>
-            <p class="phase-ai-brand-help">Nhấn vào từng ô để chọn màu thương hiệu của bạn.</p>
+            <p class="phase-ai-brand-help">Select a swatch to customize your brand colors.</p>
           </div>
-          <label class="phase-ai-brand-toggle"><input type="checkbox" id="ai-use-brand-colors">Dùng màu thương hiệu</label>
-          <p class="phase-ai-brand-help">Logo, màu, kiểu chữ lưu một lần – dùng cho mọi thiết kế, landing page và OneQR. <span id="ai-brand-industry-summary">💅 Nail</span></p>
+          <label class="phase-ai-brand-toggle"><input type="checkbox" id="ai-use-brand-colors">Use brand colors</label>
+          <p class="phase-ai-brand-help">Save your logo, colors, and fonts once to use across designs, landing pages, and OneQR. <span id="ai-brand-industry-summary">💅 Nail salons</span></p>
         </section>
 
         <section class="phase-ai-options" aria-label="Content and tone settings">
           <div>
-            <h3 class="phase-ai-option-heading">Loại nội dung</h3>
+            <h3 class="phase-ai-option-heading">Content type</h3>
             <div class="phase-ai-content-grid" id="ai-content-types">
-              <button type="button" class="phase-ai-content-option" data-ai-content="promotion" aria-pressed="false"><strong>🏷️ Ưu đãi</strong><small>lấy từ POS</small></button>
-              <button type="button" class="phase-ai-content-option" data-ai-content="holiday" aria-pressed="false"><strong>🎉 Chúc mừng lễ</strong><small>Halloween, Tết...</small></button>
-              <button type="button" class="phase-ai-content-option" data-ai-content="notice" aria-pressed="false"><strong>📢 Thông báo</strong><small>giờ mở, nghỉ lễ</small></button>
-              <button type="button" class="phase-ai-content-option" data-ai-content="new-service" aria-pressed="false"><strong>✨ Dịch vụ mới</strong><small>ra mắt mẫu mới</small></button>
-              <button type="button" class="phase-ai-content-option" data-ai-content="hiring" aria-pressed="false"><strong>👨‍🎓 Tuyển thợ</strong><small>nơi Việc làm</small></button>
-              <button type="button" class="phase-ai-content-option" data-ai-content="gift-card" aria-pressed="true"><strong>🎁 Gift Card</strong><small>mua tặng</small></button>
-              <button type="button" class="phase-ai-content-option" data-ai-content="staff" aria-pressed="false"><strong>💅 Giới thiệu thợ</strong><small>khoe tay nghề</small></button>
+              <button type="button" class="phase-ai-content-option" data-ai-content="promotion" aria-pressed="false"><strong>🏷️ Promotion</strong><small>From POS</small></button>
+              <button type="button" class="phase-ai-content-option" data-ai-content="holiday" aria-pressed="false"><strong>🎉 Holiday</strong><small>Seasonal greetings</small></button>
+              <button type="button" class="phase-ai-content-option" data-ai-content="notice" aria-pressed="false"><strong>📢 Announcement</strong><small>Hours &amp; closures</small></button>
+              <button type="button" class="phase-ai-content-option" data-ai-content="new-service" aria-pressed="false"><strong>✨ New service</strong><small>New styles &amp; services</small></button>
+              <button type="button" class="phase-ai-content-option" data-ai-content="hiring" aria-pressed="false"><strong>👨‍🎓 Hiring</strong><small>Job openings</small></button>
+              <button type="button" class="phase-ai-content-option" data-ai-content="gift-card" aria-pressed="true"><strong>🎁 Gift card</strong><small>Give a gift</small></button>
+              <button type="button" class="phase-ai-content-option" data-ai-content="staff" aria-pressed="false"><strong>💅 Staff spotlight</strong><small>Showcase your team</small></button>
             </div>
           </div>
           <div>
-            <h3 class="phase-ai-option-heading">Giọng văn</h3>
+            <h3 class="phase-ai-option-heading">Tone of voice</h3>
             <div class="phase-ai-tone-options" id="ai-tone-options">
-              <button type="button" class="phase-ai-tone-option" data-ai-tone="luxury" aria-pressed="true">Sang trọng</button>
-              <button type="button" class="phase-ai-tone-option" data-ai-tone="playful" aria-pressed="false">Vui tươi</button>
-              <button type="button" class="phase-ai-tone-option" data-ai-tone="minimal" aria-pressed="false">Tối giản</button>
-              <button type="button" class="phase-ai-tone-option" data-ai-tone="warm" aria-pressed="false">Ấm áp</button>
+              <button type="button" class="phase-ai-tone-option" data-ai-tone="luxury" aria-pressed="true">Luxury</button>
+              <button type="button" class="phase-ai-tone-option" data-ai-tone="playful" aria-pressed="false">Playful</button>
+              <button type="button" class="phase-ai-tone-option" data-ai-tone="minimal" aria-pressed="false">Minimal</button>
+              <button type="button" class="phase-ai-tone-option" data-ai-tone="warm" aria-pressed="false">Warm</button>
             </div>
           </div>
         </section>
 
-        <div class="phase-ai-loading" id="ai-generation-loading" hidden><span class="phase-ai-loader-icon"><span data-icon="loader-2"></span></span><strong>AI is analyzing and designing your banner</strong><span class="promo-note" id="ai-loading-cost">Using 2 credit for this design.</span><span class="phase-ai-progress" aria-hidden="true"></span></div>
+        <div class="phase-ai-loading" id="ai-generation-loading" hidden><span class="phase-ai-loader-icon"><span data-icon="loader-2"></span></span><strong>AI is analyzing and designing your banner</strong><span class="promo-note" id="ai-loading-cost">Using 2 credits for this design.</span><span class="phase-ai-progress" aria-hidden="true"></span></div>
         <div class="phase-ai-result" id="ai-generation-result" hidden>
           <div class="phase-ai-result-art purple" id="ai-result-art"><small id="ai-result-badge">SPECIAL OFFER</small><strong id="ai-result-title">Your promotion</strong><span id="ai-result-copy">Created from your prompt</span></div>
           <div class="phase-ai-result-actions"><button type="button" class="promo-button primary" id="use-ai-banner"><span data-icon="check"></span>Use this banner</button></div>
@@ -257,9 +257,9 @@
       </section>
 
       <aside class="phase-ai-side">
-        <section class="phase-ai-card phase-ai-side-card" id="ai-plan-credits"><h3>Plan &amp; credits</h3><div class="phase-ai-credit-row"><span>Current ad plan:</span><strong>Basic</strong></div><div class="phase-ai-credit-row"><span>Available AI credits:</span><strong class="credit-value" id="ai-available-credits">50 credit</strong></div><div class="phase-ai-credit-row"><span>Cost for this generation:</span><strong id="ai-generation-cost">2 credit</strong></div></section>
+        <section class="phase-ai-card phase-ai-side-card" id="ai-plan-credits"><h3>Plan &amp; credits</h3><div class="phase-ai-credit-row"><span>Current ad plan:</span><strong>Basic</strong></div><div class="phase-ai-credit-row"><span>Available AI credits:</span><strong class="credit-value" id="ai-available-credits">50 credits</strong></div><div class="phase-ai-credit-row"><span>Cost for this generation:</span><strong id="ai-generation-cost">2 credits</strong></div></section>
         <section class="phase-ai-card phase-ai-side-card phase-ai-tips" id="ai-prompt-tips"><h3>Prompt tips</h3><p>For best results, include: main subject (Nail Spa, Bitcoin), color palette (Gold, Pink), art style (Luxury, Modern), and a specific call-to-action.</p></section>
-        <section class="phase-ai-card phase-ai-side-card phase-ai-safety" aria-labelledby="ai-safety-title"><h3 id="ai-safety-title">🛡️ Luật an toàn</h3><ul><li>Giá, % giảm, ngày, điều kiện lấy từ ưu đãi — 🔒 không sửa tay.</li><li>AI chỉ tạo nền &amp; viết lời; chữ trên hình do mẫu dựng — không lỗi dấu, không sai giá.</li><li>Không dùng nhân vật, logo, thương hiệu của người khác.</li><li>Không tự viết đánh giá khách. Ảnh tải lên: tiệm phải có quyền dùng.</li></ul></section>
+        <section class="phase-ai-card phase-ai-side-card phase-ai-safety" aria-labelledby="ai-safety-title"><h3 id="ai-safety-title">🛡️ Safety guidelines</h3><ul><li>🔒 Prices, discounts, dates, and terms come from the promotion and cannot be edited here.</li><li>AI creates the background and copy. Templates render the text to keep lettering and prices accurate.</li><li>Do not use characters, logos, or brands that belong to others.</li><li>Do not fabricate customer reviews. Only upload images your business has permission to use.</li></ul></section>
       </aside>
     </div>
   </div>
@@ -498,13 +498,14 @@
   const AI_QUALITY_COST = {low:1,medium:2,high:4};
   let aiQuality = 'medium', aiCredits = 50, aiResultTheme = 'purple', aiGenerationTimer;
   function syncAIBrandIndustry() {
-    document.getElementById('ai-brand-industry-summary').textContent = document.getElementById('ai-brand-industry').value;
+    document.getElementById('ai-brand-industry-summary').textContent = document.getElementById('ai-brand-industry').selectedOptions[0].textContent;
   }
   function updateAICost() {
     const cost = AI_QUALITY_COST[aiQuality];
     document.getElementById('ai-quality-label').textContent = aiQuality.charAt(0).toUpperCase() + aiQuality.slice(1);
-    document.getElementById('ai-generation-cost').textContent = cost + ' credit';
-    document.getElementById('ai-loading-cost').textContent = 'Using ' + cost + ' credit for this design.';
+    const costLabel = cost + (cost === 1 ? ' credit' : ' credits');
+    document.getElementById('ai-generation-cost').textContent = costLabel;
+    document.getElementById('ai-loading-cost').textContent = 'Using ' + costLabel + ' for this design.';
     document.querySelectorAll('[data-ai-quality]').forEach(button => button.classList.toggle('selected',button.dataset.aiQuality === aiQuality));
   }
   function resetAIGenerator() {
@@ -533,7 +534,7 @@
       document.getElementById('ai-result-badge').textContent = promotionForm.elements.badge.value.trim() || 'SPECIAL OFFER';
       document.getElementById('ai-result-title').textContent = promotionForm.elements.title.value.trim() || 'Your promotion';
       document.getElementById('ai-result-copy').textContent = prompt.length > 90 ? prompt.slice(0,87) + '…' : prompt;
-      document.getElementById('ai-available-credits').textContent = aiCredits + ' credit';
+      document.getElementById('ai-available-credits').textContent = aiCredits + (aiCredits === 1 ? ' credit' : ' credits');
       document.getElementById('ai-generation-loading').hidden = true;
       document.getElementById('ai-generation-result').hidden = false;
       document.getElementById('generate-ai-design').disabled = false;
