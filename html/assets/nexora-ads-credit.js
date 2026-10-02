@@ -98,7 +98,32 @@
       </button>`;
     }).join('');
     dialog.querySelector('[data-ads-invoice-payment]').textContent = selectedPayment().label;
+    const cardForm = dialog.querySelector('[data-ads-card-form]');
+    if (cardForm) cardForm.hidden = selectedPaymentId !== 'CARD';
+    if (selectedPaymentId !== 'CARD') {
+      const cardError = dialog.querySelector('[data-ads-card-error]');
+      if (cardError) cardError.textContent = '';
+      dialog.querySelectorAll('[data-ads-card-required]').forEach(field => field.removeAttribute('aria-invalid'));
+    }
     if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
+  }
+
+  function validateCardForm() {
+    if (selectedPaymentId !== 'CARD') return true;
+    let firstMissing = null;
+    dialog.querySelectorAll('[data-ads-card-required]').forEach(field => {
+      const missing = !field.value.trim();
+      field.setAttribute('aria-invalid', String(missing));
+      if (!firstMissing && missing) firstMissing = field;
+    });
+    const cardError = dialog.querySelector('[data-ads-card-error]');
+    if (firstMissing) {
+      if (cardError) cardError.textContent = 'Please complete all required card details.';
+      firstMissing.focus();
+      return false;
+    }
+    if (cardError) cardError.textContent = '';
+    return true;
   }
 
   function updateQuote(resetConsent) {
@@ -161,11 +186,16 @@
     dialog.querySelector(`[data-ads-payment="${selectedPaymentId}"]`)?.focus();
   });
   custom.addEventListener('input', () => updateQuote(true));
+  dialog.querySelectorAll('[data-ads-card-required]').forEach(field => field.addEventListener('input', () => {
+    field.removeAttribute('aria-invalid');
+    const cardError = dialog.querySelector('[data-ads-card-error]');
+    if (cardError) cardError.textContent = '';
+  }));
   consent.addEventListener('change', () => updateQuote(false));
   form.addEventListener('submit', event => {
     event.preventDefault();
     const cents = amountCents();
-    if (!dialog.open || completed || cents === null || !consent.checked) return;
+    if (!dialog.open || completed || cents === null || !consent.checked || !validateCardForm()) return;
     completed = true;
     submit.disabled = true;
     balanceCents += cents;
