@@ -13,7 +13,7 @@
   const returnLink = document.querySelector('[data-ads-return]');
   const returnCampaign = document.querySelector('[data-ads-return-campaign]');
   const STORAGE_KEY = 'nexora:ads-credit:v1';
-  const amountLimits = { minCents: 100, maxCents: 1000000 };
+  const amountLimits = { minCents: 3000, maxCents: 1000000 };
   const paymentMethods = [
     { id: 'USDT', label: 'USDT', balance: '$9.08', asset: 'assets/usdt.png' },
     { id: 'USDV', label: 'USDV', balance: '$11,183.38', asset: 'assets/usdv.png' },
@@ -107,7 +107,7 @@
     const invalid = cents === null;
     dialog.querySelector('[data-ads-custom-wrap]').hidden = selectedAmount !== 'custom';
     custom.setAttribute('aria-invalid', String(selectedAmount === 'custom' && invalid));
-    error.textContent = selectedAmount === 'custom' && invalid ? 'Enter $1.00–$10,000.00 with no more than two decimal places.' : '';
+    error.textContent = selectedAmount === 'custom' && invalid ? 'Enter $30.00–$10,000.00 with no more than two decimal places.' : '';
     amountButtons.forEach(button => button.setAttribute('aria-pressed', String(button.dataset.adsAmount === selectedAmount)));
     dialog.querySelector('[data-ads-receive]').textContent = invalid ? '—' : money(cents);
     dialog.querySelector('[data-ads-total]').textContent = invalid ? '—' : money(cents);
