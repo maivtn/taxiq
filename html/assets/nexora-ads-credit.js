@@ -14,9 +14,16 @@
   const returnCampaign = document.querySelector('[data-ads-return-campaign]');
   const STORAGE_KEY = 'nexora:ads-credit:v1';
   const amountLimits = { minCents: 100, maxCents: 1000000 };
+  const paymentMethods = [
+    { id: 'USDT', label: 'USDT', balance: '$9.08', asset: 'assets/usdt.png' },
+    { id: 'USDV', label: 'USDV', balance: '$11,183.38', asset: 'assets/usdv.png' },
+    { id: 'VMM', label: 'VMM', balance: '$0.00', asset: 'assets/vmm.png' },
+    { id: 'CARD', label: 'Credit or Debit Card' }
+  ];
   let balanceCents = 35000;
   let holdCents = 3000;
   let selectedAmount = '100';
+  let selectedPaymentId = 'USDT';
   let completed = false;
   let opener;
   let previousOverflow = '';
@@ -71,6 +78,29 @@
     return Number.isSafeInteger(cents) && cents >= amountLimits.minCents && cents <= amountLimits.maxCents ? cents : null;
   }
 
+  function selectedPayment() {
+    return paymentMethods.find(method => method.id === selectedPaymentId) || paymentMethods[0];
+  }
+
+  function renderPaymentMethods() {
+    const target = dialog.querySelector('[data-ads-payment-list]');
+    if (!target) return;
+    target.innerHTML = paymentMethods.map(method => {
+      const selected = method.id === selectedPaymentId;
+      const asset = method.id === 'CARD'
+        ? '<i data-lucide="credit-card" aria-hidden="true"></i>'
+        : `<img src="${method.asset}" alt="" aria-hidden="true">`;
+      const balance = method.id === 'CARD'
+        ? ''
+        : `<span class="package-payment-balance"><span>Balance</span><strong>${method.balance}</strong></span>`;
+      return `<button class="package-payment-option${selected ? ' is-selected' : ''}" type="button" data-ads-payment="${method.id}" aria-pressed="${selected}">
+        <span class="package-payment-option-main"><span class="package-payment-radio" aria-hidden="true"></span><span class="package-payment-asset">${asset}</span><span class="package-payment-name">${method.label}</span></span>${balance}
+      </button>`;
+    }).join('');
+    dialog.querySelector('[data-ads-invoice-payment]').textContent = selectedPayment().label;
+    if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
+  }
+
   function updateQuote(resetConsent) {
     if (resetConsent) consent.checked = false;
     const cents = amountCents();
@@ -99,7 +129,9 @@
     opener = event.currentTarget;
     completed = false;
     selectedAmount = '100';
+    selectedPaymentId = 'USDT';
     form.reset();
+    renderPaymentMethods();
     updateQuote(true);
     previousOverflow = document.body.style.overflow;
     document.body.style.overflow = 'hidden';
@@ -121,6 +153,13 @@
     updateQuote(true);
     if (selectedAmount === 'custom') custom.focus();
   }));
+  dialog.addEventListener('click', event => {
+    const payment = event.target.closest('[data-ads-payment]');
+    if (!payment) return;
+    selectedPaymentId = payment.dataset.adsPayment;
+    renderPaymentMethods();
+    dialog.querySelector(`[data-ads-payment="${selectedPaymentId}"]`)?.focus();
+  });
   custom.addEventListener('input', () => updateQuote(true));
   consent.addEventListener('change', () => updateQuote(false));
   form.addEventListener('submit', event => {
@@ -132,11 +171,12 @@
     balanceCents += cents;
     receiptNumber += 1;
     const receipt = `ADS-${String(receiptNumber).padStart(3, '0')}`;
+    const payment = selectedPayment();
     history.unshift({
-      activity: 'Card top-up',
+      activity: `${payment.label} top-up`,
       date: new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric' }).format(new Date()),
       cents, balance: balanceCents, status: 'Completed',
-      detail: `Receipt ${receipt} · Visa ending 4242 · Credit ${money(cents)} · Fee $0.00 · Tax $0.00 · Total ${money(cents)}.`
+      detail: `Receipt ${receipt} · Paid with ${payment.label} · Credit ${money(cents)} · Fee $0.00 · Tax $0.00 · Total ${money(cents)}.`
     });
     persistCredit();
     renderBalanceAndHistory();
@@ -145,5 +185,6 @@
   });
   loadSavedCredit();
   renderReturnContext();
+  renderPaymentMethods();
   renderBalanceAndHistory();
 }());
