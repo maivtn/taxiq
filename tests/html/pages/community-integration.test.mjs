@@ -29,6 +29,38 @@ test('all bundled Community modules have valid inline JavaScript', () => {
   for (const [name, base64] of Object.entries(modules)) compileHTML(Buffer.from(base64, 'base64').toString('utf8'), name);
 });
 
+for (const [role, route, initial, forbidden] of [['tech', 'dlastt', 'ind', 'biz'], ['owner', 'dlastb', 'biz', 'ind']]) {
+  test(`Last minute uses the ${role} account without exposing a persona switch`, () => {
+    const modules = JSON.parse(hub.match(/const MODS=(\{[^\n]+\});/)[1]);
+    const factory = hub.match(/function moduleSource\(key\)\{[\s\S]*?\n\}/)[0];
+    const html = runInNewContext(factory + '\nmoduleSource("lastmin")', {
+      MODS: modules, SRC: {lastmin: 'lastmin'}, accountRole: role, route,
+      dec: value => Buffer.from(value, 'base64').toString('utf8')
+    });
+    compileHTML(html, 'Last minute account module');
+    const dom = new JSDOM(html, {url:'https://demo.test/html/pages/community-hub.html', runScripts:'outside-only'});
+    const {window} = dom;
+    const accountScript = window.document.querySelector('script[src="../assets/community-last-minute.js"]');
+    assert.ok(accountScript);
+    Object.defineProperty(window.document, 'currentScript', {value: accountScript});
+    const visited = [];
+    window.go = view => visited.push(view);
+    window.eval(read('../assets/community-last-minute.js'));
+    assert.equal(visited.at(-1), initial);
+    assert.equal(window.document.getElementById('tabs').style.display, 'none');
+    for (const view of [forbidden, 'ci', 'rules']) {
+      assert.equal(window.document.querySelector('main > section[data-v="' + view + '"]').style.display, 'none');
+      window.go(view);
+      assert.equal(visited.at(-1), 'cust');
+    }
+    window.go(initial);
+    assert.equal(visited.at(-1), initial);
+    window.go('cust');
+    assert.equal(visited.at(-1), 'cust');
+    dom.window.close();
+  });
+}
+
 test('opening the module directly preserves role and route in the account shell', () => {
   const dom = new JSDOM(hub);
   const entry = dom.window.document.querySelector('script[data-community-entry]');

@@ -348,9 +348,16 @@ const accountRole=new URLSearchParams(location.search).get('role')==='tech'?'tec
 let role=accountRole,route='feed',frames={};
 function moduleSource(key){
   const source=dec(MODS[SRC[key]]);
+  const closingBody='<'+'/body>';
+  if(key==='lastmin'){
+    const view=route==='dlastt'?'ind':route==='dlastb'?'biz':'cust';
+    const closingHead='<'+'/head>';
+    const accountStyle='<style>#tabs,.clock,section[data-v="ci"],section[data-v="rules"],section[data-v="'+(accountRole==='tech'?'biz':'ind')+'"]{display:none!important}</style>';
+    const account='<script src="../assets/community-last-minute.js" data-community-role="'+accountRole+'" data-community-view="'+view+'"><'+'/script>';
+    return source.replace(closingHead,accountStyle+closingHead).replace(closingBody,account+closingBody);
+  }
   if(!['feed','jobsTech','jobsOwner','profile','shift','connect'].includes(key))return source;
   const actions='<script src="../assets/community-hub-actions.js" data-community-module="'+key+'"><'+'/script>';
-  const closingBody='<'+'/body>';
   return source.replace(closingBody,actions+closingBody);
 }
 function frame(key){if(frames[key])return frames[key];const f=document.createElement('iframe');f.dataset.key=key;f.title=key;f.className='hidden';
