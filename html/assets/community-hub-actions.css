@@ -1,0 +1,84 @@
+.community-action-dialog {
+  width: min(620px, calc(100% - 28px));
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  overflow: auto;
+  border: 1px solid #dde5ef;
+  border-radius: 18px;
+  background: #fff;
+  color: #0b1220;
+  font: inherit;
+  box-shadow: 0 20px 60px rgba(8, 31, 73, .2);
+}
+.community-action-dialog::backdrop { background: rgba(8, 31, 73, .48); }
+.community-action-dialog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 20px 22px;
+  border-bottom: 1px solid #dde5ef;
+}
+.community-action-dialog-head h2 { margin: 0; font-size: 18px; line-height: 1.4; font-weight: 700; }
+.community-action-close { flex-shrink: 0; width: 30px; height: 30px; border-radius: 8px; font-size: 22px; }
+.community-action-close:hover { background: #f3f6fa; }
+.community-action-dialog-body { padding: 20px 22px; }
+.community-action-dialog-body p { margin: 0 0 12px; line-height: 1.6; white-space: pre-wrap; overflow-wrap: anywhere; }
+.community-action-meta { color: #5b6b82; font-size: 12px; line-height: 1.5; }
+.community-action-summary { display: grid; gap: 10px; margin: 16px 0; padding: 14px; border: 1px solid #dde5ef; border-radius: 12px; background: #f8fafc; }
+.community-action-summary > div { display: flex; justify-content: space-between; gap: 16px; line-height: 1.5; }
+.community-action-summary strong { text-align: right; overflow-wrap: anywhere; }
+.community-action-toolbar, .community-action-dialog-foot { display: flex; flex-wrap: wrap; gap: 8px; }
+.community-action-toolbar { margin-top: 10px; }
+.community-action-dialog-foot { justify-content: flex-end; padding: 16px 22px; border-top: 1px solid #dde5ef; }
+.community-action-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 36px;
+  padding: 8px 12px;
+  border: 1px solid #dde5ef;
+  border-radius: 10px;
+  background: #fff;
+  color: #0b1220;
+  font: inherit;
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.4;
+  cursor: pointer;
+}
+.community-action-button:hover { background: #f3f6fa; }
+.community-action-button.is-primary { border-color: transparent; background: linear-gradient(135deg, #2b59ff, #8e4df8); color: #fff; }
+.community-action-button:disabled { opacity: .5; cursor: default; }
+.community-action-button[aria-pressed="true"] { border-color: #4648d8; background: #e9e9ff; color: #4648d8; }
+.community-action-form { display: grid; gap: 14px; margin-top: 18px; }
+.community-action-form label { display: grid; gap: 7px; font-weight: 600; font-size: 13px; }
+.community-action-form input, .community-action-form textarea {
+  width: 100%;
+  min-width: 0;
+  padding: 10px 12px;
+  border: 1px solid #dde5ef;
+  border-radius: 10px;
+  background: #fff;
+  color: #0b1220;
+  font: inherit;
+  font-weight: 400;
+}
+.community-action-form textarea { min-height: 96px; resize: vertical; }
+.community-action-form > button { justify-self: end; }
+.community-action-date-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+.community-action-comments { display: grid; gap: 14px; padding-top: 18px; border-top: 1px solid #dde5ef; }
+.community-action-comment { padding: 12px 14px; border-radius: 12px; background: #f3f6fa; }
+.community-action-comment p { margin: 6px 0 0; }
+.community-action-photo { padding: 28px; border-radius: 12px; background: #fdf2f8; text-align: center; font-size: 54px; margin-bottom: 16px; }
+.community-action-status { padding: 12px 14px; margin: 14px 0; border-radius: 12px; background: #ecfdf5; color: #047857; font-weight: 600; line-height: 1.5; }
+.community-action-dialog :focus-visible, .community-action-button:focus-visible { outline: 2px solid #4648d8; outline-offset: 3px; }
+@media (max-width: 600px) {
+  .community-action-dialog-head, .community-action-dialog-body { padding: 16px; }
+  .community-action-dialog-foot { padding: 14px 16px; }
+  .community-action-date-row { grid-template-columns: 1fr; }
+  .community-action-summary > div { flex-direction: column; gap: 3px; }
+  .community-action-summary strong { text-align: left; }
+}
