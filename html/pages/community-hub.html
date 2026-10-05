@@ -349,7 +349,8 @@ function moduleSource(key){
   const source=dec(MODS[SRC[key]]);
   if(!['feed','jobsTech','jobsOwner','profile','shift','connect'].includes(key))return source;
   const actions='<script src="../assets/community-hub-actions.js" data-community-module="'+key+'"><'+'/script>';
-  return source.replace('</body>',actions+'</body>');
+  const closingBody='<'+'/body>';
+  return source.replace(closingBody,actions+closingBody);
 }
 function frame(key){if(frames[key])return frames[key];const f=document.createElement('iframe');f.dataset.key=key;f.title=key;f.className='hidden';
   const load=document.createElement('div');load.className='loading';load.textContent='Đang tải…';$('#stage').appendChild(load);
