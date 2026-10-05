@@ -107,7 +107,7 @@ test('Staff frame expands Community with links to every section of the new staff
   const menu = window.document.getElementById('staff-subnav-community');
   assert.equal(toggle.getAttribute('aria-expanded'), 'true');
   assert.equal(menu.classList.contains('is-collapsed'), false);
-  const tabs = ['feed','groups','shift','profile','deals','connect','learning','jobs','events'];
+  const tabs = ['feed','groups','jobs','profile','shift','deals','connect','learning','events'];
   assert.deepEqual([...menu.querySelectorAll('a')].map(link => {
     const url = new URL(link.href);
     assert.equal(url.pathname, '/html/pages/staff-community.html');

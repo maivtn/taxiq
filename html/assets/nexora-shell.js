@@ -44,11 +44,11 @@
   var COMMUNITY_ITEMS = [
       { label: 'Feed', tab: 'feed' },
       { label: 'Groups & Market', tab: 'groups' },
+      { label: 'Jobs', tab: 'jobs' },
       { label: 'Extra Shifts', tab: 'shift' },
       { label: 'Deals & Coupons', tab: 'deals' },
       { label: 'Messages & Calls', tab: 'connect' },
       { label: 'Learning', tab: 'learning' },
-      { label: 'Jobs', tab: 'jobs' },
       { label: 'Events', tab: 'events' }
     ];
 

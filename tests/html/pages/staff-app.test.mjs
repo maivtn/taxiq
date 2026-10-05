@@ -7,7 +7,7 @@ const pages = new URL('../../../html/pages/', import.meta.url);
 const staffApp = new URL('staff-app.html', pages);
 const source = () => readFileSync(staffApp, 'utf8');
 const bridge = readFileSync(new URL('../assets/staff-community.js', pages), 'utf8');
-const tabs = ['feed', 'groups', 'shift', 'profile', 'deals', 'connect', 'learning', 'jobs', 'events'];
+const tabs = ['feed', 'groups', 'jobs', 'profile', 'shift', 'deals', 'connect', 'learning', 'events'];
 
 function harness() {
   const dom = new JSDOM(source(), {url: 'https://demo.test/html/pages/staff-app.html', runScripts: 'outside-only'});
