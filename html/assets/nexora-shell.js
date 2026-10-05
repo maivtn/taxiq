@@ -330,7 +330,6 @@
       '</div><i class="staff-profile-chevron" data-lucide="chevron-down" aria-hidden="true"></i></div>' +
     '</div>' +
     '<nav class="sidebar-nav staff-sidebar-nav" aria-label="Staff menu">' +
-      renderStaffCommunityMenu() +
       '<a class="nav-item staff-nav-item" href="#" data-staff-nav="home">' + iconWrap('home') + '<span>Home</span></a>' +
       '<a class="nav-item staff-nav-item' + (activeTab === 'dashboard' ? ' is-active' : '') + '" href="staff-dashboard.html" data-staff-nav="dashboard">' + iconWrap('layout-dashboard') + '<span>Dashboard</span></a>' +
       '<button class="nav-item nav-parent is-expanded staff-nav-item" type="button" data-nav-group aria-expanded="true" aria-controls="staff-subnav-workspace">' +
@@ -344,6 +343,7 @@
       '</div></div>' +
       '<a class="nav-item staff-nav-item' + (activeTab === 'my-tickets' ? ' is-active' : '') + '" href="staff-work-orders.html" data-staff-nav="my-tickets">' + iconWrap('list-checks') + '<span>My Tickets</span><span class="staff-nav-count" data-staff-ticket-count hidden></span></a>' +
       '<a class="nav-item staff-nav-item' + (activeTab === 'my-calendar' ? ' is-active' : '') + '" href="pos-calendar.html" data-staff-nav="my-calendar">' + iconWrap('calendar-days') + '<span>My Calendar</span><span class="staff-nav-count" data-staff-calendar-count>4</span></a>' +
+      renderStaffCommunityMenu() +
       '<a class="nav-item staff-nav-item' + (activeTab === 'staff-handbook' ? ' is-active' : '') + '" href="staff-handbook.html" data-staff-nav="staff-handbook">' + iconWrap('book-open-check') + '<span>Staff Handbook</span></a>' +
       '<a class="nav-item staff-nav-item" href="#" data-staff-nav="tips">' + iconWrap('circle-dollar-sign') + '<span>Tips</span></a>' +
       '<a class="nav-item staff-nav-item" href="#" data-staff-nav="transactions">' + iconWrap('receipt') + '<span>Transactions</span></a>' +
