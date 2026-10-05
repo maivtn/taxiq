@@ -30,7 +30,7 @@
     const active = menuRoute(route);
     preview.shell.dataset.staffMenuActive = active;
     preview.shell.querySelector('[data-staff-community-title]').textContent = labels[active];
-    preview.shell.querySelector('[data-staff-community-fullscreen]').href = 'community.html?role=tech&tab=' + encodeURIComponent(route);
+    preview.shell.querySelector('[data-staff-community-fullscreen]').href = 'staff-community.html?role=tech&tab=' + encodeURIComponent(route);
     preview.shell.querySelectorAll('[data-staff-sidebar] [data-staff-community-tab]').forEach(link => {
       const selected = link.dataset.staffCommunityTab === active;
       link.classList.toggle('bg-white/10', selected);

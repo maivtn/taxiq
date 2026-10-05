@@ -3,12 +3,13 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Nexora Touch - Staff</title>
+  <title>Nexora Touch - Staff Community</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/staff-shell.css">
+  <link rel="stylesheet" href="../assets/staff-community.css">
 </head>
 <body>
   <div class="shell">
@@ -17,14 +18,27 @@
     <div class="app-area">
       <header class="header"></header>
 
-      <main class="content" aria-label="Staff content"></main>
+      <main class="content staff-community-content" aria-label="Staff Community content">
+        <div class="page-heading">
+          <h1 class="page-title">Community</h1>
+        </div>
+        <iframe id="community-hub" title="Staff Community" data-community-role="tech" hidden></iframe>
+      </main>
     </div>
   </div>
 
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script>
-    window.NEXORA_SHELL = { activePage: 'staff', activeTab: 'dashboard', expandCommunity: true };
+    window.NEXORA_SHELL = {
+      activePage: 'staff',
+      activeTab: 'feed',
+      isCommunity: true,
+      onNavigate: function (tab) {
+        if (typeof window.navigateCommunityHub === 'function') window.navigateCommunityHub(tab);
+      }
+    };
   </script>
-  <script src="../assets/nexora-shell.js"></script>
+  <script src="../assets/nexora-shell.js" defer></script>
+  <script src="../assets/community-integration.js" defer></script>
 </body>
 </html>

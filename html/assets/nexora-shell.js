@@ -308,16 +308,17 @@
   }
 
   function renderStaffCommunityMenu() {
-    var open = !!cfg.isCommunity;
+    var native = !!cfg.isCommunity;
+    var open = native || !!cfg.expandCommunity;
     var items = COMMUNITY_ITEMS.slice();
     items.splice(3, 0, { label: 'Tech Profile', tab: 'profile' });
-    return '<button class="nav-item nav-parent staff-nav-item' + (open ? ' is-expanded is-active' : '') + '" type="button" data-nav-group aria-expanded="' + open + '" aria-controls="staff-subnav-community">' +
+    return '<button class="nav-item nav-parent staff-nav-item' + (open ? ' is-expanded' : '') + (native ? ' is-active' : '') + '" type="button" data-nav-group aria-expanded="' + open + '" aria-controls="staff-subnav-community">' +
       iconWrap('users-round') + '<span>Community</span>' + CARET + '</button>' +
       '<div class="nav-subnav' + (open ? '' : ' is-collapsed') + '" id="staff-subnav-community" data-nav-subnav><div class="nav-subnav-inner">' +
       items.map(function (item) {
         var content = '<span class="nav-subitem-dot" aria-hidden="true"></span><span>' + item.label + '</span>';
-        if (open) return '<button class="nav-subitem' + (activeTab === item.tab ? ' is-active' : '') + '" type="button" data-shell-tab="' + item.tab + '">' + content + '</button>';
-        return '<a class="nav-subitem" href="community.html?role=tech&amp;tab=' + item.tab + '">' + content + '</a>';
+        if (native) return '<button class="nav-subitem' + (activeTab === item.tab ? ' is-active' : '') + '" type="button" data-shell-tab="' + item.tab + '">' + content + '</button>';
+        return '<a class="nav-subitem" href="staff-community.html?role=tech&amp;tab=' + item.tab + '">' + content + '</a>';
       }).join('') + '</div></div>';
   }
 

@@ -2,8 +2,8 @@
   'use strict';
 
   var params = new URLSearchParams(window.location.search);
-  var role = params.get('role') === 'tech' ? 'tech' : 'owner';
   var frame = document.getElementById('community-hub');
+  var role = (frame.getAttribute('data-community-role') || params.get('role')) === 'tech' ? 'tech' : 'owner';
   var routes = ['feed', 'groups', 'mkt', 'jobs', 'profile', 'shift', 'deals', 'dcats', 'dmatch', 'dopen', 'dlast', 'dlastt', 'dlastb', 'dcamp', 'dwallet', 'dcreate', 'dmanage', 'dredeem', 'dwish', 'connect', 'chatgroups', 'calls', 'privacy', 'pos', 'kiosk', 'tlib', 'learning', 'events'];
   var ready = false;
   var current = validRoute(params.get('tab'));
@@ -45,7 +45,7 @@
   window.navigateCommunityHub = function (tab) { return show(tab, false); };
   window.addEventListener('message', function (event) {
     if (event.source !== frame.contentWindow || event.origin !== window.location.origin) return;
-    if (frame.hidden || !event.data || event.data.type !== 'nexora-community-route') return;
+    if (!ready || frame.hidden || !event.data || event.data.type !== 'nexora-community-route') return;
     var tab = validRoute(event.data.route);
     show(tab, true);
   });
@@ -54,5 +54,5 @@
     if (!frame.hidden) show(current, false);
   });
   // Every Community section stays inside the same hub.
-  window.activateCommunityTab(current);
+  show(current, false);
 })();

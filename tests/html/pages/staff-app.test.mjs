@@ -63,7 +63,7 @@ test('every staff Community menu destination preserves the tech role', () => {
     const link = menu.querySelector('[data-staff-community-tab="' + tab + '"]');
     assert.ok(link, 'missing menu destination: ' + tab);
     const url = new URL(link.getAttribute('href'), dom.window.location.href);
-    assert.equal(url.pathname, '/html/pages/community.html');
+    assert.equal(url.pathname, '/html/pages/staff-community.html');
     assert.equal(url.searchParams.get('role'), 'tech');
     assert.equal(url.searchParams.get('tab'), tab);
   }

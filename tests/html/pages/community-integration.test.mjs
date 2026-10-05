@@ -39,7 +39,7 @@ test('opening the module directly preserves role and route in the account shell'
     const window = {location};
     window.parent = window;
     runInNewContext(entry.textContent, {window, location, URL});
-    assert.equal(destination, `https://demo.test/html/pages/community.html?role=${role}&tab=jobs`);
+    assert.equal(destination, `https://demo.test/html/pages/${role === 'tech' ? 'staff-community.html' : 'community.html'}?role=${role}&tab=jobs`);
     destination = undefined;
     window.parent = {};
     runInNewContext(entry.textContent, {window, location, URL});
@@ -91,8 +91,55 @@ test('Learning and Events keep the new hub visible and preserve the staff role',
     assert.equal(window.document.body.classList.contains('community-hub-active'), true);
     assert.equal(new URL(window.location.href).searchParams.get('tab'), tab);
   }
+  frame.dispatchEvent(new window.Event('load'));
   window.dispatchEvent(new window.MessageEvent('message', {source:frame.contentWindow, origin:window.location.origin, data:{type:'nexora-community-route',route:'learn'}}));
   assert.equal(new URL(window.location.href).searchParams.get('tab'), 'learning');
+  dom.window.close();
+});
+
+test('Staff frame expands Community with links to every section of the new staff page', () => {
+  const dom = new JSDOM(read('frame-staff.html'), {url:'https://demo.test/html/pages/frame-staff.html', runScripts:'outside-only'});
+  const {window} = dom;
+  for (const script of window.document.scripts) if (!script.src) window.eval(script.textContent);
+  window.eval(shell);
+  window.document.dispatchEvent(new window.Event('DOMContentLoaded'));
+  const toggle = window.document.querySelector('[aria-controls="staff-subnav-community"]');
+  const menu = window.document.getElementById('staff-subnav-community');
+  assert.equal(toggle.getAttribute('aria-expanded'), 'true');
+  assert.equal(menu.classList.contains('is-collapsed'), false);
+  const tabs = ['feed','groups','shift','profile','deals','connect','learning','jobs','events'];
+  assert.deepEqual([...menu.querySelectorAll('a')].map(link => {
+    const url = new URL(link.href);
+    assert.equal(url.pathname, '/html/pages/staff-community.html');
+    assert.equal(url.searchParams.get('role'), 'tech');
+    return url.searchParams.get('tab');
+  }), tabs);
+  dom.window.close();
+});
+
+test('the new Staff Community page retains queued navigation and always loads the tech hub', () => {
+  const dom = new JSDOM(read('staff-community.html'), {url:'https://demo.test/html/pages/staff-community.html?role=owner&tab=jobs', runScripts:'outside-only'});
+  const {window} = dom;
+  for (const script of window.document.scripts) if (!script.src) window.eval(script.textContent);
+  window.eval(shell);
+  window.document.dispatchEvent(new window.Event('DOMContentLoaded'));
+  window.eval(read('../assets/community-integration.js'));
+  const frame = window.document.getElementById('community-hub');
+  const initialSource = frame.src;
+  assert.equal(new URL(initialSource).searchParams.get('role'), 'tech');
+  assert.equal(new URL(initialSource).searchParams.get('tab'), 'jobs');
+  window.document.querySelector('[data-shell-tab="profile"]').click();
+  window.dispatchEvent(new window.MessageEvent('message', {source:frame.contentWindow, origin:window.location.origin, data:{type:'nexora-community-route',route:'jobs'}}));
+  assert.equal(new URL(window.location.href).searchParams.get('tab'), 'profile');
+  const sent = [];
+  frame.contentWindow.postMessage = data => sent.push(data);
+  frame.dispatchEvent(new window.Event('load'));
+  assert.equal(sent.at(-1).route, 'profile');
+  window.document.querySelector('[data-shell-tab="groups"]').click();
+  assert.equal(frame.src, initialSource);
+  assert.equal(sent.at(-1).route, 'groups');
+  assert.equal(window.document.querySelector('[data-shell-tab="groups"]').classList.contains('is-active'), true);
+  assert.equal(new URL(window.location.href).searchParams.get('role'), 'tech');
   dom.window.close();
 });
 

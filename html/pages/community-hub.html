@@ -7,8 +7,9 @@
 <script data-community-entry>
 // Direct links use the account shell; only the embedded module hides its demo navigation.
 if (window.parent === window) {
-  const accountPage = new URL('community.html', window.location.href);
-  accountPage.search = new URL(window.location.href).search;
+  const entryUrl = new URL(window.location.href);
+  const accountPage = new URL(entryUrl.searchParams.get('role') === 'tech' ? 'staff-community.html' : 'community.html', entryUrl);
+  accountPage.search = entryUrl.search;
   window.location.replace(accountPage.href);
 }
 </script>
