@@ -6646,9 +6646,12 @@
   <link rel="stylesheet" href="../assets/community-page.css">
   <link rel="stylesheet" href="../assets/staff-shell.css">
   <style>
-    #community-hub { display:block; width:100%; height:calc(100dvh - 110px); min-height:520px; border:0; border-radius:16px; }
+    .community-hub-heading { display:none; }
+    body.community-hub-active .community-hub-heading { display:block; }
+    #community-hub { display:block; width:100%; height:calc(100dvh - 170px); min-height:520px; border:0; border-radius:16px; }
     #community-hub[hidden], body.community-hub-active .blank-stage { display:none; }
-    @media (max-width:767px) { #community-hub { height:calc(100dvh - 90px); min-height:420px; } }
+    @media (max-width:767px) { #community-hub { height:calc(100dvh - 150px); min-height:420px; } }
+    @media (max-width:639px) { #community-hub { height:calc(100dvh - 146px); } }
   </style>
 </head>
 <body>
@@ -6676,6 +6679,9 @@
       <script src="../assets/nexora-shell.js"></script>
 
       <main class="content" aria-label="Community content">
+        <div class="page-heading community-hub-heading">
+          <h1 class="page-title">Community</h1>
+        </div>
         <iframe id="community-hub" title="Nexora Community" hidden></iframe>
         <section class="blank-stage">
           <div class="page-heading">

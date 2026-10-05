@@ -94,20 +94,10 @@ body.lang-en #wn ul{display:none}body.lang-en #wn p{font-size:13.5px!important;c
 @media(max-width:900px){aside{display:none}.top{height:56px}.top .hm{display:none}.demo .anon{display:none}}
 </style>
 <style>
-#demoBar, .app > aside { display:none !important; }
+#demoBar, .app > aside, .app > main > .top { display:none !important; }
 .app > main { width:100%; min-width:0; }
 .segbar { overflow-x:auto; }
 .segbar button { flex-shrink:0; white-space:nowrap; }
-@media (max-width:600px) {
-  .top { display:grid; grid-template-columns:minmax(0,1fr) auto auto; height:auto; padding:10px 12px; gap:8px; }
-  .top h1 { grid-area:1 / 1; font-size:16px; }
-  .top > .pill, .top > .sp { display:none; }
-  .top > #topChat { grid-area:1 / 2; }
-  .top > .menuwrap:has(#topAv) { grid-area:1 / 3; }
-  .top > #annBtn { grid-area:2 / 1; justify-self:start; }
-  .top > .menuwrap:has(#tourMenuBtn) { grid-area:2 / 2 / 3 / 4; justify-self:end; }
-  .tourbtn { white-space:nowrap; }
-}
 </style>
 </head>
 <body>
