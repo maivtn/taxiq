@@ -16,7 +16,6 @@
   ];
   // Sample recipients only. This prototype never calls an SMS provider.
   guests.forEach((guest, index) => { guest.phone = '+1 (713) 555-010' + index; });
-  const smsHistory = new Map();
   const smsDefaults = {
     'return-soon': 'Hi [Customer Name], your turn at [Salon Name] is coming up. Please return soon: [OneQR Link]',
     'ready-now': 'Hi [Customer Name], we\'re ready for you at [Salon Name]. Please come to the front desk now. Details: [OneQR Link]',
@@ -78,10 +77,6 @@
     careOption.disabled = saved.sections['wait-care']?.enabled === false;
     careOption.hidden = careOption.disabled;
     smsType.value = 'return-soon';
-    const last = smsHistory.get(guest.id);
-    smsDialog.querySelector('[data-wl-sms-history]').textContent = last
-      ? 'Last demo this session: ' + last.time + ' · ' + last.type + '\n' + last.message
-      : 'No SMS demos recorded for this customer in this session.';
     loadSmsTemplate();
     smsDialog.showModal();
   }
@@ -172,7 +167,6 @@
     '<p id="wl-empty" class="wl-empty" hidden>No customers waiting right now.</p>' +
     '<dialog class="wl-sms-dialog" aria-labelledby="wl-sms-title">' +
       '<div class="wl-sms-heading"><h2 id="wl-sms-title">Send Waitlist SMS</h2><button type="button" data-wl-sms-close aria-label="Close SMS composer">×</button></div>' +
-      '<p class="wl-sms-help">Prototype · Sample customers and phone numbers. No real SMS is sent.</p>' +
       '<p class="wl-sms-recipient" data-wl-sms-recipient></p><p class="wl-sms-help" data-wl-sms-visit></p>' +
       '<label class="wl-sms-field">Message type<select data-wl-sms-type><option value="return-soon">Return Soon</option><option value="ready-now">Ready Now</option><option value="wait-care">Wait Update</option></select></label>' +
       '<p class="wl-sms-help">Uses the owner’s saved template. Edits here apply only to this message. Changing the message type loads that template.</p>' +
@@ -181,9 +175,8 @@
       '<label class="wl-sms-check"><input type="checkbox" data-wl-sms-wait-confirmed>I checked this waiting estimate with the team.</label></div>' +
       '<label class="wl-sms-check" data-wl-sms-ready-group hidden><input type="checkbox" data-wl-sms-ready-confirmed>The salon is ready to serve this customer.</label>' +
       '<div class="wl-sms-preview"><strong>Customer preview</strong><p data-wl-sms-preview></p><small data-wl-sms-count></small></div>' +
-      '<details class="wl-sms-history"><summary>Last contact in this demo</summary><p data-wl-sms-history></p></details>' +
       '<p class="wl-sms-status" data-wl-sms-status role="status" aria-live="polite"></p>' +
-      '<div class="wl-sms-actions"><button type="button" data-wl-sms-close>Close</button><button type="button" class="primary" data-wl-sms-submit>Send SMS (demo)</button></div>' +
+      '<div class="wl-sms-actions"><button type="button" data-wl-sms-close>Close</button><button type="button" class="primary" data-wl-sms-submit>Send SMS</button></div>' +
     '</dialog>';
   const smsDialog = root.querySelector('.wl-sms-dialog');
   const smsType = root.querySelector('[data-wl-sms-type]');
@@ -221,8 +214,7 @@
     smsSubmitted = true;
     smsSubmit.disabled = true;
     smsDialog.querySelectorAll('input, select, textarea').forEach(field => { field.disabled = true; });
-    smsHistory.set(smsGuest.id, { type: smsType.selectedOptions[0].textContent, message: text, time: new Date().toLocaleTimeString() });
-    smsStatus.textContent = 'Demo recorded for ' + smsGuest.name + '. No SMS was sent. The waiting list is unchanged.';
+    smsStatus.textContent = 'Message recorded for ' + smsGuest.name + '.';
   });
   renderList();
 

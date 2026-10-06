@@ -51,8 +51,6 @@
 #front-desk-waitlist .wl-sms-check input{width:18px;height:18px;flex:0 0 18px;margin:1px 0 0;accent-color:var(--nexora-brand,#4c43df)}
 #front-desk-waitlist .wl-sms-preview{margin:18px 0;padding:16px;border:1px solid var(--nexora-border,#dbe4f3);border-radius:10px;background:#f6f8fc;font-size:13px}
 #front-desk-waitlist .wl-sms-preview p{padding:12px;background:#e5efff;border-radius:10px;line-height:1.6;white-space:pre-wrap;overflow-wrap:anywhere}
-#front-desk-waitlist .wl-sms-history{font-size:12px;color:var(--nexora-muted,#52607b)}
-#front-desk-waitlist .wl-sms-history p{white-space:pre-wrap;overflow-wrap:anywhere;line-height:1.6}
 #front-desk-waitlist .wl-sms-status{font-size:13px;line-height:1.5;color:var(--nexora-brand,#4c43df)}
 #front-desk-waitlist .wl-sms-actions{display:flex;justify-content:flex-end;gap:10px;margin-top:16px}
 #front-desk-waitlist .wl-sms-actions button{min-height:42px}
