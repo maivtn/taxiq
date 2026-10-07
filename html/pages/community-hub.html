@@ -377,6 +377,7 @@ function go(r){if(role!=='owner'&&['dcreate','dmanage','dcamp','dredeem','dlastb
   $('#gate').classList.add('hidden');
   $$('.stage iframe').forEach(f=>f.classList.add('hidden'));$$('.stage .ph:not(#gate)').forEach(p=>p.classList.add('hidden'));
   if(curFrame&&!tRun)post(curFrame,{cmd:'stopTour'});
+  if(role==='owner'&&r==='jobs'){curFrame=null;return}
   if(R.ph){$(R.ph).classList.remove('hidden');curFrame=null;return}
   const key=typeof R.m==='function'?R.m():R.m;const f=frame(key);f.classList.remove('hidden');curFrame=f;if(R.v)post(f,{cmd:'view',v:R.v})}
 document.addEventListener('click',e=>{const g=e.target.closest('[data-go]');if(g&&!e.target.closest('.stour'))go(g.dataset.go)});
