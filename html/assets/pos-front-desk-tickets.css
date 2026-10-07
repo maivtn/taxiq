@@ -34,8 +34,11 @@
 .checkin-overview td small.phone { display:inline; margin:0; font-size:12px; color:#7a8882; }
 .checkin-overview .guest-tag { display:inline-block; font-size:9px; font-weight:850; border-radius:99px; padding:4px 6px; background:#e8f3ef; color:#1d6654; white-space:nowrap; }
 .checkin-overview .guest-tag.returning { background:#edf0f7; color:#4d6081; }
-.checkin-overview .status-text { font-size:10px; font-weight:800; text-transform:uppercase; color:#286b59; }
-.checkin-overview .status-text.cancelled { color:#aa4646; }.checkin-overview .status-text.completed { color:#52605c; }
+.checkin-overview .status-text { display:inline-flex; align-items:center; gap:5px; padding:5px 7px; border-radius:99px; font-size:10px; font-weight:800; line-height:1.25; text-transform:uppercase; white-space:nowrap; color:#246c51; background:#eaf6ee; }
+.checkin-overview .status-text::before { content:""; width:5px; height:5px; flex-shrink:0; border-radius:50%; background:currentColor; }
+.checkin-overview .status-text.waiting { color:#8a5c16; background:#fff5df; }
+.checkin-overview .status-text.completed { color:#4d6478; background:#edf2f7; }
+.checkin-overview .status-text.cancelled { color:#a8414b; background:#fff0f1; }
 .checkin-overview .overview-count { font-size:11px; font-weight:700; letter-spacing:0; color:#66756f; margin-left:6px; }
 .checkin-overview .overview-empty { padding:28px 0; text-align:center; color:#66756f; }
 @media(max-width:760px) { .checkin-overview .overview-grid { grid-template-columns:minmax(0,1fr); }.checkin-overview .overview-stats { grid-template-columns:repeat(2,minmax(0,1fr)); } }
