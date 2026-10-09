@@ -277,7 +277,7 @@
     ['title','badge','description','value','startTime','endTime'].forEach(name => { field(name).value = current[name] ?? ''; });
     ['free','custom'].forEach(type => { form.querySelector('option[value="' + type + '"]').hidden = current.type !== type; });
     form.querySelectorAll('[name="days"]').forEach(input => { input.checked = current.days.includes(input.value); });
-    field('checkout').checked = !!current.checkout; field('hero').checked = !!current.hero; field('public').checked = current.public !== 'private';
+    field('checkout').checked = !!current.checkout; field('hero').checked = !!current.hero; field('public').checked = !current.id || current.public !== 'private';
     field('paidBoost').checked = !!current.paidBoost; field('boostArea').value = current.boostArea || 'Houston'; field('boostBudget').value = Number(current.boostBudget) > 0 ? current.boostBudget : 100;
     const goal = form.querySelector('[name="goal"][value="' + (current.goal || 'slow-hours') + '"]'); if (goal) goal.checked = true;
     form.querySelectorAll('[name="shareDestination"]').forEach(input => { input.checked = (current.shareDestinations || ['oneqr','nearby','search']).includes(input.value); });

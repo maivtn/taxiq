@@ -92,10 +92,10 @@
         </section>
         <section class="editor-section" aria-labelledby="placements-title">
           <h3 class="section-number" id="placements-title" data-i18n="placementsSection">03 / Placements</h3>
-          <label class="promo-check-card"><input name="checkIn" type="checkbox"><span><strong>Check-in screen</strong><small>Show the promotion while customers check in.</small></span><span data-icon="user-plus"></span></label>
+          <label class="promo-check-card"><input name="checkIn" type="checkbox" checked><span><strong>Check-in screen</strong><small>Show the promotion while customers check in.</small></span><span data-icon="user-plus"></span></label>
           <label class="promo-check-card"><input name="checkout" type="checkbox" checked><span><strong data-i18n="checkout">Offer this at checkout</strong><small data-i18n="checkoutHint">Available in the POS checkout.</small></span><span data-icon="shopping-bag"></span></label>
-          <label class="promo-check-card"><input name="hero" type="checkbox"><span><strong>OneQR hero</strong><small data-i18n="heroHint">Show this promotion’s banners.</small></span><span data-icon="scan"></span></label>
-          <label class="promo-check-card"><input name="public" type="checkbox"><span><strong><span data-i18n="public">Search Deals listing</span><span class="promo-copy-badge" data-i18n="free">Free</span></strong><small data-i18n="publicHint">Request an organic listing. Approval is required.</small></span><span data-icon="globe"></span></label>
+          <label class="promo-check-card"><input name="hero" type="checkbox" checked><span><strong>OneQR hero</strong><small data-i18n="heroHint">Show this promotion’s banners.</small></span><span data-icon="scan"></span></label>
+          <label class="promo-check-card"><input name="public" type="checkbox" checked><span><strong><span data-i18n="public">Search Deals listing</span><span class="promo-copy-badge" data-i18n="free">Free</span></strong><small data-i18n="publicHint">Request an organic listing. Approval is required.</small></span><span data-icon="globe"></span></label>
           <p class="promo-note" data-i18n="publicNote">Organic listings are free. Paid promotion is optional.</p>
         </section>
         <section class="editor-section phase-advanced" aria-labelledby="advanced-settings-title">
@@ -329,7 +329,7 @@
     form.dataset.editing = offer.id ? 'true' : 'false';
     form.dataset.campaignStatus = linkedCampaignStatus(offer.id);
     form.dataset.initialPublic = offer.public || 'private';
-    form.elements.checkIn.checked = !!offer.checkIn;
+    form.elements.checkIn.checked = !offer.id || !!offer.checkIn;
     form.elements.promotionArea.value = offer.promotionArea || offer.boostArea || 'Katy';
     form.elements.paidObjective.value = offer.paidObjective || 'traffic';
     form.querySelectorAll('[name="paidPlacement"]').forEach(input => { input.checked = (offer.paidPlacements || ['search','explore']).includes(input.value); });
