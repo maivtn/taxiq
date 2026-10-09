@@ -55,6 +55,14 @@
     helpSteps:['⓪ Goal → ① Details → ② Discount → ③ Placements → ④ Banners → ⑤ Share & ads → ⑥ Tracking','⓪ Mục tiêu → ① Thông tin → ② Ưu đãi → ③ Nơi hiển thị → ④ Banner → ⑤ Chia sẻ & quảng cáo → ⑥ Theo dõi'],
     helpNote:['Preview as you edit. Save, then enable the promotion from your list when you are ready.','Xem preview bên cạnh khi sửa. Lưu, sau đó chủ động bật chương trình tại danh sách.'],
     detailsSection:['01 / Promotion details','01 / Thông tin chương trình'], name:['Promotion name','Tên chương trình'], badge:['Badge · optional','Badge · tùy chọn'],
+    promotionType:['Promotion type','Loại chương trình'], deal:['Deal','Deal'], coupon:['Coupon','Coupon'], allOfferTypes:['Deal & Coupon','Deal & Coupon'], filterOfferType:['Filter promotion type','Lọc loại chương trình'],
+    dealTypeHint:['Use directly when eligible. No coupon claim or quantity limit.','Dùng trực tiếp khi đủ điều kiện. Không cần lấy mã, không giới hạn số suất.'],
+    couponTypeHint:['Customers claim a coupon first. Set quantity and usage limits.','Khách lấy coupon trước khi dùng. Cấu hình số suất và giới hạn sử dụng.'],
+    couponSettings:['Coupon settings','Cấu hình Coupon'], totalSlots:['Total coupons','Tổng số suất'], perPersonLimit:['Uses per phone number · optional','Số lần dùng mỗi SĐT · tùy chọn'], holdDays:['Hold after claim · days','Giữ suất sau khi lấy · ngày'], unlimited:['Unlimited','Không giới hạn'], untilExpiry:['Until promotion ends','Đến khi chương trình kết thúc'],
+    endDateOptional:['End date · optional','Ngày kết thúc · tùy chọn'], couponEndDate:['End date · required for Coupon','Ngày kết thúc · bắt buộc cho Coupon'], couponEndDateError:['Choose an end date for this coupon.','Chọn ngày kết thúc cho Coupon.'],
+    couponSettingsHint:['Claiming reserves one coupon. An unused coupon is released when its hold expires; the hold cannot extend past the promotion’s end date.','Lấy coupon giữ một suất. Quá hạn giữ chưa dùng thì suất được trả lại; hạn giữ không vượt ngày kết thúc chương trình.'],
+    couponClaimRequired:['Claim a coupon before use, linked to your phone number.','Lấy coupon trước khi dùng, gắn với số điện thoại của khách.'], couponUsesLimit:['Uses per phone number','Số lần dùng mỗi số điện thoại'], couponHold:['Hold after claim','Giữ suất sau khi lấy'], couponHoldUnit:['days; capped by the promotion’s end date','ngày; không vượt ngày kết thúc chương trình'],
+    offerTypeError:['Choose Deal or Coupon.','Chọn Deal hoặc Coupon.'], totalSlotsError:['Enter a positive whole number of coupons.','Nhập tổng số suất là số nguyên lớn hơn 0.'], perPersonLimitError:['Enter a positive whole number of uses per customer, or leave it blank for unlimited.','Nhập số lần dùng mỗi khách là số nguyên lớn hơn 0, hoặc để trống nếu không giới hạn.'], holdDaysError:['Enter a positive whole number of hold days, or leave it blank to hold until the promotion ends.','Nhập số ngày giữ suất là số nguyên lớn hơn 0, hoặc để trống để giữ đến khi chương trình kết thúc.'],
     detailsHint:['Example: 15% off Classic Pedicure, Tue–Thu 10 AM–2 PM; cannot be combined. Clearly state who qualifies, eligible services and exclusions.','Ví dụ: Giảm 15% Classic Pedicure, thứ Ba–thứ Năm 10–14h; không cộng dồn. Luôn ghi rõ ai được dùng, dịch vụ nào và điều kiện loại trừ.'],
     description:['Description · optional','Mô tả · tùy chọn'], scheduleSection:['02 / Discount & schedule','02 / Ưu đãi & lịch chạy'], discountType:['Discount type','Loại giảm giá'],
     percent:['Percent · %','Percent · %'], amount:['Amount · $','Amount · $'], discountValue:['Discount value','Mức giảm'], legacyFree:['Free service or add-on','Dịch vụ hoặc add-on miễn phí'], legacyCustom:['Custom offer','Ưu đãi tùy chỉnh'],
@@ -102,14 +110,15 @@
   ];
   const localized = value => value[language === 'vi' ? 1 : 0];
   const newBanner = (theme = 'purple') => ({id:uid(), theme});
-  function blankOffer() { return {id:null,title:'',badge:'',description:'',type:'percent',value:10,days:[...days],startTime:'00:00',endTime:'23:59',checkout:true,hero:true,public:'private',paidBoost:false,paidUsePromotionSettings:true,paidObjective:'traffic',paidPlacements:['search','explore'],paidStartDate:'',paidEndDate:'',paidDailyBudget:15,paidCreative:'cover',boostArea:'Katy',boostBudget:100,goal:'slow-hours',shareDestinations:['oneqr','nearby','search'],outreachSegment:'pedicure',outreachChannel:'sms-email',partnerMode:'off',paused:true,banners:[newBanner()],uses:0,revenue:0}; }
+  const offerType = offer => offer.offerType === 'coupon' ? 'coupon' : 'deal';
+  function blankOffer() { return {id:null,title:'',badge:'',description:'',offerType:'deal',totalSlots:null,perPersonLimit:null,holdDays:null,type:'percent',value:10,days:[...days],startTime:'00:00',endTime:'23:59',checkout:true,hero:true,public:'private',paidBoost:false,paidUsePromotionSettings:true,paidObjective:'traffic',paidPlacements:['search','explore'],paidStartDate:'',paidEndDate:'',paidDailyBudget:15,paidCreative:'cover',boostArea:'Katy',boostBudget:100,goal:'slow-hours',shareDestinations:['oneqr','nearby','search'],outreachSegment:'pedicure',outreachChannel:'sms-email',partnerMode:'off',paused:true,banners:[newBanner()],uses:0,revenue:0}; }
   function templateOffer(sample) {
     const templateConditions = {
       upgrade:{serviceScope:'selected',serviceIds:['nail-art','foot-massage'],customerGroup:'all',stacking:'exclusive'},
       weekday:{serviceScope:'selected',serviceIds:['classic-pedicure'],customerGroup:'all',stacking:'exclusive'},
       welcome:{serviceScope:'selected',serviceIds:['classic-pedicure'],customerGroup:'new',stacking:'exclusive'}
     };
-    return {...blankOffer(), ...(templateConditions[sample.id] || {serviceScope:'legacy',customerGroup:'legacy',stacking:'legacy'}), templateId:sample.id, title:localized(sample.title), badge:localized(sample.badge), description:localized(sample.description),type:sample.type,value:sample.value,days:[...(sample.days || days)],startTime:sample.startTime || '00:00',endTime:sample.endTime || '23:59',hero:true};
+    return {...blankOffer(), ...(templateConditions[sample.id] || {serviceScope:'legacy',customerGroup:'legacy',stacking:'legacy'}), offerType:sample.id === 'welcome' ? 'coupon' : 'deal', templateId:sample.id, title:localized(sample.title), badge:localized(sample.badge), description:localized(sample.description),type:sample.type,value:sample.value,days:[...(sample.days || days)],startTime:sample.startTime || '00:00',endTime:sample.endTime || '23:59',hero:true};
   }
   function normalize(offer) {
     if (!offer || typeof offer.id !== 'string' || typeof offer.title !== 'string' || !Array.isArray(offer.days)) throw new Error('Invalid promotion');
@@ -126,7 +135,7 @@
     const offers = [templates[0],templates[2],templates[1]].map((sample,index) => ({...templateOffer(sample),id:['add-on-upgrade','rebook-save','weekday-glow'][index],title:['Add-On Upgrade — Nâng Cấp Móng','Rebook & Save — Đặt Lịch Kế Tiếp','Weekday Glow — Giờ Vàng Trong Tuần'][index],paused:false,banners:[newBanner(['purple','rose','gold'][index])],hero:index !== 2,createdAt:index+1}));
     return {version:2,demoSeedVersion,offers};
   }
-  let state = {version:2,offers:[]}, loadFailed = false, query = '', filter = 'all', current = null, selectedBanner = 0, uploadPending = false, editorSession = 0, feedbackTimer, posterOffer = null, posterIndex = 0, placementMode = null, initialRevision = '', draftAssets = [], editorOpener = null;
+  let state = {version:2,offers:[]}, loadFailed = false, query = '', filter = 'all', typeFilter = 'all', current = null, selectedBanner = 0, uploadPending = false, editorSession = 0, feedbackTimer, posterOffer = null, posterIndex = 0, placementMode = null, initialRevision = '', draftAssets = [], editorOpener = null;
   const imageUrls = new Map();
   function load() {
     try {
@@ -190,11 +199,12 @@
     $('#stat-total').textContent = loadFailed ? '—' : offers.length;
     $('#stat-active').textContent = loadFailed ? '—' : offers.filter(o => !o.paused).length;
     $('#stat-banners').textContent = loadFailed ? '—' : offers.reduce((sum,o) => sum + o.banners.length,0);
-    const visible = offers.filter(o => (filter === 'all' || (filter === 'disabled') === o.paused) && (o.title + ' ' + o.badge).toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
+    const visible = offers.filter(o => (typeFilter === 'all' || offerType(o) === typeFilter) && (filter === 'all' || (filter === 'disabled') === o.paused) && (o.title + ' ' + o.badge).toLocaleLowerCase().includes(query.trim().toLocaleLowerCase()));
     $('#promotion-list').innerHTML = visible.map(offer => {
       const action = (name,label,symbol) => '<button class="promo-button" data-action="' + name + '" data-id="' + esc(offer.id) + '">' + icon(symbol) + '<span>' + esc(label) + '</span></button>';
       const performance = '<a class="promo-button" data-action="performance" data-id="' + esc(offer.id) + '" href="promotion-performance.html?promotionId=' + encodeURIComponent(offer.id) + '">' + icon('chart') + '<span>' + esc(t('performance')) + '</span></a>';
-      return '<article class="promotion-card" data-promotion-id="' + esc(offer.id) + '">' + artwork(offer,offer.banners[0]) + '<div class="promotion-card-body"><h3>' + esc(offer.title) + '</h3><p class="promotion-schedule">' + esc(schedule(offer)) + '</p><div class="promo-badges"><span class="promo-status ' + (offer.paused ? 'disabled' : 'enabled') + '">' + t(studio.lifecycle(offer)) + '</span>' + (offer.checkout ? '<span class="promo-chip">POS checkout</span>' : '') + (offer.hero ? '<span class="promo-chip">Website & OneQR</span>' : '') + '<span class="promo-chip">' + esc(studio.status(offer,t)) + '</span>' + (offer.paidBoost ? '<span class="promo-chip">Paid Boost · ' + esc(offer.boostArea) + '</span>' : '') + '<span class="promo-chip">' + offer.banners.length + ' ' + t('banner') + '</span></div><div class="promotion-actions">' + action('edit',t('edit'),'edit') + action('share',t('share'),'external-link') + action('toggle',t(offer.paused ? 'enable' : 'disable'),offer.paused ? 'play' : 'pause') + performance + action('duplicate',t('duplicate'),'copy') + action('preview',t('preview'),'eye') + '<details class="promo-more"><summary class="promo-button icon-button" aria-label="' + t('more') + '">' + icon('more') + '</summary><div class="promo-more-menu"><button class="danger" data-action="delete" data-id="' + esc(offer.id) + '">' + t('delete') + '</button></div></details></div></div></article>';
+      const typeChip = '<span class="promo-chip promo-offer-chip">' + t(offerType(offer)) + '</span>' + (offerType(offer) === 'coupon' && Number(offer.totalSlots) > 0 ? '<span class="promo-chip">' + esc(t('totalSlots')) + ': ' + esc(offer.totalSlots) + '</span>' : '');
+      return '<article class="promotion-card" data-promotion-id="' + esc(offer.id) + '">' + artwork(offer,offer.banners[0]) + '<div class="promotion-card-body"><h3>' + esc(offer.title) + '</h3><p class="promotion-schedule">' + esc(schedule(offer)) + '</p><div class="promo-badges">' + typeChip + '<span class="promo-status ' + (offer.paused ? 'disabled' : 'enabled') + '">' + t(studio.lifecycle(offer)) + '</span>' + (offer.checkout ? '<span class="promo-chip">POS checkout</span>' : '') + (offer.hero ? '<span class="promo-chip">Website & OneQR</span>' : '') + '<span class="promo-chip">' + esc(studio.status(offer,t)) + '</span>' + (offer.paidBoost ? '<span class="promo-chip">Paid Boost · ' + esc(offer.boostArea) + '</span>' : '') + '<span class="promo-chip">' + offer.banners.length + ' ' + t('banner') + '</span></div><div class="promotion-actions">' + action('edit',t('edit'),'edit') + action('share',t('share'),'external-link') + action('toggle',t(offer.paused ? 'enable' : 'disable'),offer.paused ? 'play' : 'pause') + performance + action('duplicate',t('duplicate'),'copy') + action('preview',t('preview'),'eye') + '<details class="promo-more"><summary class="promo-button icon-button" aria-label="' + t('more') + '">' + icon('more') + '</summary><div class="promo-more-menu"><button class="danger" data-action="delete" data-id="' + esc(offer.id) + '">' + t('delete') + '</button></div></details></div></div></article>';
     }).join('');
     $('#promotion-empty').hidden = loadFailed || visible.length > 0;
     $('#empty-title').textContent = t(offers.length ? 'noMatches' : 'emptyTitle');
@@ -212,7 +222,7 @@
     $('#promotion-language').value = $('#editor-language').value = language;
     $('#promotion-language').setAttribute('aria-label',t('language')); $('#editor-language').setAttribute('aria-label',t('language'));
     renderTemplates(); render();
-    if (current) { $('#editor-title').textContent = t(current.id ? 'editTitle' : 'createTitle'); $('#save-note').textContent = t(current.id ? 'editNote' : 'saveNote'); renderBanners(); if (uploadPending) $('#upload-info').textContent = t('busy'); }
+    if (current) { $('#editor-title').textContent = t(current.id ? 'editTitle' : 'createTitle'); $('#save-note').textContent = t(current.id ? 'editNote' : 'saveNote'); updateConditional(); renderBanners(); if (uploadPending) $('#upload-info').textContent = t('busy'); }
     if (posterOffer) renderPoster();
     if (placementMode) renderPlacementPreview(placementMode);
     window.NEXORA_CAMPAIGNS?.translate();
@@ -220,6 +230,11 @@
   function readOffer() {
     const result = {...current};
     ['title','badge','description','type','value','startTime','endTime'].forEach(name => { result[name] = field(name).value.trim(); });
+    result.offerType = field('offerType').value;
+    ['totalSlots','perPersonLimit','holdDays'].forEach(name => {
+      const value = field(name).value.trim();
+      result[name] = result.offerType === 'coupon' && value !== '' ? Number(value) : null;
+    });
     result.days = Array.from(form.querySelectorAll('[name="days"]:checked'),input => input.value);
     result.checkout = field('checkout').checked; result.hero = field('hero').checked; result.public = field('public').checked ? (current.public !== 'private' ? current.public : 'pending') : 'private';
     const paidBoost = field('paidBoost').checked;
@@ -240,6 +255,13 @@
   }
   function updateConditional() {
     studio.conditional(form);
+    const coupon = field('offerType').value === 'coupon';
+    $('#coupon-settings').hidden = !coupon;
+    ['totalSlots','perPersonLimit','holdDays'].forEach(name => { field(name).disabled = !coupon; });
+    field('totalSlots').required = coupon;
+    field('endDate').required = coupon;
+    $('#promotion-end-date-label').dataset.i18n = coupon ? 'couponEndDate' : 'endDateOptional';
+    $('#promotion-end-date-label').textContent = t(coupon ? 'couponEndDate' : 'endDateOptional');
     const type = field('type').value;
     field('value').type = ['percent','fixed'].includes(type) ? 'number' : 'text';
     field('value').max = type === 'percent' ? '100' : '';
@@ -255,6 +277,14 @@
   function validation(offer) {
     if (!offer.title) return ['nameError','title'];
     for (const [name,max] of [['title',100],['badge',50],['description',1000]]) if ((offer[name] || '').length > max) return ['lengthError',name];
+    if (!['deal','coupon'].includes(offer.offerType ?? 'deal')) return ['offerTypeError','offerType'];
+    if (offerType(offer) === 'coupon') {
+      if (!offer.endDate) return ['couponEndDateError','endDate'];
+      for (const name of ['totalSlots','perPersonLimit','holdDays']) {
+        if (name !== 'totalSlots' && offer[name] == null) continue;
+        if (!Number.isSafeInteger(offer[name]) || offer[name] <= 0) return [name + 'Error',name];
+      }
+    }
     if (['percent','fixed'].includes(offer.type) && !validValue(offer)) return ['valueError','value'];
     if (offer.type === 'custom' && !offer.value) return ['customError','value'];
     if (!offer.days.length) return ['daysError','days'];
@@ -273,7 +303,10 @@
     if (!current.id) { current.serviceScope ??= 'all'; current.customerGroup ??= 'all'; current.stacking ??= 'exclusive'; }
     selectedBanner = 0; uploadPending = false; draftAssets = []; editorSession++;
     initialRevision = offer.id ? JSON.stringify(offer) : '';
-    form.reset(); studio.fill(form,current); $('#editor-language').value = language; field('type').value = current.type; updateConditional();
+    form.reset(); studio.fill(form,current); $('#editor-language').value = language; field('type').value = current.type;
+    field('offerType').value = offerType(current);
+    ['totalSlots','perPersonLimit','holdDays'].forEach(name => { field(name).value = current[name] ?? ''; });
+    updateConditional();
     ['title','badge','description','value','startTime','endTime'].forEach(name => { field(name).value = current[name] ?? ''; });
     ['free','custom'].forEach(type => { form.querySelector('option[value="' + type + '"]').hidden = current.type !== type; });
     form.querySelectorAll('[name="days"]').forEach(input => { input.checked = current.days.includes(input.value); });
@@ -342,7 +375,7 @@
       draftAssets = []; editor.close(); clearFilters(); feedback(t(offer.id ? 'updated' : 'saved'));
     }
   }
-  function clearFilters() { filter = 'all'; query = ''; $('#promotion-search').value = ''; $('#promotion-filter').value = 'all'; render(); }
+  function clearFilters() { filter = 'all'; typeFilter = 'all'; query = ''; $('#promotion-search').value = ''; $('#promotion-filter').value = 'all'; $('#promotion-offer-filter').value = 'all'; render(); }
   function renderPoster() {
     $('#poster-output').innerHTML = artwork(posterOffer,posterOffer.banners[posterIndex]);
     const terms = studio.terms(posterOffer,t);
@@ -393,6 +426,7 @@
   $('#promotion-templates').addEventListener('click',event => { const button = event.target.closest('[data-template]'); if (button) openEditor(templateOffer(templates.find(sample => sample.id === button.dataset.template))); });
   $('#promotion-search').addEventListener('input',event => { query = event.target.value; render(); });
   $('#promotion-filter').addEventListener('change',event => { filter = event.target.value; render(); });
+  $('#promotion-offer-filter').addEventListener('change',event => { typeFilter = event.target.value; render(); });
   $('#clear-filters').addEventListener('click',clearFilters);
   $('#retry-load').addEventListener('click',() => { load(); render(); });
   ['#promotion-language','#editor-language'].forEach(selector => $(selector).addEventListener('change',event => { language = event.target.value === 'vi' ? 'vi' : 'en'; try { localStorage.setItem(languageKey,language); } catch (_) {} applyLanguage(); }));
@@ -481,4 +515,13 @@
   load();
   window.NEXORA_CAMPAIGNS.init({getState:() => state,available:() => !loadFailed,persist,t,feedback,openEditor,artwork,hydrateImages});
   applyLanguage();
+  function openRequestedEditor() {
+    const url = new URL(window.location.href);
+    if (loadFailed || url.searchParams.get('create') !== '1') return;
+    openEditor();
+    url.searchParams.delete('create');
+    window.history.replaceState(null,'',url);
+  }
+  if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded',openRequestedEditor,{once:true});
+  else openRequestedEditor();
 })();

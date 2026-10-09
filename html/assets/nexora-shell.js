@@ -90,7 +90,7 @@
       { label: 'Salon Settings', tab: 'salon-settings', href: 'pos-salon-settings.html' },
       { label: 'Report', tab: 'report', href: 'pos-shop-income-report.html' },
       { label: 'Promotions', href: 'reward-promotions.html' },
-      { label: 'Deal & Coupon', tab: 'deal-coupon', href: 'pos-deal-coupon.html' },
+      { label: 'Deal & Coupon', tab: 'deal-coupon', href: 'reward-promotions.html?source=pos&tab=deal-coupon' },
       { label: 'Check-In Devices', href: 'qr-stations.html?tab=qr-stations' },
       { label: 'Printer', tab: 'printer' },
       { label: 'Public Check-In', href: '../customer/check-in-mobile.html' }

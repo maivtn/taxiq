@@ -31,6 +31,10 @@
 
   function show(tab, fromFrame) {
     current = validRoute(tab);
+    if (role === 'owner' && current === 'dcreate') {
+      window.location.href = 'reward-promotions.html?source=pos&tab=deal-coupon&create=1';
+      return true;
+    }
     frame.hidden = false;
     document.body.classList.add('community-hub-active');
     syncLocation(current);
@@ -53,6 +57,6 @@
     ready = true;
     if (!frame.hidden) show(current, false);
   });
-  // Every Community section stays inside the same hub.
+  // Creation uses the shared Promotion Studio; the other sections stay in this hub.
   show(current, false);
 })();

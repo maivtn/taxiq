@@ -82,21 +82,34 @@
     return null;
   }
   function terms(offer,t) {
-    const result = [];
+    const dateLabel = value => {
+      if (!value) return '…';
+      const date = new Date(value + 'T12:00:00Z');
+      return Number.isNaN(date.getTime()) ? value : new Intl.DateTimeFormat('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:'UTC'}).format(date);
+    };
+    const coupon = offer.offerType === 'coupon';
+    const result = [t(coupon ? 'coupon' : 'deal')];
+    if (coupon) {
+      result.push(t('couponClaimRequired'));
+      if (Number(offer.totalSlots) > 0) result.push(t('totalSlots') + ': ' + offer.totalSlots);
+      result.push(t('couponUsesLimit') + ': ' + (Number(offer.perPersonLimit) > 0 ? offer.perPersonLimit : t('unlimited')));
+      result.push(t('couponHold') + ': ' + (Number(offer.holdDays) > 0 ? offer.holdDays + ' ' + t('couponHoldUnit') : t('untilExpiry')));
+    }
     if (offer.serviceScope === 'selected') result.push(t('selectServices') + ': ' + (offer.serviceIds || []).map(id => services[id] || id).join(', '));
     else if (offer.serviceScope === 'all') result.push(t('allServices'));
     else if (offer.services) result.push(t('selectServices') + ': ' + offer.services);
     if (offer.customerGroup && offer.customerGroup !== 'legacy') result.push(t({all:'allCustomers',new:'newCustomers',returning:'returningCustomers'}[offer.customerGroup]));
     else if (offer.audience) result.push(offer.audience);
     if (offer.stacking && offer.stacking !== 'legacy') result.push(t(offer.stacking === 'exclusive' ? 'exclusive' : 'combinable'));
-    if (offer.startDate || offer.endDate) result.push((offer.startDate || '…') + ' → ' + (offer.endDate || '…'));
+    if (offer.startDate || offer.endDate) result.push(dateLabel(offer.startDate) + ' → ' + dateLabel(offer.endDate));
     if (offer.exclusions) result.push(offer.exclusions);
     result.push(t(offer.cta === 'booking' ? 'bookingCta' : 'detailsCta'));
     return result;
   }
   function snapshot(offer) {
     const data = {};
-    ['title','badge','description','type','value','days','startTime','endTime','banners','services','audience','redemption','code','serviceIds','paidBoost','boostArea','boostBudget','goal','shareDestinations','outreachSegment','outreachChannel','partnerMode',...keys].forEach(key => { data[key] = offer[key] ?? defaults[key] ?? null; });
+    ['title','badge','description','offerType','totalSlots','perPersonLimit','holdDays','type','value','days','startTime','endTime','banners','services','audience','redemption','code','serviceIds','paidBoost','boostArea','boostBudget','goal','shareDestinations','outreachSegment','outreachChannel','partnerMode',...keys].forEach(key => { data[key] = offer[key] ?? defaults[key] ?? null; });
+    data.offerType ??= 'deal';
     return data;
   }
   function publication(offer, previous) {
