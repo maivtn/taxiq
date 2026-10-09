@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexora Touch - Deal &amp; Coupon</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <style>
+    .deal-coupon-content { display:flex; flex-direction:column; height:calc(100dvh - 64px); min-height:520px; padding-bottom:16px; }
+    .deal-coupon-heading { margin:0 0 16px; font-size:24px; font-weight:800; line-height:32px; }
+    .deal-coupon-frame { flex:1; min-height:0; width:100%; border:1px solid var(--nexora-border); border-radius:16px; background:var(--nexora-surface); }
+    .deal-coupon-frame[hidden], .deal-coupon-status[hidden] { display:none; }
+    .deal-coupon-status { padding:24px; border:1px solid var(--nexora-border); border-radius:16px; background:var(--nexora-surface); color:var(--nexora-muted); }
+    .deal-coupon-status p { margin:0; }
+    .deal-coupon-retry { margin-top:12px; padding:10px 16px; border:1px solid var(--nexora-border); border-radius:10px; background:var(--nexora-surface); color:var(--nexora-brand); font-weight:700; cursor:pointer; }
+    @media (min-width:1366px) { .deal-coupon-content { padding-bottom:28px; } }
+    @media (max-width:639px) { .deal-coupon-content { min-height:420px; } }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Dashboard sidebar"></aside>
+    <div class="app-area">
+      <header class="header"></header>
+      <main class="content deal-coupon-content" aria-label="Deal and coupon creation">
+        <h1 class="deal-coupon-heading">Deal &amp; Coupon</h1>
+        <div class="deal-coupon-status" id="deal-coupon-status" role="status" aria-live="polite">
+          <p id="deal-coupon-message">Loading Deal &amp; Coupon…</p>
+          <button class="deal-coupon-retry" id="deal-coupon-retry" type="button" hidden>Try again</button>
+        </div>
+        <iframe class="deal-coupon-frame" id="deal-coupon-frame" title="Create deals and coupons" hidden></iframe>
+      </main>
+    </div>
+  </div>
+  <script>
+    window.NEXORA_SHELL = {
+      activePage: 'pos',
+      activeTab: 'deal-coupon',
+      onNavigate: function (tab) {
+        window.location.href = 'pos-phase-1.html?tab=' + encodeURIComponent(tab);
+      }
+    };
+  </script>
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script src="../assets/nexora-shell.js"></script>
+  <script>
+    (function () {
+      var frame = document.getElementById('deal-coupon-frame');
+      var status = document.getElementById('deal-coupon-status');
+      var message = document.getElementById('deal-coupon-message');
+      var retry = document.getElementById('deal-coupon-retry');
+
+      frame.addEventListener('load', function () {
+        if (!frame.getAttribute('srcdoc')) return;
+        frame.contentWindow.postMessage({cmd:'view', v:'create'}, window.location.origin);
+        status.hidden = true;
+        frame.hidden = false;
+      });
+
+      async function loadPromotion() {
+        status.hidden = false;
+        frame.hidden = true;
+        retry.hidden = true;
+        message.textContent = 'Loading Deal & Coupon…';
+        try {
+          // Read only the existing Promotion module; the Community shell never runs here.
+          var response = await fetch('community-hub.html');
+          if (!response.ok) throw new Error('Unable to load promotion source');
+          var source = await response.text();
+          var bundle = source.match(/^const MODS=(.*);$/m);
+          if (!bundle) throw new Error('Promotion module not found');
+          var encoded = JSON.parse(bundle[1]).promo;
+          if (typeof encoded !== 'string' || !encoded) throw new Error('Promotion module is empty');
+          frame.srcdoc = new TextDecoder().decode(Uint8Array.from(atob(encoded), function (character) { return character.charCodeAt(0); }));
+        } catch (error) {
+          message.textContent = 'Unable to load Deal & Coupon. Please try again.';
+          retry.hidden = false;
+        }
+      }
+
+      retry.addEventListener('click', loadPromotion);
+      loadPromotion();
+    })();
+  </script>
+</body>
+</html>

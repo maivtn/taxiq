@@ -17,7 +17,6 @@
     if (tab === 'mkt') return 'groups';
     if (tab === 'profile') return role === 'tech' ? 'profile' : 'jobs';
     if (['chatgroups', 'calls', 'privacy'].indexOf(tab) !== -1) return 'connect';
-    if (role === 'owner' && tab === 'dcreate') return 'dcreate';
     if (tab.charAt(0) === 'd' || ['pos', 'kiosk', 'tlib'].indexOf(tab) !== -1) return 'deals';
     return tab;
   }
