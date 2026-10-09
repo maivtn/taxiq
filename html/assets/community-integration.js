@@ -32,7 +32,7 @@
   function show(tab, fromFrame) {
     current = validRoute(tab);
     if (role === 'owner' && current === 'dcreate') {
-      window.location.href = 'reward-promotions.html?source=pos&tab=deal-coupon&create=1';
+      window.location.href = 'reward-promotions.html?source=pos&tab=promotions&create=1';
       return true;
     }
     frame.hidden = false;

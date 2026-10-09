@@ -31,13 +31,11 @@
 <body>
 <div class="shell"><aside class="sidebar" id="sidebar"></aside><div class="app-area"><header class="header" id="header"></header>
 <script>
-  var promotionEntry = new URLSearchParams(window.location.search);
-  var fromPos = promotionEntry.get('source') === 'pos';
   window.NEXORA_SHELL = {
-    activePage: fromPos ? 'pos' : 'reward',
-    activeTab: fromPos ? 'deal-coupon' : 'promotions',
+    activePage: 'pos',
+    activeTab: 'promotions',
     onNavigate: function(tab) {
-      window.location.href = (fromPos ? 'pos-phase-1.html' : 'salon-setup-reward.html') + '?tab=' + encodeURIComponent(tab);
+      window.location.href = 'pos-phase-1.html?tab=' + encodeURIComponent(tab);
     }
   };
 </script>

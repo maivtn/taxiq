@@ -80,7 +80,6 @@
       { label: 'Earn Rules', tab: 'earn-rules' },
       { label: 'Reward Catalog', tab: 'reward-catalog' },
       { label: 'AI Offers', tab: 'ai-offers' },
-      { label: 'Promotions', tab: 'promotions', href: 'reward-promotions.html' },
       { label: 'Customers', tab: 'customers' },
       { label: 'Loyalty Activity', tab: 'loyalty-activity' },
       { label: 'Analytics', tab: 'analytics' }
@@ -89,8 +88,7 @@
       { label: 'Front Desk', tab: 'front-desk', href: 'pos-front-desk.html' },
       { label: 'Salon Settings', tab: 'salon-settings', href: 'pos-salon-settings.html' },
       { label: 'Report', tab: 'report', href: 'pos-shop-income-report.html' },
-      { label: 'Promotions', href: 'reward-promotions.html' },
-      { label: 'Deal & Coupon', tab: 'deal-coupon', href: 'reward-promotions.html?source=pos&tab=deal-coupon' },
+      { label: 'Promotions', tab: 'promotions', href: 'reward-promotions.html' },
       { label: 'Check-In Devices', href: 'qr-stations.html?tab=qr-stations' },
       { label: 'Printer', tab: 'printer' },
       { label: 'Public Check-In', href: '../customer/check-in-mobile.html' }
