@@ -9,6 +9,7 @@
   <link rel="stylesheet" href="../assets/reward-promotions.css?v=20261009-coupon-form">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/promotion-industry-icons.css?v=20261009">
+  <link rel="stylesheet" href="../assets/promotion-create-enhancements.css?v=20261009">
   <style>
     .phase-tracking{margin-top:18px;padding:20px;border:1px solid var(--promo-line);border-radius:12px;background:var(--promo-surface);box-shadow:var(--promo-shadow)}
     .phase-section-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:16px}.phase-section-heading h2{margin:0}.phase-tracking-controls{display:grid;justify-items:end;gap:10px}.phase-tracking-filters{display:grid;grid-template-columns:repeat(3,minmax(150px,1fr)) auto;align-items:end;gap:10px;min-width:min(760px,62vw)}.phase-tracking-filters .promo-field{margin-bottom:0}.phase-tracking-filters>.promo-button{min-height:38px;white-space:nowrap}
@@ -50,8 +51,17 @@
   <section class="promo-library" id="promotion-templates-section" aria-labelledby="templates-title">
     <h2 id="templates-title" data-i18n="templateTitle">Promotion templates</h2>
     <p class="section-description" data-i18n="templateDescription">Choose a template to prefill the promotion.</p>
+    <div class="pc-library-toolbar">
+      <div class="promo-field"><span id="template-industry-label" data-i18n="chooseIndustry">Industry</span><select id="template-industry" aria-labelledby="template-industry-label"></select></div>
+      <label class="promo-field"><span data-i18n="promotionType">Promotion type</span><select id="template-kind"><option value="all" data-i18n="allOfferTypes">Deal &amp; Coupon</option><option value="deal">Deal</option><option value="coupon">Coupon</option></select></label>
+      <label class="promo-field"><span data-i18n="promotionGoal">Goal</span><select id="template-goal"><option value="all" data-i18n="allGoals">All goals</option><option value="slow-hours" data-i18n="goalSlow">Fill slow hours</option><option value="returning" data-i18n="goalReturning">Bring customers back</option><option value="new-customers" data-i18n="goalNew">Get new customers</option><option value="gift-card" data-i18n="goalGift">Sell gift cards</option></select></label>
+      <label class="promo-field"><span data-i18n="templateServiceGroup">Service group</span><select id="template-service-group"><option value="all" data-i18n="allGroups">All groups</option></select></label>
+      <label class="promo-field pc-template-search"><span data-i18n="searchTemplates">Search templates</span><input id="template-search" type="search" placeholder="Name, offer or service…" data-placeholder="templateSearchPlaceholder"></label>
+    </div>
     <div class="phase-template-filters" id="template-category-filters" aria-label="Filter promotion templates by industry"></div>
+    <p class="promo-note" id="template-results" aria-live="polite"></p>
     <div id="promotion-templates" class="promo-template-grid"></div>
+    <div class="pc-library-pagination"><button type="button" class="promo-button" id="template-previous" data-i18n="previousTemplates">Previous</button><span id="template-page"></span><button type="button" class="promo-button" id="template-next" data-i18n="nextTemplates">Next</button></div>
   </section>
   <div class="promotion-manage-heading"><h2 class="promotion-manage-title" data-i18n="managePromotions">Manage promotions</h2><div class="promotion-manage-tools"><label class="promo-search"><span data-icon="search"></span><input id="promotion-search" type="search" data-placeholder="search" placeholder="Search promotion name or badge…" aria-label="Search promotion name or badge"></label><select class="promotion-manage-filter" id="promotion-offer-filter" data-label="filterOfferType" aria-label="Filter promotion type"><option value="all" data-i18n="allOfferTypes">Deal &amp; Coupon</option><option value="deal" data-i18n="deal">Deal</option><option value="coupon" data-i18n="coupon">Coupon</option></select><select class="promotion-manage-filter" id="promotion-filter" aria-label="Filter promotions"><option value="all" data-i18n="allStatuses">All statuses</option><option value="enabled" data-i18n="enabled">Enabled</option><option value="disabled" data-i18n="disabled">Disabled</option></select></div></div>
   <section class="promo-stats" id="promotion-overview" aria-label="Promotion overview">
@@ -80,7 +90,7 @@
 <dialog id="promotion-editor" class="promo-dialog" aria-labelledby="editor-title">
   <form id="promotion-form" novalidate>
     <header class="editor-header"><div><p class="promo-eyebrow">Promotion studio</p><h2 id="editor-title">Create promotion</h2></div><div class="editor-header-actions"><button type="button" class="promo-close" data-close-editor data-label="closeEditor" aria-label="Close promotion editor"><span data-icon="x"></span></button></div></header>
-    <div class="editor-help"><strong>Review these 4 parts before using your offer</strong><span>① Name &amp; eligible services → ② Discount → ③ Days &amp; times → ④ Banners &amp; placements</span><small>Preview as you edit. Save, then enable the promotion from your list when you are ready.</small></div>
+    <div class="editor-help"><strong>Review your promotion before using it</strong><span>Industry &amp; goal → Eligibility &amp; discount → Schedule → Channels &amp; creative → Campaign &amp; posts</span><small>Preview as you edit. Save, then enable the promotion from your list when you are ready.</small></div>
     <div class="editor-body">
       <div class="editor-fields">
         <section class="editor-section" aria-labelledby="details-title">
@@ -92,21 +102,37 @@
               <label class="promo-offer-type"><input type="radio" name="offerType" value="coupon" aria-describedby="coupon-type-hint"><span><strong data-i18n="coupon">Coupon</strong><small id="coupon-type-hint" data-i18n="couponTypeHint">Customers claim a coupon first. Set quantity and usage limits.</small></span></label>
             </div>
           </fieldset>
+          <div class="pc-context-fields">
+            <div class="promo-field"><span id="promotion-industry-label" data-i18n="chooseIndustry">Industry</span><select name="industryId" id="promotion-industry" aria-labelledby="promotion-industry-label"></select><small class="promo-note" id="promotion-industry-context"></small></div>
+            <label class="promo-field"><span data-i18n="promotionGoal">Goal</span><select name="goal"><option value="slow-hours" data-i18n="goalSlow">Fill slow hours</option><option value="returning" data-i18n="goalReturning">Bring customers back</option><option value="new-customers" data-i18n="goalNew">Get new customers</option><option value="gift-card" data-i18n="goalGift">Sell gift cards</option></select></label>
+          </div>
+          <div class="pc-editor-template"><label class="promo-field"><span data-i18n="choosePromotionTemplate">Promotion template · optional</span><select id="editor-template"></select></label><button type="button" class="promo-button" id="editor-template-preview" data-i18n="preview">Preview</button><button type="button" class="promo-button" id="editor-template-apply" data-i18n="useTemplate">Use template</button></div>
+          <p class="promo-note" id="editor-template-source"></p>
           <div class="promo-field-row details-row">
             <label class="promo-field"><span data-i18n="name">Promotion name</span><input name="title" maxlength="100" required aria-describedby="promotion-error"></label>
             <label class="promo-field"><span data-i18n="badge">Badge · optional</span><input name="badge" maxlength="50"></label>
           </div>
           <p class="promo-note" data-i18n="detailsHint">Example: 15% off Classic Pedicure, Tue–Thu 10 AM–2 PM; cannot be combined. Clearly state who qualifies, eligible services and exclusions.</p>
           <label class="promo-field"><span data-i18n="description">Description · optional</span><textarea name="description" maxlength="1000" rows="3"></textarea></label>
-          <fieldset class="promo-coupon-eligibility" id="coupon-eligibility" hidden>
+          <fieldset class="promo-coupon-eligibility" id="coupon-eligibility">
             <legend data-i18n="couponEligibility">Eligibility &amp; conditions</legend>
             <div class="promo-field-row">
-              <label class="promo-field"><span id="coupon-service-scope-label" data-i18n="servicesScope">Service scope</span><select name="serviceScope" aria-labelledby="coupon-service-scope-label"><option value="legacy" data-i18n="legacyScope">Keep existing terms</option><option value="all" data-i18n="allServices">All services</option><option value="selected" data-i18n="selectedServices">Selected services / packages</option></select></label>
+              <label class="promo-field"><span id="coupon-service-scope-label" data-i18n="servicesScope">Service scope</span><select name="serviceScope" aria-labelledby="coupon-service-scope-label"><option value="legacy" data-i18n="legacyScope">Keep existing terms</option><option value="all" data-i18n="allServices">All services</option><option value="selected" data-i18n="selectedServices">Selected services / packages</option><option value="groups" data-i18n="selectedServiceGroups">Selected service groups</option></select></label>
               <label class="promo-field"><span id="coupon-customer-group-label" data-i18n="customerGroup">Customer eligibility</span><select name="customerGroup" aria-labelledby="coupon-customer-group-label"><option value="legacy" data-i18n="legacyScope">Keep existing terms</option><option value="all" data-i18n="allCustomers">All customers</option><option value="new" data-i18n="newCustomers">New customers</option><option value="returning" data-i18n="returningCustomers">Returning customers</option><option value="inactive45" data-i18n="inactiveCustomers">No visit in 45+ days</option><option value="oneqr-nearby" data-i18n="nearbyCustomers">OneQR customers near the shop</option></select></label>
             </div>
-            <label class="promo-field" id="studio-services" hidden><span id="coupon-services-label" data-i18n="selectServices">Eligible services / packages</span><select name="serviceIds" multiple aria-labelledby="coupon-services-label" aria-describedby="coupon-service-help"><option value="classic-pedicure">Classic Pedicure</option><option value="gel-manicure">Gel Manicure</option><option value="nail-art">Nail Art</option><option value="foot-massage">Foot Massage</option><option value="mani-pedi">Manicure + Pedicure Package</option></select><small id="coupon-service-help" class="promo-note" data-i18n="serviceHelp">Sample salon catalog. Hold Ctrl / ⌘ to select more than one.</small></label>
+            <label class="promo-field" id="studio-service-groups" hidden><span id="promotion-service-groups-label" data-i18n="selectedServiceGroups">Selected service groups</span><select name="serviceGroupIds" multiple aria-labelledby="promotion-service-groups-label"></select></label>
+            <label class="promo-field" id="studio-services" hidden><span id="coupon-services-label" data-i18n="selectServices">Eligible services / packages</span><select name="serviceIds" multiple aria-labelledby="coupon-services-label" aria-describedby="coupon-service-help"><option value="classic-pedicure">Classic Pedicure</option><option value="gel-manicure">Gel Manicure</option><option value="nail-art">Nail Art</option><option value="foot-massage">Foot Massage</option><option value="mani-pedi">Manicure + Pedicure Package</option></select><small id="coupon-service-help" class="promo-note" data-i18n="serviceHelp">From the POS service catalog. Hold Ctrl / ⌘ to select more than one.</small></label>
             <label class="promo-field"><span id="coupon-stacking-label" data-i18n="stacking">Combine with other offers</span><select name="stacking" aria-labelledby="coupon-stacking-label"><option value="legacy" data-i18n="legacyScope">Keep existing terms</option><option value="exclusive" data-i18n="exclusive">Cannot be combined</option><option value="combinable" data-i18n="combinable">Can be combined</option></select></label>
             <label class="promo-field"><span data-i18n="exclusions">Additional terms &amp; exclusions</span><textarea name="exclusions" maxlength="1000" rows="2"></textarea></label>
+            <div class="promo-field-row">
+              <label class="promo-field"><span data-i18n="customerRequirement">Customer requirement</span><select name="useRequirement"><option value="none" data-i18n="requirementNone">No requirement</option><option value="online" data-i18n="requirementOnline">Online booking required</option><option value="appt" data-i18n="requirementAppointment">Appointment required</option><option value="checkin" data-i18n="requirementCheckin">Check-in required</option></select></label>
+              <label class="promo-field"><span data-i18n="minimumSpend">Minimum eligible spend · USD · optional</span><input name="minimumSpend" type="number" min="0.01" step="0.01"></label>
+            </div>
+            <div class="promo-field-row">
+              <label class="promo-field"><span data-i18n="maximumDiscount">Maximum discount per use · USD · optional</span><input name="maximumDiscount" type="number" min="0.01" step="0.01"></label>
+              <label class="promo-field"><span data-i18n="cta">Customer action</span><select name="cta"><option value="details" data-i18n="detailsCta">View promotion</option><option value="booking" data-i18n="bookingCta">Book an appointment</option></select></label>
+            </div>
+            <label class="promo-field" id="promotion-code-field" hidden><span data-i18n="couponCode">Coupon code · optional</span><input name="code" maxlength="40" placeholder="e.g. WELCOME15"></label>
           </fieldset>
         </section>
         <section class="editor-section" aria-labelledby="schedule-title">
@@ -127,6 +153,7 @@
             <p class="promo-note" id="coupon-hold-help" data-i18n="couponHoldHint">Leave blank to keep a claimed coupon until the promotion ends.</p>
             <p class="promo-note" data-i18n="couponSettingsHint">Claiming reserves one coupon. An unused coupon is released when its hold expires; the hold cannot extend past the promotion’s end date.</p>
           </fieldset>
+          <fieldset class="promo-coupon-settings" id="deal-settings"><legend data-i18n="dealLimits">Deal usage limits</legend><div class="promo-field-row"><label class="promo-field"><span data-i18n="dealFrequency">Per customer</span><select name="dealFrequency"><option value="visit" data-i18n="oncePerVisit">Once per visit</option><option value="week" data-i18n="oncePerWeek">Once per week</option><option value="month" data-i18n="oncePerMonth">Once per month</option></select></label><label class="promo-field"><span data-i18n="dealMonthlyCap">Monthly discount cap · USD · optional</span><input name="dealMonthlyCap" type="number" min="0.01" step="0.01"></label></div><p class="promo-note" data-i18n="dealCapHint">The cap applies to the total discount given by this Deal during a calendar month.</p></fieldset>
         </section>
         <section class="editor-section" aria-labelledby="placements-title">
           <h3 class="section-number" id="placements-title" data-i18n="placementsSection">03 / Placements</h3>
@@ -134,7 +161,11 @@
           <label class="promo-check-card"><input name="checkout" type="checkbox" checked><span><strong data-i18n="checkout">Offer this at checkout</strong><small data-i18n="checkoutHint">Available in the POS checkout.</small></span><span data-icon="shopping-bag"></span></label>
           <label class="promo-check-card"><input name="hero" type="checkbox" checked><span><strong>OneQR hero</strong><small data-i18n="heroHint">Show this promotion’s banners.</small></span><span data-icon="scan"></span></label>
           <label class="promo-check-card"><input name="public" type="checkbox" checked><span><strong><span data-i18n="public">Search Deals listing</span><span class="promo-copy-badge" data-i18n="free">Free</span></strong><small data-i18n="publicHint">Request an organic listing. Approval is required.</small></span><span data-icon="globe"></span></label>
-          <p class="promo-note" data-i18n="publicNote">Organic listings are free. Paid promotion is optional.</p>
+          <div class="pc-channel-heading"><strong data-i18n="internalChannels">Internal · your own channels</strong><small data-i18n="goalChannelHint">The goal suggests channels; you can change them.</small></div><div class="pc-channel-grid" id="creation-internal-channels"></div>
+          <details class="pc-channel-details"><summary data-i18n="checkinOptions">Check-in placements</summary><div id="creation-checkin-options" class="pc-option-grid"></div><p class="promo-note" id="checkin-eligibility-warning" hidden></p></details>
+          <details class="pc-channel-details"><summary data-i18n="bookingOptions">Booking &amp; AI Voice placements</summary><div id="creation-booking-options" class="pc-option-grid"></div></details>
+          <div class="pc-channel-heading"><strong data-i18n="publicChannels">Public · NEXORA discovery</strong><small data-i18n="publicNote">Organic listings are free. Paid promotion is optional.</small></div><div class="pc-channel-grid" id="creation-public-channels"></div>
+          <details class="pc-channel-details"><summary data-i18n="partnerContent">Partner content · optional</summary><label class="promo-field"><span data-i18n="partnerModeLabel">OneQR Hero &amp; check-in idle screen</span><select name="partnerMode"><option value="off" data-i18n="ownOffersOnly">Your own offers only</option><option value="approved" data-i18n="partnerReviewRequired">Request partner content · owner review</option></select></label><label class="pc-small-check" id="partner-consent-field" hidden><input type="checkbox" name="partnerConsent"><span data-i18n="partnerConsentLabel">Request review for partners in other industries. Exclude competing businesses.</span></label></details>
         </section>
         <section class="editor-section phase-advanced" aria-labelledby="advanced-settings-title">
           <div class="phase-advanced-heading"><span class="phase-advanced-copy"><strong id="advanced-settings-title">Paid advertising</strong><small>Set a budget and choose sponsored placements for this promotion.</small></span><span class="phase-campaign-status" id="paid-campaign-status" data-status="off" aria-live="polite">Off</span></div>
@@ -152,22 +183,30 @@
                 <label class="phase-paid-placement"><input type="checkbox" name="paidPlacement" value="explore" checked><span><strong>Explore &amp; Nearby · Sponsored</strong><small>Reaches customers browsing offers near the target area.</small></span></label>
                 <label class="phase-paid-placement"><input type="checkbox" name="paidPlacement" value="banner"><span><strong>Network banner · Sponsored</strong><small>Uses the cover banner across eligible Nexora placements.</small></span></label>
               </div></div>
+              <details class="pc-channel-details"><summary data-i18n="externalAds">External advertising · optional</summary><div class="pc-option-grid" id="creation-external-ads"></div><p class="promo-note" data-i18n="externalAdsHint">Save the selected platforms and prepare assets. Platform accounts and spending are configured separately.</p></details>
             </div>
             </section>
           </div>
         </section>
+        <section class="editor-section" aria-labelledby="program-campaign-title">
+          <h3 class="section-number" id="program-campaign-title" data-i18n="campaignAndPosting">05 / Campaign &amp; posting schedule</h3>
+          <div class="pc-campaign-picker"><label class="promo-field"><span data-i18n="programCampaign">Promotion campaign · optional</span><select name="programCampaignId"></select></label><button type="button" class="promo-button" id="new-program-campaign" data-i18n="newProgramCampaign">New campaign</button></div>
+          <div class="pc-new-campaign" id="new-program-campaign-fields" hidden><label class="promo-field"><span data-i18n="campaignName">Campaign name</span><input id="program-campaign-name" maxlength="100"></label><label class="promo-field"><span data-i18n="campaignKind">Campaign type</span><select id="program-campaign-kind"><option value="opening" data-i18n="grandOpening">Grand opening</option><option value="seasonal" data-i18n="seasonalCampaign">Seasonal</option><option value="custom" data-i18n="customCampaign">Other</option></select></label><div class="promo-field-row"><label class="promo-field"><span data-i18n="startDateOptional">Start date</span><input id="program-campaign-start" type="date"></label><label class="promo-field"><span data-i18n="endDateOptional">End date</span><input id="program-campaign-end" type="date"></label></div><button type="button" class="promo-button" id="add-program-campaign" data-i18n="addProgramCampaign">Add campaign</button><p class="promo-error" id="program-campaign-error" role="alert"></p></div>
+          <p class="promo-note" id="program-campaign-context"></p>
+          <div class="promo-field-row"><label class="promo-field"><span data-i18n="postMode">Posting schedule</span><select name="postMode"><option value="off" data-i18n="postOff">No automatic posting</option><option value="enabled" data-i18n="postOnEnable">When the promotion starts</option><option value="milestones" data-i18n="postMilestones">Program milestones</option><option value="weekly" data-i18n="postWeekly">Repeat weekly</option></select></label><label class="promo-field" id="post-time-field" hidden><span data-i18n="postTime">Posting time · shop timezone</span><input name="postTime" type="time" value="09:00"></label></div>
+          <div id="posting-settings" hidden><div id="creation-post-channels" class="pc-option-grid"></div><div id="creation-post-milestones" class="pc-option-grid"></div><p class="promo-note" data-i18n="postScheduleHint">Review the queue before publishing. Dates follow the promotion; manually edited dates stay fixed.</p><div id="promotion-post-queue" class="pc-post-queue"></div></div>
+        </section>
         <div class="phase-compat-fields" hidden>
           <select id="editor-language" aria-label="Language"><option value="en">EN</option><option value="vi">VI</option></select>
-          <select name="cta"><option value="details">View promotion</option><option value="booking">Book an appointment</option></select>
           <input type="hidden" name="boostArea" value="Katy">
-          <input type="radio" name="goal" value="slow-hours" checked>
           <input type="checkbox" name="shareDestination" value="oneqr" checked><input type="checkbox" name="shareDestination" value="nearby" checked><input type="checkbox" name="shareDestination" value="search" checked>
-          <select name="outreachSegment"><option value="pedicure">Pedicure customers</option></select><select name="outreachChannel"><option value="sms-email">SMS + Email</option></select><select name="partnerMode"><option value="off">Off</option></select>
-          <div class="paid-placement-config" hidden></div><div id="publication-summary"></div><ol id="publication-history"></ol><section id="promotion-share-channels"><details><summary>Share</summary></details></section><button type="button" id="preview-promotion">Preview</button>
+          <select name="outreachSegment"><option value="pedicure">Pedicure customers</option></select><select name="outreachChannel"><option value="sms-email">SMS + Email</option></select>
+          <div class="paid-placement-config" hidden></div><div id="publication-summary"></div><ol id="publication-history"></ol><button type="button" id="preview-promotion">Preview</button>
         </div>
       </div>
       <aside class="editor-preview" aria-labelledby="banners-title">
         <h3 class="section-number" id="banners-title" data-i18n="bannersSection">04 / Banners & posters</h3>
+        <div class="pc-preview-tabs" role="group" aria-label="Promotion preview"><button type="button" data-create-preview="banner" aria-pressed="true" data-i18n="banner">Banner</button><button type="button" data-create-preview="oneqr" aria-pressed="false">OneQR</button><button type="button" data-create-preview="app" aria-pressed="false">App</button><button type="button" data-create-preview="checkin" aria-pressed="false" data-i18n="checkinPreview">Check-in</button><button type="button" data-create-preview="pos" aria-pressed="false">POS</button><button type="button" data-create-preview="booking" aria-pressed="false" data-i18n="bookingPreview">Booking</button></div>
         <div id="promotion-preview" aria-live="polite"></div><div class="studio-preview-terms" id="studio-preview-terms"></div>
         <p class="promo-note" data-i18n="bannerHint">Reorder banners to choose the cover image. Every banner opens the same promotion.</p>
         <div id="promotion-banners" class="promo-banner-list"></div>
@@ -190,6 +229,8 @@
         <button type="button" class="promo-button phase-ai-button" id="generate-ai-banner"><span data-icon="sparkles"></span><span>Generate banner with AI</span></button>
         <p class="promo-note" id="ai-banner-status">Describe the promotion and let AI Ads create banner options.</p>
         <button type="button" class="promo-text-button" id="preview-draft"><span data-icon="external-link"></span><span data-i18n="previewPrint">Preview & print poster</span></button>
+        <section class="pc-preflight"><h4 data-i18n="preflightTitle">Review before saving</h4><div id="creation-preflight" aria-live="polite"></div></section>
+        <section id="promotion-share-channels" class="pc-share"><details><summary data-i18n="shareLinkQr">Customer link &amp; QR</summary><div id="creation-share-body"></div><p id="creation-share-feedback" class="promo-note" role="status"></p></details></section>
       </aside>
     </div>
     <footer class="editor-footer"><div><p id="promotion-error" class="promo-error" role="alert"></p><p class="promo-note" id="save-note" data-i18n="saveNote">Save draft keeps the promotion disabled.</p></div><div class="editor-footer-actions"><button type="button" class="promo-button promotion-footer-cancel" data-close-editor data-i18n="cancel">Cancel</button><button type="button" class="promo-button promotion-footer-draft" id="save-promotion-draft">Save draft</button><button type="submit" class="promo-button promotion-footer-save" id="save-promotion">Save promotion</button><button type="button" class="promo-button primary promotion-footer-submit" id="submit-promotion-approval">Submit for approval</button></div></footer>
@@ -340,11 +381,17 @@
 <dialog id="promotion-poster-dialog" class="promo-poster-dialog" aria-labelledby="poster-title"><header class="editor-header"><div><p class="promo-eyebrow" data-i18n="preview">Preview</p><h2 id="poster-title" data-i18n="promotionPoster">Promotion poster</h2></div><button type="button" class="promo-close" id="close-poster" data-label="closePreview" aria-label="Close preview"><span data-icon="x"></span></button></header><div class="poster-body"><div id="poster-output"></div><div class="poster-pager"><button type="button" class="promo-button" id="previous-banner" data-label="previousBanner" aria-label="Previous banner"><span data-icon="arrow-left"></span></button><span id="poster-page"></span><button type="button" class="promo-button" id="next-banner" data-label="nextBanner" aria-label="Next banner"><span data-icon="arrow-right"></span></button></div><div id="poster-details"></div></div><footer class="editor-footer"><p class="promo-note" data-i18n="printHint">Print or save as PDF.</p><button class="promo-button primary" id="print-poster"><span data-icon="printer"></span><span data-i18n="print">Print poster</span></button></footer></dialog>
 <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
 <script>if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();</script>
-<script src="../assets/promotion-industry-icons.js?v=20261009"></script>
+<script src="../assets/promotion-industry-icons.js?v=20261009-create-enhance"></script>
 <script src="../assets/promotion-banner-assets.js"></script>
-<script src="../assets/promotion-studio.js?v=20261009-coupon-form"></script>
-<script src="../assets/promotion-campaigns.js?v=20260925-optional-tabs"></script>
-<script src="../assets/reward-promotions.js?v=20261009-industry-icons"></script>
+<script src="../assets/salon-data.js"></script>
+<script src="../assets/appointment-service-catalog.js"></script>
+<script src="../assets/service-approval-settings.js"></script>
+<script src="../assets/promotion-create-data.js?v=20261009"></script>
+<script src="../assets/promotion-studio.js?v=20261009-create-enhance"></script>
+<script src="../assets/promotion-create-enhancements.js?v=20261009"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+<script src="../assets/promotion-campaigns.js?v=20261009-industry"></script>
+<script src="../assets/reward-promotions.js?v=20261009-create-enhance"></script>
 <script>
 (function () {
   const promotionStudio = window.NEXORA_STUDIO;
@@ -367,7 +414,7 @@
     form.dataset.editing = offer.id ? 'true' : 'false';
     form.dataset.campaignStatus = linkedCampaignStatus(offer.id);
     form.dataset.initialPublic = offer.public || 'private';
-    form.elements.checkIn.checked = !offer.id || !!offer.checkIn;
+    form.elements.checkIn.checked = offer.checkIn ?? !offer.id;
     form.elements.promotionArea.value = offer.promotionArea || offer.boostArea || 'Katy';
     form.elements.paidObjective.value = offer.paidObjective || 'traffic';
     form.querySelectorAll('[name="paidPlacement"]').forEach(input => { input.checked = (offer.paidPlacements || ['search','explore']).includes(input.value); });
@@ -421,10 +468,8 @@
     {id:'fitness-trial',icon:'fitness',theme:'default',visualTitle:'Fitness Trial Week',offer:'7 DAYS',bodyTitle:'Gym or studio trial',category:'Fitness',detail:'Free 7-day trial or intro class. Promote through local discovery, website widget, and tracked booking link.',title:'Fitness Trial Week · Sample',badge:'7-DAY TRIAL',description:'Try eligible classes for seven days. Review participation terms before use.',type:'custom',value:'7-day trial'},
     {id:'wellness-first',icon:'spa',theme:'gold',visualTitle:'Wellness First Visit',offer:'$25 OFF',bodyTitle:'Med spa or wellness consult',category:'Wellness',detail:'$25 off first consultation or selected wellness service. Requires clear terms and approval before public distribution.',title:'Wellness First Visit · Sample',badge:'FIRST VISIT',description:'Save $25 on an eligible first consultation or wellness service.',type:'fixed',value:'25'},
     {id:'event-night',icon:'bar',theme:'green',visualTitle:'Event Night Promo',offer:'2 FOR 1',bodyTitle:'Bar, venue, or entertainment',category:'Event',detail:'2-for-1 entry or selected drink special for event night. Good for OneQR audience, CryptoMap360, and social assets.',title:'Event Night Promo · Sample',badge:'EVENT NIGHT',description:'Two-for-one admission for the selected event night.',type:'custom',value:'2-for-1'},
-    {id:'build-year',icon:'calendar',theme:'blue',visualTitle:'Build My Year',offer:'12 MONTHS',bodyTitle:'Seasonal campaign set',category:'1 year',detail:'Creates Spring, Summer, Fall, and Holiday drafts with suggested banners, channels, schedule, and tracking goals.',buttonLabel:'Create drafts',title:'Spring Refresh · Build My Year',badge:'SPRING',description:'The first of four seasonal promotion drafts. Review Spring, Summer, Fall and Holiday offers before enabling.',type:'percent',value:'15'}
+    {id:'build-year',icon:'calendar',theme:'blue',visualTitle:'Build My Year',offer:'12 MONTHS',bodyTitle:'Seasonal campaign set',category:'1 year',detail:'Start with Spring Refresh, then use seasonal templates for Summer, Fall and Holiday. Group them in a seasonal campaign and choose a posting schedule.',buttonLabel:'Create drafts',title:'Spring Refresh · Build My Year',badge:'SPRING',description:'Spring seasonal promotion. Review the offer and schedule before enabling.',type:'percent',value:'15'}
   ];
-  const templateHost = document.getElementById('promotion-templates');
-  const templateFilterHost = document.getElementById('template-category-filters');
   const templateCategories = [
     {id:'all',label:'All'},
     {id:'beauty',label:'Beauty',icon:'cosmetics'},
@@ -439,42 +484,8 @@
     {id:'wellness',label:'Wellness',icon:'spa'}
   ];
   const templateCategory = {'weekday-pedicure':['beauty'],'add-on-upgrade':['beauty'],'rebook-save':['beauty'],'gift-card':['gift-card'],'lunch-combo':['restaurant'],'coffee-hour':['restaurant'],'retail-bundle':['apparel','shopping'],'oil-return':['lifestyle'],'fitness-trial':['lifestyle','wellness'],'wellness-first':['wellness','beauty'],'event-night':['destination','entertainment'],'build-year':['home','lifestyle']};
-  let activeTemplateCategory = 'all';
   const esc = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-  function renderTemplateFilters() {
-    templateFilterHost.innerHTML = templateCategories.map(item => '<button type="button" class="phase-template-filter' + (item.id === activeTemplateCategory ? ' active' : '') + '" data-template-category="' + item.id + '" aria-pressed="' + (item.id === activeTemplateCategory) + '">' + (item.icon ? industryIcons.image(item.icon) : '') + '<span>' + esc(item.label) + '</span></button>').join('');
-  }
-  function renderPhaseTemplates() {
-    const visibleCatalog = activeTemplateCategory === 'all' ? catalog : catalog.filter(item => templateCategory[item.id]?.includes(activeTemplateCategory));
-    if (templateHost.dataset.templateFilter === activeTemplateCategory && templateHost.querySelectorAll('[data-phase-template]').length === visibleCatalog.length) return;
-    templateHost.dataset.templateFilter = activeTemplateCategory;
-    templateHost.innerHTML = visibleCatalog.map((item,index) => '<article class="promo-template phase-template-card"><div class="phase-template-visual phase-template-' + esc(item.theme) + '"><div class="phase-template-visual-copy"><strong>' + esc(item.visualTitle) + '</strong><span>' + esc(item.offer) + '</span></div><span class="phase-template-symbol" aria-hidden="true">' + industryIcons.image(item.icon) + '</span></div><div class="phase-template-body"><div class="phase-template-top"><strong>' + esc(item.bodyTitle) + '</strong><span class="phase-template-category">' + esc(item.category) + '</span></div><p>' + esc(item.detail) + '</p><button type="button" class="promo-button' + (index === 0 ? ' primary' : '') + '" data-phase-template="' + esc(item.id) + '">' + esc(item.buttonLabel || 'Use template') + '<span aria-hidden="true">→</span></button></div></article>').join('');
-  }
-  renderTemplateFilters();
-  renderPhaseTemplates();
-  new MutationObserver(renderPhaseTemplates).observe(templateHost,{childList:true});
-  templateFilterHost.addEventListener('click',event => {
-    const button = event.target.closest('[data-template-category]'); if (!button || button.dataset.templateCategory === activeTemplateCategory) return;
-    activeTemplateCategory = button.dataset.templateCategory;
-    renderTemplateFilters();
-    renderPhaseTemplates();
-  });
-  templateHost.addEventListener('click',event => {
-    const button = event.target.closest('[data-phase-template]'); if (!button) return;
-    const item = catalog.find(entry => entry.id === button.dataset.phaseTemplate); if (!item) return;
-    document.getElementById('create-promotion').click();
-    const form = document.getElementById('promotion-form');
-    const set = (name,value) => { const control = form.elements.namedItem(name); if (control) control.value = value; };
-    set('offerType',['rebook-save','wellness-first'].includes(item.id) ? 'coupon' : 'deal');
-    if (form.elements.namedItem('offerType').value === 'coupon') {
-      set('customerGroup',item.id === 'wellness-first' ? 'new' : 'returning');
-      set('serviceScope','all'); set('stacking','exclusive');
-    }
-    form.elements.namedItem('value').type = ['percent','fixed'].includes(item.type) ? 'number' : 'text';
-    set('title',item.title); set('badge',item.badge); set('description',item.description); set('type',item.type); set('value',item.value); set('startTime',item.start || '00:00'); set('endTime',item.end || '23:59');
-    form.querySelectorAll('[name="days"]').forEach(input => { input.checked = (item.days || ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']).includes(input.value); });
-    form.elements.namedItem('offerType')[0].dispatchEvent(new Event('change',{bubbles:true}));
-  });
+  window.NEXORA_PROMOTION_CREATE.mountLibrary(catalog,templateCategories,templateCategory);
 
   const list = document.getElementById('promotion-list');
   function syncTrackingActions() {
@@ -618,7 +629,13 @@
     resetAIGenerator();
     const form = document.getElementById('promotion-form');
     const prompt = document.getElementById('ai-banner-prompt');
-    if (!prompt.value.trim()) prompt.value = [form.elements.title.value,form.elements.description.value].filter(Boolean).join('. ');
+    const context = window.NEXORA_PROMOTION_CREATE.aiContext();
+    if (!prompt.value.trim() || prompt.value === prompt.dataset.promotionContext) prompt.value = context;
+    prompt.dataset.promotionContext = context;
+    const selectedIndustry = form.elements.industryId.selectedOptions[0];
+    const aiIndustry = document.getElementById('ai-brand-industry');
+    const matchingIndustry = Array.from(aiIndustry.options).find(option => option.dataset.industryIcon === selectedIndustry.dataset.industryIcon);
+    if (matchingIndustry) { aiIndustry.value = matchingIndustry.value; aiIndustry.dispatchEvent(new Event('change',{bubbles:true})); }
     aiDialog.showModal();
   });
   document.getElementById('close-ai-banner').addEventListener('click',() => { resetAIGenerator(); aiDialog.close(); });
@@ -648,8 +665,8 @@
   document.getElementById('submit-promotion-approval').addEventListener('click',() => {
     const form = document.getElementById('promotion-form');
     const publicPlacement = form.querySelector('[name="public"]');
-    if (!publicPlacement.checked && !form.elements.paidBoost.checked) {
-      document.getElementById('promotion-error').textContent = 'Select Search Deals listing or enable Paid Boost before submitting for approval.';
+    if (!publicPlacement.checked && !form.querySelector('[name="publicChannel"]:checked')) {
+      document.getElementById('promotion-error').textContent = 'Select a Public discovery channel before submitting for approval.';
       publicPlacement.focus();
       return;
     }
@@ -661,7 +678,6 @@
     const form = document.getElementById('promotion-form');
     form.dataset.saveMode = mode;
     const publicPlacement = form.querySelector('[name="public"]');
-    if (form.dataset.initialPublic === 'private') publicPlacement.checked = false;
     publicPlacement.dispatchEvent(new Event('change',{bubbles:true}));
   };
   document.getElementById('save-promotion').addEventListener('click',() => saveWithoutApproval('save'));

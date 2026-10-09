@@ -109,7 +109,7 @@
   }
   function snapshot(offer) {
     const data = {};
-    ['title','badge','description','offerType','totalSlots','perPersonLimit','holdDays','type','value','days','startTime','endTime','banners','services','audience','redemption','code','serviceIds','paidBoost','boostArea','boostBudget','goal','shareDestinations','outreachSegment','outreachChannel','partnerMode',...keys].forEach(key => { data[key] = offer[key] ?? defaults[key] ?? null; });
+    ['title','badge','description','offerType','totalSlots','perPersonLimit','holdDays','type','value','days','startTime','endTime','banners','services','audience','redemption','code','serviceIds','paidBoost','boostArea','boostBudget','goal','shareDestinations','outreachSegment','outreachChannel','partnerMode','industryId','useRequirement','minimumSpend','maximumDiscount','dealFrequency','dealMonthlyCap','serviceGroupIds','internalChannels','publicChannels','searchListing','checkinPositions','bookingPositions','externalAds','partnerConsent',...keys].forEach(key => { data[key] = offer[key] ?? defaults[key] ?? null; });
     data.offerType ??= 'deal';
     return data;
   }

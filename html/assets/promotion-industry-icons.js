@@ -39,13 +39,13 @@
     for (const group of select.children) {
       const section = document.createElement('div');
       section.setAttribute('role','group');
-      section.setAttribute('aria-label',group.label);
+      if (group.tagName === 'OPTGROUP') section.setAttribute('aria-label',group.label);
       const heading = document.createElement('div');
       heading.className = 'promotion-industry-group';
       heading.setAttribute('aria-hidden','true');
       heading.textContent = group.label;
-      section.append(heading);
-      for (const option of group.children) {
+      if (group.tagName === 'OPTGROUP') section.append(heading);
+      for (const option of group.tagName === 'OPTION' ? [group] : group.children) {
         const button = document.createElement('button');
         button.type = 'button';
         button.className = 'promotion-industry-option';
@@ -65,8 +65,17 @@
     }
     function sync() {
       const selected = select.selectedOptions[0];
+      if (!selected) return;
       trigger.innerHTML = image(selected.dataset.industryIcon) + '<span id="' + select.id + '-value">' + escape(selected.textContent) + '</span><span class="promotion-industry-arrow" aria-hidden="true"></span>';
-      buttons.forEach(button => button.setAttribute('aria-selected',String(button.dataset.value === select.value)));
+      buttons.forEach(button => {
+        button.setAttribute('aria-selected',String(button.dataset.value === select.value));
+        const option = Array.from(select.options).find(item => item.value === button.dataset.value);
+        if (option) button.querySelector('span').textContent = option.textContent;
+      });
+      Array.from(list.children).forEach((section,index) => {
+        const group = select.children[index];
+        if (group?.tagName === 'OPTGROUP') { section.setAttribute('aria-label',group.label); section.querySelector('.promotion-industry-group').textContent = group.label; }
+      });
     }
     function close(focus) {
       list.hidden = true;

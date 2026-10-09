@@ -243,7 +243,7 @@
     if (!result.id || paidBoost || Object.hasOwn(current,'paidBoost')) result.paidBoost = paidBoost;
     if (!result.id || paidBoost || Object.hasOwn(current,'boostArea')) result.boostArea = field('boostArea').value;
     if (!result.id || paidBoost || Object.hasOwn(current,'boostBudget')) result.boostBudget = Number(field('boostBudget').value);
-    const goal = form.querySelector('[name="goal"]:checked')?.value || 'slow-hours';
+    const goal = field('goal').value || 'slow-hours';
     const shareDestinations = Array.from(form.querySelectorAll('[name="shareDestination"]:checked'),input => input.value);
     const outreachSegment = field('outreachSegment').value, outreachChannel = field('outreachChannel').value, partnerMode = field('partnerMode').value;
     if (!result.id || Object.hasOwn(current,'goal') || goal !== 'slow-hours') result.goal = goal;
@@ -259,7 +259,7 @@
     studio.conditional(form);
     const coupon = field('offerType').value === 'coupon';
     $('#coupon-settings').hidden = !coupon;
-    $('#coupon-eligibility').hidden = !coupon;
+    $('#coupon-eligibility').hidden = false;
     ['totalSlots','perPersonLimit','holdDays'].forEach(name => { field(name).disabled = !coupon; });
     field('totalSlots').required = coupon;
     field('perPersonLimit').required = coupon;
@@ -280,14 +280,17 @@
   function showError(message, name) {
     $('#promotion-error').textContent = message;
     form.querySelectorAll('[aria-invalid]').forEach(el => el.removeAttribute('aria-invalid'));
-    if (name) { const target = form.querySelector('[name="' + name + '"]') || field(name); target.setAttribute('aria-invalid','true'); target.focus(); }
+    if (name) { const target = form.querySelector('[name="' + name + '"]') || field(name); target.setAttribute('aria-invalid','true');
+      for (let ancestor = target.parentElement; ancestor && ancestor !== form; ancestor = ancestor.parentElement) if (ancestor.tagName === 'DETAILS') ancestor.open = true;
+      const focusTarget = target.hidden && target.dataset.imagePicker ? target.nextElementSibling.querySelector('button') : target;
+      focusTarget.focus(); }
   }
   function validation(offer) {
     if (!offer.title) return ['nameError','title'];
     for (const [name,max] of [['title',100],['badge',50],['description',1000]]) if ((offer[name] || '').length > max) return ['lengthError',name];
     if (!['deal','coupon'].includes(offer.offerType ?? 'deal')) return ['offerTypeError','offerType'];
+    if ((offer.exclusions || '').length > 1000) return ['lengthError','exclusions'];
     if (offerType(offer) === 'coupon') {
-      if ((offer.exclusions || '').length > 1000) return ['lengthError','exclusions'];
       if (!offer.startDate) return ['couponStartDateError','startDate'];
       if (!offer.endDate) return ['couponEndDateError','endDate'];
       for (const name of ['totalSlots','perPersonLimit','holdDays']) {
@@ -321,9 +324,9 @@
     ['title','badge','description','value','startTime','endTime'].forEach(name => { field(name).value = current[name] ?? ''; });
     ['free','custom'].forEach(type => { form.querySelector('option[value="' + type + '"]').hidden = current.type !== type; });
     form.querySelectorAll('[name="days"]').forEach(input => { input.checked = current.days.includes(input.value); });
-    field('checkout').checked = !!current.checkout; field('hero').checked = !!current.hero; field('public').checked = !current.id || current.public !== 'private';
+    field('checkout').checked = !!current.checkout; field('hero').checked = !!current.hero; field('public').checked = !current.id || (current.searchListing ?? current.public !== 'private');
     field('paidBoost').checked = !!current.paidBoost; field('boostArea').value = current.boostArea || 'Houston'; field('boostBudget').value = Number(current.boostBudget) > 0 ? current.boostBudget : 100;
-    const goal = form.querySelector('[name="goal"][value="' + (current.goal || 'slow-hours') + '"]'); if (goal) goal.checked = true;
+    field('goal').value = current.goal || 'slow-hours';
     form.querySelectorAll('[name="shareDestination"]').forEach(input => { input.checked = (current.shareDestinations || ['oneqr','nearby','search']).includes(input.value); });
     field('outreachSegment').value = current.outreachSegment || 'pedicure'; field('outreachChannel').value = current.outreachChannel || 'sms-email'; field('partnerMode').value = current.partnerMode || 'off';
     updateConditional();
@@ -343,7 +346,9 @@
     $('#banner-current-design').textContent = banner.assetId ? t('uploaded') : banner.theme;
     $('#banner-theme').value = editableTheme ? banner.theme : '';
     $('#banner-theme').disabled = uploadPending;
-    $('#promotion-preview').innerHTML = artwork(offer,banner);
+    const art = artwork(offer,banner);
+    $('#promotion-preview').innerHTML = window.NEXORA_PROMOTION_CREATE?.preview(offer,art,t) || art;
+    window.NEXORA_PROMOTION_CREATE?.preflight(offer,t);
     $('#studio-preview-terms').innerHTML = '<strong>'+t('previewTerms')+'</strong>' + studio.terms(offer,t).map(term => '<p>'+esc(term)+'</p>').join('');
     studio.renderPublication(current,t);
     $('#promotion-banners').innerHTML = current.banners.map((banner,index) => {
@@ -366,7 +371,7 @@
     const status = record.paidApprovalRequested ? 'pending' : 'draft';
     const priorHistory = existing?.history || [];
     const history = !existing ? [{at:Date.now(),status,source:'promotion'}] : existing.status !== status ? [...priorHistory,{at:Date.now(),status,source:'promotion'}] : priorHistory;
-    const campaign = {...(existing || {}),id:existing?.id || 'campaign-' + uid().replace('promotion-',''),name:record.title + ' · Paid Boost',promotionId:record.id,creativeId:record.banners[0].id,objective:record.paidObjective || 'traffic',area:record.boostArea,radius:existing?.radius || 10,category:'beauty',audience:'local',placements:record.paidPlacements?.length ? record.paidPlacements : ['search','explore'],startDate:record.paidStartDate || record.startDate || '',endDate:record.paidEndDate || record.endDate || '',dailyBudget,totalBudget,billing:'cpc',source:'ads-credit',status,quickSetup:true,updatedAt:Date.now(),history};
+    const campaign = {...(existing || {}),id:existing?.id || 'campaign-' + uid().replace('promotion-',''),name:record.title + ' · Paid Boost',promotionId:record.id,creativeId:record.banners[0].id,objective:record.paidObjective || 'traffic',area:record.boostArea,radius:existing?.radius || 10,category:window.NEXORA_PROMOTION_CREATE?.campaignCategory(record.industryId) || 'beauty',industryId:record.industryId,audience:'local',placements:record.paidPlacements?.length ? record.paidPlacements : ['search','explore'],startDate:record.paidStartDate || record.startDate || '',endDate:record.paidEndDate || record.endDate || '',dailyBudget,totalBudget,billing:'cpc',source:'ads-credit',status,quickSetup:true,updatedAt:Date.now(),history};
     return existing ? campaigns.map(item => item.id === existing.id ? campaign : item) : [...campaigns,campaign];
   }
   function saveOffer() {
@@ -381,6 +386,7 @@
     const record = {...offer,id:offer.id || uid(),paused:offer.id ? offer.paused : saveMode === 'draft',createdAt:offer.createdAt || Date.now(),updatedAt:Date.now()};
     const next = {...state,offers:offer.id ? state.offers.map(item => item.id === offer.id ? record : item) : [...state.offers,record]};
     next.campaigns = quickCampaigns({...record,paidApprovalRequested});
+    window.NEXORA_PROMOTION_CREATE?.patchState(next);
     if (persist(next,true)) {
       draftAssets.filter(id => !record.banners.some(banner => banner.assetId === id)).forEach(id => { window.NEXORA_PROMOTION_ASSETS?.discard?.(id).catch(() => {}); imageUrls.delete(id); });
       draftAssets = []; editor.close(); clearFilters(); feedback(t(offer.id ? 'updated' : 'saved'));
@@ -523,6 +529,25 @@
   document.addEventListener('click',event => { document.querySelectorAll('.promo-more[open]').forEach(menu => { if (!menu.contains(event.target)) menu.open = false; }); });
   document.addEventListener('keydown',event => { if (event.key === 'Escape') document.querySelectorAll('.promo-more[open]').forEach(menu => { menu.open = false; }); });
   window.addEventListener('storage',event => { if (event.key === key || event.key === null) { load(); render(); } });
+  window.NEXORA_PROMOTION_EDITOR = {
+    read:readOffer, translate:t, refresh:() => { if (current) { updateConditional(); renderBanners(); } },
+    applyTemplate(preset) {
+      if (!current) return;
+      const retained = readOffer();
+      const keys = ['title','badge','description','offerType','type','value','days','startTime','endTime','industryId','goal','serviceScope','serviceIds','serviceGroupIds','customerGroup','stacking','useRequirement','minimumSpend','maximumDiscount','exclusions','code','totalSlots','perPersonLimit','holdDays','dealFrequency','dealMonthlyCap','startDate','endDate','cta','templateId','templateVersion','templateSource','templateBaseline'];
+      current = {...retained,...Object.fromEntries(keys.map(key => [key,preset[key] ?? null]))};
+      const templateTheme = {blue:'ocean',green:'sage',default:'purple'}[preset.theme] || preset.theme;
+      if (!current.id && !current.banners[0].assetId && Object.hasOwn(bannerThemes,templateTheme)) current.banners[0].theme = templateTheme;
+      studio.fill(form,current);
+      field('offerType').value = current.offerType;
+      field('type').value = current.type;
+      ['free','custom'].forEach(type => { form.querySelector('option[value="' + type + '"]').hidden = current.type !== type; });
+      updateConditional();
+      ['title','badge','description','value','startTime','endTime','totalSlots','perPersonLimit','holdDays'].forEach(name => { field(name).value = current[name] ?? ''; });
+      form.querySelectorAll('[name="days"]').forEach(input => { input.checked = current.days.includes(input.value); });
+      updateConditional(); renderBanners();
+    }
+  };
   load();
   window.NEXORA_CAMPAIGNS.init({getState:() => state,available:() => !loadFailed,persist,t,feedback,openEditor,artwork,hydrateImages});
   applyLanguage();

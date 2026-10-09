@@ -33,6 +33,8 @@
       id: SALON_ID,
       name: 'Bitcoin Nail Bar',
       location: 'Houston, TX',
+      industryId: 'nail',
+      products: [],
     },
     categories: [
       { id: 'pedicure', name: 'Pedicure', kind: 'service', active: true },
@@ -218,6 +220,8 @@
         id: SALON_ID,
         name: asString(salon.name, DEFAULT_CATALOG.salon.name),
         location: asString(salon.location, DEFAULT_CATALOG.salon.location),
+        industryId: asString(salon.industryId, DEFAULT_CATALOG.salon.industryId),
+        products: Array.isArray(salon.products) ? salon.products.filter(function (id) { return typeof id === 'string'; }) : [],
       },
       categories: normalizeCategories(sourceCategories, services),
       services: services,
