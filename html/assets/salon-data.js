@@ -116,6 +116,8 @@
       price: Number.isFinite(price) ? price : null,
       durationMin: Number.isFinite(duration) && duration > 0 ? duration : 60,
       requiredSkill: asString(service.requiredSkill),
+      bufferBeforeMin: Math.max(0, Number(service.bufferBeforeMin) || 0),
+      bufferAfterMin: Math.max(0, Number(service.bufferAfterMin) || 0),
       icon: asString(service.icon, '✨'),
       active: service.active !== false,
       categoryId: asString(service.categoryId),

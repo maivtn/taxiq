@@ -472,6 +472,7 @@
   </style>
   <link rel="stylesheet" href="../assets/vendor/tom-select/tom-select.css">
   <link rel="stylesheet" href="../assets/pos-salon-settings.css?v=20260911-step-reorder">
+  <link rel="stylesheet" href="../assets/staff-schedule-workspace.css">
   <link rel="stylesheet" href="../assets/pos-salon-sms-settings.css?v=20260924-care-two-templates">
 </head>
 <body>
@@ -708,6 +709,16 @@
                 </div>
               </div>
 
+              <div class="tech-modal-section" data-tech-app-access>
+                <div class="tech-modal-section-title"><i class="bi bi-phone" aria-hidden="true"></i>Staff app access</div>
+                <div class="tech-modal-fields">
+                  <label class="settings-field"><span class="settings-label">Today availability toggle</span><select class="settings-select" data-tech-same-day><option value="allowed">Allowed</option><option value="request" selected>Manager approval required</option><option value="none">Not allowed</option></select></label>
+                  <label class="settings-field"><span class="settings-label">Schedule requests</span><select class="settings-select" data-tech-request-policy><option value="request">Manager approval required</option><option value="none">View only</option><option value="self">Apply directly when bookings are unaffected</option></select></label>
+                  <label class="settings-field"><span class="settings-label">Today toggle with bookings</span><select class="settings-select" data-tech-booked-day><option value="review">Send for manager review</option><option value="block">Block off toggle</option></select></label>
+                </div>
+                <p class="schedule-help">Staff with no working hours or approved services stay unavailable for new bookings.</p>
+              </div>
+
               <div class="tech-modal-section">
                 <div class="tech-modal-section-title"><i class="bi bi-card-checklist" aria-hidden="true"></i>Services</div>
                 <div class="tech-service-checks tech-service-picker" data-tech-field="services" data-tech-service-picker>
@@ -715,6 +726,7 @@
                 </div>
               </div>
             </div>
+            <p class="schedule-form-error" data-tech-setup-error role="alert"></p>
             <div class="tech-modal-actions">
               <button class="booking-secondary-button" type="button" data-tech-modal-close>Close</button>
               <button class="booking-primary-button" type="button" data-tech-modal-save><i class="bi bi-check2" aria-hidden="true"></i>Save technician</button>
@@ -926,7 +938,7 @@
         var start = document.querySelector('[data-tech-schedule-start="' + day + '"]');
         var end = document.querySelector('[data-tech-schedule-end="' + day + '"]');
 
-        dayOff.checked = options && options.blank ? false : !daySchedule;
+        dayOff.checked = !daySchedule;
         if (start) start.value = daySchedule ? daySchedule.start : '';
         if (end) end.value = daySchedule ? daySchedule.end : '';
         syncTechDayOffRow(dayOff);
@@ -1110,6 +1122,13 @@
       setTechField('contractType', isCreate ? 'w2' : (choice.dataset.contractType || 'w2'));
       setTechTinValue(isCreate ? '' : (choice.dataset.ssn || ''), isCreate ? '' : (choice.dataset.ein || ''));
 
+      var scheduleStore=window.NEXORA_STAFF_SCHEDULE_STORE;
+      var appSchedule=scheduleStore.getStaffSchedule(scheduleStore.SALON_ID,isCreate?'new-staff':choice.dataset.techChoice,{});
+      document.querySelector('[data-tech-same-day]').value=appSchedule.sameDayMode;
+      document.querySelector('[data-tech-request-policy]').value=appSchedule.permission==='none'?'none':appSchedule.permission==='self'?'self':'request';
+      document.querySelector('[data-tech-booked-day]').value=appSchedule.bookedDayMode;
+      if(!isCreate)setTechScheduleValue(['mon','tue','wed','thu','fri','sat','sun'].filter(function(day){return appSchedule.weekly[day].working;}).map(function(day){return day+'='+appSchedule.weekly[day].start+'-'+appSchedule.weekly[day].end;}).join(';'));
+
       var nameField = document.querySelector('[data-tech-field="name"]');
       setTechSelectOpen(false);
       if (nameField) nameField.focus();
@@ -1119,6 +1138,7 @@
       var modal = document.querySelector('[data-tech-modal]');
       if (!modal) return;
 
+      document.querySelector('[data-tech-setup-error]').textContent='';
       modal.hidden = false;
       document.body.style.overflow = 'hidden';
       var search = document.querySelector('[data-tech-search]');
@@ -1196,7 +1216,8 @@
       var choices = document.querySelector('.tech-choice-grid');
       if (choices) {
         choices.innerHTML = technicians.map(function(technician, index) {
-          var services = technician.services && technician.services.length ? technician.services : (technician.skills || []);
+          var staffSchedule=window.NEXORA_STAFF_SCHEDULE_STORE.getStaffSchedule(window.NEXORA_STAFF_SCHEDULE_STORE.SALON_ID,technician.id,{});
+          var services=catalog.services.filter(function(service){return window.NEXORA_STAFF_SCHEDULE_STORE.isEligible(technician,service,staffSchedule);}).map(function(service){return service.name;});
           var profile = technician.posProfile || {};
           var commission = Math.round((profile.comm == null ? 0.6 : profile.comm) * 100);
           return '<button class="tech-choice-card' + (index === 0 ? ' is-active' : '') + '" type="button" role="option" data-tech-choice="' + escapeHtml(technician.id) + '"' +
@@ -1215,7 +1236,8 @@
       if (grid) {
         grid.innerHTML = '';
         technicians.forEach(function(technician) {
-          var services = technician.services && technician.services.length ? technician.services : (technician.skills || []);
+          var staffSchedule=window.NEXORA_STAFF_SCHEDULE_STORE.getStaffSchedule(window.NEXORA_STAFF_SCHEDULE_STORE.SALON_ID,technician.id,{});
+          var services=catalog.services.filter(function(service){return window.NEXORA_STAFF_SCHEDULE_STORE.isEligible(technician,service,staffSchedule);}).map(function(service){return service.name;});
           var profile = technician.posProfile || {};
           grid.appendChild(createTechCard({
             id: technician.id,
@@ -1230,6 +1252,12 @@
     }
 
     function saveTechModal() {
+      var incompleteDay=Array.from(document.querySelectorAll('[data-tech-modal] [data-tech-day-off]')).find(function(toggle){
+        if(toggle.checked)return false;
+        var row=toggle.closest('.tech-schedule-row');
+        return !row.querySelector('[data-tech-schedule-start]').value||!row.querySelector('[data-tech-schedule-end]').value;
+      });
+      if(incompleteDay){document.querySelector('[data-tech-setup-error]').textContent='Enter both start and end times for each working day, or mark it as a day off.';incompleteDay.closest('.tech-schedule-row').querySelector('input[type="time"]').focus();return;}
       var cleanFeeField = document.querySelector('[data-tech-field="cleanFee"]');
       if (!cleanFeeField.reportValidity()) return;
       var cleanFee = Number(getTechField('cleanFee'));
@@ -1246,13 +1274,14 @@
 
       var data = {
         id: id,
-        name: getTechField('name') || 'New technician',
+        name: getTechField('name').trim(),
         phone: getTechField('phone'),
         email: getTechField('email'),
-        services: getTechField('services') || 'Gel',
+        services: getTechField('services') || '',
         schedule: getTechField('schedule')
       };
 
+      if(!data.name){document.querySelector('[data-tech-setup-error]').textContent='Enter the technician name before saving.';document.querySelector('[data-tech-field="name"]').focus();return;}
       var nextCatalog = salonData.loadCatalog();
       var existing = id ? salonData.findTechnician(nextCatalog, id) : null;
       var services = String(data.services || '').split(',').map(function(service) { return service.trim(); }).filter(Boolean);
@@ -1277,8 +1306,26 @@
           ein: tinType === 'ein' ? tinValue : ''
         })
       }));
-      salonData.saveCatalog(Object.assign({}, nextCatalog, { technicians: nextTechnicians }));
+      var scheduleStore=window.NEXORA_STAFF_SCHEDULE_STORE;
+      var nextSchedule=scheduleStore.getStaffSchedule(scheduleStore.SALON_ID,id,{});
+      var parsedSchedule=parseTechSchedule(data.schedule);
+      ['mon','tue','wed','thu','fri','sat','sun'].forEach(function(day){
+        var hours=parsedSchedule[day];
+        nextSchedule.weekly[day]=hours?{working:true,start:hours.start,end:hours.end,breaks:(nextSchedule.weekly[day].breaks||[]).filter(function(pause){return pause.start>=hours.start&&pause.end<=hours.end;})}:{working:false,start:'',end:'',breaks:[]};
+      });
+      nextSchedule.permission=document.querySelector('[data-tech-request-policy]').value;
+      nextSchedule.sameDayMode=document.querySelector('[data-tech-same-day]').value;
+      nextSchedule.bookedDayMode=document.querySelector('[data-tech-booked-day]').value;
+      nextSchedule.serviceIds=services.map(function(name){return salonData.findService(nextCatalog,name)?.id;}).filter(Boolean);
+      var result=scheduleStore.saveStaffSetup(scheduleStore.SALON_ID,id,nextSchedule,Object.assign({},nextCatalog,{technicians:nextTechnicians}),window.NEXORA_APPOINTMENTS_STORE.loadAll());
+      if(!result.ok){
+        var message=result.error.code==='booking-impact'?'This change affects '+result.error.impacts.length+' existing booking(s). Resolve them in Booking Book before saving.':result.error.code==='invalid-schedule'?'Check the working hours: end time must follow start time.':'Unable to save staff setup in this browser. Please try again.';
+        document.querySelector('[data-tech-setup-error]').textContent=message;
+        return;
+      }
+      document.querySelector('[data-tech-setup-error]').textContent='';
       renderStaffRoster();
+      window.NEXORA_STAFF_SCHEDULE_SETTINGS?.refresh();
 
       setStaffStatus('Saved staff info: ' + data.name + '.');
       closeTechModal();

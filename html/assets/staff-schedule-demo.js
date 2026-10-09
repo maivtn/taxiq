@@ -5,7 +5,7 @@
   var catalog = window.NEXORA_SALON_DATA?.loadCatalog();
   if (!schedules || !bookings || !catalog) return;
   function dateKey(date) { return date.getFullYear() + '-' + String(date.getMonth() + 1).padStart(2,'0') + '-' + String(date.getDate()).padStart(2,'0'); }
-  var monday = new Date();
+  var monday = new Date(schedules.salonToday(schedules.SALON_ID) + 'T12:00:00');
   monday.setHours(12,0,0,0);
   monday.setDate(monday.getDate() - (monday.getDay() + 6) % 7);
   var batch = 'schedule-demo-' + dateKey(monday);
@@ -33,7 +33,7 @@
       var schedule = schedules.getStaffSchedule(schedules.SALON_ID,person.id,{});
       if (index === 1) { schedule.weekly.tue.working = false; schedule.weekly.sat.end = '17:00'; }
       if (index === 2) schedule.weekly.wed.breaks.push({start:'15:00',end:'15:15'});
-      if (index === 3) { schedule.weekly.mon.start = '10:00'; schedule.permission = 'none'; }
+      if (index === 3) { schedule.weekly.mon.start = '10:00'; schedule.permission = 'none'; schedule.sameDayMode = 'none'; }
       salon.staff[person.id] = schedule;
     });
     if (firstVisit) localStorage.setItem(schedules.STORAGE_KEY,JSON.stringify(state));
@@ -45,8 +45,10 @@
       people.forEach(function (person, index) {
         var schedule = schedules.scheduleForDate(schedules.getStaffSchedule(schedules.SALON_ID,person.id,{}),dateAt(day));
         if (!schedule.working) return;
+        var eligible=services.filter(function(service){return schedules.isEligible(person,service,schedules.getStaffSchedule(schedules.SALON_ID,person.id,{}));});
+        if(!eligible.length)return;
         ['10:00','11:30','14:00','16:00'].slice(0,index === 0 ? 4 : 2 + index % 2).forEach(function (time, slot) {
-          var service = services[(day + index + slot) % services.length];
+          var service = eligible[(day + index + slot) % eligible.length];
           var duration = Number(service.durationMin) || 60;
           var end = new Date(dateAt(day) + 'T' + time + ':00'); end.setMinutes(end.getMinutes() + duration);
           var endTime = String(end.getHours()).padStart(2,'0') + ':' + String(end.getMinutes()).padStart(2,'0');

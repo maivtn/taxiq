@@ -15,7 +15,13 @@
 
   var selectedStaff = '';
   var selectedDate = '';
-  var boardDate = dateKey(new Date());
+  var boardDate = store.salonToday(store.SALON_ID);
+  var workspaceTab = 'team';
+  var searchValue = '';
+  var previewService = '';
+  var previewStaff = '';
+  var previewTime = '';
+  var rulesOpen = false;
   var boardView = 'staff';
   var drawerOpen = false;
   var editorScope = 'weekly';
@@ -48,8 +54,9 @@
     var date = new Date(iso + 'T12:00:00');
     return !Number.isNaN(date.getTime()) && dateKey(date) === iso ? iso : '';
   }
-  function formatEditorDateFields() {
-    modalHost.querySelectorAll('input[type="date"]').forEach(function (native) {
+  function formatEditorDateFields(scope) {
+    (scope || modalHost).querySelectorAll('input[type="date"]').forEach(function (native) {
+      if (native.closest('.schedule-formatted-date')) return;
       var field = document.createElement('span');
       field.className = 'schedule-formatted-date';
       var text = document.createElement('input');
@@ -92,13 +99,34 @@
     boardDate = value;
     boardMessage = '';
     render(selectedStaff);
-    host.querySelector(focusSelector)?.focus();
+    host.querySelector(focusSelector === '[data-schedule-week-date]' ? '[data-date-display]' : focusSelector)?.focus();
   }
   function appointments() { try { return appointmentStore ? appointmentStore.loadAll() : []; } catch (_) { return []; } }
   function statusLabel(status) { return {pending:'Pending review', adjusted:'Adjusted by manager', blocked:'Booking conflict', applied:'Approved & synced', rejected:'Rejected', cancelled:'Cancelled'}[status] || status; }
-  function typeLabel(type) { return {'day-off':'Day off', 'change-hours':'Change hours', 'break':'Extra break', 'weekly-schedule':'Weekly schedule'}[type] || type; }
+  function typeLabel(type) { return {'day-off':'Day off', 'change-hours':'Change hours', 'break':'Extra break', 'weekly-schedule':'Weekly schedule', 'availability-today':'Today’s availability'}[type] || type; }
   function weeklySummary(weekly) { return ['mon','tue','wed','thu','fri','sat','sun'].map(function (key) { var day = weekly[key]; return key[0].toUpperCase() + key.slice(1) + ': ' + (day.working ? day.start + '–' + day.end : 'Day off'); }).join(' · '); }
-  function requestProposal(request) { if (request.type === 'weekly-schedule') return weeklySummary(request.weekly); return request.type === 'day-off' ? 'Not working' : request.start + '–' + request.end; }
+  function requestProposal(request) { if (request.type === 'availability-today') return request.available ? 'Receive new bookings today' : 'Stop new bookings today'; if (request.type === 'weekly-schedule') return weeklySummary(request.weekly); return request.type === 'day-off' ? 'Not working' : request.start + '–' + request.end; }
+  function coverageAfterChange(staffId,next,date,catalog) {
+    var rules=store.salonRules(store.SALON_ID),open=store.businessDay(date,rules);
+    if(!open.working)return [];
+    var roster=catalog.technicians.filter(function(person){return person.active!==false;}).map(function(person){
+      var schedule=person.id===staffId?next:store.getStaffSchedule(store.SALON_ID,person.id,{});
+      var day=store.scheduleForDate(schedule,date),start=day.start>open.start?day.start:open.start,end=day.end<open.end?day.end:open.end;
+      return {person:person,schedule:schedule,working:day.working&&start<end&&schedule.availableToday[date]!==false};
+    });
+    return skillsFor(catalog).filter(function (skill) {
+      var minimum=Number(rules.coverageMinimums[skill])||0;
+      var count=roster.filter(function(entry){return entry.working&&qualifiedForSkill(entry.person,skill,catalog,entry.schedule);}).length;
+      return count<minimum;
+    });
+  }
+  function requestImpactSummary(request,current,catalog) {
+    if(!['pending','adjusted','blocked'].includes(request.status))return '';
+    var next=store.requestSchedule(request,current);
+    var impacts=store.changeImpacts(request.staffId,current,next,appointments());
+    var gaps=request.type==='weekly-schedule'?Array.from(new Set(week().flatMap(function(date){return coverageAfterChange(request.staffId,next,dateKey(date),catalog);} ))):coverageAfterChange(request.staffId,next,request.date,catalog);
+    return '<div class="schedule-request-impact"><span>'+impacts.length+' existing booking(s) affected</span><span'+(gaps.length?' class="is-warning"':'')+'>'+(gaps.length?esc(gaps.join(', '))+' below minimum':'Coverage minimums met')+'</span></div>';
+  }
   function requestQueue(state, catalog) {
     var names = Object.fromEntries(catalog.technicians.map(function (person) { return [person.id, person.name]; }));
     var items = state.requests.filter(function (item) { return item.salonId === store.SALON_ID && matchesRequestFilter(item, requestFilter); }).sort(function (left, right) { return String(right.createdAt).localeCompare(String(left.createdAt)); });
@@ -108,7 +136,7 @@
       var schedule = store.getStaffSchedule(request.salonId, request.staffId, {});
       var current = store.scheduleForDate(schedule, request.date);
       var rejection = active && rejectId === request.id ? '<form class="schedule-reject-form" data-request-reject-form="' + esc(request.id) + '"><label>Reason for rejection (required)<textarea data-rejection-reason rows="3" maxlength="500" required placeholder="Explain why this request cannot be approved">' + esc(rejectionReason) + '</textarea></label><small>The staff member will see this reason. Their schedule will stay unchanged.</small><div><button type="submit" class="schedule-reject-confirm">Confirm rejection</button><button type="button" data-reject-cancel>Cancel</button></div></form>' : '';
-      return '<article class="schedule-request"><div class="schedule-request-main"><header><div><strong class="schedule-request-staff-name">' + esc(names[request.staffId] || request.staffId) + '</strong><div class="schedule-request-meta"><span class="schedule-request-type is-' + esc(request.type) + '">' + esc(typeLabel(request.type)) + '</span><small>' + esc(displayDate(request.date)) + '</small></div></div><span class="request-status is-' + esc(request.status) + '">' + esc(statusLabel(request.status)) + '</span></header><div class="schedule-request-compare"><p><small>Current</small><strong>' + esc(request.type === 'weekly-schedule' ? weeklySummary(schedule.weekly) : current.working ? current.start + '–' + current.end : 'Day off') + '</strong></p><span>→</span><p><small>Requested</small><strong>' + esc(requestProposal(request)) + '</strong></p></div><p>' + esc(request.reason || 'No reason provided') + '</p>' + (request.status === 'blocked' ? '<small class="schedule-conflict-note">' + (request.bookingImpactIds || []).length + ' booking(s) must be resolved before approval.</small>' : '') + (request.status === 'rejected' && request.rejectionReason ? '<p class="schedule-rejection-note"><strong>Rejection reason:</strong> ' + esc(request.rejectionReason) + '</p>' : '') + rejection + '</div>' + (active && rejectId !== request.id ? '<div class="schedule-request-actions"><button type="button" data-request-reject="' + esc(request.id) + '">Reject</button><button type="button" class="booking-primary-button" data-request-approve="' + esc(request.id) + '">' + (request.status === 'blocked' ? 'Check & approve again' : 'Approve & sync') + '</button></div>' : '') + '</article>';
+      return '<article class="schedule-request"><div class="schedule-request-main"><header><div><strong class="schedule-request-staff-name">' + esc(names[request.staffId] || request.staffId) + '</strong><div class="schedule-request-meta"><span class="schedule-request-type is-' + esc(request.type) + '">' + esc(typeLabel(request.type)) + '</span><small>' + esc(displayDate(request.date)) + '</small></div></div><span class="request-status is-' + esc(request.status) + '">' + esc(statusLabel(request.status)) + '</span></header><div class="schedule-request-compare"><p><small>Current</small><strong>' + esc(request.type === 'availability-today' ? (schedule.availableToday[request.date]===false?'New bookings off':'New bookings enabled') : request.type === 'weekly-schedule' ? weeklySummary(schedule.weekly) : current.working ? current.start + '–' + current.end : 'Day off') + '</strong></p><span>→</span><p><small>Requested</small><strong>' + esc(requestProposal(request)) + '</strong></p></div><p>' + esc(request.reason || 'No reason provided') + '</p>' + requestImpactSummary(request,schedule,catalog) + (request.status === 'blocked' ? '<small class="schedule-conflict-note">' + (request.bookingImpactIds || []).length + ' booking(s) must be resolved before approval.</small>' : '') + (request.status === 'rejected' && request.rejectionReason ? '<p class="schedule-rejection-note"><strong>Rejection reason:</strong> ' + esc(request.rejectionReason) + '</p>' : '') + rejection + '</div>' + (active && rejectId !== request.id ? '<div class="schedule-request-actions"><button type="button" data-request-reject="' + esc(request.id) + '">Reject</button><button type="button" class="booking-primary-button" data-request-approve="' + esc(request.id) + '">' + (request.status === 'blocked' ? 'Check & approve again' : 'Approve & sync') + '</button></div>' : '') + '</article>';
     }).join('');
   }
   function matchesRequestFilter(item, filter) {
@@ -126,7 +154,7 @@
     var added = 0;
     requestFilter = 'open';
     samples.forEach(function (sample,index) {
-      var person = people[index % people.length], date = new Date(); date.setHours(12,0,0,0); date.setDate(date.getDate() + 14 + index);
+      var person = people[index % people.length], date = new Date(store.salonToday(store.SALON_ID) + 'T12:00:00'); date.setHours(12,0,0,0); date.setDate(date.getDate() + 14 + index);
       var schedule = store.getStaffSchedule(store.SALON_ID,person.id,{});
       if (sample.type !== 'day-off') { for (var offset = 0; offset < 7 && !store.scheduleForDate(schedule,dateKey(date)).working; offset++) date.setDate(date.getDate() + 1); }
       var result = store.createRequest(Object.assign({salonId:store.SALON_ID,staffId:person.id,date:dateKey(date)},sample));
@@ -181,8 +209,8 @@
     var source = editorValues;
     var staff = salonData.loadCatalog().technicians.find(function (person) { return person.id === selectedStaff; });
     var tabs = {weekly:'Weekly schedule',date:'Date changes',permissions:'Staff permissions'};
-    var content = editorScope === 'weekly' ? '<div class="schedule-explainer"><strong>Regular hours, repeated every week</strong><p>Set each working day and its breaks. For a vacation, late start or extra break on one date, use Date changes.</p></div><section class="tech-modal-section">' + weeklyEditor() + '</section><p class="schedule-help">Date changes override these hours on their selected dates.</p>' : (editorScope === 'date' ? datePanel() : '<div class="schedule-explainer"><strong>Who can change this staff member’s availability?</strong><p>This controls changes to this staff member’s own hours, days off and breaks — not the salon’s opening hours or other staff schedules.</p></div><label>Staff availability permission<select class="schedule-select" data-schedule-permission><option value="none" ' + (source.permission === 'none' ? 'selected' : '') + '>View only — manager edits staff schedule</option><option value="request" ' + (source.permission !== 'none' && source.permission !== 'self' ? 'selected' : '') + '>Edit own schedule — approval required</option><option value="self" ' + (source.permission === 'self' ? 'selected' : '') + '>Edit own schedule — no approval needed</option></select></label><div class="schedule-permission-note"><strong>Your salon sets the approval rule</strong><p>Approval required: changes stay pending until a manager approves. No approval needed: staff changes apply directly. Changes affecting existing bookings still need manager resolution; bookings are never automatically cancelled or reassigned.</p></div>');
-    return '<div class="schedule-backdrop" data-schedule-close></div><aside class="schedule-drawer" data-schedule-drawer role="dialog" aria-modal="true" aria-labelledby="schedule-drawer-title" ' + (breakForm || impactReview ? 'inert' : '') + '><header><div class="schedule-editor-heading"><div class="schedule-staff-identity"><strong class="schedule-staff-name">' + esc(staff ? staff.name : selectedStaff) + '</strong><span class="schedule-staff-salon">' + esc(salonData.loadCatalog().salon.name) + '</span></div><h2 id="schedule-drawer-title" tabindex="-1">Edit staff schedule</h2></div><button type="button" data-schedule-close aria-label="Close schedule editor">×</button></header><div class="schedule-editor-tabs" role="tablist" aria-label="Schedule settings">' + Object.keys(tabs).map(function (key) { return '<button type="button" role="tab" id="schedule-tab-' + key + '" aria-controls="schedule-editor-panel" aria-selected="' + (editorScope === key) + '" data-schedule-scope="' + key + '">' + tabs[key] + '</button>'; }).join('') + '</div><section id="schedule-editor-panel" role="tabpanel" aria-labelledby="schedule-tab-' + editorScope + '">' + content + '</section><p class="schedule-form-error" data-schedule-error role="alert">' + esc(editorError) + '</p><p class="schedule-editor-message" role="status">' + esc(editorMessage) + '</p><footer><small>Save draft keeps edits private. Publish applies all three sections to Booking (demo).</small><div><button type="button" data-schedule-close>Cancel</button><button type="button" data-schedule-save-draft>Save draft</button><button type="button" class="booking-primary-button" data-schedule-publish>Publish schedule</button></div></footer></aside>' + breakDialog();
+    var content = editorScope === 'weekly' ? '<div class="schedule-explainer"><strong>Regular hours, repeated every week</strong><p>Set working days, hours and breaks. Use Date changes for a vacation or a late start on one date.</p></div><section class="tech-modal-section">' + weeklyEditor() + '</section><p class="schedule-help">Date changes override the weekly hours.</p>' : editorScope === 'date' ? datePanel() : permissionPanel(source,staff);
+    return '<div class="schedule-backdrop" data-schedule-close></div><aside class="schedule-drawer" data-schedule-drawer role="dialog" aria-modal="true" aria-labelledby="schedule-drawer-title" ' + (breakForm || impactReview || rulesOpen ? 'inert' : '') + '><header><div class="schedule-editor-heading"><div class="schedule-staff-identity"><strong class="schedule-staff-name">' + esc(staff ? staff.name : selectedStaff) + '</strong><span class="schedule-staff-salon">' + esc(salonData.loadCatalog().salon.name) + '</span></div><h2 id="schedule-drawer-title" tabindex="-1">Edit staff schedule</h2></div><button type="button" data-schedule-close aria-label="Close schedule editor">×</button></header><div class="schedule-editor-tabs" role="tablist" aria-label="Schedule settings">' + Object.keys(tabs).map(function (key) { return '<button type="button" role="tab" id="schedule-tab-' + key + '" aria-controls="schedule-editor-panel" aria-selected="' + (editorScope === key) + '" data-schedule-scope="' + key + '">' + tabs[key] + '</button>'; }).join('') + '</div><section id="schedule-editor-panel" role="tabpanel" aria-labelledby="schedule-tab-' + editorScope + '">' + content + '</section><p class="schedule-form-error" data-schedule-error role="alert">' + esc(editorError) + '</p><p class="schedule-editor-message" role="status">' + esc(editorMessage) + '</p><footer><small>Save draft keeps edits private. Publish applies all three sections to Booking (demo).</small><div><button type="button" data-schedule-preview-impact>Review impact</button><button type="button" data-schedule-close>Cancel</button><button type="button" data-schedule-save-draft>Save draft</button><button type="button" class="booking-primary-button" data-schedule-publish>Publish schedule</button></div></footer></aside>' + breakDialog();
   }
   function datePanel() {
     var dates = Object.keys(editorValues.exceptions).sort();
@@ -197,7 +225,7 @@
   function impactDialog() {
     if (!impactReview) return '<div data-request-impact hidden></div>';
     var rows = impactReview.impacts || [];
-    return '<div class="schedule-impact-backdrop"></div><section class="schedule-impact" data-request-impact role="dialog" aria-modal="true"><header><div><small>Approval paused</small><h2>Resolve affected bookings</h2></div><button type="button" data-impact-close aria-label="Close">×</button></header><p>This change has not been published. Reassign or reschedule these bookings, then approve again.</p><div class="schedule-impact-list">' + rows.map(function (item) { return '<a href="booking-book-phase-1.html?tab=booking&appointment=' + encodeURIComponent(item.appointmentId) + '"><strong>' + esc(item.customerName) + '</strong><span>' + esc(displayDate(item.startAt.slice(0, 10)) + ' · ' + item.startAt.slice(11, 16)) + '</span><small>Open booking →</small></a>'; }).join('') + '</div><footer><button type="button" data-impact-close>Keep request blocked</button><a class="booking-primary-button" href="booking-book-phase-1.html?tab=booking">Open Booking Book</a></footer></section>';
+    return '<div class="schedule-impact-backdrop"></div><section class="schedule-impact" data-request-impact role="dialog" aria-modal="true"><header><div><small>Approval paused</small><h2>Resolve affected bookings</h2></div><button type="button" data-impact-close aria-label="Close">×</button></header><p>This change has not been published. Resolve these appointments in Booking Book, then save or approve again.</p><div class="schedule-impact-list">' + rows.map(function (item) { return '<a href="booking-book-phase-1.html?tab=booking&appointment=' + encodeURIComponent(item.appointmentId) + '"><strong>' + esc(item.customerName) + '</strong><span>' + esc(displayDate(item.startAt.slice(0, 10)) + ' · ' + item.startAt.slice(11, 16)) + '</span><small>Open booking →</small></a>'; }).join('') + '</div><footer><button type="button" data-impact-close>Keep current schedule</button><a class="booking-primary-button" href="booking-book-phase-1.html?tab=booking">Open Booking Book</a></footer></section>';
   }
   function boardHeader(label, days) {
     return '<div class="schedule-row"><span>' + esc(label) + '</span>' + days.map(function (date) { return '<span>' + date.toLocaleDateString('en-US', {weekday:'short'}) + '<br>' + displayDate(dateKey(date)) + '</span>'; }).join('') + '</div>';
@@ -208,9 +236,9 @@
         var key = dateKey(date);
         var item = availabilityByStaff[person.id][key];
         var availability = item.availability;
-        return '<button type="button" class="schedule-day' + (!availability.working ? ' is-off' : '') + (item.conflicts.length ? ' has-conflict' : '') + '" data-schedule-day data-schedule-staff="' + esc(person.id) + '" data-schedule-date="' + key + '"><strong>' + (availability.working ? esc(availability.start + '–' + availability.end) : 'Day off') + '</strong><small>' + availability.openSlots.length + ' open · ' + availability.appointments.length + ' booked</small></button>';
+        return '<button type="button" class="schedule-day' + (!availability.working ? ' is-off' : '') + (item.conflicts.length ? ' has-conflict' : '') + '" data-schedule-day data-schedule-staff="' + esc(person.id) + '" data-schedule-date="' + key + '" aria-label="' + esc(person.name + ', ' + displayDate(key) + ', ' + shiftLabel(availability)) + '"><strong>' + (availability.working ? esc(availability.start + '–' + availability.end) : 'Day off') + '</strong><small>' + availability.openSlots.length + ' open starts · ' + availability.appointments.length + ' booked</small>' + (availability.source === 'exception' ? '<span class="schedule-cell-note">Date change</span>' : '') + (!availability.available && availability.working ? '<span class="schedule-cell-note">New bookings off</span>' : '') + (item.conflicts.length ? '<span class="schedule-cell-note is-conflict">' + item.conflicts.length + ' conflict(s)</span>' : '') + '</button>';
       }).join('');
-      return '<div class="schedule-row" data-schedule-staff="' + esc(person.id) + '"><strong>' + esc(person.name) + '</strong>' + cells + '</div>';
+      return '<div class="schedule-row" data-schedule-staff="' + esc(person.id) + '"><strong><button type="button" class="schedule-staff-row-button" data-schedule-edit-staff="' + esc(person.id) + '"><span class="schedule-avatar">' + esc(person.name.charAt(0)) + '</span><span>' + esc(person.name) + '<small>Edit weekly schedule</small></span></button></strong>' + cells + '</div>';
     }).join('');
     return '<div class="schedule-week" data-schedule-week>' + boardHeader('Staff', days) + rows + '</div>';
   }
@@ -221,19 +249,20 @@
       if (skill && skills.indexOf(skill) < 0) skills.push(skill);
     }
     (catalog.services || []).forEach(function (service) { if (service.active !== false) addSkill(service.requiredSkill); });
-    people.forEach(function (person) { (person.skills || []).forEach(addSkill); });
+
     skills.sort(function (a, b) { return a.localeCompare(b); });
     var rows = skills.map(function (skill) {
-      var qualified = people.filter(function (person) { return (person.skills || []).indexOf(skill) >= 0; });
+      var qualified = people.filter(function (person) { return qualifiedForSkill(person,skill,catalog); });
       var cells = days.map(function (date) {
         var key = dateKey(date);
-        var available = qualified.filter(function (person) { return availabilityByStaff[person.id][key].availability.working; });
+        var available = qualified.filter(function (person) { return availabilityByStaff[person.id][key].availability.available; });
         var chips = qualified.map(function (person) {
           var day = availabilityByStaff[person.id][key].availability;
           return '<button type="button" class="schedule-skill-chip' + (!day.working ? ' is-off' : '') + '" data-schedule-day data-schedule-staff="' + esc(person.id) + '" data-schedule-date="' + key + '" aria-label="Open ' + esc(person.name) + ' schedule for ' + esc(displayDate(key)) + '"><strong>' + esc(person.name) + '</strong><small>' + (day.working ? esc(day.start + '–' + day.end) : 'Off') + '</small></button>';
         }).join('');
-        var warning = qualified.length === 0 ? '<span class="schedule-coverage-warning is-unassigned">No qualified staff</span>' : (available.length === 0 ? '<span class="schedule-coverage-warning is-empty">No coverage</span>' : (available.length === 1 ? '<span class="schedule-coverage-warning">Limited · 1 tech</span>' : ''));
-        return '<div class="schedule-skill-cell">' + chips + warning + '</div>';
+        var minimum = Number(store.salonRules(store.SALON_ID).coverageMinimums[skill]) || 0;
+        var warning = !store.businessDay(key,store.salonRules(store.SALON_ID)).working ? '<span class="schedule-coverage-warning">Salon closed</span>' : available.length < minimum ? '<span class="schedule-coverage-warning is-empty">Needs ' + (minimum-available.length) + ' more</span>' : '';
+        return '<div class="schedule-skill-cell"><div class="schedule-skill-count"><strong>' + available.length + '</strong><small>working / ' + minimum + ' minimum</small></div>' + chips + warning + '</div>';
       }).join('');
       return '<div class="schedule-row schedule-skill-row"><strong>' + esc(skill) + '</strong>' + cells + '</div>';
     }).join('');
@@ -242,7 +271,112 @@
       var count = people.filter(function (person) { return availabilityByStaff[person.id][key].availability.working; }).length;
       return '<div class="schedule-skill-total"><strong>' + count + '</strong><small>techs</small></div>';
     }).join('');
-    return '<div class="schedule-coverage-intro"><p class="schedule-coverage-help">Coverage is calculated from each staff member’s assigned skills and published schedule. Select any staff chip, including an off chip, to edit that person’s hours.</p><div class="schedule-coverage-legend" aria-label="Coverage status examples"><span class="schedule-legend-chip is-working">Working · 09:00–19:00</span><span class="schedule-legend-chip is-off">Tech off</span><span class="schedule-legend-chip is-limited">Limited · 1 tech</span><span class="schedule-legend-chip is-empty">No coverage</span><span class="schedule-legend-chip is-unassigned">No qualified staff</span></div></div><div class="schedule-week schedule-skill-week" data-schedule-week>' + boardHeader('Skill / Day', days) + (rows || '<div class="schedule-empty">Assign skills to staff to see coverage.</div>') + '<div class="schedule-row schedule-skill-row schedule-total-row"><strong>Total working</strong>' + totals + '</div></div>';
+    return '<div class="schedule-coverage-intro"><p class="schedule-coverage-help">Coverage uses approved services and published hours. Select a staff chip to edit the schedule.</p></div><div class="schedule-week schedule-skill-week" data-schedule-week>' + boardHeader('Skill / Day', days) + (rows || '<div class="schedule-empty">Assign skills to staff to see coverage.</div>') + '<div class="schedule-row schedule-skill-row schedule-total-row"><strong>Total working</strong>' + totals + '</div></div>';
+  }
+  function qualifiedForSkill(person, skill, catalog, suppliedSchedule) {
+    var schedule = suppliedSchedule || store.getStaffSchedule(store.SALON_ID, person.id, {});
+    return catalog.services.some(function (service) { return service.requiredSkill === skill && store.isEligible(person, service, schedule); });
+  }
+  function skillsFor(catalog) {
+    return Array.from(new Set(catalog.services.filter(function (service) { return service.active !== false && service.requiredSkill; }).map(function (service) { return service.requiredSkill; }))).sort();
+  }
+  function coverageRisks(catalog, people, days, availabilityByStaff) {
+    var minimums = store.salonRules(store.SALON_ID).coverageMinimums;
+    var risks = [];
+    skillsFor(catalog).forEach(function (skill) {
+      var qualified=people.filter(function(person){return qualifiedForSkill(person,skill,catalog);});
+      days.forEach(function (date) {
+        var key = dateKey(date), minimum = Number(minimums[skill]) || 0;
+        if (!store.businessDay(key, store.salonRules(store.SALON_ID)).working) return;
+        var count = qualified.filter(function (person) { return availabilityByStaff[person.id][key].availability.available; }).length;
+        if (count < minimum) risks.push({skill:skill,date:key,count:count,minimum:minimum});
+      });
+    });
+    return risks;
+  }
+  function coverageBanner(risks) {
+    if (!risks.length) return '<div class="schedule-coverage-banner is-good"><span class="schedule-status-dot"></span><div><strong>Team coverage meets your minimums</strong><p>Working staff are counted by their approved services.</p></div><button type="button" data-schedule-rules-open>Set minimums</button></div>';
+    return '<div class="schedule-coverage-banner"><span class="schedule-status-dot"></span><div><strong>' + risks.length + ' coverage gap' + (risks.length === 1 ? '' : 's') + ' this week</strong><p>' + risks.slice(0,3).map(function (risk) { return esc(risk.skill + ' · ' + displayDate(risk.date) + ': ' + risk.count + '/' + risk.minimum + ' staff'); }).join(' &nbsp; • &nbsp; ') + '</p></div><button type="button" data-schedule-rules-open>Set minimums</button></div>';
+  }
+  function staffAccessPanel(catalog, people) {
+    return '<div class="schedule-staff-cards">' + people.map(function (person) {
+      var schedule = store.getStaffSchedule(store.SALON_ID, person.id, {});
+      var day = store.scheduleForDate(schedule, boardDate);
+      var services = catalog.services.filter(function (service) { return store.isEligible(person, service, schedule); });
+      var weeklyCount = Object.values(schedule.weekly).filter(function (day) { return day.working; }).length;
+      return '<article class="schedule-staff-card"><header><span class="schedule-avatar">' + esc(person.name.charAt(0)) + '</span><div><h3>' + esc(person.name) + '</h3><small>' + esc(({tech:'Technician',manager:'Manager',frontdesk:'Front desk'})[person.posProfile?.posRole] || 'Technician') + ' · Level ' + esc(person.posProfile?.level || 1) + '</small></div><span class="schedule-badge ' + (day.working ? 'is-good' : '') + '">' + (day.working ? 'Scheduled' : 'Off') + '</span></header><div class="schedule-staff-card-hours"><strong>' + esc(shiftLabel(day)) + '</strong><span>' + weeklyCount + ' working days / week</span></div><div class="schedule-service-tags">' + services.slice(0,4).map(function (service) { return '<span>' + esc(service.name) + '</span>'; }).join('') + (services.length > 4 ? '<span>+' + (services.length - 4) + ' more</span>' : '') + (!services.length ? '<span class="is-empty">No approved services</span>' : '') + '</div><dl><div><dt>Today toggle</dt><dd>' + esc({allowed:'Allowed',request:'Approval required',none:'Not allowed'}[schedule.sameDayMode]) + '</dd></div><div><dt>Schedule requests</dt><dd>' + esc(schedule.permission === 'none' ? 'Disabled' : schedule.permission === 'self' ? 'Apply directly' : 'Manager approval') + '</dd></div><div><dt>Existing bookings</dt><dd>' + (schedule.bookedDayMode === 'block' ? 'Block off toggle' : 'Manager review') + '</dd></div></dl><footer><button type="button" data-schedule-edit-staff="' + esc(person.id) + '">Edit schedule &amp; access</button><a href="pos-calendar.html?staff=' + encodeURIComponent(person.id) + '&amp;date=' + boardDate + '">View staff calendar ↗</a></footer></article>';
+    }).join('') + (people.length ? '' : '<div class="schedule-empty">No staff match your search.</div>') + '</div>';
+  }
+  function bookingPreview(catalog, people, appointmentList) {
+    var services = catalog.services.filter(function (service) { return service.active !== false; });
+    if (!services.some(function (service) { return service.id === previewService; })) previewService = services[0]?.id || '';
+    var service = services.find(function (item) { return item.id === previewService; });
+    if (!service) return '<div class="schedule-empty">Add a service to preview booking availability.</div>';
+    var options = people.map(function (person) {
+      var schedule = store.getStaffSchedule(store.SALON_ID, person.id, {});
+      var result = store.availabilityForDay({staffSchedule:schedule,technician:person,technicianId:person.id,service:service,date:boardDate,appointments:appointmentList});
+      return {person:person,result:result};
+    }).filter(function (entry) { return entry.result.openSlots.length; });
+    if (!options.some(function (entry) { return entry.person.id === previewStaff; })) { previewStaff = options[0]?.person.id || ''; previewTime = ''; }
+    var selected = options.find(function (entry) { return entry.person.id === previewStaff; });
+    if (previewTime && !selected?.result.openSlots.some(function (slot) { return slot.time === previewTime; })) previewTime = '';
+    return '<section class="schedule-preview"><header><div><h3>Booking availability preview</h3><p>See the staff and start times customers can choose.</p></div><a href="booking-book-phase-1.html?tab=booking">Open Booking Book ↗</a></header><div class="schedule-preview-filters"><label>Service<select class="schedule-select" data-preview-service>' + services.map(function (item) { return '<option value="' + esc(item.id) + '" ' + (item.id === previewService ? 'selected' : '') + '>' + esc(item.name) + '</option>'; }).join('') + '</select></label><div><small>Selected date · Salon time</small><strong>' + esc(displayDate(boardDate)) + '</strong></div><div><small>Appointment length</small><strong>' + service.durationMin + ' min' + (service.bufferBeforeMin || service.bufferAfterMin ? ' + ' + ((service.bufferBeforeMin || 0) + (service.bufferAfterMin || 0)) + ' min buffer' : '') + '</strong></div></div><div class="schedule-preview-layout"><div class="schedule-preview-staff"><h4>Bookable staff <span>' + options.length + '</span></h4>' + options.map(function (entry) { return '<button type="button" data-preview-staff="' + esc(entry.person.id) + '" aria-pressed="' + (previewStaff === entry.person.id) + '"><span class="schedule-avatar">' + esc(entry.person.name.charAt(0)) + '</span><span><strong>' + esc(entry.person.name) + '</strong><small>' + entry.result.openSlots.length + ' start times · ' + esc(displayTime(entry.result.start) + '–' + displayTime(entry.result.end)) + '</small></span></button>'; }).join('') + (!options.length ? '<div class="schedule-empty">No available staff for this service and date. Choose another date or service.</div>' : '') + '</div><div class="schedule-preview-slots"><h4>' + (selected ? 'Available starts for ' + esc(selected.person.name) : 'Available start times') + '</h4><div class="schedule-slot-grid">' + (selected ? selected.result.openSlots.map(function (slot) { return '<button type="button" data-preview-time="' + slot.time + '" aria-pressed="' + (previewTime === slot.time) + '">' + esc(displayTime(slot.time)) + '</button>'; }).join('') : '') + '</div><p class="schedule-help">Includes salon hours, approved services, staff hours, breaks and existing bookings. Today’s unavailable toggle closes new slots only.</p>' + (previewTime ? '<div class="schedule-preview-selection"><strong>' + esc(selected.person.name + ' · ' + displayTime(previewTime)) + '</strong><button type="button" data-preview-check>Check selected slot</button><small>Preview only. No appointment is created.</small></div>' : '') + '</div></div></section>';
+  }
+  function activityDetails(entry,catalog) {
+    var before=entry.before||{},after=entry.after||{},lines=[];
+    if(after.weekly)Object.keys(names).forEach(function(key){if(JSON.stringify(before.weekly?.[key])!==JSON.stringify(after.weekly[key])){var previous=before.weekly?.[key];lines.push(names[key]+': '+(previous?shiftLabel(previous):'Not configured')+' → '+shiftLabel(after.weekly[key])+'; breaks: '+after.weekly[key].breaks.map(function(pause){return pause.start+'–'+pause.end;}).join(', '));}});
+    if(after.weekly){
+      var dates=Array.from(new Set(Object.keys(before.exceptions||{}).concat(Object.keys(after.exceptions||{}))));
+      dates.forEach(function(date){if(JSON.stringify(before.exceptions?.[date])!==JSON.stringify(after.exceptions?.[date]))lines.push(displayDate(date)+': '+(after.exceptions?.[date]?shiftLabel(store.scheduleForDate(after,date)):'Use weekly hours'));});
+      ['permission','sameDayMode','bookedDayMode'].forEach(function(key){if(before[key]!==after[key])lines.push(({permission:'Schedule requests',sameDayMode:'Today toggle',bookedDayMode:'Booking protection'})[key]+': '+(before[key]||'Default')+' → '+after[key]);});
+      if(JSON.stringify(before.serviceIds)!==JSON.stringify(after.serviceIds))lines.push('Approved services: '+(after.serviceIds===null?'From staff skills':after.serviceIds.map(function(id){return catalog.services.find(function(service){return service.id===id;})?.name||id;}).join(', ')||'None'));
+      Object.keys(after.availableToday||{}).forEach(function(date){if(before.availableToday?.[date]!==after.availableToday[date])lines.push(displayDate(date)+': new bookings '+(after.availableToday[date]?'enabled':'off'));});
+    }
+    if(after.type)lines.push(typeLabel(after.type)+' · '+displayDate(after.date)+' · '+requestProposal(after));
+    if(after.reason)lines.push(after.reason);
+    if(after.rejectionReason)lines.push('Rejection reason: '+after.rejectionReason);
+    if(after.businessHours){lines.push('Time zone: '+after.timezone+' · Booking grid: '+after.slotIncrementMin+' min');lines.push(Object.keys(names).map(function(key){return names[key]+': '+shiftLabel(after.businessHours[key]);}).join(' · '));lines.push('Minimums: '+Object.keys(after.coverageMinimums).map(function(skill){return skill+' '+after.coverageMinimums[skill];}).join(', '));}
+    return lines.length?'<ul>'+lines.map(function(line){return '<li>'+esc(line)+'</li>';}).join('')+'</ul>':'<p>Saved with the current schedule.</p>';
+  }
+  function activityPanel(state, catalog) {
+    var logs = (state.audit || []).filter(function (item) { return item.salonId === store.SALON_ID; }).slice().reverse();
+    return '<section class="schedule-activity"><header><h3>Schedule activity</h3><p>Changes and decisions saved in this browser.</p></header>' + (logs.length ? '<div class="schedule-activity-list">' + logs.map(function (entry) {
+      var person = catalog.technicians.find(function (person) { return person.id === entry.staffId; });
+      var date = new Date(entry.occurredAt);
+      var rules = store.salonRules(store.SALON_ID);
+      var when = date.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric',timeZone:rules.timezone}) + ' · ' + date.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit',timeZone:rules.timezone});
+      return '<article><span class="schedule-activity-icon" aria-hidden="true">↻</span><div><strong>' + esc(entry.action) + '</strong><p>' + esc((person?.name || 'Salon') + ' · ' + entry.actor) + '</p><details><summary>View change</summary>' + activityDetails(entry,catalog) + '</details></div><time datetime="' + esc(entry.occurredAt) + '">' + esc(when) + '</time></article>';
+    }).join('') + '</div>' : '<div class="schedule-empty">No schedule activity yet. Publish a schedule or review a request to see it here.</div>') + '</section>';
+  }
+  function permissionPanel(source, staff) {
+    var catalog = salonData.loadCatalog();
+    var services = catalog.services.filter(function (service) { return service.active !== false; });
+    return '<div class="schedule-explainer"><strong>Staff app access</strong><p>Set today’s toggle separately from requests to change hours, breaks or future days.</p></div><label>Same-day availability toggle<select class="schedule-select" data-schedule-same-day><option value="allowed" ' + (source.sameDayMode === 'allowed' ? 'selected' : '') + '>Allowed</option><option value="request" ' + (source.sameDayMode === 'request' ? 'selected' : '') + '>Request manager approval</option><option value="none" ' + (source.sameDayMode === 'none' ? 'selected' : '') + '>Not allowed</option></select></label><label>Schedule change requests<select class="schedule-select" data-schedule-permission><option value="none" ' + (source.permission === 'none' ? 'selected' : '') + '>View only — requests disabled</option><option value="request" ' + (!['none','self'].includes(source.permission) ? 'selected' : '') + '>Manager approval required</option><option value="self" ' + (source.permission === 'self' ? 'selected' : '') + '>Apply directly when bookings are unaffected</option></select></label><label>Off toggle when appointments exist<select class="schedule-select" data-schedule-booked-day><option value="block" ' + (source.bookedDayMode === 'block' ? 'selected' : '') + '>Block the off toggle</option><option value="review" ' + (source.bookedDayMode === 'review' ? 'selected' : '') + '>Send for manager review</option></select></label><div class="schedule-permission-note"><strong>Confirmed appointments stay protected</strong><p>Changes that close booked times wait for manager resolution. The app never cancels or reassigns an appointment automatically.</p></div><fieldset class="schedule-eligibility"><legend>Approved booking services</legend><p>Choose the services this staff member can perform. Staff level is shown separately in their profile.</p>' + services.map(function (service) { return '<label><input type="checkbox" data-schedule-service="' + esc(service.id) + '" ' + (store.isEligible(staff,service,source) ? 'checked' : '') + '><span><strong>' + esc(service.name) + '</strong><small>' + service.durationMin + ' min · ' + esc(service.requiredSkill || 'Service approval') + '</small></span></label>'; }).join('') + '</fieldset>';
+  }
+  function rulesDialog(catalog) {
+    if (!rulesOpen) return '';
+    var rules = store.salonRules(store.SALON_ID);
+    return '<div class="schedule-break-backdrop" data-schedule-rules-close></div><form class="schedule-rules-dialog" data-schedule-rules-form role="dialog" aria-modal="true" aria-labelledby="schedule-rules-title"><header><div><h2 id="schedule-rules-title">Booking &amp; coverage rules</h2><p>Demo rules used by Schedule and My Calendar.</p></div><button type="button" data-schedule-rules-close aria-label="Close rules">×</button></header><div class="schedule-rules-top"><label>Salon time zone<select class="schedule-select" data-rule-timezone>' + ['America/Chicago','America/New_York','America/Denver','America/Los_Angeles','Asia/Ho_Chi_Minh'].map(function (zone) { return '<option ' + (rules.timezone === zone ? 'selected' : '') + '>' + zone + '</option>'; }).join('') + '</select></label><label>Booking grid<select class="schedule-select" data-rule-grid>' + [15,30,60].map(function (step) { return '<option value="' + step + '" ' + (rules.slotIncrementMin === step ? 'selected' : '') + '>' + step + ' minutes</option>'; }).join('') + '</select></label></div><h3>Salon opening hours</h3><p class="schedule-help">Staff slots stay within these hours. Saved holidays and closures also apply.</p><div class="schedule-rule-hours">' + Object.keys(names).map(function (key) { var day=rules.businessHours[key]; return '<div data-rule-day="' + key + '"><label><input type="checkbox" data-rule-working ' + (day.working ? 'checked' : '') + '>' + names[key] + '</label><input type="time" data-rule-start value="' + (day.start || '09:00') + '" aria-label="' + names[key] + ' open time"><span>to</span><input type="time" data-rule-end value="' + (day.end || '19:00') + '" aria-label="' + names[key] + ' close time"></div>'; }).join('') + '</div><h3>Minimum staff by skill</h3><p class="schedule-help">Count scheduled staff with approved services. Minimums are demo settings and can be changed.</p><div class="schedule-rule-minimums">' + skillsFor(catalog).map(function (skill) { return '<label>' + esc(skill) + '<input type="number" min="0" max="50" step="1" data-rule-skill="' + esc(skill) + '" value="' + (Number(rules.coverageMinimums[skill]) || 0) + '" required></label>'; }).join('') + '</div><p data-rule-error class="schedule-form-error" role="alert"></p><footer><button type="button" data-schedule-rules-close>Cancel</button><button type="submit" class="booking-primary-button">Save rules</button></footer></form>';
+  }
+  function previewImpact() {
+    snapshotEditor();
+    var next = editorSchedule(), current = store.getStaffSchedule(store.SALON_ID,selectedStaff,{});
+    var validation = store.validateSchedule(next);
+    if (!validation.ok) { showError('Check working hours and breaks before reviewing the impact.'); return; }
+    var added=0, removed=0, rows=appointments();
+    week().forEach(function (date) {
+      var key=dateKey(date), before=store.availabilityForDay({staffSchedule:current,technicianId:selectedStaff,date:key,appointments:rows,ignorePast:true}).openSlots;
+      var after=store.availabilityForDay({staffSchedule:next,technicianId:selectedStaff,date:key,appointments:rows,ignorePast:true}).openSlots;
+      added += after.filter(function (slot) { return !before.some(function (item) { return item.time===slot.time; }); }).length;
+      removed += before.filter(function (slot) { return !after.some(function (item) { return item.time===slot.time; }); }).length;
+    });
+    var impacts=store.changeImpacts(selectedStaff,current,next,rows);
+    var gaps=week().reduce(function (count,date) { return count+coverageAfterChange(selectedStaff,next,dateKey(date),salonData.loadCatalog()).length; },0);
+    var catalog=salonData.loadCatalog(), person=catalog.technicians.find(function (person) { return person.id===selectedStaff; });
+    var serviceCount=catalog.services.filter(function (service) { return store.isEligible(person,service,next); }).length;
+    editorMessage='Selected week: '+added+' open time blocks added, '+removed+' removed. '+impacts.length+' existing booking(s) affected. '+serviceCount+' services approved. '+gaps+' skill/day coverage gap(s) after this change.';
+    editorError='';
+    render(selectedStaff);
   }
   function render(preselect) {
     if (preselect) selectedStaff = preselect;
@@ -260,30 +394,35 @@
         var key = dateKey(date);
         var availability = store.availabilityForDay({staffSchedule:schedule, technicianId:person.id, date:key, appointments:appointmentList});
         var dayConflicts = availability.conflicts.filter(function (item) { return item.startAt.slice(0, 10) === key; });
-        if (availability.working) working++;
-        slots += availability.openSlots.length;
+        if (key === boardDate) { if (availability.available) working++; slots += availability.openSlots.length; }
         conflicts += dayConflicts.length;
         availabilityByStaff[person.id][key] = {availability:availability, conflicts:dayConflicts};
       });
     });
-    var unassigned = people.filter(function (person) { return !(person.skills || []).length; }).length;
-    var viewControls = '<section class="schedule-view-toolbar"><div class="schedule-view-toggle" role="group" aria-label="Group schedule by"><button type="button" data-schedule-view="staff" aria-pressed="' + (boardView === 'staff') + '">By Staff</button><button type="button" data-schedule-view="skill" aria-pressed="' + (boardView === 'skill') + '">By Skill</button></div><p>' + (boardView === 'staff' ? 'Edit the source schedule for each staff member.' : 'Read-only coverage view derived from staff schedules.') + (unassigned ? ' <strong>' + unassigned + ' staff</strong> need skill assignments.' : '') + '</p></section>';
-    var board = boardView === 'skill' ? skillBoard(catalog, people, days, availabilityByStaff) : staffBoard(people, days, availabilityByStaff);
-    host.innerHTML = '<header class="schedule-heading"><div><h2>Staff Schedule &amp; Booking Availability</h2><p>Manager publishes working hours. Staff changes arrive as requests.</p></div><div class="schedule-actions"><select class="schedule-select" aria-label="Salon"><option>Bitcoin Nail Bar</option></select><span data-schedule-sync-status>' + (state.salons[store.SALON_ID]?.syncedAt ? 'Synced to Booking' : 'Ready to sync') + '</span></div></header>' + weekControls(days) + viewControls + '<div class="schedule-summary"><div class="schedule-card" data-schedule-summary="working"><strong>' + working + '</strong><span>Working staff-days</span></div><div class="schedule-card"><strong>' + slots + '</strong><span>Open slots</span></div><div class="schedule-card"><strong>' + conflicts + '</strong><span>Booking conflicts</span></div><div class="schedule-card"><strong>' + people.length + '</strong><span>Staff members</span></div></div>' + board + requestInbox(state,catalog) + editor() + impactDialog();
+    var openRequests = state.requests.filter(function (item) { return item.salonId === store.SALON_ID && matchesRequestFilter(item,'open'); }).length;
+    var rules = store.salonRules(store.SALON_ID);
+    var filtered = people.filter(function (person) { return (person.name + ' ' + (person.skills || []).join(' ')).toLowerCase().includes(searchValue.toLowerCase()); });
+    var tabs = {team:'Team schedule',staff:'Staff & app access',booking:'Booking preview',activity:'Activity'};
+    var viewControls = '<div class="schedule-view-toolbar">' + (workspaceTab==='team'?'<div class="schedule-view-toggle" role="group" aria-label="Group schedule by"><button type="button" data-schedule-view="staff" aria-pressed="' + (boardView === 'staff') + '">By staff</button><button type="button" data-schedule-view="skill" aria-pressed="' + (boardView === 'skill') + '">By skill</button></div>':'<p>Manage staff schedules, approved services and app permissions.</p>') + '<label class="schedule-search"><span>Find staff or skill</span><input type="search" data-schedule-search value="' + esc(searchValue) + '" placeholder="Search staff or skill"></label></div>';
+    var board = boardView === 'skill' ? skillBoard(catalog,filtered,days,availabilityByStaff) : staffBoard(filtered,days,availabilityByStaff);
+    var content = workspaceTab === 'team' ? coverageBanner(coverageRisks(catalog,people,days,availabilityByStaff)) + viewControls + board + '<p class="schedule-board-help">Select a day to add a date change. Select a staff name to edit the weekly schedule. Open starts use a 30-minute duration; Booking preview uses the selected service.</p>' : workspaceTab === 'staff' ? viewControls + staffAccessPanel(catalog,filtered) : workspaceTab === 'booking' ? bookingPreview(catalog,people,appointmentList) : activityPanel(state,catalog);
+    host.innerHTML = '<header class="schedule-heading"><div><span class="schedule-eyebrow">STAFF &amp; BOOKING</span><h2>Schedule</h2><p>Plan the team, review changes and keep booking availability in sync.</p></div><div class="schedule-actions"><button type="button" data-schedule-rules-open>Booking rules</button><button type="button" class="booking-primary-button" data-schedule-add-staff>+ Add staff</button></div></header><div class="schedule-context"><span>' + esc(catalog.salon.name) + ' · ' + esc(rules.timezone) + '</span><span data-schedule-sync-status>' + (state.salons[store.SALON_ID]?.syncedAt ? 'Saved & synced in this browser' : 'Demo · saved in this browser') + '</span></div><div class="schedule-summary"><div class="schedule-card"><span>Available · ' + esc(displayDate(boardDate)) + '</span><strong>' + working + '<small> / ' + people.length + ' staff</small></strong></div><div class="schedule-card"><span>30-minute start times</span><strong>' + slots + '</strong></div><div class="schedule-card"><span>Requests to review</span><strong>' + openRequests + '</strong><button type="button" data-schedule-show-requests>Review requests →</button></div><div class="schedule-card' + (conflicts ? ' is-warning' : '') + '"><span>Booking conflicts · this week</span><strong>' + conflicts + '</strong></div></div><nav class="schedule-workspace-tabs" aria-label="Schedule views">' + Object.keys(tabs).map(function (key) { return '<button type="button" data-schedule-workspace="' + key + '" aria-pressed="' + (workspaceTab === key) + '">' + tabs[key] + '</button>'; }).join('') + '</nav>' + (workspaceTab === 'activity' ? '' : weekControls(days)) + '<section class="schedule-workspace-panel" aria-label="' + tabs[workspaceTab] + '">' + content + '</section>' + requestInbox(state,catalog) + editor() + impactDialog() + rulesDialog(catalog);
     var openCount = state.requests.filter(function (item) { return item.salonId === store.SALON_ID && matchesRequestFilter(item,'open'); }).length;
     document.querySelectorAll('[data-staff-requests-count]').forEach(function (badge) { badge.textContent = openCount; badge.setAttribute('aria-label',openCount + ' requests need review'); });
     if (requestsHost) {
       requestsHost.replaceChildren(host.querySelector('[data-schedule-requests]'));
     }
     modalHost.replaceChildren();
-    Array.from(host.querySelectorAll('.schedule-backdrop,.schedule-drawer,.schedule-impact-backdrop,[data-request-impact],.schedule-break-backdrop,[data-break-form]')).forEach(function (node) { modalHost.appendChild(node); });
+    Array.from(host.querySelectorAll('.schedule-backdrop,.schedule-drawer,.schedule-impact-backdrop,[data-request-impact],.schedule-break-backdrop,[data-break-form],.schedule-rules-dialog')).forEach(function (node) { modalHost.appendChild(node); });
     formatEditorDateFields();
+    formatEditorDateFields(host);
     if (drawerOpen && store.loadState().drafts[store.SALON_ID]?.[selectedStaff]) {
       modalHost.querySelector('[data-schedule-save-draft]').insertAdjacentHTML('beforebegin', '<button type="button" data-schedule-discard>Discard saved draft</button>');
     }
     if (boardMessage) modalHost.insertAdjacentHTML('beforeend', '<div class="schedule-toast" role="status">' + esc(boardMessage) + '<button type="button" data-schedule-toast-close aria-label="Dismiss message">×</button></div>');
     // The editor lives outside hidden settings panels so Staff can open it directly.
-    if (breakForm) modalHost.querySelector('[data-break-form] input:not(:disabled),[data-break-form] select:not(:disabled)')?.focus();
+    if (rulesOpen) modalHost.querySelector('[data-rule-timezone]')?.focus();
+    else if (breakForm) modalHost.querySelector('[data-break-form] input:not(:disabled),[data-break-form] select:not(:disabled)')?.focus();
     else if (impactReview) modalHost.querySelector('[data-impact-close]')?.focus();
     else if (drawerOpen) modalHost.querySelector('#schedule-drawer-title')?.focus();
   }
@@ -299,6 +438,12 @@
     });
     var permission = modalHost.querySelector('[data-schedule-permission]');
     if (permission) editorValues.permission = permission.value;
+    var sameDay = modalHost.querySelector('[data-schedule-same-day]');
+    if (sameDay) editorValues.sameDayMode = sameDay.value;
+    var protection = modalHost.querySelector('[data-schedule-booked-day]');
+    if (protection) editorValues.bookedDayMode = protection.value;
+    var services = modalHost.querySelectorAll('[data-schedule-service]');
+    if (services.length) editorValues.serviceIds = Array.from(services).filter(function (input) { return input.checked; }).map(function (input) { return input.dataset.scheduleService; });
     if (editorScope === 'date') updateDateDraft();
   }
   function updateDateDraft() {
@@ -348,14 +493,14 @@
   function showImpacts(kind, id, impacts) { impactReview = {kind:kind, id:id, impacts:impacts}; render(selectedStaff); }
   function publish() {
     var result = store.publishDraft(store.SALON_ID, selectedStaff, appointments(), []);
-    if (result.ok) { drawerOpen = false; impactReview = null; boardMessage = 'Schedule published. Staff calendar and Booking availability updated in this demo.'; render(selectedStaff); return; }
+    if (result.ok) { drawerOpen = false; impactReview = null; editorValues = null; boardMessage = 'Schedule published. Staff calendar and Booking availability updated in this demo.'; render(selectedStaff); return; }
     if (result.error.code === 'booking-impact') { showImpacts('publish', selectedStaff, result.error.impacts); return; }
     showError('Schedule could not be published.');
   }
   function review(id, decision, reason) {
     var result = store.reviewRequest(id, decision, appointments(), undefined, undefined, reason);
     if (!result.ok && result.error.code === 'booking-impact') { showImpacts('request', id, result.error.impacts); return; }
-    boardMessage = result.ok ? (decision === 'reject' ? 'Request rejected. The staff schedule is unchanged.' : 'Request approved. The staff schedule is updated in this demo.') : 'Unable to review this request. Please check its current status.';
+    boardMessage = result.ok ? (decision === 'reject' ? 'Request rejected. The staff schedule is unchanged.' : 'Request approved. The staff schedule is updated in this demo.') : result.error.code==='request-expired'?'This same-day request has expired. Reject it and ask the staff member to submit a new request.':'Unable to review this request. Please check its hours, breaks and current status.';
     impactReview = null;
     if (result.ok) { rejectId = ''; rejectionReason = ''; if (decision === 'reject') requestFilter = 'rejected'; }
     render(selectedStaff);
@@ -475,6 +620,26 @@
   host.addEventListener('submit', handleRequestSubmit);
   if (requestsHost) requestsHost.addEventListener('submit', handleRequestSubmit);
   function handleClick(event) {
+    var workspace = event.target.closest('[data-schedule-workspace]');
+    if (workspace) { workspaceTab=workspace.dataset.scheduleWorkspace; render(selectedStaff); host.querySelector('[data-schedule-workspace="'+workspaceTab+'"]')?.focus(); return; }
+    if (event.target.closest('[data-schedule-add-staff]')) { document.querySelector('[data-tech-modal-open]')?.click(); return; }
+    if (event.target.closest('[data-schedule-show-requests]')) { (requestsHost || host).querySelector('[data-schedule-requests]')?.scrollIntoView({block:'start',behavior:'smooth'}); return; }
+    if (event.target.closest('[data-schedule-rules-open]')) { rulesOpen=true; render(selectedStaff); return; }
+    if (event.target.closest('[data-schedule-rules-close]')) { rulesOpen=false; render(selectedStaff); return; }
+    var editStaff=event.target.closest('[data-schedule-edit-staff]');
+    if (editStaff) { openEditor(editStaff.dataset.scheduleEditStaff,editStaff); return; }
+    if (event.target.closest('[data-schedule-preview-impact]')) { previewImpact(); return; }
+    var previewPerson=event.target.closest('[data-preview-staff]');
+    if (previewPerson) { previewStaff=previewPerson.dataset.previewStaff; previewTime=''; render(selectedStaff); return; }
+    var previewSlot=event.target.closest('[data-preview-time]');
+    if (previewSlot) { previewTime=previewSlot.dataset.previewTime; render(selectedStaff); return; }
+    if (event.target.closest('[data-preview-check]')) {
+      var catalog=salonData.loadCatalog(), service=catalog.services.find(function (service) { return service.id===previewService; }), person=catalog.technicians.find(function (person) { return person.id===previewStaff; });
+      var latest=store.availabilityForDay({staffSchedule:store.getStaffSchedule(store.SALON_ID,previewStaff,{}),technician:person,technicianId:previewStaff,service:service,date:boardDate,appointments:appointments()});
+      boardMessage=latest.openSlots.some(function (slot) { return slot.time===previewTime; })?'This start time is still available. Open Booking Book to create an appointment.':'This start time is no longer available. Choose another slot.';
+      render(selectedStaff); return;
+    }
+
     if (event.target.closest('[data-add-request-demo]')) { addRequestDemo(); return; }
     var filter = event.target.closest('[data-request-filter]');
     if (filter) { requestFilter = filter.dataset.requestFilter; rejectId = ''; rejectionReason = ''; render(selectedStaff); requestsHost?.querySelector('[data-request-filter="' + requestFilter + '"]')?.focus(); return; }
@@ -490,7 +655,7 @@
       changeWeek(dateKey(nextWeek), '[data-schedule-week-step="' + weekStep.dataset.scheduleWeekStep + '"]');
       return;
     }
-    if (event.target.closest('[data-schedule-this-week]')) { changeWeek(dateKey(new Date()), '[data-schedule-this-week]'); return; }
+    if (event.target.closest('[data-schedule-this-week]')) { changeWeek(store.salonToday(store.SALON_ID), '[data-schedule-this-week]'); return; }
     if (event.target.closest('[data-schedule-toast-close]')) { boardMessage = ''; modalHost.querySelector('.schedule-toast')?.remove(); return; }
     var view = event.target.closest('[data-schedule-view]');
     if (view) { boardView = view.dataset.scheduleView; render(selectedStaff); host.querySelector('[data-schedule-view="' + boardView + '"]')?.focus(); return; }
@@ -543,7 +708,35 @@
   host.addEventListener('click', handleClick);
   if (requestsHost) requestsHost.addEventListener('click', handleClick);
   host.addEventListener('change', function (event) {
+    if (event.target.matches('[data-date-display]')) {
+      var iso=parseDisplayDate(event.target.value);
+      event.target.setCustomValidity(iso?'':'Enter a valid date, for example Oct 9, 2026.');
+      if(!iso){event.target.reportValidity();return;}
+      var native=event.target.parentElement.querySelector('input[type="date"]'); native.value=iso; native.dispatchEvent(new Event('change',{bubbles:true})); return;
+    }
+    if (event.target.matches('[data-preview-service]')) { previewService=event.target.value; previewTime=''; render(selectedStaff); return; }
     if (event.target.matches('[data-schedule-week-date]')) changeWeek(event.target.value, '[data-schedule-week-date]');
+  });
+  host.addEventListener('input', function (event) {
+    if(event.target.matches('[data-date-display]')){event.target.setCustomValidity(parseDisplayDate(event.target.value)?'':'Enter a valid date, for example Oct 9, 2026.');return;}
+    if (!event.target.matches('[data-schedule-search]')) return;
+    searchValue=event.target.value;
+    var caret=event.target.selectionStart;
+    render(selectedStaff);
+    var input=host.querySelector('[data-schedule-search]'); input.focus(); input.setSelectionRange(caret,caret);
+  });
+  modalHost.addEventListener('submit', function (event) {
+    if (!event.target.matches('[data-schedule-rules-form]')) return;
+    event.preventDefault();
+    var form=event.target, rules=store.salonRules(store.SALON_ID);
+    rules.timezone=form.querySelector('[data-rule-timezone]').value;
+    rules.slotIncrementMin=Number(form.querySelector('[data-rule-grid]').value);
+    form.querySelectorAll('[data-rule-day]').forEach(function (row) { rules.businessHours[row.dataset.ruleDay]={working:row.querySelector('[data-rule-working]').checked,start:row.querySelector('[data-rule-start]').value,end:row.querySelector('[data-rule-end]').value,breaks:[]}; });
+    form.querySelectorAll('[data-rule-skill]').forEach(function (input) { rules.coverageMinimums[input.dataset.ruleSkill]=Number(input.value); });
+    var result=store.saveRules(store.SALON_ID,rules,undefined,appointments());
+    if(!result.ok&&result.error.code==='booking-impact'){rulesOpen=false;showImpacts('rules',store.SALON_ID,result.error.impacts);return;}
+    if (!result.ok) { form.querySelector('[data-rule-error]').textContent='Check opening hours and coverage minimums. Close time must follow open time.'; return; }
+    rulesOpen=false; boardMessage='Booking rules and coverage minimums saved in this browser.'; render(selectedStaff);
   });
   modalHost.addEventListener('click', handleClick);
   function closeEditor() {
@@ -556,7 +749,7 @@
   }
   function openEditor(staffId, trigger) {
     selectedStaff = staffId;
-    selectedDate = dateKey(new Date());
+    selectedDate = boardDate;
     editorScope = 'weekly';
     drawerOpen = true;
     opener = trigger;
@@ -571,9 +764,9 @@
       var next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : tabs.length - 1)) % tabs.length;
       tabs[next].click(); return;
     }
-    if (event.key === 'Escape') { event.preventDefault(); if (breakForm) { breakForm = null; render(selectedStaff); } else if (impactReview) { impactReview = null; render(selectedStaff); } else closeEditor(); }
+    if (event.key === 'Escape') { event.preventDefault(); if (rulesOpen) { rulesOpen=false; render(selectedStaff); } else if (breakForm) { breakForm = null; render(selectedStaff); } else if (impactReview) { impactReview = null; render(selectedStaff); } else closeEditor(); }
     if (event.key !== 'Tab') return;
-    var dialog = modalHost.querySelector('[data-break-form]') || modalHost.querySelector('[data-request-impact]:not([hidden])') || modalHost.querySelector('[data-schedule-drawer]');
+    var dialog = modalHost.querySelector('[data-schedule-rules-form]') || modalHost.querySelector('[data-break-form]') || modalHost.querySelector('[data-request-impact]:not([hidden])') || modalHost.querySelector('[data-schedule-drawer]');
     if (!dialog) return;
     var controls = Array.from(dialog.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),a[href]'));
     var first = controls[0], last = controls[controls.length - 1];
@@ -581,7 +774,9 @@
     else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
   });
 
+  if (appointmentStore?.subscribe) appointmentStore.subscribe(function () { render(selectedStaff); });
   var unsubscribe = store.subscribe(function () { render(selectedStaff); });
+  window.addEventListener('storage',function(event){if(event.key===salonData.STORAGE_KEY||event.key==='nexora:holiday-closures:v2:'+store.SALON_ID)render(selectedStaff);});
   window.addEventListener('pagehide', unsubscribe, {once:true});
   window.NEXORA_STAFF_SCHEDULE_SETTINGS = {refresh:render,open:openEditor};
   render(new URLSearchParams(location.search).get('staff') || '');
