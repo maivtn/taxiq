@@ -109,11 +109,10 @@
 .schedule-eligibility{margin:6px 0 0;padding:14px;border:1px solid #e2e8f0;border-radius:10px;min-width:0}
 .schedule-eligibility legend{padding:0 5px;font-weight:600}
 .schedule-eligibility>p{margin:0 0 10px;color:#64748b;font-size:12px;line-height:1.5}
-.schedule-eligibility>label{display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid #f1f5f9;cursor:pointer;min-height:44px;box-sizing:border-box}
-.schedule-eligibility>label:last-child{border:0}
-.schedule-eligibility input{width:16px;height:16px;accent-color:#4648d4}
-.schedule-eligibility label>span{display:grid;gap:2px}
-.schedule-eligibility small{color:#64748b;font-weight:400}
+.schedule-eligibility .tech-service-picker{max-height:360px}
+.schedule-eligibility .tech-service-picker-toolbar label,.schedule-eligibility .tech-service-category-all{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:800;cursor:pointer}
+.schedule-eligibility .tech-service-check{display:flex;align-items:center;gap:6px;font-size:11px;font-weight:700;cursor:pointer}
+.schedule-eligibility input[type="checkbox"]{width:14px;height:14px;flex:0 0 auto;accent-color:var(--nexora-brand)}
 .schedule-rules-dialog{position:fixed;z-index:91;left:50%;top:50%;transform:translate(-50%,-50%);width:min(640px,calc(100% - 24px));max-height:calc(100dvh - 24px);box-sizing:border-box;overflow:auto;padding:24px;border-radius:16px;background:#fff;color:#18212f;font:13px/1.5 Inter,sans-serif;box-shadow:0 24px 64px #0f172a29}
 .schedule-rules-dialog>header{display:flex;justify-content:space-between;align-items:start;gap:12px;margin-bottom:18px}
 .schedule-rules-dialog h2{margin:0;font-size:20px}

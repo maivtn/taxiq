@@ -859,6 +859,11 @@
         return;
       }
       appointmentServiceCatalogLoader.load(TECHNICIAN_SERVICE_CATALOG_URL).then(function(nextCatalog) {
+        var seeded = salonData.seedServicesFromMenuCatalog(salonData.loadCatalog(), nextCatalog);
+        if (seeded.seeded) {
+          salonData.saveCatalog(seeded.catalog);
+          window.NEXORA_STAFF_SCHEDULE_SETTINGS?.refresh();
+        }
         renderTechServicePicker(nextCatalog, false);
       }).catch(function() {
         renderTechServicePicker(null, true);

@@ -348,10 +348,39 @@
       return '<article><span class="schedule-activity-icon" aria-hidden="true">↻</span><div><strong>' + esc(entry.action) + '</strong><p>' + esc((person?.name || 'Salon') + ' · ' + entry.actor) + '</p><details><summary>View change</summary>' + activityDetails(entry,catalog) + '</details></div><time datetime="' + esc(entry.occurredAt) + '">' + esc(when) + '</time></article>';
     }).join('') + '</div>' : '<div class="schedule-empty">No schedule activity yet. Publish a schedule or review a request to see it here.</div>') + '</section>';
   }
+  function approvedServicePicker(source, staff, catalog) {
+    var services = catalog.services.filter(function (service) { return service.active !== false; });
+    var categories = catalog.categories.map(function (category) { return {id:category.id,name:category.name,services:[]}; });
+    services.forEach(function (service) {
+      var name = service.categoryName || service.requiredSkill || 'Other services';
+      var category = categories.find(function (item) { return item.id === service.categoryId; }) || categories.find(function (item) { return item.name.toLowerCase() === name.toLowerCase(); });
+      if (!category) { category = {id:service.categoryId || 'schedule-category-' + categories.length,name:name,services:[]}; categories.push(category); }
+      category.services.push(service);
+    });
+    categories = categories.filter(function (category) { return category.services.length; });
+    return '<div class="tech-service-checks tech-service-picker" data-schedule-service-picker><div class="tech-service-picker-toolbar"><label><input type="checkbox" data-schedule-service-all>Check all services</label><span class="tech-service-picker-summary"><span class="tech-service-picker-count">' + services.length + '</span><i class="bi bi-chevron-down tech-service-picker-chevron" aria-hidden="true"></i></span></div>' + (categories.length ? categories.map(function (category, index) {
+      return '<details class="tech-service-category"' + (index === 0 ? ' open' : '') + '><summary class="tech-service-category-head"><label class="tech-service-category-all"><input type="checkbox" data-schedule-service-category-all="' + esc(category.id) + '" aria-label="Check all ' + esc(category.name) + ' services">Check all</label><span class="tech-service-category-title">' + esc(category.name) + '</span><span class="tech-service-category-count">' + category.services.length + '</span></summary><div class="tech-service-category-body">' + category.services.map(function (service) {
+        return '<label class="tech-service-check"><input type="checkbox" data-schedule-service="' + esc(service.id) + '" data-schedule-service-category="' + esc(category.id) + '" ' + (store.isEligible(staff,service,source) ? 'checked' : '') + '>' + esc(service.name) + '</label>';
+      }).join('') + '</div></details>';
+    }).join('') : '<div class="tech-service-catalog-state">No services available.</div>') + '</div>';
+  }
+  function syncApprovedServiceCheckAll() {
+    var services = Array.from(modalHost.querySelectorAll('[data-schedule-service]'));
+    function sync(input, options) {
+      if (!input) return;
+      var checkedCount = options.filter(function (option) { return option.checked; }).length;
+      input.disabled = options.length === 0;
+      input.checked = options.length > 0 && checkedCount === options.length;
+      input.indeterminate = checkedCount > 0 && checkedCount < options.length;
+    }
+    sync(modalHost.querySelector('[data-schedule-service-all]'), services);
+    modalHost.querySelectorAll('[data-schedule-service-category-all]').forEach(function (input) {
+      sync(input, services.filter(function (service) { return service.dataset.scheduleServiceCategory === input.dataset.scheduleServiceCategoryAll; }));
+    });
+  }
   function permissionPanel(source, staff) {
     var catalog = salonData.loadCatalog();
-    var services = catalog.services.filter(function (service) { return service.active !== false; });
-    return '<div class="schedule-explainer"><strong>Staff app access</strong><p>Set today’s toggle separately from requests to change hours, breaks or future days.</p></div><label>Same-day availability toggle<select class="schedule-select" data-schedule-same-day><option value="allowed" ' + (source.sameDayMode === 'allowed' ? 'selected' : '') + '>Allowed</option><option value="request" ' + (source.sameDayMode === 'request' ? 'selected' : '') + '>Request manager approval</option><option value="none" ' + (source.sameDayMode === 'none' ? 'selected' : '') + '>Not allowed</option></select></label><label>Schedule change requests<select class="schedule-select" data-schedule-permission><option value="none" ' + (source.permission === 'none' ? 'selected' : '') + '>View only — requests disabled</option><option value="request" ' + (!['none','self'].includes(source.permission) ? 'selected' : '') + '>Manager approval required</option><option value="self" ' + (source.permission === 'self' ? 'selected' : '') + '>Apply directly when bookings are unaffected</option></select></label><label>Off toggle when appointments exist<select class="schedule-select" data-schedule-booked-day><option value="block" ' + (source.bookedDayMode === 'block' ? 'selected' : '') + '>Block the off toggle</option><option value="review" ' + (source.bookedDayMode === 'review' ? 'selected' : '') + '>Send for manager review</option></select></label><div class="schedule-permission-note"><strong>Confirmed appointments stay protected</strong><p>Changes that close booked times wait for manager resolution. The app never cancels or reassigns an appointment automatically.</p></div><fieldset class="schedule-eligibility"><legend>Approved booking services</legend><p>Choose the services this staff member can perform. Staff level is shown separately in their profile.</p>' + services.map(function (service) { return '<label><input type="checkbox" data-schedule-service="' + esc(service.id) + '" ' + (store.isEligible(staff,service,source) ? 'checked' : '') + '><span><strong>' + esc(service.name) + '</strong><small>' + service.durationMin + ' min · ' + esc(service.requiredSkill || 'Service approval') + '</small></span></label>'; }).join('') + '</fieldset>';
+    return '<div class="schedule-explainer"><strong>Staff app access</strong><p>Set today’s toggle separately from requests to change hours, breaks or future days.</p></div><label>Same-day availability toggle<select class="schedule-select" data-schedule-same-day><option value="allowed" ' + (source.sameDayMode === 'allowed' ? 'selected' : '') + '>Allowed</option><option value="request" ' + (source.sameDayMode === 'request' ? 'selected' : '') + '>Request manager approval</option><option value="none" ' + (source.sameDayMode === 'none' ? 'selected' : '') + '>Not allowed</option></select></label><label>Schedule change requests<select class="schedule-select" data-schedule-permission><option value="none" ' + (source.permission === 'none' ? 'selected' : '') + '>View only — requests disabled</option><option value="request" ' + (!['none','self'].includes(source.permission) ? 'selected' : '') + '>Manager approval required</option><option value="self" ' + (source.permission === 'self' ? 'selected' : '') + '>Apply directly when bookings are unaffected</option></select></label><label>Off toggle when appointments exist<select class="schedule-select" data-schedule-booked-day><option value="block" ' + (source.bookedDayMode === 'block' ? 'selected' : '') + '>Block the off toggle</option><option value="review" ' + (source.bookedDayMode === 'review' ? 'selected' : '') + '>Send for manager review</option></select></label><div class="schedule-permission-note"><strong>Confirmed appointments stay protected</strong><p>Changes that close booked times wait for manager resolution. The app never cancels or reassigns an appointment automatically.</p></div><fieldset class="schedule-eligibility"><legend>Approved booking services</legend><p>Choose the services this staff member can perform. Staff level is shown separately in their profile.</p>' + approvedServicePicker(source,staff,catalog) + '</fieldset>';
   }
   function rulesDialog(catalog) {
     if (!rulesOpen) return '';
@@ -416,6 +445,10 @@
     Array.from(host.querySelectorAll('.schedule-backdrop,.schedule-drawer,.schedule-impact-backdrop,[data-request-impact],.schedule-break-backdrop,[data-break-form],.schedule-rules-dialog')).forEach(function (node) { modalHost.appendChild(node); });
     formatEditorDateFields();
     formatEditorDateFields(host);
+    syncApprovedServiceCheckAll();
+    modalHost.querySelectorAll('.tech-service-category-all').forEach(function (label) {
+      label.addEventListener('click', function (event) { event.stopPropagation(); });
+    });
     if (drawerOpen && store.loadState().drafts[store.SALON_ID]?.[selectedStaff]) {
       modalHost.querySelector('[data-schedule-save-draft]').insertAdjacentHTML('beforebegin', '<button type="button" data-schedule-discard>Discard saved draft</button>');
     }
@@ -566,6 +599,12 @@
       render(selectedStaff);
       return;
     }
+    if (event.target.matches('[data-schedule-service-all],[data-schedule-service-category-all]')) {
+      modalHost.querySelectorAll('[data-schedule-service]').forEach(function (input) {
+        if (event.target.hasAttribute('data-schedule-service-all') || input.dataset.scheduleServiceCategory === event.target.dataset.scheduleServiceCategoryAll) input.checked = event.target.checked;
+      });
+    }
+    if (event.target.matches('[data-schedule-service],[data-schedule-service-all],[data-schedule-service-category-all]')) syncApprovedServiceCheckAll();
     snapshotEditor();
     if (event.target.matches('[data-schedule-off]') && !event.target.checked) {
       var day = editorValues.weekly[event.target.dataset.scheduleOff];
@@ -768,7 +807,7 @@
     if (event.key !== 'Tab') return;
     var dialog = modalHost.querySelector('[data-schedule-rules-form]') || modalHost.querySelector('[data-break-form]') || modalHost.querySelector('[data-request-impact]:not([hidden])') || modalHost.querySelector('[data-schedule-drawer]');
     if (!dialog) return;
-    var controls = Array.from(dialog.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),a[href]'));
+    var controls = Array.from(dialog.querySelectorAll('button:not(:disabled),input:not(:disabled),select:not(:disabled),a[href],summary'));
     var first = controls[0], last = controls[controls.length - 1];
     if (event.shiftKey && (document.activeElement === first || document.activeElement.id === 'schedule-drawer-title')) { event.preventDefault(); last.focus(); }
     else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
