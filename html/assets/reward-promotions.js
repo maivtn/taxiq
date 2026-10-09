@@ -58,11 +58,13 @@
     promotionType:['Promotion type','Loại chương trình'], deal:['Deal','Deal'], coupon:['Coupon','Coupon'], allOfferTypes:['Deal & Coupon','Deal & Coupon'], filterOfferType:['Filter promotion type','Lọc loại chương trình'],
     dealTypeHint:['Use directly when eligible. No coupon claim or quantity limit.','Dùng trực tiếp khi đủ điều kiện. Không cần lấy mã, không giới hạn số suất.'],
     couponTypeHint:['Customers claim a coupon first. Set quantity and usage limits.','Khách lấy coupon trước khi dùng. Cấu hình số suất và giới hạn sử dụng.'],
-    couponSettings:['Coupon settings','Cấu hình Coupon'], totalSlots:['Total coupons','Tổng số suất'], perPersonLimit:['Uses per phone number · optional','Số lần dùng mỗi SĐT · tùy chọn'], holdDays:['Hold after claim · days','Giữ suất sau khi lấy · ngày'], unlimited:['Unlimited','Không giới hạn'], untilExpiry:['Until promotion ends','Đến khi chương trình kết thúc'],
+    couponEligibility:['Eligibility & conditions','Đối tượng & điều kiện'], couponSettings:['Coupon settings','Cấu hình Coupon'], totalSlots:['Total coupons','Tổng số suất'], perPersonLimit:['Uses per phone number','Số lần dùng mỗi SĐT'], holdDays:['Hold after claim · days · optional','Giữ suất sau khi lấy · ngày · tùy chọn'], unlimited:['Unlimited','Không giới hạn'], untilExpiry:['Until promotion ends','Đến khi chương trình kết thúc'],
+    startDateOptional:['Start date · optional','Ngày bắt đầu · tùy chọn'], couponStartDate:['Start date · required for Coupon','Ngày bắt đầu · bắt buộc cho Coupon'], couponStartDateError:['Choose a start date for this coupon.','Chọn ngày bắt đầu cho Coupon.'],
     endDateOptional:['End date · optional','Ngày kết thúc · tùy chọn'], couponEndDate:['End date · required for Coupon','Ngày kết thúc · bắt buộc cho Coupon'], couponEndDateError:['Choose an end date for this coupon.','Chọn ngày kết thúc cho Coupon.'],
     couponSettingsHint:['Claiming reserves one coupon. An unused coupon is released when its hold expires; the hold cannot extend past the promotion’s end date.','Lấy coupon giữ một suất. Quá hạn giữ chưa dùng thì suất được trả lại; hạn giữ không vượt ngày kết thúc chương trình.'],
+    couponUsageHint:['Counts completed uses for the same phone number, not the number of claims.','Đếm số lần đã dùng theo cùng SĐT, không phải số lần lấy coupon.'], couponHoldHint:['Leave blank to keep a claimed coupon until the promotion ends.','Để trống để giữ coupon đã lấy đến khi chương trình kết thúc.'],
     couponClaimRequired:['Claim a coupon before use, linked to your phone number.','Lấy coupon trước khi dùng, gắn với số điện thoại của khách.'], couponUsesLimit:['Uses per phone number','Số lần dùng mỗi số điện thoại'], couponHold:['Hold after claim','Giữ suất sau khi lấy'], couponHoldUnit:['days; capped by the promotion’s end date','ngày; không vượt ngày kết thúc chương trình'],
-    offerTypeError:['Choose Deal or Coupon.','Chọn Deal hoặc Coupon.'], totalSlotsError:['Enter a positive whole number of coupons.','Nhập tổng số suất là số nguyên lớn hơn 0.'], perPersonLimitError:['Enter a positive whole number of uses per customer, or leave it blank for unlimited.','Nhập số lần dùng mỗi khách là số nguyên lớn hơn 0, hoặc để trống nếu không giới hạn.'], holdDaysError:['Enter a positive whole number of hold days, or leave it blank to hold until the promotion ends.','Nhập số ngày giữ suất là số nguyên lớn hơn 0, hoặc để trống để giữ đến khi chương trình kết thúc.'],
+    offerTypeError:['Choose Deal or Coupon.','Chọn Deal hoặc Coupon.'], totalSlotsError:['Enter a positive whole number of coupons.','Nhập tổng số suất là số nguyên lớn hơn 0.'], perPersonLimitError:['Enter a positive whole number of uses per phone number.','Nhập số lần dùng mỗi SĐT là số nguyên lớn hơn 0.'], holdDaysError:['Enter a positive whole number of hold days, or leave it blank to hold until the promotion ends.','Nhập số ngày giữ suất là số nguyên lớn hơn 0, hoặc để trống để giữ đến khi chương trình kết thúc.'],
     detailsHint:['Example: 15% off Classic Pedicure, Tue–Thu 10 AM–2 PM; cannot be combined. Clearly state who qualifies, eligible services and exclusions.','Ví dụ: Giảm 15% Classic Pedicure, thứ Ba–thứ Năm 10–14h; không cộng dồn. Luôn ghi rõ ai được dùng, dịch vụ nào và điều kiện loại trừ.'],
     description:['Description · optional','Mô tả · tùy chọn'], scheduleSection:['02 / Discount & schedule','02 / Ưu đãi & lịch chạy'], discountType:['Discount type','Loại giảm giá'],
     percent:['Percent · %','Percent · %'], amount:['Amount · $','Amount · $'], discountValue:['Discount value','Mức giảm'], legacyFree:['Free service or add-on','Dịch vụ hoặc add-on miễn phí'], legacyCustom:['Custom offer','Ưu đãi tùy chỉnh'],
@@ -257,11 +259,17 @@
     studio.conditional(form);
     const coupon = field('offerType').value === 'coupon';
     $('#coupon-settings').hidden = !coupon;
+    $('#coupon-eligibility').hidden = !coupon;
     ['totalSlots','perPersonLimit','holdDays'].forEach(name => { field(name).disabled = !coupon; });
     field('totalSlots').required = coupon;
+    field('perPersonLimit').required = coupon;
+    field('startDate').required = coupon;
     field('endDate').required = coupon;
+    $('#promotion-start-date-label').dataset.i18n = coupon ? 'couponStartDate' : 'startDateOptional';
+    $('#promotion-start-date-label').textContent = t(coupon ? 'couponStartDate' : 'startDateOptional');
     $('#promotion-end-date-label').dataset.i18n = coupon ? 'couponEndDate' : 'endDateOptional';
     $('#promotion-end-date-label').textContent = t(coupon ? 'couponEndDate' : 'endDateOptional');
+    field('holdDays').placeholder = t('untilExpiry');
     const type = field('type').value;
     field('value').type = ['percent','fixed'].includes(type) ? 'number' : 'text';
     field('value').max = type === 'percent' ? '100' : '';
@@ -279,9 +287,11 @@
     for (const [name,max] of [['title',100],['badge',50],['description',1000]]) if ((offer[name] || '').length > max) return ['lengthError',name];
     if (!['deal','coupon'].includes(offer.offerType ?? 'deal')) return ['offerTypeError','offerType'];
     if (offerType(offer) === 'coupon') {
+      if ((offer.exclusions || '').length > 1000) return ['lengthError','exclusions'];
+      if (!offer.startDate) return ['couponStartDateError','startDate'];
       if (!offer.endDate) return ['couponEndDateError','endDate'];
       for (const name of ['totalSlots','perPersonLimit','holdDays']) {
-        if (name !== 'totalSlots' && offer[name] == null) continue;
+        if (name === 'holdDays' && offer[name] == null) continue;
         if (!Number.isSafeInteger(offer[name]) || offer[name] <= 0) return [name + 'Error',name];
       }
     }
@@ -305,7 +315,8 @@
     initialRevision = offer.id ? JSON.stringify(offer) : '';
     form.reset(); studio.fill(form,current); $('#editor-language').value = language; field('type').value = current.type;
     field('offerType').value = offerType(current);
-    ['totalSlots','perPersonLimit','holdDays'].forEach(name => { field(name).value = current[name] ?? ''; });
+    ['totalSlots','perPersonLimit','holdDays'].forEach(name => { field(name).value = current[name] ?? (name === 'perPersonLimit' ? 1 : ''); });
+    ['serviceScope','customerGroup','stacking'].forEach(name => { field(name).querySelector('option[value="legacy"]').hidden = !current.id; });
     updateConditional();
     ['title','badge','description','value','startTime','endTime'].forEach(name => { field(name).value = current[name] ?? ''; });
     ['free','custom'].forEach(type => { form.querySelector('option[value="' + type + '"]').hidden = current.type !== type; });

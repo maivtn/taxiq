@@ -7,6 +7,7 @@
     servicesScope:['Service scope','Phạm vi dịch vụ'], legacyScope:['Keep existing terms','Giữ điều kiện hiện tại'], allServices:['All services','Tất cả dịch vụ'], selectedServices:['Selected services / packages','Dịch vụ / gói được chọn'],
     selectServices:['Eligible services / packages','Dịch vụ / gói áp dụng'], serviceHelp:['Sample salon catalog. Hold Ctrl / ⌘ to select more than one.','Danh mục salon minh họa. Giữ Ctrl / ⌘ để chọn nhiều mục.'],
     customerGroup:['Customer eligibility','Nhóm khách áp dụng'], allCustomers:['All customers','Tất cả khách'], newCustomers:['New customers','Khách mới'], returningCustomers:['Returning customers','Khách quay lại'],
+    inactiveCustomers:['No visit in 45+ days','Khách chưa quay lại từ 45 ngày'], nearbyCustomers:['OneQR customers near the shop','Khách OneQR gần tiệm'],
     stacking:['Combine with other offers','Cộng dồn ưu đãi'], exclusive:['Cannot be combined','Không cộng dồn'], combinable:['Can be combined','Cho phép cộng dồn'],
     exclusions:['Additional terms & exclusions','Điều kiện bổ sung & loại trừ'], conditionsHelp:['Eligibility is configured here. Booking and POS must verify it before confirming the discount.','Cấu hình điều kiện tại đây; booking và POS cần xác minh trước khi xác nhận mức giảm.'],
     effectiveStart:['Effective from · optional','Hiệu lực từ ngày · tùy chọn'], effectiveEnd:['Effective until · optional','Hiệu lực đến ngày · tùy chọn'],
@@ -98,7 +99,7 @@
     if (offer.serviceScope === 'selected') result.push(t('selectServices') + ': ' + (offer.serviceIds || []).map(id => services[id] || id).join(', '));
     else if (offer.serviceScope === 'all') result.push(t('allServices'));
     else if (offer.services) result.push(t('selectServices') + ': ' + offer.services);
-    if (offer.customerGroup && offer.customerGroup !== 'legacy') result.push(t({all:'allCustomers',new:'newCustomers',returning:'returningCustomers'}[offer.customerGroup]));
+    if (offer.customerGroup && offer.customerGroup !== 'legacy') result.push(t({all:'allCustomers',new:'newCustomers',returning:'returningCustomers',inactive45:'inactiveCustomers','oneqr-nearby':'nearbyCustomers'}[offer.customerGroup]));
     else if (offer.audience) result.push(offer.audience);
     if (offer.stacking && offer.stacking !== 'legacy') result.push(t(offer.stacking === 'exclusive' ? 'exclusive' : 'combinable'));
     if (offer.startDate || offer.endDate) result.push(dateLabel(offer.startDate) + ' → ' + dateLabel(offer.endDate));

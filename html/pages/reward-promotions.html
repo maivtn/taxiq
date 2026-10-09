@@ -6,7 +6,7 @@
   <title>Nexora Touch - Promotion Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/reward-promotions.css?v=20261009-deal-coupon">
+  <link rel="stylesheet" href="../assets/reward-promotions.css?v=20261009-coupon-form">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <style>
     .phase-tracking{margin-top:18px;padding:20px;border:1px solid var(--promo-line);border-radius:12px;background:var(--promo-surface);box-shadow:var(--promo-shadow)}
@@ -96,6 +96,16 @@
           </div>
           <p class="promo-note" data-i18n="detailsHint">Example: 15% off Classic Pedicure, Tue–Thu 10 AM–2 PM; cannot be combined. Clearly state who qualifies, eligible services and exclusions.</p>
           <label class="promo-field"><span data-i18n="description">Description · optional</span><textarea name="description" maxlength="1000" rows="3"></textarea></label>
+          <fieldset class="promo-coupon-eligibility" id="coupon-eligibility" hidden>
+            <legend data-i18n="couponEligibility">Eligibility &amp; conditions</legend>
+            <div class="promo-field-row">
+              <label class="promo-field"><span id="coupon-service-scope-label" data-i18n="servicesScope">Service scope</span><select name="serviceScope" aria-labelledby="coupon-service-scope-label"><option value="legacy" data-i18n="legacyScope">Keep existing terms</option><option value="all" data-i18n="allServices">All services</option><option value="selected" data-i18n="selectedServices">Selected services / packages</option></select></label>
+              <label class="promo-field"><span id="coupon-customer-group-label" data-i18n="customerGroup">Customer eligibility</span><select name="customerGroup" aria-labelledby="coupon-customer-group-label"><option value="legacy" data-i18n="legacyScope">Keep existing terms</option><option value="all" data-i18n="allCustomers">All customers</option><option value="new" data-i18n="newCustomers">New customers</option><option value="returning" data-i18n="returningCustomers">Returning customers</option><option value="inactive45" data-i18n="inactiveCustomers">No visit in 45+ days</option><option value="oneqr-nearby" data-i18n="nearbyCustomers">OneQR customers near the shop</option></select></label>
+            </div>
+            <label class="promo-field" id="studio-services" hidden><span id="coupon-services-label" data-i18n="selectServices">Eligible services / packages</span><select name="serviceIds" multiple aria-labelledby="coupon-services-label" aria-describedby="coupon-service-help"><option value="classic-pedicure">Classic Pedicure</option><option value="gel-manicure">Gel Manicure</option><option value="nail-art">Nail Art</option><option value="foot-massage">Foot Massage</option><option value="mani-pedi">Manicure + Pedicure Package</option></select><small id="coupon-service-help" class="promo-note" data-i18n="serviceHelp">Sample salon catalog. Hold Ctrl / ⌘ to select more than one.</small></label>
+            <label class="promo-field"><span id="coupon-stacking-label" data-i18n="stacking">Combine with other offers</span><select name="stacking" aria-labelledby="coupon-stacking-label"><option value="legacy" data-i18n="legacyScope">Keep existing terms</option><option value="exclusive" data-i18n="exclusive">Cannot be combined</option><option value="combinable" data-i18n="combinable">Can be combined</option></select></label>
+            <label class="promo-field"><span data-i18n="exclusions">Additional terms &amp; exclusions</span><textarea name="exclusions" maxlength="1000" rows="2"></textarea></label>
+          </fieldset>
         </section>
         <section class="editor-section" aria-labelledby="schedule-title">
           <h3 class="section-number" id="schedule-title" data-i18n="scheduleSection">02 / Discount & schedule</h3>
@@ -103,14 +113,16 @@
           <fieldset class="promo-days"><legend data-i18n="days">Days it runs</legend><div id="promotion-days"></div></fieldset>
           <div class="promo-field-row"><label class="promo-field"><span data-i18n="startsAt">Starts at</span><input name="startTime" type="time" required value="00:00"></label><label class="promo-field"><span data-i18n="endsAt">Ends at</span><input name="endTime" type="time" required value="23:59"></label></div>
           <p class="promo-note" data-i18n="timeHint">Shop local time · America/Chicago. Start and end times must be on the same day.</p>
-          <div class="promo-field-row"><label class="promo-field"><span>Start date · optional</span><input type="date" name="startDate"></label><label class="promo-field"><span id="promotion-end-date-label" data-i18n="endDateOptional">End date · optional</span><input type="date" name="endDate"></label></div>
+          <div class="promo-field-row"><label class="promo-field"><span id="promotion-start-date-label" data-i18n="startDateOptional">Start date · optional</span><input type="date" name="startDate"></label><label class="promo-field"><span id="promotion-end-date-label" data-i18n="endDateOptional">End date · optional</span><input type="date" name="endDate"></label></div>
           <fieldset class="promo-coupon-settings" id="coupon-settings" hidden>
             <legend data-i18n="couponSettings">Coupon settings</legend>
             <label class="promo-field"><span data-i18n="totalSlots">Total coupons</span><input name="totalSlots" type="number" min="1" step="1" inputmode="numeric" disabled aria-describedby="promotion-error"></label>
             <div class="promo-field-row">
-              <label class="promo-field"><span data-i18n="perPersonLimit">Uses per phone number · optional</span><input name="perPersonLimit" type="number" min="1" step="1" inputmode="numeric" disabled data-placeholder="unlimited" placeholder="Unlimited" aria-describedby="promotion-error"></label>
-              <label class="promo-field"><span data-i18n="holdDays">Hold after claim · days</span><input name="holdDays" type="number" min="1" step="1" inputmode="numeric" disabled data-placeholder="untilExpiry" placeholder="Until promotion ends" aria-describedby="promotion-error"></label>
+              <label class="promo-field"><span data-i18n="perPersonLimit">Uses per phone number</span><input name="perPersonLimit" type="number" min="1" step="1" inputmode="numeric" disabled aria-describedby="coupon-usage-help promotion-error"></label>
+              <label class="promo-field"><span data-i18n="holdDays">Hold after claim · days · optional</span><input name="holdDays" type="number" min="1" step="1" inputmode="numeric" disabled placeholder="Until promotion ends" aria-describedby="coupon-hold-help promotion-error"></label>
             </div>
+            <p class="promo-note" id="coupon-usage-help" data-i18n="couponUsageHint">Counts completed uses for the same phone number, not the number of claims.</p>
+            <p class="promo-note" id="coupon-hold-help" data-i18n="couponHoldHint">Leave blank to keep a claimed coupon until the promotion ends.</p>
             <p class="promo-note" data-i18n="couponSettingsHint">Claiming reserves one coupon. An unused coupon is released when its hold expires; the hold cannot extend past the promotion’s end date.</p>
           </fieldset>
         </section>
@@ -144,9 +156,7 @@
         </section>
         <div class="phase-compat-fields" hidden>
           <select id="editor-language" aria-label="Language"><option value="en">EN</option><option value="vi">VI</option></select>
-          <select name="serviceScope"><option value="legacy">Keep existing terms</option><option value="all">All services</option><option value="selected">Selected services</option></select><select name="customerGroup"><option value="legacy">Keep existing terms</option><option value="all">All customers</option><option value="new">New customers</option><option value="returning">Returning customers</option></select>
-          <label id="studio-services" hidden><select name="serviceIds" multiple><option value="classic-pedicure">Classic Pedicure</option><option value="gel-manicure">Gel Manicure</option><option value="nail-art">Nail Art</option><option value="foot-massage">Foot Massage</option><option value="mani-pedi">Manicure + Pedicure Package</option></select></label>
-          <select name="stacking"><option value="legacy">Keep existing terms</option><option value="exclusive">Cannot be combined</option><option value="combinable">Can be combined</option></select><select name="cta"><option value="details">View promotion</option><option value="booking">Book an appointment</option></select><textarea name="exclusions"></textarea>
+          <select name="cta"><option value="details">View promotion</option><option value="booking">Book an appointment</option></select>
           <input type="hidden" name="boostArea" value="Katy">
           <input type="radio" name="goal" value="slow-hours" checked>
           <input type="checkbox" name="shareDestination" value="oneqr" checked><input type="checkbox" name="shareDestination" value="nearby" checked><input type="checkbox" name="shareDestination" value="search" checked>
@@ -329,9 +339,9 @@
 <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
 <script>if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();</script>
 <script src="../assets/promotion-banner-assets.js"></script>
-<script src="../assets/promotion-studio.js?v=20261009-deal-coupon"></script>
+<script src="../assets/promotion-studio.js?v=20261009-coupon-form"></script>
 <script src="../assets/promotion-campaigns.js?v=20260925-optional-tabs"></script>
-<script src="../assets/reward-promotions.js?v=20261009-deal-coupon"></script>
+<script src="../assets/reward-promotions.js?v=20261009-coupon-form"></script>
 <script>
 (function () {
   const promotionStudio = window.NEXORA_STUDIO;
@@ -451,6 +461,10 @@
     const form = document.getElementById('promotion-form');
     const set = (name,value) => { const control = form.elements.namedItem(name); if (control) control.value = value; };
     set('offerType',['rebook-save','wellness-first'].includes(item.id) ? 'coupon' : 'deal');
+    if (form.elements.namedItem('offerType').value === 'coupon') {
+      set('customerGroup',item.id === 'wellness-first' ? 'new' : 'returning');
+      set('serviceScope','all'); set('stacking','exclusive');
+    }
     form.elements.namedItem('value').type = ['percent','fixed'].includes(item.type) ? 'number' : 'text';
     set('title',item.title); set('badge',item.badge); set('description',item.description); set('type',item.type); set('value',item.value); set('startTime',item.start || '00:00'); set('endTime',item.end || '23:59');
     form.querySelectorAll('[name="days"]').forEach(input => { input.checked = (item.days || ['Sun','Mon','Tue','Wed','Thu','Fri','Sat']).includes(input.value); });

@@ -131,8 +131,8 @@ body:has(.promo-dialog[open],.promo-poster-dialog[open]){overflow:hidden}
 .promo-field textarea{resize:vertical;min-height:78px;line-height:1.5;max-width:100%}
 .promo-field input:disabled{opacity:.6;background:#edf1f6}
 .promo-field-row{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;min-width:0}
-.promo-offer-types,.promo-coupon-settings{min-width:0;padding:0;border:0;margin:0 0 16px}
-.promo-offer-types legend,.promo-coupon-settings legend{padding:0;margin-bottom:8px;font-size:11px;font-weight:600;color:var(--promo-muted)}
+.promo-offer-types,.promo-coupon-settings,.promo-coupon-eligibility{min-width:0;padding:0;border:0;margin:0 0 16px}
+.promo-offer-types legend,.promo-coupon-settings legend,.promo-coupon-eligibility legend{padding:0;margin-bottom:8px;font-size:11px;font-weight:600;color:var(--promo-muted)}
 .promo-offer-type-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
 .promo-offer-type{display:flex;align-items:flex-start;gap:8px;padding:12px;border:1px solid var(--promo-line);border-radius:8px;background:var(--promo-surface);cursor:pointer}
 .promo-offer-type:has(input:checked){border-color:#c5c3eb;background:#f7f7fd}
