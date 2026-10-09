@@ -90,6 +90,7 @@
       { label: 'Salon Settings', tab: 'salon-settings', href: 'pos-salon-settings.html' },
       { label: 'Report', tab: 'report', href: 'pos-shop-income-report.html' },
       { label: 'Promotions', href: 'reward-promotions.html' },
+      { label: 'Deal & Coupon', tab: 'dcreate', page: 'community', href: 'community.html?tab=dcreate&role=owner' },
       { label: 'Check-In Devices', href: 'qr-stations.html?tab=qr-stations' },
       { label: 'Printer', tab: 'printer' },
       { label: 'Public Check-In', href: '../customer/check-in-mobile.html' }
@@ -215,8 +216,10 @@
   // nothing while a panel is plainly on screen.
   var nativeTabs = [];
   NAV.forEach(function (node) {
-    if (node.type !== 'group' || node.page !== activePage || !node.items) return;
-    node.items.forEach(function (it) { if (it.tab) nativeTabs.push(it.tab); });
+    if (node.type !== 'group' || !node.items) return;
+    node.items.forEach(function (it) {
+      if (it.tab && (node.page === activePage || it.page === activePage)) nativeTabs.push(it.tab);
+    });
   });
   if (cfg.isCommunity && activePage === 'staff') {
     nativeTabs = COMMUNITY_ITEMS.map(function (item) { return item.tab; }).concat(['profile']);
@@ -230,6 +233,19 @@
   if (urlTab && nativeTabs.length && nativeTabs.indexOf(urlTab) === -1) urlTab = '';
 
   var activeTab = urlTab || sidebarTab(cfg.activeTab) || (activePage === 'pos' ? 'front-desk' : '');
+  expandLinkedTabGroup(activeTab);
+
+  function expandLinkedTabGroup(tab) {
+    var changed = false;
+    NAV.forEach(function (node) {
+      if (node.type !== 'group' || !node.items) return;
+      if (node.items.some(function (it) { return it.page === activePage && it.tab === tab; }) && !expandedGroups[node.key]) {
+        expandedGroups[node.key] = true;
+        changed = true;
+      }
+    });
+    return changed;
+  }
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
@@ -265,8 +281,9 @@
     var items = node.items.map(function (it) {
       var inner = '<span class="nav-subitem-dot" aria-hidden="true"></span><span>' + esc(it.label) + '</span>';
       if (it.href) {
-        var hrefActive = isNative && it.tab === activeTab;
-        return '<a class="nav-subitem' + (hrefActive ? ' is-active' : '') + '"' + (isNative && it.tab ? ' data-shell-active-tab="' + esc(it.tab) + '"' : '') + ' href="' + esc(it.href) + '">' + inner + '</a>';
+        var itemNative = it.page ? it.page === activePage : isNative;
+        var hrefActive = itemNative && it.tab === activeTab;
+        return '<a class="nav-subitem' + (hrefActive ? ' is-active' : '') + '"' + (itemNative && it.tab ? ' data-shell-active-tab="' + esc(it.tab) + '"' : '') + ' href="' + esc(it.href) + '">' + inner + '</a>';
       }
       if (node.page && !isNative) {
         // foreign group -> cross-page link
@@ -376,7 +393,12 @@
 
   function setActiveTab(tab) {
     tab = sidebarTab(tab);
+    var tabChanged = tab !== activeTab;
     activeTab = tab;
+    if (tabChanged && expandLinkedTabGroup(tab)) {
+      saveExpandedGroups();
+      refreshSidebar();
+    }
     var subs = document.querySelectorAll('.sidebar [data-shell-tab], .sidebar [data-shell-active-tab]');
     for (var i = 0; i < subs.length; i++) {
       subs[i].classList.toggle('is-active', (subs[i].getAttribute('data-shell-tab') || subs[i].getAttribute('data-shell-active-tab')) === tab);
