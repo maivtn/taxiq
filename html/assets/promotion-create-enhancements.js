@@ -31,7 +31,7 @@
     internalChannels:['Internal · your own channels','Internal · Kênh riêng'],goalChannelHint:['The goal suggests channels; you can change them.','Mục tiêu gợi ý kênh; bạn có thể điều chỉnh.'],publicChannels:['Public · NEXORA discovery','Public · Khám phá NEXORA'],publicNote:['Organic listings are free. Paid promotion is optional.','Hiển thị tự nhiên miễn phí. Quảng cáo trả phí là tùy chọn.'],
     checkinOptions:['Check-in placements','Vị trí Check-in'],bookingOptions:['Booking & AI Voice placements','Vị trí Booking & AI Voice'],partnerContent:['Partner content · optional','Nội dung đối tác · tùy chọn'],partnerModeLabel:['OneQR Hero & check-in idle screen','OneQR Hero & màn hình chờ Check-in'],ownOffersOnly:['Your own offers only','Chỉ ưu đãi của tiệm'],partnerReviewRequired:['Request partner content · owner review','Yêu cầu nội dung đối tác · owner xét duyệt'],partnerConsentLabel:['Request review for partners in other industries. Exclude competing businesses.','Yêu cầu xét duyệt đối tác khác ngành. Loại trừ đối thủ cạnh tranh.'],
     externalAds:['External advertising · optional','Quảng cáo ngoài NEXORA · tùy chọn'],externalAdsHint:['Save selected platforms and prepare assets. Platform accounts and spending are configured separately.','Lưu nền tảng đã chọn và chuẩn bị nội dung. Tài khoản, ngân sách nền tảng cấu hình riêng.'],
-    campaignAndPosting:['05 / Campaign & posting schedule','05 / Chiến dịch & lịch đăng'],programCampaign:['Promotion campaign · optional','Chiến dịch khuyến mãi · tùy chọn'],newProgramCampaign:['New campaign','Tạo chiến dịch'],campaignKind:['Campaign type','Loại chiến dịch'],grandOpening:['Grand opening','Khai trương'],seasonalCampaign:['Seasonal','Theo mùa'],customCampaign:['Other','Khác'],addProgramCampaign:['Add campaign','Thêm chiến dịch'],postMode:['Posting schedule','Lịch đăng'],postOff:['No automatic posting','Không tự động đăng'],postOnEnable:['When the promotion starts','Khi khuyến mãi bắt đầu'],postMilestones:['Program milestones','Theo mốc chương trình'],postWeekly:['Repeat weekly','Lặp mỗi tuần'],postTime:['Posting time · shop timezone','Giờ đăng · múi giờ tiệm'],postScheduleHint:['Review the draft queue. Manually edited dates stay fixed when promotion dates change.','Rà soát hàng đợi nháp. Ngày đã chỉnh tay được giữ khi đổi ngày khuyến mãi.'],
+    campaignAndPosting:['Campaign & posting schedule','Chiến dịch & lịch đăng'],programCampaign:['Promotion campaign · optional','Chiến dịch khuyến mãi · tùy chọn'],newProgramCampaign:['New campaign','Tạo chiến dịch'],campaignKind:['Campaign type','Loại chiến dịch'],grandOpening:['Grand opening','Khai trương'],seasonalCampaign:['Seasonal','Theo mùa'],customCampaign:['Other','Khác'],addProgramCampaign:['Add campaign','Thêm chiến dịch'],postMode:['Posting schedule','Lịch đăng'],postOff:['No automatic posting','Không tự động đăng'],postOnEnable:['When the promotion starts','Khi khuyến mãi bắt đầu'],postMilestones:['Program milestones','Theo mốc chương trình'],postWeekly:['Repeat weekly','Lặp mỗi tuần'],postTime:['Posting time · shop timezone','Giờ đăng · múi giờ tiệm'],postScheduleHint:['Review the draft queue. Manually edited dates stay fixed when promotion dates change.','Rà soát hàng đợi nháp. Ngày đã chỉnh tay được giữ khi đổi ngày khuyến mãi.'],
     checkinPreview:['Check-in','Check-in'],bookingPreview:['Booking','Booking'],preflightTitle:['Review before saving','Rà soát trước khi lưu'],shareLinkQr:['Customer link & QR','Link & QR cho khách'],
     industryError:['Choose an industry.','Chọn ngành.'],groupError:['Choose at least one active service group.','Chọn ít nhất một nhóm dịch vụ đang hoạt động.'],moneyConditionError:['Enter a positive USD amount with up to two decimal places.','Nhập số tiền USD lớn hơn 0, tối đa hai số lẻ.'],requirementError:['Choose a supported customer requirement.','Chọn yêu cầu áp dụng hợp lệ.'],dealFrequencyError:['Choose a Deal usage frequency.','Chọn tần suất sử dụng Deal.'],codeError:['Use up to 40 letters, numbers, underscores or hyphens for the coupon code.','Mã Coupon tối đa 40 ký tự chữ, số, gạch dưới hoặc gạch nối.'],partnerConsentError:['Confirm the partner review request.','Xác nhận yêu cầu xét duyệt đối tác.'],postChannelError:['Choose at least one enabled channel for the posting schedule.','Chọn ít nhất một kênh đang bật cho lịch đăng.'],postDateError:['Set effective dates before preparing milestone or weekly posts.','Chọn ngày hiệu lực trước khi lập lịch theo mốc hoặc hàng tuần.'],postTimeError:['Enter a valid posting time.','Nhập giờ đăng hợp lệ.'],postMilestoneError:['Select at least one posting milestone.','Chọn ít nhất một mốc đăng.'],paidPublicError:['Enable a Public discovery channel for Paid Boost.','Bật một kênh Public cho Paid Boost.'],catalogServiceError:['An eligible service is no longer in the POS catalog. Update the selection.','Có dịch vụ áp dụng không còn trong danh mục POS. Cập nhật lựa chọn.'],postLimitError:['A weekly posting schedule can cover up to one year.','Lịch đăng hàng tuần có thể lập tối đa một năm.'],postQueueDateError:['Enter valid dates and times for the posting queue.','Nhập ngày và giờ hợp lệ cho hàng đợi đăng.']
   });
@@ -216,7 +216,7 @@
     const ci = field('checkIn').checked;
     form.querySelectorAll('[name="checkinPosition"]').forEach(input => { input.disabled = !ci; });
     form.querySelectorAll('[name="bookingPosition"]').forEach(input => { input.disabled = !checked('internalChannel').includes('booking'); });
-    const post = field('postMode').value !== 'off';
+    const post = field('paidBoost').checked && field('postMode').value !== 'off';
     $('posting-settings').hidden = !post; $('post-time-field').hidden = !post;
     $('creation-post-milestones').hidden = field('postMode').value !== 'milestones';
     form.querySelectorAll('[name="postChannel"]').forEach(input => { input.disabled = !checked('internalChannel').includes(input.value); });
@@ -224,7 +224,7 @@
     $('checkin-eligibility-warning').textContent = text('Online booking is required. Walk-in customers can view the offer but do not qualify automatically.','Cần đặt lịch online. Khách walk-in có thể xem nhưng không tự động đủ điều kiện.');
     $('promotion-industry-context').textContent = text('Default from Salon Settings · ','Mặc định từ Salon Settings · ')+salon.name;
     const campaign = allCampaigns().find(item => item.id === field('programCampaignId').value);
-    $('program-campaign-context').textContent = campaign ? campaign.name+' · '+dateLabel(campaign.startDate)+' → '+dateLabel(campaign.endDate) : text('Group promotions in a campaign. This is separate from Paid Boost.','Gộp các khuyến mãi vào một chiến dịch. Chiến dịch này tách riêng Paid Boost.');
+    $('program-campaign-context').textContent = campaign ? campaign.name+' · '+dateLabel(campaign.startDate)+' → '+dateLabel(campaign.endDate) : text('Group related promotions in one campaign.','Gộp các khuyến mãi liên quan vào một chiến dịch.');
   }
   studio.read = function (target,offer) {
     offer = original.read(target,offer);
@@ -266,7 +266,7 @@
     if (offer.offerType === 'coupon' && offer.code && !/^[A-Za-z0-9_-]{1,40}$/.test(offer.code)) return ['codeError','code'];
     if ((offer.partnerMode !== 'off' || offer.publicChannels.includes('partners')) && !offer.partnerConsent) return ['partnerConsentError','partnerConsent'];
     if (offer.paidBoost && !offer.searchListing && !offer.publicChannels.length) return ['paidPublicError','public'];
-    if (offer.postMode !== 'off') {
+    if (offer.paidBoost && offer.postMode !== 'off') {
       if (!offer.postChannels.length || offer.postQueue.some(item => !offer.internalChannels.includes(item.channel))) return ['postChannelError','postChannel'];
       if (!/^([01]\d|2[0-3]):[0-5]\d$/.test(offer.postTime)) return ['postTimeError','postTime'];
       if (['milestones','weekly'].includes(offer.postMode) && (!offer.startDate || !offer.endDate)) return ['postDateError','startDate'];
@@ -312,7 +312,7 @@
   function shift(date,amount) { if (!date) return ''; const value = new Date(date+'T12:00:00Z'); value.setUTCDate(value.getUTCDate()+amount); return value.toISOString().slice(0,10); }
   function dayDistance(start,end) { return start && end ? Math.round((new Date(end+'T12:00:00Z')-new Date(start+'T12:00:00Z'))/86400000) : 0; }
   function buildQueue(offer) {
-    if (offer.postMode === 'off') return [];
+    if (!offer.paidBoost || offer.postMode === 'off') return [];
     const start = offer.startDate || today(), end = offer.endDate;
     const dates = [];
     if (offer.postMode === 'enabled') dates.push(['start',start]);
