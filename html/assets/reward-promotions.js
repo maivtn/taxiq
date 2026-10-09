@@ -282,7 +282,8 @@
     form.querySelectorAll('[aria-invalid]').forEach(el => el.removeAttribute('aria-invalid'));
     if (name) { const target = form.querySelector('[name="' + name + '"]') || field(name); target.setAttribute('aria-invalid','true');
       for (let ancestor = target.parentElement; ancestor && ancestor !== form; ancestor = ancestor.parentElement) if (ancestor.tagName === 'DETAILS') ancestor.open = true;
-      const focusTarget = target.hidden && target.dataset.imagePicker ? target.nextElementSibling.querySelector('button') : target;
+      const focusTarget = target.hidden && target.dataset.imagePicker ? target.nextElementSibling.querySelector('button')
+        : target.hidden && target.dataset.servicePicker ? target.nextElementSibling.querySelector('input') || target.nextElementSibling : target;
       focusTarget.focus(); }
   }
   function validation(offer) {

@@ -24,7 +24,7 @@
     chooseIndustry:['Industry','Chọn ngành'], promotionGoal:['Goal','Mục tiêu'], goalSlow:goalCopy['slow-hours'], goalReturning:goalCopy.returning, goalNew:goalCopy['new-customers'], goalGift:goalCopy['gift-card'],
     allGoals:['All goals','Tất cả mục tiêu'], allGroups:['All groups','Tất cả nhóm'], templateServiceGroup:['Service group','Nhóm dịch vụ'], searchTemplates:['Search templates','Tìm mẫu'], templateSearchPlaceholder:['Name, offer or service…','Tên, ưu đãi hoặc dịch vụ…'],
     previousTemplates:['Previous','Trước'],nextTemplates:['Next','Tiếp'], choosePromotionTemplate:['Promotion template · optional','Mẫu khuyến mãi · tùy chọn'], selectedServiceGroups:['Selected service groups','Nhóm dịch vụ áp dụng'],
-    serviceHelp:['From the POS service catalog. Hold Ctrl / ⌘ to select more than one.','Danh mục dịch vụ từ POS. Giữ Ctrl / ⌘ để chọn nhiều mục.'], couponEligibility:['Eligibility & conditions','Đối tượng & điều kiện áp dụng'],
+    serviceHelp:['From the POS service catalog. Select one or more services / packages.','Danh mục dịch vụ từ POS. Chọn một hoặc nhiều dịch vụ / gói.'], couponEligibility:['Eligibility & conditions','Đối tượng & điều kiện áp dụng'],
     customerRequirement:['Customer requirement','Yêu cầu với khách'],requirementNone:requirementCopy.none,requirementOnline:requirementCopy.online,requirementAppointment:requirementCopy.appt,requirementCheckin:requirementCopy.checkin,
     minimumSpend:['Minimum eligible spend · USD · optional','Chi tiêu tối thiểu · USD · tùy chọn'],maximumDiscount:['Maximum discount per use · USD · optional','Giảm tối đa mỗi lần · USD · tùy chọn'],couponCode:['Coupon code · optional','Mã Coupon · tùy chọn'],
     dealLimits:['Deal usage limits','Giới hạn sử dụng Deal'],dealFrequency:['Per customer','Theo khách'],oncePerVisit:['Once per visit','Một lần mỗi lượt đến'],oncePerWeek:['Once per week','Một lần mỗi tuần'],oncePerMonth:['Once per month','Một lần mỗi tháng'],dealMonthlyCap:['Monthly discount cap · USD · optional','Hạn mức giảm trong tháng · USD · tùy chọn'],dealCapHint:['The cap applies to the total discount given by this Deal during a calendar month.','Hạn mức tính tổng tiền giảm của Deal trong một tháng lịch.'],
@@ -48,6 +48,58 @@
     for (const id of offer.serviceIds || []) if (!serviceMap.has(id)) field('serviceIds').add(new Option((legacyLabels[id] || id) + text(' · Existing selection',' · Lựa chọn cũ'),id));
     for (const id of offer.serviceGroupIds || []) if (!groupMap.has(id)) field('serviceGroupIds').add(new Option(id + text(' · Existing selection',' · Lựa chọn cũ'),id));
   }
+  function serviceVisual(item = {}, group = {}) {
+    const photo = item.image || group.image;
+    if (typeof photo === 'string' && /^data:image\/(png|jpeg|webp);base64,[A-Za-z0-9+/]+={0,2}$/.test(photo)) return '<img src="'+esc(photo)+'" alt="" width="32" height="32" decoding="async">';
+    const icons = window.NEXORA_PROMOTION_ICONS;
+    if (Object.hasOwn(icons.icons,item.icon)) return icons.image(item.icon);
+    const name = [item.name,group.name].filter(Boolean).join(' ');
+    const key = /pedicure|foot|feet|toe|sock/i.test(name) ? 'pedicure'
+      : /wax|eyebrow|brow|lash|face|skin/i.test(name) ? 'cosmetics'
+      : /massage|stone|paraffin|collagen|spa/i.test(name) ? 'spa'
+      : /manicure|acrylic|dip|gel|nail|polish|shellac/i.test(name) ? 'nail'
+      : /hair|barber/i.test(name) ? 'hair'
+      : /yoga/i.test(name) ? 'yoga'
+      : /fitness|gym/i.test(name) ? 'fitness'
+      : industry(defaultIndustry)?.icon || 'retail';
+    return icons.image(key);
+  }
+  function renderServicePickers() {
+    for (const name of ['serviceGroupIds','serviceIds']) {
+      const select = field(name);
+      let picker = select.nextElementSibling;
+      if (!picker?.classList.contains('pc-service-picker')) {
+        picker = document.createElement('div');
+        picker.className = 'pc-service-picker';
+        picker.tabIndex = -1;
+        picker.setAttribute('role','group');
+        picker.setAttribute('aria-labelledby',select.getAttribute('aria-labelledby'));
+        if (select.hasAttribute('aria-describedby')) picker.setAttribute('aria-describedby',select.getAttribute('aria-describedby'));
+        select.after(picker);
+        picker.addEventListener('change',event => {
+          const input = event.target.closest('[data-service-value]');
+          if (!input) return;
+          const option = Array.from(select.options).find(option => option.value === input.dataset.serviceValue);
+          if (option) option.selected = input.checked;
+          select.dispatchEvent(new Event('change',{bubbles:true}));
+        });
+      }
+      select.hidden = true;
+      select.dataset.servicePicker = 'true';
+      const choice = (option,group = {}) => {
+        const item = name === 'serviceGroupIds' ? groupMap.get(option.value) || {name:option.textContent} : serviceMap.get(option.value) || {name:option.textContent};
+        const count = name === 'serviceGroupIds' && item.services ? '<small>'+item.services.length+' '+text('services','dịch vụ')+'</small>' : '';
+        return '<label class="pc-service-choice"><input type="checkbox" data-service-value="'+esc(option.value)+'"'+(option.selected ? ' checked' : '')+'><span class="pc-service-visual" aria-hidden="true">'+serviceVisual(item,group)+'</span><span class="pc-service-copy"><span class="pc-service-name">'+esc(option.textContent)+'</span>'+count+'</span></label>';
+      };
+      picker.innerHTML = Array.from(select.children).map(child => {
+        if (child.tagName !== 'OPTGROUP') return choice(child);
+        const group = groupMap.get(serviceMap.get(child.children[0]?.value)?.categoryId) || {name:child.label};
+        return '<section class="pc-service-category"><h4><span class="pc-service-visual" aria-hidden="true">'+serviceVisual(group)+'</span>'+esc(child.label)+'</h4><div class="pc-service-option-grid">'+Array.from(child.children,option => choice(option,group)).join('')+'</div></section>';
+      }).join('');
+      picker.classList.toggle('pc-service-group-grid',name === 'serviceGroupIds');
+      if (!select.options.length) picker.innerHTML = '<p class="promo-note">'+text('No services in the POS catalog.','Danh mục POS chưa có dịch vụ.')+'</p>';
+    }
+  }
   function industryOptions(all) {
     return (all ? '<option value="all" data-industry-icon="retail">'+text('All industries','Tất cả ngành')+'</option>' : '') + data.groups.map(group => '<optgroup label="'+esc(label(group))+'">'+data.industries.filter(item => item.group === group.id).map(item => '<option value="'+esc(item.id)+'" data-industry-icon="'+esc(item.icon)+'">'+esc(label(item))+'</option>').join('')+'</optgroup>').join('');
   }
@@ -56,7 +108,8 @@
   $('template-industry').value = defaultIndustry;
   window.NEXORA_PROMOTION_ICONS.mountPicker($('promotion-industry'));
   window.NEXORA_PROMOTION_ICONS.mountPicker($('template-industry'));
-  $('template-service-group').innerHTML += data.serviceGroups.map((name,index) => '<option value="'+index+'">'+esc(name)+'</option>').join('');
+  $('template-service-group').innerHTML += data.serviceGroups.map((name,index) => '<option value="'+index+'" data-industry-icon="'+['nail','pedicure','nail','cosmetics','spa'][index]+'">'+esc(name)+'</option>').join('');
+  window.NEXORA_PROMOTION_ICONS.mountPicker($('template-service-group'));
   const days = value => String(value || '0123456').split('').map(index => ['Sun','Mon','Tue','Wed','Thu','Fri','Sat'][Number(index)]).filter(Boolean);
   const theme = value => ({ocean:'blue',sage:'green',sig:'purple',rose:'rose',gold:'gold'}[value] || 'purple');
   function discountType(type,value,custom) { return custom && (value === '' || value == null) ? 'custom' : type === 'amt' ? 'fixed' : type === 'pct' ? 'percent' : type === 'free' ? 'free' : 'custom'; }
@@ -139,6 +192,7 @@
     Object.keys(defaults).forEach(name => { field(name).value = offer[name] ?? defaults[name]; });
     field('goal').value = offer.goal || 'slow-hours';
     for (const option of field('serviceGroupIds').options) option.selected = (offer.serviceGroupIds || []).includes(option.value);
+    renderServicePickers();
     selectedTemplate = offer.templateId || null; baseline = offer.templateBaseline || null;
     $('new-program-campaign-fields').hidden = true; $('program-campaign-error').textContent = '';
     $('creation-share-feedback').textContent = '';
@@ -358,6 +412,8 @@
         for (const group of select.querySelectorAll('optgroup')) group.label = label(data.groups.find(item => item.id === industry(group.children[0]?.value)?.group));
         select.dispatchEvent(new Event('change'));
       }
+      $('template-service-group').dispatchEvent(new Event('change'));
+      if (field('serviceIds').dataset.servicePicker) renderServicePickers();
       for (const [name,items] of [['internalChannel',internal],['publicChannel',publicChannels],['checkinPosition',checkin],['bookingPosition',booking],['externalAd',external],['postChannel',postable],['postMilestone',milestones]]) {
         form.querySelectorAll('[name="'+name+'"]').forEach(input => { const item = items.find(entry => entry[0] === input.value); input.nextElementSibling.textContent = text(item[1],item[2]); });
       }

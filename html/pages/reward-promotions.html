@@ -9,7 +9,7 @@
   <link rel="stylesheet" href="../assets/reward-promotions.css?v=20261009-coupon-form">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/promotion-industry-icons.css?v=20261009">
-  <link rel="stylesheet" href="../assets/promotion-create-enhancements.css?v=20261009">
+  <link rel="stylesheet" href="../assets/promotion-create-enhancements.css?v=20261009-service-icons">
   <style>
     .phase-tracking{margin-top:18px;padding:20px;border:1px solid var(--promo-line);border-radius:12px;background:var(--promo-surface);box-shadow:var(--promo-shadow)}
     .phase-section-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;margin-bottom:16px}.phase-section-heading h2{margin:0}.phase-tracking-controls{display:grid;justify-items:end;gap:10px}.phase-tracking-filters{display:grid;grid-template-columns:repeat(3,minmax(150px,1fr)) auto;align-items:end;gap:10px;min-width:min(760px,62vw)}.phase-tracking-filters .promo-field{margin-bottom:0}.phase-tracking-filters>.promo-button{min-height:38px;white-space:nowrap}
@@ -55,7 +55,7 @@
       <div class="promo-field"><span id="template-industry-label" data-i18n="chooseIndustry">Industry</span><select id="template-industry" aria-labelledby="template-industry-label"></select></div>
       <label class="promo-field"><span data-i18n="promotionType">Promotion type</span><select id="template-kind"><option value="all" data-i18n="allOfferTypes">Deal &amp; Coupon</option><option value="deal">Deal</option><option value="coupon">Coupon</option></select></label>
       <label class="promo-field"><span data-i18n="promotionGoal">Goal</span><select id="template-goal"><option value="all" data-i18n="allGoals">All goals</option><option value="slow-hours" data-i18n="goalSlow">Fill slow hours</option><option value="returning" data-i18n="goalReturning">Bring customers back</option><option value="new-customers" data-i18n="goalNew">Get new customers</option><option value="gift-card" data-i18n="goalGift">Sell gift cards</option></select></label>
-      <label class="promo-field"><span data-i18n="templateServiceGroup">Service group</span><select id="template-service-group"><option value="all" data-i18n="allGroups">All groups</option></select></label>
+      <div class="promo-field"><span id="template-service-group-label" data-i18n="templateServiceGroup">Service group</span><select id="template-service-group" aria-labelledby="template-service-group-label"><option value="all" data-i18n="allGroups" data-industry-icon="retail">All groups</option></select></div>
       <label class="promo-field pc-template-search"><span data-i18n="searchTemplates">Search templates</span><input id="template-search" type="search" placeholder="Name, offer or service…" data-placeholder="templateSearchPlaceholder"></label>
     </div>
     <div class="phase-template-filters" id="template-category-filters" aria-label="Filter promotion templates by industry"></div>
@@ -120,8 +120,8 @@
               <label class="promo-field"><span id="coupon-service-scope-label" data-i18n="servicesScope">Service scope</span><select name="serviceScope" aria-labelledby="coupon-service-scope-label"><option value="legacy" data-i18n="legacyScope">Keep existing terms</option><option value="all" data-i18n="allServices">All services</option><option value="selected" data-i18n="selectedServices">Selected services / packages</option><option value="groups" data-i18n="selectedServiceGroups">Selected service groups</option></select></label>
               <label class="promo-field"><span id="coupon-customer-group-label" data-i18n="customerGroup">Customer eligibility</span><select name="customerGroup" aria-labelledby="coupon-customer-group-label"><option value="legacy" data-i18n="legacyScope">Keep existing terms</option><option value="all" data-i18n="allCustomers">All customers</option><option value="new" data-i18n="newCustomers">New customers</option><option value="returning" data-i18n="returningCustomers">Returning customers</option><option value="inactive45" data-i18n="inactiveCustomers">No visit in 45+ days</option><option value="oneqr-nearby" data-i18n="nearbyCustomers">OneQR customers near the shop</option></select></label>
             </div>
-            <label class="promo-field" id="studio-service-groups" hidden><span id="promotion-service-groups-label" data-i18n="selectedServiceGroups">Selected service groups</span><select name="serviceGroupIds" multiple aria-labelledby="promotion-service-groups-label"></select></label>
-            <label class="promo-field" id="studio-services" hidden><span id="coupon-services-label" data-i18n="selectServices">Eligible services / packages</span><select name="serviceIds" multiple aria-labelledby="coupon-services-label" aria-describedby="coupon-service-help"><option value="classic-pedicure">Classic Pedicure</option><option value="gel-manicure">Gel Manicure</option><option value="nail-art">Nail Art</option><option value="foot-massage">Foot Massage</option><option value="mani-pedi">Manicure + Pedicure Package</option></select><small id="coupon-service-help" class="promo-note" data-i18n="serviceHelp">From the POS service catalog. Hold Ctrl / ⌘ to select more than one.</small></label>
+            <div class="promo-field" id="studio-service-groups" hidden><span id="promotion-service-groups-label" data-i18n="selectedServiceGroups">Selected service groups</span><select name="serviceGroupIds" multiple aria-labelledby="promotion-service-groups-label"></select></div>
+            <div class="promo-field" id="studio-services" hidden><span id="coupon-services-label" data-i18n="selectServices">Eligible services / packages</span><select name="serviceIds" multiple aria-labelledby="coupon-services-label" aria-describedby="coupon-service-help"><option value="classic-pedicure">Classic Pedicure</option><option value="gel-manicure">Gel Manicure</option><option value="nail-art">Nail Art</option><option value="foot-massage">Foot Massage</option><option value="mani-pedi">Manicure + Pedicure Package</option></select><small id="coupon-service-help" class="promo-note" data-i18n="serviceHelp">From the POS service catalog. Select one or more services / packages.</small></div>
             <label class="promo-field"><span id="coupon-stacking-label" data-i18n="stacking">Combine with other offers</span><select name="stacking" aria-labelledby="coupon-stacking-label"><option value="legacy" data-i18n="legacyScope">Keep existing terms</option><option value="exclusive" data-i18n="exclusive">Cannot be combined</option><option value="combinable" data-i18n="combinable">Can be combined</option></select></label>
             <label class="promo-field"><span data-i18n="exclusions">Additional terms &amp; exclusions</span><textarea name="exclusions" maxlength="1000" rows="2"></textarea></label>
             <div class="promo-field-row">
@@ -388,10 +388,10 @@
 <script src="../assets/service-approval-settings.js"></script>
 <script src="../assets/promotion-create-data.js?v=20261009"></script>
 <script src="../assets/promotion-studio.js?v=20261009-create-enhance"></script>
-<script src="../assets/promotion-create-enhancements.js?v=20261009"></script>
+<script src="../assets/promotion-create-enhancements.js?v=20261009-service-icons"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="../assets/promotion-campaigns.js?v=20261009-industry"></script>
-<script src="../assets/reward-promotions.js?v=20261009-create-enhance"></script>
+<script src="../assets/reward-promotions.js?v=20261009-service-icons"></script>
 <script>
 (function () {
   const promotionStudio = window.NEXORA_STUDIO;
