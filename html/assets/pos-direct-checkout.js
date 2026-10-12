@@ -39,13 +39,17 @@
   try{const saved=JSON.parse(localStorage.getItem(key));if(Array.isArray(saved))records=saved;}catch(_){}
   const button=(label,action,attrs='',style='btn-secondary')=>`<button type="button" class="btn ${style}" data-direct-action="${action}" ${attrs}>${label}</button>`;
   const phone=()=>{const value=digits(current?.phone || guest.phone);return contactUntil>Date.now()?value.replace(/^(\d{3})(\d{3})(\d{4})$/,'($1) $2-$3'):'••• ••• '+value.slice(-4);};
+  const isCancelled=t=>!!t&&(t.cancelled||t.status==='cancelled');
+  const hasPayment=t=>!!(t?.payment||t?.splitBills?.bills?.some(b=>b.payment));
+  const canCancel=t=>canCheckout()&&!!t&&!isCancelled(t)&&!hasPayment(t);
+  const cancelNeedsApproval=t=>['in-service','ready-to-pay','ready'].includes(t.status)||t.lines.some(l=>['in-service','completed'].includes(l.status));
   function persist(){try{localStorage.setItem(key,JSON.stringify(records));return true;}catch(_){warning='Unable to save checkout locally. Keep this page open.';return false;}}
   function markApproval(action){current.pendingApproval=action;current.poPendingApprovals=[...new Set([...(current.poPendingApprovals || []),action])];}
   function save(){if(current){current.services=current.lines.map(l=>l.name);current.tech=[...new Set(current.lines.flatMap(l=>String(l.tech || '').split(',')).map(n=>n.trim()).filter(Boolean))].join(', ');persist();}else try{localStorage.setItem(draftKey,JSON.stringify(guest));}catch(_){}
   }
   function setUrl(){
     const url=new URL(location.href);url.searchParams.delete('mode');
-    if(view==='editor'||view==='receipt'||view==='legacy'){
+    if(view==='editor'||view==='receipt'||view==='legacy'||view==='cancelled'){
       url.searchParams.delete('view');
       if(view==='editor')url.searchParams.set('step',stage);else url.searchParams.delete('step');
       if(current)url.searchParams.set('checkoutId',current.id);else url.searchParams.delete('checkoutId');
@@ -67,6 +71,7 @@
     guest={phone:value,customer:found?.customer || '',status:found?'existing':'new'};warning='';save();if(found&&ensureCustomer())stage=2;render();root.querySelector(found?'[data-direct-field="tech"]':'#customer-name')?.focus();
   }
   function ensureCustomer(){
+    if(isCancelled(current)){warning='This checkout has been cancelled.';return false;}
     if(current)return true;
     if(digits(guest.phone).length!==10||!guest.status){warning='Find the customer by phone first.';return false;}
     if(!guest.customer.trim()){warning='Enter the new customer’s name.';return false;}
@@ -138,8 +143,51 @@
     const t=total(),itemCount=current?.lines.length || 0,ready=stage===1?!!(current||guest.status==='existing'||guest.status==='new'&&guest.customer.trim()):stage===2?!validateServices():true;
     return `<section class="checkout-frame panel checkout-stage-${stage}" aria-label="Checkout flow"><div class="builder-head"><div class="builder-title">${button(icon('arrow'),'list','aria-label="Back to checkout list" title="Checkout list"','icon-button')}<div><h2>Direct checkout</h2><p class="muted">${current?esc(current.id):'New customer checkout'}</p></div></div><span class="direct-note">${icon('check')} No check-in required</span></div><nav class="checkout-progress" aria-label="Checkout steps">${['Customer','Technician & services','Payment & checkout'].map((label,index)=>button(`<b>${stage>index+1?icon('check'):index+1}</b><span class="step-copy"><span class="step-full">${label}</span><span class="step-short">${['Customer','Services','Payment'][index]}</span></span>`,'go-step',`data-step="${index+1}" aria-label="${label}" ${stage===index+1?'aria-current="step"':''}`,`step-button ${stage===index+1?'active':stage>index+1?'done':''}`)).join('')}</nav><div class="builder-grid"><div class="stack">${customerHtml()}${stage>=2?servicesHtml():''}</div>${stage===3?summaryHtml():stage===2?previewHtml():''}</div><div class="checkout-action-wrap"><p class="review-warning" role="status" data-po-warning>${esc(warning)}</p><div class="checkout-step-actions">${button(icon('arrow')+(stage===1?'List':stage===2?'Customer':'Services'),'previous','','btn-secondary')}<div class="action-context">${stage===1?'<span>Customer first, then services and payment</span>':`<span>${itemCount} item${itemCount===1?'':'s'} <span class="action-dot">·</span> ${stage===2?'Services total':'Total due'}</span><strong data-po-total="${stage===2?'net':'total'}">${money(stage===2?t.netCents:t.totalCents)}</strong>`}</div>${button(stage===3?'Review checkout '+icon('arrowRight'):(stage===1?'Continue to services':'Continue to payment')+icon('arrowRight'),stage===3?'review':'next',`data-po-primary ${!ready?'disabled':''}`,'btn-primary')}<span class="action-demo">Demo checkout</span></div></div></section>`;
   }
+  async function cancelCheckout(id){
+    let ticket=records.find(t=>t.id===id);if(!canCancel(ticket))return;
+    const operator=demo.account(),started=cancelNeedsApproval(ticket);
+    const reasons=['Guest left','Duplicate ticket','Service declined','Created in error','Other'];
+    const needsPin=started||demo.load().rules.cancel;
+    const result=await Swal.fire({
+      title:'Cancel checkout?',
+      html:`<div class="po-cancel-details"><strong>${esc(ticket.customer)} · ${esc(ticket.id)}</strong><span>${ticket.lines.map(l=>esc(l.name || 'Custom service')).join(', ') || 'No services'}</span><span>Technician: ${esc(ticket.tech || 'Unassigned')}</span></div><p class="po-cancel-warning" id="po-cancel-warning">This removes the checkout from active work. Its history is retained. No payment or refund is processed.</p><label class="pos-approval-field">Reason · required<select id="po-cancel-reason"><option value="">Choose reason</option>${reasons.map(reason=>`<option value="${reason}">${reason}</option>`).join('')}</select></label>${needsPin?'<p class="pos-muted">Manager / Owner PIN required.</p>':''}`,
+      showCancelButton:true,focusCancel:true,cancelButtonText:'Keep checkout',confirmButtonText:needsPin?'Continue with PIN':'Yes, cancel checkout',confirmButtonColor:'#b6384c',
+      customClass:{popup:'pos-swal po-cancel-dialog'},
+      didOpen:()=>{Swal.getPopup().setAttribute('role','alertdialog');Swal.getPopup().setAttribute('aria-describedby','po-cancel-warning');},
+      preConfirm:()=>{const reason=document.getElementById('po-cancel-reason').value;if(!reasons.includes(reason)){Swal.showValidationMessage('Choose a reason before cancelling.');return false;}return reason;}
+    });
+    if(!result.isConfirmed||demo.account().id!==operator.id)return;
+    ticket=records.find(t=>t.id===id);if(!canCancel(ticket))return;
+    const approval=await demo.approve('cancel',id,{force:cancelNeedsApproval(ticket),label:'Cancel checkout'});
+    if(!approval||demo.account().id!==operator.id)return;
+    try{const saved=JSON.parse(localStorage.getItem(key) || '[]');if(!Array.isArray(saved))throw new Error();records=saved;}
+    catch(_){warning='Unable to read this checkout. Try again.';render();return;}
+    ticket=records.find(t=>t.id===id);if(!canCancel(ticket))return;
+    if(cancelNeedsApproval(ticket)&&!approval.approver){warning='Checkout changed. Cancel again with Manager / Owner approval.';render();return;}
+    const previous={...ticket};
+    Object.assign(ticket,{status:'cancelled',cancelled:true,cancelReason:result.value,cancelledBy:operator.name,cancelApprovedBy:approval.approver?.name || '',cancelledAt:new Date().toISOString()});
+    if(!persist()){
+      Object.keys(ticket).forEach(key=>{if(!(key in previous))delete ticket[key];});Object.assign(ticket,previous);
+      render();return;
+    }
+    const logged=demo.audit('Cancelled checkout',id,approval.approver || operator,result.value);
+    if(current?.id===id){current=null;view='list';contactUntil=0;}
+    warning=logged?'':'Cancellation saved, but its activity log could not be saved.';
+    render();
+  }
   function accountHtml(){return `<button type="button" class="po-account" data-pos-switch>${icon('user')} ${esc(demo.account().name)} · ${esc(demo.account().role)}</button>`;}
-  function listHtml(){const rows=records.filter(t=>(filter==='all'||(t.payment?'paid':'draft')===filter)&&(!search||(t.customer+' '+t.id).toLowerCase().includes(search.toLowerCase())||(/^[\d\s()+.-]+$/.test(search)&&digits(t.phone).includes(digits(search)))));return `<section class="checkout-hero"><div class="checkout-list-title"><h2>Checkout Customer</h2>${records.some(t=>!t.payment)?'<span class="count-chip">Drafts: '+records.filter(t=>!t.payment).length+'</span>':''}</div><div class="hero-actions">${accountHtml()}${button(icon('plus')+' New checkout','new',!canCheckout()?'disabled':'','btn-primary')}</div></section><div class="po-list-tools"><input class="input" data-po-search placeholder="Search name, phone or ID" value="${esc(search)}" aria-label="Search checkouts"><select class="select" data-po-filter aria-label="Checkout status">${[['all','All checkouts'],['draft','Drafts'],['paid','Paid']].map(([id,label])=>`<option value="${id}" ${filter===id?'selected':''}>${label}</option>`).join('')}</select></div><div class="ticket-grid">${rows.map(t=>`<article class="ticket-card panel"><div class="ticket-top"><div><span class="ticket-id">${esc(t.id)}</span><h4 class="ticket-name">${esc(t.customer)}</h4></div><span class="status ${t.payment?'po-paid':''}">${t.payment?'Paid':'Draft'}</span></div><div class="ticket-details"><div class="field-label">Services</div><p>${t.lines.map(l=>esc(l.name)).join(', ') || 'No services added yet'}</p><div class="field-label">Technician</div><p>${esc(t.tech || 'Not assigned')}</p></div><div class="po-ticket-meta">${demo.timeHtml(t.payment?.paidAt || t.createdAt)}<strong>${t.payment?money(t.payment.totalCents):'Not paid'}</strong></div><div class="ticket-actions">${button(icon('card')+(t.payment?' View saved receipt':' Resume checkout'),'open',`data-id="${t.id}" ${!canCheckout()?'disabled':''}`,'btn-secondary btn-wide')}</div></article>`).join('') || '<div class="panel ticket-empty"><span class="po-empty-icon">'+icon('ticket')+'</span><strong>No checkouts yet</strong></div>'}</div>`;}
+  function checkoutCardHtml(t){
+    const cancelled=isCancelled(t),status=cancelled?'Cancelled':t.payment?'Paid':'Draft';
+    return `<article class="ticket-card panel"><div class="ticket-top"><div><span class="ticket-id">${esc(t.id)}</span><h4 class="ticket-name">${esc(t.customer)}</h4></div><span class="status ${cancelled?'po-cancelled':t.payment?'po-paid':''}">${status}</span></div><div class="ticket-details"><div class="field-label">Services</div><p>${t.lines.map(l=>esc(l.name)).join(', ') || 'No services added yet'}</p><div class="field-label">Technician</div><p>${esc(t.tech || 'Not assigned')}</p>${cancelled?'<div class="field-label">Cancellation reason</div><p>'+esc(t.cancelReason || '—')+'</p>':''}</div><div class="po-ticket-meta">${demo.timeHtml(cancelled?t.cancelledAt:t.payment?.paidAt || t.createdAt)}<strong>${t.payment?money(t.payment.totalCents):cancelled?'':'Not paid'}</strong></div><div class="ticket-actions">${button(icon(cancelled?'ticket':'card')+(cancelled?' View cancellation':t.payment?' View saved receipt':' Resume checkout'),'open',`data-id="${t.id}" ${!canCheckout()?'disabled':''}`,'btn-secondary btn-wide')}${canCancel(t)?button('Cancel checkout','cancel-checkout',`data-id="${t.id}" aria-label="Cancel checkout ${esc(t.id)} for ${esc(t.customer)}"`,'ticket-cancel'):''}</div></article>`;
+  }
+  function listHtml(){
+    const rows=records.filter(t=>(filter==='cancelled'?isCancelled(t):!isCancelled(t)&&(filter==='all'||(t.payment?'paid':'draft')===filter))&&(!search||(t.customer+' '+t.id).toLowerCase().includes(search.toLowerCase())||(/^[\d\s()+.-]+$/.test(search)&&digits(t.phone).includes(digits(search)))));
+    const drafts=records.filter(t=>!t.payment&&!isCancelled(t)).length;
+    return `<section class="checkout-hero"><div class="checkout-list-title"><h2>Checkout Customer</h2>${drafts?'<span class="count-chip">Drafts: '+drafts+'</span>':''}</div><div class="hero-actions">${accountHtml()}${button(icon('plus')+' New checkout','new',!canCheckout()?'disabled':'','btn-primary')}</div></section><p class="review-warning" role="status">${esc(warning)}</p><div class="po-list-tools"><input class="input" data-po-search placeholder="Search name, phone or ID" value="${esc(search)}" aria-label="Search checkouts"><select class="select" data-po-filter aria-label="Checkout status">${[['all','Active & paid'],['draft','Drafts'],['paid','Paid'],['cancelled','Cancelled']].map(([id,label])=>`<option value="${id}" ${filter===id?'selected':''}>${label}</option>`).join('')}</select></div><div class="ticket-grid">${rows.map(checkoutCardHtml).join('') || '<div class="panel ticket-empty"><span class="po-empty-icon">'+icon('ticket')+'</span><strong>'+((search||filter!=='all')?'No matching checkouts':'No checkouts yet')+'</strong></div>'}</div>`;
+  }
+  function cancelledHtml(){
+    return `<section class="panel receipt-confirm cancelled-confirm" aria-label="Cancelled checkout"><span class="success-icon">${icon('close')}</span><h2>Checkout cancelled</h2><p class="muted">${esc(current.customer)} · ${esc(current.id)}</p><div class="cancellation-record"><div><span>Reason</span><strong>${esc(current.cancelReason || '—')}</strong></div><div><span>Cancelled by</span><strong>${esc(current.cancelledBy || '—')}</strong></div>${current.cancelApprovedBy?'<div><span>Approved by</span><strong>'+esc(current.cancelApprovedBy)+'</strong></div>':''}<div><span>Cancelled at</span><strong>${demo.timeHtml(current.cancelledAt)}</strong></div></div><div class="receipt-quick">${current.lines.length?summaryRows():'<p class="hint">No services</p>'}</div>${button('Checkout Customer','list','','btn-primary btn-wide')}</section>`;
+  }
   function receiptHtml(){const p=current.payment;return `<section class="panel receipt-confirm"><span class="success-icon">${icon('check')}</span><p class="po-eyebrow">CHECKOUT COMPLETE</p><h2>Payment complete · demo</h2><p class="muted">${esc(current.customer)} · ${esc(current.id)}</p><div class="receipt-quick">${[['Services',p.subtotalCents],['Discount',-p.discountCents],['Payment discount',-p.methodDiscountCents],['Card fee',p.feeCents],['Guest tip',p.tipCents]].map(([label,amount])=>`<div class="summary-line"><span>${label}</span><strong>${money(amount)}</strong></div>`).join('')}<div class="total-line"><span>Total collected</span><span>${money(p.totalCents)}</span></div></div><p class="hint">${esc(demo.load().payment.methods.find(m=>m.id===p.method)?.label || p.method)} · ${demo.timeHtml(p.paidAt)}</p><div class="receipt-actions">${button('Print receipt','print')}${button('SMS receipt · demo','sms')}${button('View saved receipt','saved-receipt')}${button('Done · Checkout Customer','list','','btn-primary')}</div><p class="safe-note">${icon('info')} Demo only. No money was charged and no SMS was sent.</p></section>`;}
   function render(){
     const pageScroll=document.scrollingElement.scrollTop,panelScroll=root.querySelector('.summary-scroll')?.scrollTop || 0;
@@ -147,7 +195,7 @@
     const active=root.contains(document.activeElement)?document.activeElement:null;
     const activePicker=active?.closest('.service-picker');
     const focusData=active?{id:active.id,tag:active.tagName,data:{...active.dataset},picker:activePicker?activePicker.dataset.pickerGroup+':'+activePicker.dataset.pickerParent:''}:null;
-    setUrl();root.innerHTML=`${view==='list'?'':`<div class="po-workspace-meta"><span>FRONT DESK <span class="po-meta-divider">/</span> DIRECT CHECKOUT</span>${accountHtml()}</div>`}${view==='list'?listHtml():view==='receipt'?receiptHtml():view==='legacy'?'<section class="ticket-workspace" data-po-legacy></section>':editorHtml()}`;
+    setUrl();root.innerHTML=`${view==='list'?'':`<div class="po-workspace-meta"><span>FRONT DESK <span class="po-meta-divider">/</span> DIRECT CHECKOUT</span>${accountHtml()}</div>`}${view==='list'?listHtml():view==='receipt'?receiptHtml():view==='cancelled'?cancelledHtml():view==='legacy'?'<section class="ticket-workspace" data-po-legacy></section>':editorHtml()}`;
     if(view==='legacy')openLegacy();
     const panel=root.querySelector('.summary-scroll');if(panel)panel.scrollTop=panelScroll;
     root.querySelectorAll('.service-picker').forEach(el=>{el.querySelector('.picker-grid').scrollTop=pickerScrolls.get(el.dataset.pickerGroup+':'+el.dataset.pickerParent) || 0;});
@@ -194,6 +242,8 @@
   }
   function validateServices(){if(!current.lines.some(l=>!l.parentLineId))return 'Add at least one main service.';if(groups().some(g=>!g.tech))return 'Select a technician for each group.';if(current.lines.some(l=>!l.name.trim()||l.price==null||!Number.isFinite(Number(l.price))||Number(l.price)<0))return 'Enter a name and valid price for each service.';if(current.lines.some(l=>l.discount?.type==='percent'&&Number(l.discount.value)>100))return 'Service discount cannot exceed 100%.';return '';}
   async function review(){
+    if(!current||isCancelled(current)||current.payment||!canCheckout())return;
+    const checkoutId=current.id;
     warning=validateServices();const t=total(),p=current.checkout;
     if(!warning&&(!Number.isFinite(t.totalCents)||t.error))warning=t.error || 'Enter valid payment amounts.';
     if(!warning&&(!Number.isFinite(Number(p.tip))||Number(p.tip)<0||(p.tipType==='percent'&&Number(p.tip)>100)))warning='Enter a valid tip from 0 to 100% or a dollar amount.';
@@ -204,9 +254,13 @@
     if(!warning&&Object.values(allocations()).reduce((s,n)=>s+n,0)!==t.tipCents)warning='Manual tip allocations must match the guest tip.';
     if(warning){render();return;}
     const approvals=current.poPendingApprovals || (current.pendingApproval?[current.pendingApproval]:[]);
-    for(const action of approvals)if(!await demo.approve(action,current.id,{label:action==='price'?'Approve changed service prices':'Approve checkout discounts'}))return;
+    for(const action of approvals){
+      if(current?.id!==checkoutId||isCancelled(current)||current.payment)return;
+      if(!await demo.approve(action,checkoutId,{label:action==='price'?'Approve changed service prices':'Approve checkout discounts'}))return;
+    }
+    if(current?.id!==checkoutId||isCancelled(current)||current.payment)return;
     const result=await Swal.fire({title:'Review checkout',html:`<div class="receipt-quick"><div class="summary-line"><span>Customer</span><strong>${esc(current.customer)}</strong></div><div class="summary-line"><span>Payment method</span><strong>${esc(demo.methods().find(m=>m.id===p.method)?.label)}</strong></div><div class="total-line"><span>Total due</span><strong>${money(t.totalCents)}</strong></div></div><p class="pos-muted">Demo only. No payment is collected.</p>`,showCancelButton:true,confirmButtonText:'Complete demo',cancelButtonText:'Back to checkout',confirmButtonColor:'#4648d8',customClass:{popup:'pos-swal po-review-dialog'}});
-    if(!result.isConfirmed||!canCheckout()||current.payment)return;
+    if(!result.isConfirmed||!canCheckout()||current?.id!==checkoutId||isCancelled(current)||current.payment)return;
     current.payment={...t,tipAllocations:allocations(),method:p.method,receipt:p.receipt || 'none',cashCents:p.method==='cash'?t.totalCents:p.method==='split'?t.cashPortionCents:0,cardCents:p.method==='card'?t.totalCents:p.method==='split'?t.cardPortionCents:0,changeCents:p.method==='cash'?Math.round(Number(p.cash)*100)-t.totalCents:0,paidAt:new Date().toISOString(),simulated:true};
     current.status='completed';delete current.pendingApproval;delete current.poPendingApprovals;save();view='receipt';render();
   }
@@ -273,7 +327,8 @@
     const b=e.target.closest('[data-direct-action]');if(!b||b.disabled)return;const action=b.dataset.directAction;
     if(action==='list'){save();view='list';warning='';current=null;contactUntil=0;render();return;}
     if(action==='new'){newCheckout();return;}
-    if(action==='open'){current=normalize(records.find(t=>t.id===b.dataset.id));view=current.payment?'receipt':current.splitBills?'legacy':'editor';stage=current.lines.length?3:2;tipMode=current.checkout.tipType==='percent'?'percent':'amount';warning='';render();return;}
+    if(action==='cancel-checkout'){await cancelCheckout(b.dataset.id);return;}
+    if(action==='open'){const record=records.find(t=>t.id===b.dataset.id);if(!record)return;current=normalize(record);view=isCancelled(current)?'cancelled':current.payment?'receipt':current.splitBills?'legacy':'editor';stage=current.lines.length?3:2;tipMode=current.checkout.tipType==='percent'?'percent':'amount';warning='';render();return;}
     if(action==='print'){window.print();return;}
     if(action==='sms'){Swal.fire({title:'SMS receipt · demo',text:'The receipt is prepared for '+phone()+'. No SMS was sent.',confirmButtonText:'Done',customClass:{popup:'pos-swal'}});return;}
     if(action==='saved-receipt'){Swal.fire({title:'Saved receipt',html:`<p>${esc(current.id)} · ${esc(current.customer)}</p>${summaryRows()}<div class="total-line"><span>Total paid</span><strong>${money(current.payment.totalCents)}</strong></div>`,customClass:{popup:'pos-swal po-review-dialog'}});return;}
@@ -284,7 +339,7 @@
     if(action==='go-step'){goStep(b.dataset.step);return;}
     if(action==='previous'){if(stage===1){save();view='list';current=null;warning='';render();}else goStep(stage-1);return;}
     if(action==='next'){goStep(stage+1);return;}
-    if(!current||current.payment)return;
+    if(!current||current.payment||isCancelled(current))return;
     const g=groups().find(g=>g.id===b.dataset.group),l=current.lines.find(l=>l.id===b.dataset.line),p=current.checkout;
     if(action==='add-group'){const group={id:crypto.randomUUID(),tech:''};groups().push(group);picker=group.id;addonPicker='';pickerSearch='';}
     if(action==='remove-group'){const ids=groupLines(g).map(l=>l.id);current.poGroups=groups().filter(x=>x!==g);current.lines=current.lines.filter(l=>!ids.includes(l.id)&&!ids.includes(l.parentLineId));}
@@ -314,7 +369,19 @@
   });
   window.addEventListener('nexora:pos-account-changed',()=>{save();current=null;view='list';contactUntil=0;render();});
   window.addEventListener('nexora:pos-settings-changed',()=>{if(view==='editor')render();});
+  window.addEventListener('storage',e=>{
+    if(e.key!==key)return;
+    try{
+      const saved=JSON.parse(e.newValue || '[]');if(!Array.isArray(saved))return;records=saved;
+      if(current){
+        const record=records.find(t=>t.id===current.id);current=record?normalize(record):null;
+        if(!current){view='list';warning='Checkout is no longer available.';}
+        else if(isCancelled(current)||current.payment){view=isCancelled(current)?'cancelled':'receipt';contactUntil=0;if(Swal.isVisible())Swal.close();}
+      }
+      render();
+    }catch(_){}
+  });
   const params=new URLSearchParams(location.search),id=params.get('checkoutId');current=records.find(t=>t.id===id) || null;
-  if(current){normalize(current);view=current.payment?'receipt':current.splitBills?'legacy':'editor';stage=params.get('step')?Math.max(1,Math.min(3,Number(params.get('step'))||2)):params.get('mode')==='edit'?2:3;tipMode=current.checkout.tipType==='percent'?'percent':'amount';render();}
+  if(current){normalize(current);view=isCancelled(current)?'cancelled':current.payment?'receipt':current.splitBills?'legacy':'editor';stage=params.get('step')?Math.max(1,Math.min(3,Number(params.get('step'))||2)):params.get('mode')==='edit'?2:3;tipMode=current.checkout.tipType==='percent'?'percent':'amount';render();}
   else if(params.get('view')==='list'||!canCheckout())render();else newCheckout();
 })();
