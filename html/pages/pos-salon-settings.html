@@ -473,6 +473,7 @@
   <link rel="stylesheet" href="../assets/vendor/tom-select/tom-select.css">
   <link rel="stylesheet" href="../assets/pos-salon-settings.css?v=20260911-step-reorder">
   <link rel="stylesheet" href="../assets/staff-schedule-workspace.css">
+  <link rel="stylesheet" href="../assets/pos-demo-settings.css">
   <link rel="stylesheet" href="../assets/pos-salon-sms-settings.css?v=20260924-care-two-templates">
 </head>
 <body>
@@ -497,6 +498,9 @@
           <button type="button" data-settings-tab="staff-schedule"><i data-lucide="calendar-range" aria-hidden="true"></i> Staff Schedule</button>
           <button type="button" data-settings-tab="services"><i data-lucide="list" aria-hidden="true"></i> Services</button>
           <button type="button" data-settings-tab="roles"><i data-lucide="shield-check" aria-hidden="true"></i> Roles &amp; Permissions</button>
+          <button type="button" data-settings-tab="access-pin"><i data-lucide="key-round" aria-hidden="true"></i> Access &amp; PIN</button>
+          <button type="button" data-settings-tab="payment-fees"><i data-lucide="credit-card" aria-hidden="true"></i> Payment Methods &amp; Fees</button>
+          <button type="button" data-settings-tab="stations"><i data-lucide="armchair" aria-hidden="true"></i> Stations</button>
           <a href="pos-operating-standards.html"><i data-lucide="clipboard-check" aria-hidden="true"></i> Operating Standards</a>
         </nav>
         <section data-settings-panel="staff">
@@ -515,6 +519,9 @@
         <section data-settings-panel="services" hidden></section>
         <section data-settings-panel="roles" hidden></section>
         <section data-settings-panel="sms" hidden></section>
+        <section data-settings-panel="access-pin" hidden></section>
+        <section data-settings-panel="payment-fees" hidden></section>
+        <section data-settings-panel="stations" hidden></section>
 
         <div class="tech-modal" data-tech-modal hidden>
           <div class="tech-dialog" role="dialog" aria-modal="true" aria-labelledby="tech-modal-title">
@@ -1445,6 +1452,10 @@
       }
     });
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../assets/pos-demo-settings.js"></script>
+  <script src="../assets/pos-stations.js"></script>
+  <script src="../assets/pos-settings-workspaces.js"></script>
   <script src="../assets/pos-salon-settings.js"></script>
   <script src="../assets/staff-schedule-settings.js"></script>
   <script src="../assets/vendor/tom-select/tom-select.complete.min.js"></script>

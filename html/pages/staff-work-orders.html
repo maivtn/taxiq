@@ -394,6 +394,7 @@
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/staff-shell.css">
   <link rel="stylesheet" href="../assets/service-assignments.css">
+  <link rel="stylesheet" href="../assets/pos-demo-settings.css">
   <style>
     .staff-profile-id { font-size: 11px; }
   </style>
@@ -405,6 +406,7 @@
       <header class="header"></header>
       <main class="content work-orders-page" aria-label="Technician Work Orders">
         <div class="wo-shell">
+          <section class="pos-settings" data-staff-stations aria-label="Stations and cleaning tasks"></section>
           <section data-salon-gate>
             <div class="wo-page-head">
               <div>
@@ -1350,5 +1352,9 @@
       }
     })();
   </script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="../assets/pos-demo-settings.js"></script>
+  <script src="../assets/pos-stations.js"></script>
+  <script src="../assets/staff-stations.js"></script>
 </body>
 </html>

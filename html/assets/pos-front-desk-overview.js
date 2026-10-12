@@ -21,13 +21,15 @@
     const rows=guests.filter(guest=>(status==='all'||guest.status===status)&&(!query||guest.name.toLowerCase().includes(query)||guest.phone.includes(query)||(digits&&/^[\d\s()+.-]+$/.test(query)&&guest.phone.replace(/\D/g,'').includes(digits))));
     $('#overview-result-count').textContent=rows.length;
     $('#overview-empty').hidden=rows.length>0;
-    $('#overview-guests').innerHTML=rows.map(g=>'<tr><td><strong>#'+g.sequence+'</strong></td><td>'+esc(g.time)+'</td><td><strong>'+esc(g.name)+'</strong><small class="phone">'+esc(g.phone)+'</small></td><td><span class="guest-tag '+(g.type==='RETURNING'?'returning':'')+'">'+g.type+'</span></td><td>'+esc(g.source)+'</td><td>'+esc(g.service)+'</td><td>'+esc(g.tech)+'</td><td><span class="status-text '+g.status+'">'+g.status.replace('-',' ')+'</span></td><td class="overview-detail-action"><button type="button" data-checkin-detail="'+g.sequence+'" aria-label="View Detail for check-in #'+g.sequence+' · '+esc(g.name)+'">View Detail</button></td></tr>').join('');
+    $('#overview-guests').innerHTML=rows.map(g=>'<tr><td><strong>#'+g.sequence+'</strong></td><td>'+esc(g.time)+'</td><td><strong>'+esc(g.name)+'</strong><small class="phone">'+esc('•••• '+g.phone.replace(/\D/g,'').slice(-4))+'</small></td><td><span class="guest-tag '+(g.type==='RETURNING'?'returning':'')+'">'+g.type+'</span></td><td>'+esc(g.source)+'</td><td>'+esc(g.service)+'</td><td>'+esc(g.tech)+'</td><td><span class="status-text '+g.status+'">'+g.status.replace('-',' ')+'</span></td><td class="overview-detail-action"><button type="button" data-checkin-detail="'+g.sequence+'" aria-label="View Detail for check-in #'+g.sequence+' · '+esc(g.name)+'">View Detail</button></td></tr>').join('');
   }
+  window.addEventListener('nexora:pos-account-changed',()=>{const dialog=document.querySelector('#checkin-detail-dialog');if(dialog.open)dialog.close();document.querySelector('#checkin-detail-content').textContent='';});
   const detailDialog=$('#checkin-detail-dialog');
   let detailTrigger=null;
-  $('#overview-guests').addEventListener('click',event=>{
+  $('#overview-guests').addEventListener('click',async event=>{
     const button=event.target.closest('[data-checkin-detail]');if(!button)return;
     const guest=guests.find(guest=>guest.sequence===Number(button.dataset.checkinDetail));if(!guest)return;
+    if(!await window.NEXORA_POS_DEMO.approve('contact','Check-in #'+guest.sequence,{label:'View full customer contact'}))return;
     detailTrigger=button;
     $('#checkin-detail-title').textContent='Check-in #'+guest.sequence;
     const statusLabels={waiting:'Waiting','in-service':'In Service',completed:'Completed',cancelled:'Cancelled'};
@@ -36,6 +38,7 @@
     const fields=[['Check-in time',guest.time,'clock'],['Guest type',guest.type==='RETURNING'?'Returning Guest':'New Guest','guest'],['Service',guest.service,'service'],['Technician',guest.tech,'guest'],['Source',guest.source,'source']];
     $('#checkin-detail-content').innerHTML='<div class="checkin-customer"><span class="checkin-avatar" aria-hidden="true">'+esc(guest.name.charAt(0))+'</span><div class="checkin-customer-copy"><span class="checkin-eyebrow">Customer</span><h3>'+esc(guest.name)+'</h3><span class="checkin-phone"><span class="checkin-sr-only">Phone: </span>'+esc(guest.phone)+'</span></div><span class="checkin-status '+guest.status+'"><span class="checkin-sr-only">Status: </span>'+esc(statusLabels[guest.status])+'</span></div><dl class="checkin-detail-grid">'+fields.map(([label,value,symbol])=>'<div class="checkin-info'+(label==='Source'?' checkin-info-source':'')+'"><dt>'+icon(symbol)+label+'</dt><dd>'+esc(value)+'</dd></div>').join('')+'</dl>';
     detailDialog.showModal();
+    setTimeout(()=>{if(detailDialog.open)detailDialog.close();document.querySelector('#checkin-detail-content').textContent='';},30000);
   });
   function restoreDetailFocus(){if(detailTrigger&&detailTrigger.isConnected)detailTrigger.focus();}
   detailDialog.addEventListener('close',restoreDetailFocus);
