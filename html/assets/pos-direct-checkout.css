@@ -255,14 +255,11 @@
 .po-direct .action-context strong{color:#515bb0;font-size:16px;font-weight:750;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
 .po-direct .action-dot{margin:0 4px;color:#bbc3d3}
 .po-direct .action-demo{font-size:10px;white-space:nowrap;color:#aab4c4}
-.po-direct .checkout-hero{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:16px 0 20px}
-.po-direct .checkout-hero h2{font-size:20px;letter-spacing:-.02em;margin:0 0 4px}
-.po-direct .hero-copy{color:#73839b;font-size:11px;margin:0}
-.po-direct .hero-actions{display:flex;align-items:center;gap:9px}
+.po-direct .checkout-hero{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:12px 0}
+.po-direct .checkout-list-title{display:flex;align-items:center;gap:10px;min-width:0}
+.po-direct .checkout-hero h2{font-size:20px;letter-spacing:-.02em;margin:0}
+.po-direct .hero-actions{display:flex;align-items:center;flex-wrap:wrap;gap:9px}
 .po-direct .count-chip{padding:6px 9px;border:1px solid #e1e8f3;border-radius:7px;background:#f2f7fb;font-size:11px;color:#879cb1;white-space:nowrap}
-.po-direct .list-heading{display:flex;justify-content:space-between;align-items:center;gap:12px;margin:16px 0 11px}
-.po-direct .list-heading h3{font-size:14px;margin:0}
-.po-direct .po-ticket-link{color:#8b8fd0;text-decoration:none;font-size:11px}
 .po-direct .po-list-tools{display:flex;gap:8px;max-width:690px;margin-bottom:14px}
 .po-direct .po-list-tools .input{flex:1}
 .po-direct .po-list-tools .select{width:175px}
