@@ -50,6 +50,7 @@
       link.classList.toggle('active',selected);
       if(selected)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
     });
+    window.NEXORA_FRONT_DESK_TICKETS.syncNavigation();
     document.title='Nexora Touch - Front Desk '+(overview?'Overview':'Tickets');
     if(!$('#ticket-workspace').hidden){$('#tickets-view').hidden=true;$('#overview-view').hidden=true;return;}
     if(overview)renderGuests();

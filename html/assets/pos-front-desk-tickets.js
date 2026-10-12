@@ -31,6 +31,9 @@ try{
 }catch(_){}
 const ticketKey=t=>t.bookingId || String(t.id);
 const ticketRecords=tickets.map(t=>({...t,...savedWorkspaces[ticketKey(t)],id:t.id,bookingId:t.bookingId}));
+Object.entries(savedWorkspaces).forEach(([id,ticket])=>{
+ if(ticket?.payment&&!ticketRecords.some(t=>ticketKey(t)===id))ticketRecords.push({...ticket});
+});
 tickets=ticketRecords.filter(t=>!t.payment&&!t.cancelled);
 function persistWorkspace(t){
  savedWorkspaces[ticketKey(t)]={...t};
@@ -82,7 +85,15 @@ function renderFamilyGroups(){
   }).join('')+'</ul></article>';
  }).join('');
 }
+function syncNavigation(){
+ const active=openedTicket?.payment?'completed':new URL(window.location.href).searchParams.get('view')==='overview'?'overview':'tickets';
+ document.querySelectorAll('[data-front-view],[data-front-completed]').forEach(link=>{
+  const selected=(link.hasAttribute('data-front-completed')?'completed':link.dataset.frontView)===active;
+  link.classList.toggle('active',selected);if(selected)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
+ });
+}
 function render(){
+  syncNavigation();
   tickets.forEach(t=>{if(t.lines?.length&&t.lines.every(l=>l.status==='completed'))t.status='ready-to-pay';const st=stations?.assigned(t);if(st){t.stationCode=st.code;t.stationOverride=st.override;}});
   applyTicketView();
   renderFamilyGroups();
@@ -108,7 +119,7 @@ const workspace=window.NEXORA_TICKET_WORKSPACE.mount($('#ticket-workspace'),{
  technicians:()=>technicians,
  onChange(t){persistWorkspace(t);if(t.payment)tickets=tickets.filter(row=>row!==t);render();},
  onModeChange(kind){if(openedTicket)updateTicketUrl(openedTicket,kind);},
- onBack(){openedTicket=null;updateTicketUrl(null);$('#tickets-view').hidden=false;render();}
+ onBack(){if(openedTicket?.payment){location.href='pos-completed-services.html';return;}openedTicket=null;updateTicketUrl(null);$('#tickets-view').hidden=false;render();}
 });
 function updateTicketUrl(ticket,kind,historyMode='push'){
  const url=new URL(window.location.href);
@@ -141,7 +152,7 @@ async function open(kind,ticket,historyMode='push'){
  if(['edit','checkout'].includes(kind)){
   kind=ticket.splitBills||ticket.payment?'checkout':kind;
   openedTicket=ticket;updateTicketUrl(ticket,kind,historyMode);
-  $('#tickets-view').hidden=true;$('#overview-view').hidden=true;workspace.open(ticket,kind);return;
+  $('#tickets-view').hidden=true;$('#overview-view').hidden=true;workspace.open(ticket,kind);syncNavigation();return;
  }
  selected=ticket;action=kind;$('#ticket-form').reset();$('#ticket-error').textContent='';$('#ticket-submit').hidden=false;$('#ticket-submit').textContent='Save';
  let title='',content='';
@@ -185,7 +196,7 @@ $('#ticket-form').addEventListener('submit',e=>{
  if(action!=='assign'||!data.get('print'))feedback('Ticket updated.');
  persistWorkspace(t);$('#ticket-dialog').close();render();
 });
-window.NEXORA_FRONT_DESK_TICKETS={active:()=>tickets.filter(visibleFor),rows:filteredTickets,filters:()=>({status:filter,station:stationFilter}),setStationFilter(code){stationFilter=code;render();},open,save(t){persistWorkspace(t);render();},feedback};
+window.NEXORA_FRONT_DESK_TICKETS={active:()=>tickets.filter(visibleFor),rows:filteredTickets,syncNavigation,filters:()=>({status:filter,station:stationFilter}),setStationFilter(code){stationFilter=code;render();},open,save(t){persistWorkspace(t);render();},feedback};
 window.addEventListener('nexora:stations-changed',render);
 window.addEventListener('nexora:pos-account-changed',()=>{if(openedTicket){openedTicket=null;$('#ticket-workspace').hidden=true;$('#tickets-view').hidden=false;updateTicketUrl(null);}if($('#ticket-dialog').open)$('#ticket-dialog').close();render();});
 render();restoreTicketUrl();
