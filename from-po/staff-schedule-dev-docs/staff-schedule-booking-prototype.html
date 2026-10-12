@@ -1,0 +1,762 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nexora Staff Schedule + Booking Availability Prototype</title>
+  <style>
+    :root {
+      --bg: #f6f8fa;
+      --panel: #fff;
+      --ink: #1d252c;
+      --muted: #687782;
+      --line: #dce4e8;
+      --teal: #0f766e;
+      --teal-dark: #0a5d57;
+      --rose: #c65d7a;
+      --gold: #b8872f;
+      --blue: #2563eb;
+      --soft: #eff7f5;
+      --radius: 8px;
+      --shadow: 0 12px 28px rgba(15, 23, 42, .08);
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); }
+    button, input, select { font: inherit; }
+    .app { display: grid; grid-template-columns: 236px minmax(0, 1fr); min-height: 100vh; }
+    .sidebar { background: #12232a; color: #d9e5e8; padding: 18px 14px; }
+    .brand { display: flex; align-items: center; gap: 10px; color: #fff; font-weight: 800; margin: 4px 6px 24px; }
+    .logo { width: 34px; height: 34px; border-radius: 8px; display: grid; place-items: center; background: linear-gradient(135deg, var(--teal), #d3a449); }
+    .nav { display: grid; gap: 4px; }
+    .nav a { color: #c8d6da; text-decoration: none; padding: 10px 12px; border-radius: 7px; font-size: 14px; }
+    .nav a.active { background: rgba(255,255,255,.12); color: #fff; }
+    .main { padding: 22px; min-width: 0; }
+    .crumb { color: var(--muted); font-size: 13px; margin-bottom: 6px; }
+    .page-head { display: flex; justify-content: space-between; gap: 16px; align-items: flex-start; margin-bottom: 16px; }
+    h1 { margin: 0 0 4px; font-size: 30px; line-height: 1.1; }
+    h2 { margin: 0; font-size: 18px; }
+    h3 { margin: 0; font-size: 15px; }
+    p { margin: 0; color: var(--muted); line-height: 1.45; }
+    .toolbar { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    .btn { min-height: 40px; border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 7px; padding: 9px 12px; cursor: pointer; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 8px; white-space: nowrap; }
+    .btn.primary { background: var(--teal); border-color: var(--teal); color: #fff; }
+    .btn.small { min-height: 34px; padding: 7px 10px; font-size: 13px; }
+    .tabs { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+    .tab { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 9px 12px; cursor: pointer; font-weight: 800; }
+    .tab.active { background: var(--teal); color: #fff; border-color: var(--teal); }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); overflow: hidden; margin-bottom: 18px; }
+    .panel-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; align-items: center; gap: 12px; }
+    .panel-body { padding: 14px 16px; }
+    .pill { display: inline-flex; align-items: center; border: 1px solid #b9dcd6; background: #effaf7; color: var(--teal-dark); border-radius: 999px; padding: 5px 8px; font-size: 12px; font-weight: 850; white-space: nowrap; }
+    .pill.warn { border-color: #f2d48c; background: #fff8e6; color: #83590e; }
+    .pill.off { border-color: #e3c0c9; background: #fff8fa; color: #9f3f5a; }
+    .stats { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .stat { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 12px; }
+    .stat strong { display: block; font-size: 22px; margin-bottom: 3px; }
+    .stat span { color: var(--muted); font-size: 12px; }
+    .grid-2 { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 12px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+    .staff-list { display: grid; gap: 10px; }
+    .staff-row { display: grid; grid-template-columns: minmax(220px, 1fr) 160px 170px 1fr auto; gap: 10px; align-items: center; border: 1px solid var(--line); border-radius: 8px; padding: 12px; background: #fbfcfc; }
+    .avatar { width: 42px; height: 42px; border-radius: 999px; display: grid; place-items: center; background: #e7f4f1; color: var(--teal-dark); font-weight: 900; }
+    .person { display: grid; grid-template-columns: 42px minmax(0, 1fr); gap: 10px; align-items: center; }
+    .muted { color: var(--muted); font-size: 12px; }
+    .actions { display: flex; gap: 7px; flex-wrap: wrap; justify-content: flex-end; }
+    .week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; }
+    .coverage-table { width: 100%; border-collapse: collapse; font-size: 12px; }
+    .coverage-table th, .coverage-table td { border-bottom: 1px solid var(--line); border-right: 1px solid var(--line); padding: 9px; vertical-align: top; text-align: left; }
+    .coverage-table th:last-child, .coverage-table td:last-child { border-right: 0; }
+    .coverage-table th { background: #eef5f4; color: var(--teal-dark); font-weight: 900; }
+    .coverage-cell { display: grid; gap: 6px; min-width: 120px; }
+    .staff-chip { border: 1px solid #b9dcd6; background: #effaf7; color: var(--teal-dark); border-radius: 999px; padding: 4px 7px; font-size: 11px; font-weight: 850; display: inline-flex; width: fit-content; }
+    .staff-chip.senior { border-color: #f2d48c; background: #fff8e6; color: #83590e; }
+    .staff-chip.off { border-color: #e3c0c9; background: #fff8fa; color: #9f3f5a; text-decoration: line-through; }
+    .coverage-alerts { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .skill-matrix { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 10px; }
+    .skill-card { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 12px; display: grid; gap: 8px; }
+    .skill-card strong { font-size: 20px; }
+    .skill-card span { color: var(--muted); font-size: 12px; }
+    .bar { height: 8px; border-radius: 999px; background: #e8eef1; overflow: hidden; }
+    .bar i { display: block; height: 100%; background: var(--teal); border-radius: inherit; }
+    .bar.warn i { background: var(--gold); }
+    .bar.danger i { background: var(--rose); }
+    .policy-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+    .day-card { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 10px; display: grid; gap: 8px; min-height: 150px; }
+    .day-card.on { border-color: #b9dcd6; background: #f7fcfb; }
+    .day-card.off { background: #fff8fa; }
+    .day-card strong { font-size: 13px; }
+    .day-card input { width: 100%; min-height: 34px; border: 1px solid var(--line); border-radius: 7px; padding: 7px; }
+    .toggle { width: 48px; height: 28px; border-radius: 999px; border: 0; background: #cfd8de; padding: 3px; cursor: pointer; justify-self: start; }
+    .toggle::after { content: ""; display: block; width: 22px; height: 22px; border-radius: 999px; background: #fff; transition: .16s ease; }
+    .toggle.on { background: var(--teal); }
+    .toggle.on::after { transform: translateX(20px); }
+    .rule-card { border: 1px solid var(--line); background: #fbfcfc; border-radius: 8px; padding: 12px; display: grid; gap: 10px; }
+    .rule-card label { display: grid; gap: 6px; font-size: 12px; font-weight: 850; }
+    .rule-card input, .rule-card select { min-height: 38px; border: 1px solid var(--line); border-radius: 7px; padding: 8px; background: #fff; }
+    .booking-preview { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 12px; display: grid; gap: 10px; }
+    .slot-grid { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; }
+    .slot { border: 1px solid #b9dcd6; background: #effaf7; color: var(--teal-dark); border-radius: 8px; padding: 9px; font-weight: 850; text-align: center; }
+    .slot.off { border-color: var(--line); background: #f3f5f6; color: var(--muted); text-decoration: line-through; }
+    .flow { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 8px; }
+    .flow-step { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 10px; display: grid; gap: 5px; }
+    .flow-step b { width: 24px; height: 24px; border-radius: 999px; background: var(--teal); color: #fff; display: grid; place-items: center; font-size: 12px; }
+    .flow-step span { color: var(--muted); font-size: 12px; line-height: 1.35; }
+    .phone-layout { display: grid; grid-template-columns: 360px minmax(0, 1fr); gap: 16px; align-items: start; }
+    .phone { border: 10px solid #101820; border-radius: 30px; background: #101820; box-shadow: var(--shadow); overflow: hidden; max-width: 360px; }
+    .phone-screen { background: #f8fafb; border-radius: 20px; overflow: hidden; min-height: 680px; }
+    .phone-head { background: #12232a; color: #fff; padding: 18px 16px; display: grid; gap: 5px; }
+    .phone-head span { color: #b7c8cd; font-size: 12px; }
+    .phone-body { padding: 12px; display: grid; gap: 10px; }
+    .mobile-card { border: 1px solid var(--line); background: #fff; border-radius: 12px; padding: 12px; display: grid; gap: 9px; }
+    .mobile-card .row { display: flex; justify-content: space-between; gap: 10px; align-items: center; }
+    .mobile-card strong { font-size: 14px; }
+    .mobile-card p { font-size: 12px; }
+    .mobile-action-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+    .appointment { border: 1px solid var(--line); border-radius: 8px; padding: 9px; display: grid; grid-template-columns: 56px minmax(0, 1fr); gap: 8px; align-items: start; background: #fbfcfc; }
+    .appointment time { color: var(--teal-dark); font-weight: 900; font-size: 12px; }
+    .sync-list { display: grid; gap: 8px; }
+    .sync-item { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 10px; display: grid; grid-template-columns: auto minmax(0, 1fr); gap: 8px; align-items: start; }
+    .sync-dot { width: 18px; height: 18px; border-radius: 999px; background: var(--teal); margin-top: 2px; }
+    .sync-dot.warn { background: var(--gold); }
+    .sync-dot.off { background: var(--rose); }
+    .sync-banner { border: 1px solid #b9dcd6; background: #effaf7; color: var(--teal-dark); border-radius: 8px; padding: 12px; display: grid; gap: 10px; margin-top: 12px; }
+    .sync-banner .sync-list { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+    .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(12px); background: #101820; color: #fff; border-radius: 999px; padding: 10px 14px; opacity: 0; pointer-events: none; transition: .18s ease; font-weight: 800; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    @media (max-width: 1100px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .stats, .grid-2, .grid-3 { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .staff-row { grid-template-columns: 1fr 1fr; }
+      .staff-row .actions { grid-column: 1 / -1; justify-content: flex-start; }
+      .week, .flow { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .coverage-alerts, .skill-matrix, .policy-grid { grid-template-columns: 1fr; }
+      .sync-banner .sync-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+      .phone-layout { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 720px) {
+      .main { padding: 16px; }
+      .page-head { flex-direction: column; }
+      .toolbar { justify-content: flex-start; }
+      .stats, .grid-2, .grid-3, .week, .flow, .slot-grid, .mobile-action-grid, .sync-banner .sync-list, .coverage-alerts, .skill-matrix, .policy-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="brand"><div class="logo">N</div><div>Nexora Touch</div></div>
+      <nav class="nav">
+        <a href="#">Dashboard</a>
+        <a href="#">POS</a>
+        <a href="#" class="active">Salon Settings</a>
+        <a href="#">Staff</a>
+        <a href="#">Booking</a>
+        <a href="#">Analytics</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="crumb">Salon Settings / Staff Schedule</div>
+      <div class="page-head">
+        <div>
+          <h1>Staff Schedule &amp; Booking Availability</h1>
+          <p>Business hours define the salon. Staff availability decides which technicians can receive bookings.</p>
+        </div>
+        <div class="toolbar">
+          <button class="btn" id="downloadHtml">Download HTML</button>
+          <button class="btn">Sync Booking</button>
+          <button class="btn primary">Save Schedule</button>
+        </div>
+      </div>
+
+      <div class="tabs">
+        <button class="tab active" data-scroll="overview">Overview</button>
+        <button class="tab" data-scroll="team-overview">Team Overview</button>
+        <button class="tab" data-scroll="add-staff">Add Staff Flow</button>
+        <button class="tab" data-scroll="staff">Staff</button>
+        <button class="tab" data-scroll="weekly">Weekly Schedule</button>
+        <button class="tab" data-scroll="app-control">App Control</button>
+        <button class="tab" data-scroll="staff-app">Staff App Preview</button>
+        <button class="tab" data-scroll="my-calendar">My Calendar</button>
+        <button class="tab" data-scroll="booking">Booking Link</button>
+        <button class="tab" data-scroll="rules">Rules</button>
+      </div>
+
+      <section class="panel" id="overview">
+        <div class="panel-head">
+          <div>
+            <h2>Availability Overview</h2>
+            <p>Show managers what is ready for booking and what needs attention.</p>
+          </div>
+          <span class="pill">Connected to Booking</span>
+        </div>
+        <div class="panel-body">
+          <div class="stats">
+            <div class="stat"><strong>18</strong><span>Staff members</span></div>
+            <div class="stat"><strong>12</strong><span>Available today</span></div>
+            <div class="stat"><strong>6</strong><span>Can toggle in app</span></div>
+            <div class="stat"><strong>42</strong><span>Bookable slots today</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="team-overview">
+        <div class="panel-head">
+          <div>
+            <h2>Team Schedule Overview</h2>
+            <p>Owner/Manager needs a weekly view of every technician, who is working, who is off, and what skill coverage is available each day.</p>
+          </div>
+          <div class="actions">
+            <button class="btn small">This week</button>
+            <button class="btn small primary">Optimize coverage</button>
+          </div>
+        </div>
+        <div class="panel-body">
+          <div class="coverage-alerts">
+            <div class="rule-card">
+              <h3>Coverage risk</h3>
+              <p>Wednesday has no senior acrylic/dip technician scheduled.</p>
+              <span class="pill warn">Needs attention</span>
+            </div>
+            <div class="rule-card">
+              <h3>Too many off</h3>
+              <p>Friday has 3 technicians off. Booking capacity may be low.</p>
+              <span class="pill warn">Review staffing</span>
+            </div>
+            <div class="rule-card">
+              <h3>Good coverage</h3>
+              <p>Saturday has pedicure, gel, acrylic, and waxing coverage.</p>
+              <span class="pill">Ready for booking</span>
+            </div>
+          </div>
+          <div style="height:12px"></div>
+          <div class="skill-matrix">
+            <div class="skill-card">
+              <h3>Pedicure / Gel</h3>
+              <strong>7 techs</strong>
+              <span>Minimum per day: 3 · Saturday coverage strong</span>
+              <div class="bar"><i style="width:88%"></i></div>
+            </div>
+            <div class="skill-card">
+              <h3>Acrylic / Dip</h3>
+              <strong>3 senior</strong>
+              <span>Minimum per day: 1 · Wednesday missing</span>
+              <div class="bar danger"><i style="width:38%"></i></div>
+            </div>
+            <div class="skill-card">
+              <h3>Waxing / Facial</h3>
+              <strong>2 techs</strong>
+              <span>Minimum per day: 1 · Thursday missing</span>
+              <div class="bar warn"><i style="width:52%"></i></div>
+            </div>
+            <div class="skill-card">
+              <h3>Front desk / Manager</h3>
+              <strong>2 leads</strong>
+              <span>Minimum per day: 1 · covered all week</span>
+              <div class="bar"><i style="width:100%"></i></div>
+            </div>
+          </div>
+          <div style="height:12px"></div>
+          <div class="policy-grid">
+            <div class="rule-card">
+              <h3>Day-off policy</h3>
+              <p>Do not approve too many staff off on the same day if skill coverage drops below minimum.</p>
+              <span class="pill warn">Auto-block risky requests</span>
+            </div>
+            <div class="rule-card">
+              <h3>Skill minimums</h3>
+              <p>Set minimum coverage by skill: Pedicure 3, Acrylic 1, Waxing/Facial 1, Manager 1.</p>
+              <button class="btn small">Edit minimums</button>
+            </div>
+            <div class="rule-card">
+              <h3>Suggested fix</h3>
+              <p>Move Lynn's day off from Wednesday to Monday, or ask Jenny to cover Acrylic Wednesday 12-6.</p>
+              <button class="btn small primary">Apply suggestion</button>
+            </div>
+          </div>
+          <div style="height:12px"></div>
+          <div class="panel" style="margin-bottom:0;">
+            <div class="panel-head">
+              <div>
+                <h2>Promotion Readiness From Staff Schedule</h2>
+                <p>Use staff coverage to decide which services can be promoted and which days should be avoided.</p>
+              </div>
+              <span class="pill">Connected to Promotion Hub</span>
+            </div>
+            <div class="panel-body grid-3">
+              <div class="rule-card">
+                <h3>Recommended promo</h3>
+                <p>Weekday Pedicure/Gel promo is safe Monday, Tuesday, Thursday because coverage is strong.</p>
+                <span class="pill">Run Mon/Tue/Thu</span>
+              </div>
+              <div class="rule-card">
+                <h3>Do not promote</h3>
+                <p>Acrylic/Dip promo should not run Wednesday because no senior acrylic tech is scheduled.</p>
+                <span class="pill off">Block Wednesday</span>
+              </div>
+              <div class="rule-card">
+                <h3>Ad spend protection</h3>
+                <p>If staffing drops after day-off approval, pause or reduce paid ads for affected services.</p>
+                <span class="pill warn">Prevent wasted ads</span>
+              </div>
+            </div>
+          </div>
+          <div style="height:12px"></div>
+          <div style="overflow:auto; border:1px solid var(--line); border-radius:8px; background:#fff;">
+            <table class="coverage-table">
+              <thead>
+                <tr>
+                  <th>Skill / Day</th>
+                  <th>Mon 21</th>
+                  <th>Tue 22</th>
+                  <th>Wed 23</th>
+                  <th>Thu 24</th>
+                  <th>Fri 25</th>
+                  <th>Sat 26</th>
+                  <th>Sun 27</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <th>Pedicure / Gel</th>
+                  <td><div class="coverage-cell"><span class="staff-chip">Kayla 10-7</span><span class="staff-chip">Jenny 10-6</span></div></td>
+                  <td><div class="coverage-cell"><span class="staff-chip">Kayla 10-7</span><span class="staff-chip">Michael 12-7</span></div></td>
+                  <td><div class="coverage-cell"><span class="staff-chip">Michael 12-7</span><span class="staff-chip off">Lynn off</span></div></td>
+                  <td><div class="coverage-cell"><span class="staff-chip">Kayla 10-7</span><span class="staff-chip">Lana 10-5</span></div></td>
+                  <td><div class="coverage-cell"><span class="staff-chip">Jenny 10-7</span><span class="staff-chip off">Kayla off</span></div></td>
+                  <td><div class="coverage-cell"><span class="staff-chip">Kayla 10-7</span><span class="staff-chip">Michael 10-7</span><span class="staff-chip">Lynn 11-6</span></div></td>
+                  <td><div class="coverage-cell"><span class="staff-chip">Lynn 11-5</span></div></td>
+                </tr>
+                <tr>
+                  <th>Acrylic / Dip</th>
+                  <td><div class="coverage-cell"><span class="staff-chip senior">Lynn 10-6</span></div></td>
+                  <td><div class="coverage-cell"><span class="staff-chip senior">Lynn 10-6</span><span class="staff-chip senior">Jenny 12-7</span></div></td>
+                  <td><div class="coverage-cell"><span class="staff-chip off">Lynn off</span><span class="pill warn">No coverage</span></div></td>
+                  <td><div class="coverage-cell"><span class="staff-chip senior">Jenny 10-7</span></div></td>
+                  <td><div class="coverage-cell"><span class="staff-chip off">Jenny off</span><span class="staff-chip senior">Lynn 12-7</span></div></td>
+                  <td><div class="coverage-cell"><span class="staff-chip senior">Lynn 10-7</span><span class="staff-chip senior">Jenny 10-7</span></div></td>
+                  <td><div class="coverage-cell"><span class="staff-chip off">Jenny off</span><span class="pill warn">Limited</span></div></td>
+                </tr>
+                <tr>
+                  <th>Waxing / Facial</th>
+                  <td><div class="coverage-cell"><span class="staff-chip">Tiffany 10-4</span></div></td>
+                  <td><div class="coverage-cell"><span class="staff-chip">Tiffany 10-4</span></div></td>
+                  <td><div class="coverage-cell"><span class="staff-chip">Tiffany 12-6</span></div></td>
+                  <td><div class="coverage-cell"><span class="staff-chip off">Tiffany off</span><span class="pill warn">No facial</span></div></td>
+                  <td><div class="coverage-cell"><span class="staff-chip">Tiffany 10-5</span></div></td>
+                  <td><div class="coverage-cell"><span class="staff-chip">Tiffany 10-6</span></div></td>
+                  <td><div class="coverage-cell"><span class="staff-chip off">Off</span></div></td>
+                </tr>
+                <tr>
+                  <th>Total working</th>
+                  <td>6 techs</td>
+                  <td>7 techs</td>
+                  <td><span class="pill warn">4 techs</span></td>
+                  <td>6 techs</td>
+                  <td><span class="pill warn">4 techs</span></td>
+                  <td><span class="pill">8 techs</span></td>
+                  <td>3 techs</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+          <div style="height:12px"></div>
+          <div class="flow">
+            <div class="flow-step"><b>1</b><strong>See weekly coverage</strong><span>Owner sees all staff by day and skill type.</span></div>
+            <div class="flow-step"><b>2</b><strong>Find gaps</strong><span>System flags no coverage, low coverage, or too many off.</span></div>
+            <div class="flow-step"><b>3</b><strong>Adjust schedule</strong><span>Click a day/staff to edit shift or request coverage.</span></div>
+            <div class="flow-step"><b>4</b><strong>Booking updates</strong><span>Open slots recalculate after changes.</span></div>
+            <div class="flow-step"><b>5</b><strong>Staff app syncs</strong><span>Technicians see updated work schedule.</span></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="add-staff">
+        <div class="panel-head">
+          <div>
+            <h2>Add Staff: Skills &amp; Schedule</h2>
+            <p>The current Add Staff modal already has service skills and weekly schedule. BA should make these two sections clearer because they drive booking availability.</p>
+          </div>
+          <span class="pill">Existing flow enhancement</span>
+        </div>
+        <div class="panel-body grid-2">
+          <div class="rule-card">
+            <h3>01 / Technician Profile</h3>
+            <p>Basic profile and POS setup.</p>
+            <label>Technician name<input value="New Technician"></label>
+            <label>Phone<input value="+1"></label>
+            <label>POS role<select><option>Technician</option><option>Manager</option><option>Front Desk</option><option>Owner</option></select></label>
+            <label>Staff level<select><option>Level 1 · Basic services</option><option>Level 2 · Advanced services</option><option>Level 3 · Senior / all approved services</option></select></label>
+          </div>
+          <div class="rule-card">
+            <h3>02 / Skills &amp; Services</h3>
+            <p>This is the technician's tay nghề. Booking should only show this staff for services they are checked for.</p>
+            <div class="sync-list">
+              <div class="sync-item"><div class="sync-dot"></div><div><strong>Pedicure</strong><p>Classic Pedicure, Gel Pedicure, Jelly Pedicure</p></div></div>
+              <div class="sync-item"><div class="sync-dot"></div><div><strong>Manicure</strong><p>Shellac Gel Manicure, Classic Manicure</p></div></div>
+              <div class="sync-item"><div class="sync-dot warn"></div><div><strong>Acrylic / Dip</strong><p>Requires Level 2 or manager approval.</p></div></div>
+              <div class="sync-item"><div class="sync-dot warn"></div><div><strong>Facial / Massage / Waxing</strong><p>Specialty services need explicit eligibility.</p></div></div>
+            </div>
+          </div>
+          <div class="rule-card">
+            <h3>03 / Weekly Schedule</h3>
+            <p>Set working days and hours during Add Staff, not later only. Default can be day off until configured.</p>
+            <div class="week">
+              <div class="day-card on"><strong>Mon</strong><button class="toggle on"></button><span class="pill">On</span><input type="time" value="10:00"><input type="time" value="19:00"></div>
+              <div class="day-card on"><strong>Tue</strong><button class="toggle on"></button><span class="pill">On</span><input type="time" value="10:00"><input type="time" value="19:00"></div>
+              <div class="day-card off"><strong>Wed</strong><button class="toggle"></button><span class="pill off">Off</span><input value="Day off" disabled=""></div>
+            </div>
+          </div>
+          <div class="rule-card">
+            <h3>04 / Booking Link</h3>
+            <p>After Save technician, the system should auto-create staff availability and update booking options.</p>
+            <div class="sync-list">
+              <div class="sync-item"><div class="sync-dot"></div><div><strong>Save technician</strong><p>Create staff profile, skills, schedule, and app permission.</p></div></div>
+              <div class="sync-item"><div class="sync-dot"></div><div><strong>Update booking</strong><p>Staff appears only for eligible services and configured schedule.</p></div></div>
+              <div class="sync-item"><div class="sync-dot"></div><div><strong>Sync staff app</strong><p>Technician sees their schedule after login.</p></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="staff">
+        <div class="panel-head">
+          <div>
+            <h2>Staff Availability</h2>
+            <p>Each technician can have their own working days, services, booking visibility, and app permission.</p>
+          </div>
+          <button class="btn small primary">Add Staff Schedule</button>
+        </div>
+        <div class="panel-body staff-list">
+          <div class="staff-row">
+            <div class="person"><div class="avatar">K</div><div><h3>Kayla</h3><div class="muted">Manager · Pedicure · Gel Polish</div></div></div>
+            <span class="pill">Available today</span>
+            <div class="muted">Mon-Sat / 10 AM-7 PM</div>
+            <div class="muted">Booking: visible · App toggle: allowed</div>
+            <div class="actions"><button class="btn small" data-scroll="weekly">Edit schedule</button><button class="btn small">View bookings</button></div>
+          </div>
+          <div class="staff-row">
+            <div class="person"><div class="avatar">M</div><div><h3>Michael</h3><div class="muted">Nail Technician · Manicure</div></div></div>
+            <span class="pill warn">Starts at 12 PM</span>
+            <div class="muted">Tue-Sat / 12 PM-7 PM</div>
+            <div class="muted">Booking: visible · App toggle: allowed</div>
+            <div class="actions"><button class="btn small" data-scroll="weekly">Edit schedule</button><button class="btn small">View bookings</button></div>
+          </div>
+          <div class="staff-row">
+            <div class="person"><div class="avatar">L</div><div><h3>Lynn</h3><div class="muted">Nail Technician · Full Set</div></div></div>
+            <span class="pill off">Off today</span>
+            <div class="muted">Wed-Sun / custom</div>
+            <div class="muted">Booking: hidden today · App toggle: allowed</div>
+            <div class="actions"><button class="btn small" data-scroll="weekly">Edit schedule</button><button class="btn small">View bookings</button></div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="weekly">
+        <div class="panel-head">
+          <div>
+            <h2>Weekly Schedule Editor</h2>
+            <p>Manager sets default availability. Staff app can request same-day on/off if allowed.</p>
+          </div>
+          <select aria-label="Select staff"><option>Kayla</option><option>Michael</option><option>Lynn</option></select>
+        </div>
+        <div class="panel-body">
+          <div class="week">
+            <div class="day-card off"><strong>Sun</strong><button class="toggle"></button><span class="pill off">Off</span><input value="Closed" disabled=""></div>
+            <div class="day-card on"><strong>Mon</strong><button class="toggle on"></button><span class="pill">On</span><input type="time" value="10:00"><input type="time" value="19:00"></div>
+            <div class="day-card on"><strong>Tue</strong><button class="toggle on"></button><span class="pill">On</span><input type="time" value="10:00"><input type="time" value="19:00"></div>
+            <div class="day-card on"><strong>Wed</strong><button class="toggle on"></button><span class="pill">On</span><input type="time" value="10:00"><input type="time" value="19:00"></div>
+            <div class="day-card on"><strong>Thu</strong><button class="toggle on"></button><span class="pill">On</span><input type="time" value="10:00"><input type="time" value="19:00"></div>
+            <div class="day-card on"><strong>Fri</strong><button class="toggle on"></button><span class="pill">On</span><input type="time" value="10:00"><input type="time" value="19:00"></div>
+            <div class="day-card on"><strong>Sat</strong><button class="toggle on"></button><span class="pill">On</span><input type="time" value="10:00"><input type="time" value="19:00"></div>
+          </div>
+          <div class="sync-banner">
+            <div class="row" style="display:flex;justify-content:space-between;gap:10px;align-items:center;flex-wrap:wrap;">
+              <div>
+                <strong>Auto-sync after manager saves</strong>
+                <p>When Owner/Manager updates a staff schedule, Nexora recalculates booking slots and updates the technician app automatically.</p>
+              </div>
+              <button class="btn small primary" id="simulateSync">Simulate Save &amp; Sync</button>
+            </div>
+            <div class="sync-list">
+              <div class="sync-item"><div class="sync-dot"></div><div><strong>Booking slots</strong><p>Recalculated instantly.</p></div></div>
+              <div class="sync-item"><div class="sync-dot"></div><div><strong>Staff app</strong><p>New schedule appears for technician.</p></div></div>
+              <div class="sync-item"><div class="sync-dot warn"></div><div><strong>Existing bookings</strong><p>Protected or flagged for manager.</p></div></div>
+              <div class="sync-item"><div class="sync-dot"></div><div><strong>Audit log</strong><p>Save who changed what and when.</p></div></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="staff-app">
+        <div class="panel-head">
+          <div>
+            <h2>Technician App Preview</h2>
+            <p>This is what the technician sees in the mobile app for schedule, availability, bookings, and requests.</p>
+          </div>
+          <span class="pill">Mobile app UI</span>
+        </div>
+        <div class="panel-body phone-layout">
+          <div class="phone">
+            <div class="phone-screen">
+              <div class="phone-head">
+                <strong>Hi Kayla</strong>
+                <span>Today · Thu, Sep 24 · Nexora Touch Nail Spa</span>
+              </div>
+              <div class="phone-body">
+                <div class="mobile-card">
+                  <div class="row">
+                    <div>
+                      <strong>Available today</strong>
+                      <p>10:00 AM-7:00 PM · Online booking visible</p>
+                    </div>
+                    <button class="toggle on" aria-label="Available today toggle"></button>
+                  </div>
+                  <span class="pill">Synced to booking</span>
+                </div>
+
+                <div class="mobile-card">
+                  <div class="row">
+                    <strong>Today's bookings</strong>
+                    <span class="pill">4</span>
+                  </div>
+                  <div class="appointment"><time>10:30</time><div><strong>Maria G.</strong><p>Gel Pedicure · 60 min</p></div></div>
+                  <div class="appointment"><time>12:00</time><div><strong>Jennifer L.</strong><p>Pedicure + Gel Polish · 75 min</p></div></div>
+                  <div class="appointment"><time>2:30</time><div><strong>Walk-in hold</strong><p>Manager block · 30 min</p></div></div>
+                  <button class="btn small">View all appointments</button>
+                </div>
+
+                <div class="mobile-card">
+                  <strong>Quick actions</strong>
+                  <div class="mobile-action-grid">
+                    <button class="btn small">Take break</button>
+                    <button class="btn small">Request day off</button>
+                    <button class="btn small">Change hours</button>
+                    <button class="btn small">Message manager</button>
+                  </div>
+                </div>
+
+                <div class="mobile-card">
+                  <strong>Availability warning</strong>
+                  <p>If you turn off today, existing bookings stay assigned until a manager reassigns or approves the change.</p>
+                  <span class="pill warn">Booking protection on</span>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="grid-2">
+            <div class="rule-card">
+              <h3>Staff app states</h3>
+              <div class="sync-list">
+                <div class="sync-item"><div class="sync-dot"></div><div><strong>Available today</strong><p>Staff appears in booking for eligible services and open slots.</p></div></div>
+                <div class="sync-item"><div class="sync-dot off"></div><div><strong>Unavailable today</strong><p>Staff is hidden from new online bookings for the selected day.</p></div></div>
+                <div class="sync-item"><div class="sync-dot warn"></div><div><strong>Approval needed</strong><p>Future day off or booked-day toggle requires manager approval.</p></div></div>
+              </div>
+            </div>
+            <div class="rule-card">
+              <h3>BA notes for app behavior</h3>
+              <div class="sync-list">
+                <div class="sync-item"><div class="sync-dot"></div><div><strong>Simple toggle</strong><p>Thợ chỉ thấy Available/Unavailable, không cần hiểu booking engine.</p></div></div>
+                <div class="sync-item"><div class="sync-dot warn"></div><div><strong>Protect bookings</strong><p>Nếu đã có hẹn, app phải cảnh báo và gửi manager duyệt.</p></div></div>
+                <div class="sync-item"><div class="sync-dot"></div><div><strong>Instant sync</strong><p>Khi được duyệt, booking page cập nhật slot ngay.</p></div></div>
+              </div>
+            </div>
+            <div class="rule-card">
+              <h3>Request day off</h3>
+              <label>Date<input type="date"></label>
+              <label>Reason<select><option>Personal</option><option>Sick</option><option>Vacation</option><option>Other</option></select></label>
+              <button class="btn small primary">Submit request</button>
+            </div>
+            <div class="rule-card">
+              <h3>Change hours request</h3>
+              <label>Start time<input type="time" value="12:00"></label>
+              <label>End time<input type="time" value="18:00"></label>
+              <button class="btn small primary">Request change</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="my-calendar">
+        <div class="panel-head">
+          <div>
+            <h2>Staff App / My Calendar</h2>
+            <p>My Calendar should show both booked appointments and the technician's working schedule in one place.</p>
+          </div>
+          <span class="pill">Staff app menu</span>
+        </div>
+        <div class="panel-body grid-2">
+          <div class="booking-preview">
+            <h3>Calendar tabs inside staff app</h3>
+            <div class="tabs" style="margin-bottom: 10px;">
+              <button class="tab active">Appointments</button>
+              <button class="tab">Work Schedule</button>
+              <button class="tab">Requests</button>
+            </div>
+            <div class="sync-list">
+              <div class="sync-item"><div class="sync-dot"></div><div><strong>Appointments</strong><p>Booked customers assigned to this technician.</p></div></div>
+              <div class="sync-item"><div class="sync-dot"></div><div><strong>Work Schedule</strong><p>Days/hours the technician is scheduled to work.</p></div></div>
+              <div class="sync-item"><div class="sync-dot warn"></div><div><strong>Requests</strong><p>Day off, change hours, take break, pending approval.</p></div></div>
+            </div>
+          </div>
+          <div class="booking-preview">
+            <h3>My Calendar day view</h3>
+            <div class="appointment"><time>10:00</time><div><strong>Work starts</strong><p>Available for booking · synced from manager schedule</p></div></div>
+            <div class="appointment"><time>10:30</time><div><strong>Maria G.</strong><p>Gel Pedicure · booked appointment</p></div></div>
+            <div class="appointment"><time>12:30</time><div><strong>Break</strong><p>Not bookable · staff app request approved</p></div></div>
+            <div class="appointment"><time>2:00</time><div><strong>Open slot</strong><p>Bookable online for eligible services</p></div></div>
+            <div class="appointment"><time>7:00</time><div><strong>Work ends</strong><p>Hidden from booking after this time</p></div></div>
+          </div>
+          <div class="rule-card">
+            <h3>Work Schedule view</h3>
+            <p>Shows the same weekly schedule owner/manager set on web.</p>
+            <div class="week">
+              <div class="day-card on"><strong>Mon</strong><span class="pill">10-7</span><p>Bookable</p></div>
+              <div class="day-card on"><strong>Tue</strong><span class="pill">10-7</span><p>Bookable</p></div>
+              <div class="day-card off"><strong>Wed</strong><span class="pill off">Off</span><p>Hidden</p></div>
+            </div>
+          </div>
+          <div class="rule-card">
+            <h3>Staff actions from My Calendar</h3>
+            <div class="mobile-action-grid">
+              <button class="btn small">Request day off</button>
+              <button class="btn small">Change hours</button>
+              <button class="btn small">Take break</button>
+              <button class="btn small">Message manager</button>
+            </div>
+            <p>Any change that affects booking availability should follow manager approval rules.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="app-control">
+        <div class="panel-head">
+          <div>
+            <h2>Technician App Control</h2>
+            <p>Let technicians update their availability from the staff app without breaking the booking calendar.</p>
+          </div>
+          <span class="pill warn">Owner controlled</span>
+        </div>
+        <div class="panel-body grid-3">
+          <div class="rule-card">
+            <h3>Same-day toggle</h3>
+            <p>Staff can turn themselves on/off for today from the app.</p>
+            <label>Permission<select><option>Allowed</option><option>Request approval</option><option>Not allowed</option></select></label>
+          </div>
+          <div class="rule-card">
+            <h3>Future schedule changes</h3>
+            <p>Staff can request changes for future days; manager approves.</p>
+            <label>Approval<select><option>Manager approval required</option><option>Auto approve</option><option>Owner only</option></select></label>
+          </div>
+          <div class="rule-card">
+            <h3>Booking protection</h3>
+            <p>Turning off cannot cancel confirmed bookings automatically.</p>
+            <label>When booked<select><option>Block off toggle if appointments exist</option><option>Allow with manager approval</option><option>Allow and reassign</option></select></label>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="booking">
+        <div class="panel-head">
+          <div>
+            <h2>Booking Availability Preview</h2>
+            <p>Customer booking only shows staff and time slots that pass service, schedule, break, and existing booking checks.</p>
+          </div>
+          <button class="btn small">Open booking page</button>
+        </div>
+        <div class="panel-body grid-2">
+          <div class="booking-preview">
+            <h3>Customer selects service: Gel Pedicure</h3>
+            <p>Bookable technicians today</p>
+            <div class="staff-list">
+              <div class="staff-row" style="grid-template-columns: 1fr auto;"><div class="person"><div class="avatar">K</div><div><strong>Kayla</strong><div class="muted">10 slots available</div></div></div><span class="pill">Bookable</span></div>
+              <div class="staff-row" style="grid-template-columns: 1fr auto;"><div class="person"><div class="avatar">M</div><div><strong>Michael</strong><div class="muted">Starts at 12 PM</div></div></div><span class="pill warn">Limited</span></div>
+              <div class="staff-row" style="grid-template-columns: 1fr auto;"><div class="person"><div class="avatar">L</div><div><strong>Lynn</strong><div class="muted">Off today</div></div></div><span class="pill off">Hidden</span></div>
+            </div>
+          </div>
+          <div class="booking-preview">
+            <h3>Available slots for Kayla</h3>
+            <p>Slots update immediately when schedule or app toggle changes.</p>
+            <div class="slot-grid">
+              <div class="slot">10:00</div><div class="slot">10:30</div><div class="slot off">11:00</div><div class="slot">11:30</div>
+              <div class="slot">12:00</div><div class="slot off">12:30</div><div class="slot">1:00</div><div class="slot">1:30</div>
+              <div class="slot">2:00</div><div class="slot">2:30</div><div class="slot">3:00</div><div class="slot off">3:30</div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section class="panel" id="rules">
+        <div class="panel-head">
+          <div>
+            <h2>Rules For Dev</h2>
+            <p>Availability must respect salon hours, staff schedule, services, existing bookings, holidays, and app toggles.</p>
+          </div>
+          <span class="pill">Booking source of truth</span>
+        </div>
+        <div class="panel-body">
+          <div class="flow">
+            <div class="flow-step"><b>1</b><strong>Business hours</strong><span>Salon open/closed sets the outer boundary.</span></div>
+            <div class="flow-step"><b>2</b><strong>Staff schedule</strong><span>Technician weekly hours create default availability.</span></div>
+            <div class="flow-step"><b>3</b><strong>App toggle</strong><span>Same-day on/off can override only if allowed.</span></div>
+            <div class="flow-step"><b>4</b><strong>Booking rules</strong><span>Service duration, buffer, breaks and existing appointments are checked.</span></div>
+            <div class="flow-step"><b>5</b><strong>Customer slots</strong><span>Only valid staff and times appear online.</span></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <div class="toast" id="toast">Done</div>
+  <script>
+    const toast = document.getElementById('toast');
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove('show'), 1400);
+    }
+    document.querySelectorAll('[data-scroll]').forEach((button) => {
+      button.addEventListener('click', () => {
+        const target = document.getElementById(button.dataset.scroll);
+        if (!target) return;
+        target.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        document.querySelectorAll('.tab').forEach((tab) => tab.classList.toggle('active', tab.dataset.scroll === button.dataset.scroll));
+      });
+    });
+    document.querySelectorAll('.toggle').forEach((button) => {
+      button.addEventListener('click', () => {
+        button.classList.toggle('on');
+        const card = button.closest('.day-card');
+        card.classList.toggle('on', button.classList.contains('on'));
+        card.classList.toggle('off', !button.classList.contains('on'));
+        showToast(button.classList.contains('on') ? 'Day turned on' : 'Day turned off');
+      });
+    });
+    document.querySelectorAll('.btn').forEach((button) => {
+      if (button.id !== 'downloadHtml' && !button.dataset.scroll) {
+        button.addEventListener('click', () => showToast(button.textContent.trim() + ' clicked'));
+      }
+    });
+    document.getElementById('downloadHtml').addEventListener('click', () => {
+      const html = '<!doctype html>\n' + document.documentElement.outerHTML;
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'staff-schedule-booking-prototype.html';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      showToast('HTML downloaded');
+    });
+    document.getElementById('simulateSync').addEventListener('click', () => {
+      showToast('Schedule saved, booking slots and staff app synced');
+    });
+  </script>
+
+
+</body></html>

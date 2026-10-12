@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NEXORA — Coupon cho cá nhân (thợ · người làm tự do)</title>
+<style>
+:root{--ink:#0B1220;--mute:#5B6B82;--line:#DDE5EF;--page:#F4F6FA;--p1:#DB2777;--grad:linear-gradient(135deg,#DB2777,#F97316);--ok:#047857;--okbg:#D1FAE5;--warn:#B45309;--warnbg:#FEF3C7;--bad:#B91C1C;--badbg:#FEE2E2}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--page);color:var(--ink);font-size:14px;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}input,select,textarea{font:inherit}
+.top{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line)}
+.bar{display:flex;align-items:center;gap:10px;padding:10px 16px;flex-wrap:wrap}.av{width:40px;height:40px;border-radius:50%;background:var(--grad);color:#fff;display:grid;place-items:center;font-weight:800}
+.bar b{font-size:15px}.bar small{display:block;color:var(--mute);font-size:12px}.sp{flex:1}
+.mode{display:flex;gap:4px;background:#F1F5F9;border-radius:12px;padding:3px}.mode button{padding:7px 10px;border-radius:9px;font-weight:700;font-size:12px;color:var(--mute)}.mode button.on{background:#fff;color:var(--p1);box-shadow:0 1px 3px rgba(0,0,0,.1)}
+.tabs{display:flex;gap:6px;padding:0 16px 10px;overflow-x:auto}.tabs button{white-space:nowrap;padding:8px 13px;border-radius:12px;font-weight:700;font-size:13px;color:var(--mute);background:#F1F5F9}.tabs button.on{background:var(--grad);color:#fff}
+main{max-width:980px;margin:0 auto;padding:14px 14px 130px}
+section[data-v]{display:none}section[data-v].on{display:block}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}.card h3{font-size:15px;font-weight:800;margin-bottom:4px}
+.muted{color:var(--mute);font-size:12.5px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 14px;border-radius:12px;font-weight:700;background:var(--grad);color:#fff}.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}.btn.sm{padding:7px 11px;font-size:12.5px;border-radius:10px}.btn.full{width:100%}
+.f{display:block;font-size:12px;font-weight:700;margin:10px 0 4px}.in{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}.row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{padding:7px 11px;border-radius:20px;border:1px solid var(--line);background:#fff;font-weight:700;font-size:12.5px}.chip.on{background:#FDF2F8;border-color:var(--p1);color:var(--p1)}
+.tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:10px;font-size:10.5px;font-weight:800;white-space:nowrap;margin:1px 2px 1px 0}.tag.ok{background:var(--okbg);color:var(--ok)}.tag.warn{background:var(--warnbg);color:var(--warn)}.tag.bad{background:var(--badbg);color:var(--bad)}.tag.gray{background:#F1F5F9;color:#475569}.tag.pink{background:#FDF2F8;color:var(--p1)}
+.opt{display:flex;gap:10px;align-items:flex-start;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin-top:8px;background:#fff;cursor:pointer}.opt input{margin-top:3px;accent-color:var(--p1)}.opt b{display:block;font-size:13px}.opt small{color:var(--mute);font-size:12px}.opt .r{margin-left:auto;font-weight:800;font-size:12px;white-space:nowrap}
+.opt:has(input:checked){border-color:var(--p1);background:#FFF7FB}
+.rule{display:block;padding:12px;border-radius:12px;font-size:13px;line-height:1.5;margin-bottom:12px}.rule.free{background:#ECFDF5;border:1px solid #A7F3D0}.rule.booth{background:#EFF6FF;border:1px solid #BFDBFE}.rule.emp{background:#FFFBEB;border:1px solid #FDE68A}
+.cp{display:flex;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-top:8px;background:#fff}.cp .stub{width:88px;flex:0 0 88px;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;font-weight:800;font-size:19px;background:var(--grad)}.cp .stub small{font-size:10px;opacity:.9}.cp .b{padding:10px;flex:1}.cp .b b{display:block;font-size:13.5px}.cp .b .m{font-size:12px;color:var(--mute);margin-top:2px}
+.pro{display:grid;grid-template-columns:360px 1fr;gap:14px;align-items:start}
+.phone{background:#0B1220;border-radius:30px;padding:10px;position:sticky;top:130px}.scr{background:#fff;border-radius:22px;height:640px;overflow:auto}
+.url{margin:10px;border-radius:16px;background:#F1F5F9;padding:6px 12px;font-size:11.5px}
+.hero{background:var(--grad);color:#fff;padding:16px;margin:0 10px;border-radius:16px}.hero .av{width:56px;height:56px;background:#fff;color:var(--p1);font-size:22px}
+.kpi{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.kpi div{background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}.kpi b{display:block;font-size:22px}.kpi span{font-size:12px;color:var(--mute)}
+table.t{width:100%;border-collapse:collapse;font-size:12.5px}table.t th,table.t td{padding:8px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}table.t th{font-size:11px;color:var(--mute);text-transform:uppercase}table.t td.n{text-align:right}
+.big{font-size:28px;font-weight:800;letter-spacing:2px;text-align:center;padding:12px;border:2px solid var(--line);border-radius:14px;width:100%}
+.res .ok{background:#F0FDF4;border-color:#86EFAC}.res .no{background:#FEF2F2;border-color:#FECACA;opacity:.85}
+.flow{display:grid;grid-template-columns:repeat(5,1fr);gap:8px;margin-top:10px}.flow div{border:1px solid var(--line);border-radius:12px;padding:10px;font-size:12.5px;background:#fff}.flow b{display:block;font-size:12px;color:var(--p1);margin-bottom:4px}.kio2{background:#0B1220;border-radius:20px;padding:10px;max-width:360px;margin-top:12px}.kio2 .in2{background:#F8FAFC;border-radius:14px;padding:12px;font-size:13px}@media(max-width:860px){.flow{grid-template-columns:1fr}}
+.spot{outline:3px solid #F59E0B;outline-offset:3px;border-radius:14px}
+.stour{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;width:min(680px,94vw);background:#0B1220;color:#fff;border-radius:16px;padding:12px 14px;z-index:90;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.stour .hd{font-size:11px;font-weight:800;letter-spacing:1px;color:#F9A8D4;display:flex;gap:8px;align-items:center;margin-bottom:6px}.stour .hd .sp{flex:1}.stour .hd button{background:#1E293B;border-radius:8px;padding:4px 9px;color:#fff}
+.stour #tVi{font-size:14px;font-weight:700}.stour #tEn{font-size:12px;color:#94A3B8;margin-top:2px}.stour .bar2{height:3px;background:#1E293B;border-radius:2px;margin-top:8px;overflow:hidden}.stour .bar2 i{display:block;height:100%;background:#F9A8D4;width:0}
+.hidden{display:none!important}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:110px;background:#0B1220;color:#fff;padding:10px 16px;border-radius:12px;font-weight:700;font-size:13px;z-index:95;display:none;max-width:90vw}
+.wn{position:fixed;inset:0;background:rgba(15,27,61,.55);z-index:80;display:grid;place-items:center;padding:16px}.wn .bx{background:#fff;border-radius:18px;max-width:560px;padding:22px}.wn li{margin:6px 0 6px 18px;font-size:13.5px;line-height:1.5}
+@media(max-width:860px){.pro{grid-template-columns:1fr}.phone{position:static;max-width:380px;margin:0 auto}.kpi{grid-template-columns:1fr 1fr}.row3{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="top"><div class="bar"><div class="av">J</div><div><b>Jessica Nguyen</b><small>Thợ nail · NEXORA ID · <span id="modeTxt"></span></small></div><span class="sp"></span><div class="mode" id="mode"><button data-m="free">🚗 Làm tự do</button><button data-m="booth" class="on">🪑 Thuê ghế</button><button data-m="emp">🏪 Nhân viên tiệm</button></div><button class="btn ghost sm" id="tourBtn">✦ AI Tour</button></div>
+<div class="tabs" id="tabs"><button data-v="page" class="on">👤 Trang của tôi</button><button data-v="create">➕ Tạo coupon</button><button data-v="redeem">🧾 Dùng coupon</button><button data-v="clients">👥 Khách của tôi</button><button data-v="stats">📈 Hiệu quả</button></div></div>
+<main>
+<div class="rule" id="rule"></div>
+<!-- PAGE -->
+<section data-v="page" class="on">
+ <div class="pro"><div class="phone" id="phone"><div class="scr"><div class="url">🔒 nexora.deals/p/jessica-nails-katy</div>
+  <div class="hero"><div style="display:flex;gap:12px;align-items:center"><div class="av">J</div><div><b style="font-size:17px">Jessica Nguyen</b><div style="font-size:12px;opacity:.9">Thợ nail · Gel-X · Nail art · 8 năm</div><div style="font-size:12px;opacity:.9" id="whereTxt"></div></div></div><div style="margin-top:10px;font-size:12.5px">⭐ 4.9 · 86 khách đánh giá</div></div>
+  <div style="padding:10px 14px"><div class="chips"><span class="chip on">📅 Đặt lịch với Jessica</span><span class="chip">💬 Nhắn</span><span class="chip">📷 Mẫu móng</span></div>
+  <b style="display:block;margin-top:14px">Ưu đãi của Jessica</b><div id="myCps"></div>
+  <b style="display:block;margin-top:14px">Dịch vụ</b><p class="muted" style="margin-top:4px">Gel-X $60 · Nail art từ $10 · Pedicure $35 · Dip $45</p></div></div></div>
+ <div>
+  <div class="card" id="cPageInfo"><h3>Trang cá nhân công khai</h3><p class="muted">Khách vào bằng link / QR của Jessica, từ Community, hoặc từ Google (trang cá nhân được index như trang tiệm — xem mục SEO). Coupon của thợ luôn gắn với <b>tên thợ</b>, không gắn với tiệm.</p>
+   <div class="row" style="margin-top:10px"><button class="btn ghost sm" id="qrBtn">🖨 Link & QR của tôi</button><button class="btn ghost sm" id="shareBtn">📤 Chia sẻ trang</button></div></div>
+  <div class="card" id="cWhy"><h3>Vì sao thợ cần coupon riêng?</h3><p class="muted" style="line-height:1.55">Trong ngành nail, <b>khách đi theo thợ</b>. Thợ có nhóm khách riêng (Instagram, Zalo, khách quen) và muốn kéo thêm khách về <b>ghế của mình</b>. Coupon cá nhân biến nhóm khách đó thành lượt ghé thật — nhưng <b>tiệm vẫn nắm quầy</b>: coupon chỉ dùng được khi tiệm cho phép, khách check-in ở máy của tiệm, bill đi qua POS của tiệm.</p></div>
+  <div class="card" id="cMatch"><h3>✦ Khách gần tôi đang muốn</h3><p class="muted">Từ Deal Match — nhu cầu gom trong bán kính nơi Jessica làm. Đáp 1 chạm bằng coupon cá nhân.</p>
+   <table class="t" style="margin-top:8px"><tbody><tr><td><b>Gel-X dưới $55</b><div class="muted">7 người · trong 5 mi · cuối tuần</div></td><td><button class="btn sm" data-answer="Gel-X">Đáp bằng coupon</button></td></tr><tr><td><b>Nail art cô dâu</b><div class="muted">3 người · tháng 10</div></td><td><button class="btn sm" data-answer="Nail art cô dâu">Đáp bằng coupon</button></td></tr></tbody></table></div>
+ </div></div>
+</section>
+<!-- CREATE -->
+<section data-v="create">
+ <div class="card" id="cCreate"><h3>➕ Tạo coupon cá nhân — một màn hình</h3><p class="muted">Không cần POS. Mẫu gợi ý theo nghề của bạn; mọi thứ khác có sẵn mặc định.</p>
+  <div class="chips" style="margin:10px 0" id="tpl"><button class="chip" data-t="0">👋 Khách mới −20%</button><button class="chip" data-t="1">🔁 Quay lại $10</button><button class="chip" data-t="2">🎨 Nail art tặng 2 móng</button><button class="chip" data-t="3">🤝 Giới thiệu bạn $15</button></div>
+  <label class="f">Kiểu — do ô “số suất” quyết định</label><div class="chips" id="otc"><button class="chip on" data-ot="coupon">🎟️ Coupon — có số lượng, khách phải lấy</button><button class="chip" data-ot="program">🏷️ Deal — không giới hạn số lượng, tự áp</button></div><p class="muted" id="otNote" style="margin-top:4px">Có số suất → Coupon: khách lấy bằng SĐT · đếm suất · hạn · 1 lần/người. Xoá số suất → thành Deal.</p>
+  <div class="row"><div><label class="f">Tiêu đề</label><input class="in" id="cT" value="Giảm 20% Gel-X lần đầu với Jessica"></div><div><label class="f">Dịch vụ của tôi</label><select class="in" id="cS"><option>Gel-X</option><option>Nail art</option><option>Pedicure</option><option>Dip powder</option><option>Mọi dịch vụ của tôi</option></select></div></div>
+  <div class="row3"><div><label class="f">Loại · giá trị</label><div class="row"><select class="in" id="cK"><option value="pct">%</option><option value="amt">$</option></select><input class="in" id="cV" value="20"></div></div><div><label class="f">Áp dụng cho</label><select class="in" id="cA"><option value="new">Khách mới của tôi</option><option value="all">Mọi khách</option><option value="ret">Khách quen của tôi</option></select></div><div><label class="f">Hạn · số suất · /người</label><div class="row3"><select class="in" id="cD"><option>14 ngày</option><option selected>30 ngày</option><option>60 ngày</option></select><input class="in" id="cQ" value="30"><select class="in"><option>1</option><option>2</option></select></div></div></div>
+  <label class="f">Phát ở đâu</label>
+  <label class="opt"><input type="checkbox" checked data-ch="link"><span><b>Link & QR của tôi</b><small>Khách quét → nhập SĐT → coupon vào ví, không cần app</small></span><span class="r">$0</span></label>
+  <label class="opt"><input type="checkbox" checked data-ch="social"><span><b>Facebook · Instagram · Zalo · TikTok của tôi</b><small>Bộ đăng soạn sẵn bài + ảnh; link có mã kênh</small></span><span class="r">$0</span></label>
+  <label class="opt"><input type="checkbox" data-ch="sms"><span><b>SMS khách của tôi</b><small>Chỉ khách đã đồng ý nhận tin từ bạn (TCPA) · tối đa 1 tin / chương trình</small></span><span class="r">$0</span></label>
+  <label class="opt"><input type="checkbox" data-ch="public"><span><b>Community & Deal Match (Public)</b><small>Duyệt lần đầu · khách gần nơi bạn làm thấy · click $0; phí thành công chỉ khi bạn bật</small></span><span class="r">duyệt</span></label>
+  <label class="opt"><input type="checkbox" data-ch="boost"><span><b>Đẩy nhẹ (Paid Boost)</b><small>Ngân sách nhỏ do bạn đặt, trần mỗi ngày · cần bật Public · hiện nhãn “Được tài trợ”</small></span><span class="r">$/click</span></label>
+  <label class="f">Dùng ở đâu</label><div id="useWhere"></div>
+  <div style="display:flex;gap:8px;margin-top:14px;flex-wrap:wrap"><button class="btn" id="pub">🚀 Phát hành</button><button class="btn ghost" id="kitBtn">📣 Bộ đăng</button></div>
+ </div>
+</section>
+<!-- REDEEM -->
+<section data-v="redeem">
+ <div class="row" style="align-items:start">
+  <div class="card" id="cRd"><h3>🧾 Mini quầy trên điện thoại của bạn</h3><p class="muted">Không có POS: khách đọc SĐT (hoặc đưa QR) → bạn xác nhận → nhập giá dịch vụ. Ghi nhận ngay, khách nhận biên nhận qua SMS.</p>
+   <input class="in big" id="ph" placeholder="SĐT khách" inputmode="tel" style="margin-top:10px"><div class="chips" style="margin-top:8px"><button class="chip" data-ph="7135550188">Lan · lấy coupon của bạn</button><button class="chip" data-ph="8325550111">Số lạ · khách mới</button><button class="chip" data-ph="7135550177">Vy · đã dùng</button></div>
+   <div class="row" style="margin-top:10px"><button class="btn" id="look">Tìm coupon</button><button class="btn ghost" id="scan">📷 Quét QR khách</button></div></div>
+  <div class="card res" id="cRes"><h3>Kết quả</h3><div id="out" class="muted">Chưa tra.</div></div>
+ </div>
+ <div class="card" id="cSalon"><div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap"><h3 style="flex:1">🏪 Khách dùng coupon của bạn <b>tại tiệm</b> — máy check-in của tiệm thấy gì</h3><div class="chips"><button class="chip on" data-shift="1">Jessica có ca hôm nay</button><button class="chip" data-shift="0">Không có ca</button></div></div><div id="salonFlow"></div></div>
+</section>
+<!-- CLIENTS -->
+<section data-v="clients">
+ <div class="card" id="cCl"><h3>👥 Khách của tôi</h3><p class="muted">Khách thuộc về <b>bạn</b> (theo NEXORA ID của bạn), không thuộc tiệm — kể cả khi bạn chuyển tiệm. Chỉ nhắn được khách đã đồng ý.</p>
+  <table class="t" style="margin-top:8px"><thead><tr><th>Khách</th><th>Lần ghé</th><th>Coupon</th><th>Nhận tin</th><th></th></tr></thead><tbody>
+  <tr><td><b>Lan T.</b><div class="muted">•••0188</div></td><td>0 · mới</td><td><span class="tag pink">Gel-X −20% · chưa dùng</span></td><td><span class="tag ok">đồng ý</span></td><td><button class="btn ghost sm" data-msg="Lan">Nhắc</button></td></tr>
+  <tr><td><b>Vy N.</b><div class="muted">•••0177</div></td><td>4 · 21 ngày trước</td><td><span class="tag gray">đã dùng 12/9</span></td><td><span class="tag ok">đồng ý</span></td><td><button class="btn ghost sm" data-msg="Vy">Mời quay lại</button></td></tr>
+  <tr><td><b>Hoa P.</b><div class="muted">•••0166</div></td><td>2 · 63 ngày trước</td><td>—</td><td><span class="tag bad">chưa đồng ý</span></td><td><button class="btn ghost sm" disabled style="opacity:.4">Không nhắn được</button></td></tr>
+  </tbody></table></div>
+</section>
+<!-- STATS -->
+<section data-v="stats">
+ <div class="kpi" id="kpi"><div><b>41</b><span>lượt lấy</span></div><div><b>17</b><span>đã dùng</span></div><div><b>$1,020</b><span>doanh thu dịch vụ</span></div><div><b>9</b><span>khách mới</span></div></div>
+ <div class="card" style="margin-top:12px" id="cSt"><h3>Theo kênh</h3><table class="t"><thead><tr><th>Kênh</th><th class="n">Lấy</th><th class="n">Dùng</th><th class="n">Doanh thu</th></tr></thead><tbody><tr><td>Instagram của tôi</td><td class="n">18</td><td class="n">7</td><td class="n">$420</td></tr><tr><td>Link & QR</td><td class="n">9</td><td class="n">5</td><td class="n">$300</td></tr><tr><td>Community / Deal Match</td><td class="n">11</td><td class="n">4</td><td class="n">$240</td></tr><tr><td>SMS khách của tôi</td><td class="n">3</td><td class="n">1</td><td class="n">$60</td></tr></tbody></table><p class="muted" style="margin-top:8px">Số mẫu. Doanh thu tính từ giá bạn nhập ở Mini quầy — hoặc từ bill POS của tiệm nếu tiệm chấp nhận coupon của bạn.</p></div>
+</section>
+</main>
+<div class="wn" id="wn"><div class="bx"><div style="font-size:12px;font-weight:800;color:var(--p1)">MỚI · Coupon cho cá nhân</div><h2 style="font-size:20px;margin:6px 0 8px">Thợ & người làm tự do cũng có coupon riêng</h2><ul><li><b>Trang cá nhân công khai</b> — coupon gắn tên bạn, khách là khách của bạn.</li><li><b>Tạo coupon một màn hình</b> — không cần POS.</li><li><b>Mini quầy trên điện thoại</b> — nhập SĐT khách để dùng coupon.</li><li><b>3 hình thức làm việc</b> — tự do · thuê ghế · nhân viên tiệm — mỗi loại quy tắc riêng.</li></ul><div style="display:flex;gap:8px;margin-top:12px"><button class="btn" id="wnGo">✦ Xem AI Tour</button><button class="btn ghost" id="wnX">Tự xem</button></div></div></div>
+<div class="stour hidden" id="tb"><div class="hd">✦ AI SMART TOUR <span id="tStep"></span><span class="sp"></span><button id="tPause">⏸</button><button id="tNext">⏭</button><button id="tClose">✕</button></div><div id="tVi"></div><div id="tEn"></div><div class="bar2"><i id="tBar"></i></div></div>
+<div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];let tt;const toast=m=>{const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(tt);tt=setTimeout(()=>t.style.display='none',2600)};
+let MODE='booth',view='page';
+const RULE={free:['free','🚗 <b>Làm tự do</b> (tại nhà khách, tiệm tạm, sự kiện): bạn toàn quyền. Coupon dùng ở <b>Mini quầy trên điện thoại của bạn</b>. Doanh thu và khách là của bạn.'],
+ booth:['booth','🪑 <b>Thuê ghế tại Bella Salon</b>: doanh thu dịch vụ là của bạn, nên coupon chỉ áp cho <b>dịch vụ của bạn</b>. Dùng ở Mini quầy của bạn, <b>hoặc</b> ở POS tiệm nếu tiệm bật “Chấp nhận coupon của thợ thuê ghế” (giảm trừ vào phần của bạn, không trừ doanh thu tiệm).'],
+ emp:['emp','🏪 <b>Nhân viên Bella Salon</b>: doanh thu là của tiệm, nên coupon của bạn <b>cần chủ tiệm duyệt</b> và chạy qua POS Promotions của tiệm (hiện ở danh sách “Chờ duyệt” của chủ). Khách vẫn gắn tên bạn để tính hoa hồng / thưởng.']};
+const WHERE={free:[['mine',true,'Mini quầy trên điện thoại của tôi','Nhập SĐT hoặc quét QR khách']],booth:[['mine',true,'Mini quầy của tôi','Nhập SĐT / quét QR'],['salon',true,'POS của Bella Salon','Chỉ khi tiệm bật chấp nhận coupon thợ thuê ghế · trừ vào phần của tôi']],emp:[['salon',true,'POS của Bella Salon','Bắt buộc · chủ tiệm duyệt trước khi chạy']]};
+const CPS=[{t:'Giảm 20% Gel-X lần đầu với Jessica',big:'-20%',sm:'Gel-X',m:'Khách mới · tới 27/10 · còn 22/30 suất'},{t:'Tặng 2 móng nail art',big:'FREE',sm:'art',m:'Mọi khách · tới 15/11'}];
+function setMode(m){MODE=m;$$('#mode button').forEach(b=>b.classList.toggle('on',b.dataset.m===m));const r=RULE[m];$('#rule').className='rule '+r[0];$('#rule').innerHTML=r[1];
+ $('#modeTxt').textContent={free:'làm tự do · Katy',booth:'thuê ghế tại Bella Salon · Katy',emp:'nhân viên Bella Salon'}[m];$('#whereTxt').textContent={free:'📍 Làm tại nhà khách · Katy & Sugar Land',booth:'📍 Ghế số 4 · Bella Salon, Katy',emp:'📍 Bella Salon, Katy'}[m];
+ $('#useWhere').innerHTML=WHERE[m].map(w=>`<label class="opt"><input type="checkbox" ${w[1]?'checked':''} ${m==='emp'?'disabled':''} data-w="${w[0]}"><span><b>${w[2]}</b><small>${w[3]}</small></span></label>`).join('');
+ $('#pub').textContent=m==='emp'?'📨 Gửi chủ tiệm duyệt':'🚀 Phát hành';drawCps()}
+function drawCps(){$('#myCps').innerHTML=CPS.map(c=>`<div class="cp"><div class="stub">${c.big}<small>${c.sm}</small></div><div class="b"><b>${c.t}</b><div class="m">${c.m}</div><div class="m">${MODE==='emp'?'Dùng tại Bella Salon':MODE==='booth'?'Dùng với Jessica · ghế số 4':'Jessica tới tận nơi'}</div></div></div>`).join('')}
+$('#mode').onclick=e=>{const b=e.target.closest('[data-m]');if(b){setMode(b.dataset.m);toast('Đổi hình thức làm việc — quy tắc coupon đổi theo')}};
+function go(v){view=v;$$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));$$('section[data-v]').forEach(s=>s.classList.toggle('on',s.dataset.v===v));window.scrollTo({top:0})}
+$('#tabs').onclick=e=>{const b=e.target.closest('[data-v]');if(b)go(b.dataset.v)};
+const TP=[['Giảm 20% Gel-X lần đầu với Jessica','Gel-X','pct',20,'new'],['Quay lại trong 30 ngày giảm $10','Mọi dịch vụ của tôi','amt',10,'ret'],['Tặng 2 móng nail art','Nail art','amt',10,'all'],['Giới thiệu bạn: cả 2 giảm $15','Mọi dịch vụ của tôi','amt',15,'all']];
+$('#tpl').onclick=e=>{const b=e.target.closest('[data-t]');if(!b)return;const t=TP[+b.dataset.t];$('#cT').value=t[0];$('#cS').value=t[1];$('#cK').value=t[2];$('#cV').value=t[3];$('#cA').value=t[4];$$('#tpl .chip').forEach(x=>x.classList.toggle('on',x===b))};
+$('#pub').onclick=()=>{const pub=$('[data-ch=public]').checked,boost=$('[data-ch=boost]').checked;if(boost&&!pub)return toast('Đẩy nhẹ cần bật Community & Deal Match (Public) trước');
+ if(MODE==='emp'){toast('📨 Đã gửi Bella Salon duyệt — chạy khi chủ tiệm bấm Duyệt trong POS Promotions');return}
+ CPS.unshift({t:$('#cT').value,big:($('#cK').value==='pct'?'-'+$('#cV').value+'%':'$'+$('#cV').value),sm:$('#cS').value.split(' ')[0],m:({new:'Khách mới',all:'Mọi khách',ret:'Khách quen'})[$('#cA').value]+' · '+$('#cD').value+' · '+$('#cQ').value+' suất'});drawCps();toast(pub?'🚀 Đã phát hành — kênh của bạn chạy ngay; Community chờ duyệt lần đầu':'🚀 Đã phát hành trên kênh của bạn');go('page')};
+$('#kitBtn').onclick=()=>toast('📣 Bộ đăng: ảnh 1080² + Story + bài IG/FB/Zalo + SMS, link nexora.link/p/jessica?c=ig (mẫu)');
+$('#qrBtn').onclick=()=>toast('🖨 nexora.link/p/jessica — in QR dán ghế / gửi khách');$('#shareBtn').onclick=()=>toast('📤 Đã sao chép link trang cá nhân');
+document.addEventListener('click',e=>{const a=e.target.closest('[data-answer]');if(a){go('create');$('#cT').value='Ưu đãi '+a.dataset.answer+' cho khách gần Katy';$('#cS').value=/Gel/.test(a.dataset.answer)?'Gel-X':'Nail art';$('[data-ch=public]').checked=true;toast('✦ Đã điền sẵn coupon đáp nhu cầu — Deal Match báo cho người đang muốn')}
+ const m=e.target.closest('[data-msg]');if(m)toast('💬 Đã gửi tin cho '+m.dataset.msg+' (chỉ khách đã đồng ý)')});
+const CL={'7135550188':{n:'Lan T.',v:0,c:[['Giảm 20% Gel-X lần đầu',true,'Khách mới của Jessica ✓']]},'7135550177':{n:'Vy N.',v:4,c:[['Giảm 20% Gel-X lần đầu',false,'Đã dùng 12/9 — 1 lần/SĐT']]}};
+function look(ph){$('#ph').value=ph;const d=ph.replace(/\D/g,'');if(d.length<7)return toast('Nhập SĐT hợp lệ');const c=CL[d];
+ if(!c){$('#out').innerHTML=`<div class="opt ok"><span><b>🆕 Khách mới của bạn</b><small>Chưa có coupon · có thể áp “Khách mới −20%” nếu còn suất</small></span></div><button class="btn full" style="margin-top:10px" onclick="toast('✓ Đã áp −20% · khách nhận biên nhận SMS')">Áp coupon khách mới</button>`;return}
+ $('#out').innerHTML=`<b>${c.n}</b> · ${c.v?c.v+' lần với bạn':'chưa từng làm với bạn'}`+c.c.map(x=>`<div class="opt ${x[1]?'ok':'no'}"><span>${x[1]?'✅':'⛔'}</span><span><b>${x[0]}</b><small>${x[2]}</small></span></div>`).join('')+(c.c.some(x=>x[1])?`<label class="f">Giá dịch vụ ($)</label><input class="in" id="bill" value="60"><button class="btn full" style="margin-top:10px" id="okBtn">✓ Xác nhận dùng · ghi nhận</button>`:'')+(MODE!=='free'?`<p class="muted" style="margin-top:8px">${MODE==='booth'?'Hoặc để thu ngân Bella Salon áp ở POS — trừ vào phần của bạn.':'Nhân viên tiệm: coupon áp ở POS của tiệm.'}</p>`:'')}
+$('#look').onclick=()=>look($('#ph').value);document.addEventListener('click',e=>{const b=e.target.closest('[data-ph]');if(b)look(b.dataset.ph);if(e.target.id==='okBtn'){const v=+$('#bill').value||0;toast('✓ Đã dùng · khách trả $'+(v*0.8).toFixed(0)+' (−$'+(v*0.2).toFixed(0)+') · biên nhận SMS đã gửi')}});
+$('#scan').onclick=()=>look('7135550188');
+let OTI='coupon',SHIFT=1;
+function syncOTI(){OTI=$('#cQ').value.trim()?'coupon':'program';$$('#otc .chip').forEach(x=>x.classList.toggle('on',x.dataset.ot===OTI));$('#otNote').textContent=OTI==='program'?'🏷️ Deal: không nhập số suất → không giới hạn số lượng · hiện như banner ($ / % off, có điều kiện) · tự áp khi khách đặt lịch / check-in với bạn · 1 lần/lượt ghé · nhân viên tiệm vẫn cần chủ duyệt.':'🎟️ Coupon: có số suất → khách lấy bằng SĐT · đếm suất, hết là dừng · hạn · 1 lần/người.';$('#cQ').placeholder='trống = Deal'}
+$('#cQ').addEventListener('input',()=>{$('#cQ').value=$('#cQ').value.replace(/[^0-9]/g,'');syncOTI()});
+document.addEventListener('click',e=>{const o=e.target.closest('[data-ot]');if(o){if(o.dataset.ot==='program')$('#cQ').value='';else if(!$('#cQ').value.trim()){$('#cQ').focus();$('#cQ').style.borderColor='var(--p1)';toast('Nhập số suất → tự thành Coupon')}syncOTI()}
+ const s=e.target.closest('[data-shift]');if(s){SHIFT=+s.dataset.shift;$$('[data-shift]').forEach(x=>x.classList.toggle('on',x===s));drawSalon()}});
+function drawSalon(){const who={free:'Làm tự do',booth:'Thuê ghế',emp:'Nhân viên tiệm'}[MODE];const pay={free:'Jessica chịu (không qua tiệm)',booth:'Trừ vào phần của Jessica khi đối soát tiền ghế',emp:'Theo cài đặt của chủ: tiệm chịu · trừ hoa hồng Jessica · hoặc chia'}[MODE];
+ if(MODE==='free'){$('#salonFlow').innerHTML='<p class="muted" style="margin-top:8px">Làm tự do: không có tiệm — khách dùng coupon ở <b>Mini quầy</b> phía trên. Nếu Jessica làm ở nhiều nơi, coupon ghi rõ các địa điểm được dùng và chỉ hợp lệ khi Jessica có lịch ở đó.</p>';return}
+ const ok=SHIFT&&true;const steps=[['1 · Khách check-in','Nhập SĐT ở máy check-in của Bella Salon (không cần mở ví).'],['2 · POS nhận ra','Tra SĐT → thấy <b>coupon của Jessica</b> (issuer = cá nhân, host = Bella Salon).'],['3 · Kiểm tra','Tiệm có cho phép? '+(MODE==='emp'?'Chủ đã duyệt ✓':'Tiệm bật nhận coupon thợ thuê ghế ✓')+' · Jessica có ca hôm nay? '+(ok?'✓':'✗')],['4 · Xếp khách','Coupon <b>tự xếp khách vào hàng chờ của Jessica</b> — khách tới vì Jessica thì làm với Jessica.'],['5 · Tính tiền & ghi','Bill POS của tiệm ghi coupon_id · issuer = Jessica. Ai chịu giảm: '+pay+'.']];
+ $('#salonFlow').innerHTML=`<div class="flow">${steps.map(x=>`<div><b>${x[0]}</b>${x[1]}</div>`).join('')}</div><div class="kio2"><div class="in2"><b>👋 Chào chị Lan</b><div class="muted" style="margin:4px 0 8px">Máy check-in · Bella Salon</div>${ok?`<div class="opt ok" style="cursor:default"><span>✅</span><span><b>Coupon của Jessica · Gel-X −20%</b><small>Jessica đang có ca · bạn được xếp vào hàng của Jessica (chờ ~10 phút)</small></span></div><button class="btn full" style="margin-top:8px">✓ Check-in với Jessica</button>`:`<div class="opt no" style="cursor:default"><span>⛔</span><span><b>Coupon của Jessica · Gel-X −20%</b><small>Jessica không có ca hôm nay — coupon chỉ dùng khi làm với Jessica</small></span></div><button class="btn ghost full" style="margin-top:8px">📅 Đặt lịch với Jessica (coupon giữ nguyên)</button><button class="btn ghost full" style="margin-top:6px">Check-in với thợ khác (không dùng coupon)</button>`}</div></div><p class="muted" style="margin-top:8px">Ghi nhận khách: vào <b>hồ sơ khách của Bella Salon</b> và là <b>khách theo dõi Jessica</b> — hai thứ tách nhau. Jessica chuyển tiệm: khách vẫn theo Jessica; hồ sơ ở Bella Salon vẫn thuộc tiệm; coupon gắn Bella Salon tự kết thúc.</p>`}
+const _setMode=setMode;setMode=function(m){_setMode(m);drawSalon()};
+/* tour */
+const TOUR=[
+ {v:'page',sel:'#mode',vi:'Nhóm Cá nhân có 3 hình thức làm việc: tự do, thuê ghế, nhân viên tiệm. Chọn hình thức nào, quy tắc coupon đổi theo — ai chịu giảm giá, dùng ở đâu, có cần chủ tiệm duyệt không.',en:'Individuals work 3 ways: freelance, booth renter, salon employee. Each changes who pays the discount, where it’s used, and whether the owner must approve.'},
+ {v:'page',sel:'#cWhy',vi:'Vì sao thợ cần coupon riêng: khách đi theo thợ. Coupon cá nhân kéo nhóm khách riêng của thợ về ghế của thợ — nhưng tiệm vẫn nắm quầy.',en:'Why techs need their own coupons: clients follow techs; the salon still controls the counter.'},
+ {v:'page',sel:'#phone',vi:'Trang cá nhân công khai: coupon gắn tên thợ, đặt lịch thẳng với thợ. Khách là khách của thợ, đi theo thợ khi chuyển tiệm.',en:'Public personal page: coupons carry the tech’s name; clients belong to the tech.'},
+ {v:'page',sel:'#cMatch',vi:'Deal Match cho cá nhân: thấy khách gần mình đang muốn gì, đáp 1 chạm bằng coupon.',en:'Deal Match for individuals: see nearby demand, answer with a coupon in one tap.'},
+ {v:'create',sel:'#cCreate',vi:'Tạo coupon một màn hình, không cần POS: mẫu theo nghề, dịch vụ của tôi, đối tượng, hạn, số suất, kênh phát.',en:'One-screen coupon creation, no POS: trade templates, my services, audience, expiry, slots, channels.'},
+ {v:'create',sel:'#useWhere',vi:'Dùng ở đâu: tự do → Mini quầy của tôi; thuê ghế → Mini quầy hoặc POS tiệm nếu tiệm cho phép; nhân viên → gửi chủ tiệm duyệt.',en:'Where it’s used depends on the work mode.',do:()=>setMode('booth')},
+ {v:'create',sel:'#rule',vi:'Nhân viên tiệm: nút đổi thành “Gửi chủ tiệm duyệt” — coupon hiện trong danh sách chờ duyệt ở POS Promotions của chủ.',en:'Employees: the button becomes “Send to owner for approval”.',do:()=>setMode('emp')},
+ {v:'redeem',sel:'#cSalon',vi:'Thợ làm tại tiệm: khách check-in bằng SĐT ở máy của tiệm → POS thấy coupon của thợ → kiểm tra tiệm cho phép và thợ có ca → tự xếp khách vào hàng của thợ → bill đi qua POS tiệm, ai chịu giảm theo quy tắc.',en:'At a salon: phone check-in on the salon kiosk → POS sees the tech’s coupon → checks permission and shift → queues the client to that tech → bill goes through the salon POS.',do:()=>{setMode('emp');SHIFT=1;drawSalon()}},
+ {v:'redeem',sel:'#cSalon',vi:'Thợ không có ca: coupon không dùng được với thợ khác — máy gợi ý đặt lịch với thợ, coupon giữ nguyên.',en:'Tech not on shift: coupon can’t be used with another tech — kiosk offers to book with that tech.',do:()=>{SHIFT=0;$$('[data-shift]').forEach(x=>x.classList.toggle('on',x.dataset.shift==='0'));drawSalon()}},
+ {v:'redeem',sel:'#cRd',vi:'Mini quầy trên điện thoại: nhập SĐT khách hoặc quét QR → thấy coupon đủ điều kiện → nhập giá → xác nhận; khách nhận biên nhận SMS.',en:'Mini counter on the phone: phone or QR → eligible coupon → enter price → confirm; SMS receipt.',do:()=>{setMode('booth');look('7135550188')}},
+ {v:'clients',sel:'#cCl',vi:'Khách của tôi: gắn theo NEXORA ID của thợ. Chỉ nhắn được khách đã đồng ý nhận tin.',en:'My clients: tied to the tech’s NEXORA ID; message only opted-in clients.'},
+ {v:'stats',sel:'#cSt',vi:'Hiệu quả theo kênh: Instagram, link & QR, Community, SMS — biết kênh nào ra khách.',en:'Performance by channel.'},
+];
+let ti=0,tRun=false,tPaused=false,tStart=0,raf,DUR=9000;
+function spot(el){$$('.spot').forEach(x=>x.classList.remove('spot'));if(el){el.classList.add('spot');el.scrollIntoView({behavior:'smooth',block:'center'})}}
+function showStep(){const s=TOUR[ti];go(s.v);s.do&&s.do();setTimeout(()=>spot($(s.sel)),300);$('#tVi').textContent=s.vi;$('#tEn').textContent=s.en;$('#tStep').textContent=`${ti+1}/${TOUR.length}`;tStart=performance.now();$('#tBar').dataset.p=0;loop()}
+function loop(){cancelAnimationFrame(raf);const f=t=>{if(!tRun)return;const bar=$('#tBar');if(tPaused){tStart=t-(+bar.dataset.p)*DUR;raf=requestAnimationFrame(f);return}const p=Math.min(1,(t-tStart)/DUR);bar.style.width=p*100+'%';bar.dataset.p=p;if(p>=1)return nextStep();raf=requestAnimationFrame(f)};raf=requestAnimationFrame(f)}
+function nextStep(){ti=(ti+1)%TOUR.length;showStep()}
+function startTour(){$('#wn').classList.add('hidden');tRun=true;tPaused=false;ti=0;$('#tPause').textContent='⏸';$('#tb').classList.remove('hidden');showStep()}
+function stopTour(){if(!tRun)return;tRun=false;cancelAnimationFrame(raf);$('#tb').classList.add('hidden');spot(null)}
+$('#tPause').onclick=()=>{tPaused=!tPaused;$('#tPause').textContent=tPaused?'▶':'⏸'};$('#tNext').onclick=nextStep;$('#tClose').onclick=stopTour;$('#tourBtn').onclick=startTour;$('#wnGo').onclick=startTour;$('#wnX').onclick=()=>$('#wn').classList.add('hidden');
+['touchstart','wheel','keydown','mousedown'].forEach(ev=>window.addEventListener(ev,e=>{if(tRun&&e.isTrusted&&!e.target.closest('.stour'))stopTour()},{passive:true}));
+setMode('booth');drawSalon();if(!window.__EMBED)setTimeout(()=>{if(!$('#wn').classList.contains('hidden'))startTour()},7000);
+</script>
+</body>
+</html>

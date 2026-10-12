@@ -1,0 +1,185 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NEXORA Deals — SEO: trang công khai hiển thị thế nào (bản mẫu)</title>
+<style>
+:root{--ink:#0B1220;--mute:#5B6B82;--line:#DDE5EF;--page:#F4F6FA;--p1:#4F46E5;--grad:linear-gradient(135deg,#4F46E5,#7C3AED);--ok:#047857;--okbg:#D1FAE5;--warn:#B45309;--warnbg:#FEF3C7;--bad:#B91C1C;--badbg:#FEE2E2}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:var(--page);color:var(--ink);font-size:14px;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.top{position:sticky;top:0;z-index:20;background:#0F1B3D;color:#fff}
+.bar{display:flex;align-items:center;gap:10px;padding:12px 18px;flex-wrap:wrap}.bar h1{font-size:16px;font-weight:800}.bar .sub{font-size:11.5px;color:#A5B4FC}.sp{flex:1}
+.tabs{display:flex;gap:6px;padding:0 18px 10px;overflow-x:auto}.tabs button{white-space:nowrap;padding:8px 14px;border-radius:12px;font-weight:700;font-size:13px;color:#C7D2FE;background:#1E2B5C}.tabs button.on{background:var(--grad);color:#fff}
+.btn{display:inline-flex;align-items:center;gap:6px;padding:8px 12px;border-radius:10px;font-weight:700;background:#1E2B5C;color:#fff;font-size:12.5px}
+main{max-width:1180px;margin:0 auto;padding:16px 18px 130px}
+section[data-v]{display:none}section[data-v].on{display:block}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:16px;margin-bottom:14px}.card h3{font-size:15px;font-weight:800;margin-bottom:6px}
+.muted{color:var(--mute);font-size:12.5px}
+.tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:10px;font-size:10.5px;font-weight:800;white-space:nowrap;margin:1px 2px 1px 0}.tag.ok{background:var(--okbg);color:var(--ok)}.tag.warn{background:var(--warnbg);color:var(--warn)}.tag.bad{background:var(--badbg);color:var(--bad)}.tag.gray{background:#F1F5F9;color:#475569}
+.ins{display:flex;gap:10px;padding:12px 14px;border-radius:12px;background:#FFFBEB;border:1px solid #FDE68A;font-size:13px;line-height:1.5;margin-bottom:14px}
+.ins.red{background:#FEF2F2;border-color:#FECACA}
+/* SERP */
+.serp{background:#fff;border:1px solid var(--line);border-radius:16px;padding:18px 20px;font-family:Arial,sans-serif}
+.gq{display:flex;align-items:center;gap:10px;border:1px solid #dfe1e5;border-radius:24px;padding:10px 16px;max-width:620px;box-shadow:0 1px 6px rgba(32,33,36,.18);margin-bottom:14px;font-size:15px}
+.gq b{color:#4285F4}.gq span{flex:1}
+.gchips{display:flex;gap:8px;margin-bottom:16px;font-size:13px;color:#4d5156}.gchips span{border:1px solid #dadce0;border-radius:16px;padding:5px 12px}.gchips span.on{background:#e8f0fe;border-color:#e8f0fe;color:#1a73e8}
+.res{max-width:640px;margin-bottom:22px;position:relative}
+.res .site{display:flex;align-items:center;gap:10px;font-size:13px;color:#202124}.res .fav{width:28px;height:28px;border-radius:50%;background:var(--grad);color:#fff;display:grid;place-items:center;font-weight:800;font-size:12px}.res .site small{display:block;color:#4d5156;font-size:12px}
+.res h3{font-size:19px;color:#1a0dab;font-weight:400;margin:6px 0 3px;line-height:1.3}.res p{font-size:14px;color:#4d5156;line-height:1.55}
+.res .rich{display:flex;gap:14px;flex-wrap:wrap;font-size:13px;color:#4d5156;margin-top:4px}.res .rich b{color:#202124}
+.res .stars{color:#e7711b}
+.res .links{display:flex;gap:18px;margin-top:6px;font-size:14px}.res .links a{color:#1a0dab}
+.res .num{position:absolute;left:-34px;top:2px;width:22px;height:22px;border-radius:50%;background:#F59E0B;color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center}
+.lp{border:1px solid #dadce0;border-radius:12px;max-width:640px;overflow:hidden;margin-bottom:22px}.lp .map{height:120px;background:linear-gradient(135deg,#e8eaed 25%,#f1f3f4 25%,#f1f3f4 50%,#e8eaed 50%,#e8eaed 75%,#f1f3f4 75%);background-size:28px 28px;position:relative}.lp .map i{position:absolute;width:14px;height:14px;border-radius:50% 50% 50% 0;background:#ea4335;transform:rotate(-45deg)}
+.lp .row{padding:10px 14px;border-top:1px solid #eee;font-size:13.5px}.lp .row b{color:#1a0dab;font-weight:400;font-size:15px}
+.aio{max-width:640px;border:1px solid #d2e3fc;background:#f8fbff;border-radius:12px;padding:14px;margin-bottom:22px;font-size:14px;line-height:1.55}
+.aio .h{font-size:12px;font-weight:700;color:#1a73e8;margin-bottom:6px}
+/* PAGE */
+.pg{display:grid;grid-template-columns:390px 1fr;gap:16px;align-items:start}
+.phone{background:#0B1220;border-radius:34px;padding:12px;box-shadow:0 20px 50px rgba(0,0,0,.3);position:sticky;top:120px}
+.scr{background:#fff;border-radius:24px;height:720px;overflow:auto}
+.url{margin:10px;border-radius:18px;background:#F1F5F9;padding:7px 12px;font-size:12px;color:#334155;display:flex;gap:6px;align-items:center}
+.ph{padding:6px 14px 20px}
+.crumbs{font-size:11.5px;color:var(--mute);margin-bottom:6px}.crumbs a{color:var(--p1)}
+.ph h1{font-size:21px;line-height:1.25;margin-bottom:4px}.ph h2{font-size:15px;margin:16px 0 8px}
+.ph .lead{font-size:13px;color:#334155;line-height:1.5}
+.dc{display:flex;gap:10px;border:1px solid var(--line);border-radius:14px;overflow:hidden;margin-bottom:10px}
+.dc .stub{width:84px;flex:0 0 84px;color:#fff;display:flex;flex-direction:column;justify-content:center;align-items:center;font-weight:800;font-size:18px;background:var(--grad)}.dc .stub small{font-size:10px;opacity:.9}
+.dc .b{padding:9px 10px 9px 0;flex:1}.dc .b b{display:block;font-size:13.5px}.dc .b .m{font-size:11.5px;color:var(--mute);margin-top:2px}
+.dc .cta{margin-top:6px;display:inline-block;background:#DC2626;color:#fff;border-radius:8px;padding:5px 10px;font-weight:800;font-size:12px}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{padding:6px 10px;border-radius:18px;border:1px solid var(--line);font-weight:700;font-size:12px;background:#fff}.chip.on{background:#EEF2FF;border-color:var(--p1);color:var(--p1)}
+.hero{border-radius:16px;padding:16px;color:#fff;background:var(--grad);margin:8px 0}.hero .big{font-family:Georgia,serif;font-size:34px}.hero small{opacity:.9}
+.claim{display:block;width:100%;text-align:center;background:#DC2626;color:#fff;border-radius:12px;padding:12px;font-weight:800;margin:10px 0}
+.facts{border:1px solid var(--line);border-radius:12px;font-size:12.5px}.facts div{display:flex;padding:8px 10px;border-top:1px solid var(--line)}.facts div:first-child{border-top:0}.facts div span{color:var(--mute);width:110px;flex:0 0 110px}
+.expired{background:#F1F5F9;border:1px dashed #94A3B8;border-radius:12px;padding:12px;margin:8px 0;font-size:13px}
+.note{border-left:3px solid #F59E0B;padding:6px 10px;background:#FFFBEB;border-radius:6px;font-size:12.5px;margin:8px 0}
+.pgsel{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px}
+.ann h3{display:flex;align-items:center;gap:8px}.ann .n{width:22px;height:22px;border-radius:50%;background:#F59E0B;color:#fff;font-size:11px;font-weight:800;display:grid;place-items:center;flex:0 0 22px}
+/* DEV */
+table.t{width:100%;border-collapse:collapse;font-size:12.5px}table.t th,table.t td{padding:8px 7px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top}table.t th{font-size:11px;color:var(--mute);text-transform:uppercase}
+pre.code{white-space:pre-wrap;font:12px/1.5 ui-monospace,Menlo,monospace;background:#0B1220;color:#E2E8F0;border-radius:12px;padding:14px;overflow:auto;max-height:420px}
+code{font:12px ui-monospace,Menlo,monospace;background:#F1F5F9;padding:1px 5px;border-radius:5px}
+.spot{outline:3px solid #F59E0B;outline-offset:3px;border-radius:14px}
+.stour{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;width:min(700px,94vw);background:#0B1220;color:#fff;border-radius:16px;padding:12px 14px;z-index:90;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.stour .hd{font-size:11px;font-weight:800;letter-spacing:1px;color:#A78BFA;display:flex;gap:8px;align-items:center;margin-bottom:6px}.stour .hd .sp{flex:1}.stour .hd button{background:#1E293B;border-radius:8px;padding:4px 9px;color:#fff}
+.stour #tVi{font-size:14px;font-weight:700}.stour #tEn{font-size:12px;color:#94A3B8;margin-top:2px}.stour .bar2{height:3px;background:#1E293B;border-radius:2px;margin-top:8px;overflow:hidden}.stour .bar2 i{display:block;height:100%;background:#A78BFA;width:0}
+.hidden{display:none!important}
+.wn{position:fixed;inset:0;background:rgba(15,27,61,.55);z-index:80;display:grid;place-items:center;padding:16px}.wn .bx{background:#fff;border-radius:18px;max-width:580px;padding:22px}.wn li{margin:6px 0 6px 18px;font-size:13.5px;line-height:1.5}
+@media(max-width:980px){.pg{grid-template-columns:1fr}.phone{position:static;max-width:400px;margin:0 auto}.res .num{left:-6px;top:-10px}}
+</style>
+</head>
+<body>
+<div class="top"><div class="bar"><div><h1>🔎 NEXORA Deals — SEO <span class="tag gray" style="background:#312E81;color:#C7D2FE">BẢN MẪU</span></h1><div class="sub">Google thấy gì · khách bấm vào thấy gì · dev phải làm gì</div></div><span class="sp"></span><button class="btn" id="tourBtn">✦ AI Tour</button></div>
+<div class="tabs" id="tabs"><button data-v="serp" class="on">1 · Google thấy gì</button><button data-v="page">2 · Khách bấm vào thấy gì</button><button data-v="dev">3 · Dev cần làm gì</button></div></div>
+<main>
+<!-- ============ SERP ============ -->
+<section data-v="serp" class="on">
+ <div class="ins red" id="truth">⚠️ <span><b>Sự thật trước:</b> Deal & Coupon hiện là ứng dụng một trang (JS, iframe, không có URL riêng cho từng deal) — <b>Google gần như không thấy gì</b>. Muốn lên Google phải có <b>trang công khai render sẵn HTML trên server</b>, mỗi trang một URL ổn định. Màn dưới đây là cách nó <b>sẽ</b> hiển thị khi làm đúng.</span></div>
+ <div class="card" style="padding:10px 14px"><div class="chips" id="qsel"><span class="muted" style="align-self:center">Khách tìm:</span><button class="chip on" data-q="0">nail deals katy tx</button><button class="chip" data-q="1">giảm giá làm móng houston</button><button class="chip" data-q="2">kayla nails katy</button><button class="chip" data-q="3">nail salon grand opening katy</button></div></div>
+ <div class="serp" id="serp"></div>
+ <p class="muted" style="margin-top:8px">Mô phỏng. Google quyết định có hiện thông tin phụ (giá, sao, ngày) hay không — dữ liệu có cấu trúc chỉ làm trang <b>đủ điều kiện</b>, không bảo đảm. Chấm cam = số thứ tự chú thích ở tab 2.</p>
+</section>
+<!-- ============ PAGE ============ -->
+<section data-v="page">
+ <div class="pgsel chips" id="psel"><button class="chip on" data-p="hub">① Trang ngành × thành phố</button><button class="chip" data-p="biz">② Trang tiệm</button><button class="chip" data-p="deal">③ Trang 1 deal</button><button class="chip" data-p="exp">③b Deal đã hết hạn</button><button class="chip" data-p="open">④ Trang sắp khai trương</button></div>
+ <div class="pg"><div class="phone" id="phone"><div class="scr" id="scr"></div></div><div id="ann"></div></div>
+</section>
+<!-- ============ DEV ============ -->
+<section data-v="dev">
+ <div class="card" id="cUrl"><h3>🧭 Cấu trúc URL — cái gì được index, cái gì không</h3>
+  <table class="t"><thead><tr><th>Loại trang</th><th>URL</th><th>Index</th><th>Vòng đời</th><th>Dữ liệu có cấu trúc</th></tr></thead><tbody>
+  <tr><td><b>① Ngành × thành phố</b> (hub)</td><td><code>nexora.deals/us/tx/katy/nail</code> · <code>/vi/…</code></td><td><span class="tag ok">index</span></td><td>Ổn định — deal bên trong thay đổi, URL giữ nguyên</td><td>ItemList + BreadcrumbList</td></tr>
+  <tr><td><b>② Trang tiệm</b></td><td><code>nexora.deals/biz/kayla-nails-katy</code></td><td><span class="tag ok">index</span></td><td>Ổn định — trang mạnh nhất về SEO</td><td>LocalBusiness (NailSalon) + makesOffer[Offer]</td></tr>
+  <tr><td><b>③ Một deal</b></td><td><code>nexora.link/c/k4-giam-20-gel-x-lan-dau</code></td><td><span class="tag warn">index khi còn hạn</span></td><td>Hết hạn: vẫn 200, hiện “đã hết hạn” + deal khác; sau 30 ngày → <code>noindex</code>; xoá hẳn → 410</td><td>Offer (thuộc LocalBusiness), validThrough, areaServed</td></tr>
+  <tr><td><b>④ Sắp khai trương</b></td><td><code>nexora.link/open/kayla-katy</code></td><td><span class="tag ok">index</span></td><td>Tới ngày mở + 30 → chuyển 301 về trang tiệm</td><td>Event (ngày khai trương) + LocalBusiness</td></tr>
+  <tr><td>Liên kết theo kênh</td><td><code>…?c=fb</code>, <code>?c=amb</code></td><td><span class="tag gray">canonical về URL gốc</span></td><td>—</td><td>—</td></tr>
+  <tr><td>Ví coupon, lấy coupon, Deal Match mong muốn của khách, máy check-in, POS</td><td>app / sau đăng nhập</td><td><span class="tag bad">noindex · không vào sitemap</span></td><td>—</td><td>—</td></tr>
+  </tbody></table></div>
+ <div class="card" id="cReq"><h3>✅ Bắt buộc để Google đọc được</h3>
+  <table class="t"><tbody>
+  <tr><td><b>Render sẵn trên server</b> (SSR/SSG)</td><td>HTML đầu tiên đã có tên deal, giá, điều kiện, hạn, địa chỉ. Không để nội dung chỉ xuất hiện sau khi JS chạy.</td></tr>
+  <tr><td><b>Title & description riêng</b></td><td>Title: <i>Giảm 20% Gel-X lần đầu — Kayla Nails & Spa, Katy TX</i> (≤ 60 ký tự). Description: điều kiện + hạn + “lấy bằng SĐT”.</td></tr>
+  <tr><td><b>Nội dung thật, không mỏng</b></td><td>Mỗi hub có đoạn giới thiệu riêng theo thành phố/ngành, danh sách deal, tiệm, câu hỏi thường gặp dạng text. Tránh 3.405 trang thành phố gần như giống nhau — <b>chỉ tạo hub khi có ≥ 1 deal thật</b>, còn không thì <code>noindex</code>.</td></tr>
+  <tr><td><b>Song ngữ</b></td><td><code>/vi/</code> và <code>/en/</code> + <code>hreflang</code>; khách Việt gõ tiếng Việt vẫn ra trang tiếng Việt.</td></tr>
+  <tr><td><b>Sitemap</b></td><td>Tách: hub, tiệm, deal (cập nhật <code>lastmod</code> khi đổi), khai trương. Deal hết hạn quá 30 ngày rời sitemap.</td></tr>
+  <tr><td><b>Tốc độ & điện thoại</b></td><td>Ảnh banner nén (WebP), không nhúng dữ liệu địa lý toàn cầu như bản mẫu.</td></tr>
+  <tr><td><b>Liên kết nội bộ</b></td><td>Deal → tiệm → hub → hub lân cận (Sugar Land, Cypress). Trang tiệm liên kết Google Business Profile của tiệm.</td></tr>
+  <tr><td><b>Giá & hạn phải khớp</b></td><td>Số trên trang, trong JSON-LD và ở quầy phải giống nhau; hết suất/hết hạn phải cập nhật ngay (<code>availability</code>).</td></tr>
+  </tbody></table></div>
+ <div class="card" id="cLd"><h3>🧾 Dữ liệu có cấu trúc (JSON-LD) — trang ③ một deal</h3><pre class="code" id="ld"></pre>
+  <p class="muted" style="margin-top:8px">[Likely] Google không có kết quả riêng kiểu “coupon”; Offer được hiểu qua LocalBusiness. Product/Offer (merchant listings) chỉ dùng cho <b>tiệm bán sản phẩm</b> (nail supply). FAQ rich results đã ngừng hiện từ 7/5/2026 — vẫn nên có mục hỏi đáp dạng text vì AI Overviews / ChatGPT đọc được, nhưng đừng mong nó hiện thành ô hỏi đáp trên Google.</p></div>
+ <div class="card" id="cRisk"><h3>⚠️ Rủi ro</h3>
+  <table class="t"><tbody>
+  <tr><td><b>Trang mỏng hàng loạt</b></td><td>Sinh tự động trang cho mọi ngành × mọi thành phố = hàng trăm nghìn trang trống → Google đánh giá thấp cả tên miền.</td></tr>
+  <tr><td><b>Deal chết</b></td><td>Deal sống vài ngày; không xử lý hết hạn → đầy trang lỗi, khách bấm từ Google thấy deal không dùng được.</td></tr>
+  <tr><td><b>Ăn thịt lẫn nhau</b></td><td>Trang tiệm trên NEXORA cạnh tranh với website riêng của tiệm cho cùng từ khoá tên tiệm. Trang tiệm nên liên kết về website/GBP của tiệm, không thay thế.</td></tr>
+  <tr><td><b>Ngành y tế / pháp lý</b></td><td>Deal nha khoa, med spa, luật cần câu chữ tuân thủ trước khi public (đã có luồng duyệt trong Template Library).</td></tr>
+  <tr><td><b>Tên miền</b></td><td>Deal ở <code>nexora.link</code> (link ngắn) hay <code>nexora.deals</code>/<code>nexoratouch.com/deals</code> — anh chọn một tên miền chính cho SEO; link ngắn chỉ redirect 301.</td></tr>
+  </tbody></table></div>
+</section>
+</main>
+<div class="wn" id="wn"><div class="bx"><div style="font-size:12px;font-weight:800;color:var(--p1)">SEO · Deal & Coupon</div><h2 style="font-size:20px;margin:6px 0 8px">Deal lên Google trông như thế nào</h2><ul><li><b>Google thấy gì:</b> kết quả tìm kiếm mô phỏng cho 4 kiểu khách tìm.</li><li><b>Khách bấm vào thấy gì:</b> 4 loại trang công khai trên điện thoại, kèm chú thích SEO từng phần.</li><li><b>Dev cần làm gì:</b> URL, index/noindex, JSON-LD, vòng đời deal hết hạn, rủi ro.</li></ul><div style="display:flex;gap:8px;margin-top:12px"><button class="btn" style="background:var(--grad)" id="wnGo">✦ Xem AI Tour</button><button class="btn" style="background:#fff;color:var(--ink);border:1px solid var(--line)" id="wnX">Tự xem</button></div></div></div>
+<div class="stour hidden" id="tb"><div class="hd">✦ AI SMART TOUR <span id="tStep"></span><span class="sp"></span><button id="tPause">⏸</button><button id="tNext">⏭</button><button id="tClose">✕</button></div><div id="tVi"></div><div id="tEn"></div><div class="bar2"><i id="tBar"></i></div></div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const SITE=(n,u)=>`<div class="site"><div class="fav">N</div><div>${n}<small>${u}</small></div></div>`;
+const Q=[
+ {q:'nail deals katy tx',h:`<div class="lp"><div class="map"><i style="left:30%;top:40%"></i><i style="left:55%;top:30%"></i><i style="left:70%;top:60%"></i></div><div class="row"><b>Kayla Nails & Spa</b><br>4.8 <span class="stars">★★★★★</span> (212) · Tiệm nail · Katy, TX<br><span style="color:#188038">Đang mở</span> · Ưu đãi: Giảm 20% Gel-X lần đầu</div><div class="row"><b>Katy Nail Lounge</b><br>4.6 <span class="stars">★★★★☆</span> (98) · Tiệm nail</div></div>
+  <div class="res"><span class="num">1</span>${SITE('NEXORA Deals','nexora.deals › us › tx › katy › nail')}<h3>12 ưu đãi tiệm nail ở Katy, TX — cập nhật hôm nay | NEXORA</h3><p>Pedicure từ $32, Gel-X giảm 20% lần đầu, giờ vàng T2–T4… Lấy coupon bằng số điện thoại, dùng tại quầy — không cần cài app.</p></div>
+  <div class="res"><span class="num">2</span>${SITE('NEXORA Deals','nexora.link › c › giam-20-gel-x-lan-dau')}<h3>Giảm 20% Gel-X lần đầu — Kayla Nails & Spa, Katy TX</h3><p><b>Hết hạn 27/10/2026</b> · Khách mới · 1 lần/khách · Còn 86/100 suất. Nhập SĐT để giữ suất 7 ngày.</p><div class="rich"><span><b>4.8</b> <span class="stars">★★★★★</span> 212 đánh giá</span><span>9990 Katy Fwy</span></div></div>
+  <div class="res">${SITE('Yelp','yelp.com › search')}<h3>THE BEST 10 Nail Salons in Katy, TX</h3><p>Kết quả của nền tảng khác — đây là đối thủ trực tiếp trên trang kết quả.</p></div>`},
+ {q:'giảm giá làm móng houston',h:`<div class="res"><span class="num">1</span>${SITE('NEXORA Deals','nexora.deals › vi › us › tx › houston › nail')}<h3>Ưu đãi làm móng ở Houston hôm nay — 34 tiệm | NEXORA</h3><p>Sơn gel, bột, Gel-X, pedicure spa — giảm tới 30%. Bellaire, Sugar Land, Katy, Pearland. Lấy coupon bằng SĐT, chủ tiệm người Việt.</p><div class="links"><a>Bellaire</a><a>Sugar Land</a><a>Katy</a><a>Pedicure</a></div></div>
+  <div class="aio"><div class="h">✦ AI Overview (Google) — mô phỏng</div>Ở Houston có nhiều tiệm làm móng đang giảm giá, ví dụ <b>Golden Nails & Spa (Bellaire)</b> pedicure spa $38 thứ 2–4, <b>Kayla Nails & Spa (Katy)</b> giảm 20% Gel-X cho khách mới… <span style="color:#1a73e8">[nexora.deals]</span><br><span class="muted">Nội dung dạng text rõ ràng trên trang (giá, điều kiện, hạn, địa chỉ) là thứ AI trích dẫn.</span></div>`},
+ {q:'kayla nails katy',h:`<div class="res">${SITE('Kayla Nails & Spa','kaylanails.com')}<h3>Kayla Nails & Spa — Katy, TX | Đặt lịch</h3><p>Website riêng của tiệm nên đứng đầu cho tên tiệm.</p></div>
+  <div class="res"><span class="num">3</span>${SITE('NEXORA Deals','nexora.deals › biz › kayla-nails-katy')}<h3>Kayla Nails & Spa, Katy — 3 ưu đãi đang có | NEXORA</h3><p>Giảm 20% Gel-X lần đầu · Giờ vàng T2–T4 −15% · Combo tay + chân $55. Đặt lịch, lấy coupon bằng SĐT.</p><div class="rich"><span><b>4.8</b> <span class="stars">★★★★★</span> 212</span><span>Tiệm nail · 9:30–19:30</span><span>(281) 555-0123</span></div></div>`},
+ {q:'nail salon grand opening katy',h:`<div class="res"><span class="num">4</span>${SITE('NEXORA Deals','nexora.link › open › kayla-katy')}<h3>Kayla Nails & Spa khai trương 6/10 ở Katy — giữ chỗ ưu đãi người sáng lập</h3><p>Giảm 30% mọi dịch vụ cho 50 khách đầu. Giữ chỗ bằng số điện thoại, không cần app. Còn 9 ngày.</p><div class="rich"><span><b>Th 2, 6 thg 10</b> · Khai trương</span><span>Katy, TX</span></div></div>`}];
+function drawSerp(i){$$('#qsel [data-q]').forEach(b=>b.classList.toggle('on',+b.dataset.q===i));$('#serp').innerHTML=`<div class="gq"><b>G</b><span>${Q[i].q}</span>🔍</div><div class="gchips"><span class="on">Tất cả</span><span>Bản đồ</span><span>Hình ảnh</span><span>Tin tức</span></div>`+Q[i].h}
+$('#qsel').onclick=e=>{const b=e.target.closest('[data-q]');if(b)drawSerp(+b.dataset.q)};
+/* pages */
+const DC=(big,sm,t,m,bg)=>`<div class="dc"><div class="stub" style="${bg?'background:'+bg:''}">${big}<small>${sm}</small></div><div class="b"><b>${t}</b><div class="m">${m}</div><span class="cta">🎟 Lấy bằng SĐT</span></div></div>`;
+const PG={
+ hub:{u:'nexora.deals/vi/us/tx/katy/nail',h:`<div class="crumbs"><a>NEXORA Deals</a> › <a>Texas</a> › <a>Katy</a> › Nail</div><h1>12 ưu đãi tiệm nail ở Katy, TX</h1><p class="lead">Cập nhật 28/9/2026. Pedicure, Gel-X, sơn gel, bột — lấy coupon bằng số điện thoại, dùng tại quầy.</p><div class="chips" style="margin:10px 0"><span class="chip on">Tất cả</span><span class="chip">Pedicure</span><span class="chip">Gel-X</span><span class="chip">Giờ vàng</span><span class="chip">Khai trương</span></div>${DC('-20%','giảm','Giảm 20% Gel-X lần đầu','Kayla Nails & Spa · 0.6 mi · tới 27/10 · còn 86 suất')}${DC('$32','pedi','Pedicure $32 mọi ngày','Katy Nail Lounge · 1.4 mi · tới 8/10','linear-gradient(135deg,#059669,#0EA5E9)')}${DC('-15%','T2–T4','Giờ vàng 10h–14h','Kayla Nails & Spa · tới 31/10','linear-gradient(135deg,#B45309,#F59E0B)')}<h2>Tiệm nail ở Katy có ưu đãi</h2><p class="lead">Kayla Nails & Spa · Katy Nail Lounge · Lux Nail Bar…</p><h2>Hỏi nhanh</h2><p class="lead"><b>Có cần cài app không?</b> Không — nhập số điện thoại là giữ suất.<br><b>Coupon dùng thế nào?</b> Tới tiệm, nhập SĐT ở máy check-in, ưu đãi tự áp.</p><h2>Gần Katy</h2><div class="chips"><span class="chip">Sugar Land</span><span class="chip">Cypress</span><span class="chip">Houston</span><span class="chip">Fulshear</span></div>`,
+  a:[['H1 + đoạn mở đầu riêng cho Katy × Nail','Nội dung thật theo thành phố và ngành; ngày cập nhật hiển thị. Đây là thứ Google chấm “không mỏng”.'],['Danh sách deal (ItemList)','Mỗi thẻ là link tới trang deal ③. Hết hạn thì tự rơi khỏi danh sách; hub không bao giờ trống — nếu không còn deal nào, hub chuyển noindex.'],['Hỏi nhanh (text)','Không còn hiện thành ô FAQ trên Google (ngừng 5/2026), nhưng AI Overviews / ChatGPT đọc được.'],['Liên kết thành phố lân cận','Giúp Google hiểu vùng phủ và giữ khách ở lại mạng lưới.']]},
+ biz:{u:'nexora.deals/vi/biz/kayla-nails-katy',h:`<div class="crumbs"><a>Katy</a> › <a>Nail</a> › Kayla Nails & Spa</div><h1>Kayla Nails & Spa — Katy, TX</h1><p class="lead">⭐ 4.8 (212 đánh giá Google) · 9990 Katy Fwy · 9:30–19:30 · (281) 555-0123</p><div class="chips" style="margin:10px 0"><span class="chip on">📅 Đặt lịch</span><span class="chip">🗺 Chỉ đường</span><span class="chip">🌐 Website tiệm</span></div><h2>3 ưu đãi đang có</h2>${DC('-20%','giảm','Giảm 20% Gel-X lần đầu','Khách mới · tới 27/10 · còn 86 suất')}${DC('-15%','T2–T4','Giờ vàng 10h–14h','Mọi khách · tới 31/10','linear-gradient(135deg,#B45309,#F59E0B)')}${DC('$55','combo','Combo tay + chân gel','Mọi khách · tới 15/11','linear-gradient(135deg,#059669,#0EA5E9)')}<h2>Dịch vụ</h2><p class="lead">Gel-X · Pedicure spa · Dip powder · Nail art · Manicure</p><h2>Giờ mở cửa</h2><p class="lead">T2–T7 9:30–19:30 · CN 11:00–17:00</p>`,
+  a:[['Trang mạnh nhất về SEO','URL ổn định, tên tiệm + thành phố; dữ liệu LocalBusiness (NailSalon) + danh sách Offer đang chạy.'],['Nút website & Google Business','Liên kết về website/GBP của tiệm — không tranh từ khoá tên tiệm với chính tiệm.'],['Thông tin NAP khớp','Tên – địa chỉ – SĐT phải giống hệt Google Business Profile.']]},
+ deal:{u:'nexora.link/c/k4-giam-20-gel-x-lan-dau',h:`<div class="crumbs"><a>Katy</a> › <a>Kayla Nails & Spa</a> › Ưu đãi</div><h1>Giảm 20% Gel-X lần đầu — Kayla Nails & Spa, Katy</h1><div class="hero"><small>KHÁCH MỚI</small><div class="big">20% OFF</div><small>Gel-X · tới 27/10/2026</small></div><a class="claim">🎟 Lấy coupon bằng số điện thoại</a><div class="facts"><div><span>Áp dụng</span>Gel-X</div><div><span>Ai được dùng</span>Khách mới (lần đầu tới tiệm)</div><div><span>Giới hạn</span>1 lần / số điện thoại</div><div><span>Còn lại</span>86 / 100 suất</div><div><span>Hạn</span>27/10/2026</div><div><span>Giữ suất</span>7 ngày sau khi lấy</div><div><span>Địa chỉ</span>9990 Katy Fwy, Katy, TX</div></div><div class="note">Không cần cài app. Tới tiệm, nhập SĐT ở máy check-in — ưu đãi tự áp.</div><h2>Ưu đãi khác ở Katy</h2>${DC('$32','pedi','Pedicure $32 mọi ngày','Katy Nail Lounge · 1.4 mi','linear-gradient(135deg,#059669,#0EA5E9)')}`,
+  a:[['Title chuẩn','Ưu đãi — Tên tiệm, Thành phố. Mô tả = điều kiện + hạn + “lấy bằng SĐT”.'],['Bảng điều kiện dạng text','Giá, đối tượng, giới hạn, hạn, địa chỉ nằm trong HTML đầu tiên (render server) và khớp JSON-LD Offer (validThrough, availability).'],['Nút lấy coupon','Mở luồng SĐT — trang luồng này là noindex.'],['Liên kết ?c=','Link từ Facebook/SMS mang ?c=fb… nhưng canonical về URL gốc để không bị trùng lặp.']]},
+ exp:{u:'nexora.link/c/k3-fall-color-collection',h:`<div class="crumbs"><a>Katy</a> › <a>Kayla Nails & Spa</a> › Ưu đãi</div><h1>Fall Color Collection −$5 — Kayla Nails & Spa</h1><div class="expired">⌛ <b>Ưu đãi này đã hết hạn ngày 31/10/2026.</b> Tiệm đang có 2 ưu đãi khác 👇</div>${DC('-15%','T2–T4','Giờ vàng 10h–14h','Kayla Nails & Spa · tới 31/12','linear-gradient(135deg,#B45309,#F59E0B)')}${DC('$55','combo','Combo tay + chân gel','Kayla Nails & Spa · tới 15/11','linear-gradient(135deg,#059669,#0EA5E9)')}`,
+  a:[['Không trả lỗi 404 ngay','Khách từ Google vẫn thấy trang (200), biết deal đã hết và có lựa chọn khác — không mất khách.'],['availability = Discontinued','JSON-LD cập nhật ngay khi hết hạn / hết suất.'],['Sau 30 ngày: noindex, rời sitemap','Tránh Google giữ hàng nghìn trang chết. Xoá hẳn chương trình ⇒ 410.']]},
+ open:{u:'nexora.link/open/kayla-katy',h:`<div class="crumbs"><a>Katy</a> › <a>Nail</a> › Sắp khai trương</div><h1>Kayla Nails & Spa khai trương Thứ Hai 6/10 — Katy, TX</h1><div class="hero" style="background:linear-gradient(135deg,#B45309,#F59E0B)"><small>🎊 NGƯỜI SÁNG LẬP · 50 SUẤT</small><div class="big">−30%</div><small>mọi dịch vụ · còn 9 ngày · 47 người đã giữ chỗ</small></div><a class="claim">📲 Giữ chỗ bằng số điện thoại</a><div class="note">Trước ngày mở chỉ giữ chỗ, không phát mã. Ngày khai trương nhập SĐT ở quầy là nhận ưu đãi.</div><h2>Tuần khai trương</h2><p class="lead">Giảm 20% mọi dịch vụ 6–12/10 · Lì xì $15 khi giới thiệu bạn.</p>`,
+  a:[['Event: ngày khai trương','Dữ liệu Event (startDate 2026-10-06, location) — đủ điều kiện hiện ngày trên Google.'],['Hết cửa sổ khai trương','Ngày mở + 30 ⇒ 301 về trang tiệm ②, giữ lại sức mạnh liên kết.'],['Số người giữ chỗ là số thật','Không hiển thị số ảo — vừa là yêu cầu trung thực, vừa tránh bị báo cáo.']]}};
+let CP='hub';
+function drawPage(k){CP=k;$$('#psel [data-p]').forEach(b=>b.classList.toggle('on',b.dataset.p===k));const p=PG[k];$('#scr').innerHTML=`<div class="url">🔒 ${p.u}</div><div class="ph">${p.h}</div>`;$('#scr').scrollTop=0;
+ $('#ann').innerHTML=`<div class="card ann"><h3>Google đọc trang này thế nào</h3><div class="muted" style="margin-bottom:8px">URL: <code>${p.u}</code></div>${p.a.map((x,i)=>`<div style="margin:10px 0"><h3 style="font-size:13.5px"><span class="n">${i+1}</span>${x[0]}</h3><div class="muted" style="margin-left:30px">${x[1]}</div></div>`).join('')}</div>`}
+$('#psel').onclick=e=>{const b=e.target.closest('[data-p]');if(b)drawPage(b.dataset.p)};
+$('#ld').textContent=JSON.stringify({"@context":"https://schema.org","@type":"NailSalon","@id":"https://nexora.deals/biz/kayla-nails-katy#biz","name":"Kayla Nails & Spa","address":{"@type":"PostalAddress","streetAddress":"9990 Katy Fwy","addressLocality":"Katy","addressRegion":"TX","addressCountry":"US"},"telephone":"+1-281-555-0123","url":"https://nexora.deals/biz/kayla-nails-katy","sameAs":["https://kaylanails.com"],"makesOffer":{"@type":"Offer","name":"Giảm 20% Gel-X lần đầu","url":"https://nexora.link/c/k4-giam-20-gel-x-lan-dau","description":"Khách mới · 1 lần/số điện thoại · lấy bằng SĐT, dùng tại quầy","itemOffered":{"@type":"Service","name":"Gel-X"},"eligibleCustomerType":"Khách mới","validFrom":"2026-09-27","validThrough":"2026-10-27T23:59:00-05:00","availability":"https://schema.org/InStock","inventoryLevel":{"@type":"QuantitativeValue","value":86},"areaServed":"Katy, TX"}},null,2);
+function go(v){$$('#tabs button').forEach(b=>b.classList.toggle('on',b.dataset.v===v));$$('section[data-v]').forEach(s=>s.classList.toggle('on',s.dataset.v===v));window.scrollTo({top:0})}
+$('#tabs').onclick=e=>{const b=e.target.closest('[data-v]');if(b)go(b.dataset.v)};
+/* tour */
+const TOUR=[
+ {v:'serp',sel:'#truth',vi:'Sự thật trước: Deal & Coupon hiện là app một trang — Google gần như không thấy. Muốn lên Google phải có trang công khai render sẵn trên server, mỗi trang một URL.',en:'Truth first: today’s Deal & Coupon is a single-page app — Google barely sees it. SEO needs server-rendered public pages, one URL each.'},
+ {v:'serp',sel:'#serp',vi:'Khách tìm “nail deals katy tx”: trang ngành × thành phố của NEXORA đứng cạnh Google Maps và Yelp; trang deal riêng hiện hạn, số suất, sao.',en:'“nail deals katy tx”: NEXORA’s city × industry hub sits beside Maps and Yelp; the deal page shows expiry, slots, stars.',do:()=>drawSerp(0)},
+ {v:'serp',sel:'#serp',vi:'Khách Việt gõ tiếng Việt: trang /vi/ riêng. AI Overview của Google trích giá, điều kiện, địa chỉ từ phần chữ trên trang.',en:'Vietnamese query: dedicated /vi/ page. Google’s AI Overview quotes prices, terms, addresses from page text.',do:()=>drawSerp(1)},
+ {v:'serp',sel:'#serp',vi:'Tìm tên tiệm: website của tiệm nên đứng đầu; trang tiệm trên NEXORA đứng sau và liên kết về — không giành từ khoá với chính tiệm.',en:'Brand query: the salon’s own site should lead; the NEXORA page follows and links back.',do:()=>drawSerp(2)},
+ {v:'serp',sel:'#serp',vi:'Khai trương: trang Sắp khai trương có dữ liệu Event nên có thể hiện ngày mở ngay trên kết quả.',en:'Grand opening: the Coming Soon page with Event data can show the opening date in results.',do:()=>drawSerp(3)},
+ {v:'page',sel:'#phone',vi:'Khách bấm vào trang ngành × thành phố: đoạn mở đầu riêng, danh sách deal, hỏi nhanh, thành phố lân cận.',en:'Hub page: unique intro, deal list, quick Q&A, nearby cities.',do:()=>drawPage('hub')},
+ {v:'page',sel:'#phone',vi:'Trang một deal: điều kiện dạng chữ khớp với JSON-LD; nút lấy bằng SĐT dẫn vào luồng không index.',en:'Deal page: terms in text matching JSON-LD; the phone-claim button leads to a noindex flow.',do:()=>drawPage('deal')},
+ {v:'page',sel:'#phone',vi:'Deal hết hạn không trả lỗi: báo đã hết và đưa deal khác của tiệm; sau 30 ngày mới noindex.',en:'Expired deal: no error — says it ended and shows the salon’s other deals; noindex after 30 days.',do:()=>drawPage('exp')},
+ {v:'dev',sel:'#cUrl',vi:'Cho dev: URL nào được index, URL nào không; vòng đời trang deal; ?c= luôn canonical về URL gốc.',en:'For dev: what gets indexed; deal page lifecycle; ?c= canonicalises to the base URL.'},
+ {v:'dev',sel:'#cRisk',vi:'Rủi ro lớn nhất: sinh hàng loạt trang thành phố trống. Chỉ tạo hub khi có ít nhất một deal thật.',en:'Biggest risk: mass empty city pages. Only publish a hub when it has a real deal.'},
+];
+let ti=0,tRun=false,tPaused=false,tStart=0,raf,DUR=9000;
+function spot(el){$$('.spot').forEach(x=>x.classList.remove('spot'));if(el){el.classList.add('spot');el.scrollIntoView({behavior:'smooth',block:'center'})}}
+function showStep(){const s=TOUR[ti];go(s.v);s.do&&s.do();setTimeout(()=>spot($(s.sel)),300);$('#tVi').textContent=s.vi;$('#tEn').textContent=s.en;$('#tStep').textContent=`${ti+1}/${TOUR.length}`;tStart=performance.now();$('#tBar').dataset.p=0;loop()}
+function loop(){cancelAnimationFrame(raf);const f=t=>{if(!tRun)return;const bar=$('#tBar');if(tPaused){tStart=t-(+bar.dataset.p)*DUR;raf=requestAnimationFrame(f);return}const p=Math.min(1,(t-tStart)/DUR);bar.style.width=p*100+'%';bar.dataset.p=p;if(p>=1)return nextStep();raf=requestAnimationFrame(f)};raf=requestAnimationFrame(f)}
+function nextStep(){ti=(ti+1)%TOUR.length;showStep()}
+function startTour(){$('#wn').classList.add('hidden');tRun=true;tPaused=false;ti=0;$('#tPause').textContent='⏸';$('#tb').classList.remove('hidden');showStep()}
+function stopTour(){if(!tRun)return;tRun=false;cancelAnimationFrame(raf);$('#tb').classList.add('hidden');spot(null)}
+$('#tPause').onclick=()=>{tPaused=!tPaused;$('#tPause').textContent=tPaused?'▶':'⏸'};$('#tNext').onclick=nextStep;$('#tClose').onclick=stopTour;$('#tourBtn').onclick=startTour;$('#wnGo').onclick=startTour;$('#wnX').onclick=()=>$('#wn').classList.add('hidden');
+['touchstart','wheel','keydown','mousedown'].forEach(ev=>window.addEventListener(ev,e=>{if(tRun&&e.isTrusted&&!e.target.closest('.stour'))stopTour()},{passive:true}));
+drawSerp(0);drawPage('hub');setTimeout(()=>{if(!$('#wn').classList.contains('hidden'))startTour()},7000);
+</script>
+</body>
+</html>

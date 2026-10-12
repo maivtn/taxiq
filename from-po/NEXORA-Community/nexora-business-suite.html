@@ -1,0 +1,264 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>NEXORA Business Suite — bật/tắt module</title>
+<style>
+:root{--ink:#0B1220;--mute:#5B6B82;--line:#E2E8F0;--page:#F5F7FB;--side:#0F1B3D;--teal:#0F766E;--tealbg:#F0FDFA;--ind:#4F46E5;--indbg:#EEF2FF;--ok:#166534;--okbg:#DCFCE7;--warn:#92400E;--warnbg:#FEF3C7;--off:#94A3B8;--offbg:#F1F5F9}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--page);color:var(--ink);font-size:14px;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+.app{display:grid;grid-template-columns:250px minmax(0,1fr);min-height:100vh}
+aside{background:var(--side);color:#C7D2FE;padding:14px 12px;position:sticky;top:0;height:100vh;overflow:auto}
+.biz{display:flex;gap:10px;align-items:center;background:#16244F;border-radius:12px;padding:10px;margin-bottom:12px;color:#fff;font-weight:800}
+.biz i{width:32px;height:32px;border-radius:9px;background:#F59E0B;display:grid;place-items:center;font-style:normal;color:#111;font-weight:900}
+.biz small{display:block;font-weight:600;color:#A5B4FC;font-size:11px}
+.mg{font-size:10.5px;font-weight:800;letter-spacing:.08em;color:#7C8DB5;margin:14px 8px 6px;text-transform:uppercase;display:flex;justify-content:space-between}
+.mi{display:flex;align-items:center;gap:9px;padding:8px 10px;border-radius:10px;font-weight:700;font-size:13.5px;color:#C7D2FE;width:100%;text-align:left;transition:background .15s}
+.mi:hover{background:#1E2B5C}.mi.on{background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff}
+.mi .dot{width:22px;height:22px;border-radius:7px;display:grid;place-items:center;font-size:10px;font-weight:900;color:#fff;flex:0 0 22px}
+.mi.new{animation:pop .9s ease}
+@keyframes pop{0%{background:#22C55E55}100%{background:transparent}}
+main{padding:18px 22px 110px;max-width:1180px;width:100%}
+.top{display:flex;gap:12px;align-items:flex-start;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+.top h1{font-size:24px}.top p{color:var(--mute);margin-top:4px;font-size:13.5px;max-width:640px}
+.tb{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.btn{border:1px solid var(--line);background:#fff;border-radius:10px;padding:8px 12px;font-weight:700;font-size:13px}
+.btn.pri{background:var(--teal);border-color:var(--teal);color:#fff}
+.btn.sm{padding:6px 10px;font-size:12px}
+.lang{display:flex;border:1px solid var(--line);border-radius:999px;padding:3px;background:#fff}.lang button{padding:4px 10px;border-radius:999px;font-weight:800;font-size:12px;color:var(--mute)}.lang button.on{background:var(--teal);color:#fff}
+.tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:14px}.tabs button{border:1px solid var(--line);background:#fff;border-radius:999px;padding:8px 14px;font-weight:800;font-size:13.5px}.tabs button.on{background:var(--teal);border-color:var(--teal);color:#fff}
+.panel{background:#fff;border:1px solid var(--line);border-radius:16px;margin-bottom:16px;overflow:hidden}
+.ph{padding:14px 16px;border-bottom:1px solid var(--line);display:flex;justify-content:space-between;gap:12px;align-items:center;flex-wrap:wrap}
+.ph h2{font-size:17px}.ph p{font-size:13px;color:var(--mute);margin-top:3px}
+.pb{padding:14px 16px}
+.acct{display:flex;gap:10px;flex-wrap:wrap;align-items:center;font-size:13px;background:var(--indbg);border:1px solid #C7D2FE;border-radius:12px;padding:10px 12px;margin-bottom:14px;color:#3730A3}
+.acct b{color:#1E1B4B}
+.core{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:8px}
+.cc{border:1px solid var(--line);border-radius:12px;padding:10px 12px;background:#F8FAFC}
+.cc b{display:block;font-size:13px}.cc small{font-size:11.5px;color:var(--mute)}
+.cc.bn{background:var(--tealbg);border-color:#99F6E4}
+.lock{font-size:10.5px;font-weight:800;border-radius:999px;padding:2px 8px;background:#E2E8F0;color:#334155;white-space:nowrap}
+.lock.t{background:#CCFBF1;color:#115E59}
+.mods{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:12px}
+.mc{border:1.5px solid var(--line);border-radius:16px;padding:14px;display:grid;gap:10px;background:#fff;transition:.2s}
+.mc.on{border-color:#0F766E;box-shadow:0 0 0 3px #CCFBF1}
+.mch{display:flex;gap:10px;align-items:flex-start}
+.ic{width:40px;height:40px;border-radius:12px;display:grid;place-items:center;color:#fff;font-weight:900;font-size:13px;flex:0 0 40px}
+.mch div{flex:1;min-width:0}.mch b{font-size:15px;display:block}.mch small{font-size:12px;color:var(--mute)}
+.sw{position:relative;width:46px;height:26px;border-radius:999px;background:#CBD5E1;flex:0 0 46px;transition:.2s}
+.sw:after{content:"";position:absolute;left:3px;top:3px;width:20px;height:20px;border-radius:50%;background:#fff;transition:.2s;box-shadow:0 1px 3px rgba(0,0,0,.25)}
+.sw.on{background:var(--teal)}.sw.on:after{left:23px}
+.tags{display:flex;gap:6px;flex-wrap:wrap}.tg{font-size:11.5px;font-weight:700;border-radius:999px;padding:3px 9px;background:#F1F5F9;color:#334155}
+.tg.ok{background:var(--okbg);color:var(--ok)}.tg.w{background:var(--warnbg);color:var(--warn)}.tg.i{background:var(--indbg);color:#3730A3}
+.mc ul{list-style:none;display:grid;gap:4px;font-size:12.5px;color:#334155}.mc li{display:flex;gap:6px}.mc li:before{content:"•";color:var(--off)}
+.fb{font-size:12px;color:var(--mute);border-top:1px dashed var(--line);padding-top:8px}
+.fb b{color:#334155}
+.run{font-size:12px;background:var(--warnbg);color:var(--warn);border-radius:10px;padding:7px 10px}
+.flows{display:grid;gap:10px}
+.fl{border:1px solid var(--line);border-radius:14px;padding:12px 14px;display:grid;gap:8px}
+.fl h3{font-size:14px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.steps{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
+.st{border-radius:10px;padding:6px 10px;font-size:12.5px;font-weight:600;background:#F8FAFC;border:1px solid var(--line)}
+.st.m{background:var(--tealbg);border-color:#99F6E4;color:#115E59}
+.st.x{background:var(--offbg);color:var(--off);text-decoration:line-through;border-style:dashed}
+.st.f{background:var(--warnbg);border-color:#FDE68A;color:var(--warn)}
+.arr{color:var(--off);font-weight:900}
+.sim{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px}
+.ev{border:1px solid var(--line);border-radius:14px;overflow:hidden}
+.evh{background:#0F172A;color:#E2E8F0;padding:10px 12px;font-family:ui-monospace,Menlo,monospace;font-size:12.5px;display:flex;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.evr{display:grid;grid-template-columns:170px minmax(0,1fr) auto;gap:10px;padding:9px 12px;border-top:1px solid #F1F5F9;align-items:center;font-size:13px}
+.evr b{font-size:13px}.evr.skip{color:var(--off)}.evr.skip b{color:var(--off)}
+.log{max-height:260px;overflow:auto;font-family:ui-monospace,Menlo,monospace;font-size:12px;background:#0B1220;color:#A7F3D0;border-radius:12px;padding:10px 12px;line-height:1.6;margin-top:12px}
+.log .d{color:#64748B}.log .s{color:#94A3B8}
+.pk{display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:10px}
+.pc{border:1.5px solid var(--line);border-radius:14px;padding:12px;display:grid;gap:8px;text-align:left;background:#fff}
+.pc.on{border-color:var(--ind);box-shadow:0 0 0 3px #E0E7FF}
+.pc b{font-size:14.5px}.pc small{font-size:12px;color:var(--mute)}
+.pr{font-size:12px;font-weight:800;color:var(--warn);background:var(--warnbg);border-radius:8px;padding:4px 8px;justify-self:start}
+table{width:100%;border-collapse:collapse;font-size:12.5px}th{text-align:left;font-size:11px;letter-spacing:.04em;text-transform:uppercase;color:var(--mute);padding:8px 10px;background:#F8FAFC;border-bottom:1px solid var(--line);white-space:nowrap}td{padding:8px 10px;border-bottom:1px solid #F1F5F9;vertical-align:top}
+.tw{overflow-x:auto;border:1px solid var(--line);border-radius:12px}
+pre{background:#0B1220;color:#E2E8F0;border-radius:12px;padding:12px;font-size:12px;overflow:auto;line-height:1.5}
+.rules{display:grid;gap:8px;counter-reset:r}.rules li{list-style:none;counter-increment:r;display:grid;grid-template-columns:28px 1fr;gap:8px;font-size:13px;line-height:1.5}.rules li:before{content:counter(r);width:24px;height:24px;border-radius:8px;background:var(--indbg);color:#3730A3;font-weight:900;display:grid;place-items:center;font-size:12px}
+.dash{display:grid;grid-template-columns:repeat(auto-fill,minmax(180px,1fr));gap:10px}
+.wd{border:1px solid var(--line);border-radius:14px;padding:12px;background:#fff;min-height:84px}
+.wd small{font-size:11px;font-weight:800;color:var(--mute);text-transform:uppercase;letter-spacing:.05em}.wd b{display:block;font-size:15px;margin-top:6px}.wd span{font-size:12px;color:var(--mute)}
+.wd.up{border-style:dashed;background:#FAFBFF}.wd.up b{color:#4338CA}
+.modal{position:fixed;inset:0;background:rgba(15,23,42,.5);display:none;place-items:center;z-index:60;padding:12px}.modal.on{display:grid}
+.mbox{background:#fff;border-radius:20px;width:min(560px,100%);max-height:calc(100vh - 24px);overflow:auto;padding:18px;display:grid;gap:12px}
+.mbox h3{font-size:17px}.mbox p{font-size:13px;color:#334155;line-height:1.5}
+.mbox .li{display:grid;gap:6px}.mbox .li div{border:1px solid var(--line);border-radius:12px;padding:9px 11px;font-size:13px}
+.mbox .li div small{display:block;color:var(--mute);font-size:12px}
+.mf{display:flex;gap:8px;justify-content:flex-end;flex-wrap:wrap}
+.note{font-size:12px;color:var(--mute);margin-top:10px}
+.hide{display:none!important}
+.spot{outline:3px solid #7C3AED;outline-offset:4px;border-radius:14px;transition:outline .2s}
+.stour{position:fixed;left:50%;bottom:16px;transform:translateX(-50%);width:min(640px,calc(100vw - 24px));background:#0F172A;color:#fff;border-radius:16px;padding:12px 14px;z-index:80;box-shadow:0 20px 50px -10px rgba(0,0,0,.5)}
+.stour .hd{display:flex;align-items:center;gap:8px;font-weight:900;font-size:12px;letter-spacing:.06em;color:#C4B5FD}.stour .hd .sp{flex:1}.stour .hd button{background:#1E293B;color:#fff;border-radius:8px;width:30px;height:28px}
+#tVi{margin-top:6px;font-size:14px;line-height:1.45}#tEn{margin-top:3px;font-size:12px;color:#94A3B8;line-height:1.4}
+.stour .bar{height:3px;background:#1E293B;border-radius:3px;margin-top:8px;overflow:hidden}.stour .bar i{display:block;height:100%;width:0;background:#A78BFA}
+.wn{position:fixed;inset:0;background:rgba(15,23,42,.55);display:grid;place-items:center;z-index:90;padding:12px}.wn .bx{background:#fff;border-radius:20px;padding:20px;width:min(560px,100%);max-height:calc(100vh - 24px);overflow:auto}
+.wn ul{margin:8px 0 0 18px;display:grid;gap:6px;font-size:13.5px;line-height:1.5}
+@media(max-width:860px){.app{grid-template-columns:minmax(0,1fr)}aside{position:static;height:auto;display:flex;gap:6px;overflow-x:auto;padding:10px}aside .biz,aside .mg{display:none}#menu{display:flex;gap:6px}.mi{white-space:nowrap;width:auto}main{padding:14px 14px 130px}.evr{grid-template-columns:1fr}.top h1{font-size:20px}}
+</style>
+</head>
+<body>
+<div class="app">
+ <aside><div class="biz"><i>B</i><div>Bitcoin Nail Bar<small id="acctSub"></small></div></div><div id="menu"></div></aside>
+ <main>
+  <div class="top"><div><div style="font-size:12px;color:var(--mute);font-weight:700" id="crumb"></div><h1 id="ttl"></h1><p id="sub"></p></div>
+   <div class="tb"><div class="lang"><button data-lang="vi" class="on">VI</button><button data-lang="en">EN</button></div><button class="btn" id="tourBtn">✦ AI Tour</button></div></div>
+  <div class="tabs" id="tabs"></div>
+  <section data-v="apps"><div id="acct" class="acct"></div>
+   <div class="panel" id="pCore"><div class="ph"><div><h2 data-t="coreT"></h2><p data-t="coreS"></p></div><span class="lock" data-t="always"></span></div><div class="pb"><div class="core" id="core"></div></div></div>
+   <div class="panel" id="pMods"><div class="ph"><div><h2 data-t="modT"></h2><p data-t="modS"></p></div><span class="tg i" id="onCount"></span></div><div class="pb"><div class="mods" id="mods"></div></div></div>
+   <div class="panel" id="pDash"><div class="ph"><div><h2 data-t="dashT"></h2><p data-t="dashS"></p></div></div><div class="pb"><div class="dash" id="dash"></div></div></div>
+  </section>
+  <section data-v="flows" class="hide"><div class="panel"><div class="ph"><div><h2 data-t="flowT"></h2><p data-t="flowS"></p></div><div class="tags" id="flowLeg"></div></div><div class="pb"><div class="flows" id="flows"></div></div></div></section>
+  <section data-v="events" class="hide"><div class="panel"><div class="ph"><div><h2 data-t="evT"></h2><p data-t="evS"></p></div></div><div class="pb"><div class="sim" id="sim"></div><div id="evBox"></div><div class="log" id="log"></div></div></div></section>
+  <section data-v="pack" class="hide"><div class="panel"><div class="ph"><div><h2 data-t="pkT"></h2><p data-t="pkS"></p></div></div><div class="pb"><div class="pk" id="pk"></div><p class="note" data-t="pkN"></p></div></div></section>
+  <section data-v="dev" class="hide">
+   <div class="panel"><div class="ph"><div><h2 data-t="rlT"></h2><p data-t="rlS"></p></div></div><div class="pb"><ol class="rules" id="rules"></ol></div></div>
+   <div class="panel"><div class="ph"><div><h2 data-t="mxT"></h2><p data-t="mxS"></p></div></div><div class="pb"><div class="tw" id="matrix"></div></div></div>
+   <div class="panel"><div class="ph"><div><h2 data-t="mfT"></h2><p data-t="mfS"></p></div><select id="mfSel" class="btn"></select></div><div class="pb"><pre id="mf"></pre></div></div>
+  </section>
+ </main>
+</div>
+<div class="modal" id="offM"><div class="mbox" id="offBox"></div></div>
+<div class="wn" id="wn"><div class="bx"><div style="font-weight:900;color:var(--teal);font-size:12px">What's New · Business Suite</div><h2 style="font-size:20px;margin:6px 0 8px">Một bộ — bật module nào dùng module đó</h2><ul>
+ <li><b>MỚI · Ứng dụng:</b> bật/tắt POS, AI Voice, SMS, Booking, Marketing Pro, Community, Việc làm. Menu và Dashboard tự đổi theo, không cần cài lại.</li>
+ <li><b>Nền luôn có</b> + <b>OneQR, Gift Card, Ưu đãi cơ bản</b> luôn đi kèm.</li>
+ <li><b>Quyền dùng theo tài khoản:</b> bật một lần là mọi chi nhánh dùng.</li>
+ <li><b>Tắt module:</b> dữ liệu giữ nguyên, việc đang chạy chạy nốt tới hết.</li>
+ <li><b>Luồng</b> tự đổi khi tắt module; <b>Sự kiện</b> cho thấy module nào nghe; <b>Gói bán</b> để tách NEXORA POS / Voice / SMS.</li></ul>
+ <div style="display:flex;gap:8px;margin-top:14px"><button class="btn pri" id="wnGo">✦ Xem AI Tour</button><button class="btn" id="wnX">Tự xem</button></div></div></div>
+<div class="stour hide" id="tb"><div class="hd">✦ AI SMART TOUR <span id="tStep"></span><span class="sp"></span><button id="tPause">⏸</button><button id="tNext">⏭</button><button id="tClose">✕</button></div><div id="tVi"></div><div id="tEn"></div><div class="bar"><i id="tBar"></i></div></div>
+<div id="toast" style="position:fixed;left:50%;top:14px;transform:translateX(-50%);background:#0F172A;color:#fff;border-radius:12px;padding:10px 14px;font-size:13px;font-weight:700;z-index:95;display:none;max-width:calc(100vw - 24px)"></div>
+<script>
+let LANG='vi';const L=(v,e)=>LANG==='vi'?v:e;const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+function toast(m){const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(t._t);t._t=setTimeout(()=>t.style.display='none',2600)}
+/* ===== NỀN (luôn có) + đi kèm ===== */
+const CORE=[['Tài khoản & chi nhánh','Accounts & locations','vai trò, phân quyền, nhật ký','roles, permissions, audit'],['Khách hàng (CRM chung)','Customers (shared CRM)','1 hồ sơ · đồng ý SMS/push · lịch sử','one profile · consent · history'],['Dịch vụ & sản phẩm','Services & products','danh mục dùng chung mọi module','one catalog for all modules'],['Thanh toán, ví, sổ cái','Payments, wallet, ledger','payout · hoàn tiền','payouts · refunds'],['Kênh thông báo','Notification channels','App push · email · cổng SMS dùng chung','push · email · shared SMS gateway'],['Link & đo lường','Links & tracking','link có mã kênh cho mọi chiến dịch','channel-coded links'],['Kho mẫu & media','Templates & media','mẫu ngành · banner · ảnh','industry templates · assets'],['Gói & quyền dùng','Plans & entitlements','kiểm ở máy chủ, theo tài khoản','server-side, per account']];
+const BUNDLE=[['OneQR','OneQR','QR cố định của tiệm · quảng cáo chéo','permanent shop QR · cross-promo','#0EA5E9','QR'],['Gift Card','Gift Card','bán & nhận gift card','sell & redeem gift cards','#DB2777','GC'],['Ưu đãi cơ bản','Basic offers','Deal không giới hạn · hiện trên OneQR & App','unlimited Deals on OneQR & app','#0F766E','ƯĐ']];
+/* ===== MODULE (bản khai) ===== */
+const M=[
+ {id:'pos',c:'#F59E0B',ab:'POS',n:['POS','POS'],d:['Bán hàng tại quầy, check-in, tự áp ưu đãi khi tính tiền','Checkout, check-in, auto-apply offers'],menu:[['Bán hàng (POS)','Checkout'],['Check-in','Check-in'],['Nhân viên & ca','Staff & shifts']],need:[],opt:[],emit:['checkout.completed','customer.checked_in'],listen:['offer.published'],
+  fb:['Không có POS: nhân viên xác nhận ưu đãi bằng mã/PIN trên app NEXORA hoặc OneQR; thanh toán qua link/QR.','Without POS: staff confirm offers by code/PIN in the app or OneQR; pay by link/QR.'],run:null,w:[['Doanh thu hôm nay','Today’s sales','$ — (mẫu)','$ — (sample)']]},
+ {id:'voice',c:'#7C3AED',ab:'AI',n:['AI Voice','AI Voice'],d:['Lễ tân AI nghe máy 24/7, trả lời, đặt lịch','AI receptionist answers 24/7 and books'],menu:[['AI Receptionist','AI Receptionist'],['Cuộc gọi','Calls']],need:[],opt:['booking','sms'],emit:['call.answered','call.missed','call.booked'],listen:['offer.published'],
+  fb:['Không có AI Voice: cuộc gọi về số của tiệm như bình thường; Booking online vẫn nhận lịch.','Without AI Voice: calls ring the shop; online booking still works.'],run:[['Cuộc gọi đang diễn ra xong mới ngắt; lịch AI đã đặt giữ nguyên.','Live calls finish; AI-made bookings stay.']],w:[['Cuộc gọi nhỡ','Missed calls','— (mẫu)','— (sample)']]},
+ {id:'sms',c:'#0284C7',ab:'SMS',n:['SMS Campaigns (AI Hub)','SMS Campaigns (AI Hub)'],d:['Nhóm khách, chiến dịch SMS, tin tự động','Customer groups, SMS campaigns, automations'],menu:[['AI Hub › Campaigns','AI Hub › Campaigns'],['Nhóm khách','Customer groups']],need:[],opt:['booking'],emit:['message.sent'],listen:['call.missed','offer.published','booking.created'],
+  fb:['Không có SMS: chiến dịch chỉ gửi App push + email (miễn phí).','Without SMS: campaigns go by app push + email (free).'],run:[['3 tin đã hẹn giờ vẫn gửi đúng lịch (mẫu).','3 scheduled messages still send (sample).'],['Tin tự động (gọi nhỡ, sinh nhật) dừng khi tắt.','Automations stop on turn-off.']],w:[['Tin hẹn giờ','Scheduled messages','3 (mẫu)','3 (sample)']]},
+ {id:'booking',c:'#16A34A',ab:'BK',n:['Booking','Booking'],d:['Lịch hẹn, trang đặt lịch, nhắc lịch','Appointments, booking page, reminders'],menu:[['Lịch hẹn','Appointments'],['Trang đặt lịch','Booking page']],need:[],opt:['sms'],emit:['booking.created'],listen:['offer.published'],
+  fb:['Không có Booking: nút trên OneQR đổi thành “Gọi tiệm”.','Without Booking: the OneQR button becomes “Call the shop”.'],run:[['Lịch hẹn đã đặt vẫn giữ và vẫn nhắc.','Existing appointments stay and are reminded.']],w:[['Lịch hẹn hôm nay','Today’s appointments','— (mẫu)','— (sample)']]},
+ {id:'mkt',c:'#DB2777',ab:'MK',n:['Marketing Pro','Marketing Pro'],d:['Coupon có suất, landing page, Studio nội dung (mẫu/AI), chiến dịch đa kênh, Meta/Google Ads, đẩy trả phí OneQR','Limited coupons, landing pages, content studio, multichannel campaigns, ads, OneQR boost'],menu:[['Chiến dịch & Landing page','Campaigns & landing pages'],['AI Studio (banner · poster · lời đăng)','AI Studio (banners · posters · captions)']],need:[],opt:['sms','booking','pos'],emit:['campaign.launched','offer.published'],listen:['checkout.completed','booking.created','message.sent'],
+  fb:['Không có Marketing Pro: vẫn tạo Ưu đãi cơ bản (Deal không giới hạn) hiện trên OneQR + App.','Without Marketing Pro: Basic offers (unlimited Deals) still show on OneQR + app.'],run:[['2 coupon đang phát chạy tới hết suất / hết ngày (mẫu).','2 live coupons run to sell-out / end date (sample).'],['Landing page mở tới khi chương trình hết.','Landing pages stay up until the program ends.'],['Không tạo chiến dịch mới.','No new campaigns.']],w:[['Chương trình đang chạy','Running programs','5 (mẫu)','5 (sample)']]},
+ {id:'comm',c:'#EA580C',ab:'CM',n:['Community · Deal Match','Community · Deal Match'],d:['Ưu đãi lên mạng lưới NEXORA, khách đăng nhu cầu, hệ thống ghép','Offers on the NEXORA network, demand matching'],menu:[['Community','Community'],['Deal Match','Deal Match']],need:[],opt:['mkt'],emit:[],listen:['offer.published'],
+  fb:['Không có Community: ưu đãi chỉ hiện ở kênh riêng của tiệm.','Without Community: offers stay on the shop’s own channels.'],run:[['Bài đã đăng tự hết hạn theo ngày của ưu đãi.','Posts expire with the offer.']],w:[['Lượt xem mạng lưới','Network views','— (mẫu)','— (sample)']]},
+ {id:'jobs',c:'#475569',ab:'JB',n:['Việc làm','Jobs'],d:['Tuyển thợ, ca làm thêm','Hiring, extra shifts'],menu:[['Tuyển dụng','Hiring']],need:[],opt:[],emit:['job.posted'],listen:[],
+  fb:['Không có Việc làm: không ảnh hưởng module khác.','Without Jobs: no impact on others.'],run:[['Tin tuyển đang đăng chạy tới ngày hết hạn.','Open job posts run to expiry.']],w:[['Ứng viên mới','New applicants','— (mẫu)','— (sample)']]}];
+let ON={pos:true,voice:true,sms:true,booking:true,mkt:true,comm:false,jobs:false};
+const LOCS=2;
+/* ===== SỰ KIỆN ===== */
+const EV={'checkout.completed':['Thanh toán xong','Checkout completed'],'customer.checked_in':['Khách check-in','Customer checked in'],'call.answered':['AI nghe máy','Call answered'],'call.missed':['Cuộc gọi nhỡ','Missed call'],'call.booked':['AI đặt lịch','AI booked'],'message.sent':['Tin đã gửi','Message sent'],'booking.created':['Có lịch hẹn mới','Booking created'],'offer.published':['Ưu đãi mới bật','Offer published'],'campaign.launched':['Chiến dịch chạy','Campaign launched'],'job.posted':['Đăng tin tuyển','Job posted']};
+const CORE_LISTEN={'checkout.completed':[['Sổ cái + điểm thưởng','Ledger + loyalty'],['Gift Card: trừ số dư nếu trả bằng thẻ','Gift Card balance']],'offer.published':[['OneQR: hiện ưu đãi','OneQR shows it'],['App: thông báo cho khách đã theo dõi tiệm','App notifies followers']],'call.missed':[['CRM: ghi lịch sử khách','CRM history']],'booking.created':[['CRM: ghi lịch sử khách','CRM history']],'customer.checked_in':[['CRM: nhận diện khách + ưu đãi của khách','CRM: identify client + their offers']],'message.sent':[['Link & đo lường: gắn mã kênh','Tracking: channel code']]};
+const REACT={'checkout.completed':{mkt:['Đo hiệu quả chương trình (doanh thu có ưu đãi)','Measure program results'],sms:['Hẹn tin cảm ơn / mời quay lại','Queue thank-you / come-back message']},'call.missed':{sms:['Tự nhắn SMS kèm link đặt lịch','Auto-text a booking link'],voice:['Ghi nhận để AI gọi lại / báo chủ tiệm','Log for callback']},'offer.published':{pos:['Tự áp khi tính tiền','Auto-apply at checkout'],booking:['Gắn nhãn khung giờ có ưu đãi','Tag eligible slots'],voice:['AI nhắc ưu đãi khi khách gọi','AI mentions it on calls'],sms:['Gợi ý gửi cho nhóm khách','Suggest sending to a group'],comm:['Đưa lên mạng lưới (cần duyệt lần đầu)','Publish to network (first review)']},'booking.created':{sms:['Gửi tin xác nhận & nhắc lịch','Confirmation & reminder'],mkt:['Đo khách đến từ chiến dịch nào','Attribute to a campaign']}};
+const SIM=[['checkout.completed','💳',['Khách thanh toán $60','Client pays $60']],['call.missed','📞',['Có cuộc gọi nhỡ','A missed call']],['offer.published','🏷️',['Bật một ưu đãi mới','Publish a new offer']],['booking.created','📅',['Khách đặt lịch online','Client books online']]];
+/* ===== LUỒNG ===== */
+function flows(){const o=ON;const S=(t,cls)=>({t,cls});
+ return [
+ [L('Khách dùng ưu đãi tại tiệm','Client uses an offer in store'),[S(L('Khách đưa ưu đãi (app / OneQR / SĐT)','Client shows offer'),'m'),o.pos?S(L('POS tự áp khi tính tiền','POS auto-applies'),'m'):S(L('Nhân viên xác nhận mã/PIN trên app','Staff confirm code/PIN in app'),'f'),S(L('Sổ cái + điểm thưởng','Ledger + loyalty'),''),o.mkt?S(L('Tính vào báo cáo chương trình','Counted in program report'),'m'):S(L('Báo cáo chương trình','Program report'),'x')]],
+ [L('Gửi ưu đãi cho khách cũ','Send an offer to past clients'),[S(L('Chọn nhóm khách (CRM chung)','Pick a group (shared CRM)'),''),S(L('App push (miễn phí)','App push (free)'),'m'),o.sms?S(L('SMS sau X giờ nếu chưa mở','SMS if unopened'),'m'):S(L('Chỉ App push + email','Push + email only'),'f'),o.mkt?S(L('Landing page của chương trình','Program landing page'),'m'):S(L('Mở thẳng ưu đãi trong app','Opens the offer in the app'),'f')]],
+ [L('Khách gọi tới tiệm','A client calls the shop'),o.voice?[S(L('AI nghe máy 24/7','AI answers 24/7'),'m'),o.booking?S(L('Đặt lịch ngay trong cuộc gọi','Books during the call'),'m'):S(L('Ghi yêu cầu, báo chủ tiệm','Takes a message'),'f'),o.sms?S(L('Nhắn link ưu đãi sau cuộc gọi','Texts the offer link'),'m'):S(L('Nhắn link sau cuộc gọi','Post-call text'),'x')]:[S(L('Chuông về số của tiệm','Rings the shop'),'f'),o.sms?S(L('Gọi nhỡ → SMS link đặt lịch','Missed → SMS booking link'),'m'):S(L('Gọi nhỡ → SMS','Missed → SMS'),'x')]],
+ [L('Khách quét OneQR','A client scans OneQR'),[S(L('Trang OneQR của tiệm','Shop OneQR page'),'m'),S(L('Ưu đãi + quảng cáo chéo','Offers + cross-promo'),'m'),o.booking?S(L('Nút Đặt lịch','Book button'),'m'):S(L('Nút Gọi tiệm','Call button'),'f'),S(L('Mua Gift Card','Buy a gift card'),'m'),o.mkt?S(L('Mở landing page chương trình','Program landing page'),'m'):S(L('Landing page','Landing page'),'x')]],
+ [L('Chạy một chiến dịch khuyến mãi','Run a promotion campaign'),o.mkt?[S(L('Ưu đãi','Offer'),'m'),S(L('Landing page (mẫu/AI)','Landing page'),'m'),S(L('Banner · poster · caption (mẫu/AI)','Creative kit'),'m'),S(L('Kênh: App'+(o.sms?'/SMS':'')+' · OneQR chéo & trả phí · mạng xã hội · Ads','Channels: app'+(o.sms?'/SMS':'')+' · OneQR · social · ads'),'m'),S(L('Báo cáo theo kênh','Report by channel'),'m')]:[S(L('Ưu đãi cơ bản (Deal không giới hạn)','Basic offer (unlimited Deal)'),'m'),S(L('Hiện trên OneQR + App push','OneQR + app push'),'m'),S(L('Coupon có suất · landing · Studio AI · Ads','Coupons · landing · studio · ads'),'x')]]]}
+/* ===== GÓI BÁN ===== */
+const PK=[['full',['Full Suite','Full Suite'],['Tất cả module','Everything'],['pos','voice','sms','booking','mkt','comm','jobs']],['posp',['NEXORA POS','NEXORA POS'],['POS + Booking','POS + Booking'],['pos','booking']],['voicep',['NEXORA Voice','NEXORA Voice'],['AI Voice + Booking','AI Voice + Booking'],['voice','booking']],['smsp',['NEXORA SMS','NEXORA SMS'],['SMS Campaigns','SMS Campaigns'],['sms']],['mktp',['NEXORA Marketing','NEXORA Marketing'],['Marketing Pro + SMS + Community','Marketing Pro + SMS + Community'],['mkt','sms','comm']],['base',['Chỉ gói nền','Base only'],['OneQR + Gift Card + Ưu đãi cơ bản','OneQR + Gift Card + Basic offers'],[]]];
+/* ===== TEXT ===== */
+const T={coreT:['Nền — luôn có','Core — always on'],coreS:['Dùng chung cho mọi module. Không tắt được.','Shared by every module. Cannot be turned off.'],always:['Luôn bật','Always on'],modT:['Module — bật khi cần','Modules — turn on when needed'],modS:['Bật/tắt không cần cài lại. Tắt thì giữ dữ liệu, việc đang chạy chạy nốt tới hết.','No reinstall. Turning off keeps data; running work finishes.'],dashT:['Dashboard tự dựng từ module đang bật','Dashboard built from enabled modules'],dashS:['Ô của module tắt được thay bằng gợi ý nhỏ, không che nội dung.','Disabled modules show a small hint instead.'],flowT:['Luồng tự đổi theo module đang bật','Flows adapt to enabled modules'],flowS:['Mỗi chỗ nối giữa 2 module có sẵn cách làm khi module kia tắt.','Every cross-module step has a fallback.'],evT:['Sự kiện — module nói chuyện qua nền','Events — modules talk through the core'],evS:['Không module nào gọi thẳng module khác. Bấm để mô phỏng.','No module calls another directly. Tap to simulate.'],pkT:['Gói bán — cùng một code','Packages — one codebase'],pkS:['Bán riêng = một bộ module bật sẵn. Bấm để xem menu đổi theo.','A product = a preset of modules. Tap to preview.'],pkN:['Giá chưa có — anh chốt. Nền + OneQR + Gift Card + Ưu đãi cơ bản luôn đi kèm mọi gói.','No prices yet — to be set. Core + OneQR + Gift Card + Basic offers come with every package.'],rlT:['Luật cho dev','Rules for developers'],rlS:['Làm đúng từ đầu thì sau này tách bán riêng không phải gỡ code.','Get these right now and splitting products later needs no rework.'],mxT:['Bảng phụ thuộc & cách làm khi tắt','Dependency & fallback matrix'],mxS:['Bắt buộc = không bật được nếu thiếu. Tuỳ chọn = có thì dùng, không có thì theo cách dự phòng.','Required blocks enabling; optional uses a fallback.'],mfT:['Bản khai module (manifest)','Module manifest'],mfS:['Menu, dashboard, sự kiện, quyền đều đọc từ đây.','Menu, dashboard, events and permissions read from this.']};
+const TABS=[['apps',['Ứng dụng','Apps']],['flows',['Luồng','Flows']],['events',['Sự kiện','Events']],['pack',['Gói bán','Packages']],['dev',['Cho dev','For devs']]];let TAB='apps';
+const RULES=[['Module chỉ nói chuyện qua <b>sự kiện của nền</b>, không gọi thẳng module khác.','Modules talk only through <b>core events</b>, never directly.'],['Mỗi module có <b>bản khai</b>: phụ thuộc, menu, ô dashboard, sự kiện, quyền. Menu và dashboard tự dựng từ bản khai của module đang bật.','Each module has a <b>manifest</b>; menu and dashboard are built from enabled manifests.'],['Mỗi chỗ nối có <b>cách làm khi module kia tắt</b> (xem bảng dưới).','Every cross-module step has a <b>fallback</b>.'],['<b>Kiểm quyền ở máy chủ</b>: API của module tắt trả 403 <code>MODULE_DISABLED</code>. Ẩn nút chỉ là phần giao diện.','<b>Check entitlements server-side</b>: disabled module APIs return 403 <code>MODULE_DISABLED</code>.'],['<b>Quyền dùng theo tài khoản</b>: bật một lần, mọi chi nhánh dùng. Nếu sau này tính giá theo số chi nhánh thì chỉ đổi bảng giá, không đổi cách kiểm quyền.','<b>Per-account entitlements</b>: all locations share them; per-location pricing later changes billing only.'],['<b>Tắt = giữ dữ liệu + việc đang chạy chạy nốt tới hết.</b> Không nhận việc mới. Việc không có ngày kết thúc (Deal “không kết thúc”, tin tự động) dừng ở <b>cuối kỳ thanh toán</b> đã trả.','<b>Off = keep data; running work finishes.</b> Open-ended items stop at the <b>end of the paid billing period</b>.'],['<b>Cờ tính năng</b> (dev bật thử) và <b>quyền dùng theo gói</b> (khách trả tiền) là 2 hệ riêng.','<b>Feature flags</b> and <b>plan entitlements</b> are separate systems.'],['Tách hạ tầng riêng chỉ khi cần (vd tổng đài AI Voice). Bán riêng không cần tách code.','Split infrastructure only when needed; selling separately needs no code split.']];
+/* ===== VẼ ===== */
+function nOn(){return M.filter(m=>ON[m.id]).length}
+function drawMenu(prev){const core=[['Tổng quan','Dashboard','#334155','▦'],['Khách hàng','Customers','#334155','KH'],['Thanh toán','Payments','#334155','$'],...BUNDLE.map(b=>[b[0],b[1],b[4],b[5]])];
+ const items=M.filter(m=>ON[m.id]).flatMap(m=>m.menu.map(x=>({m,x})));
+ $('#menu').innerHTML=`<div class="mg"><span>${L('Nền + đi kèm','Core + bundled')}</span></div>`+core.map((c,i)=>`<button class="mi ${i===0?'':''}"><span class="dot" style="background:${c[2]}">${c[3]}</span>${L(c[0],c[1])}</button>`).join('')+
+ `<div class="mg"><span>${L('Module đang bật','Enabled modules')}</span><span>${nOn()}/${M.length}</span></div>`+(items.length?items.map(({m,x})=>`<button class="mi ${prev&&!prev[m.id]?'new':''}" data-mid="${m.id}" data-sub="${x[1]}"><span class="dot" style="background:${m.c}">${m.ab}</span>${L(...x)}</button>`).join(''):`<div style="font-size:12px;color:#7C8DB5;padding:6px 10px">${L('Chưa bật module nào','No modules on')}</div>`)+
+ `<div class="mg"><span>${L('Hệ thống','System')}</span></div><button class="mi on" data-go="apps"><span class="dot" style="background:#4F46E5">⚙</span>${L('Ứng dụng & gói','Apps & plan')}</button>`;
+ $('#acctSub').textContent=L(`${LOCS} chi nhánh · ${nOn()} module`,`${LOCS} locations · ${nOn()} modules`)}
+function drawTabs(){$('#tabs').innerHTML=TABS.map(t=>`<button class="${TAB===t[0]?'on':''}" data-tab="${t[0]}">${L(...t[1])}</button>`).join('');$$('section[data-v]').forEach(s=>s.classList.toggle('hide',s.dataset.v!==TAB))}
+function drawApps(){$('#acct').innerHTML=`🏢 <span>${L('Quyền dùng tính theo <b>tài khoản</b>: bật module một lần, cả','Entitlements are per <b>account</b>: turn a module on once, all')} <b>${LOCS} ${L('chi nhánh','locations')}</b> ${L('dùng được.','can use it.')}</span>`;
+ $('#core').innerHTML=CORE.map(c=>`<div class="cc"><b>${L(c[0],c[1])}</b><small>${L(c[2],c[3])}</small></div>`).join('')+BUNDLE.map(b=>`<div class="cc bn"><b>${L(b[0],b[1])} <span class="lock t">${L('luôn đi kèm','bundled')}</span></b><small>${L(b[2],b[3])}</small></div>`).join('');
+ $('#onCount').textContent=L(`${nOn()} / ${M.length} đang bật`,`${nOn()} / ${M.length} on`);
+ $('#mods').innerHTML=M.map(m=>{const on=ON[m.id];const opt=m.opt.map(o=>{const x=M.find(z=>z.id===o);return `<span class="tg ${ON[o]?'ok':''}">${ON[o]?'✓':'○'} ${L('dùng thêm','uses')} ${L(...x.n)}</span>`}).join('');
+  return `<div class="mc ${on?'on':''}" id="mc-${m.id}"><div class="mch"><span class="ic" style="background:${m.c}">${m.ab}</span><div><b>${L(...m.n)}</b><small>${L(...m.d)}</small></div><button class="sw ${on?'on':''}" data-sw="${m.id}" role="switch" aria-checked="${on}" aria-label="${L(...m.n)}"></button></div>
+  <div class="tags"><span class="tg ${on?'ok':''}">${on?L('Đang bật','On'):L('Đang tắt','Off')}</span><span class="tg i">${m.menu.length} ${L('mục menu','menu items')}</span>${opt}</div>
+  <div class="fb">↪ <b>${L('Khi tắt','When off')}:</b> ${L(...m.fb)}</div></div>`}).join('');
+ const ws=[[L('Khách hàng','Customers'),L('CRM chung','Shared CRM'),'—'],[L('OneQR','OneQR'),L('Lượt quét','Scans'),'—'],[L('Gift Card','Gift Card'),L('Đã bán','Sold'),'—']];
+ $('#dash').innerHTML=ws.map(w=>`<div class="wd"><small>${w[0]}</small><b>${w[1]}</b><span>${w[2]} ${L('(mẫu)','(sample)')}</span></div>`).join('')+M.map(m=>ON[m.id]?m.w.map(w=>`<div class="wd" style="border-top:3px solid ${m.c}"><small>${L(...m.n)}</small><b>${L(w[0],w[1])}</b><span>${L(w[2],w[3])}</span></div>`).join(''):`<div class="wd up"><small>${L(...m.n)}</small><b>${L('Bật để dùng','Turn on to use')}</b><span><button class="btn sm" data-sw="${m.id}">${L('Bật','Turn on')}</button></span></div>`).join('')}
+function drawFlows(){$('#flowLeg').innerHTML=`<span class="tg ok">${L('Dùng module','Module step')}</span><span class="tg w">${L('Cách dự phòng','Fallback')}</span><span class="tg">${L('Không có (module tắt)','Unavailable')}</span>`;
+ $('#flows').innerHTML=flows().map(f=>`<div class="fl"><h3>${f[0]}</h3><div class="steps">${f[1].map((s,i)=>`${i?'<span class="arr">→</span>':''}<span class="st ${s.cls}">${esc(s.t)}</span>`).join('')}</div></div>`).join('')}
+let LOG=[];
+function drawEvents(sel){$('#sim').innerHTML=SIM.map(s=>`<button class="btn" data-sim="${s[0]}">${s[1]} ${L(...s[2])}</button>`).join('');
+ const k=sel||'checkout.completed';const who=M.filter(m=>m.emit.includes(k)).map(m=>L(...m.n));const core=(CORE_LISTEN[k]||[]);const r=REACT[k]||{};
+ $('#evBox').innerHTML=`<div class="ev"><div class="evh"><span>event: ${k}</span><span>${L('phát bởi','emitted by')}: ${who.length?who.join(', '):L('nền / app khách','core / client app')}</span></div>
+ ${core.map(c=>`<div class="evr"><b>${L('Nền','Core')}</b><span>${L(...c)}</span><span class="tg ok">${L('luôn chạy','always')}</span></div>`).join('')}
+ ${Object.entries(r).map(([id,a])=>{const m=M.find(z=>z.id===id);const on=ON[id];return `<div class="evr ${on?'':'skip'}"><b>${L(...m.n)}</b><span>${L(...a)}</span><span class="tg ${on?'ok':''}">${on?L('nghe & làm','handles'):L('bỏ qua — module tắt','skipped — off')}</span></div>`}).join('')}</div>`;
+ $('#log').innerHTML=LOG.length?LOG.slice(-14).map(l=>`<div>${l}</div>`).join(''):`<span class="s">${L('Bấm một nút phía trên để mô phỏng.','Tap a button above to simulate.')}</span>`;const lg=$('#log');lg.scrollTop=lg.scrollHeight}
+function simulate(k){const t=new Date().toTimeString().slice(0,8);LOG.push(`<span class="d">${t}</span> ▶ ${k}`);(CORE_LISTEN[k]||[]).forEach(c=>LOG.push(`<span class="d">${t}</span>   ✓ core · ${esc(L(...c))}`));Object.entries(REACT[k]||{}).forEach(([id,a])=>LOG.push(`<span class="d">${t}</span>   ${ON[id]?'✓':'<span class="s">– skip</span>'} ${id} · ${esc(L(...a))}`));drawEvents(k)}
+let PKSEL=null;
+function drawPack(){$('#pk').innerHTML=PK.map(p=>`<button class="pc ${PKSEL===p[0]?'on':''}" data-pk="${p[0]}"><b>${L(...p[1])}</b><small>${L(...p[2])}</small><div class="tags">${p[3].length?p[3].map(id=>{const m=M.find(z=>z.id===id);return `<span class="tg" style="background:${m.c}1A;color:${m.c}">${L(...m.n)}</span>`}).join(''):`<span class="tg">${L('Không thêm module','No add-ons')}</span>`}<span class="tg ok">+ ${L('Nền · OneQR · Gift Card · Ưu đãi cơ bản','Core · OneQR · Gift Card · Basic offers')}</span></div><span class="pr">${L('Giá: anh chốt','Price: TBD')}</span></button>`).join('')}
+function drawDev(){$('#rules').innerHTML=RULES.map(r=>`<li><span>${L(...r)}</span></li>`).join('');
+ $('#matrix').innerHTML=`<table><thead><tr><th>Module</th><th>${L('Bắt buộc','Requires')}</th><th>${L('Tuỳ chọn','Optional')}</th><th>${L('Phát sự kiện','Emits')}</th><th>${L('Nghe sự kiện','Listens')}</th><th>${L('Khi tắt','When off')}</th><th>${L('Việc đang chạy khi tắt','Running work on turn-off')}</th></tr></thead><tbody>${M.map(m=>`<tr><td><b>${L(...m.n)}</b></td><td>${m.need.length?m.need.join(', '):L('chỉ Nền','core only')}</td><td>${m.opt.map(o=>L(...M.find(z=>z.id===o).n)).join(', ')||'—'}</td><td><code>${m.emit.join('<br>')||'—'}</code></td><td><code>${m.listen.join('<br>')||'—'}</code></td><td>${L(...m.fb)}</td><td>${m.run?m.run.map(r=>L(...r)).join('<br>'):L('Hoá đơn đã có giữ nguyên; tắt có hiệu lực cuối kỳ thanh toán.','Past bills kept; takes effect at period end.')}</td></tr>`).join('')}</tbody></table>`;
+ const s=$('#mfSel');const cur=s.value||'mkt';s.innerHTML=M.map(m=>`<option value="${m.id}" ${m.id===cur?'selected':''}>${L(...m.n)}</option>`).join('');drawMf()}
+function drawMf(){const m=M.find(z=>z.id===$('#mfSel').value)||M[0];$('#mf').textContent=JSON.stringify({id:m.id,name:m.n[1],entitlement:'account',requires:['core',...m.need],optional:m.opt,menu:m.menu.map(x=>x[1]),dashboard_widgets:m.w.map(w=>w[1]),events:{emits:m.emit,listens:m.listen},api_guard:{when_disabled:'403 MODULE_DISABLED'},on_disable:{data:'keep',running:'finish',open_ended:'stop_at_billing_period_end',new_work:'blocked'}},null,2)}
+function drawText(){$$('[data-t]').forEach(e=>{const t=T[e.dataset.t];if(t)e.innerHTML=L(...t)});$('#crumb').textContent=L('Cài đặt › Ứng dụng & gói','Settings › Apps & plan');$('#ttl').textContent='NEXORA Business Suite';$('#sub').textContent=L('Một bộ đầy đủ. Module nào không dùng thì tắt — ẩn khỏi menu, giữ dữ liệu. Cần thì bật lại, không phải cài lại.','One full suite. Turn off what you don’t use — hidden, data kept. Turn it back on anytime.')}
+function all(prev){drawText();drawMenu(prev);drawTabs();drawApps();drawFlows();drawEvents();drawPack();drawDev()}
+/* ===== TẮT MODULE ===== */
+let PEND=null;
+function askOff(id){const m=M.find(z=>z.id===id);PEND=id;const deps=M.filter(z=>ON[z.id]&&z.opt.includes(id));
+ $('#offBox').innerHTML=`<h3>${L('Tắt','Turn off')} ${L(...m.n)}?</h3><p>${L('Module biến khỏi menu của cả','Removed from the menu for all')} <b>${LOCS} ${L('chi nhánh','locations')}</b>. ${L('Dữ liệu giữ nguyên — bật lại là có ngay.','Data is kept — turn back on anytime.')}</p>
+ <div class="li"><div><b>${L('Việc đang chạy — chạy nốt tới hết','Running work — finishes')}</b>${(m.run||[[L('Hoá đơn đã có giữ nguyên; tắt có hiệu lực cuối kỳ thanh toán.','Past bills kept; effective at period end.'),'']]).map(r=>`<small>• ${L(...r)}</small>`).join('')}<small>• ${L('Việc không có ngày kết thúc dừng ở cuối kỳ thanh toán đã trả.','Open-ended items stop at the end of the paid period.')}</small></div>
+ <div><b>${L('Từ bây giờ','From now on')}</b><small>• ${L('Không tạo việc mới trong module này.','No new work in this module.')}</small><small>• ${L(...m.fb)}</small></div>
+ ${deps.length?`<div><b>${L('Module khác sẽ dùng cách dự phòng','Other modules switch to fallback')}</b>${deps.map(d=>`<small>• ${L(...d.n)}</small>`).join('')}</div>`:''}</div>
+ <div class="mf"><button class="btn" data-offx="1">${L('Giữ lại','Keep')}</button><button class="btn pri" id="offGo">${L('Tắt module','Turn off')}</button></div>`;$('#offM').classList.add('on')}
+function setMod(id,v){const prev={...ON};ON[id]=v;all(prev);toast(v?L(`Đã bật ${L(...M.find(z=>z.id===id).n)} — menu đã thêm, không cần cài lại`,'Turned on — menu updated'):L('Đã tắt — dữ liệu giữ nguyên, việc đang chạy chạy nốt','Turned off — data kept, running work finishes'))}
+document.addEventListener('click',e=>{let b;
+ if(b=e.target.closest('[data-sw]')){const id=b.dataset.sw;if(ON[id])askOff(id);else setMod(id,true);return}
+ if(b=e.target.closest('#offGo')){$('#offM').classList.remove('on');setMod(PEND,false);return}
+ if(b=e.target.closest('[data-offx]')||e.target.id==='offM'){$('#offM').classList.remove('on');return}
+ if(b=e.target.closest('[data-tab]')){TAB=b.dataset.tab;drawTabs();return}
+ if(b=e.target.closest('[data-go]')){TAB=b.dataset.go;drawTabs();return}
+ if(b=e.target.closest('[data-mid]')){if(b.dataset.mid==='mkt'){window.open(/AI Studio/.test(b.dataset.sub)?'nexora-ai-studio.html':'nexora-campaign-studio.html','_blank');return}toast(L('Mở ','Open ')+L(...M.find(z=>z.id===b.dataset.mid).n)+L(' (mẫu)',' (sample)'));return}
+ if(b=e.target.closest('[data-sim]')){simulate(b.dataset.sim);return}
+ if(b=e.target.closest('[data-pk]')){const p=PK.find(x=>x[0]===b.dataset.pk);const prev={...ON};PKSEL=p[0];M.forEach(m=>ON[m.id]=p[3].includes(m.id));all(prev);toast(L('Xem gói ','Previewing ')+L(...p[1])+L(' — menu bên trái đã đổi',' — menu updated'));return}
+ if(b=e.target.closest('[data-lang]')){LANG=b.dataset.lang;$$('[data-lang]').forEach(x=>x.classList.toggle('on',x.dataset.lang===LANG));document.documentElement.lang=LANG;all();return}});
+$('#mfSel').onchange=drawMf;
+document.addEventListener('keydown',e=>{if(e.key==='Escape')$('#offM').classList.remove('on')});
+/* ===== AI SMART TOUR ===== */
+const TOUR=[
+ {tab:'apps',sel:'#pCore',vi:'Nền luôn có: tài khoản, khách hàng dùng chung, dịch vụ, thanh toán, kênh thông báo, link đo lường, kho mẫu, gói & quyền dùng. OneQR, Gift Card, Ưu đãi cơ bản luôn đi kèm.',en:'Core is always on; OneQR, Gift Card and Basic offers are always bundled.'},
+ {tab:'apps',sel:'#acct',vi:'Quyền dùng theo tài khoản: bật một lần, mọi chi nhánh dùng được.',en:'Entitlements are per account: every location gets them.'},
+ {tab:'apps',sel:'#pMods',vi:'7 module bật/tắt được. Bật là menu thêm ngay, không phải cài lại.',en:'Seven modules toggle on/off with no reinstall.'},
+ {tab:'apps',sel:'#mc-pos',vi:'Tắt POS: hiện rõ việc đang chạy sẽ chạy nốt, dữ liệu giữ nguyên, và module nào chuyển sang cách dự phòng.',en:'Turning off POS shows what finishes, what’s kept, and which modules fall back.',do:()=>askOff('pos'),el:()=>$('#offBox')},
+ {tab:'apps',sel:'#pDash',vi:'Dashboard tự dựng từ module đang bật; module tắt chỉ còn một ô nhỏ “Bật để dùng”.',en:'The dashboard is built from enabled modules.',do:()=>$('#offM').classList.remove('on')},
+ {tab:'flows',sel:'#flows',vi:'Luồng tự đổi: không có POS thì nhân viên xác nhận mã/PIN trên app; không có SMS thì chỉ App push + email; không có AI Voice thì chuông về số của tiệm.',en:'Flows adapt: no POS → code/PIN in app; no SMS → push + email; no AI Voice → calls ring the shop.'},
+ {tab:'events',sel:'#evBox',vi:'Module không gọi thẳng nhau — chỉ nghe sự kiện của nền. Module tắt thì bỏ qua, không làm hỏng module khác.',en:'Modules only listen to core events; disabled ones simply skip.',do:()=>simulate('offer.published')},
+ {tab:'pack',sel:'#pk',vi:'Bán riêng NEXORA POS / Voice / SMS = một bộ module bật sẵn trên cùng một code. Bấm để xem menu đổi theo.',en:'Selling POS / Voice / SMS separately = presets on one codebase.'},
+ {tab:'dev',sel:'#rules',vi:'8 luật cho dev: kiểm quyền ở máy chủ, tắt thì chạy nốt, việc không có ngày kết thúc dừng ở cuối kỳ thanh toán.',en:'Eight developer rules, incl. server-side checks and turn-off behaviour.'},
+ {tab:'dev',sel:'#mf',vi:'Bản khai của từng module: menu, dashboard, sự kiện, quyền, hành vi khi tắt.',en:'Each module’s manifest.'}];
+let ti=0,tRun=false,tPaused=false,tStart=0,raf;const DUR=8500;
+function spot(el){$$('.spot').forEach(x=>x.classList.remove('spot'));if(el){el.classList.add('spot');el.scrollIntoView({behavior:'smooth',block:'center'})}}
+function showStep(){const s=TOUR[ti];TAB=s.tab;drawTabs();s.do&&s.do();setTimeout(()=>spot(s.el?s.el():$(s.sel)),250);$('#tVi').textContent=s.vi;$('#tEn').textContent=s.en;$('#tStep').textContent=`${ti+1}/${TOUR.length}`;tStart=performance.now();$('#tBar').dataset.p=0}
+function loop(){cancelAnimationFrame(raf);const f=t=>{if(!tRun)return;const bar=$('#tBar');if(tPaused){tStart=t-(+bar.dataset.p)*DUR;raf=requestAnimationFrame(f);return}const p=Math.min(1,(t-tStart)/DUR);bar.style.width=p*100+'%';bar.dataset.p=p;if(p>=1){ti=(ti+1)%TOUR.length;showStep()}raf=requestAnimationFrame(f)};raf=requestAnimationFrame(f)}
+function startTour(){$('#wn').classList.add('hide');tRun=true;tPaused=false;ti=0;$('#tPause').textContent='⏸';$('#tb').classList.remove('hide');showStep();loop()}
+function stopTour(){if(!tRun)return;tRun=false;cancelAnimationFrame(raf);$('#tb').classList.add('hide');spot(null);$('#offM').classList.remove('on')}
+$('#tPause').onclick=()=>{tPaused=!tPaused;$('#tPause').textContent=tPaused?'▶':'⏸'};$('#tNext').onclick=()=>{ti=(ti+1)%TOUR.length;showStep()};$('#tClose').onclick=stopTour;$('#tourBtn').onclick=startTour;
+$('#wnGo').onclick=startTour;$('#wnX').onclick=()=>$('#wn').classList.add('hide');
+['touchstart','wheel','keydown','mousedown'].forEach(ev=>window.addEventListener(ev,e=>{if(tRun&&e.isTrusted&&!e.target.closest('.stour'))stopTour()},{passive:true}));
+all();
+setTimeout(()=>{if(!$('#wn').classList.contains('hide'))startTour()},6000);
+</script>
+</body>
+</html>

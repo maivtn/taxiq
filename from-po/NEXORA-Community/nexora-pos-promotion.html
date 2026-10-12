@@ -1,0 +1,280 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NEXORA TOUCH POS — Promotion (bản mẫu liên kết Community)</title>
+<style>
+:root{--ink:#0B1220;--mute:#5B6B82;--line:#DDE5EF;--page:#F3F6FB;--p1:#4F46E5;--grad:linear-gradient(135deg,#4F46E5,#7C3AED);--ok:#047857;--okbg:#D1FAE5;--warn:#B45309;--warnbg:#FEF3C7;--bad:#B91C1C;--badbg:#FEE2E2}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--page);color:var(--ink);font-size:14px;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}
+input,select{font:inherit}
+.top{position:sticky;top:0;z-index:20;background:#fff;border-bottom:1px solid var(--line)}
+.top .bar{display:flex;align-items:center;gap:10px;padding:10px 14px}
+.top h1{font-size:17px;font-weight:800}
+.top .sub{font-size:11px;color:var(--mute);font-weight:600}
+.badge{font-size:10px;font-weight:800;padding:2px 7px;border-radius:8px;background:#EEF2FF;color:var(--p1)}
+.tabs{display:flex;gap:4px;padding:0 10px 8px;overflow-x:auto;scrollbar-width:none}
+.tabs button{white-space:nowrap;padding:8px 12px;border-radius:12px;font-weight:700;font-size:13px;color:var(--mute);background:#F1F5F9}
+.tabs button.on{background:var(--grad);color:#fff}
+.tabs button .n{display:inline-block;min-width:18px;padding:0 5px;border-radius:9px;background:#fff;color:var(--p1);font-size:10px;margin-left:5px;text-align:center}
+main{max-width:720px;margin:0 auto;padding:14px 14px 120px}
+section[data-v]{display:none}section[data-v].on{display:block}
+.card{background:#fff;border:1px solid var(--line);border-radius:16px;padding:14px;margin-bottom:12px}
+.card h3{font-size:15px;font-weight:800;margin-bottom:4px}
+.muted{color:var(--mute);font-size:12.5px}
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:10px 14px;border-radius:12px;font-weight:700;background:var(--grad);color:#fff}
+.btn.ghost{background:#fff;color:var(--ink);border:1px solid var(--line)}
+.btn.sm{padding:7px 11px;font-size:12.5px;border-radius:10px}
+.btn.green{background:#059669}.btn.red{background:#DC2626}
+.btn[disabled]{opacity:.45;cursor:not-allowed}
+.f{display:block;font-size:12px;font-weight:700;margin:12px 0 4px}
+.in{width:100%;padding:10px 12px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.row{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.tag{display:inline-flex;align-items:center;padding:2px 8px;border-radius:10px;font-size:10.5px;font-weight:800;white-space:nowrap}
+.tag.ok{background:var(--okbg);color:var(--ok)}.tag.warn{background:var(--warnbg);color:var(--warn)}.tag.bad{background:var(--badbg);color:var(--bad)}.tag.gray{background:#F1F5F9;color:#475569}.tag.blue{background:#E0F2FE;color:#0369A1}.tag.vio{background:#EDE9FE;color:#6D28D9}
+.chips{display:flex;gap:6px;flex-wrap:wrap}
+.chip{padding:7px 11px;border-radius:20px;border:1px solid var(--line);background:#fff;font-weight:700;font-size:12.5px}
+.chip.on{background:#EEF2FF;border-color:var(--p1);color:var(--p1)}
+.opt{display:flex;gap:10px;align-items:center;padding:10px 12px;border:1px solid var(--line);border-radius:12px;margin-top:8px;background:#fff}
+.opt .cb{width:22px;height:22px;border-radius:7px;border:2px solid #CBD5E1;display:grid;place-items:center;font-weight:900;color:#fff;flex-shrink:0}
+.opt.on .cb{background:var(--p1);border-color:var(--p1)}
+.opt b{display:block;font-size:13px}.opt small{color:var(--mute);font-size:11.5px}
+.pr{display:flex;gap:12px;align-items:flex-start;padding:12px 0;border-top:1px solid #EEF2F7}
+.pr:first-child{border-top:0}
+.pr .st{width:58px;height:58px;border-radius:12px;background:var(--grad);color:#fff;display:grid;place-items:center;font-weight:900;font-size:15px;flex-shrink:0;text-align:center;line-height:1.1}
+.pr h4{font-size:14px;font-weight:800}
+.meta{display:flex;gap:8px;flex-wrap:wrap;font-size:11.5px;color:var(--mute);margin-top:4px}
+.acts{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.kpi{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.kpi div{background:#F8FAFC;border-radius:12px;padding:10px;text-align:center}
+.kpi b{display:block;font-size:20px}.kpi span{font-size:11px;color:var(--mute);font-weight:600}
+.cust{display:flex;gap:12px;align-items:center}
+.av{width:48px;height:48px;border-radius:50%;background:var(--grad);color:#fff;display:grid;place-items:center;font-weight:900;font-size:18px;flex-shrink:0}
+.cp{display:flex;gap:10px;align-items:flex-start;padding:10px;border:1px solid var(--line);border-radius:12px;margin-top:8px;background:#fff}
+.cp.sel{border-color:var(--p1);background:#EEF2FF}
+.cp.off{opacity:.6}
+.cp .rb{width:20px;height:20px;border-radius:50%;border:2px solid #CBD5E1;flex-shrink:0;margin-top:2px}
+.cp.sel .rb{border:6px solid var(--p1)}
+.bill{display:grid;grid-template-columns:1fr auto;gap:6px 12px;background:#0B1220;color:#fff;border-radius:14px;padding:14px;margin-top:10px;font-size:13.5px}
+.bill .tot{font-size:20px;font-weight:900;color:#6EE7B7}
+.alert{display:flex;gap:8px;padding:10px 12px;border-radius:12px;background:var(--badbg);color:#7F1D1D;font-size:13px;margin-top:8px}
+.alert.ok{background:var(--okbg);color:#064E3B}.alert.warn{background:var(--warnbg);color:#78350F}
+.flow{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;gap:6px;align-items:center;font-size:12px;text-align:center}
+.flow div{background:#F8FAFC;border-radius:10px;padding:8px 6px}
+.flow b{display:block;font-size:12.5px}
+.flow .ar{background:none;font-size:18px;color:var(--p1)}
+.hist{padding:8px 0;border-top:1px solid #EEF2F7;font-size:13px}
+.sim{display:flex;gap:6px;flex-wrap:wrap;align-items:center;font-size:12px;color:var(--mute);margin-top:8px}
+.qr{width:64px;height:64px;display:grid;grid-template-columns:repeat(11,1fr);gap:1px;background:#fff;padding:3px;border-radius:6px;border:1px solid var(--line)}
+.qr i{background:#0B1220}.qr b{background:#fff}
+.toast{position:fixed;left:50%;bottom:92px;transform:translateX(-50%);background:#0B1220;color:#fff;padding:10px 16px;border-radius:12px;font-size:13px;font-weight:600;z-index:300;display:none;max-width:90vw;text-align:center}
+.spot{outline:3px solid #F59E0B;outline-offset:3px;border-radius:14px;transition:outline .2s}
+/* AI SMART TOUR */
+.stour{position:fixed;left:10px;right:10px;bottom:10px;z-index:250;background:#0B1220;color:#fff;border-radius:16px;padding:12px 14px;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.stour .hd{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:800;letter-spacing:.06em;color:#FBBF24}
+.stour .hd .sp{flex:1}.stour .hd button{color:#fff;font-size:15px;padding:2px 6px}
+.stour #tVi{font-size:13.5px;font-weight:600;margin-top:6px}.stour #tEn{font-size:12px;color:#94A3B8;margin-top:2px}
+.stour .bar{height:3px;background:#1E293B;border-radius:2px;margin-top:8px;overflow:hidden}.stour .bar i{display:block;height:100%;width:0;background:#FBBF24}
+.hidden{display:none!important}
+body.lang-en .vi{display:none}body:not(.lang-en) .en{display:none}
+@media(max-width:480px){.row{grid-template-columns:1fr}.kpi{grid-template-columns:repeat(3,1fr)}}
+</style>
+</head>
+<body>
+<div class="top">
+  <div class="bar"><div><h1>🧾 NEXORA POS · Promotion <span class="badge">MẪU</span></h1><div class="sub">Kayla Nails &amp; Spa · <span class="vi">một nơi tạo, phát hành, nhận diện khách &amp; redeem</span><span class="en">one place to create, publish, recognize clients &amp; redeem</span></div></div>
+    <span style="flex:1"></span><button class="btn ghost sm" id="tourBtn">✦ AI Tour</button><button class="btn ghost sm" id="langBtn">EN</button></div>
+  <div class="tabs" id="tabs">
+    <button data-v="promo" class="on">📣 <span class="vi">Chương trình</span><span class="en">Promotions</span></button>
+    <button data-v="create">➕ <span class="vi">Tạo mới</span><span class="en">Create</span></button>
+    <button data-v="checkin">🪪 <span class="vi">Check-in khách</span><span class="en">Client check-in</span><span class="n" id="nIn">0</span></button>
+    <button data-v="report">📊 <span class="vi">Báo cáo</span><span class="en">Reports</span></button>
+  </div>
+</div>
+<main>
+
+<!-- ============ PROMOTIONS ============ -->
+<section data-v="promo" class="on">
+  <div class="card" id="cFlow">
+    <h3 class="vi">Một nguồn duy nhất — POS</h3><h3 class="en">Single source of truth — the POS</h3>
+    <p class="muted vi">Tiệm tạo chương trình <b>ở đây</b>. Community, SMS, QR tại quầy chỉ là <b>kênh phát</b>. Khách lấy ở đâu cũng về cùng một danh sách, thu ngân không bao giờ gặp mã lạ.</p>
+    <p class="muted en">The salon creates promotions <b>here</b>. Community, SMS and the counter QR are only <b>channels</b>. Wherever a client claims, it lands in the same list — the cashier never sees an unknown code.</p>
+    <div class="flow" style="margin-top:10px"><div><b>POS</b><span class="vi">tạo &amp; quản lý</span><span class="en">create &amp; manage</span></div><div class="ar">→</div><div><b>Community · SMS · QR</b><span class="vi">khách thấy &amp; lấy</span><span class="en">clients see &amp; claim</span></div><div class="ar">→</div><div><b>POS check-in</b><span class="vi">tự nhận diện &amp; áp dụng</span><span class="en">auto-recognize &amp; apply</span></div></div>
+  </div>
+  <div class="card" id="cList"><h3 class="vi">Chương trình đang chạy</h3><h3 class="en">Running promotions</h3><div id="promoList"></div></div>
+</section>
+
+<!-- ============ CREATE ============ -->
+<section data-v="create">
+  <div class="card" id="cCreate">
+    <h3 class="vi">Tạo chương trình</h3><h3 class="en">Create a promotion</h3>
+    <label class="f vi">Loại ưu đãi</label><label class="f en">Offer type</label>
+    <div class="chips" id="cType"><button class="chip on" data-t="pct">Giảm %</button><button class="chip" data-t="amt">Giảm $</button><button class="chip" data-t="bogo">Mua X tặng Y</button><button class="chip" data-t="price">Giá đặc biệt</button></div>
+    <div class="row"><div><label class="f" id="valLbl">Giảm bao nhiêu %</label><input class="in" id="cVal" value="20"></div><div><label class="f vi">Hết hạn sau</label><label class="f en">Expires in</label><select class="in" id="cExp"><option value="7">7 ngày</option><option value="14" selected>14 ngày</option><option value="30">30 ngày</option><option value="60">60 ngày</option></select></div></div>
+    <label class="f vi">Tiêu đề</label><label class="f en">Title</label><input class="in" id="cTitle" maxlength="60" placeholder="VD: Giảm 20% bộ Gel-X lần đầu">
+    <div class="row"><div><label class="f vi">Tổng số lượt</label><label class="f en">Total slots</label><input class="in" id="cQty" inputmode="numeric" value="50"></div><div><label class="f vi">Mỗi khách tối đa</label><label class="f en">Max per client</label><select class="in" id="cPer"><option value="1">1 lần</option><option value="2">2 lần</option><option value="99">Không giới hạn</option></select></div></div>
+    <div class="row"><div><label class="f vi">Giữ lượt sau khi lấy (ngày)</label><label class="f en">Hold after claim (days)</label><input class="in" id="cHold" inputmode="numeric" placeholder="Trống = đến hết hạn"></div><div><label class="f vi">Áp dụng cho</label><label class="f en">Applies to</label><select class="in" id="cWho"><option value="all">Mọi khách</option><option value="new">Khách mới (POS tự kiểm tra)</option><option value="back">Khách quen ≥ 2 lần</option><option value="lapsed">Khách lâu không ghé ≥ 60 ngày</option></select></div></div>
+    <label class="f vi">Điều kiện thêm (hiện cho khách)</label><label class="f en">Extra condition (shown to client)</label><input class="in" id="cCond" placeholder="VD: không cộng dồn ưu đãi khác">
+    <label class="f vi">📣 Kênh phát hành</label><label class="f en">📣 Channels</label>
+    <div class="opt on" data-ch="pos"><span class="cb">✓</span><div><b class="vi">POS · tự áp dụng khi check-in</b><b class="en">POS · auto-apply at check-in</b><small class="vi">Luôn bật. Khách đủ điều kiện được đề xuất ngay tại quầy, không cần mã.</small><small class="en">Always on. Eligible clients are offered it at the counter, no code needed.</small></div></div>
+    <div class="opt on" data-ch="community"><span class="cb">✓</span><div><b class="vi">Community · Deal gần bạn &amp; Coupon theo ngành</b><b class="en">Community · Nearby deals &amp; industry coupons</b><small class="vi">Miễn phí. Khách bấm “Lấy coupon” → vào ví → về cùng danh sách này.</small><small class="en">Free. Client taps “Get coupon” → wallet → same list here.</small></div></div>
+    <div class="opt" data-ch="sms"><span class="cb"></span><div><b class="vi">SMS cho khách trong POS</b><b class="en">SMS to POS clients</b><small class="vi">Gửi link coupon tới khách phù hợp điều kiện (khách quen, lâu không ghé).</small><small class="en">Send a coupon link to clients matching the condition.</small></div></div>
+    <div class="opt" data-ch="qr"><span class="cb"></span><div><b class="vi">QR tại quầy / tờ rơi</b><b class="en">Counter QR / flyer</b><small class="vi">Khách quét → nhập SĐT → nhận coupon, POS tạo hồ sơ khách luôn.</small><small class="en">Client scans → enters phone → coupon; POS creates the client record.</small></div></div>
+    <div style="margin-top:14px;display:flex;gap:8px"><button class="btn" id="pub">🚀 <span class="vi">Phát hành</span><span class="en">Publish</span></button><button class="btn ghost" id="aiFill">✦ AI gợi ý</button></div>
+  </div>
+</section>
+
+<!-- ============ CHECK-IN ============ -->
+<section data-v="checkin">
+  <div class="card" id="cIn">
+    <h3 class="vi">🪪 Khách check-in</h3><h3 class="en">🪪 Client check-in</h3>
+    <p class="muted vi">Khách nhập SĐT ở máy check-in, hoặc thu ngân quét QR NEXORA ID. POS tự tìm hồ sơ &amp; mọi coupon khách đang giữ — không cần khách mở ví.</p>
+    <p class="muted en">Client enters a phone at the kiosk, or the cashier scans the NEXORA ID QR. The POS finds the record and every coupon the client holds — no wallet needed.</p>
+    <div style="display:flex;gap:8px;margin-top:10px"><input class="in" id="inPhone" inputmode="tel" placeholder="Số điện thoại khách"><button class="btn" id="inGo">Check-in</button></div>
+    <div class="sim"><span class="vi">Thử nhanh:</span><span class="en">Try:</span><button class="btn ghost sm" data-ph="7135550101">Linh · khách quen</button><button class="btn ghost sm" data-ph="7135550102">Mai · có coupon Community</button><button class="btn ghost sm" data-ph="7135550103">Trang · lâu không ghé</button><button class="btn ghost sm" data-ph="8325550199">SĐT lạ · khách mới</button></div>
+  </div>
+  <div id="inResult"></div>
+  <div class="card" id="cQueue"><h3 class="vi">Đang chờ tính tiền hôm nay</h3><h3 class="en">Waiting for checkout today</h3><div id="queue" class="muted">—</div></div>
+</section>
+
+<!-- ============ REPORT ============ -->
+<section data-v="report">
+  <div class="card" id="cKpi"><h3 class="vi">Hôm nay</h3><h3 class="en">Today</h3><div class="kpi"><div><b id="kIn">0</b><span class="vi">check-in</span><span class="en">check-ins</span></div><div><b id="kUse">0</b><span class="vi">coupon dùng</span><span class="en">redeemed</span></div><div><b id="kSave">$0</b><span class="vi">khách tiết kiệm</span><span class="en">client savings</span></div></div></div>
+  <div class="card" id="cByPromo"><h3 class="vi">Theo chương trình · theo kênh</h3><h3 class="en">By promotion · by channel</h3><div id="byPromo"></div><p class="muted" style="margin-top:8px"><span class="vi">Số liệu là dữ liệu mẫu trong phiên này — bản mẫu không bịa số thật.</span><span class="en">Sample session data only — the prototype does not invent real numbers.</span></p></div>
+  <div class="card" id="cHist"><h3 class="vi">Lịch sử redeem</h3><h3 class="en">Redeem log</h3><div id="hist" class="muted">—</div></div>
+</section>
+</main>
+
+<div class="toast" id="toast"></div>
+<div class="stour hidden" id="tb"><div class="hd">✦ AI SMART TOUR <span id="tStep"></span><span class="sp"></span><button id="tPause">⏸</button><button id="tNext">⏭</button><button id="tClose">✕</button></div><div id="tVi"></div><div id="tEn"></div><div class="bar"><i id="tBar"></i></div></div>
+
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const money=n=>'$'+(Math.round(n*100)/100).toFixed(2);
+const DAY=864e5;let OFF=0;const now=()=>Date.now()+OFF;
+const fmtT=t=>{const d=new Date(t),z=n=>String(n).padStart(2,'0');return `${z(d.getDate())}/${z(d.getMonth()+1)} ${z(d.getHours())}:${z(d.getMinutes())}`};
+const toast=m=>{const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(t._h);t._h=setTimeout(()=>t.style.display='none',2600)};
+
+/* ---------- DATA (mẫu) ---------- */
+const T0=Date.now();
+const S={
+ promos:[
+  {id:'p1',t:'pct',v:20,title:'Giảm 20% bộ Gel-X lần đầu',exp:T0+6*DAY,qty:50,per:1,hold:3,who:'new',cond:'Không cộng dồn ưu đãi khác',ch:{pos:1,community:1,sms:0,qr:1},got:{community:9,qr:2,sms:0},used:0,rel:0},
+  {id:'p2',t:'amt',v:10,title:'Quay lại trong 30 ngày giảm $10',exp:T0+20*DAY,qty:200,per:1,hold:0,who:'back',cond:'Khách đã ghé ≥ 2 lần',ch:{pos:1,community:0,sms:1,qr:0},got:{community:0,qr:0,sms:31},used:0,rel:0},
+  {id:'p3',t:'price',v:49,title:'Pedicure spa giá $49 thứ 2–4',exp:T0+12*DAY,qty:100,per:2,hold:0,who:'all',cond:'Thứ 2–4',ch:{pos:1,community:1,sms:0,qr:0},got:{community:41,qr:0,sms:0},used:0,rel:0},
+  {id:'p4',t:'pct',v:15,title:'Lâu không ghé — giảm 15% mọi dịch vụ',exp:T0+30*DAY,qty:80,per:1,hold:0,who:'lapsed',cond:'Khách ≥ 60 ngày chưa quay lại',ch:{pos:1,community:0,sms:1,qr:0},got:{community:0,qr:0,sms:12},used:0,rel:0}],
+ cust:{
+  '7135550101':{name:'Linh Phạm',visits:5,last:T0-12*DAY,wallet:[]},
+  '7135550102':{name:'Mai Trần',visits:1,last:T0-40*DAY,wallet:[{pid:'p3',code:'NX-P3-K7Q2',src:'community',at:T0-2*DAY,used:0}]},
+  '7135550103':{name:'Trang Lê',visits:3,last:T0-75*DAY,wallet:[{pid:'p4',code:'NX-P4-M2ZX',src:'sms',at:T0-1*DAY,used:0}]}},
+ queue:[],hist:[],kin:0};
+const stub=p=>p.t==='pct'?[`-${p.v}%`,'giảm']:p.t==='amt'?[`$${p.v}`,'giảm']:p.t==='bogo'?[p.v,'tặng']:[`$${p.v}`,'giá'];
+const claimed=p=>Object.values(p.got).reduce((a,b)=>a+b,0);
+const left=p=>Math.max(0,p.qty-claimed(p)+(p.rel||0));
+const isExp=p=>now()>p.exp;
+const WHO={all:['Mọi khách','All clients'],new:['Khách mới','New clients'],back:['Khách quen ≥2 lần','Returning ≥2 visits'],lapsed:['Lâu không ghé ≥60 ngày','Lapsed ≥60 days']};
+const CH={pos:'POS',community:'Community',sms:'SMS',qr:'QR quầy'};
+let lang='vi';const L=(vi,en)=>lang==='vi'?vi:en;
+
+/* ---------- NAV ---------- */
+let view='promo';
+function go(v){view=v;$$('#tabs [data-v]').forEach(b=>b.classList.toggle('on',b.dataset.v===v));$$('section[data-v]').forEach(s=>s.classList.toggle('on',s.dataset.v===v));render()}
+$('#tabs').onclick=e=>{const b=e.target.closest('[data-v]');if(b)go(b.dataset.v)};
+$('#langBtn').onclick=()=>{lang=lang==='vi'?'en':'vi';document.body.classList.toggle('lang-en',lang==='en');$('#langBtn').textContent=lang==='vi'?'EN':'VI';render()};
+
+/* ---------- PROMO LIST ---------- */
+function drawPromos(){$('#promoList').innerHTML=S.promos.map(p=>{const [b,s]=stub(p);const chs=Object.keys(p.ch).filter(k=>p.ch[k]);
+ return `<div class="pr"><div class="st">${esc(b)}<br><small style="font-size:9px;font-weight:700">${s.toUpperCase()}</small></div><div style="flex:1;min-width:0"><h4>${esc(p.title)}</h4>
+ <div class="meta"><span>👥 ${WHO[p.who][lang==='vi'?0:1]}</span><span>⏳ ${isExp(p)?'<b style="color:var(--bad)">'+L('hết hạn','expired')+'</b>':L('còn ','')+Math.ceil((p.exp-now())/DAY)+L(' ngày',' days left')}</span><span>🎟️ ${L('còn','left')} ${left(p)}/${p.qty}</span><span>✓ ${L('đã dùng','used')} ${p.used}</span>${p.hold?`<span>⏱ ${L('giữ lượt','hold')} ${p.hold}${L(' ngày','d')}</span>`:''}</div>
+ <div class="meta" style="margin-top:6px">${chs.map(k=>`<span class="tag ${k==='pos'?'vio':k==='community'?'blue':'gray'}">${CH[k]}${p.got[k]?' · '+p.got[k]:''}</span>`).join('')}${p.paused?'<span class="tag warn">'+L('Tạm dừng','Paused')+'</span>':''}</div>
+ <div class="acts"><button class="btn ghost sm" data-pause="${p.id}">${p.paused?'▶ '+L('Chạy lại','Resume'):'⏸ '+L('Dừng','Pause')}</button><button class="btn ghost sm" data-tgl="${p.id}:community">${p.ch.community?'🔕 '+L('Gỡ khỏi Community','Unpublish from Community'):'📣 '+L('Đăng lên Community','Publish to Community')}</button></div></div></div>`}).join('')}
+
+/* ---------- CREATE ---------- */
+let CT='pct';const VL={pct:['Giảm bao nhiêu %','Percent off'],amt:['Giảm bao nhiêu $','Dollars off'],bogo:['Mua X tặng Y (VD 5+1)','Buy X get Y'],price:['Giá đặc biệt ($)','Special price ($)']};
+$('#cType').onclick=e=>{const b=e.target.closest('[data-t]');if(!b)return;CT=b.dataset.t;$$('#cType .chip').forEach(c=>c.classList.toggle('on',c===b));$('#valLbl').textContent=VL[CT][lang==='vi'?0:1];$('#cVal').value={pct:'20',amt:'10',bogo:'1+1',price:'49'}[CT]};
+$$('.opt[data-ch]').forEach(o=>o.onclick=()=>{if(o.dataset.ch==='pos')return toast(L('POS luôn bật — đây là nguồn gốc của chương trình','POS is always on — it is the source of the promotion'));o.classList.toggle('on');o.querySelector('.cb').textContent=o.classList.contains('on')?'✓':''});
+$('#aiFill').onclick=()=>{const v=$('#cVal').value,who=$('#cWho').value;$('#cTitle').value=({pct:`Giảm ${v}% ${who==='new'?'lần đầu ghé tiệm':'mọi dịch vụ'}`,amt:`Giảm $${v} ${who==='back'?'cho khách quen':'hoá đơn từ $50'}`,bogo:`Mua ${v.split('+')[0]||1} tặng ${v.split('+')[1]||1}`,price:`Dịch vụ giá $${v}`})[CT];$('#cCond').value='Không cộng dồn ưu đãi khác · xuất trình khi thanh toán';toast('✦ AI đã gợi ý — chỉnh lại nếu cần')};
+$('#pub').onclick=()=>{const title=$('#cTitle').value.trim();if(!title)return toast(L('Nhập tiêu đề','Enter a title'));const qty=+$('#cQty').value||0;if(qty<1)return toast(L('Tổng số lượt phải > 0','Slots must be > 0'));
+ const exp=+$('#cExp').value,hold=+$('#cHold').value||0;const ch={};$$('.opt[data-ch]').forEach(o=>ch[o.dataset.ch]=o.classList.contains('on')?1:0);
+ const p={id:'p'+(S.promos.length+1),t:CT,v:['pct','amt','price'].includes(CT)?+$('#cVal').value:$('#cVal').value,title,exp:now()+exp*DAY,qty,per:+$('#cPer').value,hold:hold<exp?hold:0,who:$('#cWho').value,cond:$('#cCond').value.trim()||'—',ch,got:{community:0,qr:0,sms:0},used:0,rel:0};
+ S.promos.unshift(p);toast('🚀 '+L('Đã phát hành: ','Published: ')+Object.keys(ch).filter(k=>ch[k]).map(k=>CH[k]).join(' · '));go('promo')};
+document.addEventListener('click',e=>{const p=e.target.closest('[data-pause]'),t=e.target.closest('[data-tgl]');
+ if(p){const x=S.promos.find(q=>q.id===p.dataset.pause);x.paused=!x.paused;toast(x.paused?L('Đã dừng — mọi kênh ngừng nhận, POS ngừng đề xuất','Paused on every channel'):L('Chạy lại','Resumed'));render()}
+ if(t){const [id,k]=t.dataset.tgl.split(':');const x=S.promos.find(q=>q.id===id);x.ch[k]^=1;toast(x.ch[k]?L('📣 Đã đăng lên Community — cùng danh sách, cùng số lượt','Published to Community — same list, same slots'):L('Đã gỡ khỏi Community — coupon khách đã lấy vẫn dùng được tới hạn','Unpublished — already-claimed coupons stay valid'));render()}});
+
+/* ---------- CHECK-IN: nhận diện & đề xuất ---------- */
+let cur=null;
+function eligible(p,c){const r=[];if(p.paused)r.push(L('đang tạm dừng','paused'));if(isExp(p))r.push(L('đã hết hạn','expired'));
+ if(p.who==='new'&&c.visits>0)r.push(L(`khách đã ghé ${c.visits} lần — không phải khách mới`,`${c.visits} prior visits — not new`));
+ if(p.who==='back'&&c.visits<2)r.push(L('chưa đủ 2 lần ghé','fewer than 2 visits'));
+ if(p.who==='lapsed'&&(!c.visits||(now()-c.last)<60*DAY))r.push(c.visits?L('mới ghé gần đây','visited recently'):L('khách mới — chưa từng ghé','new — never visited'));
+ const usedN=(c.hist||[]).filter(h=>h.pid===p.id).length;if(usedN>=p.per)r.push(L(`đã dùng ${usedN}/${p.per} lần`,`used ${usedN}/${p.per}`));
+ return r}
+function offersFor(c){const out=[];
+ c.wallet.forEach(w=>{const p=S.promos.find(q=>q.id===w.pid);if(!p||w.used)return;const why=eligible(p,c);
+  if(p.hold&&now()>w.at+p.hold*DAY)why.push(L(`quá thời gian giữ lượt (${p.hold} ngày) — lượt đã trả về kho`,`hold window (${p.hold}d) passed — slot released`));
+  out.push({p,w,why,src:w.src})});
+ S.promos.forEach(p=>{if(!p.ch.pos||out.some(o=>o.p.id===p.id))return;const why=eligible(p,c);if(!left(p))why.push(L('hết lượt','no slots left'));
+  if(!why.length||p.who!=='all')out.push({p,w:null,why,src:'pos'})});
+ return out.sort((a,b)=>a.why.length-b.why.length)}
+function checkin(ph){ph=ph.replace(/\D/g,'');if(ph.length<7)return toast(L('Nhập SĐT hợp lệ','Enter a valid phone'));let c=S.cust[ph],isNew=false;
+ if(!c){c=S.cust[ph]={name:'',visits:0,last:0,wallet:[],hist:[]};isNew=true}c.hist=c.hist||[];cur={ph,c,isNew,offers:offersFor(c),sel:null,bill:60};
+ const ok=cur.offers.find(o=>!o.why.length);cur.sel=ok?ok.p.id:null;S.kin++;drawIn();$('#nIn').textContent=S.queue.length;$('#inResult').scrollIntoView({behavior:'smooth',block:'start'})}
+function drawIn(){if(!cur){$('#inResult').innerHTML='';return}const {ph,c,isNew,offers}=cur;const days=c.last?Math.floor((now()-c.last)/DAY):null;
+ const who=isNew?`<span class="tag ok">🆕 ${L('Khách mới — SĐT chưa có trong POS','New — phone not in POS')}</span>`:`<span class="tag blue">${L('Khách quen','Returning')} · ${c.visits} ${L('lần','visits')}</span> <span class="tag ${days>=60?'warn':'gray'}">${L('ghé cách đây','last visit')} ${days} ${L('ngày','days ago')}</span>`;
+ $('#inResult').innerHTML=`<div class="card" id="cCust"><div class="cust"><div class="av">${c.name?c.name[0]:'?'}</div><div style="flex:1"><b style="font-size:15px">${esc(c.name||L('(chưa có tên)','(no name yet)'))}</b><div class="muted">${ph.replace(/(\d{3})(\d{3})(\d{4})/,'($1) $2-$3')}${isNew?' · <input class="in" id="newName" placeholder="'+L('Tên khách (tuỳ chọn)','Client name (optional)')+'" style="display:inline-block;width:170px;padding:5px 8px;margin-top:4px">':''}</div><div style="margin-top:6px">${who}</div></div></div>
+  ${isNew?`<div class="alert ok">✓ <div>${L('POS tự tạo hồ sơ khách từ SĐT. Coupon “khách mới” được đề xuất ngay — khách không cần mở app hay ví.','POS creates the client record from the phone. The “new client” promo is offered right away — no app or wallet needed.')}</div></div>`:''}
+  <h3 style="margin-top:12px">${L('Ưu đãi nhận diện được','Recognized offers')} <span class="badge">${offers.filter(o=>!o.why.length).length} ${L('áp dụng được','eligible')}</span></h3>
+  ${offers.length?offers.map(o=>{const ok=!o.why.length;return `<div class="cp ${ok?(cur.sel===o.p.id?'sel':''):'off'}" data-pick="${ok?o.p.id:''}"><span class="rb"></span><div style="flex:1"><b>${esc(o.p.title)}</b><div class="meta"><span class="tag ${o.src==='community'?'blue':o.src==='pos'?'vio':'gray'}">${o.src==='pos'?L('POS · tự đề xuất','POS · auto-offer'):L('khách lấy từ ','claimed via ')+CH[o.src]}</span>${o.w?`<span>${o.w.code}</span>`:''}<span>⏳ ${fmtT(o.p.exp)}</span></div>
+   ${ok?`<div class="muted" style="color:var(--ok);font-weight:700;margin-top:4px">✓ ${L('Đủ điều kiện — POS đã kiểm tra: ','Eligible — POS verified: ')}${WHO[o.p.who][lang==='vi'?0:1]}</div>`:`<div class="muted" style="color:var(--bad);margin-top:4px">⛔ ${o.why.join(' · ')}</div>`}</div></div>`}).join(''):`<div class="muted">${L('Không có ưu đãi phù hợp.','No matching offers.')}</div>`}
+  <label class="f">${L('Tổng hoá đơn ($)','Bill total ($)')}</label><input class="in" id="inBill" inputmode="decimal" value="${cur.bill}">
+  <div class="bill" id="inCalc"></div>
+  <div style="display:flex;gap:8px;margin-top:12px"><button class="btn green" id="inOk" style="flex:1">✓ ${L('Tính tiền & ghi nhận','Checkout & record')}</button><button class="btn ghost" id="inSkip">${L('Không dùng ưu đãi','No offer')}</button></div></div>`;
+ calc();$('#inBill').oninput=()=>{cur.bill=+$('#inBill').value||0;calc()}}
+function disc(p,bill){if(p.t==='pct')return bill*p.v/100;if(p.t==='amt')return Math.min(p.v,bill);if(p.t==='price')return Math.max(0,bill-p.v);return 0}
+function calc(){const p=S.promos.find(q=>q.id===cur.sel),bill=cur.bill,dc=p?disc(p,bill):0;$('#inCalc').innerHTML=`<span>${L('Hoá đơn','Bill')}</span><span>${money(bill)}</span><span>${L('Giảm','Discount')}${p?' ('+stub(p)[0]+')':''}</span><span>−${money(dc)}</span><span><b>${L('Khách trả','Client pays')}</b></span><span class="tot">${money(bill-dc)}</span>`}
+document.addEventListener('click',e=>{const pk=e.target.closest('[data-pick]');if(pk&&cur){const id=pk.dataset.pick;if(!id)return toast(L('Ưu đãi này không đủ điều kiện','Not eligible'));cur.sel=cur.sel===id?null:id;drawIn();return}
+ const ph=e.target.closest('[data-ph]');if(ph)checkin(ph.dataset.ph);
+ if(e.target.id==='inGo')checkin($('#inPhone').value);
+ if(e.target.id==='inSkip'&&cur){cur.sel=null;finish()}
+ if(e.target.id==='inOk'&&cur)finish()});
+function finish(){const {ph,c,isNew}=cur;if(isNew&&$('#newName'))c.name=$('#newName').value.trim()||c.name;const p=S.promos.find(q=>q.id===cur.sel);const bill=cur.bill;let dc=0,src='—';
+ if(p){dc=disc(p,bill);const o=cur.offers.find(x=>x.p.id===p.id);src=o.src;if(o.w){o.w.used=1}else{p.got.pos=(p.got.pos||0)+1}p.used++;c.hist.push({pid:p.id,at:now()});
+  S.hist.unshift({name:c.name||ph,title:p.title,src,bill,dc,at:now()})}
+ c.visits++;c.last=now();S.queue.unshift({name:c.name||ph,title:p?p.title:L('không dùng ưu đãi','no offer'),pay:bill-dc});
+ toast(p?`✓ ${L('Đã áp dụng','Applied')} ${p.title} — ${L('khách tiết kiệm','saved')} ${money(dc)}`:L('✓ Đã ghi nhận lượt ghé','✓ Visit recorded'));cur=null;render()}
+
+/* ---------- REPORT ---------- */
+function drawReport(){$('#kIn').textContent=S.kin;$('#kUse').textContent=S.hist.length;$('#kSave').textContent=money(S.hist.reduce((a,h)=>a+h.dc,0));
+ $('#byPromo').innerHTML=S.promos.map(p=>`<div class="hist"><b>${esc(p.title)}</b><div class="muted">${Object.keys(p.got).filter(k=>p.got[k]).map(k=>CH[k]+' '+p.got[k]).join(' · ')||L('chưa ai lấy','no claims')} → ${L('dùng','used')} ${p.used}${claimed(p)?' ('+Math.round(p.used/claimed(p)*100)+'%)':''}</div></div>`).join('');
+ $('#hist').innerHTML=S.hist.map(h=>`<div class="hist"><b>${esc(h.name)}</b> · ${esc(h.title)} <span class="tag ${h.src==='community'?'blue':h.src==='pos'?'vio':'gray'}">${CH[h.src]||h.src}</span><div class="muted">${fmtT(h.at)} · ${money(h.bill)} → ${money(h.bill-h.dc)} (−${money(h.dc)})</div></div>`).join('')||'—'}
+function render(){drawPromos();$('#queue').innerHTML=S.queue.map(q=>`<div class="hist"><b>${esc(q.name)}</b> · ${esc(q.title)} · <b>${money(q.pay)}</b></div>`).join('')||'—';$('#nIn').textContent=S.queue.length;drawReport();if(cur)drawIn();$('#valLbl').textContent=VL[CT][lang==='vi'?0:1]}
+
+/* ---------- AI SMART TOUR ---------- */
+const TOUR=[
+ {v:'promo',sel:'#cFlow',vi:'Chỉ có MỘT nơi tạo chương trình: POS. Community, SMS, QR chỉ là kênh phát. Không còn hai danh sách lệch nhau.',en:'One place creates promotions: the POS. Community, SMS and QR are only channels. No more two lists drifting apart.'},
+ {v:'promo',sel:'#cList',vi:'Mỗi chương trình hiện rõ: ai được áp dụng, còn bao nhiêu lượt, khách lấy từ kênh nào. Bật/tắt Community bằng 1 nút.',en:'Each promotion shows who qualifies, slots left, and which channel clients claimed from. Toggle Community with one tap.'},
+ {v:'create',sel:'#cCreate',vi:'Tạo mới: chọn loại, hạn, số lượt, giữ lượt, và “Áp dụng cho” — POS tự kiểm tra khách mới / khách quen / lâu không ghé.',en:'Create: type, expiry, slots, hold window, and “Applies to” — the POS verifies new / returning / lapsed itself.',do:()=>{$('#cTitle').value='Giảm 20% bộ Gel-X lần đầu';$('#cWho').value='new';$('#cHold').value='3'}},
+ {v:'create',sel:'.opt[data-ch="community"]',vi:'Kênh phát hành: tick Community để coupon xuất hiện ở Deal gần bạn & Coupon theo ngành. Khách lấy ở đó → về cùng danh sách này.',en:'Channels: tick Community and the coupon appears in Nearby deals & industry coupons. Claims there land in this same list.'},
+ {v:'checkin',sel:'#cIn',vi:'Khách đến: nhập SĐT ở máy check-in hoặc quét QR NEXORA ID. POS tự nhận diện, không cần khách mở ví.',en:'Client arrives: phone at the kiosk or NEXORA ID QR. The POS recognizes them — no wallet needed.',do:()=>checkin('7135550102')},
+ {v:'checkin',sel:'#cCust',vi:'Mai đã lấy coupon Pedicure $49 trên Community. POS thấy ngay mã đó, kiểm tra điều kiện và chọn sẵn. Thu ngân chỉ bấm Tính tiền.',en:'Mai claimed the $49 pedicure on Community. The POS sees the code, checks the rules and pre-selects it. The cashier just taps Checkout.'},
+ {v:'checkin',sel:'#cCust',vi:'SĐT lạ = khách mới. POS tự tạo hồ sơ và đề xuất coupon “khách mới” — điều kiện “khách mới” do POS xác nhận, không phải thu ngân tick tay.',en:'Unknown phone = new client. The POS creates the record and offers the “new client” promo — verified by the POS, not a cashier checkbox.',do:()=>checkin('8325550199')},
+ {v:'checkin',sel:'#cCust',vi:'Linh là khách quen 5 lần: coupon “khách mới” bị từ chối kèm lý do; coupon “khách quen” được đề xuất. Tự động, không cần nhớ.',en:'Linh has 5 visits: the “new client” promo is refused with a reason; the “returning” promo is offered. Automatic.',do:()=>checkin('7135550101')},
+ {v:'report',sel:'#cByPromo',vi:'Báo cáo theo kênh: lấy từ Community bao nhiêu, dùng thật bao nhiêu. Biết kênh nào ra tiền.',en:'Reports by channel: how many claimed on Community, how many actually redeemed. Know which channel pays.',do:()=>{cur=null}},
+];
+let ti=0,tRun=false,tPaused=false,tStart=0,raf,DUR=8000;
+function spot(el){$$('.spot').forEach(x=>x.classList.remove('spot'));if(el){el.classList.add('spot');el.scrollIntoView({behavior:'smooth',block:'center'})}}
+function showStep(){const s=TOUR[ti];go(s.v);s.do&&s.do();setTimeout(()=>spot($(s.sel)),350);$('#tVi').textContent=s.vi;$('#tEn').textContent=s.en;$('#tStep').textContent=`${ti+1}/${TOUR.length}`;tStart=performance.now();$('#tBar').dataset.p=0;loop()}
+function loop(){cancelAnimationFrame(raf);const f=t=>{if(!tRun)return;const bar=$('#tBar');if(tPaused){tStart=t-(+bar.dataset.p)*DUR;raf=requestAnimationFrame(f);return}const p=Math.min(1,(t-tStart)/DUR);bar.style.width=p*100+'%';bar.dataset.p=p;if(p>=1)return nextStep();raf=requestAnimationFrame(f)};raf=requestAnimationFrame(f)}
+function nextStep(){ti=(ti+1)%TOUR.length;showStep()}
+function startTour(){tRun=true;tPaused=false;ti=0;$('#tPause').textContent='⏸';$('#tb').classList.remove('hidden');showStep()}
+function stopTour(){if(!tRun)return;tRun=false;cancelAnimationFrame(raf);$('#tb').classList.add('hidden');spot(null)}
+$('#tPause').onclick=()=>{tPaused=!tPaused;$('#tPause').textContent=tPaused?'▶':'⏸'};$('#tNext').onclick=nextStep;$('#tClose').onclick=stopTour;$('#tourBtn').onclick=startTour;
+['touchstart','wheel','keydown','mousedown'].forEach(ev=>window.addEventListener(ev,e=>{if(tRun&&e.isTrusted&&!e.target.closest('.stour'))stopTour()},{passive:true}));
+render();setTimeout(startTour,1200);
+</script>
+</body>
+</html>

@@ -1,0 +1,288 @@
+<!doctype html>
+<html lang="en"><head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Staff My Calendar - Enhanced Current UI</title>
+  <style>
+    :root {
+      --bg: #f6f8fa;
+      --panel: #fff;
+      --ink: #1d252c;
+      --muted: #687782;
+      --line: #dce4e8;
+      --teal: #0f766e;
+      --soft: #eff7f5;
+      --warn: #fff8e6;
+      --danger: #fff8fa;
+      font-family: Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--bg); color: var(--ink); }
+    button, select { font: inherit; }
+    .app { display: grid; grid-template-columns: 244px minmax(0, 1fr); min-height: 100vh; }
+    .sidebar { background: #10252c; color: #d9e5e8; padding: 18px 14px; }
+    .profile { display: grid; gap: 4px; margin: 6px 8px 22px; }
+    .profile strong { color: #fff; font-size: 16px; }
+    .profile span { color: #aebfc5; font-size: 12px; }
+    .nav { display: grid; gap: 4px; }
+    .nav a { color: #c8d6da; text-decoration: none; padding: 10px 12px; border-radius: 7px; font-size: 14px; display: flex; justify-content: space-between; }
+    .nav a.active { background: rgba(255,255,255,.12); color: #fff; }
+    .main { padding: 22px; min-width: 0; }
+    .topbar { display: flex; justify-content: space-between; align-items: flex-start; gap: 14px; margin-bottom: 18px; }
+    h1 { margin: 0; font-size: 28px; line-height: 1.1; }
+    h2 { margin: 0; font-size: 18px; }
+    h3 { margin: 0; font-size: 15px; }
+    p { margin: 0; color: var(--muted); line-height: 1.45; }
+    .btn { min-height: 38px; border: 1px solid var(--line); background: #fff; color: var(--ink); border-radius: 7px; padding: 8px 12px; cursor: pointer; font-weight: 800; display: inline-flex; align-items: center; justify-content: center; gap: 8px; }
+    .btn.primary { background: var(--teal); border-color: var(--teal); color: #fff; }
+    .btn.small { min-height: 32px; padding: 6px 9px; font-size: 13px; }
+    .toolbar { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end; }
+    .panel { background: var(--panel); border: 1px solid var(--line); border-radius: 8px; overflow: hidden; margin-bottom: 16px; }
+    .panel-head { padding: 14px 16px; border-bottom: 1px solid var(--line); display: flex; justify-content: space-between; gap: 12px; align-items: center; }
+    .panel-body { padding: 14px 16px; }
+    .pill { display: inline-flex; align-items: center; border: 1px solid #b9dcd6; background: var(--soft); color: #0a5d57; border-radius: 999px; padding: 5px 8px; font-size: 12px; font-weight: 850; white-space: nowrap; }
+    .pill.warn { border-color: #f2d48c; background: var(--warn); color: #83590e; }
+    .pill.off { border-color: #e3c0c9; background: var(--danger); color: #9f3f5a; }
+    .businesses { display: flex; gap: 8px; flex-wrap: wrap; }
+    .business { border: 1px solid var(--line); border-radius: 999px; background: #fff; padding: 8px 10px; font-size: 13px; font-weight: 850; }
+    .business.active { border-color: #b9dcd6; background: var(--soft); color: #0a5d57; }
+    .calendar-shell { display: grid; grid-template-columns: minmax(0, 1fr) 320px; gap: 14px; align-items: start; }
+    .mode-tabs { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 12px; }
+    .mode-tab { border: 1px solid var(--line); background: #fff; border-radius: 999px; padding: 9px 12px; cursor: pointer; font-weight: 850; }
+    .mode-tab.active { background: var(--teal); border-color: var(--teal); color: #fff; }
+    .week { display: grid; grid-template-columns: repeat(7, minmax(0, 1fr)); gap: 8px; margin-bottom: 14px; }
+    .day { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 10px 8px; text-align: center; display: grid; gap: 4px; }
+    .day span { color: var(--muted); font-size: 12px; font-weight: 850; }
+    .day strong { font-size: 19px; }
+    .day.active { border-color: var(--teal); background: var(--soft); color: #0a5d57; }
+    .summary { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-bottom: 12px; }
+    .stat { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 12px; }
+    .stat strong { display: block; font-size: 20px; margin-bottom: 3px; }
+    .stat span { color: var(--muted); font-size: 12px; }
+    .timeline { display: grid; gap: 10px; }
+    .item { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 12px; display: grid; grid-template-columns: 78px minmax(0, 1fr) auto; gap: 10px; align-items: start; }
+    .item time { font-weight: 900; color: #0a5d57; font-size: 13px; }
+    .item.work { border-color: #b9dcd6; background: #f7fcfb; }
+    .item.break { border-color: #f2d48c; background: #fffdf5; }
+    .item.open { border-style: dashed; }
+    .item.off { border-color: #e3c0c9; background: #fff8fa; }
+    .muted { color: var(--muted); font-size: 12px; }
+    .side-card { border: 1px solid var(--line); background: #fff; border-radius: 8px; padding: 12px; display: grid; gap: 10px; margin-bottom: 12px; }
+    .switch-row { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .toggle { width: 48px; height: 28px; border-radius: 999px; border: 0; background: var(--teal); padding: 3px; cursor: pointer; }
+    .toggle::after { content: ""; display: block; width: 22px; height: 22px; border-radius: 999px; background: #fff; transform: translateX(20px); }
+    .request-grid { display: grid; gap: 8px; }
+    .note { border: 1px solid var(--line); background: #fbfcfc; border-radius: 8px; padding: 10px; }
+    .footer { color: var(--muted); font-size: 12px; text-align: center; padding: 24px; }
+    .toast { position: fixed; left: 50%; bottom: 22px; transform: translateX(-50%) translateY(12px); background: #101820; color: #fff; border-radius: 999px; padding: 10px 14px; opacity: 0; pointer-events: none; transition: .18s ease; font-weight: 800; }
+    .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+    @media (max-width: 1000px) {
+      .app { grid-template-columns: 1fr; }
+      .sidebar { display: none; }
+      .calendar-shell { grid-template-columns: 1fr; }
+      .summary { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 680px) {
+      .main { padding: 16px; }
+      .topbar { flex-direction: column; }
+      .week { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+      .item { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <aside class="sidebar">
+      <div class="profile">
+        <strong>Kayla Bui</strong>
+        <span>Staff ID: N3CNJNOU2</span>
+      </div>
+      <nav class="nav">
+        <a href="#">Home</a>
+        <a href="#">Dashboard</a>
+        <a href="#">My Workspace</a>
+        <a href="#">My Tickets</a>
+        <a href="#" class="active">My Calendar <span>1</span></a>
+        <a href="#">Tips</a>
+        <a href="#">Transactions</a>
+        <a href="#">Payout Methods</a>
+        <a href="#">Profile</a>
+        <a href="#">Sign out</a>
+      </nav>
+    </aside>
+
+    <main class="main">
+      <div class="topbar">
+        <div>
+          <div class="muted">MY SCHEDULE ONLY</div>
+          <h1>My Calendar</h1>
+          <p>Appointments, work schedule, open slots, and schedule requests for the logged-in technician.</p>
+        </div>
+        <div class="toolbar">
+          <button class="btn" id="downloadHtml">Download HTML</button>
+          <button class="btn">Back to work orders</button>
+        </div>
+      </div>
+
+      <section class="panel">
+        <div class="panel-head">
+          <div>
+            <h2>Businesses</h2>
+            <p>Select the business schedule to view.</p>
+          </div>
+          <span class="pill">Staff app</span>
+        </div>
+        <div class="panel-body businesses">
+          <button class="business">BITCOIN NAIL BAR</button>
+          <button class="business">BITCOIN NAIL BAR 1</button>
+          <button class="business">nexoratouch2</button>
+          <button class="business active">Nexora Touch Nail Spa</button>
+        </div>
+      </section>
+
+      <section class="calendar-shell">
+        <div>
+          <div class="mode-tabs">
+            <button class="mode-tab">Appointments</button>
+            <button class="mode-tab active">Work Schedule</button>
+            <button class="mode-tab">Requests</button>
+          </div>
+
+          <div class="week">
+            <button class="day"><span>SUN</span><strong>20</strong></button>
+            <button class="day"><span>MON</span><strong>21</strong></button>
+            <button class="day"><span>TUE</span><strong>22</strong></button>
+            <button class="day"><span>WED</span><strong>23</strong></button>
+            <button class="day active"><span>THU</span><strong>24</strong></button>
+            <button class="day"><span>FRI</span><strong>25</strong></button>
+            <button class="day"><span>SAT</span><strong>26</strong></button>
+          </div>
+
+          <div class="summary">
+            <div class="stat"><strong>10-7</strong><span>Work schedule today</span></div>
+            <div class="stat"><strong>3</strong><span>Booked appointments</span></div>
+            <div class="stat"><strong>6</strong><span>Open bookable slots</span></div>
+          </div>
+
+          <section class="panel">
+            <div class="panel-head">
+              <div>
+                <h2>Thursday · Calendar</h2>
+                <p>New design keeps booked appointments and adds work schedule events.</p>
+              </div>
+              <span class="pill">Synced to Booking</span>
+            </div>
+            <div class="panel-body timeline">
+              <div class="item work">
+                <time>10:00 am</time>
+                <div><h3>Work starts</h3><div class="muted">Visible in online booking · eligible: Pedicure, Gel Polish, Manicure</div></div>
+                <span class="pill">Work Schedule</span>
+              </div>
+              <div class="item">
+                <time>10:30 am</time>
+                <div><h3>Maria G. · Gel Pedicure</h3><div class="muted">10:30 am · 60 min · Confirmed</div></div>
+                <span class="pill">Appointment</span>
+              </div>
+              <div class="item break">
+                <time>12:30 pm</time>
+                <div><h3>Break</h3><div class="muted">Not bookable · approved from staff app</div></div>
+                <span class="pill warn">Break</span>
+              </div>
+              <div class="item open">
+                <time>02:00 pm</time>
+                <div><h3>Open slot</h3><div class="muted">Customer can book eligible services</div></div>
+                <span class="pill">Bookable</span>
+              </div>
+              <div class="item">
+                <time>03:30 pm</time>
+                <div><h3>Justice · Express Pedicure</h3><div class="muted">03:30 pm · 25 min · Completed</div></div>
+                <span class="pill">Completed</span>
+              </div>
+              <div class="item work">
+                <time>07:00 pm</time>
+                <div><h3>Work ends</h3><div class="muted">Hidden from online booking after this time</div></div>
+                <span class="pill">Work Schedule</span>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <aside>
+          <div class="side-card">
+            <div class="switch-row">
+              <div>
+                <h3>Available today</h3>
+                <p>10:00 am-7:00 pm</p>
+              </div>
+              <button class="toggle" aria-label="Available today"></button>
+            </div>
+            <span class="pill">Online booking visible</span>
+          </div>
+
+          <div class="side-card">
+            <h3>Work Schedule</h3>
+            <div class="note"><strong>Mon</strong><p>10:00 am-7:00 pm</p></div>
+            <div class="note"><strong>Tue</strong><p>10:00 am-7:00 pm</p></div>
+            <div class="note"><strong>Wed</strong><p>Day off</p></div>
+            <div class="note"><strong>Thu</strong><p>10:00 am-7:00 pm</p></div>
+            <button class="btn small">View full schedule</button>
+          </div>
+
+          <div class="side-card">
+            <h3>Requests</h3>
+            <div class="request-grid">
+              <button class="btn small">Request day off</button>
+              <button class="btn small">Change hours</button>
+              <button class="btn small">Take break</button>
+              <button class="btn small">Message manager</button>
+            </div>
+            <p>Requests that affect booking require manager approval.</p>
+          </div>
+
+          <div class="side-card">
+            <h3>BA Note</h3>
+            <p>Keep the current My Calendar menu. Add tabs or side cards so staff can see work schedule without leaving the calendar.</p>
+          </div>
+        </aside>
+      </section>
+
+      <div class="footer">© 2026 NEXORA Touch.</div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast">View full schedule clicked</div>
+  <script>
+    const toast = document.getElementById('toast');
+    function showToast(message) {
+      toast.textContent = message;
+      toast.classList.add('show');
+      clearTimeout(showToast.timer);
+      showToast.timer = setTimeout(() => toast.classList.remove('show'), 1400);
+    }
+    document.querySelectorAll('.mode-tab').forEach((button) => {
+      button.addEventListener('click', () => {
+        document.querySelectorAll('.mode-tab').forEach((tab) => tab.classList.remove('active'));
+        button.classList.add('active');
+        showToast(button.textContent.trim() + ' selected');
+      });
+    });
+    document.querySelectorAll('.btn, .business, .day').forEach((button) => {
+      if (button.id !== 'downloadHtml') button.addEventListener('click', () => showToast(button.textContent.trim() + ' clicked'));
+    });
+    document.getElementById('downloadHtml').addEventListener('click', () => {
+      const html = '<!doctype html>\n' + document.documentElement.outerHTML;
+      const blob = new Blob([html], { type: 'text/html' });
+      const url = URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = 'staff-current-my-calendar-enhanced.html';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+      URL.revokeObjectURL(url);
+      showToast('HTML downloaded');
+    });
+  </script>
+
+
+</body></html>

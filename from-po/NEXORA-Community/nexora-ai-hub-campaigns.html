@@ -1,0 +1,234 @@
+<!doctype html>
+<html lang="vi">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>NEXORA TOUCH — AI Hub · Campaigns (bản bổ sung)</title>
+<style>
+:root{--ink:#0F172A;--mute:#64748B;--line:#E5E7EB;--bg:#F4F6FB;--side:#16163A;--p1:#4F46E5;--p2:#7C3AED;--new:#DB2777;--ok:#16A34A;--warn:#D97706}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:Inter,-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);color:var(--ink);font-size:14px;-webkit-font-smoothing:antialiased}
+button{font:inherit;cursor:pointer;border:0;background:none;color:inherit}input,select,textarea{font:inherit;color:inherit}
+.app{display:grid;grid-template-columns:230px minmax(0,1fr);min-height:100vh}
+aside{background:var(--side);color:#C7D2FE;padding:14px 12px;position:sticky;top:0;height:100vh;overflow:auto}
+.biz{display:flex;align-items:center;gap:10px;background:rgba(255,255,255,.06);border:1px solid rgba(255,255,255,.1);border-radius:12px;padding:9px 10px;color:#fff;font-weight:800;font-size:13px}.biz i{width:30px;height:30px;border-radius:50%;background:#FACC15;color:#111;display:grid;place-items:center;font-style:normal;font-size:11px}
+aside nav{margin-top:14px}aside a{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:10px;font-size:13.5px;font-weight:600;color:#C7D2FE}aside a.on{background:linear-gradient(135deg,#4F46E5,#7C3AED);color:#fff}
+aside .sub a{padding:6px 12px 6px 34px;font-size:12.5px;font-weight:500}aside .sub a.cur{color:#7DD3FC}
+main{padding:22px 26px 120px;min-width:0}
+h1{font-size:26px;letter-spacing:-.4px}.lead{color:var(--mute);margin-top:4px}
+.guide{display:inline-flex;gap:6px;align-items:center;margin-top:12px;border:1px solid #C7D2FE;background:#fff;color:var(--p1);font-weight:700;font-size:12.5px;border-radius:10px;padding:7px 11px}
+.tabs{display:flex;gap:8px;margin:14px 0;flex-wrap:wrap}.tabs button{display:inline-flex;gap:7px;align-items:center;padding:9px 14px;border-radius:12px;background:#fff;border:1px solid var(--line);font-weight:700;font-size:13px}.tabs .on{background:linear-gradient(135deg,#4F46E5,#8B5CF6);color:#fff;border-color:transparent}
+.card{background:#fff;border:1px solid var(--line);border-radius:14px}
+.blink{display:flex;justify-content:space-between;align-items:center;padding:10px 12px}.blink b{font-size:12.5px}.blink a{display:block;color:var(--p1);font-size:12.5px}.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;padding:9px 14px;border-radius:10px;font-weight:700;font-size:13px}
+.btn.ghost{background:#fff;border:1px solid var(--line)}.btn.pri{background:linear-gradient(135deg,#4F46E5,#6D28D9);color:#fff}.btn.org{background:linear-gradient(135deg,#F59E0B,#EA580C);color:#fff}.btn.sm{padding:6px 10px;font-size:12px}
+.row1{display:flex;align-items:center;gap:12px;margin:14px 0;flex-wrap:wrap}.row1 .hint{color:var(--mute);flex:1;min-width:220px}
+.cred{display:flex;align-items:center;gap:14px;background:#fff;border:1px solid var(--line);border-radius:12px;padding:8px 12px}.cred small{display:block;font-size:10.5px;font-weight:800;color:var(--mute);letter-spacing:.5px}.cred span{font-size:11.5px;color:var(--mute)}.cred b{font-size:22px;color:var(--p1)}
+.stats{display:grid;grid-template-columns:repeat(5,1fr);gap:12px}.st{background:#fff;border:1px solid var(--line);border-top:3px solid var(--c);border-radius:12px;padding:10px 12px;position:relative}.st small{font-size:11.5px;font-weight:700;color:#334155}.st b{display:block;font-size:22px;color:var(--c)}
+.sec{font-weight:800;font-size:15px;margin:22px 0 10px;display:flex;align-items:center;gap:8px}
+.groups{display:grid;grid-template-columns:repeat(3,1fr);gap:12px}.gc{background:#fff;border:1px solid var(--line);border-top:3px solid var(--c);border-radius:12px;padding:12px;text-align:left;position:relative}.gc:hover{box-shadow:0 8px 20px -12px rgba(15,23,42,.3)}
+.gc .t{display:flex;gap:10px}.gc .ic{width:30px;height:30px;border-radius:9px;background:#F1F5F9;display:grid;place-items:center;color:#475569;flex:0 0 30px}.gc b{display:block;font-size:14px}.gc p{font-size:12.5px;color:var(--mute);margin-top:2px}
+.gc .f{display:flex;justify-content:space-between;align-items:center;border-top:1px solid #F1F5F9;margin-top:10px;padding-top:8px}.gc .n{font-size:20px;font-weight:800;color:#2563EB}.gc .n small{font-size:12px;color:var(--mute);font-weight:500}
+.pill{font-size:11px;font-weight:700;border-radius:999px;padding:3px 9px;background:#F1F5F9;color:#334155}.pill.ok{background:#DCFCE7;color:#166534}.pill.warn{background:#FEF3C7;color:#92400E}
+.split{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}.split span{font-size:11px;font-weight:700;border-radius:7px;padding:2px 7px}.s-app{background:#EEF2FF;color:#3730A3}.s-sms{background:#ECFDF5;color:#047857}.s-no{background:#F1F5F9;color:#64748B}
+.new{display:inline-flex;align-items:center;font-size:10px;font-weight:900;letter-spacing:.5px;background:var(--new);color:#fff;border-radius:6px;padding:2px 6px;vertical-align:middle}
+.hasnew{outline:2px dashed #F9A8D4;outline-offset:3px}
+table.t{width:100%;border-collapse:collapse;font-size:13px}table.t th{font-size:11px;letter-spacing:.5px;text-transform:uppercase;color:var(--mute);text-align:left;padding:10px 12px;border-bottom:1px solid var(--line);white-space:nowrap}table.t td{padding:12px;border-bottom:1px solid #F1F5F9;white-space:nowrap}table.t th.nw{color:var(--new)}
+.tw{overflow-x:auto}
+.lift{font-weight:800;color:var(--ok)}
+/* modal */
+.ov{position:fixed;inset:0;background:rgba(15,23,42,.5);z-index:50;display:grid;place-items:center;padding:16px}
+.modal{background:#fff;border-radius:16px;width:min(620px,100%);max-height:92vh;display:flex;flex-direction:column;box-shadow:0 30px 70px rgba(0,0,0,.35)}
+.mh{display:flex;justify-content:space-between;align-items:center;padding:14px 16px;border-bottom:1px solid var(--line)}.mh b{font-size:16px}.x{width:32px;height:32px;border-radius:8px;border:1px solid var(--line)}
+.mb{padding:14px 16px;overflow:auto;flex:1}
+.lbl{font-size:11.5px;font-weight:800;letter-spacing:.6px;color:var(--mute);margin:16px 0 8px;display:flex;align-items:center;gap:8px}.lbl:first-child{margin-top:0}
+.in{width:100%;border:1px solid var(--line);border-radius:10px;padding:10px 12px;background:#fff}
+.gpick{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.gp{border:1px solid var(--line);border-radius:12px;padding:10px;text-align:center;background:#fff}.gp.on{border-color:var(--p1);background:#EEF2FF}.gp b{display:block;font-size:13.5px;margin-top:3px}.gp span{font-size:12px;color:#2563EB;font-weight:600}
+.chips{display:flex;gap:6px;flex-wrap:wrap}.chip{border:1px solid var(--line);border-radius:999px;padding:6px 11px;font-size:12.5px;font-weight:600;background:#fff}.chip.on{border-color:var(--p1);background:#EEF2FF;color:var(--p1)}
+.tpl{border:1px solid var(--line);border-radius:12px;padding:10px 12px;margin-bottom:8px;text-align:left;width:100%}.tpl b{color:var(--p1);font-size:12.5px}.tpl p{font-size:13px;margin-top:2px}
+.comp{border:1px solid var(--line);border-radius:12px;overflow:hidden}.ins{display:flex;gap:6px;flex-wrap:wrap;padding:8px 10px;border-bottom:1px solid var(--line);font-size:12px;align-items:center}.ins button{border:1px solid #C7D2FE;background:#EEF2FF;color:#3730A3;border-radius:8px;padding:4px 8px;font-size:12px;font-weight:600}
+.comp textarea{width:100%;border:0;outline:0;padding:10px 12px;min-height:80px;resize:vertical}.cf{display:flex;justify-content:space-between;padding:6px 12px;font-size:11.5px;color:var(--mute);border-top:1px solid var(--line)}.cf b{color:var(--p1)}
+.prev{background:#F8FAFC;border:1px solid var(--line);border-radius:12px;padding:10px;margin-top:8px}.bub{background:#fff;border-radius:14px;padding:9px 12px;font-size:13px;max-width:85%;box-shadow:0 1px 2px rgba(0,0,0,.06);white-space:pre-wrap}
+.opts{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}.opt{border:1px solid var(--line);border-radius:12px;padding:10px;text-align:left;background:#fff}.opt.on{border-color:var(--p1);background:#EEF2FF}.opt b{display:block;font-size:13px}.opt span{font-size:11.5px;color:var(--mute)}
+.newbox{border:1.5px dashed #F9A8D4;background:#FFF7FB;border-radius:14px;padding:12px;margin-top:8px}
+.promo{display:flex;gap:10px;align-items:center;border:1px solid var(--line);border-radius:12px;padding:9px;margin-top:6px;background:#fff;width:100%;text-align:left}.promo.on{border-color:var(--p1);background:#EEF2FF}.promo i{width:44px;height:44px;border-radius:10px;background:linear-gradient(135deg,#6D28D9,#111827);color:#fff;display:grid;place-items:center;font-style:normal;font-weight:900;font-size:13px}.promo b{display:block;font-size:13px}.promo span{font-size:11.5px;color:var(--mute)}
+.confirm{background:#FFF7ED;border:1px solid #FED7AA;border-radius:12px;padding:12px;margin-top:14px;font-size:13px;line-height:1.7}.confirm b.h{color:#9A3412}
+.mf{display:flex;gap:10px;align-items:center;padding:12px 16px;border-top:1px solid var(--line)}.est{flex:1;background:#EEF2FF;border:1px solid #C7D2FE;border-radius:12px;padding:8px 12px}.est small{display:block;font-size:11px;color:var(--mute)}.est b{color:var(--p1);font-size:14px}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.tg{position:relative;width:40px;height:22px;border-radius:11px;background:#CBD5E1;flex:0 0 40px}.tg::after{content:'';position:absolute;top:3px;left:3px;width:16px;height:16px;border-radius:50%;background:#fff;transition:.2s}.tg.on{background:var(--p1)}.tg.on::after{left:21px}
+.tr{display:flex;align-items:center;gap:10px;justify-content:space-between;font-size:13px;margin-top:8px}.tr small{display:block;color:var(--mute);font-size:11.5px}
+/* drawer */
+.drawer{position:fixed;top:0;right:0;bottom:0;width:min(460px,100%);background:#fff;z-index:60;box-shadow:-20px 0 50px rgba(0,0,0,.25);padding:18px;overflow:auto}
+.fun{display:grid;gap:8px;margin-top:10px}.fr{display:grid;grid-template-columns:120px 1fr 60px;gap:8px;align-items:center;font-size:12.5px}.fr .bar{height:12px;border-radius:6px;background:#F1F5F9;overflow:hidden}.fr .bar i{display:block;height:100%}
+.cmp{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.cmp div{border:1px solid var(--line);border-radius:12px;padding:10px}.cmp b{display:block;font-size:22px}.cmp span{font-size:12px;color:var(--mute)}
+/* doc */
+.doc{margin-top:24px}.doc h3{font-size:15px;margin-bottom:8px}.doc td,.doc th{white-space:normal!important;vertical-align:top}
+.note{font-size:12px;color:var(--mute);background:#F8FAFC;border:1px solid var(--line);border-radius:10px;padding:8px 10px;margin-top:8px;line-height:1.5}
+.bug{background:#FEF2F2;border:1px solid #FECACA;color:#991B1B;border-radius:10px;padding:8px 10px;font-size:12.5px;margin-top:10px}
+.legend{position:fixed;left:250px;bottom:16px;z-index:40;background:#111827;color:#fff;border-radius:12px;padding:8px 12px;font-size:12px;display:flex;gap:10px;align-items:center;box-shadow:0 10px 30px rgba(0,0,0,.3)}
+.spot{outline:3px solid #F59E0B!important;outline-offset:3px;border-radius:14px}
+.stour{position:fixed;left:50%;transform:translateX(-50%);bottom:16px;width:min(680px,94vw);background:#0B1220;color:#fff;border-radius:16px;padding:12px 14px;z-index:90;box-shadow:0 12px 40px rgba(0,0,0,.35)}
+.stour .hd2{font-size:11px;font-weight:800;letter-spacing:1px;color:#C4B5FD;display:flex;gap:8px;align-items:center;margin-bottom:6px}.stour .hd2 .sp{flex:1}.stour .hd2 button{background:#1E293B;border-radius:8px;padding:4px 9px;color:#fff}
+.stour #tVi{font-size:14px;font-weight:700}.stour #tEn{font-size:12px;color:#94A3B8;margin-top:2px}.stour .bar2{height:3px;background:#1E293B;border-radius:2px;margin-top:8px;overflow:hidden}.stour .bar2 i{display:block;height:100%;background:#C4B5FD;width:0}
+.hidden{display:none!important}
+#toast{position:fixed;left:50%;transform:translateX(-50%);bottom:110px;background:#0B1220;color:#fff;padding:10px 16px;border-radius:12px;font-weight:700;font-size:13px;z-index:95;display:none;max-width:90vw}
+.wn{position:fixed;inset:0;background:rgba(15,27,61,.55);z-index:80;display:grid;place-items:center;padding:16px}.wn .bx{background:#fff;border-radius:18px;max-width:580px;padding:22px}.wn li{margin:6px 0 6px 18px;font-size:13.5px;line-height:1.5}
+@media(max-width:980px){.app{grid-template-columns:1fr}aside{display:none}.stats{grid-template-columns:repeat(2,1fr)}.groups{grid-template-columns:1fr 1fr}.legend{left:16px}main{padding:16px 14px 120px}}
+@media(max-width:560px){.mf{flex-wrap:wrap}.mf .est{flex:1 1 100%}.mf .btn{flex:1}.groups,.gpick,.opts{grid-template-columns:1fr 1fr}.row2{grid-template-columns:1fr}}
+</style>
+</head>
+<body>
+<div class="app">
+<aside><div class="biz"><i>BTC</i>BITCOIN NAIL BAR</div>
+ <nav><a>🏠 Home</a><a>▦ Dashboard</a><a>💳 Payments & Payouts</a><a>☆ Reviews</a><a>▣ One QR</a><a class="on">📅 AI Hub</a>
+ <div class="sub"><a>Booking</a><a>Customers</a><a>Call Log</a><a class="cur">• SMS Campaigns → Campaigns <span class="new">MỚI</span></a><a>Plans</a><a>Salon settings</a></div>
+ <a>🛒 POS</a><a>🎁 Gift Card Center</a><a>📊 Analytics</a><a>⚙️ Settings</a><a>📚 News & Library</a><a>❓ Support</a></nav></aside>
+<main>
+ <h1>AI Hub</h1><p class="lead">Manage bookings, appointments, and client schedules in one place.</p>
+ <button class="guide">▣ AI Voice setup guide ↗</button>
+ <div class="tabs"><button>📅 Booking</button><button>👥 Customers</button><button>📞 Call Log</button><button class="on">💬 Campaigns <span class="new" style="background:#fff;color:var(--new)">MỚI</span></button><button>🏷️ Plans</button><button>⚙️ Salon settings</button></div>
+ <div class="card blink"><div><b>Online Booking Link</b><a>https://nexoratouch.com/b/bitcoin-nail-bar</a></div><button class="btn ghost sm">⧉ Copy</button></div>
+ <div class="row1"><span class="hint">Pick a customer group → Write message → <b>Chọn kênh (App → SMS)</b> <span class="new">MỚI</span> → Send or schedule</span>
+  <div class="cred"><div><small>SMS CREDITS</small><span>≈ $765.775 remaining</span></div><b>30,631</b></div><button class="btn org">🛒 Buy Credits</button><button class="btn pri" id="openCreate">✦ Create New Campaign</button></div>
+ <div class="stats" id="statsRow">
+  <div class="st" style="--c:#0EA5E9"><small>Total customers</small><b>871</b></div>
+  <div class="st" style="--c:#7C3AED"><small>SMS sent this month</small><b id="stSms">4</b></div>
+  <div class="st" style="--c:#16A34A"><small>Campaigns sent this month</small><b id="stCamp">1</b></div>
+  <div class="st" style="--c:#F59E0B"><small>Active auto campaigns</small><b id="stAuto">0</b></div>
+  <div class="st hasnew" style="--c:#DB2777" id="stApp"><small>Có app · nhận push <span class="new">MỚI</span></small><b id="appCount"></b></div></div>
+ <div class="sec">Customer groups — Select to send a campaign</div>
+ <div class="groups" id="groups"></div>
+ <div class="bug" id="bugNote">🐞 <b>Lỗi đang có trên bản thật:</b> ô nhóm “All” trong màn Create ghi <b>0 customers</b> nhưng ước tính lại tính <b>871</b>. Bản này đã sửa: All = 871.</div>
+ <div class="sec">Campaigns <span class="new">MỚI: cột kết quả</span></div>
+ <div class="card tw"><table class="t"><thead><tr><th>Name</th><th>Audience</th><th>Mode</th><th class="nw">Kênh</th><th>Status</th><th>Sent</th><th>Failed</th><th class="nw">Đã mở</th><th class="nw">Quay lại (check-in)</th><th class="nw">Doanh thu</th><th class="nw">So với đối chứng</th><th>Actions</th></tr></thead><tbody id="campBody"></tbody></table></div>
+ <div class="note">Các chiến dịch cũ (test, vip1, VIP · 7/27/2026) giữ nguyên số Sent/Failed từ tài khoản. Cột MỚI của chúng để trống vì bản thật chưa ghi dữ liệu này. Chiến dịch tạo trong prototype có kết quả mẫu.</div>
+
+ <div class="doc card" style="padding:16px" id="devDoc"><h3>📐 Ghi chú cho dev — giữ gì, thêm gì</h3>
+  <table class="t"><thead><tr><th>Phần</th><th>Hiện có (giữ nguyên)</th><th>Bổ sung</th></tr></thead><tbody>
+  <tr><td>Tab</td><td>SMS Campaigns</td><td>Đổi tên <b>Campaigns</b> — gửi cả App push + chuông + SMS</td></tr>
+  <tr><td>Nhóm khách</td><td>All · New · 15 · 30 · 60 Days · VIP · Birthday</td><td>Mỗi nhóm hiện số <b>có app / đồng ý SMS / không gửi được</b>. Lọc thêm theo <b>dịch vụ</b>, <b>thợ</b>. Loại khách <b>vừa nhận tin trong N ngày</b>. Sửa lỗi All = 0</td></tr>
+  <tr><td>Mẫu · soạn tin · xem trước</td><td>Giữ nguyên ({name} {shop} {link} {phone}, STOP, đếm ký tự)</td><td>Xem trước thêm <b>thông báo app</b> (tên tiệm làm tiêu đề)</td></tr>
+  <tr><td>Kênh</td><td>Chỉ SMS</td><td><b>App trước → SMS sau X giờ nếu chưa mở</b> (mặc định) · Chỉ app · Chỉ SMS. SMS <b>chỉ</b> gửi khách đã đồng ý</td></tr>
+  <tr><td>Đính kèm</td><td>Landing page (optional)</td><td><b>Gắn ưu đãi từ POS Promotions</b> (Deal / Coupon, giữ điều kiện) — để đo khách dùng ưu đãi</td></tr>
+  <tr><td>Lịch gửi</td><td>Send now · Schedule · Automated</td><td>Automated: kích hoạt khi khách <b>chạm mốc</b> (15/30/60 ngày, sinh nhật) + chuỗi App → SMS</td></tr>
+  <tr><td>Đo hiệu quả</td><td>—</td><td><b>Nhóm đối chứng</b> (giữ lại % không gửi) · <b>quay lại = check-in trong N ngày</b> · doanh thu từ bill POS</td></tr>
+  <tr><td>Xác nhận & chi phí</td><td>Group · Messages · Cost · Schedule</td><td>Tách: <b>push (miễn phí)</b> · <b>SMS (trừ credit)</b> · <b>bị loại</b> (chưa đồng ý / vừa nhận tin). Chỉ tính tiền phần SMS</td></tr>
+  <tr><td>Bảng Campaigns</td><td>Name · Audience · Mode · Status · Sent · Failed · View</td><td>Kênh · Đã mở · Quay lại · Doanh thu · So với đối chứng; View mở chi tiết phễu</td></tr></tbody></table>
+  <p class="note">Số khách theo nhóm (871 / 114 / 19 / 140 / 564 / 6), credits (30,631 ≈ $765.775) và giá SMS ($0.025/tin = $21.775 ÷ 871) lấy từ tài khoản Bitcoin Nail Bar lúc xem 29/9. <b>Tách có app / đồng ý SMS, tỷ lệ mở, quay lại, doanh thu là số mẫu.</b> X giờ chờ, N ngày quay lại, % đối chứng, N ngày không nhắn lại: <b>chờ Brian chốt</b>.</p></div>
+</main></div>
+<div class="legend"><span class="new">MỚI</span> = phần bổ sung · còn lại giữ nguyên như NEXORA đang chạy <button class="btn sm" style="background:#fff;color:#111" id="tourBtn">✦ AI Tour</button></div>
+<div id="modalRoot"></div><div id="drawerRoot"></div>
+<div class="wn" id="wn"><div class="bx"><div style="font-size:12px;font-weight:800;color:var(--new)">MỚI · Campaigns (bổ sung vào AI Hub)</div><h2 style="font-size:20px;margin:6px 0 8px">Gửi 1 lần — App trước, SMS sau, chỉ trả tiền SMS</h2><ul><li>Mỗi nhóm khách hiện số <b>có app / đồng ý SMS / không gửi được</b>.</li><li>Kênh mới: <b>App push + chuông</b> trước, <b>SMS sau X giờ</b> nếu chưa mở.</li><li>Gắn <b>ưu đãi từ POS Promotions</b>, đo <b>khách quay lại</b> bằng check-in, có <b>nhóm đối chứng</b>.</li><li>Giữ nguyên mọi thứ đang có: nhóm, mẫu, soạn tin, lịch gửi, credits.</li></ul><div style="display:flex;gap:8px;margin-top:12px"><button class="btn pri" id="wnGo">✦ Xem AI Tour</button><button class="btn ghost" id="wnX">Tự xem</button></div></div></div>
+<div class="stour hidden" id="tb"><div class="hd2">✦ AI SMART TOUR <span id="tStep"></span><span class="sp"></span><button id="tPause">⏸</button><button id="tNext">⏭</button><button id="tClose">✕</button></div><div id="tVi"></div><div id="tEn"></div><div class="bar2"><i id="tBar"></i></div></div>
+<div id="toast"></div>
+<script>
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];let tt;const toast=m=>{const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(tt);tt=setTimeout(()=>t.style.display='none',2600)};
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const PRICE=0.025;
+/* nhóm — số khách thật từ tài khoản; tách kênh là số mẫu */
+const G=[{k:'new',n:'New Customers',d:'First-time callers who haven’t returned. Welcome + offer to lock in visit #2.',c:'#0EA5E9',ic:'👤',cnt:114,st:'Ready',short:'New'},
+ {k:'d15',n:'15 Days No Visit',d:'Gentle reminder — nails need a touch-up?',c:'#16A34A',ic:'📅',cnt:19,st:'Ready',short:'15 Days'},
+ {k:'d30',n:'30 Days No Visit',d:'Been a while — send a strong offer to bring them back.',c:'#7C3AED',ic:'🕒',cnt:140,st:'Scheduled',short:'30 Days'},
+ {k:'d60',n:'60 Days Inactive',d:'About to lose them — strongest win-back offer.',c:'#F59E0B',ic:'🔄',cnt:564,st:'Ready',short:'60 Days'},
+ {k:'vip',n:'VIP Customers',d:'Top spenders — priority booking, exclusive offers.',c:'#DB2777',ic:'☆',cnt:6,st:'Sent',short:'VIP'},
+ {k:'bday',n:'Birthdays This Month',d:'Auto-send — free nail art or discount gift.',c:'#EA580C',ic:'🎁',cnt:0,st:'Auto',short:'Birthday'}];
+const ALL={k:'all',short:'All',cnt:871,ic:'👥'};
+const SVC=['Mọi dịch vụ','Pedicure','Gel-X','Dip powder','Manicure'],TECH=['Mọi thợ','Jessica','Tâm','Ann'];
+function split(cnt,recent){const app=Math.round(cnt*0.36),rest=cnt-app,sms=Math.round(rest*0.62),no=rest-sms;const rc=recent?Math.round(cnt*0.05):0;return{app:Math.max(0,app-Math.round(rc/2)),sms:Math.max(0,sms-Math.round(rc/2)),no,recent:rc}}
+$('#appCount').textContent=split(871).app+' khách';
+function drawGroups(){$('#groups').innerHTML=G.map(g=>{const s=split(g.cnt);return `<button class="gc" style="--c:${g.c}" data-g="${g.k}"><div class="t"><span class="ic">${g.ic}</span><div><b>${g.n}</b><p>${g.d}</p></div></div><div class="f"><span class="n">${g.cnt} <small>customers</small></span><span class="pill ${g.st==='Sent'||g.st==='Auto'?'':'ok'}">${g.st}</span></div><div class="split hasnew" style="outline-offset:2px">${g.cnt?`<span class="s-app">📱 ${s.app} có app</span><span class="s-sms">💬 ${s.sms} đồng ý SMS</span><span class="s-no">🚫 ${s.no} chưa đồng ý</span>`:'<span class="s-no">Tự gửi khi đến sinh nhật</span>'}</div></button>`}).join('');
+ $$('#groups [data-g]').forEach(b=>b.onclick=()=>openCreate(b.dataset.g))}
+/* campaigns */
+const CAMPS=[{n:'test',a:'VIP Customers',m:'Now',ch:'SMS',st:'Sent',sent:4,f:0},{n:'vip1',a:'VIP Customers',m:'Now',ch:'SMS',st:'Sent',sent:3,f:0},{n:'VIP · 7/27/2026',a:'VIP Customers',m:'Now',ch:'SMS',st:'Sent',sent:2,f:0},{n:'VIP · 7/27/2026',a:'VIP Customers',m:'Now',ch:'SMS',st:'Sent',sent:2,f:0}];
+function drawCamps(){$('#campBody').innerHTML=CAMPS.map((c,i)=>`<tr><td><b>${esc(c.n)}</b></td><td>${esc(c.a)}</td><td>${c.m}</td><td>${c.ch}</td><td><span class="pill ok">${c.st}</span></td><td>${c.sent}</td><td>${c.f}</td><td>${c.open??'—'}</td><td>${c.ret??'—'}</td><td>${c.rev??'—'}</td><td>${c.lift?`<span class="lift">${c.lift}</span>`:'—'}</td><td><button class="btn ghost sm" data-view="${i}">View</button></td></tr>`).join('');$$('[data-view]').forEach(b=>b.onclick=()=>openDrawer(+b.dataset.view))}
+/* create modal state */
+let F={};function reset(g){F={name:'',g:g||'all',svc:'Mọi dịch vụ',tech:'Mọi thợ',recent:true,recentDays:'7',msg:'',ch:'waterfall',wait:'24',promo:'p2',land:'',sched:'now',ctrl:true,ctrlPct:'10',win:'14'}}
+const PROMOS=[{id:'p0',t:'Không gắn ưu đãi',s:'Chỉ gửi tin',b:'—'},{id:'p1',t:'Chào khách lần đầu',s:'Coupon · đã lấy 52/100 · mỗi ngày · 29/09 → 29/10 · mã WELCOME15',b:'15%'},{id:'p2',t:'Bộ màu mùa thu',s:'Deal · T3–T5 10:00–15:00 · 01/09 → 30/11',b:'$5'},{id:'p3',t:'Pedicure ngày thường',s:'Deal · T3–T5 10:00–14:00 · 29/09 → 29/10',b:'15%'},{id:'p4',t:'Quà tháng sinh nhật',s:'Coupon · đã lấy 18/150 · tháng sinh nhật',b:'$10'},{id:'p5',t:'Khai trương Kayla Katy',s:'Coupon · lên lịch 06/10 → 05/11 · 47 khách giữ chỗ',b:'20%'}];
+function grp(){return F.g==='all'?ALL:G.find(x=>x.k===F.g)}
+function calc(){const g=grp();let cnt=g.cnt;if(F.svc!=='Mọi dịch vụ')cnt=Math.round(cnt*0.4);if(F.tech!=='Mọi thợ')cnt=Math.round(cnt*0.3);const s=split(cnt,F.recent);const ctrl=F.ctrl?Math.round((s.app+s.sms)*(+F.ctrlPct)/100):0;
+ let push=0,sms=0,smsMax=0;const appS=Math.round(s.app*(1-(F.ctrl?+F.ctrlPct/100:0))),smsS=Math.round(s.sms*(1-(F.ctrl?+F.ctrlPct/100:0)));
+ if(F.ch==='waterfall'){push=appS;const fallback=Math.round(appS*0.3*0.62);sms=smsS;smsMax=smsS+fallback}else if(F.ch==='app'){push=appS}else{sms=Math.round((s.app*0.62+s.sms)*(1-(F.ctrl?+F.ctrlPct/100:0)));smsMax=sms}
+ return{cnt,s,ctrl,push,sms,smsMax,cost:(smsMax||sms)*PRICE}}
+function openCreate(g){reset(g);drawModal()}
+function msgFill(){const p=PROMOS.find(x=>x.id===F.promo);return (F.msg||`Hi {name}! {shop} nhớ bạn — ${p&&p.id!=='p0'?p.t+' cho bạn':'ghé tiệm tuần này nhé'}: {link}`)}
+function drawModal(){const c=calc(),g=grp();const p=PROMOS.find(x=>x.id===F.promo);const sample=msgFill().replace('{name}','Linh').replace('{shop}','Bitcoin Nail Bar').replace('{link}','nexora.link/b/btc').replace('{phone}','(832) 799-3990');
+ $('#modalRoot').innerHTML=`<div class="ov" id="ov"><div class="modal" id="createModal"><div class="mh"><b>📣 Create Campaign</b><button class="x" id="mx">✕</button></div><div class="mb" id="mb">
+ <div class="lbl">CAMPAIGN NAME *</div><input class="in" id="fName" placeholder="e.g. July VIP promo" value="${esc(F.name)}">
+ <div class="lbl">STEP 1 — CHOOSE CUSTOMER GROUP</div><div class="gpick" id="gpick">${[ALL,...G].map(x=>`<button class="gp ${F.g===x.k?'on':''}" data-gp="${x.k}">${x.ic}<b>${x.short}</b><span>${x.cnt} customers</span></button>`).join('')}</div>
+ <div class="newbox" id="filtBox"><div class="lbl" style="margin-top:0"><span class="new">MỚI</span> LỌC THÊM</div>
+  <div style="font-size:12px;font-weight:700;margin-bottom:6px">Dịch vụ khách hay làm</div><div class="chips" id="fSvc">${SVC.map(x=>`<button class="chip ${F.svc===x?'on':''}" data-svc="${x}">${x}</button>`).join('')}</div>
+  <div style="font-size:12px;font-weight:700;margin:10px 0 6px">Thợ quen</div><div class="chips" id="fTech">${TECH.map(x=>`<button class="chip ${F.tech===x?'on':''}" data-tech="${x}">${x}</button>`).join('')}</div>
+  <div class="tr"><span>Bỏ khách <b>vừa nhận tin</b> trong <select class="in" id="fRecentD" style="width:auto;display:inline-block;padding:3px 6px">${['3','7','14'].map(x=>`<option ${F.recentDays===x?'selected':''}>${x}</option>`).join('')}</select> ngày<small>Tránh 1 khách nhận 2 tin (ví dụ vừa thuộc 30 Days vừa VIP)</small></span><button class="tg ${F.recent?'on':''}" id="fRecent"></button></div>
+  <div class="split" style="margin-top:10px"><span class="s-app">📱 ${c.s.app} có app</span><span class="s-sms">💬 ${c.s.sms} đồng ý SMS</span><span class="s-no">🚫 ${c.s.no} chưa đồng ý — không gửi SMS</span>${c.s.recent?`<span class="s-no">⏸ ${c.s.recent} vừa nhận tin</span>`:''}</div></div>
+ <div class="lbl">STEP 2 — PICK A TEMPLATE OR WRITE YOUR OWN</div>
+ <button class="tpl" data-tpl="Hi {name}! {shop} has a new offer for you. Book today: {link}"><b>📣 All customers</b><p>Hi {name}! {shop} has a new offer for you. Book today: {link}</p></button>
+ <button class="tpl" data-tpl="Hi {name}! Visit {shop} to discover our latest services and offers: {link}"><b>✨ Salon update</b><p>Hi {name}! Visit {shop} to discover our latest services and offers: {link}</p></button>
+ <div class="lbl">STEP 3 — COMPOSE MESSAGE</div><div class="comp"><div class="ins">Insert: <button data-ins="{name}">👤 Customer name</button><button data-ins="{shop}">🏪 Shop name</button><button data-ins="{link}">🔗 Offer link</button><button data-ins="{phone}">📞 Phone number</button></div><textarea id="fMsg" placeholder="Write your message...">${esc(F.msg)}</textarea><div class="cf"><span>Reply STOP to opt out</span><b>${msgFill().length} chars — ${Math.ceil(msgFill().length/160)||1} SMS (Gsm7, 160/msg)</b></div></div>
+ <div class="row2"><div class="prev"><div style="font-size:11px;font-weight:800;color:var(--mute);margin-bottom:6px">📱 PREVIEW ON CUSTOMER PHONE · SMS</div><div class="bub">${esc(sample)}\nReply STOP to opt out</div></div>
+  <div class="prev hasnew" id="pushPrev"><div style="font-size:11px;font-weight:800;color:var(--new);margin-bottom:6px">MỚI · THÔNG BÁO APP</div><div style="display:grid;grid-template-columns:28px 1fr 38px;gap:8px;align-items:center;background:#fff;border-radius:14px;padding:8px"><span style="width:28px;height:28px;border-radius:7px;background:linear-gradient(145deg,#6366F1,#312E81);color:#fff;display:grid;place-items:center;font-size:10px;font-weight:800">NX</span><div style="font-size:12px"><div style="color:var(--mute);font-size:10.5px">NEXORA · bây giờ</div><b>Bitcoin Nail Bar</b><div>${esc(p&&p.id!=='p0'?p.t:'Ưu đãi mới cho bạn')}</div></div><span style="width:38px;height:38px;border-radius:8px;background:linear-gradient(135deg,#6D28D9,#111827);color:#fff;display:grid;place-items:center;font-weight:900;font-size:12px">${p?p.b:''}</span></div><div style="font-size:11px;color:var(--mute);margin-top:6px">+ vào chuông 🔔 trong app</div></div></div>
+ <div class="newbox" id="chBox"><div class="lbl" style="margin-top:0"><span class="new">MỚI</span> STEP 4 — KÊNH GỬI</div>
+  <div class="opts">${[['waterfall','📱→💬 App trước, SMS sau','Khuyên dùng · chỉ trả SMS cho ai cần'],['app','📱 Chỉ app','Push + chuông · miễn phí'],['sms','💬 Chỉ SMS','Như hiện tại · khách đã đồng ý']].map(o=>`<button class="opt ${F.ch===o[0]?'on':''}" data-ch="${o[0]}"><b>${o[1]}</b><span>${o[2]}</span></button>`).join('')}</div>
+  ${F.ch==='waterfall'?`<div class="tr"><span>Gửi SMS cho khách có app nhưng <b>chưa mở thông báo</b> sau <select class="in" id="fWait" style="width:auto;display:inline-block;padding:3px 6px">${['6','24','48'].map(x=>`<option ${F.wait===x?'selected':''}>${x}</option>`).join('')}</select> giờ<small>Chỉ khi khách đồng ý SMS · khách không có app nhận SMS ngay</small></span></div>`:''}</div>
+ <div class="newbox" id="promoBox"><div class="lbl" style="margin-top:0"><span class="new">MỚI</span> STEP 5 — GẮN ƯU ĐÃI TỪ POS PROMOTIONS</div>${PROMOS.map(x=>`<button class="promo ${F.promo===x.id?'on':''}" data-promo="${x.id}"><i>${x.b}</i><div><b>${x.t}</b><span>${x.s}</span></div></button>`).join('')}<div class="note" style="margin-top:8px">Link {link} mở thẳng ưu đãi trong app / web app của tiệm, giữ nguyên điều kiện (ngày, giờ, cần đặt lịch). Nhờ vậy đo được ai <b>dùng</b> ưu đãi.</div></div>
+ <div class="lbl">ATTACH LANDING PAGE (OPTIONAL)</div><div style="display:flex;gap:8px"><select class="in"><option>-- No landing page --</option></select><button class="btn ghost sm">＋ Create page</button></div>
+ <div class="lbl">SEND SCHEDULE</div><div class="opts">${[['now','⚡ Send now',''],['sched','🕒 Schedule',''],['auto','🔁 Automated','']].map(o=>`<button class="opt ${F.sched===o[0]?'on':''}" data-sc="${o[0]}" style="text-align:center"><b>${o[1]}</b></button>`).join('')}</div>
+ ${F.sched==='auto'?`<div class="newbox"><b style="font-size:13px"><span class="new">MỚI</span> Tự gửi khi khách chạm mốc</b><div class="chips" style="margin-top:8px"><span class="chip on">${g.short==='All'?'30 ngày chưa ghé':g.short}</span></div><div class="note">Mỗi ngày hệ thống tìm khách vừa chạm mốc (theo check-in / check-out trong POS) và gửi theo kênh ở Step 4. Một khách chỉ nhận chiến dịch này 1 lần mỗi mốc.</div></div>`:''}
+ <div class="newbox" id="measBox"><div class="lbl" style="margin-top:0"><span class="new">MỚI</span> ĐO HIỆU QUẢ</div>
+  <div class="tr"><span>Giữ nhóm đối chứng <select class="in" id="fCtrlP" style="width:auto;display:inline-block;padding:3px 6px">${['5','10','20'].map(x=>`<option ${F.ctrlPct===x?'selected':''}>${x}</option>`).join('')}</select>% không gửi<small>So sánh để biết tin nhắn có kéo khách về thật không</small></span><button class="tg ${F.ctrl?'on':''}" id="fCtrl"></button></div>
+  <div class="tr"><span>Tính “quay lại” nếu khách <b>check-in trong</b> <select class="in" id="fWin" style="width:auto;display:inline-block;padding:3px 6px">${['7','14','30'].map(x=>`<option ${F.win===x?'selected':''}>${x}</option>`).join('')}</select> ngày<small>Doanh thu lấy từ bill POS của khách đó</small></span></div></div>
+ <div class="confirm" id="confirmBox"><b class="h">⚠ Confirm before sending</b><br>Group: <b>${g.short}</b> (${c.cnt} customers)${F.svc!=='Mọi dịch vụ'?' · '+F.svc:''}${F.tech!=='Mọi thợ'?' · thợ '+F.tech:''}<br>
+  <span class="new">MỚI</span> 📱 Push + chuông: <b>${c.push}</b> (miễn phí) · 💬 SMS: <b>${c.sms}</b>${F.ch==='waterfall'?` + tối đa <b>${c.smsMax-c.sms}</b> nhắc lại sau ${F.wait} giờ`:''}<br>
+  <span class="new">MỚI</span> Không gửi: <b>${c.s.no}</b> chưa đồng ý SMS & không có app${F.ch==='app'?` · <b>${c.s.sms}</b> chưa có app (chọn Chỉ app)`:''}${c.s.recent?` · <b>${c.s.recent}</b> vừa nhận tin`:''}${F.ctrl?` · <b>${c.ctrl}</b> nhóm đối chứng`:''}<br>
+  Cost: <b>$${c.cost.toFixed(3)}</b> — tối đa ${c.smsMax||c.sms} credits (chỉ phần SMS)<br>Schedule: <b>${F.sched==='now'?'Send immediately':F.sched==='sched'?'Scheduled':'Automated'}</b></div>
+ </div><div class="mf"><div class="est"><small>Estimated cost</small><b>${c.smsMax||c.sms} SMS tối đa ($${c.cost.toFixed(3)}) · ${c.push} push miễn phí</b></div><button class="btn ghost" id="mCancel">Cancel</button><button class="btn pri" id="mSend">➤ Send Campaign</button></div></div></div>`;
+ bindModal()}
+function bindModal(){$('#mx').onclick=$('#mCancel').onclick=()=>$('#modalRoot').innerHTML='';
+ const keep=()=>{F.name=$('#fName').value;F.msg=$('#fMsg').value};
+ $$('[data-gp]').forEach(b=>b.onclick=()=>{keep();F.g=b.dataset.gp;redraw()});$$('[data-svc]').forEach(b=>b.onclick=()=>{keep();F.svc=b.dataset.svc;redraw()});$$('[data-tech]').forEach(b=>b.onclick=()=>{keep();F.tech=b.dataset.tech;redraw()});
+ $('#fRecent').onclick=()=>{keep();F.recent=!F.recent;redraw()};$('#fRecentD').onchange=e=>{keep();F.recentDays=e.target.value;redraw()};
+ $$('[data-tpl]').forEach(b=>b.onclick=()=>{F.name=$('#fName').value;F.msg=b.dataset.tpl;redraw()});$$('[data-ins]').forEach(b=>b.onclick=()=>{keep();F.msg+=(F.msg?' ':'')+b.dataset.ins;redraw()});
+ $('#fMsg').oninput=()=>{keep()};$('#fMsg').onchange=()=>{keep();redraw()};
+ $$('[data-ch]').forEach(b=>b.onclick=()=>{keep();F.ch=b.dataset.ch;redraw()});const w=$('#fWait');if(w)w.onchange=e=>{keep();F.wait=e.target.value;redraw()};
+ $$('[data-promo]').forEach(b=>b.onclick=()=>{keep();F.promo=b.dataset.promo;redraw()});$$('[data-sc]').forEach(b=>b.onclick=()=>{keep();F.sched=b.dataset.sc;redraw()});
+ $('#fCtrl').onclick=()=>{keep();F.ctrl=!F.ctrl;redraw()};$('#fCtrlP').onchange=e=>{keep();F.ctrlPct=e.target.value;redraw()};$('#fWin').onchange=e=>{keep();F.win=e.target.value;redraw()};
+ $('#mSend').onclick=()=>{keep();if(!F.name.trim()){$('#fName').focus();$('#fName').style.borderColor='#DB2777';toast('Nhập tên chiến dịch');return}const c=calc(),g=grp();const opened=Math.round(c.push*0.48);const ret=Math.round((c.push+c.sms)*0.14);
+  CAMPS.unshift({n:F.name,a:g.short==='All'?'All customers':(G.find(x=>x.k===F.g)||{}).n,m:F.sched==='now'?'Now':F.sched==='sched'?'Scheduled':'Automated',ch:F.ch==='waterfall'?'App → SMS':F.ch==='app'?'App':'SMS',st:F.sched==='now'?'Sent':F.sched==='sched'?'Scheduled':'Active',sent:c.push+c.sms,f:0,open:opened+' ('+Math.round(opened/Math.max(1,c.push)*100)+'% push)',ret:ret+' trong '+F.win+' ngày',rev:'$'+(ret*42).toLocaleString(),lift:F.ctrl?'+'+(9)+' điểm %':'— (không đối chứng)',data:{c,opened,ret,win:F.win,ctrl:F.ctrl,ctrlPct:F.ctrlPct,promo:F.promo}});
+  $('#stCamp').textContent=+$('#stCamp').textContent+1;$('#stSms').textContent=+$('#stSms').textContent+c.sms;if(F.sched==='auto')$('#stAuto').textContent=+$('#stAuto').textContent+1;
+  $('#modalRoot').innerHTML='';drawCamps();toast('Demo: đã tạo “'+F.name+'” — không gửi tin thật')}}
+function redraw(){const sc=$('#mb').scrollTop;drawModal();$('#mb').scrollTop=sc}
+function openDrawer(i){const c=CAMPS[i];const d=c.data;$('#drawerRoot').innerHTML=`<div class="ov" id="dov" style="background:rgba(15,23,42,.35)"></div><div class="drawer" id="drawer"><div style="display:flex;justify-content:space-between;align-items:center"><b style="font-size:17px">${esc(c.n)}</b><button class="x" id="dx">✕</button></div><div class="note">${esc(c.a)} · ${c.ch} · ${c.st}</div>
+ ${d?`<div class="lbl"><span class="new">MỚI</span> PHỄU</div><div class="fun">${[['Gửi push',d.c.push,'#6366F1'],['Mở push',d.opened,'#8B5CF6'],['Gửi SMS',d.c.sms,'#10B981'],['Check-in lại',d.ret,'#F59E0B']].map(r=>`<div class="fr"><span>${r[0]}</span><div class="bar"><i style="width:${Math.min(100,r[1]/Math.max(1,d.c.push+d.c.sms)*100)}%;background:${r[2]}"></i></div><b>${r[1]}</b></div>`).join('')}</div>
+ <div class="lbl"><span class="new">MỚI</span> SO VỚI NHÓM ĐỐI CHỨNG</div>${d.ctrl?`<div class="cmp"><div><b>${Math.round(d.ret/Math.max(1,d.c.push+d.c.sms)*100)}%</b><span>Nhóm nhận tin quay lại trong ${d.win} ngày</span></div><div><b>${Math.max(0,Math.round(d.ret/Math.max(1,d.c.push+d.c.sms)*100)-9)}%</b><span>Nhóm đối chứng (${d.ctrlPct}%, không nhận tin)</span></div></div><div class="note">Chênh lệch ≈ tác dụng thật của tin nhắn. Không có nhóm đối chứng thì số “quay lại” gồm cả khách đằng nào cũng tới.</div>`:'<div class="note">Chiến dịch này không giữ nhóm đối chứng — chỉ biết số quay lại, không biết bao nhiêu là nhờ tin.</div>'}
+ <div class="lbl">CHI PHÍ</div><div class="note">${d.c.sms} SMS × $${PRICE} = <b>$${(d.c.sms*PRICE).toFixed(3)}</b> · push miễn phí</div><div class="note">Số liệu phễu là <b>số mẫu</b>.</div>`:`<div class="note" style="margin-top:12px">Chiến dịch cũ — bản thật hiện chỉ ghi Sent / Failed. Sau khi bổ sung, chiến dịch mới sẽ có phễu, quay lại và so với đối chứng.</div>`}</div>`;
+ $('#dx').onclick=$('#dov').onclick=()=>$('#drawerRoot').innerHTML=''}
+$('#openCreate').onclick=()=>openCreate('all');
+drawGroups();drawCamps();
+/* tour */
+const TOUR=[
+ {sel:'#statsRow',do:()=>{closeAll()},vi:'Giữ nguyên màn AI Hub › SMS Campaigns đang chạy: nhóm khách, credits, thống kê. Thêm 1 ô MỚI: số khách có app — nhận thông báo miễn phí.',en:'Same AI Hub screen as today; one new stat: customers with the app (free push).'},
+ {sel:'#groups',vi:'Mỗi nhóm (New · 15 · 30 · 60 ngày · VIP · Sinh nhật) giờ hiện thêm: bao nhiêu khách có app, bao nhiêu đồng ý SMS, bao nhiêu chưa đồng ý — không được gửi SMS.',en:'Each group now shows app / SMS-consent / no-consent counts.'},
+ {sel:'#bugNote',vi:'Lỗi đang có trên bản thật: nhóm All ghi 0 khách nhưng ước tính tính 871. Bản này sửa lại.',en:'Live bug: “All” shows 0 but estimates 871 — fixed here.'},
+ {sel:'#filtBox',do:()=>{openCreate('d30')},vi:'Create Campaign giữ nguyên 5 bước cũ. Bước 1 thêm lọc theo dịch vụ, thợ quen, và bỏ khách vừa nhận tin trong vài ngày để không gửi trùng.',en:'Step 1 adds service, tech and recently-contacted filters.'},
+ {sel:'#pushPrev',do:()=>{setTimeout(()=>{$('#pushPrev').scrollIntoView({block:'center'})},100)},vi:'Xem trước thêm thông báo app: icon NEXORA, tiêu đề là tên tiệm, ảnh ưu đãi — cạnh bản xem trước SMS đang có.',en:'Adds an app-notification preview next to the SMS preview.'},
+ {sel:'#chBox',vi:'Bước MỚI — Kênh gửi: App trước, SMS sau X giờ nếu khách chưa mở. SMS chỉ gửi khách đã đồng ý. Khách không có app nhận SMS ngay.',en:'New step — channel: app first, SMS after X hours if unopened, consent only.'},
+ {sel:'#promoBox',vi:'Gắn ưu đãi từ POS Promotions thay vì chỉ landing page — link mở thẳng ưu đãi trong app của tiệm, giữ điều kiện, đo được ai dùng.',en:'Attach a POS Promotions offer so redemption can be measured.'},
+ {sel:'#measBox',vi:'Đo hiệu quả: giữ nhóm đối chứng không gửi, tính quay lại bằng check-in trong N ngày, doanh thu từ bill POS.',en:'Measurement: control group, return = check-in within N days, POS revenue.'},
+ {sel:'#confirmBox',vi:'Ô xác nhận tách rõ: bao nhiêu push (miễn phí), bao nhiêu SMS (trừ credit), bao nhiêu bị loại vì chưa đồng ý hoặc vừa nhận tin. Chỉ tính tiền phần SMS.',en:'Confirmation splits free push vs paid SMS vs excluded.'},
+ {sel:'#campBody',do:()=>{if(!$('#mSend'))openCreate('d30');$('#fName').value='Win-back 30 ngày';$('#mSend').click()},vi:'Bảng Campaigns thêm cột: Kênh, Đã mở, Quay lại (check-in), Doanh thu, So với đối chứng.',en:'Campaign table adds opened, returned, revenue and lift columns.'},
+ {sel:'#drawer',do:()=>{openDrawer(0)},vi:'View mở chi tiết: phễu gửi → mở → check-in lại, và so sánh với nhóm đối chứng để biết tin nhắn có tác dụng thật.',en:'View shows the funnel and control-group comparison.'},
+ {sel:'#devDoc',do:()=>{closeAll();setTimeout(()=>$('#devDoc').scrollIntoView({block:'start'}),100)},vi:'Bảng cho dev: giữ gì, thêm gì. Số khách và giá SMS lấy từ tài khoản thật; tách kênh và kết quả là số mẫu; các con số X giờ, N ngày, % đối chứng chờ Brian chốt.',en:'Dev table: keep vs add; real counts, sample splits, pending decisions.'},
+];
+function closeAll(){$('#modalRoot').innerHTML='';$('#drawerRoot').innerHTML=''}
+let ti=0,tRun=false,tPaused=false,tStart=0,raf,DUR=9000;
+function spot(el){$$('.spot').forEach(x=>x.classList.remove('spot'));if(el){el.classList.add('spot');el.scrollIntoView({behavior:'smooth',block:'center'})}}
+function showStep(){const s=TOUR[ti];s.do&&s.do();setTimeout(()=>spot($(s.sel)),300);$('#tVi').textContent=s.vi;$('#tEn').textContent=s.en;$('#tStep').textContent=`${ti+1}/${TOUR.length}`;tStart=performance.now();$('#tBar').dataset.p=0;loop()}
+function loop(){cancelAnimationFrame(raf);const f=t=>{if(!tRun)return;const bar=$('#tBar');if(tPaused){tStart=t-(+bar.dataset.p)*DUR;raf=requestAnimationFrame(f);return}const p=Math.min(1,(t-tStart)/DUR);bar.style.width=p*100+'%';bar.dataset.p=p;if(p>=1)return nextStep();raf=requestAnimationFrame(f)};raf=requestAnimationFrame(f)}
+function nextStep(){ti=(ti+1)%TOUR.length;showStep()}
+function startTour(){$('#wn').classList.add('hidden');tRun=true;tPaused=false;ti=0;$('#tPause').textContent='⏸';$('#tb').classList.remove('hidden');showStep()}
+function stopTour(){if(!tRun)return;tRun=false;cancelAnimationFrame(raf);$('#tb').classList.add('hidden');spot(null)}
+$('#tPause').onclick=()=>{tPaused=!tPaused;$('#tPause').textContent=tPaused?'▶':'⏸'};$('#tNext').onclick=nextStep;$('#tClose').onclick=stopTour;$('#tourBtn').onclick=startTour;$('#wnGo').onclick=startTour;$('#wnX').onclick=()=>$('#wn').classList.add('hidden');
+['touchstart','wheel','keydown','mousedown'].forEach(ev=>window.addEventListener(ev,e=>{if(tRun&&e.isTrusted&&!e.target.closest('.stour'))stopTour()},{passive:true}));
+window.addEventListener('message',e=>{const d=e.data||{};try{if(d.cmd==='tour')startTour();if(d.cmd==='stopTour')stopTour()}catch(err){}});
+if(!window.__EMBED)setTimeout(()=>{if(!$('#wn').classList.contains('hidden'))startTour()},7000);
+</script>
+</body>
+</html>
