@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/pos-front-desk.css">
   <link rel="stylesheet" href="../assets/pos-demo-settings.css">
-  <link rel="stylesheet" href="../assets/pos-front-desk-tickets.css?v=overview-tab-1">
+  <link rel="stylesheet" href="../assets/pos-front-desk-tickets.css?v=ticket-views-1">
   <link rel="stylesheet" href="../assets/ticket-workspace.css?v=po-tip-1">
 </head>
 <body>
@@ -30,12 +30,19 @@
 
 <section id="ticket-workspace" class="ticket-workspace" aria-label="Edit and checkout ticket" hidden></section>
 <section id="tickets-view" aria-labelledby="tickets-title">
-  <section class="pos-operations" data-pos-operations aria-label="Today’s Operations"></section>
-  <div class="tickets-heading"><div><h2 id="tickets-title" tabindex="-1">Open Tickets</h2><p>Guests currently moving through the service workflow.</p></div></div>
-  <div id="ticket-filters" class="toolbar" role="group" aria-label="Filter tickets by status"></div>
+  <div class="tickets-heading"><div><h2 id="tickets-title" tabindex="-1">Open Tickets</h2><p>Guests currently moving through the service workflow.</p></div><a class="ticket-direct-link" href="pos-direct-checkout.html"><i data-lucide="plus" aria-hidden="true"></i>Direct checkout</a></div>
+  <section class="pos-operations ticket-station-tools" data-pos-operations aria-label="Station availability and ticket filters"></section>
+  <div class="ticket-toolbar">
+    <div id="ticket-filters" class="toolbar" role="group" aria-label="Filter tickets by status"></div>
+    <div class="ticket-view-switch" role="group" aria-label="Ticket view mode">
+      <button type="button" data-ticket-view="table" aria-pressed="true" aria-controls="ticket-table-view"><i data-lucide="table-2" aria-hidden="true"></i>Table</button>
+      <button type="button" data-ticket-view="board" aria-pressed="false" aria-controls="ticket-board-view"><i data-lucide="columns-3" aria-hidden="true"></i>Board</button>
+    </div>
+  </div>
   <p id="assignment-alert" class="assignment-alert" role="status"></p>
   <section id="family-checkin-groups" class="family-checkin-groups" aria-label="Family check-in groups" hidden></section>
-  <div class="table-wrap"><table><thead><tr><th>Number</th><th>Customer</th><th>Check-in at</th><th>Status</th><th>Technician</th><th>Services</th><th>Wait time</th><th>Actions</th></tr></thead><tbody id="ticket-body"></tbody></table><p class="empty" id="ticket-empty" hidden>No guests match this status.</p></div>
+  <div id="ticket-table-view" class="table-wrap"><table><thead><tr><th>Number</th><th>Customer</th><th>Check-in at</th><th>Status</th><th>Technician</th><th>Services</th><th>Wait time</th><th>Actions</th></tr></thead><tbody id="ticket-body"></tbody></table><p class="empty" id="ticket-empty" hidden>No guests match these filters.</p></div>
+  <section id="ticket-board-view" class="pos-operations ticket-board-view" data-ticket-board aria-label="Open tickets by service status" hidden></section>
 <p id="feedback" role="status"></p></section>
 <section id="overview-view" class="checkin-overview" aria-labelledby="overview-title" hidden>
   <div class="tickets-heading"><div class="overview-heading-copy"><h2 id="overview-title" tabindex="-1">Today’s Check-in Overview</h2><p>Guest flow and new-customer acquisition for today.</p></div></div>
@@ -72,7 +79,7 @@
 <script src="../assets/appointment-tickets.js"></script>
 <script src="../assets/appointments-store.js"></script>
 <script src="../assets/ticket-workspace.js?v=po-tip-1"></script>
-<script src="../assets/pos-front-desk-tickets.js"></script>
-<script src="../assets/pos-front-desk-operations.js"></script>
+<script src="../assets/pos-front-desk-tickets.js?v=ticket-views-1"></script>
+<script src="../assets/pos-front-desk-operations.js?v=ticket-views-1"></script>
 <script src="../assets/pos-front-desk-overview.js?v=overview-tab-1"></script>
 </body></html>

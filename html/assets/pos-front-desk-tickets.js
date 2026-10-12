@@ -50,7 +50,17 @@ const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;
 const demo=window.NEXORA_POS_DEMO,stations=window.NEXORA_STATIONS;
 const labels={'not-arrived':'Not Arrived',waiting:'Waiting','in-service':'In Service','ready-to-pay':'Ready to pay'};
 const visibleFor=t=>!demo||['owner','manager','cashier'].includes(demo.account().role)||(demo.account().role==='technician'&&String(t.tech || '').split(',').map(n=>n.trim()).includes(demo.account().name));
-let filter='all',selected=null,action='',openedTicket=null;
+let filter='all',stationFilter='',selected=null,action='',openedTicket=null;
+const ticketViewKey='nexora:front-desk-ticket-view:v1';
+function preferredTicketView(){try{return localStorage.getItem(ticketViewKey)==='board'?'board':'table';}catch(_){return 'table';}}
+function ticketViewFromUrl(){const value=new URL(window.location.href).searchParams.get('ticketView');return ['table','board'].includes(value)?value:preferredTicketView();}
+let ticketView=ticketViewFromUrl();
+function applyTicketView(){
+ $('#ticket-table-view').hidden=ticketView!=='table';$('#ticket-board-view').hidden=ticketView!=='board';
+ document.querySelectorAll('[data-ticket-view]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.ticketView===ticketView)));
+}
+const matchesStation=t=>!stationFilter||(stations.assigned(t)?.code || t.stationCode)===stationFilter;
+const filteredTickets=()=>tickets.filter(t=>visibleFor(t)&&matchesStation(t)&&(filter==='all'||t.status===filter));
 const feedback=message=>{$('#feedback').textContent=message;};
 function button(label,kind,id,extra=''){return '<button type="button" data-action="'+kind+'" data-id="'+id+'" class="'+extra+'">'+label+'</button>';}
 function needsTechnician(t){return t.lines?t.lines.some(l=>!l.tech):!t.tech;}
@@ -74,12 +84,14 @@ function renderFamilyGroups(){
 }
 function render(){
   tickets.forEach(t=>{if(t.lines?.length&&t.lines.every(l=>l.status==='completed'))t.status='ready-to-pay';const st=stations?.assigned(t);if(st){t.stationCode=st.code;t.stationOverride=st.override;}});
+  applyTicketView();
   renderFamilyGroups();
-  $('#ticket-nav-count').textContent=tickets.length;
-  $('#ticket-filters').innerHTML=[['all','All'],...Object.entries(labels)].map(([key,label])=>'<button type="button" data-filter="'+key+'" class="'+(filter===key?'active':'')+'" aria-pressed="'+(filter===key)+'">'+label+' ('+tickets.filter(t=>key==='all'||t.status===key).length+')</button>').join('');
-  const waiting=tickets.filter(t=>t.status==='waiting'&&needsTechnician(t)).length;
+  const active=tickets.filter(visibleFor),stationRows=active.filter(matchesStation);
+  $('#ticket-nav-count').textContent=active.length;
+  $('#ticket-filters').innerHTML=[['all','All'],...Object.entries(labels)].map(([key,label])=>'<button type="button" data-filter="'+key+'" class="'+(filter===key?'active':'')+'" aria-pressed="'+(filter===key)+'">'+label+' ('+stationRows.filter(t=>key==='all'||t.status===key).length+')</button>').join('');
+  const waiting=stationRows.filter(t=>t.status==='waiting'&&needsTechnician(t)).length;
   $('#assignment-alert').hidden=!waiting;$('#assignment-alert').textContent='● '+waiting+' '+(waiting===1?'guest':'guests')+' awaiting technician assignment';
-  const rows=tickets.filter(t=>visibleFor(t)&&(filter==='all'||t.status===filter));
+  const rows=filteredTickets();
   $('#ticket-empty').hidden=rows.length>0;
   $('#ticket-body').innerHTML=rows.map(t=>{
     let actions=button('Edit','edit',t.id);
@@ -106,6 +118,7 @@ function updateTicketUrl(ticket,kind,historyMode='push'){
 }
 function restoreTicketUrl(){
  const url=new URL(window.location.href),id=url.searchParams.get('ticketId'),kind=url.searchParams.get('mode');
+ ticketView=ticketViewFromUrl();applyTicketView();
  const dialog=$('#ticket-workspace dialog');if(dialog?.open)dialog.close();
  $('#ticket-workspace').hidden=true;openedTicket=null;
  $('#tickets-view').hidden=url.searchParams.get('view')==='overview';
@@ -143,6 +156,13 @@ async function open(kind,ticket,historyMode='push'){
  $('#ticket-dialog-title').textContent=title;$('#ticket-dialog-content').innerHTML=content;$('#ticket-dialog').showModal();
 }
 $('#ticket-filters').addEventListener('click',e=>{const b=e.target.closest('[data-filter]');if(b){filter=b.dataset.filter;render();}});
+document.querySelector('.ticket-view-switch').addEventListener('click',e=>{
+ const button=e.target.closest('[data-ticket-view]');if(!button||button.dataset.ticketView===ticketView)return;
+ ticketView=button.dataset.ticketView;
+ try{localStorage.setItem(ticketViewKey,ticketView);}catch(_){}
+ const url=new URL(window.location.href);url.searchParams.set('ticketView',ticketView);window.history.replaceState(window.history.state,'',url.href);
+ applyTicketView();
+});
 $('#family-checkin-groups').addEventListener('click',e=>{const link=e.target.closest('[data-family-ticket]');if(!link)return;const t=ticketRecords.find(t=>ticketKey(t)===link.dataset.familyTicket&&!t.cancelled);if(t){e.preventDefault();open(t.payment?'checkout':'edit',t);}});
 $('#ticket-body').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const t=tickets.find(t=>t.id===Number(b.dataset.id));if(!t)return;if(b.dataset.action==='start'){try{const gate=String(t.tech).split(',').map(n=>stations.gate(n.trim())).find(Boolean);if(gate)throw new Error('Confirm '+gate.code+' clean before the next Beep.');stations.start(t);}catch(error){feedback(error.message);return;}t.status='in-service';if(t.lines)t.lines.forEach(l=>{if(l.tech&&l.status!=='completed')l.status='in-service';});persistWorkspace(t);render();feedback('Service started for '+t.customer);return;}open(b.dataset.action,t);});
 document.querySelectorAll('[data-close-dialog]').forEach(b=>b.addEventListener('click',()=>$('#ticket-dialog').close()));
@@ -165,7 +185,7 @@ $('#ticket-form').addEventListener('submit',e=>{
  if(action!=='assign'||!data.get('print'))feedback('Ticket updated.');
  persistWorkspace(t);$('#ticket-dialog').close();render();
 });
-window.NEXORA_FRONT_DESK_TICKETS={active:()=>tickets.filter(visibleFor),open,save(t){persistWorkspace(t);render();},feedback};
+window.NEXORA_FRONT_DESK_TICKETS={active:()=>tickets.filter(visibleFor),rows:filteredTickets,filters:()=>({status:filter,station:stationFilter}),setStationFilter(code){stationFilter=code;render();},open,save(t){persistWorkspace(t);render();},feedback};
 window.addEventListener('nexora:stations-changed',render);
 window.addEventListener('nexora:pos-account-changed',()=>{if(openedTicket){openedTicket=null;$('#ticket-workspace').hidden=true;$('#tickets-view').hidden=false;updateTicketUrl(null);}if($('#ticket-dialog').open)$('#ticket-dialog').close();render();});
 render();restoreTicketUrl();
