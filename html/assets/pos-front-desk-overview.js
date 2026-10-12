@@ -45,20 +45,29 @@
   detailDialog.querySelectorAll('[data-close-checkin-detail]').forEach(button=>button.addEventListener('click',()=>{detailDialog.close();restoreDetailFocus();}));
   function showView(overview,focus=false) {
     if(detailDialog.open)detailDialog.close();
+    document.querySelectorAll('[data-front-view]').forEach(link=>{
+      const selected=link.dataset.frontView===(overview?'overview':'tickets');
+      link.classList.toggle('active',selected);
+      if(selected)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
+    });
+    document.title='Nexora Touch - Front Desk '+(overview?'Overview':'Tickets');
     if(!$('#ticket-workspace').hidden){$('#tickets-view').hidden=true;$('#overview-view').hidden=true;return;}
     if(overview)renderGuests();
     $('#tickets-view').hidden=overview;$('#overview-view').hidden=!overview;
-    if(focus)$(overview?'#overview-title':'#checkin-summary').focus();
+    if(focus)$(overview?'#overview-title':'#tickets-title').focus();
   }
   function navigate(overview) {
     const url=new URL(window.location.href);
     if(overview)url.searchParams.set('view','overview');else url.searchParams.delete('view');
+    ['ticketId','mode'].forEach(key=>url.searchParams.delete(key));
     if(url.href!==window.location.href)window.history.pushState(window.history.state,'',url.href);
-    showView(overview,true);
+    window.dispatchEvent(new PopStateEvent('popstate'));
   }
   function overviewFromUrl(){return new URL(window.location.href).searchParams.get('view')==='overview';}
-  $('#checkin-summary').addEventListener('click',()=>navigate(true));
-  $('[data-overview-back]').addEventListener('click',()=>navigate(false));
+  document.querySelectorAll('[data-front-view]').forEach(link=>link.addEventListener('click',event=>{
+    if(event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
+    event.preventDefault();navigate(link.dataset.frontView==='overview');
+  }));
   window.addEventListener('popstate',()=>showView(overviewFromUrl(),true));
   showView(overviewFromUrl());
   $('#overview-filter').addEventListener('change',renderGuests);

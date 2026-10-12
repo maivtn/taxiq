@@ -8,7 +8,7 @@
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/pos-front-desk.css">
   <link rel="stylesheet" href="../assets/pos-demo-settings.css">
-  <link rel="stylesheet" href="../assets/pos-front-desk-tickets.css">
+  <link rel="stylesheet" href="../assets/pos-front-desk-tickets.css?v=overview-tab-1">
   <link rel="stylesheet" href="../assets/ticket-workspace.css">
 </head>
 <body>
@@ -16,12 +16,13 @@
 <main class="content front-desk tickets-page">
 <h1>Front Desk</h1><p class="subtitle">Check in guests, manage open tickets, and run the turn board.</p>
   <nav class="workflow" aria-label="Front Desk workflows">
+    <a data-front-view="overview" href="pos-front-desk-tickets.html?view=overview">Overview</a>
     <a href="pos-front-desk.html?section=checkin">Check-in</a>
-    <a class="active" href="pos-front-desk-tickets.html" aria-current="page">Tickets <span id="ticket-nav-count"></span></a>
+    <a data-front-view="tickets" class="active" href="pos-front-desk-tickets.html" aria-current="page">Tickets <span id="ticket-nav-count"></span></a>
     <a href="pos-front-desk-turn-board.html">Turn Board</a>
     <a href="pos-direct-checkout.html?view=list">Checkout Customer</a>
     <button type="button" disabled>Completed Services</button>
-    <a href="pos-front-desk.html">Appointments</a>
+    <a href="pos-front-desk.html?section=appointments">Appointments</a>
     <a href="pos-front-desk.html?section=estimate">Estimate</a>
     <button type="button" disabled>Staffs Clock</button>
     <button type="button" disabled>Customer History</button>
@@ -30,14 +31,14 @@
 <section id="ticket-workspace" class="ticket-workspace" aria-label="Edit and checkout ticket" hidden></section>
 <section id="tickets-view" aria-labelledby="tickets-title">
   <section class="pos-operations" data-pos-operations aria-label="Today’s Operations"></section>
-  <div class="tickets-heading"><div><h2 id="tickets-title">Open Tickets</h2><p>Guests currently moving through the service workflow.</p></div><button type="button" id="checkin-summary" aria-controls="overview-view"><strong>48 Check-ins Today</strong><span>12 New · 36 Returning → View overview</span></button></div>
+  <div class="tickets-heading"><div><h2 id="tickets-title" tabindex="-1">Open Tickets</h2><p>Guests currently moving through the service workflow.</p></div></div>
   <div id="ticket-filters" class="toolbar" role="group" aria-label="Filter tickets by status"></div>
   <p id="assignment-alert" class="assignment-alert" role="status"></p>
   <section id="family-checkin-groups" class="family-checkin-groups" aria-label="Family check-in groups" hidden></section>
   <div class="table-wrap"><table><thead><tr><th>Number</th><th>Customer</th><th>Check-in at</th><th>Status</th><th>Technician</th><th>Services</th><th>Wait time</th><th>Actions</th></tr></thead><tbody id="ticket-body"></tbody></table><p class="empty" id="ticket-empty" hidden>No guests match this status.</p></div>
 <p id="feedback" role="status"></p></section>
 <section id="overview-view" class="checkin-overview" aria-labelledby="overview-title" hidden>
-  <div class="tickets-heading"><button type="button" data-overview-back aria-label="Back to Tickets"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m12 19-7-7 7-7M5 12h14"></path></svg><span>Back</span></button><div class="overview-heading-copy"><h2 id="overview-title" tabindex="-1">Today’s Check-in Overview</h2><p>Guest flow and new-customer acquisition for today.</p></div></div>
+  <div class="tickets-heading"><div class="overview-heading-copy"><h2 id="overview-title" tabindex="-1">Today’s Check-in Overview</h2><p>Guest flow and new-customer acquisition for today.</p></div></div>
   <div class="overview-stats">
     <div class="stat-card"><span>Total Check-ins</span><strong>48</strong></div>
     <div class="stat-card"><span>New Guests</span><strong>12</strong></div>
@@ -73,5 +74,5 @@
 <script src="../assets/ticket-workspace.js"></script>
 <script src="../assets/pos-front-desk-tickets.js"></script>
 <script src="../assets/pos-front-desk-operations.js"></script>
-<script src="../assets/pos-front-desk-overview.js"></script>
+<script src="../assets/pos-front-desk-overview.js?v=overview-tab-1"></script>
 </body></html>
