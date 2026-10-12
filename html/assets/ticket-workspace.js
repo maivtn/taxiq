@@ -75,7 +75,7 @@
       },30000);
       return true;
     };
-    let ticket, parent, activeBillId, mode='edit', category='All', search='', dialogAction='', dialogLine='', setupAssignments={}, serviceFilter='all', lastAssignment=null, qrStream=null, qrFrame=null, tipMode='even', tipType='fixed', tipValue=0, tipPerTech={}, tipCustomerMode=false, discountType='fixed', discountValue=0, discountAbsorber='salon', discountReason='';
+    let ticket, parent, activeBillId, mode='edit', category='All', search='', dialogAction='', dialogLine='', setupAssignments={}, serviceFilter='all', lastAssignment=null, qrStream=null, qrFrame=null, tipType='fixed', tipValue=0, tipPerTech={}, tipCustomerMode=false, discountType='fixed', discountValue=0, discountAbsorber='salon', discountReason='';
     const $ = selector => root.querySelector(selector);
     const button = (label,attr,style='') => `<button type="button" class="tw-button ${style}" ${attr}>${iconForLabel[label]?icon(iconForLabel[label]):''}<span>${label}</span></button>`;
     const input = (label,name,value='',type='text') => `<label>${label}<input name="${name}" type="${type}" value="${esc(value)}" ${type==='number'?'min="0" step="0.01"':''} required></label>`;
@@ -119,28 +119,70 @@
       const names=[...new Set((ticket.lines || []).flatMap(line=>String(line.tech || '').split(',')).map(name=>name.trim()).filter(Boolean))];
       return names.length?names:['Unassigned'];
     }
+    const tipPolicies=[['proportional','By work'],['fifty','50 / 50'],['equal','Equal'],['manual','Manual']];
+    function effectiveTipPolicy(policy,count=tipTechnicians().length){return policy==='fifty'&&count!==2?'equal':policy || 'proportional';}
+    function checkoutTipPolicy(){return effectiveTipPolicy((amountSplit()?parent.checkout:ticket.checkout).tipSplitMode || demo?.load().payment.tipSplit || 'equal');}
+    function tipPolicyButtons(policy,attribute,locked=false){
+      const count=tipTechnicians().length,selected=effectiveTipPolicy(policy,count);
+      return `<div class="tw-tip-policies" role="group" aria-label="Tip split method">${tipPolicies.map(([id,label])=>button(label,`${attribute}="${id}" aria-pressed="${selected===id}" ${locked||id==='fifty'&&count!==2?'disabled':''} ${id==='fifty'&&count!==2?'title="Requires exactly two technicians"':''}`,selected===id?'selected':'')).join('')}</div>`;
+    }
+    function tipAllocationsFor(subject,policy,manual=subject.checkout.tipAllocations){
+      const t=totals(subject,false);if(t.error)return {};
+      if(demo&&subject.amountTotals){
+        const original=totals(parent,false),names=tipTechnicians(),weights=demo.allocateTip(parent.lines,original.tipCents || 0,checkoutTipPolicy(),parent.checkout.tipAllocations);
+        const total=Object.values(weights).reduce((sum,value)=>sum+value,0);let running=0,previous=0;
+        return Object.fromEntries(names.map(name=>{running+=total?weights[name] || 0:1;const next=Math.round(t.tipCents*running/(total || names.length)),value=next-previous;previous=next;return [name,value];}));
+      }
+      if(demo)return demo.allocateTip(subject.lines,t.tipCents,effectiveTipPolicy(policy),manual);
+      const names=tipTechnicians(),count=names.length;
+      if(policy==='manual'&&count>1)return Object.fromEntries(names.map(name=>[name,cents(manual?.[name] || 0)]));
+      const weights=names.map(name=>policy==='proportional'?subject.lines.reduce((sum,line)=>{const techs=String(line.tech || '').split(',').map(value=>value.trim()).filter(Boolean);return sum+(techs.includes(name)?cents(line.price)/techs.length:0);},0):1);
+      const total=weights.reduce((sum,value)=>sum+value,0);let running=0,previous=0;
+      return Object.fromEntries(names.map((name,index)=>{running+=total?weights[index]:1;const next=Math.round(t.tipCents*running/(total || count)),value=next-previous;previous=next;return [name,value];}));
+    }
+    function tipBalanceInfo(subject,policy,manual=subject.checkout.tipAllocations){
+      const t=totals(subject,false);if(t.error)return {balanced:false,text:t.error};
+      const names=tipTechnicians(),values=tipAllocationsFor(subject,policy,manual),sum=Object.values(values).reduce((total,value)=>total+value,0);
+      if(!subject.amountTotals&&policy==='manual'&&names.length>1&&names.some(name=>!validMoney(manual?.[name] ?? 0)))return {balanced:false,text:'Enter a valid tip for every technician.'};
+      const remaining=t.tipCents-sum;
+      return {balanced:remaining===0,text:remaining===0?'Tip fully allocated':remaining>0?'Remaining '+money(remaining):'Over allocated by '+money(-remaining)};
+    }
+    function tipAllocationHtml(){
+      const names=tipTechnicians().filter(name=>name!=='Unassigned'),p=ticket.checkout,policy=checkoutTipPolicy();
+      if(!names.length)return '<p class="tw-muted">Assign a technician to allocate the tip.</p>';
+      const values=tipAllocationsFor(ticket,policy),manual=policy==='manual'&&names.length>1&&!amountSplit();
+      return names.map((name,index)=>`<div class="tw-tip-allocation-row"><span>${esc(name)}</span>${manual?`<label class="tw-tip-allocation-input"><span>$</span><input type="number" min="0" step="0.01" inputmode="decimal" data-tw-tip-share="${index}" value="${esc(p.tipAllocations?.[name] ?? 0)}" aria-label="Tip for ${esc(name)}"></label>`:`<strong>${money(values[name] || 0)}</strong>`}</div>`).join('');
+    }
+    function tipCheckoutHtml(){
+      const p=ticket.checkout,names=tipTechnicians(),multiple=names.length>1,locked=amountSplit(),type=locked?'fixed':p.tipType || 'fixed',presets=type==='percent'?[0,10,15,18,20,25]:[0,5,10,20];
+      const policy=checkoutTipPolicy(),balance=tipBalanceInfo(ticket,policy);
+      return `<section class="tw-card tw-tip-card" aria-label="Guest tip"><div class="tw-card-title"><h3>GUEST TIP</h3>${button('Hand to customer',`data-tw-hand data-tw-customer-view ${locked?'disabled title="Tip is already allocated to this amount split"':''}`,'tw-small tw-purple')}</div><div class="tw-tip-entry"><div class="tw-tip-entry-types" role="group" aria-label="Tip entry type">${[['fixed','Amount'],['percent','Percent']].map(([id,label])=>button(label,`data-tw-tip-entry="${id}" aria-pressed="${type===id}" ${locked?'disabled':''}`,type===id?'selected':'')).join('')}</div><label class="tw-tip-inline-value"><span>${type==='percent'?'%':'$'}</span><input type="number" min="0" ${type==='percent'?'max="100"':''} step="0.01" inputmode="decimal" data-tw-inline-tip value="${esc(locked?(totals(ticket).tipCents || 0)/100:(p.tip ?? 0))}" aria-label="${type==='percent'?'Tip percent':'Tip amount'}" ${locked?'disabled':''}></label></div>${!locked?`<div class="tw-tip-presets" role="group" aria-label="Tip presets">${presets.map(value=>button(value===0?'No tip':type==='percent'?value+'%':money(cents(value)),`data-tw-tip="${value}" data-tip-type="${type}" aria-pressed="${Number(p.tip)===value}"`,Number(p.tip)===value?'selected':'')).join('')}</div>`:''}<p class="tw-tip-basis">${locked?'Tip is included in this guest’s allocated bill.':type==='percent'?'Uses discounted services before payment discounts and fees.':''}</p><div class="tw-tip-split-heading"><strong>Tip allocation</strong><span data-tw-tip-card-total></span></div>${multiple?tipPolicyButtons(policy,'data-tw-tip-split',locked):''}<div class="tw-tip-allocation-list" data-tw-tip-allocation>${tipAllocationHtml()}</div><p class="tw-tip-balance ${balance.balanced?'balanced':'unbalanced'}" data-tw-tip-balance aria-live="polite">${balance.text}</p></section>`;
+    }
     function tipFieldsHtml() {
-      const technicians=tipTechnicians(),multiple=technicians.length>1,perTech=multiple&&tipMode==='technician';
-      const presets=[5,10,15,20],prefix=tipType==='percent'?'%':'$',customValue=presets.includes(Number(tipValue))?'':tipValue || '';
-      const topAction=tipCustomerMode
-        ? button('Back to staff','data-tw-tip-back-staff','tw-small')
-        : button('Hand to customer','data-tw-tip-customer','tw-small tw-purple');
-      const modeTabs=multiple&&!tipCustomerMode?`<div class="tw-tip-tabs" role="group" aria-label="Tip distribution"><button type="button" data-tw-tip-mode="even" aria-pressed="${!perTech}" class="${!perTech?'selected':''}">Split evenly</button><button type="button" data-tw-tip-mode="technician" aria-pressed="${perTech}" class="${perTech?'selected':''}">Tip per technician</button></div>`:'';
-      const evenFields=`${tipCustomerMode?'<div class="tw-tip-customer-heading"><h3>Add a tip?</h3><p>Tap an amount, then hand the device back to the front desk.</p></div>':''}<fieldset class="tw-tip-fieldset"><legend>TIP AS</legend><div class="tw-tip-tabs"><button type="button" data-tw-tip-type="fixed" aria-pressed="${tipType==='fixed'}" class="${tipType==='fixed'?'selected':''}">Amount</button><button type="button" data-tw-tip-type="percent" aria-pressed="${tipType==='percent'}" class="${tipType==='percent'?'selected':''}">Percent</button></div></fieldset><fieldset class="tw-tip-fieldset"><legend>VALUE</legend><div class="tw-tip-values">${presets.map(value=>`<button type="button" data-tw-tip-value="${value}" class="${Number(tipValue)===value?'selected':''}">${tipType==='percent'?value+'%':'$'+value}</button>`).join('')}<label class="tw-tip-custom"><span>${prefix}</span><input name="tipValue" data-tw-tip-custom type="number" min="0" ${tipType==='percent'?'max="100"':''} step="0.01" placeholder="Custom" value="${esc(customValue)}" aria-label="Custom ${tipType==='percent'?'tip percentage':'tip amount'}"></label></div></fieldset>`;
-      const techFields=`<div class="tw-tip-tech-list">${technicians.map((name,index)=>{const value=Number(tipPerTech[name] || 0),custom=presets.includes(value)?'':value || '';return `<section class="tw-tip-tech-row"><span class="tw-tip-avatar" data-index="${index}">${esc(name.charAt(0).toUpperCase())}</span><strong>${esc(name)}</strong><div class="tw-tip-tech-values">${presets.map(amount=>`<button type="button" data-tw-tip-tech-value="${amount}" data-tw-tip-tech="${index}" class="${value===amount?'selected':''}">$${amount}</button>`).join('')}<label class="tw-tip-custom"><span>$</span><input data-tw-tip-tech-custom="${index}" type="number" min="0" step="0.01" placeholder="Custom" value="${custom}" aria-label="Custom tip for ${esc(name)}"></label></div></section>`;}).join('')}</div><div class="tw-tip-total"><span>TOTAL</span><strong data-tw-tip-split-total>${money(technicians.reduce((sum,name)=>sum+cents(tipPerTech[name] || 0),0))}</strong></div>`;
-      const policy=demo&&multiple&&!tipCustomerMode?`<label>Split rule<select data-tw-tip-policy>${[['proportional','By service amount'],['equal','Equal per technician'],['fifty','50 / 50'],['manual','Manual amounts']].map(([id,label])=>`<option value="${id}" ${tipPolicy===id?'selected':''}>${label}</option>`).join('')}</select></label>`:'';
-      return `${policy}<div class="tw-tip-top-action">${topAction}</div>${modeTabs}${perTech?techFields:evenFields}`;
+      const technicians=tipTechnicians(),multiple=technicians.length>1;
+      tipPolicy=effectiveTipPolicy(tipPolicy,technicians.length);
+      const perTech=multiple&&tipPolicy==='manual'&&!tipCustomerMode,presets=tipType==='percent'?[0,10,15,18,20,25]:[0,5,10,20],prefix=tipType==='percent'?'%':'$',customValue=presets.includes(Number(tipValue))?'':tipValue || '';
+      const topAction=tipCustomerMode?button('Back to staff','data-tw-tip-back-staff','tw-small'):button('Hand to customer','data-tw-tip-customer','tw-small tw-purple');
+      const amountFields=`${tipCustomerMode?'<div class="tw-tip-customer-heading"><h3>Add a tip?</h3><p>Choose a tip, then return the device to staff.</p></div>':''}<fieldset class="tw-tip-fieldset"><legend>GUEST TIP</legend><div class="tw-tip-tabs"><button type="button" data-tw-tip-type="fixed" aria-pressed="${tipType==='fixed'}" class="${tipType==='fixed'?'selected':''}">Amount</button><button type="button" data-tw-tip-type="percent" aria-pressed="${tipType==='percent'}" class="${tipType==='percent'?'selected':''}">Percent</button></div><div class="tw-tip-dialog-values">${presets.map(value=>`<button type="button" data-tw-tip-value="${value}" aria-pressed="${Number(tipValue)===value}" class="${Number(tipValue)===value?'selected':''}">${value===0?'No tip':tipType==='percent'?value+'%':money(cents(value))}</button>`).join('')}<label class="tw-tip-custom"><span>${prefix}</span><input name="tipValue" data-tw-tip-custom type="number" min="0" ${tipType==='percent'?'max="100"':''} step="0.01" placeholder="Custom" value="${esc(customValue)}" aria-label="Custom ${tipType==='percent'?'tip percentage':'tip amount'}"></label></div></fieldset>`;
+      const techFields=perTech?`<div class="tw-tip-tech-list">${technicians.map((name,index)=>`<section class="tw-tip-tech-row"><span class="tw-tip-avatar">${esc(name.charAt(0).toUpperCase())}</span><strong>${esc(name)}</strong><div class="tw-tip-tech-values">${[5,10,15,20].map(value=>`<button type="button" data-tw-tip-tech-value="${value}" data-tw-tip-tech="${index}" aria-pressed="${Number(tipPerTech[name])===value}" class="${Number(tipPerTech[name])===value?'selected':''}">$${value}</button>`).join('')}<label class="tw-tip-custom"><span>$</span><input data-tw-tip-tech-custom="${index}" type="number" min="0" step="0.01" placeholder="Custom" value="${esc(tipPerTech[name] ?? 0)}" aria-label="Custom tip for ${esc(name)}"></label></div></section>`).join('')}</div><div class="tw-tip-total"><span>ALLOCATED</span><strong data-tw-tip-split-total></strong></div><p class="tw-tip-balance" data-tw-tip-dialog-balance aria-live="polite"></p>`:'';
+      const draft={...ticket,checkout:{...ticket.checkout,tip:tipValue,tipType}},values=tipAllocationsFor(draft,tipPolicy,tipPerTech);
+      const preview=multiple&&!tipCustomerMode&&!perTech?`<div class="tw-tip-dialog-allocation">${technicians.map((name,index)=>`<div class="tw-tip-allocation-row"><span>${esc(name)}</span><strong data-tw-dialog-tip-share="${index}">${money(values[name] || 0)}</strong></div>`).join('')}</div>`:'';
+      return `<div class="tw-tip-top-action">${topAction}</div>${amountFields}${multiple&&!tipCustomerMode?'<fieldset class="tw-tip-fieldset"><legend>TIP ALLOCATION</legend>'+tipPolicyButtons(tipPolicy,'data-tw-tip-policy-choice')+'</fieldset>':''}${techFields}${preview}`;
     }
     function renderTipFields() {
       const fields=$('[data-tw-fields]');if(!fields||dialogAction!=='hand')return;
       fields.innerHTML=tipFieldsHtml();
-      const perTech=tipTechnicians().length>1&&tipMode==='technician'&&!tipCustomerMode;
-      $('[data-tw-save]').textContent=perTech?'Save Split':'Save Tip';
+      $('[data-tw-save]').textContent=tipTechnicians().length>1&&tipPolicy==='manual'&&!tipCustomerMode?'Save Split':'Save Tip';
       $('dialog').classList.toggle('tw-customer-tip-dialog',tipCustomerMode);
+      updateTipSplitTotal();
     }
     function updateTipSplitTotal() {
-      const total=$('[data-tw-tip-split-total]');if(!total)return;
-      total.textContent=money(tipTechnicians().reduce((sum,name)=>sum+cents(tipPerTech[name] || 0),0));
+      const total=$('[data-tw-tip-split-total]');if(total)total.textContent=money(tipTechnicians().reduce((sum,name)=>sum+(validMoney(tipPerTech[name])?cents(tipPerTech[name]):0),0));
+      const draft={...ticket,checkout:{...ticket.checkout,tip:tipValue,tipType}},values=tipAllocationsFor(draft,tipPolicy,tipPerTech);
+      root.querySelectorAll('[data-tw-dialog-tip-share]').forEach(el=>{const name=tipTechnicians()[Number(el.dataset.twDialogTipShare)];el.textContent=money(values[name] || 0);});
+      const status=$('[data-tw-tip-dialog-balance]');if(!status)return;
+      const balance=tipBalanceInfo(draft,'manual',tipPerTech);
+      status.textContent=balance.text;status.classList.toggle('balanced',balance.balanced);status.classList.toggle('unbalanced',!balance.balanced);
     }
     function discountAllFieldsHtml() {
       const subtotal=parent.lines.reduce((sum,line)=>sum+(validMoney(line.price)?cents(line.price):0),0),presets=[5,10,15,20],prefix=discountType==='percent'?'%':'$',custom=presets.includes(Number(discountValue))?'':discountValue || '';
@@ -224,6 +266,7 @@
       if(parent.lines.some(l=>!validMoney(l.price))){error('Set missing service prices in Ticket Detail before creating bills.');return;}
       const t=totals(parent,false);
       if(t.error){error(t.error);return;}
+      if(parent.checkout.tipSplitMode==='manual'){const balance=tipBalanceInfo(parent,'manual');if(!balance.balanced){error(balance.text+'. Match the guest tip before splitting bills.');return;}}
       const bills=Array.from({length:count},(_,i)=>{
         const bill=newBill(String(data.get('guest'+i)||'').trim().slice(0,80)||'Guest '+(i+1)),existing=group()?.bills[i];
         if(existing){bill.id=existing.id;bill.checkout={...existing.checkout};}
@@ -382,6 +425,10 @@
       if(demo&&!demo.methods().some(m=>m.id===p.method))return 'Choose an enabled payment method.';
       if(parent.directCheckout&&ticket.lines.some(l=>!l.tech))return 'Select a technician for every service.';
       if(incomplete)return `Complete ${incomplete} service${incomplete===1?'':'s'} before payment.`;
+      if(!validMoney(p.tip)||(p.tipType==='percent'&&Number(p.tip)>100))return 'Enter a valid tip from 0 to 100% or a dollar amount.';
+      if((p.tipSplitMode || demo?.load().payment.tipSplit)==='manual'){
+        const balance=tipBalanceInfo(ticket,'manual');if(!balance.balanced)return balance.text;
+      }
       if(p.method==='cash'&&(!validMoney(p.cash)||cents(p.cash)<t.totalCents))return `Enter at least ${money(t.totalCents)} in cash received.`;
       if(p.method==='split'&&(!validMoney(p.splitCash)||cents(p.splitCash)>t.netCents))return 'Enter a cash service portion from zero to the service amount; card covers the rest and tip.';
       if(p.method==='gift-card'&&!p.giftCode?.trim())return 'Enter the gift card reference.';
@@ -422,10 +469,13 @@
       if ($('[data-tw-coupon-total]')) $('[data-tw-coupon-total]').textContent=t.error?'—':'−'+money(couponCents);
       if ($('[data-tw-method-discount]')) $('[data-tw-method-discount]').textContent='−'+money(t.methodDiscountCents || 0);
       if ($('[data-tw-card-fee]')) $('[data-tw-card-fee]').textContent=money(t.feeCents || 0);
-      if ($('[data-tw-tip-total]')) $('[data-tw-tip-total]').textContent=t.error?'—':money(t.tipCents);
+      root.querySelectorAll('[data-tw-tip-total],[data-tw-tip-card-total]').forEach(el=>el.textContent=t.error?'—':money(t.tipCents));
       if ($('[data-tw-change]')) $('[data-tw-change]').textContent=t.error?'—':money(Math.max(0,cents(ticket.checkout.cash || 0)-t.totalCents));
       root.querySelectorAll('[data-tw-bill-total]').forEach(el=>{const bill=group()?.bills.find(b=>b.id===el.dataset.twBillTotal);if(bill){const billTotals=bill.payment||totals(billTicket(bill));el.textContent=billTotals.error?'—':money(billTotals.totalCents);}});
-      if($('[data-tw-tip-allocation]')&&demo&&!t.error){const allocations=demo.allocateTip(ticket.lines,t.tipCents,ticket.checkout.tipSplitMode || demo.load().payment.tipSplit,ticket.checkout.tipAllocations);$('[data-tw-tip-allocation]').textContent='Tip split: '+Object.entries(allocations).map(([name,amount])=>name+' '+money(amount)).join(' · ');}
+      const allocation=$('[data-tw-tip-allocation]');if(allocation&&!allocation.contains(document.activeElement))allocation.innerHTML=tipAllocationHtml();
+      const balanceNode=$('[data-tw-tip-balance]');if(balanceNode){const balance=tipBalanceInfo(ticket,checkoutTipPolicy());balanceNode.textContent=balance.text;balanceNode.classList.toggle('balanced',balance.balanced);balanceNode.classList.toggle('unbalanced',!balance.balanced);}
+      root.querySelectorAll('[data-tw-tip]').forEach(el=>{const selected=Number(ticket.checkout.tip)===Number(el.dataset.twTip)&&ticket.checkout.tipType===el.dataset.tipType;el.classList.toggle('selected',selected);el.setAttribute('aria-pressed',selected);});
+      root.querySelectorAll('[data-tw-method-total]').forEach(el=>{const estimate=totals({...ticket,checkout:{...ticket.checkout,method:el.dataset.twMethodTotal}});el.textContent=estimate.error?'—':money(estimate.totalCents);});
       if ($('[data-tw-pay]')) $('[data-tw-pay] span').textContent='Pay · '+(t.error?'—':money(t.totalCents));
       if($('[data-tw-payment-hint]')){const hint=paymentHint(t);$('[data-tw-payment-hint]').textContent=hint;$('[data-tw-paybar]').dataset.ready=String(hint==='Ready to collect payment');}
       return t;
@@ -435,14 +485,17 @@
       if (ticket.payment) return `<section class="tw-card tw-receipt"><h3>PAYMENT RECORDED · DEMO</h3><p>Total <strong>${money(ticket.payment.totalCents)}</strong></p><p>Card fee ${money(ticket.payment.feeCents || 0)} · Payment discount ${money(ticket.payment.methodDiscountCents || 0)}</p><p>Change due ${money(ticket.payment.changeCents)}</p>${Object.keys(ticket.payment.tipAllocations || {}).length?`<p>Tip allocation: ${Object.entries(ticket.payment.tipAllocations).map(([name,amount])=>esc(name)+' '+money(amount)).join(' · ')}</p>`:''}<p>${esc(ticket.payment.method)} · ${esc(ticket.payment.receipt==='sms'?'SMS receipt simulated':ticket.payment.receipt==='print'?'Print receipt selected':'No receipt')}</p>${ticket.payment.method==='split'?`<p>Cash ${money(ticket.payment.cashCents)} · Card ${money(ticket.payment.cardCents)}</p>`:''}<p class="tw-muted">No money was charged. No SMS was sent.</p>${button('Print receipt','data-tw-print')}</section>`;
       const available=demo?demo.methods():[{id:'cash',label:'Cash'},{id:'card',label:'Card'},{id:'gift-card',label:'Gift Card'},{id:'split',label:'Split Pay'}];
       const primary=available.filter(m=>['cash','card','gift-card','crypto','split'].includes(m.id)),extra=available.filter(m=>!primary.includes(m));
-      const methodsHtml=list=>list.map(m=>button(esc(m.label),`data-tw-method="${esc(m.id)}"`,p.method===m.id?'selected':'')).join('');
+      const methodsHtml=list=>list.map(m=>{
+        const estimate=totals({...ticket,checkout:{...p,method:m.id}}),symbol=iconForLabel[m.label];
+        return `<button type="button" class="tw-button tw-method-option ${p.method===m.id?'selected':''}" data-tw-method="${esc(m.id)}" aria-pressed="${p.method===m.id}">${symbol?icon(symbol):''}<span>${esc(m.label)}<strong data-tw-method-total="${esc(m.id)}">${estimate.error?'—':money(estimate.totalCents)}</strong></span></button>`;
+      }).join('');
       const details=p.method==='cash'?`<div class="tw-cash"><label>Cash received <input aria-label="Cash received" type="number" min="0" step="0.01" data-tw-field="cash" value="${esc(p.cash)}"></label><span>Change due <strong data-tw-change>$0.00</strong></span></div>`
         :p.method==='split'?`<div class="tw-cash"><label>Cash service portion ($)<input aria-label="Split cash amount" type="number" min="0" step="0.01" data-tw-field="splitCash" value="${esc(p.splitCash || '')}"></label><span>Card covers remaining services, tip and its fee (demo)</span></div>`
         :p.method==='gift-card'?`<label class="tw-payment-info">Gift card reference<input aria-label="Gift card reference" data-tw-field="giftCode" value="${esc(p.giftCode || '')}" placeholder="Demo reference"></label>`
         :`<p class="tw-muted">${esc(available.find(m=>m.id===p.method)?.label || 'Selected method')} payment is simulated. No payment details are collected.</p>`;
-      return `<section class="tw-card"><h3>PAYMENT METHOD</h3><div class="tw-methods">${methodsHtml(primary)}${extra.length?button('More','data-tw-more-methods aria-expanded="'+!!p.moreOpen+'"',p.moreOpen?'selected':''):''}</div>${p.moreOpen?`<div class="tw-methods">${methodsHtml(extra)}</div>`:''}${details}
+      return `${tipCheckoutHtml()}<section class="tw-card"><h3>PAYMENT METHOD</h3><div class="tw-methods">${methodsHtml(primary)}${extra.length?button('More','data-tw-more-methods aria-expanded="'+!!p.moreOpen+'"',p.moreOpen?'selected':''):''}</div>${p.moreOpen?`<div class="tw-methods">${methodsHtml(extra)}</div>`:''}${details}
       <h3 class="tw-receipt-label">RECEIPT</h3><div class="tw-receipt-options">${[['none','No Receipt'],['sms','Send SMS'],['print','Print']].map(([id,label])=>button(label,`data-tw-receipt="${id}"`,p.receipt===id?'selected':'')).join('')}</div><div class="tw-preview">${button('Print preview','data-tw-preview','tw-text')}</div></section>
-      <section class="tw-card tw-payment-summary"><div class="tw-card-title"><h3>PAYMENT SUMMARY</h3><div class="tw-ticket-tools">${button('Add tip','data-tw-hand aria-haspopup="dialog"'+(amountSplit()?' disabled title="Tip is already allocated to this amount split"':''),'tw-small tw-purple')}${button('Discount all','data-tw-discount-all'+(group()?.bills.some(b=>b.payment)?' disabled title="Discount is locked after the first bill is paid"':''),'tw-small tw-orange')}${button('Coupon','data-tw-coupon aria-haspopup="dialog"'+(group()?.bills.some(b=>b.payment)?' disabled title="Coupon is locked after the first bill is paid"':''),'tw-small tw-coupon-button')}${!group()?button('Split bill','data-tw-split-bill aria-haspopup="dialog"','tw-small tw-purple'):''}</div></div>${parent.coupon?`<div class="tw-applied-coupon" role="status">${icon('coupon')}<span><strong>${esc(parent.coupon.code)}</strong><small>${esc(parent.coupon.label)} applied</small></span>${button('Remove','data-tw-remove-coupon aria-label="Remove coupon '+esc(parent.coupon.code)+'"','tw-text tw-small')}</div>`:''}<div class="tw-summary-row tw-rule"><span>Subtotal</span><span data-tw-subtotal></span></div><div class="tw-summary-row"><span>Tip</span><span data-tw-tip-total></span></div><div class="tw-summary-row"><span>Discount</span><span class="tw-red" data-tw-discount-total></span></div><div class="tw-summary-row"><span>Coupon${parent.coupon?' · '+esc(parent.coupon.code):''}</span><span class="tw-red" data-tw-coupon-total></span></div><div class="tw-summary-row"><span>Payment method discount</span><span class="tw-red" data-tw-method-discount></span></div><div class="tw-summary-row"><span>Card fee · tip excluded</span><span data-tw-card-fee></span></div><div class="tw-summary-row tw-rule"><strong>TOTAL</strong><strong data-tw-total></strong></div><div class="pos-muted" data-tw-tip-allocation></div></section><p class="tw-demo">Prototype · Payment and SMS receipt are simulated.</p>`;
+      <section class="tw-card tw-payment-summary"><div class="tw-card-title"><h3>PAYMENT SUMMARY</h3><div class="tw-ticket-tools">${button('Discount all','data-tw-discount-all'+(group()?.bills.some(b=>b.payment)?' disabled title="Discount is locked after the first bill is paid"':''),'tw-small tw-orange')}${button('Coupon','data-tw-coupon aria-haspopup="dialog"'+(group()?.bills.some(b=>b.payment)?' disabled title="Coupon is locked after the first bill is paid"':''),'tw-small tw-coupon-button')}${!group()?button('Split bill','data-tw-split-bill aria-haspopup="dialog"','tw-small tw-purple'):''}</div></div>${parent.coupon?`<div class="tw-applied-coupon" role="status">${icon('coupon')}<span><strong>${esc(parent.coupon.code)}</strong><small>${esc(parent.coupon.label)} applied</small></span>${button('Remove','data-tw-remove-coupon aria-label="Remove coupon '+esc(parent.coupon.code)+'"','tw-text tw-small')}</div>`:''}<div class="tw-summary-row tw-rule"><span>Subtotal</span><span data-tw-subtotal></span></div><div class="tw-summary-row"><span>Tip</span><span data-tw-tip-total></span></div><div class="tw-summary-row"><span>Discount</span><span class="tw-red" data-tw-discount-total></span></div><div class="tw-summary-row"><span>Coupon${parent.coupon?' · '+esc(parent.coupon.code):''}</span><span class="tw-red" data-tw-coupon-total></span></div><div class="tw-summary-row"><span>Payment method discount</span><span class="tw-red" data-tw-method-discount></span></div><div class="tw-summary-row"><span>Card fee · tip excluded</span><span data-tw-card-fee></span></div><div class="tw-summary-row tw-rule"><strong>TOTAL</strong><strong data-tw-total></strong></div></section><p class="tw-demo">Prototype · Payment and SMS receipt are simulated.</p>`;
     }
     function render() {
       const paid=!!ticket.payment;
@@ -490,9 +543,8 @@
       if(action==='price'){title='Set service price';fields=input('Price ($)','price',l.price ?? '','number');}
       if(action==='customer'){title='Edit customer';fields=input('Customer','customer',ticket.customer)+input('Phone','phone',ticket.phone,'tel');}
       if(action==='hand'){
-        title='Tip';tipPolicy=ticket.checkout.tipSplitMode || demo?.load().payment.tipSplit || 'equal';tipMode=tipPolicy==='manual'?'technician':ticket.checkout.tipMode || 'even';tipType=ticket.checkout.tipType || 'fixed';tipValue=Number(ticket.checkout.tip || 0);tipPerTech={...(ticket.checkout.tipAllocations || {})};tipCustomerMode=false;
+        title='Tip';tipPolicy=checkoutTipPolicy();tipType=ticket.checkout.tipType || 'fixed';tipValue=Number(ticket.checkout.tip || 0);tipPerTech={...(ticket.checkout.tipAllocations || {})};tipCustomerMode=false;
         tipTechnicians().forEach(name=>{if(!validMoney(tipPerTech[name]))tipPerTech[name]=0;});
-        if(tipTechnicians().length<2)tipMode='even';
         fields=tipFieldsHtml();
       }
       if(action==='preview'){const t=totals(ticket);title='Receipt preview';fields=`${amountSplit()?'<p>Shared ticket services shown below. The total is this guest’s allocated payment, including their share of discount and tip.</p>':''}<p>Ticket #${esc(ticket.id)} · ${esc(ticket.customer)}</p>${ticket.lines.map(l=>`<div class="tw-summary-row"><span>${esc(l.name)}</span><span>${validMoney(l.price)?money(cents(l.price)):'—'}</span></div>`).join('')}<p>Discount ${money(t.discountCents || 0)} · Method discount ${money(t.methodDiscountCents || 0)} · Card fee ${money(t.feeCents || 0)} · Tip ${money(t.tipCents || 0)}</p><h3>Total ${t.error?'—':money(t.totalCents)}</h3><p>Demo receipt · ${ticket.payment?'Payment recorded':'Not paid'}</p>`;}
@@ -512,10 +564,12 @@
     }
     root.addEventListener('input',e=>{
       if(ticket.payment)return;
+      if(e.target.hasAttribute('data-tw-inline-tip')){if(amountSplit())return;ticket.checkout.tip=e.target.value;save();renderTotals();return;}
+      if(e.target.hasAttribute('data-tw-tip-share')){if(amountSplit())return;const name=tipTechnicians()[Number(e.target.dataset.twTipShare)];if(!name)return;ticket.checkout.tipAllocations=ticket.checkout.tipAllocations || {};ticket.checkout.tipAllocations[name]=e.target.value;save();renderTotals();return;}
       if(dialogAction==='split-bill'&&$('dialog').open&&e.target.matches('[name="customBillCount"]'))updateSplitCount();
       if(dialogAction==='split-bill'&&$('dialog').open&&e.target.matches('[data-tw-share]'))updateAmountPreview();
       if(dialogAction==='split-bill'&&$('dialog').open&&e.target.name?.startsWith('guest'))renderSetupServices();
-      if(dialogAction==='hand'&&e.target.matches('[data-tw-tip-custom]')){tipValue=e.target.value;return;}
+      if(dialogAction==='hand'&&e.target.matches('[data-tw-tip-custom]')){tipValue=e.target.value;updateTipSplitTotal();return;}
       if(dialogAction==='hand'&&e.target.matches('[data-tw-tip-tech-custom]')){const name=tipTechnicians()[Number(e.target.dataset.twTipTechCustom)];if(name)tipPerTech[name]=e.target.value;updateTipSplitTotal();return;}
       if(dialogAction==='discount'&&!dialogLine&&e.target.matches('[data-tw-discount-custom]')){discountValue=e.target.value;return;}
       if(dialogAction==='discount'&&!dialogLine&&e.target.matches('[data-tw-discount-reason]')){discountReason=e.target.value;return;}
@@ -524,7 +578,6 @@
       if(e.target.matches('[data-tw-field]')){ticket.checkout[e.target.dataset.twField]=e.target.value;if(e.target.dataset.twField==='tip')ticket.checkout.tipType='fixed';save();renderTotals();}
     });
     root.addEventListener('change',e=>{
-      if(e.target.matches('[data-tw-tip-policy]')){tipPolicy=e.target.value;tipMode=e.target.value==='manual'?'technician':'even';renderTipFields();return;}
       if(dialogAction==='split-bill'&&$('dialog').open&&e.target.matches('[data-tw-setup-line]')){
         const lineId=e.target.dataset.twSetupLine,guest=e.target.dataset.guest;
         setupAssignments[lineId]=e.target.checked?Number(guest):null;
@@ -572,6 +625,14 @@
       if(b.hasAttribute('data-tw-remove-bill')&&group()&&!amountSplit()&&group().bills.length>2&&!ticket.lines.length&&!ticket.payment){group().bills=group().bills.filter(b=>b.id!==activeBillId);selectBill(group().bills[0].id);save();render();return;}
       if(b.hasAttribute('data-tw-cancel-split')&&group()&&!group().bills.some(b=>b.payment)){delete parent.splitBills;ticket=parent;lastAssignment=null;serviceFilter='all';save();render();return;}
       if(ticket.payment)return;
+      if(b.hasAttribute('data-tw-tip-entry')){if(amountSplit())return;ticket.checkout.tipType=b.dataset.twTipEntry;ticket.checkout.tip=0;save();render();return;}
+      if(b.hasAttribute('data-tw-tip-split')){
+        if(amountSplit())return;const policy=b.dataset.twTipSplit;
+        if(!tipPolicies.some(([id])=>id===policy)||policy==='fifty'&&tipTechnicians().length!==2)return;
+        if(policy==='manual'&&ticket.checkout.tipSplitMode!=='manual')ticket.checkout.tipAllocations=Object.fromEntries(Object.entries(tipAllocationsFor(ticket,ticket.checkout.tipSplitMode || demo?.load().payment.tipSplit || 'equal')).map(([name,value])=>[name,value/100]));
+        ticket.checkout.tipSplitMode=policy;ticket.checkout.tipMode=policy==='manual'?'technician':'even';save();render();return;
+      }
+      if(b.hasAttribute('data-tw-customer-view')){if(amountSplit())return;openDialog('hand');tipCustomerMode=true;if(!tipValue)tipType='percent';renderTipFields();return;}
       if(b.hasAttribute('data-tw-take-photo')&&!group()){
         parent.notePhotos=parent.notePhotos || [];
         if(parent.notePhotos.length<5)parent.notePhotos.push({name:'Photo '+(parent.notePhotos.length+1),source:'camera'});
@@ -587,7 +648,11 @@
       if(b.hasAttribute('data-tw-remove-coupon')){delete parent.coupon;if(group())refreshSplitDiscount();save();render();return;}
       if(b.hasAttribute('data-tw-tip-customer')){tipCustomerMode=true;if(!tipValue)tipType='percent';renderTipFields();return;}
       if(b.hasAttribute('data-tw-tip-back-staff')){tipCustomerMode=false;renderTipFields();return;}
-      if(b.hasAttribute('data-tw-tip-mode')){tipMode=b.dataset.twTipMode;tipPolicy=tipMode==='technician'?'manual':'equal';renderTipFields();return;}
+      if(b.hasAttribute('data-tw-tip-policy-choice')){
+        const policy=b.dataset.twTipPolicyChoice;if(!tipPolicies.some(([id])=>id===policy)||policy==='fifty'&&tipTechnicians().length!==2)return;
+        if(policy==='manual'&&tipPolicy!=='manual'){const draft={...ticket,checkout:{...ticket.checkout,tip:tipValue,tipType}};tipPerTech=Object.fromEntries(Object.entries(tipAllocationsFor(draft,tipPolicy)).map(([name,value])=>[name,value/100]));}
+        tipPolicy=policy;renderTipFields();return;
+      }
       if(b.hasAttribute('data-tw-tip-type')){tipType=b.dataset.twTipType;tipValue=0;renderTipFields();return;}
       if(b.hasAttribute('data-tw-tip-value')){tipValue=Number(b.dataset.twTipValue);renderTipFields();return;}
       if(b.hasAttribute('data-tw-tip-tech-value')){const name=tipTechnicians()[Number(b.dataset.twTipTech)];if(name)tipPerTech[name]=Number(b.dataset.twTipTechValue);renderTipFields();return;}
@@ -627,8 +692,8 @@
         if(p.method==='split'&&(!validMoney(p.splitCash)||cents(p.splitCash)>t.netCents)){message('Enter a split cash amount between zero and the total.');return;}
         if(p.method==='gift-card'&&!p.giftCode?.trim()){message('Enter a gift card reference.');return;}
         lastAssignment=null;
-        const splitMode=p.tipSplitMode || demo?.load().payment.tipSplit || 'equal';
-        const tipAllocations=demo?demo.allocateTip(ticket.lines,t.tipCents,splitMode,p.tipAllocations):{};
+        const splitMode=checkoutTipPolicy();
+        const tipAllocations=tipAllocationsFor(ticket,splitMode);
         if(splitMode==='manual'&&Object.values(tipAllocations).reduce((sum,n)=>sum+n,0)!==t.tipCents){message('Manual tip amounts must match the total tip.');return;}
         ticket.payment={...t,tipAllocations,method:p.method,receipt:p.receipt,cashCents:p.method==='split'?(t.cashPortionCents ?? cents(p.splitCash)):p.method==='cash'?t.totalCents:0,cardCents:p.method==='split'?(t.cardPortionCents ?? t.totalCents-cents(p.splitCash)):p.method==='card'?t.totalCents:0,giftCode:p.method==='gift-card'?p.giftCode:'',otherMethod:p.method==='other'?(p.otherMethod || 'Zelle'):'',changeCents:p.method==='cash'?cents(p.cash)-t.totalCents:0,paidAt:new Date().toISOString(),simulated:true};ticket.status='completed';save();render();$('[data-tw-complete-checkout]')?.focus();
       }
@@ -670,14 +735,13 @@
       }
       if(dialogAction==='customer'){if(!data.get('customer').trim()||String(data.get('phone')).replace(/\D/g,'').length!==10){error('Customer name and a 10-digit phone are required.');return;}ticket.customer=data.get('customer').trim();ticket.phone=data.get('phone').trim();}
       if(dialogAction==='hand'){
-        const technicians=tipTechnicians(),perTech=technicians.length>1&&tipMode==='technician'&&!tipCustomerMode;
-        if(perTech){
-          if(technicians.some(name=>!validMoney(tipPerTech[name]))){error('Enter a valid tip for every technician.');return;}
-          ticket.checkout.tip=technicians.reduce((sum,name)=>sum+Number(tipPerTech[name] || 0),0);ticket.checkout.tipType='fixed';ticket.checkout.tipMode='technician';ticket.checkout.tipSplitMode='manual';ticket.checkout.tipAllocations={...tipPerTech};
-        }else{
-          if(!validMoney(tipValue)||(tipType==='percent'&&Number(tipValue)>100)){error('Enter a valid tip from 0 to 100% or a valid dollar amount.');return;}
-          ticket.checkout.tip=Number(tipValue);ticket.checkout.tipType=tipType;ticket.checkout.tipMode='even';ticket.checkout.tipSplitMode=tipPolicy==='manual'?'equal':tipPolicy;delete ticket.checkout.tipAllocations;
-        }
+        const technicians=tipTechnicians(),perTech=technicians.length>1&&tipPolicy==='manual'&&!tipCustomerMode;
+        if(!validMoney(tipValue)||(tipType==='percent'&&Number(tipValue)>100)){error('Enter a valid tip from 0 to 100% or a valid dollar amount.');return;}
+        const draft={...ticket,checkout:{...ticket.checkout,tip:Number(tipValue),tipType}};
+        if(perTech){const balance=tipBalanceInfo(draft,'manual',tipPerTech);if(!balance.balanced){error(balance.text+'. Match the total guest tip.');return;}}
+        ticket.checkout.tip=Number(tipValue);ticket.checkout.tipType=tipType;ticket.checkout.tipSplitMode=tipPolicy;ticket.checkout.tipMode=tipPolicy==='manual'?'technician':'even';
+        if(perTech)ticket.checkout.tipAllocations={...tipPerTech};
+        else if(tipPolicy!=='manual')delete ticket.checkout.tipAllocations;
       }
       stopQrScanner();$('dialog').close();save();render();
     });

@@ -223,3 +223,46 @@
 .tw-note-tools{display:flex;align-items:center;gap:8px;margin-top:10px}
 .tw-note-tools>span{margin-left:auto;color:#52607b;font-size:10px}
 @media(max-width:600px){.tw-tip-values{grid-template-columns:repeat(2,1fr)}.tw-tip-custom{grid-column:1/-1}.tw-tip-tech-row{grid-template-columns:30px 1fr}.tw-tip-tech-values{grid-column:1/-1;grid-template-columns:repeat(4,1fr)}.tw-tip-tech-values .tw-tip-custom{grid-column:1/-1}.tw-tip-top-action{position:static;margin:-4px 0 14px}.tw-discount-absorbers{grid-template-columns:1fr}.tw-note-tools{flex-wrap:wrap}.tw-note-tools>span{width:100%;margin:0}}
+
+/* PO checkout tip entry, four allocation choices, and payment estimates. */
+.tw-tip-card .tw-card-title{margin-bottom:12px;align-items:center}
+.tw-tip-entry{display:flex;align-items:center;gap:9px}
+.tw-tip-entry-types{display:flex;gap:3px;flex:1;padding:3px;border-radius:9px;background:#f3f5fa}
+.ticket-workspace .tw-tip-entry-types .tw-button{flex:1;min-height:33px;padding:6px 9px;border-color:transparent;background:transparent;color:#78869d;font-size:11px}
+.ticket-workspace .tw-tip-entry-types .tw-button.selected{background:#fff;border-color:#dfe3f1;color:#5456c1;box-shadow:0 1px 3px #27355c08}
+.tw-tip-inline-value{display:flex;align-items:center;gap:5px;flex:none;width:112px;border:1px solid #dce3ef;border-radius:8px;padding:0 9px;background:#fff;color:#8a96ad}
+.ticket-workspace .tw-tip-inline-value input{width:100%;min-width:0;min-height:39px;border:0;border-radius:0;padding:8px 0;background:transparent;text-align:right;font-size:14px;font-weight:700;color:#42516a;outline:none}
+.tw-tip-inline-value:focus-within,.tw-tip-allocation-input:focus-within{border-color:#7e80df;box-shadow:0 0 0 3px #4648d813}
+.tw-tip-presets,.tw-tip-policies{display:grid;gap:6px;margin-top:9px}
+.tw-tip-presets{grid-template-columns:repeat(6,minmax(0,1fr))}
+.tw-tip-presets:has(>button:nth-child(4):last-child){grid-template-columns:repeat(4,minmax(0,1fr))}
+.tw-tip-policies{grid-template-columns:repeat(4,minmax(0,1fr));margin-top:8px}
+.ticket-workspace .tw-tip-presets .tw-button,.ticket-workspace .tw-tip-policies .tw-button{min-width:0;min-height:34px;padding:7px 4px;border-radius:8px;font-size:11px;white-space:normal;color:#77849d;line-height:1.35}
+.ticket-workspace .tw-tip-presets .tw-button.selected,.ticket-workspace .tw-tip-policies .tw-button.selected{background:#efefff;border-color:#b5b8e7;color:#5659be;box-shadow:0 0 0 1px #e0e1fb}
+.tw-tip-basis{font-size:10px;color:#8b97ac;line-height:1.5;margin:8px 0 0}
+.tw-tip-basis:empty{display:none}
+.tw-tip-split-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid #e7ebf3;padding-top:12px;margin-top:12px;font-size:11px;color:#677691}
+.tw-tip-split-heading strong{font-weight:650}
+.tw-tip-split-heading>span{color:#5b60b8;font-size:16px;font-weight:750;font-variant-numeric:tabular-nums}
+.tw-tip-allocation-list,.tw-tip-dialog-allocation{display:grid;gap:5px;margin-top:9px}
+.tw-tip-allocation-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:7px 9px;border:1px solid #e5e9f3;border-radius:8px;background:#fafbfe;color:#71819a;font-size:11px}
+.tw-tip-allocation-row>span{min-width:0;overflow-wrap:anywhere}
+.tw-tip-allocation-row>strong{color:#5e6caf;font-weight:650;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tw-tip-allocation-input{display:flex;align-items:center;gap:4px;flex:none;width:98px;padding:0 7px;border:1px solid #dfe4ef;border-radius:6px;background:#fff;font-size:11px;color:#919eb3}
+.ticket-workspace .tw-tip-allocation-input input{width:100%;min-width:0;min-height:30px;border:0;border-radius:0;padding:5px 0;text-align:right;font-size:12px;background:transparent;color:#4f617f;outline:none}
+.tw-tip-balance{font-size:10px;line-height:1.5;margin:8px 0 0;color:#8b98ad}
+.tw-tip-balance.balanced{color:#358b6b}
+.tw-tip-balance.unbalanced{color:#b17448}
+.tw-tip-dialog-values{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:9px}
+.tw-tip-dialog-values>button{min-height:38px;border:1px solid #dce3ef;border-radius:8px;background:#fff;font:inherit;font-weight:650;color:#6f7f98;cursor:pointer}
+.tw-tip-dialog-values>button.selected{background:#efefff;border-color:#afb4e7;color:#5e5fc1}
+.tw-tip-dialog-values>.tw-tip-custom{grid-column:1/-1}
+.ticket-workspace .tw-checkout-side .tw-methods{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px}
+.ticket-workspace .tw-checkout-side .tw-methods .tw-button{min-width:0;padding:9px 8px;min-height:55px;font-size:11px}
+.ticket-workspace .tw-checkout-side .tw-method-option{justify-content:flex-start;text-align:left;gap:7px}
+.tw-method-option>span{display:grid;gap:3px;min-width:0;overflow-wrap:anywhere}
+.tw-method-option strong{color:#687994;font-size:12px;font-weight:700;white-space:nowrap;font-variant-numeric:tabular-nums}
+.tw-method-option.selected strong{color:#5455bc}
+.tw-method-option>.tw-icon{width:17px;height:17px;color:#8f97c1;flex:none}
+@media(max-width:540px){.tw-tip-card .tw-card-title{gap:8px}.ticket-workspace .tw-tip-card .tw-card-title .tw-button{font-size:10px;padding:7px 9px}.tw-tip-policies{grid-template-columns:repeat(2,minmax(0,1fr))}.tw-tip-presets{grid-template-columns:repeat(3,minmax(0,1fr))}.tw-tip-inline-value{width:95px}.ticket-workspace .tw-checkout-side .tw-methods{grid-template-columns:repeat(2,minmax(0,1fr))}.tw-tip-dialog-values{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media print{.tw-tip-card{display:none!important}}
