@@ -38,7 +38,11 @@
     });
     window.lucide?.createIcons();
   }
-  const paymentImages={cash:'cash.png',card:'credit-debit-card-icon.png','gift-card':'gift_card.png',crypto:'crypto.png',split:'split_pay.png',zelle:'zelle.png'};
+  const paymentImages={
+    cash:'cash.png',card:'credit-debit-card-icon.png','gift-card':'gift_card.png',crypto:'crypto.png',split:'split_pay.png',zelle:'zelle.png',
+    'cash-app':'cash-app.svg',venmo:'venmo.svg',paypal:'paypal.svg','apple-pay':'apple.svg','apple-cash':'apple.svg',
+    vlinkpay:'vlinkpay-logo.png','vlinkpay-wallet':'vlinkpay-logo.png'
+  };
   const paymentIcon=method=>paymentImages[method]?`<img class="dc-payment-art" src="../assets/pos-payment/${paymentImages[method]}" alt="" width="20" height="20" aria-hidden="true">`:icon('wallet');
   const addons=[{id:'po-gel-polish',name:'Gel Polish',price:15,durationMin:10},{id:'po-nail-art',name:'Nail Art',price:10,durationMin:10},{id:'po-chrome',name:'Chrome',price:15,durationMin:10},{id:'po-french',name:'French',price:10,durationMin:10}];
   let records=[],current=null,stage=1,view='list',warning='',search='',filter='all',contactUntil=0;
