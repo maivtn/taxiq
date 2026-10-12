@@ -129,8 +129,8 @@
   function cashFeedbackHtml(){const p=current.checkout,t=total(),received=Math.round(Number(p.cash)*100),change=received-t.totalCents;return p.cash===''?'':`<span class="${change>=0?'cash-change':'cash-short'}">${change>=0?'Change '+money(change):'Remaining '+money(-change)}</span>`;}
   function paymentHtml(){
     const p=current.checkout,methods=demo.methods(),primary=methods.filter(m=>['cash','card','zelle','gift-card','split'].includes(m.id)),other=methods.filter(m=>!primary.includes(m));
-    const paymentIcons={cash:'cash',card:'card','gift-card':'gift',crypto:'crypto',split:'split'},selectedOther=other.find(m=>m.id===p.method);
-    const chip=m=>button(`<span class="payment-chip-icon" aria-hidden="true">${icon(paymentIcons[m.id] || 'wallet')}</span><span class="payment-chip-copy"><b>${esc(m.id==='card'?'Card':m.label)}</b><small>${money(total(m.id).totalCents)}</small></span>`,'payment',`data-value="${esc(m.id)}" aria-pressed="${p.method===m.id}" aria-label="${esc(m.label)} · ${money(total(m.id).totalCents)}"`,'payment-chip payment-'+m.id+' '+(p.method===m.id?'selected':''));
+    const paymentImages={cash:'cash.png',card:'credit-debit-card-icon.png','gift-card':'gift_card.png',crypto:'crypto.png',split:'split_pay.png',zelle:'zelle.png'},selectedOther=other.find(m=>m.id===p.method);
+    const chip=m=>button(`<span class="payment-chip-icon ${paymentImages[m.id]?'has-image':''}" aria-hidden="true">${paymentImages[m.id]?`<img src="../assets/pos-payment/${paymentImages[m.id]}" alt="" width="20" height="20" aria-hidden="true">`:icon('wallet')}</span><span class="payment-chip-copy"><b>${esc(m.id==='card'?'Card':m.label)}</b><small>${money(total(m.id).totalCents)}</small></span>`,'payment',`data-value="${esc(m.id)}" aria-pressed="${p.method===m.id}" aria-label="${esc(m.label)} · ${money(total(m.id).totalCents)}"`,'payment-chip payment-'+m.id+' '+(p.method===m.id?'selected':''));
     let entry='';
     if(p.method==='cash'){
       const presets=[20,50,100].map(value=>button('$'+value,'cash-value',`data-value="${value}" ${value*100<total().totalCents?'hidden':''}`,'btn-small')).join('');

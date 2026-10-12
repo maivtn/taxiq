@@ -237,12 +237,10 @@
 .po-direct .payment-chip-copy{display:grid;gap:2px;min-width:0}
 .po-direct .payment-chip-copy b{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:11px;line-height:1.4;font-weight:650;color:#34445e}
 .po-direct .payment-chip-copy small{font-size:12px;font-weight:650;color:#52627b;font-variant-numeric:tabular-nums}
-.po-direct .payment-chip.payment-cash .payment-chip-icon{background:#e6f7ed;color:#00805a}
-.po-direct .payment-chip.payment-card .payment-chip-icon{background:#e8f5ff;color:#0076bb}
-.po-direct .payment-chip.payment-gift-card .payment-chip-icon{background:#fff3d8;color:#946011}
-.po-direct .payment-chip.payment-split .payment-chip-icon{background:#eee8ff;color:#5140b5}
 .po-direct .payment-chip.selected{border-color:#8c7de4;background:#f3f0ff;box-shadow:0 0 0 1px #b6a9f0}
 .po-direct .payment-chip.selected .payment-chip-icon{background:#e4ddff;color:#5140b5}
+.po-direct .payment-chip .payment-chip-icon.has-image{background:transparent}
+.po-direct .payment-chip-icon img{display:block;width:20px;height:20px;object-fit:contain;flex:none;pointer-events:none}
 .po-direct .payment-chip.selected b,.po-direct .payment-chip.selected small{color:#5140b5}
 .po-direct .payment-more{border-style:dashed}
 .po-direct .cash-entry{position:relative}
