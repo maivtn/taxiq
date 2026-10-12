@@ -1,6 +1,6 @@
 (function () {
   'use strict';
-  const demo=window.NEXORA_POS_DEMO,stations=window.NEXORA_STATIONS,esc=demo.esc;
+  const demo=window.NEXORA_POS_DEMO,stations=window.NEXORA_STATIONS,esc=demo.esc,ui=window.NEXORA_POS_SETTINGS_UI;
   const access=document.querySelector('[data-settings-panel="access-pin"]');
   const payment=document.querySelector('[data-settings-panel="payment-fees"]');
   const stationPanel=document.querySelector('[data-settings-panel="stations"]');
@@ -25,6 +25,7 @@
       ].map(row=>'<tr>'+row.map((value,i)=>`<${i?'td':'th'}>${value}</${i?'td':'th'}>`).join('')+'</tr>').join('')}</tbody></table></div></section>
       <div class="pos-actions"><button type="submit" class="pos-primary" ${!owner()?'disabled':''}>Save access rules with Owner PIN</button><span class="pos-muted">${owner()?'Changes are stored in this browser.':'Switch to the Owner account to edit access rules.'}</span></div><p class="pos-status" data-pos-access-status role="status"></p></form>
       <section class="pos-card"><h3>Approval activity</h3>${auditHtml(data.audit)}</section>`;
+    ui?.decorate(access,'access');
   }
   function auditHtml(rows){return rows.length?`<div class="pos-table"><table><thead><tr><th>Action / subject</th><th>Requested by</th><th>Approved by</th><th>Reason</th><th>Time</th></tr></thead><tbody>${rows.slice(0,20).map(r=>`<tr><td>${esc(r.action)}<small>${esc(r.subject)}</small></td><td>${esc(r.operator)}</td><td>${esc(r.approver)}</td><td>${esc(r.reason || '—')}</td><td>${demo.timeHtml(r.at)}</td></tr>`).join('')}</tbody></table></div>`:'<p class="pos-muted">No approvals recorded yet.</p>';}
   function paymentHtml() {
@@ -38,6 +39,7 @@
       <section class="pos-card"><h3>$100 service example · before tip</h3><div class="pos-preview" data-pos-payment-preview></div></section>
       <div class="pos-actions"><button type="submit" class="pos-primary">Save payment & tip rules with Owner PIN</button></div></fieldset><p class="pos-status" data-pos-payment-status role="status">${owner()?'Local prototype · no live payment changes.':'Switch to the Owner account to edit payment rules.'}</p></form>`;
     preview();
+    ui?.decorate(payment,'payment');
   }
   function readPayment() {
     const f=payment.querySelector('form'),data=new FormData(f);
@@ -50,12 +52,13 @@
   }
   function preview() {
     if(owner())paymentDraft=readPayment();
-    payment.querySelector('[data-pos-payment-preview]').innerHTML=paymentDraft.methods.filter(m=>m.enabled&&m.id!=='split').slice(0,5).map(m=>{
+    payment.querySelector('[data-pos-payment-preview]').innerHTML=paymentDraft.methods.filter(m=>m.enabled&&m.id!=='split').sort((a,b)=>{const order=['cash','zelle','card'],rank=id=>order.includes(id)?order.indexOf(id):3;return rank(a.id)-rank(b.id);}).slice(0,3).map(m=>{
       const percent=m.discountType==='inherit'&&paymentDraft.walletEnabled?paymentDraft.walletPercent:m.discountType==='percent'?m.discountValue:0;
       const reduction=Math.min(10000,Math.max(0,Math.round(m.discountType==='fixed'?m.discountValue*100:10000*percent/100)));
       const fee=m.id==='card'&&paymentDraft.cardFeeEnabled?Math.round((10000-reduction)*paymentDraft.cardFeePercent/100):0;
       return `<article><span>${esc(m.label)}</span><strong>$${((10000-reduction+fee)/100).toFixed(2)}</strong><small>Discount $${(reduction/100).toFixed(2)} · Fee $${(fee/100).toFixed(2)}</small></article>`;
     }).join('');
+    ui?.decoratePreview(payment);
   }
   function filteredLog(){return stations.load().log.filter(r=>(!logFlag||r.flagged)&&(!logFrom||r.at.slice(0,10)>=logFrom)&&(!logTo||r.at.slice(0,10)<=logTo));}
   function logHtml() {const rows=filteredLog();return `<div class="pos-table"><table><thead><tr><th>Station / ticket</th><th>Confirmed by</th><th>Time</th><th>Checklist</th><th>Overdue</th><th>Flag / reason</th></tr></thead><tbody>${rows.map(r=>`<tr><td>${esc(r.station)}<small>${esc(r.ticketId || '—')}</small></td><td>${esc(r.by)}${r.onBehalf?'<small>On behalf</small>':''}</td><td>${demo.timeHtml(r.at)}</td><td>${r.checklist.map(i=>esc((i.checked?'✓ ':'— ')+i.item)).join('<br>') || 'Manager override'}</td><td>${r.overdueMin}m</td><td>${r.flagged?'⚑ '+esc(r.reason):'Clean confirmed'}</td></tr>`).join('') || '<tr><td colspan="6">No sanitation records in this range.</td></tr>'}</tbody></table></div>`;}
@@ -70,6 +73,7 @@
       <section class="pos-card"><div class="pos-heading"><h3>Station register</h3><a class="pos-button" href="staff-work-orders.html">Staff cleaning tasks</a></div><div class="pos-table"><table class="pos-station-register"><thead><tr><th>Code</th><th>Zone / capacity / neighbor</th><th>State</th><th>Responsible</th><th>Actions</th></tr></thead><tbody>${data.stations.filter(st=>st.enabled).map(st=>`<tr><td>${esc(st.code)}</td><td>${esc(st.zone)} · ${st.capacity} guest${st.capacity===1?'':'s'}<small>Neighbor ${esc(st.neighbor || '—')}</small>${manager()?`<button type="button" data-pos-station-edit="${esc(st.code)}">Edit station</button>`:''}</td><td>${stations.labels[st.state]}</td><td>${esc(st.tech || st.blockedNote || '—')}</td><td><div class="pos-station-actions">${st.state==='cleaning'?`<button type="button" data-pos-clean="${esc(st.code)}">Confirm clean</button><button type="button" data-pos-beep="${esc(st.code)}">Beep cleaner</button>`:''}${manager()&&['free','blocked'].includes(st.state)?`<button type="button" data-pos-block="${esc(st.code)}">${st.state==='blocked'?'Unblock':'Block station'}</button>`:''}</div></td></tr>`).join('')}</tbody></table></div></section>
       <section class="pos-card"><div class="pos-heading"><div><h3>Sanitation log</h3><p>Confirmation signatures, checklist, minutes overdue, and manager overrides.</p></div><div class="pos-actions"><button type="button" data-pos-export-csv>Export CSV</button><button type="button" data-pos-export-pdf>Print / save PDF</button></div></div><div class="pos-counts"><label>From<input data-pos-log-from type="date" value="${logFrom}"></label><label>To<input data-pos-log-to type="date" value="${logTo}"></label><label class="pos-check"><input type="checkbox" data-pos-log-flag ${logFlag?'checked':''}>Flagged only</label></div><div data-pos-log>${logHtml()}</div></section>
       <section class="pos-card"><h3>Cleaning reminders & station activity</h3>${data.events.length?`<div class="pos-table"><table><thead><tr><th>Station</th><th>Event</th><th>Recipient</th><th>Time</th></tr></thead><tbody>${data.events.slice(0,15).map(r=>`<tr><td>${esc(r.station)}</td><td>${esc(r.type.replace('station.','').replaceAll('-',' '))}</td><td>${esc(r.to || r.by)}</td><td>${demo.timeHtml(r.at)}</td></tr>`).join('')}</tbody></table></div>`:'<p>No activity yet.</p>'}</section>`;
+    ui?.decorate(stationPanel,'stations');
   }
   function status(panel,selector,text,error=false){const node=panel.querySelector(selector);node.textContent=text;node.classList.toggle('error',error);}
   access.addEventListener('submit',async e=>{

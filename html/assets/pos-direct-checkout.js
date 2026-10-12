@@ -1,76 +1,177 @@
 (function () {
   'use strict';
-  const demo=window.NEXORA_POS_DEMO,esc=demo.esc,$=s=>document.querySelector(s);
-  const key='nexora:direct-checkouts:v1',lookupKey='nexora:direct-checkout-customer-draft:v1';
-  const digits=value=>String(value || '').replace(/\D/g,'');
-  let records=[],lookup=null,current=null;
-  try{const saved=JSON.parse(localStorage.getItem(key));if(Array.isArray(saved))records=saved;}catch(_){}
-  const knownCustomers=[{customer:'Quan',phone:'5550122807'},{customer:'Brian',phone:'5550161092'},{customer:'DJ',phone:'5550195421'},{customer:'Leo',phone:'5550178804'}];
-  const catalog=()=>window.NEXORA_SALON_DATA.loadCatalog();
-  const technicians=()=>catalog().technicians.filter(t=>t.active).map(t=>({name:t.name,status:'available'}));
+  const root=document.querySelector('[data-direct-root]');if(!root)return;
+  const demo=window.NEXORA_POS_DEMO,esc=demo.esc,key='nexora:direct-checkouts:v1',draftKey='nexora:direct-checkout-customer-draft:v1';
+  const money=n=>'$'+(Number(n || 0)/100).toFixed(2),digits=v=>String(v || '').replace(/\D/g,'');
+  const catalog=()=>window.NEXORA_SALON_DATA.loadCatalog().services.filter(s=>s.active!==false);
+  const technicians=()=>window.NEXORA_SALON_DATA.loadCatalog().technicians.filter(t=>t.active).map(t=>t.name);
+  const category=s=>s.categoryName || s.requiredSkill || 'Other';
   const canCheckout=()=>['owner','manager','cashier'].includes(demo.account().role);
-  function persist(){try{localStorage.setItem(key,JSON.stringify(records));return true;}catch(_){$('[data-direct-feedback]').textContent='Unable to save checkout locally. Keep this page open.';return false;}}
-  const workspace=window.NEXORA_TICKET_WORKSPACE.mount($('#ticket-workspace'),{
-    catalog:()=>catalog().services,technicians,
-    onChange(){persist();},
-    onModeChange(mode){if(current)url(current.id,mode);},
-    onBack(){current=null;url();showList();}
+  const icons={arrow:'<path d="m12 19-7-7 7-7M5 12h14"/>',check:'<path d="m5 12 4 4L19 6"/>',plus:'<path d="M12 5v14M5 12h14"/>',ticket:'<path d="M6 3h12v18l-3-2-3 2-3-2-3 2V3ZM9 8h6M9 12h6"/>',card:'<rect x="2" y="4" width="20" height="16" rx="3"/><path d="M2 10h20M6 15h3"/>',info:'<circle cx="12" cy="12" r="9"/><path d="M12 11v6M12 7h.01"/>',user:'<circle cx="12" cy="8" r="4"/><path d="M5 21v-2a7 7 0 0 1 14 0v2"/>'};
+  const icon=name=>`<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${icons[name] || icons.ticket}</svg>`;
+  const addons=[{id:'po-gel-polish',name:'Gel Polish',price:15,durationMin:10},{id:'po-nail-art',name:'Nail Art',price:10,durationMin:10},{id:'po-chrome',name:'Chrome',price:15,durationMin:10},{id:'po-french',name:'French',price:10,durationMin:10}];
+  let records=[],current=null,stage=1,view='list',warning='',search='',filter='all',contactUntil=0;
+  let guest={phone:'',customer:'',status:''},tipMode='percent',picker='',addonPicker='',pickerCategory='',discountOpen=new Set();
+  try{const saved=JSON.parse(localStorage.getItem(key));if(Array.isArray(saved))records=saved;}catch(_){}
+  const button=(label,action,attrs='',style='btn-secondary')=>`<button type="button" class="btn ${style}" data-direct-action="${action}" ${attrs}>${label}</button>`;
+  const phone=()=>{const value=digits(current?.phone || guest.phone);return contactUntil>Date.now()?value.replace(/^(\d{3})(\d{3})(\d{4})$/,'($1) $2-$3'):'••• ••• '+value.slice(-4);};
+  function persist(){try{localStorage.setItem(key,JSON.stringify(records));return true;}catch(_){warning='Unable to save checkout locally. Keep this page open.';return false;}}
+  function markApproval(action){current.pendingApproval=action;current.poPendingApprovals=[...new Set([...(current.poPendingApprovals || []),action])];}
+  function save(){if(current){current.services=current.lines.map(l=>l.name);current.tech=[...new Set(current.lines.flatMap(l=>String(l.tech || '').split(',')).map(n=>n.trim()).filter(Boolean))].join(', ');persist();}else try{localStorage.setItem(draftKey,JSON.stringify(guest));}catch(_){}
+  }
+  function setUrl(){
+    const url=new URL(location.href);url.searchParams.delete('mode');
+    if(view==='editor'||view==='receipt'||view==='legacy'){
+      url.searchParams.delete('view');
+      if(view==='editor')url.searchParams.set('step',stage);else url.searchParams.delete('step');
+      if(current)url.searchParams.set('checkoutId',current.id);else url.searchParams.delete('checkoutId');
+    }else{url.searchParams.delete('checkoutId');url.searchParams.delete('step');url.searchParams.set('view','list');}
+    history.replaceState(null,'',url);
+  }
+  function normalize(t){
+    t.checkout=t.checkout || {tip:0,tipType:'fixed',method:'cash',cash:'',receipt:'none'};t.checkout.tipSplitMode=t.checkout.tipSplitMode || demo.load().payment.tipSplit;
+    if(!t.poGroups){const names=[...new Set(t.lines.map(l=>String(l.tech || '').split(',')[0].trim()))];t.poGroups=(names.length?names:['']).map(name=>({id:crypto.randomUUID(),tech:name}));t.lines.forEach(l=>{const name=String(l.tech || '').split(',')[0].trim();l.groupId=t.poGroups.find(g=>g.tech===name).id;});}
+    if(!t.poGroups.length)t.poGroups.push({id:crypto.randomUUID(),tech:''});
+    return t;
+  }
+  function newCheckout(){if(!canCheckout())return;current=null;guest={phone:'',customer:'',status:''};try{const saved=JSON.parse(localStorage.getItem(draftKey));if(saved)guest={...guest,...saved,status:''};}catch(_){}stage=1;view='editor';warning='';contactUntil=0;render();root.querySelector('#customer-phone')?.focus();}
+  function lookup(){
+    const value=digits(guest.phone);if(value.length!==10){warning='Enter a valid 10-digit customer phone number.';render();return;}
+    const appointments=(window.NEXORA_APPOINTMENTS_STORE?.loadAll() || []).map(t=>({customer:t.customerName,phone:t.phone}));
+    const sample=[{customer:'Demo customer A',phone:'2025550101'},{customer:'Quan',phone:'5550122807'},{customer:'Brian',phone:'5550161092'},{customer:'DJ',phone:'5550195421'},{customer:'Leo',phone:'5550178804'}];
+    const found=[...records,...appointments,...sample].find(t=>digits(t.phone)===value);
+    guest={phone:value,customer:found?.customer || '',status:found?'existing':'new'};warning='';save();render();root.querySelector('#customer-name')?.focus();
+  }
+  function ensureCustomer(){
+    if(current)return true;
+    if(digits(guest.phone).length!==10||!guest.status){warning='Find the customer by phone first.';return false;}
+    if(!guest.customer.trim()){warning='Enter the new customer’s name.';return false;}
+    current=normalize({id:'DC-'+crypto.randomUUID().slice(0,8).toUpperCase(),directCheckout:true,customer:guest.customer.trim(),phone:digits(guest.phone),customerType:guest.status==='existing'?'returning':'new',createdAt:new Date().toISOString(),checkedIn:false,status:'draft',lines:[],services:[],tech:'',note:'',checkout:{tip:0,tipType:'percent',tipSplitMode:demo.load().payment.tipSplit,method:demo.methods().find(m=>m.id!=='split')?.id || 'cash',cash:'',receipt:'none'}});
+    records.unshift(current);if(!persist()){records.shift();current=null;return false;}try{localStorage.removeItem(draftKey);}catch(_){}return true;
+  }
+  function total(method){if(!current)return {subtotalCents:0,discountCents:0,netCents:0,tipCents:0,totalCents:0};return window.NEXORA_TICKET_WORKSPACE.totals(method?{...current,payment:null,checkout:{...current.checkout,method}}:current);}
+  function requiresApproval(){return (current?.poPendingApprovals || (current?.pendingApproval?[current.pendingApproval]:[])).some(action=>demo.load().rules[action]);}
+  function groups(){return current?.poGroups || [];}
+  function groupLines(g){return current.lines.filter(l=>l.groupId===g.id);}
+  function mainLines(g){return groupLines(g).filter(l=>!l.parentLineId);}
+  function lineNet(l){const base=Math.round(Number(l.price || 0)*100);const reduction=Math.min(base,Math.round(l.discount?.type==='fixed'?Number(l.discount.value || 0)*100:base*Number(l.discount?.value || 0)/100));return base-reduction;}
+  function orderLines(){current.lines=groups().flatMap(g=>groupLines(g));}
+  function itemHtml(l,group,addon=false){return `<div class="item-editor"><div class="item-line ${addon?'addon-line':''}"><div class="item-name">${l.custom?`<input class="input" aria-label="Custom service name" placeholder="Custom ${addon?'add-on':'service'} name" data-direct-field="name" data-line="${l.id}" value="${esc(l.name)}">`:`<strong>${esc(l.name)}</strong>`}</div><label class="item-price"><span>$</span><input type="number" min="0" step="0.01" inputmode="decimal" aria-label="Price for ${esc(l.name || 'custom service')}" data-direct-field="price" data-line="${l.id}" value="${l.price ?? ''}"></label>${button('Remove','remove-line',`data-line="${l.id}"`,'remove-item')}</div><div class="discount-under">${button((discountOpen.has(l.id)?'▾':'▸')+' Discount'+(l.discount?.value?' · '+money(Math.round(Number(l.price || 0)*100)-lineNet(l))+' off':''),'line-discount',`data-line="${l.id}"`,'discount-toggle')}<span class="item-net" data-net-line="${l.id}">Net ${money(lineNet(l))}</span></div>${discountOpen.has(l.id)?`<div class="discount-panel"><label>Service discount<select class="select" data-direct-field="discount-type" data-line="${l.id}"><option value="fixed" ${l.discount?.type!=='percent'?'selected':''}>Amount ($)</option><option value="percent" ${l.discount?.type==='percent'?'selected':''}>Percent (%)</option></select></label><input class="input" type="number" min="0" step="0.01" aria-label="Discount value for ${esc(l.name)}" data-direct-field="discount-value" data-line="${l.id}" value="${l.discount?.value || 0}"></div>`:''}</div>`;}
+  function pickerHtml(group,parentId=''){
+    const addOn=!!parentId,list=addOn?addons:catalog().filter(s=>category(s)===(pickerCategory || category(catalog()[0] || {})));
+    return `${!addOn?`<div class="form-field"><label>Service category<select class="select" data-direct-field="category">${[...new Set(catalog().map(category))].map(c=>`<option ${c===(pickerCategory || category(catalog()[0] || {}))?'selected':''}>${esc(c)}</option>`).join('')}</select></label></div>`:''}<div class="picker-grid" aria-label="${addOn?'Available add-ons':'Available main services'}">${list.map(s=>`<button type="button" class="service-choice" data-direct-action="add-service" data-group="${group.id}" data-service="${esc(s.id)}" data-parent="${parentId}"><span><b>${esc(s.name)}</b><small>${s.durationMin || 15} min</small></span><strong>${s.price==null?'Enter price':money(Math.round(s.price*100))+' +'}</strong></button>`).join('')}</div>`;
+  }
+  function serviceHtml(l,g){return `<div class="service-block"><div class="service-block-top"><span class="service-tag">MAIN SERVICE</span><span class="inherit-tag">${esc(g.tech || 'Select technician')} ${l.coTech?'+ '+esc(l.coTech)+' share this service':'performs this service and its add-ons'}</span></div>${itemHtml(l,g)}<label class="co-tech-field">Working together on this service<select class="select" data-direct-field="co-tech" data-line="${l.id}"><option value="">Only ${esc(g.tech || 'selected technician')}</option>${technicians().filter(t=>t!==g.tech).map(t=>`<option value="${esc(t)}" ${t===l.coTech?'selected':''}>${esc(t)} · shared service</option>`).join('')}</select></label><div class="addons-area"><div class="addons-head"><strong>Add-ons for this service</strong><span>Technician inherited automatically</span></div>${current.lines.filter(a=>a.parentLineId===l.id&&a.groupId===g.id).map(a=>itemHtml(a,g,true)).join('') || '<p class="addon-empty">No add-ons yet. Add as many as needed without choosing the technician again.</p>'}<div class="button-row">${button(icon('plus')+' Add-on','addon-picker',`data-line="${l.id}" data-group="${g.id}"`)}${button('+ Custom add-on','custom-service',`data-group="${g.id}" data-parent="${l.id}"`,'btn-quiet')}</div>${addonPicker===l.id?pickerHtml(g,l.id):''}</div></div>`;}
+  function groupHtml(g,index){const extra=groupLines(g).filter(l=>l.parentLineId&&!mainLines(g).some(s=>s.id===l.parentLineId));return `<div class="tech-group"><div class="group-head"><div><span class="group-number">TECHNICIAN ${index+1}</span><h4>${esc(g.tech || 'Choose technician')}</h4></div><div class="po-group-actions">${groups().length>1?`${button('↑ Up','move-group',`data-group="${g.id}" data-direction="-1" ${!index?'disabled':''}`,'po-reorder')}${button('↓ Down','move-group',`data-group="${g.id}" data-direction="1" ${index===groups().length-1?'disabled':''}`,'po-reorder')}${button('Remove technician','remove-group',`data-group="${g.id}"`,'text-button danger-text')}`:''}</div></div><label class="form-field">Who performed this work? · required<select class="select" data-direct-field="tech" data-group="${g.id}"><option value="">Select technician</option>${technicians().map(t=>`<option value="${esc(t)}" ${g.tech===t?'selected':''}>${esc(t)}</option>`).join('')}</select></label><div class="group-services">${mainLines(g).map(l=>serviceHtml(l,g)).join('') || '<div class="empty">Add a main service, or record an add-on by this technician below.</div>'}</div><div class="button-row group-buttons">${button(icon('plus')+' Add main service','service-picker',`data-group="${g.id}"`)}${button('+ Custom service','custom-service',`data-group="${g.id}"`,'btn-quiet')}</div>${picker===g.id?pickerHtml(g):''}${index>0||extra.length?`<div class="other-tech-work"><div class="addons-head"><strong>Add-on by this technician</strong><span>Link it to the main service</span></div>${extra.map(l=>itemHtml(l,g,true)).join('') || '<p class="addon-empty">Use this when another technician performs an add-on for a service above.</p>'}${button(icon('plus')+' Add their add-on','extra-service',`data-group="${g.id}"`)}</div>`:''}</div>`;}
+  function customerHtml(){const name=current?.customer || guest.customer,found=current||guest.status==='existing',newGuest=current?.customerType==='new';return `<section class="panel form-panel"><h3 class="panel-title"><span class="step">1</span> Find customer</h3><label class="inline-label" for="customer-phone">Customer phone · required</label><div class="lookup-row"><input class="input" id="customer-phone" inputmode="tel" autocomplete="off" placeholder="(000) 000-0000" value="${esc(found?phone():guest.phone)}" ${found?'readonly':''}>${button('Find customer','lookup',found?'disabled':'')}</div><div aria-live="polite">${found?`<div class="identity-card found"><b>${newGuest?'New customer':'Existing customer found'}</b><strong>${esc(name)}</strong><span class="sensitive-phone">${esc(phone())} · ${contactUntil>Date.now()?'Contact approved for this record':'Phone hidden by permission'}</span><div class="customer-private-actions">${button('View full contact · approval required','reveal-contact')}${stage===1?button('Different customer','different-customer'):''}</div></div>`:guest.status==='new'?`<div class="identity-card new"><b>New customer</b><p>No matching phone number. Enter the guest’s name to continue.</p><label for="customer-name">Customer name · required</label><input class="input" id="customer-name" autocomplete="off" placeholder="Enter first and last name" value="${esc(guest.customer)}">${button('Continue to services','next','','btn-primary')}</div>`:'<p class="hint">Demo: enter <b>202-555-0101</b> for an existing customer, or <b>202-555-0199</b> for a new customer.</p>'}</div></section>`;}
+  function servicesHtml(){return `<section class="panel form-panel"><h3 class="panel-title"><span class="step">2</span> Technician & services</h3><p class="hint po-service-help">Choose the technician once. Add-ons and custom items under their service inherit that technician. Service choices show standard menu prices; payment estimates appear in step 3.</p><div class="tech-groups">${groups().map(groupHtml).join('')}</div>${button(icon('plus')+' Add another technician & their work','add-group','','add-tech')}<p class="hint">If a different technician performs an add-on, add that technician above and record the work under them.</p></section>`;}
+  function previewHtml(){return `<aside class="panel summary-panel checkout-preview" aria-label="Ticket preview"><div class="preview-heading"><span class="preview-icon">${icon('ticket')}</span><div><p class="summary-title">TICKET PREVIEW</p><h3>${esc(current.customer)}</h3><span>${esc(phone())}</span></div></div><div class="preview-progress"><span class="done">${icon('check')} Customer found</span><span class="current">2 &nbsp; Assign technician and service</span><span>3 &nbsp; Payment and checkout</span></div><p class="preview-message">Choose a technician and add a main service. The price, discount, tip, and payment choices will appear here.</p><div class="po-preview-mini"><span>Services added</span><strong>${current.lines.length}</strong><span>Menu subtotal</span><strong data-po-subtotal>${money(total().subtotalCents)}</strong></div></aside>`;}
+  function summaryRows(){return groups().map(g=>groupLines(g).map(l=>`<div class="summary-service"><div class="summary-line ${l.parentLineId?'addon-summary':''}"><span>${l.parentLineId?'↳ ':''}${esc(l.name || 'Custom service')}<small>${esc(l.tech || 'Technician needed')}${l.coTech?' · shared service':''}</small></span><strong data-po-summary-line="${l.id}">${money(lineNet(l))}</strong></div></div>`).join('')).join('');}
+  function tipHtml(){const p=current.checkout,percent=[0,10,15,18,20,25],amount=[0,5,10,20],values=tipMode==='percent'?percent:amount;return `<div class="tip-picker"><div class="tip-picker-head"><strong>Guest tip</strong></div><div class="tip-mode" role="group" aria-label="Choose tip entry type">${[['percent','% of services'],['amount','Dollar amount'],['custom','Custom']].map(([id,label])=>button(label,'tip-mode',`data-value="${id}" aria-pressed="${tipMode===id}"`,tipMode===id?'selected':'')).join('')}</div>${tipMode!=='custom'?`<div class="tip-presets" role="group" aria-label="Tip presets">${values.map(value=>button(value===0?'No tip':tipMode==='percent'?value+'%':money(value*100),'tip-value',`data-value="${value}" aria-pressed="${Number(p.tip)===value}"`,Number(p.tip)===value?'selected':'')).join('')}</div>`:''}${tipMode==='percent'?'<p class="hint">Percent uses discounted services before wallet discounts, card fees, or tax.</p>':''}<label class="po-tip-entry">${tipMode==='percent'?'Tip percent (%)':'Tip amount ($)'}<input class="input" type="number" min="0" max="${tipMode==='percent'?100:99999}" step="0.01" data-direct-field="tip" value="${p.tip || 0}"></label></div>`;}
+  function allocations(){const t=total();return demo.allocateTip(current.lines,t.tipCents || 0,current.checkout.tipSplitMode,current.checkout.tipAllocations);}
+  function tipAllocationHtml(){const values=allocations(),p=current.checkout,names=Object.keys(values);return names.length===1?`<div class="tip-auto"><span>${esc(names[0])}</span><strong>${money(values[names[0]])}</strong></div><p class="hint">One technician receives the full tip.</p>`:`<div class="tip-allocation"><div class="tip-allocation-head"><strong>Split tip between technicians</strong><small>Salon default: ${esc(demo.load().payment.tipSplit)}</small></div><div class="tip-split-modes" role="group" aria-label="Tip split method">${[['proportional','By work'],['fifty','50 / 50'],['equal','Equal'],['manual','Manual']].map(([id,label])=>button(label,'tip-split',`data-value="${id}" ${id==='fifty'&&names.length!==2?'disabled':''} aria-pressed="${p.tipSplitMode===id}"`,p.tipSplitMode===id?'selected':'')).join('')}</div><div class="tip-split-list">${names.map(name=>`<div class="tip-split-row"><span>${esc(name)}</span>${p.tipSplitMode==='manual'?`<label class="tip-input-wrap">$ <input type="number" min="0" step="0.01" data-direct-field="tip-allocation" data-tech="${esc(name)}" value="${p.tipAllocations?.[name] || 0}" aria-label="Tip for ${esc(name)}"></label>`:`<strong>${money(values[name])}</strong>`}</div>`).join('')}</div><p class="tip-status ${Object.values(values).reduce((s,n)=>s+n,0)===(total().tipCents || 0)?'balanced':'unbalanced'}">${Object.values(values).reduce((s,n)=>s+n,0)===(total().tipCents || 0)?'Tip fully allocated':'Manual amounts must match the guest tip'}</p></div>`;}
+  function paymentHtml(){const p=current.checkout,methods=demo.methods(),primary=methods.filter(m=>['cash','card','gift-card','crypto','split'].includes(m.id)),other=methods.filter(m=>!primary.includes(m));const symbols={cash:'$',card:'▰','gift-card':'▧',crypto:'₿',split:'⑂'};const chip=m=>button(`<span class="payment-chip-icon" aria-hidden="true">${symbols[m.id] || '◉'}</span><span class="payment-chip-copy"><b>${esc(m.label)}</b><small>${money(total(m.id).totalCents)}</small></span>`,'payment',`data-value="${esc(m.id)}" aria-pressed="${p.method===m.id}"`,'payment-chip '+(p.method===m.id?'selected':''));return `<div class="estimate-intro"><strong>Compare payment totals</strong><span>Choose an accepted Nexora payment method. The amount under each name is the estimate for this ticket.</span></div><div class="payment-choice-bar" role="group" aria-label="Payment methods">${primary.map(chip).join('')}${other.length?button(`<span class="payment-chip-icon">···</span><span class="payment-chip-copy"><b>${p.moreOpen?'Less':'More'}</b><small>${other.length} options</small></span>`,'payment-more',`aria-expanded="${!!p.moreOpen}"`,'payment-chip payment-more'):''}</div>${p.moreOpen?`<div class="payment-choice-bar payment-choice-extra" role="group" aria-label="More payment methods">${other.map(chip).join('')}</div>`:''}<p class="estimate-footnote">Discounts and card fees apply to the selected method. Tip is included; tax is not calculated in this prototype.</p>${p.method==='cash'?`<label class="po-tip-entry">Cash received ($)<input class="input" type="number" min="0" step="0.01" data-direct-field="cash" value="${esc(p.cash)}" placeholder="${(total().totalCents/100).toFixed(2)}"></label>`:p.method==='split'?`<label class="po-tip-entry">Cash service portion ($)<input class="input" type="number" min="0" step="0.01" data-direct-field="splitCash" value="${esc(p.splitCash || '')}"></label><p class="hint">Card covers the remaining service amount, tip and card fee.</p>`:p.method==='gift-card'?`<label class="po-tip-entry">Gift Card reference<input class="input" data-direct-field="giftCode" value="${esc(p.giftCode || '')}" placeholder="Demo gift card reference"></label>`:''}`;}
+  function summaryHtml(){const t=total();return `<aside class="panel summary-panel" aria-label="Checkout summary"><h3 class="panel-title"><span class="step">3</span> Payment & checkout</h3><div class="summary-block"><p class="summary-title">Customer</p><div class="summary-customer">${esc(current.customer)}</div><p class="hint">${esc(phone())}</p></div><div class="summary-block"><p class="summary-title">Work by technician</p>${summaryRows()}</div><div class="summary-block">${tipHtml()}<label class="form-field tip-order-discount">Order discount<input class="input" type="number" min="0" step="0.01" data-direct-field="order-discount" value="${current.discount?.value || 0}"></label>${requiresApproval()?'<p class="approval-note">Manager PIN required to approve discounts or changed prices.</p>':''}${[['Services & add-ons','subtotalCents','subtotal'],['Service & order discounts','discountCents','discount'],['Guest tip','tipCents','tip']].map(([label,key,id])=>`<div class="summary-line"><span>${label}</span><strong data-po-total="${id}">${id==='discount'?'−':''}${money(t[key])}</strong></div>`).join('')}</div><div class="summary-block"><p class="summary-title">Tip allocation</p><div data-po-tip-allocation>${tipAllocationHtml()}</div></div><div class="summary-block"><p class="summary-title">Payment method & estimate</p><div data-po-payment>${paymentHtml()}</div><div class="summary-line wallet-line"><span>Payment discount</span><strong data-po-total="methodDiscount">−${money(t.methodDiscountCents)}</strong></div><div class="summary-line fee-line"><span>Credit Card fee · tip excluded</span><strong data-po-total="fee">${money(t.feeCents)}</strong></div><div class="total-line"><span>Total due</span><span data-po-total="total">${money(t.totalCents)}</span></div></div><p class="review-warning" role="status" data-po-warning>${esc(warning)}</p>${button('Review checkout · <span data-po-total="button">'+money(t.totalCents)+'</span>','review','','btn-primary btn-wide')}<p class="safe-note">${icon('info')} Demo only. No payment is collected and no salon data is changed.</p></aside>`;}
+  function editorHtml(){return `<section class="checkout-frame panel checkout-stage-${stage}" aria-label="Checkout flow"><div class="builder-head"><div>${button(icon('arrow')+' Back to checkout list','list','','back-link')}<h2>New direct checkout</h2><p class="muted">Find the customer, assign the work, and finish payment.</p></div><div class="flow-actions"><span class="direct-note">${icon('check')} No check-in required</span></div></div><div class="checkout-progress" aria-label="Three checkout steps">${['Find customer','Technician & services','Payment & checkout'].map((label,index)=>`<span class="${stage===index+1?'active':stage>index+1?'done':''}" ${stage===index+1?'aria-current="step"':''}><b>${stage>index+1?'✓':index+1}</b><span class="step-copy">${label}</span></span>`).join('')}</div><div class="builder-grid"><div class="stack">${customerHtml()}${stage>=2?servicesHtml():''}</div>${stage===3?summaryHtml():stage===2?previewHtml():''}</div><div class="checkout-step-actions">${button('← '+(stage===1?'Checkout list':stage===2?'Customer':'Services'),'previous')}${stage<3?`<p class="review-warning" role="status" data-po-warning>${esc(warning)}</p>${button((stage===1?'Next · Services':'Next · Payment')+' →','next','','btn-primary')}`:'<p class="checkout-next-hint">Review the total and payment method, then complete the demo checkout.</p>'}</div></section>`;}
+  function listHtml(){const rows=records.filter(t=>(filter==='all'||(t.payment?'paid':'draft')===filter)&&(!search||(t.customer+' '+t.id).toLowerCase().includes(search.toLowerCase())||(/^[\d\s()+.-]+$/.test(search)&&digits(t.phone).includes(digits(search)))));return `<section class="checkout-hero"><div><h2>Checkout Customer</h2><p class="hero-copy">Look up the guest by phone, then assign work by technician. Check-in is optional.</p></div><div class="hero-actions"><span class="count-chip">${records.filter(t=>!t.payment).length} checkout drafts</span>${button(icon('plus')+' New checkout','new',!canCheckout()?'disabled':'','btn-primary')}</div></section><div class="list-heading"><div><h3>Customer checkouts</h3><p class="muted">Resume a draft or open the saved receipt.</p></div><a class="po-ticket-link" href="pos-front-desk-tickets.html">Open service tickets →</a></div><div class="po-list-tools"><input class="input" data-po-search placeholder="Search customer, phone or checkout" value="${esc(search)}" aria-label="Search checkouts"><select class="select" data-po-filter aria-label="Checkout status">${[['all','All checkouts'],['draft','Drafts'],['paid','Paid']].map(([id,label])=>`<option value="${id}" ${filter===id?'selected':''}>${label}</option>`).join('')}</select></div><div class="ticket-grid">${rows.map(t=>`<article class="ticket-card panel"><div class="ticket-top"><div><span class="ticket-id">${esc(t.id)}</span><h4 class="ticket-name">${esc(t.customer)}</h4></div><span class="status ${t.payment?'po-paid':''}">${t.payment?'Paid':'Draft'}</span></div><div class="ticket-details"><div class="field-label">Services</div><p>${t.lines.map(l=>esc(l.name)).join(', ') || 'No services added yet'}</p><div class="field-label">Technician</div><p>${esc(t.tech || 'Not assigned')}</p></div><div class="po-ticket-meta">${demo.timeHtml(t.payment?.paidAt || t.createdAt)}<strong>${t.payment?money(t.payment.totalCents):'Not paid'}</strong></div><div class="ticket-actions">${button(icon('card')+(t.payment?' View saved receipt':' Resume checkout'),'open',`data-id="${t.id}" ${!canCheckout()?'disabled':''}`,'btn-secondary btn-wide')}</div></article>`).join('') || '<div class="panel ticket-empty"><span class="po-empty-icon">'+icon('ticket')+'</span><strong>No checkouts yet</strong><p>Start a new checkout when the next guest is ready.</p></div>'}</div>`;}
+  function receiptHtml(){const p=current.payment;return `<section class="panel receipt-confirm"><span class="success-icon">${icon('check')}</span><p class="po-eyebrow">CHECKOUT COMPLETE</p><h2>Payment complete · demo</h2><p class="muted">${esc(current.customer)} · ${esc(current.id)}</p><div class="receipt-quick">${[['Services',p.subtotalCents],['Discount',-p.discountCents],['Payment discount',-p.methodDiscountCents],['Card fee',p.feeCents],['Guest tip',p.tipCents]].map(([label,amount])=>`<div class="summary-line"><span>${label}</span><strong>${money(amount)}</strong></div>`).join('')}<div class="total-line"><span>Total collected</span><span>${money(p.totalCents)}</span></div></div><p class="hint">${esc(demo.load().payment.methods.find(m=>m.id===p.method)?.label || p.method)} · ${demo.timeHtml(p.paidAt)}</p><div class="receipt-actions">${button('Print receipt','print')}${button('SMS receipt · demo','sms')}${button('View saved receipt','saved-receipt')}${button('Done · Checkout Customer','list','','btn-primary')}</div><p class="safe-note">${icon('info')} Demo only. No money was charged and no SMS was sent.</p></section>`;}
+  function render(){setUrl();root.innerHTML=`<div class="po-workspace-meta"><span>FRONT DESK <span class="po-meta-divider">/</span> ${view==='list'?'CHECKOUT CUSTOMER':'DIRECT CHECKOUT'}</span><button type="button" class="po-account" data-pos-switch>${icon('user')} ${esc(demo.account().name)} · ${esc(demo.account().role)}</button></div>${view==='list'?listHtml():view==='receipt'?receiptHtml():view==='legacy'?'<section class="ticket-workspace" data-po-legacy></section>':editorHtml()}`;if(view==='legacy')openLegacy();}
+  function openLegacy(){const legacy=root.querySelector('[data-po-legacy]');window.NEXORA_TICKET_WORKSPACE.mount(legacy,{catalog,technicians:()=>technicians().map(name=>({name,status:'available'})),onChange(){save();},onModeChange(){},onBack(){current=null;view='list';render();}}).open(current,'checkout');}
+  function updateSummary(){
+    if(!current)return;const t=total(),fields={subtotal:t.subtotalCents,discount:t.discountCents,tip:t.tipCents,methodDiscount:t.methodDiscountCents,fee:t.feeCents,total:t.totalCents,button:t.totalCents};
+    root.querySelectorAll('[data-po-total]').forEach(el=>el.textContent=(['discount','methodDiscount'].includes(el.dataset.poTotal)?'−':'')+money(fields[el.dataset.poTotal]));
+    root.querySelectorAll('[data-net-line]').forEach(el=>{const l=current.lines.find(l=>l.id===el.dataset.netLine);if(l)el.textContent='Net '+money(lineNet(l));});
+    root.querySelectorAll('[data-po-summary-line]').forEach(el=>{const line=current.lines.find(l=>l.id===el.dataset.poSummaryLine);if(line)el.textContent=money(lineNet(line));});
+    const subtotal=root.querySelector('[data-po-subtotal]');if(subtotal)subtotal.textContent=money(t.subtotalCents);
+    const tipStatus=root.querySelector('.tip-status');if(tipStatus){const balanced=Object.values(allocations()).reduce((s,n)=>s+n,0)===(t.tipCents || 0);tipStatus.textContent=balanced?'Tip fully allocated':'Manual amounts must match the guest tip';tipStatus.classList.toggle('balanced',balanced);tipStatus.classList.toggle('unbalanced',!balanced);}
+    const allocationsNode=root.querySelector('[data-po-tip-allocation]');if(allocationsNode&&!allocationsNode.contains(document.activeElement))allocationsNode.innerHTML=tipAllocationHtml();
+    root.querySelectorAll('[data-direct-action="payment"] small').forEach(el=>{const id=el.closest('button').dataset.value;el.textContent=money(total(id).totalCents);});
+  }
+  function validateServices(){if(!current.lines.some(l=>!l.parentLineId))return 'Add at least one main service.';if(groups().some(g=>!g.tech))return 'Select a technician for each group.';if(current.lines.some(l=>!l.name.trim()||l.price==null||!Number.isFinite(Number(l.price))||Number(l.price)<0))return 'Enter a name and valid price for each service.';if(current.lines.some(l=>l.discount?.type==='percent'&&Number(l.discount.value)>100))return 'Service discount cannot exceed 100%.';return '';}
+  async function review(){
+    warning=validateServices();const t=total(),p=current.checkout;
+    if(!warning&&(!Number.isFinite(t.totalCents)||t.error))warning=t.error || 'Enter valid payment amounts.';
+    if(!warning&&(!Number.isFinite(Number(p.tip))||Number(p.tip)<0||(p.tipType==='percent'&&Number(p.tip)>100)))warning='Enter a valid tip from 0 to 100% or a dollar amount.';
+    if(!warning&&!demo.methods().some(m=>m.id===p.method))warning='Choose an enabled payment method.';
+    if(!warning&&p.method==='cash'&&(!Number.isFinite(Number(p.cash))||p.cash===''||Math.round(Number(p.cash)*100)<t.totalCents))warning='Cash received must cover '+money(t.totalCents)+'.';
+    if(!warning&&p.method==='split'&&(p.splitCash==null||p.splitCash===''||Number(p.splitCash)<0||Math.round(Number(p.splitCash)*100)>t.netCents))warning='Enter a cash service portion between zero and '+money(t.netCents)+'.';
+    if(!warning&&p.method==='gift-card'&&!p.giftCode?.trim())warning='Enter the Gift Card reference.';
+    if(!warning&&Object.values(allocations()).reduce((s,n)=>s+n,0)!==t.tipCents)warning='Manual tip allocations must match the guest tip.';
+    if(warning){render();return;}
+    const approvals=current.poPendingApprovals || (current.pendingApproval?[current.pendingApproval]:[]);
+    for(const action of approvals)if(!await demo.approve(action,current.id,{label:action==='price'?'Approve changed service prices':'Approve checkout discounts'}))return;
+    const result=await Swal.fire({title:'Review checkout',html:`<div class="receipt-quick"><div class="summary-line"><span>Customer</span><strong>${esc(current.customer)}</strong></div><div class="summary-line"><span>Payment method</span><strong>${esc(demo.methods().find(m=>m.id===p.method)?.label)}</strong></div><div class="total-line"><span>Total due</span><strong>${money(t.totalCents)}</strong></div></div><p class="pos-muted">Demo only. No payment is collected.</p>`,showCancelButton:true,confirmButtonText:'Complete demo',cancelButtonText:'Back to checkout',confirmButtonColor:'#4648d8',customClass:{popup:'pos-swal po-review-dialog'}});
+    if(!result.isConfirmed||!canCheckout()||current.payment)return;
+    current.payment={...t,tipAllocations:allocations(),method:p.method,receipt:p.receipt || 'none',cashCents:p.method==='cash'?t.totalCents:p.method==='split'?t.cashPortionCents:0,cardCents:p.method==='card'?t.totalCents:p.method==='split'?t.cardPortionCents:0,changeCents:p.method==='cash'?Math.round(Number(p.cash)*100)-t.totalCents:0,paidAt:new Date().toISOString(),simulated:true};
+    current.status='completed';delete current.pendingApproval;delete current.poPendingApprovals;save();view='receipt';render();
+  }
+  function addService(g,s,parentId=''){const line={id:crypto.randomUUID(),serviceId:s.id || null,groupId:g.id,name:s.name || '',price:s.price ?? null,originalPrice:s.price ?? null,tech:g.tech,status:'completed',custom:!!s.custom};if(parentId)line.parentLineId=parentId;current.lines.push(line);orderLines();save();render();}
+  root.addEventListener('input',e=>{
+    const el=e.target;if(el.id==='customer-phone'){guest.phone=el.value;guest.status='';save();return;}if(el.id==='customer-name'){guest.customer=el.value;save();return;}
+    if(el.hasAttribute('data-po-search')){search=el.value;const start=el.selectionStart;render();const input=root.querySelector('[data-po-search]');input.focus();input.setSelectionRange(start,start);return;}
+    if(!current||current.payment)return;
+    const field=el.dataset.directField,l=current.lines.find(l=>l.id===el.dataset.line),p=current.checkout;
+    if(field==='name'&&l)l.name=el.value;
+    if(field==='price'&&l){l.price=el.value===''?null:Number(el.value);markApproval('price');}
+    if(field==='discount-value'&&l){l.discount={type:l.discount?.type || 'fixed',value:Math.max(0,Number(el.value)||0)};markApproval('discount');}
+    if(field==='order-discount'){current.discount={type:'fixed',value:Math.max(0,Number(el.value)||0)};markApproval('discount');}
+    if(field==='tip'){p.tip=Math.max(0,Number(el.value)||0);p.tipType=tipMode==='percent'?'percent':'fixed';}
+    if(['cash','splitCash','giftCode'].includes(field))p[field]=el.value;
+    if(field==='tip-allocation'){p.tipAllocations=p.tipAllocations || {};p.tipAllocations[el.dataset.tech]=Math.max(0,Number(el.value)||0);}
+    save();updateSummary();
   });
-  function url(id,mode='checkout',replace=false){const next=new URL(location.href);if(id){next.searchParams.set('checkoutId',id);next.searchParams.set('mode',mode);}else{next.searchParams.delete('checkoutId');next.searchParams.delete('mode');}if(next.href!==location.href)history[replace?'replaceState':'pushState'](null,'',next);}
-  function renderList(){
-    $('[data-direct-session]').innerHTML=demo.sessionHtml();
-    const query=$('[data-direct-search]').value.trim().toLowerCase(),status=$('[data-direct-filter]').value;
-    $('[data-direct-new]').disabled=!canCheckout();
-    const rows=records.filter(t=>(status==='all'||(t.payment?'paid':'draft')===status)&&(!query||(t.customer+' '+t.id).toLowerCase().includes(query)||(/^[\d\s()+.-]+$/.test(query)&&digits(t.phone).includes(digits(query)))));
-    $('[data-direct-results]').innerHTML=rows.map(t=>`<article class="direct-checkout-row"><div><strong>${esc(t.id)} · ${esc(t.customer)}</strong><p>${t.payment?'Paid':'Draft'} · ${t.lines.length} services · Contact •••• ${esc(digits(t.phone).slice(-4))}</p></div>${demo.timeHtml(t.payment?.paidAt || t.createdAt)}<strong>${t.payment?'$'+(t.payment.totalCents/100).toFixed(2):'Not paid'}</strong><button type="button" data-direct-open="${esc(t.id)}" ${!canCheckout()?'disabled':''}>${t.payment?'View saved receipt':'Resume checkout'}</button></article>`).join('') || '<div class="pos-card"><h3>No checkouts found</h3><p>Create a new checkout or adjust the search.</p></div>';
-  }
-  function showList(){
-    $('#ticket-workspace').hidden=true;$('[data-direct-customer]').hidden=true;$('[data-direct-list]').hidden=false;renderList();
-  }
-  function open(t,mode='checkout',replace=false){
+  root.addEventListener('change',e=>{
+    const el=e.target;if(el.hasAttribute('data-po-filter')){filter=el.value;render();return;}if(!current||current.payment)return;
+    const field=el.dataset.directField,l=current.lines.find(l=>l.id===el.dataset.line),g=groups().find(g=>g.id===el.dataset.group);
+    if(field==='category'){pickerCategory=el.value;render();return;}
+    if(!['tech','co-tech','discount-type'].includes(field))return;
+    if(field==='tech'&&g){g.tech=el.value;groupLines(g).forEach(l=>{if(l.coTech===g.tech)delete l.coTech;l.tech=[g.tech,l.coTech].filter(Boolean).join(', ');});}
+    if(field==='co-tech'&&l){l.coTech=el.value;l.tech=[groups().find(g=>g.id===l.groupId).tech,l.coTech].filter(Boolean).join(', ');}
+    if(field==='discount-type'&&l){l.discount={type:el.value,value:l.discount?.value || 0};markApproval('discount');}
+    save();render();
+  });
+  root.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='customer-phone'){e.preventDefault();lookup();}if(e.key==='Enter'&&e.target.id==='customer-name'){e.preventDefault();if(ensureCustomer()){stage=2;render();}}});
+  root.addEventListener('click',async e=>{
+    const b=e.target.closest('[data-direct-action]');if(!b||b.disabled)return;const action=b.dataset.directAction;
+    if(action==='list'){save();view='list';warning='';current=null;contactUntil=0;render();return;}
+    if(action==='new'){newCheckout();return;}
+    if(action==='open'){current=normalize(records.find(t=>t.id===b.dataset.id));view=current.payment?'receipt':current.splitBills?'legacy':'editor';stage=current.lines.length?3:2;tipMode=current.checkout.tipType==='percent'?'percent':'amount';warning='';render();return;}
+    if(action==='print'){window.print();return;}
+    if(action==='sms'){Swal.fire({title:'SMS receipt · demo',text:'The receipt is prepared for '+phone()+'. No SMS was sent.',confirmButtonText:'Done',customClass:{popup:'pos-swal'}});return;}
+    if(action==='saved-receipt'){Swal.fire({title:'Saved receipt',html:`<p>${esc(current.id)} · ${esc(current.customer)}</p>${summaryRows()}<div class="total-line"><span>Total paid</span><strong>${money(current.payment.totalCents)}</strong></div>`,customClass:{popup:'pos-swal po-review-dialog'}});return;}
     if(!canCheckout())return;
-    current=t;lookup=null;$('[data-direct-list]').hidden=true;$('[data-direct-customer]').hidden=true;
-    url(t.id,mode,replace);workspace.open(t,t.payment?'checkout':mode);
-  }
-  function newCheckout(){
-    if(!canCheckout())return;
-    current=null;lookup=null;$('#ticket-workspace').hidden=true;$('[data-direct-list]').hidden=true;$('[data-direct-customer]').hidden=false;
-    const f=$('[data-direct-customer-form]');f.reset();f.elements.customer.disabled=true;$('[data-direct-customer-result]').hidden=true;$('[data-direct-error]').textContent='';
-    try{const draft=JSON.parse(localStorage.getItem(lookupKey));if(draft){f.elements.phone.value=draft.phone || '';f.elements.customer.value=draft.customer || '';}}catch(_){}
-    f.elements.phone.focus();
-  }
-  function lookupCustomer(){
-    const f=$('[data-direct-customer-form]'),phone=digits(f.elements.phone.value);
-    if(phone.length!==10){$('[data-direct-error]').textContent='Enter a valid 10-digit phone number.';return;}
-    const booked=(window.NEXORA_APPOINTMENTS_STORE?.loadAll() || []).map(r=>({customer:r.customerName,phone:r.phone}));
-    const found=[...records,...booked,...knownCustomers].find(c=>digits(c.phone)===phone);
-    lookup={phone,existing:!!found};f.elements.customer.disabled=false;f.elements.customer.value=found?.customer || '';
-    $('[data-direct-customer-status]').textContent=found?'Customer found · '+found.customer:'New customer · enter their name';
-    $('[data-direct-customer-result]').hidden=false;$('[data-direct-error]').textContent='';f.elements.customer.focus();
-  }
-  $('[data-direct-customer-form]').addEventListener('input',e=>{
-    const f=e.currentTarget;
-    if(e.target.name==='phone'){lookup=null;f.elements.customer.disabled=true;$('[data-direct-customer-result]').hidden=true;}
-    try{localStorage.setItem(lookupKey,JSON.stringify({phone:f.elements.phone.value,customer:f.elements.customer.value}));}catch(_){}
+    if(action==='lookup'){lookup();return;}
+    if(action==='different-customer'){current=null;guest={phone:'',customer:'',status:''};contactUntil=0;render();return;}
+    if(action==='reveal-contact'){if(await demo.approve('contact',current?.id || guest.customer,{label:'View full customer contact'})){contactUntil=Date.now()+30000;render();setTimeout(()=>{contactUntil=0;if(view==='editor')render();},30000);}return;}
+    if(action==='previous'){if(stage===1){save();view='list';current=null;}else stage--;warning='';render();return;}
+    if(action==='next'){warning='';if(stage===1){if(ensureCustomer())stage=2;}else{warning=validateServices();if(!warning)stage=3;}render();return;}
+    if(!current||current.payment)return;
+    const g=groups().find(g=>g.id===b.dataset.group),l=current.lines.find(l=>l.id===b.dataset.line),p=current.checkout;
+    if(action==='add-group')groups().push({id:crypto.randomUUID(),tech:''});
+    if(action==='remove-group'){const ids=groupLines(g).map(l=>l.id);current.poGroups=groups().filter(x=>x!==g);current.lines=current.lines.filter(l=>!ids.includes(l.id)&&!ids.includes(l.parentLineId));}
+    if(action==='move-group'){const index=groups().indexOf(g),next=index+Number(b.dataset.direction);if(next>=0&&next<groups().length)[current.poGroups[index],current.poGroups[next]]=[current.poGroups[next],current.poGroups[index]];orderLines();}
+    if(action==='service-picker'){picker=picker===g.id?'':g.id;addonPicker='';}
+    if(action==='addon-picker'){addonPicker=addonPicker===l.id?'':l.id;picker='';}
+    if(action==='add-service'){const s=(b.dataset.parent?addons:catalog()).find(s=>s.id===b.dataset.service);if(s)addService(g,s,b.dataset.parent);return;}
+    if(action==='custom-service'){addService(g,{name:'',price:0,custom:true},b.dataset.parent);return;}
+    if(action==='remove-line'){current.lines=current.lines.filter(x=>x!==l&&x.parentLineId!==l.id);}
+    if(action==='line-discount'){if(discountOpen.has(l.id))discountOpen.delete(l.id);else discountOpen.add(l.id);}
+    if(action==='extra-service'){
+      const mains=current.lines.filter(l=>!l.parentLineId);if(!mains.length){warning='Add a main service before linking another technician’s add-on.';render();return;}
+      const result=await Swal.fire({title:'Add-on by '+(g.tech || 'this technician'),html:`<label class="pos-approval-field">Related main service<select id="po-related-service">${mains.map(l=>`<option value="${l.id}">${esc(l.name)}</option>`).join('')}</select></label><label class="pos-approval-field">Add-on<select id="po-extra-service">${addons.map(a=>`<option value="${a.id}">${esc(a.name)} · ${money(a.price*100)}</option>`).join('')}</select></label>`,showCancelButton:true,confirmButtonText:'Add their add-on',customClass:{popup:'pos-swal'},preConfirm:()=>({parent:document.getElementById('po-related-service').value,service:document.getElementById('po-extra-service').value})});
+      if(result.isConfirmed)addService(g,addons.find(a=>a.id===result.value.service),result.value.parent);return;
+    }
+    if(action==='tip-mode'){tipMode=b.dataset.value;p.tipType=tipMode==='percent'?'percent':'fixed';p.tip=0;}
+    if(action==='tip-value')p.tip=Number(b.dataset.value);
+    if(action==='tip-split')p.tipSplitMode=b.dataset.value;
+    if(action==='payment'){p.method=b.dataset.value;warning='';}
+    if(action==='payment-more')p.moreOpen=!p.moreOpen;
+    if(action==='review'){await review();return;}
+    save();render();
   });
-  $('[data-direct-customer-form]').addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.name==='phone'){e.preventDefault();lookupCustomer();}});
-  $('[data-direct-customer-form]').addEventListener('submit',e=>{
-    e.preventDefault();if(!canCheckout())return;const f=e.currentTarget;
-    if(!lookup||lookup.phone!==digits(f.elements.phone.value)){lookupCustomer();return;}
-    const name=f.elements.customer.value.trim();if(!name){$('[data-direct-error]').textContent='Enter the customer’s name.';return;}
-    const t={id:'DC-'+crypto.randomUUID().slice(0,8).toUpperCase(),directCheckout:true,customer:name,phone:lookup.phone,customerType:lookup.existing?'returning':'new',createdAt:new Date().toISOString(),checkedIn:false,status:'draft',lines:[],services:[],tech:'',note:'',checkout:{tip:0,tipType:'fixed',tipSplitMode:demo.load().payment.tipSplit,method:demo.methods().find(m=>m.id!=='split')?.id || 'cash',cash:'',receipt:'none'}};
-    records.unshift(t);if(!persist()){records.shift();return;}
-    try{localStorage.removeItem(lookupKey);}catch(_){}open(t,'edit');
-  });
-  document.addEventListener('click',e=>{
-    if(e.target.closest('[data-direct-new]'))newCheckout();
-    if(e.target.closest('[data-direct-lookup]'))lookupCustomer();
-    if(e.target.closest('[data-direct-cancel]')){url();showList();}
-    const b=e.target.closest('[data-direct-open]');if(b){const t=records.find(t=>t.id===b.dataset.directOpen);if(t)open(t,t.lines.length?'checkout':'edit');}
-  });
-  $('[data-direct-search]').addEventListener('input',renderList);$('[data-direct-filter]').addEventListener('change',renderList);
-  function restore(){const params=new URLSearchParams(location.search),t=records.find(t=>t.id===params.get('checkoutId'));if(t&&canCheckout())open(t,params.get('mode')==='edit'?'edit':'checkout',true);else showList();}
-  window.addEventListener('popstate',restore);
-  window.addEventListener('nexora:pos-account-changed',()=>{current=null;url();showList();});
-  restore();
+  window.addEventListener('nexora:pos-account-changed',()=>{save();current=null;view='list';contactUntil=0;render();});
+  window.addEventListener('nexora:pos-settings-changed',()=>{if(view==='editor')updateSummary();});
+  const params=new URLSearchParams(location.search),id=params.get('checkoutId');current=records.find(t=>t.id===id) || null;
+  if(current){normalize(current);view=current.payment?'receipt':current.splitBills?'legacy':'editor';stage=params.get('step')?Math.max(1,Math.min(3,Number(params.get('step'))||2)):params.get('mode')==='edit'?2:3;tipMode=current.checkout.tipType==='percent'?'percent':'amount';render();}
+  else if(params.get('view')==='list'||!canCheckout())render();else newCheckout();
 })();

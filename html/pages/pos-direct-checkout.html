@@ -8,41 +8,25 @@
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/pos-front-desk.css">
   <link rel="stylesheet" href="../assets/ticket-workspace.css">
+  <link rel="stylesheet" href="../assets/pos-direct-checkout.css?v=po-v34-2">
   <link rel="stylesheet" href="../assets/pos-demo-settings.css">
 </head>
 <body>
 <div class="shell"><aside class="sidebar" aria-label="Salon sidebar"></aside><div class="app-area"><header class="header"></header>
-<main class="content front-desk direct-checkout">
+<main class="content front-desk">
   <h1>Front Desk</h1><p class="subtitle">Check in guests, manage open tickets, and run the turn board.</p>
   <nav class="workflow" aria-label="Front Desk workflows">
     <a href="pos-front-desk.html?section=checkin">Check-in</a>
     <a href="pos-front-desk-tickets.html">Tickets</a>
     <a href="pos-front-desk-turn-board.html">Turn Board</a>
-    <a class="active" href="pos-direct-checkout.html" aria-current="page">Checkout Customer</a>
+    <a class="active" href="pos-direct-checkout.html?view=list" aria-current="page">Checkout Customer</a>
     <button type="button" disabled>Completed Services</button>
     <a href="pos-front-desk.html">Appointments</a>
     <a href="pos-front-desk.html?section=estimate">Estimate</a>
     <button type="button" disabled>Staffs Clock</button>
     <button type="button" disabled>Customer History</button>
   </nav>
-  <div data-direct-session></div>
-  <section data-direct-list>
-    <div class="pos-heading"><div><h2>Checkout Customer</h2><p class="pos-muted">Open a service ticket or create a checkout without Check-in.</p></div><button class="pos-primary" type="button" data-direct-new>+ New checkout</button></div>
-    <div class="pos-card"><div class="direct-summary"><strong>Direct checkout</strong><span>Find the guest → add technician & services → review payment.</span></div><p class="pos-muted">Direct checkouts keep their own draft and receipt. They do not add a Check-in or a Turn Board guest.</p><div class="pos-actions"><a class="pos-button" href="pos-front-desk-tickets.html">Find existing service ticket</a><a class="pos-button" href="pos-salon-settings.html?section=payment-fees">Payment Methods & Fees</a></div></div>
-    <div class="pos-actions" style="margin-bottom:12px"><label style="flex:1">Search checkouts<input data-direct-search type="search" placeholder="Customer, phone or checkout number"></label><label>Status<select data-direct-filter><option value="all">All</option><option value="draft">Drafts</option><option value="paid">Paid</option></select></label></div>
-    <div class="direct-checkout-list" data-direct-results></div>
-  </section>
-  <section class="pos-card" data-direct-customer hidden>
-    <div class="pos-heading"><div><span class="pos-kicker">DIRECT CHECKOUT · 1 OF 3</span><h2>Find customer by phone</h2><p class="pos-muted">Enter a 10-digit number. A new customer needs a name.</p></div><button type="button" data-direct-cancel>Back to checkout list</button></div>
-    <form data-direct-customer-form>
-      <div class="direct-customer-fields"><label>Customer phone number<input name="phone" type="tel" autocomplete="off" inputmode="tel" maxlength="22" placeholder="(555) 012-2807" required></label><button type="button" data-direct-lookup>Find customer</button></div>
-      <div class="direct-customer-result" data-direct-customer-result hidden><strong data-direct-customer-status></strong><label style="margin:10px 0">Customer name<input name="customer" maxlength="80" required></label><button class="pos-primary" type="submit">Continue · Technician & services</button></div>
-      <p class="pos-status" data-direct-error role="status"></p>
-    </form>
-  </section>
-  <section id="ticket-workspace" class="ticket-workspace" aria-label="Direct checkout workspace" hidden></section>
-  <p class="pos-status" data-direct-feedback role="status"></p>
-  <p class="pos-muted">Interactive prototype · local demo data · no payment or SMS is sent.</p>
+  <section class="po-direct" data-direct-root aria-label="Direct checkout workspace"></section>
 </main></div></div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
 <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
@@ -54,5 +38,5 @@
 <script src="../assets/pos-demo-settings.js"></script>
 <script src="../assets/pos-stations.js"></script>
 <script src="../assets/ticket-workspace.js"></script>
-<script src="../assets/pos-direct-checkout.js"></script>
+<script src="../assets/pos-direct-checkout.js?v=po-v34-2"></script>
 </body></html>

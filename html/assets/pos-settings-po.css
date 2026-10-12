@@ -1,0 +1,218 @@
+/* Salon Settings composition and tokens from PO V34, scoped to the added tabs. */
+.po-settings .muted{color:#6e7b91;font-size:13px;line-height:1.5;margin:0}
+.po-settings .panel{background:#fff;border:1px solid #e1e7ef;border-radius:17px;box-shadow:0 5px 19px #263b6410}
+.po-settings .btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;border-radius:10px;border:1px solid transparent;padding:11px 15px;font-weight:800;font-size:12px;min-height:42px;transition:filter .15s,transform .15s}
+.po-settings .btn:hover:not(:disabled){filter:brightness(.96);transform:translateY(-1px)}
+.po-settings .btn svg{width:17px;height:17px}
+.po-settings .btn-primary{background:#16845e;color:white;box-shadow:0 4px 12px #16845e35}
+.po-settings .btn-secondary{background:#fff;border-color:#d6dfeb;color:#334460}
+.po-settings .input,.po-settings .select{width:100%;background:#fff;border:1px solid #d6deea;border-radius:9px;color:#22314b;padding:10px 11px;outline:none;min-height:42px}
+.po-settings .input:focus,.po-settings .select:focus{border-color:#657fe0;box-shadow:0 0 0 3px #657fe020}
+.po-settings .muted{color:#65738C;font-size:12px}
+.po-settings .panel{border:1px solid #DDE5EF;border-radius:12px;box-shadow:0 2px 8px #1B315309;background:#fff}
+.po-settings .btn{border-radius:8px;font-size:11px;min-height:38px;padding:9px 13px}
+.po-settings .btn-primary{background:#4648D8;color:#fff;box-shadow:0 4px 10px #4648D82B}
+.po-settings .btn-secondary{background:#fff;border-color:#DDE5EF;color:#4648D8}
+.po-settings .input,.po-settings .select{border-color:#DDE5EF;border-radius:8px;color:#0B1C30}
+.po-settings .input:focus,.po-settings .select:focus{border-color:#4648D8;box-shadow:0 0 0 3px #4648D820}
+.po-settings .settings-head{display:flex;justify-content:space-between;gap:15px;align-items:start}
+.po-settings .settings-head h2{font-size:18px;color:#0B1220;margin:0 0 5px}
+.po-settings .settings-card,.po-settings .settings-explain{padding:22px}
+.po-settings .settings-card-title{display:flex;justify-content:space-between;gap:15px;align-items:center;padding-bottom:19px;border-bottom:1px solid #E7EAF2}
+.po-settings .settings-card h3,.po-settings .settings-explain h3{font-size:15px;color:#0B1220;margin:4px 0 5px}
+.po-settings .settings-eyebrow{font-size:10px;font-weight:850;letter-spacing:.08em;color:#4648D8}
+.po-settings .settings-switch{display:flex;align-items:center;gap:9px;font-size:11px;font-weight:800;color:#4648D8;white-space:nowrap}
+.po-settings .settings-switch input{width:19px;height:19px;accent-color:#4648D8}
+.po-settings .settings-field{padding:20px 0}
+.po-settings .settings-field label{display:block;font-size:12px;font-weight:800;color:#25324C;margin-bottom:10px}
+.po-settings .settings-percent{position:relative;width:160px}
+.po-settings .settings-percent input{width:100%;height:43px;padding-right:35px;font-size:17px;font-weight:850}
+.po-settings .settings-percent span{position:absolute;right:15px;top:10px;color:#64748B;font-weight:800}
+.po-settings .settings-preview{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.po-settings .settings-preview>div{display:grid;gap:6px;border:1px solid #DDE5EF;border-radius:9px;padding:13px;background:#F8FAFC}
+.po-settings .settings-preview>div:nth-child(2){border-color:#C6C4F3;background:#F4F3FF}
+.po-settings .settings-preview span{font-size:10px;color:#7484A1}
+.po-settings .settings-preview strong{font-size:11px;color:#283753}
+.po-settings .settings-preview b{font-size:20px;color:#0B1C30}
+.po-settings .settings-preview>div:nth-child(2) b{color:#4648D8}
+.po-settings .settings-actions{display:flex;align-items:center;gap:13px;flex-wrap:wrap;margin-top:13px}
+.po-settings .settings-actions span{font-size:10px;color:#7A879C}
+.po-settings .settings-explain h3{margin-top:0}
+.po-settings .settings-rule-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:9px;margin:15px 0}
+.po-settings .settings-rule-grid div{display:flex;align-items:start;gap:8px;font-size:11px;color:#4C5D78;line-height:1.4}
+.po-settings .settings-rule-grid b{width:20px;height:20px;display:grid;place-items:center;flex:none;border-radius:6px;background:#E9E9FF;color:#4648D8}
+.po-settings .settings-explain p{font-size:11px;line-height:1.5;color:#65738C}
+@media(max-width:620px){.po-settings .settings-head{display:grid}
+.po-settings .settings-preview,.po-settings .settings-rule-grid{grid-template-columns:1fr}
+.po-settings .settings-card,.po-settings .settings-explain{padding:16px}}
+.po-settings .access-head{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-top:17px}
+.po-settings .access-head h2{font-size:21px;margin:4px 0}
+.po-settings .access-role-grid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:10px;margin-top:15px}
+.po-settings .access-role-card{border:1px solid #DDE5EF;background:#fff;border-radius:12px;padding:15px;box-shadow:0 2px 9px #1B315309}
+.po-settings .access-role-card.active{border-color:#4648D8;background:#F3F3FF;box-shadow:inset 0 0 0 1px #4648D8}
+.po-settings .access-role-card span{font-size:9px;letter-spacing:.1em;color:#6576A0;font-weight:900}
+.po-settings .access-role-card strong{display:block;color:#1D2B46;font-size:15px;margin:6px 0}
+.po-settings .access-role-card p{color:#65738C;font-size:11px;line-height:1.45;margin:0}
+.po-settings .access-rule-panel{margin-top:15px;padding:16px}
+.po-settings .access-rule-title{display:flex;justify-content:space-between;align-items:center;gap:12px;margin-bottom:11px}
+.po-settings .access-rule-title h3,.po-settings .access-build-note h3{font-size:15px;margin:0 0 4px;color:#17233A}
+.po-settings .access-rule-title p,.po-settings .access-build-note p{margin:0;color:#68788F;font-size:11px;line-height:1.5}
+.po-settings .access-current{border-radius:99px;background:#EDEEFF;color:#4648D8;padding:7px 10px;white-space:nowrap;font-size:10px;font-weight:850}
+.po-settings .access-rule-list{display:grid;gap:5px}
+.po-settings .access-rule-row{display:grid;grid-template-columns:minmax(0,1.3fr) 150px minmax(0,1fr);align-items:center;gap:12px;padding:10px;border:1px solid #E8EDF4;border-radius:9px}
+.po-settings .access-rule-row strong{font-size:11px;color:#24344F}
+.po-settings .access-rule-row small{font-size:10px;color:#6B7A90;line-height:1.4}
+.po-settings .access-rule-level{justify-self:start;padding:6px 8px;border-radius:7px;font-size:10px;font-weight:850}
+.po-settings .access-rule-level.routine{color:#167B64;background:#E5F7F1}
+.po-settings .access-rule-level.manager{color:#4D54B4;background:#ECEEFF}
+.po-settings .access-rule-level.owner{color:#9B651A;background:#FFF2DE}
+.po-settings .access-build-note{margin-top:12px;padding:15px}
+.po-settings .access-build-note p{font-size:11px}
+.po-settings .settings-card-title .settings-eyebrow{color:#9B651A}
+@media(max-width:900px){.po-settings .access-role-grid{grid-template-columns:1fr}
+.po-settings .access-rule-row{grid-template-columns:1fr auto}
+.po-settings .access-rule-row small{grid-column:1/-1}
+.po-settings .access-head,.po-settings .access-rule-title{align-items:flex-start;flex-direction:column}}
+.po-settings .settings-head-actions{display:flex;gap:8px;flex-wrap:wrap}
+.po-settings .owner-mode-card{display:flex;justify-content:space-between;align-items:start;gap:16px;padding:16px;margin-top:12px;background:linear-gradient(105deg,#F3F4FF,#fff)}
+.po-settings .owner-mode-card h3{font-size:16px;color:#202C50;margin:5px 0}
+.po-settings .owner-mode-card p{font-size:11px;color:#5E6E89;line-height:1.5;margin:0;max-width:650px}
+.po-settings .permission-matrix,.po-settings .access-audit{padding:17px;margin-top:13px}
+.po-settings .permission-table-wrap{overflow:auto}
+.po-settings .permission-matrix table{width:100%;border-collapse:collapse;min-width:690px}
+.po-settings .permission-matrix th,.po-settings .permission-matrix td{padding:10px 9px;border-bottom:1px solid #E8ECF3;text-align:left;font-size:10px;color:#24344F}
+.po-settings .permission-matrix thead th{background:#F5F7FC;font-size:9px;text-transform:uppercase;letter-spacing:.04em}
+.po-settings .permission-matrix tbody th{font-weight:700;min-width:210px}
+.po-settings .permission-matrix .permission-group th{background:#F8F8FF;color:#4A4EB0;font-size:9px;letter-spacing:.08em;text-transform:uppercase}
+.po-settings .permission-status{display:inline-block;white-space:nowrap;border-radius:6px;padding:5px 7px;font-size:9px;font-weight:850}
+.po-settings .permission-status.blocked{color:#8B4C54;background:#FAECEF}
+.po-settings .permission-status.approval{color:#494EB1;background:#EDEEFF}
+.po-settings .permission-status.allowed{color:#177C65;background:#E8F7F1}
+.po-settings .permission-footnote{font-size:10px;line-height:1.5;color:#677891;margin:12px 0 0}
+.po-settings .access-audit h3{font-size:14px;margin:0 0 9px}
+.po-settings .access-audit p{font-size:11px;color:#66758F;margin:0}
+.po-settings .audit-row{display:flex;justify-content:space-between;gap:10px;padding:8px 0;border-top:1px solid #E8ECF3}
+.po-settings .audit-row strong,.po-settings .audit-row span{font-size:10px}
+.po-settings .audit-row span{color:#697991}
+@media(max-width:1100px){.po-settings .access-role-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
+@media(max-width:720px){.po-settings .access-role-grid{grid-template-columns:1fr}
+.po-settings .owner-mode-card{flex-direction:column;align-items:start}
+.po-settings .audit-row{flex-direction:column;gap:3px}}
+.po-settings .st-set{display:grid;gap:12px}
+.po-settings .st-set .st-counts{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+.po-settings .st-set .st-counts label{display:grid;gap:4px;font-size:10.5px;color:#53617C;font-weight:750}
+.po-settings .st-set .st-counts input{border:1px solid #DDE4EE;border-radius:9px;padding:9px 10px;font-size:16px;font-weight:800;font-family:ui-monospace,Menlo,monospace;width:100%}
+.po-settings .st-set .st-toggle{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #EDF0F6;font-size:11px}
+.po-settings .st-set .st-toggle:last-child{border:0}
+.po-settings .st-set .st-toggle p{margin:2px 0 0;font-size:10px;color:#75849A;font-weight:500}
+.po-settings .st-seg{display:inline-flex;background:#F3F5FA;border:1px solid #DDE4EE;border-radius:9px;padding:2px}
+.po-settings .st-seg button{border:0;background:none;padding:6px 10px;border-radius:7px;font-size:10px;font-weight:800;color:#66768E;font-family:inherit;cursor:pointer}
+.po-settings .st-seg button[aria-pressed="true"]{background:#494BDD;color:#fff}
+.po-settings .st-preview{display:flex;gap:5px;flex-wrap:wrap}
+.po-settings .st-preview span{font-size:10px;font-weight:800;font-family:ui-monospace,Menlo,monospace;border:1px solid #DDE4EE;border-radius:7px;padding:4px 7px;background:#F7F9FD;color:#1C2C48}
+.po-settings .st-more{font-size:10.5px;color:#4648D8;font-weight:800;cursor:pointer}
+@media(max-width:760px){.po-settings .st-set .st-counts{grid-template-columns:1fr}}
+.po-settings .settings-preview.three{grid-template-columns:repeat(3,minmax(0,1fr))}
+.po-settings .settings-preview.three>div:nth-child(2){border-color:#BEE7D8;background:#F0FBF6}
+.po-settings .settings-preview.three>div:nth-child(2) b{color:#168460}
+.po-settings .settings-preview.three>div:nth-child(3){border-color:#C6C4F3;background:#F4F3FF}
+.po-settings .settings-preview.three>div:nth-child(3) b{color:#4648D8}
+.po-settings .settings-wallet-methods{display:flex;flex-wrap:wrap;gap:8px;padding-top:4px}
+.po-settings .settings-wallet-methods label{display:flex;align-items:center;gap:6px;padding:9px 11px;border:1px solid #DDE5EF;border-radius:8px;background:#F8FAFD;color:#344560;font-size:11px;font-weight:800}
+.po-settings .settings-wallet-methods input,.po-settings .settings-tip-option input{accent-color:#4648D8}
+.po-settings .settings-tip-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:9px;padding-top:16px}
+.po-settings .settings-tip-option{display:flex;align-items:start;gap:8px;padding:12px;border:1px solid #DDE5EF;border-radius:9px;background:#fff;cursor:pointer}
+.po-settings .settings-tip-option.selected{background:#F4F3FF;border-color:#A8A9E6}
+.po-settings .settings-tip-option strong{display:block;font-size:11px;color:#253551}
+.po-settings .settings-tip-option small{display:block;margin-top:4px;color:#718098;font-size:10px;line-height:1.35}
+.po-settings .settings-check h3{margin:0 0 13px}
+@media(max-width:750px){.po-settings .settings-preview.three{grid-template-columns:1fr}
+.po-settings .settings-tip-options{grid-template-columns:1fr}}
+.po-settings .settings-count{align-self:flex-start;padding:7px 10px;border-radius:9px;background:#e8f7fd;color:#0d708e;font-size:12px;font-weight:800;white-space:nowrap}
+.po-settings .payment-method-rows{display:grid;gap:8px;margin-top:16px}
+.po-settings .payment-method-row{display:grid;grid-template-columns:minmax(170px,1fr) minmax(190px,1.2fr) 115px auto;gap:10px;align-items:end;padding:10px 12px;border:1px solid #dce5f5;border-radius:12px;background:#f8faff}
+.po-settings .payment-method-row>.settings-switch{justify-content:flex-start;align-self:center;gap:10px}
+.po-settings .payment-method-row>.settings-switch strong{font-size:13px;color:#12254a}
+.po-settings .payment-rule-label{display:grid;gap:4px;font-size:11px;font-weight:700;color:#536887}
+.po-settings .payment-rule-label .select,.po-settings .payment-rule-value{height:37px;min-width:0}
+.po-settings .payment-method-row>small{color:#667b9b;font-size:11px;align-self:center}
+.po-settings .payment-add-method{display:flex;gap:9px;margin-top:13px}
+.po-settings .payment-add-method .input{max-width:350px}
+.po-settings .payment-add-method .btn{white-space:nowrap}
+@media(max-width:850px){.po-settings .payment-method-row{grid-template-columns:minmax(120px,1fr) minmax(150px,1fr) 90px}
+.po-settings .payment-method-row>.btn,.po-settings .payment-method-row>small{grid-column:2 / -1;justify-self:start}
+.po-settings .payment-add-method{flex-wrap:wrap}}
+@media(max-width:560px){.po-settings .payment-method-row{grid-template-columns:1fr 110px}
+.po-settings .payment-method-row>.settings-switch{grid-column:1 / -1}
+.po-settings .payment-method-row>.btn,.po-settings .payment-method-row>small{grid-column:1 / -1}}
+
+/* Refine PO's hierarchy and density without changing the settings workflow. */
+.po-settings{font:13px/1.5 Inter,sans-serif;color:#19263e;margin-top:22px;min-width:0}
+.po-settings *{box-sizing:border-box}
+.po-settings .settings-head{margin:0 0 20px;align-items:flex-start;gap:16px}
+.po-settings .settings-head h2{font-size:23px;letter-spacing:-.02em;font-weight:800;color:#1c2c46;margin:0 0 5px}
+.po-settings .settings-head p{font-size:12px;color:#6d7b92;margin:0;line-height:1.5}
+.po-settings .settings-head-actions{display:flex;align-items:center;gap:7px;flex-wrap:wrap}
+.po-settings .po-settings-button,.po-settings a.pos-button{display:inline-flex;align-items:center;justify-content:center;min-height:35px;border:1px solid #dce3ee;border-radius:9px;padding:8px 11px;background:#fff;color:#53617b;text-decoration:none;font:650 11px/1.4 Inter,sans-serif;cursor:pointer}
+.po-settings .po-settings-primary{background:#4648d8;border-color:#4648d8;color:#fff;box-shadow:0 3px 9px #4648d818}
+.po-settings .po-settings-button:hover{border-color:#aeb5e7;background:#f8f8ff}.po-settings .po-settings-primary:hover{background:#3c3dc5;color:#fff}
+.po-settings .panel,.po-settings .pos-card{border:1px solid #dce4ef;border-radius:13px;background:#fff;box-shadow:0 3px 15px #26365a05;margin-bottom:14px}
+.po-settings .settings-card{padding:19px 21px}
+.po-settings .settings-card h3,.po-settings .pos-card h3{font-size:15px;font-weight:750;letter-spacing:-.01em;color:#22334e;margin:0 0 7px}
+.po-settings .settings-card p,.po-settings .pos-card p{font-size:11px;color:#65758d;line-height:1.55;margin:5px 0 10px}
+.po-settings .settings-eyebrow,.po-settings .pos-kicker{font-size:8px;font-weight:800;letter-spacing:.09em;color:#9b651a;display:block;margin-bottom:6px}
+.po-settings .settings-card-title{display:flex;align-items:flex-start;justify-content:space-between;gap:18px;margin-bottom:15px;border:0;padding:0}
+.po-settings .settings-card-title>div{flex:1;min-width:0}
+.po-settings .settings-card-title .settings-switch{flex:none;padding-top:4px}
+.po-settings .settings-count{padding:6px 9px;border-radius:8px;font-size:10px;font-weight:750;background:#e9f5fb;color:#33728a}
+.po-settings label,.po-settings .pos-check{font-size:11px;color:#586982;font-weight:600}
+.po-settings .settings-switch{display:flex;align-items:center;gap:8px;font-size:11px;color:#576b82}
+.po-settings input[type=checkbox],.po-settings input[type=radio]{accent-color:#4648d8;width:15px;height:15px;flex:none}
+.po-settings input:not([type=checkbox]):not([type=radio]),.po-settings select{font:12px/1.4 Inter,sans-serif;border:1px solid #dae3ef;border-radius:9px;min-height:37px;padding:8px 10px;box-shadow:none;background-color:#fff;color:#263650}
+.po-settings input:focus,.po-settings select:focus{border-color:#959ce5;outline:0;box-shadow:0 0 0 3px #4648d812}
+.po-settings select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23758199' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;background-size:16px;padding-right:44px!important}
+.po-settings input:disabled,.po-settings select:disabled{background-color:#f5f7fb;color:#9aa6b9}
+.po-settings button{font-size:11px;min-height:35px;font-weight:650;border-radius:9px;padding:8px 11px;box-shadow:none}
+.po-settings button:focus-visible,.po-settings summary:focus-visible{outline:3px solid #4648d835;outline-offset:2px}
+.po-settings .pos-primary{background:#4648d8;border-color:#4648d8;box-shadow:0 3px 10px #4648d818}
+.po-settings .pos-actions{gap:9px}.po-settings .pos-actions .pos-muted{font-size:10px;color:#76859d}
+.po-settings .pos-status{margin:11px 0;font-size:11px;min-height:15px}
+.po-settings .access-build-note{padding:16px 18px;background:#f9faff;border-color:#e0e5f5;margin:0 0 14px}
+.po-settings .access-build-note h3{font-size:13px;margin:0 0 6px}.po-settings .access-build-note p{font-size:11px;margin:0;color:#697891;line-height:1.65}
+.po-settings .owner-mode-card{display:flex;align-items:flex-start;justify-content:space-between;gap:22px;background:linear-gradient(110deg,#f4f4ff,#fff);padding:18px 20px;margin:0 0 14px}
+.po-settings .owner-mode-card>div:first-child{flex:1;min-width:0}.po-settings .owner-mode-card h3{font-size:17px;margin:3px 0 6px}.po-settings .owner-mode-card p{font-size:11px;line-height:1.6;margin:0;color:#738199;max-width:670px}
+.po-settings .po-owner-actions{display:flex;align-items:flex-end;flex-direction:column;gap:10px;flex:none}.po-settings .access-current{font-size:9px;padding:6px 9px;border-radius:99px;background:#ebedff;color:#686ac2}
+.po-settings .access-role-grid{display:flex;flex-wrap:wrap;gap:10px;margin:0 0 14px}
+.po-settings .access-role-card{flex:1 1 calc(25% - 10px);min-width:0;padding:16px;border:1px solid #dfe5f0;border-radius:12px;background:#fff;box-shadow:0 2px 10px #26365a04}
+.po-settings .access-role-card span{font-size:8px;letter-spacing:.08em;text-transform:uppercase;color:#697994;font-weight:750}.po-settings .access-role-card strong{font-size:16px;letter-spacing:-.01em;color:#31435d;margin:7px 0 5px}.po-settings .access-role-card p{font-size:10px;color:#65738c;line-height:1.65;margin:0}
+.po-settings .access-role-card.active{background:#f7f7ff;border-color:#a4a8e8;box-shadow:0 0 0 1px #a4a8e84a}.po-settings .access-role-card.active strong{color:#575ac0}
+.po-settings .permission-matrix{padding:18px 20px}.po-settings .permission-matrix h3{margin:0 0 5px;font-size:15px}.po-settings .permission-matrix>.pos-muted{font-size:10px;color:#6e7e97;margin-bottom:13px}
+.po-settings .permission-matrix .pos-table{margin-top:12px;border:1px solid #e5eaf3;border-radius:9px;overflow:auto}.po-settings .permission-matrix table{min-width:740px;width:100%;border-collapse:collapse}
+.po-settings .permission-matrix th,.po-settings .permission-matrix td{padding:10px 11px;font-size:10px;border-bottom:1px solid #edf0f6;color:#596b85;vertical-align:middle}.po-settings .permission-matrix thead th{font-size:9px;letter-spacing:.045em;text-transform:uppercase;background:#f6f8fc;color:#65758f}
+.po-settings .permission-group th{background:#f9f9fe;color:#7d80bb;font-size:9px;letter-spacing:.08em;text-transform:uppercase;padding-top:9px;padding-bottom:9px}
+.po-settings .permission-status{font-size:9px;padding:5px 7px;border-radius:6px;font-weight:650;white-space:nowrap}.po-settings .permission-status.blocked{color:#8b4c54;background:#fff3f4}.po-settings .permission-status.approval{color:#494eb1;background:#f0f0fc}.po-settings .permission-status.allowed{color:#177c65;background:#edf9f4}
+.po-settings .access-rule-panel{padding:18px 20px;margin:0 0 14px}.po-settings .access-rule-list{display:flex;flex-direction:column;gap:7px;margin-top:14px}
+.po-settings .access-rule-row{display:flex;align-items:center;gap:14px;border:1px solid #e7ebf4;border-radius:9px;padding:10px 12px;background:#fcfdff}
+.po-settings .access-rule-row>strong{flex:1.2;min-width:0;font-size:11px;font-weight:650;color:#586a84}.po-settings .access-rule-row>small{flex:1;min-width:0;font-size:9px;color:#718097;line-height:1.5}
+.po-settings .access-rule-level{display:flex;flex-direction:row;align-items:center;gap:7px;flex:0 0 122px;border-radius:7px;font-size:10px;padding:7px 9px;font-weight:650}.po-settings .access-rule-level.manager{color:#7276bd;background:#efeffc}.po-settings .access-rule-level.routine{color:#589982;background:#edf9f3}
+.po-settings .po-enrollment{padding:16px 19px;margin-bottom:15px}.po-settings summary{font-size:11px;cursor:pointer;font-weight:650;color:#7b80c5}.po-settings .po-enrollment[open]>summary{margin-bottom:16px}.po-settings .po-enrollment h3{font-size:13px}.po-settings .pin-demo-note{background:#f8f9ff;border-color:#e6e9f5;color:#8b96ad;margin-top:13px;font-size:10px;line-height:1.55}
+.po-settings .po-enrollment .pos-table table{font-size:11px}.po-settings .po-enrollment .pos-table td,.po-settings .po-enrollment .pos-table th{font-size:10px;padding:11px}.po-settings .po-enrollment .pos-table select{font-size:11px}
+.po-settings .access-audit{padding:18px 20px}.po-settings .access-audit .pos-table th,.po-settings .access-audit .pos-table td{font-size:10px;padding:10px}.po-settings .access-audit .pos-table td small{font-size:9px}
+.po-settings .payment-method-row{display:flex;align-items:flex-end;flex-wrap:wrap;gap:10px;border:1px solid #dce5f1;border-radius:10px;padding:11px 12px;margin-bottom:8px;background:#f9fbff}
+.po-settings .payment-method-row>.settings-switch{flex:1 1 160px;min-width:120px;padding:0;align-self:center}.po-settings .payment-method-row .settings-switch strong{font-size:12px;font-weight:650;color:#52637e}.po-settings .payment-rule-label{flex:1 1 190px;font-size:10px;color:#6c7d96}.po-settings .payment-method-row>.pos-method-value{flex:0 0 105px;font-size:10px;color:#6c7d96}.po-settings .payment-rule-value{height:37px;font-size:12px}
+.po-settings .payment-add-method{display:flex;align-items:flex-end;gap:8px;margin:13px 0 0}.po-settings .payment-add-method>label{max-width:350px;font-size:10px;color:#65758f}.po-settings .payment-add-method>button{min-height:37px}
+.po-settings .settings-field{max-width:360px;font-size:10px;color:#6d7e96}.po-settings .settings-percent{display:flex;align-items:center;border:1px solid #dce3ef;border-radius:9px;background:#fff;overflow:hidden}.po-settings .settings-percent input{border:0!important;flex:1;min-width:0;width:100%;border-radius:0;box-shadow:none!important}.po-settings .settings-percent>span{flex:0 0 32px;font-size:12px;color:#8d9ab0;text-align:center}
+.po-settings .settings-wallet-methods{display:flex;flex-wrap:wrap;gap:6px;margin-top:15px;padding-top:13px;border-top:1px solid #edf0f5}.po-settings .settings-wallet-methods label{display:flex;align-items:center;flex-direction:row;gap:6px;background:#f8faff;border:1px solid #e1e7f2;border-radius:8px;padding:8px 10px;font-size:10px;font-weight:650;color:#7a89a2}
+.po-settings .settings-tip-options{display:flex;flex-wrap:wrap;gap:9px;margin-top:6px;padding-top:0}.po-settings .settings-tip-option{display:flex;align-items:flex-start;flex-direction:row;gap:9px;flex:1 1 calc(50% - 9px);min-width:0;padding:12px;border:1px solid #e0e6f1;border-radius:10px;background:#fff;cursor:pointer}.po-settings .settings-tip-option input{margin:2px 0 0}.po-settings .settings-tip-option strong{font-size:11px;color:#667790;font-weight:650}.po-settings .settings-tip-option small{font-size:9px;color:#73829a;margin-top:4px;line-height:1.5;display:block}.po-settings .settings-tip-option.selected{background:#f8f8ff;border-color:#b7baed}
+.po-settings .settings-preview{display:flex;flex-wrap:wrap;gap:10px;margin-top:13px}.po-settings .settings-preview>article{flex:1;min-width:0;padding:15px;border:1px solid #e2e6f1;border-radius:11px;background:#fafbff;display:flex;flex-direction:column;gap:4px}.po-settings .settings-preview>article>span{font-size:9px;color:#73829a;line-height:1.5}.po-settings .settings-preview>article>strong{font-size:12px;color:#667790;font-weight:650}.po-settings .settings-preview>article>b{font-size:25px;color:#687493;letter-spacing:-.035em;margin-top:3px}.po-settings .settings-preview>article:nth-child(2){background:#f2faf6;border-color:#d6ebe0}.po-settings .settings-preview>article:nth-child(2)>b{color:#57a18c}.po-settings .settings-preview>article:nth-child(3){background:#f6f5ff;border-color:#e1dff6}.po-settings .settings-preview>article:nth-child(3)>b{color:#8283ca}
+.po-settings .settings-rule-grid{display:flex;flex-wrap:wrap;gap:10px;margin:14px 0}.po-settings .settings-rule-grid>div{flex:1 1 190px;display:flex;align-items:center;gap:10px;background:#fafbfe;border:1px solid #e8edf4;border-radius:9px;padding:11px}.po-settings .settings-rule-grid b{display:flex;align-items:center;justify-content:center;flex:0 0 24px;width:24px;height:24px;border-radius:7px;background:#eff0fc;color:#888bc5;font-size:11px}.po-settings .settings-rule-grid span{font-size:10px;color:#687a93;line-height:1.45}
+.po-settings .po-inline-link{font-size:11px;font-weight:600;color:#5558c2;text-decoration:none}
+.po-settings .st-set{display:flex;flex-direction:column;gap:12px}.po-settings .st-counts{display:flex;gap:12px;flex-wrap:wrap}.po-settings .st-counts>label{flex:1 1 130px;min-width:0;font-size:10px;color:#596b86;font-weight:600;gap:6px}.po-settings .st-counts input{font:750 20px/1.3 ui-monospace,Menlo,monospace;border-radius:10px;border-color:#dfe5f0;padding:11px 12px;min-height:47px;background:#fbfcff;color:#596d88}
+.po-settings .st-preview{display:flex;gap:5px;flex-wrap:wrap;margin-top:0}.po-settings .st-preview span{border:1px solid #e3e8f2;background:#f8faff;font:650 10px/1.4 ui-monospace,Menlo,monospace;color:#6c7c95;border-radius:7px;padding:5px 8px}
+.po-settings .st-toggle{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px 0;border-bottom:1px solid #edf0f6;gap:12px}.po-settings .st-toggle:last-child{border:0}.po-settings .st-toggle>div:first-child{flex:1;min-width:200px}.po-settings .st-toggle strong{font-size:12px;font-weight:650;color:#667892}.po-settings .st-toggle p{font-size:10px;line-height:1.6;margin:4px 0 0;max-width:630px;color:#6c7990}
+.po-settings .st-seg{display:inline-flex;align-items:center;background:#f5f7fc;border:1px solid #e0e5f1;border-radius:9px;gap:2px;padding:3px;flex:none}.po-settings .st-seg button{border:0;background:transparent;min-height:31px;border-radius:7px;padding:7px 11px;font-size:10px;font-weight:650;color:#66768e;box-shadow:none}.po-settings .st-seg button[aria-pressed=true]{background:#4648d8;color:#fff;box-shadow:0 2px 5px #4648d819}
+.po-settings .po-station-more{padding:15px 18px}.po-settings .po-station-more>summary{font-size:10px;letter-spacing:.01em}.po-settings .po-station-more[open]>summary{margin-bottom:14px}.po-settings .po-station-more .pos-counts{gap:10px}.po-settings .po-station-more .pos-check{font-size:10px;margin:3px 0}
+.po-settings .po-station-management{padding:16px 18px}.po-settings .po-station-management[open]>summary{margin-bottom:16px}.po-settings .po-station-management .settings-card{border:0;border-top:1px solid #edf0f6;border-radius:0;padding:17px 0 0;box-shadow:none;margin:0 0 13px}.po-settings .po-station-management .pos-table th,.po-settings .po-station-management .pos-table td{font-size:10px;padding:10px}.po-settings .po-station-management .pos-table td small{font-size:9px}
+@media(max-width:1100px){.po-settings .access-role-card{flex-basis:calc(50% - 10px)}.po-settings .settings-rule-grid>div{flex-basis:100%}}
+@media(max-width:760px){.po-settings .settings-head{flex-direction:column;gap:10px}.po-settings .owner-mode-card{flex-direction:column;gap:12px}.po-settings .po-owner-actions{align-items:center;flex-direction:row;flex-wrap:wrap;gap:8px}.po-settings .access-rule-row{flex-wrap:wrap;gap:8px}.po-settings .access-rule-row>strong{flex:1 1 150px}.po-settings .access-rule-row>small{flex-basis:100%}.po-settings .st-toggle>div:first-child{flex-basis:100%}.po-settings .st-seg{max-width:100%;flex-wrap:wrap}}
+@media(max-width:600px){.po-settings{margin-top:16px}.po-settings .settings-head h2{font-size:21px}.po-settings .settings-card,.po-settings .permission-matrix,.po-settings .access-rule-panel,.po-settings .access-audit{padding:14px;margin-bottom:11px}.po-settings .access-build-note,.po-settings .owner-mode-card{padding:14px}.po-settings .access-role-grid{gap:7px;margin-bottom:11px}.po-settings .access-role-card{padding:12px;flex-basis:calc(50% - 7px)}.po-settings .access-role-card strong{font-size:14px}.po-settings .access-role-card p{font-size:9px}.po-settings .payment-method-row{padding:10px;gap:7px}.po-settings .payment-method-row>.settings-switch{flex-basis:100%}.po-settings .payment-rule-label{flex:1 1 150px}.po-settings .payment-method-row>.pos-method-value{flex-basis:90px}.po-settings .settings-tip-option{flex-basis:100%;padding:10px}.po-settings .settings-preview{gap:7px}.po-settings .settings-preview>article{padding:10px;flex-basis:calc(33.333% - 7px)}.po-settings .settings-preview>article>b{font-size:20px}.po-settings .settings-preview>article>strong{font-size:11px}.po-settings .settings-preview>article>span{font-size:8px}.po-settings .settings-card-title{gap:9px;margin-bottom:12px}.po-settings .st-counts{gap:8px}.po-settings .st-counts>label{flex-basis:85px;font-size:9px}.po-settings .st-counts input{font-size:18px;padding:9px;min-height:41px}.po-settings .st-toggle{padding:10px 0;gap:8px}.po-settings .st-seg button{padding:6px 9px;font-size:10px;min-height:30px}.po-settings .st-preview span{font-size:9px;padding:4px 6px}.po-settings .po-station-management{padding:14px}.po-settings .po-enrollment{padding:13px}.po-settings .settings-field{max-width:none}}

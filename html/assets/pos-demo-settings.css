@@ -18,3 +18,17 @@
 [data-staff-stations]{margin-bottom:16px}[data-staff-stations] .pos-card .pos-card{margin-top:10px}[data-staff-stations] .direct-checkout-row{margin:7px 0}
 
 .pos-toggle>select{width:230px;max-width:100%}.pos-operations a.pos-button{display:inline-flex;align-items:center}.pos-settings summary{cursor:pointer;font-weight:700}
+
+/* Station states match the PO V34 strip in Today's Operations. */
+.pos-station-strip{gap:6px;padding:2px 0 6px}
+.pos-station-tile{flex-basis:90px!important;min-height:60px;padding:8px 9px!important;border-width:1.5px!important;border-radius:10px!important;gap:2px;background:#e4f8f1!important;border-color:#9ed8bf!important}
+.pos-station-tile strong{font:750 11px/1.3 ui-monospace,Menlo,monospace;color:#1c2c48}
+.pos-station-tile>span{font-size:8px;font-weight:800;letter-spacing:.055em;text-transform:uppercase;color:#07986c}
+.pos-station-tile small{font-size:9px;color:#66768e;line-height:1.35}
+.pos-station-tile.held{background:#fff6dd!important;border-color:#f3d27a!important}.pos-station-tile.held>span{color:#b26820}
+.pos-station-tile.occupied{background:#ffecef!important;border-color:#f2b4bf!important}.pos-station-tile.occupied>span{color:#c22442}
+.pos-station-tile.cleaning{background:#f1e8ff!important;border-color:#c9b3f2!important}.pos-station-tile.cleaning>span{color:#7051d7}
+.pos-station-tile.blocked{background:#ececef!important;border-color:#c9ced9!important;opacity:.8}.pos-station-tile.blocked>span{color:#52525b}
+.pos-station-tile.cleaning.overdue{border-color:#c22442!important;box-shadow:0 0 0 2px #ffe6ea}.pos-station-tile.cleaning.overdue>span{color:#c22442}
+.pos-station-chip{font:750 10px/1.4 ui-monospace,Menlo,monospace;background:#eef2ff;color:#2f6ecf;padding:3px 7px;border-radius:6px}
+.pos-station-chip.flagged{background:#ffecef;color:#c22442}.pos-station-field{font-size:11px}.pos-station-field .pos-muted{font-size:10px;line-height:1.5}
