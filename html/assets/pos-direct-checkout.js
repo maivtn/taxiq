@@ -3,6 +3,28 @@
   const root=document.querySelector('[data-direct-root]');if(!root)return;
   const demo=window.NEXORA_POS_DEMO,esc=demo.esc,key='nexora:direct-checkouts:v1',draftKey='nexora:direct-checkout-customer-draft:v1';
   const money=n=>'$'+(Number(n || 0)/100).toFixed(2),digits=v=>String(v || '').replace(/\D/g,'');
+  const hasPhoneCountryCode=value=>/^\s*\+1/.test(value) || /^1\d{10}$/.test(digits(value));
+  const phoneDigits=value=>{const number=digits(value);return (hasPhoneCountryCode(value)?number.slice(1):number).slice(0,10);};
+  function formatPhoneInput(value){
+    const number=phoneDigits(value);
+    if(!number)return '';
+    if(number.length<=3)return '('+number;
+    return '('+number.slice(0,3)+') '+number.slice(3,6)+(number.length>6?'-'+number.slice(6):'');
+  }
+  function maskPhoneInput(input,inputType){
+    const raw=input.value,cursor=input.selectionStart,formatted=formatPhoneInput(raw);
+    if(raw!==formatted){
+      const before=Math.max(0,digits(raw.slice(0,cursor)).length-(hasPhoneCountryCode(raw)?1:0));
+      input.value=formatted;
+      if(cursor!==null){
+        let position=0,count=0;
+        while(position<formatted.length&&count<before){if(/\d/.test(formatted[position]))count++;position++;}
+        if(inputType==='deleteContentForward')while(position<formatted.length&&/\D/.test(formatted[position]))position++;
+        input.setSelectionRange(position,position);
+      }
+    }
+    guest.phone=phoneDigits(input.value);guest.status='';save();
+  }
   const catalog=()=>window.NEXORA_SALON_DATA.loadCatalog().services.filter(s=>s.active!==false);
   const technicians=()=>window.NEXORA_SALON_DATA.loadCatalog().technicians.filter(t=>t.active).map(t=>t.name);
   const category=s=>s.categoryName || s.requiredSkill || 'Other';
@@ -34,7 +56,7 @@
     if(!t.poGroups.length)t.poGroups.push({id:crypto.randomUUID(),tech:''});
     return t;
   }
-  function newCheckout(){if(!canCheckout())return;current=null;guest={phone:'',customer:'',status:''};try{const saved=JSON.parse(localStorage.getItem(draftKey));if(saved)guest={...guest,...saved,status:''};}catch(_){}stage=1;view='editor';warning='';contactUntil=0;render();root.querySelector('#customer-phone')?.focus();}
+  function newCheckout(){if(!canCheckout())return;current=null;guest={phone:'',customer:'',status:''};try{const saved=JSON.parse(localStorage.getItem(draftKey));if(saved)guest={...guest,...saved,status:''};}catch(_){}guest.phone=phoneDigits(guest.phone);stage=1;view='editor';warning='';contactUntil=0;render();root.querySelector('#customer-phone')?.focus();}
   function lookup(){
     const value=digits(guest.phone);if(value.length!==10){warning='Enter a valid 10-digit customer phone number.';render();return;}
     const appointments=(window.NEXORA_APPOINTMENTS_STORE?.loadAll() || []).map(t=>({customer:t.customerName,phone:t.phone}));
@@ -63,7 +85,7 @@
   }
   function serviceHtml(l,g){return `<div class="service-block"><div class="service-block-top"><span class="service-tag">MAIN SERVICE</span><span class="inherit-tag">${esc(g.tech || 'Select technician')} ${l.coTech?'+ '+esc(l.coTech)+' share this service':'performs this service and its add-ons'}</span></div>${itemHtml(l,g)}<label class="co-tech-field">Working together on this service<select class="select" data-direct-field="co-tech" data-line="${l.id}"><option value="">Only ${esc(g.tech || 'selected technician')}</option>${technicians().filter(t=>t!==g.tech).map(t=>`<option value="${esc(t)}" ${t===l.coTech?'selected':''}>${esc(t)} · shared service</option>`).join('')}</select></label><div class="addons-area"><div class="addons-head"><strong>Add-ons for this service</strong><span>Technician inherited automatically</span></div>${current.lines.filter(a=>a.parentLineId===l.id&&a.groupId===g.id).map(a=>itemHtml(a,g,true)).join('') || '<p class="addon-empty">No add-ons yet. Add as many as needed without choosing the technician again.</p>'}<div class="button-row">${button(icon('plus')+' Add-on','addon-picker',`data-line="${l.id}" data-group="${g.id}"`)}${button('+ Custom add-on','custom-service',`data-group="${g.id}" data-parent="${l.id}"`,'btn-quiet')}</div>${addonPicker===l.id?pickerHtml(g,l.id):''}</div></div>`;}
   function groupHtml(g,index){const extra=groupLines(g).filter(l=>l.parentLineId&&!mainLines(g).some(s=>s.id===l.parentLineId));return `<div class="tech-group"><div class="group-head"><div><span class="group-number">TECHNICIAN ${index+1}</span><h4>${esc(g.tech || 'Choose technician')}</h4></div><div class="po-group-actions">${groups().length>1?`${button('↑ Up','move-group',`data-group="${g.id}" data-direction="-1" ${!index?'disabled':''}`,'po-reorder')}${button('↓ Down','move-group',`data-group="${g.id}" data-direction="1" ${index===groups().length-1?'disabled':''}`,'po-reorder')}${button('Remove technician','remove-group',`data-group="${g.id}"`,'text-button danger-text')}`:''}</div></div><label class="form-field">Who performed this work? · required<select class="select" data-direct-field="tech" data-group="${g.id}"><option value="">Select technician</option>${technicians().map(t=>`<option value="${esc(t)}" ${g.tech===t?'selected':''}>${esc(t)}</option>`).join('')}</select></label><div class="group-services">${mainLines(g).map(l=>serviceHtml(l,g)).join('') || '<div class="empty">Add a main service, or record an add-on by this technician below.</div>'}</div><div class="button-row group-buttons">${button(icon('plus')+' Add main service','service-picker',`data-group="${g.id}"`)}${button('+ Custom service','custom-service',`data-group="${g.id}"`,'btn-quiet')}</div>${picker===g.id?pickerHtml(g):''}${index>0||extra.length?`<div class="other-tech-work"><div class="addons-head"><strong>Add-on by this technician</strong><span>Link it to the main service</span></div>${extra.map(l=>itemHtml(l,g,true)).join('') || '<p class="addon-empty">Use this when another technician performs an add-on for a service above.</p>'}${button(icon('plus')+' Add their add-on','extra-service',`data-group="${g.id}"`)}</div>`:''}</div>`;}
-  function customerHtml(){const name=current?.customer || guest.customer,found=current||guest.status==='existing',newGuest=current?.customerType==='new';return `<section class="panel form-panel"><h3 class="panel-title"><span class="step">1</span> Find customer</h3><label class="inline-label" for="customer-phone">Customer phone · required</label><div class="lookup-row"><input class="input" id="customer-phone" inputmode="tel" autocomplete="off" placeholder="(000) 000-0000" value="${esc(found?phone():guest.phone)}" ${found?'readonly':''}>${button('Find customer','lookup',found?'disabled':'')}</div><div aria-live="polite">${found?`<div class="identity-card found"><b>${newGuest?'New customer':'Existing customer found'}</b><strong>${esc(name)}</strong><span class="sensitive-phone">${esc(phone())} · ${contactUntil>Date.now()?'Contact approved for this record':'Phone hidden by permission'}</span><div class="customer-private-actions">${button('View full contact · approval required','reveal-contact')}${stage===1?button('Different customer','different-customer'):''}</div></div>`:guest.status==='new'?`<div class="identity-card new"><b>New customer</b><p>No matching phone number. Enter the guest’s name to continue.</p><label for="customer-name">Customer name · required</label><input class="input" id="customer-name" autocomplete="off" placeholder="Enter first and last name" value="${esc(guest.customer)}">${button('Continue to services','next','','btn-primary')}</div>`:'<p class="hint">Demo: enter <b>202-555-0101</b> for an existing customer, or <b>202-555-0199</b> for a new customer.</p>'}</div></section>`;}
+  function customerHtml(){const name=current?.customer || guest.customer,found=current||guest.status==='existing',newGuest=current?.customerType==='new';return `<section class="panel form-panel"><h3 class="panel-title"><span class="step">1</span> Find customer</h3><label class="inline-label" for="customer-phone">Customer phone · required</label><div class="lookup-row"><input class="input" id="customer-phone" type="tel" inputmode="tel" autocomplete="off" placeholder="(000) 000-0000" value="${esc(found?phone():formatPhoneInput(guest.phone))}" ${found?'readonly':''}>${button('Find customer','lookup',found?'disabled':'')}</div><div aria-live="polite">${found?`<div class="identity-card found"><b>${newGuest?'New customer':'Existing customer found'}</b><strong>${esc(name)}</strong><span class="sensitive-phone">${esc(phone())} · ${contactUntil>Date.now()?'Contact approved for this record':'Phone hidden by permission'}</span><div class="customer-private-actions">${button('View full contact · approval required','reveal-contact')}${stage===1?button('Different customer','different-customer'):''}</div></div>`:guest.status==='new'?`<div class="identity-card new"><b>New customer</b><p>No matching phone number. Enter the guest’s name to continue.</p><label for="customer-name">Customer name · required</label><input class="input" id="customer-name" autocomplete="off" placeholder="Enter first and last name" value="${esc(guest.customer)}">${button('Continue to services','next','','btn-primary')}</div>`:'<p class="hint">Demo: enter <b>(202) 555-0101</b> for an existing customer, or <b>(202) 555-0199</b> for a new customer.</p>'}</div></section>`;}
   function servicesHtml(){return `<section class="panel form-panel"><h3 class="panel-title"><span class="step">2</span> Technician & services</h3><p class="hint po-service-help">Choose the technician once. Add-ons and custom items under their service inherit that technician. Service choices show standard menu prices; payment estimates appear in step 3.</p><div class="tech-groups">${groups().map(groupHtml).join('')}</div>${button(icon('plus')+' Add another technician & their work','add-group','','add-tech')}<p class="hint">If a different technician performs an add-on, add that technician above and record the work under them.</p></section>`;}
   function previewHtml(){return `<aside class="panel summary-panel checkout-preview" aria-label="Ticket preview"><div class="preview-heading"><span class="preview-icon">${icon('ticket')}</span><div><p class="summary-title">TICKET PREVIEW</p><h3>${esc(current.customer)}</h3><span>${esc(phone())}</span></div></div><div class="preview-progress"><span class="done">${icon('check')} Customer found</span><span class="current">2 &nbsp; Assign technician and service</span><span>3 &nbsp; Payment and checkout</span></div><p class="preview-message">Choose a technician and add a main service. The price, discount, tip, and payment choices will appear here.</p><div class="po-preview-mini"><span>Services added</span><strong>${current.lines.length}</strong><span>Menu subtotal</span><strong data-po-subtotal>${money(total().subtotalCents)}</strong></div></aside>`;}
   function summaryRows(){return groups().map(g=>groupLines(g).map(l=>`<div class="summary-service"><div class="summary-line ${l.parentLineId?'addon-summary':''}"><span>${l.parentLineId?'↳ ':''}${esc(l.name || 'Custom service')}<small>${esc(l.tech || 'Technician needed')}${l.coTech?' · shared service':''}</small></span><strong data-po-summary-line="${l.id}">${money(lineNet(l))}</strong></div></div>`).join('')).join('');}
@@ -106,8 +128,23 @@
     current.status='completed';delete current.pendingApproval;delete current.poPendingApprovals;save();view='receipt';render();
   }
   function addService(g,s,parentId=''){const line={id:crypto.randomUUID(),serviceId:s.id || null,groupId:g.id,name:s.name || '',price:s.price ?? null,originalPrice:s.price ?? null,tech:g.tech,status:'completed',custom:!!s.custom};if(parentId)line.parentLineId=parentId;current.lines.push(line);orderLines();save();render();}
+  root.addEventListener('beforeinput',e=>{
+    const el=e.target;
+    if(el.id!=='customer-phone'||el.readOnly||!e.cancelable||el.selectionStart!==el.selectionEnd)return;
+    const direction=e.inputType==='deleteContentBackward'?-1:e.inputType==='deleteContentForward'?1:0;
+    if(!direction)return;
+    const cursor=el.selectionStart;
+    let index=direction<0?cursor-1:cursor;
+    if(index<0||index>=el.value.length||/\d/.test(el.value[index]))return;
+    while(index>=0&&index<el.value.length&&/\D/.test(el.value[index]))index+=direction;
+    if(index<0||index>=el.value.length)return;
+    e.preventDefault();
+    const start=direction<0?index:cursor,end=direction<0?cursor:index+1;
+    el.value=el.value.slice(0,start)+el.value.slice(end);el.setSelectionRange(start,start);
+    maskPhoneInput(el,e.inputType);
+  });
   root.addEventListener('input',e=>{
-    const el=e.target;if(el.id==='customer-phone'){guest.phone=el.value;guest.status='';save();return;}if(el.id==='customer-name'){guest.customer=el.value;save();return;}
+    const el=e.target;if(el.id==='customer-phone'){maskPhoneInput(el,e.inputType);return;}if(el.id==='customer-name'){guest.customer=el.value;save();return;}
     if(el.hasAttribute('data-po-search')){search=el.value;const start=el.selectionStart;render();const input=root.querySelector('[data-po-search]');input.focus();input.setSelectionRange(start,start);return;}
     if(!current||current.payment)return;
     const field=el.dataset.directField,l=current.lines.find(l=>l.id===el.dataset.line),p=current.checkout;
