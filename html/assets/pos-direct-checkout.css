@@ -86,8 +86,8 @@
 .po-direct .lookup-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:8px;margin-top:7px}
 .po-direct #customer-phone{font-size:15px;font-weight:650;letter-spacing:.025em;min-height:44px}
 .po-direct .lookup-row .btn{min-height:44px}
-.po-direct .lookup-demo{margin:13px 0 0;font-size:11px;color:#52627b}
-.po-direct .lookup-demo b{font-weight:650;color:#34445e;white-space:nowrap}
+.po-direct .lookup-examples{margin:13px 0 0;font-size:11px;color:#52627b}
+.po-direct .lookup-examples b{font-weight:650;color:#34445e;white-space:nowrap}
 .po-direct .identity-card{display:grid;gap:5px;margin-top:16px;padding:14px;border:1px solid #d8e9df;border-radius:10px;background:#f0f9f4;color:#438267}
 .po-direct .identity-card b{font-size:11px;letter-spacing:.075em;text-transform:uppercase}
 .po-direct .identity-card strong{font-size:17px}
@@ -264,9 +264,8 @@
 .po-direct .checkout-step-actions{display:flex;align-items:center;gap:10px;padding:10px 12px}
 .po-direct .checkout-step-actions>.btn{min-height:42px;font-size:13px}
 .po-direct .action-context{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex:1;min-width:0;font-size:11px;color:#52627b}
-.po-direct .action-context strong{color:#5140b5;font-size:16px;font-weight:750;letter-spacing:-.02em;font-variant-numeric:tabular-nums}
+.po-direct .action-context strong{color:#4c43df;font-size:20px;font-weight:750;letter-spacing:-.025em;font-variant-numeric:tabular-nums}
 .po-direct .action-dot{margin:0 4px;color:#bbc3d3}
-.po-direct .action-demo{font-size:11px;white-space:nowrap;color:#52627b}
 .po-direct .checkout-hero{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:12px 0}
 .po-direct .checkout-list-title{display:flex;align-items:center;gap:10px;min-width:0}
 .po-direct .checkout-hero h2{font-size:20px;letter-spacing:-.02em;margin:0}
@@ -306,13 +305,53 @@
 .po-direct .cancellation-record strong{font-weight:650;text-align:right;color:#65596a;overflow-wrap:anywhere}
 .po-direct .success-icon{display:inline-grid;place-items:center;width:50px;height:50px;background:#ecf9f1;border-radius:15px;color:#16845b}
 .po-direct .success-icon svg{width:25px;height:25px}
-.po-direct .po-eyebrow{font-size:11px;font-weight:750;letter-spacing:.1em;color:#52627b;margin:12px 0 5px}
 .po-direct .receipt-confirm h2{font-size:22px;letter-spacing:-.025em;margin:0 0 7px}
 .po-direct .receipt-quick{text-align:left;padding:12px 14px;background:#fafbfe;border:1px solid #e8edf5;border-radius:10px;margin:17px 0 12px}
 .po-direct .receipt-actions{display:grid;grid-template-columns:1fr 1fr;gap:7px;margin-top:15px}
 .po-direct .receipt-actions .btn{font-size:11px}
-.po-direct .safe-note{display:flex;align-items:start;justify-content:center;gap:6px;font-size:11px;line-height:1.5;color:#52627b;margin:13px 0 0}
-.po-direct .safe-note svg{width:12px;height:12px;flex:none}
+/* Completion and confirmation use one clear total and concise actions. */
+.po-direct .dc-payment-art,.po-review-dialog .dc-payment-art{display:block;width:20px;height:20px;object-fit:contain;flex:none;pointer-events:none}
+.po-direct .receipt-result{padding:26px;background:linear-gradient(180deg,#f8fcfa 0,#fff 140px);border-color:#d9e6e1;box-shadow:0 8px 24px #24334b08}
+.po-direct .receipt-result .success-icon{width:48px;height:48px;margin-bottom:13px;background:#e6f7ee;border:1px solid #c5ead7;border-radius:16px;color:#00845b}
+.po-direct .receipt-result h2{font-size:24px;line-height:1.25;letter-spacing:-.035em}
+.po-direct .receipt-customer{margin:0;color:#34445e;font-size:13px;font-weight:650;overflow-wrap:anywhere}
+.po-direct .receipt-customer>span{display:block;margin-top:4px;font-size:11px;font-weight:500;color:#62718a}
+.po-direct .receipt-result .receipt-quick{padding:15px 16px;margin:20px 0 12px;border-color:#e0e4f3;background:#f8f9fe}
+.po-direct .receipt-result .summary-line{margin:8px 0;font-size:12px}
+.po-direct .receipt-result .summary-line strong{font-size:12px}
+.po-direct .receipt-result .total-line{margin-top:13px;padding-top:13px;font-size:12px}
+.po-direct .receipt-result .total-line>strong{font-size:28px}
+.po-direct .receipt-change{display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:12px;padding-top:10px;border-top:1px solid #e2e7ef;font-size:11px;color:#52627b}
+.po-direct .receipt-change strong{margin-left:4px;color:#34445e;font-variant-numeric:tabular-nums}
+.po-direct .receipt-meta{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:0 0 18px;font-size:11px;color:#52627b}
+.po-direct .receipt-method,.po-review-dialog .receipt-method{display:inline-flex;align-items:center;gap:7px;padding:6px 9px;border:1px solid #dce4ee;border-radius:8px;background:#fff;color:#34445e;font-size:12px;font-weight:650}
+.po-direct .receipt-meta .credits-history-date{display:inline-flex;flex-direction:row;align-items:center;gap:7px;font-size:11px;font-weight:600;color:#52627b}
+.po-direct .receipt-meta .credits-history-date small{margin:0;color:#62718a;font-weight:500}
+.po-direct .receipt-result .receipt-actions{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:0}
+.po-direct .receipt-result .receipt-actions .btn{font-size:12px;padding:9px 8px;min-height:40px}
+.po-direct .receipt-result .receipt-actions .receipt-done{grid-column:1/-1;min-height:44px;margin-top:2px}
+.po-review-dialog.po-confirm-dialog{width:min(460px,calc(100vw - 32px));padding:24px;border:1px solid #dce3ef;box-shadow:0 24px 64px #14253f29;color:#24334b}
+.po-review-dialog.po-confirm-dialog .dc-modal-title{padding:0 32px 0 0;text-align:left;font-size:22px;letter-spacing:-.035em;color:#24334b;line-height:1.3}
+.po-review-dialog.po-confirm-dialog .dc-modal-content{margin:18px 0 0;overflow:visible;font-size:12px}
+.po-review-dialog.po-confirm-dialog .dc-modal-close{display:grid;place-items:center;padding:0;position:absolute;top:16px;right:16px;width:32px;height:32px;border-radius:8px;color:#62718a;background:#f5f7fb;font-size:22px}
+.po-review-dialog .review-customer{display:flex;align-items:center;gap:11px;padding:13px;border:1px solid #e1e6f1;border-radius:11px;background:#f8faff;text-align:left}
+.po-review-dialog .review-avatar{display:grid;place-items:center;width:38px;height:38px;flex:none;border:1px solid #ddd8f7;border-radius:11px;background:#eeebff;color:#5140b5}
+.po-review-dialog .review-avatar svg{width:19px;height:19px}
+.po-review-dialog .review-customer>div{min-width:0;display:grid;gap:3px}
+.po-review-dialog .review-customer span:not(.review-avatar),.po-review-dialog .review-customer small{font-size:11px;color:#62718a}
+.po-review-dialog .review-customer strong{font-size:14px;color:#24334b;overflow-wrap:anywhere}
+.po-review-dialog .review-payment{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px 0;color:#52627b;font-size:12px}
+.po-review-dialog .review-total{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:15px;border:1px solid #dcd6f7;border-radius:11px;background:#f5f2ff;color:#5140b5;font-size:13px;font-weight:650}
+.po-review-dialog .review-total strong{font-size:26px;letter-spacing:-.035em;font-weight:750;font-variant-numeric:tabular-nums;color:#4c43df}
+.po-review-dialog.po-confirm-dialog .dc-modal-actions{display:flex;gap:9px;width:100%;margin:20px 0 0;padding:0;flex-wrap:wrap}
+.po-review-dialog.po-confirm-dialog .dc-modal-actions button{flex:1;min-height:42px;padding:10px 13px;border:1px solid #d6dfec;border-radius:9px;font:650 12px/1.4 Inter,sans-serif;cursor:pointer}
+.po-review-dialog.po-confirm-dialog .dc-modal-back{background:#fff;color:#52627b}
+.po-review-dialog.po-confirm-dialog .dc-modal-back:hover{background:#f5f7fb;border-color:#aebbd0}
+.po-review-dialog.po-confirm-dialog .dc-modal-actions .dc-modal-confirm{background:#4c43df;color:#fff;border-color:#4c43df;box-shadow:0 3px 8px #4c43df20}
+.po-review-dialog.po-confirm-dialog .dc-modal-actions .dc-modal-confirm:hover{background:#3b32c5;border-color:#3b32c5}
+.po-review-dialog.po-confirm-dialog button:focus-visible{outline:3px solid #a399f0;outline-offset:3px}
+@container(max-width:470px){.po-direct .receipt-result .receipt-actions{grid-template-columns:repeat(2,minmax(0,1fr))}.po-direct .receipt-result [data-direct-action="saved-receipt"]{grid-column:1/-1}}
+@media(max-width:440px){.po-review-dialog.po-confirm-dialog{padding:20px}.po-review-dialog.po-confirm-dialog .dc-modal-actions{flex-direction:column}.po-review-dialog.po-confirm-dialog .dc-modal-actions button{width:100%}.po-review-dialog .review-total strong{font-size:23px}}
 .po-review-dialog .receipt-quick{border:1px solid #e1e6f0;border-radius:10px;padding:12px;background:#fafbff}
 .po-review-dialog .summary-line,.po-review-dialog .total-line{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:8px 0;font-size:12px}
 .po-review-dialog .total-line{color:#4c43df;font-weight:750;font-size:17px}
@@ -330,7 +369,6 @@
   .po-direct .po-group-actions{flex-wrap:wrap;max-width:59px;justify-content:flex-end}
   .po-direct .payment-choice-bar{grid-template-columns:repeat(2,minmax(0,1fr))}
   .po-direct .payment-chip-copy b{font-size:11px}
-  .po-direct .action-demo{display:none}
   .po-direct .service-choice strong{gap:2px}
 }
 @container(max-width:700px){
@@ -366,7 +404,7 @@
   .po-direct .customer-intro h3{font-size:15px}
   .po-direct .lookup-icon{width:35px;height:35px}
   .po-direct .lookup-row{grid-template-columns:minmax(0,1fr)}
-  .po-direct .lookup-demo{line-height:1.7}
+  .po-direct .lookup-examples{line-height:1.7}
   .po-direct .customer-type{display:none}
   .po-direct .customer-strip{padding:8px;gap:7px}
   .po-direct .customer-strip-copy>strong{font-size:12px}
@@ -404,7 +442,7 @@
   .po-direct .checkout-step-actions>[data-po-primary]{margin-left:auto}
   .po-direct .action-context>span{display:inline;line-height:1.5}
   .po-direct .action-context .action-dot{display:none}
-  .po-direct .action-context strong{font-size:14px}
+  .po-direct .action-context strong{font-size:18px}
   .po-direct .po-workspace-meta{font-size:11px;gap:5px}
   .po-direct .po-account{font-size:11px;padding:5px 6px}
   .po-direct .po-account svg{display:none}
@@ -414,4 +452,4 @@
   .po-direct .receipt-confirm{padding:18px}
 }
 @media(prefers-reduced-motion:reduce){.po-direct *{transition:none!important;scroll-behavior:auto!important}}
-@media print{.sidebar,.header,.workflow,.front-desk>h1,.front-desk>.subtitle,.po-workspace-meta{display:none!important}.shell,.app-area{display:block!important}.content{padding:0!important}.po-direct .receipt-confirm{box-shadow:none;border:0;margin:0 auto}.po-direct .receipt-actions,.po-direct .safe-note{display:none!important}}
+@media print{.sidebar,.header,.workflow,.front-desk>h1,.front-desk>.subtitle,.po-workspace-meta{display:none!important}.shell,.app-area{display:block!important}.content{padding:0!important}.po-direct .receipt-confirm{box-shadow:none;border:0;margin:0 auto}.po-direct .receipt-actions{display:none!important}}
