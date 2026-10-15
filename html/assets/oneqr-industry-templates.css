@@ -225,7 +225,10 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .industry-card::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, transparent 24%, rgba(15,23,42,.2) 100%); pointer-events: none; }
 .industry-card:hover { transform: translateY(-2px); filter: brightness(1.06); box-shadow: 0 12px 24px rgba(30,41,59,.2); }
 .industry-card.is-selected { box-shadow: 0 0 0 3px #fff, 0 0 0 6px #4f46e5, 0 13px 28px rgba(30,41,59,.22); }
-.industry-card-icon { position: absolute; z-index: 1; top: 10px; right: 11px; font-size: 27px; filter: drop-shadow(0 2px 5px rgba(15,23,42,.22)); }
+.industry-card-icon { position: absolute; z-index: 1; top: 10px; right: 11px; width: 36px; height: 36px; filter: drop-shadow(0 2px 5px rgba(15,23,42,.22)); }
+.industry-card-icon img { display: block; width: 100%; height: 100%; object-fit: contain; }
+.industry-icon-credit { margin: 18px 0 0; color: var(--oq-muted); font-size: 10px; }
+.industry-icon-credit a { color: inherit; text-underline-offset: 2px; }
 .industry-card div { z-index: 1; min-width: 0; }
 .industry-card strong, .industry-card small { display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .industry-card strong { color: #fff; font-size: 13px; line-height: 1.25; text-shadow: 0 1px 6px rgba(0,0,0,.25); }

@@ -5,6 +5,60 @@
   const GROUPS = catalog.groups;
   const industries = catalog.industries;
   const TILE_BACKGROUNDS = window.ONEQR_ACTION_APPEARANCE.backgrounds;
+  // Freepik / Flaticon Special Lineal Color PNGs. Credit is below the grid.
+  const SHARED_ICON_KEYS = new Set([
+    'nail', 'spa', 'hair', 'tattoo', 'fitness', 'restaurant', 'coffee',
+    'seafood', 'food-truck', 'retail', 'apparel', 'jewelry', 'electronics',
+    'home', 'furniture', 'flowers', 'travel', 'entertainment', 'repair',
+    'cosmetics', 'takeaway'
+  ]);
+  const FLATICON_IDS = {
+    medical: 5256176, car: 9835784, microphone: 2972039, business: 3094836,
+    teamwork: 1865736, camera: 7640413, pet: 8418363, dental: 5714921,
+    garden: 842870, party: 9109172, 'ice-cream': 2200569, construction: 10295941,
+    baby: 9593079, grocery: 3194525, education: 306846, finance: 2523092,
+    puzzle: 4406319, pharmacy: 9069025, boba: 4645854, meat: 995856,
+    professional: 12692369, plumbing: 7853370, laundry: 1685982,
+    music: 1514194, law: 1208147, 'pet-grooming': 6245877
+  };
+  const GROUP_ICONS = {
+    beauty: 'spa', food: 'restaurant', personal: 'professional', showbiz: 'microphone',
+    service: 'repair', store: 'retail', houseauto: 'construction', health: 'medical',
+    family: 'education', events: 'party', finance: 'finance', pro: 'business',
+    community: 'teamwork', other: 'puzzle'
+  };
+  const INDUSTRY_ICONS = {
+    nails: 'nail', hair: 'hair', lash: 'cosmetics', tattoo: 'tattoo',
+    cafe: 'coffee', truck: 'food-truck', trainer: 'fitness', mua: 'cosmetics',
+    kol: 'camera', freelance: 'electronics', photo: 'camera', songwriter: 'music',
+    band: 'music', model: 'apparel', actor: 'entertainment', gym: 'fitness',
+    tutor: 'education', ride: 'car', shopvn: 'retail', grocery: 'grocery',
+    butcher: 'meat', seafood: 'seafood', boba: 'boba', icecream: 'ice-cream',
+    foodsupply: 'takeaway', beautyproducts: 'cosmetics', supplement: 'pharmacy',
+    supply: 'repair', goldshop: 'jewelry', jewelry: 'jewelry', gems: 'jewelry',
+    florist: 'flowers', furniture: 'furniture', boutique: 'apparel', thrift: 'apparel',
+    petstore: 'pet', wig: 'hair', auto: 'repair', bodyshop: 'car', tires: 'car',
+    towing: 'car', autoglass: 'car', dealer: 'car', autoparts: 'repair',
+    lawn: 'garden', landscape: 'garden', plumber: 'plumbing', electric: 'repair',
+    hvac: 'repair', pest: 'home', pool: 'home', appliance: 'electronics',
+    painting: 'repair', solar: 'electronics', locksmith: 'repair', gas: 'car',
+    carwash: 'car', carrental: 'car', moving: 'home', laundry: 'laundry',
+    alteration: 'apparel', phonerepair: 'electronics', dental: 'dental',
+    acupuncture: 'spa', pharmacy: 'pharmacy', vet: 'pet', medspa: 'spa',
+    pmu: 'cosmetics', childcare: 'baby', driving: 'car', music: 'music',
+    martial: 'fitness', dance: 'entertainment', photobooth: 'camera',
+    catering: 'restaurant', notary: 'law', translation: 'education', mortgage: 'home',
+    staffing: 'teamwork', legal: 'law', realestate: 'home', insurance: 'finance',
+    security: 'law', taxservice: 'finance', travel: 'travel', itservice: 'electronics',
+    karaoke: 'microphone', petgroom: 'pet-grooming', petboard: 'pet', funeral: 'flowers'
+  };
+  function industryIcon(industry) {
+    const key = INDUSTRY_ICONS[industry.id] || GROUP_ICONS[industry.groupId] || 'puzzle';
+    const path = SHARED_ICON_KEYS.has(key)
+      ? `../assets/promotions/industry-icons/${key}.png`
+      : `../assets/oneqr/industry-icons/${key}-${FLATICON_IDS[key]}.png`;
+    return `<img src="${path}" alt="" width="36" height="36" loading="lazy" decoding="async">`;
+  }
   const state = { group: 'all', query: '', language: 'en', selected: 'nails' };
   const groupById = id => GROUPS.find(group => group.id === id);
   const label = record => record[state.language] || record.en;
@@ -55,7 +109,7 @@
       const actionCount = actionIds(industry).length;
       const actionCopy = state.language === 'vi' ? `${actionCount} hành động sẵn có` : `${actionCount} actions ready`;
       const tileBackground = TILE_BACKGROUNDS[industries.indexOf(industry) % TILE_BACKGROUNDS.length];
-      return `<button class="industry-card ${selected ? 'is-selected' : ''}" type="button" data-industry="${industry.id}" aria-pressed="${selected}" style="--card-gradient:${tileBackground}"><span class="industry-card-icon">${industry.icon}</span><div><strong>${label(industry)}</strong><small>${label(group)} · ${actionCopy}</small></div><span class="selected-check"><i data-lucide="check"></i></span></button>`;
+      return `<button class="industry-card ${selected ? 'is-selected' : ''}" type="button" data-industry="${industry.id}" aria-pressed="${selected}" style="--card-gradient:${tileBackground}"><span class="industry-card-icon" aria-hidden="true">${industryIcon(industry)}</span><div><strong>${label(industry)}</strong><small>${label(group)} · ${actionCopy}</small></div><span class="selected-check"><i data-lucide="check"></i></span></button>`;
     }).join('');
     grid.querySelectorAll('[data-industry]').forEach((button) => button.addEventListener('click', () => selectIndustry(button.dataset.industry)));
     refreshIcons();
