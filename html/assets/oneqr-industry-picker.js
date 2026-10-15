@@ -52,12 +52,15 @@
     security: 'law', taxservice: 'finance', travel: 'travel', itservice: 'electronics',
     karaoke: 'microphone', petgroom: 'pet-grooming', petboard: 'pet', funeral: 'flowers'
   };
-  function industryIcon(industry) {
-    const key = INDUSTRY_ICONS[industry.id] || GROUP_ICONS[industry.groupId] || 'puzzle';
+  function flaticonImage(key, size = 36) {
     const path = SHARED_ICON_KEYS.has(key)
       ? `../assets/promotions/industry-icons/${key}.png`
       : `../assets/oneqr/industry-icons/${key}-${FLATICON_IDS[key]}.png`;
-    return `<img src="${path}" alt="" width="36" height="36" loading="lazy" decoding="async">`;
+    return `<img src="${path}" alt="" width="${size}" height="${size}" loading="lazy" decoding="async">`;
+  }
+  function industryIcon(industry) {
+    const key = INDUSTRY_ICONS[industry.id] || GROUP_ICONS[industry.groupId] || 'puzzle';
+    return flaticonImage(key);
   }
   const state = { group: 'all', query: '', language: 'en', selected: 'nails' };
   const groupById = id => GROUPS.find(group => group.id === id);
@@ -73,8 +76,8 @@
   function renderGroups() {
     const tabs = $('#industry-group-tabs');
     const allLabel = state.language === 'vi' ? 'Tất cả' : 'All industries';
-    tabs.innerHTML = [`<button class="group-tab ${state.group === 'all' ? 'is-active' : ''}" type="button" role="tab" aria-selected="${state.group === 'all'}" data-group="all">${allLabel}<span>${industries.length}</span></button>`]
-      .concat(GROUPS.map((group) => `<button class="group-tab ${state.group === group.id ? 'is-active' : ''}" type="button" role="tab" aria-selected="${state.group === group.id}" data-group="${group.id}">${group.icon} ${label(group)}<span>${group.items.split('|').length}</span></button>`)).join('');
+    tabs.innerHTML = [`<button class="group-tab ${state.group === 'all' ? 'is-active' : ''}" type="button" role="tab" aria-selected="${state.group === 'all'}" data-group="all">${flaticonImage('retail', 20)}${allLabel}<span>${industries.length}</span></button>`]
+      .concat(GROUPS.map((group) => `<button class="group-tab ${state.group === group.id ? 'is-active' : ''}" type="button" role="tab" aria-selected="${state.group === group.id}" data-group="${group.id}">${flaticonImage(GROUP_ICONS[group.id] || 'puzzle', 20)}${label(group)}<span>${group.items.split('|').length}</span></button>`)).join('');
     tabs.querySelectorAll('[data-group]').forEach((button) => button.addEventListener('click', () => {
       state.group = button.dataset.group;
       renderGroups();

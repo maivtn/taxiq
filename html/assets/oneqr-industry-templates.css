@@ -215,6 +215,7 @@ button, a { -webkit-tap-highlight-color: transparent; }
 .group-tabs-wrap { margin-top: 17px; overflow: hidden; }
 .group-tabs { display: flex; gap: 7px; overflow-x: auto; padding-bottom: 7px; scrollbar-width: thin; }
 .group-tab { display: inline-flex; flex: 0 0 auto; align-items: center; gap: 7px; padding: 8px 11px; border: 1px solid var(--oq-line); border-radius: 999px; background: #fff; color: #596376; cursor: pointer; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.group-tab > img { display: block; flex: 0 0 20px; width: 20px; height: 20px; object-fit: contain; }
 .group-tab span { display: grid; min-width: 19px; height: 19px; padding: 0 4px; place-items: center; border-radius: 8px; background: #f1f3f6; color: #7a8496; font-size: 11px; }
 .group-tab.is-active { border-color: #b9b4fa; background: #f2f0ff; color: var(--oq-primary-dark); }
 .group-tab.is-active span { background: #ddd9ff; color: var(--oq-primary-dark); }
