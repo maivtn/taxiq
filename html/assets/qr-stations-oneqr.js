@@ -451,6 +451,11 @@
     var order = moduleOrderByRole.customer || [];
     var enabledSet = enabledByRole.customer || new Set();
     var activeModules = order.filter(function (name) { return enabledSet.has(name); }).slice(0, 4);
+    var invalidLinks = order.filter(function (name) {
+      var url = moduleDetails(name, 'customer').url.trim();
+      return enabledSet.has(name) && url && !normalizedModuleUrl(url);
+    });
+    document.getElementById('oneqrLinkErrorCount').textContent = invalidLinks.length;
     var demoClicks = [68, 52, 29, 14];
     var maximum = demoClicks[0];
     performanceActionListEl.innerHTML = activeModules.map(function (name, index) {
@@ -496,30 +501,9 @@
   }
 
   function renderPreviewBusinessInfo() {
-    var card = { address: '9793 Westheimer Rd, Suite A', city: 'Houston', region: 'TX', addressMode: 'full', phone: '(346) 802-4906', showPhone: true, showHours: true, openTime: '09:30', closeTime: '19:00' };
-    try {
-      var saved = JSON.parse(window.localStorage.getItem('taxiq:oneqr-contact-card') || 'null');
-      if (saved && typeof saved === 'object') card = Object.assign(card, saved);
-    } catch (error) { /* Use the default business profile if storage is unavailable. */ }
+    var card = window.NEXORA_ONEQR_PROFILE.read();
     if (card.configured && card.name) heroNameEl.textContent = card.name;
-    var address = card.addressMode === 'hidden' ? '' : [card.addressMode === 'area' ? '' : card.address, card.city, card.region].filter(Boolean).join(', ');
-    function displayTime(value) {
-      var match = /^(\d{2}):(\d{2})$/.exec(value || '');
-      if (!match) return '';
-      var hour = Number(match[1]);
-      return (hour % 12 || 12) + ':' + match[2] + (hour >= 12 ? ' PM' : ' AM');
-    }
-    var hours = card.showHours && card.openTime && card.closeTime ? 'Open daily · ' + displayTime(card.openTime) + '–' + displayTime(card.closeTime) : '';
-    var addressEl = document.getElementById('oneqrPreviewAddress');
-    var hoursEl = document.getElementById('oneqrPreviewHours');
-    addressEl.querySelector('b').textContent = address;
-    addressEl.hidden = !address;
-    hoursEl.querySelector('b').textContent = hours;
-    hoursEl.hidden = !hours;
-    document.getElementById('oneqrPreviewBusinessInfo').hidden = !address && !hours;
-    document.getElementById('oneqrPreviewCall').hidden = !card.showPhone || !card.phone;
-    document.getElementById('oneqrPreviewText').hidden = !card.showPhone || !card.phone;
-    document.getElementById('oneqrPreviewDirections').hidden = !address;
+    window.NEXORA_ONEQR_PROFILE.render();
   }
 
   document.getElementById('oneqrContactCard').addEventListener('click', function () { window.NEXORA_CONTACT_CARD.open(); });
@@ -1362,6 +1346,7 @@
         return;
       }
       moduleStatusEl.textContent = 'Module changes saved.';
+      document.dispatchEvent(new CustomEvent('oneqr:settings-saved'));
       renderModules();
       renderPreview();
       flashButtonLabel(saveSettingsBtn, 'Saved!');

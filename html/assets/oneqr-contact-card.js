@@ -5,31 +5,14 @@
   const $ = selector => dialog.querySelector(selector);
   const $$ = selector => Array.from(dialog.querySelectorAll(selector));
   const CONTACT_STORAGE_KEY = 'taxiq:oneqr-contact-card';
-  const DEFAULT_CONTACT_CARD = {
-    name: 'Bitcoin Nail Bar',
-    title: 'Nail salon · Houston',
-    phone: '(346) 802-4906',
-    email: 'hello@bitcoinnailbar.com',
-    website: 'https://bitcoinnailbar.com',
-    address: '9793 Westheimer Rd, Suite A',
-    city: 'Houston',
-    region: 'TX',
-    bio: 'Beauty, care, and a better booking experience.',
-    addressMode: 'full',
-    showPhone: true,
-    showHours: true,
-    openTime: '09:30',
-    closeTime: '19:00',
-    theme: 'indigo',
-    configured: false
-  };
+  const profile = window.NEXORA_ONEQR_PROFILE;
+  const DEFAULT_CONTACT_CARD = profile.defaults;
 
   let contactDraft = { ...DEFAULT_CONTACT_CARD };
   function refreshIcons() { window.lucide?.createIcons(); }
   function showToast(message) { $('#contact-feedback').textContent = message; }
   function loadContactCard() {
-    try { return { ...DEFAULT_CONTACT_CARD, ...JSON.parse(localStorage.getItem(CONTACT_STORAGE_KEY) || 'null') }; }
-    catch (error) { return { ...DEFAULT_CONTACT_CARD }; }
+    return profile.read();
   }
   function setContactFormValues() {
     const values = {
@@ -41,7 +24,9 @@
       '#contact-address': contactDraft.address,
       '#contact-city': contactDraft.city,
       '#contact-state': contactDraft.region,
+      '#contact-zip': contactDraft.zip,
       '#contact-bio': contactDraft.bio,
+      '#contact-blurb': contactDraft.blurb,
       '#contact-open-time': contactDraft.openTime,
       '#contact-close-time': contactDraft.closeTime
     };
@@ -49,6 +34,7 @@
     $$('#contact-card-form [name="contact-address-mode"]').forEach((input) => { input.checked = input.value === contactDraft.addressMode; });
     $('#contact-show-phone').checked = Boolean(contactDraft.showPhone);
     $('#contact-show-hours').checked = Boolean(contactDraft.showHours);
+    $$('#contact-closed-days input').forEach(input => { input.checked = (contactDraft.closedDays || []).includes(Number(input.value)); });
     $('#contact-add-action').checked = true;
     $$('[data-contact-theme]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.contactTheme === contactDraft.theme)));
   }
@@ -64,26 +50,20 @@
       address: $('#contact-address').value.trim(),
       city: $('#contact-city').value.trim(),
       region: $('#contact-state').value.trim(),
+      zip: $('#contact-zip').value.trim(),
       bio: $('#contact-bio').value.trim(),
+      blurb: $('#contact-blurb').value.trim(),
       addressMode: $('#contact-card-form [name="contact-address-mode"]:checked')?.value || 'full',
       showPhone: $('#contact-show-phone').checked,
       showHours: $('#contact-show-hours').checked,
       openTime: $('#contact-open-time').value,
-      closeTime: $('#contact-close-time').value
+      closeTime: $('#contact-close-time').value,
+      closedDays: $$('#contact-closed-days input:checked').map(input => Number(input.value))
     };
   }
 
-  function displayTime(value) {
-    if (!value || !value.includes(':')) return '';
-    const [hours, minutes] = value.split(':').map(Number);
-    const suffix = hours >= 12 ? 'PM' : 'AM';
-    return `${hours % 12 || 12}:${String(minutes).padStart(2, '0')} ${suffix}`;
-  }
-
   function cardAddress(card) {
-    if (card.addressMode === 'hidden') return '';
-    const area = [card.city, card.region].filter(Boolean).join(', ');
-    return card.addressMode === 'area' ? area : [card.address, area].filter(Boolean).join(', ');
+    return profile.address(card);
   }
 
   function contactAddress() {
@@ -100,12 +80,13 @@
     $('#contact-preview-phone').textContent = contactDraft.phone || 'Phone not added';
     $('#contact-preview-email').textContent = contactDraft.email || 'Email not added';
     $('#contact-preview-address').textContent = contactAddress() || 'Address hidden';
-    $('#contact-preview-hours').textContent = `${displayTime(contactDraft.openTime)}–${displayTime(contactDraft.closeTime)}`;
+    $('#contact-preview-hours').textContent = profile.hours(contactDraft);
     $('#contact-preview-phone-row').hidden = !contactDraft.showPhone || !contactDraft.phone;
     $('#contact-preview-email-row').hidden = !contactDraft.email;
     $('#contact-preview-address-row').hidden = !contactAddress();
     $('#contact-preview-hours-row').hidden = !contactDraft.showHours || !contactDraft.openTime || !contactDraft.closeTime;
     $('#contact-hours-row').hidden = !contactDraft.showHours;
+    $('#contact-closed-days').hidden = !contactDraft.showHours;
     refreshIcons();
   }
 
@@ -121,31 +102,9 @@
     showToast('Business details imported for this prototype.');
   }
 
-  function vCardValue(value) {
-    return String(value || '').replace(/\\/g, '\\\\').replace(/\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
-  }
-
   function downloadVCard() {
     readContactForm();
-    const includeAddress = contactDraft.addressMode !== 'hidden' && (contactDraft.address || contactDraft.city || contactDraft.region);
-    const street = contactDraft.addressMode === 'area' ? '' : contactDraft.address;
-    const lines = [
-      'BEGIN:VCARD', 'VERSION:3.0', `FN:${vCardValue(contactDraft.name)}`,
-      contactDraft.title ? `TITLE:${vCardValue(contactDraft.title)}` : '',
-      contactDraft.showPhone && contactDraft.phone ? `TEL;TYPE=CELL:${vCardValue(contactDraft.phone)}` : '',
-      contactDraft.email ? `EMAIL:${vCardValue(contactDraft.email)}` : '',
-      contactDraft.website ? `URL:${vCardValue(contactDraft.website)}` : '',
-      includeAddress ? `ADR;TYPE=WORK:;;${vCardValue(street)};${vCardValue(contactDraft.city)};${vCardValue(contactDraft.region)};;` : '',
-      contactDraft.bio ? `NOTE:${vCardValue(contactDraft.bio)}` : '', 'END:VCARD'
-    ].filter(Boolean).join('\r\n');
-    const url = URL.createObjectURL(new Blob([lines], { type: 'text/vcard;charset=utf-8' }));
-    const link = document.createElement('a');
-    link.href = url;
-    link.download = `${(contactDraft.name || 'oneqr-contact').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'oneqr-contact'}.vcf`;
-    document.body.appendChild(link);
-    link.click();
-    link.remove();
-    URL.revokeObjectURL(url);
+    profile.downloadVCard(contactDraft);
     showToast('vCard downloaded.');
   }
 

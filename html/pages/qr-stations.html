@@ -56,6 +56,7 @@
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/qr-stations.css?v=industry-module-library-8">
   <link rel="stylesheet" href="../assets/oneqr-contact-card.css?v=card-colors-3">
+  <link rel="stylesheet" href="../assets/oneqr-experience.css?v=1">
 </head>
 <body>
   <div class="shell">
@@ -370,28 +371,36 @@
                       <div class="oneqr-phone-featured"><i data-lucide="sparkles" aria-hidden="true"></i><span id="oneqrHeroTagline">Bitcoin Nail Bar</span></div>
                       <div id="oneqrCustomerActions">
                         <div class="oneqr-phone-quick-actions" aria-label="Customer contact actions">
-                          <button class="is-primary" type="button" id="oneqrPreviewCall" tabindex="-1"><i data-lucide="phone" aria-hidden="true"></i>Call</button>
-                          <button type="button" id="oneqrPreviewText" tabindex="-1"><i data-lucide="message-square" aria-hidden="true"></i>Text</button>
-                          <button type="button" tabindex="-1"><i data-lucide="contact-round" aria-hidden="true"></i>Save contact</button>
-                          <button type="button" tabindex="-1"><i data-lucide="wallet-cards" aria-hidden="true"></i>Add to Wallet</button>
-                          <button type="button" id="oneqrPreviewDirections" tabindex="-1"><i data-lucide="navigation" aria-hidden="true"></i>Directions</button>
-                          <button type="button" tabindex="-1"><i data-lucide="share-2" aria-hidden="true"></i>Share card</button>
+                          <button class="is-primary" type="button" id="oneqrPreviewCall" data-oneqr-action="call"><i data-lucide="phone" aria-hidden="true"></i>Call</button>
+                          <button type="button" id="oneqrPreviewText" data-oneqr-action="text"><i data-lucide="message-square" aria-hidden="true"></i>Text</button>
+                          <button type="button" data-oneqr-action="save"><i data-lucide="contact-round" aria-hidden="true"></i>Save contact</button>
+                          <button type="button" data-oneqr-action="wallet"><i data-lucide="wallet-cards" aria-hidden="true"></i>Add to Wallet</button>
+                          <button type="button" id="oneqrPreviewDirections" data-oneqr-action="directions"><i data-lucide="navigation" aria-hidden="true"></i>Directions</button>
+                          <button type="button" data-oneqr-action="exchange"><i data-lucide="user-plus" aria-hidden="true"></i>Send yours</button>
+                          <button type="button" data-oneqr-action="share"><i data-lucide="share-2" aria-hidden="true"></i>Share card</button>
                         </div>
                         <h3 class="oneqr-phone-help">How can we help you today?</h3>
                       </div>
                       <div class="oneqr-phone-welcome" id="oneqrWelcomeText"></div>
                       <div class="oneqr-phone-tiles" id="oneqrPreviewTiles"></div>
                       <button class="oneqr-phone-viewall" type="button" id="oneqrPreviewViewAll" aria-controls="oneqrPreviewTiles" aria-expanded="false">View All</button>
-                      <section class="oneqr-phone-business-info" id="oneqrPreviewBusinessInfo" aria-label="Business information">
-                        <span id="oneqrPreviewAddress"><i data-lucide="map-pin" aria-hidden="true"></i><b>9793 Westheimer Rd, Suite A, Houston, TX</b></span>
-                        <span id="oneqrPreviewHours"><i data-lucide="clock-3" aria-hidden="true"></i><b>Open daily · 9:30 AM–7:00 PM</b></span>
-                      </section>
+                      <section class="oneqr-about" data-oneqr-about aria-label="About this page"></section>
+                      <button class="oneqr-home-button" type="button" data-oneqr-action="home"><i data-lucide="circle-plus" aria-hidden="true"></i>Add to Home Screen</button>
+                      <p class="oneqr-page-feedback" data-oneqr-feedback role="status" aria-live="polite"></p>
                     </div>
-                    <footer class="oneqr-phone-footer">Powered by <strong>Nexora Touch</strong><i data-lucide="arrow-up-right" aria-hidden="true"></i></footer>
+                    <footer class="oneqr-phone-footer"><span data-oneqr-page-url></span> · QR &amp; NFC</footer>
                   </div>
                 </div>
               </div>
             </div>
+
+            <section class="oneqr-info-panel" aria-labelledby="oneqr-profile-title">
+              <div class="oneqr-info-heading">
+                <div><h3 id="oneqr-profile-title">Fill once — used in 8 places <span class="oneqr-badge" id="oneqrProfileState">Business profile</span></h3><p>All details come from your Business Profile. Edit your Contact card to update these previews.</p></div>
+                <button class="oneqr-qrcard-btn" type="button" data-edit-oneqr-profile>Edit profile</button>
+              </div>
+              <div class="oneqr-profile-outputs" id="oneqrProfileOutputs"></div>
+            </section>
 
             <section class="oneqr-performance" aria-labelledby="oneqr-performance-title">
               <div class="oneqr-performance-heading">
@@ -406,8 +415,29 @@
                 <article><span>QR scans</span><strong>315</strong></article>
                 <article><span>Action clicks</span><strong>163</strong></article>
                 <article><span>Contacts saved</span><strong>56</strong></article>
+                <article><span>Link errors</span><strong id="oneqrLinkErrorCount">0</strong></article>
               </div>
               <div class="oneqr-performance-action-list" id="oneqrPerformanceActionList" aria-label="Action click distribution"></div>
+              <p class="oneqr-info-note">Link errors count invalid destinations in this draft. Live link availability is not checked in this demo.</p>
+            </section>
+
+            <section class="oneqr-info-panel" aria-labelledby="oneqr-inbox-title">
+              <div class="oneqr-info-heading">
+                <div><h3 id="oneqr-inbox-title">Contacts sent back <span class="oneqr-pill" id="oneqrLeadCount">0</span></h3><p>Customers who choose “Send yours” on your QR page appear here.</p></div>
+                <div class="oneqr-info-actions"><button class="oneqr-qrcard-btn" type="button" id="oneqrExportLeads">Export CSV</button><button class="oneqr-qrcard-btn" type="button" id="oneqrSendToCrm">Send to CRM · Demo</button></div>
+              </div>
+              <div id="oneqrLeadList"></div>
+              <p class="oneqr-info-note" id="oneqrLeadFeedback" role="status" aria-live="polite"></p>
+            </section>
+
+            <div class="oneqr-info-actions">
+              <button class="oneqr-qrcard-btn" type="button" id="oneqrPostService"><i data-lucide="play" aria-hidden="true"></i>Post-service journey</button>
+              <button class="oneqr-qrcard-btn" type="button" id="oneqrResetTemplate">Reset to recommended</button>
+            </div>
+            <section class="oneqr-setup-metric" aria-label="Setup time">
+              <div><span>Setup time</span><strong id="oneqrSetupTime">0:00</strong></div>
+              <p>Goal: set up and save your first OneQR in under 2 minutes, without instructions.</p>
+              <span class="oneqr-pill" id="oneqrSetupState">Not saved yet</span>
             </section>
           </section>
           </section>
@@ -740,7 +770,9 @@
             <label class="contact-field is-wide"><span>Street address</span><input id="contact-address" type="text"></label>
             <label class="contact-field"><span>City</span><input id="contact-city" type="text"></label>
             <label class="contact-field"><span>State</span><input id="contact-state" type="text" maxlength="30"></label>
+            <label class="contact-field"><span>ZIP code</span><input id="contact-zip" type="text" maxlength="10" autocomplete="postal-code"></label>
             <label class="contact-field is-wide"><span>Short bio</span><textarea id="contact-bio" rows="2" maxlength="220"></textarea></label>
+            <label class="contact-field is-wide"><span>About this page</span><textarea id="contact-blurb" rows="3" maxlength="500" placeholder="Leave blank to use the introduction with your business name."></textarea></label>
           </div>
 
           <fieldset class="contact-choice-group">
@@ -760,6 +792,16 @@
             <label class="contact-field"><span>Opens</span><input id="contact-open-time" type="time"></label>
             <label class="contact-field"><span>Closes</span><input id="contact-close-time" type="time"></label>
           </div>
+          <fieldset class="contact-choice-group" id="contact-closed-days">
+            <legend>Closed days</legend>
+            <label><input type="checkbox" value="1"><span>Mon</span></label>
+            <label><input type="checkbox" value="2"><span>Tue</span></label>
+            <label><input type="checkbox" value="3"><span>Wed</span></label>
+            <label><input type="checkbox" value="4"><span>Thu</span></label>
+            <label><input type="checkbox" value="5"><span>Fri</span></label>
+            <label><input type="checkbox" value="6"><span>Sat</span></label>
+            <label><input type="checkbox" value="0"><span>Sun</span></label>
+          </fieldset>
 
           <fieldset class="contact-theme-picker">
             <legend>Card style</legend>
@@ -829,8 +871,10 @@
   <script src="../assets/nexora-shell.js"></script>
   <script src="../assets/oneqr-action-appearance.js"></script>
   <script src="../assets/oneqr-industries.js"></script>
-  <script src="../assets/oneqr-contact-card.js"></script>
-  <script src="../assets/qr-stations-oneqr.js?v=industry-module-library-7"></script>
+  <script src="../assets/oneqr-experience.js?v=1"></script>
+  <script src="../assets/oneqr-contact-card.js?v=profile-details-4"></script>
+  <script src="../assets/qr-stations-oneqr.js?v=profile-insights-8"></script>
+  <script src="../assets/oneqr-builder-insights.js?v=1"></script>
   <script src="../assets/qr-stations-workflows.js"></script>
 </body>
 </html>

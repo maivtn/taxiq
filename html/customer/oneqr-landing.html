@@ -8,6 +8,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/oneqr-header.css">
+  <link rel="stylesheet" href="../assets/oneqr-experience.css?v=1">
   <style>
     * {
       box-sizing: border-box;
@@ -159,7 +160,7 @@
   </style>
 </head>
 <body>
-  <main class="oneqr-scan-page">
+  <main class="oneqr-scan-page" data-oneqr-public>
     <div data-oneqr-header></div>
     <script src="../assets/oneqr-header.js"></script>
 
@@ -168,7 +169,16 @@
       <p>Welcome back, <strong id="oneqrWelcomeName"></strong> &#128075;</p>
     </div>
 
-    <nav class="oneqr-scan-menu" aria-label="Bitcoin Nail Bar quick links">
+    <div class="oneqr-public-actions" aria-label="Business contact actions">
+      <button type="button" data-oneqr-action="call"><i data-lucide="phone" aria-hidden="true"></i>Call</button>
+      <button type="button" data-oneqr-action="text"><i data-lucide="message-square" aria-hidden="true"></i>Text</button>
+      <button type="button" data-oneqr-action="save"><i data-lucide="contact-round" aria-hidden="true"></i>Save contact</button>
+      <button type="button" data-oneqr-action="wallet"><i data-lucide="wallet-cards" aria-hidden="true"></i>Add to Wallet</button>
+      <button type="button" data-oneqr-action="directions"><i data-lucide="navigation" aria-hidden="true"></i>Directions</button>
+      <button type="button" data-oneqr-action="exchange"><i data-lucide="user-plus" aria-hidden="true"></i>Send yours</button>
+      <button type="button" data-oneqr-action="share"><i data-lucide="share-2" aria-hidden="true"></i>Share card</button>
+    </div>
+    <nav class="oneqr-scan-menu" aria-label="Business quick links">
       <a class="oneqr-scan-item" href="booking.html">
         <span class="oneqr-scan-icon"><i data-lucide="calendar-check" aria-hidden="true"></i></span>
         <span>Book Appointment</span>
@@ -211,19 +221,16 @@
       </a>
     </nav>
 
-    <footer class="oneqr-scan-footer">
-      <div class="oneqr-scan-footer-row">
-        <span class="oneqr-scan-footer-icon"><i data-lucide="map-pin" aria-hidden="true"></i></span>
-        <span>9793 Westheimer Rd Suite A, Houston, TX 77042</span>
-      </div>
-      <div class="oneqr-scan-footer-row">
-        <span class="oneqr-scan-footer-icon"><i data-lucide="clock" aria-hidden="true"></i></span>
-        <span>9:30 AM&ndash;7:00 PM<br>11:00 AM&ndash;5:00 PM</span>
-      </div>
+    <footer class="oneqr-public-details">
+      <section class="oneqr-about" data-oneqr-about aria-label="About this page"></section>
+      <button class="oneqr-home-button" type="button" data-oneqr-action="home"><i data-lucide="circle-plus" aria-hidden="true"></i>Add to Home Screen</button>
+      <p class="oneqr-page-feedback" data-oneqr-feedback role="status" aria-live="polite"></p>
+      <small><span data-oneqr-page-url></span> · QR &amp; NFC</small>
     </footer>
   </main>
 
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script src="../assets/oneqr-experience.js?v=1"></script>
   <script>
     (function () {
       var welcomeEl = document.getElementById('oneqrWelcome');
