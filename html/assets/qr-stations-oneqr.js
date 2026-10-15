@@ -269,7 +269,7 @@
     var icon = moduleDetails(name).icon || MODULE_ICONS[name] || 'link-2';
     return isModuleImage(icon)
       ? '<img src="' + escapeModuleText(icon) + '" alt="">'
-      : '<i data-lucide="' + escapeModuleText(icon) + '" aria-hidden="true"></i>';
+      : appearanceChoices.image(icon);
   }
 
   function isModuleImage(value) {
@@ -288,9 +288,10 @@
     document.getElementById('oneqrAppearanceTitle').textContent = isIcon ? 'Choose an icon' : 'Choose a card background';
     document.getElementById('oneqrAppearanceDescription').textContent = (isIcon ? 'Choose an icon for ' : 'Choose an industry-style gradient for ') + moduleTitle(name) + '.';
     appearanceGrid.classList.toggle('is-backgrounds', !isIcon);
+    document.getElementById('oneqrAppearanceCredit').hidden = !isIcon;
     appearanceGrid.innerHTML = (isIcon ? appearanceChoices.icons : appearanceChoices.backgrounds).map(function (value, index) {
       return '<button type="button" data-appearance-choice="' + index + '" class="' + (value === selected ? 'is-selected' : '') + '" aria-pressed="' + (value === selected) + '" aria-label="' + (isIcon ? 'Use ' + value + ' icon' : 'Use gradient ' + (index + 1)) + '">' +
-        (isIcon ? '<i data-lucide="' + value + '" aria-hidden="true"></i>' : '<span style="background:' + value + '"></span>') + '</button>';
+        (isIcon ? appearanceChoices.image(value) : '<span style="background:' + value + '"></span>') + '</button>';
     }).join('');
     appearanceReset.querySelector('span').textContent = isIcon ? 'Use default' : 'Use white';
     refreshIcons();
@@ -757,7 +758,7 @@
     addModuleListEl.innerHTML = catalog.map(function (entry) {
       var action = entry[1];
       return '<button type="button" class="oneqr-modal-item" data-add-module="' + escapeModuleText(action.en) + '">' +
-        '<span class="oneqr-modal-item-icon"><i data-lucide="' + escapeModuleText(action.icon) + '" aria-hidden="true"></i></span>' +
+        '<span class="oneqr-modal-item-icon">' + appearanceChoices.image(action.icon) + '</span>' +
         '<div><strong>' + escapeModuleText(action.en) + '</strong><small>' + escapeModuleText(action.descEn) + '</small></div>' +
         '<i data-lucide="plus" aria-hidden="true"></i></button>';
     }).join('') || '<p class="oneqr-library-empty">No available actions found. Try another search or close the library.</p>';
