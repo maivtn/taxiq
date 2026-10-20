@@ -17,14 +17,15 @@
       cardFeeEnabled:true,cardFeePercent:3,walletEnabled:true,walletPercent:5,tipSplit:'proportional'},
     audit:[]
   };
-  let fallback = clone(defaults), accountId = 'owner';
+  let fallback = clone(defaults), accountId = 'owner', saveError = null;
   try { accountId = sessionStorage.getItem(sessionKey) || accountId; } catch (_) {}
   function load() {
     try { const saved = JSON.parse(localStorage.getItem(key)); if(saved?.accounts && saved?.payment?.methods) return saved; } catch (_) {}
     return clone(fallback);
   }
   function save(value,publish=true) {
-    try { localStorage.setItem(key,JSON.stringify(value)); } catch (_) { return false; }
+    saveError = null;
+    try { localStorage.setItem(key,JSON.stringify(value)); } catch (error) { saveError = error; return false; }
     fallback = clone(value);
     if(publish)window.dispatchEvent(new CustomEvent('nexora:pos-settings-changed'));
     return true;
@@ -37,20 +38,24 @@
     return save(data,false);
   }
   async function approve(action,subject,config={}) {
-    const user=account(),ownerOnly=config.ownerOnly || ['settings','access'].includes(action);
+    const user=account(),ownerOnly=config.ownerOnly || ['settings','access'].includes(action),copy=config.copy;
     if(user.role==='cleaner' && action!=='clean') return false;
     if(user.role==='technician'&&['cancel','refund','override','station-settings','settings','access'].includes(action))return false;
     if(!config.force && !ownerOnly && action!=='override' && !load().rules[action]) return true;
     if(!window.Swal) return false;
     const eligible=load().accounts.filter(a=>a.pin && (ownerOnly?a.role==='owner':['owner','manager'].includes(a.role)));
-    const result=await Swal.fire({title:ownerOnly?'Owner PIN approval':'Manager / Owner approval',
-      html:`<p class="pos-muted">${esc(config.label || action)} · ${esc(subject || 'Salon')}</p><label class="pos-approval-field">Approver<select id="pos-approval-account">${eligible.map(a=>`<option value="${esc(a.id)}">${esc(a.name)} · ${esc(a.role)}</option>`).join('')}</select></label><label class="pos-approval-field">Personal demo PIN<input id="pos-approval-pin" type="password" inputmode="numeric" autocomplete="off" maxlength="6"></label>${config.reason?'<label class="pos-approval-field">Reason<textarea id="pos-approval-reason" maxlength="160" placeholder="At least 5 characters"></textarea></label>':''}<p class="pos-muted">Demo PINs: Brian 1234 · Mai 5678</p>`,
-      customClass:{popup:'pos-swal'},showCancelButton:true,confirmButtonText:'Approve this action',confirmButtonColor:'#4648d4',
+    const result=await Swal.fire({title:copy?.title || (ownerOnly?'Owner PIN approval':'Manager / Owner approval'),
+      html:`<p class="pos-muted">${esc(config.label || action)} · ${esc(subject || 'Salon')}</p><label class="pos-approval-field">${esc(copy?.accountLabel || 'Approver')}<select id="pos-approval-account">${eligible.map(a=>`<option value="${esc(a.id)}">${esc(a.name)} · ${esc(a.role)}</option>`).join('')}</select></label><label class="pos-approval-field">${esc(copy?.pinLabel || 'Personal demo PIN')}<input id="pos-approval-pin" type="password" inputmode="numeric" autocomplete="off" maxlength="6"></label>${config.reason?'<label class="pos-approval-field">Reason<textarea id="pos-approval-reason" maxlength="160" placeholder="At least 5 characters"></textarea></label>':''}<p class="pos-muted">${copy?eligible.map(a=>esc(a.name)+' · '+esc(a.pin)).join(' · '):'Demo PINs: Brian 1234 · Mai 5678'}</p>`,
+      customClass:{popup:'pos-swal'},showCancelButton:true,confirmButtonText:copy?.confirm || 'Approve this action',cancelButtonText:copy?.cancel || 'Cancel',confirmButtonColor:'#4648d4',
       preConfirm:()=>{
         const approver=eligible.find(a=>a.id===document.getElementById('pos-approval-account').value);
         const pin=document.getElementById('pos-approval-pin').value;
         const reason=document.getElementById('pos-approval-reason')?.value.trim() || '';
-        if(!approver || pin!==approver.pin){Swal.showValidationMessage('The PIN does not match this approver.');return false;}
+        if(!approver || pin!==approver.pin){
+          if(copy&&approver){const input=document.getElementById('pos-approval-pin');input.required=true;input.pattern=String(approver.pin).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');input.reportValidity();}
+          else Swal.showValidationMessage('The PIN does not match this approver.');
+          return false;
+        }
         if(config.reason&&reason.length<5){Swal.showValidationMessage('Enter a reason of at least 5 characters.');return false;}
         return {approver,reason};
       }});
@@ -58,17 +63,17 @@
     if(!audit(config.label || action,subject,result.value.approver,result.value.reason)) return false;
     return result.value;
   }
-  async function switchAccount() {
+  async function switchAccount(poCopy=false) {
     if(!window.Swal)return;
     const accounts=load().accounts;
-    const result=await Swal.fire({title:'Switch POS account',input:'select',inputOptions:Object.fromEntries(accounts.map(a=>[a.id,a.name+' · '+a.role])),inputValue:accountId,
-      showCancelButton:true,confirmButtonText:'Continue',customClass:{popup:'pos-swal'},confirmButtonColor:'#4648d4'});
+    const result=await Swal.fire({title:poCopy?'POS ACCOUNT':'Switch POS account',input:'select',inputOptions:Object.fromEntries(accounts.map(a=>[a.id,a.name+' · '+a.role])),inputValue:accountId,
+      showCancelButton:true,cancelButtonText:'Cancel',confirmButtonText:'Continue',customClass:{popup:'pos-swal'},confirmButtonColor:'#4648d4'});
     if(!result.isConfirmed)return;
     const target=accounts.find(a=>a.id===result.value);if(!target)return;
     if(target.pin){
-      const pin=await Swal.fire({title:'Sign in · '+target.name,input:'password',inputAttributes:{inputmode:'numeric',maxlength:'6',autocomplete:'off'},
-        text:'Use this account’s personal demo PIN.',showCancelButton:true,customClass:{popup:'pos-swal'},
-        preConfirm:value=>{if(value!==target.pin){Swal.showValidationMessage('Incorrect demo PIN.');return false;}return true;}});
+      const pin=await Swal.fire({title:poCopy?'Sign in with PIN':'Sign in · '+target.name,input:'password',inputAttributes:{inputmode:'numeric',maxlength:'6',autocomplete:'off'},
+        text:poCopy?target.name+' · '+target.role:'Use this account’s personal demo PIN.',showCancelButton:true,...(poCopy?{confirmButtonText:'Sign in with PIN',cancelButtonText:'Cancel'}:{}),customClass:{popup:'pos-swal'},
+        preConfirm:value=>{if(value!==target.pin){if(poCopy){const input=Swal.getInput();input.required=true;input.pattern=String(target.pin).replace(/[.*+?^${}()|[\]\\]/g,'\\$&');input.reportValidity();}else Swal.showValidationMessage('Incorrect demo PIN.');return false;}return true;}});
       if(!pin.isConfirmed)return;
     }
     accountId=target.id;
@@ -106,7 +111,7 @@
     return `<span class="credits-history-date">${d.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})}<small>${d.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</small></span>`;
   }
   function sessionHtml() {const a=account();return `<div class="pos-session"><span>Demo account · <strong>${esc(a.name)}</strong> · ${esc(a.role)}</span><button type="button" data-pos-switch>Switch POS account</button></div>`;}
-  document.addEventListener('click',e=>{if(e.target.closest('[data-pos-switch]'))switchAccount();});
+  document.addEventListener('click',e=>{const button=e.target.closest('[data-pos-switch]');if(button)switchAccount(!!button.closest('[data-direct-root]'));});
   window.addEventListener('storage',e=>{if(e.key===key)window.dispatchEvent(new CustomEvent('nexora:pos-settings-changed'));});
-  window.NEXORA_POS_DEMO={load,save,account,approve,audit,methods,pricing,allocateTip,timeHtml,sessionHtml,esc};
+  window.NEXORA_POS_DEMO={load,save,account,approve,audit,methods,pricing,allocateTip,timeHtml,sessionHtml,esc,lastSaveError:()=>saveError};
 })();

@@ -130,7 +130,7 @@
 .po-direct .discount-toggle.applied{color:#5140b5}
 .po-direct .discount-toggle:hover:not(:disabled){background:transparent;border-color:transparent;color:#875008}
 .po-direct .item-net{font-size:11px;font-weight:800;color:#61738c;font-variant-numeric:tabular-nums;white-space:nowrap}
-.po-direct .discount-panel{display:grid;grid-template-columns:minmax(0,1fr) 94px;gap:8px;padding:9px;background:#f2f3ff;border:1px solid #e6e7f6;border-radius:7px;margin:4px 0 8px}
+.po-direct .discount-panel{display:grid;grid-template-columns:minmax(0,1fr) 94px;align-items:end;gap:8px;padding:9px;background:#f2f3ff;border:1px solid #e6e7f6;border-radius:7px;margin:4px 0 8px}
 .po-direct .discount-panel>label{display:grid;gap:4px;font-size:12px;font-weight:650;color:#5140b5}
 .po-direct .discount-panel .input,.po-direct .discount-panel .select{min-height:34px;font-size:12px;padding-top:6px;padding-bottom:6px}
 .po-direct details>summary{cursor:pointer;list-style:none}
@@ -224,9 +224,9 @@
 .po-direct .tip-picker-head{display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;font-size:12px;color:#53627c}
 .po-direct .tip-picker-head strong{font-weight:650}
 .po-direct .tip-picker-head>span{font-size:12px;color:#5140b5}
-.po-direct .tip-entry-row{display:flex;gap:7px;align-items:center}
-.po-direct .tip-mode{display:flex;flex:1;gap:2px;padding:3px;background:#f4f6fb;border-radius:8px}
-.po-direct .tip-mode .btn{flex:1;min-height:28px;padding:5px 6px;border-color:transparent;background:transparent;font-size:12px;color:#52627b}
+.po-direct .tip-entry-row{display:flex;flex-wrap:wrap;gap:7px;align-items:center}
+.po-direct .tip-mode{display:flex;flex:1 1 100%;gap:2px;padding:3px;background:#f4f6fb;border-radius:8px}
+.po-direct .tip-mode .btn{flex:1;min-width:0;min-height:28px;padding:5px 6px;border-color:transparent;background:transparent;font-size:12px;color:#52627b;overflow-wrap:anywhere}
 .po-direct .tip-mode .btn.selected{background:#fff;color:#5140b5;border-color:#e4e7f4;box-shadow:0 1px 3px #29335b05}
 .po-direct .tip-inline-input{display:flex;align-items:center;width:83px;height:35px;flex:none;border:1px solid #e0e5ee;border-radius:8px;background:#fff;padding:0 7px;color:#52627b;font-size:12px}
 .po-direct .tip-inline-input input{width:100%;min-width:0;border:0;border-radius:0;background:transparent;outline:0;text-align:right;padding:5px 0;font-size:12px;font-weight:650;color:#53647e}
@@ -236,6 +236,8 @@
 .po-direct .tip-detail{margin-top:7px;border-bottom:0}
 .po-direct .tip-detail>summary{min-height:31px}
 .po-direct .tip-detail .detail-content{padding-bottom:0}
+.po-direct .tip-allocation-head{display:grid;gap:4px;margin:8px 0;font-size:12px;color:#52627b}
+.po-direct .tip-allocation-head small{font-size:12px;font-weight:400}
 .po-direct .tip-auto,.po-direct .tip-split-row{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:7px 9px;border:1px solid #e7e9f4;border-radius:7px;background:#f9faff;color:#52627b;font-size:12px}
 .po-direct .tip-auto strong,.po-direct .tip-split-row strong{font-size:12px;color:#5140b5;font-weight:650}
 .po-direct .tip-split-list{display:grid;gap:5px;margin-top:8px}
@@ -259,13 +261,13 @@
 .po-direct .payment-chip.selected b,.po-direct .payment-chip.selected small{color:#5140b5}
 .po-direct .payment-more{border-style:dashed}
 .po-direct .cash-entry{position:relative}
-.po-direct .cash-entry .po-tip-entry{max-width:58%}
-.po-direct .cash-feedback{position:absolute;right:0;top:28px;font-size:12px;font-weight:600;text-align:right;max-width:40%}
-.po-direct .cash-change{color:#187347}
-.po-direct .cash-short{color:#a15b15}
+.po-direct .cash-entry .po-tip-entry{max-width:none}
 .po-direct .cash-presets{display:flex;gap:5px;margin-top:7px}
 .po-direct .cash-presets .btn{min-height:27px;flex:1;color:#52627b;font-size:12px;padding:4px 6px;background:#fafbfe}
 .po-direct .estimate-footnote{font-size:12px;line-height:1.55;color:#52627b;margin:9px 0 0}
+.po-direct .payment-block>.hint{margin:0 0 9px}
+.po-direct .safe-note,.po-review-dialog .safe-note{font-size:12px;line-height:1.5;color:#62718a;margin:12px 0 0}
+.pos-swal .receipt-sms-preview{padding:14px;border:1px solid #dce3ef;border-radius:9px;background:#f8faff;color:#34445e;font-size:13px;line-height:1.6;overflow-wrap:anywhere}
 .po-direct .total-breakdown .summary-line{margin:4px 0;font-size:12px}
 .po-direct .total-breakdown .summary-line strong{font-size:12px}
 .po-direct .fee-line>span{color:#52627b}
@@ -281,6 +283,8 @@
 .po-direct .checkout-stage-2 .action-context{display:none}
 .po-direct .checkout-stage-2 .checkout-step-actions>[data-po-primary]{margin-left:auto}
 .po-direct .action-context{display:flex;align-items:center;justify-content:flex-end;gap:10px;flex:1;min-width:0;font-size:12px;color:#52627b}
+.po-direct .action-context:empty{display:none}
+.po-direct .checkout-step-actions>[data-po-primary]{margin-left:auto}
 .po-direct .action-context strong{color:#4c43df;font-size:20px;font-weight:750;letter-spacing:-.025em;font-variant-numeric:tabular-nums}
 .po-direct .action-dot{margin:0 4px;color:#bbc3d3}
 .po-direct .checkout-hero{display:flex;justify-content:space-between;align-items:center;gap:16px;margin:12px 0}
