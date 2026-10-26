@@ -1,5 +1,5 @@
 .staff-sidebar {
-  background: #0b234f;
+  background: var(--nexora-sidebar);
 }
 
 .staff-sidebar .staff-profile-panel {
@@ -70,7 +70,7 @@
   gap: 12px;
   padding: 0 12px;
   border-radius: 8px;
-  font-size: 14px;
+  font-size: 12px;
   font-weight: 700;
 }
 
@@ -132,15 +132,21 @@
 }
 
 .staff-sidebar .nav-subitem {
-  height: 38px;
-  font-size: 13px;
+  height: 36px;
+  font-size: 12px;
+  color: rgba(255, 255, 255, 0.75);
 }
 
 .staff-sidebar .nav-subitem.is-active {
-  background: rgba(255, 255, 255, 0.08);
+  background: transparent;
+  color: var(--brand-cyan);
 }
 
 .staff-sidebar .logout-button {
   padding-right: 12px;
   padding-left: 12px;
 }
+
+.staff-sidebar-nav>.nav-item+.nav-item,.staff-sidebar-nav>.nav-subnav+.nav-item{margin-top:6px}
+.staff-sidebar .nav-subitem:disabled{opacity:.45;cursor:default}
+.staff-sidebar .nav-subitem:disabled:hover{background:transparent}

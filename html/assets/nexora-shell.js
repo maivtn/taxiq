@@ -22,6 +22,7 @@
   var activePage = cfg.activePage || '';
 
   var PAGES = {
+    dashboard: 'frame-salon.html',
     booking: 'booking-book-phase-1.html',
     community: 'community.html',
     reward: 'salon-setup-reward.html',
@@ -45,22 +46,16 @@
       { label: 'Feed', tab: 'feed' },
       { label: 'Groups & Market', tab: 'groups' },
       { label: 'Jobs', tab: 'jobs' },
-      { label: 'Extra Shifts', tab: 'shift' },
-      { label: 'Deals & Coupons', tab: 'deals' },
-      { label: 'Messages & Calls', tab: 'connect' },
-      { label: 'Learning', tab: 'learning' },
-      { label: 'Events', tab: 'events' }
+      { label: 'Extra shifts', tab: 'shift' },
+      { label: 'Deals & Coupons', tab: 'deals', disabled: true, title: 'Coming soon' },
+      { label: 'Messages & Calls', tab: 'connect' }
     ];
 
   // Sidebar groups and labels mirror the merchant navigation on Nexora Touch.
   var NAV = [
     { type: 'item', key: 'home', label: 'Home', icon: 'home' },
-    { type: 'item', key: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard' },
-    { type: 'group', key: 'community', label: 'Community', icon: 'users-round', page: 'community', items: COMMUNITY_ITEMS.filter(function (item) {
-      return ['learning', 'events'].indexOf(item.tab) === -1;
-    }).map(function (item) {
-      return Object.assign({}, item, item.tab === 'shift' ? {label: 'Extra shifts'} : {}, item.tab === 'deals' ? {disabled: true, title: 'Coming soon'} : {});
-    }) },
+    { type: 'item', key: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard', page: 'dashboard' },
+    { type: 'group', key: 'community', label: 'Community', icon: 'users-round', page: 'community', items: COMMUNITY_ITEMS },
     { type: 'group', key: 'booking', label: 'AI Hub', icon: 'sparkles', items: [
       { label: 'OneQR', page: 'stations', tab: 'one-qr', href: 'qr-stations.html' },
       { label: 'Reviews', page: 'review', tab: 'reviews', href: 'nexora-review.html' },
@@ -336,16 +331,37 @@
 
   function renderStaffCommunityMenu() {
     var native = !!cfg.isCommunity;
-    var open = native || !!cfg.expandCommunity;
-    var items = COMMUNITY_ITEMS.slice();
-    items.splice(3, 0, { label: 'Tech Profile', tab: 'profile' });
-    return '<button class="nav-item nav-parent staff-nav-item' + (open ? ' is-expanded' : '') + (native ? ' is-active' : '') + '" type="button" data-nav-group aria-expanded="' + open + '" aria-controls="staff-subnav-community">' +
+    var active = native && COMMUNITY_ITEMS.some(function (item) { return item.tab === activeTab; });
+    var open = active || !!cfg.expandCommunity;
+    return '<button class="nav-item nav-parent staff-nav-item' + (open ? ' is-expanded' : '') + (active ? ' is-active' : '') + '" type="button" data-staff-group="community" data-nav-group aria-expanded="' + open + '" aria-controls="staff-subnav-community">' +
       iconWrap('users-round') + '<span>Community</span>' + CARET + '</button>' +
       '<div class="nav-subnav' + (open ? '' : ' is-collapsed') + '" id="staff-subnav-community" data-nav-subnav><div class="nav-subnav-inner">' +
-      items.map(function (item) {
-        var content = '<span class="nav-subitem-dot" aria-hidden="true"></span><span>' + item.label + '</span>';
+      COMMUNITY_ITEMS.map(function (item) {
+        var content = '<span class="nav-subitem-dot" aria-hidden="true"></span><span>' + esc(item.label) + '</span>';
+        if (item.disabled) return '<button class="nav-subitem" type="button" disabled title="' + esc(item.title) + '">' + content + '</button>';
         if (native) return '<button class="nav-subitem' + (activeTab === item.tab ? ' is-active' : '') + '" type="button" data-shell-tab="' + item.tab + '">' + content + '</button>';
         return '<a class="nav-subitem" href="staff-community.html?role=tech&amp;tab=' + item.tab + '">' + content + '</a>';
+      }).join('') + '</div></div>';
+  }
+
+  var STAFF_WORKSPACE_ITEMS = [
+    {label: 'My Salons', tab: 'my-salons', href: 'my-salons.html'},
+    {label: 'My QR', tab: 'my-qr', href: 'staff-app.html#staff-my-qr-screen'},
+    {label: 'My Earnings', tab: 'my-earnings'},
+    {label: 'My Reviews', tab: 'my-reviews'},
+    {label: 'Report', tab: 'report'}
+  ];
+
+  function renderStaffWorkspaceMenu() {
+    var active = STAFF_WORKSPACE_ITEMS.some(function (item) { return item.tab === activeTab; });
+    var open = active || !!cfg.expandWorkspace;
+    return '<button class="nav-item nav-parent staff-nav-item' + (open ? ' is-expanded' : '') + (active ? ' is-active' : '') + '" type="button" data-staff-group="workspace" data-nav-group aria-expanded="' + open + '" aria-controls="staff-subnav-workspace">' +
+      iconWrap('briefcase-business') + '<span>My Workspace</span>' + CARET + '</button>' +
+      '<div class="nav-subnav' + (open ? '' : ' is-collapsed') + '" id="staff-subnav-workspace" data-nav-subnav><div class="nav-subnav-inner">' +
+      STAFF_WORKSPACE_ITEMS.map(function (item) {
+        var content = '<span class="nav-subitem-dot" aria-hidden="true"></span><span>' + item.label + '</span>';
+        var attributes = ' class="nav-subitem' + (activeTab === item.tab ? ' is-active' : '') + '" data-staff-nav="' + item.tab + '"';
+        return item.href ? '<a' + attributes + ' href="' + item.href + '">' + content + '</a>' : '<button' + attributes + ' type="button">' + content + '</button>';
       }).join('') + '</div></div>';
   }
 
@@ -357,25 +373,17 @@
       '</div><i class="staff-profile-chevron" data-lucide="chevron-down" aria-hidden="true"></i></div>' +
     '</div>' +
     '<nav class="sidebar-nav staff-sidebar-nav" aria-label="Staff menu">' +
-      '<a class="nav-item staff-nav-item" href="#" data-staff-nav="home">' + iconWrap('home') + '<span>Home</span></a>' +
+      '<a class="nav-item staff-nav-item" href="staff-app.html#staff-home-screen" data-staff-nav="home">' + iconWrap('home') + '<span>Home</span></a>' +
       '<a class="nav-item staff-nav-item' + (activeTab === 'dashboard' ? ' is-active' : '') + '" href="staff-dashboard.html" data-staff-nav="dashboard">' + iconWrap('layout-dashboard') + '<span>Dashboard</span></a>' +
-      '<button class="nav-item nav-parent is-expanded staff-nav-item" type="button" data-nav-group aria-expanded="true" aria-controls="staff-subnav-workspace">' +
-        iconWrap('briefcase-business') + '<span>My Workspace</span>' + CARET +
-      '</button>' +
-      '<div class="nav-subnav" id="staff-subnav-workspace" data-nav-subnav><div class="nav-subnav-inner">' +
-        '<a class="nav-subitem" href="#" data-staff-nav="my-qr"><span class="nav-subitem-dot" aria-hidden="true"></span><span>My QR</span></a>' +
-        '<a class="nav-subitem" href="#" data-staff-nav="my-earnings"><span class="nav-subitem-dot" aria-hidden="true"></span><span>My Earnings</span></a>' +
-        '<a class="nav-subitem" href="#" data-staff-nav="my-reviews"><span class="nav-subitem-dot" aria-hidden="true"></span><span>My Reviews</span></a>' +
-        '<a class="nav-subitem' + (activeTab === 'my-salons' ? ' is-active' : '') + '" href="my-salons.html" data-staff-nav="my-salons"><span class="nav-subitem-dot" aria-hidden="true"></span><span>My Salons</span></a>' +
-      '</div></div>' +
-      '<a class="nav-item staff-nav-item' + (activeTab === 'my-tickets' ? ' is-active' : '') + '" href="staff-work-orders.html" data-staff-nav="my-tickets">' + iconWrap('list-checks') + '<span>My Tickets</span><span class="staff-nav-count" data-staff-ticket-count hidden></span></a>' +
-      '<a class="nav-item staff-nav-item' + (activeTab === 'my-calendar' ? ' is-active' : '') + '" href="pos-calendar.html" data-staff-nav="my-calendar">' + iconWrap('calendar-days') + '<span>My Calendar</span><span class="staff-nav-count" data-staff-calendar-count>4</span></a>' +
       renderStaffCommunityMenu() +
-      '<a class="nav-item staff-nav-item' + (activeTab === 'staff-handbook' ? ' is-active' : '') + '" href="staff-handbook.html" data-staff-nav="staff-handbook">' + iconWrap('book-open-check') + '<span>Staff Handbook</span></a>' +
+      renderStaffWorkspaceMenu() +
+      '<a class="nav-item staff-nav-item' + (activeTab === 'my-tickets' ? ' is-active' : '') + '" href="staff-work-orders.html" data-staff-nav="my-tickets">' + iconWrap('list-checks') + '<span>My Tickets</span><span class="staff-nav-count" data-staff-ticket-count hidden></span></a>' +
+      '<a class="nav-item staff-nav-item' + (activeTab === 'my-calendar' ? ' is-active' : '') + '" href="pos-calendar.html" data-staff-nav="my-calendar">' + iconWrap('calendar-days') + '<span>My Calendar</span></a>' +
+      (activeTab === 'staff-handbook' ? '<a class="nav-item staff-nav-item is-active" href="staff-handbook.html" data-staff-nav="staff-handbook">' + iconWrap('book-open-check') + '<span>Staff Handbook</span></a>' : '') +
       '<a class="nav-item staff-nav-item" href="#" data-staff-nav="tips">' + iconWrap('circle-dollar-sign') + '<span>Tips</span></a>' +
       '<a class="nav-item staff-nav-item" href="#" data-staff-nav="transactions">' + iconWrap('receipt') + '<span>Transactions</span></a>' +
       '<a class="nav-item staff-nav-item" href="#" data-staff-nav="payout-methods">' + iconWrap('chart-no-axes-combined') + '<span>Payout Methods</span></a>' +
-      '<a class="nav-item staff-nav-item" href="#" data-staff-nav="profile">' + iconWrap('settings') + '<span>Profile</span></a>' +
+      '<a class="nav-item staff-nav-item' + (activeTab === 'profile' ? ' is-active' : '') + '" href="staff-community.html?role=tech&amp;tab=profile" data-staff-nav="profile">' + iconWrap('settings') + '<span>Profile</span></a>' +
     '</nav>' +
     '<div class="sidebar-footer"><button class="logout-button" type="button"><span class="logout-icon"><i data-lucide="log-out" aria-hidden="true"></i></span><span>Sign out</span></button></div>';
 
@@ -409,7 +417,28 @@
       var pages = subs[i].getAttribute('data-shell-pages');
       subs[i].classList.toggle('is-active', (!pages || pages.split(' ').indexOf(activePage) !== -1) && (subs[i].getAttribute('data-shell-tab') || subs[i].getAttribute('data-shell-active-tab')) === tab);
     }
-    if (activePage !== 'staff') {
+    if (activePage === 'staff') {
+      var staffItems = document.querySelectorAll('.sidebar [data-staff-nav]');
+      for (var j = 0; j < staffItems.length; j++) {
+        var current = staffItems[j].getAttribute('data-staff-nav') === tab;
+        staffItems[j].classList.toggle('is-active', current);
+        if (current) staffItems[j].setAttribute('aria-current', 'page');
+        else staffItems[j].removeAttribute('aria-current');
+      }
+      var staffGroups = {
+        community: !!cfg.isCommunity && COMMUNITY_ITEMS.some(function (item) { return item.tab === tab; }),
+        workspace: STAFF_WORKSPACE_ITEMS.some(function (item) { return item.tab === tab; })
+      };
+      Object.keys(staffGroups).forEach(function (key) {
+        var parent = document.querySelector('[data-staff-group="' + key + '"]');
+        if (!parent) return;
+        parent.classList.toggle('is-active', staffGroups[key]);
+        if (staffGroups[key]) {
+          parent.classList.add('is-expanded');parent.setAttribute('aria-expanded', 'true');
+          document.getElementById(parent.getAttribute('aria-controls')).classList.remove('is-collapsed');
+        }
+      });
+    } else {
       NAV.forEach(function (node) {
         if (node.type !== 'group') return;
         var toggle = document.querySelector('.sidebar [data-sidebar-key="' + node.key + '"]');
@@ -630,6 +659,7 @@
     }
 
     wire();
+    if (activePage === 'staff') setActiveTab(activeTab);
     initStaffTicketCount();
     if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
   }

@@ -31,13 +31,15 @@
     preview.shell.dataset.staffMenuActive = active;
     preview.shell.querySelector('[data-staff-community-title]').textContent = labels[active];
     preview.shell.querySelector('[data-staff-community-fullscreen]').href = 'staff-community.html?role=tech&tab=' + encodeURIComponent(route);
+    preview.shell.querySelectorAll('[data-staff-sidebar] summary[data-current-group]').forEach(summary => summary.removeAttribute('data-current-group'));
     preview.shell.querySelectorAll('[data-staff-sidebar] [data-staff-community-tab]').forEach(link => {
       const selected = link.dataset.staffCommunityTab === active;
       link.classList.toggle('bg-white/10', selected);
       link.classList.toggle('text-white', selected);
       if (selected) link.setAttribute('aria-current', 'page');
       else link.removeAttribute('aria-current');
-      if (selected) link.closest('details').open = true;
+      const group = link.closest('details');
+      if (selected && group) { group.open = true; group.querySelector('summary').setAttribute('data-current-group', 'true'); }
     });
   }
 

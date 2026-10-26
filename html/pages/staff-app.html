@@ -256,6 +256,22 @@
       }
     }
 
+    /* Match the shared staff sidebar and the staging staff navigation. */
+    [data-staff-sidebar-panel] { background: #081f49 !important; }
+    [data-staff-sidebar-menu] a,
+    [data-staff-sidebar-menu] summary,
+    [data-staff-sidebar-menu] button[data-menu-key] { color: rgba(255,255,255,.85) !important; font-size: 12px !important; }
+    [data-staff-sidebar-menu] > a,
+    [data-staff-sidebar-menu] > details > summary { height: 48px !important; }
+    [data-staff-sidebar-menu] details > div a,
+    [data-staff-sidebar-menu] details > div button { height: 36px !important; color: rgba(255,255,255,.75) !important; }
+    [data-staff-sidebar-menu] i,
+    [data-staff-sidebar-menu] svg { color: #d69cff !important; filter: drop-shadow(0 0 5px #d69cff55); }
+    [data-staff-sidebar-menu] > a[aria-current="page"],
+    [data-staff-sidebar-menu] summary[data-current-group="true"] { color: #fff !important; background: linear-gradient(90deg,#2b59ff,#8e4df8); }
+    [data-staff-sidebar-menu] details > div a[aria-current="page"] { color: #32d7ff !important; background: transparent; }
+    [data-staff-sidebar-menu] button:disabled { opacity: .45; cursor: default; border: 0; background: transparent; }
+
     .merchant-menu-group > summary {
       list-style: none;
     }
@@ -602,7 +618,7 @@
 
     <section class="grid justify-items-center gap-9 lg:grid-cols-2 lg:items-start lg:gap-8 xl:grid-cols-3">
       <!-- Staff -->
-      <article class="w-full max-w-[430px]">
+      <article class="w-full max-w-[430px]" id="staff-home-screen">
         <div class="mb-3 flex items-end justify-between gap-4 px-1">
           <div>
             <h2 class="text-lg font-semibold text-white">Staff Account</h2>
@@ -853,7 +869,7 @@
       </article>
 
       <!-- Staff My QR -->
-      <article class="w-full max-w-[430px]">
+      <article class="w-full max-w-[430px]" id="staff-my-qr-screen">
         <div class="mb-3 flex items-end justify-between gap-4 px-1">
           <div>
             <h2 class="text-lg font-semibold text-white">Staff Account</h2>
@@ -1991,129 +2007,44 @@
           </div>
         </div>
 
-        <nav class="flex-1 space-y-1 overflow-y-auto px-4 py-4 text-white" data-staff-sidebar-menu>
-          <a href="#" class="flex h-9 items-center gap-2 rounded-lg px-2 text-[12px] font-semibold text-nexoraBrandDark" data-menu-key="home">
-            <i data-lucide="home" class="h-4 w-4"></i>
-            Home
-          </a>
-
-          <a href="#" class="flex h-9 items-center gap-2 rounded-lg px-2 text-[12px] font-semibold text-nexoraBrandDark" data-menu-key="dashboard">
-            <i data-lucide="layout-dashboard" class="h-4 w-4"></i>
-            Dashboard
-          </a>
-
+        <nav class="flex-1 space-y-1.5 overflow-y-auto px-4 py-4 text-white" data-staff-sidebar-menu>
+          <a href="#staff-home-screen" class="flex h-12 items-center gap-3 rounded-lg px-2 text-[12px] font-semibold" data-menu-key="home"><i data-lucide="home" class="h-4 w-4"></i>Home</a>
+          <a href="staff-dashboard.html" class="flex h-12 items-center gap-3 rounded-lg px-2 text-[12px] font-semibold" data-menu-key="dashboard"><i data-lucide="layout-dashboard" class="h-4 w-4"></i>Dashboard</a>
           <details class="staff-menu-group">
-            <summary class="flex h-9 cursor-pointer items-center justify-between gap-2 rounded-lg px-2 text-[11px] font-semibold text-nexoraBrandDark">
-              <span class="flex min-w-0 items-center gap-2">
-                <i data-lucide="briefcase-business" class="h-4 w-4 shrink-0 text-nexoraBrandDark"></i>
-                <span class="truncate">My Workspace</span>
-              </span>
-              <i data-lucide="chevron-down" class="h-3.5 w-3.5 shrink-0 text-nexoraBrandDark transition-transform" data-collapse-chevron></i>
+            <summary class="flex h-12 cursor-pointer items-center justify-between gap-3 rounded-lg px-2 text-[12px] font-semibold">
+              <span class="flex min-w-0 items-center gap-3"><i data-lucide="users-round" class="h-4 w-4 shrink-0"></i><span class="truncate">Community</span></span>
+              <i data-lucide="chevron-down" class="h-4 w-4 shrink-0 transition-transform" data-collapse-chevron></i>
             </summary>
-            <div class="ml-4 space-y-1 border-l border-nexoraBorder pb-1 pl-4">
-              <a href="#" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="my-qr">My QR</a>
-              <a href="#" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="my-earnings">My Earnings</a>
-              <a href="#" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="my-reviews">My Reviews</a>
-              <a href="#" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="my-salons">My Salons</a>
+            <div class="ml-4 space-y-1 border-l border-white/10 pb-1 pl-4">
+              <a href="staff-community.html?role=tech&amp;tab=feed" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="feed" data-staff-community-tab="feed">Feed</a>
+              <a href="staff-community.html?role=tech&amp;tab=groups" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="groups" data-staff-community-tab="groups">Groups &amp; Market</a>
+              <a href="staff-community.html?role=tech&amp;tab=jobs" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="jobs" data-staff-community-tab="jobs">Jobs</a>
+              <a href="staff-community.html?role=tech&amp;tab=shift" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="shift" data-staff-community-tab="shift">Extra shifts</a>
+              <button type="button" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold w-full text-left" data-menu-key="deals" disabled title="Coming soon">Deals &amp; Coupons</button>
+              <a href="staff-community.html?role=tech&amp;tab=connect" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="connect" data-staff-community-tab="connect">Messages &amp; Calls</a>
             </div>
           </details>
-
           <details class="staff-menu-group">
-            <summary class="flex h-9 cursor-pointer items-center justify-between gap-2 rounded-lg px-2 text-[11px] font-semibold text-nexoraBrandDark">
-              <span class="flex min-w-0 items-center gap-2">
-                <i data-lucide="users-round" class="h-4 w-4 shrink-0 text-nexoraBrandDark"></i>
-                <span class="truncate">Community</span>
-              </span>
-              <i data-lucide="chevron-down" class="h-3.5 w-3.5 shrink-0 text-nexoraBrandDark transition-transform" data-collapse-chevron></i>
+            <summary class="flex h-12 cursor-pointer items-center justify-between gap-3 rounded-lg px-2 text-[12px] font-semibold">
+              <span class="flex min-w-0 items-center gap-3"><i data-lucide="briefcase-business" class="h-4 w-4 shrink-0"></i><span class="truncate">My Workspace</span></span>
+              <i data-lucide="chevron-down" class="h-4 w-4 shrink-0 transition-transform" data-collapse-chevron></i>
             </summary>
-            <div class="ml-4 space-y-1 border-l border-nexoraBorder pb-1 pl-4">
-              <a href="staff-community.html?role=tech&amp;tab=feed" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="feed" data-staff-community-tab="feed">Feed</a>
-              <a href="staff-community.html?role=tech&amp;tab=groups" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="groups" data-staff-community-tab="groups">Groups &amp; Market</a>
-              <a href="staff-community.html?role=tech&amp;tab=jobs" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="jobs" data-staff-community-tab="jobs">Jobs</a>
-              <a href="staff-community.html?role=tech&amp;tab=profile" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="profile" data-staff-community-tab="profile">Tech Profile</a>
-              <a href="staff-community.html?role=tech&amp;tab=shift" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="shift" data-staff-community-tab="shift">Extra Shifts</a>
-              <a href="staff-community.html?role=tech&amp;tab=deals" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="deals" data-staff-community-tab="deals">Deals &amp; Coupons</a>
-              <a href="staff-community.html?role=tech&amp;tab=connect" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="connect" data-staff-community-tab="connect">Messages &amp; Calls</a>
-              <a href="staff-community.html?role=tech&amp;tab=learning" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="learning" data-staff-community-tab="learning">Learning</a>
-              <a href="staff-community.html?role=tech&amp;tab=events" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="events" data-staff-community-tab="events">Events</a>
+            <div class="ml-4 space-y-1 border-l border-white/10 pb-1 pl-4">
+              <a href="my-salons.html" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="my-salons">My Salons</a>
+              <a href="#staff-my-qr-screen" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="my-qr">My QR</a>
+              <a href="#" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="my-earnings">My Earnings</a>
+              <a href="#" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="my-reviews">My Reviews</a>
+              <a href="#" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="report">Report</a>
             </div>
           </details>
-
-          <details class="staff-menu-group">
-            <summary class="flex h-9 cursor-pointer items-center justify-between gap-2 rounded-lg px-2 text-[11px] font-semibold text-nexoraBrandDark">
-              <span class="flex min-w-0 items-center gap-2">
-                <i data-lucide="wallet" class="h-4 w-4 shrink-0 text-nexoraBrandDark"></i>
-                <span class="truncate">Wallet</span>
-              </span>
-              <i data-lucide="chevron-down" class="h-3.5 w-3.5 shrink-0 text-nexoraBrandDark transition-transform" data-collapse-chevron></i>
-            </summary>
-            <div class="ml-4 space-y-1 border-l border-nexoraBorder pb-1 pl-4">
-              <a href="#" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="balance">Balance</a>
-              <a href="#" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="transactions">Transactions</a>
-              <a href="#" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="payout-methods">Payout Methods</a>
-              <a href="#" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="statements">Statements</a>
-            </div>
-          </details>
-
-          <details class="staff-menu-group">
-            <summary class="flex h-9 cursor-pointer items-center justify-between gap-2 rounded-lg px-2 text-[11px] font-semibold text-nexoraBrandDark">
-              <span class="flex min-w-0 items-center gap-2">
-                <i data-lucide="gift" class="h-4 w-4 shrink-0 text-nexoraBrandDark"></i>
-                <span class="truncate">Rewards</span>
-              </span>
-              <i data-lucide="chevron-down" class="h-3.5 w-3.5 shrink-0 text-nexoraBrandDark transition-transform" data-collapse-chevron></i>
-            </summary>
-            <div class="ml-4 space-y-1 border-l border-nexoraBorder pb-1 pl-4">
-              <a href="#" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="referral">Referral</a>
-              <a href="#" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="points">Points</a>
-              <a href="#" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="promotions">Promotions</a>
-            </div>
-          </details>
-
-          <details class="staff-menu-group">
-            <summary class="flex h-9 cursor-pointer items-center justify-between gap-2 rounded-lg px-2 text-[11px] font-semibold text-nexoraBrandDark">
-              <span class="flex min-w-0 items-center gap-2">
-                <svg class="h-4 w-4 shrink-0 text-nexoraBrandDark" viewBox="0 0 24 24" aria-hidden="true">
-                  <path d="M13.2 5H8.1C5.8 5 4 6.8 4 9.1v6.8C4 18.2 5.8 20 8.1 20h6.8c2.3 0 4.1-1.8 4.1-4.1v-4.1" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" stroke-width="2.1"></path>
-                  <text x="7.2" y="15.2" fill="currentColor" font-family="Inter, ui-sans-serif, system-ui, sans-serif" font-size="7.4" font-weight="800" letter-spacing="-0.2">AI</text>
-                  <path d="M18 2.8l1.05 3.05L22.1 6.9l-3.05 1.05L18 11l-1.05-3.05L13.9 6.9l3.05-1.05L18 2.8z" fill="currentColor"></path>
-                </svg>
-                <span class="truncate">AI Assistant</span>
-              </span>
-              <i data-lucide="chevron-down" class="h-3.5 w-3.5 shrink-0 text-nexoraBrandDark transition-transform" data-collapse-chevron></i>
-            </summary>
-            <div class="ml-4 space-y-1 border-l border-nexoraBorder pb-1 pl-4">
-              <a href="#" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="ask-nexora">Ask Nexora</a>
-              <a href="#" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="career-coach">Career Coach</a>
-              <a href="#" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="tax-iq">Tax IQ</a>
-              <a href="#" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="translation">Translation</a>
-            </div>
-          </details>
-
-          <details class="staff-menu-group">
-            <summary class="flex h-9 cursor-pointer items-center justify-between gap-2 rounded-lg px-2 text-[11px] font-semibold text-nexoraBrandDark">
-              <span class="flex min-w-0 items-center gap-2">
-                <i data-lucide="user-circle" class="h-4 w-4 shrink-0 text-nexoraBrandDark"></i>
-                <span class="truncate">My Profile</span>
-              </span>
-              <i data-lucide="chevron-down" class="h-3.5 w-3.5 shrink-0 text-nexoraBrandDark transition-transform" data-collapse-chevron></i>
-            </summary>
-            <div class="ml-4 space-y-1 border-l border-nexoraBorder pb-1 pl-4">
-              <a href="#" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="personal-info">Personal Info</a>
-              <a href="#" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="digital-profile">Digital Profile</a>
-              <a href="#" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="portfolio">Portfolio</a>
-              <a href="#" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="verification">Verification</a>
-              <a href="#" class="flex h-8 items-center rounded-lg px-2 text-[11px] font-semibold" data-menu-key="tax-info">Tax Info</a>
-            </div>
-          </details>
-
-          <div class="space-y-1">
-            <a href="#" class="flex h-9 items-center gap-2 rounded-lg px-2 text-[11px] font-semibold" data-menu-key="notifications"><i data-lucide="bell" class="h-3.5 w-3.5 text-nexoraSubtle"></i>Notifications</a>
-            <a href="#" class="flex h-9 items-center gap-2 rounded-lg px-2 text-[11px] font-semibold" data-menu-key="settings"><i data-lucide="settings" class="h-3.5 w-3.5 text-nexoraSubtle"></i>Settings</a>
-            <a href="#" class="flex h-9 items-center gap-2 rounded-lg px-2 text-[11px] font-semibold" data-menu-key="help-center"><i data-lucide="circle-help" class="h-3.5 w-3.5 text-nexoraSubtle"></i>Help Center</a>
-            <a href="#" class="flex h-9 items-center gap-2 rounded-lg px-2 text-[11px] font-semibold text-nexoraDanger" data-menu-key="sign-out"><i data-lucide="log-out" class="h-3.5 w-3.5 text-nexoraDanger"></i>Sign Out</a>
-          </div>
+          <a href="staff-work-orders.html" class="flex h-12 items-center gap-3 rounded-lg px-2 text-[12px] font-semibold" data-menu-key="my-tickets"><i data-lucide="list-checks" class="h-4 w-4"></i>My Tickets</a>
+          <a href="pos-calendar.html" class="flex h-12 items-center gap-3 rounded-lg px-2 text-[12px] font-semibold" data-menu-key="my-calendar"><i data-lucide="calendar-days" class="h-4 w-4"></i>My Calendar</a>
+          <a href="#" class="flex h-12 items-center gap-3 rounded-lg px-2 text-[12px] font-semibold" data-menu-key="tips"><i data-lucide="circle-dollar-sign" class="h-4 w-4"></i>Tips</a>
+          <a href="#" class="flex h-12 items-center gap-3 rounded-lg px-2 text-[12px] font-semibold" data-menu-key="transactions"><i data-lucide="receipt" class="h-4 w-4"></i>Transactions</a>
+          <a href="#" class="flex h-12 items-center gap-3 rounded-lg px-2 text-[12px] font-semibold" data-menu-key="payout-methods"><i data-lucide="chart-no-axes-combined" class="h-4 w-4"></i>Payout Methods</a>
+          <a href="staff-community.html?role=tech&amp;tab=profile" class="flex h-12 items-center gap-3 rounded-lg px-2 text-[12px] font-semibold" data-menu-key="profile" data-staff-community-tab="profile"><i data-lucide="settings" class="h-4 w-4"></i>Profile</a>
         </nav>
+        <div class="shrink-0 border-t border-white/15 px-4 py-3"><a href="#" class="flex h-10 items-center gap-3 px-2 text-[12px] font-semibold text-white/65" data-menu-key="sign-out"><i data-lucide="log-out" class="h-4 w-4"></i>Sign out</a></div>
       </aside>
     </div>
   </template>
@@ -2157,9 +2088,12 @@
         if (activeMenuItem) {
           activeMenuItem.setAttribute('aria-current', 'page');
           activeMenuItem.classList.add('bg-white/10', 'text-white');
-          activeMenuItem.closest('details')?.setAttribute('open', '');
+          const activeGroup = activeMenuItem.closest('details');
+          if (activeGroup) { activeGroup.setAttribute('open', ''); activeGroup.querySelector('summary').setAttribute('data-current-group', 'true'); }
         }
-        sidebar.querySelector('[data-menu-key="jobs"]')?.addEventListener('click', closeMenu);
+        sidebar.querySelectorAll('a[href]').forEach((link) => {
+          if (link.getAttribute('href') !== '#') link.addEventListener('click', closeMenu);
+        });
 
         openButton?.addEventListener('click', openMenu);
         sidebar.querySelectorAll('[data-staff-menu-close]').forEach((button) => {
