@@ -107,7 +107,7 @@ code{font:12px ui-monospace,Menlo,monospace;background:#F1F5F9;padding:1px 5px;b
 <link rel="stylesheet" href="../assets/nexora-shell.css">
 <link rel="stylesheet" href="../assets/oneqr-earnings.css?v=management-1">
 <link rel="stylesheet" href="../assets/oneqr-policy.css?v=management-1">
-<link rel="stylesheet" href="../assets/oneqr-management.css?v=earnings-demo-1">
+<link rel="stylesheet" href="../assets/oneqr-management.css?v=oneqr-handoff-1">
 </head>
 <body>
 <div class="shell">
@@ -139,7 +139,7 @@ code{font:12px ui-monospace,Menlo,monospace;background:#F1F5F9;padding:1px 5px;b
 </div></div>
 
 <div>
- <div class="panel" id="pCtl"><h3>🎛️ Điều khiển demo</h3>
+ <div class="panel" id="pCtl"><h3>🎛️ Điều khiển</h3>
   <div class="muted" style="font-size:12.5px;color:var(--mute)">Thứ tự trang chính</div>
   <div class="ctl" id="cOrder"><button data-o="cur">① Bản hiện tại (khám phá lên trên)</button><button data-o="rec">② Khám phá xuống dưới</button><button data-o="ad" class="on">③ Đề xuất: thanh gọn + 1 ô tài trợ + màn chờ</button></div>
   <div style="font-size:12.5px;color:var(--mute)">Banner hero — quảng cáo chéo</div>
@@ -147,9 +147,9 @@ code{font:12px ui-monospace,Menlo,monospace;background:#F1F5F9;padding:1px 5px;b
   <div class="ctl" id="cMode"><button data-m="split" class="on">50/50 chia đôi — luôn thấy cả hai</button><button data-m="rotate">50/50 xoay vòng</button><button data-m="scan">↻ Lượt quét mới</button></div>
   <div style="font-size:12.5px;color:var(--mute)">2 nút Deals Nearby · Search Deals</div>
   <div class="ctl" id="cBtn"><button data-b="plain">Cơ bản (như bản hiện tại)</button><button data-b="rich" class="on">Hấp dẫn — nội dung thật, đổi theo giờ</button></div>
-  <div style="font-size:12.5px;color:var(--mute)">Ngày khách quét (demo)</div>
+  <div style="font-size:12.5px;color:var(--mute)">Ngày khách quét</div>
   <div class="ctl" id="cDay"><button data-dy="1">T2</button><button data-dy="2" class="on">T3</button><button data-dy="3">T4</button><button data-dy="4">T5</button><button data-dy="5">T6</button><button data-dy="6">T7</button><button data-dy="0">CN</button></div>
-  <div style="font-size:12.5px;color:var(--mute)">Giờ khách quét (demo)</div>
+  <div style="font-size:12.5px;color:var(--mute)">Giờ khách quét</div>
   <div class="ctl" id="cTod"><button data-t="morning">☕ Sáng 9:30</button><button data-t="lunch" class="on">🍜 Trưa 12:30</button><button data-t="aft">🧋 Chiều 3:30</button><button data-t="eve">🌙 Tối 6:30</button></div>
   <div style="font-size:12.5px;color:var(--mute)">Bộ lọc đối thủ trên QR của tiệm (chủ tiệm cài)</div>
   <div class="ctl" id="cComp"><button data-c="group" class="on">Chặn cả nhóm Làm đẹp</button><button data-c="ind">Chỉ chặn ngành Nail</button><button data-c="off">Tắt</button></div>
@@ -176,7 +176,7 @@ code{font:12px ui-monospace,Menlo,monospace;background:#F1F5F9;padding:1px 5px;b
   <tr><td><b>Đăng ký</b></td><td>SĐT → mã SMS → tên (tuỳ chọn). Không tải app. Một màn trượt từ dưới lên, có “Để sau”.</td></tr>
   <tr><td><b>Mã giới thiệu</b></td><td><b>Tự gắn</b> theo QR đang quét (<code>ref_code</code>, <code>referrer_biz</code>, <code>source_qr</code>) — khách không phải nhập. Tính cho tiệm có QR, kể cả khi khách bấm Đăng ký từ màn con.</td></tr>
   <tr><td><b>Nút quay lại</b></td><td>Mọi màn con: thanh trên <b>dính cố định</b> khi cuộn, nút “← Menu chính” to (cao 40px), nền tím nhạt viền đậm — không bị nội dung hay banner che.</td></tr></tbody></table>
-  <p class="note" style="margin-top:8px">Quyền lợi khi được giới thiệu (tiệm / NEXORA thưởng gì) chưa chốt — prototype không ghi số.</p></div>
+  <p class="note" style="margin-top:8px">Quyền lợi khi được giới thiệu (tiệm / NEXORA thưởng gì) chưa chốt.</p></div>
  <div class="panel" id="pAuto"><h3>🤖 Quảng cáo chéo — NEXORA điều phối tự động</h3>
   <p style="font-size:13px;line-height:1.55">Chủ tiệm chỉ <b>bật 1 lần</b> (“Cho quảng cáo chéo”) — vừa đồng ý <b>hiện</b> deal của tiệm gần, vừa đồng ý <b>được hiện</b> trên QR của họ. Không mời, không duyệt từng deal. Mỗi lần khách mở QR, hệ thống tự chọn:</p>
   <div class="ctl" id="cRad"><button data-rad="auto" class="on">Tự động: 1 mi → nới 2 mi</button><button data-rad="1">Chỉ 1 mi</button><button data-rad="2">Tối đa 2 mi</button></div>
@@ -689,7 +689,7 @@ function search(){const P=q?parse(q):null;let L=[],hid=0;
  ${hid?`<div class="note">🛡️ ${hid} kết quả của tiệm cùng ${COMP==='group'?'nhóm '+GRP[HOST.grp]:'ngành Nail'} được ẩn theo cài đặt của ${HOST.name}.</div>`:''}
  <div id="sList">${P?(L.map(d=>card(d)).join('')||`<div class="empty" id="wishBox"><b>Chưa có deal khớp “${esc(q)}”</b><div class="m" style="margin:6px 0 10px;color:var(--mute);font-size:12.5px">Để lại SĐT — khi tiệm gần đây có deal đúng ý, bạn nhận 1 tin nhắn. Tiệm gần đó cũng thấy nhu cầu này.</div><input class="in" placeholder="(713) 555-0142" inputmode="tel"><button class="btn full" style="margin-top:8px" id="wishGo">✦ Đăng mong muốn</button></div>`):''}</div>`}
 function wait(){const L=withDist().filter(d=>!d.own&&!compHidden(d)&&d.mi<=radius).sort((a,b)=>(b.spon||0)-(a.spon||0)||a.mi-b.mi).slice(0,5);
- return`<div class="hd sub"><button class="back" data-s="home" aria-label="Về menu chính">← Menu chính</button><b>Đã check-in</b></div><div class="hero" id="waitHero" style="background:linear-gradient(135deg,#065F46,#10B981)"><div class="k">✅ ĐÃ CHECK-IN · ${HOST.name.toUpperCase()}</div><h2>Bạn là số 3</h2><p>Chờ khoảng 15 phút (số mẫu). Tiệm sẽ nhắn khi tới lượt.</p></div>${ATTACH.length?`<div class="sec">ƯU ĐÃI ĐÃ GẮN VÀO LƯỢT CỦA BẠN</div><div id="attList">${ATTACH.map(id=>{const d=D.find(x=>x.id===id);return `<div class="card" style="grid-template-columns:1fr"><div><b>✅ ${esc(d.t)}</b><div class="m">Thợ & thu ngân thấy khi tính tiền · ${esc(d.cond)}</div></div></div>`}).join('')}</div>`:''}
+ return`<div class="hd sub"><button class="back" data-s="home" aria-label="Về menu chính">← Menu chính</button><b>Đã check-in</b></div><div class="hero" id="waitHero" style="background:linear-gradient(135deg,#065F46,#10B981)"><div class="k">✅ ĐÃ CHECK-IN · ${HOST.name.toUpperCase()}</div><h2>Bạn là số 3</h2><p>Chờ khoảng 15 phút. Tiệm sẽ nhắn khi tới lượt.</p></div>${ATTACH.length?`<div class="sec">ƯU ĐÃI ĐÃ GẮN VÀO LƯỢT CỦA BẠN</div><div id="attList">${ATTACH.map(id=>{const d=D.find(x=>x.id===id);return `<div class="card" style="grid-template-columns:1fr"><div><b>✅ ${esc(d.t)}</b><div class="m">Thợ & thu ngân thấy khi tính tiền · ${esc(d.cond)}</div></div></div>`}).join('')}</div>`:''}
  <div class="sec">TRONG LÚC CHỜ · GẦN ${HOST.name.toUpperCase()}</div><div id="waitFeed">${L.map(d=>card(d,'wait_feed')).join('')}</div><button class="btn ghost full" data-s="search">⌕ Tìm deal khác</button><div class="note" style="margin-top:8px">Deal tiệm cùng nhóm ${GRP[HOST.grp]} không hiện ở đây (bộ lọc đối thủ).</div>`}
 let BK={svc:'Pedicure',time:'2:30 PM',tech:'Bất kỳ'},DONE=null;
 const HD=t=>`<div class="hd sub"><button class="back" data-s="home" aria-label="Về menu chính">← Menu chính</button><b>${t}</b></div>`;
@@ -702,7 +702,7 @@ function book(){const TT=[[10,'10:00 AM'],[11.5,'11:30 AM'],[14,'2:00 PM'],[14.5
  return HD('Booking')+offBox+dayRow+`<div class="sec">1 · DỊCH VỤ</div><div class="chips" id="bkSvc" style="flex-wrap:wrap">${SVC.map(x=>`<button class="chip ${BK.svc===x[0]?'on':''}" data-bs="${x[0]}">${x[0]} · $${x[1]}</button>`).join('')}</div>
  <div class="sec">2 · GIỜ</div><div class="chips" id="bkTime" style="flex-wrap:wrap">${T.length?'':'<span style="font-size:12px;color:var(--mute)">Hết giờ hợp lệ trong ngày này — chọn ngày khác.</span>'}${T.map(x=>`<button class="chip ${BK.time===x?'on':''}" data-bt="${x}">${x}</button>`).join('')}</div>
  <div class="sec">3 · THỢ</div><div class="chips" id="bkTech" style="flex-wrap:wrap">${['Bất kỳ',...TECHS.map(t=>t[1])].map(x=>`<button class="chip ${BK.tech===x?'on':''}" data-bh="${x}">${x}</button>`).join('')}</div>
- <div class="sec">4 · SỐ ĐIỆN THOẠI</div><input class="in" value="(713) 555-0142" inputmode="tel"><button class="btn full" style="margin-top:10px" id="bkGo" ${BK.time?'':'disabled'}>Đặt ${BK.svc} · ${DN[BK.day]} ${BK.time||''}${off?' + ưu đãi':''}</button><div class="note">Giờ và giá là số mẫu — bản thật lấy từ lịch Booking và danh mục POS.</div>`}
+ <div class="sec">4 · SỐ ĐIỆN THOẠI</div><input class="in" value="(713) 555-0142" inputmode="tel"><button class="btn full" style="margin-top:10px" id="bkGo" ${BK.time?'':'disabled'}>Đặt ${BK.svc} · ${DN[BK.day]} ${BK.time||''}${off?' + ưu đãi':''}</button>`}
 function svcScr(){return HD('Services')+`<div id="svcList">${SVC.map(x=>`<div class="card" style="grid-template-columns:1fr auto;align-items:center"><div><b>${x[0]}</b><div class="m">Giá từ danh mục POS</div></div><div style="text-align:right"><b>$${x[1]}</b><button class="btn sm" style="margin-top:4px" data-bookx="${x[0]}">Đặt</button></div></div>`).join('')}</div><div class="note">Không có quảng cáo ở màn này — khách đang chọn dịch vụ của tiệm.</div>`}
 function galScr(){const G=[['#F9A8D4','#DB2777'],['#C4B5FD','#6D28D9'],['#FDE68A','#F59E0B'],['#99F6E4','#0F766E'],['#FECACA','#DC2626'],['#BAE6FD','#0284C7']];return HD('Gallery')+`<div class="th4" id="galGrid" style="grid-template-columns:1fr 1fr">${G.map((g,i)=>`<button data-galx="${i+1}" style="height:120px;border-radius:12px;background:linear-gradient(135deg,${g[0]},${g[1]});color:#fff;font-weight:800;display:flex;align-items:flex-end;padding:8px">Mẫu #${i+1}</button>`).join('')}</div><div class="note">Bấm một mẫu → “Làm mẫu này” gắn vào lượt check-in hoặc lịch hẹn.</div>`}
 function moreScr(){return HD('Tiện ích')+[['rev','⭐ Viết đánh giá','Làm xong rồi? 30 giây thôi'],['tip','💵 Tip cho thợ','Gửi tip trực tiếp cho thợ'],['rew','🎁 Rewards','Điểm tích luỹ của bạn'],['gift','🎀 Gift Card','Mua thẻ quà tặng']].map(x=>`<button class="card" data-s="${x[0]}" style="grid-template-columns:1fr"><div><b>${x[1]}</b><div class="m">${x[2]}</div></div></button>`).join('')}
@@ -748,12 +748,12 @@ function drawLayer(){let h='';if(ACCT){h=acctSheet()}else if(info){const I=INFO[
  const wc=$('#wifiCopy');if(wc)wc.onclick=()=>{log({event:'about_action',action:'wifi_copy'});toast('Đã chép mật khẩu Wi-Fi')};
  const cg=$('#claimGo');if(cg)cg.onclick=()=>{log({screen:'claim',claim_id:'cl_'+Date.now().toString(36),deal:sheet});sheet=null;drawLayer();toast('✅ Đã lấy coupon — mã gửi qua SMS')};
  const bo=$('#bookOffer');if(bo)bo.onclick=()=>{const r=RULES[sheet]||{};BK.offer=sheet;if(r.svc)BK.svc=r.svc;BK.day=null;BK.time=null;log({event:'offer_book_start',deal:sheet});sheet=null;heroSrc=null;hLock=null;pLock=null;oLock=null;scr='book';draw();$('#body').scrollTop=0};
- const bx=$('#bookOther');if(bx)bx.onclick=()=>{log({event:'partner_book',deal:sheet});toast('Mở trang đặt lịch của tiệm đối tác (mẫu)')};
+ const bx=$('#bookOther');if(bx)bx.onclick=()=>{log({event:'partner_book',deal:sheet});toast('Mở trang đặt lịch của tiệm đối tác')};
  const uo=$('#useOwn');if(uo)uo.onclick=()=>{ATTACH.push(sheet);log({event:'own_offer_attach',deal:sheet,checked_in:CHECKED});sheet=null;heroSrc=null;hLock=null;pLock=null;if(!CHECKED){CHECKED=true;log({screen:'checkin',event:'checked_in'})}else toast('Đã báo tiệm — thợ sẽ áp ưu đãi');scr='wait';draw();$('#body').scrollTop=0};
  const cu=$('#claimUse');if(cu)cu.onclick=()=>{ATTACH.push(sheet);log({event:'own_coupon_claim_use',deal:sheet});sheet=null;heroSrc=null;hLock=null;pLock=null;toast('✅ Đã lấy coupon — gắn vào lượt của bạn');if(!CHECKED){CHECKED=true;log({screen:'checkin',event:'checked_in'})}scr='wait';draw();$('#body').scrollTop=0};
  const cl=$('#claimLater');if(cl)cl.onclick=()=>{log({event:'own_coupon_claim_later',deal:sheet});sheet=null;drawLayer();toast('✅ Đã lấy — mã gửi qua SMS, dùng lần sau')};
  const sv=$('#saveGo');if(sv)sv.onclick=()=>{log({event:'save_remind',deal:sheet});sheet=null;drawLayer();toast('🔔 Sẽ nhắn bạn khi deal còn hiệu lực gần giờ này')};
- const dg=$('#dirGo');if(dg)dg.onclick=()=>{log({screen:'directions',deal:sheet});toast('Mở bản đồ chỉ đường (mẫu)')};
+ const dg=$('#dirGo');if(dg)dg.onclick=()=>{log({screen:'directions',deal:sheet});toast('Mở bản đồ chỉ đường')};
  const pa=$('#pAllow');if(pa)pa.onclick=()=>gpsResult(true);const pd=$('#pDeny');if(pd)pd.onclick=()=>gpsResult(false)}
 function gpsResult(ok){permOpen=false;if(ok){useGPS=true;zip='';toast('📡 Đang dùng vị trí của bạn');log({screen:'nearby',event:'gps_granted'})}else{useGPS=false;toast('Đã chặn — vẫn xem quanh tiệm, hoặc nhập ZIP');log({screen:'nearby',event:'gps_denied'})}draw()}
 function bind(){
@@ -769,7 +769,7 @@ function bind(){
  $$('#body [data-done]').forEach(b=>b.onclick=()=>{DONE=b.dataset.done;log({event:DONE+'_done'});scr='done';draw();$('#body').scrollTop=0});
  $$('#body [data-ci]').forEach(b=>b.onclick=()=>{CHECKED=true;log({screen:'checkin',event:'checked_in'});scr='wait';draw();$('#body').scrollTop=0});
  const g=$('#gpsBtn');if(g)g.onclick=()=>{if(useGPS){useGPS=false;toast('Đã tắt — quay về vị trí tiệm');draw();return}if(PERM==='allow')return gpsResult(true);if(PERM==='deny')return gpsResult(false);permOpen=true;drawLayer()};
- const zi=$('#zipGo');if(zi)zi.onclick=()=>{const v=$('#zipIn').value.trim();if(!ZIPS[v]){toast('Demo có ZIP: 77401, 77036, 77002, 77494');return}zip=v;log({screen:'nearby',event:'zip',zip:v});draw()};
+ const zi=$('#zipGo');if(zi)zi.onclick=()=>{const v=$('#zipIn').value.trim();if(!ZIPS[v]){toast('ZIP: 77401, 77036, 77002, 77494');return}zip=v;log({screen:'nearby',event:'zip',zip:v});draw()};
  const zx=$('#zipX');if(zx)zx.onclick=()=>{zip='';draw()};
  $$('#radChips [data-r],#nearList [data-r]').forEach(b=>b.onclick=()=>{radius=+b.dataset.r;draw()});
  $$('#catChips [data-c]').forEach(b=>b.onclick=()=>{cat=b.dataset.c;draw()});
@@ -887,7 +887,7 @@ window.ONEQR_ADVERTISING = Object.freeze({
 document.querySelectorAll('.qr-advertising-shell, #wn, #tb').forEach(mountAdvertisingIcons);
 if (window.lucide) window.lucide.createIcons();
 </script>
-<script src="../assets/oneqr-po-content.js?v=earnings-demo-2"></script>
-<script src="../assets/oneqr-earnings.js?v=earnings-demo-2"></script>
+<script src="../assets/oneqr-po-content.js?v=oneqr-handoff-1"></script>
+<script src="../assets/oneqr-earnings.js?v=oneqr-handoff-1"></script>
 </body>
 </html>

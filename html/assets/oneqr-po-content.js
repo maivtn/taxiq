@@ -1,16 +1,13 @@
-/* Literal PO excerpts. Layout classes/IDs are adapted; business copy comes from from-po/.
+/* PO excerpts; demo presentation labels removed at the user's request for developer handoff.
+   Layout classes/IDs are adapted; business copy comes from from-po/.
    Ads/Referral 2026-09-21 governs fees/splits; older payout excerpts remain proposals. */
 window.ONEQR_PO_CONTENT = Object.freeze({
-  "notice": "BẢN MẪU · Tất cả số liệu là minh họa. Chính sách pilot đề xuất, chưa kích hoạt thu phí hoặc trả thưởng.",
-  "stateOff": "Kiếm tiền mẫu đang tắt",
-  "stateOn": "Đã bật · mô phỏng",
+  "stateOff": "Kiếm tiền đang tắt",
+  "stateOn": "Đã bật",
   "purpose": "Nhận tiền khi khách từ QR tạo event hợp lệ.",
   "reviewAction": "Xem điều kiện tham gia",
-  "demoNote": "Các nút này chỉ mô phỏng trạng thái, không xác minh hay bật chương trình thật. Tắt kiếm tiền không ẩn Nearby/Search và không xóa thưởng đã khóa hợp lệ.",
-  "approved": "Đã duyệt · mô phỏng",
-  "unapproved": "Chưa đăng ký · mô phỏng",
-  "enabled": "Đã bật · mô phỏng",
-  "turnOff": "Tắt kiếm tiền · mẫu",
+  "enabled": "Đã bật",
+  "turnOff": "Tắt kiếm tiền",
   "consentTitle": "Tôi hiểu và đồng ý",
   "consentText": "Thu nhập từ OneQR chỉ được ghi nhận khi khách tạo hành động hợp lệ được Nexora duyệt. Nexora có quyền từ chối, giữ, đảo hoặc thu hồi khoản earning nếu phát hiện traffic không hợp lệ, refund, chargeback, gian lận hoặc vi phạm chính sách. Tôi chịu trách nhiệm về thông tin tài khoản, thuế và cách tôi đặt/chia sẻ mã QR.",
   "enableAction": "Bật kiếm tiền & đồng ý điều khoản",
@@ -20,8 +17,8 @@ window.ONEQR_PO_CONTENT = Object.freeze({
   "reserves": "<section class=\"eq-card\" data-po-source=\"from-po/NEXORA-OneQR-Tong-Hop-Toan-Bo-Gui-IT/NEXORA-OneQR-Ledger-Payout-CRM-Operations.html:9\"><span class=\"eq-po-tag eq-po-green\">02</span><h3>Ledger không sửa/xóa</h3><p class=\"eq-muted\">Mỗi event tạo dòng debit/credit. Nếu sai thì tạo reversal, giữ lịch sử để audit và đối soát.</p></section><section class=\"eq-card\" data-po-source=\"from-po/NEXORA-OneQR-Tong-Hop-Toan-Bo-Gui-IT/NEXORA-OneQR-Monetization-Sponsor-Terms.html:19;NEXORA-OneQR-Ads-Referral-Revenue-Policy.html:276\"><p>Nếu vi phạm, Nexora có quyền tắt kiếm tiền, giữ payout, reverse earning, khóa tài khoản hoặc yêu cầu hoàn trả.</p><p>Refund/reversal đảo publisher share, sponsor override và platform share tương ứng.</p></section><section class=\"eq-card\" data-po-source=\"from-po/NEXORA-OneQR-Tong-Hop-Toan-Bo-Gui-IT/NEXORA-OneQR-Menu-Placement.html:37.integratedPages[NEXORA-Referral-Policy-V1.html]\"><p>Hoàn tiền sau payout tạo số dư âm để bù trừ thu nhập tương lai, tạm ngừng payout đến khi đủ điều kiện; không tự rút tiền từ ngân hàng đối tác. Refund/chargeback cần sự kiện có mã duy nhất, xử lý lặp không đảo thêm. Có hold thì thông báo lý do phù hợp và cho gửi yêu cầu kiểm tra trong 30 ngày; mục tiêu phản hồi đầu tiên 5 ngày làm việc.</p></section>",
   "payouts": "<section class=\"eq-card\" data-po-source=\"from-po/NEXORA-OneQR-Tong-Hop-Toan-Bo-Gui-IT/NEXORA-OneQR-Menu-Placement.html:37.integratedPages[NEXORA-Referral-Policy-V1.html]\"><h2>Nhận tiền thưởng</h2><p>Trạng thái thanh toán phải có nguyên nhân và thời điểm rõ ràng.</p><p>Rút tối thiểu $25 số dư available; lập đợt chi thứ Ba hàng tuần theo America/Chicago, lấy số dư đủ điều kiện tại 00:00 cùng ngày. Tài khoản nhận tiền/hồ sơ cần thiết phải hợp lệ. Thời gian tiền về phụ thuộc đơn vị thanh toán; chưa có tích hợp thì không ghi trạng thái paid.</p><p>Tắt kiếm tiền hoặc pause campaign chỉ chặn khóa nguồn mới từ thời điểm hiệu lực; khoản đã giữ chỗ vẫn theo policy snapshot. Khóa do gian lận là trường hợp riêng cần review và nhật ký. Các điều khoản payout này là đề xuất vận hành, chưa phải xác nhận về thuế hay hợp đồng pháp lý.</p></section><section class=\"eq-card\" data-po-source=\"from-po/NEXORA-OneQR-Tong-Hop-Toan-Bo-Gui-IT/NEXORA-OneQR-Business-Verification-KYB.html:11\"><h2>Level 3 · Monetization/Payout Verified</h2><p>KYC/KYB, payout account, tax form, risk review.</p><p>Nhận earning, sponsor override, payout.</p></section>",
   "payoutGuideAction": "Xem hướng dẫn nhận tiền",
-  "payoutGuide": "<h2>Receive Payouts và Payout Methods</h2><p>Receive Payouts: đủ điều kiện, kỳ chi, số tiền, trạng thái và lịch sử.</p><p>Payout Methods: quản lý phương thức nhận tiền hiện có. Không nhập tài khoản ngân hàng hoặc giấy tờ thật trong prototype.</p>",
-  "settings": "<section class=\"eq-card\" data-po-source=\"from-po/NEXORA-OneQR-Tong-Hop-Toan-Bo-Gui-IT/NEXORA-OneQR-Business-Verification-KYB.html:9\"><h2>Luồng xác minh đề xuất</h2><div class=\"eq-po-flow\"><div class=\"eq-po-step\"><b>1 · Account</b><p>Tạo tài khoản và xác minh email/phone.</p></div><div class=\"eq-po-step\"><b>2 · Admin ID</b><p>ID cá nhân, selfie/liveness nếu cần.</p></div><div class=\"eq-po-step\"><b>3 · Business info</b><p>Legal name, DBA, address, tax/license.</p></div><div class=\"eq-po-step\"><b>4 · Authority</b><p>Xác minh người đó có quyền quản lý doanh nghiệp.</p></div><div class=\"eq-po-step\"><b>5 · Risk review</b><p>Ngành nghề, nội dung ads, complaint, payment risk.</p></div><div class=\"eq-po-step\"><b>6 · Approve</b><p>Mở quyền chạy ads, public, monetization, payout.</p></div></div></section><section class=\"eq-card\" data-po-source=\"from-po/NEXORA-OneQR-Tong-Hop-Toan-Bo-Gui-IT/NEXORA-OneQR-Business-Verification-KYB.html:11\"><h2>4 mức xác minh cho Nexora</h2><table><thead><tr><th>Mức</th><th>Dùng cho</th><th>Cần xác minh</th><th>Quyền mở</th></tr></thead><tbody><tr><td>Level 0 · Basic</td><td>Tạo tài khoản, xem demo.</td><td>Email/phone.</td><td>Draft OneQR, chưa public ads/monetization.</td></tr><tr><td>Level 1 · Business Profile</td><td>Merchant tạo OneQR cơ bản.</td><td>Tên tiệm, địa chỉ, ngành nghề, phone, website/social.</td><td>Public OneQR, check-in, menu, promotion nội bộ.</td></tr><tr><td>Level 2 · Advertiser Verified</td><td>Chạy quảng cáo trả phí.</td><td>Legal name, business docs/tax/license, payment profile, admin authority.</td><td>Nạp Ads Credit, public ads, Search Deals/Deal Nearby paid placement.</td></tr><tr><td>Level 3 · Monetization/Payout Verified</td><td>Bật kiếm tiền hoặc Sponsor nhận payout.</td><td>KYC/KYB, payout account, tax form, risk review.</td><td>Nhận earning, sponsor override, payout.</td></tr></tbody></table></section>",
+  "payoutGuide": "<h2>Receive Payouts và Payout Methods</h2><p>Receive Payouts: đủ điều kiện, kỳ chi, số tiền, trạng thái và lịch sử.</p><p>Payout Methods: quản lý phương thức nhận tiền hiện có.</p>",
+  "settings": "<section class=\"eq-card\" data-po-source=\"from-po/NEXORA-OneQR-Tong-Hop-Toan-Bo-Gui-IT/NEXORA-OneQR-Business-Verification-KYB.html:9\"><h2>Luồng xác minh đề xuất</h2><div class=\"eq-po-flow\"><div class=\"eq-po-step\"><b>1 · Account</b><p>Tạo tài khoản và xác minh email/phone.</p></div><div class=\"eq-po-step\"><b>2 · Admin ID</b><p>ID cá nhân, selfie/liveness nếu cần.</p></div><div class=\"eq-po-step\"><b>3 · Business info</b><p>Legal name, DBA, address, tax/license.</p></div><div class=\"eq-po-step\"><b>4 · Authority</b><p>Xác minh người đó có quyền quản lý doanh nghiệp.</p></div><div class=\"eq-po-step\"><b>5 · Risk review</b><p>Ngành nghề, nội dung ads, complaint, payment risk.</p></div><div class=\"eq-po-step\"><b>6 · Approve</b><p>Mở quyền chạy ads, public, monetization, payout.</p></div></div></section><section class=\"eq-card\" data-po-source=\"from-po/NEXORA-OneQR-Tong-Hop-Toan-Bo-Gui-IT/NEXORA-OneQR-Business-Verification-KYB.html:11\"><h2>4 mức xác minh cho Nexora</h2><table><thead><tr><th>Mức</th><th>Dùng cho</th><th>Cần xác minh</th><th>Quyền mở</th></tr></thead><tbody><tr><td>Level 0 · Basic</td><td>Tạo tài khoản.</td><td>Email/phone.</td><td>Draft OneQR, chưa public ads/monetization.</td></tr><tr><td>Level 1 · Business Profile</td><td>Merchant tạo OneQR cơ bản.</td><td>Tên tiệm, địa chỉ, ngành nghề, phone, website/social.</td><td>Public OneQR, check-in, menu, promotion nội bộ.</td></tr><tr><td>Level 2 · Advertiser Verified</td><td>Chạy quảng cáo trả phí.</td><td>Legal name, business docs/tax/license, payment profile, admin authority.</td><td>Nạp Ads Credit, public ads, Search Deals/Deal Nearby paid placement.</td></tr><tr><td>Level 3 · Monetization/Payout Verified</td><td>Bật kiếm tiền hoặc Sponsor nhận payout.</td><td>KYC/KYB, payout account, tax form, risk review.</td><td>Nhận earning, sponsor override, payout.</td></tr></tbody></table></section>",
   "provenance": {
     "fees": "NEXORA-OneQR-Ads-Referral-Revenue-Policy.html · ONEQR-ADS-REF-REV-2026-09-21-v1",
     "summary": "NEXORA-OneQR-Ledger-Payout-CRM-Operations.html",
@@ -31,7 +28,7 @@ window.ONEQR_PO_CONTENT = Object.freeze({
     "demo": "Ads/Referral 2026-09-21: fee/split examples; Ledger/Payout Operations: metrics/table; integratedPages[NEXORA-Ads-Earnings-Dashboards.html]: labels, details and refund simulation. Fixture amounts/dates are illustrative; no real transfer."
   },
   "demo": {
-    "heading": "Dashboard mẫu",
+    "heading": "Dashboard",
     "incomeHeading": "Nguồn thưởng của bạn",
     "payoutHeading": "Nhận tiền thưởng",
     "guidance": "Chính sách & hướng dẫn",
@@ -66,13 +63,12 @@ window.ONEQR_PO_CONTENT = Object.freeze({
     "eligible": "Giá trị đủ điều kiện",
     "newCustomer": "Khách mới",
     "returningCustomer": "khách quay lại sau 90 ngày nếu campaign bật",
-    "simulateRefund": "Mô phỏng hoàn $20",
-    "restoreRefund": "Khôi phục ví dụ gốc",
-    "sessionNote": "Chỉ thay đổi dữ liệu minh họa trong màn hình này.",
-    "accountNote": "Không kết nối tài khoản thật.",
+    "simulateRefund": "Hoàn $20",
+    "restoreRefund": "Khôi phục",
     "sourceName": "OneQR B",
     "ledgerHeading": "Ledger không sửa/xóa",
     "risk": "risk review",
     "policyVersion": "ONEQR-ADS-REF-REV-2026-09-21-v1"
-  }
+  },
+  "participationNote": "Tắt kiếm tiền không ẩn Nearby/Search và không xóa thưởng đã khóa hợp lệ."
 });

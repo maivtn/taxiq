@@ -16,20 +16,20 @@
   // All amounts are calculated in 1/10,000 USD to preserve the policy's fractional-cent examples.
   // Settlement outcomes below are fixtures, not a rule imposing a 14-day wait on CPC.
   const demoEvents = [
-    { id: 'DEMO-101', kind: 'service', date: '2026-10-25', baseCents: 8000, feePercent: 10, status: 'pending' },
-    { id: 'DEMO-102', kind: 'banner', date: '2026-10-22', status: 'available' },
-    { id: 'DEMO-103', kind: 'explore', date: '2026-10-23', status: 'available' },
-    { id: 'DEMO-104', kind: 'search', date: '2026-10-24', status: 'pending' },
-    { id: 'DEMO-105', kind: 'service', date: '2026-10-20', baseCents: 16000, feePercent: 10, status: 'hold' },
-    { id: 'DEMO-106', kind: 'service', date: '2026-10-01', baseCents: 60000, feePercent: 10, status: 'sending', payoutId: 'DEMO-PAYOUT-102' },
-    { id: 'DEMO-107', kind: 'service', date: '2026-09-25', baseCents: 8000, feePercent: 10, status: 'paid', payoutId: 'DEMO-PAYOUT-101' },
-    { id: 'DEMO-108', kind: 'service', date: '2026-09-26', baseCents: 64000, feePercent: 10, status: 'paid', payoutId: 'DEMO-PAYOUT-101' },
-    { id: 'DEMO-109', kind: 'service', date: '2026-10-05', baseCents: 58000, refundCents: 2000, adjustedAt: '2026-10-23', feePercent: 10, status: 'available' },
-    { id: 'DEMO-110', kind: 'service', date: '2026-10-26', baseCents: 8000, feePercent: 5, status: 'pending' }
+    { id: 'E-101', kind: 'service', date: '2026-10-25', baseCents: 8000, feePercent: 10, status: 'pending' },
+    { id: 'E-102', kind: 'banner', date: '2026-10-22', status: 'available' },
+    { id: 'E-103', kind: 'explore', date: '2026-10-23', status: 'available' },
+    { id: 'E-104', kind: 'search', date: '2026-10-24', status: 'pending' },
+    { id: 'E-105', kind: 'service', date: '2026-10-20', baseCents: 16000, feePercent: 10, status: 'hold' },
+    { id: 'E-106', kind: 'service', date: '2026-10-01', baseCents: 60000, feePercent: 10, status: 'sending', payoutId: 'PAYOUT-102' },
+    { id: 'E-107', kind: 'service', date: '2026-09-25', baseCents: 8000, feePercent: 10, status: 'paid', payoutId: 'PAYOUT-101' },
+    { id: 'E-108', kind: 'service', date: '2026-09-26', baseCents: 64000, feePercent: 10, status: 'paid', payoutId: 'PAYOUT-101' },
+    { id: 'E-109', kind: 'service', date: '2026-10-05', baseCents: 58000, refundCents: 2000, adjustedAt: '2026-10-23', feePercent: 10, status: 'available' },
+    { id: 'E-110', kind: 'service', date: '2026-10-26', baseCents: 8000, feePercent: 5, status: 'pending' }
   ];
   const demoPayouts = [
-    { id: 'DEMO-PAYOUT-102', date: '2026-10-20', status: 'sending' },
-    { id: 'DEMO-PAYOUT-101', date: '2026-10-13', status: 'paid' }
+    { id: 'PAYOUT-102', date: '2026-10-20', status: 'sending' },
+    { id: 'PAYOUT-101', date: '2026-10-13', status: 'paid' }
   ];
   const views = {
     overview: 'Tổng quan', advertising: 'Cài đặt quảng cáo', activity: 'Thu nhập',
@@ -53,7 +53,7 @@
   const badge = status => `<span class="eq-badge ${status}">${escape(copy[status])}</span>`;
   function entries() {
     return demoEvents.map(event => {
-      const refundCents = event.refundCents || (event.id === 'DEMO-101' && state.demoRefund ? 2000 : 0);
+      const refundCents = event.refundCents || (event.id === 'E-101' && state.demoRefund ? 2000 : 0);
       const fee = event.kind === 'service' ? (event.baseCents - refundCents) * event.feePercent : { banner: 4000, explore: 2500, search: 3000 }[event.kind];
       const share = event.kind === 'service' ? 50 : event.kind === 'banner' ? 40 : 35;
       const publisher = fee * share / 100;
@@ -87,7 +87,7 @@
         ])}</section>`;
     } else if (view === 'payouts') {
       content = metrics([['available', sum('available')], ['pending', sum('pending')], ['sending', sum('sending')], ['paid', sum('paid')]]) +
-        `<section class="eq-card"><h2>${copy.payoutHeading}</h2><p class="eq-muted">${copy.accountNote}</p>${table([copy.event, copy.amount, copy.status, copy.detail], demoPayouts.map(payout => {
+        `<section class="eq-card"><h2>${copy.payoutHeading}</h2>${table([copy.event, copy.amount, copy.status, copy.detail], demoPayouts.map(payout => {
           const amount = rows.filter(row => row.payoutId === payout.id).reduce((total, row) => total + row.publisher, 0);
           return `<tr data-payout-status="${payout.status}"><td><strong>${payout.id}</strong><small>${date(payout.date)}</small></td><td class="eq-demo-money">${money(amount)}</td><td>${badge(payout.status)}</td><td>${detailButton(payout.id)}</td></tr>`;
         }))}</section>`;
@@ -111,7 +111,7 @@
   }
   function settings() {
     const status = state.enabled ? PO.enabled : PO.stateOff;
-    return `${PO.settings}<section class="eq-card" data-po-source="NEXORA-OneQR-Monetization-Sponsor-Terms.html:25;NEXORA-OneQR-Menu-Placement.html:37.integratedPages[NEXORA-Ads-Earnings-Dashboards.html]"><h2>${PO.termsHeading}</h2><p><span class="eq-badge ${state.enabled ? 'enabled' : 'pending'}">${status}</span></p><p>${PO.demoNote}</p><div class="eq-row"><a href="#policy" data-policy-link>${escape('Chính sách chia doanh thu')}</a></div><label class="eq-consent"><input type="checkbox" id="consent"${state.consent ? ' checked' : ''}${state.enabled ? ' disabled' : ''}><span><strong>${PO.consentTitle}</strong><span class="eq-consent-copy">${PO.consentText}</span></span></label><button type="button" class="eq-primary" data-action="toggle"${!state.enabled && !state.consent ? ' disabled' : ''}>${state.enabled ? PO.turnOff : PO.enableAction}</button></section>`;
+    return `${PO.settings}<section class="eq-card" data-po-source="NEXORA-OneQR-Monetization-Sponsor-Terms.html:25;NEXORA-OneQR-Menu-Placement.html:37.integratedPages[NEXORA-Ads-Earnings-Dashboards.html]"><h2>${PO.termsHeading}</h2><p><span class="eq-badge ${state.enabled ? 'enabled' : 'pending'}">${status}</span></p><p>${PO.participationNote}</p><div class="eq-row"><a href="#policy" data-policy-link>${escape('Chính sách chia doanh thu')}</a></div><label class="eq-consent"><input type="checkbox" id="consent"${state.consent ? ' checked' : ''}${state.enabled ? ' disabled' : ''}><span><strong>${PO.consentTitle}</strong><span class="eq-consent-copy">${PO.consentText}</span></span></label><button type="button" class="eq-primary" data-action="toggle"${!state.enabled && !state.consent ? ' disabled' : ''}>${state.enabled ? PO.turnOff : PO.enableAction}</button></section>`;
   }
   function payouts() {
     return `${demoContent('payouts')}${guidance(PO.payouts)}<section class="eq-card"><button type="button" data-action="payout-guide">${PO.payoutGuideAction}</button></section>`;
@@ -143,16 +143,16 @@
           [copy.sponsor, money(reversedFee / 10)], [copy.platform, money(reversedFee - row.adjustment - reversedFee / 10)]
         ])}`;
       }
-      if (row.id === 'DEMO-101') content += `<div class="eq-demo-actions"><button type="button" class="eq-primary" data-action="demo-refund">${state.demoRefund ? copy.restoreRefund : copy.simulateRefund}</button><p class="eq-small eq-muted">${copy.sessionNote}</p></div>`;
+      if (row.id === 'E-101') content += `<div class="eq-demo-actions"><button type="button" class="eq-primary" data-action="demo-refund">${state.demoRefund ? copy.restoreRefund : copy.simulateRefund}</button></div>`;
     } else {
       const paidRows = rows.filter(entry => entry.payoutId === payout.id);
-      content = `<h2>${copy.payoutHeading}</h2><p>${payout.id} · <time datetime="${payout.date}">${date(payout.date)}</time></p>${badge(payout.status)}<p class="eq-note">${copy.accountNote}</p>${breakdown([
+      content = `<h2>${copy.payoutHeading}</h2><p>${payout.id} · <time datetime="${payout.date}">${date(payout.date)}</time></p>${badge(payout.status)}${breakdown([
         ...paidRows.map(entry => [entry.id, money(entry.publisher)]),
         [copy.amount, money(paidRows.reduce((total, entry) => total + entry.publisher, 0))]
       ])}`;
     }
     dialog.dataset.detailId = id;
-    dialog.innerHTML = `<div class="eq-note warning">${PO.notice}</div>${content}<button type="button" data-action="close">${copy.back}</button>`;
+    dialog.innerHTML = `${content}<button type="button" data-action="close">${copy.back}</button>`;
     if (!dialog.open) dialog.showModal();
   }
   function readRoute() {
@@ -194,7 +194,7 @@
     panelStorage.append(advertisingPanel, policyPanel);
     document.documentElement.lang = 'vi';
     const content = state.view === 'advertising' ? '' : ({ overview, activity, reserves, payouts, settings }[state.view])();
-    root.innerHTML = `<div class="earnings-page eq-management-chrome"><div class="eq-top"><div class="eq-business">Bitcoin Nail Bar · Business Owner</div></div><section class="eq-monetization-off eq-po-participation${state.enabled ? ' is-enabled' : ''}"><div><h2 data-monetization-status="${state.enabled ? 'enabled' : 'disabled'}">${state.enabled ? PO.stateOn : PO.stateOff}</h2><p>${PO.purpose}</p></div>${button('settings', PO.reviewAction)}</section><div class="eq-mobile-nav">${select()}</div><nav class="eq-nav eq-management-nav" role="tablist" aria-label="Quảng cáo">${Object.entries(views).map(([key, text]) => `<button type="button" id="management-tab-${key}" role="tab" data-view="${key}" aria-selected="${key === state.view}" aria-controls="earnings-content" tabindex="${key === state.view ? '0' : '-1'}"${key === state.view ? ' aria-current="page"' : ''}>${text}</button>`).join('')}</nav></div><div id="earnings-content" class="eq-management-content${state.view === 'advertising' ? '' : ' earnings-page eq-po-content'}" role="tabpanel" aria-labelledby="management-tab-${state.view}">${state.view === 'advertising' ? '' : `<div class="eq-note warning" data-po-source="NEXORA-OneQR-Menu-Placement.html:37.integratedPages[NEXORA-Ads-Earnings-Dashboards.html]">${PO.notice}</div>`}${content}</div>`;
+    root.innerHTML = `<div class="earnings-page eq-management-chrome"><div class="eq-top"><div class="eq-business">Bitcoin Nail Bar · Business Owner</div></div><section class="eq-monetization-off eq-po-participation${state.enabled ? ' is-enabled' : ''}"><div><h2 data-monetization-status="${state.enabled ? 'enabled' : 'disabled'}">${state.enabled ? PO.stateOn : PO.stateOff}</h2><p>${PO.purpose}</p></div>${button('settings', PO.reviewAction)}</section><div class="eq-mobile-nav">${select()}</div><nav class="eq-nav eq-management-nav" role="tablist" aria-label="Quảng cáo">${Object.entries(views).map(([key, text]) => `<button type="button" id="management-tab-${key}" role="tab" data-view="${key}" aria-selected="${key === state.view}" aria-controls="earnings-content" tabindex="${key === state.view ? '0' : '-1'}"${key === state.view ? ' aria-current="page"' : ''}>${text}</button>`).join('')}</nav></div><div id="earnings-content" class="eq-management-content${state.view === 'advertising' ? '' : ' earnings-page eq-po-content'}" role="tabpanel" aria-labelledby="management-tab-${state.view}">${content}</div>`;
     const panel = root.querySelector('#earnings-content');
     if (state.view === 'advertising') panel.append(advertisingPanel);
     if (state.view === 'settings') panel.append(policyPanel);
@@ -268,9 +268,9 @@
   });
   dialog.addEventListener('click', event => {
     if (event.target.closest('[data-action="close"]')) dialog.close();
-    if (event.target.closest('[data-action="demo-refund"]') && state.enabled && dialog.dataset.detailId === 'DEMO-101') {
+    if (event.target.closest('[data-action="demo-refund"]') && state.enabled && dialog.dataset.detailId === 'E-101') {
       state.demoRefund = !state.demoRefund;
-      render(); showDetail('DEMO-101');
+      render(); showDetail('E-101');
       dialog.querySelector('[data-action="demo-refund"]').focus();
     }
   });
