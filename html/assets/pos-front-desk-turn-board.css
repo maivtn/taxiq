@@ -250,3 +250,10 @@
 #edit-turn-form #edit-turn-tech-field[hidden]{display:none}
 .front-desk #edit-turn-form select{appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%2364748b' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;background-size:16px}
 #edit-turn-form #edit-turn-preview{font-weight:600}
+
+/* Match the PO grid: keep the technician column above the Edit/Add backdrop. */
+.front-desk :is(#edit-turn-modal,#add-turn-modal).show{position:static;inset:auto;z-index:auto;display:block;padding:0;background:transparent}
+.front-desk :is(#edit-turn-modal,#add-turn-modal).show::before{content:"";position:fixed;inset:0;z-index:1000;background:#0c1b3b66}
+.front-desk:has(:is(#edit-turn-modal,#add-turn-modal).show) .turn-grid th:first-child{z-index:1001;pointer-events:none}
+.front-desk :is(#edit-turn-modal,#add-turn-modal).show>.modal{position:fixed;top:50%;left:50%;z-index:1002;transform:translate(-50%,-50%);width:min(560px,calc(100vw - 48px));max-height:min(90vh,calc(100dvh - 48px))}
+@media(max-width:650px){.front-desk :is(#edit-turn-modal,#add-turn-modal).show>.modal{width:calc(100vw - 24px);max-height:calc(100dvh - 24px)}}
