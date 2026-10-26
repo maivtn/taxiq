@@ -33,6 +33,20 @@
 .eq-po-content h3 { margin-top: 20px; }
 .eq-po-content .eq-consent-copy { display: block; margin-top: 6px; line-height: 1.6; }
 .eq-po-content table { white-space: normal; }
+.eq-demo-empty { padding: 28px 20px; }
+.eq-demo-metrics strong, .eq-demo-money { font-variant-numeric: tabular-nums; }
+.eq-demo-metrics-pair { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+.eq-demo-metrics strong { overflow-wrap: anywhere; }
+.eq-demo-data .eq-badge.adjusted { background: #fff1f2; color: #be123c; }
+.eq-demo-data .eq-table-wrap { margin-bottom: 16px; }
+.eq-demo-data td:first-child { max-width: 280px; }
+.eq-demo-guidance { margin-bottom: 18px; border: 1px solid #dde5ef; border-radius: 12px; background: #fff; }
+.eq-demo-guidance > summary { padding: 14px 20px; cursor: pointer; color: #4648d4; font-weight: 600; min-height: 44px; }
+.eq-demo-guidance > div { padding: 0 16px; }
+.eq-demo-guidance .eq-card { border: 0; padding: 16px 4px; margin: 0; }
+.eq-demo-guidance .eq-card + .eq-card { border-top: 1px solid #edf0f5; border-radius: 0; }
+#earning-detail .eq-demo-actions { margin: 18px 0; }
+#earning-detail .eq-demo-actions p { margin: 8px 0 0; }
 @media (max-width: 900px) {
   .eq-full-policy .policy-layout { grid-template-columns: minmax(0, 1fr); }
 }
