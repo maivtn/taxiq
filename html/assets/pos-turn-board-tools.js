@@ -11,14 +11,16 @@
   let demoMode = $('#peak-mode-toggle').value;
 
   function snapshot() {
-    return structuredClone({tickets, technicians, nextTurnIndex, manualTurnAudit, turnEditAudit, demoMode});
+    return structuredClone({tickets, technicians, nextTurnIndex, manualTurnAudit, turnEditAudit, staffProfileAudit, demoMode});
   }
   function validSnapshot(value) {
     return value && Array.isArray(value.tickets) && Array.isArray(value.technicians)
       && Number.isInteger(value.nextTurnIndex) && ['normal', 'peak'].includes(value.demoMode)
       && Array.isArray(value.manualTurnAudit) && Array.isArray(value.turnEditAudit)
+      && (value.staffProfileAudit === undefined || Array.isArray(value.staffProfileAudit))
       && value.technicians.every(t => typeof t.name === 'string' && Array.isArray(t.codes)
-        && t.codes.every(c => typeof c === 'string') && ['available','busy','paused','clocked-out'].includes(t.status)
+        && t.codes.every(c => typeof c === 'string')
+        && (t.approvedServiceCodes === undefined || (Array.isArray(t.approvedServiceCodes) && t.approvedServiceCodes.every(c => typeof c === 'string'))) && ['available','busy','paused','clocked-out'].includes(t.status)
         && ['turns','serviceCount','sales','minutes'].every(k => Number.isFinite(t[k]) && t[k] >= 0))
       && value.tickets.every(t => Number.isFinite(t.id) && typeof t.customer === 'string'
         && typeof t.tech === 'string' && Array.isArray(t.services) && t.services.every(s => typeof s === 'string')
@@ -28,10 +30,11 @@
   function restore(value) {
     const data = structuredClone(value);
     tickets = data.tickets;
-    technicians.splice(0, technicians.length, ...data.technicians);
+    technicians.splice(0, technicians.length, ...data.technicians.map(tech => ({...tech, approvedServiceCodes:[...new Set(tech.approvedServiceCodes || tech.codes)]})));
     nextTurnIndex = data.nextTurnIndex;
     manualTurnAudit.splice(0, manualTurnAudit.length, ...data.manualTurnAudit);
     turnEditAudit.splice(0, turnEditAudit.length, ...data.turnEditAudit);
+    staffProfileAudit.splice(0, staffProfileAudit.length, ...(data.staffProfileAudit || []));
     demoMode = data.demoMode;
     $('#peak-mode-toggle').value = demoMode;
     clearFilters();
@@ -196,7 +199,7 @@
   };
   // Record successful board mutations only. Failed validation leaves Undo untouched.
   for (const [name, label] of Object.entries({assignGuestFromBoard:'Assign guest',saveAddedTurn:'Add turn',
-    saveTurnEdit:'Edit turn',skipTurn:'Skip turn',togglePause:'Change availability'})) {
+    saveTurnEdit:'Edit turn',saveStaffProfile:'Save Skills & Level',skipTurn:'Skip turn',togglePause:'Change availability'})) {
     const original = window[name];
     window[name] = function (...args) { return change(label, () => original(...args)); };
   }
@@ -205,7 +208,7 @@
     return change(mode === 'peak' ? 'Load large salon demo' : 'Load sample data', () => {
       demoMode = mode === 'peak' ? 'peak' : 'normal';
       $('#peak-mode-toggle').value = demoMode;
-      manualTurnAudit.splice(0); turnEditAudit.splice(0);
+      manualTurnAudit.splice(0); turnEditAudit.splice(0); staffProfileAudit.splice(0);
       clearFilters(); originalDemoMode(demoMode);
     });
   };

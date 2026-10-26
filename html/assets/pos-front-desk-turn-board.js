@@ -14,15 +14,18 @@ const technicians=[
 function boardEscape(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function boardServiceCode(id){return boardEscape(window.NEXORA_BOARD_SERVICES?.code(id)||id);}
 const serviceLabels={PED:'Pedicure',MANI:'Manicure',GEL:'Gel Polish',DIP:'Dipping Powder','ACR-FS':'Acrylic Full Set',REF:'Refill',WAX:'Waxing'};
+technicians.forEach(tech=>{tech.approvedServiceCodes=[...new Set(tech.codes)];});
 const normalTickets=structuredClone(tickets),normalTechnicians=structuredClone(technicians);
+const staffProfileAudit=[];
+let profileReturnIndex=null;
 let nextTurnIndex=0,boardMode="compact",editingTechIndex=null,activeFilter="all",addTurnTechIndex=null,addTurnSaving=false,boostTechIndex=null;
 const manualTurnAudit=[];
 function render() {}
 function toast(message){document.getElementById("toast").textContent=message;}
 function buildPeakHourData(){const firstNames=['Kayla','Lana','Chloe','Mia','HUU','Michael','Julie','Amy','Jessica','Cindy','Kim','Anna','Tina','Nancy','Rose','Linda','Jenny','Kelly','Tracy','Helen','Mai','Vy','Tammy','Diana','Sophia'],services=['Deluxe Pedicure','Dipping Powder','Gel Manicure','Acrylic Full Set','Express Pedicure','Eyebrow Waxing'],codes=['PED','DIP','GEL','ACR-FS','MANI','WAX'];const names=Array.from({length:50},(_,index)=>`${firstNames[index%firstNames.length]} ${index<25?'A':'B'}`);const technicians=names.map((name,index)=>{const status=index%11===0?'clocked-out':index%7===0?'paused':index%3===0?'busy':'available';return{name,level:index%3+1,status,turns:index%6,serviceCount:index%8+1,sales:80+index*18,minutes:45+index*11,codes:Array.from({length:index%5+1},(_,slot)=>codes[(index+slot)%codes.length]),commission:.6,dailyIncomeGoal:250+(index%4)*50,detail:status==='available'?'Available now · Mixed services':status==='busy'?'Busy · About 20 min remaining':status==='paused'?'Paused':'Clocked out'};});const guestNames=['Sophia','Emma','Olivia','Ava','Isabella','Mia','Luna','Camila','Harper','Ella','Grace','Lily'];const tickets=Array.from({length:36},(_,index)=>({id:200+index,customer:`${guestNames[index%guestNames.length]} ${index+1}`,phone:`(555) 020-${String(3000+index).slice(-4)}`,time:`${10+Math.floor(index/12)}:${String((index%12)*5).padStart(2,'0')} AM`,status:'waiting',tech:'',services:[services[index%services.length]],wait:8+index*2,isNew:index%3===0,requiredLevel:index%5===0?2:1}));return{technicians,tickets};}
-function setDemoMode(mode){const data=mode==='peak'?buildPeakHourData():{technicians:normalTechnicians,tickets:normalTickets};tickets=data.tickets.map(item=>({...item}));technicians.splice(0,technicians.length,...data.technicians.map(item=>({...item,codes:[...item.codes]})));nextTurnIndex=0;activeFilter='all';render();renderTurnBoard();toast(mode==='peak'?'Large Salon Demo loaded: 50 technicians and 36 waiting guests':'Normal Data restored');}
+function setDemoMode(mode){const data=mode==='peak'?buildPeakHourData():{technicians:normalTechnicians,tickets:normalTickets};tickets=data.tickets.map(item=>({...item}));technicians.splice(0,technicians.length,...data.technicians.map(item=>({...item,codes:[...item.codes],approvedServiceCodes:[...(item.approvedServiceCodes||item.codes)]})));nextTurnIndex=0;activeFilter='all';render();renderTurnBoard();toast(mode==='peak'?'Large Salon Demo loaded: 50 technicians and 36 waiting guests':'Normal Data restored');}
 function canAutoAssign(ticket){return ticket.status==='waiting'&&!ticket.tech&&Array.isArray(ticket.services)&&ticket.services.length>0;}
-function rotationPositionMap(techs,startIndex){const positions=new Map(),count=techs.length;let position=1;for(let offset=0;offset<count;offset++){const index=(startIndex+offset)%count;if(techs[index].status==='available'||techs[index].status==='busy')positions.set(index,position++);}return positions;}
+function rotationPositionMap(techs,startIndex){const positions=new Map(),count=techs.length;let position=1;for(let offset=0;offset<count;offset++){const index=(Math.max(0,startIndex)+offset)%count;if(techs[index].status==='available'||techs[index].status==='busy')positions.set(index,position++);}return positions;}
 function orderedTechs(){const positions=rotationPositionMap(technicians,nextTurnIndex);return technicians.map((tech,index)=>({tech,index,rotation:positions.get(index)||null})).sort((a,b)=>a.rotation&&b.rotation?a.rotation-b.rotation:a.rotation?-1:b.rotation?1:a.index-b.index);}
 function advanceTurn(){const available=technicians.map((t,i)=>({t,i})).filter(x=>x.t.status==='available'&&x.i!==nextTurnIndex);nextTurnIndex=available.length?available[0].i:(nextTurnIndex+1)%technicians.length;}
 function activeCustomerFor(name){return tickets.find(t=>t.status==='in-service'&&t.tech.includes(name));}
@@ -30,12 +33,93 @@ function workloadScore(tech){return tech.minutes*.45+tech.sales*.35+tech.service
 function balanceRecommendation(tech){const active=technicians.filter(t=>t.status!=='clocked-out'),average=active.reduce((sum,t)=>sum+workloadScore(t),0)/active.length,gap=Math.round(average-workloadScore(tech));return gap>55?{show:true,text:`Recommended for balance · workload is ${gap} points below team average`}:{show:false,text:''};}
 function goalProgress(tech){const serviceTotal=tech.sales,percent=Math.min(100,Math.round(serviceTotal/tech.dailyIncomeGoal*100)),remaining=Math.max(0,tech.dailyIncomeGoal-serviceTotal),requiredSales=tech.dailyIncomeGoal,status=percent>=100?'Goal Reached':percent>=80?'On Track':'Needs Opportunity';return{serviceTotal,percent,remaining,requiredSales,status};}
 function setBoardMode(mode){boardMode=mode;['compact','cards','grid'].forEach(m=>document.getElementById('mode-'+m).classList.toggle('active',m===mode));renderTurnBoard();}
-function visibleTechs(){const q=(document.getElementById('tech-search').value||'').toLowerCase(),status=document.getElementById('tech-status-filter').value;return orderedTechs().filter(x=>(status==='all'||x.tech.status===status)&&(x.tech.name.toLowerCase().includes(q)||x.tech.codes.some(code=>(serviceLabels[code]||code).toLowerCase().includes(q))));}
-function renderCompactBoard(){return `<div class="compact-board"><div class="compact-row header"><div>Turn order / Technician</div><div>Status</div><div>Turns</div><div>Services</div><div>Service Total</div><div>Goal</div><div>Today / Action</div></div>${visibleTechs().map(({tech,index,rotation})=>{const g=goalProgress(tech);return `<div class="compact-row"><div class="compact-tech">${rotation?`#${rotation}${rotation===1?' NEXT':''}`:'—'} · ${boardEscape(tech.name)}<small>Level ${tech.level}</small></div><div>${tech.status}</div><div>${tech.turns}T</div><div>${tech.serviceCount}</div><div><strong>$${tech.sales}</strong></div><div>${g.percent}%<div class="mini-progress"><span style="width:${g.percent}%"></span></div></div><div>${tech.codes.map(boardServiceCode).join(' · ')} ${tech.status==='clocked-out'?`<button class="action" onclick="checkInBoardTech(${index})">Check in</button>`:''} <button class="action" onclick="openEditTurn(${index})">Edit Turn</button></div></div>`}).join('')}</div>`;}
+function approvedServiceCodes(tech){return tech.approvedServiceCodes||[...new Set(tech.codes)];}
+function visibleTechs(){const q=(document.getElementById('tech-search').value||'').toLowerCase(),status=document.getElementById('tech-status-filter').value;return orderedTechs().filter(x=>(status==='all'||x.tech.status===status)&&(x.tech.name.toLowerCase().includes(q)||approvedServiceCodes(x.tech).some(code=>(serviceLabels[code]||code).toLowerCase().includes(q))));}
+function renderCompactBoard(){return `<div class="compact-board"><div class="compact-row header"><div>Turn order / Technician</div><div>Status</div><div>Turns</div><div>Services</div><div>Service Total</div><div>Goal</div><div>Today / Action</div></div>${visibleTechs().map(({tech,index,rotation})=>{const g=goalProgress(tech);return `<div class="compact-row"><div class="compact-tech">${rotation?`#${rotation}${rotation===1&&index===nextTurnIndex?' NEXT':''}`:'—'} · ${boardEscape(tech.name)}<small>Level ${tech.level}</small></div><div>${tech.status}</div><div>${tech.turns}T</div><div>${tech.serviceCount}</div><div><strong>$${tech.sales}</strong></div><div>${g.percent}%<div class="mini-progress"><span style="width:${g.percent}%"></span></div></div><div>${tech.codes.map(boardServiceCode).join(' · ')} ${tech.status==='clocked-out'?`<button class="action" onclick="checkInBoardTech(${index})">Check in</button>`:''} <button class="action" onclick="openEditTurn(${index})">Edit Turn</button></div></div>`}).join('')}</div>`;}
 function turnGridColumnCount(){return Math.max(12,...technicians.map(tech=>(tech.codes?.length||0)+1));}
-function renderTurnGrid(){const columnCount=turnGridColumnCount(),columns=Array.from({length:columnCount},(_,index)=>index);return `<div class="turn-grid-wrap"><table class="turn-grid"><tr><th>Turn / Technician</th>${columns.map(n=>`<th>${n+1}</th>`).join('')}</tr>${visibleTechs().map(({tech,index,rotation})=>`<tr><th>${rotation?`#${rotation}${rotation===1?' NEXT':''}`:'—'} · ${boardEscape(tech.name)}<br>${tech.turns}T · $${tech.sales}${tech.status==='clocked-out'?`<button class="grid-check-in" onclick="checkInBoardTech(${index})">Check in</button>`:''}</th>${columns.map((n)=>{const detail=tech.turnDetails?.[n];return n<tech.codes.length?`<td class="turn-cell done"><button onclick="openEditTurn(${index})">${boardServiceCode(tech.codes[n])}<br>${detail?`$${detail.amount} · +${detail.credit}T`:`+${demoRecordedTurnCredit(30+n*18)}T`}</button></td>`:n===tech.codes.length?`<td class="turn-cell add-turn-cell"><button onclick="openAddTurn(${index})">＋ Add Turn</button></td>`:`<td class="turn-cell"></td>`}).join('')}</tr>`).join('')}</table></div>`;}
-function renderCardBoard(){return visibleTechs().map(({tech,index,rotation})=>{const customer=activeCustomerFor(tech.name),isNext=rotation===1,label=rotation?`<span class="${isNext?'next-turn':'up-next'}">#${rotation}${isNext?' NEXT':''}</span>`:'',balance=balanceRecommendation(tech),goal=goalProgress(tech),codes=tech.codes.map(code=>`<abbr title="${boardEscape(serviceLabels[code])}">${boardServiceCode(code)}</abbr>`).join(''),goalClass=goal.percent>=100?'reached':goal.percent>=80?'on-track':'';return `<article class="board-card ${isNext?'current':''}"><div class="tech-avatar">${boardEscape(tech.name.slice(0,2))}</div><div><div class="board-name">${boardEscape(tech.name)} · Level ${tech.level}${label}</div><div class="board-status">${tech.status}</div>${customer?`<div class="board-customer">Serving <strong>${boardEscape(customer.customer)}</strong>${customer.location?`<br>📍 <strong>${boardEscape(customer.location)}</strong>`:''}${customer.techNote?`<br>📝 ${boardEscape(customer.techNote)}`:''}</div>`:''}</div><div class="availability">${tech.status.toUpperCase()}</div><div class="workload-metrics"><div class="metric"><span>Turns</span><strong>${tech.turns}</strong></div><div class="metric"><span>Services</span><strong>${tech.serviceCount}</strong></div><div class="metric"><span>Service Total</span><strong>$${tech.sales}</strong></div><div class="metric"><span>Working Time</span><strong>${tech.minutes}m</strong></div></div><div class="goal-card"><div class="goal-line"><strong>Goal Progress · ${goal.percent}%</strong><span>${goal.status}</span></div><div class="goal-track"><div class="goal-fill ${goalClass}" style="width:${goal.percent}%"></div></div><div class="goal-meta"><span>Service Total $${goal.serviceTotal} / Daily Goal $${tech.dailyIncomeGoal}</span><span>$${goal.remaining} remaining</span></div></div><div class="service-codes">Today: ${codes}</div>${balance.show?`<div class="makeup"><strong>MAKE-UP RECOMMENDED</strong>${balance.text}</div>`:''}<div class="board-actions">${tech.status==='clocked-out'?`<button class="action main" onclick="checkInBoardTech(${index})">Check in</button>`:`<button class="action main" onclick="openNextGuest(${index})">Assign Guest</button>`}<button class="action" onclick="skipTurn(${index})">Skip Turn</button><button class="action" onclick="togglePause(${index})">Pause</button><button class="action" onclick="openEditTurn(${index})">Edit Turn</button>${goal.percent<100?`<button class="action" onclick="openBoost(${index})">Boost This Technician</button>`:''}</div></article>`}).join('');}
-function renderTurnBoard(){const waiting=tickets.filter(t=>t.status==='waiting'&&!t.tech),available=technicians.filter(t=>t.status==='available').length,busy=technicians.filter(t=>t.status==='busy'||t.status==='paused').length;document.getElementById('stat-total-techs').textContent=technicians.length;document.getElementById('stat-available-techs').textContent=available;document.getElementById('stat-busy-techs').textContent=busy;document.getElementById('stat-waiting-guests').textContent=waiting.length;document.getElementById('next-turn-name').textContent=technicians[nextTurnIndex]?.name||'No technicians';document.getElementById('turn-waiting-copy').textContent=`${waiting.length} guests are waiting for a technician`;const board=document.getElementById('turn-board-grid');board.className=boardMode==='cards'?'board-grid':'';board.innerHTML=!technicians.length?'<div class="board-empty"><strong>No technicians</strong><p>Load sample data from Board menu to try the salon workflow.</p><button class="btn" onclick="requestBoardChange(\'sample\')">Load sample data</button></div>':boardMode==='compact'?renderCompactBoard():boardMode==='grid'?renderTurnGrid():renderCardBoard();}
+function renderTurnGrid(){const columnCount=turnGridColumnCount(),columns=Array.from({length:columnCount},(_,index)=>index);return `<div class="turn-grid-wrap"><table class="turn-grid"><tr><th>Turn / Technician</th>${columns.map(n=>`<th>${n+1}</th>`).join('')}</tr>${visibleTechs().map(({tech,index,rotation})=>`<tr><th>${rotation?`#${rotation}${rotation===1&&index===nextTurnIndex?' NEXT':''}`:'—'} · ${boardEscape(tech.name)}<br>${tech.turns}T · $${tech.sales}${tech.status==='clocked-out'?`<button class="grid-check-in" onclick="checkInBoardTech(${index})">Check in</button>`:''}</th>${columns.map((n)=>{const detail=tech.turnDetails?.[n];return n<tech.codes.length?`<td class="turn-cell done"><button onclick="openEditTurn(${index})">${boardServiceCode(tech.codes[n])}<br>${detail?`$${detail.amount} · +${detail.credit}T`:`+${demoRecordedTurnCredit(30+n*18)}T`}</button></td>`:n===tech.codes.length?`<td class="turn-cell add-turn-cell"><button onclick="openAddTurn(${index})">＋ Add Turn</button></td>`:`<td class="turn-cell"></td>`}).join('')}</tr>`).join('')}</table></div>`;}
+function renderCardBoard(){return visibleTechs().map(({tech,index,rotation})=>{const customer=activeCustomerFor(tech.name),isNext=rotation===1&&index===nextTurnIndex,label=rotation?`<span class="${isNext?'next-turn':'up-next'}">#${rotation}${isNext?' NEXT':''}</span>`:'',balance=balanceRecommendation(tech),goal=goalProgress(tech),codes=tech.codes.map(code=>`<abbr title="${boardEscape(serviceLabels[code])}">${boardServiceCode(code)}</abbr>`).join(''),goalClass=goal.percent>=100?'reached':goal.percent>=80?'on-track':'';return `<article class="board-card ${isNext?'current':''}"><div class="tech-avatar">${boardEscape(tech.name.slice(0,2))}</div><div><div class="board-name">${boardEscape(tech.name)} · Level ${tech.level}${label}</div><div class="board-status">${tech.status}</div>${customer?`<div class="board-customer">Serving <strong>${boardEscape(customer.customer)}</strong>${customer.location?`<br>📍 <strong>${boardEscape(customer.location)}</strong>`:''}${customer.techNote?`<br>📝 ${boardEscape(customer.techNote)}`:''}</div>`:''}</div><div class="availability">${tech.status.toUpperCase()}</div><div class="workload-metrics"><div class="metric"><span>Turns</span><strong>${tech.turns}</strong></div><div class="metric"><span>Services</span><strong>${tech.serviceCount}</strong></div><div class="metric"><span>Service Total</span><strong>$${tech.sales}</strong></div><div class="metric"><span>Working Time</span><strong>${tech.minutes}m</strong></div></div><div class="goal-card"><div class="goal-line"><strong>Goal Progress · ${goal.percent}%</strong><span>${goal.status}</span></div><div class="goal-track"><div class="goal-fill ${goalClass}" style="width:${goal.percent}%"></div></div><div class="goal-meta"><span>Service Total $${goal.serviceTotal} / Daily Goal $${tech.dailyIncomeGoal}</span><span>$${goal.remaining} remaining</span></div></div><div class="service-codes">Today: ${codes}</div>${balance.show?`<div class="makeup"><strong>MAKE-UP RECOMMENDED</strong>${balance.text}</div>`:''}<div class="board-actions">${tech.status==='clocked-out'?`<button class="action main" onclick="checkInBoardTech(${index})">Check in</button>`:`<button class="action main" onclick="openNextGuest(${index})">Assign Guest</button>`}<button class="action" onclick="skipTurn(${index})">Skip Turn</button><button class="action" onclick="togglePause(${index})">Pause</button><button class="action" onclick="openEditTurn(${index})">Edit Turn</button>${goal.percent<100?`<button class="action" onclick="openBoost(${index})">Boost This Technician</button>`:''}</div></article>`}).join('');}
+// The spotlight follows the same rotation as the board; it never advances that rotation.
+function turnSpotlightQueue(techs,rotationOrder,limit=10){
+ return rotationOrder.map(index=>({tech:techs[index],index}))
+  .filter(row=>row.tech&&['available','busy'].includes(row.tech.status))
+  .slice(0,limit).map((row,index)=>({...row,position:index+1}));
+}
+function renderTurnSpotlight(waitingCount){
+ const rotationOrder=orderedTechs().filter(row=>row.rotation).map(row=>row.index);
+ const queue=turnSpotlightQueue(technicians,rotationOrder),tech=technicians[nextTurnIndex];
+ const current=tech?.status==='available'?tech:null;
+ document.getElementById('next-tech-card').classList.toggle('is-empty',!current);
+ document.getElementById('next-tech-avatar').textContent=current?current.name.trim().split(/\s+/).map(part=>part[0]).join('').slice(0,2):'—';
+ document.getElementById('next-turn-name').textContent=current?current.name:technicians.length?'No available technician':'No technicians';
+ document.getElementById('next-tech-status').textContent=current?`${current.status} · Level ${current.level}`:'Waiting for availability';
+ const metrics=document.getElementById('next-tech-metrics'),services=document.getElementById('next-tech-services'),goalCopy=document.getElementById('next-tech-goal');
+ if(current){
+  const goal=goalProgress(current);
+  metrics.innerHTML=`<div class="next-tech-metric"><span>Turns</span><strong>${current.turns}T</strong></div><div class="next-tech-metric"><span>Services</span><strong>${current.serviceCount}</strong></div><div class="next-tech-metric"><span>Service Total</span><strong>$${current.sales}</strong></div><div class="next-tech-metric"><span>Goal</span><strong>${goal.percent}%</strong></div>`;
+  services.innerHTML=`Can perform: <strong>${approvedServiceCodes(current).map(boardServiceCode).join(' · ')||'—'}</strong>`;
+  goalCopy.textContent=`$${goal.serviceTotal} / $${current.dailyIncomeGoal} goal`;
+ }else{metrics.replaceChildren();services.replaceChildren();goalCopy.textContent='';}
+ document.getElementById('assign-next-guest').disabled=!current||!tickets.some(canAutoAssign);
+ document.getElementById('view-next-technician').disabled=!current;
+ document.getElementById('turn-waiting-copy').textContent=`${waitingCount} guests waiting · showing ${queue.length} upcoming technicians`;
+ document.getElementById('next-turn-queue').innerHTML=queue.filter(row=>row.index!==nextTurnIndex).map(row=>`<button type="button" class="next-queue-card status-${row.tech.status}" data-tech-index="${row.index}" onclick="openTechnicianProfile(${row.index})"><span class="next-queue-rank">#${row.position}</span><span><strong>${boardEscape(row.tech.name)}</strong><small>Level ${row.tech.level} · ${row.tech.turns}T · $${row.tech.sales}</small></span><span class="next-queue-state">${row.tech.status.toUpperCase()}</span></button>`).join('')||'<div class="next-queue-card queue-empty"><div><strong>No additional technicians</strong><small>Waiting for availability</small></div></div>';
+}
+function openTechnicianProfile(index){
+ if(!technicians[index])return;
+ profileReturnIndex=index;
+ const select=document.getElementById('staff-select');
+ select.replaceChildren(...technicians.map((tech,i)=>{const option=document.createElement('option');option.value=String(i);option.textContent=tech.name;return option;}));
+ select.value=String(index);loadStaffProfile();
+ document.getElementById('turnboard-view').hidden=true;
+ document.getElementById('staff-view').hidden=false;
+ document.getElementById('staff-view-title').focus();
+}
+function viewNextTechnician(){openTechnicianProfile(nextTurnIndex);}
+function closeTechnicianProfile(){
+ document.getElementById('staff-view').hidden=true;
+ document.getElementById('turnboard-view').hidden=false;
+ renderTurnBoard();
+ const target=profileReturnIndex===nextTurnIndex?document.getElementById('view-next-technician'):document.querySelector(`#next-turn-queue [data-tech-index="${profileReturnIndex}"]`);
+ (target||document.getElementById('view-next-technician')).focus();
+}
+function loadStaffProfile(){
+ const tech=technicians[Number(document.getElementById('staff-select').value)];
+ if(!tech){closeTechnicianProfile();return;}
+ document.getElementById('staff-profile-name').textContent=tech.name;
+ document.getElementById('staff-profile-status').textContent=`${tech.status} · ${tech.turns} turns today`;
+ document.getElementById('staff-level').value=String(tech.level);
+ document.getElementById('staff-change-reason').value='';
+ document.getElementById('staff-skill-grid').innerHTML=Object.entries(serviceLabels).map(([code,label])=>`<label class="rule-box staff-skill"><input type="checkbox" name="staff-skill" value="${boardEscape(code)}" ${approvedServiceCodes(tech).includes(code)?'checked':''}><span><strong>${boardServiceCode(code)}</strong><br><small>${boardEscape(label)}</small></span></label>`).join('');
+ renderStaffAudit();
+}
+function renderStaffAudit(){
+ document.getElementById('staff-audit-log').innerHTML=staffProfileAudit.length?staffProfileAudit.slice().reverse().map(item=>`<div class="ledger-row"><span>${new Date(item.at).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'})}</span><strong>${boardEscape(item.technician)}</strong><span>Level ${item.previousLevel} → ${item.newLevel}</span><span>${boardEscape(item.reason)} · ${boardEscape(item.by)}</span></div>`).join(''):'<p class="hint">No changes in this prototype session.</p>';
+}
+function saveStaffProfile(){
+ const reason=document.getElementById('staff-change-reason').value.trim();
+ if(!reason){toast('A reason is required to change technician access');return;}
+ const tech=technicians[Number(document.getElementById('staff-select').value)];
+ if(!tech)return;
+ const level=Number(document.getElementById('staff-level').value),codes=[...document.querySelectorAll('input[name="staff-skill"]:checked')].map(input=>input.value);
+ if(![1,2,3].includes(level))return;
+ staffProfileAudit.push({technician:tech.name,previousLevel:tech.level,newLevel:level,previousCodes:[...approvedServiceCodes(tech)],newCodes:[...codes],reason,by:'Manager · BI',at:new Date().toISOString()});
+ // Approved skills are independent of today's recorded service cells and turn credits.
+ tech.level=level;tech.approvedServiceCodes=codes;
+ loadStaffProfile();renderTurnBoard();toast(`${tech.name} skills and level updated · turn unchanged`);
+}
+function renderTurnBoard(){
+ if(nextTurnIndex<0||technicians[nextTurnIndex]?.status!=='available')advanceTurn();
+ const waiting=tickets.filter(t=>t.status==='waiting'&&!t.tech),available=technicians.filter(t=>t.status==='available').length,busy=technicians.filter(t=>t.status==='busy'||t.status==='paused').length;
+ document.getElementById('stat-total-techs').textContent=technicians.length;
+ document.getElementById('stat-available-techs').textContent=available;
+ document.getElementById('stat-busy-techs').textContent=busy;
+ document.getElementById('stat-waiting-guests').textContent=waiting.length;
+ renderTurnSpotlight(waiting.length);
+ const board=document.getElementById('turn-board-grid');
+ board.className=boardMode==='cards'?'board-grid':'';
+ board.innerHTML=!technicians.length?'<div class="board-empty"><strong>No technicians</strong><p>Load sample data from Board menu to try the salon workflow.</p><button class="btn" onclick="requestBoardChange(\'sample\')">Load sample data</button></div>':boardMode==='compact'?renderCompactBoard():boardMode==='grid'?renderTurnGrid():renderCardBoard();
+}
 // Seeded historical cells retain the weights in effect when the demo records were created.
 function demoRecordedTurnCredit(amount){return amount<30?.5:amount<70?1:amount<110?1.5:2;}
 function saveTurnRules(){document.getElementById('turn-rules-modal').classList.remove('show');toast('Weighted turn rules saved');}
@@ -62,15 +146,6 @@ function advanceTurn(){
  }
  nextTurnIndex=-1;
 }
-const renderSourceBoard=renderTurnBoard;
-renderTurnBoard=function(){
- if(nextTurnIndex<0||technicians[nextTurnIndex]?.status!=='available')advanceTurn();
- // The source renderer requires an index even when everyone is unavailable.
- const none=nextTurnIndex<0;if(none)nextTurnIndex=0;
- renderSourceBoard();
- if(none){nextTurnIndex=-1;document.getElementById('next-turn-name').textContent=technicians.length?'No available technician':'No technicians';}
- document.querySelector('.turn-hero button').disabled=none||!tickets.some(canAutoAssign);
-};
 const sourceOpenNextGuest=openNextGuest;
 openNextGuest=function(index=nextTurnIndex){
  if(!technicians[index]||technicians[index].status!=='available'){toast('Choose an available technician.');return;}
@@ -224,6 +299,19 @@ saveTurnEdit=function(){
 };
 // The imported prototype only supports adjusting credit in the Edit Turn dialog.
 const editAction=document.querySelector('#edit-turn-modal select:not([id])');if(editAction)editAction.closest('label').remove();
+function closeBoardOverlay(id){
+ if(id==='turn-rules-modal')closeTurnRules();
+ else if(id==='guest-picker')closeGuestPicker();
+ else if(id==='boost-modal')closeBoost();
+ else if(id==='add-turn-modal')closeAddTurn();
+ else if(typeof window.closeBoardDialog==='function'&&['demo-guest-modal','board-confirm-modal'].includes(id))window.closeBoardDialog(id);
+ else document.getElementById(id)?.classList.remove('show');
+}
+document.querySelectorAll('.modal-wrap .modal').forEach(modal=>{
+ if(modal.querySelector('.turn-rules-close,.dialog-close'))return;
+ const overlay=modal.closest('.modal-wrap');
+ modal.insertAdjacentHTML('afterbegin',`<button type="button" class="dialog-close" aria-label="Close" title="Close" onclick="closeBoardOverlay('${overlay.id}')">×</button>`);
+});
 document.querySelectorAll('.modal-wrap').forEach(modal=>{
  modal.addEventListener('click',event=>{if(event.target===modal){if(modal.id==='turn-rules-modal')closeTurnRules();else modal.classList.remove('show');}});
 });
