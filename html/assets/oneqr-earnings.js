@@ -10,7 +10,7 @@
   const advertisingPanel = document.getElementById('advertising-panel');
   const policyPanel = document.getElementById('oneqr-policy-panel');
   const policyDetails = document.getElementById('oneqr-policy-full');
-  const state = { view: 'overview', policyOpen: false, policySection: '', approved: false, consent: false, enabled: false, demoRefund: false };
+  const state = { view: 'overview', policyOpen: false, policySection: '', consent: false, enabled: false, demoRefund: false };
   const copy = PO.demo;
   // Synthetic events, not production balances. Rates/splits follow the Sep 21 PO policy.
   // All amounts are calculated in 1/10,000 USD to preserve the policy's fractional-cent examples.
@@ -110,8 +110,8 @@
     return `${demoContent('reserves')}${guidance(PO.reserves)}`;
   }
   function settings() {
-    const status = state.enabled ? PO.enabled : state.approved ? PO.approved : PO.unapproved;
-    return `${PO.settings}<section class="eq-card" data-po-source="NEXORA-OneQR-Monetization-Sponsor-Terms.html:25;NEXORA-OneQR-Menu-Placement.html:37.integratedPages[NEXORA-Ads-Earnings-Dashboards.html]"><h2>${PO.termsHeading}</h2><p><span class="eq-badge ${state.enabled ? 'enabled' : 'pending'}">${status}</span></p><p>${PO.demoNote}</p><div class="eq-row"><button type="button" data-action="approve">${PO.approveAction}</button><a href="#policy" data-policy-link>${escape('Chính sách chia doanh thu')}</a></div><label class="eq-consent"><input type="checkbox" id="consent"${state.consent ? ' checked' : ''}${state.enabled ? ' disabled' : ''}><span><strong>${PO.consentTitle}</strong><span class="eq-consent-copy">${PO.consentText}</span></span></label><button type="button" class="eq-primary" data-action="toggle"${!state.enabled && !(state.approved && state.consent) ? ' disabled' : ''}>${state.enabled ? PO.turnOff : PO.enableAction}</button></section>`;
+    const status = state.enabled ? PO.enabled : PO.stateOff;
+    return `${PO.settings}<section class="eq-card" data-po-source="NEXORA-OneQR-Monetization-Sponsor-Terms.html:25;NEXORA-OneQR-Menu-Placement.html:37.integratedPages[NEXORA-Ads-Earnings-Dashboards.html]"><h2>${PO.termsHeading}</h2><p><span class="eq-badge ${state.enabled ? 'enabled' : 'pending'}">${status}</span></p><p>${PO.demoNote}</p><div class="eq-row"><a href="#policy" data-policy-link>${escape('Chính sách chia doanh thu')}</a></div><label class="eq-consent"><input type="checkbox" id="consent"${state.consent ? ' checked' : ''}${state.enabled ? ' disabled' : ''}><span><strong>${PO.consentTitle}</strong><span class="eq-consent-copy">${PO.consentText}</span></span></label><button type="button" class="eq-primary" data-action="toggle"${!state.enabled && !state.consent ? ' disabled' : ''}>${state.enabled ? PO.turnOff : PO.enableAction}</button></section>`;
   }
   function payouts() {
     return `${demoContent('payouts')}${guidance(PO.payouts)}<section class="eq-card"><button type="button" data-action="payout-guide">${PO.payoutGuideAction}</button></section>`;
@@ -236,9 +236,8 @@
     const target = event.target.closest('button');
     if (!target) return;
     if (target.dataset.view) navigate(target.dataset.view);
-    if (target.dataset.action === 'approve') { state.approved = true; render(); root.querySelector('[data-action="approve"]').focus(); }
     if (target.dataset.action === 'toggle') {
-      if (!state.enabled && !(state.approved && state.consent)) return;
+      if (!state.enabled && !state.consent) return;
       state.enabled = !state.enabled;
       if (state.enabled) navigate('overview');
       else { render(); root.querySelector('[data-action="toggle"]').focus(); }

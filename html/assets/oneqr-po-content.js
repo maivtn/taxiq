@@ -7,7 +7,6 @@ window.ONEQR_PO_CONTENT = Object.freeze({
   "purpose": "Nhận tiền khi khách từ QR tạo event hợp lệ.",
   "reviewAction": "Xem điều kiện tham gia",
   "demoNote": "Các nút này chỉ mô phỏng trạng thái, không xác minh hay bật chương trình thật. Tắt kiếm tiền không ẩn Nearby/Search và không xóa thưởng đã khóa hợp lệ.",
-  "approveAction": "Xem trạng thái sau duyệt · mẫu",
   "approved": "Đã duyệt · mô phỏng",
   "unapproved": "Chưa đăng ký · mô phỏng",
   "enabled": "Đã bật · mô phỏng",
