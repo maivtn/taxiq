@@ -52,51 +52,60 @@
       { label: 'Events', tab: 'events' }
     ];
 
+  // Sidebar groups and labels mirror the merchant navigation on Nexora Touch.
   var NAV = [
     { type: 'item', key: 'home', label: 'Home', icon: 'home' },
-    { type: 'divider' },
     { type: 'item', key: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard' },
-    { type: 'group', key: 'payments', label: 'Payments & Payouts', icon: 'wallet', items: [
-      { label: 'Overview' },
-      { label: 'Customer Payments' },
-      { label: 'Tips' },
-      { label: 'Payroll' },
-      { label: 'Direct Savings' }
-    ] },
-    { type: 'item', key: 'review', label: 'Reviews', icon: 'star', page: 'review' },
-    { type: 'item', key: 'stations', label: 'One QR', icon: 'qr-code', page: 'stations' },
-    { type: 'group', key: 'booking', label: 'Ai Hub', icon: 'calendar-days', page: 'booking', items: [
-      { label: 'Booking', tab: 'booking' },
-      { label: 'Customers', tab: 'customers' },
-      { label: 'Call Log', tab: 'calllog' },
-      { label: 'SMS Campaigns', tab: 'sms-campaigns' },
-      { label: 'QR Codes', tab: 'qr-codes' },
-      { label: 'Plans', tab: 'plans' },
-      { label: 'Salon Settings', tab: 'settings' }
-    ] },
-    { type: 'group', key: 'community', label: 'Community', icon: 'users-round', page: 'community', items: COMMUNITY_ITEMS },
-    { type: 'group', key: 'reward', label: 'Reward', icon: 'gift', page: 'reward', items: [
-      { label: 'Overview', tab: 'overview' },
-      { label: 'Earn Rules', tab: 'earn-rules' },
-      { label: 'Reward Catalog', tab: 'reward-catalog' },
-      { label: 'AI Offers', tab: 'ai-offers' },
-      { label: 'Customers', tab: 'customers' },
-      { label: 'Loyalty Activity', tab: 'loyalty-activity' },
-      { label: 'Analytics', tab: 'analytics' }
+    { type: 'group', key: 'community', label: 'Community', icon: 'users-round', page: 'community', items: COMMUNITY_ITEMS.filter(function (item) {
+      return ['learning', 'events'].indexOf(item.tab) === -1;
+    }).map(function (item) {
+      return Object.assign({}, item, item.tab === 'shift' ? {label: 'Extra shifts'} : {}, item.tab === 'deals' ? {disabled: true, title: 'Coming soon'} : {});
+    }) },
+    { type: 'group', key: 'booking', label: 'AI Hub', icon: 'sparkles', items: [
+      { label: 'OneQR', page: 'stations', tab: 'one-qr', href: 'qr-stations.html' },
+      { label: 'Reviews', page: 'review', tab: 'reviews', href: 'nexora-review.html' },
+      { label: 'Analytics', placeholder: true }
     ] },
     { type: 'group', key: 'pos', label: 'POS', icon: 'store', page: 'pos', items: [
-      { label: 'Front Desk', tab: 'front-desk', href: 'pos-front-desk.html' },
-      { label: 'Salon Settings', tab: 'salon-settings', href: 'pos-salon-settings.html' },
+      { label: 'Front Desk', pages: ['pos', 'booking'], tab: 'front-desk', href: 'pos-front-desk.html' },
+      { label: 'Customers', pages: ['pos', 'booking'], tab: 'customers', href: 'booking-book-phase-1.html?tab=customers' },
+      { label: 'Call Log', page: 'booking', tab: 'calllog', href: 'booking-book-phase-1.html?tab=calllog' },
+      { label: 'Salon Settings', pages: ['pos', 'booking'], tab: 'salon-settings', href: 'pos-salon-settings.html' },
       { label: 'Report', tab: 'report', href: 'pos-shop-income-report.html' },
-      { label: 'Promotions', tab: 'promotions', href: 'reward-promotions.html' },
-      { label: 'Check-In Devices', href: 'qr-stations.html?tab=qr-stations' },
-      { label: 'Printer', tab: 'printer' },
-      { label: 'Public Check-In', href: '../customer/check-in-mobile.html' }
+      { label: 'Promotions', pages: ['pos', 'reward'], tab: 'promotions', href: 'reward-promotions.html' },
+      { label: 'SMS Campaigns', page: 'booking', tab: 'sms-campaigns', href: 'nexora-sms-dashboard.html' },
+      { label: 'Loyalty', page: 'reward', tab: 'loyalty', href: 'salon-setup-reward.html' },
+      { label: 'Gift Card Center', placeholder: true },
+      { label: 'QR Self Check-in', href: '../customer/check-in-mobile.html' },
+      { label: 'Self Check-in Device', placeholder: true },
+      { label: 'Printer', tab: 'printer' }
     ] },
-    { type: 'item', key: 'settings', label: 'Settings', icon: 'settings', page: 'owner-settings' },
+    { type: 'group', key: 'payments', label: 'Payments & Payouts', icon: 'wallet', items: [
+      { label: 'Overview' },
+      { label: 'Receive Payments', page: 'stations', tab: 'receive-payments', href: 'qr-stations.html?tab=accept-payment' },
+      { label: 'Payment Activity' },
+      { label: 'Tips', page: 'stations', tab: 'tips', href: 'qr-stations.html?tab=qr-stations' },
+      { label: 'Payroll' },
+      { label: 'Direct Savings' },
+      { label: 'Category Management' }
+    ] },
     { type: 'item', key: 'news-library', label: 'News & Library', icon: 'newspaper', page: 'news-library' },
-    { type: 'item', key: 'support', label: 'Support', icon: 'circle-question-mark' }
+    { type: 'item', key: 'support', label: 'Support', icon: 'circle-question-mark' },
+    // Keep the locked visibility key; Setting is always reachable in the account menu.
+    { type: 'item', key: 'settings', label: 'Settings', icon: 'settings', page: 'owner-settings', accountOnly: true }
   ];
+
+  function itemPages(node, item) {
+    return item.pages || [item.page || node.page];
+  }
+
+  function itemIsActive(node, item, tab) {
+    return itemPages(node, item).indexOf(activePage) !== -1 && !!item.tab && item.tab === tab;
+  }
+
+  function groupIsActive(node, tab) {
+    return node.type === 'group' && node.items.some(function (item) { return itemIsActive(node, item, tab); });
+  }
 
   var expandedGroups = {};
   try {
@@ -107,9 +116,6 @@
       }
     });
   } catch (e) {}
-  NAV.forEach(function (node) {
-    if (node.type === 'group' && node.page === activePage) expandedGroups[node.key] = true;
-  });
 
   function saveExpandedGroups() {
     if (activePage === 'staff') return;
@@ -198,7 +204,7 @@
         if (nodes.length && nodes[nodes.length - 1].type !== 'divider') nodes.push(node);
         return;
       }
-      if (hidden[sidebarNodeKey(node)]) return;
+      if (node.accountOnly || hidden[sidebarNodeKey(node)]) return;
       nodes.push(node);
     });
     while (nodes.length && nodes[nodes.length - 1].type === 'divider') nodes.pop();
@@ -214,21 +220,38 @@
   // nothing while a panel is plainly on screen.
   var nativeTabs = [];
   NAV.forEach(function (node) {
-    if (node.type !== 'group' || node.page !== activePage || !node.items) return;
-    node.items.forEach(function (it) { if (it.tab) nativeTabs.push(it.tab); });
+    if (node.type !== 'group' || !node.items) return;
+    node.items.forEach(function (item) {
+      if (item.tab && itemPages(node, item).indexOf(activePage) !== -1) nativeTabs.push(item.tab);
+    });
   });
   if (cfg.isCommunity && activePage === 'staff') {
     nativeTabs = COMMUNITY_ITEMS.map(function (item) { return item.tab; }).concat(['profile']);
   }
   function sidebarTab(tab) {
-    // The operational POS tabs all belong to the Front Desk submenu.
-    if (activePage === 'pos' && ['checkin', 'todaybooking', 'tickets', 'booking', 'customers', 'clock', 'dispatch', 'appointments', 'estimate'].indexOf(tab) !== -1) return 'front-desk';
+    if (!tab) return '';
+    if (activePage === 'reward') return tab === 'promotions' ? 'promotions' : 'loyalty';
+    if (activePage === 'review') return 'reviews';
+    if (activePage === 'analytics') return 'analytics';
+    if (activePage === 'stations') {
+      if (tab === 'qr-stations') return 'tips';
+      if (tab === 'accept-payment') return 'receive-payments';
+      return 'one-qr';
+    }
+    if (activePage === 'booking') {
+      if (tab === 'booking') return 'front-desk';
+      if (tab === 'settings') return 'salon-settings';
+    }
+    if (activePage === 'pos' && ['checkin', 'todaybooking', 'tickets', 'booking', 'clock', 'dispatch', 'appointments', 'estimate', 'turnboard', 'turn-board', 'checkout', 'completed-services'].indexOf(tab) !== -1) return 'front-desk';
     return tab;
   }
   urlTab = sidebarTab(urlTab);
   if (urlTab && nativeTabs.length && nativeTabs.indexOf(urlTab) === -1) urlTab = '';
 
-  var activeTab = urlTab || sidebarTab(cfg.activeTab) || (activePage === 'pos' ? 'front-desk' : '');
+  var activeTab = urlTab || sidebarTab(cfg.activeTab) || ({pos: 'front-desk', booking: 'front-desk', review: 'reviews', analytics: 'analytics', stations: 'one-qr', reward: 'loyalty', community: 'feed'}[activePage] || '');
+  NAV.forEach(function (node) {
+    if (groupIsActive(node, activeTab)) expandedGroups[node.key] = true;
+  });
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
@@ -253,26 +276,28 @@
   }
 
   function renderGroup(node) {
-    var isNative = node.page && node.page === activePage;
+    var isNative = groupIsActive(node, activeTab);
     var expanded = expandedGroups[node.key] === true;
     var subId = 'nexora-subnav-' + node.key;
 
-    var btn = '<button class="nav-item nav-parent' + (expanded ? ' is-expanded' : '') + '" type="button"'
+    var btn = '<button class="nav-item nav-parent' + (expanded ? ' is-expanded' : '') + (isNative ? ' is-active' : '') + '" type="button" data-sidebar-key="' + esc(node.key) + '"'
       + ' data-nav-group aria-expanded="' + (expanded ? 'true' : 'false') + '" aria-controls="' + subId + '">'
       + iconWrap(node.icon) + '<span>' + esc(node.label) + '</span>' + CARET + '</button>';
 
     var items = node.items.map(function (it) {
       var inner = '<span class="nav-subitem-dot" aria-hidden="true"></span><span>' + esc(it.label) + '</span>';
+      if (it.placeholder) return '<button class="nav-subitem" type="button">' + inner + '</button>';
+      if (it.disabled) return '<button class="nav-subitem" type="button" disabled title="' + esc(it.title || '') + '">' + inner + '</button>';
       if (it.href) {
-        var hrefActive = isNative && it.tab === activeTab;
-        return '<a class="nav-subitem' + (hrefActive ? ' is-active' : '') + '"' + (isNative && it.tab ? ' data-shell-active-tab="' + esc(it.tab) + '"' : '') + ' href="' + esc(it.href) + '">' + inner + '</a>';
+        var hrefActive = itemIsActive(node, it, activeTab);
+        return '<a class="nav-subitem' + (hrefActive ? ' is-active' : '') + '"' + (it.tab ? ' data-shell-active-tab="' + esc(it.tab) + '" data-shell-pages="' + esc(itemPages(node, it).join(' ')) + '"' : '') + ' href="' + esc(it.href) + '">' + inner + '</a>';
       }
-      if (node.page && !isNative) {
+      if (node.page && node.page !== activePage) {
         // foreign group -> cross-page link
         var href = PAGES[node.page] + (it.tab ? ('?tab=' + encodeURIComponent(it.tab)) : '');
         return '<a class="nav-subitem" href="' + href + '">' + inner + '</a>';
       }
-      if (isNative && it.tab) {
+      if (node.page === activePage && it.tab) {
         var on = it.tab === activeTab;
         return '<button class="nav-subitem' + (on ? ' is-active' : '') + '" type="button" data-shell-tab="' + esc(it.tab) + '">' + inner + '</button>';
       }
@@ -292,11 +317,14 @@
   }
 
   function renderMerchantSidebarHtml() {
-    return '<div class="sidebar-panel">' +
-        '<div class="profile-row"><div class="avatar">NT</div><div>' +
-          '<div class="profile-name">NEXORA TOUCH</div>' +
-          '<div class="profile-email">merchant@nexoratouch.com</div>' +
-        '</div></div>' +
+    return '<div class="sidebar-account">' +
+      '<button class="sidebar-panel sidebar-account-toggle" type="button" aria-label="Account menu" aria-expanded="false" aria-controls="nexora-account-menu" data-shell-account-toggle>' +
+        '<span class="profile-row"><span class="avatar">NT</span><span class="profile-name">NEXORA TOUCH</span></span>' + CARET +
+      '</button>' +
+      '<div class="sidebar-account-menu" id="nexora-account-menu" hidden>' +
+        '<a href="owner-setting.html"><i data-lucide="settings" aria-hidden="true"></i><span>Setting</span></a>' +
+        '<a href="owner-setting.html?tab=business-verification"><i data-lucide="badge-check" aria-hidden="true"></i><span>Business Verification</span></a>' +
+      '</div>' +
       '</div>' +
       '<nav class="sidebar-nav" aria-label="Main menu">' + renderNav() + '</nav>' +
       '<div class="sidebar-panel plan-panel">' +
@@ -378,7 +406,24 @@
     activeTab = tab;
     var subs = document.querySelectorAll('.sidebar [data-shell-tab], .sidebar [data-shell-active-tab]');
     for (var i = 0; i < subs.length; i++) {
-      subs[i].classList.toggle('is-active', (subs[i].getAttribute('data-shell-tab') || subs[i].getAttribute('data-shell-active-tab')) === tab);
+      var pages = subs[i].getAttribute('data-shell-pages');
+      subs[i].classList.toggle('is-active', (!pages || pages.split(' ').indexOf(activePage) !== -1) && (subs[i].getAttribute('data-shell-tab') || subs[i].getAttribute('data-shell-active-tab')) === tab);
+    }
+    if (activePage !== 'staff') {
+      NAV.forEach(function (node) {
+        if (node.type !== 'group') return;
+        var toggle = document.querySelector('.sidebar [data-sidebar-key="' + node.key + '"]');
+        if (!toggle) return;
+        var active = groupIsActive(node, tab);
+        toggle.classList.toggle('is-active', active);
+        if (active) {
+          expandedGroups[node.key] = true;
+          toggle.classList.add('is-expanded');
+          toggle.setAttribute('aria-expanded', 'true');
+          document.getElementById(toggle.getAttribute('aria-controls')).classList.remove('is-collapsed');
+        }
+      });
+      saveExpandedGroups();
     }
   }
 
@@ -395,6 +440,19 @@
   }
 
   function wireSidebar() {
+    var accountToggle = document.querySelector('[data-shell-account-toggle]');
+    var accountMenu = document.getElementById('nexora-account-menu');
+    if (accountToggle && accountMenu) {
+      accountToggle.addEventListener('click', function () {
+        accountMenu.hidden = !accountMenu.hidden;
+        accountToggle.setAttribute('aria-expanded', String(!accountMenu.hidden));
+      });
+      accountToggle.parentNode.addEventListener('keydown', function (event) {
+        if (event.key === 'Escape') {
+          accountMenu.hidden = true; accountToggle.setAttribute('aria-expanded', 'false'); accountToggle.focus();
+        }
+      });
+    }
     // group expand / collapse
     var toggles = document.querySelectorAll('.sidebar [data-nav-group]');
     for (var i = 0; i < toggles.length; i++) {
@@ -435,6 +493,11 @@
 
   function wire() {
     wireSidebar();
+    document.addEventListener('click', function (event) {
+      if (event.target.closest && event.target.closest('.sidebar-account')) return;
+      var menu = document.getElementById('nexora-account-menu'), toggle = document.querySelector('[data-shell-account-toggle]');
+      if (menu && toggle) { menu.hidden = true; toggle.setAttribute('aria-expanded', 'false'); }
+    });
     // mobile drawer open / close
     var opener = document.querySelector('.header [data-shell-drawer-open]');
     if (opener) opener.addEventListener('click', function () {
