@@ -91,6 +91,13 @@ code{font:12px ui-monospace,Menlo,monospace;background:#F1F5F9;padding:1px 5px;b
 .tg.okc{background:#DCFCE7;color:#166534}.tg.waitc{background:#FEF3C7;color:#92400E}.tg.bkc{background:#DBEAFE;color:#1E40AF}.tg.nwc{background:#FCE7F3;color:#9D174D}
 .hh .cond{font-size:10.5px;font-weight:800;background:rgba(255,255,255,.22);border-radius:6px;padding:2px 6px;align-self:flex-start;margin-top:2px}
 .hidden{display:none!important}
+.qr-advertising-icon{display:inline-block;width:18px;height:18px;object-fit:contain;vertical-align:middle;flex-shrink:0;pointer-events:none}
+.nav i .qr-advertising-icon{width:26px;height:26px}
+.menu i .qr-advertising-icon{width:30px;height:30px}
+.disc .ic .qr-advertising-icon,.rdc .t1 i .qr-advertising-icon,.anchor .pin .qr-advertising-icon{width:26px;height:26px}
+.panel h3 .qr-advertising-icon,.top b .qr-advertising-icon{width:24px;height:24px}
+.tg .qr-advertising-icon,.tag2 .qr-advertising-icon,.kind .qr-advertising-icon,.cond .qr-advertising-icon,.urg .qr-advertising-icon{width:13px;height:13px}
+.sec .qr-advertising-icon,.k .qr-advertising-icon,table.t .qr-advertising-icon{width:15px;height:15px}
 #toast{position:fixed;left:50%;transform:translateX(-50%);bottom:110px;background:#0B1220;color:#fff;padding:10px 16px;border-radius:12px;font-weight:700;font-size:13px;z-index:95;display:none;max-width:90vw}
 .wn{position:fixed;inset:0;background:rgba(15,27,61,.55);z-index:80;display:grid;place-items:center;padding:16px}.wn .bx{background:#fff;border-radius:18px;max-width:560px;padding:22px}.wn li{margin:6px 0 6px 18px;font-size:13.5px;line-height:1.5}
 @media(max-width:900px){.advertising-demo{grid-template-columns:minmax(0,1fr)}.advertising-demo>*{min-width:0}.phone{position:static;max-width:400px;margin:0 auto;width:100%}}
@@ -215,7 +222,42 @@ code{font:12px ui-monospace,Menlo,monospace;background:#F1F5F9;padding:1px 5px;b
 <script src="../assets/nexora-shell.js"></script>
 <script src="../assets/oneqr-action-appearance.js"></script>
 <script>
-const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];let tt;const toast=m=>{const t=$('#toast');t.textContent=m;t.style.display='block';clearTimeout(tt);tt=setTimeout(()=>t.style.display='none',2600)};
+const ADVERTISING_ICONS={
+ '👩‍🎨':'users-round','📱':'phone','✦':'sparkles','⌂':'home','⌖':'map-pin','⌕':'map',
+ '▦':'calendar-check','✓':'check','≡':'list','▧':'image','🎛':'settings-2',
+ '☕':'coffee','🍜':'utensils','🧋':'coffee','🌙':'clock','🧭':'map',
+ '✅':'circle-check','❌':'square','⭐':'star','💵':'hand-coins','👤':'user-round',
+ '🤖':'bot','📏':'list','⏰':'clock','⏱':'clock','⏳':'clock','📅':'calendar-check',
+ '📆':'calendar-days','🗓':'calendar-days','👋':'user-round','👆':'circle-check',
+ '🏷':'tag','🎟':'ticket','📍':'map-pin','🔔':'bell','💰':'badge-dollar-sign',
+ '🤝':'share-2','🏪':'store','📡':'map-pin','✍':'paintbrush','🔎':'map',
+ '🟢':'circle-check','💅':'paintbrush','📸':'camera','📶':'wifi','🅿':'car',
+ 'ℹ':'list','📞':'phone','🛡':'circle-check','↔':'share-2','🚫':'square',
+ '🙈':'image','🎁':'gift','🎀':'gift','📝':'receipt','🔌':'zap','🌐':'globe-2'
+};
+const advertisingIconPattern=new RegExp(Object.keys(ADVERTISING_ICONS).sort((a,b)=>b.length-a.length).map(symbol=>symbol+'\\uFE0F?').join('|'),'gu');
+function mountAdvertisingIcons(root){
+ if(!root)return;
+ const walker=document.createTreeWalker(root,NodeFilter.SHOW_TEXT),replacements=[];
+ let node;
+ while((node=walker.nextNode())){
+  if(node.parentElement.closest('script,style,textarea,option,[contenteditable]'))continue;
+  const matches=[...node.data.matchAll(advertisingIconPattern)];
+  if(matches.length)replacements.push({node,matches});
+ }
+ replacements.forEach(({node,matches})=>{
+  const fragment=document.createDocumentFragment();let offset=0;
+  matches.forEach(match=>{
+   const icon=document.createElement('img');
+   icon.className='oneqr-flat-icon qr-advertising-icon';
+   icon.src=window.ONEQR_ACTION_APPEARANCE.iconPath(ADVERTISING_ICONS[match[0].replace(/\uFE0F/g,'')]);
+   icon.alt='';icon.setAttribute('aria-hidden','true');icon.width=18;icon.height=18;icon.decoding='async';
+   fragment.append(node.data.slice(offset,match.index),icon);offset=match.index+match[0].length;
+  });
+  fragment.append(node.data.slice(offset));node.replaceWith(fragment);
+ });
+}
+const $=s=>document.querySelector(s),$$=s=>[...document.querySelectorAll(s)];let tt;const toast=m=>{const t=$('#toast');t.textContent=m;mountAdvertisingIcons(t);t.style.display='block';clearTimeout(tt);tt=setTimeout(()=>t.style.display='none',2600)};
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const rmD=s=>s.normalize('NFD').replace(/[̀-ͯ]/g,'').replace(/đ/g,'d').toLowerCase();
 /* ---------- dữ liệu mẫu ---------- */
@@ -294,7 +336,7 @@ function refreshPart(){const cand=D.filter(d=>!d.own&&(d.optin||d.spon)).map(d=>
  drawAuto()}
 const ST_TXT={on:'✅ Đang lên banner',far:'↔️ Xa hơn bán kính',comp:'🛡️ Cùng nhóm ngành — bộ lọc đối thủ',cat:'🚫 Ngành chặn mặc định (bar)',owner:'🙈 Chủ tiệm đã ẩn',notopt:'— Chưa bật quảng cáo chéo',paidfill:'⭐ Tài trợ lấp chỗ'};
 function drawAuto(){const el=$('#autoList');if(!el)return;$('#autoR').textContent=AUTO.R+' mi'+(AUTO.mode==='auto'?(AUTO.R===2?' (tự nới vì trong 1 mi chưa đủ '+MINP+' đối tác)':' (trong 1 mi đã đủ đối tác)'):'');
- el.innerHTML=AUTO.why.sort((a,b)=>a.mi-b.mi).map(x=>`<tr><td><b>${esc(x.d.biz)}</b><div style="font-size:11px;color:var(--mute)">${esc(x.d.t)}</div></td><td>${x.mi.toFixed(1)} mi</td><td>${ST_TXT[x.st]||x.st}</td><td>${['on','far','owner'].includes(x.st)?`<button class="btn ghost sm" data-blk="${esc(x.d.biz)}">${x.st==='owner'?'Hiện lại':'Ẩn'}</button>`:''}</td></tr>`).join('');
+ el.innerHTML=AUTO.why.sort((a,b)=>a.mi-b.mi).map(x=>`<tr><td><b>${esc(x.d.biz)}</b><div style="font-size:11px;color:var(--mute)">${esc(x.d.t)}</div></td><td>${x.mi.toFixed(1)} mi</td><td>${ST_TXT[x.st]||x.st}</td><td>${['on','far','owner'].includes(x.st)?`<button class="btn ghost sm" data-blk="${esc(x.d.biz)}">${x.st==='owner'?'Hiện lại':'Ẩn'}</button>`:''}</td></tr>`).join('');mountAdvertisingIcons(el);
  $$('#autoList [data-blk]').forEach(b=>b.onclick=()=>{const n=b.dataset.blk;BLOCKBIZ.has(n)?BLOCKBIZ.delete(n):BLOCKBIZ.add(n);pIdx=0;log({event:'owner_block_toggle',biz:n,blocked:BLOCKBIZ.has(n)});draw()})}
 const KIND={own:'',cross:'🤝 GẦN TIỆM',paid:'⭐ ĐƯỢC TÀI TRỢ'};
 function isSplit(){return CROSS&&MODE50==='split'}
@@ -303,9 +345,9 @@ function splitHTML(){const P=partList();const x=P.length?P[pIdx%P.length]:null;c
  return `<div class="hero2" id="heroBox"><div class="hh" id="heroOwn" data-hid="${o.id}" style="background:${o.bg}">${ownInner(o)}</div>
  ${x?`<div class="hh" id="heroPart" data-hid="${x.id}" style="background:${x.bg}">${partInner(x,P)}</div>`:''}</div>`}
 function ownInner(o){const n=HS_OWN.length;return `<div class="pc"><div class="k">CỦA ${HOST.name.toUpperCase()}</div><h3>${esc(o.h)}</h3><span class="cond">${condShort(o.id)}</span><div class="row2"><span class="cta">Xem →</span><span class="pr">${esc(o.pr)}</span></div></div>${n>1?`<div class="dots">${HS_OWN.map((y,i)=>`<i class="${i<oIdx%n?'done':''}"><b ${i===oIdx%n?'id="oBar"':''}></b></i>`).join('')}</div>`:''}`}
-function ownShow(){const el=$('#heroOwn');if(!el)return;const o=HS_OWN[oIdx%HS_OWN.length];el.dataset.hid=o.id;el.style.background=o.bg;el.innerHTML=ownInner(o);setTimeout(()=>{if($('#heroOwn')&&$('#heroOwn').dataset.hid===o.id)log({event:'hero_impression',slide:o.id,kind:'own',half:'shop'})},1000)}
+function ownShow(){const el=$('#heroOwn');if(!el)return;const o=HS_OWN[oIdx%HS_OWN.length];el.dataset.hid=o.id;el.style.background=o.bg;el.innerHTML=ownInner(o);mountAdvertisingIcons(el);setTimeout(()=>{if($('#heroOwn')&&$('#heroOwn').dataset.hid===o.id)log({event:'hero_impression',slide:o.id,kind:'own',half:'shop'})},1000)}
 function partInner(x,P){return `<div class="pc"><span class="kind">${KIND[x.kind]}</span><div class="k">${esc(x.k)}</div><h3>${esc(x.h)}</h3><div class="row2"><span class="cta">Xem →</span><span class="pr">${esc(x.pr)}</span></div></div><div class="dots">${P.map((y,i)=>`<i class="${i<pIdx%P.length?'done':''}"><b ${i===pIdx%P.length?'id="pBar"':''}></b></i>`).join('')}</div>`}
-function partShow(){const P=partList(),el=$('#heroPart');if(!el||!P.length)return;const x=P[pIdx%P.length];el.dataset.hid=x.id;el.style.background=x.bg;el.innerHTML=partInner(x,P);clearTimeout(hImpT);hImpT=setTimeout(()=>{if($('#heroPart')&&$('#heroPart').dataset.hid===x.id)log({event:'hero_impression',slide:x.id,kind:x.kind,half:'partner'})},1000)}
+function partShow(){const P=partList(),el=$('#heroPart');if(!el||!P.length)return;const x=P[pIdx%P.length];el.dataset.hid=x.id;el.style.background=x.bg;el.innerHTML=partInner(x,P);mountAdvertisingIcons(el);clearTimeout(hImpT);hImpT=setTimeout(()=>{if($('#heroPart')&&$('#heroPart').dataset.hid===x.id)log({event:'hero_impression',slide:x.id,kind:x.kind,half:'partner'})},1000)}
 function splitStart(){clearInterval(pT);clearInterval(oT);if(!$('#heroOwn'))return;ownShow();if($('#heroPart'))partShow();if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
  if(HS_OWN.length>1){let o0=performance.now()-2000;const DO=5000;oT=setInterval(()=>{if(!$('#heroOwn'))return clearInterval(oT);if(oLock)return(o0=performance.now());const p=Math.min(1,(performance.now()-o0)/DO);const b=$('#oBar');if(b)b.style.width=p*100+'%';if(p>=1){const pc=$('#heroOwn .pc');pc&&pc.classList.add('fade');o0=performance.now()+300;setTimeout(()=>{oIdx++;ownShow()},250)}},80)}
  if(!$('#heroPart'))return;let t0=performance.now();const DP=4000;
@@ -319,7 +361,7 @@ function bindSplit(){const own=$('#heroOwn'),pt=$('#heroPart');
 function heroSeq(){if(!CROSS)return HS_OWN.slice();const P=HS_PART.filter(x=>!compHidden(D.find(d=>d.id===x.id)));const n=Math.max(HS_OWN.length,P.length);const out=[];for(let i=0;i<n;i++){out.push(HS_OWN[i%HS_OWN.length]);if(P.length)out.push(P[i%P.length])}if(SCAN%2&&P.length){out.push(out.shift())}return out}
 function heroHTML(){const S=heroSeq();const x=S[hIdx%S.length];return`<div class="hero" id="heroBox" style="background:${x.bg}" data-hid="${x.id}"><div class="hc"><div class="k"><span class="who">${esc(x.k)}</span>${x.kind!=='own'?`<span class="kind">${KIND[x.kind]}</span>`:''}</div><h2>${esc(x.h)}</h2><p>${esc(x.p)}</p><div class="row"><span class="cta">${esc(x.cta)} →</span><span class="pr">${esc(x.pr)}</span></div></div><div class="dots">${S.map((y,i)=>`<i class="${i<hIdx%S.length?'done':''}"><b ${i===hIdx%S.length?'id="hBar"':''}></b></i>`).join('')}</div></div>`}
 let hImpT=null;
-function heroShow(){const S=heroSeq(),x=S[hIdx%S.length],hb=$('#heroBox');if(!hb)return;hb.outerHTML=heroHTML();bindHero();clearTimeout(hImpT);hImpT=setTimeout(()=>{if($('#heroBox')&&$('#heroBox').dataset.hid===x.id)log({event:'hero_impression',slide:x.id,kind:x.kind,pos:hIdx%S.length})},1000)}
+function heroShow(){const S=heroSeq(),x=S[hIdx%S.length],hb=$('#heroBox');if(!hb)return;hb.outerHTML=heroHTML();mountAdvertisingIcons($('#heroBox'));bindHero();clearTimeout(hImpT);hImpT=setTimeout(()=>{if($('#heroBox')&&$('#heroBox').dataset.hid===x.id)log({event:'hero_impression',slide:x.id,kind:x.kind,pos:hIdx%S.length})},1000)}
 function heroStart(){clearInterval(heroT);if(!$('#heroBox'))return;{const S=heroSeq(),x=S[hIdx%S.length];clearTimeout(hImpT);hImpT=setTimeout(()=>{if($('#heroBox')&&$('#heroBox').dataset.hid===x.id)log({event:'hero_impression',slide:x.id,kind:x.kind,pos:hIdx%S.length})},1000)}const bar=()=>$('#hBar');let t0=performance.now();const DURH=4500;if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
  heroT=setInterval(()=>{if(!$('#heroBox'))return clearInterval(heroT);if(hLock)return(t0=performance.now());const p=Math.min(1,(performance.now()-t0)/DURH);const b=bar();if(b)b.style.width=(p*100)+'%';if(p>=1){const hc=$('#heroBox .hc');hc&&hc.classList.add('fade');setTimeout(()=>{hIdx++;heroShow();t0=performance.now()},250)}},80)}
 function bindHero(){const hb=$('#heroBox');if(!hb)return;
@@ -394,7 +436,7 @@ function doneScr(){const D0={book:['📅 ĐÃ ĐẶT LỊCH',`${BK.svc} · ${DN[
  rev:['⭐ CẢM ƠN BẠN','Đã gửi đánh giá','Đánh giá giúp tiệm được nhiều khách biết hơn.','#92400E,#F59E0B','review_done','ĐI ĐÂU TIẾP? · GẦN TIỆM',''],
  tip:['💵 ĐÃ GỬI TIP','Cảm ơn bạn','Thợ đã nhận được tip của bạn.','#065F46,#10B981','tip_done','ĐI ĐÂU TIẾP? · GẦN TIỆM','']}[DONE];
  return HD('Xong')+`<div class="hero" id="doneHero" style="background:linear-gradient(135deg,${D0[3]})"><div class="k">${D0[0]}</div><h2>${esc(D0[1])}</h2><p>${esc(D0[2])}</p></div>${D0[6]}${nearAds(D0[4],D0[5])}<button class="btn ghost full" data-s="home" style="margin-top:8px">← Về menu chính</button>`}
-function draw(){refreshPart();const X={svc:svcScr,gal:galScr,more:moreScr,rev:revScr,tip:tipScr,done:doneScr,rew:()=>simpleScr('Rewards','🎁 Điểm tích luỹ — cần số điện thoại / NEXORA ID.'),gift:()=>simpleScr('Gift Card','🎀 Mua thẻ quà tặng của tiệm.')};$('#body').innerHTML=X[scr]?X[scr]():scr==='wait'?wait():scr==='home'?home():scr==='near'?near():scr==='search'?search():book();$$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.s===(scr==='search'?'near':['home','near','book'].includes(scr)?scr:'home')));drawLayer();bind();startTick();clearInterval(heroT);clearInterval(pT);clearInterval(oT);if(isSplit()){bindSplit();splitStart()}else{bindHero();heroStart()}}
+function draw(){refreshPart();const X={svc:svcScr,gal:galScr,more:moreScr,rev:revScr,tip:tipScr,done:doneScr,rew:()=>simpleScr('Rewards','🎁 Điểm tích luỹ — cần số điện thoại / NEXORA ID.'),gift:()=>simpleScr('Gift Card','🎀 Mua thẻ quà tặng của tiệm.')};$('#body').innerHTML=X[scr]?X[scr]():scr==='wait'?wait():scr==='home'?home():scr==='near'?near():scr==='search'?search():book();mountAdvertisingIcons($('#body'));$$('#nav button').forEach(b=>b.classList.toggle('on',b.dataset.s===(scr==='search'?'near':['home','near','book'].includes(scr)?scr:'home')));drawLayer();bind();startTick();clearInterval(heroT);clearInterval(pT);clearInterval(oT);if(isSplit()){bindSplit();splitStart()}else{bindHero();heroStart()}}
 const INFO={svc:['💅 Dịch vụ & giá',()=>SVC.map(x=>`<div class="li" style="display:flex;justify-content:space-between;padding:8px 0;border-bottom:1px solid var(--line)"><span>${x[0]}</span><b>$${x[1]}</b></div>`).join('')+'<p class="note">Lấy từ danh mục dịch vụ trong POS — tiệm sửa giá một chỗ, QR tự cập nhật.</p>'],
  team:['👩‍🎨 Thợ hôm nay',()=>TECHS.map(t=>`<div style="display:flex;gap:10px;align-items:center;padding:8px 0;border-bottom:1px solid var(--line)"><i style="width:36px;height:36px;border-radius:50%;background:${t[3]};color:#fff;display:grid;place-items:center;font-style:normal;font-weight:900">${t[0]}</i><div><b>${t[1]}</b><div style="font-size:12px;color:var(--mute)">${t[2]}</div></div></div>`).join('')+'<p class="note">Lấy từ lịch làm hôm nay. Bấm tên thợ → trang cá nhân của thợ (nếu thợ bật).</p>'],
  gal:['📸 Mẫu móng',()=>'<div class="th4" style="grid-template-columns:1fr 1fr 1fr"><i style="height:90px;background:linear-gradient(135deg,#F9A8D4,#DB2777)"></i><i style="height:90px;background:linear-gradient(135deg,#C4B5FD,#6D28D9)"></i><i style="height:90px;background:linear-gradient(135deg,#FDE68A,#F59E0B)"></i><i style="height:90px;background:linear-gradient(135deg,#99F6E4,#0F766E)"></i><i style="height:90px;background:linear-gradient(135deg,#FECACA,#DC2626)"></i><i style="height:90px;background:linear-gradient(135deg,#BAE6FD,#0284C7)"></i></div><p class="note">Ảnh từ Gallery của tiệm. Khách chọn mẫu → “Làm mẫu này” gửi cho thợ lúc check-in.</p>'],
@@ -421,7 +463,7 @@ function sheetActions(d){const att=ATTACH.includes(d.id),e=evalR(d);let h=condBo
 function drawLayer(){let h='';if(ACCT){h=acctSheet()}else if(info){const I=INFO[info];h=`<div class="dim" data-close="1"></div><div class="sheet" style="max-height:75%;overflow:auto"><b style="font-size:16px;display:block;margin-bottom:6px">${I[0]}</b>${I[1]()}<button class="btn ghost full" style="margin-top:8px" data-close="1">Đóng</button></div>`}else if(sheet){const d=withDist().find(x=>x.id===sheet);h=`<div class="dim" data-close="1"></div><div class="sheet">${heroSrc==='cross'?`<div class="note" style="margin:0 0 8px">🤝 ${HOST.name} giới thiệu đối tác gần tiệm</div>`:heroSrc==='paid'?`<div class="note" style="margin:0 0 8px">⭐ Được tài trợ · hiện trên QR của ${HOST.name}</div>`:''}<div style="display:flex;gap:10px">${stub(d)}<div><b style="font-size:16px">${esc(d.t)}</b><div class="m" style="color:var(--mute);font-size:12.5px;margin-top:2px">${esc(d.biz)}${d.own?'':' · '+d.mi.toFixed(1)+' mi'} · ${esc(d.cond)}</div></div></div>
  ${sheetActions(d)}<button class="btn ghost full" style="margin-top:8px" data-close="1">Đóng</button></div>`}
  if(permOpen)h+=`<div class="dim"></div><div class="perm" id="permBox"><b>🌐 nexora.link muốn biết vị trí của bạn</b><div style="font-size:12.5px;color:var(--mute)">Hộp thoại này do trình duyệt hiển thị. Khách có thể chặn.</div><div class="row"><button class="btn ghost sm" id="pDeny">Chặn</button><button class="btn sm" id="pAllow">Cho phép</button></div></div>`;
- $('#layer').innerHTML=h;
+ $('#layer').innerHTML=h;mountAdvertisingIcons($('#layer'));
  $$('#layer [data-acct]').forEach(b=>b.onclick=()=>{ACCT=b.dataset.acct;OTP=false;drawLayer()});
  const as=$('#acSend');if(as)as.onclick=()=>{OTP=true;log({event:ACCT+'_otp_sent',ref:ACCT==='signup'?REF:null});drawLayer()};
  const ad=$('#acDone');if(ad)ad.onclick=()=>{const nm=($('#acName')||{}).value||'Linh';USER={name:nm};log(ACCT==='signup'?{event:'signup',ref_code:REF,referrer_biz:HOST.id,source_qr:HOST.qr}:{event:'login'});toast(ACCT==='signup'?'✅ Đã tạo tài khoản — mã giới thiệu '+REF+' đã gắn':'✅ Đã đăng nhập');ACCT=null;OTP=false;draw()};
@@ -504,7 +546,7 @@ const TOUR=[
 ];
 let ti=0,tRun=false,tPaused=false,tStart=0,raf,DUR=9000;
 function spot(el){$$('.spot').forEach(x=>x.classList.remove('spot'));if(el){el.classList.add('spot');el.scrollIntoView({behavior:'smooth',block:'center'})}}
-function showStep(){const s=TOUR[ti];sheet=null;permOpen=false;s.do&&s.do();setTimeout(()=>spot($(s.sel)),250);$('#tVi').textContent=s.vi;$('#tEn').textContent=s.en;$('#tStep').textContent=`${ti+1}/${TOUR.length}`;tStart=performance.now();$('#tBar').dataset.p=0;loop()}
+function showStep(){const s=TOUR[ti];sheet=null;permOpen=false;s.do&&s.do();setTimeout(()=>spot($(s.sel)),250);$('#tVi').textContent=s.vi;$('#tEn').textContent=s.en;mountAdvertisingIcons($('#tVi'));mountAdvertisingIcons($('#tEn'));$('#tStep').textContent=`${ti+1}/${TOUR.length}`;tStart=performance.now();$('#tBar').dataset.p=0;loop()}
 function loop(){cancelAnimationFrame(raf);const f=t=>{if(!tRun)return;const bar=$('#tBar');if(tPaused){tStart=t-(+bar.dataset.p)*DUR;raf=requestAnimationFrame(f);return}const p=Math.min(1,(t-tStart)/DUR);bar.style.width=p*100+'%';bar.dataset.p=p;if(p>=1)return nextStep();raf=requestAnimationFrame(f)};raf=requestAnimationFrame(f)}
 function nextStep(){ti=(ti+1)%TOUR.length;showStep()}
 function startTour(){$('#wn').classList.add('hidden');tRun=true;tPaused=false;ti=0;$('#tPause').textContent='⏸';$('#tb').classList.remove('hidden');showStep()}
@@ -556,6 +598,7 @@ saveButton.onclick = () => {
 document.addEventListener('click', event => {
   if (event.target.closest('.ctl, #autoList')) saveStatus.textContent = 'Có thay đổi chưa lưu.';
 });
+document.querySelectorAll('.qr-advertising-shell, #wn, #tb').forEach(mountAdvertisingIcons);
 if (window.lucide) window.lucide.createIcons();
 </script>
 </body>
