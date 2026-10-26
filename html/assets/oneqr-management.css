@@ -4,11 +4,11 @@
 .oneqr-management .eq-management-content.earnings-page { max-width: none; padding: 0; }
 .eq-management-chrome .eq-top { align-items: center; }
 .eq-management-chrome .eq-business { color: #565e74; font-size: 13px; }
-.eq-advertising-status { display: inline-flex; align-items: center; gap: 8px; margin-top: 8px; }
-.eq-advertising-status img, .eq-monetization-off-icon img { width: 28px; height: 28px; object-fit: contain; }
+.eq-management-chrome .eq-top { margin-bottom: 12px; }
+.eq-po-participation { grid-template-columns: minmax(0, 1fr) auto; padding: 16px 20px; }
+.eq-po-participation.is-enabled { border-color: #a7f3d0; border-left-color: #059669; background: #ecfdf5; color: #065f46; }
 .eq-management-nav { flex-wrap: nowrap; margin-bottom: 20px; }
 .eq-management-nav button { display: inline-flex; align-items: center; gap: 7px; white-space: nowrap; }
-.eq-management-nav img { width: 20px; height: 20px; object-fit: contain; }
 .eq-overview-advertising { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 16px; }
 .eq-overview-advertising h2 { margin-bottom: 8px; }
 #advertising-panel { min-width: 0; }
@@ -24,6 +24,18 @@
 .eq-full-policy .policy-section { padding: 20px; }
 .eq-full-policy .policy-section table { white-space: normal; }
 .eq-full-policy .policy-footer { margin-top: 20px; }
+.eq-po-content .eq-po-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px; }
+.eq-po-content .eq-po-flow { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); gap: 12px; }
+.eq-po-content .eq-po-step { padding: 14px; border: 1px solid #e2e8f0; border-radius: 10px; background: #f8fafc; }
+.eq-po-content .eq-po-step b { display: block; margin-bottom: 6px; }
+.eq-po-content .eq-po-step p { margin-bottom: 0; }
+.eq-po-content .eq-po-tag { display: inline-block; padding: 2px 7px; border-radius: 6px; background: #eef2ff; color: #4648d4; font-size: 12px; }
+.eq-po-content .eq-metric b { display: block; margin-top: 8px; color: #0b1c30; font-size: 23px; }
+.eq-po-content ul, .eq-po-content ol { margin: 10px 0; padding-left: 22px; }
+.eq-po-content li { margin-bottom: 7px; }
+.eq-po-content h3 { margin-top: 20px; }
+.eq-po-content .eq-consent-copy { display: block; margin-top: 6px; line-height: 1.6; }
+.eq-po-content table { white-space: normal; }
 @media (max-width: 900px) {
   .eq-full-policy .policy-layout { grid-template-columns: minmax(0, 1fr); }
 }
@@ -31,6 +43,9 @@
   .eq-management-chrome .eq-top { display: flex; align-items: flex-start; }
   .eq-management-chrome .eq-top > .eq-business { display: grid; gap: 6px; }
   .eq-management-chrome .eq-tools { width: auto; }
+  .eq-po-participation { grid-template-columns: minmax(0, 1fr); padding: 14px; }
+  .eq-po-participation > button { grid-column: 1; justify-self: stretch; }
+  .eq-po-content .eq-po-grid { grid-template-columns: minmax(0, 1fr); }
   .eq-management-chrome .eq-mobile-nav label { font-size: 0; gap: 0; }
   .eq-management-chrome .eq-mobile-nav select { width: 100%; }
   .eq-overview-advertising > button { width: 100%; }

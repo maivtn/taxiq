@@ -57,7 +57,7 @@
     { type: 'item', key: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard', page: 'dashboard' },
     { type: 'group', key: 'community', label: 'Community', icon: 'users-round', page: 'community', items: COMMUNITY_ITEMS },
     { type: 'group', key: 'booking', label: 'AI Hub', icon: 'sparkles', items: [
-      { label: 'OneQR', page: 'stations', tab: 'one-qr', href: 'qr-stations.html', image: '../assets/icon-oneqr/issue-2040-oneqr-qr-code-3d.png' },
+      { label: 'OneQR', page: 'stations', tab: 'one-qr', href: 'qr-stations.html' },
       { label: 'Reviews', page: 'review', tab: 'reviews', href: 'nexora-review.html' },
       { label: 'Analytics', placeholder: true }
     ] },
