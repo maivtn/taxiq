@@ -28,7 +28,8 @@
   const emojiPattern = new RegExp(pattern, 'gu');
   const iconName = value => emojiIcons.get(normalize(value || '')) || 'sparkles';
   const icon = (name, size = 24) => appearance.image(name, size);
-  let monthlyCap = '', menuGroups = null;
+  let monthlyCap = '', menuGroups = null, serviceGroups = [];
+  const openCategories = new Map();
   const pickerStates = new WeakMap();
   let pickerId = 0;
 
@@ -117,6 +118,7 @@
   }));
 
   function services(fallback, selected) {
+    document.querySelectorAll('#svcBox details[data-service-category]').forEach(details=>openCategories.set(details.dataset.serviceCategory,details.open));
     const defaults = [
       {name:'Manicure & Gel',services:['Manicure']},
       {name:'Pedicure & Foot Care',services:['Classic Pedicure','Pedicure + Gel Polish','Foot massage']},
@@ -124,14 +126,68 @@
       {name:'Design & Add-ons',services:['Nail art']}
     ];
     const groups = (menuGroups || defaults).map(group => ({name:group.name,services:[...group.services]}));
+    const counts = new Map(), labels = new Map();
+    groups.forEach(group=>group.services.forEach(name=>counts.set(name,(counts.get(name)||0)+1)));
+    // Identical menu labels in different categories remain separate choices.
+    groups.forEach(group=>{group.services=group.services.map(name=>{
+      const value=counts.get(name)>1?name+' ('+group.name+')':name;
+      labels.set(value,name);return value;
+    });});
     if(menuGroups){
       const aliases={'Dip powder':'Dipping Powder','Gel-X':'Full Set Gel X','Nail art':'Nail Design','Foot massage':'Extra Massage','Pedicure + Gel Polish':'Shellac with Pedicure or Manicure'};
       const available=groups.flatMap(group=>group.services);
-      selected.forEach((name,index)=>{const canonical=available.find(item=>item.toLowerCase()===(aliases[name]||name).toLowerCase());if(canonical)selected[index]=canonical;});
+      selected.forEach((name,index)=>{if(available.includes(name))return;const canonical=available.find(item=>(labels.get(item)||item).toLowerCase()===(aliases[name]||name).toLowerCase());if(canonical)selected[index]=canonical;});
     }
-    const button = name => `<button type="button" aria-pressed="${selected.includes(name)}" class="${selected.includes(name)?'on':''}" data-svc="${escape(name)}">${escape(name==='Mọi dịch vụ'?text('Mọi dịch vụ','All services'):name)}</button>`;
-    return `<div class="label-row"><b>${text('Dịch vụ áp dụng','Eligible services')}</b><span class="tooltip" tabindex="0">?<span class="tip">${text('Lấy từ danh mục dịch vụ của POS (Salon Settings). POS chỉ trừ giảm giá trên đúng dịch vụ này trong bill; Booking gắn nhãn đúng dịch vụ; add-on chỉ gợi ý khi khách chọn dịch vụ chính.','From the POS service menu (Salon Settings). The POS discounts only these services on the bill; Booking tags only these; add-ons are suggested only with a main service.')}</span></span></div><div class="svc">${button('Mọi dịch vụ')}</div><div class="po-service-categories">${groups.filter(group => group.services.length).map(group => `<section class="po-service-category"><h4>${escape(group.name)}</h4><div class="svc">${group.services.map(button).join('')}</div></section>`).join('')}</div>`;
+    serviceGroups = groups.filter(group => group.services.length);
+    const allSelected = selected.includes('Mọi dịch vụ');
+    const button = name => {
+      const checked = selected.includes(name) || (name !== 'Mọi dịch vụ' && allSelected);
+      return `<button type="button" aria-pressed="${checked}" class="${checked?'on':''}" data-svc="${escape(name)}">${escape(name==='Mọi dịch vụ'?text('Mọi dịch vụ','All services'):(labels.get(name)||name))}</button>`;
+    };
+    const categories = serviceGroups.map((group,index) => {
+      const count = allSelected ? group.services.length : group.services.filter(name=>selected.includes(name)).length;
+      const checked = count === group.services.length;
+      return `<section class="po-service-category"><input class="po-category-check" type="checkbox" id="service-category-${index}" data-svc-category="${index}" data-partial="${count>0&&!checked}" ${checked?'checked':''} aria-label="${escape(text('Chọn tất cả','Select all')+': '+group.name)}" aria-describedby="service-category-count-${index}"><details data-service-category="${escape(group.name)}" ${openCategories.get(group.name)?'open':''}><summary><span>${escape(group.name)}</span><small id="service-category-count-${index}">${count} / ${group.services.length}</small><span class="po-category-arrow" aria-hidden="true"></span></summary><div class="svc">${group.services.map(button).join('')}</div></details></section>`;
+    }).join('');
+    return `<div class="label-row"><b>${text('Dịch vụ áp dụng','Eligible services')}</b><span class="tooltip" tabindex="0">?<span class="tip">${text('Lấy từ danh mục dịch vụ của POS (Salon Settings). POS chỉ trừ giảm giá trên đúng dịch vụ này trong bill; Booking gắn nhãn đúng dịch vụ; add-on chỉ gợi ý khi khách chọn dịch vụ chính.','From the POS service menu (Salon Settings). The POS discounts only these services on the bill; Booking tags only these; add-ons are suggested only with a main service.')}</span></span></div><div class="svc">${button('Mọi dịch vụ')}</div><div class="po-service-categories">${categories}</div>`;
   }
+  function syncServiceCategoryChecks() {
+    document.querySelectorAll('[data-svc-category]').forEach(input=>{input.indeterminate=input.dataset.partial==='true';});
+  }
+  function selectedServices() {
+    return new Set(SEL_SVC.includes('Mọi dịch vụ')?serviceGroups.flatMap(group=>group.services):SEL_SVC);
+  }
+  function applyServiceSelection(selected) {
+    const all = [...new Set(serviceGroups.flatMap(group=>group.services))];
+    SEL_SVC = all.length && selected.size===all.length && all.every(name=>selected.has(name)) ? ['Mọi dịch vụ'] : [...selected];
+    drawSvc(); preflight(); drawLP();
+  }
+  function toggleService(name) {
+    if(name==='Mọi dịch vụ'){SEL_SVC=['Mọi dịch vụ'];drawSvc();preflight();drawLP();return;}
+    const selected = selectedServices();
+    if(selected.has(name)) selected.delete(name); else selected.add(name);
+    applyServiceSelection(selected);
+    Array.from(document.querySelectorAll('#svcBox [data-svc]')).find(button=>button.dataset.svc===name)?.focus({preventScroll:true});
+  }
+  function toggleServiceCategory(input) {
+    const index = Number(input.dataset.svcCategory), group = serviceGroups[index];
+    if(!group) return;
+    const selected = selectedServices();
+    group.services.forEach(name=>{if(input.checked)selected.add(name);else selected.delete(name);});
+    applyServiceSelection(selected);
+    document.getElementById('service-category-'+index)?.focus({preventScroll:true});
+  }
+  // Fill each row evenly, avoiding a short trailing row on wide screens.
+  function channelCards(channels, renderCard) {
+    function spans(maximum) {
+      if(!channels.length) return [];
+      const rows = Math.ceil(channels.length/maximum), base = Math.floor(channels.length/rows), extra = channels.length%rows;
+      return Array.from({length:rows},(_,index)=>Array(base+(index<extra?1:0)).fill(12/(base+(index<extra?1:0)))).flat();
+    }
+    const desktop = spans(4), tablet = spans(2);
+    return channels.map((channel,index)=>renderCard(channel).replace('<button ',`<button style="--channel-span:${desktop[index]};--channel-tablet-span:${tablet[index]}" `)).join('');
+  }
+
   const date = value => {
     if (!/^\d{4}-\d{2}-\d{2}$/.test(value || '')) return value || '';
     const [year,month,day] = value.split('-').map(Number);
@@ -176,6 +232,7 @@
       showToast(text('Nhập tên và mức giảm hợp lệ trước khi bật chương trình.','Enter a name and a valid discount before turning on.')); return;
     }
     for(const input of [$('#aMin'),$('#pgCap')]){if(input&&input.value.trim()&&(!Number.isFinite(Number(input.value))||Number(input.value)<0)){input.focus();showToast(text('Nhập số tiền không âm.','Enter a non-negative amount.'));return;}}
+    if(!SEL_SVC.length){preflight();$('#svcBox').scrollIntoView({block:'center',behavior:'smooth'});$('#svcBox [data-svc]')?.focus({preventScroll:true});return;}
     const owned = CH.filter(channel => channel.t==='int' && ST.on[channel.id]).map(channel => channel.id);
     if (ST.ci.on) owned.push('check-in'); if (ST.bk.on) owned.push('booking');
     const publicChannels = CH.filter(channel => channel.t==='pub' && ST.on[channel.id]).map(channel => channel.id);
@@ -295,6 +352,7 @@
     aiIndustry.addEventListener('change',aiLabel); aiLabel(); updateCost();
     dialog().addEventListener('close',()=>{ clearTimeout(generationTimer); $('#generate-ai-design').disabled=false; });
     document.addEventListener('change',event => {
+      if (event.target.matches('[data-svc-category]')) toggleServiceCategory(event.target);
       if (event.target.dataset.poSelect==='goal') { TPG=Number(event.target.value); TPN=20; drawTP(); }
       if (event.target.dataset.poSelect==='service') { TPS=Number(event.target.value); TPN=20; drawTP(); }
     });
@@ -332,6 +390,6 @@
       if(groups.length){menuGroups=groups;drawSvc();summary(SEL_SVC);}
     }).catch(()=>{/* The original PO service groups remain available offline. */});
   }
-  window.NEXORA_PROMOTION_FEEDBACK={industrySelect,goalSelect,serviceGroupSelect,services,summary,date,dateRange,publish,publicationStatus,reviewBoost,monthlyCap:()=>monthlyCap,setMonthlyCap:value=>{monthlyCap=value;}};
+  window.NEXORA_PROMOTION_FEEDBACK={industrySelect,goalSelect,serviceGroupSelect,services,syncServiceCategoryChecks,toggleService,channelCards,summary,date,dateRange,publish,publicationStatus,reviewBoost,monthlyCap:()=>monthlyCap,setMonthlyCap:value=>{monthlyCap=value;}};
   document.addEventListener('DOMContentLoaded',init,{once:true});
 })();
