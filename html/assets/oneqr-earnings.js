@@ -5,39 +5,57 @@
   if (!root) return;
   const dialog = document.getElementById('earning-detail');
   const policy = 'ONEQR-ADS-REF-REV-2026-09-21-v1';
-  const initialHash = location.hash.slice(1);
+  const panelStorage = document.getElementById('oneqr-panel-storage');
+  const advertisingPanel = document.getElementById('advertising-panel');
+  const policyPanel = document.getElementById('oneqr-policy-panel');
+  const policyDetails = document.getElementById('oneqr-policy-full');
+  const consentKey = 'nexora_oneqr_business_monetization_v1';
   const state = {
-    lang: new URLSearchParams(location.search).get('lang') === 'vi' ? 'vi' : 'en',
-    view: initialHash === 'settings' ? 'settings' : 'overview',
+    lang: new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'vi',
+    view: 'overview',
+    policyOpen: false,
+    policySection: '',
     enabled: false,
     consent: false,
     audit: null,
     period: 'all',
     status: 'all'
   };
+  try {
+    const saved = JSON.parse(localStorage.getItem(consentKey) || 'null');
+    if (saved && saved.policy === policy && saved.consent === true && typeof saved.audit === 'string' && Number.isFinite(Date.parse(saved.audit))) {
+      state.consent = true;
+      state.enabled = saved.enabled === true;
+      state.audit = saved.audit;
+    }
+  } catch (error) { /* Storage is optional for this prototype. */ }
   const t = (vi, en) => state.lang === 'vi' ? vi : en;
   const money = cents => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(cents / 100);
   const escape = value => String(value).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
-  const date = value => new Intl.DateTimeFormat(state.lang === 'vi' ? 'vi-VN' : 'en-US', { day: 'numeric', month: 'long', year: 'numeric', timeZone: 'America/Chicago' }).format(new Date(value + 'T12:00:00-05:00'));
+  const date = value => new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'short', year: 'numeric', timeZone: 'America/Chicago' }).format(new Date(value + 'T12:00:00-05:00'));
+  const dateTime = value => new Intl.DateTimeFormat('en-US', { day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit', timeZone: 'America/Chicago' }).format(new Date(value));
   const labels = () => ({ pending: t('Chờ đối soát', 'Pending settlement'), available: t('Khả dụng', 'Available'), reserve: t('Dự phòng', 'Reserve'), hold: t('Giữ do tranh chấp', 'Dispute hold'), sending: t('Đang chuyển', 'In transfer'), paid: t('Đã ghi có ví', 'Wallet credited'), reconciling: t('Cần đối chiếu', 'Needs reconciliation'), failed: t('Thất bại', 'Failed'), rejected: t('Bị loại', 'Excluded'), enabled: t('Đã bật kiếm tiền', 'Monetization on'), disabled: t('Đang tắt kiếm tiền', 'Monetization off') });
   const badge = key => `<span class="eq-badge ${key}">${labels()[key]}</span>`;
-  const views = () => ({ overview: t('Tổng quan', 'Overview'), activity: t('Thu nhập', 'Earnings activity'), reserves: t('Dự phòng & điều chỉnh', 'Reserves & adjustments'), payouts: t('Nhận tiền', 'Payouts'), settings: t('Điều kiện & chính sách', 'Eligibility & policy') });
+  const views = () => ({ overview: t('Tổng quan', 'Overview'), advertising: 'Cài đặt quảng cáo', activity: t('Thu nhập', 'Earnings activity'), reserves: t('Dự phòng & điều chỉnh', 'Reserves & adjustments'), payouts: t('Nhận tiền', 'Payouts'), settings: t('Điều kiện & chính sách', 'Eligibility & policy') });
+  const viewIcons = { overview: 'layout-dashboard', advertising: 'megaphone', activity: 'badge-dollar-sign', reserves: 'clock', payouts: 'wallet', settings: 'settings' };
+  const crossEnabled = () => window.ONEQR_ADVERTISING.crossEnabled();
+  const crossLabel = () => crossEnabled() ? 'Tiệm bật quảng cáo chéo' : 'Chỉ quảng cáo của tiệm';
   const activities = [
     { id: 'E-103', date: '2026-09-21', type: ['Click banner tài trợ', 'Sponsored banner clicks'], campaign: 'Coffee Morning · C-203', amount: 1600, status: 'pending', basis: ['100 click hợp lệ × $0.40 × 40%', '100 valid clicks × $0.40 × 40%'], due: '2026-10-05', note: ['Đã loại click lặp; chờ đủ 14 ngày đối soát.', 'Duplicate clicks excluded; awaiting the 14-day settlement period.'] },
-    { id: 'E-102', date: '2026-09-20', type: ['Dịch vụ hoàn tất', 'Completed service'], campaign: 'Wellness Welcome · C-202', amount: 11240, status: 'pending', basis: ['$2,248 dịch vụ đủ điều kiện × 10% phí × 50%', '$2,248 eligible services × 10% fee × 50%'], due: '2026-10-04', note: ['Đã hoàn tất và xác nhận thanh toán. Nguồn khóa theo booking B-102 ngày 18 tháng 9 năm 2026.', 'Completion and payment verified. Source locked to booking B-102 on September 18, 2026.'] },
-    { id: 'E-101', date: '2026-09-07', type: ['Dịch vụ hoàn tất', 'Completed service'], campaign: 'Wellness Welcome · C-202', amount: 10000, status: 'available', basis: ['$2,000 dịch vụ đủ điều kiện × 10% phí × 50%', '$2,000 eligible services × 10% fee × 50%'], due: '2026-09-21', note: ['Publisher Share $100: đã trích dự phòng $20 một lần, $80 vào khả dụng. Nguồn khóa ở booking B-101 ngày 5 tháng 9 năm 2026.', 'Publisher Share $100: $20 reserved once, $80 allocated to available. Source locked at booking B-101 on September 5, 2026.'] },
+    { id: 'E-102', date: '2026-09-20', type: ['Dịch vụ hoàn tất', 'Completed service'], campaign: 'Wellness Welcome · C-202', amount: 11240, status: 'pending', basis: ['$2,248 dịch vụ đủ điều kiện × 10% phí × 50%', '$2,248 eligible services × 10% fee × 50%'], due: '2026-10-04', note: ['Đã hoàn tất và xác nhận thanh toán. Nguồn khóa theo booking B-102 ngày Sep 18, 2026.', 'Completion and payment verified. Source locked to booking B-102 on Sep 18, 2026.'] },
+    { id: 'E-101', date: '2026-09-07', type: ['Dịch vụ hoàn tất', 'Completed service'], campaign: 'Wellness Welcome · C-202', amount: 10000, status: 'available', basis: ['$2,000 dịch vụ đủ điều kiện × 10% phí × 50%', '$2,000 eligible services × 10% fee × 50%'], due: '2026-09-21', note: ['Publisher Share $100: đã trích dự phòng $20 một lần, $80 vào khả dụng. Nguồn khóa ở booking B-101 ngày Sep 5, 2026.', 'Publisher Share $100: $20 reserved once, $80 allocated to available. Source locked at booking B-101 on Sep 5, 2026.'] },
     { id: 'E-104', date: '2026-09-21', type: ['Tranh chấp đang kiểm tra', 'Dispute under review'], campaign: 'Wellness Welcome · C-202', amount: 500, status: 'hold', basis: ['$5 trong dự phòng của E-101', '$5 within the E-101 reserve'], due: '2026-10-21', note: ['Chỉ giữ $5 liên quan. Chưa kết luận mất quyền hưởng; chưa tạo khoản thu hồi. Ngày giải phóng còn phụ thuộc kết quả tranh chấp.', 'Only the related $5 is held. No confirmed loss of entitlement or recovery. Release also depends on the dispute outcome.'] },
     { id: 'E-105', date: '2026-09-21', type: ['Click bị loại', 'Excluded click'], campaign: 'Coffee Morning · C-203', amount: 0, status: 'rejected', basis: ['Click lặp cùng advertiser trong 24 giờ', 'Duplicate click for the same advertiser within 24 hours'], due: null, note: ['Không tạo Publisher Share.', 'No Publisher Share created.'] }
   ];
   const payouts = [
     { id: 'P-0922', date: '2026-09-22', amount: 3000, status: 'reconciling', ref: 'NX-0922-01', walletRef: '—', note: ['Chưa rõ kết quả ghi có. Đang đối chiếu với VlinkPay trước khi thử lại; $30 vẫn thuộc đang chuyển.', 'Credit outcome unknown. Reconcile with VlinkPay before retrying; $30 remains in transfer.'] },
-    { id: 'P-0915', date: '2026-09-15', amount: 41000, status: 'paid', ref: 'NX-0915-01', walletRef: 'VLP-0915-8841', note: ['VlinkPay xác nhận ghi có ngày 15 tháng 9 năm 2026, 09:12 America/Chicago.', 'VlinkPay confirmed credit on September 15, 2026, 09:12 America/Chicago.'] },
+    { id: 'P-0915', date: '2026-09-15', amount: 41000, status: 'paid', ref: 'NX-0915-01', walletRef: 'VLP-0915-8841', note: ['VlinkPay xác nhận ghi có ngày Sep 15, 2026, 09:12 America/Chicago.', 'VlinkPay confirmed credit on Sep 15, 2026, 09:12 America/Chicago.'] },
     { id: 'P-0908', date: '2026-09-08', amount: 41000, status: 'failed', ref: 'NX-0908-01', walletRef: '—', note: ['Đã xác nhận chưa ghi có do gián đoạn kết nối. Đối chiếu xong, chuyển lại trong P-0915 và chỉ ghi nhận đã trả một lần.', 'No credit confirmed after a connection failure. Reconciled and retried in P-0915; counted as paid only once.'] }
   ];
   const pair = (label, value, cls = '') => `<div class="${cls}"><dt>${label}</dt><dd>${value}</dd></div>`;
   const note = (content, warning = false) => `<div class="eq-note${warning ? ' warning' : ''}">${content}</div>`;
   const button = (view, text) => `<button type="button" data-view="${view}">${text}</button>`;
-  const policyLink = () => `<a data-policy-link data-policy-version="${policy}" href="oneqr-policy.html?lang=${state.lang}" target="_blank" rel="noopener" aria-label="${t('Chính sách kiếm tiền OneQR (mở tab mới)', 'OneQR Monetization Policy (opens in a new tab)')}">${t('Chính sách kiếm tiền OneQR', 'OneQR Monetization Policy')}</a>`;
+  const policyLink = () => `<a data-policy-link data-policy-version="${policy}" href="#policy">${t('Chính sách kiếm tiền OneQR', 'OneQR Monetization Policy')}</a>`;
   const eligibility = { kyb: true, tax: true, qrOwnership: true, security: true, wallet: true };
   const eligible = () => Object.values(eligibility).every(Boolean);
   function select(id, title, values, current) {
@@ -56,7 +74,8 @@
       ['adjustment', -5000, t('Lịch sử thu hồi đã xác nhận', 'Confirmed recovery history')],
       ['debt', 0, t('Không còn nghĩa vụ chưa bù', 'No outstanding recovery')]
     ];
-    return `<section class="eq-hero"><div><span class="eq-muted">${t('Khả dụng để xét kỳ chi tiếp theo', 'Available for the next payout review')}</span><strong class="eq-amount" data-balance="available">$70.00</strong><p>${t('Đã loại dự phòng, hold và khoản đang chuyển; đã khấu trừ nghĩa vụ xác nhận.', 'After reserves, holds, funds in transfer and confirmed recovery deductions.')}</p>${button('payouts', t('Xem đối soát & nhận tiền →', 'View reconciliation & payouts →'))}</div><div class="eq-hero-side"><h3>${t('Kỳ xét chi tiếp theo', 'Next payout review')}</h3><strong>${date('2026-09-29')} · 00:00</strong><p class="eq-muted">America/Chicago · ${t('Mỗi thứ Ba', 'Every Tuesday')}</p><span>${t('Tối thiểu $25 sau khấu trừ. Ngày xét chi không phải cam kết tiền về ví.', 'Minimum $25 after deductions. Review date is not a guaranteed wallet credit date.')}</span></div></section>
+    return `<section class="eq-card eq-overview-advertising"><div><h2>Banner hero — quảng cáo chéo</h2><span class="eq-badge ${crossEnabled() ? 'enabled' : 'disabled'}" data-cross-promotion-status="${crossEnabled() ? 'enabled' : 'disabled'}">${crossLabel()}</span></div>${button('advertising', views().advertising)}</section>
+      <section class="eq-hero"><div><span class="eq-muted">${t('Khả dụng để xét kỳ chi tiếp theo', 'Available for the next payout review')}</span><strong class="eq-amount" data-balance="available">$70.00</strong><p>${t('Đã loại dự phòng, hold và khoản đang chuyển; đã khấu trừ nghĩa vụ xác nhận.', 'After reserves, holds, funds in transfer and confirmed recovery deductions.')}</p>${button('payouts', t('Xem đối soát & nhận tiền →', 'View reconciliation & payouts →'))}</div><div class="eq-hero-side"><h3>${t('Kỳ xét chi tiếp theo', 'Next payout review')}</h3><strong>${date('2026-09-29')} · 00:00</strong><p class="eq-muted">America/Chicago · ${t('Mỗi thứ Ba', 'Every Tuesday')}</p><span>${t('Tối thiểu $25 sau khấu trừ. Ngày xét chi không phải cam kết tiền về ví.', 'Minimum $25 after deductions. Review date is not a guaranteed wallet credit date.')}</span></div></section>
       <section class="eq-metrics" aria-label="${t('Các khoản thu nhập', 'Earnings balances')}">${metrics.map(([key, cents, hint]) => `<article class="eq-metric"><span class="eq-small eq-muted">${labels()[key] || (key === 'debt' ? t('Còn phải bù', 'Outstanding recovery') : t('Điều chỉnh', 'Adjustments'))}</span><strong data-balance="${key}">${money(cents)}</strong><span class="eq-small eq-muted">${hint}</span></article>`).join('')}</section>
       <div class="eq-columns"><section class="eq-card"><h2>${t('Từ hoạt động đến thu nhập', 'From activity to earnings')}</h2><ol class="eq-list">${[
         [t('Hoạt động hợp lệ', 'Qualified activity'), t('Click tài trợ hoặc dịch vụ hoàn tất, đã thanh toán và có nguồn QR của doanh nghiệp.', 'Sponsored click or completed, paid service attributed to your Business QR.')],
@@ -91,7 +110,7 @@
       ['VlinkPay SSO', t('Đã xác nhận ví Business •••• 8841', 'Business wallet •••• 8841 verified'), eligibility.wallet]
     ];
     return `<div class="eq-columns"><section class="eq-card"><h2>${t('Điều kiện tham gia', 'Participation requirements')}</h2><ul class="eq-list" data-eligibility>${checks.map(([label, description, ok]) => `<li><span class="eq-step">${ok ? '✓' : '!'}</span><div><h3>${label}</h3><span class="eq-muted">${description}</span></div></li>`).join('')}</ul><p class="eq-small eq-muted">${t('Dùng kết quả xác minh hiện có. Đăng nhập SSO thành công chưa đủ để xác nhận ví có thể nhận tiền.', 'Uses existing verification results. Successful SSO sign-in alone does not establish wallet credit eligibility.')}</p></section>
-      <section class="eq-card"><h2>${t('Bật kiếm tiền cho Business', 'Enable Business monetization')}</h2><p>${t('Chấp thuận chính sách áp dụng cho Bitcoin Nail Bar.', 'Accept the policy for Bitcoin Nail Bar.')}</p><p>${policyLink()}</p>${note(t('Dự phòng được trích một lần trên Publisher Share sau đối soát. Tỷ lệ và thời hạn giữ theo chính sách áp dụng; phần còn lại được giải phóng khi đến hạn và không còn hold hoặc nghĩa vụ thu hồi.', 'Reserves are deducted once from Publisher Share after settlement. Rates and holding periods follow the applicable policy; remaining funds are released at maturity once holds and recovery obligations are cleared.'), true)}<label class="eq-consent"><input type="checkbox" id="consent"${state.consent ? ' checked' : ''}${state.enabled ? ' disabled' : ''}><span>${t('Tôi hiểu thu nhập chỉ từ hoạt động hợp lệ, có thể bị giữ, đảo hoặc thu hồi khi hoàn tiền, tranh chấp hoặc gian lận. Tôi chịu trách nhiệm về hồ sơ, thuế và cách đặt QR; đồng ý chính sách dự phòng và thứ tự thu hồi: dự phòng hợp lệ → khả dụng → thu nhập kỳ sau.', 'I understand that only qualified activity earns income, which may be held, reversed or recovered for refunds, disputes or fraud. I am responsible for my profile, taxes and QR placement; I accept the reserve policy and recovery order: eligible reserve → available → future earnings.')}</span></label><button class="eq-primary" data-action="toggle"${!state.enabled && !(state.consent && eligible()) ? ' disabled' : ''}>${state.enabled ? t('Tắt kiếm tiền', 'Turn off monetization') : t('Đồng ý & bật kiếm tiền', 'Accept & enable monetization')}</button><p class="eq-small eq-muted" data-consent-audit data-policy-version="${state.audit ? policy : ''}">${state.audit ? `${t('Chấp thuận bởi', 'Accepted by')} Business Owner · ${escape(new Intl.DateTimeFormat(state.lang === 'vi' ? 'vi-VN' : 'en-US', { dateStyle: 'long', timeStyle: 'short', timeZone: 'America/Chicago' }).format(new Date(state.audit)))} America/Chicago · ${policyLink()}` : t('Chưa ghi nhận chấp thuận. Ô đồng ý không được chọn sẵn.', 'No consent recorded. Acceptance is never preselected.')}</p>${note(t('Tắt chỉ dừng ghi nhận hoạt động mới. Tiện ích OneQR, Nearby/Search và bảo vệ đối thủ vẫn hoạt động; khoản đã khóa hợp lệ, dự phòng và công nợ tiếp tục xử lý. Không cộng hồi tố click lúc tắt.', 'Turning off stops new earning activity. OneQR utilities, Nearby/Search and competitor protection remain; valid locked earnings, reserves and recoveries continue. Clicks while disabled are not rewarded retroactively.'))}</section></div>
+      <section class="eq-card"><h2>${t('Bật kiếm tiền cho Business', 'Enable Business monetization')}</h2><p>${t('Chấp thuận chính sách áp dụng cho Bitcoin Nail Bar.', 'Accept the policy for Bitcoin Nail Bar.')}</p><p>${policyLink()}</p>${note(t('Dự phòng được trích một lần trên Publisher Share sau đối soát. Tỷ lệ và thời hạn giữ theo chính sách áp dụng; phần còn lại được giải phóng khi đến hạn và không còn hold hoặc nghĩa vụ thu hồi.', 'Reserves are deducted once from Publisher Share after settlement. Rates and holding periods follow the applicable policy; remaining funds are released at maturity once holds and recovery obligations are cleared.'), true)}<label class="eq-consent"><input type="checkbox" id="consent"${state.consent ? ' checked' : ''}${state.enabled ? ' disabled' : ''}><span>${t('Tôi hiểu thu nhập chỉ từ hoạt động hợp lệ, có thể bị giữ, đảo hoặc thu hồi khi hoàn tiền, tranh chấp hoặc gian lận. Tôi chịu trách nhiệm về hồ sơ, thuế và cách đặt QR; đồng ý chính sách dự phòng và thứ tự thu hồi: dự phòng hợp lệ → khả dụng → thu nhập kỳ sau.', 'I understand that only qualified activity earns income, which may be held, reversed or recovered for refunds, disputes or fraud. I am responsible for my profile, taxes and QR placement; I accept the reserve policy and recovery order: eligible reserve → available → future earnings.')}</span></label><button class="eq-primary" data-action="toggle"${!state.enabled && !(state.consent && eligible()) ? ' disabled' : ''}>${state.enabled ? t('Tắt kiếm tiền', 'Turn off monetization') : t('Đồng ý & bật kiếm tiền', 'Accept & enable monetization')}</button><p class="eq-small eq-muted" data-consent-audit data-policy-version="${state.audit ? policy : ''}">${state.audit ? `${t('Chấp thuận bởi', 'Accepted by')} Business Owner · ${escape(dateTime(state.audit))} America/Chicago · ${policyLink()}` : t('Chưa ghi nhận chấp thuận. Ô đồng ý không được chọn sẵn.', 'No consent recorded. Acceptance is never preselected.')}</p>${note(t('Tắt chỉ dừng ghi nhận hoạt động mới. Tiện ích OneQR, Nearby/Search và bảo vệ đối thủ vẫn hoạt động; khoản đã khóa hợp lệ, dự phòng và công nợ tiếp tục xử lý. Không cộng hồi tố click lúc tắt.', 'Turning off stops new earning activity. OneQR utilities, Nearby/Search and competitor protection remain; valid locked earnings, reserves and recoveries continue. Clicks while disabled are not rewarded retroactively.'))}</section></div>
       <section class="eq-card"><h2>${t('Cách tính Publisher Share', 'How Publisher Share is calculated')}</h2><p class="eq-small eq-muted">${policyLink()} · ${t('Chính sách hiển thị chỉ đọc; lưu theo từng khoản thu.', 'Read-only policy, saved with each earning.')}</p><div class="eq-table-wrap" tabindex="0" role="region" aria-label="${t('Bảng dữ liệu thu nhập', 'Earnings data table')}"><table><thead><tr><th scope="col">${t('Hoạt động', 'Activity')}</th><th scope="col">${t('Phí Advertiser', 'Advertiser fee')}</th><th scope="col">${t('Phần Business', 'Business share')}</th></tr></thead><tbody>${[
         [t('Click banner tài trợ', 'Sponsored banner click'), '$0.40', '40% ($0.16)'],
         [t('Click card Nearby / Explore', 'Nearby / Explore card click'), '$0.25', '35%'],
@@ -100,20 +119,67 @@
         [t('Khách quay lại ≥ 90 ngày, campaign cho phép', 'Returning ≥ 90 days, campaign enabled'), '5%', t('50% phí dịch vụ hợp lệ', '50% of performance fee')]
       ].map(row => `<tr>${row.map(c => `<td>${c}</td>`).join('')}</tr>`).join('')}</tbody></table></div><p class="eq-small eq-muted">${t('Cơ sở phí dịch vụ là giá sau giảm giá, không gồm thuế, tip, phụ phí, retail, gift card lúc bán hoặc phần hoàn. Phần chia lẻ dưới một cent hiển thị theo kết quả đối soát; chưa tự đặt quy tắc làm tròn. Không mặc định cộng cả phí click và dịch vụ trên cùng hành trình.', 'Service fees use discounted eligible service value, excluding tax, tips, surcharges, retail, gift card sales and refunds. Fractional-cent shares use confirmed settlement results; rounding is not assumed. Click and service fees are not automatically stacked on one journey.')}</p><p>${t('Không cần nạp Ads Credit hoặc mời thêm tài khoản để tham gia. Bảo vệ đối thủ vẫn áp dụng cho quảng cáo trả phí.', 'No Ads Credit purchase or account referrals are required. Competitor protection also applies to paid advertisements.')}</p></section>`;
   }
+  function readRoute() {
+    const [route, ...section] = location.hash.slice(1).split('/');
+    state.view = route === 'policy' ? 'settings' : Object.hasOwn(views(), route) ? route : 'overview';
+    state.policyOpen = route === 'policy';
+    state.policySection = state.policyOpen ? section.join('/') : '';
+    state.lang = new URLSearchParams(location.search).get('lang') === 'en' ? 'en' : 'vi';
+  }
+  function writeRoute() {
+    const hash = state.policyOpen ? 'policy' + (state.policySection ? '/' + state.policySection : '') : state.view;
+    if (location.hash !== '#' + hash) history.pushState(null, '', '#' + hash);
+  }
+  function focusNavigation() {
+    const mobile = root.querySelector('#earnings-view');
+    (mobile.offsetParent ? mobile : root.querySelector('.eq-nav [aria-selected="true"]'))?.focus();
+  }
+  function scrollToPolicy() {
+    if (!state.policyOpen) return;
+    requestAnimationFrame(() => {
+      const section = state.policySection && document.getElementById(state.policySection);
+      const destination = section && policyPanel.contains(section) ? section : policyDetails;
+      destination.scrollIntoView({ block: 'start' });
+    });
+  }
+  function navigate(view, policySection = null) {
+    if (!Object.hasOwn(views(), view)) return;
+    state.view = view;
+    state.policyOpen = view === 'settings' && policySection !== null;
+    state.policySection = state.policyOpen ? policySection : '';
+    state.period = 'all'; state.status = 'all';
+    writeRoute(); render();
+    if (state.policyOpen) scrollToPolicy(); else focusNavigation();
+  }
+  function syncPolicy() {
+    policyPanel.querySelectorAll('[data-policy-lang]').forEach(node => { node.hidden = node.dataset.policyLang !== state.lang; });
+    policyPanel.querySelector('.policy-toc').setAttribute('aria-label', t('Mục lục', 'Contents'));
+    policyDetails.open = state.policyOpen;
+  }
+  let renderedView = null;
   function render() {
+    const activeElement = document.activeElement;
+    const preserveFocus = (state.view === 'advertising' && advertisingPanel.contains(activeElement)) || (state.view === 'settings' && policyPanel.contains(activeElement));
+    const enteringAdvertising = state.view === 'advertising' && renderedView !== 'advertising';
+    if (state.view !== 'advertising') window.ONEQR_ADVERTISING.suspend();
+    panelStorage.append(advertisingPanel, policyPanel);
     document.documentElement.lang = state.lang;
-    root.setAttribute('aria-label', t('Thu nhập OneQR', 'OneQR Earnings'));
+    root.setAttribute('aria-label', 'Quảng cáo');
     const mode = state.enabled ? 'enabled' : 'disabled';
-    const content = ({ overview, activity, reserves, payouts: payoutView, settings }[state.view])();
-    root.innerHTML = `<div class="eq-top"><div><a href="qr-stations.html?tab=one-qr">← ${t('Cấu hình OneQR', 'OneQR configuration')}</a><h1>${t('Thu nhập OneQR', 'OneQR Earnings')}</h1><span class="eq-muted">Bitcoin Nail Bar · Business Owner</span></div><div class="eq-tools">${select('language', t('Ngôn ngữ', 'Language'), { en: 'English', vi: 'Tiếng Việt' }, state.lang)}</div></div>
+    const content = state.view === 'advertising' ? '' : ({ overview, activity, reserves, payouts: payoutView, settings }[state.view])();
+    root.innerHTML = `<div class="earnings-page eq-management-chrome"><div class="eq-top"><div class="eq-business"><span>Bitcoin Nail Bar · Business Owner</span><div class="eq-advertising-status">${window.ONEQR_ACTION_APPEARANCE.image('share-2', 28)}<span class="eq-badge ${crossEnabled() ? 'enabled' : 'disabled'}" data-cross-promotion-status="${crossEnabled() ? 'enabled' : 'disabled'}">${crossLabel()}</span></div></div><div class="eq-tools">${select('language', t('Ngôn ngữ', 'Language'), { en: 'English', vi: 'Tiếng Việt' }, state.lang)}</div></div>
       ${state.enabled ? `<div class="eq-row"><span data-monetization-status="${mode}">${badge(mode)}</span><div class="eq-row">${button('settings', t('Quản lý kiếm tiền', 'Manage monetization'))}</div></div>` : `<section class="eq-monetization-off" aria-labelledby="monetization-off-title">
-        <span class="eq-monetization-off-icon" aria-hidden="true"><svg width="26" height="26" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="9"/><path d="M9 8v8m6-8v8"/></svg></span>
+        <span class="eq-monetization-off-icon" aria-hidden="true">${window.ONEQR_ACTION_APPEARANCE.image('badge-dollar-sign', 28)}</span>
         <div><h2 id="monetization-off-title" data-monetization-status="disabled">${labels().disabled}</h2><p>${t('Bật kiếm tiền để nhận thu nhập từ các hoạt động OneQR đủ điều kiện.', 'Enable monetization to earn from eligible OneQR activity.')}</p><p class="eq-monetization-off-note">${t('Các khoản đã ghi nhận hợp lệ vẫn tiếp tục đối soát và chi trả theo chính sách.', 'Previously recorded valid earnings continue through settlement and payout under their saved policies.')}</p></div>
         <button class="eq-primary" type="button" data-view="settings">${t('Bật kiếm tiền', 'Enable monetization')} <span aria-hidden="true">→</span></button>
       </section>`}
-      <div class="eq-mobile-nav">${select('earnings-view', t('Mục thu nhập', 'Earnings section'), views(), state.view)}</div>
-      <nav class="eq-nav" aria-label="${t('Quản lý thu nhập', 'Earnings navigation')}">${Object.entries(views()).map(([key, text]) => `<button data-view="${key}"${key === state.view ? ' aria-current="page"' : ''}>${text}</button>`).join('')}</nav><div id="earnings-content">${content}</div>`;
-    root.querySelectorAll('table').forEach(table => {
+      <div class="eq-mobile-nav">${select('earnings-view', 'Quảng cáo', views(), state.view)}</div>
+      <nav class="eq-nav eq-management-nav" role="tablist" aria-label="Quảng cáo">${Object.entries(views()).map(([key, text]) => `<button type="button" id="management-tab-${key}" role="tab" data-view="${key}" aria-selected="${key === state.view}" aria-controls="earnings-content" tabindex="${key === state.view ? '0' : '-1'}"${key === state.view ? ' aria-current="page"' : ''}>${window.ONEQR_ACTION_APPEARANCE.image(viewIcons[key], 20)}<span>${text}</span></button>`).join('')}</nav></div><div id="earnings-content" class="eq-management-content${state.view === 'advertising' ? '' : ' earnings-page'}" role="tabpanel" aria-labelledby="management-tab-${state.view}">${content}</div>`;
+    const panel = root.querySelector('#earnings-content');
+    if (state.view === 'advertising') panel.append(advertisingPanel);
+    if (state.view === 'settings') panel.append(policyPanel);
+    syncPolicy();
+    root.querySelectorAll('.eq-table-wrap table, .policy-table table').forEach(table => {
       table.setAttribute('role', 'table');
       const headers = Array.from(table.querySelectorAll('th'), th => th.textContent.trim());
       table.querySelectorAll('tr').forEach(row => row.setAttribute('role', 'row'));
@@ -123,6 +189,9 @@
         if (cell.colSpan === 1) cell.dataset.label = headers[i];
       }));
     });
+    renderedView = state.view;
+    if (enteringAdvertising) window.ONEQR_ADVERTISING.activate();
+    if (preserveFocus && activeElement.isConnected) activeElement.focus({ preventScroll: true });
   }
   let opener = null;
   function detail(id) {
@@ -136,28 +205,43 @@
     dialog.querySelector('button').focus();
   }
   root.addEventListener('click', event => {
+    const policySection = event.target.closest('a[href^="#policy/"]');
+    if (policySection) {
+      event.preventDefault(); navigate('settings', policySection.getAttribute('href').slice('#policy/'.length)); return;
+    }
+    if (event.target.closest('[data-policy-link]')) {
+      event.preventDefault(); navigate('settings', ''); return;
+    }
+    if (event.target.closest('[data-back-to-earnings]')) {
+      event.preventDefault(); navigate('settings'); return;
+    }
     const target = event.target.closest('button');
     if (!target) return;
     if (target.dataset.view) {
-      state.view = target.dataset.view; state.period = 'all'; state.status = 'all'; render();
-      const mobileNav = root.querySelector('#earnings-view');
-      (mobileNav.offsetParent ? mobileNav : root.querySelector('.eq-nav [aria-current]')).focus();
+      navigate(target.dataset.view);
     }
     if (target.dataset.detail) detail(target.dataset.detail);
     if (target.dataset.action === 'toggle') {
       if (!state.enabled && !(state.consent && eligible())) return;
       state.enabled = !state.enabled;
       if (state.enabled) state.audit = new Date().toISOString();
+      try {
+        localStorage.setItem(consentKey, JSON.stringify({ policy, enabled: state.enabled, consent: state.consent, audit: state.audit }));
+      } catch (error) { /* Storage is optional for this prototype. */ }
       render(); root.querySelector('[data-action="toggle"]')?.focus();
     }
   });
   root.addEventListener('change', event => {
     const { id, value, checked } = event.target;
     if (id === 'earnings-view') {
-      if (!Object.hasOwn(views(), value)) return;
-      state.view = value; state.period = 'all'; state.status = 'all';
+      navigate(value); return;
     }
-    else if (id === 'language') state.lang = value;
+    else if (id === 'language') {
+      state.lang = value === 'en' ? 'en' : 'vi';
+      const url = new URL(location.href);
+      url.searchParams.set('lang', state.lang);
+      history.replaceState(null, '', url);
+    }
     else if (id === 'consent') state.consent = checked;
     else if (id === 'period-filter') state.period = value;
     else if (id === 'status-filter') state.status = value;
@@ -165,12 +249,41 @@
     render();
     if (id) root.querySelector('#' + id)?.focus();
   });
+  root.addEventListener('keydown', event => {
+    if (!event.target.matches('.eq-management-nav [role="tab"]')) return;
+    const keys = Object.keys(views());
+    const current = keys.indexOf(state.view);
+    let next;
+    if (event.key === 'ArrowRight') next = (current + 1) % keys.length;
+    else if (event.key === 'ArrowLeft') next = (current + keys.length - 1) % keys.length;
+    else if (event.key === 'Home') next = 0;
+    else if (event.key === 'End') next = keys.length - 1;
+    else return;
+    event.preventDefault(); navigate(keys[next]);
+  });
   dialog.addEventListener('click', event => {
+    if (event.target.closest('[data-policy-link]')) {
+      event.preventDefault();
+      if (typeof dialog.close === 'function') dialog.close(); else dialog.removeAttribute('open');
+      navigate('settings', ''); return;
+    }
     if (event.target.closest('[data-action="close"]')) {
       if (typeof dialog.close === 'function') dialog.close(); else dialog.removeAttribute('open');
       opener?.focus();
     }
   });
   dialog.addEventListener('close', () => opener?.focus());
-  render();
+  policyDetails.addEventListener('toggle', () => {
+    if (state.view !== 'settings' || policyDetails.open === state.policyOpen) return;
+    state.policyOpen = policyDetails.open;
+    state.policySection = '';
+    writeRoute();
+  });
+  const policyContents = policyPanel.querySelector('.policy-contents');
+  const compact = window.matchMedia('(max-width: 650px)');
+  const syncContents = () => { policyContents.open = !compact.matches; };
+  syncContents(); compact.addEventListener('change', syncContents);
+  window.addEventListener('hashchange', () => { readRoute(); render(); scrollToPolicy(); });
+  document.addEventListener('oneqr-advertising-change', () => { render(); });
+  readRoute(); render(); scrollToPolicy();
 })();
