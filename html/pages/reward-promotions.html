@@ -6,9 +6,9 @@
   <title>Nexora Touch - Promotion Studio</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="../assets/reward-promotions.css?v=20261009-coupon-form">
+  <link rel="stylesheet" href="../assets/reward-promotions.css?v=20261026-oneqr-icons">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
-  <link rel="stylesheet" href="../assets/promotion-industry-icons.css?v=20261009">
+  <link rel="stylesheet" href="../assets/promotion-industry-icons.css?v=20261026-oneqr-icons">
   <link rel="stylesheet" href="../assets/promotion-create-enhancements.css?v=20261026-control-height">
   <style>
     .phase-tracking{margin-top:18px;padding:20px;border:1px solid var(--promo-line);border-radius:12px;background:var(--promo-surface);box-shadow:var(--promo-shadow)}
@@ -83,7 +83,6 @@
   </div>
   <div id="studio-campaigns" hidden></div>
   <p class="promo-demo-note" data-i18n="demoNote">Interactive prototype · Sample data · Changes are saved in this browser.</p>
-  <p class="promotion-icon-credit">Industry icons by <a href="https://www.flaticon.com/authors/special/lineal-color?author_id=1&amp;type=standard" target="_blank" rel="noopener noreferrer">Freepik · Flaticon</a></p>
   <p id="promotion-feedback" class="promo-feedback" role="status" aria-live="polite"></p>
 </main></div></div>
 
@@ -362,7 +361,7 @@
       <div class="phase-oneqr-screen" data-placement-overview-screen>
         <div class="phase-oneqr-screen-header"><span class="phase-oneqr-screen-logo">BN</span><span><strong>Bitcoin Nail Bar</strong><small>OneQR customer page</small></span></div>
         <div class="phase-oneqr-shortcuts">
-          <div class="phase-oneqr-shortcut" data-placement-marker="nearby"><span class="phase-oneqr-crosshair" aria-hidden="true"></span><strong>Deals Nearby / Explore</strong><small>Khám phá địa điểm quanh bạn</small></div>
+          <div class="phase-oneqr-shortcut" data-placement-marker="nearby"><span data-icon="map-pin"></span><strong>Deals Nearby / Explore</strong><small>Khám phá địa điểm quanh bạn</small></div>
           <div class="phase-oneqr-shortcut" data-placement-marker="search"><span data-icon="search"></span><strong>Search Deals</strong><small>Tìm ưu đãi theo dịch vụ</small></div>
         </div>
         <div class="phase-oneqr-banner-frame" data-placement-marker="banner"><div class="phase-oneqr-banner-preview" id="paid-placement-banner-preview" aria-label="Current promotion banners"></div></div>
@@ -381,7 +380,8 @@
 <dialog id="promotion-poster-dialog" class="promo-poster-dialog" aria-labelledby="poster-title"><header class="editor-header"><div><p class="promo-eyebrow" data-i18n="preview">Preview</p><h2 id="poster-title" data-i18n="promotionPoster">Promotion poster</h2></div><button type="button" class="promo-close" id="close-poster" data-label="closePreview" aria-label="Close preview"><span data-icon="x"></span></button></header><div class="poster-body"><div id="poster-output"></div><div class="poster-pager"><button type="button" class="promo-button" id="previous-banner" data-label="previousBanner" aria-label="Previous banner"><span data-icon="arrow-left"></span></button><span id="poster-page"></span><button type="button" class="promo-button" id="next-banner" data-label="nextBanner" aria-label="Next banner"><span data-icon="arrow-right"></span></button></div><div id="poster-details"></div></div><footer class="editor-footer"><p class="promo-note" data-i18n="printHint">Print or save as PDF.</p><button class="promo-button primary" id="print-poster"><span data-icon="printer"></span><span data-i18n="print">Print poster</span></button></footer></dialog>
 <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
 <script>if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();</script>
-<script src="../assets/promotion-industry-icons.js?v=20261009-create-enhance"></script>
+<script src="../assets/oneqr-action-appearance.js?v=20261026"></script>
+<script src="../assets/promotion-industry-icons.js?v=20261026-oneqr-icons"></script>
 <script src="../assets/promotion-banner-assets.js"></script>
 <script src="../assets/salon-data.js"></script>
 <script src="../assets/appointment-service-catalog.js"></script>
@@ -391,7 +391,7 @@
 <script src="../assets/promotion-create-enhancements.js?v=20261009-paid-setup"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 <script src="../assets/promotion-campaigns.js?v=20261009-industry"></script>
-<script src="../assets/reward-promotions.js?v=20261009-service-icons"></script>
+<script src="../assets/reward-promotions.js?v=20261026-oneqr-icons"></script>
 <script>
 (function () {
   const promotionStudio = window.NEXORA_STUDIO;

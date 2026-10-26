@@ -1,18 +1,18 @@
 (function () {
   'use strict';
-  // Original Freepik / Flaticon Special Lineal Color PNGs. Author credit is in the page footer.
+  const appearance = window.ONEQR_ACTION_APPEARANCE;
   const icons = Object.freeze({
-    nail:307547, pedicure:8086132, spa:11015011, hair:3791216, tattoo:8057592,
-    fitness:5109726, yoga:2963606, nutrition:5638581, restaurant:564022,
-    'fast-food':2600470, coffee:1721407, bakery:4293088, 'hot-pot':1591533,
-    seafood:5290730, 'food-truck':938071, bar:2957384, retail:2611215,
-    apparel:7615058, gift:1040292, jewelry:391226, electronics:3930510,
-    home:1365896, furniture:4540976, flowers:3314900, travel:10521422,
-    entertainment:2991644, lifestyle:3208762, repair:560696, calendar:2964523,
-    cosmetics:1658257, takeaway:5247756
+    nail:'paintbrush', pedicure:'paintbrush', spa:'flower-2', hair:'wand-2', tattoo:'paintbrush',
+    fitness:'trophy', yoga:'heart', nutrition:'heart', restaurant:'utensils',
+    'fast-food':'chef-hat', coffee:'coffee', bakery:'cake', 'hot-pot':'utensils',
+    seafood:'utensils', 'food-truck':'truck', bar:'music', retail:'shopping-bag',
+    apparel:'shopping-bag', gift:'gift', jewelry:'crown', electronics:'phone',
+    home:'home', furniture:'home', flowers:'flower-2', travel:'globe-2',
+    entertainment:'gamepad-2', lifestyle:'heart', repair:'wrench', calendar:'calendar-check',
+    cosmetics:'sparkles', takeaway:'shopping-bag'
   });
   const escape = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-  const path = key => '../assets/promotions/industry-icons/' + (Object.hasOwn(icons,key) ? key : 'retail') + '.png';
+  const path = key => appearance.iconPath(icons[Object.hasOwn(icons,key) ? key : 'retail']);
   function image(key) {
     return '<img class="promotion-industry-icon" src="' + path(key) + '" alt="" width="32" height="32" decoding="async">';
   }

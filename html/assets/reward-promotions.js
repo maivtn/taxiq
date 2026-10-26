@@ -12,37 +12,15 @@
   const esc = value => String(value ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;'}[c]));
   const uid = () => 'promotion-' + (typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2));
   const field = name => form.elements.namedItem(name);
-  const icons = {
-    plus:'M12 5v14M5 12h14', x:'m6 6 12 12M6 18 18 6', search:'M21 21l-4.3-4.3M19 11a8 8 0 1 1-16 0 8 8 0 0 1 16 0',
-    layers:'m12 3 9 5-9 5-9-5 9-5Zm-9 9 9 5 9-5M3 16l9 5 9-5', 'check-circle':'m8 12 3 3 5-6M22 12a10 10 0 1 1-4-8',
-    image:'M4 3h16a1 1 0 0 1 1 1v16a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Zm-1 14 5-5 4 4 3-3 6 6M8 8h.01',
-    sun:'M12 2v2m0 16v2M2 12h2m16 0h2M5 5l1.5 1.5m11 11L19 19M5 19l1.5-1.5m11-11L19 5M16 12a4 4 0 1 1-8 0 4 4 0 0 1 8 0',
-    sparkles:'m12 3 2.5 6.5L21 12l-6.5 2.5L12 21l-2.5-6.5L3 12l6.5-2.5L12 3ZM3 2v4M1 4h4',
-    calendar:'M8 2v4m8-4v4M3 10h18M5 4h14a2 2 0 0 1 2 2v14H3V6a2 2 0 0 1 2-2ZM8 15l3 3 5-5',
-    gift:'M3 8h18v4H3V8Zm2 4v9h14v-9M12 8v13m0-13H8a3 3 0 1 1 3-3l1 3Zm0 0h4a3 3 0 1 0-3-3l-1 3Z',
-    utensils:'M4 3v7a3 3 0 0 0 6 0V3M7 3v18M20 3c-4 2-5 7-5 10h5m0-10v18',
-    'user-plus':'M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2M13 7a4 4 0 1 1-8 0 4 4 0 0 1 8 0Zm7 1v6m-3-3h6',
-    'shopping-bag':'M3 7h18l-1 14H4L3 7Zm5 0V6a4 4 0 0 1 8 0v1M8 11h.01M16 11h.01',
-    scan:'M8 3H3v5m13-5h5v5M3 16v5h5m8 0h5v-5M7 12h10',
-    globe:'M21 12a9 9 0 1 1-18 0 9 9 0 0 1 18 0ZM3 12h18M12 3a18 18 0 0 0 0 18 18 18 0 0 0 0-18Z',
-    upload:'M12 16V3m-5 5 5-5 5 5M3 16v5h18v-5',
-    'external-link':'M15 3h6v6m0-6L10 14M9 3H3v18h18v-6',
+  const controlIcons = {
+    plus:'M12 5v14M5 12h14', x:'m6 6 12 12M6 18 18 6',
     'arrow-left':'M19 12H5m6-6-6 6 6 6', 'arrow-right':'M5 12h14m-6-6 6 6-6 6', 'arrow-up':'M12 19V5m-6 6 6-6 6 6', 'arrow-down':'M12 5v14m-6-6 6 6 6-6',
-    printer:'M6 9V3h12v6M6 17H3V9h18v8h-3M6 14h12v7H6v-7Zm11-2h.01',
-    edit:'m16 3 5 5-12 12-6 1 1-6L16 3Zm-3 3 5 5', copy:'M9 9h12v12H9V9ZM5 15H3V3h12v2',
-    eye:'M2 12s3.5-7 10-7 10 7 10 7-3.5 7-10 7S2 12 2 12Zm13 0a3 3 0 1 1-6 0 3 3 0 0 1 6 0',
-    pause:'M8 5v14M16 5v14', play:'m7 4 14 8-14 8V4Z', more:'M5 12h.01M12 12h.01M19 12h.01',
-    'settings-2':'M20 7h-9M14 17H5M17 4v6M8 14v6M4 7h3M18 17h2',
-    gauge:'M12 14l4-4M3.34 19a10 10 0 1 1 17.32 0',
-    history:'M3 12a9 9 0 1 0 3-6.7L3 8M3 3v5h5M12 7v5l3 2',
-    lightbulb:'M9 18h6M10 22h4M8.5 14.5a6 6 0 1 1 7 0c-.9.7-1.5 1.6-1.5 2.5h-4c0-.9-.6-1.8-1.5-2.5Z',
-    megaphone:'M3 11v2l18 5V6L3 11Zm4 3 1.5 7H5l-1.5-8',
-    'wallet-cards':'M3 7h18v12H3V7Zm3 0V5h12v2M3 11h18M7 15h4',
-    check:'m5 12 4 4L19 6',
-    'loader-2':'M21 12a9 9 0 1 1-6.2-8.6',
-    'alert-circle':'M12 8v5m0 3h.01M22 12a10 10 0 1 1-20 0 10 10 0 0 1 20 0'
+    pause:'M8 5v14M16 5v14', play:'m7 4 14 8-14 8V4Z', more:'M5 12h.01M12 12h.01M19 12h.01'
   };
-  const icon = name => '<svg class="promo-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + (icons[name] || icons.image) + '"/></svg>';
+  const iconNames = {sun:'clock',calendar:'calendar-check',scan:'qr-code',upload:'image',edit:'paintbrush',chart:'layout-dashboard',gauge:'settings-2',history:'clock',lightbulb:'sparkles','loader-2':'settings','alert-circle':'bell'};
+  const icon = name => Object.hasOwn(controlIcons,name)
+    ? '<svg class="promo-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="' + controlIcons[name] + '"/></svg>'
+    : '<img class="promo-icon" src="' + window.ONEQR_ACTION_APPEARANCE.iconPath(iconNames[name] || name) + '" alt="" width="20" height="20" decoding="async">';
   const copy = {
     subtitle:['Create and manage promotions.','Tạo và quản lý chương trình.'], language:['Language','Ngôn ngữ'], addPromotion:['Add promotion','Tạo chương trình'],
     templateTitle:['Promotion templates','Mẫu chương trình'],

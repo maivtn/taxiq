@@ -3,8 +3,6 @@
 .phase-template-filter .promotion-industry-icon{width:20px;height:20px}
 .phase-template-symbol .promotion-industry-icon{width:36px;height:36px}
 .template-symbol .promotion-industry-icon{width:26px;height:26px}
-.promotion-icon-credit{margin:8px 0 0;color:var(--promo-muted);font-size:10px}
-.promotion-icon-credit a{color:inherit;text-underline-offset:2px}
 #ai-brand-industry-summary{display:inline-flex;align-items:center;gap:5px;vertical-align:middle}
 #ai-brand-industry-summary .promotion-industry-icon{width:18px;height:18px}
 .promotion-industry-picker{position:relative;min-width:0}
