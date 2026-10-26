@@ -27,120 +27,166 @@
     'linear-gradient(135deg, #2DD4BF, #155E75)'
   ];
   const ACTION_ICON_CHOICES = [
-    'link-2', 'globe-2', 'external-link', 'qr-code', 'mouse-pointer-click',
-    'calendar-check', 'calendar-check-2', 'calendar-days', 'calendar-range', 'clock-3',
-    'phone', 'phone-call', 'mail', 'message-circle', 'message-square',
-    'messages-square', 'send', 'navigation', 'map-pin', 'map-pinned',
-    'home', 'building-2', 'store', 'briefcase-business', 'user',
-    'users', 'contact-round', 'id-card', 'user-check', 'user-plus',
-    'star', 'heart', 'gift', 'crown', 'gem',
-    'sparkles', 'badge-check', 'shield-check', 'check-circle', 'circle-plus',
-    'shopping-bag', 'credit-card', 'wallet', 'wallet-cards', 'coins',
-    'dollar-sign', 'circle-dollar-sign', 'receipt', 'receipt-text', 'hand-coins',
-    'image', 'video', 'play', 'monitor', 'smartphone',
-    'tablet', 'radio', 'menu', 'list', 'tags',
-    'ticket-percent', 'megaphone', 'bell', 'book-open', 'graduation-cap',
-    'file-text', 'folder', 'clipboard-list', 'calculator', 'code-2',
-    'printer', 'newspaper', 'rocket', 'zap', 'settings',
-    'activity', 'bar-chart-3', 'chart-no-axes-combined', 'trending-up', 'sprout', 'infinity',
-    'badge', 'badge-dollar-sign', 'blocks', 'apple', 'list-checks',
-    'utensils', 'heart-handshake', 'ticket', 'images', 'file-check-2',
-    'clipboard-check', 'clipboard-x', 'file-question', 'folder-tree', 'notebook-pen',
-    'pencil', 'square-pen', 'save', 'download', 'upload-cloud',
-    'copy', 'eye', 'search', 'scan-line', 'share-2',
-    'refresh-cw', 'rotate-ccw', 'undo-2', 'sliders-horizontal', 'settings-2',
-    'shield', 'shield-plus', 'info', 'circle-help', 'circle-question-mark',
-    'alert-triangle', 'triangle-alert', 'octagon-alert', 'check', 'circle-check',
-    'circle-check-big', 'x-circle', 'trash-2', 'inbox', 'voicemail',
-    'phone-forwarded', 'phone-off', 'message-circle-question', 'message-circle-off', 'users-round',
-    'user-circle', 'user-round-check', 'user-x', 'key-round', 'languages',
-    'layers', 'layers-2', 'layers-3', 'layout-dashboard', 'layout-grid',
-    'layout-template', 'list-filter', 'panel-left', 'panel-top', 'arrow-left-right'
+    "award", "badge-dollar-sign", "bell", "bike", "bot", "briefcase",
+    "building-2", "cake", "calendar-check", "calendar-clock", "calendar-days", "camera",
+    "car", "check", "chef-hat", "circle-check", "clock", "coffee",
+    "credit-card", "crown", "dollar-sign", "facebook", "flower-2", "gamepad-2",
+    "gift", "globe-2", "hand-coins", "heart", "home", "image",
+    "instagram", "layout-dashboard", "layout-list", "link", "linkedin", "list",
+    "mail", "map", "map-pin", "megaphone", "message-circle", "music",
+    "package", "paintbrush", "percent", "phone", "qr-code", "receipt",
+    "rocket", "scan-line", "settings-2", "settings", "share-2", "shopping-bag",
+    "sparkles", "square", "square-arrow-out-up-right", "star", "store", "tag",
+    "thumbs-up", "ticket", "trophy", "truck", "tv", "user-cog",
+    "user-round", "users-round", "utensils", "video", "wallet", "wand-2",
+    "wifi", "wrench", "youtube", "zap"
   ];
-  // Freepik / Flaticon Special Lineal Color PNGs, stored locally for the demo.
-  const FLATICON_IDS = {
-    'link-2': 2128313, 'globe-2': 3976437, 'qr-code': 7380606,
-    'mouse-pointer-click': 4001233, 'clock-3': 3094796, phone: 4298187,
-    mail: 912125, 'message-circle': 8604427, 'message-square': 1698588,
-    'map-pin': 4259455, user: 1698618, star: 276049, heart: 4763016,
-    crown: 616067, 'shield-check': 7514105, 'check-circle': 6889473,
-    'circle-plus': 10435127, 'credit-card': 6725363, wallet: 1163373,
-    coins: 3898135, receipt: 679871, video: 9967241,
-    smartphone: 999434, menu: 2828899, list: 2041794,
-    tags: 543135, 'ticket-percent': 2016358, bell: 1069867,
-    'book-open': 1156964, 'file-text': 3940079, megaphone: 3100336,
-    folder: 3305653, calculator: 191110, printer: 3286223,
-    rocket: 619175, pencil: 4277236, settings: 4403451,
-    search: 3286250, 'key-round': 3062553, 'trash-2': 14018849,
-    'upload-cloud': 3663257, info: 3930246, 'alert-triangle': 4081557,
-    'bar-chart-3': 559144, 'circle-help': 2194227, badge: 2583447,
-    zap: 11016041, radio: 1527104, eye: 10608532,
-    'share-2': 3175949, layers: 4263797, bot: 8616562,
-    save: 4176381, 'clipboard-list': 2795007, 'refresh-cw': 12388462,
-    monitor: 2285656, send: 7989068, 'layout-dashboard': 1881517,
-    languages: 5273888, download: 5261869
-  };
-  const SHARED_ICON_FILES = {
-    'calendar-check': 'promotions/industry-icons/calendar.png',
-    home: 'promotions/industry-icons/home.png',
-    store: 'promotions/industry-icons/retail.png',
-    'briefcase-business': 'oneqr/industry-icons/professional-12692369.png',
-    users: 'oneqr/industry-icons/teamwork-1865736.png',
-    gift: 'promotions/industry-icons/gift.png',
-    gem: 'promotions/industry-icons/jewelry.png',
-    sparkles: 'promotions/industry-icons/spa.png',
-    image: 'oneqr/industry-icons/camera-7640413.png',
-    'graduation-cap': 'oneqr/industry-icons/education-306846.png',
-    activity: 'oneqr/industry-icons/medical-5256176.png',
-    sprout: 'oneqr/industry-icons/garden-842870.png',
-    blocks: 'oneqr/industry-icons/puzzle-4406319.png',
-    apple: 'promotions/industry-icons/nutrition.png',
-    utensils: 'promotions/industry-icons/restaurant.png'
-  };
-  // Keep the existing icon keys so saved module appearances remain compatible.
+  const ICON_KEYS = new Set(ACTION_ICON_CHOICES);
+  // Older module keys resolve to the supplied 3D assets without rewriting saved settings.
   const ICON_ALIASES = {
-    'external-link': 'send', 'calendar-check-2': 'calendar-check',
-    'calendar-days': 'calendar-check', 'calendar-range': 'calendar-check',
-    'calendar-clock': 'calendar-check', 'phone-call': 'phone',
-    'messages-square': 'message-circle', navigation: 'map-pin', 'map-pinned': 'map-pin',
-    'building-2': 'home', 'contact-round': 'user', 'id-card': 'user',
-    'user-check': 'user', 'user-plus': 'user', 'badge-check': 'badge',
-    'shopping-bag': 'store', 'wallet-cards': 'wallet', 'dollar-sign': 'coins',
-    'circle-dollar-sign': 'coins', 'receipt-text': 'receipt', 'hand-coins': 'coins',
-    play: 'video', tablet: 'smartphone', 'code-2': 'monitor', newspaper: 'file-text',
-    'chart-no-axes-combined': 'bar-chart-3', 'trending-up': 'bar-chart-3',
-    infinity: 'link-2', 'badge-dollar-sign': 'coins', 'list-checks': 'list',
-    'heart-handshake': 'users', ticket: 'ticket-percent', images: 'image',
-    'file-check-2': 'file-text', 'clipboard-check': 'clipboard-list',
-    'clipboard-x': 'clipboard-list', 'file-question': 'file-text', 'folder-tree': 'folder',
-    'notebook-pen': 'pencil', 'square-pen': 'pencil', copy: 'file-text',
-    'scan-line': 'qr-code', 'rotate-ccw': 'refresh-cw', 'undo-2': 'refresh-cw',
-    'sliders-horizontal': 'settings', 'settings-2': 'settings', shield: 'shield-check',
-    'shield-plus': 'shield-check', 'circle-question-mark': 'circle-help',
-    'triangle-alert': 'alert-triangle', 'octagon-alert': 'alert-triangle',
-    check: 'check-circle', 'circle-check': 'check-circle', 'circle-check-big': 'check-circle',
-    'check-circle-2': 'check-circle', 'x-circle': 'trash-2', inbox: 'mail', voicemail: 'phone',
-    'phone-forwarded': 'phone', 'phone-off': 'phone', 'message-circle-question': 'message-circle',
-    'message-circle-off': 'message-circle', 'users-round': 'users', 'user-circle': 'user',
-    'user-round-check': 'user', 'user-x': 'user', 'user-cog': 'user',
-    'layers-2': 'layers', 'layers-3': 'layers', 'layout-grid': 'layout-dashboard',
-    'layout-template': 'layout-dashboard', 'list-filter': 'list',
-    'panel-left': 'layout-dashboard', 'panel-top': 'layout-dashboard',
-    'arrow-left-right': 'refresh-cw', square: 'layout-dashboard', percent: 'tags'
+    "link-2": "link",
+    "globe": "globe-2",
+    "external-link": "square-arrow-out-up-right",
+    "mouse-pointer-click": "circle-check",
+    "calendar-check-2": "calendar-check",
+    "calendar-range": "calendar-days",
+    "clock-3": "clock",
+    "phone-call": "phone",
+    "messages-square": "message-circle",
+    "message-square": "message-circle",
+    "send": "share-2",
+    "navigation": "map-pin",
+    "map-pinned": "map",
+    "briefcase-business": "briefcase",
+    "user": "user-round",
+    "users": "users-round",
+    "contact-round": "user-round",
+    "id-card": "user-round",
+    "user-check": "circle-check",
+    "user-plus": "users-round",
+    "gem": "sparkles",
+    "badge-check": "award",
+    "shield-check": "circle-check",
+    "check-circle": "circle-check",
+    "circle-plus": "circle-check",
+    "wallet-cards": "wallet",
+    "coins": "hand-coins",
+    "circle-dollar-sign": "badge-dollar-sign",
+    "receipt-text": "receipt",
+    "play": "video",
+    "monitor": "tv",
+    "smartphone": "phone",
+    "tablet": "tv",
+    "radio": "music",
+    "menu": "list",
+    "tags": "tag",
+    "ticket-percent": "percent",
+    "book-open": "list",
+    "graduation-cap": "award",
+    "file-text": "receipt",
+    "folder": "package",
+    "clipboard-list": "list",
+    "calculator": "receipt",
+    "code-2": "settings-2",
+    "printer": "receipt",
+    "newspaper": "layout-list",
+    "activity": "heart",
+    "bar-chart-3": "layout-dashboard",
+    "chart-no-axes-combined": "layout-dashboard",
+    "trending-up": "rocket",
+    "sprout": "flower-2",
+    "infinity": "link",
+    "badge": "award",
+    "blocks": "package",
+    "apple": "heart",
+    "list-checks": "list",
+    "heart-handshake": "heart",
+    "images": "image",
+    "file-check-2": "circle-check",
+    "clipboard-check": "circle-check",
+    "clipboard-x": "list",
+    "file-question": "list",
+    "folder-tree": "package",
+    "notebook-pen": "paintbrush",
+    "pencil": "paintbrush",
+    "square-pen": "paintbrush",
+    "save": "package",
+    "download": "package",
+    "upload-cloud": "image",
+    "copy": "list",
+    "eye": "image",
+    "search": "map",
+    "refresh-cw": "settings-2",
+    "rotate-ccw": "clock",
+    "undo-2": "clock",
+    "sliders-horizontal": "settings-2",
+    "shield": "circle-check",
+    "shield-plus": "circle-check",
+    "info": "list",
+    "circle-help": "message-circle",
+    "circle-question-mark": "message-circle",
+    "alert-triangle": "bell",
+    "triangle-alert": "bell",
+    "octagon-alert": "bell",
+    "circle-check-big": "circle-check",
+    "check-circle-2": "circle-check",
+    "x-circle": "square",
+    "trash-2": "settings",
+    "inbox": "mail",
+    "voicemail": "phone",
+    "phone-forwarded": "phone",
+    "phone-off": "phone",
+    "message-circle-question": "message-circle",
+    "message-circle-off": "message-circle",
+    "user-circle": "user-round",
+    "user-round-check": "user-round",
+    "user-x": "user-round",
+    "key-round": "settings",
+    "languages": "globe-2",
+    "layers": "layout-dashboard",
+    "layers-2": "layout-dashboard",
+    "layers-3": "layout-dashboard",
+    "layout-grid": "layout-dashboard",
+    "layout-template": "layout-dashboard",
+    "list-filter": "list",
+    "panel-left": "layout-list",
+    "panel-top": "layout-dashboard",
+    "arrow-left-right": "share-2"
   };
-  function iconPath(name) {
-    const key = ICON_ALIASES[name] || name;
-    if (Object.hasOwn(SHARED_ICON_FILES, key)) return '../assets/' + SHARED_ICON_FILES[key];
-    const icon = Object.hasOwn(FLATICON_IDS, key) ? key : 'link-2';
-    return '../assets/oneqr/action-icons/' + icon + '-' + FLATICON_IDS[icon] + '.png';
+  function resolveIcon(name) {
+    if (ICON_KEYS.has(name)) return name;
+    return Object.hasOwn(ICON_ALIASES, name) ? ICON_ALIASES[name] : 'link';
   }
-  function image(name) {
-    return '<img class="oneqr-flat-icon" src="' + iconPath(name) + '" alt="" width="24" height="24" decoding="async">';
+  function iconPath(name) {
+    return '../assets/icon-oneqr/issue-2040-oneqr-' + resolveIcon(name) + '-3d.png';
+  }
+  function image(name, size = 24) {
+    return '<img class="oneqr-flat-icon" src="' + iconPath(name) + '" alt="" width="' + size + '" height="' + size + '" decoding="async">';
+  }
+  function mount() {
+    if (typeof document === 'undefined') return;
+    const containers = ['.oneqr-scan-icon', '.oneqr-scan-welcome-icon', '.qr-tab-icon', '.oneqr-phone-quick-actions', '.oneqr-public-actions', '.oneqr-about', '.oneqr-phone-featured'];
+    const selectors = containers.map(selector => selector + ' [data-lucide], ' + selector + ' svg[class*="lucide-"]').join(', ');
+    document.querySelectorAll(selectors).forEach(node => {
+      const legacyName = Array.from(node.classList).filter(value => value.startsWith('lucide-')).map(value => value.slice(7).replace(/-icon$/, '')).find(value => ICON_KEYS.has(value) || Object.hasOwn(ICON_ALIASES, value));
+      const name = node.getAttribute('data-lucide') || legacyName;
+      if (!name) return;
+      const compact = node.closest('.oneqr-phone-quick-actions, .oneqr-public-actions, .oneqr-about, .oneqr-phone-featured');
+      const size = node.closest('.qr-tab-icon') ? 20 : compact ? 14 : 28;
+      const icon = document.createElement('img');
+      icon.className = 'oneqr-flat-icon';icon.src = iconPath(name);
+      icon.alt = '';icon.width = size;icon.height = size;icon.decoding = 'async';
+      node.replaceWith(icon);
+    });
   }
   window.ONEQR_ACTION_APPEARANCE = Object.freeze({
     backgrounds: Object.freeze(TILE_BACKGROUNDS),
     icons: Object.freeze(ACTION_ICON_CHOICES),
+    resolveIcon: resolveIcon,
     iconPath: iconPath,
-    image: image
+    image: image,
+    mount: mount
   });
+  mount();
+  if (typeof document !== 'undefined' && document.readyState === 'loading') document.addEventListener('DOMContentLoaded', mount, {once: true});
 })();

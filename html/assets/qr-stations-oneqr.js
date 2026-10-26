@@ -285,10 +285,10 @@
     appearanceTarget = { name: name, role: currentRole, mode: mode };
     var isIcon = mode === 'icon';
     var selected = isIcon ? (moduleDetails(name).icon || MODULE_ICONS[name]) : moduleBackground(name);
+    if (isIcon && !isModuleImage(selected)) selected = appearanceChoices.resolveIcon(selected);
     document.getElementById('oneqrAppearanceTitle').textContent = isIcon ? 'Choose an icon' : 'Choose a card background';
     document.getElementById('oneqrAppearanceDescription').textContent = (isIcon ? 'Choose an icon for ' : 'Choose an industry-style gradient for ') + moduleTitle(name) + '.';
     appearanceGrid.classList.toggle('is-backgrounds', !isIcon);
-    document.getElementById('oneqrAppearanceCredit').hidden = !isIcon;
     appearanceGrid.innerHTML = (isIcon ? appearanceChoices.icons : appearanceChoices.backgrounds).map(function (value, index) {
       return '<button type="button" data-appearance-choice="' + index + '" class="' + (value === selected ? 'is-selected' : '') + '" aria-pressed="' + (value === selected) + '" aria-label="' + (isIcon ? 'Use ' + value + ' icon' : 'Use gradient ' + (index + 1)) + '">' +
         (isIcon ? appearanceChoices.image(value) : '<span style="background:' + value + '"></span>') + '</button>';

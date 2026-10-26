@@ -57,7 +57,7 @@
     { type: 'item', key: 'dashboard', label: 'Dashboard', icon: 'layout-dashboard', page: 'dashboard' },
     { type: 'group', key: 'community', label: 'Community', icon: 'users-round', page: 'community', items: COMMUNITY_ITEMS },
     { type: 'group', key: 'booking', label: 'AI Hub', icon: 'sparkles', items: [
-      { label: 'OneQR', page: 'stations', tab: 'one-qr', href: 'qr-stations.html' },
+      { label: 'OneQR', page: 'stations', tab: 'one-qr', href: 'qr-stations.html', image: '../assets/icon-oneqr/issue-2040-oneqr-qr-code-3d.png' },
       { label: 'Reviews', page: 'review', tab: 'reviews', href: 'nexora-review.html' },
       { label: 'Analytics', placeholder: true }
     ] },
@@ -280,7 +280,8 @@
       + iconWrap(node.icon) + '<span>' + esc(node.label) + '</span>' + CARET + '</button>';
 
     var items = node.items.map(function (it) {
-      var inner = '<span class="nav-subitem-dot" aria-hidden="true"></span><span>' + esc(it.label) + '</span>';
+      var marker = it.image ? '<img class="nav-subitem-image" src="' + esc(it.image) + '" alt="" width="20" height="20">' : '<span class="nav-subitem-dot" aria-hidden="true"></span>';
+      var inner = marker + '<span>' + esc(it.label) + '</span>';
       if (it.placeholder) return '<button class="nav-subitem" type="button">' + inner + '</button>';
       if (it.disabled) return '<button class="nav-subitem" type="button" disabled title="' + esc(it.title || '') + '">' + inner + '</button>';
       if (it.href) {

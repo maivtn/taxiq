@@ -1163,7 +1163,7 @@
 }
 
 .oneqr-module-icon img { width: 100%; height: 100%; object-fit: cover; }
-.oneqr-module-icon .oneqr-flat-icon { display: block; width: 24px; height: 24px; object-fit: contain; }
+.oneqr-module-icon .oneqr-flat-icon { display: block; width: 30px; height: 30px; object-fit: contain; }
 .oneqr-module-icon-tools { display: grid; flex: 0 0 72px; grid-template-columns: 34px 29px; align-items: center; justify-content: center; justify-items: center; gap: 3px 5px; }
 .oneqr-module-icon-tools > span:last-child { display: grid; width: 72px; grid-column: 1 / -1; gap: 2px; }
 .oneqr-module-icon-tools > span:last-child button { min-height: 18px; padding: 0 4px; border: 1px solid #dfe3eb; border-radius: 5px; background: #fff; color: #667085; cursor: pointer; font-size: 11px; font-weight: 700; line-height: 1; white-space: nowrap; }
@@ -1253,7 +1253,7 @@
 .oneqr-appearance-grid button { display: grid; min-width: 0; height: 40px; place-items: center; border: 1px solid #e4e7ec; border-radius: 9px; background: #fff; color: #596376; cursor: pointer; }
 .oneqr-appearance-grid button:hover, .oneqr-appearance-grid button:focus-visible, .oneqr-appearance-grid button.is-selected { border-color: #8d85f2; background: #f2f0ff; color: #4b48e7; outline: none; box-shadow: 0 0 0 2px rgba(79,70,229,.08); }
 .oneqr-appearance-grid svg { width: 17px; height: 17px; }
-.oneqr-appearance-grid .oneqr-flat-icon { display: block; width: 26px; height: 26px; object-fit: contain; }
+.oneqr-appearance-grid .oneqr-flat-icon { display: block; width: 32px; height: 32px; object-fit: contain; }
 .oneqr-appearance-dialog > .oneqr-appearance-credit { margin: 12px 0 0; font-size: 10px; }
 .oneqr-appearance-credit a { color: inherit; text-underline-offset: 2px; }
 .oneqr-appearance-grid.is-backgrounds { grid-template-columns: repeat(auto-fit, minmax(60px, 1fr)); gap: 9px; }

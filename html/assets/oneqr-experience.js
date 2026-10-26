@@ -106,6 +106,7 @@
       if (brand) brand.textContent = card.name;
       document.title = card.name + ' - OneQR';
     }
+    if (window.ONEQR_ACTION_APPEARANCE) window.ONEQR_ACTION_APPEARANCE.mount();
     if (window.lucide) window.lucide.createIcons();
   }
 

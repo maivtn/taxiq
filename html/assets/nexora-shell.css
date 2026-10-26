@@ -743,3 +743,5 @@ select {
 .sidebar:not(.staff-sidebar) .nav-item.is-active .lucide-menu-icon{color:#fff}
 .sidebar-nav{scrollbar-width:thin;scrollbar-color:#32d7ff transparent}
 @media(prefers-reduced-motion:reduce){.sidebar-account-toggle .nav-caret{transition:none}}
+
+.nav-subitem-image{display:block;width:20px;height:20px;flex-shrink:0;object-fit:contain}

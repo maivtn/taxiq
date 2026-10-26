@@ -5,62 +5,143 @@
   const GROUPS = catalog.groups;
   const industries = catalog.industries;
   const TILE_BACKGROUNDS = window.ONEQR_ACTION_APPEARANCE.backgrounds;
-  // Freepik / Flaticon Special Lineal Color PNGs. Credit is below the grid.
-  const SHARED_ICON_KEYS = new Set([
-    'nail', 'spa', 'hair', 'tattoo', 'fitness', 'restaurant', 'coffee',
-    'seafood', 'food-truck', 'retail', 'apparel', 'jewelry', 'electronics',
-    'home', 'furniture', 'flowers', 'travel', 'entertainment', 'repair',
-    'cosmetics', 'takeaway'
-  ]);
-  const FLATICON_IDS = {
-    medical: 5256176, car: 9835784, microphone: 2972039, business: 3094836,
-    teamwork: 1865736, camera: 7640413, pet: 8418363, dental: 5714921,
-    garden: 842870, party: 9109172, 'ice-cream': 2200569, construction: 10295941,
-    baby: 9593079, grocery: 3194525, education: 306846, finance: 2523092,
-    puzzle: 4406319, pharmacy: 9069025, boba: 4645854, meat: 995856,
-    professional: 12692369, plumbing: 7853370, laundry: 1685982,
-    music: 1514194, law: 1208147, 'pet-grooming': 6245877
-  };
+  const appearance = window.ONEQR_ACTION_APPEARANCE;
   const GROUP_ICONS = {
-    beauty: 'spa', food: 'restaurant', personal: 'professional', showbiz: 'microphone',
-    service: 'repair', store: 'retail', houseauto: 'construction', health: 'medical',
-    family: 'education', events: 'party', finance: 'finance', pro: 'business',
-    community: 'teamwork', other: 'puzzle'
+    "beauty": "sparkles",
+    "food": "utensils",
+    "personal": "user-round",
+    "showbiz": "music",
+    "service": "bell",
+    "store": "store",
+    "houseauto": "wrench",
+    "health": "heart",
+    "family": "award",
+    "events": "cake",
+    "finance": "wallet",
+    "pro": "briefcase",
+    "community": "users-round",
+    "other": "square"
   };
   const INDUSTRY_ICONS = {
-    nails: 'nail', hair: 'hair', lash: 'cosmetics', tattoo: 'tattoo',
-    cafe: 'coffee', truck: 'food-truck', trainer: 'fitness', mua: 'cosmetics',
-    kol: 'camera', freelance: 'electronics', photo: 'camera', songwriter: 'music',
-    band: 'music', model: 'apparel', actor: 'entertainment', gym: 'fitness',
-    tutor: 'education', ride: 'car', shopvn: 'retail', grocery: 'grocery',
-    butcher: 'meat', seafood: 'seafood', boba: 'boba', icecream: 'ice-cream',
-    foodsupply: 'takeaway', beautyproducts: 'cosmetics', supplement: 'pharmacy',
-    supply: 'repair', goldshop: 'jewelry', jewelry: 'jewelry', gems: 'jewelry',
-    florist: 'flowers', furniture: 'furniture', boutique: 'apparel', thrift: 'apparel',
-    petstore: 'pet', wig: 'hair', auto: 'repair', bodyshop: 'car', tires: 'car',
-    towing: 'car', autoglass: 'car', dealer: 'car', autoparts: 'repair',
-    lawn: 'garden', landscape: 'garden', plumber: 'plumbing', electric: 'repair',
-    hvac: 'repair', pest: 'home', pool: 'home', appliance: 'electronics',
-    painting: 'repair', solar: 'electronics', locksmith: 'repair', gas: 'car',
-    carwash: 'car', carrental: 'car', moving: 'home', laundry: 'laundry',
-    alteration: 'apparel', phonerepair: 'electronics', dental: 'dental',
-    acupuncture: 'spa', pharmacy: 'pharmacy', vet: 'pet', medspa: 'spa',
-    pmu: 'cosmetics', childcare: 'baby', driving: 'car', music: 'music',
-    martial: 'fitness', dance: 'entertainment', photobooth: 'camera',
-    catering: 'restaurant', notary: 'law', translation: 'education', mortgage: 'home',
-    staffing: 'teamwork', legal: 'law', realestate: 'home', insurance: 'finance',
-    security: 'law', taxservice: 'finance', travel: 'travel', itservice: 'electronics',
-    karaoke: 'microphone', petgroom: 'pet-grooming', petboard: 'pet', funeral: 'flowers'
+    "nails": "paintbrush",
+    "hair": "wand-2",
+    "massage": "flower-2",
+    "lash": "sparkles",
+    "tattoo": "paintbrush",
+    "restaurant": "utensils",
+    "cafe": "coffee",
+    "truck": "truck",
+    "solo": "user-round",
+    "trainer": "trophy",
+    "mua": "paintbrush",
+    "coach": "message-circle",
+    "kol": "instagram",
+    "freelance": "briefcase",
+    "photo": "camera",
+    "artist": "music",
+    "songwriter": "music",
+    "band": "music",
+    "model": "camera",
+    "actor": "tv",
+    "mc": "message-circle",
+    "gym": "trophy",
+    "tutor": "award",
+    "ride": "car",
+    "home": "home",
+    "shopvn": "store",
+    "retail": "shopping-bag",
+    "grocery": "store",
+    "butcher": "chef-hat",
+    "seafood": "utensils",
+    "boba": "coffee",
+    "icecream": "cake",
+    "foodsupply": "package",
+    "beautyproducts": "sparkles",
+    "supplement": "heart",
+    "supply": "package",
+    "goldshop": "crown",
+    "jewelry": "crown",
+    "gems": "sparkles",
+    "florist": "flower-2",
+    "printing": "image",
+    "furniture": "home",
+    "boutique": "shopping-bag",
+    "thrift": "shopping-bag",
+    "petstore": "heart",
+    "wig": "wand-2",
+    "auto": "wrench",
+    "bodyshop": "car",
+    "tires": "car",
+    "towing": "truck",
+    "autoglass": "car",
+    "dealer": "car",
+    "autoparts": "wrench",
+    "lawn": "flower-2",
+    "landscape": "flower-2",
+    "construction": "building-2",
+    "plumber": "wrench",
+    "electric": "zap",
+    "hvac": "settings",
+    "roofing": "home",
+    "pest": "home",
+    "pool": "home",
+    "appliance": "settings",
+    "flooring": "home",
+    "painting": "paintbrush",
+    "solar": "zap",
+    "locksmith": "settings-2",
+    "gas": "car",
+    "carwash": "car",
+    "carrental": "car",
+    "moving": "truck",
+    "laundry": "settings",
+    "alteration": "shopping-bag",
+    "phonerepair": "phone",
+    "clinic": "heart",
+    "dental": "heart",
+    "acupuncture": "flower-2",
+    "chiro": "heart",
+    "optical": "user-round",
+    "pharmacy": "heart",
+    "vet": "heart",
+    "medspa": "sparkles",
+    "pmu": "paintbrush",
+    "childcare": "users-round",
+    "school": "award",
+    "driving": "car",
+    "music": "music",
+    "martial": "trophy",
+    "dance": "music",
+    "wedding": "heart",
+    "venue": "building-2",
+    "partyrental": "cake",
+    "photobooth": "camera",
+    "catering": "chef-hat",
+    "moneytransfer": "wallet",
+    "notary": "receipt",
+    "translation": "globe-2",
+    "mortgage": "home",
+    "staffing": "users-round",
+    "legal": "briefcase",
+    "realestate": "home",
+    "bizbroker": "briefcase",
+    "insurance": "circle-check",
+    "security": "circle-check",
+    "taxservice": "receipt",
+    "travel": "map",
+    "itservice": "settings-2",
+    "agency": "megaphone",
+    "worship": "building-2",
+    "nonprofit": "heart",
+    "karaoke": "music",
+    "petgroom": "heart",
+    "petboard": "home",
+    "funeral": "flower-2",
+    "other": "square"
   };
-  function flaticonImage(key, size = 36) {
-    const path = SHARED_ICON_KEYS.has(key)
-      ? `../assets/promotions/industry-icons/${key}.png`
-      : `../assets/oneqr/industry-icons/${key}-${FLATICON_IDS[key]}.png`;
-    return `<img src="${path}" alt="" width="${size}" height="${size}" loading="lazy" decoding="async">`;
-  }
+  function industryImage(key, size = 36) { return appearance.image(key, size); }
   function industryIcon(industry) {
-    const key = INDUSTRY_ICONS[industry.id] || GROUP_ICONS[industry.groupId] || 'puzzle';
-    return flaticonImage(key);
+    return industryImage(INDUSTRY_ICONS[industry.id] || GROUP_ICONS[industry.groupId] || 'square');
   }
   const state = { group: 'all', query: '', language: 'en', selected: 'nails' };
   const groupById = id => GROUPS.find(group => group.id === id);
@@ -76,8 +157,8 @@
   function renderGroups() {
     const tabs = $('#industry-group-tabs');
     const allLabel = state.language === 'vi' ? 'Tất cả' : 'All industries';
-    tabs.innerHTML = [`<button class="group-tab ${state.group === 'all' ? 'is-active' : ''}" type="button" role="tab" aria-selected="${state.group === 'all'}" data-group="all">${flaticonImage('retail', 20)}${allLabel}<span>${industries.length}</span></button>`]
-      .concat(GROUPS.map((group) => `<button class="group-tab ${state.group === group.id ? 'is-active' : ''}" type="button" role="tab" aria-selected="${state.group === group.id}" data-group="${group.id}">${flaticonImage(GROUP_ICONS[group.id] || 'puzzle', 20)}${label(group)}<span>${group.items.split('|').length}</span></button>`)).join('');
+    tabs.innerHTML = [`<button class="group-tab ${state.group === 'all' ? 'is-active' : ''}" type="button" role="tab" aria-selected="${state.group === 'all'}" data-group="all">${industryImage('store', 20)}${allLabel}<span>${industries.length}</span></button>`]
+      .concat(GROUPS.map((group) => `<button class="group-tab ${state.group === group.id ? 'is-active' : ''}" type="button" role="tab" aria-selected="${state.group === group.id}" data-group="${group.id}">${industryImage(GROUP_ICONS[group.id] || 'square', 20)}${label(group)}<span>${group.items.split('|').length}</span></button>`)).join('');
     tabs.querySelectorAll('[data-group]').forEach((button) => button.addEventListener('click', () => {
       state.group = button.dataset.group;
       renderGroups();
