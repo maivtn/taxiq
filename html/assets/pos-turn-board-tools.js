@@ -30,7 +30,7 @@
   function restore(value) {
     const data = structuredClone(value);
     tickets = data.tickets;
-    technicians.splice(0, technicians.length, ...data.technicians.map(tech => ({...tech, approvedServiceCodes:[...new Set(tech.approvedServiceCodes || tech.codes)]})));
+    technicians.splice(0, technicians.length, ...data.technicians.map(tech => ({...tech, approvedServiceCodes:[...new Set(tech.approvedServiceCodes || tech.codes)], turnDetails:recordedTurnEntries(tech)})));
     nextTurnIndex = data.nextTurnIndex;
     manualTurnAudit.splice(0, manualTurnAudit.length, ...data.manualTurnAudit);
     turnEditAudit.splice(0, turnEditAudit.length, ...data.turnEditAudit);

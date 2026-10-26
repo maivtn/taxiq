@@ -242,3 +242,11 @@
 @media(max-width:700px){.turn-spotlight{padding:10px}.next-tech-card{grid-template-columns:52px minmax(0,1fr);padding:14px;gap:12px}.next-tech-avatar{width:52px;height:52px;border-radius:15px;font-size:18px}.next-tech-title h2{font-size:20px}.next-tech-metrics{grid-template-columns:repeat(2,minmax(0,1fr))}.next-turn-panel{padding:14px}.next-turn-queue{grid-auto-columns:minmax(170px,78%)}#staff-view .staff-profile-grid{grid-template-columns:1fr}#staff-view .form-grid{grid-template-columns:repeat(2,minmax(0,1fr))}#staff-view .ledger-row{grid-template-columns:1fr 1fr}}
 @media(max-width:380px){.next-tech-actions{flex-direction:column}#staff-view .form-grid{grid-template-columns:1fr}}
 @media(prefers-reduced-motion:reduce){.front-desk .next-queue-card{transition:none}}
+
+/* Edit the selected service turn using the PO actions and shared control spacing. */
+#edit-turn-form .boost-form{margin-top:16px}
+#edit-turn-form .edit-turn-reason{grid-column:1/-1}
+#edit-turn-form #edit-turn-tech-field{grid-column:1/-1}
+#edit-turn-form #edit-turn-tech-field[hidden]{display:none}
+.front-desk #edit-turn-form select{appearance:none;padding-right:44px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%2364748b' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 16px center;background-size:16px}
+#edit-turn-form #edit-turn-preview{font-weight:600}

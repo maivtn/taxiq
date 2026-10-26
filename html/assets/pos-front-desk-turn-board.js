@@ -14,16 +14,17 @@ const technicians=[
 function boardEscape(value){return String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
 function boardServiceCode(id){return boardEscape(window.NEXORA_BOARD_SERVICES?.code(id)||id);}
 const serviceLabels={PED:'Pedicure',MANI:'Manicure',GEL:'Gel Polish',DIP:'Dipping Powder','ACR-FS':'Acrylic Full Set',REF:'Refill',WAX:'Waxing'};
-technicians.forEach(tech=>{tech.approvedServiceCodes=[...new Set(tech.codes)];});
+technicians.forEach(tech=>{tech.approvedServiceCodes=[...new Set(tech.codes)];tech.turnDetails=recordedTurnEntries(tech);});
 const normalTickets=structuredClone(tickets),normalTechnicians=structuredClone(technicians);
 const staffProfileAudit=[];
 let profileReturnIndex=null;
 let nextTurnIndex=0,boardMode="compact",editingTechIndex=null,activeFilter="all",addTurnTechIndex=null,addTurnSaving=false,boostTechIndex=null;
-const manualTurnAudit=[];
+const manualTurnAudit=[],turnEditAudit=[];
+let editingTurnIndex=null,editingTurnSource=null,editingTurnOriginal=null,editTurnCreditBeforeSkip=null;
 function render() {}
 function toast(message){document.getElementById("toast").textContent=message;}
 function buildPeakHourData(){const firstNames=['Kayla','Lana','Chloe','Mia','HUU','Michael','Julie','Amy','Jessica','Cindy','Kim','Anna','Tina','Nancy','Rose','Linda','Jenny','Kelly','Tracy','Helen','Mai','Vy','Tammy','Diana','Sophia'],services=['Deluxe Pedicure','Dipping Powder','Gel Manicure','Acrylic Full Set','Express Pedicure','Eyebrow Waxing'],codes=['PED','DIP','GEL','ACR-FS','MANI','WAX'];const names=Array.from({length:50},(_,index)=>`${firstNames[index%firstNames.length]} ${index<25?'A':'B'}`);const technicians=names.map((name,index)=>{const status=index%11===0?'clocked-out':index%7===0?'paused':index%3===0?'busy':'available';return{name,level:index%3+1,status,turns:index%6,serviceCount:index%8+1,sales:80+index*18,minutes:45+index*11,codes:Array.from({length:index%5+1},(_,slot)=>codes[(index+slot)%codes.length]),commission:.6,dailyIncomeGoal:250+(index%4)*50,detail:status==='available'?'Available now · Mixed services':status==='busy'?'Busy · About 20 min remaining':status==='paused'?'Paused':'Clocked out'};});const guestNames=['Sophia','Emma','Olivia','Ava','Isabella','Mia','Luna','Camila','Harper','Ella','Grace','Lily'];const tickets=Array.from({length:36},(_,index)=>({id:200+index,customer:`${guestNames[index%guestNames.length]} ${index+1}`,phone:`(555) 020-${String(3000+index).slice(-4)}`,time:`${10+Math.floor(index/12)}:${String((index%12)*5).padStart(2,'0')} AM`,status:'waiting',tech:'',services:[services[index%services.length]],wait:8+index*2,isNew:index%3===0,requiredLevel:index%5===0?2:1}));return{technicians,tickets};}
-function setDemoMode(mode){const data=mode==='peak'?buildPeakHourData():{technicians:normalTechnicians,tickets:normalTickets};tickets=data.tickets.map(item=>({...item}));technicians.splice(0,technicians.length,...data.technicians.map(item=>({...item,codes:[...item.codes],approvedServiceCodes:[...(item.approvedServiceCodes||item.codes)]})));nextTurnIndex=0;activeFilter='all';render();renderTurnBoard();toast(mode==='peak'?'Large Salon Demo loaded: 50 technicians and 36 waiting guests':'Normal Data restored');}
+function setDemoMode(mode){const data=mode==='peak'?buildPeakHourData():{technicians:normalTechnicians,tickets:normalTickets};tickets=data.tickets.map(item=>({...item}));technicians.splice(0,technicians.length,...data.technicians.map(item=>({...item,codes:[...item.codes],approvedServiceCodes:[...(item.approvedServiceCodes||item.codes)],turnDetails:recordedTurnEntries(item)})));nextTurnIndex=0;activeFilter='all';render();renderTurnBoard();toast(mode==='peak'?'Large Salon Demo loaded: 50 technicians and 36 waiting guests':'Normal Data restored');}
 function canAutoAssign(ticket){return ticket.status==='waiting'&&!ticket.tech&&Array.isArray(ticket.services)&&ticket.services.length>0;}
 function rotationPositionMap(techs,startIndex){const positions=new Map(),count=techs.length;let position=1;for(let offset=0;offset<count;offset++){const index=(Math.max(0,startIndex)+offset)%count;if(techs[index].status==='available'||techs[index].status==='busy')positions.set(index,position++);}return positions;}
 function orderedTechs(){const positions=rotationPositionMap(technicians,nextTurnIndex);return technicians.map((tech,index)=>({tech,index,rotation:positions.get(index)||null})).sort((a,b)=>a.rotation&&b.rotation?a.rotation-b.rotation:a.rotation?-1:b.rotation?1:a.index-b.index);}
@@ -37,7 +38,7 @@ function approvedServiceCodes(tech){return tech.approvedServiceCodes||[...new Se
 function visibleTechs(){const q=(document.getElementById('tech-search').value||'').toLowerCase(),status=document.getElementById('tech-status-filter').value;return orderedTechs().filter(x=>(status==='all'||x.tech.status===status)&&(x.tech.name.toLowerCase().includes(q)||approvedServiceCodes(x.tech).some(code=>(serviceLabels[code]||code).toLowerCase().includes(q))));}
 function renderCompactBoard(){return `<div class="compact-board"><div class="compact-row header"><div>Turn order / Technician</div><div>Status</div><div>Turns</div><div>Services</div><div>Service Total</div><div>Goal</div><div>Today / Action</div></div>${visibleTechs().map(({tech,index,rotation})=>{const g=goalProgress(tech);return `<div class="compact-row"><div class="compact-tech">${rotation?`#${rotation}${rotation===1&&index===nextTurnIndex?' NEXT':''}`:'—'} · ${boardEscape(tech.name)}<small>Level ${tech.level}</small></div><div>${tech.status}</div><div>${tech.turns}T</div><div>${tech.serviceCount}</div><div><strong>$${tech.sales}</strong></div><div>${g.percent}%<div class="mini-progress"><span style="width:${g.percent}%"></span></div></div><div>${tech.codes.map(boardServiceCode).join(' · ')} ${tech.status==='clocked-out'?`<button class="action" onclick="checkInBoardTech(${index})">Check in</button>`:''} <button class="action" onclick="openEditTurn(${index})">Edit Turn</button></div></div>`}).join('')}</div>`;}
 function turnGridColumnCount(){return Math.max(12,...technicians.map(tech=>(tech.codes?.length||0)+1));}
-function renderTurnGrid(){const columnCount=turnGridColumnCount(),columns=Array.from({length:columnCount},(_,index)=>index);return `<div class="turn-grid-wrap"><table class="turn-grid"><tr><th>Turn / Technician</th>${columns.map(n=>`<th>${n+1}</th>`).join('')}</tr>${visibleTechs().map(({tech,index,rotation})=>`<tr><th>${rotation?`#${rotation}${rotation===1&&index===nextTurnIndex?' NEXT':''}`:'—'} · ${boardEscape(tech.name)}<br>${tech.turns}T · $${tech.sales}${tech.status==='clocked-out'?`<button class="grid-check-in" onclick="checkInBoardTech(${index})">Check in</button>`:''}</th>${columns.map((n)=>{const detail=tech.turnDetails?.[n];return n<tech.codes.length?`<td class="turn-cell done"><button onclick="openEditTurn(${index})">${boardServiceCode(tech.codes[n])}<br>${detail?`$${detail.amount} · +${detail.credit}T`:`+${demoRecordedTurnCredit(30+n*18)}T`}</button></td>`:n===tech.codes.length?`<td class="turn-cell add-turn-cell"><button onclick="openAddTurn(${index})">＋ Add Turn</button></td>`:`<td class="turn-cell"></td>`}).join('')}</tr>`).join('')}</table></div>`;}
+function renderTurnGrid(){const columnCount=turnGridColumnCount(),columns=Array.from({length:columnCount},(_,index)=>index);return `<div class="turn-grid-wrap"><table class="turn-grid"><tr><th>Turn / Technician</th>${columns.map(n=>`<th>${n+1}</th>`).join('')}</tr>${visibleTechs().map(({tech,index,rotation})=>`<tr><th>${rotation?`#${rotation}${rotation===1&&index===nextTurnIndex?' NEXT':''}`:'—'} · ${boardEscape(tech.name)}<br>${tech.turns}T · $${tech.sales}${tech.status==='clocked-out'?`<button class="grid-check-in" onclick="checkInBoardTech(${index})">Check in</button>`:''}</th>${columns.map((n)=>{const detail=tech.turnDetails?.[n];return n<tech.codes.length?`<td class="turn-cell ${detail?.action==='skip'?'skip':'done'}"><button onclick="openEditTurn(${index},${n})">${boardServiceCode(tech.codes[n])}<br>${detail&&!detail.seeded?`$${detail.amount} · +${detail.credit}T`:`+${recordedTurnEntry(tech,n).credit}T`}</button></td>`:n===tech.codes.length?`<td class="turn-cell add-turn-cell"><button onclick="openAddTurn(${index})">＋ Add Turn</button></td>`:`<td class="turn-cell"></td>`}).join('')}</tr>`).join('')}</table></div>`;}
 function renderCardBoard(){return visibleTechs().map(({tech,index,rotation})=>{const customer=activeCustomerFor(tech.name),isNext=rotation===1&&index===nextTurnIndex,label=rotation?`<span class="${isNext?'next-turn':'up-next'}">#${rotation}${isNext?' NEXT':''}</span>`:'',balance=balanceRecommendation(tech),goal=goalProgress(tech),codes=tech.codes.map(code=>`<abbr title="${boardEscape(serviceLabels[code])}">${boardServiceCode(code)}</abbr>`).join(''),goalClass=goal.percent>=100?'reached':goal.percent>=80?'on-track':'';return `<article class="board-card ${isNext?'current':''}"><div class="tech-avatar">${boardEscape(tech.name.slice(0,2))}</div><div><div class="board-name">${boardEscape(tech.name)} · Level ${tech.level}${label}</div><div class="board-status">${tech.status}</div>${customer?`<div class="board-customer">Serving <strong>${boardEscape(customer.customer)}</strong>${customer.location?`<br>📍 <strong>${boardEscape(customer.location)}</strong>`:''}${customer.techNote?`<br>📝 ${boardEscape(customer.techNote)}`:''}</div>`:''}</div><div class="availability">${tech.status.toUpperCase()}</div><div class="workload-metrics"><div class="metric"><span>Turns</span><strong>${tech.turns}</strong></div><div class="metric"><span>Services</span><strong>${tech.serviceCount}</strong></div><div class="metric"><span>Service Total</span><strong>$${tech.sales}</strong></div><div class="metric"><span>Working Time</span><strong>${tech.minutes}m</strong></div></div><div class="goal-card"><div class="goal-line"><strong>Goal Progress · ${goal.percent}%</strong><span>${goal.status}</span></div><div class="goal-track"><div class="goal-fill ${goalClass}" style="width:${goal.percent}%"></div></div><div class="goal-meta"><span>Service Total $${goal.serviceTotal} / Daily Goal $${tech.dailyIncomeGoal}</span><span>$${goal.remaining} remaining</span></div></div><div class="service-codes">Today: ${codes}</div>${balance.show?`<div class="makeup"><strong>MAKE-UP RECOMMENDED</strong>${balance.text}</div>`:''}<div class="board-actions">${tech.status==='clocked-out'?`<button class="action main" onclick="checkInBoardTech(${index})">Check in</button>`:`<button class="action main" onclick="openNextGuest(${index})">Assign Guest</button>`}<button class="action" onclick="skipTurn(${index})">Skip Turn</button><button class="action" onclick="togglePause(${index})">Pause</button><button class="action" onclick="openEditTurn(${index})">Edit Turn</button>${goal.percent<100?`<button class="action" onclick="openBoost(${index})">Boost This Technician</button>`:''}</div></article>`}).join('');}
 // The spotlight follows the same rotation as the board; it never advances that rotation.
 function turnSpotlightQueue(techs,rotationOrder,limit=10){
@@ -123,8 +124,109 @@ function renderTurnBoard(){
 // Seeded historical cells retain the weights in effect when the demo records were created.
 function demoRecordedTurnCredit(amount){return amount<30?.5:amount<70?1:amount<110?1.5:2;}
 function saveTurnRules(){document.getElementById('turn-rules-modal').classList.remove('show');toast('Weighted turn rules saved');}
-function openEditTurn(index){editingTechIndex=index;document.getElementById('edit-turn-copy').textContent=`Edit ${technicians[index].name}'s turn credit`;document.getElementById('edit-turn-reason').value='';document.getElementById('edit-turn-modal').classList.add('show');}
-function saveTurnEdit(){const reason=document.getElementById('edit-turn-reason').value.trim();if(!reason){toast('Audit reason is required');return}technicians[editingTechIndex].turns=parseFloat(document.getElementById('edit-turn-credit').value);document.getElementById('edit-turn-modal').classList.remove('show');renderTurnBoard();toast('Turn updated and audit log saved');}
+// Keep sample cells within the row totals, then freeze their values before edits.
+function recordedTurnEntries(tech){
+ const known=(tech.turnDetails||[]).slice(0,tech.codes.length).filter(Boolean);
+ let creditLeft=Math.max(0,tech.turns-known.reduce((sum,entry)=>sum+entry.credit,0));
+ let amountLeft=Math.max(0,tech.sales-known.reduce((sum,entry)=>sum+entry.amount,0));
+ let countLeft=Math.max(0,tech.serviceCount-known.reduce((sum,entry)=>sum+(entry.serviceCount??1),0));
+ return tech.codes.map((code,index)=>{
+  const detail=tech.turnDetails?.[index];
+  if(detail)return {...detail,code,serviceCount:detail.serviceCount??1};
+  const amount=Math.min(30+index*18,amountLeft),credit=Math.min(demoRecordedTurnCredit(30+index*18),creditLeft),serviceCount=Math.min(1,countLeft);
+  creditLeft=+(creditLeft-credit).toFixed(4);amountLeft=+(amountLeft-amount).toFixed(2);countLeft-=serviceCount;
+  return {code,amount,credit,serviceCount,seeded:true};
+ });
+}
+function recordedTurnEntry(tech,index){return recordedTurnEntries(tech)[index];}
+function openEditTurn(index,turnIndex){
+ const tech=technicians[index],slot=turnIndex??((tech?.codes.length||0)-1);
+ if(!tech||!Number.isInteger(slot)||slot<0||slot>=tech.codes.length)return;
+ editingTechIndex=index;editingTurnIndex=slot;editingTurnSource=tech;editingTurnOriginal=recordedTurnEntry(tech,slot);
+ editTurnCreditBeforeSkip=null;
+ document.getElementById('edit-turn-copy').textContent=`Edit ${tech.name}'s turn credit`;
+ document.getElementById('edit-turn-preview').textContent=`${window.NEXORA_BOARD_SERVICES?.code(editingTurnOriginal.code)||editingTurnOriginal.code} · #${slot+1} · $${editingTurnOriginal.amount.toFixed(2)} · +${editingTurnOriginal.credit}T`;
+ const credit=document.getElementById('edit-turn-credit');
+ const credits=[...new Set([0,0.5,1,1.5,2,...window.NEXORA_TURN_SETTINGS.load().serviceWeights,editingTurnOriginal.credit])].sort((a,b)=>a-b);
+ credit.replaceChildren(...credits.map(value=>{const option=document.createElement('option');option.value=String(value);option.textContent=String(value);return option;}));
+ credit.value=String(editingTurnOriginal.credit);credit.disabled=false;
+ const target=document.getElementById('edit-turn-tech');
+ target.replaceChildren(...technicians.flatMap((item,i)=>{
+  if(i===index)return [];
+  const option=document.createElement('option');option.value=String(i);option.textContent=item.name;return [option];
+ }));
+ target.selectedIndex=-1;
+ document.getElementById('edit-turn-action').value='adjust';
+ document.getElementById('edit-turn-action').querySelector('[value="move"]').disabled=technicians.length<2;
+ document.getElementById('edit-turn-reason').value='';
+ document.getElementById('edit-turn-error').textContent='';
+ document.getElementById('edit-turn-save').disabled=false;
+ updateEditTurnAction();
+ document.getElementById('edit-turn-modal').classList.add('show');credit.focus();
+}
+function updateEditTurnAction(){
+ const action=document.getElementById('edit-turn-action').value,credit=document.getElementById('edit-turn-credit');
+ document.getElementById('edit-turn-tech-field').hidden=action!=='move';
+ document.getElementById('edit-turn-tech').disabled=action!=='move';
+ if(action==='skip'){
+  if(!credit.disabled)editTurnCreditBeforeSkip=credit.value;
+  credit.value='0';credit.disabled=true;
+ }else{
+  if(credit.disabled&&editTurnCreditBeforeSkip!==null)credit.value=editTurnCreditBeforeSkip;
+  credit.disabled=false;
+ }
+ document.getElementById('edit-turn-error').textContent='';
+}
+function closeEditTurn(){
+ document.getElementById('edit-turn-modal').classList.remove('show');
+ const techIndex=editingTechIndex,turnIndex=editingTurnIndex;
+ editingTechIndex=null;editingTurnIndex=null;editingTurnSource=null;editingTurnOriginal=null;
+ document.querySelector(`#turn-board-grid button[onclick="openEditTurn(${techIndex},${turnIndex})"]`)?.focus();
+}
+function saveTurnEdit(){
+ const modal=document.getElementById('edit-turn-modal');
+ if(!modal.classList.contains('show')||editingTechIndex===null||editingTurnIndex===null)return;
+ const tech=technicians[editingTechIndex],slot=editingTurnIndex,original=editingTurnOriginal;
+ if(!tech||tech!==editingTurnSource||tech.codes[slot]!==original.code){closeEditTurn();return;}
+ const current=recordedTurnEntry(tech,slot);
+ if(current.credit!==original.credit||current.amount!==original.amount){closeEditTurn();return;}
+ const reason=document.getElementById('edit-turn-reason').value.trim(),error=document.getElementById('edit-turn-error');
+ if(!reason){error.textContent='Audit reason is required';document.getElementById('edit-turn-reason').focus();return;}
+ const action=document.getElementById('edit-turn-action').value,creditInput=document.getElementById('edit-turn-credit');
+ const value=action==='skip'?0:Number(creditInput.value);
+ if(!['adjust','move','skip'].includes(action)||creditInput.value===''||!Number.isFinite(value)||value<0){error.textContent='Valid turn credit and an audit reason are required.';return;}
+ const targetInput=document.getElementById('edit-turn-tech'),targetIndex=Number(targetInput.value),target=technicians[targetIndex];
+ if(action==='move'&&(!targetInput.value||!target||target===tech)){
+  error.textContent='Move to another tech';targetInput.focus();return;
+ }
+ if(action==='adjust'&&value===current.credit){closeEditTurn();return;}
+ document.getElementById('edit-turn-save').disabled=true;
+ const at=new Date().toISOString(),previousTotal=tech.turns;
+ const nextTotal=+(tech.turns-current.credit+(action==='move'?0:value)).toFixed(4);
+ if(nextTotal<0||(action==='move'&&(tech.sales<current.amount||tech.serviceCount<current.serviceCount))){
+  document.getElementById('edit-turn-save').disabled=false;error.textContent='Valid turn credit and an audit reason are required.';return;
+ }
+ const entry={...current,credit:value,action,reason,seeded:false,updatedAt:at,updatedBy:'Manager'};
+ // Freeze the existing cells before a move changes their column positions.
+ tech.turnDetails=recordedTurnEntries(tech);
+ if(action==='move'){
+  const targetPreviousTotal=target.turns;
+  target.turnDetails=recordedTurnEntries(target);
+  tech.codes.splice(slot,1);tech.turnDetails.splice(slot,1);
+  target.codes.push(entry.code);target.turnDetails.push(entry);
+  tech.turns=nextTotal;
+  target.turns=+(target.turns+value).toFixed(4);
+  const serviceCount=current.serviceCount,amount=current.amount;
+  tech.serviceCount-=serviceCount;target.serviceCount+=serviceCount;
+  tech.sales=+(tech.sales-amount).toFixed(2);target.sales=+(target.sales+amount).toFixed(2);
+  turnEditAudit.push({technician:tech.name,to:target.name,turnIndex:slot,serviceCode:entry.code,amount:current.amount,action,previous:current.credit,value,previousTotal,total:tech.turns,targetPreviousTotal,targetTotal:target.turns,reason,by:'Manager',at});
+ }else{
+  tech.turnDetails[slot]=entry;
+  tech.turns=nextTotal;
+  turnEditAudit.push({technician:tech.name,turnIndex:slot,serviceCode:entry.code,amount:current.amount,action,previous:current.credit,value,previousTotal,total:tech.turns,reason,by:'Manager',at});
+ }
+ renderTurnBoard();closeEditTurn();toast('Turn updated and audit log saved');
+}
 function createManualTurnEntry(code,amount,reason,creditCalculator){return{code,amount:+amount,credit:creditCalculator(+amount),reason,createdAt:new Date().toISOString(),createdBy:'Manager'};}
 function openAddTurn(index){addTurnTechIndex=index;addTurnSaving=false;document.getElementById('add-turn-copy').textContent=`Add a missing turn for ${technicians[index].name}`;document.getElementById('add-turn-service').value='PED';document.getElementById('add-turn-amount').value='45';document.getElementById('add-turn-reason').value='';document.getElementById('add-turn-save').disabled=false;updateAddTurnPreview();document.getElementById('add-turn-modal').classList.add('show');}
 function closeAddTurn(){document.getElementById('add-turn-modal').classList.remove('show');addTurnTechIndex=null;addTurnSaving=false;}
@@ -290,20 +392,13 @@ window.NEXORA_TURN_SETTINGS.subscribe(settings=>{
 });
 fillTurnRules(window.NEXORA_TURN_SETTINGS.load());
 if(new URLSearchParams(location.search).get('settings')==='weighted-turns')openTurnRules();
-const turnEditAudit=[];
-saveTurnEdit=function(){
- const reason=document.getElementById('edit-turn-reason').value.trim(),value=Number(document.getElementById('edit-turn-credit').value);
- if(!reason||!Number.isFinite(value)||value<0){toast('Valid turn credit and an audit reason are required.');return;}
- const tech=technicians[editingTechIndex];turnEditAudit.push({technician:tech.name,previous:tech.turns,value,reason,by:'Manager',at:new Date().toISOString()});tech.turns=value;
- document.getElementById('edit-turn-modal').classList.remove('show');renderTurnBoard();toast('Turn updated; audit recorded for this demo session.');
-};
-// The imported prototype only supports adjusting credit in the Edit Turn dialog.
-const editAction=document.querySelector('#edit-turn-modal select:not([id])');if(editAction)editAction.closest('label').remove();
+document.getElementById('edit-turn-form').addEventListener('submit',event=>{event.preventDefault();saveTurnEdit();});
 function closeBoardOverlay(id){
  if(id==='turn-rules-modal')closeTurnRules();
  else if(id==='guest-picker')closeGuestPicker();
  else if(id==='boost-modal')closeBoost();
  else if(id==='add-turn-modal')closeAddTurn();
+ else if(id==='edit-turn-modal')closeEditTurn();
  else if(typeof window.closeBoardDialog==='function'&&['demo-guest-modal','board-confirm-modal'].includes(id))window.closeBoardDialog(id);
  else document.getElementById(id)?.classList.remove('show');
 }
@@ -313,7 +408,7 @@ document.querySelectorAll('.modal-wrap .modal').forEach(modal=>{
  modal.insertAdjacentHTML('afterbegin',`<button type="button" class="dialog-close" aria-label="Close" title="Close" onclick="closeBoardOverlay('${overlay.id}')">×</button>`);
 });
 document.querySelectorAll('.modal-wrap').forEach(modal=>{
- modal.addEventListener('click',event=>{if(event.target===modal){if(modal.id==='turn-rules-modal')closeTurnRules();else modal.classList.remove('show');}});
+ modal.addEventListener('click',event=>{if(event.target===modal){if(modal.id==='turn-rules-modal')closeTurnRules();else if(modal.id==='edit-turn-modal')closeEditTurn();else modal.classList.remove('show');}});
 });
-document.addEventListener('keydown',event=>{if(event.key==='Escape')document.querySelectorAll('.modal-wrap.show').forEach(modal=>{if(modal.id==='turn-rules-modal')closeTurnRules();else modal.classList.remove('show');});});
+document.addEventListener('keydown',event=>{if(event.key==='Escape')document.querySelectorAll('.modal-wrap.show').forEach(modal=>{if(modal.id==='turn-rules-modal')closeTurnRules();else if(modal.id==='edit-turn-modal')closeEditTurn();else modal.classList.remove('show');});});
 renderTurnBoard();

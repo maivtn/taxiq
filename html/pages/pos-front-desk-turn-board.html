@@ -86,7 +86,21 @@
     <div class="turn-rules-footer"><div class="turn-rules-save-note"><span><i data-lucide="shield-check" aria-hidden="true"></i></span><p><strong>Applies to new turns</strong>Existing recorded turns stay unchanged.</p></div><div class="modal-actions"><button class="btn" type="button" onclick="closeTurnRules()">Cancel</button><button class="btn primary" type="submit"><i data-lucide="check" aria-hidden="true"></i>Save Rules</button></div></div>
   </form>
 </div>
-<div class="modal-wrap" id="edit-turn-modal" role="dialog" aria-modal="true"><div class="modal"><h3>Edit Turn</h3><p id="edit-turn-copy">Adjust weighted credit with an audit reason.</p><div class="boost-form"><label>Turn credit<select id="edit-turn-credit"><option>0</option><option>0.5</option><option>1</option><option>1.5</option><option>2</option></select></label><label>Action<select><option>Adjust credit</option><option>Move to another tech</option><option>Skip / No turn</option></select></label><label style="grid-column:1/-1">Audit reason<input id="edit-turn-reason" placeholder="Required for manager edit"></label></div><div class="audit-note">The system records the manager, previous value, new value, reason, and timestamp.</div><div class="modal-actions"><button class="btn" onclick="document.getElementById('edit-turn-modal').classList.remove('show')">Cancel</button><button class="btn primary" onclick="saveTurnEdit()">Save Edit</button></div></div></div>
+<div class="modal-wrap" id="edit-turn-modal" role="dialog" aria-modal="true" aria-labelledby="edit-turn-title" aria-describedby="edit-turn-copy">
+  <form class="modal" id="edit-turn-form" novalidate>
+    <h3 id="edit-turn-title">Edit Turn</h3><p id="edit-turn-copy">Adjust weighted credit with an audit reason.</p>
+    <div id="edit-turn-preview" class="turn-preview"></div>
+    <div class="boost-form">
+      <label>Turn credit<select id="edit-turn-credit"><option>0</option><option>0.5</option><option>1</option><option>1.5</option><option>2</option></select></label>
+      <label>Action<select id="edit-turn-action" onchange="updateEditTurnAction()"><option value="adjust">Adjust credit</option><option value="move">Move to another tech</option><option value="skip">Skip / No turn</option></select></label>
+      <label id="edit-turn-tech-field" hidden>Move to another tech<select id="edit-turn-tech"></select></label>
+      <label class="edit-turn-reason">Audit reason<input id="edit-turn-reason" maxlength="240" placeholder="Required for manager edit" required></label>
+    </div>
+    <div class="audit-note">The system records the manager, previous value, new value, reason, and timestamp.</div>
+    <p id="edit-turn-error" class="board-form-error" role="alert"></p>
+    <div class="modal-actions"><button type="button" class="btn" onclick="closeEditTurn()">Cancel</button><button type="submit" class="btn primary" id="edit-turn-save">Save Edit</button></div>
+  </form>
+</div>
 <div class="modal-wrap" id="add-turn-modal" role="dialog" aria-modal="true" aria-labelledby="add-turn-title"><div class="modal"><h3 id="add-turn-title">＋ Add Turn</h3><p id="add-turn-copy">Add a missing service turn with a complete audit record.</p><div class="boost-form"><label>Service code<select id="add-turn-service"><option value="PED">PED · Pedicure</option><option value="MANI">MANI · Manicure</option><option value="GEL">GEL · Gel Polish</option><option value="DIP">DIP · Dipping Powder</option><option value="ACR-FS">ACR-FS · Acrylic Full Set</option><option value="WAX">WAX · Waxing</option></select></label><label>Service amount<input id="add-turn-amount" type="number" min="0" step="0.01" value="45" oninput="updateAddTurnPreview()"></label><label>Turn credit<input id="add-turn-credit" type="number" min="0" step="any" required></label><label>Reason for adding turn<input id="add-turn-reason" placeholder="Required"></label></div><div id="add-turn-preview" class="turn-preview">$45.00 service · 1 turn</div><div class="audit-note">Audit saves manager, technician, timestamp, service amount, turn credit, and reason.</div><div class="modal-actions"><button class="btn" onclick="closeAddTurn()">Cancel</button><button class="btn primary" id="add-turn-save" onclick="saveAddedTurn()">Add Turn</button></div></div></div>
 <div class="modal-wrap" id="demo-guest-modal" role="dialog" aria-modal="true" aria-labelledby="demo-guest-title"><form class="modal" id="demo-guest-form">
   <h3 id="demo-guest-title">Add demo guest</h3><p>Add a waiting guest to try assigning a technician.</p>
