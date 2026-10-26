@@ -13,9 +13,6 @@
 .eq-overview-advertising h2 { margin-bottom: 8px; }
 #advertising-panel { min-width: 0; }
 #advertising-panel > .top { margin-bottom: 16px; }
-.oneqr-advertising-links { display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 16px; }
-.oneqr-advertising-links a { display: inline-flex; align-items: center; gap: 8px; min-height: 44px; padding: 8px 14px; border: 1px solid #dde5ef; border-radius: 10px; background: #fff; color: #4648d4; font-weight: 700; text-decoration: none; }
-.oneqr-advertising-links img { width: 22px; height: 22px; object-fit: contain; }
 #advertising-panel .advertising-demo { padding-bottom: 24px; }
 #advertising-panel .phone { top: 24px; }
 .eq-full-policy > summary { cursor: pointer; font-size: 16px; font-weight: 700; min-height: 44px; }
