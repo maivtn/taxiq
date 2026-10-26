@@ -3,7 +3,9 @@
 .pc-library-toolbar .promo-field{margin-bottom:0}.pc-template-search{grid-column:1/-1}
 .pc-library-pagination{display:flex;justify-content:center;align-items:center;gap:18px;margin-top:18px;font-size:12px;color:var(--promo-muted)}
 .pc-context-fields{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
-.pc-editor-template,.pc-campaign-picker{display:flex;align-items:flex-end;gap:8px;margin-bottom:10px}.pc-editor-template .promo-field,.pc-campaign-picker .promo-field{flex:1;min-width:0;margin:0}.pc-editor-template>.promo-button,.pc-campaign-picker>.promo-button{flex-shrink:0;min-height:38px}
+.pc-editor-template,.pc-campaign-picker{display:flex;align-items:flex-end;gap:8px;margin-bottom:10px}.pc-editor-template .promo-field,.pc-campaign-picker .promo-field{flex:1;min-width:0;margin:0}.pc-editor-template>.promo-button,.pc-campaign-picker>.promo-button{flex-shrink:0;min-height:44px}
+#promotion-form :is(input:not([type=checkbox],[type=radio],[type=hidden],[type=file]),select:not([multiple]),.promotion-industry-trigger){box-sizing:border-box;height:44px;min-height:44px}
+#promotion-form .banner-add-row>.promo-button{min-height:44px}
 #promotion-form select:not([multiple]),.pc-library-toolbar select{appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%2364758b' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat right 16px center/16px}
 #promotion-form select[multiple]{min-height:130px;background:#fff;padding:8px}#promotion-form select[multiple] option{padding:6px 8px}#promotion-form select[multiple] optgroup{font-size:11px}
 .pc-channel-heading{display:grid;gap:5px;margin:20px 0 10px}.pc-channel-heading strong{font-size:12px}.pc-channel-heading small{font-size:11px;color:var(--promo-muted)}
