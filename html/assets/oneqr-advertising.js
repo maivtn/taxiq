@@ -17,7 +17,7 @@
     recipientCreditPoints: 0, consent: null, ledger: [], audit: []
   };
   let reviewSnapshot = null;
-  let view = 'ads';
+  let view = 'setup';
   let busy = false;
   const messages = {};
   const t = key => PO[state.language][key];
@@ -158,25 +158,23 @@
     save();
   }
 
-  // Three main tabs; activation shares the industry screen, and transfers open from the wallet.
-  const groups = { overview: 'overview', earn: 'earn', transfer: 'earn', ads: 'ads', setup: 'ads', policy: 'ads' };
-  const oldRoutes = { advertising: 'ads', activity: 'earn', reserves: 'earn', payouts: 'earn', settings: 'ads' };
+  // Keep the six independent tabs and screen order from the PO prototype.
+  const views = new Set(['setup', 'overview', 'earn', 'transfer', 'ads', 'policy']);
+  const oldRoutes = { advertising: 'ads', activity: 'earn', reserves: 'earn', payouts: 'earn', settings: 'setup' };
   function navigate(requested, write = true, focus = false) {
     const route = oldRoutes[requested] || requested;
-    view = Object.hasOwn(groups, route) ? route : 'ads';
-    const group = groups[view];
+    view = views.has(route) ? route : 'setup';
     root.querySelectorAll('[data-screen]').forEach(section => {
-      const visible = view === 'ads' || view === 'setup' ? ['setup', 'ads'].includes(section.dataset.screen) : section.dataset.screen === view;
-      section.classList.toggle('hide', !visible);
+      section.classList.toggle('hide', section.dataset.screen !== view);
     });
     root.querySelectorAll('#nav [data-view]').forEach(button => {
-      button.classList.toggle('active', button.dataset.view === group);
-      if (button.dataset.view === group) button.setAttribute('aria-current', 'page');
+      button.classList.toggle('active', button.dataset.view === view);
+      if (button.dataset.view === view) button.setAttribute('aria-current', 'page');
       else button.removeAttribute('aria-current');
     });
     if (write && location.hash !== '#' + view) history.pushState(null, '', '#' + view);
     if (focus) {
-      const heading = $(view === 'ads' ? 'setup' : view)?.querySelector('h2');
+      const heading = $(view)?.querySelector('h2');
       if (heading) { heading.tabIndex = -1; heading.focus({ preventScroll: true }); }
     }
   }

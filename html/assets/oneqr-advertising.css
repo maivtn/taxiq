@@ -28,12 +28,15 @@
 .qa-app .box p:last-child { margin-bottom: 0; }
 .qa-app .num { margin: 7px 0; font-size: 24px; font-weight: 750; line-height: 1.25; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
 .qa-app .equivalent { display: block; margin: -2px 0 6px; color: #6739b3; font-weight: 600; }
-.qa-app nav { display: flex; gap: 5px; width: fit-content; max-width: 100%; margin: 18px 0 0; border: 1px solid #eae8f1; border-radius: 12px; padding: 5px; background: #fff; }
+.qa-app nav { display: flex; flex-wrap: wrap; gap: 5px; width: fit-content; max-width: 100%; margin: 18px 0 0; border: 1px solid #eae8f1; border-radius: 12px; padding: 5px; background: #fff; }
 .qa-app nav button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; background: transparent; color: #666879; white-space: nowrap; }
 .qa-app nav button::before { content: ''; flex-shrink: 0; width: 23px; height: 23px; background: center / contain no-repeat; }
+.qa-app nav button[data-view="setup"]::before { background-image: url('icon-oneqr/issue-2040-oneqr-scan-line-3d.png'); }
 .qa-app nav button[data-view="overview"]::before { background-image: url('icon-oneqr/issue-2040-oneqr-layout-dashboard-3d.png'); }
 .qa-app nav button[data-view="earn"]::before { background-image: url('icon-oneqr/issue-2040-oneqr-wallet-3d.png'); }
+.qa-app nav button[data-view="transfer"]::before { background-image: url('icon-oneqr/issue-2040-oneqr-share-2-3d.png'); }
 .qa-app nav button[data-view="ads"]::before { background-image: url('icon-oneqr/issue-2040-oneqr-megaphone-3d.png'); }
+.qa-app nav button[data-view="policy"]::before { background-image: url('icon-oneqr/issue-2040-oneqr-list-3d.png'); }
 .qa-app nav button.active { background: #eee8fa; color: #6335aa; }
 .qa-app label { display: block; margin: 14px 0 6px; font-weight: 600; }
 .qa-app input, .qa-app select { width: 100%; min-height: 44px; border: 1px solid #dcd9e7; border-radius: 9px; padding: 11px; background-color: #fff; color: #25213a; font: inherit; }
