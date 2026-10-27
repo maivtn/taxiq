@@ -190,6 +190,8 @@
     $('recipient-wallet').classList.toggle('hide', !state.recipientCreditPoints);
     $('status').textContent = t(state.activated ? 'statusOn' : 'statusOff');
     $('status').classList.toggle('is-active', state.activated);
+    $('oneqr-consent').hidden = state.activated;
+    $('activate').hidden = state.activated;
     $('ads-status').classList.toggle('hide', !state.activated);
     $('ads-status').classList.toggle('is-active', state.adsEnabled);
     $('ads-status').textContent = t(state.adsEnabled ? 'adsOn' : 'adsOff');
