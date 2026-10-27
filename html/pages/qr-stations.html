@@ -55,6 +55,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/qr-stations.css?v=industry-module-library-8">
+  <link rel="stylesheet" href="../assets/oneqr-tip.css?v=po-20261027">
   <link rel="stylesheet" href="../assets/oneqr-contact-card.css?v=card-colors-3">
   <link rel="stylesheet" href="../assets/oneqr-experience.css?v=1">
 </head>
@@ -69,7 +70,7 @@
         <section class="qr-stations-shell" aria-labelledby="qr-stations-title">
           <div class="qr-stations-heading">
             <h1 id="qr-stations-title">One QR</h1>
-            <p>Create and manage tip stations. Customers scan to tip your staff.</p>
+            <p>Set up your QR code and the ways your business receives payments.</p>
 
             <div class="qr-tabs" role="tablist" aria-label="Stations and QR tabs">
               <button id="qr-tab-one-qr" class="qr-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="qr-panel-one-qr" data-qr-tab="one-qr">
@@ -82,7 +83,7 @@
               </a>
               <button id="qr-tab-qr-stations" class="qr-tab" type="button" role="tab" aria-selected="false" aria-controls="qr-panel-qr-stations" data-qr-tab="qr-stations" tabindex="-1">
                 <span class="qr-tab-icon"><i data-lucide="hand-coins" aria-hidden="true"></i></span>
-                <span>Receive Tips</span>
+                <span>Tip QR</span>
               </button>
               <button id="qr-tab-accept-payment" class="qr-tab" type="button" role="tab" aria-selected="false" aria-controls="qr-panel-accept-payment" data-qr-tab="accept-payment" tabindex="-1">
                 <span class="qr-tab-icon"><i data-lucide="credit-card" aria-hidden="true"></i></span>
@@ -100,128 +101,62 @@
           </div>
 
           <section id="qr-panel-qr-stations" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-qr-stations" data-qr-panel="qr-stations" hidden>
-          <section class="qr-stats-grid" aria-label="QR station summary">
-            <article class="qr-stat-card is-indigo">
-              <div class="qr-stat-copy">
-                <span class="qr-stat-label">Total Stations</span>
-                <strong>3</strong>
-              </div>
-              <span class="qr-stat-icon"><i data-lucide="layers" aria-hidden="true"></i></span>
-            </article>
-            <article class="qr-stat-card is-amber">
-              <div class="qr-stat-copy">
-                <span class="qr-stat-label">Active NFC Stands</span>
-                <strong>0</strong>
-              </div>
-              <span class="qr-stat-icon"><i data-lucide="smartphone" aria-hidden="true"></i></span>
-            </article>
-            <article class="qr-stat-card is-emerald">
-              <div class="qr-stat-copy">
-                <span class="qr-stat-label">Total Scans</span>
-                <strong>272</strong>
-              </div>
-              <span class="qr-stat-icon"><i data-lucide="activity" aria-hidden="true"></i></span>
-            </article>
-            <article class="qr-stat-card is-red">
-              <div class="qr-stat-copy">
-                <span class="qr-stat-label">Device Issues</span>
-                <strong>0</strong>
-              </div>
-              <span class="qr-stat-icon"><i data-lucide="octagon-alert" aria-hidden="true"></i></span>
-            </article>
-          </section>
-
-          <button class="qr-add-station" type="button">
-            <i data-lucide="plus" aria-hidden="true"></i>
-            <span>Add Station</span>
-          </button>
-
-          <section class="qr-station-grid" aria-label="Salon QR stations">
-            <article class="qr-station-card">
-              <div class="qr-station-main">
-                <div class="qr-code-frame" aria-label="QR code for 332332">
-                  <div class="qr-code-art" data-qr-value="https://staging-web.nexoratouch.com/touch/blnexora/332332" data-qr-size="168" role="img" aria-label="332332 QR code preview"></div>
+            <div class="tip-qr" data-tip-qr lang="en" data-po-source="NEXORA_ONEQR_Tip_Payment_Methods (2).html">
+              <div class="tip-qr-heading">
+                <div>
+                  <h2 data-tip-copy="tipTitle">Create a tip QR code</h2>
+                  <p data-tip-copy="tipDescription">Create one tip QR code for your business. Customers scan it to select a technician and send a tip.</p>
                 </div>
-                <div class="qr-station-detail">
-                  <h2>332332</h2>
-                  <div class="qr-station-url">staging-web.nexoratouch.com/touch/blnexora/332332</div>
-                  <div class="qr-status-row">
-                    <span class="qr-status">Active</span>
-                    <span class="qr-toggle" aria-hidden="true"></span>
-                  </div>
-                  <div class="qr-station-meta">
-                    <div><span>Scans:</span> <strong>11</strong></div>
-                    <div><span>Revenue:</span> <strong class="qr-revenue">$0.00</strong></div>
-                  </div>
+                <div class="tip-qr-language">
+                  <button type="button" data-tip-language="vi" aria-pressed="false" lang="vi">VI</button>
+                  <button type="button" data-tip-language="en" aria-pressed="true" lang="en">EN</button>
                 </div>
               </div>
-              <div class="qr-station-quick-actions has-remove">
-                <a class="qr-station-action is-view" href="https://staging-web.nexoratouch.com/touch/blnexora/332332" target="_blank" rel="noopener"><i data-lucide="qr-code" aria-hidden="true"></i><span>View QR</span></a>
-                <button class="qr-station-action is-copy" type="button" data-copy-link="https://staging-web.nexoratouch.com/touch/blnexora/332332"><i data-lucide="copy" aria-hidden="true"></i><span>Copy link</span></button>
-                <button class="qr-station-action is-remove" type="button"><i data-lucide="trash-2" aria-hidden="true"></i><span>Remove</span></button>
-              </div>
-              <div class="qr-station-footer">
-                <span class="qr-paper-note">Paper QR Only</span>
-                <button class="qr-link-device" type="button"><i data-lucide="link" aria-hidden="true"></i><span>Link Device</span></button>
-              </div>
-            </article>
-
-            <article class="qr-station-card">
-              <div class="qr-station-main">
-                <div class="qr-code-frame" aria-label="QR code for Front Desk">
-                  <div class="qr-code-art" data-qr-value="https://staging-web.nexoratouch.com/touch/blnexora/front-desk" data-qr-size="168" role="img" aria-label="Front Desk QR code preview"></div>
-                </div>
-                <div class="qr-station-detail">
-                  <h2>Front Desk</h2>
-                  <div class="qr-station-url">staging-web.nexoratouch.com/touch/blnexora/front-desk</div>
-                  <div class="qr-status-row">
-                    <span class="qr-status">Active</span>
-                    <span class="qr-toggle" aria-hidden="true"></span>
+              <p class="tip-qr-notice" data-tip-copy="demo">DEV PROTOTYPE: sample data only. No account connection, real QR generation, or saved changes.</p>
+              <div class="tip-qr-grid">
+                <article class="tip-qr-card">
+                  <div class="tip-qr-business">
+                    <div class="tip-qr-sample" data-tip-sample aria-hidden="true" hidden><span>QR MẪU</span></div>
+                    <div class="tip-qr-business-copy">
+                      <h3>Bitcoin Nail Bar</h3>
+                      <span class="tip-qr-tag" data-tip-copy="sample">Sample QR code</span>
+                      <p data-tip-copy="qrText">Create one business tip QR; print copies for customers to use.</p>
+                      <div class="tip-qr-actions">
+                        <button class="tip-qr-button" type="button" data-tip-action="generate"><img src="../assets/icon-oneqr/issue-2040-oneqr-qr-code-3d.png" alt=""><span data-tip-copy="generateTip">Generate tip QR</span></button>
+                        <button class="tip-qr-button is-secondary" type="button" data-tip-action="view" hidden><span data-tip-copy="viewQR">View QR code</span></button>
+                        <button class="tip-qr-button is-secondary" type="button" data-tip-action="print" hidden><span data-tip-copy="printQR">Print QR code</span></button>
+                      </div>
+                      <p class="tip-qr-generated" data-tip-generated role="status"></p>
+                    </div>
                   </div>
-                  <div class="qr-station-meta">
-                    <div><span>Scans:</span> <strong>5</strong></div>
-                    <div><span>Revenue:</span> <strong class="qr-revenue">$0.00</strong></div>
-                  </div>
+                </article>
+                <article class="tip-qr-card tip-qr-activity">
+                  <h3 data-tip-copy="activity">QR activity</h3>
+                  <p data-tip-copy="activityDesc">See total scans of your main QR code.</p>
+                  <dl class="tip-qr-stats">
+                    <div class="tip-qr-stat"><dt data-tip-copy="scans">Total QR scans</dt><dd>—</dd></div>
+                    <div class="tip-qr-stat"><dt data-tip-copy="tips">Tips received</dt><dd>—</dd></div>
+                  </dl>
+                  <p class="tip-qr-tracking" data-tip-copy="tipTracking">Show tip amounts only when a transaction can be confirmed; a tip click is not a confirmed payment.</p>
+                </article>
+              </div>
+              <section class="tip-qr-card tip-qr-how" aria-labelledby="tip-qr-how-title">
+                <h3 id="tip-qr-how-title" data-tip-copy="howTitle">How it works</h3>
+                <ol class="tip-qr-steps">
+                  <li class="tip-qr-step"><div class="tip-qr-step-heading"><b>01</b><img src="../assets/icon-oneqr/issue-2040-oneqr-qr-code-3d.png" alt=""></div><p data-tip-copy="step1">View or print your business QR code.</p></li>
+                  <li class="tip-qr-step"><div class="tip-qr-step-heading"><b>02</b><img src="../assets/icon-oneqr/issue-2040-oneqr-map-pin-3d.png" alt=""></div><p data-tip-copy="step2">Place copies in convenient locations.</p></li>
+                  <li class="tip-qr-step"><div class="tip-qr-step-heading"><b>03</b><img src="../assets/icon-oneqr/issue-2040-oneqr-hand-coins-3d.png" alt=""></div><p data-tip-copy="step3">Customers scan, choose a technician and send a tip.</p></li>
+                </ol>
+                <p data-tip-copy="sameQR">Copies of the same QR show total scans only; they cannot identify which location was scanned.</p>
+              </section>
+              <section class="tip-qr-card tip-qr-staff" aria-labelledby="tip-qr-staff-title">
+                <div class="tip-qr-staff-heading">
+                  <img src="../assets/icon-oneqr/issue-2040-oneqr-users-round-3d.png" alt="">
+                  <div><h3 id="tip-qr-staff-title" data-tip-copy="staffTitle">How do customers select a technician?</h3><p data-tip-copy="staffHelp">The tip page should show eligible staff so customers can choose the right person before sending a tip.</p></div>
                 </div>
-              </div>
-              <div class="qr-station-quick-actions">
-                <a class="qr-station-action is-view" href="https://staging-web.nexoratouch.com/touch/blnexora/front-desk" target="_blank" rel="noopener"><i data-lucide="qr-code" aria-hidden="true"></i><span>View QR</span></a>
-                <button class="qr-station-action is-copy" type="button" data-copy-link="https://staging-web.nexoratouch.com/touch/blnexora/front-desk"><i data-lucide="copy" aria-hidden="true"></i><span>Copy link</span></button>
-              </div>
-              <div class="qr-station-footer">
-                <span class="qr-paper-note">Paper QR Only</span>
-                <button class="qr-link-device" type="button"><i data-lucide="link" aria-hidden="true"></i><span>Link Device</span></button>
-              </div>
-            </article>
-
-            <article class="qr-station-card">
-              <div class="qr-station-main">
-                <div class="qr-code-frame" aria-label="QR code for Master Store">
-                  <div class="qr-code-art" data-qr-value="https://staging-web.nexoratouch.com/touch/blnexora/master-store" data-qr-size="168" role="img" aria-label="Master Store QR code preview"></div>
-                </div>
-                <div class="qr-station-detail">
-                  <h2>Master Store</h2>
-                  <div class="qr-station-url">staging-web.nexoratouch.com/touch/blnexora/master-store</div>
-                  <div class="qr-status-row">
-                    <span class="qr-status">Active</span>
-                    <span class="qr-toggle" aria-hidden="true"></span>
-                  </div>
-                  <div class="qr-station-meta">
-                    <div><span>Scans:</span> <strong>256</strong></div>
-                    <div><span>Revenue:</span> <strong class="qr-revenue">$11,217.36</strong></div>
-                  </div>
-                </div>
-              </div>
-              <div class="qr-station-quick-actions">
-                <a class="qr-station-action is-view" href="https://staging-web.nexoratouch.com/touch/blnexora/master-store" target="_blank" rel="noopener"><i data-lucide="qr-code" aria-hidden="true"></i><span>View QR</span></a>
-                <button class="qr-station-action is-copy" type="button" data-copy-link="https://staging-web.nexoratouch.com/touch/blnexora/master-store"><i data-lucide="copy" aria-hidden="true"></i><span>Copy link</span></button>
-              </div>
-              <div class="qr-station-footer">
-                <span class="qr-paper-note">Paper QR Only</span>
-                <button class="qr-link-device" type="button"><i data-lucide="link" aria-hidden="true"></i><span>Link Device</span></button>
-              </div>
-            </article>
-          </section>
+                <span class="tip-qr-tag" data-tip-copy="staffNote">Dev: verify the existing staff selection and tip payout flow.</span>
+              </section>
+            </div>
           </section>
 
           <section id="qr-panel-one-qr" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-one-qr" data-qr-panel="one-qr">
@@ -855,6 +790,12 @@
   </dialog>
   <input type="file" id="oneqrModuleIconUpload" accept=".png,.jpg,.jpeg,.webp,.gif,image/png,image/jpeg,image/webp,image/gif" hidden>
 
+  <dialog id="tip-qr-dialog" class="tip-qr-dialog" aria-labelledby="tip-qr-dialog-title" aria-describedby="tip-qr-dialog-text" lang="en">
+    <h2 id="tip-qr-dialog-title" data-tip-copy="qrModal">Sample QR code</h2>
+    <p id="tip-qr-dialog-text" data-tip-modal-text>The QR image in this prototype is illustrative; it cannot be scanned, printed or downloaded for real use.</p>
+    <div class="tip-qr-actions"><button class="tip-qr-button is-secondary" type="button" data-tip-close data-tip-copy="close">Close</button></div>
+  </dialog>
+
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script>
     window.NEXORA_SHELL = {
@@ -876,5 +817,6 @@
   <script src="../assets/qr-stations-oneqr.js?v=profile-insights-8"></script>
   <script src="../assets/oneqr-builder-insights.js?v=1"></script>
   <script src="../assets/qr-stations-workflows.js"></script>
+  <script src="../assets/oneqr-tip.js?v=po-20261027"></script>
 </body>
 </html>

@@ -35,7 +35,7 @@
   ];
   const oneQrSections = [
     {id:'one-qr',label:'OneQR',desc:'Salon QR code',url:'https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=one-qr'},
-    {id:'tip',label:'Receive Tips',desc:'Tip stations',url:'https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=tip'},
+    {id:'tip',label:'Tip QR',desc:'Tip stations',url:'https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=tip'},
     {id:'payment',label:'Accept Payment',desc:'Payment QR',url:'https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=payment'},
     {id:'referral',label:'Referral Link',desc:'Referral tools',url:'https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=referral'},
     {id:'staff-invite',label:'Staff Invite QR',desc:'Invite technicians',url:'https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=staff-invite'}
