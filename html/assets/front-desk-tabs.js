@@ -18,7 +18,7 @@
     {id: 'booking', label: 'Booking', icon: 'appointments', href: 'pos-front-desk.html?section=appointments&bookingView=booking', section: 'appointments', more: true},
     {id: 'appointments', label: 'Appointments', image: '../assets/icon-oneqr/issue-2040-oneqr-calendar-days-3d.png', style: 'appointments', href: 'pos-front-desk.html?section=appointments&bookingView=appointment', section: 'appointments', more: true},
     {id: 'estimate', label: 'Estimate', icon: 'estimate', href: 'pos-front-desk.html?section=estimate', section: 'estimate', more: true},
-    {id: 'staffs-clock', label: 'Staffs Clock', icon: 'staffs-clock', more: true},
+    {id: 'staffs-clock', label: 'Staffs Clock', icon: 'staffs-clock', href: 'pos-front-desk.html?section=clock', section: 'clock', more: true},
     {id: 'customer-history', label: 'Customer History', icon: 'overview', more: true},
     {id: 'price-menu', label: 'Price Menu', image: '../assets/icon-oneqr/issue-2040-oneqr-list-3d.png', style: 'gift-card-center', more: true},
     {id: 'ai-voice', label: 'AI Voice', image: '../assets/icon-oneqr/issue-2040-oneqr-phone-3d.png', style: 'checkout-customer', more: true},
@@ -116,7 +116,7 @@
     }
     const section = params.get('section') || params.get('tab');
     const bookingTab = params.get('bookingView') === 'appointment' || (!params.has('bookingView') && ['table', 'cards', 'calendar'].includes(params.get('view'))) ? 'appointments' : 'booking';
-    const sections = {appointments: bookingTab, booking: bookingTab, checkin: 'checkin', waitlist: 'waitlist', estimate: 'estimate',
+    const sections = {appointments: bookingTab, booking: bookingTab, checkin: 'checkin', waitlist: 'waitlist', estimate: 'estimate', clock: 'staffs-clock',
       assign: 'tickets', tickets: 'tickets', checkout: 'checkout-customer', overview: 'overview', staff: 'staff',
       turnboard: 'turn-board', 'turn-board': 'turn-board'};
     return Object.hasOwn(sections, section) ? sections[section] : params.has('view') ? bookingTab : 'overview';

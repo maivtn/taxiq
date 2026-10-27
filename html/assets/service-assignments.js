@@ -144,6 +144,18 @@
     const ticket=state.tickets.find(t=>t.id===ticketId);if(!ticket||ticket.payment)throw new Error('Ticket is closed.');
     ticket.note=String(note).trim();
   });}
+  function setClockedIn(id,clockedIn,expected){return mutate(state=>{
+    const tech=state.technicians.find(row=>row.id===id);
+    if(!tech)throw new Error('Choose an available technician.');
+    if(typeof clockedIn!=='boolean')throw new TypeError('Choose an available technician.');
+    if(expected!==undefined&&tech.clockedIn!==expected)throw new Error('A selected technician is no longer available.');
+    tech.clockedIn=clockedIn;
+  });}
+  function setStation(id,station){return mutate(state=>{
+    const tech=state.technicians.find(row=>row.id===id);
+    if(!tech||!Number.isSafeInteger(station)||station<1)throw new Error('Choose an available technician.');
+    tech.station=station;
+  });}
   root.addEventListener('storage',event=>{if(event.key===key||event.key===null)publish();});
-  root.NEXORA_SERVICE_ASSIGNMENTS={load,assign,send,transition,resend,addService,editService,saveNote,pay,queue,inbox,ticketStatus,labels,catalog,subscribe(fn){listeners.add(fn);return()=>listeners.delete(fn);}};
+  root.NEXORA_SERVICE_ASSIGNMENTS={load,assign,send,transition,resend,addService,editService,saveNote,setClockedIn,setStation,pay,queue,inbox,ticketStatus,labels,catalog,subscribe(fn){listeners.add(fn);return()=>listeners.delete(fn);}};
 })(window);

@@ -139,6 +139,25 @@
     });
   } catch (e) {}
 
+  function sidebarRoute() {
+    var params = new URLSearchParams(window.location.search || '');
+    return (window.location.pathname || '') + '|' + ['module', 'section', 'group', 'tab', 'view', 'bookingView'].map(function(key) { return params.get(key) || ''; }).join('|') + '|' + activeTab;
+  }
+
+  function normalizeExpandedGroups(preferActive) {
+    if (activePage === 'staff') return;
+    function normalize(nodes) {
+      var groups = nodes.filter(function(node) { return node.type === 'group'; });
+      var selected = preferActive && groups.find(function(node) { return groupIsActive(node, activeTab); });
+      selected = selected || groups.find(function(node) { return expandedGroups[node.key] === true; });
+      groups.forEach(function(node) {
+        expandedGroups[node.key] = node === selected;
+        normalize(node.children || node.items || []);
+      });
+    }
+    normalize(NAV);
+  }
+
   function saveExpandedGroups() {
     if (activePage === 'staff') return;
     try { window.sessionStorage.setItem(SIDEBAR_EXPANDED_STORAGE_KEY, JSON.stringify(expandedGroups)); } catch (e) {}
@@ -279,9 +298,8 @@
   if (urlTab && nativeTabs.length && nativeTabs.indexOf(urlTab) === -1) urlTab = '';
 
   var activeTab = urlTab || sidebarTab(cfg.activeTab) || ({pos: 'front-desk', booking: 'front-desk', review: 'reviews', analytics: 'analytics', stations: 'one-qr', reward: 'loyalty', community: 'feed'}[activePage] || '');
-  visit(NAV, function (node) {
-    if (groupIsActive(node, activeTab)) expandedGroups[node.key] = true;
-  });
+  normalizeExpandedGroups(true);
+  var lastSidebarRoute = sidebarRoute();
 
   function esc(s) {
     return String(s == null ? '' : s).replace(/[&<>"]/g, function (c) {
@@ -315,8 +333,7 @@
       + iconWrap(node.icon) + '<span>' + esc(node.label) + '</span>' + CARET + '</button>';
 
     var items = node.items.map(function (it) {
-      var marker = it.image ? '<img class="nav-subitem-image" src="' + esc(it.image) + '" alt="" width="20" height="20">' : '<span class="nav-subitem-dot" aria-hidden="true"></span>';
-      var inner = marker + '<span>' + esc(it.label) + '</span>';
+      var inner = '<span>' + esc(it.label) + '</span>';
       if (it.placeholder) return '<button class="nav-subitem" type="button">' + inner + '</button>';
       if (it.disabled) return '<button class="nav-subitem" type="button" disabled title="' + esc(it.title || '') + '">' + inner + '</button>';
       if (it.href) {
@@ -339,11 +356,16 @@
     return btn + '<div class="nav-subnav' + (expanded ? '' : ' is-collapsed') + '" id="' + subId + '" data-nav-subnav><div class="nav-subnav-inner">' + items + '</div></div>';
   }
 
+  var TREE_ICONS = {home:'house', dashboard:'layout-dashboard', onboarding:'rocket', pos:'monitor', payments:'wallet-cards', community:'users-round', aihub:'sparkles', marketing:'megaphone', 'ai-voice':'headset', news:'newspaper', spinwheel:'circle-dot', oneqr:'qr-code', tools:'briefcase-business', reviews:'star', analytics:'chart-no-axes-combined', taxiq:'file-text', support:'life-buoy', settings:'settings'};
+  function treeIcon(node) {
+    return iconWrap(node.key === 'business-tools' ? 'briefcase-business' : (TREE_ICONS[node.iconKey] || 'circle'));
+  }
+
   function renderTree(nodes, depth) {
     var hidden = hiddenSidebarKeySet();
     return nodes.filter(function (node) { return !node.accountOnly && !hidden[node.key]; }).map(function (node) {
       var active = node.href && node.href.indexOf('&view=') !== -1 ? routeActive(node) : node.page === activePage && node.tab ? node.tab === activeTab : routeActive(node);
-      var label = (node.iconKey && window.NEXORA_ICONS ? window.NEXORA_ICONS.image(node.iconKey, {size: 28}) : '') + '<span class="shell-tree-label">' + esc(node.label) + '</span>';
+      var label = ((depth === 0 || node.showIcon) && node.iconKey ? treeIcon(node) : '') + '<span class="shell-tree-label">' + esc(node.label) + '</span>' + (node.externalIndicator || node.newTab ? '<i class="sidebar-external-icon" data-lucide="arrow-up-right" aria-hidden="true"></i>' : '');
       var cls = depth ? 'nav-subitem' : 'nav-item';
       if (node.children) {
         var open = expandedGroups[node.key] === true, id = 'nexora-subnav-' + node.key;
@@ -353,14 +375,15 @@
           '<button class="' + cls + ' nav-parent' + (open ? ' is-expanded' : '') + (ancestor ? ' is-active' : '') + '" type="button" data-sidebar-key="' + esc(node.key) + '" data-nav-group aria-expanded="' + open + '" aria-controls="' + id + '"' + (node.href ? ' aria-label="' + esc(node.label) + '"' : '') + '>' + (node.href ? '' : label) + CARET + '</button></div>' +
           '<div class="nav-subnav' + (open ? '' : ' is-collapsed') + '" id="' + id + '" data-nav-subnav><div class="nav-subnav-inner">' + renderTree(node.children, depth + 1) + '</div></div></div>';
       }
+      if (node.availability === 'unavailable') return '<button type="button" class="' + cls + '" data-shell-key="' + esc(node.key) + '" disabled>' + label + '</button>';
       if (!node.href) return '';
       var native = node.page === activePage && node.tab && node.href.split('?')[0] === (window.location.pathname || '').split('/').pop() && node.href.indexOf('&view=') === -1 && (typeof cfg.onNavigate === 'function' || typeof window.activateMainTab === 'function');
-      return '<' + (native ? 'button type="button" data-shell-tab="' + esc(node.tab) + '"' : 'a href="' + esc(node.href) + '"' + (node.newTab ? ' target="_blank" rel="noopener noreferrer"' : '')) + ' class="' + cls + (active ? ' is-active' : '') + '" data-shell-key="' + esc(node.key) + '"' + (!native && node.page && node.tab && node.href.indexOf('&view=') === -1 ? ' data-shell-active-tab="' + esc(node.tab) + '" data-shell-pages="' + esc(node.page) + '"' : '') + (active ? ' aria-current="page"' : '') + '>' + label + (node.availability === 'preview' ? '<small class="shell-preview-tag">BẢN XEM TRƯỚC</small>' : '') + '</' + (native ? 'button' : 'a') + '>';
+      return '<' + (native ? 'button type="button" data-shell-tab="' + esc(node.tab) + '"' : 'a href="' + esc(node.href) + '"' + (node.newTab ? ' target="_blank" rel="noopener noreferrer"' : '')) + ' class="' + cls + (active ? ' is-active' : '') + '" data-shell-key="' + esc(node.key) + '"' + (!native && node.page && node.tab && node.href.indexOf('&view=') === -1 ? ' data-shell-active-tab="' + esc(node.tab) + '" data-shell-pages="' + esc(node.page) + '"' : '') + (active ? ' aria-current="page"' : '') + '>' + label + (node.availability === 'preview' ? '<small class="shell-preview-tag">PREVIEW</small>' : '') + '</' + (native ? 'button' : 'a') + '>';
     }).join('');
   }
 
   function renderNav() {
-    if (treeNav) return renderTree(visibleNav(), 0);
+    if (treeNav) return renderTree(visibleNav().filter(function(node) { return node.key !== 'public-home'; }), 0);
     return visibleNav().map(function (node) {
       if (node.type === 'divider') return '<div class="nav-divider"></div>';
       if (node.type === 'group') return renderGroup(node);
@@ -369,21 +392,30 @@
   }
 
   function renderMerchantSidebarHtml() {
-    return '<div class="sidebar-account">' +
+    var home = treeNav && visibleNav().find(function(node) { return node.key === 'public-home'; });
+    var injectedSalon = window.NEXORA_ACTIVE_SALON;
+    var catalogSalon;
+    try { catalogSalon = window.NEXORA_SALON_DATA && window.NEXORA_SALON_DATA.loadCatalog().salon; } catch (_) {}
+    var salon = injectedSalon || catalogSalon;
+    var salonName = salon && typeof salon.name === 'string' && salon.name.trim() ? salon.name.trim() : 'Bitcoin Nail Bar';
+    var salonAvatar = salonName === 'Bitcoin Nail Bar' ? '<img class="sidebar-salon-logo" src="../assets/bitcoin-nailbar-logo.png" alt="">' : '<span class="avatar">' + esc(salonName.split(/\s+/).slice(0, 2).map(function(word) { return word[0]; }).join('')) + '</span>';
+    return (treeNav ? '<div class="sidebar-brand"><img src="../assets/nexora-touch-logo.png" alt="Nexora Touch"></div>' + (home ? '<div class="sidebar-public-home">' + renderTree([home], 0) + '</div>' : '') : '') +
+      '<div class="sidebar-account">' +
       '<button class="sidebar-panel sidebar-account-toggle" type="button" aria-label="Account menu" aria-expanded="false" aria-controls="nexora-account-menu" data-shell-account-toggle>' +
-        '<span class="profile-row"><span class="avatar">NT</span><span class="profile-name">NEXORA TOUCH</span></span>' + CARET +
+        (treeNav ? '<span class="profile-row">' + salonAvatar + '<span class="sidebar-salon-copy"><small class="sidebar-salon-kicker">CURRENT SALON</small><span class="profile-name">' + esc(salonName) + '</span></span></span>' : '<span class="profile-row"><span class="avatar">NT</span><span class="profile-name">NEXORA TOUCH</span></span>') + CARET +
       '</button>' +
       '<div class="sidebar-account-menu" id="nexora-account-menu" hidden>' +
-        '<a href="owner-setting.html"><i data-lucide="settings" aria-hidden="true"></i><span>' + (treeNav ? 'Cài đặt' : 'Setting') + '</span></a>' +
-        '<a href="owner-setting.html?tab=business-verification"><i data-lucide="badge-check" aria-hidden="true"></i><span>' + (treeNav ? 'Xác minh doanh nghiệp' : 'Business Verification') + '</span></a>' +
+        '<a href="owner-setting.html"><i data-lucide="settings" aria-hidden="true"></i><span>' + (treeNav ? 'Settings' : 'Setting') + '</span></a>' +
+        '<a href="owner-setting.html?tab=business-verification"><i data-lucide="badge-check" aria-hidden="true"></i><span>' + 'Business Verification' + '</span></a>' +
       '</div>' +
       '</div>' +
+      (treeNav ? '<div class="sidebar-section-label">Platform</div>' : '') +
       '<nav class="sidebar-nav" aria-label="Main menu">' + renderNav() + '</nav>' +
-      '<div class="sidebar-panel plan-panel">' +
-        '<div class="plan-info"><div class="panel-kicker">' + (treeNav ? 'Gói dịch vụ' : 'Current Plan') + '</div>' + (treeNav ? '' : '<div class="panel-title">Pro Plan</div>') + '</div>' +
-        '<button class="plan-button" type="button">' + (treeNav ? 'Quản lý' : 'Manage') + '</button>' +
+      '<div class="sidebar-panel plan-panel"><span class="plan-icon"><i data-lucide="crown" aria-hidden="true"></i></span>' +
+        '<div class="plan-info"><div class="panel-title" title="Professional Pro">Professional Pro</div></div>' +
+        '<button class="plan-button" type="button">' + 'Manage' + '</button>' +
       '</div>' +
-      '<div class="sidebar-footer"><button class="logout-button" type="button"><span class="logout-icon"><i data-lucide="log-out" aria-hidden="true"></i></span><span>' + (treeNav ? 'Đăng xuất' : 'Sign out') + '</span></button></div>' + (treeNav ? '<a class="nexora-icon-credit" href="https://icons8.com" target="_blank" rel="noopener noreferrer">Icons8</a>' : '');
+      '<div class="sidebar-footer"><button class="logout-button" type="button"><span class="logout-icon"><i data-lucide="log-out" aria-hidden="true"></i></span><span>' + 'Sign out' + '</span></button></div>';
   }
 
   function renderStaffCommunityMenu() {
@@ -394,7 +426,7 @@
       iconWrap('users-round') + '<span>Community</span>' + CARET + '</button>' +
       '<div class="nav-subnav' + (open ? '' : ' is-collapsed') + '" id="staff-subnav-community" data-nav-subnav><div class="nav-subnav-inner">' +
       COMMUNITY_ITEMS.map(function (item) {
-        var content = '<span class="nav-subitem-dot" aria-hidden="true"></span><span>' + esc(item.label) + '</span>';
+        var content = '<span>' + esc(item.label) + '</span>';
         if (item.disabled) return '<button class="nav-subitem" type="button" disabled title="' + esc(item.title) + '">' + content + '</button>';
         if (native) return '<button class="nav-subitem' + (activeTab === item.tab ? ' is-active' : '') + '" type="button" data-shell-tab="' + item.tab + '">' + content + '</button>';
         return '<a class="nav-subitem" href="staff-community.html?role=tech&amp;tab=' + item.tab + '">' + content + '</a>';
@@ -416,7 +448,7 @@
       iconWrap('briefcase-business') + '<span>My Workspace</span>' + CARET + '</button>' +
       '<div class="nav-subnav' + (open ? '' : ' is-collapsed') + '" id="staff-subnav-workspace" data-nav-subnav><div class="nav-subnav-inner">' +
       STAFF_WORKSPACE_ITEMS.map(function (item) {
-        var content = '<span class="nav-subitem-dot" aria-hidden="true"></span><span>' + item.label + '</span>';
+        var content = '<span>' + item.label + '</span>';
         var attributes = ' class="nav-subitem' + (activeTab === item.tab ? ' is-active' : '') + '" data-staff-nav="' + item.tab + '"';
         return item.href ? '<a' + attributes + ' href="' + item.href + '">' + content + '</a>' : '<button' + attributes + ' type="button">' + content + '</button>';
       }).join('') + '</div></div>';
@@ -463,8 +495,8 @@
   function merchantHeader() {
     var pos = workspace === 'pos';
     return '<div class="mobile-brand"><button class="icon-button" type="button" data-shell-drawer-open aria-label="Open navigation menu" aria-controls="nexora-sidebar" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>' + '</button><a href="dashboard.html"><img class="brand-logo" src="../assets/nexora-logo.svg" alt="Nexora Touch"></a></div>' +
-      '<form class="shell-workspace-search" action="dashboard.html"><label class="search"><i data-lucide="search" aria-hidden="true"></i><input name="q" type="search" aria-label="' + (pos ? 'Tìm chức năng SI POS' : 'Tìm sản phẩm') + '" placeholder="' + (pos ? 'Tìm chức năng SI POS...' : 'Tìm sản phẩm hoặc tính năng…') + '" autocomplete="off"' + (pos ? ' data-shell-function-search' : '') + '></label><div class="shell-function-results" hidden></div></form>' +
-      '<div class="shell-workspace-actions">' + (cfg.showClearStorage ? '<button class="shell-clear-storage-button" type="button" data-shell-clear-storage aria-label="Clear local storage"><i data-lucide="trash-2" aria-hidden="true"></i><span>Clear local storage</span></button>' : '') + '<a href="owner-setting.html" aria-label="Cài đặt doanh nghiệp"><i data-lucide="store" aria-hidden="true"></i></a><a href="news-library.html?tab=news" aria-label="Tin mới từ Nexora"><i data-lucide="bell" aria-hidden="true"></i></a><a href="community.html?tab=connect" aria-label="Tin nhắn Community"><i data-lucide="messages-square" aria-hidden="true"></i></a><a href="dashboard.html" aria-label="Tất cả sản phẩm"><i data-lucide="grid-3x3" aria-hidden="true"></i></a></div>';
+      '<form class="shell-workspace-search" action="dashboard.html"><label class="search"><i data-lucide="search" aria-hidden="true"></i><input name="q" type="search" aria-label="' + (pos ? 'Search SI POS tools' : 'Search products') + '" placeholder="' + (pos ? 'Search SI POS tools...' : 'Search products or features…') + '" autocomplete="off"' + (pos ? ' data-shell-function-search' : '') + '></label><div class="shell-function-results" hidden></div></form>' +
+      '<div class="shell-workspace-actions">' + (cfg.showClearStorage ? '<button class="shell-clear-storage-button" type="button" data-shell-clear-storage aria-label="Clear local storage"><i data-lucide="trash-2" aria-hidden="true"></i><span>Clear local storage</span></button>' : '') + '<a href="owner-setting.html" aria-label="Business settings"><i data-lucide="store" aria-hidden="true"></i></a><a href="news-library.html?tab=news" aria-label="Nexora news"><i data-lucide="bell" aria-hidden="true"></i></a><a href="community.html?tab=connect" aria-label="Community messages"><i data-lucide="messages-square" aria-hidden="true"></i></a><a href="dashboard.html" aria-label="All products"><i data-lucide="grid-3x3" aria-hidden="true"></i></a></div>';
   }
 
   function navigate(tab) {
@@ -502,8 +534,7 @@
         if (!parent) return;
         parent.classList.toggle('is-active', staffGroups[key]);
         if (staffGroups[key]) {
-          parent.classList.add('is-expanded');parent.setAttribute('aria-expanded', 'true');
-          document.getElementById(parent.getAttribute('aria-controls')).classList.remove('is-collapsed');
+          setGroupExpanded(parent, true);
         }
       });
     } else {
@@ -514,10 +545,7 @@
         var active = groupIsActive(node, tab);
         toggle.classList.toggle('is-active', active);
         if (active) {
-          expandedGroups[node.key] = true;
-          toggle.classList.add('is-expanded');
-          toggle.setAttribute('aria-expanded', 'true');
-          document.getElementById(toggle.getAttribute('aria-controls')).classList.remove('is-collapsed');
+          setGroupExpanded(toggle, true);
         }
       });
       saveExpandedGroups();
@@ -543,6 +571,22 @@
     }
   }
 
+  function setGroupExpanded(toggle, open) {
+    var sub = document.getElementById(toggle.getAttribute('aria-controls'));
+    if (!sub) return;
+    if (open) {
+      var parent = toggle.closest('[data-nav-subnav], .sidebar-nav');
+      var peers = document.querySelectorAll('.sidebar [data-nav-group]');
+      for (var i = 0; i < peers.length; i++) {
+        if (peers[i] !== toggle && peers[i].closest('[data-nav-subnav], .sidebar-nav') === parent) setGroupExpanded(peers[i], false);
+      }
+    }
+    sub.classList.toggle('is-collapsed', !open);
+    toggle.classList.toggle('is-expanded', open);
+    toggle.setAttribute('aria-expanded', String(open));
+    if (activePage !== 'staff') expandedGroups[sub.id.replace('nexora-subnav-', '')] = open;
+  }
+
   function wireSidebar() {
     var accountToggle = document.querySelector('[data-shell-account-toggle]');
     var accountMenu = document.getElementById('nexora-account-menu');
@@ -564,13 +608,15 @@
         var sub = document.getElementById(toggle.getAttribute('aria-controls'));
         if (!sub) return;
         toggle.addEventListener('click', function () {
-          var collapsed = sub.classList.toggle('is-collapsed');
-          toggle.classList.toggle('is-expanded', !collapsed);
-          toggle.setAttribute('aria-expanded', collapsed ? 'false' : 'true');
-          expandedGroups[sub.id.replace('nexora-subnav-', '')] = !collapsed;
+          setGroupExpanded(toggle, toggle.getAttribute('aria-expanded') !== 'true');
           saveExpandedGroups();
         });
       })(toggles[i]);
+    }
+
+    if (activePage === 'staff') {
+      var openStaffGroup = Array.from(toggles).find(function(toggle) { return toggle.getAttribute('aria-expanded') === 'true'; });
+      if (openStaffGroup) setGroupExpanded(openStaffGroup, true);
     }
 
     // same-page tab sub-items
@@ -680,7 +726,9 @@
     var nav = sidebar.querySelector ? sidebar.querySelector('.sidebar-nav') : null;
     var scrollTop = nav ? nav.scrollTop : 0;
     var restoreFocus = focused && sidebar.contains && sidebar.contains(focused);
-    if (treeNav) visit(NAV, function(node) { if (groupIsActive(node, activeTab)) expandedGroups[node.key] = true; });
+    var route = sidebarRoute();
+    normalizeExpandedGroups(route !== lastSidebarRoute);
+    lastSidebarRoute = route;
     sidebar.innerHTML = renderMerchantSidebarHtml();
     wireSidebar();
     nav = sidebar.querySelector ? sidebar.querySelector('.sidebar-nav') : null;

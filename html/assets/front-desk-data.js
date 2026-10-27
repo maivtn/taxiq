@@ -83,6 +83,26 @@
     return [...rows.values()];
   }
   function saveTechnicians(rows){localStorage.setItem(keys.technicians,JSON.stringify(rows));}
+  // Patch only the selected saved profile. The returned compensation rereads
+  // current data and restores only fields that still contain this write's value.
+  function patchTechnician(name,changes){
+    const hadSaved=localStorage.getItem(keys.technicians)!==null,rows=read(keys.technicians,[]),index=rows.findIndex(row=>row.name===name),before=index<0?{name}:{...rows[index]},next={...before,...changes};
+    if(index<0)rows.push(next);else rows[index]=next;
+    saveTechnicians(rows);
+    return function compensate(){
+      const latest=read(keys.technicians,[]),at=latest.findIndex(row=>row.name===name);
+      if(at<0)return;
+      const current={...latest[at]};let changed=false;
+      Object.keys(changes).forEach(field=>{
+        if(current[field]!==changes[field])return;
+        if(Object.hasOwn(before,field))current[field]=before[field];else delete current[field];
+        changed=true;
+      });
+      if(!changed)return;
+      if(index<0&&Object.keys(current).every(field=>field==='name'))latest.splice(at,1);else latest[at]=current;
+      if(!latest.length&&!hadSaved)localStorage.removeItem(keys.technicians);else saveTechnicians(latest);
+    };
+  }
   function workFor(name,rows=all()){
     return rows.filter(active).flatMap(ticket=>ticket.lines.filter(line=>!line.parentLineId&&names(line).includes(name)).map(line=>({ticket,line})));
   }
@@ -143,5 +163,5 @@
     if(returnTo)target.searchParams.set('returnTo',returnTo);
     return target.href;
   }
-  window.NEXORA_FRONT_DESK_DATA={keys,keyOf,digits,names,all,active,editable,save,technicians,saveTechnicians,workFor,statusFor,canOperate,visible,canAssign,openForPhone,create,addService,url};
+  window.NEXORA_FRONT_DESK_DATA={keys,keyOf,digits,names,all,active,editable,save,technicians,saveTechnicians,patchTechnician,workFor,statusFor,canOperate,visible,canAssign,openForPhone,create,addService,url};
 })();

@@ -62,7 +62,7 @@ test('shared shell renders the PO POS menu before later page dependencies execut
     const state = shellStateBeforeDependency(file, dependency);
     assert.equal(state?.sidebarId, 'nexora-sidebar', `${file} loaded its page dependencies before the shared shell`);
     assert.ok(state.posLabels.includes('Front Desk'), `${file} omitted Front Desk before its page dependencies`);
-    assert.ok(state.posLabels.includes('Khuyến mãi'), `${file} omitted PO marketing navigation before its page dependencies`);
+    assert.ok(state.posLabels.includes('Promotions'), `${file} omitted PO marketing navigation before its page dependencies`);
   }
 });
 

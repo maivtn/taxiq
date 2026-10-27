@@ -1,0 +1,71 @@
+#front-desk-clock[hidden],#front-desk-clock [hidden]{display:none!important}
+#front-desk-clock{min-width:0;color:var(--nexora-text);font-size:12px;line-height:1.5}
+#front-desk-clock .clock-surface{min-width:0;background:#fff;border:1px solid var(--nexora-border);border-radius:14px;overflow:hidden}
+#front-desk-clock .clock-heading{display:flex;align-items:center;gap:10px;padding:16px 18px;border-bottom:1px solid #e9edf5;flex-wrap:wrap}
+#front-desk-clock .clock-heading h2{font-size:14px;font-weight:700;line-height:1.5;margin:0;flex:1;min-width:180px}
+#front-desk-clock .clock-heading-icon{display:grid;place-items:center;width:38px;height:38px;background:#fef9eb;border:1px solid #faedc5;border-radius:10px;flex-shrink:0}
+#front-desk-clock .clock-heading-icon img{width:30px;height:30px;object-fit:contain}
+#front-desk-clock .clock-date{font-size:11px;color:#62708a;border:1px solid #e3e8f2;border-radius:20px;padding:5px 10px;background:#f8fafc;white-space:nowrap}
+#front-desk-clock .clock-qr-body{display:flex;align-items:center;gap:25px;padding:22px}
+#front-desk-clock .clock-qr{width:174px;height:174px;display:grid;place-items:center;flex:0 0 174px;border:1px solid #e2e7f2;border-radius:12px;padding:11px;background:#fff}
+#front-desk-clock .clock-qr img,#front-desk-clock .clock-qr canvas{max-width:150px;max-height:150px}
+#front-desk-clock .clock-qr-copy{flex:1;min-width:0;max-width:850px;color:#52617a}
+#front-desk-clock .clock-qr-copy p{margin:0 0 12px}
+#front-desk-clock .clock-token{display:inline-block;color:#4c43df;background:#f1efff;border:1px solid #e2defe;padding:4px 9px;border-radius:6px;font-family:ui-monospace,SFMono-Regular,monospace;font-weight:700;letter-spacing:.4px}
+#front-desk-clock .clock-meter{height:6px;background:#eceafc;border-radius:8px;margin:16px 0 10px;overflow:hidden;max-width:480px}
+#front-desk-clock .clock-meter span{display:block;height:100%;width:100%;background:#6558e8;border-radius:inherit;transition:width .3s linear}
+#front-desk-clock .clock-hint{color:#67758b;font-size:11px;line-height:1.7}
+#front-desk-clock .clock-qr-copy .clock-hint{margin:14px 0 0;background:#f8f9fd;border:1px solid #edf0f7;border-radius:8px;padding:10px 12px}
+#front-desk-clock .clock-main-grid{display:flex;flex-wrap:wrap;gap:18px;margin-top:18px;align-items:start}
+#front-desk-clock .clock-roster .clock-heading{gap:8px}
+#front-desk-clock .clock-roster-tools{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-left:auto}
+#front-desk-clock .clock-on-count{color:#17805c;background:#eaf9f1;border:1px solid #cfeddd;border-radius:20px;padding:4px 9px;white-space:nowrap;font-size:11px;font-weight:600}
+#front-desk-clock .clock-views{display:flex;padding:3px;gap:3px;background:#f4f6fb;border:1px solid #e3e8f2;border-radius:8px}
+#front-desk-clock .clock-views button{padding:5px 10px;border:0;background:transparent;color:#67758b;font-size:11px;border-radius:5px}
+#front-desk-clock .clock-views button.active{color:#4c43df;background:white;box-shadow:0 1px 3px #152c511a}
+#front-desk-clock .clock-table-wrap{overflow-x:auto}
+#front-desk-clock table{min-width:840px;white-space:normal}
+#front-desk-clock th{padding:11px 14px;font-weight:600;background:#f8faff;font-size:10px}
+#front-desk-clock td{padding:13px 14px;font-size:11px;vertical-align:middle}
+#front-desk-clock td:last-child,#front-desk-clock th:last-child{text-align:left}
+#front-desk-clock td:last-child{min-width:160px}
+#front-desk-clock td:last-child button+button{margin-left:5px}
+#front-desk-clock .clock-person{display:flex;align-items:center;gap:10px;min-width:135px}
+#front-desk-clock .clock-avatar{display:grid;place-items:center;width:36px;height:36px;flex-shrink:0;background:#efedff;color:#6953b5;border:1px solid #e3ddfa;border-radius:50%;font-weight:700;font-size:12px}
+#front-desk-clock .clock-person strong{font-size:12px;line-height:1.5}
+#front-desk-clock small{display:block;font-size:10px;color:#6d7b91;font-weight:400;margin-top:3px}
+#front-desk-clock .clock-shift{color:#7b8598;white-space:nowrap}
+#front-desk-clock .clock-shift.on-shift{color:#17805c}
+#front-desk-clock .clock-shift.on-shift:before{content:"";display:inline-block;width:6px;height:6px;background:#28ae78;border-radius:50%;margin-right:5px;vertical-align:middle}
+#front-desk-clock .clock-station{width:58px;min-height:32px;padding:6px 8px;font-weight:600;font-size:11px}
+#front-desk-clock .clock-ticket{color:#17805c;line-height:1.5}
+#front-desk-clock .clock-ticket.busy{color:#aa6d23}
+#front-desk-clock .clock-next{color:#7558bd;font-weight:600}
+#front-desk-clock .clock-beeper{display:inline-block;color:#7558bd;background:#f2edff;border:1px solid #e7dff9;border-radius:6px;padding:3px 8px;font-size:11px;font-weight:700}
+#front-desk-clock [data-clk],#front-desk-clock [data-clock-beep]{padding:7px 9px;font-size:11px;white-space:nowrap;min-height:32px}
+#front-desk-clock .clock-roster-hint{margin:0;padding:12px 18px;background:#fafbfe;border-top:1px solid #edf0f6}
+#front-desk-clock .clock-roster-cards{display:flex;flex-wrap:wrap;gap:12px;padding:16px}
+#front-desk-clock .clock-person-card{flex:1 1 230px;min-width:0;border:1px solid #e2e7f2;border-radius:11px;padding:15px;background:#fff}
+#front-desk-clock .clock-card-shift{margin:13px 0;border-bottom:1px solid #eef0f6;padding-bottom:12px}
+#front-desk-clock .clock-person-card dl{display:flex;flex-wrap:wrap;gap:14px;margin:0 0 16px}
+#front-desk-clock .clock-person-card dt{font-size:10px;color:#728097;margin-bottom:5px}
+#front-desk-clock .clock-person-card dd{margin:0;font-size:12px;min-height:25px}
+#front-desk-clock .clock-card-actions{display:flex;gap:7px;padding-top:12px;border-top:1px solid #eef0f6}
+#front-desk-clock .clock-card-actions button{flex:1}
+#front-desk-clock .clock-feeds{display:flex;flex-direction:column;flex:0 1 285px;gap:18px;min-width:0}
+#front-desk-clock .clock-feeds .clock-heading{padding:13px 15px;gap:8px}
+#front-desk-clock .clock-feeds .clock-heading h2{font-size:13px;min-width:0}
+#front-desk-clock .clock-feeds .clock-heading-icon{width:32px;height:32px}
+#front-desk-clock .clock-feeds .clock-heading-icon img{width:25px;height:25px}
+#front-desk-clock .clock-feed{padding:4px 16px;max-height:410px;overflow-y:auto}
+#front-desk-clock .clock-feed-line{padding:12px 0;border-bottom:1px solid #edf0f6;font-size:11px;color:#53617a;line-height:1.8;overflow-wrap:anywhere}
+#front-desk-clock .clock-feed-line:last-child{border:0}
+#front-desk-clock .clock-muted{color:#7a879a;font-size:11px;line-height:1.8;margin:12px 0}
+#front-desk-clock .clock-feedback{font-size:12px;color:#52617a;margin:14px 0 0}
+#front-desk-clock button:focus-visible,#front-desk-clock input:focus-visible{outline:2px solid #6558e8;outline-offset:2px}
+#front-desk-clock button:disabled{opacity:.55;cursor:wait}
+@media(max-width:1100px){#front-desk-clock .clock-main-grid>.clock-roster{flex-basis:100%}#front-desk-clock .clock-feeds{flex:1 1 100%;flex-direction:row;flex-wrap:wrap}.clock-feeds>.clock-surface{flex:1 1 280px}#front-desk-clock .clock-feed{max-height:250px}}
+@media(max-width:640px){#front-desk-clock .clock-heading{padding:12px}#front-desk-clock .clock-heading h2{font-size:13px;min-width:150px}#front-desk-clock .clock-date{margin-left:48px}#front-desk-clock .clock-qr-body{padding:16px;gap:18px;flex-direction:column;align-items:stretch}#front-desk-clock .clock-qr{align-self:center}#front-desk-clock .clock-roster-tools{margin-left:0;width:100%;justify-content:space-between}#front-desk-clock .clock-roster-cards{padding:12px}.clock-person-card{flex-basis:100%}#front-desk-clock .clock-feeds{flex-direction:column}#front-desk-clock .clock-main-grid,#front-desk-clock .clock-feeds{gap:12px}#front-desk-clock .clock-main-grid{margin-top:12px}}
+
+#front-desk-clock .clock-roster{flex:1 1 560px}
+#front-desk-clock .clock-person-card dl>div{flex:1 1 calc(50% - 14px);min-width:0}

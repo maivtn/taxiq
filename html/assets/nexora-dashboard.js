@@ -21,7 +21,7 @@
       card.hidden = !((category.value === 'all' || card.dataset.category.split(/\s+/).includes(category.value)) && (!query || normalize(card.textContent + ' ' + card.dataset.search).includes(query)));
       if (!card.hidden) count++;
     });
-    document.getElementById('result-count').textContent = count + ' sản phẩm';
+    document.getElementById('result-count').textContent = count + ' products';
     document.getElementById('empty').hidden = count > 0;
     document.getElementById('clear-filter').hidden = !query && category.value === 'all';
   }
@@ -33,10 +33,10 @@
   }
   function reset() { search.value = ''; category.value = 'all'; saveFilters(); search.focus(); }
   function link(item) {
-    var href = item.demo === 'wheel' ? 'dashboard.html?module=spinwheel' : item.url ? routes.resolve(item.url) : '';
+    var href = item.demo === 'wheel' ? 'vlinkpay-campaigns.html?view=create' : item.url ? routes.resolve(item.url) : '';
     var node = document.createElement(href && !item.unavailable ? 'a' : 'div');
     node.className = 'detail-link' + (item.unavailable || !href ? ' unavailable' : '');
-    var copy = document.createElement('span'); copy.textContent = item.label + (item.unavailable || !href ? ' · chưa khả dụng' : ''); node.appendChild(copy);
+    var copy = document.createElement('span'); copy.textContent = item.label + (item.unavailable || !href ? ' · unavailable' : ''); node.appendChild(copy);
     if (item.description) { var description = document.createElement('small'); description.textContent = item.description; copy.appendChild(description); }
     if (href && !item.unavailable) {
       node.href = href;

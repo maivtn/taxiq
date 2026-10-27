@@ -1,9 +1,8 @@
-/* Navigation labels and hierarchy from the Oct 27, 2026 PO handoff.
- * Original PO previews are intentionally retained for screens outside this phase.
- * Serve the repository root so ../../from-po/ preview links are available. */
+/* Merchant hierarchy from the PO handoff; every destination is an integrated local page. */
 (function () {
   'use strict';
-  var preview = '../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/';
+  // Preserve the English preference shared with the PO handoff.
+  try { window.localStorage.setItem('nexora-dashboard-language-v1', 'en'); } catch (_) {}
   var front = {
     checkin: 'pos-front-desk.html?section=checkin', tickets: 'pos-front-desk-tickets.html',
     turns: 'pos-front-desk-turn-board.html', turnboard: 'pos-front-desk-turn-board.html',
@@ -13,17 +12,18 @@
   };
   function resolve(href, opsView) {
     if (opsView && front[opsView]) return front[opsView];
-    if (opsView === 'clock') return 'pos-phase-1.html?tab=clock';
+    if (opsView === 'clock') return 'pos-front-desk.html?section=clock';
     if (!href) return '';
     if (href === '#modules') return 'dashboard.html';
-    if (href === '#salon-home') return preview + 'salon-home.html#salon-home';
-    if (href === '#dashboard-onboarding') return preview + 'dashboard.html#dashboard-onboarding';
+    if (href === '#salon-home') return 'salon-home.html';
+    if (href === '#dashboard-onboarding') return 'nexora-getting-started.html';
     if (href.indexOf('#module-') === 0) {
       var module = href.slice(8);
       return 'dashboard.html?module=' + (module === 'aihub-marketing' ? 'aihub&section=marketing' : module);
     }
     var anchors = {
       '#pos-front-desk': 'pos-front-desk.html',
+      '#pos-ai-voice': 'pos-ai-voice.html',
       '#pos-booking-calendar': 'pos-front-desk.html?section=appointments&bookingView=appointment&view=calendar',
       '#pos-booking-requests': 'pos-front-desk.html?section=appointments&bookingView=booking',
       '#pos-booking-customers': 'pos-front-desk.html?section=appointments&bookingView=appointment&view=table',
@@ -36,17 +36,34 @@
       '#pos-loyalty': 'salon-setup-reward.html'
     };
     if (anchors[href]) return anchors[href];
-    if (href[0] === '#') return preview + 'dashboard.html' + href;
-    if (!/^https?:/.test(href)) return (href.indexOf('products/') === 0 || href.indexOf('nexora_') === 0 || href === 'index.html') ? preview + href : href;
+    if (href[0] === '#') return 'dashboard.html' + href;
+    if (!/^https?:/.test(href)) {
+      if (/^(nexora_home_de_xuat|index)\.html/.test(href)) return 'nexora-home.html';
+      if (href === 'products/spin-wheel/create.html') return 'vlinkpay-campaigns.html?view=create';
+      if (href.indexOf('products/') === 0) {
+        var product = href.split('/')[1], modules = {'si-pos':'pos','one-qr':'oneqr','payments-payouts':'payments','ai-hub':'aihub','ai-marketing':'aihub&section=marketing','reviews':'reviews','gift-card-center':'gift','analytics':'analytics','community':'community','spin-wheel':'spinwheel','tax-iq':'taxiq'};
+        if (product === 'ai-voice-sms') return 'pos-ai-voice.html';
+        return 'dashboard.html?module=' + (modules[product] || 'pos');
+      }
+      return href;
+    }
     var u;
     try { u = new URL(href); } catch (_) { return href; }
-    if (u.hostname !== 'nexoratouch.com') return href;
+    if (u.hostname === 'merchant.vlinkpay.com' || u.hostname === 'staging-merchant.vlinkpay.com') {
+      if (u.pathname === '/campaign-management') return 'vlinkpay-campaigns.html';
+      if (u.pathname === '/marketing-tools') return '';
+    }
+    if (u.hostname !== 'nexoratouch.com' && u.hostname !== 'staging-web.nexoratouch.com') return href;
     var path = u.pathname, tab = u.searchParams.get('tab');
     if (path === '/dashboard/community') return 'community.html?tab=' + (tab || 'feed');
     if (path === '/dashboard/reviews') return 'nexora-review.html';
     if (path === '/dashboard/pos' && front[tab]) return front[tab];
-    if (path === '/dashboard/pos' && tab === 'timeclock') return 'pos-phase-1.html?tab=clock';
-    if (path === '/dashboard/pos/printer') return 'pos-phase-1.html?tab=printer';
+    if (path === '/dashboard/pos' && tab === 'timeclock') return 'pos-front-desk.html?section=clock';
+    if (path === '/dashboard/pos/printer') return 'pos-printer-setup.html';
+    var localRoutes = {'/dashboard/pos/report/technician':'pos-technician-report.html','/dashboard/pos/public-checkin':'pos-qr-checkin.html','/dashboard/pos/devices':'pos-checkin-devices.html','/dashboard/analytics':'nexora-analytics.html','/dashboard/category-management':'payment-categories.html','/dashboard/support':'nexora-support.html','/dashboard/ai-hub/setup-guide':'salon-guide-ai-voice.html'};
+    if (localRoutes[path]) return localRoutes[path];
+    if (path === '/dashboard/reports') return {'receive_payments':'payment-income.html',tips:'tip-list.html',direct_payments:'payment-activity.html'}[tab] || 'payment-income.html?tab=overview';
+    if (path === '/dashboard/tips') return {overview:'tip-overview.html',payouts:'staff-payouts.html',savings:'direct-savings.html'}[tab] || 'tip-overview.html';
     if (path.indexOf('/menu/') === 0) return '../menu/menu.html';
     if (path === '/dashboard/pos' && tab === 'orderlist') return front.tickets;
     if (path === '/dashboard/pos' && tab === 'customer') return 'booking-book-phase-1.html?tab=customers';
@@ -67,12 +84,13 @@
     if (path === '/dashboard/settings/kyb') return 'owner-setting.html?tab=business-verification';
     if (path === '/dashboard/news-library') return 'news-library.html?tab=' + (tab || 'news');
     if (path === '/dashboard/package-management') return 'nexora-packages.html?tab=overview';
-    return href; // Keep PO external destinations where no equivalent local screen exists.
+    return href;
   }
   var nodes = [
   {
     "key": "public-home",
-    "label": "Trang chủ Nexora ↗",
+    "label": "Nexora Home",
+    "externalIndicator": true,
     "iconKey": "home",
     "href": "nexora_home_de_xuat.html"
   },
@@ -90,7 +108,7 @@
   },
   {
     "key": "start-link",
-    "label": "Hướng dẫn bắt đầu",
+    "label": "Getting started",
     "iconKey": "onboarding",
     "href": "#dashboard-onboarding"
   },
@@ -106,49 +124,49 @@
         "children": [
           {
             "key": "on-khach",
-            "label": "Đón khách",
+            "label": "Check-in",
             "href": "#pos-front-desk",
             "opsView": "checkin"
           },
           {
             "key": "phieu-dich-vu",
-            "label": "Phiếu dịch vụ",
+            "label": "Tickets",
             "href": "#pos-front-desk",
             "opsView": "tickets"
           },
           {
             "key": "chia-turn",
-            "label": "Chia turn",
+            "label": "Turn Board",
             "href": "#pos-front-desk",
             "opsView": "turns"
           },
           {
             "key": "at-lich",
-            "label": "Đặt lịch",
+            "label": "Booking",
             "href": "#pos-front-desk",
             "opsView": "booking"
           },
           {
             "key": "thu-tien",
-            "label": "Thu tiền",
+            "label": "Checkout",
             "href": "#pos-front-desk",
             "opsView": "checkout"
           },
           {
             "key": "a-hoan-tat",
-            "label": "Đã hoàn tất",
+            "label": "Completed Services",
             "href": "#pos-front-desk",
             "opsView": "completed"
           },
           {
             "key": "bao-gia",
-            "label": "Báo giá",
+            "label": "Estimate",
             "href": "#pos-front-desk",
             "opsView": "estimate"
           },
           {
             "key": "cham-cong",
-            "label": "Chấm công",
+            "label": "Time clock",
             "href": "#pos-front-desk",
             "opsView": "clock"
           }
@@ -156,62 +174,62 @@
       },
       {
         "key": "quan-ly-tiem",
-        "label": "Quản lý tiệm",
+        "label": "Salon management",
         "children": [
           {
             "key": "pos-booking",
-            "label": "Lịch hẹn",
+            "label": "Appointments",
             "href": "#pos-booking-calendar"
           },
           {
             "key": "pos-settings",
-            "label": "Cài đặt tiệm",
+            "label": "Salon settings",
             "href": "#pos-salon-settings-info"
           },
           {
             "key": "salon-menu-nav",
-            "label": "Menu dịch vụ",
+            "label": "Service menu",
             "href": "#pos-salon-settings-services"
           },
           {
             "key": "bao-cao",
-            "label": "Báo cáo",
+            "label": "Reports",
             "href": "https://nexoratouch.com/dashboard/pos/report/technician"
           },
           {
             "key": "may-in-bien-lai",
-            "label": "Máy in biên lai",
+            "label": "Receipt printer",
             "href": "https://nexoratouch.com/dashboard/pos/printer"
           }
         ]
       },
       {
         "key": "khach-tiep-thi",
-        "label": "Khách & tiếp thị",
+        "label": "Customers & marketing",
         "children": [
           {
             "key": "khach-hang",
-            "label": "Khách hàng",
+            "label": "Customers",
             "href": "https://nexoratouch.com/dashboard/pos?tab=customer"
           },
           {
             "key": "pos-call-log",
-            "label": "Nhật ký cuộc gọi",
+            "label": "Call log",
             "href": "#pos-call-log"
           },
           {
             "key": "pos-promotions",
-            "label": "Khuyến mãi",
+            "label": "Promotions",
             "href": "#pos-promotions"
           },
           {
             "key": "pos-sms",
-            "label": "Chiến dịch SMS",
+            "label": "SMS Campaign",
             "href": "#pos-sms-campaigns"
           },
           {
             "key": "pos-loyalty",
-            "label": "Tích điểm",
+            "label": "Loyalty",
             "href": "#pos-loyalty"
           },
           {
@@ -223,7 +241,7 @@
       },
       {
         "key": "tai-chinh-chi-tra",
-        "label": "Tài chính & chi trả",
+        "label": "Finance & payouts",
         "iconKey": "payments",
         "href": "#module-payments"
       }
@@ -231,7 +249,7 @@
   },
   {
     "key": "products",
-    "label": "Tất cả sản phẩm",
+    "label": "All products",
     "availability": "preview",
     "children": [
       {
@@ -241,25 +259,26 @@
         "children": [
           {
             "key": "bang-tin",
-            "label": "Bảng tin",
+            "label": "Feed",
             "href": "https://nexoratouch.com/dashboard/community"
           },
           {
             "key": "nhom-cho",
-            "label": "Nhóm & Chợ",
+            "label": "Groups & Market",
             "href": "https://nexoratouch.com/dashboard/community?tab=groups"
           },
           {
             "key": "viec-lam",
-            "label": "Việc làm",
+            "label": "Jobs",
             "href": "https://nexoratouch.com/dashboard/community?tab=jobs"
           },
           {
             "key": "tin-nhan-cuoc-goi",
-            "label": "Tin nhắn & cuộc gọi",
+            "label": "Messages & calls",
             "href": "https://nexoratouch.com/dashboard/community?tab=connect"
           }
-        ]
+        ],
+        "showIcon": true
       },
       {
         "key": "booking",
@@ -296,32 +315,32 @@
             "children": [
               {
                 "key": "lich-hen",
-                "label": "Lịch hẹn",
+                "label": "Appointments",
                 "href": "https://nexoratouch.com/dashboard/ai-hub?tab=booking&view=today"
               },
               {
                 "key": "lich",
-                "label": "Lịch",
+                "label": "Calendar",
                 "href": "https://nexoratouch.com/dashboard/ai-hub?tab=booking&view=calendar"
               },
               {
                 "key": "khach-hang-2",
-                "label": "Khách hàng",
+                "label": "Customers",
                 "href": "#pos-voice-customers"
               },
               {
                 "key": "nhat-ky-cuoc-goi",
-                "label": "Nhật ký cuộc gọi",
+                "label": "Call log",
                 "href": "#pos-call-log"
               },
               {
                 "key": "goi-su-dung",
-                "label": "Gói sử dụng",
+                "label": "Plans",
                 "href": "https://nexoratouch.com/dashboard/ai-hub?tab=plans"
               },
               {
                 "key": "cai-dat-le-tan-ai",
-                "label": "Cài đặt Lễ tân AI",
+                "label": "AI Receptionist Settings",
                 "href": "https://nexoratouch.com/dashboard/ai-hub?tab=settings"
               }
             ]
@@ -332,7 +351,7 @@
             "children": [
               {
                 "key": "khuyen-mai-pos",
-                "label": "Khuyến mãi POS",
+                "label": "POS promotions",
                 "href": "https://nexoratouch.com/dashboard/pos/promotions"
               },
               {
@@ -342,7 +361,7 @@
               },
               {
                 "key": "khach-hang-3",
-                "label": "Khách hàng",
+                "label": "Customers",
                 "href": "https://nexoratouch.com/dashboard/ai-hub?tab=customers"
               },
               {
@@ -352,7 +371,7 @@
               },
               {
                 "key": "vlinkpay-campaigns",
-                "label": "Chiến dịch · VLinkPay",
+                "label": "Campaigns · VLinkPay",
                 "newTab": true,
                 "href": "https://merchant.vlinkpay.com/campaign-management?pageIndex=0&pageSize=10"
               },
@@ -364,11 +383,12 @@
               }
             ]
           }
-        ]
+        ],
+        "showIcon": true
       },
       {
         "key": "business-tools",
-        "label": "Công cụ doanh nghiệp",
+        "label": "Business tools",
         "iconKey": "oneqr",
         "availability": "preview",
         "children": [
@@ -379,11 +399,11 @@
             "children": [
               {
                 "key": "qr-tai-tiem",
-                "label": "QR tại tiệm",
+                "label": "In-salon QR",
                 "children": [
                   {
                     "key": "tong-quan-one-qr",
-                    "label": "Tổng quan One QR",
+                    "label": "One QR overview",
                     "href": "#module-oneqr"
                   },
                   {
@@ -393,38 +413,38 @@
                   },
                   {
                     "key": "nhan-tip",
-                    "label": "Nhận tip",
+                    "label": "Accept tips",
                     "href": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=tip"
                   },
                   {
                     "key": "nhan-thanh-toan",
-                    "label": "Nhận thanh toán",
+                    "label": "Receive payments",
                     "href": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=payment"
                   },
                   {
                     "key": "qr-khach-tu-check-in",
-                    "label": "QR khách tự check-in",
+                    "label": "Customer self check-in QR",
                     "href": "https://nexoratouch.com/dashboard/pos/public-checkin"
                   },
                   {
                     "key": "thiet-bi-tu-check-in",
-                    "label": "Thiết bị tự check-in",
+                    "label": "Self check-in devices",
                     "href": "https://nexoratouch.com/dashboard/pos/devices"
                   }
                 ]
               },
               {
                 "key": "chia-se-moi",
-                "label": "Chia sẻ & mời",
+                "label": "Share & invite",
                 "children": [
                   {
                     "key": "lien-ket-gioi-thieu",
-                    "label": "Liên kết giới thiệu",
+                    "label": "Referral Link",
                     "href": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=referral"
                   },
                   {
                     "key": "qr-moi-nhan-vien",
-                    "label": "QR mời nhân viên",
+                    "label": "Staff Invite QR",
                     "href": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=staff-invite"
                   }
                 ]
@@ -438,37 +458,37 @@
             "children": [
               {
                 "key": "thu-nhap-tiem",
-                "label": "Thu nhập tiệm",
+                "label": "Salon income",
                 "children": [
                   {
                     "key": "tong-quan-thanh-toan",
-                    "label": "Tổng quan thanh toán",
+                    "label": "Payment overview",
                     "href": "#module-payments"
                   },
                   {
                     "key": "nhan-thanh-toan-2",
-                    "label": "Nhận thanh toán",
+                    "label": "Receive payments",
                     "href": "https://nexoratouch.com/dashboard/reports?tab=receive_payments"
                   }
                 ]
               },
               {
                 "key": "chi-tra-nhan-vien",
-                "label": "Chi trả nhân viên",
+                "label": "Staff payouts",
                 "children": [
                   {
                     "key": "tong-quan-tien-tip",
-                    "label": "Tổng quan tiền tip",
+                    "label": "Tip overview",
                     "href": "https://nexoratouch.com/dashboard/tips?tab=overview"
                   },
                   {
                     "key": "danh-sach-tip",
-                    "label": "Danh sách tip",
+                    "label": "Tip list",
                     "href": "https://nexoratouch.com/dashboard/reports?tab=tips"
                   },
                   {
                     "key": "payroll-chi-tra",
-                    "label": "Payroll / chi trả",
+                    "label": "Payroll / payouts",
                     "href": "https://nexoratouch.com/dashboard/tips?tab=payouts"
                   },
                   {
@@ -480,22 +500,22 @@
               },
               {
                 "key": "may-ca-the",
-                "label": "Máy cà thẻ",
+                "label": "Card terminal",
                 "children": [
                   {
                     "key": "hoat-dong-thanh-toan",
-                    "label": "Hoạt động thanh toán",
+                    "label": "Payment activity",
                     "href": "https://nexoratouch.com/dashboard/reports?tab=direct_payments"
                   }
                 ]
               },
               {
                 "key": "cau-hinh",
-                "label": "Cấu hình",
+                "label": "Settings",
                 "children": [
                   {
                     "key": "quan-ly-danh-muc",
-                    "label": "Quản lý danh mục",
+                    "label": "Category management",
                     "href": "https://nexoratouch.com/dashboard/category-management"
                   }
                 ]
@@ -521,25 +541,26 @@
             "href": "#module-taxiq",
             "availability": "preview"
           }
-        ]
+        ],
+        "showIcon": true
       }
     ]
   },
   {
     "key": "news-library",
-    "label": "Tin tức & Tài liệu",
+    "label": "News & Library",
     "iconKey": "news",
     "href": "https://nexoratouch.com/dashboard/news-library?tab=news"
   },
   {
     "key": "support",
-    "label": "Hỗ trợ",
+    "label": "Support",
     "iconKey": "support",
     "href": "https://nexoratouch.com/dashboard/support"
   },
   {
     "key": "settings",
-    "label": "Cài đặt",
+    "label": "Settings",
     "iconKey": "settings",
     "href": "owner-setting.html",
     "page": "owner-settings",
@@ -549,6 +570,8 @@
   function prepare(items) {
     items.forEach(function (node) {
       if (node.href) node.href = resolve(node.href, node.opsView);
+      if (node.key === 'vlinkpay-ai-ads') node.availability = 'unavailable';
+      if (node.newTab && node.href && !/^https?:/.test(node.href)) { node.externalIndicator = true; delete node.newTab; }
       if (node.href && node.href.indexOf('community.html?tab=') === 0) { node.page = 'community'; node.tab = node.href.split('tab=')[1]; }
       if (node.href && node.href.indexOf('booking-book-phase-1.html?tab=') === 0) { node.page = 'booking'; node.tab = new URLSearchParams(node.href.split('?')[1]).get('tab'); }
       if (node.href && node.href.indexOf('qr-stations.html?tab=') === 0) { node.page = 'stations'; node.tab = new URLSearchParams(node.href.split('?')[1]).get('tab'); }

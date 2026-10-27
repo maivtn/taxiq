@@ -1,0 +1,61 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Printer setup — NEXORA TOUCH</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/nexora-icons.css"><link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/pos-printer-setup.css">
+</head>
+<body>
+<div class="shell"><aside class="sidebar" aria-label="Salon sidebar"></aside><div class="app-area"><header class="header"></header>
+<main class="content pps-page" data-printer-setup>
+  <h1>Printer setup</h1><p class="pps-subtitle">Configure how this device prints customer receipts.</p><p class="pps-intro">Set up a printer for each device you use at the counter.</p>
+  <section class="pps-card" aria-labelledby="pps-thermal-title">
+    <h2 id="pps-thermal-title"><img src="../assets/icon-oneqr/issue-2040-oneqr-receipt-3d.png" alt="">THERMAL RECEIPT PRINTER</h2>
+    <h3>How do you want to print?</h3>
+    <div class="pps-methods" role="radiogroup" aria-label="Print method">
+      <label class="pps-method"><input type="radio" name="pps-print-method" value="airprint" checked><span><strong>AirPrint / Computer printer</strong><small>Use an AirPrint printer on iPad, or a printer set up on your computer.</small></span></label>
+      <label class="pps-method"><input type="radio" name="pps-print-method" value="star"><span><strong>Star receipt printer</strong><small>Connect a compatible Star printer using the PassPRNT app.</small></span></label>
+    </div>
+    <p class="pps-help">Already have a thermal receipt printer? Let’s find the right setup for your printer and device. Choose a print method above, or open “Other printer / Not sure” below for guidance.</p>
+    <div data-printer-airprint>
+      <h4>Set up AirPrint / Computer printing</h4>
+      <ol class="pps-steps">
+        <li><span class="pps-step-number">1</span><div><strong>Connect your printer</strong><p>On iPad, use an AirPrint-compatible printer on the same network. On a computer, install the printer driver and add the printer in your system settings.</p></div></li>
+        <li><span class="pps-step-number">2</span><div><strong>Choose your printer in the print dialog</strong><p>When you print a test receipt below, select your printer and the matching paper size in the system print dialog. No PassPRNT app is needed.</p></div></li>
+        <li><span class="pps-step-number">3</span><div><strong>Check a sample receipt</strong><p>Print a sample receipt and check that the text is readable and fits the paper.</p></div></li>
+      </ol>
+      <button class="pps-button primary" type="button" data-printer-test>Print test receipt</button>
+      <p class="pps-help">After printing a test, check the actual receipt for readable text and the correct paper size. Confirm the result at the printer.</p>
+    </div>
+    <div data-printer-star hidden>
+      <h4>SET UP PASSPRNT</h4>
+      <ol class="pps-steps">
+        <li><span class="pps-step-number">1</span><div><strong>Install Star PassPRNT</strong><p>Install once on this iPad to get started. The Install button opens the App Store.</p></div><a class="pps-button" href="https://apps.apple.com/us/app/star-passprnt/id979827520" target="_blank" rel="noopener">Install <span aria-hidden="true">↗</span></a></li>
+        <li class="pps-star-step"><div class="pps-step-line"><span class="pps-step-number">2</span><div><strong>Open PassPRNT and choose your printer</strong><p>Open PassPRNT to pair your printer over Bluetooth or your local network. You can select and manage your printer in the app.</p></div></div>
+          <div class="pps-star-fields"><label class="pps-field pps-paper-width">Paper width<select name="pps-paper-width"><option value="80">80 mm roll</option><option value="58">58 mm roll</option></select></label><label class="pps-field">Printer mode<select name="pps-printer-mode" aria-describedby="pps-mode-help"><option value="star-desktop">Star desktop (TSP100, TSP650, TSP700)</option><option value="starprnt">mC-Print, mPOP, portable StarPRNT</option><option value="portable-escpos">Portable printer, ESC/POS</option><option value="bsc10-escpos">BSC10, ESC/POS</option></select></label><p id="pps-mode-help" class="pps-help">If the receipt prints as random characters, match this to the EMU line on the printer self-test.</p></div>
+        </li>
+        <li><span class="pps-step-number">3</span><div><strong>Check a sample receipt</strong><p>Sends a sample receipt to the printer and returns to the POS.</p></div><button class="pps-button primary" type="button" data-printer-test>Print test receipt</button></li>
+      </ol>
+      <div class="pps-last-test"><strong>LAST TEST PRINT</strong><p data-printer-last-test>Choose “Print test receipt” above to check your printer.</p></div>
+      <details class="pps-details pps-passprnt"><summary>Why install Star PassPRNT?</summary><div><p>For the Star printer option, Nexora sends your receipt to the Star PassPRNT app, which prints it on the Star printer you select. Install the app on each iPad you print from, then open it and choose your printer before your first print.</p><p>For the Star app method, PassPRNT sends your receipt to the printer. With AirPrint / Computer printer, you print through the system print dialog.</p></div></details>
+    </div>
+    <details class="pps-details"><summary>Other printer / Not sure</summary><div><p>Using an Epson, BIXOLON, MUNBYN, Xprinter, or another thermal printer? Find guidance for your device below.</p><ul><li>On iPad: check the manufacturer’s specifications for AirPrint support. If supported, connect your iPad and printer to the same network and choose AirPrint / Computer printer.</li><li>On a computer: install the manufacturer’s driver and confirm the printer works from your browser, then choose AirPrint / Computer printer in Nexora.</li><li>Your printer does not support AirPrint? You can use Nexora on a computer: install the manufacturer’s driver, add the printer to your system, then choose “AirPrint / Computer printer” to print a test receipt. To keep using your iPad, share the printer brand and model with Nexora support to check connection options. Direct printing from iPad to these brands requires an additional integration.</li></ul><h3>Find the right connection for your printer</h3><p>Share these details when contacting Nexora support so we can guide you through your options:</p><ul><li>Brand and full model number, including the variant shown on the printer label.</li><li>Connection type: USB, Ethernet, Wi-Fi, or Bluetooth.</li><li>Device and browser used with Nexora, such as iPad with Safari or Windows with Chrome.</li></ul></div></details>
+  </section>
+  <section class="pps-card" aria-labelledby="pps-receipt-title">
+    <h2 id="pps-receipt-title"><img src="../assets/icon-oneqr/issue-2040-oneqr-settings-3d.png" alt="">RECEIPT SETTINGS</h2><p class="pps-help">Choose what prints and how many copies.</p>
+    <div class="pps-setting"><div><strong>Print products</strong><p>Include retail products on the receipt.</p></div><button type="button" class="pps-switch" role="switch" aria-checked="false" aria-label="Print products" data-printer-toggle="printProducts"><span></span></button></div>
+    <div class="pps-setting"><div><strong>Sort services</strong><p>Group services in a consistent order.</p></div><button type="button" class="pps-switch" role="switch" aria-checked="false" aria-label="Sort services" data-printer-toggle="sortServices"><span></span></button></div>
+    <div class="pps-setting"><div><strong>Card payment copies</strong><p>Number of receipts printed after a card payment.</p></div><div class="pps-stepper" role="group" aria-label="Card payment copies"><button type="button" data-printer-copy="cardCopies" data-delta="-1" aria-label="Decrease Card payment copies">−</button><output data-printer-count="cardCopies">1</output><button type="button" data-printer-copy="cardCopies" data-delta="1" aria-label="Increase Card payment copies">+</button></div></div>
+    <div class="pps-setting"><div><strong>Other payment copies</strong><p>Number of receipts for cash and every other method.</p></div><div class="pps-stepper" role="group" aria-label="Other payment copies"><button type="button" data-printer-copy="otherCopies" data-delta="-1" aria-label="Decrease Other payment copies">−</button><output data-printer-count="otherCopies">0</output><button type="button" data-printer-copy="otherCopies" data-delta="1" aria-label="Increase Other payment copies">+</button></div></div>
+    <div class="pps-save"><span data-printer-save-status role="status" aria-live="polite">All changes saved</span><button class="pps-button primary" type="button" data-printer-save disabled>Save settings</button></div>
+  </section>
+</main></div></div>
+<dialog class="pps-dialog" data-printer-preview aria-labelledby="pps-preview-title"><header><h2 id="pps-preview-title">Print test receipt</h2><button type="button" class="pps-close" data-printer-close aria-label="Close">×</button></header><div class="pps-preview-body"><article class="pps-receipt" data-printer-receipt></article></div><footer><button class="pps-button" type="button" data-printer-close>Close</button><button class="pps-button primary" type="button" data-printer-print>Print</button></footer></dialog>
+<script>window.NEXORA_SHELL={workspace:'pos',activePage:'pos',activeTab:'printer'};</script>
+<script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+<script src="../assets/nexora-icons.js"></script><script src="../assets/nexora-shell-nav.js"></script><script src="../assets/nexora-shell.js"></script>
+<script src="../assets/salon-data.js"></script><script src="../assets/pos-printer-setup.js"></script>
+</body></html>

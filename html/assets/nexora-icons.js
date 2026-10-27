@@ -1,4 +1,4 @@
-/* Local Icons8 3D Fluency PNGs. Attribution is rendered by the shared shell. */
+/* Local Icons8 3D Fluency PNGs. Attribution is retained on the product catalog. */
 (function () {
   'use strict';
   var script = document.currentScript;

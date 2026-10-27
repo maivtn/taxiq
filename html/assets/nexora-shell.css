@@ -758,7 +758,6 @@ body[data-nexora-workspace="pos"] .sidebar-nav { min-height: 0; overflow-y: auto
 .shell-tree-label { min-width:0; overflow-wrap:anywhere; flex:1; text-align:left; }
 .shell-tree-branch .nav-subnav-inner { padding-left:10px; }
 .shell-tree-branch .nav-subitem { min-height:42px; gap:8px; line-height:1.4; white-space:normal; }
-.shell-tree-branch .nav-subitem .nexora-3d-icon { width:24px; height:24px; }
 .shell-tree-branch .nav-subnav { margin-left:7px; }
 .shell-tree-branch .nav-subnav-inner > .shell-tree-branch .nav-subnav { margin-left:0; }
 .shell-preview-tag { max-width:70px; font-size:8px; line-height:1.4; color:#ced6ee; }
@@ -794,3 +793,30 @@ body[data-nexora-workspace="pos"] .header .mobile-brand { flex-shrink:0; }
 @media (max-width:767px) {
  .header:has([data-shell-clear-storage]) .shell-workspace-actions { flex-basis:100%; margin-left:0; flex-wrap:wrap; }
 }
+
+/* Merchant sidebar order follows the PO reference: logo, public home, salon, platform. */
+.sidebar-brand { flex-shrink:0; display:flex; align-items:center; min-height:54px; padding:0 6px; margin-bottom:10px; }
+.sidebar-brand img { display:block; width:192px; max-width:100%; height:auto; }
+.sidebar-public-home { flex-shrink:0; margin-bottom:12px; }
+.sidebar-public-home .nav-item { min-height:44px; height:auto; padding:10px 12px; border:1px solid #ffffff26; border-radius:9px; background:#ffffff0c; font-size:12px; }
+.sidebar-salon-logo { width:38px; height:38px; object-fit:contain; border-radius:50%; flex-shrink:0; }
+.sidebar-salon-copy { min-width:0; display:flex; flex-direction:column; gap:4px; }
+.sidebar-salon-kicker { color:#b7c9ec; font-size:9px; font-weight:800; letter-spacing:.12em; }
+.sidebar-salon-copy .profile-name { display:block; text-transform:uppercase; }
+body[data-nexora-workspace="salon"] .sidebar-nav,
+body[data-nexora-workspace="pos"] .sidebar-nav { margin-top:14px; }
+.plan-panel .plan-icon { display:flex; flex:0 0 28px; }
+.plan-panel .plan-info { flex:1; }
+.sidebar-section-label { flex-shrink:0; padding:14px 8px 0; color:#b7c9ec; font-size:9px; font-weight:800; letter-spacing:.14em; text-transform:uppercase; }
+body[data-nexora-workspace="salon"] .sidebar-section-label + .sidebar-nav,
+body[data-nexora-workspace="pos"] .sidebar-section-label + .sidebar-nav { margin-top:8px; }
+
+/* The sidebar uses one consistent Lucide outline set. */
+.sidebar:not(.staff-sidebar) .lucide-menu-icon { width:20px; height:20px; color:#c4d2eb; filter:none; stroke-width:1.8; }
+.sidebar-external-icon { width:15px; height:15px; flex-shrink:0; color:currentColor; }
+.plan-panel { gap:10px; }
+.plan-panel .plan-icon { flex:0 0 24px; color:#f5c451; }
+.plan-panel .plan-icon svg { width:24px; height:24px; stroke-width:1.8; }
+.plan-panel .plan-info { min-width:0; }
+.plan-panel .panel-title { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; font-weight:700; }
+.plan-panel .plan-button { flex-shrink:0; }

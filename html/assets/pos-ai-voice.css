@@ -1,0 +1,48 @@
+    .pos-voice { display: grid; gap: 18px; }
+    .pos-voice-hero { display: flex; align-items: center; justify-content: space-between; gap: 18px; padding: 22px 24px; border: 1px solid #ccd8f3; border-radius: 16px; background: linear-gradient(115deg,#f1efff,#edf8ff 62%,#fff); box-shadow: 0 12px 28px #182f5810; }
+    .pos-voice-back { display: flex; align-items: center; width: max-content; min-height: 34px; margin-bottom: 11px; padding: 7px 11px; border: 1px solid #bab2ef; border-radius: 9px; background: #fff; color: #4939b5; font-size: 12px; font-weight: 800; text-decoration: none; }
+    .pos-voice-back:hover,.pos-voice-back:focus-visible { border-color: #6755d9; background: #f8f6ff; }
+    .pos-voice-eyebrow { color: #5849c5; font-size: 10px; font-weight: 900; letter-spacing: .14em; text-transform: uppercase; }
+    .pos-voice-hero h1 { margin: 4px 0 6px; color: #17223d; font-size: clamp(25px,3vw,34px); letter-spacing: -.04em; }
+    .pos-voice-hero p { max-width: 640px; margin: 0; color: #536681; font-size: 13px; line-height: 1.55; }
+    .pos-voice-hero-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pos-voice-hero-actions a, .pos-voice-link { display: inline-flex; align-items: center; justify-content: center; min-height: 36px; padding: 8px 12px; border: 1px solid #bab2ef; border-radius: 9px; background: #fff; color: #4939b5; font-size: 11px; font-weight: 800; text-decoration: none; white-space: nowrap; }
+    .pos-voice-hero-actions a:hover, .pos-voice-link:hover { border-color: #6755d9; background: #f8f6ff; }
+    .pos-voice-demo { padding: 10px 14px; border: 1px solid #e3d1a3; border-radius: 10px; background: #fffaf0; color: #73541b; font-size: 12px; line-height: 1.45; }
+    .pos-voice-tabs { display: flex; flex-wrap: wrap; gap: 8px; }
+    .pos-voice-tabs a { padding: 10px 14px; border: 1px solid #d8e1f1; border-radius: 9px; background: #fff; color: #4b5f7e; font-size: 12px; font-weight: 800; text-decoration: none; }
+    .pos-voice-tabs a[aria-current="page"] { border-color: #6552d8; background: #6552d8; color: #fff; }
+    .pos-voice-metrics { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 10px; }
+    .pos-voice-metric, .pos-voice-panel { border: 1px solid #dce5f1; border-radius: 13px; background: #fff; box-shadow: 0 6px 18px #172b4b0a; }
+    .pos-voice-metric { padding: 15px; }
+    .pos-voice-metric span { display: block; color: #60718c; font-size: 11px; font-weight: 750; }
+    .pos-voice-metric strong { display: block; margin-top: 5px; color: #17223d; font-size: 23px; }
+    .pos-voice-main { display: grid; grid-template-columns: minmax(0,1.25fr) minmax(280px,.75fr); gap: 14px; align-items: start; }
+    .pos-voice-panel { min-width: 0; overflow: hidden; scroll-margin-top: 88px; }
+    .pos-voice-panel-head { display: flex; align-items: center; justify-content: space-between; flex-wrap: wrap; gap: 10px; padding: 17px; border-bottom: 1px solid #e8edf5; }
+    .pos-voice-panel h2 { margin: 0; color: #17223d; font-size: 18px; letter-spacing: -.025em; }
+    .pos-voice-panel-head p { margin: 4px 0 0; color: #6a7b94; font-size: 11px; }
+    .pos-voice-controls { display: flex; flex-wrap: wrap; gap: 8px; padding: 13px 17px; }
+    .pos-voice-controls input { flex: 1 1 175px; min-width: 0; padding: 9px 11px; border: 1px solid #d8e2ef; border-radius: 8px; color: #17223d; font: inherit; font-size: 12px; }
+    .pos-voice-controls select { padding: 9px 11px; border: 1px solid #d8e2ef; border-radius: 8px; background: #fff; color: #17223d; font: inherit; font-size: 12px; }
+    .pos-call-list { display: grid; gap: 7px; padding: 0 13px 13px; }
+    .pos-call-item { display: grid; grid-template-columns: auto minmax(0,1fr) auto; align-items: center; gap: 11px; width: 100%; padding: 11px; border: 1px solid #e1e8f2; border-radius: 10px; background: #fff; color: #17223d; text-align: left; cursor: pointer; }
+    .pos-call-item:hover, .pos-call-item[aria-pressed="true"] { border-color: #8575ea; background: #f5f3ff; }
+    .pos-call-icon { display: grid; place-items: center; width: 34px; height: 34px; border-radius: 10px; background: #e9e6ff; color: #5849c5; font-size: 17px; }
+    .pos-call-item strong, .pos-call-item small { display: block; }
+    .pos-call-item strong { font-size: 12px; }
+    .pos-call-item small { margin-top: 3px; color: #64758e; font-size: 11px; }
+    .pos-call-item em { color: #526482; font-size: 10px; font-style: normal; font-weight: 800; white-space: nowrap; }
+    .pos-call-empty { margin: 0; padding: 12px; color: #64758e; font-size: 12px; }
+    .pos-voice-customer { padding: 17px; }
+    .pos-voice-customer > strong { display: block; color: #17223d; font-size: 17px; }
+    .pos-voice-customer-status { display: inline-block; margin: 12px 0; padding: 5px 8px; border-radius: 6px; background: #e9f6ef; color: #167250; font-size: 10px; font-weight: 850; }
+    .pos-voice-customer dl { display: grid; grid-template-columns: minmax(90px,.45fr) minmax(0,1fr); gap: 10px 12px; margin: 0; font-size: 12px; }
+    .pos-voice-customer dt { color: #687993; }
+    .pos-voice-customer dd { min-width: 0; margin: 0; color: #182841; font-weight: 750; overflow-wrap: anywhere; }
+    .pos-voice-note { margin: 15px 0; padding: 12px; border-radius: 9px; background: #f3f7fc; color: #445a77; font-size: 12px; line-height: 1.5; }
+    .pos-voice-customer-actions { display: flex; flex-wrap: wrap; gap: 8px; }
+    @media (max-width: 900px) { .pos-voice-main { grid-template-columns: 1fr; } }
+    @media (max-width: 640px) { .pos-voice-hero { align-items: start; flex-direction: column; } .pos-voice-metrics { grid-template-columns: 1fr; } }
+
+.pos-voice [hidden]{display:none!important}.pos-call-icon svg{width:18px;height:18px}.pos-call-item{min-height:60px}.pos-voice-controls select{appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none' stroke='%2364758e'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E") no-repeat right 16px center/16px}.pos-voice-link{white-space:normal}.pos-voice-hero-actions{flex-shrink:0;max-width:300px}

@@ -2,36 +2,36 @@
 window.NEXORA_PRODUCT_CATALOG = {
   "oneqr": {
     "title": "One QR",
-    "description": "Một mã QR cố định với menu theo vai trò. Khách chọn check-in, lịch hẹn, dịch vụ, ưu đãi, đánh giá, tiền boa hoặc thanh toán tùy cấu hình.",
-    "status": "7 công cụ QR",
+    "description": "One fixed QR code with role-based menus. Guests can check in, book appointments, view services and offers, leave reviews, tip or pay, depending on configuration.",
+    "status": "7 QR tools",
     "groups": [
       {
-        "name": "QR tại tiệm",
+        "name": "In-salon QR",
         "items": [
           {
             "label": "OneQR",
             "url": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=one-qr"
           },
           {
-            "label": "Nhận tip",
+            "label": "Accept tips",
             "url": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=tip"
           },
           {
-            "label": "Nhận thanh toán",
+            "label": "Receive payments",
             "url": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=payment"
           },
           {
-            "label": "QR khách tự check-in",
+            "label": "Customer self check-in QR",
             "url": "https://nexoratouch.com/dashboard/pos/public-checkin"
           },
           {
-            "label": "Thiết bị tự check-in",
+            "label": "Self check-in devices",
             "url": "https://nexoratouch.com/dashboard/pos/devices"
           }
         ]
       },
       {
-        "name": "Chia sẻ & mời",
+        "name": "Share & invite",
         "items": [
           {
             "label": "Referral Link",
@@ -49,49 +49,49 @@ window.NEXORA_PRODUCT_CATALOG = {
     "dashboardVisible": true,
     "category": "pos payments customers",
     "search": "oneqr qr tip reviews danh gia thanh toan",
-    "cardDescription": "Một mã QR mở menu dịch vụ, tip, đánh giá và thanh toán trên điện thoại.",
-    "cardCategory": "TRẢI NGHIỆM QR",
-    "cardStatus": "5 khu vận hành",
+    "cardDescription": "One QR opens services, tips, reviews and payments on a phone.",
+    "cardCategory": "QR EXPERIENCE",
+    "cardStatus": "5 operating areas",
     "tags": [
-      "Menu tùy chỉnh",
-      "Tip & thanh toán"
+      "Custom menu",
+      "Tips & payments"
     ],
-    "action": "Xem chi tiết",
+    "action": "View details",
     "availability": "available",
     "showcaseOrder": 7,
-    "landingHref": "../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/products/one-qr/index.html"
+    "landingHref": "salon-home.html#salon-feature-explorer"
   },
   "payments": {
     "title": "Payments & Payouts",
-    "description": "Thu nhập tiệm, chi trả nhân viên và giao dịch máy cà thẻ. Các màn hình chuyên biệt chưa có được đánh dấu đề xuất.",
-    "status": "7 màn hình",
+    "description": "Salon income, staff payouts and card transactions. Proposed screens are marked.",
+    "status": "7 screens",
     "groups": [
       {
-        "name": "Thu nhập tiệm",
+        "name": "Salon income",
         "items": [
           {
-            "label": "Nhận thanh toán",
+            "label": "Receive payments",
             "url": "https://nexoratouch.com/dashboard/reports?tab=receive_payments"
           },
           {
-            "label": "Tổng thu nhập theo kỳ (đề xuất)",
+            "label": "Income by period (proposed)",
             "unavailable": true
           }
         ]
       },
       {
-        "name": "Chi trả nhân viên",
+        "name": "Staff payouts",
         "items": [
           {
-            "label": "Tổng quan tiền tip",
+            "label": "Tip overview",
             "url": "https://nexoratouch.com/dashboard/tips?tab=overview"
           },
           {
-            "label": "Danh sách tip",
+            "label": "Tip list",
             "url": "https://nexoratouch.com/dashboard/reports?tab=tips"
           },
           {
-            "label": "Payroll / chi trả",
+            "label": "Payroll / payouts",
             "url": "https://nexoratouch.com/dashboard/tips?tab=payouts"
           },
           {
@@ -99,33 +99,33 @@ window.NEXORA_PRODUCT_CATALOG = {
             "url": "https://nexoratouch.com/dashboard/tips?tab=savings"
           },
           {
-            "label": "Lịch sử chi trả theo nhân viên (đề xuất)",
+            "label": "Payout history by staff member (proposed)",
             "unavailable": true
           }
         ]
       },
       {
-        "name": "Máy cà thẻ",
+        "name": "Card terminal",
         "items": [
           {
-            "label": "Hoạt động thanh toán",
+            "label": "Payment activity",
             "url": "https://nexoratouch.com/dashboard/reports?tab=direct_payments"
           },
           {
-            "label": "Lịch sử giao dịch máy cà thẻ (đề xuất)",
+            "label": "Card transaction history (proposed)",
             "unavailable": true
           },
           {
-            "label": "Đối soát máy cà thẻ (đề xuất)",
+            "label": "Card terminal reconciliation (proposed)",
             "unavailable": true
           }
         ]
       },
       {
-        "name": "Cấu hình",
+        "name": "Settings",
         "items": [
           {
-            "label": "Quản lý danh mục",
+            "label": "Category management",
             "url": "https://nexoratouch.com/dashboard/category-management"
           }
         ]
@@ -136,275 +136,275 @@ window.NEXORA_PRODUCT_CATALOG = {
     "dashboardVisible": true,
     "category": "payments analytics",
     "search": "payments payouts thu nhap tiệm income nhan vien lich su chi tra payroll giao dich may ca the card terminal thanh toan tips doi soat",
-    "cardDescription": "Theo dõi khoản thu, tiền boa, giao dịch và chi trả cho đội ngũ.",
-    "cardCategory": "DÒNG TIỀN",
-    "cardStatus": "7 màn hình",
+    "cardDescription": "Track income, tips, transactions and team payouts.",
+    "cardCategory": "PAYMENTS",
+    "cardStatus": "7 screens",
     "tags": [
-      "Nhận thanh toán",
-      "Chi trả nhân viên"
+      "Receive payments",
+      "Staff payouts"
     ],
-    "action": "Xem chi tiết",
+    "action": "View details",
     "availability": "available",
     "showcaseOrder": 9,
-    "landingHref": "../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/products/payments-payouts/index.html"
+    "landingHref": "salon-home.html#salon-feature-explorer"
   },
   "pos": {
     "title": "SI POS",
-    "description": "Điều hành tiệm từ quầy, lịch và đội ngũ đến khách hàng và doanh thu.",
-    "status": "Trung tâm",
+    "description": "Run your salon across the front desk, schedule, team, customers and revenue.",
+    "status": "Hub",
     "groups": [
       {
-        "name": "Quầy & dịch vụ",
+        "name": "Front desk & services",
         "items": [
           {
-            "label": "Đón khách",
-            "description": "Xác nhận khách đã đến",
+            "label": "Check-in",
+            "description": "Confirm customer arrival",
             "icon": "arrival",
             "url": "https://nexoratouch.com/dashboard/pos?tab=checkin"
           },
           {
-            "label": "Phiếu dịch vụ",
-            "description": "Xem dịch vụ đang làm",
+            "label": "Tickets",
+            "description": "View active services",
             "icon": "ticket",
             "url": "https://nexoratouch.com/dashboard/pos?tab=orderlist"
           },
           {
-            "label": "Chia turn",
-            "description": "Theo dõi lượt phục vụ",
+            "label": "Turn Board",
+            "description": "Track service rotation",
             "icon": "queue",
             "url": "https://nexoratouch.com/dashboard/pos?tab=turnboard"
           },
           {
-            "label": "Thu tiền",
-            "description": "Hoàn tất thanh toán",
+            "label": "Checkout",
+            "description": "Complete checkout",
             "icon": "card",
             "url": "https://nexoratouch.com/dashboard/pos?tab=checkoutcustomer"
           },
           {
             "label": "Gift Card Center",
-            "description": "Mở bộ thẻ quà tặng và thành viên",
+            "description": "Open gift cards and membership tools",
             "icon": "gift",
             "url": "#module-gift"
           },
           {
-            "label": "Đã hoàn tất",
-            "description": "Xem dịch vụ đã xong",
+            "label": "Completed Services",
+            "description": "View completed services",
             "icon": "done",
             "url": "https://nexoratouch.com/dashboard/pos?tab=completed"
           },
           {
-            "label": "Menu dịch vụ của tiệm",
-            "description": "Mở menu dịch vụ đang dùng của tiệm",
+            "label": "Salon Service Menu",
+            "description": "Open this salon’s live service menu",
             "icon": "list",
             "url": "https://nexoratouch.com/menu/bitcoin-nail-bar-1b8cb587-9d36bc13?oneQrAs=customer"
           },
           {
-            "label": "Quản lý dịch vụ",
-            "description": "Sửa dịch vụ, giá và thời lượng",
+            "label": "Manage services",
+            "description": "Edit services, prices and durations",
             "icon": "settings",
             "url": "https://nexoratouch.com/dashboard/pos/settings/services"
           }
         ]
       },
       {
-        "name": "Lịch & đội ngũ",
+        "name": "Schedule & staff",
         "items": [
           {
-            "label": "Lịch hẹn",
-            "description": "Xem và sắp lịch khách",
+            "label": "Appointments",
+            "description": "View and manage appointments",
             "icon": "calendar",
             "url": "https://nexoratouch.com/dashboard/pos?tab=booking"
           },
           {
-            "label": "Lịch đặt",
-            "description": "Xem lịch đặt theo ngày",
+            "label": "Booking calendar",
+            "description": "View bookings by day",
             "icon": "calendar",
             "url": "#pos-booking-calendar"
           },
           {
-            "label": "Lịch hẹn của thợ",
-            "description": "Xem giờ hẹn theo từng thợ",
+            "label": "Technician appointments",
+            "description": "View appointments by technician",
             "icon": "team",
             "url": "#pos-booking-staff"
           },
           {
-            "label": "Báo giá",
-            "description": "Ước tính trước dịch vụ",
+            "label": "Estimate",
+            "description": "Estimate service cost",
             "icon": "estimate",
             "url": "https://nexoratouch.com/dashboard/pos?tab=estimate"
           },
           {
-            "label": "Chấm công",
-            "description": "Theo dõi giờ làm của thợ",
+            "label": "Time clock",
+            "description": "Track staff hours",
             "icon": "clock",
             "url": "https://nexoratouch.com/dashboard/pos?tab=timeclock"
           }
         ]
       },
       {
-        "name": "Khách & tăng trưởng",
+        "name": "Customers & growth",
         "items": [
           {
-            "label": "Khách đặt lịch",
-            "description": "Xem yêu cầu đặt lịch của khách",
+            "label": "Booking requests",
+            "description": "View customer booking requests",
             "icon": "calendar",
             "url": "#pos-booking-requests"
           },
           {
-            "label": "Lịch đặt",
-            "description": "Xem giờ khách đã đặt",
+            "label": "Booking calendar",
+            "description": "View booked customer times",
             "icon": "calendar",
             "url": "#pos-booking-calendar"
           },
           {
-            "label": "Lịch hẹn của khách",
-            "description": "Xem lịch hẹn của khách",
+            "label": "Customer appointments",
+            "description": "View customer appointments",
             "icon": "customer",
             "url": "#pos-booking-customers"
           },
           {
-            "label": "Lịch hẹn của thợ",
-            "description": "Xem appointment theo thợ",
+            "label": "Technician appointments",
+            "description": "View appointments by technician",
             "icon": "team",
             "url": "#pos-booking-staff"
           },
           {
-            "label": "Hồ sơ khách",
-            "description": "Lịch sử khách và dịch vụ",
+            "label": "Customer profiles",
+            "description": "Customer and service history",
             "icon": "customer",
             "url": "https://nexoratouch.com/dashboard/pos?tab=customer"
           },
           {
             "label": "Loyalty",
-            "description": "Điểm thưởng và quyền lợi khách hàng",
+            "description": "Reward points and customer benefits",
             "icon": "star",
             "url": "https://nexoratouch.com/dashboard/pos/loyalty"
           },
           {
-            "label": "Khuyến mãi",
-            "description": "Tạo ưu đãi cho khách",
+            "label": "Promotions",
+            "description": "Create customer offers",
             "icon": "gift",
             "url": "https://nexoratouch.com/dashboard/pos/promotions"
           },
           {
-            "label": "Đánh giá",
-            "description": "Xem phản hồi của khách",
+            "label": "Reviews",
+            "description": "View customer feedback",
             "icon": "star",
             "url": "https://nexoratouch.com/dashboard/reviews"
           },
           {
-            "label": "Lễ tân AI",
-            "description": "Hỗ trợ lịch hẹn và liên lạc",
+            "label": "AI Receptionist",
+            "description": "Help with appointments and calls",
             "icon": "spark",
             "url": "#pos-ai-voice"
           }
         ]
       },
       {
-        "name": "Marketing & chiến dịch",
+        "name": "Marketing & campaigns",
         "items": [
           {
-            "label": "Tạo chiến dịch",
-            "description": "Chọn mục tiêu, nhóm khách và thông điệp",
+            "label": "Create campaign",
+            "description": "Choose a goal, audience and message",
             "icon": "spark",
             "url": "products/ai-marketing/studio.html#create"
           },
           {
-            "label": "Quản lý chiến dịch",
-            "description": "Xem và sửa các bản nháp đã lưu",
+            "label": "Manage campaigns",
+            "description": "View and edit saved drafts",
             "icon": "list",
             "url": "products/ai-marketing/studio.html#manage"
           },
           {
-            "label": "Hiệu quả marketing",
-            "description": "So sánh lượt tiếp cận và khách đặt lịch",
+            "label": "Marketing performance",
+            "description": "Compare reach and booked appointments",
             "icon": "chart",
             "url": "products/ai-marketing/studio.html#performance"
           },
           {
             "label": "SMS Campaigns",
-            "description": "Mở chiến dịch SMS trong NEXORA",
+            "description": "Open SMS campaigns in NEXORA",
             "icon": "phone",
             "url": "https://nexoratouch.com/dashboard/ai-hub?tab=sms-campaigns"
           }
         ]
       },
       {
-        "name": "AI Voice & cuộc gọi",
+        "name": "AI Voice & calls",
         "items": [
           {
-            "label": "Tổng quan AI Voice",
-            "description": "Cuộc gọi và khách trong SI POS",
+            "label": "AI Voice overview",
+            "description": "Calls and customers in SI POS",
             "icon": "phone",
             "url": "#pos-ai-voice"
           },
           {
-            "label": "Nhật ký cuộc gọi",
-            "description": "Xem cuộc gọi và kết quả tiếp nhận",
+            "label": "Call log",
+            "description": "Review calls and outcomes",
             "icon": "list",
             "url": "#pos-call-log"
           },
           {
-            "label": "Khách từ cuộc gọi",
-            "description": "Mở hồ sơ gắn với cuộc gọi",
+            "label": "Call customers",
+            "description": "Open profiles linked to calls",
             "icon": "customer",
             "url": "#pos-voice-customers"
           },
           {
-            "label": "Thiết lập AI Voice",
-            "description": "Hướng dẫn cấu hình trên Nexora",
+            "label": "AI Voice setup",
+            "description": "Setup guide on Nexora",
             "icon": "settings",
             "url": "https://nexoratouch.com/dashboard/ai-hub/setup-guide"
           }
         ]
       },
       {
-        "name": "Doanh thu & thanh toán",
+        "name": "Revenue & payments",
         "items": [
           {
-            "label": "Doanh số",
-            "description": "Xem báo cáo thanh toán hiện có",
+            "label": "Sales",
+            "description": "View the available payments report",
             "icon": "chart",
             "url": "https://nexoratouch.com/dashboard/reports?tab=receive_payments"
           },
           {
-            "label": "Giao dịch",
-            "description": "Theo dõi hoạt động thanh toán",
+            "label": "Transactions",
+            "description": "Track payment activity",
             "icon": "list",
             "url": "https://nexoratouch.com/dashboard/reports?tab=direct_payments"
           },
           {
-            "label": "Chi trả thợ",
-            "description": "Xem khoản chi trả nhân viên",
+            "label": "Staff payouts",
+            "description": "View staff payouts",
             "icon": "team",
             "url": "https://nexoratouch.com/dashboard/tips?tab=payouts"
           },
           {
-            "label": "Phân tích",
-            "description": "Xem xu hướng tip và QR",
+            "label": "Analytics",
+            "description": "View tip and QR trends",
             "icon": "chart",
             "url": "https://nexoratouch.com/dashboard/analytics"
           }
         ]
       },
       {
-        "name": "Quản lý POS",
+        "name": "POS management",
         "items": [
           {
-            "label": "Cài đặt tiệm",
-            "description": "Thông tin và cấu hình vận hành",
+            "label": "Salon settings",
+            "description": "Salon information and operating settings",
             "icon": "settings",
             "url": "https://nexoratouch.com/dashboard/pos/settings/salon-information"
           },
           {
-            "label": "Báo cáo POS",
-            "description": "Theo dõi thợ và doanh thu",
+            "label": "POS reports",
+            "description": "Track staff and revenue",
             "icon": "chart",
             "url": "https://nexoratouch.com/dashboard/pos/report/technician"
           },
           {
-            "label": "Máy in biên lai",
-            "description": "Cài đặt máy in hóa đơn",
+            "label": "Receipt printer",
+            "description": "Configure receipt printers",
             "icon": "settings",
             "url": "https://nexoratouch.com/dashboard/pos/printer"
           }
@@ -414,66 +414,66 @@ window.NEXORA_PRODUCT_CATALOG = {
         "name": "Gift Card Center",
         "sections": [
           {
-            "name": "Phát hành & thiết kế",
+            "name": "Issue & design",
             "items": [
               {
-                "label": "Phát hành thẻ số",
+                "label": "Issue digital card",
                 "url": "https://merchant.vlinkpay.com/gift-voucher/product-management/issue-digital",
                 "newTab": true
               },
               {
-                "label": "Thẻ thành viên",
+                "label": "Membership card",
                 "url": "https://merchant.vlinkpay.com/gift-voucher/product-management/issue-digital?type=membership",
                 "newTab": true
               },
               {
-                "label": "Thiết lập bán online nhanh",
+                "label": "Quick online setup",
                 "url": "https://merchant.vlinkpay.com/gift-voucher/product-management/quick-create-card?type=0",
                 "newTab": true
               },
               {
-                "label": "Thiết lập E-Gift nâng cao",
-                "description": "Luồng này yêu cầu xác minh doanh nghiệp (KYB).",
+                "label": "Advanced E-Gift setup",
+                "description": "This flow requires business verification (KYB).",
                 "url": "https://merchant.vlinkpay.com/gift-voucher/product-management/sell-egift-form?type=0",
                 "newTab": true
               }
             ]
           },
           {
-            "name": "Quản lý & sử dụng",
+            "name": "Manage & accept",
             "items": [
               {
-                "label": "Quản lý thẻ đã phát hành",
+                "label": "Manage issued cards",
                 "url": "https://merchant.vlinkpay.com/gift-voucher/product-management?tab=all&pageSize=10",
                 "newTab": true
               },
               {
-                "label": "Nhận thanh toán bằng thẻ",
+                "label": "Accept card payment",
                 "url": "https://merchant.vlinkpay.com/payment-process/payment-gift-card",
                 "newTab": true
               }
             ]
           },
           {
-            "name": "Thành viên & báo cáo",
+            "name": "Membership & reports",
             "items": [
               {
-                "label": "Chương trình thành viên",
+                "label": "Membership program",
                 "url": "https://merchant.vlinkpay.com/settings/benefits-setup",
                 "newTab": true
               },
               {
-                "label": "Báo cáo thành viên",
+                "label": "Membership report",
                 "url": "https://merchant.vlinkpay.com/settings/membership-report",
                 "newTab": true
               },
               {
-                "label": "Lịch sử thanh toán thẻ",
+                "label": "Card payment history",
                 "url": "https://merchant.vlinkpay.com/reports/card-transaction-history",
                 "newTab": true
               },
               {
-                "label": "Thẻ sắp hết hạn",
+                "label": "Expiring cards",
                 "url": "https://merchant.vlinkpay.com/reports/expiring-cards",
                 "newTab": true
               }
@@ -487,28 +487,28 @@ window.NEXORA_PRODUCT_CATALOG = {
     "dashboardVisible": true,
     "category": "pos customers analytics",
     "search": "si pos super intelligence pos dieu hanh tiem quầy dich vu lich nhan su khach hang doanh thu thanh toan checkin check-in booking",
-    "cardDescription": "Đón khách, xếp lượt, lịch hẹn và doanh số trong một luồng.",
-    "cardCategory": "VẬN HÀNH",
-    "cardStatus": "Trung tâm",
+    "cardDescription": "Check-in, turn board, appointments and sales in one flow.",
+    "cardCategory": "OPERATIONS",
+    "cardStatus": "Hub",
     "tags": [
-      "Đón khách",
-      "Lịch & đội ngũ"
+      "Check-in",
+      "Schedule & staff"
     ],
-    "action": "Xem chi tiết",
+    "action": "View details",
     "availability": "available",
     "showcaseOrder": 0,
-    "landingHref": "../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/products/si-pos/index.html"
+    "landingHref": "salon-home.html#salon-feature-explorer"
   },
   "aihub": {
     "title": "AI Hub",
-    "description": "Lễ tân AI và công cụ marketing trong một nơi.",
-    "status": "2 trợ lý AI",
+    "description": "AI receptionist and marketing tools in one place.",
+    "status": "2 AI assistants",
     "groups": [
       {
         "name": "AI Receptionist",
         "sections": [
           {
-            "name": "Đặt lịch",
+            "name": "Booking",
             "items": [
               {
                 "label": "Appointments",
@@ -521,7 +521,7 @@ window.NEXORA_PRODUCT_CATALOG = {
             ]
           },
           {
-            "name": "Khách & cuộc gọi",
+            "name": "Customers & calls",
             "items": [
               {
                 "label": "Customers",
@@ -534,7 +534,7 @@ window.NEXORA_PRODUCT_CATALOG = {
             ]
           },
           {
-            "name": "Thiết lập",
+            "name": "Setup",
             "items": [
               {
                 "label": "Plans",
@@ -554,7 +554,7 @@ window.NEXORA_PRODUCT_CATALOG = {
       },
       {
         "name": "Marketing Assistant",
-        "upcoming": "Đang chuẩn bị: tạo nội dung AI, gợi ý trả lời đánh giá, phân nhóm khách và đo hiệu quả chiến dịch.",
+        "upcoming": "In development: AI content, review reply suggestions, customer segments and campaign results.",
         "sections": [
           {
             "name": "Nexora",
@@ -564,7 +564,7 @@ window.NEXORA_PRODUCT_CATALOG = {
                 "url": "https://nexoratouch.com/dashboard/ai-hub?tab=sms-campaigns"
               },
               {
-                "label": "Khuyến mãi POS",
+                "label": "POS promotions",
                 "url": "https://nexoratouch.com/dashboard/pos/promotions"
               },
               {
@@ -572,7 +572,7 @@ window.NEXORA_PRODUCT_CATALOG = {
                 "url": "https://nexoratouch.com/dashboard/reviews"
               },
               {
-                "label": "Khách hàng",
+                "label": "Customers",
                 "url": "https://nexoratouch.com/dashboard/ai-hub?tab=customers"
               },
               {
@@ -585,17 +585,18 @@ window.NEXORA_PRODUCT_CATALOG = {
             "name": "VLinkPay",
             "items": [
               {
-                "label": "Chiến dịch",
+                "label": "Campaigns",
                 "url": "https://merchant.vlinkpay.com/campaign-management?pageIndex=0&pageSize=10",
                 "newTab": true
               },
               {
-                "label": "Tạo vòng quay",
+                "label": "Prize wheel demo",
                 "demo": "wheel"
               },
               {
                 "label": "AI Ads",
                 "url": "https://merchant.vlinkpay.com/marketing-tools",
+                "unavailable": true,
                 "newTab": true
               }
             ]
@@ -608,28 +609,28 @@ window.NEXORA_PRODUCT_CATALOG = {
     "dashboardVisible": true,
     "category": "marketing customers",
     "search": "ai hub ai receptionist marketing assistant ai marketing vlinkpay campaign management ai ads sms chien dich quang cao noi dung khach hang booking call log",
-    "cardDescription": "AI Receptionist hỗ trợ lịch hẹn và cuộc gọi; Marketing Assistant hỗ trợ tiếp cận khách.",
-    "cardCategory": "TRỢ LÝ AI",
-    "cardStatus": "2 trợ lý AI",
+    "cardDescription": "AI Receptionist supports appointments and calls; Marketing Assistant helps reach customers.",
+    "cardCategory": "AI ASSISTANTS",
+    "cardStatus": "2 AI assistants",
     "tags": [
       "AI Receptionist",
       "Marketing Assistant"
     ],
-    "action": "Xem chi tiết",
+    "action": "View details",
     "availability": "available",
     "showcaseOrder": 1,
-    "landingHref": "../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/products/ai-hub/index.html"
+    "landingHref": "salon-home.html#salon-feature-explorer"
   },
   "reviews": {
     "title": "Reviews",
-    "description": "Đánh giá và phản hồi của khách hàng.",
-    "status": "Đang sử dụng",
+    "description": "Customer reviews and feedback.",
+    "status": "Available",
     "groups": [
       {
-        "name": "Đánh giá",
+        "name": "Reviews",
         "items": [
           {
-            "label": "Xem Reviews",
+            "label": "View reviews",
             "url": "https://nexoratouch.com/dashboard/reviews"
           }
         ]
@@ -640,84 +641,84 @@ window.NEXORA_PRODUCT_CATALOG = {
     "dashboardVisible": true,
     "category": "customers marketing",
     "search": "reviews danh gia google yelp phan hoi khach hang",
-    "cardDescription": "Theo dõi đánh giá và phản hồi của khách sau dịch vụ.",
-    "cardCategory": "PHẢN HỒI",
-    "cardStatus": "Đang sử dụng",
+    "cardDescription": "Track guest reviews and responses after a service.",
+    "cardCategory": "FEEDBACK",
+    "cardStatus": "Available",
     "tags": [
-      "Đánh giá",
-      "Phản hồi khách"
+      "Reviews",
+      "Customer feedback"
     ],
-    "action": "Xem chi tiết",
+    "action": "View details",
     "availability": "available",
     "showcaseOrder": 10,
-    "landingHref": "../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/products/reviews/index.html"
+    "landingHref": "salon-home.html#salon-feature-explorer"
   },
   "gift": {
     "title": "Gift Card Center",
-    "description": "Phát hành, thiết kế, quản lý và nhận thanh toán bằng thẻ quà tặng; theo dõi thành viên và hạn thẻ.",
-    "status": "Đang sử dụng",
+    "description": "Issue, design, manage and accept gift cards; track memberships and expiration.",
+    "status": "Available",
     "groups": [
       {
-        "name": "Phát hành & thiết kế",
+        "name": "Issue & design",
         "items": [
           {
-            "label": "Phát hành thẻ số",
+            "label": "Issue digital card",
             "url": "https://merchant.vlinkpay.com/gift-voucher/product-management/issue-digital",
             "newTab": true
           },
           {
-            "label": "Thẻ thành viên",
+            "label": "Membership card",
             "url": "https://merchant.vlinkpay.com/gift-voucher/product-management/issue-digital?type=membership",
             "newTab": true
           },
           {
-            "label": "Thiết lập bán online nhanh",
+            "label": "Quick online setup",
             "url": "https://merchant.vlinkpay.com/gift-voucher/product-management/quick-create-card?type=0",
             "newTab": true
           },
           {
-            "label": "Thiết lập E-Gift nâng cao",
-            "description": "Luồng này yêu cầu xác minh doanh nghiệp (KYB).",
+            "label": "Advanced E-Gift setup",
+            "description": "This flow requires business verification (KYB).",
             "url": "https://merchant.vlinkpay.com/gift-voucher/product-management/sell-egift-form?type=0",
             "newTab": true
           }
         ]
       },
       {
-        "name": "Quản lý & sử dụng",
+        "name": "Manage & accept",
         "items": [
           {
-            "label": "Quản lý thẻ đã phát hành",
+            "label": "Manage issued cards",
             "url": "https://merchant.vlinkpay.com/gift-voucher/product-management?tab=all&pageSize=10",
             "newTab": true
           },
           {
-            "label": "Nhận thanh toán bằng thẻ",
+            "label": "Accept card payment",
             "url": "https://merchant.vlinkpay.com/payment-process/payment-gift-card",
             "newTab": true
           }
         ]
       },
       {
-        "name": "Thành viên & báo cáo",
+        "name": "Membership & reports",
         "items": [
           {
-            "label": "Chương trình thành viên",
+            "label": "Membership program",
             "url": "https://merchant.vlinkpay.com/settings/benefits-setup",
             "newTab": true
           },
           {
-            "label": "Báo cáo thành viên",
+            "label": "Membership report",
             "url": "https://merchant.vlinkpay.com/settings/membership-report",
             "newTab": true
           },
           {
-            "label": "Lịch sử thanh toán thẻ",
+            "label": "Card payment history",
             "url": "https://merchant.vlinkpay.com/reports/card-transaction-history",
             "newTab": true
           },
           {
-            "label": "Thẻ sắp hết hạn",
+            "label": "Expiring cards",
             "url": "https://merchant.vlinkpay.com/reports/expiring-cards",
             "newTab": true
           }
@@ -729,28 +730,28 @@ window.NEXORA_PRODUCT_CATALOG = {
     "dashboardVisible": true,
     "category": "gift marketing",
     "search": "gift card voucher qua tang membership phát hành thiết kế e-gift thanh toán báo cáo hết hạn",
-    "cardDescription": "Phát hành thẻ quà tặng, thẻ số và quản lý quyền lợi thành viên.",
-    "cardCategory": "SI POS · THẺ & THÀNH VIÊN",
-    "cardStatus": "Trong SI POS",
+    "cardDescription": "Issue gift and digital cards and manage membership benefits.",
+    "cardCategory": "SI POS · CARDS & MEMBERSHIP",
+    "cardStatus": "Inside SI POS",
     "tags": [
       "Gift Card",
       "Membership"
     ],
-    "action": "Xem chi tiết",
+    "action": "View details",
     "availability": "available",
     "showcaseOrder": 5,
-    "landingHref": "../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/products/gift-card-center/index.html"
+    "landingHref": "salon-home.html#salon-feature-explorer"
   },
   "analytics": {
     "title": "Analytics",
-    "description": "Xu hướng tip, bảng xếp hạng và hiệu suất điểm QR.",
-    "status": "Đang sử dụng",
+    "description": "Tip trends, rankings and QR point performance.",
+    "status": "Available",
     "groups": [
       {
-        "name": "Báo cáo",
+        "name": "Reports",
         "items": [
           {
-            "label": "Xem Analytics",
+            "label": "View analytics",
             "url": "https://nexoratouch.com/dashboard/analytics"
           }
         ]
@@ -761,45 +762,45 @@ window.NEXORA_PRODUCT_CATALOG = {
     "dashboardVisible": true,
     "category": "analytics payments",
     "search": "analytics bao cao phan tich doanh thu tip hieu suat nhan vien qr",
-    "cardDescription": "Xem xu hướng tiền boa và hiệu suất tại từng điểm QR.",
-    "cardCategory": "BÁO CÁO",
-    "cardStatus": "Đang sử dụng",
+    "cardDescription": "See tip trends and performance at each QR touchpoint.",
+    "cardCategory": "ANALYTICS",
+    "cardStatus": "Available",
     "tags": [
-      "Xu hướng tip",
-      "Hiệu suất QR"
+      "Tip trends",
+      "QR performance"
     ],
-    "action": "Xem chi tiết",
+    "action": "View details",
     "availability": "available",
     "showcaseOrder": 11,
-    "landingHref": "../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/products/analytics/index.html"
+    "landingHref": "salon-home.html#salon-feature-explorer"
   },
   "community": {
     "title": "Community",
-    "description": "Kết nối doanh nghiệp, người làm nghề và khách hàng qua nội dung, cơ hội và hội thoại.",
-    "status": "Đang sử dụng",
+    "description": "Connect businesses, professionals and customers through content, opportunities and conversations.",
+    "status": "Available",
     "groups": [
       {
-        "name": "Cộng đồng & việc làm",
+        "name": "Community & jobs",
         "items": [
           {
-            "label": "Bảng tin",
+            "label": "Feed",
             "url": "https://nexoratouch.com/dashboard/community"
           },
           {
-            "label": "Nhóm & Chợ",
+            "label": "Groups & Market",
             "url": "https://nexoratouch.com/dashboard/community?tab=groups"
           },
           {
-            "label": "Việc làm",
+            "label": "Jobs",
             "url": "https://nexoratouch.com/dashboard/community?tab=jobs"
           }
         ]
       },
       {
-        "name": "Liên lạc",
+        "name": "Communication",
         "items": [
           {
-            "label": "Tin nhắn, nhóm chat & cuộc gọi",
+            "label": "Messages, group chats & calls",
             "url": "https://nexoratouch.com/dashboard/community?tab=connect"
           }
         ]
@@ -810,62 +811,62 @@ window.NEXORA_PRODUCT_CATALOG = {
     "dashboardVisible": true,
     "category": "community",
     "search": "community cong dong bang tin nhom cho fanpage blog viec lam ca lam them deal coupon tin nhan chat goi thoai video call messages calls",
-    "cardDescription": "Doanh nghiệp, người làm nghề và khách hàng kết nối qua nội dung, cơ hội và hội thoại.",
-    "cardCategory": "KẾT NỐI",
-    "cardStatus": "Đang sử dụng",
+    "cardDescription": "Businesses, professionals and customers connect through content, opportunities and conversations.",
+    "cardCategory": "CONNECT",
+    "cardStatus": "Available",
     "tags": [
-      "Việc làm & ưu đãi",
-      "Chat, thoại & video"
+      "Jobs & offers",
+      "Chat, voice & video"
     ],
-    "action": "Xem chi tiết",
+    "action": "View details",
     "availability": "available",
     "showcaseOrder": 6,
-    "landingHref": "../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/products/community/index.html"
+    "landingHref": "salon-home.html#salon-feature-explorer"
   },
   "taxiq": {
     "title": "Tax IQ",
-    "description": "Bản giới thiệu cách sắp xếp thu nhập, chi phí và biên lai; chưa kết nối dữ liệu thật.",
-    "status": "Bản định hướng",
+    "description": "A concept for organizing income, expenses, and receipts; no live data is connected.",
+    "status": "Concept preview",
     "pending": true,
     "groups": [
       {
-        "name": "Cho doanh nghiệp · dự kiến",
+        "name": "For businesses · preview",
         "items": [
           {
-            "label": "Tổng quan doanh nghiệp",
+            "label": "Business overview",
             "unavailable": true
           },
           {
-            "label": "Thu nhập doanh nghiệp",
+            "label": "Business income",
             "unavailable": true
           },
           {
-            "label": "Chi phí vận hành",
+            "label": "Operating expenses",
             "unavailable": true
           },
           {
-            "label": "Kho biên lai",
+            "label": "Receipts",
             "unavailable": true
           }
         ]
       },
       {
-        "name": "Cho cá nhân · dự kiến",
+        "name": "For individuals · preview",
         "items": [
           {
-            "label": "Tổng quan cá nhân",
+            "label": "Personal overview",
             "unavailable": true
           },
           {
-            "label": "Thu nhập cá nhân",
+            "label": "Personal income",
             "unavailable": true
           },
           {
-            "label": "Chi phí cá nhân",
+            "label": "Personal expenses",
             "unavailable": true
           },
           {
-            "label": "Biên lai cá nhân",
+            "label": "Personal receipts",
             "unavailable": true
           }
         ]
@@ -876,19 +877,19 @@ window.NEXORA_PRODUCT_CATALOG = {
     "dashboardVisible": false,
     "availability": "preview",
     "showcaseOrder": 8,
-    "landingHref": "../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/products/tax-iq/index.html"
+    "landingHref": "salon-home.html#salon-feature-explorer"
   },
   "spinwheel": {
     "title": "Spin Wheel",
-    "description": "Kiểu vòng quay giúp tiệm hình dung một chiến dịch tương tác với khách.",
-    "status": "Bản xem thử",
+    "description": "A prize wheel preview shows how an interactive customer campaign could work.",
+    "status": "Preview",
     "pending": true,
     "groups": [
       {
         "name": "Spin Wheel",
         "items": [
           {
-            "label": "Thử vòng quay",
+            "label": "Try the prize wheel",
             "url": "products/spin-wheel/create.html"
           }
         ]
@@ -899,16 +900,16 @@ window.NEXORA_PRODUCT_CATALOG = {
     "dashboardVisible": true,
     "category": "marketing gift",
     "search": "spin wheel vong quay vong quay so giai thuong qua tang uu dai chien dich marketing thu quay",
-    "cardDescription": "Kiểu vòng quay giúp tiệm hình dung một chiến dịch tương tác với khách.",
-    "cardCategory": "VÒNG QUAY TƯƠNG TÁC",
-    "cardStatus": "Bản xem thử",
+    "cardDescription": "A prize wheel preview shows how an interactive customer campaign could work.",
+    "cardCategory": "INTERACTIVE PRIZE WHEEL",
+    "cardStatus": "Preview",
     "tags": [
-      "Đặt phần thưởng",
-      "Thử quay"
+      "Set rewards",
+      "Try a spin"
     ],
-    "action": "Thử vòng quay",
+    "action": "Try the prize wheel",
     "availability": "preview",
     "showcaseOrder": 4,
-    "landingHref": "../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/products/spin-wheel/index.html"
+    "landingHref": "salon-home.html#salon-feature-explorer"
   }
 };
