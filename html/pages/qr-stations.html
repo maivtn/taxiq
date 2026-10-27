@@ -115,14 +115,14 @@
               <div class="tip-qr-grid">
                 <article class="tip-qr-card">
                   <div class="tip-qr-business">
-                    <div class="tip-qr-code" data-tip-code data-qr-value="../tip-flow/select-staff.html" data-qr-size="160" role="img" aria-label="Tip QR" hidden></div>
+                    <button class="tip-qr-code" type="button" data-tip-code data-oneqr-view aria-label="View QR code" hidden><span class="qr-code-art" data-qr-value="../customer/oneqr-landing.html" data-qr-size="160" role="img" aria-label="Tip QR"></span></button>
                     <div class="tip-qr-business-copy">
                       <h3>Bitcoin Nail Bar</h3>
                       <p data-tip-copy="qrText">Create one business tip QR; print copies for customers to use.</p>
                       <div class="tip-qr-actions">
                         <button class="tip-qr-button" type="button" data-tip-action="generate"><img src="../assets/icon-oneqr/issue-2040-oneqr-qr-code-3d.png" alt=""><span data-tip-copy="generateTip">Generate tip QR</span></button>
-                        <button class="tip-qr-button is-secondary" type="button" data-tip-action="view" hidden><span data-tip-copy="viewQR">View QR code</span></button>
-                        <button class="tip-qr-button is-secondary" type="button" data-tip-action="print" hidden><span data-tip-copy="printQR">Print QR code</span></button>
+                        <button class="tip-qr-button is-secondary" type="button" data-tip-action="view" data-oneqr-view hidden><span data-tip-copy="viewQR">View QR code</span></button>
+                        <button class="tip-qr-button is-secondary" type="button" data-tip-action="print" data-oneqr-print hidden><span data-tip-copy="printQR">Print QR code</span></button>
                       </div>
                     </div>
                   </div>
@@ -778,16 +778,6 @@
     <button class="oneqr-appearance-reset" type="button" id="oneqrAppearanceReset"><i data-lucide="rotate-ccw" aria-hidden="true"></i><span>Use default</span></button>
   </dialog>
   <input type="file" id="oneqrModuleIconUpload" accept=".png,.jpg,.jpeg,.webp,.gif,image/png,image/jpeg,image/webp,image/gif" hidden>
-
-  <dialog id="tip-qr-dialog" class="tip-qr-dialog" aria-labelledby="tip-qr-dialog-title" aria-describedby="tip-qr-dialog-text" lang="en">
-    <h2 id="tip-qr-dialog-title">Bitcoin Nail Bar</h2>
-    <p id="tip-qr-dialog-text" data-tip-copy="tipDescription">Create one tip QR code for your business. Customers scan it to select a technician and send a tip.</p>
-    <div class="tip-qr-code tip-qr-dialog-code" data-qr-value="../tip-flow/select-staff.html" data-qr-size="232" role="img" aria-label="Tip QR"></div>
-    <div class="tip-qr-actions">
-      <button class="tip-qr-button" type="button" data-tip-print data-tip-copy="printQR">Print QR code</button>
-      <button class="tip-qr-button is-secondary" type="button" data-tip-close data-tip-copy="close">Close</button>
-    </div>
-  </dialog>
 
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script>

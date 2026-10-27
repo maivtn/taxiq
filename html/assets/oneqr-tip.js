@@ -3,8 +3,7 @@
   'use strict';
 
   var screen = document.querySelector('[data-tip-qr]');
-  var dialog = document.getElementById('tip-qr-dialog');
-  if (!screen || !dialog) return;
+  if (!screen) return;
 
   var copy = {
     vi: {
@@ -22,8 +21,7 @@
       step1: 'Xem hoặc in mã QR của tiệm.',
       step2: 'Đặt nhiều bản ở nơi thuận tiện cho khách.',
       step3: 'Khách quét, chọn thợ và gửi tip.',
-      sameQR: 'Các bản in cùng mã chỉ cho biết tổng lượt quét, không phân biệt vị trí quét.',
-      close: 'Đóng'
+      sameQR: 'Các bản in cùng mã chỉ cho biết tổng lượt quét, không phân biệt vị trí quét.'
     },
     en: {
       tipTitle: 'Create a tip QR code',
@@ -40,8 +38,7 @@
       step1: 'View or print your business QR code.',
       step2: 'Place copies in convenient locations.',
       step3: 'Customers scan, choose a technician and send a tip.',
-      sameQR: 'Copies of the same QR show total scans only; they cannot identify which location was scanned.',
-      close: 'Close'
+      sameQR: 'Copies of the same QR show total scans only; they cannot identify which location was scanned.'
     }
   };
   var language = 'en';
@@ -50,12 +47,10 @@
   function setLanguage(nextLanguage) {
     language = nextLanguage;
     screen.lang = language;
-    dialog.lang = language;
-    [screen, dialog].forEach(function (root) {
-      root.querySelectorAll('[data-tip-copy]').forEach(function (element) {
-        element.textContent = copy[language][element.getAttribute('data-tip-copy')];
-      });
+    screen.querySelectorAll('[data-tip-copy]').forEach(function (element) {
+      element.textContent = copy[language][element.getAttribute('data-tip-copy')];
     });
+    screen.querySelector('[data-tip-code]').setAttribute('aria-label', copy[language].viewQR);
     screen.querySelectorAll('[data-tip-language]').forEach(function (button) {
       button.setAttribute('aria-pressed', String(button.getAttribute('data-tip-language') === language));
     });
@@ -79,22 +74,6 @@
       screen.querySelector('[data-tip-action="view"]').focus();
       return;
     }
-    dialog.showModal();
-    if (action === 'print') printQr();
-  });
-
-  function printQr() {
-    document.body.classList.add('is-printing-tip-qr');
-    try { window.print(); }
-    finally { document.body.classList.remove('is-printing-tip-qr'); }
-  }
-
-  dialog.querySelector('[data-tip-print]').addEventListener('click', printQr);
-  dialog.querySelector('[data-tip-close]').addEventListener('click', function () { dialog.close(); });
-  dialog.addEventListener('click', function (event) {
-    if (event.target !== dialog) return;
-    var bounds = dialog.getBoundingClientRect();
-    if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.close();
   });
 
   setLanguage(language);

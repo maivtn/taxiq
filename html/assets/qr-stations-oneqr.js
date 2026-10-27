@@ -921,6 +921,9 @@
   if (viewQrBtn) {
     viewQrBtn.addEventListener('click', function () { openViewModal(viewQrBtn); });
   }
+  document.querySelectorAll('[data-oneqr-view]').forEach(function (button) {
+    button.addEventListener('click', function () { openViewModal(button); });
+  });
 
   if (viewModal) {
     viewModal.addEventListener('click', function (event) {
@@ -1103,6 +1106,9 @@
   if (printQrBtn) {
     printQrBtn.addEventListener('click', function () { printOneQrCard(printQrBtn); });
   }
+  document.querySelectorAll('[data-oneqr-print]').forEach(function (button) {
+    button.addEventListener('click', function () { printOneQrCard(button); });
+  });
 
   if (viewPrintBtn) {
     viewPrintBtn.addEventListener('click', function () { printOneQrCard(viewPrintBtn); });

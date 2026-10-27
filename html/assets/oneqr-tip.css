@@ -35,7 +35,7 @@
 .tip-qr-button.is-secondary { background: #fff; color: #4648d4; }
 .tip-qr-button.is-secondary:hover { background: #e9e9ff; color: #3a3bbf; }
 .tip-qr-button img { width: 20px; height: 20px; object-fit: contain; }
-.tip-qr button:focus-visible, .tip-qr-dialog button:focus-visible { outline: 3px solid #4648d4; outline-offset: 3px; }
+.tip-qr button:focus-visible { outline: 3px solid #4648d4; outline-offset: 3px; }
 .tip-qr-code {
   display: grid;
   width: 182px;
@@ -44,9 +44,12 @@
   place-items: center;
   border: 11px solid #fff;
   outline: 1px solid #dedce8;
+  padding: 0;
   background: #fff;
+  cursor: pointer;
 }
 
+.tip-qr-code .qr-code-art { width: 100%; height: 100%; }
 .tip-qr-code canvas, .tip-qr-code img { display: block; width: 100%; height: 100%; }
 .tip-qr-activity > p { margin-top: 8px; }
 .tip-qr-stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 180px), 1fr)); gap: 12px; margin: 18px 0 0; }
@@ -61,12 +64,6 @@
 .tip-qr-step-heading img { width: 34px; height: 34px; object-fit: contain; }
 .tip-qr-how > p { margin-top: 16px; font-size: 13px; }
 
-.tip-qr-dialog { width: min(440px, calc(100% - 32px)); max-height: calc(100dvh - 40px); border: 1px solid var(--nexora-border); border-radius: 16px; padding: 24px; background: #fff; color: var(--nexora-text); box-shadow: 0 24px 64px #0b1c3033; }
-.tip-qr-dialog::backdrop { background: #1e193e99; }
-.tip-qr-dialog h2 { margin: 0; font-size: 20px; font-weight: 800; }
-.tip-qr-dialog p { margin: 12px 0 0; color: var(--nexora-muted); font-size: 14px; line-height: 1.6; }
-.tip-qr-dialog-code { width: min(256px, 100%); height: auto; aspect-ratio: 1; margin: 24px auto; border-width: 12px; }
-
 @media (max-width: 1000px) {
   .tip-qr-grid { grid-template-columns: minmax(0, 1fr); }
 }
@@ -78,12 +75,4 @@
   .tip-qr-business { flex-wrap: wrap; }
   .tip-qr-steps { grid-template-columns: minmax(0, 1fr); gap: 10px; }
   .tip-qr-step-heading { margin-bottom: 8px; }
-}
-
-@media print {
-  body.is-printing-tip-qr { background: #fff; }
-  body.is-printing-tip-qr > :not(#tip-qr-dialog) { display: none !important; }
-  body.is-printing-tip-qr .tip-qr-dialog { position: static; width: 100%; max-height: none; margin: 0 auto; border: 0; padding: 32px 20px; box-shadow: none; text-align: center; }
-  body.is-printing-tip-qr .tip-qr-dialog::backdrop { background: transparent; }
-  body.is-printing-tip-qr .tip-qr-dialog .tip-qr-actions { display: none; }
 }
