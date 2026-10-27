@@ -37,7 +37,7 @@
     'Start Service':'play',Start:'play',Complete:'check',Back:'back','Checkout Ticket':'forward','Complete checkout':'check',
     Cash:'cash',Card:'card','Gift Card':'gift','Split Pay':'split','Split bill':'split',More:'more',Less:'more','Send SMS':'message',
     'No Receipt':'receipt','Edit customer':'user','Hand to customer':'tablet','Discount all':'percent','Add tip':'dollar','Add service':'plus',
-    'Back to Edit':'back',Checkout:'forward',View:'eye','Add Tip':'dollar','Add-On':'plus','Add main service':'plus','Custom service':'plus','Add another technician & their work':'plus',
+    'Back to Edit':'back',Checkout:'forward',View:'eye','Assign Services':'check','Add Tip':'dollar','Add-On':'plus','Add main service':'plus','Custom service':'plus','Add another technician & their work':'plus',
     Discount:'percent',Coupon:'coupon','Scan QR':'scan','Start camera':'scan','Take a photo':'camera','Upload image':'image','Custom':'plus','Cancel split bill':'close',Close:'close','Change tech':'user','Change service':'refresh',Remove:'trash',Pay:'card'};
   const icon = name => `<svg class="tw-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${iconPaths[name]}</svg>`;
   function totals(ticket, applyPaymentRules=true) {
@@ -260,6 +260,11 @@
       else if(stations&&!parent.directCheckout&&parent.lines.length&&parent.lines.every(l=>l.status==='completed'))stations.release(parent,true);
       options.onChange(parent);
     }
+    function markAssignmentPending(lines=[]){
+      if(!staging||mode!=='edit'||ticket.payment||group())return;
+      parent.assignmentPending=true;
+      parent.assignmentLineIds=[...new Set([...(parent.assignmentLineIds || []),...lines.map(line=>line.id)])];
+    }
     function startSplit(data) {
       const error=text=>{$('[data-tw-error]').textContent=text;};
       if(group()&&(!amountSplit()||group().bills.some(b=>b.payment))){error('Service assignments are locked after payment.');return;}
@@ -477,6 +482,10 @@
         const lineDiscount=lineDiscountCents(t,couponCents),orderDiscount=Math.max(0,(t.discountCents || 0)-couponCents-lineDiscount);
         if($('[data-tw-line-discount]'))$('[data-tw-line-discount]').textContent=(lineDiscount?'−':'')+money(lineDiscount);
         if($('[data-tw-order-discount]'))$('[data-tw-order-discount]').textContent=(orderDiscount?'−':'')+money(orderDiscount);
+        const methodRule=demo?.load().payment.methods.find(method=>method.id===ticket.checkout.method),paymentRules=demo?.load().payment;
+        const orderRate=parent.discount?.type==='percent'?Number(parent.discount.value):orderDiscount/Math.max(1,(t.subtotalCents || 0)-lineDiscount)*100;
+        const methodRate=ticket.checkout.method!=='split'&&methodRule?.discountType==='percent'?Number(methodRule.discountValue):ticket.checkout.method!=='split'&&methodRule?.discountType==='inherit'&&paymentRules?.walletEnabled?Number(paymentRules.walletPercent):(t.methodDiscountCents || 0)/Math.max(1,t.netCents || 0)*100;
+        [['order',orderRate,orderDiscount],['method',methodRate,t.methodDiscountCents]].forEach(([name,rate,amount])=>{const badge=$('[data-tw-'+name+'-discount-percent]');if(badge){badge.hidden=!amount;badge.textContent=Number(rate.toFixed(2)).toLocaleString('en-US')+'% off';}});
         [['coupon',couponCents],['method',t.methodDiscountCents],['fee',t.feeCents]].forEach(([name,value])=>{const row=$('[data-tw-optional-row="'+name+'"]');if(row)row.hidden=!value;});
       }
       root.querySelectorAll('[data-tw-tip-total],[data-tw-tip-card-total]').forEach(el=>el.textContent=t.error?'—':money(t.tipCents));
@@ -533,7 +542,8 @@
           splitGroup:group(),amountSplit:amountSplit(),serviceSplit,activeBillId,guestColor,guestNumber,serviceFilter,serviceToolbarHtml,
           customerKind,contact:contactUntil>Date.now()?parent.phone || 'No phone number':'•••• '+String(parent.phone || '').replace(/\D/g,'').slice(-4),
           technicians:options.technicians(),methods:demo?demo.methods():[{id:'cash',label:'Cash'},{id:'card',label:'Card'},{id:'gift-card',label:'Gift Card'},{id:'split',label:'Split Pay'}],
-          stationChip:stations?.chip(parent) || '',stationHtml,noteHtml,billHeading,billsHtml,paymentHtml,paybarHtml,rewardCode});
+          stationChip:stations?.chip(parent) || '',stationHtml,noteHtml,billHeading,billsHtml,paymentHtml,paybarHtml,rewardCode,
+          assignmentPending:!!parent.assignmentPending||parent.lines.some(line=>line.status==='unassigned')});
         if(serviceSplit&&serviceFilter!=='all'&&!root.querySelector('.tw-line:not([hidden])'))$('.tw-lines').insertAdjacentHTML('beforeend',`<p class="tw-filter-empty" data-tw-filter-empty>${serviceFilter==='unassigned'?'No unassigned services.':'No services on this bill yet.'} Choose All services to review the full ticket.</p>`);
         $('dialog').addEventListener('close',stopQrScanner);renderTotals();return;
       }
@@ -590,7 +600,8 @@
     function add(service) {
       if(staging&&addContext.selectTech&&!addContext.tech)return;
       const tech=staging?addContext.tech:'';
-      ticket.lines.push({id:crypto.randomUUID(),serviceId:service.id || null,name:service.name,price:service.price,tech,status:parent.directCheckout?'completed':tech?'assigned':'unassigned',...(staging&&addContext.parentId?{parentLineId:addContext.parentId}:{})});
+      const line={id:crypto.randomUUID(),serviceId:service.id || null,name:service.name,price:service.price,tech,status:parent.directCheckout?'completed':tech?'assigned':'unassigned',...(staging&&addContext.parentId?{parentLineId:addContext.parentId}:{})};
+      ticket.lines.push(line);markAssignmentPending([line]);
       addContext={tech:'',parentId:'',selectTech:false};save();render();
     }
     root.addEventListener('input',e=>{
@@ -640,7 +651,9 @@
       if(staging&&e.target.hasAttribute('data-tw-group-tech')&&!group()){
         const from=e.target.dataset.twGroupTech,to=e.target.value,choice=options.technicians().find(t=>t.name===to);
         if(to&&(!choice||choice.status&&choice.status!=='available'&&to!==from)){render();return;}
-        parent.lines.filter(line=>(line.tech || '')===from).forEach(line=>{line.tech=to;if(line.status==='unassigned'&&to)line.status='assigned';else if(!to&&line.status==='assigned')line.status='unassigned';});
+        const changed=parent.lines.filter(line=>(line.tech || '')===from);
+        changed.forEach(line=>{line.tech=to;if(line.status==='unassigned'&&to)line.status='assigned';else if(!to&&line.status==='assigned')line.status='unassigned';});
+        if(from!==to)markAssignmentPending(changed);
         save();render();return;
       }
       if(e.target.matches('[data-tw-bill-name]')&&group()) {
@@ -665,9 +678,16 @@
       if(b.hasAttribute('data-tw-remove-bill')&&group()&&!amountSplit()&&group().bills.length>2&&!ticket.lines.length&&!ticket.payment){group().bills=group().bills.filter(b=>b.id!==activeBillId);selectBill(group().bills[0].id);save();render();return;}
       if(b.hasAttribute('data-tw-cancel-split')&&group()&&!group().bills.some(b=>b.payment)){delete parent.splitBills;ticket=parent;lastAssignment=null;serviceFilter='all';save();render();return;}
       if(ticket.payment)return;
+      if(staging&&b.hasAttribute('data-tw-assign')&&mode==='edit'&&!group()){
+        if(!ticket.lines.length){message('Add at least one service.');return;}
+        if(ticket.lines.some(line=>!clockedIn(line.tech))){message('Select a technician for every service.');return;}
+        const pending=new Set(parent.assignmentLineIds || []),at=new Date().toISOString();
+        ticket.lines.forEach(line=>{if(pending.has(line.id)||line.status==='unassigned'){line.status='assigned';line.assignedAt=at;}});
+        delete parent.assignmentPending;delete parent.assignmentLineIds;save();render();message('Technician assigned.');return;
+      }
       if(staging&&b.hasAttribute('data-tw-remove-group')&&!group()){
         const ids=new Set(parent.lines.filter(line=>(line.tech || '')===b.dataset.twRemoveGroup).map(line=>line.id));
-        parent.lines=parent.lines.filter(line=>!ids.has(line.id)&&!ids.has(line.parentLineId));save();render();return;
+        parent.lines=parent.lines.filter(line=>!ids.has(line.id)&&!ids.has(line.parentLineId));markAssignmentPending();save();render();return;
       }
       if(staging&&b.hasAttribute('data-tw-new-tech')&&!group()){addContext={tech:'',parentId:'',selectTech:true};openDialog('catalog');return;}
       if(staging&&b.hasAttribute('data-tw-custom'))addContext={tech:b.dataset.twTech || '',parentId:b.dataset.twParent || '',selectTech:false};
@@ -716,7 +736,7 @@
       if(b.hasAttribute('data-tw-action')){
         const l=ticket.lines.find(l=>l.id===b.dataset.line);if(!l)return;
         const action=b.dataset.twAction;
-        if(action==='remove'){ticket.lines=ticket.lines.filter(x=>x!==l&&(!staging||x.parentLineId!==l.id));save();render();}
+        if(action==='remove'){ticket.lines=ticket.lines.filter(x=>x!==l&&(!staging||x.parentLineId!==l.id));markAssignmentPending();save();render();}
         else if(action==='start'){if(!clockedIn(l.tech)){openDialog('tech',l.id);return;}try{if(stations){const gate=String(l.tech || '').split(',').map(n=>stations.gate(n.trim())).find(Boolean);if(gate)throw new Error('Confirm '+gate.code+' clean before sending the next Beep.');stations.start(parent);}}catch(error){message(error.message);return;}l.status='in-service';save();render();}
         else if(action==='complete'){l.status='completed';save();render();}
         else openDialog(action,l.id);
@@ -778,8 +798,9 @@
         if(!choice||choice.status==='clocked-out'||(choice.status&&choice.status!=='available'&&tech!==l.tech)){error('Choose an available technician.');return;}
         l.tech=tech;if(l.status==='unassigned')l.status='assigned';
         if(staging&&!l.parentLineId)ticket.lines.filter(child=>child.parentLineId===l.id&&child.tech===previous).forEach(child=>{child.tech=tech;if(child.status==='unassigned')child.status='assigned';});
+        if(previous!==tech)markAssignmentPending([l,...ticket.lines.filter(child=>child.parentLineId===l.id)]);
       }
-      if(dialogAction==='service'){const s=services().find(s=>s.id===data.get('service'));if(!s)return;l.name=s.name;l.serviceId=s.id;l.price=s.price;l.discount=null;l.status=parent.directCheckout?'completed':l.tech?'assigned':'unassigned';}
+      if(dialogAction==='service'){const s=services().find(s=>s.id===data.get('service'));if(!s)return;const changed=l.serviceId!==s.id;l.name=s.name;l.serviceId=s.id;l.price=s.price;l.discount=null;l.status=parent.directCheckout?'completed':l.tech?'assigned':'unassigned';if(changed)markAssignmentPending([l]);}
       if(dialogAction==='custom'||dialogAction==='price'){
         if(!validMoney(data.get('price')) || (dialogAction==='custom'&&!data.get('name').trim())){error('Enter a service name and valid price.');return;}
         if(dialogAction==='custom'){add({name:data.get('name').trim(),price:Number(data.get('price'))});return;}
