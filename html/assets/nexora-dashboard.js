@@ -93,7 +93,8 @@
   }
   cards.forEach(function (card) {
     var key = card.dataset.module;
-    card.querySelector('.card-icon').innerHTML = window.NEXORA_ICONS.image(key, {size: 48});
+    var cardIcon = card.querySelector('.card-icon');
+    if (!cardIcon.querySelector('img')) cardIcon.innerHTML = window.NEXORA_ICONS.image(key, {size: 48});
     card.addEventListener('click', function () { var next = params(); next.set('module', key); next.delete('section'); next.delete('group'); updateURL(next); renderRoute(true); });
   });
   document.getElementById('detail-back').addEventListener('click', function () { var next = params(); ['module','section','group'].forEach(function (key) { next.delete(key); }); updateURL(next); renderRoute(true); });
