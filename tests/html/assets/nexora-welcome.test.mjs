@@ -10,10 +10,17 @@ function loadPage(name, saved = {}) {
   const dom = new JSDOM(page(name), { url: `http://localhost/html/pages/${name}`, runScripts: 'outside-only' });
   const { window } = dom;
   window.matchMedia = () => ({ matches: true });
+  window.HTMLElement.prototype.scrollIntoView = () => {};
   for (const [key, value] of Object.entries(saved)) window.localStorage.setItem(key, value);
   window.eval(asset('nexora-icons.js'));
-  window.eval(asset('nexora-welcome-data.js'));
-  window.eval(asset('nexora-welcome.js'));
+  if (name === 'salon-home.html') {
+    window.eval(asset('nexora-shell-nav.js'));
+    window.eval(asset('nexora-salon-home.js'));
+  } else {
+    window.eval(asset('nexora-welcome-data.js'));
+    window.eval(asset('nexora-welcome.js'));
+    if (name === 'nexora-home.html') window.eval(asset('nexora-business-directory.js'));
+  }
   return dom;
 }
 
@@ -35,39 +42,39 @@ function submit(window) {
   window.document.getElementById('nxw-setup-form').dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
 }
 
-test('Home slideshow wraps through all 12 PO products and resolves CTAs to local screens', () => {
+test('Salon Home uses the PO showcases and slideshow with local module destinations', () => {
   const dom = loadPage('salon-home.html');
   try {
     const { window } = dom;
-    assert.equal(window.document.querySelectorAll('[data-slide]').length, 12);
-    assert.equal(window.document.querySelectorAll('.nxw-card').length, 12);
-    click(window, '[data-action="slide-prev"]');
-    assert.equal(window.document.getElementById('nxw-slide-title').textContent, 'Analytics');
-    assert.equal(window.document.getElementById('nxw-slide-count').textContent, '12 / 12');
-    click(window, '[data-action="slide-next"]');
-    assert.equal(window.document.getElementById('nxw-slide-title').textContent, 'SI POS');
-    click(window, '[data-slide="4"]');
-    assert.equal(window.document.getElementById('nxw-slide-title').textContent, 'Spin Wheel');
-    assert.match(window.document.querySelector('#nxw-slide-copy .nxw-btn').href, /\/html\/pages\/dashboard\.html\?module=spinwheel$/);
-    assert.equal(window.document.querySelector('[data-slide="4"]').getAttribute('aria-pressed'), 'true');
-    assert.equal(window.document.getElementById('nxw-slide-play').getAttribute('aria-label'), 'Play slideshow');
+    assert.equal(window.document.querySelectorAll('#salon-slide-dots button').length, 12);
+    assert.equal(window.document.querySelectorAll('#salon-products .salon-product').length, 12);
+    assert.equal(window.document.querySelectorAll('#salon-intro-video video').length, 2);
+    click(window, '#salon-slide-prev');
+    assert.equal(window.document.getElementById('salon-home-title').textContent, 'Analytics');
+    click(window, '#salon-slide-next');
+    assert.equal(window.document.getElementById('salon-home-title').textContent, 'SI POS');
+    assert.match(window.document.querySelector('#salon-slide-link').href, /dashboard\.html\?module=pos$/);
+    click(window, '#salon-slide-dots button:nth-child(5)');
+    assert.equal(window.document.getElementById('salon-home-title').textContent, 'Spin Wheel');
+    assert.equal(window.document.querySelector('#salon-slide-dots button:nth-child(5)').getAttribute('aria-current'), 'true');
+    assert.equal(window.document.getElementById('salon-slide-play').getAttribute('aria-label'), 'Play slideshow');
   } finally { dom.window.close(); }
 });
 
-test('Feature explorer changes product and opens the selected local booking screen', () => {
+test('PO feature explorer changes product and renders the selected One QR preview', () => {
   const dom = loadPage('salon-home.html');
   try {
     const { window } = dom;
-    click(window, '[data-explorer-product="oneqr"]');
-    const options = [...window.document.querySelectorAll('[data-explorer-feature]')];
-    const booking = options.find((option) => option.textContent === 'Book appointment');
+    const product = [...window.document.querySelectorAll('#explorer-products button')].find((button) => button.textContent === 'One QR');
+    assert.ok(product);
+    product.click();
+    const booking = [...window.document.querySelectorAll('#explorer-feature-list button')].find((button) => button.textContent.endsWith('Book appointment'));
     assert.ok(booking);
     booking.click();
-    assert.equal(window.document.querySelector('#nxw-feature-detail h3').textContent, 'Book appointment');
-    const route = new URL(window.document.querySelector('#nxw-feature-detail a').href);
-    assert.equal(route.pathname, '/html/pages/pos-front-desk.html');
-    assert.equal(route.searchParams.get('bookingView'), 'booking');
-    assert.equal(window.document.activeElement.getAttribute('aria-pressed'), 'true');
+    assert.equal(window.document.getElementById('explorer-feature-name').textContent, 'Book appointment');
+    assert.match(window.document.getElementById('explorer-screen').getAttribute('aria-label'), /Book appointment/);
+    assert.match(window.document.querySelector('#explorer-module-link').href, /dashboard\.html\?module=oneqr$/);
+    assert.ok([...window.document.querySelectorAll('#explorer-feature-list button[aria-pressed="true"]')].some((button) => button.textContent.endsWith('Book appointment')));
   } finally { dom.window.close(); }
 });
 
@@ -153,7 +160,7 @@ test('Every new page renders its own local content without PO frame or page link
         assert.equal(new URL(link.href).origin, 'http://localhost', `${filename}: ${link.href}`);
         assert.doesNotMatch(link.href, /from-po/);
       }
-      assert.doesNotMatch(dom.window.document.getElementById('nxw-main').textContent, /undefined/);
+      assert.doesNotMatch(dom.window.document.querySelector('main').textContent, /undefined/);
     } finally { dom.window.close(); }
   }
 });
