@@ -1,18 +1,18 @@
 /* Adapted from the PO advertising and wallet prototype in from-po/quang-cao. */
 .qr-advertising-shell { display: grid; max-width: 1440px; margin: 0 auto; gap: 20px; }
-.qa-app { min-width: 0; color: #25213a; font: 15px/1.5 Inter, system-ui, sans-serif; }
+.qa-app { --qa-primary: #4648d4; --qa-primary-hover: #3a3bbf; --qa-primary-active: #2d2eaa; --qa-primary-subtle: #e9e9ff; min-width: 0; color: #25213a; font: 15px/1.5 Inter, system-ui, sans-serif; }
 .qa-app *, .qa-app *::before, .qa-app *::after { box-sizing: border-box; }
 .qa-app .hide, .qa-app [hidden] { display: none !important; }
 .qa-app h1 { margin: 10px 0; font-size: 30px; line-height: 1.25; }
 .qa-app h2 { margin: 0 0 12px; font-size: 21px; line-height: 1.35; }
 .qa-app h3 { margin: 18px 0 5px; font-size: 16px; }
 .qa-app p { margin: 12px 0; color: #666879; line-height: 1.6; }
-.qa-app a { color: #6739b3; text-underline-offset: 3px; }
+.qa-app a { color: var(--qa-primary); text-underline-offset: 3px; }
 .qa-app small, .qa-app .muted { color: #666879; font-size: 13px; }
-.qa-app button { border: 0; border-radius: 9px; padding: 11px 16px; background: #7040c2; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
-.qa-app button.alt { background: #eee8fa; color: #6639ae; }
+.qa-app button { border: 1px solid transparent; border-radius: 9px; padding: 11px 16px; background: var(--qa-primary); color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+.qa-app button.alt { border-color: var(--qa-primary); background: #fff; color: var(--qa-primary); }
 .qa-app button:disabled { opacity: .45; cursor: not-allowed; }
-.qa-app button:focus-visible, .qa-app a:focus-visible, .qa-app input:focus-visible, .qa-app select:focus-visible { outline: 3px solid #b69bdf; outline-offset: 3px; }
+.qa-app button:focus-visible, .qa-app a:focus-visible, .qa-app input:focus-visible, .qa-app select:focus-visible { outline: 3px solid var(--qa-primary); outline-offset: 3px; }
 .qa-app button:not(:disabled):hover { filter: brightness(.97); }
 .qa-app .notice { margin: 16px 0; border-radius: 10px; padding: 13px 15px; background: #fff6de; color: #785a16; line-height: 1.5; }
 .qa-app .card { min-width: 0; margin: 16px 0; border: 1px solid #eae8f1; border-radius: 16px; padding: 24px; background: #fff; }
@@ -29,7 +29,7 @@
 .qa-app #overview .equivalent, .qa-app #overview [data-i="exchange"] { color: #3a3bbf; }
 .qa-app nav { display: flex; flex-wrap: wrap; gap: 3px; width: fit-content; max-width: 100%; margin: 12px 0 0; border: 1px solid #eae8f1; border-radius: 10px; padding: 4px; background: #fff; }
 .qa-app nav button { display: inline-flex; min-height: 36px; align-items: center; justify-content: center; border-radius: 7px; padding: 8px 12px; background: transparent; color: #666879; font-size: 13px; line-height: 1.3; white-space: nowrap; }
-.qa-app nav button.active { background: #eee8fa; color: #6335aa; }
+.qa-app nav button.active { background: var(--qa-primary-subtle); color: var(--qa-primary-active); }
 .qa-app label { display: block; margin: 14px 0 6px; font-weight: 600; }
 .qa-app input, .qa-app select { width: 100%; min-height: 44px; border: 1px solid #dcd9e7; border-radius: 9px; padding: 11px; background-color: #fff; color: #25213a; font: inherit; }
 .qa-app select:not([multiple]) { appearance: none; -webkit-appearance: none; padding-right: 44px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%23666879' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; background-size: 16px; }
@@ -43,9 +43,9 @@
 .qa-app .ts-control > input::placeholder { color: #666879; opacity: 1; }
 .qa-app .ts-wrapper.multi .ts-control > .item { display: none; }
 .qa-app .qa-secondary-selected { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
-.qa-app .qa-secondary-chip { display: inline-flex; max-width: 100%; align-items: center; gap: 6px; border-radius: 6px; padding: 4px 8px; background: #eee8fa; color: #6335aa; font-size: 13px; line-height: 20px; overflow-wrap: anywhere; }
+.qa-app .qa-secondary-chip { display: inline-flex; max-width: 100%; align-items: center; gap: 6px; border-radius: 6px; padding: 4px 8px; background: var(--qa-primary-subtle); color: var(--qa-primary-active); font-size: 13px; line-height: 20px; overflow-wrap: anywhere; }
 .qa-app .qa-secondary-chip button { display: inline-flex; min-width: 24px; min-height: 24px; flex: 0 0 24px; align-items: center; justify-content: center; border-radius: 4px; padding: 0; background: transparent; color: inherit; font-size: 18px; line-height: 1; }
-.qa-app .ts-wrapper.focus .ts-control { border-color: #a78bce; outline: 2px solid #b69bdf; outline-offset: 2px; }
+.qa-app .ts-wrapper.focus .ts-control { border-color: var(--qa-primary); outline: 2px solid var(--qa-primary); outline-offset: 2px; }
 .qa-app .ts-dropdown { border: 1px solid #dcd9e7; border-radius: 10px; background: #fff; box-shadow: 0 8px 24px rgba(37, 33, 58, .1); color: #25213a; font: inherit; overflow: hidden; }
 .qa-app .ts-dropdown-content { max-height: 260px; overscroll-behavior: contain; }
 .qa-app .qa-secondary-dropdown-actions { display: flex; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px solid #eae8f1; padding: 8px 10px; background: #fff; }
@@ -53,8 +53,8 @@
 .qa-app .ts-dropdown .option { display: flex; min-height: 40px; align-items: center; gap: 10px; padding: 10px 12px; }
 .qa-app .ts-dropdown .option input.tomselect-checkbox { width: 18px; min-height: 18px; height: 18px; flex: 0 0 18px; margin: 0; }
 .qa-app .ts-dropdown .optgroup-header { padding: 8px 12px; background: #f8f6fc; color: #666879; font-size: 12px; font-weight: 700; }
-.qa-app .ts-dropdown .active { background: #eee8fa; color: #6335aa; }
-.qa-app input[type="checkbox"] { width: 18px; min-height: 18px; height: 18px; flex: 0 0 18px; margin: 4px 0 0; accent-color: #7040c2; }
+.qa-app .ts-dropdown .active { background: var(--qa-primary-subtle); color: var(--qa-primary-active); }
+.qa-app input[type="checkbox"] { width: 18px; min-height: 18px; height: 18px; flex: 0 0 18px; margin: 4px 0 0; accent-color: var(--qa-primary); }
 .qa-app .line { display: flex; align-items: flex-start; gap: 9px; margin: 17px 0; }
 .qa-app .line label { margin: 0; font-weight: 400; }
 .qa-app .line a { display: block; width: fit-content; margin-top: 6px; }
@@ -80,14 +80,13 @@
 .qa-app #setup .notice { border: 1px solid #fde68a; background: #fffbeb; color: #854d0e; }
 .qa-app #setup .tag { background: #f1f5f9; color: #334155; }
 .qa-app #setup .tag.is-active { background: #dcfce7; color: #166534; }
-.qa-app #setup .qa-secondary-chip, .qa-app #setup button.alt { background: #e9e9ff; color: #2d2eaa; }
+.qa-app #setup .qa-secondary-chip { background: var(--qa-primary-subtle); color: var(--qa-primary-active); }
 .qa-app #setup .ts-dropdown { border-color: #cbd5e1; color: #0b1c30; }
 .qa-app #setup .ts-dropdown .optgroup-header { background: #f1f5f9; color: #334155; }
 .qa-app #setup a { color: #3a3bbf; }
-.qa-app #setup #activate, .qa-app #setup #ads-toggle { min-height: 44px; border: 1px solid #3a3bbf; padding: 11px 18px; background: #4648d4; color: #fff; font-weight: 800; box-shadow: 0 4px 12px rgba(70, 72, 212, .18); }
-.qa-app #setup #ads-toggle.is-advertising-on { border-color: #b91c1c; background: #dc2626; box-shadow: 0 4px 12px rgba(220, 38, 38, .18); }
-.qa-app #setup #activate:hover, .qa-app #setup #ads-toggle:hover { background: #3a3bbf; }
-.qa-app #setup #ads-toggle.is-advertising-on:hover { background: #b91c1c; }
+.qa-app #setup #activate, .qa-app #setup #ads-toggle { border-color: var(--qa-primary); background: #fff; color: var(--qa-primary); box-shadow: none; }
+.qa-app #setup #activate:hover, .qa-app #setup #ads-toggle:hover, .qa-app button.alt:hover { border-color: var(--qa-primary-hover); background: var(--qa-primary-subtle); color: var(--qa-primary-hover); }
+.qa-app #setup #activate:active, .qa-app #setup #ads-toggle:active, .qa-app button.alt:active { border-color: var(--qa-primary-active); color: var(--qa-primary-active); }
 @media (max-width: 1024px) {
   .qr-advertising-shell { gap: 16px; }
   .qa-app { font-size: 14px; }
