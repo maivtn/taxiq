@@ -61,20 +61,19 @@
     const staging=options.stagingLayout&&window.NEXORA_TICKET_STAGING;
     if(staging)root.classList.add('tw-staging');
     let addContext={tech:'',parentId:'',selectTech:false},rewardCode='';
-    let contactUntil=0,notesUntil=0,tipPolicy='equal';
+    let contactUntil=0,tipPolicy='equal';
     const demo=window.NEXORA_POS_DEMO,stations=window.NEXORA_STATIONS;
-    const reveal=async action=>{
+    const revealContact=async()=>{
       if(!demo)return true;
-      const result=await demo.approve(action,'Ticket '+parent.id,{label:action==='contact'?'View / edit customer contact':'View private notes'});
+      const result=await demo.approve('contact','Ticket '+parent.id,{label:'View / edit customer contact'});
       if(!result)return false;
-      if(action==='contact')contactUntil=Date.now()+30000;else notesUntil=Date.now()+30000;
+      contactUntil=Date.now()+30000;
       setTimeout(()=>{
         if(root.hidden)return;
         if(contactUntil<=Date.now()){
           const phone=$('[data-tw-contact]');if(phone)phone.textContent='•••• '+String(parent.phone || '').replace(/\D/g,'').slice(-4);
           if($('dialog')?.open&&dialogAction==='customer')$('dialog').close();
         }
-        if(notesUntil<=Date.now()){const note=$('[data-tw-note]');if(note){note.value='';note.disabled=true;}}
         if(!$('dialog')?.open)render();
       },30000);
       return true;
@@ -535,7 +534,7 @@
       const customerKind=parent.directCheckout?'Direct checkout · no Check-in':parent.bookingId?'Booked customer':parent.checkIn?'Checked-in customer':'Walk-in customer';
       const customerHtml=mode==='checkout'?`<section class="tw-card tw-customer-card"><h3>CUSTOMER</h3><div class="tw-customer-name"><strong>${esc(parent.customer)}</strong><span>${customerKind}</span>${!paid&&!group()?button('View','data-tw-customer','tw-text tw-small'):''}</div><p>${icon('phone')}<span data-tw-contact>${esc(contactUntil>Date.now()?parent.phone || 'No phone number':'•••• '+String(parent.phone || '').replace(/\D/g,'').slice(-4))}</span></p></section>`:'';
       const notePhotos=parent.notePhotos || [];
-      const noteHtml=`<section class="tw-card tw-note-card">${demo&&notesUntil<=Date.now()?`<div class="pos-warning">Private notes hidden · ${button('View notes','data-tw-reveal-notes','tw-small')}</div>`:''}<label class="tw-note">NOTE<textarea data-tw-note placeholder="Seat, customer preferences, color/powder used…" ${paid||group()||(demo&&notesUntil<=Date.now())?'disabled':''}>${esc(!demo||notesUntil>Date.now()?parent.note || '':'')}</textarea></label><div class="tw-note-tools">${button('Take a photo','data-tw-take-photo'+(paid||group()||notePhotos.length>=5?' disabled':''),'tw-small')}${button('Upload image','data-tw-upload-image'+(paid||group()||notePhotos.length>=5?' disabled':''),'tw-small')}<input type="file" accept="image/*" data-tw-note-upload hidden><span data-tw-photo-count>${notePhotos.length}/5 photos</span></div></section>`;
+      const noteHtml=`<section class="tw-card tw-note-card"><label class="tw-note">NOTE<textarea data-tw-note placeholder="Seat, customer preferences, color/powder used…" ${paid||group()?'disabled':''}>${esc(parent.note || '')}</textarea></label><div class="tw-note-tools">${button('Take a photo','data-tw-take-photo'+(paid||group()||notePhotos.length>=5?' disabled':''),'tw-small')}${button('Upload image','data-tw-upload-image'+(paid||group()||notePhotos.length>=5?' disabled':''),'tw-small')}<input type="file" accept="image/*" data-tw-note-upload hidden><span data-tw-photo-count>${notePhotos.length}/5 photos</span></div></section>`;
       if(staging){
         const stationHtml=stations&&!parent.directCheckout&&!paid&&parent.lines.some(l=>l.status!=='completed')&&stations.load().settings.mode!=='off'?`<section class="tw-card"><h3>STATION · REVIEW & SEND</h3>${stations.pickerHtml(parent)}${button('Review & Send','data-tw-review-station','tw-purple')}</section>`:'';
         root.innerHTML=staging.render({parent,ticket,mode,button,icon,esc,money,cents,validMoney,totals,discount,detailLines,
@@ -617,7 +616,7 @@
       if(dialogAction==='discount'&&!dialogLine&&e.target.matches('[data-tw-discount-custom]')){discountValue=e.target.value;return;}
       if(dialogAction==='discount'&&!dialogLine&&e.target.matches('[data-tw-discount-reason]')){discountReason=e.target.value;return;}
       if(e.target.matches('[data-tw-search]')){search=e.target.value;renderCatalog();}
-      if(e.target.matches('[data-tw-note]')&&(!demo||notesUntil>Date.now())){parent.note=e.target.value;save();}
+      if(e.target.matches('[data-tw-note]')&&!group()){parent.note=e.target.value;save();}
       if(e.target.matches('[data-tw-field]')){ticket.checkout[e.target.dataset.twField]=e.target.value;if(e.target.dataset.twField==='tip')ticket.checkout.tipType='fixed';save();renderTotals();}
     });
     root.addEventListener('change',e=>{
@@ -663,11 +662,10 @@
     root.addEventListener('click',async e=>{
       const b=e.target.closest('button');if(!b||b.disabled)return;
       if(b.hasAttribute('data-tw-complete-checkout')){if(mode==='checkout'&&checkoutPaid()&&!root.hidden){root.hidden=true;options.onBack();}return;}
-      if(b.hasAttribute('data-tw-back')){contactUntil=0;notesUntil=0;root.hidden=true;options.onBack();return;}
+      if(b.hasAttribute('data-tw-back')){contactUntil=0;root.hidden=true;options.onBack();return;}
       if(b.hasAttribute('data-tw-back-edit')&&!group()&&!ticket.payment){mode='edit';options.onModeChange?.(mode);render();return;}
       if(b.hasAttribute('data-tw-review-station')){try{const tech=parent.lines.map(l=>l.tech).filter(Boolean).join(', ');const gate=parent.lines.map(l=>String(l.tech || '').split(',').map(n=>stations.gate(n.trim())).find(Boolean)).find(Boolean);if(gate)throw new Error('Confirm '+gate.code+' clean before the next Beep.');stations.hold(parent,$('[data-pos-station]').value,tech);save();render();message('Station held for this ticket · service Beep queued (demo).');}catch(error){message(error.message);}return;}
-      if(b.hasAttribute('data-tw-reveal-notes')){if(await reveal('notes'))render();return;}
-      if(b.hasAttribute('data-tw-customer')){if(await reveal('contact'))openDialog('customer');return;}
+      if(b.hasAttribute('data-tw-customer')){if(await revealContact())openDialog('customer');return;}
       if(b.hasAttribute('data-tw-close')){stopQrScanner();$('dialog').close();return;}
       if(b.hasAttribute('data-tw-print')){window.print();return;}
       if(b.hasAttribute('data-tw-preview')){openDialog('preview');return;}
@@ -817,10 +815,10 @@
       }
       stopQrScanner();$('dialog').close();save();render();
     });
-    window.addEventListener('nexora:pos-account-changed',()=>{contactUntil=0;notesUntil=0;if(!root.hidden&&ticket){if($('dialog')?.open)$('dialog').close();render();}});
+    window.addEventListener('nexora:pos-account-changed',()=>{contactUntil=0;if(!root.hidden&&ticket){if($('dialog')?.open)$('dialog').close();render();}});
     window.addEventListener('nexora:pos-settings-changed',()=>{if(!root.hidden&&ticket&&!$('dialog')?.open)render();});
     return {open(value,requestedMode='edit') {
-      contactUntil=0;notesUntil=0;
+      contactUntil=0;
       parent=value;ticket=value;mode=parent.splitBills?'checkout':requestedMode;category='All';search='';serviceFilter='all';lastAssignment=null;
       addContext={tech:'',parentId:'',selectTech:false};rewardCode='';
       const catalog=options.catalog(),key=value=>String(value || '').trim().toLowerCase();
