@@ -30,7 +30,14 @@
 .tw-staging .tw-line{padding:12px;margin:0;border:0;border-bottom:1px dashed #e9edf4;border-radius:0;background:white}
 .tw-staging .tw-line:nth-child(odd){background:#fafbfe}
 .tw-staging .tw-line:last-child{border-bottom:0}
-.tw-staging .tw-line.tw-addon-line{padding-left:28px;background:#fbfcff}
+.tw-staging .tw-line.tw-addon-line{margin:3px 8px 3px 24px;padding:8px 10px;border:0;border-radius:6px;background:#f7f7ff}
+.tw-addon-row{display:flex;align-items:center;gap:8px;min-width:0}
+.tw-addon-row>.tw-icon{align-self:flex-start;margin-top:2px;color:#667085;width:14px;height:14px;flex:0 0 14px}
+.tw-addon-content{flex:1;min-width:0}
+.tw-addon-content>strong{font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.tw-addon-row>.tw-addon-price{font-size:12px;white-space:nowrap}
+.tw-staging .tw-addon-content .tw-line-actions{margin-top:4px}
+.tw-staging .tw-addon-content .tw-line-actions .tw-button{min-height:25px;padding:3px 6px}
 .tw-staging .tw-line-top{gap:12px;align-items:flex-start}
 .tw-staging .tw-line-top>div{display:flex;align-items:center;gap:7px;flex-wrap:wrap;min-width:0}
 .tw-staging .tw-line-top strong{font-size:12px;line-height:1.5;font-weight:700}
@@ -92,6 +99,13 @@
 .tw-summary-tech li{display:flex;align-items:center;gap:8px;padding:6px 0;font-size:12px;line-height:1.5}
 .tw-summary-tech li>span{flex:1;min-width:0;overflow-wrap:anywhere}
 .tw-summary-tech li>strong{font-size:12px;white-space:nowrap;font-weight:600}
+.tw-summary-tech li:has(>.tw-summary-line){display:block;padding:0}
+.tw-summary-line{display:flex;align-items:center;gap:8px;padding:6px 0}
+.tw-summary-line>span{flex:1;min-width:0;overflow-wrap:anywhere}
+.tw-summary-line>strong{font-size:12px;white-space:nowrap;font-weight:600}
+.tw-summary-tech .tw-summary-addons,.tw-summary-tech li.tw-summary-addon{padding-left:16px}
+.tw-summary-addons>li.tw-summary-addon{padding-left:0}
+.tw-summary-addon .tw-summary-line>.tw-icon{width:14px;height:14px;flex:0 0 14px;color:#6556b7}
 .tw-staging .tw-summary-remove{padding:0;min-height:28px;width:28px;font-size:17px;font-weight:400;flex:none}
 .tw-staging-totals{margin-top:10px;padding-top:8px;border-top:1px solid #e5e7ef}
 .tw-staging .tw-summary-row{font-size:12px;margin:7px 0;align-items:center}

@@ -11,6 +11,7 @@
     check:'<path d="m5 12 4 4L19 6"/>',
     back:'<path d="m12 19-7-7 7-7M5 12h14"/>',
     forward:'<path d="m12 5 7 7-7 7M5 12h14"/>',
+    addon:'<path d="M5 4v7a4 4 0 0 0 4 4h10m-4-4 4 4-4 4"/>',
     cash:'<rect x="2" y="5" width="20" height="14" rx="2"/><circle cx="12" cy="12" r="3"/><path d="M6 12h.01M18 12h.01"/>',
     card:'<rect x="2" y="4" width="20" height="16" rx="2"/><path d="M2 10h20M6 15h3"/>',
     gift:'<rect x="3" y="8" width="18" height="4" rx="1"/><path d="M5 12v9h14v-9M12 8v13M12 8H7a3 3 0 1 1 3-3l2 3Zm0 0h5a3 3 0 1 0-3-3l-2 3Z"/>',
@@ -428,11 +429,10 @@
         if(group().bills.some(b=>!parent.lines.some(l=>group().assignments[l.id]===b.id)))return 'Assign services to every empty bill before payment.';
       }
       if(t.error)return t.error;
-      const incomplete=ticket.lines.filter(l=>l.status!=='completed').length,p=ticket.checkout;
+      const p=ticket.checkout;
       if(demo&&!['owner','manager','cashier'].includes(demo.account().role))return 'Switch to a cashier, manager or owner account to collect payment.';
       if(demo&&!demo.methods().some(m=>m.id===p.method))return 'Choose an enabled payment method.';
       if(parent.directCheckout&&ticket.lines.some(l=>!l.tech))return 'Select a technician for every service.';
-      if(incomplete)return `Complete ${incomplete} service${incomplete===1?'':'s'} before payment.`;
       if(!validMoney(p.tip)||(p.tipType==='percent'&&Number(p.tip)>100))return 'Enter a valid tip from 0 to 100% or a dollar amount.';
       if((p.tipSplitMode || demo?.load().payment.tipSplit)==='manual'){
         const balance=tipBalanceInfo(ticket,'manual');if(!balance.balanced)return balance.text;
@@ -565,7 +565,7 @@
       if(action==='split-bill'){
         title='Split bill by guest';
         setupAssignments=Object.fromEntries(parent.lines.map(l=>[l.id,amountSplit()?null:0]));
-        fields=`<fieldset class="tw-radio-field"><legend>Split method</legend><div class="tw-radio-options tw-method-options"><label class="tw-radio-choice"><input type="radio" name="splitMode" value="services" aria-label="By services" checked><span><strong>By services</strong><small>Choose who pays for each service</small></span></label><label class="tw-radio-choice"><input type="radio" name="splitMode" value="amount" aria-label="By amount"><span><strong>By amount</strong><small>Share the total equally or by amount</small></span></label></div></fieldset><p data-tw-split-guidance></p><fieldset class="tw-radio-field"><legend>Number of bills</legend><div class="tw-bill-count-row"><div class="tw-radio-options" data-tw-bill-count></div><label class="tw-custom-count" data-tw-custom-count hidden><input name="customBillCount" aria-label="Custom number of bills" type="number" min="2" step="1" placeholder="Enter number" disabled></label></div></fieldset><fieldset class="tw-radio-field" data-tw-allocation hidden><legend>Divide amount</legend><div class="tw-radio-options tw-method-options"><label class="tw-radio-choice"><input type="radio" name="amountAllocation" value="equal" checked><span>Split equally</span></label><label class="tw-radio-choice"><input type="radio" name="amountAllocation" value="custom"><span>Enter individual amounts</span></label></div></fieldset><div data-tw-split-guests></div><section data-tw-service-setup></section><section class="tw-split-summary" data-tw-split-summary role="status" aria-live="polite"></section><p class="tw-muted">Choose a payment method for each bill after creating it. Complete services before collecting payment.</p>`;
+        fields=`<fieldset class="tw-radio-field"><legend>Split method</legend><div class="tw-radio-options tw-method-options"><label class="tw-radio-choice"><input type="radio" name="splitMode" value="services" aria-label="By services" checked><span><strong>By services</strong><small>Choose who pays for each service</small></span></label><label class="tw-radio-choice"><input type="radio" name="splitMode" value="amount" aria-label="By amount"><span><strong>By amount</strong><small>Share the total equally or by amount</small></span></label></div></fieldset><p data-tw-split-guidance></p><fieldset class="tw-radio-field"><legend>Number of bills</legend><div class="tw-bill-count-row"><div class="tw-radio-options" data-tw-bill-count></div><label class="tw-custom-count" data-tw-custom-count hidden><input name="customBillCount" aria-label="Custom number of bills" type="number" min="2" step="1" placeholder="Enter number" disabled></label></div></fieldset><fieldset class="tw-radio-field" data-tw-allocation hidden><legend>Divide amount</legend><div class="tw-radio-options tw-method-options"><label class="tw-radio-choice"><input type="radio" name="amountAllocation" value="equal" checked><span>Split equally</span></label><label class="tw-radio-choice"><input type="radio" name="amountAllocation" value="custom"><span>Enter individual amounts</span></label></div></fieldset><div data-tw-split-guests></div><section data-tw-service-setup></section><section class="tw-split-summary" data-tw-split-summary role="status" aria-live="polite"></section><p class="tw-muted">Choose a payment method for each bill after creating it.</p>`;
       }
       if(action==='catalog'){title=staging&&addContext.selectTech?'Add another technician & their work':'Add service';fields=`${staging&&addContext.selectTech?'<label>Technician<select data-tw-picker-tech aria-label="Technician"><option value="">Choose technician</option>'+options.technicians().filter(t=>t.status==='available').map(t=>'<option value="'+esc(t.name)+'">'+esc(t.name)+'</option>').join('')+'</select></label>':''}<input class="tw-search" data-tw-search type="search" placeholder="Search services…" aria-label="Search ticket services" value="${esc(search)}"><div class="tw-categories" data-tw-categories></div><div class="tw-catalog" data-tw-catalog></div>`;}
       if(action==='tech'){title='Change technician';fields='<label>Technician<select name="tech" required><option value="">Choose technician</option>'+options.technicians().map(t=>`<option ${t.name===l.tech?'selected':''} ${t.status==='clocked-out'||(t.status&&t.status!=='available'&&t.name!==l.tech)?'disabled':''}>${esc(t.name)}</option>`).join('')+'</select></label>';}
@@ -753,7 +753,6 @@
         const t=totals(ticket),p=ticket.checkout;
         if(t.error){message(t.error);return;}
         const hint=paymentHint(t);if(hint!=='Ready to collect payment'){message(hint);return;}
-        if(ticket.lines.some(l=>l.status!=='completed')){message('Complete all services before payment.');return;}
         if(p.method==='cash'&&(!validMoney(p.cash)||cents(p.cash)<t.totalCents)){message('Cash received must cover the total.');return;}
         if(p.method==='split'&&(!validMoney(p.splitCash)||cents(p.splitCash)>t.netCents)){message('Enter a split cash amount between zero and the total.');return;}
         if(p.method==='gift-card'&&!p.giftCode?.trim()){message('Enter a gift card reference.');return;}
@@ -761,6 +760,7 @@
         const splitMode=checkoutTipPolicy();
         const tipAllocations=tipAllocationsFor(ticket,splitMode);
         if(splitMode==='manual'&&Object.values(tipAllocations).reduce((sum,n)=>sum+n,0)!==t.tipCents){message('Manual tip amounts must match the total tip.');return;}
+        ticket.lines.forEach(line=>{line.status='completed';});
         ticket.payment={...t,tipAllocations,method:p.method,receipt:p.receipt,cashCents:p.method==='split'?(t.cashPortionCents ?? cents(p.splitCash)):p.method==='cash'?t.totalCents:0,cardCents:p.method==='split'?(t.cardPortionCents ?? t.totalCents-cents(p.splitCash)):p.method==='card'?t.totalCents:0,giftCode:p.method==='gift-card'?p.giftCode:'',otherMethod:p.method==='other'?(p.otherMethod || 'Zelle'):'',changeCents:p.method==='cash'?cents(p.cash)-t.totalCents:0,paidAt:new Date().toISOString(),simulated:true};ticket.status='completed';save();render();$('[data-tw-complete-checkout]')?.focus();
       }
     });
