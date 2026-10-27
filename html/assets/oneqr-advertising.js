@@ -18,6 +18,7 @@
       adsOn: 'Quảng cáo đang bật', adsOff: 'Quảng cáo đã tắt',
       disableAds: 'Tắt quảng cáo', enableAds: 'Bật quảng cáo', removeIndustry: 'Bỏ ngành',
       clearSecondary: 'Bỏ chọn tất cả', closeSecondary: 'Đóng',
+      secondaryPlaceholder: 'Select or search',
       secondaryHelp: 'Liệt kê những ngành doanh nghiệp thực sự cung cấp.',
       noAgree: 'Không đồng ý thì không kích hoạt OneQR theo gói hiện tại.',
       overviewIntro: 'Quét QR hoặc mở danh sách không tự tạo điểm.',
@@ -38,6 +39,7 @@
       adsOn: 'Advertising is on', adsOff: 'Advertising is off',
       disableAds: 'Turn off advertising', enableAds: 'Turn on advertising', removeIndustry: 'Remove industry',
       clearSecondary: 'Clear all', closeSecondary: 'Close',
+      secondaryPlaceholder: 'Select or search',
       secondaryHelp: 'List services your business actually offers.',
       noAgree: 'If you do not agree, OneQR cannot be activated under the current plan.',
       overviewIntro: 'Scanning a QR or opening a list does not itself earn points.',
@@ -138,7 +140,7 @@
         closeAfterSelect: false,
         clearAfterSelect: true,
         lockOptgroupOrder: true,
-        placeholder: '',
+        placeholder: t('secondaryPlaceholder'),
         hidePlaceholder: false,
         render: { no_results: null }
       });
