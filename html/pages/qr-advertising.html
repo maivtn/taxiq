@@ -86,7 +86,6 @@
                     <label for="custom" data-i="customLabel"></label>
                     <input id="custom" data-ph="customPlaceholder">
                   </div>
-                  <p class="notice" data-i="filterNote"></p>
                   <div id="oneqr-consent" class="line">
                     <input type="checkbox" id="agree" required>
                     <label for="agree">
@@ -133,7 +132,6 @@
                     <div class="box">
                       <small data-i="chosenIndustry"></small>
                       <div id="chosen" class="num" style="font-size:17px"></div>
-                      <small data-i="industryReview"></small>
                     </div>
                   </div>
                   <p data-i="exchange"></p>
@@ -152,7 +150,6 @@
                     <div class="box">
                       <small data-i="pending"></small>
                       <div class="num" data-pending>300</div>
-                      <small data-i="demoOnly"></small>
                     </div>
                     <div class="box">
                       <small data-i="minimumWithdraw"></small>
@@ -219,9 +216,8 @@
                 <div class="card">
                   <h2 data-i="transferTitle"></h2>
                   <p data-i="transferIntro"></p>
-                  <div class="notice" id="recipient-help" data-i="demoRecipient"></div>
                   <label for="recipient" data-i="recipient"></label>
-                  <input id="recipient" autocomplete="off" aria-describedby="recipient-help" placeholder="DEMO">
+                  <input id="recipient" autocomplete="off">
                   <label for="amount" data-i="amount"></label>
                   <input id="amount" type="number" min="1000" step="1" value="1000">
                   <p id="preview" aria-live="polite"></p>
@@ -232,7 +228,7 @@
                     <p>
                       <span data-i="recipient"></span>
                       :
-                      <b>Demo Recipient</b>
+                      <b id="reviewRecipient"></b>
                     </p>
                     <p id="reviewAmount"></p>
                     <p data-i="transferWarning"></p>
@@ -243,7 +239,7 @@
                   </div>
                   <p id="result" class="ok" role="status" tabindex="-1"></p>
                   <div id="recipient-wallet" class="box hide">
-                    <h3>Demo Recipient</h3>
+                    <h3 id="recipient-wallet-name" data-i="recipient"></h3>
                     <p data-i="spendWallet"></p>
                     <small data-i="receivedCredits"></small>
                     <div class="num" id="recipient-credits">0</div>
@@ -259,18 +255,15 @@
                     :
                     <b id="adIndustry"></b>
                   </p>
-                  <p class="notice" data-i="failClosed"></p>
                   <h3 data-i="placements"></h3>
                   <p data-i="placementsText"></p>
                   <h3 data-i="blocking"></h3>
                   <p data-i="blockingText"></p>
-                  <p data-i="secondaryPolicy"></p>
                 </div>
               </section>
               <section data-screen="policy" id="policy" class="hide">
                 <div class="card">
-                  <span class="tag" data-i="draftTag"></span>
-                  <h2 style="margin-top:16px" data-i="policyTitle"></h2>
+                  <h2 data-i="policyTitle"></h2>
                   <p data-i="p1"></p>
                   <p data-i="p2"></p>
                   <p data-i="p3"></p>
@@ -278,7 +271,6 @@
                   <p data-i="p5"></p>
                   <p data-i="p6"></p>
                   <p data-i="p7"></p>
-                  <div class="notice" data-i="legal"></div>
                 </div>
               </section>
             </div>

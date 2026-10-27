@@ -19,14 +19,40 @@
       disableAds: 'Tắt quảng cáo', enableAds: 'Bật quảng cáo', removeIndustry: 'Bỏ ngành',
       clearSecondary: 'Bỏ chọn tất cả', closeSecondary: 'Đóng',
       secondaryHelp: 'Liệt kê những ngành doanh nghiệp thực sự cung cấp.',
-      noAgree: 'Không đồng ý thì không kích hoạt OneQR theo gói hiện tại.'
+      noAgree: 'Không đồng ý thì không kích hoạt OneQR theo gói hiện tại.',
+      overviewIntro: 'Quét QR hoặc mở danh sách không tự tạo điểm.',
+      available: 'Ví thu nhập khả dụng', pending: 'Điểm chờ duyệt',
+      payoutText: 'Từ 10.000 điểm đã duyệt chưa dùng = $100. Khi yêu cầu rút, hoàn tất thông tin người nhận, mã số thuế, xác minh và phương thức nhận tiền theo yêu cầu.',
+      convertText: '100 điểm đã duyệt = 1 credit = $1 giá trị sử dụng. Điểm đã đổi không còn trong số dư có thể rút.',
+      receivedCredits: 'Credit nhận', ownCredits: 'Credit đổi từ điểm của mình',
+      statusOff: 'Chưa kích hoạt', statusOn: 'Đã kích hoạt',
+      errRecipient: 'Nhập tài khoản người nhận.', confirmDemo: 'Xác nhận chuyển',
+      done: 'Đã chuyển điểm.',
+      refSourceText: 'Chương trình giới thiệu chưa được kích hoạt.',
+      testPayout: 'Yêu cầu rút tiền', convertAmount: 'Số điểm muốn đổi',
+      convertConfirm: 'Xác nhận đổi', convertDone: 'Đã đổi điểm thành credit trong ví sử dụng.',
+      payoutDone: 'Số dư đã đủ ngưỡng. Hoàn tất thông tin người nhận, thuế và xác minh để tiếp tục.',
+      p4: '4. Quy đổi: 100 ONEQR Points = 1 credit = $1 giá trị quy đổi.'
     },
     en: {
       adsOn: 'Advertising is on', adsOff: 'Advertising is off',
       disableAds: 'Turn off advertising', enableAds: 'Turn on advertising', removeIndustry: 'Remove industry',
       clearSecondary: 'Clear all', closeSecondary: 'Close',
       secondaryHelp: 'List services your business actually offers.',
-      noAgree: 'If you do not agree, OneQR cannot be activated under the current plan.'
+      noAgree: 'If you do not agree, OneQR cannot be activated under the current plan.',
+      overviewIntro: 'Scanning a QR or opening a list does not itself earn points.',
+      available: 'Available earnings', pending: 'Pending points',
+      payoutText: 'At least 10,000 approved, unused points = $100. When requesting payout, complete recipient, tax, verification and payment details as required.',
+      convertText: '100 approved points = 1 credit = $1 in spending value. Converted points are no longer available for withdrawal.',
+      receivedCredits: 'Received credits', ownCredits: 'Credits converted from own points',
+      statusOff: 'Not activated', statusOn: 'Activated',
+      errRecipient: 'Enter the recipient account.', confirmDemo: 'Confirm transfer',
+      done: 'Points transferred.',
+      refSourceText: 'The referral program is not active yet.',
+      testPayout: 'Request payout', convertAmount: 'Points to convert',
+      convertConfirm: 'Confirm conversion', convertDone: 'Points converted to spending-wallet credits.',
+      payoutDone: 'Your balance meets the minimum. Complete recipient, tax and verification details to continue.',
+      p4: '4. Conversion: 100 ONEQR Points = 1 credit = $1 in conversion value.'
     }
   };
   const state = {
@@ -226,7 +252,11 @@
     root.querySelectorAll('[data-minimum-payout]').forEach(element => { element.textContent = number(10000); });
     $('received').textContent = number(state.receivedCreditPoints / 100);
     $('ownCredits').textContent = number(state.ownCreditPoints / 100);
-    $('recipient-credits').textContent = number(state.recipientCreditPoints / 100);
+    const transfers = state.ledger.filter(entry => entry.kind === 'transfer');
+    const latestTransfer = transfers[transfers.length - 1];
+    const recipientPoints = transfers.filter(entry => entry.recipient === latestTransfer?.recipient).reduce((total, entry) => total + entry.points, 0);
+    $('recipient-credits').textContent = number(recipientPoints / 100);
+    $('recipient-wallet-name').textContent = latestTransfer?.recipient && latestTransfer.recipient !== 'DEMO' ? latestTransfer.recipient : t('recipient');
     $('recipient-wallet').classList.toggle('hide', !state.recipientCreditPoints);
     $('status').textContent = t(state.activated ? 'statusOn' : 'statusOff');
     $('status').classList.toggle('is-active', state.activated);
@@ -247,7 +277,7 @@
       const date = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date(entry.timestamp));
       return `<article class="ledger-entry"><strong>${escape(t(entry.kind === 'transfer' ? 'transferTitle' : 'convert'))}</strong>
         <span>−${number(entry.points)} ${escape(t('points'))} → ${number(entry.points / 100)} ${escape(t('credits'))}</span>
-        ${entry.kind === 'transfer' ? '<small>Demo Recipient</small>' : ''}
+        ${entry.kind === 'transfer' ? `<small>${escape(entry.recipient && entry.recipient !== 'DEMO' ? entry.recipient : t('recipient'))}</small>` : ''}
         <small>${escape(t('adsSource'))}</small><time datetime="${escape(entry.timestamp)}">${date}</time>
         <small>${escape(entry.id)}</small><small>${escape(t(entry.kind === 'transfer' ? 'done' : 'convertDone'))}</small></article>`;
     }).join('');
@@ -340,7 +370,8 @@
 
   function reviewTransfer() {
     invalidateReview();
-    if ($('recipient').value.trim() !== 'DEMO') {
+    const recipient = $('recipient').value.trim();
+    if (!recipient) {
       report('error', 'errRecipient', true);
       $('recipient').focus();
       return;
@@ -351,13 +382,14 @@
       $('amount').focus();
       return;
     }
-    reviewSnapshot = { id: id(), points, recipient: 'DEMO' };
+    reviewSnapshot = { id: id(), points, recipient };
+    $('reviewRecipient').textContent = recipient;
     $('reviewAmount').textContent = transferPreview(points);
     $('review').classList.remove('hide');
     $('review').focus({ preventScroll: true });
   }
 
-  function commit(kind, points, transactionId) {
+  function commit(kind, points, transactionId, recipient = null) {
     if (busy || !Number.isSafeInteger(points) || points <= 0 || points > state.balance
       || state.ledger.some(entry => entry.id === transactionId)) return false;
     busy = true;
@@ -368,7 +400,7 @@
       state.ledger.push({ id: transactionId, kind, points, timestamp: new Date().toISOString(),
         status: 'spent', program: 'oneqr-advertising-demo', source: 'advertising', version: VERSION,
         businessId: 'bitcoin-nail-bar-demo', sender: 'bitcoin-nail-bar-demo',
-        recipient: kind === 'transfer' ? 'DEMO' : 'bitcoin-nail-bar-demo',
+        recipient: kind === 'transfer' ? recipient : 'bitcoin-nail-bar-demo',
         eventId: 'sample-approved-balance', idempotencyKey: transactionId, adjustmentReason: null });
       save();
       refreshBalances();
@@ -385,7 +417,7 @@
     }
     reviewSnapshot = null;
     $('review').classList.add('hide');
-    if (snapshot.points < 1000 || !commit('transfer', snapshot.points, snapshot.id)) {
+    if (snapshot.points < 1000 || !commit('transfer', snapshot.points, snapshot.id, snapshot.recipient)) {
       report('error', 'errAmount', true);
       return;
     }
