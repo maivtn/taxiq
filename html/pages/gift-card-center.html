@@ -1,0 +1,44 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nexora Touch — Gift Card Center</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/nexora-icons.css" />
+    <link rel="stylesheet" href="../assets/nexora-shell.css" />
+    <link rel="stylesheet" href="../assets/gift-card-center.css" />
+  </head>
+  <body>
+    <div class="shell">
+      <aside class="sidebar" aria-label="Gift Card Center"></aside>
+      <div class="app-area">
+        <header class="header"></header>
+        <main
+          class="content gift-center"
+          id="gift-center"
+          aria-label="Gift Card Center"
+        ></main>
+      </div>
+    </div>
+    <dialog class="gc-dialog gift-center" id="gift-dialog"></dialog>
+    <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+    <script>
+      window.NEXORA_SHELL = {
+        workspace: "salon",
+        activePage: "gift",
+        activeTab: "gift",
+      };
+    </script>
+    <script src="../assets/nexora-shell-nav.js"></script>
+    <script src="../assets/nexora-shell.js"></script>
+    <script src="../assets/nexora-product-catalog.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="../assets/gift-card-center.js"></script>
+  </body>
+</html>

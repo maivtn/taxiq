@@ -21,6 +21,7 @@
     if (href === '#dashboard-onboarding') return 'nexora-getting-started.html';
     if (href.indexOf('#module-') === 0) {
       var module = href.slice(8);
+      if (module === 'gift') return 'gift-card-center.html';
       return 'dashboard.html?module=' + (module === 'aihub-marketing' ? 'aihub&section=marketing' : module);
     }
     var anchors = {
@@ -44,6 +45,7 @@
       if (href === 'products/spin-wheel/create.html') return 'vlinkpay-campaigns.html?view=create';
       if (href.indexOf('products/') === 0) {
         var product = href.split('/')[1], modules = {'si-pos':'pos','one-qr':'oneqr','payments-payouts':'payments','ai-hub':'aihub','ai-marketing':'aihub&section=marketing','reviews':'reviews','gift-card-center':'gift','analytics':'analytics','community':'community','spin-wheel':'spinwheel','tax-iq':'taxiq'};
+        if (product === 'gift-card-center') return 'gift-card-center.html';
         if (product === 'ai-voice-sms') return 'pos-ai-voice.html';
         return 'dashboard.html?module=' + (modules[product] || 'pos');
       }
@@ -54,9 +56,15 @@
     if (u.hostname === 'merchant.vlinkpay.com' || u.hostname === 'staging-merchant.vlinkpay.com') {
       if (u.pathname === '/campaign-management') return 'vlinkpay-campaigns.html';
       if (u.pathname === '/marketing-tools') return '';
+      var giftViews = {'/gift-voucher/product-management/issue-digital':'issue','/gift-voucher/product-management/quick-create-card':'quick','/gift-voucher/product-management/sell-egift-form':'advanced','/gift-voucher/product-management':'cards','/payment-process/payment-gift-card':'redeem','/settings/benefits-setup':'benefits','/settings/membership-report':'members','/reports/card-transaction-history':'transactions','/reports/expiring-cards':'expiring'};
+      if (giftViews[u.pathname]) return 'gift-card-center.html?view=' + (u.pathname.endsWith('/issue-digital') && u.searchParams.get('type') === 'membership' ? 'membership' : giftViews[u.pathname]);
     }
     if (u.hostname !== 'nexoratouch.com' && u.hostname !== 'staging-web.nexoratouch.com') return href;
     var path = u.pathname, tab = u.searchParams.get('tab');
+    if (path === '/dashboard') return 'dashboard.html';
+    if (path === '/dashboard/settings') return 'owner-setting.html';
+    if (path === '/dashboard/settings/staff') return 'pos-front-desk-staff.html';
+    if (path === '/dashboard/pos' && tab === 'gift-card-center') return 'gift-card-center.html';
     if (path === '/dashboard/community') return 'community.html?tab=' + (tab || 'feed');
     if (path === '/dashboard/reviews') return 'nexora-review.html';
     if (path === '/dashboard/pos' && front[tab]) return front[tab];

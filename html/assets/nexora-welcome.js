@@ -37,7 +37,7 @@
   function button(label, action, secondary) { return '<button class="nxw-btn' + (secondary ? ' secondary' : '') + '" type="button" data-action="' + escape(action) + '">' + escape(label) + '</button>'; }
   function link(label, href, secondary) { return '<a class="nxw-btn' + (secondary ? ' secondary' : '') + '" href="' + escape(href) + '">' + escape(label) + '</a>'; }
   function moduleRoute(key) {
-    var routes = {'ai-voice':'pos-ai-voice.html','aihub-marketing':'dashboard.html?module=aihub&section=marketing','aihub-marketing-campaign':'nexora-sms-dashboard.html','aimarketing':'dashboard.html?module=aihub&section=marketing','spin-wheel':'dashboard.html?module=spinwheel',spin:'dashboard.html?module=spinwheel',deals:'pos-deal-coupon.html'};
+    var routes = {gift:'gift-card-center.html','ai-voice':'pos-ai-voice.html','aihub-marketing':'dashboard.html?module=aihub&section=marketing','aihub-marketing-campaign':'nexora-sms-dashboard.html','aimarketing':'dashboard.html?module=aihub&section=marketing','spin-wheel':'dashboard.html?module=spinwheel',spin:'dashboard.html?module=spinwheel',deals:'pos-deal-coupon.html'};
     return routes[key] || 'dashboard.html?module=' + encodeURIComponent(key);
   }
   function featureRoute(product, feature, index) {

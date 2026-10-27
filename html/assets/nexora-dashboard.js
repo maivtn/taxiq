@@ -40,7 +40,7 @@
     if (item.description) { var description = document.createElement('small'); description.textContent = item.description; copy.appendChild(description); }
     if (href && !item.unavailable) {
       node.href = href;
-      if (item.newTab) { node.target = '_blank'; node.rel = 'noopener noreferrer'; }
+      if (item.newTab && /^https?:/.test(href)) { node.target = '_blank'; node.rel = 'noopener noreferrer'; }
       var arrow = document.createElement('span'); arrow.textContent = '↗'; arrow.setAttribute('aria-hidden','true'); node.appendChild(arrow);
     }
     return node;

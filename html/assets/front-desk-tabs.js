@@ -12,7 +12,7 @@
     {id: 'turn-board', label: 'Turn Board', icon: 'turn-board', href: 'pos-front-desk-turn-board.html'},
     {id: 'staff', label: 'Staff', icon: 'staffs-clock', href: 'pos-front-desk-staff.html'},
     {id: 'checkout-customer', label: 'Checkout Customer', icon: 'checkout-customer', href: 'pos-direct-checkout.html?view=list', count: 'checkout-nav-count'},
-    {id: 'gift-card-center', label: 'Gift Card Center', icon: 'gift-card-center'},
+    {id: 'gift-card-center', label: 'Gift Card Center', icon: 'gift-card-center', href: 'gift-card-center.html'},
     {id: 'completed', label: 'Completed Services', icon: 'completed-services', href: 'pos-completed-services.html'},
     {id: 'products-other-sales', label: 'Products & Other Sales', image: '../assets/icon-oneqr/issue-2040-oneqr-package-3d.png', style: 'products-other-sales', href: 'pos-products-other-sales.html', more: true},
     {id: 'booking', label: 'Booking', icon: 'appointments', href: 'pos-front-desk.html?section=appointments&bookingView=booking', section: 'appointments', more: true},
