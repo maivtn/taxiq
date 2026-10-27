@@ -32,23 +32,8 @@
     }
     if (estimate || section === 'appointments') {
       document.querySelector('#appointments').hidden = estimate;
-      document.querySelectorAll('[data-front-section]').forEach(link => {
-        const active = link.dataset.frontSection === (estimate ? 'estimate' : 'appointments');
-        link.classList.toggle('active', active);
-        if (active) link.setAttribute('aria-current','page'); else link.removeAttribute('aria-current');
-      });
     }
   }
-  document.querySelectorAll('[data-front-section="estimate"], [data-front-section="appointments"]').forEach(link => link.addEventListener('click', event => {
-    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-    event.preventDefault();
-    const url = new URL(location.href);
-    url.searchParams.set('section',link.dataset.frontSection);
-    url.searchParams.set('tab',link.dataset.frontSection);
-    url.searchParams.delete('ticket');
-    history.pushState(null,'',url);
-    window.dispatchEvent(new PopStateEvent('popstate'));
-  }));
   window.addEventListener('popstate',renderSection);
   renderSection();
 })();

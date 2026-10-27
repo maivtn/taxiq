@@ -1,5 +1,4 @@
 .staff-workspace-page{--staff-brand:#4648d8;--staff-soft:#f7f7ff;--staff-muted:#64748b;--staff-line:#dde5ef;--staff-rule:#e7ecf3}
-.staff-workspace-page .workflow{padding-bottom:18px}
 [data-front-staff]{max-width:1600px;margin:0 auto;container-type:inline-size;container-name:staff-workspace}
 .staff-workspace-page [hidden]{display:none!important}
 .staff-workspace-page svg{width:18px;height:18px;flex-shrink:0}

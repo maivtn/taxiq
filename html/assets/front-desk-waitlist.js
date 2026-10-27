@@ -250,21 +250,7 @@
       const section = document.querySelector(selector);
       if (section) section.hidden = true;
     });
-    document.querySelectorAll('[data-front-section]').forEach(link => {
-      const active = link.dataset.frontSection === 'waitlist';
-      link.classList.toggle('active', active);
-      if (active) link.setAttribute('aria-current', 'page'); else link.removeAttribute('aria-current');
-    });
   }
-  document.querySelector('[data-front-section="waitlist"]').addEventListener('click', event => {
-    if (event.ctrlKey || event.metaKey || event.shiftKey || event.altKey) return;
-    event.preventDefault();
-    const url = new URL(location.href);
-    url.searchParams.set('section', 'waitlist'); url.searchParams.set('tab', 'waitlist');
-    ['ticket', 'view', 'calendarView'].forEach(key => url.searchParams.delete(key));
-    if (url.href !== location.href) history.pushState(null, '', url);
-    window.dispatchEvent(new PopStateEvent('popstate'));
-  });
   window.addEventListener('popstate', renderSection);
   renderSection();
 })();

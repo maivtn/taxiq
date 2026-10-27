@@ -245,7 +245,7 @@
     const activePicker=active?.closest('.service-picker');
     const focusData=active?{id:active.id,tag:active.tagName,data:{...active.dataset},picker:activePicker?activePicker.dataset.pickerGroup+':'+activePicker.dataset.pickerParent:''}:null;
     const completed=view==='receipt'||view==='legacy'&&!!current?.payment;
-    document.querySelectorAll('[data-direct-nav]').forEach(link=>{const active=link.dataset.directNav===(completed?'completed':'checkouts');link.classList.toggle('active',active);if(active)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');});
+    window.NEXORA_FRONT_DESK_TABS?.sync({active:completed?'completed':'checkout-customer'});
     setUrl();root.innerHTML=`${view==='list'?'':`<div class="po-workspace-meta"><span>Front Desk <span class="po-meta-divider">/</span> ${completed?'Completed Services':'Checkout Customer'}</span>${accountHtml()}</div>`}${view==='list'?listHtml():view==='receipt'?receiptHtml():view==='cancelled'?cancelledHtml():view==='legacy'?'<section class="ticket-workspace" data-po-legacy></section>':editorHtml()}`;
     renderIcons();
     if(view==='legacy')openLegacy();

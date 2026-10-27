@@ -33,25 +33,14 @@
   <link rel="stylesheet" href="../assets/front-desk-waitlist.css?v=20261006-clean-waitlist">
   <link rel="stylesheet" href="../assets/front-desk-schedule.css">
   <link rel="stylesheet" href="../assets/pos-front-desk-booking.css">
+  <link rel="stylesheet" href="../assets/front-desk-tabs.css">
 </head>
 <body>
 <div class="shell"><aside class="sidebar" aria-label="Salon sidebar"></aside><div class="app-area"><header class="header"></header>
 <main class="content front-desk">
   <h1>Front Desk</h1><p class="subtitle">Check in guests, manage open tickets, and run the turn board.</p>
-  <nav class="workflow" aria-label="Front Desk workflows">
-    <a href="pos-front-desk-tickets.html?view=overview">Overview</a>
-    <a data-front-section="checkin" href="pos-front-desk.html?section=checkin">Check-in</a>
-    <a data-front-section="tickets" href="pos-front-desk-tickets.html">Tickets</a>
-    <a data-front-section="waitlist" href="pos-front-desk.html?section=waitlist">Live Waitlist</a>
-    <a href="pos-front-desk-turn-board.html">Turn Board</a>
-    <a href="pos-front-desk-staff.html">Staff</a>
-    <a href="pos-direct-checkout.html?view=list">Checkout Customer</a>
-    <a href="pos-completed-services.html">Completed Services</a>
-    <a data-front-section="appointments" class="active" href="pos-front-desk.html?section=appointments" aria-current="page">Appointments</a>
-    <a data-front-section="estimate" href="pos-front-desk.html?section=estimate">Estimate</a>
-    <button type="button" disabled>Staffs Clock</button>
-    <button type="button" disabled>Customer History</button>
-  </nav>
+  <nav class="workflow" data-front-desk-tabs aria-label="Front Desk workflows"></nav>
+  <script src="../assets/front-desk-tabs.js"></script>
   <section id="front-desk-checkin" aria-label="Guest Check-in" hidden></section>
   <section id="front-desk-estimate" aria-label="Service Estimate" hidden></section>
   <section id="front-desk-waitlist" aria-label="Live Waitlist" hidden></section>
@@ -112,6 +101,7 @@
 <script src="../assets/staff-schedule-store.js"></script><script src="../assets/front-desk-schedule.js"></script>
 <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
 <script>window.NEXORA_SHELL = {activePage: 'pos', activeTab: 'front-desk'};</script><script src="../assets/nexora-shell.js"></script>
+<script src="../assets/front-desk-data.js"></script>
 <script src="../assets/pos-turn-settings.js"></script>
 <script src="../assets/team-calendar-content.js"></script>
 <script src="../assets/pos-front-desk-booking-calendar.js"></script>

@@ -47,7 +47,7 @@ function section(){
  mode=requested||'tickets';
  if(['tickets','assign','checkout'].includes(mode)){const url=new URL(location.href);url.searchParams.delete('view');url.searchParams.delete('tab');history.replaceState(null,'',url);}
  root.hidden=appointments;document.querySelector('#appointments').hidden=!appointments;
- document.querySelectorAll('[data-front-section]').forEach(a=>{const active=(a.dataset.frontSection==='appointments')===appointments;a.classList.toggle('active',active);if(active)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current');});
+ window.NEXORA_FRONT_DESK_TABS?.sync();
 }
 function navigate(next,id=''){const url=new URL(location.href);url.searchParams.set('section',next);url.searchParams.delete('view');url.searchParams.delete('tab');if(id)url.searchParams.set('ticket',id);else url.searchParams.delete('ticket');history.pushState(null,'',url);selected=id;section();render();}
 async function run(task,message){if(busy)return;busy=true;root.setAttribute('aria-busy','true');try{await task();feedback.textContent=message;render();}catch(error){feedback.textContent=error.message;}finally{busy=false;root.removeAttribute('aria-busy');}}

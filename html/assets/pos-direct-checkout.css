@@ -1,6 +1,4 @@
 /* Direct checkout: compact PO flow with shared checkout action colors. */
-.direct-checkout-page .subtitle{margin-bottom:12px}
-.direct-checkout-page .workflow{padding-bottom:4px}
 .po-direct{--dc-brand:#4c43df;--dc-ink:#24334b;--dc-muted:#52627b;--dc-border:#d6dfec;--dc-soft:#f6f8fc;font:14px/1.5 Inter,sans-serif;color:var(--dc-ink);min-width:0;container-type:inline-size}
 .po-direct *{box-sizing:border-box}
 .po-direct [hidden]{display:none!important}

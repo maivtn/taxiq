@@ -49,11 +49,7 @@ function renderFamilyGroups(){
  }).join('');
 }
 function syncNavigation(){
- const active=openedTicket?.payment?'completed':new URL(window.location.href).searchParams.get('view')==='overview'?'overview':'tickets';
- document.querySelectorAll('[data-front-view],[data-front-completed]').forEach(link=>{
-  const selected=(link.hasAttribute('data-front-completed')?'completed':link.dataset.frontView)===active;
-  link.classList.toggle('active',selected);if(selected)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');
- });
+ window.NEXORA_FRONT_DESK_TABS?.sync({active:openedTicket?.payment?'completed':undefined});
 }
 function render(){
   syncNavigation();
@@ -61,7 +57,6 @@ function render(){
   applyTicketView();
   renderFamilyGroups();
   const active=tickets.filter(visibleFor),stationRows=active.filter(matchesStation);
-  $('#ticket-nav-count').textContent=active.length;
   $('#ticket-filters').innerHTML=[['all','All'],...Object.entries(labels)].map(([key,label])=>'<button type="button" data-filter="'+key+'" class="'+(filter===key?'active':'')+'" aria-pressed="'+(filter===key)+'">'+label+' ('+stationRows.filter(t=>key==='all'||t.status===key).length+')</button>').join('');
   const waiting=stationRows.filter(t=>t.status==='waiting'&&needsTechnician(t)).length;
   $('#assignment-alert').hidden=!waiting;$('#assignment-alert').textContent='● '+waiting+' '+(waiting===1?'guest':'guests')+' awaiting technician assignment';

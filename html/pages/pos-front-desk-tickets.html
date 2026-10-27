@@ -10,24 +10,14 @@
   <link rel="stylesheet" href="../assets/pos-demo-settings.css">
   <link rel="stylesheet" href="../assets/pos-front-desk-tickets.css?v=ticket-views-1">
   <link rel="stylesheet" href="../assets/ticket-workspace.css?v=po-tip-1">
+  <link rel="stylesheet" href="../assets/front-desk-tabs.css">
 </head>
 <body>
 <div class="shell"><aside class="sidebar" aria-label="Salon sidebar"></aside><div class="app-area"><header class="header"></header>
 <main class="content front-desk tickets-page">
 <h1>Front Desk</h1><p class="subtitle">Check in guests, manage open tickets, and run the turn board.</p>
-  <nav class="workflow" aria-label="Front Desk workflows">
-    <a data-front-view="overview" href="pos-front-desk-tickets.html?view=overview">Overview</a>
-    <a href="pos-front-desk.html?section=checkin">Check-in</a>
-    <a data-front-view="tickets" class="active" href="pos-front-desk-tickets.html" aria-current="page">Tickets <span id="ticket-nav-count"></span></a>
-    <a href="pos-front-desk-turn-board.html">Turn Board</a>
-    <a href="pos-front-desk-staff.html">Staff</a>
-    <a href="pos-direct-checkout.html?view=list">Checkout Customer</a>
-    <a data-front-completed href="pos-completed-services.html">Completed Services</a>
-    <a href="pos-front-desk.html?section=appointments">Appointments</a>
-    <a href="pos-front-desk.html?section=estimate">Estimate</a>
-    <button type="button" disabled>Staffs Clock</button>
-    <button type="button" disabled>Customer History</button>
-  </nav>
+  <nav class="workflow" data-front-desk-tabs aria-label="Front Desk workflows"></nav>
+  <script src="../assets/front-desk-tabs.js"></script>
 
 <section id="ticket-workspace" class="ticket-workspace" aria-label="Edit and checkout ticket" hidden></section>
 <section id="tickets-view" aria-labelledby="tickets-title">

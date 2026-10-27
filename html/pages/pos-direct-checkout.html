@@ -10,24 +10,14 @@
   <link rel="stylesheet" href="../assets/ticket-workspace.css?v=po-tip-1">
   <link rel="stylesheet" href="../assets/pos-direct-checkout.css?v=checkout-po-copy-20261020-2">
   <link rel="stylesheet" href="../assets/pos-demo-settings.css">
+  <link rel="stylesheet" href="../assets/front-desk-tabs.css">
 </head>
 <body>
 <div class="shell"><aside class="sidebar" aria-label="Salon sidebar"></aside><div class="app-area"><header class="header"></header>
 <main class="content front-desk direct-checkout-page">
   <h1>Front Desk</h1><p class="subtitle">Fast, clear actions for your salon team.</p>
-  <nav class="workflow" aria-label="Front Desk workflows">
-    <a href="pos-front-desk-tickets.html?view=overview">Overview</a>
-    <a href="pos-front-desk.html?section=checkin">Check-in</a>
-    <a href="pos-front-desk-tickets.html">Tickets</a>
-    <a href="pos-front-desk-turn-board.html">Turn Board</a>
-    <a href="pos-front-desk-staff.html">Staff</a>
-    <a data-direct-nav="checkouts" class="active" href="pos-direct-checkout.html?view=list" aria-current="page">Checkout Customer</a>
-    <a data-direct-nav="completed" href="pos-completed-services.html">Completed Services</a>
-    <a href="pos-front-desk.html?section=appointments">Appointments</a>
-    <a href="pos-front-desk.html?section=estimate">Estimate</a>
-    <button type="button" disabled>Staffs Clock</button>
-    <button type="button" disabled>Customer History</button>
-  </nav>
+  <nav class="workflow" data-front-desk-tabs aria-label="Front Desk workflows"></nav>
+  <script src="../assets/front-desk-tabs.js"></script>
   <section class="po-direct" data-direct-root aria-label="Checkout Customer"></section>
 </main></div></div>
 <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
