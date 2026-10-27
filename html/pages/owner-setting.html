@@ -1642,6 +1642,7 @@
   </style>
   <link rel="stylesheet" href="../assets/nexora-icons.css">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <link rel="stylesheet" href="../assets/owner-settings-content.css">
 </head>
 <body>
   <div class="shell">
@@ -1661,17 +1662,20 @@
 
         <div class="settings-shell">
           <div class="page-tabs" role="tablist" aria-label="Account settings sections">
-            <button class="page-tab" type="button" role="tab" id="tab-account" aria-controls="panel-account" aria-selected="false" tabindex="-1" data-settings-tab="account">
+            <button class="page-tab is-active" type="button" role="tab" id="tab-account" aria-controls="panel-account" aria-selected="true" tabindex="0" data-settings-tab="account">
               <span>Account</span>
             </button>
             <button class="page-tab" type="button" role="tab" id="tab-business-verification" aria-controls="panel-business-verification" aria-selected="false" tabindex="-1" data-settings-tab="business-verification">
               <span>Business Verification</span>
             </button>
-            <button class="page-tab is-active" type="button" role="tab" id="tab-sub-account" aria-controls="panel-sub-account" aria-selected="true" tabindex="0" data-settings-tab="sub-account">
+            <button class="page-tab" type="button" role="tab" id="tab-sub-account" aria-controls="panel-sub-account" aria-selected="false" tabindex="-1" data-settings-tab="sub-account">
               <span>Sub Account</span>
             </button>
             <button class="page-tab" type="button" role="tab" id="tab-staff" aria-controls="panel-staff" aria-selected="false" tabindex="-1" data-settings-tab="staff">
               <span>Staff</span>
+            </button>
+            <button class="page-tab" type="button" role="tab" id="tab-service-applications" aria-controls="panel-service-applications" aria-selected="false" tabindex="-1" data-settings-tab="service-applications">
+              <span>Service Applications</span>
             </button>
             <button class="page-tab" type="button" role="tab" id="tab-affiliate-link" aria-controls="panel-affiliate-link" aria-selected="false" tabindex="-1" data-settings-tab="affiliate-link">
               <span>Affiliate Link</span>
@@ -1684,13 +1688,13 @@
             </button>
           </div>
 
-          <section class="settings-panel" id="panel-account" role="tabpanel" aria-labelledby="tab-account" data-settings-panel="account" hidden>
+          <section class="settings-panel" id="panel-account" role="tabpanel" aria-labelledby="tab-account" data-settings-panel="account">
           </section>
 
           <section class="settings-panel" id="panel-business-verification" role="tabpanel" aria-labelledby="tab-business-verification" data-settings-panel="business-verification" hidden>
           </section>
 
-          <section class="settings-panel" id="panel-sub-account" role="tabpanel" aria-labelledby="tab-sub-account" data-settings-panel="sub-account">
+          <section class="settings-panel" id="panel-sub-account" role="tabpanel" aria-labelledby="tab-sub-account" data-settings-panel="sub-account" hidden>
             <article class="settings-section is-sub-account-frameless">
               <div class="section-head">
                 <p class="section-copy">Manage Sub Account login accounts, role permissions, and activity logs under this owner account.</p>
@@ -1721,7 +1725,7 @@
                           <td data-label="Account"><div class="cell-title">mai@nexoratouch.com</div><div class="cell-meta">Mai Tran</div><div class="cell-meta">+1 832 555 0182</div></td>
                           <td data-label="Role"><span class="role-badge">Owner Manager</span></td>
                           <td data-label="Status"><span class="status-pill">Active</span></td>
-                          <td data-label="Last Login"><span class="credits-history-date">Aug 07, 2026<small>9:42 AM</small></span></td>
+                          <td data-label="Last Login"><span class="credits-history-date">Aug 7, 2026<small>9:42 AM</small></span></td>
                           <td data-label="Actions"><div class="table-actions"><button class="icon-action" type="button" aria-label="View mai@nexoratouch.com" data-open-modal="sub-account-detail-modal" aria-controls="sub-account-detail-modal"><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button><button class="icon-action" type="button" aria-label="Edit mai@nexoratouch.com" data-open-modal="edit-sub-account-modal" aria-controls="edit-sub-account-modal" data-account-id="b7210960-ecab9-461f-9afb-82b64b9835dd" data-account-email="mai@nexoratouch.com" data-account-name="Mai Tran" data-account-phone="832 555 0182" data-account-role="Owner Manager" data-account-status="Active"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button><button class="icon-action" type="button" aria-label="Deactivate mai@nexoratouch.com" data-open-deactivate-modal data-account-email="mai@nexoratouch.com" data-account-name="Mai Tran"><i data-lucide="user-x" aria-hidden="true"></i><span>Deactivate</span></button><button class="icon-action" type="button" aria-label="Reset password for mai@nexoratouch.com" data-open-reset-password-modal data-account-email="mai@nexoratouch.com" data-account-name="Mai Tran"><i data-lucide="key-round" aria-hidden="true"></i><span>Reset password</span></button><button class="icon-action" type="button" aria-label="Resend login email to mai@nexoratouch.com" data-open-resend-email-modal data-account-email="mai@nexoratouch.com" data-account-name="Mai Tran"><i data-lucide="mail" aria-hidden="true"></i><span>Resend email</span></button></div></td>
                         </tr>
                         <tr>
@@ -1735,7 +1739,7 @@
                           <td data-label="Account"><div class="cell-title">jordan.reyes@nexoratouch.com</div><div class="cell-meta">Jordan Reyes</div><div class="cell-meta">+1 281 555 0129</div></td>
                           <td data-label="Role"><span class="role-badge">Technician Lead</span></td>
                           <td data-label="Status"><span class="status-pill is-disabled">Disabled</span></td>
-                          <td data-label="Last Login"><span class="credits-history-date">Aug 05, 2026<small>5:12 PM</small></span></td>
+                          <td data-label="Last Login"><span class="credits-history-date">Aug 5, 2026<small>5:12 PM</small></span></td>
                           <td data-label="Actions"><div class="table-actions"><button class="icon-action" type="button" aria-label="View jordan.reyes@nexoratouch.com" data-open-modal="sub-account-detail-modal" aria-controls="sub-account-detail-modal"><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button><button class="icon-action" type="button" aria-label="Edit jordan.reyes@nexoratouch.com" data-open-modal="edit-sub-account-modal" aria-controls="edit-sub-account-modal" data-account-id="d891e307-231d-42be-9404-12c0e74ff612" data-account-email="jordan.reyes@nexoratouch.com" data-account-name="Jordan Reyes" data-account-phone="281 555 0129" data-account-role="Technician Lead" data-account-status="Disabled"><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button><button class="icon-action" type="button" aria-label="Activate jordan.reyes@nexoratouch.com" data-sub-account-action="activate" data-account-email="jordan.reyes@nexoratouch.com"><i data-lucide="user-check" aria-hidden="true"></i><span>Activate</span></button><button class="icon-action" type="button" aria-label="Reset password for jordan.reyes@nexoratouch.com" data-open-reset-password-modal data-account-email="jordan.reyes@nexoratouch.com" data-account-name="Jordan Reyes"><i data-lucide="key-round" aria-hidden="true"></i><span>Reset password</span></button><button class="icon-action" type="button" aria-label="Resend login email to jordan.reyes@nexoratouch.com" data-open-resend-email-modal data-account-email="jordan.reyes@nexoratouch.com" data-account-name="Jordan Reyes"><i data-lucide="mail" aria-hidden="true"></i><span>Resend email</span></button></div></td>
                         </tr>
                       </tbody>
@@ -1802,11 +1806,11 @@
                     <table class="owner-table is-log-table">
                       <thead><tr><th>Time</th><th>Sub account</th><th>Role</th><th>Action</th><th>Module</th><th>Status</th></tr></thead>
                       <tbody>
-                        <tr><td data-label="Time"><span class="credits-history-date">Aug 07, 2026<small>10:15 AM</small></span></td><td data-label="Sub account"><div class="cell-title">Mai Tran</div><div class="cell-meta">mai@nexoratouch.com</div></td><td data-label="Role"><span class="role-badge">Owner Manager</span></td><td data-label="Action">Login success</td><td data-label="Module">Authentication</td><td data-label="Status"><span class="status-pill">Success</span></td></tr>
-                        <tr><td data-label="Time"><span class="credits-history-date">Aug 07, 2026<small>9:42 AM</small></span></td><td data-label="Sub account"><div class="cell-title">Mai Tran</div><div class="cell-meta">mai@nexoratouch.com</div></td><td data-label="Role"><span class="role-badge">Owner Manager</span></td><td data-label="Action">Updated Sub Account</td><td data-label="Module">Sub Account</td><td data-label="Status"><span class="status-pill">Success</span></td></tr>
-                        <tr><td data-label="Time"><span class="credits-history-date">Aug 06, 2026<small>4:18 PM</small></span></td><td data-label="Sub account"><div class="cell-title">Amy Le</div><div class="cell-meta">amy.le@nexoratouch.com</div></td><td data-label="Role"><span class="role-badge">Front Desk</span></td><td data-label="Action">Login failed</td><td data-label="Module">Authentication</td><td data-label="Status"><span class="status-pill is-disabled">Failed</span></td></tr>
-                        <tr><td data-label="Time"><span class="credits-history-date">Aug 06, 2026<small>2:26 PM</small></span></td><td data-label="Sub account"><div class="cell-title">Jordan Reyes</div><div class="cell-meta">jordan.reyes@nexoratouch.com</div></td><td data-label="Role"><span class="role-badge">Technician Lead</span></td><td data-label="Action">Viewed transactions</td><td data-label="Module">Transactions</td><td data-label="Status"><span class="status-pill">Success</span></td></tr>
-                        <tr><td data-label="Time"><span class="credits-history-date">Aug 06, 2026<small>11:03 AM</small></span></td><td data-label="Sub account"><div class="cell-title">Mai Tran</div><div class="cell-meta">mai@nexoratouch.com</div></td><td data-label="Role"><span class="role-badge">Owner Manager</span></td><td data-label="Action">Role changed</td><td data-label="Module">Settings</td><td data-label="Status"><span class="status-pill">Success</span></td></tr>
+                        <tr><td data-label="Time"><span class="credits-history-date">Aug 7, 2026<small>10:15 AM</small></span></td><td data-label="Sub account"><div class="cell-title">Mai Tran</div><div class="cell-meta">mai@nexoratouch.com</div></td><td data-label="Role"><span class="role-badge">Owner Manager</span></td><td data-label="Action">Login success</td><td data-label="Module">Authentication</td><td data-label="Status"><span class="status-pill">Success</span></td></tr>
+                        <tr><td data-label="Time"><span class="credits-history-date">Aug 7, 2026<small>9:42 AM</small></span></td><td data-label="Sub account"><div class="cell-title">Mai Tran</div><div class="cell-meta">mai@nexoratouch.com</div></td><td data-label="Role"><span class="role-badge">Owner Manager</span></td><td data-label="Action">Updated Sub Account</td><td data-label="Module">Sub Account</td><td data-label="Status"><span class="status-pill">Success</span></td></tr>
+                        <tr><td data-label="Time"><span class="credits-history-date">Aug 6, 2026<small>4:18 PM</small></span></td><td data-label="Sub account"><div class="cell-title">Amy Le</div><div class="cell-meta">amy.le@nexoratouch.com</div></td><td data-label="Role"><span class="role-badge">Front Desk</span></td><td data-label="Action">Login failed</td><td data-label="Module">Authentication</td><td data-label="Status"><span class="status-pill is-disabled">Failed</span></td></tr>
+                        <tr><td data-label="Time"><span class="credits-history-date">Aug 6, 2026<small>2:26 PM</small></span></td><td data-label="Sub account"><div class="cell-title">Jordan Reyes</div><div class="cell-meta">jordan.reyes@nexoratouch.com</div></td><td data-label="Role"><span class="role-badge">Technician Lead</span></td><td data-label="Action">Viewed transactions</td><td data-label="Module">Transactions</td><td data-label="Status"><span class="status-pill">Success</span></td></tr>
+                        <tr><td data-label="Time"><span class="credits-history-date">Aug 6, 2026<small>11:03 AM</small></span></td><td data-label="Sub account"><div class="cell-title">Mai Tran</div><div class="cell-meta">mai@nexoratouch.com</div></td><td data-label="Role"><span class="role-badge">Owner Manager</span></td><td data-label="Action">Role changed</td><td data-label="Module">Settings</td><td data-label="Status"><span class="status-pill">Success</span></td></tr>
                       </tbody>
                     </table>
                   </div>
@@ -1816,6 +1820,9 @@
           </section>
 
           <section class="settings-panel" id="panel-staff" role="tabpanel" aria-labelledby="tab-staff" data-settings-panel="staff" hidden>
+          </section>
+
+          <section class="settings-panel" id="panel-service-applications" role="tabpanel" aria-labelledby="tab-service-applications" data-settings-panel="service-applications" hidden>
           </section>
 
           <section class="settings-panel" id="panel-affiliate-link" role="tabpanel" aria-labelledby="tab-affiliate-link" data-settings-panel="affiliate-link" hidden>
@@ -1970,7 +1977,7 @@
                   <div class="detail-row"><span>Role</span><span class="detail-value">Owner Manager</span></div>
                   <div class="detail-row"><span>Status</span><span class="detail-value">Active</span></div>
                   <div class="detail-row"><span>Created at</span><span class="detail-value">Jul 18, 2026</span></div>
-                  <div class="detail-row"><span>Last login</span><span class="detail-value"><span class="credits-history-date">Aug 07, 2026<small>9:42 AM</small></span></span></div>
+                  <div class="detail-row"><span>Last login</span><span class="detail-value"><span class="credits-history-date">Aug 7, 2026<small>9:42 AM</small></span></span></div>
                   <div class="detail-row"><span>Login URL</span><span class="detail-value">/sub-account/login?merchant=nt-houston</span></div>
                 </div>
                 <div class="module-chip-list" aria-label="Effective module permissions">
@@ -1990,7 +1997,7 @@
     </div>
   </div>
 
-  <script>window.NEXORA_SHELL = { activePage: 'owner-settings', activeTab: 'sub-account' };</script>
+  <script>window.NEXORA_SHELL = { activePage: 'owner-settings', activeTab: 'account' };</script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
   <script src="../assets/nexora-icons.js"></script>
@@ -2024,7 +2031,7 @@
       var sidebarMenuStatus = document.querySelector('[data-sidebar-menu-status]');
       var currentEditSubAccountButton = null;
       var pendingDeactivateRow = null;
-      var defaultTab = 'sub-account';
+      var defaultTab = 'account';
       var defaultSubAccountView = 'accounts';
       var systemConfirmButtonColor = 'var(--nexora-brand)';
       var fallbackSidebarVisibilityStorageKey = 'nexora.sidebar.visibility.v1';
@@ -2604,5 +2611,9 @@
       activateSubAccountView(currentQueryView(), false);
     })();
   </script>
+  <script src="../assets/salon-data.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="../assets/owner-settings-content.js"></script>
+  <script src="../assets/owner-service-applications.js"></script>
 </body>
 </html>

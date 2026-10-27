@@ -19,9 +19,9 @@
     {id: 'appointments', label: 'Appointments', image: '../assets/icon-oneqr/issue-2040-oneqr-calendar-days-3d.png', style: 'appointments', href: 'pos-front-desk.html?section=appointments&bookingView=appointment', section: 'appointments', more: true},
     {id: 'estimate', label: 'Estimate', icon: 'estimate', href: 'pos-front-desk.html?section=estimate', section: 'estimate', more: true},
     {id: 'staffs-clock', label: 'Staffs Clock', icon: 'staffs-clock', href: 'pos-front-desk.html?section=clock', section: 'clock', more: true},
-    {id: 'customer-history', label: 'Customer History', icon: 'overview', more: true},
-    {id: 'price-menu', label: 'Price Menu', image: '../assets/icon-oneqr/issue-2040-oneqr-list-3d.png', style: 'gift-card-center', more: true},
-    {id: 'ai-voice', label: 'AI Voice', image: '../assets/icon-oneqr/issue-2040-oneqr-phone-3d.png', style: 'checkout-customer', more: true},
+    {id: 'customer-history', label: 'Customer History', icon: 'overview', href: 'pos-products-other-sales.html?section=history', more: true},
+    {id: 'price-menu', label: 'Price Menu', image: '../assets/icon-oneqr/issue-2040-oneqr-list-3d.png', style: 'gift-card-center', href: 'pos-products-other-sales.html?section=pricemenu', more: true},
+    {id: 'ai-voice', label: 'AI Voice', image: '../assets/icon-oneqr/issue-2040-oneqr-phone-3d.png', style: 'checkout-customer', href: 'pos-ai-voice.html', more: true},
     {id: 'waitlist', label: 'Live Waitlist', icon: 'tickets', style: 'waitlist', href: 'pos-front-desk.html?section=waitlist', section: 'waitlist', more: true}
   ];
   const nodes = new Map();
@@ -102,7 +102,7 @@
     if (page === 'pos-front-desk-staff.html') return 'staff';
     if (page === 'pos-front-desk-turn-board.html') return 'turn-board';
     if (page === 'pos-completed-services.html') return 'completed';
-    if (page === 'pos-products-other-sales.html') return 'products-other-sales';
+    if (page === 'pos-products-other-sales.html') return ({history:'customer-history',pricemenu:'price-menu'})[params.get('section')] || 'products-other-sales';
     if (page === 'pos-front-desk-tickets.html' || page === 'pos-direct-checkout.html') {
       const id = params.get(page === 'pos-direct-checkout.html' ? 'checkoutId' : 'ticketId');
       if (id) {

@@ -63,7 +63,7 @@
     var path = u.pathname, tab = u.searchParams.get('tab');
     if (path === '/dashboard') return 'dashboard.html';
     if (path === '/dashboard/settings') return 'owner-setting.html';
-    if (path === '/dashboard/settings/staff') return 'pos-front-desk-staff.html';
+    if (path === '/dashboard/settings/staff') return 'owner-setting.html?tab=staff';
     if (path === '/dashboard/pos' && tab === 'gift-card-center') return 'gift-card-center.html';
     if (path === '/dashboard/community') return 'community.html?tab=' + (tab || 'feed');
     if (path === '/dashboard/reviews') return 'nexora-review.html';
@@ -91,6 +91,10 @@
       var qrTab = qrTabs[u.searchParams.get('section')];
       if (qrTab) return 'qr-stations.html?tab=' + qrTab;
     }
+    if (path.indexOf('/dashboard/settings/staff/') === 0) return 'owner-staff-profile.html?staffId=' + encodeURIComponent(path.split('/').pop());
+    if (path === '/dashboard/settings/affiliate') return 'owner-setting.html?tab=affiliate-link';
+    if (path === '/dashboard/settings/service-applications') return 'owner-setting.html?tab=service-applications';
+    if (path === '/dashboard/settings/privacy') return 'owner-setting.html?tab=terms-privacy';
     if (path === '/dashboard/settings/profile') return 'owner-setting.html';
     if (path === '/dashboard/settings/kyb') return 'owner-setting.html?tab=business-verification';
     if (path === '/dashboard/news-library') return 'news-library.html?tab=' + (tab || 'news');

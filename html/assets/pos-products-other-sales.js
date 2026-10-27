@@ -238,7 +238,7 @@
 
   const liveFrontDeskTabs = [];
   function liveNavHtml(){return `<nav class="live-front-tabs" aria-label="Front Desk sections">${liveFrontDeskTabs.map(tab=>{const active=state.section===tab.id||tab.id==='checkout'&&state.section==='quicksale';return `<button type="button" class="live-front-tab ${active?'selected':''}" style="--tab-soft:${tab.soft};--tab-ink:${tab.ink};--tab-border:${tab.border}" data-action="nav" data-id="${tab.id}" aria-pressed="${active}"><img src="${tab.image}" alt="" width="48" height="48" draggable="false"><span>${tab.label}</span>${tab.id==='tickets'||tab.id==='checkout'?`<b class="live-tab-count">${activeTickets().length}</b>`:''}</button>`}).join('')}</nav>`}
-  function shellHtml(){return '<div class="pos-content live-pos-content">'+(state.section==='completed'?completedSalesHtml():quickSaleHtml())+'</div>'}
+  function shellHtml(){return '<div class="pos-content live-pos-content">'+(state.section==='history'?customerHistoryHtml():state.section==='pricemenu'?priceMenuHtml():state.section==='completed'?completedSalesHtml():quickSaleHtml())+'</div>'}
 
   const ticketStatus = ticket => ticket.status || 'inservice';
   const activeTickets = () => state.tickets.filter(ticket=>!['paid','cancelled'].includes(ticketStatus(ticket)));
@@ -641,6 +641,14 @@
   });
   productsRoot.addEventListener('input',event=>{if(event.target.id==='live-sale-cash'){const input=event.target,clean=input.value.replace(/[^0-9.]/g,''),parts=clean.split('.');input.value=parts[0]+(parts.length>1?'.'+parts.slice(1).join('').slice(0,2):'');saleDraft().cashReceived=input.value;refreshSalePayment();saveDemoSession()}});
   if(!state.enabledPaymentMethods.includes('applecash'))state.enabledPaymentMethods.push('applecash');
-  if(!['quicksale','completed'].includes(state.section)){state.section='quicksale';state.editor=false;}
+  const referenceSections = ['history','pricemenu'];
+  function syncReferenceRoute(){
+    const section = new URLSearchParams(location.search).get('section');
+    if(referenceSections.includes(section)){state.section=section;state.editor=false;}
+    else if(!['quicksale','completed'].includes(state.section)){state.section='quicksale';state.editor=false;}
+    document.title='Nexora Touch - '+(state.section==='history'?'Customer History':state.section==='pricemenu'?'Price Menu':'Products & Other Sales');
+  }
+  window.addEventListener('popstate',()=>{clearSensitiveView();syncReferenceRoute();render();});
+  syncReferenceRoute();
   render();
 })();
