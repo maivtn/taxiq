@@ -121,7 +121,7 @@
 @media(max-width:540px){.tw-bill-tabs{grid-template-columns:1fr}.tw-bills .tw-card-title>div:first-child{flex:1}.tw-progress{min-width:110px}.tw-paybar{flex-wrap:wrap;gap:10px}.tw-paybar-guest{max-width:50%;flex:1}.tw-paybar-guest strong{font-size:23px}.tw-paybar [data-tw-payment-hint]{order:3;flex-basis:100%;padding-top:8px;border-top:1px solid #e7ebf2}.ticket-workspace .tw-paybar .tw-pay{min-width:130px}.tw-split-dialog [data-tw-split-guests]{grid-template-columns:1fr}.tw-split-dialog .tw-dialog-actions{padding:12px 24px}.tw-dialog-actions [data-tw-setup-status]{flex-basis:100%}.tw-service-table th:first-child{min-width:135px}.tw-service-filters{gap:6px}.ticket-workspace .tw-service-filters .tw-button{padding:8px 9px;font-size:11px}}
 @media(prefers-reduced-motion:reduce){.ticket-workspace .tw-bill-tabs .tw-bill-card{transition:none}}
 @media print{.tw-paybar,.tw-service-context,.tw-service-filters,.tw-assignment-feedback,.tw-filter-empty{display:none!important}.ticket-workspace .tw-line{box-shadow:none}}
-.ticket-workspace:has(.tw-checkout-layout){max-width:1600px;margin-inline:auto}
+.ticket-workspace:has(.tw-checkout-layout){max-width:none;margin-inline:0}
 .tw-checkout-side .tw-tip-row{flex-wrap:wrap}
 .tw-checkout-side .tw-custom-tip{flex:1 1 100%}
 .tw-checkout-side .tw-cash{flex-wrap:wrap}
