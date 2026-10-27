@@ -28,6 +28,7 @@
     if(mode==='appointment')url.searchParams.set('view',view);else url.searchParams.delete('view');
     if(mode==='appointment'&&view==='calendar'&&!['day','week','twoWeeks','threeWeeks','month'].includes(url.searchParams.get('calendarView')))url.searchParams.set('calendarView','day');
     if(url.href!==location.href)history[push?'pushState':'replaceState'](history.state,'',url);
+    window.NEXORA_FRONT_DESK_TABS?.sync();
   }
   function restoreNavigation() {
     const params=new URLSearchParams(location.search);

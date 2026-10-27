@@ -1,8 +1,19 @@
 /* Shared Front Desk tabs use the artwork and palette from the merchant POS. */
 .front-desk>.subtitle{margin-bottom:25px}
-.front-desk .workflow[data-front-desk-tabs]{display:flex;flex-wrap:nowrap;overflow-x:auto;white-space:nowrap;gap:8px;padding:4px 1px 20px;align-items:stretch;scrollbar-width:thin}
+.front-desk .workflow[data-front-desk-tabs]{position:relative;display:flex;flex-wrap:nowrap;white-space:nowrap;gap:8px;padding:4px 1px 20px;align-items:stretch}
+.front-desk-primary-tabs{display:flex;flex:1;min-width:0;gap:8px;overflow-x:auto;padding:0 3px 4px;scrollbar-width:thin}
 .front-desk .workflow[data-front-desk-tabs] [data-pos-workflow]{--tab-soft:#eff6ff;--tab-ink:#1e40af;--tab-border:#bfdbfe;--tab-selected:#dbeafe;--tab-ring:#60a5fa;position:relative;display:flex;flex:0 0 auto;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:96px;min-height:82px;padding:6px 9px;border:1px solid var(--tab-border);border-radius:12px;background:var(--tab-soft);color:var(--tab-ink);font-family:inherit;font-size:13px;line-height:20px;font-weight:600;text-decoration:none;box-shadow:0 1px 2px #0000000d;transition:background .15s,border-color .15s,box-shadow .15s}
-.front-desk .workflow[data-front-desk-tabs] button:disabled{cursor:default;opacity:1}
+.front-desk .workflow[data-front-desk-tabs] .front-desk-primary-tabs>[data-pos-workflow]{flex:1 0 auto;text-align:center}
+.front-desk .workflow[data-front-desk-tabs] .front-desk-more-toggle{flex:0 0 72px;min-width:72px;margin-bottom:4px}
+.front-desk-more-icon{display:grid;place-items:center;width:48px;height:48px;font-size:22px;letter-spacing:3px}
+.front-desk-more-panel{position:absolute;top:calc(100% - 12px);right:1px;z-index:50;width:min(480px,100%);max-height:calc(100dvh - 32px);overflow:auto;padding:12px;border:1px solid #dbe4f3;border-radius:14px;background:#fff;box-shadow:0 16px 44px #27365324;white-space:normal}
+.front-desk-more-panel[hidden]{display:none}
+.front-desk-more-head{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:10px}
+.front-desk-more-head h2{margin:0;font-size:14px;line-height:20px}
+.front-desk .front-desk-more-close{display:grid;place-items:center;width:28px;height:28px;padding:0;font-size:20px;line-height:1}
+.front-desk-more-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.front-desk .workflow[data-front-desk-tabs] .front-desk-more-grid>[data-pos-workflow]{flex-direction:row;justify-content:flex-start;gap:8px;min-width:0;min-height:56px;text-align:left;white-space:normal}
+.front-desk .workflow[data-front-desk-tabs] .front-desk-more-grid>[data-pos-workflow]>img{width:40px;height:40px}
 .front-desk .workflow[data-front-desk-tabs] [data-pos-workflow]>img{width:48px;height:48px;object-fit:contain;flex-shrink:0}
 .front-desk .workflow[data-front-desk-tabs] [data-pos-workflow]:hover{background:var(--tab-selected);border-color:var(--tab-ring)}
 .front-desk .workflow[data-front-desk-tabs] [data-pos-workflow].active{background:var(--tab-selected);color:var(--tab-ink);border-color:var(--tab-ring);box-shadow:inset 0 0 0 1px var(--tab-ring),0 1px 2px #0000000d}
@@ -19,4 +30,14 @@
 .front-desk .workflow[data-front-desk-tabs] [data-pos-workflow="staffs-clock"],.front-desk .workflow[data-front-desk-tabs] [data-pos-workflow="staff"]{--tab-soft:#fefce8;--tab-ink:#a16207;--tab-border:#fef08a;--tab-selected:#fef9c3;--tab-ring:#facc15}
 .workflow[data-front-desk-tabs] .workflow-count{position:absolute;top:6px;right:6px;display:grid;place-items:center;min-width:20px;height:20px;padding:0 5px;border-radius:99px;background:#ffffffe6;color:var(--tab-ink);font-size:12px;font-weight:700;line-height:20px}
 .workflow[data-front-desk-tabs] .workflow-count:empty,.workflow[data-front-desk-tabs] .workflow-count[hidden]{display:none}
-@media(max-width:639px){.front-desk .workflow[data-front-desk-tabs]{gap:4px;padding-bottom:14px}.front-desk .workflow[data-front-desk-tabs] [data-pos-workflow]{min-width:72px;min-height:60px;padding:4px 8px;border-radius:8px;font-size:11px;line-height:16px}.front-desk .workflow[data-front-desk-tabs] [data-pos-workflow]>img{width:32px;height:32px}.workflow[data-front-desk-tabs] .workflow-count{top:3px;right:3px;min-width:16px;height:16px;font-size:10px;line-height:16px}}
+@media(max-width:639px){
+  .front-desk .workflow[data-front-desk-tabs]{gap:4px;padding-bottom:14px}
+  .front-desk-primary-tabs{gap:4px}
+  .front-desk .workflow[data-front-desk-tabs] [data-pos-workflow]{min-width:72px;min-height:60px;padding:4px 8px;border-radius:8px;font-size:11px;line-height:16px}
+  .front-desk .workflow[data-front-desk-tabs] .front-desk-more-toggle{flex-basis:60px;min-width:60px}
+  .front-desk .workflow[data-front-desk-tabs] [data-pos-workflow]>img,.front-desk .workflow[data-front-desk-tabs] .front-desk-more-grid>[data-pos-workflow]>img{width:32px;height:32px}
+  .front-desk-more-icon{width:32px;height:32px;font-size:18px}
+  .front-desk-more-panel{top:calc(100% - 8px);padding:10px}
+  .front-desk-more-grid{gap:6px}
+  .workflow[data-front-desk-tabs] .workflow-count{top:3px;right:3px;min-width:16px;height:16px;font-size:10px;line-height:16px}
+}
