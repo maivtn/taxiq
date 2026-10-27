@@ -99,6 +99,7 @@
 
   function currentTab() {
     const page = location.pathname.split('/').pop(), params = new URLSearchParams(location.search);
+    if (page === 'gift-card-center.html') return 'gift-card-center';
     if (page === 'pos-front-desk-staff.html') return 'staff';
     if (page === 'pos-front-desk-turn-board.html') return 'turn-board';
     if (page === 'pos-completed-services.html') return 'completed';

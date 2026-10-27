@@ -1,5 +1,6 @@
 /* Gift Card Center: PO catalog hierarchy plus operational screens read on
  * staging-merchant.vlinkpay.com, Oct 27, 2026. Prototype state stays local.
+ * Nexora entry: /dashboard/pos?tab=gift-card-center opens Issue Digital in Front Desk.
  * Sources: /gift-voucher/product-management/{issue-digital,quick-create-card,sell-egift-form},
  * /payment-process/payment-gift-card, /settings/{benefits-setup,membership-report},
  * /reports/{card-transaction-history,expiring-cards}. */
@@ -52,22 +53,11 @@
     "Please present this card before payment.",
     "Cannot be combined with membership credit. Customer must use all available credit before applying any discount.",
   ];
-  const colors = [
-    "#092c24",
-    "#101928",
-    "#24303a",
-    "#075044",
-    "#9b2020",
-    "#5628a5",
-    "#367bef",
-    "#10b991",
-    "#f59e0b",
-    "#e4409d",
-    "#06b6d4",
-    "#9562e9",
-    "#f7ce48",
-    "#dfd82d",
-  ];
+  const colors = ['#1e293b','#064e3b','#7f1d1d','#4c1d95','#3b82f6','#10b981','#f59e0b','#ec4899','#06b6d4','#8b5cf6','#ffd84d','#dbcd43'];
+  const textColors = ['#3b82f6','#ca8a04','#ffffff','#000000'];
+  const automaticColors = {textColor:'#e6c575',holderColor:'#ffffff',amountColor:'#e6c575',infoColor:'#eeeeee'};
+  const brandPrompts = window.NEXORA_GIFT_BRAND_PROMPTS || [];
+  const logoStyles = ['Luxury Gold','Minimalist','Vintage Badge','Playful','Modern – Tech','Pastel','Vibrant'];
   const typeIcons = {
     "Gift Card": "gift-card",
     Membership: "membership",
@@ -243,6 +233,8 @@
         smsDays: 30,
       },
       savedTerms: saved.savedTerms || terms.join("\n"),
+      // Display balances belong to the prototype, never the staging wallet.
+      cryptoWallet: saved.cryptoWallet || {usdt:1000,usdv:1000},
     };
   }
   let store = load(),
@@ -285,7 +277,7 @@
   function navigate(next, tab = "", push = true) {
     if (dialog.open) dialog.close();
     if (push) history.pushState({}, "", url(next, tab));
-    view = Object.hasOwn(definitions, next) ? next : "";
+    view = Object.hasOwn(definitions, next) ? next : "issue";
     subtab = tab;
     page = 1;
     pageSize = 10;
@@ -318,7 +310,7 @@
         : "Gift Card",
       tier:
         view === "membership"
-          ? "MEMBER"
+          ? "Member"
           : view === "membership-package"
             ? "SILVER"
             : "STARTER",
@@ -329,11 +321,22 @@
       address: "",
       amount: 50,
       discount: 0,
+      maxDiscount: 10,
+      promotionType: "Amount",
+      cryptoAssets: [],
+      cryptoAmounts: {},
+      cryptoUnits: {},
+      cryptoQuantity: 1,
+      sendGift: false,
+      requireAccount: false,
+      feeCurrency: "USDV",
+      recipientName: "",
+      recipientEmail: "",
       payment: "Cash",
       period: ["membership", "membership-package"].includes(view)
         ? "30"
         : "none",
-      benefit: store.benefits[0]?.id || "",
+      benefit: "",
       category: "",
       quantity: 50,
       terms: store.savedTerms,
@@ -349,6 +352,9 @@
       amountColor: "#e6c575",
       infoColor: "#eeeeee",
       logo: "",
+      logoPrompt: "",
+      logoCategory: 0,
+      logoStyles: [],
       products: "",
       samePercent: false,
       percent: 5,
@@ -365,7 +371,7 @@
   }
   function field(label, name, options = {}) {
     const value = options.value ?? formDraft?.[name] ?? "";
-    return `<label class="gc-field">${label ? `<span>${label}${options.required ? ' <b class="gc-required">*</b>' : ""}</span>` : ""}<input name="${name}" type="${options.type || "text"}" value="${esc(value)}" ${options.placeholder ? `placeholder="${esc(options.placeholder)}"` : ""} ${options.required ? "required" : ""} ${options.min !== undefined ? `min="${options.min}"` : ""} ${options.max !== undefined ? `max="${options.max}"` : ""} ${options.step ? `step="${options.step}"` : ""} ${options.readonly ? "readonly" : ""}></label>`;
+    return `<label class="gc-field">${label ? `<span>${label}${options.required ? ' <b class="gc-required">*</b>' : ""}</span>` : ""}<input name="${name}" type="${options.type || "text"}" value="${esc(value)}" ${options.placeholder ? `placeholder="${esc(options.placeholder)}"` : ""} ${options.required ? "required" : ""} ${options.min !== undefined ? `min="${options.min}"` : ""} ${options.max !== undefined ? `max="${options.max}"` : ""} ${options.step ? `step="${options.step}"` : ""} ${options.readonly ? "readonly" : ""} ${options.list?`list="${options.list}"`:""} aria-label="${esc(options.placeholder||label.replace(/<[^>]*>/g,""))}"></label>`;
   }
   function select(label, name, items, value, extra = "") {
     return `<label class="gc-field"><span>${label}</span><select name="${name}" ${extra}>${items
@@ -383,88 +389,104 @@
     return `<label class="gc-field"><span>${label}${options.required ? ' <b class="gc-required">*</b>' : ""}</span><span class="gc-input-prefix"><span>${options.prefix || "$"}</span><input type="number" name="${name}" value="${esc(value)}" min="${options.min ?? 0}" ${options.max !== undefined ? `max="${options.max}"` : ""} step="${options.step || "0.01"}" placeholder="Custom" ${options.required ? "required" : ""}></span></label>`;
   }
   function choices(name, items, value, labels) {
-    return `<div class="gc-choices">${items.map((x, i) => `<button type="button" class="gc-choice" data-choice="${name}" data-value="${esc(x)}" aria-pressed="${String(x) === String(value)}">${esc(labels ? labels[i] : x)}</button>`).join("")}</div>`;
+    return `<div class="gc-choices">${items.map((x, i) => `<button type="button" class="gc-choice" data-choice="${name}" data-value="${esc(x)}" aria-pressed="${String(x).toLowerCase() === String(value).toLowerCase()}">${esc(labels ? labels[i] : x)}</button>`).join("")}</div>`;
   }
   function presetAmount(name, values, value, options = {}) {
-    return `<div class="gc-choices">${values.map((n) => `<button type="button" class="gc-choice" data-choice="${name}" data-value="${n}" aria-pressed="${Number(value) === n}">${money(n).replace(".00", "")}</button>`).join("")}<span class="gc-custom">${amountField("", name, value, { required: true, min: 0, ...options })}</span></div>`;
+    const preset=values.includes(Number(value));
+    return `<div class="gc-choices">${values.map((n) => `<button type="button" class="gc-choice" data-choice="${name}" data-value="${n}" aria-pressed="${Number(value) === n}">${money(n).replace(".00", "")}</button>`).join("")}<span class="gc-custom">${amountField("", name, preset?"":value, { min: 0, ...options, required: !preset })}</span></div>`;
   }
   function preview() {
     const d = formDraft;
-    return `<div class="gc-preview" data-card-preview style="${d.color ? `background:${esc(d.color)};` : `background-image:url('${asset}background-${d.background}.png');background-size:cover;`}color:${esc(d.textColor)}"><div class="gc-preview-top"><div>${d.logo ? `<img src="${esc(d.logo)}" alt="" class="gc-brand-logo">` : ""}<strong data-preview-brand>${esc(d.brand)}</strong><div class="gc-preview-type" data-preview-slogan>${esc(d.slogan)}</div></div><span class="gc-preview-value" data-preview-amount style="color:${esc(d.amountColor)}">${money(d.amount)}</span></div><div class="gc-preview-number">•••• •••• •••• ••••</div><div class="gc-preview-bottom" style="color:${esc(d.infoColor)}"><span>VALID THRU <span data-preview-expiry>${d.period === "none" ? "No Expiration" : date(addDays(today(), d.period === "date" ? 30 : d.period))}</span></span><span data-preview-type>${esc(d.type.toUpperCase())}</span></div><span data-preview-holder style="font-size:10px;color:${esc(d.holderColor)}">${esc(d.name)}</span></div>`;
+    const expiry=d.period==='date'&&d.expiryDate?date(d.expiryDate):d.period==='none'?'No Expiration':date(addDays(today(),d.period==='date'?30:d.period));
+    return `<div class="gc-preview" data-card-preview style="${d.color?`background:${esc(d.color)};`:`background-image:url('${asset}background-${d.background}.png');background-size:cover;`}color:${esc(d.textColor)}"><div class="gc-preview-top"><div class="gc-preview-brand"><span class="gc-logo-slot">${d.logo?`<img src="${esc(d.logo)}" alt="" class="gc-brand-logo">`:''}</span><div><strong data-preview-brand>${esc(d.brand)}</strong><div class="gc-preview-type" data-preview-slogan>${esc(d.slogan)}</div></div></div><span class="gc-preview-value" data-preview-amount style="color:${esc(d.amountColor)}">${(d.type==='Discount'||d.type==='Promotion'&&d.promotionType==='Discount')?`${d.discount}%`:money(d.amount).replace('.00','')}</span></div><div class="gc-preview-number">•••• •••• •••• ••••</div><div class="gc-preview-expiry" style="color:${esc(d.infoColor)}">VALID THRU <span data-preview-expiry>${expiry}</span></div><span data-preview-holder style="color:${esc(d.holderColor)}">${esc(d.name)}</span><div class="gc-preview-bottom" style="color:${esc(d.infoColor)}"><span data-preview-type>${esc(d.type.toUpperCase())}</span><span class="gc-preview-provider"><img src="../assets/pos-payment/vlinkpay-logo.png" alt=""><strong>VLINKPAY</strong></span></div></div>`;
+  }
+  function textColorControl(label,name) {
+    const value=formDraft[name];
+    return `<div class="gc-text-color"><span>${label}</span><div><button type="button" class="gc-auto-color" data-text-auto="${name}">AUTO</button>${textColors.map(color=>`<button type="button" class="gc-color" style="--color:${color}" data-text-color="${name}" data-value="${color}" aria-label="Select color" aria-pressed="${value===color}"></button>`).join('')}<label class="gc-color gc-custom-color">${icon('palette')}<input type="color" name="${name}" value="${value}" aria-label="${esc(label)}"></label></div></div>`;
+  }
+  function brandIdentity() {
+    const d=formDraft,category=brandPrompts[Number(d.logoCategory)]||brandPrompts[0];
+    return `<section class="gc-card gc-brand-identity"><div class="gc-brand-heading"><span class="gc-subhead">${icon('sparkles')}BRAND IDENTITY ${icon('info')}</span><div class="gc-actions">${button(icon('folder')+'Library','library')}<label class="gc-file">${icon('upload')}Upload Logo<input type="file" name="logo" accept="image/png,image/jpeg,image/webp,image/svg+xml"></label></div></div><div class="gc-style-tags">${logoStyles.map((label,index)=>`<button type="button" data-logo-style="${index}" aria-pressed="${d.logoStyles.includes(index)}">${label}</button>`).join('')}</div><label class="gc-field"><textarea name="logoPrompt" placeholder="Describe your logo idea" aria-label="Describe your logo idea">${esc(d.logoPrompt)}</textarea></label><div class="gc-suggestion-heading"><span>SUGGESTED DESCRIPTIONS <small>for</small></span><select name="logoCategory" aria-label="SUGGESTED DESCRIPTIONS">${brandPrompts.map((item,index)=>`<option value="${index}" ${Number(d.logoCategory)===index?'selected':''}>${esc(item.category.toUpperCase())}</option>`).join('')}</select></div><div class="gc-logo-suggestions">${(category?.prompts||[]).map((prompt,index)=>`<button type="button" data-logo-prompt="${index}" title="${esc(prompt)}">${esc(prompt)}</button>`).join('')}</div>${button(icon('sparkles')+'Generate Logo with AI','generate-logo','disabled','primary gc-generate-logo')}</section>`;
+  }
+  function phoneField(name,placeholder,required=false) {
+    return `<div class="gc-phone-field"><select name="${name}Country" aria-label="${esc(placeholder)}"><option>+1</option></select>${field('',name,{placeholder,type:'tel',required})}</div>`;
   }
   function designer() {
-    const d = formDraft;
-    return `<aside class="gc-stack gc-designer"><section class="gc-card"><div data-preview-container>${preview()}</div><button type="button" class="gc-preview-flip" data-action="flip">TAB TO FLIP CARD</button></section><section class="gc-card"><div class="gc-subhead">DESIGN COLLECTION</div><div class="gc-colors" style="margin-top:13px">${Array.from({ length: 10 }, (_, i) => `<button type="button" class="gc-color" data-background="${i + 1}" aria-label="Background ${i + 1}" aria-pressed="${!d.color && d.background === i + 1}" style="background:url('${asset}background-${i + 1}.png') center/cover"></button>`).join("")}${colors.map((c) => `<button type="button" class="gc-color" data-color="${c}" aria-label="Select theme color" aria-pressed="${d.color === c}" style="--color:${c}"></button>`).join("")}<label class="gc-color" style="overflow:hidden"><input name="color" type="color" value="${d.color || "#152448"}" aria-label="Custom theme color" style="width:100%;height:100%;padding:0;border:0"></label></div><details class="gc-disclosure"><summary>CUSTOM TEXT COLOR (ADVANCED)</summary><div>${[
-      ["Brand Name & Slogan", "textColor"],
-      ["Card Holder Name", "holderColor"],
-      ["Amount Value", "amountColor"],
-      [
-        "Other info (Card type, Card number, Valid thru, Terms of use, Contact info)",
-        "infoColor",
-      ],
-    ]
-      .map(
-        ([label, name]) =>
-          `<label class="gc-field" style="margin-bottom:12px"><span>${label}</span><input type="color" name="${name}" value="${d[name]}" aria-label="${esc(label)}"></label>`,
-      )
-      .join(
-        "",
-      )}</div></details></section><section class="gc-card"><div class="gc-subhead">BRAND IDENTITY</div><div class="gc-actions" style="margin-top:12px">${button("Library", "library")}<label class="gc-file">${icon("upload")}Upload Logo<input type="file" name="logo" accept="image/png,image/jpeg,image/webp,image/svg+xml"></label></div></section><section class="gc-card"><details class="gc-disclosure"><summary>BUSINESS INFORMATION & CONTACT</summary><div class="gc-stack">${field("Brand Name", "brand")}${field("Brand Slogan", "slogan")}${field("Phone Number", "brandPhone", { placeholder: "(555) 123-4567" })}${field("Email Address", "brandEmail", { type: "email" })}${field("Website", "website", { type: "url" })}${button("Save", "save-draft")}</div></details></section></aside>`;
+    const d=formDraft;
+    return `<aside class="gc-stack gc-designer"><section class="gc-card gc-card-stage"><div data-preview-container>${preview()}</div><button type="button" class="gc-preview-flip" data-action="flip">${icon('rotate-cw')}TAB TO FLIP CARD</button></section><section class="gc-card"><details class="gc-disclosure" data-gc-panel="design" open><summary>${icon('palette')}<span>DESIGN COLLECTION</span>${icon('info')}</summary><div class="gc-colors">${Array.from({length:10},(_,i)=>`<button type="button" class="gc-color" data-background="${i+1}" aria-label="Background ${i+1}" aria-pressed="${!d.color&&d.background===i+1}" style="background:url('${asset}background-${i+1}.png') center/cover"></button>`).join('')}${colors.map(c=>`<button type="button" class="gc-color" data-color="${c}" aria-label="Select theme color" aria-pressed="${d.color===c}" style="--color:${c}"></button>`).join('')}<label class="gc-color gc-custom-color">${icon('palette')}<input name="color" type="color" value="${d.color||'#152448'}" aria-label="Custom theme color"></label></div></details><details class="gc-disclosure gc-text-disclosure" data-gc-panel="text"><summary><span>CUSTOM TEXT COLOR (ADVANCED)</span>${icon('info')}</summary><div>${[['Brand Name & Slogan','textColor'],['Card Holder Name','holderColor'],['Amount Value','amountColor'],['Other info (Card type, Card number, Valid thru, Terms of use, Contact info)','infoColor']].map(([label,name])=>textColorControl(label,name)).join('')}</div></details></section>${brandIdentity()}<section class="gc-card"><details class="gc-disclosure" data-gc-panel="business"><summary>${icon('contact')}<span>BUSINESS INFORMATION & CONTACT</span>${icon('info')}</summary><div class="gc-stack">${field('Brand Name','brand')}${field('Brand Slogan','slogan')}<div class="gc-field"><span>Phone Number</span>${phoneField('brandPhone','(555) 123-4567')}</div>${field('Email Address','brandEmail',{type:'email'})}${field('Website','website',{type:'url'})}${button(icon('save')+'Save','save-draft')}</div></details></section></aside>`;
   }
   function termsEditor(name = "terms") {
-    return `<div class="gc-actions" style="justify-content:flex-end;margin-bottom:10px">${button("Load T & C", "load-terms")}${button("Save T & C", "save-terms")}</div><label class="gc-field"><textarea name="${name}" placeholder="${esc(terms.join("\n"))}">${esc(formDraft[name])}</textarea></label><div class="gc-terms">SUGGESTED TERMS<br>${terms.map((t, i) => `<button type="button" data-term="${i}">${esc(t)}</button>`).join("")}</div>`;
+    return `${["issue","membership"].includes(view)?"":`<div class="gc-actions" style="justify-content:flex-end;margin-bottom:10px">${button("Load T & C", "load-terms")}${button("Save T & C", "save-terms")}</div>`}<label class="gc-field"><textarea name="${name}" placeholder="${esc(terms.join("\n"))}">${esc(formDraft[name])}</textarea></label><div class="gc-terms">SUGGESTED TERMS<br>${terms.map((t, i) => `<button type="button" data-term="${i}">${esc(t)}</button>`).join("")}</div>`;
   }
   function panel(title, body) {
-    return `<section class="gc-card"><div class="gc-panel-title">${title}</div>${body}</section>`;
+    const isTerms=title==='Terms and Conditions';
+    return `<details class="gc-card gc-form-panel" data-gc-panel="${esc(title)}" ${isTerms?'':'open'}><summary><span class="gc-panel-title">${title}${icon('info')}</span>${isTerms?`<span class="gc-actions">${button(icon('folder-open')+'Load T & C','load-terms')}${button(icon('save')+'Save T & C','save-terms')}</span>`:''}</summary><div class="gc-panel-body">${body}</div></details>`;
+  }
+  const tierOptions={
+    'Gift Card':['STARTER','BRONZE','SILVER','GOLD','PLATINUM','ELITE'],
+    Membership:['Member','Silver','Gold','Platinum','Diamond','Royal'],
+    Discount:['Welcome','Birthday','Student','Senior','Referral','Review'],
+    Promotion:['Welcome','Birthday','Student','Senior','Referral','Review']
+  };
+  function productLine() {
+    const d=formDraft,tiers=tierOptions[d.type]||[];
+    return panel('Select Product Line <b class="gc-required">*</b>',`<div class="gc-products">${Object.entries(typeIcons).map(([name,file])=>`<button type="button" class="gc-choice" data-choice="type" data-value="${name}" aria-pressed="${d.type===name}"><img src="${asset}icon-${file}.png" alt="">${name}</button>`).join('')}</div>${tiers.length?`<div class="gc-tier-options">${choices('tier',tiers,d.tier)}<div class="gc-custom-tier">${field('','tier',{placeholder:'Custom',value:tiers.some(t=>t.toLowerCase()===String(d.tier).toLowerCase())?'':d.tier})}</div></div>`:''}`);
+  }
+  function customerInformation(member=false) {
+    const d=formDraft;
+    return panel('Customer Information'+(member?' <b class="gc-required">*</b>':''),`<div class="gc-fields ${member?'gc-member-customer':'three'}">${field('','name',{placeholder:member?'Name *':'Name',required:member,list:'gc-customer-options'})}<datalist id="gc-customer-options">${[...new Set(store.cards.map(c=>c.name).filter(Boolean))].map(name=>`<option value="${esc(name)}"></option>`).join('')}</datalist>${field('','email',{placeholder:'Email',type:'email'})}${member?dateField('Date of Birth *','dob',d.dob):''}${phoneField('phone',member?'Phone Number *':'Phone Number',member)}${member?field('','address',{placeholder:'Address (optional)'}):''}</div>`);
+  }
+  function expiration() {
+    const d=formDraft;
+    return panel('Expiration <b class="gc-required">*</b>',select('','period',[['30','30 Days'],['60','60 Days'],['90','90 Days'],['180','180 Days'],['365','365 Days'],['date','Select Date…'],['none','No Expiration']],d.period)+(d.period==='date'?dateField('Select Date…','expiryDate',d.expiryDate):''));
+  }
+  function discountChoices(required=true) {
+    const d=formDraft,preset=[5,10,15,20].includes(Number(d.discount));
+    return `${choices('discount',[5,10,15,20],d.discount,['5%','10%','15%','20%'])}${amountField('','discount',preset||!d.discount?'':d.discount,{prefix:'%',min:0,max:100,required:required&&!preset})}`;
+  }
+  function paymentMethods() {
+    return panel('Payment Method <b class="gc-required">*</b>',`<div class="gc-products gc-payment-methods">${Object.entries(paymentIcons).map(([name,file])=>`<button type="button" class="gc-choice" data-choice="payment" data-value="${name}" aria-pressed="${formDraft.payment===name}"><img src="${asset}payment-${file}.png" alt="">${name}</button>`).join('')}</div><div class="gc-fee"><span>Platform Service Fee (0%)</span><strong>Free</strong></div><div class="gc-submit"><button type="submit" class="gc-button primary large">Confirm Issuance</button></div>`);
+  }
+  const cryptoAssetList=['VMM','USDT','USDV','VPOINT','VMMBONUS','BTC','ETH','VMMC','USDC','Dogecoin','ADA','VCREDIT','VGIFT','VNV','XRP','VLG','USDR','VPC','VND','USD','VPOINT_ALT','WINNER','SHIB'].map(code=>({id:code.toLowerCase(),code:code==='VPOINT_ALT'?'VPOINT':code,icon:code==='VPOINT_ALT'?'vpoint':code==='VPOINT'?'vpoint-rewards':code.toLowerCase()}));
+  const cryptoAsset=id=>cryptoAssetList.find(item=>item.id===id);
+  const cryptoBalance=id=>Number(store.cryptoWallet[id])||0;
+  const cryptoImage=item=>`<img src="${asset}currencies/${item.icon}.png" alt="${item.code}">`;
+  const cryptoValue=()=>formDraft.cryptoAssets.reduce((sum,id)=>sum+(Number(formDraft.cryptoAmounts[id])||0),0);
+  const cryptoQuantity=()=>Math.max(1,Math.floor(Number(formDraft.cryptoQuantity)||1));
+  const cryptoFee=()=>Math.round(cryptoValue()*cryptoQuantity()*1.5)/100;
+  function cryptoReady(){
+    const quantity=cryptoQuantity(),fee=cryptoFee(),currency=formDraft.feeCurrency.toLowerCase();
+    return formDraft.cryptoAssets.length>0&&formDraft.cryptoAssets.every(id=>Number(formDraft.cryptoAmounts[id])>0&&Number(formDraft.cryptoAmounts[id])*quantity+(id===currency?fee:0)<=cryptoBalance(id))&&fee<=cryptoBalance(currency);
+  }
+  function cryptoSummary() {
+    const d=formDraft,value=cryptoValue(),quantity=cryptoQuantity(),fee=cryptoFee();
+    return `${d.cryptoAssets.length?`<details class="gc-crypto-used" open><summary>Total Crypto Used ${icon('chevron-down')}</summary>${d.cryptoAssets.map(id=>`<div>${cryptoImage(cryptoAsset(id))}<strong>${cryptoAsset(id).code}</strong><span>${money(Number(d.cryptoAmounts[id])*quantity)}<small>≈ ${Number(d.cryptoAmounts[id])*quantity||0} ${cryptoAsset(id).code}</small></span></div>`).join('')}<div class="gc-crypto-total"><span>Card Value<strong>${money(value)}</strong></span><span>Total Value<strong>${money(value*quantity)}</strong></span></div></details>`:''}<div class="gc-crypto-fees"><div><span>Platform Service Fee (0%)</span><strong>Free</strong></div><div><span>Transfer Fee (1.5%)</span><strong>${fee?money(fee):'Free'}</strong></div><div><span>Total Fees ${button(icon('info'),'crypto-fees','aria-label="Open fees overview"','icon-only')}</span><strong>${fee?money(fee):'Free'}</strong></div></div><div class="gc-crypto-fee-method"><span>Fee Payment Method</span><label class="gc-fee-currency">${cryptoImage(cryptoAsset(d.feeCurrency.toLowerCase()))}<select name="feeCurrency" aria-label="Fee Payment Method">${cryptoAssetList.map(item=>`<option value="${item.code}" ${d.feeCurrency===item.code?'selected':''} ${cryptoBalance(item.id)>0?'':'disabled'}>${item.code}</option>`).join('')}</select></label><small>Exchange Rate 1 ${esc(d.feeCurrency)} = $1</small><strong>${fee.toFixed(2)}</strong></div><div class="gc-submit"><button type="submit" class="gc-button primary large" ${cryptoReady()?'':'disabled'}>Confirm Issuance</button></div>`;
+  }
+  function cryptoFields(){
+    const d=formDraft,quantity=cryptoQuantity();
+    return panel('Select Crypto Assets <b class="gc-required">*</b>',`<details class="gc-assets-picker" data-gc-panel="crypto-picker"><summary>${d.cryptoAssets.length?d.cryptoAssets.map(id=>`<span>${cryptoImage(cryptoAsset(id))}${cryptoAsset(id).code}</span>`).join(''):'Select Crypto Assets'}${icon('chevron-down')}</summary><div class="gc-assets-options"><strong>Select Assets</strong>${cryptoAssetList.map(item=>`<label><input type="checkbox" data-crypto-asset="${item.id}" ${d.cryptoAssets.includes(item.id)?'checked':''} ${cryptoBalance(item.id)>0?'':'disabled'}>${cryptoImage(item)}<span>${item.code}<small>${cryptoBalance(item.id).toFixed(4)} ${item.code}</small></span><small>Value: ${money(cryptoBalance(item.id))}</small></label>`).join('')}</div></details><div class="gc-asset-values">${d.cryptoAssets.map(id=>{const item=cryptoAsset(id);return `<section><div class="gc-asset-name">${cryptoImage(item)}<strong>${item.code}</strong><small>Qty: ${cryptoBalance(id)} ${item.code}<br>Value: ${money(cryptoBalance(id))}</small></div><div class="gc-asset-input"><span>$</span><input type="number" data-crypto-amount="${id}" aria-label="${item.code}" placeholder="0" value="${esc(d.cryptoAmounts[id]||'')}" min="0.01" max="${cryptoBalance(id)/quantity}" step="0.01" required><select data-crypto-unit="${id}" aria-label="${item.code}"><option ${d.cryptoUnits[id]==='USD'||!d.cryptoUnits[id]?'selected':''}>USD</option><option ${d.cryptoUnits[id]===item.code?'selected':''}>${item.code}</option></select><button type="button" class="gc-button icon-only" data-crypto-remove="${id}" aria-label="Remove">${icon('trash-2')}</button></div></section>`;}).join('')}</div><p class="gc-note">Select one or more crypto assets to back the card value</p>`)+panel('Card Quantity <b class="gc-required">*</b>',`<div class="gc-quantity"><button class="gc-button" type="button" data-crypto-quantity="-1" ${quantity===1?'disabled':''}>−</button><input name="cryptoQuantity" type="number" min="1" step="1" value="${quantity}" aria-label="Card Quantity" required><button class="gc-button" type="button" data-crypto-quantity="1">+</button></div><label class="gc-check"><input type="checkbox" name="sendGift" ${d.sendGift?'checked':''}>Send as a gift ${icon('info')}</label>${d.sendGift?`<div class="gc-fields">${field('Recipient Name','recipientName',{placeholder:'John Doe'})}${field('Recipient Email','recipientEmail',{placeholder:'johndoe@example.com',type:'email'})}</div>`:''}<label class="gc-check"><input type="checkbox" name="requireAccount" ${d.requireAccount?'checked':''}>Require VlinkPay account to use card ${icon('info')}</label>`)+`<section class="gc-card" data-crypto-summary>${cryptoSummary()}</section>`;
+  }
+  function refreshCrypto(){
+    if(formDraft?.type!=='Crypto Card')return;
+    formDraft.amount=cryptoValue();setDraft();
+    const summary=root.querySelector('[data-crypto-summary]');if(summary)summary.innerHTML=cryptoSummary();
+    updatePreview();refreshIcons();
   }
   function issue() {
-    const d = formDraft,
-      member = d.type === "Membership";
-    return `<form id="gc-issue-form" class="gc-form-layout">${designer()}<div class="gc-stack"><p class="gc-required-note"><span class="gc-required">*</span> required</p>${panel(
-      'Select Product Line <b class="gc-required">*</b>',
-      `<div class="gc-products">${Object.entries(typeIcons)
-        .map(
-          ([name, file]) =>
-            `<button type="button" class="gc-choice" data-choice="type" data-value="${name}" aria-pressed="${d.type === name}"><img src="${asset}icon-${file}.png" alt="">${name}</button>`,
-        )
-        .join(
-          "",
-        )}</div>${choices("tier", member ? ["MEMBER", "SILVER", "GOLD", "PLATINUM", "DIAMOND", "ROYAL"] : ["STARTER", "BRONZE", "SILVER", "GOLD", "PLATINUM", "ELITE"], d.tier)}<div style="max-width:150px;margin-top:10px">${field("", "tier", { placeholder: "Custom" })}</div>`,
-    )}${panel("Customer Information" + (member ? ' <b class="gc-required">*</b>' : ""), `<div class="gc-fields three">${field("", "name", { placeholder: "Name", required: member })}${field("", "email", { placeholder: "Email", type: "email", required: member })}${field("", "phone", { placeholder: "Phone Number", type: "tel", required: member })}</div>${member ? `<div class="gc-fields" style="margin-top:14px">${dateField("Date of Birth *", "dob", d.dob)}${field("Address (optional)", "address")}</div>` : ""}`)}${
-      member
-        ? panel(
-            'Benefits <b class="gc-required">*</b>',
-            `${select("", "benefit", [["", "Select Benefit"], ...store.benefits.filter((b) => b.active).map((b) => [b.id, b.name])], d.benefit, "required")}<div style="margin-top:10px">${button("+ Add Benefit", "add-benefit")}</div>`,
-          ) +
-          panel(
-            'Expiration <b class="gc-required">*</b>',
-            `${select(
-              "",
-              "period",
-              [
-                ["30", "30 Days"],
-                ["60", "60 Days"],
-                ["90", "90 Days"],
-                ["180", "180 Days"],
-                ["365", "365 Days"],
-                ["date", "Select Date…"],
-                ["none", "No Expiration"],
-              ],
-              d.period,
-            )}${d.period === "date" ? dateField("Select Date…", "expiryDate", d.expiryDate) : ""}`,
-          )
-        : ""
-    }${panel((member ? "Price" : "Amount") + ' <b class="gc-required">*</b>', presetAmount("amount", member ? [50, 100, 500, 1000, 2000] : [50, 100, 250, 500], d.amount))}${member ? panel("DISCOUNT (OPTIONAL)", `${choices("discount", [5, 10, 15, 20], d.discount, ["5%", "10%", "15%", "20%"])}${amountField("", "discount", d.discount, { prefix: "%", max: 100 })}`) : ""}${panel("Terms and Conditions", termsEditor())}${panel(
-      'Payment Method <b class="gc-required">*</b>',
-      `<div class="gc-products">${Object.entries(paymentIcons)
-        .map(
-          ([name, file]) =>
-            `<button type="button" class="gc-choice" data-choice="payment" data-value="${name}" aria-pressed="${d.payment === name}"><img src="${asset}payment-${file}.png" alt="">${name}</button>`,
-        )
-        .join(
-          "",
-        )}</div><div class="gc-fee"><span>Platform Service Fee (0%)</span><strong>Free</strong></div><div class="gc-submit"><button type="submit" class="gc-button primary large">Confirm Issuance</button></div>`,
-    )}</div></form>`;
+    const d=formDraft,member=d.type==='Membership',discount=d.type==='Discount',promotion=d.type==='Promotion',crypto=d.type==='Crypto Card';
+    let body=productLine();
+    if(crypto)body+=cryptoFields();
+    else {
+      body+=customerInformation(member);
+      if(member)body+=panel('Benefits <b class="gc-required">*</b>',`${select('','benefit',[['','Select Benefit'],...store.benefits.filter(b=>b.active).map(b=>[b.id,b.name])],d.benefit,'required')}<div style="margin-top:10px">${button('+ Add Benefit','add-benefit')}</div>`);
+      if(member||discount||promotion)body+=expiration();
+      if(discount)body+=panel('Discount <b class="gc-required">*</b>',discountChoices())+panel('Max Discount Amount',presetAmount('maxDiscount',[10,15,20,25],d.maxDiscount));
+      else if(promotion)body+=panel('Promotion Type <b class="gc-required">*</b>',`${choices('promotionType',['Amount','Discount'],d.promotionType)}<div class="gc-promotion-value">${d.promotionType==='Discount'?discountChoices():presetAmount('amount',[5,10,15,20,25],d.amount)}</div>`);
+      else body+=panel((member?'Price':'Amount')+' <b class="gc-required">*</b>',presetAmount('amount',member?[50,100,500,1000,2000]:[50,100,250,500],d.amount));
+      if(member)body+=panel('Discount (Optional)',discountChoices(false));
+      body+=panel('Terms and Conditions',termsEditor())+paymentMethods();
+    }
+    return `<form id="gc-issue-form" class="gc-form-layout">${designer()}<div class="gc-stack"><p class="gc-required-note"><span class="gc-required">*</span> required</p>${body}</div></form>`;
   }
   function quick() {
     const d = formDraft;
@@ -959,33 +981,9 @@
       },
     );
   }
-  function overview() {
-    const product = window.NEXORA_PRODUCT_CATALOG.gift;
-    return `<div class="gc-head"><div><h1>${esc(product.title)}</h1><p>${esc(product.description)}</p></div></div><div class="gc-overview">${product.groups
-      .map(
-        (group) =>
-          `<section class="gc-card"><h2>${esc(group.name)}</h2>${group.items
-            .map((item) => {
-              const u = new URL(item.url),
-                next =
-                  u.pathname.endsWith("issue-digital") &&
-                  u.searchParams.get("type") === "membership"
-                    ? "membership"
-                    : routeMap[u.pathname];
-              return `<a href="${url(next)}" data-view="${next}"><span>${esc(item.label)}${item.description ? `<small>${esc(item.description)}</small>` : ""}</span>${icon("arrow-up-right")}</a>`;
-            })
-            .join("")}</section>`,
-      )
-      .join("")}</div>`;
-  }
   function render() {
-    if (!view) {
-      document.title = "Nexora Touch — Gift Card Center";
-      root.innerHTML = overview();
-      refreshIcons();
-      window.NEXORA_SHELL?.refreshSidebar?.();
-      return;
-    }
+    const panels=root.dataset.view===view?[...root.querySelectorAll('[data-gc-panel]')].map(node=>[node.dataset.gcPanel,node.open]):[];
+    root.dataset.view=view;
     const [title, description] = definitions[view];
     document.title = "Nexora Touch — " + title;
     if (
@@ -1030,8 +1028,11 @@
       expiring,
       redeem,
     }[view]();
-    root.innerHTML = `<a class="gc-breadcrumb" href="${url("")}" data-view="">${icon("arrow-left")}Gift Card Center</a><div class="gc-head"><div><h1>${title}</h1>${description ? `<p>${description}</p>` : ""}</div><div class="gc-head-actions">${actions}</div></div>${content}`;
+    root.innerHTML = `<div class="gc-head"><div><h1>${title}</h1>${description ? `<p>${description}</p>` : ""}</div><div class="gc-head-actions">${actions}</div></div>${content}`;
+    for(const [key,open] of panels){const panel=[...root.querySelectorAll("[data-gc-panel]")].find(node=>node.dataset.gcPanel===key);if(panel)panel.open=open;}
+    updateIssueValidity();
     refreshIcons();
+    window.NEXORA_FRONT_DESK_TABS?.sync?.({active:"gift-card-center"});
     window.NEXORA_SHELL?.refreshSidebar?.();
   }
   function refreshIcons() {
@@ -1289,8 +1290,14 @@
       }),
     );
   }
+  function updateIssueValidity(){
+    if(!formDraft||formDraft.type!=='Membership')return;
+    const submit=root.querySelector('#gc-issue-form [type=submit]');
+    if(submit)submit.disabled=!(formDraft.name.trim()&&formDraft.phone.trim()&&formDraft.dob&&formDraft.benefit&&Number(formDraft.amount)>0&&(formDraft.period!=='date'||formDraft.expiryDate));
+  }
   function updatePreview() {
     if (!formDraft) return;
+    updateIssueValidity();
     const previewHost = root.querySelector("[data-preview-container]");
     if (previewHost) previewHost.innerHTML = preview();
   }
@@ -1327,19 +1334,47 @@
     if (routeLink(event)) return;
     const b = event.target.closest("button");
     if (!b || b.disabled) return;
+    if(b.dataset.cryptoQuantity){formDraft.cryptoQuantity=Math.max(1,cryptoQuantity()+Number(b.dataset.cryptoQuantity));setDraft();render();return;}
+    if(b.dataset.cryptoRemove){formDraft.cryptoAssets=formDraft.cryptoAssets.filter(id=>id!==b.dataset.cryptoRemove);refreshCrypto();render();return;}
+    if (b.dataset.textColor || b.dataset.textAuto) {
+      const name=b.dataset.textColor||b.dataset.textAuto;
+      formDraft[name]=b.dataset.textAuto?automaticColors[name]:b.dataset.value;
+      setDraft();render();return;
+    }
+    if (b.dataset.logoStyle !== undefined) {
+      const index=Number(b.dataset.logoStyle),selected=new Set(formDraft.logoStyles);
+      if(selected.has(index))selected.delete(index);else selected.add(index);
+      formDraft.logoStyles=[...selected];setDraft();render();return;
+    }
+    if (b.dataset.logoPrompt !== undefined) {
+      const category=brandPrompts[Number(formDraft.logoCategory)]||brandPrompts[0];
+      formDraft.logoPrompt=category.prompts[Number(b.dataset.logoPrompt)];setDraft();
+      const input=root.querySelector('[name=logoPrompt]');input.value=formDraft.logoPrompt;input.focus();return;
+    }
     if (b.dataset.choice) {
       const key = b.dataset.choice;
-      formDraft[key] = ["amount", "discount", "percent", "quantity"].includes(
+      if(key==='type'&&formDraft.type===b.dataset.value)return;
+      formDraft[key] = ["amount", "discount", "percent", "quantity", "maxDiscount"].includes(
         key,
       )
         ? Number(b.dataset.value)
         : b.dataset.value;
       if (key === "type" && formDraft.type === "Membership") {
-        formDraft.tier = "MEMBER";
+        formDraft.tier = "Member";
+        formDraft.benefit = "";
+        formDraft.amount = 50;
+        formDraft.discount = 0;
         formDraft.period = "30";
       } else if (key === "type") {
-        formDraft.period = "none";
+        formDraft.period = ['Discount','Promotion'].includes(formDraft.type)?'30':'none';
+        formDraft.tier=tierOptions[formDraft.type]?.[0]||'';
+        if(['Gift Card','Prepaid Card'].includes(formDraft.type)){formDraft.amount=50;formDraft.discount=0;}
+        if(formDraft.type==='Crypto Card')formDraft.amount=cryptoValue();
+        if(formDraft.type==='Discount'){formDraft.discount=5;formDraft.maxDiscount=10;formDraft.amount=0;}
+        if(formDraft.type==='Promotion'){formDraft.promotionType='Amount';formDraft.amount=5;}
       }
+      if(key==='promotionType')formDraft.amount=formDraft.promotionType==='Amount'?5:0;
+      if(key==='type')formDraft.slogan=formDraft.type==='Crypto Card'?'':formDraft.type.toUpperCase();
       setDraft();
       render();
       return;
@@ -1390,17 +1425,23 @@
     }
     const action = b.dataset.action;
     if (!action) return;
+    if(action==='crypto-fees'){
+      const fee=cryptoFee();openDialog('Total Fees',`<div class="gc-crypto-fees"><div><span>Platform Service Fee (0%)</span><strong>Free</strong></div><div><span>Transfer Fee (1.5%)</span><strong>${fee?money(fee):'Free'}</strong></div><div><span>Total Fees</span><strong>${fee?money(fee):'Free'}</strong></div></div>`);return;
+    }
     if (action === "save-draft") {
       setDraft();
       return;
     }
     if (action === "load-terms") {
+      event.preventDefault();
+      root.querySelector('[data-gc-panel="Terms and Conditions"]')?.setAttribute("open", "");
       formDraft.terms = store.savedTerms;
       setDraft();
       render();
       return;
     }
     if (action === "save-terms") {
+      event.preventDefault();
       store.savedTerms = formDraft.terms;
       save();
       return;
@@ -1522,6 +1563,8 @@
   });
   root.addEventListener("input", (event) => {
     const input = event.target;
+    if(input.name==='cryptoQuantity'&&formDraft?.type==='Crypto Card'){formDraft.cryptoQuantity=Math.max(1,Math.floor(Number(input.value)||1));root.querySelectorAll('[data-crypto-amount]').forEach(node=>node.max=cryptoBalance(node.dataset.cryptoAmount)/cryptoQuantity());refreshCrypto();return;}
+    if(input.dataset.cryptoAmount){formDraft.cryptoAmounts[input.dataset.cryptoAmount]=Number(input.value)||0;refreshCrypto();return;}
     if (input.matches("[data-query]")) {
       const position = input.selectionStart;
       filter.query = input.value;
@@ -1550,12 +1593,21 @@
           : input.type === "number"
             ? Number(input.value)
             : input.value;
+      if(['amount','tier','discount','maxDiscount'].includes(input.name)){
+        root.querySelectorAll('[data-choice="'+input.name+'"]').forEach(button=>button.setAttribute('aria-pressed',String(button.dataset.value===String(formDraft[input.name]))));
+        if(input.name==='amount'||input.name==='maxDiscount')input.required=true;
+        if(input.name==='discount')input.required=formDraft.type==='Discount'||formDraft.type==='Promotion'&&formDraft.promotionType==='Discount';
+      }
       setDraft();
       updatePreview();
     }
   });
   root.addEventListener("change", (event) => {
     const input = event.target;
+    if(input.dataset.cryptoAsset){formDraft.cryptoAssets=[...root.querySelectorAll('[data-crypto-asset]:checked')].map(node=>node.dataset.cryptoAsset);refreshCrypto();render();return;}
+    if(input.dataset.cryptoUnit){formDraft.cryptoUnits[input.dataset.cryptoUnit]=input.value;setDraft();return;}
+    if(input.name==='sendGift'||input.name==='cryptoQuantity'){formDraft[input.name]=input.name==='sendGift'?input.checked:Math.max(1,Math.floor(Number(input.value)||1));refreshCrypto();render();return;}
+    if(input.name==='feeCurrency'){formDraft.feeCurrency=input.value;refreshCrypto();return;}
     if (input.type === "file") {
       const file = input.files?.[0];
       if (!file) return;
@@ -1570,6 +1622,13 @@
       };
       reader.readAsDataURL(file);
       return;
+    }
+    if(input.name==='logoCategory'){
+      formDraft.logoCategory=Number(input.value);setDraft();render();return;
+    }
+    if(input.name==='name'&&formDraft){
+      const customer=store.cards.find(card=>card.name===input.value);
+      if(customer){for(const name of ['email','phone']){if(customer[name]){formDraft[name]=customer[name];const input=root.querySelector('[name="'+name+'"]');if(input)input.value=customer[name];}}setDraft();updateIssueValidity();return;}
     }
     if (input.name === "packageBenefit") {
       formDraft.benefits = [
@@ -1631,6 +1690,17 @@
       if (days) days.disabled = !input.checked;
     }
   });
+  document.addEventListener('pointerdown',event=>{
+    root.querySelectorAll('.gc-assets-picker[open]').forEach(picker=>{if(!picker.contains(event.target))picker.open=false;});
+  });
+  root.addEventListener('keydown',event=>{
+    if(event.key!=='Escape')return;
+    const picker=root.querySelector('.gc-assets-picker[open]');if(picker){event.preventDefault();event.stopPropagation();picker.open=false;picker.querySelector('summary').focus();}
+  });
+  root.addEventListener('invalid',event=>{
+    let panel=event.target.closest('details');
+    while(panel&&root.contains(panel)){panel.open=true;panel=panel.parentElement.closest('details');}
+  },true);
   let nextCardNumber = Date.now() * 1000;
   function newCard(extra = {}) {
     const id =
@@ -1653,6 +1723,10 @@
     const form = event.target;
     if (!form.reportValidity()) return;
     if (form.id === "gc-issue-form") {
+      if(formDraft.type==='Crypto Card'){
+        if(!cryptoReady())return;
+        store.cards.unshift(newCard({amount:cryptoValue(),balance:cryptoValue(),quantity:cryptoQuantity(),payment:'VLINKPAY',expires:'',name:formDraft.sendGift?formDraft.recipientName:formDraft.name,email:formDraft.sendGift?formDraft.recipientEmail:formDraft.email}));save();navigate('cards','store');return;
+      }
       if (formDraft.type === "Membership" && !formDraft.dob) {
         root.querySelector("[name=dob]").focus();
         return;
@@ -1665,9 +1739,9 @@
             : addDays(today(), formDraft.period);
       store.cards.unshift(
         newCard({
-          expires: formDraft.type === "Membership" ? expiry : "",
+          expires: ["Membership","Discount","Promotion"].includes(formDraft.type) ? expiry : "",
           period:
-            formDraft.type === "Membership" ? Number(formDraft.period) || 0 : 0,
+            ["Membership","Discount","Promotion"].includes(formDraft.type) ? Number(formDraft.period) || 0 : 0,
         }),
       );
       save();
