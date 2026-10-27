@@ -11,6 +11,7 @@
 .front-desk .workflow[data-front-desk-tabs] [data-pos-workflow="tickets"],.front-desk .workflow[data-front-desk-tabs] [data-pos-workflow="waitlist"]{--tab-soft:#faf5ff;--tab-ink:#7e22ce;--tab-border:#e9d5ff;--tab-selected:#f3e8ff;--tab-ring:#c084fc}
 .front-desk .workflow[data-front-desk-tabs] [data-pos-workflow="turn-board"]{--tab-soft:#f0f9ff;--tab-ink:#0369a1;--tab-border:#bae6fd;--tab-selected:#e0f2fe;--tab-ring:#38bdf8}
 .front-desk .workflow[data-front-desk-tabs] [data-pos-workflow="checkout-customer"]{--tab-soft:#eef2ff;--tab-ink:#4338ca;--tab-border:#c7d2fe;--tab-selected:#e0e7ff;--tab-ring:#818cf8}
+.front-desk .workflow[data-front-desk-tabs] [data-pos-workflow="products-other-sales"]{--tab-soft:#ecfdf5;--tab-ink:#047857;--tab-border:#a7f3d0;--tab-selected:#d1fae5;--tab-ring:#34d399}
 .front-desk .workflow[data-front-desk-tabs] [data-pos-workflow="gift-card-center"]{--tab-soft:#ecfeff;--tab-ink:#0e7490;--tab-border:#a5f3fc;--tab-selected:#cffafe;--tab-ring:#22d3ee}
 .front-desk .workflow[data-front-desk-tabs] [data-pos-workflow="completed-services"]{--tab-soft:#ecfdf5;--tab-ink:#047857;--tab-border:#a7f3d0;--tab-selected:#d1fae5;--tab-ring:#34d399}
 .front-desk .workflow[data-front-desk-tabs] [data-pos-workflow="appointments"]{--tab-soft:#f5f3ff;--tab-ink:#6d28d9;--tab-border:#ddd6fe;--tab-selected:#ede9fe;--tab-ring:#a78bfa}

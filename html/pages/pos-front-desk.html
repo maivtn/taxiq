@@ -12,7 +12,7 @@
         window.history.replaceState(window.history.state, '', current);
       }
       const section = requested || (!current.searchParams.has('view') && !current.searchParams.has('ticket') ? 'overview' : null);
-      const pages = {staff: 'pos-front-desk-staff.html', overview: 'pos-front-desk-tickets.html', tickets: 'pos-front-desk-tickets.html', turnboard: 'pos-front-desk-turn-board.html', 'turn-board': 'pos-front-desk-turn-board.html'};
+      const pages = {staff: 'pos-front-desk-staff.html', overview: 'pos-front-desk-tickets.html', tickets: 'pos-front-desk-tickets.html', turnboard: 'pos-front-desk-turn-board.html', 'turn-board': 'pos-front-desk-turn-board.html', quicksale: 'pos-products-other-sales.html', 'products-other-sales': 'pos-products-other-sales.html'};
       if (!Object.hasOwn(pages, section)) return;
       const target = new URL(pages[section], current);
       target.search = current.search;

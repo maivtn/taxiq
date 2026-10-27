@@ -13,6 +13,7 @@
     {id: 'turn-board', label: 'Turn Board', icon: 'turn-board', href: 'pos-front-desk-turn-board.html'},
     {id: 'staff', label: 'Staff', icon: 'staffs-clock', href: 'pos-front-desk-staff.html'},
     {id: 'checkout-customer', label: 'Checkout Customer', icon: 'checkout-customer', href: 'pos-direct-checkout.html?view=list', count: 'checkout-nav-count'},
+    {id: 'products-other-sales', label: 'Products & Other Sales', image: '../assets/icon-oneqr/issue-2040-oneqr-shopping-bag-3d.png', style: 'products-other-sales', href: 'pos-products-other-sales.html'},
     {id: 'completed', label: 'Completed Services', icon: 'completed-services', href: 'pos-completed-services.html'},
     {id: 'booking', label: 'Booking', icon: 'appointments', href: 'pos-front-desk.html?section=appointments', section: 'appointments'},
     {id: 'estimate', label: 'Estimate', icon: 'estimate', href: 'pos-front-desk.html?section=estimate', section: 'estimate'},
@@ -32,7 +33,7 @@
     if (tab.view) node.dataset.frontView = tab.view;
     if (tab.id === 'completed') node.dataset.frontCompleted = '';
     const image = document.createElement('img');
-    image.src = '../assets/icons/pos-front-desk/' + tab.icon + '.svg';
+    image.src = tab.image || '../assets/icons/pos-front-desk/' + tab.icon + '.svg';
     image.alt = ''; image.width = 48; image.height = 48; image.draggable = false;
     image.setAttribute('aria-hidden', 'true');
     const label = document.createElement('span');
@@ -53,6 +54,7 @@
     if (page === 'pos-front-desk-staff.html') return 'staff';
     if (page === 'pos-front-desk-turn-board.html') return 'turn-board';
     if (page === 'pos-completed-services.html') return 'completed';
+    if (page === 'pos-products-other-sales.html') return 'products-other-sales';
     if (page === 'pos-front-desk-tickets.html' || page === 'pos-direct-checkout.html') {
       const id = params.get(page === 'pos-direct-checkout.html' ? 'checkoutId' : 'ticketId');
       if (id) {
