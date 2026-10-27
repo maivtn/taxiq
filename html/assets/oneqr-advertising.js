@@ -226,6 +226,12 @@
   }
 
   function updateIndustry() {
+    const category = PO.categories.find(group => group[0] === state.group);
+    const classified = Boolean(category?.[3].some(industry => industry[0] === state.industry && industry[0] !== 'other'));
+    // Older page markup may still include the PO's unconditional classification notes.
+    root.querySelectorAll('[data-i="filterNote"], [data-i="failClosed"]').forEach(note => {
+      note.hidden = classified;
+    });
     const names = [state.industry, ...state.secondary.filter(key => key !== state.industry)].map(key => {
       const industry = PO.categories.flatMap(category => category[3]).find(item => item[0] === key);
       return industry?.[state.language === 'vi' ? 1 : 2];
