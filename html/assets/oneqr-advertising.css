@@ -72,6 +72,18 @@
 .qa-app .ledger-entry strong { color: #25213a; font-size: 14px; }
 .qa-app .ledger-entry small { overflow-wrap: anywhere; }
 .qa-app .ledger-entry time { color: #666879; font-size: 12px; }
+.qa-app #setup .card.hero { border-color: #d8dee9; background: #fff; color: #0b1c30; }
+.qa-app #setup h2, .qa-app #setup label, .qa-app #setup .box b { color: #0b1c30; }
+.qa-app #setup p, .qa-app #setup .muted { color: #4d5870; }
+.qa-app #setup input, .qa-app #setup select, .qa-app #setup .ts-control { border-color: #cbd5e1; background-color: #fff; color: #0b1c30; }
+.qa-app #setup .box { border-color: #cbd5e1; background: #f8fafc; }
+.qa-app #setup .notice { border: 1px solid #fde68a; background: #fffbeb; color: #854d0e; }
+.qa-app #setup .tag { background: #f1f5f9; color: #334155; }
+.qa-app #setup .tag.is-active { background: #dcfce7; color: #166534; }
+.qa-app #setup .qa-secondary-chip, .qa-app #setup button.alt { background: #e9e9ff; color: #2d2eaa; }
+.qa-app #setup .ts-dropdown { border-color: #cbd5e1; color: #0b1c30; }
+.qa-app #setup .ts-dropdown .optgroup-header { background: #f1f5f9; color: #334155; }
+.qa-app #setup a { color: #3a3bbf; }
 @media (max-width: 1024px) {
   .qr-advertising-shell { gap: 16px; }
   .qa-app { font-size: 14px; }
