@@ -820,3 +820,11 @@ body[data-nexora-workspace="pos"] .sidebar-section-label + .sidebar-nav { margin
 .plan-panel .plan-info { min-width:0; }
 .plan-panel .panel-title { overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:12px; font-weight:700; }
 .plan-panel .plan-button { flex-shrink:0; }
+
+/* Current Salon menu remains English across the local merchant prototype. */
+.sidebar-account-language{display:flex;align-items:center;gap:4px;min-height:40px;padding:0 10px;color:#ffffffe0;font-size:12px;font-weight:600}
+.sidebar-account-language-control{position:relative;flex:1;min-width:0}
+.sidebar-account-language select{display:block;appearance:none;width:100%;min-height:40px;padding:0 44px 0 0;border:0;border-radius:6px;background:transparent;color:inherit;font:inherit;cursor:pointer}
+.sidebar-account-language option{background:#fff;color:#182841}
+.sidebar-account-language-control svg{position:absolute;right:16px;top:50%;width:16px;height:16px;transform:translateY(-50%);pointer-events:none;color:#b7c9ec}
+.sidebar-account-language select:focus-visible{outline:2px solid #32d7ff;outline-offset:2px}

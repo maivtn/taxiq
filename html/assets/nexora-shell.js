@@ -405,8 +405,10 @@
         (treeNav ? '<span class="profile-row">' + salonAvatar + '<span class="sidebar-salon-copy"><small class="sidebar-salon-kicker">CURRENT SALON</small><span class="profile-name">' + esc(salonName) + '</span></span></span>' : '<span class="profile-row"><span class="avatar">NT</span><span class="profile-name">NEXORA TOUCH</span></span>') + CARET +
       '</button>' +
       '<div class="sidebar-account-menu" id="nexora-account-menu" hidden>' +
-        '<a href="owner-setting.html"><i data-lucide="settings" aria-hidden="true"></i><span>' + (treeNav ? 'Settings' : 'Setting') + '</span></a>' +
-        '<a href="owner-setting.html?tab=business-verification"><i data-lucide="badge-check" aria-hidden="true"></i><span>' + 'Business Verification' + '</span></a>' +
+        '<a href="owner-setting.html"><span>' + (treeNav ? 'Settings' : 'Setting') + '</span></a>' +
+        '<a href="owner-setting.html?tab=business-verification"><span>' + 'Business Verification' + '</span></a>' +
+        '<a href="my-certifications.html"><span>My Certifications</span></a>' +
+        '<label class="sidebar-account-language"><span>Language:</span><span class="sidebar-account-language-control"><select aria-label="Language"><option value="en" selected>English</option></select><i data-lucide="chevron-down" aria-hidden="true"></i></span></label>' +
       '</div>' +
       '</div>' +
       (treeNav ? '<div class="sidebar-section-label">Platform</div>' : '') +

@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>My Certifications | Nexora Touch</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/nexora-icons.css">
+  <link rel="stylesheet" href="../assets/nexora-shell.css">
+  <style>
+    .certifications-page{width:100%;max-width:1280px;margin:auto;color:#182841;min-width:0}
+    .certifications-page h1{margin:0 0 8px;font-size:28px;line-height:1.25;letter-spacing:-.03em}
+    .certifications-page>p{margin:0 0 24px;color:#6c7890;font-size:13px;line-height:1.6}
+    .certificate-selection{display:inline-flex;flex-direction:column;gap:5px;max-width:100%;padding:12px 18px;margin-bottom:20px;border:1px solid #6653db;border-radius:10px;background:#f1efff;color:#5544bf;text-decoration:none;font-size:13px;font-weight:700;overflow-wrap:anywhere}
+    .certificate-selection small{font-size:11px;font-weight:500}
+    .certificate-preview{padding:20px;border:1px solid #dce2ec;border-radius:14px;background:#fff;scroll-margin-top:90px}
+    .certificate-warning{margin:0 0 16px;padding:12px 16px;border:1px solid #f3c3c3;border-radius:8px;background:#fff3f3;color:#b42318;font-size:12px;line-height:1.6}
+    .certificate-preview img{display:block;width:100%;height:auto;border-radius:8px}
+    .certificate-actions{display:flex;justify-content:flex-end;margin-top:20px}
+    .certificate-download{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 18px;border:1px solid #6653db;border-radius:9px;background:#6653db;color:#fff;text-decoration:none;font-size:12px;font-weight:700}
+    .certificate-download svg{width:16px;height:16px}
+    .certifications-page a:focus-visible{outline:3px solid #b8aaf5;outline-offset:3px}
+    @media(max-width:767px){.certifications-page h1{font-size:24px}.certificate-preview{padding:12px}.certificate-warning{padding:10px}.certificate-download{width:100%}}
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Salon sidebar"></aside>
+    <div class="app-area">
+      <header class="header"></header>
+      <!-- Copy and revoked demo preview from staging /dashboard/certifications. -->
+      <main class="content certifications-page">
+        <h1>My Certifications</h1>
+        <p>NEXORA TOUCH certificates issued to you. Download one as an image, or share its link.</p>
+        <a class="certificate-selection" href="#certificate-preview" aria-current="true"><span>Program 1</span><small>NXT-01-2026-0002</small></a>
+        <section class="certificate-preview" id="certificate-preview" aria-label="NXT-01-2026-0002">
+          <p class="certificate-warning">This certificate was revoked on Sep 9, 2026 and is no longer valid.</p>
+          <img src="../assets/certifications/nxt-01-2026-0002.png" width="1600" height="1236" alt="NEXORA TOUCH certificate awarded to Nexora_b1 for Program 1, certificate ID NXT-01-2026-0002.">
+          <div class="certificate-actions"><a class="certificate-download" href="../assets/certifications/nxt-01-2026-0002.png" download="nexora-touch-certificate-NXT-01-2026-0002.png"><i data-lucide="download" aria-hidden="true"></i>Download certificate</a></div>
+        </section>
+      </main>
+    </div>
+  </div>
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script>window.NEXORA_SHELL={workspace:'salon',activePage:'certifications',activeTab:'certifications'};</script>
+  <script src="../assets/nexora-icons.js"></script>
+  <script src="../assets/nexora-shell-nav.js"></script>
+  <script src="../assets/nexora-shell.js"></script>
+</body>
+</html>
