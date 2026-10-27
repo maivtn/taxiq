@@ -1,0 +1,92 @@
+/* Adapted from the PO advertising and wallet prototype in from-po/quang-cao. */
+.qr-advertising-shell { display: grid; max-width: 1440px; margin: 0 auto; gap: 20px; }
+.qa-app { min-width: 0; color: #25213a; font: 15px/1.5 Inter, system-ui, sans-serif; }
+.qa-app *, .qa-app *::before, .qa-app *::after { box-sizing: border-box; }
+.qa-app .hide, .qa-app [hidden] { display: none !important; }
+.qa-app h1 { margin: 10px 0; font-size: 30px; line-height: 1.25; }
+.qa-app h2 { margin: 0 0 12px; font-size: 21px; line-height: 1.35; }
+.qa-app h3 { margin: 18px 0 5px; font-size: 16px; }
+.qa-app p { margin: 12px 0; color: #666879; line-height: 1.6; }
+.qa-app a { color: #6739b3; text-underline-offset: 3px; }
+.qa-app small, .qa-app .muted { color: #666879; font-size: 13px; }
+.qa-app button { border: 0; border-radius: 9px; padding: 11px 16px; background: #7040c2; color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
+.qa-app button.alt { background: #eee8fa; color: #6639ae; }
+.qa-app button:disabled { opacity: .45; cursor: not-allowed; }
+.qa-app button:focus-visible, .qa-app a:focus-visible, .qa-app input:focus-visible, .qa-app select:focus-visible { outline: 3px solid #b69bdf; outline-offset: 3px; }
+.qa-app button:not(:disabled):hover { filter: brightness(.97); }
+.qa-app .lang { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
+.qa-app .lang b { font-size: 13px; }
+.qa-app .lang button { padding: 7px 12px; font-size: 13px; }
+.qa-app .lang button[aria-pressed="true"] { background: #7040c2; color: #fff; }
+.qa-app .lang .muted { flex-basis: 100%; max-width: 880px; }
+.qa-app #google_translate_element { min-height: 32px; }
+.qa-app .notice { margin: 16px 0; border-radius: 10px; padding: 13px 15px; background: #fff6de; color: #785a16; line-height: 1.5; }
+.qa-app .card { min-width: 0; margin: 16px 0; border: 1px solid #eae8f1; border-radius: 16px; padding: 24px; background: #fff; }
+.qa-app .hero { background: linear-gradient(115deg, #f0e8ff, #e7faf9); }
+.qa-app .grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 12px; }
+.qa-app .box { min-width: 0; border: 1px solid #ebe8f1; border-radius: 12px; padding: 15px; }
+.qa-app .box p:last-child { margin-bottom: 0; }
+.qa-app .num { margin: 7px 0; font-size: 24px; font-weight: 750; line-height: 1.25; font-variant-numeric: tabular-nums; overflow-wrap: anywhere; }
+.qa-app .equivalent { display: block; margin: -2px 0 6px; color: #6739b3; font-weight: 600; }
+.qa-app nav { display: flex; gap: 5px; width: fit-content; max-width: 100%; margin: 18px 0 0; border: 1px solid #eae8f1; border-radius: 12px; padding: 5px; background: #fff; }
+.qa-app nav button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; background: transparent; color: #666879; white-space: nowrap; }
+.qa-app nav button::before { content: ''; flex-shrink: 0; width: 23px; height: 23px; background: center / contain no-repeat; }
+.qa-app nav button[data-view="overview"]::before { background-image: url('icon-oneqr/issue-2040-oneqr-layout-dashboard-3d.png'); }
+.qa-app nav button[data-view="earn"]::before { background-image: url('icon-oneqr/issue-2040-oneqr-wallet-3d.png'); }
+.qa-app nav button[data-view="ads"]::before { background-image: url('icon-oneqr/issue-2040-oneqr-megaphone-3d.png'); }
+.qa-app nav button.active { background: #eee8fa; color: #6335aa; }
+.qa-app label { display: block; margin: 14px 0 6px; font-weight: 600; }
+.qa-app input, .qa-app select { width: 100%; min-height: 44px; border: 1px solid #dcd9e7; border-radius: 9px; padding: 11px; background-color: #fff; color: #25213a; font: inherit; }
+.qa-app select:not([multiple]) { appearance: none; -webkit-appearance: none; padding-right: 44px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%23666879' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; background-size: 16px; }
+.qa-app select[multiple] { min-height: 160px; padding-right: 44px; }
+.qa-app select option { padding: 3px 4px; }
+.qa-app input[type="checkbox"] { width: 18px; min-height: 18px; height: 18px; flex: 0 0 18px; margin: 4px 0 0; accent-color: #7040c2; }
+.qa-app .line { display: flex; align-items: flex-start; gap: 9px; margin: 17px 0; }
+.qa-app .line label { margin: 0; font-weight: 400; }
+.qa-app .line a { display: block; width: fit-content; margin-top: 6px; }
+.qa-app .row { display: flex; flex-wrap: wrap; gap: 10px; }
+.qa-app .tag { display: inline-block; border-radius: 20px; padding: 6px 11px; background: #eee8fa; color: #6737aa; font-size: 13px; }
+.qa-app .tag.is-active { background: #dff5eb; color: #19805b; }
+.qa-app .error { color: #b33442; }
+.qa-app .ok { color: #19805b; }
+.qa-app #payout, .qa-app #convert, .qa-app #review, .qa-app #recipient-wallet { margin-top: 16px; }
+.qa-app #review { border-color: #cbb9e6; background: #f9f6fe; }
+.qa-app #review h3, .qa-app #recipient-wallet h3 { margin-top: 0; }
+.qa-app #review:focus, .qa-app [role="status"]:focus { outline: none; }
+.qa-app .subview-back { margin-top: 16px; }
+.qa-app .ledger-entry { display: grid; gap: 3px; margin-top: 12px; border-top: 1px solid #eae8f1; padding-top: 12px; }
+.qa-app .ledger-entry strong { color: #25213a; font-size: 14px; }
+.qa-app .ledger-entry small { overflow-wrap: anywhere; }
+.qa-app .ledger-entry time { color: #666879; font-size: 12px; }
+body:has(.qa-app) > .skiptranslate { display: none !important; }
+body:has(.qa-app) { top: 0 !important; }
+@media (max-width: 1024px) {
+  .qr-advertising-shell { gap: 16px; }
+  .qa-app { font-size: 14px; }
+  .qa-app h1 { font-size: 26px; }
+  .qa-app .card { padding: 20px; }
+  .qa-app .box { padding: 13px; }
+}
+@media (max-width: 650px) {
+  .qr-advertising-shell { gap: 12px; }
+  .qa-app h1 { font-size: 22px; }
+  .qa-app h2 { font-size: 18px; }
+  .qa-app .card { margin: 12px 0; padding: 16px; }
+  .qa-app .notice { margin: 12px 0; padding: 11px 12px; font-size: 13px; }
+  .qa-app .lang { gap: 6px; margin-bottom: 12px; }
+  .qa-app .lang .muted { font-size: 12px; }
+  .qa-app nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; gap: 3px; padding: 4px; }
+  .qa-app nav button { flex-direction: column; gap: 4px; padding: 8px 4px; font-size: 11px; white-space: normal; }
+  .qa-app nav button::before { width: 24px; height: 24px; }
+  .qa-app .grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+  .qa-app .grid > .box:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  .qa-app .box { padding: 12px; }
+  .qa-app .num { font-size: 22px; }
+  .qa-app .row { gap: 8px; }
+  .qa-app .row button { flex: 1 1 auto; padding: 10px 12px; font-size: 13px; }
+  .qa-app .line { font-size: 13px; }
+}
+@media (max-width: 360px) {
+  .qa-app .grid { grid-template-columns: minmax(0, 1fr); }
+  .qa-app .grid > .box { grid-column: auto; }
+}
