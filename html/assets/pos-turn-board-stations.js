@@ -1,6 +1,19 @@
 (function () {
   'use strict';
-  const stations=window.NEXORA_STATIONS,demo=window.NEXORA_POS_DEMO;
+  const stations=window.NEXORA_STATIONS,demo=window.NEXORA_POS_DEMO,data=window.NEXORA_FRONT_DESK_DATA;
+  let refreshing=false;
+  function refreshShared(){
+    try{
+      refreshing=true;
+      tickets=data.all().filter(data.active);
+      const rows=data.technicians();
+      rows.forEach(row=>{const tech=technicians.find(tech=>tech.name===row.name);if(tech)Object.assign(tech,row);else technicians.push({...row,codes:row.codes || [],approvedServiceCodes:row.approvedServiceCodes || row.codes || [],turnDetails:row.turnDetails || [],turns:row.turns || row.posProfile?.turns || 0,sales:row.sales || 0,minutes:row.minutes || 0,serviceCount:row.serviceCount || 0,level:row.level || 1,commission:row.commission || .6,dailyIncomeGoal:row.dailyIncomeGoal || 150});});
+      technicians.forEach(tech=>{if(!['clocked-out','paused'].includes(tech.status))tech.status=data.statusFor(tech,tickets)==='busy'?'busy':'available';});
+      if(!technicians[nextTurnIndex]||technicians[nextTurnIndex].status!=='available')nextTurnIndex=technicians.findIndex(tech=>tech.status==='available');
+      renderTurnBoard();
+    }catch(error){toast(error.message);}
+    finally{refreshing=false;}
+  }
   const originalRender=renderTurnBoard,originalAssign=assignGuestFromBoard;
   function chipFor(tech){
     if(stations.load().settings.mode==='off')return '';
@@ -11,9 +24,10 @@
   renderCardBoard=function(){let html=cards();technicians.forEach(t=>{html=html.replace(boardEscape(t.name)+' · Level ',boardEscape(t.name)+chipFor(t)+' · Level ');});return html;};
   renderTurnGrid=function(){let html=grid();technicians.forEach(t=>{html=html.replace(' · '+boardEscape(t.name)+'<br>',' · '+boardEscape(t.name)+chipFor(t)+'<br>');});return html;};
   renderTurnBoard=function(){
-    const data=stations.load();
-    tickets.forEach(t=>{const s=data.stations.find(s=>s.ticketId===String(t.bookingId || t.id)&&['held','occupied'].includes(s.state));if(s){t.stationCode=s.code;t.stationOverride=s.override;}});
+    const stationData=stations.load();
+    tickets.forEach(t=>{const s=stationData.stations.find(s=>s.ticketId===String(t.bookingId || t.id)&&['held','occupied'].includes(s.state));if(s){t.stationCode=s.code;t.stationOverride=s.override;}});
     originalRender();
+    if(!refreshing){try{data.saveTechnicians(technicians);}catch(error){toast(error.message);}}
   };
   assignGuestFromBoard=async function(ticketId,index){
     const t=tickets.find(t=>t.id===ticketId),tech=technicians[index];if(!t||!tech)return;
@@ -30,15 +44,13 @@
       }
       originalAssign(ticketId,index);
       stations.start(t);
-      const key='nexora:front-desk-ticket-workspaces:v1',saved=JSON.parse(localStorage.getItem(key)||'{}');
-      saved[String(t.bookingId || t.id)]={...saved[String(t.bookingId || t.id)],...t};localStorage.setItem(key,JSON.stringify(saved));
+      if(t.lines)t.lines.forEach(line=>{if(line.status!=='completed'){line.tech=tech.name;line.status='in-service';}});
+      data.save(t);
       renderTurnBoard();
     }catch(error){toast(error.message);}
   };
   window.addEventListener('nexora:stations-changed',renderTurnBoard);
-  window.addEventListener('storage',e=>{if(e.key==='nexora:front-desk-ticket-workspaces:v1'){
-    try{const saved=JSON.parse(e.newValue || '{}');tickets=tickets.map(t=>({...t,...saved[String(t.bookingId || t.id)]})).filter(t=>!t.payment&&!t.cancelled);renderTurnBoard();}catch(_){}
-  }});
-  try{const saved=JSON.parse(localStorage.getItem('nexora:front-desk-ticket-workspaces:v1') || '{}');tickets=tickets.map(t=>({...t,...saved[String(t.bookingId || t.id)]})).filter(t=>!t.payment&&!t.cancelled);}catch(_){}
-  renderTurnBoard();
+  window.addEventListener('storage',event=>{if(!event.key||Object.values(data.keys).includes(event.key))refreshShared();});
+  window.addEventListener('focus',refreshShared);
+  refreshShared();
 })();

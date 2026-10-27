@@ -1,7 +1,8 @@
 (function () {
   'use strict';
   const root=document.querySelector('[data-direct-root]');if(!root)return;
-  const demo=window.NEXORA_POS_DEMO,esc=demo.esc,key='nexora:direct-checkouts:v1',draftKey='nexora:direct-checkout-customer-draft:v1';
+  const data=window.NEXORA_FRONT_DESK_DATA;
+  const demo=window.NEXORA_POS_DEMO,esc=demo.esc,draftKey='nexora:direct-checkout-customer-draft:v1';
   const money=n=>'$'+(Number(n || 0)/100).toFixed(2),digits=v=>String(v || '').replace(/\D/g,'');
   const hasPhoneCountryCode=value=>/^\s*\+1/.test(value) || /^1\d{10}$/.test(digits(value));
   const phoneDigits=value=>{const number=digits(value);return (hasPhoneCountryCode(value)?number.slice(1):number).slice(0,10);};
@@ -56,7 +57,7 @@
   let records=[],current=null,stage=1,view='list',warning='',search='',filter='all',contactUntil=0;
   let guest={phone:'',customer:'',status:''},tipMode='percent',picker='',addonPicker='',pickerCategory='all',pickerSearch='',discountOpen=new Set();
   const detailState=new Map();
-  try{const saved=JSON.parse(localStorage.getItem(key));if(Array.isArray(saved))records=saved;}catch(_){}
+  try{records=data.all();}catch(error){warning=error.message;}
   // UI copy: PO V34 customerResultHtml, itemEditor, groupHtml, tipPickerHtml, summaryHtml and renderModal.
   const actionIcons={'custom-service':'plus','cancel-checkout':'cancel',print:'print',sms:'sms','saved-receipt':'ticket',lookup:'search','different-customer':'user','reveal-contact':'lock',list:'arrow'};
   const actionColors={'service-picker':'dc-green','addon-picker':'dc-blue','extra-service':'dc-blue','custom-service':'dc-purple','line-discount':'dc-amber','reveal-contact':'dc-purple','different-customer':'dc-blue','add-group':'dc-purple',print:'dc-blue',sms:'dc-green','saved-receipt':'dc-purple',open:'dc-purple'};
@@ -64,9 +65,9 @@
   const phone=()=>{const value=digits(current?.phone || guest.phone);return contactUntil>Date.now()?value.replace(/^(\d{3})(\d{3})(\d{4})$/,'($1) $2-$3'):'••• ••• '+value.slice(-4);};
   const isCancelled=t=>!!t&&(t.cancelled||t.status==='cancelled');
   const hasPayment=t=>!!(t?.payment||t?.splitBills?.bills?.some(b=>b.payment));
-  const canCancel=t=>canCheckout()&&!!t&&!isCancelled(t)&&!hasPayment(t);
+  const canCancel=t=>canCheckout()&&!!t?.directCheckout&&!isCancelled(t)&&!hasPayment(t);
   const cancelNeedsApproval=t=>['in-service','ready-to-pay','ready'].includes(t.status)||t.lines.some(l=>['in-service','completed'].includes(l.status));
-  function persist(){try{localStorage.setItem(key,JSON.stringify(records));return true;}catch(error){warning=String(error.message || error);return false;}}
+  function persist(ticket=current){try{if(ticket)data.save(ticket);return true;}catch(error){warning=String(error.message || error);return false;}}
   function markApproval(action){current.pendingApproval=action;current.poPendingApprovals=[...new Set([...(current.poPendingApprovals || []),action])];}
   function save(){if(current){current.services=current.lines.map(l=>l.name);current.tech=[...new Set(current.lines.flatMap(l=>String(l.tech || '').split(',')).map(n=>n.trim()).filter(Boolean))].join(', ');persist();}else try{localStorage.setItem(draftKey,JSON.stringify(guest));}catch(_){}
   }
@@ -98,6 +99,11 @@
     if(current)return true;
     if(digits(guest.phone).length!==10||!guest.status){warning='Find the customer by phone first.';return false;}
     if(!guest.customer.trim()){warning='Enter the new customer’s name.';return false;}
+    const existing=data.openForPhone(guest.phone);
+    if(existing){
+      if(!existing.directCheckout){location.href=data.url(existing,'edit',new URLSearchParams(location.search).get('returnTo')==='staff'?'staff':'');return false;}
+      current=normalize(existing);records=records.filter(row=>data.keyOf(row)!==data.keyOf(existing));records.unshift(current);return true;
+    }
     current=normalize({id:'DC-'+crypto.randomUUID().slice(0,8).toUpperCase(),directCheckout:true,customer:guest.customer.trim(),phone:digits(guest.phone),customerType:guest.status==='existing'?'returning':'new',createdAt:new Date().toISOString(),checkedIn:false,status:'draft',lines:[],services:[],tech:'',note:'',checkout:{tip:0,tipType:'percent',tipSplitMode:demo.load().payment.tipSplit,method:demo.methods().find(m=>m.id!=='split')?.id || 'cash',cash:'',receipt:'none'}});
     records.unshift(current);if(!persist()){records.shift();current=null;return false;}try{localStorage.removeItem(draftKey);}catch(_){}return true;
   }
@@ -180,7 +186,7 @@
   }
   function editorHtml(){
     const t=total(),ready=stage===1?!!(current||guest.status==='existing'||guest.status==='new'&&guest.customer.trim()):stage===2?!validateServices():true;
-    return `<section class="checkout-frame panel checkout-stage-${stage}" aria-label="Checkout flow"><div class="builder-head"><div class="builder-title">${button(icon('arrow'),'list','aria-label="Back to checkout list" title="Back to checkout list"','icon-button')}<div><h2>New direct checkout</h2><p class="muted">Find the customer, assign the work, and finish payment.</p>${current?`<p class="muted">${esc(current.id)}</p>`:''}</div></div><span class="direct-note">${icon('check')} No check-in required</span></div><nav class="checkout-progress" aria-label="Three checkout steps">${['Find customer','Technician & services','Payment & checkout'].map((label,index)=>button(`<b>${stage>index+1?icon('check'):index+1}</b><span class="step-copy"><span class="step-full">${label}</span><span class="step-short">${['Find customer','Technician & services','Payment & checkout'][index]}</span></span>`,'go-step',`data-step="${index+1}" aria-label="${label}" ${stage===index+1?'aria-current="step"':''}`,`step-button ${stage===index+1?'active':stage>index+1?'done':''}`)).join('')}</nav><div class="builder-grid"><div class="stack">${customerHtml()}${stage>=2?servicesHtml():''}</div>${stage===3?summaryHtml():stage===2?previewHtml():''}</div><div class="checkout-action-wrap"><p class="review-warning" role="status" data-po-warning>${esc(warning)}</p><div class="checkout-step-actions">${button(icon('arrow')+(stage===1?'Checkout list':stage===2?'Customer':'Services'),'previous','','btn-secondary')}<div class="action-context">${stage===3?`<span>Total due</span><strong data-po-total="total">${money(t.totalCents)}</strong>`:''}</div>${button(stage===3?'Review checkout · <span data-po-total="button">'+money(t.totalCents)+'</span>':(stage===1?'Next · Services':'Next · Payment')+icon('arrowRight'),stage===3?'review':'next',`data-po-primary ${!ready?'disabled':''}`,'btn-primary')}</div></div></section>`;
+    return `<section class="checkout-frame panel checkout-stage-${stage}" aria-label="Checkout flow"><div class="builder-head"><div class="builder-title">${button(icon('arrow'),'list',new URLSearchParams(location.search).get('returnTo')==='staff'?'aria-label="Staff" title="Staff"':'aria-label="Back to checkout list" title="Back to checkout list"','icon-button')}<div><h2>New direct checkout</h2><p class="muted">Find the customer, assign the work, and finish payment.</p>${current?`<p class="muted">${esc(current.id)}</p>`:''}</div></div><span class="direct-note">${icon('check')} No check-in required</span></div><nav class="checkout-progress" aria-label="Three checkout steps">${['Find customer','Technician & services','Payment & checkout'].map((label,index)=>button(`<b>${stage>index+1?icon('check'):index+1}</b><span class="step-copy"><span class="step-full">${label}</span><span class="step-short">${['Find customer','Technician & services','Payment & checkout'][index]}</span></span>`,'go-step',`data-step="${index+1}" aria-label="${label}" ${stage===index+1?'aria-current="step"':''}`,`step-button ${stage===index+1?'active':stage>index+1?'done':''}`)).join('')}</nav><div class="builder-grid"><div class="stack">${customerHtml()}${stage>=2?servicesHtml():''}</div>${stage===3?summaryHtml():stage===2?previewHtml():''}</div><div class="checkout-action-wrap"><p class="review-warning" role="status" data-po-warning>${esc(warning)}</p><div class="checkout-step-actions">${button(icon('arrow')+(stage===1?'Checkout list':stage===2?'Customer':'Services'),'previous','','btn-secondary')}<div class="action-context">${stage===3?`<span>Total due</span><strong data-po-total="total">${money(t.totalCents)}</strong>`:''}</div>${button(stage===3?'Review checkout · <span data-po-total="button">'+money(t.totalCents)+'</span>':(stage===1?'Next · Services':'Next · Payment')+icon('arrowRight'),stage===3?'review':'next',`data-po-primary ${!ready?'disabled':''}`,'btn-primary')}</div></div></section>`;
   }
   async function cancelCheckout(id){
     let ticket=records.find(t=>t.id===id);if(!canCancel(ticket))return;
@@ -198,13 +204,13 @@
     ticket=records.find(t=>t.id===id);if(!canCancel(ticket))return;
     const approval=await approveCheckout('cancel',id,{force:cancelNeedsApproval(ticket),label:'Cancel ticket'});
     if(!approval||demo.account().id!==operator.id)return;
-    try{const saved=JSON.parse(localStorage.getItem(key) || '[]');if(!Array.isArray(saved))throw new Error();records=saved;}
+    try{records=data.all();}
     catch(error){warning=String(error.message || error);render();return;}
     ticket=records.find(t=>t.id===id);if(!canCancel(ticket))return;
     if(cancelNeedsApproval(ticket)&&!approval.approver){warning=`Review the changes for ${customerName(ticket.customer)} before entering the approver PIN.`;render();return;}
     const previous={...ticket};
     Object.assign(ticket,{status:'cancelled',cancelled:true,cancelReason:result.value,cancelledBy:operator.name,cancelApprovedBy:approval.approver?.name || '',cancelledAt:new Date().toISOString()});
-    if(!persist()){
+    if(!persist(ticket)){
       Object.keys(ticket).forEach(key=>{if(!(key in previous))delete ticket[key];});Object.assign(ticket,previous);
       render();return;
     }
@@ -252,7 +258,7 @@
     }
     window.scrollTo(window.scrollX,pageScroll);
   }
-  function openLegacy(){const legacy=root.querySelector('[data-po-legacy]');window.NEXORA_TICKET_WORKSPACE.mount(legacy,{catalog,technicians:()=>technicians().map(name=>({name,status:'available'})),onChange(){save();},onModeChange(){},onBack(){if(current?.payment){location.href='pos-completed-services.html';return;}current=null;view='list';render();}}).open(current,'checkout');}
+  function openLegacy(){const legacy=root.querySelector('[data-po-legacy]');window.NEXORA_TICKET_WORKSPACE.mount(legacy,{catalog,technicians:()=>technicians().map(name=>({name,status:'available'})),onChange(){save();},onModeChange(){},onBack(){if(new URLSearchParams(location.search).get('returnTo')==='staff'){location.href='pos-front-desk-staff.html';return;}if(current?.payment){location.href='pos-completed-services.html';return;}current=null;view='list';render();}}).open(current,'checkout');}
   function updatePrimary(){
     const primary=root.querySelector('[data-po-primary]');if(!primary)return;
     primary.disabled=stage===1?!Boolean(current||guest.status==='existing'||guest.status==='new'&&guest.customer.trim()):stage===2?Boolean(validateServices()):false;
@@ -385,11 +391,11 @@
   root.addEventListener('keydown',e=>{if(e.key==='Enter'&&e.target.id==='customer-phone'){e.preventDefault();lookup();}if(e.key==='Enter'&&e.target.id==='customer-name'){e.preventDefault();if(ensureCustomer()){stage=2;render();}}});
   root.addEventListener('click',async e=>{
     const b=e.target.closest('[data-direct-action]');if(!b||b.disabled)return;const action=b.dataset.directAction;
-    if(action==='list'){save();view='list';warning='';current=null;contactUntil=0;render();return;}
+    if(action==='list'){save();if(new URLSearchParams(location.search).get('returnTo')==='staff'){location.href='pos-front-desk-staff.html';return;}view='list';warning='';current=null;contactUntil=0;render();return;}
     if(action==='completed'){location.href='pos-completed-services.html';return;}
     if(action==='new'){newCheckout();return;}
     if(action==='cancel-checkout'){await cancelCheckout(b.dataset.id);return;}
-    if(action==='open'){const record=records.find(t=>t.id===b.dataset.id);if(!record)return;current=normalize(record);view=isCancelled(current)?'cancelled':current.payment?'receipt':current.splitBills?'legacy':'editor';stage=current.lines.length?3:2;tipMode=current.checkout.tipType==='percent'?'percent':'amount';warning='';render();return;}
+    if(action==='open'){const record=records.find(t=>String(t.id)===b.dataset.id);if(!record)return;if(!record.directCheckout){location.href=data.url(record,'checkout');return;}current=normalize(record);view=isCancelled(current)?'cancelled':current.payment?'receipt':current.splitBills?'legacy':'editor';stage=current.lines.length?3:2;tipMode=current.checkout.tipType==='percent'?'percent':'amount';warning='';render();return;}
     if(action==='print'){window.print();return;}
     if(action==='sms'){Swal.fire({title:'Send receipt to '+phone(),html:`<p>Preview the message and confirm the customer's phone before sending in the live POS.</p><div class="receipt-sms-preview">${esc(customerName(current.customer))}, thank you for visiting Bitcoin Nail Bar. Your receipt ${esc(current.id)} is ${money(current.payment.totalCents)} paid by ${esc(demo.load().payment.methods.find(m=>m.id===current.payment.method)?.label || current.payment.method)}. A secure receipt link would be attached by Nexora.</div><p>Prototype only. No SMS has been sent. The live system should check customer consent and show delivery status.</p>`,showCancelButton:true,cancelButtonText:'← Back to receipt',confirmButtonText:'Done · Checkout Customer',customClass:{popup:'pos-swal'}}).then(result=>{if(result.isConfirmed){view='list';current=null;contactUntil=0;render();}});return;}
     if(action==='saved-receipt'){Swal.fire({title:'View saved receipt',html:`<p>${esc(current.id)} · ${esc(customerName(current.customer))}</p>${summaryRows()}<div class="total-line"><span>Paid · ${esc(demo.load().payment.methods.find(m=>m.id===current.payment.method)?.label || current.payment.method)}</span><strong>${money(current.payment.totalCents)}</strong></div>`,confirmButtonText:'← Back to receipt',customClass:{popup:'pos-swal po-review-dialog'},didOpen:()=>renderIcons(Swal.getPopup())});return;}
@@ -430,19 +436,21 @@
   });
   window.addEventListener('nexora:pos-account-changed',()=>{save();current=null;view='list';contactUntil=0;render();});
   window.addEventListener('nexora:pos-settings-changed',()=>{if(view==='editor')render();});
-  window.addEventListener('storage',e=>{
-    if(e.key!==key)return;
+  function refreshRecords(){
     try{
-      const saved=JSON.parse(e.newValue || '[]');if(!Array.isArray(saved))return;records=saved;
+      records=data.all();
       if(current){
         const record=records.find(t=>t.id===current.id);current=record?normalize(record):null;
         if(!current){view='list';warning='';}
         else if(isCancelled(current)||current.payment){view=isCancelled(current)?'cancelled':'receipt';contactUntil=0;if(Swal.isVisible())Swal.close();}
       }
       render();
-    }catch(_){}
-  });
-  const params=new URLSearchParams(location.search),id=params.get('checkoutId');current=records.find(t=>t.id===id) || null;
+    }catch(error){warning=error.message;render();}
+  }
+  window.addEventListener('storage',event=>{if(!event.key||Object.values(data.keys).includes(event.key))refreshRecords();});
+  window.addEventListener('pageshow',event=>{if(event.persisted)refreshRecords();});
+  const params=new URLSearchParams(location.search),id=params.get('checkoutId');current=records.find(t=>String(t.id)===id) || null;
+  if(current&&!current.directCheckout){location.replace(data.url(current,params.get('mode') || 'checkout',params.get('returnTo')==='staff'?'staff':''));return;}
   if(current){normalize(current);view=isCancelled(current)?'cancelled':current.payment?'receipt':current.splitBills?'legacy':'editor';stage=params.get('step')?Math.max(1,Math.min(3,Number(params.get('step'))||2)):params.get('mode')==='edit'?2:3;tipMode=current.checkout.tipType==='percent'?'percent':'amount';render();}
   else if(params.get('view')==='list'||!canCheckout())render();else newCheckout();
 })();

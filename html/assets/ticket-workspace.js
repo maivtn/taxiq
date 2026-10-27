@@ -81,7 +81,7 @@
     const input = (label,name,value='',type='text') => `<label>${label}<input name="${name}" type="${type}" value="${esc(value)}" ${type==='number'?'min="0" step="0.01"':''} required></label>`;
     const services = () => options.catalog().filter(s=>s.active!==false);
     const categoryOf = s => s.categoryName || s.requiredSkill || 'Other';
-    const clockedIn = name => {const tech=options.technicians().find(t=>t.name===name);return !!tech && tech.status!=='clocked-out';};
+    const clockedIn = value => {const names=String(value || '').split(',').map(name=>name.trim()).filter(Boolean);return names.length>0&&names.every(name=>{const tech=options.technicians().find(t=>t.name===name);return !!tech&&tech.status!=='clocked-out';});};
     const group = () => parent.splitBills;
     const checkoutPaid = () => !!parent.payment&&(!group()||(group().bills.length>0&&group().bills.every(b=>b.payment)));
     const amountSplit = () => group()?.mode==='amount';

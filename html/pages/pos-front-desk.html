@@ -8,7 +8,7 @@
       const current = new URL(window.location.href);
       const requested = current.searchParams.get('section') || current.searchParams.get('tab');
       const section = requested || (!current.searchParams.has('view') && !current.searchParams.has('ticket') ? 'overview' : null);
-      const pages = {overview: 'pos-front-desk-tickets.html', tickets: 'pos-front-desk-tickets.html', turnboard: 'pos-front-desk-turn-board.html', 'turn-board': 'pos-front-desk-turn-board.html'};
+      const pages = {staff: 'pos-front-desk-staff.html', overview: 'pos-front-desk-tickets.html', tickets: 'pos-front-desk-tickets.html', turnboard: 'pos-front-desk-turn-board.html', 'turn-board': 'pos-front-desk-turn-board.html'};
       if (!Object.hasOwn(pages, section)) return;
       const target = new URL(pages[section], current);
       target.search = current.search;
@@ -39,6 +39,7 @@
     <a data-front-section="tickets" href="pos-front-desk-tickets.html">Tickets</a>
     <a data-front-section="waitlist" href="pos-front-desk.html?section=waitlist">Live Waitlist</a>
     <a href="pos-front-desk-turn-board.html">Turn Board</a>
+    <a href="pos-front-desk-staff.html">Staff</a>
     <a href="pos-direct-checkout.html?view=list">Checkout Customer</a>
     <a href="pos-completed-services.html">Completed Services</a>
     <a data-front-section="appointments" class="active" href="pos-front-desk.html?section=appointments" aria-current="page">Appointments</a>

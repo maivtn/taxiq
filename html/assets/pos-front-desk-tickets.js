@@ -1,57 +1,20 @@
 /* Tickets content adapted from the supplied Front Desk prototype. Ticket workspaces are saved locally between visits. */
 (function () {
 'use strict';
-let tickets=[
- {id:7,customer:'Quan',phone:'(555) 012-2807',time:'8:49 AM',status:'waiting',tech:'',services:['Milk and Honey Pedicure'],wait:28},
- {id:9,customer:'Brian',phone:'(555) 016-1092',time:'9:16 AM',status:'waiting',tech:'',services:['Milk and Honey Pedicure'],wait:17},
- {id:1,customer:'DJ',phone:'(555) 019-5421',time:'10:56 AM',status:'in-service',tech:'Chloe',services:['Acrylic with Polish (Full Set)','Paris Pearl Pedicure'],wait:0},
- {id:8,customer:'Leo',phone:'(555) 017-8804',time:'9:07 AM',status:'waiting',tech:'Kayla Bui, Lana VMM',services:['Paris Pearl Pedicure','Eyebrow Waxing','Dipping Powder'],wait:25}
-];
-const appointmentStore=window.NEXORA_APPOINTMENTS_STORE;
-if(appointmentStore){
- const records=appointmentStore.loadAll();
- const reservedNumbers=new Set([...tickets.map(t=>t.id),...records.map(r=>r.metadata?.checkIn?.ticketNumber).filter(Number.isSafeInteger)]);
- let nextId=Math.max(...tickets.map(t=>t.id));
- records.filter(r=>r.status==='checked-in'&&(r.metadata?.estimate||r.metadata?.checkIn)).forEach(r=>{
-  const checkIn=r.metadata?.checkIn;
-  let number=checkIn?.ticketNumber;
-  if(!Number.isSafeInteger(number)){do{nextId++;}while(reservedNumbers.has(nextId));number=nextId;reservedNumbers.add(number);}
-  const lines=r.tickets.map(l=>({id:l.id,serviceId:l.serviceId,name:l.serviceName,price:l.price,tech:l.technicianName==='Anyone'?'':l.technicianName,status:l.technicianId?'assigned':'unassigned'}));
-  tickets.push({id:number,bookingId:r.id,customer:r.customerName,phone:r.phone,
-   time:new Date(r.metadata.checkedInAt || r.startAt).toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'}),
-   status:'waiting',tech:[...new Set(lines.map(l=>l.tech).filter(Boolean))].join(', '),services:lines.map(l=>l.name),lines,checkIn,
-   wait:Math.max(0,Math.floor((Date.now()-new Date(r.metadata.checkedInAt || r.startAt).getTime())/60000)),estimateNote:r.note});
- });
+const data=window.NEXORA_FRONT_DESK_DATA;
+const ticketKey=data.keyOf;
+let loadError='';
+const ticketRecords=(()=>{try{return data.all();}catch(error){loadError=error.message;return [];}})();
+let tickets=ticketRecords.filter(data.active);
+const technicians=(()=>{try{return data.technicians();}catch(_){return [];}})();
+function persistWorkspace(ticket){
+ try{data.save(ticket);return true;}
+ catch(error){feedback(error.message);return false;}
 }
-const workspaceStorageKey='nexora:front-desk-ticket-workspaces:v1';
-let savedWorkspaces={};
-try{
- const stored=JSON.parse(localStorage.getItem(workspaceStorageKey)||'{}');
- if(stored&&typeof stored==='object'&&!Array.isArray(stored))savedWorkspaces=stored;
-}catch(_){}
-const ticketKey=t=>t.bookingId || String(t.id);
-const ticketRecords=tickets.map(t=>({...t,...savedWorkspaces[ticketKey(t)],id:t.id,bookingId:t.bookingId}));
-Object.entries(savedWorkspaces).forEach(([id,ticket])=>{
- if(ticket?.payment&&!ticketRecords.some(t=>ticketKey(t)===id))ticketRecords.push({...ticket});
-});
-tickets=ticketRecords.filter(t=>!t.payment&&!t.cancelled);
-function persistWorkspace(t){
- savedWorkspaces[ticketKey(t)]={...t};
- try{localStorage.setItem(workspaceStorageKey,JSON.stringify(savedWorkspaces));}
- catch(_){feedback('Unable to save this ticket locally. Keep this page open and try again.');}
-}
-const technicians=[
- {name:'Kayla Bui',level:2,status:'available',turns:4,serviceCount:6,sales:180,minutes:205,codes:['PED','GEL','WAX'],commission:.6,dailyIncomeGoal:150,detail:'Available now · Nails & pedicure'},
- {name:'Lana VMM',level:3,status:'available',turns:4,serviceCount:4,sales:430,minutes:278,codes:['ACR-FS','REF','DIP'],commission:.6,dailyIncomeGoal:220,detail:'Available now · All services'},
- {name:'Chloe',level:3,status:'busy',turns:3,serviceCount:5,sales:365,minutes:250,codes:['MANI','GEL','PED'],commission:.6,dailyIncomeGoal:240,detail:'Busy · About 18 min remaining'},
- {name:'Mia',level:1,status:'clocked-out',turns:2,serviceCount:3,sales:155,minutes:120,codes:['MANI','WAX'],commission:.55,dailyIncomeGoal:120,detail:'Clocked out'}
-];
-const salonTechnicians=window.NEXORA_SALON_DATA?.loadCatalog().technicians || [];
-salonTechnicians.forEach(t=>{if(!technicians.some(existing=>existing.name===t.name))technicians.push({name:t.name,status:t.active?'available':'clocked-out',detail:t.active?'Available for service':'Clocked out'});});
 const $=selector=>document.querySelector(selector);
 const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 const demo=window.NEXORA_POS_DEMO,stations=window.NEXORA_STATIONS;
-const labels={'not-arrived':'Not Arrived',waiting:'Waiting','in-service':'In Service','ready-to-pay':'Ready to pay'};
+const labels={draft:'Checkout in progress','not-arrived':'Not Arrived',waiting:'Waiting','in-service':'In Service','ready-to-pay':'Ready to pay'};
 const visibleFor=t=>!demo||['owner','manager','cashier'].includes(demo.account().role)||(demo.account().role==='technician'&&String(t.tech || '').split(',').map(n=>n.trim()).includes(demo.account().name));
 let filter='all',stationFilter='',selected=null,action='',openedTicket=null;
 const ticketViewKey='nexora:front-desk-ticket-view:v1';
@@ -106,7 +69,8 @@ function render(){
   $('#ticket-empty').hidden=rows.length>0;
   $('#ticket-body').innerHTML=rows.map(t=>{
     let actions=button('Edit','edit',t.id);
-    if(!t.services.length)actions+=button('Add Service','edit',t.id)+button('Consultation','assign',t.id)+button('Cancel','cancel',t.id,'cancel');
+    if(t.directCheckout)actions+=button('Checkout','checkout',t.id,'checkin')+button('Cancel','cancel',t.id,'cancel');
+    else if(!t.services.length)actions+=button('Add Service','edit',t.id)+button('Consultation','assign',t.id)+button('Cancel','cancel',t.id,'cancel');
     else if(['in-service','ready-to-pay'].includes(t.status))actions+=(t.splitBills?'':button('Reassign','assign',t.id))+button('Checkout','checkout',t.id,'checkin')+button('Cancel','cancel',t.id,'cancel');
     else actions+=(t.tech?button('Reassign','assign',t.id)+button('Start Service','start',t.id,'checkin'):button('Assign Tech','assign',t.id))+button('Cancel','cancel',t.id,'cancel');
     const family=t.checkIn?.mode==='family'?'<small class="family-ticket-marker">Family · '+esc(t.checkIn.contact?.name)+'</small>':'';
@@ -119,7 +83,7 @@ const workspace=window.NEXORA_TICKET_WORKSPACE.mount($('#ticket-workspace'),{
  technicians:()=>technicians,
  onChange(t){persistWorkspace(t);if(t.payment)tickets=tickets.filter(row=>row!==t);render();},
  onModeChange(kind){if(openedTicket)updateTicketUrl(openedTicket,kind);},
- onBack(){if(openedTicket?.payment){location.href='pos-completed-services.html';return;}openedTicket=null;updateTicketUrl(null);$('#tickets-view').hidden=false;render();}
+ onBack(){if(new URLSearchParams(location.search).get('returnTo')==='staff'){location.href='pos-front-desk-staff.html';return;}if(openedTicket?.payment){location.href='pos-completed-services.html';return;}openedTicket=null;updateTicketUrl(null);$('#tickets-view').hidden=false;render();}
 });
 function updateTicketUrl(ticket,kind,historyMode='push'){
  const url=new URL(window.location.href);
@@ -150,6 +114,7 @@ async function open(kind,ticket,historyMode='push'){
  }
  if(ticket.splitBills&&!['edit','checkout'].includes(kind))return;
  if(['edit','checkout'].includes(kind)){
+  if(ticket.directCheckout){location.href=data.url(ticket,kind,new URLSearchParams(location.search).get('returnTo')==='staff'?'staff':'');return;}
   kind=ticket.splitBills||ticket.payment?'checkout':kind;
   openedTicket=ticket;updateTicketUrl(ticket,kind,historyMode);
   $('#tickets-view').hidden=true;$('#overview-view').hidden=true;workspace.open(ticket,kind);syncNavigation();return;
@@ -175,7 +140,7 @@ document.querySelector('.ticket-view-switch').addEventListener('click',e=>{
  applyTicketView();
 });
 $('#family-checkin-groups').addEventListener('click',e=>{const link=e.target.closest('[data-family-ticket]');if(!link)return;const t=ticketRecords.find(t=>ticketKey(t)===link.dataset.familyTicket&&!t.cancelled);if(t){e.preventDefault();open(t.payment?'checkout':'edit',t);}});
-$('#ticket-body').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const t=tickets.find(t=>t.id===Number(b.dataset.id));if(!t)return;if(b.dataset.action==='start'){try{const gate=String(t.tech).split(',').map(n=>stations.gate(n.trim())).find(Boolean);if(gate)throw new Error('Confirm '+gate.code+' clean before the next Beep.');stations.start(t);}catch(error){feedback(error.message);return;}t.status='in-service';if(t.lines)t.lines.forEach(l=>{if(l.tech&&l.status!=='completed')l.status='in-service';});persistWorkspace(t);render();feedback('Service started for '+t.customer);return;}open(b.dataset.action,t);});
+$('#ticket-body').addEventListener('click',e=>{const b=e.target.closest('[data-action]');if(!b)return;const t=tickets.find(t=>String(t.id)===b.dataset.id);if(!t)return;if(b.dataset.action==='start'){try{const gate=String(t.tech).split(',').map(n=>stations.gate(n.trim())).find(Boolean);if(gate)throw new Error('Confirm '+gate.code+' clean before the next Beep.');stations.start(t);}catch(error){feedback(error.message);return;}t.status='in-service';if(t.lines)t.lines.forEach(l=>{if(l.tech&&l.status!=='completed')l.status='in-service';});persistWorkspace(t);render();feedback('Service started for '+t.customer);return;}open(b.dataset.action,t);});
 document.querySelectorAll('[data-close-dialog]').forEach(b=>b.addEventListener('click',()=>$('#ticket-dialog').close()));
 $('#ticket-form').addEventListener('submit',e=>{
  e.preventDefault();const data=new FormData(e.currentTarget),t=selected;if(!t)return;
@@ -194,15 +159,27 @@ $('#ticket-form').addEventListener('submit',e=>{
   }
  }
  if(action!=='assign'||!data.get('print'))feedback('Ticket updated.');
- persistWorkspace(t);$('#ticket-dialog').close();render();
+ if(persistWorkspace(t)){$('#ticket-dialog').close();render();}
 });
 window.NEXORA_FRONT_DESK_TICKETS={active:()=>tickets.filter(visibleFor),rows:filteredTickets,syncNavigation,filters:()=>({status:filter,station:stationFilter}),setStationFilter(code){stationFilter=code;render();},open,save(t){persistWorkspace(t);render();},feedback};
 window.addEventListener('nexora:stations-changed',render);
 window.addEventListener('nexora:pos-account-changed',()=>{if(openedTicket){openedTicket=null;$('#ticket-workspace').hidden=true;$('#tickets-view').hidden=false;updateTicketUrl(null);}if($('#ticket-dialog').open)$('#ticket-dialog').close();render();});
-render();restoreTicketUrl();
+render();restoreTicketUrl();if(loadError)feedback(loadError);
 window.addEventListener('popstate',restoreTicketUrl);
-window.addEventListener('storage',e=>{
- if(e.key!==workspaceStorageKey)return;
- try{savedWorkspaces=JSON.parse(e.newValue || '{}');ticketRecords.forEach(t=>{const saved=savedWorkspaces[ticketKey(t)];if(saved)Object.assign(t,saved);});tickets=ticketRecords.filter(t=>!t.payment&&!t.cancelled);if(openedTicket){if(openedTicket.cancelled){openedTicket=null;$('#ticket-workspace').hidden=true;$('#tickets-view').hidden=false;}else workspace.open(openedTicket,openedTicket.payment?'checkout':'edit');}render();feedback('Ticket progress updated from the staff app.');}catch(_){feedback('Unable to read the latest ticket progress.');}
-});
+function refreshTickets(){
+ try{
+  const latest=data.all(),latestTechs=data.technicians(),existing=new Map(ticketRecords.map(ticket=>[ticketKey(ticket),ticket]));
+  ticketRecords.splice(0,ticketRecords.length,...latest.map(ticket=>Object.assign(existing.get(ticketKey(ticket)) || {},ticket)));
+  tickets=ticketRecords.filter(data.active);
+  technicians.splice(0,technicians.length,...latestTechs);
+  if(openedTicket){
+   if(!data.active(openedTicket)&&!openedTicket.payment){openedTicket=null;$('#ticket-workspace').hidden=true;$('#tickets-view').hidden=false;updateTicketUrl(null);}
+   else workspace.open(openedTicket,openedTicket.payment?'checkout':new URLSearchParams(location.search).get('mode') || 'edit');
+  }
+  render();
+ }catch(error){feedback(error.message);}
+}
+window.addEventListener('storage',event=>{if(!event.key||Object.values(data.keys).includes(event.key))refreshTickets();});
+window.addEventListener('focus',refreshTickets);
+window.addEventListener('pageshow',event=>{if(event.persisted)refreshTickets();});
 })();
