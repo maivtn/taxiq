@@ -1,6 +1,6 @@
 /* Shared Front Desk tabs use the artwork and palette from the merchant POS. */
 .front-desk>.subtitle{margin-bottom:25px}
-.front-desk .workflow[data-front-desk-tabs]{position:relative;display:flex;flex-wrap:nowrap;width:max-content;max-width:100%;margin-inline:auto;white-space:nowrap;gap:8px;padding:4px 1px 20px;align-items:stretch}
+.front-desk .workflow[data-front-desk-tabs]{position:relative;display:flex;flex-wrap:nowrap;width:max-content;max-width:100%;margin-inline:0;white-space:nowrap;gap:8px;padding:4px 1px 20px;align-items:stretch}
 .front-desk-primary-tabs{display:flex;flex:0 1 auto;min-width:0;gap:8px;overflow-x:auto;padding:0 3px 4px;scrollbar-width:thin}
 .front-desk .workflow[data-front-desk-tabs] [data-pos-workflow]{--tab-soft:#eff6ff;--tab-ink:#1e40af;--tab-border:#bfdbfe;--tab-selected:#dbeafe;--tab-ring:#60a5fa;position:relative;display:flex;flex:0 0 auto;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-width:96px;min-height:82px;padding:6px 9px;border:1px solid var(--tab-border);border-radius:12px;background:var(--tab-soft);color:var(--tab-ink);font-family:inherit;font-size:13px;line-height:20px;font-weight:600;text-decoration:none;box-shadow:0 1px 2px #0000000d;transition:background .15s,border-color .15s,box-shadow .15s}
 .front-desk .workflow[data-front-desk-tabs] .front-desk-primary-tabs>[data-pos-workflow]{flex:0 0 auto;text-align:center}
