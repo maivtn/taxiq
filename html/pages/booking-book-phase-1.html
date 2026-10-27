@@ -9590,6 +9590,7 @@
     }
 
   </style>
+  <link rel="stylesheet" href="../assets/nexora-icons.css">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/nexora-credits.css">
   <link rel="stylesheet" href="../assets/pos-customers.css">
@@ -9603,7 +9604,9 @@
       <script>
         window.NEXORA_SHELL = { activePage: 'booking', activeTab: 'booking' };
       </script>
-      <script src="../assets/nexora-shell.js"></script>
+      <script src="../assets/nexora-icons.js"></script>
+  <script src="../assets/nexora-shell-nav.js"></script>
+  <script src="../assets/nexora-shell.js"></script>
 
       <main class="content" aria-label="Booking Book content">
         <section class="blank-stage">
@@ -12942,6 +12945,7 @@
       var tab = getValidMainTab(requestedTab);
 
       activateMainTab(tab, { syncUrl: false });
+      if (tab === 'booking' && ['today', 'calendar'].includes(params.get('view'))) activateBookingSubTab(params.get('view'));
       if (requestedTab !== tab) {
         syncMainTabUrl(tab, 'replace');
       }
@@ -17090,8 +17094,7 @@ function getBookingCardCallStart(item) {
     });
 
     window.addEventListener('popstate', function() {
-      var params = new URLSearchParams(window.location.search);
-      activateMainTab(params.get('tab'), { syncUrl: false });
+      activateMainTabFromUrl();
     });
 
     document.querySelectorAll('[data-subtab-target]').forEach(function(tab) {
@@ -17103,6 +17106,10 @@ function getBookingCardCallStart(item) {
     document.querySelectorAll('[data-booking-subtab-target]').forEach(function(tab) {
       tab.addEventListener('click', function() {
         activateBookingSubTab(tab.dataset.bookingSubtabTarget);
+        var url = new URL(window.location.href);
+        url.searchParams.set('view', tab.dataset.bookingSubtabTarget);
+        window.history.pushState({tab: 'booking'}, '', url.search + url.hash);
+        window.NEXORA_SHELL.refreshSidebar();
       });
     });
 

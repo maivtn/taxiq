@@ -8,7 +8,11 @@
 
 **Công nghệ:** HTML, CSS, JavaScript thuần, các store/localStorage và thư viện đang có; không bổ sung framework hoặc build pipeline.
 
-**Trạng thái:** Kế hoạch đề xuất, chưa triển khai các task bên dưới. Người dùng đã yêu cầu kiểm thử kỹ UI và responsive sau triển khai, đặc biệt trên iPad và cả phone. Hiện trạng vẫn được xác định bằng đọc mã nguồn; chưa có kết quả kiểm thử cho đợt thay đổi này.
+**Trạng thái cập nhật Oct 27, 2026:** Đã triển khai Task 1–4 trên `main`: 26 icon 3D Fluency local, shell nhiều cấp, mapping điều hướng và Dashboard 9 thẻ/chi tiết module. Task 5–14 chưa triển khai. Người dùng đã chốt giữ Tax IQ tại `html/index.html` và mở Salon Home/Hướng dẫn bắt đầu bằng HTML mẫu PO trong đợt này.
+
+**Kiểm thử đợt A:** 28/28 ca shell/Dashboard đạt. Lượt `npm test` cuối ghi nhận 1.559 đạt, 249 lỗi; bản trước thay đổi có 280 lỗi, không có tên ca lỗi mới so với baseline. Bộ test toàn dự án chưa xanh. Đã đo bố cục trên 26 kích thước Dashboard, 40 tổ hợp chi tiết module và 36 tổ hợp trang đang dùng shell; không ghi nhận tràn ngang tài liệu. Đã thao tác tìm/lọc/reset, chi tiết/quay lại/Back, menu nhiều cấp, Escape/focus, URL Calendar/Settings/QR và hai đích preview PO. Đây là giả lập viewport Chrome; chưa kiểm tra Safari/WebKit, thiết bị iPad/phone thật hoặc bàn phím ảo. Bằng chứng cục bộ: `tmp/po-handoff-qa/2026-10-27/verification-summary.json`, log và ảnh trong cùng thư mục.
+
+**Mở demo:** Chạy `python3 -m http.server 8125 --bind 127.0.0.1` từ gốc repository, rồi mở `http://127.0.0.1:8125/html/pages/dashboard.html`. Thư mục PO phải có trong workspace để mở các trang xem trước đã được chốt.
 
 **Nguồn yêu cầu:**
 
@@ -18,7 +22,7 @@
 - [Báo cáo QA của PO](../../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/docs/QA_REPORT.md); kết quả này chỉ thuộc package PO.
 - [Dashboard mẫu](../../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/dashboard.html), [Salon Home mẫu](../../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/salon-home.html), [Trang chủ mẫu](../../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/index.html).
 - [Các trang sản phẩm](../../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/products/README.md).
-- Staging để bổ sung phần thiếu/chưa rõ: `https://staging-web.nexoratouch.com`; với luồng VLinkPay có `https://staging-merchant.vlinkpay.com`. Đây là các host đã xuất hiện trong mã nguồn, chưa phải bằng chứng đã kiểm tra đúng màn hoặc quyền truy cập. Xem [nguồn link Nexora staging](../../../html/assets/qr-stations-workflows.js) và [nguồn link merchant staging](../../../html/pages/owner-setting.html).
+- Staging để bổ sung phần thiếu/chưa rõ: `https://staging-web.nexoratouch.com`; với luồng VLinkPay có `https://staging-merchant.vlinkpay.com`. Đã đối chiếu màn Analytics tip/QR, AI Hub Settings và POS Technician Report trên Nexora staging trong đợt A; chưa đối chiếu các luồng VLinkPay ngoài phạm vi. Xem [nguồn link Nexora staging](../../../html/assets/qr-stations-workflows.js) và [nguồn link merchant staging](../../../html/pages/owner-setting.html).
 - [Icons8 3D Fluency](https://icons8.com/icons/all--style-3d-fluency--technique-3d) và [điều kiện dùng miễn phí](https://icons8.com/license).
 
 ## 1. Quy tắc triển khai
@@ -158,7 +162,7 @@ Các file mới dưới đây là phương án tổ chức kỹ thuật dự ki�
 | Promotions / SMS / Loyalty | `reward-promotions.html` / `nexora-sms-dashboard.html` / `salon-setup-reward.html` trong `html/pages/` |
 | One QR | `html/pages/qr-stations.html` và query của từng tab hiện có |
 | Reviews | `html/pages/nexora-review.html` |
-| POS Report | `html/pages/pos-shop-income-report.html` |
+| POS Report | Giữ đích PO `/dashboard/pos/report/technician`: staging là báo cáo thợ/commission, khác Store Income và Service Income local; không thay bằng báo cáo gần nghĩa. Hai màn local giữ nguyên URL. |
 | Community | `html/pages/community.html` với các tab hiện có |
 | Tax IQ | `html/index.html`, `html/taxiq/`; giới thiệu trong catalog vẫn mang trạng thái preview của PO |
 | Staff | Giữ các đích trong menu Staff hiện tại, gồm `staff-dashboard.html`, `staff-work-orders.html`, `pos-calendar.html` |
@@ -184,17 +188,17 @@ Các tab/query phải đối chiếu handler thực tế trước khi thêm link
 
 **Nguồn:** Link Icons8 người dùng cung cấp; đối chiếu các icon inline, ký tự và emoji trong HTML/JS PO. Đã khảo sát tùy chọn PNG 94×94 miễn phí và tải thử icon Home; việc này chưa đồng nghĩa toàn bộ bộ icon đã được tải vào repo.
 
-- [ ] Kiểm kê vị trí thay: sidebar cấp chính, thẻ sản phẩm, shortcut, nhóm onboarding, feature explorer, Promotions/Loyalty và trang public.
-- [ ] Chọn icon từ đúng style **3D Fluency**; cùng chất liệu, phối màu và cách dựng. Loại icon thương hiệu như Gemini/ChatGPT khi cần biểu tượng AI chung.
-- [ ] Ưu tiên các nghĩa: Home, Dashboard, POS, QR, Community, AI Hub, AI Voice, Marketing, SMS, Gift Card, Reviews, Analytics, Tax IQ, Booking, Staff, Tickets, Checkout, Settings, Report, Rewards, Support.
-- [ ] Tải bản miễn phí được website cung cấp; lưu file local theo tên ngữ nghĩa. Không nâng kích thước ảnh bằng nội suy và không gọi bản kích thước trả phí để vượt giới hạn miễn phí.
-- [ ] Ghi `sources.json`: key, tên icon gốc, URL trang icon, URL/file tải, kích thước, style, ngày lấy, nơi dự kiến sử dụng. Ghi điều kiện nguồn trong `LICENSE.txt`.
-- [ ] Kiểm kê file ảnh và xem ảnh nguồn để loại file lỗi, sai style hoặc sai nghĩa. Đây là rà soát tài nguyên, không phải test luồng UI.
-- [ ] Tạo helper dùng chung, giải quyết đường dẫn asset theo vị trí script để chạy được cả `html/pages/` và landing page lồng thư mục.
-- [ ] Dùng kích thước hiển thị thống nhất: sidebar 24–28px, thẻ sản phẩm 40–48px, shortcut 32–40px. Icon 94px phù hợp các vị trí này; không dùng làm hình hero lớn.
-- [ ] Icon thiếu nghĩa phù hợp được ghi rõ trong manifest; không lấy icon từ style khác hoặc đổi sang nghĩa gần nhưng dễ gây hiểu nhầm.
-- [ ] Nếu không tìm được icon phù hợp trong style đã chọn, hỏi người dùng về phương án cho đúng vị trí đó trước khi thay.
-- [ ] Chuẩn bị link ghi nguồn Icons8 tại các trang dùng bộ miễn phí theo yêu cầu của nhà cung cấp. Tên liên kết dùng thương hiệu `Icons8`; không thêm đoạn quảng bá tự viết.
+- [x] Kiểm kê vị trí thay: sidebar cấp chính, thẻ sản phẩm, shortcut, nhóm onboarding, feature explorer, Promotions/Loyalty và trang public.
+- [x] Chọn icon từ đúng style **3D Fluency**; cùng chất liệu, phối màu và cách dựng. Loại icon thương hiệu như Gemini/ChatGPT khi cần biểu tượng AI chung.
+- [x] Ưu tiên các nghĩa: Home, Dashboard, POS, QR, Community, AI Hub, AI Voice, Marketing, SMS, Gift Card, Reviews, Analytics, Tax IQ, Booking, Staff, Tickets, Checkout, Settings, Report, Rewards, Support.
+- [x] Tải bản miễn phí được website cung cấp; lưu file local theo tên ngữ nghĩa. Không nâng kích thước ảnh bằng nội suy và không gọi bản kích thước trả phí để vượt giới hạn miễn phí.
+- [x] Ghi `sources.json`: key, tên icon gốc, URL trang icon, URL/file tải, kích thước, style, ngày lấy, nơi dự kiến sử dụng. Ghi điều kiện nguồn trong `LICENSE.txt`.
+- [x] Kiểm kê file ảnh và xem ảnh nguồn để loại file lỗi, sai style hoặc sai nghĩa. Đây là rà soát tài nguyên, không phải test luồng UI.
+- [x] Tạo helper dùng chung, giải quyết đường dẫn asset theo vị trí script để chạy được cả `html/pages/` và landing page lồng thư mục.
+- [x] Dùng kích thước hiển thị thống nhất: sidebar 24–28px, thẻ sản phẩm 40–48px, shortcut 32–40px. Icon 94px phù hợp các vị trí này; không dùng làm hình hero lớn.
+- [x] Icon thiếu nghĩa phù hợp được ghi rõ trong manifest; không lấy icon từ style khác hoặc đổi sang nghĩa gần nhưng dễ gây hiểu nhầm.
+- [x] Nếu không tìm được icon phù hợp trong style đã chọn, hỏi người dùng về phương án cho đúng vị trí đó trước khi thay.
+- [x] Chuẩn bị link ghi nguồn Icons8 tại các trang dùng bộ miễn phí theo yêu cầu của nhà cung cấp. Tên liên kết dùng thương hiệu `Icons8`; không thêm đoạn quảng bá tự viết.
 
 **Tiêu chí hoàn tất:** Bộ asset thực tải, có mapping dùng lại được và nguồn/license rõ ràng; một chức năng dùng cùng biểu tượng tại các vị trí tương ứng. Chưa thay hàng loạt icon của các trang ngoài phạm vi.
 
@@ -202,14 +206,14 @@ Các tab/query phải đối chiếu handler thực tế trước khi thêm link
 
 **File:** `nexora-shell-nav.js`, `nexora-shell.js`, `nexora-shell.css`, `frame-salon.html`, `frame-staff.html`.
 
-- [ ] Đưa cấu hình merchant navigation ra file riêng; giữ `NEXORA_SHELL` tương thích với các trang cũ.
-- [ ] Render cây menu PO: Salon Home, Dashboard, Hướng dẫn bắt đầu; SI POS gồm Front Desk, Quản lý tiệm, Khách & tiếp thị; nhóm Tất cả sản phẩm và Hỗ trợ.
-- [ ] Trong AI Hub hiển thị đúng AI Receptionist và Marketing Assistant; trong Công cụ doanh nghiệp nhóm One QR và Payment Gateway theo mẫu.
-- [ ] Nhánh đang mở chỉ lộ các con thuộc nhánh đó. Mục đang chọn và nhánh tổ tiên được xác định theo page/tab/URL.
-- [ ] Tách header theo workspace: Salon dùng ngữ cảnh doanh nghiệp, SI POS dùng toolbar vận hành theo PO, Staff giữ ngữ cảnh nhân viên.
-- [ ] Giữ drawer mobile, trạng thái thu gọn và cấu hình ẩn/hiện menu hiện có; xử lý khóa menu cũ không còn trong model mà không xóa dữ liệu người dùng.
-- [ ] Scope CSS bằng workspace; không đổi toàn bộ `.header`, `.sidebar`, `.content` theo giao diện Salon rồi áp vào Staff.
-- [ ] Áp bộ icon đã chuẩn bị cho các vị trí shell nằm trong phạm vi; đảm bảo các trang cũ chưa nạp helper không bị lỗi khởi tạo.
+- [x] Đưa cấu hình merchant navigation ra file riêng; giữ `NEXORA_SHELL` tương thích với các trang cũ.
+- [x] Render cây menu PO: Salon Home, Dashboard, Hướng dẫn bắt đầu; SI POS gồm Front Desk, Quản lý tiệm, Khách & tiếp thị; nhóm Tất cả sản phẩm và Hỗ trợ.
+- [x] Trong AI Hub hiển thị đúng AI Receptionist và Marketing Assistant; trong Công cụ doanh nghiệp nhóm One QR và Payment Gateway theo mẫu.
+- [x] Nhánh đang mở chỉ lộ các con thuộc nhánh đó. Mục đang chọn và nhánh tổ tiên được xác định theo page/tab/URL.
+- [x] Tách header theo workspace: Salon dùng ngữ cảnh doanh nghiệp, SI POS dùng toolbar vận hành theo PO, Staff giữ ngữ cảnh nhân viên.
+- [x] Giữ drawer mobile, trạng thái thu gọn và cấu hình ẩn/hiện menu hiện có; xử lý khóa menu cũ không còn trong model mà không xóa dữ liệu người dùng.
+- [x] Scope CSS bằng workspace; không đổi toàn bộ `.header`, `.sidebar`, `.content` theo giao diện Salon rồi áp vào Staff.
+- [x] Áp bộ icon đã chuẩn bị cho các vị trí shell nằm trong phạm vi; đảm bảo các trang cũ chưa nạp helper không bị lỗi khởi tạo.
 
 **Tiêu chí hoàn tất:** Một bộ shell chung phục vụ được ba ngữ cảnh; Staff giữ các đích riêng; menu nhiều cấp không làm hỏng cách chuyển tab của các trang hiện có.
 
@@ -217,14 +221,14 @@ Các tab/query phải đối chiếu handler thực tế trước khi thêm link
 
 **File:** Các trang có include `nexora-shell.js`, mapping `PAGES`, hai file frame.
 
-- [ ] Kiểm kê tất cả trang dùng shell và các handler `onNavigate` trước khi đổi model.
-- [ ] Với mục PO còn thiếu màn/nội dung local hoặc chưa rõ luồng, lên đúng staging để đối chiếu trước; nếu không đủ căn cứ hoặc khác PO thì hỏi người dùng trước khi nối hoặc dựng HTML.
-- [ ] Cập nhật include theo thứ tự: dữ liệu menu/helper icon trước shell; CSS shell sau CSS trang như quy ước hiện tại.
-- [ ] Nối các mục đã có vào URL ở mục 5; giữ query/tab phục vụ Customers, Call Log, OneQR, Booking và các màn khác.
-- [ ] Chuyển menu Dashboard khỏi `frame-salon.html` sang `dashboard.html` khi trang Dashboard ở Task 4 được thêm trong cùng phạm vi bàn giao.
-- [ ] Đưa link Trang chủ và Salon Home về đúng ngữ cảnh; không đổi `html/index.html` thành Trang chủ public trong đợt này.
-- [ ] Xử lý quay lại từ chi tiết module, mở URL trực tiếp và browser back bằng URL hiện có; không dựng một SPA/router mới.
-- [ ] Rà soát diff và commit phần shell/điều hướng thuộc phạm vi đã hoàn tất, ghi trạng thái test thực tế.
+- [x] Kiểm kê tất cả trang dùng shell và các handler `onNavigate` trước khi đổi model.
+- [x] Với mục PO còn thiếu màn/nội dung local hoặc chưa rõ luồng, lên đúng staging để đối chiếu trước; nếu không đủ căn cứ hoặc khác PO thì hỏi người dùng trước khi nối hoặc dựng HTML.
+- [x] Cập nhật include theo thứ tự: dữ liệu menu/helper icon trước shell; CSS shell sau CSS trang như quy ước hiện tại.
+- [x] Nối các mục đã có vào URL ở mục 5; giữ query/tab phục vụ Customers, Call Log, OneQR, Booking và các màn khác.
+- [x] Chuyển menu Dashboard khỏi `frame-salon.html` sang `dashboard.html` khi trang Dashboard ở Task 4 được thêm trong cùng phạm vi bàn giao.
+- [x] Đưa link Trang chủ và Salon Home về đúng ngữ cảnh; không đổi `html/index.html` thành Trang chủ public trong đợt này.
+- [x] Xử lý quay lại từ chi tiết module, mở URL trực tiếp và browser back bằng URL hiện có; không dựng một SPA/router mới.
+- [x] Rà soát diff và commit phần shell/điều hướng thuộc phạm vi đã hoàn tất, ghi trạng thái test thực tế.
 
 **Tiêu chí hoàn tất:** Mỗi mục menu có đích đúng, hoặc giữ trạng thái preview/đích ngoài đúng PO. Không có mục mới dẫn vào khung nội dung rỗng chỉ để đủ menu.
 
@@ -232,13 +236,13 @@ Các tab/query phải đối chiếu handler thực tế trước khi thêm link
 
 **File:** `pages/dashboard.html`, `nexora-product-catalog.js`, `nexora-dashboard.js`, `nexora-dashboard.css`.
 
-- [ ] Trích đúng nội dung từ `#module-browser`, `#module-detail`, `catalog` và bộ lọc của Dashboard PO.
-- [ ] Hiển thị **9 thẻ**: SI POS, One QR, Payments & Payouts, AI Hub, Reviews, Gift Card Center, Analytics, Community, Spin Wheel.
-- [ ] Đặt bộ lọc và danh mục ngay dưới tiêu đề gọn; giữ việc PO đã bỏ hàng thẻ lặp và hàng quick-access.
-- [ ] Thực hiện tìm kiếm/lọc, cập nhật số kết quả, empty state và thao tác đặt lại bằng câu chữ PO.
-- [ ] Tạo màn chi tiết module với nhóm chức năng, trạng thái khả dụng, link đến màn hiện có và quay lại danh sách.
-- [ ] Dùng `dashboard.html?module=<key>` cho đích chi tiết. Hỗ trợ AI Marketing qua `module=aihub&section=marketing`; Tax IQ truy cập trực tiếp ở `module=taxiq` dù không thêm thẻ thứ 10.
-- [ ] Giữ trạng thái preview/đề xuất của Tax IQ, Spin Wheel và các phần Payments chưa có, kể cả khi repo đang có demo riêng.
+- [x] Trích đúng nội dung từ `#module-browser`, `#module-detail`, `catalog` và bộ lọc của Dashboard PO.
+- [x] Hiển thị **9 thẻ**: SI POS, One QR, Payments & Payouts, AI Hub, Reviews, Gift Card Center, Analytics, Community, Spin Wheel.
+- [x] Đặt bộ lọc và danh mục ngay dưới tiêu đề gọn; giữ việc PO đã bỏ hàng thẻ lặp và hàng quick-access.
+- [x] Thực hiện tìm kiếm/lọc, cập nhật số kết quả, empty state và thao tác đặt lại bằng câu chữ PO.
+- [x] Tạo màn chi tiết module với nhóm chức năng, trạng thái khả dụng, link đến màn hiện có và quay lại danh sách.
+- [x] Dùng `dashboard.html?module=<key>` cho đích chi tiết. Hỗ trợ AI Marketing qua `module=aihub&section=marketing`; Tax IQ truy cập trực tiếp ở `module=taxiq` dù không thêm thẻ thứ 10.
+- [x] Giữ trạng thái preview/đề xuất của Tax IQ, Spin Wheel và các phần Payments chưa có, kể cả khi repo đang có demo riêng.
 
 **Tiêu chí hoàn tất:** Dashboard có đúng vai trò danh mục; URL mở đúng module, quay lại giữ ngữ cảnh tìm kiếm/lọc khi có thể; không đồng nhất nhầm số lượng 9 thẻ với 12 landing page.
 

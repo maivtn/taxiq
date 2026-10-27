@@ -22,7 +22,7 @@
   var activePage = cfg.activePage || '';
 
   var PAGES = {
-    dashboard: 'frame-salon.html',
+    dashboard: 'dashboard.html',
     booking: 'booking-book-phase-1.html',
     community: 'community.html',
     reward: 'salon-setup-reward.html',
@@ -88,6 +88,34 @@
     { type: 'item', key: 'settings', label: 'Settings', icon: 'settings', page: 'owner-settings', accountOnly: true }
   ];
 
+  var treeNav = window.NEXORA_SHELL_NAV;
+  var workspace = activePage === 'staff' ? 'staff' : (cfg.workspace || (activePage === 'pos' ? 'pos' : 'salon'));
+  cfg.workspace = workspace;
+  function visit(nodes, callback) {
+    nodes.forEach(function (node) { callback(node); if (node.children) visit(node.children, callback); });
+  }
+  if (treeNav && activePage !== 'staff') {
+    NAV = treeNav.nodes;
+    visit(NAV, function (node) { node.type = node.children ? 'group' : 'item'; node.items = node.children; });
+  }
+  function routeActive(node) {
+    if (!node.href || /^(?:https?:|\.\.\/)/.test(node.href)) return false;
+    try {
+      var current = new URL(window.location.href), target = new URL(node.href, current);
+      if (target.pathname !== current.pathname) return false;
+      if (target.pathname.endsWith('/dashboard.html')) return (target.searchParams.get('module') || '') === (current.searchParams.get('module') || '') && (!target.searchParams.has('section') || target.searchParams.get('section') === current.searchParams.get('section'));
+      var matches = function(url) { return Array.from(url.searchParams).every(function(pair) { var value = current.searchParams.get(pair[0]); if (pair[0] === 'view' && value === null && current.pathname.endsWith('/booking-book-phase-1.html')) value = 'today'; return value === pair[1]; }); };
+      if (!matches(target)) return false;
+      var moreSpecific = false;
+      if (treeNav && !node.children) visit(NAV, function(other) {
+        if (!other.href || other.children || /^(?:https?:|\.\.\/)/.test(other.href)) return;
+        var url = new URL(other.href, current);
+        if (url.pathname === target.pathname && url.searchParams.size > target.searchParams.size && matches(url)) moreSpecific = true;
+      });
+      return !moreSpecific;
+    } catch (_) { return false; }
+  }
+
   function itemPages(node, item) {
     return item.pages || [item.page || node.page];
   }
@@ -97,13 +125,14 @@
   }
 
   function groupIsActive(node, tab) {
-    return node.type === 'group' && node.items.some(function (item) { return itemIsActive(node, item, tab); });
+    return node.type === 'group' && node.items.some(function (item) { return routeActive(item) || itemIsActive(node, item, tab) || groupIsActive(item, tab); });
   }
 
   var expandedGroups = {};
   try {
     var savedGroups = JSON.parse(window.sessionStorage.getItem(SIDEBAR_EXPANDED_STORAGE_KEY) || '{}');
-    NAV.forEach(function (node) {
+    if (savedGroups && typeof savedGroups === 'object') Object.keys(savedGroups).forEach(function (key) { if (typeof savedGroups[key] === 'boolean') expandedGroups[key] = savedGroups[key]; });
+    visit(NAV, function (node) {
       if (node.type === 'group' && savedGroups && typeof savedGroups[node.key] === 'boolean') {
         expandedGroups[node.key] = savedGroups[node.key];
       }
@@ -130,9 +159,8 @@
     };
   }
 
-  var SIDEBAR_MENU_ITEMS = NAV.filter(function (node) {
-    return node.type !== 'divider';
-  }).map(sidebarMenuItemFromNode);
+  var SIDEBAR_MENU_ITEMS = [];
+  visit(NAV, function (node) { if (node.type !== 'divider') SIDEBAR_MENU_ITEMS.push(sidebarMenuItemFromNode(node)); });
 
   function sidebarMenuKeyMap() {
     var map = {};
@@ -174,11 +202,20 @@
     return [];
   }
 
+  function legacyHiddenSidebarKeys(store) {
+    try {
+      var data = JSON.parse(store.getItem(SIDEBAR_VISIBILITY_STORAGE_KEY) || '[]');
+      var keys = Array.isArray(data) ? data : (data.hiddenKeys || data.hidden || []);
+      var valid = sidebarMenuKeyMap();
+      return keys.filter(function(key) { return typeof key === 'string' && !valid[key]; });
+    } catch (_) { return []; }
+  }
+
   function setHiddenSidebarKeys(keys) {
     var hiddenKeys = normalizeHiddenSidebarKeys(keys);
     var store = storage();
     if (store) {
-      try { store.setItem(SIDEBAR_VISIBILITY_STORAGE_KEY, JSON.stringify({ hiddenKeys: hiddenKeys })); } catch (e) {}
+      try { store.setItem(SIDEBAR_VISIBILITY_STORAGE_KEY, JSON.stringify({ hiddenKeys: hiddenKeys.concat(legacyHiddenSidebarKeys(store)) })); } catch (e) {}
     }
     return hiddenKeys;
   }
@@ -212,7 +249,7 @@
   // own default tab, so honouring the bad value here would leave the sidebar highlighting
   // nothing while a panel is plainly on screen.
   var nativeTabs = [];
-  NAV.forEach(function (node) {
+  visit(NAV, function (node) {
     if (node.type !== 'group' || !node.items) return;
     node.items.forEach(function (item) {
       if (item.tab && itemPages(node, item).indexOf(activePage) !== -1) nativeTabs.push(item.tab);
@@ -223,6 +260,7 @@
   }
   function sidebarTab(tab) {
     if (!tab) return '';
+    if (treeNav && activePage !== 'staff') return tab;
     if (activePage === 'reward') return tab === 'promotions' ? 'promotions' : 'loyalty';
     if (activePage === 'review') return 'reviews';
     if (activePage === 'analytics') return 'analytics';
@@ -241,7 +279,7 @@
   if (urlTab && nativeTabs.length && nativeTabs.indexOf(urlTab) === -1) urlTab = '';
 
   var activeTab = urlTab || sidebarTab(cfg.activeTab) || ({pos: 'front-desk', booking: 'front-desk', review: 'reviews', analytics: 'analytics', stations: 'one-qr', reward: 'loyalty', community: 'feed'}[activePage] || '');
-  NAV.forEach(function (node) {
+  visit(NAV, function (node) {
     if (groupIsActive(node, activeTab)) expandedGroups[node.key] = true;
   });
 
@@ -301,7 +339,28 @@
     return btn + '<div class="nav-subnav' + (expanded ? '' : ' is-collapsed') + '" id="' + subId + '" data-nav-subnav><div class="nav-subnav-inner">' + items + '</div></div>';
   }
 
+  function renderTree(nodes, depth) {
+    var hidden = hiddenSidebarKeySet();
+    return nodes.filter(function (node) { return !node.accountOnly && !hidden[node.key]; }).map(function (node) {
+      var active = node.href && node.href.indexOf('&view=') !== -1 ? routeActive(node) : node.page === activePage && node.tab ? node.tab === activeTab : routeActive(node);
+      var label = (node.iconKey && window.NEXORA_ICONS ? window.NEXORA_ICONS.image(node.iconKey, {size: 28}) : '') + '<span class="shell-tree-label">' + esc(node.label) + '</span>';
+      var cls = depth ? 'nav-subitem' : 'nav-item';
+      if (node.children) {
+        var open = expandedGroups[node.key] === true, id = 'nexora-subnav-' + node.key;
+        var ancestor = groupIsActive(node, activeTab);
+        return '<div class="shell-tree-branch" data-depth="' + depth + '"><div class="shell-tree-row">' +
+          (node.href ? '<a class="' + cls + (active ? ' is-active' : '') + '" href="' + esc(node.href) + '"' + (active ? ' aria-current="page"' : '') + '>' + label + '</a>' : '') +
+          '<button class="' + cls + ' nav-parent' + (open ? ' is-expanded' : '') + (ancestor ? ' is-active' : '') + '" type="button" data-sidebar-key="' + esc(node.key) + '" data-nav-group aria-expanded="' + open + '" aria-controls="' + id + '"' + (node.href ? ' aria-label="' + esc(node.label) + '"' : '') + '>' + (node.href ? '' : label) + CARET + '</button></div>' +
+          '<div class="nav-subnav' + (open ? '' : ' is-collapsed') + '" id="' + id + '" data-nav-subnav><div class="nav-subnav-inner">' + renderTree(node.children, depth + 1) + '</div></div></div>';
+      }
+      if (!node.href) return '';
+      var native = node.page === activePage && node.tab && node.href.split('?')[0] === (window.location.pathname || '').split('/').pop() && node.href.indexOf('&view=') === -1 && (typeof cfg.onNavigate === 'function' || typeof window.activateMainTab === 'function');
+      return '<' + (native ? 'button type="button" data-shell-tab="' + esc(node.tab) + '"' : 'a href="' + esc(node.href) + '"' + (node.newTab ? ' target="_blank" rel="noopener noreferrer"' : '')) + ' class="' + cls + (active ? ' is-active' : '') + '" data-shell-key="' + esc(node.key) + '"' + (!native && node.page && node.tab && node.href.indexOf('&view=') === -1 ? ' data-shell-active-tab="' + esc(node.tab) + '" data-shell-pages="' + esc(node.page) + '"' : '') + (active ? ' aria-current="page"' : '') + '>' + label + (node.availability === 'preview' ? '<small class="shell-preview-tag">BẢN XEM TRƯỚC</small>' : '') + '</' + (native ? 'button' : 'a') + '>';
+    }).join('');
+  }
+
   function renderNav() {
+    if (treeNav) return renderTree(visibleNav(), 0);
     return visibleNav().map(function (node) {
       if (node.type === 'divider') return '<div class="nav-divider"></div>';
       if (node.type === 'group') return renderGroup(node);
@@ -315,16 +374,16 @@
         '<span class="profile-row"><span class="avatar">NT</span><span class="profile-name">NEXORA TOUCH</span></span>' + CARET +
       '</button>' +
       '<div class="sidebar-account-menu" id="nexora-account-menu" hidden>' +
-        '<a href="owner-setting.html"><i data-lucide="settings" aria-hidden="true"></i><span>Setting</span></a>' +
-        '<a href="owner-setting.html?tab=business-verification"><i data-lucide="badge-check" aria-hidden="true"></i><span>Business Verification</span></a>' +
+        '<a href="owner-setting.html"><i data-lucide="settings" aria-hidden="true"></i><span>' + (treeNav ? 'Cài đặt' : 'Setting') + '</span></a>' +
+        '<a href="owner-setting.html?tab=business-verification"><i data-lucide="badge-check" aria-hidden="true"></i><span>' + (treeNav ? 'Xác minh doanh nghiệp' : 'Business Verification') + '</span></a>' +
       '</div>' +
       '</div>' +
       '<nav class="sidebar-nav" aria-label="Main menu">' + renderNav() + '</nav>' +
       '<div class="sidebar-panel plan-panel">' +
-        '<div class="plan-info"><div class="panel-kicker">Current Plan</div><div class="panel-title">Pro Plan</div></div>' +
-        '<button class="plan-button" type="button">Manage</button>' +
+        '<div class="plan-info"><div class="panel-kicker">' + (treeNav ? 'Gói dịch vụ' : 'Current Plan') + '</div>' + (treeNav ? '' : '<div class="panel-title">Pro Plan</div>') + '</div>' +
+        '<button class="plan-button" type="button">' + (treeNav ? 'Quản lý' : 'Manage') + '</button>' +
       '</div>' +
-      '<div class="sidebar-footer"><button class="logout-button" type="button"><span class="logout-icon"><i data-lucide="log-out" aria-hidden="true"></i></span><span>Sign out</span></button></div>';
+      '<div class="sidebar-footer"><button class="logout-button" type="button"><span class="logout-icon"><i data-lucide="log-out" aria-hidden="true"></i></span><span>' + (treeNav ? 'Đăng xuất' : 'Sign out') + '</span></button></div>' + (treeNav ? '<a class="nexora-icon-credit" href="https://icons8.com" target="_blank" rel="noopener noreferrer">Icons8</a>' : '');
   }
 
   function renderStaffCommunityMenu() {
@@ -401,6 +460,13 @@
         '<i data-lucide="trash-2" aria-hidden="true"></i><span>Clear local storage</span>' +
       '</button></div>' : '');
 
+  function merchantHeader() {
+    var pos = workspace === 'pos';
+    return '<div class="mobile-brand"><button class="icon-button" type="button" data-shell-drawer-open aria-label="Open navigation menu" aria-controls="nexora-sidebar" aria-expanded="false"><svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 6h16M4 12h16M4 18h16" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg>' + '</button><a href="dashboard.html"><img class="brand-logo" src="../assets/nexora-logo.svg" alt="Nexora Touch"></a></div>' +
+      '<form class="shell-workspace-search" action="dashboard.html"><label class="search"><i data-lucide="search" aria-hidden="true"></i><input name="q" type="search" aria-label="' + (pos ? 'Tìm chức năng SI POS' : 'Tìm sản phẩm') + '" placeholder="' + (pos ? 'Tìm chức năng SI POS...' : 'Tìm sản phẩm hoặc tính năng…') + '" autocomplete="off"' + (pos ? ' data-shell-function-search' : '') + '></label><div class="shell-function-results" hidden></div></form>' +
+      '<div class="shell-workspace-actions">' + (cfg.showClearStorage ? '<button class="shell-clear-storage-button" type="button" data-shell-clear-storage aria-label="Clear local storage"><i data-lucide="trash-2" aria-hidden="true"></i><span>Clear local storage</span></button>' : '') + '<a href="owner-setting.html" aria-label="Cài đặt doanh nghiệp"><i data-lucide="store" aria-hidden="true"></i></a><a href="news-library.html?tab=news" aria-label="Tin mới từ Nexora"><i data-lucide="bell" aria-hidden="true"></i></a><a href="community.html?tab=connect" aria-label="Tin nhắn Community"><i data-lucide="messages-square" aria-hidden="true"></i></a><a href="dashboard.html" aria-label="Tất cả sản phẩm"><i data-lucide="grid-3x3" aria-hidden="true"></i></a></div>';
+  }
+
   function navigate(tab) {
     var fn = (typeof cfg.onNavigate === 'function') ? cfg.onNavigate
       : (typeof window.activateMainTab === 'function' ? window.activateMainTab : null);
@@ -410,10 +476,14 @@
   function setActiveTab(tab) {
     tab = sidebarTab(tab);
     activeTab = tab;
+    // Several legacy handlers synchronize the URL after invoking this setter.
+    if (treeNav && activePage !== 'staff' && typeof window.queueMicrotask === 'function') window.queueMicrotask(function() { if (window.document && window.document.documentElement) refreshSidebar(); });
     var subs = document.querySelectorAll('.sidebar [data-shell-tab], .sidebar [data-shell-active-tab]');
     for (var i = 0; i < subs.length; i++) {
       var pages = subs[i].getAttribute('data-shell-pages');
-      subs[i].classList.toggle('is-active', (!pages || pages.split(' ').indexOf(activePage) !== -1) && (subs[i].getAttribute('data-shell-tab') || subs[i].getAttribute('data-shell-active-tab')) === tab);
+      var selected = (!pages || pages.split(' ').indexOf(activePage) !== -1) && (subs[i].getAttribute('data-shell-tab') || subs[i].getAttribute('data-shell-active-tab')) === tab;
+      subs[i].classList.toggle('is-active', selected);
+      if (selected) subs[i].setAttribute('aria-current', 'page'); else subs[i].removeAttribute('aria-current');
     }
     if (activePage === 'staff') {
       var staffItems = document.querySelectorAll('.sidebar [data-staff-nav]');
@@ -437,7 +507,7 @@
         }
       });
     } else {
-      NAV.forEach(function (node) {
+      visit(NAV, function (node) {
         if (node.type !== 'group') return;
         var toggle = document.querySelector('.sidebar [data-sidebar-key="' + node.key + '"]');
         if (!toggle) return;
@@ -458,7 +528,14 @@
     var sidebar = document.querySelector('aside.sidebar');
     var backdrop = document.querySelector('.nexora-shell-backdrop');
     var opener = document.querySelector('.header [data-shell-drawer-open]');
-    if (sidebar) sidebar.classList.toggle('is-open', open);
+    if (sidebar) {
+      sidebar.classList.toggle('is-open', open);
+      var mobile = typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 1366px)').matches;
+      sidebar.inert = mobile && !open;
+      if (document.body.classList) document.body.classList.toggle('nexora-drawer-open', mobile && open);
+      if (mobile && open) { var first = sidebar.querySelector('button, a[href]'); if (first) first.focus(); }
+      if (mobile && !open && sidebar.contains && sidebar.contains(document.activeElement) && opener) opener.focus();
+    }
     if (backdrop) backdrop.classList.toggle('is-open', open);
     if (opener) {
       opener.setAttribute('aria-expanded', open ? 'true' : 'false');
@@ -509,6 +586,20 @@
       })(tabs[j]);
     }
 
+    var nativeLinks = document.querySelectorAll('.sidebar a[data-shell-active-tab]');
+    for (var k = 0; k < nativeLinks.length; k++) {
+      nativeLinks[k].addEventListener('click', function(event) {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        var target = new URL(this.href), current = new URL(window.location.href);
+        var canNavigate = typeof cfg.onNavigate === 'function' || typeof window.activateMainTab === 'function';
+        if (target.pathname !== current.pathname || !canNavigate) return;
+        event.preventDefault();
+        navigate(this.getAttribute('data-shell-active-tab'));
+        setActiveTab(this.getAttribute('data-shell-active-tab'));
+        setDrawer(false);
+      });
+    }
+
     var planButton = document.querySelector('.sidebar .plan-button');
     if (planButton) {
       planButton.addEventListener('click', function () {
@@ -520,6 +611,22 @@
 
   function wire() {
     wireSidebar();
+    var functionSearch = document.querySelector('[data-shell-function-search]');
+    if (functionSearch) {
+      var results = document.querySelector('.shell-function-results');
+      function updateResults() {
+        var normalize = function(value) { return value.normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/đ/g, 'd').toLocaleLowerCase(); };
+        var query = normalize(functionSearch.value.trim());
+        var matches = [];
+        visit(NAV, function(node) { if (query && node.href && normalize(node.label).indexOf(query) !== -1) matches.push(node); });
+        results.innerHTML = matches.map(function(node) { return '<a href="' + esc(node.href) + '">' + esc(node.label) + '</a>'; }).join('');
+        results.hidden = !matches.length;
+      }
+      functionSearch.addEventListener('input', updateResults);
+      functionSearch.form.addEventListener('submit', function(event) { event.preventDefault(); var first = results.querySelector('a'); if (first) window.location.href = first.href; });
+      functionSearch.addEventListener('keydown', function(event) { if (event.key === 'Escape') results.hidden = true; if (event.key === 'ArrowDown') { var first = results.querySelector('a'); if (first) {event.preventDefault();first.focus();} } });
+      document.addEventListener('click', function(event) { if (!functionSearch.form.contains(event.target)) results.hidden = true; });
+    }
     document.addEventListener('click', function (event) {
       if (event.target.closest && event.target.closest('.sidebar-account')) return;
       var menu = document.getElementById('nexora-account-menu'), toggle = document.querySelector('[data-shell-account-toggle]');
@@ -535,6 +642,14 @@
     if (backdrop) backdrop.addEventListener('click', function () { setDrawer(false); });
     document.addEventListener('keydown', function (event) {
       if (event.key === 'Escape') setDrawer(false);
+      if (event.key === 'Tab') {
+        var sidebar = document.querySelector('aside.sidebar');
+        if (!sidebar || !sidebar.classList.contains('is-open')) return;
+        var focusable = Array.from(sidebar.querySelectorAll('a[href], button:not(:disabled), input, select')).filter(function(el) { return el.getClientRects().length > 0; });
+        var first = focusable[0], last = focusable[focusable.length - 1];
+        if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+        else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+      }
     });
 
     // Explicitly confirmed reset for the pages that expose this development action.
@@ -559,8 +674,21 @@
   function refreshSidebar() {
     var sidebar = document.querySelector('aside.sidebar');
     if (!sidebar || activePage === 'staff') return;
+    var focused = document.activeElement;
+    var focusKey = focused && focused.getAttribute ? focused.getAttribute('data-shell-key') : null;
+    var focusGroup = focused && focused.getAttribute ? focused.getAttribute('data-sidebar-key') : null;
+    var nav = sidebar.querySelector ? sidebar.querySelector('.sidebar-nav') : null;
+    var scrollTop = nav ? nav.scrollTop : 0;
+    var restoreFocus = focused && sidebar.contains && sidebar.contains(focused);
+    if (treeNav) visit(NAV, function(node) { if (groupIsActive(node, activeTab)) expandedGroups[node.key] = true; });
     sidebar.innerHTML = renderMerchantSidebarHtml();
     wireSidebar();
+    nav = sidebar.querySelector ? sidebar.querySelector('.sidebar-nav') : null;
+    if (nav) nav.scrollTop = scrollTop;
+    if (restoreFocus && !sidebar.inert) {
+      var replacement = focusKey ? sidebar.querySelector('[data-shell-key="' + focusKey + '"]') : focusGroup ? sidebar.querySelector('[data-sidebar-key="' + focusGroup + '"]') : null;
+      if (replacement) replacement.focus({preventScroll: true});
+    }
     if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
   }
 
@@ -646,7 +774,8 @@
     var header = document.querySelector('header.header');
     if (sidebar) sidebar.id = 'nexora-sidebar';
     if (sidebar) sidebar.innerHTML = activePage === 'staff' ? STAFF_SIDEBAR_HTML : renderMerchantSidebarHtml();
-    if (header) header.innerHTML = HEADER_HTML;
+    if (document.body.setAttribute) document.body.setAttribute('data-nexora-workspace', workspace);
+    if (header) header.innerHTML = treeNav && activePage !== 'staff' ? merchantHeader() : HEADER_HTML;
     saveExpandedGroups();
 
     // drawer backdrop (once)
@@ -658,6 +787,12 @@
 
     wire();
     if (activePage === 'staff') setActiveTab(activeTab);
+    if (typeof window.matchMedia === 'function') {
+      var drawerMedia = window.matchMedia('(max-width: 1366px)');
+      var syncDrawer = function() { setDrawer(false); };
+      if (drawerMedia.addEventListener) drawerMedia.addEventListener('change', syncDrawer);
+      setDrawer(false);
+    }
     initStaffTicketCount();
     if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
   }

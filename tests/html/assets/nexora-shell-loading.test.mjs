@@ -32,12 +32,13 @@ function shellStateBeforeDependency(file, dependency) {
   try {
     for (const script of dom.window.document.querySelectorAll('script')) {
       if (script.src.endsWith('/assets/nexora-shell.js')) dom.window.eval(shellSource);
+      else if (script.src.endsWith('/assets/nexora-shell-nav.js') || script.src.endsWith('/assets/nexora-icons.js')) dom.window.eval(readFileSync(new URL(script.src.split('/').pop(), SOURCE_DIR), 'utf8'));
       else if (script.textContent.includes('window.NEXORA_SHELL')) dom.window.eval(script.textContent);
     }
 
     return {
       sidebarId: dom.window.document.querySelector('aside.sidebar')?.id || '',
-      rewardLabels: Array.from(dom.window.document.querySelectorAll('#nexora-subnav-reward .nav-subitem span:last-child'), (node) => node.textContent)
+      posLabels: Array.from(dom.window.document.querySelectorAll('#nexora-subnav-pos .shell-tree-label'), (node) => node.textContent)
     };
   } finally {
     dom.window.close();
@@ -56,12 +57,12 @@ test('salon pages leave sidebar and header rendering to the shared shell', () =>
   }
 });
 
-test('shared shell renders the complete Reward menu before later page dependencies execute', () => {
+test('shared shell renders the PO POS menu before later page dependencies execute', () => {
   for (const [file, dependency] of cases) {
     const state = shellStateBeforeDependency(file, dependency);
     assert.equal(state?.sidebarId, 'nexora-sidebar', `${file} loaded its page dependencies before the shared shell`);
-    assert.ok(state.rewardLabels.includes('AI Offers'), `${file} omitted AI Offers before its page dependencies`);
-    assert.ok(state.rewardLabels.includes('Promotions'), `${file} omitted Promotions before its page dependencies`);
+    assert.ok(state.posLabels.includes('Front Desk'), `${file} omitted Front Desk before its page dependencies`);
+    assert.ok(state.posLabels.includes('Khuyến mãi'), `${file} omitted PO marketing navigation before its page dependencies`);
   }
 });
 
@@ -74,6 +75,7 @@ test('Promotions renders shared shell icons after Lucide becomes available', () 
   try {
     for (const script of dom.window.document.querySelectorAll('script')) {
       if (script.src.endsWith('/assets/nexora-shell.js')) dom.window.eval(shellSource);
+      else if (script.src.endsWith('/assets/nexora-shell-nav.js') || script.src.endsWith('/assets/nexora-icons.js')) dom.window.eval(readFileSync(new URL(script.src.split('/').pop(), SOURCE_DIR), 'utf8'));
       else if (script.src.includes('/lucide@')) {
         dom.window.lucide = { createIcons() { iconRenders += 1; } };
       } else if (script.textContent.includes('window.NEXORA_SHELL') || script.textContent.includes('lucide.createIcons')) {

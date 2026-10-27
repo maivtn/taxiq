@@ -745,3 +745,52 @@ select {
 @media(prefers-reduced-motion:reduce){.sidebar-account-toggle .nav-caret{transition:none}}
 
 .nav-subitem-image{display:block;width:20px;height:20px;flex-shrink:0;object-fit:contain}
+
+/* The PO merchant navigation shares the renderer; Staff retains its own styles. */
+body[data-nexora-workspace="salon"] .sidebar,
+body[data-nexora-workspace="pos"] .sidebar { padding: 18px 14px; }
+body[data-nexora-workspace="salon"] .sidebar-nav,
+body[data-nexora-workspace="pos"] .sidebar-nav { min-height: 0; overflow-y: auto; overscroll-behavior: contain; scrollbar-width: thin; }
+.shell-tree-row { display:flex; align-items:stretch; min-width:0; }
+.shell-tree-row > a { flex:1; }
+.shell-tree-row > a + button { flex:0 0 40px; justify-content:center; padding:8px; }
+.shell-tree-row > button:only-child { width:100%; }
+.shell-tree-label { min-width:0; overflow-wrap:anywhere; flex:1; text-align:left; }
+.shell-tree-branch .nav-subnav-inner { padding-left:10px; }
+.shell-tree-branch .nav-subitem { min-height:42px; gap:8px; line-height:1.4; white-space:normal; }
+.shell-tree-branch .nav-subitem .nexora-3d-icon { width:24px; height:24px; }
+.shell-tree-branch .nav-subnav { margin-left:7px; }
+.shell-tree-branch .nav-subnav-inner > .shell-tree-branch .nav-subnav { margin-left:0; }
+.shell-preview-tag { max-width:70px; font-size:8px; line-height:1.4; color:#ced6ee; }
+.shell-workspace-search { position:relative; flex:1; max-width:560px; min-width:0; }
+.shell-workspace-search .search { width:100%; }
+.shell-workspace-actions { display:flex; gap:6px; align-items:center; margin-left:auto; }
+.shell-workspace-actions a { display:flex; width:40px; height:40px; align-items:center; justify-content:center; color:var(--nexora-muted); border:1px solid var(--nexora-border); border-radius:10px; }
+.shell-workspace-actions svg { width:18px; height:18px; }
+.shell-function-results { position:absolute; z-index:50; left:0; right:0; top:calc(100% + 8px); max-height:60vh; overflow:auto; border:1px solid var(--nexora-border); border-radius:10px; background:#fff; box-shadow:var(--nexora-soft-shadow); padding:6px; }
+.shell-function-results a { display:block; padding:12px; font-size:13px; text-decoration:none; color:var(--nexora-text); }
+.shell-function-results a:hover, .shell-function-results a:focus-visible { background:#eeefff; }
+body[data-nexora-workspace="pos"] .header { background:#fff; }
+body[data-nexora-workspace="salon"] .header .mobile-brand,
+body[data-nexora-workspace="pos"] .header .mobile-brand { flex-shrink:0; }
+@media (max-width:767px) {
+ body[data-nexora-workspace="salon"] .header,
+ body[data-nexora-workspace="pos"] .header { gap:10px; padding:12px; flex-wrap:wrap; }
+ .shell-workspace-search { order:3; flex-basis:100%; max-width:none; }
+ .shell-workspace-actions { gap:4px; }
+ .shell-workspace-actions a { width:34px; height:34px; }
+}
+@media (max-width:1366px) { body.nexora-drawer-open { overflow:hidden; } }
+/* Nested PO trees have variable height; a fixed expansion ceiling clips grandchildren. */
+.shell-tree-branch .nav-subnav { max-height:none; }
+.shell-tree-branch .nav-subnav.is-collapsed { display:none; }
+.shell-tree-branch .nav-subnav-inner { margin:2px 0 6px 7px; padding-left:8px; }
+.shell-tree-branch .nav-subitem { height:auto; }
+.shell-workspace-search .search { display:flex; }
+@media (max-width:767px) {
+ body[data-nexora-workspace="salon"] .header,
+ body[data-nexora-workspace="pos"] .header { min-height:116px; }
+}
+@media (max-width:767px) {
+ .header:has([data-shell-clear-storage]) .shell-workspace-actions { flex-basis:100%; margin-left:0; flex-wrap:wrap; }
+}
