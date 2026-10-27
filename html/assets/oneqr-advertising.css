@@ -14,12 +14,6 @@
 .qa-app button:disabled { opacity: .45; cursor: not-allowed; }
 .qa-app button:focus-visible, .qa-app a:focus-visible, .qa-app input:focus-visible, .qa-app select:focus-visible { outline: 3px solid #b69bdf; outline-offset: 3px; }
 .qa-app button:not(:disabled):hover { filter: brightness(.97); }
-.qa-app .lang { display: flex; align-items: center; flex-wrap: wrap; gap: 8px; margin-bottom: 18px; }
-.qa-app .lang b { font-size: 13px; }
-.qa-app .lang button { padding: 7px 12px; font-size: 13px; }
-.qa-app .lang button[aria-pressed="true"] { background: #7040c2; color: #fff; }
-.qa-app .lang .muted { flex-basis: 100%; max-width: 880px; }
-.qa-app #google_translate_element { min-height: 32px; }
 .qa-app .notice { margin: 16px 0; border-radius: 10px; padding: 13px 15px; background: #fff6de; color: #785a16; line-height: 1.5; }
 .qa-app .card { min-width: 0; margin: 16px 0; border: 1px solid #eae8f1; border-radius: 16px; padding: 24px; background: #fff; }
 .qa-app .hero { background: linear-gradient(115deg, #f0e8ff, #e7faf9); }
@@ -61,8 +55,6 @@
 .qa-app .ledger-entry strong { color: #25213a; font-size: 14px; }
 .qa-app .ledger-entry small { overflow-wrap: anywhere; }
 .qa-app .ledger-entry time { color: #666879; font-size: 12px; }
-body:has(.qa-app) > .skiptranslate { display: none !important; }
-body:has(.qa-app) { top: 0 !important; }
 @media (max-width: 1024px) {
   .qr-advertising-shell { gap: 16px; }
   .qa-app { font-size: 14px; }
@@ -76,8 +68,6 @@ body:has(.qa-app) { top: 0 !important; }
   .qa-app h2 { font-size: 18px; }
   .qa-app .card { margin: 12px 0; padding: 16px; }
   .qa-app .notice { margin: 12px 0; padding: 11px 12px; font-size: 13px; }
-  .qa-app .lang { gap: 6px; margin-bottom: 12px; }
-  .qa-app .lang .muted { font-size: 12px; }
   .qa-app nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); width: 100%; gap: 3px; padding: 4px; }
   .qa-app nav button { flex-direction: column; gap: 4px; padding: 8px 4px; font-size: 11px; white-space: normal; }
   .qa-app nav button::before { width: 24px; height: 24px; }

@@ -149,7 +149,6 @@
     document.title = t('title');
     root.querySelectorAll('[data-i]').forEach(element => { element.textContent = t(element.dataset.i); });
     root.querySelectorAll('[data-ph]').forEach(element => { element.placeholder = t(element.dataset.ph); });
-    root.querySelectorAll('[data-lang]').forEach(element => { element.setAttribute('aria-pressed', String(element.dataset.lang === state.language)); });
     renderGroups();
     refreshBalances();
     $('preview').textContent = transferPreview();
@@ -267,8 +266,6 @@
   }
 
   root.addEventListener('click', event => {
-    const language = event.target.closest('[data-lang]');
-    if (language) { setLanguage(language.dataset.lang); return; }
     const destination = event.target.closest('[data-view]');
     if (destination) { event.preventDefault(); navigate(destination.dataset.view, true, !destination.closest('#nav')); return; }
     const button = event.target.closest('[data-action]');
@@ -321,18 +318,6 @@
     button.setAttribute('aria-expanded', 'false');
     button.setAttribute('aria-controls', button.dataset.action);
   });
-  setLanguage(state.language);
+  setLanguage('vi');
   navigate(location.hash.slice(1).split('/')[0], false);
-
-  // Optional machine translation never replaces the built-in English and Vietnamese dictionaries.
-  window.googleTranslateElementInit = function () {
-    if (window.google?.translate?.TranslateElement) {
-      new window.google.translate.TranslateElement({ pageLanguage: 'vi', autoDisplay: false }, 'google_translate_element');
-    }
-  };
-  const translateScript = document.createElement('script');
-  translateScript.src = 'https://translate.google.com/translate_a/element.js?cb=googleTranslateElementInit';
-  translateScript.async = true;
-  translateScript.onerror = () => { $('google_translate_element').hidden = true; };
-  document.head.append(translateScript);
 })();
