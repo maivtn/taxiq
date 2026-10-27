@@ -84,9 +84,9 @@
 .qa-app #setup .ts-dropdown { border-color: #cbd5e1; color: #0b1c30; }
 .qa-app #setup .ts-dropdown .optgroup-header { background: #f1f5f9; color: #334155; }
 .qa-app #setup a { color: #3a3bbf; }
-.qa-app #setup #activate, .qa-app #setup #ads-toggle { border-color: var(--qa-primary); background: #fff; color: var(--qa-primary); box-shadow: none; }
-.qa-app #setup #activate:hover, .qa-app #setup #ads-toggle:hover, .qa-app button.alt:hover { border-color: var(--qa-primary-hover); background: var(--qa-primary-subtle); color: var(--qa-primary-hover); }
-.qa-app #setup #activate:active, .qa-app #setup #ads-toggle:active, .qa-app button.alt:active { border-color: var(--qa-primary-active); color: var(--qa-primary-active); }
+.qa-app #setup #ads-toggle { border-color: var(--qa-primary); background: #fff; color: var(--qa-primary); box-shadow: none; }
+.qa-app #setup #ads-toggle:hover, .qa-app button.alt:hover { border-color: var(--qa-primary-hover); background: var(--qa-primary-subtle); color: var(--qa-primary-hover); }
+.qa-app #setup #ads-toggle:active, .qa-app button.alt:active { border-color: var(--qa-primary-active); color: var(--qa-primary-active); }
 @media (max-width: 1024px) {
   .qr-advertising-shell { gap: 16px; }
   .qa-app { font-size: 14px; }
