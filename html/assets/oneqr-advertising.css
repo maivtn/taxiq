@@ -41,8 +41,10 @@
 .qa-app .ts-control::after { content: ''; position: absolute; right: 16px; top: 50%; width: 16px; height: 16px; transform: translateY(-50%); pointer-events: none; background: center / 16px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%23666879' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
 .qa-app .ts-control > input { width: auto; min-width: 120px; border-radius: 0; color: #25213a; font: inherit; }
 .qa-app .ts-control > input::placeholder { color: #666879; opacity: 1; }
-.qa-app .ts-wrapper.multi .ts-control > .item { display: inline-flex; max-width: 100%; align-items: center; gap: 5px; margin: 0; border-radius: 6px; padding: 3px 8px; background: #eee8fa; color: #6335aa; font-size: 13px; line-height: 20px; overflow-wrap: anywhere; }
-.qa-app .ts-control .item .remove { display: inline-flex; min-width: 24px; min-height: 24px; align-items: center; justify-content: center; margin: 0; border: 0; padding: 0; color: inherit; font-size: 18px; line-height: 1; text-decoration: none; }
+.qa-app .ts-wrapper.multi .ts-control > .item { display: none; }
+.qa-app .qa-secondary-selected { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 8px; }
+.qa-app .qa-secondary-chip { display: inline-flex; max-width: 100%; align-items: center; gap: 6px; border-radius: 6px; padding: 4px 8px; background: #eee8fa; color: #6335aa; font-size: 13px; line-height: 20px; overflow-wrap: anywhere; }
+.qa-app .qa-secondary-chip button { display: inline-flex; min-width: 24px; min-height: 24px; flex: 0 0 24px; align-items: center; justify-content: center; border-radius: 4px; padding: 0; background: transparent; color: inherit; font-size: 18px; line-height: 1; }
 .qa-app .ts-wrapper.focus .ts-control { border-color: #a78bce; outline: 2px solid #b69bdf; outline-offset: 2px; }
 .qa-app .ts-dropdown { border: 1px solid #dcd9e7; border-radius: 10px; background: #fff; box-shadow: 0 8px 24px rgba(37, 33, 58, .1); color: #25213a; font: inherit; overflow: hidden; }
 .qa-app .ts-dropdown-content { max-height: 260px; overscroll-behavior: contain; }

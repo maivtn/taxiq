@@ -100,7 +100,7 @@
     });
     if (typeof window.TomSelect === 'function') {
       const select = new window.TomSelect(secondary, {
-        plugins: { checkbox_options: {}, remove_button: { title: t('removeIndustry') } },
+        plugins: { checkbox_options: {}, no_active_items: {}, no_backspace_delete: {} },
         create: false,
         maxItems: null,
         maxOptions: null,
@@ -108,8 +108,8 @@
         closeAfterSelect: false,
         clearAfterSelect: true,
         lockOptgroupOrder: true,
-        placeholder: t('secondaryLabel'),
-        hidePlaceholder: true,
+        placeholder: '',
+        hidePlaceholder: false,
         render: { no_results: null }
       });
       select.control_input.setAttribute('aria-labelledby', 'secondary-label');
@@ -117,6 +117,31 @@
     } else {
       $('secondary-help').textContent = PO[state.language].secondaryHelp;
     }
+    renderSelectedSecondary();
+  }
+
+  function renderSelectedSecondary() {
+    const labels = new Map(PO.categories.flatMap(group => group[3]).map(industry => [industry[0], industry[state.language === 'vi' ? 1 : 2]]));
+    const selected = state.secondary.filter(value => labels.has(value));
+    $('secondary-selected').hidden = selected.length === 0;
+    $('secondary-selected').innerHTML = selected.map(value => `<span class="qa-secondary-chip" role="listitem">
+      <span>${escape(labels.get(value))}</span>
+      <button type="button" data-action="remove-secondary" data-value="${escape(value)}" aria-label="${escape(t('removeIndustry') + ': ' + labels.get(value))}"><span aria-hidden="true">×</span></button>
+    </span>`).join('');
+  }
+
+  function removeSecondaryIndustry(value) {
+    const buttons = Array.from($('secondary-selected').querySelectorAll('button'));
+    const index = buttons.findIndex(button => button.dataset.value === value);
+    const secondary = $('secondary');
+    if (secondary.tomselect) secondary.tomselect.removeItem(value);
+    else {
+      Array.from(secondary.options).forEach(option => { if (option.value === value) option.selected = false; });
+      secondary.dispatchEvent(new Event('change', { bubbles: true }));
+    }
+    const remaining = $('secondary-selected').querySelectorAll('button');
+    const focusTarget = remaining[Math.min(index, remaining.length - 1)] || secondary.tomselect?.control_input || secondary;
+    focusTarget.focus({ preventScroll: true });
   }
 
   function canActivate() {
@@ -349,6 +374,7 @@
     const action = button.dataset.action;
     if (action === 'activate') activate();
     if (action === 'toggle-ads') toggleAdvertising();
+    if (action === 'remove-secondary') removeSecondaryIndustry(button.dataset.value);
     if (action === 'review-transfer') reviewTransfer();
     if (action === 'confirm-transfer') confirmTransfer();
     if (action === 'cancel-transfer') { invalidateReview(); root.querySelector('[data-action="review-transfer"]').focus(); }
@@ -373,7 +399,11 @@
       renderIndustries();
     }
     if (event.target.id === 'industry') { state.industry = $('industry').value; updateIndustry(); }
-    if (event.target.id === 'secondary') { state.secondary = Array.from($('secondary').selectedOptions, option => option.value); updateIndustry(); }
+    if (event.target.id === 'secondary') {
+      state.secondary = Array.from($('secondary').selectedOptions, option => option.value);
+      renderSelectedSecondary();
+      updateIndustry();
+    }
     if (event.target.id === 'agree') {
       if (!$('agree').checked) reviewIndustryChange('consent-change');
       updateIndustry();
