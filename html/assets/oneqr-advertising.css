@@ -48,6 +48,8 @@
 .qa-app .ts-wrapper.focus .ts-control { border-color: #a78bce; outline: 2px solid #b69bdf; outline-offset: 2px; }
 .qa-app .ts-dropdown { border: 1px solid #dcd9e7; border-radius: 10px; background: #fff; box-shadow: 0 8px 24px rgba(37, 33, 58, .1); color: #25213a; font: inherit; overflow: hidden; }
 .qa-app .ts-dropdown-content { max-height: 260px; overscroll-behavior: contain; }
+.qa-app .qa-secondary-dropdown-actions { display: flex; align-items: center; justify-content: space-between; gap: 8px; border-top: 1px solid #eae8f1; padding: 8px 10px; background: #fff; }
+.qa-app .qa-secondary-dropdown-actions button { min-height: 34px; border-radius: 7px; padding: 6px 12px; font-size: 13px; }
 .qa-app .ts-dropdown .option { display: flex; min-height: 40px; align-items: center; gap: 10px; padding: 10px 12px; }
 .qa-app .ts-dropdown .option input.tomselect-checkbox { width: 18px; min-height: 18px; height: 18px; flex: 0 0 18px; margin: 0; }
 .qa-app .ts-dropdown .optgroup-header { padding: 8px 12px; background: #f8f6fc; color: #666879; font-size: 12px; font-weight: 700; }

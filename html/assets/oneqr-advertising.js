@@ -16,12 +16,14 @@
     vi: {
       adsOn: 'Quảng cáo đang bật', adsOff: 'Quảng cáo đã tắt',
       disableAds: 'Tắt quảng cáo', enableAds: 'Bật quảng cáo', removeIndustry: 'Bỏ ngành',
+      clearSecondary: 'Bỏ chọn tất cả', closeSecondary: 'Đóng',
       secondaryHelp: 'Liệt kê những ngành doanh nghiệp thực sự cung cấp.',
       noAgree: 'Không đồng ý thì không kích hoạt OneQR theo gói hiện tại.'
     },
     en: {
       adsOn: 'Advertising is on', adsOff: 'Advertising is off',
       disableAds: 'Turn off advertising', enableAds: 'Turn on advertising', removeIndustry: 'Remove industry',
+      clearSecondary: 'Clear all', closeSecondary: 'Close',
       secondaryHelp: 'List services your business actually offers.',
       noAgree: 'If you do not agree, OneQR cannot be activated under the current plan.'
     }
@@ -114,6 +116,26 @@
       });
       select.control_input.setAttribute('aria-labelledby', 'secondary-label');
       select.control_input.setAttribute('aria-describedby', 'secondary-help');
+      const actions = document.createElement('div');
+      actions.className = 'qa-secondary-dropdown-actions';
+      actions.innerHTML = `<button type="button" class="alt" data-action="clear-secondary">${escape(t('clearSecondary'))}</button>
+        <button type="button" data-action="close-secondary">${escape(t('closeSecondary'))}</button>`;
+      select.dropdown.append(actions);
+      // Keep the composite control open while keyboard focus moves into its action buttons.
+      const onBlur = select.onBlur.bind(select);
+      select.onBlur = event => {
+        if (event?.relatedTarget && select.dropdown.contains(event.relatedTarget)) return;
+        onBlur(event);
+      };
+      actions.addEventListener('focusout', event => {
+        if (event.relatedTarget !== select.control_input && !actions.contains(event.relatedTarget)) select.onBlur(event);
+      });
+      actions.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+          event.preventDefault();
+          closeSecondaryDropdown();
+        }
+      });
     } else {
       $('secondary-help').textContent = PO[state.language].secondaryHelp;
     }
@@ -142,6 +164,22 @@
     const remaining = $('secondary-selected').querySelectorAll('button');
     const focusTarget = remaining[Math.min(index, remaining.length - 1)] || secondary.tomselect?.control_input || secondary;
     focusTarget.focus({ preventScroll: true });
+  }
+
+  function clearSecondaryIndustries() {
+    const select = $('secondary').tomselect;
+    if (!select) return;
+    select.clear();
+    select.setTextboxValue('');
+    select.refreshOptions(false);
+    select.open();
+  }
+
+  function closeSecondaryDropdown() {
+    const select = $('secondary').tomselect;
+    if (!select) return;
+    select.control_input.focus({ preventScroll: true });
+    select.close();
   }
 
   function canActivate() {
@@ -377,6 +415,8 @@
     if (action === 'activate') activate();
     if (action === 'toggle-ads') toggleAdvertising();
     if (action === 'remove-secondary') removeSecondaryIndustry(button.dataset.value);
+    if (action === 'clear-secondary') clearSecondaryIndustries();
+    if (action === 'close-secondary') closeSecondaryDropdown();
     if (action === 'review-transfer') reviewTransfer();
     if (action === 'confirm-transfer') confirmTransfer();
     if (action === 'cancel-transfer') { invalidateReview(); root.querySelector('[data-action="review-transfer"]').focus(); }
