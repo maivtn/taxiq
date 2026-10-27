@@ -234,6 +234,7 @@
     $('ads-status').classList.toggle('is-active', state.adsEnabled);
     $('ads-status').textContent = t(state.adsEnabled ? 'adsOn' : 'adsOff');
     $('ads-toggle').classList.toggle('hide', !state.activated);
+    $('ads-toggle').classList.toggle('is-advertising-on', state.adsEnabled);
     $('ads-toggle').textContent = t(state.adsEnabled ? 'disableAds' : 'enableAds');
     if (messages.payoutResult?.key) report('payoutResult', state.balance >= 10000 ? 'payoutDone' : 'payoutLow', state.balance < 10000);
     renderLedger();

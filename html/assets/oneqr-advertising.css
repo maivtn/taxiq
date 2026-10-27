@@ -84,6 +84,10 @@
 .qa-app #setup .ts-dropdown { border-color: #cbd5e1; color: #0b1c30; }
 .qa-app #setup .ts-dropdown .optgroup-header { background: #f1f5f9; color: #334155; }
 .qa-app #setup a { color: #3a3bbf; }
+.qa-app #setup #activate, .qa-app #setup #ads-toggle { min-height: 44px; border: 1px solid #3a3bbf; padding: 11px 18px; background: #4648d4; color: #fff; font-weight: 800; box-shadow: 0 4px 12px rgba(70, 72, 212, .18); }
+.qa-app #setup #ads-toggle.is-advertising-on { border-color: #b91c1c; background: #dc2626; box-shadow: 0 4px 12px rgba(220, 38, 38, .18); }
+.qa-app #setup #activate:hover, .qa-app #setup #ads-toggle:hover { background: #3a3bbf; }
+.qa-app #setup #ads-toggle.is-advertising-on:hover { background: #b91c1c; }
 @media (max-width: 1024px) {
   .qr-advertising-shell { gap: 16px; }
   .qa-app { font-size: 14px; }
