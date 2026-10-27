@@ -10,6 +10,7 @@
 
   const VERSION = 'ONEQR-ADS-WALLET-2026-10-27';
   const STORE = 'nexora-oneqr-advertising-demo-20261027';
+  const isReload = window.performance?.getEntriesByType?.('navigation')[0]?.type === 'reload';
   const $ = id => root.querySelector('#' + id);
   // UI changes explicitly requested after the PO handoff; keep the original PO copy intact.
   const UI_COPY = {
@@ -43,9 +44,10 @@
   const escape = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
   const id = () => typeof crypto.randomUUID === 'function' ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
 
-  // Only this version's synthetic balances are restored; previous cash-based demos are separate.
+  // A browser reload starts the demo over; ordinary navigation can resume it.
   try {
-    const saved = JSON.parse(sessionStorage.getItem(STORE));
+    if (isReload) sessionStorage.removeItem(STORE);
+    const saved = isReload ? null : JSON.parse(sessionStorage.getItem(STORE));
     const amounts = ['balance', 'pending', 'ownCreditPoints', 'receivedCreditPoints', 'recipientCreditPoints'];
     if (saved?.version === VERSION && amounts.every(key => Number.isSafeInteger(saved[key]) && saved[key] >= 0)
       && Array.isArray(saved.secondary) && Array.isArray(saved.ledger) && Array.isArray(saved.audit)) {
@@ -465,6 +467,15 @@
 
   window.addEventListener('popstate', () => navigate(location.hash.slice(1).split('/')[0], false));
   window.addEventListener('hashchange', () => navigate(location.hash.slice(1).split('/')[0], false));
+  if (isReload) {
+    root.querySelectorAll('input').forEach(input => {
+      if (input.type === 'checkbox') input.checked = input.defaultChecked;
+      else input.value = input.defaultValue;
+    });
+    history.replaceState(null, '', location.pathname + location.search);
+    history.scrollRestoration = 'manual';
+    window.scrollTo(0, 0);
+  }
   $('custom').value = state.custom;
   $('agree').checked = Boolean(state.activated && state.consent);
   root.querySelectorAll('[data-action="payout"], [data-action="convert"]').forEach(button => {
