@@ -644,6 +644,41 @@
     } else script.addEventListener('load', connect, {once: true});
   }
 
+  function decoratePosWorkflow() {
+    var icons = {
+      'Overview': 'overview', 'Check-in': 'check-in', 'Tickets': 'tickets',
+      'Live Waitlist': 'waitlist', 'Turn Board': 'turn-board', 'Staff': 'staff',
+      'Checkout Customer': 'checkout-customer', 'Gift Card Center': 'gift-card-center',
+      'Completed Services': 'completed-services', 'Appointments': 'appointments',
+      'Booking': 'appointments', 'Estimate': 'estimate', 'Staffs Clock': 'staffs-clock',
+      'Customer History': 'customer-history'
+    };
+    var files = { waitlist: 'tickets', staff: 'staffs-clock', 'customer-history': 'overview' };
+    document.querySelectorAll('.front-desk .workflow > a, .front-desk .workflow > button').forEach(function (tab) {
+      if (tab.dataset.posWorkflow) return;
+      var labelNode = Array.from(tab.childNodes).find(function (node) { return node.nodeType === 3 && node.textContent.trim(); });
+      if (!labelNode) return;
+      var label = labelNode.textContent.trim();
+      var icon = icons[label];
+      if (!icon) return;
+      tab.dataset.posWorkflow = icon;
+      var caption = document.createElement('span');
+      caption.className = 'workflow-label';
+      caption.textContent = label === 'Appointments' ? 'Booking' : label;
+      labelNode.replaceWith(caption);
+      var image = document.createElement('img');
+      image.src = '../assets/icons/pos-front-desk/' + (files[icon] || icon) + '.svg';
+      image.alt = '';
+      image.setAttribute('aria-hidden', 'true');
+      image.width = 48;
+      image.height = 48;
+      image.draggable = false;
+      tab.prepend(image);
+      var count = tab.querySelector('#ticket-nav-count');
+      if (count) count.classList.add('workflow-count');
+    });
+  }
+
   function init() {
     var sidebar = document.querySelector('aside.sidebar');
     var header = document.querySelector('header.header');
@@ -662,6 +697,7 @@
     wire();
     if (activePage === 'staff') setActiveTab(activeTab);
     initStaffTicketCount();
+    decoratePosWorkflow();
     if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
   }
 

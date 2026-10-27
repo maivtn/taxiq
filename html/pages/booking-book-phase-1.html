@@ -4,6 +4,11 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Nexora Touch - Booking Book Shell</title>
+  <script>
+    if (['customers', 'calllog'].includes(new URLSearchParams(window.location.search).get('tab'))) {
+      document.documentElement.dataset.posWorkspace = 'customers';
+    }
+  </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
@@ -9587,6 +9592,7 @@
   </style>
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/nexora-credits.css">
+  <link rel="stylesheet" href="../assets/pos-customers.css">
 </head>
 <body>
   <div class="shell">
@@ -11737,32 +11743,22 @@
                       <span>Customer list</span>
                     </div>
                     <div class="booking-daybar-actions">
-                      <span class="cust-count" data-cust-count></span>
-                      <div class="booking-filter-wrap">
-                        <button class="booking-secondary-button booking-filter-toggle" type="button" data-booking-filter-toggle="customers" aria-controls="customers-filter-menu" aria-expanded="false"><i class="bi bi-funnel" aria-hidden="true"></i>Filter</button>
-                        <div class="booking-filter-popover" id="customers-filter-menu" data-booking-filter-menu="customers" hidden>
-                          <div class="booking-filter-popover-head"><span>Filter customers</span></div>
-                          <div class="booking-controls" aria-label="Customer filters">
-                            <label class="booking-control-field" style="grid-column: 1 / -1;">
-                              <span class="booking-control-label">Search</span>
-                              <input class="booking-input" type="search" placeholder="Search by name or phone number..." data-cust-search>
-                            </label>
-                          </div>
-
-                        </div>
-                      </div>
+                      <label class="pos-customer-search"><i class="bi bi-search" aria-hidden="true"></i><span class="sr-only">Search</span><input class="booking-input" type="search" placeholder="Search by name or phone number..." data-cust-search></label>
+                      <select class="booking-input pos-customer-sort" data-cust-sort aria-label="Sort by created date"><option value="newest">Sort by: Newest first</option><option value="oldest">Sort by: Oldest first</option></select>
+                      <button class="booking-secondary-button" type="button" data-cust-import><i class="bi bi-upload" aria-hidden="true"></i>Import Excel / CSV / JSON</button>
+                      <input type="file" data-cust-import-file accept=".xlsx,.xls,.csv,.tsv,.json" hidden>
                       <button class="booking-primary-button" type="button" data-cust-create><i class="bi bi-person-plus" aria-hidden="true"></i><span>Create customer</span></button>
                     </div>
                   </div>
 
-                  <div class="booking-status-chips" data-cust-seg-filter role="group" aria-label="Filter by customer group"></div>
+                  <div class="pos-customer-filters"><div class="booking-status-chips" data-cust-seg-filter role="group" aria-label="Filter by customer group"></div><span class="cust-count" data-cust-count></span></div>
+                  <p data-cust-import-status role="status" hidden></p>
 
                   <div class="booking-table-wrap">
                     <table class="booking-table cust-table">
                       <thead>
                         <tr>
                           <th scope="col">Customer</th>
-                          <th scope="col">Phone</th>
                           <th scope="col">Group</th>
                           <th scope="col">Source</th>
                           <th scope="col">Visits</th>
@@ -11785,22 +11781,10 @@
                     <div class="booking-date">
                       <span class="booking-action-icon"><i class="bi bi-telephone" aria-hidden="true"></i></span>
                       <span>Call log</span>
+                      <span class="cust-count" data-call-count></span>
                     </div>
                     <div class="booking-daybar-actions">
-                      <span class="cust-count" data-call-count></span>
-                      <div class="booking-filter-wrap">
-                        <button class="booking-secondary-button booking-filter-toggle" type="button" data-booking-filter-toggle="calllog" aria-controls="calllog-filter-menu" aria-expanded="false"><i class="bi bi-funnel" aria-hidden="true"></i>Filter</button>
-                        <div class="booking-filter-popover" id="calllog-filter-menu" data-booking-filter-menu="calllog" hidden>
-                          <div class="booking-filter-popover-head"><span>Filter calls</span></div>
-                          <div class="booking-controls" aria-label="Call log filters">
-                            <label class="booking-control-field" style="grid-column: 1 / -1;">
-                              <span class="booking-control-label">Search</span>
-                              <input class="booking-input" type="search" placeholder="Search by caller or phone number..." data-call-search>
-                            </label>
-                          </div>
-
-                        </div>
-                      </div>
+                      <label class="pos-call-search"><span class="sr-only">Search</span><input class="booking-input" type="search" placeholder="Search by caller or phone number..." data-call-search></label>
                     </div>
                   </div>
 
@@ -12684,6 +12668,7 @@
   <script src="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
   <script src="../assets/nexora-credits.js"></script>
+  <script src="../assets/pos-customer-import.js"></script>
   <script>
     var DEFAULT_MAIN_TAB = 'booking';
     var BOOKING_TODAY_DATE = '2026-07-09';
@@ -12921,6 +12906,17 @@
 
     function activateMainTab(target, options) {
       var activeTarget = getValidMainTab(target);
+      if (activeTarget === 'customers' || activeTarget === 'calllog') {
+        document.documentElement.dataset.posWorkspace = 'customers';
+        document.title = 'Nexora Touch - ' + (activeTarget === 'customers' ? 'Customers' : 'Call Log');
+        document.querySelector('main.content').setAttribute('aria-label', 'Customers and calls');
+        document.querySelector('.page-tabs').setAttribute('aria-label', 'Customers and calls');
+      } else {
+        delete document.documentElement.dataset.posWorkspace;
+        document.title = 'Nexora Touch - Booking Book Shell';
+        document.querySelector('main.content').setAttribute('aria-label', 'Booking Book content');
+        document.querySelector('.page-tabs').setAttribute('aria-label', 'Booking Book sections');
+      }
       setBookingFilterOpen(null);
 
       document.querySelectorAll('[data-tab-target]').forEach(function(tab) {
@@ -17938,12 +17934,23 @@ function getBookingCardCallStart(item) {
     var CUST_SRC = {
       qr:      { icon: 'bi-qr-code',           label: 'QR' },
       receipt: { icon: 'bi-receipt',           label: 'Receipt' },
-      call:    { icon: 'bi-telephone',         label: 'Incoming' },
+      call:    { icon: 'bi-telephone',         label: 'Phone Call' },
       pos:     { icon: 'bi-box-arrow-in-down', label: 'Import' },
+      excel:   { icon: 'bi-box-arrow-in-down', label: 'Import' },
       manual:  { icon: 'bi-person-plus',       label: 'Manual' }
     };
 
-    var custFilter = { search: '', seg: 'all' };
+    var custFilter = { search: '', seg: 'all', sort: 'newest' };
+
+    function customerLastVisit(value) {
+      var parts = /^(\d{2})\/(\d{2})\/(\d{4})$/.exec(value || '');
+      return parts ? new Date(Number(parts[3]), Number(parts[2]) - 1, Number(parts[1])).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' }) : value || '—';
+    }
+
+    function customerPhone(value) {
+      var raw = String(value || '').trim();
+      return raw ? (/^\+/.test(raw) ? raw : '+1 ' + raw) : '—';
+    }
 
     function renderCustSegChips() {
       var wrap = document.querySelector('[data-cust-seg-filter]');
@@ -17975,12 +17982,14 @@ function getBookingCardCallStart(item) {
           (qDigits && c.phone.replace(/\D/g, '').indexOf(qDigits) !== -1);
         return segOk && searchOk;
       });
+      // The array keeps insertion order; the newest customer appears first.
+      if (custFilter.sort === 'newest') rows.reverse();
 
       var countEl = document.querySelector('[data-cust-count]');
       if (countEl) countEl.textContent = rows.length + '/' + CUSTOMERS.length + ' customers';
 
       if (!rows.length) {
-        tbody.innerHTML = '<tr><td colspan="7" class="booking-empty-cell">No customers found</td></tr>';
+        tbody.innerHTML = '<tr><td colspan="6" class="booking-empty-cell">No customers found</td></tr>';
         renderCustSegChips();
         return;
       }
@@ -17996,13 +18005,13 @@ function getBookingCardCallStart(item) {
           ? ' <span class="badge badge-soft cust-inactive-tag">Inactive</span>'
           : '';
         return '<tr class="booking-table-row">' +
-          '<td><div class="booking-customer-name">' + escapeHtml(c.name) + inactiveTag + '</div></td>' +
-          '<td>+1 ' + escapeHtml(c.phone) + '</td>' +
+          '<td><div class="booking-customer-name">' + escapeHtml(c.name) + inactiveTag + '</div><div class="pos-customer-phone">' + escapeHtml(customerPhone(c.phone)) + '</div></td>' +
           '<td>' + segHtml + '</td>' +
-          '<td><span class="badge badge-soft">' + srcHtml + '</span></td>' +
+          '<td><span class="badge badge-soft pos-customer-source" data-source="' + escapeHtml(c.src || '') + '">' + srcHtml + '</span></td>' +
           '<td>' + c.visits + '</td>' +
-          '<td>' + escapeHtml(c.last) + '</td>' +
+          '<td>' + escapeHtml(customerLastVisit(c.last)) + '</td>' +
           '<td><div class="booking-actions">' +
+            '<button class="booking-mini-button pos-customer-view" type="button" data-cust-view="' + CUSTOMERS.indexOf(c) + '"><i class="bi bi-eye" aria-hidden="true"></i><span class="booking-mini-label">View</span></button>' +
             '<button class="booking-mini-button" type="button" data-cust-edit="' + CUSTOMERS.indexOf(c) + '" title="Edit" aria-label="Edit customer"><i class="bi bi-pencil" aria-hidden="true"></i><span class="booking-mini-label">Edit</span></button>' +
             '<button class="booking-mini-button sms-temp-hidden" type="button" title="Send SMS" aria-label="Send SMS"><i class="bi bi-chat-dots" aria-hidden="true"></i><span class="booking-mini-label">Send SMS</span></button>' +
           '</div></td>' +
@@ -18042,36 +18051,33 @@ function getBookingCardCallStart(item) {
     var callSearch = '';
 
     function formatCallDur(sec) {
-      if (!sec) return '—';
-      return Math.floor(sec / 60) + ':' + String(sec % 60).padStart(2, '0');
+      return String(Math.floor(sec / 60)).padStart(2, '0') + ':' + String(sec % 60).padStart(2, '0');
     }
 
     function renderCallStats() {
       var host = document.querySelector('[data-call-stats]');
       if (!host) return;
 
-      var today = CALLS.filter(function(c) { return c.time.indexOf('Today') === 0; });
-      var missed = today.filter(function(c) { return c.status === 'missed'; }).length;
-      var booked = today.filter(function(c) { return c.status === 'booked'; }).length;
-      var answeredRate = today.length ? Math.round((today.length - missed) / today.length * 100) : 0;
+      var missed = CALLS.filter(function(c) { return c.status === 'missed'; }).length;
+      var booked = CALLS.filter(function(c) { return c.status === 'booked'; }).length;
+      var answeredRate = CALLS.length ? Math.round((CALLS.length - missed) / CALLS.length * 100) : 0;
 
       host.innerHTML =
         '<article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-electric);">' +
           '<div class="kpi-top"><div class="kpi-icon"><i class="bi bi-telephone-inbound" aria-hidden="true"></i></div></div>' +
-          '<div class="kpi-label">Calls today</div><div class="kpi-value">' + today.length + '</div>' +
-          '<div class="kpi-trend">so far today</div></article>' +
+          '<div class="kpi-label">Calls</div><div class="kpi-value">' + CALLS.length + '</div></article>' +
         '<article class="overview-card kpi-card" style="--kpi-accent: #ef4444;">' +
           '<div class="kpi-top"><div class="kpi-icon"><i class="bi bi-telephone-x" aria-hidden="true"></i></div><span class="badge booking-status booking-status-noshow">Follow-up</span></div>' +
           '<div class="kpi-label">Missed calls</div><div class="kpi-value">' + missed + '</div>' +
-          '<div class="kpi-trend">need follow-up SMS</div></article>' +
+          '</article>' +
         '<article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-success);">' +
           '<div class="kpi-top"><div class="kpi-icon"><i class="bi bi-calendar-check" aria-hidden="true"></i></div><span class="badge booking-status booking-status-done">Booking</span></div>' +
           '<div class="kpi-label">Booked by phone</div><div class="kpi-value">' + booked + '</div>' +
-          '<div class="kpi-trend">↑ bookings today</div></article>' +
+          '</article>' +
         '<article class="overview-card kpi-card" style="--kpi-accent: var(--nexora-brand);">' +
           '<div class="kpi-top"><div class="kpi-icon"><i class="bi bi-graph-up-arrow" aria-hidden="true"></i></div></div>' +
           '<div class="kpi-label">Answer rate</div><div class="kpi-value">' + answeredRate + '%</div>' +
-          '<div class="kpi-trend">' + (answeredRate >= 80 ? '↑ good' : '⚠️ needs improvement') + '</div></article>';
+          '</article>';
     }
 
     function renderCallStatusChips() {
@@ -18117,10 +18123,10 @@ function getBookingCardCallStart(item) {
         var meta = CALL_STATUS_META[c.status] || { cls: 'booking-status-new', icon: '', label: c.status };
         var metaIcon = meta.icon ? '<i class="bi ' + meta.icon + '" aria-hidden="true"></i> ' : '';
         var action = c.status === 'missed'
-          ? '<button class="booking-mini-button primary" type="button" data-call-sms="' + CALLS.indexOf(c) + '" title="Follow-up SMS" aria-label="Follow-up SMS"><i class="bi bi-reply" aria-hidden="true"></i><span class="booking-mini-label">Follow-up SMS</span></button>'
+          ? '<button class="booking-mini-button primary" type="button" data-call-sms="' + CALLS.indexOf(c) + '" title="Follow-up SMS" aria-label="Follow-up SMS"><i class="bi bi-send" aria-hidden="true"></i><span class="booking-mini-label">Follow-up SMS</span></button>'
           : '';
         return '<tr class="booking-table-row">' +
-          '<td>' + escapeHtml(c.time) + '</td>' +
+          '<td>' + escapeHtml(c.time.split(' ')[0]) + '<small class="pos-call-time">' + escapeHtml(c.time.split(' ').slice(1).join(' ')) + '</small></td>' +
           '<td><div class="booking-customer-name">' + escapeHtml(c.name) + '</div></td>' +
           '<td>+1 ' + escapeHtml(c.phone) + '</td>' +
           '<td><span class="badge booking-status ' + meta.cls + '">' + metaIcon + escapeHtml(meta.label) + '</span></td>' +
@@ -18138,6 +18144,69 @@ function getBookingCardCallStart(item) {
       custSearchInput.addEventListener('input', function() {
         custFilter.search = custSearchInput.value;
         renderCustomers();
+      });
+    }
+
+    var custSortInput = document.querySelector('[data-cust-sort]');
+    if (custSortInput) custSortInput.addEventListener('change', function() {
+      custFilter.sort = custSortInput.value;
+      renderCustomers();
+    });
+
+    var custImportInput = document.querySelector('[data-cust-import-file]');
+    var custImportButton = document.querySelector('[data-cust-import]');
+    var customerExcelLoader;
+    function loadCustomerExcel() {
+      if (window.XLSX) return Promise.resolve(window.XLSX);
+      if (!customerExcelLoader) {
+        customerExcelLoader = new Promise(function(resolve, reject) {
+          var script = document.createElement('script');
+          script.src = 'https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js';
+          script.onload = function() { resolve(window.XLSX); };
+          script.onerror = function() { script.remove(); customerExcelLoader = null; reject(new Error('Excel import unavailable')); };
+          document.head.appendChild(script);
+        });
+      }
+      return customerExcelLoader;
+    }
+    if (custImportButton && custImportInput) {
+      custImportButton.addEventListener('click', function() { custImportInput.click(); });
+      custImportInput.addEventListener('change', async function() {
+        var file = custImportInput.files[0];
+        if (!file) return;
+        var status = document.querySelector('[data-cust-import-status]');
+        status.hidden = false;
+        status.textContent = 'Importing...';
+        custImportButton.disabled = true;
+        try {
+          var importer = window.NEXORA_CUSTOMER_IMPORT;
+          var rows;
+          if (/\.(xlsx|xls)$/i.test(file.name)) {
+            var excel = await loadCustomerExcel();
+            var workbook = excel.read(await file.arrayBuffer(), { type: 'array' });
+            rows = workbook.SheetNames.length ? excel.utils.sheet_to_json(workbook.Sheets[workbook.SheetNames[0]], { defval: '', raw: false }) : [];
+          } else if (/\.json$/i.test(file.name)) {
+            rows = JSON.parse(await file.text());
+            if (!Array.isArray(rows)) throw new Error('Could not import customer file');
+          } else {
+            rows = importer.parseDelimited(await file.text(), /\.tsv$/i.test(file.name) ? '\t' : null);
+          }
+          var result = importer.mergeCustomers(CUSTOMERS, rows.filter(function(row) { return row && typeof row === 'object' && !Array.isArray(row); }));
+          custFilter.search = '';
+          custFilter.seg = 'all';
+          custFilter.sort = 'newest';
+          custSearchInput.value = '';
+          custSortInput.value = 'newest';
+          renderCustomers();
+          status.textContent = result.imported || result.updated
+            ? 'Imported ' + result.imported + ' | Updated ' + result.updated + (result.skipped ? ' | Skipped ' + result.skipped : '')
+            : 'No customers imported';
+        } catch (error) {
+          status.textContent = 'Could not import customer file';
+        } finally {
+          custImportInput.value = '';
+          custImportButton.disabled = false;
+        }
       });
     }
 
@@ -18188,21 +18257,32 @@ function getBookingCardCallStart(item) {
       setCustModalError('');
     }
 
+    function setCustModalMode(readOnly) {
+      var modal = document.querySelector('[data-cust-modal]');
+      modal.querySelectorAll('input').forEach(function(input) { input.readOnly = readOnly; });
+      modal.querySelectorAll('select, [data-cf-status]').forEach(function(control) { control.disabled = readOnly; });
+      modal.querySelector('[data-cust-save]').hidden = readOnly;
+      modal.querySelector('.cust-modal-foot [data-cust-modal-close]').textContent = readOnly ? 'Close' : 'Cancel';
+      if (custBirthdayPicker) custBirthdayPicker.set('clickOpens', !readOnly);
+    }
+
     function openCustCreateModal() {
       var modal = document.querySelector('[data-cust-modal]');
       var title = document.querySelector('[data-cust-modal-title]');
       if (!modal) return;
+      setCustModalMode(false);
       custEditIndex = -1;
       resetCustModalFields();
       if (title) title.textContent = 'Create customer';
       modal.hidden = false;
     }
 
-    function openCustModal(index) {
+    function openCustModal(index, readOnly) {
       var c = CUSTOMERS[index];
       var modal = document.querySelector('[data-cust-modal]');
       var title = document.querySelector('[data-cust-modal-title]');
       if (!c || !modal) return;
+      setCustModalMode(!!readOnly);
       custEditIndex = index;
       modal.querySelector('[data-cf-name]').value = c.name || '';
       modal.querySelector('[data-cf-phone]').value = c.phone || '';
@@ -18217,7 +18297,7 @@ function getBookingCardCallStart(item) {
       modal.querySelector('[data-cf-type]').value = custTypeOf(c);
       setCustStatusToggle(custStatusOf(c) === 'active');
       setCustModalError('');
-      if (title) title.textContent = 'Update customer';
+      if (title) title.textContent = readOnly ? 'Customer profile' : 'Update customer';
       modal.hidden = false;
     }
 
@@ -18302,6 +18382,12 @@ function getBookingCardCallStart(item) {
       var custEditBtn = event.target.closest('[data-cust-edit]');
       if (custEditBtn) {
         openCustModal(parseInt(custEditBtn.dataset.custEdit, 10));
+        return;
+      }
+
+      var custViewBtn = event.target.closest('[data-cust-view]');
+      if (custViewBtn) {
+        openCustModal(parseInt(custViewBtn.dataset.custView, 10), true);
         return;
       }
 
