@@ -1,13 +1,20 @@
+/* Report navigation follows the POS reports on Nexora staging. */
 .pos-report-navigation{margin-bottom:24px}
 .pos-report-title{margin:0 0 5px;color:#0b1220;font-size:20px;font-weight:800;letter-spacing:-.5px}
 .pos-report-description{margin:0 0 16px;color:#4d5870;font-size:12px}
-.pos-report-tabs{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:18px}
-.pos-report-tabs a{display:inline-flex;align-items:center;justify-content:center;min-height:44px;padding:10px 16px;border:1px solid #dbe4f3;border-radius:9px;background:#fff;color:#52607b;font-size:12px;font-weight:700;text-decoration:none}
-.pos-report-tabs a:hover{border-color:#4648d8;color:#4648d8}
-.pos-report-tabs a.is-active,.pos-report-tabs a[aria-current="page"]{border-color:#4648d8;background:#4648d8;color:#fff}
+.pos-report-tabs{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:18px}
+.pos-report-tabs a{display:inline-flex;min-width:0;min-height:44px;align-items:center;justify-content:center;gap:4px;padding:8px 12px;border:1px solid #dde5ef;border-radius:8px;background:#fff;color:#4d5870;font-size:12px;line-height:15px;font-weight:700;text-align:center;text-decoration:none;overflow-wrap:anywhere;transition:background .15s,border-color .15s,color .15s}
+.pos-report-tab-label{min-width:0;overflow-wrap:anywhere}
+.pos-report-tab-icon{display:grid;place-items:center;width:28px;height:28px;flex-shrink:0;border-radius:8px;background:#f3f6fa;color:#4648d8}
+.pos-report-tab-icon svg{width:16px;height:16px}
+.pos-report-tabs a:hover{border-color:#c4b5fd;background:#f3f6fa;color:#0b1220}
+.pos-report-tabs a.is-active,.pos-report-tabs a[aria-current="page"]{border-color:transparent;background:#4648d8;color:#fff;box-shadow:0 8px 24px #0f172a0f}
+.pos-report-tabs a.is-active .pos-report-tab-icon,.pos-report-tabs a[aria-current="page"] .pos-report-tab-icon{background:#ffffff26;color:#fff}
 .pos-report-tabs a:focus-visible{outline:3px solid #8e4df8;outline-offset:3px}
-@media print{.pos-report-navigation{display:none}}
-
-.pos-report-tabs a{gap:8px;min-height:46px}
-.pos-report-tabs img{width:23px;height:23px;object-fit:contain;flex-shrink:0}
-@media(max-width:720px){.pos-report-tabs{gap:5px}.pos-report-tabs a{flex:1 1 145px;padding:9px;font-size:11px}}
+@media(max-width:639px){
+  .pos-report-tabs{display:grid;grid-template-columns:repeat(5,minmax(0,1fr))}
+  .pos-report-tabs a{flex-direction:column;min-height:48px;padding:6px 4px}
+  .pos-report-tab-icon{width:24px;height:24px}
+  .pos-report-tab-icon svg{width:14px;height:14px}
+}
+@media print{.pos-report-navigation,.pos-report-tabs{display:none}}
