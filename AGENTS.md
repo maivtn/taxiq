@@ -14,11 +14,18 @@
 - Không tự tạo hoặc cập nhật tài liệu/spec/mô tả như một bước bắt buộc khi chỉnh prototype. Nội dung UI và cập nhật trạng thái ngắn gọn không cần quy trình tài liệu.
 - Chỉ khi người dùng yêu cầu viết hoặc sửa tài liệu, đọc và áp dụng [.claude/SKIL_Doc.md](.claude/SKIL_Doc.md) trong phạm vi tài liệu đó. Yêu cầu trực tiếp của người dùng được ưu tiên khi có mâu thuẫn.
 
+## IMPORTANT — Bám sát PO; thiếu trong PO thì lấy từ staging web
+
+- Tài liệu và HTML mẫu do PO cung cấp trong `from-po/` là nguồn chuẩn để triển khai giao diện. Phải bám sát đúng màn hình và ngữ cảnh: bố cục, thành phần, nội dung, trạng thái và luồng tương tác; không tự rút gọn, thiết kế lại hoặc bổ sung chức năng làm sai lệch yêu cầu PO.
+- Với màn hình hoặc phần nội dung PO chưa cung cấp, phải đối chiếu và lấy giao diện/HTML từ staging web tương ứng để làm HTML nội bộ. Không dùng staging để thay thế yêu cầu đã có trong tài liệu PO.
+- Nếu cả PO và staging đều thiếu, staging lỗi/không truy cập được, hoặc có điểm chưa rõ cần đề xuất thay đổi, hỏi lại người dùng trước khi triển khai phần đó; không tự suy diễn nội dung hay hành vi.
+- Yêu cầu điều chỉnh rõ ràng của người dùng được ưu tiên khi khác với mẫu PO hoặc staging.
+
 ## Quy tắc giao diện
 
 - Ưu tiên dùng bộ icon có sẵn trong `html/assets/icon-oneqr/` khi tạo mới hoặc chỉnh sửa giao diện.
-- Mọi câu chữ trên giao diện phải lấy từ tài liệu HTML mẫu do PO cung cấp, đối chiếu đúng màn hình và ngữ cảnh trong `from-po/`. Không tự chế, diễn giải lại hoặc bổ sung câu chữ mới, bao gồm tiêu đề, nhãn, nút, hướng dẫn, tooltip, placeholder, thông báo và trạng thái trống.
-- Nếu HTML mẫu không có câu chữ tương ứng, không tự suy diễn để thêm vào UI. Chỉ dùng câu chữ ngoài mẫu khi người dùng yêu cầu hoặc cung cấp rõ ràng.
+- Mọi câu chữ trên giao diện phải lấy từ tài liệu HTML mẫu PO; phần PO chưa có thì lấy từ staging web theo thứ tự ưu tiên ở trên, đối chiếu đúng màn hình và ngữ cảnh. Không tự chế, diễn giải lại hoặc bổ sung câu chữ mới, bao gồm tiêu đề, nhãn, nút, hướng dẫn, tooltip, placeholder, thông báo và trạng thái trống.
+- Nếu cả HTML mẫu PO và staging không có câu chữ tương ứng, không tự suy diễn để thêm vào UI. Chỉ dùng câu chữ ngoài hai nguồn này khi người dùng yêu cầu hoặc cung cấp rõ ràng.
 - Ngày hiển thị phải theo định dạng Mỹ `MMM D, YYYY`, ví dụ `Sep 20, 2026`: tháng viết tắt tiếng Anh, ngày không thêm số 0, năm đủ 4 chữ số. Áp dụng chung cho POS, Booking, app thợ và prototype; xem [Date Format](nexora-design-system-colors.md#date-format). Không đổi định dạng ISO của dữ liệu lưu trữ/API.
 - Khi tạo hoặc chỉnh sửa ô chọn (select/dropdown), tuân thủ [Form Controls](nexora-design-system-colors.md#form-controls): mũi tên cách mép phải 16px, icon rộng 16px, vùng đệm bên phải tối thiểu 44px. Áp dụng cả trên tablet, điện thoại và các ô chọn kích thước nhỏ.
 
