@@ -5,7 +5,10 @@
   const esc=value=>String(value ?? '').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
   const money=value=>'$'+Number(value || 0).toFixed(2);
   const phoneDisplay=value=>{const phone=data.digits(value).slice(0,10);return phone.length>6?'('+phone.slice(0,3)+') '+phone.slice(3,6)+'-'+phone.slice(6):phone.length>3?'('+phone.slice(0,3)+') '+phone.slice(3):phone?'('+phone:'';};
-  const icon=name=>'<i data-lucide="'+name+'" aria-hidden="true"></i>';
+  const contentIcons={users:'users-round','user-round':'user-round',ticket:'ticket',clock:'clock',sparkles:'sparkles'};
+  const icon=name=>contentIcons[name]&&window.ONEQR_ACTION_APPEARANCE
+    ?window.ONEQR_ACTION_APPEARANCE.image(contentIcons[name],24)
+    :'<i data-lucide="'+name+'" aria-hidden="true"></i>';
   let rows=[],techRows=[],techs=[],fullCatalog=[],saving=false,openCustomer=null;
   const state={staffSearch:'',staffFilter:'all',selectedTech:'',techMode:'new',techNewPhone:'',techNewName:'',techNewStatus:'idle',techNewCategory:'',techNewServiceIndex:'',techCoTech:'',techNewNotice:'',assignCategory:'',assignServiceIndex:'',assignTicketId:'',assignmentNotice:''};
   const activeTickets=()=>rows.filter(ticket=>data.editable(ticket)&&data.visible(ticket)).map(ticket=>({...ticket,name:String(ticket.customer || '').toUpperCase()}));
