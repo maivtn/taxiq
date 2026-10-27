@@ -69,6 +69,7 @@
     if (path === '/dashboard/reviews') return 'nexora-review.html';
     if (path === '/dashboard/pos' && front[tab]) return front[tab];
     if (path === '/dashboard/pos' && tab === 'timeclock') return 'pos-front-desk.html?section=clock';
+    if (path === '/dashboard/pos/sms-campaigns') return 'nexora-sms-dashboard.html';
     if (path === '/dashboard/pos/printer') return 'pos-printer-setup.html';
     var localRoutes = {'/dashboard/pos/report/technician':'pos-technician-report.html','/dashboard/pos/public-checkin':'pos-qr-checkin.html','/dashboard/pos/devices':'pos-checkin-devices.html','/dashboard/analytics':'nexora-analytics.html','/dashboard/category-management':'payment-categories.html','/dashboard/support':'nexora-support.html','/dashboard/ai-hub/setup-guide':'salon-guide-ai-voice.html'};
     if (localRoutes[path]) return localRoutes[path];
