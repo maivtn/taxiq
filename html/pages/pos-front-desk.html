@@ -7,6 +7,10 @@
     (function () {
       const current = new URL(window.location.href);
       const requested = current.searchParams.get('section') || current.searchParams.get('tab');
+      if (requested === 'booking') {
+        current.searchParams.set('section', 'appointments');
+        window.history.replaceState(window.history.state, '', current);
+      }
       const section = requested || (!current.searchParams.has('view') && !current.searchParams.has('ticket') ? 'overview' : null);
       const pages = {staff: 'pos-front-desk-staff.html', overview: 'pos-front-desk-tickets.html', tickets: 'pos-front-desk-tickets.html', turnboard: 'pos-front-desk-turn-board.html', 'turn-board': 'pos-front-desk-turn-board.html'};
       if (!Object.hasOwn(pages, section)) return;
@@ -28,6 +32,7 @@
   <link rel="stylesheet" href="../assets/pos-estimate.css">
   <link rel="stylesheet" href="../assets/front-desk-waitlist.css?v=20261006-clean-waitlist">
   <link rel="stylesheet" href="../assets/front-desk-schedule.css">
+  <link rel="stylesheet" href="../assets/pos-front-desk-booking.css">
 </head>
 <body>
 <div class="shell"><aside class="sidebar" aria-label="Salon sidebar"></aside><div class="app-area"><header class="header"></header>
@@ -50,19 +55,30 @@
   <section id="front-desk-checkin" aria-label="Guest Check-in" hidden></section>
   <section id="front-desk-estimate" aria-label="Service Estimate" hidden></section>
   <section id="front-desk-waitlist" aria-label="Live Waitlist" hidden></section>
-  <section id="appointments" aria-label="Appointments">
-    <section data-front-schedule aria-label="Staff schedule coverage"></section>
-    <div class="booking-link"><strong>YOUR BOOKING PAGE — SHARE THIS LINK WITH CUSTOMERS:</strong><a id="booking-url"></a><button id="copy-link">▢ COPY</button></div>
-    <div class="toolbar">
-      <div class="views" role="group" aria-label="Appointment view"><button class="active" data-view="table" aria-pressed="true">Table</button><button data-view="cards" aria-pressed="false">Cards</button><button data-view="calendar" aria-pressed="false">Calendar</button></div>
-      <button class="primary" id="new-booking">+ New Booking</button>
-      <select id="status-filter" aria-label="Filter by status"><option value="">All Statuses</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="checked-in">Checked In</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option><option value="no-show">No Show</option></select>
-      <select id="tech-filter" aria-label="Filter by technician"><option value="">All Technicians</option></select>
-      <input id="from-date" type="date" aria-label="From date"><input id="to-date" type="date" aria-label="To date"><span id="booking-count" aria-live="polite"></span>
-      <button id="calendar-reward-settings" type="button" hidden>⚙ Reward settings</button>
+  <section id="appointments" class="booking-workspace" aria-label="Booking">
+    <section data-front-schedule aria-label="Staff schedule coverage" hidden></section>
+    <div class="booking-workspace-head">
+      <div class="booking-primary-tools"><nav class="booking-subtabs" aria-label="Booking views"><button type="button" data-booking-view="booking" aria-pressed="true" class="active">Booking</button><button type="button" data-booking-view="appointment" aria-pressed="false">Appointment</button></nav><button class="primary" id="new-booking" type="button">+ New booking</button></div>
+      <div class="booking-link" role="group" aria-label="Booking online"><strong>Booking online:</strong><a id="booking-url" target="_blank" rel="noopener"></a><button id="copy-link" type="button"><i data-lucide="copy" aria-hidden="true"></i>Copy</button><a id="booking-open-link" target="_blank" rel="noopener" aria-label="Open booking page in a new tab"><i data-lucide="external-link" aria-hidden="true"></i></a></div>
+    </div>
+    <div class="booking-toolbar">
+      <div class="booking-list-tools" data-booking-list-tools>
+        <label class="booking-search"><i data-lucide="search" aria-hidden="true"></i><input id="booking-search" type="search" placeholder="Search by name or phone number" aria-label="Search by name or phone number"></label>
+        <div class="booking-filter-anchor"><button id="booking-filter-toggle" class="booking-filter-toggle" type="button" aria-expanded="false" aria-controls="booking-filter-panel"><i data-lucide="filter" aria-hidden="true"></i>Filter</button>
+          <div id="booking-filter-panel" class="booking-filter-panel" role="dialog" aria-label="Filter appointments" hidden><h3>Filter appointments</h3><div class="booking-filter-fields">
+            <label>Source<select id="source-filter"><option value="">All Sources</option><option value="ai">AI Voice</option><option value="website">Website / OneQR</option><option value="front-desk">Front Desk</option></select></label>
+            <label>Status<select id="status-filter"><option value="">All Statuses</option><option value="pending">Pending</option><option value="confirmed">Confirmed</option><option value="checked-in">Checked In</option><option value="in-service">In Service</option><option value="completed">Completed</option><option value="cancelled">Cancelled</option></select></label>
+            <label class="full">Technician<select id="tech-filter"><option value="">All Technicians</option></select></label>
+            <label>From<input id="from-date" type="date" aria-label="From"></label><label>To<input id="to-date" type="date" aria-label="To"></label>
+          </div><button id="clear-booking-filters" type="button">Clear Filters</button></div>
+        </div>
+      </div>
+      <div class="views" role="group" aria-label="Appointment view" hidden><button data-view="table" aria-pressed="false">Table</button><button data-view="cards" aria-pressed="false">Cards</button><button data-view="calendar" class="active" aria-pressed="true">Calendar</button></div>
+      <span id="booking-count" aria-live="polite"></span>
+      <div class="booking-settings-tools"><button id="booking-turn-settings" type="button">Weighted Turn Settings</button><button id="calendar-reward-settings" type="button">Reward settings</button></div>
     </div>
     <div id="booking-results"></div>
-    <section id="team-calendar" aria-label="Team Calendar" hidden></section>
+    <section id="team-calendar" data-booking-staging aria-label="Team Calendar" hidden></section>
   </section>
   <section id="service-assignments" aria-label="Ticket service assignments" hidden>
     <div data-assignment-list></div><div data-assignment-detail hidden></div>
@@ -71,14 +87,34 @@
   </section>
   <p id="feedback" role="status"></p>
 </main></div></div>
-<dialog id="booking-dialog"><form id="booking-form"><div class="dialog-heading"><h2 id="dialog-title">New Booking</h2><button type="button" id="close-dialog" aria-label="Close">×</button></div><div id="booking-fields">
-<label>Customer<input name="customerName" required></label><label>Phone<input name="phone" type="tel" required></label><label>Date &amp; time<input name="startAt" type="datetime-local" required></label><label>Service<select name="service" required></select></label><label>Technician<select name="technicianId"><option value="">Unassigned</option></select></label></div><p id="form-error" role="alert"></p><button id="save-booking" class="primary" type="submit">Save Booking</button></form></dialog>
+<dialog id="booking-dialog" class="booking-editor" aria-labelledby="dialog-title"><form id="booking-form">
+  <div class="booking-editor-head"><div><p>Booking</p><h2 id="dialog-title">New Booking</h2></div><button type="button" id="close-dialog" aria-label="Close">×</button></div>
+  <div class="booking-editor-body"><div id="booking-fields" class="booking-editor-fields">
+    <label>Customer name<input name="customerName" required autocomplete="name"></label>
+    <label>Phone number<span class="booking-phone-field"><span>US +1</span><input name="phone" type="tel" required placeholder="(555) 555-5555" autocomplete="tel"></span></label>
+    <label>Technician<select name="technicianId"><option value="">Anyone</option></select></label>
+    <label>Date<input name="date" type="date" required></label><label>Time<input name="time" type="time" required></label>
+  </div>
+  <div class="booking-editor-services"><section class="booking-service-picker"><div class="booking-service-heading"><h3>Add services</h3><label class="booking-search"><i data-lucide="search" aria-hidden="true"></i><input id="booking-service-search" type="search" placeholder="Search services..." aria-label="Search services..."></label></div><div class="booking-service-categories" data-booking-service-categories role="group" aria-label="Service category"></div><div class="booking-service-list" data-booking-service-list></div></section>
+    <section class="booking-selected-services" aria-label="Selected services"><div><h3>Selected services</h3><span data-booking-selected-count>0</span></div><div data-booking-selected-list><p>No services selected yet.</p></div><footer><strong>Estimated Total</strong><strong data-booking-total>$0.00</strong></footer></section>
+  </div><p id="form-error" role="alert"></p></div>
+  <footer class="booking-editor-footer"><button type="button" data-close-booking>Cancel</button><button id="save-booking" class="primary" type="submit">Create Booking</button></footer>
+</form></dialog>
+<dialog id="booking-turn-dialog" class="booking-settings-dialog" aria-labelledby="booking-turn-title"><form id="booking-turn-form">
+  <div class="booking-turn-head"><span class="booking-turn-icon"><i data-lucide="sliders-horizontal" aria-hidden="true"></i></span><div><small>Turn board settings</small><h2 id="booking-turn-title">Weighted Turn Settings</h2><p>Set how service amounts convert into turns.</p></div><button type="button" data-close-turn aria-label="Close">×</button></div>
+  <section class="booking-turn-credit"><div><h3>Booking turn credit</h3><p>Replaces the range credits when a technician does the services a customer requested them for. Also set in Booking Incentive Policy — both screens use this one number.</p><button type="button" data-booking-incentive-policy><i data-lucide="gift" aria-hidden="true"></i>Booking Incentive Policy</button></div><label><span class="booking-visually-hidden">Booking turn credit</span><input name="bookingTurnCredit" type="number" min="0" step="any" required><span>turns/booking</span></label></section>
+  <div class="booking-turn-section-head"><h3>Service ranges</h3><span data-booking-turn-range-count></span></div><p class="booking-turn-help">Set an Up to amount for each range. The next range starts $0.01 above it.</p>
+  <div class="booking-turn-table"><table><thead><tr><th>Range</th><th>From <span>Auto</span></th><th>Up to</th><th>Turn credit</th><th></th></tr></thead><tbody data-booking-turn-ranges></tbody></table></div><button type="button" class="booking-add-range" data-booking-turn-add>+ Add range</button>
+  <p class="booking-turn-basis">Service value after discounts.<br>Excludes tips, tax, products, and gift-card payments.</p><p data-booking-turn-error role="alert"></p>
+  <footer><p>Applies to new turns<br>Existing recorded turns stay unchanged.</p><button type="button" data-close-turn>Cancel</button><button type="submit" class="primary">Save Rules</button></footer>
+</form></dialog>
 <script src="../assets/salon-data.js"></script><script src="../assets/appointment-tickets.js"></script><script src="../assets/appointments-store.js"></script>
 <script src="../assets/staff-schedule-store.js"></script><script src="../assets/front-desk-schedule.js"></script>
 <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
 <script>window.NEXORA_SHELL = {activePage: 'pos', activeTab: 'front-desk'};</script><script src="../assets/nexora-shell.js"></script>
 <script src="../assets/pos-turn-settings.js"></script>
 <script src="../assets/team-calendar-content.js"></script>
+<script src="../assets/pos-front-desk-booking-calendar.js"></script>
 <script src="../assets/pos-front-desk.js"></script>
 <script src="../assets/service-assignments.js"></script>
 <script src="../assets/front-desk-assignments.js"></script>

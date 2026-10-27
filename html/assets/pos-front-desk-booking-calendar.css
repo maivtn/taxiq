@@ -1,0 +1,54 @@
+.booking-legacy-content{display:flex;flex-direction:column;gap:14px;padding-top:20px}
+.booking-legacy-content>:not(#technician-overview):not(#unassigned-queue){display:none!important}
+.booking-legacy-content #technician-overview{order:0;margin:0}
+.booking-legacy-content #unassigned-queue{order:1;margin:0}
+:host{font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:#101827;background:transparent;min-height:0}
+:host([hidden]){display:none!important}
+:host([data-policy-only=true]) :is(.booking-live-calendar,.booking-legacy-content){display:none}
+.booking-live-calendar{font-family:Inter,ui-sans-serif,system-ui,sans-serif;color:#101827;min-width:0}
+.booking-live-calendar button,.booking-live-calendar select{font:inherit;cursor:pointer;color:inherit}
+.pb-datebar{display:flex;align-items:center;gap:12px;margin:18px 0 12px}
+.pb-datebar>strong{font-size:12px}
+.pb-date-controls{display:flex;gap:6px}
+.pb-date-controls button{border:1px solid #dfe3ed;background:white;border-radius:8px;padding:6px 11px;min-height:34px;font-size:12px;font-weight:650}
+.pb-date-controls button:first-child,.pb-date-controls button:last-child{font-size:22px;line-height:18px;padding:5px 10px}
+.pb-view-switch{display:flex;padding:3px;margin-left:auto;gap:3px;border:1px solid #dfe3ed;border-radius:10px;background:white}
+.pb-view-switch button{border:0;background:transparent;padding:6px 10px;border-radius:7px;font-size:11px;font-weight:650;color:#475467}
+.pb-view-switch button.selected{background:#eae7ff;color:#4338ca}
+.pb-summary{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px;margin-bottom:20px}
+.pb-summary-card{position:relative;display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding:9px 11px;border:1px solid #e0e5ed;background:white;border-radius:8px;box-shadow:0 1px 3px #172b4d08;min-height:57px;text-align:left}
+.pb-summary-card.selected{border-color:#38bdf8;box-shadow:0 0 0 1px #38bdf833}
+.pb-summary-card strong{font-size:20px;font-weight:750;line-height:22px}
+.pb-summary-card span{font-size:10px;color:#667085}
+.pb-summary-card small{font-size:10px;color:#218b6b}
+.pb-summary-card i{position:absolute;right:9px;top:9px;display:grid;place-items:center;width:20px;height:20px;border-radius:99px;background:#e0f2fe;color:#0284c7;font-style:normal;font-size:14px}
+.pb-summary-card.completed i{background:#d1fae5;color:#059669}
+.pb-summary-card.pending i{background:#fef3c7;color:#d97706}
+.pb-summary-card.cancelled i{background:#ffe4e6;color:#e11d48}
+.pb-scope-row{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.pb-scope-row select{appearance:none;width:150px;height:34px;border:1px solid #dfe3ed;border-radius:8px;background-color:#fff;padding:6px 44px 6px 12px;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23606a7b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-position:right 16px center;background-repeat:no-repeat;background-size:16px;font-size:11px;font-weight:650}
+.pb-legend{display:flex;align-items:center;gap:8px;font-size:10px;color:#667085;font-weight:650}
+.pb-legend span{display:flex;align-items:center;gap:4px}
+.pb-legend i{width:6px;height:6px;border-radius:50%;background:#9ca3af}
+.pb-legend .completed i{background:#218b6b}.pb-legend .upcoming i{background:#3975d4}.pb-legend .pending i{background:#b56b14}
+.pb-grid-scroll{border:1px solid #dfe3ed;border-radius:12px;overflow:auto;background:white;max-height:720px;scrollbar-width:thin;scrollbar-color:#32d7ff #f6f8fc}
+.pb-grid{display:grid;grid-template-columns:64px repeat(var(--pb-columns),minmax(180px,1fr));grid-template-rows:44px repeat(92,28px);position:relative;min-width:max-content}
+.pb-corner{grid-column:1;grid-row:1;background:#fafbff;border-right:1px solid #e5e9f0;border-bottom:1px solid #e5e9f0}
+.pb-technician{position:sticky;top:0;z-index:3;display:flex;align-items:center;justify-content:center;gap:8px;padding:6px;background:#fafbff;border-right:1px solid #e5e9f0;border-bottom:1px solid #e5e9f0;min-width:0}
+.pb-technician strong{display:block;font-size:11px;line-height:1.4}
+.pb-technician small{display:flex;align-items:center;gap:4px;font-size:9px;color:#667085;margin-top:3px}
+.pb-technician small i{width:6px;height:6px;background:#10b981;border-radius:50%}
+.pb-avatar{display:grid;place-items:center;width:30px;height:30px;border-radius:50%;background:#eae7ff;color:#6254c0;font-size:10px;font-weight:750;flex:none}
+.pb-time{position:sticky;left:0;z-index:2;padding:5px;text-align:right;font-size:11px;font-weight:700;line-height:1;color:#667085;border-right:1px solid #e5e9f0;background:#fafbff}
+.pb-slot{position:relative;border:0;border-right:1px solid #e5e9f0;border-bottom:1px solid #f0f2f6;background:white;min-width:0;padding:0}
+.pb-slot span{color:#d1d5db;opacity:0;font-size:14px}.pb-slot:hover{background:#fafbff}.pb-slot:hover span{opacity:1}
+.pb-appointment{z-index:1;display:flex;flex-direction:column;align-items:flex-start;text-align:left;gap:4px;min-height:0;min-width:0;overflow:hidden;margin:2px;padding:5px 7px;border:1px solid #5286d6;border-radius:8px;background:#e7f0ff;color:#244a83}
+.pb-appointment strong{font-size:11px;font-weight:750;line-height:1.3}.pb-appointment>span{font-size:10px;line-height:1.3}.pb-appointment small{font-size:9px;margin-top:auto}
+.pb-appointment.completed{background:#e9f7f1;border-color:#65b99a;color:#157f5b}.pb-appointment.pending{background:#fffbeb;border-color:#f7c65e;color:#946008}.pb-appointment.cancelled{background:#fff1f2;border-color:#f3a8b3;color:#be3451}
+.pb-overview{border:1px solid #dfe3ed;border-radius:12px;overflow:auto;background:white}
+.pb-weekdays,.pb-days{display:grid;grid-template-columns:repeat(7,minmax(110px,1fr));min-width:770px}
+.pb-weekdays span{background:#fafbff;padding:10px;border-right:1px solid #e5e9f0;font-size:11px;color:#667085;font-weight:650}
+.pb-day{display:flex;flex-direction:column;align-items:flex-start;gap:6px;min-height:135px;padding:10px;border:0;border-top:1px solid #e5e9f0;border-right:1px solid #e5e9f0;background:white;text-align:left}
+.pb-day>strong{font-size:13px}.pb-day>span{font-size:10px;color:#667085}.pb-day small{font-size:10px;padding:4px;border-radius:5px;background:#eff6ff;color:#1d4ed8;max-width:100%;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.booking-live-calendar :is(button,select):focus-visible{outline:2px solid #a5a2ed;outline-offset:1px}
+@media(max-width:760px){.pb-datebar{gap:8px;flex-wrap:wrap}.pb-view-switch{margin:0 0 0 auto}.pb-view-switch button{font-size:10px;padding:6px}.pb-summary{gap:5px;margin-bottom:12px}.pb-summary-card{padding:7px;min-height:54px}.pb-summary-card strong{font-size:17px}.pb-summary-card span{font-size:9px}.pb-summary-card i{right:5px;top:6px;width:16px;height:16px;font-size:11px}.pb-legend{gap:5px;font-size:9px}.pb-scope-row{flex-wrap:wrap;gap:8px}.pb-grid-scroll{max-height:600px}}
