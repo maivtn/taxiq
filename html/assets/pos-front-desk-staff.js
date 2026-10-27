@@ -7,7 +7,7 @@
   const phoneDisplay=value=>{const phone=data.digits(value).slice(0,10);return phone.length>6?'('+phone.slice(0,3)+') '+phone.slice(3,6)+'-'+phone.slice(6):phone.length>3?'('+phone.slice(0,3)+') '+phone.slice(3):phone?'('+phone:'';};
   const icon=name=>'<i data-lucide="'+name+'" aria-hidden="true"></i>';
   let rows=[],techRows=[],techs=[],fullCatalog=[],saving=false,openCustomer=null;
-  const state={selectedTech:'',techMode:'new',techNewPhone:'',techNewName:'',techNewStatus:'idle',techNewCategory:'',techNewServiceIndex:'',techCoTech:'',techNewNotice:'',assignCategory:'',assignServiceIndex:'',assignTicketId:'',assignmentNotice:''};
+  const state={staffSearch:'',staffFilter:'all',selectedTech:'',techMode:'new',techNewPhone:'',techNewName:'',techNewStatus:'idle',techNewCategory:'',techNewServiceIndex:'',techCoTech:'',techNewNotice:'',assignCategory:'',assignServiceIndex:'',assignTicketId:'',assignmentNotice:''};
   const activeTickets=()=>rows.filter(ticket=>data.editable(ticket)&&data.visible(ticket)).map(ticket=>({...ticket,name:String(ticket.customer || '').toUpperCase()}));
   const ticketWorkForTech=name=>data.workFor(name,rows).filter(({ticket})=>data.visible(ticket)).map(({ticket,line})=>({ticket:{...ticket,name:String(ticket.customer || '').toUpperCase()},service:line,role:data.names(line)[0]===name?'lead':'with '+data.names(line)[0]}));
   const statusLabel=name=>({busy:'Working',assigned:'Assigned','clocked-out':'Clocked out',paused:'Paused',available:'Available'}[data.statusFor(techRows.find(tech=>tech.name===name),rows)]);
@@ -26,9 +26,11 @@
     if(state.assignServiceIndex!==''){const index=fullCatalog.findIndex(service=>service.id===existingServiceId);state.assignServiceIndex=index<0?'':String(index);}
     const categories=[...new Set(fullCatalog.map(service=>service.category))];
     if(!techs.includes(state.selectedTech))state.selectedTech=techs[0] || '';
-    const firstEligible=fullCatalog.find(service=>data.canAssign(state.selectedTech,service))?.category || categories[0] || '';
-    if(!categories.includes(state.techNewCategory))state.techNewCategory=firstEligible;
-    if(!categories.includes(state.assignCategory))state.assignCategory=firstEligible;
+    const eligibleCategories=categories.filter(category=>catalogChoices(category).length);
+    const firstEligible=eligibleCategories[0] || '';
+    if(!eligibleCategories.includes(state.techNewCategory))state.techNewCategory=firstEligible;
+    if(!eligibleCategories.includes(state.assignCategory))state.assignCategory=firstEligible;
+    ['techNewServiceIndex','assignServiceIndex'].forEach(key=>{if(state[key]!==''&&!data.canAssign(state.selectedTech,fullCatalog[Number(state[key])]))state[key]='';});
     if(state.selectedTech)rememberTechnician();
     if(openCustomer)openCustomer=rows.find(ticket=>data.keyOf(ticket)===data.keyOf(openCustomer)) || null;
   }
@@ -41,148 +43,136 @@
       <label for="tech-guest-name">Customer name · required</label>
       <input class="input" id="tech-guest-name" autocomplete="off" value="${esc(state.techNewName)}" placeholder="First and last name">
       </div>`;return `<p class="hint">Demo lookup: 202-555-0101 is a returning customer; another phone creates a new customer.</p>`}
-  function techNewTicketHtml(categories){const service=state.techNewServiceIndex!==''?fullCatalog[Number(state.techNewServiceIndex)]:null;return `<div class="tech-flow-steps">
-      <span>
-      <b>1</b> Customer</span>
-      <span>
-      <b>2</b> Service & team</span>
-      <span>
-      <b>3</b> Ticket or checkout</span>
-      </div>
-      <div class="tech-flow-grid">
-      <div class="tech-flow-section">
-      <h4>Customer</h4>
-      <label for="tech-guest-phone">Phone number · required</label>
-      <div class="tech-phone-row">
-      <input class="input" id="tech-guest-phone" inputmode="tel" autocomplete="off" value="${esc(phoneDisplay(state.techNewPhone))}" placeholder="(000) 000-0000">
-      <button type="button" class="btn btn-secondary" data-action="tech-lookup-guest">Find customer</button>
-      </div>
-      <div id="tech-guest-result" aria-live="polite">${technicianGuestResultHtml()}</div>
-      </div>
-      <div class="tech-flow-section">
-      <h4>Service by ${esc(state.selectedTech)}</h4>
-      <div class="tech-field-pair">
-      <div class="form-field">
-      <label for="tech-new-category">Category</label>
-      <select class="select" id="tech-new-category">${categories.map(category=>`<option value="${esc(category)}" ${state.techNewCategory===category?'selected':''}>${esc(category)}</option>`).join('')}</select>
-      </div>
-      <div class="form-field">
-      <label for="tech-new-service">Service</label>
-      <select class="select" id="tech-new-service">
-      <option value="">Choose service</option>${catalogChoices(state.techNewCategory).map(({item,index})=>`<option value="${index}" ${String(state.techNewServiceIndex)===String(index)?'selected':''}>${esc(item.name)} · ${money(item.price)}</option>`).join('')}</select>
-      </div>
-      </div>
-      <div class="form-field">
-      <label for="tech-co-worker">Working together with</label>
-      <select class="select" id="tech-co-worker">
-      <option value="">No second technician</option>${techs.filter(tech=>tech!==state.selectedTech&&service&&data.canAssign(tech,service)).map(tech=>`<option value="${esc(tech)}" ${state.techCoTech===tech?'selected':''}>${esc(tech)} · same service</option>`).join('')}</select>
-      <p class="hint">A shared service is charged once. Both technicians appear on the ticket and in tip allocation.</p>
-      </div>
-      </div>
-      </div>
-      <div class="tech-checkout-footer">
-      <div class="tech-new-preview">
-      <div>
-      <small>TICKET PREVIEW</small>
-      <strong id="tech-guest-preview">${esc(state.techNewName||'Customer not selected')}</strong>
-      <span>${esc(state.selectedTech)}${state.techCoTech?` + ${esc(state.techCoTech)}`:''}</span>
-      </div>
-      <div>
-      <strong>${service?esc(service.name):'Choose a service'}</strong>
-      <b>${service?money(service.price):'$0.00'}</b>
-      </div>
-      </div>
-      <div class="tech-checkout-actions">
-      <p class="tech-assign-feedback" role="status">${esc(state.techNewNotice)}</p>
-      <div class="tech-new-actions">
-      <button type="button" class="btn btn-secondary" data-action="tech-create-ticket">Create ticket</button>
-      <button type="button" class="btn btn-primary" data-action="tech-create-checkout">Create ticket & checkout →</button>
-      </div>
-      <p class="tech-prototype-note">No check-in is required. Discounts, add-ons, tip, and payment choice remain editable at checkout.</p>
-      </div>
-      </div>`}
-  function techExistingTicketHtml(categories){const available=catalogChoices(state.assignCategory);return `<div class="tech-assign-title">
-      <span class="tech-panel-kicker">EXISTING TICKET</span>
-      <h3>Assign another service to ${esc(state.selectedTech)}</h3>
-      <p>Choose an open ticket and a service. It will appear under this technician at checkout.</p>
-      </div>
-      <div class="tech-assign-fields">
-      <div class="form-field">
-      <label for="assign-ticket">Customer ticket</label>
-      <select class="select" id="assign-ticket">
-      <option value="">Choose open ticket</option>${activeTickets().map(ticket=>`<option value="${esc(data.keyOf(ticket))}" ${String(state.assignTicketId)===data.keyOf(ticket)?'selected':''}>#${esc(ticket.id)} · ${esc(ticket.name)}</option>`).join('')}</select>
-      </div>${existingServicesHtml()}<div class="form-field">
-      <label for="assign-category">Service category</label>
-      <select class="select" id="assign-category">${categories.map(category=>`<option value="${esc(category)}" ${state.assignCategory===category?'selected':''}>${esc(category)}</option>`).join('')}</select>
-      </div>
-      <div class="form-field">
-      <label for="assign-service">Salon service</label>
-      <select class="select" id="assign-service">
-      <option value="">Choose service</option>${available.map(({item,index})=>`<option value="${index}" ${String(state.assignServiceIndex)===String(index)?'selected':''}>${esc(item.name)} · ${money(item.price)}</option>`).join('')}</select>
-      </div>
-      </div>
-      <div class="tech-assign-footer">
-      <button type="button" class="btn btn-primary" data-action="assign-tech-service">${icon('plus')} Assign to ${esc(state.selectedTech)}</button>
-      <p class="tech-assign-note">Uses the salon's standard menu price. Add-ons and discounts can be edited on the checkout ticket.</p>
-      </div>
-      <p class="tech-assign-feedback" role="status">${esc(state.assignmentNotice)}</p>`}
-  function techniciansHtml(){const categories=[...new Set(fullCatalog.map(item=>item.category))],work=ticketWorkForTech(state.selectedTech),busy=techRows.filter(tech=>data.statusFor(tech,rows)==='busy').length;return `<section class="tech-screen-head">
-      <div>
-      <p class="tech-screen-eyebrow">FRONT DESK · STAFF WORKSPACE</p>
-      <h2>Salon Technicians</h2>
-      <p class="muted">Tap a technician to assign work, make a ticket, or start checkout for a customer.</p>
-      </div>
-      <div class="tech-head-actions">
-      <span class="tech-count">${busy} working · ${techs.filter(tech=>data.statusFor(techRows.find(row=>row.name===tech),rows)==='available').length} available</span>
-      </div>
+  const technicianStatus=name=>data.statusFor(techRows.find(tech=>tech.name===name),rows);
+  const rosterStatus=name=>['clocked-out','paused'].includes(technicianStatus(name))?'offshift':technicianStatus(name);
+  const rosterLabels={all:'All staff',busy:'Working',assigned:'Assigned',available:'Available',offshift:'Off shift'};
+  const avatarColors=[['#f1eaff','#7754b2'],['#ffeef0','#b5687b'],['#e5f3f0','#367e72'],['#e8f0fd','#5077ae'],['#fff1df','#a87934'],['#eceff4','#727e94']];
+  function technicianAvatar(name,large=false){
+    const colors=avatarColors[Math.max(0,techs.indexOf(name))%avatarColors.length];
+    return `<span class="tech-avatar${large?' large':''}" style="--avatar-bg:${colors[0]};--avatar-ink:${colors[1]}" aria-hidden="true">${esc(name.trim().split(/\s+/).map(part=>part[0]).join('').slice(0,2))}</span>`;
+  }
+  function staffCounts(){
+    const counts={all:techs.length,busy:0,assigned:0,available:0,offshift:0};
+    techs.forEach(tech=>counts[rosterStatus(tech)]++);
+    return counts;
+  }
+  function staffSummaryHtml(){
+    const counts=staffCounts();
+    return ['busy','assigned','available','offshift'].map(status=>`<span class="tech-summary-item ${status}"><i class="tech-status-dot" aria-hidden="true"></i><strong>${counts[status]}</strong>${rosterLabels[status]}</span>`).join('');
+  }
+  function staffFiltersHtml(){
+    const counts=staffCounts();
+    return Object.keys(counts).map(status=>`<button type="button" class="tech-filter${state.staffFilter===status?' selected':''}" data-action="filter-tech" data-value="${status}" aria-pressed="${state.staffFilter===status}">${rosterLabels[status]}<span>${counts[status]}</span></button>`).join('');
+  }
+  function staffRosterHtml(){
+    const visible=techs.filter(tech=>(state.staffFilter==='all'||rosterStatus(tech)===state.staffFilter)&&tech.toLowerCase().includes(state.staffSearch.trim().toLowerCase()));
+    return visible.length?visible.map(tech=>{
+      const jobs=ticketWorkForTech(tech).filter(job=>job.service.status!=='completed'),selected=state.selectedTech===tech,status=rosterStatus(tech);
+      return `<button type="button" class="tech-roster-card${selected?' selected':''}" data-action="select-tech" data-id="${esc(tech)}" aria-pressed="${selected}">
+        <span class="tech-selection-tick" aria-hidden="true">${icon('check')}</span>${technicianAvatar(tech)}
+        <span class="tech-card-copy"><strong>${esc(tech)}</strong><small>${jobs.length?`${jobs.length} service${jobs.length===1?'':'s'} to finish`:status==='available'?'Ready for work':statusLabel(tech)}</small></span>
+        <span class="tech-status ${status}"><i class="tech-status-dot" aria-hidden="true"></i>${rosterLabels[status]}</span>
+      </button>`;
+    }).join(''):'<div class="tech-roster-empty">No technicians match your search. Try a different name or filter.</div>';
+  }
+  function renderRoster(){
+    root.querySelector('[data-staff-roster]').innerHTML=staffRosterHtml();
+    root.querySelector('[data-staff-filters]').innerHTML=staffFiltersHtml();
+    window.lucide?.createIcons();
+  }
+  function servicePickerHtml(categories,existing=false){
+    const category=existing?state.assignCategory:state.techNewCategory,index=existing?state.assignServiceIndex:state.techNewServiceIndex,mode=existing?'existing':'new';
+    return `<div class="tech-flow-section tech-service-section">
+      <h4 class="tech-step-title"><b>2</b>Service by ${esc(state.selectedTech)}</h4>
+      <span class="tech-field-label">Service category</span>
+      <div class="tech-category-chips" role="group" aria-label="Service category">${categories.map(value=>`<button type="button" class="tech-category-chip${category===value?' selected':''}" data-action="tech-category" data-mode="${mode}" data-value="${esc(value)}" aria-pressed="${category===value}">${esc(value)}</button>`).join('')}</div>
+      <div class="tech-services-grid" role="group" aria-label="Choose a service">${catalogChoices(category).map(({item,index:serviceIndex})=>`<button type="button" class="tech-service-card${String(index)===String(serviceIndex)?' selected':''}" data-action="tech-service" data-mode="${mode}" data-value="${serviceIndex}" aria-pressed="${String(index)===String(serviceIndex)}">
+        <span class="tech-service-radio" aria-hidden="true"></span><span class="tech-service-name">${esc(item.name)}</span>
+        <span class="tech-service-meta"><span>${Number(item.duration)>0?esc(item.duration)+' min':''}</span><strong>${money(item.price)}</strong></span>
+      </button>`).join('')}</div>
+    </div>`;
+  }
+  function ticketPreviewHtml(service,existing=false){
+    const ticket=existing?activeTickets().find(ticket=>data.keyOf(ticket)===state.assignTicketId):null;
+    return `<div class="tech-new-preview"><div><small>TICKET PREVIEW</small><strong id="${existing?'tech-ticket-preview':'tech-guest-preview'}">${esc(existing?ticket?.name||'Ticket not selected':state.techNewName||'Customer not selected')}</strong><span>${esc(state.selectedTech)}${!existing&&state.techCoTech?` + ${esc(state.techCoTech)}`:''} · ${service?esc(service.name):'Choose a service'}</span></div><b>${service?money(service.price):'$0.00'}</b></div>`;
+  }
+  function techNewTicketHtml(categories){
+    const service=state.techNewServiceIndex!==''?fullCatalog[Number(state.techNewServiceIndex)]:null;
+    return `<div class="tech-form-body">
+      <section class="tech-flow-section tech-customer-section">
+        <h4 class="tech-step-title"><b>1</b>Who’s the customer?</h4>
+        <label for="tech-guest-phone">Phone number · required</label>
+        <div class="tech-phone-row"><input class="input" id="tech-guest-phone" type="tel" inputmode="tel" autocomplete="off" value="${esc(phoneDisplay(state.techNewPhone))}" placeholder="(000) 000-0000"><button type="button" class="btn btn-secondary" data-action="tech-lookup-guest">Find customer${icon('chevron-right')}</button></div>
+        <div id="tech-guest-result" aria-live="polite">${technicianGuestResultHtml()}</div>
       </section>
-      <div class="tech-roster" role="group" aria-label="Select technician">${techs.map((tech,index,ordered)=>{const jobs=ticketWorkForTech(tech),selected=state.selectedTech===tech;return `<div class="tech-roster-item">
-      <button type="button" class="tech-roster-card ${selected?'selected':''}" data-action="select-tech" data-id="${esc(tech)}" aria-pressed="${selected}">
-      <span class="tech-avatar">${esc(tech.split(' ').map(part=>part[0]).join('').slice(0,2))}</span>
-      <span class="tech-card-copy">
-      <strong>${esc(tech)}</strong>
-      <small>${jobs.some(job=>job.service.status!=='completed')?`${jobs.filter(job=>job.service.status!=='completed').length} assigned service${jobs.filter(job=>job.service.status!=='completed').length===1?'':'s'}`:data.statusFor(techRows.find(row=>row.name===tech),rows)==='available'?'Ready for work':statusLabel(tech)}</small>
-      </span>
-      <span class="tech-status ${data.statusFor(techRows.find(row=>row.name===tech),rows)}">${statusLabel(tech)}</span>
-      </button>
-      </div>`}).join('')}</div>
-      <div class="tech-workspace">
-      <section class="panel tech-current">
-      <div class="tech-panel-head">
-      <div>
-      <span class="tech-panel-kicker">SELECTED TECHNICIAN</span>
-      <h3>${esc(state.selectedTech)}</h3>
-      <p>${work.length} service${work.length===1?'':'s'} assigned on open tickets</p>
+      ${servicePickerHtml(categories)}
+      <div class="form-field tech-team-field"><label for="tech-co-worker">Working together with</label>
+        <select class="select" id="tech-co-worker"><option value="">No second technician</option>${techs.filter(tech=>tech!==state.selectedTech&&service&&data.canAssign(tech,service)).map(tech=>`<option value="${esc(tech)}" ${state.techCoTech===tech?'selected':''}>${esc(tech)} · same service</option>`).join('')}</select>
+        <p class="hint tech-team-hint">${icon('users')}Same service, one charge. Both technicians appear on the ticket.</p>
       </div>
-      <span class="tech-panel-icon">${icon('users')}</span>
-      </div>${work.length?`<div class="tech-work-list">${work.map(({ticket,service,role})=>`<div class="tech-work-row">
-      <div>
-      <strong>${esc(service.name||fullCatalog.find(c=>c.id===service.serviceId)?.name||'Service')}</strong>
-      <span>Ticket #${esc(ticket.id)} · ${esc(ticket.name)}${role==='lead'?'':` · ${esc(role)}`} · ${esc(service.status==='completed'?'Completed':service.status==='in-service'?'In service':'Waiting')}</span>
+    </div>
+    <div class="tech-checkout-footer">${ticketPreviewHtml(service)}
+      <div class="tech-checkout-actions"><p class="tech-assign-feedback" role="status">${esc(state.techNewNotice)}</p>
+        <div class="tech-new-actions"><button type="button" class="btn btn-secondary" data-action="tech-create-ticket">Create ticket</button><button type="button" class="btn btn-primary" data-action="tech-create-checkout">Create ticket & checkout${icon('arrow-right')}</button></div>
+        <p class="tech-prototype-note">No check-in is required. Discounts, add-ons, tip, and payment choice remain editable at checkout.</p>
       </div>
-      <button type="button" class="tech-ticket-link" data-action="open-ticket" data-id="${esc(data.keyOf(ticket))}">Open ticket →</button>
-      </div>`).join('')}</div>`:`<div class="tech-empty">No services assigned yet. Start a ticket for this technician.</div>`}</section>
-      <section class="panel tech-assign">
-      <div class="tech-mode-tabs" role="group" aria-label="Technician work mode">
-      <button type="button" class="${state.techMode==='new'?'selected':''}" data-action="tech-mode" data-value="new" aria-pressed="${state.techMode==='new'}">New ticket & checkout</button>
-      <button type="button" class="${state.techMode==='existing'?'selected':''}" data-action="tech-mode" data-value="existing" aria-pressed="${state.techMode==='existing'}">Add to existing ticket</button>
-      </div>${state.techMode==='new'?techNewTicketHtml(categories):techExistingTicketHtml(categories)}</section>
-      </div>
-      <p class="tech-prototype-note">Prototype data only. No live technician schedule, customer, ticket, or payment is changed.</p>`}
+    </div>`;
+  }
+  function techExistingTicketHtml(categories){
+    const service=state.assignServiceIndex!==''?fullCatalog[Number(state.assignServiceIndex)]:null;
+    return `<div class="tech-form-body">
+      <section class="tech-flow-section tech-customer-section"><h4 class="tech-step-title"><b>1</b>Choose an open ticket</h4>
+        <label for="assign-ticket">Customer ticket</label>
+        <select class="select" id="assign-ticket"><option value="">Choose open ticket</option>${activeTickets().map(ticket=>`<option value="${esc(data.keyOf(ticket))}" ${String(state.assignTicketId)===data.keyOf(ticket)?'selected':''}>#${esc(ticket.id)} · ${esc(ticket.name)}</option>`).join('')}</select>
+        ${existingServicesHtml()}
+      </section>${servicePickerHtml(categories,true)}
+    </div>
+    <div class="tech-checkout-footer">${ticketPreviewHtml(service,true)}
+      <p class="tech-assign-feedback" role="status">${esc(state.assignmentNotice)}</p>
+      <div class="tech-assign-footer"><button type="button" class="btn btn-primary" data-action="assign-tech-service">${icon('plus')} Assign to ${esc(state.selectedTech)}</button><p class="tech-assign-note">Uses the salon's standard menu price. Add-ons and discounts can be edited on the checkout ticket.</p></div>
+    </div>`;
+  }
+  function currentWorkHtml(work){
+    const status=rosterStatus(state.selectedTech);
+    return `<section class="panel tech-current" aria-label="Selected technician work">
+      <div class="tech-panel-head"><span class="tech-panel-kicker">SELECTED TECHNICIAN</span><div class="tech-selected-identity">${technicianAvatar(state.selectedTech,true)}<div><h3>${esc(state.selectedTech)}</h3><p>${work.length} service${work.length===1?'':'s'} assigned on open tickets</p></div></div></div>
+      ${status==='offshift'?`<div class="tech-off-notice">${icon('clock')}<span>This technician is off shift. Choose an on-shift technician to assign new work.</span></div>`:''}
+      ${work.length?`<div class="tech-work-heading"><span>CURRENT WORK</span><b>${work.length}</b></div><div class="tech-work-list">${work.map(({ticket,service,role})=>{
+        const item=fullCatalog.find(item=>item.id===service.serviceId),status=service.status==='completed'?'completed':service.status==='in-service'?'busy':'assigned';
+        return `<article class="tech-work-row"><div class="tech-job-heading"><strong>${esc(service.name||item?.name||'Service')}</strong>${service.price!=null||item?.price!=null?`<span>${money(service.price??item.price)}</span>`:''}</div>
+          <div class="tech-job-customer">${icon('user-round')}<span>${esc(ticket.name)}</span></div><div class="tech-job-meta"><span>Ticket #${esc(ticket.id)}</span><span class="tech-status ${status}"><i class="tech-status-dot" aria-hidden="true"></i>${service.status==='completed'?'Completed':service.status==='in-service'?'In service':'Waiting'}</span></div>
+          ${role==='lead'?'':`<p class="tech-job-team">${esc(role)}</p>`}<button type="button" class="tech-ticket-link" data-action="open-ticket" data-id="${esc(data.keyOf(ticket))}">Open ticket ${icon('arrow-right')}</button></article>`;
+      }).join('')}</div>`:`<div class="tech-empty"><span class="tech-empty-icon">${icon(status==='offshift'?'clock':'sparkles')}</span><div><h4>${status==='offshift'?'Currently off shift':'Ready for the next guest'}</h4><p>${status==='offshift'?'Existing tickets remain accessible. New work requires an active shift.':'No services assigned yet. Start a ticket or add work to an existing one.'}</p></div></div>`}
+      <div class="tech-work-foot">${icon('info')}<span>Completed services stay here until the customer’s ticket is closed.</span></div>
+    </section>`;
+  }
+  function techniciansHtml(){
+    const categories=[...new Set(fullCatalog.filter(service=>data.canAssign(state.selectedTech,service)).map(item=>item.category))],work=ticketWorkForTech(state.selectedTech);
+    return `<section class="tech-screen-head"><div><p class="tech-screen-eyebrow">FRONT DESK · STAFF WORKSPACE</p><h2>Salon Technicians</h2><p class="muted">Tap a technician to assign work, make a ticket, or start checkout for a customer.</p></div><div class="tech-summary" aria-label="Technician status summary">${staffSummaryHtml()}</div></section>
+      <div class="tech-toolbar"><div class="tech-filters" data-staff-filters role="group" aria-label="Technician status">${staffFiltersHtml()}</div><label class="tech-search">${icon('search')}<span class="tech-sr-only">Search technicians</span><input id="staff-search" type="search" placeholder="Search technicians…" autocomplete="off" value="${esc(state.staffSearch)}"></label></div>
+      <div class="tech-roster" data-staff-roster role="group" aria-label="Select technician">${staffRosterHtml()}</div>
+      <div class="tech-workspace">${currentWorkHtml(work)}<section class="panel tech-assign" aria-label="Assign work"><div class="tech-mode-tabs" role="group" aria-label="Technician work mode"><button type="button" class="${state.techMode==='new'?'selected':''}" data-action="tech-mode" data-value="new" aria-pressed="${state.techMode==='new'}">${icon('plus')}New ticket & checkout</button><button type="button" class="${state.techMode==='existing'?'selected':''}" data-action="tech-mode" data-value="existing" aria-pressed="${state.techMode==='existing'}">${icon('ticket')}Add to existing ticket</button></div>${state.techMode==='new'?techNewTicketHtml(categories):techExistingTicketHtml(categories)}</section></div>`;
+  }
   function existingServicesHtml(){
     const ticket=rows.find(ticket=>data.keyOf(ticket)===state.assignTicketId);if(!ticket)return '';
     const service=state.assignServiceIndex!==''?fullCatalog[Number(state.assignServiceIndex)]:null;
     return '<div class="tech-existing-services"><small>Services</small>'+ticket.lines.filter(line=>!line.parentLineId).map(line=>'<div class="'+(service?.id===line.serviceId?'same-service':'')+'"><strong>'+esc(line.name)+'</strong><span>'+esc(line.tech)+'</span></div>').join('')+'</div>';
   }
   function render(){
+    const focused=document.activeElement;
+    const previousFocus=root.contains(focused)?{id:focused.id,action:focused.dataset.action,value:focused.dataset.value,tech:focused.dataset.id,mode:focused.dataset.mode}:null;
     root.innerHTML=techniciansHtml();
     const newNotice=root.querySelector('.tech-new-actions')?.parentElement.querySelector('[role="status"]');
     if(openCustomer&&data.active(openCustomer)&&newNotice){
       const link=document.createElement('a');link.className='tech-ticket-link';link.textContent='Open ticket →';link.href=data.url(openCustomer,'edit','staff');newNotice.append(' ',link);
     }
-    root.querySelectorAll('[data-action="tech-create-ticket"],[data-action="tech-create-checkout"],[data-action="assign-tech-service"]').forEach(button=>{button.disabled=saving||!data.canOperate()||!state.selectedTech||(button.dataset.action!=='assign-tech-service'&&!!openCustomer&&data.active(openCustomer));});
+    root.querySelectorAll('[data-action="tech-create-ticket"],[data-action="tech-create-checkout"],[data-action="assign-tech-service"]').forEach(button=>{button.disabled=saving||!data.canOperate()||!state.selectedTech||!fullCatalog.some(service=>data.canAssign(state.selectedTech,service))||(button.dataset.action!=='assign-tech-service'&&!!openCustomer&&data.active(openCustomer));});
     if(!data.canOperate())root.querySelector('.tech-assign').hidden=true;
     window.lucide?.createIcons();
+    if(previousFocus){
+      const next=previousFocus.id?document.getElementById(previousFocus.id):Array.from(root.querySelectorAll('[data-action]')).find(button=>button.dataset.action===previousFocus.action&&button.dataset.value===previousFocus.value&&button.dataset.id===previousFocus.tech&&button.dataset.mode===previousFocus.mode);
+      next?.focus({preventScroll:true});
+    }
   }
   function refresh(){try{refreshData();clearError();render();}catch(error){showError(error);}}
   function showError(error){
@@ -219,6 +209,17 @@
   root.addEventListener('click',event=>{
     const button=event.target.closest('[data-action]');if(!button||button.disabled)return;
     const action=button.dataset.action;
+    if(action==='filter-tech'){state.staffFilter=button.dataset.value;renderRoster();root.querySelectorAll('[data-action="filter-tech"]').forEach(filter=>{if(filter.dataset.value===state.staffFilter)filter.focus({preventScroll:true});});return;}
+    if(action==='tech-category'){
+      if(button.dataset.mode==='existing'){state.assignCategory=button.dataset.value;state.assignServiceIndex='';}
+      else{state.techNewCategory=button.dataset.value;state.techNewServiceIndex='';state.techCoTech='';}
+      render();return;
+    }
+    if(action==='tech-service'){
+      if(button.dataset.mode==='existing')state.assignServiceIndex=button.dataset.value;
+      else{state.techNewServiceIndex=button.dataset.value;state.techCoTech='';}
+      render();return;
+    }
     if(action==='select-tech'){
       state.selectedTech=button.dataset.id;state.techCoTech='';
       ['techNewServiceIndex','assignServiceIndex'].forEach(key=>{const service=fullCatalog[Number(state[key])];if(state[key]!==''&&!data.canAssign(state.selectedTech,service))state[key]='';});
@@ -244,6 +245,7 @@
     }
   });
   root.addEventListener('input',event=>{
+    if(event.target.id==='staff-search'){state.staffSearch=event.target.value;renderRoster();return;}
     if(event.target.id==='tech-guest-phone'){
       const input=event.target,cursor=input.selectionStart,before=data.digits(input.value.slice(0,cursor)).length;
       state.techNewPhone=data.digits(input.value).slice(0,10);input.value=phoneDisplay(state.techNewPhone);
@@ -252,18 +254,15 @@
       const result=root.querySelector('#tech-guest-result');if(result)result.innerHTML=technicianGuestResultHtml();
       root.querySelector('#tech-guest-preview').textContent='Customer not selected';
       root.querySelector('.tech-checkout-actions [role="status"]').textContent='';
-      root.querySelectorAll('[data-action="tech-create-ticket"],[data-action="tech-create-checkout"]').forEach(button=>{button.disabled=!data.canOperate();});
+      root.querySelectorAll('[data-action="tech-create-ticket"],[data-action="tech-create-checkout"]').forEach(button=>{button.disabled=saving||!data.canOperate()||!fullCatalog.some(service=>data.canAssign(state.selectedTech,service));});
     }
     if(event.target.id==='tech-guest-name'){
       state.techNewName=event.target.value.toUpperCase();root.querySelector('#tech-guest-preview').textContent=state.techNewName || 'Customer not selected';
     }
   });
   root.addEventListener('change',event=>{
-    const fields={'tech-new-category':'techNewCategory','tech-new-service':'techNewServiceIndex','tech-co-worker':'techCoTech','assign-ticket':'assignTicketId','assign-category':'assignCategory','assign-service':'assignServiceIndex'};
+    const fields={'tech-co-worker':'techCoTech','assign-ticket':'assignTicketId'};
     const field=fields[event.target.id];if(!field)return;state[field]=event.target.value;
-    if(field==='techNewCategory'){state.techNewServiceIndex='';state.techCoTech='';}
-    if(field==='assignCategory')state.assignServiceIndex='';
-    if(field==='techNewServiceIndex')state.techCoTech='';
     if(field==='assignTicketId')state.assignmentNotice='';
     render();
   });
