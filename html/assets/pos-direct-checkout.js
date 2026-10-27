@@ -57,6 +57,7 @@
   let records=[],current=null,stage=1,view='list',warning='',search='',filter='all',contactUntil=0;
   let guest={phone:'',customer:'',status:''},tipMode='percent',picker='',addonPicker='',pickerCategory='all',pickerSearch='',discountOpen=new Set();
   const detailState=new Map();
+  let servicesWorkspace,servicesRoot;
   try{records=data.all();}catch(error){warning=error.message;}
   // UI copy: PO V34 customerResultHtml, itemEditor, groupHtml, tipPickerHtml, summaryHtml and renderModal.
   const actionIcons={'custom-service':'plus','cancel-checkout':'cancel',print:'print',sms:'sms','saved-receipt':'ticket',lookup:'search','different-customer':'user','reveal-contact':'lock',list:'arrow'};
@@ -92,7 +93,7 @@
     const appointments=(window.NEXORA_APPOINTMENTS_STORE?.loadAll() || []).map(t=>({customer:t.customerName,phone:t.phone}));
     const sample=[{customer:'Customer A',phone:'2025550101'},{customer:'Quan',phone:'5550122807'},{customer:'Brian',phone:'5550161092'},{customer:'DJ',phone:'5550195421'},{customer:'Leo',phone:'5550178804'}];
     const found=[...records,...appointments,...sample].find(t=>digits(t.phone)===value);
-    guest={phone:value,customer:customerName(found?.customer),status:found?'existing':'new'};warning='';save();if(found&&ensureCustomer())stage=2;render();root.querySelector(found?'[data-direct-field="tech"]':'#customer-name')?.focus();
+    guest={phone:value,customer:customerName(found?.customer),status:found?'existing':'new'};warning='';save();if(found&&ensureCustomer())stage=2;render();root.querySelector(found?'[data-tw-group-tech],[data-tw-new-tech]':'#customer-name')?.focus();
   }
   function ensureCustomer(){
     if(isCancelled(current)){warning='Cancelled';return false;}
@@ -123,22 +124,6 @@
   function coTechText(name){return `<span class="co-tech-text">+ ${esc(name)} · shared service</span>`;}
   function summaryNameHtml(l){return (l.parentLineId?icon('addon','dc-addon-icon'):'')+esc(l.name || 'Custom service')+(l.coTech?'<span class="summary-co-tech">'+coTechText(l.coTech)+'</span>':'');}
   function lineDiscountLabel(l){return (discountOpen.has(l.id)?'▾':'▸')+' Discount'+(l.discount?.value?' ('+money(Math.round(Number(l.price || 0)*100)-lineNet(l))+' off)':'');}
-  function itemHtml(l,group,addon=false){
-    return `<div class="item-editor"><div class="item-line ${addon?'addon-line':''}"><div class="item-name">${l.custom?`<input class="input" aria-label="Custom ${addon?'addon':'service'} name" placeholder="Custom ${addon?'addon':'service'} name" data-direct-field="name" data-line="${l.id}" value="${esc(l.name)}">`:`<strong>${esc(l.name)}</strong>`}</div><label class="item-price"><span>$</span><input type="number" min="0" step="0.01" inputmode="decimal" aria-label="Price for ${esc(l.name || 'custom service')}" data-direct-field="price" data-line="${l.id}" value="${l.price ?? ''}"></label>${button(icon('close'),'remove-line',`data-line="${l.id}" aria-label="Remove ${esc(l.name || 'custom service')}"`,'remove-item')}</div><div class="discount-under">${button(lineDiscountLabel(l),'line-discount',`data-line="${l.id}" data-po-discount-line="${l.id}" aria-expanded="${discountOpen.has(l.id)}"`,'discount-toggle '+(l.discount?.value?'applied':''))}<span class="item-net" data-net-line="${l.id}">Net ${money(lineNet(l))}</span></div>${discountOpen.has(l.id)?`<div class="discount-panel"><label>Service discount<select class="select" data-direct-field="discount-type" data-line="${l.id}"><option value="fixed" ${l.discount?.type!=='percent'?'selected':''}>Amount ($)</option><option value="percent" ${l.discount?.type==='percent'?'selected':''}>Percent (%)</option></select></label><label><input class="input" type="number" min="0" step="0.01" aria-label="Discount value for ${esc(l.name || (addon?'addon':'service'))}" data-direct-field="discount-value" data-line="${l.id}" value="${l.discount?.value || 0}"></label></div>`:''}</div>`;
-  }
-  function pickerHtml(group,parentId=''){
-    const addOn=!!parentId,all=addOn?addons:catalog(),categories=[...new Set(all.map(category))];
-    const list=all.filter(s=>(addOn||pickerCategory==='all'||category(s)===pickerCategory)&&(!pickerSearch||(s.name+' '+category(s)).toLowerCase().includes(pickerSearch.toLowerCase())));
-    return `<div class="service-picker" data-picker-group="${group.id}" data-picker-parent="${parentId}"><div class="picker-toolbar"><label class="picker-search">${icon('search')}<input class="input" data-po-service-search placeholder="${addOn?'Available add-ons':'Search all services...'}" value="${esc(pickerSearch)}" aria-label="${addOn?'Available add-ons':'Available main services'}"></label>${!addOn?`<select class="select" data-direct-field="category" aria-label="Service category"><option value="all" ${pickerCategory==='all'?'selected':''}>All</option>${categories.map(c=>`<option value="${esc(c)}" ${c===pickerCategory?'selected':''}>${esc(c)}</option>`).join('')}</select>`:''}</div><div class="picker-grid" aria-label="${addOn?'Available add-ons':'Available main services'}">${list.map(s=>{const count=groupLines(group).filter(l=>l.serviceId===s.id&&(l.parentLineId || '')===parentId).length;return `<button type="button" class="service-choice ${count?'has-selection':''}" data-direct-action="add-service" data-group="${group.id}" data-service="${esc(s.id)}" data-parent="${parentId}"><span><b>${esc(s.name)}</b><small>${s.durationMin || 15} min${count?' · ×'+count:''}</small></span><strong>${s.price==null?'—':money(Math.round(s.price*100))}<span class="choice-plus">${icon('plus')}</span></strong></button>`;}).join('') || '<p class="picker-empty">No matching services</p>'}</div></div>`;
-  }
-  function serviceHtml(l,g){
-    const child=current.lines.filter(a=>a.parentLineId===l.id&&a.groupId===g.id);
-    return `<div class="service-block"><div class="service-block-top"><span class="service-tag">MAIN SERVICE</span><span class="inherit-tag">${l.coTech?`${esc(g.tech || 'Lead technician')} + ${esc(l.coTech)} share this service; add-ons stay with ${esc(g.tech || 'the lead')}`:`${esc(g.tech || 'Select technician')} performs this service and its add-ons`}</span></div>${itemHtml(l,g)}<div class="co-tech-field"><label for="co-tech-${l.id}">Working together on this service</label><select class="select" id="co-tech-${l.id}" data-direct-field="co-tech" data-line="${l.id}"><option value="">Only ${esc(g.tech || 'selected technician')}</option>${technicians().filter(t=>t!==g.tech).map(t=>`<option value="${esc(t)}" ${t===l.coTech?'selected':''}>${esc(t)} · shared service</option>`).join('')}</select></div><div class="addons-area"><div class="addons-head"><strong>Add-ons for this service</strong><span>Technician inherited automatically</span></div>${child.length?child.map(a=>itemHtml(a,g,true)).join(''):'<p class="addon-empty">No add-ons yet. Add as many as needed without choosing the technician again.</p>'}<div class="button-row">${button(icon('plus')+' Add-on','addon-picker',`data-line="${l.id}" data-group="${g.id}" aria-expanded="${addonPicker===l.id}"`,'btn-small')}${button('Custom add-on','custom-service',`data-group="${g.id}" data-parent="${l.id}"`,'btn-quiet btn-small')}</div>${addonPicker===l.id?pickerHtml(g,l.id):''}</div></div>`;
-  }
-  function groupHtml(g,index){
-    const lines=groupLines(g),extra=lines.filter(l=>l.parentLineId&&!mainLines(g).some(s=>s.id===l.parentLineId)),menuOpen=picker===g.id||!lines.length&&!picker&&groups().length===1;
-    return `<section class="tech-group" aria-label="TECHNICIAN ${index+1}"><div class="group-head"><span class="group-avatar">${index+1}</span><label class="group-technician">Who performed this work? · required<select class="select" data-direct-field="tech" data-group="${g.id}"><option value="">Select technician</option>${technicians().map(t=>`<option value="${esc(t)}" ${g.tech===t?'selected':''}>${esc(t)}</option>`).join('')}</select></label><div class="group-amount"><strong data-po-group-net="${g.id}">${money(lines.reduce((sum,l)=>sum+lineNet(l),0))}</strong></div>${groups().length>1?`<div class="po-group-actions">${button(icon('up'),'move-group',`data-group="${g.id}" data-direction="-1" ${!index?'disabled':''} aria-label="Move ${esc(g.tech || 'technician')} earlier"`,'po-reorder')}${button(icon('down'),'move-group',`data-group="${g.id}" data-direction="1" ${index===groups().length-1?'disabled':''} aria-label="Move ${esc(g.tech || 'technician')} later"`,'po-reorder')}${button(icon('close'),'remove-group',`data-group="${g.id}" aria-label="Remove technician" title="Remove technician"`,'remove-item')}</div>`:''}</div><div class="group-services">${mainLines(g).map(l=>serviceHtml(l,g)).join('')}</div><div class="button-row group-buttons">${lines.length||!menuOpen?button(icon('plus')+' Add main service','service-picker',`data-group="${g.id}" aria-expanded="${menuOpen}"`,'btn-small'):''}${button('Custom service','custom-service',`data-group="${g.id}"`,'btn-quiet btn-small')}</div>${menuOpen?pickerHtml(g):''}${index>0||extra.length?`<details class="other-tech-work" ${detailAttrs('extra:'+g.id,!!extra.length)}><summary>${icon('link')} Add-on by this technician ${extra.length?'<span class="detail-count">'+extra.length+'</span>':''}</summary><div class="detail-content"><p class="hint">Link it to the main service</p>${extra.map(l=>itemHtml(l,g,true)).join('')}${button(icon('plus')+' Add their add-on','extra-service',`data-group="${g.id}"`,'btn-small')}</div></details>`:''}</section>`;
-  }
   function customerHtml(){
     const name=customerName(current?.customer || guest.customer),found=current||guest.status==='existing',newGuest=current?.customerType==='new';
     const contactLabel=contactUntil>Date.now()?'Renew contact access':'View full contact · approval required';
@@ -146,7 +131,26 @@
     return `<section class="panel form-panel customer-form"><div class="customer-intro"><span class="lookup-icon">${icon('search')}</span><div><h3>Find customer</h3></div></div><label class="inline-label" for="customer-phone">Customer phone · required</label><div class="lookup-row"><input class="input" id="customer-phone" type="tel" inputmode="tel" autocomplete="off" placeholder="(000) 000-0000" value="${esc(found?phone():formatPhoneInput(guest.phone))}" ${found?'readonly':''}>${button('Find customer','lookup',found?'disabled':'','btn-primary')}</div><div aria-live="polite">${found?`<div class="identity-card found"><b>${newGuest?'New customer':'Existing customer found'}</b><strong>${esc(name)}</strong><span>${esc(phone())} · ${contactUntil>Date.now()?'Contact approved for this record':'Phone hidden by permission'}</span><div class="customer-private-actions">${button(contactLabel,'reveal-contact','','btn-small')}${button('Different customer','different-customer','','btn-quiet btn-small')}</div></div>`:guest.status==='new'?`<div class="identity-card new"><b>New customer</b><p>No matching phone number. Enter the guest's name to continue.</p><label for="customer-name">Customer name · required</label><input class="input" id="customer-name" autocomplete="off" placeholder="Enter first and last name" value="${esc(guest.customer)}"></div>`:'<p class="lookup-examples">Demo: enter <b>202-555-0101</b> for an existing customer, or <b>202-555-0199</b> for a new customer.</p>'}</div></section>`;
   }
 
-  function servicesHtml(){return `<section class="form-panel services-panel"><div class="section-heading"><div><h3>Technician & services</h3><p>Choose the technician once. Add-ons and custom items under their service inherit that technician. Service choices show standard menu prices; payment estimates appear in step 3.</p></div></div><div class="tech-groups">${groups().map(groupHtml).join('')}</div>${button(icon('plus')+' Add another technician & their work','add-group','','add-tech')}<p class="hint">If a different technician performs an add-on, add that technician above and record the work under them.</p></section>`;}
+  function servicesHtml(){return '<section class="ticket-workspace" data-direct-services></section>';}
+  function openServices(){
+    const host=root.querySelector('[data-direct-services]');if(!host)return;
+    if(!servicesWorkspace){
+      servicesRoot=host;
+      servicesWorkspace=window.NEXORA_TICKET_WORKSPACE.mount(servicesRoot,{
+        stagingLayout:true,servicesOnly:true,catalog,
+        technicians:()=>technicians().map(name=>({name,status:'available'})),
+        onChange(ticket){
+          current=ticket;
+          const previous=new Map(groups().map(group=>[group.tech,group]));
+          current.poGroups=[...new Set(current.lines.map(line=>line.tech || ''))].map(tech=>previous.get(tech) || {id:crypto.randomUUID(),tech});
+          current.lines.forEach(line=>{line.groupId=current.poGroups.find(group=>group.tech===(line.tech || '')).id;});
+          save();updateSummary();
+        },
+        onModeChange(){},onBack(){}
+      });
+    }else host.replaceWith(servicesRoot);
+    servicesWorkspace.open(current,'edit');
+  }
   // PO source: from-po/nexora-pos-12-10/nexora-pos-prototype-v34.html, checkoutPreviewHtml.
 
   function previewHtml(){return `<aside class="summary-panel checkout-preview" aria-label="Ticket preview"><div class="preview-heading"><span class="preview-icon">${icon('ticket')}</span><div><p class="summary-title">TICKET PREVIEW</p><h3>${esc(customerName(current.customer))}</h3><span>${esc(phone())}</span></div></div><div class="preview-progress"><span class="done">${icon('check')} Customer found</span><span class="current">2 &nbsp; Assign technician and service</span><span>3 &nbsp; Payment and checkout</span></div><p class="preview-message">Choose a technician and add a main service. The price, discount, tip, and payment choices will appear here.</p></aside>`;}
@@ -240,6 +244,7 @@
   }
 
   function render(){
+    if(servicesRoot)servicesRoot.hidden=true;
     const pageScroll=document.scrollingElement.scrollTop,panelScroll=root.querySelector('.summary-scroll')?.scrollTop || 0;
     const pickerScrolls=new Map([...root.querySelectorAll('.service-picker')].map(el=>[el.dataset.pickerGroup+':'+el.dataset.pickerParent,el.querySelector('.picker-grid')?.scrollTop || 0]));
     const active=root.contains(document.activeElement)?document.activeElement:null;
@@ -249,6 +254,7 @@
     window.NEXORA_FRONT_DESK_TABS?.sync({active:completed?'completed':'checkout-customer'});
     setUrl();root.innerHTML=`${view==='list'?'':`<div class="po-workspace-meta"><span>Front Desk <span class="po-meta-divider">/</span> ${completed?'Completed Services':'Checkout Customer'}</span>${accountHtml()}</div>`}${view==='list'?listHtml():view==='receipt'?receiptHtml():view==='cancelled'?cancelledHtml():view==='legacy'?'<section class="ticket-workspace" data-po-legacy></section>':editorHtml()}`;
     renderIcons();
+    if(view==='editor'&&stage>=2)openServices();
     if(view==='legacy')openLegacy();
     const panel=root.querySelector('.summary-scroll');if(panel)panel.scrollTop=panelScroll;
     root.querySelectorAll('.service-picker').forEach(el=>{el.querySelector('.picker-grid').scrollTop=pickerScrolls.get(el.dataset.pickerGroup+':'+el.dataset.pickerParent) || 0;});
@@ -297,7 +303,7 @@
     }
     stage=target;render();
     if(stage===1&&!current)root.querySelector('#customer-phone')?.focus();
-    if(stage===2){const group=groups().find(g=>!g.tech);if(group)root.querySelector('[data-direct-field="tech"][data-group="'+group.id+'"]')?.focus();}
+    if(stage===2)root.querySelector('[data-tw-group-tech],[data-tw-new-tech]')?.focus();
   }
   function validateServices(){
     if(!current.lines.some(l=>!l.parentLineId))return 'Add at least one main service.';
@@ -370,6 +376,7 @@
     maskPhoneInput(el,e.inputType);
   });
   root.addEventListener('input',e=>{
+    if(e.target.closest('[data-direct-services]'))return;
     const el=e.target;if(el.id==='customer-phone'){maskPhoneInput(el,e.inputType);updatePrimary();return;}if(el.id==='customer-name'){guest.customer=el.value;save();updatePrimary();return;}
     if(el.hasAttribute('data-po-service-search')){pickerSearch=el.value;const start=el.selectionStart;render();const input=document.activeElement;if(input?.hasAttribute('data-po-service-search'))input.setSelectionRange(start,start);return;}
     if(el.hasAttribute('data-po-search')){search=el.value;const start=el.selectionStart;render();const input=root.querySelector('[data-po-search]');input.focus();input.setSelectionRange(start,start);return;}
@@ -385,6 +392,7 @@
     save();updateSummary();
   });
   root.addEventListener('change',e=>{
+    if(e.target.closest('[data-direct-services]'))return;
     const el=e.target;if(el.hasAttribute('data-po-filter')){filter=el.value;render();return;}if(!current||current.payment)return;
     const field=el.dataset.directField,l=current.lines.find(l=>l.id===el.dataset.line),g=groups().find(g=>g.id===el.dataset.group);
     if(field==='category'){pickerCategory=el.value;render();return;}

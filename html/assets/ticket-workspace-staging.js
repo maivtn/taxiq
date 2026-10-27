@@ -37,6 +37,7 @@
       const customerKind=typeof parent.newCustomer==='boolean'?(parent.newCustomer?'New Customer':'Returning Customer'):ctx.customerKind;
       const customerHtml=`<section class="tw-card tw-customer-card" aria-label="Customer"><h3>CUSTOMER</h3><div class="tw-customer-name"><strong>${esc(parent.customer)}</strong><span>${esc(customerKind)}</span>${editable?button('View','data-tw-customer','tw-text tw-small'):''}</div><p>${icon('phone')}<span data-tw-contact>${esc(ctx.contact)}</span></p></section>`;
       const dialog=`<dialog class="tw-dialog" aria-labelledby="tw-dialog-title"><form data-tw-form><div class="tw-card-title"><h2 id="tw-dialog-title"></h2>${button('Close','data-tw-close aria-label="Close dialog"','tw-text tw-icon-only')}</div><div data-tw-fields></div><footer class="tw-dialog-actions"><p data-tw-error role="alert"></p><span data-tw-setup-status role="status" hidden></span><div>${button('Cancel','data-tw-close','tw-dialog-cancel')}<button type="submit" class="tw-button tw-primary" data-tw-save>Save</button></div></footer></form></dialog>`;
+      if(ctx.servicesOnly)return `${servicesHtml}<p data-tw-message role="status"></p>${dialog}`;
       function paymentHtml() {
         if(paid)return ctx.paymentHtml();
         const p=ticket.checkout,available=ctx.methods,primary=available.filter(m=>['cash','card','gift-card','crypto','split'].includes(m.id)),extra=available.filter(m=>!primary.includes(m));

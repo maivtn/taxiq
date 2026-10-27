@@ -537,7 +537,7 @@
       const noteHtml=`<section class="tw-card tw-note-card"><label class="tw-note">NOTE<textarea data-tw-note placeholder="Seat, customer preferences, color/powder used…" ${paid||group()?'disabled':''}>${esc(parent.note || '')}</textarea></label><div class="tw-note-tools">${button('Take a photo','data-tw-take-photo'+(paid||group()||notePhotos.length>=5?' disabled':''),'tw-small')}${button('Upload image','data-tw-upload-image'+(paid||group()||notePhotos.length>=5?' disabled':''),'tw-small')}<input type="file" accept="image/*" data-tw-note-upload hidden><span data-tw-photo-count>${notePhotos.length}/5 photos</span></div></section>`;
       if(staging){
         const stationHtml=stations&&!parent.directCheckout&&!paid&&parent.lines.some(l=>l.status!=='completed')&&stations.load().settings.mode!=='off'?`<section class="tw-card"><h3>STATION · REVIEW & SEND</h3>${stations.pickerHtml(parent)}${button('Review & Send','data-tw-review-station','tw-purple')}</section>`:'';
-        root.innerHTML=staging.render({parent,ticket,mode,button,icon,esc,money,cents,validMoney,totals,discount,detailLines,
+        root.innerHTML=staging.render({parent,ticket,mode,button,icon,esc,money,cents,validMoney,totals,discount,detailLines,servicesOnly:!!options.servicesOnly,
           splitGroup:group(),amountSplit:amountSplit(),serviceSplit,activeBillId,guestColor,guestNumber,serviceFilter,serviceToolbarHtml,
           customerKind,contact:contactUntil>Date.now()?parent.phone || 'No phone number':'•••• '+String(parent.phone || '').replace(/\D/g,'').slice(-4),
           technicians:options.technicians(),methods:demo?demo.methods():[{id:'cash',label:'Cash'},{id:'card',label:'Card'},{id:'gift-card',label:'Gift Card'},{id:'split',label:'Split Pay'}],
