@@ -6,7 +6,8 @@
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
   const money = value => new Intl.NumberFormat('en-US', { style:'currency', currency:'USD' }).format((Number(value) || 0) / 100);
   const today = data.iso(new Date()), params = new URLSearchParams(location.search);
-  const state = { tab:['payroll','card'].includes(params.get('tab')) ? params.get('tab') : 'technician', mode:['Daily','Weekly','Monthly'].includes(params.get('mode')) ? params.get('mode') : 'Daily', selected:/^\d{4}-\d{2}-\d{2}$/.test(params.get('date') || '') ? params.get('date') : today, tech:'all', sort:'default', from:today, to:today };
+  const state = { tab:['store','service','payroll','card'].includes(params.get('tab')) ? params.get('tab') : 'technician', mode:['Daily','Weekly','Monthly'].includes(params.get('mode')) ? params.get('mode') : 'Daily', selected:/^\d{4}-\d{2}-\d{2}$/.test(params.get('date') || '') ? params.get('date') : today, tech:'all', sort:'default', from:today, to:today };
+  const incomePanel=root.querySelector('[data-report-income]');
   let rows = [], printRows = [];
   const button = (label, action, attrs='', classes='') => `<button type="button" class="ptr-button ${classes}" data-report-action="${action}" ${attrs}>${label}</button>`;
   const dateControl = (label, value, field='date', type='date', display='') => `<label class="ptr-date"><img src="../assets/icon-oneqr/issue-2040-oneqr-calendar-days-3d.png" alt=""><span>${esc(display || (type==='month' ? data.period('Monthly', value + '-01').label : data.formatDate(value)))}</span><input type="${type}" data-report-field="${field}" aria-label="${label}" value="${esc(value)}" max="${type==='month' ? today.slice(0,7) : today}"></label>`;
@@ -18,9 +19,15 @@
     return [...data.demoPayments(technicians), ...saved];
   }
   function selectedRange() { return data.period(state.tab==='payroll' ? 'Weekly' : state.mode, state.selected); }
-  function updateUrl() {
-    const query = new URLSearchParams(); if (state.tab!=='technician') query.set('tab',state.tab); if (state.mode!=='Daily') query.set('mode',state.mode); if (state.selected!==today) query.set('date',state.selected);
-    history.replaceState(null,'',location.pathname+(query.size?'?'+query.toString():'')+location.hash);
+  function updateUrl(push=false) {
+    const query=new URLSearchParams();
+    if(state.tab!=='technician')query.set('tab',state.tab);
+    if(!['store','service'].includes(state.tab)){
+      if(state.mode!=='Daily')query.set('mode',state.mode);
+      if(state.selected!==today)query.set('date',state.selected);
+    }
+    history[push?'pushState':'replaceState'](null,'',location.pathname+(query.size?'?'+query.toString():'')+location.hash);
+    window.NEXORA_SHELL?.refreshSidebar?.();
   }
   function kpis(items) { return `<div class="ptr-kpis">${items.map(([label,value,number])=>`<div class="ptr-kpi"><span>${label}</span><strong>${number ? value : money(value)}</strong></div>`).join('')}</div>`; }
   const total = key => rows.reduce((sum,row)=>sum+(row[key] || 0),0);
@@ -54,10 +61,19 @@
   function renderCard() {
     panel.innerHTML=`<div class="ptr-card-range"><div class="ptr-field"><span>From</span>${dateControl('From',state.from,'from')}</div><div class="ptr-field"><span>To</span>${dateControl('To',state.to,'to')}</div></div><div class="ptr-empty">No card payments in this period.</div>`;
   }
-  function render() {
+  function render(push=false) {
     root.querySelectorAll('[data-report-tab]').forEach(link=>{if(link.dataset.reportTab===state.tab)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');});
-    panel.setAttribute('aria-label',state.tab==='technician'?'Techs & pay':state.tab==='payroll'?'Payroll':'Card');
-    if(state.tab==='technician')renderTechnician();else if(state.tab==='payroll')renderPayroll();else renderCard();updateUrl();
+    const income=['store','service'].includes(state.tab);panel.hidden=income;
+    if(income){
+      incomePanel.setAttribute('aria-label',state.tab==='store'?'Store income report':'Service income report');
+      window.NEXORA_POS_INCOME_REPORTS.show(incomePanel,state.tab);
+    }else{
+      window.NEXORA_POS_INCOME_REPORTS.hide(incomePanel);
+      panel.setAttribute('aria-label',state.tab==='technician'?'Techs & pay':state.tab==='payroll'?'Payroll':'Card');
+      if(state.tab==='technician')renderTechnician();else if(state.tab==='payroll')renderPayroll();else renderCard();
+    }
+    updateUrl(push);
+    if(document.activeElement?.closest('[hidden]'))root.querySelector('.pos-report-tabs [aria-current="page"]')?.focus({preventScroll:true});
   }
   function sheet(row) {
     const mode=state.tab==='payroll'?'Weekly':state.mode,range=selectedRange();
@@ -77,7 +93,10 @@
     download('\uFEFF'+content,'pos-'+state.tab+'-'+selectedRange().start+'.csv','text/csv;charset=utf-8');
   }
   root.addEventListener('click',event=>{
-    const tab=event.target.closest('[data-report-tab]');if(tab){event.preventDefault();state.tab=tab.dataset.reportTab;render();return;}
+    const tab=event.target.closest('[data-report-tab]');if(tab){
+      if(event.button!==0||event.ctrlKey||event.metaKey||event.shiftKey||event.altKey)return;
+      event.preventDefault();if(state.tab!==tab.dataset.reportTab){state.tab=tab.dataset.reportTab;if(dialog.open)dialog.close();render(true);}return;
+    }
     const mode=event.target.closest('[data-report-mode]');if(mode){state.mode=mode.dataset.reportMode;render();return;}
     const target=event.target.closest('[data-report-action]');if(!target)return;const action=target.dataset.reportAction;
     if(action==='previous'||action==='next'){const day=data.parseDate(state.selected),direction=action==='previous'?-1:1,mode=state.tab==='payroll'?'Weekly':state.mode;if(mode==='Monthly'){day.setDate(1);day.setMonth(day.getMonth()+direction);}else day.setDate(day.getDate()+direction*(mode==='Weekly'?7:1));state.selected=data.iso(day);render();}
@@ -90,6 +109,13 @@
   dialog.addEventListener('click',event=>{if(event.target===dialog){const box=dialog.getBoundingClientRect();if(event.clientX<box.left||event.clientX>box.right||event.clientY<box.top||event.clientY>box.bottom)dialog.close();}});
   dialog.querySelector('[data-report-print]').addEventListener('click',()=>{document.body.classList.add('ptr-printing');try{window.print();}finally{document.body.classList.remove('ptr-printing');}});
   dialog.querySelector('[data-report-mail]').addEventListener('click',()=>{const body=printRows.map(row=>row.name+'\r\n'+selectedRange().label+'\r\nTotal amount '+money(row.service)+'\r\nTotal tips '+money(row.tip)+'\r\nTotal commission '+money(row.commission)).join('\r\n\r\n');download('X-Unsent: 1\r\nSubject: Technician report\r\nMIME-Version: 1.0\r\nContent-Type: text/plain; charset=UTF-8\r\n\r\n'+body,'technician-report.eml','message/rfc822');});
+  window.addEventListener('popstate',()=>{
+    const query=new URLSearchParams(location.search);
+    state.tab=['store','service','payroll','card'].includes(query.get('tab'))?query.get('tab'):'technician';
+    state.mode=['Daily','Weekly','Monthly'].includes(query.get('mode'))?query.get('mode'):'Daily';
+    state.selected=/^\d{4}-\d{2}-\d{2}$/.test(query.get('date')||'')?query.get('date'):today;
+    if(dialog.open)dialog.close();render();
+  });
   window.addEventListener('storage',event=>{if(!event.key||data.keys.includes(event.key)||event.key===window.NEXORA_SALON_DATA.STORAGE_KEY)render();});
   render();
 })();

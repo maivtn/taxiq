@@ -14,6 +14,8 @@
     if (opsView && front[opsView]) return front[opsView];
     if (opsView === 'clock') return 'pos-front-desk.html?section=clock';
     if (!href) return '';
+    if(href==='pos-shop-income-report.html')return 'pos-technician-report.html?tab=store';
+    if(href==='pos-service-income-report.html')return 'pos-technician-report.html?tab=service';
     if (href === '#modules') return 'dashboard.html';
     if (href === '#salon-home') return 'salon-home.html';
     if (href === '#dashboard-onboarding') return 'nexora-getting-started.html';

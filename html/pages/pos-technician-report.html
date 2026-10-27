@@ -7,23 +7,26 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/nexora-icons.css"><link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/pos-technician-report.css">
+  <link rel="stylesheet" href="../assets/pos-report-tabs.css">
+  <link rel="stylesheet" href="../assets/pos-income-report-views.css">
 </head>
 <body>
 <div class="shell"><aside class="sidebar" aria-label="Salon sidebar"></aside><div class="app-area"><header class="header"></header>
 <main class="content ptr-page" data-technician-report>
   <h1>Report</h1><p class="ptr-subtitle">Review technician performance, store income, and service income.</p>
-  <nav class="ptr-tabs" aria-label="POS reports">
+  <nav class="pos-report-tabs" aria-label="POS reports">
     <a href="pos-technician-report.html" data-report-tab="technician" aria-current="page"><img src="../assets/icon-oneqr/issue-2040-oneqr-users-round-3d.png" alt="">Technician report</a>
-    <a href="pos-shop-income-report.html"><img src="../assets/icon-oneqr/issue-2040-oneqr-wallet-3d.png" alt="">Store income report</a>
-    <a href="pos-service-income-report.html"><img src="../assets/icon-oneqr/issue-2040-oneqr-receipt-3d.png" alt="">Service income report</a>
+    <a href="pos-technician-report.html?tab=store" data-report-tab="store"><img src="../assets/icon-oneqr/issue-2040-oneqr-wallet-3d.png" alt="">Store income report</a>
+    <a href="pos-technician-report.html?tab=service" data-report-tab="service"><img src="../assets/icon-oneqr/issue-2040-oneqr-receipt-3d.png" alt="">Service income report</a>
     <a href="pos-technician-report.html?tab=payroll" data-report-tab="payroll"><img src="../assets/icon-oneqr/issue-2040-oneqr-hand-coins-3d.png" alt="">Payroll</a>
     <a href="pos-technician-report.html?tab=card" data-report-tab="card"><img src="../assets/icon-oneqr/issue-2040-oneqr-credit-card-3d.png" alt="">Card</a>
   </nav>
   <section data-report-panel aria-label="Techs &amp; pay"></section>
+  <section data-report-income aria-label="Income report" hidden></section>
 </main></div></div>
 <dialog class="ptr-dialog" data-report-dialog aria-labelledby="ptr-detail-title"><header><div><p>PRINT PREVIEW</p><h2 id="ptr-detail-title">Technician report</h2></div><button class="ptr-close" type="button" data-close-report aria-label="Close report">×</button></header><div class="ptr-preview" data-report-preview></div><footer><button class="ptr-button" data-report-mail type="button">Send mail</button><button class="ptr-button primary" data-report-print type="button">Print</button></footer></dialog>
 <script>window.NEXORA_SHELL={workspace:'pos',activePage:'pos',activeTab:'report'};</script>
 <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
 <script src="../assets/nexora-icons.js"></script><script src="../assets/nexora-shell-nav.js"></script><script src="../assets/nexora-shell.js"></script>
-<script src="../assets/salon-data.js"></script><script src="../assets/pos-technician-report-data.js"></script><script src="../assets/pos-technician-report.js"></script>
+<script src="../assets/salon-data.js"></script><script src="../assets/pos-technician-report-data.js"></script><script src="../assets/pos-income-report-views.js"></script><script src="../assets/pos-technician-report.js"></script>
 </body></html>
