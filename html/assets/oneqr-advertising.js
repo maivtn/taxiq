@@ -11,8 +11,23 @@
   const VERSION = 'ONEQR-ADS-WALLET-2026-10-27';
   const STORE = 'nexora-oneqr-advertising-demo-20261027';
   const $ = id => root.querySelector('#' + id);
+  // UI changes explicitly requested after the PO handoff; keep the original PO copy intact.
+  const UI_COPY = {
+    vi: {
+      adsOn: 'Quảng cáo đang bật', adsOff: 'Quảng cáo đã tắt',
+      disableAds: 'Tắt quảng cáo', enableAds: 'Bật quảng cáo', removeIndustry: 'Bỏ ngành',
+      secondaryHelp: 'Liệt kê những ngành doanh nghiệp thực sự cung cấp.',
+      noAgree: 'Không đồng ý thì không kích hoạt OneQR theo gói hiện tại.'
+    },
+    en: {
+      adsOn: 'Advertising is on', adsOff: 'Advertising is off',
+      disableAds: 'Turn off advertising', enableAds: 'Turn on advertising', removeIndustry: 'Remove industry',
+      secondaryHelp: 'List services your business actually offers.',
+      noAgree: 'If you do not agree, OneQR cannot be activated under the current plan.'
+    }
+  };
   const state = {
-    language: 'vi', activated: false, group: '', industry: '', secondary: [], custom: '',
+    language: 'vi', activated: false, adsEnabled: false, group: '', industry: '', secondary: [], custom: '',
     balance: 12000, pending: 300, ownCreditPoints: 0, receivedCreditPoints: 0,
     recipientCreditPoints: 0, consent: null, ledger: [], audit: []
   };
@@ -20,7 +35,7 @@
   let view = 'setup';
   let busy = false;
   const messages = {};
-  const t = key => PO[state.language][key];
+  const t = key => UI_COPY[state.language][key] ?? PO[state.language][key];
   const number = value => new Intl.NumberFormat(state.language === 'vi' ? 'vi-VN' : 'en-US', { maximumFractionDigits: 2 }).format(value);
   const dollars = points => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(points / 100);
   const escape = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
@@ -34,6 +49,7 @@
       && Array.isArray(saved.secondary) && Array.isArray(saved.ledger) && Array.isArray(saved.audit)) {
       Object.keys(state).forEach(key => { if (Object.hasOwn(saved, key)) state[key] = saved[key]; });
       state.language = state.language === 'en' ? 'en' : 'vi';
+      state.adsEnabled = state.activated && (typeof saved.adsEnabled === 'boolean' ? saved.adsEnabled : true);
     }
   } catch (_) { /* The demo also works when session storage is unavailable. */ }
 
@@ -54,6 +70,7 @@
     PO.categories.forEach(category => $('group').add(new Option(category[state.language === 'vi' ? 1 : 2], category[0])));
     $('group').value = state.group;
     renderIndustries();
+    renderSecondaryIndustries();
   }
 
   function renderIndustries() {
@@ -62,7 +79,15 @@
     $('industry').replaceChildren(new Option(t('chooseIndustry'), ''));
     category?.[3].forEach(item => $('industry').add(new Option(item[index], item[0])));
     $('industry').value = state.industry;
-    $('secondary').replaceChildren();
+    updateIndustry();
+  }
+
+  function renderSecondaryIndustries() {
+    const secondary = $('secondary');
+    secondary.tomselect?.destroy();
+    $('secondary-label').htmlFor = 'secondary';
+    secondary.replaceChildren();
+    const index = state.language === 'vi' ? 1 : 2;
     PO.categories.forEach(group => {
       const optgroup = document.createElement('optgroup');
       optgroup.label = group[index];
@@ -71,9 +96,27 @@
         option.selected = state.secondary.includes(item[0]);
         optgroup.append(option);
       });
-      if (optgroup.children.length) $('secondary').append(optgroup);
+      if (optgroup.children.length) secondary.append(optgroup);
     });
-    updateIndustry();
+    if (typeof window.TomSelect === 'function') {
+      const select = new window.TomSelect(secondary, {
+        plugins: { checkbox_options: {}, remove_button: { title: t('removeIndustry') } },
+        create: false,
+        maxItems: null,
+        maxOptions: null,
+        hideSelected: false,
+        closeAfterSelect: false,
+        clearAfterSelect: true,
+        lockOptgroupOrder: true,
+        placeholder: t('secondaryLabel'),
+        hidePlaceholder: true,
+        render: { no_results: null }
+      });
+      select.control_input.setAttribute('aria-labelledby', 'secondary-label');
+      select.control_input.setAttribute('aria-describedby', 'secondary-help');
+    } else {
+      $('secondary-help').textContent = PO[state.language].secondaryHelp;
+    }
   }
 
   function canActivate() {
@@ -85,6 +128,7 @@
     if (!state.activated) return;
     state.audit.push({ id: id(), type: reason, timestamp: new Date().toISOString(), previousConsent: state.consent });
     state.activated = false;
+    state.adsEnabled = false;
     state.consent = null;
     $('agree').checked = false;
     refreshBalances();
@@ -121,6 +165,11 @@
     $('recipient-wallet').classList.toggle('hide', !state.recipientCreditPoints);
     $('status').textContent = t(state.activated ? 'statusOn' : 'statusOff');
     $('status').classList.toggle('is-active', state.activated);
+    $('ads-status').classList.toggle('hide', !state.activated);
+    $('ads-status').classList.toggle('is-active', state.adsEnabled);
+    $('ads-status').textContent = t(state.adsEnabled ? 'adsOn' : 'adsOff');
+    $('ads-toggle').classList.toggle('hide', !state.activated);
+    $('ads-toggle').textContent = t(state.adsEnabled ? 'disableAds' : 'enableAds');
     if (messages.payoutResult?.key) report('payoutResult', state.balance >= 10000 ? 'payoutDone' : 'payoutLow', state.balance < 10000);
     renderLedger();
   }
@@ -196,6 +245,7 @@
       return;
     }
     state.activated = true;
+    state.adsEnabled = true;
     state.consent = {
       businessId: 'bitcoin-nail-bar-demo', account: 'Business Owner', business: 'Bitcoin Nail Bar',
       timestamp: new Date().toISOString(), version: VERSION, language: state.language,
@@ -207,6 +257,17 @@
     save();
     refreshBalances();
     updateIndustry();
+  }
+
+  function toggleAdvertising() {
+    if (!state.activated) return;
+    state.adsEnabled = !state.adsEnabled;
+    state.audit.push({
+      id: id(), type: state.adsEnabled ? 'advertising-enabled' : 'advertising-disabled',
+      timestamp: new Date().toISOString(), businessId: 'bitcoin-nail-bar-demo', version: VERSION
+    });
+    save();
+    refreshBalances();
   }
 
   function reviewTransfer() {
@@ -287,6 +348,7 @@
     if (!button || button.disabled) return;
     const action = button.dataset.action;
     if (action === 'activate') activate();
+    if (action === 'toggle-ads') toggleAdvertising();
     if (action === 'review-transfer') reviewTransfer();
     if (action === 'confirm-transfer') confirmTransfer();
     if (action === 'cancel-transfer') { invalidateReview(); root.querySelector('[data-action="review-transfer"]').focus(); }

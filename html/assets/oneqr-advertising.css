@@ -30,6 +30,21 @@
 .qa-app select:not([multiple]) { appearance: none; -webkit-appearance: none; padding-right: 44px; background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%23666879' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); background-repeat: no-repeat; background-position: right 16px center; background-size: 16px; }
 .qa-app select[multiple] { min-height: 160px; padding-right: 44px; }
 .qa-app select option { padding: 3px 4px; }
+.qa-app select.ts-hidden-accessible { min-height: 0; padding: 0; }
+.qa-app .ts-wrapper { min-width: 0; width: 100%; }
+.qa-app .ts-wrapper.multi .ts-control { min-height: 44px; align-items: center; gap: 6px; border: 1px solid #dcd9e7; border-radius: 9px; padding: 8px 44px 8px 11px; background: #fff; box-shadow: none; }
+.qa-app .ts-control::after { content: ''; position: absolute; right: 16px; top: 50%; width: 16px; height: 16px; transform: translateY(-50%); pointer-events: none; background: center / 16px no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%23666879' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E"); }
+.qa-app .ts-control > input { width: auto; min-width: 120px; border-radius: 0; color: #25213a; font: inherit; }
+.qa-app .ts-control > input::placeholder { color: #666879; opacity: 1; }
+.qa-app .ts-wrapper.multi .ts-control > .item { display: inline-flex; max-width: 100%; align-items: center; gap: 5px; margin: 0; border-radius: 6px; padding: 3px 8px; background: #eee8fa; color: #6335aa; font-size: 13px; line-height: 20px; overflow-wrap: anywhere; }
+.qa-app .ts-control .item .remove { display: inline-flex; min-width: 24px; min-height: 24px; align-items: center; justify-content: center; margin: 0; border: 0; padding: 0; color: inherit; font-size: 18px; line-height: 1; text-decoration: none; }
+.qa-app .ts-wrapper.focus .ts-control { border-color: #a78bce; outline: 2px solid #b69bdf; outline-offset: 2px; }
+.qa-app .ts-dropdown { border: 1px solid #dcd9e7; border-radius: 10px; background: #fff; box-shadow: 0 8px 24px rgba(37, 33, 58, .1); color: #25213a; font: inherit; overflow: hidden; }
+.qa-app .ts-dropdown-content { max-height: 260px; overscroll-behavior: contain; }
+.qa-app .ts-dropdown .option { display: flex; min-height: 40px; align-items: center; gap: 10px; padding: 10px 12px; }
+.qa-app .ts-dropdown .option input.tomselect-checkbox { width: 18px; min-height: 18px; height: 18px; flex: 0 0 18px; margin: 0; }
+.qa-app .ts-dropdown .optgroup-header { padding: 8px 12px; background: #f8f6fc; color: #666879; font-size: 12px; font-weight: 700; }
+.qa-app .ts-dropdown .active { background: #eee8fa; color: #6335aa; }
 .qa-app input[type="checkbox"] { width: 18px; min-height: 18px; height: 18px; flex: 0 0 18px; margin: 4px 0 0; accent-color: #7040c2; }
 .qa-app .line { display: flex; align-items: flex-start; gap: 9px; margin: 17px 0; }
 .qa-app .line label { margin: 0; font-weight: 400; }
@@ -37,6 +52,7 @@
 .qa-app .row { display: flex; flex-wrap: wrap; gap: 10px; }
 .qa-app .tag { display: inline-block; border-radius: 20px; padding: 6px 11px; background: #eee8fa; color: #6737aa; font-size: 13px; }
 .qa-app .tag.is-active { background: #dff5eb; color: #19805b; }
+.qa-app #ads-status { margin-left: 6px; }
 .qa-app .error { color: #b33442; }
 .qa-app .ok { color: #19805b; }
 .qa-app #payout, .qa-app #convert, .qa-app #review, .qa-app #recipient-wallet { margin-top: 16px; }

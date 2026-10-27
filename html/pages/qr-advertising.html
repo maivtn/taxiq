@@ -8,7 +8,8 @@
     <title>OneQR · Quảng cáo &amp; thu nhập</title>
     <link rel="stylesheet" href="../assets/qr-stations.css?v=industry-module-library-8">
     <link rel="stylesheet" href="../assets/nexora-shell.css">
-    <link rel="stylesheet" href="../assets/oneqr-advertising.css?v=po-20261027-layout-review">
+    <link rel="stylesheet" href="../assets/vendor/tom-select/tom-select.css">
+    <link rel="stylesheet" href="../assets/oneqr-advertising.css?v=po-20261027-ads-toggle-select">
   </head>
   <body>
     <div class="shell">
@@ -70,15 +71,16 @@
               <section data-screen="setup" id="setup">
                 <div class="card hero">
                   <span id="status" class="tag" role="status"></span>
+                  <span id="ads-status" class="tag hide" role="status"></span>
                   <h2 style="margin-top:16px" data-i="setupTitle"></h2>
                   <p data-i="setupIntro"></p>
                   <label for="group" data-i="groupLabel"></label>
                   <select id="group" required></select>
                   <label for="industry" data-i="industryLabel"></label>
                   <select id="industry" required></select>
-                  <label for="secondary" data-i="secondaryLabel"></label>
-                  <select id="secondary" multiple size="5"></select>
-                  <p class="muted" data-i="secondaryHelp"></p>
+                  <label for="secondary" id="secondary-label" data-i="secondaryLabel"></label>
+                  <select id="secondary" multiple size="5" aria-describedby="secondary-help"></select>
+                  <p id="secondary-help" class="muted" data-i="secondaryHelp"></p>
                   <div id="customBlock" class="hide">
                     <label for="custom" data-i="customLabel"></label>
                     <input id="custom" data-ph="customPlaceholder">
@@ -91,7 +93,10 @@
                       <a href="#policy" data-view="policy" data-i="policyLink"></a>
                     </label>
                   </div>
-                  <button type="button" id="activate" data-action="activate" data-i="activate"></button>
+                  <div class="row">
+                    <button type="button" id="activate" data-action="activate" data-i="activate"></button>
+                    <button type="button" id="ads-toggle" class="alt hide" data-action="toggle-ads"></button>
+                  </div>
                   <p class="muted" data-i="noAgree"></p>
                 </div>
                 <div class="grid">
@@ -285,6 +290,7 @@
     <script src="../assets/nexora-shell.js"></script>
     <script src="../assets/oneqr-action-appearance.js"></script>
     <script src="../assets/oneqr-advertising-po.js?v=po-20261027"></script>
-    <script src="../assets/oneqr-advertising.js?v=po-20261027-editable-setup"></script>
+    <script src="../assets/vendor/tom-select/tom-select.complete.min.js"></script>
+    <script src="../assets/oneqr-advertising.js?v=po-20261027-ads-toggle-select"></script>
   </body>
 </html>
