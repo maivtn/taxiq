@@ -6,20 +6,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
-  <link rel="stylesheet" href="../assets/pos-salon-settings.css">
   <link rel="stylesheet" href="../assets/operating-standards.css">
+  <link rel="stylesheet" href="../assets/salon-settings-tabs.css">
 </head>
 <body>
 <div class="shell"><aside class="sidebar" aria-label="Salon sidebar"></aside><div class="app-area"><header class="header"></header>
 <main class="standards-page">
   <div class="standards-settings-heading"><h1>Salon Settings</h1><p>Thông tin, nhân sự và tiêu chuẩn vận hành của tiệm.</p></div>
-  <nav class="salon-tabs" aria-label="Salon settings sections">
-    <a href="pos-salon-settings.html?section=information"><i data-lucide="building-2" aria-hidden="true"></i>Salon Information</a>
-    <a href="pos-salon-settings.html?section=staff"><i data-lucide="users-round" aria-hidden="true"></i>Staff</a>
-    <a href="pos-salon-settings.html?section=services"><i data-lucide="list" aria-hidden="true"></i>Services</a>
-    <a href="pos-salon-settings.html?section=roles"><i data-lucide="shield-check" aria-hidden="true"></i>Roles &amp; Permissions</a>
-    <a class="active" href="pos-operating-standards.html" aria-current="page"><i data-lucide="book-open" aria-hidden="true"></i>Operating Standards</a>
-  </nav>
+  <nav class="salon-tabs" data-salon-settings-tabs aria-label="Salon settings sections"></nav>
+  <script src="../assets/salon-settings-tabs.js"></script>
   <section id="standards-library" aria-labelledby="library-title">
     <header class="standards-heading"><div><p class="standards-eyebrow">Salon Settings</p><h2 id="library-title">Operating Standards</h2><p id="library-meta">Create, publish and manage the documents your staff can read.</p></div><div class="standards-actions"><button class="standard-button primary" id="add-standard"><span aria-hidden="true">＋</span>New document</button></div></header>
     <nav class="standards-view-tabs" aria-label="Operating standards views"><button type="button" data-standards-view="documents" aria-pressed="true"><i data-lucide="files" aria-hidden="true"></i>Salon Documents <span data-view-count="documents">0</span></button><button type="button" data-standards-view="templates" aria-pressed="false"><i data-lucide="layout-template" aria-hidden="true"></i>System Templates <span data-view-count="templates">9</span></button><button type="button" data-standards-view="deleted" aria-pressed="false"><i data-lucide="trash-2" aria-hidden="true"></i>Recently Deleted <span data-view-count="deleted">0</span></button></nav>

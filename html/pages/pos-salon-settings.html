@@ -476,6 +476,7 @@
   <link rel="stylesheet" href="../assets/pos-demo-settings.css">
   <link rel="stylesheet" href="../assets/pos-settings-po.css?v=po-v34-2">
   <link rel="stylesheet" href="../assets/pos-salon-sms-settings.css?v=20260924-care-two-templates">
+  <link rel="stylesheet" href="../assets/salon-settings-tabs.css">
 </head>
 <body>
   <div class="shell">
@@ -492,18 +493,8 @@
           <p class="page-description">Manage salon information, staff, services, roles, and permissions.</p>
         </div>
 
-        <nav class="salon-tabs" aria-label="Salon settings sections">
-          <button type="button" data-settings-tab="information"><i data-lucide="building-2" aria-hidden="true"></i> Salon Information</button>
-          <button type="button" data-settings-tab="sms"><i data-lucide="message-square" aria-hidden="true"></i> SMS Settings</button>
-          <button type="button" data-settings-tab="staff" class="active" aria-current="page"><i data-lucide="users-round" aria-hidden="true"></i> Staff</button>
-          <button type="button" data-settings-tab="staff-schedule"><i data-lucide="calendar-range" aria-hidden="true"></i> Staff Schedule</button>
-          <button type="button" data-settings-tab="services"><i data-lucide="list" aria-hidden="true"></i> Services</button>
-          <button type="button" data-settings-tab="roles"><i data-lucide="shield-check" aria-hidden="true"></i> Roles &amp; Permissions</button>
-          <button type="button" data-settings-tab="access-pin"><i data-lucide="key-round" aria-hidden="true"></i> Access &amp; PIN</button>
-          <button type="button" data-settings-tab="payment-fees"><i data-lucide="credit-card" aria-hidden="true"></i> Payment Methods &amp; Fees</button>
-          <button type="button" data-settings-tab="stations"><i data-lucide="armchair" aria-hidden="true"></i> Stations</button>
-          <a href="pos-operating-standards.html"><i data-lucide="clipboard-check" aria-hidden="true"></i> Operating Standards</a>
-        </nav>
+        <nav class="salon-tabs" data-salon-settings-tabs aria-label="Salon settings sections"></nav>
+        <script src="../assets/salon-settings-tabs.js"></script>
         <section data-settings-panel="staff">
         <div class="tech-intro">
           <div class="tech-intro-text">Set a staff member’s POS role, pay structure, and tip preference, and confirm their tax filing type.</div>

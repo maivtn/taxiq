@@ -1,0 +1,11 @@
+/* One tab layout across every Salon Settings page. */
+.salon-tabs[data-salon-settings-tabs]{display:flex;align-items:stretch;flex-wrap:wrap;gap:5px;margin:16px 0}
+.salon-tabs[data-salon-settings-tabs]>:is(button,a){display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:14px 16px;border:1px solid #dbe4f3;border-radius:8px;background:#fff;color:#52607b;font:inherit;font-size:12px;font-weight:700;line-height:16px;text-decoration:none;white-space:nowrap;cursor:pointer}
+.salon-tabs[data-salon-settings-tabs]>.active{background:#4c43df;border-color:#4c43df;color:#fff}
+.salon-tabs[data-salon-settings-tabs]>:is(button,a):hover:not(.active){background:#f5f3ff;border-color:#c7c2f5;color:#4c43df}
+.salon-tabs[data-salon-settings-tabs]>:is(button,a):focus-visible{outline:2px solid #4c43df;outline-offset:2px}
+.salon-tabs[data-salon-settings-tabs] svg{width:18px;height:18px;flex-shrink:0;stroke-width:1.8}
+@media(max-width:640px){
+  .salon-tabs[data-salon-settings-tabs]>:is(button,a){gap:6px;min-height:40px;padding:10px 12px;font-size:11px}
+  .salon-tabs[data-salon-settings-tabs] svg{width:16px;height:16px}
+}
