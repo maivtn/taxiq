@@ -62,13 +62,13 @@
   }
   function staffFiltersHtml(){
     const counts=staffCounts();
-    return Object.keys(counts).map(status=>`<button type="button" class="tech-filter${state.staffFilter===status?' selected':''}" data-action="filter-tech" data-value="${status}" aria-pressed="${state.staffFilter===status}">${rosterLabels[status]}<span>${counts[status]}</span></button>`).join('');
+    return Object.keys(counts).map(status=>`<option value="${status}"${state.staffFilter===status?' selected':''}>${rosterLabels[status]} (${counts[status]})</option>`).join('');
   }
   function staffRosterHtml(){
     const visible=techs.filter(tech=>(state.staffFilter==='all'||rosterStatus(tech)===state.staffFilter)&&tech.toLowerCase().includes(state.staffSearch.trim().toLowerCase()));
     return visible.length?visible.map(tech=>{
       const jobs=ticketWorkForTech(tech).filter(job=>job.service.status!=='completed'),selected=state.selectedTech===tech,status=rosterStatus(tech);
-      return `<button type="button" class="tech-roster-card${selected?' selected':''}" data-action="select-tech" data-id="${esc(tech)}" aria-pressed="${selected}">
+      return `<button type="button" class="tech-roster-card${selected?' selected':''}" data-action="select-tech" data-id="${esc(tech)}" aria-pressed="${selected}" title="${esc(tech)}">
         <span class="tech-selection-tick" aria-hidden="true">${icon('check')}</span>${technicianAvatar(tech)}
         <span class="tech-card-copy"><strong>${esc(tech)}</strong><small>${jobs.length?`${jobs.length} service${jobs.length===1?'':'s'} to finish`:status==='available'?'Ready for work':statusLabel(tech)}</small></span>
         <span class="tech-status ${status}"><i class="tech-status-dot" aria-hidden="true"></i>${rosterLabels[status]}</span>
@@ -76,7 +76,9 @@
     }).join(''):'<div class="tech-roster-empty">No technicians match your search. Try a different name or filter.</div>';
   }
   function renderRoster(){
-    root.querySelector('[data-staff-roster]').innerHTML=staffRosterHtml();
+    const roster=root.querySelector('[data-staff-roster]');
+    roster.innerHTML=staffRosterHtml();
+    roster.scrollTop=0;
     root.querySelector('[data-staff-filters]').innerHTML=staffFiltersHtml();
     window.lucide?.createIcons();
   }
@@ -149,9 +151,10 @@
   function techniciansHtml(){
     const categories=[...new Set(fullCatalog.filter(service=>data.canAssign(state.selectedTech,service)).map(item=>item.category))],work=ticketWorkForTech(state.selectedTech);
     return `<section class="tech-screen-head"><div><p class="tech-screen-eyebrow">FRONT DESK · STAFF WORKSPACE</p><h2>Salon Technicians</h2><p class="muted">Tap a technician to assign work, make a ticket, or start checkout for a customer.</p></div><div class="tech-summary" aria-label="Technician status summary">${staffSummaryHtml()}</div></section>
-      <div class="tech-toolbar"><div class="tech-filters" data-staff-filters role="group" aria-label="Technician status">${staffFiltersHtml()}</div><label class="tech-search">${icon('search')}<span class="tech-sr-only">Search technicians</span><input id="staff-search" type="search" placeholder="Search technicians…" autocomplete="off" value="${esc(state.staffSearch)}"></label></div>
-      <div class="tech-roster" data-staff-roster role="group" aria-label="Select technician">${staffRosterHtml()}</div>
-      <div class="tech-workspace">${currentWorkHtml(work)}<section class="panel tech-assign" aria-label="Assign work"><div class="tech-mode-tabs" role="group" aria-label="Technician work mode"><button type="button" class="${state.techMode==='new'?'selected':''}" data-action="tech-mode" data-value="new" aria-pressed="${state.techMode==='new'}">${icon('plus')}New ticket & checkout</button><button type="button" class="${state.techMode==='existing'?'selected':''}" data-action="tech-mode" data-value="existing" aria-pressed="${state.techMode==='existing'}">${icon('ticket')}Add to existing ticket</button></div>${state.techMode==='new'?techNewTicketHtml(categories):techExistingTicketHtml(categories)}</section></div>`;
+      <div class="tech-staff-layout"><section class="panel tech-roster-panel" aria-label="Salon Technicians">
+        <div class="tech-toolbar"><label class="tech-search">${icon('search')}<span class="tech-sr-only">Search technicians</span><input id="staff-search" type="search" placeholder="Search technicians…" autocomplete="off" value="${esc(state.staffSearch)}"></label><select class="select tech-status-filter" id="staff-status" data-staff-filters aria-label="Technician status">${staffFiltersHtml()}</select></div>
+        <div class="tech-roster" data-staff-roster role="group" aria-label="Select technician">${staffRosterHtml()}</div>
+      </section><div class="tech-workspace">${currentWorkHtml(work)}<section class="panel tech-assign" aria-label="Assign work"><div class="tech-mode-tabs" role="group" aria-label="Technician work mode"><button type="button" class="${state.techMode==='new'?'selected':''}" data-action="tech-mode" data-value="new" aria-pressed="${state.techMode==='new'}">${icon('plus')}New ticket & checkout</button><button type="button" class="${state.techMode==='existing'?'selected':''}" data-action="tech-mode" data-value="existing" aria-pressed="${state.techMode==='existing'}">${icon('ticket')}Add to existing ticket</button></div>${state.techMode==='new'?techNewTicketHtml(categories):techExistingTicketHtml(categories)}</section></div></div>`;
   }
   function existingServicesHtml(){
     const ticket=rows.find(ticket=>data.keyOf(ticket)===state.assignTicketId);if(!ticket)return '';
@@ -161,6 +164,7 @@
   function render(){
     const focused=document.activeElement;
     const previousFocus=root.contains(focused)?{id:focused.id,action:focused.dataset.action,value:focused.dataset.value,tech:focused.dataset.id,mode:focused.dataset.mode}:null;
+    const rosterScroll=root.querySelector('[data-staff-roster]')?.scrollTop;
     root.innerHTML=techniciansHtml();
     const newNotice=root.querySelector('.tech-new-actions')?.parentElement.querySelector('[role="status"]');
     if(openCustomer&&data.active(openCustomer)&&newNotice){
@@ -172,6 +176,12 @@
     if(previousFocus){
       const next=previousFocus.id?document.getElementById(previousFocus.id):Array.from(root.querySelectorAll('[data-action]')).find(button=>button.dataset.action===previousFocus.action&&button.dataset.value===previousFocus.value&&button.dataset.id===previousFocus.tech&&button.dataset.mode===previousFocus.mode);
       next?.focus({preventScroll:true});
+    }
+    const roster=root.querySelector('[data-staff-roster]');
+    if(rosterScroll!==undefined)roster.scrollTop=rosterScroll;
+    else{
+      const selected=roster.querySelector('.selected');
+      if(selected)roster.scrollTop=Math.max(0,selected.offsetTop-(roster.clientHeight-selected.offsetHeight)/2);
     }
   }
   function refresh(){try{refreshData();clearError();render();}catch(error){showError(error);}}
@@ -209,7 +219,6 @@
   root.addEventListener('click',event=>{
     const button=event.target.closest('[data-action]');if(!button||button.disabled)return;
     const action=button.dataset.action;
-    if(action==='filter-tech'){state.staffFilter=button.dataset.value;renderRoster();root.querySelectorAll('[data-action="filter-tech"]').forEach(filter=>{if(filter.dataset.value===state.staffFilter)filter.focus({preventScroll:true});});return;}
     if(action==='tech-category'){
       if(button.dataset.mode==='existing'){state.assignCategory=button.dataset.value;state.assignServiceIndex='';}
       else{state.techNewCategory=button.dataset.value;state.techNewServiceIndex='';state.techCoTech='';}
@@ -261,6 +270,7 @@
     }
   });
   root.addEventListener('change',event=>{
+    if(event.target.id==='staff-status'){state.staffFilter=event.target.value;renderRoster();return;}
     const fields={'tech-co-worker':'techCoTech','assign-ticket':'assignTicketId'};
     const field=fields[event.target.id];if(!field)return;state[field]=event.target.value;
     if(field==='assignTicketId')state.assignmentNotice='';
