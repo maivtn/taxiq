@@ -53,10 +53,15 @@
   transition: background 0.2s, border-color 0.2s, color 0.2s, transform 0.2s;
 }
 
-.qr-tab:hover {
+.qr-tab:hover:not(:disabled) {
   border-color: #cbd2ff;
   color: var(--nexora-text);
   transform: translateY(-1px);
+}
+
+.qr-tab:disabled {
+  opacity: 0.5;
+  cursor: default;
 }
 
 .qr-tab.is-active {
