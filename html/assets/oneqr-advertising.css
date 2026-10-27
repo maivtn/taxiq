@@ -43,7 +43,6 @@
 .qa-app #review { border-color: #cbb9e6; background: #f9f6fe; }
 .qa-app #review h3, .qa-app #recipient-wallet h3 { margin-top: 0; }
 .qa-app #review:focus, .qa-app [role="status"]:focus { outline: none; }
-.qa-app .subview-back { margin-top: 16px; }
 .qa-app .ledger-entry { display: grid; gap: 3px; margin-top: 12px; border-top: 1px solid #eae8f1; padding-top: 12px; }
 .qa-app .ledger-entry strong { color: #25213a; font-size: 14px; }
 .qa-app .ledger-entry small { overflow-wrap: anywhere; }

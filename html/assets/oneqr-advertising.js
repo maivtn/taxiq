@@ -78,7 +78,16 @@
 
   function canActivate() {
     const industry = PO.categories.find(category => category[0] === state.group)?.[3].find(item => item[0] === state.industry);
-    return !state.activated && Boolean(industry) && $('agree').checked && (state.industry !== 'other' || Boolean(state.custom.trim()));
+    return Boolean(industry) && $('agree').checked && (state.industry !== 'other' || Boolean(state.custom.trim()));
+  }
+
+  function reviewIndustryChange(reason = 'industry-change') {
+    if (!state.activated) return;
+    state.audit.push({ id: id(), type: reason, timestamp: new Date().toISOString(), previousConsent: state.consent });
+    state.activated = false;
+    state.consent = null;
+    $('agree').checked = false;
+    refreshBalances();
   }
 
   function updateIndustry() {
@@ -91,7 +100,6 @@
     $('custom').required = state.industry === 'other';
     $('chosen').textContent = label;
     $('adIndustry').textContent = label;
-    $('activate').disabled = !canActivate();
   }
 
   function refreshBalances() {
@@ -113,8 +121,6 @@
     $('recipient-wallet').classList.toggle('hide', !state.recipientCreditPoints);
     $('status').textContent = t(state.activated ? 'statusOn' : 'statusOff');
     $('status').classList.toggle('is-active', state.activated);
-    $('agree').disabled = state.activated;
-    ['group', 'industry', 'secondary', 'custom'].forEach(key => { $(key).disabled = state.activated; });
     if (messages.payoutResult?.key) report('payoutResult', state.balance >= 10000 ? 'payoutDone' : 'payoutLow', state.balance < 10000);
     renderLedger();
   }
@@ -179,7 +185,16 @@
   }
 
   function activate() {
-    if (!canActivate()) return;
+    state.custom = state.custom.trim();
+    $('custom').value = state.custom;
+    if (!canActivate()) {
+      const invalid = ['group', 'industry', 'custom', 'agree'].map($).find(control => !control.checkValidity());
+      if (invalid) {
+        invalid.focus();
+        invalid.reportValidity();
+      }
+      return;
+    }
     state.activated = true;
     state.consent = {
       businessId: 'bitcoin-nail-bar-demo', account: 'Business Owner', business: 'Bitcoin Nail Bar',
@@ -289,7 +304,7 @@
   });
 
   root.addEventListener('change', event => {
-    if (state.activated && ['group', 'industry', 'secondary', 'custom'].includes(event.target.id)) return;
+    if (['group', 'industry', 'secondary'].includes(event.target.id)) reviewIndustryChange();
     if (event.target.id === 'group') {
       state.group = $('group').value;
       state.industry = '';
@@ -297,7 +312,10 @@
     }
     if (event.target.id === 'industry') { state.industry = $('industry').value; updateIndustry(); }
     if (event.target.id === 'secondary') { state.secondary = Array.from($('secondary').selectedOptions, option => option.value); updateIndustry(); }
-    if (event.target.id === 'agree') updateIndustry();
+    if (event.target.id === 'agree') {
+      if (!$('agree').checked) reviewIndustryChange('consent-change');
+      updateIndustry();
+    }
     save();
   });
 
@@ -307,7 +325,7 @@
       report('convertResult', '');
       root.querySelector('[data-action="convert-points"]').disabled = !$('convertAmount').value.trim();
     }
-    if (event.target.id === 'custom' && !state.activated) { state.custom = $('custom').value; updateIndustry(); save(); }
+    if (event.target.id === 'custom') { reviewIndustryChange(); state.custom = $('custom').value; updateIndustry(); save(); }
   });
 
   window.addEventListener('popstate', () => navigate(location.hash.slice(1).split('/')[0], false));
