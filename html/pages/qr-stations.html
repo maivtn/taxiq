@@ -112,21 +112,18 @@
                   <button type="button" data-tip-language="en" aria-pressed="true" lang="en">EN</button>
                 </div>
               </div>
-              <p class="tip-qr-notice" data-tip-copy="demo">DEV PROTOTYPE: sample data only. No account connection, real QR generation, or saved changes.</p>
               <div class="tip-qr-grid">
                 <article class="tip-qr-card">
                   <div class="tip-qr-business">
-                    <div class="tip-qr-sample" data-tip-sample aria-hidden="true" hidden><span>QR MẪU</span></div>
+                    <div class="tip-qr-code" data-tip-code data-qr-value="../tip-flow/select-staff.html" data-qr-size="160" role="img" aria-label="Tip QR" hidden></div>
                     <div class="tip-qr-business-copy">
                       <h3>Bitcoin Nail Bar</h3>
-                      <span class="tip-qr-tag" data-tip-copy="sample">Sample QR code</span>
                       <p data-tip-copy="qrText">Create one business tip QR; print copies for customers to use.</p>
                       <div class="tip-qr-actions">
                         <button class="tip-qr-button" type="button" data-tip-action="generate"><img src="../assets/icon-oneqr/issue-2040-oneqr-qr-code-3d.png" alt=""><span data-tip-copy="generateTip">Generate tip QR</span></button>
                         <button class="tip-qr-button is-secondary" type="button" data-tip-action="view" hidden><span data-tip-copy="viewQR">View QR code</span></button>
                         <button class="tip-qr-button is-secondary" type="button" data-tip-action="print" hidden><span data-tip-copy="printQR">Print QR code</span></button>
                       </div>
-                      <p class="tip-qr-generated" data-tip-generated role="status"></p>
                     </div>
                   </div>
                 </article>
@@ -137,7 +134,6 @@
                     <div class="tip-qr-stat"><dt data-tip-copy="scans">Total QR scans</dt><dd>272</dd></div>
                     <div class="tip-qr-stat"><dt data-tip-copy="tips">Tips received</dt><dd>$11,217.36</dd></div>
                   </dl>
-                  <p class="tip-qr-tracking" data-tip-copy="tipTracking">Show tip amounts only when a transaction can be confirmed; a tip click is not a confirmed payment.</p>
                 </article>
               </div>
               <section class="tip-qr-card tip-qr-how" aria-labelledby="tip-qr-how-title">
@@ -148,13 +144,6 @@
                   <li class="tip-qr-step"><div class="tip-qr-step-heading"><b>03</b><img src="../assets/icon-oneqr/issue-2040-oneqr-hand-coins-3d.png" alt=""></div><p data-tip-copy="step3">Customers scan, choose a technician and send a tip.</p></li>
                 </ol>
                 <p data-tip-copy="sameQR">Copies of the same QR show total scans only; they cannot identify which location was scanned.</p>
-              </section>
-              <section class="tip-qr-card tip-qr-staff" aria-labelledby="tip-qr-staff-title">
-                <div class="tip-qr-staff-heading">
-                  <img src="../assets/icon-oneqr/issue-2040-oneqr-users-round-3d.png" alt="">
-                  <div><h3 id="tip-qr-staff-title" data-tip-copy="staffTitle">How do customers select a technician?</h3><p data-tip-copy="staffHelp">The tip page should show eligible staff so customers can choose the right person before sending a tip.</p></div>
-                </div>
-                <span class="tip-qr-tag" data-tip-copy="staffNote">Dev: verify the existing staff selection and tip payout flow.</span>
               </section>
             </div>
           </section>
@@ -791,9 +780,13 @@
   <input type="file" id="oneqrModuleIconUpload" accept=".png,.jpg,.jpeg,.webp,.gif,image/png,image/jpeg,image/webp,image/gif" hidden>
 
   <dialog id="tip-qr-dialog" class="tip-qr-dialog" aria-labelledby="tip-qr-dialog-title" aria-describedby="tip-qr-dialog-text" lang="en">
-    <h2 id="tip-qr-dialog-title" data-tip-copy="qrModal">Sample QR code</h2>
-    <p id="tip-qr-dialog-text" data-tip-modal-text>The QR image in this prototype is illustrative; it cannot be scanned, printed or downloaded for real use.</p>
-    <div class="tip-qr-actions"><button class="tip-qr-button is-secondary" type="button" data-tip-close data-tip-copy="close">Close</button></div>
+    <h2 id="tip-qr-dialog-title">Bitcoin Nail Bar</h2>
+    <p id="tip-qr-dialog-text" data-tip-copy="tipDescription">Create one tip QR code for your business. Customers scan it to select a technician and send a tip.</p>
+    <div class="tip-qr-code tip-qr-dialog-code" data-qr-value="../tip-flow/select-staff.html" data-qr-size="232" role="img" aria-label="Tip QR"></div>
+    <div class="tip-qr-actions">
+      <button class="tip-qr-button" type="button" data-tip-print data-tip-copy="printQR">Print QR code</button>
+      <button class="tip-qr-button is-secondary" type="button" data-tip-close data-tip-copy="close">Close</button>
+    </div>
   </dialog>
 
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
