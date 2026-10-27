@@ -523,7 +523,33 @@
 
 
 }
-#products-other-sales{min-width:0}
+#products-other-sales{min-width:0;max-width:1440px;margin-inline:auto;container-type:inline-size;container-name:products-sales}
 #products-other-sales select{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23606a7b' stroke-width='2'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E");background-position:right 16px center;background-repeat:no-repeat;background-size:16px;padding-right:44px}
 #products-other-sales .modal-backdrop{z-index:1500}
 @media print{body:has(#products-other-sales) :is(.sidebar,.header,.workflow,main>h1,main>.subtitle){display:none!important}}
+
+/* Share the staging checkout presentation inside the PO sale workspace. */
+#products-other-sales #app-main{padding:0;min-height:0;background:transparent}
+#products-other-sales .live-pos-content{max-width:1360px;margin-inline:auto}
+#products-other-sales .sale-frame{padding:0;border:0;border-radius:0;background:transparent;box-shadow:none}
+#products-other-sales .sale-grid{grid-template-columns:minmax(0,1.3fr) minmax(380px,1fr);gap:24px;align-items:start}
+#products-other-sales .sale-frame .live-payment-sidebar{min-width:0;padding:0;margin:0;border:0;border-radius:0;background:transparent;box-shadow:none;position:static}
+#products-other-sales .live-payment-sidebar .tw-checkout-side .tw-methods{display:flex;flex-wrap:wrap;gap:8px}
+#products-other-sales .live-payment-sidebar .tw-methods .tw-button{min-width:0;min-height:37px;padding:8px 10px;font-size:11px}
+#products-other-sales .live-payment-sidebar .tw-method-option img{width:20px;height:20px;object-fit:contain;flex:none}
+#products-other-sales .live-payment-sidebar .tw-receipt-options .tw-button{min-height:29px;padding:6px 9px;font-size:10px;font-weight:500}
+#products-other-sales .live-payment-sidebar .tw-payment-summary .tw-card-title{flex-wrap:wrap}
+#products-other-sales .live-payment-sidebar .tw-ticket-tools{margin-left:auto}
+#products-other-sales .live-payment-sidebar .tw-ticket-tools svg{width:16px;height:16px;stroke-width:1.8}
+#products-other-sales .live-payment-sidebar .tw-summary-remove{min-height:28px;width:28px;padding:0;font-size:17px}
+#products-other-sales .live-summary-assistant{display:block;margin-top:3px;color:#667085;font-size:11px}
+#products-other-sales .live-sale-totals{margin-bottom:0}
+#products-other-sales .live-sale-totals .tw-summary-row{font-size:12px;margin:7px 0;align-items:center;line-height:1.6}
+#products-other-sales .live-sale-totals dt{flex:1;min-width:0;color:#667085}
+#products-other-sales .live-sale-totals dd{margin:0;white-space:nowrap;font-size:12px;font-weight:600}
+#products-other-sales .live-sale-totals .tw-rule{padding-top:9px;margin-top:9px;border-top:1px solid #dfe3ed}
+#products-other-sales .live-sale-totals .tw-rule :is(dt,dd){color:#101827;font-weight:750}
+#products-other-sales #live-cash-feedback .short{color:#be123c}
+#products-other-sales .live-payment-sidebar .tw-paybar .tw-pay{width:100%;min-height:44px;min-width:0;padding:12px;font-size:13px}
+@container products-sales (max-width:900px){#products-other-sales .sale-grid{grid-template-columns:1fr;gap:16px}}
+@container products-sales (max-width:520px){#products-other-sales .sale-grid{gap:12px}#products-other-sales .live-payment-sidebar .tw-methods .tw-button{flex:1 1 auto}}
