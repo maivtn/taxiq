@@ -35,8 +35,9 @@
   };
   const iconForLabel = {'Print Ticket':'printer','Print receipt':'printer',Print:'printer','Print preview':'eye',
     'Start Service':'play',Start:'play',Complete:'check',Back:'back','Checkout Ticket':'forward','Complete checkout':'check',
-    Cash:'cash',Card:'card','Gift Card':'gift','Split Pay':'split','Split bill':'split',More:'more','Send SMS':'message',
+    Cash:'cash',Card:'card','Gift Card':'gift','Split Pay':'split','Split bill':'split',More:'more',Less:'more','Send SMS':'message',
     'No Receipt':'receipt','Edit customer':'user','Hand to customer':'tablet','Discount all':'percent','Add tip':'dollar','Add service':'plus',
+    'Back to Edit':'back',Checkout:'forward',View:'eye','Add Tip':'dollar','Add-On':'plus','Add main service':'plus','Custom service':'plus','Add another technician & their work':'plus',
     Discount:'percent',Coupon:'coupon','Scan QR':'scan','Start camera':'scan','Take a photo':'camera','Upload image':'image','Custom':'plus','Cancel split bill':'close',Close:'close','Change tech':'user','Change service':'refresh',Remove:'trash',Pay:'card'};
   const icon = name => `<svg class="tw-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true" focusable="false">${iconPaths[name]}</svg>`;
   function totals(ticket, applyPaymentRules=true) {
@@ -57,6 +58,9 @@
     return applyPaymentRules&&window.NEXORA_POS_DEMO?{...base,...window.NEXORA_POS_DEMO.pricing(net,tip,p)}:base;
   }
   function mount(root, options) {
+    const staging=options.stagingLayout&&window.NEXORA_TICKET_STAGING;
+    if(staging)root.classList.add('tw-staging');
+    let addContext={tech:'',parentId:'',selectTech:false},rewardCode='';
     let contactUntil=0,notesUntil=0,tipPolicy='equal';
     const demo=window.NEXORA_POS_DEMO,stations=window.NEXORA_STATIONS;
     const reveal=async action=>{
@@ -457,7 +461,7 @@
       if (!$('[data-tw-catalog]')) return;
       const list=services().filter(s=>(category==='All'||categoryOf(s)===category)&&s.name.toLowerCase().includes(search.toLowerCase()));
       $('[data-tw-categories]').innerHTML=['All',...new Set(services().map(categoryOf))].map(c=>button(esc(c),`data-tw-category="${esc(c)}" aria-pressed="${c===category}"`,c===category?'selected':'')).join('');
-      $('[data-tw-catalog]').innerHTML=[...new Set(list.map(categoryOf))].map(c=>`<section class="tw-category"><h4>${esc(c)}</h4><div class="tw-service-grid">${list.filter(s=>categoryOf(s)===c).map(s=>`<button type="button" class="tw-service" data-tw-add="${esc(s.id)}" ${ticket.payment?'disabled':''}><strong>${esc(s.name)}</strong><span>${s.price==null?'Enter price':money(cents(s.price))}<b aria-hidden="true">${icon('plus')}</b></span></button>`).join('')}</div></section>`).join('') || '<p class="tw-muted">No services found.</p>';
+      $('[data-tw-catalog]').innerHTML=[...new Set(list.map(categoryOf))].map(c=>`<section class="tw-category"><h4>${esc(c)}</h4><div class="tw-service-grid">${list.filter(s=>categoryOf(s)===c).map(s=>`<button type="button" class="tw-service" data-tw-add="${esc(s.id)}" ${ticket.payment||staging&&addContext.selectTech&&!addContext.tech?'disabled':''}><strong>${esc(s.name)}</strong><span>${s.price==null?'Enter price':money(cents(s.price))}<b aria-hidden="true">${icon('plus')}</b></span></button>`).join('')}</div></section>`).join('') || '<p class="tw-muted">No services found.</p>';
     }
     function renderTotals() {
       const t=totals(ticket);
@@ -469,6 +473,12 @@
       if ($('[data-tw-coupon-total]')) $('[data-tw-coupon-total]').textContent=t.error?'—':'−'+money(couponCents);
       if ($('[data-tw-method-discount]')) $('[data-tw-method-discount]').textContent='−'+money(t.methodDiscountCents || 0);
       if ($('[data-tw-card-fee]')) $('[data-tw-card-fee]').textContent=money(t.feeCents || 0);
+      if(staging){
+        const lineDiscount=lineDiscountCents(t,couponCents),orderDiscount=Math.max(0,(t.discountCents || 0)-couponCents-lineDiscount);
+        if($('[data-tw-line-discount]'))$('[data-tw-line-discount]').textContent=(lineDiscount?'−':'')+money(lineDiscount);
+        if($('[data-tw-order-discount]'))$('[data-tw-order-discount]').textContent=(orderDiscount?'−':'')+money(orderDiscount);
+        [['coupon',couponCents],['method',t.methodDiscountCents],['fee',t.feeCents]].forEach(([name,value])=>{const row=$('[data-tw-optional-row="'+name+'"]');if(row)row.hidden=!value;});
+      }
       root.querySelectorAll('[data-tw-tip-total],[data-tw-tip-card-total]').forEach(el=>el.textContent=t.error?'—':money(t.tipCents));
       if ($('[data-tw-change]')) $('[data-tw-change]').textContent=t.error?'—':money(Math.max(0,cents(ticket.checkout.cash || 0)-t.totalCents));
       root.querySelectorAll('[data-tw-bill-total]').forEach(el=>{const bill=group()?.bills.find(b=>b.id===el.dataset.twBillTotal);if(bill){const billTotals=bill.payment||totals(billTicket(bill));el.textContent=billTotals.error?'—':money(billTotals.totalCents);}});
@@ -479,6 +489,14 @@
       if ($('[data-tw-pay]')) $('[data-tw-pay] span').textContent='Pay · '+(t.error?'—':money(t.totalCents));
       if($('[data-tw-payment-hint]')){const hint=paymentHint(t);$('[data-tw-payment-hint]').textContent=hint;$('[data-tw-paybar]').dataset.ready=String(hint==='Ready to collect payment');}
       return t;
+    }
+    function lineDiscountCents(t,couponCents){
+      if(t.error)return 0;
+      if(!amountSplit())return ticket.lines.reduce((sum,line)=>sum+discount(cents(line.price),line.discount),0);
+      const lineDiscount=parent.lines.reduce((sum,line)=>sum+discount(cents(line.price),line.discount),0);
+      const subtotal=parent.lines.reduce((sum,line)=>sum+cents(line.price),0);
+      const beforeCoupon=lineDiscount+discount(subtotal-lineDiscount,parent.discount);
+      return beforeCoupon?Math.min(t.discountCents-couponCents,Math.round((t.discountCents-couponCents)*lineDiscount/beforeCoupon)):0;
     }
     function paymentHtml() {
       const p=ticket.checkout;
@@ -509,6 +527,16 @@
       const customerHtml=mode==='checkout'?`<section class="tw-card tw-customer-card"><h3>CUSTOMER</h3><div class="tw-customer-name"><strong>${esc(parent.customer)}</strong><span>${customerKind}</span>${!paid&&!group()?button('View','data-tw-customer','tw-text tw-small'):''}</div><p>${icon('phone')}<span data-tw-contact>${esc(contactUntil>Date.now()?parent.phone || 'No phone number':'•••• '+String(parent.phone || '').replace(/\D/g,'').slice(-4))}</span></p></section>`:'';
       const notePhotos=parent.notePhotos || [];
       const noteHtml=`<section class="tw-card tw-note-card">${demo&&notesUntil<=Date.now()?`<div class="pos-warning">Private notes hidden · ${button('View notes','data-tw-reveal-notes','tw-small')}</div>`:''}<label class="tw-note">NOTE<textarea data-tw-note placeholder="Seat, customer preferences, color/powder used…" ${paid||group()||(demo&&notesUntil<=Date.now())?'disabled':''}>${esc(!demo||notesUntil>Date.now()?parent.note || '':'')}</textarea></label><div class="tw-note-tools">${button('Take a photo','data-tw-take-photo'+(paid||group()||notePhotos.length>=5?' disabled':''),'tw-small')}${button('Upload image','data-tw-upload-image'+(paid||group()||notePhotos.length>=5?' disabled':''),'tw-small')}<input type="file" accept="image/*" data-tw-note-upload hidden><span data-tw-photo-count>${notePhotos.length}/5 photos</span></div></section>`;
+      if(staging){
+        const stationHtml=stations&&!parent.directCheckout&&!paid&&parent.lines.some(l=>l.status!=='completed')&&stations.load().settings.mode!=='off'?`<section class="tw-card"><h3>STATION · REVIEW & SEND</h3>${stations.pickerHtml(parent)}${button('Review & Send','data-tw-review-station','tw-purple')}</section>`:'';
+        root.innerHTML=staging.render({parent,ticket,mode,button,icon,esc,money,cents,validMoney,totals,discount,detailLines,
+          splitGroup:group(),amountSplit:amountSplit(),serviceSplit,activeBillId,guestColor,guestNumber,serviceFilter,serviceToolbarHtml,
+          customerKind,contact:contactUntil>Date.now()?parent.phone || 'No phone number':'•••• '+String(parent.phone || '').replace(/\D/g,'').slice(-4),
+          technicians:options.technicians(),methods:demo?demo.methods():[{id:'cash',label:'Cash'},{id:'card',label:'Card'},{id:'gift-card',label:'Gift Card'},{id:'split',label:'Split Pay'}],
+          stationChip:stations?.chip(parent) || '',stationHtml,noteHtml,billHeading,billsHtml,paymentHtml,paybarHtml,rewardCode});
+        if(serviceSplit&&serviceFilter!=='all'&&!root.querySelector('.tw-line:not([hidden])'))$('.tw-lines').insertAdjacentHTML('beforeend',`<p class="tw-filter-empty" data-tw-filter-empty>${serviceFilter==='unassigned'?'No unassigned services.':'No services on this bill yet.'} Choose All services to review the full ticket.</p>`);
+        $('dialog').addEventListener('close',stopQrScanner);renderTotals();return;
+      }
       root.innerHTML=`<div class="tw-heading">${button('Back','data-tw-back')}<h2>${parent.directCheckout?'Direct checkout':'Ticket'} #${esc(parent.id)} · ${esc(parent.customer)}${stations?.chip(parent) || ''}</h2>${!paid&&!group()?button('Edit customer','data-tw-customer','tw-text'):''}</div>${billsHtml()}<div class="tw-workspace ${mode==='checkout'?'tw-checkout-layout':''}">${leftColumn}<div class="tw-ticket-side">${customerHtml}${stations&&!parent.directCheckout&&!paid&&parent.lines.some(l=>l.status!=='completed')&&stations.load().settings.mode!=='off'?`<section class="tw-card"><h3>STATION · REVIEW & SEND</h3>${stations.pickerHtml(parent)}${button('Review & Send','data-tw-review-station','tw-purple')}</section>`:''}<section class="tw-card"><div class="tw-card-title"><h3>${amountSplit()?'SHARED TICKET':'TICKET DETAIL'} (${detailLines.length} services)</h3>${amountSplit()&&!group().bills.some(b=>b.payment)?button('Assign services','data-tw-assign-services aria-haspopup="dialog"','tw-small tw-purple'):''}${!paid&&!group()?`<div class="tw-ticket-tools">${mode==='checkout'?button('Add service','data-tw-add-service','tw-small tw-purple'):''}${button('Custom','data-tw-custom','tw-small tw-purple')}</div>`:''}</div>${amountSplit()?`<p class="tw-service-pick-note">This ticket is split by amount. ${group().bills.some(b=>b.payment)?'Each bill pays a share of the ticket total.':'Choose Assign services to select who pays for each service. Bill totals will follow the selected services.'}</p>`:''}<div class="tw-lines">${serviceSplit?serviceToolbarHtml():''}${detailLines.map(l=>{
         const owner=serviceSplit?group().bills.find(b=>b.id===group().assignments[l.id]):null;
         const canManage=!paid&&(!serviceSplit||owner?.id===activeBillId);
@@ -530,7 +558,7 @@
         setupAssignments=Object.fromEntries(parent.lines.map(l=>[l.id,amountSplit()?null:0]));
         fields=`<fieldset class="tw-radio-field"><legend>Split method</legend><div class="tw-radio-options tw-method-options"><label class="tw-radio-choice"><input type="radio" name="splitMode" value="services" aria-label="By services" checked><span><strong>By services</strong><small>Choose who pays for each service</small></span></label><label class="tw-radio-choice"><input type="radio" name="splitMode" value="amount" aria-label="By amount"><span><strong>By amount</strong><small>Share the total equally or by amount</small></span></label></div></fieldset><p data-tw-split-guidance></p><fieldset class="tw-radio-field"><legend>Number of bills</legend><div class="tw-bill-count-row"><div class="tw-radio-options" data-tw-bill-count></div><label class="tw-custom-count" data-tw-custom-count hidden><input name="customBillCount" aria-label="Custom number of bills" type="number" min="2" step="1" placeholder="Enter number" disabled></label></div></fieldset><fieldset class="tw-radio-field" data-tw-allocation hidden><legend>Divide amount</legend><div class="tw-radio-options tw-method-options"><label class="tw-radio-choice"><input type="radio" name="amountAllocation" value="equal" checked><span>Split equally</span></label><label class="tw-radio-choice"><input type="radio" name="amountAllocation" value="custom"><span>Enter individual amounts</span></label></div></fieldset><div data-tw-split-guests></div><section data-tw-service-setup></section><section class="tw-split-summary" data-tw-split-summary role="status" aria-live="polite"></section><p class="tw-muted">Choose a payment method for each bill after creating it. Complete services before collecting payment.</p>`;
       }
-      if(action==='catalog'){title='Add service';fields=`<input class="tw-search" data-tw-search type="search" placeholder="Search services…" aria-label="Search ticket services" value="${esc(search)}"><div class="tw-categories" data-tw-categories></div><div class="tw-catalog" data-tw-catalog></div>`;}
+      if(action==='catalog'){title=staging&&addContext.selectTech?'Add another technician & their work':'Add service';fields=`${staging&&addContext.selectTech?'<label>Technician<select data-tw-picker-tech aria-label="Technician"><option value="">Choose technician</option>'+options.technicians().filter(t=>t.status==='available').map(t=>'<option value="'+esc(t.name)+'">'+esc(t.name)+'</option>').join('')+'</select></label>':''}<input class="tw-search" data-tw-search type="search" placeholder="Search services…" aria-label="Search ticket services" value="${esc(search)}"><div class="tw-categories" data-tw-categories></div><div class="tw-catalog" data-tw-catalog></div>`;}
       if(action==='tech'){title='Change technician';fields='<label>Technician<select name="tech" required><option value="">Choose technician</option>'+options.technicians().map(t=>`<option ${t.name===l.tech?'selected':''} ${t.status==='clocked-out'||(t.status&&t.status!=='available'&&t.name!==l.tech)?'disabled':''}>${esc(t.name)}</option>`).join('')+'</select></label>';}
       if(action==='service'){title='Change service';fields='<label>Service<select name="service" required>'+services().map(s=>`<option value="${esc(s.id)}">${esc(s.name)} · ${s.price==null?'Enter price':money(cents(s.price))}</option>`).join('')+'</select></label>';}
       if(action==='discount'){
@@ -560,10 +588,14 @@
       $('dialog').classList.toggle('tw-catalog-dialog',action==='catalog'||action==='split-bill');renderCatalog();$('dialog').showModal();
     }
     function add(service) {
-      ticket.lines.push({id:crypto.randomUUID(),serviceId:service.id || null,name:service.name,price:service.price,tech:'',status:parent.directCheckout?'completed':'unassigned'});save();render();
+      if(staging&&addContext.selectTech&&!addContext.tech)return;
+      const tech=staging?addContext.tech:'';
+      ticket.lines.push({id:crypto.randomUUID(),serviceId:service.id || null,name:service.name,price:service.price,tech,status:parent.directCheckout?'completed':tech?'assigned':'unassigned',...(staging&&addContext.parentId?{parentLineId:addContext.parentId}:{})});
+      addContext={tech:'',parentId:'',selectTech:false};save();render();
     }
     root.addEventListener('input',e=>{
       if(ticket.payment)return;
+      if(e.target.hasAttribute('data-tw-reward-code')){rewardCode=e.target.value;const check=$('[data-tw-reward-check]');if(check)check.disabled=!rewardCode.trim();return;}
       if(e.target.hasAttribute('data-tw-inline-tip')){if(amountSplit())return;ticket.checkout.tip=e.target.value;save();renderTotals();return;}
       if(e.target.hasAttribute('data-tw-tip-share')){if(amountSplit())return;const name=tipTechnicians()[Number(e.target.dataset.twTipShare)];if(!name)return;ticket.checkout.tipAllocations=ticket.checkout.tipAllocations || {};ticket.checkout.tipAllocations[name]=e.target.value;save();renderTotals();return;}
       if(dialogAction==='split-bill'&&$('dialog').open&&e.target.matches('[name="customBillCount"]'))updateSplitCount();
@@ -578,6 +610,7 @@
       if(e.target.matches('[data-tw-field]')){ticket.checkout[e.target.dataset.twField]=e.target.value;if(e.target.dataset.twField==='tip')ticket.checkout.tipType='fixed';save();renderTotals();}
     });
     root.addEventListener('change',e=>{
+      if(staging&&e.target.hasAttribute('data-tw-picker-tech')){addContext.tech=e.target.value;renderCatalog();return;}
       if(dialogAction==='split-bill'&&$('dialog').open&&e.target.matches('[data-tw-setup-line]')){
         const lineId=e.target.dataset.twSetupLine,guest=e.target.dataset.guest;
         setupAssignments[lineId]=e.target.checked?Number(guest):null;
@@ -604,6 +637,12 @@
         focusService(lineId);return;
       }
       if(ticket.payment)return;
+      if(staging&&e.target.hasAttribute('data-tw-group-tech')&&!group()){
+        const from=e.target.dataset.twGroupTech,to=e.target.value,choice=options.technicians().find(t=>t.name===to);
+        if(to&&(!choice||choice.status&&choice.status!=='available'&&to!==from)){render();return;}
+        parent.lines.filter(line=>(line.tech || '')===from).forEach(line=>{line.tech=to;if(line.status==='unassigned'&&to)line.status='assigned';else if(!to&&line.status==='assigned')line.status='unassigned';});
+        save();render();return;
+      }
       if(e.target.matches('[data-tw-bill-name]')&&group()) {
         activeBill().name=e.target.value.trim().slice(0,80)||'Guest';selectBill(activeBillId);save();render();return;
       }
@@ -612,6 +651,7 @@
       const b=e.target.closest('button');if(!b||b.disabled)return;
       if(b.hasAttribute('data-tw-complete-checkout')){if(mode==='checkout'&&checkoutPaid()&&!root.hidden){root.hidden=true;options.onBack();}return;}
       if(b.hasAttribute('data-tw-back')){contactUntil=0;notesUntil=0;root.hidden=true;options.onBack();return;}
+      if(b.hasAttribute('data-tw-back-edit')&&!group()&&!ticket.payment){mode='edit';options.onModeChange?.(mode);render();return;}
       if(b.hasAttribute('data-tw-review-station')){try{const tech=parent.lines.map(l=>l.tech).filter(Boolean).join(', ');const gate=parent.lines.map(l=>String(l.tech || '').split(',').map(n=>stations.gate(n.trim())).find(Boolean)).find(Boolean);if(gate)throw new Error('Confirm '+gate.code+' clean before the next Beep.');stations.hold(parent,$('[data-pos-station]').value,tech);save();render();message('Station held for this ticket · service Beep queued (demo).');}catch(error){message(error.message);}return;}
       if(b.hasAttribute('data-tw-reveal-notes')){if(await reveal('notes'))render();return;}
       if(b.hasAttribute('data-tw-customer')){if(await reveal('contact'))openDialog('customer');return;}
@@ -625,6 +665,14 @@
       if(b.hasAttribute('data-tw-remove-bill')&&group()&&!amountSplit()&&group().bills.length>2&&!ticket.lines.length&&!ticket.payment){group().bills=group().bills.filter(b=>b.id!==activeBillId);selectBill(group().bills[0].id);save();render();return;}
       if(b.hasAttribute('data-tw-cancel-split')&&group()&&!group().bills.some(b=>b.payment)){delete parent.splitBills;ticket=parent;lastAssignment=null;serviceFilter='all';save();render();return;}
       if(ticket.payment)return;
+      if(staging&&b.hasAttribute('data-tw-remove-group')&&!group()){
+        const ids=new Set(parent.lines.filter(line=>(line.tech || '')===b.dataset.twRemoveGroup).map(line=>line.id));
+        parent.lines=parent.lines.filter(line=>!ids.has(line.id)&&!ids.has(line.parentLineId));save();render();return;
+      }
+      if(staging&&b.hasAttribute('data-tw-new-tech')&&!group()){addContext={tech:'',parentId:'',selectTech:true};openDialog('catalog');return;}
+      if(staging&&b.hasAttribute('data-tw-custom'))addContext={tech:b.dataset.twTech || '',parentId:b.dataset.twParent || '',selectTech:false};
+      if(staging&&b.hasAttribute('data-tw-reward-check')){openDialog('coupon');$('[name="couponCode"]').value=rewardCode;$('[data-tw-form]').requestSubmit();return;}
+      if(staging&&b.hasAttribute('data-tw-reward-scan')){openDialog('coupon');$('[data-tw-start-qr]').click();return;}
       if(b.hasAttribute('data-tw-tip-entry')){if(amountSplit())return;ticket.checkout.tipType=b.dataset.twTipEntry;ticket.checkout.tip=0;save();render();return;}
       if(b.hasAttribute('data-tw-tip-split')){
         if(amountSplit())return;const policy=b.dataset.twTipSplit;
@@ -662,13 +710,13 @@
       if(b.hasAttribute('data-tw-discount-offer')){discountType='percent';discountValue=20;discountReason='Add-On Upgrade offer';renderDiscountFields();return;}
       if(b.hasAttribute('data-tw-assign-services')&&amountSplit()&&!group().bills.some(bill=>bill.payment)){openDialog('split-bill');return;}
       if(b.hasAttribute('data-tw-split-bill')&&!group()){openDialog('split-bill');return;}
-      if(b.hasAttribute('data-tw-add-service')){openDialog('catalog');return;}
+      if(b.hasAttribute('data-tw-add-service')){addContext={tech:b.dataset.twTech || '',parentId:b.dataset.twParent || '',selectTech:false};openDialog('catalog');return;}
       if(b.hasAttribute('data-tw-category')){category=b.dataset.twCategory;renderCatalog();}
       if(b.hasAttribute('data-tw-add')){const s=services().find(s=>s.id===b.dataset.twAdd);if(s)add(s);}
       if(b.hasAttribute('data-tw-action')){
         const l=ticket.lines.find(l=>l.id===b.dataset.line);if(!l)return;
         const action=b.dataset.twAction;
-        if(action==='remove'){ticket.lines=ticket.lines.filter(x=>x!==l);save();render();}
+        if(action==='remove'){ticket.lines=ticket.lines.filter(x=>x!==l&&(!staging||x.parentLineId!==l.id));save();render();}
         else if(action==='start'){if(!clockedIn(l.tech)){openDialog('tech',l.id);return;}try{if(stations){const gate=String(l.tech || '').split(',').map(n=>stations.gate(n.trim())).find(Boolean);if(gate)throw new Error('Confirm '+gate.code+' clean before sending the next Beep.');stations.start(parent);}}catch(error){message(error.message);return;}l.status='in-service';save();render();}
         else if(action==='complete'){l.status='completed';save();render();}
         else openDialog(action,l.id);
@@ -725,7 +773,12 @@
         parent.coupon={code,label:coupon.label,type:coupon.type,value:coupon.value};
         if(group())refreshSplitDiscount();
       }
-      if(dialogAction==='tech'){const tech=data.get('tech');const choice=options.technicians().find(t=>t.name===tech);if(!choice||choice.status==='clocked-out'||(choice.status&&choice.status!=='available'&&tech!==l.tech)){error('Choose an available technician.');return;}l.tech=tech;if(l.status==='unassigned')l.status='assigned';}
+      if(dialogAction==='tech'){
+        const tech=data.get('tech'),previous=l.tech,choice=options.technicians().find(t=>t.name===tech);
+        if(!choice||choice.status==='clocked-out'||(choice.status&&choice.status!=='available'&&tech!==l.tech)){error('Choose an available technician.');return;}
+        l.tech=tech;if(l.status==='unassigned')l.status='assigned';
+        if(staging&&!l.parentLineId)ticket.lines.filter(child=>child.parentLineId===l.id&&child.tech===previous).forEach(child=>{child.tech=tech;if(child.status==='unassigned')child.status='assigned';});
+      }
       if(dialogAction==='service'){const s=services().find(s=>s.id===data.get('service'));if(!s)return;l.name=s.name;l.serviceId=s.id;l.price=s.price;l.discount=null;l.status=parent.directCheckout?'completed':l.tech?'assigned':'unassigned';}
       if(dialogAction==='custom'||dialogAction==='price'){
         if(!validMoney(data.get('price')) || (dialogAction==='custom'&&!data.get('name').trim())){error('Enter a service name and valid price.');return;}
@@ -750,6 +803,7 @@
     return {open(value,requestedMode='edit') {
       contactUntil=0;notesUntil=0;
       parent=value;ticket=value;mode=parent.splitBills?'checkout':requestedMode;category='All';search='';serviceFilter='all';lastAssignment=null;
+      addContext={tech:'',parentId:'',selectTech:false};rewardCode='';
       const catalog=options.catalog(),key=value=>String(value || '').trim().toLowerCase();
       const resolveService=line=>{
         if(line.serviceId)return catalog.find(s=>s.id===line.serviceId);

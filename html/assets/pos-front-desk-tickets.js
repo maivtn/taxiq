@@ -74,6 +74,7 @@ function render(){
   window.dispatchEvent(new CustomEvent('nexora:tickets-changed'));
 }
 const workspace=window.NEXORA_TICKET_WORKSPACE.mount($('#ticket-workspace'),{
+ stagingLayout:true,
  catalog:()=>window.NEXORA_SALON_DATA ? window.NEXORA_SALON_DATA.loadCatalog().services : [],
  technicians:()=>technicians,
  onChange(t){persistWorkspace(t);if(t.payment)tickets=tickets.filter(row=>row!==t);render();},
