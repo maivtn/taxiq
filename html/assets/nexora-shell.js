@@ -71,8 +71,6 @@
       { label: 'SMS Campaigns', page: 'booking', tab: 'sms-campaigns', href: 'nexora-sms-dashboard.html' },
       { label: 'Loyalty', page: 'reward', tab: 'loyalty', href: 'salon-setup-reward.html' },
       { label: 'Gift Card Center', placeholder: true },
-      { label: 'QR Self Check-in', href: '../customer/check-in-mobile.html' },
-      { label: 'Self Check-in Device', placeholder: true },
       { label: 'Printer', tab: 'printer' }
     ] },
     { type: 'group', key: 'payments', label: 'Payments & Payouts', icon: 'wallet', items: [
@@ -229,7 +227,6 @@
     if (activePage === 'review') return 'reviews';
     if (activePage === 'analytics') return 'analytics';
     if (activePage === 'stations') {
-      if (tab === 'qr-stations') return 'tips';
       if (tab === 'accept-payment') return 'receive-payments';
       return 'one-qr';
     }
