@@ -14,6 +14,7 @@
 .po-direct .hint{margin:7px 0 0}
 .po-direct .panel{background:#fff;border:1px solid var(--dc-border);border-radius:14px;box-shadow:0 4px 18px #24334b08}
 .po-direct .btn{display:inline-flex;align-items:center;justify-content:center;gap:7px;min-height:40px;padding:9px 13px;border:1px solid var(--dc-border);border-radius:8px;background:#fff;color:#34445e;font-size:13px;font-weight:650;line-height:1.35;cursor:pointer;transition:background .15s,border-color .15s,box-shadow .15s}
+.po-direct a.btn{text-decoration:none}
 .po-direct .btn:hover:not(:disabled){background:#f4f5ff;border-color:#bec1ed}
 .po-direct .btn-primary{background:var(--dc-brand);border-color:var(--dc-brand);color:#fff;box-shadow:0 3px 9px #4c43df26}
 .po-direct .btn-primary:hover:not(:disabled){background:#3b32c5;border-color:#3b32c5;box-shadow:0 4px 12px #4c43df30}
@@ -31,7 +32,7 @@
 .po-direct .discount-toggle.dc-amber.applied{font-weight:750;color:#875008}
 .po-direct .btn-wide{width:100%}
 .po-direct .btn[class]:disabled{opacity:1;color:#8792a5;background:#f1f4f8;border-color:#e0e6ef;cursor:default;box-shadow:none}
-.po-direct button:focus-visible,.po-direct summary:focus-visible{outline:3px solid #8183e454;outline-offset:2px}
+.po-direct button:focus-visible,.po-direct a.btn:focus-visible,.po-direct summary:focus-visible{outline:3px solid #8183e454;outline-offset:2px}
 .po-direct .icon-button,.po-direct .remove-item,.po-direct .po-reorder{width:32px;height:32px;min-height:32px;padding:6px;flex:none}
 .po-direct .icon-button{color:#52627b;background:#f7f9fc}
 .po-direct .remove-item{border-color:transparent;background:transparent;color:#c03753}

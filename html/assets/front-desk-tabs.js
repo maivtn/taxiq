@@ -62,6 +62,7 @@
           const data = window.NEXORA_FRONT_DESK_DATA;
           if (data?.all().find(ticket => data.keyOf(ticket) === id)?.payment) return 'completed';
         } catch (_) { /* The page owns any saved-data error message. */ }
+        if (params.get('mode') === 'checkout' || params.get('returnTo') === 'checkout') return 'checkout-customer';
       }
       return page === 'pos-direct-checkout.html' ? 'checkout-customer' : params.get('view') === 'overview' ? 'overview' : 'tickets';
     }

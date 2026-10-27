@@ -101,8 +101,7 @@
     if(!guest.customer.trim()){warning='Enter the new customer’s name.';return false;}
     const existing=data.openForPhone(guest.phone);
     if(existing){
-      if(!existing.directCheckout){location.href=data.url(existing,'edit',new URLSearchParams(location.search).get('returnTo')==='staff'?'staff':'');return false;}
-      current=normalize(existing);records=records.filter(row=>data.keyOf(row)!==data.keyOf(existing));records.unshift(current);return true;
+      location.href=data.url(existing,'edit',new URLSearchParams(location.search).get('returnTo') || 'checkout');return false;
     }
     current=normalize({id:'DC-'+crypto.randomUUID().slice(0,8).toUpperCase(),directCheckout:true,customer:guest.customer.trim(),phone:digits(guest.phone),customerType:guest.status==='existing'?'returning':'new',createdAt:new Date().toISOString(),checkedIn:false,status:'draft',lines:[],services:[],tech:'',note:'',checkout:{tip:0,tipType:'percent',tipSplitMode:demo.load().payment.tipSplit,method:demo.methods().find(m=>m.id!=='split')?.id || 'cash',cash:'',receipt:'none'}});
     records.unshift(current);if(!persist()){records.shift();current=null;return false;}try{localStorage.removeItem(draftKey);}catch(_){}return true;
@@ -222,7 +221,9 @@
   function accountHtml(){return `<button type="button" class="po-account" data-pos-switch>${icon('user')} ${esc(demo.account().name)} · ${esc(demo.account().role)}</button>`;}
   function checkoutCardHtml(t){
     const cancelled=isCancelled(t),status=cancelled?'Cancelled':t.payment?'Paid':'Checkout in progress';
-    return `<article class="ticket-card panel"><div class="ticket-top"><div><span class="ticket-id">${esc(t.id)}</span><h4 class="ticket-name">${esc(customerName(t.customer))}</h4></div><span class="status ${cancelled?'po-cancelled':t.payment?'po-paid':''}">${status}</span></div><div class="ticket-details"><div class="field-label">Services</div><p>${t.lines.map(l=>esc(l.name)).join(', ') || 'No services added yet.'}</p><div class="field-label">Technician</div><p>${esc(t.tech || 'Not assigned')}</p>${cancelled?'<div class="field-label">Reason</div><p>'+esc(t.cancelReason || '—')+'</p>':''}</div><div class="po-ticket-meta">${demo.timeHtml(cancelled?t.cancelledAt:t.payment?.paidAt || t.createdAt)}<strong>${t.payment?money(t.payment.totalCents):''}</strong></div><div class="ticket-actions">${button(icon(cancelled?'ticket':'card')+(cancelled?' Cancelled':t.payment?' View saved receipt':' Checkout'),'open',`data-id="${t.id}" ${!canCheckout()?'disabled':''}`,'btn-secondary btn-wide')}${canCancel(t)?button('Cancel ticket','cancel-checkout',`data-id="${t.id}" aria-label="Cancel ticket #${esc(t.id)} for ${esc(customerName(t.customer))}"`,'ticket-cancel'):''}</div></article>`;
+    const openLabel=icon(cancelled?'ticket':'card')+(cancelled?' Cancelled':t.payment?' View saved receipt':' Checkout');
+    const openAction=!cancelled&&canCheckout()?`<a class="btn btn-secondary btn-wide dc-purple" href="${esc(data.url(t,'checkout','checkout'))}">${openLabel}</a>`:button(openLabel,'open',`data-id="${esc(t.id)}" ${!canCheckout()?'disabled':''}`,'btn-secondary btn-wide');
+    return `<article class="ticket-card panel"><div class="ticket-top"><div><span class="ticket-id">${esc(t.id)}</span><h4 class="ticket-name">${esc(customerName(t.customer))}</h4></div><span class="status ${cancelled?'po-cancelled':t.payment?'po-paid':''}">${status}</span></div><div class="ticket-details"><div class="field-label">Services</div><p>${t.lines.map(l=>esc(l.name)).join(', ') || 'No services added yet.'}</p><div class="field-label">Technician</div><p>${esc(t.tech || 'Not assigned')}</p>${cancelled?'<div class="field-label">Reason</div><p>'+esc(t.cancelReason || '—')+'</p>':''}</div><div class="po-ticket-meta">${demo.timeHtml(cancelled?t.cancelledAt:t.payment?.paidAt || t.createdAt)}<strong>${t.payment?money(t.payment.totalCents):''}</strong></div><div class="ticket-actions">${openAction}${canCancel(t)?button('Cancel ticket','cancel-checkout',`data-id="${t.id}" aria-label="Cancel ticket #${esc(t.id)} for ${esc(customerName(t.customer))}"`,'ticket-cancel'):''}</div></article>`;
   }
   function listHtml(){
     const rows=records.filter(t=>!t.payment&&(filter==='cancelled'?isCancelled(t):!isCancelled(t))&&(!search||(customerName(t.customer)+' '+t.id).toLowerCase().includes(search.toLowerCase())||(/^[\d\s()+.-]+$/.test(search)&&digits(t.phone).includes(digits(search)))));
@@ -288,7 +289,12 @@
   function goStep(target){
     warning='';target=Math.max(1,Math.min(3,Number(target)||1));
     if(target>=2&&!ensureCustomer()){render();return;}
-    if(target===3){warning=validateServices();if(warning){render();return;}}
+    if(target===3){
+      warning=validateServices();if(warning){render();return;}
+      if(persist())location.href=data.url(current,'checkout',new URLSearchParams(location.search).get('returnTo') || 'checkout');
+      else render();
+      return;
+    }
     stage=target;render();
     if(stage===1&&!current)root.querySelector('#customer-phone')?.focus();
     if(stage===2){const group=groups().find(g=>!g.tech);if(group)root.querySelector('[data-direct-field="tech"][data-group="'+group.id+'"]')?.focus();}
@@ -395,7 +401,7 @@
     if(action==='completed'){location.href='pos-completed-services.html';return;}
     if(action==='new'){newCheckout();return;}
     if(action==='cancel-checkout'){await cancelCheckout(b.dataset.id);return;}
-    if(action==='open'){const record=records.find(t=>String(t.id)===b.dataset.id);if(!record)return;if(!record.directCheckout){location.href=data.url(record,'checkout');return;}current=normalize(record);view=isCancelled(current)?'cancelled':current.payment?'receipt':current.splitBills?'legacy':'editor';stage=current.lines.length?3:2;tipMode=current.checkout.tipType==='percent'?'percent':'amount';warning='';render();return;}
+    if(action==='open'){const record=records.find(t=>String(t.id)===b.dataset.id);if(!record)return;if(!isCancelled(record)){location.href=data.url(record,'checkout','checkout');return;}current=normalize(record);view='cancelled';warning='';render();return;}
     if(action==='print'){window.print();return;}
     if(action==='sms'){Swal.fire({title:'Send receipt to '+phone(),html:`<p>Preview the message and confirm the customer's phone before sending in the live POS.</p><div class="receipt-sms-preview">${esc(customerName(current.customer))}, thank you for visiting Bitcoin Nail Bar. Your receipt ${esc(current.id)} is ${money(current.payment.totalCents)} paid by ${esc(demo.load().payment.methods.find(m=>m.id===current.payment.method)?.label || current.payment.method)}. A secure receipt link would be attached by Nexora.</div><p>Prototype only. No SMS has been sent. The live system should check customer consent and show delivery status.</p>`,showCancelButton:true,cancelButtonText:'← Back to receipt',confirmButtonText:'Done · Checkout Customer',customClass:{popup:'pos-swal'}}).then(result=>{if(result.isConfirmed){view='list';current=null;contactUntil=0;render();}});return;}
     if(action==='saved-receipt'){Swal.fire({title:'View saved receipt',html:`<p>${esc(current.id)} · ${esc(customerName(current.customer))}</p>${summaryRows()}<div class="total-line"><span>Paid · ${esc(demo.load().payment.methods.find(m=>m.id===current.payment.method)?.label || current.payment.method)}</span><strong>${money(current.payment.totalCents)}</strong></div>`,confirmButtonText:'← Back to receipt',customClass:{popup:'pos-swal po-review-dialog'},didOpen:()=>renderIcons(Swal.getPopup())});return;}
@@ -449,8 +455,8 @@
   }
   window.addEventListener('storage',event=>{if(!event.key||Object.values(data.keys).includes(event.key))refreshRecords();});
   window.addEventListener('pageshow',event=>{if(event.persisted)refreshRecords();});
-  const params=new URLSearchParams(location.search),id=params.get('checkoutId');current=records.find(t=>String(t.id)===id) || null;
-  if(current&&!current.directCheckout){location.replace(data.url(current,params.get('mode') || 'checkout',params.get('returnTo')==='staff'?'staff':''));return;}
+  const params=new URLSearchParams(location.search),id=params.get('checkoutId');current=records.find(t=>data.keyOf(t)===id||String(t.id)===id) || null;
+  if(current&&!isCancelled(current)){location.replace(data.url(current,params.get('mode')==='edit'||params.get('step')==='2'?'edit':'checkout',params.get('returnTo') || 'checkout'));return;}
   if(current){normalize(current);view=isCancelled(current)?'cancelled':current.payment?'receipt':current.splitBills?'legacy':'editor';stage=params.get('step')?Math.max(1,Math.min(3,Number(params.get('step'))||2)):params.get('mode')==='edit'?2:3;tipMode=current.checkout.tipType==='percent'?'percent':'amount';render();}
   else if(params.get('view')==='list'||!canCheckout())render();else newCheckout();
 })();

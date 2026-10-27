@@ -78,8 +78,8 @@ const workspace=window.NEXORA_TICKET_WORKSPACE.mount($('#ticket-workspace'),{
  catalog:()=>window.NEXORA_SALON_DATA ? window.NEXORA_SALON_DATA.loadCatalog().services : [],
  technicians:()=>technicians,
  onChange(t){persistWorkspace(t);if(t.payment)tickets=tickets.filter(row=>row!==t);render();},
- onModeChange(kind){if(openedTicket)updateTicketUrl(openedTicket,kind);},
- onBack(){if(new URLSearchParams(location.search).get('returnTo')==='staff'){location.href='pos-front-desk-staff.html';return;}if(openedTicket?.payment){location.href='pos-completed-services.html';return;}openedTicket=null;updateTicketUrl(null);$('#tickets-view').hidden=false;render();}
+ onModeChange(kind){if(openedTicket){updateTicketUrl(openedTicket,kind);syncNavigation();}},
+ onBack(){const returnTo=new URLSearchParams(location.search).get('returnTo');if(returnTo==='staff'){location.href='pos-front-desk-staff.html';return;}if(openedTicket?.payment){location.href='pos-completed-services.html';return;}if(returnTo==='checkout'){location.href='pos-direct-checkout.html?view=list';return;}openedTicket=null;updateTicketUrl(null);$('#tickets-view').hidden=false;render();}
 });
 function updateTicketUrl(ticket,kind,historyMode='push'){
  const url=new URL(window.location.href);
@@ -110,7 +110,6 @@ async function open(kind,ticket,historyMode='push'){
  }
  if(ticket.splitBills&&!['edit','checkout'].includes(kind))return;
  if(['edit','checkout'].includes(kind)){
-  if(ticket.directCheckout){location.href=data.url(ticket,kind,new URLSearchParams(location.search).get('returnTo')==='staff'?'staff':'');return;}
   kind=ticket.splitBills||ticket.payment?'checkout':kind;
   openedTicket=ticket;updateTicketUrl(ticket,kind,historyMode);
   $('#tickets-view').hidden=true;$('#overview-view').hidden=true;workspace.open(ticket,kind);syncNavigation();return;

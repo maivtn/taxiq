@@ -138,9 +138,8 @@
     return save(ticket);
   }
   function url(ticket,mode='edit',returnTo=''){
-    const target=new URL(ticket.directCheckout?'pos-direct-checkout.html':'pos-front-desk-tickets.html',location.href);
-    target.searchParams.set(ticket.directCheckout?'checkoutId':'ticketId',keyOf(ticket));target.searchParams.set('mode',mode);
-    if(ticket.directCheckout)target.searchParams.set('step',mode==='checkout'?'3':'2');
+    const target=new URL('pos-front-desk-tickets.html',location.href);
+    target.searchParams.set('ticketId',keyOf(ticket));target.searchParams.set('mode',mode);
     if(returnTo)target.searchParams.set('returnTo',returnTo);
     return target.href;
   }
