@@ -554,21 +554,21 @@
 @container products-sales (max-width:900px){#products-other-sales .sale-grid{grid-template-columns:1fr;gap:16px}}
 @container products-sales (max-width:520px){#products-other-sales .sale-grid{gap:12px}#products-other-sales .live-payment-sidebar .tw-methods .tw-button{flex:1 1 auto}}
 
-/* Customer lookup in Products & Other Sales. */
-#products-other-sales .sale-frame .sale-customer-card{
+/* Shared Customer and Items & people form presentation. */
+#products-other-sales .sale-frame .sale-section-card{
   padding:18px 20px;
   border:1px solid #e0e5f0;
   border-radius:14px;
   background:#fff;
   box-shadow:0 4px 16px #0b1c3005;
 }
-#products-other-sales .sale-customer-card .panel-title{
+#products-other-sales .sale-section-card .panel-title{
   gap:10px;
   margin:0 0 16px;
   font-size:16px;
   letter-spacing:-.2px;
 }
-#products-other-sales .sale-customer-card .step{
+#products-other-sales .sale-section-card .step{
   width:26px;
   height:26px;
   border-radius:8px;
@@ -576,13 +576,98 @@
   color:#fff;
   font-size:12px;
 }
-#products-other-sales .sale-customer-label{
-  display:block;
-  margin-bottom:8px;
+#products-other-sales .sale-section-card :is(.sale-customer-label,.sale-fields label,.sale-provider>label){
   color:#475569;
   font-size:12px;
   font-weight:650;
+  line-height:1.5;
 }
+#products-other-sales .sale-customer-label{
+  display:block;
+  margin-bottom:8px;
+}
+#products-other-sales .sale-section-card :is(.input,.select){
+  min-width:0;
+  min-height:46px;
+  padding:10px 12px;
+  border:1px solid #d8deec;
+  border-radius:10px;
+  background-color:#fafbff;
+  color:#0b1c30;
+  font-size:14px;
+  font-weight:550;
+  line-height:1.4;
+  transition:border-color .15s,box-shadow .15s,background-color .15s;
+}
+#products-other-sales .sale-section-card .select{padding-right:44px}
+#products-other-sales .sale-section-card :is(.input,.select):focus{
+  border-color:#7778e5;
+  background-color:#fff;
+  box-shadow:0 0 0 3px #4648d414;
+}
+#products-other-sales .sale-section-card .input::placeholder{color:#8692a6;font-weight:400}
+#products-other-sales .sale-items-card>.hint{
+  margin:0 0 14px;
+  color:#64748b;
+  font-size:12px;
+  line-height:1.5;
+}
+#products-other-sales .sale-lines{display:grid;gap:12px}
+#products-other-sales .sale-items-card .sale-line{
+  min-width:0;
+  margin:0;
+  padding:14px;
+  border:1px solid #e0e5f0;
+  border-radius:10px;
+  background:#fff;
+  box-shadow:none;
+}
+#products-other-sales .sale-line-top{gap:12px;min-height:34px}
+#products-other-sales .sale-line-top>strong{color:#0b1c30;font-size:13px;font-weight:750}
+#products-other-sales .sale-items-card .sale-fields{
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin:12px 0;
+}
+#products-other-sales .sale-fields label,#products-other-sales .sale-provider>label{min-width:0;gap:6px}
+#products-other-sales .sale-items-card .sale-provider{
+  margin:12px 0;
+  padding:12px;
+  border:1px solid #e0e5f0;
+  border-radius:10px;
+  background:#f8fafc;
+}
+#products-other-sales .sale-provider .sale-fields{margin-top:0}
+#products-other-sales .sale-provider .sale-fields:last-child{margin-bottom:0}
+#products-other-sales .sale-provider>.hint{margin-top:10px;color:#64748b;font-size:12px;line-height:1.5}
+#products-other-sales .sale-line-total{gap:12px;padding-top:12px;border-color:#e0e5f0;color:#64748b}
+#products-other-sales .sale-line-total strong{color:#0b1c30;font-size:15px;font-weight:750;font-variant-numeric:tabular-nums}
+#products-other-sales .sale-items-card .danger-text{
+  min-height:34px;
+  padding:7px 10px;
+  border:1px solid #fecdd3;
+  border-radius:8px;
+  background:#fff1f2;
+  color:#be123c;
+  font-size:12px;
+  font-weight:650;
+  line-height:1.4;
+}
+#products-other-sales .sale-items-card .danger-text:hover{background:#ffe4e6;border-color:#fda4af}
+#products-other-sales .sale-items-card .add-tech{
+  min-height:46px;
+  margin-top:14px;
+  padding:10px 12px;
+  border:1px dashed #aaa9e9;
+  border-radius:10px;
+  background:#f3f2ff;
+  color:#4648d4;
+  font-size:13px;
+  font-weight:650;
+  line-height:1.4;
+}
+#products-other-sales .sale-items-card .add-tech:hover{background:#e9e9ff;border-color:#7778e5}
+#products-other-sales .sale-section-card button:focus-visible{outline:3px solid #b6b7f5;outline-offset:3px}
 #products-other-sales .sale-customer-card .lookup-row{
   display:grid;
   grid-template-columns:minmax(0,1fr) auto;
@@ -630,6 +715,7 @@
   letter-spacing:.25px;
 }
 #products-other-sales .sale-phone-field .input::placeholder{color:#8692a6;font-weight:400;letter-spacing:0}
+#products-other-sales .sale-phone-field .input:focus{background:transparent;box-shadow:none}
 #products-other-sales .sale-customer-card .sale-find-customer{
   gap:8px;
   min-height:46px;
@@ -645,13 +731,19 @@
 }
 #products-other-sales .sale-find-customer svg{width:17px;height:17px}
 #products-other-sales .sale-customer-card .sale-find-customer:hover{background:#3a3bbf;border-color:#3a3bbf}
-#products-other-sales .sale-customer-card .sale-find-customer:focus-visible{outline:3px solid #b6b7f5;outline-offset:3px}
 #products-other-sales .sale-customer-card .identity-card{max-width:640px;margin-top:14px}
 @container products-sales (max-width:520px){
-  #products-other-sales .sale-frame .sale-customer-card{padding:15px}
-  #products-other-sales .sale-customer-card .panel-title{margin-bottom:13px}
+  #products-other-sales .sale-frame .sale-section-card{padding:15px}
+  #products-other-sales .sale-section-card .panel-title{margin-bottom:13px}
+  #products-other-sales .sale-section-card :is(.input,.select){min-height:42px;font-size:13px}
+  #products-other-sales .sale-items-card .sale-line{padding:12px}
+  #products-other-sales .sale-items-card .sale-fields{gap:10px}
+  #products-other-sales .sale-items-card .add-tech{min-height:42px;font-size:12px}
   #products-other-sales .sale-customer-card .lookup-row{gap:8px}
-  #products-other-sales .sale-customer-card .sale-find-customer{padding:10px 12px}
+  #products-other-sales .sale-customer-card .sale-find-customer{min-height:42px;padding:10px 12px}
+}
+@container products-sales (max-width:400px){
+  #products-other-sales .sale-items-card .sale-fields{grid-template-columns:1fr}
 }
 @container products-sales (max-width:360px){
   #products-other-sales .sale-customer-card .lookup-row{grid-template-columns:1fr}
