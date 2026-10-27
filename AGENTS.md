@@ -24,6 +24,7 @@
 ## Quy tắc giao diện
 
 - Ưu tiên dùng bộ icon có sẵn trong `html/assets/icon-oneqr/` khi tạo mới hoặc chỉnh sửa giao diện.
+- Nguồn tham khảo để tìm và lấy icon khi cần: [IconScout — Giveaway 3D Icon Pack](https://iconscout.com/3d-icon-pack/giveaway-3d-icon-pack_309252). Chọn icon phù hợp với chức năng và đồng bộ phong cách với các icon đang dùng.
 - Mọi câu chữ trên giao diện phải lấy từ tài liệu HTML mẫu PO; phần PO chưa có thì lấy từ staging web theo thứ tự ưu tiên ở trên, đối chiếu đúng màn hình và ngữ cảnh. Không tự chế, diễn giải lại hoặc bổ sung câu chữ mới, bao gồm tiêu đề, nhãn, nút, hướng dẫn, tooltip, placeholder, thông báo và trạng thái trống.
 - Nếu cả HTML mẫu PO và staging không có câu chữ tương ứng, không tự suy diễn để thêm vào UI. Chỉ dùng câu chữ ngoài hai nguồn này khi người dùng yêu cầu hoặc cung cấp rõ ràng.
 - Ngày hiển thị phải theo định dạng Mỹ `MMM D, YYYY`, ví dụ `Sep 20, 2026`: tháng viết tắt tiếng Anh, ngày không thêm số 0, năm đủ 4 chữ số. Áp dụng chung cho POS, Booking, app thợ và prototype; xem [Date Format](nexora-design-system-colors.md#date-format). Không đổi định dạng ISO của dữ liệu lưu trữ/API.
