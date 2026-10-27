@@ -118,9 +118,9 @@
       select.control_input.setAttribute('aria-describedby', 'secondary-help');
       const actions = document.createElement('div');
       actions.className = 'qa-secondary-dropdown-actions';
-      actions.innerHTML = `<button type="button" class="alt" data-action="clear-secondary">${escape(t('clearSecondary'))}</button>
-        <button type="button" data-action="close-secondary">${escape(t('closeSecondary'))}</button>`;
-      select.dropdown.append(actions);
+      actions.innerHTML = `<button type="button" data-action="close-secondary">${escape(t('closeSecondary'))}</button>
+        <button type="button" class="alt" data-action="clear-secondary">${escape(t('clearSecondary'))}</button>`;
+      select.dropdown.prepend(actions);
       // Keep the composite control open while keyboard focus moves into its action buttons.
       const onBlur = select.onBlur.bind(select);
       select.onBlur = event => {
