@@ -265,6 +265,7 @@
   {
     "key": "products",
     "label": "All products",
+    "iconKey": "products",
     "availability": "preview",
     "children": [
       {
