@@ -781,7 +781,6 @@
         const value=l?data.get('value'):discountValue,type=l?data.get('type'):discountType;
         if(!validMoney(value)||(type==='percent'&&Number(value)>100)){error('Enter a discount from 0 to 100% or a valid dollar amount.');return;}
         if(group()?.bills.some(b=>b.payment)){error('Discount is locked after the first bill is paid.');return;}
-        if(!await approveDialog('discount'))return;
         (l || parent).discount=l?{type,value:Number(value)}:{type,value:Number(value),absorber:discountAbsorber,reason:discountReason.trim()};
         if(group())refreshSplitDiscount();
       }
@@ -789,7 +788,6 @@
         const code=String(data.get('couponCode') || '').trim().toUpperCase(),coupon=couponCatalog[code];
         if(!coupon){error('Coupon not found. Try WELCOME10 or SAVE5.');return;}
         if(group()?.bills.some(b=>b.payment)){error('Coupon is locked after the first bill is paid.');return;}
-        if(!await approveDialog('discount'))return;
         parent.coupon={code,label:coupon.label,type:coupon.type,value:coupon.value};
         if(group())refreshSplitDiscount();
       }
