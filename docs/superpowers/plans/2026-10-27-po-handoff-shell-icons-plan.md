@@ -4,11 +4,11 @@
 
 **Mục tiêu:** Đưa giao diện và điều hướng của prototype hiện tại về cấu trúc PO mới, tái sử dụng các module đã có và thay các biểu tượng chưa phù hợp bằng bộ Icons8 3D Fluency thống nhất.
 
-**Kiến trúc:** Nâng cấp bộ shell đang dùng chung trong `nexora-shell.js` và `nexora-shell.css`, với ngữ cảnh Salon, SI POS và Staff. Các màn chức năng tiếp tục là trang HTML riêng; Trang chủ public và các landing page dùng layout website riêng. Giữ hai file `frame-salon.html`, `frame-staff.html` làm khung mẫu và đưa nội dung Dashboard vào trang thật.
+**Kiến trúc đề xuất:** Nâng cấp bộ shell đang dùng chung trong `nexora-shell.js` và `nexora-shell.css`, với ngữ cảnh Salon, SI POS và Staff. Các màn chức năng tiếp tục là trang HTML riêng; Trang chủ public và các landing page dùng layout website riêng. Giữ hai file `frame-salon.html`, `frame-staff.html` làm khung mẫu và đưa nội dung Dashboard vào trang thật. Các thay đổi ảnh hưởng cách người dùng nhìn thấy hoặc đi qua sản phẩm cần tuân thủ quy trình đối chiếu và xác nhận ở mục 2.1–2.3; việc ghi trong kế hoạch không có nghĩa phương án đã được người dùng chốt.
 
 **Công nghệ:** HTML, CSS, JavaScript thuần, các store/localStorage và thư viện đang có; không bổ sung framework hoặc build pipeline.
 
-**Trạng thái:** Kế hoạch đề xuất, chưa triển khai các task bên dưới. Hiện trạng được xác định bằng đọc mã nguồn, chưa kiểm thử UI hoặc chạy test.
+**Trạng thái:** Kế hoạch đề xuất, chưa triển khai các task bên dưới. Người dùng đã yêu cầu kiểm thử kỹ UI và responsive sau triển khai, đặc biệt trên iPad và cả phone. Hiện trạng vẫn được xác định bằng đọc mã nguồn; chưa có kết quả kiểm thử cho đợt thay đổi này.
 
 **Nguồn yêu cầu:**
 
@@ -18,16 +18,20 @@
 - [Báo cáo QA của PO](../../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/docs/QA_REPORT.md); kết quả này chỉ thuộc package PO.
 - [Dashboard mẫu](../../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/dashboard.html), [Salon Home mẫu](../../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/salon-home.html), [Trang chủ mẫu](../../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/index.html).
 - [Các trang sản phẩm](../../../from-po/NEXORA_TOUCH_dev_handoff_2026-10-27/products/README.md).
+- Staging để bổ sung phần thiếu/chưa rõ: `https://staging-web.nexoratouch.com`; với luồng VLinkPay có `https://staging-merchant.vlinkpay.com`. Đây là các host đã xuất hiện trong mã nguồn, chưa phải bằng chứng đã kiểm tra đúng màn hoặc quyền truy cập. Xem [nguồn link Nexora staging](../../../html/assets/qr-stations-workflows.js) và [nguồn link merchant staging](../../../html/pages/owner-setting.html).
 - [Icons8 3D Fluency](https://icons8.com/icons/all--style-3d-fluency--technique-3d) và [điều kiện dùng miễn phí](https://icons8.com/license).
 
 ## 1. Quy tắc triển khai
 
 - Làm trên `main`; chỉ tạo nhánh/worktree khi người dùng yêu cầu.
 - Trước mỗi đợt, đọc `git status` và diff để nhận diện thay đổi của người dùng. Chỉ commit file thuộc phạm vi đã hoàn tất; không tự push.
-- Không tự chạy test tự động hoặc thao tác kiểm thử UI trên trình duyệt. Chỉ gom kiểm thử sau khi hoàn tất phạm vi và được người dùng yêu cầu.
-- Khi chưa được yêu cầu test, ghi đúng: **Chưa chạy test — chờ yêu cầu của người dùng**.
+- Người dùng đã yêu cầu kiểm thử kỹ UI và responsive cho đợt thay đổi này, ưu tiên iPad và phone. Sau khi hoàn tất toàn bộ phạm vi triển khai được giao, gom chạy test tự động và kiểm thử UI theo Task 15 và ma trận ở mục 8; không cần xin phép lại cho phạm vi này.
+- Không chạy test lẻ tẻ sau từng file/task. Sửa lỗi phát hiện trong lượt kiểm thử tập trung rồi kiểm tra lại phần lỗi và các luồng bị ảnh hưởng trước khi bàn giao.
+- Lần cập nhật kế hoạch chỉ sửa tài liệu, chưa phải lượt kiểm thử giao diện. Báo rõ phần đã kiểm thử, chưa kiểm thử và giới hạn thiết bị thực tế; không ghi đang chờ yêu cầu test vì yêu cầu cho đợt này đã được xác nhận.
 - Đọc nguồn, kiểm kê asset, xem ảnh nguồn và rà soát diff được phép thực hiện; không xem đó là bằng chứng luồng UI đã hoạt động.
-- Mọi câu chữ UI lấy từ đúng màn trong HTML/JS của PO; không tự viết thêm nhãn, placeholder, tooltip hoặc thông báo.
+- Bám sát bố cục, nhóm chức năng, điều hướng, trạng thái, quy tắc và câu chữ trong đúng màn PO. Không tự gộp/tách/ẩn/bỏ chức năng, đổi luồng hoặc thay ý nghĩa nghiệp vụ để thuận tiện triển khai.
+- Câu chữ UI lấy từ đúng màn trong HTML/JS PO. Với phần PO chưa có nội dung hoặc chưa rõ, người dùng đã yêu cầu lên staging đối chiếu để dựng HTML; lấy cấu trúc, nhãn, trạng thái và hành vi từ đúng màn/ngữ cảnh staging, giữ dữ liệu demo phù hợp của prototype.
+- Nếu PO và staging mâu thuẫn, staging chưa có nội dung tương ứng hoặc vẫn cần đề xuất khác mẫu, nêu rõ bằng chứng và hỏi người dùng trước khi triển khai phần đó. Không tự suy diễn, tự viết nội dung thay thế hoặc coi giả định trong kế hoạch là yêu cầu đã được duyệt.
 - Nguồn icon mới nhất do người dùng chỉ định là **Icons8 3D Fluency**. Dùng một style cho bộ icon thay thế; không trộn với IconScout, OneQR 3D hoặc emoji trong cùng nhóm được cập nhật.
 - Ngày đầy đủ hiển thị theo `MMM D, YYYY`; dữ liệu lưu trữ/API và giá trị native date input giữ ISO. Ngày kèm giờ dùng kiểu hai dòng đang có trong dự án.
 - Dropdown dùng mũi tên 16px, cách mép phải 16px và padding phải tối thiểu 44px.
@@ -50,6 +54,40 @@
 
 **Quyết định đề xuất:** Nâng cấp shell Salon hiện có, giữ biến thể Staff cùng nền tảng. Không tạo thêm một bộ shell merchant song song để duy trì lâu dài.
 
+### 2.1 Thứ tự đối chiếu PO và staging
+
+| Bước | Việc cần làm | Cách xử lý |
+| --- | --- | --- |
+| 1 | Đọc yêu cầu trực tiếp của người dùng và đúng màn PO mới | Giữ các điều chỉnh đã được người dùng xác nhận, gồm style icon và yêu cầu test; triển khai phần PO đã rõ, không thêm ý tưởng ngoài mẫu |
+| 2 | Nhận diện phần PO thiếu nội dung, chưa rõ tương tác hoặc chỉ có link ngoài | Mở đúng màn trên staging, đúng vai trò và ngữ cảnh tiệm để lấy căn cứ dựng HTML; không dùng trang khác chỉ vì có giao diện gần giống |
+| 3 | Ghi lại căn cứ vừa đối chiếu | Ghi ngắn URL/màn, vai trò, nội dung/hành vi đã thấy và ảnh khi cần trong ghi chú task; không đánh dấu đã xem staging khi mới đọc URL trong repo |
+| 4 | So sánh kết quả staging với PO | Phần staging bổ sung khoảng trống có thể dùng để làm HTML; phần trái PO phải hỏi người dùng, không tự ưu tiên staging chỉ vì đang chạy được |
+| 5 | Phần vẫn chưa rõ hoặc cần làm khác nguồn | Nêu cụ thể chỗ thiếu/mâu thuẫn, ảnh hưởng và phương án đề xuất; chờ trả lời cho phần phụ thuộc, tiếp tục những phần độc lập đã rõ |
+
+Ở kế hoạch này, “lên staging” nghĩa là truy cập để đối chiếu nội dung và luồng phục vụ làm HTML. Không tự hiểu thành yêu cầu deploy prototype lên staging, sửa dữ liệu staging hoặc thực hiện giao dịch thật. Nếu chưa có URL đúng màn, tài khoản hoặc quyền cần thiết, hỏi thông tin truy cập còn thiếu trước khi làm phần phụ thuộc.
+
+### 2.2 Những trường hợp phải hỏi trước khi làm
+
+- Nội dung, trạng thái, cách tính hoặc kết quả một thao tác khác nhau giữa PO, staging và module hiện tại.
+- Muốn đổi tên, bỏ/gộp/tách menu, ẩn một mục PO, đổi thứ tự hoặc thay điểm đến khiến người dùng đi theo luồng khác mẫu.
+- Muốn rút gọn màn hoặc luồng PO, tự thêm màn/chức năng/copy, hoặc thay một chức năng thiếu nội dung bằng một chức năng gần nghĩa.
+- Chưa xác định được điểm vào public/Salon/Tax IQ, phạm vi đợt triển khai hoặc cách nối giữa các hệ thống sau khi đối chiếu nguồn.
+- Icon trong 3D Fluency chưa có nghĩa phù hợp và muốn dùng biểu tượng khác nghĩa, khác style hoặc tài nguyên trả phí.
+
+Các lựa chọn nội bộ như tên file helper, tách CSS/JS hoặc tái sử dụng renderer được xử lý theo quy tắc dự án khi không làm thay đổi UI, copy, luồng hoặc phạm vi PO. Không dùng lựa chọn kỹ thuật làm lý do tự thay đổi trải nghiệm sản phẩm.
+
+### 2.3 Các phương án trong kế hoạch chưa được coi là đã chốt
+
+| Phương án | Căn cứ hiện có | Điểm cần xác nhận trước khi ảnh hưởng UI/phạm vi |
+| --- | --- | --- |
+| Nâng cấp shell hiện có, dùng hai frame làm mẫu và tạo Dashboard riêng | Cấu trúc mã đang dùng chung shell; đây là đề xuất của người phân tích | Xác nhận nếu cách tổ chức này làm thay đổi giao diện hoặc đường đi so với PO; nội bộ phải giữ đúng trải nghiệm PO |
+| Giữ Tax IQ ở `html/index.html`, thêm public home ở đường dẫn riêng | Bảo toàn URL đang có; PO có public home riêng trong package | Điểm vào mặc định và cách đi giữa Public, Salon, Dashboard và Tax IQ khi người dùng chưa chỉ định |
+| Thực hiện Task 1–4 trước các phần còn lại | Đề xuất chia đợt để có shell và Dashboard sớm | Phạm vi triển khai thực tế; không tự bỏ/ẩn mục PO chỉ vì trang tương ứng nằm ở đợt sau |
+| Map link PO sang màn local hoặc tạo URL chi tiết module | Tái sử dụng các trang đã có trong prototype | Nếu màn local có nội dung/hành vi khác, đối chiếu staging và hỏi cách xử lý chênh lệch trước khi thay đích |
+| Đưa một số website hệ sinh thái sang đợt riêng | Package có nhiều website độc lập | Hỏi lại nếu link hoặc luồng PO trong phạm vi bàn giao cần các trang này; không tự cắt khỏi yêu cầu đã được giao |
+
+Quy tắc này áp dụng cho toàn bộ checklist bên dưới, kể cả bước đang được viết dưới dạng mệnh lệnh. Phần bám đúng nguồn có thể thực hiện; phần thay đổi sản phẩm chưa có căn cứ phải được hỏi trước, không triển khai rồi mới báo.
+
 ## 3. Phạm vi từng đợt và phụ thuộc
 
 | Đợt | Task | Kết quả bàn giao | Độ lớn tương đối |
@@ -59,7 +97,7 @@
 | C | 7–9 | Front Desk và các màn vận hành thống nhất với mẫu mới | Lớn |
 | D | 10–12 | AI/Marketing, Gift Card, Spin Wheel và các module liên quan được nối đầy đủ | Lớn |
 | E | 13–14 | Trang chủ public, 12 landing page và các trang giới thiệu cần thiết | Lớn, có thể thực hiện sau các đợt vận hành |
-| F | 15 | Rà soát phạm vi, kiểm thử tập trung khi được yêu cầu, xử lý lỗi và bàn giao | Phụ thuộc phạm vi kiểm thử |
+| F | 15 | Tổng kiểm thử UI, responsive ưu tiên iPad/phone, test tự động, sửa lỗi và kiểm tra lại trước bàn giao | Bắt buộc sau khi hoàn tất phạm vi triển khai được giao |
 
 Độ lớn dùng để sắp thứ tự, không phải cam kết số ngày. Chưa ước lượng ngày công khi chưa triển khai và chưa có kết quả kiểm thử hiện trạng.
 
@@ -78,14 +116,14 @@ flowchart LR
     F --> K
     H --> K
     J --> K
-    K --> L[Kiểm thử khi được yêu cầu]
+    K --> L[Kiểm thử UI và responsive]
 ```
 
 **Đợt A nên được triển khai trước.** Đợt này tập trung shell và điều hướng; các module đang có được nối vào đúng vị trí, chưa cần thay nội dung toàn bộ module cùng lúc.
 
 ## 4. Cấu trúc file dự kiến
 
-Các file mới dưới đây là phương án đề xuất. Nếu tại thời điểm triển khai đã có file cùng trách nhiệm, sử dụng file đó thay vì tạo bản trùng.
+Các file mới dưới đây là phương án tổ chức kỹ thuật dự kiến. Nếu tại thời điểm triển khai đã có file cùng trách nhiệm, sử dụng file đó thay vì tạo bản trùng. Đường dẫn nội bộ không được dùng để tự thay đổi điều hướng hoặc nội dung PO; các điểm cần xác nhận tuân thủ mục 2.1–2.3.
 
 | Nhóm | File mới hoặc thư mục đích | File hiện tại cần thay đổi |
 | --- | --- | --- |
@@ -125,7 +163,7 @@ Các file mới dưới đây là phương án đề xuất. Nếu tại thời 
 | Tax IQ | `html/index.html`, `html/taxiq/`; giới thiệu trong catalog vẫn mang trạng thái preview của PO |
 | Staff | Giữ các đích trong menu Staff hiện tại, gồm `staff-dashboard.html`, `staff-work-orders.html`, `pos-calendar.html` |
 
-Các tab/query phải đối chiếu handler thực tế trước khi thêm link. Analytics về tip/QR của PO và báo cáo doanh thu POS là các ngữ cảnh riêng; không tự map mọi mục Analytics về báo cáo doanh thu hoặc Analytics Tax IQ.
+Các tab/query phải đối chiếu handler thực tế trước khi thêm link. Analytics về tip/QR của PO và báo cáo doanh thu POS là các ngữ cảnh riêng; không tự map mọi mục Analytics về báo cáo doanh thu hoặc Analytics Tax IQ. Nếu PO chưa đủ nội dung để xác định đích, xem staging theo mục 2.1; nếu vẫn thiếu hoặc có khác biệt thì hỏi trước khi map.
 
 ### 5.2 API shell và dữ liệu
 
@@ -135,8 +173,8 @@ Các tab/query phải đối chiếu handler thực tế trước khi thêm link
 - `window.NEXORA_ICONS.image(key, options)` trả về HTML ảnh từ asset local; `options` gồm `size` và `className`. Mapping chứa tên ngữ nghĩa, file, URL nguồn và trạng thái đã tải.
 - `window.NEXORA_PRODUCT_CATALOG` dùng chung dữ liệu giới thiệu; mỗi mục có `key`, `title`, `iconKey`, `availability`, `dashboardVisible`, `showcaseOrder`, `groups`, `landingHref`. Nội dung lấy từ PO.
 - Catalog mới chỉ quản lý giới thiệu/điều hướng. Dữ liệu vận hành tiếp tục qua `NEXORA_FRONT_DESK_DATA`, `NEXORA_APPOINTMENTS_STORE`, `NEXORA_STATIONS` và các store hiện có.
-- Với chức năng chưa có màn local và PO chỉ cung cấp link ngoài, giữ đúng link đó cùng trạng thái trong mẫu; không tạo nghiệp vụ giả để làm đầy menu.
-- Các đích local mới chỉ được bật trên menu cùng mốc bàn giao chứa trang tương ứng. Trước Task 5–6, Salon Home/onboarding có thể được khai báo trong model nhưng chưa hiển thị thành link đến file chưa tồn tại; không tạo trang rỗng làm đích tạm.
+- Với chức năng chưa có màn local và PO chỉ cung cấp link ngoài, đối chiếu đúng màn staging để dựng HTML khi có căn cứ; nếu chưa đủ thì hỏi, không tạo nghiệp vụ giả để làm đầy menu hoặc tự đổi đích ngoài thành luồng khác.
+- Các đích local mới phải có nội dung tương ứng trước khi bật link. Nếu phạm vi đợt đầu chưa bao gồm một màn PO, hỏi cách bàn giao phần đó; không tự ẩn/bỏ menu PO, tạo trang rỗng hoặc dùng placeholder tự viết làm đích tạm.
 
 ## 6. Checklist triển khai chi tiết
 
@@ -155,6 +193,7 @@ Các tab/query phải đối chiếu handler thực tế trước khi thêm link
 - [ ] Tạo helper dùng chung, giải quyết đường dẫn asset theo vị trí script để chạy được cả `html/pages/` và landing page lồng thư mục.
 - [ ] Dùng kích thước hiển thị thống nhất: sidebar 24–28px, thẻ sản phẩm 40–48px, shortcut 32–40px. Icon 94px phù hợp các vị trí này; không dùng làm hình hero lớn.
 - [ ] Icon thiếu nghĩa phù hợp được ghi rõ trong manifest; không lấy icon từ style khác hoặc đổi sang nghĩa gần nhưng dễ gây hiểu nhầm.
+- [ ] Nếu không tìm được icon phù hợp trong style đã chọn, hỏi người dùng về phương án cho đúng vị trí đó trước khi thay.
 - [ ] Chuẩn bị link ghi nguồn Icons8 tại các trang dùng bộ miễn phí theo yêu cầu của nhà cung cấp. Tên liên kết dùng thương hiệu `Icons8`; không thêm đoạn quảng bá tự viết.
 
 **Tiêu chí hoàn tất:** Bộ asset thực tải, có mapping dùng lại được và nguồn/license rõ ràng; một chức năng dùng cùng biểu tượng tại các vị trí tương ứng. Chưa thay hàng loạt icon của các trang ngoài phạm vi.
@@ -179,6 +218,7 @@ Các tab/query phải đối chiếu handler thực tế trước khi thêm link
 **File:** Các trang có include `nexora-shell.js`, mapping `PAGES`, hai file frame.
 
 - [ ] Kiểm kê tất cả trang dùng shell và các handler `onNavigate` trước khi đổi model.
+- [ ] Với mục PO còn thiếu màn/nội dung local hoặc chưa rõ luồng, lên đúng staging để đối chiếu trước; nếu không đủ căn cứ hoặc khác PO thì hỏi người dùng trước khi nối hoặc dựng HTML.
 - [ ] Cập nhật include theo thứ tự: dữ liệu menu/helper icon trước shell; CSS shell sau CSS trang như quy ước hiện tại.
 - [ ] Nối các mục đã có vào URL ở mục 5; giữ query/tab phục vụ Customers, Call Log, OneQR, Booking và các màn khác.
 - [ ] Chuyển menu Dashboard khỏi `frame-salon.html` sang `dashboard.html` khi trang Dashboard ở Task 4 được thêm trong cùng phạm vi bàn giao.
@@ -261,6 +301,7 @@ Các tab/query phải đối chiếu handler thực tế trước khi thêm link
 **File:** Các trang `pos-front-desk*`, `pos-direct-checkout.html`, `pos-completed-services.html`, `pos-salon-settings.html`, `booking-book-phase-1.html`; runtime/store liên quan khi có chênh lệch được xác định.
 
 - [ ] Đối chiếu trực tiếp UI PO với màn đã có trong quá trình làm; sửa phần thiếu thay vì thay lại module hoàn chỉnh, không tạo thêm tài liệu bắt buộc.
+- [ ] Dùng staging bổ sung các phần PO chưa mô tả; ghi nhận chênh lệch giữa PO, staging và hành vi hiện tại. Không tự chọn bên nào khi việc lựa chọn làm thay đổi nghiệp vụ hoặc trải nghiệm đã có; hỏi người dùng cho phần chênh lệch đó.
 - [ ] Giữ cùng mã phiếu qua check-in, giao thợ, phục vụ, chờ thanh toán và hoàn tất; direct checkout vẫn dùng luồng hiện tại.
 - [ ] Nối bốn góc nhìn Booking: yêu cầu, lịch đặt, lịch theo khách, lịch theo thợ; giữ quy tắc thời lượng, thợ và lịch đang có.
 - [ ] Map chín phần Settings của PO vào các tab hiện tại; bảo toàn Operating Standards và cấu hình được bổ sung trước đó.
@@ -336,24 +377,31 @@ Các tab/query phải đối chiếu handler thực tế trước khi thêm link
 
 **Tiêu chí hoàn tất:** Các trang được đưa vào có link/asset phù hợp, đúng nội dung PO và đúng style icon. Không xem toàn bộ thư mục hệ sinh thái là một yêu cầu xây lại mọi website.
 
-### Task 15 Rà soát kiểm thử có điều kiện và bàn giao
+### Task 15 Tổng kiểm thử UI responsive và bàn giao
 
-**File:** Toàn bộ file đã thay đổi; chỉ cập nhật test thực sự bị tác động khi người dùng yêu cầu kiểm thử.
+**File:** Toàn bộ file đã thay đổi và các trang dùng chung shell/CSS bị ảnh hưởng; cập nhật test thực sự bị tác động. Bằng chứng kiểm thử lưu tại `tmp/po-handoff-qa/2026-10-27/`, không tự commit ảnh/log tạm.
+
+**Ủy quyền kiểm thử:** Người dùng đã yêu cầu test kỹ UI và responsive, đặc biệt iPad và cả phone. Thực hiện sau khi làm xong toàn bộ phạm vi của đợt triển khai được giao; không cần hỏi lại có chạy test hay không.
 
 - [ ] Rà soát diff theo từng đợt, loại file không thuộc yêu cầu và đối chiếu copy với nguồn PO.
 - [ ] Đối chiếu các nhóm rủi ro ở mục 7; ghi nhận phần chưa triển khai và phần chỉ là preview.
-- [ ] Khi chưa có yêu cầu test: dừng ở rà soát nguồn/diff, không tự mở prototype để thử, không chạy `npm test` và không khẳng định luồng đã đạt.
-- [ ] Khi người dùng yêu cầu test: gom phạm vi đã làm và chạy toàn bộ bằng `npm test`. Chỉ chạy một file bằng `node --test tests/<đường-dẫn-file-test>` nếu người dùng chỉ định phạm vi đó.
+- [ ] Đối chiếu UI/copy/luồng đã làm với đúng màn PO và căn cứ staging đã dùng; mọi chênh lệch có chủ đích phải có xác nhận của người dùng trước đó, không tự coi là cải tiến hợp lệ.
+- [ ] Chốt danh sách trang thực tế thuộc phạm vi đã triển khai, gồm trang mới và trang cũ chịu ảnh hưởng bởi shell, CSS, icon hoặc điều hướng dùng chung; dùng danh sách này để ghi độ phủ kiểm thử.
+- [ ] Chạy toàn bộ kiểm thử tự động bằng `npm test`. Chỉ chạy một file bằng `node --test tests/<đường-dẫn-file-test>` nếu người dùng chỉ định phạm vi đó; `npm test` không thay thế kiểm thử UI trên trình duyệt.
 - [ ] Test JavaScript đặt trong `tests/` và phản ánh đường dẫn nguồn; fixture đọc từ `import.meta.url`/`__dirname`, không phụ thuộc cwd.
 - [ ] Ưu tiên test sẵn có của shell/navigation, Front Desk, stations, Booking, Promotions, SMS và Rewards. Chỉ bổ sung test hành vi còn thiếu; không viết test soi class/icon path chỉ để khớp cách cài đặt.
-- [ ] Nếu được yêu cầu kiểm thử UI: gom một lượt trên 360, 390, 768, 820, 1024, 1440px; kiểm tra navigation, menu nhiều cấp, More, dữ liệu demo, icon, ngày, dropdown, bàn phím và reduced motion.
-- [ ] Sửa lỗi liên quan trong phạm vi, rà soát diff rồi commit. Phản hồi ngắn gồm mã commit, kết quả test thực tế và điểm còn thiếu; không tự push.
+- [ ] Kiểm thử UI và responsive theo đầy đủ ma trận ở mục 8, ưu tiên iPad dọc/ngang, Split View và phone; thao tác thực tế trên các trạng thái mở menu, modal, dropdown và bàn phím thay vì chỉ chụp trang ban đầu.
+- [ ] Kiểm tra hồi quy Staff và các trang cũ dùng shell, cũng như điểm vào Tax IQ; đổi kích thước hoặc xoay thiết bị không được làm mất tab, bộ lọc và bản nháp đang nhập.
+- [ ] Ghi URL, viewport, orientation, trình duyệt, chế độ thiết bị thật/giả lập, bước thực hiện và ảnh cho kết quả lỗi; lưu cả ảnh sau sửa ở cùng tình huống.
+- [ ] Sửa các lỗi UI/responsive thuộc phạm vi, kiểm tra lại chính tình huống lỗi và các màn dùng chung thành phần bị sửa. Chỉ lặp lại bộ kiểm thử rộng hơn khi thay đổi hoặc lỗi mới tạo rủi ro hồi quy.
+- [ ] Đối chiếu điều kiện hoàn tất ở mục 8.6; báo rõ ô nào chưa được kiểm thử và giới hạn thiết bị, không dùng kết quả giả lập để khẳng định đã test iPad/iPhone thật.
+- [ ] Rà soát diff rồi commit; phản hồi ngắn gồm mã commit, kết quả test tự động, độ phủ UI/responsive và phần còn thiếu; không tự push.
 
-**Tiêu chí hoàn tất:** Có thể truy được mỗi thay đổi về task/nguồn PO; trạng thái kiểm thử phản ánh đúng việc đã làm, không dùng báo cáo QA của PO thay cho kết quả của repo.
+**Tiêu chí hoàn tất:** Toàn bộ phạm vi triển khai được kiểm thử tự động và UI/responsive theo mức độ phủ đã ghi nhận, các lỗi liên quan được xử lý và kiểm tra lại; trạng thái phản ánh đúng bằng chứng. Báo cáo QA của PO không thay cho kết quả kiểm thử repo.
 
 ## 7. Các điểm cần tập trung khi rà soát
 
-| Điều kiện dễ gặp | Hành vi cần giữ | Task sở hữu | Kiểm tra khi người dùng yêu cầu |
+| Điều kiện dễ gặp | Hành vi cần giữ | Task sở hữu | Kiểm tra trong lượt tổng kiểm thử đã được yêu cầu |
 | --- | --- | --- | --- |
 | Trang cũ chỉ truyền `activePage/activeTab` | Shell vẫn khởi tạo đúng, handler tab vẫn nhận sự kiện | 2–3 | Các test shell/navigation hiện có và luồng trang cũ |
 | Staff dùng chung CSS/header và Community | Không nhận menu/toolbar merchant; link Staff giữ đúng vai trò | 2–3 | Các test Staff shell, calendar và Community theo vai trò |
@@ -366,7 +414,91 @@ Các tab/query phải đối chiếu handler thực tế trước khi thêm link
 | Tiếng Ả Rập và ngày hiển thị | Hướng nội dung theo mẫu, ngày vẫn `MMM D, YYYY` | 5–6, 14 | Bản dịch có sẵn, RTL, lịch và dropdown |
 | Preview có nút thao tác/đích ngoài | Không báo thành công như giao dịch hay phát hành thật | 4, 10–14 | Phạm vi tác động của các nút và nhãn trạng thái PO |
 
-## 8. Những việc không đưa vào đợt prototype
+## 8. Kế hoạch kiểm thử UI và responsive chi tiết
+
+### 8.1 Thời điểm và cách thực hiện
+
+- Gom kiểm thử sau khi hoàn tất toàn bộ phạm vi của đợt triển khai được giao; không chạy sau mỗi thay đổi nhỏ. Nếu đợt triển khai chỉ gồm Task 1–4, kiểm thử đầy đủ phạm vi đó và các trang cũ bị ảnh hưởng, không đánh dấu các task chưa triển khai là đã được kiểm thử.
+- Mở prototype qua local HTTP server theo hướng dẫn dự án. Dùng dữ liệu demo và thao tác trong prototype; các link ngoài được kiểm tra đúng đích, không gửi tin, thanh toán hoặc phát hành chiến dịch thật.
+- Kiểm tra giao diện ban đầu, cuộn giữa/cuối trang và các trạng thái tương tác. Ảnh chụp chỉ là bằng chứng cho trạng thái đã quan sát, không thay thế việc thực hiện luồng.
+- Ưu tiên xử lý lỗi iPad trước, tiếp theo phone, rồi desktop; vẫn hoàn tất ma trận của phạm vi bàn giao. Các số đo dưới đây dùng **CSS pixel**, không phải độ phân giải màn hình vật lý.
+
+### 8.2 Ma trận thiết bị và viewport
+
+| Nhóm | Viewport cần kiểm thử | Tình huống ưu tiên |
+| --- | --- | --- |
+| iPad cỡ 768 | `768×1024` dọc, `1024×768` ngang | Sidebar/header, thanh Front Desk, bảng/lịch và modal khi chiều cao giảm |
+| iPad cỡ 820 | `820×1180` dọc, `1180×820` ngang | Kích thước tablet trung gian; More và menu không phụ thuộc giả định chỉ có 768/1024 |
+| iPad cỡ 834 | `834×1194` dọc, `1194×834` ngang | Các vùng nội dung hai cột, feature explorer và form nhập liệu |
+| iPad cỡ 1024 | `1024×1366` dọc, `1366×1024` ngang | Phân biệt bố cục tablet lớn và desktop; vẫn thao tác được bằng chạm |
+| iPad Split View | Chiều rộng `500`, `600`, `700`, chiều cao `1024` | Giả lập cửa sổ hẹp khi chia màn hình; drawer/toolbar không bị cắt, không giữ cứng layout desktop |
+| Phone nhỏ | `360×800` dọc | Nội dung gọn, nút đủ dùng, không tràn ngang hoặc ép chữ quá nhỏ |
+| Phone phổ biến | `390×844` dọc, `844×390` ngang | Form, bàn phím, modal và thao tác khi chiều cao hạn chế |
+| Phone lớn | `430×932` dọc, `932×430` ngang | Cách chia cột, icon/card và sticky action không bị giãn hoặc che nội dung |
+| Desktop | `1280×800`, `1440×900` | Sidebar, mật độ nội dung, bảng và tính nhất quán với mẫu desktop PO |
+| Biên breakpoint | Trước/tại/sau mỗi breakpoint thực tế; tối thiểu `767/768/769` và `1023/1024/1025` px | Kiểm tra chuyển drawer/sidebar, số cột và phân bổ tab; thêm `819/820/821`, `1365/1366/1367` nếu CSS sử dụng các ngưỡng này |
+
+Viewport Split View và thiết bị giả lập chỉ mô phỏng kích thước; ghi rõ điều này trong kết quả. Khi kiểm thử bằng iPad thật, ghi thêm model, phiên bản iPadOS, Safari và trạng thái chia màn hình thực tế.
+
+### 8.3 Độ phủ trình duyệt và thiết bị thật
+
+- Chromium/Chrome: chạy toàn bộ danh sách trang trong phạm vi qua các viewport ở mục 8.2; kiểm tra console error, ảnh lỗi và tràn ngang cùng với thao tác UI.
+- Safari/WebKit: ưu tiên các luồng shell, Front Desk, Booking, dropdown/date input, modal, sticky và cuộn trên kích thước iPad/phone. Dùng Safari thực tế nếu có; WebKit giả lập được ghi riêng, không gọi là đã test Safari trên thiết bị thật.
+- Khi có iPad thật: thực hiện ít nhất một luồng hoàn chỉnh ở cả dọc/ngang, một tình huống Split View, nhập form với bàn phím màn hình và thao tác cuộn/chạm trong menu/modal.
+- Khi có phone thật: kiểm tra luồng chính, mở bàn phím, cuộn form, dropdown, modal và xoay ngang. Ghi rõ iPhone/Safari hoặc Android/Chrome thực tế đã dùng.
+- Nếu môi trường không có thiết bị hoặc trình duyệt cần thiết, hoàn tất phần giả lập khả dụng và báo phần kiểm thử thực chưa thực hiện. Không đánh dấu toàn bộ ma trận PASS dựa trên một trình duyệt desktop.
+
+### 8.4 Checklist UI theo nhóm màn hình
+
+| Nhóm màn hình | Tình huống bắt buộc | Điều kiện đạt |
+| --- | --- | --- |
+| Shell Salon và SI POS | Mở/đóng drawer, mở nhánh nhiều cấp, đổi màn, mở URL trực tiếp, back/forward; cuộn menu dài | Mục active đúng, nhánh không chồng nhau, overlay và z-index đúng, đóng drawer trả lại cuộn trang và focus |
+| Shell Staff và trang cũ | Dashboard, Community theo vai trò, My Tickets, My Calendar và một trang cũ của mỗi nhóm merchant bị tác động | Không xuất hiện menu/toolbar sai vai trò; header, khoảng trống nội dung và handler tab giữ đúng |
+| Dashboard | Đủ 9 thẻ, tìm kiếm/lọc, không có kết quả, chi tiết module, quay lại, nhãn dài | Không lặp thẻ, không cắt nhãn hoặc nút; số kết quả và trạng thái preview đúng; bộ lọc không mất khi quay lại theo hành vi đã thiết kế |
+| Salon Home | Chuyển/dừng slide, AI Tour, video placeholder, explorer, liên kết nhanh; cuộn hết trang | Ảnh và icon đúng tỷ lệ, không nhảy layout che CTA, carousel không nuốt thao tác cuộn, reduced motion được tôn trọng |
+| Onboarding | Đổi ngành/tab, nhập form, preview, hoàn thành/sửa bước, reload và storage bị chặn | Nội dung và tiến độ đúng ngành/tiệm; input, thông báo và nút lưu đều nhìn thấy và thao tác được |
+| Front Desk toolbar | Chạm các tab, More, tìm chức năng, thêm/bớt shortcut, kéo đổi thứ tự và thao tác bàn phím | Không tràn document; mục dư vào More đúng, không mất tab active; touch không phụ thuộc hover hoặc kéo bằng chuột |
+| Stations và Overview | Chuyển Thẻ/Lưới/Hàng ngang, lọc, xem trạng thái, thay đổi ticket và cuộn danh sách dài | Các kiểu xem dùng cùng dữ liệu; chip/tên thợ không đè nhau, trạng thái và tổng số không mâu thuẫn |
+| Booking và chuỗi phục vụ | Yêu cầu/lịch khách/lịch thợ; check-in → giao thợ → phục vụ → checkout → hoàn tất; direct checkout | Giữ mã phiếu và dữ liệu; bảng/lịch có vùng cuộn đúng; chọn thợ/dịch vụ và nút xác nhận dùng được trên tablet/phone |
+| Salon Settings | Chuyển các tab, form dài, select nhỏ, mở dropdown, xác nhận; kiểm tra Operating Standards | Nội dung không bị header/sidebar che; mũi tên select đúng khoảng cách; footer action không che trường cuối |
+| Marketing, SMS, Promotions, Loyalty | Đi hết các bước form, trạng thái lỗi/rỗng/đã lưu, preview, bảng hành động, modal chi tiết | Không có control ngoài màn hình; nhãn và trạng thái lấy đúng PO; bản nháp không bị hiểu thành đã gửi/phát hành |
+| Gift Card và Spin Wheel | Mở trung tâm thẻ, các đích ngoài, form nháp, tổng tỷ lệ, quay demo, xem kết quả | Không gán giao dịch thật cho demo; giải thưởng, nút và kết quả không bị cắt; các trạng thái mở modal đều responsive |
+| Public và landing page | Header mobile, hero, CTA, video, FAQ, footer, liên kết; toàn bộ 12 trang sản phẩm nếu thuộc phạm vi triển khai | Không chỉ kiểm tra một landing page mẫu; mỗi trang có ảnh/icon/copy và đường dẫn đúng, không tràn ngang |
+| Icon và ngôn ngữ | 3D Fluency ở sidebar/card/shortcut, font tải chậm, chuỗi dài, đổi ngôn ngữ và RTL | Cùng style, icon không méo/mờ rõ rệt hoặc vỡ đường dẫn; nhãn dài không che action; ngày vẫn đúng quy tắc dự án |
+
+Với mỗi trang đã thay đổi: kiểm tra layout ở mọi viewport nhóm thiết bị bắt buộc. Các thao tác đầy đủ được thực hiện ít nhất trên iPad dọc/ngang, phone dọc/ngang và desktop; lặp lại tại viewport khác nếu bố cục hoặc cách tương tác thay đổi. Các màn dùng chung thành phần vẫn cần kiểm tra ngữ cảnh thực tế, không suy ra tất cả trang đạt chỉ từ một trang đại diện.
+
+### 8.5 Checklist responsive ưu tiên iPad và phone
+
+- [ ] Không có cuộn ngang ở cấp document. Bảng/lịch rộng có thể cuộn trong container riêng; cột cuối và nút thao tác vẫn tiếp cận được.
+- [ ] Sidebar, drawer, topbar, thanh tab, More và sticky action không che nhau hoặc che nội dung ở đầu/cuối trang.
+- [ ] Menu/dropdown/popover tự nằm trong vùng nhìn thấy, cuộn được khi dài; vị trí không sai sau khi xoay máy hoặc mở bàn phím.
+- [ ] Modal vừa vùng hiển thị, có vùng cuộn nội dung; nút đóng/xác nhận luôn tiếp cận được, không khóa cuộn trang sau khi đóng.
+- [ ] Trường đang nhập và lỗi validation không bị bàn phím màn hình che; có thể đi tới trường cuối và submit form trên iPad/phone.
+- [ ] Các action cần thiết dùng được bằng chạm, không dựa riêng vào hover; mục gần nhau không gây bấm nhầm, vùng chạm ưu tiên khoảng 44×44px khi bố cục cho phép.
+- [ ] Kéo thả shortcut có cách thao tác thay thế; cuộn danh sách/carousel không vô tình kích hoạt kéo hoặc click.
+- [ ] Xoay dọc/ngang, resize và chuyển Split View giữ tab đang chọn, bộ lọc, bản nháp, trạng thái modal và dữ liệu ticket theo hành vi dự kiến.
+- [ ] Header/modal/CTA xử lý đúng viewport thấp, thanh trình duyệt mobile và safe area nếu thiết bị có; kiểm tra cả khi trang đã cuộn.
+- [ ] Form, card và bảng không co chữ/nút quá nhỏ để vừa màn hình; nhãn dài wrap hoặc truncate có chủ đích và vẫn đọc được thông tin cần thiết.
+- [ ] Chọn ngày/thời gian, select và dropdown nhỏ giữ định dạng ngày, icon 16px, khoảng cách phải 16px và padding phải ít nhất 44px theo quy tắc dự án.
+- [ ] Icon PNG hiển thị rõ ở kích thước sử dụng và màn hình mật độ cao; không phóng icon 94px thành hình lớn hoặc bóp méo bằng CSS.
+- [ ] Tab, Enter, Escape, focus visible và trả focus sau đóng modal/drawer hoạt động; motion/carousel tôn trọng reduced motion.
+- [ ] Console không có lỗi JavaScript phát sinh từ các thao tác kiểm thử; không có ảnh/icon lỗi hoặc nội dung mất sau đổi kích thước.
+
+### 8.6 Bằng chứng kết quả và điều kiện bàn giao
+
+Mỗi kết quả cần ghi: URL/trang, trình duyệt và phiên bản, viewport, dọc/ngang hoặc Split View, thiết bị thật/giả lập, trạng thái UI/luồng đã thao tác, PASS/FAIL/Chưa kiểm thử và đường dẫn bằng chứng. Ghi các kết quả ngay trong mục này khi thực hiện, hoặc trong một bảng kết quả ngắn đi kèm lượt bàn giao; không tạo thêm bộ tài liệu QA nặng.
+
+Ảnh nên đặt tên như `ipad-820x1180-front-desk-more.png`, `phone-390x844-booking-modal.png`; ảnh lỗi kèm bước tái hiện và ảnh sau sửa. Lưu log `npm test` cùng thư mục bằng chứng, giữ nguyên kết quả thực tế.
+
+- [ ] Có kết quả cho toàn bộ trang/viewport thuộc phạm vi, trong đó iPad dọc/ngang, Split View và phone được ghi riêng.
+- [ ] Không còn lỗi thuộc phạm vi làm mất thao tác, che nút/trường nhập, tràn document, mất dữ liệu demo, sai vai trò hoặc sai đích điều hướng.
+- [ ] Các lỗi UI/responsive phát hiện đã được sửa và kiểm tra lại cùng điều kiện gây lỗi; các thành phần dùng chung được kiểm tra hồi quy tại các trang liên quan.
+- [ ] Kết quả `npm test` được ghi rõ; lỗi còn lại có mô tả và phạm vi ảnh hưởng, không khẳng định bộ test đạt khi còn lỗi.
+- [ ] Giới hạn thiết bị/trình duyệt và các ô chưa kiểm thử được nêu rõ trong bàn giao; không thay chúng bằng kết quả QA của PO.
+- [ ] Chỉ tuyên bố UI/responsive đã được kiểm thử trong đúng phạm vi có bằng chứng. Khi thiếu kiểm thử thiết bị thật, ghi rõ đã giả lập kích thước iPad/phone và phần thực tế còn thiếu.
+
+## 9. Những việc không đưa vào đợt prototype
 
 - Backend, đăng nhập thực, KYB thực, quyền truy cập production và audit trail mới.
 - Gửi SMS/email, gọi điện AI, chạy quảng cáo, thanh toán, payout hoặc phát thưởng thật.
@@ -377,7 +509,7 @@ Các tab/query phải đối chiếu handler thực tế trước khi thêm link
 
 Các mục này có thể được bổ sung bằng yêu cầu riêng. Trạng thái preview trong handoff không tự trở thành yêu cầu tích hợp production.
 
-## 9. Trình tự commit và mốc bàn giao
+## 10. Trình tự commit và mốc bàn giao
 
 | Mốc | Nội dung commit gợi ý | Điều kiện bàn giao |
 | --- | --- | --- |
@@ -388,12 +520,14 @@ Các mục này có thể được bổ sung bằng yêu cầu riêng. Trạng t
 | C | `feat: align front desk workspace with PO handoff` | Toolbar, sơ đồ chỗ, Overview và phần vận hành được cập nhật |
 | D | `feat: connect marketing gift cards and spin wheel previews` | Module mới có đích, module cũ được đối chiếu bổ sung |
 | E | `feat: add Nexora public and product pages` | Trang public/landing và link trong phạm vi đầy đủ |
-| F | `fix: address requested handoff verification findings` | Chỉ tạo khi có lỗi cần sửa sau kiểm thử được yêu cầu |
+| F | `fix: address handoff UI and responsive findings` | Chỉ tạo khi có lỗi cần sửa sau lượt tổng kiểm thử đã được người dùng yêu cầu |
 
-Mỗi mốc có thể tách thành commit nhỏ khi thay đổi độc lập. Trước mọi commit rà soát diff; test không phải điều kiện tự động được phép chạy. Bàn giao luôn phân biệt **đã triển khai**, **đã kiểm thử**, **preview** và **chưa làm**.
+Mỗi mốc có thể tách thành commit nhỏ khi thay đổi độc lập. Trước mọi commit rà soát diff; không chạy test sau từng commit nhỏ. Toàn bộ phạm vi triển khai được giao phải qua lượt tổng kiểm thử UI/responsive và test tự động đã được yêu cầu trước khi bàn giao cuối đợt. Bàn giao luôn phân biệt **đã triển khai**, **đã kiểm thử**, **preview** và **chưa làm**.
 
-## 10. Phạm vi bắt đầu được đề xuất
+## 11. Phạm vi bắt đầu được đề xuất
 
 Thực hiện **Task 1–4** làm đợt triển khai đầu: tải bộ icon cần thiết, nâng cấp shell Salon, nối các màn hiện có và bổ sung Dashboard có nội dung để thay đích `frame-salon.html` đang rỗng. Đây là mốc đủ cụ thể để xem lại toàn bộ cấu trúc menu mới trước khi tiếp tục Salon Home, onboarding và các module còn lại.
+
+Nếu triển khai đợt đầu này, sau khi hoàn tất Task 1–4 phải thực hiện Task 15 cho phạm vi tương ứng và các trang cũ chịu ảnh hưởng; ưu tiên iPad và phone theo mục 8 trước khi bàn giao.
 
 File này là kế hoạch cho toàn bộ đợt thay đổi. Việc tạo kế hoạch chưa đồng nghĩa các task triển khai đã hoàn thành.
