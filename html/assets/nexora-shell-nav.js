@@ -106,7 +106,7 @@
     "key": "public-home",
     "label": "Nexora Home",
     "externalIndicator": true,
-    "iconKey": "home",
+    "iconKey": "public-home",
     "href": "nexora_home_de_xuat.html"
   },
   {
