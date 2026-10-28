@@ -227,11 +227,11 @@
     },
     {
       "key": "phone",
-      "word": "telephone",
-      "href": "https://www.flaticon.com/free-icon/call_2208224",
-      "image": "https://cdn-icons-png.flaticon.com/128/2208/2208224.png",
-      "label": "Call",
-      "file": "phone-2208224.png"
+      "word": "call",
+      "href": "https://www.flaticon.com/free-icon/phone-call_8090713",
+      "image": "https://cdn-icons-png.flaticon.com/128/8090/8090713.png",
+      "label": "Phone call",
+      "file": "phone-8090713.png"
     },
     {
       "key": "settings",
