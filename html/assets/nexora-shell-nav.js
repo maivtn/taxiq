@@ -271,306 +271,304 @@
     "key": "products",
     "label": "All products",
     "iconKey": "products",
-    "availability": "preview",
+    "toggleAll": true
+  },
+  {
+    "key": "community",
+    "label": "Community",
+    "iconKey": "community",
     "children": [
       {
-        "key": "community",
-        "label": "Community",
-        "iconKey": "community",
-        "children": [
-          {
-            "key": "bang-tin",
-            "label": "Feed",
-            "href": "https://nexoratouch.com/dashboard/community"
-          },
-          {
-            "key": "nhom-cho",
-            "label": "Groups & Market",
-            "href": "https://nexoratouch.com/dashboard/community?tab=groups"
-          },
-          {
-            "key": "viec-lam",
-            "label": "Jobs",
-            "href": "https://nexoratouch.com/dashboard/community?tab=jobs"
-          },
-          {
-            "key": "tin-nhan-cuoc-goi",
-            "label": "Messages & calls",
-            "href": "https://nexoratouch.com/dashboard/community?tab=connect"
-          }
-        ],
-        "showIcon": true
+        "key": "bang-tin",
+        "label": "Feed",
+        "href": "https://nexoratouch.com/dashboard/community"
       },
       {
-        "key": "booking",
-        "label": "AI Hub",
-        "iconKey": "aihub",
-        "children": [
-          {
-            "key": "ai-marketing",
-            "label": "AI Marketing",
-            "iconKey": "marketing",
-            "href": "#module-aihub-marketing"
-          },
-          {
-            "key": "ai-voice-si-pos",
-            "label": "AI Voice · SI POS",
-            "iconKey": "ai-voice",
-            "href": "#pos-ai-voice"
-          },
-          {
-            "key": "sms-campaigns",
-            "label": "SMS Campaigns",
-            "iconKey": "news",
-            "href": "https://nexoratouch.com/dashboard/ai-hub?tab=sms-campaigns"
-          },
-          {
-            "key": "spin-wheel",
-            "label": "Spin Wheel",
-            "iconKey": "spinwheel",
-            "href": "#module-spinwheel"
-          },
-          {
-            "key": "ai-receptionist",
-            "label": "AI Receptionist",
-            "children": [
-              {
-                "key": "lich-hen",
-                "label": "Appointments",
-                "href": "https://nexoratouch.com/dashboard/ai-hub?tab=booking&view=today"
-              },
-              {
-                "key": "lich",
-                "label": "Calendar",
-                "href": "https://nexoratouch.com/dashboard/ai-hub?tab=booking&view=calendar"
-              },
-              {
-                "key": "khach-hang-2",
-                "label": "Customers",
-                "href": "#pos-voice-customers"
-              },
-              {
-                "key": "nhat-ky-cuoc-goi",
-                "label": "Call log",
-                "navContext": "ai-receptionist",
-                "href": "#pos-call-log"
-              },
-              {
-                "key": "goi-su-dung",
-                "label": "Plans",
-                "href": "https://nexoratouch.com/dashboard/ai-hub?tab=plans"
-              },
-              {
-                "key": "cai-dat-le-tan-ai",
-                "label": "AI Receptionist Settings",
-                "href": "https://nexoratouch.com/dashboard/ai-hub?tab=settings"
-              }
-            ]
-          },
-          {
-            "key": "marketing-assistant",
-            "label": "Marketing Assistant",
-            "children": [
-              {
-                "key": "khuyen-mai-pos",
-                "label": "POS promotions",
-                "href": "https://nexoratouch.com/dashboard/pos/promotions"
-              },
-              {
-                "key": "review",
-                "label": "Reviews",
-                "href": "https://nexoratouch.com/dashboard/reviews"
-              },
-              {
-                "key": "khach-hang-3",
-                "label": "Customers",
-                "href": "https://nexoratouch.com/dashboard/ai-hub?tab=customers"
-              },
-              {
-                "key": "analytics",
-                "label": "Analytics",
-                "href": "https://nexoratouch.com/dashboard/analytics"
-              },
-              {
-                "key": "vlinkpay-campaigns",
-                "label": "Campaigns · VLinkPay",
-                "newTab": true,
-                "href": "https://merchant.vlinkpay.com/campaign-management?pageIndex=0&pageSize=10"
-              },
-              {
-                "key": "vlinkpay-ai-ads",
-                "label": "AI Ads · VLinkPay",
-                "linkPending": true
-              }
-            ]
-          }
-        ],
-        "showIcon": true
+        "key": "nhom-cho",
+        "label": "Groups & Market",
+        "href": "https://nexoratouch.com/dashboard/community?tab=groups"
       },
       {
-        "key": "business-tools",
-        "label": "Business tools",
-        "iconKey": "oneqr",
-        "availability": "preview",
+        "key": "viec-lam",
+        "label": "Jobs",
+        "href": "https://nexoratouch.com/dashboard/community?tab=jobs"
+      },
+      {
+        "key": "tin-nhan-cuoc-goi",
+        "label": "Messages & calls",
+        "href": "https://nexoratouch.com/dashboard/community?tab=connect"
+      }
+    ],
+    "showIcon": true
+  },
+  {
+    "key": "booking",
+    "label": "AI Hub",
+    "iconKey": "aihub",
+    "children": [
+      {
+        "key": "ai-marketing",
+        "label": "AI Marketing",
+        "iconKey": "marketing",
+        "href": "#module-aihub-marketing"
+      },
+      {
+        "key": "ai-voice-si-pos",
+        "label": "AI Voice · SI POS",
+        "iconKey": "ai-voice",
+        "href": "#pos-ai-voice"
+      },
+      {
+        "key": "sms-campaigns",
+        "label": "SMS Campaigns",
+        "iconKey": "news",
+        "href": "https://nexoratouch.com/dashboard/ai-hub?tab=sms-campaigns"
+      },
+      {
+        "key": "spin-wheel",
+        "label": "Spin Wheel",
+        "iconKey": "spinwheel",
+        "href": "#module-spinwheel"
+      },
+      {
+        "key": "ai-receptionist",
+        "label": "AI Receptionist",
         "children": [
           {
-            "key": "stations",
-            "label": "One QR",
-            "iconKey": "oneqr",
-            "children": [
-              {
-                "key": "qr-tai-tiem",
-                "label": "In-salon QR",
-                "children": [
-                  {
-                    "key": "tong-quan-one-qr",
-                    "label": "One QR overview",
-                    "href": "#module-oneqr"
-                  },
-                  {
-                    "key": "oneqr-2",
-                    "label": "OneQR",
-                    "href": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=one-qr"
-                  },
-                  {
-                    "key": "nhan-tip",
-                    "label": "Accept tips",
-                    "href": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=tip"
-                  },
-                  {
-                    "key": "nhan-thanh-toan",
-                    "label": "Receive payments",
-                    "href": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=payment"
-                  },
-                  {
-                    "key": "customer-self-check-in",
-                    "label": "Check-in",
-                    "href": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=check-in"
-                  }
-                ]
-              },
-              {
-                "key": "chia-se-moi",
-                "label": "Share & invite",
-                "children": [
-                  {
-                    "key": "lien-ket-gioi-thieu",
-                    "label": "Referral Link",
-                    "href": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=referral"
-                  },
-                  {
-                    "key": "qr-moi-nhan-vien",
-                    "label": "Staff Invite QR",
-                    "href": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=staff-invite"
-                  }
-                ]
-              }
-            ]
+            "key": "lich-hen",
+            "label": "Appointments",
+            "href": "https://nexoratouch.com/dashboard/ai-hub?tab=booking&view=today"
           },
           {
-            "key": "payments",
-            "label": "Payment Gateway",
-            "iconKey": "payments",
-            "children": [
-              {
-                "key": "thu-nhap-tiem",
-                "label": "Salon income",
-                "children": [
-                  {
-                    "key": "tong-quan-thanh-toan",
-                    "label": "Payment overview",
-                    "href": "#module-payments"
-                  },
-                  {
-                    "key": "nhan-thanh-toan-2",
-                    "label": "Receive payments",
-                    "href": "https://nexoratouch.com/dashboard/reports?tab=receive_payments"
-                  },
-                  {
-                    "key": "income-by-period",
-                    "label": "Income by period",
-                    "href": "payment-income-period.html"
-                  }
-                ]
-              },
-              {
-                "key": "chi-tra-nhan-vien",
-                "label": "Staff payouts",
-                "children": [
-                  {
-                    "key": "tong-quan-tien-tip",
-                    "label": "Tip overview",
-                    "href": "https://nexoratouch.com/dashboard/tips?tab=overview"
-                  },
-                  {
-                    "key": "danh-sach-tip",
-                    "label": "Tip list",
-                    "href": "https://nexoratouch.com/dashboard/reports?tab=tips"
-                  },
-                  {
-                    "key": "payroll-chi-tra",
-                    "label": "Payroll / payouts",
-                    "href": "https://nexoratouch.com/dashboard/tips?tab=payouts"
-                  },
-                  {
-                    "key": "direct-savings",
-                    "label": "Direct Savings",
-                    "href": "https://nexoratouch.com/dashboard/tips?tab=savings"
-                  },
-                  {
-                    "key": "payout-history-by-staff",
-                    "label": "Payout history by staff member",
-                    "href": "staff-payout-history.html"
-                  }
-                ]
-              },
-              {
-                "key": "may-ca-the",
-                "label": "Card terminal",
-                "children": [
-                  {
-                    "key": "hoat-dong-thanh-toan",
-                    "label": "Payment activity",
-                    "href": "https://nexoratouch.com/dashboard/reports?tab=direct_payments"
-                  }
-                ]
-              },
-              {
-                "key": "cau-hinh",
-                "label": "Settings",
-                "children": [
-                  {
-                    "key": "quan-ly-danh-muc",
-                    "label": "Category management",
-                    "href": "https://nexoratouch.com/dashboard/category-management"
-                  }
-                ]
-              }
-            ]
+            "key": "lich",
+            "label": "Calendar",
+            "href": "https://nexoratouch.com/dashboard/ai-hub?tab=booking&view=calendar"
           },
           {
-            "key": "reviews-2",
+            "key": "khach-hang-2",
+            "label": "Customers",
+            "href": "#pos-voice-customers"
+          },
+          {
+            "key": "nhat-ky-cuoc-goi",
+            "label": "Call log",
+            "navContext": "ai-receptionist",
+            "href": "#pos-call-log"
+          },
+          {
+            "key": "goi-su-dung",
+            "label": "Plans",
+            "href": "https://nexoratouch.com/dashboard/ai-hub?tab=plans"
+          },
+          {
+            "key": "cai-dat-le-tan-ai",
+            "label": "AI Receptionist Settings",
+            "href": "https://nexoratouch.com/dashboard/ai-hub?tab=settings"
+          }
+        ]
+      },
+      {
+        "key": "marketing-assistant",
+        "label": "Marketing Assistant",
+        "children": [
+          {
+            "key": "khuyen-mai-pos",
+            "label": "POS promotions",
+            "href": "https://nexoratouch.com/dashboard/pos/promotions"
+          },
+          {
+            "key": "review",
             "label": "Reviews",
-            "iconKey": "reviews",
             "href": "https://nexoratouch.com/dashboard/reviews"
           },
           {
-            "key": "analytics-2",
+            "key": "khach-hang-3",
+            "label": "Customers",
+            "href": "https://nexoratouch.com/dashboard/ai-hub?tab=customers"
+          },
+          {
+            "key": "analytics",
             "label": "Analytics",
-            "iconKey": "analytics",
             "href": "https://nexoratouch.com/dashboard/analytics"
           },
           {
-            "key": "tax-iq",
-            "label": "Tax IQ",
-            "iconKey": "taxiq",
-            "href": "#module-taxiq",
-            "availability": "preview"
+            "key": "vlinkpay-campaigns",
+            "label": "Campaigns · VLinkPay",
+            "newTab": true,
+            "href": "https://merchant.vlinkpay.com/campaign-management?pageIndex=0&pageSize=10"
+          },
+          {
+            "key": "vlinkpay-ai-ads",
+            "label": "AI Ads · VLinkPay",
+            "linkPending": true
           }
-        ],
-        "showIcon": true
+        ]
       }
-    ]
+    ],
+    "showIcon": true
+  },
+  {
+    "key": "business-tools",
+    "label": "Business tools",
+    "iconKey": "oneqr",
+    "availability": "preview",
+    "children": [
+      {
+        "key": "stations",
+        "label": "One QR",
+        "iconKey": "oneqr",
+        "children": [
+          {
+            "key": "qr-tai-tiem",
+            "label": "In-salon QR",
+            "children": [
+              {
+                "key": "tong-quan-one-qr",
+                "label": "One QR overview",
+                "href": "#module-oneqr"
+              },
+              {
+                "key": "oneqr-2",
+                "label": "OneQR",
+                "href": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=one-qr"
+              },
+              {
+                "key": "nhan-tip",
+                "label": "Accept tips",
+                "href": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=tip"
+              },
+              {
+                "key": "nhan-thanh-toan",
+                "label": "Receive payments",
+                "href": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=payment"
+              },
+              {
+                "key": "customer-self-check-in",
+                "label": "Check-in",
+                "href": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=check-in"
+              }
+            ]
+          },
+          {
+            "key": "chia-se-moi",
+            "label": "Share & invite",
+            "children": [
+              {
+                "key": "lien-ket-gioi-thieu",
+                "label": "Referral Link",
+                "href": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=referral"
+              },
+              {
+                "key": "qr-moi-nhan-vien",
+                "label": "Staff Invite QR",
+                "href": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=staff-invite"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "payments",
+        "label": "Payment Gateway",
+        "iconKey": "payments",
+        "children": [
+          {
+            "key": "thu-nhap-tiem",
+            "label": "Salon income",
+            "children": [
+              {
+                "key": "tong-quan-thanh-toan",
+                "label": "Payment overview",
+                "href": "#module-payments"
+              },
+              {
+                "key": "nhan-thanh-toan-2",
+                "label": "Receive payments",
+                "href": "https://nexoratouch.com/dashboard/reports?tab=receive_payments"
+              },
+              {
+                "key": "income-by-period",
+                "label": "Income by period",
+                "href": "payment-income-period.html"
+              }
+            ]
+          },
+          {
+            "key": "chi-tra-nhan-vien",
+            "label": "Staff payouts",
+            "children": [
+              {
+                "key": "tong-quan-tien-tip",
+                "label": "Tip overview",
+                "href": "https://nexoratouch.com/dashboard/tips?tab=overview"
+              },
+              {
+                "key": "danh-sach-tip",
+                "label": "Tip list",
+                "href": "https://nexoratouch.com/dashboard/reports?tab=tips"
+              },
+              {
+                "key": "payroll-chi-tra",
+                "label": "Payroll / payouts",
+                "href": "https://nexoratouch.com/dashboard/tips?tab=payouts"
+              },
+              {
+                "key": "direct-savings",
+                "label": "Direct Savings",
+                "href": "https://nexoratouch.com/dashboard/tips?tab=savings"
+              },
+              {
+                "key": "payout-history-by-staff",
+                "label": "Payout history by staff member",
+                "href": "staff-payout-history.html"
+              }
+            ]
+          },
+          {
+            "key": "may-ca-the",
+            "label": "Card terminal",
+            "children": [
+              {
+                "key": "hoat-dong-thanh-toan",
+                "label": "Payment activity",
+                "href": "https://nexoratouch.com/dashboard/reports?tab=direct_payments"
+              }
+            ]
+          },
+          {
+            "key": "cau-hinh",
+            "label": "Settings",
+            "children": [
+              {
+                "key": "quan-ly-danh-muc",
+                "label": "Category management",
+                "href": "https://nexoratouch.com/dashboard/category-management"
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "key": "reviews-2",
+        "label": "Reviews",
+        "iconKey": "reviews",
+        "href": "https://nexoratouch.com/dashboard/reviews"
+      },
+      {
+        "key": "analytics-2",
+        "label": "Analytics",
+        "iconKey": "analytics",
+        "href": "https://nexoratouch.com/dashboard/analytics"
+      },
+      {
+        "key": "tax-iq",
+        "label": "Tax IQ",
+        "iconKey": "taxiq",
+        "href": "#module-taxiq",
+        "availability": "preview"
+      }
+    ],
+    "showIcon": true
   },
   {
     "key": "news-library",
