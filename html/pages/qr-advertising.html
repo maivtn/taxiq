@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../assets/nexora-icons.css">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
     <link rel="stylesheet" href="../assets/vendor/tom-select/tom-select.css">
-    <link rel="stylesheet" href="../assets/oneqr-advertising.css?v=po-20261027-dropdown-footer">
+    <link rel="stylesheet" href="../assets/oneqr-advertising.css?v=po-20261028-history">
   </head>
   <body>
     <div class="shell">
@@ -193,9 +193,16 @@
                     <div class="box">
                       <b data-i="ledgerTitle"></b>
                       <p data-i="ledgerText"></p>
-                      <div id="ledger"></div>
                     </div>
                   </div>
+                </div>
+                <div class="card qa-history-card">
+                  <h2 id="income-history-heading"><span data-i="incomeHistory"></span> <span class="qa-history-count" data-history-count="income">0</span></h2>
+                  <div id="income-history" class="qa-history-table-wrap" role="region" aria-labelledby="income-history-heading" tabindex="0"></div>
+                </div>
+                <div class="card qa-history-card">
+                  <h2 id="payout-history-heading"><span data-i="payoutHistory"></span> <span class="qa-history-count" data-history-count="payout">0</span></h2>
+                  <div id="payout-history" class="qa-history-table-wrap" role="region" aria-labelledby="payout-history-heading" tabindex="0"></div>
                 </div>
                 <div class="card">
                   <h2 data-i="spendWallet"></h2>
@@ -212,6 +219,10 @@
                       <small data-i="ownCreditsHelp"></small>
                     </div>
                   </div>
+                </div>
+                <div class="card qa-history-card">
+                  <h2 id="conversion-history-heading"><span data-i="conversionHistory"></span> <span class="qa-history-count" data-history-count="conversion">0</span></h2>
+                  <div id="conversion-history" class="qa-history-table-wrap" role="region" aria-labelledby="conversion-history-heading" tabindex="0"></div>
                 </div>
               </section>
               <section data-screen="transfer" id="transfer" class="hide">
@@ -247,6 +258,10 @@
                     <div class="num" id="recipient-credits">0</div>
                     <small data-i="notCash"></small>
                   </div>
+                </div>
+                <div class="card qa-history-card">
+                  <h2 id="transfer-history-heading"><span data-i="transferHistory"></span> <span class="qa-history-count" data-history-count="transfer">0</span></h2>
+                  <div id="transfer-history" class="qa-history-table-wrap" role="region" aria-labelledby="transfer-history-heading" tabindex="0"></div>
                 </div>
               </section>
               <section data-screen="ads" id="ads" class="hide">
@@ -288,6 +303,6 @@
     <script src="../assets/oneqr-action-appearance.js"></script>
     <script src="../assets/oneqr-advertising-po.js?v=po-20261027"></script>
     <script src="../assets/vendor/tom-select/tom-select.complete.min.js"></script>
-    <script src="../assets/oneqr-advertising.js?v=po-20261027-secondary-placeholder"></script>
+    <script src="../assets/oneqr-advertising.js?v=po-20261028-history"></script>
   </body>
 </html>

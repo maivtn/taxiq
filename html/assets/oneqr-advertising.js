@@ -33,6 +33,10 @@
       testPayout: 'Yêu cầu rút tiền', convertAmount: 'Số điểm muốn đổi',
       convertConfirm: 'Xác nhận đổi', convertDone: 'Đã đổi điểm thành credit trong ví sử dụng.',
       payoutDone: 'Số dư đã đủ ngưỡng. Hoàn tất thông tin người nhận, thuế và xác minh để tiếp tục.',
+      incomeHistory: 'Lịch sử thu nhập', transferHistory: 'Lịch sử chuyển điểm',
+      payoutHistory: 'Lịch sử rút tiền', conversionHistory: 'Lịch sử đổi sang credit',
+      historyId: 'Mã giao dịch', historyTime: 'Thời gian', historySource: 'Nguồn', historyStatus: 'Trạng thái',
+      historyReview: 'Chờ đối soát', historySending: 'Đang chuyển', historyPaid: 'Đã trả',
       p4: '4. Quy đổi: 100 ONEQR Points = 1 credit = $1 giá trị quy đổi.'
     },
     en: {
@@ -54,6 +58,10 @@
       testPayout: 'Request payout', convertAmount: 'Points to convert',
       convertConfirm: 'Confirm conversion', convertDone: 'Points converted to spending-wallet credits.',
       payoutDone: 'Your balance meets the minimum. Complete recipient, tax and verification details to continue.',
+      incomeHistory: 'Earnings history', transferHistory: 'Transfer history',
+      payoutHistory: 'Payout history', conversionHistory: 'Credit conversion history',
+      historyId: 'Transaction ID', historyTime: 'Time', historySource: 'Source', historyStatus: 'Status',
+      historyReview: 'Pending review', historySending: 'Processing', historyPaid: 'Paid',
       p4: '4. Conversion: 100 ONEQR Points = 1 credit = $1 in conversion value.'
     }
   };
@@ -276,18 +284,71 @@
     $('ads-toggle').classList.toggle('hide', !state.activated);
     $('ads-toggle').textContent = t(state.adsEnabled ? 'disableAds' : 'enableAds');
     if (messages.payoutResult?.key) report('payoutResult', state.balance >= 10000 ? 'payoutDone' : 'payoutLow', state.balance < 10000);
-    renderLedger();
+    renderHistories();
   }
 
-  function renderLedger() {
-    $('ledger').innerHTML = [...state.ledger].reverse().map(entry => {
-      const date = new Intl.DateTimeFormat('en-US', { month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Asia/Ho_Chi_Minh' }).format(new Date(entry.timestamp));
-      return `<article class="ledger-entry"><strong>${escape(t(entry.kind === 'transfer' ? 'transferTitle' : 'convert'))}</strong>
-        <span>−${number(entry.points)} ${escape(t('points'))} → ${number(entry.points / 100)} ${escape(t('credits'))}</span>
-        ${entry.kind === 'transfer' ? `<small>${escape(entry.recipient && entry.recipient !== 'DEMO' ? entry.recipient : t('recipient'))}</small>` : ''}
-        <small>${escape(t('adsSource'))}</small><time datetime="${escape(entry.timestamp)}">${date}</time>
-        <small>${escape(entry.id)}</small><small>${escape(t(entry.kind === 'transfer' ? 'done' : 'convertDone'))}</small></article>`;
-    }).join('');
+  function seedIncomeHistory() {
+    if (state.ledger.some(entry => entry.kind === 'income')) return;
+    // Describe the PO's two opening sample balances, without inventing per-event rates.
+    // Also preserve transactions from sessions created before the history tables existed.
+    const used = state.ledger.filter(entry => ['transfer', 'conversion'].includes(entry.kind))
+      .reduce((total, entry) => total + entry.points, 0);
+    const opening = {
+      kind: 'income', timestamp: '2026-10-27T00:00:00.000Z', source: 'advertising',
+      program: 'oneqr-advertising-demo', businessId: 'bitcoin-nail-bar-demo',
+      version: VERSION, adjustmentReason: null
+    };
+    state.ledger.unshift(
+      { ...opening, id: 'ONEQR-INCOME-001', eventId: 'sample-approved-balance', points: state.balance + used, status: 'approved' },
+      { ...opening, id: 'ONEQR-INCOME-002', eventId: 'sample-pending-balance', points: state.pending, status: 'pending' }
+    );
+  }
+
+  function historyStatus(entry) {
+    let key;
+    let style = 'complete';
+    if (entry.kind === 'income') {
+      key = entry.status === 'pending' ? 'pending' : 'approved';
+      if (entry.status === 'pending') style = 'pending';
+    } else if (entry.kind === 'transfer') key = 'done';
+    else if (entry.kind === 'conversion') key = 'convertDone';
+    else {
+      key = { pending: 'historyReview', processing: 'historySending', paid: 'historyPaid' }[entry.status];
+      style = entry.status === 'paid' ? 'complete' : 'pending';
+    }
+    return `<span class="qa-history-status ${style}">${escape(key ? t(key) : entry.status)}</span>`;
+  }
+
+  function renderHistories() {
+    const date = entry => {
+      const formatted = new Intl.DateTimeFormat('en-US', {
+        month: 'short', day: 'numeric', year: 'numeric', timeZone: 'Asia/Ho_Chi_Minh'
+      }).format(new Date(entry.timestamp));
+      return `<time datetime="${escape(entry.timestamp)}">${escape(formatted)}</time>`;
+    };
+    const transaction = ['historyId', entry => `<strong class="qa-history-id">${escape(entry.id)}</strong>`];
+    const timestamp = ['historyTime', date];
+    const amount = ['amount', entry => `<span class="qa-history-points${entry.kind === 'income' ? ' is-income' : ''}">${entry.kind === 'income' ? '+' : '−'}${number(entry.points)}</span>`];
+    const value = ['$', entry => escape(dollars(entry.points))];
+    const credits = ['credits', entry => escape(number(entry.points / 100))];
+    const status = ['historyStatus', historyStatus];
+    const columns = {
+      income: [transaction, timestamp, ['historySource', () => escape(t('adsSource'))], amount, value, status],
+      transfer: [transaction, timestamp, ['recipient', entry => escape(entry.recipient && entry.recipient !== 'DEMO' ? entry.recipient : t('recipient'))], amount, credits, status],
+      payout: [transaction, timestamp, amount, value, status],
+      conversion: [transaction, timestamp, amount, credits, status]
+    };
+    Object.entries(columns).forEach(([kind, fields]) => {
+      const entries = state.ledger.filter(entry => entry.kind === kind)
+        .sort((a, b) => b.timestamp.localeCompare(a.timestamp));
+      const label = key => key === '$' ? '$' : t(key);
+      root.querySelector(`[data-history-count="${kind}"]`).textContent = number(entries.length);
+      $(`${kind}-history`).innerHTML = `<table class="qa-history-table${fields.length > 5 ? ' qa-history-table-wide' : ''}" aria-labelledby="${kind}-history-heading" role="table">
+        <thead role="rowgroup"><tr role="row">${fields.map(([key]) => `<th scope="col" role="columnheader">${escape(label(key))}</th>`).join('')}</tr></thead>
+        <tbody role="rowgroup">${entries.length ? entries.map(entry => `<tr role="row" data-history-id="${escape(entry.id)}">${fields.map(([key, render]) => `<td role="cell" data-label="${escape(label(key))}"><div class="qa-history-cell">${render(entry)}</div></td>`).join('')}</tr>`).join('')
+          : `<tr role="row"><td role="cell" colspan="${fields.length}" class="qa-history-empty">—</td></tr>`}</tbody>
+      </table>`;
+    });
   }
 
   function transferPreview(points = Number($('amount').value)) {
@@ -521,6 +582,7 @@
     button.setAttribute('aria-expanded', 'false');
     button.setAttribute('aria-controls', button.dataset.action);
   });
+  seedIncomeHistory();
   setLanguage('vi');
   navigate(location.hash.slice(1).split('/')[0], false);
 })();
