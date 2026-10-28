@@ -1,4 +1,4 @@
-/* Local Icons8 3D Fluency PNGs. Attribution is retained on the product catalog. */
+/* Local 3D PNGs from Icons8 and the selected IconScout assets. */
 (function () {
   'use strict';
   var script = document.currentScript;
@@ -9,7 +9,7 @@
   "pos": "pos.png",
   "oneqr": "oneqr.png",
   "community": "community.png",
-  "aihub": "aihub.png",
+  "aihub": "../iconscout/ai-hub-10852467.png",
   "marketing": "marketing.png",
   "sms": "sms.png",
   "gift": "gift.png",
