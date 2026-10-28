@@ -196,7 +196,7 @@ const catalog={
       { name: 'Liên lạc', items: [{ label: 'Tin nhắn, nhóm chat & cuộc gọi', url: nexora + '/dashboard/community?tab=connect' }] }
     ]},
     taxiq: { title: 'Tax IQ', description: 'Bản giới thiệu cách sắp xếp thu nhập, chi phí và biên lai; chưa kết nối dữ liệu thật.', status: 'Bản định hướng', pending: true, groups: [
-      { name: 'Cho doanh nghiệp · dự kiến', items: [{ label: 'Tổng quan doanh nghiệp', unavailable: true }, { label: 'Thu nhập doanh nghiệp', unavailable: true }, { label: 'Chi phí vận hành', unavailable: true }, { label: 'Kho biên lai', unavailable: true }] },
+      { name: 'Cho doanh nghiệp · dự kiến', items: [{ label: 'Tổng quan doanh nghiệp', unavailable: true }, { label: 'Thu nhập doanh nghiệp', unavailable: true }, { label: 'Chi phí vận hành', unavailable: true }, { label: 'Kho biên lai', url: 'tax-iq-receipts.html' }] },
       { name: 'Cho cá nhân · dự kiến', items: [{ label: 'Tổng quan cá nhân', unavailable: true }, { label: 'Thu nhập cá nhân', unavailable: true }, { label: 'Chi phí cá nhân', unavailable: true }, { label: 'Biên lai cá nhân', unavailable: true }] }
     ]}
   };

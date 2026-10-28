@@ -1,0 +1,52 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nexora Touch - Tax IQ Receipts</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/nexora-icons.css">
+  <link rel="stylesheet" href="../assets/nexora-shell.css?v=20261028-po-menu-complete-v2">
+  <link rel="stylesheet" href="../assets/taxiq-receipts.css?v=20261028">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Salon sidebar"></aside>
+    <div class="app-area">
+      <header class="header"></header>
+      <main class="content taxiq-records">
+        <div class="taxiq-heading">
+          <div><span class="taxiq-eyebrow">Tax IQ · Concept preview</span><h1>Receipts</h1><p>Keep documents easy to find and share for review.</p></div>
+          <a class="taxiq-button" href="dashboard.html?module=taxiq&amp;group=0"><i data-lucide="arrow-left" aria-hidden="true"></i>Tax IQ</a>
+        </div>
+        <p class="taxiq-intro">Preview a salon's income, expense and receipt records for a period.</p>
+        <div class="taxiq-metrics" id="taxiq-metrics"></div>
+        <div class="taxiq-filters" aria-label="Receipts">
+          <select id="taxiq-status" aria-label="Status"><option>All statuses</option><option>Approved</option><option>Needs Review</option><option>Missing purpose</option><option>Processing</option></select>
+          <select id="taxiq-category" aria-label="Category"><option>All categories</option><option>Supplies</option><option>Utilities</option><option>Payment evidence</option><option>Equipment</option><option>Meals</option><option>Travel</option></select>
+          <select id="taxiq-source" aria-label="Source"><option>All sources</option><option>Camera</option><option>File upload</option><option>Email import</option><option>Payout upload</option></select>
+        </div>
+        <section class="taxiq-panel" aria-labelledby="taxiq-vault-title">
+          <div class="taxiq-panel-heading"><h2 id="taxiq-vault-title">Receipt library</h2></div>
+          <div class="taxiq-table-wrap"><table><thead><tr><th scope="col">ID</th><th scope="col">Vendor</th><th scope="col">Category</th><th scope="col">Amount</th><th scope="col">Source</th><th scope="col">Confidence</th><th scope="col">Tax</th><th scope="col">Status</th><th scope="col">Owner</th><th scope="col">Actions</th></tr></thead><tbody id="taxiq-receipts"></tbody></table></div>
+        </section>
+        <p class="taxiq-note">This is a concept preview. Screens, access and data sources need confirmation before use; this is not a tax filing tool.</p>
+      </main>
+    </div>
+  </div>
+  <dialog class="taxiq-dialog" id="taxiq-dialog" aria-labelledby="taxiq-dialog-title">
+    <div class="taxiq-dialog-heading"><h2 id="taxiq-dialog-title"></h2><button class="taxiq-button taxiq-icon-button" type="button" data-taxiq-close aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button></div>
+    <dl class="taxiq-detail" id="taxiq-detail"></dl>
+    <div class="taxiq-dialog-footer"><button class="taxiq-button taxiq-primary" type="button" data-taxiq-close>Close</button></div>
+  </dialog>
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script>window.NEXORA_SHELL={activePage:'taxiq',activeTab:'receipts',activeNavKey:'tax-iq'};</script>
+  <script src="../assets/nexora-icons.js"></script>
+  <script src="../assets/nexora-shell-nav.js?v=20261028-source-refresh"></script>
+  <script src="../assets/nexora-shell.js?v=20261028-source-refresh"></script>
+  <script src="../assets/taxiq-receipts-data.js?v=20261028"></script>
+  <script src="../assets/taxiq-receipts.js?v=20261028"></script>
+</body>
+</html>

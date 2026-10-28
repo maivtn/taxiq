@@ -1,0 +1,87 @@
+/* Receipt records copied from the existing Tax IQ prototype; no live data. */
+window.NEXORA_TAXIQ_RECEIPTS = [
+  [
+    "rcpt_001",
+    "Beauty Supply Warehouse",
+    "Supplies",
+    "$384.20",
+    "Camera",
+    "Approved",
+    "Owner",
+    "94%",
+    "$31.60",
+    "REC-0042",
+    "Jun 18 14:00",
+    "rcpt_001.jpg"
+  ],
+  [
+    "rcpt_002",
+    "AT&T Phone Bill",
+    "Utilities",
+    "$129.00",
+    "Email import",
+    "Needs Review",
+    "Bookkeeper",
+    "67%",
+    "$0.00",
+    "INV-0918",
+    "Jun 20 09:15",
+    "rcpt_002.jpg"
+  ],
+  [
+    "rcpt_003",
+    "Unknown Zelle memo",
+    "Payment evidence",
+    "$250.00",
+    "Payout upload",
+    "Missing purpose",
+    "Finance",
+    "—",
+    "—",
+    "—",
+    "Jun 15 18:21",
+    "—"
+  ],
+  [
+    "rcpt_004",
+    "Nail Supply Co.",
+    "Supplies",
+    "$212.50",
+    "File upload",
+    "Approved",
+    "Owner",
+    "91%",
+    "$17.50",
+    "NS-8812",
+    "Jun 22 10:30",
+    "rcpt_004.jpg"
+  ],
+  [
+    "rcpt_005",
+    "City Water Dept",
+    "Utilities",
+    "$88.00",
+    "Email import",
+    "Processing",
+    "Owner",
+    "—",
+    "—",
+    "—",
+    "Jun 24 11:00",
+    "—"
+  ],
+  [
+    "rcpt_006",
+    "Square POS Receipt",
+    "Equipment",
+    "$495.00",
+    "Camera",
+    "Needs Review",
+    "Owner",
+    "72%",
+    "$40.75",
+    "SQ-2026061",
+    "Jun 23 16:20",
+    "rcpt_006.jpg"
+  ]
+];

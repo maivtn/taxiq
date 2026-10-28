@@ -840,7 +840,7 @@ window.NEXORA_PRODUCT_CATALOG = {
           },
           {
             "label": "Receipts",
-            "unavailable": true
+            "url": "tax-iq-receipts.html"
           }
         ]
       },
