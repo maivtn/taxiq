@@ -23,7 +23,9 @@
     if(!['information','staff','staff-schedule','services','roles','sms','access-pin','payment-fees','stations'].includes(tab))tab='staff';
     window.NEXORA_SALON_SETTINGS_TABS.sync(tab);
     document.querySelectorAll('[data-settings-panel]').forEach(p=>p.hidden=p.dataset.settingsPanel!==tab);
+    document.querySelector('.content').dataset.settingsSection=tab;
     const url=new URL(location.href);url.searchParams.set('section',tab);history.replaceState(null,'',url);
+    window.NEXORA_SHELL.refreshSidebar();
     if(showRequests)requestAnimationFrame(()=>$('[data-staff-requests-settings]')?.scrollIntoView({block:'start'}));
   }
   $('#salon-staff-search').addEventListener('input',()=>{page=1;drawStaff();});
