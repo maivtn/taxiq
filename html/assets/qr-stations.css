@@ -3480,17 +3480,6 @@
   }
 }
 
-/* Business earnings entry stays separate from QR configuration and tip revenue. */
-.oneqr-earnings-entry { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 12px 16px; border: 1px solid #d5d5fb; border-left: 3px solid #635bff; border-radius: 10px; background: linear-gradient(110deg, #f1f1ff, #fff); }
-.oneqr-earnings-copy { min-width: 0; }
-.oneqr-earnings-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 6px 10px; margin-bottom: 4px; }
-.oneqr-earnings-entry h3 { margin: 0; font-size: 16px; font-weight: 800; line-height: 1.4; color: #3730a3; }
-.oneqr-earnings-entry p { margin: 0; font-size: 13px; line-height: 1.4; color: #565e74; }
-.oneqr-earnings-entry a { flex-shrink: 0; text-decoration: none; text-transform: none; }
-.oneqr-earnings-entry .oneqr-pill { text-transform: none; }
-@media (max-width: 650px) { .oneqr-earnings-entry { align-items: flex-start; flex-direction: column; gap: 10px; padding: 12px; } }
-
-
 @media screen and (max-width: 650px) {
   .qr-stations-shell, .qr-stations-heading, .qr-panel, .oneqr-panel { min-width: 0; }
   .qr-stations-shell { gap: 16px; }
@@ -3511,7 +3500,6 @@
   .oneqr-qrcard-actions { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 6px; }
   .oneqr-qrcard-btn { min-height: 44px; padding: 8px; font-size: 12px; text-transform: none; }
   .oneqr-qrcard-btn svg { flex-shrink: 0; }
-  .oneqr-earnings-entry a { align-self: stretch; }
   .oneqr-panel { flex-basis: 100%; padding: 12px; }
   .oneqr-panel-head h3 { font-size: 15px; }
   .oneqr-modules, .oneqr-module-list { min-width: 0; max-width: 100%; }
