@@ -291,6 +291,7 @@
     $('ads-toggle').classList.toggle('hide', !state.activated);
     $('ads-toggle').textContent = t(state.adsEnabled ? 'disableAds' : 'enableAds');
     if (messages.payoutResult?.key) report('payoutResult', state.balance >= 10000 ? 'payoutDone' : 'payoutLow', state.balance < 10000);
+    updateConversionPreview();
     renderHistories();
   }
 
@@ -405,6 +406,7 @@
   const views = new Set(['setup', 'overview', 'earn', 'transfer', 'ads', 'policy']);
   const oldRoutes = { advertising: 'ads', activity: 'earn', reserves: 'earn', payouts: 'earn', settings: 'setup' };
   function navigate(requested, write = true, focus = false) {
+    if ($('convert').open) $('convert').close();
     const route = oldRoutes[requested] || requested;
     view = views.has(route) ? route : 'setup';
     root.querySelectorAll('[data-screen]').forEach(section => {
@@ -516,10 +518,33 @@
     $('result').focus({ preventScroll: true });
   }
 
+  function updateConversionPreview() {
+    const input = $('convertAmount');
+    const points = Number(input.value);
+    const valid = Number.isSafeInteger(points) && points > 0 && points % 100 === 0;
+    input.max = String(state.balance);
+    $('convertCredits').textContent = valid ? number(points / 100) : '—';
+    $('convertEquivalent').textContent = valid ? `${dollars(points)} ${t('equiv')}` : '';
+    root.querySelector('[data-action="convert-points"]').disabled = !input.value.trim();
+  }
+
+  function openConversionModal() {
+    if ($('convert').open) return;
+    report('convertResult', '');
+    report('convertFeedback', '');
+    $('convertFeedback').hidden = true;
+    $('convertAmount').removeAttribute('aria-invalid');
+    updateConversionPreview();
+    $('convert').showModal();
+    $('convert').scrollTop = 0;
+    document.documentElement.classList.add('qa-convert-open');
+  }
+
   function convertPoints() {
     const points = Number($('convertAmount').value);
     if (!Number.isSafeInteger(points) || points <= 0 || points % 100 !== 0 || points > state.balance) {
       report('convertResult', 'errConvert', true);
+      $('convertAmount').setAttribute('aria-invalid', 'true');
       $('convertAmount').focus();
       return;
     }
@@ -528,8 +553,11 @@
     $('convertAmount').value = '';
     root.querySelector('[data-action="convert-points"]').disabled = true;
     invalidateReview();
-    report('convertResult', 'convertDone');
-    $('convertResult').focus({ preventScroll: true });
+    report('convertResult', '');
+    $('convertAmount').removeAttribute('aria-invalid');
+    $('convert').close();
+    $('convertFeedback').hidden = false;
+    report('convertFeedback', 'convertDone');
   }
 
   root.addEventListener('click', event => {
@@ -546,8 +574,9 @@
     if (action === 'review-transfer') reviewTransfer();
     if (action === 'confirm-transfer') confirmTransfer();
     if (action === 'cancel-transfer') { invalidateReview(); root.querySelector('[data-action="review-transfer"]').focus(); }
-    if (action === 'convert-points') convertPoints();
-    if (action === 'payout' || action === 'convert') {
+    if (action === 'convert') openConversionModal();
+    if (action === 'close-convert') $('convert').close();
+    if (action === 'payout') {
       $(action).classList.toggle('hide');
       button.setAttribute('aria-expanded', String(!$(action).classList.contains('hide')));
     }
@@ -557,6 +586,19 @@
       report('payoutResult', state.balance >= 10000 ? 'payoutDone' : 'payoutLow', state.balance < 10000);
       $('payoutResult').focus({ preventScroll: true });
     }
+  });
+
+  $('convert-form').addEventListener('submit', event => {
+    event.preventDefault();
+    convertPoints();
+  });
+  $('convert').addEventListener('close', () => {
+    document.documentElement.classList.remove('qa-convert-open');
+  });
+  $('convert').addEventListener('click', event => {
+    if (event.target !== $('convert')) return;
+    const bounds = $('convert').getBoundingClientRect();
+    if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) $('convert').close();
   });
 
   root.addEventListener('change', event => {
@@ -583,7 +625,8 @@
     if (['recipient', 'amount'].includes(event.target.id)) invalidateReview();
     if (event.target.id === 'convertAmount') {
       report('convertResult', '');
-      root.querySelector('[data-action="convert-points"]').disabled = !$('convertAmount').value.trim();
+      $('convertAmount').removeAttribute('aria-invalid');
+      updateConversionPreview();
     }
     if (event.target.id === 'custom') { reviewIndustryChange(); state.custom = $('custom').value; updateIndustry(); save(); }
   });
@@ -601,7 +644,7 @@
   }
   $('custom').value = state.custom;
   $('agree').checked = Boolean(state.activated && state.consent);
-  root.querySelectorAll('[data-action="payout"], [data-action="convert"]').forEach(button => {
+  root.querySelectorAll('[data-action="payout"]').forEach(button => {
     button.setAttribute('aria-expanded', 'false');
     button.setAttribute('aria-controls', button.dataset.action);
   });

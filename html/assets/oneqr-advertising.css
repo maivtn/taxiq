@@ -64,7 +64,36 @@
 .qa-app #ads-status { margin-left: 6px; }
 .qa-app .error { color: #b33442; }
 .qa-app .ok { color: #19805b; }
-.qa-app #payout, .qa-app #convert, .qa-app #review, .qa-app #recipient-wallet { margin-top: 16px; }
+.qa-app #payout, .qa-app #review, .qa-app #recipient-wallet { margin-top: 16px; }
+.qa-app .qa-convert-feedback { margin: 16px 0 0; border: 1px solid #bbf7d0; border-radius: 9px; padding: 11px 14px; background: #f0fdf4; color: #166534; font-size: 13px; }
+html.qa-convert-open { overflow: hidden; }
+.qa-app .qa-convert-dialog { position: fixed; inset: 0; width: min(480px, calc(100vw - 32px)); height: fit-content; max-width: none; max-height: calc(100vh - 32px); max-height: calc(100dvh - 32px); margin: auto; border: 1px solid #d8dee9; border-radius: 20px; padding: 0; background: #fff; color: #0b1c30; font: inherit; box-shadow: 0 24px 72px #0f172a33; overflow: auto; overscroll-behavior: contain; }
+.qa-app .qa-convert-dialog::backdrop { background: #0f172a80; backdrop-filter: blur(3px); }
+.qa-app .qa-convert-dialog form { margin: 0; }
+.qa-app .qa-convert-body { padding: 24px; }
+.qa-app .qa-convert-heading { display: flex; align-items: center; justify-content: space-between; gap: 16px; }
+.qa-app .qa-convert-heading h2 { margin: 0; font-size: 22px; }
+.qa-app .qa-dialog-close { display: grid; width: 36px; height: 36px; flex: 0 0 36px; place-items: center; border-color: #e2e8f0; padding: 0; background: #fff; color: #4d5870; font-size: 24px; line-height: 1; }
+.qa-app .qa-sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; border: 0; }
+.qa-app .qa-convert-dialog #convert-description { margin: 16px 0 20px; color: #4d5870; font-size: 13px; }
+.qa-app .qa-convert-balance { display: flex; align-items: center; justify-content: space-between; gap: 16px; border: 1px solid #e2e8f0; border-radius: 12px; padding: 14px 16px; background: #f8fafc; }
+.qa-app .qa-convert-balance > span { color: #4d5870; font-size: 13px; }
+.qa-app .qa-convert-balance > div { text-align: right; }
+.qa-app .qa-convert-balance .num { display: block; margin: 0; font-size: 22px; }
+.qa-app .qa-convert-balance .equivalent { margin: 3px 0 0; color: #4d5870; font-size: 12px; }
+.qa-app .qa-convert-dialog label { margin-top: 20px; font-size: 13px; }
+.qa-app .qa-convert-dialog input { border-color: #cbd5e1; padding: 12px 14px; color: #0b1c30; font-size: 22px; font-weight: 650; text-align: right; font-variant-numeric: tabular-nums; }
+.qa-app .qa-convert-dialog input[aria-invalid="true"] { border-color: #b33442; }
+.qa-app .qa-convert-preview { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-top: 16px; border: 1px solid #c7c8f5; border-radius: 12px; padding: 14px 16px; background: var(--qa-primary-subtle); }
+.qa-app .qa-convert-preview > span { color: var(--qa-primary-active); font-size: 13px; font-weight: 600; }
+.qa-app .qa-convert-preview > div { min-width: 0; text-align: right; overflow-wrap: anywhere; }
+.qa-app .qa-convert-preview-value { color: var(--qa-primary-active); font-size: 13px; }
+.qa-app .qa-convert-preview output { font-size: 28px; font-weight: 750; font-variant-numeric: tabular-nums; }
+.qa-app .qa-convert-preview small { color: var(--qa-primary-active); font-size: 12px; }
+.qa-app #convertResult { margin: 12px 0 0; font-size: 13px; }
+.qa-app #convertResult:empty { display: none; }
+.qa-app .qa-convert-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 10px; border-top: 1px solid #e2e8f0; padding: 18px 24px; background: #f8fafc; }
+.qa-app .qa-convert-actions button { min-width: 110px; font-size: 13px; }
 .qa-app #review { border-color: #cbb9e6; background: #f9f6fe; }
 .qa-app #review h3, .qa-app #recipient-wallet h3 { margin-top: 0; }
 .qa-app #review:focus, .qa-app [role="status"]:focus { outline: none; }
@@ -126,6 +155,11 @@
   .qa-app .row { gap: 8px; }
   .qa-app .row button { flex: 1 1 auto; padding: 10px 12px; font-size: 13px; }
   .qa-app .line { font-size: 13px; }
+  .qa-app .qa-convert-body { padding: 20px; }
+  .qa-app .qa-convert-heading h2 { font-size: 20px; }
+  .qa-app .qa-convert-balance, .qa-app .qa-convert-preview { padding: 12px; gap: 12px; }
+  .qa-app .qa-convert-actions { padding: 16px 20px; }
+  .qa-app .qa-convert-actions button { min-width: 0; flex: 1; }
   .qa-app .qa-history-table, .qa-app .qa-history-table tbody { display: block; min-width: 0; }
   .qa-app .qa-history-table thead { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
   .qa-app .qa-history-table tbody tr { display: block; padding: 12px; }

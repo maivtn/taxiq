@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../assets/nexora-icons.css">
   <link rel="stylesheet" href="../assets/nexora-shell.css">
     <link rel="stylesheet" href="../assets/vendor/tom-select/tom-select.css">
-    <link rel="stylesheet" href="../assets/oneqr-advertising.css?v=po-20261028-history">
+    <link rel="stylesheet" href="../assets/oneqr-advertising.css?v=po-20261028-convert-modal">
   </head>
   <body>
     <div class="shell">
@@ -161,21 +161,15 @@
                   </div>
                   <div class="row" style="margin-top:16px">
                     <button data-action="payout" data-i="withdraw"></button>
-                    <button class="alt" data-action="convert" data-i="convert"></button>
+                    <button class="alt" data-action="convert" data-i="convert" aria-haspopup="dialog" aria-controls="convert"></button>
                   </div>
+                  <p id="convertFeedback" class="qa-convert-feedback" role="status" hidden></p>
                   <div class="notice hide" id="payout">
                     <span data-i="payoutText"></span>
                     <div style="margin-top:12px">
                       <button data-action="request-payout" data-i="testPayout"></button>
                     </div>
                     <p id="payoutResult" role="status" tabindex="-1"></p>
-                  </div>
-                  <div class="box hide" id="convert">
-                    <p data-i="convertText"></p>
-                    <label for="convertAmount" data-i="convertAmount"></label>
-                    <input type="number" id="convertAmount" min="100" step="100" value="1000">
-                    <button data-action="convert-points" data-i="convertConfirm" style="margin-top:12px"></button>
-                    <p id="convertResult" role="status" tabindex="-1"></p>
                   </div>
                 </div>
                 <div class="card">
@@ -290,6 +284,40 @@
                   <p data-i="p7"></p>
                 </div>
               </section>
+              <dialog id="convert" class="qa-convert-dialog" aria-labelledby="convert-title" aria-describedby="convert-description">
+                <form id="convert-form" novalidate>
+                  <div class="qa-convert-body">
+                    <div class="qa-convert-heading">
+                      <h2 id="convert-title" data-i="convert"></h2>
+                      <button type="button" class="qa-dialog-close" data-action="close-convert">
+                        <span aria-hidden="true">×</span>
+                        <span class="qa-sr-only" data-i="closeSecondary"></span>
+                      </button>
+                    </div>
+                    <p id="convert-description" data-i="convertText"></p>
+                    <div class="qa-convert-balance">
+                      <span data-i="available"></span>
+                      <div>
+                        <strong class="num balance">12.000</strong>
+                      </div>
+                    </div>
+                    <label for="convertAmount" data-i="convertAmount"></label>
+                    <input type="number" id="convertAmount" min="100" step="100" value="1000" inputmode="numeric" aria-describedby="convertResult" autofocus>
+                    <div class="qa-convert-preview">
+                      <span data-i="spendWallet"></span>
+                      <div>
+                        <div class="qa-convert-preview-value"><output id="convertCredits" for="convertAmount" aria-live="polite">10</output> <span data-i="credits"></span></div>
+                        <small id="convertEquivalent"></small>
+                      </div>
+                    </div>
+                    <p id="convertResult" role="status"></p>
+                  </div>
+                  <div class="qa-convert-actions">
+                    <button type="button" class="alt" data-action="close-convert" data-i="closeSecondary"></button>
+                    <button type="submit" data-action="convert-points" data-i="convertConfirm"></button>
+                  </div>
+                </form>
+              </dialog>
             </div>
           </div>
         </main>
@@ -303,6 +331,6 @@
     <script src="../assets/oneqr-action-appearance.js"></script>
     <script src="../assets/oneqr-advertising-po.js?v=po-20261027"></script>
     <script src="../assets/vendor/tom-select/tom-select.complete.min.js"></script>
-    <script src="../assets/oneqr-advertising.js?v=po-20261028-history"></script>
+    <script src="../assets/oneqr-advertising.js?v=po-20261028-convert-modal"></script>
   </body>
 </html>
