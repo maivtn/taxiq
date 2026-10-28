@@ -9,7 +9,8 @@
   <link rel="stylesheet" href="../assets/nexora-shell.css">
   <link rel="stylesheet" href="../assets/pos-front-desk.css">
   <link rel="stylesheet" href="../assets/pos-demo-settings.css">
-  <link rel="stylesheet" href="../assets/pos-front-desk-tickets.css?v=ticket-views-1">
+  <link rel="stylesheet" href="../assets/pos-front-desk-tickets.css?v=station-overview-20261028">
+  <link rel="stylesheet" href="../assets/pos-station-map.css?v=station-overview-20261028">
   <link rel="stylesheet" href="../assets/ticket-workspace.css?v=po-tip-1">
   <link rel="stylesheet" href="../assets/ticket-workspace-staging.css?v=addon-layout-20261027">
   <link rel="stylesheet" href="../assets/front-desk-tabs.css">
@@ -24,7 +25,7 @@
 <section id="ticket-workspace" class="ticket-workspace" aria-label="Edit and checkout ticket" hidden></section>
 <section id="tickets-view" aria-labelledby="tickets-title">
   <div class="tickets-heading"><div><h2 id="tickets-title" tabindex="-1">Open Tickets</h2><p>Guests currently moving through the service workflow.</p></div><a class="ticket-direct-link" href="pos-direct-checkout.html"><i data-lucide="plus" aria-hidden="true"></i>Direct checkout</a></div>
-  <section class="pos-operations ticket-station-tools" data-pos-operations aria-label="Station availability and ticket filters"></section>
+  <section class="pos-operations ticket-session-tools" data-pos-operations></section>
   <div class="ticket-toolbar">
     <div id="ticket-filters" class="toolbar" role="group" aria-label="Filter tickets by status"></div>
     <div class="ticket-view-switch" role="group" aria-label="Ticket view mode">
@@ -45,6 +46,7 @@
     <div class="stat-card"><span>Returning Guests</span><strong>36</strong></div>
     <div class="stat-card"><span>Average Wait</span><strong>14m</strong></div>
   </div>
+  <section class="pos-station-map" data-pos-station-map data-view="cards" aria-labelledby="pos-station-map-title" hidden></section>
   <div class="overview-grid">
     <section class="overview-panel" aria-labelledby="overview-sources-title"><h3 id="overview-sources-title">Guest Sources</h3><div id="source-breakdown"></div></section>
     <section class="overview-panel" aria-labelledby="overview-order-title"><h3 id="overview-order-title">Guest Order Summary</h3><p>Every guest keeps the original check-in number through waiting, service, checkout, or cancellation.</p></section>
@@ -77,6 +79,7 @@
 <script src="../assets/ticket-workspace-staging.js?v=direct-services-20261027"></script>
 <script src="../assets/ticket-workspace.js?v=direct-services-20261027"></script>
 <script src="../assets/pos-front-desk-tickets.js?v=checkout-links-20261027"></script>
-<script src="../assets/pos-front-desk-operations.js?v=ticket-views-1"></script>
+<script src="../assets/pos-front-desk-operations.js?v=station-overview-20261028"></script>
 <script src="../assets/pos-front-desk-overview.js?v=completed-1"></script>
+<script src="../assets/pos-station-map.js?v=station-overview-20261028"></script>
 </body></html>
