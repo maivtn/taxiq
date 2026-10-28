@@ -773,9 +773,15 @@ body[data-nexora-workspace="pos"] .sidebar-nav { min-height: 0; overflow-y: auto
   box-shadow:var(--shell-menu-active-shadow);
   color:#fff;
 }
-.sidebar:not(.staff-sidebar) .sidebar-nav .nav-subitem:is(.is-active,.is-expanded) {
+.sidebar:not(.staff-sidebar) .sidebar-nav .nav-subitem.nav-parent:is(.is-active,.is-expanded) {
   background:var(--shell-menu-sub-background);
   box-shadow:var(--shell-menu-sub-shadow);
+  color:#fff;
+  font-weight:800;
+}
+.sidebar:not(.staff-sidebar) .sidebar-nav .nav-subitem.is-active:not(.nav-parent) {
+  background:#5465ca55;
+  box-shadow:none;
   color:#fff;
   font-weight:800;
 }
