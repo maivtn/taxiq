@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="../assets/pos-report-tabs.css?v=compact-icons-20261028">
   <link rel="stylesheet" href="../assets/pos-income-report-views.css?v=hierarchy-20261028">
   <link rel="stylesheet" href="../assets/pos-report-layout.css?v=original-filters-20261028">
+  <link rel="stylesheet" href="../assets/pos-card-report.css?v=card-history-20261028">
 </head>
 <body>
 <div class="shell"><aside class="sidebar" aria-label="Salon sidebar"></aside><div class="app-area"><header class="header"></header>
@@ -20,14 +21,49 @@
     <a href="pos-technician-report.html?tab=store" data-report-tab="store"><img src="../assets/icon-oneqr/issue-2040-oneqr-store-3d.png" width="28" height="28" alt="" aria-hidden="true" draggable="false"><span class="pos-report-tab-label">Store income report</span></a>
     <a href="pos-technician-report.html?tab=service" data-report-tab="service"><img src="../assets/icon-oneqr/issue-2040-oneqr-receipt-3d.png" width="28" height="28" alt="" aria-hidden="true" draggable="false"><span class="pos-report-tab-label">Service income report</span></a>
     <a href="pos-technician-report.html?tab=payroll" data-report-tab="payroll"><img src="../assets/icon-oneqr/issue-2040-oneqr-badge-dollar-sign-3d.png" width="28" height="28" alt="" aria-hidden="true" draggable="false"><span class="pos-report-tab-label">Payroll</span></a>
-    <a href="pos-technician-report.html?tab=card" data-report-tab="card"><img src="../assets/icons/iconscout/payment-10647002.png" width="28" height="28" alt="" aria-hidden="true" draggable="false"><span class="pos-report-tab-label">Card</span></a>
+    <a href="pos-technician-report.html?tab=card" data-report-tab="card"><img src="../assets/icon-oneqr/issue-2040-oneqr-credit-card-3d.png" width="28" height="28" alt="" aria-hidden="true" draggable="false"><span class="pos-report-tab-label">Card</span></a>
   </nav>
   <section data-report-panel aria-label="Techs &amp; pay"></section>
   <section data-report-income aria-label="Income report" hidden></section>
+  <section class="pcr-view" data-report-card aria-label="Card payment report" hidden>
+    <svg class="symbols" aria-hidden="true"><defs>
+      <symbol id="pcr-i-chevron" viewBox="0 0 24 24"><path d="m9 5 7 7-7 7"/></symbol>
+      <symbol id="pcr-i-info" viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 11v6m0-10v.1"/></symbol>
+      <symbol id="pcr-i-close" viewBox="0 0 24 24"><path d="m6 6 12 12M6 18 18 6"/></symbol>
+    </defs></svg>
+    <div class="filters">
+      <div class="dates">
+        <label class="field"><span>From</span><span class="date-input"><span data-card-date-display="from">Oct 5, 2026</span><img src="../assets/icon-oneqr/issue-2040-oneqr-calendar-days-3d.png" alt="" aria-hidden="true"><input type="date" id="pcr-from" value="2026-10-05" aria-label="From date"></span></label>
+        <label class="field"><span>To</span><span class="date-input"><span data-card-date-display="to">Oct 28, 2026</span><img src="../assets/icon-oneqr/issue-2040-oneqr-calendar-days-3d.png" alt="" aria-hidden="true"><input type="date" id="pcr-to" value="2026-10-28" aria-label="To date"></span></label>
+      </div>
+      <div class="filter-caption">All amounts in <strong>USD</strong> · Newest first</div>
+    </div>
+    <p id="pcr-range-error" class="range-error" role="alert" hidden>Choose a valid date range. From must be on or before To.</p>
+    <section class="table-panel" aria-labelledby="pcr-history-title">
+      <div class="table-heading"><div><h2 id="pcr-history-title">Card payments <span class="count" id="pcr-count">26</span></h2><p>Captured card transactions and refund history.</p></div><span class="captured-tag">Captured payments</span></div>
+      <div id="pcr-report-content" aria-live="polite"></div>
+    </section>
+    <p class="info-note"><svg aria-hidden="true"><use href="#pcr-i-info"/></svg><span>Amount includes the tip. For completed orders, tips stay with the technician and are excluded from refunds.</span></p>
+    <dialog id="pcr-refund-dialog" aria-labelledby="pcr-refund-title">
+      <form id="pcr-refund-form" class="modal-form" novalidate>
+        <div class="modal-header"><div><h2 id="pcr-refund-title">Refund card payment</h2><p id="pcr-refund-subtitle"></p></div><button class="icon-btn" type="button" id="pcr-close-refund" aria-label="Close refund dialog"><svg aria-hidden="true"><use href="#pcr-i-close"/></svg></button></div>
+        <div class="modal-body">
+          <div class="refund-summary"><div><span>Original amount</span><strong id="pcr-original-amount"></strong></div><div><span>Already refunded</span><strong id="pcr-already-refunded"></strong></div><div><span>Available to refund</span><strong id="pcr-available-refund"></strong></div></div>
+          <label class="field"><span>Amount (USD)</span><input type="number" id="pcr-refund-amount" min="0.01" step="0.01" placeholder="e.g. 25.00" inputmode="decimal" aria-describedby="pcr-amount-help" required><small class="help" id="pcr-amount-help"></small></label>
+          <label class="field"><span>Reason</span><select id="pcr-refund-reason" aria-label="Reason"><option value="RequestedByCustomer">Requested by customer</option><option value="Duplicate">Duplicate charge</option><option value="ServiceIssue">Service issue</option><option value="Other">Other</option></select></label>
+          <label class="field"><span id="pcr-note-label">Note (optional)</span><textarea id="pcr-refund-note" rows="3" maxlength="500" placeholder="Add any details about this refund…"></textarea></label>
+          <label class="check"><input type="checkbox" id="pcr-notify-customer"><span>Email the customer a refund notice <span class="muted">(simulated)</span></span></label>
+          <p class="modal-error" id="pcr-refund-error" role="alert" hidden></p>
+        </div>
+        <div class="modal-foot"><span class="modal-demo">Demo only</span><button type="button" class="btn" id="pcr-cancel-refund">Cancel</button><button type="submit" class="btn primary" id="pcr-submit-refund">Refund</button></div>
+      </form>
+    </dialog>
+    <div class="toast" id="pcr-toast" role="status" hidden></div>
+  </section>
 </main></div></div>
 <dialog class="ptr-dialog" data-report-dialog aria-labelledby="ptr-detail-title"><header><div><p>PRINT PREVIEW</p><h2 id="ptr-detail-title">Technician report</h2></div><button class="ptr-close" type="button" data-close-report aria-label="Close report">×</button></header><div class="ptr-preview" data-report-preview></div><footer><button class="ptr-button" data-report-mail type="button">Send mail</button><button class="ptr-button primary" data-report-print type="button">Print</button></footer></dialog>
 <script>window.NEXORA_SHELL={workspace:'pos',activePage:'pos',activeTab:'report'};</script>
 <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
 <script src="../assets/nexora-icons.js"></script><script src="../assets/nexora-shell-nav.js?v=20261028-source-refresh"></script><script src="../assets/nexora-shell.js?v=20261028-sidebar-single-selection"></script>
-<script src="../assets/salon-data.js"></script><script src="../assets/pos-technician-report-data.js"></script><script src="../assets/pos-income-report-views.js?v=original-filters-20261028"></script><script src="../assets/pos-technician-report.js?v=original-filters-20261028"></script>
+<script src="../assets/salon-data.js"></script><script src="../assets/pos-technician-report-data.js"></script><script src="../assets/pos-income-report-views.js?v=original-filters-20261028"></script><script src="../assets/pos-card-report.js?v=card-history-20261028"></script><script src="../assets/pos-technician-report.js?v=card-history-20261028"></script>
 </body></html>

@@ -6,7 +6,7 @@
   const esc = value => String(value ?? '').replace(/[&<>"']/g, char => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[char]));
   const money = value => new Intl.NumberFormat('en-US', { style:'currency', currency:'USD' }).format((Number(value) || 0) / 100);
   const today = data.iso(new Date()), params = new URLSearchParams(location.search);
-  const state = { tab:['store','service','payroll','card'].includes(params.get('tab')) ? params.get('tab') : 'technician', mode:['Daily','Weekly','Monthly'].includes(params.get('mode')) ? params.get('mode') : 'Daily', selected:/^\d{4}-\d{2}-\d{2}$/.test(params.get('date') || '') ? params.get('date') : today, tech:'all', sort:'default', from:today, to:today };
+  const state = { tab:['store','service','payroll','card'].includes(params.get('tab')) ? params.get('tab') : 'technician', mode:['Daily','Weekly','Monthly'].includes(params.get('mode')) ? params.get('mode') : 'Daily', selected:/^\d{4}-\d{2}-\d{2}$/.test(params.get('date') || '') ? params.get('date') : today, tech:'all', sort:'default' };
   const incomePanel=root.querySelector('[data-report-income]');
   let rows = [], printRows = [];
   const button = (label, action, attrs='', classes='') => `<button type="button" class="ptr-button ${classes}" data-report-action="${action}" ${attrs}>${label}</button>`;
@@ -22,7 +22,7 @@
   function updateUrl(push=false) {
     const query=new URLSearchParams();
     if(state.tab!=='technician')query.set('tab',state.tab);
-    if(!['store','service'].includes(state.tab)){
+    if(['technician','payroll'].includes(state.tab)){
       if(state.mode!=='Daily')query.set('mode',state.mode);
       if(state.selected!==today)query.set('date',state.selected);
     }
@@ -59,19 +59,19 @@
     if(state.sort==='topup')rows.sort((a,b)=>b.topup-a.topup); if(state.sort==='achieved')rows.sort((a,b)=>b.achieved-a.achieved);
     panel.innerHTML=heading('Payroll')+`<div class="ptr-toolbar"><div class="ptr-period">${button('‹','previous','aria-label="Previous week"','ptr-arrow')}<span class="ptr-week">${esc(selectedRange().label)}</span>${button('›','next','aria-label="Next week" '+(selectedRange().end>=today?'disabled':''),'ptr-arrow')}</div><div class="ptr-payroll-tools"><select class="ptr-select" data-report-field="technician" aria-label="Filter by technician"><option value="all">All technicians</option>${roster().map(tech=>`<option value="${esc(tech.id)}" ${state.tech===tech.id?'selected':''}>${esc(tech.name)}</option>`).join('')}</select> <select class="ptr-select" data-report-field="sort" aria-label="Sort">${[['default','Default order'],['topup','Top-up (highest first)'],['achieved','% achieved (highest first)']].map(([id,label])=>`<option value="${id}" ${state.sort===id?'selected':''}>${label}</option>`).join('')}</select> ${button('Export CSV','export','','primary')}</div></div><p class="ptr-payroll-note">Weekly pay (Monday–Sunday). Payable matches Weekly Payroll; tips are paid separately and never count toward the guarantee. Salon remainder is before costs.</p>`+kpis([['TOTAL SERVICE',total('service')],['TOTAL PAYABLE',total('payable')],['TOTAL TOP-UP',total('topup')],['SALON REMAINDER (BEFORE COSTS)',total('remainder')]])+`<div class="ptr-table-wrap"><table class="ptr-table" aria-label="Payroll"><thead><tr><th>TECHNICIAN</th><th>SERVICE REVENUE</th><th>COMMISSION</th><th>GUARANTEE / WEEK</th><th title="Salon pays this so the technician reaches the weekly guarantee.">TOP-UP</th><th title="Deducted after the top-up.">CLEAN FEE</th><th title="What the technician is paid for the week, tips excluded.">PAYABLE</th><th title="Service revenue collected (after all discounts) minus payable — before rent, supplies and other costs.">SALON REMAINDER</th><th>RATING</th><th>TIPS</th><th title="All discounts on this technician’s services, whoever bore them.">DISCOUNTS</th><th>SUPPLY FEE</th></tr></thead><tbody>${rows.map(payrollRow).join('')}<tr><td><strong>Total</strong></td>${['service','commission','guarantee','topup','clean','payable','remainder'].map(key=>`<td><strong>${money(total(key))}</strong></td>`).join('')}<td></td><td>${money(total('tip'))}</td><td>${money(total('discount'))}</td><td>${money(total('supply'))}</td></tr></tbody></table></div>`;
   }
-  function renderCard() {
-    panel.innerHTML=heading('Card')+`<div class="ptr-card-range"><div class="ptr-field"><span>From</span>${dateControl('From',state.from,'from')}</div><div class="ptr-field"><span>To</span>${dateControl('To',state.to,'to')}</div></div><div class="ptr-empty">No card payments in this period.</div>`;
-  }
   function render(push=false) {
     root.querySelectorAll('[data-report-tab]').forEach(link=>{link.classList.toggle('is-active',link.dataset.reportTab===state.tab);if(link.dataset.reportTab===state.tab)link.setAttribute('aria-current','page');else link.removeAttribute('aria-current');});
-    const income=['store','service'].includes(state.tab);panel.hidden=income;
+    const income=['store','service'].includes(state.tab),card=state.tab==='card';panel.hidden=income||card;
+    if(card)window.NEXORA_POS_CARD_REPORT.show();else window.NEXORA_POS_CARD_REPORT.hide();
     if(income){
       incomePanel.setAttribute('aria-label',state.tab==='store'?'Store income report':'Service income report');
       window.NEXORA_POS_INCOME_REPORTS.show(incomePanel,state.tab);
     }else{
       window.NEXORA_POS_INCOME_REPORTS.hide(incomePanel);
-      panel.removeAttribute('aria-label');panel.setAttribute('aria-labelledby','ptr-panel-title');
-      if(state.tab==='technician')renderTechnician();else if(state.tab==='payroll')renderPayroll();else renderCard();
+      if(!card){
+        panel.removeAttribute('aria-label');panel.setAttribute('aria-labelledby','ptr-panel-title');
+        if(state.tab==='technician')renderTechnician();else renderPayroll();
+      }
     }
     updateUrl(push);
     if(document.activeElement?.closest('[hidden]'))root.querySelector('.pos-report-tabs [aria-current="page"]')?.focus({preventScroll:true});
@@ -112,7 +112,7 @@
     event.preventDefault();const modes=Array.from(root.querySelectorAll('[data-report-mode]')),index=modes.indexOf(event.target);
     modes[event.key==='Home'?0:event.key==='End'?modes.length-1:(index+(event.key==='ArrowRight'?1:-1)+modes.length)%modes.length].click();
   });
-  root.addEventListener('change',event=>{const field=event.target.dataset.reportField,value=event.target.value;if(!field)return;if(field==='date'){if(!value)return;state.selected=value.length===7?value+'-01':value;}if(field==='technician')state.tech=value;if(field==='sort')state.sort=value;if(field==='from'){if(!value)return;state.from=value;if(state.to<value)state.to=value;}if(field==='to'){if(!value)return;state.to=value;if(state.from>value)state.from=value;}render();});
+  root.addEventListener('change',event=>{const field=event.target.dataset.reportField,value=event.target.value;if(!field)return;if(field==='date'){if(!value)return;state.selected=value.length===7?value+'-01':value;}if(field==='technician')state.tech=value;if(field==='sort')state.sort=value;render();});
   dialog.querySelector('[data-close-report]').addEventListener('click',()=>dialog.close());
   dialog.addEventListener('click',event=>{if(event.target===dialog){const box=dialog.getBoundingClientRect();if(event.clientX<box.left||event.clientX>box.right||event.clientY<box.top||event.clientY>box.bottom)dialog.close();}});
   dialog.querySelector('[data-report-print]').addEventListener('click',()=>{document.body.classList.add('ptr-printing');try{window.print();}finally{document.body.classList.remove('ptr-printing');}});
