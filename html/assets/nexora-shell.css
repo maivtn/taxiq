@@ -803,7 +803,6 @@ body[data-nexora-workspace="pos"] .sidebar { padding:18px 14px; }
 .shell-products-toggle:hover { border-color:#95a9d6; background:#ffffff1b; color:#fff; }
 .shell-products-toggle:focus-visible { outline:2px solid #32d7ff; outline-offset:2px; }
 .shell-tree-label { min-width:0; overflow-wrap:anywhere; flex:1; text-align:left; }
-.sidebar:not(.staff-sidebar) .shell-tree-section-label { margin:7px 0 2px; padding:0 9px; color:#b7c9ec; font-size:11px; font-weight:700; line-height:1.4; letter-spacing:.03em; }
 @keyframes shellNavMenuUnfold { from { opacity:.3; } to { opacity:1; } }
 @media (max-width:768px) {
   .sidebar:not(.staff-sidebar) .sidebar-nav .nav-item { min-height:48px; padding:10px 11px; }

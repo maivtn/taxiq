@@ -448,7 +448,6 @@
           {
             "key": "qr-tai-tiem",
             "label": "In-salon QR",
-            "sectionLabel": true,
             "children": [
               {
                 "key": "tong-quan-one-qr",
@@ -519,7 +518,6 @@
           {
             "key": "chi-tra-nhan-vien",
             "label": "Staff payouts",
-            "sectionLabel": true,
             "children": [
               {
                 "key": "tong-quan-tien-tip",
