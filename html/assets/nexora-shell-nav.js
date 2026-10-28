@@ -321,12 +321,6 @@
         "href": "#pos-ai-voice"
       },
       {
-        "key": "sms-campaigns",
-        "label": "SMS Campaigns",
-        "iconKey": "news",
-        "href": "https://nexoratouch.com/dashboard/ai-hub?tab=sms-campaigns"
-      },
-      {
         "key": "spin-wheel",
         "label": "Spin Wheel",
         "iconKey": "spinwheel",
