@@ -104,7 +104,13 @@
       var current = new URL(window.location.href), target = new URL(node.href, current);
       if (target.pathname !== current.pathname) return false;
       if (target.pathname.endsWith('/dashboard.html')) return (target.searchParams.get('module') || '') === (current.searchParams.get('module') || '') && (!target.searchParams.has('section') || target.searchParams.get('section') === current.searchParams.get('section'));
-      var matches = function(url) { return Array.from(url.searchParams).every(function(pair) { var value = current.searchParams.get(pair[0]); if (pair[0] === 'view' && value === null && current.pathname.endsWith('/booking-book-phase-1.html')) value = 'today'; return value === pair[1]; }); };
+      var matches = function(url) { return Array.from(url.searchParams).every(function(pair) {
+        var value = current.searchParams.get(pair[0]);
+        if (pair[0] === 'view' && value === null && current.pathname.endsWith('/booking-book-phase-1.html')) value = 'today';
+        // Bookmarked Call Log URLs belong to the POS Customers & marketing screen.
+        if (pair[0] === 'nav' && value === null && current.pathname.endsWith('/booking-book-phase-1.html') && current.searchParams.get('tab') === 'calllog') value = 'pos';
+        return value === pair[1];
+      }); };
       if (!matches(target)) return false;
       var moreSpecific = false;
       if (treeNav && !node.children) visit(NAV, function(other) {
@@ -121,6 +127,7 @@
   }
 
   function itemIsActive(node, item, tab) {
+    if (item.navContext) return routeActive(item);
     return itemPages(node, item).indexOf(activePage) !== -1 && !!item.tab && item.tab === tab;
   }
 
@@ -141,7 +148,7 @@
 
   function sidebarRoute() {
     var params = new URLSearchParams(window.location.search || '');
-    return (window.location.pathname || '') + '|' + ['module', 'section', 'group', 'tab', 'view', 'bookingView'].map(function(key) { return params.get(key) || ''; }).join('|') + '|' + activeTab;
+    return (window.location.pathname || '') + '|' + ['module', 'section', 'group', 'tab', 'view', 'bookingView', 'nav'].map(function(key) { return params.get(key) || ''; }).join('|') + '|' + activeTab;
   }
 
   function normalizeExpandedGroups(preferActive) {
@@ -364,7 +371,7 @@
   function renderTree(nodes, depth) {
     var hidden = hiddenSidebarKeySet();
     return nodes.filter(function (node) { return !node.accountOnly && !hidden[node.key]; }).map(function (node) {
-      var active = node.href && node.href.indexOf('&view=') !== -1 ? routeActive(node) : node.page === activePage && node.tab ? node.tab === activeTab : routeActive(node);
+      var active = node.navContext || node.href && node.href.indexOf('&view=') !== -1 ? routeActive(node) : node.page === activePage && node.tab ? node.tab === activeTab : routeActive(node);
       var label = ((depth === 0 || node.showIcon) && node.iconKey ? treeIcon(node) : '') + '<span class="shell-tree-label">' + esc(node.label) + '</span>' + (node.externalIndicator || node.newTab ? '<i class="sidebar-external-icon" data-lucide="arrow-up-right" aria-hidden="true"></i>' : '');
       var cls = depth ? 'nav-subitem' : 'nav-item';
       if (node.children) {
@@ -377,8 +384,8 @@
       }
       if (node.availability === 'unavailable') return '<button type="button" class="' + cls + '" data-shell-key="' + esc(node.key) + '" disabled>' + label + '</button>';
       if (!node.href) return '';
-      var native = node.page === activePage && node.tab && node.href.split('?')[0] === (window.location.pathname || '').split('/').pop() && node.href.indexOf('&view=') === -1 && (typeof cfg.onNavigate === 'function' || typeof window.activateMainTab === 'function');
-      return '<' + (native ? 'button type="button" data-shell-tab="' + esc(node.tab) + '"' : 'a href="' + esc(node.href) + '"' + (node.newTab ? ' target="_blank" rel="noopener noreferrer"' : '')) + ' class="' + cls + (active ? ' is-active' : '') + '" data-shell-key="' + esc(node.key) + '"' + (!native && node.page && node.tab && node.href.indexOf('&view=') === -1 ? ' data-shell-active-tab="' + esc(node.tab) + '" data-shell-pages="' + esc(node.page) + '"' : '') + (active ? ' aria-current="page"' : '') + '>' + label + (node.availability === 'preview' ? '<small class="shell-preview-tag">PREVIEW</small>' : '') + '</' + (native ? 'button' : 'a') + '>';
+      var native = !node.navContext && node.page === activePage && node.tab && node.href.split('?')[0] === (window.location.pathname || '').split('/').pop() && node.href.indexOf('&view=') === -1 && (typeof cfg.onNavigate === 'function' || typeof window.activateMainTab === 'function');
+      return '<' + (native ? 'button type="button" data-shell-tab="' + esc(node.tab) + '"' : 'a href="' + esc(node.href) + '"' + (node.newTab ? ' target="_blank" rel="noopener noreferrer"' : '')) + ' class="' + cls + (active ? ' is-active' : '') + '" data-shell-key="' + esc(node.key) + '"' + (node.navContext ? ' data-shell-nav-context="' + esc(node.navContext) + '"' : '') + (!native && node.page && node.tab && node.href.indexOf('&view=') === -1 ? ' data-shell-active-tab="' + esc(node.tab) + '" data-shell-pages="' + esc(node.page) + '"' : '') + (active ? ' aria-current="page"' : '') + '>' + label + (node.availability === 'preview' ? '<small class="shell-preview-tag">PREVIEW</small>' : '') + '</' + (native ? 'button' : 'a') + '>';
     }).join('');
   }
 
@@ -516,6 +523,8 @@
     for (var i = 0; i < subs.length; i++) {
       var pages = subs[i].getAttribute('data-shell-pages');
       var selected = (!pages || pages.split(' ').indexOf(activePage) !== -1) && (subs[i].getAttribute('data-shell-tab') || subs[i].getAttribute('data-shell-active-tab')) === tab;
+      var context = subs[i].getAttribute('data-shell-nav-context');
+      if (context) selected = selected && context === (new URL(window.location.href).searchParams.get('nav') || 'pos');
       subs[i].classList.toggle('is-active', selected);
       if (selected) subs[i].setAttribute('aria-current', 'page'); else subs[i].removeAttribute('aria-current');
     }
@@ -642,6 +651,7 @@
         var canNavigate = typeof cfg.onNavigate === 'function' || typeof window.activateMainTab === 'function';
         if (target.pathname !== current.pathname || !canNavigate) return;
         event.preventDefault();
+        if (this.hasAttribute('data-shell-nav-context') && target.href !== current.href) window.history.pushState({tab: this.getAttribute('data-shell-active-tab')}, '', target.href);
         navigate(this.getAttribute('data-shell-active-tab'));
         setActiveTab(this.getAttribute('data-shell-active-tab'));
         setDrawer(false);

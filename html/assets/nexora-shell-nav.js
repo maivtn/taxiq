@@ -230,6 +230,7 @@
           {
             "key": "pos-call-log",
             "label": "Call log",
+            "navContext": "pos",
             "href": "#pos-call-log"
           },
           {
@@ -347,6 +348,7 @@
               {
                 "key": "nhat-ky-cuoc-goi",
                 "label": "Call log",
+                "navContext": "ai-receptionist",
                 "href": "#pos-call-log"
               },
               {
@@ -586,6 +588,7 @@
   function prepare(items) {
     items.forEach(function (node) {
       if (node.href) node.href = resolve(node.href, node.opsView);
+      if (node.href && node.navContext) node.href += (node.href.indexOf('?') === -1 ? '?' : '&') + 'nav=' + encodeURIComponent(node.navContext);
       if (node.key === 'vlinkpay-ai-ads') node.availability = 'unavailable';
       if (node.newTab && node.href && !/^https?:/.test(node.href)) { node.externalIndicator = true; delete node.newTab; }
       if (node.href && node.href.indexOf('community.html?tab=') === 0) { node.page = 'community'; node.tab = node.href.split('tab=')[1]; }
