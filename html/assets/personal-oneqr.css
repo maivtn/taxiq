@@ -9,7 +9,7 @@
 .pqr-tabs { margin-bottom: 20px; }
 .pqr-advertising { min-width: 0; }
 .qa-personal-app > h1 { margin-top: 16px; }
-.pqr-section { display: grid; gap: 18px; }
+.pqr-section { display: grid; grid-template-columns: minmax(0,1fr); gap: 18px; }
 .pqr-card { min-width: 0; padding: 18px; background: var(--nexora-surface); border: 1px solid var(--nexora-border); border-radius: 9px; }
 .pqr-card h2, .pqr-card h3 { margin: 0; color: var(--nexora-text); }
 .pqr-card h2 { font-size: 16px; }
