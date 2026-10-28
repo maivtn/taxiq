@@ -67,8 +67,8 @@
     ];
   }
   function defaults() {
-    return { version: 1, id: 'personal-demo', name: 'NGUYỄN MINH AN — One QR', greeting: 'Hi, I’m An. Nice to meet you!',
-      profile: { name: 'Nguyễn Minh An', bio: '', phone: '', email: '', showPhone: false, showEmail: false, avatar: '' },
+    return { version: 1, id: 'personal-demo', name: 'Nguyễn Văn A — One QR', greeting: 'Hi, I’m A. Nice to meet you!',
+      profile: { name: 'Nguyễn Văn A', bio: '', phone: '', email: '', showPhone: false, showEmail: false, avatar: '' },
       links: template(linked), salonId: linked ? salons[0].id : null, payments: {}, referral: 'https://localhost:3000/?ref=93176C31&leg=left&staff=NAIE5LMVX', referralPlacement: 'left', staffId: 'NAIE5LMVX', ads: false, consent: false, adIndustries: [], leads: [] };
   }
   function read() {
@@ -77,11 +77,13 @@
       const data = JSON.parse(localStorage.getItem(KEY));
       if (data && data.version === 1) {
         const result = { ...initial, ...data, profile: { ...initial.profile, ...data.profile } };
+        if (result.name === 'NGUYỄN MINH AN — One QR') result.name = initial.name;
+        if (result.profile.name === 'Nguyễn Minh An') result.profile.name = initial.profile.name;
         result.links = Array.isArray(data.links) ? data.links.filter(item => item && typeof item.name === 'string' && typeof item.url === 'string').map(item => ({ ...item, icon: icons.includes(item.icon) || isIconImage(item.icon) ? item.icon : 'link', background: window.ONEQR_ACTION_APPEARANCE?.backgrounds.includes(item.background) ? item.background : '' })) : initial.links;
         result.adIndustries = Array.isArray(data.adIndustries) ? [...new Set(data.adIndustries.filter(item => typeof item === 'string'))] : [];
         result.referralPlacement = data.referralPlacement === 'right' ? 'right' : 'left';
         result.links.forEach(link => { if (Object.hasOwn(legacyLabels, link.name)) link.name = legacyLabels[link.name]; });
-        if (result.greeting === 'Xin chào, mình là An. Rất vui được kết nối với bạn!') result.greeting = initial.greeting;
+        if (['Xin chào, mình là An. Rất vui được kết nối với bạn!', 'Hi, I’m An. Nice to meet you!'].includes(result.greeting)) result.greeting = initial.greeting;
         if (['https://vlinkpay.com/?ref=C884A316', 'https://vlinkpay.com?ref=C884A316'].includes(result.referral)) {
           result.referral = initial.referral;
           result.links.forEach(link => { if (link.kind === 'referral' && /vlinkpay\.com\/?\?ref=C884A316$/.test(link.url)) link.url = referralUrl(result); });
