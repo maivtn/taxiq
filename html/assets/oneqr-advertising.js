@@ -85,16 +85,18 @@
   let busy = false;
   const messages = {};
   const PERSONAL_COPY = {
-    navSetup: 'Kích hoạt', navAds: 'Quảng cáo', setupTitle: 'Quảng cáo kiếm tiền',
-    setupIntro: 'Personal được tham gia hiển thị quảng cáo; kết quả và thu nhập thuộc tài khoản sở hữu QR.',
-    agreement: 'Tôi đã đọc nội dung tham gia và đồng ý hiển thị quảng cáo.',
-    activate: 'Kích hoạt', chosenIndustry: 'Trạng thái', adsTitle: 'Quảng cáo kiếm tiền',
-    noAgree: 'Prototype dùng dữ liệu mẫu; không thực hiện thanh toán, gửi tip hoặc thay đổi số dư.',
-    earnIntro: 'Chỉ chủ tài khoản xem khu vực kết quả và thu nhập. Prototype dùng dữ liệu minh hoạ hoặc trạng thái chưa có dữ liệu; không trình bày số mẫu như số dư thật.',
-    p1: 'Người dùng đọc nội dung tham gia và chủ động chọn đồng ý. Nội dung quảng cáo mang nhãn tài trợ.',
-    p2: 'Personal không áp dụng bộ lọc chặn quảng cáo đối thủ theo ngành. Chính sách kiểm duyệt và phân phối chung vẫn áp dụng.'
+    navSetup: 'Activate', navAds: 'Advertising', setupTitle: 'Earn from advertising',
+    setupIntro: 'Personal accounts can display ads. Results and earnings belong to the QR owner.',
+    agreement: 'I have read the participation terms and agree to display advertising.',
+    activate: 'Activate', adsTitle: 'Advertising industries', chosenIndustry: 'Allowed advertising industries',
+    groupLabel: 'Advertising industry group *', industryLabel: 'Primary advertising industry *',
+    secondaryLabel: 'Additional advertising industries', secondaryHelp: 'Select the advertising industries allowed on your One QR.',
+    noAgree: 'This prototype uses demo data; it does not process payments, tips, or balance changes.',
+    earnIntro: 'Only the account owner can view results and earnings. This prototype uses demo data or empty states; sample amounts are not real balances.',
+    p1: 'Read the participation terms and choose whether to opt in. Advertising is labeled as sponsored.',
+    p2: 'Only advertising from your selected industries may appear on your One QR. General review and distribution policies still apply.'
   };
-  const t = key => (personal && state.language === 'vi' ? PERSONAL_COPY[key] : undefined) ?? UI_COPY[state.language][key] ?? PO[state.language][key];
+  const t = key => (personal ? PERSONAL_COPY[key] : undefined) ?? UI_COPY[state.language][key] ?? PO[state.language][key];
   const number = value => new Intl.NumberFormat(state.language === 'vi' ? 'vi-VN' : 'en-US', { maximumFractionDigits: 2 }).format(value);
   const dollars = points => new Intl.NumberFormat('en-US', { style: 'currency', currency: 'USD' }).format(points / 100);
   const escape = value => String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[character]));
@@ -116,6 +118,20 @@
   function syncOwner() {
     if (!personal || typeof options.readOwner !== 'function') return;
     const owner = options.readOwner();
+    const allowed = new Set(PO.categories.flatMap(category => category[3]).filter(industry => industry[0] !== 'other').map(industry => industry[0]));
+    const selected = (Array.isArray(owner.adIndustries) ? owner.adIndustries : []).filter(value => allowed.has(value));
+    const selection = owner.adIndustrySelection;
+    if (selection && typeof selection === 'object') {
+      const category = PO.categories.find(category => category[0] === selection.group);
+      state.group = category?.[0] || '';
+      state.industry = category?.[3].find(industry => industry[0] === selection.industry)?.[0] || '';
+      state.custom = typeof selection.custom === 'string' ? selection.custom : '';
+    } else if (selected.length) {
+      // Keep selections made before the primary/additional industry form was shared.
+      state.industry = selected.includes(state.industry) ? state.industry : selected[0];
+      state.group = PO.categories.find(category => category[3].some(industry => industry[0] === state.industry))[0];
+    }
+    state.secondary = selected.filter(value => value !== state.industry);
     state.activated = Boolean(owner.consent);
     state.adsEnabled = Boolean(owner.ads && state.activated);
     state.consent = state.activated ? state.consent || { account: BUSINESS_ID, version: VERSION } : null;
@@ -123,15 +139,18 @@
   }
   function notifyOwner(previous) {
     if (!personal || typeof options.onActivationChange !== 'function') return true;
-    if (options.onActivationChange({ activated: state.activated, adsEnabled: state.adsEnabled }) !== false) return true;
+    const allowedIndustries = [...new Set([state.industry, ...state.secondary].filter(value => value && value !== 'other'))];
+    const industrySelection = { group: state.group, industry: state.industry, custom: state.custom };
+    if (options.onActivationChange({ activated: state.activated, adsEnabled: state.adsEnabled, allowedIndustries, industrySelection }) !== false) return true;
     Object.assign(state, previous);
     refreshBalances();
     return false;
   }
-  if (personal) {
-    root.querySelectorAll('[data-qa-business-only] [required]').forEach(control => { control.required = false; });
-    syncOwner();
+  function industrySnapshot() {
+    return { group: state.group, industry: state.industry, secondary: [...state.secondary], custom: state.custom,
+      activated: state.activated, adsEnabled: state.adsEnabled, consent: state.consent, audit: [...state.audit] };
   }
+  if (personal) syncOwner();
 
   function save() {
     try { sessionStorage.setItem(STORE, JSON.stringify({ ...state, version: VERSION })); }
@@ -146,7 +165,7 @@
   }
 
   function renderGroups() {
-    if (personal) { updateIndustry(); return; }
+    $('custom').value = state.custom;
     $('group').replaceChildren(new Option(t('chooseGroup'), ''));
     PO.categories.forEach(category => $('group').add(new Option(category[state.language === 'vi' ? 1 : 2], category[0])));
     $('group').value = state.group;
@@ -216,7 +235,7 @@
         }
       });
     } else {
-      $('secondary-help').textContent = PO[state.language].secondaryHelp;
+      $('secondary-help').textContent = personal ? t('secondaryHelp') : PO[state.language].secondaryHelp;
     }
     renderSelectedSecondary();
   }
@@ -262,7 +281,6 @@
   }
 
   function canActivate() {
-    if (personal) return $('agree').checked;
     const industry = PO.categories.find(category => category[0] === state.group)?.[3].find(item => item[0] === state.industry);
     return Boolean(industry) && $('agree').checked && (state.industry !== 'other' || Boolean(state.custom.trim()));
   }
@@ -278,14 +296,6 @@
   }
 
   function updateIndustry() {
-    if (personal) {
-      $('custom').required = false;
-      const status = !state.activated ? 'statusOff' : state.adsEnabled ? 'adsOn' : 'adsOff';
-      $('chosen').textContent = t(status);
-      $('adIndustry').textContent = t(status);
-      $('activate').disabled = !canActivate();
-      return;
-    }
     const category = PO.categories.find(group => group[0] === state.group);
     const classified = Boolean(category?.[3].some(industry => industry[0] === state.industry && industry[0] !== 'other'));
     // Older page markup may still include the PO's unconditional classification notes.
@@ -301,6 +311,7 @@
     $('custom').required = state.industry === 'other';
     $('chosen').textContent = label;
     $('adIndustry').textContent = label;
+    if (personal) $('activate').disabled = !canActivate();
   }
 
   function refreshBalances() {
@@ -336,6 +347,7 @@
     $('ads-status').textContent = t(state.adsEnabled ? 'adsOn' : 'adsOff');
     $('ads-toggle').classList.toggle('hide', !state.activated);
     $('ads-toggle').textContent = t(state.adsEnabled ? 'disableAds' : 'enableAds');
+    if (personal) $('ads-toggle').disabled = !state.adsEnabled && !canActivate();
     if (messages.payoutResult?.key) report('payoutResult', state.balance >= 10000 ? 'payoutDone' : 'payoutLow', state.balance < 10000);
     updateConversionPreview();
     renderHistories();
@@ -463,7 +475,7 @@
   }
 
   function setLanguage(language) {
-    state.language = language === 'en' ? 'en' : 'vi';
+    state.language = personal || language === 'en' ? 'en' : 'vi';
     document.documentElement.lang = state.language;
     if (!personal) document.title = t('title');
     root.querySelectorAll('[data-i]').forEach(element => { element.textContent = t(element.dataset.i); });
@@ -516,7 +528,7 @@
       businessId: BUSINESS_ID, account: personal ? 'Personal' : 'Business Owner', business: personal ? options.accountId : 'Bitcoin Nail Bar',
       timestamp: new Date().toISOString(), version: VERSION, language: state.language,
       primaryIndustry: state.industry, secondaryIndustries: [...state.secondary],
-      description: state.custom, classification: personal ? 'not-applicable' : state.industry === 'other' ? 'pending' : 'confirmed',
+      description: state.custom, classification: state.industry === 'other' ? 'pending' : 'confirmed',
       placements: ['Deal Nearby', 'Search Deals', 'Explore'], earningsEnrolled: true
     };
     state.audit.push({ id: id(), type: 'activation', ...state.consent });
@@ -528,6 +540,7 @@
 
   function toggleAdvertising() {
     if (!state.activated) return;
+    if (personal && !state.adsEnabled && !canActivate()) return;
     const previous = { adsEnabled: state.adsEnabled, audit: [...state.audit] };
     state.adsEnabled = !state.adsEnabled;
     state.audit.push({
@@ -681,6 +694,7 @@
   });
 
   root.addEventListener('change', event => {
+    const previous = personal ? industrySnapshot() : null;
     if (['group', 'industry', 'secondary'].includes(event.target.id)) reviewIndustryChange();
     if (event.target.id === 'group') {
       state.group = $('group').value;
@@ -697,6 +711,11 @@
       if (!$('agree').checked) reviewIndustryChange('consent-change');
       updateIndustry();
     }
+    if (personal && ['group', 'industry', 'secondary', 'agree'].includes(event.target.id)) {
+      if (!notifyOwner(previous)) { renderGroups(); $('agree').checked = state.activated; }
+      refreshBalances();
+      updateIndustry();
+    }
     save();
   });
 
@@ -707,7 +726,14 @@
       $('convertAmount').removeAttribute('aria-invalid');
       updateConversionPreview();
     }
-    if (event.target.id === 'custom') { reviewIndustryChange(); state.custom = $('custom').value; updateIndustry(); save(); }
+    if (event.target.id === 'custom') {
+      const previous = personal ? industrySnapshot() : null;
+      reviewIndustryChange();
+      state.custom = $('custom').value;
+      if (personal && !notifyOwner(previous)) { renderGroups(); $('agree').checked = state.activated; }
+      updateIndustry();
+      save();
+    }
   });
 
   const syncRoute = () => { if (root.isConnected) navigate(location.hash.slice(1).split('/')[0], false); };
@@ -730,10 +756,10 @@
   });
   seedIncomeHistory();
   seedTransferHistory();
-  setLanguage('vi');
+  setLanguage(personal ? 'en' : 'vi');
   navigate(location.hash.slice(1).split('/')[0], false);
   const controller = {
-    refresh() { syncOwner(); refreshBalances(); updateIndustry(); },
+    refresh() { syncOwner(); if (personal) renderGroups(); refreshBalances(); updateIndustry(); },
     close() { if ($('convert').open) $('convert').close(); }
   };
   instances.set(root, controller);

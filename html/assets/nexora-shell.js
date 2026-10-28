@@ -498,7 +498,7 @@
     { label: 'Tip QR', tab: 'tip-qr' },
     { label: 'Accept Payment', tab: 'accept-payment' },
     { label: 'Referral Link', tab: 'referral-link' },
-    { label: 'Quảng cáo', tab: 'advertising' }
+    { label: 'Advertising', tab: 'advertising' }
   ];
   function renderPersonalQrMenu() {
     var active = PERSONAL_QR_ITEMS.some(function (item) { return item.tab === activeTab; });

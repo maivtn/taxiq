@@ -9,7 +9,7 @@ const assets = new URL('../../../html/assets/', import.meta.url);
 const pages = new URL('../../../html/pages/', import.meta.url);
 const storeSource = readFileSync(new URL('personal-oneqr-store.js', assets), 'utf8');
 const uiSource = readFileSync(new URL('personal-oneqr.js', assets), 'utf8');
-const menuLabels = ['One QR', 'Tip QR', 'Accept Payment', 'Referral Link', 'Quảng cáo'];
+const menuLabels = ['One QR', 'Tip QR', 'Accept Payment', 'Referral Link', 'Advertising'];
 function app(t, {path='oneqr-personal.html?account=personal', saved, publicPage=false}={}) {
   const source = readFileSync(new URL(publicPage ? '../customer/oneqr-personal.html' : path.split('?')[0], pages), 'utf8');
   const dom = new JSDOM(source, {url: 'https://nexora.test/html/' + (publicPage ? 'customer/' : 'pages/') + path, runScripts: 'outside-only'});
@@ -18,10 +18,11 @@ function app(t, {path='oneqr-personal.html?account=personal', saved, publicPage=
   w.HTMLDialogElement.prototype.close=function(){this.open=false;};
   w.URL.createObjectURL=()=> 'blob:demo';w.URL.revokeObjectURL=()=>{};
   if(saved)w.localStorage.setItem('nexora.personal-oneqr.v1',JSON.stringify(saved));
+  w.eval(readFileSync(new URL('oneqr-action-appearance.js',assets),'utf8'));
   w.eval(storeSource);
   if(!publicPage){
     w.NEXORA_SHELL={activePage:'staff',activeTab:'one-qr',salonLinked:w.NEXORA_PERSONAL_QR.linked,onNavigate(tab){w.NEXORA_PERSONAL_QR.navigate(tab);}};
-    for(const file of ['nexora-icons.js','nexora-shell-nav.js','nexora-shell.js','oneqr-advertising-po.js','personal-oneqr-advertising-template.js','oneqr-advertising.js'])w.eval(readFileSync(new URL(file,assets),'utf8'));
+    for(const file of ['nexora-icons.js','nexora-shell-nav.js','nexora-shell.js','oneqr-advertising-po.js','personal-oneqr-advertising-template.js','oneqr-advertising.js','receive-payment-methods.js'])w.eval(readFileSync(new URL(file,assets),'utf8'));
   }
   w.eval(uiSource);w.document.dispatchEvent(new w.Event('DOMContentLoaded'));
   return w;
@@ -29,6 +30,7 @@ function app(t, {path='oneqr-personal.html?account=personal', saved, publicPage=
 const click=(w,action)=>w.document.querySelector(action==='activate'?'#oneqr-advertising #activate':'[data-pqr-action="'+action+'"]').click();
 function input(w,selector,value){const node=w.document.querySelector(selector);node.value=value;node.dispatchEvent(new w.Event('input',{bubbles:true}));return node;}
 function submit(w,selector){w.document.querySelector(selector).dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));}
+function selectAdIndustry(w){for(const [id,value] of [['group','beauty'],['industry','nail']]){const select=w.document.querySelector('#oneqr-advertising #'+id);select.value=value;select.dispatchEvent(new w.Event('change',{bubbles:true}));}}
 
 test('both Personal states have the same five One QR destinations directly after Community',t=>{
  for(const linked of [false,true]){
@@ -67,18 +69,20 @@ test('mobile Staff sidebar has the same One QR group and removes old duplicate e
 });
 test('unlinked Personal cannot display a salon tip QR, while the linked demo can select authorized salons',t=>{
  const unlinked=app(t,{path:'frame-personal.html?tab=tip-qr'});
- assert.match(unlinked.document.querySelector('#pqr-panel').textContent,/Chưa liên kết tiệm/);
+ assert.match(unlinked.document.querySelector('#pqr-panel').textContent,/No salon linked/);
  assert.equal(unlinked.document.querySelector('#pqr-panel [data-pqr-qr]'),null);
- const staff=app(t,{path:'frame-staff.html?tab=tip-qr'}),select=staff.document.querySelector('[data-pqr-salon]');
- assert.equal(select.options.length,2);select.value=select.options[1].value;select.dispatchEvent(new staff.Event('change',{bubbles:true}));
- assert.match(staff.document.querySelector('#pqr-panel [data-pqr-qr]').dataset.pqrQr,/salon=lux-nail-lounge/);
+ const staff=app(t,{path:'frame-staff.html?tab=tip-qr'}),d=staff.document;
+ assert.equal(d.querySelectorAll('[data-salon-qr-list] [data-pqr-qr]').length,3);
+ assert.equal(d.querySelector('[data-pqr-salon]'),null);
+ d.querySelector('[data-pqr-salon-view="lux-nail-lounge"]').click();
+ assert.match(d.querySelector('.pqr-dialog [data-pqr-qr]').dataset.pqrQr,/salon\/lux-nail-lounge\/staff\/david-le918747/);
 });
 test('the personal builder keeps all required areas and excludes Business role, industry and identity controls',t=>{
  const w=app(t),main=w.document.querySelector('main');
- for(const label of ['Hoạt động hôm nay','Nội dung hiển thị','Cấu hình','Xem trước','Thông tin dùng chung','Hiệu quả One QR','Liên hệ nhận được'])assert.ok(main.textContent.includes(label),label);
+ for(const label of ['Today’s activity','Modules','Configuration','Live Preview','Shared profile','OneQR performance','Contacts sent back'])assert.ok(main.textContent.includes(label),label);
  assert.equal(main.querySelectorAll('.pqr-builder > section').length,3);
  assert.doesNotMatch(main.textContent,/Change industry|Identity|Customer|Station|Staff Portal/);
- assert.ok(main.textContent.includes('Dữ liệu minh hoạ'));
+ assert.ok(main.textContent.includes('Demo data'));
 });
 test('editing, toggling, reordering, adding and deleting links updates the preview; QR remains stable',t=>{
  const w=app(t),d=w.document,qr=d.querySelector('[data-pqr-qr]').dataset.pqrQr;
@@ -114,20 +118,39 @@ test('profile editing defaults private and public page and vCard share only opte
 });
 test('payment configuration controls the public payment link without depending on salon membership',t=>{
  const w=app(t);assert.equal(w.document.querySelector('[data-pqr-phone] [data-pqr-link=payment]'),null);
- w.NEXORA_PERSONAL_QR.navigate('accept-payment');w.document.querySelector('[data-pqr-method=Zelle]').click();
- input(w,'[data-pqr-payment-form] [name=identifier]','an@example.com');submit(w,'[data-pqr-payment-form]');
+ w.NEXORA_PERSONAL_QR.navigate('accept-payment');w.document.querySelector('[data-rp-edit=zelle]').click();
+ input(w,'[data-rp-form] [name=holder]','An Nguyen');input(w,'[data-rp-form] [name=identifier]','an@example.com');submit(w,'[data-rp-form]');
  assert.ok(w.document.querySelector('#pqr-panel [data-pqr-qr]'));
  w.NEXORA_PERSONAL_QR.navigate('one-qr');assert.ok(w.document.querySelector('[data-pqr-phone] [data-pqr-link=payment]'));
+ w.NEXORA_PERSONAL_QR.navigate('accept-payment');w.document.querySelector('[data-rp-toggle=zelle]').click();
+ assert.equal(w.NEXORA_PERSONAL_QR.hasPayment(w.NEXORA_PERSONAL_QR.read()),false);
+ assert.equal(w.NEXORA_PERSONAL_QR.read().payments.Zelle.identifier,'an@example.com');
+ assert.equal(w.document.querySelectorAll('[data-rp-row]').length,6);
+});
+test('referral placement reuses the old invite payload in its QR and matching module',t=>{
+ const w=app(t),api=w.NEXORA_PERSONAL_QR;api.navigate('referral-link');
+ const original=new URL(api.referralUrl(api.read())),right=w.document.querySelector('[name=referral-placement][value=right]');
+ right.checked=true;right.dispatchEvent(new w.Event('change',{bubbles:true}));
+ const saved=api.read(),target=new URL(api.referralUrl(saved));
+ assert.equal(target.searchParams.get('leg'),'right');
+ assert.equal(target.searchParams.get('staff'),original.searchParams.get('staff'));
+ assert.equal(target.searchParams.get('ref'),original.searchParams.get('ref'));
+ assert.equal(w.document.querySelector('.pqr-referral-code [data-pqr-qr]').dataset.pqrQr,target.href);
+ assert.equal(api.visibleLinks(saved).find(link=>link.kind==='referral').url,target.href);
+ api.navigate('one-qr');
+ assert.equal(w.document.querySelector('[data-link-id=referral] [data-link-field=url]').value,target.href);
 });
 test('ads require explicit consent and never credit earnings for a preview or click',t=>{
  const w=app(t);w.NEXORA_PERSONAL_QR.navigate('advertising');const d=w.document;
  assert.equal(d.querySelector('#oneqr-advertising #agree').checked,false);assert.equal(d.querySelector('#oneqr-advertising #activate').disabled,true);
  click(w,'activate');assert.equal(w.NEXORA_PERSONAL_QR.read().ads,false);
+ selectAdIndustry(w);
  const checkbox=d.querySelector('#oneqr-advertising #agree');checkbox.checked=true;checkbox.dispatchEvent(new w.Event('change',{bubbles:true}));click(w,'activate');
  assert.equal(w.NEXORA_PERSONAL_QR.read().ads,true);assert.equal(d.querySelector('#oneqr-advertising .balance').textContent,'0');
+ assert.deepEqual(Array.from(w.NEXORA_PERSONAL_QR.read().adIndustries),['nail']);
  d.querySelector('#oneqr-advertising #ads-toggle').click();
  assert.equal(w.NEXORA_PERSONAL_QR.read().ads,false);
- for(const id of ['chosen','adIndustry'])assert.equal(d.querySelector('#oneqr-advertising #'+id).textContent,'Quảng cáo đã tắt');
+ for(const id of ['chosen','adIndustry'])assert.equal(d.querySelector('#oneqr-advertising #'+id).textContent,d.querySelector('#oneqr-advertising #industry').selectedOptions[0].textContent);
  d.querySelector('#oneqr-advertising #ads-toggle').click();
  w.NEXORA_PERSONAL_QR.navigate('one-qr');assert.ok(d.querySelector('.pqr-sponsored'));d.querySelector('[data-pqr-link=instagram]').click();
  assert.equal(Object.hasOwn(w.NEXORA_PERSONAL_QR.read(),'balance'),false);
@@ -136,8 +159,8 @@ test('changing the demo salon state preserves QR identity, custom content, payme
  const first=app(t);input(first,'[data-pqr-name]','QR cá nhân');click(first,'save');const saved=first.NEXORA_PERSONAL_QR.read();saved.payments.Venmo='@an';
  const staff=app(t,{path:'frame-staff.html',saved}),next=staff.NEXORA_PERSONAL_QR.read();
  for(const key of ['id','name','referral'])assert.equal(next[key],saved[key]);
- assert.deepEqual(JSON.parse(JSON.stringify(next.links)),JSON.parse(JSON.stringify(saved.links)));assert.equal(next.payments.Venmo,'@an');
- const unlinked=app(t,{path:'frame-personal.html',saved:next});assert.equal(unlinked.NEXORA_PERSONAL_QR.read().salonId,null);assert.equal(unlinked.NEXORA_PERSONAL_QR.read().payments.Venmo,'@an');
+ assert.deepEqual(JSON.parse(JSON.stringify(next.links)),JSON.parse(JSON.stringify(saved.links)));assert.equal(next.payments.Venmo.identifier,'@an');
+ const unlinked=app(t,{path:'frame-personal.html',saved:next});assert.equal(unlinked.NEXORA_PERSONAL_QR.read().salonId,null);assert.equal(unlinked.NEXORA_PERSONAL_QR.read().payments.Venmo.identifier,'@an');
 });
 test('contacts are added only by a voluntary submit and appear only in the private inbox',t=>{
  const w=app(t);assert.equal(w.NEXORA_PERSONAL_QR.read().leads.length,0);click(w,'exchange');
@@ -159,7 +182,7 @@ test('saving an older editor never restores another tab’s contact privacy or e
  const fresh=api.read();fresh.profile.showPhone=false;fresh.profile.phone='555-111-1234';fresh.payments.Venmo='@new-target';
  w.localStorage.setItem(api.KEY,JSON.stringify(fresh));
  input(w,'[data-pqr-greeting]','Lời chào mới');click(w,'save');
- const result=api.read();assert.equal(result.profile.phone,'555-111-1234');assert.equal(result.profile.showPhone,false);assert.equal(result.payments.Venmo,'@new-target');assert.equal(result.greeting,'Lời chào mới');
+ const result=api.read();assert.equal(result.profile.phone,'555-111-1234');assert.equal(result.profile.showPhone,false);assert.equal(result.payments.Venmo.identifier,'@new-target');assert.equal(result.greeting,'Lời chào mới');
 });
 test('a stale profile dialog preserves a privacy update received while it was open',t=>{
  const seed=app(t).NEXORA_PERSONAL_QR.read();seed.profile.phone='555-111-1234';seed.profile.showPhone=true;
@@ -174,16 +197,16 @@ test('profile, payment and ad saves never publish invalid builder drafts',t=>{
  input(w,'[data-pqr-name]','');input(w,'[data-link-index="0"] [data-link-field=url]','javascript:alert(1)');
  click(w,'profile');input(w,'[data-pqr-profile-form] [name=bio]','Đôi nét về tôi');submit(w,'[data-pqr-profile-form]');
  assert.equal(w.NEXORA_PERSONAL_QR.read().name,before.name);assert.equal(w.NEXORA_PERSONAL_QR.read().links[0].url,before.links[0].url);
- w.NEXORA_PERSONAL_QR.navigate('accept-payment');w.document.querySelector('[data-pqr-method=Zelle]').click();input(w,'[data-pqr-payment-form] [name=identifier]','an@example.com');submit(w,'[data-pqr-payment-form]');
+ w.NEXORA_PERSONAL_QR.navigate('accept-payment');w.document.querySelector('[data-rp-edit=zelle]').click();input(w,'[data-rp-form] [name=holder]','An Nguyen');input(w,'[data-rp-form] [name=identifier]','an@example.com');submit(w,'[data-rp-form]');
  assert.equal(w.NEXORA_PERSONAL_QR.read().name,before.name);
- w.NEXORA_PERSONAL_QR.navigate('advertising');const consent=w.document.querySelector('#oneqr-advertising #agree');consent.checked=true;consent.dispatchEvent(new w.Event('change',{bubbles:true}));click(w,'activate');
+ w.NEXORA_PERSONAL_QR.navigate('advertising');selectAdIndustry(w);const consent=w.document.querySelector('#oneqr-advertising #agree');consent.checked=true;consent.dispatchEvent(new w.Event('change',{bubbles:true}));click(w,'activate');
  assert.equal(w.NEXORA_PERSONAL_QR.read().ads,true);assert.equal(w.NEXORA_PERSONAL_QR.read().name,before.name);assert.equal(w.NEXORA_PERSONAL_QR.read().links[0].url,before.links[0].url);
 });
-test('the default linked Tip link targets an authorized salon and opens its public QR',t=>{
- const w=app(t,{path:'frame-staff.html'}),saved=w.NEXORA_PERSONAL_QR.read(),tip=saved.links.find(link=>link.kind==='tip');
- const target=new URL(tip.url);assert.ok(w.NEXORA_PERSONAL_QR.salons.some(salon=>salon.id===target.searchParams.get('salon')));
- const publicW=app(t,{path:target.pathname.split('/').at(-1)+target.search,saved,publicPage:true});
- assert.doesNotMatch(publicW.document.body.textContent,/Chưa có QR hợp lệ/);assert.match(publicW.document.body.textContent,/Bitcoin Nail Bar/);
+test('the linked Tip module and salon cards reuse the previous staff QR destinations',t=>{
+ const w=app(t,{path:'frame-staff.html'}),api=w.NEXORA_PERSONAL_QR,tip=api.read().links.find(link=>link.kind==='tip');
+ assert.equal(tip.url,api.salons[0].tipUrl);
+ api.navigate('tip-qr');
+ assert.deepEqual(Array.from(w.document.querySelectorAll('[data-salon-qr-list] [data-pqr-qr]'),node=>node.dataset.pqrQr),Array.from(api.salons,salon=>salon.tipUrl));
 });
 
 test('cross-tab link deletions synchronize editor rows before another edit and keep local drafts',t=>{

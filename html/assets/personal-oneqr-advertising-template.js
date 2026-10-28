@@ -1,7 +1,7 @@
 /* Advertising layout copied from qr-advertising.html (PO advertising and wallet prototype). */
 window.NEXORA_PERSONAL_ADVERTISING_TEMPLATE = `<div id="oneqr-advertising" class="qa-app qa-personal-app" data-po-source="from-po/quang-cao/NEXORA_ONEQR_Chinh_sach_Va_Vi (2).html">
-              <span class="pqr-demo">Dữ liệu minh hoạ</span>
-              <h1 data-i="title">OneQR · Quảng cáo &amp; thu nhập</h1>
+              <span class="pqr-demo">Demo data</span>
+              <h1 data-i="title">OneQR · Advertising &amp; earnings</h1>
               <nav id="nav" aria-label="OneQR">
                 <button class="active" data-view="setup" data-i="navSetup"></button>
                 <button data-view="overview" data-i="navOverview"></button>
@@ -16,7 +16,6 @@ window.NEXORA_PERSONAL_ADVERTISING_TEMPLATE = `<div id="oneqr-advertising" class
                   <span id="ads-status" class="tag hide" role="status"></span>
                   <h2 style="margin-top:16px" data-i="setupTitle"></h2>
                   <p data-i="setupIntro"></p>
-                  <div data-qa-business-only hidden>
                   <label for="group" data-i="groupLabel"></label>
                   <select id="group" required></select>
                   <label for="industry" data-i="industryLabel"></label>
@@ -28,7 +27,6 @@ window.NEXORA_PERSONAL_ADVERTISING_TEMPLATE = `<div id="oneqr-advertising" class
                   <div id="customBlock" class="hide">
                     <label for="custom" data-i="customLabel"></label>
                     <input id="custom" data-ph="customPlaceholder">
-                  </div>
                   </div>
                   <div id="oneqr-consent" class="line">
                     <input type="checkbox" id="agree" required>
