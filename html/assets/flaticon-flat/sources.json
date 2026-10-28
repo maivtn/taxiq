@@ -23,11 +23,15 @@
     },
     {
       "key": "aihub",
-      "word": "artificial intelligence",
-      "href": "https://www.flaticon.com/free-icon/artificial-intelligence_901002",
-      "image": "https://cdn-icons-png.flaticon.com/128/901/901002.png",
-      "label": "Artificial Intelligence",
-      "file": "aihub-901002.png"
+      "word": "ai",
+      "href": "https://www.flaticon.com/free-icon/assistant_14958196",
+      "image": "https://cdn-icons-png.flaticon.com/512/14958/14958196.png",
+      "label": "Assistant",
+      "file": "aihub-14958196.png",
+      "author": "juicy_fish",
+      "author_url": "https://www.flaticon.com/authors/juicy-fish",
+      "style": "Juicy_fish Others",
+      "collection": "https://www.flaticon.com/packs/metaverse-flat-14957970"
     },
     {
       "key": "sms",
