@@ -755,6 +755,12 @@ body[data-nexora-workspace="pos"] .sidebar-nav { min-height: 0; overflow-y: auto
 .shell-tree-row > a { flex:1; }
 .shell-tree-row > a + button { flex:0 0 40px; justify-content:center; padding:8px; }
 .shell-tree-row > button:only-child { width:100%; }
+.shell-tree-row:has(> a.nav-item + button.nav-parent) { border-radius:8px; transition:background .2s,box-shadow .2s; }
+.shell-tree-row:has(> a.nav-item + button.nav-parent):hover { background:rgba(255,255,255,.05); }
+.shell-tree-row:has(> a.nav-item + button.nav-parent):has(> .is-active) { background:linear-gradient(90deg,var(--nexora-electric),var(--nexora-violet)); box-shadow:0 10px 24px rgba(43,89,255,.2); }
+.shell-tree-row:has(> a.nav-item + button.nav-parent) > .nav-item { background:transparent; box-shadow:none; }
+.shell-tree-row:has(> a.nav-item + button.nav-parent) > a { border-radius:8px 0 0 8px; }
+.shell-tree-row:has(> a.nav-item + button.nav-parent) > button { border-radius:0 8px 8px 0; }
 .sidebar [data-product-menu][hidden] { display:none!important; }
 .shell-products-toggle { display:flex; margin:6px 0 8px; width:100%; min-height:44px; align-items:center; gap:12px; border:1px solid rgba(255,255,255,.14); border-radius:8px; padding:0 16px; background:rgba(255,255,255,.04); color:#c8d6ef; box-shadow:none; font:inherit; font-size:12px; font-weight:700; text-align:left; cursor:pointer; }
 .shell-products-toggle:hover { background:rgba(255,255,255,.08); color:#fff; }
