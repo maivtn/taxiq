@@ -13,7 +13,7 @@
   "marketing": "../iconscout/ai-marketing-13327169.png",
   "sms": "sms.png",
   "gift": "../iconscout/gift-card-7705322.png",
-  "reviews": "reviews.png",
+  "reviews": "../iconscout/reviews-feedback-13328881.png",
   "analytics": "analytics.png",
   "taxiq": "../iconscout/tax-iq-10411198.png",
   "booking": "booking.png",
