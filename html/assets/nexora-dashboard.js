@@ -41,7 +41,7 @@
     if (href && !item.unavailable) {
       node.href = href;
       if (item.newTab && /^https?:/.test(href)) { node.target = '_blank'; node.rel = 'noopener noreferrer'; }
-      var arrow = document.createElement('span'); arrow.textContent = '↗'; arrow.setAttribute('aria-hidden','true'); node.appendChild(arrow);
+      var arrow = document.createElement('i'); arrow.dataset.lucide = 'arrow-up-right'; arrow.className = 'detail-link-arrow'; arrow.setAttribute('aria-hidden','true'); node.appendChild(arrow);
     }
     return node;
   }
@@ -58,6 +58,7 @@
       (section.items || []).forEach(function (item) { list.appendChild(link(item)); });
       wrap.appendChild(list); host.appendChild(wrap);
     });
+    if (window.lucide && typeof window.lucide.createIcons === 'function') window.lucide.createIcons();
     var marketing = document.getElementById('detail-marketing-preview');
     if (marketing) marketing.hidden = product.key !== 'aihub' || group.name !== 'Marketing Assistant';
   }

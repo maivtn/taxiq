@@ -77,6 +77,7 @@
 .nexora-dashboard .detail-section h3 { font-size:14px; margin:0 0 12px; }
 .nexora-dashboard .detail-link { flex:1 1 calc(50% - 10px); min-width:220px; display:flex; align-items:center; justify-content:space-between; gap:10px; padding:15px; border:1px solid var(--line); border-radius:10px; background:#f9faff; color:var(--ink); text-decoration:none; font-size:13px; font-weight:600; overflow-wrap:anywhere; }
 .nexora-dashboard .detail-link small { display:block; margin-top:5px; font-size:11px; font-weight:400; color:var(--muted); line-height:1.5; }
+.nexora-dashboard .detail-link-arrow { width:16px; height:16px; flex:0 0 16px; color:var(--muted); }
 .nexora-dashboard .detail-link.unavailable { color:#68778c; background:#f5f6f8; }
 .nexora-dashboard .detail-link[href]:hover { border-color:var(--violet); background:#f2efff; }
 .nexora-dashboard .detail-upcoming { font-size:13px; color:#7f5c28; background:#fff5df; padding:14px; border-radius:10px; line-height:1.6; }
