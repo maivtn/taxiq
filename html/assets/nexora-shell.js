@@ -447,7 +447,13 @@
   }
 
   function renderNav() {
-    if (treeNav) return renderTree(visibleNav().filter(function(node) { return node.key !== 'public-home'; }), 0);
+    if (treeNav) {
+      var nodes = visibleNav().filter(function(node) { return node.key !== 'public-home'; });
+      var supportKeys = ['news-library', 'support'];
+      var supportNodes = nodes.filter(function(node) { return supportKeys.indexOf(node.key) !== -1; });
+      return renderTree(nodes.filter(function(node) { return supportKeys.indexOf(node.key) === -1; }), 0) +
+        (supportNodes.length ? '<div class="sidebar-section-label sidebar-support-title" id="nav-support-title">Support</div>' + renderTree(supportNodes, 0) : '');
+    }
     return visibleNav().map(function (node) {
       if (node.type === 'divider') return '<div class="nav-divider"></div>';
       if (node.type === 'group') return renderGroup(node);
