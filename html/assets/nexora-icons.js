@@ -21,6 +21,7 @@
   "tickets": "tickets.png",
   "checkout": "checkout.png",
   "settings": "settings.png",
+  "configuration": "../iconscout/configuration-8363484.png",
   "report": "report.png",
   "rewards": "../iconscout/deal-coupon-13170797.png",
   "support": "support.png",
