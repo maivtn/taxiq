@@ -22,6 +22,7 @@
   "checkout": "checkout.png",
   "settings": "settings.png",
   "configuration": "../iconscout/configuration-8363484.png",
+  "setup-checklist": "../iconscout/setup-checklist-5242405.png",
   "report": "report.png",
   "rewards": "../iconscout/deal-coupon-13170797.png",
   "support": "support.png",
