@@ -135,6 +135,37 @@
     return node.type === 'group' && node.items.some(function (item) { return routeActive(item) || itemIsActive(node, item, tab) || groupIsActive(item, tab); });
   }
 
+  function treeNodeIsActive(node) {
+    return node.navContext || node.href && node.href.indexOf('&view=') !== -1 ? routeActive(node) : node.page === activePage && node.tab ? node.tab === activeTab : routeActive(node);
+  }
+
+  // An expanded branch takes visual precedence over the current route's sibling.
+  // Keep aria-current on the actual destination, but show only one selected row.
+  function syncTreeActiveState() {
+    if (!treeNav || activePage === 'staff') return;
+    var hidden = hiddenSidebarKeySet();
+    function sync(nodes) {
+      var visible = nodes.filter(function(node) { return !node.accountOnly && !node.toggleProducts && !hidden[node.key] && (!node.productMenu || expandedGroups.products === true); });
+      var selected = visible.find(function(node) { return node.children && expandedGroups[node.key] === true; })
+        || visible.find(function(node) { return treeNodeIsActive(node) || groupIsActive(node, activeTab); });
+      nodes.forEach(function(node) {
+        if (node.children) {
+          var toggle = document.querySelector('.sidebar [data-sidebar-key="' + node.key + '"]');
+          if (toggle) {
+            toggle.classList.toggle('is-active', node === selected);
+            var link = toggle.parentElement.querySelector('a');
+            if (link) link.classList.toggle('is-active', node === selected && treeNodeIsActive(node));
+          }
+          sync(node.children);
+        } else {
+          var item = document.querySelector('.sidebar [data-shell-key="' + node.key + '"]');
+          if (item) item.classList.toggle('is-active', node === selected && treeNodeIsActive(node));
+        }
+      });
+    }
+    sync(NAV);
+  }
+
   var expandedGroups = {};
   try {
     var savedGroups = JSON.parse(window.sessionStorage.getItem(SIDEBAR_EXPANDED_STORAGE_KEY) || '{}');
@@ -156,8 +187,8 @@
 
   function normalizeExpandedGroups(preferActive) {
     if (activePage === 'staff') return;
-    // Dashboard is a standalone destination, so it must not restore an old branch.
-    if (preferActive && treeNav && NAV.some(function(node) { return node.key === 'dashboard' && routeActive(node); })) {
+    // Standalone root destinations must not restore a previous menu branch.
+    if (preferActive && treeNav && NAV.some(function(node) { return !node.children && !node.toggleProducts && routeActive(node); })) {
       visit(NAV, function(node) { if (node.type === 'group') expandedGroups[node.key] = false; });
       return;
     }
@@ -379,7 +410,7 @@
   function renderTree(nodes, depth) {
     var hidden = hiddenSidebarKeySet();
     return nodes.filter(function (node) { return !node.accountOnly && !hidden[node.key]; }).map(function (node) {
-      var active = node.navContext || node.href && node.href.indexOf('&view=') !== -1 ? routeActive(node) : node.page === activePage && node.tab ? node.tab === activeTab : routeActive(node);
+      var active = treeNodeIsActive(node);
       var label = ((depth === 0 || node.showIcon) && node.iconKey ? treeIcon(node) : '') + '<span class="shell-tree-label">' + esc(node.label) + '</span>' + (node.externalIndicator || node.newTab ? '<i class="sidebar-external-icon" data-lucide="arrow-up-right" aria-hidden="true"></i>' : '');
       var cls = depth ? 'nav-subitem' : 'nav-item';
       if (node.toggleProducts) return '<button type="button" class="shell-products-toggle nav-parent' + (expandedGroups.products === true ? ' is-expanded' : '') + '" data-sidebar-products-toggle aria-expanded="' + (expandedGroups.products === true) + '" aria-controls="nexora-product-menu-community nexora-product-menu-booking nexora-product-menu-business-tools">' + label + CARET + '</button>';
@@ -558,6 +589,15 @@
           setGroupExpanded(parent, true);
         }
       });
+    } else if (treeNav) {
+      normalizeExpandedGroups(true);
+      visit(NAV, function(node) {
+        if (node.type !== 'group') return;
+        var toggle = document.querySelector('.sidebar [data-sidebar-key="' + node.key + '"]');
+        if (toggle) setGroupExpanded(toggle, expandedGroups[node.key] === true);
+      });
+      syncTreeActiveState();
+      saveExpandedGroups();
     } else {
       visit(NAV, function (node) {
         if (node.type !== 'group') return;
@@ -609,18 +649,19 @@
   }
 
   function wireSidebar() {
-    var dashboardLink = document.querySelector('.sidebar [data-shell-key="dashboard"]');
-    if (activePage !== 'staff' && dashboardLink) {
-      dashboardLink.addEventListener('click', function(event) {
-        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
-        document.querySelectorAll('.sidebar [data-nav-group]').forEach(function(toggle) { setGroupExpanded(toggle, false); });
-        document.querySelectorAll('.sidebar-nav .is-active').forEach(function(item) {
-          item.classList.remove('is-active');
-          item.removeAttribute('aria-current');
+    if (treeNav && activePage !== 'staff') {
+      document.querySelectorAll('.sidebar-nav > a[data-shell-key]').forEach(function(link) {
+        link.addEventListener('click', function(event) {
+          if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+          document.querySelectorAll('.sidebar [data-nav-group]').forEach(function(toggle) { setGroupExpanded(toggle, false); });
+          document.querySelectorAll('.sidebar-nav .is-active').forEach(function(item) {
+            item.classList.remove('is-active');
+            item.removeAttribute('aria-current');
+          });
+          link.classList.add('is-active');
+          link.setAttribute('aria-current', 'page');
+          saveExpandedGroups();
         });
-        dashboardLink.classList.add('is-active');
-        dashboardLink.setAttribute('aria-current', 'page');
-        saveExpandedGroups();
       });
     }
     var accountToggle = document.querySelector('[data-shell-account-toggle]');
@@ -644,6 +685,7 @@
         if (!sub) return;
         toggle.addEventListener('click', function () {
           setGroupExpanded(toggle, toggle.getAttribute('aria-expanded') !== 'true');
+          syncTreeActiveState();
           saveExpandedGroups();
         });
       })(toggles[i]);
@@ -658,6 +700,7 @@
         productsToggle.setAttribute('aria-expanded', String(open));
         productsToggle.classList.toggle('is-expanded', open);
         expandedGroups.products = open;
+        syncTreeActiveState();
         saveExpandedGroups();
       });
     }
@@ -666,6 +709,7 @@
       var openStaffGroup = Array.from(toggles).find(function(toggle) { return toggle.getAttribute('aria-expanded') === 'true'; });
       if (openStaffGroup) setGroupExpanded(openStaffGroup, true);
     }
+    syncTreeActiveState();
 
     // same-page tab sub-items
     var tabs = document.querySelectorAll('.sidebar [data-shell-tab]');

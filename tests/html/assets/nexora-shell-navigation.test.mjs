@@ -3,6 +3,61 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {boot,group,leaf} from './helpers/shell-fixture.mjs';
 
+function assertOneHighlightedSibling(w) {
+ for(const container of w.document.querySelectorAll('.sidebar-nav,.nav-subnav-inner')){
+  const highlighted=Array.from(container.children).filter(child=>{
+   if(child.matches('[data-sidebar-products-toggle]'))return false;
+   const row=child.matches('.shell-tree-branch')?child.querySelector('.shell-tree-row'):child;
+   return row.matches('.is-active,.is-expanded')||!!row.querySelector('.is-active,.is-expanded');
+  });
+  assert.ok(highlighted.length<=1,'Multiple highlighted siblings: '+highlighted.map(row=>row.textContent.trim().slice(0,60)).join(', '));
+ }
+}
+
+test('opening another root branch removes the current Community highlight and preserves its real destination',t=>{
+ const w=boot(t,{page:'community.html?tab=feed',activePage:'community',activeTab:'feed',before(w){w.sessionStorage.setItem('nexora.sidebar.expanded.v1',JSON.stringify({products:true}));}});
+ const community=group(w,'community'),communityLink=community.parentElement.querySelector('a');
+ assert.equal(communityLink.getAttribute('aria-current'),'page');
+ for(const key of ['booking','business-tools','pos','booking']){
+  group(w,key).click();assertOneHighlightedSibling(w);
+  assert.equal(community.classList.contains('is-active'),false);assert.equal(communityLink.classList.contains('is-active'),false);
+  assert.equal(group(w,key).getAttribute('aria-expanded'),'true');
+  w.NEXORA_SHELL.refreshSidebar();assertOneHighlightedSibling(w);
+ }
+ group(w,'booking').click();assertOneHighlightedSibling(w);
+ assert.ok(group(w,'community').classList.contains('is-active'));
+});
+
+test('nested branch switching never highlights two sibling rows, including split One QR controls',t=>{
+ const w=boot(t,{page:'payment-income.html',activePage:'payments',before(w){w.sessionStorage.setItem('nexora.sidebar.expanded.v1',JSON.stringify({products:true}));}});
+ for(const key of ['stations','payments','chi-tra-nhan-vien','thu-nhap-tiem','stations','qr-tai-tiem']){
+  const toggle=group(w,key);assert.ok(toggle,'Missing group '+key);toggle.click();assertOneHighlightedSibling(w);
+ }
+});
+
+test('standalone root links close all branches and leave only the clicked item highlighted',t=>{
+ for(const label of ['Dashboard','Salon Home','Getting started','News & Library','Support']){
+  const w=boot(t);w.document.querySelector('[data-sidebar-products-toggle]').click();
+  group(w,'business-tools').click();group(w,'payments').click();group(w,'thu-nhap-tiem').click();
+  const link=leaf(w,label);link.addEventListener('click',event=>event.preventDefault());link.click();
+  assert.equal(w.document.querySelectorAll('.sidebar [data-nav-group][aria-expanded="true"]').length,0,label);
+  assert.deepEqual(Array.from(w.document.querySelectorAll('.sidebar-nav .is-active'),item=>item.textContent.trim()),[label]);
+  const saved=JSON.parse(w.sessionStorage.getItem('nexora.sidebar.expanded.v1'));assert.equal(saved.products,true);
+  for(const toggle of w.document.querySelectorAll('.sidebar [data-nav-group]'))assert.equal(saved[toggle.dataset.sidebarKey],false);
+  const next=boot(t,{page:link.getAttribute('href'),before(w){w.sessionStorage.setItem('nexora.sidebar.expanded.v1',JSON.stringify(saved));}});
+  assert.equal(next.document.querySelectorAll('.sidebar [data-nav-group][aria-expanded="true"]').length,0);
+  assertOneHighlightedSibling(next);
+ }
+});
+
+test('standalone root pages discard saved expanded branches when opened directly',t=>{
+ for(const page of ['dashboard.html','salon-home.html','nexora-getting-started.html','news-library.html?tab=news','nexora-support.html']){
+  const w=boot(t,{page,before(w){w.sessionStorage.setItem('nexora.sidebar.expanded.v1',JSON.stringify({products:true,pos:true,community:true,booking:true,'business-tools':true,payments:true,'thu-nhap-tiem':true}));}});
+  assert.equal(w.document.querySelectorAll('.sidebar [data-nav-group][aria-expanded="true"]').length,0,page);
+  assertOneHighlightedSibling(w);
+ }
+});
+
 test('PO menu opens only the selected nested branch and persists it through refresh',t=>{
  const w=boot(t);w.document.querySelector('[data-sidebar-products-toggle]').click();group(w,'business-tools').click();group(w,'stations').click();
  assert.equal(group(w,'stations').getAttribute('aria-expanded'),'true');
