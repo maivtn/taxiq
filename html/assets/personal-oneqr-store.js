@@ -2,7 +2,7 @@
 (function () {
   'use strict';
   const KEY = 'nexora.personal-oneqr.v1';
-  const icons = window.ONEQR_ACTION_APPEARANCE ? window.ONEQR_ACTION_APPEARANCE.icons : ['user-round', 'instagram', 'credit-card', 'share-2', 'hand-coins', 'calendar-check', 'globe-2', 'link', 'phone', 'mail', 'qr-code', 'wallet', 'megaphone'];
+  const icons = window.ONEQR_ACTION_APPEARANCE ? window.ONEQR_ACTION_APPEARANCE.icons : ['user-round', 'instagram', 'credit-card', 'share-2', 'hand-coins', 'dollar-sign', 'calendar-check', 'globe-2', 'link', 'phone', 'mail', 'qr-code', 'wallet', 'megaphone'];
   const isIconImage = value => /^data:image\/(?:png|jpeg|webp|gif);base64,/i.test(value || '');
   const legacyLabels = { 'Gửi tip cho tôi': 'Send me a tip', 'Đặt lịch với tôi tại tiệm': 'Book an appointment with me', 'Instagram của tôi': 'My Instagram', 'Gửi thanh toán': 'Send a payment', 'Hồ sơ cá nhân': 'Personal profile', 'Tham gia cùng tôi': 'Join me' };
   const methodConfig = [
@@ -55,7 +55,7 @@
   }
   function template(isLinked) {
     return isLinked ? [
-      { id: 'tip', name: 'Send me a tip', url: salons[0].tipUrl, icon: 'hand-coins', enabled: true, kind: 'tip' },
+      { id: 'tip', name: 'Send me a tip', url: salons[0].tipUrl, icon: 'dollar-sign', enabled: true, kind: 'tip' },
       { id: 'booking', name: 'Book an appointment with me', url: new URL('../customer/booking.html', pagesBase).href, icon: 'calendar-check', enabled: true, kind: 'booking' },
       { id: 'instagram', name: 'My Instagram', url: 'https://www.instagram.com/', icon: 'instagram', enabled: true },
       { id: 'payment', name: 'Send a payment', url: publicUrl('payment'), icon: 'credit-card', enabled: true, kind: 'payment' }
@@ -91,6 +91,7 @@
         result.links.forEach(link => {
           link.url = moduleUrl(result, link);
           if (link.kind === 'tip') {
+            if (link.icon === 'hand-coins') link.icon = 'dollar-sign';
             const salon = salons.find(item => link.url === publicUrl('tip') + '&salon=' + item.id);
             if (salon) link.url = salon.tipUrl;
           }
