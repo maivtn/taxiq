@@ -46,7 +46,6 @@ function applyLanguage(){
  root.querySelectorAll('[aria-label],[placeholder],[title]').forEach(element=>{for(const name of ['aria-label','placeholder','title'])if(element.hasAttribute(name))element.setAttribute(name,toEnglish(element.getAttribute(name)));});
  root.querySelectorAll('[data-marketing-en],[data-tax-en],[data-booking-en]').forEach(element=>{element.textContent=element.dataset.marketingEn||element.dataset.taxEn||element.dataset.bookingEn;});
 }
-function openWheelDemo(){window.location.href='vlinkpay-campaigns.html?view=create';}
 const nexora='https://nexoratouch.com';
 const activeMenuUrl='../menu/menu.html';
 const servicesSettingsUrl='pos-salon-settings.html?section=services';
@@ -890,19 +889,11 @@ const catalog={
   const salonShowcaseGrid = document.querySelector('#salon-products .salon-product-grid');
   const salonShowcaseOrder = ['pos','aihub','aihub-marketing','aihub-marketing-campaign','spin-wheel','gift','community','oneqr','taxiq','payments','reviews','analytics'];
   salonShowcaseGrid.append(...salonShowcaseOrder.map(key => salonShowcaseGrid.querySelector(`[data-showcase-key="${key}"], [href="#module-${key}"]`)).filter(Boolean));
-  salonShowcaseGrid.querySelector('[data-open-wheel-demo]').addEventListener('click', openWheelDemo);
   document.querySelector('#salon-products .salon-section-head > small').textContent = salonShowcaseGrid.children.length + ' khu giới thiệu';
   salonShowcaseGrid.querySelectorAll('.salon-feature-list').forEach(list => { list.dataset.count = String(list.children.length); });
   applyLanguage();
   const salonCarousel = document.getElementById('salon-product-carousel');
   const salonSlides = [...salonShowcaseGrid.querySelectorAll('.salon-product')];
-  function selectMarketingCampaignPreview() {
-    explorerProduct = 'aimarketing';
-    explorerFeature = salonExplorer.aimarketing.features.findIndex(feature => feature[2] === 'marketingSms');
-    if (explorerFeature < 0) explorerFeature = 0;
-    renderSalonExplorer(true);
-  }
-  document.getElementById('salon-ai-marketing').addEventListener('click', selectMarketingCampaignPreview);
   const salonSlideVisual = document.getElementById('salon-hero-visual');
   const salonSlidePhoto = document.getElementById('salon-hero-photo');
   const salonSlidePhotoBackdrop = document.getElementById('salon-hero-photo-backdrop');
@@ -1048,7 +1039,7 @@ const catalog={
     featureList.replaceChildren(...features);
     const link = document.getElementById('salon-slide-link');
     const wheelSlide = card.matches('[data-open-wheel-demo]');
-    link.href = wheelSlide ? '#salon-product-carousel' : card.getAttribute('href');
+    link.href = card.getAttribute('href');
     setLocalizedText(link, wheelSlide ? 'Thử Spin Wheel →' : campaignSlide ? 'Xem chiến dịch →' : 'Khám phá sản phẩm →', wheelSlide ? 'Try Spin Wheel →' : campaignSlide ? 'Explore campaign preview →' : 'Explore product →');
     salonSlideVisual.style.setProperty('--product-color', card.style.getPropertyValue('--product-color'));
     salonSlideVisual.style.setProperty('--product-tint', card.style.getPropertyValue('--product-tint'));
@@ -1079,7 +1070,7 @@ const catalog={
     if (!promoImage.getAttribute('src')?.endsWith(salonPhotoSources[photoKey])) promoImage.src=salonPhotoSources[photoKey];
     setLocalizedText(document.getElementById('salon-promo-product-name'), productName, productName);
     setLocalizedText(document.getElementById('salon-promo-product-description'), productDescription, productDescription);
-    document.getElementById('salon-promo-product-link').href=wheelSlide?'#salon-product-carousel':card.getAttribute('href');
+    document.getElementById('salon-promo-product-link').href=card.getAttribute('href');
     setLocalizedText(document.getElementById('salon-promo-product-link'), campaignSlide ? 'Xem chiến dịch →' : 'Khám phá sản phẩm →', campaignSlide ? 'Explore campaign preview →' : 'Explore product →');
     salonSlideVisual.dataset.photo = photoKey;
     if (!salonSlidePhoto.getAttribute('src')?.endsWith(salonPhotoSources[photoKey])) salonSlidePhoto.src = salonPhotoSources[photoKey];
@@ -1119,18 +1110,6 @@ const catalog={
   }
   document.getElementById('salon-slide-prev').addEventListener('click', () => changeSalonSlide(salonSlideIndex - 1));
   document.getElementById('salon-slide-next').addEventListener('click', () => changeSalonSlide(salonSlideIndex + 1));
-  document.getElementById('salon-slide-link').addEventListener('click', event => {
-    if (salonSlides[salonSlideIndex].id === 'salon-ai-marketing') selectMarketingCampaignPreview();
-    if (!salonSlides[salonSlideIndex].matches('[data-open-wheel-demo]')) return;
-    event.preventDefault();
-    openWheelDemo();
-  });
-  document.getElementById('salon-promo-product-link').addEventListener('click', event => {
-    if (salonSlides[salonSlideIndex].id === 'salon-ai-marketing') selectMarketingCampaignPreview();
-    if (!salonSlides[salonSlideIndex].matches('[data-open-wheel-demo]')) return;
-    event.preventDefault();
-    openWheelDemo();
-  });
   document.getElementById('salon-ai-tour-link').addEventListener('click', () => {
     const key=salonSlideKey(salonSlides[salonSlideIndex]);
     explorerProduct=key==='aihub-marketing'||key==='aihub-marketing-campaign'||key==='spin-wheel'?'aimarketing':key;
