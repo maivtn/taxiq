@@ -77,8 +77,8 @@ const catalog={
       ]},
       { name: 'Máy cà thẻ', items: [
         { label: 'Hoạt động thanh toán', url: nexora + '/dashboard/reports?tab=direct_payments' },
-        { label: 'Lịch sử giao dịch máy cà thẻ (đề xuất)', unavailable: true },
-        { label: 'Đối soát máy cà thẻ (đề xuất)', unavailable: true }
+        { label: 'Lịch sử giao dịch máy cà thẻ (đề xuất)', linkPending: true },
+        { label: 'Đối soát máy cà thẻ (đề xuất)', linkPending: true }
       ]},
       { name: 'Cấu hình', items: [
         { label: 'Quản lý danh mục', url: nexora + '/dashboard/category-management' }

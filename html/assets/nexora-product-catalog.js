@@ -109,11 +109,11 @@ window.NEXORA_PRODUCT_CATALOG = {
           },
           {
             "label": "Card transaction history (proposed)",
-            "unavailable": true
+            "linkPending": true
           },
           {
             "label": "Card terminal reconciliation (proposed)",
-            "unavailable": true
+            "linkPending": true
           }
         ]
       },
