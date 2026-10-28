@@ -111,11 +111,11 @@
     },
     {
       "key": "hair",
-      "word": "haircut",
-      "href": "https://www.flaticon.com/free-icon/hair-salon_6595005",
-      "image": "https://cdn-icons-png.flaticon.com/128/6595/6595005.png",
-      "label": "Hair Salon",
-      "file": "hair-6595005.png"
+      "word": "barber",
+      "href": "https://www.flaticon.com/free-icon/hairdresser_2042888",
+      "image": "https://cdn-icons-png.flaticon.com/128/2042/2042888.png",
+      "label": "Hairdresser",
+      "file": "hair-2042888.png"
     },
     {
       "key": "spa",
@@ -127,11 +127,11 @@
     },
     {
       "key": "services",
-      "word": "briefcase",
-      "href": "https://www.flaticon.com/free-icon/briefcase_3393660",
-      "image": "https://cdn-icons-png.flaticon.com/128/3393/3393660.png",
-      "label": "Briefcase",
-      "file": "services-3393660.png"
+      "word": "category",
+      "href": "https://www.flaticon.com/free-icon/categories_3326644",
+      "image": "https://cdn-icons-png.flaticon.com/128/3326/3326644.png",
+      "label": "Categories",
+      "file": "services-3326644.png"
     },
     {
       "key": "checkin",
