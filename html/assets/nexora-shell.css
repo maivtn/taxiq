@@ -755,6 +755,11 @@ body[data-nexora-workspace="pos"] .sidebar-nav { min-height: 0; overflow-y: auto
 .shell-tree-row > a { flex:1; }
 .shell-tree-row > a + button { flex:0 0 40px; justify-content:center; padding:8px; }
 .shell-tree-row > button:only-child { width:100%; }
+.shell-products-toggle { display:flex; align-items:center; gap:10px; min-height:44px; margin:10px 0 4px; border:0; border-radius:8px; padding:8px 16px; background:transparent; color:#b9c9e3; font:inherit; font-size:12px; font-weight:700; text-align:left; cursor:pointer; }
+.shell-products-toggle:hover { background:rgba(255,255,255,.05); color:#fff; }
+.shell-products-toggle:focus-visible { outline:2px solid #32d7ff; outline-offset:2px; }
+.shell-products-toggle .sidebar-icon-wrap { width:24px; height:24px; }
+.sidebar:not(.staff-sidebar) .shell-products-toggle .lucide-menu-icon { width:18px; height:18px; color:currentColor; filter:none; }
 .shell-tree-label { min-width:0; overflow-wrap:anywhere; flex:1; text-align:left; }
 .shell-tree-branch .nav-subnav-inner { padding-left:10px; }
 .shell-tree-branch .nav-subitem { min-height:42px; gap:8px; line-height:1.4; white-space:normal; }

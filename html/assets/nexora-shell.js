@@ -377,9 +377,10 @@
       if (node.children) {
         var open = expandedGroups[node.key] === true, id = 'nexora-subnav-' + node.key;
         var ancestor = groupIsActive(node, activeTab);
+        var groupClass = node.key === 'products' ? 'shell-products-toggle' : cls;
         return '<div class="shell-tree-branch" data-depth="' + depth + '"><div class="shell-tree-row">' +
           (node.href ? '<a class="' + cls + (active ? ' is-active' : '') + '" href="' + esc(node.href) + '"' + (active ? ' aria-current="page"' : '') + '>' + label + '</a>' : '') +
-          '<button class="' + cls + ' nav-parent' + (open ? ' is-expanded' : '') + (ancestor ? ' is-active' : '') + '" type="button" data-sidebar-key="' + esc(node.key) + '" data-nav-group aria-expanded="' + open + '" aria-controls="' + id + '"' + (node.href ? ' aria-label="' + esc(node.label) + '"' : '') + '>' + (node.href ? '' : label) + CARET + '</button></div>' +
+          '<button class="' + groupClass + ' nav-parent' + (open ? ' is-expanded' : '') + (ancestor && node.key !== 'products' ? ' is-active' : '') + '" type="button" data-sidebar-key="' + esc(node.key) + '" data-nav-group aria-expanded="' + open + '" aria-controls="' + id + '"' + (node.href ? ' aria-label="' + esc(node.label) + '"' : '') + '>' + (node.href ? '' : label) + CARET + '</button></div>' +
           '<div class="nav-subnav' + (open ? '' : ' is-collapsed') + '" id="' + id + '" data-nav-subnav><div class="nav-subnav-inner">' + renderTree(node.children, depth + 1) + '</div></div></div>';
       }
       if (node.linkPending) return '<button type="button" class="' + cls + '" data-shell-key="' + esc(node.key) + '">' + label + '</button>';
@@ -555,7 +556,7 @@
         var toggle = document.querySelector('.sidebar [data-sidebar-key="' + node.key + '"]');
         if (!toggle) return;
         var active = groupIsActive(node, tab);
-        toggle.classList.toggle('is-active', active);
+        toggle.classList.toggle('is-active', active && node.key !== 'products');
         if (active) {
           setGroupExpanded(toggle, true);
         }
