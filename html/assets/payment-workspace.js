@@ -5,7 +5,9 @@
   var root = document.getElementById('payment-main');
   if (!root) return;
   var model=window.NEXORA_PAYMENT_MODEL;
-  var view = document.body.dataset.paymentView || 'overview';
+  var requestedView=document.body.dataset.paymentView||'overview';
+  var isStaffHistory=requestedView==='payout-history';
+  var view=isStaffHistory?'payouts':requestedView;
   if (view === 'receive' && new URLSearchParams(location.search).get('tab') === 'overview') view = 'overview';
   var STORAGE = 'nexora-merchant-payments-demo-v1';
   var defaults = {
@@ -82,13 +84,46 @@
     var labels=['Wed','Thu','Fri','Sat','Sun','Mon','Tue'];
     return '<section class="pw-card"><h2>'+title+'</h2><svg class="pw-chart" viewBox="0 0 800 230" role="img" aria-label="'+title+'">'+[0,1,2,3,4].map(function(n){var y=35+n*37;return '<line x1="46" y1="'+y+'" x2="785" y2="'+y+'"/><text x="5" y="'+(y+4)+'">$'+(max*(4-n)/4)+'</text>';}).join('')+labels.map(function(l,i){var x=50+i*121;return '<circle cx="'+x+'" cy="180" r="3" tabindex="0"><title>'+l+': $0.00</title></circle><text x="'+x+'" y="215" text-anchor="middle">'+l+'</text>';}).join('')+'</svg></section>';
   }
-  var categoryRange='All time';
-  function categorySummary(manage) {
-    return '<section class="pw-card"><div class="pw-card-head"><div><h2>INCOME BY CATEGORY</h2><p>All received money</p></div><div class="pw-controls">'+select('category-period',['All time','Week','Month','Year'],'All time','Income by category period')+'<select name="category-subperiod" aria-label="Income by category date" disabled><option>All periods</option></select>'+(manage?'<a class="pw-btn pw-primary" href="payment-categories.html">MANAGE CATEGORIES</a>':'')+'</div></div><div class="pw-bars" id="category-bars">'+categoryBars()+'</div></section>';
+  var categoryRange='All time',categorySelection='';
+  function localDate(value){return value.getFullYear()+'-'+String(value.getMonth()+1).padStart(2,'0')+'-'+String(value.getDate()).padStart(2,'0');}
+  function categoryPeriods(){
+    var now=new Date(),result=[];
+    if(categoryRange==='Week'){
+      var monday=new Date(now.getFullYear(),now.getMonth(),now.getDate());monday.setDate(monday.getDate()-(monday.getDay()+6)%7);
+      for(var index=0;index<12;index++){
+        var start=new Date(monday);start.setDate(start.getDate()-index*7);var end=new Date(start);end.setDate(end.getDate()+6);
+        var thursday=new Date(Date.UTC(start.getFullYear(),start.getMonth(),start.getDate()+3)),year=thursday.getUTCFullYear();
+        var week=Math.ceil((((thursday-new Date(Date.UTC(year,0,1)))/86400000)+1)/7);
+        result.push({label:'Week '+week+', '+year,start:localDate(start),end:localDate(end)});
+      }
+    }else if(categoryRange==='Month'){
+      for(var month=0;month<12;month++){var first=new Date(now.getFullYear(),now.getMonth()-month,1),last=new Date(first.getFullYear(),first.getMonth()+1,0);result.push({label:first.toLocaleDateString('en-US',{month:'short',year:'numeric'}),start:localDate(first),end:localDate(last)});}
+    }else if(categoryRange==='Year'){
+      for(var offset=0;offset<5;offset++){var value=now.getFullYear()-offset;result.push({label:String(value),start:value+'-01-01',end:value+'-12-31'});}
+    }
+    return result.map(function(period){period.value=period.start+':'+period.end;return period;});
+  }
+  function categoryPeriodOptions(){
+    var periods=categoryPeriods();if(!periods.length){categorySelection='';return '<option>All periods</option>';}
+    if(!periods.some(function(period){return period.value===categorySelection;}))categorySelection=periods[0].value;
+    return periods.map(function(period){return '<option value="'+period.value+'"'+(period.value===categorySelection?' selected':'')+'>'+esc(period.label)+'</option>';}).join('');
+  }
+  function categoryRecords(){
+    var periods=categoryPeriods(),selected=periods.find(function(period){return period.value===categorySelection;});
+    return allPayments().filter(function(record){if(!selected)return true;var at=model.parseDate(record.date);return at&&at>=selected.start&&at<=selected.end;});
+  }
+  function childHeading(){
+    if(view==='income-period')return '<div class="pw-child-heading"><a href="dashboard.html?module=payments&amp;group=0">Salon income</a><h2>Income by period</h2></div>';
+    if(isStaffHistory)return '<div class="pw-child-heading"><a href="dashboard.html?module=payments&amp;group=1">Staff payouts</a><h2>Payout history by staff member</h2></div>';
+    return '';
+  }
+
+  function categorySummary(manage,nested) {
+    return '<section class="pw-card"><div class="pw-card-head"><div>'+(nested?'<h3>INCOME BY CATEGORY</h3>':'<h2>INCOME BY CATEGORY</h2>')+'<p>All received money</p></div><div class="pw-controls">'+select('category-period',['All time','Week','Month','Year'],categoryRange,'Income by category period')+'<select name="category-subperiod" aria-label="Income by category date"'+(categoryRange==='All time'?' disabled':'')+'>'+categoryPeriodOptions()+'</select>'+(manage?'<a class="pw-btn pw-primary" href="payment-categories.html">MANAGE CATEGORIES</a>':'')+'</div></div><div class="pw-bars" id="category-bars">'+categoryBars()+'</div></section>';
   }
   function categoryBars() {
     var colors={Uncategorized:'#98a6ba',Commission:'#8d52f2',Bonus:'#f14f73',Salary:'#4486ed'};
-    var values=model.categoryTotals(store,allPayments(),categoryRange).map(function(row){return [row.name,row.amount,colors[row.name]||'#7d6de3'];});
+    var values=model.categoryTotals(store,categoryRecords(),'All time').map(function(row){return [row.name,row.amount,colors[row.name]||'#7d6de3'];});
     var max=Math.max(1,...values.map(function(c){return c[1];}));
     return values.map(function(c){return '<div><div class="pw-bar-label"><span><i class="pw-dot" style="background:'+c[2]+'"></i>'+esc(c[0])+'</span><span>'+money(c[1])+'</span></div><div class="pw-track"><span style="background:'+c[2]+';width:'+(c[1]?Math.max(.4,c[1]/max*100):0)+'%"></span></div></div>';}).join('');
   }
@@ -115,7 +150,7 @@
   }
   function filterRows(data) {
     return data.filter(function(r){
-      if(filters.search && !Object.values(r).join(' ').toLowerCase().includes(filters.search.toLowerCase()))return false;
+      if(filters.search && !(isStaffHistory?String(r.staff||''):Object.values(r).join(' ')).toLowerCase().includes(filters.search.toLowerCase().trim()))return false;
       if(filters.status && filters.status!=='All Statuses' && r.status!==filters.status)return false;
       if(filters.method && filters.method!=='All Payment Methods' && r.method!==filters.method)return false;
       if(filters.staff && filters.staff!=='All Staff' && !r.staff.includes(filters.staff))return false;
@@ -163,10 +198,10 @@
     return stats([['TOTAL VOLUME','$27,764.08','','dollar'],['TRANSACTIONS','121 Transactions','','arrow'],['AVERAGE TIP','$229.46','','dollar'],['FEES SAVED','$832.92','Reported fee savings from direct payouts','wallet','pw-green-text']])+'<div class="pw-grid analytics">'+chart('DAILY REVENUE TREND',100)+'<section class="pw-card"><h2>HOW TIPS WERE PAID</h2><div class="pw-vertical-bars">'+mix.map(function(c){return '<div><div class="pw-bar-label" style="font-size:11px"><span><i class="pw-dot" style="background:'+c[3]+'"></i>'+c[0]+'</span><span>'+money(c[1])+' ('+c[2]+'%)</span></div><div class="pw-track"><span style="background:'+c[3]+';width:'+Math.max(.5,c[2])+'%"></span></div></div>';}).join('')+'</div></section></div><div class="pw-grid equal">'+ranking('LEADERBOARD',[['Nexora 02',16420.55,'86 tips received'],['Ike',9063.77,'8 tips received'],['nexora_005',1449,'8 tips received'],['glxc301.',185.77,'12 tips received'],['glxc301.',185.77,'12 tips received']],'award',false)+ranking('STATION PERFORMANCE',[['Master Store',27689.08],['332332',15],['Front Desk',0],['Master Store',0]],'users',true)+'</div>';
   }
   function render() {
-    categoryRange='All time';
     var tabs=[['Overview','tip-overview.html','overview'],['Receive Payments','payment-income.html','receive'],['Payment Activity','payment-activity.html','activity'],['Tips','tip-list.html','tips'],['Payroll','staff-payouts.html','payouts'],['Direct Savings','direct-savings.html','savings'],['Category Management','payment-categories.html','categories']];
-    root.innerHTML='<div class="pw-heading"><h1>'+(view==='analytics'?icon('chart')+' Analytics':'Payments &amp; Payouts')+'</h1>'+(view==='analytics'?'<p>View in-depth analytics on tipping volume, staff rankings, and station performance.</p>':'<div class="pw-topbar"><nav class="pw-tabs" aria-label="Payments & Payouts">'+tabs.map(function(t){return '<a href="'+t[1]+'"'+(view===t[2]?' aria-current="page"':'')+'>'+t[0]+'</a>';}).join('')+'</nav>'+button('Add Activity','add-activity','pw-primary','plus')+'</div>')+'</div>'+(view==='receive'?receive():view==='tips'||view==='payouts'||view==='activity'?listView(view):view==='savings'?savings():view==='categories'?categories():view==='analytics'?analytics():overview())+'<footer class="pw-footer">© 2026 NEXORA Touch.</footer>';
+    root.innerHTML='<div class="pw-heading"><h1>'+(view==='analytics'?icon('chart')+' Analytics':'Payments &amp; Payouts')+'</h1>'+(view==='analytics'?'<p>View in-depth analytics on tipping volume, staff rankings, and station performance.</p>':'<div class="pw-topbar"><nav class="pw-tabs" aria-label="Payments & Payouts">'+tabs.map(function(t){return '<a href="'+t[1]+'"'+((view==='income-period'?'overview':view)===t[2]?' aria-current="page"':'')+'>'+t[0]+'</a>';}).join('')+'</nav>'+button('Add Activity','add-activity','pw-primary','plus')+'</div>')+'</div>'+childHeading()+(view==='income-period'?categorySummary(true,true):view==='receive'?receive():view==='tips'||view==='payouts'||view==='activity'?listView(view):view==='savings'?savings():view==='categories'?categories():view==='analytics'?analytics():overview())+'<footer class="pw-footer">© 2026 NEXORA Touch.</footer>';
     if(view==='activity'&&!Object.keys(filters).length)filters.date='Last 30 Days';
+    if(view==='payouts'&&filters.search){var search=root.querySelector('[name="search"]');if(search)search.value=filters.search;}
     drawList();drawQR();
   }
   var dialog=document.getElementById('payment-dialog');
@@ -339,7 +374,7 @@
       var period=validatePayPeriod();if(!period||!dialog.querySelector('#pw-evidence').reportValidity())return;
       var payout={id:'PAY-'+Date.now(),date:'2026-10-27',time:'12:00 pm',amount:Number(field('amount')),method:chosen('payout-method'),type:chosen('payout-type'),status:chosen('payout-status'),staff:staff,periodStart:period.start,periodEnd:period.end,note:field('note'),evidence:evidenceDraft.slice()};
       if(!save(function(next){next.payouts.unshift(payout);},el))return;
-      filters={};currentPage=1;closeDialog();render();
+      filters=isStaffHistory?{search:filters.search||''}:{};currentPage=1;closeDialog();render();
     }
     else if(action==='unpaid'){
       var unpaid=[['Jade',66.06,'2026-09-04','04:22 pm'],['Ike',60.77,'2026-10-13','09:43 am'],['glxc301.',30.77,'2026-09-03','02:51 pm'],['1.',25.77,'2026-10-13','09:43 am'],['nexora_004.',15,'2026-10-13','09:43 am'],['nexora.',15,'2026-10-13','09:43 am'],['nexora_02',15,'2026-10-13','09:43 am'],['Staff.',0.77,'2026-08-19','05:27 pm']];
@@ -355,13 +390,14 @@
       var volume=Math.max(0,Number(document.getElementById('pw-volume').value)),fee=Number(document.getElementById('pw-fee').value),amount=volume*fee/100;
       document.getElementById('pw-fee-label').textContent=fee+'%';document.getElementById('pw-monthly').textContent=money(amount)+'/month';document.getElementById('pw-yearly').textContent=money(amount*12);return;
     }
-    if(el.name&&['search','min','max'].includes(el.name)){filters[el.name]=el.value;currentPage=1;drawList();}
+    if(el.name&&['search','min','max'].includes(el.name)){filters[el.name]=el.value;currentPage=1;drawList();if(isStaffHistory&&el.name==='search'){var url=new URL(location.href);if(el.value.trim())url.searchParams.set('staff',el.value.trim());else url.searchParams.delete('staff');history.replaceState(history.state,'',url.href);}}
   });
   root.addEventListener('change',function(event){
     var el=event.target;
     if(el.name==='category-period'){
-      categoryRange=el.value;var sub=root.querySelector('[name="category-subperiod"]');sub.disabled=el.value==='All time';sub.innerHTML=options(el.value==='Month'?['October 2026']:el.value==='Year'?['2026']:el.value==='Week'?['Oct 21, 2026 – Oct 27, 2026']:['All periods']);root.querySelector('#category-bars').innerHTML=categoryBars();return;
+      categoryRange=el.value;categorySelection='';var sub=root.querySelector('[name="category-subperiod"]');sub.disabled=el.value==='All time';sub.innerHTML=categoryPeriodOptions();root.querySelector('#category-bars').innerHTML=categoryBars();return;
     }
+    if(el.name==='category-subperiod'){categorySelection=el.value;root.querySelector('#category-bars').innerHTML=categoryBars();return;}
     if(el.tagName==='SELECT'&&el.name&&!el.name.startsWith('category-')){filters[el.name]=el.value;currentPage=1;drawList();}
   });
   dialog.addEventListener('change',function(event){
@@ -381,5 +417,6 @@
   dialog.addEventListener('click',function(event){if(event.target===dialog)closeDialog();});
   var requestedStaff=new URLSearchParams(location.search).get('staff');
   if(view==='tips'&&requestedStaff)filters.staff=requestedStaff;
+  if(view==='payouts'&&requestedStaff)filters.search=requestedStaff;
   render();
 })();

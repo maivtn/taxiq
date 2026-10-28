@@ -60,7 +60,7 @@ window.NEXORA_PRODUCT_CATALOG = {
   "payments": {
     "title": "Payments & Payouts",
     "description": "Salon income, staff payouts and card transactions. Proposed screens are marked.",
-    "status": "7 screens",
+    "status": "9 screens",
     "groups": [
       {
         "name": "Salon income",
@@ -70,8 +70,8 @@ window.NEXORA_PRODUCT_CATALOG = {
             "url": "https://nexoratouch.com/dashboard/reports?tab=receive_payments"
           },
           {
-            "label": "Income by period (proposed)",
-            "unavailable": true
+            "label": "Income by period",
+            "url": "payment-income-period.html"
           }
         ]
       },
@@ -95,8 +95,8 @@ window.NEXORA_PRODUCT_CATALOG = {
             "url": "https://nexoratouch.com/dashboard/tips?tab=savings"
           },
           {
-            "label": "Payout history by staff member (proposed)",
-            "unavailable": true
+            "label": "Payout history by staff member",
+            "url": "staff-payout-history.html"
           }
         ]
       },
@@ -134,7 +134,7 @@ window.NEXORA_PRODUCT_CATALOG = {
     "search": "payments payouts thu nhap tiệm income nhan vien lich su chi tra payroll giao dich may ca the card terminal thanh toan tips doi soat",
     "cardDescription": "Track income, tips, transactions and team payouts.",
     "cardCategory": "PAYMENTS",
-    "cardStatus": "7 screens",
+    "cardStatus": "9 screens",
     "tags": [
       "Receive payments",
       "Staff payouts"

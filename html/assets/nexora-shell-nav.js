@@ -486,6 +486,11 @@
                     "key": "nhan-thanh-toan-2",
                     "label": "Receive payments",
                     "href": "https://nexoratouch.com/dashboard/reports?tab=receive_payments"
+                  },
+                  {
+                    "key": "income-by-period",
+                    "label": "Income by period",
+                    "href": "payment-income-period.html"
                   }
                 ]
               },
@@ -512,6 +517,11 @@
                     "key": "direct-savings",
                     "label": "Direct Savings",
                     "href": "https://nexoratouch.com/dashboard/tips?tab=savings"
+                  },
+                  {
+                    "key": "payout-history-by-staff",
+                    "label": "Payout history by staff member",
+                    "href": "staff-payout-history.html"
                   }
                 ]
               },
