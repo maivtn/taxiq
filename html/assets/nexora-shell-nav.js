@@ -265,6 +265,9 @@
         "key": "tai-chinh-chi-tra",
         "label": "Finance & payouts",
         "iconKey": "payments",
+        "showIcon": true,
+        "externalIndicator": true,
+        "shortcutTo": "tong-quan-thanh-toan",
         "href": "#module-payments"
       }
     ]
