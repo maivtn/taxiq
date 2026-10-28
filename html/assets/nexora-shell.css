@@ -783,14 +783,14 @@ body[data-nexora-workspace="pos"] .sidebar { padding:18px 14px; }
 .sidebar:not(.staff-sidebar) :is(.sidebar-nav > .nav-item,.shell-tree-row,.nav-subnav-inner > .nav-subitem):active { box-shadow:inset 0 3px 8px #07122c8c,0 1px 0 #07122c8c; }
 /* Strong selection marks a destination; open groups and route ancestors stay subtle. */
 .sidebar:not(.staff-sidebar) .sidebar-nav .nav-item.is-active:not(.nav-parent) { background:var(--shell-menu-active-background); box-shadow:var(--shell-menu-active-shadow); color:#fff; }
-.sidebar:not(.staff-sidebar) .sidebar-nav .nav-subitem.is-active:not(.nav-parent) { background:var(--shell-menu-sub-background); box-shadow:none; color:#fff; font-weight:800; }
+.sidebar:not(.staff-sidebar) .sidebar-nav .nav-subitem.is-active:not(.nav-parent) { background:var(--shell-menu-active-background); box-shadow:var(--shell-menu-active-shadow); color:#fff; font-weight:800; }
 .sidebar:not(.staff-sidebar) .sidebar-nav .nav-parent.is-expanded { background:#ffffff0d; box-shadow:none; color:#fff; }
 .sidebar:not(.staff-sidebar) .sidebar-nav .nav-parent.is-active { background:#ffffff2b; box-shadow:none; color:#fff; }
 .sidebar:not(.staff-sidebar) .shell-tree-row { border-radius:7px; }
 .sidebar:not(.staff-sidebar) .shell-tree-branch[data-depth="0"] > .shell-tree-row { border-radius:9px; }
 .sidebar:not(.staff-sidebar) .sidebar-nav .shell-tree-row:has(> .nav-parent.is-expanded) { background:#ffffff0d; box-shadow:none; }
 .sidebar:not(.staff-sidebar) .sidebar-nav .shell-tree-row:has(> .nav-parent.is-active) { background:#ffffff2b; box-shadow:none; }
-.sidebar:not(.staff-sidebar) .sidebar-nav .shell-tree-row:has(> a.nav-subitem.is-active) { background:var(--shell-menu-sub-background); box-shadow:none; }
+.sidebar:not(.staff-sidebar) .sidebar-nav .shell-tree-row:has(> a.nav-subitem.is-active) { background:var(--shell-menu-active-background); box-shadow:var(--shell-menu-active-shadow); }
 .sidebar:not(.staff-sidebar) .sidebar-nav .shell-tree-row:has(> a.nav-item.is-active) { background:var(--shell-menu-active-background); box-shadow:var(--shell-menu-active-shadow); }
 .sidebar:not(.staff-sidebar) .sidebar-nav .shell-tree-row:has(> :is(.is-active,.is-expanded)) > :is(.nav-item,.nav-subitem) { color:#fff; }
 .sidebar:not(.staff-sidebar) .sidebar-nav .shell-tree-branch > .shell-tree-row > :is(.nav-item,.nav-subitem) { background:transparent; box-shadow:none; }
