@@ -19,9 +19,11 @@
   const lucide = name => '<i data-lucide="' + name + '" aria-hidden="true"></i>';
   const button = (label, action, primary = false, icon = '') => '<button class="pqr-button' + (primary ? ' is-primary' : '') + '" type="button" data-pqr-action="' + action + '">' + (icon ? lucide(icon) : '') + label + '</button>';
   const icons = () => { if (window.lucide) window.lucide.createIcons(); };
-  const tabs = [{ id: 'one-qr', label: 'One QR', icon: 'qr-code' }, { id: 'tip-qr', label: 'Tip QR', icon: 'hand-coins' }, { id: 'accept-payment', label: 'Accept Payment', icon: 'credit-card' }, { id: 'referral-link', label: 'Referral Link', icon: 'share-2' }, { id: 'advertising', label: 'Quảng cáo', icon: 'megaphone' }];
+  const tabs = [{ id: 'one-qr', label: 'One QR', icon: 'scan-line' }, { id: 'advertising', label: 'Quảng cáo', icon: 'megaphone' }, { id: 'tip-qr', label: 'Tip QR', icon: 'hand-coins' }, { id: 'accept-payment', label: 'Accept Payment', icon: 'credit-card' }, { id: 'referral-link', label: 'Referral Link', icon: 'share-2' }];
   const aliases = { 'my-qr': 'tip-qr', 'qr-stations': 'tip-qr', 'payout-methods': 'accept-payment', ads: 'advertising' };
   let current = 'one-qr';
+  let advertisingElement = null;
+  let advertisingController = null;
   const dialog = document.createElement('dialog');
   dialog.className = 'pqr-dialog'; dialog.setAttribute('aria-labelledby', 'pqr-dialog-title'); document.body.append(dialog);
   function feedback(message, error = false) {
@@ -130,15 +132,35 @@
     return '<section class="pqr-card"><div class="pqr-card-head"><h2>Referral Link</h2><span class="pqr-demo">Dữ liệu minh hoạ</span></div>' + (state.referral ? '<div class="pqr-qr-card">' + qrMarkup(state.referral) + '<div class="pqr-qr-detail"><h2>Liên kết giới thiệu</h2><p class="pqr-url">' + esc(state.referral) + '</p><div class="pqr-actions">' + button('Sao chép URL', 'referral-copy', true, 'copy') + button('Thêm vào One QR', 'referral-add', false, 'plus') + '</div></div></div>' : '<div class="pqr-empty">Chưa có liên kết giới thiệu</div>' + button('Thử lại', 'retry')) + '</section>';
   }
   function adPanel() {
-    return '<div class="pqr-two-col"><section class="pqr-card"><div class="pqr-card-head"><h2>Quảng cáo kiếm tiền</h2><span class="pqr-status">' + (state.ads ? 'Đã kích hoạt' : 'Chưa kích hoạt') + '</span></div><p class="pqr-muted">Personal được tham gia hiển thị quảng cáo; kết quả và thu nhập thuộc tài khoản sở hữu QR.</p>' +
-      (state.ads ? '<p class="pqr-muted">Nội dung tài trợ mẫu</p>' + button('Xem trước', 'preview') : '<details class="pqr-terms"><summary>Nội dung tham gia</summary><p class="pqr-muted">Quét QR, mở trang hoặc bấm nội dung không tự chứng minh đã được trả tiền.</p><p class="pqr-muted">Prototype dùng dữ liệu mẫu; không thực hiện thanh toán, gửi tip, thay đổi số dư hoặc tạo chiến dịch thật.</p></details><label class="pqr-consent"><input type="checkbox" data-pqr-consent' + (state.consent ? ' checked' : '') + '><span>Tôi đã đọc nội dung tham gia và đồng ý hiển thị quảng cáo.</span></label><button class="pqr-button is-primary" type="button" data-pqr-action="activate"' + (!state.consent ? ' disabled' : '') + '>Kích hoạt</button>') + '</section><section class="pqr-card"><div class="pqr-card-head"><h2>Kết quả và thu nhập</h2><span class="pqr-demo">Dữ liệu minh hoạ</span></div><div class="pqr-activity"><div class="pqr-stat"><span>Lượt quét</span><strong>—</strong></div><div class="pqr-stat"><span>Lượt bấm</span><strong>—</strong></div><div class="pqr-stat"><span>Thu nhập</span><strong>—</strong></div></div><div class="pqr-empty">Chưa có dữ liệu</div><p class="pqr-muted">Quét QR, mở trang hoặc bấm nội dung không tự chứng minh đã được trả tiền.</p></section></div>';
+    return '<div class="pqr-advertising" data-pqr-advertising></div>';
+  }
+  function mountAdvertising() {
+    const slot = host.querySelector('[data-pqr-advertising]');
+    if (!advertisingElement) {
+      const template = document.createElement('template');
+      template.innerHTML = window.NEXORA_PERSONAL_ADVERTISING_TEMPLATE;
+      advertisingElement = template.content.firstElementChild;
+    }
+    slot.append(advertisingElement);
+    if (advertisingController) { advertisingController.refresh(); return; }
+    advertisingController = window.NEXORA_ONEQR_ADVERTISING.mount(advertisingElement, {
+      accountType: 'personal', accountId: state.id, readOwner: api.read,
+      onActivationChange({ activated, adsEnabled }) {
+        const previous = { ads: state.ads, consent: state.consent };
+        state.ads = adsEnabled; state.consent = activated;
+        if (!persist(undefined, ['ads', 'consent'])) { Object.assign(state, previous); return false; }
+        refreshPreview(); return true;
+      }
+    });
   }
   function navigate(tab, updateURL = true) {
+    if (advertisingController) advertisingController.close();
     tab = aliases[tab] || tab; current = tabs.some(item => item.id === tab) ? tab : 'one-qr';
     if (updateURL) { const target = new URL(location.href); target.searchParams.delete('view'); target.searchParams.set('tab', current); history.pushState({}, '', target); }
     host.innerHTML = '<div class="pqr-heading"><div><h1>One QR của tôi</h1><p>Một mã QR để chia sẻ thông tin và các liên kết của bạn.</p></div><span class="pqr-demo">Personal · ' + (api.linked ? 'Đã liên kết tiệm' : 'Chưa liên kết tiệm') + '</span></div>' +
-      '<nav class="qr-tabs pqr-tabs" role="tablist" aria-label="One QR">' + tabs.map(item => '<button class="qr-tab' + (item.id === current ? ' is-active' : '') + '" id="pqr-tab-' + item.id + '" type="button" role="tab" aria-selected="' + (item.id === current) + '" aria-controls="pqr-panel" data-pqr-tab="' + item.id + '">' + image(item.icon) + '<span>' + item.label + '</span></button>').join('') + '</nav><div id="pqr-panel" role="tabpanel" aria-labelledby="pqr-tab-' + current + '">' + ({ 'one-qr': buildMain, 'tip-qr': tipPanel, 'accept-payment': paymentPanel, 'referral-link': referralPanel, advertising: adPanel }[current])() + '</div><p class="pqr-feedback" data-pqr-feedback role="status" aria-live="polite"></p>';
+      '<nav class="qr-tabs pqr-tabs" role="tablist" aria-label="One QR">' + tabs.map(item => '<button class="qr-tab' + (item.id === current ? ' is-active' : '') + '" id="pqr-tab-' + item.id + '" type="button" role="tab" aria-selected="' + (item.id === current) + '" aria-controls="pqr-panel" data-pqr-tab="' + item.id + '"><span class="qr-tab-icon">' + lucide(item.icon) + '</span><span>' + item.label + '</span></button>').join('') + '</nav><div id="pqr-panel" role="tabpanel" aria-labelledby="pqr-tab-' + current + '">' + ({ 'one-qr': buildMain, 'tip-qr': tipPanel, 'accept-payment': paymentPanel, 'referral-link': referralPanel, advertising: adPanel }[current])() + '</div><p class="pqr-feedback" data-pqr-feedback role="status" aria-live="polite"></p>';
     if (current === 'one-qr') { renderLinks(); renderLeads(); }
+    if (current === 'advertising') mountAdvertising();
     if (window.NEXORA_SHELL && window.NEXORA_SHELL.setActiveTab) window.NEXORA_SHELL.setActiveTab(current);
     icons(); drawQR(host);
   }
@@ -249,7 +271,6 @@
     else if (action === 'payment-copy' && api.hasPayment(state)) await copy(api.publicUrl('payment'));
     else if (action === 'referral-copy' && state.referral) await copy(state.referral);
     else if (action === 'referral-add' && state.referral) { if (!state.links.some(item => item.kind === 'referral')) state.links.push({ id: 'referral', name: 'Tham gia cùng tôi', url: state.referral, icon: 'share-2', kind: 'referral', enabled: true }); navigate('one-qr'); feedback('Lưu thay đổi để giữ nội dung đang chỉnh.'); }
-    else if (action === 'activate' && state.consent) { state.ads = true; if (persist(undefined, ['ads', 'consent'])) navigate('advertising', false); else state.ads = false; }
     else if (action === 'preview') openDialog('Xem trước', '<div data-pqr-phone>' + phone() + '</div>');
     else if (action === 'retry') { if (current === 'referral-link') { state.referral = api.read().referral; } navigate(current, false); feedback(current === 'tip-qr' ? 'Chưa có liên kết tiệm hợp lệ.' : 'Chưa có dữ liệu'); }
     else if (action === 'exchange') exchangeContact();
@@ -270,7 +291,6 @@
       }
     });
     host.addEventListener('change', event => {
-      if (event.target.matches('[data-pqr-consent]')) { state.consent = event.target.checked; host.querySelector('[data-pqr-action="activate"]').disabled = !state.consent; }
       if (event.target.matches('[data-pqr-salon]') && api.linked && api.salons.some(item => item.id === event.target.value)) { state.salonId = event.target.value; persist(undefined, ['salonId']); navigate('tip-qr', false); }
     });
     host.addEventListener('submit', event => { if (event.target.matches('[data-pqr-add-form]')) { event.preventDefault(); const input = event.target.elements.url; if (!api.validUrl(input.value.trim())) { input.setAttribute('aria-invalid', 'true'); feedback('URL không hợp lệ.', true); return; } addLink(input.value.trim()); } });
@@ -310,6 +330,7 @@
       if (nameInput && previousName !== state.name) nameInput.value = state.name;
       if (greetingInput && previousGreeting !== state.greeting) greetingInput.value = state.greeting;
       renderLeads(); refreshPreview();
+      if (advertisingController && current === 'advertising') advertisingController.refresh();
     }
   });
   dialog.addEventListener('click', event => { if (event.target === dialog) dialog.close(); });

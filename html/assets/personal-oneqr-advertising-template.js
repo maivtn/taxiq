@@ -1,0 +1,263 @@
+/* Advertising layout copied from qr-advertising.html (PO advertising and wallet prototype). */
+window.NEXORA_PERSONAL_ADVERTISING_TEMPLATE = `<div id="oneqr-advertising" class="qa-app qa-personal-app" data-po-source="from-po/quang-cao/NEXORA_ONEQR_Chinh_sach_Va_Vi (2).html">
+              <span class="pqr-demo">Dữ liệu minh hoạ</span>
+              <h1 data-i="title">OneQR · Quảng cáo &amp; thu nhập</h1>
+              <nav id="nav" aria-label="OneQR">
+                <button class="active" data-view="setup" data-i="navSetup"></button>
+                <button data-view="overview" data-i="navOverview"></button>
+                <button data-view="earn" data-i="navEarn"></button>
+                <button data-view="transfer" data-i="navTransfer"></button>
+                <button data-view="ads" data-i="navAds"></button>
+                <button data-view="policy" data-i="navPolicy"></button>
+              </nav>
+              <section data-screen="setup" id="setup">
+                <div class="card hero">
+                  <span id="status" class="tag" role="status"></span>
+                  <span id="ads-status" class="tag hide" role="status"></span>
+                  <h2 style="margin-top:16px" data-i="setupTitle"></h2>
+                  <p data-i="setupIntro"></p>
+                  <div data-qa-business-only hidden>
+                  <label for="group" data-i="groupLabel"></label>
+                  <select id="group" required></select>
+                  <label for="industry" data-i="industryLabel"></label>
+                  <select id="industry" required></select>
+                  <label for="secondary" id="secondary-label" data-i="secondaryLabel"></label>
+                  <select id="secondary" multiple size="5" aria-describedby="secondary-help"></select>
+                  <div id="secondary-selected" class="qa-secondary-selected" role="list" aria-labelledby="secondary-label" hidden></div>
+                  <p id="secondary-help" class="muted" data-i="secondaryHelp"></p>
+                  <div id="customBlock" class="hide">
+                    <label for="custom" data-i="customLabel"></label>
+                    <input id="custom" data-ph="customPlaceholder">
+                  </div>
+                  </div>
+                  <div id="oneqr-consent" class="line">
+                    <input type="checkbox" id="agree" required>
+                    <label for="agree">
+                      <span data-i="agreement"></span>
+                      <a href="#policy" data-view="policy" data-i="policyLink"></a>
+                    </label>
+                  </div>
+                  <div class="row">
+                    <button type="button" id="activate" data-action="activate" data-i="activate"></button>
+                    <button type="button" id="ads-toggle" class="alt hide" data-action="toggle-ads"></button>
+                  </div>
+                  <p class="muted" data-i="noAgree"></p>
+                </div>
+                <div class="grid">
+                  <div class="box">
+                    <b data-i="step1"></b>
+                    <p data-i="step1p"></p>
+                  </div>
+                  <div class="box">
+                    <b data-i="step2"></b>
+                    <p data-i="step2p"></p>
+                  </div>
+                  <div class="box">
+                    <b data-i="step3"></b>
+                    <p data-i="step3p"></p>
+                  </div>
+                </div>
+              </section>
+              <section data-screen="overview" id="overview" class="hide">
+                <div class="card hero">
+                  <h2 data-i="overviewTitle"></h2>
+                  <p data-i="overviewIntro"></p>
+                  <div class="grid">
+                    <div class="box">
+                      <small data-i="available"></small>
+                      <div class="num balance">12.000</div>
+                      <small>ONEQR Points</small>
+                    </div>
+                    <div class="box">
+                      <small data-i="pending"></small>
+                      <div class="num" data-pending>300</div>
+                      <small data-i="pendingHelp"></small>
+                    </div>
+                    <div class="box">
+                      <small data-i="chosenIndustry"></small>
+                      <div id="chosen" class="num" style="font-size:17px"></div>
+                    </div>
+                  </div>
+                  <p data-i="exchange"></p>
+                </div>
+              </section>
+              <section data-screen="earn" id="earn" class="hide">
+                <div class="card">
+                  <h2 data-i="earnTitle"></h2>
+                  <p data-i="earnIntro"></p>
+                  <div class="grid">
+                    <div class="box">
+                      <small data-i="available"></small>
+                      <div class="num balance">12.000</div>
+                      <small data-i="approved"></small>
+                    </div>
+                    <div class="box">
+                      <small data-i="pending"></small>
+                      <div class="num" data-pending>300</div>
+                    </div>
+                    <div class="box">
+                      <small data-i="minimumWithdraw"></small>
+                      <div class="num" data-minimum-payout>10.000</div>
+                      <small>ONEQR Points = $100</small>
+                    </div>
+                  </div>
+                  <div class="row" style="margin-top:16px">
+                    <button data-action="payout" data-i="withdraw"></button>
+                    <button class="alt" data-action="convert" data-i="convert" aria-haspopup="dialog" aria-controls="convert"></button>
+                  </div>
+                  <p id="convertFeedback" class="qa-convert-feedback" role="status" hidden></p>
+                  <div class="notice hide" id="payout">
+                    <span data-i="payoutText"></span>
+                    <div style="margin-top:12px">
+                      <button data-action="request-payout" data-i="testPayout"></button>
+                    </div>
+                    <p id="payoutResult" role="status" tabindex="-1"></p>
+                  </div>
+                </div>
+                <div class="card">
+                  <h2 data-i="sourcesTitle"></h2>
+                  <p data-i="sourcesIntro"></p>
+                  <div class="grid">
+                    <div class="box">
+                      <b data-i="adsSource"></b>
+                      <p data-i="adsSourceText"></p>
+                    </div>
+                    <div class="box">
+                      <b data-i="refSource"></b>
+                      <p data-i="refSourceText"></p>
+                    </div>
+                    <div class="box">
+                      <b data-i="ledgerTitle"></b>
+                      <p data-i="ledgerText"></p>
+                    </div>
+                  </div>
+                </div>
+                <div class="card qa-history-card">
+                  <h2 id="income-history-heading"><span data-i="incomeHistory"></span> <span class="qa-history-count" data-history-count="income">0</span></h2>
+                  <div id="income-history" class="qa-history-table-wrap" role="region" aria-labelledby="income-history-heading" tabindex="0"></div>
+                </div>
+                <div class="card qa-history-card">
+                  <h2 id="payout-history-heading"><span data-i="payoutHistory"></span> <span class="qa-history-count" data-history-count="payout">0</span></h2>
+                  <div id="payout-history" class="qa-history-table-wrap" role="region" aria-labelledby="payout-history-heading" tabindex="0"></div>
+                </div>
+                <div class="card">
+                  <h2 data-i="spendWallet"></h2>
+                  <p data-i="spendText"></p>
+                  <div class="grid">
+                    <div class="box">
+                      <small data-i="receivedCredits"></small>
+                      <div class="num" id="received">0</div>
+                      <small data-i="notCash"></small>
+                    </div>
+                    <div class="box">
+                      <small data-i="ownCredits"></small>
+                      <div class="num" id="ownCredits">0</div>
+                      <small data-i="ownCreditsHelp"></small>
+                    </div>
+                  </div>
+                </div>
+                <div class="card qa-history-card">
+                  <h2 id="conversion-history-heading"><span data-i="conversionHistory"></span> <span class="qa-history-count" data-history-count="conversion">0</span></h2>
+                  <div id="conversion-history" class="qa-history-table-wrap" role="region" aria-labelledby="conversion-history-heading" tabindex="0"></div>
+                </div>
+                <div class="card qa-history-card">
+                  <h2 id="transfer-history-heading"><span data-i="transferHistory"></span> <span class="qa-history-count" data-history-count="transfer">0</span></h2>
+                  <div id="transfer-history" class="qa-history-table-wrap" role="region" aria-labelledby="transfer-history-heading" tabindex="0"></div>
+                </div>
+              </section>
+              <section data-screen="transfer" id="transfer" class="hide">
+                <div class="card">
+                  <h2 data-i="transferTitle"></h2>
+                  <p data-i="transferIntro"></p>
+                  <label for="recipient" data-i="recipient"></label>
+                  <input id="recipient" autocomplete="off">
+                  <label for="amount" data-i="amount"></label>
+                  <input id="amount" type="number" min="1000" step="1" value="1000">
+                  <p id="preview" aria-live="polite"></p>
+                  <button data-action="review-transfer" data-i="continue"></button>
+                  <p id="error" class="error" role="alert"></p>
+                  <div id="review" class="box hide" tabindex="-1" aria-labelledby="review-heading">
+                    <h3 id="review-heading" data-i="review"></h3>
+                    <p>
+                      <span data-i="recipient"></span>
+                      :
+                      <b id="reviewRecipient"></b>
+                    </p>
+                    <p id="reviewAmount"></p>
+                    <p data-i="transferWarning"></p>
+                    <div class="row">
+                      <button data-action="confirm-transfer" data-i="confirmDemo"></button>
+                      <button class="alt" data-action="cancel-transfer" data-i="back"></button>
+                    </div>
+                  </div>
+                  <p id="result" class="ok" role="status" tabindex="-1"></p>
+                  <div id="recipient-wallet" class="box hide">
+                    <h3 id="recipient-wallet-name" data-i="recipient"></h3>
+                    <p data-i="spendWallet"></p>
+                    <small data-i="receivedCredits"></small>
+                    <div class="num" id="recipient-credits">0</div>
+                    <small data-i="notCash"></small>
+                  </div>
+                </div>
+              </section>
+              <section data-screen="ads" id="ads" class="hide">
+                <div class="card">
+                  <h2 data-i="adsTitle"></h2>
+                  <p>
+                    <span data-i="chosenIndustry"></span>
+                    :
+                    <b id="adIndustry"></b>
+                  </p>
+                  <h3 data-i="placements"></h3>
+                  <p data-i="placementsText"></p>
+                  <h3 data-i="blocking" data-qa-business-only hidden></h3>
+                  <p data-i="blockingText" data-qa-business-only hidden></p>
+                </div>
+              </section>
+              <section data-screen="policy" id="policy" class="hide">
+                <div class="card">
+                  <h2 data-i="policyTitle"></h2>
+                  <p data-i="p1"></p>
+                  <p data-i="p2"></p>
+                  <p data-i="p3"></p>
+                  <p data-i="p4"></p>
+                  <p data-i="p5"></p>
+                  <p data-i="p6"></p>
+                  <p data-i="p7"></p>
+                </div>
+              </section>
+              <dialog id="convert" class="qa-convert-dialog" aria-labelledby="convert-title" aria-describedby="convert-description">
+                <form id="convert-form" novalidate>
+                  <div class="qa-convert-body">
+                    <div class="qa-convert-heading">
+                      <h2 id="convert-title" data-i="convert"></h2>
+                      <button type="button" class="qa-dialog-close" data-action="close-convert">
+                        <span aria-hidden="true">×</span>
+                        <span class="qa-sr-only" data-i="closeSecondary"></span>
+                      </button>
+                    </div>
+                    <p id="convert-description" data-i="convertText"></p>
+                    <div class="qa-convert-balance">
+                      <span data-i="available"></span>
+                      <div>
+                        <strong class="num balance">12.000</strong>
+                      </div>
+                    </div>
+                    <label for="convertAmount" data-i="convertAmount"></label>
+                    <input type="number" id="convertAmount" min="100" step="100" value="1000" inputmode="numeric" aria-describedby="convertResult" autofocus>
+                    <div class="qa-convert-preview">
+                      <span data-i="spendWallet"></span>
+                      <div>
+                        <div class="qa-convert-preview-value"><output id="convertCredits" for="convertAmount" aria-live="polite">10</output> <span data-i="credits"></span></div>
+                        <small id="convertEquivalent"></small>
+                      </div>
+                    </div>
+                    <p id="convertResult" role="status"></p>
+                  </div>
+                  <div class="qa-convert-actions">
+                    <button type="button" class="alt" data-action="close-convert" data-i="closeSecondary"></button>
+                    <button type="submit" data-action="convert-points" data-i="convertConfirm"></button>
+                  </div>
+                </form>
+              </dialog>
+            </div>`;

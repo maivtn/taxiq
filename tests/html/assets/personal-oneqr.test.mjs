@@ -21,12 +21,12 @@ function app(t, {path='oneqr-personal.html?account=personal', saved, publicPage=
   w.eval(storeSource);
   if(!publicPage){
     w.NEXORA_SHELL={activePage:'staff',activeTab:'one-qr',salonLinked:w.NEXORA_PERSONAL_QR.linked,onNavigate(tab){w.NEXORA_PERSONAL_QR.navigate(tab);}};
-    for(const file of ['nexora-icons.js','nexora-shell-nav.js','nexora-shell.js'])w.eval(readFileSync(new URL(file,assets),'utf8'));
+    for(const file of ['nexora-icons.js','nexora-shell-nav.js','nexora-shell.js','oneqr-advertising-po.js','personal-oneqr-advertising-template.js','oneqr-advertising.js'])w.eval(readFileSync(new URL(file,assets),'utf8'));
   }
   w.eval(uiSource);w.document.dispatchEvent(new w.Event('DOMContentLoaded'));
   return w;
 }
-const click=(w,action)=>w.document.querySelector('[data-pqr-action="'+action+'"]').click();
+const click=(w,action)=>w.document.querySelector(action==='activate'?'#oneqr-advertising #activate':'[data-pqr-action="'+action+'"]').click();
 function input(w,selector,value){const node=w.document.querySelector(selector);node.value=value;node.dispatchEvent(new w.Event('input',{bubbles:true}));return node;}
 function submit(w,selector){w.document.querySelector(selector).dispatchEvent(new w.Event('submit',{bubbles:true,cancelable:true}));}
 
@@ -121,10 +121,14 @@ test('payment configuration controls the public payment link without depending o
 });
 test('ads require explicit consent and never credit earnings for a preview or click',t=>{
  const w=app(t);w.NEXORA_PERSONAL_QR.navigate('advertising');const d=w.document;
- assert.equal(d.querySelector('[data-pqr-consent]').checked,false);assert.equal(d.querySelector('[data-pqr-action=activate]').disabled,true);
+ assert.equal(d.querySelector('#oneqr-advertising #agree').checked,false);assert.equal(d.querySelector('#oneqr-advertising #activate').disabled,true);
  click(w,'activate');assert.equal(w.NEXORA_PERSONAL_QR.read().ads,false);
- const checkbox=d.querySelector('[data-pqr-consent]');checkbox.checked=true;checkbox.dispatchEvent(new w.Event('change',{bubbles:true}));click(w,'activate');
- assert.equal(w.NEXORA_PERSONAL_QR.read().ads,true);assert.match(d.querySelector('#pqr-panel').textContent,/Chưa có dữ liệu/);
+ const checkbox=d.querySelector('#oneqr-advertising #agree');checkbox.checked=true;checkbox.dispatchEvent(new w.Event('change',{bubbles:true}));click(w,'activate');
+ assert.equal(w.NEXORA_PERSONAL_QR.read().ads,true);assert.equal(d.querySelector('#oneqr-advertising .balance').textContent,'0');
+ d.querySelector('#oneqr-advertising #ads-toggle').click();
+ assert.equal(w.NEXORA_PERSONAL_QR.read().ads,false);
+ for(const id of ['chosen','adIndustry'])assert.equal(d.querySelector('#oneqr-advertising #'+id).textContent,'Quảng cáo đã tắt');
+ d.querySelector('#oneqr-advertising #ads-toggle').click();
  w.NEXORA_PERSONAL_QR.navigate('one-qr');assert.ok(d.querySelector('.pqr-sponsored'));d.querySelector('[data-pqr-link=instagram]').click();
  assert.equal(Object.hasOwn(w.NEXORA_PERSONAL_QR.read(),'balance'),false);
 });
@@ -172,7 +176,7 @@ test('profile, payment and ad saves never publish invalid builder drafts',t=>{
  assert.equal(w.NEXORA_PERSONAL_QR.read().name,before.name);assert.equal(w.NEXORA_PERSONAL_QR.read().links[0].url,before.links[0].url);
  w.NEXORA_PERSONAL_QR.navigate('accept-payment');w.document.querySelector('[data-pqr-method=Zelle]').click();input(w,'[data-pqr-payment-form] [name=identifier]','an@example.com');submit(w,'[data-pqr-payment-form]');
  assert.equal(w.NEXORA_PERSONAL_QR.read().name,before.name);
- w.NEXORA_PERSONAL_QR.navigate('advertising');const consent=w.document.querySelector('[data-pqr-consent]');consent.checked=true;consent.dispatchEvent(new w.Event('change',{bubbles:true}));click(w,'activate');
+ w.NEXORA_PERSONAL_QR.navigate('advertising');const consent=w.document.querySelector('#oneqr-advertising #agree');consent.checked=true;consent.dispatchEvent(new w.Event('change',{bubbles:true}));click(w,'activate');
  assert.equal(w.NEXORA_PERSONAL_QR.read().ads,true);assert.equal(w.NEXORA_PERSONAL_QR.read().name,before.name);assert.equal(w.NEXORA_PERSONAL_QR.read().links[0].url,before.links[0].url);
 });
 test('the default linked Tip link targets an authorized salon and opens its public QR',t=>{

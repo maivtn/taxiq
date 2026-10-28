@@ -1,16 +1,14 @@
-.personal-qr-page { max-width: 1700px; margin-inline: auto; }
+.personal-qr-page { max-width: 1440px; margin-inline: auto; }
 .personal-qr-page [hidden], .personal-qr-public-page [hidden], .pqr-dialog [hidden] { display: none !important; }
 .pqr-heading { display: flex; justify-content: space-between; align-items: flex-start; flex-wrap: wrap; gap: 12px; margin-bottom: 20px; }
-.pqr-heading h1 { margin: 0 0 6px; font-size: 24px; letter-spacing: -.6px; }
+.pqr-heading h1 { margin: 0 0 6px; font-size: 20px; font-weight: 900; line-height: 1.2; }
 .pqr-heading p, .pqr-muted { color: var(--nexora-muted); font-size: 12px; line-height: 1.6; }
 .pqr-heading p { margin: 0; }
 .pqr-demo { display: inline-flex; align-items: center; gap: 6px; color: var(--nexora-brand); background: #eeeefe; padding: 6px 10px; border-radius: 6px; font-size: 11px; white-space: nowrap; }
 .pqr-status { color: #087f5b; background: #e8f8ef; border-radius: 30px; padding: 4px 9px; font-size: 11px; }
-.pqr-tabs { margin-bottom: 22px; }
-.pqr-tabs .qr-tab { flex: 1; justify-content: center; }
-.pqr-tabs img { width: 25px; height: 25px; object-fit: contain; }
-.personal-qr-page .pqr-tabs { overflow: visible; }
-.pqr-tabs .qr-tab span { white-space: normal; overflow-wrap: anywhere; }
+.pqr-tabs { margin-bottom: 20px; }
+.pqr-advertising { min-width: 0; }
+.qa-personal-app > h1 { margin-top: 16px; }
 .pqr-section { display: grid; gap: 18px; }
 .pqr-card { min-width: 0; padding: 18px; background: var(--nexora-surface); border: 1px solid var(--nexora-border); border-radius: 9px; }
 .pqr-card h2, .pqr-card h3 { margin: 0; color: var(--nexora-text); }
@@ -118,6 +116,6 @@
 .personal-qr-public-page .pqr-phone { max-width: 410px; border-width: 0; border-radius: 16px; box-shadow: var(--nexora-soft-shadow); }
 .pqr-community-frame { width: 100%; border: 0; min-height: 800px; }
 @media (max-width: 1180px) { .pqr-builder { grid-template-columns: minmax(280px,1fr) minmax(240px,1fr); } .pqr-builder > :last-child { grid-column: 1 / -1; } .pqr-builder .pqr-phone { width: 340px; max-width: 100%; } }
-@media (max-width: 640px) { .personal-qr-page { padding: 16px 12px; } .pqr-heading h1 { font-size: 21px; } .pqr-tabs { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 6px; } .pqr-tabs .qr-tab { min-width: 0; padding: 9px 5px; font-size: 11px; gap: 4px; } .pqr-tabs img { width: 22px; height: 22px; } .pqr-builder, .pqr-two-col { grid-template-columns: minmax(0,1fr); } .pqr-card, .pqr-builder > .pqr-card { padding: 13px; } .pqr-qr-card { gap: 12px; align-items: flex-start; } .pqr-qr-code { width: 86px; min-height: 86px; padding: 5px; } .pqr-qr-detail h2 { font-size: 14px; } .pqr-qr-detail .pqr-actions { gap: 5px; } .pqr-qr-detail .pqr-button { padding: 7px; font-size: 11px; } .pqr-activity { gap: 7px; } .pqr-stat { padding: 10px; } .pqr-stat span { font-size: 11px; } .pqr-stat strong { font-size: 21px; } .pqr-output-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .pqr-field input, .pqr-field textarea, .pqr-field select, .pqr-input { font-size: 16px; } .pqr-dialog-fields { grid-template-columns: minmax(0,1fr); } .pqr-icon-grid { grid-template-columns: repeat(3,minmax(0,1fr)); } .pqr-dialog-body { padding: 15px; } }
+@media (max-width: 640px) { .personal-qr-page { padding: 16px 12px; } .pqr-heading h1 { font-size: 21px; } .pqr-builder, .pqr-two-col { grid-template-columns: minmax(0,1fr); } .pqr-card, .pqr-builder > .pqr-card { padding: 13px; } .pqr-qr-card { gap: 12px; align-items: flex-start; } .pqr-qr-code { width: 86px; min-height: 86px; padding: 5px; } .pqr-qr-detail h2 { font-size: 14px; } .pqr-qr-detail .pqr-actions { gap: 5px; } .pqr-qr-detail .pqr-button { padding: 7px; font-size: 11px; } .pqr-activity { gap: 7px; } .pqr-stat { padding: 10px; } .pqr-stat span { font-size: 11px; } .pqr-stat strong { font-size: 21px; } .pqr-output-grid { grid-template-columns: repeat(2,minmax(0,1fr)); } .pqr-field input, .pqr-field textarea, .pqr-field select, .pqr-input { font-size: 16px; } .pqr-dialog-fields { grid-template-columns: minmax(0,1fr); } .pqr-icon-grid { grid-template-columns: repeat(3,minmax(0,1fr)); } .pqr-dialog-body { padding: 15px; } }
 @media (pointer: coarse) { .pqr-button, .pqr-icon-button { min-height: 44px; } .pqr-icon-button { min-width: 40px; } .pqr-consent { min-height: 44px; } }
 @media print { .sidebar, .header, .nexora-shell-backdrop, body > .shell { display: none !important; } .pqr-dialog[open] { display: block; position: static; width: 100%; border: 0; box-shadow: none; } .pqr-dialog-head button, .pqr-dialog .pqr-actions { display: none; } }
