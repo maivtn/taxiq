@@ -51,3 +51,20 @@
 - Trước khi commit, rà soát diff. Không tự chạy test để đáp ứng điều kiện commit; nếu chưa được yêu cầu test, vẫn commit thay đổi thuộc yêu cầu và ghi rõ chưa chạy test. Nếu đã chạy test theo yêu cầu và còn lỗi liên quan, xử lý hoặc báo rõ trở ngại trước khi commit.
 - Không đưa thay đổi không liên quan của người dùng vào commit. Không tự động push nếu người dùng chưa yêu cầu.
 - Trong phản hồi hoàn tất, thông báo mã commit và trạng thái kiểm thử ngắn gọn (kết quả thực tế hoặc chưa chạy theo quy tắc trên).
+
+
+
+Tài khoản demo Staging 
+personal: nexora_02@mailinator.com / 123456
+business: nexora_b1@mailinator.com / 123456
+
+
+Tài khoản demo Test:
+
+Tài khoản 1: jade_01@mailinator.com / 123456
+
+Tài khoản 2: quanpm / 123456
+
+Tài khoản merchant: bitcoinnailbar@nexoratouch.com / bitcoinnailbar@123
+ 
+Tài khoản staff: david.le918747@nexoratouch.com / Nexora@2026!
