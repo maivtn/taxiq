@@ -591,9 +591,7 @@ window.NEXORA_PRODUCT_CATALOG = {
               },
               {
                 "label": "AI Ads",
-                "url": "https://merchant.vlinkpay.com/marketing-tools",
-                "unavailable": true,
-                "newTab": true
+                "linkPending": true
               }
             ]
           }

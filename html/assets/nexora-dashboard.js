@@ -33,10 +33,12 @@
   }
   function reset() { search.value = ''; category.value = 'all'; saveFilters(); search.focus(); }
   function link(item) {
-    var href = item.demo === 'wheel' ? 'vlinkpay-campaigns.html?view=create' : item.url ? routes.resolve(item.url) : '';
-    var node = document.createElement(href && !item.unavailable ? 'a' : 'div');
-    node.className = 'detail-link' + (item.unavailable || !href ? ' unavailable' : '');
-    var copy = document.createElement('span'); copy.textContent = item.label + (item.unavailable || !href ? ' · unavailable' : ''); node.appendChild(copy);
+    var href = item.linkPending ? '' : item.demo === 'wheel' ? 'vlinkpay-campaigns.html?view=create' : item.url ? routes.resolve(item.url) : '';
+    var unavailable = !item.linkPending && (item.unavailable || !href);
+    var node = document.createElement(item.linkPending ? 'button' : href && !item.unavailable ? 'a' : 'div');
+    if (item.linkPending) node.type = 'button';
+    node.className = 'detail-link' + (unavailable ? ' unavailable' : '');
+    var copy = document.createElement('span'); copy.textContent = item.label + (unavailable ? ' · unavailable' : ''); node.appendChild(copy);
     if (item.description) { var description = document.createElement('small'); description.textContent = item.description; copy.appendChild(description); }
     if (href && !item.unavailable) {
       node.href = href;

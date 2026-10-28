@@ -400,8 +400,7 @@
               {
                 "key": "vlinkpay-ai-ads",
                 "label": "AI Ads · VLinkPay",
-                "newTab": true,
-                "href": "https://merchant.vlinkpay.com/marketing-tools"
+                "linkPending": true
               }
             ]
           }
@@ -598,7 +597,6 @@
     items.forEach(function (node) {
       if (node.href) node.href = resolve(node.href, node.opsView);
       if (node.href && node.navContext) node.href += (node.href.indexOf('?') === -1 ? '?' : '&') + 'nav=' + encodeURIComponent(node.navContext);
-      if (node.key === 'vlinkpay-ai-ads') node.availability = 'unavailable';
       if (node.newTab && node.href && !/^https?:/.test(node.href)) { node.externalIndicator = true; delete node.newTab; }
       if (node.href && node.href.indexOf('community.html?tab=') === 0) { node.page = 'community'; node.tab = node.href.split('tab=')[1]; }
       if (node.href && node.href.indexOf('booking-book-phase-1.html?tab=') === 0) { node.page = 'booking'; node.tab = new URLSearchParams(node.href.split('?')[1]).get('tab'); }

@@ -164,7 +164,7 @@ const catalog={
         { name: 'VLinkPay', items: [
           { label: 'Chiến dịch', url: 'https://merchant.vlinkpay.com/campaign-management?pageIndex=0&pageSize=10', newTab: true },
           { label: 'Tạo vòng quay', demo: 'wheel' },
-          { label: 'AI Ads', url: 'https://merchant.vlinkpay.com/marketing-tools', newTab: true }
+          { label: 'AI Ads', linkPending: true }
         ]}
       ]}
     ]},
