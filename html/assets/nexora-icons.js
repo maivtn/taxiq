@@ -6,13 +6,13 @@
   var files = {
   "home": "home.png",
   "dashboard": "dashboard.png",
-  "pos": "pos.png",
-  "oneqr": "oneqr.png",
-  "community": "community.png",
+  "pos": "../iconscout/pos-project-management-6578282.png",
+  "oneqr": "../iconscout/oneqr-14843205.png",
+  "community": "../iconscout/community-5487791.png",
   "aihub": "../iconscout/ai-hub-10852467.png",
   "marketing": "marketing.png",
   "sms": "sms.png",
-  "gift": "gift.png",
+  "gift": "../iconscout/gift-card-7705322.png",
   "reviews": "reviews.png",
   "analytics": "analytics.png",
   "taxiq": "taxiq.png",
@@ -27,9 +27,9 @@
   "news": "news.png",
   "onboarding": "onboarding.png",
   "tools": "tools.png",
-  "payments": "payments.png",
+  "payments": "../iconscout/payment-14986609.png",
   "ai-voice": "ai-voice.png",
-  "spinwheel": "spinwheel.png"
+  "spinwheel": "../iconscout/prize-wheel-10862879.webp"
 };
   function escape(value) { return String(value).replace(/[&<>"']/g, function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];}); }
   window.NEXORA_ICONS = {files: files, image: function(key, options) {
