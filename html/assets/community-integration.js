@@ -39,7 +39,7 @@
     document.body.classList.add('community-hub-active');
     syncLocation(current);
     if (!frame.getAttribute('src')) {
-      frame.src = 'community-hub.html?role=' + role + '&tab=' + encodeURIComponent(current);
+      frame.src = 'community-hub.html?v=20261028-community-ui-v2&role=' + role + '&tab=' + encodeURIComponent(current);
     } else if (ready && !fromFrame) {
       frame.contentWindow.postMessage({type: 'nexora-community-navigate', route: current}, window.location.origin);
     }

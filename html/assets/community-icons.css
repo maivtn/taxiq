@@ -1,0 +1,6 @@
+.community-icon-copy { font:inherit; color:inherit; pointer-events:none; }
+.community-icon-glyph { display:inline-flex; align-items:center; justify-content:center; width:var(--community-icon-size,20px); height:var(--community-icon-size,20px); margin-inline:1px; vertical-align:-.25em; flex:none; }
+.community-icon-glyph > img { display:block; width:100%; height:100%; object-fit:contain; }
+.community-icon-original { position:absolute; width:0; height:0; overflow:hidden; font-size:0; line-height:0; }
+.i18n-a.community-icon-translated::before { content:''; display:inline-block; width:var(--community-translated-size,20px); height:var(--community-translated-size,20px); margin-right:4px; vertical-align:middle; background:var(--community-translated-icon) center/contain no-repeat; }
+.i18n-a.community-icon-translated::after { content:attr(data-community-icon-label)!important; }

@@ -1,5 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
 import {boot,group,leaf} from './helpers/shell-fixture.mjs';
 
 test('PO menu opens only the selected nested branch and persists it through refresh',t=>{
@@ -137,4 +138,22 @@ test('Community has a separate destination link and disclosure button like Front
  assert.equal(toggle.getAttribute('aria-label'),'Community');assert.equal(toggle.hasAttribute('href'),false);
  const location=w.location.href;toggle.click();assert.equal(w.location.href,location);assert.equal(toggle.getAttribute('aria-expanded'),'true');
  assert.equal(row.querySelectorAll('a').length,1);assert.equal(row.querySelectorAll('button').length,1);
+});
+
+test('One QR label opens its local workspace while the adjacent button only expands its menu',t=>{
+ const w=boot(t);w.document.querySelector('[data-sidebar-products-toggle]').click();group(w,'business-tools').click();
+ const toggle=group(w,'stations'),link=toggle.parentElement.querySelector('a'),location=w.location.href;
+ assert.equal(link.textContent.trim(),'One QR');assert.equal(link.getAttribute('href'),'qr-stations.html?tab=one-qr');
+ toggle.click();assert.equal(w.location.href,location);assert.equal(toggle.getAttribute('aria-expanded'),'true');
+});
+
+test('Payment Gateway sidebar keeps exactly the PO menu while approved extra screens remain in Payments',t=>{
+ const w=boot(t),gateway=w.NEXORA_SHELL_NAV.nodes.find(node=>node.key==='business-tools').children.find(node=>node.key==='payments');
+ assert.deepEqual(Array.from(gateway.children,group=>group.label),['Salon income','Staff payouts','Card terminal','Settings']);
+ assert.deepEqual(Array.from(gateway.children,group=>group.children.length),[2,4,1,1]);
+ assert.deepEqual(Array.from(gateway.children[0].children,item=>item.label),['Payment overview','Receive payments']);
+ assert.ok(!gateway.children.some(group=>group.children.some(item=>['income-by-period','payout-history-by-staff'].includes(item.key))));
+ w.eval(readFileSync(new URL('../../../html/assets/nexora-product-catalog.js',import.meta.url),'utf8'));
+ const links=Array.from(w.NEXORA_PRODUCT_CATALOG.payments.groups).flatMap(group=>Array.from(group.items,item=>item.url));
+ assert.ok(links.includes('payment-income-period.html'));assert.ok(links.includes('staff-payout-history.html'));
 });
