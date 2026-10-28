@@ -1433,6 +1433,8 @@
 
 /* Special Flat icons by Magnific / Freepik, from the selected Flaticon collection. */
 .po-salon-home .salon-flat-icon { display: block; flex: none; object-fit: contain; }
+.po-salon-home .salon-preview-icon { display: inline-block; flex: none; width: 1em; height: 1em; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; vertical-align: middle; }
+.po-salon-home .ui-pos-flow .salon-preview-icon { width: 1.15em; height: 1.15em; }
 .po-salon-home .salon-product-icon .salon-flat-icon { width: 28px; height: 28px; }
 .po-salon-home .salon-quick i .salon-flat-icon { width: 28px; height: 28px; }
 .po-salon-home .salon-owner-list i { flex: 0 0 30px; width: 30px; height: 30px; }

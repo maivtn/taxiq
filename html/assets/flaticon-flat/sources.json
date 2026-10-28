@@ -15,11 +15,11 @@
     },
     {
       "key": "pos",
-      "word": "pos terminal",
-      "href": "https://www.flaticon.com/free-icon/point-of-sale_9423135",
-      "image": "https://cdn-icons-png.flaticon.com/128/9423/9423135.png",
-      "label": "Point Of Sale",
-      "file": "pos-9423135.png"
+      "word": "terminal",
+      "href": "https://www.flaticon.com/free-icon/pos_6408062",
+      "image": "https://cdn-icons-png.flaticon.com/128/6408/6408062.png",
+      "label": "Pos",
+      "file": "pos-6408062.png"
     },
     {
       "key": "aihub",
@@ -84,18 +84,18 @@
     {
       "key": "payments",
       "word": "wallet",
-      "href": "https://www.flaticon.com/free-icon/wallet_855279",
-      "image": "https://cdn-icons-png.flaticon.com/128/855/855279.png",
-      "label": "Wallet",
-      "file": "payments-855279.png"
+      "href": "https://www.flaticon.com/free-icon/digital-wallet_9368527",
+      "image": "https://cdn-icons-png.flaticon.com/128/9368/9368527.png",
+      "label": "Digital wallet",
+      "file": "payments-9368527.png"
     },
     {
       "key": "reviews",
-      "word": "review",
-      "href": "https://www.flaticon.com/free-icon/rating_1365307",
-      "image": "https://cdn-icons-png.flaticon.com/128/1365/1365307.png",
+      "word": "rating",
+      "href": "https://www.flaticon.com/free-icon/rating_679939",
+      "image": "https://cdn-icons-png.flaticon.com/128/679/679939.png",
       "label": "Rating",
-      "file": "reviews-1365307.png"
+      "file": "reviews-679939.png"
     },
     {
       "key": "analytics",
@@ -251,11 +251,11 @@
     },
     {
       "key": "news",
-      "word": "newspaper",
-      "href": "https://www.flaticon.com/free-icon/news_3855129",
-      "image": "https://cdn-icons-png.flaticon.com/128/3855/3855129.png",
+      "word": "news",
+      "href": "https://www.flaticon.com/free-icon/news_1968737",
+      "image": "https://cdn-icons-png.flaticon.com/128/1968/1968737.png",
       "label": "News",
-      "file": "news-3855129.png"
+      "file": "news-1968737.png"
     }
   ]
 }
