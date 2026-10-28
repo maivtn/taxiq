@@ -10,6 +10,7 @@
 
   const VERSION = 'ONEQR-ADS-WALLET-2026-10-27';
   const STORE = 'nexora-oneqr-advertising-demo-20261027';
+  const BUSINESS_ID = 'bitcoin-nail-bar-demo';
   const isReload = window.performance?.getEntriesByType?.('navigation')[0]?.type === 'reload';
   const $ = id => root.querySelector('#' + id);
   // UI changes explicitly requested after the PO handoff; keep the original PO copy intact.
@@ -37,6 +38,9 @@
       payoutHistory: 'Lịch sử rút tiền', conversionHistory: 'Lịch sử đổi sang credit',
       historyId: 'Mã giao dịch', historyTime: 'Thời gian', historySource: 'Nguồn', historyStatus: 'Trạng thái',
       historyReview: 'Chờ đối soát', historySending: 'Đang chuyển', historyPaid: 'Đã trả',
+      historyTransferType: 'Loại giao dịch', historyTransferAccount: 'Tài khoản gửi / nhận', historyTransferValue: 'Giá trị',
+      historySent: 'Chuyển điểm', historyReceived: 'Nhận điểm',
+      historySender: 'Người gửi', historyRecipient: 'Người nhận', historyReceivedDone: 'Đã nhận credit.',
       p4: '4. Quy đổi: 100 ONEQR Points = 1 credit = $1 giá trị quy đổi.'
     },
     en: {
@@ -62,6 +66,9 @@
       payoutHistory: 'Payout history', conversionHistory: 'Credit conversion history',
       historyId: 'Transaction ID', historyTime: 'Time', historySource: 'Source', historyStatus: 'Status',
       historyReview: 'Pending review', historySending: 'Processing', historyPaid: 'Paid',
+      historyTransferType: 'Transaction type', historyTransferAccount: 'Sender / recipient account', historyTransferValue: 'Value',
+      historySent: 'Points sent', historyReceived: 'Points received',
+      historySender: 'Sender', historyRecipient: 'Recipient', historyReceivedDone: 'Credits received.',
       p4: '4. Conversion: 100 ONEQR Points = 1 credit = $1 in conversion value.'
     }
   };
@@ -268,7 +275,7 @@
     root.querySelectorAll('[data-minimum-payout]').forEach(element => { element.textContent = number(10000); });
     $('received').textContent = number(state.receivedCreditPoints / 100);
     $('ownCredits').textContent = number(state.ownCreditPoints / 100);
-    const transfers = state.ledger.filter(entry => entry.kind === 'transfer');
+    const transfers = state.ledger.filter(entry => entry.kind === 'transfer' && !isReceivedTransfer(entry));
     const latestTransfer = transfers[transfers.length - 1];
     const recipientPoints = transfers.filter(entry => entry.recipient === latestTransfer?.recipient).reduce((total, entry) => total + entry.points, 0);
     $('recipient-credits').textContent = number(recipientPoints / 100);
@@ -304,13 +311,17 @@
     );
   }
 
+  function isReceivedTransfer(entry) {
+    return entry.kind === 'transfer' && entry.recipient === BUSINESS_ID && entry.sender !== BUSINESS_ID;
+  }
+
   function historyStatus(entry) {
     let key;
     let style = 'complete';
     if (entry.kind === 'income') {
       key = entry.status === 'pending' ? 'pending' : 'approved';
       if (entry.status === 'pending') style = 'pending';
-    } else if (entry.kind === 'transfer') key = 'done';
+    } else if (entry.kind === 'transfer') key = isReceivedTransfer(entry) ? 'historyReceivedDone' : 'done';
     else if (entry.kind === 'conversion') key = 'convertDone';
     else {
       key = { pending: 'historyReview', processing: 'historySending', paid: 'historyPaid' }[entry.status];
@@ -332,10 +343,21 @@
     const value = ['$', entry => escape(dollars(entry.points))];
     const credits = ['credits', entry => escape(number(entry.points / 100))];
     const status = ['historyStatus', historyStatus];
-    const numericClass = key => ['amount', '$', 'credits'].includes(key) ? ' class="qa-history-numeric"' : '';
+    const transferType = ['historyTransferType', entry => `<span class="qa-history-direction${isReceivedTransfer(entry) ? ' is-received' : ''}">${escape(t(isReceivedTransfer(entry) ? 'historyReceived' : 'historySent'))}</span>`];
+    const transferAccount = ['historyTransferAccount', entry => {
+      const received = isReceivedTransfer(entry);
+      const account = received ? entry.sender : entry.recipient;
+      return `<span>${escape(account === 'DEMO' ? t('recipient') : account || '—')}</span><small class="qa-history-account-role">${escape(t(received ? 'historySender' : 'historyRecipient'))}</small>`;
+    }];
+    const transferValue = ['historyTransferValue', entry => {
+      const received = isReceivedTransfer(entry);
+      // The sender spends earnings points; the recipient receives spend-only credits.
+      return `<span class="qa-history-points${received ? ' is-income' : ''}">${received ? '+' : '−'}${number(received ? entry.points / 100 : entry.points)} ${escape(t(received ? 'credits' : 'points'))}</span>`;
+    }];
+    const numericClass = key => ['amount', '$', 'credits', 'historyTransferValue'].includes(key) ? ' class="qa-history-numeric"' : '';
     const columns = {
       income: [transaction, timestamp, ['historySource', () => escape(t('adsSource'))], amount, value, status],
-      transfer: [transaction, timestamp, ['recipient', entry => escape(entry.recipient && entry.recipient !== 'DEMO' ? entry.recipient : t('recipient'))], amount, credits, status],
+      transfer: [transaction, timestamp, transferType, transferAccount, transferValue, status],
       payout: [transaction, timestamp, amount, value, status],
       conversion: [transaction, timestamp, amount, credits, status]
     };

@@ -82,6 +82,9 @@
 .qa-app .qa-history-table time { white-space: nowrap; color: #4d5870; font-size: 12px; }
 .qa-app .qa-history-points { font-weight: 700; font-variant-numeric: tabular-nums; white-space: nowrap; }
 .qa-app .qa-history-points.is-income { color: #166534; }
+.qa-app .qa-history-direction { display: inline-block; border-radius: 8px; padding: 4px 8px; background: var(--qa-primary-subtle); color: var(--qa-primary-active); font-size: 12px; }
+.qa-app .qa-history-direction.is-received { background: #dcfce7; color: #166534; }
+.qa-app .qa-history-account-role { display: block; margin-top: 4px; font-size: 12px; }
 .qa-app .qa-history-status { display: inline-block; max-width: 220px; border-radius: 8px; padding: 4px 8px; background: #f1f5f9; color: #334155; font-size: 12px; line-height: 1.5; }
 .qa-app .qa-history-status.complete { background: #dcfce7; color: #166534; }
 .qa-app .qa-history-status.pending { background: #fef3c7; color: #854d0e; }
