@@ -178,6 +178,10 @@ test('Every new page renders its own local content without PO frame or page link
       assert.equal(dom.window.document.documentElement.lang, 'en');
       assert.equal(dom.window.document.querySelectorAll('iframe').length, 0);
       for (const link of dom.window.document.querySelectorAll('a[href]')) {
+        if (filename === 'salon-home.html' && link.classList.contains('salon-icon-credit')) {
+          assert.equal(link.href, 'https://www.flaticon.com/authors/special/flat?author_id=1&type=standard');
+          continue;
+        }
         assert.equal(new URL(link.href).origin, 'http://localhost', `${filename}: ${link.href}`);
         assert.doesNotMatch(link.href, /from-po/);
       }

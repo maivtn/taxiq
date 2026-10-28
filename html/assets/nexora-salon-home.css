@@ -899,7 +899,8 @@
 .po-salon-home .pos-intelligence-domains button:hover,
 .po-salon-home .pos-intelligence-domains button:focus-visible { transform: perspective(400px) rotateX(4deg) translateY(-2px); border-color: #69addb; box-shadow: 0 5px 0 #a9c6e5, 0 9px 14px #183d6b27; }
 .po-salon-home .pos-intelligence-domains button[aria-pressed="true"] { border-color: #487dc4; background: linear-gradient(130deg, #dbe9ff, #ecf9ff); color: #173c75; }
-.po-salon-home .pos-intelligence-domains svg { flex: none; width: 20px; height: 20px; padding: 4px; border-radius: 6px; background: #e5efff; color: #416fc1; }
+.po-salon-home .pos-intelligence-domains .salon-flat-icon { flex: 0 0 24px; width: 24px; height: 24px; }
+.po-salon-home .pos-intelligence-domains button > span { min-width: 0; }
 .po-salon-home .pos-intelligence-reading { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .po-salon-home .pos-intelligence-card { display: grid; align-content: start; gap: 5px; min-height: 100px; padding: 12px; border: 1px solid #dce5f0; border-radius: 9px; background: #fff; box-shadow: 0 6px 15px #233c6910; }
 .po-salon-home .pos-intelligence-card.is-signal { background: linear-gradient(145deg, #fff, #f3f6ff); }
@@ -1429,3 +1430,16 @@
 .po-salon-home .salon-hero { grid-template-columns: minmax(0, 1fr); }
 }
 .po-salon-home{width:100%;min-width:0;max-width:1450px}.po-salon-home .salon-home{min-width:0;max-width:100%}
+
+/* Special Flat icons by Magnific / Freepik, from the selected Flaticon collection. */
+.po-salon-home .salon-flat-icon { display: block; flex: none; object-fit: contain; }
+.po-salon-home .salon-product-icon .salon-flat-icon { width: 28px; height: 28px; }
+.po-salon-home .salon-quick i .salon-flat-icon { width: 28px; height: 28px; }
+.po-salon-home .salon-owner-list i { flex: 0 0 30px; width: 30px; height: 30px; }
+.po-salon-home .salon-owner-list i .salon-flat-icon { width: 22px; height: 22px; }
+.po-salon-home .salon-ai-tour-top > span { display: inline-flex; align-items: center; gap: 6px; }
+.po-salon-home .explorer-ai-mark { border: 1px solid #dedff7; background: #fff; }
+.po-salon-home .salon-update { display: flex; align-items: center; gap: 12px; min-width: 0; }
+.po-salon-home .salon-update > div { min-width: 0; }
+.po-salon-home .salon-icon-credit { justify-self: end; color: var(--muted); font-size: 10px; text-decoration: none; }
+.po-salon-home .salon-icon-credit:hover { text-decoration: underline; }

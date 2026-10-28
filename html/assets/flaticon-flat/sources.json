@@ -1,0 +1,257 @@
+{
+  "collection": "https://www.flaticon.com/authors/special/flat?author_id=1&type=standard",
+  "author": "Magnific / Freepik",
+  "author_id": 1,
+  "style_id": 8,
+  "style": "Special Flat",
+  "assets": [
+    {
+      "key": "nail",
+      "word": "nail polish",
+      "href": "https://www.flaticon.com/free-icon/nail-polish_1658222",
+      "image": "https://cdn-icons-png.flaticon.com/128/1658/1658222.png",
+      "file": "nail-1658222.png",
+      "label": "Nail Polish"
+    },
+    {
+      "key": "pos",
+      "word": "pos terminal",
+      "href": "https://www.flaticon.com/free-icon/point-of-sale_9423135",
+      "image": "https://cdn-icons-png.flaticon.com/128/9423/9423135.png",
+      "label": "Point Of Sale",
+      "file": "pos-9423135.png"
+    },
+    {
+      "key": "aihub",
+      "word": "robot",
+      "href": "https://www.flaticon.com/free-icon/robot_2661489",
+      "image": "https://cdn-icons-png.flaticon.com/128/2661/2661489.png",
+      "label": "Robot",
+      "file": "aihub-2661489.png"
+    },
+    {
+      "key": "sms",
+      "word": "sms",
+      "href": "https://www.flaticon.com/free-icon/sms_2499456",
+      "image": "https://cdn-icons-png.flaticon.com/128/2499/2499456.png",
+      "label": "Sms",
+      "file": "sms-2499456.png"
+    },
+    {
+      "key": "wheel",
+      "word": "prize wheel",
+      "href": "https://www.flaticon.com/free-icon/fortune-wheel_4909115",
+      "image": "https://cdn-icons-png.flaticon.com/128/4909/4909115.png",
+      "label": "Fortune Wheel",
+      "file": "wheel-4909115.png"
+    },
+    {
+      "key": "gift",
+      "word": "gift card",
+      "href": "https://www.flaticon.com/free-icon/gift-card_1651898",
+      "image": "https://cdn-icons-png.flaticon.com/128/1651/1651898.png",
+      "label": "Gift Card",
+      "file": "gift-1651898.png"
+    },
+    {
+      "key": "community",
+      "word": "community",
+      "href": "https://www.flaticon.com/free-icon/group_6576105",
+      "image": "https://cdn-icons-png.flaticon.com/128/6576/6576105.png",
+      "label": "Group",
+      "file": "community-6576105.png"
+    },
+    {
+      "key": "oneqr",
+      "word": "qr code",
+      "href": "https://www.flaticon.com/free-icon/qr-code_8630963",
+      "image": "https://cdn-icons-png.flaticon.com/128/8630/8630963.png",
+      "label": "Qr Code",
+      "file": "oneqr-8630963.png"
+    },
+    {
+      "key": "taxiq",
+      "word": "tax",
+      "href": "https://www.flaticon.com/free-icon/taxes_1651909",
+      "image": "https://cdn-icons-png.flaticon.com/128/1651/1651909.png",
+      "label": "Taxes",
+      "file": "taxiq-1651909.png"
+    },
+    {
+      "key": "payments",
+      "word": "wallet",
+      "href": "https://www.flaticon.com/free-icon/wallet_855279",
+      "image": "https://cdn-icons-png.flaticon.com/128/855/855279.png",
+      "label": "Wallet",
+      "file": "payments-855279.png"
+    },
+    {
+      "key": "reviews",
+      "word": "review",
+      "href": "https://www.flaticon.com/free-icon/rating_1365307",
+      "image": "https://cdn-icons-png.flaticon.com/128/1365/1365307.png",
+      "label": "Rating",
+      "file": "reviews-1365307.png"
+    },
+    {
+      "key": "analytics",
+      "word": "analytics",
+      "href": "https://www.flaticon.com/free-icon/analysis_2041643",
+      "image": "https://cdn-icons-png.flaticon.com/128/2041/2041643.png",
+      "label": "Analysis",
+      "file": "analytics-2041643.png"
+    },
+    {
+      "key": "marketing",
+      "word": "megaphone",
+      "href": "https://www.flaticon.com/free-icon/loudspeaker_1378593",
+      "image": "https://cdn-icons-png.flaticon.com/128/1378/1378593.png",
+      "label": "Loudspeaker",
+      "file": "marketing-1378593.png"
+    },
+    {
+      "key": "hair",
+      "word": "haircut",
+      "href": "https://www.flaticon.com/free-icon/hair-salon_6595005",
+      "image": "https://cdn-icons-png.flaticon.com/128/6595/6595005.png",
+      "label": "Hair Salon",
+      "file": "hair-6595005.png"
+    },
+    {
+      "key": "spa",
+      "word": "spa",
+      "href": "https://www.flaticon.com/free-icon/spa_1057315",
+      "image": "https://cdn-icons-png.flaticon.com/128/1057/1057315.png",
+      "label": "Spa",
+      "file": "spa-1057315.png"
+    },
+    {
+      "key": "services",
+      "word": "briefcase",
+      "href": "https://www.flaticon.com/free-icon/briefcase_3393660",
+      "image": "https://cdn-icons-png.flaticon.com/128/3393/3393660.png",
+      "label": "Briefcase",
+      "file": "services-3393660.png"
+    },
+    {
+      "key": "checkin",
+      "word": "reception",
+      "href": "https://www.flaticon.com/free-icon/information-desk_3284615",
+      "image": "https://cdn-icons-png.flaticon.com/128/3284/3284615.png",
+      "label": "Information Desk",
+      "file": "checkin-3284615.png"
+    },
+    {
+      "key": "calendar",
+      "word": "calendar",
+      "href": "https://www.flaticon.com/free-icon/schedule_3652191",
+      "image": "https://cdn-icons-png.flaticon.com/128/3652/3652191.png",
+      "label": "Schedule",
+      "file": "calendar-3652191.png"
+    },
+    {
+      "key": "queue",
+      "word": "queue",
+      "href": "https://www.flaticon.com/free-icon/queue_2137512",
+      "image": "https://cdn-icons-png.flaticon.com/128/2137/2137512.png",
+      "label": "Queue",
+      "file": "queue-2137512.png"
+    },
+    {
+      "key": "tickets",
+      "word": "invoice",
+      "href": "https://www.flaticon.com/free-icon/invoice_4862191",
+      "image": "https://cdn-icons-png.flaticon.com/128/4862/4862191.png",
+      "label": "Invoice",
+      "file": "tickets-4862191.png"
+    },
+    {
+      "key": "clock",
+      "word": "clock",
+      "href": "https://www.flaticon.com/free-icon/clock_2784459",
+      "image": "https://cdn-icons-png.flaticon.com/128/2784/2784459.png",
+      "label": "Clock",
+      "file": "clock-2784459.png"
+    },
+    {
+      "key": "checkout",
+      "word": "payment",
+      "href": "https://www.flaticon.com/free-icon/cashless-payment_4108042",
+      "image": "https://cdn-icons-png.flaticon.com/128/4108/4108042.png",
+      "label": "Cashless Payment",
+      "file": "checkout-4108042.png"
+    },
+    {
+      "key": "tips",
+      "word": "tip jar",
+      "href": "https://www.flaticon.com/free-icon/money_9564978",
+      "image": "https://cdn-icons-png.flaticon.com/128/9564/9564978.png",
+      "label": "Money",
+      "file": "tips-9564978.png"
+    },
+    {
+      "key": "transactions",
+      "word": "transaction",
+      "href": "https://www.flaticon.com/free-icon/transaction-history_9368537",
+      "image": "https://cdn-icons-png.flaticon.com/128/9368/9368537.png",
+      "label": "Transaction History",
+      "file": "transactions-9368537.png"
+    },
+    {
+      "key": "payouts",
+      "word": "money transfer",
+      "href": "https://www.flaticon.com/free-icon/transfer_9405882",
+      "image": "https://cdn-icons-png.flaticon.com/128/9405/9405882.png",
+      "label": "Transfer",
+      "file": "payouts-9405882.png"
+    },
+    {
+      "key": "sales",
+      "word": "revenue",
+      "href": "https://www.flaticon.com/free-icon/increase_2553139",
+      "image": "https://cdn-icons-png.flaticon.com/128/2553/2553139.png",
+      "label": "Increase",
+      "file": "sales-2553139.png"
+    },
+    {
+      "key": "staff",
+      "word": "team",
+      "href": "https://www.flaticon.com/free-icon/team_476863",
+      "image": "https://cdn-icons-png.flaticon.com/128/476/476863.png",
+      "label": "Team",
+      "file": "staff-476863.png"
+    },
+    {
+      "key": "phone",
+      "word": "telephone",
+      "href": "https://www.flaticon.com/free-icon/call_2208224",
+      "image": "https://cdn-icons-png.flaticon.com/128/2208/2208224.png",
+      "label": "Call",
+      "file": "phone-2208224.png"
+    },
+    {
+      "key": "settings",
+      "word": "settings",
+      "href": "https://www.flaticon.com/free-icon/settings_675729",
+      "image": "https://cdn-icons-png.flaticon.com/128/675/675729.png",
+      "label": "Settings",
+      "file": "settings-675729.png"
+    },
+    {
+      "key": "guide",
+      "word": "checklist",
+      "href": "https://www.flaticon.com/free-icon/checklist_8090840",
+      "image": "https://cdn-icons-png.flaticon.com/128/8090/8090840.png",
+      "label": "Checklist",
+      "file": "guide-8090840.png"
+    },
+    {
+      "key": "news",
+      "word": "newspaper",
+      "href": "https://www.flaticon.com/free-icon/news_3855129",
+      "image": "https://cdn-icons-png.flaticon.com/128/3855/3855129.png",
+      "label": "News",
+      "file": "news-3855129.png"
+    }
+  ]
+}
