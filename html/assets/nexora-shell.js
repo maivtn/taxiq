@@ -363,7 +363,7 @@
     return btn + '<div class="nav-subnav' + (expanded ? '' : ' is-collapsed') + '" id="' + subId + '" data-nav-subnav><div class="nav-subnav-inner">' + items + '</div></div>';
   }
 
-  var TREE_ICONS = {home:'house', 'public-home':'sparkles', dashboard:'layout-dashboard', onboarding:'rocket', pos:'monitor', products:'store', payments:'wallet-cards', community:'users-round', aihub:'sparkles', marketing:'megaphone', 'ai-voice':'headset', news:'newspaper', spinwheel:'circle-dot', oneqr:'qr-code', tools:'briefcase-business', reviews:'star', analytics:'chart-no-axes-combined', taxiq:'file-text', support:'life-buoy', settings:'settings'};
+  var TREE_ICONS = {home:'house', 'public-home':'globe', dashboard:'layout-dashboard', onboarding:'rocket', pos:'monitor', products:'store', payments:'wallet-cards', community:'users-round', aihub:'sparkles', marketing:'megaphone', 'ai-voice':'headset', news:'newspaper', spinwheel:'circle-dot', oneqr:'qr-code', tools:'briefcase-business', reviews:'star', analytics:'chart-no-axes-combined', taxiq:'file-text', support:'life-buoy', settings:'settings'};
   function treeIcon(node) {
     return iconWrap(node.key === 'business-tools' ? 'briefcase-business' : (TREE_ICONS[node.iconKey] || 'circle'));
   }
