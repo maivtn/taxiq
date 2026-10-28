@@ -540,7 +540,7 @@
       (activeTab === 'staff-handbook' ? '<a class="nav-item staff-nav-item is-active" href="staff-handbook.html" data-staff-nav="staff-handbook">' + iconWrap('book-open-check') + '<span>Staff Handbook</span></a>' : '') +
       '<a class="nav-item staff-nav-item" href="#" data-staff-nav="tips">' + iconWrap('circle-dollar-sign') + '<span>Tips</span></a>' +
       '<a class="nav-item staff-nav-item" href="#" data-staff-nav="transactions">' + iconWrap('receipt') + '<span>Transactions</span></a>') +
-      '<a class="nav-item staff-nav-item' + (activeTab === 'profile' ? ' is-active' : '') + '" href="' + (personalOnly ? 'frame-personal.html?view=profile' : 'staff-community.html?role=tech&amp;tab=profile') + '" data-staff-nav="profile">' + iconWrap('settings') + '<span>Profile</span></a>' +
+      '<a class="nav-item staff-nav-item' + (activeTab === 'profile' ? ' is-active' : '') + '" href="staff-profile.html?account=' + (personalOnly ? 'personal' : 'staff') + '" data-staff-nav="profile">' + iconWrap('settings') + '<span>Profile</span></a>' +
     '</nav>' +
     '<div class="sidebar-footer"><button class="logout-button" type="button"><span class="logout-icon"><i data-lucide="log-out" aria-hidden="true"></i></span><span>Sign out</span></button></div>';
 
