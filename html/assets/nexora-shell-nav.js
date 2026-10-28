@@ -87,6 +87,7 @@
     if (path === '/dashboard/pos/settings/salon-information') return 'pos-salon-settings.html?section=information';
     if (path === '/dashboard/ai-hub') {
       if (tab === 'sms-campaigns') return 'nexora-sms-dashboard.html';
+      if (tab === 'booking' && u.searchParams.get('view') === 'today') return front.booking;
       if (['booking','customers','calllog','plans','settings'].indexOf(tab) !== -1) return 'booking-book-phase-1.html?tab=' + tab + (u.searchParams.has('view') ? '&view=' + u.searchParams.get('view') : '');
     }
     if (path === '/dashboard/touchpoints') {
@@ -360,6 +361,7 @@
           {
             "key": "lich-hen",
             "label": "Appointments",
+            "navContext": "ai-receptionist",
             "href": "https://nexoratouch.com/dashboard/ai-hub?tab=booking&view=today"
           },
           {
