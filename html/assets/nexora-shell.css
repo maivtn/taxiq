@@ -761,7 +761,7 @@ body[data-nexora-workspace="pos"] .sidebar { padding:18px 14px; }
 .sidebar:not(.staff-sidebar) .sidebar-nav > .nav-item + .nav-item { margin-top:0; }
 .sidebar:not(.staff-sidebar) .sidebar-nav .nav-item { height:auto; min-height:42px; gap:10px; padding:9px 11px; border-radius:9px; color:#dce5f7; font-size:14px; font-weight:700; line-height:1.5; }
 .sidebar:not(.staff-sidebar) .sidebar-nav .sidebar-icon-wrap { width:20px; height:20px; background:none; }
-.sidebar:not(.staff-sidebar) .sidebar-nav .lucide-menu-icon { width:20px; height:20px; color:currentColor; filter:none; }
+.sidebar:not(.staff-sidebar) .sidebar-nav .lucide-menu-icon { width:16px; height:16px; color:currentColor; filter:none; }
 .shell-tree-row { display:flex; align-items:stretch; min-width:0; }
 .shell-tree-row > a { flex:1; }
 .shell-tree-row > a + button { flex:0 0 35px; justify-content:center; padding:8px; }
@@ -865,7 +865,7 @@ body[data-nexora-workspace="salon"] .sidebar-section-label + .sidebar-nav,
 body[data-nexora-workspace="pos"] .sidebar-section-label + .sidebar-nav { margin-top:8px; }
 
 /* The sidebar uses one consistent Lucide outline set. */
-.sidebar:not(.staff-sidebar) .lucide-menu-icon { width:20px; height:20px; color:#c4d2eb; filter:none; stroke-width:1.8; }
+.sidebar:not(.staff-sidebar) .lucide-menu-icon { width:16px; height:16px; color:#c4d2eb; filter:none; stroke-width:1.8; }
 .sidebar-external-icon { width:15px; height:15px; flex-shrink:0; color:currentColor; }
 .plan-panel { gap:10px; }
 .plan-panel .plan-icon { flex:0 0 24px; color:#f5c451; }
