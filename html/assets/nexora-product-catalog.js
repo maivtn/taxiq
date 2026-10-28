@@ -556,10 +556,6 @@ window.NEXORA_PRODUCT_CATALOG = {
             "name": "Nexora",
             "items": [
               {
-                "label": "SMS Campaigns",
-                "url": "https://nexoratouch.com/dashboard/ai-hub?tab=sms-campaigns"
-              },
-              {
                 "label": "POS promotions",
                 "url": "https://nexoratouch.com/dashboard/pos/promotions"
               },
@@ -591,7 +587,7 @@ window.NEXORA_PRODUCT_CATALOG = {
               },
               {
                 "label": "AI Ads",
-                "linkPending": true
+                "url": "https://merchant.vlinkpay.com/marketing-tools"
               }
             ]
           }
@@ -787,6 +783,10 @@ window.NEXORA_PRODUCT_CATALOG = {
           {
             "label": "Jobs",
             "url": "https://nexoratouch.com/dashboard/community?tab=jobs"
+          },
+          {
+            "label": "Extra shifts",
+            "url": "https://nexoratouch.com/dashboard/community?tab=shift"
           }
         ]
       },

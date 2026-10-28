@@ -1,5 +1,5 @@
 /* Gift Card Center: PO catalog hierarchy plus operational screens read on
- * staging-merchant.vlinkpay.com. Nexora embedded layout rechecked Oct 28, 2026.
+ * merchant.vlinkpay.com. Production screens rechecked Oct 28, 2026.
  * Prototype state stays local; no live merchant or AI requests are sent.
  * Nexora entry: /dashboard/pos?tab=gift-card-center opens Issue Digital in Front Desk.
  * Sources: /gift-voucher/product-management/{issue-digital,quick-create-card,sell-egift-form},
@@ -58,6 +58,178 @@
   const textColors = ['#3b82f6','#ca8a04','#ffffff','#000000'];
   const automaticColors = {textColor:'#e6c575',holderColor:'#ffffff',amountColor:'#e6c575',infoColor:'#eeeeee'};
   const brandPrompts = window.NEXORA_GIFT_BRAND_PROMPTS || [];
+  const quickTerms = ['Minimum purchase of $25','Single use only','Cannot combine with other offers','Excludes sale items','In-store only','Members only'];
+  const packageTerms = [...terms.slice(0,4),'Subject to availability. Cannot be combined with other offers.','Management reserves the right to modify or cancel at any time.'];
+  // Representative templates selected under each production gallery category; public CDN URLs require no account.
+  const templateCategories = ["Beauty", "Restaurant", "Apparel", "Prepaid Cards", "Destination", "Entertainment", "Home", "Lifestyle", "Shopping", "Wellness"];
+  const quickTemplates = [
+  {
+    "category": "Entertainment",
+    "image": "../assets/gift-card-center/templates/entertainment-media-14.jpg",
+    "source": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/Entertainment--Media/Entertainment--Media-14.jpg"
+  },
+  {
+    "category": "Beauty",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/nail-and-beauty/e-gift-card-20.jpg"
+  },
+  {
+    "category": "Beauty",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/nail-and-beauty/e-gift-card-02.jpg"
+  },
+  {
+    "category": "Beauty",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/nail-and-beauty/e-gift-card-04.jpg"
+  },
+  {
+    "category": "Beauty",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/nail-and-beauty/e-gift-card-06.jpg"
+  },
+  {
+    "category": "Restaurant",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/restaurant/restaurant-34.jpg"
+  },
+  {
+    "category": "Restaurant",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/restaurant/restaurant-32.jpg"
+  },
+  {
+    "category": "Restaurant",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/restaurant/restaurant-30.jpg"
+  },
+  {
+    "category": "Restaurant",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/restaurant/restaurant-24.jpg"
+  },
+  {
+    "category": "Apparel",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/fashioncompress/fashion--apparel-02.jpg"
+  },
+  {
+    "category": "Apparel",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/fashioncompress/fashion--apparel-04.jpg"
+  },
+  {
+    "category": "Apparel",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/fashioncompress/fashion--apparel-06.jpg"
+  },
+  {
+    "category": "Apparel",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/fashioncompress/fashion--apparel-08.jpg"
+  },
+  {
+    "category": "Prepaid Cards",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/GC1-03.jpg"
+  },
+  {
+    "category": "Prepaid Cards",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/GC1-04.jpg"
+  },
+  {
+    "category": "Prepaid Cards",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/GC1-06.jpg"
+  },
+  {
+    "category": "Prepaid Cards",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/GC1-08.jpg"
+  },
+  {
+    "category": "Destination",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/travel--tourismcompress/fashion--apparel-02.jpg"
+  },
+  {
+    "category": "Destination",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/travel--tourismcompress/fashion--apparel-04.jpg"
+  },
+  {
+    "category": "Destination",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/travel--tourismcompress/fashion--apparel-06.jpg"
+  },
+  {
+    "category": "Destination",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/travel--tourismcompress/fashion--apparel-08.jpg"
+  },
+  {
+    "category": "Entertainment",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/Entertainment--Media/Entertainment--Media-02.jpg"
+  },
+  {
+    "category": "Entertainment",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/Entertainment--Media/Entertainment--Media-04.jpg"
+  },
+  {
+    "category": "Entertainment",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/Entertainment--Media/Entertainment--Media-06.jpg"
+  },
+  {
+    "category": "Entertainment",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/Entertainment--Media/Entertainment--Media-08.jpg"
+  },
+  {
+    "category": "Home",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/Home--garden/Home--Garden-02.jpg"
+  },
+  {
+    "category": "Home",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/Home--garden/Home--Garden-04.jpg"
+  },
+  {
+    "category": "Home",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/Home--garden/Home--Garden-06.jpg"
+  },
+  {
+    "category": "Home",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/Home--garden/Home--Garden-08.jpg"
+  },
+  {
+    "category": "Lifestyle",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/pet-services/Pet-Services-02.jpg"
+  },
+  {
+    "category": "Lifestyle",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/pet-services/Pet-Services-04.jpg"
+  },
+  {
+    "category": "Lifestyle",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/pet-services/Pet-Services-06.jpg"
+  },
+  {
+    "category": "Lifestyle",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/pet-services/Pet-Services-08.jpg"
+  },
+  {
+    "category": "Shopping",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/Technology--IT/Technology--IT-02.jpg"
+  },
+  {
+    "category": "Shopping",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/Technology--IT/Technology--IT-16.jpg"
+  },
+  {
+    "category": "Shopping",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/Technology--IT/Technology--IT-18.jpg"
+  },
+  {
+    "category": "Shopping",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/Technology--IT/Technology--IT-20.jpg"
+  },
+  {
+    "category": "Wellness",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/health--wellnesscompress/health--wellness-12.jpg"
+  },
+  {
+    "category": "Wellness",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/health--wellnesscompress/health--wellness-14.jpg"
+  },
+  {
+    "category": "Wellness",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/health--wellnesscompress/health--wellness-18.jpg"
+  },
+  {
+    "category": "Wellness",
+    "image": "https://raw.githubusercontent.com/vlink-group/VlinkPay/main/sell-EGift/Cards-v2/GiftCards/health--wellnesscompress/health--wellness-20.jpg"
+  }
+];
+  const suggestedTerms = () => view==='quick'?quickTerms:view==='membership-package'?packageTerms:terms;
   const logoStyles = ['Luxury Gold','Minimalist','Vintage Badge','Playful','Modern – Tech','Pastel','Vibrant'];
   const typeIcons = {
     "Gift Card": "gift-card",
@@ -234,6 +406,10 @@
         smsDays: 30,
       },
       savedTerms: saved.savedTerms || terms.join("\n"),
+      logos: Array.isArray(saved.logos) ? saved.logos : [
+        {id:'logo-demo-1',image:'../assets/nexora-touch-logo.png',date:'2026-10-28'},
+        {id:'logo-demo-2',image:'../assets/nexora-logo.svg',date:'2026-10-28'},
+      ],
       // Display balances belong to the prototype, never the staging wallet.
       cryptoWallet: saved.cryptoWallet || {usdt:1000,usdv:1000},
     };
@@ -340,7 +516,10 @@
       benefit: "",
       category: "",
       quantity: 50,
-      terms: store.savedTerms,
+      terms: view === "quick" ? terms.slice(0,4).join("\n") : store.savedTerms,
+      termsMarkup: "",
+      templateImage: quickTemplates[0].image,
+      benefitValues: {},
       brand: "Bitcoin Nail Bar",
       slogan: "GIFT CARD",
       brandPhone: "",
@@ -362,8 +541,8 @@
       allowCustom: true,
       mostPopular: false,
       benefits: [],
-      vouchers: [{ amount: 25, percent: 5, quantity: 1, terms: "" }],
-      egifts: [{ amount: 25, percent: 5, quantity: 1, terms: "" }],
+      vouchers: [{ amount: 10, percent: 5, quantity: 1, terms: "" }],
+      egifts: [{ amount: 10, percent: 5, quantity: 1, terms: "" }],
     };
     return { ...defaults, ...store.drafts[view] };
   }
@@ -417,7 +596,7 @@
     return `<aside class="gc-stack gc-designer"><section class="gc-card gc-card-stage"><div data-preview-container>${preview()}</div><button type="button" class="gc-preview-flip" data-action="flip">${icon('rotate-cw')}TAB TO FLIP CARD</button></section><section class="gc-card"><details class="gc-disclosure" data-gc-panel="design" open><summary>${icon('palette')}<span>DESIGN COLLECTION</span>${icon('info')}</summary><div class="gc-colors">${Array.from({length:10},(_,i)=>`<button type="button" class="gc-color" data-background="${i+1}" aria-label="Background ${i+1}" aria-pressed="${!d.color&&d.background===i+1}" style="background:url('${asset}background-${i+1}.png') center/cover"></button>`).join('')}${colors.map(c=>`<button type="button" class="gc-color" data-color="${c}" aria-label="Select theme color" aria-pressed="${d.color===c}" style="--color:${c}"></button>`).join('')}<label class="gc-color gc-custom-color">${icon('palette')}<input name="color" type="color" value="${d.color||'#152448'}" aria-label="Custom theme color"></label></div></details><details class="gc-disclosure gc-text-disclosure" data-gc-panel="text"><summary><span>CUSTOM TEXT COLOR (ADVANCED)</span>${icon('info')}</summary><div>${[['Brand Name & Slogan','textColor'],['Card Holder Name','holderColor'],['Amount Value','amountColor'],['Other info (Card type, Card number, Valid thru, Terms of use, Contact info)','infoColor']].map(([label,name])=>textColorControl(label,name)).join('')}</div></details></section>${brandIdentity()}<section class="gc-card"><details class="gc-disclosure" data-gc-panel="business"><summary>${icon('contact')}<span>BUSINESS INFORMATION & CONTACT</span>${icon('info')}</summary><div class="gc-stack">${field('Brand Name','brand')}${field('Brand Slogan','slogan')}<div class="gc-field"><span>Phone Number</span>${phoneField('brandPhone','(555) 123-4567')}</div>${field('Email Address','brandEmail',{type:'email'})}${field('Website','website',{type:'url'})}${button(icon('save')+'Save','save-draft')}</div></details></section></aside>`;
   }
   function termsEditor(name = "terms") {
-    return `${["issue","membership"].includes(view)?"":`<div class="gc-actions" style="justify-content:flex-end;margin-bottom:10px">${button("Load T & C", "load-terms")}${button("Save T & C", "save-terms")}</div>`}<label class="gc-field"><textarea name="${name}" placeholder="${esc(terms.join("\n"))}">${esc(formDraft[name])}</textarea></label><div class="gc-terms">SUGGESTED TERMS<br>${terms.map((t, i) => `<button type="button" data-term="${i}">${esc(t)}</button>`).join("")}</div>`;
+    return `${["issue","membership"].includes(view)?"":`<div class="gc-actions" style="justify-content:flex-end;margin-bottom:10px">${button(view==="membership-package"?"Load Terms":"Load T & C", "load-terms")}${button(view==="membership-package"?"Save Terms":"Save T & C", "save-terms")}</div>`}<label class="gc-field"><textarea name="${name}" placeholder="${esc(terms.join("\n"))}">${esc(formDraft[name])}</textarea></label><div class="gc-terms">SUGGESTED TERMS<br>${suggestedTerms().map((t, i) => `<button type="button" data-term="${i}">${esc(t)}</button>`).join("")}</div>`;
   }
   function panel(title, body) {
     const isTerms=title==='Terms and Conditions';
@@ -425,12 +604,12 @@
   }
   const tierOptions={
     'Gift Card':['STARTER','BRONZE','SILVER','GOLD','PLATINUM','ELITE'],
-    Membership:['Member','Silver','Gold','Platinum','Diamond','Royal'],
+    Membership:['SILVER','GOLD','PLATINUM','DIAMOND','ROYAL'],
     Discount:['Welcome','Birthday','Student','Senior','Referral','Review'],
     Promotion:['Welcome','Birthday','Student','Senior','Referral','Review']
   };
   function productLine() {
-    const d=formDraft,tiers=tierOptions[d.type]||[];
+    const d=formDraft,tiers=d.type==='Gift Card'?[]:tierOptions[d.type]||[];
     return panel('Select Product Line <b class="gc-required">*</b>',`<div class="gc-products">${Object.entries(typeIcons).map(([name,file])=>`<button type="button" class="gc-choice" data-choice="type" data-value="${name}" aria-pressed="${d.type===name}"><img src="${asset}icon-${file}.png" alt="">${name}</button>`).join('')}</div>${tiers.length?`<div class="gc-tier-options">${choices('tier',tiers,d.tier)}<div class="gc-custom-tier">${field('','tier',{placeholder:'Custom',value:tiers.some(t=>t.toLowerCase()===String(d.tier).toLowerCase())?'':d.tier})}</div></div>`:''}`);
   }
   function customerInformation(member=false) {
@@ -479,7 +658,7 @@
     if(crypto)body+=cryptoFields();
     else {
       body+=customerInformation(member);
-      if(member)body+=panel('Benefits <b class="gc-required">*</b>',`${select('','benefit',[['','Select Benefit'],...store.benefits.filter(b=>b.active).map(b=>[b.id,b.name])],d.benefit,'required')}<div style="margin-top:10px">${button('+ Add Benefit','add-benefit')}</div>`);
+      if(member)body+=panel('Benefits <b class="gc-required">*</b>',`${benefitPicker()}`);
       if(member||discount||promotion)body+=expiration();
       if(discount)body+=panel('Discount <b class="gc-required">*</b>',discountChoices())+panel('Max Discount Amount',presetAmount('maxDiscount',[10,15,20,25],d.maxDiscount));
       else if(promotion)body+=panel('Promotion Type <b class="gc-required">*</b>',`${choices('promotionType',['Amount','Discount'],d.promotionType)}<div class="gc-promotion-value">${d.promotionType==='Discount'?discountChoices():presetAmount('amount',[5,10,15,20,25],d.amount)}</div>`);
@@ -489,17 +668,42 @@
     }
     return `<form id="gc-issue-form" class="gc-form-layout">${designer()}<div class="gc-stack"><p class="gc-required-note"><span class="gc-required">*</span> required</p>${body}</div></form>`;
   }
+  function quickPreview() {
+    const d=formDraft;
+    return `<div class="gc-quick-preview" data-quick-preview><img src="${esc(d.templateImage||quickTemplates[0].image)}" alt="" referrerpolicy="no-referrer"><span class="gc-quick-value">${money(d.amount).replace('.00','')}</span><span class="gc-quick-cashback"><small>CASHBACK</small>${esc(d.percent)}%</span>${d.logo?`<img class="gc-quick-logo" src="${esc(d.logo)}" alt="">`:''}</div>`;
+  }
+  function quickDesigner() {
+    const d=formDraft;
+    const thumbnails=quickTemplates.map((template,index)=>({...template,index})).sort((a,b)=>Number(b.image===d.templateImage)-Number(a.image===d.templateImage)).slice(0,4);
+    return `<aside class="gc-stack gc-quick-designer">${quickPreview()}<section class="gc-card"><div class="gc-brand-heading"><span class="gc-subhead">${icon('palette')}DESIGN COLLECTION ${icon('info')}</span><label class="gc-file">${icon('image')}Upload Template<input type="file" name="templateImage" accept="image/png,image/jpeg,image/webp"></label></div><div class="gc-template-strip">${thumbnails.map(t=>`<button type="button" data-quick-template="${t.index}" aria-label="${esc(t.category)}" aria-pressed="${d.templateImage===t.image}"><img src="${esc(t.image)}" alt="" referrerpolicy="no-referrer"></button>`).join('')}${button('View more','quick-templates','','outline')}</div></section><section class="gc-card"><div class="gc-brand-heading"><span class="gc-subhead">${icon('sparkles')}BRAND IDENTITY ${icon('info')}</span><label class="gc-file">${icon('image')}Upload Logo<input type="file" name="logo" accept="image/png,image/jpeg,image/webp,image/svg+xml"></label></div><div class="gc-style-tags">${logoStyles.slice(0,3).map((label,index)=>`<button type="button" data-logo-style="${index}" aria-pressed="${d.logoStyles.includes(index)}">${label}</button>`).join('')}</div><label class="gc-field"><textarea name="logoPrompt" placeholder="Describe your logo idea">${esc(d.logoPrompt)}</textarea></label><div class="gc-submit">${button(icon('sparkles')+'Generate Logo with AI','generate-logo','disabled','outline')}</div></section></aside>`;
+  }
+  function safeTermsMarkup(value) {
+    const holder=document.createElement('template');holder.innerHTML=value;
+    holder.content.querySelectorAll('script,style,iframe,object,embed,form,input,button').forEach(node=>node.remove());
+    holder.content.querySelectorAll('*').forEach(node=>{for(const attr of [...node.attributes]){if(!['href','src','alt','title','target','rel','style'].includes(attr.name)||/^on/i.test(attr.name)||['href','src'].includes(attr.name)&&!(/^(https?:|data:image\/(png|jpeg|webp);base64,|\.\.\/)/i.test(attr.value)))node.removeAttribute(attr.name);} if(node.hasAttribute('style')){const style=node.style;const color=style.color,background=style.backgroundColor;node.removeAttribute('style');node.style.color=color;node.style.backgroundColor=background;}});
+    return holder.innerHTML;
+  }
+  function richTermsEditor() {
+    return `<div class="gc-rich-editor"><div class="gc-editor-toolbar"><button type="button" data-editor-command="bold" aria-label="Bold"><b>B</b></button><button type="button" data-editor-command="italic" aria-label="Italic"><em>I</em></button><select data-editor-heading aria-label="Heading"><option value="">Heading</option>${[1,2,3,4,5,6].map(n=>`<option value="h${n}">Header ${n}</option>`).join('')}</select>${button(icon('link'),'editor-link','aria-label="Insert Link"','icon-only')}${button(icon('image'),'editor-image','aria-label="Insert Image"','icon-only')}<label aria-label="Text Color">${icon('type')}<input type="color" data-editor-color="foreColor" aria-label="Text Color"></label><label aria-label="Background Color">${icon('paint-bucket')}<input type="color" data-editor-color="hiliteColor" value="#ffffff" aria-label="Background Color"></label></div><div contenteditable="true" role="textbox" aria-label="Terms and conditions" data-rich-terms>${formDraft.termsMarkup?safeTermsMarkup(formDraft.termsMarkup):esc(formDraft.terms).replace(/\n/g,'<br>')}</div></div><div class="gc-terms">SUGGESTED TERMS<br>${quickTerms.map((t,i)=>`<button type="button" data-term="${i}">${esc(t)}</button>`).join('')}</div>`;
+  }
   function quick() {
     const d = formDraft;
-    return `<form id="gc-quick-form" class="gc-form-layout">${designer()}<div class="gc-stack"><p class="gc-required-note"><span class="gc-required">*</span> required</p>${panel('Step 1: Select Product Line <b class="gc-required">*</b>', `${choices("type", ["Gift Card", "Voucher"], d.type)}<div style="margin-top:15px">${select("", "category", [["", "Select Category"], "Beauty", "Restaurant", "Apparel", "Prepaid Cards", "Destination", "Entertainment", "Home", "Lifestyle", "Shopping", "Wellness"], d.category, "required")}</div>`)}${panel('Step 2: Amount & Cashback <b class="gc-required">*</b>', `<span class="gc-note">Amount ($) ($25 – $5,000)</span>${presetAmount("amount", [50, 100, 250, 500], d.amount, { min: 25, max: 5000 })}<div style="margin-top:16px">${choices("percent", [5, 10, 15, 20], d.percent, ["5%", "10%", "15%", "20%"])}${amountField("Cashback (%)", "percent", d.percent, { prefix: "%", max: 100 })}</div>`)}${panel('Step 3: Quantity <b class="gc-required">*</b>', `${choices("quantity", [50, 100, 200, 400], d.quantity)}${amountField("", "quantity", d.quantity, { prefix: "#", required: true, min: 1, step: 1 })}`)}${panel("Step 4: Terms and conditions", termsEditor())}<div class="gc-submit"><button type="submit" class="gc-button primary large">Create</button></div></div></form>`;
+    return `<form id="gc-quick-form" class="gc-form-layout gc-quick-layout">${quickDesigner()}<div class="gc-stack gc-quick-fields"><p class="gc-required-note"><span class="gc-required">*</span> required</p>${panel('Step 1: Select Product Line <b class="gc-required">*</b>', `${choices("type", ["Gift Card", "Voucher"], d.type)}<div style="margin-top:12px">${select("", "category", [["", "Select Category"], "Beauty", "Restaurant", "Apparel", "Prepaid Cards", "Destination", "Entertainment", "Home", "Lifestyle", "Shopping", "Wellness"], d.category, "required")}</div>`)}${panel('Step 2: Amount & Cashback <b class="gc-required">*</b>', `<span class="gc-note">Amount ($) ($10 – $5,000)</span>${presetAmount("amount", [50, 100, 250, 500], d.amount, { min: 10, max: 5000 })}<div style="margin-top:16px"><span class="gc-note">Cashback (%)</span><div class="gc-choices">${choices("percent", [5, 10, 15, 20], d.percent, ["5%", "10%", "15%", "20%"])}${amountField("", "percent", [5,10,15,20].includes(Number(d.percent))?'':d.percent, { prefix: "%", max: 100 })}</div></div>`)}${panel('Step 3: Quantity <b class="gc-required">*</b>', `<div class="gc-choices">${choices("quantity", [50, 100, 200, 400], d.quantity)}${amountField("", "quantity", [50,100,200,400].includes(Number(d.quantity))?'':d.quantity, { prefix: "#", min: 1, step: 1 })}</div>`)}${panel("Step 4: Terms and conditions", richTermsEditor())}<div class="gc-submit"><button type="submit" class="gc-button primary large">Create</button></div></div></form>`;
+  }
+  function benefitLabel(b) {
+    return b.name+' ('+({'Percentage (%)':'%','Currency':'$','Time Used':'Time Used'}[b.unit]||b.unit)+')'+(b.rollover?' ['+b.rollover+']':'')+(b.cycle?' ['+b.cycle+']':'');
+  }
+  function benefitPicker() {
+    const d=formDraft,selected=[...new Set([...(d.benefits||[]),...(d.benefit?[d.benefit]:[])])];
+    return `<details class="gc-benefit-picker" data-gc-panel="benefits-picker"><summary>${selected.length?'Selected benefits':'Select Benefit'}${icon('chevron-down')}</summary><div class="gc-benefit-options"><strong>Select Benefit</strong>${store.benefits.filter(b=>b.active).map(b=>`<label><input type="checkbox" name="selectedBenefit" value="${esc(b.id)}" ${selected.includes(b.id)?'checked':''}><img src="../assets/icon-oneqr/issue-2040-oneqr-${esc(b.icon||'gift')}-3d.png" alt="">${esc(benefitLabel(b))}</label>`).join('')}</div></details>${selected.length?`<p class="gc-subhead">SELECTED BENEFITS</p><div class="gc-selected-benefits">${selected.map(id=>{const b=store.benefits.find(b=>b.id===id);return b?`<div><button type="button" data-remove-benefit="${esc(id)}" aria-label="Remove">×</button><img src="../assets/icon-oneqr/issue-2040-oneqr-${esc(b.icon||'gift')}-3d.png" alt=""><span>${esc(benefitLabel(b))}</span><input type="number" min="0" ${b.unit==='Percentage (%)'?'max="100"':''} step="0.01" data-benefit-value="${esc(id)}" value="${esc(d.benefitValues[id]??'')}" aria-label="${esc(b.name)}" required></div>`:'';}).join('')}</div>`:''}<div style="margin-top:10px">${button('+ Add Benefit','add-benefit')}</div>`;
   }
   function advancedCard(kind, item, index) {
     const voucher = kind === "vouchers";
-    return `<article class="gc-advanced-card gc-card"><div class="gc-preview" style="background-image:url('${item.image || asset + "background-" + (item.background || (voucher ? 3 : 1)) + ".png"}');background-size:cover"><div class="gc-preview-top"><strong>${esc(formDraft.brand)}</strong><span>${voucher ? "E-VOUCHER" : "E-GIFT CARD"}</span></div><div class="gc-preview-bottom"><strong style="font-size:22px">${money(item.amount)}</strong><strong>${item.percent}%</strong></div></div><div class="gc-advanced-tools"><button type="button" data-action="template" data-kind="${kind}" data-index="${index}">Template design</button><label>Upload<input type="file" data-card-upload="${kind}:${index}" accept="image/*" style="display:none"></label><button type="button" data-action="preview-advanced" data-kind="${kind}" data-index="${index}">Preview</button></div><div class="gc-advanced-controls"><span class="gc-note">${voucher ? "Voucher Amount" : "Gift Amount"} (require)<br>($25 – $5,000)</span><input type="number" class="gc-search" data-advanced="${kind}:${index}:amount" value="${item.amount}" min="25" max="5000" step=".01" required><div class="gc-fields" style="margin-top:14px"><label class="gc-field"><span>${voucher ? "Discount (%)" : "Cashback (%)"}</span><input type="number" data-advanced="${kind}:${index}:percent" value="${item.percent}" min="0" max="100" required></label><label class="gc-field"><span>Quantity</span><input type="number" data-advanced="${kind}:${index}:quantity" value="${item.quantity}" min="1" required></label></div><button type="button" class="gc-button" style="margin-top:12px;width:100%" data-action="conditions" data-kind="${kind}" data-index="${index}">Conditions of Use <b class="gc-required">*</b></button><label class="gc-check"><input type="checkbox" data-remove-card="${kind}:${index}">Select</label><button type="button" class="gc-button" data-action="remove-advanced" data-kind="${kind}" data-index="${index}">Remove</button></div></article>`;
+    return `<article class="gc-advanced-card gc-card"><div class="gc-preview" style="background-image:url('${item.image || asset + "background-" + (item.background || (voucher ? 3 : 1)) + ".png"}');background-size:cover"><div class="gc-preview-top"><strong>${esc(formDraft.brand)}</strong><span>${voucher ? "E-VOUCHER" : "E-GIFT CARD"}</span></div><div class="gc-preview-bottom"><strong style="font-size:22px">${money(item.amount)}</strong><strong>${item.percent}%</strong></div></div><div class="gc-advanced-tools"><button type="button" data-action="template" data-kind="${kind}" data-index="${index}">Template design</button><label>Upload<input type="file" data-card-upload="${kind}:${index}" accept="image/*" style="display:none"></label><button type="button" data-action="preview-advanced" data-kind="${kind}" data-index="${index}">Preview</button></div><div class="gc-advanced-controls"><span class="gc-note">${voucher ? "Voucher Amount" : "Gift Amount"} (require)<br>($10 – $5,000)</span><input type="number" class="gc-search" data-advanced="${kind}:${index}:amount" value="${item.amount}" min="10" max="5000" step=".01" required><div class="gc-fields" style="margin-top:14px"><label class="gc-field"><span>${voucher ? "Discount (%)" : "Cashback (%)"}</span><input type="number" data-advanced="${kind}:${index}:percent" value="${item.percent}" min="0" max="100" required></label><label class="gc-field"><span>Quantity</span><input type="number" data-advanced="${kind}:${index}:quantity" value="${item.quantity}" min="1" required></label></div><button type="button" class="gc-button" style="margin-top:12px;width:100%" data-action="conditions" data-kind="${kind}" data-index="${index}">Conditions of Use <b class="gc-required">*</b></button><label class="gc-check"><input type="checkbox" data-remove-card="${kind}:${index}">Select</label><button type="button" class="gc-button" data-action="remove-advanced" data-kind="${kind}" data-index="${index}">Remove</button></div></article>`;
   }
   function advanced() {
     const d = formDraft;
-    return `<form id="gc-advanced-form"><div class="gc-advanced-intro"><p><strong>Step 1:</strong> Let’s get acquainted! To sell E-Gift on VLINKPAY, we first ask that you need KYB</p><p><strong>Step 2:</strong> Let’s get acquainted! To sell E-Gift on VLINKPAY, we ask that you provide, Logo Product and Services, % Cashback, Conditions of Use.<br>E-Gift card or E-Voucher, business time and date of Operation.</p><a class="gc-breadcrumb" href="owner-setting.html?tab=business-verification">This flow requires business verification (KYB). ${icon("arrow-up-right")}</a></div><div class="gc-stack">${panel('Business logo <b class="gc-required">*</b>', `<div class="gc-actions"><label class="gc-file">Click here to update logo<input name="logo" type="file" accept="image/*" ${d.logo ? "" : "required"}></label>${d.logo ? `<img src="${esc(d.logo)}" class="gc-brand-logo" alt="">` : ""}<span class="gc-note">Customize your brand logo and text</span></div>`)}${panel('List of products and services <b class="gc-required">*</b>', `<div class="gc-fields">${field("", "products", { placeholder: "Product or service", required: true })}<div class="gc-fields"><label class="gc-check"><input type="checkbox" name="samePercent" ${d.samePercent ? "checked" : ""}>Same Percent (%)</label>${field("", "percent", { type: "number", min: 0, max: 100 })}</div></div><p class="gc-note">*Specify if applicable to all products or only specific items</p>`)}</div>${[
+    return `<form id="gc-advanced-form"><div class="gc-advanced-intro"><p><strong>Step 1:</strong> Let’s get acquainted! To sell E-Gift on VLINKPAY, we first ask that you need KYB</p><p><strong>Step 2:</strong> Let’s get acquainted! To sell E-Gift on VLINKPAY, we ask that you provide, Logo Product and Services, % Cashback, Conditions of Use.<br>E-Gift card or E-Voucher, business time and date of Operation.</p></div><div class="gc-stack">${panel('Business logo <b class="gc-required">*</b>', `<div class="gc-actions"><label class="gc-file">Click here to update logo<input name="logo" type="file" accept="image/*" ${d.logo ? "" : "required"}></label>${d.logo ? `<img src="${esc(d.logo)}" class="gc-brand-logo" alt="">` : ""}<span class="gc-note">Customize your brand logo and text</span></div>`)}${panel('List of products and services <b class="gc-required">*</b>', `<div class="gc-fields">${field("", "products", { placeholder: "Product or service", required: true })}<div class="gc-fields"><label class="gc-check"><input type="checkbox" name="samePercent" ${d.samePercent ? "checked" : ""}>Same Percent (%)</label>${field("", "percent", { type: "number", min: 0, max: 100 })}</div></div><p class="gc-note">*Specify if applicable to all products or only specific items</p>`)}</div>${[
       ["vouchers", "E-Voucher", "Add E-Voucher"],
       ["egifts", "E-Gift Card", "Add E-Gift Card"],
     ]
@@ -700,15 +904,9 @@
   }
   function membershipPackage() {
     const d = formDraft;
-    return `<form id="gc-package-form" class="gc-form-layout">${designer()}<div class="gc-stack"><label class="gc-check"><input type="checkbox" name="mostPopular" ${d.mostPopular ? "checked" : ""}>Mark as Most Popular</label><p class="gc-required-note"><span class="gc-required">*</span> required</p>${panel('Step 1: Package Name <b class="gc-required">*</b>', `${choices("tier", ["SILVER", "GOLD", "PLATINUM", "ELITE"], d.tier)}${field("", "tier", { placeholder: "Custom", required: true })}`)}${panel(
+    return `<form id="gc-package-form" class="gc-form-layout">${designer()}<div class="gc-stack"><label class="gc-check"><input type="checkbox" name="mostPopular" ${d.mostPopular ? "checked" : ""}>Mark as Most Popular</label><p class="gc-required-note"><span class="gc-required">*</span> required</p>${panel('Step 1: Package Name <b class="gc-required">*</b>', `${choices("tier", ["SILVER", "GOLD", "PLATINUM", "DIAMOND", "ROYAL"], d.tier)}${field("", "tier", { placeholder: "Custom", required: true })}`)}${panel(
       'Step 2: Benefits <b class="gc-required">*</b>',
-      store.benefits
-        .filter((b) => b.active)
-        .map(
-          (b) =>
-            `<label class="gc-check"><input type="checkbox" name="packageBenefit" value="${b.id}" ${d.benefits.includes(b.id) ? "checked" : ""}>${esc(b.name)}</label>`,
-        )
-        .join("") + button("+ Add Benefit", "add-benefit"),
+      benefitPicker(),
     )}${panel('Step 3: Price <b class="gc-required">*</b>', presetAmount("amount", [50, 100, 500, 1000, 2000], d.amount))}${panel("Step 4: Discount", `${choices("discount", [5, 10, 15, 20], d.discount, ["5%", "10%", "15%", "20%"])}${amountField("", "discount", d.discount, { prefix: "%", max: 100 })}`)}${panel('Step 5: Membership Period <b class="gc-required">*</b>', `${choices("period", [30, 60, 90, 180, 365], d.period, ["30 Days", "60 Days", "90 Days", "180 Days", "365 Days"])}${field("", "period", { type: "number", min: 1, required: true, placeholder: "Custom" })}`)}${panel("Step 6: Terms & Conditions", termsEditor())}<button type="submit" class="gc-button primary large">Create and Activate Package</button></div></form>`;
   }
   function members() {
@@ -953,14 +1151,28 @@
     }
     return `<div class="gc-top-tabs"><span class="gc-button">Gift Card Payment</span></div><div class="gc-redeem-options">${redeemOptions.map(([key, title, copy, ic]) => `<button type="button" class="gc-redeem-option" data-payment="${key}">${icon(ic)}<strong>${title}</strong><p>${copy}</p></button>`).join("")}</div>`;
   }
+  function paymentPreview(preview,form) {
+      const data = new FormData(form),
+        amount = Number(data.get("paymentAmount"));
+      preview.innerHTML = `<section class="gc-card"><h3>Preview</h3><strong>${money(amount)}</strong><p>${esc(data.get("note") || "")}</p><div class="gc-qr" data-local-payment-qr></div></section>`;
+      const host = preview.querySelector("[data-local-payment-qr]");
+      if (window.QRCode) {
+        new window.QRCode(host, {
+          text: JSON.stringify({
+            type: "gift-card-payment-preview",
+            amount,
+            note: String(data.get("note") || ""),
+          }),
+          width: 220,
+          height: 220,
+        });
+      }
+  }
   function scanCard(kind) {
-    const title =
-      kind === "charity"
-        ? "Pay with Charity Gift Card"
-        : redeemOptions.find((o) => o[0] === kind)[1];
+    const title = redeemOptions.find((o) => o[0] === kind)[1];
     openDialog(
       title,
-      `<form>${field(kind === "vlinkpay" ? "Gift Card QR Code" : "Card Number", "cardCode", { value: "", required: true, placeholder: kind === "vlinkpay" ? "Enter or scan QR code" : "Enter card number or scan..." })}<p class="gc-note" data-card-error hidden>Please check and try again</p>${footer("Continue")}</form>`,
+      `<form>${field(kind === "vlinkpay" ? "Gift Card QR Code" : "Card Number", "cardCode", { value: "", required: true, placeholder: kind === "vlinkpay" ? "Enter or scan QR code" : "" })}<p class="gc-note" data-card-error hidden>Please check and try again</p>${footer("Continue")}</form>`,
       (event) => {
         event.preventDefault();
         const raw = String(
@@ -985,6 +1197,7 @@
   function render() {
     const panels=root.dataset.view===view?[...root.querySelectorAll('[data-gc-panel]')].map(node=>[node.dataset.gcPanel,node.open]):[];
     root.dataset.view=view;
+    editorSelection=null;
     const [title, description] = definitions[view];
     document.title = "Nexora Touch — " + title;
     if (
@@ -1000,7 +1213,6 @@
     const actions = [
       "issue",
       "membership",
-      "quick",
       "membership-package",
     ].includes(view)
       ? button(
@@ -1041,6 +1253,8 @@
   }
   function openDialog(title, body, submit) {
     if (dialog.open) dialog.close();
+    dialog.onkeydown=null;
+    dialog.onpointerdown=null;
     dialog.setAttribute("aria-labelledby", "gc-dialog-title");
     dialog.innerHTML = `<div class="gc-dialog-head"><h2 id="gc-dialog-title">${esc(title)}</h2><button type="button" class="gc-button icon-only" data-close aria-label="Close">${icon("x")}</button></div>${body}`;
     dialog
@@ -1061,7 +1275,7 @@
     let selectedIcon = existing?.icon || "gift";
     openDialog(
       existing ? "Benefit Name" : "Create New Benefit",
-      `<p>Fill in the required information to create a new benefit</p><form><div class="gc-field"><span>Benefit Icon</span><small>Select a preset icon or upload your own image</small><div class="gc-icon-choices">${["gift", "hand-coins", "percent", "cake", "star", "crown"].map((name) => `<button type="button" data-benefit-icon="${name}" aria-label="Icon"><img src="../assets/icon-oneqr/issue-2040-oneqr-${name}-3d.png" alt=""></button>`).join("")}</div></div>${field("Benefit Name", "benefitName", { value: existing?.name || "", placeholder: "Enter benefit name", required: true })}<div class="gc-choices"><span class="gc-note">Suggestions</span>${["Discount", "Cashback", "Gift", "Birthday"].map((label) => `<button type="button" class="gc-choice" data-suggest-benefit="${label}">${label}</button>`).join("")}</div>${select("Benefit Unit", "benefitUnit", [["", "Select benefit unit"], "Percentage (%)", "Currency", "Time Used"], existing?.unit || "", "required")}${footer()}
+      `<p>Fill in the required information to create a new benefit</p><form><div class="gc-field"><span>Benefit Icon</span><small>Select a preset icon or upload your own image</small>${button('Upload','upload-benefit-icon','disabled')}<div class="gc-icon-choices">${["gift", "hand-coins", "percent", "cake", "star", "crown"].map((name) => `<button type="button" data-benefit-icon="${name}" aria-label="Icon"><img src="../assets/icon-oneqr/issue-2040-oneqr-${name}-3d.png" alt=""></button>`).join("")}</div></div>${field("Benefit Name", "benefitName", { value: existing?.name || "", placeholder: "Enter benefit name", required: true })}<div class="gc-choices"><span class="gc-note">Suggestions</span>${["Discount", "Cashback", "Gift", "Birthday"].map((label) => `<button type="button" class="gc-choice" data-suggest-benefit="${label}">${label}</button>`).join("")}</div>${select("Benefit Unit", "benefitUnit", [["", "Select benefit unit"], "Percentage (%)", "Currency", "Time Used"], existing?.unit || "", "required")}<div data-benefit-rollover class="gc-fields" ${existing?.unit==='Currency'?'':'hidden'}>${select('Rollover Type','rollover',[['','Select an option...'],'Reset','Rollover'],existing?.rollover||'')}${select('Cycle','cycle',[['','Select an option...'],'Daily','Monthly','Quarterly','Yearly'],existing?.cycle||'')}</div>${footer()}
     </form>`,
       (event) => {
         event.preventDefault();
@@ -1070,6 +1284,8 @@
           id: existing?.id || "BEN" + String(Date.now()).slice(-7),
           name: String(data.get("benefitName")).trim(),
           unit: data.get("benefitUnit"),
+          rollover: data.get("benefitUnit")==="Currency" ? data.get("rollover") : "",
+          cycle: data.get("benefitUnit")==="Currency" ? data.get("cycle") : "",
           icon: selectedIcon,
           active: existing?.active ?? true,
           date: existing?.date || today(),
@@ -1079,6 +1295,7 @@
         else store.benefits.push(b);
         if (formDraft) {
           formDraft.benefit = b.id;
+          formDraft.benefits = [...new Set([...formDraft.benefits,b.id])];
           setDraft();
         }
         save();
@@ -1086,6 +1303,10 @@
         render();
       },
     );
+    const syncBenefitCycle=()=>{const currency=dialog.querySelector('[name=benefitUnit]').value==='Currency',rollover=dialog.querySelector('[name=rollover]').value==='Rollover';dialog.querySelector('[data-benefit-rollover]').hidden=!currency;dialog.querySelector('[name=cycle]').required=currency&&rollover;};
+    dialog.querySelector('[name=benefitUnit]').addEventListener('change',syncBenefitCycle);
+    dialog.querySelector('[name=rollover]').addEventListener('change',syncBenefitCycle);
+    syncBenefitCycle();
     dialog.querySelectorAll("[data-benefit-icon]").forEach((b) =>
       b.addEventListener("click", () => {
         selectedIcon = b.dataset.benefitIcon;
@@ -1122,7 +1343,7 @@
       ["Email", card.email || "-"],
       ["Payment Method", card.payment || "-"],
     ];
-    const info = `<div class="gc-actions" style="margin:12px 0">${button("Send SMS", "card-sms", `data-id="${id}" ${card.phone ? "" : "disabled"}`)}${button("Send Email", "card-email", `data-id="${id}" ${card.email ? "" : "disabled"}`)}${button("Print", "card-print")}${button("Download", "card-download", `data-id="${id}"`)}${button("Reload", "card-reload", `data-id="${id}"`)}</div><p><span class="gc-badge">${card.approval || "Approved"}</span></p><div class="gc-fields">${detailRows.map(([label, value]) => `<div class="gc-field"><span class="gc-note">${label}</span><strong>${esc(value)}</strong></div>`).join("")}</div><h3 style="margin-top:20px">Terms & Conditions</h3><p style="white-space:pre-wrap">${esc(card.terms || "-")}</p>`;
+    const info = `<div class="gc-actions" style="margin:12px 0">${button("Send SMS", "card-sms", `data-id="${id}" ${card.phone ? "" : "disabled"}`)}${button("Send Email", "card-email", `data-id="${id}" ${card.email ? "" : "disabled"}`)}${button("Print", "card-print")}${button("Download", "card-download", `data-id="${id}"`)}${button("Reload", "card-reload", `data-id="${id}"`)}</div><div class="gc-actions" style="margin-bottom:18px"><span>Card Locked</span><label class="gc-check"><input type="checkbox" class="gc-switch" data-card-lock ${card.locked?"checked":""}>${card.locked?"Locked":"Unlocked"}</label><span class="gc-badge">${card.approval || "Approved"}</span></div><div class="gc-fields">${detailRows.map(([label, value]) => `<div class="gc-field"><span class="gc-note">${label}</span><strong>${esc(value)}</strong></div>`).join("")}</div>${card.type==='Membership'?`<h3 style="margin-top:20px">Membership Benefits</h3><div class="gc-selected-benefits">${[...new Set([...(card.benefits||[]),...(card.benefit?[card.benefit]:[])])].map(id=>{const b=store.benefits.find(b=>b.id===id);return b?`<div><img src="../assets/icon-oneqr/issue-2040-oneqr-${esc(b.icon||'gift')}-3d.png" alt=""><span>${esc(b.name)}</span><strong>${b.unit==='Currency'?money(card.benefitValues?.[id]||0):esc(card.benefitValues?.[id]||0)+(b.unit==='Percentage (%)'?'%':'')}</strong><small>Used Times: 0</small></div>`:'';}).join('')}</div>`:''}<h3 style="margin-top:20px">Terms & Conditions</h3><p style="white-space:pre-wrap">${esc(card.terms || "-")}</p>`;
     openDialog(
       "Product Details",
       `${tabs(
@@ -1133,8 +1354,9 @@
         ],
         tab,
         "detail-tab",
-      )}<div>${tab === "info" ? info : tab === "transactions" ? table(transactionHeaders, transactionRows(store.transactions.filter((t) => t.card === id))) : table(["Created Date", "Type", "Status"], [[date(card.created), esc(card.type), esc(card.approval || "Approved")]])}</div>`,
+      )}<div>${tab === "info" ? info : tab === "transactions" ? table(transactionHeaders, transactionRows(store.transactions.filter((t) => t.card === id))) : table(["Action", "Changed Fields", "Old Value", "New Value", "Updated At", "Updated By", "Remark"], (card.history||[]).map(item=>[esc(item.action),esc(item.field),esc(item.before),esc(item.after),date(item.date),esc(item.by||"-"),esc(item.remark||"-")]))}</div>`,
     );
+    dialog.querySelector('[data-card-lock]')?.addEventListener('change',event=>{const before=card.locked?'Locked':'Unlocked';card.locked=event.target.checked;card.history=card.history||[];card.history.unshift({action:'Update',field:'Card Locked',before,after:card.locked?'Locked':'Unlocked',date:today()});save();cardDetails(id);});
     dialog
       .querySelectorAll("[data-detail-tab]")
       .forEach((b) =>
@@ -1278,29 +1500,51 @@
     );
   }
   function libraryDialog() {
-    openDialog(
-      "Library",
-      `<div class="gc-icon-choices">${["nexora-touch-logo.png", "nexora-logo.svg"].map((file, i) => `<button type="button" style="width:150px;height:80px" data-library="${file}" aria-label="${i ? "Nexora Touch" : "NEXORA TOUCH"}"><img src="../assets/${file}" alt="Nexora Touch"></button>`).join("")}</div>`,
-    );
-    dialog.querySelectorAll("[data-library]").forEach((b) =>
-      b.addEventListener("click", () => {
-        formDraft.logo = "../assets/" + b.dataset.library;
-        setDraft();
-        dialog.close();
-        render();
-      }),
-    );
+    openDialog(`Logo Library (${store.logos.length} logos)`, `<div class="gc-logo-library">${store.logos.map((logo,i)=>`<article><img src="${esc(logo.image)}" alt="Logo ${i+1}"><div class="gc-actions"><button type="button" class="gc-button icon-only" data-delete-logo="${esc(logo.id)}" aria-label="Delete">${icon('trash-2')}</button><button type="button" class="gc-button icon-only" data-preview-logo="${esc(logo.id)}" aria-label="Preview">${icon('eye')}</button><button type="button" class="gc-button primary" data-library="${esc(logo.id)}">${icon('check')}Use</button></div><p>Logo ${i+1} <small>${date(logo.date)}</small></p></article>`).join('')}</div>`);
+    dialog.querySelectorAll('[data-library]').forEach(b=>b.addEventListener('click',()=>{formDraft.logo=store.logos.find(logo=>logo.id===b.dataset.library).image;setDraft();dialog.close();render();}));
+    dialog.querySelectorAll('[data-delete-logo]').forEach(b=>b.addEventListener('click',()=>{store.logos=store.logos.filter(logo=>logo.id!==b.dataset.deleteLogo);save();libraryDialog();}));
+    dialog.querySelectorAll('[data-preview-logo]').forEach(b=>b.addEventListener('click',()=>{const logo=store.logos.find(logo=>logo.id===b.dataset.previewLogo);openDialog('Preview',`<img class="gc-logo-preview" src="${esc(logo.image)}" alt="">${button('Library','library')}`);dialog.querySelector('[data-action=library]').addEventListener('click',libraryDialog);}));
+  }
+  function quickTemplatesDialog() {
+    const pageSize=12;
+    const draw=(selected=[],page=1,pickerOpen=false)=>{
+      const filtered=quickTemplates.map((template,index)=>({...template,index})).filter(template=>!selected.length||selected.includes(template.category));
+      const pages=Math.max(1,Math.ceil(filtered.length/pageSize));
+      page=Math.min(Math.max(1,page),pages);
+      openDialog('Select a design for your E-Gift Card', `<details class="gc-template-categories" ${pickerOpen?'open':''}><summary role="combobox" aria-haspopup="listbox" aria-expanded="${pickerOpen}" aria-controls="gc-template-category-options">${selected.length?selected.map(esc).join(', '):'Select categories'}${icon('chevron-down')}</summary><div id="gc-template-category-options" role="listbox" aria-multiselectable="true">${templateCategories.map(category=>`<label role="option" aria-selected="${selected.includes(category)}"><input type="checkbox" data-template-category value="${esc(category)}" ${selected.includes(category)?'checked':''}>${esc(category)}</label>`).join('')}</div></details><div class="gc-template-gallery">${filtered.slice((page-1)*pageSize,page*pageSize).map(template=>`<button type="button" data-template-index="${template.index}" aria-label="${esc(template.category)}" aria-pressed="${formDraft.templateImage===template.image}"><img src="${esc(template.image)}" alt="" loading="lazy" referrerpolicy="no-referrer"></button>`).join('')}</div><nav class="gc-template-pagination" aria-label="Select a design for your E-Gift Card"><button type="button" class="gc-button icon-only" data-template-page="${page-1}" title="Previous" aria-label="Previous" ${page===1?'disabled':''}>${icon('arrow-left')}</button>${Array.from({length:pages},(_,i)=>`<button type="button" class="gc-button" data-template-page="${i+1}" ${page===i+1?'disabled aria-current="page"':''}>${i+1}</button>`).join('')}<button type="button" class="gc-button icon-only" data-template-page="${page+1}" title="Next" aria-label="Next" ${page===pages?'disabled':''}>${icon('arrow-right')}</button></nav>`);
+      const picker=dialog.querySelector('.gc-template-categories');
+      picker.addEventListener('toggle',()=>picker.querySelector('summary').setAttribute('aria-expanded',String(picker.open)));
+      dialog.querySelectorAll('[data-template-category]').forEach(input=>input.addEventListener('change',()=>draw([...dialog.querySelectorAll('[data-template-category]:checked')].map(input=>input.value),1,true)));
+      dialog.querySelectorAll('[data-template-page]').forEach(button=>button.addEventListener('click',()=>draw(selected,Number(button.dataset.templatePage))));
+      dialog.querySelectorAll('[data-template-index]').forEach(button=>button.addEventListener('click',()=>{formDraft.templateImage=quickTemplates[Number(button.dataset.templateIndex)].image;setDraft();dialog.close();render();}));
+      dialog.onpointerdown=event=>{if(picker.open&&!picker.contains(event.target))picker.open=false;};
+      dialog.onkeydown=event=>{if(event.key==='Escape'&&picker.open){event.preventDefault();event.stopPropagation();picker.open=false;picker.querySelector('summary').focus();}};
+    };draw();
+  }
+  let editorSelection=null;
+  function syncRichTerms() {
+    const editor=root.querySelector('[data-rich-terms]');if(!editor)return;
+    formDraft.terms=editor.innerText;formDraft.termsMarkup=safeTermsMarkup(editor.innerHTML);setDraft();
+  }
+  function editTerms(command,value) {
+    const editor=root.querySelector('[data-rich-terms]');if(!editor)return;
+    editor.focus();if(editorSelection){const selection=window.getSelection();selection.removeAllRanges();selection.addRange(editorSelection);}
+    document.execCommand(command,false,value);syncRichTerms();
+  }
+  function editorInsertDialog(image) {
+    openDialog(image?'Insert Image':'Insert Link',`<form>${field('URL','insertUrl',{value:'',required:true,type:'url'})}${field(image?'Alt Text':'Text','insertText',{value:''})}${image?field('Title','insertTitle',{value:''}):'<label class="gc-check"><input type="checkbox" name="newTab" checked>Open in new tab</label>'}${footer('Insert')}</form>`,event=>{event.preventDefault();const data=new FormData(event.currentTarget),url=String(data.get('insertUrl'));if(!/^https?:\/\//i.test(url))return;const text=String(data.get('insertText')||url);dialog.close();editTerms('insertHTML',image?`<img src="${esc(url)}" alt="${esc(text)}" title="${esc(data.get('insertTitle'))}">`:`<a href="${esc(url)}" ${data.has('newTab')?'target="_blank" rel="noopener noreferrer"':''}>${esc(text)}</a>`);});
   }
   function updateIssueValidity(){
     if(!formDraft||formDraft.type!=='Membership')return;
     const submit=root.querySelector('#gc-issue-form [type=submit]');
-    if(submit)submit.disabled=!(formDraft.name.trim()&&formDraft.phone.trim()&&formDraft.dob&&formDraft.benefit&&Number(formDraft.amount)>0&&(formDraft.period!=='date'||formDraft.expiryDate));
+    if(submit)submit.disabled=!(formDraft.name.trim()&&formDraft.phone.trim()&&formDraft.dob&&(formDraft.benefits.length||formDraft.benefit)&&Number(formDraft.amount)>0&&(formDraft.period!=='date'||formDraft.expiryDate));
   }
   function updatePreview() {
     if (!formDraft) return;
     updateIssueValidity();
     const previewHost = root.querySelector("[data-preview-container]");
     if (previewHost) previewHost.innerHTML = preview();
+    const quickHost=root.querySelector('[data-quick-preview]');if(quickHost)quickHost.outerHTML=quickPreview();
   }
   function exportTransactions() {
     const rows = filteredTransactions(),
@@ -1352,6 +1596,9 @@
       formDraft.logoPrompt=category.prompts[Number(b.dataset.logoPrompt)];setDraft();
       const input=root.querySelector('[name=logoPrompt]');input.value=formDraft.logoPrompt;input.focus();return;
     }
+    if(b.dataset.quickTemplate!==undefined){formDraft.templateImage=quickTemplates[Number(b.dataset.quickTemplate)].image;setDraft();render();return;}
+    if(b.dataset.removeBenefit){formDraft.benefits=formDraft.benefits.filter(id=>id!==b.dataset.removeBenefit);if(formDraft.benefit===b.dataset.removeBenefit)formDraft.benefit='';setDraft();render();return;}
+    if(b.dataset.editorCommand){editTerms(b.dataset.editorCommand);return;}
     if (b.dataset.choice) {
       const key = b.dataset.choice;
       if(key==='type'&&formDraft.type===b.dataset.value)return;
@@ -1362,6 +1609,8 @@
         : b.dataset.value;
       if (key === "type" && formDraft.type === "Membership") {
         formDraft.tier = "Member";
+        formDraft.benefits = [];
+        formDraft.benefitValues = {};
         formDraft.benefit = "";
         formDraft.amount = 50;
         formDraft.discount = 0;
@@ -1396,7 +1645,8 @@
     if (b.dataset.term !== undefined) {
       formDraft.terms =
         (formDraft.terms ? formDraft.terms + "\n" : "") +
-        terms[Number(b.dataset.term)];
+        suggestedTerms()[Number(b.dataset.term)];
+      formDraft.termsMarkup = "";
       setDraft();
       render();
       return;
@@ -1419,13 +1669,14 @@
     }
     if (b.dataset.payment) {
       if (b.dataset.payment === "amount") {
-        paymentMode = "amount";
-        render();
+        openDialog('E-Gift Card Payment', `<form class="gc-stack">${amountField('Enter amount','paymentAmount','',{required:true,min:0.01})}<label class="gc-field"><span>Note (optional)</span><textarea name="note"></textarea></label><button type="submit" class="gc-button primary">Generate QR Code</button></form><div data-payment-preview></div>`,event=>{event.preventDefault();if(event.currentTarget.reportValidity())paymentPreview(dialog.querySelector('[data-payment-preview]'),event.currentTarget);});
       } else scanCard(b.dataset.payment);
       return;
     }
     const action = b.dataset.action;
     if (!action) return;
+    if(action==='quick-templates'){quickTemplatesDialog();return;}
+    if(action==='editor-link'||action==='editor-image'){editorInsertDialog(action==='editor-image');return;}
     if(action==='crypto-fees'){
       const fee=cryptoFee();openDialog('Total Fees',`<div class="gc-crypto-fees"><div><span>Platform Service Fee (0%)</span><strong>Free</strong></div><div><span>Transfer Fee (1.5%)</span><strong>${fee?money(fee):'Free'}</strong></div><div><span>Total Fees</span><strong>${fee?money(fee):'Free'}</strong></div></div>`);return;
     }
@@ -1437,6 +1688,7 @@
       event.preventDefault();
       root.querySelector('[data-gc-panel="Terms and Conditions"]')?.setAttribute("open", "");
       formDraft.terms = store.savedTerms;
+      formDraft.termsMarkup = "";
       setDraft();
       render();
       return;
@@ -1472,11 +1724,13 @@
       navigate("membership-package");
       formDraft = {
         ...getDraft(),
+        benefit: "",
         editId: p.id,
         tier: p.name,
         amount: p.price,
         period: p.period,
-        benefits: p.benefits,
+        benefits: [...(p.benefits || [])],
+        benefitValues: {...(p.benefitValues || {})},
         discount: p.discount || 0,
       };
       render();
@@ -1506,7 +1760,7 @@
     }
     if (action === "add-advanced") {
       formDraft[b.dataset.kind].push({
-        amount: 25,
+        amount: 10,
         percent: 5,
         quantity: 1,
         terms: "",
@@ -1564,6 +1818,8 @@
   });
   root.addEventListener("input", (event) => {
     const input = event.target;
+    if(input.matches('[data-rich-terms]')){syncRichTerms();return;}
+    if(input.dataset.benefitValue){formDraft.benefitValues[input.dataset.benefitValue]=Number(input.value);setDraft();return;}
     if(input.name==='cryptoQuantity'&&formDraft?.type==='Crypto Card'){formDraft.cryptoQuantity=Math.max(1,Math.floor(Number(input.value)||1));root.querySelectorAll('[data-crypto-amount]').forEach(node=>node.max=cryptoBalance(node.dataset.cryptoAmount)/cryptoQuantity());refreshCrypto();return;}
     if(input.dataset.cryptoAmount){formDraft.cryptoAmounts[input.dataset.cryptoAmount]=Number(input.value)||0;refreshCrypto();return;}
     if (input.matches("[data-query]")) {
@@ -1605,6 +1861,9 @@
   });
   root.addEventListener("change", (event) => {
     const input = event.target;
+    if(input.matches('[data-editor-heading]')){if(input.value)editTerms('formatBlock',input.value);return;}
+    if(input.dataset.editorColor){editTerms(input.dataset.editorColor,input.value);return;}
+    if(input.name==='selectedBenefit'){formDraft.benefits=[...root.querySelectorAll('[name=selectedBenefit]:checked')].map(node=>node.value);formDraft.benefit=formDraft.benefits[0]||'';setDraft();render();return;}
     if(input.dataset.cryptoAsset){formDraft.cryptoAssets=[...root.querySelectorAll('[data-crypto-asset]:checked')].map(node=>node.dataset.cryptoAsset);refreshCrypto();render();return;}
     if(input.dataset.cryptoUnit){formDraft.cryptoUnits[input.dataset.cryptoUnit]=input.value;setDraft();return;}
     if(input.name==='sendGift'||input.name==='cryptoQuantity'){formDraft[input.name]=input.name==='sendGift'?input.checked:Math.max(1,Math.floor(Number(input.value)||1));refreshCrypto();render();return;}
@@ -1617,7 +1876,8 @@
         if (input.dataset.cardUpload) {
           const [kind, index] = input.dataset.cardUpload.split(":");
           formDraft[kind][Number(index)].image = reader.result;
-        } else formDraft.logo = reader.result;
+        } else if(input.name==='templateImage')formDraft.templateImage=reader.result;
+        else {formDraft.logo=reader.result;if(!store.logos.some(logo=>logo.image===reader.result))store.logos.push({id:'logo-'+Date.now(),image:reader.result,date:today()});}
         setDraft();
         render();
       };
@@ -1691,6 +1951,9 @@
       if (days) days.disabled = !input.checked;
     }
   });
+  root.addEventListener('pointerdown',event=>{
+    if(event.target.closest('.gc-editor-toolbar')){const selection=window.getSelection();if(selection.rangeCount&&root.querySelector('[data-rich-terms]')?.contains(selection.anchorNode))editorSelection=selection.getRangeAt(0).cloneRange();if(event.target.closest('button'))event.preventDefault();}
+  });
   document.addEventListener('pointerdown',event=>{
     root.querySelectorAll('.gc-assets-picker[open]').forEach(picker=>{if(!picker.contains(event.target))picker.open=false;});
   });
@@ -1717,6 +1980,8 @@
       balance: Number(formDraft.amount),
       ...formDraft,
       ...extra,
+      benefits: [...(extra.benefits || formDraft.benefits || [])],
+      benefitValues: {...(extra.benefitValues || formDraft.benefitValues || {})},
     };
   }
   root.addEventListener("submit", (event) => {
@@ -1750,8 +2015,15 @@
       return;
     }
     if (form.id === "gc-quick-form") {
-      if (Number(formDraft.amount) < 25 || Number(formDraft.amount) > 5000) {
+      if (Number(formDraft.amount) < 10 || Number(formDraft.amount) > 5000) {
         root.querySelector("[name=amount]").focus();
+        return;
+      }
+      if (!Number.isInteger(Number(formDraft.quantity)) || Number(formDraft.quantity) < 1) {
+        const quantity = root.querySelector("[name=quantity]");
+        quantity.required = true;
+        quantity.reportValidity();
+        quantity.focus();
         return;
       }
       store.cards.unshift(
@@ -1801,7 +2073,7 @@
     }
     if (form.id === "gc-package-form") {
       if (!formDraft.benefits.length) {
-        root.querySelector("[name=packageBenefit]")?.focus();
+        root.querySelector(".gc-benefit-picker summary")?.focus();
         return;
       }
       const p = {
@@ -1809,7 +2081,8 @@
         name: formDraft.tier,
         price: Number(formDraft.amount),
         period: Number(formDraft.period),
-        benefits: formDraft.benefits,
+        benefits: [...formDraft.benefits],
+        benefitValues: {...formDraft.benefitValues},
         active: true,
         date: today(),
         discount: Number(formDraft.discount),
@@ -1835,22 +2108,7 @@
       return;
     }
     if (form.id === "gc-payment-form") {
-      const data = new FormData(form),
-        amount = Number(data.get("paymentAmount"));
-      const preview = root.querySelector("[data-payment-preview]");
-      preview.innerHTML = `<section class="gc-card"><h3>Preview</h3><strong>${money(amount)}</strong><p>${esc(data.get("note") || "")}</p><div class="gc-qr" data-local-payment-qr></div></section>`;
-      const host = preview.querySelector("[data-local-payment-qr]");
-      if (window.QRCode) {
-        new window.QRCode(host, {
-          text: JSON.stringify({
-            type: "gift-card-payment-preview",
-            amount,
-            note: String(data.get("note") || ""),
-          }),
-          width: 220,
-          height: 220,
-        });
-      }
+      paymentPreview(root.querySelector('[data-payment-preview]'),form);
       return;
     }
   });

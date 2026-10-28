@@ -99,6 +99,7 @@
     visit(NAV, function (node) { node.type = node.toggleProducts ? 'control' : node.children ? 'group' : 'item'; node.items = node.children; });
   }
   function routeActive(node) {
+    if (cfg.activeNavKey) return node.key === cfg.activeNavKey;
     if (!node.href || /^(?:https?:|\.\.\/)/.test(node.href)) return false;
     try {
       var current = new URL(window.location.href), target = new URL(node.href, current);

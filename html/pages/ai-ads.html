@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nexora Touch - AI Ads</title>
+  <link rel="stylesheet" href="../assets/nexora-icons.css">
+  <link rel="stylesheet" href="../assets/nexora-shell.css?v=20261028-po-menu-complete-v2">
+  <style>
+    html, body { margin: 0; height: 100%; }
+    .shell { height: 100dvh; min-height: 0; overflow: hidden; }
+    .app-area { height: 100%; min-height: 0; display: flex; flex-direction: column; }
+    .header { flex: 0 0 auto; }
+    .content.ai-ads-host { flex: 1 1 0; min-height: 0; padding: 0; display: flex; flex-direction: column; }
+    .ai-ads-heading { flex: 0 0 auto; padding: 20px 24px; background: #fff; }
+    .ai-ads-heading h1 { margin: 0; color: #0f172a; font-size: 24px; line-height: 32px; font-weight: 800; }
+    .ai-ads-heading p { margin: 4px 0 0; color: #64748b; font-size: 14px; line-height: 20px; }
+    .ai-ads-frame { display: block; width: 100%; flex: 1 1 0; min-height: 0; border: 0; }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Salon sidebar"></aside>
+    <div class="app-area">
+      <header class="header"></header>
+      <main class="content ai-ads-host" aria-label="AI Ads">
+        <div class="ai-ads-heading"><h1>AI Ads</h1><p>Create advertising banners with AI</p></div>
+        <iframe class="ai-ads-frame" src="ai-ads-workspace.html" title="AI Ads" sandbox="allow-scripts allow-same-origin allow-popups"></iframe>
+      </main>
+    </div>
+  </div>
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script>window.NEXORA_SHELL = { activePage: 'ai-ads', activeTab: 'ai-ads' };</script>
+  <script src="../assets/nexora-icons.js"></script>
+  <script src="../assets/nexora-shell-nav.js?v=20261028-source-refresh"></script>
+  <script src="../assets/nexora-shell.js?v=20261028-source-refresh"></script>
+</body>
+</html>

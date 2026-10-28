@@ -1,0 +1,21 @@
+/* Captured AI Ads markup stays isolated from the salon shell. */
+html, body { margin: 0; min-width: 0; }
+body { font-family: Inter, sans-serif; }
+[hidden] { display: none !important; }
+button.local-unavailable { cursor: not-allowed; opacity: .55; }
+.ds-select-control { padding-right: 44px !important; }
+.ds-select-chevron { right: 16px !important; width: 16px !important; height: 16px !important; }
+.currency-token { display: grid; place-items: center; font-size: 7px; font-weight: 800; width: 100%; height: 100%; color: #4f46e5; background: #eef2ff; }
+#global-modal { padding-block: 16px; overflow-y: auto; }
+#modal-content-box { max-height: calc(100dvh - 32px); overflow-y: auto; }
+#screen-notifications button:focus-visible, button:focus-visible, [role=button]:focus-visible { outline: 2px solid #4f46e5; outline-offset: 3px; }
+@media (max-width: 639px) { #modal-content-box { padding: 20px; } }
+/* Retain ISO values for the native calendar while showing the project date format. */
+.local-date-picker { position: relative; min-height: 36px; border: 1px solid #e2e8f099; border-radius: 12px; background: #f8fafc; }
+.local-date-picker input[type=date] { position: absolute; inset: 0; z-index: 2; opacity: 0; cursor: pointer; width: 100%; height: 100%; }
+.local-date-picker:focus-within { outline: 2px solid #6366f1; outline-offset: 1px; }
+.local-date-value { display: block; min-height: 34px; padding: 8px 34px 8px 10px; color: #1e293b; font-size: 12px; }
+.local-date-calendar { position: absolute; right: 12px; top: 7px; color: #64748b; pointer-events: none; }
+#quality-trigger { position: relative; padding-right: 44px; }
+#quality-trigger::after { position: absolute; width: 16px; height: 16px; right: 16px; top: 50%; transform: translateY(-50%); content: ''; background: currentColor; mask: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath fill='none' stroke='black' stroke-width='1.5' d='m4 6 4 4 4-4'/%3E%3C/svg%3E") center/16px 16px no-repeat; }
+.local-date-calendar svg { display: block; width: 16px; height: 16px; }

@@ -155,7 +155,6 @@ const catalog={
       ]},
       { name: 'Marketing Assistant', upcoming: 'Đang chuẩn bị: tạo nội dung AI, gợi ý trả lời đánh giá, phân nhóm khách và đo hiệu quả chiến dịch.', sections: [
         { name: 'Nexora', items: [
-          { label: 'SMS Campaigns', url: nexora + '/dashboard/ai-hub?tab=sms-campaigns' },
           { label: 'Khuyến mãi POS', url: nexora + '/dashboard/pos/promotions' },
           { label: 'Reviews', url: nexora + '/dashboard/reviews' },
           { label: 'Khách hàng', url: nexora + '/dashboard/ai-hub?tab=customers' },
@@ -164,7 +163,7 @@ const catalog={
         { name: 'VLinkPay', items: [
           { label: 'Chiến dịch', url: 'https://merchant.vlinkpay.com/campaign-management?pageIndex=0&pageSize=10', newTab: true },
           { label: 'Tạo vòng quay', demo: 'wheel' },
-          { label: 'AI Ads', linkPending: true }
+          { label: 'AI Ads', url: 'https://merchant.vlinkpay.com/marketing-tools' }
         ]}
       ]}
     ]},

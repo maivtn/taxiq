@@ -57,7 +57,7 @@
     try { u = new URL(href); } catch (_) { return href; }
     if (u.hostname === 'merchant.vlinkpay.com' || u.hostname === 'staging-merchant.vlinkpay.com') {
       if (u.pathname === '/campaign-management') return 'vlinkpay-campaigns.html';
-      if (u.pathname === '/marketing-tools') return '';
+      if (u.pathname === '/marketing-tools') return 'ai-ads.html';
       var giftViews = {'/gift-voucher/product-management/issue-digital':'issue','/gift-voucher/product-management/quick-create-card':'quick','/gift-voucher/product-management/sell-egift-form':'advanced','/gift-voucher/product-management':'cards','/payment-process/payment-gift-card':'redeem','/settings/benefits-setup':'benefits','/settings/membership-report':'members','/reports/card-transaction-history':'transactions','/reports/expiring-cards':'expiring'};
       if (giftViews[u.pathname]) return 'gift-card-center.html?view=' + (u.pathname.endsWith('/issue-digital') && u.searchParams.get('type') === 'membership' ? 'membership' : giftViews[u.pathname]);
     }
@@ -295,6 +295,16 @@
         "href": "https://nexoratouch.com/dashboard/community?tab=jobs"
       },
       {
+        "key": "community-extra-shifts",
+        "label": "Extra shifts",
+        "href": "https://nexoratouch.com/dashboard/community?tab=shift"
+      },
+      {
+        "key": "community-deals",
+        "label": "Deals & Coupons",
+        "availability": "unavailable"
+      },
+      {
         "key": "tin-nhan-cuoc-goi",
         "label": "Messages & calls",
         "href": "https://nexoratouch.com/dashboard/community?tab=connect"
@@ -396,7 +406,7 @@
           {
             "key": "vlinkpay-ai-ads",
             "label": "AI Ads · VLinkPay",
-            "linkPending": true
+            "href": "https://merchant.vlinkpay.com/marketing-tools"
           }
         ]
       }
