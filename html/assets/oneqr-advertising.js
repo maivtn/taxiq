@@ -332,6 +332,7 @@
     const value = ['$', entry => escape(dollars(entry.points))];
     const credits = ['credits', entry => escape(number(entry.points / 100))];
     const status = ['historyStatus', historyStatus];
+    const numericClass = key => ['amount', '$', 'credits'].includes(key) ? ' class="qa-history-numeric"' : '';
     const columns = {
       income: [transaction, timestamp, ['historySource', () => escape(t('adsSource'))], amount, value, status],
       transfer: [transaction, timestamp, ['recipient', entry => escape(entry.recipient && entry.recipient !== 'DEMO' ? entry.recipient : t('recipient'))], amount, credits, status],
@@ -344,8 +345,8 @@
       const label = key => key === '$' ? '$' : t(key);
       root.querySelector(`[data-history-count="${kind}"]`).textContent = number(entries.length);
       $(`${kind}-history`).innerHTML = `<table class="qa-history-table${fields.length > 5 ? ' qa-history-table-wide' : ''}" aria-labelledby="${kind}-history-heading" role="table">
-        <thead role="rowgroup"><tr role="row">${fields.map(([key]) => `<th scope="col" role="columnheader">${escape(label(key))}</th>`).join('')}</tr></thead>
-        <tbody role="rowgroup">${entries.length ? entries.map(entry => `<tr role="row" data-history-id="${escape(entry.id)}">${fields.map(([key, render]) => `<td role="cell" data-label="${escape(label(key))}"><div class="qa-history-cell">${render(entry)}</div></td>`).join('')}</tr>`).join('')
+        <thead role="rowgroup"><tr role="row">${fields.map(([key]) => `<th scope="col" role="columnheader"${numericClass(key)}>${escape(label(key))}</th>`).join('')}</tr></thead>
+        <tbody role="rowgroup">${entries.length ? entries.map(entry => `<tr role="row" data-history-id="${escape(entry.id)}">${fields.map(([key, render]) => `<td role="cell" data-label="${escape(label(key))}"${numericClass(key)}><div class="qa-history-cell">${render(entry)}</div></td>`).join('')}</tr>`).join('')
           : `<tr role="row"><td role="cell" colspan="${fields.length}" class="qa-history-empty">—</td></tr>`}</tbody>
       </table>`;
     });
