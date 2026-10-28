@@ -11,6 +11,7 @@
 .qa-app small, .qa-app .muted { color: #666879; font-size: 13px; }
 .qa-app button { border: 1px solid transparent; border-radius: 9px; padding: 11px 16px; background: var(--qa-primary); color: #fff; font: inherit; font-weight: 700; cursor: pointer; }
 .qa-app button.alt { border-color: var(--qa-primary); background: #fff; color: var(--qa-primary); }
+.qa-app #ads-toggle { margin-top: 16px; }
 .qa-app button:disabled { opacity: .45; cursor: not-allowed; }
 .qa-app button:focus-visible, .qa-app a:focus-visible, .qa-app input:focus-visible, .qa-app select:focus-visible { outline: 3px solid var(--qa-primary); outline-offset: 3px; }
 .qa-app button:not(:disabled):hover { filter: brightness(.97); }
