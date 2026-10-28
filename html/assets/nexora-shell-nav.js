@@ -194,6 +194,7 @@
       {
         "key": "quan-ly-tiem",
         "label": "Salon management",
+        "href": "#pos-salon-settings-info",
         "children": [
           {
             "key": "pos-booking",
