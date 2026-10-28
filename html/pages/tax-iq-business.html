@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nexora Touch - Tax IQ Business Overview</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/nexora-icons.css">
+  <link rel="stylesheet" href="../assets/nexora-shell.css?v=20261028-po-active-hierarchy">
+  <link rel="stylesheet" href="../assets/taxiq-receipts.css?v=20261028">
+  <link rel="stylesheet" href="../assets/taxiq-business.css?v=20261028">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Salon sidebar"></aside>
+    <div class="app-area">
+      <header class="header"></header>
+      <main class="content taxiq-records taxiq-business">
+        <div class="taxiq-heading">
+          <div><span class="taxiq-eyebrow">Tax IQ · Concept preview</span><h1>Business overview</h1><p>Preview a period summary of business income, expenses, and receipts.</p></div>
+          <div class="taxiq-business-actions"><a class="taxiq-button" href="tax-iq-receipts.html">Receipts</a><a class="taxiq-button" href="dashboard.html?module=taxiq&amp;group=0"><i data-lucide="arrow-left" aria-hidden="true"></i>Tax IQ</a></div>
+        </div>
+        <div class="taxiq-business-tabs" role="tablist" aria-label="Business overview">
+          <button id="taxiq-tab-dashboard" type="button" role="tab" aria-selected="true" aria-controls="taxiq-dashboard" data-taxiq-tab="dashboard">Dashboard</button>
+          <button id="taxiq-tab-analytics" type="button" role="tab" aria-selected="false" aria-controls="taxiq-analytics" tabindex="-1" data-taxiq-tab="analytics">Analytics</button>
+        </div>
+        <section id="taxiq-dashboard" role="tabpanel" aria-labelledby="taxiq-tab-dashboard">
+          <div class="taxiq-metrics" id="taxiq-dashboard-metrics"></div>
+          <div class="taxiq-dashboard-grid">
+            <section class="taxiq-panel" aria-labelledby="taxiq-runs-title"><div class="taxiq-panel-heading"><h2 id="taxiq-runs-title">Recent Payroll Runs</h2></div><div class="taxiq-table-wrap"><table><thead><tr><th scope="col">Run ID</th><th scope="col">Period</th><th scope="col">Pay Date</th><th scope="col">Gross</th><th scope="col">Tax</th><th scope="col">Risk</th><th scope="col">Status</th></tr></thead><tbody id="taxiq-runs"></tbody></table></div></section>
+            <section class="taxiq-panel" aria-labelledby="taxiq-issues-title"><div class="taxiq-panel-heading"><h2 id="taxiq-issues-title">TaxIQ Issues</h2></div><div class="taxiq-issues" id="taxiq-issues"></div></section>
+          </div>
+        </section>
+        <section id="taxiq-analytics" role="tabpanel" aria-labelledby="taxiq-tab-analytics" hidden>
+          <div class="taxiq-metrics" id="taxiq-analytics-metrics"></div>
+          <div class="taxiq-analytics-grid">
+            <div class="taxiq-business-column">
+              <section class="taxiq-panel" aria-labelledby="taxiq-risk-title"><div class="taxiq-panel-heading taxiq-panel-tools"><h2 id="taxiq-risk-title">Risk Trend by Payroll Run</h2><div class="taxiq-filters"><select id="taxiq-risk-period" aria-label="Period"><option value="all">All periods</option><option value="q1">Q1 2026</option><option value="q2">Q2 2026</option><option value="ytd">YTD 2026</option></select></div></div><div class="taxiq-bars" id="taxiq-risk-bars"></div></section>
+              <section class="taxiq-panel" aria-labelledby="taxiq-risk-runs-title"><div class="taxiq-panel-heading"><h2 id="taxiq-risk-runs-title">Risk by Run</h2></div><div class="taxiq-table-wrap"><table><thead><tr><th scope="col">Run</th><th scope="col">Period</th><th scope="col">Risk</th><th scope="col">Status</th></tr></thead><tbody id="taxiq-risk-runs"></tbody></table></div></section>
+            </div>
+            <div class="taxiq-business-column">
+              <section class="taxiq-panel" aria-labelledby="taxiq-jurisdiction-title"><div class="taxiq-panel-heading"><h2 id="taxiq-jurisdiction-title">Tax by Jurisdiction</h2></div><div class="taxiq-bars" id="taxiq-jurisdiction-bars"></div></section>
+              <section class="taxiq-panel" aria-labelledby="taxiq-calendar-title"><div class="taxiq-panel-heading"><h2 id="taxiq-calendar-title">Deposit Calendar</h2></div><div class="taxiq-table-wrap"><table><thead><tr><th scope="col">Jurisdiction</th><th scope="col">Schedule</th><th scope="col">Next Due</th></tr></thead><tbody id="taxiq-deposit-calendar"></tbody></table></div></section>
+            </div>
+          </div>
+        </section>
+        <p class="taxiq-note">This is a concept preview. Screens, access and data sources need confirmation before use; this is not a tax filing tool.</p>
+      </main>
+    </div>
+  </div>
+  <dialog class="taxiq-dialog" id="taxiq-business-dialog" aria-labelledby="taxiq-business-dialog-title">
+    <div class="taxiq-dialog-heading"><h2 id="taxiq-business-dialog-title"></h2><button class="taxiq-button taxiq-icon-button" type="button" data-taxiq-close aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button></div>
+    <dl class="taxiq-detail" id="taxiq-business-detail"></dl>
+    <div class="taxiq-dialog-footer"><button class="taxiq-button taxiq-primary" type="button" data-taxiq-close>Close</button></div>
+  </dialog>
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script>window.NEXORA_SHELL={activePage:'taxiq',activeTab:'business-overview',activeNavKey:'tax-iq'};</script>
+  <script src="../assets/nexora-icons.js"></script>
+  <script src="../assets/nexora-shell-nav.js?v=20261028-ai-hub-po"></script>
+  <script src="../assets/nexora-shell.js?v=20261028-ai-hub-po"></script>
+  <script src="../assets/taxiq-business-data.js?v=20261028"></script>
+  <script src="../assets/taxiq-business.js?v=20261028"></script>
+</body>
+</html>

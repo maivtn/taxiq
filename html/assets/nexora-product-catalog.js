@@ -828,7 +828,7 @@ window.NEXORA_PRODUCT_CATALOG = {
         "items": [
           {
             "label": "Business overview",
-            "unavailable": true
+            "url": "tax-iq-business.html"
           },
           {
             "label": "Business income",
