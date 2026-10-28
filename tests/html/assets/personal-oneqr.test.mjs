@@ -79,7 +79,7 @@ test('unlinked Personal cannot display a salon tip QR, while the linked demo can
 });
 test('the personal builder keeps all required areas and excludes Business role, industry and identity controls',t=>{
  const w=app(t),main=w.document.querySelector('main');
- for(const label of ['Today’s activity','Modules','Configuration','Live Preview','Shared profile','OneQR performance','Contacts sent back'])assert.ok(main.textContent.includes(label),label);
+ for(const label of ['Today’s activity','Modules','Configuration','Live Preview','OneQR performance','Contacts sent back'])assert.ok(main.textContent.includes(label),label);
  assert.equal(main.querySelectorAll('.pqr-builder > section').length,3);
  assert.doesNotMatch(main.textContent,/Change industry|Identity|Customer|Station|Staff Portal/);
  assert.ok(main.textContent.includes('Demo data'));
@@ -92,7 +92,7 @@ test('editing, toggling, reordering, adding and deleting links updates the previ
  const toggle=d.querySelector('[data-link-index="0"] [data-link-field=enabled]');toggle.checked=false;toggle.dispatchEvent(new w.Event('input',{bubbles:true}));
  assert.doesNotMatch(d.querySelector('[data-pqr-phone]').textContent,/Hồ sơ của An/);
  d.querySelector('[data-pqr-action=down][data-index="0"]').click();assert.equal(d.querySelector('[data-link-index="1"] [data-link-field=name]').value,'Hồ sơ của An');
- click(w,'add');input(w,'[data-pqr-new-link] [name=name]','Website');input(w,'[data-pqr-new-link] [name=url]','https://example.com/an');submit(w,'[data-pqr-new-link]');
+ input(w,'[data-pqr-add-form] [name=url]','https://example.com/an');submit(w,'[data-pqr-add-form]');input(w,'[data-pqr-new-link] [name=name]','Website');submit(w,'[data-pqr-new-link]');
  assert.match(d.querySelector('[data-pqr-phone]').textContent,/Website/);
  const last=d.querySelectorAll('[data-pqr-action=remove]');last[last.length-1].click();assert.doesNotMatch(d.querySelector('[data-pqr-phone]').textContent,/Website/);
  click(w,'save');assert.equal(w.NEXORA_PERSONAL_QR.read().name,'QR của An');assert.equal(d.querySelector('[data-pqr-qr]').dataset.pqrQr,qr);
