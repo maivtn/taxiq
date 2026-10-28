@@ -20,6 +20,7 @@
 
   var cfg = window.NEXORA_SHELL || {};
   var activePage = cfg.activePage || '';
+  var personalOnly = activePage === 'staff' && cfg.salonLinked === false;
 
   var PAGES = {
     dashboard: 'dashboard.html',
@@ -470,6 +471,7 @@
   }
 
   function renderStaffCommunityMenu() {
+    if (personalOnly) return '<a class="nav-item staff-nav-item" href="frame-personal.html?view=community" data-staff-nav="community">' + iconWrap('users-round') + '<span>Community</span></a>';
     var native = !!cfg.isCommunity;
     var active = native && COMMUNITY_ITEMS.some(function (item) { return item.tab === activeTab; });
     var open = active || !!cfg.expandCommunity;
@@ -480,17 +482,33 @@
         var content = '<span>' + esc(item.label) + '</span>';
         if (item.disabled) return '<button class="nav-subitem" type="button" disabled title="' + esc(item.title) + '">' + content + '</button>';
         if (native) return '<button class="nav-subitem' + (activeTab === item.tab ? ' is-active' : '') + '" type="button" data-shell-tab="' + item.tab + '">' + content + '</button>';
-        return '<a class="nav-subitem" href="staff-community.html?role=tech&amp;tab=' + item.tab + '">' + content + '</a>';
+        return '<a class="nav-subitem" href="' + (personalOnly ? 'frame-personal.html?view=community&amp;tab=' : 'staff-community.html?role=tech&amp;tab=') + item.tab + '">' + content + '</a>';
       }).join('') + '</div></div>';
   }
 
   var STAFF_WORKSPACE_ITEMS = [
     {label: 'My Salons', tab: 'my-salons', href: 'my-salons.html'},
-    {label: 'My QR', tab: 'my-qr', href: 'staff-app.html#staff-my-qr-screen'},
     {label: 'My Earnings', tab: 'my-earnings'},
     {label: 'My Reviews', tab: 'my-reviews'},
     {label: 'Report', tab: 'report'}
   ];
+
+  var PERSONAL_QR_ITEMS = [
+    { label: 'One QR', tab: 'one-qr' },
+    { label: 'Tip QR', tab: 'tip-qr' },
+    { label: 'Accept Payment', tab: 'accept-payment' },
+    { label: 'Referral Link', tab: 'referral-link' },
+    { label: 'Quảng cáo', tab: 'advertising' }
+  ];
+  function renderPersonalQrMenu() {
+    var active = PERSONAL_QR_ITEMS.some(function (item) { return item.tab === activeTab; });
+    return '<button class="nav-item nav-parent staff-nav-item' + (active ? ' is-expanded is-active' : '') + '" type="button" data-staff-group="one-qr" data-nav-group aria-expanded="' + active + '" aria-controls="staff-subnav-one-qr">' +
+      iconWrap('qr-code') + '<span>One QR</span>' + CARET + '</button>' +
+      '<div class="nav-subnav' + (active ? '' : ' is-collapsed') + '" id="staff-subnav-one-qr" data-nav-subnav><div class="nav-subnav-inner">' +
+      PERSONAL_QR_ITEMS.map(function (item) {
+        return '<a class="nav-subitem" data-staff-nav="' + item.tab + '" data-personal-qr-nav="' + item.tab + '" href="oneqr-personal.html?account=' + (personalOnly ? 'personal' : 'staff') + '&amp;tab=' + item.tab + '">' + esc(item.label) + '</a>';
+      }).join('') + '</div></div>';
+  }
 
   function renderStaffWorkspaceMenu() {
     var active = STAFF_WORKSPACE_ITEMS.some(function (item) { return item.tab === activeTab; });
@@ -508,22 +526,21 @@
   var STAFF_SIDEBAR_HTML =
     '<div class="sidebar-panel staff-profile-panel">' +
       '<div class="staff-profile-row"><div class="staff-avatar">N2</div><div class="staff-profile-copy">' +
-        '<div class="staff-profile-name">nexora 2</div>' +
-        '<div class="staff-profile-id">Staff ID: NAIE5LMVX</div>' +
+        '<div class="staff-profile-name">' + esc(cfg.profileName || 'nexora 2') + '</div>' +
+        '<div class="staff-profile-id">' + (personalOnly ? 'Personal' : 'Staff ID: NAIE5LMVX') + '</div>' +
       '</div><i class="staff-profile-chevron" data-lucide="chevron-down" aria-hidden="true"></i></div>' +
     '</div>' +
     '<nav class="sidebar-nav staff-sidebar-nav" aria-label="Staff menu">' +
-      '<a class="nav-item staff-nav-item" href="staff-app.html#staff-home-screen" data-staff-nav="home">' + iconWrap('home') + '<span>Home</span></a>' +
-      '<a class="nav-item staff-nav-item' + (activeTab === 'dashboard' ? ' is-active' : '') + '" href="staff-dashboard.html" data-staff-nav="dashboard">' + iconWrap('layout-dashboard') + '<span>Dashboard</span></a>' +
+      '<a class="nav-item staff-nav-item' + (activeTab === 'dashboard' ? ' is-active' : '') + '" href="' + (personalOnly ? 'frame-personal.html?view=dashboard' : 'staff-dashboard.html') + '" data-staff-nav="dashboard">' + iconWrap('layout-dashboard') + '<span>Dashboard</span></a>' +
       renderStaffCommunityMenu() +
-      renderStaffWorkspaceMenu() +
+      renderPersonalQrMenu() +
+      (personalOnly ? '' : renderStaffWorkspaceMenu() +
       '<a class="nav-item staff-nav-item' + (activeTab === 'my-tickets' ? ' is-active' : '') + '" href="staff-work-orders.html" data-staff-nav="my-tickets">' + iconWrap('list-checks') + '<span>My Tickets</span><span class="staff-nav-count" data-staff-ticket-count hidden></span></a>' +
       '<a class="nav-item staff-nav-item' + (activeTab === 'my-calendar' ? ' is-active' : '') + '" href="pos-calendar.html" data-staff-nav="my-calendar">' + iconWrap('calendar-days') + '<span>My Calendar</span></a>' +
       (activeTab === 'staff-handbook' ? '<a class="nav-item staff-nav-item is-active" href="staff-handbook.html" data-staff-nav="staff-handbook">' + iconWrap('book-open-check') + '<span>Staff Handbook</span></a>' : '') +
       '<a class="nav-item staff-nav-item" href="#" data-staff-nav="tips">' + iconWrap('circle-dollar-sign') + '<span>Tips</span></a>' +
-      '<a class="nav-item staff-nav-item" href="#" data-staff-nav="transactions">' + iconWrap('receipt') + '<span>Transactions</span></a>' +
-      '<a class="nav-item staff-nav-item" href="#" data-staff-nav="payout-methods">' + iconWrap('chart-no-axes-combined') + '<span>Payout Methods</span></a>' +
-      '<a class="nav-item staff-nav-item' + (activeTab === 'profile' ? ' is-active' : '') + '" href="staff-community.html?role=tech&amp;tab=profile" data-staff-nav="profile">' + iconWrap('settings') + '<span>Profile</span></a>' +
+      '<a class="nav-item staff-nav-item" href="#" data-staff-nav="transactions">' + iconWrap('receipt') + '<span>Transactions</span></a>') +
+      '<a class="nav-item staff-nav-item' + (activeTab === 'profile' ? ' is-active' : '') + '" href="' + (personalOnly ? 'frame-personal.html?view=profile' : 'staff-community.html?role=tech&amp;tab=profile') + '" data-staff-nav="profile">' + iconWrap('settings') + '<span>Profile</span></a>' +
     '</nav>' +
     '<div class="sidebar-footer"><button class="logout-button" type="button"><span class="logout-icon"><i data-lucide="log-out" aria-hidden="true"></i></span><span>Sign out</span></button></div>';
 
@@ -580,6 +597,7 @@
       }
       var staffGroups = {
         community: !!cfg.isCommunity && COMMUNITY_ITEMS.some(function (item) { return item.tab === tab; }),
+        'one-qr': PERSONAL_QR_ITEMS.some(function (item) { return item.tab === tab; }),
         workspace: STAFF_WORKSPACE_ITEMS.some(function (item) { return item.tab === tab; })
       };
       Object.keys(staffGroups).forEach(function (key) {
@@ -739,6 +757,17 @@
         setDrawer(false);
       });
     }
+
+    document.querySelectorAll('.sidebar [data-personal-qr-nav]').forEach(function (link) {
+      link.addEventListener('click', function (event) {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        if (new URL(link.href).pathname !== window.location.pathname || typeof cfg.onNavigate !== 'function') return;
+        event.preventDefault();
+        navigate(link.getAttribute('data-personal-qr-nav'));
+        setActiveTab(link.getAttribute('data-personal-qr-nav'));
+        setDrawer(false);
+      });
+    });
 
     var planButton = document.querySelector('.sidebar .plan-button');
     if (planButton) {

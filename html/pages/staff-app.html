@@ -4,6 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Nexora Touch Mobile Dashboards - Tailwind + Lucide</title>
+  <script src="../assets/staff-qr-legacy.js"></script>
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -2008,7 +2009,6 @@
         </div>
 
         <nav class="flex-1 space-y-1.5 overflow-y-auto px-4 py-4 text-white" data-staff-sidebar-menu>
-          <a href="#staff-home-screen" class="flex h-12 items-center gap-3 rounded-lg px-2 text-[12px] font-semibold" data-menu-key="home"><i data-lucide="home" class="h-4 w-4"></i>Home</a>
           <a href="staff-dashboard.html" class="flex h-12 items-center gap-3 rounded-lg px-2 text-[12px] font-semibold" data-menu-key="dashboard"><i data-lucide="layout-dashboard" class="h-4 w-4"></i>Dashboard</a>
           <details class="staff-menu-group">
             <summary class="flex h-12 cursor-pointer items-center justify-between gap-3 rounded-lg px-2 text-[12px] font-semibold">
@@ -2024,6 +2024,19 @@
               <a href="staff-community.html?role=tech&amp;tab=connect" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="connect" data-staff-community-tab="connect">Messages &amp; Calls</a>
             </div>
           </details>
+          <details class="staff-menu-group" data-staff-oneqr-group>
+            <summary class="flex h-12 cursor-pointer items-center justify-between gap-3 rounded-lg px-2 text-[12px] font-semibold">
+              <span class="flex min-w-0 items-center gap-3"><i data-lucide="qr-code" class="h-4 w-4 shrink-0"></i><span class="truncate">One QR</span></span>
+              <i data-lucide="chevron-down" class="h-4 w-4 shrink-0 transition-transform" data-collapse-chevron></i>
+            </summary>
+            <div class="ml-4 space-y-1 border-l border-white/10 pb-1 pl-4">
+              <a href="oneqr-personal.html?account=staff&amp;tab=one-qr" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="one-qr">One QR</a>
+              <a href="oneqr-personal.html?account=staff&amp;tab=tip-qr" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="tip-qr">Tip QR</a>
+              <a href="oneqr-personal.html?account=staff&amp;tab=accept-payment" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="accept-payment">Accept Payment</a>
+              <a href="oneqr-personal.html?account=staff&amp;tab=referral-link" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="referral-link">Referral Link</a>
+              <a href="oneqr-personal.html?account=staff&amp;tab=advertising" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="advertising">Quảng cáo</a>
+            </div>
+          </details>
           <details class="staff-menu-group">
             <summary class="flex h-12 cursor-pointer items-center justify-between gap-3 rounded-lg px-2 text-[12px] font-semibold">
               <span class="flex min-w-0 items-center gap-3"><i data-lucide="briefcase-business" class="h-4 w-4 shrink-0"></i><span class="truncate">My Workspace</span></span>
@@ -2031,7 +2044,6 @@
             </summary>
             <div class="ml-4 space-y-1 border-l border-white/10 pb-1 pl-4">
               <a href="my-salons.html" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="my-salons">My Salons</a>
-              <a href="#staff-my-qr-screen" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="my-qr">My QR</a>
               <a href="#" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="my-earnings">My Earnings</a>
               <a href="#" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="my-reviews">My Reviews</a>
               <a href="#" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="report">Report</a>
@@ -2041,7 +2053,6 @@
           <a href="pos-calendar.html" class="flex h-12 items-center gap-3 rounded-lg px-2 text-[12px] font-semibold" data-menu-key="my-calendar"><i data-lucide="calendar-days" class="h-4 w-4"></i>My Calendar</a>
           <a href="#" class="flex h-12 items-center gap-3 rounded-lg px-2 text-[12px] font-semibold" data-menu-key="tips"><i data-lucide="circle-dollar-sign" class="h-4 w-4"></i>Tips</a>
           <a href="#" class="flex h-12 items-center gap-3 rounded-lg px-2 text-[12px] font-semibold" data-menu-key="transactions"><i data-lucide="receipt" class="h-4 w-4"></i>Transactions</a>
-          <a href="#" class="flex h-12 items-center gap-3 rounded-lg px-2 text-[12px] font-semibold" data-menu-key="payout-methods"><i data-lucide="chart-no-axes-combined" class="h-4 w-4"></i>Payout Methods</a>
           <a href="staff-community.html?role=tech&amp;tab=profile" class="flex h-12 items-center gap-3 rounded-lg px-2 text-[12px] font-semibold" data-menu-key="profile" data-staff-community-tab="profile"><i data-lucide="settings" class="h-4 w-4"></i>Profile</a>
         </nav>
         <div class="shrink-0 border-t border-white/15 px-4 py-3"><a href="#" class="flex h-10 items-center gap-3 px-2 text-[12px] font-semibold text-white/65" data-menu-key="sign-out"><i data-lucide="log-out" class="h-4 w-4"></i>Sign out</a></div>
@@ -2081,7 +2092,7 @@
           }, 220);
         };
 
-        const activeMenuKey = shell.dataset.staffMenuActive;
+        const activeMenuKey = shell.dataset.staffMenuActive === 'my-qr' ? 'tip-qr' : shell.dataset.staffMenuActive;
         const activeMenuItem = activeMenuKey
           ? sidebar.querySelector(`[data-menu-key="${activeMenuKey}"]`)
           : null;
