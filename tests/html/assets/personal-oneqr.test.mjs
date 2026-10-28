@@ -77,12 +77,18 @@ test('unlinked Personal cannot display a salon tip QR, while the linked demo can
  d.querySelector('[data-pqr-salon-view="lux-nail-lounge"]').click();
  assert.match(d.querySelector('.pqr-dialog [data-pqr-qr]').dataset.pqrQr,/salon\/lux-nail-lounge\/staff\/david-le918747/);
 });
-test('the personal builder keeps all required areas and excludes Business role, industry and identity controls',t=>{
- const w=app(t),main=w.document.querySelector('main');
- for(const label of ['Today’s activity','Modules','Configuration','Live Preview','OneQR performance','Contacts sent back'])assert.ok(main.textContent.includes(label),label);
- assert.equal(main.querySelectorAll('.pqr-builder > section').length,3);
- assert.doesNotMatch(main.textContent,/Change industry|Identity|Customer|Station|Staff Portal/);
- assert.ok(main.textContent.includes('Demo data'));
+test('Personal and Staff builders share the required areas without duplicate profile, activity or module controls',t=>{
+ for(const path of ['oneqr-personal.html?account=personal','oneqr-staff.html','frame-personal.html','frame-staff.html']){
+  const w=app(t,{path}),main=w.document.querySelector('main');
+  const headings=Array.from(main.querySelectorAll('h2,h3'),node=>node.textContent.trim());
+  for(const label of ['Modules','Configuration','Live Preview','OneQR performance','Contacts sent back'])assert.equal(headings.filter(text=>text===label).length,1,path+': '+label);
+  assert.equal(main.querySelectorAll('.pqr-builder > section').length,3,path);
+  assert.equal(main.querySelectorAll('.pqr-activity').length,1,path);
+  assert.equal(main.querySelectorAll('[data-pqr-action=profile]').length,1,path);
+  assert.equal(main.querySelectorAll('[data-pqr-action=add],[data-pqr-action=reset]').length,0,path);
+  assert.doesNotMatch(main.textContent,/Today’s activity|Shared profile|Change industry|Identity|Customer|Station|Staff Portal/);
+  assert.ok(main.textContent.includes('Demo data'));
+ }
 });
 test('editing, toggling, reordering, adding and deleting links updates the preview; QR remains stable',t=>{
  const w=app(t),d=w.document,qr=d.querySelector('[data-pqr-qr]').dataset.pqrQr;
@@ -91,18 +97,18 @@ test('editing, toggling, reordering, adding and deleting links updates the previ
  assert.match(d.querySelector('[data-pqr-phone]').textContent,/Hồ sơ của An/);
  const toggle=d.querySelector('[data-link-index="0"] [data-link-field=enabled]');toggle.checked=false;toggle.dispatchEvent(new w.Event('input',{bubbles:true}));
  assert.doesNotMatch(d.querySelector('[data-pqr-phone]').textContent,/Hồ sơ của An/);
- d.querySelector('[data-pqr-action=down][data-index="0"]').click();assert.equal(d.querySelector('[data-link-index="1"] [data-link-field=name]').value,'Hồ sơ của An');
- input(w,'[data-pqr-add-form] [name=url]','https://example.com/an');submit(w,'[data-pqr-add-form]');input(w,'[data-pqr-new-link] [name=name]','Website');submit(w,'[data-pqr-new-link]');
+ d.querySelector('[data-link-index="0"] [data-pqr-module-drag]').dispatchEvent(new w.KeyboardEvent('keydown',{key:'ArrowDown',bubbles:true,cancelable:true}));assert.equal(d.querySelector('[data-link-index="1"] [data-link-field=name]').value,'Hồ sơ của An');
+ input(w,'[data-pqr-add-form] [name=url]','https://example.com/an');submit(w,'[data-pqr-add-form]');const added=d.querySelector('[data-link-index]:last-child');input(w,'[data-link-id="'+added.dataset.linkId+'"] [data-link-field=name]','Website');
  assert.match(d.querySelector('[data-pqr-phone]').textContent,/Website/);
  const last=d.querySelectorAll('[data-pqr-action=remove]');last[last.length-1].click();assert.doesNotMatch(d.querySelector('[data-pqr-phone]').textContent,/Website/);
  click(w,'save');assert.equal(w.NEXORA_PERSONAL_QR.read().name,'QR của An');assert.equal(d.querySelector('[data-pqr-qr]').dataset.pqrQr,qr);
 });
 test('invalid URLs and missing names are kept as drafts and cannot be saved',t=>{
  const w=app(t),before=w.localStorage.getItem(w.NEXORA_PERSONAL_QR.KEY);
- input(w,'[data-link-index="0"] [data-link-field=url]','javascript:alert(1)');click(w,'save');
+ input(w,'[data-link-index="1"] [data-link-field=url]','javascript:alert(1)');click(w,'save');
  assert.ok(w.document.querySelector('[data-link-field=url][aria-invalid=true]'));
  assert.equal(w.localStorage.getItem(w.NEXORA_PERSONAL_QR.KEY),before);
- assert.equal(w.document.querySelector('[data-pqr-phone] [data-pqr-link=profile]'),null);
+ assert.equal(w.document.querySelector('[data-pqr-phone] [data-pqr-link=instagram]'),null);
  input(w,'[data-pqr-name]','');click(w,'save');assert.ok(w.document.querySelector('[data-pqr-name][aria-invalid=true]'));
 });
 test('profile editing defaults private and public page and vCard share only opted-in contact data',t=>{
@@ -138,7 +144,7 @@ test('referral placement reuses the old invite payload in its QR and matching mo
  assert.equal(w.document.querySelector('.pqr-referral-code [data-pqr-qr]').dataset.pqrQr,target.href);
  assert.equal(api.visibleLinks(saved).find(link=>link.kind==='referral').url,target.href);
  api.navigate('one-qr');
- assert.equal(w.document.querySelector('[data-link-id=referral] [data-link-field=url]').value,target.href);
+ assert.equal(w.document.querySelector('[data-link-id=referral] .pqr-module-url').textContent,target.href);
 });
 test('ads require explicit consent and never credit earnings for a preview or click',t=>{
  const w=app(t);w.NEXORA_PERSONAL_QR.navigate('advertising');const d=w.document;
@@ -194,13 +200,13 @@ test('a stale profile dialog preserves a privacy update received while it was op
 });
 test('profile, payment and ad saves never publish invalid builder drafts',t=>{
  const w=app(t),before=w.NEXORA_PERSONAL_QR.read();
- input(w,'[data-pqr-name]','');input(w,'[data-link-index="0"] [data-link-field=url]','javascript:alert(1)');
+ input(w,'[data-pqr-name]','');input(w,'[data-link-index="1"] [data-link-field=url]','javascript:alert(1)');
  click(w,'profile');input(w,'[data-pqr-profile-form] [name=bio]','Đôi nét về tôi');submit(w,'[data-pqr-profile-form]');
- assert.equal(w.NEXORA_PERSONAL_QR.read().name,before.name);assert.equal(w.NEXORA_PERSONAL_QR.read().links[0].url,before.links[0].url);
+ assert.equal(w.NEXORA_PERSONAL_QR.read().name,before.name);assert.equal(w.NEXORA_PERSONAL_QR.read().links[1].url,before.links[1].url);
  w.NEXORA_PERSONAL_QR.navigate('accept-payment');w.document.querySelector('[data-rp-edit=zelle]').click();input(w,'[data-rp-form] [name=holder]','An Nguyen');input(w,'[data-rp-form] [name=identifier]','an@example.com');submit(w,'[data-rp-form]');
  assert.equal(w.NEXORA_PERSONAL_QR.read().name,before.name);
  w.NEXORA_PERSONAL_QR.navigate('advertising');selectAdIndustry(w);const consent=w.document.querySelector('#oneqr-advertising #agree');consent.checked=true;consent.dispatchEvent(new w.Event('change',{bubbles:true}));click(w,'activate');
- assert.equal(w.NEXORA_PERSONAL_QR.read().ads,true);assert.equal(w.NEXORA_PERSONAL_QR.read().name,before.name);assert.equal(w.NEXORA_PERSONAL_QR.read().links[0].url,before.links[0].url);
+ assert.equal(w.NEXORA_PERSONAL_QR.read().ads,true);assert.equal(w.NEXORA_PERSONAL_QR.read().name,before.name);assert.equal(w.NEXORA_PERSONAL_QR.read().links[1].url,before.links[1].url);
 });
 test('the linked Tip module and salon cards reuse the previous staff QR destinations',t=>{
  const w=app(t,{path:'frame-staff.html'}),api=w.NEXORA_PERSONAL_QR,tip=api.read().links.find(link=>link.kind==='tip');
@@ -232,4 +238,67 @@ test('the standalone Staff One QR page always keeps the Staff sidebar and Staff 
   for(const link of d.querySelectorAll('[data-personal-qr-nav]'))assert.equal(new URL(link.href).pathname,'/html/pages/oneqr-staff.html');
   assert.equal(new URL(w.NEXORA_PERSONAL_QR.page('accept-payment')).pathname,'/html/pages/oneqr-staff.html');
  }
+});
+
+test('Personal and Staff add a custom URL directly and keep system destinations read-only',t=>{
+ for(const path of ['oneqr-personal.html?account=personal','oneqr-staff.html']){
+  const w=app(t,{path}),d=w.document,api=w.NEXORA_PERSONAL_QR,before=api.read();
+  for(const link of before.links.filter(link=>link.kind)){
+   const row=d.querySelector('[data-link-id="'+link.id+'"]');
+   assert.equal(row.querySelector('[data-link-field=url]'),null,path+': '+link.id);
+   assert.equal(row.querySelector('.pqr-module-url').textContent,api.moduleUrl(before,link));
+  }
+  const add=d.querySelector('[data-pqr-add-form] [type=submit]');assert.equal(add.disabled,true);
+  input(w,'[data-pqr-add-form] [name=url]','https://example.com/promotion');assert.equal(add.disabled,false);
+  submit(w,'[data-pqr-add-form]');
+  assert.equal(d.querySelector('.pqr-dialog').open,false);
+  const row=Array.from(d.querySelectorAll('[data-link-index]')).at(-1),id=row.dataset.linkId;
+  assert.equal(row.querySelector('[data-link-field=name]').value,'Custom Link');
+  assert.equal(row.querySelector('[data-link-field=url]').value,'https://example.com/promotion');
+  assert.equal(api.read().links.length,before.links.length);
+  input(w,'[data-link-id="'+id+'"] [data-link-field=name]','Promotion');
+  input(w,'[data-link-id="'+id+'"] [data-link-field=url]','https://example.com/offer');click(w,'save');
+  const saved=api.read().links.at(-1);assert.equal(saved.name,'Promotion');assert.equal(saved.url,'https://example.com/offer');
+ }
+});
+test('dragging a module commits its order on drop and cancelling a drag preserves the order',t=>{
+ const w=app(t),d=w.document,api=w.NEXORA_PERSONAL_QR,initial=Array.from(api.read().links,link=>link.id),main=d.querySelector('main');
+ const pointer=(target,type,extra={})=>{const event=new w.Event(type,{bubbles:true,cancelable:true});Object.assign(event,{button:0,pointerId:1,isPrimary:true,clientX:100,clientY:180,...extra});target.dispatchEvent(event);};
+ const target=d.querySelector('[data-link-index="1"]');target.getBoundingClientRect=()=>({top:100,height:100});d.elementFromPoint=()=>target;
+ pointer(d.querySelector('[data-pqr-module-drag]'),'pointerdown');pointer(main,'pointermove');pointer(main,'pointercancel');
+ assert.deepEqual(Array.from(d.querySelectorAll('[data-link-index]'),row=>row.dataset.linkId),initial);
+ pointer(d.querySelector('[data-pqr-module-drag]'),'pointerdown');pointer(main,'pointermove');pointer(main,'pointerup');
+ const expected=[initial[1],initial[0],...initial.slice(2)];
+ assert.deepEqual(Array.from(d.querySelectorAll('[data-link-index]'),row=>row.dataset.linkId),expected);
+ assert.deepEqual(Array.from(api.read().links,link=>link.id),initial);click(w,'save');
+ assert.deepEqual(Array.from(api.read().links,link=>link.id),expected);
+});
+test('the inline icon picker updates only its module and stays a draft until settings are saved',t=>{
+ const w=app(t),d=w.document,api=w.NEXORA_PERSONAL_QR,before=api.read();
+ d.querySelector('[data-link-index="0"] [data-pqr-action=icon]').click();
+ assert.equal(d.querySelector('.pqr-dialog').open,false);
+ const picker=d.querySelector('[data-pqr-icon-picker]');assert.ok(picker);assert.equal(picker.getAttribute('role'),'dialog');
+ picker.querySelector('[data-pqr-icon=dollar-sign]').click();
+ assert.equal(d.querySelector('[data-pqr-icon-picker]'),null);
+ assert.match(d.querySelector('[data-link-index="0"] .oneqr-module-icon img').src,/dollar-sign-3d\.png$/);
+ assert.equal(api.read().links[0].icon,before.links[0].icon);click(w,'save');
+ assert.equal(api.read().links[0].icon,'dollar-sign');assert.equal(api.read().links[1].icon,before.links[1].icon);
+});
+
+test('icon uploads remain pending through compression and removing a pending item unblocks saving',t=>{
+ const w=app(t),d=w.document,api=w.NEXORA_PERSONAL_QR,before=api.read(),images=[],sizes=[];
+ w.FileReader=class{readAsDataURL(){this.result='data:image/png;base64,aWNvbg==';this.onload();}abort(){this.onabort?.();}};
+ w.Image=class{constructor(){this.width=1024;this.height=512;images.push(this);}set src(value){this.source=value;}};
+ w.HTMLCanvasElement.prototype.getContext=function(){return{drawImage:(image,x,y,width,height)=>sizes.push([width,height])};};
+ w.HTMLCanvasElement.prototype.toDataURL=()=> 'data:image/webp;base64,Y29tcHJlc3NlZA==';
+ const upload=index=>{d.querySelector('[data-link-index="'+index+'"] [data-pqr-action=upload]').click();const field=d.querySelector('[data-pqr-icon-upload]');Object.defineProperty(field,'files',{configurable:true,value:[new w.File(['icon'],'icon.png',{type:'image/png'})]});field.dispatchEvent(new w.Event('change',{bubbles:true}));};
+ upload(0);assert.equal(d.querySelector('[data-pqr-action=save]').disabled,true);
+ images[0].onload();assert.deepEqual(sizes,[[256,128]]);assert.equal(d.querySelector('[data-pqr-action=save]').disabled,false);
+ assert.equal(api.read().links[0].icon,before.links[0].icon);click(w,'save');assert.match(api.read().links[0].icon,/^data:image\/webp;/);
+ upload(1);assert.equal(d.querySelector('[data-pqr-action=save]').disabled,true);
+ d.querySelector('[data-link-index="1"] [data-pqr-action=remove]').click();assert.equal(d.querySelector('[data-pqr-action=save]').disabled,false);
+ images[1].onload();click(w,'save');assert.equal(api.read().links.some(link=>link.id===before.links[1].id),false);
+ upload(0);assert.equal(d.querySelector('[data-pqr-action=save]').disabled,true);
+ d.querySelector('[data-link-index="0"] [data-pqr-action=icon]').click();d.querySelector('[data-pqr-icon-picker] [data-pqr-icon=dollar-sign]').click();
+ assert.equal(d.querySelector('[data-pqr-action=save]').disabled,false);images[2].onload();click(w,'save');assert.equal(api.read().links[0].icon,'dollar-sign');
 });

@@ -26,6 +26,7 @@
   let advertisingElement = null;
   let advertisingController = null;
   let paymentController = null;
+  let moduleDrag = null;
   const iconReads = new Map();
   const dialog = document.createElement('dialog');
   dialog.className = 'pqr-dialog'; dialog.setAttribute('aria-labelledby', 'pqr-dialog-title'); document.body.append(dialog);
@@ -100,14 +101,13 @@
   function stats(values) { return '<div class="pqr-activity">' + ['QR scans', 'Action clicks', 'Contacts saved'].map((label, index) => '<div class="pqr-stat"><span>' + label + '</span><strong>' + values[index] + '</strong></div>').join('') + '</div>'; }
   function buildMain() {
     return `<section class="pqr-section">
-      <section class="pqr-card"><div class="pqr-card-head"><h2>Today’s activity</h2><span class="pqr-demo">Demo data</span></div>${stats([284, 163, 56])}</section>
       <section class="oneqr-qrcard pqr-master-card">${qrMarkup(api.publicUrl())}<div class="oneqr-qrcard-detail"><div class="oneqr-qrcard-title-row"><h3 data-pqr-card-name>${esc(state.name)}</h3><a class="qr-open-link" href="${esc(api.publicUrl())}" target="_blank" rel="noopener" aria-label="Open OneQR landing page">${lucide('external-link')}</a></div><div class="oneqr-qrcard-url">${esc(api.publicUrl())}</div><p>This QR code stays the same. Content and permissions behind it can be updated anytime.</p><div class="oneqr-qrcard-actions">${button('View QR', 'qr', true, 'eye')}${button('Copy URL', 'copy', false, 'copy')}${button('Print', 'print', false, 'printer')}</div></div></section>
       <div class="oneqr-builder pqr-builder">
-        <section class="oneqr-panel oneqr-modules"><div class="oneqr-panel-head oneqr-module-heading"><h3>Modules</h3><div class="oneqr-module-toolbar">${button('Contact card', 'profile', false, 'contact-round')}</div></div>
-          <form class="oneqr-module-link-form" data-pqr-add-form>${lucide('link-2')}<input name="url" inputmode="url" aria-label="Paste a link to add a module" placeholder="Paste any link — website, Google review, YouTube, Instagram..." required><button type="submit">Add</button></form>
-          <p class="oneqr-module-hint">Add a link, then edit the title and destination below.</p><div class="oneqr-module-list pqr-link-list" data-pqr-links></div>
+        <section class="oneqr-panel oneqr-modules"><div class="oneqr-panel-head oneqr-module-heading"><h3>Modules</h3><div class="oneqr-module-toolbar"><span class="oneqr-badge">Drag &amp; drop</span>${button('Contact card', 'profile', false, 'contact-round')}</div></div>
+          <form class="oneqr-module-link-form" data-pqr-add-form>${lucide('link-2')}<input name="url" type="url" inputmode="url" autocomplete="url" maxlength="500" aria-label="Paste any link" placeholder="Paste any link — website, Google review, YouTube, Instagram..." required><button type="submit" disabled>Add</button></form>
+          <p class="oneqr-module-hint">Add a destination first, then choose what customers will see this action as.</p><ul class="oneqr-module-list pqr-link-list" data-pqr-links></ul>
           <p class="oneqr-module-hint" data-pqr-module-status role="status">Save Settings to keep your module changes.</p>
-          <input type="file" accept="image/png,image/jpeg,image/webp,image/gif" data-pqr-icon-upload hidden>
+          <input type="file" accept="image/png,image/jpeg,image/webp" data-pqr-icon-upload hidden>
         </section>
         <section class="oneqr-panel oneqr-config"><div class="oneqr-panel-head"><h3>Configuration</h3><span class="oneqr-badge">Master QR</span></div><label class="oneqr-field pqr-field">OneQR Name<input data-pqr-name maxlength="100" value="${esc(state.name)}" required></label><label class="oneqr-field pqr-field">Welcome Message<textarea data-pqr-greeting maxlength="300" rows="3">${esc(state.greeting)}</textarea></label>${button('Save Settings', 'save', true, 'save').replace('pqr-button', 'pqr-button pqr-save')}<p class="pqr-feedback" data-pqr-feedback role="status" aria-live="polite"></p></section>
         <section class="oneqr-panel oneqr-preview"><div class="oneqr-panel-head"><h3>Live Preview</h3><span class="oneqr-pill">Mobile</span></div><a class="pqr-preview-link" href="${esc(api.publicUrl())}" target="_blank" rel="noopener">${lucide('external-link')}Public page</a><div data-pqr-phone>${phone()}</div></section>
@@ -123,15 +123,14 @@
     const list = document.querySelector('[data-pqr-links]'); if (!list) return;
     list.innerHTML = state.links.length ? state.links.map((link, index) => {
       const title = esc(link.name);
+      const url = esc(api.moduleUrl(state, link));
       const hint = link.kind === 'payment' && !api.hasPayment(state) ? 'Payment not configured' : ['tip', 'booking'].includes(link.kind) && !api.linked ? 'No salon linked' : '';
-      return `<div class="oneqr-module pqr-module" data-link-index="${index}" data-link-id="${esc(link.id)}">
-        <div class="pqr-module-order">${moduleButton('up', index, 'Move up', lucide('arrow-up'))}${moduleButton('down', index, 'Move down', lucide('arrow-down'))}</div>
-        <div class="oneqr-module-icon-tools"><span class="oneqr-module-icon">${image(link.icon)}</span><button class="oneqr-module-background${link.background ? ' has-color' : ''}" type="button" data-pqr-action="background" data-index="${index}" aria-label="Choose card background for ${title}"${link.background ? ' style="--action-swatch:' + esc(link.background) + '"' : ''}><span></span></button><span>${moduleButton('icon', index, 'Choose icon for ' + link.name, 'Change icon')}${moduleButton('upload', index, 'Upload icon for ' + link.name, 'Upload')}</span></div>
-        <div class="oneqr-module-fields"><input class="oneqr-module-title-input" data-link-field="name" aria-label="Module title: ${title}" maxlength="100" value="${title}"><div class="oneqr-module-url-field">${lucide('link-2')}<input data-link-field="url" aria-label="Link for ${title}" maxlength="500" value="${esc(api.moduleUrl(state, link))}" spellcheck="false">${moduleButton('module-copy', index, 'Copy link for ' + link.name, lucide('copy'))}${moduleButton('module-open', index, 'Open link for ' + link.name, lucide('external-link'))}</div>${hint ? '<small class="pqr-module-hint">' + hint + '</small>' : ''}</div>
-        <div class="oneqr-module-side"><input class="pqr-toggle" type="checkbox" aria-label="Toggle ${title} module" data-link-field="enabled"${link.enabled ? ' checked' : ''}><button class="oneqr-module-remove" type="button" data-pqr-action="remove" data-index="${index}">Remove</button></div></div>`;
-    }).join('') : '<p class="pqr-muted">No modules yet. Add a module.</p>';
-    list.querySelectorAll('[data-pqr-action=up]').forEach((node, index) => { node.disabled = index === 0; });
-    list.querySelectorAll('[data-pqr-action=down]').forEach((node, index) => { node.disabled = index === state.links.length - 1; });
+      return `<li class="oneqr-module pqr-module" data-link-index="${index}" data-link-id="${esc(link.id)}">
+        <button class="oneqr-module-drag" type="button" data-pqr-module-drag aria-label="Reorder ${title}" aria-roledescription="sortable">${lucide('grip-vertical')}</button>
+        <div class="oneqr-module-icon-tools"><span class="oneqr-module-icon">${image(link.icon)}</span><span>${moduleButton('icon', index, 'Change icon', 'Change icon')}${moduleButton('upload', index, 'Upload icon', 'Upload')}</span></div>
+        <div class="oneqr-module-fields"><input class="oneqr-module-title-input" data-link-field="name" aria-label="Tile label for ${title}" placeholder="${title}" maxlength="60" value="${title}"><div class="oneqr-module-url-field${link.kind ? ' is-system-link' : ''}" aria-label="Link address">${lucide('link-2')}${link.kind ? '<span class="pqr-module-url" title="' + url + '">' + url + '</span>' : '<input data-link-field="url" type="url" inputmode="url" autocomplete="url" aria-label="Link address" placeholder="e.g. https://example.com/promotion" maxlength="500" value="' + url + '" spellcheck="false">'}${moduleButton('module-copy', index, 'Copy link', lucide('copy'))}<a ${api.validUrl(api.moduleUrl(state, link)) ? 'href="' + url + '"' : 'aria-disabled="true"'} target="_blank" rel="noopener" aria-label="Open link">${lucide('external-link')}</a></div>${hint ? '<small class="pqr-module-hint">' + hint + '</small>' : ''}</div>
+        <div class="oneqr-module-side"><input class="pqr-toggle" type="checkbox" role="switch" aria-checked="${Boolean(link.enabled)}" aria-label="Show or hide ${title}" data-link-field="enabled"${link.enabled ? ' checked' : ''}><button class="oneqr-module-remove" type="button" data-pqr-action="remove" data-index="${index}" aria-label="Remove ${title}">Remove</button></div></li>`;
+    }).join('') : '<li class="pqr-muted">No modules yet. Add a module.</li>';
     const distribution = document.querySelector('[data-pqr-distribution]');
     if (distribution) distribution.innerHTML = api.visibleLinks(state, api.linked).map((link, index) => '<div class="pqr-performance-row"><span>' + esc(link.name) + '</span><div class="pqr-bar"><span style="width:' + Math.max(12, 80 - index * 19) + '%"></span></div><span>' + Math.max(12, 80 - index * 19) + '</span></div>').join('');
     icons();
@@ -201,6 +200,7 @@
     });
   }
   function navigate(tab, updateURL = true) {
+    moduleDrag = null;
     if (dialog.open) dialog.close();
     if (paymentController) { paymentController.destroy(); paymentController = null; }
     if (advertisingController) advertisingController.close();
@@ -237,19 +237,41 @@
       feedback('Settings saved.');
     });
   }
-  function addLink(value = '') {
-    openDialog('Add Module', '<form data-pqr-new-link><label class="pqr-field">Module title<input name="name" maxlength="100" required></label><label class="pqr-field">URL<input name="url" value="' + esc(value) + '" maxlength="500" required></label><p class="pqr-feedback" data-pqr-link-error role="alert"></p><button type="submit" class="pqr-button is-primary">Add Module</button></form>');
-    dialog.querySelector('form').addEventListener('submit', event => {
-      event.preventDefault(); const form = event.currentTarget;
-      if (!form.elements.name.value.trim() || !api.validUrl(form.elements.url.value.trim())) { dialog.querySelector('[data-pqr-link-error]').textContent = 'Enter a title and a valid URL.'; return; }
-      state.links.push({ id: 'link-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6), name: form.elements.name.value.trim(), url: form.elements.url.value.trim(), icon: 'link', enabled: true });
-      dialog.close(); document.querySelector('[data-pqr-add-form]').reset(); renderLinks(); refreshPreview(); feedback('Save Settings to keep your module changes.');
-    });
+  function addLink(value) {
+    state.links.push({ id: 'link-' + Date.now() + '-' + Math.random().toString(36).slice(2, 6), name: 'Custom Link', url: value, icon: 'link', enabled: true });
+    const form = host.querySelector('[data-pqr-add-form]');
+    form.reset(); form.querySelector('[type=submit]').disabled = true;
+    renderLinks(); refreshPreview();
+    host.querySelector('[data-link-index="' + (state.links.length - 1) + '"] [data-link-field=name]').focus();
+  }
+  function closeIconPicker() {
+    host?.querySelector('[data-pqr-icon-picker]')?.remove();
+  }
+  function showIconPicker(index) {
+    closeIconPicker();
+    const link = state.links[index];
+    const defaultIcon = api.template(api.linked).find(item => item.id === link.id)?.icon || 'link';
+    const choices = [{ icon: defaultIcon, label: 'Default' }, ...api.icons.map(icon => ({ icon, label: icon }))];
+    const popup = document.createElement('div');
+    popup.className = 'pqr-icon-popover'; popup.dataset.pqrIconPicker = link.id;
+    popup.setAttribute('role', 'dialog'); popup.setAttribute('aria-label', 'Choose an icon');
+    popup.innerHTML = '<div class="pqr-icon-popover-head"><h3>Choose an icon</h3><button class="pqr-icon-button" type="button" data-pqr-action="close-icon" aria-label="Close">' + lucide('x') + '</button></div><div class="pqr-icon-grid">' + choices.map(choice => '<button class="pqr-icon-choice" type="button" role="checkbox" aria-checked="' + (choice.icon === link.icon) + '" data-pqr-icon="' + choice.icon + '" data-link-id="' + esc(link.id) + '" aria-label="' + choice.label + '">' + image(choice.icon) + '</button>').join('') + '</div>';
+    host.querySelector('[data-link-index="' + index + '"]').append(popup);
+    icons(); popup.querySelector('[data-pqr-icon]').focus();
+  }
+  function reorderModule(id, targetId, after) {
+    const from = state.links.findIndex(link => link.id === id);
+    if (from < 0 || !state.links.some(link => link.id === targetId) || id === targetId) return;
+    const [link] = state.links.splice(from, 1);
+    const target = state.links.findIndex(link => link.id === targetId);
+    state.links.splice(target + (after ? 1 : 0), 0, link);
+    renderLinks(); refreshPreview();
+    host.querySelectorAll('[data-link-id]').forEach(row => { if (row.dataset.linkId === id) row.querySelector('[data-pqr-module-drag]')?.focus(); });
   }
   function updateAppearance(id, field, value) {
     const link = state.links.find(item => item.id === id); if (!link) return;
     if (field === 'icon' && iconReads.has(id)) { iconReads.get(id).abort(); iconReads.delete(id); }
-    link[field] = value; renderLinks(); refreshPreview();
+    link[field] = value; renderLinks(); refreshPreview(); syncIconUploads();
     const status = host.querySelector('[data-pqr-module-status]');
     if (status) status.textContent = 'Module appearance updated. Select Save Settings to keep it.';
   }
@@ -260,12 +282,28 @@
   function uploadModuleIcon(input) {
     const file = input.files[0], id = input.dataset.linkId; input.value = '';
     if (!file || !state.links.some(item => item.id === id)) return;
-    if (!['image/png', 'image/jpeg', 'image/webp', 'image/gif'].includes(file.type) || file.size > 1024 * 1024) { feedback('Use a PNG, JPG, WebP, or GIF image smaller than 1 MB.', true); return; }
+    if (!['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) { feedback('Or upload your own icon (PNG, JPG or WebP). It\'s compressed automatically before saving.', true); return; }
     if (iconReads.has(id)) iconReads.get(id).abort();
     const reader = new FileReader(); iconReads.set(id, reader);
     syncIconUploads();
     const finish = () => { if (iconReads.get(id) === reader) iconReads.delete(id); syncIconUploads(); };
-    reader.onload = () => { if (iconReads.get(id) !== reader) return; finish(); if (api.isIconImage(reader.result)) updateAppearance(id, 'icon', reader.result); };
+    reader.onload = () => {
+      if (iconReads.get(id) !== reader) return;
+      const uploaded = new Image();
+      uploaded.onload = () => {
+        if (iconReads.get(id) !== reader) return;
+        try {
+          const scale = Math.min(1, 256 / Math.max(uploaded.width, uploaded.height));
+          const canvas = document.createElement('canvas');
+          canvas.width = Math.max(1, Math.round(uploaded.width * scale)); canvas.height = Math.max(1, Math.round(uploaded.height * scale));
+          canvas.getContext('2d').drawImage(uploaded, 0, 0, canvas.width, canvas.height);
+          const value = canvas.toDataURL('image/webp', .85);
+          finish(); if (api.isIconImage(value)) updateAppearance(id, 'icon', value);
+        } catch (_) { finish(); feedback('Could not read this image. Please try another file.', true); }
+      };
+      uploaded.onerror = () => { if (iconReads.get(id) === reader) { finish(); feedback('Could not read this image. Please try another file.', true); } };
+      uploaded.src = reader.result;
+    };
     reader.onerror = () => { finish(); feedback('Could not read this image. Please try another file.', true); };
     reader.onabort = finish; reader.readAsDataURL(file);
   }
@@ -312,6 +350,7 @@
     });
   }
   document.addEventListener('click', async event => {
+    if (!event.target.closest('[data-pqr-icon-picker], [data-pqr-action=icon]')) closeIconPicker();
     const tab = event.target.closest('[data-pqr-tab]'); if (tab && host) { navigate(tab.dataset.pqrTab); return; }
     const link = event.target.closest('[data-pqr-link]');
     if (link) {
@@ -328,22 +367,17 @@
       const target = tipUrl(tipShare.dataset.pqrTipShare);
       try { if (navigator.share) await navigator.share({ title: 'Payment & Tip QR', url: target }); else await copy(target); } catch (_) { /* Closing the share sheet leaves the invite unchanged. */ } return;
     }
-    const choice = event.target.closest('[data-pqr-icon]'); if (choice) { if (api.icons.includes(choice.dataset.pqrIcon)) updateAppearance(choice.dataset.linkId, 'icon', choice.dataset.pqrIcon); dialog.close(); return; }
-    const swatch = event.target.closest('[data-pqr-background]'); if (swatch) { const value = window.ONEQR_ACTION_APPEARANCE.backgrounds[Number(swatch.dataset.pqrBackground)] || ''; updateAppearance(swatch.dataset.linkId, 'background', value); dialog.close(); return; }
+    const choice = event.target.closest('[data-pqr-icon]'); if (choice) { if (api.icons.includes(choice.dataset.pqrIcon)) updateAppearance(choice.dataset.linkId, 'icon', choice.dataset.pqrIcon); closeIconPicker(); return; }
     const control = event.target.closest('[data-pqr-action]'); if (!control) return;
     const action = control.dataset.pqrAction, index = Number(control.dataset.index);
     if (action === 'close') dialog.close();
+    else if (action === 'close-icon') closeIconPicker();
     else if (action === 'profile') editProfile();
     else if (action === 'save') saveDraft();
-    else if (action === 'add') addLink();
-    else if (action === 'reset') { iconReads.forEach(reader => reader.abort()); iconReads.clear(); state.links = api.template(api.linked); renderLinks(); refreshPreview(); feedback('Save Settings to keep your module changes.'); }
-    else if (action === 'remove') { const link = state.links[index]; if (link && iconReads.has(link.id)) iconReads.get(link.id).abort(); state.links.splice(index, 1); renderLinks(); refreshPreview(); }
-    else if (action === 'up' || action === 'down') { const target = index + (action === 'up' ? -1 : 1); if (target >= 0 && target < state.links.length) { [state.links[index], state.links[target]] = [state.links[target], state.links[index]]; renderLinks(); refreshPreview(); } }
-    else if (action === 'icon' && state.links[index]) openDialog('Choose an icon', '<div class="pqr-icon-grid">' + api.icons.map(icon => '<button class="pqr-icon-choice" type="button" data-pqr-icon="' + icon + '" data-link-id="' + esc(state.links[index].id) + '" aria-label="' + icon + '">' + image(icon) + '</button>').join('') + '</div>');
-    else if (action === 'background' && state.links[index]) openDialog('Choose a card background', '<div class="pqr-icon-grid pqr-background-grid">' + ['', ...window.ONEQR_ACTION_APPEARANCE.backgrounds].map((color, value) => '<button class="pqr-icon-choice" type="button" data-pqr-background="' + (value - 1) + '" data-link-id="' + esc(state.links[index].id) + '" aria-label="' + (color ? 'Use gradient ' + value : 'Use white') + '"><span style="background:' + (color || '#fff') + '"></span></button>').join('') + '</div>');
+    else if (action === 'remove') { const link = state.links[index]; if (link && iconReads.has(link.id)) { iconReads.get(link.id).abort(); iconReads.delete(link.id); } state.links.splice(index, 1); renderLinks(); refreshPreview(); syncIconUploads(); }
+    else if (action === 'icon' && state.links[index]) showIconPicker(index);
     else if (action === 'upload' && state.links[index]) { const input = host.querySelector('[data-pqr-icon-upload]'); input.dataset.linkId = state.links[index].id; input.click(); }
     else if (action === 'module-copy' && state.links[index]) await copy(api.moduleUrl(state, state.links[index]));
-    else if (action === 'module-open' && state.links[index] && api.validUrl(state.links[index].url)) window.open(api.moduleUrl(state, state.links[index]), '_blank', 'noopener');
     else if (action === 'qr' || action === 'print') showQr(api.publicUrl(), action === 'print');
     else if (action === 'copy' || action === 'share') await copy(api.publicUrl());
     else if (action === 'browser-print') window.print();
@@ -364,13 +398,56 @@
     }
   });
   if (host) {
+    host.addEventListener('pointerdown', event => {
+      const handle = event.target.closest('[data-pqr-module-drag]');
+      if (!handle || event.button !== 0 || event.isPrimary === false) return;
+      event.preventDefault(); closeIconPicker();
+      const row = handle.closest('[data-link-id]');
+      moduleDrag = { pointerId: event.pointerId, id: row.dataset.linkId, targetId: null, after: false };
+      handle.setPointerCapture?.(event.pointerId); row.classList.add('is-dragging');
+    });
+    host.addEventListener('pointermove', event => {
+      if (!moduleDrag || event.pointerId !== moduleDrag.pointerId) return;
+      event.preventDefault();
+      host.querySelectorAll('.is-drag-over-top,.is-drag-over-bottom').forEach(row => row.classList.remove('is-drag-over-top', 'is-drag-over-bottom'));
+      moduleDrag.targetId = null;
+      const row = document.elementFromPoint(event.clientX, event.clientY)?.closest('[data-link-index]');
+      if (row && host.contains(row) && row.dataset.linkId !== moduleDrag.id) {
+        moduleDrag.targetId = row.dataset.linkId;
+        const rect = row.getBoundingClientRect(); moduleDrag.after = event.clientY > rect.top + rect.height / 2;
+        row.classList.add(moduleDrag.after ? 'is-drag-over-bottom' : 'is-drag-over-top');
+      }
+      if (event.clientY < 80 || event.clientY > window.innerHeight - 80) window.scrollBy(0, event.clientY < 80 ? -14 : 14);
+    });
+    function finishModuleDrag(event) {
+      if (!moduleDrag || event.pointerId !== moduleDrag.pointerId) return;
+      const drag = moduleDrag; moduleDrag = null;
+      host.querySelectorAll('.is-dragging,.is-drag-over-top,.is-drag-over-bottom').forEach(row => row.classList.remove('is-dragging', 'is-drag-over-top', 'is-drag-over-bottom'));
+      if (event.type === 'pointerup' && drag.targetId) reorderModule(drag.id, drag.targetId, drag.after);
+    }
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach(type => host.addEventListener(type, finishModuleDrag));
     host.addEventListener('input', event => {
+      if (event.target.matches('[data-pqr-add-form] [name=url]')) { event.target.removeAttribute('aria-invalid'); event.target.form.querySelector('[type=submit]').disabled = !api.validUrl(event.target.value.trim()); }
       if (event.target.matches('[data-pqr-name]')) { state.name = event.target.value; event.target.removeAttribute('aria-invalid'); refreshPreview(); }
       if (event.target.matches('[data-pqr-greeting]')) { state.greeting = event.target.value; refreshPreview(); }
       if (event.target.matches('[data-link-field]')) {
-        const row = state.links[Number(event.target.closest('[data-link-index]').dataset.linkIndex)]; const field = event.target.dataset.linkField;
+        const item = event.target.closest('[data-link-index]');
+        const row = state.links[Number(item.dataset.linkIndex)]; const field = event.target.dataset.linkField;
         if (!row) return;
+        if (field === 'url' && row.kind) return;
         row[field] = field === 'enabled' ? event.target.checked : event.target.value; event.target.removeAttribute('aria-invalid'); refreshPreview();
+        if (field === 'enabled') event.target.setAttribute('aria-checked', String(event.target.checked));
+        if (field === 'name') {
+          event.target.setAttribute('aria-label', 'Tile label for ' + row.name);
+          item.querySelector('[data-pqr-module-drag]').setAttribute('aria-label', 'Reorder ' + row.name);
+          item.querySelector('[data-link-field=enabled]').setAttribute('aria-label', 'Show or hide ' + row.name);
+          item.querySelector('[data-pqr-action=remove]').setAttribute('aria-label', 'Remove ' + row.name);
+        }
+        if (field === 'url') {
+          const open = item.querySelector('[aria-label="Open link"]');
+          if (api.validUrl(row.url)) { open.href = row.url; open.removeAttribute('aria-disabled'); }
+          else { open.removeAttribute('href'); open.setAttribute('aria-disabled', 'true'); }
+        }
       }
     });
     host.addEventListener('change', event => {
@@ -385,6 +462,14 @@
     });
     host.addEventListener('submit', event => { if (event.target.matches('[data-pqr-add-form]')) { event.preventDefault(); const input = event.target.elements.url; if (!api.validUrl(input.value.trim())) { input.setAttribute('aria-invalid', 'true'); feedback('Enter a valid URL.', true); return; } addLink(input.value.trim()); } });
     host.addEventListener('keydown', event => {
+      const handle = event.target.closest('[data-pqr-module-drag]');
+      if (handle && ['ArrowUp', 'ArrowDown'].includes(event.key)) {
+        event.preventDefault();
+        const index = Number(handle.closest('[data-link-index]').dataset.linkIndex), target = index + (event.key === 'ArrowUp' ? -1 : 1);
+        if (target >= 0 && target < state.links.length) reorderModule(state.links[index].id, state.links[target].id, target > index);
+        return;
+      }
+      if (event.key === 'Escape' && host.querySelector('[data-pqr-icon-picker]')) { closeIconPicker(); return; }
       const tab = event.target.closest('[data-pqr-tab]'); if (!tab || !['ArrowLeft', 'ArrowRight', 'Home', 'End'].includes(event.key)) return;
       event.preventDefault(); const index = tabs.findIndex(item => item.id === current); const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
       navigate(tabs[next].id); host.querySelector('[data-pqr-tab="' + tabs[next].id + '"]').focus();

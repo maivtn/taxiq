@@ -60,7 +60,7 @@
       { id: 'instagram', name: 'My Instagram', url: 'https://www.instagram.com/', icon: 'instagram', enabled: true },
       { id: 'payment', name: 'Send a payment', url: publicUrl('payment'), icon: 'credit-card', enabled: true, kind: 'payment' }
     ] : [
-      { id: 'profile', name: 'Personal profile', url: publicUrl('profile'), icon: 'user-round', enabled: true },
+      { id: 'profile', name: 'Personal profile', url: publicUrl('profile'), icon: 'user-round', enabled: true, kind: 'profile' },
       { id: 'instagram', name: 'My Instagram', url: 'https://www.instagram.com/', icon: 'instagram', enabled: true },
       { id: 'payment', name: 'Send a payment', url: publicUrl('payment'), icon: 'credit-card', enabled: true, kind: 'payment' },
       { id: 'referral', name: 'Join me', url: 'https://localhost:3000/?ref=93176C31&leg=left&staff=NAIE5LMVX', icon: 'share-2', enabled: true, kind: 'referral' }
@@ -90,6 +90,7 @@
         }
         result.links.forEach(link => {
           link.url = moduleUrl(result, link);
+          if (link.id === 'profile' && !link.kind && link.url === publicUrl('profile')) link.kind = 'profile';
           if (link.kind === 'tip') {
             if (link.icon === 'hand-coins') link.icon = 'dollar-sign';
             const salon = salons.find(item => link.url === publicUrl('tip') + '&salon=' + item.id);
