@@ -10,7 +10,7 @@
   "oneqr": "../iconscout/oneqr-14843205.png",
   "community": "../iconscout/community-5487791.png",
   "aihub": "../iconscout/ai-hub-10852467.png",
-  "marketing": "marketing.png",
+  "marketing": "../iconscout/ai-marketing-13327169.png",
   "sms": "sms.png",
   "gift": "../iconscout/gift-card-7705322.png",
   "reviews": "reviews.png",
