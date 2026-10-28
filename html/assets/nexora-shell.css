@@ -680,8 +680,8 @@ select {
   }
 }
 
-/* below desktop: sidebar becomes a slide-in drawer opened from the header */
-@media (max-width: 1366px) {
+/* At 768px and below, the sidebar becomes a drawer opened from the header. */
+@media (max-width: 768px) {
   .sidebar {
     display: flex;
     z-index: 40;
@@ -695,7 +695,7 @@ select {
   }
 }
 
-@media (min-width: 1367px) {
+@media (min-width: 769px) {
   .sidebar {
     display: flex;
   }
@@ -781,15 +781,18 @@ body[data-nexora-workspace="pos"] .sidebar { padding:18px 14px; }
 .sidebar:not(.staff-sidebar) .shell-tree-row:has(> :focus-visible) { color:#fff; background:linear-gradient(115deg,#6353d572,#2583c452); box-shadow:inset 0 1px #ffffff55,0 5px 0 #07122c8c,0 12px 18px #07122c8c; }
 .sidebar:not(.staff-sidebar) .shell-tree-row:is(:hover,:has(> :focus-visible)) > :is(.nav-item,.nav-subitem) { color:#fff; }
 .sidebar:not(.staff-sidebar) :is(.sidebar-nav > .nav-item,.shell-tree-row,.nav-subnav-inner > .nav-subitem):active { box-shadow:inset 0 3px 8px #07122c8c,0 1px 0 #07122c8c; }
-.sidebar:not(.staff-sidebar) .sidebar-nav .nav-item:is(.is-active,.is-expanded) { background:var(--shell-menu-active-background); box-shadow:var(--shell-menu-active-shadow); color:#fff; }
-.sidebar:not(.staff-sidebar) .sidebar-nav .nav-subitem.is-active:not(.nav-parent) { background:#5465ca55; box-shadow:none; color:#fff; font-weight:800; }
-.sidebar:not(.staff-sidebar) .sidebar-nav .nav-subitem.nav-parent:is(.is-active,.is-expanded) { background:var(--shell-menu-sub-background); box-shadow:var(--shell-menu-sub-shadow); color:#fff; font-weight:800; }
+/* Strong selection marks a destination; open groups and route ancestors stay subtle. */
+.sidebar:not(.staff-sidebar) .sidebar-nav .nav-item.is-active:not(.nav-parent) { background:var(--shell-menu-active-background); box-shadow:var(--shell-menu-active-shadow); color:#fff; }
+.sidebar:not(.staff-sidebar) .sidebar-nav .nav-subitem.is-active:not(.nav-parent) { background:var(--shell-menu-sub-background); box-shadow:none; color:#fff; font-weight:800; }
+.sidebar:not(.staff-sidebar) .sidebar-nav .nav-parent.is-expanded { background:#ffffff0d; box-shadow:none; color:#fff; }
+.sidebar:not(.staff-sidebar) .sidebar-nav .nav-parent.is-active { background:#ffffff12; box-shadow:none; color:#fff; }
 .sidebar:not(.staff-sidebar) .shell-tree-row { border-radius:7px; }
 .sidebar:not(.staff-sidebar) .shell-tree-branch[data-depth="0"] > .shell-tree-row { border-radius:9px; }
-.sidebar:not(.staff-sidebar) .sidebar-nav .shell-tree-row:has(> :is(.is-active,.is-expanded)) { background:var(--shell-menu-sub-background); box-shadow:var(--shell-menu-sub-shadow); }
-.sidebar:not(.staff-sidebar) .sidebar-nav .shell-tree-row:has(> .nav-item:is(.is-active,.is-expanded)) { background:var(--shell-menu-active-background); box-shadow:var(--shell-menu-active-shadow); }
+.sidebar:not(.staff-sidebar) .sidebar-nav .shell-tree-row:has(> .nav-parent.is-expanded) { background:#ffffff0d; box-shadow:none; }
+.sidebar:not(.staff-sidebar) .sidebar-nav .shell-tree-row:has(> .nav-parent.is-active) { background:#ffffff12; box-shadow:none; }
+.sidebar:not(.staff-sidebar) .sidebar-nav .shell-tree-row:has(> a.nav-subitem.is-active) { background:var(--shell-menu-sub-background); box-shadow:none; }
+.sidebar:not(.staff-sidebar) .sidebar-nav .shell-tree-row:has(> a.nav-item.is-active) { background:var(--shell-menu-active-background); box-shadow:var(--shell-menu-active-shadow); }
 .sidebar:not(.staff-sidebar) .sidebar-nav .shell-tree-row:has(> :is(.is-active,.is-expanded)) > :is(.nav-item,.nav-subitem) { color:#fff; }
-.sidebar:not(.staff-sidebar) .sidebar-nav .shell-tree-row:has(> :is(.is-active,.is-expanded)) > .nav-subitem { font-weight:800; }
 .sidebar:not(.staff-sidebar) .sidebar-nav .shell-tree-branch > .shell-tree-row > :is(.nav-item,.nav-subitem) { background:transparent; box-shadow:none; }
 .sidebar:not(.staff-sidebar) .shell-tree-row:has(> a + button.nav-parent) > a { border-top-right-radius:0; border-bottom-right-radius:0; }
 .sidebar:not(.staff-sidebar) .shell-tree-row:has(> a + button.nav-parent) > button { border-top-left-radius:0; border-bottom-left-radius:0; }
@@ -801,7 +804,7 @@ body[data-nexora-workspace="pos"] .sidebar { padding:18px 14px; }
 .shell-products-toggle:focus-visible { outline:2px solid #32d7ff; outline-offset:2px; }
 .shell-tree-label { min-width:0; overflow-wrap:anywhere; flex:1; text-align:left; }
 @keyframes shellNavMenuUnfold { from { opacity:.3; } to { opacity:1; } }
-@media (max-width:760px) {
+@media (max-width:768px) {
   .sidebar:not(.staff-sidebar) .sidebar-nav .nav-item { min-height:48px; padding:10px 11px; }
   .sidebar:not(.staff-sidebar) .sidebar-nav .nav-subitem { min-height:45px; padding:9px 10px; }
   .shell-products-toggle { min-height:48px; padding:11px 13px; }
@@ -828,7 +831,7 @@ body[data-nexora-workspace="pos"] .header .mobile-brand { flex-shrink:0; }
  .shell-workspace-actions { gap:4px; }
  .shell-workspace-actions a { width:34px; height:34px; }
 }
-@media (max-width:1366px) { body.nexora-drawer-open { overflow:hidden; } }
+@media (max-width:768px) { body.nexora-drawer-open { overflow:hidden; } }
 /* Nested PO trees have variable height; a fixed expansion ceiling clips grandchildren. */
 .shell-tree-branch .nav-subnav { max-height:none; }
 .shell-tree-branch .nav-subnav.is-collapsed { display:none; }

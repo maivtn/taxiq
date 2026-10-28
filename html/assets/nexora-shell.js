@@ -143,15 +143,14 @@
     return node.navContext || node.href && node.href.indexOf('&view=') !== -1 ? routeActive(node) : node.page === activePage && node.tab ? node.tab === activeTab : routeActive(node);
   }
 
-  // An expanded branch takes visual precedence over the current route's sibling.
-  // Keep aria-current on the actual destination, but show only one selected row.
+  // Selection follows the current route, independently of which group is open.
+  // Keep one selected destination or ancestor at each level of the tree.
   function syncTreeActiveState() {
     if (!treeNav || activePage === 'staff') return;
     var hidden = hiddenSidebarKeySet();
     function sync(nodes) {
       var visible = nodes.filter(function(node) { return !node.accountOnly && !node.toggleProducts && !hidden[node.key] && (!node.productMenu || expandedGroups.products === true); });
-      var selected = visible.find(function(node) { return node.children && expandedGroups[node.key] === true; })
-        || visible.find(function(node) { return treeNodeIsActive(node) || groupIsActive(node, activeTab); });
+      var selected = visible.find(function(node) { return treeNodeIsActive(node) || groupIsActive(node, activeTab); });
       nodes.forEach(function(node) {
         if (node.children) {
           var toggle = document.querySelector('.sidebar [data-sidebar-key="' + node.key + '"]');
@@ -649,7 +648,7 @@
     var opener = document.querySelector('.header [data-shell-drawer-open]');
     if (sidebar) {
       sidebar.classList.toggle('is-open', open);
-      var mobile = typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 1366px)').matches;
+      var mobile = typeof window.matchMedia === 'function' && window.matchMedia('(max-width: 768px)').matches;
       sidebar.inert = mobile && !open;
       if (document.body.classList) document.body.classList.toggle('nexora-drawer-open', mobile && open);
       if (mobile && open) { var first = sidebar.querySelector('button, a[href]'); if (first) first.focus(); }
@@ -970,7 +969,7 @@
     wire();
     if (activePage === 'staff') setActiveTab(activeTab);
     if (typeof window.matchMedia === 'function') {
-      var drawerMedia = window.matchMedia('(max-width: 1366px)');
+      var drawerMedia = window.matchMedia('(max-width: 768px)');
       var syncDrawer = function() { setDrawer(false); };
       if (drawerMedia.addEventListener) drawerMedia.addEventListener('change', syncDrawer);
       setDrawer(false);
