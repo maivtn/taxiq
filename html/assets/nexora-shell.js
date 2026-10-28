@@ -408,7 +408,15 @@
   }
 
   var TREE_ICONS = {home:'house', 'public-home':'globe', dashboard:'layout-dashboard', onboarding:'rocket', pos:'monitor', products:'store', payments:'wallet-cards', community:'users-round', aihub:'sparkles', marketing:'megaphone', 'ai-voice':'headset', news:'newspaper', spinwheel:'circle-dot', oneqr:'qr-code', tools:'briefcase-business', reviews:'star', analytics:'chart-no-axes-combined', taxiq:'file-text', support:'life-buoy', settings:'settings'};
+  // These four inline outline icons are the PO's AI Hub shortcut symbols.
+  var PO_AI_HUB_ICONS = {
+    'ai-marketing': '<path d="M3 10v4a2 2 0 0 0 2 2h2l2 5h3l-2-5h2l8 4V4l-8 4H5a2 2 0 0 0-2 2Z"/><path d="M20 9a4 4 0 0 1 0 6"/>',
+    'ai-voice-si-pos': '<path d="M5 3h3l1.5 4-2 2a16 16 0 0 0 7.5 7.5l2-2L21 16v3a2 2 0 0 1-2 2A16 16 0 0 1 3 5a2 2 0 0 1 2-2Z"/>',
+    'aihub-sms-campaigns': '<rect x="3" y="3" width="18" height="18" rx="2"/><path d="M7 7h10M7 11h10M7 15h4M14 15h3"/>',
+    'spin-wheel': '<circle cx="12" cy="12" r="9"/><circle cx="12" cy="12" r="2"/><path d="M12 3v7m8.6-1.1-6.7 2.2m3.4 8-4.1-5.6m-6.4 5.6 4.1-5.6M3.4 8.9l6.7 2.2"/>'
+  };
   function treeIcon(node) {
+    if (PO_AI_HUB_ICONS[node.key]) return '<span class="sidebar-icon-wrap"><svg class="lucide-menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' + PO_AI_HUB_ICONS[node.key] + '</svg></span>';
     return iconWrap(node.key === 'business-tools' ? 'briefcase-business' : (TREE_ICONS[node.iconKey] || 'circle'));
   }
 
@@ -422,7 +430,7 @@
       if (node.children) {
         var open = expandedGroups[node.key] === true, id = 'nexora-subnav-' + node.key;
         var ancestor = groupIsActive(node, activeTab);
-        return '<div class="shell-tree-branch" data-depth="' + depth + '"' + (node.productMenu ? ' id="nexora-product-menu-' + esc(node.key) + '" data-product-menu' + (expandedGroups.products === true ? '' : ' hidden') : '') + '><div class="shell-tree-row">' +
+        return '<div class="shell-tree-branch' + (node.dividerBefore ? ' has-divider-before' : '') + '" data-depth="' + depth + '"' + (node.productMenu ? ' id="nexora-product-menu-' + esc(node.key) + '" data-product-menu' + (expandedGroups.products === true ? '' : ' hidden') : '') + '><div class="shell-tree-row">' +
           (node.href ? '<a class="' + cls + (active ? ' is-active' : '') + '" href="' + esc(node.href) + '"' + (active ? ' aria-current="page"' : '') + '>' + label + '</a>' : '') +
           '<button class="' + cls + ' nav-parent' + (open ? ' is-expanded' : '') + (ancestor ? ' is-active' : '') + '" type="button" data-sidebar-key="' + esc(node.key) + '" data-nav-group aria-expanded="' + open + '" aria-controls="' + id + '"' + (node.href ? ' aria-label="' + esc(node.label) + '"' : '') + '>' + (node.href ? '' : label) + CARET + '</button></div>' +
           '<div class="nav-subnav' + (open ? '' : ' is-collapsed') + '" id="' + id + '" data-nav-subnav><div class="nav-subnav-inner">' + renderTree(node.children, depth + 1) + '</div></div></div>';

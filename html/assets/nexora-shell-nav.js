@@ -327,23 +327,35 @@
         "key": "ai-marketing",
         "label": "AI Marketing",
         "iconKey": "marketing",
+        "showIcon": true,
         "href": "#module-aihub-marketing"
       },
       {
         "key": "ai-voice-si-pos",
         "label": "AI Voice · SI POS",
         "iconKey": "ai-voice",
+        "showIcon": true,
         "href": "#pos-ai-voice"
+      },
+      {
+        "key": "aihub-sms-campaigns",
+        "label": "SMS Campaigns",
+        "iconKey": "news",
+        "showIcon": true,
+        "navContext": "aihub",
+        "href": "https://nexoratouch.com/dashboard/ai-hub?tab=sms-campaigns"
       },
       {
         "key": "spin-wheel",
         "label": "Spin Wheel",
         "iconKey": "spinwheel",
+        "showIcon": true,
         "href": "#module-spinwheel"
       },
       {
         "key": "ai-receptionist",
         "label": "AI Receptionist",
+        "dividerBefore": true,
         "children": [
           {
             "key": "lich-hen",
