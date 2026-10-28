@@ -156,6 +156,11 @@
 
   function normalizeExpandedGroups(preferActive) {
     if (activePage === 'staff') return;
+    // Dashboard is a standalone destination, so it must not restore an old branch.
+    if (preferActive && treeNav && NAV.some(function(node) { return node.key === 'dashboard' && routeActive(node); })) {
+      visit(NAV, function(node) { if (node.type === 'group') expandedGroups[node.key] = false; });
+      return;
+    }
     function normalize(nodes) {
       var groups = nodes.filter(function(node) { return node.type === 'group'; });
       var selected = preferActive && groups.find(function(node) { return groupIsActive(node, activeTab); });
@@ -604,6 +609,20 @@
   }
 
   function wireSidebar() {
+    var dashboardLink = document.querySelector('.sidebar [data-shell-key="dashboard"]');
+    if (activePage !== 'staff' && dashboardLink) {
+      dashboardLink.addEventListener('click', function(event) {
+        if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        document.querySelectorAll('.sidebar [data-nav-group]').forEach(function(toggle) { setGroupExpanded(toggle, false); });
+        document.querySelectorAll('.sidebar-nav .is-active').forEach(function(item) {
+          item.classList.remove('is-active');
+          item.removeAttribute('aria-current');
+        });
+        dashboardLink.classList.add('is-active');
+        dashboardLink.setAttribute('aria-current', 'page');
+        saveExpandedGroups();
+      });
+    }
     var accountToggle = document.querySelector('[data-shell-account-toggle]');
     var accountMenu = document.getElementById('nexora-account-menu');
     if (accountToggle && accountMenu) {
