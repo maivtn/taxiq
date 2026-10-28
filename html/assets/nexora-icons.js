@@ -7,7 +7,7 @@
   "home": "home.png",
   "dashboard": "dashboard.png",
   "pos": "../iconscout/pos-project-management-6578282.png",
-  "oneqr": "../iconscout/oneqr-14843205.png",
+  "oneqr": "../iconscout/oneqr-12692239.png",
   "community": "../iconscout/community-5487791.png",
   "aihub": "../iconscout/ai-hub-10852467.png",
   "marketing": "../iconscout/ai-marketing-13327169.png",
