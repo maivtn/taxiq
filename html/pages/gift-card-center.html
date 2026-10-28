@@ -7,20 +7,34 @@
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap"
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Poppins:wght@400;500;600;700&display=swap"
       rel="stylesheet"
     />
     <link rel="stylesheet" href="../assets/nexora-icons.css" />
     <link rel="stylesheet" href="../assets/nexora-shell.css" />
+    <link rel="stylesheet" href="../assets/front-desk-tabs.css" />
+    <link rel="stylesheet" href="../assets/gift-card-center.css" />
   </head>
   <body>
     <div class="shell">
       <aside class="sidebar" aria-label="Gift Card Center"></aside>
       <div class="app-area">
         <header class="header"></header>
-        <main class="content" aria-label="Gift Card Center"></main>
+        <main class="content front-desk gc-workspace" aria-label="Gift Card Center">
+          <h1 class="gc-front-title">Front Desk</h1>
+          <p class="subtitle gc-front-subtitle">Check in guests, manage open tickets, and run the turn board.</p>
+          <nav class="workflow" data-front-desk-tabs aria-label="Front Desk sections"></nav>
+          <section class="gc-portal" aria-label="Secure Gift Card">
+            <header class="gc-portal-head">
+              <strong><i data-lucide="gift" aria-hidden="true"></i>Secure Gift Card</strong>
+              <a href="gift-card-center.html?view=cards" target="_blank" rel="noopener noreferrer"><i data-lucide="external-link" aria-hidden="true"></i>Open Merchant Portal</a>
+            </header>
+            <div class="gift-center" id="gift-center" aria-label="Gift Card Center"></div>
+          </section>
+        </main>
       </div>
     </div>
+    <dialog class="gc-dialog gift-center" id="gift-dialog"></dialog>
     <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
     <script>
       window.NEXORA_SHELL = {
@@ -32,5 +46,10 @@
     <script src="../assets/nexora-shell-nav.js"></script>
     <script src="../assets/nexora-shell.js"></script>
     <script src="../assets/salon-data.js"></script>
+    <script src="../assets/front-desk-data.js"></script>
+    <script src="../assets/front-desk-tabs.js"></script>
+    <script src="../assets/gift-card-brand-prompts.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+    <script src="../assets/gift-card-center.js"></script>
   </body>
 </html>

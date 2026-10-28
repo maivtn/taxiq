@@ -1175,3 +1175,11 @@
 .gc-preview-provider>img{width:20px;width:clamp(14px,4cqw,28px);height:auto;object-fit:contain}
 .gc-preview-provider>strong{font:inherit;font-weight:700;letter-spacing:-.02em}
 .gc-preview[data-card-preview] .gc-preview-number{font-size:16px;font-size:clamp(16px,4cqw,34px);letter-spacing:2px;letter-spacing:.7cqw}
+
+/* Brand Identity starts collapsed in the Nexora embedded Issue Digital screen. */
+.gc-brand-identity .gc-brand-heading{margin:0;padding:0;border:0;flex-wrap:nowrap}
+.gc-brand-identity .gc-brand-heading>.gc-subhead{white-space:nowrap}
+.gc-brand-identity .gc-brand-heading>.gc-actions{margin-left:auto;flex-wrap:nowrap}
+.gc-brand-identity .gc-disclosure[open]>.gc-brand-heading{padding-bottom:14px;margin-bottom:14px;border-bottom:1px solid #e5e9ed}
+.gc-brand-identity .gc-disclosure>.gc-brand-body{padding-top:0}
+@media(max-width:1150px){.gc-brand-identity .gc-brand-heading{flex-wrap:wrap}.gc-brand-identity .gc-brand-heading>.gc-actions{margin-left:0}.gc-brand-identity .gc-brand-heading::after{margin-left:auto}}
