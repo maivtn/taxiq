@@ -1,28 +1,14 @@
-/* One hierarchy for all five Report views: title, period/filter controls, summary, results. */
+/* Shared report headings and date formatting; filters retain their original per-report layout. */
 .ptr-page [data-report-panel][hidden],.ptr-page [data-report-income][hidden] { display:none!important; }
 .ptr-page .ptr-report-heading { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; min-height:40px; margin:0 0 12px; }
 .ptr-page .ptr-report-heading h2 { margin:0; font-size:18px; font-weight:800; line-height:1.3; letter-spacing:-.35px; color:#172033; }
 .ptr-page .ptr-report-heading .header-actions,.ptr-page .ptr-report-heading .ptr-actions { display:flex; align-items:center; flex-wrap:wrap; gap:8px; margin:0; }
-.ptr-page .ptr-toolbar,.ptr-page .ptr-card-range,[data-pos-income] .report-toolbar,[data-pos-income] .toolbar-card { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px; padding:12px; margin:0 0 12px; border:1px solid #dde5ef; border-radius:12px; background:#fff; box-shadow:none; }
-.ptr-page .ptr-toolbar .ptr-period { min-width:0; flex:1 1 auto; }
-.ptr-page .ptr-card-range { justify-content:flex-start; }
-.ptr-page .ptr-period-note,[data-pos-income] .report-meta,[data-pos-income] .ptr-income-context { display:flex; align-items:center; flex-wrap:wrap; gap:8px 12px; padding:0; margin:0 0 16px; background:transparent; color:#4d5870; font-size:12px; border:0; }
-.ptr-page .ptr-period-note strong,[data-pos-income] .report-meta h3,[data-pos-income] .ptr-income-context h3 { margin:0; font-size:13px; line-height:1.5; color:#25324a; font-weight:800; }
+[data-pos-income] .report-meta,[data-pos-income] .ptr-income-context { display:flex; align-items:center; flex-wrap:wrap; gap:8px 12px; padding:0; margin:0 0 16px; background:transparent; color:#4d5870; font-size:12px; border:0; }
+[data-pos-income] .report-meta h3,[data-pos-income] .ptr-income-context h3 { margin:0; font-size:13px; line-height:1.5; color:#25324a; font-weight:800; }
 [data-pos-income] .ptr-income-context p { margin:0; font-size:12px; }
 .ptr-page .ptr-payroll-note { margin:0 0 16px; font-size:12px; }
 .ptr-page .ptr-table[aria-label="Payroll"] th:last-child,.ptr-page .ptr-table[aria-label="Payroll"] td:last-child { position:static; }
-.ptr-page .ptr-button,[data-pos-income] .button { min-height:40px; padding:8px 13px; border-radius:8px; font-size:12px; line-height:1.4; font-weight:700; }
-.ptr-page .ptr-arrow,[data-pos-income] .button-icon { flex:none; width:36px; min-width:36px; padding:4px; font-size:20px; }
-[data-pos-income] .ptr-report-period-arrow { align-self:flex-end; }
-.ptr-page .ptr-date { min-height:40px; }
-.ptr-page .ptr-select,[data-pos-income] .field select { min-height:40px; padding-right:44px; background-position:right 16px center; background-size:16px; font-size:12px; }
-.ptr-page .ptr-segments,[data-pos-income] .period-tabs { display:inline-flex; align-items:center; gap:2px; padding:3px; background:#f4f5fa; border:1px solid #e0e5ef; border-radius:9px; flex:none; }
-.ptr-page .ptr-segments button,[data-pos-income] .period-tab { min-height:32px; padding:7px 12px; border:0; border-radius:6px; background:transparent; font-size:12px; line-height:1.4; color:#4d5870; font-weight:700; }
-.ptr-page .ptr-segments button[aria-selected=true],[data-pos-income] .period-tab[aria-selected=true] { background:#4648d8; color:#fff; }
-[data-pos-income] .field label { font-size:11px; font-weight:700; }
-[data-pos-income] .picker-panel { flex:1 1 180px; min-width:0; }
-[data-pos-income] .picker-row { flex-wrap:wrap; }
-[data-pos-income] .picker-row .field { min-width:0; flex:1 1 150px; }
+.ptr-page .ptr-select,[data-pos-income] .field select { padding-right:44px; background-position:right 16px center; background-size:16px; }
 [data-pos-income] .section-heading h3,[data-pos-income] .table-heading h3,[data-pos-income] .chart-header h3 { margin:0; font-size:14px; line-height:1.4; font-weight:800; }
 .ptr-income-date { display:flex; align-items:center; gap:8px; position:relative; min-height:40px; min-width:150px; border:1px solid #dde5ef; border-radius:8px; padding:8px 12px; background:#fff; color:#172033; font-size:12px; font-weight:750; }
 .ptr-income-date>img { width:18px; height:18px; object-fit:contain; flex:none; }
@@ -30,34 +16,13 @@
 [data-pos-income] .ptr-income-date input { position:absolute; inset:0; opacity:0; width:100%; min-width:0; height:100%; padding:0; cursor:pointer; }
 .ptr-income-date input::-webkit-calendar-picker-indicator { position:absolute; inset:0; width:auto; height:auto; cursor:pointer; }
 .ptr-income-date:focus-within { outline:3px solid #c4b5fd; outline-offset:2px; }
-[data-pos-income] .ptr-service-picker { display:flex; align-items:flex-end; gap:8px; margin-left:auto; }
-[data-pos-income] .toolbar-card .custom-range { margin-left:auto; }
 [data-pos-income] .column-plot:has(.ptr-service-empty) { min-width:0; height:auto; min-height:120px; display:flex; align-items:center; justify-content:center; }
 .ptr-service-empty { margin:0; padding:30px 16px; text-align:center; color:#667085; font-size:12px; }
 [data-pos-income] [hidden] { display:none!important; }
-@media(max-width:1100px) {
-  .ptr-page .ptr-toolbar { align-items:flex-start; }
-  .ptr-page .ptr-payroll-tools { width:100%; }
-  [data-pos-income] .report-toolbar .period-control,[data-pos-income] .toolbar-card .period-tabs { flex-basis:100%; }
-  [data-pos-income] .period-control .period-tabs { flex-basis:auto; }
-  [data-pos-income] .ptr-service-picker { width:100%; margin:0; }
-  [data-pos-income] .ptr-service-picker .field { flex:1; min-width:0; }
-  [data-pos-income] .toolbar-card .custom-range { width:100%; margin:0; }
-}
 @media(max-width:720px) {
   .ptr-page .ptr-report-heading { align-items:flex-start; gap:10px; }
   .ptr-page .ptr-report-heading .ptr-actions,.ptr-page .ptr-report-heading .header-actions { width:100%; }
   .ptr-page .ptr-report-heading .ptr-button,[data-pos-income] .ptr-report-heading .button { flex:1; min-width:0; padding:8px; }
-  .ptr-page .ptr-period .ptr-segments { flex-basis:100%; justify-content:space-between; }
-  .ptr-page .ptr-segments button,[data-pos-income] .period-tab { flex:1; padding-inline:8px; }
-  .ptr-page .ptr-toolbar,.ptr-page .ptr-card-range,[data-pos-income] .report-toolbar,[data-pos-income] .toolbar-card { gap:10px; padding:10px; }
-  [data-pos-income] .period-tabs { width:100%; }
-  [data-pos-income] .picker-row { gap:10px; }
-  .ptr-page .ptr-card-range .ptr-field { flex:1; min-width:0; }
-  .ptr-page .ptr-card-range .ptr-date { min-width:0; }
   [data-pos-income] .ptr-income-date { min-width:0; }
-  [data-pos-income] .date-fields { display:flex; flex-wrap:wrap; gap:10px; }
-  [data-pos-income] .date-fields .field { flex:1 1 130px; min-width:0; }
-  [data-pos-income] .date-fields .button { flex-basis:100%; }
 }
-@media print { .ptr-report-heading,.ptr-service-picker { display:none!important; } }
+@media print { .ptr-report-heading { display:none!important; } }
