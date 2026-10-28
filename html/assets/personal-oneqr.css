@@ -54,8 +54,6 @@
 .pqr-toggle:before { content: ''; position: absolute; top: 3px; left: 3px; width: 11px; height: 11px; border-radius: 50%; background: #fff; }
 .pqr-toggle:checked:before { transform: translateX(12px); }
 .pqr-save { width: 100%; margin-top: 2px; }
-.pqr-profile-callout { border-top: 1px solid var(--nexora-border); margin-top: 18px; padding-top: 16px; }
-.pqr-profile-callout .pqr-button { margin-top: 12px; }
 .pqr-phone { border: 5px solid #e4e7f0; border-radius: 24px; overflow: hidden; background: #fff; max-width: 390px; margin-inline: auto; color: #0b1c30; }
 .pqr-phone-hero { background: linear-gradient(130deg,#4648d4,#7c4eef); color: #fff; padding: 24px 16px 20px; text-align: center; }
 .pqr-avatar { display: grid; place-items: center; width: 62px; height: 62px; border: 3px solid #fff; border-radius: 50%; background: #f0edff; overflow: hidden; margin: 0 auto 10px; }
@@ -98,7 +96,6 @@
 .pqr-consent input { accent-color: var(--nexora-brand); margin-top: 5px; }
 .pqr-terms { padding: 14px; margin: 15px 0; background: var(--nexora-surface-muted); border-radius: 7px; }
 .pqr-terms summary { cursor: pointer; font-size: 13px; font-weight: 600; }
-.pqr-profile-icon { width: 36px; height: 36px; object-fit: contain; }
 .pqr-dialog { padding: 0; width: min(94vw,700px); max-height: 90dvh; border: 1px solid var(--nexora-border); border-radius: 12px; color: var(--nexora-text); background: #fff; box-shadow: 0 24px 80px #0b1c3030; }
 .pqr-dialog::backdrop { background: #0b1c3066; backdrop-filter: blur(3px); }
 .pqr-dialog-head { display: flex; justify-content: space-between; align-items: center; gap: 10px; padding: 18px 20px; border-bottom: 1px solid var(--nexora-border); }
