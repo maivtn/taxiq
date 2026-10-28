@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {boot,group,leaf} from './helpers/shell-fixture.mjs';
 
 test('PO menu opens only the selected nested branch and persists it through refresh',t=>{
- const w=boot(t);group(w,'products').click();group(w,'business-tools').click();group(w,'stations').click();
+ const w=boot(t);w.document.querySelector('[data-sidebar-products-toggle]').click();group(w,'business-tools').click();group(w,'stations').click();
  assert.equal(group(w,'stations').getAttribute('aria-expanded'),'true');
  assert.equal(group(w,'payments').getAttribute('aria-expanded'),'false');
  w.NEXORA_SHELL.refreshSidebar();assert.equal(group(w,'stations').getAttribute('aria-expanded'),'true');
@@ -20,7 +20,7 @@ test('community native tabs still use the page callback',t=>{
 });
 test('blocked storage does not prevent nested navigation',t=>{
  const w=boot(t,{before(w){for(const key of ['sessionStorage','localStorage'])Object.defineProperty(w,key,{get(){throw Error('blocked');}});}});
- group(w,'products').click();w.NEXORA_SHELL.refreshSidebar();assert.equal(group(w,'products').getAttribute('aria-expanded'),'true');
+ w.document.querySelector('[data-sidebar-products-toggle]').click();w.NEXORA_SHELL.refreshSidebar();assert.equal(w.document.querySelector('[data-sidebar-products-toggle]').getAttribute('aria-expanded'),'true');assert.ok(Array.from(w.document.querySelectorAll('[data-product-menu]')).every(menu=>!menu.hidden));
 });
 test('legacy saved group and visibility keys survive editing the current menu',t=>{
  const w=boot(t,{before(w){w.localStorage.setItem('nexora.sidebar.visibility.v1',JSON.stringify({hiddenKeys:['reward','dashboard']}));w.sessionStorage.setItem('nexora.sidebar.expanded.v1',JSON.stringify({reward:true}));}});
@@ -59,11 +59,11 @@ test('PO technician commission report is not substituted with service or store i
 });
 
 test('opening a sidebar group closes its siblings while preserving ancestor groups',t=>{
- const w=boot(t);group(w,'pos').click();group(w,'front-desk').click();
- group(w,'products').click();assert.equal(group(w,'pos').getAttribute('aria-expanded'),'false');
- group(w,'business-tools').click();group(w,'stations').click();group(w,'payments').click();
+ const w=boot(t);w.document.querySelector('[data-sidebar-products-toggle]').click();group(w,'pos').click();group(w,'front-desk').click();
+ group(w,'business-tools').click();assert.equal(group(w,'pos').getAttribute('aria-expanded'),'false');
+ group(w,'stations').click();group(w,'payments').click();
  assert.equal(group(w,'stations').getAttribute('aria-expanded'),'false');
- for(const key of ['products','business-tools','payments'])assert.equal(group(w,key).getAttribute('aria-expanded'),'true');
+ for(const key of ['business-tools','payments'])assert.equal(group(w,key).getAttribute('aria-expanded'),'true');
  w.NEXORA_SHELL.refreshSidebar();assert.equal(group(w,'payments').getAttribute('aria-expanded'),'true');
  assert.equal(group(w,'pos').getAttribute('aria-expanded'),'false');
 });
@@ -85,4 +85,56 @@ test('sidebar subitems have text labels without icons or dot markers',t=>{
  assert.equal(w.document.querySelectorAll('.sidebar .nav-subitem img, .sidebar .nav-subitem .nav-subitem-dot').length,0);
  assert.ok(w.document.querySelector('.sidebar .nav-item img, .sidebar .nav-item [data-lucide]'));
  }
+});
+
+
+test('All products controls three sibling menus and occupies its original position after SI POS',t=>{
+ const w=boot(t),control=w.document.querySelector('[data-sidebar-products-toggle]'),nav=w.document.querySelector('.sidebar-nav');
+ assert.equal(control.tagName,'BUTTON');assert.equal(control.type,'button');assert.equal(control.parentElement,nav);assert.equal(control.querySelector('.sidebar-icon-wrap,[data-lucide],img'),null);
+ assert.equal(control.previousElementSibling.querySelector('[data-sidebar-key]').dataset.sidebarKey,'pos');
+ assert.equal(control.nextElementSibling.querySelector('[data-sidebar-key]').dataset.sidebarKey,'community');
+ assert.equal(control.hasAttribute('href'),false);assert.equal(control.hasAttribute('aria-current'),false);assert.equal(control.classList.contains('is-active'),false);
+ assert.equal(w.document.querySelector('#nexora-subnav-products'),null);
+ assert.deepEqual(Array.from(w.document.querySelectorAll('[data-product-menu]'),menu=>menu.querySelector('[data-sidebar-key]').dataset.sidebarKey),['community','booking','business-tools']);
+ for(const key of ['pos','community','booking','business-tools'])assert.equal(group(w,key).closest('.shell-tree-branch').parentElement,nav);
+ assert.equal(w.NEXORA_SHELL.sidebarMenuItems.some(item=>item.key==='products'),false);
+});
+test('All products hides and shows only the three product menus without expanding their submenus',t=>{
+ const w=boot(t),control=w.document.querySelector('[data-sidebar-products-toggle]'),menus=()=>Array.from(w.document.querySelectorAll('[data-product-menu]'));
+ assert.equal(control.getAttribute('aria-expanded'),'false');assert.ok(menus().every(menu=>menu.hidden));
+ group(w,'pos').click();const pos=group(w,'pos').getAttribute('aria-expanded');
+ control.click();assert.equal(control.getAttribute('aria-expanded'),'true');assert.ok(menus().every(menu=>!menu.hidden));
+ for(const key of ['community','booking','business-tools'])assert.equal(group(w,key).getAttribute('aria-expanded'),'false');
+ assert.equal(group(w,'pos').getAttribute('aria-expanded'),pos);
+ control.click();assert.equal(control.getAttribute('aria-expanded'),'false');assert.ok(menus().every(menu=>menu.hidden));
+ assert.equal(group(w,'pos').getAttribute('aria-expanded'),pos);assert.equal(group(w,'pos').closest('.shell-tree-branch').hidden,false);
+ assert.equal(leaf(w,'Getting started').hidden,false);assert.equal(leaf(w,'Support').hidden,false);
+});
+test('product-list visibility survives page changes and never derives active state from a child route',async t=>{
+ for(const open of [true,false]){
+ const source=boot(t),control=source.document.querySelector('[data-sidebar-products-toggle]');if(open)control.click();
+ const saved=source.sessionStorage.getItem('nexora.sidebar.expanded.v1');
+ const w=boot(t,{page:'community.html?tab=feed',activePage:'community',activeTab:'feed',before(w){w.sessionStorage.setItem('nexora.sidebar.expanded.v1',saved);}});
+ w.NEXORA_SHELL.setActiveTab('groups');await Promise.resolve();w.NEXORA_SHELL.refreshSidebar();
+ const next=w.document.querySelector('[data-sidebar-products-toggle]');assert.equal(next.getAttribute('aria-expanded'),String(open));
+ assert.ok(Array.from(w.document.querySelectorAll('[data-product-menu]')).every(menu=>menu.hidden===!open));
+ assert.equal(next.classList.contains('is-active'),false);assert.equal(next.hasAttribute('aria-current'),false);
+ }
+});
+test('hiding and restoring product menus preserves their selected branch and the normal accordion',t=>{
+ const w=boot(t),control=w.document.querySelector('[data-sidebar-products-toggle]');control.click();group(w,'community').click();
+ control.click();assert.equal(group(w,'community').closest('[data-product-menu]').hidden,true);
+ control.click();assert.equal(group(w,'community').getAttribute('aria-expanded'),'true');
+ group(w,'booking').click();assert.equal(group(w,'community').getAttribute('aria-expanded'),'false');
+ assert.equal(group(w,'booking').getAttribute('aria-expanded'),'true');group(w,'pos').click();assert.equal(group(w,'booking').getAttribute('aria-expanded'),'false');
+ assert.equal(control.getAttribute('aria-expanded'),'true');
+});
+
+test('Community has a separate destination link and disclosure button like Front Desk',t=>{
+ const w=boot(t),control=w.document.querySelector('[data-sidebar-products-toggle]');control.click();
+ const toggle=group(w,'community'),row=toggle.parentElement,link=row.querySelector('a');
+ assert.equal(link.textContent.trim(),'Community');assert.equal(link.getAttribute('href'),'community.html?tab=feed');
+ assert.equal(toggle.getAttribute('aria-label'),'Community');assert.equal(toggle.hasAttribute('href'),false);
+ const location=w.location.href;toggle.click();assert.equal(w.location.href,location);assert.equal(toggle.getAttribute('aria-expanded'),'true');
+ assert.equal(row.querySelectorAll('a').length,1);assert.equal(row.querySelectorAll('button').length,1);
 });

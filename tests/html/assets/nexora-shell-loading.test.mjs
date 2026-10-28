@@ -31,8 +31,9 @@ function shellStateBeforeDependency(file, dependency) {
   });
   try {
     for (const script of dom.window.document.querySelectorAll('script')) {
-      if (script.src.endsWith('/assets/nexora-shell.js')) dom.window.eval(shellSource);
-      else if (script.src.endsWith('/assets/nexora-shell-nav.js') || script.src.endsWith('/assets/nexora-icons.js')) dom.window.eval(readFileSync(new URL(script.src.split('/').pop(), SOURCE_DIR), 'utf8'));
+      const scriptPath = script.src ? new URL(script.src).pathname : '';
+      if (scriptPath.endsWith('/assets/nexora-shell.js')) dom.window.eval(shellSource);
+      else if (scriptPath.endsWith('/assets/nexora-shell-nav.js') || scriptPath.endsWith('/assets/nexora-icons.js')) dom.window.eval(readFileSync(new URL(scriptPath.split('/').pop(), SOURCE_DIR), 'utf8'));
       else if (script.textContent.includes('window.NEXORA_SHELL')) dom.window.eval(script.textContent);
     }
 
@@ -74,8 +75,9 @@ test('Promotions renders shared shell icons after Lucide becomes available', () 
   let iconRenders = 0;
   try {
     for (const script of dom.window.document.querySelectorAll('script')) {
-      if (script.src.endsWith('/assets/nexora-shell.js')) dom.window.eval(shellSource);
-      else if (script.src.endsWith('/assets/nexora-shell-nav.js') || script.src.endsWith('/assets/nexora-icons.js')) dom.window.eval(readFileSync(new URL(script.src.split('/').pop(), SOURCE_DIR), 'utf8'));
+      const scriptPath = script.src ? new URL(script.src).pathname : '';
+      if (scriptPath.endsWith('/assets/nexora-shell.js')) dom.window.eval(shellSource);
+      else if (scriptPath.endsWith('/assets/nexora-shell-nav.js') || scriptPath.endsWith('/assets/nexora-icons.js')) dom.window.eval(readFileSync(new URL(scriptPath.split('/').pop(), SOURCE_DIR), 'utf8'));
       else if (script.src.includes('/lucide@')) {
         dom.window.lucide = { createIcons() { iconRenders += 1; } };
       } else if (script.textContent.includes('window.NEXORA_SHELL') || script.textContent.includes('lucide.createIcons')) {

@@ -96,7 +96,7 @@
   }
   if (treeNav && activePage !== 'staff') {
     NAV = treeNav.nodes;
-    visit(NAV, function (node) { node.type = node.toggleAll ? 'control' : node.children ? 'group' : 'item'; node.items = node.children; });
+    visit(NAV, function (node) { node.type = node.toggleProducts ? 'control' : node.children ? 'group' : 'item'; node.items = node.children; });
   }
   function routeActive(node) {
     if (!node.href || /^(?:https?:|\.\.\/)/.test(node.href)) return false;
@@ -146,6 +146,9 @@
     });
   } catch (e) {}
 
+  // Discard the obsolete expand-all mode; products now controls visibility only.
+  delete expandedGroups.__all;
+
   function sidebarRoute() {
     var params = new URLSearchParams(window.location.search || '');
     return (window.location.pathname || '') + '|' + ['module', 'section', 'group', 'tab', 'view', 'bookingView', 'nav'].map(function(key) { return params.get(key) || ''; }).join('|') + '|' + activeTab;
@@ -153,10 +156,6 @@
 
   function normalizeExpandedGroups(preferActive) {
     if (activePage === 'staff') return;
-    if (typeof expandedGroups.__all === 'boolean') {
-      visit(NAV, function(node) { if (node.type === 'group') expandedGroups[node.key] = expandedGroups.__all; });
-      return;
-    }
     function normalize(nodes) {
       var groups = nodes.filter(function(node) { return node.type === 'group'; });
       var selected = preferActive && groups.find(function(node) { return groupIsActive(node, activeTab); });
@@ -378,11 +377,11 @@
       var active = node.navContext || node.href && node.href.indexOf('&view=') !== -1 ? routeActive(node) : node.page === activePage && node.tab ? node.tab === activeTab : routeActive(node);
       var label = ((depth === 0 || node.showIcon) && node.iconKey ? treeIcon(node) : '') + '<span class="shell-tree-label">' + esc(node.label) + '</span>' + (node.externalIndicator || node.newTab ? '<i class="sidebar-external-icon" data-lucide="arrow-up-right" aria-hidden="true"></i>' : '');
       var cls = depth ? 'nav-subitem' : 'nav-item';
-      if (node.toggleAll) return '<button type="button" class="shell-products-toggle nav-parent' + (expandedGroups.__all === true ? ' is-expanded' : '') + '" data-sidebar-toggle-all aria-expanded="' + (expandedGroups.__all === true) + '">' + label + CARET + '</button>';
+      if (node.toggleProducts) return '<button type="button" class="shell-products-toggle nav-parent' + (expandedGroups.products === true ? ' is-expanded' : '') + '" data-sidebar-products-toggle aria-expanded="' + (expandedGroups.products === true) + '" aria-controls="nexora-product-menu-community nexora-product-menu-booking nexora-product-menu-business-tools">' + label + CARET + '</button>';
       if (node.children) {
         var open = expandedGroups[node.key] === true, id = 'nexora-subnav-' + node.key;
         var ancestor = groupIsActive(node, activeTab);
-        return '<div class="shell-tree-branch" data-depth="' + depth + '"><div class="shell-tree-row">' +
+        return '<div class="shell-tree-branch" data-depth="' + depth + '"' + (node.productMenu ? ' id="nexora-product-menu-' + esc(node.key) + '" data-product-menu' + (expandedGroups.products === true ? '' : ' hidden') : '') + '><div class="shell-tree-row">' +
           (node.href ? '<a class="' + cls + (active ? ' is-active' : '') + '" href="' + esc(node.href) + '"' + (active ? ' aria-current="page"' : '') + '>' + label + '</a>' : '') +
           '<button class="' + cls + ' nav-parent' + (open ? ' is-expanded' : '') + (ancestor ? ' is-active' : '') + '" type="button" data-sidebar-key="' + esc(node.key) + '" data-nav-group aria-expanded="' + open + '" aria-controls="' + id + '"' + (node.href ? ' aria-label="' + esc(node.label) + '"' : '') + '>' + (node.href ? '' : label) + CARET + '</button></div>' +
           '<div class="nav-subnav' + (open ? '' : ' is-collapsed') + '" id="' + id + '" data-nav-subnav><div class="nav-subnav-inner">' + renderTree(node.children, depth + 1) + '</div></div></div>';
@@ -561,11 +560,10 @@
         if (!toggle) return;
         var active = groupIsActive(node, tab);
         toggle.classList.toggle('is-active', active);
-        if (active && expandedGroups.__all !== false) {
-          setGroupExpanded(toggle, true, expandedGroups.__all === true);
+        if (active) {
+          setGroupExpanded(toggle, true);
         }
       });
-      syncAllProductsToggle();
       saveExpandedGroups();
     }
   }
@@ -589,11 +587,10 @@
     }
   }
 
-  function setGroupExpanded(toggle, open, skipAccordion) {
+  function setGroupExpanded(toggle, open) {
     var sub = document.getElementById(toggle.getAttribute('aria-controls'));
     if (!sub) return;
-    if (!skipAccordion && activePage !== 'staff') delete expandedGroups.__all;
-    if (open && !skipAccordion) {
+    if (open) {
       var parent = toggle.closest('[data-nav-subnav], .sidebar-nav');
       var peers = document.querySelectorAll('.sidebar [data-nav-group]');
       for (var i = 0; i < peers.length; i++) {
@@ -604,16 +601,6 @@
     toggle.classList.toggle('is-expanded', open);
     toggle.setAttribute('aria-expanded', String(open));
     if (activePage !== 'staff') expandedGroups[sub.id.replace('nexora-subnav-', '')] = open;
-  }
-
-  function syncAllProductsToggle() {
-    var control = document.querySelector('.sidebar [data-sidebar-toggle-all]');
-    if (!control) return;
-    var groups = Array.from(document.querySelectorAll('.sidebar [data-nav-group]'));
-    var open = groups.length > 0 && groups.every(function(group) { return group.getAttribute('aria-expanded') === 'true'; });
-    control.setAttribute('aria-expanded', String(open));
-    control.setAttribute('aria-controls', groups.map(function(group) { return group.getAttribute('aria-controls'); }).join(' '));
-    control.classList.toggle('is-expanded', open);
   }
 
   function wireSidebar() {
@@ -638,22 +625,22 @@
         if (!sub) return;
         toggle.addEventListener('click', function () {
           setGroupExpanded(toggle, toggle.getAttribute('aria-expanded') !== 'true');
-          syncAllProductsToggle();
           saveExpandedGroups();
         });
       })(toggles[i]);
     }
 
-    var allProducts = document.querySelector('.sidebar [data-sidebar-toggle-all]');
-    if (allProducts) {
-      allProducts.addEventListener('click', function() {
-        var open = allProducts.getAttribute('aria-expanded') !== 'true';
-        Array.from(toggles).forEach(function(toggle) { setGroupExpanded(toggle, open, true); });
-        expandedGroups.__all = open;
-        syncAllProductsToggle();
+    var productsToggle = document.querySelector('.sidebar [data-sidebar-products-toggle]');
+    if (productsToggle) {
+      productsToggle.setAttribute('aria-controls', Array.from(document.querySelectorAll('.sidebar [data-product-menu]')).map(function(menu) { return menu.id; }).join(' '));
+      productsToggle.addEventListener('click', function() {
+        var open = productsToggle.getAttribute('aria-expanded') !== 'true';
+        document.querySelectorAll('.sidebar [data-product-menu]').forEach(function(menu) { menu.hidden = !open; });
+        productsToggle.setAttribute('aria-expanded', String(open));
+        productsToggle.classList.toggle('is-expanded', open);
+        expandedGroups.products = open;
         saveExpandedGroups();
       });
-      syncAllProductsToggle();
     }
 
     if (activePage === 'staff') {

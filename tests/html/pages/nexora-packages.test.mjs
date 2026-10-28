@@ -263,7 +263,7 @@ function renderPackageHistoryHTML() {
 test('creates the empty Package Management page from the shared shell', () => {
   const html = source();
   assert.match(html, /<title>NEXORA TOUCH - Package Management<\/title>/);
-  assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css">/);
+  assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css(?:\?[^\"]+)?">/);
   assert.match(html, /<aside class="sidebar" aria-label="Dashboard sidebar"><\/aside>/);
   assert.match(html, /<header class="header"><\/header>/);
   assert.match(html, /<main class="content" aria-label="Package management content">/);

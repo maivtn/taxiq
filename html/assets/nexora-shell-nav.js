@@ -270,13 +270,14 @@
   {
     "key": "products",
     "label": "All products",
-    "iconKey": "products",
-    "toggleAll": true
+    "toggleProducts": true
   },
   {
     "key": "community",
+    "productMenu": true,
     "label": "Community",
     "iconKey": "community",
+    "href": "https://nexoratouch.com/dashboard/community",
     "children": [
       {
         "key": "bang-tin",
@@ -303,6 +304,7 @@
   },
   {
     "key": "booking",
+    "productMenu": true,
     "label": "AI Hub",
     "iconKey": "aihub",
     "children": [
@@ -409,6 +411,7 @@
   },
   {
     "key": "business-tools",
+    "productMenu": true,
     "label": "Business tools",
     "iconKey": "oneqr",
     "availability": "preview",

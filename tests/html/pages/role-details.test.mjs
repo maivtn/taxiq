@@ -139,8 +139,8 @@ test('creates the Role Details page from the shared merchant shell', () => {
   assert.match(html, /<aside class="sidebar"[^>]*><\/aside>/);
   assert.match(html, /<header class="header"><\/header>/);
   assert.match(html, /<main class="content" aria-label="Role Details content">/);
-  assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css">/);
-  assert.match(html, /<script src="\.\.\/assets\/nexora-shell\.js"><\/script>/);
+  assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css(?:\?[^\"]+)?">/);
+  assert.match(html, /<script src="\.\.\/assets\/nexora-shell\.js(?:\?[^\"]+)?"><\/script>/);
   assert.match(html, /window\.NEXORA_SHELL = \{[\s\S]*?activePage: 'owner-settings',[\s\S]*?activeTab: 'sub-account',[\s\S]*?onNavigate: function \(tabId\) \{[\s\S]*?window\.location\.href = 'owner-setting\.html\?tab=' \+ encodeURIComponent\(tabId\);[\s\S]*?\}[\s\S]*?\};/);
 });
 

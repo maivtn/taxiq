@@ -303,12 +303,12 @@ test('creates Billing Detail from the Salon shared-shell skeleton', () => {
   assert.match(html, /data-billing-email-preview-modal hidden aria-hidden="true"/);
   assert.match(html, /data-billing-email-preview-body/);
   assert.match(html, /data-billing-email-preview-close/);
-  assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css">/);
+  assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css(?:\?[^\"]+)?">/);
   assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-package-billing-detail\.css">/);
   assert.match(html, /<script src="\.\.\/assets\/nexora-package-billing-data\.js"><\/script>\s*<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/sweetalert2@11"><\/script>\s*<script src="\.\.\/assets\/nexora-package-billing-detail\.js"><\/script>/);
   assert.match(html, /activePage:\s*'packages'/);
   assert.match(html, /activeTab:\s*'history'/);
-  assert.match(html, /<script src="\.\.\/assets\/nexora-shell\.js"><\/script>/);
+  assert.match(html, /<script src="\.\.\/assets\/nexora-shell\.js(?:\?[^\"]+)?"><\/script>/);
 });
 
 test('renders a paid billing record with invoice and receipt downloads', () => {

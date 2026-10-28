@@ -32,7 +32,7 @@ test('renders the Credit Usage view inside Booking Book Plans', () => {
   const html = source();
 
   assert.match(html, /<title>Nexora Touch - Booking Book Shell<\/title>/);
-  assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css">/);
+  assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css(?:\?[^\"]+)?">/);
   assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-credits\.css">/);
   assert.match(html, /<main class="content" aria-label="Booking Book content">/);
   assert.match(html, /data-plans-view-target="credits"/);

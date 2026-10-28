@@ -43,8 +43,8 @@ test('creates the Owner Settings page from the shared merchant shell', () => {
   assert.match(html, /<aside class="sidebar"[^>]*><\/aside>/);
   assert.match(html, /<header class="header"><\/header>/);
   assert.match(html, /<main class="content" aria-label="Settings content">/);
-  assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css">/);
-  assert.match(html, /<script src="\.\.\/assets\/nexora-shell\.js"><\/script>/);
+  assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css(?:\?[^\"]+)?">/);
+  assert.match(html, /<script src="\.\.\/assets\/nexora-shell\.js(?:\?[^\"]+)?"><\/script>/);
 });
 
 test('renders the requested Account Settings headline and tabs', () => {

@@ -174,12 +174,12 @@ test('creates the News & Library page from the shared merchant shell', () => {
   assert.doesNotMatch(html, /data-news-status/);
   assert.match(html, /<p class="page-description">Keep Nexora Touch news and Zoom schedules in one owner workspace\.<\/p>/);
   assert.doesNotMatch(html, /Keep VLINKPAY news/);
-  assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css">/);
+  assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css(?:\?[^\"]+)?">/);
   assert.match(html, /<script src="https:\/\/cdn\.jsdelivr\.net\/npm\/sweetalert2@11"><\/script>/);
   assert.doesNotMatch(html, /data-news-media-modal/);
   assert.doesNotMatch(html, /news-media-modal/);
   assert.match(html, /window\.NEXORA_SHELL = \{ activePage: 'news-library', activeTab: 'news' \};/);
-  assert.match(html, /<script src="\.\.\/assets\/nexora-shell\.js"><\/script>/);
+  assert.match(html, /<script src="\.\.\/assets\/nexora-shell\.js(?:\?[^\"]+)?"><\/script>/);
 });
 
 test('renders only the requested News & Library tabs with dynamic content mount points', () => {

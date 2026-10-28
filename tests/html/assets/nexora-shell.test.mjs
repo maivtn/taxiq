@@ -4,8 +4,9 @@ import {readFileSync,existsSync,readdirSync} from 'node:fs';
 import {boot,group,leaf,assets} from './helpers/shell-fixture.mjs';
 
 test('shared merchant shell renders the PO hierarchy and local operational destinations',t=>{
- const w=boot(t);for(const key of ['pos','products','community','booking','business-tools','stations','payments'])assert.ok(group(w,key),key);
+ const w=boot(t);for(const key of ['pos','community','booking','business-tools','stations','payments'])assert.ok(group(w,key),key);
  assert.equal(leaf(w,'Dashboard').getAttribute('href'),'dashboard.html');
+ assert.ok(w.document.querySelector('[data-sidebar-products-toggle]'));assert.equal(group(w,'products'),null);
  const front=w.document.querySelector('#nexora-subnav-front-desk');
  assert.deepEqual(Array.from(front.querySelectorAll('a'),x=>x.textContent),['Check-in','Tickets','Turn Board','Booking','Checkout','Completed Services','Estimate','Time clock']);
  assert.equal(leaf(w,'Tickets').getAttribute('href'),'pos-front-desk-tickets.html');
@@ -31,8 +32,12 @@ test('POS function search finds usable destinations without submitting a Dashboa
  assert.equal(w.document.querySelector('.shell-function-results a').getAttribute('href'),'pos-front-desk.html?section=estimate');
 });
 test('every shared-shell page loads icons and the PO model before the renderer',()=>{
- for(const file of readdirSync(new URL('../pages/',assets)).filter(x=>x.endsWith('.html'))){let html=readFileSync(new URL('../pages/'+file,assets),'utf8');if(!html.includes('src="../assets/nexora-shell.js"'))continue;
- assert.ok(html.indexOf('src="../assets/nexora-icons.js"')<html.indexOf('src="../assets/nexora-shell.js"'),file);assert.ok(html.includes('src="../assets/nexora-shell-nav.js"'),file);
+ for(const file of readdirSync(new URL('../pages/',assets)).filter(x=>x.endsWith('.html'))){
+ const html=readFileSync(new URL('../pages/'+file,assets),'utf8');
+ const scripts=Array.from(html.matchAll(/<script\b[^>]*\bsrc=["']([^"']+)["']/g),match=>match[1].split('?')[0]);
+ const shell=scripts.indexOf('../assets/nexora-shell.js');if(shell<0)continue;
+ const icons=scripts.indexOf('../assets/nexora-icons.js'),model=scripts.indexOf('../assets/nexora-shell-nav.js');
+ assert.ok(icons>=0&&icons<shell,file+' icons');assert.ok(model>=0&&model<shell,file+' navigation model');
  }
 });
 test('3D icon files are local 94px PNGs with traceable attribution',()=>{
@@ -47,7 +52,7 @@ test('merchant sidebar places Nexora Home directly between the brand and salon a
 test('merchant sidebar uses English labels, plan icon and keeps the three product-group icons',t=>{
  const w=boot(t),sidebar=w.document.querySelector('.sidebar');assert.doesNotMatch(sidebar.textContent,/[\u00c0-\u024f\u1e00-\u1eff]/);
  assert.ok(sidebar.querySelector('.plan-icon [data-lucide="crown"]'));assert.match(sidebar.querySelector('.plan-info').textContent,/Professional Pro/);assert.equal(sidebar.querySelectorAll('.nexora-3d-icon,.nexora-icon-credit').length,0);assert.doesNotMatch(sidebar.textContent,/↗/);assert.ok(sidebar.querySelector('.sidebar-external-icon[data-lucide="arrow-up-right"]'));
- for(const key of ['community','booking','business-tools'])assert.ok(group(w,key).querySelector('[data-lucide]'),key);
+ for(const key of ['community','booking','business-tools'])assert.ok(group(w,key).parentElement.querySelector('[data-lucide]'),key);
  assert.equal(w.localStorage.getItem('nexora-dashboard-language-v1'),'en');
 });
 test('current salon identity uses the existing catalog when no host override is supplied',t=>{

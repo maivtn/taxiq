@@ -11,7 +11,7 @@ function boot(saved){
  w.HTMLDialogElement.prototype.showModal=function(){this.open=true};w.HTMLDialogElement.prototype.close=function(){this.open=false};
  for(const [key,value] of Object.entries(saved||{}))w.localStorage.setItem(key,value);
  for(const script of w.document.scripts){
-  if(script.src){const src=script.getAttribute('src');if(src.startsWith('../assets/'))w.eval(fs.readFileSync(path.join(SOURCE_DIR,src),'utf8'));}
+  if(script.src){const src=script.getAttribute('src').split('?')[0];if(src.startsWith('../assets/'))w.eval(fs.readFileSync(path.join(SOURCE_DIR,src),'utf8'));}
   else w.eval(script.textContent);
  }
  return dom;

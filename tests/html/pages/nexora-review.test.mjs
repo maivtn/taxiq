@@ -56,10 +56,10 @@ test('keeps source scope and initials-only avatar contracts explicit', () => {
 
 test('loads page-scoped review assets after shared shell assets', () => {
   const html = source();
-  assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css">/);
+  assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-shell\.css(?:\?[^\"]+)?">/);
   assert.match(html, /<link rel="stylesheet" href="\.\.\/assets\/nexora-review\.css">/);
   assert.match(html, /<script src="\.\.\/assets\/nexora-review\.js"><\/script>/);
-  assert.match(html, /<script src="\.\.\/assets\/nexora-shell\.js"><\/script>/);
+  assert.match(html, /<script src="\.\.\/assets\/nexora-shell\.js(?:\?[^\"]+)?"><\/script>/);
   assert.match(readFileSync(JS_URL, 'utf8'), /const REVIEW_DATA/);
 });
 
