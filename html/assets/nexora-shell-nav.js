@@ -14,6 +14,8 @@
     if (opsView && front[opsView]) return front[opsView];
     if (opsView === 'clock') return 'pos-front-desk.html?section=clock';
     if (!href) return '';
+    if(href==='pos-qr-checkin.html')return 'qr-stations.html?tab=check-in&setup=qr';
+    if(href==='pos-checkin-devices.html')return 'qr-stations.html?tab=check-in&setup=device';
     if(href==='pos-shop-income-report.html')return 'pos-technician-report.html?tab=store';
     if(href==='pos-service-income-report.html')return 'pos-technician-report.html?tab=service';
     if (href === '#modules') return 'dashboard.html';
@@ -71,7 +73,7 @@
     if (path === '/dashboard/pos' && tab === 'timeclock') return 'pos-front-desk.html?section=clock';
     if (path === '/dashboard/pos/sms-campaigns') return 'nexora-sms-dashboard.html';
     if (path === '/dashboard/pos/printer') return 'pos-printer-setup.html';
-    var localRoutes = {'/dashboard/pos/report/technician':'pos-technician-report.html','/dashboard/pos/public-checkin':'pos-qr-checkin.html','/dashboard/pos/devices':'pos-checkin-devices.html','/dashboard/analytics':'nexora-analytics.html','/dashboard/category-management':'payment-categories.html','/dashboard/support':'nexora-support.html','/dashboard/ai-hub/setup-guide':'salon-guide-ai-voice.html'};
+    var localRoutes = {'/dashboard/pos/report/technician':'pos-technician-report.html','/dashboard/pos/public-checkin':'qr-stations.html?tab=check-in&setup=qr','/dashboard/pos/devices':'qr-stations.html?tab=check-in&setup=device','/dashboard/analytics':'nexora-analytics.html','/dashboard/category-management':'payment-categories.html','/dashboard/support':'nexora-support.html','/dashboard/ai-hub/setup-guide':'salon-guide-ai-voice.html'};
     if (localRoutes[path]) return localRoutes[path];
     if (path === '/dashboard/reports') return {'receive_payments':'payment-income.html',tips:'tip-list.html',direct_payments:'payment-activity.html'}[tab] || 'payment-income.html?tab=overview';
     if (path === '/dashboard/tips') return {overview:'tip-overview.html',payouts:'staff-payouts.html',savings:'direct-savings.html'}[tab] || 'tip-overview.html';
@@ -87,7 +89,9 @@
       if (['booking','customers','calllog','plans','settings'].indexOf(tab) !== -1) return 'booking-book-phase-1.html?tab=' + tab + (u.searchParams.has('view') ? '&view=' + u.searchParams.get('view') : '');
     }
     if (path === '/dashboard/touchpoints') {
-      var qrTabs = {'one-qr':'one-qr', tip:'qr-stations', payment:'accept-payment', referral:'referral-link', 'staff-invite':'staff-invite-qr'};
+      var checkinSection=u.searchParams.get('section');
+      if(checkinSection==='public-checkin'||checkinSection==='devices')return 'qr-stations.html?tab=check-in&setup='+(checkinSection==='devices'?'device':'qr');
+      var qrTabs = {'check-in':'check-in','one-qr':'one-qr', tip:'qr-stations', payment:'accept-payment', referral:'referral-link', 'staff-invite':'staff-invite-qr'};
       var qrTab = qrTabs[u.searchParams.get('section')];
       if (qrTab) return 'qr-stations.html?tab=' + qrTab;
     }
@@ -440,14 +444,9 @@
                     "href": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=payment"
                   },
                   {
-                    "key": "qr-khach-tu-check-in",
-                    "label": "Customer self check-in QR",
-                    "href": "https://nexoratouch.com/dashboard/pos/public-checkin"
-                  },
-                  {
-                    "key": "thiet-bi-tu-check-in",
-                    "label": "Self check-in devices",
-                    "href": "https://nexoratouch.com/dashboard/pos/devices"
+                    "key": "customer-self-check-in",
+                    "label": "Check-in",
+                    "href": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=check-in"
                   }
                 ]
               },

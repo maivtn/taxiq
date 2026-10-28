@@ -1,0 +1,78 @@
+/* Merged Customer self check-in layout from Nexora staging, Oct 28, 2026. */
+.oneqr-checkin { min-width:0; color:#19263e; font:13px/1.5 Inter,sans-serif; }
+.oneqr-checkin [hidden] { display:none!important; }
+.oneqr-checkin-heading { margin-bottom:22px; }
+.oneqr-checkin-heading h2 { margin:0 0 5px; font-size:20px; line-height:1.3; font-weight:800; }
+.oneqr-checkin-heading p { margin:0; color:#647087; }
+.oneqr-checkin-options { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:16px; margin-bottom:20px; }
+.oneqr-checkin-option { display:flex; flex-direction:column; gap:18px; min-width:0; padding:20px 16px 16px; border:1px solid #dce2ec; border-radius:16px; background:#fff; }
+.oneqr-checkin-option.is-expanded { border-color:#6a59dd; box-shadow:0 0 0 1px #6a59dd18; }
+.oneqr-checkin-summary { display:flex; align-items:center; flex:1; gap:14px; min-width:0; }
+.oneqr-checkin-summary>div:last-child { min-width:0; }
+.oneqr-checkin-summary h3 { margin:0 0 5px; font-size:18px; line-height:1.35; }
+.oneqr-checkin-summary p { margin:0; font-size:12px; color:#647087; }
+.oneqr-checkin-thumbnail { display:grid; place-items:center; flex:0 0 80px; height:80px; padding:3px; border:1px solid #dde3ed; border-radius:8px; background:#fff; }
+.oneqr-checkin-thumbnail img,.oneqr-checkin-thumbnail canvas { display:block; width:72px; height:72px; }
+.oneqr-checkin-device-count { display:block; margin-top:8px; font-size:12px; }
+.oneqr-checkin-actions { display:flex; gap:8px; flex-wrap:wrap; }
+.oneqr-checkin .nxa-button { min-height:40px; padding:9px 12px; border-radius:8px; font-size:12px; }
+.oneqr-checkin .nxa-button.primary,.oneqr-device-dialog .nxa-button.primary { background:#4648d8; border-color:#4648d8; }
+.oneqr-checkin-tablet { position:relative; display:grid; place-items:center; isolation:isolate; flex:0 0 128px; width:128px; height:112px; }
+.oneqr-checkin-tablet::before { content:''; position:absolute; bottom:4px; width:20px; height:14px; background:#dce2ec; }
+.oneqr-checkin-tablet::after { content:''; position:absolute; bottom:2px; width:48px; height:6px; border-radius:999px; background:#a9b1c0; }
+.oneqr-checkin-tablet>div { z-index:1; width:124px; height:96px; padding:8px; border:5px solid #263344; border-radius:10px; background:#f4f6fa; text-align:center; box-shadow:0 2px 8px #162b5018; transform:perspective(600px) rotateY(-8deg); }
+.oneqr-checkin-tablet strong { display:block; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; font-size:5px; line-height:1.2; color:#4648d8; }
+.oneqr-checkin-tablet b { display:block; font-size:9px; line-height:1.2; margin:7px 0; }
+.oneqr-checkin-tablet span { display:block; border-radius:3px; padding:5px; background:#4648d8; color:#fff; font-size:5px; line-height:1.2; font-weight:600; }
+.oneqr-checkin .oneqr-checkin-details { position:relative; width:100%; max-width:none; margin:0; padding:24px; border:1px solid #dde3ed; border-radius:16px; background:#fff; box-shadow:0 1px 3px #172e4505; }
+.oneqr-checkin-details:focus { outline:none; }
+.oneqr-checkin-details:focus-visible { outline:2px solid #8d80e0; outline-offset:3px; }
+.oneqr-checkin .oneqr-checkin-close { position:absolute; z-index:1; top:20px; right:24px; width:40px; height:40px; min-height:40px; padding:9px; color:#65738a; }
+.oneqr-checkin [data-oneqr-qr-detail]>.nxa-card { margin:0; padding:0; border:0; box-shadow:none; }
+.oneqr-checkin [data-oneqr-qr-detail]>.nxa-card>h3 { display:flex; align-items:center; gap:8px; padding-right:48px; margin:0 0 12px; font-size:18px; }
+.oneqr-checkin [data-oneqr-qr-detail]>.nxa-card>h3 svg { width:22px; height:22px; color:#6653db; flex:none; }
+.oneqr-checkin .nxa-preview-column h4 { margin:0 0 12px; font-size:14px; }
+.oneqr-checkin .nxa-heading { padding-right:48px; margin-bottom:24px; }
+.oneqr-checkin .nxa-heading h3 { margin:0 0 5px; font-size:24px; line-height:1.3; }
+.oneqr-checkin .nxa-heading p { margin-bottom:0; }
+.oneqr-checkin .nxa-device-columns { display:block; }
+.oneqr-checkin [data-oneqr-device-detail] .nxa-card { padding:16px; margin-bottom:22px; box-shadow:none; border-radius:12px; }
+.oneqr-checkin [data-oneqr-device-detail]>.nxa-card:last-child { margin-bottom:0; }
+.oneqr-checkin .nxa-card h4 { display:flex; align-items:center; gap:8px; font-size:14px; line-height:1.4; margin:0 0 8px; }
+.oneqr-checkin .nxa-card h4 svg { width:16px; height:16px; color:#6553d9; }
+.oneqr-checkin .nxa-card>p { font-size:12px; margin-bottom:12px; }
+.oneqr-checkin .nxa-link-wrap { border:0; padding:10px 12px; }
+.oneqr-checkin .nxa-pair-row { flex-wrap:nowrap; gap:16px; }
+.oneqr-checkin .nxa-pair-row>div:last-child { flex:1; min-width:0; }
+.oneqr-checkin .nxa-pair-row #device-qr { flex-basis:152px; padding:6px; border:1px solid #e1e5ed; border-radius:12px; }
+.oneqr-checkin #device-code { padding:10px 12px; background:#f6f7fb; border-radius:8px; overflow-wrap:anywhere; }
+.oneqr-pair-progress { display:block; width:100%; height:6px; margin:12px 0; border:0; border-radius:999px; accent-color:#4648d8; }
+.oneqr-pair-progress::-webkit-progress-bar { background:#f1f2f8; border-radius:999px; }
+.oneqr-pair-progress::-webkit-progress-value { background:#4648d8; border-radius:999px; }
+.oneqr-checkin [data-device-filter] { min-height:27px; padding:4px 9px; border-radius:999px; font-size:10px; border-color:transparent; background:#f5f6fa; }
+.oneqr-checkin [data-device-filter][aria-pressed=true] { background:#4648d8; color:#fff; }
+.oneqr-checkin .nxa-section-head { margin-bottom:12px; gap:12px; }
+.oneqr-checkin .nxa-section-head h4 { margin:0; }
+.oneqr-checkin .nxa-table-scroll th { text-transform:none; }
+.oneqr-checkin .nxa-table-scroll td,.oneqr-checkin .nxa-table-scroll th { padding:12px; }
+.oneqr-checkin .nxa-pill { border-radius:999px; text-transform:uppercase; font-size:10px; }
+.oneqr-checkin .nxa-pill.active { color:#6553d9; background:#edeaff; }
+.oneqr-device-actions { display:flex; justify-content:flex-end; gap:6px; }
+.oneqr-checkin .oneqr-device-actions .nxa-button { min-height:32px; padding:6px 9px; font-size:10px; }
+.oneqr-checkin .nxa-button.danger { color:#d24f5d; border-color:#efc7cc; }
+.oneqr-device-dialog { box-sizing:border-box; width:min(384px,calc(100vw - 32px)); max-height:calc(100dvh - 32px); overflow:auto; padding:24px; border:1px solid #dce2ed; border-radius:12px; color:#24324a; box-shadow:0 20px 70px #14233b40; }
+.oneqr-device-dialog::backdrop { background:#142033aa; backdrop-filter:blur(3px); }
+.oneqr-device-dialog header { display:flex; align-items:center; justify-content:space-between; gap:12px; margin-bottom:24px; }
+.oneqr-device-dialog h2 { margin:0; font-size:14px; }
+.oneqr-device-dialog header button { display:grid; place-items:center; width:30px; height:30px; border:0; background:transparent; color:#526075; cursor:pointer; }
+.oneqr-device-dialog header svg { width:16px; height:16px; }
+.oneqr-device-dialog label { display:grid; gap:7px; margin:20px 0 6px; font-size:11px; font-weight:800; color:#68758b; }
+.oneqr-device-dialog input { display:block; box-sizing:border-box; width:100%; min-height:44px; padding:10px 12px; border:1px solid #dce2ec; border-radius:8px; font:13px Inter,sans-serif; background:#f7f8fc; color:#24324a; }
+.oneqr-device-dialog input[name=confirmPin] { margin-top:6px; }
+.oneqr-device-dialog p { font-size:11px; line-height:1.5; color:#6d7890; }
+.oneqr-device-dialog footer { display:flex; justify-content:flex-end; gap:8px; margin-top:24px; }
+.oneqr-device-dialog footer .nxa-button { min-height:34px; padding:7px 12px; font-size:11px; }
+.oneqr-device-dialog input:focus-visible,.oneqr-device-dialog button:focus-visible { outline:2px solid #7a6ed9; outline-offset:2px; }
+.oneqr-device-dialog button:disabled { opacity:.5; cursor:not-allowed; }
+@media(max-width:1100px) { .oneqr-checkin-options { gap:12px; }.oneqr-checkin-summary { gap:10px; }.oneqr-checkin-tablet { flex-basis:100px; width:100px; }.oneqr-checkin-tablet>div { width:100px; }.oneqr-checkin-summary h3 { font-size:16px; }.oneqr-checkin-actions .nxa-button { font-size:11px; padding-inline:10px; } }
+@media(max-width:767px) { .oneqr-checkin-options { grid-template-columns:minmax(0,1fr); }.oneqr-checkin .oneqr-checkin-details { padding:16px; }.oneqr-checkin .oneqr-checkin-close { top:16px; right:16px; }.oneqr-checkin .nxa-heading h3 { font-size:20px; }.oneqr-checkin .nxa-pair-row { flex-wrap:wrap; }.oneqr-checkin .nxa-pair-row>div:last-child { flex-basis:100%; }.oneqr-checkin .nxa-columns { gap:20px; }.oneqr-checkin [data-oneqr-device-detail] .nxa-card { padding:12px; }.oneqr-checkin .nxa-actions .nxa-button { flex:1 1 120px; } }

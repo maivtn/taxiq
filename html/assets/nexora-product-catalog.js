@@ -21,12 +21,8 @@ window.NEXORA_PRODUCT_CATALOG = {
             "url": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=payment"
           },
           {
-            "label": "Customer self check-in QR",
-            "url": "https://nexoratouch.com/dashboard/pos/public-checkin"
-          },
-          {
-            "label": "Self check-in devices",
-            "url": "https://nexoratouch.com/dashboard/pos/devices"
+            "label": "Check-in",
+            "url": "https://nexoratouch.com/dashboard/touchpoints?tab=stations&section=check-in"
           }
         ]
       },

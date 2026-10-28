@@ -26,6 +26,7 @@
     if (!window.history || typeof window.history[method] !== 'function') return;
     var url = new URL(window.location.href);
     url.searchParams.set('tab', tabId);
+    if(tabId!=='check-in'){url.searchParams.delete('setup');url.searchParams.delete('pair');}
     window.history[method]({ qrTab: tabId }, '', url.href);
   }
 
@@ -41,10 +42,11 @@
     panels.forEach(function (panel) {
       panel.hidden = panel.getAttribute('data-qr-panel') !== activeTabId;
     });
+    if (shouldUpdateURL) updateTabURL(activeTabId, 'pushState');
     if (window.NEXORA_SHELL && typeof window.NEXORA_SHELL.setActiveTab === 'function') {
       window.NEXORA_SHELL.setActiveTab(activeTabId);
     }
-    if (shouldUpdateURL) updateTabURL(activeTabId, 'pushState');
+    window.dispatchEvent(new CustomEvent('nexora:qr-tab-changed',{detail:{tab:activeTabId}}));
     return activeTabId;
   }
 

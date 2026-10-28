@@ -59,6 +59,8 @@
   <link rel="stylesheet" href="../assets/oneqr-tip.css?v=po-20261027">
   <link rel="stylesheet" href="../assets/oneqr-contact-card.css?v=card-colors-3">
   <link rel="stylesheet" href="../assets/oneqr-experience.css?v=1">
+  <link rel="stylesheet" href="../assets/nexora-local-admin.css?v=merged-checkin-20261028">
+  <link rel="stylesheet" href="../assets/oneqr-checkin.css?v=merged-checkin-20261028">
 </head>
 <body>
   <div class="shell">
@@ -90,6 +92,7 @@
                 <span class="qr-tab-icon"><i data-lucide="credit-card" aria-hidden="true"></i></span>
                 <span>Payment Method</span>
               </button>
+              <button id="qr-tab-check-in" class="qr-tab" type="button" role="tab" aria-selected="false" aria-controls="qr-panel-check-in" data-qr-tab="check-in" tabindex="-1"><span class="qr-tab-icon"><i data-lucide="scan-qr-code" aria-hidden="true"></i></span><span>Check-in</span></button>
               <button id="qr-tab-referral-link" class="qr-tab" type="button" role="tab" aria-selected="false" aria-controls="qr-panel-referral-link" data-qr-tab="referral-link" tabindex="-1">
                 <span class="qr-tab-icon"><i data-lucide="share-2" aria-hidden="true"></i></span>
                 <span>Referral Link</span>
@@ -98,14 +101,6 @@
                 <span class="qr-tab-icon"><i data-lucide="user-plus" aria-hidden="true"></i></span>
                 <span>Staff Invite QR</span>
               </button>
-              <a class="qr-tab" href="pos-qr-checkin.html">
-                <span class="qr-tab-icon"><img src="../assets/icon-oneqr/issue-2040-oneqr-qr-code-3d.png" alt="" width="22" height="22"></span>
-                <span>QR Self Check-in</span>
-              </a>
-              <a class="qr-tab" href="pos-checkin-devices.html">
-                <span class="qr-tab-icon"><img src="../assets/icon-oneqr/issue-2040-oneqr-tv-3d.png" alt="" width="22" height="22"></span>
-                <span>Self Check-in Device</span>
-              </a>
             </div>
           </div>
 
@@ -461,6 +456,17 @@
             </section>
           </section>
 
+
+          <section id="qr-panel-check-in" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-check-in" data-qr-panel="check-in" hidden>
+            <div class="oneqr-checkin" data-oneqr-checkin>
+              <header class="oneqr-checkin-heading"><h2>Customer self check-in</h2><p>Choose how customers check in when they arrive.</p></header>
+              <div class="oneqr-checkin-options">
+                <article class="oneqr-checkin-option" data-checkin-option="qr"><div class="oneqr-checkin-summary"><div class="oneqr-checkin-thumbnail" id="checkin-summary-qr" role="img" aria-label="QR Check-in"></div><div><h3>QR Check-in</h3><p>Customers scan with their own phone.</p></div></div><div class="oneqr-checkin-actions"><button type="button" class="nxa-button primary" data-checkin-expand="qr" aria-expanded="false" aria-controls="oneqr-checkin-details"> <i data-lucide="printer" aria-hidden="true"></i>View &amp; Print QR</button><button type="button" class="nxa-button" data-checkin-copy><i data-lucide="copy" aria-hidden="true"></i>Copy Link</button></div></article>
+                <article class="oneqr-checkin-option" data-checkin-option="device"><div class="oneqr-checkin-summary"><div class="oneqr-checkin-tablet" aria-hidden="true"><div><strong>BITCOIN NAIL BAR</strong><b>Welcome in.</b><span>Tap to check in</span></div></div><div><h3>Check-in Device</h3><p>Customers use a tablet at the front desk.</p><strong class="oneqr-checkin-device-count" data-checkin-device-count aria-live="polite"></strong></div></div><div class="oneqr-checkin-actions"><button type="button" class="nxa-button primary" data-checkin-expand="device" aria-expanded="false" aria-controls="oneqr-checkin-details"><i data-lucide="tablet" aria-hidden="true"></i>Set up device</button><a class="nxa-button" data-checkin-screen href="../customer/check-in-mobile.html?mode=kiosk" target="_blank" rel="noopener"><i data-lucide="external-link" aria-hidden="true"></i>Open check-in screen</a></div></article>
+              </div>
+              <section class="oneqr-checkin-details nx-admin" id="oneqr-checkin-details" aria-label="QR Self Check-in" tabindex="-1" hidden><button class="oneqr-checkin-close nxa-button" type="button" data-checkin-close aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button><div data-oneqr-qr-detail hidden><section class="nxa-card"><h3><i data-lucide="qr-code" aria-hidden="true"></i> Check-in QR — print and stick it at the door</h3><p>Customers scan this to check in from their own phone. The link never changes, so you print it once.</p><div class="nxa-columns"><div class="nxa-form" id="qr-controls"><label>Layout source<select id="qr-layout"><option value="artwork">Artwork templates</option><option value="custom">Custom layout</option></select></label><div role="radiogroup" aria-label="Choose artwork" class="nxa-artworks" id="qr-artworks"><button type="button" role="radio" aria-checked="true" aria-label="Modern Minimal Light" data-artwork="modern-minimal-light"><img src="../assets/checkin-artwork/modern-minimal-light-thumb.webp" alt="" loading="lazy"><span>Modern Minimal Light</span></button><button type="button" role="radio" aria-checked="false" aria-label="Dark Luxury" data-artwork="dark-luxury"><img src="../assets/checkin-artwork/dark-luxury-thumb.webp" alt="" loading="lazy"><span>Dark Luxury</span></button><button type="button" role="radio" aria-checked="false" aria-label="Elegant Floral" data-artwork="elegant-floral"><img src="../assets/checkin-artwork/elegant-floral-thumb.webp" alt="" loading="lazy"><span>Elegant Floral</span></button><button type="button" role="radio" aria-checked="false" aria-label="Modern Dark Glow" data-artwork="modern-dark-glow"><img src="../assets/checkin-artwork/modern-dark-glow-thumb.webp" alt="" loading="lazy"><span>Modern Dark Glow</span></button><button type="button" role="radio" aria-checked="false" aria-label="Clean Friendly" data-artwork="clean-friendly"><img src="../assets/checkin-artwork/clean-friendly-thumb.webp" alt="" loading="lazy"><span>Clean Friendly</span></button><button type="button" role="radio" aria-checked="false" aria-label="Premium Portrait" data-artwork="premium-portrait"><img src="../assets/checkin-artwork/premium-portrait-thumb.webp" alt="" loading="lazy"><span>Premium Portrait</span></button><button type="button" role="radio" aria-checked="false" aria-label="Minimal Line Art" data-artwork="minimal-line-art"><img src="../assets/checkin-artwork/minimal-line-art-thumb.webp" alt="" loading="lazy"><span>Minimal Line Art</span></button><button type="button" role="radio" aria-checked="false" aria-label="Bold Vivid" data-artwork="bold-vivid"><img src="../assets/checkin-artwork/bold-vivid-thumb.webp" alt="" loading="lazy"><span>Bold Vivid</span></button></div><div class="nxa-actions" id="qr-artwork-toggles"><label><input type="checkbox" id="qr-logo"> Show salon logo</label><label><input type="checkbox" id="qr-salon-name"> Show salon name</label></div><p id="qr-artwork-note">Artwork text and colors are fixed; your salon check-in QR is added automatically.</p><div class="nxa-form" id="qr-custom" hidden><div class="nxa-chips" role="radiogroup" aria-label="Custom layout"><button type="button" role="radio" aria-checked="true" data-custom="Simple">Simple</button><button type="button" role="radio" aria-checked="false" data-custom="Classic Gold">Classic Gold</button><button type="button" role="radio" aria-checked="false" data-custom="Modern Navy">Modern Navy</button><button type="button" role="radio" aria-checked="false" data-custom="Minimal Clean">Minimal Clean</button><button type="button" role="radio" aria-checked="false" data-custom="Wide Counter">Wide Counter</button><button type="button" role="radio" aria-checked="false" data-custom="Soft Sage">Soft Sage</button></div><label>Design size<select><option>Card 4 × 6 in</option></select></label><label>Print language<select><option>English</option></select></label><label>Headline<input id="qr-headline" maxlength="60" value="CHECK IN HERE"></label><label>Closing message<textarea id="qr-closing" maxlength="100">Thank you for visiting!</textarea></label><label>Color palette<select id="qr-palette"><option value="ink">Ink</option><option value="gold">Gold</option></select></label><div class="nxa-actions"><label><input type="checkbox" id="qr-hours" checked> Business hours</label><label><input type="checkbox" id="qr-link-visible" checked> Check-in link</label><label><input type="checkbox" id="qr-instructions" checked> Instructions</label></div></div><label>Customer check-in link<span class="nxa-copy"><a id="qr-checkin-link" href="../customer/check-in-mobile.html"></a><button type="button" class="nxa-button" id="qr-copy">Copy</button></span></label></div><section class="nxa-preview-column"><h4>Live preview</h4><div class="nxa-canvas-wrap"><canvas id="qr-preview" width="1224" height="1584" aria-label="Check-in QR live preview"></canvas></div><div class="nxa-actions"><button class="nxa-button" type="button" data-qr-export="print"><i data-lucide="printer" aria-hidden="true"></i>Print</button><button class="nxa-button" type="button" data-qr-export="pdf">Download PDF</button><button class="nxa-button" type="button" data-qr-export="png">Download PNG</button><button class="nxa-button" type="button" data-qr-export="qr">Download QR PNG</button></div><p class="nxa-muted">Choose paper and scale in the print dialog. Use 100% for actual size and turn off headers and footers. Printer margins may leave a white border.</p></section></div></section><div id="qr-renderer" hidden></div></div><div data-oneqr-device-detail hidden><div class="nxa-heading"><h3>Self Check-in Device</h3><p>Open a kiosk link for customer check-in, or pair and manage your check-in tablets.</p></div><div class="nxa-device-columns"><section class="nxa-card"><h4><i data-lucide="tablet" aria-hidden="true"></i> Kiosk Check-In Link</h4><p>Open this link on any phone, tablet, or computer for customer check-in. No device pairing is needed.</p><p class="nxa-link-wrap" id="device-kiosk-text"></p><div class="nxa-actions"><button type="button" class="nxa-button" id="device-copy">Copy Link</button><a class="nxa-button primary" href="../customer/check-in-mobile.html?mode=kiosk" id="device-kiosk">Open Kiosk</a></div></section><section class="nxa-card"><h4>Pairing code</h4><div class="nxa-pair-row"><div id="device-qr" role="img" aria-label="Tablet pairing QR code"></div><div><p id="device-code"></p><progress class="oneqr-pair-progress" id="device-progress" max="900" value="900"></progress><p>This code expires in <strong id="device-expires">15:00</strong></p><button type="button" class="nxa-button" id="device-new-code">New code</button></div></div><p>Open the tablet's camera and scan this code. It works once and lasts 15 minutes — as soon as a tablet uses it, a new code appears here.</p></section></div><section class="nxa-card"><div class="nxa-section-head"><h4 data-device-heading>Paired tablets (0 active)</h4><div class="nxa-chips" aria-label="Paired tablets"><button type="button" data-device-filter="All" aria-pressed="true">All</button><button type="button" data-device-filter="Active" aria-pressed="false">Active</button><button type="button" data-device-filter="Revoked" aria-pressed="false">Revoked</button><button type="button" data-device-filter="Expired" aria-pressed="false">Expired</button></div></div><div class="nxa-table-scroll"><table><thead><tr><th>Name</th><th>Status</th><th>Paired by</th><th>Paired</th><th>Last activity</th><th>Device</th><th>Actions</th></tr></thead><tbody id="device-rows"></tbody></table></div></section></div></section>
+            </div>
+          </section>
           <section id="qr-panel-referral-link" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-referral-link" data-qr-panel="referral-link" hidden>
             <p class="qr-workflow-intro">Share your affiliate link and choose where new members are placed in your network.</p>
             <article class="referral-card">
@@ -500,6 +506,7 @@
           </section>
         </section>
       </main>
+      <dialog class="oneqr-device-dialog" id="checkin-device-edit" aria-labelledby="checkin-device-edit-title"><form id="checkin-device-edit-form"><header><h2 id="checkin-device-edit-title">Edit tablet</h2><button type="button" data-device-edit-close aria-label="Cancel"><i data-lucide="x" aria-hidden="true"></i></button></header><label>DEVICE NAME<input name="name" required maxlength="80"></label><label>NEW ACCESS PIN<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{4,6}" minlength="4" maxlength="6" placeholder="e.g. 4821" autocomplete="new-password"></label><input name="confirmPin" type="password" inputmode="numeric" minlength="4" maxlength="6" placeholder="Confirm PIN" aria-label="Confirm PIN" autocomplete="new-password"><p>Leave blank to keep the current PIN. 4 to 6 digits.</p><footer><button class="nxa-button" type="button" data-device-edit-close>Cancel</button><button class="nxa-button primary" type="submit" data-device-edit-save disabled>Save</button></footer></form></dialog>
     </div>
   </div>
 
@@ -802,15 +809,18 @@
   <script src="../assets/qr-stations-qrcode.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
   <script src="../assets/nexora-icons.js"></script>
-  <script src="../assets/nexora-shell-nav.js"></script>
+  <script src="../assets/nexora-shell-nav.js?v=merged-checkin-20261028"></script>
   <script src="../assets/nexora-shell.js"></script>
   <script src="../assets/oneqr-action-appearance.js"></script>
   <script src="../assets/oneqr-industries.js"></script>
   <script src="../assets/oneqr-experience.js?v=1"></script>
   <script src="../assets/oneqr-contact-card.js?v=profile-details-4"></script>
-  <script src="../assets/qr-stations-oneqr.js?v=profile-insights-8"></script>
+  <script src="../assets/qr-stations-oneqr.js?v=merged-checkin-20261028"></script>
   <script src="../assets/oneqr-builder-insights.js?v=1"></script>
   <script src="../assets/qr-stations-workflows.js"></script>
   <script src="../assets/oneqr-tip.js?v=po-20261027"></script>
+  <script src="../assets/pos-qr-checkin.js?v=merged-checkin-20261028"></script>
+  <script src="../assets/pos-checkin-devices.js?v=merged-checkin-20261028"></script>
+  <script src="../assets/oneqr-checkin.js?v=merged-checkin-20261028"></script>
 </body>
 </html>
