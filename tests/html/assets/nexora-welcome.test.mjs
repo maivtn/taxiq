@@ -15,6 +15,7 @@ function loadPage(name, saved = {}) {
   window.eval(asset('nexora-icons.js'));
   if (name === 'salon-home.html') {
     window.eval(asset('nexora-shell-nav.js'));
+    window.eval(asset('nexora-salon-audio.js'));
     window.eval(asset('nexora-salon-home.js'));
   } else {
     window.eval(asset('nexora-welcome-data.js'));
@@ -75,6 +76,26 @@ test('PO feature explorer changes product and renders the selected One QR previe
     assert.match(window.document.getElementById('explorer-screen').getAttribute('aria-label'), /Book appointment/);
     assert.match(window.document.querySelector('#explorer-module-link').href, /dashboard\.html\?module=oneqr$/);
     assert.ok([...window.document.querySelectorAll('#explorer-feature-list button[aria-pressed="true"]')].some((button) => button.textContent.endsWith('Book appointment')));
+  } finally { dom.window.close(); }
+});
+
+test('every Salon Home feature renders the selected screen without script errors', () => {
+  const dom = loadPage('salon-home.html');
+  try {
+    const { window } = dom;
+    const errors = [];
+    window.addEventListener('error', event => { errors.push(event.error); event.preventDefault(); });
+    const names = [...window.document.querySelectorAll('#explorer-products button')].map(button => button.textContent);
+    for (const name of names) {
+      [...window.document.querySelectorAll('#explorer-products button')].find(button => button.textContent === name).click();
+      const labels = [...window.document.querySelectorAll('#explorer-feature-list button span:nth-child(2)')].map(label => label.textContent);
+      for (const [index, label] of labels.entries()) {
+        window.document.querySelectorAll('#explorer-feature-list button')[index].click();
+        assert.equal(errors.length, 0, `${name}: ${label}: ${errors[0]?.message}`);
+        assert.equal(window.document.querySelector('#explorer-screen .explorer-screen-head span').textContent, label, `${name}: selected preview must update`);
+        assert.ok(window.document.querySelector('#explorer-screen .explorer-screen-body').childElementCount > 0, `${name}: ${label}: preview must contain a visual`);
+      }
+    }
   } finally { dom.window.close(); }
 });
 

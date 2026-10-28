@@ -14,6 +14,17 @@
 .po-salon-home .tree .nav-start-link.active { min-height: 39px; background: linear-gradient(105deg,#7652e9,#316bc7); box-shadow: inset 3px 0 #a8f1ff; color: #fff; font-weight: 800; }
 .po-salon-home .tree .nav-start-link.is-in-support.active { background: linear-gradient(105deg,#7652e9,#316bc7); color: #fff; }
 .po-salon-home { max-width: 1450px; margin: 0 auto; padding: 24px clamp(20px, 3vw, 42px) 55px; }
+.po-salon-home #salon-intro-video,
+.po-salon-home #salon-products,
+.po-salon-home #salon-ai-marketing,
+.po-salon-home #salon-spin-wheel,
+.po-salon-home #salon-businesses,
+.po-salon-home #salon-feature-explorer,
+.po-salon-home #salon-work,
+.po-salon-home #salon-owner { scroll-margin-top: 72px; }
+@media (max-width: 767px) {
+.po-salon-home #salon-home-view [id^="salon-"] { scroll-margin-top: 128px; }
+}
 @media (min-width: 1800px) {
 .po-salon-home .content:has(#dashboard-view:not([hidden]) #dashboard-default:not([hidden])) { max-width: 2200px; }
 }
@@ -493,6 +504,8 @@
 .po-salon-home .explorer-ai-head > div { display: grid; gap: 2px; min-width: 0; }
 .po-salon-home .explorer-ai-head strong { font-size: 11px; }
 .po-salon-home .explorer-ai-head small { color: #697c70; font-size: 9px; }
+.po-salon-home #explorer-speak { margin-inline-start: auto; padding: 8px 11px; border: 1px solid #b9d4c2; border-radius: 8px; background: #fff; color: #225f57; font-size: 10px; font-weight: 850; white-space: nowrap; cursor: pointer; }
+.po-salon-home #explorer-ai-summary { margin: 12px 0 !important; color: #213b32; font-size: 12px; font-weight: 700; line-height: 1.55; }
 .po-salon-home .explorer-ai-points { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
 .po-salon-home .explorer-ai-points > div { padding: 10px 11px; border: 1px solid #e3eae2; border-radius: 9px; background: #fff; }
 .po-salon-home .explorer-ai-points span { color: #42725d; font-size: 9px; font-weight: 900; letter-spacing: .04em; text-transform: uppercase; }
@@ -501,6 +514,7 @@
 @media (max-width: 620px) {
 .po-salon-home .explorer-ai-points { grid-template-columns: 1fr; }
 .po-salon-home .explorer-ai-head { flex-wrap: wrap; }
+.po-salon-home #explorer-speak { margin-inline-start: 40px; }
 }
 @media (prefers-reduced-motion: reduce) {
 .po-salon-home .explorer-ai-guide.is-updating { animation: none; }
@@ -518,11 +532,14 @@
 .po-salon-home .explorer-products button:nth-child(4n + 3) { --studio-chip: #f8e4fa; }
 .po-salon-home .explorer-products button:nth-child(4n + 4) { --studio-chip: #def8f1; }
 .po-salon-home .explorer-products button::before,
-.po-salon-home .explorer-detail-foot a::before { content: ''; position: absolute; z-index: -1; inset: -30% auto -30% -75%; width: 45%; background: linear-gradient(90deg, transparent, #ffffffa8, transparent); transform: skewX(-23deg); transition: left .65s ease; pointer-events: none; }
+.po-salon-home .explorer-detail-foot a::before,
+.po-salon-home #explorer-speak::before { content: ''; position: absolute; z-index: -1; inset: -30% auto -30% -75%; width: 45%; background: linear-gradient(90deg, transparent, #ffffffa8, transparent); transform: skewX(-23deg); transition: left .65s ease; pointer-events: none; }
 .po-salon-home .explorer-products button:hover::before,
 .po-salon-home .explorer-products button:focus-visible::before,
 .po-salon-home .explorer-detail-foot a:hover::before,
-.po-salon-home .explorer-detail-foot a:focus-visible::before { left: 135%; }
+.po-salon-home .explorer-detail-foot a:focus-visible::before,
+.po-salon-home #explorer-speak:hover::before,
+.po-salon-home #explorer-speak:focus-visible::before { left: 135%; }
 .po-salon-home .explorer-products button:hover,
 .po-salon-home .explorer-products button:focus-visible { border-color: #fff; background: linear-gradient(145deg, #fff, var(--studio-chip)); transform: perspective(700px) rotateX(7deg) rotateY(-5deg) translate3d(0,-4px,9px); box-shadow: inset 0 1px #fff, 0 9px 0 #0c1b4d78, 0 20px 25px #07184a72; }
 .po-salon-home .explorer-products button[aria-pressed="true"] { border-color: #d7d0ff; background: linear-gradient(125deg, #803df0, #4e4de1 54%, #137dbd); color: #fff; box-shadow: inset 0 1px #ffffff7a, inset 0 -3px #20339070, 0 6px 0 #111656, 0 13px 24px #631de27a; animation: studioSelectedPop .42s cubic-bezier(.2,.8,.2,1), studioSelectedGlow 3.4s ease-in-out .42s infinite; }
@@ -559,6 +576,11 @@
 .po-salon-home .explorer-ai-points > div { border-color: #dedff7; background: #ffffffde; }
 .po-salon-home .explorer-ai-points span { color: #5645b8; }
 .po-salon-home .explorer-ai-points p { color: #435176; }
+.po-salon-home #explorer-ai-summary { color: #202857; }
+.po-salon-home #explorer-speak { position: relative; isolation: isolate; overflow: hidden; border-color: #aeb7ee; background: linear-gradient(145deg, #fff, #eeedff); color: #4a3ab5; box-shadow: 0 3px 0 #a7a2d4, 0 7px 12px #5552a229; transition: transform .25s, box-shadow .25s; }
+.po-salon-home #explorer-speak:hover,
+.po-salon-home #explorer-speak:focus-visible { background: linear-gradient(145deg, #fff, #e4e6ff); transform: perspective(500px) rotateX(5deg) translateY(-3px); box-shadow: 0 6px 0 #918bc3, 0 13px 17px #5552a240; }
+.po-salon-home #explorer-speak:active { transform: translateY(2px); box-shadow: 0 1px 0 #918bc3; }
 .po-salon-home .explorer-detail-foot a { position: relative; isolation: isolate; overflow: hidden; border: 1px solid #8179ed; background: linear-gradient(120deg, #7142d6, #4c58dc 58%, #1385b6); box-shadow: inset 0 1px #ffffff78, 0 4px 0 #2b318f, 0 10px 16px #393aa644; transition: transform .28s, box-shadow .28s; }
 .po-salon-home .explorer-detail-foot a:hover,
 .po-salon-home .explorer-detail-foot a:focus-visible { background: linear-gradient(120deg, #834dec, #5663e6 58%, #169ac5); transform: perspective(600px) rotateX(5deg) translate3d(0,-3px,5px); box-shadow: inset 0 1px #ffffffa8, 0 7px 0 #2b318f, 0 16px 21px #393aa65c; }
@@ -586,6 +608,7 @@
 @media (hover: none) {
 .po-salon-home .explorer-products button:hover,
 .po-salon-home .explorer-feature-list button:hover,
+.po-salon-home #explorer-speak:hover,
 .po-salon-home .explorer-detail-foot a:hover,
 .po-salon-home .oneqr-explorer-phone-menu button:hover { transform: none; }
 }
@@ -596,10 +619,12 @@
 .po-salon-home .explorer-screen-body > * { animation: none !important; }
 .po-salon-home .explorer-products button,
 .po-salon-home .explorer-feature-list button,
+.po-salon-home #explorer-speak,
 .po-salon-home .explorer-detail-foot a,
 .po-salon-home .oneqr-explorer-phone-menu button { transition: none !important; transform: none !important; }
 .po-salon-home .explorer-products button::before,
-.po-salon-home .explorer-detail-foot a::before { display: none; }
+.po-salon-home .explorer-detail-foot a::before,
+.po-salon-home #explorer-speak::before { display: none; }
 }
 .po-salon-home .explorer-feature-rail { align-self: start; display: flex; flex-direction: column; gap: 12px; }
 .po-salon-home .explorer-feature-list { min-height: 0; max-height: 390px; }
@@ -1016,6 +1041,10 @@
 .po-salon-home .salon-ai-tour-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
 .po-salon-home .salon-ai-tour-top span { color: #b9f3e9; font-size: 10px; letter-spacing: .06em; }
 .po-salon-home .salon-ai-tour-top b { font-weight: 900; }
+.po-salon-home #salon-ai-tour-voice { padding: 5px 8px; border: 1px solid #ffffff72; border-radius: 6px; background: #ffffff17; color: #fff; font: inherit; font-size: 10px; font-weight: 850; cursor: pointer; white-space: nowrap; }
+.po-salon-home #salon-ai-tour-voice:hover { background: #ffffff32; }
+.po-salon-home #salon-ai-tour-link { color: #c8fff0; font-size: 11px; font-weight: 850; text-decoration: none; }
+.po-salon-home #salon-ai-tour-link:hover { text-decoration: underline; }
 .po-salon-home .salon-ai-tour #salon-ai-tour-copy { max-width: none; min-height: 0; margin: 6px 0 7px; color: #fff; font-size: 12px; font-weight: 700; line-height: 1.5; }
 .po-salon-home .salon-businesses { padding: 22px; border: 1px solid #e0e6e8; border-radius: 17px; background: #fff; box-shadow: 0 14px 32px #1729480d; scroll-margin-top: 72px; }
 .po-salon-home .salon-businesses .salon-section-head { margin-bottom: 14px; }
@@ -1025,7 +1054,8 @@
 .po-salon-home .salon-business-grid a { display: grid; align-content: space-between; gap: 16px; min-height: 135px; padding: 15px; border: 1px solid #e0e7e8; border-radius: 12px; background: linear-gradient(145deg,#f9fafb,#f1f6f4); color: #263b54; text-decoration: none; transition: border-color .2s, transform .2s; }
 .po-salon-home .salon-business-grid a:hover { transform: translateY(-3px); border-color: #65a993; }
 .po-salon-home .salon-business-grid a:first-child { border-color: #b9d9ca; background: linear-gradient(145deg,#eaf5ee,#fff); }
-.po-salon-home .salon-business-grid i { display: grid; place-items: center; width: 33px; height: 33px; border-radius: 9px; background: #d9eae0; color: #246c57; font-size: 17px; font-style: normal; }
+.po-salon-home .salon-business-grid i { display: flex; align-items: center; justify-content: center; width: 44px; height: 44px; border-radius: 9px; background: #d9eae0; }
+.po-salon-home .salon-business-grid i img { display: block; width: 40px; height: 40px; object-fit: contain; }
 .po-salon-home .salon-business-grid strong { display: block; margin-bottom: 4px; font-size: 12px; }
 .po-salon-home .salon-business-grid small { color: #667d83; font-size: 10px; line-height: 1.4; }
 .po-salon-home .salon-business-grid em { color: #226f59; font-size: 10px; font-style: normal; font-weight: 850; }
