@@ -109,7 +109,7 @@ window.NEXORA_PRODUCT_CATALOG = {
           },
           {
             "label": "Card transaction history (proposed)",
-            "linkPending": true
+            "url": "pos-technician-report.html?tab=card"
           },
           {
             "label": "Card terminal reconciliation (proposed)",

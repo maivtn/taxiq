@@ -65,7 +65,7 @@
 [data-pos-income="store"] .section-heading h2{margin: 0;}
 [data-pos-income="store"] .section-total{color: var(--text); font-size: 14px; font-weight: 800; font-variant-numeric: tabular-nums; white-space: nowrap;}
 [data-pos-income="store"] .payment-list{padding: 0;}
-[data-pos-income="store"] .payment-row{display: grid; width: 100%; min-height: 44px; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; border: 0; border-bottom: 1px solid var(--rule); background: transparent; padding: 5px 14px; text-align: left; cursor: pointer;}
+[data-pos-income="store"] .payment-row{display: grid; width: 100%; min-height: 44px; grid-template-columns: minmax(0, 1fr) auto; align-items: center; gap: 10px; border: 0; border-bottom: 1px solid var(--rule); background: transparent; padding: 5px 14px; text-align: left; cursor: pointer; color: inherit; text-decoration: none;}
 [data-pos-income="store"] .payment-row:last-child{border-bottom: 0;}
 [data-pos-income="store"] .payment-row:hover{background: var(--surface-muted);}
 [data-pos-income="store"] .method-name{display: flex; align-items: baseline; justify-content: flex-start; gap: 8px; font-size: 13px; font-weight: 750;}

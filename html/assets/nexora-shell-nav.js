@@ -73,6 +73,7 @@
     if (path === '/dashboard/pos' && tab === 'timeclock') return 'pos-front-desk.html?section=clock';
     if (path === '/dashboard/pos/sms-campaigns') return 'nexora-sms-dashboard.html';
     if (path === '/dashboard/pos/printer') return 'pos-printer-setup.html';
+    if (path === '/dashboard/pos/report/card') return 'pos-technician-report.html?tab=card';
     var localRoutes = {'/dashboard/pos/report/technician':'pos-technician-report.html','/dashboard/pos/public-checkin':'qr-stations.html?tab=check-in&setup=qr','/dashboard/pos/devices':'qr-stations.html?tab=check-in&setup=device','/dashboard/analytics':'nexora-analytics.html','/dashboard/category-management':'payment-categories.html','/dashboard/support':'nexora-support.html','/dashboard/ai-hub/setup-guide':'salon-guide-ai-voice.html'};
     if (localRoutes[path]) return localRoutes[path];
     if (path === '/dashboard/reports') return {'receive_payments':'payment-income.html',tips:'tip-list.html',direct_payments:'payment-activity.html'}[tab] || 'payment-income.html?tab=overview';

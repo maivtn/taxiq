@@ -392,6 +392,8 @@
       padding: 5px 14px;
       text-align: left;
       cursor: pointer;
+      color: inherit;
+      text-decoration: none;
     }
 
     .payment-row:last-child { border-bottom: 0; }
@@ -793,10 +795,10 @@
           <strong class="section-total" data-payment-total>$3,842.65</strong>
         </header>
         <div class="payment-list" data-payment-list>
-          <button class="payment-row" type="button" data-payment-method="card" aria-label="View Card payments">
+          <a class="payment-row" href="pos-technician-report.html?tab=card" data-payment-method="card" aria-label="View Card payments">
             <span class="method-name"><span>Card</span><span class="allocation-count" data-payment-count>21 allocations</span></span>
             <strong class="method-amount" data-payment-amount="2468.20">$2,468.20</strong>
-          </button>
+          </a>
           <button class="payment-row" type="button" data-payment-method="cash" aria-label="View Cash payments">
             <span class="method-name"><span>Cash</span><span class="allocation-count" data-payment-count>8 allocations</span></span>
             <strong class="method-amount" data-payment-amount="923.45">$923.45</strong>
@@ -1365,7 +1367,7 @@
         openReportRow(row)
       })
 
-      $$('[data-payment-method]').forEach((row) => row.addEventListener('click', () => openDrawer(row.dataset.paymentMethod, `${methodNames[row.dataset.paymentMethod]} payments`)))
+      $$('button[data-payment-method]').forEach((row) => row.addEventListener('click', () => openDrawer(row.dataset.paymentMethod, `${methodNames[row.dataset.paymentMethod]} payments`)))
       $('[data-close-drawer]').addEventListener('click', closeDrawer)
       $('[data-order-drawer]').addEventListener('click', (event) => { if (event.target === event.currentTarget) closeDrawer() })
 
