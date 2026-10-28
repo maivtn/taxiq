@@ -6,13 +6,14 @@
   const methods = ['Zelle', 'Apple Cash', 'Venmo', 'PayPal', 'Cash App'];
   const salons = [{ id: 'bitcoin-nail-bar', name: 'Bitcoin Nail Bar' }, { id: 'lux-nail-lounge', name: 'Lux Nail Lounge' }];
   const url = new URL(location.href);
-  const linked = url.pathname.endsWith('/frame-staff.html') || (!url.pathname.endsWith('/frame-personal.html') && url.searchParams.get('account') === 'staff');
+  const linked = url.pathname.endsWith('/frame-staff.html') || url.pathname.endsWith('/oneqr-staff.html') || (!url.pathname.endsWith('/frame-personal.html') && url.searchParams.get('account') === 'staff');
   const pagesBase = new URL(location.pathname.includes('/customer/') ? '../pages/' : './', location.href);
   const publicBase = new URL('../customer/oneqr-personal.html', pagesBase);
   publicBase.searchParams.set('id', 'personal-demo');
   function page(tab = 'one-qr') {
-    const target = new URL('oneqr-personal.html', pagesBase);
-    target.searchParams.set('account', linked ? 'staff' : 'personal'); target.searchParams.set('tab', tab); return target.href;
+    const target = new URL(linked ? 'oneqr-staff.html' : 'oneqr-personal.html', pagesBase);
+    if (!linked) target.searchParams.set('account', 'personal');
+    target.searchParams.set('tab', tab); return target.href;
   }
   function publicUrl(view) { const target = new URL(publicBase); if (view) target.searchParams.set('view', view); return target.href; }
   function template(isLinked) {

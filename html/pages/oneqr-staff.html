@@ -1,0 +1,39 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Nexora — One QR Staff</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/nexora-icons.css">
+  <link rel="stylesheet" href="../assets/nexora-shell.css?v=20261028-po-menu-complete-v2">
+  <link rel="stylesheet" href="../assets/staff-shell.css">
+  <link rel="stylesheet" href="../assets/qr-stations.css?v=industry-module-library-8">
+  <link rel="stylesheet" href="../assets/personal-oneqr.css?v=1">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar staff-sidebar" aria-label="Staff sidebar"></aside>
+    <div class="app-area">
+      <header class="header"></header>
+      <main class="content personal-qr-page" data-personal-oneqr-app></main>
+    </div>
+  </div>
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="../assets/personal-oneqr-store.js?v=1"></script>
+  <script>
+    window.NEXORA_SHELL = {
+      activePage: 'staff', activeTab: 'one-qr', salonLinked: NEXORA_PERSONAL_QR.linked,
+      profileName: NEXORA_PERSONAL_QR.read().profile.name,
+      onNavigate: function (tab) { if (window.NEXORA_PERSONAL_QR.navigate) window.NEXORA_PERSONAL_QR.navigate(tab); }
+    };
+  </script>
+  <script src="../assets/nexora-icons.js"></script>
+  <script src="../assets/nexora-shell-nav.js?v=20261028-source-refresh"></script>
+  <script src="../assets/nexora-shell.js?v=20261028-personal-oneqr"></script>
+  <script src="../assets/personal-oneqr.js?v=1"></script>
+</body>
+</html>

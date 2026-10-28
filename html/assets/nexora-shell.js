@@ -506,7 +506,7 @@
       iconWrap('qr-code') + '<span>One QR</span>' + CARET + '</button>' +
       '<div class="nav-subnav' + (active ? '' : ' is-collapsed') + '" id="staff-subnav-one-qr" data-nav-subnav><div class="nav-subnav-inner">' +
       PERSONAL_QR_ITEMS.map(function (item) {
-        return '<a class="nav-subitem" data-staff-nav="' + item.tab + '" data-personal-qr-nav="' + item.tab + '" href="oneqr-personal.html?account=' + (personalOnly ? 'personal' : 'staff') + '&amp;tab=' + item.tab + '">' + esc(item.label) + '</a>';
+        return '<a class="nav-subitem" data-staff-nav="' + item.tab + '" data-personal-qr-nav="' + item.tab + '" href="' + (personalOnly ? 'oneqr-personal.html?account=personal&amp;tab=' : 'oneqr-staff.html?tab=') + item.tab + '">' + esc(item.label) + '</a>';
       }).join('') + '</div></div>';
   }
 

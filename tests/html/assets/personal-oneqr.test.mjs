@@ -39,7 +39,8 @@ test('both Personal states have the same five One QR destinations directly after
   const community=linked?d.querySelector('#staff-subnav-community'):d.querySelector('[data-staff-nav="community"]');
   assert.equal(community.nextElementSibling,group);
   for(const link of sub.querySelectorAll('a')){
-   const url=new URL(link.href);assert.equal(url.searchParams.get('account'),linked?'staff':'personal');
+   const url=new URL(link.href);assert.equal(url.pathname.split('/').at(-1),linked?'oneqr-staff.html':'oneqr-personal.html');
+   if(!linked)assert.equal(url.searchParams.get('account'),'personal');
    assert.ok(existsSync(new URL(url.pathname.split('/').at(-1),pages)));
   }
   assert.equal(d.querySelectorAll('[data-staff-nav="my-qr"], [data-staff-nav="payout-methods"]').length,0);
@@ -145,7 +146,7 @@ test('legacy Staff QR bookmarks redirect to the shared personal tool without alt
  for(const [suffix,tab]of [['#staff-my-qr-screen','tip-qr'],['?tab=payout-methods','accept-payment'],['#staff-home-screen',null]]){
   let redirect=null;const url=new URL('https://nexora.test/html/pages/staff-app.html'+suffix);
   vm.runInNewContext(source,{URL,location:{href:url.href,hash:url.hash,replace(value){redirect=value;}},window:{addEventListener(){}}});
-  assert.equal(redirect,tab?'oneqr-personal.html?account=staff&tab='+tab:null);
+  assert.equal(redirect,tab?'oneqr-staff.html?tab='+tab:null);
  }
 });
 
@@ -192,4 +193,16 @@ test('cross-tab link deletions synchronize editor rows before another edit and k
  w.localStorage.setItem(api.KEY,JSON.stringify(newer));w.dispatchEvent(new w.StorageEvent('storage',{key:api.KEY}));
  assert.equal(w.document.querySelector('[data-link-index="0"] [data-link-field=name]').value,'Tên đang chỉnh');
  click(w,'save');assert.equal(api.read().links[0].name,'Tên đang chỉnh');assert.equal(api.read().profile.bio,'Giới thiệu từ tab khác');
+});
+
+test('the standalone Staff One QR page always keeps the Staff sidebar and Staff destinations',t=>{
+ for(const query of ['', '?account=personal', '?tab=tip-qr']){
+  const w=app(t,{path:'oneqr-staff.html'+query}),d=w.document;
+  assert.equal(w.NEXORA_PERSONAL_QR.linked,true);
+  assert.ok(d.querySelector('[data-staff-group="workspace"]'));
+  assert.ok(d.querySelector('[data-staff-nav="my-calendar"]'));
+  assert.match(d.querySelector('.staff-profile-id').textContent,/Staff ID/);
+  for(const link of d.querySelectorAll('[data-personal-qr-nav]'))assert.equal(new URL(link.href).pathname,'/html/pages/oneqr-staff.html');
+  assert.equal(new URL(w.NEXORA_PERSONAL_QR.page('accept-payment')).pathname,'/html/pages/oneqr-staff.html');
+ }
 });
