@@ -22,7 +22,7 @@
   "checkout": "checkout.png",
   "settings": "settings.png",
   "report": "report.png",
-  "rewards": "rewards.png",
+  "rewards": "../iconscout/deal-coupon-13170797.png",
   "support": "support.png",
   "news": "news.png",
   "onboarding": "onboarding.png",
