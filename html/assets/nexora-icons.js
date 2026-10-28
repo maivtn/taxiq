@@ -15,7 +15,7 @@
   "gift": "../iconscout/gift-card-7705322.png",
   "reviews": "reviews.png",
   "analytics": "analytics.png",
-  "taxiq": "taxiq.png",
+  "taxiq": "../iconscout/tax-iq-10411198.png",
   "booking": "booking.png",
   "staff": "staff.png",
   "tickets": "tickets.png",
