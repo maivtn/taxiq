@@ -17,7 +17,7 @@
   const UI_COPY = {
     vi: {
       adsOn: 'Quảng cáo đang bật', adsOff: 'Quảng cáo đã tắt',
-      disableAds: 'Tắt quảng cáo', enableAds: 'Bật quảng cáo', removeIndustry: 'Bỏ ngành',
+      disableAds: 'Hủy kích hoạt quảng cáo OneQR', enableAds: 'Kích hoạt quảng cáo OneQR', removeIndustry: 'Bỏ ngành',
       clearSecondary: 'Bỏ chọn tất cả', closeSecondary: 'Đóng',
       secondaryPlaceholder: 'Select or search',
       secondaryHelp: 'Liệt kê những ngành doanh nghiệp thực sự cung cấp.',
@@ -45,7 +45,7 @@
     },
     en: {
       adsOn: 'Advertising is on', adsOff: 'Advertising is off',
-      disableAds: 'Turn off advertising', enableAds: 'Turn on advertising', removeIndustry: 'Remove industry',
+      disableAds: 'Deactivate OneQR advertising', enableAds: 'Activate OneQR advertising', removeIndustry: 'Remove industry',
       clearSecondary: 'Clear all', closeSecondary: 'Close',
       secondaryPlaceholder: 'Select or search',
       secondaryHelp: 'List services your business actually offers.',
@@ -275,7 +275,8 @@
     root.querySelectorAll('[data-minimum-payout]').forEach(element => { element.textContent = number(10000); });
     $('received').textContent = number(state.receivedCreditPoints / 100);
     $('ownCredits').textContent = number(state.ownCreditPoints / 100);
-    const transfers = state.ledger.filter(entry => entry.kind === 'transfer' && !isReceivedTransfer(entry));
+    const transfers = state.ledger.filter(entry => entry.kind === 'transfer' && !isReceivedTransfer(entry))
+      .sort((a, b) => a.timestamp.localeCompare(b.timestamp));
     const latestTransfer = transfers[transfers.length - 1];
     const recipientPoints = transfers.filter(entry => entry.recipient === latestTransfer?.recipient).reduce((total, entry) => total + entry.points, 0);
     $('recipient-credits').textContent = number(recipientPoints / 100);
@@ -285,6 +286,7 @@
     $('status').classList.toggle('is-active', state.activated);
     $('oneqr-consent').hidden = state.activated;
     $('activate').hidden = state.activated;
+    root.querySelectorAll('[data-i="secondaryHelp"], [data-i="noAgree"]').forEach(note => { note.hidden = state.activated; });
     $('ads-status').classList.toggle('hide', !state.activated);
     $('ads-status').classList.toggle('is-active', state.adsEnabled);
     $('ads-status').textContent = t(state.adsEnabled ? 'adsOn' : 'adsOff');
@@ -299,7 +301,7 @@
     if (state.ledger.some(entry => entry.kind === 'income')) return;
     // Describe the PO's two opening sample balances, without inventing per-event rates.
     // Also preserve transactions from sessions created before the history tables existed.
-    const used = state.ledger.filter(entry => ['transfer', 'conversion'].includes(entry.kind))
+    const used = state.ledger.filter(entry => entry.kind === 'conversion' || (entry.kind === 'transfer' && !isReceivedTransfer(entry)))
       .reduce((total, entry) => total + entry.points, 0);
     const opening = {
       kind: 'income', timestamp: '2026-10-27T00:00:00.000Z', source: 'advertising',
@@ -310,6 +312,32 @@
       { ...opening, id: 'ONEQR-INCOME-001', eventId: 'sample-approved-balance', points: state.balance + used, status: 'approved' },
       { ...opening, id: 'ONEQR-INCOME-002', eventId: 'sample-pending-balance', points: state.pending, status: 'pending' }
     );
+  }
+
+  function seedTransferHistory() {
+    const samples = [
+      { id: 'ONEQR-TRANSFER-001', timestamp: '2026-10-27T08:15:00.000Z', points: 1000, sender: BUSINESS_ID, recipient: 'luna.spa@example.test' },
+      { id: 'ONEQR-TRANSFER-002', timestamp: '2026-10-27T09:00:00.000Z', points: 2000, sender: 'queen.nails@example.test', recipient: BUSINESS_ID },
+      { id: 'ONEQR-TRANSFER-003', timestamp: '2026-10-27T10:30:00.000Z', points: 1000, sender: BUSINESS_ID, recipient: 'jade.nails@example.test' },
+      { id: 'ONEQR-TRANSFER-004', timestamp: '2026-10-27T11:45:00.000Z', points: 1500, sender: 'anna.nails@example.test', recipient: BUSINESS_ID }
+    ];
+    samples.forEach(sample => {
+      if (state.ledger.some(entry => entry.id === sample.id)) return;
+      const entry = { ...sample, kind: 'transfer' };
+      const received = isReceivedTransfer(entry);
+      if (!received && sample.points > state.balance) return;
+      if (received) state.receivedCreditPoints += sample.points;
+      else {
+        state.balance -= sample.points;
+        state.recipientCreditPoints += sample.points;
+      }
+      state.ledger.push({
+        ...entry, status: received ? 'received' : 'spent', businessId: BUSINESS_ID,
+        source: received ? 'transfer' : 'advertising', program: 'oneqr-advertising-demo', version: VERSION,
+        eventId: received ? 'sample-received-transfer' : 'sample-approved-balance',
+        idempotencyKey: sample.id, adjustmentReason: null
+      });
+    });
   }
 
   function isReceivedTransfer(entry) {
@@ -649,6 +677,7 @@
     button.setAttribute('aria-controls', button.dataset.action);
   });
   seedIncomeHistory();
+  seedTransferHistory();
   setLanguage('vi');
   navigate(location.hash.slice(1).split('/')[0], false);
 })();
