@@ -2980,19 +2980,24 @@ window.POS_PROMOTIONS_DEMO_DATA = {
   ],
   "placements": [
     {
+      "id": "nearby",
+      "name": "Deals Nearby / Explore",
+      "description": "Local discovery feed"
+    },
+    {
       "id": "search",
       "name": "Search Deals",
-      "description": "Appears above eligible organic results."
+      "description": "When customers search deals"
     },
     {
-      "id": "explore",
-      "name": "Explore & Nearby",
-      "description": "Reaches customers browsing offers near the target area."
+      "id": "community",
+      "name": "Community",
+      "description": "Industry coupons · Feed · Deal Match"
     },
     {
-      "id": "network",
-      "name": "Network banner",
-      "description": "Uses the cover banner across eligible Nexora placements."
+      "id": "xpromo",
+      "name": "Cross-promo partners",
+      "description": "Shown on non-competing partners’ OneQR / idle screen"
     }
   ]
 };

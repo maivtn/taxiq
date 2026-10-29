@@ -231,7 +231,7 @@
       active: false,
       publicStatus: "off",
       paidEnabled: false,
-      paidPlacements: ["search", "explore"],
+      paidPlacements: data.placements.map((placement) => placement.id),
       targetArea: "Houston",
       budget: 100,
       dailyLimit: 15,
@@ -305,7 +305,14 @@
     try {
       const saved = JSON.parse(localStorage.getItem(storageKey));
       if (saved?.version === 1 && Array.isArray(saved.promotions))
-        return saved.promotions;
+        return saved.promotions.map((promotion) => ({
+          ...promotion,
+          paidPlacements: (promotion.paidPlacements || [])
+            .map((id) => (id === "explore" ? "nearby" : id))
+            .filter((id) =>
+              data.placements.some((placement) => placement.id === id),
+            ),
+        }));
     } catch (_) {}
     return seed();
   }
@@ -684,10 +691,12 @@
     }
     function renderPaid() {
       $("paid-placements").innerHTML = data.placements
-        .map(
-          (p) =>
-            `<label class="demo-paid-placement"><input type="checkbox" name="paidPlacement" value="${p.id}" ${(draft.paidPlacements || []).includes(p.id) ? "checked" : ""}><span><strong>${escape(p.name)}</strong><small>${escape(p.description)}</small></span></label>`,
-        )
+        .map((placement) => {
+          const channel = data.channels.find(
+            (item) => item.id === placement.id,
+          );
+          return `<label class="demo-paid-placement"><input type="checkbox" name="paidPlacement" value="${placement.id}" ${(draft.paidPlacements || []).includes(placement.id) ? "checked" : ""}><span><strong>${escape(localized(channel.name))}</strong><small>${escape(localized(channel.description))}</small></span></label>`;
+        })
         .join("");
     }
     function renderBanners() {
@@ -959,6 +968,10 @@
     form.addEventListener("change", (event) => {
       const name = event.target.name;
       read();
+      if (name === "paidEnabled" && draft.paidEnabled) {
+        draft.paidPlacements = data.placements.map((placement) => placement.id);
+        renderPaid();
+      }
       if (name === "goal") {
         draft.channels = recommended[draft.goal].slice();
         renderChannels();
@@ -1452,8 +1465,8 @@
         shares: { "source-0": 0.44, "source-2": 0.24, "source-11": 0.32 },
       },
       {
-        id: "explore",
-        name: "Explore & Nearby",
+        id: "nearby",
+        name: "Deals Nearby / Explore",
         color: "#a855f7",
         views: 0,
         clicks: 0,
@@ -1463,9 +1476,20 @@
         shares: {},
       },
       {
-        id: "network",
-        name: "Network banner",
+        id: "community",
+        name: "Community",
         color: "#ec4899",
+        views: 0,
+        clicks: 0,
+        redeems: 0,
+        revenue: 0,
+        cost: 0,
+        shares: {},
+      },
+      {
+        id: "xpromo",
+        name: "Cross-promo partners",
+        color: "#06b6d4",
         views: 0,
         clicks: 0,
         redeems: 0,
