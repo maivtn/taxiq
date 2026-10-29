@@ -34,7 +34,7 @@
 .tip-qr-button:hover { border-color: #3a3bbf; background: #3a3bbf; }
 .tip-qr-button.is-secondary { background: #fff; color: #4648d4; }
 .tip-qr-button.is-secondary:hover { background: #e9e9ff; color: #3a3bbf; }
-.tip-qr-button img { width: 20px; height: 20px; object-fit: contain; }
+.tip-qr-button svg { width: 20px; height: 20px; flex: none; }
 .tip-qr button:focus-visible { outline: 3px solid #4648d4; outline-offset: 3px; }
 .tip-qr-code {
   display: grid;
@@ -61,7 +61,7 @@
 .tip-qr-step { min-width: 0; border: 1px solid var(--nexora-border); border-radius: 10px; padding: 16px; }
 .tip-qr-step-heading { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-bottom: 14px; }
 .tip-qr-step-heading b { color: #4648d4; font-size: 16px; font-weight: 800; }
-.tip-qr-step-heading img { width: 34px; height: 34px; object-fit: contain; }
+.tip-qr-step-heading svg { width: 34px; height: 34px; flex: none; color: #4648d4; }
 .tip-qr-how > p { margin-top: 16px; font-size: 13px; }
 
 @media (max-width: 1000px) {
