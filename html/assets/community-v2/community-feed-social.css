@@ -7,6 +7,11 @@
 .community-feed-post-author-info{min-width:0}
 .community-feed-post-name-row{display:flex;align-items:center;gap:7px;min-width:0;margin-top:1px}
 .community-feed-post-author{display:block;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#2c3853;font-size:14px;font-weight:800;line-height:1.4}
+.community-feed-post-name-row>.community-feed-post-author{flex:1}
+.community-feed-post-name-row>.community-feed-post-business{flex:none;white-space:nowrap}
+.community-feed-post-meta{display:flex;align-items:center;flex-wrap:wrap;gap:5px 8px;margin-top:5px;min-width:0}
+.community-feed-post-meta>.community-feed-post-byline,.community-feed-post-meta>.community-feed-post-destinations{margin-top:0}
+.community-feed-post-byline time{white-space:nowrap}
 .community-feed-post-tags{display:flex;align-items:center;flex-wrap:wrap;gap:5px;margin-top:5px}
 .community-feed-post-type,.community-feed-post-business,.community-feed-post-resolved{display:inline-flex;align-items:center;padding:3px 7px;border-radius:6px;font-size:10px;font-weight:750;line-height:1.35;max-width:100%;overflow-wrap:anywhere;background:#eef0f8;color:#586381}
 .community-feed-post-type[data-post-kind="showcase"]{background:#fcebf4;color:#ac4381}

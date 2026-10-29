@@ -8,7 +8,7 @@ const read = path => readFileSync(new URL(path, pages), 'utf8');
 const controller = read('../assets/community-v2-integration.js');
 const settle = async () => { for (let i = 0; i < 6; i += 1) await Promise.resolve(); };
 
-async function boot(t, {page = 'community.html', query = '', pending = false, language, profileName, failMount = false, initialState} = {}) {
+async function boot(t, {page = 'community.html', query = '', pending = false, language, profileName, failMount = false, initialState, headerSearch = false} = {}) {
   const dom = new JSDOM(read(page), {
     url: 'https://demo.test/html/pages/' + page + query,
     runScripts: 'outside-only'
@@ -28,6 +28,12 @@ async function boot(t, {page = 'community.html', query = '', pending = false, la
   const selected = [];
   w.NEXORA_SHELL.setActiveTab = tab => selected.push(tab);
   w.document.querySelector('.sidebar').innerHTML = '<label class="sidebar-account-language"><select aria-label="Language"><option value="en">English</option></select></label>';
+  let searchFixture = null;
+  if (headerSearch) {
+    const header = w.document.querySelector('.app-area > header.header');
+    header.insertAdjacentHTML('afterbegin', '<form class="shell-workspace-search" action="dashboard.html"><label class="search"><i data-lucide="search" aria-hidden="true"></i><input name="q" type="search" aria-label="Search products" placeholder="Search products or features…" autocomplete="off" value="Gel-X"></label><div class="shell-function-results" hidden></div></form>');
+    searchFixture = {form: header.querySelector('.shell-workspace-search'), input: header.querySelector('input[type="search"]')};
+  }
   const calls = {mounts: [], routes: [], languages: [], closed: 0};
   const api = {
     navigate(route) { calls.routes.push(route); },
@@ -51,7 +57,7 @@ async function boot(t, {page = 'community.html', query = '', pending = false, la
   w.eval(controller);
   await settle();
   return {
-    w, calls, selected, api, pushState,
+    w, calls, selected, api, pushState, searchFixture,
     host: w.document.querySelector('#community-staging, #community-hub, [data-community-v2]'),
     notify(data) { calls.mounts[0].options.notify(data); },
     async finish() { finishMount(api); await settle(); }
@@ -82,6 +88,57 @@ test('owner Community opens its native content inside the shared dashboard shell
   assert.equal(calls.mounts[0].host, host);
   assert.equal(w.document.body.classList.contains('community-hub-active'), true);
   assert.deepEqual(calls.routes, ['feed']);
+});
+
+test('the Community header search expands and closes without replacing its form or losing the query', async t => {
+  const {w, searchFixture: {form, input}} = await boot(t, {headerSearch: true});
+  const toggle = w.document.querySelector('.community-search-toggle');
+  assert.ok(toggle, 'Community needs a control to reveal the existing header search');
+  assert.equal(w.document.querySelector('.shell-workspace-search'), form);
+  assert.equal(form.querySelector('input[type="search"]'), input);
+  assert.equal(form.classList.contains('community-shell-search'), true);
+  assert.equal(form.getAttribute('action'), 'dashboard.html');
+  assert.equal(new w.FormData(form).get('q'), 'Gel-X');
+  assert.equal(toggle.getAttribute('aria-expanded'), 'false');
+  assert.equal(w.document.body.classList.contains('community-search-open'), false);
+
+  toggle.click();
+  assert.equal(toggle.getAttribute('aria-expanded'), 'true');
+  assert.equal(w.document.body.classList.contains('community-search-open'), true);
+  assert.equal(w.document.activeElement, input);
+  input.value = 'Gel-X Houston';
+  input.dispatchEvent(new w.Event('input', {bubbles: true}));
+  input.dispatchEvent(new w.KeyboardEvent('keydown', {key: 'Escape', bubbles: true, cancelable: true}));
+  assert.equal(toggle.getAttribute('aria-expanded'), 'false');
+  assert.equal(w.document.body.classList.contains('community-search-open'), false);
+  assert.equal(w.document.activeElement, toggle);
+  assert.equal(new w.FormData(form).get('q'), 'Gel-X Houston');
+
+  toggle.click();
+  assert.equal(toggle.getAttribute('aria-expanded'), 'true');
+  assert.equal(w.document.body.classList.contains('community-search-open'), true);
+  assert.equal(w.document.activeElement, input);
+  assert.equal(input.value, 'Gel-X Houston');
+  assert.equal(form.getAttribute('action'), 'dashboard.html');
+});
+
+test('a Personal header rendered after Community boot receives one working search toggle', async t => {
+  const {w} = await boot(t, {page: 'frame-personal.html', query: '?view=community&tab=feed'});
+  const header = w.document.querySelector('.app-area > header.header');
+  assert.equal(header.querySelectorAll('.community-search-toggle').length, 0);
+  header.insertAdjacentHTML('beforeend', '<label class="search"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m21 21-4.35-4.35M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"></path></svg><input type="search" placeholder="Search tech, station, review..."></label>');
+  const input = header.querySelector('input[type="search"]');
+  await settle();
+  assert.equal(header.querySelectorAll('.community-search-toggle').length, 1);
+
+  input.parentElement.appendChild(w.document.createElement('span'));
+  await settle();
+  assert.equal(header.querySelectorAll('.community-search-toggle').length, 1, 'later header mutations must not install duplicate toggles');
+  const toggle = header.querySelector('.community-search-toggle');
+  toggle.click();
+  assert.equal(toggle.getAttribute('aria-expanded'), 'true');
+  assert.equal(w.document.body.classList.contains('community-search-open'), true);
+  assert.equal(w.document.activeElement, input);
 });
 
 test('opening a deep link retains its group context while selecting the containing sidebar section', async t => {

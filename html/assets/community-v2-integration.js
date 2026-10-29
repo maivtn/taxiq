@@ -4,7 +4,7 @@
   var frame = document.querySelector('#community-staging, #community-hub, [data-community-v2]');
   if (!frame) return;
   var origin = location.protocol === 'file:' ? '*' : location.origin;
-  var componentURL=new URL('community-v2/community-hub.js?v=20261029-staging-feed',document.currentScript.src);
+  var componentURL=new URL('community-v2/community-hub.js?v=20261029-mobile-polish-final',document.currentScript.src);
   var hub=null,fallbackFrame=null,clearPostOnBack=false,detailBackPending=false;
   function clearPostLink(){var url=new URL(location.href);for(var key of ['post','postId','comment','commentId','thread','threadId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearPostOnBack=false;}
   function clearDetailState(){if(history.state?.communityDetail){var state=Object.assign({},history.state);delete state.communityDetail;history.replaceState(state,'',location.href);}}
@@ -74,6 +74,24 @@
   var main=frame.closest('main');
   main.classList.add('community-v2-content');
   var header=document.querySelector('.app-area > .header');
+  function enhanceHeaderSearch(){
+    var searchInput=header?.querySelector('input[type="search"]');
+    var searchArea=searchInput?.closest('form')||searchInput?.closest('.search');
+    if(!searchArea||header.querySelector('.community-search-toggle'))return;
+    searchArea.classList.add('community-shell-search');
+    if(!searchArea.id)searchArea.id='community-shell-search';
+    var searchToggle=document.createElement('button');
+    searchToggle.type='button';searchToggle.className='icon-button community-search-toggle';
+    searchToggle.setAttribute('aria-label',searchInput.getAttribute('aria-label')||searchInput.placeholder);
+    searchToggle.setAttribute('aria-controls',searchArea.id);searchToggle.setAttribute('aria-expanded','false');
+    searchToggle.innerHTML='<svg width="20" height="20" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m21 21-4.35-4.35M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+    (header.querySelector('.shell-workspace-actions,.header-actions')||header).prepend(searchToggle);
+    function setSearchOpen(open){document.body.classList.toggle('community-search-open',open);searchToggle.setAttribute('aria-expanded',String(open));if(open)searchInput.focus();else searchToggle.focus();}
+    searchToggle.addEventListener('click',function(){setSearchOpen(searchToggle.getAttribute('aria-expanded')!=='true');});
+    searchArea.addEventListener('keydown',function(event){if(event.key==='Escape'){event.preventDefault();setSearchOpen(false);}});
+  }
+  enhanceHeaderSearch();
+  if(header)new MutationObserver(enhanceHeaderSearch).observe(header,{childList:true,subtree:true});
   function resizeCommunity(){
     var height=window.visualViewport?window.visualViewport.height:window.innerHeight;
     document.documentElement.style.setProperty('--community-viewport-height',Math.round(height)+'px');
@@ -145,7 +163,7 @@
     load.then(mount).then(function(api){hub=api;ready=true;send('nexora-community-language',{language:communityLanguage()});send('nexora-community-navigate',{route:current});}).catch(function(error){
       console.error('Community native shell could not load; using the standalone preview.',error);
       fallbackFrame=document.createElement('iframe');fallbackFrame.title=frame.getAttribute('aria-label')||'NEXORA Community';fallbackFrame.style.cssText='display:block;width:100%;height:100%;border:0';
-      var source=new URL('nexora-community-complete.html',componentURL);params.set('tab',current);params.set('embedded','1');params.set('v','20261029-staging-feed');source.search=params.toString();
+      var source=new URL('nexora-community-complete.html',componentURL);params.set('tab',current);params.set('embedded','1');params.set('v','20261029-mobile-polish-final');source.search=params.toString();
       (frame.shadowRoot||frame).replaceChildren(fallbackFrame);fallbackFrame.src=source.href;
     });
   }

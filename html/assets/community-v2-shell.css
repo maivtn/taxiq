@@ -27,6 +27,15 @@
 body.community-hub-active { overflow:hidden; }
 body.community-hub-active > .shell,
 body.community-hub-active .app-area { height:var(--community-viewport-height,100dvh); min-height:0; }
+.community-search-toggle { display:none; }
+
+@media (max-width:767px) {
+  body.community-hub-active .app-area > .header { min-height:64px; padding:10px 12px; gap:8px; flex-wrap:wrap; }
+  body.community-hub-active .header .community-shell-search { display:none; order:3; flex:1 0 100%; width:100%; max-width:none; }
+  body.community-hub-active.community-search-open .header .community-shell-search { display:block; }
+  body.community-hub-active .header .community-search-toggle { display:inline-flex; flex:none; width:44px; height:44px; box-shadow:none; }
+  body.community-hub-active .header > .community-search-toggle { order:2; margin-left:auto; }
+}
 
 @media (max-width: 768px) {
   body.community-hub-active .sidebar:not(.is-open) { box-shadow:none; }

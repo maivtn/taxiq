@@ -174,10 +174,10 @@
   </style>
   <link rel="stylesheet" href="../vendor/tom-select/tom-select.css">
   <link rel="stylesheet" href="community-controls.css?v=20261029">
-  <link rel="stylesheet" href="community-mobile.css?v=20261029-modal-polish">
-  <link rel="stylesheet" href="community-feed-social.css?v=20261029-staging-feed">
-  <link rel="stylesheet" href="community-feed-composer.css?v=20261029-staging-feed">
-  <link rel="stylesheet" href="community-layout.css?v=20261029-staging-feed">
+  <link rel="stylesheet" href="community-mobile.css?v=20261029-mobile-polish-final">
+  <link rel="stylesheet" href="community-feed-social.css?v=20261029-mobile-polish-final">
+  <link rel="stylesheet" href="community-feed-composer.css?v=20261029-mobile-polish-final">
+  <link rel="stylesheet" href="community-layout.css?v=20261029-mobile-polish-final">
 </head>
 <body>
 <script>
@@ -277,11 +277,11 @@
 <div id="notifyPanel" class="notify-panel panel hide" role="dialog" aria-label="Thông báo phù hợp"></div>
 <div id="modalRoot"></div><div id="toast" class="toast hide" role="status"></div>
 <script src="../vendor/tom-select/tom-select.complete.min.js"></script>
-<script src="community-demo-data.js?v=20261029-staging-feed"></script>
+<script src="community-demo-data.js?v=20261029-mobile-polish-final"></script>
 <script src="nexora-us-geo-2025.js"></script>
 <script src="nexora-us-place-centers-2025.js"></script>
-<script src="community-feed-social.js?v=20261029-staging-feed"></script>
-<script src="community-feed-composer.js?v=20261029-staging-feed"></script>
+<script src="community-feed-social.js?v=20261029-mobile-polish-final"></script>
+<script src="community-feed-composer.js?v=20261029-mobile-polish-final"></script>
 <script>
 (() => {
   const KEY='nexora-market-prototype-v1';
@@ -426,7 +426,7 @@
       const owner=item.surface==='pages'?(item.page?.title||item.owner||item.title):item.owner||'',avatar=feedAvatar(owner),initials=owner.split(/\s+/).slice(0,2).map(part=>part[0]).join('');
       const badge=card.querySelector(':scope > .kind'),meta=card.querySelector(':scope > .meta'),dateValue=item.createdAt||item.publishedAt;
       const header=document.createElement('header');header.className='community-feed-post-header';
-      header.innerHTML=`<span class="community-feed-post-avatar" aria-hidden="true">${avatar?`<img src="${esc(avatar)}" alt="">`:esc(initials)}</span><div class="community-feed-post-author-info"><strong class="community-feed-post-author" data-community-authored title="${esc(owner)}">${esc(owner)}</strong><div class="community-feed-post-tags">${feedBusiness(owner)?'<span class="community-feed-post-business">Doanh nghiệp</span>':''}</div><div class="community-feed-post-byline">${dateValue?`<time datetime="${esc(dateValue)}">${esc(new Date(dateValue).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}))}</time>`:''}</div><div class="community-feed-post-destinations"><span class="community-feed-post-destination">Bảng tin chung</span></div></div>`;
+      header.innerHTML=`<span class="community-feed-post-avatar" aria-hidden="true">${avatar?`<img src="${esc(avatar)}" alt="">`:esc(initials)}</span><div class="community-feed-post-author-info"><div class="community-feed-post-name-row"><strong class="community-feed-post-author" data-community-authored title="${esc(owner)}">${esc(owner)}</strong>${feedBusiness(owner)?'<span class="community-feed-post-business">Doanh nghiệp</span>':''}</div><div class="community-feed-post-tags"></div><div class="community-feed-post-meta"><div class="community-feed-post-byline">${dateValue?`<time datetime="${esc(dateValue)}">${esc(new Date(dateValue).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'}))}</time>`:''}</div><div class="community-feed-post-destinations"><span class="community-feed-post-destination">Bảng tin chung</span></div></div></div>`;
       if(badge)header.querySelector('.community-feed-post-tags').prepend(badge);meta?.remove();card.prepend(header);if(item.surface==='pages'&&item.title===owner)card.querySelector(':scope > h3')?.remove();
       const image=card.querySelector(':scope > .blog-cover');if(image){const actions=card.querySelector(':scope > .listing-actions');if(actions)actions.before(image);}
       card.querySelector(':scope > h3')?.setAttribute('data-community-authored','');card.querySelector(':scope > p')?.setAttribute('data-community-authored','');
@@ -835,7 +835,7 @@
   setInterval(()=>{if(extra.pagePosts.some(post=>post.status==='scheduled'&&post.publishAt&&new Date(post.publishAt).getTime()<=Date.now())){renderExtra();const open=$('#modalRoot [data-page-detail-id]');if(open){const page=extra.pages.find(x=>x.id===open.dataset.pageDetailId),tab=$('#modalRoot [data-page-tab].active')?.dataset.pageTab;if(page&&tab==='scheduled')pageDetail(page,'scheduled');}}},30000);
 })();
 </script>
-<script src="nexora-community-i18n.js?rev=20261029-staging-feed"></script>
+<script src="nexora-community-i18n.js?rev=20261029-mobile-polish-final"></script>
   <script src="../vendor/lucide.min.js" defer></script>
   <script src="community-ui.js?v=20261029-modal-polish" defer></script>
 </body>
