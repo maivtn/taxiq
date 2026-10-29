@@ -118,7 +118,7 @@
     var source = new URL('../assets/community-v2/nexora-community-complete.html', location.href);
     source.searchParams.set('embedded', '1');
     source.searchParams.set('tab', current);
-    source.searchParams.set('v', '20261029-mobile-finish');
+    source.searchParams.set('v', '20261029-modal-polish');
     if (window.NEXORA_SHELL && window.NEXORA_SHELL.activePage === 'staff') {
       var name = window.NEXORA_SHELL.profileName || document.querySelector('.staff-profile-name')?.textContent;
       if (name) source.searchParams.set('member', name.trim());

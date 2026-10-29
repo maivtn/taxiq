@@ -23,28 +23,37 @@ body .primary:not(.danger) { background: linear-gradient(110deg, #4d5df1, #8252e
 button.community-has-icon { display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
 button.community-has-icon:disabled { transform: none; }
 
-#viewerLocationLabel { display: inline-flex; align-items: center; gap: 6px; }
+#viewerLocationLabel { display: inline-flex; align-items: center; gap: 6px; color: #3d4961; font-weight: 750; }
 #viewerLocationLabel .community-action-icon { flex: none; width: 16px; height: 16px; }
+body #localDiscovery { justify-content: flex-start; gap: 12px; }
+body #changeViewerLocation { margin-left: 0; padding: 6px 4px; color: #6250c9; font-weight: 600; text-decoration: underline; text-decoration-color: #b7ace9; text-underline-offset: 3px; text-decoration-thickness: 1px; border-radius: 6px; }
 
 /* Quick actions wrap with space for the raised card edges. */
 body #feedView .feed-action-row { flex-wrap: wrap; overflow: visible; padding: 13px 3px 10px; row-gap: 12px; }
 body #feedView .feed-action { max-width: 100%; }
 body :is(.kind, .chip, .sponsor-label, .demo-tag) { align-self: flex-start; width: fit-content; max-width: 100%; }
 
-/* Every post filter remains visible, including on phones. */
-body #feedView .feed-filter-bar { display: grid; grid-template-columns: minmax(0, 1fr) 150px; align-items: start; gap: 18px; padding: 14px; border: 1px solid var(--community-border); border-radius: 14px; background: #fff; }
-body #feedView .feed-filter-main { display: grid; min-width: 0; gap: 6px; }
+/* One icon select keeps post filtering compact. */
+body #feedView .feed-filter-bar { display: grid; grid-template-columns: minmax(0, 1fr) 150px; align-items: center; gap: 18px; padding: 12px 14px; border: 1px solid var(--community-border); border-radius: 14px; background: #fff; }
+body #feedView .feed-filter-main { display: flex; align-items: center; min-width: 0; gap: 12px; }
 body #feedView .feed-group-shortcut { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 44px; margin-top: 0; padding: 10px; border: 1px solid #ded8fa; border-radius: 10px; background: #f4f1ff; white-space: normal; }
-body #feedView .feed-filter-scroll {
-  display: flex;
-  flex-wrap: wrap;
-  width: 100%;
-  overflow: visible;
-  gap: 8px;
-  padding: 4px 0;
-}
-body #feedView .feed-filter-scroll .filter-chip { min-height: 40px; padding: 8px 11px; font-size: 12px; white-space: normal; box-shadow: none; }
-body #feedView .feed-filter-scroll .filter-chip:active { transform: none; }
+.feed-filter-control { flex: 1; min-width: 0; width: 100%; max-width: 360px; }
+.feed-filter-control > select { width: 100%; min-height: 44px; padding: 9px 44px 9px 12px; border: 1px solid #d8dfeb; border-radius: 10px; background-color: #fff; color: #334155; font: inherit; font-size: 14px; }
+.feed-filter-control .ts-wrapper { --ts-pr-min: 44px; width: 100%; }
+.feed-filter-control .ts-control { align-items: center; flex-wrap: nowrap; min-height: 46px; padding: 7px 44px 7px 12px; border: 1px solid #d8dfeb; border-radius: 10px; background: #fff; cursor: pointer; font-size: 14px; line-height: 1.5; }
+.feed-filter-control .ts-control::after { content: ''; position: absolute; top: 50%; right: 16px; width: 16px; height: 16px; transform: translateY(-50%); background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2365728a' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center / 16px no-repeat; pointer-events: none; }
+.feed-filter-control .ts-wrapper.focus .ts-control { border-color: #8b7bea; box-shadow: 0 0 0 3px #8b7bea20; }
+.feed-filter-control .ts-dropdown { z-index: 30; margin-top: 6px; padding: 5px; border: 1px solid #dce2ed; border-radius: 12px; background: #fff; box-shadow: 0 12px 32px #1b254525; font-size: 14px; }
+.feed-filter-control .ts-dropdown-content { max-height: min(380px, 55dvh); overscroll-behavior: contain; }
+.feed-filter-control .feed-filter-choice { display: flex; align-items: center; gap: 10px; min-width: 0; color: #3d4961; font-weight: 600; }
+.feed-filter-control .ts-dropdown .option { min-height: 44px; padding: 7px 10px; border-radius: 8px; }
+.feed-filter-control .ts-dropdown :is(.active, .selected) { color: #5548c8; background: #f0edff; }
+.feed-filter-control .feed-filter-choice > span:last-child { min-width: 0; overflow-wrap: anywhere; }
+.feed-filter-control .feed-icon { display: grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 8px; color: #6250c9; background: #f0edff; }
+.feed-filter-control .feed-icon svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
+.feed-filter-control :is([data-kind="deal"], [data-kind="tip"]) .feed-icon { color: #a76513; background: #fff4df; }
+.feed-filter-control :is([data-kind="jobs"], [data-kind="shifts"], [data-kind="event"]) .feed-icon { color: #2877c5; background: #eaf5ff; }
+.feed-filter-control :is([data-kind="market"], [data-kind="showcase"]) .feed-icon { color: #168565; background: #e6f7ef; }
 
 /* Market search stays visible; optional filters open below it. */
 body .toolbar.market-toolbar { display: block; padding: 12px; }
@@ -71,6 +80,13 @@ body .toolbar.market-toolbar { display: block; padding: 12px; }
 #jobTemplates, #shiftTemplates { grid-template-columns: repeat(2, minmax(0, 1fr)); }
 #pageCards .page-card, #pageCards .page-content { display: flex; flex-direction: column; }
 #pageCards .page-content { flex: 1; }
+#pageCards .page-cover { flex: none; }
+#pageCards .page-identity { align-items: flex-start; margin-top: 0; padding-top: 12px; }
+#pageCards .page-identity > .page-avatar { position: relative; margin-top: -35px; }
+#pageCards .page-identity > div { flex: 1; min-width: 0; }
+#pageCards .page-identity h3 { margin: 0 0 5px; line-height: 1.4; overflow-wrap: anywhere; }
+#pageCards .page-identity .meta { display: block; line-height: 1.5; overflow-wrap: anywhere; }
+#pageCards .page-card[data-promoted="true"] .page-identity > .page-avatar { margin-top: 0; }
 #pageCards .page-actions { margin-top: auto; padding-top: 12px; }
 body #feedView.deal-mode #feedPosts {
   display: grid;
@@ -89,27 +105,82 @@ body .page-cover { background-size: cover; background-position: center; }
 
 /* Keep the title, scrollable form and final actions in their own regions. */
 html.community-dialog-open, body.community-dialog-open { overflow: hidden; }
-body .overlay { overscroll-behavior: contain; }
+body .overlay { overscroll-behavior: contain; background: #17214299; }
 body .dialog {
   display: flex;
   flex-direction: column;
+  min-width: 0;
   max-height: calc(100dvh - 32px);
   overflow: hidden;
+  border: 1px solid #e2e8f0;
+  box-shadow: 0 24px 80px #101c3c40;
 }
 body .dialog > form { display: flex; flex: 1 1 auto; flex-direction: column; min-height: 0; overflow: hidden; }
 body .dialog .dialog-head, body .dialog .dialog-footer { flex: none; }
 body .dialog .dialog-body { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; -webkit-overflow-scrolling: touch; scroll-padding-block: 16px; }
-body .dialog .dialog-head { align-items: flex-start; gap: 12px; }
+body .dialog .dialog-head { align-items: flex-start; gap: 12px; background: #fff; }
 body .dialog .dialog-head > div { min-width: 0; }
+body .dialog .dialog-head h2 { margin-top: 0; line-height: 1.35; letter-spacing: -.02em; overflow-wrap: anywhere; }
+body .dialog .dialog-head p { margin-bottom: 0; font-size: 13px; line-height: 1.5; }
 body .dialog .dialog-footer { position: relative; bottom: auto; flex-wrap: wrap; border-top: 1px solid var(--community-border); background: #fff; }
-body .dialog :is(.icon-btn,.close) { display: grid; place-items: center; width: 40px; height: 40px; min-width: 40px; }
+body .dialog .dialog-footer > :is(button, a) { min-width: 96px; min-height: 44px; max-width: 100%; white-space: normal; text-align: center; }
+body .dialog :is(.icon-btn,.close) { display: grid; place-items: center; flex: none; width: 44px; height: 44px; min-width: 44px; padding: 0; border: 1px solid #e4e8f0; border-radius: 11px; background: #f5f7fb; color: #475569; }
 body .dialog :is(.icon-btn,.close) svg { width: 20px; height: 20px; }
-body .dialog .form-grid { gap: 16px; }
+body .dialog .form-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 16px; }
+body .dialog .form-grid > :is(.form-group, .group) { min-width: 0; }
+body .dialog :is(.form-group, .group) { gap: 7px; }
+body .dialog :is(.form-group, .group) > label { line-height: 1.5; }
+body .dialog :is(.field, .select) { min-width: 0; min-height: 44px; max-width: 100%; border-color: #d8dfeb; font-size: 14px; line-height: 1.5; }
+body .dialog textarea.field { min-height: 104px; resize: vertical; }
+body .dialog input[type="file"] { width: 100%; overflow: hidden; text-overflow: ellipsis; }
+body .dialog input[type="file"]::file-selector-button { min-height: 32px; margin-right: 10px; padding: 6px 10px; border: 0; border-radius: 7px; background: #efedff; color: #5548c8; font: inherit; font-size: 12px; }
+body .dialog .form-grid > .page-form-note { grid-column: 1 / -1; }
+body .dialog .checkbox-row { align-items: flex-start; gap: 9px; line-height: 1.5; }
+body .dialog .checkbox-row input { flex: none; margin: 1px 0 0; }
+body .dialog :is(.helper, .location-status, .page-form-note) { font-size: 12px; line-height: 1.5; }
+body .dialog .switcher { gap: 12px; }
+body .dialog .switcher button { min-width: 0; min-height: 78px; line-height: 1.4; }
+body .dialog .switcher button.active { box-shadow: inset 0 0 0 1px #a99aeb; }
+body .dialog .switcher button.active:disabled { opacity: 1; }
+body .dialog .switcher small { margin-top: 5px; line-height: 1.5; }
 body .dialog :is(input, select, textarea) { scroll-margin-block: 20px; }
-body .dialog .job-example-head { flex-wrap: wrap; }
-body .dialog .page-preview-name { overflow-wrap: anywhere; }
+body .dialog :is(.quiet, .blog-note, .notice, .flow-steps, .message-box) { font-size: 13px; line-height: 1.6; overflow-wrap: anywhere; }
+body .dialog .job-example { padding: 14px; }
+body .dialog .job-example-head { flex-wrap: wrap; row-gap: 8px; }
+body .dialog .job-example-head .btn { flex: none; min-height: 40px; max-width: 100%; white-space: normal; }
+body .dialog .job-example p { line-height: 1.6; }
+body .dialog .location-action { align-items: flex-start; gap: 8px 12px; }
+body .dialog .location-action .btn { max-width: 100%; white-space: normal; }
+body .dialog .location-action .location-status { flex: 1 1 160px; }
+body .dialog :is(.blog-image-actions, .cover-actions) { align-items: flex-start; gap: 12px; }
+body .dialog :is(.blog-cover-preview, .cover-preview) { display: block; max-width: 100%; object-fit: contain; background: #f7f8fc; }
+body .dialog :is(.blog-image-error, .page-media-error, .page-post-error) { font-size: 12px; line-height: 1.5; overflow-wrap: anywhere; }
+body .dialog .page-preview-bottom { align-items: flex-start; margin-top: 0; padding-top: 12px; }
+body .dialog .page-preview-avatar { flex: none; margin-top: -36px; }
+body .dialog .page-preview-name { min-width: 0; line-height: 1.5; white-space: normal; overflow-wrap: anywhere; }
+body .dialog .page-profile-head { align-items: flex-start; margin-top: 0; padding-top: 16px; }
+body .dialog .page-profile-head .page-avatar-shell { margin-top: -50px; }
+body .dialog .page-profile-title { padding-top: 0; }
+body .dialog .page-profile-title h3 { line-height: 1.3; overflow-wrap: anywhere; }
+body .dialog .promo-summary > div { align-items: baseline; flex-wrap: wrap; }
+body .dialog .promo-summary strong { min-width: 0; text-align: right; overflow-wrap: anywhere; }
 body .call-preview { overflow-y: auto; overscroll-behavior: contain; }
-body .call-preview-card { max-height: calc(100dvh - 32px); overflow-y: auto; }
+body .call-preview-card { width: min(400px, 100%); max-height: calc(100dvh - 36px); overflow-y: auto; padding: 24px; border: 1px solid var(--community-border); border-radius: 18px; }
+body .call-preview-card h2 { margin: 0 0 10px; font-size: 21px; line-height: 1.35; letter-spacing: -.02em; overflow-wrap: anywhere; }
+body .call-preview-card p { margin: 0 0 20px; color: #64748b; line-height: 1.6; overflow-wrap: anywhere; }
+body .call-preview-card .form-line { margin: 18px 0; }
+body .call-preview-card .form-line label { font-size: 13px; line-height: 1.5; }
+body .call-preview-card :is(button, input) { min-height: 44px; max-width: 100%; }
+body .call-preview-card .inline-actions { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--community-border); }
+body .call-preview-card .inline-actions > button { flex: 1; min-width: 0; white-space: normal; }
+body #closeCallPreview { width: 100%; }
+body .chat-menu-subpanel { border: 1px solid #e2e8f0; border-radius: 10px; }
+body .chat-menu-subpanel label { margin-top: 0; font-size: 12px; line-height: 1.5; }
+body .chat-menu-subpanel :is(.demo-input, .demo-select) { min-height: 44px; }
+body .chat-menu-subpanel > div:has(> .chat-menu-choice) { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+body .chat-menu-subpanel .chat-menu-choice { min-height: 40px; margin: 0; }
+body .chat-menu-subpanel .inline-actions > button { flex: 1; min-width: 0; white-space: normal; }
+body .chat-menu-subpanel [data-chat-confirm-delete] { background: #c73b51; border-color: #c73b51; color: #fff; }
 #posts > :last-child:nth-child(odd) { grid-column: 1 / -1; }
 body .toast { z-index: 100; max-width: min(420px, calc(100% - 24px)); overflow-wrap: anywhere; }
 
@@ -158,9 +229,7 @@ body .toast { z-index: 100; max-width: min(420px, calc(100% - 24px)); overflow-w
   body.embedded #feedView .feed-filter-main { display: contents; }
   body.embedded #feedView .feed-filter-label { grid-column: 1; grid-row: 1; }
   body.embedded #feedView .feed-group-shortcut { display: inline-flex; grid-column: 2; grid-row: 1; font-size: 12px; padding: 8px; }
-  body.embedded #feedView .feed-filter-scroll { grid-column: 1 / -1; grid-row: 2; }
-  body.embedded #feedView .feed-filter-scroll { width: 100%; gap: 7px; padding: 4px 0; }
-  body.embedded #feedView .feed-filter-scroll .filter-chip { min-height: 44px; padding: 8px 10px; font-size: 12px; }
+  body.embedded #feedView .feed-filter-control { grid-column: 1 / -1; grid-row: 2; max-width: none; }
   body.embedded #feedView .feed-composer { margin-bottom: 14px; padding: 13px; }
   body.embedded #feedView .feed-prompt-text { min-width: 0; padding: 11px 12px; font-size: 14px; line-height: 1.4; }
   body.embedded #feedView .feed-action-row { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding-top: 12px; }
@@ -186,24 +255,32 @@ body .toast { z-index: 100; max-width: min(420px, calc(100% - 24px)); overflow-w
   body.embedded .page-cover-edit { min-height: 44px; padding: 8px 10px; font-size: 12px; }
   body.embedded .page-avatar-edit { width: 44px; height: 44px; right: -8px; bottom: -5px; }
   body.embedded .page-profile-head { align-items: flex-start; gap: 12px; }
-  body.embedded .page-profile-title { padding-top: 32px; }
+  body.embedded .page-profile-title { padding-top: 0; }
   body.embedded .page-profile-count { font-size: 12px; line-height: 1.5; }
   body.embedded .page-owner-tools { padding: 13px; }
   body.embedded .page-actions { flex-wrap: wrap; }
   body.embedded .page-detail-tabs { gap: 2px; padding: 3px 0; scroll-padding-inline: 8px; }
   body.embedded .page-detail-tabs button { min-height: 44px; padding: 10px; font-size: 13px; }
   body.embedded .page-post-options { grid-template-columns: minmax(0, 1fr); }
-  body.embedded .overlay { align-items: end; padding: 0; }
-  body.embedded .dialog { width: 100%; max-height: calc(100dvh - 8px); border-radius: 20px 20px 0 0; }
-  body.embedded .dialog .dialog-head { padding: 16px; }
-  body.embedded .dialog .dialog-head h2 { font-size: 19px; line-height: 1.35; }
-  body.embedded .dialog .dialog-body { padding: 16px; }
-  body.embedded .page-profile-dialog .dialog-body { padding: 0 14px 20px; }
-  body.embedded .dialog .dialog-footer { gap: 8px; padding: 12px 16px max(12px, env(safe-area-inset-bottom)); }
-  body.embedded .dialog .dialog-footer > :is(button, a) { flex: 1 1 120px; min-width: 0; min-height: 46px; font-size: 14px; }
-  body.embedded .dialog .form-grid { grid-template-columns: minmax(0, 1fr); }
-  body.embedded .dialog .form-group label { font-size: 13px; line-height: 1.5; }
-  body.embedded .dialog .job-example p { font-size: 13px; line-height: 1.6; }
+  body .overlay { align-items: end; padding: 0; }
+  body .dialog { width: 100%; max-height: calc(100dvh - 8px); border-radius: 20px 20px 0 0; }
+  body .dialog .dialog-head { padding: 16px; }
+  body .dialog .dialog-head h2 { font-size: 19px; line-height: 1.35; }
+  body .dialog .dialog-body { padding: 16px; }
+  body .page-profile-dialog .dialog-body { padding: 0 14px 20px; }
+  body .dialog .dialog-footer { gap: 8px; padding: 12px 16px max(12px, env(safe-area-inset-bottom)); }
+  body .dialog .dialog-footer > :is(button, a) { flex: 1 1 120px; min-width: 0; min-height: 46px; font-size: 14px; }
+  body .dialog .form-grid { grid-template-columns: minmax(0, 1fr); }
+  body .dialog :is(.form-group, .group) label { font-size: 13px; line-height: 1.5; }
+  body .dialog .job-example p { font-size: 13px; line-height: 1.6; }
+  body .dialog .job-example-head .btn { min-height: 44px; }
+  body .dialog .location-action .location-status { flex-basis: 100%; }
+  body .dialog .switcher button { min-height: 82px; padding: 12px; font-size: 14px; }
+  body .dialog .promo-summary strong { text-align: left; }
+  body .overlay:has(> .page-profile-dialog) { align-items: stretch; }
+  body .dialog.page-profile-dialog { position: relative; inset: auto; height: 100dvh; max-height: 100dvh; border: 0; border-radius: 0; }
+  body .dialog .page-profile-head { margin-left: 0; gap: 12px; }
+  body .dialog .page-profile-head .page-avatar-shell { margin-top: -42px; }
   body.embedded .toast { right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); left: 12px; max-width: none; font-size: 13px; }
 
   /* Keep the requested Recent deals grid at two columns on phones as well. */
