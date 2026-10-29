@@ -34,6 +34,10 @@
 .tip-qr-open-link:focus-visible { outline: 3px solid #4648d4; outline-offset: 3px; }
 .tip-qr-open-link svg { width: 16px; height: 16px; }
 .tip-qr-business-copy > p { margin-top: 14px; }
+.tip-qr .tip-qr-link { border: 0; padding: 10px 12px; }
+.tip-qr-link a { color: inherit; text-decoration: none; }
+.tip-qr-link a:hover { text-decoration: underline; }
+.tip-qr-link a:focus-visible { outline: 3px solid #4648d4; outline-offset: 3px; }
 .tip-qr-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 .tip-qr-button { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; gap: 8px; border: 1px solid #4648d4; border-radius: 9px; padding: 10px 15px; background: #4648d4; color: #fff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 .tip-qr-button:hover { border-color: #3a3bbf; background: #3a3bbf; }

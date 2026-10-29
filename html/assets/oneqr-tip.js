@@ -48,6 +48,9 @@
   var copyButton = screen.querySelector('[data-tip-action="copy"]');
   var copyLabel = copyButton.querySelector('[data-tip-copy="copyLink"]');
   var qrCode = screen.querySelector('[data-tip-code] [data-qr-value]');
+  var tipLink = screen.querySelector('[data-tip-link]');
+  tipLink.href = new URL(qrCode.getAttribute('data-qr-value'), window.location.href).href;
+  tipLink.textContent = tipLink.href;
   var copyTimer;
   var copied = false;
 
