@@ -474,6 +474,7 @@
       previewMode = "banner",
       showMore = false,
       selectedBanner = 0;
+    let customServices = draft.services.filter((id) => id !== "all");
     function read() {
       for (const name of [
         "name",
@@ -645,19 +646,19 @@
     }
     function renderServices() {
       const isAll = draft.services.includes("all");
+      $("service-scope").value = isAll ? "all" : "custom";
+      $("eligible-services").hidden = isAll;
       const openGroups = new Set(
         [...$("eligible-services").querySelectorAll("details[open]")].map(
           (group) => group.dataset.serviceGroup,
         ),
       );
-      $("eligible-services").innerHTML =
-        `<label class="demo-service-choice demo-service-all"><input type="checkbox" id="all-services" ${isAll ? "checked" : ""}><strong>${t("eligibleServicesAll")}</strong></label>` +
-        data.services
-          .map(
-            (group, index) =>
-              `<details class="demo-service-category" data-service-group="${index}" ${openGroups.has(String(index)) ? "open" : ""}><summary><input type="checkbox" data-service-category="${index}" aria-label="${escape(group.name)}" ${isAll || group.services.every((s) => draft.services.includes(s.id)) ? "checked" : ""}><span>${escape(group.name)}</span><small>${group.services.length}</small></summary><div class="demo-service-grid">${group.services.map((service) => `<label class="demo-service-choice"><input type="checkbox" data-service="${escape(service.id)}" ${isAll || draft.services.includes(service.id) ? "checked" : ""}><span>${escape(service.name)}</span></label>`).join("")}</div></details>`,
-          )
-          .join("");
+      $("eligible-services").innerHTML = data.services
+        .map(
+          (group, index) =>
+            `<details class="demo-service-category" data-service-group="${index}" ${openGroups.has(String(index)) ? "open" : ""}><summary><input type="checkbox" data-service-category="${index}" aria-label="${escape(group.name)}" ${isAll || group.services.every((s) => draft.services.includes(s.id)) ? "checked" : ""}><span>${escape(group.name)}</span><small>${group.services.length}</small></summary><div class="demo-service-grid">${group.services.map((service) => `<label class="demo-service-choice"><input type="checkbox" data-service="${escape(service.id)}" ${isAll || draft.services.includes(service.id) ? "checked" : ""}><span>${escape(service.name)}</span></label>`).join("")}</div></details>`,
+        )
+        .join("");
       document.querySelectorAll("[data-service-category]").forEach((input) => {
         const g = data.services[Number(input.dataset.serviceCategory)];
         const count = g.services.filter((s) =>
@@ -893,7 +894,7 @@
         (!draft.startDate || draft.endDate < draft.startDate)
       )
         fail("errorEndDateBeforeStart", "endDate");
-      if (!draft.services.length) fail("errorServicesRequired", "name");
+      if (!draft.services.length) fail("errorServicesRequired", "serviceScope");
       if (draft.kind === "coupon") {
         if (!draft.startDate) fail("errorStartDateRequired", "startDate");
         if (!Number.isInteger(Number(draft.slots)) || Number(draft.slots) < 1)
@@ -968,6 +969,15 @@
     form.addEventListener("change", (event) => {
       const name = event.target.name;
       read();
+      if (name === "serviceScope") {
+        if (event.target.value === "all") {
+          customServices = [...draft.services];
+          draft.services = ["all"];
+        } else {
+          draft.services = [...customServices];
+        }
+        renderServices();
+      }
       if (name === "paidEnabled" && draft.paidEnabled) {
         draft.paidPlacements = data.placements.map((placement) => placement.id);
         renderPaid();
@@ -986,28 +996,15 @@
     });
     $("eligible-services").addEventListener("change", (event) => {
       const input = event.target;
-      if (input.id === "all-services") {
-        draft.services = input.checked ? ["all"] : [];
-      } else {
-        let selected = new Set(
-          draft.services.includes("all")
-            ? data.services.flatMap((g) => g.services.map((s) => s.id))
-            : draft.services,
-        );
-        const items = input.dataset.service
-          ? [{ id: input.dataset.service }]
-          : data.services[Number(input.dataset.serviceCategory)]?.services ||
-            [];
-        items.forEach((s) =>
-          input.checked ? selected.add(s.id) : selected.delete(s.id),
-        );
-        draft.services = [...selected];
-        if (
-          draft.services.length ===
-          data.services.reduce((sum, g) => sum + g.services.length, 0)
-        )
-          draft.services = ["all"];
-      }
+      let selected = new Set(draft.services);
+      const items = input.dataset.service
+        ? [{ id: input.dataset.service }]
+        : data.services[Number(input.dataset.serviceCategory)]?.services || [];
+      items.forEach((s) =>
+        input.checked ? selected.add(s.id) : selected.delete(s.id),
+      );
+      draft.services = [...selected];
+      customServices = [...draft.services];
       renderServices();
       update();
     });

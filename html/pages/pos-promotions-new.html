@@ -221,7 +221,9 @@
                       </label>
                       <div class="promo-svc">
                         <div class="promo-svc-label">
-                          <b data-copy="eligibleServicesLabel"
+                          <b
+                            id="eligible-services-label"
+                            data-copy="eligibleServicesLabel"
                             >Eligible services</b
                           ><button
                             type="button"
@@ -236,7 +238,18 @@
                             >
                           </button>
                         </div>
-                        <div id="eligible-services"></div>
+                        <select
+                          id="service-scope"
+                          name="serviceScope"
+                          class="demo-service-scope"
+                          aria-labelledby="eligible-services-label"
+                        >
+                          <option value="all" data-copy="eligibleServicesAll">
+                            All services
+                          </option>
+                          <option value="custom">Custom</option>
+                        </select>
+                        <div id="eligible-services" hidden></div>
                       </div>
                     </section>
                     <section

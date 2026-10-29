@@ -216,8 +216,9 @@
   opacity: 1;
   visibility: visible;
 }
-.demo-service-all {
-  margin: 8px 0 14px;
+.demo-service-scope {
+  width: 100%;
+  margin: 8px 0 0;
 }
 .demo-service-category {
   border: 1px solid #e1e6f0;
@@ -244,7 +245,8 @@
   flex: 0 0 16px;
   width: 16px;
   height: 16px;
-  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%2364758b' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E") no-repeat center / 16px;
+  background: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Cpath d='m4 6 4 4 4-4' fill='none' stroke='%2364758b' stroke-width='1.5' stroke-linecap='round'/%3E%3C/svg%3E")
+    no-repeat center / 16px;
 }
 .demo-service-category[open] summary::after {
   transform: rotate(180deg);
