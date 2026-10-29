@@ -9,15 +9,18 @@
     {name:'Kim Tuyen', id:'NX-2042', handle:'@kim.tuyen', phone:'7135550144', detail:'chat-kim'},
     {name:'Sally Thanh Hoang', id:'NX-2043', handle:'@sally.hoang', email:'sally@example.com', detail:'chat-sally'}
   ];
+  const callTime=(days,hour,minute)=>{const date=new Date();date.setDate(date.getDate()-days);date.setHours(hour,minute,0,0);if(date>new Date())date.setDate(date.getDate()-1);return date.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' · '+date.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});};
   const calls = [
-    {name:'Sally Thanh Hoang', id:'call-1', type:'outgoing-voice', summary:'Outgoing · Voice · Oct 11, 2026 · 9:25 PM'},
-    {name:'Sally Thanh Hoang', id:'call-2', type:'missed-video', summary:'Missed · Video · Oct 11, 2026 · 2:24 PM'},
-    {name:'Kayla Bui', id:'call-4', type:'missed-voice', summary:'Missed · Voice · Oct 9, 2026 · 10:41 PM'}
+    {name:'Kim Tuyen',id:'call-1',type:'outgoing-voice',summary:'Outgoing · Voice · '+callTime(0,9,25)},
+    {name:'Mai Nguyễn',id:'call-2',type:'missed-video',summary:'Missed · Video · '+callTime(1,14,24)},
+    {name:'Sally Thanh Hoang',id:'call-4',type:'missed-voice',summary:'Missed · Voice · '+callTime(1,10,41)},
+    {name:'Kim Tuyen',id:'call-5',type:'outgoing-voice',summary:'Outgoing · Voice · '+callTime(2,16,10)},
+    {name:'Mai Nguyễn',id:'call-6',type:'outgoing-video',summary:'Outgoing · Video · '+callTime(3,11,5)}
   ];
   const communities = [
-    {id:'dallas', name:'Thợ Nail Dallas – Fort Worth', type:'city', detail:'Dallas – Fort Worth · 5 members'},
-    {id:'tax', name:'Thuế & 1099 cho thợ', type:'topic', detail:'6 members'},
-    {id:'ai', name:'Học Hỏi AI', type:'topic', detail:'1 member'}
+    {id:'dallas', name:'Thợ Nail Dallas – Fort Worth', type:'city', detail:'Dallas – Fort Worth · 962 members'},
+    {id:'tax', name:'Thuế & 1099 cho thợ', type:'topic', detail:'624 members'},
+    {id:'ai', name:'Học Hỏi AI', type:'topic', detail:'387 members'}
   ];
   const $ = selector => document.querySelector(selector);
   const parentMessageOrigin = location.protocol === 'file:' ? '*' : location.origin;
@@ -286,9 +289,9 @@
     } else if (kind === 'chat-mai') {
       html = thread('Mai Nguyễn','About your 12 white waiting chairs',[{text:'Hi, are the white chairs still available? Could I see their condition and the price for six?'}],'chat-mai',true);
     } else if (kind === 'chat-kim') {
-      html = thread('Kim Tuyen','Direct message',[{text:'Hello Kim ne',mine:true},{text:'Hmm'},{text:'hello em',mine:true}],'chat-kim',true);
+      html = thread('Kim Tuyen','Ca hỗ trợ tại BITCOIN NAIL BAR',[{text:'Chị ơi, cuối tuần tiệm còn cần người làm gel manicure không?'},{text:'Còn em nhé. Tiệm cần hỗ trợ một ca 9 giờ đến 6 giờ, có nghỉ trưa. Em làm được Gel-X không?',mine:true},{text:'Dạ được chị, em gửi mẫu em mới làm để chị xem nhé.'},{text:'Em gửi giúp chị vài mẫu và ngày em trống, chị xác nhận lịch lại trong chiều nay.',mine:true}],'chat-kim',true);
     } else if (kind === 'chat-sally') {
-      html = thread('Sally Thanh Hoang','Direct message',[{text:'Could we talk later today?'}],'chat-sally',true);
+      html = thread('Sally Thanh Hoang','Mẫu Gel-X và lịch hẹn',[{text:'Chị gửi giúp em hình mẫu Gel-X hồng sữa tiệm mới đăng nhé.'},{text:'Được em, mẫu đó có nhũ nhẹ và đá ở hai ngón. Em thích độ dài vừa hay dài?',mine:true},{text:'Em muốn dài vừa thôi chị, để làm việc gõ máy vẫn tiện. Chiều thứ Sáu tiệm còn giờ không?'}],'chat-sally',true);
     } else if (state.sourceChats[kind]) {
       const source = state.sourceChats[kind];
       html = thread(source.recipient, source.reference, [], kind, true);
@@ -297,7 +300,7 @@
       const custom = state.createdGroups.find(group => group.id === kind);
       const joined = communities.find(group => 'group-community-' + group.id === kind && state.joinedCommunities.includes(group.id));
       if (!names[kind] && !custom && !joined) return;
-      const messages = kind === 'group-new' || custom || joined ? [] : [{text:kind === 'group-houston' ? 'Có ai cần ghế chờ màu trắng không?' : 'Cho mình hỏi cách giữ form Gel-X đẹp lâu.'}];
+      const messages = kind === 'group-new' || custom || joined ? [] : [{text:kind === 'group-houston' ? 'Tiệm mình đang đổi nội thất, có 12 ghế chờ trắng. Anh chị cần mình gửi kích thước nhé.' : 'Mình đang tập vẽ hoa nét mảnh trên tip. Có ai ở Houston muốn cùng thực hành buổi tới không?'},{text:kind === 'group-houston' ? 'Mình cần 6 ghế cho khu chờ. Bạn gửi giúp giá theo chiếc và khu vực nhận nhé.' : 'Cho mình tham gia với. Mình mang cọ liner và tip mẫu, cần chuẩn bị thêm màu gì không?'}];
       html = thread(names[kind] || custom?.name || joined.name, 'Group chat', messages, kind);
     } else if (kind.startsWith('call-')) {
       const call = calls.find(item => item.id === kind && !state.deletedCalls.includes(item.id));
@@ -359,11 +362,13 @@
       return '<button class="row-button" data-detail="' + detail + '" data-initials="' + esc(initials) + '"><span><strong>' + esc(member.name) + '</strong><small>' + esc(member.handle) + ' · ' + esc(member.id) + '</small></span><span class="arrow">›</span></button>';
     }).join('');
   }
+  const conversationSamples={'chat-kim':'Em gửi giúp chị vài mẫu và ngày em trống, chị xác nhận lịch lại trong chiều nay.','chat-sally':'Em muốn dài vừa thôi chị, để làm việc gõ máy vẫn tiện. Chiều thứ Sáu tiệm còn giờ không?','group-houston':'Bạn gửi giúp giá theo chiếc và khu vực nhận nhé.','group-art':'Mình mang cọ liner và tip mẫu, cần chuẩn bị thêm màu gì không?'};
   function renderConversationPreviews() {
     for (const id of ['chat-kim','chat-sally','group-houston','group-art','group-new','chat-mai',...Object.keys(state.sourceChats)]) {
       const messages = state.sentMessages[id];
       const preview = document.querySelector('[data-detail="' + id + '"] small');
       if (preview && Array.isArray(messages) && messages.length) preview.textContent = chatPreviewText(messages[messages.length - 1]);
+      else if(preview&&conversationSamples[id])preview.textContent=conversationSamples[id];
     }
   }
   function chatPreviewText(message){const label=message.text||({image:ui('Photo','Ảnh'),audio:ui('Voice message','Tin thoại'),sticker:ui('Sticker','Nhãn dán'),gif:'GIF'}[message.type]||ui('Message','Tin nhắn'));return label+ui(' · Just now',' · Vừa xong');}

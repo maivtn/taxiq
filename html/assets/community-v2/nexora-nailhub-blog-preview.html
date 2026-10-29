@@ -13,6 +13,7 @@
   <header class="top"><div class="top-inner"><div class="brand">NailHub.AI <span style="font-size:11px;font-weight:700;opacity:.8">· bản mô phỏng</span></div><a href="nexora-community-complete.html?view=blog">↗ Xem Blog NEXORA</a></div></header>
   <main class="wrap"><div class="eyebrow">Blog dùng chung</div><div class="hero"><div><h1>Bài viết cho người trong nghề</h1><p>Một bài Blog được hiển thị trên cả NailHub.AI và NEXORA trong bản mẫu.</p></div><button id="create" class="btn primary">＋ Viết Blog</button></div><div class="notice">Đây là giao diện mô phỏng NailHub.AI trên máy này. Bài thử chỉ lưu trong trình duyệt, không được đăng lên NailHub.AI hay NEXORA thật.</div><div class="toolbar"><input id="search" class="field" type="search" placeholder="Tìm bài Blog..." aria-label="Tìm bài Blog"><select id="topic" class="field" aria-label="Lọc chủ đề"></select></div><div id="count" class="count"></div><div id="posts" class="grid"></div></main>
   <div id="modal"></div>
+  <script src="community-demo-data.js?v=20261029-realistic-data"></script>
   <script>
   (()=>{
     const KEY='nexora-nailhub-shared-blog-v1',ME='BITCOIN NAIL BAR';
@@ -21,10 +22,10 @@
     const $=selector=>document.querySelector(selector);
     const esc=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
     const norm=value=>String(value||'').normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase().trim();
-    function load(){try{const value=JSON.parse(localStorage.getItem(KEY));if(Array.isArray(value))return value;}catch{}return demo.map(article=>({...article}));}
+    function load(){let saved=null;try{const value=JSON.parse(localStorage.getItem(KEY));if(Array.isArray(value))saved=value;}catch{}const rows=window.NEXORA_COMMUNITY_DEMO.merge(saved,window.NEXORA_COMMUNITY_DEMO.blogs,demo,'blogs');try{localStorage.setItem(KEY,JSON.stringify(rows));}catch{}return rows;}
     let articles=load(),editing=null,cover='';
     function save(){localStorage.setItem(KEY,JSON.stringify(articles));}
-    function coverUrl(value){return /^data:image\/(?:png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(value||'')?value:'';}
+    function coverUrl(value){return window.NEXORA_COMMUNITY_DEMO.mediaURL(value);}
     function coverMarkup(article,full=false){const url=coverUrl(article.cover);return url?`<img class="cover ${full?'full':''}" src="${url}" alt="Ảnh bìa: ${esc(article.title)}">`:'';}
     function previewCover(){const preview=$('#coverPreview');if(!preview)return;const url=coverUrl(cover);preview.innerHTML=url?`<img class="cover-preview" src="${url}" alt="Xem trước ảnh bìa"><button type="button" class="btn small" data-remove-cover>Xóa ảnh</button>`:'<span class="meta">Chưa chọn ảnh. Bài vẫn đăng bình thường.</span>';}
     function date(value){return new Date(value).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'});}

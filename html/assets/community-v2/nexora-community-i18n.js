@@ -1001,8 +1001,8 @@ Joined in this preview.	Đã tham gia trong bản xem trước.
     if (!isConnect) {
       const promotionUntil = core.match(/^Bản thử đang hiển thị đến (.+)\. Chưa có khoản tiền nào được thu\.$/);
       if (promotionUntil) return match[1] + 'Preview placement active until ' + promotionUntil[1] + '. No payment was taken.' + match[3];
-      const count = core.match(/^(\d+)\s+(bài đăng|bài cập nhật|người theo dõi|trang|Fanpage|bài|tin|nháp)$/);
-      if (count) return match[1] + count[1] + ' ' + ({'bài đăng':'listings','bài cập nhật':'updates','người theo dõi':'followers','trang':'Pages','Fanpage':'Pages','bài':'posts','tin':'posts','nháp':'drafts'}[count[2]]) + match[3];
+      const count = core.match(/^([\d,]+)\s+(bài đăng|bài cập nhật|người theo dõi|trang|Fanpage|bài|tin|nháp|thành viên)$/);
+      if (count) return match[1] + count[1] + ' ' + ({'bài đăng':'listings','bài cập nhật':'updates','người theo dõi':'followers','trang':'Pages','Fanpage':'Pages','bài':'posts','tin':'posts','nháp':'drafts','thành viên':'members'}[count[2]]) + match[3];
       const request = core.match(/^(🔔\s*)?(\d+) yêu cầu tin nhắn đang chờ$/);
       if (request) return match[1] + (request[1] || '') + request[2] + ' pending message request' + (request[2] === '1' ? '' : 's') + match[3];
       const nearby = core.match(/^(⌖\s*.+?) · bài gần bạn lên trước$/);
@@ -1044,14 +1044,14 @@ Joined in this preview.	Đã tham gia trong bản xem trước.
       const pollChoice = core.match(/^(9|10) giờ sáng · (\d+)$/);
       if (pollChoice) return match[1] + pollChoice[1] + ' AM · ' + pollChoice[2] + match[3];
     } else {
-      const count = core.match(/^(\d+) (members?)$/);
+      const count = core.match(/^([\d,]+) (members?)$/);
       if (count) return match[1] + count[1] + ' thành viên' + match[3];
       if (core === '✓ Verified') return match[1] + '✓ Đã xác minh' + match[3];
-      const call = core.match(/^(Outgoing|Missed|Incoming) · (Voice|Video) · Oct (\d+), (\d{4}) · (.*)$/);
-      if (call) return match[1] + ({Outgoing:'Đã gọi',Missed:'Nhỡ',Incoming:'Đã nhận'}[call[1]]) + ' · ' + ({Voice:'Thoại',Video:'Video'}[call[2]]) + ' · Oct ' + call[3] + ', ' + call[4] + ' · ' + call[5] + match[3];
+      const call = core.match(/^(Outgoing|Missed|Incoming) · (Voice|Video) · ([A-Z][a-z]{2} \d{1,2}, \d{4}) · (.*)$/);
+      if (call) return match[1] + ({Outgoing:'Đã gọi',Missed:'Nhỡ',Incoming:'Đã nhận'}[call[1]]) + ' · ' + ({Voice:'Thoại',Video:'Video'}[call[2]]) + ' · ' + call[3] + ' · ' + call[4] + match[3];
       const namedCall = core.match(/^(View call details for|Voice call|Video call|Show delete for call with|Delete call with) (.+)$/);
       if (namedCall) {
-        const rest = namedCall[1] === 'Delete call with' ? namedCall[2].replace(/, ((?:Outgoing|Missed|Incoming) · (?:Voice|Video) · Oct .*)$/, (_, summary) => ', ' + translate(summary)) : namedCall[2];
+        const rest = namedCall[1] === 'Delete call with' ? namedCall[2].replace(/, ((?:Outgoing|Missed|Incoming) · (?:Voice|Video) · [A-Z][a-z]{2} .*)$/, (_, summary) => ', ' + translate(summary)) : namedCall[2];
         return match[1] + (dictionary.get(namedCall[1]) || namedCall[1]) + ' ' + rest + match[3];
       }
       const namedMessage = core.match(/^(View message request from|Chat with) (.+)$/);
