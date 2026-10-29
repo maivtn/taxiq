@@ -4,15 +4,16 @@
   const assetBase = new URL('../icon-oneqr/', document.currentScript.src);
   const feedAssetBase = new URL('feed-icons/', document.currentScript.src);
   const feedArtwork = {
-    'feed-sale':'for-sale-17755826.png', 'feed-job':'briefcase-8178806.png',
-    'feed-poll':'voting-1598588.png', 'feed-tip':'tips-and-tricks-12695893.png',
+    'feed-photo':'picture-2659360.png',
+    'feed-sale':'for-sale-17755826.png', 'feed-job':'posting-8522069.png',
+    'feed-poll':'vote-8121705.png', 'feed-tip':'mode-8484254.png',
     'feed-ask':'speech-bubble-5726734.png',
     'feed-event':'event-18669653.png', 'feed-blog':'notes-1355663.png'
   };
   const artwork = {
     feed:'layout-list', market:'users-round', groups:'users-round', pages:'building-2',
     deals:'ticket', jobs:'briefcase', daywork:'calendar-days', blog:'feed-blog', connect:'message-circle',
-    general:'paintbrush', showcase:'image', tip:'feed-tip', question:'feed-ask', poll:'feed-poll',
+    general:'paintbrush', showcase:'feed-photo', tip:'feed-tip', question:'feed-ask', poll:'feed-poll',
     event:'feed-event', sale:'feed-sale', want:'shopping-bag', hiring:'feed-job', seeking:'user-round',
     dayhire:'calendar-clock', page:'building-2', group:'users-round', messages:'message-circle', calls:'phone', privacy:'settings-2'
   };

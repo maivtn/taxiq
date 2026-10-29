@@ -11,16 +11,16 @@
     {
       "key": "hiring",
       "label": "Post a job",
-      "file": "briefcase-8178806.png",
-      "href": "https://www.flaticon.com/free-icon/briefcase_8178806",
-      "image": "https://cdn-icons-png.flaticon.com/512/8178/8178806.png"
+      "file": "posting-8522069.png",
+      "href": "https://www.flaticon.com/free-icon/posting_8522069",
+      "image": "https://cdn-icons-png.flaticon.com/512/8522/8522069.png"
     },
     {
       "key": "poll",
       "label": "Poll",
-      "file": "voting-1598588.png",
-      "href": "https://www.flaticon.com/free-icon/voting_1598588",
-      "image": "https://cdn-icons-png.flaticon.com/512/1598/1598588.png"
+      "file": "vote-8121705.png",
+      "href": "https://www.flaticon.com/free-icon/vote_8121705",
+      "image": "https://cdn-icons-png.flaticon.com/512/8121/8121705.png"
     },
     {
       "key": "question",
@@ -32,9 +32,10 @@
     {
       "key": "tip",
       "label": "Tips",
-      "file": "tips-and-tricks-12695893.png",
-      "href": "https://www.flaticon.com/free-icon/tips-and-tricks_12695893",
-      "image": "https://cdn-icons-png.flaticon.com/512/12695/12695893.png"
+      "file": "mode-8484254.png",
+      "href": "https://www.flaticon.com/free-icon/mode_8484254",
+      "image": "https://cdn-icons-png.flaticon.com/512/8484/8484254.png",
+      "author": "manshagraphics"
     },
     {
       "key": "event",
@@ -49,6 +50,14 @@
       "file": "notes-1355663.png",
       "href": "https://www.flaticon.com/free-icon/notes_1355663",
       "image": "https://cdn-icons-png.flaticon.com/512/1355/1355663.png"
+    },
+    {
+      "key": "showcase",
+      "label": "Work photos",
+      "file": "picture-2659360.png",
+      "href": "https://www.flaticon.com/free-icon/picture_2659360",
+      "image": "https://cdn-icons-png.flaticon.com/512/2659/2659360.png",
+      "author": "Magnific"
     }
   ]
 }
