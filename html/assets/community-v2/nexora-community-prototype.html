@@ -174,13 +174,13 @@
   </style>
   <link rel="stylesheet" href="../vendor/tom-select/tom-select.css">
   <link rel="stylesheet" href="community-controls.css?v=20261029">
-  <link rel="stylesheet" href="community-mobile.css?v=20261029-community-blog-filter-v17">
-  <link rel="stylesheet" href="community-feed-social.css?v=20261029-community-review-header-v16">
-  <link rel="stylesheet" href="community-feed-composer.css?v=20261029-community-review-header-v16">
-  <link rel="stylesheet" href="community-layout.css?v=20261029-community-review-header-v16">
-<link rel="stylesheet" href="community-group-workflow.css?v=20261029-community-review-header-v16">
-<link rel="stylesheet" href="community-jobs-workflow.css?v=20261029-community-review-header-v16">
-<link rel="stylesheet" href="community-shifts-workflow.css?v=20261029-community-review-header-v16">
+  <link rel="stylesheet" href="community-mobile.css?v=20261029-community-feed-tour-v19">
+  <link rel="stylesheet" href="community-feed-social.css?v=20261029-community-feed-tour-v19">
+  <link rel="stylesheet" href="community-feed-composer.css?v=20261029-community-feed-tour-v19">
+  <link rel="stylesheet" href="community-layout.css?v=20261029-community-feed-tour-v19">
+<link rel="stylesheet" href="community-group-workflow.css?v=20261029-community-feed-tour-v19">
+<link rel="stylesheet" href="community-jobs-workflow.css?v=20261029-community-feed-tour-v19">
+<link rel="stylesheet" href="community-shifts-workflow.css?v=20261029-community-feed-tour-v19">
 <style>
 #dealSearchTools{display:none}
 #feedView.deal-mode #dealSearchTools{display:grid;gap:10px;margin:0 0 16px}
@@ -295,15 +295,15 @@
 <div id="notifyPanel" class="notify-panel panel hide" role="dialog" aria-label="Thông báo phù hợp"></div>
 <div id="modalRoot"></div><div id="toast" class="toast hide" role="status"></div>
 <script src="../vendor/tom-select/tom-select.complete.min.js"></script>
-<script src="community-demo-data.js?v=20261029-community-review-header-v16"></script>
+<script src="community-demo-data.js?v=20261029-community-feed-tour-v19"></script>
 <script src="nexora-us-geo-2025.js"></script>
 <script src="nexora-us-place-centers-2025.js"></script>
-<script src="community-record-store.js?v=20261029-community-review-header-v16"></script>
-<script src="community-group-workflow.js?v=20261029-community-review-header-v16"></script>
-<script src="community-jobs-workflow.js?v=20261029-community-review-header-v16"></script>
-<script src="community-shifts-workflow.js?v=20261029-community-review-header-v16"></script>
-<script src="community-feed-social.js?v=20261029-community-review-header-v16"></script>
-<script src="community-feed-composer.js?v=20261029-community-review-header-v16"></script>
+<script src="community-record-store.js?v=20261029-community-feed-tour-v19"></script>
+<script src="community-group-workflow.js?v=20261029-community-feed-tour-v19"></script>
+<script src="community-jobs-workflow.js?v=20261029-community-feed-tour-v19"></script>
+<script src="community-shifts-workflow.js?v=20261029-community-feed-tour-v19"></script>
+<script src="community-feed-social.js?v=20261029-community-feed-tour-v19"></script>
+<script src="community-feed-composer.js?v=20261029-community-feed-tour-v19"></script>
 <script>
 (() => {
   const KEY='nexora-market-prototype-v1';
@@ -505,8 +505,8 @@
     const select=$('#feedFilterSelect'),options=feedFilterOptions(),signature=JSON.stringify(options),selected=selectedFeedFilter();
     if(select.dataset.options!==signature){select.tomselect?.destroy();select.innerHTML=options.map(([kind,label])=>`<option value="${esc(kind)}">${esc(label)}</option>`).join('');select.value=selected;select.dataset.options=signature;}
     if(!select.tomselect&&window.TomSelect){
-      const renderChoice=data=>{const [kind,label,icon]=options.find(item=>item[0]===data.value)||options[0];return `<div class="feed-filter-choice" data-kind="${esc(kind)}">${feedIcon(icon)}<span${kind.startsWith('group:')?' data-community-authored':''}>${esc(label)}</span></div>`;};
-      const control=new window.TomSelect(select,{create:false,maxItems:1,maxOptions:null,controlInput:null,hideSelected:false,closeAfterSelect:true,searchField:[],render:{option:renderChoice,item:renderChoice}});
+      const renderChoice=(data,selected=false)=>{const [kind,label,icon]=options.find(item=>item[0]===data.value)||options[0];return `<div class="feed-filter-choice" data-kind="${esc(kind)}">${feedIcon(icon)}<span>${selected?'<span class="feed-filter-prefix">Lọc bài: </span>':''}<span${kind.startsWith('group:')?' data-community-authored':''}>${esc(label)}</span></span></div>`;};
+      const control=new window.TomSelect(select,{create:false,maxItems:1,maxOptions:null,controlInput:null,hideSelected:false,closeAfterSelect:true,searchField:[],render:{option:data=>renderChoice(data),item:data=>renderChoice(data,true)}});
       control.control.setAttribute('aria-labelledby','feedFilterLabel');
     }
     if(select.tomselect){if(select.tomselect.getValue()!==selected)select.tomselect.setValue(selected,true);}
@@ -879,9 +879,9 @@
   setInterval(()=>{if(extra.pagePosts.some(post=>post.status==='scheduled'&&post.publishAt&&new Date(post.publishAt).getTime()<=Date.now())){renderExtra();const open=document.querySelector('#communityPageScreen [data-page-detail-id],#modalRoot [data-page-detail-id]');if(open){const page=extra.pages.find(x=>x.id===open.dataset.pageDetailId),tab=open.querySelector('[data-page-tab].active')?.dataset.pageTab;if(page&&tab==='scheduled')pageDetail(page,'scheduled');}}},30000);
 })();
 </script>
-<script src="nexora-community-i18n.js?rev=20261029-community-review-header-v16"></script>
+<script src="nexora-community-i18n.js?rev=20261029-community-feed-tour-v19"></script>
   <script src="../vendor/lucide.min.js" defer></script>
-  <script src="community-ui.js?v=20261029-community-review-header-v16" defer></script>
+  <script src="community-ui.js?v=20261029-community-feed-tour-v19" defer></script>
   <script src="community-pages-screen.js?v=20261029-pages-screen-v1" defer></script>
 </body>
 </html>

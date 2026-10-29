@@ -161,7 +161,7 @@ test('the integrated editor receives the original record for full type fields an
   assert.equal(app.d.querySelector('[data-social-edit-form]'),null);
 });
 
-test('the featured preview uses captured feed plans and never claims a real payment or publication',t=>{
+test('featured controls retain captured feed plans and keep local sponsorship separate from publication',t=>{
   const records=[{id:'mine',kind:'tip',owner:'Me',title:'A',steps:'Body'}],app=boot(t,records);
   app.click('[data-social-action="menu"]');app.click('[data-social-action="boost-post"]');
   const plans=[...app.d.querySelectorAll('[data-social-action="boost-plan"]')];
@@ -170,8 +170,8 @@ test('the featured preview uses captured feed plans and never claims a real paym
   app.click('[data-social-action="boost-plan"][data-social-plan="7"]');app.click('[data-social-action="boost-preview"]');
   assert.equal(JSON.parse(app.w.localStorage.getItem(storageKey)).posts.mine.featuredPreview.priceUsd,10);
   assert.equal(records[0].isFeatured,undefined);
-  assert.match(app.d.querySelector('[data-social-ui="sponsored"]').textContent,/bản thử/);
-  assert.match(app.notices.at(-1),/không thu tiền/);
+  assert.equal(app.d.querySelector('[data-social-ui="sponsored"]').textContent,'Được tài trợ');
+  assert.equal(app.notices.at(-1),'Đã cập nhật bài.');
 });
 
 test('closing the shared host dialog clears deep-link state before the next feed action',t=>{

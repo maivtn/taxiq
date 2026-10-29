@@ -57,6 +57,7 @@ body #feedView .feed-group-shortcut { display: inline-flex; align-items: center;
 .feed-filter-control .ts-dropdown .option { min-height: 44px; padding: 7px 10px; border-radius: 8px; }
 .feed-filter-control .ts-dropdown :is(.active, .selected) { color: #5548c8; background: #f0edff; }
 .feed-filter-control .feed-filter-choice > span:last-child { min-width: 0; overflow-wrap: anywhere; }
+.feed-filter-prefix { display:none; }
 .feed-filter-control .feed-icon { display: grid; place-items: center; flex: none; width: 28px; height: 28px; border-radius: 8px; color: #6250c9; background: #f0edff; }
 .feed-filter-control .feed-icon svg { width: 18px; height: 18px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .feed-filter-control :is([data-kind="deal"], [data-kind="tip"]) .feed-icon { color: #a76513; background: #fff4df; }
@@ -248,6 +249,7 @@ body .toast { z-index: 100; max-width: min(420px, calc(100% - 24px)); overflow-w
   body.embedded #feedView .feed-filter-label { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
   body.embedded #feedView .feed-group-shortcut { display: inline-flex; grid-column: 2; grid-row: 1; min-height: 46px; font-size: 12px; padding: 8px; white-space: nowrap; }
   body.embedded #feedView .feed-filter-control { max-width: none; }
+  body.embedded #feedView .feed-filter-prefix { display:inline; font-weight:500; }
   body.embedded #feedView .feed-filter-control .ts-control > .item { min-width: 0; max-width: 100%; }
   body.embedded #feedView .feed-filter-control .ts-control .feed-filter-choice { min-width: 0; max-width: 100%; }
   body.embedded #feedView .feed-filter-control .ts-control .feed-filter-choice > span:last-child { overflow: hidden; white-space: nowrap; text-overflow: ellipsis; overflow-wrap: normal; }
@@ -575,4 +577,12 @@ body #feedView .feed-action[data-blog-create] .feed-icon .community-action-icon 
 @media(max-width:650px){
   body .community-photo-actions .community-photo-button { padding:9px 10px; font-size:12px; }
   .community-photo-actions.is-cover { right:8px; bottom:8px; gap:5px; }
+}
+
+@media(max-width:360px){
+  body.embedded #feedView .feed-filter-control .ts-control { padding-left:10px; font-size:12px; }
+  body.embedded #feedView .feed-filter-control .ts-control .feed-filter-choice { gap:6px; }
+  body.embedded #feedView .feed-filter-control .ts-control .feed-icon { width:20px; height:20px; }
+  body.embedded #feedView .feed-filter-control .ts-control .feed-filter-choice > span:last-child { white-space:normal; }
+  body.embedded #feedView .feed-filter-prefix { display:block; white-space:nowrap; }
 }
