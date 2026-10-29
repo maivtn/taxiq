@@ -117,3 +117,12 @@ body .dialog.community-social-lightbox .dialog-footer .btn{min-width:0;white-spa
   .community-social-replies .community-social-comment-avatar{display:none}
   .community-social-lightbox .dialog-body>img{max-height:65dvh}
 }
+.community-feed-post-destination{border:0;font-family:inherit;cursor:pointer;text-align:left}
+.community-feed-post-destination:hover{background:#eae5fb;color:#5d4baf}
+.community-feed-post-destination:focus-visible{outline:3px solid #8977e8;outline-offset:2px}
+.community-feed-post-market-status{display:inline-flex;padding:3px 7px;border-radius:6px;background:#eef0f5;color:#738095;font-size:10px;font-weight:750;line-height:1.35}
+.community-social-market{margin-top:12px}
+.community-social-market-actions{display:flex;flex-wrap:wrap;gap:8px}
+.community-social-trade-notice{margin:9px 0 0!important;color:#8490a3;font-size:11px;line-height:1.5}
+.community-social-detail>.content-card{padding:0;border:0;box-shadow:none}
+@media(max-width:650px){.community-social-market-actions>.btn{min-height:44px;width:100%}.community-feed-post-destination{min-height:32px}}

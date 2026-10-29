@@ -1565,7 +1565,7 @@
               <h3 class="text-[15px] font-semibold" data-staff-community-title>Community</h3>
               <a class="grid h-9 w-9 place-items-center rounded-lg text-nexoraSubtle" href="staff-community.html?role=tech&amp;tab=feed" aria-label="Open Community in full screen" data-staff-community-fullscreen><i data-lucide="expand" class="h-4 w-4"></i></a>
             </header>
-            <iframe class="min-h-0 w-full flex-1 border-0 bg-nexoraCanvas" src="community-hub.html?role=tech&amp;tab=feed" title="Staff Community — Community" loading="lazy" data-staff-community-frame></iframe>
+            <div class="min-h-0 w-full flex-1 bg-nexoraCanvas" data-staff-community-frame data-community-preview="feed" aria-label="Staff Community — Community"></div>
           </div>
           <nav class="absolute inset-x-0 bottom-0 z-30 grid h-[66px] grid-cols-5 border-t border-nailBlush bg-white/95 px-1 backdrop-blur-xl">
             <a class="grid place-items-center content-center gap-1 text-[10px] font-semibold text-nexoraSubtle" href="#"><i data-lucide="home" class="h-5 w-5"></i>Home</a>
@@ -1594,7 +1594,7 @@
               <h3 class="text-[15px] font-semibold" data-staff-community-title>Jobs</h3>
               <a class="grid h-9 w-9 place-items-center rounded-lg text-nexoraSubtle" href="staff-community.html?role=tech&amp;tab=jobs" aria-label="Open Community in full screen" data-staff-community-fullscreen><i data-lucide="expand" class="h-4 w-4"></i></a>
             </header>
-            <iframe class="min-h-0 w-full flex-1 border-0 bg-nexoraCanvas" src="community-hub.html?role=tech&amp;tab=jobs" title="Staff Community — Jobs" loading="lazy" data-staff-community-frame></iframe>
+            <div class="min-h-0 w-full flex-1 bg-nexoraCanvas" data-staff-community-frame data-community-preview="jobs" aria-label="Staff Community — Jobs"></div>
           </div>
           <nav class="absolute inset-x-0 bottom-0 z-30 grid h-[66px] grid-cols-5 border-t border-nailBlush bg-white/95 px-1 backdrop-blur-xl">
             <a class="grid place-items-center content-center gap-1 text-[10px] font-semibold text-nexoraSubtle" href="#"><i data-lucide="home" class="h-5 w-5"></i>Home</a>
@@ -2018,9 +2018,12 @@
             <div class="ml-4 space-y-1 border-l border-white/10 pb-1 pl-4">
               <a href="staff-community.html?role=tech&amp;tab=feed" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="feed" data-staff-community-tab="feed">Feed</a>
               <a href="staff-community.html?role=tech&amp;tab=groups" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="groups" data-staff-community-tab="groups">Groups &amp; Market</a>
+              <a href="staff-community.html?role=tech&amp;tab=pages" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="pages" data-staff-community-tab="pages">Pages</a>
               <a href="staff-community.html?role=tech&amp;tab=jobs" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="jobs" data-staff-community-tab="jobs">Jobs</a>
+              <a href="staff-community.html?role=tech&amp;tab=profile" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="profile" data-staff-community-tab="profile">Tech Profile</a>
+              <a href="staff-community.html?role=tech&amp;tab=blog" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="blog" data-staff-community-tab="blog">Blog</a>
               <a href="staff-community.html?role=tech&amp;tab=shift" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="shift" data-staff-community-tab="shift">Extra shifts</a>
-              <button type="button" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold w-full text-left" data-menu-key="deals" disabled title="Coming soon">Deals &amp; Coupons</button>
+              <a href="staff-community.html?role=tech&amp;tab=deals" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="deals" data-staff-community-tab="deals">Deals &amp; Coupons</a>
               <a href="staff-community.html?role=tech&amp;tab=connect" class="flex h-9 items-center rounded-lg px-2 text-[12px] font-semibold" data-menu-key="connect" data-staff-community-tab="connect">Messages &amp; Calls</a>
             </div>
           </details>
@@ -2617,6 +2620,6 @@
       window.setInterval(() => showBanner((activeIndex + 1) % items.length), 6500);
     });
   </script>
-  <script src="../assets/staff-community.js"></script>
+  <script src="../assets/staff-community.js?v=20261029-community-workflows-final"></script>
 </body>
 </html>

@@ -6,8 +6,8 @@
   const copy=value=>JSON.parse(JSON.stringify(value));
   const escapeHTML=value=>String(value??'').replace(/[&<>"']/g,char=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
   const words={
-    vi:{like:'Thích',unlike:'Bỏ thích',comments:'{count} bình luận',more:'Thêm thao tác',edit:'Sửa',remove:'Xóa',cancel:'Hủy',close:'Đóng',save:'Lưu',report:'Báo cáo',reply:'Trả lời',replying:'Đang trả lời {name}',send:'Gửi',placeholder:'Viết bình luận…',viewReplies:'Xem {count} trả lời',hideReplies:'Ẩn trả lời',moreReplies:'Xem thêm trả lời',moreComments:'Xem thêm bình luận',empty:'Chưa có bình luận nào.',deletePost:'Xoá bài',deletePostConfirm:'Xoá bài này? Không thể hoàn tác.',deleteComment:'Xoá bình luận',deleteCommentConfirm:'Xoá bình luận này?',reason:'Lý do',reasonPlaceholder:'VD: Có dấu hiệu lừa đảo',sendReport:'Gửi báo cáo',editPost:'Sửa bài',title:'Tiêu đề',body:'Nội dung',updated:'Đã cập nhật bài.',deleted:'Đã xoá bài.',error:'Đã có lỗi xảy ra. Vui lòng thử lại.',required:'Hãy viết nội dung để chia sẻ.',back:'Quay lại Bảng tin',notFound:'Bài viết không còn tồn tại',notFoundBody:'Bài viết có thể đã bị xoá hoặc bị gỡ.',photo:'Ảnh của {name}',gallery:'Ảnh của {name}',previous:'Ảnh trước',next:'Ảnh tiếp',edited:'đã sửa',boost:'Đẩy Nổi bật',extend:'Gia hạn Nổi bật',plan:'Chọn gói',days:'{count} ngày',preview:'Xem thử vị trí tài trợ',sponsored:'Được tài trợ · bản thử',demo:'Bản thử: nội dung lưu trong trình duyệt này, không được gửi hoặc đăng lên NEXORA thật.',paymentDemo:'Giá chỉ để xem luồng thiết kế. Bản thử không thu tiền; sản phẩm thật chỉ kích hoạt sau khi thanh toán thành công.'},
-    en:{like:'Like',unlike:'Remove like',comments:'{count} comments',more:'More actions',edit:'Edit',remove:'Delete',cancel:'Cancel',close:'Close',save:'Save',report:'Report',reply:'Reply',replying:'Replying to {name}',send:'Post',placeholder:'Write a comment…',viewReplies:'View {count} replies',hideReplies:'Hide replies',moreReplies:'Show more replies',moreComments:'Show more comments',empty:'No comments yet.',deletePost:'Delete post',deletePostConfirm:"Delete this post? This can't be undone.",deleteComment:'Delete comment',deleteCommentConfirm:'Delete this comment?',reason:'Reason',reasonPlaceholder:'e.g. This looks like a scam',sendReport:'Send report',editPost:'Edit post',title:'Title',body:'Content',updated:'Post updated.',deleted:'Post deleted.',error:'Something went wrong. Please try again.',required:'Write something to share.',back:'Back to feed',notFound:'This post is no longer available',notFoundBody:'It may have been deleted or removed.',photo:'Photo from {name}',gallery:'Photos from {name}',previous:'Previous photo',next:'Next photo',edited:'edited',boost:'Feature this post',extend:'Extend Featured',plan:'Choose a plan',days:'{count} days',preview:'Preview sponsored placement',sponsored:'Sponsored · demo',demo:'Demo: content is saved in this browser and is not sent or published to NEXORA.',paymentDemo:'Prices illustrate the design flow. This demo does not charge you; the live product activates only after successful payment.'}
+    vi:{like:'Thích',unlike:'Bỏ thích',comments:'{count} bình luận',more:'Thêm thao tác',edit:'Sửa',remove:'Xóa',cancel:'Hủy',close:'Đóng',save:'Lưu',report:'Báo cáo',reply:'Trả lời',replying:'Đang trả lời {name}',send:'Gửi',placeholder:'Viết bình luận…',viewReplies:'Xem {count} trả lời',hideReplies:'Ẩn trả lời',moreReplies:'Xem thêm trả lời',moreComments:'Xem thêm bình luận',empty:'Chưa có bình luận nào.',deletePost:'Xoá bài',deletePostConfirm:'Xoá bài này? Không thể hoàn tác.',deleteComment:'Xoá bình luận',deleteCommentConfirm:'Xoá bình luận này?',reason:'Lý do',reasonPlaceholder:'VD: Có dấu hiệu lừa đảo',sendReport:'Gửi báo cáo',editPost:'Sửa bài',title:'Tiêu đề',body:'Nội dung',updated:'Đã cập nhật bài.',deleted:'Đã xoá bài.',error:'Đã có lỗi xảy ra. Vui lòng thử lại.',required:'Hãy viết nội dung để chia sẻ.',back:'Quay lại Bảng tin',notFound:'Bài viết không còn tồn tại',notFoundBody:'Bài viết có thể đã bị xoá hoặc bị gỡ.',photo:'Ảnh của {name}',gallery:'Ảnh của {name}',previous:'Ảnh trước',next:'Ảnh tiếp',edited:'đã sửa',boost:'Đẩy Nổi bật',extend:'Gia hạn Nổi bật',plan:'Chọn gói',days:'{count} ngày',preview:'Xem thử vị trí tài trợ',sponsored:'Được tài trợ · bản thử',demo:'Bản thử: nội dung lưu trong trình duyệt này, không được gửi hoặc đăng lên NEXORA thật.',messageSeller:'Nhắn người bán',markSold:'Đánh dấu đã bán',markSoldConfirm:'Đánh dấu món này đã bán? Người mua sẽ thấy là đã bán.',sold:'Đã bán',bought:'Đã mua',markedSold:'Đã đánh dấu đã bán.',directTradeNotice:'Giao dịch trực tiếp giữa các thành viên. NEXORA không đứng giữa và không bảo đảm. Không chuyển tiền trước.',paymentDemo:'Giá chỉ để xem luồng thiết kế. Bản thử không thu tiền; sản phẩm thật chỉ kích hoạt sau khi thanh toán thành công.'},
+    en:{like:'Like',unlike:'Remove like',comments:'{count} comments',more:'More actions',edit:'Edit',remove:'Delete',cancel:'Cancel',close:'Close',save:'Save',report:'Report',reply:'Reply',replying:'Replying to {name}',send:'Post',placeholder:'Write a comment…',viewReplies:'View {count} replies',hideReplies:'Hide replies',moreReplies:'Show more replies',moreComments:'Show more comments',empty:'No comments yet.',deletePost:'Delete post',deletePostConfirm:"Delete this post? This can't be undone.",deleteComment:'Delete comment',deleteCommentConfirm:'Delete this comment?',reason:'Reason',reasonPlaceholder:'e.g. This looks like a scam',sendReport:'Send report',editPost:'Edit post',title:'Title',body:'Content',updated:'Post updated.',deleted:'Post deleted.',error:'Something went wrong. Please try again.',required:'Write something to share.',back:'Back to feed',notFound:'This post is no longer available',notFoundBody:'It may have been deleted or removed.',photo:'Photo from {name}',gallery:'Photos from {name}',previous:'Previous photo',next:'Next photo',edited:'edited',boost:'Feature this post',extend:'Extend Featured',plan:'Choose a plan',days:'{count} days',preview:'Preview sponsored placement',sponsored:'Sponsored · demo',demo:'Demo: content is saved in this browser and is not sent or published to NEXORA.',messageSeller:'Message seller',markSold:'Mark as sold',markSoldConfirm:'Mark this item as sold? Buyers will see it as sold.',sold:'Sold',bought:'Bought',markedSold:'Marked as sold.',directTradeNotice:'Direct trade between members. NEXORA is not a party to the deal and gives no guarantee. Never send money in advance.',paymentDemo:'Prices illustrate the design flow. This demo does not charge you; the live product activates only after successful payment.'}
   };
   // Existing staging post types plus the Feed types supplied in the PO prototype.
   const postTypes={
@@ -31,6 +31,8 @@
     const getFeed=()=>Array.isArray(adapter.getFeed?.())?adapter.getFeed():[];
     const findPost=id=>getFeed().find(post=>String(post.id)===String(id)&&post.kind!=='deal')||null;
     const own=post=>!!member&&post?.owner===member;
+    const isMarket=post=>post?.kind==='market'||post?.kind==='Marketplace'||post?.type==='sale'||post?.type==='want';
+    const isOpen=post=>!post.status||post.status==='open'||post.status==='Active';
     const t=(key,values={})=>Object.entries(values).reduce((text,[name,value])=>text.replaceAll('{'+name+'}',String(value)),words[document.documentElement.lang==='en'?'en':'vi'][key]||key);
     const tell=message=>adapter.toast?.(message);
     let state;
@@ -60,7 +62,11 @@
       catch{tell(t('error'));return false;}
     }
     function change(operation) {
-      const next=copy(state);next.posts=Object.assign(Object.create(null),next.posts);
+      let latest;try{latest=JSON.parse(localStorage.getItem(STORAGE_KEY)||'null');}catch{tell(t('error'));return false;}
+      const previous=state;
+      if(latest&&typeof latest==='object'&&!Array.isArray(latest))state={version:1,posts:Object.assign(Object.create(null),latest.posts&&typeof latest.posts==='object'&&!Array.isArray(latest.posts)?latest.posts:{}),reports:Array.isArray(latest.reports)?latest.reports:[],deletedPostIds:Array.isArray(latest.deletedPostIds)?latest.deletedPostIds:[]};
+      for(const post of getFeed())if(post.kind!=='deal')ensurePost(post);
+      const next=copy(state);state=previous;next.posts=Object.assign(Object.create(null),next.posts);
       operation(next);return persist(next);
     }
     function removeStoredPost(post) {
@@ -103,16 +109,21 @@
       const destinations=post.destinations,names=[];
       if(Array.isArray(destinations)){
         for(const destination of destinations){
-          if(destination.isMainFeed||destination.groupId===null)names.push({name:labels.mainFeed,authored:false});
-          else {const group=groups.find(item=>String(item.id)===String(destination.groupId));const name=group?.title||group?.name||destination.groupName;if(name)names.push({name,authored:true});}
+          if(destination.isMainFeed||destination.groupId===null)names.push({name:labels.mainFeed,authored:false,scope:'main'});
+          else {const group=groups.find(item=>String(item.id)===String(destination.groupId));const name=group?.title||group?.name||destination.groupName;if(name)names.push({name,authored:true,scope:'group:'+destination.groupId});}
         }
       }else{
-        if(!destinations||destinations.includeMainFeed!==false)names.push({name:labels.mainFeed,authored:false});
-        for(const groupId of Array.isArray(destinations?.groupIds)?destinations.groupIds:[]){const group=groups.find(item=>String(item.id)===String(groupId));const name=group?.title||group?.name;if(name)names.push({name,authored:true});}
+        if(!destinations||destinations.includeMainFeed!==false)names.push({name:labels.mainFeed,authored:false,scope:'main'});
+        for(const groupId of Array.isArray(destinations?.groupIds)?destinations.groupIds:[]){const group=groups.find(item=>String(item.id)===String(groupId));const name=group?.title||group?.name;if(name)names.push({name,authored:true,scope:'group:'+groupId});}
       }
       const distinctNames=names.filter((destination,index)=>names.findIndex(item=>item.name===destination.name)===index);
       const created=post.createdAt||post.publishedAt;
-      return `<header class="community-feed-post-header" data-social-ui="header"><span class="community-feed-post-avatar" aria-hidden="true">${avatar?`<img src="${esc(avatar)}" alt="">`:esc(initials)}</span><div class="community-feed-post-author-info"><div class="community-feed-post-name-row"><strong class="community-feed-post-author" title="${esc(owner)}" data-community-authored>${esc(owner)}</strong>${business?`<span class="community-feed-post-business">${esc(labels.business)}</span>`:''}</div><div class="community-feed-post-tags"><span class="community-feed-post-type" data-post-kind="${esc(kind)}">${esc(postTypes[language][kind]||postTypes[language].general)}</span>${post.resolved?`<span class="community-feed-post-resolved">${esc(labels.resolved)}</span>`:''}</div><div class="community-feed-post-meta">${created||post.lastEditedAt?`<div class="community-feed-post-byline">${created?`<time datetime="${esc(created)}">${esc(date(created))}</time>`:''}${post.lastEditedAt?`<span>${created?' · ':''}${esc(t('edited'))}</span>`:''}</div>`:''}${distinctNames.length?`<div class="community-feed-post-destinations" aria-label="${esc(labels.destinations)}">${distinctNames.map(destination=>`<span class="community-feed-post-destination"${destination.authored?' data-community-authored':''}>${esc(destination.name)}</span>`).join('')}</div>`:''}</div></div>${menuMarkup(post)}</header>`;
+      return `<header class="community-feed-post-header" data-social-ui="header"><span class="community-feed-post-avatar" aria-hidden="true">${avatar?`<img src="${esc(avatar)}" alt="">`:esc(initials)}</span><div class="community-feed-post-author-info"><div class="community-feed-post-name-row"><strong class="community-feed-post-author" title="${esc(owner)}" data-community-authored>${esc(owner)}</strong>${business?`<span class="community-feed-post-business">${esc(labels.business)}</span>`:''}</div><div class="community-feed-post-tags"><span class="community-feed-post-type" data-post-kind="${esc(kind)}">${esc(postTypes[language][kind]||postTypes[language].general)}</span>${post.resolved?`<span class="community-feed-post-resolved">${esc(labels.resolved)}</span>`:''}${isMarket(post)&&!isOpen(post)?`<span class="community-feed-post-market-status">${esc(t(post.status==='bought'?'bought':'sold'))}</span>`:''}</div><div class="community-feed-post-meta">${created||post.lastEditedAt?`<div class="community-feed-post-byline">${created?`<time datetime="${esc(created)}">${esc(date(created))}</time>`:''}${post.lastEditedAt?`<span>${created?' · ':''}${esc(t('edited'))}</span>`:''}</div>`:''}${distinctNames.length?`<div class="community-feed-post-destinations" aria-label="${esc(labels.destinations)}">${distinctNames.map(destination=>`<button type="button" class="community-feed-post-destination" data-social-action="destination"${attr(post.id,` data-social-scope="${esc(destination.scope)}"`)}${destination.authored?' data-community-authored':''}>${esc(destination.name)}</button>`).join('')}</div>`:''}</div></div>${menuMarkup(post)}</header>`;
+    }
+    function marketplaceMarkup(post) {
+      if(!isMarket(post))return '';
+      const action=isOpen(post)?(own(post)?(adapter.markSold?button('mark-sold',esc(t(post.type==='want'?'bought':'markSold')),post.id,'','btn small soft'):''):(adapter.contactPost?button('contact-seller',esc(t('messageSeller')),post.id,'','btn small soft'):'')):'';
+      return `<div class="community-social-market" data-social-ui="market">${action?`<div class="community-social-market-actions">${action}</div>`:''}<p class="community-social-trade-notice">${esc(t('directTradeNotice'))}</p></div>`;
     }
     function galleryMarkup(post) {
       const images=safeImages(post);if(!images.length)return '';
@@ -144,7 +155,7 @@
         if(safeImages(post).length)for(const image of card.querySelectorAll(':scope > .blog-cover, :scope > .blog-card-cover, :scope > img, :scope > .community-feed-photo'))image.remove();
         card.insertAdjacentHTML('afterbegin',authorHeaderMarkup(post)+previewMarkup(post));
         if(safeImages(post).length){const existingActions=card.querySelector(':scope > .listing-actions');if(existingActions)existingActions.insertAdjacentHTML('beforebegin',galleryMarkup(post));else card.insertAdjacentHTML('beforeend',galleryMarkup(post));}
-        card.insertAdjacentHTML('beforeend',actionsMarkup(post)+(opened.has(String(post.id))?commentsMarkup(post):''));
+        card.insertAdjacentHTML('beforeend',marketplaceMarkup(post)+actionsMarkup(post)+(opened.has(String(post.id))?commentsMarkup(post,card.closest('[data-social-post-detail]')?'detail':'card'):''));
       }
     }
     function refresh() {
@@ -178,7 +189,10 @@
       const rootId=thread||target?.id,roots=ensurePost(post).comments.filter(row=>!row.parentId),rootIndex=roots.findIndex(row=>row.id===rootId);
       if(rootIndex>=PAGE_SIZE)limits.set(String(post.id),rootIndex+1);
       if(target?.parentId){const replies=ensurePost(post).comments.filter(row=>row.parentId===target.parentId);replyLimits.set(threadKey(post.id,target.parentId),Math.max(PAGE_SIZE,replies.findIndex(row=>row.id===target.id)+1));}
-      showDialog(post.title||t('back'),`<article class="community-social-detail" data-social-post-detail="${esc(post.id)}"><div class="meta">${esc(post.owner)}${post.createdAt?' · '+esc(date(post.createdAt)):''}${post.lastEditedAt?' · '+esc(t('edited')):''}</div><p class="community-social-post-body">${esc(postBody(post))}</p>${galleryMarkup(post)}${actionsMarkup(post)}${opened.has(String(post.id))?commentsMarkup(post,'detail'):''}</article>`,button('close',esc(t('back')),''));
+      const rendered=adapter.renderPost?.(post)||`<article class="content-card" data-feed-post-id="${esc(post.id)}"><h3 data-community-authored>${esc(post.title||'')}</h3><p class="community-social-post-body" data-community-authored>${esc(postBody(post))}</p></article>`;
+      showDialog(post.title||t('back'),`<div class="community-social-detail" data-social-post-detail="${esc(post.id)}">${rendered}</div>`,button('close',esc(t('back')),''));
+      const detail=document.querySelector('[data-social-post-detail]');
+      if(detail){const card=detail.querySelector('[data-feed-post-id], [data-post-id]');if(!card&&detail.firstElementChild)detail.firstElementChild.setAttribute('data-feed-post-id',String(post.id));enhance(detail);adapter.enhancePosts?.(detail);}
       if(options.commentId)for(const row of document.querySelectorAll('[data-social-comment-id]'))if(row.dataset.socialCommentId===options.commentId&&row.closest('[data-social-post-detail]')){row.focus({preventScroll:true});row.scrollIntoView?.({block:'center'});}
       return true;
     }
@@ -186,7 +200,9 @@
       const backId=modal?.kind==='post'?modal.id:modal?.backId;
       modal={kind,id:String(post.id),commentId,backId};
       const cancel=button('cancel',esc(t('cancel')),post.id,'','btn');
-      if(kind==='delete-post'||kind==='delete-comment') {
+      if(kind==='mark-sold') {
+        showDialog(t(post.type==='want'?'bought':'markSold'),`<p>${esc(t(post.type==='want'?'bought':'markSoldConfirm'))}</p><p data-social-form-error class="community-social-error" role="alert"></p>`,cancel+button('confirm-mark-sold',esc(t(post.type==='want'?'bought':'markSold')),post.id,'','btn primary'));
+      } else if(kind==='delete-post'||kind==='delete-comment') {
         showDialog(t(kind==='delete-post'?'deletePost':'deleteComment'),`<p>${esc(t(kind==='delete-post'?'deletePostConfirm':'deleteCommentConfirm'))}</p><p data-social-form-error class="community-social-error" role="alert"></p>`,cancel+button('confirm-'+kind,esc(t('remove')),post.id,` data-social-comment="${esc(commentId)}"`,'btn danger'));
       } else if(kind==='edit') {
         showDialog(t('editPost'),`<div class="form-group"><label for="community-social-edit-title">${esc(t('title'))}</label><input class="field" id="community-social-edit-title" name="title" required maxlength="120" value="${esc(post.title||'')}" autofocus></div><div class="form-group"><label for="community-social-edit-body">${esc(t('body'))}</label><textarea class="field" id="community-social-edit-body" name="body" maxlength="1500" ${postBody(post)?'required':''}>${esc(postBody(post))}</textarea></div><p data-social-form-error class="community-social-error" role="alert"></p>`,cancel+`<button type="submit" class="btn primary">${esc(t('save'))}</button>`,{form:`data-social-edit-form="${esc(post.id)}" data-community-editing="true"`});
@@ -233,6 +249,14 @@
       const entry=ensurePost(post),comment=entry.comments.find(row=>row.id===commentId);
       if(action==='menu') {const menu=target.nextElementSibling,wasOpen=!menu.hidden;closeMenus();menu.hidden=wasOpen;target.setAttribute('aria-expanded',String(!wasOpen));if(!wasOpen)menu.querySelector('button')?.focus({preventScroll:true});return;}
       closeMenus();
+      if(action==='destination'){const scope=target.dataset.socialScope;if(scope){modal=null;adapter.closeDialog?.();if(adapter.navigateFeed)adapter.navigateFeed(scope);else window.NEXORA_COMMUNITY_GROUPS?.navigate(scope);}return;}
+      if(action==='contact-seller'&&isMarket(post)&&!own(post)&&isOpen(post)){modal=null;adapter.closeDialog?.();adapter.contactPost?.(post);return;}
+      if(action==='mark-sold'&&typeof adapter.markSold==='function'&&isMarket(post)&&own(post)&&isOpen(post)){subDialog('mark-sold',post);return;}
+      if(action==='confirm-mark-sold'&&typeof adapter.markSold==='function'&&modal?.kind==='mark-sold'&&modal.id===postId&&isMarket(post)&&own(post)&&isOpen(post)){
+        const snapshot=copy(post);let result=false;try{result=adapter.markSold?.(post)!==false;}catch{}
+        if(!result){for(const key of Object.keys(post))delete post[key];Object.assign(post,snapshot);formError(t('error'));return;}
+        closeDialog();refresh();tell(t(post.type==='want'?'bought':'markedSold'));return;
+      }
       if(action==='like'){if(member&&change(next=>{const row=next.posts[postId],has=row.likedBy.includes(member);row.likedBy=has?row.likedBy.filter(name=>name!==member):[...row.likedBy,member];})){refresh();focusControl('like',postId,inDetail);}}
       else if(action==='comments'){opened.has(postId)?opened.delete(postId):opened.add(postId);refresh();if(opened.has(postId))focusComposer(postId,inDetail);else focusControl('comments',postId,inDetail);}
       else if(action==='edit-post'&&own(post)){if(adapter.editPost){modal=null;adapter.editPost(post);}else subDialog('edit',post);}
@@ -315,7 +339,8 @@
     function destroy() {destroyed=true;document.removeEventListener('click',onClick);document.removeEventListener('submit',onSubmit);document.removeEventListener('input',onInput);document.removeEventListener('pointerdown',onPointerDown);document.removeEventListener('pointerup',onPointerUp);document.removeEventListener('pointercancel',onPointerCancel);document.removeEventListener('keydown',onKeyDown,true);languageObserver.disconnect();}
     applyDeleted();for(const post of getFeed())if(post.kind!=='deal')ensurePost(post);persist(state);
     document.addEventListener('click',onClick);document.addEventListener('submit',onSubmit);document.addEventListener('input',onInput);document.addEventListener('pointerdown',onPointerDown);document.addEventListener('pointerup',onPointerUp);document.addEventListener('pointercancel',onPointerCancel);document.addEventListener('keydown',onKeyDown,true);languageObserver.observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
-    mounted={enhance,openPost,isVisible,onDialogClosed,reset,destroy};return mounted;
+    const refreshOpenPost=()=>{if(modal?.kind==='post'&&document.querySelector('[data-social-post-detail]'))openPost(modal.id,{...modal,preserveOpen:true});};
+    mounted={enhance,openPost,isVisible,onDialogClosed,refreshOpenPost,reset,destroy};return mounted;
   }
-  window.NEXORA_COMMUNITY_FEED_SOCIAL={mount,enhance:root=>mounted?.enhance(root),openPost:(id,options)=>mounted?.openPost(id,options),isVisible:item=>mounted?.isVisible(item)??true,onDialogClosed:()=>mounted?.onDialogClosed(),reset:()=>mounted?.reset()};
+  window.NEXORA_COMMUNITY_FEED_SOCIAL={mount,enhance:root=>mounted?.enhance(root),openPost:(id,options)=>mounted?.openPost(id,options),isVisible:item=>mounted?.isVisible(item)??true,onDialogClosed:()=>mounted?.onDialogClosed(),refreshOpenPost:()=>mounted?.refreshOpenPost(),reset:()=>mounted?.reset()};
 })();

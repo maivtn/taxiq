@@ -1,0 +1,85 @@
+/* PO cards and compact controls; staging workflow remains a single column on phones. */
+#dayworkView [data-shifts-replaced="true"],#shiftTemplates [hidden]{display:none!important}
+#communityShiftsWorkflow{min-width:0;margin-top:18px}
+.shifts-tabs{display:flex;gap:4px;overflow-x:auto;border-bottom:1px solid #dfe3ef;margin-bottom:18px;scrollbar-width:thin}
+.shifts-tabs button{flex-shrink:0;border:0;border-bottom:3px solid transparent;background:transparent;color:#687389;font:inherit;font-weight:750;font-size:13px;padding:11px 13px;cursor:pointer;white-space:nowrap}
+.shifts-tabs button[aria-selected="true"]{color:#6351df;border-color:#7563e8}
+.shifts-workspace{display:grid;grid-template-columns:minmax(0,1fr) 260px;align-items:start;gap:18px}
+.shifts-stack{min-width:0;display:grid;gap:14px}
+.shifts-section,.shifts-availability,.shifts-card{min-width:0;padding:18px}
+.shifts-section h3,.shifts-availability h3,.shifts-card h3{margin:0;font-size:15px}
+.shifts-card{margin:12px 0;border-radius:18px;overflow-wrap:anywhere}
+.shifts-card h3{font-size:17px;margin:8px 0}
+.shifts-section-heading,.shifts-card-heading{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap}
+.shifts-section-heading h3{flex:1;min-width:100px}
+.shifts-actions,.shifts-filters,.shifts-days{display:flex;flex-wrap:wrap;align-items:center;gap:7px;margin-top:12px}
+.shifts-actions .btn,.shifts-filters .btn,.shifts-days .btn{max-width:100%;white-space:normal;text-align:center;line-height:1.35}
+.shifts-status{color:#6150c8;font-size:12px;font-weight:700;margin:9px 0;overflow-wrap:anywhere}
+.shifts-badge{display:inline-block;max-width:100%;border-radius:8px;background:#f0edff;color:#6650bf;padding:4px 7px;font-size:10px;font-weight:750;line-height:1.4}
+.shifts-policy{border:1px solid #e5e4ed;border-radius:15px;background:#fff;padding:14px;font-size:12px;color:#667083}
+.shifts-policy summary{cursor:pointer;color:#313149;font-weight:750;line-height:1.5}
+.shifts-policy ul{padding-left:17px;margin:12px 0 0;line-height:1.65}
+.shifts-policy li+li{margin-top:6px}
+.shifts-inner-card{border:1px solid #e7e4ef;border-radius:14px;padding:14px;margin-top:12px;min-width:0;overflow-wrap:anywhere;background:#fff}
+.shifts-worker-heading{display:flex;align-items:center;gap:9px;min-width:0}
+.shifts-worker-heading img{width:36px;height:36px;object-fit:cover;flex-shrink:0;border-radius:50%}
+.shifts-assignments{margin:-7px 0 17px 13px;padding-left:10px;border-left:2px solid #e9e5fa}
+.shifts-empty{font-size:13px;color:#778194;padding:16px 0;line-height:1.6;margin:0}
+.shifts-reliability>div{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:6px;margin-top:12px}
+.shifts-reliability>div>span{text-align:center;border-radius:12px;background:#f6f5fa;padding:10px 5px}
+.shifts-reliability strong{display:block;font-size:21px;line-height:1.3}
+.shifts-reliability small{display:block;color:#778194;font-size:10px;line-height:1.4}
+.shifts-form,.shifts-form-grid{display:grid;gap:13px}
+.shifts-form-grid{grid-template-columns:repeat(2,minmax(0,1fr));margin-top:13px}
+.shifts-form label,.shifts-form-grid label,.shifts-form-row label,.shifts-payment-filter{display:grid;gap:7px;min-width:0;font-size:12px;font-weight:700}
+.shifts-form input,.shifts-form textarea,.shifts-form select,.shifts-form-grid input,.shifts-form-grid select,.shifts-form-row select,.shifts-payment-filter select{min-width:0;width:100%;box-sizing:border-box;border:1px solid #dedce9;background-color:#fff;border-radius:10px;padding:11px 12px;font:inherit;color:inherit}
+.shifts-form input[type="file"]{font-size:12px;padding:12px 8px}
+.shifts-form textarea{min-height:100px;resize:vertical}
+#communityShiftsWorkflow select,.shifts-dialog select,.shifts-form-options select{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%236c7085' stroke-width='1.6' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-size:16px;background-position:right 16px center;padding-right:44px!important}
+.shifts-form-row{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:16px}
+.shifts-span{grid-column:1/-1}
+.shifts-form-options{padding:14px;margin-top:16px;background:#faf9fe;border:1px solid #e7e3f5;border-radius:13px}
+.shifts-form-options summary{font-size:12px;font-weight:750;cursor:pointer}
+.shifts-toggle input{width:38px;height:22px;accent-color:#7863e8;cursor:pointer}
+.shifts-overdue{display:flex;align-items:center;gap:12px;justify-content:space-between;border:1px solid #f0c4b6;background:#fff3ee;color:#9c482f;border-radius:14px;padding:12px 14px;margin-bottom:14px;font-size:12px}
+.shifts-overdue p{margin:0;flex:1}
+.shifts-error{color:#b83f45;font-size:12px;line-height:1.5;overflow-wrap:anywhere}
+.shifts-error:empty{display:none}
+.shifts-payment-filter{margin:13px 0;max-width:280px}
+.shifts-payment-row{width:100%;display:flex;align-items:flex-start;justify-content:space-between;gap:12px;text-align:left;border:1px solid #e2dfeb;border-radius:14px;background:#fff;padding:14px;margin:10px 0;font:inherit;color:inherit;cursor:pointer;min-width:0}
+.shifts-payment-row>span{display:grid;gap:5px;min-width:0;overflow-wrap:anywhere}
+.shifts-payment-row .shifts-status{margin:0}
+.shifts-payment-row>b{flex-shrink:0;font-size:14px}
+.shifts-payment-amount{font-size:29px;font-weight:800;margin:12px 0}
+.shifts-dialog{max-width:600px;width:min(600px,calc(100vw - 28px));max-height:calc(100dvh - 28px);overflow:auto}
+.shifts-dialog .dialog-head h2{font-size:19px;line-height:1.35;overflow-wrap:anywhere;min-width:0}
+.shifts-dialog .dialog-body{overflow-wrap:anywhere;min-width:0}
+.shifts-dialog .dialog-footer{display:flex;flex-wrap:wrap;gap:9px}
+.shifts-dialog .shifts-card{box-shadow:none;padding:0;border:0}
+.shifts-dialog .shifts-policy{margin:16px 0}
+.shifts-summary{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin:16px 0}
+.shifts-summary span{display:grid;gap:6px;border-radius:12px;background:#f5f3fd;padding:13px;font-size:12px}
+.shifts-summary strong{font-size:20px}
+.shifts-agree{display:flex;gap:9px;align-items:flex-start;font-size:13px;line-height:1.6}
+.shifts-agree input{margin-top:5px;flex-shrink:0;accent-color:#7563e8}
+.shifts-proof-preview{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:12px 0}
+.shifts-proof-preview img{display:block;width:100%;height:100px;object-fit:contain;border:1px solid #e5e1ee;background:#f8f7fb;border-radius:10px}
+.shifts-zelle{border:1px solid #e6e0f1;border-radius:13px;text-align:center;padding:18px;margin:16px 0}
+.shifts-zelle-qr{display:block;width:160px;height:160px;max-width:100%;object-fit:contain;margin:12px auto;border:1px solid #e5e1ee;border-radius:10px}
+.shifts-account{font-family:monospace;overflow-wrap:anywhere}
+.shifts-breakdown{border-radius:12px;background:#f6f4fc;padding:12px;font-size:13px}
+.shifts-breakdown>div{display:flex;justify-content:space-between;gap:12px;margin:6px 0}
+.shifts-breakdown dd{margin:0;font-weight:750}
+.shifts-pagination{display:flex;flex-wrap:wrap;justify-content:space-between;align-items:center;gap:8px;margin:15px 0 0;font-size:11px}
+.shifts-tabs button:focus-visible,.shifts-dialog button:focus-visible,#communityShiftsWorkflow button:focus-visible{outline:2px solid #8974ed;outline-offset:3px}
+@media(max-width:1100px){.shifts-workspace{grid-template-columns:minmax(0,1fr)}.shifts-workspace>aside{grid-template-columns:repeat(2,minmax(0,1fr))}.shifts-workspace>aside>.btn{justify-self:start}}
+@media(max-width:600px){#communityShiftsWorkflow{margin-top:12px}.shifts-workspace{gap:13px}.shifts-workspace>aside{grid-template-columns:minmax(0,1fr)}.shifts-section,.shifts-availability,.shifts-card{padding:14px}.shifts-tabs button{padding:10px 11px;font-size:12px}.shifts-tabs{margin-bottom:13px}.shifts-card h3{font-size:16px}.shifts-form-row{grid-template-columns:minmax(0,1fr);gap:12px}.shifts-overdue{align-items:flex-start;flex-direction:column}.shifts-dialog{width:calc(100vw - 20px);max-height:calc(100dvh - 20px)}.shifts-dialog .dialog-body{padding:16px}.shifts-dialog .dialog-head{padding:16px}.shifts-dialog .dialog-footer{padding:14px}.shifts-actions .btn{min-height:38px}.shifts-proof-preview img{height:80px}.shifts-assignments{margin-left:4px;padding-left:6px}.shifts-summary{gap:8px}.shifts-summary span{padding:10px}.shifts-summary strong{font-size:18px}}
+#dayworkView #shiftTemplates{grid-template-columns:minmax(0,1fr)}
+.shifts-tabs{display:flex;flex-wrap:wrap;overflow:visible;background:#e9edf6;border:0;border-radius:13px;padding:5px;gap:4px}
+.shifts-tabs button{border:0;border-radius:10px;min-height:44px;flex:1;white-space:normal;line-height:1.35}
+.shifts-tabs button[aria-selected="true"]{background:#fff;color:#5845d5;box-shadow:0 2px 6px #25325a0d;border:0}
+@media(max-width:767px){
+ #dayworkView #shiftTemplates .template-card{display:grid;grid-template-columns:32px minmax(0,1fr);gap:3px 10px;align-items:center;text-align:left;padding:12px;min-height:0}
+ #dayworkView #shiftTemplates .template-icon{grid-row:1/3}
+ #dayworkView #shiftTemplates .template-card strong,#dayworkView #shiftTemplates .template-card small{margin:0;line-height:1.4}
+}

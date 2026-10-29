@@ -1,9 +1,14 @@
 (() => {
-  const key = 'nexora-connect-preview-v2';
+  const contextParams=new URLSearchParams(location.search);
+  const currentMember=contextParams.get('member')||'BITCOIN NAIL BAR';
+  const currentRole=['staff','tech'].includes(contextParams.get('role'))||contextParams.get('account')==='personal'?'staff':'owner';
+  const currentAccount=contextParams.get('account')==='personal'?'personal':'business';
+  const key = 'nexora-connect-preview-v2'+(currentMember==='BITCOIN NAIL BAR'?'':':'+encodeURIComponent(currentMember));
+  const clone=value=>JSON.parse(JSON.stringify(value));
   const tourSeenKey = 'nexora-connect-guide-seen-v1';
-  const profileUrl = 'https://nexoratouch.com/community?tab=connect&handle=@bitcoin.nail.bar';
+  let profileUrl = 'https://nexoratouch.com/community?tab=connect&handle=@bitcoin.nail.bar';
   const inviteUrl = 'https://nexoratouch.com/';
-  const defaults = {phone:'shared', email:'nobody', messages:'requests', calls:'shared', request:'pending', sentMessages:{}, sourceChats:{}, deletedCalls:[], createdGroups:[], joinedCommunities:[], connections:[], chatPrefs:{}, archivedChats:[], deletedChats:[], reportedChats:[]};
+  const defaults = {phone:'shared', email:'nobody', messages:'requests', calls:'shared', request:'pending', sentMessages:{}, sourceChats:{}, deletedCalls:[], createdGroups:[], joinedCommunities:[], connections:[], chatPrefs:{}, archivedChats:[], deletedChats:[], reportedChats:[],clearedChats:{},callHistory:[],messageMeta:{},profile:{}};
   const members = [
     {name:'Mai Nguyễn', id:'NX-2041', handle:'@mai.nail', detail:'request'},
     {name:'Kim Tuyen', id:'NX-2042', handle:'@kim.tuyen', phone:'7135550144', detail:'chat-kim'},
@@ -33,8 +38,8 @@
   function load() {
     try {
       const value = JSON.parse(localStorage.getItem(key));
-      return value && typeof value === 'object' ? {...defaults,...value} : {...defaults};
-    } catch { return {...defaults}; }
+      return value && typeof value === 'object' ? {...clone(defaults),...value} : clone(defaults);
+    } catch { return clone(defaults); }
   }
   let state = load();
   if (!Array.isArray(state.deletedCalls)) state.deletedCalls = [];
@@ -45,6 +50,7 @@
   if (!state.chatPrefs || typeof state.chatPrefs !== 'object' || Array.isArray(state.chatPrefs)) state.chatPrefs = {};
   for (const field of ['archivedChats','deletedChats','reportedChats']) if (!Array.isArray(state[field])) state[field] = [];
   if (!state.sourceChats || typeof state.sourceChats !== 'object' || Array.isArray(state.sourceChats)) state.sourceChats = {};
+  let savedSnapshot=clone(state),mediaGeneration=0;
   let section = 'privacy';
   let currentDetail = '';
   const chatDrafts = new Map();
@@ -66,7 +72,32 @@
     {section:'groups',title:'Group chats',description:() => 'Open a chat or create a group.'},
     {section:'privacy',title:'Settings',description:() => 'Share your profile and choose who can contact you.'}
   ];
-  function save() { try { localStorage.setItem(key, JSON.stringify(state)); return true; } catch { return false; } }
+  function mergeChanges(latest,before,after) {
+    if(JSON.stringify(before)===JSON.stringify(after))return latest;
+    if(Array.isArray(after)) {
+      const old=Array.isArray(before)?before:[],now=Array.isArray(latest)?latest:[];
+      const token=item=>item&&typeof item==='object'?String(item.id||JSON.stringify(item)):JSON.stringify(item);
+      const removed=new Set(old.filter(item=>!after.some(row=>token(row)===token(item))).map(token));
+      const rows=now.filter(item=>!removed.has(token(item)));
+      for(const item of after){const prior=old.find(row=>token(row)===token(item));if(!prior||JSON.stringify(prior)!==JSON.stringify(item)){const index=rows.findIndex(row=>token(row)===token(item));if(index>=0)rows[index]=clone(item);else rows.push(clone(item));}}
+      return rows;
+    }
+    if(after&&typeof after==='object') {
+      const result=latest&&typeof latest==='object'&&!Array.isArray(latest)?clone(latest):{};
+      for(const name of new Set([...Object.keys(before||{}),...Object.keys(after)])) {if(!Object.hasOwn(after,name)){if(Object.hasOwn(before||{},name))delete result[name];}else result[name]=mergeChanges(result[name],before?.[name],after[name]);}
+      return result;
+    }
+    return after;
+  }
+  function save() {
+    try {const latest=load(),next=mergeChanges(latest,savedSnapshot,state);localStorage.setItem(key,JSON.stringify(next));state=next;savedSnapshot=clone(next);return true;}
+    catch {state=clone(savedSnapshot);return false;}
+  }
+  function mutate(operation){state=load();savedSnapshot=clone(state);operation(state);return save();}
+  function blockedNames(){const names=Object.entries(state.chatPrefs).filter(([,pref])=>pref?.blocked).map(([id])=>members.find(person=>person.detail===id)?.name||state.sourceChats[id]?.recipient||(id==='chat-mai'?'Mai Nguyễn':id));if(state.request==='blocked')names.push('Mai Nguyễn');return [...new Set(names)];}
+  function isBlocked(name){return blockedNames().includes(name);}
+  function changed(){window.dispatchEvent(new CustomEvent('nexora-connect-render'));}
+
   function toast(message, undo = false) {
     const el = $('#toast');
     $('#toastMessage').textContent = message;
@@ -77,7 +108,8 @@
   }
   function renderSummaries() {
     document.querySelectorAll('[data-quick-setting]').forEach(select => { select.value = state[select.dataset.quickSetting]; });
-    $('#blockedSummary').textContent = state.request === 'blocked' ? '1 account' : '0 accounts';
+    $('#blockedSummary').textContent = String(blockedNames().length)+' '+(blockedNames().length===1?'account':'accounts');
+    changed();
   }
   function setMessageView(next) {
     $('#directPanel').classList.toggle('hidden', next !== 'direct');
@@ -86,7 +118,7 @@
     $('#messagesPanel').setAttribute('aria-labelledby', next === 'groups' ? 'groupsTitle' : 'messagesTitle');
   }
   function showSection(next) {
-    rememberChatDraft();
+    rememberChatDraft();mediaGeneration++;
     closeChatRecording();pendingChatAttachment=null;
     section = next;
     currentDetail = '';
@@ -113,7 +145,7 @@
     if (next === 'privacy') renderSummaries();
     if (window.parent !== window) window.parent.postMessage({type:'nexora-connect-section',section:next}, parentMessageOrigin);
     if (window.parent !== window) window.parent.postMessage({type:'nexora-connect-detail',open:false}, parentMessageOrigin);
-    window.scrollTo({top:0,behavior:'instant'});
+    window.scrollTo({top:0,behavior:'instant'});changed();
   }
   function clearTourTimer() {
     if (tourTimer !== null) window.clearTimeout(tourTimer);
@@ -187,7 +219,7 @@
     if (type === 'sticker') media = '<span class="chat-sticker" aria-label="Sticker">' + esc(message.sticker || '✨') + '</span>';
     const text = message.text ? '<span class="chat-message-text">' + esc(message.text) + '</span>' : '';
     const contents = media || text ? media + text : '<span class="chat-message-text">Message</span>';
-    return '<div class="chat-message ' + (message.mine ? 'mine' : 'theirs') + '">' + (message.mine ? '' : '<span class="chat-inline-avatar" aria-hidden="true">' + esc(initials) + '</span>') + '<div class="thread-bubble' + (message.mine ? ' mine' : '') + '">' + contents + '</div></div>';
+    return '<div class="chat-message ' + (message.mine ? 'mine' : 'theirs') + '" data-connect-message-id="'+esc(message.id)+'">' + (message.mine ? '' : '<span class="chat-inline-avatar" aria-hidden="true">' + esc(initials) + '</span>') + '<div class="thread-bubble' + (message.mine ? ' mine' : '') + '">' + contents + '</div></div>';
   }
   const chatMenuIcons = {
     inbox:'<path d="M4 4h16v13H8l-4 3V4z"/>',profile:'<circle cx="12" cy="8" r="3"/><path d="M5 21a7 7 0 0 1 14 0"/>',theme:'<circle cx="12" cy="12" r="9"/><path d="M12 3a4 4 0 0 0 0 8 4 4 0 0 1 0 8"/>',emoji:'<circle cx="12" cy="12" r="9"/><path d="M8 14c1 2 2.5 3 4 3s3-1 4-3M8.5 9h.01M15.5 9h.01"/>',nickname:'<path d="m4 20 4-.8L20 7l-3-3L5 16zM15 6l3 3"/>',group:'<circle cx="9" cy="8" r="3"/><path d="M3 20a6 6 0 0 1 12 0M17 12v8m-4-4h8"/>',lock:'<rect x="5" y="10" width="14" height="11" rx="2"/><path d="M8 10V7a4 4 0 0 1 8 0v3"/>',mute:'<path d="M6 9a6 6 0 0 1 12 0v5l2 3H4l2-3V9zM10 21h4M3 3l18 18"/>',block:'<circle cx="12" cy="12" r="9"/><path d="m5.5 5.5 13 13"/>',restrict:'<path d="M4 5h16v13H8l-4 3V5zM4 20 20 4"/>',read:'<path d="M2 12s4-6 10-6 10 6 10 6-4 6-10 6S2 12 2 12z"/><circle cx="12" cy="12" r="2.5"/>',archive:'<rect x="3" y="4" width="18" height="4" rx="1"/><path d="M5 8v12h14V8M10 13h4"/>',delete:'<path d="M4 7h16M9 7V4h6v3M6 7l1 14h10l1-14M10 11v6m4-6v6"/>',report:'<path d="M12 3 2 21h20L12 3zM12 9v5m0 3h.01"/>'
@@ -202,11 +234,14 @@
     '<hr>'+chatMenuRow('mute','mute',pref.muted?ui('Turn notifications on','Bật thông báo'):ui('Mute notifications','Tắt thông báo'))+chatMenuRow('block','block',pref.blocked?ui('Unblock','Bỏ chặn'):ui('Block','Chặn'))+chatMenuRow('restrict','restrict',pref.restricted?ui('Remove restriction','Bỏ hạn chế'):ui('Restrict','Hạn chế'))+chatMenuRow('read','read',ui('Read receipts','Xác nhận đã đọc'),pref.readReceipts===false?ui('Off','Tắt'):ui('On','Bật'))+
     '<hr>'+chatMenuRow('archive','archive',state.archivedChats.includes(id)?ui('Unarchive chat','Bỏ lưu trữ'):ui('Archive chat','Lưu trữ cuộc trò chuyện'))+chatMenuRow('delete','delete',ui('Delete chat','Xóa cuộc trò chuyện'),'',true)+chatMenuRow('report','report',ui('Report','Báo cáo'),'',true)+
     '<div class="chat-menu-subpanel hidden" id="chatMenuSubpanel"></div></div>';}
+  let currentMessages=[];
   function thread(name, context, messages, threadId, allowCalls = false) {
-    const allMessages = state.deletedChats.includes(threadId) ? [] : [...messages, ...(Array.isArray(state.sentMessages[threadId]) ? state.sentMessages[threadId] : [])];
+    const seeded=state.clearedChats?.[threadId]?[]:messages.map((message,index)=>({...message,id:message.id||threadId+'-seed-'+index,author:message.author||(message.mine?currentMember:name),createdAt:message.createdAt||new Date(new Date().setHours(9,index,0,0)).toISOString()}));
+    const allMessages = state.deletedChats.includes(threadId) ? [] : [...seeded, ...(Array.isArray(state.sentMessages[threadId]) ? state.sentMessages[threadId] : [])];
+    currentMessages=allMessages;
     const initials = name.split(/\s+/).map(part => part[0]).slice(-2).join('').toUpperCase();
     const group = threadId.startsWith('group-');
-    const pref=group?{}:chatPref(threadId),displayName=pref.nickname||name,blocked=Boolean(pref.blocked);
+    const pref=group?{}:chatPref(threadId),displayName=pref.nickname||name,blocked=Boolean(pref.blocked)||isBlocked(name);
     const bubbles = allMessages.length ? allMessages.map(message => chatMessageMarkup(message, initials)).join('') : '<p class="chat-empty">No messages yet. Say hello.</p>';
     const actions = '<div class="chat-actions">' + (allowCalls&&!blocked ? '<button class="chat-action" data-start-call="voice" aria-label="Voice call ' + esc(name) + '" title="Voice call">' + phoneIcon + '<span>Call</span></button><button class="chat-action" data-start-call="video" aria-label="Video call ' + esc(name) + '" title="Video call">' + videoIcon + '<span>Video</span></button>' : '') + '<button class="chat-action chat-close" data-back aria-label="Close conversation" title="Close conversation">×</button></div>';
     const tools = [['photo',imageIcon,'Photo'],['voice',micIcon,'Voice'],['sticker','✦','Stickers'],['gif','GIF','GIF'],['emoji',emojiIcon,'Emoji']].map(([kind,icon,label])=>'<button type="button" class="chat-tool" data-chat-tool="' + kind + '" aria-label="' + label + '" title="' + label + '">' + icon + '<span>' + label + '</span></button>').join('');
@@ -240,11 +275,12 @@
     panel.classList.remove('hidden');
   }
   function appendChatMessage(threadId,message) {
-    state.deletedChats=state.deletedChats.filter(id=>id!==threadId);
-    if(!Array.isArray(state.sentMessages[threadId]))state.sentMessages[threadId]=[];
-    state.sentMessages[threadId].push({...message,mine:true});
-    if(!save()){state.sentMessages[threadId].pop();toast(ui('Could not save this message in the preview.','Không lưu được tin nhắn trong bản mẫu.'));return false;}
-    pendingChatAttachment=null;chatDrafts.delete(threadId);renderConversationPreviews();if(section==='groups')renderGroups();showDetail(currentDetail);$('#messageText')?.focus();toast(ui('Sent in this preview only.','Đã gửi trong bản mẫu.'));return true;
+    const bridge=window.NEXORA_COMMUNITY_CONNECT,prepared=bridge?.prepareMessage(threadId,message);if(prepared===false)return false;
+    const outgoing={...(prepared||message),mine:true,id:message.id||'message-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),author:currentMember,createdAt:new Date().toISOString()};
+    const shared=bridge?.persistMessage(threadId,outgoing);if(shared===false)return false;
+    if(shared===undefined){state.deletedChats=state.deletedChats.filter(id=>id!==threadId);if(!Array.isArray(state.sentMessages[threadId]))state.sentMessages[threadId]=[];state.sentMessages[threadId].push(outgoing);if(!save()){toast(ui('Could not save this message in the preview.','Không lưu được tin nhắn trong bản mẫu.'));return false;}}
+    bridge?.afterMessage(threadId);
+    pendingChatAttachment=null;const field=$('#messageText');if(field)field.value='';chatDrafts.delete(threadId);renderConversationPreviews();if(section==='groups')renderGroups();showDetail(currentDetail);$('#messageText')?.focus();toast(ui('Sent in this preview only.','Đã gửi trong bản mẫu.'));return true;
   }
   function closeChatRecording(discard=true) {
     discardChatRecording=discard;
@@ -256,24 +292,26 @@
     if(chatRecorder&&chatRecorder.state==='recording'){closeChatRecording(false);return;}
     if(!navigator.mediaDevices?.getUserMedia||typeof MediaRecorder==='undefined'){toast(ui('Voice recording is unavailable in this browser.','Trình duyệt này chưa hỗ trợ ghi âm.'));return;}
     try{
-      chatStream=await navigator.mediaDevices.getUserMedia({audio:true});
+      const owner=currentDetail,generation=mediaGeneration;
+      const stream=await navigator.mediaDevices.getUserMedia({audio:true});if(currentDetail!==owner||mediaGeneration!==generation){stream.getTracks().forEach(track=>track.stop());return;}chatStream=stream;
       const preferred=['audio/webm;codecs=opus','audio/mp4','audio/webm'].find(type=>MediaRecorder.isTypeSupported(type));
-      const chunks=[];discardChatRecording=false;chatRecorder=new MediaRecorder(chatStream,preferred?{mimeType:preferred}:undefined);
+      const chunks=[],recordingStream=chatStream;discardChatRecording=false;chatRecorder=new MediaRecorder(recordingStream,preferred?{mimeType:preferred}:undefined);const recording=chatRecorder;
       chatRecorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
-      chatRecorder.onstop=async()=>{const skip=discardChatRecording;chatStream?.getTracks().forEach(track=>track.stop());chatStream=null;chatRecorder=null;$('#detailPanel [data-chat-tool="voice"]')?.classList.remove('recording');if(skip)return;const blob=new Blob(chunks,{type:chunks[0]?.type||preferred||'audio/webm'});if(!blob.size||blob.size>700000){toast(ui('Keep voice messages under 700 KB in this preview.','Tin thoại trong bản mẫu cần dưới 700 KB.'));return;}const reader=new FileReader();reader.onload=()=>{pendingChatAttachment={type:'audio',src:String(reader.result)};renderChatAttachment();toast(ui('Voice message ready. Tap Send.','Tin thoại đã sẵn sàng. Bấm Gửi.'));};reader.readAsDataURL(blob);};
+      chatRecorder.onstop=async()=>{const skip=discardChatRecording||currentDetail!==owner||mediaGeneration!==generation;recordingStream.getTracks().forEach(track=>track.stop());if(chatRecorder===recording){chatStream=null;chatRecorder=null;$('#detailPanel [data-chat-tool="voice"]')?.classList.remove('recording');}if(skip)return;const blob=new Blob(chunks,{type:chunks[0]?.type||preferred||'audio/webm'});if(!blob.size||blob.size>700000){toast(ui('Keep voice messages under 700 KB in this preview.','Tin thoại trong bản mẫu cần dưới 700 KB.'));return;}const reader=new FileReader();reader.onload=()=>{if(currentDetail!==owner||mediaGeneration!==generation)return;pendingChatAttachment={type:'audio',src:String(reader.result)};renderChatAttachment();toast(ui('Voice message ready. Tap Send.','Tin thoại đã sẵn sàng. Bấm Gửi.'));};reader.readAsDataURL(blob);};
       chatRecorder.start();$('#detailPanel [data-chat-tool="voice"]')?.classList.add('recording');toast(ui('Recording… Tap Voice again to stop.','Đang ghi âm… Bấm Tin thoại lần nữa để dừng.'));
       chatRecordingTimer=setTimeout(()=>closeChatRecording(false),30000);
     }catch{chatStream?.getTracks().forEach(track=>track.stop());chatStream=null;toast(ui('Microphone permission was not granted.','Chưa được cấp quyền dùng micro.'));}
   }
   function showDetail(kind, defaultPreview = false) {
-    if(currentDetail&&currentDetail!==kind){rememberChatDraft();closeChatRecording();pendingChatAttachment=null;}
+    if(currentDetail)rememberChatDraft();
+    if(currentDetail&&currentDetail!==kind){mediaGeneration++;closeChatRecording();pendingChatAttachment=null;}
     $('#memberQuery').value = '';
     renderMemberResults();
     currentDetail = kind;
     let html = '';
     if (kind === 'blocked') {
       html = detailShell('Blocked accounts', 'People you block appear here.',
-        '<div class="surface"><p>' + (state.request === 'blocked' ? 'Mai Nguyễn is blocked.' : 'No blocked accounts.') + '</p></div>');
+        '<div class="surface"><p>' + (blockedNames().length?blockedNames().map(esc).join(', '):'No blocked accounts.') + '</p></div>');
     } else if (kind === 'nickname') {
       html = detailShell('Edit nickname', 'Your nickname is used to find and share your profile.',
         '<div class="surface"><div class="form-line"><label for="nicknameDraft">Nickname</label><input id="nicknameDraft" class="demo-input" value="@bitcoin.nail.bar"></div><button class="primary" data-preview-nickname>Preview nickname</button><p id="nicknameResult" class="muted-note"></p></div>');
@@ -295,6 +333,10 @@
     } else if (state.sourceChats[kind]) {
       const source = state.sourceChats[kind];
       html = thread(source.recipient, source.reference, [], kind, true);
+    } else if (kind.startsWith('group-')&&window.NEXORA_COMMUNITY_CONNECT) {
+      const room=window.NEXORA_COMMUNITY_CONNECT.resolveThread(kind);
+      if(!room){currentMessages=[];pendingChatAttachment=null;mediaGeneration++;closeChatRecording();const panel=$('#detailPanel');panel.replaceChildren();panel.classList.add('hidden');currentDetail='';showSection('groups');return false;}
+      html=thread(room.name,room.context||'Group chat',room.messages||[],kind,Boolean(room.allowCalls));
     } else if (kind.startsWith('group-')) {
       const names = {'group-houston':'Thợ Nail Houston','group-art':'Học Gel-X & Nail Art','group-new':'Thợ Mới Vào Nghề'};
       const custom = state.createdGroups.find(group => group.id === kind);
@@ -327,6 +369,7 @@
       $('#detailTitle').focus();
       window.scrollTo({top:0,behavior:'instant'});
     }
+    changed();
   }
   function renderMessages() {
     let sourceList = $('#communitySourceChats');
@@ -349,7 +392,7 @@
     $('#archivedChatsCard').classList.toggle('hidden',archived.length===0);
     $('#archivedChatRows').innerHTML=archived.map(id=>{const person=members.find(member=>member.detail===id||(id==='chat-mai'&&member.detail==='request'))||(state.sourceChats[id]?{name:state.sourceChats[id].recipient}:null);if(!person)return '';return '<button class="row-button" data-detail="'+esc(id)+'"><span><strong>'+esc(chatPref(id).nickname||person.name)+'</strong><small>'+esc(ui('Archived · tap to open','Đã lưu trữ · bấm để mở'))+'</small></span><span class="arrow">›</span></button>';}).join('');
     renderConversationPreviews();
-    renderConnections();
+    renderConnections();changed();
   }
   function renderConnections() {
     const card = $('#connectionsCard');
@@ -384,7 +427,7 @@
     $('#discoveryGroups').innerHTML = communities.filter(group => communityFilter === 'all' || group.type === communityFilter).map(group => {
       const joined = state.joinedCommunities.includes(group.id);
       return '<div class="discovery-row"><span><strong>' + esc(group.name) + '</strong><small>' + esc(group.detail) + '</small></span><button class="secondary" data-join-community="' + group.id + '"' + (joined ? ' disabled' : '') + '>' + (joined ? 'Joined' : 'Join') + '</button></div>';
-    }).join('');
+    }).join('');changed();
   }
   function renderCalls() {
     document.querySelectorAll('[data-call-filter]').forEach(button => button.classList.toggle('active', button.dataset.callFilter === callFilter));
@@ -396,6 +439,7 @@
           return '<div class="call-item" data-call-id="' + call.id + '"><div class="call-front"><button class="call-main" data-detail="' + call.id + '" aria-label="View call details for ' + esc(call.name) + '"><span class="call-avatar" aria-hidden="true">' + esc(initials) + '</span><span class="call-text"><strong' + (missed ? ' class="missed"' : '') + '>' + esc(call.name) + '</strong><small>' + esc(call.summary) + '</small></span></button><div class="call-actions"><button class="call-icon-button" data-start-call="voice" data-call-name="' + esc(call.name) + '" aria-label="Voice call ' + esc(call.name) + '" title="Voice call">' + phoneIcon + '</button><button class="call-icon-button" data-start-call="video" data-call-name="' + esc(call.name) + '" aria-label="Video call ' + esc(call.name) + '" title="Video call">' + videoIcon + '</button></div><button class="call-more" data-reveal-call="' + call.id + '" aria-label="Show delete for call with ' + esc(call.name) + '">⋯</button></div><button class="call-delete" data-delete-call="' + call.id + '" aria-label="Delete call with ' + esc(call.name) + ', ' + esc(call.summary) + '">Delete</button></div>';
         }).join('')
       : '<p class="muted-note">No calls in this view.</p>';
+    for(const button of document.querySelectorAll('#callRows [data-start-call]'))if(isBlocked(button.dataset.callName))button.disabled=true;changed();
   }
   function renderMemberResults() {
     const query = $('#memberQuery').value.trim();
@@ -444,7 +488,7 @@
     if(target.dataset.chatReceipts){const id=currentDetail,pref=chatPref(id),old=pref.readReceipts;pref.readReceipts=target.dataset.chatReceipts==='on';if(save()){showDetail(id);toast(ui('Read receipt preference saved in this preview.','Đã lưu lựa chọn xác nhận đã đọc trong bản thử.'));}else{pref.readReceipts=old;toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));}return;}
     if(target.dataset.chatSaveNickname!==undefined){const id=currentDetail,value=$('#chatNicknameDraft')?.value.trim()||'',pref=chatPref(id),old=pref.nickname;pref.nickname=value;if(save()){showDetail(id);toast(ui('Nickname saved in this preview.','Đã lưu biệt danh trong bản thử.'));}else{pref.nickname=old;toast(ui('Could not save this nickname.','Không lưu được biệt danh.'));}return;}
     if(target.dataset.chatCancel!==undefined){$('#chatMenuSubpanel')?.classList.add('hidden');return;}
-    if(target.dataset.chatConfirmDelete!==undefined){const id=currentDetail,oldDeleted=state.deletedChats,oldArchived=state.archivedChats,oldMessages=state.sentMessages[id];state.deletedChats=[...new Set([...state.deletedChats,id])];state.archivedChats=state.archivedChats.filter(item=>item!==id);delete state.sentMessages[id];if(save()){showSection('messages');toast(ui('Chat deleted from this browser preview.','Đã xóa cuộc trò chuyện khỏi bản thử trên trình duyệt.'));}else{state.deletedChats=oldDeleted;state.archivedChats=oldArchived;if(oldMessages)state.sentMessages[id]=oldMessages;toast(ui('Could not delete this chat.','Không xóa được cuộc trò chuyện.'));}return;}
+    if(target.dataset.chatConfirmDelete!==undefined){const id=currentDetail,oldDeleted=state.deletedChats,oldArchived=state.archivedChats,oldMessages=state.sentMessages[id];state.deletedChats=[...new Set([...state.deletedChats,id])];state.clearedChats={...(state.clearedChats||{}),[id]:true};chatDrafts.delete(id);state.archivedChats=state.archivedChats.filter(item=>item!==id);delete state.sentMessages[id];if(save()){showSection('messages');toast(ui('Chat deleted from this browser preview.','Đã xóa cuộc trò chuyện khỏi bản thử trên trình duyệt.'));}else{state.deletedChats=oldDeleted;state.archivedChats=oldArchived;if(oldMessages)state.sentMessages[id]=oldMessages;toast(ui('Could not delete this chat.','Không xóa được cuộc trò chuyện.'));}return;}
     if(target.dataset.chatConfirmReport!==undefined){const id=currentDetail,reason=$('#chatReportReason')?.value||'other';state.reportedChats.push({id,reason,at:new Date().toISOString()});if(save()){showDetail(id);toast(ui('Report recorded locally. Nothing was sent.','Báo cáo đã lưu trên máy; chưa gửi đi.'));}else{state.reportedChats.pop();toast(ui('Could not save the report.','Không lưu được báo cáo.'));}return;}
     if (target.dataset.chatTool) {
       const kind=target.dataset.chatTool,picker=$('#chatPicker');
@@ -474,7 +518,7 @@
       if (callToRestore) {
         state.deletedCalls = state.deletedCalls.filter(id => id !== callToRestore);
         lastDeletedCall = null;
-        save();
+        if(!save()){toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));return;}
         renderCalls();
         toast('Call restored.');
       }
@@ -484,7 +528,7 @@
       const id = target.dataset.deleteCall;
       if (!state.deletedCalls.includes(id)) state.deletedCalls.push(id);
       lastDeletedCall = id;
-      save();
+      if(!save()){toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));return;}
       renderCalls();
       if (currentDetail === id) {
         showSection('calls');
@@ -511,7 +555,7 @@
       const member = members.find(item => item.id === target.dataset.addMember);
       if (!member || state.connections.includes(member.id)) return;
       state.connections.push(member.id);
-      save();
+      if(!save()){toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));return;}
       renderConnections();
       $('#memberQuery').value = '';
       $('#memberQuery').blur();
@@ -533,7 +577,7 @@
     if (target.dataset.joinCommunity) {
       const id = target.dataset.joinCommunity;
       if (!state.joinedCommunities.includes(id)) state.joinedCommunities.push(id);
-      save();
+      if(!save()){toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));return;}
       renderGroups();
       toast('Joined in this preview.');
       return;
@@ -555,7 +599,7 @@
       if (!name) return;
       const id = 'group-custom-' + Date.now().toString(36);
       state.createdGroups.unshift({id,name});
-      save();
+      if(!save()){toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));return;}
       renderGroups();
       $('#createGroupDialog').classList.add('hidden');
       showDetail(id);
@@ -563,7 +607,7 @@
       return;
     }
     if (target.dataset.startCall) {
-      const name = target.dataset.callName || $('#detailTitle')?.textContent || 'this member';
+      const name = target.dataset.callName || $('#detailTitle')?.textContent || 'this member';if(isBlocked(name)){toast(ui('Blocked','Đã chặn'));return;}
       $('#callPreviewTitle').textContent = target.dataset.startCall === 'video' ? 'Video call · ' + name : 'Voice call · ' + name;
       $('#callPreviewText').textContent = 'Call preview. No call is placed.';
       $('#callPreview').classList.remove('hidden');
@@ -581,7 +625,7 @@
     if (target.id === 'resetDemo') { try { localStorage.removeItem(key); } catch {} location.reload(); return; }
     if (target.dataset.requestAction) {
       state.request = target.dataset.requestAction;
-      save();
+      if(!save()){toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));return;}
       renderMessages();
       renderMemberResults();
       renderSummaries();
@@ -628,7 +672,7 @@
   $('#callRows').addEventListener('pointercancel', () => { swipeStart = null; });
   document.addEventListener('keydown', event => {
     if (event.key === 'Escape' && tourActive) { finishTour(true); return; }
-    if (event.key === 'Escape' && !$('#conversationMenu')?.classList.contains('hidden')) {$('#conversationMenu').classList.add('hidden');$('#detailPanel [data-chat-menu-toggle]')?.setAttribute('aria-expanded','false');$('#detailPanel [data-chat-menu-toggle]')?.focus();return;}
+    if (event.key === 'Escape' && $('#conversationMenu') && !$('#conversationMenu').classList.contains('hidden')) {$('#conversationMenu').classList.add('hidden');$('#detailPanel [data-chat-menu-toggle]')?.setAttribute('aria-expanded','false');$('#detailPanel [data-chat-menu-toggle]')?.focus();return;}
     if (event.key === 'Escape' && !$('#callPreview').classList.contains('hidden')) $('#callPreview').classList.add('hidden');
     if (event.key === 'Escape' && !$('#createGroupDialog').classList.contains('hidden')) $('#createGroupDialog').classList.add('hidden');
     if (event.key === 'Escape' && document.activeElement?.id === 'memberQuery') {
@@ -647,12 +691,12 @@
     if(event.target.id==='chatPhotoInput'){
       const file=event.target.files?.[0];if(!file)return;
       if(!['image/png','image/jpeg','image/webp','image/gif'].includes(file.type)||file.size>700000){toast(ui('Choose a PNG, JPG, WebP or GIF under 700 KB.','Chọn ảnh PNG, JPG, WebP hoặc GIF dưới 700 KB.'));event.target.value='';return;}
-      const reader=new FileReader();reader.onload=()=>{pendingChatAttachment={type:'image',src:String(reader.result)};renderChatAttachment();$('#messageText')?.focus();};reader.onerror=()=>toast(ui('Could not read this photo.','Không đọc được ảnh này.'));reader.readAsDataURL(file);event.target.value='';return;
+      const owner=currentDetail,generation=mediaGeneration;const reader=new FileReader();reader.onload=()=>{if(currentDetail!==owner||mediaGeneration!==generation)return;pendingChatAttachment={type:'image',src:String(reader.result)};renderChatAttachment();$('#messageText')?.focus();};reader.onerror=()=>toast(ui('Could not read this photo.','Không đọc được ảnh này.'));reader.readAsDataURL(file);event.target.value='';return;
     }
     const setting = event.target.dataset.quickSetting;
     if (!setting || !['phone','email','messages','calls'].includes(setting)) return;
     state[setting] = event.target.value;
-    save();
+    if(!save()){renderSummaries();toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));}
   });
   $('#inviteSmsBtn').href = 'sms:?body=' + encodeURIComponent('Join me on NEXORA: ' + inviteUrl);
   $('#memberQuery').addEventListener('focus', renderMemberResults);
@@ -676,6 +720,7 @@
     tourHeld = false;
     scheduleTourAdvance();
   });
+  window.NEXORA_CONNECT_CORE={currentMember,currentRole,currentAccount,key,members,getState:()=>clone(state),read:()=>clone(load()),mutate,save,toast,showDetail,showSection,renderGroups,renderMessages,renderCalls,renderSummaries,renderMemberResults,rememberChatDraft,appendChatMessage,getContext:()=>({section,currentDetail,messages:clone(currentMessages),communityFilter,callFilter}),isBlocked,chatPref,escape:esc,setProfileURL:value=>{profileUrl=value;},refresh:()=>{state=load();savedSnapshot=clone(state);renderSummaries();renderMessages();renderGroups();renderCalls();if(currentDetail)showDetail(currentDetail);}};
   renderSummaries();
   renderConversationPreviews();
   const params = new URLSearchParams(location.search);
@@ -691,7 +736,7 @@
     state.sourceChats[id]={recipient:contact.recipient.slice(0,160),reference:String(contact.reference||'').slice(0,300),sourceId:contact.sourceId};
     state.deletedChats=state.deletedChats.filter(value=>value!==id);
     state.archivedChats=state.archivedChats.filter(value=>value!==id);
-    save();showSection('messages');showDetail(id);
+    if(!save()){toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));return;}showSection('messages');showDetail(id);
   });
   window.addEventListener('message', event => {if (event.source !== window.parent || (location.protocol !== 'file:' && event.origin !== location.origin)) return;if (event.data?.type === 'nexora-open-section' && ['messages','calls','groups','privacy'].includes(event.data.section)) showSection(event.data.section);if (event.data?.type === 'nexora-back' && currentDetail) showSection(section);if (event.data?.type === 'nexora-open-request' && state.request === 'pending') {showSection('messages');showDetail('request');}});
   let hasSeenTour = false;

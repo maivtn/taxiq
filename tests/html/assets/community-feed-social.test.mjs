@@ -248,3 +248,64 @@ test('market feed cards use the business source delete hook and roll back a reje
   assert.equal(records.length,0);assert.equal(removed,1);
   assert.deepEqual(JSON.parse(app.w.localStorage.getItem(storageKey)).deletedPostIds,['market']);
 });
+
+test('market Feed keeps seller contact and owner sold confirmation tied to the original record',t=>{
+  const records=[{id:'sale',type:'sale',owner:'Other',title:'Chair',description:'White chair',status:'open'},{id:'own',type:'sale',owner:'Me',title:'Lamp',status:'open'}],contacts=[],sold=[];
+  const app=boot(t,records,'',{contactPost:post=>contacts.push(post),markSold:post=>{sold.push(post);post.status='sold';return true;}});
+  app.click('[data-social-action="contact-seller"][data-social-post="sale"]');assert.strictEqual(contacts[0],records[0]);
+  app.click('[data-social-action="mark-sold"][data-social-post="own"]');
+  assert.equal(records[1].status,'open');assert.match(app.d.querySelector('[data-social-dialog]').textContent,/Đánh dấu món này đã bán/);
+  app.click('[data-social-action="confirm-mark-sold"]');
+  assert.strictEqual(sold[0],records[1]);assert.equal(records[1].id,'own');assert.equal(records[1].status,'sold');
+  assert.equal(app.d.querySelector('[data-social-action="mark-sold"][data-social-post="own"]'),null);
+  assert.equal(app.d.querySelector('[data-feed-post-id="own"] .community-feed-post-market-status').textContent,'Đã bán');
+});
+
+test('market sold failure restores the record and keeps the confirmation available',t=>{
+  const records=[{id:'own',type:'want',owner:'Me',title:'Lamp wanted',status:'open'}];
+  const app=boot(t,records,'',{markSold:post=>{post.status='bought';return false;}});
+  app.click('[data-social-action="mark-sold"]');app.click('[data-social-action="confirm-mark-sold"]');
+  assert.equal(records[0].status,'open');assert.ok(app.d.querySelector('[data-social-form-error]').textContent);
+  assert.ok(app.d.querySelector('[data-social-action="confirm-mark-sold"]'));
+});
+
+test('closed marketplace posts keep status and social controls without seller contact',t=>{
+  const app=boot(t,[{id:'done',type:'sale',owner:'Other',title:'Chair',status:'sold'}],'',{contactPost:()=>assert.fail('sold contact')});
+  assert.equal(app.d.querySelector('.community-feed-post-market-status').textContent,'Đã bán');
+  assert.equal(app.d.querySelector('[data-social-action="contact-seller"]'),null);
+  assert.ok(app.d.querySelector('[data-social-action="like"]'));
+});
+
+test('destination chips navigate to the exact main or group feed scope',t=>{
+  const scopes=[];
+  const app=boot(t,[{id:'a',owner:'Other',kind:'tip',title:'Tip',destinations:{includeMainFeed:true,groupIds:['g']}}],'',{getGroups:()=>[{id:'g',title:'Nail Houston'}],navigateFeed:scope=>scopes.push(scope)});
+  app.click('[data-social-scope="group:g"]');app.click('[data-social-scope="main"]');
+  assert.deepEqual(scopes,['group:g','main']);
+});
+
+test('deep post reuses each complete kind renderer and enhances its original actions',t=>{
+  const posts=[{id:'poll',kind:'poll',owner:'Other',title:'Which?',optionA:'A',optionB:'B',votesA:2},{id:'event',kind:'event',owner:'Other',title:'Class',date:'Oct 30, 2026',location:'Houston'},{id:'question',kind:'question',owner:'Me',title:'Q',resolved:true},{id:'market',type:'sale',owner:'Other',title:'Lamp',price:25,condition:'Used',status:'open'}];
+  const rendered=[],enhanced=[];
+  const app=boot(t,posts,'',{renderPost:post=>{rendered.push(post);return `<article data-feed-post-id="${post.id}"><h3>${post.title}</h3>${post.kind==='poll'?`<button data-extra-action="voteA">${post.optionA} ${post.votesA}</button><button data-extra-action="voteB">${post.optionB}</button>`:post.kind==='event'?`<time>${post.date}</time><span data-event-location>${post.location}</span><button data-extra-action="interest">Interested</button>`:post.kind==='question'?'<button data-extra-action="resolve">Answered</button>':`<b data-market-price>$${post.price}</b><span>${post.condition}</span>`}</article>`;},enhancePosts:root=>enhanced.push(root),contactPost:()=>true});
+  for(const post of posts){
+    app.social.openPost(post.id);const detail=app.d.querySelector('[data-social-post-detail]');
+    assert.strictEqual(rendered.at(-1),post);assert.strictEqual(enhanced.at(-1),detail);
+    assert.equal(detail.querySelectorAll('[data-social-action="like"]').length,1);
+    assert.ok(detail.querySelector('[data-social-comment-form]'));
+    if(post.kind==='poll')assert.match(detail.querySelector('[data-extra-action="voteA"]').textContent,/A 2/);
+    if(post.kind==='event'){assert.equal(detail.querySelector('[data-event-location]').textContent,'Houston');assert.ok(detail.querySelector('[data-extra-action="interest"]'));}
+    if(post.kind==='question')assert.ok(detail.querySelector('[data-extra-action="resolve"]'));
+    if(post.type==='sale'){assert.equal(detail.querySelector('[data-market-price]').textContent,'$25');assert.ok(detail.querySelector('[data-social-action="contact-seller"]'));}
+  }
+  posts[0].votesA=3;app.social.openPost('poll');posts[0].votesA=4;app.social.refreshOpenPost();
+  assert.match(app.d.querySelector('[data-social-post-detail] [data-extra-action="voteA"]').textContent,/A 4/);
+});
+
+test('a social mutation merges the latest stored comments from another open surface',t=>{
+  const app=boot(t,[{id:'a',kind:'general',owner:'Other',title:'A'}]);
+  const latest=JSON.parse(app.w.localStorage.getItem(storageKey));latest.posts.a.comments.push({id:'external',owner:'Guest',body:'From another surface',parentId:null});
+  latest.reports.push({id:'other-report',reason:'Keep this'});app.w.localStorage.setItem(storageKey,JSON.stringify(latest));
+  app.click('[data-social-action="like"]');
+  const saved=JSON.parse(app.w.localStorage.getItem(storageKey));
+  assert.equal(saved.posts.a.comments[0].id,'external');assert.equal(saved.reports[0].id,'other-report');assert.deepEqual(saved.posts.a.likedBy,['Me']);
+});
