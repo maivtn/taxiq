@@ -47,8 +47,35 @@
     window.NEXORA_SHELL.isCommunity = true;
     window.NEXORA_SHELL.onNavigate = window.navigateCommunityHub;
   }
+  function communityLanguage(){return localStorage.getItem('nexora-community-language')==='vi'?'vi':'en';}
+  function syncLanguageControl(){
+    var select=document.querySelector('.sidebar-account-language select');
+    if(!select)return;
+    if(!select.querySelector('option[value="vi"]'))select.add(new Option('Tiếng Việt','vi'));
+    select.value=communityLanguage();
+  }
+  document.addEventListener('change',function(event){
+    if(!event.target.matches('.sidebar-account-language select'))return;
+    var language=event.target.value==='vi'?'vi':'en';
+    localStorage.setItem('nexora-community-language',language);
+    if(ready)send('nexora-community-language',{language:language});
+  });
+  var sidebarElement=document.querySelector('.sidebar');
+  if(sidebarElement)new MutationObserver(syncLanguageControl).observe(sidebarElement,{childList:true,subtree:true});
+  syncLanguageControl();
   frame.hidden = false;
-  frame.closest('main').classList.add('community-v2-content');
+  var main=frame.closest('main');
+  main.classList.add('community-v2-content');
+  var header=document.querySelector('.app-area > .header');
+  function resizeCommunity(){
+    var height=window.visualViewport?window.visualViewport.height:window.innerHeight;
+    document.documentElement.style.setProperty('--community-viewport-height',Math.round(height)+'px');
+    if(header)document.documentElement.style.setProperty('--community-header-height',Math.ceil(header.getBoundingClientRect().height)+'px');
+  }
+  if(header&&window.ResizeObserver)new ResizeObserver(resizeCommunity).observe(header);
+  window.addEventListener('resize',resizeCommunity);
+  if(window.visualViewport)window.visualViewport.addEventListener('resize',resizeCommunity);
+  resizeCommunity();
   document.body.classList.add('community-hub-active');
 
   window.addEventListener('message', function (event) {
@@ -56,6 +83,7 @@
     var data = event.data;
     if (data.type === 'nexora-community-ready') {
       ready = true;
+      send('nexora-community-language',{language:communityLanguage()});
       send('nexora-community-navigate', {route:current});
     }
     if (data.type === 'nexora-community-route' && ready) show(data.route, true, Boolean(data.replace));
@@ -90,7 +118,7 @@
     var source = new URL('../assets/community-v2/nexora-community-complete.html', location.href);
     source.searchParams.set('embedded', '1');
     source.searchParams.set('tab', current);
-    source.searchParams.set('v', '20261029');
+    source.searchParams.set('v', '20261029-mobile-finish');
     if (window.NEXORA_SHELL && window.NEXORA_SHELL.activePage === 'staff') {
       var name = window.NEXORA_SHELL.profileName || document.querySelector('.staff-profile-name')?.textContent;
       if (name) source.searchParams.set('member', name.trim());

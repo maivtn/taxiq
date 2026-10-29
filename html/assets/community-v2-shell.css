@@ -3,7 +3,7 @@
 .content.community-v2-content {
   padding: 0;
   min-height: 0;
-  height: calc(100dvh - 64px);
+  height: calc(var(--community-viewport-height, 100dvh) - var(--community-header-height, 64px));
   overflow: hidden;
 }
 .staff-community-content .page-heading { display: none; }
@@ -21,5 +21,9 @@
 @media (max-width: 639px) {
   .community-content.content,
   .staff-community-content.content,
-  .content.community-v2-content { height: calc(100dvh - 116px); }
+  .content.community-v2-content { height: calc(var(--community-viewport-height, 100dvh) - var(--community-header-height, 116px)); }
 }
+
+body.community-hub-active { overflow:hidden; }
+body.community-hub-active > .shell,
+body.community-hub-active .app-area { height:var(--community-viewport-height,100dvh); min-height:0; }

@@ -20,6 +20,7 @@ Tìm nhân viên, đánh giá hoặc tip...	Search staff, reviews, or tips...
 ◉ BẢN PROTOTYPE	◉ INTERACTIVE PREVIEW
 Bảng tin	Feed
 Tìm bài đăng	Search listings
+Lọc	Filters
 Lọc ngành nghề	Filter industries
 Lọc danh mục	Filter categories
 Lọc tiểu bang	Filter states
