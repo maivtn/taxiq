@@ -190,7 +190,7 @@ body .toast { z-index: 100; max-width: min(420px, calc(100% - 24px)); overflow-w
 
 @media (max-width: 800px), (pointer: coarse) {
   body :is(button, a.btn, .primary, .secondary, .chat-action, .text-button) { min-height: 44px; }
-  body .community-feed-post-destination { width: auto; min-height: 24px; height: auto; padding: 3px 7px; font-size: 10px; line-height: 1.4; }
+  body .community-feed-post-destinations > .community-feed-post-destination { width: auto; min-height: 24px; height: auto; padding: 3px 7px; font-size: 10px; line-height: 1.4; }
   body :is(.icon-btn, .chat-action, .chat-like, .chat-menu-toggle) { min-width: 44px; min-height: 44px; }
   body :is(input, select, textarea):not([type="checkbox"]):not([type="radio"]):not([type="hidden"]):not([type="range"]):not([type="color"]) {
     min-height: 46px;
