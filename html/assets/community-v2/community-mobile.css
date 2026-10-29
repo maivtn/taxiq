@@ -371,6 +371,23 @@ body .toast { z-index: 100; max-width: min(420px, calc(100% - 24px)); overflow-w
   body.community-chat-open #detailPanel.chat-detail .composer .primary > span { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 }
 
+/* Desktop keeps all quick actions; phones expose the secondary actions on demand. */
+#feedView .feed-more-actions { display: contents; }
+#feedView #feedActionsToggle { display: none; }
+@media (max-width: 650px) {
+  body #feedView .feed-action-label { display: none; }
+  body #feedView #feedActions { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 8px; padding: 10px 0 0; }
+  body #feedView #feedActions > .feed-action { min-width: 0; min-height: 60px; padding: 6px 2px; gap: 4px; }
+  body #feedView #feedActionsToggle { display: flex; }
+  body #feedView #feedActionsToggle .feed-icon svg { transition: transform .18s ease; }
+  body #feedView #feedActionsToggle[aria-expanded="true"] .feed-icon svg { transform: rotate(180deg); }
+  body #feedView .feed-more-actions { display: grid; grid-column: 1 / -1; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; padding-top: 8px; border-top: 1px solid var(--community-border, #e3e8f4); }
+  body #feedView .feed-more-actions .feed-action { flex-direction: row; justify-content: flex-start; min-height: 44px; padding: 8px 10px; gap: 8px; }
+  body #feedView .feed-more-actions .feed-action > span:last-child { width: auto; text-align: left; font-size: 12px; line-height: 1.35; }
+  body #feedView .feed-more-actions .feed-action:last-child:nth-child(odd) { grid-column: 1 / -1; }
+  body #feedView .feed-composer:not(.feed-actions-expanded) :is(.feed-more-actions, .feed-post-shortcuts) { display: none; }
+}
+
 @media (hover: none) {
   body .template-card:hover, body #feedView .feed-action:hover, body #feedView .feed-action:active,
   body #feedView .feed-action .feed-icon, body .page-tabs .tab:hover { transform: none !important; }

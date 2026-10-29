@@ -7,6 +7,8 @@ Tìm ưu đãi: pedicure, facial, coffee…	Search deals: pedicure, facial, coff
 Chưa có ưu đãi phù hợp	No matching deals
 Thử từ khóa, ngành hoặc khu vực khác.	Try another keyword, industry or area.
 Bộ lọc	Filters
+Thêm	More
+Thu gọn	Show less
 Không gian làm việc	Workspace
 Trang chủ	Home
 Bảng Điều Khiển	Dashboard
