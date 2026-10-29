@@ -1,0 +1,1649 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nexora Touch - Create promotion</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/pos-promotions-source.css" />
+    <link rel="stylesheet" href="../assets/nexora-icons.css" />
+    <link
+      rel="stylesheet"
+      href="../assets/nexora-shell.css?v=20261029-sidebar-group-labels"
+    />
+    <link rel="stylesheet" href="../assets/promotion-industry-icons.css" />
+    <link rel="stylesheet" href="../assets/pos-promotions-demo.css" />
+  </head>
+  <body data-promotion-page="create">
+    <div class="shell">
+      <aside class="sidebar" id="sidebar"></aside>
+      <div class="app-area">
+        <header class="header" id="header"></header>
+        <main class="pos-promotions-page pos-promo-editor-page">
+          <div class="pos-promotions-inner">
+            <a class="promo-back-link" href="pos-promotions.html"
+              >← <span>Back</span></a
+            >
+            <header class="promo-create-panel-head">
+              <div>
+                <h1 data-copy="createTitle" id="create-title">
+                  Create promotion
+                </h1>
+                <p data-copy="createPageIntro">
+                  Pick a template or let AI suggest one for your industry — edit
+                  anything, then save.
+                </p>
+              </div>
+              <div class="promo-editor-head-actions">
+                <label class="promo-language"
+                  ><span class="sr-only" data-copy="language">Language</span
+                  ><select id="promotion-language" aria-label="Language">
+                    <option value="en">English</option>
+                    <option value="vi">Tiếng Việt</option>
+                  </select></label
+                ><span class="promo-pill promo-pill-template" id="template-pill"
+                  >🧩 Template: Quick create</span
+                ><button
+                  type="button"
+                  class="promo-ai-quick-btn"
+                  id="quick-create-ai"
+                >
+                  ✦ <span data-copy="studio.aiQuick">Quick create with AI</span>
+                </button>
+              </div>
+            </header>
+            <section
+              class="pos-promo-template-studio"
+              aria-labelledby="promo-template-studio-title"
+            >
+              <div class="pos-promo-template-studio-inner">
+                <div class="pts-header">
+                  <div>
+                    <h2
+                      data-copy="studio.title"
+                      id="promo-template-studio-title"
+                    >
+                      Choose a template · make it yours · preview
+                    </h2>
+                    <p data-copy="studio.subtitle">
+                      Up to 20 templates per industry · choosing one does not
+                      publish.
+                    </p>
+                  </div>
+                </div>
+                <div class="pts-type-block">
+                  <div class="pts-type-head">
+                    <span data-copy="studio.typeQuestion"
+                      >What are you creating?</span
+                    >
+                  </div>
+                  <div class="pts-type-grid">
+                    <button
+                      type="button"
+                      class="pts-type-card is-active"
+                      data-kind="deal"
+                      aria-pressed="true"
+                    >
+                      <span class="pts-type-icon" data-oneqr-icon="tag"></span
+                      ><span class="pts-type-copy"
+                        ><strong data-copy="studio.dealTitle"
+                          >Deal · promotion</strong
+                        ><span data-copy="studio.dealHint"
+                          >Unlimited · shown as a banner · auto-applies when
+                          eligible</span
+                        ></span
+                      ><span class="pts-type-count">6</span></button
+                    ><button
+                      type="button"
+                      class="pts-type-card"
+                      data-kind="coupon"
+                      aria-pressed="false"
+                    >
+                      <span
+                        class="pts-type-icon"
+                        data-oneqr-icon="ticket"
+                      ></span
+                      ><span class="pts-type-copy"
+                        ><strong data-copy="studio.couponTitle">Coupon</strong
+                        ><span data-copy="studio.noTemplates"
+                          >No templates yet</span
+                        ></span
+                      ><span class="pts-type-count">0</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="demo-template-filters">
+                  <label class="promo-field"
+                    ><span
+                      id="template-industry-label"
+                      data-copy="studio.industryItemLabel"
+                      >Industry</span
+                    ><select
+                      id="template-industry"
+                      aria-labelledby="template-industry-label"
+                    ></select></label
+                  ><label class="promo-field"
+                    ><span id="template-goal-label" data-copy="studio.goalLabel"
+                      >Goal</span
+                    ><select
+                      id="template-goal"
+                      aria-labelledby="template-goal-label"
+                    ></select></label
+                  ><label class="promo-field"
+                    ><span
+                      id="template-service-label"
+                      data-copy="studio.serviceLabel"
+                      >Service group</span
+                    ><select
+                      id="template-service"
+                      aria-labelledby="template-service-label"
+                    ></select
+                  ></label>
+                </div>
+                <p data-copy="studio.industryNote" class="promo-note">
+                  Industry is the catalog group. Service group lists the
+                  industries inside the selected group, in catalog order.
+                </p>
+                <input
+                  type="search"
+                  id="template-search"
+                  class="pts-search"
+                  placeholder="Search templates: pedicure, birthday, combo…"
+                  data-placeholder="studio.searchPlaceholder"
+                  aria-label="Search templates"
+                />
+                <p
+                  id="template-count"
+                  class="promo-note"
+                  aria-live="polite"
+                ></p>
+                <div class="demo-template-rail" id="template-cards"></div>
+              </div>
+            </section>
+            <div class="pos-promo-editor-shell">
+              <form
+                id="promotion-form"
+                class="pos-promo-dialog pos-promo-dialog--page"
+                novalidate
+              >
+                <div class="promo-create-layout">
+                  <div class="promo-create-form editor-fields">
+                    <section
+                      class="editor-section"
+                      aria-labelledby="promo-details-title"
+                    >
+                      <h3
+                        data-copy="detailsSection"
+                        class="section-number"
+                        id="promo-details-title"
+                      >
+                        01 / Promotion details
+                      </h3>
+                      <div class="promo-field-row details-row">
+                        <label class="promo-field"
+                          ><span data-copy="nameLabel">Promotion name</span
+                          ><input
+                            name="name"
+                            type="text"
+                            placeholder="e.g. Weekday savings"
+                            data-placeholder="namePlaceholder"
+                            maxlength="100"
+                            required /></label
+                        ><label class="promo-field"
+                          ><span data-copy="badgeLabel">Badge · optional</span
+                          ><input
+                            name="badge"
+                            type="text"
+                            placeholder="e.g. Happy Hours"
+                            data-placeholder="badgePlaceholder"
+                            maxlength="50"
+                        /></label>
+                      </div>
+                      <p data-copy="detailsHint" class="promo-note">
+                        Example: 15% off Classic Pedicure, Tue–Thu 10 AM–2 PM;
+                        cannot be combined. Clearly state who qualifies and
+                        exclusions.
+                      </p>
+                      <label class="promo-field"
+                        ><span data-copy="descriptionLabel"
+                          >Description · optional</span
+                        ><textarea
+                          name="description"
+                          maxlength="1000"
+                          rows="3"
+                          placeholder="e.g. 15% off Classic Pedicure, Tue–Thu 10 AM–2 PM"
+                          data-placeholder="descriptionPlaceholder"
+                        ></textarea>
+                      </label>
+                      <div class="promo-svc">
+                        <div class="promo-svc-label">
+                          <b data-copy="eligibleServicesLabel"
+                            >Eligible services</b
+                          ><button
+                            type="button"
+                            class="demo-tip"
+                            aria-label="From the POS service menu. The POS discounts only these services on the bill; Booking tags only these; add-ons are suggested only with a main service."
+                          >
+                            ?<span role="tooltip"
+                              >From the POS service menu. The POS discounts only
+                              these services on the bill; Booking tags only
+                              these; add-ons are suggested only with a main
+                              service.</span
+                            >
+                          </button>
+                        </div>
+                        <div id="eligible-services"></div>
+                      </div>
+                    </section>
+                    <section
+                      class="editor-section"
+                      aria-labelledby="promo-schedule-title"
+                    >
+                      <h3
+                        data-copy="scheduleSection"
+                        class="section-number"
+                        id="promo-schedule-title"
+                      >
+                        02 / Discount &amp; schedule
+                      </h3>
+                      <div class="promo-d2">
+                        <div class="promo-d2-row">
+                          <div class="promo-d2-label">
+                            <span data-copy="offerKindRowLabel">Type</span>
+                          </div>
+                          <div class="promo-d2-body">
+                            <div class="promo-d2-otinfo">
+                              <strong id="offer-kind-label">Deal</strong
+                              ><span id="offer-kind-hint"
+                                >Unlimited · auto-applies when eligible</span
+                              ><button
+                                type="button"
+                                class="promo-text-button"
+                                id="change-kind"
+                              >
+                                <span data-copy="offerKindChangeStep"
+                                  >Change in step ①</span
+                                >
+                              </button>
+                            </div>
+                          </div>
+                        </div>
+                        <div class="promo-d2-row">
+                          <div class="promo-d2-label">
+                            <span data-copy="discountRowLabel">Discount</span
+                            ><small data-copy="discountRowHint">per use</small>
+                          </div>
+                          <div class="promo-d2-body">
+                            <div class="demo-discount">
+                              <input
+                                name="discountValue"
+                                type="number"
+                                min="0.01"
+                                step="0.01"
+                                aria-label="Discount value"
+                                required
+                              /><select
+                                name="discountType"
+                                aria-label="Discount type"
+                              >
+                                <option value="percent">%</option>
+                                <option value="amount">$</option>
+                              </select>
+                            </div>
+                          </div>
+                        </div>
+                        <div
+                          id="coupon-fields"
+                          class="demo-coupon-fields"
+                          hidden
+                        >
+                          <label class="promo-field"
+                            ><span data-copy="slotsLabel">Slots</span
+                            ><input
+                              name="slots"
+                              type="number"
+                              min="1"
+                              step="1"
+                              value="100" /></label
+                          ><label class="promo-field"
+                            ><span data-copy="perClientLabel">Per client</span
+                            ><select name="perClient">
+                              <option value="1" data-copy="couponPer.one">
+                                1 time(s)
+                              </option>
+                              <option value="2" data-copy="couponPer.two">
+                                2 time(s)
+                              </option>
+                              <option value="3" data-copy="couponPer.three">
+                                3 time(s)
+                              </option>
+                            </select></label
+                          >
+                        </div>
+                        <div class="promo-d2-row">
+                          <div class="promo-d2-label">
+                            <span data-copy="daysRowLabel">Days</span>
+                          </div>
+                          <div class="promo-d2-body">
+                            <fieldset class="promo-days">
+                              <legend class="sr-only">Days it runs</legend>
+                              <div>
+                                <label class="promo-day"
+                                  ><input
+                                    name="days"
+                                    type="checkbox"
+                                    value="0"
+                                    aria-label="Sun"
+                                  /><span>Sun</span></label
+                                ><label class="promo-day"
+                                  ><input
+                                    name="days"
+                                    type="checkbox"
+                                    value="1"
+                                    aria-label="Mon"
+                                  /><span>Mon</span></label
+                                ><label class="promo-day"
+                                  ><input
+                                    name="days"
+                                    type="checkbox"
+                                    value="2"
+                                    aria-label="Tue"
+                                  /><span>Tue</span></label
+                                ><label class="promo-day"
+                                  ><input
+                                    name="days"
+                                    type="checkbox"
+                                    value="3"
+                                    aria-label="Wed"
+                                  /><span>Wed</span></label
+                                ><label class="promo-day"
+                                  ><input
+                                    name="days"
+                                    type="checkbox"
+                                    value="4"
+                                    aria-label="Thu"
+                                  /><span>Thu</span></label
+                                ><label class="promo-day"
+                                  ><input
+                                    name="days"
+                                    type="checkbox"
+                                    value="5"
+                                    aria-label="Fri"
+                                  /><span>Fri</span></label
+                                ><label class="promo-day"
+                                  ><input
+                                    name="days"
+                                    type="checkbox"
+                                    value="6"
+                                    aria-label="Sat"
+                                  /><span>Sat</span></label
+                                >
+                              </div>
+                            </fieldset>
+                          </div>
+                        </div>
+                        <div class="promo-d2-row">
+                          <div class="promo-d2-label">
+                            <span data-copy="hoursRowLabel">Hours</span
+                            ><small data-copy="hoursRowHint">shop time</small>
+                          </div>
+                          <div class="promo-d2-body">
+                            <div class="promo-d2-time">
+                              <input
+                                name="startTime"
+                                type="time"
+                                value="10:00"
+                                aria-label="Starts at"
+                                required
+                              /><span>–</span
+                              ><input
+                                name="endTime"
+                                type="time"
+                                value="14:00"
+                                aria-label="Ends at"
+                                required
+                              />
+                            </div>
+                          </div>
+                        </div>
+                        <div class="promo-d2-row">
+                          <div class="promo-d2-label">
+                            <span data-copy="datesRowLabel">Run dates</span>
+                          </div>
+                          <div class="promo-d2-body">
+                            <div class="promo-d2-time">
+                              <input
+                                name="startDate"
+                                type="date"
+                                aria-label="Start date"
+                              /><span>–</span
+                              ><input
+                                name="endDate"
+                                type="date"
+                                aria-label="End date"
+                              />
+                            </div>
+                            <small class="promo-note" id="date-display"></small>
+                          </div>
+                        </div>
+                        <div class="promo-d2-row">
+                          <div class="promo-d2-label">
+                            <span data-copy="whoRowLabel">Customer</span
+                            ><small data-copy="whoRowHint"
+                              >requirement when used</small
+                            >
+                          </div>
+                          <div class="promo-d2-body">
+                            <label class="promo-field"
+                              ><span data-copy="customerReqLabel"
+                                >Customer requirement</span
+                              ><select name="requirement">
+                                <option
+                                  value="online"
+                                  data-copy="customerReq.online"
+                                >
+                                  Online booking required
+                                </option>
+                                <option
+                                  value="appt"
+                                  data-copy="customerReq.appt"
+                                >
+                                  Appointment required
+                                </option>
+                                <option
+                                  value="checkin"
+                                  data-copy="customerReq.checkin"
+                                >
+                                  Check-in required
+                                </option>
+                                <option
+                                  value="none"
+                                  data-copy="customerReq.none"
+                                >
+                                  No requirement
+                                </option>
+                              </select></label
+                            >
+                          </div>
+                        </div>
+                      </div>
+                      <details class="demo-more" open>
+                        <summary data-copy="moreConditions">
+                          ＋ More conditions (optional): goal, minimum spend,
+                          cap, code…
+                        </summary>
+                        <div class="promo-d2-more-grid">
+                          <label class="promo-field"
+                            ><span data-copy="goalLabel">Goal</span
+                            ><select name="goal">
+                              <option value="slow" data-copy="goal.slow">
+                                Fill slow hours
+                              </option>
+                              <option value="back" data-copy="goal.back">
+                                Bring customers back
+                              </option>
+                              <option value="new" data-copy="goal.new">
+                                Get new customers
+                              </option>
+                              <option value="gift" data-copy="goal.gift">
+                                Sell gift cards
+                              </option>
+                            </select></label
+                          >
+                          <div class="promo-field" id="minimumSpend-field">
+                            <div class="demo-label">
+                              <label
+                                for="minimumSpend"
+                                data-copy="minSpendLabel"
+                                >Minimum spend ($)</label
+                              ><button
+                                type="button"
+                                class="demo-tip"
+                                aria-label="Minimum spend ($)"
+                              >
+                                ?<span role="tooltip"
+                                  >The eligible service subtotal the bill must
+                                  reach before the promotion is deducted. Leave
+                                  blank when no minimum spend is required.</span
+                                >
+                              </button>
+                            </div>
+                            <input
+                              id="minimumSpend"
+                              name="minimumSpend"
+                              type="number"
+                              min="0.01"
+                              step="0.01"
+                            />
+                          </div>
+                          <div class="promo-field" id="monthlyCap-field">
+                            <div class="demo-label">
+                              <label
+                                for="monthlyCap"
+                                data-copy="monthlyCapLabel"
+                                >Monthly cap ($)</label
+                              ><button
+                                type="button"
+                                class="demo-tip"
+                                aria-label="Monthly cap ($)"
+                              >
+                                ?<span role="tooltip"
+                                  >The maximum total discount this Deal can give
+                                  in a calendar month. The POS stops applying
+                                  the Deal when the cap is reached; it resets
+                                  next month. Leave blank for no monthly
+                                  cap.</span
+                                >
+                              </button>
+                            </div>
+                            <input
+                              id="monthlyCap"
+                              name="monthlyCap"
+                              type="number"
+                              min="0.01"
+                              step="0.01"
+                            />
+                          </div>
+                          <div id="hold-days-field" hidden>
+                            <label class="promo-field"
+                              ><span data-copy="holdDaysLabel">Hold (days)</span
+                              ><input
+                                name="holdDays"
+                                type="number"
+                                value="7"
+                                min="1"
+                                max="365"
+                            /></label>
+                          </div>
+                          <div id="coupon-code-field" hidden>
+                            <label class="promo-field"
+                              ><span data-copy="couponCodeLabel"
+                                >Coupon code (optional)</span
+                              ><input
+                                name="couponCode"
+                                type="text"
+                                placeholder="e.g. NAIL15"
+                                data-placeholder="couponCodePlaceholder"
+                                maxlength="24"
+                            /></label>
+                          </div>
+                        </div>
+                      </details>
+                      <div class="promo-d2-sum">
+                        <h4 data-copy="scheduleSummaryTitle">Summary</h4>
+                        <ul id="promotion-summary"></ul>
+                      </div>
+                    </section>
+                    <section
+                      class="editor-section"
+                      aria-labelledby="promo-channels-title"
+                    >
+                      <h3
+                        data-copy="channelsSection"
+                        class="section-number"
+                        id="promo-channels-title"
+                      >
+                        03 / Channels
+                      </h3>
+                      <p class="promo-note" id="goal-channel-hint"></p>
+                      <p data-copy="channelsPolicyNote" class="promo-note">
+                        Nexora is the source of truth: every channel uses a
+                        Nexora deal page, QR, coupon token, tracking URL and
+                        report.
+                      </p>
+                      <label class="demo-cross"
+                        ><input
+                          type="checkbox"
+                          name="crossPromotion"
+                          checked
+                        /><span
+                          ><strong data-copy="crossPromoTitle"
+                            >Allow cross-promotion for this offer</strong
+                          ><small data-copy="crossPromoHint"
+                            >Shows on the banner of nearby opted-in shops (up to
+                            10 miles, nearest first). NEXORA picks the shops —
+                            never same-group competitors or sensitive
+                            categories.</small
+                          ></span
+                        ></label
+                      >
+                      <div id="channels"></div>
+                      <p class="demo-public-policy">
+                        NEXORA automatically reviews public advertising
+                        placements. Your own channels run immediately without
+                        content review.
+                      </p>
+                    </section>
+                    <section class="editor-section" id="paid-advertising">
+                      <label class="demo-paid-toggle"
+                        ><input type="checkbox" name="paidEnabled" /><span
+                          ><strong>Quảng cáo trả phí</strong
+                          ><small
+                            >Vị trí tài trợ trong Khám phá. Cần bật Public;
+                            không chèn vào homepage tiệm khác.</small
+                          ></span
+                        ></label
+                      >
+                      <div id="paid-fields" hidden>
+                        <div
+                          id="paid-placements"
+                          class="demo-paid-placements"
+                        ></div>
+                        <label class="promo-field"
+                          ><span>Target area</span
+                          ><select name="targetArea">
+                            <option>Houston</option>
+                            <option>Katy</option>
+                            <option>Austin</option>
+                            <option>Dallas</option>
+                          </select></label
+                        >
+                        <div class="promo-field-row">
+                          <label class="promo-field"
+                            ><span>Total campaign budget (USD)</span
+                            ><input
+                              type="number"
+                              name="budget"
+                              value="100"
+                              min="0.01"
+                              step="0.01" /></label
+                          ><label class="promo-field"
+                            ><span>Daily spending limit (USD)</span
+                            ><input
+                              type="number"
+                              name="dailyLimit"
+                              value="15"
+                              min="0.01"
+                              step="0.01"
+                          /></label>
+                        </div>
+                        <p class="promo-note">
+                          The daily limit is included in the total campaign
+                          budget.
+                        </p>
+                        <p class="demo-paid-credit">
+                          <span data-oneqr-icon="wallet"></span
+                          ><span
+                            ><strong>Saving is free.</strong> Ads Credit is
+                            charged only after approval, when your paid campaign
+                            starts running.</span
+                          >
+                        </p>
+                      </div>
+                    </section>
+                  </div>
+                  <aside
+                    class="promo-create-tools editor-preview"
+                    aria-label="Live preview"
+                  >
+                    <div class="promo-live-preview" id="livePrev">
+                      <div class="promo-live-head">
+                        <strong data-copy="livePreviewTitle"
+                          >Live preview · updates as you type</strong
+                        ><span class="promo-live-type is-deal" id="preview-kind"
+                          >Deal · unlimited</span
+                        >
+                      </div>
+                      <div
+                        class="promo-live-tabs"
+                        role="tablist"
+                        aria-label="Live preview"
+                      >
+                        <button
+                          type="button"
+                          role="tab"
+                          data-preview="banner"
+                          aria-selected="true"
+                          class="is-on"
+                        >
+                          Banner</button
+                        ><button
+                          type="button"
+                          role="tab"
+                          data-preview="oneqr"
+                          aria-selected="false"
+                          class=""
+                        >
+                          OneQR</button
+                        ><button
+                          type="button"
+                          role="tab"
+                          data-preview="app"
+                          aria-selected="false"
+                          class=""
+                        >
+                          App</button
+                        ><button
+                          type="button"
+                          role="tab"
+                          data-preview="kiosk"
+                          aria-selected="false"
+                          class=""
+                        >
+                          Check-in</button
+                        ><button
+                          type="button"
+                          role="tab"
+                          data-preview="pos"
+                          aria-selected="false"
+                          class=""
+                        >
+                          POS
+                        </button>
+                      </div>
+                      <div
+                        class="promo-live-stage"
+                        role="tabpanel"
+                        id="live-stage"
+                      ></div>
+                      <div class="promo-live-studio">
+                        <div class="promo-live-colors">
+                          <p
+                            class="promo-live-colors-label"
+                            data-copy="liveColorLabel"
+                          >
+                            Banner colour
+                          </p>
+                          <div
+                            class="promo-live-swatches"
+                            id="banner-colors"
+                            role="listbox"
+                            aria-label="Banner colour"
+                          ></div>
+                          <p
+                            data-copy="liveColorOnce"
+                            class="promo-live-colors-note"
+                          >
+                            Each colour once per promotion (• = in use)
+                          </p>
+                        </div>
+                        <div class="promo-live-banner-head">
+                          <strong id="banner-count"
+                            >Banner (1/8) · first is the cover</strong
+                          ><button
+                            type="button"
+                            class="promo-live-add"
+                            id="add-banner"
+                          >
+                            ＋ <span data-copy="addBanner">Add banner</span>
+                          </button>
+                        </div>
+                        <div id="banner-list"></div>
+                        <label class="promo-upload is-compact"
+                          ><span data-copy="upload">Upload your design</span
+                          ><span class="promo-note" data-copy="uploadHint"
+                            >PNG / JPG / WebP · up to 8 MB · up to 8
+                            banners</span
+                          ><input
+                            type="file"
+                            id="banner-upload"
+                            accept="image/png,image/jpeg,image/webp"
+                            hidden
+                        /></label>
+                        <p class="promo-note" data-copy="uploadRatioHint">
+                          For the best display, use a 3:1 image (e.g., 1200 ×
+                          400 px).
+                        </p>
+                        <button
+                          type="button"
+                          class="promo-button demo-ai-banner-button"
+                          id="ai-banner-open"
+                        >
+                          <span data-oneqr-icon="sparkles"></span>AI Banner
+                          Generator</button
+                        ><button
+                          type="button"
+                          class="promo-live-print"
+                          id="poster-open"
+                          data-copy="previewPrint"
+                        >
+                          Preview &amp; print poster
+                        </button>
+                      </div>
+                    </div>
+                  </aside>
+                </div>
+                <footer class="editor-footer">
+                  <div>
+                    <p
+                      class="promo-error"
+                      id="promotion-error"
+                      role="alert"
+                    ></p>
+                    <p data-copy="saveNote" class="promo-note" id="save-note">
+                      New promotions are saved disabled.
+                    </p>
+                    <p id="publication-note" class="promo-note"></p>
+                  </div>
+                  <div class="editor-footer-actions">
+                    <a
+                      class="promo-create-btn"
+                      href="pos-promotions.html"
+                      data-copy="cancel"
+                      >Cancel</a
+                    ><button
+                      type="submit"
+                      name="saveMode"
+                      value="draft"
+                      class="promo-create-btn"
+                      data-copy="saveDraft"
+                    >
+                      Save draft</button
+                    ><button
+                      type="submit"
+                      name="saveMode"
+                      value="activate"
+                      class="promo-create-btn is-turn-on"
+                      id="activate-promotion"
+                    >
+                      Turn on
+                    </button>
+                  </div>
+                </footer>
+              </form>
+            </div>
+            <p class="promo-note demo-local-note">
+              Interactive prototype · Sample data · Changes are saved in this
+              browser.
+            </p>
+          </div>
+        </main>
+        <footer class="demo-page-footer">© 2026 NEXORA Touch.</footer>
+      </div>
+    </div>
+    <template id="ai-banner-template">
+      <div class="phase-ai-body">
+        <div class="phase-ai-layout">
+          <section
+            class="phase-ai-card phase-ai-generator"
+            aria-label="AI banner generator"
+          >
+            <div class="phase-ai-card-heading">
+              <h3 class="phase-ai-title">
+                <span data-icon="sparkles"></span>AI Banner Generator
+              </h3>
+              <div class="phase-ai-quality">
+                <button
+                  type="button"
+                  class="phase-ai-quality-trigger"
+                  id="ai-quality-trigger"
+                >
+                  <span data-icon="settings-2"></span><span>Quality:</span
+                  ><b id="ai-quality-label">Medium</b>
+                </button>
+                <div class="phase-ai-quality-menu" id="ai-quality-menu" hidden>
+                  <span class="phase-ai-quality-menu-title">Image quality</span>
+                  <button type="button" data-ai-quality="low">
+                    <span data-icon="gauge"></span><span>Low · 1 credit</span>
+                  </button>
+                  <button
+                    type="button"
+                    class="selected"
+                    data-ai-quality="medium"
+                  >
+                    <span data-icon="gauge"></span
+                    ><span>Medium · 2 credits</span>
+                  </button>
+                  <button type="button" data-ai-quality="high">
+                    <span data-icon="sparkles"></span
+                    ><span>High · 4 credits</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div>
+              <div class="phase-ai-reference-head">
+                <span class="phase-ai-label">Reference image</span
+                ><button
+                  type="button"
+                  class="phase-ai-history-button"
+                  id="ai-reference-history"
+                >
+                  <span data-icon="history"></span> Choose from generated images
+                </button>
+              </div>
+              <div
+                class="phase-ai-reference-history"
+                id="ai-reference-history-list"
+                hidden
+              >
+                <button
+                  type="button"
+                  class="phase-ai-history-swatch phase-template-purple"
+                  data-ai-history="purple"
+                  aria-label="Use purple generated image"
+                ></button>
+                <button
+                  type="button"
+                  class="phase-ai-history-swatch phase-template-gold"
+                  data-ai-history="gold"
+                  aria-label="Use gold generated image"
+                ></button>
+                <button
+                  type="button"
+                  class="phase-ai-history-swatch phase-template-rose"
+                  data-ai-history="rose"
+                  aria-label="Use rose generated image"
+                ></button>
+                <button
+                  type="button"
+                  class="phase-ai-history-swatch phase-template-blue"
+                  data-ai-history="blue"
+                  aria-label="Use blue generated image"
+                ></button>
+              </div>
+              <label class="phase-ai-reference-upload" id="ai-reference-upload"
+                ><span data-icon="image"></span
+                ><span id="ai-reference-text"
+                  >Choose or upload a reference image</span
+                ><span class="phase-ai-file-meta"
+                  >JPG, PNG, or WebP up to 5 MB · 3:1 crop</span
+                ><input
+                  type="file"
+                  id="ai-reference-file"
+                  accept="image/png,image/jpeg,image/webp"
+              /></label>
+              <div
+                class="phase-ai-reference-preview"
+                id="ai-reference-preview"
+                hidden
+              >
+                <img
+                  id="ai-reference-preview-image"
+                  alt="Selected reference"
+                /><strong id="ai-reference-name"></strong
+                ><button type="button" id="remove-ai-reference">Remove</button>
+              </div>
+            </div>
+
+            <label class="phase-ai-prompt"
+              ><span class="phase-ai-label"
+                >Describe your ad idea (prompt) *</span
+              ><textarea
+                id="ai-banner-prompt"
+                rows="4"
+                placeholder="Describe colors, text, layout, industry, style..."
+              ></textarea>
+            </label>
+
+            <section class="phase-ai-brand" aria-labelledby="ai-brand-title">
+              <h3 class="phase-ai-brand-title" id="ai-brand-title">
+                🎨 Brand &amp; industry
+              </h3>
+              <div class="phase-ai-brand-field">
+                <span id="ai-industry-label"
+                  >Industry (from Salon Settings)</span
+                ><select
+                  id="ai-brand-industry"
+                  aria-labelledby="ai-industry-label"
+                >
+                  <optgroup label="Beauty &amp; personal care">
+                    <option value="💅 Nail" selected data-industry-icon="nail">
+                      Nail salons
+                    </option>
+                    <option
+                      value="🦶 Pedicure / chân"
+                      data-industry-icon="pedicure"
+                    >
+                      Pedicures &amp; foot care
+                    </option>
+                    <option
+                      value="💆 Spa &amp; Massage"
+                      data-industry-icon="spa"
+                    >
+                      Spas &amp; massage
+                    </option>
+                    <option
+                      value="👁️ Mi &amp; chân mày"
+                      data-industry-icon="spa"
+                    >
+                      Lashes &amp; brows
+                    </option>
+                    <option
+                      value="💇 Tóc &amp; salon"
+                      data-industry-icon="hair"
+                    >
+                      Hair salons
+                    </option>
+                    <option
+                      value="💈 Barber / tóc nam"
+                      data-industry-icon="hair"
+                    >
+                      Barbershops
+                    </option>
+                    <option value="🧖 Da &amp; facial" data-industry-icon="spa">
+                      Skin care &amp; facials
+                    </option>
+                    <option
+                      value="🖊️ Phun xăm / PMU / xăm"
+                      data-industry-icon="tattoo"
+                    >
+                      Permanent makeup &amp; tattoos
+                    </option>
+                    <option
+                      value="🧴 Thẩm mỹ y khoa"
+                      data-industry-icon="cosmetics"
+                    >
+                      Medical spas
+                    </option>
+                    <option
+                      value="🪒 Wax / tẩy lông"
+                      data-industry-icon="cosmetics"
+                    >
+                      Waxing &amp; hair removal
+                    </option>
+                    <option
+                      value="🏋️ Gym &amp; thể hình"
+                      data-industry-icon="fitness"
+                    >
+                      Gyms &amp; fitness
+                    </option>
+                    <option
+                      value="🧘 Yoga &amp; pilates"
+                      data-industry-icon="yoga"
+                    >
+                      Yoga &amp; Pilates
+                    </option>
+                    <option
+                      value="🥗 Giảm cân &amp; dinh dưỡng"
+                      data-industry-icon="nutrition"
+                    >
+                      Weight loss &amp; nutrition
+                    </option>
+                    <option
+                      value="➕ Khác (Làm đẹp)"
+                      data-industry-icon="cosmetics"
+                    >
+                      Other beauty services
+                    </option>
+                  </optgroup>
+                  <optgroup label="Food &amp; beverage">
+                    <option
+                      value="🍜 Nhà hàng / quán ăn"
+                      data-industry-icon="restaurant"
+                    >
+                      Restaurants &amp; eateries
+                    </option>
+                    <option
+                      value="🥖 Bánh mì / ăn nhanh"
+                      data-industry-icon="fast-food"
+                    >
+                      Sandwiches &amp; fast food
+                    </option>
+                    <option
+                      value="🧋 Cà phê / trà sữa"
+                      data-industry-icon="coffee"
+                    >
+                      Coffee &amp; bubble tea
+                    </option>
+                    <option
+                      value="🎂 Bánh / tiệc ngọt"
+                      data-industry-icon="bakery"
+                    >
+                      Bakeries &amp; desserts
+                    </option>
+                    <option
+                      value="🍲 Lẩu · nướng · buffet"
+                      data-industry-icon="hot-pot"
+                    >
+                      Hot pot, BBQ &amp; buffets
+                    </option>
+                    <option value="🍗 Hải sản" data-industry-icon="seafood">
+                      Seafood
+                    </option>
+                    <option value="🌿 Chay" data-industry-icon="nutrition">
+                      Vegetarian &amp; vegan
+                    </option>
+                    <option
+                      value="🚚 Food truck"
+                      data-industry-icon="food-truck"
+                    >
+                      Food trucks
+                    </option>
+                    <option
+                      value="🍻 Bar · pub · karaoke"
+                      data-industry-icon="bar"
+                    >
+                      Bars, pubs &amp; karaoke
+                    </option>
+                    <option
+                      value="🏛️ Nhà hàng tiệc cưới"
+                      data-industry-icon="home"
+                    >
+                      Wedding &amp; banquet venues
+                    </option>
+                    <option
+                      value="🍽️ Catering / đặt tiệc"
+                      data-industry-icon="restaurant"
+                    >
+                      Catering &amp; events
+                    </option>
+                    <option
+                      value="🥡 Đồ ăn nhà làm / online"
+                      data-industry-icon="takeaway"
+                    >
+                      Home-based &amp; online food businesses
+                    </option>
+                    <option
+                      value="➕ Khác (Ăn uống)"
+                      data-industry-icon="restaurant"
+                    >
+                      Other food &amp; beverage
+                    </option>
+                  </optgroup>
+                  <optgroup label="Retail">
+                    <option
+                      value="🛒 Chợ / siêu thị"
+                      data-industry-icon="retail"
+                    >
+                      Grocery stores &amp; supermarkets
+                    </option>
+                    <option
+                      value="🏪 Tiện lợi / tạp hoá"
+                      data-industry-icon="retail"
+                    >
+                      Convenience stores
+                    </option>
+                    <option
+                      value="📦 Supply nail &amp; spa / đồ nghề"
+                      data-industry-icon="nail"
+                    >
+                      Nail &amp; spa supplies
+                    </option>
+                    <option
+                      value="💄 Mỹ phẩm / nước hoa"
+                      data-industry-icon="cosmetics"
+                    >
+                      Cosmetics &amp; fragrances
+                    </option>
+                    <option
+                      value="🧳 Hàng xách tay"
+                      data-industry-icon="retail"
+                    >
+                      Imported goods
+                    </option>
+                    <option
+                      value="👗 Thời trang / áo dài"
+                      data-industry-icon="apparel"
+                    >
+                      Fashion &amp; traditional clothing
+                    </option>
+                    <option
+                      value="👜 Giày / túi xách"
+                      data-industry-icon="apparel"
+                    >
+                      Shoes &amp; handbags
+                    </option>
+                    <option
+                      value="💍 Vàng bạc / trang sức"
+                      data-industry-icon="jewelry"
+                    >
+                      Jewelry &amp; precious metals
+                    </option>
+                    <option
+                      value="📱 Điện thoại / điện tử"
+                      data-industry-icon="electronics"
+                    >
+                      Phones &amp; electronics
+                    </option>
+                    <option
+                      value="🛋️ Nội thất / gia dụng"
+                      data-industry-icon="furniture"
+                    >
+                      Furniture &amp; home goods
+                    </option>
+                    <option
+                      value="💐 Hoa tươi / quà tặng"
+                      data-industry-icon="flowers"
+                    >
+                      Flowers &amp; gifts
+                    </option>
+                  </optgroup>
+                </select>
+              </div>
+              <div class="phase-ai-brand-colors">
+                <strong>Brand colors</strong>
+                <div class="phase-ai-brand-swatches">
+                  <label class="phase-ai-brand-color"
+                    ><span>Color 1</span
+                    ><input
+                      type="color"
+                      id="ai-brand-color-primary"
+                      value="#6d28d9"
+                      aria-label="Brand color 1"
+                  /></label>
+                  <label class="phase-ai-brand-color"
+                    ><span>Color 2</span
+                    ><input
+                      type="color"
+                      id="ai-brand-color-secondary"
+                      value="#f59e0b"
+                      aria-label="Brand color 2"
+                  /></label>
+                  <label class="phase-ai-brand-color"
+                    ><span>Color 3</span
+                    ><input
+                      type="color"
+                      id="ai-brand-color-3"
+                      value="#ec4899"
+                      aria-label="Brand color 3"
+                  /></label>
+                  <label class="phase-ai-brand-color"
+                    ><span>Color 4</span
+                    ><input
+                      type="color"
+                      id="ai-brand-color-4"
+                      value="#2563eb"
+                      aria-label="Brand color 4"
+                  /></label>
+                  <label class="phase-ai-brand-color"
+                    ><span>Color 5</span
+                    ><input
+                      type="color"
+                      id="ai-brand-color-5"
+                      value="#10b981"
+                      aria-label="Brand color 5"
+                  /></label>
+                  <label class="phase-ai-brand-color"
+                    ><span>Color 6</span
+                    ><input
+                      type="color"
+                      id="ai-brand-color-6"
+                      value="#ef4444"
+                      aria-label="Brand color 6"
+                  /></label>
+                  <label class="phase-ai-brand-color"
+                    ><span>Color 7</span
+                    ><input
+                      type="color"
+                      id="ai-brand-color-7"
+                      value="#111827"
+                      aria-label="Brand color 7"
+                  /></label>
+                  <label class="phase-ai-brand-color"
+                    ><span>Color 8</span
+                    ><input
+                      type="color"
+                      id="ai-brand-color-8"
+                      value="#ffffff"
+                      aria-label="Brand color 8"
+                  /></label>
+                </div>
+                <p class="phase-ai-brand-help">
+                  Select a swatch to customize your brand colors.
+                </p>
+              </div>
+              <label class="phase-ai-brand-toggle"
+                ><input type="checkbox" id="ai-use-brand-colors" />Use brand
+                colors</label
+              >
+              <p class="phase-ai-brand-help">
+                Save your logo, colors, and fonts once to use across designs,
+                landing pages, and OneQR.
+                <span id="ai-brand-industry-summary">Nail salons</span>
+              </p>
+            </section>
+
+            <section
+              class="phase-ai-options"
+              aria-label="Content and tone settings"
+            >
+              <div>
+                <h3 class="phase-ai-option-heading">Content type</h3>
+                <div class="phase-ai-content-grid" id="ai-content-types">
+                  <button
+                    type="button"
+                    class="phase-ai-content-option"
+                    data-ai-content="promotion"
+                    aria-pressed="false"
+                  >
+                    <strong>🏷️ Promotion</strong><small>From POS</small>
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-content-option"
+                    data-ai-content="holiday"
+                    aria-pressed="false"
+                  >
+                    <strong>🎉 Holiday</strong><small>Seasonal greetings</small>
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-content-option"
+                    data-ai-content="notice"
+                    aria-pressed="false"
+                  >
+                    <strong>📢 Announcement</strong
+                    ><small>Hours &amp; closures</small>
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-content-option"
+                    data-ai-content="new-service"
+                    aria-pressed="false"
+                  >
+                    <strong>✨ New service</strong
+                    ><small>New styles &amp; services</small>
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-content-option"
+                    data-ai-content="hiring"
+                    aria-pressed="false"
+                  >
+                    <strong>👨‍🎓 Hiring</strong><small>Job openings</small>
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-content-option"
+                    data-ai-content="gift-card"
+                    aria-pressed="true"
+                  >
+                    <strong>🎁 Gift card</strong><small>Give a gift</small>
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-content-option"
+                    data-ai-content="staff"
+                    aria-pressed="false"
+                  >
+                    <strong>💅 Staff spotlight</strong
+                    ><small>Showcase your team</small>
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-content-option"
+                    data-ai-content="grand-opening"
+                    aria-pressed="false"
+                  >
+                    <strong>🎊 Grand opening</strong
+                    ><small>Welcome customers</small>
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-content-option"
+                    data-ai-content="product"
+                    aria-pressed="false"
+                  >
+                    <strong>🛍️ Product spotlight</strong
+                    ><small>Feature your products</small>
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-content-option"
+                    data-ai-content="event"
+                    aria-pressed="false"
+                  >
+                    <strong>📅 Event</strong
+                    ><small>Invite your community</small>
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-content-option"
+                    data-ai-content="loyalty"
+                    aria-pressed="false"
+                  >
+                    <strong>⭐ Loyalty rewards</strong
+                    ><small>Member perks &amp; points</small>
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-content-option"
+                    data-ai-content="tips"
+                    aria-pressed="false"
+                  >
+                    <strong>💡 Tips &amp; guides</strong
+                    ><small>Share helpful advice</small>
+                  </button>
+                </div>
+              </div>
+              <div>
+                <h3 class="phase-ai-option-heading">Tone of voice</h3>
+                <div class="phase-ai-tone-options" id="ai-tone-options">
+                  <button
+                    type="button"
+                    class="phase-ai-tone-option"
+                    data-ai-tone="luxury"
+                    aria-pressed="true"
+                  >
+                    Luxury
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-tone-option"
+                    data-ai-tone="playful"
+                    aria-pressed="false"
+                  >
+                    Playful
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-tone-option"
+                    data-ai-tone="minimal"
+                    aria-pressed="false"
+                  >
+                    Minimal
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-tone-option"
+                    data-ai-tone="warm"
+                    aria-pressed="false"
+                  >
+                    Warm
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-tone-option"
+                    data-ai-tone="friendly"
+                    aria-pressed="false"
+                  >
+                    Friendly
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-tone-option"
+                    data-ai-tone="professional"
+                    aria-pressed="false"
+                  >
+                    Professional
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-tone-option"
+                    data-ai-tone="bold"
+                    aria-pressed="false"
+                  >
+                    Bold
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-tone-option"
+                    data-ai-tone="energetic"
+                    aria-pressed="false"
+                  >
+                    Energetic
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-tone-option"
+                    data-ai-tone="witty"
+                    aria-pressed="false"
+                  >
+                    Witty
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-tone-option"
+                    data-ai-tone="inspirational"
+                    aria-pressed="false"
+                  >
+                    Inspirational
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-tone-option"
+                    data-ai-tone="informative"
+                    aria-pressed="false"
+                  >
+                    Informative
+                  </button>
+                  <button
+                    type="button"
+                    class="phase-ai-tone-option"
+                    data-ai-tone="reassuring"
+                    aria-pressed="false"
+                  >
+                    Reassuring
+                  </button>
+                </div>
+              </div>
+            </section>
+
+            <div class="phase-ai-loading" id="ai-generation-loading" hidden>
+              <span class="phase-ai-loader-icon"
+                ><span data-icon="loader-2"></span></span
+              ><strong>AI is analyzing and designing your banner</strong
+              ><span class="promo-note" id="ai-loading-cost"
+                >Using 2 credits for this design.</span
+              ><span class="phase-ai-progress" aria-hidden="true"></span>
+            </div>
+            <div class="phase-ai-result" id="generated-result" hidden>
+              <div class="phase-ai-result-art purple" id="ai-result-art">
+                <small id="ai-result-badge">SPECIAL OFFER</small
+                ><strong id="ai-result-title">Your promotion</strong
+                ><span id="ai-result-copy">Created from your prompt</span>
+              </div>
+              <div class="phase-ai-result-actions">
+                <button
+                  type="button"
+                  class="promo-button primary"
+                  id="use-generated-banner"
+                >
+                  <span data-icon="check"></span>Use this banner
+                </button>
+              </div>
+            </div>
+
+            <div class="phase-ai-generate-row">
+              <button
+                type="button"
+                class="phase-ai-generate"
+                id="generate-banner"
+              >
+                <span data-icon="play"></span> Generate design now
+              </button>
+            </div>
+            <p class="promo-error" id="ai-generator-error" role="alert"></p>
+          </section>
+
+          <aside class="phase-ai-side">
+            <section
+              class="phase-ai-card phase-ai-side-card"
+              id="ai-plan-credits"
+            >
+              <h3>Plan &amp; credits</h3>
+              <div class="phase-ai-credit-row">
+                <span>Current ad plan:</span><strong>Basic</strong>
+              </div>
+              <div class="phase-ai-credit-row">
+                <span>Available AI credits:</span
+                ><strong class="credit-value" id="ai-available-credits"
+                  >50 credits</strong
+                >
+              </div>
+              <div class="phase-ai-credit-row">
+                <span>Cost for this generation:</span
+                ><strong id="ai-generation-cost">2 credits</strong>
+              </div>
+            </section>
+            <section
+              class="phase-ai-card phase-ai-side-card phase-ai-tips"
+              id="ai-prompt-tips"
+            >
+              <h3>Prompt tips</h3>
+              <p>
+                For best results, include: main subject (Nail Spa, Bitcoin),
+                color palette (Gold, Pink), art style (Luxury, Modern), and a
+                specific call-to-action.
+              </p>
+            </section>
+            <section
+              class="phase-ai-card phase-ai-side-card phase-ai-safety"
+              aria-labelledby="ai-safety-title"
+            >
+              <h3 id="ai-safety-title">🛡️ Safety guidelines</h3>
+              <ul>
+                <li>
+                  🔒 Prices, discounts, dates, and terms come from the promotion
+                  and cannot be edited here.
+                </li>
+                <li>
+                  AI creates the background and copy. Templates render the text
+                  to keep lettering and prices accurate.
+                </li>
+                <li>
+                  Do not use characters, logos, or brands that belong to others.
+                </li>
+                <li>
+                  Do not fabricate customer reviews. Only upload images your
+                  business has permission to use.
+                </li>
+              </ul>
+            </section>
+          </aside>
+        </div>
+      </div>
+    </template>
+    <dialog
+      id="promotion-dialog"
+      class="pos-promo-dialog demo-dialog"
+      aria-labelledby="dialog-title"
+    >
+      <header class="editor-header">
+        <h2 id="dialog-title"></h2>
+        <button
+          type="button"
+          class="promo-close"
+          data-close-dialog
+          aria-label="Close"
+        >
+          ×
+        </button>
+      </header>
+      <div id="dialog-body" class="demo-dialog-body"></div>
+      <footer class="editor-footer" id="dialog-footer"></footer>
+    </dialog>
+    <p
+      class="demo-toast"
+      id="demo-feedback"
+      role="status"
+      aria-live="polite"
+      hidden
+    ></p>
+    <script>
+      window.NEXORA_SHELL = {
+        activePage: "pos",
+        activeTab: "promotions",
+        onNavigate: function (tab) {
+          window.location.href =
+            tab === "promotions"
+              ? "pos-promotions.html"
+              : "pos-phase-1.html?tab=" + encodeURIComponent(tab);
+        },
+      };
+    </script>
+    <script src="../assets/nexora-icons.js"></script>
+    <script src="../assets/nexora-shell-nav.js?v=20261029-sidebar-group-labels"></script>
+    <script src="../assets/nexora-shell.js?v=20261029-sidebar-group-labels"></script>
+    <script src="../assets/oneqr-action-appearance.js"></script>
+    <script src="../assets/promotion-industry-icons.js"></script>
+    <script src="../assets/pos-promotions-demo-data.js"></script>
+    <script src="../assets/pos-promotions-demo.js"></script>
+  </body>
+</html>

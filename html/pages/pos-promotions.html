@@ -1,0 +1,395 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Nexora Touch - Promotions</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;650;700;800&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../assets/pos-promotions-source.css" />
+    <link rel="stylesheet" href="../assets/nexora-icons.css" />
+    <link
+      rel="stylesheet"
+      href="../assets/nexora-shell.css?v=20261029-sidebar-group-labels"
+    />
+    <link rel="stylesheet" href="../assets/promotion-industry-icons.css" />
+    <link rel="stylesheet" href="../assets/pos-promotions-demo.css" />
+  </head>
+  <body data-promotion-page="list">
+    <div class="shell">
+      <aside class="sidebar" id="sidebar"></aside>
+      <div class="app-area">
+        <header class="header" id="header"></header>
+        <main class="pos-promotions-page">
+          <div class="pos-promotions-inner">
+            <header class="promotions-heading">
+              <div>
+                <p data-copy="eyebrow" class="promo-eyebrow">
+                  Reward / Promotions
+                </p>
+                <h1>Promotions</h1>
+                <p data-copy="description">
+                  See which deals and coupons are running, and when.
+                </p>
+              </div>
+              <div class="heading-actions">
+                <label class="promo-language"
+                  ><span class="sr-only" data-copy="language">Language</span
+                  ><select id="promotion-language" aria-label="Language">
+                    <option value="en">English</option>
+                    <option value="vi">Tiếng Việt</option>
+                  </select></label
+                ><a class="promo-button primary" href="pos-promotions-new.html"
+                  >＋ <span data-copy="addPromotion">Add promotion</span></a
+                >
+              </div>
+            </header>
+            <section
+              class="promo-program-card"
+              aria-labelledby="promo-manage-title"
+            >
+              <header class="promo-program-head">
+                <div>
+                  <h2 data-copy="manageTitle" id="promo-manage-title">
+                    Manage deals &amp; coupons
+                  </h2>
+                  <p data-copy="manageHint">
+                    Track progress, pause, duplicate, and see who redeemed.
+                  </p>
+                </div>
+              </header>
+              <div class="promo-program-body">
+                <div class="promo-kpi" id="list-kpis"></div>
+                <div class="promo-manage-filters">
+                  <input
+                    type="search"
+                    id="program-search"
+                    placeholder="Search programs…"
+                    data-placeholder="searchPrograms"
+                    aria-label="Search programs"
+                  />
+                  <div
+                    class="promo-type-filter"
+                    role="group"
+                    aria-label="Offer type"
+                  >
+                    <button
+                      type="button"
+                      data-offer-filter="all"
+                      class="is-on"
+                      data-copy="typeAll"
+                    >
+                      All</button
+                    ><button type="button" data-offer-filter="deal">
+                      🏷️ <span data-copy="dealLabel">Deal</span></button
+                    ><button type="button" data-offer-filter="coupon">
+                      🎟️ <span data-copy="couponLabel">Coupon</span>
+                    </button>
+                  </div>
+                  <select id="program-status" aria-label="Filter promotions">
+                    <option value="all" data-copy="filterStatusAll">
+                      All statuses
+                    </option>
+                    <option value="run" data-copy="statusRunning">
+                      Running
+                    </option>
+                    <option value="sched" data-copy="statusScheduled">
+                      Scheduled
+                    </option>
+                    <option value="pause" data-copy="statusPaused">
+                      Paused
+                    </option>
+                    <option value="sold" data-copy="statusSoldOut">
+                      Sold out
+                    </option>
+                    <option value="ended" data-copy="statusEnded">Ended</option>
+                    <option value="draft" data-copy="statusDraft">Draft</option>
+                    <option value="review" data-copy="statusPendingReview">
+                      Pending review
+                    </option>
+                    <option value="rejected" data-copy="statusRejected">
+                      Rejected
+                    </option>
+                  </select>
+                </div>
+                <div class="promo-manage-wrap">
+                  <table class="promo-manage-table">
+                    <thead>
+                      <tr>
+                        <th data-copy="colProgram">Program</th>
+                        <th data-copy="colType">Type</th>
+                        <th data-copy="colSchedule">Schedule</th>
+                        <th data-copy="colProgress">Progress</th>
+                        <th data-copy="colDiscount">Discount</th>
+                        <th data-copy="colRevenue">Revenue</th>
+                        <th data-copy="colStatus">Status</th>
+                        <th>
+                          <span class="sr-only" data-copy="moreActions"
+                            >More actions</span
+                          >
+                        </th>
+                      </tr>
+                    </thead>
+                    <tbody id="program-rows"></tbody>
+                  </table>
+                </div>
+                <div class="demo-pagination" id="program-pagination"></div>
+                <p data-copy="metricsNote" class="promo-note">
+                  Discount given and revenue show up when a POS bill is linked
+                  to the program.
+                </p>
+              </div>
+            </section>
+            <section
+              class="demo-tracking"
+              id="tracking-performance"
+              aria-labelledby="tracking-title"
+            >
+              <header class="demo-tracking-heading">
+                <div>
+                  <p class="promo-eyebrow">Promotion insights</p>
+                  <h2 id="tracking-title">Tracking &amp; performance</h2>
+                  <p id="tracking-summary">
+                    All promotions · Last 30 days · All channels
+                  </p>
+                </div>
+                <div class="demo-tracking-filters">
+                  <label class="promo-field"
+                    ><span>Promotion</span
+                    ><select id="tracking-promotion">
+                      <option value="all">All promotions</option>
+                    </select></label
+                  ><label class="promo-field"
+                    ><span>Reporting period</span
+                    ><select id="tracking-period">
+                      <option value="30">Last 30 days</option>
+                      <option value="7">Last 7 days</option>
+                      <option value="90">Last 90 days</option>
+                    </select></label
+                  ><label class="promo-field"
+                    ><span>Channel</span
+                    ><select id="tracking-channel">
+                      <option value="all">All channels</option>
+                    </select></label
+                  ><button
+                    type="button"
+                    class="promo-button"
+                    id="export-tracking"
+                  >
+                    Export report
+                  </button>
+                </div>
+              </header>
+              <div class="demo-metrics" id="tracking-metrics"></div>
+              <div class="demo-channel-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Channel</th>
+                      <th>Views</th>
+                      <th>Clicks</th>
+                      <th>CTR</th>
+                      <th>Redeems</th>
+                      <th>Revenue</th>
+                      <th>Cost</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tracking-rows"></tbody>
+                </table>
+              </div>
+              <div class="demo-insights">
+                <strong>Insights</strong>
+                <p id="tracking-insight">
+                  OneQR hero has the strongest engagement rate at 18.1%, while
+                  POS checkout drives the most completed redemptions and
+                  promotion revenue.
+                </p>
+              </div>
+            </section>
+            <section
+              class="promo-program-card"
+              id="promo-run-cal"
+              aria-labelledby="promo-cal-title"
+            >
+              <header class="promo-program-head">
+                <div>
+                  <h2 data-copy="calTitle" id="promo-cal-title">
+                    Run calendar
+                  </h2>
+                  <p data-copy="calHint">What runs when over 4 months.</p>
+                </div>
+              </header>
+              <div class="promo-program-body">
+                <div id="promotion-calendar"></div>
+                <div class="demo-legend" id="calendar-legend"></div>
+              </div>
+            </section>
+            <section
+              class="promo-program-card"
+              id="promo-redeem-hist"
+              aria-labelledby="promo-history-title"
+            >
+              <header class="promo-program-head">
+                <div>
+                  <h2 data-copy="historyTitle" id="promo-history-title">
+                    Redemption history
+                  </h2>
+                  <p data-copy="historyHint">
+                    Each time an offer is applied at the POS: who used it, how
+                    it was confirmed, who applied it, and the discount.
+                  </p>
+                </div>
+                <button class="promo-button" type="button" id="export-history">
+                  CSV
+                </button>
+              </header>
+              <div class="promo-program-body">
+                <div class="demo-history-filters">
+                  <div
+                    class="promo-type-filter"
+                    role="group"
+                    aria-label="Redemption history"
+                  >
+                    <button
+                      type="button"
+                      data-history-days="1"
+                      class=""
+                      data-copy="historyToday"
+                    >
+                      Today</button
+                    ><button
+                      type="button"
+                      data-history-days="7"
+                      class=""
+                      data-copy="history7"
+                    >
+                      7 days</button
+                    ><button
+                      type="button"
+                      data-history-days="30"
+                      class="is-on"
+                      data-copy="history30"
+                    >
+                      30 days
+                    </button>
+                  </div>
+                  <select id="history-promotion" aria-label="Program">
+                    <option value="all" data-copy="historyAllPrograms">
+                      All programs
+                    </option></select
+                  ><select id="history-method" aria-label="Method">
+                    <option value="all" data-copy="historyAllMethods">
+                      All methods
+                    </option>
+                    <option
+                      value="Promotion"
+                      data-copy="historyMethodPromotion"
+                    >
+                      Promotion
+                    </option>
+                    <option value="Coupon" data-copy="historyMethodCoupon">
+                      Coupon
+                    </option>
+                    <option value="Phone" data-copy="historyMethodPhone">
+                      Phone
+                    </option>
+                    <option value="Code" data-copy="historyMethodCode">
+                      Code
+                    </option></select
+                  ><select id="history-result" aria-label="Result">
+                    <option value="all" data-copy="historyAllResults">
+                      All results
+                    </option>
+                    <option value="Applied" data-copy="historyApplied">
+                      Applied
+                    </option>
+                    <option value="Voided" data-copy="historyVoided">
+                      Voided
+                    </option>
+                    <option value="Rejected" data-copy="historyRejected">
+                      Rejected
+                    </option>
+                  </select>
+                </div>
+                <div class="promo-manage-wrap">
+                  <table class="promo-manage-table">
+                    <thead>
+                      <tr>
+                        <th data-copy="historyTime">Time</th>
+                        <th data-copy="historyClient">Client</th>
+                        <th data-copy="colProgram">Program</th>
+                        <th data-copy="historyMethod">Method</th>
+                        <th data-copy="historyBy">Applied by</th>
+                        <th>Bill</th>
+                        <th data-copy="historyDiscount">Discount</th>
+                        <th data-copy="historyResult">Result</th>
+                      </tr>
+                    </thead>
+                    <tbody id="history-rows"></tbody>
+                  </table>
+                </div>
+                <p data-copy="historyNote" class="promo-note">
+                  Phone numbers stay masked. A void is recorded by the POS; this
+                  screen only shows it.
+                </p>
+              </div>
+            </section>
+            <p class="promo-note demo-local-note">
+              Interactive prototype · Sample data · Changes are saved in this
+              browser.
+            </p>
+          </div>
+        </main>
+        <footer class="demo-page-footer">© 2026 NEXORA Touch.</footer>
+      </div>
+    </div>
+    <dialog
+      id="promotion-dialog"
+      class="pos-promo-dialog demo-dialog"
+      aria-labelledby="dialog-title"
+    >
+      <header class="editor-header">
+        <h2 id="dialog-title"></h2>
+        <button
+          type="button"
+          class="promo-close"
+          data-close-dialog
+          aria-label="Close"
+        >
+          ×
+        </button>
+      </header>
+      <div id="dialog-body" class="demo-dialog-body"></div>
+      <footer class="editor-footer" id="dialog-footer"></footer>
+    </dialog>
+    <p
+      class="demo-toast"
+      id="demo-feedback"
+      role="status"
+      aria-live="polite"
+      hidden
+    ></p>
+    <script>
+      window.NEXORA_SHELL = {
+        activePage: "pos",
+        activeTab: "promotions",
+        onNavigate: function (tab) {
+          window.location.href =
+            tab === "promotions"
+              ? "pos-promotions.html"
+              : "pos-phase-1.html?tab=" + encodeURIComponent(tab);
+        },
+      };
+    </script>
+    <script src="../assets/nexora-icons.js"></script>
+    <script src="../assets/nexora-shell-nav.js?v=20261029-sidebar-group-labels"></script>
+    <script src="../assets/nexora-shell.js?v=20261029-sidebar-group-labels"></script>
+    <script src="../assets/oneqr-action-appearance.js"></script>
+    <script src="../assets/promotion-industry-icons.js"></script>
+    <script src="../assets/pos-promotions-demo-data.js"></script>
+    <script src="../assets/pos-promotions-demo.js"></script>
+  </body>
+</html>
