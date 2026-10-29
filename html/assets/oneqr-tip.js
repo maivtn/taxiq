@@ -9,7 +9,8 @@
     vi: {
       tipTitle: 'Tạo mã QR nhận tip',
       tipDescription: 'Tạo một mã QR nhận tip của tiệm. Khách quét mã để chọn thợ và gửi tip.',
-      qrText: 'Tạo một mã QR nhận tip cho tiệm; có thể in nhiều bản để khách sử dụng.',
+      qrCreateText: 'Tạo một mã QR nhận tip cho tiệm; ',
+      qrPrintText: 'có thể in nhiều bản để khách sử dụng.',
       generateTip: 'Tạo mã QR nhận tip',
       viewQR: 'Xem mã QR',
       copyLink: 'Sao chép',
@@ -27,7 +28,8 @@
     en: {
       tipTitle: 'Create a tip QR code',
       tipDescription: 'Create one tip QR code for your business. Customers scan it to select a technician and send a tip.',
-      qrText: 'Create one business tip QR; print copies for customers to use.',
+      qrCreateText: 'Create one business tip QR; ',
+      qrPrintText: 'print copies for customers to use.',
       generateTip: 'Generate tip QR',
       viewQR: 'View QR to Download',
       copyLink: 'Copy link',
@@ -101,6 +103,7 @@
     if (!button) return;
     var action = button.getAttribute('data-tip-action');
     if (action === 'generate') {
+      screen.querySelector('[data-tip-before-create]').hidden = true;
       screen.querySelector('[data-tip-code]').hidden = false;
       screen.querySelectorAll('[data-tip-created]').forEach(function (control) {
         control.hidden = false;
