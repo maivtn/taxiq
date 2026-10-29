@@ -38,16 +38,13 @@
     });
   }
   const buttonIcons=[
-    ['#marketFilterToggle,#dealFilterToggle,.community-toolbar-filter-toggle,.community-group-filter-toggle','SlidersHorizontal'],
+    ['#marketFilterToggle,#dealFilterToggle','SlidersHorizontal'],
     ['.community-context-action[data-view="daywork"]','CalendarClock'],
-    ['.community-context-action[data-view="jobs"]','Briefcase'],
-    ['.market-info-toggle','Info'],
-    ['.community-context-action[data-template="deal"],.community-context-action[data-template="page"],.community-market-create>summary','Plus'],
+    ['.community-context-action[data-template="deal"]','Plus'],
     ['.subtab[data-view="groups"],.feed-group-shortcut','UsersRound'],
     ['.subtab[data-view="market"]','Store'],
     ['#createBtn,#createSale,#createWant,#emptyCreate,#emptyCreatePage,#createPage,[data-template="page"],[data-template="group"]','Plus'],
     ['#create,#createBlog,[data-blog-create]','SquarePen'],
-    ['#compactProfileToggle','QrCode'],
     ['#viewerUseDeviceLocation,[data-use-location],#viewerLocationLabel','MapPin'],
     ['#viewerLocationSave','Check'],
     ['[data-job-contact],[data-shift-contact],[data-page-message],[data-action="contact"]','MessageCircle'],

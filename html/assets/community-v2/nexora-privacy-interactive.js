@@ -731,20 +731,6 @@
   window.NEXORA_CONNECT_CORE={currentMember,currentRole,currentAccount,key,members,getState:()=>clone(state),read:()=>clone(load()),mutate,save,toast,showDetail,showSection,renderGroups,renderMessages,renderCalls,renderSummaries,renderMemberResults,rememberChatDraft,appendChatMessage,getContext:()=>({section,currentDetail,messages:clone(currentMessages),communityFilter,callFilter}),isBlocked,chatPref,escape:esc,initials,setProfileURL:value=>{profileUrl=value;},refresh:()=>{state=load();savedSnapshot=clone(state);renderSummaries();renderMessages();renderGroups();renderCalls();if(currentDetail)showDetail(currentDetail);}};
   renderSummaries();
   renderConversationPreviews();
-  function setupCompactConnectTools(){
-    const stage=$('#connectStage'),search=$('.global-search'),add=$('#newMessageBtn'),guide=$('#tourStartBtn'),actions=$('.page-head .head-actions'),tabs=$('.page-tabs');
-    const wrapper=document.createElement('div');wrapper.className='connect-search-tools';search.before(wrapper);wrapper.append(search);
-    const media=matchMedia('(max-width:800px)');
-    function sync(){if(media.matches){wrapper.append(add);tabs.append(guide);}else{actions.prepend(add);actions.append(guide);}}
-    media.addEventListener('change',sync);sync();
-    const profile=$('#privacyPanel .profile-grid'),qr=$('#profileQr'),share=$('#privacyPanel .profile-grid > .actions');
-    if(profile&&qr&&share){
-      const tools=document.createElement('div');tools.id='compactProfileTools';tools.className='compact-profile-tools';profile.append(tools);tools.append(qr,share);
-      const toggle=document.createElement('button');toggle.id='compactProfileToggle';toggle.type='button';toggle.className='secondary compact-profile-toggle';toggle.setAttribute('aria-controls',tools.id);toggle.setAttribute('aria-expanded','false');toggle.textContent='Share profile';tools.before(toggle);
-      toggle.addEventListener('click',()=>{const open=toggle.getAttribute('aria-expanded')!=='true';toggle.setAttribute('aria-expanded',String(open));tools.classList.toggle('is-expanded',open);});
-    }
-  }
-  setupCompactConnectTools();
   const params = new URLSearchParams(location.search);
   if (params.get('embedded') === '1') document.body.classList.add('embedded');
   const requestedSection = params.get('section');

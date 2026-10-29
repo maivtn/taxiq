@@ -3,8 +3,6 @@
 (() => {
   const isConnect = location.pathname.includes('privacy-qr-layout');
   const communityPairs = `
-Đăng ưu đãi	Post an offer
-Đăng tin và giao dịch miễn phí.	Posting and person-to-person transactions are free.
 Tìm ưu đãi: pedicure, facial, coffee…	Search deals: pedicure, facial, coffee…
 Chưa có ưu đãi phù hợp	No matching deals
 Thử từ khóa, ngành hoặc khu vực khác.	Try another keyword, industry or area.

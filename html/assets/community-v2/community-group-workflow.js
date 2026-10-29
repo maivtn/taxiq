@@ -24,7 +24,7 @@
     const city=group=>String(group.city||group.region||'');
     const topic=group=>String(group.topic||group.industry||'');
     const notifyError=()=>adapter.toast?.(t('error'));
-    let dialogGroup=null,dialogKind=null,returnFocus=null,destroyed=false,sequence=0,filtersOpen=false;
+    let dialogGroup=null,dialogKind=null,returnFocus=null,destroyed=false,sequence=0;
     const selections={city:'',topic:'',type:''};
     const fresh=()=>({version:1,groups:Object.create(null),invitations:[],deletedGroupIds:[]});
     function read() {
@@ -155,7 +155,7 @@
     }
     function filtersMarkup() {
       const options=(name,rows)=>`<label><span>${esc(t(name))}</span><select class="select" data-community-group-filter="${name}"><option value="">${esc(t('all'))}</option>${unique(rows).sort((a,b)=>a.localeCompare(b)).map(value=>`<option value="${esc(value)}"${selections[name]===value?' selected':''}>${esc(value)}</option>`).join('')}</select></label>`;
-      return `<div class="community-group-filters" id="communityGroupFilters" data-community-group-filters>${options('city',groups().map(city))}${options('topic',groups().map(topic))}<label><span>${esc(t('type'))}</span><select class="select" data-community-group-filter="type"><option value="">${esc(t('all'))}</option>${['Community','Marketplace'].map(type=>`<option value="${type}"${selections.type===type?' selected':''}>${esc(t(type==='Community'?'community':'marketplace'))}</option>`).join('')}</select></label></div>`;
+      return `<div class="community-group-filters" data-community-group-filters>${options('city',groups().map(city))}${options('topic',groups().map(topic))}<label><span>${esc(t('type'))}</span><select class="select" data-community-group-filter="type"><option value="">${esc(t('all'))}</option>${['Community','Marketplace'].map(type=>`<option value="${type}"${selections.type===type?' selected':''}>${esc(t(type==='Community'?'community':'marketplace'))}</option>`).join('')}</select></label></div>`;
     }
     function enhance(root=document) {
       if(destroyed)return;
@@ -163,7 +163,6 @@
       // Filters belong to the list column, beside the existing PO sidebar.
       cards.parentElement.querySelector(':scope > [data-community-group-filters]')?.remove();
       cards.innerHTML=filtersMarkup()+directoryMarkup();cards.classList.add('community-group-directory');
-      const toggle=document.querySelector('.community-group-filter-toggle'),count=document.querySelector('[data-group-filter-count]'),active=Object.values(selections).filter(Boolean).length;document.getElementById('groupsView')?.classList.toggle('group-filters-open',filtersOpen);toggle?.setAttribute('aria-expanded',String(filtersOpen));if(count){count.hidden=!active;count.textContent=String(active);}
     }
     function showDialog(group,body,footer,heading=title(group)) {
       if(!document.querySelector('[data-community-group-dialog]'))returnFocus=document.activeElement;
@@ -187,7 +186,7 @@
       const target=event.target.closest?.('[data-community-group-action]');
       if(!target){if(event.target.matches?.('[data-community-group-overlay]'))closeDialog();return;}
       event.preventDefault();event.stopPropagation();
-      const action=target.dataset.communityGroupAction;if(action==='filters'){filtersOpen=!filtersOpen;enhance();return;}const group=find(target.dataset.communityGroupId);if(action==='close'){closeDialog();return;}if(!group)return;
+      const action=target.dataset.communityGroupAction,group=find(target.dataset.communityGroupId);if(action==='close'){closeDialog();return;}if(!group)return;
       if(action==='detail')openGroup(group.id);
       else if(action==='membership'){if((joined(group.id)?leave(group.id):join(group.id))!==false)refresh();}
       else if(action==='feed')navigate('group:'+group.id);

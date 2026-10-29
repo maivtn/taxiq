@@ -10,14 +10,14 @@
   }
   async function mount(host,options={}){
     if(host.communityHub)return host.communityHub;
-    const url=new URL('nexora-community-complete.html?v=20261029-community-mobile-review-v12',BASE_URL);
+    const url=new URL('nexora-community-complete.html?v=20261029-community-mobile-tools-v11',BASE_URL);
     const parsed=new DOMParser().parseFromString(await read(url),'text/html');
     const styles=await Promise.all([...parsed.head.querySelectorAll('style,link[rel="stylesheet"]')].map(async node=>{const source=node.tagName==='STYLE'?url:new URL(node.getAttribute('href'),url);return scopedCSS(node.tagName==='STYLE'?node.textContent:await read(source),source);}));
     parsed.body.querySelectorAll('script').forEach(node=>node.remove());
     parsed.body.querySelectorAll('[src],[href],[data-src]').forEach(node=>{for(const attribute of ['src','href','data-src']){const value=node.getAttribute(attribute);if(value&&!value.startsWith('#'))node.setAttribute(attribute,new URL(value,url).href);}});
     const root=host.attachShadow({mode:'open'});
     const style=document.createElement('style');
-    style.textContent=styles.join('\n')+`\n:host{position:relative;display:block;height:100%;min-height:0;overflow:hidden;isolation:isolate;container:community / inline-size;} :host .app,:host .main{height:100%;min-height:0;} :host .tour-card{position:absolute;top:clamp(160px,23%,220px);} :host .tour-card.menu-step{top:auto;} @container community (max-width:800px){:host .app{--community-gutter:16px;} :host(.community-has-shell-header) .top{display:none;} :host .tour-card,:host .tour-card.menu-step{top:auto;}}`;
+    style.textContent=styles.join('\n')+`\n:host{position:relative;display:block;height:100%;min-height:0;overflow:hidden;isolation:isolate;container:community / inline-size;} :host .app,:host .main{height:100%;min-height:0;} :host .tour-card{position:absolute;top:clamp(160px,23%,220px);} :host .tour-card.menu-step{top:auto;} @container community (max-width:800px){:host .app{--community-gutter:16px;} :host .tour-card,:host .tour-card.menu-step{top:auto;}}`;
     root.append(style,...parsed.body.childNodes);
     host.communityHub=start(root,{...options,native:true});
     return host.communityHub;
@@ -83,7 +83,7 @@
       function scheduleTour(){clearTourTimer();if(!tourState.active||!tourState.playing)return;tourState.startedAt=Date.now();tourState.timer=setTimeout(()=>{if(tourState.index===tourSteps.length-1)stopTour(true);else showTourStep(tourState.index+1);},tourState.remaining);}
       function showTourStep(index){if(!tourState.active)return;clearTourTimer();tourState.index=index;tourState.remaining=5200;root.querySelectorAll('.tour-target').forEach(el=>el.classList.remove('tour-target'));const step=tourSteps[index];tourCard.classList.toggle('menu-step',Boolean(step.menu));if(step.menu){setView('feed',false);}else setView(step.view,false);tourTarget()?.classList.add('tour-target');tourCard.hidden=false;tourCard.classList.remove('is-playing','is-paused');void tourCard.offsetWidth;if(tourState.playing)tourCard.classList.add('is-playing');updateTourCopy();scheduleTour();}
       function startTour(){if(tourState.active)stopTour(false);tourState.origin=view;tourState.active=true;tourState.playing=!matchMedia('(prefers-reduced-motion:reduce)').matches;localStorage.setItem(tourSeenKey(),'1');showTourStep(0);}
-      function stopTour(restore){if(!tourState.active)return;clearTourTimer();tourState.active=false;tourCard.hidden=true;tourCard.classList.remove('is-playing','is-paused');root.querySelectorAll('.tour-target').forEach(el=>el.classList.remove('tour-target'));closeMenus();if(restore){setView(tourState.origin,false);(context.native&&root.host.classList.contains('community-has-shell-header')?document.querySelector('.community-mobile-more'):root.getElementById('startTour'))?.focus({preventScroll:true});}}
+      function stopTour(restore){if(!tourState.active)return;clearTourTimer();tourState.active=false;tourCard.hidden=true;tourCard.classList.remove('is-playing','is-paused');root.querySelectorAll('.tour-target').forEach(el=>el.classList.remove('tour-target'));closeMenus();if(restore){setView(tourState.origin,false);root.getElementById('startTour').focus({preventScroll:true});}}
       root.getElementById('startTour').addEventListener('click',startTour);
       root.getElementById('menuStartTour').addEventListener('click',startTour);
       root.getElementById('tourBack').addEventListener('click',()=>{if(tourState.index>0)showTourStep(tourState.index-1);});
