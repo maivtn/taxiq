@@ -16,3 +16,17 @@
 .connect-highlight{outline:2px solid #bdabef;border-radius:10px;outline-offset:4px}.connect-profile-qr{width:136px;height:136px;flex:none}.connect-profile-qr img,.connect-profile-qr canvas{max-width:100%;height:auto}
 .connect-active-call{position:fixed;inset:0;background:#18223e80;z-index:190;display:grid;place-items:center;padding:16px}.connect-active-call>section{width:min(420px,100%);background:white;padding:20px;border-radius:20px;box-shadow:0 18px 65px #111b3a33}.connect-active-call header{display:flex;align-items:center;justify-content:space-between;gap:9px}.connect-active-call h3{margin:0;font-size:18px;overflow-wrap:anywhere}.connect-active-call p{font-size:13px}.connect-call-actions{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0}.connect-call-actions button{flex:1;min-height:44px}.connect-active-call details button{display:block;width:100%;text-align:left;margin-top:7px}.connect-active-call.is-minimized{inset:auto 15px 15px auto;display:block;background:none;padding:0;max-width:calc(100vw - 30px)}.connect-active-call.is-minimized>button{min-height:46px;box-shadow:0 8px 25px #29205233}
 @media(max-width:680px){.connect-workflow-dialog button,.connect-members button{min-height:44px}.connect-members{position:fixed;top:10px;bottom:10px;right:10px;border-radius:16px;max-width:calc(100vw - 20px);z-index:145}.connect-drawer-shade{position:fixed;inset:0;z-index:144}.connect-message-tools>button,.connect-reactions summary{min-height:36px;padding:7px;font-size:10px}.connect-chat-controls .demo-input{min-height:44px}.connect-chat-controls>button{min-height:44px}.connect-member-row>button{padding:7px;font-size:10px}}
+/* Call log actions. */
+#callRows .call-actions { gap:6px; }
+#callRows .call-actions :is([data-start-call],[data-connect-action="history-call"]) { display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:40px;min-height:40px;width:auto;height:auto;padding:8px;border:1px solid transparent;border-radius:10px;color:#fff;font-size:11px;box-shadow:0 2px 5px #3155ed20; }
+#callRows .call-actions :is([data-start-call="voice"],[data-connect-call-type="voice"]) { background:#4f46e5;border-color:#4338ca; }
+#callRows .call-actions :is([data-start-call="video"],[data-connect-call-type="video"]) { background:#0d9488;border-color:#0f8278;box-shadow:0 2px 5px #0d948820; }
+#callRows .call-actions button:hover:not(:disabled) { filter:brightness(.94); }
+#callRows .call-actions button:disabled { background:#f1f3f8;border-color:#e5e9f0;color:#929bab;box-shadow:none;cursor:not-allowed; }
+@media(min-width:681px) {
+  #callRows :is(.call-delete,[data-connect-action="delete-call"]) { background:transparent;border-color:transparent;color:#ad5260;box-shadow:none; }
+  #callRows :is(.call-delete,[data-connect-action="delete-call"]):hover { background:#fff1f2;border-color:#fecdd3;color:#b42336; }
+}
+@media(max-width:800px) {
+  #callRows .call-actions :is([data-start-call],[data-connect-action="history-call"]) { min-width:44px;min-height:44px; }
+}

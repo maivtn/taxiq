@@ -80,6 +80,8 @@
     ['[data-social-action="mark-sold"]','CircleCheck'],
     ['#newMessageBtn','SquarePen'],
     ['#createGroupBtn,#confirmCreateGroup','UsersRound'],
+    ['[data-connect-action="history-call"][data-connect-call-type="voice"]','Phone'],
+    ['[data-connect-action="history-call"][data-connect-call-type="video"]','Video'],
     ['#templateForm[data-kind="page"] button[type="submit"]','Plus'],
     ['#listingForm[data-community-editing="true"] button[type="submit"],#blogForm[data-community-editing="true"] button[type="submit"]','Save'],
     ['#templateForm button[type="submit"],#listingForm button[type="submit"],#blogForm button[type="submit"]','Send'],
