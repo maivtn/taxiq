@@ -2,17 +2,23 @@
 (() => {
   'use strict';
   const assetBase = new URL('../icon-oneqr/', document.currentScript.src);
+  const feedAssetBase = new URL('feed-icons/', document.currentScript.src);
+  const feedArtwork = {
+    'feed-sale':'for-sale-17755826.png', 'feed-job':'briefcase-8178806.png',
+    'feed-poll':'voting-1598588.png', 'feed-tip':'tips-and-tricks-12695856.png',
+    'feed-ask':'speech-bubble-5726734.png'
+  };
   const artwork = {
     feed:'layout-list', market:'users-round', groups:'users-round', pages:'building-2',
     deals:'ticket', jobs:'briefcase', daywork:'calendar-days', blog:'receipt', connect:'message-circle',
-    general:'paintbrush', showcase:'image', tip:'sparkles', question:'message-circle', poll:'list',
-    event:'calendar-days', sale:'shopping-bag', want:'shopping-bag', hiring:'briefcase', seeking:'user-round',
+    general:'paintbrush', showcase:'image', tip:'feed-tip', question:'feed-ask', poll:'feed-poll',
+    event:'calendar-days', sale:'feed-sale', want:'shopping-bag', hiring:'feed-job', seeking:'user-round',
     dayhire:'calendar-clock', page:'building-2', group:'users-round', messages:'message-circle', calls:'phone', privacy:'settings-2'
   };
   function makeArtwork(name,nav=false) {
     const image=document.createElement('img');
     image.className='community-nav-art';
-    image.src=nav?new URL(name+(name==='feed'?'.webp':'.svg'),navBase).href:new URL('issue-2040-oneqr-'+name+'-3d.png',assetBase).href;
+    image.src=nav?new URL(name+(name==='feed'?'.webp':'.svg'),navBase).href:feedArtwork[name]?new URL(feedArtwork[name],feedAssetBase).href:new URL('issue-2040-oneqr-'+name+'-3d.png',assetBase).href;
     image.alt='';image.setAttribute('aria-hidden','true');image.draggable=false;
     image.width=image.height=28;
     return image;
@@ -35,7 +41,10 @@
         if(definition&&holder.dataset.jobLucide!==key){holder.replaceChildren(window.lucide.createElement(definition,{width:18,height:18,class:'community-action-icon','aria-hidden':'true',focusable:'false'}));holder.dataset.jobLucide=key;}
         return;
       }
-      if(holder&&artwork[key]&&!holder.querySelector('.community-nav-art'))holder.replaceChildren(makeArtwork(artwork[key]));
+      if(holder&&artwork[key]&&!holder.querySelector('.community-nav-art')){
+        holder.replaceChildren(makeArtwork(artwork[key]));
+        if(feedArtwork[artwork[key]])holder.dataset.customArtwork=key;
+      }
     });
   }
   const buttonIcons=[
