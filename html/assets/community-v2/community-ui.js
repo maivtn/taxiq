@@ -39,6 +39,8 @@
   }
   const buttonIcons=[
     ['#marketFilterToggle,#dealFilterToggle','SlidersHorizontal'],
+    ['.community-context-action[data-view="daywork"]','CalendarClock'],
+    ['.community-context-action[data-template="deal"]','Plus'],
     ['.subtab[data-view="groups"],.feed-group-shortcut','UsersRound'],
     ['.subtab[data-view="market"]','Store'],
     ['#createBtn,#createSale,#createWant,#emptyCreate,#emptyCreatePage,#createPage,[data-template="page"],[data-template="group"]','Plus'],

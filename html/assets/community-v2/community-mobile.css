@@ -27,6 +27,8 @@ button.community-has-icon:disabled { transform: none; }
 #viewerLocationLabel .community-action-icon { flex: none; width: 16px; height: 16px; }
 body #localDiscovery { justify-content: flex-start; gap: 12px; }
 body #changeViewerLocation { margin-left: 0; padding: 6px 4px; color: #6250c9; font-weight: 600; text-decoration: underline; text-decoration-color: #b7ace9; text-underline-offset: 3px; text-decoration-thickness: 1px; border-radius: 6px; }
+.community-context-location { display: contents; }
+body #localDiscovery .community-context-action { display: none; }
 
 /* Groups and Marketplace share the same section switcher. */
 body.embedded :is(#marketView, #groupsView) > .subrow .subtabs { display:flex; flex-wrap:nowrap; gap:4px; padding:4px; border-radius:12px; background:#e9edf5; }
@@ -398,4 +400,48 @@ body .toast { z-index: 100; max-width: min(420px, calc(100% - 24px)); overflow-w
 }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; animation: none !important; transition: none !important; }
+}
+
+/* Keep Jobs and Deals actions alongside the current area on phones. */
+@media (max-width: 800px) {
+  body.embedded #localDiscovery.has-context-action { flex-wrap: nowrap; justify-content: space-between; gap: 8px; min-height: 44px; padding: 0; margin-bottom: 10px; border: 0; background: transparent; }
+  body.embedded #localDiscovery.has-context-action .community-context-location { display: flex; flex: 1; min-width: 0; align-items: center; gap: 6px; }
+  body.embedded #localDiscovery.has-context-action #viewerLocationLabel { display: block; min-width: 0; overflow: hidden; text-overflow: ellipsis; font-size: 11.5px; white-space: nowrap; }
+  body.embedded #localDiscovery.has-context-action #viewerLocationLabel .community-action-icon { display: inline-block; margin-right: 5px; vertical-align: -3px; }
+  body.embedded #localDiscovery.has-context-action #changeViewerLocation { flex: none; padding-inline: 2px; font-size: 11px; }
+  body.embedded #localDiscovery .community-context-action { display: inline-flex; flex: none; min-height: 44px; padding: 8px 9px; gap: 5px; font-size: 11.5px; white-space: nowrap; }
+  body.embedded #localDiscovery .community-context-action .community-action-icon { width: 16px; height: 16px; }
+  body.embedded #jobsView.jobs-enhanced > .feature-intro,
+  body.embedded #feedView.deal-mode #dealLanding { display: none; }
+
+  body.embedded #jobsView #jobsWorkflow { margin: 0 0 6px; }
+  body.embedded #jobsView .jobs-workflow-head { grid-template-columns: minmax(0, 1fr); gap: 8px; }
+  body.embedded #jobsView .jobs-compose-slot { order: 0; }
+  body.embedded #jobsView .jobs-workflow-head .jobs-nav { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); grid-auto-flow: row; width: 100%; gap: 3px; padding: 3px; }
+  body.embedded #jobsView .jobs-nav:has([data-jobs-tab="profile"]) { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+  body.embedded #jobsView .jobs-workflow-head .jobs-tab { min-width: 0; min-height: 44px; flex-direction: row; gap: 4px; padding: 6px 4px; font-size: 11px; line-height: 1.3; }
+  body.embedded #jobsView .jobs-nav .jobs-icon { flex: none; width: 16px; height: 16px; }
+  body.embedded #jobsView .jobs-nav:has([data-jobs-tab="profile"]) .jobs-tab { flex-direction: column; gap: 2px; }
+  body.embedded #jobsView .jobs-compose-slot #jobTemplates { justify-content: flex-start; gap: 6px; margin: 0; }
+  body.embedded #jobsView #jobTemplates .template-card { min-height: 44px; padding: 6px 8px; }
+  body.embedded #jobsView .jobs-browse-controls { gap: 8px; margin: 8px 0 0; }
+  body.embedded #jobsView .jobs-browse-controls .jobs-filter-row { display: grid; grid-template-columns: .65fr 1fr 1.45fr 1fr; width: 100%; gap: 5px; margin: 0; }
+  body.embedded #jobsView .jobs-filter-row .filter-chip { min-width: 0; min-height: 44px; padding: 6px 3px; font-size: 11px; line-height: 1.3; white-space: normal; }
+  body.embedded #jobsView .jobs-refinements { margin: 8px 0 0; }
+  body.embedded #jobsView > .feature-layout > .stack { gap: 8px; }
+  body.embedded #jobsView:is([data-jobs-tab="browse"], [data-jobs-tab="myPosts"]) .section-heading { justify-content: flex-end; min-height: 16px; padding: 0; }
+  body.embedded #jobsView:is([data-jobs-tab="browse"], [data-jobs-tab="myPosts"]) #jobListTitle,
+  body.embedded #feedView.deal-mode #feedListTitle { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
+  body.embedded #jobsView #jobCount { font-size: 11px; }
+  body.embedded #jobsView #jobPosts { margin-top: 0; }
+
+  body.embedded #feedView.deal-mode #dealSearchTools { margin-bottom: 8px; }
+  body.embedded #feedView.deal-mode .feature-layout > .stack { gap: 8px; }
+  body.embedded #feedView.deal-mode .section-heading { justify-content: flex-end; min-height: 16px; padding: 0; }
+  body.embedded #feedView.deal-mode #feedCount { font-size: 11px; }
+}
+@media (max-width: 360px) {
+  body.embedded #localDiscovery.has-context-action .community-context-location { flex-direction: column; align-items: flex-start; gap: 0; }
+  body.embedded #localDiscovery.has-context-action #viewerLocationLabel { line-height: 18px; }
+  body.embedded #localDiscovery.has-context-action #changeViewerLocation { min-height: 24px; padding: 0 2px; line-height: 20px; }
 }

@@ -174,13 +174,13 @@
   </style>
   <link rel="stylesheet" href="../vendor/tom-select/tom-select.css">
   <link rel="stylesheet" href="community-controls.css?v=20261029">
-  <link rel="stylesheet" href="community-mobile.css?v=20261029-community-dev-handoff-v10">
-  <link rel="stylesheet" href="community-feed-social.css?v=20261029-community-dev-handoff-v10">
-  <link rel="stylesheet" href="community-feed-composer.css?v=20261029-community-dev-handoff-v10">
-  <link rel="stylesheet" href="community-layout.css?v=20261029-community-dev-handoff-v10">
-<link rel="stylesheet" href="community-group-workflow.css?v=20261029-community-dev-handoff-v10">
-<link rel="stylesheet" href="community-jobs-workflow.css?v=20261029-community-dev-handoff-v10">
-<link rel="stylesheet" href="community-shifts-workflow.css?v=20261029-community-dev-handoff-v10">
+  <link rel="stylesheet" href="community-mobile.css?v=20261029-community-mobile-tools-v11">
+  <link rel="stylesheet" href="community-feed-social.css?v=20261029-community-mobile-tools-v11">
+  <link rel="stylesheet" href="community-feed-composer.css?v=20261029-community-mobile-tools-v11">
+  <link rel="stylesheet" href="community-layout.css?v=20261029-community-mobile-tools-v11">
+<link rel="stylesheet" href="community-group-workflow.css?v=20261029-community-mobile-tools-v11">
+<link rel="stylesheet" href="community-jobs-workflow.css?v=20261029-community-mobile-tools-v11">
+<link rel="stylesheet" href="community-shifts-workflow.css?v=20261029-community-mobile-tools-v11">
 <style>
 #dealSearchTools{display:none}
 #feedView.deal-mode #dealSearchTools{display:grid;gap:10px;margin:0 0 16px}
@@ -294,15 +294,15 @@
 <div id="notifyPanel" class="notify-panel panel hide" role="dialog" aria-label="Thông báo phù hợp"></div>
 <div id="modalRoot"></div><div id="toast" class="toast hide" role="status"></div>
 <script src="../vendor/tom-select/tom-select.complete.min.js"></script>
-<script src="community-demo-data.js?v=20261029-community-dev-handoff-v10"></script>
+<script src="community-demo-data.js?v=20261029-community-mobile-tools-v11"></script>
 <script src="nexora-us-geo-2025.js"></script>
 <script src="nexora-us-place-centers-2025.js"></script>
-<script src="community-record-store.js?v=20261029-community-dev-handoff-v10"></script>
-<script src="community-group-workflow.js?v=20261029-community-dev-handoff-v10"></script>
-<script src="community-jobs-workflow.js?v=20261029-community-dev-handoff-v10"></script>
-<script src="community-shifts-workflow.js?v=20261029-community-dev-handoff-v10"></script>
-<script src="community-feed-social.js?v=20261029-community-dev-handoff-v10"></script>
-<script src="community-feed-composer.js?v=20261029-community-dev-handoff-v10"></script>
+<script src="community-record-store.js?v=20261029-community-mobile-tools-v11"></script>
+<script src="community-group-workflow.js?v=20261029-community-mobile-tools-v11"></script>
+<script src="community-jobs-workflow.js?v=20261029-community-mobile-tools-v11"></script>
+<script src="community-shifts-workflow.js?v=20261029-community-mobile-tools-v11"></script>
+<script src="community-feed-social.js?v=20261029-community-mobile-tools-v11"></script>
+<script src="community-feed-composer.js?v=20261029-community-mobile-tools-v11"></script>
 <script>
 (() => {
   const KEY='nexora-market-prototype-v1';
@@ -446,7 +446,18 @@
   function priceLabel(x){return money(x.price)+(x.basis==='lot'?'/cả lô':'/cái');}
   function infoLabel(x){return x.type==='sale'?'Giá bán':'Ngân sách tối đa';}
   function toast(msg){const el=$('#toast');el.textContent=msg;el.classList.remove('hide');clearTimeout(toastTimer);toastTimer=setTimeout(()=>el.classList.add('hide'),3300);}
-  function setView(next){const previous=view;if(previous!==next){const root=$('#modalRoot');if(root.firstElementChild){const content=document.createDocumentFragment();while(root.firstChild)content.append(root.firstChild);viewDrafts.set(previous,{content,editing,blogEditing,blogCover,postPreviewUrls});postPreviewUrls=[];}const draft=viewDrafts.get(next);editing=draft?.editing||null;blogEditing=draft?.blogEditing||null;blogCover=draft?.blogCover||'';postPreviewUrls=draft?.postPreviewUrls||[];if(draft){root.replaceChildren(draft.content);viewDrafts.delete(next);}}if(next==='deals'){feedScope='all';feedKindFilter='deal';feedVisibleLimit=6;renderExtra();}else if(next==='feed'&&previous==='deals'&&feedKindFilter==='deal'){feedKindFilter='all';renderExtra();}view=next;$('#feedView').classList.toggle('deal-mode',next==='deals');const contentView=next==='deals'?'feed':next;$('#feedTitle').textContent=next==='deals'?'Deal & Coupon':'Bảng tin';$('#feedListTitle').textContent=next==='deals'?'Deal mới':'Bài mới';['market','feed','groups','pages','jobs','daywork','blog','messages'].forEach(k=>$('#'+k+'View').classList.toggle('hide',k!==contentView));$('#localDiscovery').classList.toggle('hide',!['feed','market','pages','jobs','daywork','blog'].includes(contentView));document.querySelectorAll('.primary-tabs [data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===(next==='groups'?'market':next)));document.querySelectorAll('.subrow [data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===contentView));$('#notifyPanel').classList.add('hide');if(window.parent!==window){window.parent.postMessage({type:'nexora-prototype-view',view:next},parentMessageOrigin);window.parent.postMessage({type:'nexora-modal-state',open:!!$('#modalRoot').firstElementChild},parentMessageOrigin);}window.scrollTo({top:0,behavior:'smooth'});}
+  function syncCompactContextAction(next){
+    const bar=$('#localDiscovery');
+    if(!bar)return;
+    let location=bar.querySelector('.community-context-location');
+    if(!location){location=document.createElement('div');location.className='community-context-location';location.append($('#viewerLocationLabel'),$('#changeViewerLocation'));bar.prepend(location);}
+    bar.querySelector('.community-context-action')?.remove();
+    const action=next==='jobs'?{label:'Ca làm thêm',attribute:'data-view',value:'daywork'}:next==='deals'?{label:'Đăng ưu đãi',attribute:'data-template',value:'deal'}:null;
+    bar.classList.toggle('has-context-action',Boolean(action));
+    if(!action)return;
+    const button=document.createElement('button');button.type='button';button.className='btn '+(next==='deals'?'primary':'soft')+' community-context-action';button.textContent=action.label;button.setAttribute(action.attribute,action.value);bar.append(button);
+  }
+  function setView(next){const previous=view;if(previous!==next){const root=$('#modalRoot');if(root.firstElementChild){const content=document.createDocumentFragment();while(root.firstChild)content.append(root.firstChild);viewDrafts.set(previous,{content,editing,blogEditing,blogCover,postPreviewUrls});postPreviewUrls=[];}const draft=viewDrafts.get(next);editing=draft?.editing||null;blogEditing=draft?.blogEditing||null;blogCover=draft?.blogCover||'';postPreviewUrls=draft?.postPreviewUrls||[];if(draft){root.replaceChildren(draft.content);viewDrafts.delete(next);}}if(next==='deals'){feedScope='all';feedKindFilter='deal';feedVisibleLimit=6;renderExtra();}else if(next==='feed'&&previous==='deals'&&feedKindFilter==='deal'){feedKindFilter='all';renderExtra();}view=next;$('#feedView').classList.toggle('deal-mode',next==='deals');const contentView=next==='deals'?'feed':next;$('#feedTitle').textContent=next==='deals'?'Deal & Coupon':'Bảng tin';$('#feedListTitle').textContent=next==='deals'?'Deal mới':'Bài mới';['market','feed','groups','pages','jobs','daywork','blog','messages'].forEach(k=>$('#'+k+'View').classList.toggle('hide',k!==contentView));$('#localDiscovery').classList.toggle('hide',!['feed','market','pages','jobs','daywork','blog'].includes(contentView));syncCompactContextAction(next);document.querySelectorAll('.primary-tabs [data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===(next==='groups'?'market':next)));document.querySelectorAll('.subrow [data-view]').forEach(b=>b.classList.toggle('active',b.dataset.view===contentView));$('#notifyPanel').classList.add('hide');if(window.parent!==window){window.parent.postMessage({type:'nexora-prototype-view',view:next},parentMessageOrigin);window.parent.postMessage({type:'nexora-modal-state',open:!!$('#modalRoot').firstElementChild},parentMessageOrigin);}window.scrollTo({top:0,behavior:'smooth'});}
   function activityDate(item){const value=item.createdAt||item.publishedAt;if(!value)return '';const date=new Date(value);return Number.isFinite(date.getTime())?' · '+esc(date.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})):'';}
   function templateCard(kind){const x=templateCatalog[kind];const iconByKind={general:'write',showcase:'camera',tip:'bulb',question:'chathelp',poll:'ballot',event:'calendar',deal:'tag',group:'group',page:'page',hiring:'briefcase',seeking:'briefcase',daywork:'calendar',dayhire:'calendar'};return `<button class="template-card" data-template="${kind}"><span class="template-icon">${feedIcon(iconByKind[kind]||'write')}</span><strong>${esc(x.title)}</strong><small>${esc(x.hint)}</small></button>`;}
   const FEED_FILTERS=[['all','Tất cả','all'],['deal','Deal & Coupon','tag'],['market','Mua bán','bag'],['jobs','Việc làm','briefcase'],['pages','Fanpage','page'],['shifts','Ca làm thêm','calendar'],['blog','Blog','article'],['general','Bài viết','write'],['showcase','Khoe mẫu','camera'],['tip','Mẹo nghề','bulb'],['question','Hỏi đáp','chathelp'],['poll','Khảo sát','ballot'],['event','Sự kiện','calendar']];
@@ -850,8 +861,8 @@
   setInterval(()=>{if(extra.pagePosts.some(post=>post.status==='scheduled'&&post.publishAt&&new Date(post.publishAt).getTime()<=Date.now())){renderExtra();const open=$('#modalRoot [data-page-detail-id]');if(open){const page=extra.pages.find(x=>x.id===open.dataset.pageDetailId),tab=$('#modalRoot [data-page-tab].active')?.dataset.pageTab;if(page&&tab==='scheduled')pageDetail(page,'scheduled');}}},30000);
 })();
 </script>
-<script src="nexora-community-i18n.js?rev=20261029-community-dev-handoff-v10"></script>
+<script src="nexora-community-i18n.js?rev=20261029-community-mobile-tools-v11"></script>
   <script src="../vendor/lucide.min.js" defer></script>
-  <script src="community-ui.js?v=20261029-community-dev-handoff-v10" defer></script>
+  <script src="community-ui.js?v=20261029-community-mobile-tools-v11" defer></script>
 </body>
 </html>
