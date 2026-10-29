@@ -492,6 +492,9 @@ body .community-toolbar-filter-toggle,body .community-group-filter-toggle,body .
 
   body.embedded :is(.page-searchbar,.blog-toolbar) { display:grid; grid-template-columns:minmax(0,1fr) auto; gap:8px; padding:0; border:0; background:transparent; box-shadow:none; margin:0 0 8px; }
   body.embedded .community-toolbar-filter-toggle { display:inline-flex; min-height:44px; font-size:12px; }
+  body.embedded .toolbar.blog-toolbar #blogSearch { grid-column:1; min-width:0; }
+  body.embedded .blog-toolbar > .community-toolbar-filter-toggle { grid-column:2; justify-self:end; width:auto; padding:9px 10px; gap:6px; white-space:nowrap; }
+  body.embedded .blog-toolbar > .community-toolbar-filter-toggle .community-action-icon { width:16px; height:16px; }
   body.embedded :is(#pageIndustryFilter,#blogTopicFilter) { display:none; grid-column:1/-1; }
   body.embedded .community-filters-expanded :is(#pageIndustryFilter,#blogTopicFilter) { display:block; }
   body.embedded #pagesView .page-scope-bar { gap:6px; margin:0 0 8px; }
