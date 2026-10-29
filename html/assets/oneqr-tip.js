@@ -29,7 +29,7 @@
       tipTitle: 'Create a tip QR code',
       tipDescription: 'Create one tip QR code for your business. Customers scan it to select a technician and send a tip.',
       qrCreateText: 'Create one business tip QR; ',
-      qrPrintText: 'print copies for customers to use.',
+      qrPrintText: 'Print copies for customers to use.',
       generateTip: 'Generate tip QR',
       viewQR: 'View QR to Download',
       copyLink: 'Copy link',
