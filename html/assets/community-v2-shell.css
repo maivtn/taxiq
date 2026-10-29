@@ -1,0 +1,25 @@
+.community-content.content,
+.staff-community-content.content,
+.content.community-v2-content {
+  padding: 0;
+  min-height: 0;
+  height: calc(100dvh - 64px);
+  overflow: hidden;
+}
+.staff-community-content .page-heading { display: none; }
+#community-staging,
+.staff-community-content #community-hub,
+[data-community-v2] {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 0;
+  border: 0;
+  border-radius: 0;
+  background: #f8fafc;
+}
+@media (max-width: 639px) {
+  .community-content.content,
+  .staff-community-content.content,
+  .content.community-v2-content { height: calc(100dvh - 116px); }
+}

@@ -296,6 +296,11 @@
         "href": "https://nexoratouch.com/dashboard/community?tab=groups"
       },
       {
+        "key": "community-pages",
+        "label": "Pages",
+        "href": "https://nexoratouch.com/dashboard/community?tab=pages"
+      },
+      {
         "key": "viec-lam",
         "label": "Jobs",
         "href": "https://nexoratouch.com/dashboard/community?tab=jobs"
@@ -308,7 +313,12 @@
       {
         "key": "community-deals",
         "label": "Deals & Coupons",
-        "availability": "unavailable"
+        "href": "https://nexoratouch.com/dashboard/community?tab=deals"
+      },
+      {
+        "key": "community-blog",
+        "label": "Blog",
+        "href": "https://nexoratouch.com/dashboard/community?tab=blog"
       },
       {
         "key": "tin-nhan-cuoc-goi",

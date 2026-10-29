@@ -480,9 +480,12 @@
       event.preventDefault(); const index = tabs.findIndex(item => item.id === current); const next = event.key === 'Home' ? 0 : event.key === 'End' ? tabs.length - 1 : (index + (event.key === 'ArrowRight' ? 1 : -1) + tabs.length) % tabs.length;
       navigate(tabs[next].id); host.querySelector('[data-pqr-tab="' + tabs[next].id + '"]').focus();
     });
-    window.addEventListener('popstate', () => { navigate(new URL(location.href).searchParams.get('tab'), false); });
+    window.addEventListener('popstate', () => { if(params.get('view')!=='community')navigate(new URL(location.href).searchParams.get('tab'), false); });
     const frameView = params.get('view');
-    if (frameView && ['dashboard', 'community', 'profile'].includes(frameView)) {
+    if (frameView === 'community') {
+      host.innerHTML = '<iframe data-community-v2 title="NEXORA Community"></iframe>';
+      window.NEXORA_SHELL.isCommunity = true;
+    } else if (frameView && ['dashboard', 'profile'].includes(frameView)) {
       host.innerHTML = '<div class="pqr-heading"><h1>' + ({ dashboard: 'Dashboard', community: 'Community', profile: 'Profile' }[frameView]) + '</h1><span class="pqr-demo">Personal</span></div><section class="pqr-card"><div class="pqr-card-head"><h2>One QR</h2><a class="pqr-button is-primary" href="' + esc(api.page()) + '">One QR</a></div><p class="pqr-muted">Shown according to your current permissions</p>' + (frameView === 'profile' ? button('Contact card', 'profile') : '') + '</section>';
       window.NEXORA_SHELL.activeTab = frameView;
       if (window.NEXORA_SHELL.setActiveTab) window.NEXORA_SHELL.setActiveTab(frameView);

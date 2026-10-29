@@ -46,9 +46,11 @@
   var COMMUNITY_ITEMS = [
       { label: 'Feed', tab: 'feed' },
       { label: 'Groups & Market', tab: 'groups' },
+      { label: 'Pages', tab: 'pages' },
       { label: 'Jobs', tab: 'jobs' },
       { label: 'Extra shifts', tab: 'shift' },
-      { label: 'Deals & Coupons', tab: 'deals', disabled: true, title: 'Coming soon' },
+      { label: 'Deals & Coupons', tab: 'deals' },
+      { label: 'Blog', tab: 'blog' },
       { label: 'Messages & Calls', tab: 'connect' }
     ];
 
@@ -777,6 +779,7 @@
     document.querySelectorAll('.sidebar [data-personal-qr-nav]').forEach(function (link) {
       link.addEventListener('click', function (event) {
         if (event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+        if (cfg.isCommunity) return;
         if (new URL(link.href).pathname !== window.location.pathname || typeof cfg.onNavigate !== 'function') return;
         event.preventDefault();
         navigate(link.getAttribute('data-personal-qr-nav'));

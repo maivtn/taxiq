@@ -1,0 +1,50 @@
+/* The dashboard owns the workspace shell; the PO owns Community content. */
+body.embedded .app { grid-template-columns: minmax(0, 1fr); min-height: 0; }
+body.embedded .app > .sidebar,
+body.embedded .app-footer,
+body.embedded #sidebarToggle,
+body.embedded .header-search,
+body.embedded #accountButton { display: none; }
+body.embedded .system-bar {
+  position: absolute;
+  top: 18px;
+  right: 24px;
+  height: 38px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+}
+body.embedded .community-heading {
+  justify-content: flex-start;
+  gap: 12px;
+  margin: 24px auto 20px;
+  padding-right: 176px;
+}
+body.embedded .community-heading > div { min-width: 0; }
+body.embedded .community-heading .back-button { flex: none; }
+body.embedded .top-actions { gap: 3px; }
+body.embedded .top-actions button { width: 34px; height: 34px; }
+body.embedded .header-menu { top: 60px; }
+
+@media (max-width: 800px) {
+  body.embedded .main { height: 100dvh; }
+  body.embedded .community-heading {
+    width: calc(100% - 24px);
+    margin: 12px auto;
+    padding-right: 140px;
+    gap: 6px;
+  }
+  body.embedded .community-heading h1 { font-size: 17px; }
+  body.embedded .system-bar { top: 10px; right: 8px; }
+  body.embedded #messagesButton { display: none; }
+  body.embedded .top-actions button { width: 30px; height: 32px; }
+  body.embedded .tour-launch { padding: 6px; font-size: 10px; flex: none; }
+  body.embedded .header-menu { top: 50px; right: 8px; }
+  body.embedded .mobile-nav:not([hidden]) { grid-template-columns: repeat(6, minmax(0, 1fr)); }
+}
+
+@media (max-width: 380px) {
+  body.embedded .community-heading { padding-right: 136px; gap: 4px; }
+  body.embedded .community-heading h1 { font-size: 15px; }
+  body.embedded .community-heading .back-button { width: 28px; min-height: 30px; }
+}
