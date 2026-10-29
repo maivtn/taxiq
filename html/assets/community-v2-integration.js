@@ -4,6 +4,8 @@
   var frame = document.querySelector('#community-staging, #community-hub, [data-community-v2]');
   if (!frame) return;
   var origin = location.protocol === 'file:' ? '*' : location.origin;
+  var componentURL=new URL('community-v2/community-hub.js?v=20261029-native-layout',document.currentScript.src);
+  var hub=null,fallbackFrame=null;
   var current = '';
   var detailOpen = false;
   var ready = false;
@@ -19,7 +21,8 @@
     return ['chatgroups', 'calls', 'privacy'].indexOf(value) >= 0 ? 'connect' : value;
   }
   function send(type, values) {
-    frame.contentWindow.postMessage(Object.assign({type:type}, values), origin);
+    if(hub){if(type==='nexora-community-navigate')hub.navigate(values.route);if(type==='nexora-community-language')hub.setLanguage(values.language);if(type==='nexora-community-close-detail')hub.closeDetail();}
+    else if(fallbackFrame)fallbackFrame.contentWindow.postMessage(Object.assign({type:type},values),origin);
   }
   function show(value, fromFrame, replace) {
     var next = route(value);
@@ -78,10 +81,8 @@
   resizeCommunity();
   document.body.classList.add('community-hub-active');
 
-  window.addEventListener('message', function (event) {
-    if (event.source !== frame.contentWindow || (location.protocol !== 'file:' && event.origin !== location.origin) || !event.data) return;
-    var data = event.data;
-    if (data.type === 'nexora-community-ready') {
+  function receiveHubEvent(data) {
+    if (data.type === 'nexora-community-ready'&&fallbackFrame) {
       ready = true;
       send('nexora-community-language',{language:communityLanguage()});
       send('nexora-community-navigate', {route:current});
@@ -97,7 +98,8 @@
       if (history.state && history.state.communityPrevious) history.back();
       else show('feed', false, true);
     }
-  });
+  }
+  window.addEventListener('message',function(event){if(fallbackFrame&&event.source===fallbackFrame.contentWindow&&(location.protocol==='file:'||event.origin===location.origin)&&event.data)receiveHubEvent(event.data);});
   window.addEventListener('popstate', function () {
     var next = new URLSearchParams(location.search).get('tab');
     if (detailOpen) {
@@ -115,15 +117,20 @@
   // Keep ownership local instead of replacing the browser's history API.
   function recordInitialRoute() {
     show(new URLSearchParams(location.search).get('tab'), false, true);
-    var source = new URL('../assets/community-v2/nexora-community-complete.html', location.href);
-    source.searchParams.set('embedded', '1');
-    source.searchParams.set('tab', current);
-    source.searchParams.set('v', '20261029-modal-polish');
+    var params=new URLSearchParams(location.search);
+    params.set('tab',current);
     if (window.NEXORA_SHELL && window.NEXORA_SHELL.activePage === 'staff') {
       var name = window.NEXORA_SHELL.profileName || document.querySelector('.staff-profile-name')?.textContent;
-      if (name) source.searchParams.set('member', name.trim());
+      if (name) params.set('member', name.trim());
     }
-    frame.src = source.href;
+    function mount(){return window.NEXORA_COMMUNITY_HUB.mount(frame,{params:params,notify:receiveHubEvent});}
+    var load=window.NEXORA_COMMUNITY_HUB?Promise.resolve():new Promise(function(resolve,reject){var script=document.createElement('script');script.src=componentURL.href;script.onload=resolve;script.onerror=reject;document.head.append(script);});
+    load.then(mount).then(function(api){hub=api;ready=true;send('nexora-community-language',{language:communityLanguage()});send('nexora-community-navigate',{route:current});}).catch(function(error){
+      console.error('Community native shell could not load; using the standalone preview.',error);
+      fallbackFrame=document.createElement('iframe');fallbackFrame.title=frame.getAttribute('aria-label')||'NEXORA Community';fallbackFrame.style.cssText='display:block;width:100%;height:100%;border:0';
+      var source=new URL('nexora-community-complete.html',componentURL);params.set('tab',current);params.set('embedded','1');params.set('v','20261029-native-layout');source.search=params.toString();
+      (frame.shadowRoot||frame).replaceChildren(fallbackFrame);fallbackFrame.src=source.href;
+    });
   }
   recordInitialRoute();
 })();

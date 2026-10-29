@@ -483,7 +483,7 @@
     window.addEventListener('popstate', () => { if(params.get('view')!=='community')navigate(new URL(location.href).searchParams.get('tab'), false); });
     const frameView = params.get('view');
     if (frameView === 'community') {
-      host.innerHTML = '<iframe data-community-v2 title="NEXORA Community"></iframe>';
+      host.innerHTML = '<div data-community-v2 aria-label="NEXORA Community"></div>';
       window.NEXORA_SHELL.isCommunity = true;
     } else if (frameView && ['dashboard', 'profile'].includes(frameView)) {
       host.innerHTML = '<div class="pqr-heading"><h1>' + ({ dashboard: 'Dashboard', community: 'Community', profile: 'Profile' }[frameView]) + '</h1><span class="pqr-demo">Personal</span></div><section class="pqr-card"><div class="pqr-card-head"><h2>One QR</h2><a class="pqr-button is-primary" href="' + esc(api.page()) + '">One QR</a></div><p class="pqr-muted">Shown according to your current permissions</p>' + (frameView === 'profile' ? button('Contact card', 'profile') : '') + '</section>';

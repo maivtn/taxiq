@@ -1,0 +1,42 @@
+/* One content width and gutter for Community navigation, PO views and dialogs. */
+:root {
+  --community-content-width: 1140px;
+  --community-gutter: 24px;
+  --community-dialog-gutter: 24px;
+}
+body.embedded .top { padding-right: var(--community-scrollbar-width, 0px); }
+body.embedded .community-heading,
+body.embedded .top .tabs {
+  width: calc(100% - 2 * var(--community-gutter));
+  max-width: var(--community-content-width);
+  margin-inline: auto;
+  padding-inline: 0;
+}
+body.embedded .content,
+body.embedded > .shell {
+  width: 100%;
+  max-width: calc(var(--community-content-width) + 2 * var(--community-gutter));
+  margin-inline: auto;
+  padding-inline: var(--community-gutter);
+  padding-top: 18px;
+}
+body.embedded .connect-stage,
+body.embedded .connect-stage .layout,
+body.embedded[data-section="calls"] .connect-stage,
+body.embedded[data-section="calls"] .connect-stage .layout,
+body.embedded .page-tabs {
+  width: 100%;
+  max-width: none;
+  margin-inline: 0;
+}
+body.embedded .page-tabs { justify-content: flex-start; }
+body .dialog .dialog-head,
+body .dialog .dialog-body,
+body .dialog .dialog-footer { padding-inline: var(--community-dialog-gutter); }
+body .dialog .page-profile-head { margin-inline: 0; }
+@media (max-width: 800px) {
+  :root { --community-gutter: 16px; --community-dialog-gutter: 16px; }
+  body.embedded .content,
+  body.embedded > .shell { padding-top: 14px; }
+  body.community-chat-open > .shell { padding-top: 12px; }
+}
