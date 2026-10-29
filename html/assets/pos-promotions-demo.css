@@ -2026,3 +2026,372 @@
 .phase-ai-history-swatch[data-ai-history="blue"] {
   background: linear-gradient(135deg, #eff6ff, #bfdbfe);
 }
+
+/* Create page: align the existing sections, controls and preview surfaces. */
+.pos-promo-editor-page .promo-back-link {
+  margin-bottom: 8px !important;
+}
+.pos-promo-editor-page .promo-create-panel-head {
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 0;
+  padding: 20px;
+  border-bottom: 0;
+  box-shadow: none;
+}
+.pos-promo-editor-page .promo-create-panel-head > div:first-child {
+  flex: 1;
+  min-width: 0;
+}
+.pos-promo-editor-page .promo-create-panel-head h1 {
+  font-size: 22px;
+  font-weight: 700;
+  line-height: 1.35;
+}
+.pos-promo-editor-page .promo-create-panel-head > div:first-child p {
+  max-width: 560px;
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.6;
+}
+.pos-promo-editor-page .promo-editor-head-actions {
+  flex: 0 1 460px;
+  gap: 8px;
+}
+.pos-promo-editor-page .promo-pill {
+  max-width: 100%;
+  white-space: normal;
+  font-weight: 600;
+}
+.pos-promo-editor-page .pos-promo-template-studio {
+  margin-top: 0;
+}
+.pos-promo-editor-page .pos-promo-template-studio-inner {
+  padding: 20px;
+}
+.pos-promo-editor-page .pts-type-card {
+  grid-template-columns: 36px minmax(0, 1fr) auto;
+  gap: 10px;
+  border-width: 1px;
+  border-radius: 10px;
+  padding: 14px;
+}
+.pos-promo-editor-page .pts-type-card.is-active {
+  background: #f7f6ff;
+  box-shadow: 0 0 0 1px #6366f1;
+}
+.pos-promo-editor-page .demo-template-filters select,
+.pos-promo-editor-page .pts-search {
+  min-height: 44px;
+}
+.pos-promo-editor-page .demo-template-card {
+  border-radius: 10px;
+}
+.pos-promo-editor-page .demo-template-art {
+  min-height: 112px;
+  padding: 16px;
+  font-size: 22px;
+}
+#promotion-form {
+  padding-bottom: 0;
+  background: transparent;
+  box-shadow: none;
+}
+#promotion-form .promo-create-layout {
+  gap: 20px;
+}
+#promotion-form .editor-fields,
+#promotion-form .editor-preview {
+  padding: 0;
+}
+#promotion-form .editor-preview {
+  background: transparent;
+  border: 0;
+}
+#promotion-form .editor-section {
+  padding: 20px;
+  margin-bottom: 16px;
+  border-radius: 12px;
+  background: #fff;
+}
+#promotion-form .section-number {
+  margin-bottom: 16px;
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+#promotion-form .promo-field {
+  gap: 7px;
+  font-size: 12px;
+  line-height: 1.5;
+}
+#promotion-form .promo-field input,
+#promotion-form .promo-field select,
+#promotion-form .promo-field textarea,
+#promotion-form .demo-discount input,
+#promotion-form .demo-discount select,
+#promotion-form .promo-d2-time input,
+#promotion-form .demo-service-scope {
+  min-height: 42px;
+  padding: 10px 12px;
+  border: 1px solid var(--promo-line);
+  border-radius: 8px;
+  background-color: #fff;
+  color: var(--promo-ink);
+  font: inherit;
+  font-size: 13px;
+  box-sizing: border-box;
+}
+#promotion-form .promo-field textarea {
+  min-height: 92px;
+}
+#promotion-form :is(input, select, textarea):focus {
+  border-color: var(--promo-brand);
+}
+#promotion-form :is(input, select, textarea):is(.is-invalid, [aria-invalid="true"]) {
+  border-color: #fb7185;
+}
+#promotion-form .demo-discount {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 82px;
+  max-width: 280px;
+}
+#promotion-form .demo-discount select {
+  width: 100%;
+}
+#promotion-form .promo-d2 {
+  border-color: var(--promo-line);
+  border-radius: 10px;
+}
+#promotion-form .promo-d2-row {
+  grid-template-columns: 104px minmax(0, 1fr);
+  gap: 12px;
+  padding: 14px;
+}
+#promotion-form .promo-d2-label {
+  font-size: 12px;
+}
+#promotion-form .promo-d2-body .promo-field {
+  margin-bottom: 0;
+}
+#promotion-form .promo-d2-otinfo {
+  gap: 8px;
+  border-radius: 8px;
+}
+#promotion-form .promo-d2-otinfo > span {
+  flex-basis: 140px;
+}
+#promotion-form .promo-days > div {
+  grid-template-columns: repeat(7, minmax(0, 1fr));
+  gap: 5px;
+}
+#promotion-form .promo-day span {
+  height: 36px;
+  border-radius: 7px;
+  font-size: 12px;
+}
+#promotion-form .demo-more {
+  border: 1px solid var(--promo-line);
+  border-radius: 10px;
+}
+#promotion-form .demo-more > summary {
+  padding: 12px 14px;
+  line-height: 1.5;
+  color: #475569;
+}
+#promotion-form .demo-more .promo-d2-more-grid {
+  padding: 4px 14px 14px;
+  gap: 14px;
+}
+#promotion-form .promo-d2-sum {
+  border-radius: 10px;
+  background: #f8fafc;
+}
+#promotion-form .promo-d2-sum h4,
+#promotion-form .promo-live-head strong {
+  text-transform: none;
+  letter-spacing: 0;
+  font-size: 13px;
+  font-weight: 700;
+}
+#promotion-form #channels {
+  display: grid;
+  gap: 16px;
+}
+#promotion-form .promo-launch-card {
+  padding: 12px;
+  border-radius: 9px;
+  gap: 5px;
+  align-content: start;
+}
+#promotion-form .promo-launch-card strong {
+  font-size: 13px;
+}
+#promotion-form .promo-launch-card .status {
+  margin-top: 3px;
+  color: #64748b;
+}
+#promotion-form .promo-swcard {
+  padding: 12px;
+  border-width: 1px;
+  border-radius: 9px;
+}
+#promotion-form .demo-toggle-head {
+  align-items: flex-start;
+}
+#promotion-form .demo-toggle-head > div {
+  min-width: 0;
+}
+#promotion-form .demo-toggle-head strong {
+  display: block;
+  font-size: 13px;
+  line-height: 1.5;
+}
+#promotion-form .demo-toggle-head small {
+  display: block;
+  margin-top: 4px;
+  line-height: 1.5;
+}
+#promotion-form .demo-switch {
+  padding-top: 2px;
+  font-size: 11px;
+}
+#promotion-form .promo-sw-preview {
+  margin-top: 12px;
+}
+#promotion-form .demo-channel-subs input,
+#promotion-form .demo-paid-placement input,
+#promotion-form .demo-cross input,
+#promotion-form .demo-paid-toggle input {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+  accent-color: var(--promo-brand);
+}
+#promotion-form .demo-postline {
+  margin: 0 12px;
+  padding: 12px 0;
+  border-top: 1px solid var(--promo-line);
+  gap: 10px;
+}
+#promotion-form #show-more-channels {
+  margin: 0 12px 12px;
+}
+#promotion-form .demo-paid-placement {
+  align-items: flex-start;
+  gap: 8px;
+  padding: 12px;
+}
+#promotion-form .demo-paid-placement input {
+  margin-top: 2px;
+}
+#promotion-form .demo-paid-placement strong {
+  font-size: 12px;
+  font-weight: 650;
+  line-height: 1.4;
+}
+#promotion-form .demo-paid-placement small {
+  font-size: 11px;
+  line-height: 1.5;
+}
+#promotion-form .demo-paid-advertising {
+  margin: 2px 10px 12px;
+}
+#promotion-form #paid-fields {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  align-items: start;
+  gap: 14px;
+}
+#promotion-form .demo-paid-credit {
+  grid-column: 1 / -1;
+}
+#promotion-form .demo-target-area .ts-control {
+  min-height: 42px;
+}
+#promotion-form .promo-live-preview {
+  padding: 16px;
+  border-radius: 12px;
+  gap: 14px;
+  margin: 0;
+}
+#promotion-form .promo-live-tabs {
+  flex-wrap: wrap;
+  gap: 5px;
+}
+#promotion-form .promo-live-tabs button {
+  flex: 1;
+  padding: 7px;
+  border-radius: 7px;
+}
+#promotion-form .promo-live-studio {
+  gap: 12px;
+  padding-top: 14px;
+  border-top: 1px solid var(--promo-line);
+}
+#promotion-form .demo-ai-banner-button {
+  margin: 0;
+  min-height: 42px;
+}
+#promotion-form .editor-footer {
+  padding: 16px 20px;
+  border: 1px solid var(--promo-line);
+  border-radius: 12px;
+}
+#promotion-form .editor-footer-actions {
+  flex-shrink: 1;
+}
+#promotion-form .promo-error:empty,
+#promotion-form #publication-note:empty {
+  display: none;
+}
+@media (max-width: 1180px) {
+  #promotion-form .promo-d2-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 8px;
+  }
+}
+@media (max-width: 1050px) {
+  .pos-promo-editor-page .promo-create-panel-head {
+    flex-direction: column;
+  }
+  .pos-promo-editor-page .promo-editor-head-actions {
+    flex: initial;
+    justify-content: flex-start;
+    width: 100%;
+  }
+}
+@media (max-width: 720px) {
+  .pos-promo-editor-page .promo-create-panel-head {
+    padding: 16px;
+    margin-bottom: 12px;
+    border-bottom: 1px solid var(--promo-line);
+  }
+  .pos-promo-editor-page .pos-promo-template-studio-inner {
+    padding: 16px;
+  }
+  #promotion-form .editor-section,
+  #promotion-form .promo-live-preview,
+  #promotion-form .editor-footer {
+    padding: 16px;
+  }
+  #promotion-form .details-row,
+  #promotion-form #paid-fields {
+    grid-template-columns: minmax(0, 1fr);
+  }
+  #promotion-form .promo-days > div {
+    grid-template-columns: repeat(4, minmax(0, 1fr));
+  }
+  #promotion-form .promo-d2-time,
+  #promotion-form .demo-discount {
+    max-width: none;
+  }
+  #promotion-form .editor-footer-actions {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+    width: 100%;
+  }
+  #promotion-form .promo-create-btn {
+    min-width: 0;
+    font-size: 13px;
+  }
+}
