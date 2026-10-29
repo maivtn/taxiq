@@ -23,18 +23,32 @@
       "image": "https://cdn-icons-png.flaticon.com/512/1598/1598588.png"
     },
     {
-      "key": "tip",
-      "label": "Tips",
-      "file": "tips-and-tricks-12695856.png",
-      "href": "https://www.flaticon.com/free-icon/tips-and-tricks_12695856",
-      "image": "https://cdn-icons-png.flaticon.com/512/12695/12695856.png"
-    },
-    {
       "key": "question",
       "label": "Ask",
       "file": "speech-bubble-5726734.png",
       "href": "https://www.flaticon.com/free-icon/speech-bubble_5726734",
       "image": "https://cdn-icons-png.flaticon.com/512/5726/5726734.png"
+    },
+    {
+      "key": "tip",
+      "label": "Tips",
+      "file": "tips-and-tricks-12695893.png",
+      "href": "https://www.flaticon.com/free-icon/tips-and-tricks_12695893",
+      "image": "https://cdn-icons-png.flaticon.com/512/12695/12695893.png"
+    },
+    {
+      "key": "event",
+      "label": "Events",
+      "file": "event-18669653.png",
+      "href": "https://www.flaticon.com/free-icon/event_18669653",
+      "image": "https://cdn-icons-png.flaticon.com/512/18669/18669653.png"
+    },
+    {
+      "key": "blog",
+      "label": "Write blog",
+      "file": "notes-1355663.png",
+      "href": "https://www.flaticon.com/free-icon/notes_1355663",
+      "image": "https://cdn-icons-png.flaticon.com/512/1355/1355663.png"
     }
   ]
 }

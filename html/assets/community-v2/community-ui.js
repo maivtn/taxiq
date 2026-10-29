@@ -5,14 +5,15 @@
   const feedAssetBase = new URL('feed-icons/', document.currentScript.src);
   const feedArtwork = {
     'feed-sale':'for-sale-17755826.png', 'feed-job':'briefcase-8178806.png',
-    'feed-poll':'voting-1598588.png', 'feed-tip':'tips-and-tricks-12695856.png',
-    'feed-ask':'speech-bubble-5726734.png'
+    'feed-poll':'voting-1598588.png', 'feed-tip':'tips-and-tricks-12695893.png',
+    'feed-ask':'speech-bubble-5726734.png',
+    'feed-event':'event-18669653.png', 'feed-blog':'notes-1355663.png'
   };
   const artwork = {
     feed:'layout-list', market:'users-round', groups:'users-round', pages:'building-2',
-    deals:'ticket', jobs:'briefcase', daywork:'calendar-days', blog:'receipt', connect:'message-circle',
+    deals:'ticket', jobs:'briefcase', daywork:'calendar-days', blog:'feed-blog', connect:'message-circle',
     general:'paintbrush', showcase:'image', tip:'feed-tip', question:'feed-ask', poll:'feed-poll',
-    event:'calendar-days', sale:'feed-sale', want:'shopping-bag', hiring:'feed-job', seeking:'user-round',
+    event:'feed-event', sale:'feed-sale', want:'shopping-bag', hiring:'feed-job', seeking:'user-round',
     dayhire:'calendar-clock', page:'building-2', group:'users-round', messages:'message-circle', calls:'phone', privacy:'settings-2'
   };
   function makeArtwork(name,nav=false) {
@@ -35,7 +36,6 @@
     document.querySelectorAll('.feed-action,.template-card').forEach(button=>{
       const key=button.dataset.template||button.dataset.marketKind||(button.hasAttribute('data-blog-create')?'blog':'');
       const holder=button.querySelector('.feed-icon');
-      if(key==='blog'&&holder&&(window.lucide?.icons.FilePenLine||window.lucide?.icons.SquarePen)){if(!holder.dataset.blogWritingIcon){holder.replaceChildren(window.lucide.createElement(window.lucide.icons.FilePenLine||window.lucide.icons.SquarePen,{width:22,height:22,class:'community-action-icon','aria-hidden':'true',focusable:'false'}));holder.dataset.blogWritingIcon='true';}return;}
       if(button.closest('#jobTemplates')&&holder){
         const name=key==='hiring'?'Briefcase':'UserRoundSearch',definition=window.lucide?.icons[name]||window.lucide?.icons.UserRound;
         if(definition&&holder.dataset.jobLucide!==key){holder.replaceChildren(window.lucide.createElement(definition,{width:18,height:18,class:'community-action-icon','aria-hidden':'true',focusable:'false'}));holder.dataset.jobLucide=key;}
