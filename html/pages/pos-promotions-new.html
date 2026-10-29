@@ -638,9 +638,11 @@
                           ></label
                         >
                         <div id="paid-fields" hidden>
-                          <label class="promo-field demo-target-area"
-                            ><span id="target-area-label">Target area</span
-                            ><select
+                          <div class="promo-field demo-target-area">
+                            <label id="target-area-label" for="target-area"
+                              >Target area</label
+                            >
+                            <select
                               id="target-area"
                               name="targetArea"
                               multiple
@@ -768,8 +770,14 @@
                                 <option value="Chicago">Chicago</option>
                                 <option value="Naperville">Naperville</option>
                               </optgroup>
-                            </select></label
-                          >
+                            </select>
+                            <div
+                              id="target-area-selected"
+                              class="demo-target-area-selected"
+                              role="list"
+                              aria-labelledby="target-area-label"
+                            ></div>
+                          </div>
                           <label class="promo-field"
                             ><span>Total campaign budget (USD)</span
                             ><input
@@ -1749,7 +1757,8 @@
     <script>
       window.NEXORA_SHELL = {
         activePage: "pos",
-        activeTab: "promotions",
+        activeTab: "promotions-new",
+        activeNavKey: "pos-promotions-new",
         onNavigate: function (tab) {
           window.location.href =
             tab === "promotions"

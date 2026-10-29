@@ -495,7 +495,6 @@
       typeof window.TomSelect === "function"
         ? new window.TomSelect(field("targetArea"), {
             plugins: {
-              remove_button: { title: "Remove" },
               checkbox_options: {},
             },
             create: false,
@@ -506,6 +505,7 @@
             clearAfterSelect: true,
             lockOptgroupOrder: true,
             placeholder: "Select or search",
+            hidePlaceholder: false,
             render: { no_results: null },
             onItemAdd(value) {
               if (value === "all") {
@@ -525,6 +525,46 @@
       "aria-labelledby",
       "target-area-label",
     );
+    function renderTargetAreas() {
+      const labels = new Map(
+        [...field("targetArea").options].map((option) => [
+          option.value,
+          option.textContent,
+        ]),
+      );
+      $("target-area-selected").innerHTML = draft.targetAreas
+        .filter((value) => labels.has(value))
+        .map(
+          (value) =>
+            `<span class="demo-target-area-chip" role="listitem"><span>${escape(labels.get(value))}</span>${value === "all" ? "" : `<button type="button" data-remove-area="${escape(value)}" aria-label="${escape(t("removeTargetArea") + ": " + labels.get(value))}"><span aria-hidden="true">×</span></button>`}</span>`,
+        )
+        .join("");
+    }
+    $("target-area-selected").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-remove-area]");
+      if (!button) return;
+      const buttons = [...$("target-area-selected").querySelectorAll("button")];
+      const index = buttons.indexOf(button);
+      if (targetAreaPicker) {
+        targetAreaPicker.removeItem(button.dataset.removeArea);
+      } else {
+        for (const option of field("targetArea").options) {
+          if (option.value === button.dataset.removeArea)
+            option.selected = false;
+        }
+        if (!field("targetArea").selectedOptions.length)
+          field("targetArea").value = "all";
+        field("targetArea").dispatchEvent(
+          new Event("change", { bubbles: true }),
+        );
+      }
+      const remaining = $("target-area-selected").querySelectorAll("button");
+      const focusTarget =
+        remaining[Math.min(index, remaining.length - 1)] ||
+        targetAreaPicker?.control_input ||
+        field("targetArea");
+      focusTarget.focus({ preventScroll: true });
+    });
     function read() {
       for (const name of [
         "name",
@@ -881,6 +921,7 @@
         goal: t("goal." + p.goal),
       });
       $("paid-fields").hidden = !p.paidEnabled;
+      renderTargetAreas();
       renderAdsCredit();
       const hasPublic = p.channels.some((id) =>
         data.channels.some((c) => c.id === id && c.tier === "pub"),
