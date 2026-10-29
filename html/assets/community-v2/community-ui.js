@@ -5,7 +5,7 @@
   const feedAssetBase = new URL('feed-icons/', document.currentScript.src);
   const feedArtwork = {
     'feed-photo':'picture-2659360.png',
-    'feed-sale':'for-sale-17755826.png', 'feed-job':'posting-8522069.png',
+    'feed-sale':'flash-sale-15106141.png', 'feed-job':'posting-8522069.png',
     'feed-poll':'vote-8121705.png', 'feed-tip':'mode-8484254.png',
     'feed-ask':'speech-bubble-5726734.png',
     'feed-event':'event-18669653.png', 'feed-blog':'notes-1355663.png'
