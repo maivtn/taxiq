@@ -12,7 +12,8 @@
   const members = [
     {name:'Mai Nguyễn', id:'NX-2041', handle:'@mai.nail', detail:'request'},
     {name:'Kim Tuyen', id:'NX-2042', handle:'@kim.tuyen', phone:'7135550144', detail:'chat-kim'},
-    {name:'Sally Thanh Hoang', id:'NX-2043', handle:'@sally.hoang', email:'sally@example.com', detail:'chat-sally'}
+    {name:'Sally Thanh Hoang', id:'NX-2043', handle:'@sally.hoang', email:'sally@example.com', detail:'chat-sally'},
+    ...(window.NEXORA_COMMUNITY_DEMO?.connect?.members||[])
   ];
   const callTime=(days,hour,minute)=>{const date=new Date();date.setDate(date.getDate()-days);date.setHours(hour,minute,0,0);if(date>new Date())date.setDate(date.getDate()-1);return date.toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})+' · '+date.toLocaleTimeString('en-US',{hour:'numeric',minute:'2-digit'});};
   const calls = [
@@ -20,7 +21,8 @@
     {name:'Mai Nguyễn',id:'call-2',type:'missed-video',summary:'Missed · Video · '+callTime(1,14,24)},
     {name:'Sally Thanh Hoang',id:'call-4',type:'missed-voice',summary:'Missed · Voice · '+callTime(1,10,41)},
     {name:'Kim Tuyen',id:'call-5',type:'outgoing-voice',summary:'Outgoing · Voice · '+callTime(2,16,10)},
-    {name:'Mai Nguyễn',id:'call-6',type:'outgoing-video',summary:'Outgoing · Video · '+callTime(3,11,5)}
+    {name:'Mai Nguyễn',id:'call-6',type:'outgoing-video',summary:'Outgoing · Video · '+callTime(3,11,5)},
+    ...(window.NEXORA_COMMUNITY_DEMO?.connect?.calls||[]).map(call=>({...call,summary:(call.type.startsWith('missed-')?'Missed':'Outgoing')+' · '+(call.type.endsWith('video')?'Video':'Voice')+' · '+callTime(call.days,call.hour,call.minute)}))
   ];
   const communities = [
     {id:'dallas', name:'Thợ Nail Dallas – Fort Worth', type:'city', detail:'Dallas – Fort Worth · 962 members'},
@@ -38,8 +40,13 @@
   function load() {
     try {
       const value = JSON.parse(localStorage.getItem(key));
-      return value && typeof value === 'object' ? {...clone(defaults),...value} : clone(defaults);
-    } catch { return clone(defaults); }
+      return withDemoChats(value && typeof value === 'object' ? {...clone(defaults),...value} : clone(defaults));
+    } catch { return withDemoChats(clone(defaults)); }
+  }
+  function withDemoChats(value) {
+    const sources=value.sourceChats&&typeof value.sourceChats==='object'&&!Array.isArray(value.sourceChats)?value.sourceChats:{};
+    value.sourceChats={...Object.fromEntries((window.NEXORA_COMMUNITY_DEMO?.connect?.chats||[]).filter(chat=>chat.recipient!==currentMember).map(chat=>[chat.id,{recipient:chat.recipient,reference:chat.reference,sourceId:'demo:'+chat.id}])),...sources};
+    return value;
   }
   let state = load();
   if (!Array.isArray(state.deletedCalls)) state.deletedCalls = [];
@@ -332,7 +339,8 @@
       html = thread('Sally Thanh Hoang','Mẫu Gel-X và lịch hẹn',[{text:'Chị gửi giúp em hình mẫu Gel-X hồng sữa tiệm mới đăng nhé.'},{text:'Được em, mẫu đó có nhũ nhẹ và đá ở hai ngón. Em thích độ dài vừa hay dài?',mine:true},{text:'Em muốn dài vừa thôi chị, để làm việc gõ máy vẫn tiện. Chiều thứ Sáu tiệm còn giờ không?'}],'chat-sally',true);
     } else if (state.sourceChats[kind]) {
       const source = state.sourceChats[kind];
-      html = thread(source.recipient, source.reference, [], kind, true);
+      const messages=window.NEXORA_COMMUNITY_DEMO?.connect?.chats?.find(chat=>chat.id===kind)?.messages||[];
+      html = thread(source.recipient, source.reference, messages, kind, true);
     } else if (kind.startsWith('group-')&&window.NEXORA_COMMUNITY_CONNECT) {
       const room=window.NEXORA_COMMUNITY_CONNECT.resolveThread(kind);
       if(!room){currentMessages=[];pendingChatAttachment=null;mediaGeneration++;closeChatRecording();const panel=$('#detailPanel');panel.replaceChildren();panel.classList.add('hidden');currentDetail='';showSection('groups');return false;}
@@ -405,7 +413,7 @@
       return '<button class="row-button" data-detail="' + detail + '" data-initials="' + esc(initials) + '"><span><strong>' + esc(member.name) + '</strong><small>' + esc(member.handle) + ' · ' + esc(member.id) + '</small></span><span class="arrow">›</span></button>';
     }).join('');
   }
-  const conversationSamples={'chat-kim':'Em gửi giúp chị vài mẫu và ngày em trống, chị xác nhận lịch lại trong chiều nay.','chat-sally':'Em muốn dài vừa thôi chị, để làm việc gõ máy vẫn tiện. Chiều thứ Sáu tiệm còn giờ không?','group-houston':'Bạn gửi giúp giá theo chiếc và khu vực nhận nhé.','group-art':'Mình mang cọ liner và tip mẫu, cần chuẩn bị thêm màu gì không?'};
+  const conversationSamples={'chat-kim':'Em gửi giúp chị vài mẫu và ngày em trống, chị xác nhận lịch lại trong chiều nay.','chat-sally':'Em muốn dài vừa thôi chị, để làm việc gõ máy vẫn tiện. Chiều thứ Sáu tiệm còn giờ không?','group-houston':'Bạn gửi giúp giá theo chiếc và khu vực nhận nhé.','group-art':'Mình mang cọ liner và tip mẫu, cần chuẩn bị thêm màu gì không?',...Object.fromEntries((window.NEXORA_COMMUNITY_DEMO?.connect?.chats||[]).map(chat=>[chat.id,chat.messages.at(-1)?.text||'']))};
   function renderConversationPreviews() {
     for (const id of ['chat-kim','chat-sally','group-houston','group-art','group-new','chat-mai',...Object.keys(state.sourceChats)]) {
       const messages = state.sentMessages[id];

@@ -66,25 +66,25 @@
       return clone({...defaultProfile(id === member() ? memberName() : id), ...value});
     }
     function seedDemo() {
-      try { if (localStorage.getItem(STORAGE_KEY)) return; } catch { return; }
-      const rows = getJobs();
-      const profiles = {};
+      const data=readState();if(!data)return;
+      const before=JSON.stringify(data),rows=getJobs(),profiles=data.profiles;
       for (const row of rows.filter(seeking)) {
         const id = String(row.ownerId || row.owner || '');
-        if (!id || id === member()) continue;
+        if (!id || id === member() || profiles[id]) continue;
         const [cityName, stateCode] = String(row.city || '').split(',').map(part=>part.trim());
-        profiles[id] = {...defaultProfile(row.owner), exists:true, basicSavedAt:row.createdAt || stamp(), experience:row.experience || 'ThreeToFive', cityName, stateCode:stateCode || row.state || '', bio:row.description || '', skills:Array.isArray(row.skills)?row.skills:String(row.skills || '').split(',').map(value=>value.trim()).filter(Boolean), languages:['Vi','En'], jobTypes:['FullTime','Weekend'], payTypes:['Negotiable'], portfolioImageUrls:(row.photos || []).map(safeImage).filter(Boolean), completionPercent:80};
+        profiles[id] = {...defaultProfile(row.owner), exists:true, basicSavedAt:row.createdAt || stamp(), experience:row.experience || 'ThreeToFive', cityName, stateCode:stateCode || row.state || '', bio:row.description || '', skills:Array.isArray(row.skills)?row.skills:String(row.skills || '').split(',').map(value=>value.trim()).filter(Boolean), languages:['Vi','En'], jobTypes:row.workTypes||['FullTime','Weekend'], payTypes:['Negotiable'], portfolioImageUrls:(row.photos || []).map(safeImage).filter(Boolean), completionPercent:80};
       }
-      // Seed only explicit demo candidates. Their records remain member-scoped and cancellable.
-      const applications = [];
-      const hiring = rows.find(row=>!seeking(row)&&own(row)&&active(row));
-      if (hiring) for (const [index, name] of ['Jessica Nguyen','David Le'].entries()) {
-        const id = 'demo-candidate-' + (index + 1);
-        profiles[id] = {...defaultProfile(name), exists:true, basicSavedAt:'2026-10-20T14:00:00Z', cityName:'Houston', stateCode:'TX', experience:index?'FiveToTen':'ThreeToFive', languages:['Vi','En'], skills:index?['Acrylic','Dipping','Pedicure']:['Gel-X','Nail Art','Manicure'], jobTypes:['FullTime'], payTypes:['SalaryPlusCommission'], bio:index?'Chuyên bột và dipping, có thể làm cuối tuần.':'Chuyên Gel-X, làm nhanh, sạch sẽ.', licenseType:'Studying', phone:index?'7135550199':'8325550138', completionPercent:80};
-        applications.push({id:'demo-application-'+hiring.id+'-'+index,postingId:hiring.id,ownerUserId:String(hiring.ownerId || hiring.owner),applicantUserId:id,status:'Submitted',version:1,note:index?'Có thể làm cuối tuần.':'Có thể bắt đầu từ tuần sau.',sharePhone:!index,submittedAt:'2026-10-27T15:00:00Z',cancelledAt:null,postingTitle:hiring.title,businessName:hiring.owner,city:hiring.city,profileSnapshot:clone(profiles[id])});
+      // Stable sample IDs fill new demo posts without replacing edited profiles or applications.
+      for(const hiring of rows.filter(row=>!seeking(row)&&own(row)&&active(row))) {
+        if(!window.NEXORA_COMMUNITY_DEMO?.extra?.jobs?.some(row=>row.id===hiring.id)&&data.applications.length)continue;
+        const samples=window.NEXORA_COMMUNITY_DEMO?.jobCandidates?.[hiring.role];
+        for (const [index, candidate] of (samples||[{name:'Jessica Nguyen'},{name:'David Le'}]).entries()) {
+          const name=candidate.name,id='demo-candidate-'+(samples?(hiring.role==='Lễ tân'?'reception-':'manager-'):'')+(index+1),applicationId='demo-application-'+hiring.id+'-'+index;
+          profiles[id] ||= {...defaultProfile(name), exists:true, basicSavedAt:'2026-10-20T14:00:00Z', cityName:'Houston', stateCode:'TX', experience:candidate.experience||(index?'FiveToTen':'ThreeToFive'), languages:['Vi','En'], skills:candidate.skills||(index?['Acrylic','Dipping','Pedicure']:['Gel-X','Nail Art','Manicure']), jobTypes:['FullTime'], payTypes:['Negotiable'], bio:candidate.bio||(index?'Chuyên bột và dipping, có thể làm cuối tuần.':'Chuyên Gel-X, làm nhanh, sạch sẽ.'), licenseType:samples?'':'Studying', phone:index?'7135550199':'8325550138', completionPercent:80};
+          if(!data.applications.some(row=>row.id===applicationId))data.applications.push({id:applicationId,postingId:hiring.id,ownerUserId:String(hiring.ownerId || hiring.owner),applicantUserId:id,status:'Submitted',version:1,note:index?'Có thể làm cuối tuần.':'Có thể bắt đầu từ tuần sau.',sharePhone:!index,submittedAt:hiring.createdAt||'2026-10-27T15:00:00Z',cancelledAt:null,postingTitle:hiring.title,businessName:hiring.owner,city:hiring.city,profileSnapshot:clone(profiles[id])});
+        }
       }
-      const data = {...emptyState(),profiles,applications};
-      try { localStorage.setItem(STORAGE_KEY,JSON.stringify(data)); } catch { storageProblem = true; }
+      if(before!==JSON.stringify(data))try {localStorage.setItem(STORAGE_KEY,JSON.stringify(data));}catch{storageProblem=true;}
     }
     function saveProfile(step, input) {
       if (role() !== 'staff' || !STEPS.includes(step)) return false;

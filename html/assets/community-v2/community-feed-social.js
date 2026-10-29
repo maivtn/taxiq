@@ -48,7 +48,7 @@
     function ensurePost(post) {
       const key=String(post.id);
       if(!Object.hasOwn(state.posts,key)||!state.posts[key]||typeof state.posts[key]!=='object') {
-        const seeds=demoComments[key]||[];
+        const seeds=demoComments[key]||post.sampleComments||[];
         state.posts[key]={baseLikes:Number(post.likeCount)||({f5:24,f1:12,f2:18}[key]||0),likedBy:[],comments:seeds.map(([owner,body],index)=>({id:'social-demo-'+key+'-'+index,owner,body,parentId:null,createdAt:post.createdAt||new Date(Date.now()-3600000*(index+1)).toISOString()}))};
       }
       const entry=state.posts[key];

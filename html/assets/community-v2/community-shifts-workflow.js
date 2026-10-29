@@ -46,6 +46,13 @@
       try { value = JSON.parse(localStorage.getItem(STORAGE_KEY) || '{}'); } catch { value = {}; }
       return {version:1,availability:safeMap(value?.availability),zelle:safeMap(value?.zelle),assignments:Array.isArray(value?.assignments) ? value.assignments.filter(row=>row?.id&&row.shiftId&&row.worker) : [],settlements:Array.isArray(value?.settlements) ? value.settlements.filter(row=>row?.id&&row.assignmentId&&row.shiftId) : [],invitations:Array.isArray(value?.invitations) ? value.invitations.filter(row=>row?.id&&row.shiftId&&row.worker) : []};
     }
+    function seedDemo() {
+      const samples=window.NEXORA_COMMUNITY_DEMO?.shiftWorkflow;if(!samples)return;
+      const state=read();let changed=false;
+      for(const row of samples.assignments)if(shiftById(row.shiftId)&&!state.assignments.some(item=>item.id===row.id)){state.assignments.push(clone(row));changed=true;}
+      for(const row of samples.settlements)if(state.assignments.some(item=>item.id===row.assignmentId)&&!state.settlements.some(item=>item.id===row.id)){state.settlements.push(clone(row));changed=true;}
+      if(changed)try{localStorage.setItem(STORAGE_KEY,JSON.stringify(state));}catch{}
+    }
     let view = {tab:role()==='owner'?'my-shifts':'browse',filter:'Active',paymentRole:'All',paymentFilter:'All',page:1,shiftId:null,assignmentId:null,settlementId:null}, lastScope = scope(), dialog = null, destroyed = false, errorMessage = '';
     const tell = text => adapter.toast?.(text);
     const fail = code => { throw new Error(error(code)); };
@@ -719,8 +726,8 @@
     const languageObserver=new MutationObserver(()=>{render();refreshDialog();});languageObserver.observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
     const refreshTimer=window.setInterval(()=>{if(!document.getElementById('dayworkView')?.classList.contains('hide'))render();if(dialog&&document.querySelector('.shifts-dialog')&&!document.querySelector('.shifts-dialog form')&&!['claim','dispute','setup','cancel','checkIn'].includes(dialog.type))refreshDialog();},30000);
     document.addEventListener('click',onClick,true);document.addEventListener('change',onChange,true);document.addEventListener('submit',onSubmit,true);document.addEventListener('keydown',onKeydown,true);window.addEventListener('storage',onStorage);
-    const api={render,enhance,enhanceForm:enhance,collect,beforeSave,afterSave,openShift,navigate,act,openSettlement,openAssignment,onDialogClosed,reset(){view={tab:role()==='owner'?'my-shifts':'browse',filter:'Active',paymentRole:'All',paymentFilter:'All',page:1};errorMessage='';closeDialog();render();},destroy(){destroyed=true;languageObserver.disconnect();window.clearInterval(refreshTimer);document.removeEventListener('click',onClick,true);document.removeEventListener('change',onChange,true);document.removeEventListener('submit',onSubmit,true);document.removeEventListener('keydown',onKeydown,true);window.removeEventListener('storage',onStorage);}};
-    mounted=api;render();return api;
+    const api={render,enhance,enhanceForm:enhance,collect,beforeSave,afterSave,openShift,navigate,act,openSettlement,openAssignment,onDialogClosed,reset(){view={tab:role()==='owner'?'my-shifts':'browse',filter:'Active',paymentRole:'All',paymentFilter:'All',page:1};errorMessage='';closeDialog();seedDemo();render();},destroy(){destroyed=true;languageObserver.disconnect();window.clearInterval(refreshTimer);document.removeEventListener('click',onClick,true);document.removeEventListener('change',onChange,true);document.removeEventListener('submit',onSubmit,true);document.removeEventListener('keydown',onKeydown,true);window.removeEventListener('storage',onStorage);}};
+    mounted=api;seedDemo();render();return api;
   }
   window.NEXORA_COMMUNITY_SHIFTS={mount,STORAGE_KEY};
 })();
