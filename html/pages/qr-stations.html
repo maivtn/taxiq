@@ -56,7 +56,7 @@
   <link rel="stylesheet" href="../assets/nexora-icons.css">
   <link rel="stylesheet" href="../assets/nexora-shell.css?v=20261028-restore-subgroup-menus">
   <link rel="stylesheet" href="../assets/qr-stations.css?v=no-page-background-20261028">
-  <link rel="stylesheet" href="../assets/oneqr-tip.css?v=lucide-20261029">
+  <link rel="stylesheet" href="../assets/oneqr-tip.css?v=created-actions-20261029">
   <link rel="stylesheet" href="../assets/oneqr-contact-card.css?v=card-colors-3">
   <link rel="stylesheet" href="../assets/oneqr-experience.css?v=1">
   <link rel="stylesheet" href="../assets/nexora-local-admin.css?v=merged-checkin-20261028">
@@ -121,12 +121,15 @@
                   <div class="tip-qr-business">
                     <button class="tip-qr-code" type="button" data-tip-code data-oneqr-view aria-label="View QR code" hidden><span class="qr-code-art" data-qr-value="../customer/oneqr-landing.html" data-qr-size="160" role="img" aria-label="Tip QR"></span></button>
                     <div class="tip-qr-business-copy">
-                      <h3>Bitcoin Nail Bar</h3>
+                      <div class="tip-qr-business-title">
+                        <h3>Bitcoin Nail Bar</h3>
+                        <a class="tip-qr-open-link" href="../customer/oneqr-landing.html" target="_blank" rel="noopener" aria-label="Open OneQR landing page" data-tip-created hidden><i data-lucide="external-link" aria-hidden="true"></i></a>
+                      </div>
                       <p data-tip-copy="qrText">Create one business tip QR; print copies for customers to use.</p>
                       <div class="tip-qr-actions">
                         <button class="tip-qr-button" type="button" data-tip-action="generate"><i data-lucide="qr-code" aria-hidden="true"></i><span data-tip-copy="generateTip">Generate tip QR</span></button>
-                        <button class="tip-qr-button is-secondary" type="button" data-tip-action="view" data-oneqr-view hidden><span data-tip-copy="viewQR">View QR code</span></button>
-                        <button class="tip-qr-button is-secondary" type="button" data-tip-action="print" data-oneqr-print hidden><span data-tip-copy="printQR">Print QR code</span></button>
+                        <button class="tip-qr-button is-info" type="button" data-tip-action="view" data-tip-created data-oneqr-view hidden><i data-lucide="qr-code" aria-hidden="true"></i><span data-tip-copy="viewQR">View QR to Download</span></button>
+                        <button class="tip-qr-button is-secondary" type="button" data-tip-action="copy" data-tip-created hidden><i data-lucide="copy" aria-hidden="true"></i><span data-tip-copy="copyLink" aria-live="polite">Copy link</span></button>
                       </div>
                     </div>
                   </div>
@@ -813,7 +816,7 @@
   <script src="../assets/qr-stations-oneqr.js?v=merged-checkin-20261028"></script>
   <script src="../assets/oneqr-builder-insights.js?v=1"></script>
   <script src="../assets/qr-stations-workflows.js"></script>
-  <script src="../assets/oneqr-tip.js?v=po-20261027"></script>
+  <script src="../assets/oneqr-tip.js?v=created-actions-20261029"></script>
   <script src="../assets/pos-qr-checkin.js?v=merged-checkin-20261028"></script>
   <script src="../assets/pos-checkin-devices.js?v=merged-checkin-20261028"></script>
   <script src="../assets/oneqr-checkin.js?v=merged-checkin-20261028"></script>

@@ -12,7 +12,8 @@
       qrText: 'Tạo một mã QR nhận tip cho tiệm; có thể in nhiều bản để khách sử dụng.',
       generateTip: 'Tạo mã QR nhận tip',
       viewQR: 'Xem mã QR',
-      printQR: 'In mã QR',
+      copyLink: 'Sao chép',
+      copied: 'Đã sao chép',
       activity: 'Hoạt động của mã QR',
       activityDesc: 'Theo dõi tổng lượt quét của mã QR chính.',
       scans: 'Tổng lượt quét',
@@ -28,8 +29,9 @@
       tipDescription: 'Create one tip QR code for your business. Customers scan it to select a technician and send a tip.',
       qrText: 'Create one business tip QR; print copies for customers to use.',
       generateTip: 'Generate tip QR',
-      viewQR: 'View QR code',
-      printQR: 'Print QR code',
+      viewQR: 'View QR to Download',
+      copyLink: 'Copy link',
+      copied: 'Copied',
       activity: 'QR activity',
       activityDesc: 'See total scans of your main QR code.',
       scans: 'Total QR scans',
@@ -43,6 +45,35 @@
   };
   var language = 'en';
   var generateButton = screen.querySelector('[data-tip-action="generate"]');
+  var copyButton = screen.querySelector('[data-tip-action="copy"]');
+  var copyLabel = copyButton.querySelector('[data-tip-copy="copyLink"]');
+  var qrCode = screen.querySelector('[data-tip-code] [data-qr-value]');
+  var copyTimer;
+  var copied = false;
+
+  function copyTipLink() {
+    var url = new URL(qrCode.getAttribute('data-qr-value'), window.location.href).href;
+
+    function fallbackCopy() {
+      var textarea = document.createElement('textarea');
+      textarea.value = url;
+      textarea.readOnly = true;
+      textarea.style.position = 'fixed';
+      textarea.style.opacity = '0';
+      document.body.appendChild(textarea);
+      textarea.select();
+      var success = false;
+      try { success = document.execCommand('copy'); } catch (error) { /* clipboard unavailable */ }
+      textarea.remove();
+      copyButton.focus();
+      return success ? Promise.resolve() : Promise.reject();
+    }
+
+    if (navigator.clipboard && navigator.clipboard.writeText) {
+      return navigator.clipboard.writeText(url).catch(fallbackCopy);
+    }
+    return fallbackCopy();
+  }
 
   function setLanguage(nextLanguage) {
     language = nextLanguage;
@@ -51,6 +82,7 @@
       element.textContent = copy[language][element.getAttribute('data-tip-copy')];
     });
     screen.querySelector('[data-tip-code]').setAttribute('aria-label', copy[language].viewQR);
+    if (copied) copyLabel.textContent = copy[language].copied;
     screen.querySelectorAll('[data-tip-language]').forEach(function (button) {
       button.setAttribute('aria-pressed', String(button.getAttribute('data-tip-language') === language));
     });
@@ -67,12 +99,27 @@
     var action = button.getAttribute('data-tip-action');
     if (action === 'generate') {
       screen.querySelector('[data-tip-code]').hidden = false;
-      screen.querySelectorAll('[data-tip-action="view"], [data-tip-action="print"]').forEach(function (control) {
+      screen.querySelectorAll('[data-tip-created]').forEach(function (control) {
         control.hidden = false;
       });
       generateButton.hidden = true;
       screen.querySelector('[data-tip-action="view"]').focus();
       return;
+    }
+    if (action === 'copy') {
+      copyTipLink().then(function () {
+        copied = true;
+        copyLabel.textContent = copy[language].copied;
+        copyButton.classList.add('is-copied');
+        clearTimeout(copyTimer);
+        copyTimer = setTimeout(function () {
+          copied = false;
+          copyLabel.textContent = copy[language].copyLink;
+          copyButton.classList.remove('is-copied');
+        }, 1800);
+      }, function () {
+        screen.querySelector('.tip-qr-open-link').focus();
+      });
     }
   });
 

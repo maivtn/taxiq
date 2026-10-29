@@ -26,14 +26,23 @@
 
 .tip-qr-grid { display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr); gap: 18px; margin-top: 20px; }
 .tip-qr-card { min-width: 0; border: 1px solid var(--nexora-border); border-radius: 16px; padding: 24px; background: #fff; }
-.tip-qr-business { display: flex; align-items: center; gap: 22px; height: 100%; }
-.tip-qr-business-copy { min-width: 0; }
+.tip-qr-business { display: flex; flex-wrap: wrap; align-items: center; gap: 22px; height: 100%; }
+.tip-qr-business-copy { min-width: 0; flex: 1 1 280px; }
+.tip-qr-business-title { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.tip-qr-open-link { display: inline-flex; flex: none; align-items: center; justify-content: center; min-width: 36px; min-height: 36px; border-radius: 8px; color: var(--nexora-muted); }
+.tip-qr-open-link:hover { background: #e9e9ff; color: #4648d4; }
+.tip-qr-open-link:focus-visible { outline: 3px solid #4648d4; outline-offset: 3px; }
+.tip-qr-open-link svg { width: 16px; height: 16px; }
 .tip-qr-business-copy > p { margin-top: 14px; }
 .tip-qr-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
 .tip-qr-button { display: inline-flex; min-height: 42px; align-items: center; justify-content: center; gap: 8px; border: 1px solid #4648d4; border-radius: 9px; padding: 10px 15px; background: #4648d4; color: #fff; font: inherit; font-size: 13px; font-weight: 700; cursor: pointer; }
 .tip-qr-button:hover { border-color: #3a3bbf; background: #3a3bbf; }
-.tip-qr-button.is-secondary { background: #fff; color: #4648d4; }
+.tip-qr-button.is-info { border-color: #a5ddff; background: #f0f9ff; color: #0369a1; }
+.tip-qr-button.is-info:hover { border-color: #7dd3fc; background: #e0f2fe; }
+.tip-qr-button.is-secondary { border-color: #d8e2ef; background: #fff; color: var(--nexora-text); }
 .tip-qr-button.is-secondary:hover { background: #e9e9ff; color: #3a3bbf; }
+.tip-qr-button[data-tip-created] { flex: 1 1 auto; }
+.tip-qr-button.is-copied { border-color: #a7f3d0; background: #ecfdf5; color: #047857; }
 .tip-qr-button svg { width: 20px; height: 20px; flex: none; }
 .tip-qr button:focus-visible { outline: 3px solid #4648d4; outline-offset: 3px; }
 .tip-qr-code {
