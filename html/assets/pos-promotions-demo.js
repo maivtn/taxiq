@@ -1479,28 +1479,6 @@
     ];
     const trackingChannels = [
       {
-        id: "pos",
-        name: "POS checkout",
-        color: "#634dff",
-        views: 4920,
-        clicks: 760,
-        redeems: 188,
-        revenue: 5740,
-        cost: 0,
-        shares: { "source-0": 0.48, "source-2": 0.31, "source-11": 0.21 },
-      },
-      {
-        id: "oneqr",
-        name: "OneQR hero",
-        color: "#00a5ef",
-        views: 3860,
-        clicks: 698,
-        redeems: 64,
-        revenue: 1980,
-        cost: 0,
-        shares: { "source-0": 0.39, "source-2": 0.35, "source-11": 0.26 },
-      },
-      {
         id: "search",
         name: "Search Deals",
         color: "#f59e0b",
@@ -1543,17 +1521,6 @@
         revenue: 0,
         cost: 0,
         shares: {},
-      },
-      {
-        id: "checkin",
-        name: "Check-in screen",
-        color: "#10b981",
-        views: 1390,
-        clicks: 156,
-        redeems: 23,
-        revenue: 860,
-        cost: 0,
-        shares: { "source-0": 0.35, "source-2": 0.4, "source-11": 0.25 },
       },
     ];
     const history = [
@@ -1753,12 +1720,41 @@
         select.value = promotions.some((p) => p.id === value) ? value : "all";
       }
     }
+    function selectedTrackingChannels() {
+      const program = $("tracking-promotion").value;
+      const scope =
+        program === "all"
+          ? promotions
+          : promotions.filter((promotion) => promotion.id === program);
+      const selected = new Set(
+        scope.flatMap(
+          (promotion) => promotion.paidPlacements || promotion.channels || [],
+        ),
+      );
+      return trackingChannels.filter((channel) => selected.has(channel.id));
+    }
+    function syncTrackingChannels() {
+      const select = $("tracking-channel");
+      const value = select.value;
+      const channels = selectedTrackingChannels();
+      select.innerHTML =
+        '<option value="all">All channels</option>' +
+        channels
+          .map(
+            (channel) =>
+              `<option value="${channel.id}">${escape(channel.name)}</option>`,
+          )
+          .join("");
+      select.value = channels.some((channel) => channel.id === value)
+        ? value
+        : "all";
+    }
     function trackingRows() {
       const program = $("tracking-promotion").value,
         period = Number($("tracking-period").value),
         channel = $("tracking-channel").value;
       const factor = period === 7 ? 7 / 30 : period === 90 ? 3 : 1;
-      return trackingChannels
+      return selectedTrackingChannels()
         .filter((c) => channel === "all" || c.id === channel)
         .map((c) => {
           const weight = program === "all" ? 1 : c.shares[program] || 0;
@@ -1769,6 +1765,7 @@
         });
     }
     function renderTracking() {
+      syncTrackingChannels();
       const rows = trackingRows(),
         totals = rows.reduce(
           (sum, row) => {
@@ -1778,14 +1775,9 @@
           },
           { views: 0, clicks: 0, redeems: 0, revenue: 0, cost: 0 },
         );
-      const weight = totals.views / 12480;
       const metrics = [
         ["Total views", number(totals.views), "+12.4%"],
-        ["Clicks / QR scans", number(totals.clicks), "+9.8%"],
-        ["Booking taps", number(Math.round(428 * weight)), "+7.2%"],
-        ["POS redemptions", number(totals.redeems), "+15.1%"],
-        ["Promo revenue", money(totals.revenue), "+18.6%"],
-        ["New customers", number(Math.round(87 * weight)), "+6.4%"],
+        ["Clicks", number(totals.clicks), "+9.8%"],
       ];
       const defaultReport =
         $("tracking-promotion").value === "all" &&
@@ -1815,9 +1807,8 @@
           (a, b) => b.clicks / b.views - a.clicks / a.views,
         )[0],
         revenue = [...viewed].sort((a, b) => b.revenue - a.revenue)[0];
-      $("tracking-insight").textContent = defaultReport
-        ? "OneQR hero has the strongest engagement rate at 18.1%, while POS checkout drives the most completed redemptions and promotion revenue."
-        : highest && revenue
+      $("tracking-insight").textContent =
+        highest && revenue
           ? `${highest.name} · CTR ${((highest.clicks / highest.views) * 100).toFixed(1)}% · ${revenue.name} · ${money(revenue.revenue)}`
           : "—";
     }
@@ -1873,11 +1864,6 @@
       renderTracking();
       renderHistory();
     }
-    $("tracking-channel").innerHTML =
-      '<option value="all">All channels</option>' +
-      trackingChannels
-        .map((c) => `<option value="${c.id}">${c.name}</option>`)
-        .join("");
     ["program-search", "program-status"].forEach((id) =>
       $(id).addEventListener(
         id === "program-search" ? "input" : "change",

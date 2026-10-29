@@ -1048,7 +1048,7 @@
 }
 .demo-metrics {
   display: grid;
-  grid-template-columns: repeat(6, minmax(0, 1fr));
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 10px;
   margin-bottom: 14px;
 }
@@ -1153,9 +1153,6 @@
   }
   .pos-promo-dialog--page .promo-create-tools {
     position: static !important;
-  }
-  .demo-metrics {
-    grid-template-columns: repeat(3, minmax(0, 1fr));
   }
   .demo-template-filters {
     grid-template-columns: 1fr;
