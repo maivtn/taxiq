@@ -26,6 +26,35 @@ body.embedded .top-actions { gap: 3px; }
 body.embedded .top-actions button { width: 34px; height: 34px; }
 body.embedded .header-menu { top: 60px; }
 
+/* Split tabs share one active surface and elevation. */
+.top .tab-group { border-radius: 15px; }
+.top .tab-group:has(> .tab.active) {
+  background: linear-gradient(110deg, #4d5df1, #8252e9);
+  box-shadow: inset 0 1px 0 #ffffff70, 0 3px 0 #5144ba, 0 7px 15px #5148bd29;
+}
+.top .tab-group:has(> .tab.active) > .tab.active,
+.top .tab-group:has(> .tab.active) > .tab-sub-toggle {
+  border-color: transparent;
+  background: transparent;
+  box-shadow: none;
+}
+.top .tab-group > .tab:is(:hover, :active) {
+  transform: none;
+  box-shadow: none;
+}
+.top .tab-group > .tab-sub-toggle {
+  position: relative;
+  min-width: 48px;
+  padding: 0;
+}
+.top .tab-group > .tab-sub-toggle svg {
+  position: absolute;
+  top: calc(50% - 8px);
+  right: 16px;
+  width: 16px;
+  height: 16px;
+}
+
 @media (max-width: 800px) {
   body.embedded .main { height: 100dvh; }
   body.embedded .community-heading {
