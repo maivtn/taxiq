@@ -928,9 +928,6 @@
       $("activate-promotion").textContent = hasPublic
         ? "Turn on · automatic Public review"
         : t("turnOn");
-      $("publication-note").textContent = hasPublic
-        ? "Your own channels run immediately without content review. NEXORA automatically reviews public advertising placements."
-        : "";
       if (existing) {
         $("create-title").textContent = t("editTitle");
         $("save-note").textContent = t("editNote");

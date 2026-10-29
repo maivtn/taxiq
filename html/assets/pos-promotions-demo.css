@@ -373,15 +373,6 @@
   color: #768096;
   line-height: 1.5;
 }
-.demo-public-policy {
-  padding: 12px;
-  border: 1px solid #c7d2fe;
-  background: #eef2ff;
-  border-radius: 9px;
-  font-size: 11px;
-  color: #4338ca;
-  line-height: 1.6;
-}
 .demo-channel-toggle {
   position: relative;
 }
@@ -2469,8 +2460,7 @@
 #promotion-form .editor-footer-actions {
   flex-shrink: 1;
 }
-#promotion-form .promo-error:empty,
-#promotion-form #publication-note:empty {
+#promotion-form .promo-error:empty {
   display: none;
 }
 @media (max-width: 1180px) {
