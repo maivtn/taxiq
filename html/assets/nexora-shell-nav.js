@@ -458,6 +458,7 @@
           {
             "key": "qr-tai-tiem",
             "label": "In-salon QR",
+            "sectionLabel": true,
             "children": [
               {
                 "key": "tong-quan-one-qr",
@@ -489,6 +490,7 @@
           {
             "key": "chia-se-moi",
             "label": "Share & invite",
+            "sectionLabel": true,
             "children": [
               {
                 "key": "lien-ket-gioi-thieu",
@@ -512,6 +514,7 @@
           {
             "key": "thu-nhap-tiem",
             "label": "Salon income",
+            "sectionLabel": true,
             "children": [
               {
                 "key": "tong-quan-thanh-toan",
@@ -528,6 +531,7 @@
           {
             "key": "chi-tra-nhan-vien",
             "label": "Staff payouts",
+            "sectionLabel": true,
             "children": [
               {
                 "key": "tong-quan-tien-tip",
@@ -554,6 +558,7 @@
           {
             "key": "may-ca-the",
             "label": "Card terminal",
+            "sectionLabel": true,
             "children": [
               {
                 "key": "hoat-dong-thanh-toan",
@@ -565,6 +570,7 @@
           {
             "key": "cau-hinh",
             "label": "Settings",
+            "sectionLabel": true,
             "children": [
               {
                 "key": "quan-ly-danh-muc",

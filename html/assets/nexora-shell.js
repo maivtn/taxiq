@@ -198,12 +198,14 @@
       return;
     }
     function normalize(nodes) {
-      var groups = nodes.filter(function(node) { return node.type === 'group'; });
+      var groups = nodes.filter(function(node) { return node.type === 'group' && !node.sectionLabel; });
       var selected = preferActive && groups.find(function(node) { return groupIsActive(node, activeTab); });
       selected = selected || groups.find(function(node) { return expandedGroups[node.key] === true; });
       if (preferActive && selected && selected.productMenu && groupIsActive(selected, activeTab)) expandedGroups.products = true;
       groups.forEach(function(node) {
         expandedGroups[node.key] = node === selected;
+      });
+      nodes.forEach(function(node) {
         normalize(node.children || node.items || []);
       });
     }
@@ -428,6 +430,8 @@
       var label = ((depth === 0 || node.showIcon) && node.iconKey ? treeIcon(node) : '') + '<span class="shell-tree-label">' + esc(node.label) + '</span>' + (node.externalIndicator || node.newTab ? '<i class="sidebar-external-icon" data-lucide="arrow-up-right" aria-hidden="true"></i>' : '');
       var cls = (depth ? 'nav-subitem' : 'nav-item') + (node.shortcutTo ? ' shell-tree-shortcut' : '');
       if (node.toggleProducts) return '<button type="button" class="shell-products-toggle nav-parent' + (expandedGroups.products === true ? ' is-expanded' : '') + '" data-sidebar-products-toggle aria-expanded="' + (expandedGroups.products === true) + '" aria-controls="nexora-product-menu-community nexora-product-menu-booking nexora-product-menu-business-tools">' + label + CARET + '</button>';
+      // Captions keep the PO's grouping while exposing links with the product menu.
+      if (node.sectionLabel && node.children) return '<div class="shell-tree-section-label">' + esc(node.label) + '</div>' + renderTree(node.children, depth);
       if (node.children) {
         var open = expandedGroups[node.key] === true, id = 'nexora-subnav-' + node.key;
         var ancestor = groupIsActive(node, activeTab);
