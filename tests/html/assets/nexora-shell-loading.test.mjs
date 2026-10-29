@@ -10,7 +10,7 @@ const pageDirectory = new URL('../pages/', SOURCE_DIR);
 
 const cases = [
   ['booking-book-phase-1.html', '../assets/salon-data.js'],
-  ['community.html', 'https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js'],
+  ['community.html', '../assets/vendor/lucide.min.js'],
   ['salon-setup-reward.html', '../assets/promotions-store.js'],
   ['change-icon.html', 'https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js'],
   ['reward-promotions.html', 'https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js']

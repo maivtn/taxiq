@@ -10,7 +10,7 @@
   }
   async function mount(host,options={}){
     if(host.communityHub)return host.communityHub;
-    const url=new URL('nexora-community-complete.html?v=20261029-native-layout',BASE_URL);
+    const url=new URL('nexora-community-complete.html?v=20261029-staging-feed',BASE_URL);
     const parsed=new DOMParser().parseFromString(await read(url),'text/html');
     const styles=await Promise.all([...parsed.head.querySelectorAll('style,link[rel="stylesheet"]')].map(async node=>{const source=node.tagName==='STYLE'?url:new URL(node.getAttribute('href'),url);return scopedCSS(node.tagName==='STYLE'?node.textContent:await read(source),source);}));
     parsed.body.querySelectorAll('script').forEach(node=>node.remove());
@@ -60,7 +60,7 @@
       const viewHistory=[];
       const backButton=root.getElementById('backButton');
       root.querySelector('.community-heading').prepend(backButton);
-      function updateBackButton(){root.querySelector('.mobile-nav').hidden=view==='connect'?connectDetailOpen:communityModalOpen;backButton.hidden=view==='feed'&&!communityModalOpen&&viewHistory.length===0;const label=translations[language].backLabel;backButton.setAttribute('aria-label',label);backButton.title=label;}
+      function updateBackButton(){const detailOpen=view==='connect'?connectDetailOpen:communityModalOpen;app.classList.toggle('detail-open',detailOpen);root.querySelector('.mobile-nav').hidden=detailOpen;backButton.hidden=view==='feed'&&!communityModalOpen&&viewHistory.length===0;const label=translations[language].backLabel;backButton.setAttribute('aria-label',label);backButton.title=label;}
       function goBack(){if(!languageMenu.hidden||!notificationsMenu.hidden||!ecosystemMenu.hidden){closeMenus();return;}if(view!=='connect'&&communityModalOpen){sendToFrame(community,{type:'nexora-close-modal'});return;}if(view==='connect'&&connectDetailOpen){if(connectLoaded)sendToFrame(connect,{type:'nexora-back'});return;}if(hosted){notifyHost({type:'nexora-community-back'});return;}setView(viewHistory.pop()||'feed',false);}
       function notifyRequest(){let pending=true;try{const saved=JSON.parse(localStorage.getItem('nexora-connect-preview-v2'));if(saved&&saved.request)pending=saved.request==='pending';}catch{}root.getElementById('requestBadge').hidden=!pending;root.getElementById('notificationItem').hidden=!pending;root.getElementById('notificationEmpty').hidden=pending;}
       function updateMobileHeading(){const heading=root.querySelector('.community-heading h1');const name=({feed:translations[language].community,groups:translations[language].market,market:translations[language].market,pages:translations[language].pages,jobs:translations[language].jobs,daywork:translations[language].daywork,deals:translations[language].deals,blog:'Blog',connect:translations[language].connect})[view]||translations[language].community;heading.textContent=isCompact()?name:translations[language].community;}
@@ -111,6 +111,7 @@
       window.addEventListener('message',event=>{if(event.source!==community.contentWindow&&event.source!==connect.contentWindow)return;if(location.protocol!=='file:'&&event.origin!==location.origin)return;if(event.source===community.contentWindow&&event.data?.type==='nexora-modal-state'){communityModalOpen=Boolean(event.data.open);root.querySelector('.mobile-nav').hidden=communityModalOpen&&view!=='connect';updateBackButton();notifyHostDetail();}if(communityLoaded&&!community.hidden&&event.source===community.contentWindow&&event.data?.type==='nexora-prototype-view'){const next=event.data.view;if(!['feed','groups','market','pages','jobs','daywork','deals','blog'].includes(next))return;if(pendingCommunityView){if(next!==pendingCommunityView)return;pendingCommunityView=null;}if(view!==next)setView(next,true,true);}if(event.source===connect.contentWindow&&event.data?.type==='nexora-connect-back-community'){setView('feed');return;}if(event.source===connect.contentWindow&&event.data?.type==='nexora-connect-section'){connectSection=event.data.section;if(view==='connect')notifyHostRoute(false);}if(event.source===connect.contentWindow&&event.data?.type==='nexora-connect-detail'){connectDetailOpen=Boolean(event.data.open);notifyHostDetail();updateBackButton();}notifyRequest();});
       window.addEventListener('message',event=>{
         if(location.protocol!=='file:'&&event.origin!==location.origin)return;
+        if(event.source===community.contentWindow&&event.data?.type==='nexora-feed-post-close'){notifyHost({type:'nexora-feed-post-close'});return;}
         if(event.source===community.contentWindow&&event.data?.type==='nexora-community-contact'){
           pendingContact=event.data.contact;connectSection='messages';setView('connect');
           if(connectLoaded){sendToFrame(connect,{type:'nexora-open-contact',contact:pendingContact});pendingContact=null;}
@@ -149,7 +150,7 @@
       for(const frame of [community,connect])frame.addEventListener('load',()=>{const element=frame.contentDocument?.documentElement;if(element&&window.ResizeObserver)new ResizeObserver(syncPaneGutter).observe(element);syncPaneGutter();});
       if(context.native&&window.ResizeObserver)new ResizeObserver(()=>{updateMobileHeading();syncPaneGutter();if(tourState.active){root.querySelectorAll('.tour-target').forEach(el=>el.classList.remove('tour-target'));tourTarget()?.classList.add('tour-target');}}).observe(root.host);
       const communitySource=new URL(community.dataset.src,BASE_URL);
-      if(params.get('member'))communitySource.searchParams.set('member',params.get('member'));
+      if(params.get('member'))communitySource.searchParams.set('member',params.get('member'));for(const key of ['post','postId','comment','commentId','thread','threadId'])if(params.get(key))communitySource.searchParams.set(key,params.get(key));
       const connectSource=new URL(connect.dataset.src,BASE_URL);
       connectSource.searchParams.set('section',connectSection);
       ensurePane(view==='connect'?connect:community);

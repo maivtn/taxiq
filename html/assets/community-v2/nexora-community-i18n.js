@@ -21,6 +21,12 @@ Tìm nhân viên, đánh giá hoặc tip...	Search staff, reviews, or tips...
 Bảng tin	Feed
 Tìm bài đăng	Search listings
 Lọc	Filters
+Doanh nghiệp	Business
+Bảng tin chung	Main feed
+Nhóm đã tham gia	Joined groups
+Bản nháp của tôi	My drafts
+Rời nhóm	Leave group
+Tham gia	Join
 Lọc ngành nghề	Filter industries
 Lọc danh mục	Filter categories
 Lọc tiểu bang	Filter states
@@ -1061,7 +1067,9 @@ Joined in this preview.	Đã tham gia trong bản xem trước.
     return value;
   }
 
+  const ownedUI='[data-feed-composer],[data-feed-drafts],[data-community-authored],[data-social-ui],[data-social-dialog]';
   function updateNode(node) {
+    if(node.parentElement?.closest(ownedUI))return;
     if (!originals.has(node)) originals.set(node, node.nodeValue);
     const original = originals.get(node);
     const next = language === targetLanguage ? translate(original) : original;
@@ -1069,7 +1077,7 @@ Joined in this preview.	Đã tham gia trong bản xem trước.
   }
 
   function updateElement(element) {
-    if (['SCRIPT', 'STYLE', 'SVG'].includes(element.tagName)) return;
+    if (['SCRIPT', 'STYLE', 'SVG'].includes(element.tagName)||element.closest(ownedUI)) return;
     let attrs = originalAttrs.get(element);
     if (!attrs) { attrs = {}; originalAttrs.set(element, attrs); }
     for (const name of attrNames) {

@@ -27,3 +27,12 @@
 body.community-hub-active { overflow:hidden; }
 body.community-hub-active > .shell,
 body.community-hub-active .app-area { height:var(--community-viewport-height,100dvh); min-height:0; }
+
+@media (max-width: 768px) {
+  body.community-hub-active .sidebar:not(.is-open) { box-shadow:none; }
+}
+
+@media (max-width: 800px), (max-height: 500px) and (pointer: coarse) {
+  body.community-detail-open .app-area > .header { display:none; }
+  body.community-detail-open .content.community-v2-content { height:var(--community-viewport-height,100dvh); }
+}

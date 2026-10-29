@@ -4,8 +4,10 @@
   var frame = document.querySelector('#community-staging, #community-hub, [data-community-v2]');
   if (!frame) return;
   var origin = location.protocol === 'file:' ? '*' : location.origin;
-  var componentURL=new URL('community-v2/community-hub.js?v=20261029-native-layout',document.currentScript.src);
-  var hub=null,fallbackFrame=null;
+  var componentURL=new URL('community-v2/community-hub.js?v=20261029-staging-feed',document.currentScript.src);
+  var hub=null,fallbackFrame=null,clearPostOnBack=false,detailBackPending=false;
+  function clearPostLink(){var url=new URL(location.href);for(var key of ['post','postId','comment','commentId','thread','threadId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearPostOnBack=false;}
+  function clearDetailState(){if(history.state?.communityDetail){var state=Object.assign({},history.state);delete state.communityDetail;history.replaceState(state,'',location.href);}}
   var current = '';
   var detailOpen = false;
   var ready = false;
@@ -31,7 +33,9 @@
     var url = new URL(location.href);
     url.searchParams.set('tab', next);
     // Legacy group links retain their group context in the parent URL.
-    if (changed && detailOpen) {
+    if(detailBackPending) {
+      // Finish the pending modal traversal before writing the next route entry.
+    } else if (changed && detailOpen) {
       detailOpen = false;
       history.replaceState({community:next, communityPrevious:true}, '', url);
     } else if (changed && !replace) pushCommunityState({community:next}, '', url);
@@ -88,11 +92,14 @@
       send('nexora-community-navigate', {route:current});
     }
     if (data.type === 'nexora-community-route' && ready) show(data.route, true, Boolean(data.replace));
+    if(data.type==='nexora-feed-post-close'){clearPostOnBack=true;if(!detailOpen&&!detailBackPending)clearPostLink();}
     if (data.type === 'nexora-community-detail') {
       var open = Boolean(data.open);
-      if (open && !detailOpen) pushCommunityState({community:current, communityDetail:true}, '', location.href);
+      document.body.classList.toggle('community-detail-open',open);
+      if (open && !detailOpen && !detailBackPending) pushCommunityState({community:current, communityDetail:true}, '', location.href);
       detailOpen = open;
-      if (!open && history.state && history.state.communityDetail) history.back();
+      if (!open && !detailBackPending && history.state && history.state.communityDetail) {detailBackPending=true;history.back();}
+      else if(!open&&clearPostOnBack&&!detailBackPending)clearPostLink();
     }
     if (data.type === 'nexora-community-back') {
       if (history.state && history.state.communityPrevious) history.back();
@@ -101,6 +108,15 @@
   }
   window.addEventListener('message',function(event){if(fallbackFrame&&event.source===fallbackFrame.contentWindow&&(location.protocol==='file:'||event.origin===location.origin)&&event.data)receiveHubEvent(event.data);});
   window.addEventListener('popstate', function () {
+    if(clearPostOnBack)clearPostLink();
+    if(detailBackPending){
+      detailBackPending=false;
+      clearDetailState();
+      if(current!==route(new URLSearchParams(location.search).get('tab'))){var url=new URL(location.href);url.searchParams.set('tab',current);pushCommunityState({community:current},'',url);}
+      show(current,true,true);
+      if(detailOpen)pushCommunityState({community:current,communityDetail:true},'',location.href);
+      return;
+    }
     var next = new URLSearchParams(location.search).get('tab');
     if (detailOpen) {
       detailOpen = false;
@@ -116,6 +132,7 @@
   }
   // Keep ownership local instead of replacing the browser's history API.
   function recordInitialRoute() {
+    clearDetailState();
     show(new URLSearchParams(location.search).get('tab'), false, true);
     var params=new URLSearchParams(location.search);
     params.set('tab',current);
@@ -128,7 +145,7 @@
     load.then(mount).then(function(api){hub=api;ready=true;send('nexora-community-language',{language:communityLanguage()});send('nexora-community-navigate',{route:current});}).catch(function(error){
       console.error('Community native shell could not load; using the standalone preview.',error);
       fallbackFrame=document.createElement('iframe');fallbackFrame.title=frame.getAttribute('aria-label')||'NEXORA Community';fallbackFrame.style.cssText='display:block;width:100%;height:100%;border:0';
-      var source=new URL('nexora-community-complete.html',componentURL);params.set('tab',current);params.set('embedded','1');params.set('v','20261029-native-layout');source.search=params.toString();
+      var source=new URL('nexora-community-complete.html',componentURL);params.set('tab',current);params.set('embedded','1');params.set('v','20261029-staging-feed');source.search=params.toString();
       (frame.shadowRoot||frame).replaceChildren(fallbackFrame);fallbackFrame.src=source.href;
     });
   }

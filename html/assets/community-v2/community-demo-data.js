@@ -159,6 +159,8 @@
     {id:'blog-bistro-morning-tables',owner:'Saigon Bistro',origin:'NEXORA',title:'Ca sáng có khách nhóm: sắp bàn trước, chốt order từng bước',topic:'Nhà hàng',summary:'Một tin nhắn hỏi số người và giờ đến giúp quán chuẩn bị bàn, ly tách và người phụ trách trước khi khách bước vào.',body:'Sáng cuối tuần, quán thường có cả khách đi hai người lẫn nhóm bạn hẹn cà phê. Khi nhóm đông đến cùng lúc với các bàn nhỏ, điều dễ thiếu nhất lại là người nhận order và chỗ đặt món đang chờ mang ra.\n\nQuán mình nhắn hỏi trước số người, giờ đến và có trẻ nhỏ đi cùng hay không. Trước khi mở cửa, đội phục vụ đánh dấu những bàn cần ghép, chuẩn bị đủ ly tách và thống nhất ai nhận bàn nhóm. Order được nhắc lại một lần để khách kiểm tra trước khi chuyển vào quầy.\n\nCuối ca, cả nhóm xem bàn nào phải chờ và bước nào làm chậm. Có hôm chỉ cần dời chỗ để ly sạch gần quầy hơn là ca tiếp theo đã nhẹ hơn. Những thay đổi nhỏ được giữ lại khi đội phục vụ thấy thật sự hữu ích.',location:'Dallas, TX',cover:images.cafe,publishedAt:at(2,8,30)}
   ];
 
+  for(const post of feed)if(post.kind!=='deal'&&String(post.location||post.city||'').includes('Houston'))post.destinations={includeMainFeed:true,groupIds:[['showcase','tip','event'].includes(post.kind)?'g2':'g1']};
+
   const baselineKey = 'nexora-community-demo-baselines-v2';
   let baselines = {};
   try { baselines = JSON.parse(localStorage.getItem(baselineKey)) || {}; } catch {}

@@ -1,0 +1,47 @@
+/* Only the extra controls inside PO feed forms and the author's draft list. */
+.feed-composer-extras { display:grid; gap:22px; margin-top:22px; padding-top:20px; border-top:1px solid #e4e8f0; }
+.feed-composer-extras h3 { margin:0 0 8px; color:#26324b; font-size:14px; line-height:1.4; }
+.feed-composer-extras .helper { margin:4px 0 10px; line-height:1.6; }
+.feed-composer-extras [hidden], .composer-save-draft[hidden], .composer-legacy-photo[hidden] { display:none!important; }
+.composer-photos { display:flex; flex-wrap:wrap; gap:12px; margin:0; padding:4px 0 8px; list-style:none; }
+.composer-photos li { position:relative; flex:none; width:88px; height:88px; }
+.composer-photos li > img { display:block; width:100%; height:100%; border:1px solid #dfe5f0; border-radius:12px; object-fit:cover; }
+.composer-photos [data-composer-remove-photo] { position:absolute; top:-7px; right:-7px; display:grid; place-items:center; width:32px; height:32px; padding:0; border:3px solid #fff; border-radius:50%; background:#26324b; color:#fff; font:inherit; font-size:20px; box-shadow:0 2px 8px #17233822; }
+.composer-photos .composer-photo-add { display:flex; flex-direction:column; align-items:center; justify-content:center; gap:3px; width:100%; height:100%; padding:6px; border:1px dashed #b6afd9; border-radius:12px; background:#f6f4ff; color:#5c4ac5; font:inherit; font-size:11px; font-weight:750; }
+.composer-photo-add > svg { display:block; flex:none; width:24px; height:24px; }
+.composer-file-input { position:absolute; width:1px; height:1px; padding:0; overflow:hidden; clip:rect(0,0,0,0); white-space:nowrap; }
+.composer-rights { display:flex; align-items:flex-start; gap:9px; margin-top:8px; color:#47536b; font-size:12px; line-height:1.65; }
+.composer-rights input { flex:none; width:18px; height:18px; margin:2px 0 0; accent-color:#6652da; }
+.composer-destinations { display:grid; gap:8px; }
+.composer-destinations h4 { margin:9px 0 0; color:#66738b; font-size:11px; font-weight:800; }
+.composer-destination { display:flex; align-items:center; gap:11px; width:100%; min-width:0; min-height:64px; padding:12px; border:1px solid #dfe5f0; border-radius:12px; background:#fff; color:#35425b; text-align:left; font:inherit; }
+.composer-destination.is-selected { border-color:#8f80df; background:#f5f2ff; box-shadow:inset 0 0 0 1px #b7abe74d; }
+.composer-destination:disabled { cursor:default; opacity:.5; }
+.composer-destination > span:nth-child(2) { flex:1; min-width:0; }
+.composer-destination strong { display:block; font-size:13px; line-height:1.5; overflow-wrap:anywhere; }
+.composer-destination small { display:block; margin-top:2px; color:#738099; font-size:11px; line-height:1.5; overflow-wrap:anywhere; }
+.composer-destination-icon { display:grid; place-items:center; flex:none; width:34px; height:34px; border-radius:10px; background:#ede8ff; color:#6752ce; font-size:22px; }
+.composer-destination-icon svg { display:block; width:20px; height:20px; }
+.composer-check { display:grid; place-items:center; flex:none; width:20px; height:20px; border:1px solid #c8c3d9; border-radius:50%; background:#fff; color:#fff; font-size:13px; font-weight:800; }
+.composer-check svg { display:block; width:14px; height:14px; }
+.is-selected .composer-check { border-color:#6752ce; background:#6752ce; }
+.composer-error { margin:0; color:#bb394f; font-size:12px; line-height:1.6; }
+.composer-save-draft { margin-right:auto; }
+.composer-draft-card { padding:18px; }
+.composer-draft-card + .composer-draft-card { margin-top:12px; }
+.composer-draft-card h3 { margin:10px 0 6px; font-size:16px; line-height:1.4; overflow-wrap:anywhere; }
+.composer-draft-card p { margin:0 0 12px; color:#66738b; font-size:13px; line-height:1.65; white-space:pre-wrap; overflow-wrap:anywhere; }
+.composer-draft-photos { display:flex; flex-wrap:wrap; gap:7px; margin:10px 0 14px; }
+.composer-draft-photos img { width:64px; height:64px; border-radius:9px; object-fit:cover; }
+.composer-draft-actions { display:flex; flex-wrap:wrap; gap:8px; }
+.feed-composer-extras button:focus-visible,.composer-draft-actions button:focus-visible { outline:3px solid #b2a5f4; outline-offset:3px; }
+@media(max-width:650px) {
+  .feed-composer-extras { gap:19px; margin-top:18px; padding-top:18px; }
+  .composer-photos { gap:12px; }
+  .composer-photos li { width:76px; height:76px; }
+  .composer-photos [data-composer-remove-photo] { width:44px; height:44px; top:-10px; right:-9px; background:#26324be8; }
+  .composer-destination { padding:11px; }
+  .composer-draft-card { padding:14px; }
+  .composer-draft-actions .btn { flex:1; min-height:44px; }
+  .composer-save-draft { margin-right:0; }
+}

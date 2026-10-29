@@ -35,8 +35,13 @@ body .dialog .dialog-body,
 body .dialog .dialog-footer { padding-inline: var(--community-dialog-gutter); }
 body .dialog .page-profile-head { margin-inline: 0; }
 @media (max-width: 800px) {
+  body.embedded .app.detail-open .top { display:none; }
   :root { --community-gutter: 16px; --community-dialog-gutter: 16px; }
   body.embedded .content,
   body.embedded > .shell { padding-top: 14px; }
   body.community-chat-open > .shell { padding-top: 12px; }
+}
+
+@media (max-height: 500px) and (pointer: coarse) {
+  body.embedded .app.detail-open .top { display:none; }
 }
