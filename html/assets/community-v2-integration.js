@@ -4,7 +4,7 @@
   var frame = document.querySelector('#community-staging, #community-hub, [data-community-v2]');
   if (!frame) return;
   var origin = location.protocol === 'file:' ? '*' : location.origin;
-  var componentURL=new URL('community-v2/community-hub.js?v=20261029-community-mobile-tools-v11',document.currentScript.src);
+  var componentURL=new URL('community-v2/community-hub.js?v=20261029-community-pages-media-v15',document.currentScript.src);
   var hub=null,fallbackFrame=null,clearPostOnBack=false,detailBackPending=false,clearContextOnBack=false;
   function clearContextLink(){var url=new URL(location.href);for(var key of ['groupId','jobId','shiftId','assignmentId','settlementId','invitationId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearContextOnBack=false;}
   function clearPostLink(){var url=new URL(location.href);for(var key of ['post','postId','comment','commentId','thread','threadId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearPostOnBack=false;}
@@ -34,7 +34,7 @@
     var changed = next !== current;
     current = next;
     var url = new URL(location.href);
-    url.searchParams.set('tab', next);var legacy={profile:['jobsTab','profile'],'jobs-my-posts':['jobsTab','myPosts'],'jobs-applied':['jobsTab','applied'],'shift-payments':['shiftTab','payments']}[value];if(legacy)url.searchParams.set(legacy[0],legacy[1]);
+    url.searchParams.set('tab', next);if(next!=='pages')for(var pageKey of ['pageId','pageMode','pageTab'])url.searchParams.delete(pageKey);var legacy={profile:['jobsTab','profile'],'jobs-my-posts':['jobsTab','myPosts'],'jobs-applied':['jobsTab','applied'],'shift-payments':['shiftTab','payments']}[value];if(legacy)url.searchParams.set(legacy[0],legacy[1]);
     // Legacy group links retain their group context in the parent URL.
     if(detailBackPending) {
       // Finish the pending modal traversal before writing the next route entry.
@@ -106,7 +106,16 @@
   resizeCommunity();
   document.body.classList.add('community-hub-active');
 
+  function navigatePage(data){
+    var pageURL=new URL(location.href);pageURL.searchParams.set('tab','pages');
+    if(data.type!=='nexora-community-page-state')for(var previousKey of ['post','postId','comment','commentId','thread','threadId','groupId','jobsTab','jobId','profileRequired','shiftTab','shiftId','assignmentId','settlementId','invitationId'])pageURL.searchParams.delete(previousKey);
+    for(var field of ['pageId','pageMode','pageTab','pageScope']){if(typeof data[field]==='string'&&data[field])pageURL.searchParams.set(field,data[field]);else pageURL.searchParams.delete(field);}
+    if(!pageURL.searchParams.has('pageId')){pageURL.searchParams.delete('pageMode');pageURL.searchParams.delete('pageTab');}
+    if(data.type==='nexora-community-page-state')history.replaceState(history.state,'',pageURL);
+    else if(data.replace)location.replace(pageURL);else location.assign(pageURL);
+  }
   function receiveHubEvent(data) {
+    if(data.type==='nexora-community-page-navigate'||data.type==='nexora-community-page-state'){navigatePage(data);return;}
     if (data.type === 'nexora-community-ready'&&fallbackFrame) {
       ready = true;
       send('nexora-community-language',{language:communityLanguage()});
@@ -125,6 +134,7 @@
       else if(!open&&clearPostOnBack&&!detailBackPending)clearPostLink();
     }
     if (data.type === 'nexora-community-back') {
+      var pageParams=new URLSearchParams(location.search);if(pageParams.get('pageId')){navigatePage({pageId:pageParams.get('pageMode')==='edit'?pageParams.get('pageId'):'',pageMode:'view',pageScope:pageParams.get('pageScope')||'discover'});return;}
       if (history.state && history.state.communityPrevious) history.back();
       else show('feed', false, true);
     }
@@ -169,7 +179,7 @@
     load.then(mount).then(function(api){hub=api;ready=true;send('nexora-community-language',{language:communityLanguage()});send('nexora-community-navigate',{route:current,context:routeContext()});}).catch(function(error){
       console.error('Community native shell could not load; using the standalone preview.',error);
       fallbackFrame=document.createElement('iframe');fallbackFrame.title=frame.getAttribute('aria-label')||'NEXORA Community';fallbackFrame.style.cssText='display:block;width:100%;height:100%;border:0';
-      var source=new URL('nexora-community-complete.html',componentURL);params.set('tab',current);params.set('embedded','1');params.set('v','20261029-community-mobile-tools-v11');source.search=params.toString();
+      var source=new URL('nexora-community-complete.html',componentURL);params.set('tab',current);params.set('embedded','1');params.set('v','20261029-community-pages-media-v15');source.search=params.toString();
       (frame.shadowRoot||frame).replaceChildren(fallbackFrame);fallbackFrame.src=source.href;
     });
   }

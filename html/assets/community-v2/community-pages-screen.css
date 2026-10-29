@@ -1,0 +1,27 @@
+body.community-page-screen #localDiscovery,
+body.community-page-screen #pagesView > :not(#communityPageScreen) { display:none!important; }
+#communityPageScreen { min-width:0; padding-bottom:20px; }
+#communityPageScreen .page-screen-panel { position:relative; inset:auto; display:block; width:100%; max-width:none; height:auto; max-height:none; overflow:visible; margin:0; border:1px solid #e0e6f0; border-radius:16px; background:#fff; box-shadow:0 3px 14px #17213808; }
+#communityPageScreen .dialog-head { display:flex; align-items:center; justify-content:space-between; gap:12px; padding:16px 20px; border-bottom:1px solid #e6eaf2; }
+#communityPageScreen .dialog-head h2 { margin:0 0 5px; font-size:20px; }
+#communityPageScreen .dialog-head p { margin:0; color:#6a758b; font-size:13px; }
+#communityPageScreen .dialog-body { max-height:none; overflow:visible; padding:20px; }
+#communityPageScreen .page-profile-dialog > .dialog-body { padding-top:0; }
+#communityPageScreen .dialog-footer { display:flex; flex-wrap:wrap; justify-content:flex-end; gap:8px; position:sticky; bottom:0; z-index:3; padding:14px 20px; border-top:1px solid #e6eaf2; background:#fff; border-radius:0 0 16px 16px; }
+#communityPageScreen :is(.btn,.icon-btn) { min-height:44px; }
+#communityPageScreen .form-grid { grid-template-columns:repeat(2,minmax(0,1fr)); }
+@media(max-width:800px){
+  #communityPageScreen .dialog-head { align-items:flex-start; flex-wrap:wrap; padding:14px; }
+  #communityPageScreen .dialog-head h2 { font-size:18px; }
+  #communityPageScreen .dialog-body { padding:14px; }
+  #communityPageScreen .dialog-footer { padding:12px 14px; }
+  #communityPageScreen .form-grid { grid-template-columns:minmax(0,1fr); }
+  #communityPageScreen .page-hero-actions { flex-wrap:wrap; }
+}
+#communityPageScreen .page-profile-head { align-items:center; gap:14px; margin:0; padding-top:14px; }
+#communityPageScreen .page-avatar-shell,#communityPageScreen .page-avatar { position:relative; margin-top:0; }
+#communityPageScreen .page-profile-title { min-width:0; }
+#communityPageScreen .page-profile-title h3 { margin:0 0 6px; line-height:1.35; }
+@media(max-width:800px){
+  #communityPageScreen .page-profile-title h3 { font-size:20px; }
+}

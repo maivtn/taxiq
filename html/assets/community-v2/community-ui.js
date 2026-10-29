@@ -5,7 +5,7 @@
   const artwork = {
     feed:'layout-list', market:'users-round', groups:'users-round', pages:'building-2',
     deals:'ticket', jobs:'briefcase', daywork:'calendar-days', blog:'receipt', connect:'message-circle',
-    general:'paintbrush', showcase:'image', tip:'sparkles', question:'message-circle', poll:'layout-dashboard',
+    general:'paintbrush', showcase:'image', tip:'sparkles', question:'message-circle', poll:'list',
     event:'calendar-days', sale:'shopping-bag', want:'shopping-bag', hiring:'briefcase', seeking:'user-round',
     dayhire:'calendar-clock', page:'building-2', group:'users-round', messages:'message-circle', calls:'phone', privacy:'settings-2'
   };
@@ -27,8 +27,9 @@
       if(previous)previous.replaceWith(makeArtwork(name,true));
     });
     document.querySelectorAll('.feed-action,.template-card').forEach(button=>{
-      const key=button.dataset.template||button.dataset.marketKind||button.dataset.blogCreate;
+      const key=button.dataset.template||button.dataset.marketKind||(button.hasAttribute('data-blog-create')?'blog':'');
       const holder=button.querySelector('.feed-icon');
+      if(key==='blog'&&holder&&(window.lucide?.icons.FilePenLine||window.lucide?.icons.SquarePen)){if(!holder.dataset.blogWritingIcon){holder.replaceChildren(window.lucide.createElement(window.lucide.icons.FilePenLine||window.lucide.icons.SquarePen,{width:22,height:22,class:'community-action-icon','aria-hidden':'true',focusable:'false'}));holder.dataset.blogWritingIcon='true';}return;}
       if(button.closest('#jobTemplates')&&holder){
         const name=key==='hiring'?'Briefcase':'UserRoundSearch',definition=window.lucide?.icons[name]||window.lucide?.icons.UserRound;
         if(definition&&holder.dataset.jobLucide!==key){holder.replaceChildren(window.lucide.createElement(definition,{width:18,height:18,class:'community-action-icon','aria-hidden':'true',focusable:'false'}));holder.dataset.jobLucide=key;}
@@ -115,6 +116,37 @@
     if(publish)addButtonIcon(publish,document.getElementById('pagePostMode')?.value==='schedule'?'CalendarClock':'Send');
   }
 
+  // Match the existing POS / receive-payment pattern: camera input + file picker.
+  const uploadControls=new WeakMap();
+  function enhanceImageUploads(){
+    const vi=localStorage.getItem('nexora-community-language')==='vi';
+    for(const input of document.querySelectorAll('input[type="file"][accept]')){
+      if(input.hasAttribute('data-community-camera-input')||!input.accept.includes('image'))continue;
+      if(!input.closest('form')&&!input.hasAttribute('data-page-cover-file'))continue;
+      if(input.parentElement.closest('[hidden],.hide,.hidden'))continue;
+      let state=uploadControls.get(input);
+      if(!state){
+        const controls=document.createElement('div');controls.className='community-photo-actions';controls.setAttribute('role','group');
+        const camera=document.createElement('input');camera.type='file';camera.hidden=true;camera.accept=input.accept.split(',').filter(value=>value.trim().startsWith('image/')||/^\s*\.(?:jpe?g|png|webp|heic|heif|gif)$/i.test(value)).join(',')||'image/*';camera.setAttribute('capture','environment');camera.dataset.communityCameraInput='true';
+        const makeButton=(iconName,action)=>{const button=document.createElement('button');button.type='button';button.className='btn '+(action==='camera'?'soft ':'')+'community-photo-button';button.dataset.communityPhotoAction=action;const definition=window.lucide?.icons[iconName];if(definition)button.append(window.lucide.createElement(definition,{width:18,height:18,class:'community-action-icon','aria-hidden':'true'}));const label=document.createElement('span');button.append(label);return {button,label};};
+        const take=makeButton('Camera','camera'),upload=makeButton('Upload','upload');controls.append(take.button,upload.button,camera);
+        const legacy=input.closest('label.jobs-upload');
+        if(legacy){legacy.after(controls);legacy.classList.add('community-upload-legacy');}else input.after(controls);
+        if(input.hasAttribute('data-page-cover-file')){controls.classList.add('is-cover');input.parentElement.querySelector('[data-change-page-cover]')?.classList.add('community-upload-legacy');}
+        input.classList.add('community-upload-source');input.dataset.communityUploadSource='true';
+        take.button.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();if(!input.disabled)camera.click();});
+        upload.button.addEventListener('click',event=>{event.preventDefault();event.stopPropagation();if(!input.disabled)input.click();});
+        camera.addEventListener('change',event=>{event.stopPropagation();if(!camera.files?.length)return;let copied=false;try{const transfer=new DataTransfer();for(const file of camera.files)transfer.items.add(file);input.files=transfer.files;copied=true;}catch{input.files=camera.files;}input.dispatchEvent(new Event('change',{bubbles:true}));if(copied)camera.value='';});
+        state={controls,camera,take,upload};uploadControls.set(input,state);
+      }
+      const groupLabel=input.getAttribute('aria-label')||input.labels?.[0]?.textContent.trim()||(vi?'Ảnh':'Photos');
+      if(state.controls.getAttribute('aria-label')!==groupLabel)state.controls.setAttribute('aria-label',groupLabel);
+      const takeLabel=vi?'Chụp ảnh':'Take photo';if(state.take.label.textContent!==takeLabel)state.take.label.textContent=takeLabel;
+      if(state.upload.label.textContent!=='Upload')state.upload.label.textContent='Upload';
+      for(const control of [state.take.button,state.upload.button,state.camera])if(control.disabled!==input.disabled)control.disabled=input.disabled;
+    }
+  }
+
   let activeDialog=null;
   let returnFocus=null;
   let lastDialogFocus=null;
@@ -177,7 +209,7 @@
   });
   function refresh() {
     queued=false;
-    decorateArtwork();decorateButtons();updateDialog();
+    decorateArtwork();decorateButtons();enhanceImageUploads();updateDialog();
     document.querySelectorAll('.filter-chip,.subtab,.switcher [data-type]').forEach(button=>{
       const name=button.getAttribute('role')==='tab'?'aria-selected':'aria-pressed';
       const value=String(button.classList.contains('active'));
@@ -187,7 +219,8 @@
     setBodyClass('community-chat-open',Boolean(detail&&['messages','groups'].includes(document.body.dataset.section)&&visible(detail)));
   }
   function schedule(){if(!queued){queued=true;requestAnimationFrame(refresh);}}
-  new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['class','hidden','aria-selected']});
+  new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true,characterData:true,attributes:true,attributeFilter:['class','hidden','aria-selected','disabled','accept']});
+  new MutationObserver(schedule).observe(document.documentElement,{attributes:true,attributeFilter:['lang']});
   window.NEXORA_COMMUNITY_UI={refresh:schedule};
   refresh();
 })();
