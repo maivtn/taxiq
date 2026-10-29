@@ -17,6 +17,10 @@
     );
   const storageKey = "nexora:pos-promotions-standalone:v1";
   const languageKey = "nexora:pos-promotions-standalone:language";
+  const adsCreditKey = "nexora:ads-credit:v1";
+  // Match the existing Ads Credit wallet: $350 balance less $30 on hold.
+  const defaultAdsCreditCents = 32000;
+  const lowAdsCreditCents = 3000;
   const dateFormat = new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
@@ -231,10 +235,11 @@
       active: false,
       publicStatus: "off",
       paidEnabled: false,
-      paidPlacements: ["search", "explore"],
-      targetArea: "Houston",
+      paidPlacements: data.placements.map((placement) => placement.id),
+      targetArea: "all",
+      targetAreas: ["all"],
       budget: 100,
-      dailyLimit: 15,
+      dailyLimit: null,
       used: 0,
       claimed: 0,
       discountTotal: 0,
@@ -305,7 +310,19 @@
     try {
       const saved = JSON.parse(localStorage.getItem(storageKey));
       if (saved?.version === 1 && Array.isArray(saved.promotions))
-        return saved.promotions;
+        return saved.promotions.map((promotion) => ({
+          ...promotion,
+          targetAreas: Array.isArray(promotion.targetAreas)
+            ? promotion.targetAreas
+            : Array.isArray(promotion.targetArea)
+              ? promotion.targetArea
+              : [promotion.targetArea || "all"],
+          paidPlacements: (promotion.paidPlacements || [])
+            .map((id) => (id === "explore" ? "nearby" : id))
+            .filter((id) =>
+              data.placements.some((placement) => placement.id === id),
+            ),
+        }));
     } catch (_) {}
     return seed();
   }
@@ -467,6 +484,87 @@
       previewMode = "banner",
       showMore = false,
       selectedBanner = 0;
+    let customServices = draft.services.filter((id) => id !== "all");
+    const publicIds = new Set(data.placements.map((placement) => placement.id));
+    if (draft.paidEnabled) {
+      draft.channels = [
+        ...new Set([...draft.channels, ...draft.paidPlacements]),
+      ];
+    }
+    const targetAreaPicker =
+      typeof window.TomSelect === "function"
+        ? new window.TomSelect(field("targetArea"), {
+            plugins: {
+              checkbox_options: {},
+            },
+            create: false,
+            maxItems: null,
+            maxOptions: null,
+            hideSelected: false,
+            closeAfterSelect: false,
+            clearAfterSelect: true,
+            lockOptgroupOrder: true,
+            placeholder: "Select or search",
+            hidePlaceholder: false,
+            render: { no_results: null },
+            onItemAdd(value) {
+              if (value === "all") {
+                this.items
+                  .filter((id) => id !== "all")
+                  .forEach((id) => this.removeItem(id, true));
+              } else if (this.items.includes("all")) {
+                this.removeItem("all", true);
+              }
+            },
+            onChange() {
+              if (!this.items.length) this.addItem("all", true);
+            },
+          })
+        : null;
+    targetAreaPicker?.control_input.setAttribute(
+      "aria-labelledby",
+      "target-area-label",
+    );
+    function renderTargetAreas() {
+      const labels = new Map(
+        [...field("targetArea").options].map((option) => [
+          option.value,
+          option.textContent,
+        ]),
+      );
+      $("target-area-selected").innerHTML = draft.targetAreas
+        .filter((value) => labels.has(value))
+        .map(
+          (value) =>
+            `<span class="demo-target-area-chip" role="listitem"><span>${escape(labels.get(value))}</span>${value === "all" ? "" : `<button type="button" data-remove-area="${escape(value)}" aria-label="${escape(t("removeTargetArea") + ": " + labels.get(value))}"><span aria-hidden="true">×</span></button>`}</span>`,
+        )
+        .join("");
+    }
+    $("target-area-selected").addEventListener("click", (event) => {
+      const button = event.target.closest("[data-remove-area]");
+      if (!button) return;
+      const buttons = [...$("target-area-selected").querySelectorAll("button")];
+      const index = buttons.indexOf(button);
+      if (targetAreaPicker) {
+        targetAreaPicker.removeItem(button.dataset.removeArea);
+      } else {
+        for (const option of field("targetArea").options) {
+          if (option.value === button.dataset.removeArea)
+            option.selected = false;
+        }
+        if (!field("targetArea").selectedOptions.length)
+          field("targetArea").value = "all";
+        field("targetArea").dispatchEvent(
+          new Event("change", { bubbles: true }),
+        );
+      }
+      const remaining = $("target-area-selected").querySelectorAll("button");
+      const focusTarget =
+        remaining[Math.min(index, remaining.length - 1)] ||
+        targetAreaPicker?.control_input ||
+        field("targetArea");
+      focusTarget.focus({ preventScroll: true });
+    });
     function read() {
       for (const name of [
         "name",
@@ -485,20 +583,26 @@
         "perClient",
         "holdDays",
         "couponCode",
-        "targetArea",
         "budget",
-        "dailyLimit",
       ])
         draft[name] = field(name).value;
       draft.discountValue = field("discountValue").value;
+      draft.targetAreas = [...field("targetArea").selectedOptions].map(
+        (option) => option.value,
+      );
+      draft.targetArea = draft.targetAreas[0] || "";
       draft.days = [...form.querySelectorAll("[name=days]:checked")].map((n) =>
         Number(n.value),
       );
       draft.paidEnabled = field("paidEnabled").checked;
       draft.crossPromotion = field("crossPromotion").checked;
       draft.paidPlacements = [
-        ...form.querySelectorAll("[name=paidPlacement]:checked"),
-      ].map((n) => n.value);
+        ...form.querySelectorAll("[name=publicPlacement]:checked"),
+      ].map((input) => input.value);
+      draft.channels = [
+        ...draft.channels.filter((id) => !publicIds.has(id)),
+        ...draft.paidPlacements,
+      ];
       draft.checkinEnabled = field("checkinEnabled").checked;
       draft.bookingEnabled = field("bookingEnabled").checked;
       draft.checkinPlacements = [
@@ -530,11 +634,13 @@
         "perClient",
         "holdDays",
         "couponCode",
-        "targetArea",
         "budget",
-        "dailyLimit",
       ])
         field(name).value = draft[name] ?? "";
+      for (const option of field("targetArea").options) {
+        option.selected = draft.targetAreas.includes(option.value);
+      }
+      targetAreaPicker?.setValue(draft.targetAreas, true);
       field("paidEnabled").checked = draft.paidEnabled;
       field("crossPromotion").checked = draft.crossPromotion;
       form
@@ -544,7 +650,6 @@
         );
       renderChannels();
       renderServices();
-      renderPaid();
       update();
     }
     function resetPicker(id, html, value) {
@@ -638,14 +743,19 @@
     }
     function renderServices() {
       const isAll = draft.services.includes("all");
-      $("eligible-services").innerHTML =
-        `<label class="demo-service-choice demo-service-all"><input type="checkbox" id="all-services" ${isAll ? "checked" : ""}><strong>${t("eligibleServicesAll")}</strong></label>` +
-        data.services
-          .map(
-            (group, index) =>
-              `<details class="demo-service-category" open><summary><input type="checkbox" data-service-category="${index}" aria-label="${escape(group.name)}" ${isAll || group.services.every((s) => draft.services.includes(s.id)) ? "checked" : ""}><span>${escape(group.name)}</span><small>${group.services.length}</small></summary><div class="demo-service-grid">${group.services.map((service) => `<label class="demo-service-choice"><input type="checkbox" data-service="${escape(service.id)}" ${isAll || draft.services.includes(service.id) ? "checked" : ""}><span>${escape(service.name)}</span></label>`).join("")}</div></details>`,
-          )
-          .join("");
+      $("service-scope").value = isAll ? "all" : "custom";
+      $("eligible-services").hidden = isAll;
+      const openGroups = new Set(
+        [...$("eligible-services").querySelectorAll("details[open]")].map(
+          (group) => group.dataset.serviceGroup,
+        ),
+      );
+      $("eligible-services").innerHTML = data.services
+        .map(
+          (group, index) =>
+            `<details class="demo-service-category" data-service-group="${index}" ${openGroups.has(String(index)) ? "open" : ""}><summary><input type="checkbox" data-service-category="${index}" aria-label="${escape(group.name)}" ${isAll || group.services.every((s) => draft.services.includes(s.id)) ? "checked" : ""}><span>${escape(group.name)}</span><small>${group.services.length}</small></summary><div class="demo-service-grid">${group.services.map((service) => `<label class="demo-service-choice"><input type="checkbox" data-service="${escape(service.id)}" ${isAll || draft.services.includes(service.id) ? "checked" : ""}><span>${escape(service.name)}</span></label>`).join("")}</div></details>`,
+        )
+        .join("");
       document.querySelectorAll("[data-service-category]").forEach((input) => {
         const g = data.services[Number(input.dataset.serviceCategory)];
         const count = g.services.filter((s) =>
@@ -655,10 +765,15 @@
       });
     }
     function renderChannels() {
+      const paidAdvertising = $("paid-advertising");
+      paidAdvertising.remove();
+      draft.paidPlacements = draft.channels.filter((id) => publicIds.has(id));
       const selected = new Set(draft.channels),
         rec = recommended[draft.goal] || recommended.slow;
       const channelCard = (c) =>
-        `<button type="button" class="promo-launch-card ${selected.has(c.id) ? "active is-on" : ""}" data-channel="${c.id}" aria-pressed="${selected.has(c.id)}">${rec.includes(c.id) ? `<span class="promo-tag rec">${t("channelSuggested")}</span>` : ""}<strong>${escape(localized(c.name))}</strong><span>${escape(localized(c.description))}</span><span class="status">${escape(localized(c.status))}</span></button>`;
+        `<button type="button" class="promo-launch-card ${selected.has(c.id) ? "active is-on" : ""}" data-channel="${c.id}" aria-pressed="${selected.has(c.id)}"><span class="demo-channel-card-head"><strong>${escape(localized(c.name))}</strong>${rec.includes(c.id) ? `<span class="promo-tag rec">${t("channelSuggested")}</span>` : ""}</span><span class="demo-channel-card-meta"><span>${escape(localized(c.description))}</span><span class="status">${escape(localized(c.status))}</span></span></button>`;
+      const publicCard = (channel) =>
+        `<label class="demo-paid-placement"><input type="checkbox" name="publicPlacement" value="${channel.id}" ${selected.has(channel.id) ? "checked" : ""}><span><strong>${escape(localized(channel.name))}</strong><small>${escape(localized(channel.description))}</small></span></label>`;
       const switchCard = (name, title, hint, items, selectedItems, preview) =>
         `<div class="promo-swcard"><div class="demo-toggle-head"><div><strong>${t(title)} <span class="promo-tag rec">NEW</span></strong><small class="promo-note">${t(hint)}</small></div><label class="demo-switch"><input type="checkbox" name="${name}Enabled" ${draft[name + "Enabled"] ? "checked" : ""} aria-label="${t(title)}">${draft[name + "Enabled"] ? t("channelSwitchOn") : t("channelSwitchOff")}</label></div><div class="demo-channel-subs" ${draft[name + "Enabled"] ? "" : "hidden"}>${items.map((item) => `<label><input type="checkbox" name="${name}Placement" value="${item.id}" ${selectedItems.includes(item.id) ? "checked" : ""}><span><b>${escape(localized(item.name))}</b>${item.hint ? `<small>${escape(localized(item.hint))}</small>` : ""}</span></label>`).join("")}</div><button type="button" class="promo-sw-preview" data-channel-preview="${preview}">${t(name === "checkin" ? "previewCheckIn" : "previewBooking")}</button></div>`;
       $("channels").innerHTML = ["int", "pub"]
@@ -673,17 +788,11 @@
                       selected.has(c.id) ||
                       ["email", "fb", "ig", "gbp"].includes(c.id),
                   );
-          return `<div class="promo-channel-tier tier-${tier}"><div class="promo-channel-tier-head"><strong>${t(tier === "int" ? "tierInternalTitle" : "tierPublicTitle")}</strong><span class="promo-tag ${tier === "int" ? "ok" : "warn"}">${tier === "int" ? t("tierInternalTag") : "Automatic review"}</span>${tier === "pub" ? `<span class="promo-tag ok">${t("tierPublicOrganic")}</span>` : ""}<p class="promo-channel-tier-note">${t(tier === "int" ? "tierInternalHint" : "tierPublicHint")}</p></div><div class="promo-launch-grid">${tier === "int" ? switchCard("checkin", "checkInCardTitle", "checkInCardHint", data.checkin, draft.checkinPlacements, "kiosk") + switchCard("booking", "bookingCardTitle", "bookingCardHint", data.booking, draft.bookingPlacements, "oneqr") : ""}${shown.map(channelCard).join("")}</div>${tier === "int" ? `<div class="demo-postline"><strong>${t("postToLabel")}</strong><label><input type="radio" name="postWhen" value="now" ${draft.postWhen === "now" ? "checked" : ""}>${t("postWhenNow")}</label><label><input type="radio" name="postWhen" value="auto" ${draft.postWhen !== "now" ? "checked" : ""}>${t("postWhenAuto")}</label><small>${t("postMilestones")}</small><button type="button" class="promo-text-button" id="edit-post-schedule">${t("postScheduleEdit")}</button></div><button type="button" class="promo-text-button" id="show-more-channels">${t(showMore ? "showLessChannels" : "showMoreChannels", { count: all.length - shown.length })}</button>` : ""}</div>`;
+          return `<div class="promo-channel-tier tier-${tier}"><div class="promo-channel-tier-head"><div class="demo-tier-heading"><strong>${t(tier === "int" ? "tierInternalTitle" : "tierPublicTitle")}</strong><span class="promo-tag ${tier === "int" ? "ok" : "warn"}">${tier === "int" ? t("tierInternalTag") : "Automatic review"}</span>${tier === "pub" ? `<span class="promo-tag ok">${t("tierPublicOrganic")}</span>` : ""}</div>${tier === "pub" ? `<div class="demo-ad-credit" id="public-ad-credit"><div class="demo-ad-credit-balance"><span>${t("adsCreditBalance")}</span><strong id="public-credit-balance"></strong><small id="public-credit-status" role="status" aria-live="polite" hidden></small></div><a class="demo-ad-credit-topup" id="public-credit-topup" href="nexora-packages.html?tab=ads-credit" target="_blank" rel="noopener"><i data-lucide="wallet-cards" aria-hidden="true"></i>${t("addAdsCredit")}</a></div>` : ""}<p class="promo-channel-tier-note">${t(tier === "int" ? "tierInternalHint" : "tierPublicHint")}</p></div><div class="promo-launch-grid">${tier === "int" ? switchCard("checkin", "checkInCardTitle", "checkInCardHint", data.checkin, draft.checkinPlacements, "kiosk") + switchCard("booking", "bookingCardTitle", "bookingCardHint", data.booking, draft.bookingPlacements, "oneqr") : ""}${shown.map(tier === "pub" ? publicCard : channelCard).join("")}</div>${tier === "int" ? `<div class="demo-postline"><strong>${t("postToLabel")}</strong><label><input type="radio" name="postWhen" value="now" ${draft.postWhen === "now" ? "checked" : ""}>${t("postWhenNow")}</label><label><input type="radio" name="postWhen" value="auto" ${draft.postWhen !== "now" ? "checked" : ""}>${t("postWhenAuto")}</label><small>${t("postMilestones")}</small><button type="button" class="promo-text-button" id="edit-post-schedule">${t("postScheduleEdit")}</button></div><button type="button" class="promo-text-button" id="show-more-channels">${t(showMore ? "showLessChannels" : "showMoreChannels", { count: all.length - shown.length })}</button>` : ""}</div>`;
         })
         .join("");
-    }
-    function renderPaid() {
-      $("paid-placements").innerHTML = data.placements
-        .map(
-          (p) =>
-            `<label class="demo-paid-placement"><input type="checkbox" name="paidPlacement" value="${p.id}" ${(draft.paidPlacements || []).includes(p.id) ? "checked" : ""}><span><strong>${escape(p.name)}</strong><small>${escape(p.description)}</small></span></label>`,
-        )
-        .join("");
+      $("channels").querySelector(".tier-pub").append(paidAdvertising);
+      window.lucide?.createIcons();
     }
     function renderBanners() {
       $("banner-colors").innerHTML = Object.entries(themes)
@@ -704,6 +813,53 @@
         .join("");
       $("add-banner").disabled = draft.banners.length >= 8;
     }
+    function renderAdsCredit() {
+      let availableCents = defaultAdsCreditCents;
+      try {
+        const saved = JSON.parse(localStorage.getItem(adsCreditKey));
+        if (
+          Number.isFinite(saved?.balanceCents) &&
+          Number.isFinite(saved?.holdCents) &&
+          saved.balanceCents >= 0 &&
+          saved.holdCents >= 0
+        ) {
+          availableCents = Math.max(
+            0,
+            Math.floor(saved.balanceCents - saved.holdCents),
+          );
+        }
+      } catch (_) {}
+      const budgetCents = Math.round(Number(draft.budget) * 100);
+      const state =
+        availableCents === 0
+          ? "empty"
+          : draft.paidEnabled && budgetCents > availableCents
+            ? "insufficient"
+            : availableCents <= lowAdsCreditCents
+              ? "low"
+              : "ready";
+      const warning = state !== "ready";
+      $("public-ad-credit").dataset.creditState = state;
+      $("public-credit-balance").textContent = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(availableCents / 100);
+      const status = $("public-credit-status");
+      status.hidden = !warning;
+      status.textContent = warning
+        ? t(
+            {
+              empty: "adsCreditEmpty",
+              insufficient: "adsCreditInsufficient",
+              low: "adsCreditLow",
+            }[state],
+          )
+        : "";
+    }
+    window.addEventListener("storage", (event) => {
+      if (event.key === adsCreditKey || event.key === null) renderAdsCredit();
+    });
+    window.addEventListener("focus", renderAdsCredit);
     function update() {
       const p = draft,
         services = p.services.includes("all")
@@ -764,15 +920,14 @@
         goal: t("goal." + p.goal),
       });
       $("paid-fields").hidden = !p.paidEnabled;
+      renderTargetAreas();
+      renderAdsCredit();
       const hasPublic = p.channels.some((id) =>
         data.channels.some((c) => c.id === id && c.tier === "pub"),
       );
       $("activate-promotion").textContent = hasPublic
         ? "Turn on · automatic Public review"
         : t("turnOn");
-      $("publication-note").textContent = hasPublic
-        ? "Your own channels run immediately without content review. NEXORA automatically reviews public advertising placements."
-        : "";
       if (existing) {
         $("create-title").textContent = t("editTitle");
         $("save-note").textContent = t("editNote");
@@ -879,7 +1034,7 @@
         (!draft.startDate || draft.endDate < draft.startDate)
       )
         fail("errorEndDateBeforeStart", "endDate");
-      if (!draft.services.length) fail("errorServicesRequired", "name");
+      if (!draft.services.length) fail("errorServicesRequired", "serviceScope");
       if (draft.kind === "coupon") {
         if (!draft.startDate) fail("errorStartDateRequired", "startDate");
         if (!Number.isInteger(Number(draft.slots)) || Number(draft.slots) < 1)
@@ -890,6 +1045,12 @@
       if (draft.kind === "deal" && !draft.channels.includes("pos"))
         fail("errorPosCheckoutRequired", "name");
       if (draft.paidEnabled) {
+        if (!draft.targetAreas.length && !error) {
+          const areaSelect = field("targetArea");
+          areaSelect.required = true;
+          error = areaSelect.validationMessage;
+          target = targetAreaPicker?.control_input || areaSelect;
+        }
         if (
           !draft.channels.some((id) =>
             data.channels.some((c) => c.id === id && c.tier === "pub"),
@@ -900,15 +1061,10 @@
           error = "Choose at least one ad placement.";
           target = field("paidEnabled");
         }
-        if (
-          !(Number(draft.budget) > 0) ||
-          !(Number(draft.dailyLimit) > 0) ||
-          Number(draft.dailyLimit) > Number(draft.budget)
-        ) {
+        if (!(Number(draft.budget) > 0)) {
           if (!error) {
-            error =
-              "Daily ad budget must be greater than zero and cannot exceed the total ad budget.";
-            target = field("dailyLimit");
+            error = "Enter a total campaign budget greater than zero.";
+            target = field("budget");
           }
         }
       }
@@ -926,6 +1082,7 @@
       );
       const saved = {
         ...structuredClone(draft),
+        dailyLimit: null,
         id: existing?.id || crypto.randomUUID(),
         draft: !activated,
         active: activated,
@@ -954,6 +1111,19 @@
     form.addEventListener("change", (event) => {
       const name = event.target.name;
       read();
+      if (name === "serviceScope") {
+        if (event.target.value === "all") {
+          customServices = [...draft.services];
+          draft.services = ["all"];
+        } else {
+          draft.services = [...customServices];
+        }
+        renderServices();
+      }
+      if (name === "paidEnabled" && draft.paidEnabled) {
+        draft.channels = [...new Set([...draft.channels, ...publicIds])];
+        renderChannels();
+      }
       if (name === "goal") {
         draft.channels = recommended[draft.goal].slice();
         renderChannels();
@@ -968,28 +1138,15 @@
     });
     $("eligible-services").addEventListener("change", (event) => {
       const input = event.target;
-      if (input.id === "all-services") {
-        draft.services = input.checked ? ["all"] : [];
-      } else {
-        let selected = new Set(
-          draft.services.includes("all")
-            ? data.services.flatMap((g) => g.services.map((s) => s.id))
-            : draft.services,
-        );
-        const items = input.dataset.service
-          ? [{ id: input.dataset.service }]
-          : data.services[Number(input.dataset.serviceCategory)]?.services ||
-            [];
-        items.forEach((s) =>
-          input.checked ? selected.add(s.id) : selected.delete(s.id),
-        );
-        draft.services = [...selected];
-        if (
-          draft.services.length ===
-          data.services.reduce((sum, g) => sum + g.services.length, 0)
-        )
-          draft.services = ["all"];
-      }
+      let selected = new Set(draft.services);
+      const items = input.dataset.service
+        ? [{ id: input.dataset.service }]
+        : data.services[Number(input.dataset.serviceCategory)]?.services || [];
+      items.forEach((s) =>
+        input.checked ? selected.add(s.id) : selected.delete(s.id),
+      );
+      draft.services = [...selected];
+      customServices = [...draft.services];
       renderServices();
       update();
     });
@@ -1390,7 +1547,6 @@
       renderTemplates();
       renderServices();
       renderChannels();
-      renderPaid();
       update();
     };
     options();
@@ -1414,28 +1570,6 @@
     ];
     const trackingChannels = [
       {
-        id: "pos",
-        name: "POS checkout",
-        color: "#634dff",
-        views: 4920,
-        clicks: 760,
-        redeems: 188,
-        revenue: 5740,
-        cost: 0,
-        shares: { "source-0": 0.48, "source-2": 0.31, "source-11": 0.21 },
-      },
-      {
-        id: "oneqr",
-        name: "OneQR hero",
-        color: "#00a5ef",
-        views: 3860,
-        clicks: 698,
-        redeems: 64,
-        revenue: 1980,
-        cost: 0,
-        shares: { "source-0": 0.39, "source-2": 0.35, "source-11": 0.26 },
-      },
-      {
         id: "search",
         name: "Search Deals",
         color: "#f59e0b",
@@ -1447,8 +1581,8 @@
         shares: { "source-0": 0.44, "source-2": 0.24, "source-11": 0.32 },
       },
       {
-        id: "explore",
-        name: "Explore & Nearby",
+        id: "nearby",
+        name: "Deals Nearby / Explore",
         color: "#a855f7",
         views: 0,
         clicks: 0,
@@ -1458,8 +1592,8 @@
         shares: {},
       },
       {
-        id: "network",
-        name: "Network banner",
+        id: "community",
+        name: "Community",
         color: "#ec4899",
         views: 0,
         clicks: 0,
@@ -1469,15 +1603,15 @@
         shares: {},
       },
       {
-        id: "checkin",
-        name: "Check-in screen",
-        color: "#10b981",
-        views: 1390,
-        clicks: 156,
-        redeems: 23,
-        revenue: 860,
+        id: "xpromo",
+        name: "Cross-promo partners",
+        color: "#06b6d4",
+        views: 0,
+        clicks: 0,
+        redeems: 0,
+        revenue: 0,
         cost: 0,
-        shares: { "source-0": 0.35, "source-2": 0.4, "source-11": 0.25 },
+        shares: {},
       },
     ];
     const history = [
@@ -1677,12 +1811,41 @@
         select.value = promotions.some((p) => p.id === value) ? value : "all";
       }
     }
+    function selectedTrackingChannels() {
+      const program = $("tracking-promotion").value;
+      const scope =
+        program === "all"
+          ? promotions
+          : promotions.filter((promotion) => promotion.id === program);
+      const selected = new Set(
+        scope.flatMap(
+          (promotion) => promotion.paidPlacements || promotion.channels || [],
+        ),
+      );
+      return trackingChannels.filter((channel) => selected.has(channel.id));
+    }
+    function syncTrackingChannels() {
+      const select = $("tracking-channel");
+      const value = select.value;
+      const channels = selectedTrackingChannels();
+      select.innerHTML =
+        '<option value="all">All channels</option>' +
+        channels
+          .map(
+            (channel) =>
+              `<option value="${channel.id}">${escape(channel.name)}</option>`,
+          )
+          .join("");
+      select.value = channels.some((channel) => channel.id === value)
+        ? value
+        : "all";
+    }
     function trackingRows() {
       const program = $("tracking-promotion").value,
         period = Number($("tracking-period").value),
         channel = $("tracking-channel").value;
       const factor = period === 7 ? 7 / 30 : period === 90 ? 3 : 1;
-      return trackingChannels
+      return selectedTrackingChannels()
         .filter((c) => channel === "all" || c.id === channel)
         .map((c) => {
           const weight = program === "all" ? 1 : c.shares[program] || 0;
@@ -1693,6 +1856,7 @@
         });
     }
     function renderTracking() {
+      syncTrackingChannels();
       const rows = trackingRows(),
         totals = rows.reduce(
           (sum, row) => {
@@ -1702,14 +1866,9 @@
           },
           { views: 0, clicks: 0, redeems: 0, revenue: 0, cost: 0 },
         );
-      const weight = totals.views / 12480;
       const metrics = [
         ["Total views", number(totals.views), "+12.4%"],
-        ["Clicks / QR scans", number(totals.clicks), "+9.8%"],
-        ["Booking taps", number(Math.round(428 * weight)), "+7.2%"],
-        ["POS redemptions", number(totals.redeems), "+15.1%"],
-        ["Promo revenue", money(totals.revenue), "+18.6%"],
-        ["New customers", number(Math.round(87 * weight)), "+6.4%"],
+        ["Clicks", number(totals.clicks), "+9.8%"],
       ];
       const defaultReport =
         $("tracking-promotion").value === "all" &&
@@ -1724,7 +1883,7 @@
       $("tracking-rows").innerHTML = rows
         .map(
           (row) =>
-            `<tr><td><span class="demo-channel-name" style="--channel-color:${row.color}"><i></i>${row.name}</span></td><td>${number(row.views)}</td><td>${number(row.clicks)}</td><td>${row.views ? ((row.clicks / row.views) * 100).toFixed(1) + "%" : "—"}</td><td>${number(row.redeems)}</td><td>${money(row.revenue)}</td><td>${money(row.cost)}</td></tr>`,
+            `<tr><td><span class="demo-channel-name" style="--channel-color:${row.color}"><i></i>${row.name}</span></td><td>${number(row.views)}</td><td>${number(row.clicks)}</td><td>${money(row.cost)}</td></tr>`,
         )
         .join("");
       $("tracking-summary").textContent = [
@@ -1739,9 +1898,8 @@
           (a, b) => b.clicks / b.views - a.clicks / a.views,
         )[0],
         revenue = [...viewed].sort((a, b) => b.revenue - a.revenue)[0];
-      $("tracking-insight").textContent = defaultReport
-        ? "OneQR hero has the strongest engagement rate at 18.1%, while POS checkout drives the most completed redemptions and promotion revenue."
-        : highest && revenue
+      $("tracking-insight").textContent =
+        highest && revenue
           ? `${highest.name} · CTR ${((highest.clicks / highest.views) * 100).toFixed(1)}% · ${revenue.name} · ${money(revenue.revenue)}`
           : "—";
     }
@@ -1797,11 +1955,6 @@
       renderTracking();
       renderHistory();
     }
-    $("tracking-channel").innerHTML =
-      '<option value="all">All channels</option>' +
-      trackingChannels
-        .map((c) => `<option value="${c.id}">${c.name}</option>`)
-        .join("");
     ["program-search", "program-status"].forEach((id) =>
       $(id).addEventListener(
         id === "program-search" ? "input" : "change",
@@ -1994,16 +2147,8 @@
         ],
         ["Channel", $("tracking-channel").selectedOptions[0].textContent],
         [],
-        ["Channel", "Views", "Clicks", "CTR", "Redeems", "Revenue", "Cost"],
-        ...rows.map((row) => [
-          row.name,
-          row.views,
-          row.clicks,
-          row.views ? ((row.clicks / row.views) * 100).toFixed(1) + "%" : "",
-          row.redeems,
-          row.revenue,
-          row.cost,
-        ]),
+        ["Channel", "Views", "Clicks", "Cost"],
+        ...rows.map((row) => [row.name, row.views, row.clicks, row.cost]),
       ]);
     });
     $("export-history").addEventListener("click", () => {

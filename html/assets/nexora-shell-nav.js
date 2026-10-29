@@ -37,7 +37,7 @@
       '#pos-salon-settings-services': 'pos-salon-settings.html?section=services',
       '#pos-call-log': 'booking-book-phase-1.html?tab=calllog',
       '#pos-voice-customers': 'booking-book-phase-1.html?tab=customers',
-      '#pos-promotions': 'reward-promotions.html', '#pos-sms-campaigns': 'nexora-sms-dashboard.html',
+      '#pos-promotions': 'pos-promotions.html', '#pos-promotions-new': 'pos-promotions-new.html', '#pos-sms-campaigns': 'nexora-sms-dashboard.html',
       '#pos-loyalty': 'salon-setup-reward.html'
     };
     if (anchors[href]) return anchors[href];
@@ -81,7 +81,8 @@
     if (path.indexOf('/menu/') === 0) return '../menu/menu.html';
     if (path === '/dashboard/pos' && tab === 'orderlist') return front.tickets;
     if (path === '/dashboard/pos' && tab === 'customer') return 'booking-book-phase-1.html?tab=customers';
-    if (path === '/dashboard/pos/promotions') return 'reward-promotions.html';
+    if (path === '/dashboard/pos/promotions') return 'pos-promotions.html';
+    if (path === '/dashboard/pos/promotions/new') return 'pos-promotions-new.html';
     if (path === '/dashboard/pos/loyalty') return 'salon-setup-reward.html';
     if (path === '/dashboard/pos/settings/services') return 'pos-salon-settings.html?section=services';
     if (path === '/dashboard/pos/settings/salon-information') return 'pos-salon-settings.html?section=information';
@@ -244,6 +245,11 @@
             "key": "pos-promotions",
             "label": "Promotions",
             "href": "#pos-promotions"
+          },
+          {
+            "key": "pos-promotions-new",
+            "label": "Create promotion",
+            "href": "#pos-promotions-new"
           },
           {
             "key": "pos-sms",

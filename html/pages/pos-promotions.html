@@ -144,72 +144,6 @@
               </div>
             </section>
             <section
-              class="demo-tracking"
-              id="tracking-performance"
-              aria-labelledby="tracking-title"
-            >
-              <header class="demo-tracking-heading">
-                <div>
-                  <p class="promo-eyebrow">Promotion insights</p>
-                  <h2 id="tracking-title">Tracking &amp; performance</h2>
-                  <p id="tracking-summary">
-                    All promotions · Last 30 days · All channels
-                  </p>
-                </div>
-                <div class="demo-tracking-filters">
-                  <label class="promo-field"
-                    ><span>Promotion</span
-                    ><select id="tracking-promotion">
-                      <option value="all">All promotions</option>
-                    </select></label
-                  ><label class="promo-field"
-                    ><span>Reporting period</span
-                    ><select id="tracking-period">
-                      <option value="30">Last 30 days</option>
-                      <option value="7">Last 7 days</option>
-                      <option value="90">Last 90 days</option>
-                    </select></label
-                  ><label class="promo-field"
-                    ><span>Channel</span
-                    ><select id="tracking-channel">
-                      <option value="all">All channels</option>
-                    </select></label
-                  ><button
-                    type="button"
-                    class="promo-button"
-                    id="export-tracking"
-                  >
-                    Export report
-                  </button>
-                </div>
-              </header>
-              <div class="demo-metrics" id="tracking-metrics"></div>
-              <div class="demo-channel-table">
-                <table>
-                  <thead>
-                    <tr>
-                      <th>Channel</th>
-                      <th>Views</th>
-                      <th>Clicks</th>
-                      <th>CTR</th>
-                      <th>Redeems</th>
-                      <th>Revenue</th>
-                      <th>Cost</th>
-                    </tr>
-                  </thead>
-                  <tbody id="tracking-rows"></tbody>
-                </table>
-              </div>
-              <div class="demo-insights">
-                <strong>Insights</strong>
-                <p id="tracking-insight">
-                  OneQR hero has the strongest engagement rate at 18.1%, while
-                  POS checkout drives the most completed redemptions and
-                  promotion revenue.
-                </p>
-              </div>
-            </section>
-            <section
               class="promo-program-card"
               id="promo-run-cal"
               aria-labelledby="promo-cal-title"
@@ -337,6 +271,65 @@
                 </p>
               </div>
             </section>
+            <section
+              class="demo-tracking"
+              id="tracking-performance"
+              aria-labelledby="tracking-title"
+            >
+              <header class="demo-tracking-heading">
+                <div>
+                  <p class="promo-eyebrow">Promotion insights</p>
+                  <h2 id="tracking-title">Tracking &amp; performance</h2>
+                  <p id="tracking-summary">
+                    All promotions · Last 30 days · All channels
+                  </p>
+                </div>
+                <div class="demo-tracking-filters">
+                  <label class="promo-field"
+                    ><span>Promotion</span
+                    ><select id="tracking-promotion">
+                      <option value="all">All promotions</option>
+                    </select></label
+                  ><label class="promo-field"
+                    ><span>Reporting period</span
+                    ><select id="tracking-period">
+                      <option value="30">Last 30 days</option>
+                      <option value="7">Last 7 days</option>
+                      <option value="90">Last 90 days</option>
+                    </select></label
+                  ><label class="promo-field"
+                    ><span>Channel</span
+                    ><select id="tracking-channel">
+                      <option value="all">All channels</option>
+                    </select></label
+                  ><button
+                    type="button"
+                    class="promo-button"
+                    id="export-tracking"
+                  >
+                    Export report
+                  </button>
+                </div>
+              </header>
+              <div class="demo-metrics" id="tracking-metrics"></div>
+              <div class="demo-channel-table">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Channel</th>
+                      <th>Views</th>
+                      <th>Clicks</th>
+                      <th>Cost</th>
+                    </tr>
+                  </thead>
+                  <tbody id="tracking-rows"></tbody>
+                </table>
+              </div>
+              <div class="demo-insights">
+                <strong>Insights</strong>
+                <p id="tracking-insight">—</p>
+              </div>
+            </section>
             <p class="promo-note demo-local-note">
               Interactive prototype · Sample data · Changes are saved in this
               browser.
@@ -376,6 +369,7 @@
       window.NEXORA_SHELL = {
         activePage: "pos",
         activeTab: "promotions",
+        activeNavKey: "pos-promotions",
         onNavigate: function (tab) {
           window.location.href =
             tab === "promotions"
@@ -384,6 +378,7 @@
         },
       };
     </script>
+    <script src="../assets/vendor/lucide.min.js"></script>
     <script src="../assets/nexora-icons.js"></script>
     <script src="../assets/nexora-shell-nav.js?v=20261029-sidebar-group-labels"></script>
     <script src="../assets/nexora-shell.js?v=20261029-sidebar-group-labels"></script>

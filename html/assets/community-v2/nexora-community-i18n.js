@@ -5,6 +5,10 @@
   const communityPairs = `
 Đăng ưu đãi	Post an offer
 Đăng tin và giao dịch miễn phí.	Posting and person-to-person transactions are free.
+✎ Chỉnh sửa	✎ Edit
+← Quay lại danh sách Fanpage	← Back to Pages
+← Quay lại Fanpage	← Back to Page
+Chỉnh sửa	Edit
 Tìm ưu đãi: pedicure, facial, coffee…	Search deals: pedicure, facial, coffee…
 Chưa có ưu đãi phù hợp	No matching deals
 Thử từ khóa, ngành hoặc khu vực khác.	Try another keyword, industry or area.

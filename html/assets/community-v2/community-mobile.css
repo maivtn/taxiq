@@ -558,3 +558,19 @@ body .community-toolbar-filter-toggle,body .community-group-filter-toggle,body .
   body.embedded .community-toolbar-filter-toggle.has-filters { border-color:#b8aaf0; background:#eae5ff; }
   .community-toolbar-filter-count:not([hidden]) { display:inline-grid; place-items:center; min-width:18px; height:18px; padding:0 4px; border-radius:20px; background:#6755ec; color:#fff; font-size:10px; }
 }
+
+/* Photo forms use the existing camera / upload pattern across Community. */
+.community-photo-actions { display:flex; flex-wrap:wrap; align-items:center; gap:8px; margin:8px 0; min-width:0; }
+body .community-photo-actions .community-photo-button { display:inline-flex; align-items:center; justify-content:center; flex:none; min-height:44px; max-width:100%; padding:9px 12px; gap:7px; font-size:13px; line-height:1.35; }
+.community-photo-actions .community-action-icon { width:18px; height:18px; flex:none; }
+.community-upload-source { position:absolute!important; width:1px!important; height:1px!important; min-width:0!important; min-height:0!important; padding:0!important; margin:-1px!important; overflow:hidden!important; clip-path:inset(50%)!important; opacity:0!important; border:0!important; }
+.community-upload-legacy { display:none!important; }
+.composer-photos-section:has(.community-photo-actions) [data-composer-photos] > li:has([data-composer-add-photo]) { display:none; }
+.community-photo-actions.is-cover { position:absolute; right:12px; bottom:12px; z-index:2; margin:0; }
+.community-photo-actions.is-cover .community-photo-button { background:#fff; border-color:#dfe5ef; color:#34415b; box-shadow:0 2px 6px #17213814; }
+body #feedView .feed-action[data-blog-create] .feed-icon { padding:0; background:transparent; box-shadow:none; color:#087f98; }
+body #feedView .feed-action[data-blog-create] .feed-icon .community-action-icon { width:100%; height:100%; }
+@media(max-width:650px){
+  body .community-photo-actions .community-photo-button { padding:9px 10px; font-size:12px; }
+  .community-photo-actions.is-cover { right:8px; bottom:8px; gap:5px; }
+}
