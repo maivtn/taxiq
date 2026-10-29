@@ -638,12 +638,17 @@
     }
     function renderServices() {
       const isAll = draft.services.includes("all");
+      const openGroups = new Set(
+        [...$("eligible-services").querySelectorAll("details[open]")].map(
+          (group) => group.dataset.serviceGroup,
+        ),
+      );
       $("eligible-services").innerHTML =
         `<label class="demo-service-choice demo-service-all"><input type="checkbox" id="all-services" ${isAll ? "checked" : ""}><strong>${t("eligibleServicesAll")}</strong></label>` +
         data.services
           .map(
             (group, index) =>
-              `<details class="demo-service-category" open><summary><input type="checkbox" data-service-category="${index}" aria-label="${escape(group.name)}" ${isAll || group.services.every((s) => draft.services.includes(s.id)) ? "checked" : ""}><span>${escape(group.name)}</span><small>${group.services.length}</small></summary><div class="demo-service-grid">${group.services.map((service) => `<label class="demo-service-choice"><input type="checkbox" data-service="${escape(service.id)}" ${isAll || draft.services.includes(service.id) ? "checked" : ""}><span>${escape(service.name)}</span></label>`).join("")}</div></details>`,
+              `<details class="demo-service-category" data-service-group="${index}" ${openGroups.has(String(index)) ? "open" : ""}><summary><input type="checkbox" data-service-category="${index}" aria-label="${escape(group.name)}" ${isAll || group.services.every((s) => draft.services.includes(s.id)) ? "checked" : ""}><span>${escape(group.name)}</span><small>${group.services.length}</small></summary><div class="demo-service-grid">${group.services.map((service) => `<label class="demo-service-choice"><input type="checkbox" data-service="${escape(service.id)}" ${isAll || draft.services.includes(service.id) ? "checked" : ""}><span>${escape(service.name)}</span></label>`).join("")}</div></details>`,
           )
           .join("");
       document.querySelectorAll("[data-service-category]").forEach((input) => {
