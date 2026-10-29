@@ -232,9 +232,10 @@
       publicStatus: "off",
       paidEnabled: false,
       paidPlacements: data.placements.map((placement) => placement.id),
-      targetArea: "Houston",
+      targetArea: "all",
+      targetAreas: ["all"],
       budget: 100,
-      dailyLimit: 15,
+      dailyLimit: null,
       used: 0,
       claimed: 0,
       discountTotal: 0,
@@ -307,6 +308,11 @@
       if (saved?.version === 1 && Array.isArray(saved.promotions))
         return saved.promotions.map((promotion) => ({
           ...promotion,
+          targetAreas: Array.isArray(promotion.targetAreas)
+            ? promotion.targetAreas
+            : Array.isArray(promotion.targetArea)
+              ? promotion.targetArea
+              : [promotion.targetArea || "all"],
           paidPlacements: (promotion.paidPlacements || [])
             .map((id) => (id === "explore" ? "nearby" : id))
             .filter((id) =>
@@ -481,6 +487,40 @@
         ...new Set([...draft.channels, ...draft.paidPlacements]),
       ];
     }
+    const targetAreaPicker =
+      typeof window.TomSelect === "function"
+        ? new window.TomSelect(field("targetArea"), {
+            plugins: {
+              remove_button: { title: "Remove" },
+              checkbox_options: {},
+            },
+            create: false,
+            maxItems: null,
+            maxOptions: null,
+            hideSelected: false,
+            closeAfterSelect: false,
+            clearAfterSelect: true,
+            lockOptgroupOrder: true,
+            placeholder: "Select or search",
+            render: { no_results: null },
+            onItemAdd(value) {
+              if (value === "all") {
+                this.items
+                  .filter((id) => id !== "all")
+                  .forEach((id) => this.removeItem(id, true));
+              } else if (this.items.includes("all")) {
+                this.removeItem("all", true);
+              }
+            },
+            onChange() {
+              if (!this.items.length) this.addItem("all", true);
+            },
+          })
+        : null;
+    targetAreaPicker?.control_input.setAttribute(
+      "aria-labelledby",
+      "target-area-label",
+    );
     function read() {
       for (const name of [
         "name",
@@ -499,12 +539,14 @@
         "perClient",
         "holdDays",
         "couponCode",
-        "targetArea",
         "budget",
-        "dailyLimit",
       ])
         draft[name] = field(name).value;
       draft.discountValue = field("discountValue").value;
+      draft.targetAreas = [...field("targetArea").selectedOptions].map(
+        (option) => option.value,
+      );
+      draft.targetArea = draft.targetAreas[0] || "";
       draft.days = [...form.querySelectorAll("[name=days]:checked")].map((n) =>
         Number(n.value),
       );
@@ -548,11 +590,13 @@
         "perClient",
         "holdDays",
         "couponCode",
-        "targetArea",
         "budget",
-        "dailyLimit",
       ])
         field(name).value = draft[name] ?? "";
+      for (const option of field("targetArea").options) {
+        option.selected = draft.targetAreas.includes(option.value);
+      }
+      targetAreaPicker?.setValue(draft.targetAreas, true);
       field("paidEnabled").checked = draft.paidEnabled;
       field("crossPromotion").checked = draft.crossPromotion;
       form
@@ -910,6 +954,12 @@
       if (draft.kind === "deal" && !draft.channels.includes("pos"))
         fail("errorPosCheckoutRequired", "name");
       if (draft.paidEnabled) {
+        if (!draft.targetAreas.length && !error) {
+          const areaSelect = field("targetArea");
+          areaSelect.required = true;
+          error = areaSelect.validationMessage;
+          target = targetAreaPicker?.control_input || areaSelect;
+        }
         if (
           !draft.channels.some((id) =>
             data.channels.some((c) => c.id === id && c.tier === "pub"),
@@ -920,15 +970,10 @@
           error = "Choose at least one ad placement.";
           target = field("paidEnabled");
         }
-        if (
-          !(Number(draft.budget) > 0) ||
-          !(Number(draft.dailyLimit) > 0) ||
-          Number(draft.dailyLimit) > Number(draft.budget)
-        ) {
+        if (!(Number(draft.budget) > 0)) {
           if (!error) {
-            error =
-              "Daily ad budget must be greater than zero and cannot exceed the total ad budget.";
-            target = field("dailyLimit");
+            error = "Enter a total campaign budget greater than zero.";
+            target = field("budget");
           }
         }
       }
@@ -946,6 +991,7 @@
       );
       const saved = {
         ...structuredClone(draft),
+        dailyLimit: null,
         id: existing?.id || crypto.randomUUID(),
         draft: !activated,
         active: activated,

@@ -16,6 +16,7 @@
       href="../assets/nexora-shell.css?v=20261029-sidebar-group-labels"
     />
     <link rel="stylesheet" href="../assets/promotion-industry-icons.css" />
+    <link rel="stylesheet" href="../assets/vendor/tom-select/tom-select.css" />
     <link rel="stylesheet" href="../assets/pos-promotions-demo.css" />
   </head>
   <body data-promotion-page="create">
@@ -637,9 +638,15 @@
                           ></label
                         >
                         <div id="paid-fields" hidden>
-                          <label class="promo-field"
-                            ><span>Target area</span
-                            ><select name="targetArea">
+                          <label class="promo-field demo-target-area"
+                            ><span id="target-area-label">Target area</span
+                            ><select
+                              id="target-area"
+                              name="targetArea"
+                              multiple
+                              aria-labelledby="target-area-label"
+                            >
+                              <option value="all" selected>All</option>
                               <optgroup label="Texas">
                                 <option value="Houston">Houston</option>
                                 <option value="Katy">Katy</option>
@@ -763,29 +770,15 @@
                               </optgroup>
                             </select></label
                           >
-                          <div class="promo-field-row">
-                            <label class="promo-field"
-                              ><span>Total campaign budget (USD)</span
-                              ><input
-                                type="number"
-                                name="budget"
-                                value="100"
-                                min="0.01"
-                                step="0.01" /></label
-                            ><label class="promo-field"
-                              ><span>Daily spending limit (USD)</span
-                              ><input
-                                type="number"
-                                name="dailyLimit"
-                                value="15"
-                                min="0.01"
-                                step="0.01"
-                            /></label>
-                          </div>
-                          <p class="promo-note">
-                            The daily limit is included in the total campaign
-                            budget.
-                          </p>
+                          <label class="promo-field"
+                            ><span>Total campaign budget (USD)</span
+                            ><input
+                              type="number"
+                              name="budget"
+                              value="100"
+                              min="0.01"
+                              step="0.01"
+                          /></label>
                           <p class="demo-paid-credit">
                             <span data-oneqr-icon="wallet"></span
                             ><span
@@ -1772,6 +1765,7 @@
     <script src="../assets/oneqr-action-appearance.js"></script>
     <script src="../assets/promotion-industry-icons.js"></script>
     <script src="../assets/pos-promotions-demo-data.js"></script>
+    <script src="../assets/vendor/tom-select/tom-select.complete.min.js"></script>
     <script src="../assets/pos-promotions-demo.js"></script>
   </body>
 </html>
