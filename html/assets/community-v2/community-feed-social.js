@@ -156,6 +156,15 @@
         card.insertAdjacentHTML('afterbegin',authorHeaderMarkup(post)+previewMarkup(post));
         if(safeImages(post).length){const existingActions=card.querySelector(':scope > .listing-actions');if(existingActions)existingActions.insertAdjacentHTML('beforebegin',galleryMarkup(post));else card.insertAdjacentHTML('beforeend',galleryMarkup(post));}
         card.insertAdjacentHTML('beforeend',marketplaceMarkup(post)+actionsMarkup(post)+(opened.has(String(post.id))?commentsMarkup(post,card.closest('[data-social-post-detail]')?'detail':'card'):''));
+        const market=card.querySelector(':scope > .community-social-market');
+        const marketActions=market?.querySelector('.community-social-market-actions');
+        if(marketActions){
+          let row=card.querySelector(':scope > .listing-actions');
+          if(!row){row=document.createElement('div');row.className='listing-actions';row.dataset.socialUi='market-actions';market.before(row);}
+          row.classList.add('community-social-market-actions');
+          for(const action of [...marketActions.children]){action.dataset.socialUi='market-action';row.append(action);}
+          marketActions.remove();
+        }
       }
     }
     function refresh() {

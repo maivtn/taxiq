@@ -138,3 +138,48 @@ const basic={displayName:'Worker A',experience:'ThreeToFive',stateCode:'TX',city
   form.querySelector('[type="submit"]').click();
   const profile=s.api.getProfile();assert.ok(profile.basicSavedAt);assert.equal(profile.stateCode,'TX');assert.equal(profile.cityName,'Houston');assert.equal(s.window.document.getElementById('jobsProfileForm').dataset.jobsProfileStep,'Skills');assert.ok(s.window.document.querySelector('[data-jobs-action="return-job"]'));
  });
+
+ test('PO post entry remains beside Jobs navigation across rerenders and opens the same form',t=>{
+  const s=setup({member:'Salon A',role:'owner'});t.after(()=>s.dom.window.close());
+  for(let i=0;i<3;i++)s.api.render();
+  const head=s.window.document.querySelector('.jobs-workflow-head');
+  assert.equal(s.window.document.querySelectorAll('#jobTemplates').length,1);
+  assert.ok(head.querySelector('.jobs-nav'));assert.ok(head.querySelector('#jobTemplates'));
+  head.querySelector('[data-template="hiring"]').click();
+  assert.equal(s.window.document.getElementById('templateForm').dataset.kind,'hiring');
+ });
+
+ test('staging salary choices and seeking schedules are retained in the shared record',t=>{
+  const s=setup();t.after(()=>s.dom.window.close());const form=s.api.openEditor('seeking');
+  assert.ok(form.elements.namedItem('salaryType'));assert.ok(form.elements.namedItem('weeklySalary').disabled);
+  form.elements.salaryType.value='Guaranteed';form.elements.salaryType.dispatchEvent(new s.window.Event('change',{bubbles:true}));
+  assert.equal(form.elements.weeklySalary.disabled,false);form.elements.weeklySalary.value='950.50';
+  form.elements.city.value='Houston, TX';form.elements.description.value='Available to work full-time.';
+  form.querySelector('[name="workTypes"][value="FullTime"]').checked=true;
+  form.dispatchEvent(new s.window.Event('submit',{bubbles:true,cancelable:true}));
+  assert.equal(s.jobs[0].salaryType,'Guaranteed');assert.equal(s.jobs[0].weeklySalary,'950.50');
+  assert.equal(s.jobs[0].period,'Mỗi tuần');assert.deepEqual(s.jobs[0].workTypes,['FullTime']);
+  const before=JSON.stringify(s.jobs);
+  assert.equal(s.api.saveJob({kind:'seeking',role:'Thợ nail',city:'Houston',description:'Description',salaryType:'Guaranteed',weeklySalary:'-10'}),false);
+  assert.equal(JSON.stringify(s.jobs),before);
+ });
+
+ test('both PO post choices remain visible while staging posting permissions are enforced',t=>{
+  const s=setup({member:'Salon A',role:'owner'});t.after(()=>s.dom.window.close());
+  const choices=()=>[...s.window.document.querySelectorAll('#jobTemplates [data-template]')];
+  assert.ok(choices().every(button=>!button.hidden));assert.equal(choices()[0].disabled,false);assert.equal(choices()[1].disabled,true);
+  choices()[1].click();assert.equal(s.window.document.getElementById('templateForm'),null);
+  s.switchMember('Worker A','staff');assert.ok(choices().every(button=>!button.hidden));assert.equal(choices()[0].disabled,true);assert.equal(choices()[1].disabled,false);
+  choices()[1].click();assert.equal(s.window.document.getElementById('templateForm').dataset.kind,'seeking');
+ });
+
+ test('industry and area filters work together from the control beside search',t=>{
+  const s=setup();t.after(()=>s.dom.window.close());const d=s.window.document,industry=d.createElement('button');industry.dataset.jobIndustry='Nhà hàng & ăn uống';industry.textContent='Restaurants';d.getElementById('jobIndustryFilters').append(industry);s.api.render();
+  d.getElementById('jobsToggleFilters').click();assert.equal(d.getElementById('jobsRefinements').hidden,false);
+  const choose=(id,value)=>{const field=d.getElementById(id);field.value=value;field.dispatchEvent(new s.window.Event('change',{bubbles:true}));};
+  choose('jobsIndustryFilter','Nhà hàng & ăn uống');assert.deepEqual([...d.querySelectorAll('[data-job-id]')].map(el=>el.dataset.jobId),['hiring-2']);
+  choose('jobsStateFilter','TX');assert.equal(d.querySelectorAll('[data-job-id]').length,1);
+  choose('jobsStateFilter','CA');assert.equal(d.querySelectorAll('[data-job-id]').length,0);
+  assert.ok(d.querySelector('.jobs-search-row #jobsSearch'));assert.ok(d.querySelector('.jobs-search-row #jobsToggleFilters'));
+  d.getElementById('jobsToggleFilters').click();assert.equal(d.getElementById('jobsRefinements').hidden,true);
+ });

@@ -125,4 +125,9 @@ body .dialog.community-social-lightbox .dialog-footer .btn{min-width:0;white-spa
 .community-social-market-actions{display:flex;flex-wrap:wrap;gap:8px}
 .community-social-trade-notice{margin:9px 0 0!important;color:#8490a3;font-size:11px;line-height:1.5}
 .community-social-detail>.content-card{padding:0;border:0;box-shadow:none}
-@media(max-width:650px){.community-social-market-actions>.btn{min-height:44px;width:100%}.community-feed-post-destination{min-height:32px}}
+.community-social-market-actions>.btn{width:auto;max-width:100%;min-height:34px;padding:7px 10px;font-size:12px;line-height:1.35;white-space:normal;display:inline-flex;align-items:center;justify-content:center;gap:6px}
+.community-social-market-actions>.btn .community-action-icon{width:15px;height:15px;flex:none}
+.community-social-market-actions>[data-open-market]{background:#eef2ff;border-color:#dce4ff;color:#4b58b8}
+.community-social-market-actions>[data-social-action="contact-seller"]{background:#e9f8f4;border-color:#ccece2;color:#177562}
+.community-social-market-actions>[data-social-action="mark-sold"]{background:#fff5e7;border-color:#f6dfb9;color:#966220}
+@media(max-width:650px){.community-social-market-actions>.btn{min-height:40px;padding:8px 10px;font-size:11.5px}.community-feed-post-destination{min-height:32px}}

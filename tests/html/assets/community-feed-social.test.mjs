@@ -309,3 +309,17 @@ test('a social mutation merges the latest stored comments from another open surf
   const saved=JSON.parse(app.w.localStorage.getItem(storageKey));
   assert.equal(saved.posts.a.comments[0].id,'external');assert.equal(saved.reports[0].id,'other-report');assert.deepEqual(saved.posts.a.likedBy,['Me']);
 });
+
+test('marketplace actions share the original CTA row and survive repeated enhancement without duplicates',t=>{
+  const app=boot(t,[{id:'market-row',type:'sale',owner:'Other',title:'Chair',status:'open'}],'',{contactPost:()=>true});
+  const card=app.d.querySelector('[data-feed-post-id="market-row"]');
+  const view=app.d.createElement('button');view.dataset.openMarket='market-row';view.textContent='View in Marketplace';
+  card.querySelector('.listing-actions').prepend(view);
+  app.social.enhance();app.social.enhance();
+  const row=card.querySelector(':scope > .listing-actions');
+  assert.equal(card.querySelectorAll(':scope > .listing-actions').length,1);
+  assert.equal(card.querySelectorAll('[data-social-action="contact-seller"]').length,1);
+  assert.ok(row.contains(view));assert.ok(row.querySelector('[data-social-action="contact-seller"]'));
+  assert.equal(card.querySelector('.community-social-market .community-social-market-actions'),null);
+  assert.ok(card.querySelector('.community-social-trade-notice'));
+});

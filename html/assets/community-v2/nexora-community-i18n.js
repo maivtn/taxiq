@@ -3,6 +3,10 @@
 (() => {
   const isConnect = location.pathname.includes('privacy-qr-layout');
   const communityPairs = `
+Tìm ưu đãi: pedicure, facial, coffee…	Search deals: pedicure, facial, coffee…
+Chưa có ưu đãi phù hợp	No matching deals
+Thử từ khóa, ngành hoặc khu vực khác.	Try another keyword, industry or area.
+Bộ lọc	Filters
 Không gian làm việc	Workspace
 Trang chủ	Home
 Bảng Điều Khiển	Dashboard

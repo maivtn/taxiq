@@ -40,6 +40,26 @@ test('directory retains PO details, city/topic/type filters and owner membership
   assert.equal(app.workflow.store.leave('mine'),false);
 });
 
+test('directory filters stay with the main list without adding a third PO layout column',t=>{
+  const app=boot(t,{groups:[{id:'g',title:'Houston group',owner:'Other',city:'Houston'}]});
+  const cards=app.d.querySelector('#groupCards');
+  const layout=app.d.createElement('div');layout.className='feature-layout';
+  const aside=app.d.createElement('aside');aside.textContent='Create a group';
+  cards.parentElement.append(layout);layout.append(cards,aside);
+  // A refresh must also repair a filter left in the old, incorrect grid position.
+  layout.prepend(app.d.querySelector('[data-community-group-filters]'));
+  for(let i=0;i<3;i++)app.workflow.enhance();
+  assert.equal(layout.children.length,2);
+  assert.equal(layout.firstElementChild,cards);
+  assert.equal(layout.lastElementChild,aside);
+  assert.equal(app.d.querySelectorAll('[data-community-group-filters]').length,1);
+  assert.ok(cards.contains(app.d.querySelector('[data-community-group-filters]')));
+  const city=cards.querySelector('[data-community-group-filter="city"]');
+  city.value='Houston';city.dispatchEvent(new app.w.Event('change',{bubbles:true}));
+  assert.equal(layout.children.length,2);
+  assert.equal(cards.querySelectorAll('[data-community-group-card]').length,1);
+});
+
 test('group detail shows five newest source posts and join gates its chat shortcut',t=>{
   const groups=[{id:'g',title:'Gel-X',owner:'Other',rules:'Respect authors',groupType:'Community'}];
   const feed=Array.from({length:7},(_,i)=>({id:'p'+i,owner:'Author '+i,title:'Post '+i,createdAt:`2026-10-${String(i+1).padStart(2,'0')}T10:00:00Z`,destinations:{includeMainFeed:false,groupIds:['g']}}));

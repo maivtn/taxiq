@@ -87,7 +87,7 @@
   function refresh(){core.refresh();enhance();}
   function confirmAction(kind,room,name=''){dialog={kind,roomId:room.id,member:name};showModal(t(kind==='leave'?'members.leave':kind==='remove'?'members.remove':'members.reinstate'),`<p>${esc(t(kind==='leave'?'members.leaveConfirm':room.scope==='ShopGroup'?'members.excludeConfirm':'members.removeConfirm',{name}))}</p>`,button('confirm-member-action',t(kind==='leave'?'members.leave':'members.remove'),'','primary'));}
   document.addEventListener('click',event=>{
-    const target=event.target.closest?.('button,[data-connect-modal-overlay]');if(!target)return;
+    const target=event.target.closest?.('button,[data-connect-action],[data-connect-modal-overlay]');if(!target)return;
     const action=target.dataset.connectAction;
     if(!action&&target.id!=='createGroupBtn'&&target.id!=='editBtn'&&!target.dataset.startCall&&!target.dataset.requestAction&&!target.dataset.previewNickname)return;
     event.preventDefault();event.stopImmediatePropagation();

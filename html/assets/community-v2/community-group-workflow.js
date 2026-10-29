@@ -160,9 +160,9 @@
     function enhance(root=document) {
       if(destroyed)return;
       const cards=root.querySelector?.('#groupCards')||(root.id==='groupCards'?root:null);if(!cards)return;
-      let filters=cards.parentElement.querySelector('[data-community-group-filters]');
-      if(filters)filters.outerHTML=filtersMarkup();else cards.insertAdjacentHTML('beforebegin',filtersMarkup());
-      cards.innerHTML=directoryMarkup();cards.classList.add('community-group-directory');
+      // Filters belong to the list column, beside the existing PO sidebar.
+      cards.parentElement.querySelector(':scope > [data-community-group-filters]')?.remove();
+      cards.innerHTML=filtersMarkup()+directoryMarkup();cards.classList.add('community-group-directory');
     }
     function showDialog(group,body,footer,heading=title(group)) {
       if(!document.querySelector('[data-community-group-dialog]'))returnFocus=document.activeElement;

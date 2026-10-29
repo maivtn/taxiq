@@ -1,0 +1,21 @@
+import test from 'node:test';
+import assert from 'node:assert/strict';
+import {readFileSync} from 'node:fs';
+import {JSDOM} from 'jsdom';
+const source=readFileSync(new URL('../../../html/assets/community-v2/community-ui.js',import.meta.url),'utf8');
+test('Connect workflow dialogs report open and close to the native host without duplicate render notifications',async t=>{
+ const dom=new JSDOM('<html><body><div id="root"></div></body></html>',{url:'https://nexora.test/html/assets/community-v2/nexora-privacy-qr-layout.html',runScripts:'outside-only',pretendToBeVisual:true});
+ const w=dom.window,messages=[],observers=[],frames=[];
+ const Observer=w.MutationObserver;w.MutationObserver=class extends Observer{constructor(callback){super(callback);observers.push(this);}};
+ const raf=w.requestAnimationFrame.bind(w);w.requestAnimationFrame=callback=>{const id=raf(callback);frames.push(id);return id;};
+ t.after(()=>{observers.forEach(observer=>observer.disconnect());frames.forEach(id=>w.cancelAnimationFrame(id));Object.defineProperty(w,'parent',{value:w});w.close();});
+ const script=w.document.createElement('script');script.src='https://nexora.test/html/assets/community-v2/community-ui.js';Object.defineProperty(w.document,'currentScript',{value:script});
+ Object.defineProperty(w,'parent',{configurable:true,value:{postMessage:(data,origin)=>messages.push({data:JSON.parse(JSON.stringify(data)),origin})}});
+ w.NEXORA_CONNECT_CORE={};w.HTMLElement.prototype.getClientRects=()=>[{width:200,height:200}];
+ const settle=()=>new Promise(resolve=>w.requestAnimationFrame(()=>w.requestAnimationFrame(resolve)));
+ w.eval(source);const root=w.document.getElementById('root');
+ root.innerHTML='<section role="dialog" aria-modal="true"><button>Close</button><input><footer><button>Save</button></footer></section>';await settle();
+ assert.deepEqual(messages.map(row=>row.data),[{type:'nexora-connect-dialog',open:true}]);assert.equal(messages[0].origin,w.location.origin);assert.ok(w.document.body.classList.contains('community-dialog-open'));
+ w.NEXORA_COMMUNITY_UI.refresh();await settle();assert.equal(messages.length,1);
+ root.replaceChildren();await settle();assert.deepEqual(messages.map(row=>row.data.open),[true,false]);assert.equal(w.document.body.classList.contains('community-dialog-open'),false);
+});

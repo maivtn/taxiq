@@ -29,11 +29,16 @@
     document.querySelectorAll('.feed-action,.template-card').forEach(button=>{
       const key=button.dataset.template||button.dataset.marketKind||button.dataset.blogCreate;
       const holder=button.querySelector('.feed-icon');
+      if(button.closest('#jobTemplates')&&holder){
+        const name=key==='hiring'?'Briefcase':'UserRoundSearch',definition=window.lucide?.icons[name]||window.lucide?.icons.UserRound;
+        if(definition&&holder.dataset.jobLucide!==key){holder.replaceChildren(window.lucide.createElement(definition,{width:18,height:18,class:'community-action-icon','aria-hidden':'true',focusable:'false'}));holder.dataset.jobLucide=key;}
+        return;
+      }
       if(holder&&artwork[key]&&!holder.querySelector('.community-nav-art'))holder.replaceChildren(makeArtwork(artwork[key]));
     });
   }
   const buttonIcons=[
-    ['#marketFilterToggle','SlidersHorizontal'],
+    ['#marketFilterToggle,#dealFilterToggle','SlidersHorizontal'],
     ['.subtab[data-view="groups"],.feed-group-shortcut','UsersRound'],
     ['.subtab[data-view="market"]','Store'],
     ['#createBtn,#createSale,#createWant,#emptyCreate,#emptyCreatePage,#createPage,[data-template="page"],[data-template="group"]','Plus'],
@@ -61,6 +66,18 @@
     ['#closeModal,#cancelModal:not([data-community-back]),#closeCallPreview,#cancelCreateGroup,.close','X'],
     ['[data-remove-blog-cover],[data-remove-cover],.call-delete','Trash2'],
     ['[data-action="close"],[data-extra-action="closeJob"],[data-extra-action="closeShift"]','Check'],
+    ['[data-social-action="contact-seller"],[data-jobs-action="job-chat"],[data-jobs-action="application-chat"],[data-jobs-action="applicant-chat"]','MessageCircle'],
+    ['#jobsToggleFilters','SlidersHorizontal'],
+    ['[data-jobs-action="detail"],[data-jobs-action="view-application"]','FileText'],
+    ['[data-jobs-action="save"]','Bookmark'],
+    ['[data-jobs-action="candidate"],[data-jobs-action="applicant-profile"]','UserRound'],
+    ['[data-jobs-action="apply"]','Send'],
+    ['[data-jobs-action="applicants"]','UsersRound'],
+    ['[data-jobs-action="edit"]','SquarePen'],
+    ['[data-jobs-action="close-post"]','CircleCheck'],
+    ['[data-jobs-action="invite-applicant"],[data-jobs-action="invite-seeking"]','CalendarPlus'],
+    ['[data-community-group-action="detail"]','Eye'],
+    ['[data-social-action="mark-sold"]','CircleCheck'],
     ['#newMessageBtn','SquarePen'],
     ['#createGroupBtn,#confirmCreateGroup','UsersRound'],
     ['#templateForm[data-kind="page"] button[type="submit"]','Plus'],
@@ -78,7 +95,7 @@
   function addButtonIcon(button,name) {
     if(button.classList.contains('template-card'))return;
     for(const node of button.childNodes){
-      if(node.nodeType===Node.TEXT_NODE){const text=node.nodeValue.replace(/^\s*[＋⌖✦✎▣←☎×✓]\s*/u,'');if(text!==node.nodeValue)node.nodeValue=text;}
+      if(node.nodeType===Node.TEXT_NODE){const text=node.nodeValue.replace(/^\s*[＋⌖✦✎▣←☎×✓★☆]\s*/u,'');if(text!==node.nodeValue)node.nodeValue=text;}
     }
     if(button.querySelector('svg,img')||!window.lucide?.icons[name])return;
     const icon=window.lucide.createElement(window.lucide.icons[name],{width:18,height:18,class:'community-action-icon','aria-hidden':'true',focusable:'false'});
@@ -88,6 +105,7 @@
   function decorateButtons() {
     if(!window.lucide)return;
     for(const [selector,name] of buttonIcons)document.querySelectorAll(selector).forEach(button=>addButtonIcon(button,name));
+    document.querySelectorAll('[data-community-group-action="membership"]').forEach(button=>addButtonIcon(button,button.getAttribute('aria-pressed')==='true'?'UserMinus':'UserPlus'));
     document.querySelectorAll('[data-follow-page]').forEach(button=>addButtonIcon(button,button.getAttribute('aria-pressed')==='true'?'UserCheck':'UserPlus'));
     document.querySelectorAll('[data-page-primary]').forEach(button=>addButtonIcon(button,button.dataset.communityPrimary==='booking'?'CalendarDays':'MessageCircle'));
     const publish=document.getElementById('pagePostSubmit');
@@ -108,6 +126,7 @@
     if(document.documentElement.classList.contains('community-dialog-open')!==Boolean(next))document.documentElement.classList.toggle('community-dialog-open',Boolean(next));
     if(next===activeDialog)return;
     const previous=activeDialog;activeDialog=next;
+    if(window.NEXORA_CONNECT_CORE&&window.parent!==window)window.parent.postMessage({type:'nexora-connect-dialog',open:Boolean(next)},location.protocol==='file:'?'*':location.origin);
     if(next&&!next.contains(document.activeElement)){
       let retained=null;
       if(previous&&lastDialogFocus){

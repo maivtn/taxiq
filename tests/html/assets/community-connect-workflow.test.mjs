@@ -161,3 +161,14 @@ test('accepted Mai blocking publishes the member identity and existing nicknames
   assert.ok(app.app.store.read().profiles['BITCOIN NAIL BAR'].blockedNames.includes('Mai Nguyễn'));
   assert.equal(app.app.store.read().profiles['BITCOIN NAIL BAR'].blockedNames.includes('chat-mai'),false);
 });
+
+test('host Back closes the top workflow modal before its member drawer or conversation',t=>{
+  const app=boot(t);const room=app.app.store.createPrivate('Private team',[]);app.app.openRoom(room.id);
+  app.click('[data-connect-action="members"]');app.click('[data-connect-action="invite"]');
+  assert.ok(app.d.querySelector('#connectWorkflowDialog'));assert.ok(app.d.querySelector('#connectMemberDrawer'));
+  const back=()=>app.w.dispatchEvent(new app.w.MessageEvent('message',{source:app.w.parent,origin:app.w.location.origin,data:{type:'nexora-back'}}));
+  back();assert.equal(app.d.querySelector('#connectWorkflowDialog'),null);assert.ok(app.d.querySelector('#connectMemberDrawer'));
+  assert.equal(app.core.getContext().currentDetail,room.id);
+  back();assert.equal(app.d.querySelector('#connectMemberDrawer'),null);assert.equal(app.core.getContext().currentDetail,room.id);
+  back();assert.equal(app.core.getContext().currentDetail,'');
+});
