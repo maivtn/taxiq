@@ -27,6 +27,20 @@ test('same-thread preference rendering preserves the unsent draft and Escape is 
   app.core.showSection('privacy');assert.doesNotThrow(()=>app.d.dispatchEvent(new app.w.KeyboardEvent('keydown',{key:'Escape',bubbles:true})));
 });
 
+test('generated direct, archived and group conversation rows retain visible avatar initials after refresh',t=>{
+  const app=boot(t);
+  app.core.mutate(state=>{state.sourceChats['chat-linh']={recipient:'  Linh   Nguyễn ',reference:'Nail art'};});
+  app.core.showSection('messages');
+  assert.equal(app.d.querySelector('#communitySourceChats [data-detail="chat-linh"]').dataset.initials,'LN');
+  app.core.mutate(state=>{state.archivedChats=['chat-linh'];});app.core.renderMessages();
+  assert.equal(app.d.querySelector('#archivedChatRows [data-detail="chat-linh"]').dataset.initials,'LN');
+  const room=app.app.store.createPrivate('Lịch hỗ trợ cuối tuần',[]);
+  app.core.showSection('groups');app.app.refresh();
+  assert.equal(app.d.querySelector('[data-connect-action="room"][data-connect-room="'+room.id+'"]').dataset.initials,'LH');
+  app.core.refresh();app.app.enhance();
+  assert.equal(app.d.querySelector('[data-connect-action="room"][data-connect-room="'+room.id+'"]').dataset.initials,'LH');
+});
+
 test('deleted seed history stays cleared when a new message reopens the same direct conversation',t=>{
   const app=boot(t);app.core.showDetail('chat-kim');app.click('[data-chat-menu-toggle]');app.click('[data-chat-menu-action="delete"]');app.click('[data-chat-confirm-delete]');
   app.core.showDetail('chat-kim');app.d.querySelector('#messageText').value='Start again';app.click('[data-send-message]');

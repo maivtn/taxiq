@@ -34,6 +34,28 @@ body .dialog .dialog-head,
 body .dialog .dialog-body,
 body .dialog .dialog-footer { padding-inline: var(--community-dialog-gutter); }
 body .dialog .page-profile-head { margin-inline: 0; }
+@media (min-width: 800px) {
+  /* Reserve the conversation column only after a chat has been opened. */
+  body:is([data-section="messages"], [data-section="groups"]) .connect-stage:not(.detail-open) {
+    display: block;
+    width: 100%;
+    max-width: none;
+    padding: 0;
+    border: 0;
+    background: transparent;
+  }
+  body:is([data-section="messages"], [data-section="groups"]) .connect-stage:not(.detail-open) .global-search {
+    width: 100%;
+    max-width: none;
+    margin: 0 0 14px;
+  }
+  body:is([data-section="messages"], [data-section="groups"]) .connect-stage:not(.detail-open) .layout {
+    display: block;
+    width: 100%;
+    max-width: none;
+    margin: 0;
+  }
+}
 @media (max-width: 800px) {
   body.embedded .app.detail-open .top { display:none; }
   :root { --community-gutter: 16px; --community-dialog-gutter: 16px; }

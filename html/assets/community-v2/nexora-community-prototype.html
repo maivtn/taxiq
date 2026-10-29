@@ -174,13 +174,13 @@
   </style>
   <link rel="stylesheet" href="../vendor/tom-select/tom-select.css">
   <link rel="stylesheet" href="community-controls.css?v=20261029">
-  <link rel="stylesheet" href="community-mobile.css?v=20261029-community-rich-data-v3">
-  <link rel="stylesheet" href="community-feed-social.css?v=20261029-community-rich-data-v3">
-  <link rel="stylesheet" href="community-feed-composer.css?v=20261029-community-rich-data-v3">
-  <link rel="stylesheet" href="community-layout.css?v=20261029-community-rich-data-v3">
-<link rel="stylesheet" href="community-group-workflow.css?v=20261029-community-rich-data-v3">
-<link rel="stylesheet" href="community-jobs-workflow.css?v=20261029-community-rich-data-v3">
-<link rel="stylesheet" href="community-shifts-workflow.css?v=20261029-community-rich-data-v3">
+  <link rel="stylesheet" href="community-mobile.css?v=20261029-community-connect-align-v4">
+  <link rel="stylesheet" href="community-feed-social.css?v=20261029-community-connect-align-v4">
+  <link rel="stylesheet" href="community-feed-composer.css?v=20261029-community-connect-align-v4">
+  <link rel="stylesheet" href="community-layout.css?v=20261029-community-connect-align-v4">
+<link rel="stylesheet" href="community-group-workflow.css?v=20261029-community-connect-align-v4">
+<link rel="stylesheet" href="community-jobs-workflow.css?v=20261029-community-connect-align-v4">
+<link rel="stylesheet" href="community-shifts-workflow.css?v=20261029-community-connect-align-v4">
 <style>
 #dealSearchTools{display:none}
 #feedView.deal-mode #dealSearchTools{display:grid;gap:10px;margin:0 0 16px}
@@ -296,15 +296,15 @@
 <div id="notifyPanel" class="notify-panel panel hide" role="dialog" aria-label="Thông báo phù hợp"></div>
 <div id="modalRoot"></div><div id="toast" class="toast hide" role="status"></div>
 <script src="../vendor/tom-select/tom-select.complete.min.js"></script>
-<script src="community-demo-data.js?v=20261029-community-rich-data-v3"></script>
+<script src="community-demo-data.js?v=20261029-community-connect-align-v4"></script>
 <script src="nexora-us-geo-2025.js"></script>
 <script src="nexora-us-place-centers-2025.js"></script>
-<script src="community-record-store.js?v=20261029-community-rich-data-v3"></script>
-<script src="community-group-workflow.js?v=20261029-community-rich-data-v3"></script>
-<script src="community-jobs-workflow.js?v=20261029-community-rich-data-v3"></script>
-<script src="community-shifts-workflow.js?v=20261029-community-rich-data-v3"></script>
-<script src="community-feed-social.js?v=20261029-community-rich-data-v3"></script>
-<script src="community-feed-composer.js?v=20261029-community-rich-data-v3"></script>
+<script src="community-record-store.js?v=20261029-community-connect-align-v4"></script>
+<script src="community-group-workflow.js?v=20261029-community-connect-align-v4"></script>
+<script src="community-jobs-workflow.js?v=20261029-community-connect-align-v4"></script>
+<script src="community-shifts-workflow.js?v=20261029-community-connect-align-v4"></script>
+<script src="community-feed-social.js?v=20261029-community-connect-align-v4"></script>
+<script src="community-feed-composer.js?v=20261029-community-connect-align-v4"></script>
 <script>
 (() => {
   const KEY='nexora-market-prototype-v1';
@@ -895,8 +895,8 @@
   setInterval(()=>{if(extra.pagePosts.some(post=>post.status==='scheduled'&&post.publishAt&&new Date(post.publishAt).getTime()<=Date.now())){renderExtra();const open=$('#modalRoot [data-page-detail-id]');if(open){const page=extra.pages.find(x=>x.id===open.dataset.pageDetailId),tab=$('#modalRoot [data-page-tab].active')?.dataset.pageTab;if(page&&tab==='scheduled')pageDetail(page,'scheduled');}}},30000);
 })();
 </script>
-<script src="nexora-community-i18n.js?rev=20261029-community-rich-data-v3"></script>
+<script src="nexora-community-i18n.js?rev=20261029-community-connect-align-v4"></script>
   <script src="../vendor/lucide.min.js" defer></script>
-  <script src="community-ui.js?v=20261029-community-rich-data-v3" defer></script>
+  <script src="community-ui.js?v=20261029-community-connect-align-v4" defer></script>
 </body>
 </html>

@@ -32,6 +32,7 @@
   const $ = selector => document.querySelector(selector);
   const parentMessageOrigin = location.protocol === 'file:' ? '*' : location.origin;
   const esc = value => String(value || '').replace(/[&<>"']/g, character => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[character]));
+  const initials = value => String(value || '').trim().split(/\s+/).filter(Boolean).slice(0,2).map(word=>[...word][0]).join('').toLocaleUpperCase();
   const phoneIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 3h4l1 5-2 2a16 16 0 0 0 6 6l2-2 5 1v4a2 2 0 0 1-2 2C10 21 3 14 3 5a2 2 0 0 1 2-2z"/></svg>';
   const videoIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="5" width="13" height="14" rx="2"/><path d="m16 10 5-3v10l-5-3"/></svg>';
   const imageIcon = '<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="m4 17 5-5 3 3 3-3 5 5"/></svg>';
@@ -382,7 +383,7 @@
   function renderMessages() {
     let sourceList = $('#communitySourceChats');
     if (!sourceList) { sourceList = document.createElement('div'); sourceList.id = 'communitySourceChats'; $('#directPanel .surface:nth-child(2)').append(sourceList); }
-    sourceList.innerHTML = Object.entries(state.sourceChats).filter(([id])=>!state.archivedChats.includes(id)&&!state.deletedChats.includes(id)).map(([id,source])=>'<button class="row-button" data-detail="'+esc(id)+'"><span><strong>'+esc(chatPref(id).nickname||source.recipient)+'</strong><small>'+esc(source.reference)+'</small></span><span class="arrow">›</span></button>').join('');
+    sourceList.innerHTML = Object.entries(state.sourceChats).filter(([id])=>!state.archivedChats.includes(id)&&!state.deletedChats.includes(id)).map(([id,source])=>'<button class="row-button" data-detail="'+esc(id)+'" data-initials="'+esc(initials(source.recipient))+'"><span><strong>'+esc(chatPref(id).nickname||source.recipient)+'</strong><small>'+esc(source.reference)+'</small></span><span class="arrow">›</span></button>').join('');
     $('#requestCount').textContent = state.request === 'pending' ? '1' : '0';
     $('#requestRow').innerHTML = state.request === 'pending'
       ? '<button class="row-button" data-detail="request" data-initials="MN"><span><strong>Mai Nguyễn</strong><small>Are the white chairs still available?</small></span><span class="arrow">View ›</span></button>'
@@ -398,7 +399,7 @@
     $('#recentChatsEmpty').classList.toggle('hidden',['chat-kim','chat-sally','chat-mai',...Object.keys(state.sourceChats)].some(id=>!state.archivedChats.includes(id)&&!state.deletedChats.includes(id)&&(id!=='chat-mai'||state.request==='accepted')));
     const archived=state.archivedChats.filter(id=>!state.deletedChats.includes(id));
     $('#archivedChatsCard').classList.toggle('hidden',archived.length===0);
-    $('#archivedChatRows').innerHTML=archived.map(id=>{const person=members.find(member=>member.detail===id||(id==='chat-mai'&&member.detail==='request'))||(state.sourceChats[id]?{name:state.sourceChats[id].recipient}:null);if(!person)return '';return '<button class="row-button" data-detail="'+esc(id)+'"><span><strong>'+esc(chatPref(id).nickname||person.name)+'</strong><small>'+esc(ui('Archived · tap to open','Đã lưu trữ · bấm để mở'))+'</small></span><span class="arrow">›</span></button>';}).join('');
+    $('#archivedChatRows').innerHTML=archived.map(id=>{const person=members.find(member=>member.detail===id||(id==='chat-mai'&&member.detail==='request'))||(state.sourceChats[id]?{name:state.sourceChats[id].recipient}:null);if(!person)return '';return '<button class="row-button" data-detail="'+esc(id)+'" data-initials="'+esc(initials(person.name))+'"><span><strong>'+esc(chatPref(id).nickname||person.name)+'</strong><small>'+esc(ui('Archived · tap to open','Đã lưu trữ · bấm để mở'))+'</small></span><span class="arrow">›</span></button>';}).join('');
     renderConversationPreviews();
     renderConnections();changed();
   }
@@ -728,7 +729,7 @@
     tourHeld = false;
     scheduleTourAdvance();
   });
-  window.NEXORA_CONNECT_CORE={currentMember,currentRole,currentAccount,key,members,getState:()=>clone(state),read:()=>clone(load()),mutate,save,toast,showDetail,showSection,renderGroups,renderMessages,renderCalls,renderSummaries,renderMemberResults,rememberChatDraft,appendChatMessage,getContext:()=>({section,currentDetail,messages:clone(currentMessages),communityFilter,callFilter}),isBlocked,chatPref,escape:esc,setProfileURL:value=>{profileUrl=value;},refresh:()=>{state=load();savedSnapshot=clone(state);renderSummaries();renderMessages();renderGroups();renderCalls();if(currentDetail)showDetail(currentDetail);}};
+  window.NEXORA_CONNECT_CORE={currentMember,currentRole,currentAccount,key,members,getState:()=>clone(state),read:()=>clone(load()),mutate,save,toast,showDetail,showSection,renderGroups,renderMessages,renderCalls,renderSummaries,renderMemberResults,rememberChatDraft,appendChatMessage,getContext:()=>({section,currentDetail,messages:clone(currentMessages),communityFilter,callFilter}),isBlocked,chatPref,escape:esc,initials,setProfileURL:value=>{profileUrl=value;},refresh:()=>{state=load();savedSnapshot=clone(state);renderSummaries();renderMessages();renderGroups();renderCalls();if(currentDetail)showDetail(currentDetail);}};
   renderSummaries();
   renderConversationPreviews();
   const params = new URLSearchParams(location.search);
