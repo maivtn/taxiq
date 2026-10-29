@@ -2326,9 +2326,10 @@
 #promotion-form .demo-ad-credit-topup:hover {
   background: var(--promo-brand-dark);
 }
-#promotion-form .demo-ad-credit-topup img {
-  width: 18px;
-  height: 18px;
+#promotion-form .demo-ad-credit-topup svg {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
 }
 #promotion-form .promo-launch-card {
   padding: 9px 10px;
