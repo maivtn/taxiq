@@ -22,7 +22,7 @@
 .oneqr-contact-dialog .contact-field-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 11px; }
 .oneqr-contact-dialog .contact-field { display: grid; gap: 5px; }
 .oneqr-contact-dialog .contact-field.is-wide { grid-column: 1 / -1; }
-.oneqr-contact-dialog .contact-field > span, .oneqr-contact-dialog .contact-choice-group legend, .oneqr-contact-dialog .contact-theme-picker legend { color: #596376; font-size: 11px; font-weight: 800; letter-spacing: .02em; }
+.oneqr-contact-dialog .contact-field > span, .oneqr-contact-dialog .contact-field > label, .oneqr-contact-dialog .contact-choice-group legend, .oneqr-contact-dialog .contact-theme-picker legend { color: #596376; font-size: 11px; font-weight: 800; letter-spacing: .02em; }
 .oneqr-contact-dialog .contact-field input, .oneqr-contact-dialog .contact-field textarea { width: 100%; min-height: 39px; padding: 9px 10px; border: 1px solid #d0d5dd; border-radius: 9px; outline: 0; background: #fff; color: var(--oq-ink); font-size: 11px; resize: vertical; }
 .oneqr-contact-dialog .contact-field input:focus, .oneqr-contact-dialog .contact-field textarea:focus { border-color: #7c73ee; box-shadow: 0 0 0 3px rgba(79,70,229,.1); }
 .oneqr-contact-dialog .contact-choice-group, .oneqr-contact-dialog .contact-theme-picker { display: flex; flex-wrap: wrap; gap: 7px; margin: 15px 0 0; padding: 0; border: 0; }

@@ -1,6 +1,7 @@
 (function () {
   'use strict';
   const api = window.NEXORA_PERSONAL_QR;
+  const phoneControl = window.NEXORA_ONEQR_PHONE;
   const host = document.querySelector('[data-personal-oneqr-app]');
   const publicHost = document.querySelector('[data-personal-qr-public]');
   if (!api || (!host && !publicHost)) return;
@@ -88,7 +89,7 @@
       (links.length ? '<h3>My links</h3><div class="pqr-public-links">' + links.map(link => '<button class="pqr-public-link" type="button" data-pqr-link="' + esc(link.id) + '"' + background(link) + '>' + image(link.icon) + '<span>' + esc(link.name) + '</span>' + lucide('arrow-up-right') + '</button>').join('') + '</div>' : '') +
       (profile.bio.trim() ? '<section class="pqr-about"><h3>About me</h3><p>' + esc(profile.bio) + '</p></section>' : '') +
       (profile.showEmail && profile.email.trim() ? '<p class="pqr-muted" data-public-email>' + esc(profile.email) + '</p>' : '') +
-      (profile.showPhone && profile.phone.trim() ? '<p class="pqr-muted" data-public-phone>' + esc(profile.phone) + '</p>' : '') +
+      (profile.showPhone && profile.phone.trim() ? '<p class="pqr-muted" data-public-phone>' + esc(phoneControl.format(profile.phone)) + '</p>' : '') +
       (state.ads && state.adIndustries.length ? '<section class="pqr-sponsored" data-ad-industry="' + esc(state.adIndustries[0]) + '" aria-label="Sponsored content"><small>Sponsored · Demo data</small><p>Sample sponsored content</p></section>' : '') +
       button('Add to Home Screen', 'home', false, 'circle-plus').replace('pqr-button', 'pqr-button pqr-home') +
       '<p class="pqr-feedback" data-pqr-feedback role="status" aria-live="polite"></p></div><footer class="pqr-phone-footer">Nexora · One QR</footer></article>';
@@ -217,8 +218,9 @@
   api.navigate = navigate;
   function editProfile() {
     const profile = clone(state.profile);
-    openDialog('Contact card', '<form data-pqr-profile-form><div class="pqr-dialog-fields"><label class="pqr-field full">Display name<input name="name" value="' + esc(profile.name) + '" maxlength="100" required></label><label class="pqr-field full">About me<textarea name="bio" maxlength="500">' + esc(profile.bio) + '</textarea></label><label class="pqr-field">Phone number<input name="phone" type="tel" value="' + esc(profile.phone) + '"></label><label class="pqr-field">Email<input name="email" type="email" value="' + esc(profile.email) + '"></label><label class="pqr-field full">Profile photo<input name="avatar" type="file" accept="image/png,image/jpeg,image/webp"></label></div><fieldset class="pqr-terms"><legend>Public information</legend><label class="pqr-consent"><input name="showPhone" type="checkbox"' + (profile.showPhone ? ' checked' : '') + '>Phone number</label><label class="pqr-consent"><input name="showEmail" type="checkbox"' + (profile.showEmail ? ' checked' : '') + '>Email</label></fieldset><p class="pqr-feedback" data-pqr-profile-error role="alert"></p><div class="pqr-actions"><button class="pqr-button is-primary" type="submit">Save Settings</button>' + button('Cancel', 'close') + '</div></form>');
+    openDialog('Contact card', '<form data-pqr-profile-form><div class="pqr-dialog-fields"><label class="pqr-field full">Display name<input name="name" value="' + esc(profile.name) + '" maxlength="100" required></label><label class="pqr-field full">About me<textarea name="bio" maxlength="500">' + esc(profile.bio) + '</textarea></label><div class="pqr-field"><label for="pqr-profile-phone">Phone number</label>' + phoneControl.markup('pqr-profile-phone') + '</div><label class="pqr-field">Email<input name="email" type="email" value="' + esc(profile.email) + '"></label><label class="pqr-field full">Profile photo<input name="avatar" type="file" accept="image/png,image/jpeg,image/webp"></label></div><fieldset class="pqr-terms"><legend>Public information</legend><label class="pqr-consent"><input name="showPhone" type="checkbox"' + (profile.showPhone ? ' checked' : '') + '>Phone number</label><label class="pqr-consent"><input name="showEmail" type="checkbox"' + (profile.showEmail ? ' checked' : '') + '>Email</label></fieldset><p class="pqr-feedback" data-pqr-profile-error role="alert"></p><div class="pqr-actions"><button class="pqr-button is-primary" type="submit">Save Settings</button>' + button('Cancel', 'close') + '</div></form>');
     const form = dialog.querySelector('form');
+    const profilePhone = phoneControl.mount(form, profile.phone);
     let avatar = profile.avatar;
     form.elements.avatar.addEventListener('change', () => {
       const file = form.elements.avatar.files[0]; if (!file || !['image/png', 'image/jpeg', 'image/webp'].includes(file.type)) return;
@@ -228,9 +230,12 @@
       event.preventDefault();
       if (!form.elements.name.value.trim()) { dialog.querySelector('[data-pqr-profile-error]').textContent = 'Enter a display name.'; return; }
       const prior = state.profile;
-      const values = { name: form.elements.name.value.trim(), bio: form.elements.bio.value.trim(), phone: form.elements.phone.value.trim(), email: form.elements.email.value.trim(), showPhone: form.elements.showPhone.checked, showEmail: form.elements.showEmail.checked, avatar };
+      const values = { name: form.elements.name.value.trim(), bio: form.elements.bio.value.trim(), phone: profilePhone.read(), email: form.elements.email.value.trim(), showPhone: form.elements.showPhone.checked, showEmail: form.elements.showEmail.checked, avatar };
       state.profile = { ...api.read().profile };
-      Object.keys(values).forEach(key => { if (!same(values[key], profile[key])) state.profile[key] = values[key]; });
+      Object.keys(values).forEach(key => {
+        const original = key === 'phone' ? phoneControl.format(profile.phone) : profile[key];
+        if (!same(values[key], original)) state.profile[key] = values[key];
+      });
       if (!persist(undefined, ['profile'])) { state.profile = prior; dialog.querySelector('[data-pqr-profile-error]').textContent = 'Could not save. Please try again.'; return; }
       dialog.close(); refreshPreview();
       document.querySelectorAll('.staff-profile-name').forEach(node => { node.textContent = state.profile.name; });
@@ -337,11 +342,12 @@
     return api.salons.find(item => item.id === salonId)?.tipUrl || '';
   }
   function exchangeContact() {
-    openDialog('Send yours', '<form data-pqr-exchange-form><label class="pqr-field">Display name<input name="name" maxlength="100" required></label><label class="pqr-field">Phone number<input type="tel" name="phone" maxlength="50"></label><label class="pqr-field">Email<input type="email" name="email" maxlength="150"></label><p class="pqr-muted">This prototype uses demo data and preview responses.</p><p class="pqr-feedback" data-pqr-exchange-error role="alert"></p><button class="pqr-button is-primary" type="submit">Send yours</button></form>');
+    openDialog('Send yours', '<form data-pqr-exchange-form><label class="pqr-field">Display name<input name="name" maxlength="100" required></label><div class="pqr-field"><label for="pqr-exchange-phone">Phone number</label>' + phoneControl.markup('pqr-exchange-phone') + '</div><label class="pqr-field">Email<input type="email" name="email" maxlength="150"></label><p class="pqr-muted">This prototype uses demo data and preview responses.</p><p class="pqr-feedback" data-pqr-exchange-error role="alert"></p><button class="pqr-button is-primary" type="submit">Send yours</button></form>');
+    const exchangePhone = phoneControl.mount(dialog.querySelector('form'));
     dialog.querySelector('form').addEventListener('submit', event => {
       event.preventDefault(); const form = event.currentTarget;
       if (!form.elements.name.value.trim() || (!form.elements.phone.value.trim() && !form.elements.email.value.trim())) { dialog.querySelector('[data-pqr-exchange-error]').textContent = 'Enter your contact information.'; return; }
-      const lead = { id: Date.now().toString(), name: form.elements.name.value.trim(), phone: form.elements.phone.value.trim(), email: form.elements.email.value.trim(), createdAt: new Date().toISOString() };
+      const lead = { id: Date.now().toString(), name: form.elements.name.value.trim(), phone: exchangePhone.read(), email: form.elements.email.value.trim(), createdAt: new Date().toISOString() };
       // Public actions read the last saved owner state, preserving a newer edit from another tab.
       const saved = api.read(); saved.leads.unshift(lead);
       try { api.save(saved); state.leads = saved.leads; }
@@ -394,7 +400,7 @@
     else if (action === 'vcard') {
       const blob = new Blob([api.vcard(state)], { type: 'text/vcard;charset=utf-8' }); const value = URL.createObjectURL(blob); const anchor = document.createElement('a'); anchor.href = value; anchor.download = 'oneqr-personal.vcf'; anchor.click(); setTimeout(() => URL.revokeObjectURL(value), 1000); feedback('vCard downloaded.');
     } else if (action === 'wallet' || action === 'home' || action === 'call' || action === 'text') {
-      openDialog(control.textContent.trim(), '<p class="pqr-muted">This prototype uses demo data and preview responses.</p>' + (['call', 'text'].includes(action) && state.profile.showPhone ? '<p>' + esc(state.profile.phone) + '</p>' : ''));
+      openDialog(control.textContent.trim(), '<p class="pqr-muted">This prototype uses demo data and preview responses.</p>' + (['call', 'text'].includes(action) && state.profile.showPhone ? '<p>' + esc(phoneControl.format(state.profile.phone)) + '</p>' : ''));
     }
   });
   if (host) {

@@ -7,6 +7,8 @@
   const CONTACT_STORAGE_KEY = 'taxiq:oneqr-contact-card';
   const profile = window.NEXORA_ONEQR_PROFILE;
   const DEFAULT_CONTACT_CARD = profile.defaults;
+  $('[data-contact-phone]').innerHTML = window.NEXORA_ONEQR_PHONE.markup('contact-phone');
+  const phoneControl = window.NEXORA_ONEQR_PHONE.mount($('[data-contact-phone]'));
 
   let contactDraft = { ...DEFAULT_CONTACT_CARD };
   function refreshIcons() { window.lucide?.createIcons(); }
@@ -18,7 +20,6 @@
     const values = {
       '#contact-name': contactDraft.name,
       '#contact-title': contactDraft.title,
-      '#contact-phone': contactDraft.phone,
       '#contact-email': contactDraft.email,
       '#contact-website': contactDraft.website,
       '#contact-address': contactDraft.address,
@@ -30,6 +31,8 @@
       '#contact-open-time': contactDraft.openTime,
       '#contact-close-time': contactDraft.closeTime
     };
+    phoneControl.set(contactDraft.phone);
+    contactDraft.phone = phoneControl.read();
     Object.entries(values).forEach(([selector, value]) => { $(selector).value = value || ''; });
     $$('#contact-card-form [name="contact-address-mode"]').forEach((input) => { input.checked = input.value === contactDraft.addressMode; });
     $('#contact-show-phone').checked = Boolean(contactDraft.showPhone);
@@ -44,7 +47,7 @@
       ...contactDraft,
       name: $('#contact-name').value.trim(),
       title: $('#contact-title').value.trim(),
-      phone: $('#contact-phone').value.trim(),
+      phone: phoneControl.read(),
       email: $('#contact-email').value.trim(),
       website: $('#contact-website').value.trim(),
       address: $('#contact-address').value.trim(),

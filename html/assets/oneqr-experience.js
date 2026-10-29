@@ -3,8 +3,9 @@
 
   var PROFILE_KEY = 'taxiq:oneqr-contact-card';
   var LEADS_KEY = 'taxiq:oneqr-leads';
+  var phoneControl = window.NEXORA_ONEQR_PHONE;
   var defaults = {
-    name: 'Bitcoin Nail Bar', title: 'Nail salon · Houston', phone: '(346) 802-4906',
+    name: 'Bitcoin Nail Bar', title: 'Nail salon · Houston', phone: '+1 (346) 802-4906',
     email: 'hello@bitcoinnailbar.com', website: 'https://bitcoinnailbar.com',
     address: '9793 Westheimer Rd, Suite A', city: 'Houston', region: 'TX', zip: '77042',
     bio: 'Beauty, care, and a better booking experience.', blurb: '', addressMode: 'full',
@@ -13,7 +14,11 @@
   };
 
   function readProfile() {
-    try { return Object.assign({}, defaults, JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null')); }
+    try {
+      var card = Object.assign({}, defaults, JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null'));
+      card.phone = phoneControl.format(card.phone);
+      return card;
+    }
     catch (error) { return Object.assign({}, defaults); }
   }
 
@@ -115,19 +120,20 @@
   exchangeDialog.setAttribute('aria-labelledby', 'oneqrExchangeTitle');
   exchangeDialog.innerHTML = '<form id="oneqrExchangeForm"><div class="oneqr-dialog-heading"><h2 id="oneqrExchangeTitle">Send your contact</h2><button type="button" data-close-exchange aria-label="Close">×</button></div>' +
     '<p id="oneqrExchangeRecipient"></p><label>Name<input name="name" autocomplete="name" maxlength="100" required></label>' +
-    '<label>Phone<input name="phone" type="tel" autocomplete="tel" maxlength="30" required></label>' +
+    '<div class="oneqr-phone-field"><label for="oneqr-exchange-phone">Phone</label>' + phoneControl.markup('oneqr-exchange-phone', true) + '</div>' +
     '<label>Email (optional)<input name="email" type="email" autocomplete="email" maxlength="200"></label>' +
     '<label class="oneqr-consent"><input name="consent" type="checkbox"><span>I agree to receive SMS from this business. Optional — you can send your contact without agreeing.</span></label>' +
     '<p class="oneqr-info-note">Prototype: contacts are saved in this browser for the business inbox.</p><p id="oneqrExchangeError" role="alert"></p>' +
     '<div class="oneqr-dialog-actions"><button type="button" data-close-exchange>Cancel</button><button class="is-primary" type="submit">Send my contact</button></div></form>';
   document.body.appendChild(exchangeDialog);
+  var exchangePhone = phoneControl.mount(exchangeDialog);
   exchangeDialog.querySelectorAll('[data-close-exchange]').forEach(function (button) { button.addEventListener('click', function () { exchangeDialog.close(); }); });
   exchangeDialog.addEventListener('click', function (event) { if (event.target === exchangeDialog) exchangeDialog.close(); });
   exchangeDialog.querySelector('form').addEventListener('submit', function (event) {
     event.preventDefault();
     var form = event.currentTarget;
     var name = form.elements.name.value.trim();
-    var phone = form.elements.phone.value.trim();
+    var phone = exchangePhone.read();
     var error = exchangeDialog.querySelector('#oneqrExchangeError');
     if (!name || !phone || !/\d/.test(phone)) { error.textContent = 'Enter your name and a phone number.'; return; }
     var leads = readLeads();
@@ -149,6 +155,7 @@
     var preview = Boolean(button.closest('.oneqr-phone'));
     if (action === 'exchange') {
       exchangeDialog.querySelector('form').reset();
+      exchangePhone.set('');
       exchangeDialog.querySelector('#oneqrExchangeRecipient').textContent = card.name + ' will receive your contact.';
       exchangeDialog.querySelector('#oneqrExchangeError').textContent = '';
       exchangeDialog.showModal();

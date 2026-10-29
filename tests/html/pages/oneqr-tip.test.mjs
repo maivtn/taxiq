@@ -7,6 +7,7 @@ const page = readFileSync(new URL('../../../html/pages/qr-stations.html', import
 const scripts = [
   'oneqr-action-appearance.js',
   'oneqr-industries.js',
+  'oneqr-phone.js',
   'oneqr-experience.js',
   'oneqr-contact-card.js',
   'qr-stations-oneqr.js',

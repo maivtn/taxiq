@@ -19,6 +19,7 @@ function app(t, {path='oneqr-personal.html?account=personal', saved, publicPage=
   w.URL.createObjectURL=()=> 'blob:demo';w.URL.revokeObjectURL=()=>{};
   if(saved)w.localStorage.setItem('nexora.personal-oneqr.v1',JSON.stringify(saved));
   w.eval(readFileSync(new URL('oneqr-action-appearance.js',assets),'utf8'));
+  w.eval(readFileSync(new URL('oneqr-phone.js',assets),'utf8'));
   w.eval(storeSource);
   if(!publicPage){
     w.NEXORA_SHELL={activePage:'staff',activeTab:'one-qr',salonLinked:w.NEXORA_PERSONAL_QR.linked,onNavigate(tab){w.NEXORA_PERSONAL_QR.navigate(tab);}};

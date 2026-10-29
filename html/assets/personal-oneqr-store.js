@@ -121,7 +121,7 @@
   function vcard(state) {
     const value = text => String(text || '').replace(/\\/g, '\\\\').replace(/\r?\n/g, '\\n').replace(/[,;]/g, match => '\\' + match);
     return ['BEGIN:VCARD', 'VERSION:3.0', 'FN:' + value(state.profile.name),
-      state.profile.showPhone && state.profile.phone ? 'TEL:' + value(state.profile.phone) : '',
+      state.profile.showPhone && state.profile.phone ? 'TEL:' + value(window.NEXORA_ONEQR_PHONE ? window.NEXORA_ONEQR_PHONE.format(state.profile.phone) : state.profile.phone) : '',
       state.profile.showEmail && state.profile.email ? 'EMAIL:' + value(state.profile.email) : '',
       state.profile.bio ? 'NOTE:' + value(state.profile.bio) : '', 'URL:' + publicUrl(), 'END:VCARD'].filter(Boolean).join('\r\n');
   }

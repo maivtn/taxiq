@@ -57,10 +57,11 @@
   <link rel="stylesheet" href="../assets/nexora-shell.css?v=20261028-restore-subgroup-menus">
   <link rel="stylesheet" href="../assets/qr-stations.css?v=no-page-background-20261028">
   <link rel="stylesheet" href="../assets/oneqr-tip.css?v=tip-link-20261029">
-  <link rel="stylesheet" href="../assets/oneqr-contact-card.css?v=card-colors-3">
+  <link rel="stylesheet" href="../assets/oneqr-contact-card.css?v=phone-mask-20261029">
   <link rel="stylesheet" href="../assets/oneqr-experience.css?v=1">
   <link rel="stylesheet" href="../assets/nexora-local-admin.css?v=merged-checkin-20261028">
   <link rel="stylesheet" href="../assets/oneqr-checkin.css?v=merged-checkin-20261028">
+  <link rel="stylesheet" href="../assets/oneqr-phone.css?v=20261029">
 </head>
 <body>
   <div class="shell">
@@ -703,7 +704,7 @@
           <div class="contact-field-grid">
             <label class="contact-field"><span>Display name</span><input id="contact-name" type="text" maxlength="100" required></label>
             <label class="contact-field"><span>Title or short introduction</span><input id="contact-title" type="text" maxlength="100"></label>
-            <label class="contact-field"><span>Phone</span><input id="contact-phone" type="tel" inputmode="tel"></label>
+            <div class="contact-field"><label for="contact-phone">Phone</label><span data-contact-phone></span></div>
             <label class="contact-field"><span>Email</span><input id="contact-email" type="email" inputmode="email"></label>
             <label class="contact-field is-wide"><span>Website or social profile</span><input id="contact-website" type="url" inputmode="url"></label>
             <label class="contact-field is-wide"><span>Street address</span><input id="contact-address" type="text"></label>
@@ -812,8 +813,9 @@
   <script src="../assets/nexora-shell.js?v=20261028-restore-subgroup-menus"></script>
   <script src="../assets/oneqr-action-appearance.js"></script>
   <script src="../assets/oneqr-industries.js"></script>
-  <script src="../assets/oneqr-experience.js?v=1"></script>
-  <script src="../assets/oneqr-contact-card.js?v=profile-details-4"></script>
+  <script src="../assets/oneqr-phone.js?v=20261029"></script>
+  <script src="../assets/oneqr-experience.js?v=phone-mask-20261029"></script>
+  <script src="../assets/oneqr-contact-card.js?v=phone-mask-20261029"></script>
   <script src="../assets/qr-stations-oneqr.js?v=merged-checkin-20261028"></script>
   <script src="../assets/oneqr-builder-insights.js?v=1"></script>
   <script src="../assets/qr-stations-workflows.js"></script>
