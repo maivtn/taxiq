@@ -625,182 +625,182 @@
                         ></label
                       >
                       <div id="channels"></div>
+                      <div class="demo-paid-advertising" id="paid-advertising">
+                        <label class="demo-paid-toggle"
+                          ><input type="checkbox" name="paidEnabled" /><span
+                            ><strong>Quảng cáo trả phí</strong
+                            ><small
+                              >NEXORA tự động duyệt các vị trí quảng cáo public.
+                              Kênh của tiệm chạy ngay, không cần duyệt nội
+                              dung.</small
+                            ></span
+                          ></label
+                        >
+                        <div id="paid-fields" hidden>
+                          <label class="promo-field"
+                            ><span>Target area</span
+                            ><select name="targetArea">
+                              <optgroup label="Texas">
+                                <option value="Houston">Houston</option>
+                                <option value="Katy">Katy</option>
+                                <option value="Austin">Austin</option>
+                                <option value="Dallas">Dallas</option>
+                                <option value="San Antonio">San Antonio</option>
+                                <option value="Fort Worth">Fort Worth</option>
+                                <option value="Arlington">Arlington</option>
+                                <option value="Plano">Plano</option>
+                                <option value="Sugar Land">Sugar Land</option>
+                                <option value="Pearland">Pearland</option>
+                                <option value="Pasadena">Pasadena</option>
+                                <option value="Irving">Irving</option>
+                                <option value="Garland">Garland</option>
+                                <option value="Frisco">Frisco</option>
+                                <option value="McKinney">McKinney</option>
+                                <option value="Round Rock">Round Rock</option>
+                              </optgroup>
+                              <optgroup label="California">
+                                <option value="Los Angeles">Los Angeles</option>
+                                <option value="San Jose">San Jose</option>
+                                <option value="San Diego">San Diego</option>
+                                <option value="San Francisco">
+                                  San Francisco
+                                </option>
+                                <option value="Sacramento">Sacramento</option>
+                                <option value="Westminster">Westminster</option>
+                                <option value="Garden Grove">
+                                  Garden Grove
+                                </option>
+                                <option value="Santa Ana">Santa Ana</option>
+                                <option value="Anaheim">Anaheim</option>
+                                <option value="Irvine">Irvine</option>
+                                <option value="Fountain Valley">
+                                  Fountain Valley
+                                </option>
+                                <option value="Huntington Beach">
+                                  Huntington Beach
+                                </option>
+                                <option value="Fremont">Fremont</option>
+                                <option value="Oakland">Oakland</option>
+                              </optgroup>
+                              <optgroup label="Florida">
+                                <option value="Orlando">Orlando</option>
+                                <option value="Tampa">Tampa</option>
+                                <option value="Miami">Miami</option>
+                                <option value="Jacksonville">
+                                  Jacksonville
+                                </option>
+                                <option value="Fort Lauderdale">
+                                  Fort Lauderdale
+                                </option>
+                                <option value="St. Petersburg">
+                                  St. Petersburg
+                                </option>
+                                <option value="Clearwater">Clearwater</option>
+                                <option value="Gainesville">Gainesville</option>
+                              </optgroup>
+                              <optgroup label="Georgia">
+                                <option value="Atlanta">Atlanta</option>
+                                <option value="Duluth">Duluth</option>
+                                <option value="Norcross">Norcross</option>
+                                <option value="Savannah">Savannah</option>
+                              </optgroup>
+                              <optgroup label="Nevada">
+                                <option value="Las Vegas">Las Vegas</option>
+                                <option value="Henderson">Henderson</option>
+                                <option value="Reno">Reno</option>
+                              </optgroup>
+                              <optgroup label="Arizona">
+                                <option value="Phoenix">Phoenix</option>
+                                <option value="Scottsdale">Scottsdale</option>
+                                <option value="Mesa">Mesa</option>
+                                <option value="Tucson">Tucson</option>
+                              </optgroup>
+                              <optgroup label="Washington">
+                                <option value="Seattle">Seattle</option>
+                                <option value="Tacoma">Tacoma</option>
+                                <option value="Bellevue">Bellevue</option>
+                              </optgroup>
+                              <optgroup label="New York">
+                                <option value="New York">New York</option>
+                                <option value="Buffalo">Buffalo</option>
+                                <option value="Rochester">Rochester</option>
+                              </optgroup>
+                              <optgroup label="New Jersey">
+                                <option value="Newark">Newark</option>
+                                <option value="Jersey City">Jersey City</option>
+                              </optgroup>
+                              <optgroup label="Massachusetts">
+                                <option value="Boston">Boston</option>
+                                <option value="Worcester">Worcester</option>
+                                <option value="Lowell">Lowell</option>
+                              </optgroup>
+                              <optgroup label="Virginia">
+                                <option value="Richmond">Richmond</option>
+                                <option value="Virginia Beach">
+                                  Virginia Beach
+                                </option>
+                                <option value="Arlington, VA">
+                                  Arlington, VA
+                                </option>
+                                <option value="Alexandria">Alexandria</option>
+                              </optgroup>
+                              <optgroup label="North Carolina">
+                                <option value="Charlotte">Charlotte</option>
+                                <option value="Raleigh">Raleigh</option>
+                                <option value="Durham">Durham</option>
+                                <option value="Greensboro">Greensboro</option>
+                              </optgroup>
+                              <optgroup label="Colorado">
+                                <option value="Denver">Denver</option>
+                                <option value="Aurora">Aurora</option>
+                                <option value="Colorado Springs">
+                                  Colorado Springs
+                                </option>
+                              </optgroup>
+                              <optgroup label="Illinois">
+                                <option value="Chicago">Chicago</option>
+                                <option value="Naperville">Naperville</option>
+                              </optgroup>
+                            </select></label
+                          >
+                          <div class="promo-field-row">
+                            <label class="promo-field"
+                              ><span>Total campaign budget (USD)</span
+                              ><input
+                                type="number"
+                                name="budget"
+                                value="100"
+                                min="0.01"
+                                step="0.01" /></label
+                            ><label class="promo-field"
+                              ><span>Daily spending limit (USD)</span
+                              ><input
+                                type="number"
+                                name="dailyLimit"
+                                value="15"
+                                min="0.01"
+                                step="0.01"
+                            /></label>
+                          </div>
+                          <p class="promo-note">
+                            The daily limit is included in the total campaign
+                            budget.
+                          </p>
+                          <p class="demo-paid-credit">
+                            <span data-oneqr-icon="wallet"></span
+                            ><span
+                              ><strong>Saving is free.</strong> Ads Credit is
+                              charged only after approval, when your paid
+                              campaign starts running.</span
+                            >
+                          </p>
+                        </div>
+                      </div>
                       <p class="demo-public-policy">
                         NEXORA automatically reviews public advertising
                         placements. Your own channels run immediately without
                         content review.
                       </p>
-                    </section>
-                    <section class="editor-section" id="paid-advertising">
-                      <label class="demo-paid-toggle"
-                        ><input type="checkbox" name="paidEnabled" /><span
-                          ><strong>Quảng cáo trả phí</strong
-                          ><small
-                            >NEXORA tự động duyệt các vị trí quảng cáo public.
-                            Kênh của tiệm chạy ngay, không cần duyệt nội
-                            dung.</small
-                          ></span
-                        ></label
-                      >
-                      <div id="paid-fields" hidden>
-                        <div
-                          id="paid-placements"
-                          class="demo-paid-placements"
-                        ></div>
-                        <label class="promo-field"
-                          ><span>Target area</span
-                          ><select name="targetArea">
-                            <optgroup label="Texas">
-                              <option value="Houston">Houston</option>
-                              <option value="Katy">Katy</option>
-                              <option value="Austin">Austin</option>
-                              <option value="Dallas">Dallas</option>
-                              <option value="San Antonio">San Antonio</option>
-                              <option value="Fort Worth">Fort Worth</option>
-                              <option value="Arlington">Arlington</option>
-                              <option value="Plano">Plano</option>
-                              <option value="Sugar Land">Sugar Land</option>
-                              <option value="Pearland">Pearland</option>
-                              <option value="Pasadena">Pasadena</option>
-                              <option value="Irving">Irving</option>
-                              <option value="Garland">Garland</option>
-                              <option value="Frisco">Frisco</option>
-                              <option value="McKinney">McKinney</option>
-                              <option value="Round Rock">Round Rock</option>
-                            </optgroup>
-                            <optgroup label="California">
-                              <option value="Los Angeles">Los Angeles</option>
-                              <option value="San Jose">San Jose</option>
-                              <option value="San Diego">San Diego</option>
-                              <option value="San Francisco">
-                                San Francisco
-                              </option>
-                              <option value="Sacramento">Sacramento</option>
-                              <option value="Westminster">Westminster</option>
-                              <option value="Garden Grove">Garden Grove</option>
-                              <option value="Santa Ana">Santa Ana</option>
-                              <option value="Anaheim">Anaheim</option>
-                              <option value="Irvine">Irvine</option>
-                              <option value="Fountain Valley">
-                                Fountain Valley
-                              </option>
-                              <option value="Huntington Beach">
-                                Huntington Beach
-                              </option>
-                              <option value="Fremont">Fremont</option>
-                              <option value="Oakland">Oakland</option>
-                            </optgroup>
-                            <optgroup label="Florida">
-                              <option value="Orlando">Orlando</option>
-                              <option value="Tampa">Tampa</option>
-                              <option value="Miami">Miami</option>
-                              <option value="Jacksonville">Jacksonville</option>
-                              <option value="Fort Lauderdale">
-                                Fort Lauderdale
-                              </option>
-                              <option value="St. Petersburg">
-                                St. Petersburg
-                              </option>
-                              <option value="Clearwater">Clearwater</option>
-                              <option value="Gainesville">Gainesville</option>
-                            </optgroup>
-                            <optgroup label="Georgia">
-                              <option value="Atlanta">Atlanta</option>
-                              <option value="Duluth">Duluth</option>
-                              <option value="Norcross">Norcross</option>
-                              <option value="Savannah">Savannah</option>
-                            </optgroup>
-                            <optgroup label="Nevada">
-                              <option value="Las Vegas">Las Vegas</option>
-                              <option value="Henderson">Henderson</option>
-                              <option value="Reno">Reno</option>
-                            </optgroup>
-                            <optgroup label="Arizona">
-                              <option value="Phoenix">Phoenix</option>
-                              <option value="Scottsdale">Scottsdale</option>
-                              <option value="Mesa">Mesa</option>
-                              <option value="Tucson">Tucson</option>
-                            </optgroup>
-                            <optgroup label="Washington">
-                              <option value="Seattle">Seattle</option>
-                              <option value="Tacoma">Tacoma</option>
-                              <option value="Bellevue">Bellevue</option>
-                            </optgroup>
-                            <optgroup label="New York">
-                              <option value="New York">New York</option>
-                              <option value="Buffalo">Buffalo</option>
-                              <option value="Rochester">Rochester</option>
-                            </optgroup>
-                            <optgroup label="New Jersey">
-                              <option value="Newark">Newark</option>
-                              <option value="Jersey City">Jersey City</option>
-                            </optgroup>
-                            <optgroup label="Massachusetts">
-                              <option value="Boston">Boston</option>
-                              <option value="Worcester">Worcester</option>
-                              <option value="Lowell">Lowell</option>
-                            </optgroup>
-                            <optgroup label="Virginia">
-                              <option value="Richmond">Richmond</option>
-                              <option value="Virginia Beach">
-                                Virginia Beach
-                              </option>
-                              <option value="Arlington, VA">
-                                Arlington, VA
-                              </option>
-                              <option value="Alexandria">Alexandria</option>
-                            </optgroup>
-                            <optgroup label="North Carolina">
-                              <option value="Charlotte">Charlotte</option>
-                              <option value="Raleigh">Raleigh</option>
-                              <option value="Durham">Durham</option>
-                              <option value="Greensboro">Greensboro</option>
-                            </optgroup>
-                            <optgroup label="Colorado">
-                              <option value="Denver">Denver</option>
-                              <option value="Aurora">Aurora</option>
-                              <option value="Colorado Springs">
-                                Colorado Springs
-                              </option>
-                            </optgroup>
-                            <optgroup label="Illinois">
-                              <option value="Chicago">Chicago</option>
-                              <option value="Naperville">Naperville</option>
-                            </optgroup>
-                          </select></label
-                        >
-                        <div class="promo-field-row">
-                          <label class="promo-field"
-                            ><span>Total campaign budget (USD)</span
-                            ><input
-                              type="number"
-                              name="budget"
-                              value="100"
-                              min="0.01"
-                              step="0.01" /></label
-                          ><label class="promo-field"
-                            ><span>Daily spending limit (USD)</span
-                            ><input
-                              type="number"
-                              name="dailyLimit"
-                              value="15"
-                              min="0.01"
-                              step="0.01"
-                          /></label>
-                        </div>
-                        <p class="promo-note">
-                          The daily limit is included in the total campaign
-                          budget.
-                        </p>
-                        <p class="demo-paid-credit">
-                          <span data-oneqr-icon="wallet"></span
-                          ><span
-                            ><strong>Saving is free.</strong> Ads Credit is
-                            charged only after approval, when your paid campaign
-                            starts running.</span
-                          >
-                        </p>
-                      </div>
                     </section>
                   </div>
                   <aside

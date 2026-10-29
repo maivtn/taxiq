@@ -475,6 +475,12 @@
       showMore = false,
       selectedBanner = 0;
     let customServices = draft.services.filter((id) => id !== "all");
+    const publicIds = new Set(data.placements.map((placement) => placement.id));
+    if (draft.paidEnabled) {
+      draft.channels = [
+        ...new Set([...draft.channels, ...draft.paidPlacements]),
+      ];
+    }
     function read() {
       for (const name of [
         "name",
@@ -505,8 +511,12 @@
       draft.paidEnabled = field("paidEnabled").checked;
       draft.crossPromotion = field("crossPromotion").checked;
       draft.paidPlacements = [
-        ...form.querySelectorAll("[name=paidPlacement]:checked"),
-      ].map((n) => n.value);
+        ...form.querySelectorAll("[name=publicPlacement]:checked"),
+      ].map((input) => input.value);
+      draft.channels = [
+        ...draft.channels.filter((id) => !publicIds.has(id)),
+        ...draft.paidPlacements,
+      ];
       draft.checkinEnabled = field("checkinEnabled").checked;
       draft.bookingEnabled = field("bookingEnabled").checked;
       draft.checkinPlacements = [
@@ -552,7 +562,6 @@
         );
       renderChannels();
       renderServices();
-      renderPaid();
       update();
     }
     function resetPicker(id, html, value) {
@@ -668,10 +677,15 @@
       });
     }
     function renderChannels() {
+      const paidAdvertising = $("paid-advertising");
+      paidAdvertising.remove();
+      draft.paidPlacements = draft.channels.filter((id) => publicIds.has(id));
       const selected = new Set(draft.channels),
         rec = recommended[draft.goal] || recommended.slow;
       const channelCard = (c) =>
         `<button type="button" class="promo-launch-card ${selected.has(c.id) ? "active is-on" : ""}" data-channel="${c.id}" aria-pressed="${selected.has(c.id)}">${rec.includes(c.id) ? `<span class="promo-tag rec">${t("channelSuggested")}</span>` : ""}<strong>${escape(localized(c.name))}</strong><span>${escape(localized(c.description))}</span><span class="status">${escape(localized(c.status))}</span></button>`;
+      const publicCard = (channel) =>
+        `<label class="demo-paid-placement"><input type="checkbox" name="publicPlacement" value="${channel.id}" ${selected.has(channel.id) ? "checked" : ""}><span><strong>${escape(localized(channel.name))}</strong><small>${escape(localized(channel.description))}</small></span></label>`;
       const switchCard = (name, title, hint, items, selectedItems, preview) =>
         `<div class="promo-swcard"><div class="demo-toggle-head"><div><strong>${t(title)} <span class="promo-tag rec">NEW</span></strong><small class="promo-note">${t(hint)}</small></div><label class="demo-switch"><input type="checkbox" name="${name}Enabled" ${draft[name + "Enabled"] ? "checked" : ""} aria-label="${t(title)}">${draft[name + "Enabled"] ? t("channelSwitchOn") : t("channelSwitchOff")}</label></div><div class="demo-channel-subs" ${draft[name + "Enabled"] ? "" : "hidden"}>${items.map((item) => `<label><input type="checkbox" name="${name}Placement" value="${item.id}" ${selectedItems.includes(item.id) ? "checked" : ""}><span><b>${escape(localized(item.name))}</b>${item.hint ? `<small>${escape(localized(item.hint))}</small>` : ""}</span></label>`).join("")}</div><button type="button" class="promo-sw-preview" data-channel-preview="${preview}">${t(name === "checkin" ? "previewCheckIn" : "previewBooking")}</button></div>`;
       $("channels").innerHTML = ["int", "pub"]
@@ -686,19 +700,10 @@
                       selected.has(c.id) ||
                       ["email", "fb", "ig", "gbp"].includes(c.id),
                   );
-          return `<div class="promo-channel-tier tier-${tier}"><div class="promo-channel-tier-head"><strong>${t(tier === "int" ? "tierInternalTitle" : "tierPublicTitle")}</strong><span class="promo-tag ${tier === "int" ? "ok" : "warn"}">${tier === "int" ? t("tierInternalTag") : "Automatic review"}</span>${tier === "pub" ? `<span class="promo-tag ok">${t("tierPublicOrganic")}</span>` : ""}<p class="promo-channel-tier-note">${t(tier === "int" ? "tierInternalHint" : "tierPublicHint")}</p></div><div class="promo-launch-grid">${tier === "int" ? switchCard("checkin", "checkInCardTitle", "checkInCardHint", data.checkin, draft.checkinPlacements, "kiosk") + switchCard("booking", "bookingCardTitle", "bookingCardHint", data.booking, draft.bookingPlacements, "oneqr") : ""}${shown.map(channelCard).join("")}</div>${tier === "int" ? `<div class="demo-postline"><strong>${t("postToLabel")}</strong><label><input type="radio" name="postWhen" value="now" ${draft.postWhen === "now" ? "checked" : ""}>${t("postWhenNow")}</label><label><input type="radio" name="postWhen" value="auto" ${draft.postWhen !== "now" ? "checked" : ""}>${t("postWhenAuto")}</label><small>${t("postMilestones")}</small><button type="button" class="promo-text-button" id="edit-post-schedule">${t("postScheduleEdit")}</button></div><button type="button" class="promo-text-button" id="show-more-channels">${t(showMore ? "showLessChannels" : "showMoreChannels", { count: all.length - shown.length })}</button>` : ""}</div>`;
+          return `<div class="promo-channel-tier tier-${tier}"><div class="promo-channel-tier-head"><strong>${t(tier === "int" ? "tierInternalTitle" : "tierPublicTitle")}</strong><span class="promo-tag ${tier === "int" ? "ok" : "warn"}">${tier === "int" ? t("tierInternalTag") : "Automatic review"}</span>${tier === "pub" ? `<span class="promo-tag ok">${t("tierPublicOrganic")}</span>` : ""}<p class="promo-channel-tier-note">${t(tier === "int" ? "tierInternalHint" : "tierPublicHint")}</p></div><div class="promo-launch-grid">${tier === "int" ? switchCard("checkin", "checkInCardTitle", "checkInCardHint", data.checkin, draft.checkinPlacements, "kiosk") + switchCard("booking", "bookingCardTitle", "bookingCardHint", data.booking, draft.bookingPlacements, "oneqr") : ""}${shown.map(tier === "pub" ? publicCard : channelCard).join("")}</div>${tier === "int" ? `<div class="demo-postline"><strong>${t("postToLabel")}</strong><label><input type="radio" name="postWhen" value="now" ${draft.postWhen === "now" ? "checked" : ""}>${t("postWhenNow")}</label><label><input type="radio" name="postWhen" value="auto" ${draft.postWhen !== "now" ? "checked" : ""}>${t("postWhenAuto")}</label><small>${t("postMilestones")}</small><button type="button" class="promo-text-button" id="edit-post-schedule">${t("postScheduleEdit")}</button></div><button type="button" class="promo-text-button" id="show-more-channels">${t(showMore ? "showLessChannels" : "showMoreChannels", { count: all.length - shown.length })}</button>` : ""}</div>`;
         })
         .join("");
-    }
-    function renderPaid() {
-      $("paid-placements").innerHTML = data.placements
-        .map((placement) => {
-          const channel = data.channels.find(
-            (item) => item.id === placement.id,
-          );
-          return `<label class="demo-paid-placement"><input type="checkbox" name="paidPlacement" value="${placement.id}" ${(draft.paidPlacements || []).includes(placement.id) ? "checked" : ""}><span><strong>${escape(localized(channel.name))}</strong><small>${escape(localized(channel.description))}</small></span></label>`;
-        })
-        .join("");
+      $("channels").querySelector(".tier-pub").append(paidAdvertising);
     }
     function renderBanners() {
       $("banner-colors").innerHTML = Object.entries(themes)
@@ -979,8 +984,8 @@
         renderServices();
       }
       if (name === "paidEnabled" && draft.paidEnabled) {
-        draft.paidPlacements = data.placements.map((placement) => placement.id);
-        renderPaid();
+        draft.channels = [...new Set([...draft.channels, ...publicIds])];
+        renderChannels();
       }
       if (name === "goal") {
         draft.channels = recommended[draft.goal].slice();
@@ -1405,7 +1410,6 @@
       renderTemplates();
       renderServices();
       renderChannels();
-      renderPaid();
       update();
     };
     options();
