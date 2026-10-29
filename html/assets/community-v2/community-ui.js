@@ -5,7 +5,7 @@
   const artwork = {
     feed:'layout-list', market:'users-round', groups:'users-round', pages:'building-2',
     deals:'ticket', jobs:'briefcase', daywork:'calendar-days', blog:'receipt', connect:'message-circle',
-    general:'paintbrush', showcase:'camera', tip:'sparkles', question:'message-circle', poll:'layout-dashboard',
+    general:'paintbrush', showcase:'image', tip:'sparkles', question:'message-circle', poll:'layout-dashboard',
     event:'calendar-days', sale:'shopping-bag', want:'shopping-bag', hiring:'briefcase', seeking:'user-round',
     dayhire:'calendar-clock', page:'building-2', group:'users-round', messages:'message-circle', calls:'phone', privacy:'settings-2'
   };

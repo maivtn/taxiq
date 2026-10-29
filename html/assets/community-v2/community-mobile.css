@@ -20,6 +20,7 @@ body .primary:not(.danger) { background: linear-gradient(110deg, #4d5df1, #8252e
 :is(.field, .demo-input, .demo-textarea)::placeholder { color: #7c879b; opacity: 1; }
 .community-nav-art { display: block; width: 26px; height: 26px; object-fit: contain; flex: none; }
 .feed-icon .community-nav-art { width: 100%; height: 100%; }
+body #feedView .feed-action[data-template="showcase"] .feed-icon { padding:0; background:transparent; box-shadow:none; }
 button.community-has-icon { display: inline-flex; align-items: center; justify-content: center; gap: 7px; }
 button.community-has-icon:disabled { transform: none; }
 
