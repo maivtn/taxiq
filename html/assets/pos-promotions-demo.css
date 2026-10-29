@@ -2148,7 +2148,8 @@
 #promotion-form :is(input, select, textarea):focus {
   border-color: var(--promo-brand);
 }
-#promotion-form :is(input, select, textarea):is(.is-invalid, [aria-invalid="true"]) {
+#promotion-form
+  :is(input, select, textarea):is(.is-invalid, [aria-invalid="true"]) {
   border-color: #fb7185;
 }
 #promotion-form .demo-discount {
@@ -2217,6 +2218,82 @@
 #promotion-form #channels {
   display: grid;
   gap: 16px;
+}
+#promotion-form .demo-tier-heading {
+  display: flex;
+  flex: 1 1 200px;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 6px;
+  min-width: 0;
+}
+#promotion-form .demo-ad-credit {
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 8px;
+  margin-left: auto;
+  max-width: 100%;
+}
+#promotion-form .demo-ad-credit-balance {
+  display: grid;
+  grid-template-columns: auto auto;
+  align-items: center;
+  gap: 3px 8px;
+  padding: 8px 10px;
+  border: 1px solid var(--promo-line);
+  border-radius: 8px;
+  background: #fff;
+}
+#promotion-form .demo-ad-credit-balance > span {
+  grid-column: 1 / -1;
+  color: #64748b;
+  font-size: 10px;
+}
+#promotion-form .demo-ad-credit-balance > strong {
+  font-size: 16px;
+  font-weight: 700;
+  line-height: 1.25;
+  color: var(--promo-brand);
+  font-variant-numeric: tabular-nums;
+}
+#promotion-form .demo-ad-credit-balance > small {
+  font-size: 10px;
+  color: #92400e;
+}
+#promotion-form
+  .demo-ad-credit[data-credit-state="empty"]
+  .demo-ad-credit-balance,
+#promotion-form
+  .demo-ad-credit[data-credit-state="insufficient"]
+  .demo-ad-credit-balance {
+  border-color: #fecaca;
+}
+#promotion-form .demo-ad-credit[data-credit-state="empty"] small,
+#promotion-form .demo-ad-credit[data-credit-state="insufficient"] small {
+  color: #b42318;
+}
+#promotion-form .demo-ad-credit-topup {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  min-height: 40px;
+  padding: 9px 12px;
+  border: 1px solid var(--promo-brand);
+  border-radius: 8px;
+  background: var(--promo-brand);
+  color: #fff;
+  font-size: 11px;
+  font-weight: 650;
+  white-space: nowrap;
+}
+#promotion-form .demo-ad-credit-topup:hover {
+  background: var(--promo-brand-dark);
+}
+#promotion-form .demo-ad-credit-topup img {
+  width: 18px;
+  height: 18px;
 }
 #promotion-form .promo-launch-card {
   padding: 12px;

@@ -17,6 +17,10 @@
     );
   const storageKey = "nexora:pos-promotions-standalone:v1";
   const languageKey = "nexora:pos-promotions-standalone:language";
+  const adsCreditKey = "nexora:ads-credit:v1";
+  // Match the existing Ads Credit wallet: $350 balance less $30 on hold.
+  const defaultAdsCreditCents = 32000;
+  const lowAdsCreditCents = 3000;
   const dateFormat = new Intl.DateTimeFormat("en-US", {
     month: "short",
     day: "numeric",
@@ -744,10 +748,11 @@
                       selected.has(c.id) ||
                       ["email", "fb", "ig", "gbp"].includes(c.id),
                   );
-          return `<div class="promo-channel-tier tier-${tier}"><div class="promo-channel-tier-head"><strong>${t(tier === "int" ? "tierInternalTitle" : "tierPublicTitle")}</strong><span class="promo-tag ${tier === "int" ? "ok" : "warn"}">${tier === "int" ? t("tierInternalTag") : "Automatic review"}</span>${tier === "pub" ? `<span class="promo-tag ok">${t("tierPublicOrganic")}</span>` : ""}<p class="promo-channel-tier-note">${t(tier === "int" ? "tierInternalHint" : "tierPublicHint")}</p></div><div class="promo-launch-grid">${tier === "int" ? switchCard("checkin", "checkInCardTitle", "checkInCardHint", data.checkin, draft.checkinPlacements, "kiosk") + switchCard("booking", "bookingCardTitle", "bookingCardHint", data.booking, draft.bookingPlacements, "oneqr") : ""}${shown.map(tier === "pub" ? publicCard : channelCard).join("")}</div>${tier === "int" ? `<div class="demo-postline"><strong>${t("postToLabel")}</strong><label><input type="radio" name="postWhen" value="now" ${draft.postWhen === "now" ? "checked" : ""}>${t("postWhenNow")}</label><label><input type="radio" name="postWhen" value="auto" ${draft.postWhen !== "now" ? "checked" : ""}>${t("postWhenAuto")}</label><small>${t("postMilestones")}</small><button type="button" class="promo-text-button" id="edit-post-schedule">${t("postScheduleEdit")}</button></div><button type="button" class="promo-text-button" id="show-more-channels">${t(showMore ? "showLessChannels" : "showMoreChannels", { count: all.length - shown.length })}</button>` : ""}</div>`;
+          return `<div class="promo-channel-tier tier-${tier}"><div class="promo-channel-tier-head"><div class="demo-tier-heading"><strong>${t(tier === "int" ? "tierInternalTitle" : "tierPublicTitle")}</strong><span class="promo-tag ${tier === "int" ? "ok" : "warn"}">${tier === "int" ? t("tierInternalTag") : "Automatic review"}</span>${tier === "pub" ? `<span class="promo-tag ok">${t("tierPublicOrganic")}</span>` : ""}</div>${tier === "pub" ? `<div class="demo-ad-credit" id="public-ad-credit"><div class="demo-ad-credit-balance"><span>${t("adsCreditBalance")}</span><strong id="public-credit-balance"></strong><small id="public-credit-status" role="status" aria-live="polite" hidden></small></div><a class="demo-ad-credit-topup" id="public-credit-topup" href="nexora-packages.html?tab=ads-credit" target="_blank" rel="noopener" hidden><span data-oneqr-icon="wallet"></span>${t("addAdsCredit")}</a></div>` : ""}<p class="promo-channel-tier-note">${t(tier === "int" ? "tierInternalHint" : "tierPublicHint")}</p></div><div class="promo-launch-grid">${tier === "int" ? switchCard("checkin", "checkInCardTitle", "checkInCardHint", data.checkin, draft.checkinPlacements, "kiosk") + switchCard("booking", "bookingCardTitle", "bookingCardHint", data.booking, draft.bookingPlacements, "oneqr") : ""}${shown.map(tier === "pub" ? publicCard : channelCard).join("")}</div>${tier === "int" ? `<div class="demo-postline"><strong>${t("postToLabel")}</strong><label><input type="radio" name="postWhen" value="now" ${draft.postWhen === "now" ? "checked" : ""}>${t("postWhenNow")}</label><label><input type="radio" name="postWhen" value="auto" ${draft.postWhen !== "now" ? "checked" : ""}>${t("postWhenAuto")}</label><small>${t("postMilestones")}</small><button type="button" class="promo-text-button" id="edit-post-schedule">${t("postScheduleEdit")}</button></div><button type="button" class="promo-text-button" id="show-more-channels">${t(showMore ? "showLessChannels" : "showMoreChannels", { count: all.length - shown.length })}</button>` : ""}</div>`;
         })
         .join("");
       $("channels").querySelector(".tier-pub").append(paidAdvertising);
+      hydrate($("public-ad-credit"));
     }
     function renderBanners() {
       $("banner-colors").innerHTML = Object.entries(themes)
@@ -768,6 +773,54 @@
         .join("");
       $("add-banner").disabled = draft.banners.length >= 8;
     }
+    function renderAdsCredit() {
+      let availableCents = defaultAdsCreditCents;
+      try {
+        const saved = JSON.parse(localStorage.getItem(adsCreditKey));
+        if (
+          Number.isFinite(saved?.balanceCents) &&
+          Number.isFinite(saved?.holdCents) &&
+          saved.balanceCents >= 0 &&
+          saved.holdCents >= 0
+        ) {
+          availableCents = Math.max(
+            0,
+            Math.floor(saved.balanceCents - saved.holdCents),
+          );
+        }
+      } catch (_) {}
+      const budgetCents = Math.round(Number(draft.budget) * 100);
+      const state =
+        availableCents === 0
+          ? "empty"
+          : draft.paidEnabled && budgetCents > availableCents
+            ? "insufficient"
+            : availableCents <= lowAdsCreditCents
+              ? "low"
+              : "ready";
+      const warning = state !== "ready";
+      $("public-ad-credit").dataset.creditState = state;
+      $("public-credit-balance").textContent = new Intl.NumberFormat("en-US", {
+        style: "currency",
+        currency: "USD",
+      }).format(availableCents / 100);
+      const status = $("public-credit-status");
+      status.hidden = !warning;
+      status.textContent = warning
+        ? t(
+            {
+              empty: "adsCreditEmpty",
+              insufficient: "adsCreditInsufficient",
+              low: "adsCreditLow",
+            }[state],
+          )
+        : "";
+      $("public-credit-topup").hidden = !warning;
+    }
+    window.addEventListener("storage", (event) => {
+      if (event.key === adsCreditKey || event.key === null) renderAdsCredit();
+    });
+    window.addEventListener("focus", renderAdsCredit);
     function update() {
       const p = draft,
         services = p.services.includes("all")
@@ -828,6 +881,7 @@
         goal: t("goal." + p.goal),
       });
       $("paid-fields").hidden = !p.paidEnabled;
+      renderAdsCredit();
       const hasPublic = p.channels.some((id) =>
         data.channels.some((c) => c.id === id && c.tier === "pub"),
       );
@@ -1792,7 +1846,7 @@
       $("tracking-rows").innerHTML = rows
         .map(
           (row) =>
-            `<tr><td><span class="demo-channel-name" style="--channel-color:${row.color}"><i></i>${row.name}</span></td><td>${number(row.views)}</td><td>${number(row.clicks)}</td><td>${row.views ? ((row.clicks / row.views) * 100).toFixed(1) + "%" : "—"}</td><td>${number(row.redeems)}</td><td>${money(row.revenue)}</td><td>${money(row.cost)}</td></tr>`,
+            `<tr><td><span class="demo-channel-name" style="--channel-color:${row.color}"><i></i>${row.name}</span></td><td>${number(row.views)}</td><td>${number(row.clicks)}</td><td>${money(row.cost)}</td></tr>`,
         )
         .join("");
       $("tracking-summary").textContent = [
@@ -2056,16 +2110,8 @@
         ],
         ["Channel", $("tracking-channel").selectedOptions[0].textContent],
         [],
-        ["Channel", "Views", "Clicks", "CTR", "Redeems", "Revenue", "Cost"],
-        ...rows.map((row) => [
-          row.name,
-          row.views,
-          row.clicks,
-          row.views ? ((row.clicks / row.views) * 100).toFixed(1) + "%" : "",
-          row.redeems,
-          row.revenue,
-          row.cost,
-        ]),
+        ["Channel", "Views", "Clicks", "Cost"],
+        ...rows.map((row) => [row.name, row.views, row.clicks, row.cost]),
       ]);
     });
     $("export-history").addEventListener("click", () => {
