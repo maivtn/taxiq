@@ -449,10 +449,10 @@
         return result;
       }
       if(editor.kind==='seeking') {
-        const result=saveJob(input);if(result){editor=null;adapter.closeDialog?.();toast(po('Đã tạo bài trong bản thử.','Post created in this demo.'));}else formError(form,t('jobs.board.seeking.errors.submitError'));return result;
+        const result=saveJob(input);if(result){editor=null;adapter.closeDialog?.();toast(po('Đã tạo bài.','Post created.'));}else formError(form,t('jobs.board.seeking.errors.submitError'));return result;
       }
       const preserved=clone(input);
-      showDialog(t('jobs.board.owner.preview.title'),`<p class="meta">${esc(t('jobs.board.owner.preview.subtitle'))}</p>${card({...input,owner:memberName(),id:input.id||'preview',createdAt:stamp()},false,true)}<div class="jobs-notice"><h3>${esc(t('jobs.board.owner.preview.publicTitle'))}</h3><p>${esc(t('jobs.board.owner.preview.publicBody'))}</p>${facts([[t('jobs.board.owner.preview.businessName'),input.contactName],[t('jobs.board.owner.preview.phone'),input.phone]])}<label class="jobs-check-row"><input type="checkbox" id="jobsPublishAcknowledgement">${esc(t('jobs.board.owner.preview.acknowledge'))}</label></div><p class="jobs-error" id="jobsPublishError" role="alert"></p>`,button('back-edit','',t('jobs.board.owner.preview.backToEdit'))+button('publish','',po('Đăng trong bản thử','Post in this demo'),true));
+      showDialog(t('jobs.board.owner.preview.title'),`<p class="meta">${esc(t('jobs.board.owner.preview.subtitle'))}</p>${card({...input,owner:memberName(),id:input.id||'preview',createdAt:stamp()},false,true)}<div class="jobs-notice"><h3>${esc(t('jobs.board.owner.preview.publicTitle'))}</h3><p>${esc(t('jobs.board.owner.preview.publicBody'))}</p>${facts([[t('jobs.board.owner.preview.businessName'),input.contactName],[t('jobs.board.owner.preview.phone'),input.phone]])}<label class="jobs-check-row"><input type="checkbox" id="jobsPublishAcknowledgement">${esc(t('jobs.board.owner.preview.acknowledge'))}</label></div><p class="jobs-error" id="jobsPublishError" role="alert"></p>`,button('back-edit','',t('jobs.board.owner.preview.backToEdit'))+button('publish','',po('Đăng','Post'),true));
       editor={...editor,pending:preserved};return true;
     }
     function afterSave(record, form) {if(record?.kind==='hiring'||record?.kind==='seeking'){enhanceForm(form,record);tab='myPosts';render();}return true;}
@@ -464,7 +464,7 @@
       const selected=editor.selectedServices.map(service=>String(service.id||service));
       showDialog(t('jobs.board.owner.compose.services.dialog.title'),`<p class="meta">${esc(t('jobs.board.owner.compose.services.dialog.description'))}</p><label class="jobs-field"><span>${esc(t('jobs.board.owner.compose.services.dialog.searchLabel'))}</span><input class="field" id="jobsServiceSearch" type="search" placeholder="${esc(t('jobs.board.owner.compose.services.dialog.searchPlaceholder'))}"></label><form id="jobsServicesForm"><div class="jobs-service-list">${services.map(service=>`<label class="jobs-service-option" data-jobs-service-name="${esc(service.name.toLocaleLowerCase())}"><input type="checkbox" name="services" value="${esc(service.id)}"${selected.includes(String(service.id))?' checked':''}><span><strong>${esc(service.name)}</strong><small>${esc(t('jobs.board.owner.compose.services.dialog.suggested',{skills:(service.skills||[service.name]).join(', ')}))}</small></span></label>`).join('')}</div></form>`,button('back-edit','',t('common.cancel'))+`<button type="submit" class="btn primary" form="jobsServicesForm">${esc(t('jobs.board.owner.compose.services.dialog.apply'))}</button>`);return true;
     }
-    function fileData(file) {return new Promise((resolve,reject)=>{if(!['image/jpeg','image/png','image/webp'].includes(file.type)){reject(new Error(t('jobs.profile.validation.imageType')));return;}if(file.size>700*1024){reject(new Error(po('PNG, JPG, WebP hoặc GIF · tối đa 700 KB trong bản thử','PNG, JPG, WebP or GIF · maximum 700 KB in this demo')));return;}const reader=new FileReader();reader.onload=()=>safeImage(reader.result)?resolve(reader.result):reject(new Error(t('jobs.board.images.unreadable')));reader.onerror=()=>reject(new Error(t('jobs.board.images.unreadable')));reader.readAsDataURL(file);});}
+    function fileData(file) {return new Promise((resolve,reject)=>{if(!['image/jpeg','image/png','image/webp'].includes(file.type)){reject(new Error(t('jobs.profile.validation.imageType')));return;}if(file.size>700*1024){reject(new Error(po('PNG, JPG, WebP hoặc GIF · tối đa 700 KB','PNG, JPG, WebP or GIF · maximum 700 KB')));return;}const reader=new FileReader();reader.onload=()=>safeImage(reader.result)?resolve(reader.result):reject(new Error(t('jobs.board.images.unreadable')));reader.onerror=()=>reject(new Error(t('jobs.board.images.unreadable')));reader.readAsDataURL(file);});}
     async function uploadFiles(control, portfolio) {
       const files=Array.from(control.files||[]);if(!files.length)return;
       const max=portfolio?9:6,current=portfolio?getProfile().portfolioImageUrls:editor?.images||[];
@@ -536,7 +536,7 @@
         const acknowledgement=document.getElementById('jobsPublishAcknowledgement');
         if(!acknowledgement?.checked){document.getElementById('jobsPublishError').textContent=t('jobs.board.owner.preview.acknowledge');acknowledgement?.focus();return;}
         const result=editor?.pending&&saveJob(editor.pending);
-        if(result){editor=null;adapter.closeDialog?.();toast(po('Đã tạo bài trong bản thử.','Post created in this demo.'));}else{const error=document.getElementById('jobsPublishError');if(error)error.textContent=t('jobs.board.owner.errors.submitError');}return;
+        if(result){editor=null;adapter.closeDialog?.();toast(po('Đã tạo bài.','Post created.'));}else{const error=document.getElementById('jobsPublishError');if(error)error.textContent=t('jobs.board.owner.errors.submitError');}return;
       }
       if(action==='open-pos')return adapter.navigate?.('posRecruitment',{source:'jobs',jobsTab:tab});
     }

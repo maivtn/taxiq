@@ -67,3 +67,6 @@ body .dialog .page-profile-head { margin-inline: 0; }
 @media (max-height: 500px) and (pointer: coarse) {
   body.embedded .app.detail-open .top { display:none; }
 }
+
+/* Sections with no supporting sidebar use the full content width. */
+body .feature-layout.community-single-column { grid-template-columns: minmax(0, 1fr); }

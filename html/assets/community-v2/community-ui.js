@@ -43,7 +43,6 @@
     ['.subtab[data-view="market"]','Store'],
     ['#createBtn,#createSale,#createWant,#emptyCreate,#emptyCreatePage,#createPage,[data-template="page"],[data-template="group"]','Plus'],
     ['#create,#createBlog,[data-blog-create]','SquarePen'],
-    ['#fillExample,#fillBlogExample,#fillListingExample','WandSparkles'],
     ['#viewerUseDeviceLocation,[data-use-location],#viewerLocationLabel','MapPin'],
     ['#viewerLocationSave','Check'],
     ['[data-job-contact],[data-shift-contact],[data-page-message],[data-action="contact"]','MessageCircle'],

@@ -254,7 +254,7 @@
     const actions = '<div class="chat-actions">' + (allowCalls&&!blocked ? '<button class="chat-action" data-start-call="voice" aria-label="Voice call ' + esc(name) + '" title="Voice call">' + phoneIcon + '<span>Call</span></button><button class="chat-action" data-start-call="video" aria-label="Video call ' + esc(name) + '" title="Video call">' + videoIcon + '<span>Video</span></button>' : '') + '<button class="chat-action chat-close" data-back aria-label="Close conversation" title="Close conversation">×</button></div>';
     const tools = [['photo',imageIcon,'Photo'],['voice',micIcon,'Voice'],['sticker','✦','Stickers'],['gif','GIF','GIF'],['emoji',emojiIcon,'Emoji']].map(([kind,icon,label])=>'<button type="button" class="chat-tool" data-chat-tool="' + kind + '" aria-label="' + label + '" title="' + label + '">' + icon + '<span>' + label + '</span></button>').join('');
     return '<button class="back" data-back>← Back to ' + esc(section === 'groups' ? 'Group chats' : 'Messages') + '</button>' +
-      '<div class="chat-heading"><div class="chat-person"><span class="chat-avatar" aria-hidden="true">' + esc(initials) + (group ? '' : '<i class="chat-online-dot"></i>') + '</span><div class="chat-person-copy"><div class="chat-title-line"><h2 class="screen-title" tabindex="-1" id="detailTitle">' + esc(displayName) + '</h2>'+(group?'':'<button type="button" class="chat-menu-toggle" data-chat-menu-toggle aria-label="'+esc(ui('Conversation options','Tùy chọn cuộc trò chuyện'))+'" aria-controls="conversationMenu" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>')+'</div><p class="screen-subtitle">' + (group ? 'Group chat' : blocked?esc(ui('Blocked · preview','Đã chặn · bản thử')):pref.restricted?esc(ui('Restricted · preview','Đã hạn chế · bản thử')):'<span class="chat-live-status">Active now · preview</span>') + '</p></div></div>' + actions + (group?'':chatMenuMarkup(threadId,name))+'</div>' +
+      '<div class="chat-heading"><div class="chat-person"><span class="chat-avatar" aria-hidden="true">' + esc(initials) + (group ? '' : '<i class="chat-online-dot"></i>') + '</span><div class="chat-person-copy"><div class="chat-title-line"><h2 class="screen-title" tabindex="-1" id="detailTitle">' + esc(displayName) + '</h2>'+(group?'':'<button type="button" class="chat-menu-toggle" data-chat-menu-toggle aria-label="'+esc(ui('Conversation options','Tùy chọn cuộc trò chuyện'))+'" aria-controls="conversationMenu" aria-expanded="false"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg></button>')+'</div><p class="screen-subtitle">' + (group ? 'Group chat' : blocked?esc(ui('Blocked','Đã chặn')):pref.restricted?esc(ui('Restricted','Đã hạn chế')):'<span class="chat-live-status">Active now</span>') + '</p></div></div>' + actions + (group?'':chatMenuMarkup(threadId,name))+'</div>' +
       '<div class="chat-conversation"><div class="chat-message-list"><span class="chat-context">' + esc(context) + '</span>' + bubbles + '</div></div>' +
       '<div class="chat-composer"><div class="chat-tools" role="toolbar" aria-label="Message tools">' + tools + '</div><input id="chatPhotoInput" type="file" accept="image/png,image/jpeg,image/webp,image/gif" hidden><div id="chatPicker" class="chat-picker hidden"></div><div id="chatAttachmentPreview" class="chat-attachment-preview hidden"></div><div class="composer"><label class="sr-only" for="messageText">Message</label><textarea id="messageText" class="demo-textarea" rows="1" placeholder="'+esc(blocked?ui('Unblock to send messages','Bỏ chặn để gửi tin nhắn'):ui('Write a message...','Viết tin nhắn...'))+'"'+(blocked?' disabled':'')+'></textarea><button class="primary" data-send-message="' + esc(threadId) + '" aria-label="Send message"'+(blocked?' disabled':'')+'><span>Send</span><svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 12 16-8-5 16-3-7-8-1zM12 13l8-9"/></svg></button><button type="button" class="chat-like" data-chat-like aria-label="Send a quick emoji" title="Send a quick emoji"'+(blocked?' disabled':'')+'>'+esc(pref.quickEmoji||'👍')+'</button></div></div>';
   }
@@ -262,14 +262,14 @@
     const panel=$('#chatMenuSubpanel'),pref=chatPref(currentDetail),member=members.find(item=>item.detail===currentDetail || (currentDetail==='chat-mai'&&item.detail==='request'));
     if(!panel)return;
     let html='';
-    if(action==='profile')html='<strong>'+esc(ui('Profile','Hồ sơ'))+'</strong><p>'+esc(member?member.name+' · '+member.id+' · '+member.handle:ui('Profile details are unavailable in this preview.','Bản thử chưa có hồ sơ này.'))+'</p>';
+    if(action==='profile')html='<strong>'+esc(ui('Profile','Hồ sơ'))+'</strong><p>'+esc(member?member.name+' · '+member.id+' · '+member.handle:ui('Profile details are unavailable.','Chưa có thông tin hồ sơ.'))+'</p>';
     if(action==='theme')html='<strong>'+esc(ui('Choose a theme','Chọn chủ đề'))+'</strong><div>'+[['default',ui('NEXORA blue','Xanh NEXORA')],['purple',ui('Purple','Tím')],['pink',ui('Pink','Hồng')],['gold',ui('Gold','Vàng')]].map(([value,label])=>'<button type="button" class="chat-menu-choice" data-chat-theme="'+value+'" aria-pressed="'+((pref.theme||'default')===value)+'">'+esc(label)+'</button>').join('')+'</div>';
     if(action==='emoji')html='<strong>'+esc(ui('Quick emoji','Biểu tượng nhanh'))+'</strong><p>'+esc(ui('Choose the one-tap reaction beside the message box.','Chọn biểu tượng gửi nhanh cạnh ô nhắn tin.'))+'</p><div>'+['👍','❤️','😊','👏','✨','🎉'].map(value=>'<button type="button" class="chat-menu-choice" data-chat-quick-emoji="'+value+'" aria-pressed="'+((pref.quickEmoji||'👍')===value)+'">'+value+'</button>').join('')+'</div>';
     if(action==='nickname')html='<label for="chatNicknameDraft">'+esc(ui('Nickname in this conversation','Biệt danh trong cuộc trò chuyện'))+'</label><input id="chatNicknameDraft" class="demo-input" maxlength="35" value="'+esc(pref.nickname||'')+'" placeholder="'+esc(ui('Enter a nickname','Nhập biệt danh'))+'"><div class="inline-actions"><button type="button" class="primary" data-chat-save-nickname>'+esc(ui('Save','Lưu'))+'</button></div>';
-    if(action==='read')html='<strong>'+esc(ui('Read receipts','Xác nhận đã đọc'))+'</strong><p>'+esc(ui('Control whether this conversation shows when you read a message. This preview saves only your local choice.','Chọn hiển thị trạng thái đã đọc cho cuộc trò chuyện này. Bản thử chỉ lưu lựa chọn trên máy này.'))+'</p><div>'+[['on',ui('On','Bật')],['off',ui('Off','Tắt')]].map(([value,label])=>'<button type="button" class="chat-menu-choice" data-chat-receipts="'+value+'" aria-pressed="'+((pref.readReceipts!==false)===(value==='on'))+'">'+esc(label)+'</button>').join('')+'</div>';
-    if(action==='encryption')html='<strong>'+esc(ui('End-to-end encrypted chat','Trò chuyện mã hóa đầu cuối'))+'</strong><p>'+esc(ui('This preview does not provide end-to-end encryption. The option can appear only after secure messaging is implemented and verified in production.','Bản thử chưa mã hóa đầu cuối. Chỉ bật mục này khi hệ thống thật đã triển khai và kiểm chứng mã hóa.'))+'</p>';
-    if(action==='delete')html='<strong class="warning">'+esc(ui('Delete this chat?','Xóa cuộc trò chuyện này?'))+'</strong><p>'+esc(ui('This removes the conversation from this browser preview.','Cuộc trò chuyện sẽ bị xóa khỏi bản thử trên trình duyệt này.'))+'</p><div class="inline-actions"><button type="button" class="secondary" data-chat-cancel>'+esc(ui('Cancel','Hủy'))+'</button><button type="button" class="primary" data-chat-confirm-delete>'+esc(ui('Delete chat','Xóa cuộc trò chuyện'))+'</button></div>';
-    if(action==='report')html='<label for="chatReportReason">'+esc(ui('Why are you reporting this chat?','Lý do báo cáo cuộc trò chuyện'))+'</label><select id="chatReportReason" class="demo-select"><option value="spam">'+esc(ui('Spam','Tin rác'))+'</option><option value="harassment">'+esc(ui('Harassment','Quấy rối'))+'</option><option value="fraud">'+esc(ui('Scam or fraud','Lừa đảo'))+'</option><option value="other">'+esc(ui('Other','Khác'))+'</option></select><p>'+esc(ui('This preview records the selection locally. No report is sent.','Bản thử chỉ lưu lựa chọn trên máy. Chưa gửi báo cáo đi.'))+'</p><button type="button" class="primary" data-chat-confirm-report>'+esc(ui('Record report in preview','Ghi nhận trong bản thử'))+'</button>';
+    if(action==='read')html='<strong>'+esc(ui('Read receipts','Xác nhận đã đọc'))+'</strong><p>'+esc(ui('Control whether this conversation shows when you read a message.','Chọn hiển thị trạng thái đã đọc cho cuộc trò chuyện này.'))+'</p><div>'+[['on',ui('On','Bật')],['off',ui('Off','Tắt')]].map(([value,label])=>'<button type="button" class="chat-menu-choice" data-chat-receipts="'+value+'" aria-pressed="'+((pref.readReceipts!==false)===(value==='on'))+'">'+esc(label)+'</button>').join('')+'</div>';
+    if(action==='encryption')html='<strong>'+esc(ui('End-to-end encrypted chat','Trò chuyện mã hóa đầu cuối'))+'</strong><p>'+esc(ui('Coming soon.','Sắp có.'))+'</p>';
+    if(action==='delete')html='<strong class="warning">'+esc(ui('Delete this chat?','Xóa cuộc trò chuyện này?'))+'</strong><p>'+esc(ui('Delete this conversation?','Xóa cuộc trò chuyện này?'))+'</p><div class="inline-actions"><button type="button" class="secondary" data-chat-cancel>'+esc(ui('Cancel','Hủy'))+'</button><button type="button" class="primary" data-chat-confirm-delete>'+esc(ui('Delete chat','Xóa cuộc trò chuyện'))+'</button></div>';
+    if(action==='report')html='<label for="chatReportReason">'+esc(ui('Why are you reporting this chat?','Lý do báo cáo cuộc trò chuyện'))+'</label><select id="chatReportReason" class="demo-select"><option value="spam">'+esc(ui('Spam','Tin rác'))+'</option><option value="harassment">'+esc(ui('Harassment','Quấy rối'))+'</option><option value="fraud">'+esc(ui('Scam or fraud','Lừa đảo'))+'</option><option value="other">'+esc(ui('Other','Khác'))+'</option></select><button type="button" class="primary" data-chat-confirm-report>'+esc(ui('Report','Báo cáo'))+'</button>';
     panel.innerHTML=html;panel.classList.toggle('hidden',!html);panel.parentElement.scrollTop=0;
     if(action==='nickname')$('#chatNicknameDraft')?.focus();
   }
@@ -286,9 +286,9 @@
     const bridge=window.NEXORA_COMMUNITY_CONNECT,prepared=bridge?.prepareMessage(threadId,message);if(prepared===false)return false;
     const outgoing={...(prepared||message),mine:true,id:message.id||'message-'+Date.now()+'-'+Math.random().toString(36).slice(2,8),author:currentMember,createdAt:new Date().toISOString()};
     const shared=bridge?.persistMessage(threadId,outgoing);if(shared===false)return false;
-    if(shared===undefined){state.deletedChats=state.deletedChats.filter(id=>id!==threadId);if(!Array.isArray(state.sentMessages[threadId]))state.sentMessages[threadId]=[];state.sentMessages[threadId].push(outgoing);if(!save()){toast(ui('Could not save this message in the preview.','Không lưu được tin nhắn trong bản mẫu.'));return false;}}
+    if(shared===undefined){state.deletedChats=state.deletedChats.filter(id=>id!==threadId);if(!Array.isArray(state.sentMessages[threadId]))state.sentMessages[threadId]=[];state.sentMessages[threadId].push(outgoing);if(!save()){toast(ui('Could not save this message.','Không lưu được tin nhắn.'));return false;}}
     bridge?.afterMessage(threadId);
-    pendingChatAttachment=null;const field=$('#messageText');if(field)field.value='';chatDrafts.delete(threadId);renderConversationPreviews();if(section==='groups')renderGroups();showDetail(currentDetail);$('#messageText')?.focus();toast(ui('Sent in this preview only.','Đã gửi trong bản mẫu.'));return true;
+    pendingChatAttachment=null;const field=$('#messageText');if(field)field.value='';chatDrafts.delete(threadId);renderConversationPreviews();if(section==='groups')renderGroups();showDetail(currentDetail);$('#messageText')?.focus();toast(ui('Message sent.','Đã gửi tin nhắn.'));return true;
   }
   function closeChatRecording(discard=true) {
     discardChatRecording=discard;
@@ -305,7 +305,7 @@
       const preferred=['audio/webm;codecs=opus','audio/mp4','audio/webm'].find(type=>MediaRecorder.isTypeSupported(type));
       const chunks=[],recordingStream=chatStream;discardChatRecording=false;chatRecorder=new MediaRecorder(recordingStream,preferred?{mimeType:preferred}:undefined);const recording=chatRecorder;
       chatRecorder.ondataavailable=e=>{if(e.data.size)chunks.push(e.data);};
-      chatRecorder.onstop=async()=>{const skip=discardChatRecording||currentDetail!==owner||mediaGeneration!==generation;recordingStream.getTracks().forEach(track=>track.stop());if(chatRecorder===recording){chatStream=null;chatRecorder=null;$('#detailPanel [data-chat-tool="voice"]')?.classList.remove('recording');}if(skip)return;const blob=new Blob(chunks,{type:chunks[0]?.type||preferred||'audio/webm'});if(!blob.size||blob.size>700000){toast(ui('Keep voice messages under 700 KB in this preview.','Tin thoại trong bản mẫu cần dưới 700 KB.'));return;}const reader=new FileReader();reader.onload=()=>{if(currentDetail!==owner||mediaGeneration!==generation)return;pendingChatAttachment={type:'audio',src:String(reader.result)};renderChatAttachment();toast(ui('Voice message ready. Tap Send.','Tin thoại đã sẵn sàng. Bấm Gửi.'));};reader.readAsDataURL(blob);};
+      chatRecorder.onstop=async()=>{const skip=discardChatRecording||currentDetail!==owner||mediaGeneration!==generation;recordingStream.getTracks().forEach(track=>track.stop());if(chatRecorder===recording){chatStream=null;chatRecorder=null;$('#detailPanel [data-chat-tool="voice"]')?.classList.remove('recording');}if(skip)return;const blob=new Blob(chunks,{type:chunks[0]?.type||preferred||'audio/webm'});if(!blob.size||blob.size>700000){toast(ui('Keep voice messages under 700 KB.','Tin thoại cần dưới 700 KB.'));return;}const reader=new FileReader();reader.onload=()=>{if(currentDetail!==owner||mediaGeneration!==generation)return;pendingChatAttachment={type:'audio',src:String(reader.result)};renderChatAttachment();toast(ui('Voice message ready. Tap Send.','Tin thoại đã sẵn sàng. Bấm Gửi.'));};reader.readAsDataURL(blob);};
       chatRecorder.start();$('#detailPanel [data-chat-tool="voice"]')?.classList.add('recording');toast(ui('Recording… Tap Voice again to stop.','Đang ghi âm… Bấm Tin thoại lần nữa để dừng.'));
       chatRecordingTimer=setTimeout(()=>closeChatRecording(false),30000);
     }catch{chatStream?.getTracks().forEach(track=>track.stop());chatStream=null;toast(ui('Microphone permission was not granted.','Chưa được cấp quyền dùng micro.'));}
@@ -322,16 +322,16 @@
         '<div class="surface"><p>' + (blockedNames().length?blockedNames().map(esc).join(', '):'No blocked accounts.') + '</p></div>');
     } else if (kind === 'nickname') {
       html = detailShell('Edit nickname', 'Your nickname is used to find and share your profile.',
-        '<div class="surface"><div class="form-line"><label for="nicknameDraft">Nickname</label><input id="nicknameDraft" class="demo-input" value="@bitcoin.nail.bar"></div><button class="primary" data-preview-nickname>Preview nickname</button><p id="nicknameResult" class="muted-note"></p></div>');
+        '<div class="surface"><div class="form-line"><label for="nicknameDraft">Nickname</label><input id="nicknameDraft" class="demo-input" value="@bitcoin.nail.bar"></div><button class="primary" data-preview-nickname>Save</button><p id="nicknameResult" class="muted-note"></p></div>');
     } else if (kind === 'request' && state.request === 'pending') {
       html = detailShell('Mai Nguyễn', 'Message request · White waiting chairs',
         '<div class="surface"><div class="thread-bubble">Hi, are the white chairs still available? Could I see their condition and the price for six?</div><div class="inline-actions"><button class="primary" data-request-action="accepted">Accept & reply</button><button class="secondary" data-request-action="ignored">Ignore</button><button class="secondary" data-request-action="blocked">Block</button></div></div>');
     } else if (kind === 'request' && state.request === 'accepted') {
       html = thread('Mai Nguyễn','About your 12 white waiting chairs',[{text:'Hi, are the white chairs still available? Could I see their condition and the price for six?'}],'chat-mai',true);
     } else if (kind === 'request' && state.request === 'ignored') {
-      html = detailShell('Mai Nguyễn', 'Message request ignored', '<div class="surface"><p>This request was ignored in the preview. Reset the demo to view it again.</p></div>');
+      html = detailShell('Mai Nguyễn', 'Message request ignored', '<div class="surface"><p>This request was ignored.</p></div>');
     } else if (kind === 'request' && state.request === 'blocked') {
-      html = detailShell('Mai Nguyễn', 'Account blocked', '<div class="surface"><p>Mai Nguyễn is blocked in this preview. You can review the blocked list under Settings.</p></div>');
+      html = detailShell('Mai Nguyễn', 'Account blocked', '<div class="surface"><p>Mai Nguyễn is blocked. You can review the blocked list under Settings.</p></div>');
     } else if (kind === 'chat-mai') {
       html = thread('Mai Nguyễn','About your 12 white waiting chairs',[{text:'Hi, are the white chairs still available? Could I see their condition and the price for six?'}],'chat-mai',true);
     } else if (kind === 'chat-kim') {
@@ -455,7 +455,7 @@
     const active = document.activeElement === $('#memberQuery');
     $('#memberResults').classList.toggle('hidden', !query && !active);
     if (!query) {
-      $('#memberResults').innerHTML = '<div class="search-results-head"><strong>Find & add people</strong><span>Search by name, @nickname, NEXORA ID or full phone number. Demo contact: 713-555-0144.</span></div>';
+      $('#memberResults').innerHTML = '<div class="search-results-head"><strong>Find & add people</strong><span>Search by name, @nickname, NEXORA ID or full phone number.</span></div>';
       return;
     }
     const phoneLike = /^[+()\d\s.-]+$/.test(query);
@@ -484,20 +484,20 @@
   }
   async function copy(value, success) {
     try { await navigator.clipboard.writeText(value); toast(success); }
-    catch { toast('Copy is unavailable in this browser preview.'); }
+    catch { toast('Copy is unavailable in this browser.'); }
   }
   document.addEventListener('click', async event => {
     const openMenu=$('#conversationMenu');if(openMenu&&!event.target.closest('#conversationMenu,[data-chat-menu-toggle]')){openMenu.classList.add('hidden');$('#detailPanel [data-chat-menu-toggle]')?.setAttribute('aria-expanded','false');}
     const target = event.target.closest('button');
     if (!target) return;
     if(target.dataset.chatMenuToggle!==undefined){const menu=$('#conversationMenu'),opening=menu?.classList.contains('hidden');menu?.classList.toggle('hidden',!opening);target.setAttribute('aria-expanded',String(Boolean(opening)));if(opening)menu?.querySelector('button')?.focus();return;}
-    if(target.dataset.chatMenuAction){const action=target.dataset.chatMenuAction,id=currentDetail,pref=chatPref(id);if(action==='inbox'){showSection('messages');return;}if(action==='group'){showSection('groups');$('#createGroupBtn')?.click();return;}if(action==='mute'||action==='block'||action==='restrict'){const field={mute:'muted',block:'blocked',restrict:'restricted'}[action];pref[field]=!pref[field];if(!save()){pref[field]=!pref[field];toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));return;}showDetail(id);toast(pref[field]?ui('Updated in this preview.','Đã cập nhật trong bản thử.'):ui('Setting turned off in this preview.','Đã tắt cài đặt trong bản thử.'));return;}if(action==='archive'){const wasArchived=state.archivedChats.includes(id);state.archivedChats=wasArchived?state.archivedChats.filter(item=>item!==id):[...state.archivedChats,id];if(!save()){state.archivedChats=wasArchived?[...state.archivedChats,id]:state.archivedChats.filter(item=>item!==id);toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));return;}showSection('messages');toast(wasArchived?ui('Chat returned to Recent.','Đã đưa cuộc trò chuyện về Tin gần đây.'):ui('Chat moved to Archived.','Đã chuyển cuộc trò chuyện vào Lưu trữ.'));return;}openChatMenuPanel(action);return;}
-    if(target.dataset.chatTheme){const id=currentDetail,pref=chatPref(id),old=pref.theme;pref.theme=target.dataset.chatTheme;if(save()){showDetail(id);toast(ui('Theme changed in this preview.','Đã đổi chủ đề trong bản thử.'));}else{pref.theme=old;toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));}return;}
+    if(target.dataset.chatMenuAction){const action=target.dataset.chatMenuAction,id=currentDetail,pref=chatPref(id);if(action==='inbox'){showSection('messages');return;}if(action==='group'){showSection('groups');$('#createGroupBtn')?.click();return;}if(action==='mute'||action==='block'||action==='restrict'){const field={mute:'muted',block:'blocked',restrict:'restricted'}[action];pref[field]=!pref[field];if(!save()){pref[field]=!pref[field];toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));return;}showDetail(id);toast(pref[field]?ui('Updated.','Đã cập nhật.'):ui('Setting turned off.','Đã tắt cài đặt.'));return;}if(action==='archive'){const wasArchived=state.archivedChats.includes(id);state.archivedChats=wasArchived?state.archivedChats.filter(item=>item!==id):[...state.archivedChats,id];if(!save()){state.archivedChats=wasArchived?[...state.archivedChats,id]:state.archivedChats.filter(item=>item!==id);toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));return;}showSection('messages');toast(wasArchived?ui('Chat returned to Recent.','Đã đưa cuộc trò chuyện về Tin gần đây.'):ui('Chat moved to Archived.','Đã chuyển cuộc trò chuyện vào Lưu trữ.'));return;}openChatMenuPanel(action);return;}
+    if(target.dataset.chatTheme){const id=currentDetail,pref=chatPref(id),old=pref.theme;pref.theme=target.dataset.chatTheme;if(save()){showDetail(id);toast(ui('Theme changed.','Đã đổi chủ đề.'));}else{pref.theme=old;toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));}return;}
     if(target.dataset.chatQuickEmoji){const id=currentDetail,pref=chatPref(id),old=pref.quickEmoji;pref.quickEmoji=target.dataset.chatQuickEmoji;if(save()){showDetail(id);toast(ui('Quick emoji changed.','Đã đổi biểu tượng nhanh.'));}else{pref.quickEmoji=old;toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));}return;}
-    if(target.dataset.chatReceipts){const id=currentDetail,pref=chatPref(id),old=pref.readReceipts;pref.readReceipts=target.dataset.chatReceipts==='on';if(save()){showDetail(id);toast(ui('Read receipt preference saved in this preview.','Đã lưu lựa chọn xác nhận đã đọc trong bản thử.'));}else{pref.readReceipts=old;toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));}return;}
-    if(target.dataset.chatSaveNickname!==undefined){const id=currentDetail,value=$('#chatNicknameDraft')?.value.trim()||'',pref=chatPref(id),old=pref.nickname;pref.nickname=value;if(save()){showDetail(id);toast(ui('Nickname saved in this preview.','Đã lưu biệt danh trong bản thử.'));}else{pref.nickname=old;toast(ui('Could not save this nickname.','Không lưu được biệt danh.'));}return;}
+    if(target.dataset.chatReceipts){const id=currentDetail,pref=chatPref(id),old=pref.readReceipts;pref.readReceipts=target.dataset.chatReceipts==='on';if(save()){showDetail(id);toast(ui('Read receipt preference saved.','Đã lưu lựa chọn xác nhận đã đọc.'));}else{pref.readReceipts=old;toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));}return;}
+    if(target.dataset.chatSaveNickname!==undefined){const id=currentDetail,value=$('#chatNicknameDraft')?.value.trim()||'',pref=chatPref(id),old=pref.nickname;pref.nickname=value;if(save()){showDetail(id);toast(ui('Nickname saved.','Đã lưu biệt danh.'));}else{pref.nickname=old;toast(ui('Could not save this nickname.','Không lưu được biệt danh.'));}return;}
     if(target.dataset.chatCancel!==undefined){$('#chatMenuSubpanel')?.classList.add('hidden');return;}
-    if(target.dataset.chatConfirmDelete!==undefined){const id=currentDetail,oldDeleted=state.deletedChats,oldArchived=state.archivedChats,oldMessages=state.sentMessages[id];state.deletedChats=[...new Set([...state.deletedChats,id])];state.clearedChats={...(state.clearedChats||{}),[id]:true};chatDrafts.delete(id);state.archivedChats=state.archivedChats.filter(item=>item!==id);delete state.sentMessages[id];if(save()){showSection('messages');toast(ui('Chat deleted from this browser preview.','Đã xóa cuộc trò chuyện khỏi bản thử trên trình duyệt.'));}else{state.deletedChats=oldDeleted;state.archivedChats=oldArchived;if(oldMessages)state.sentMessages[id]=oldMessages;toast(ui('Could not delete this chat.','Không xóa được cuộc trò chuyện.'));}return;}
+    if(target.dataset.chatConfirmDelete!==undefined){const id=currentDetail,oldDeleted=state.deletedChats,oldArchived=state.archivedChats,oldMessages=state.sentMessages[id];state.deletedChats=[...new Set([...state.deletedChats,id])];state.clearedChats={...(state.clearedChats||{}),[id]:true};chatDrafts.delete(id);state.archivedChats=state.archivedChats.filter(item=>item!==id);delete state.sentMessages[id];if(save()){showSection('messages');toast(ui('Chat deleted.','Đã xóa cuộc trò chuyện.'));}else{state.deletedChats=oldDeleted;state.archivedChats=oldArchived;if(oldMessages)state.sentMessages[id]=oldMessages;toast(ui('Could not delete this chat.','Không xóa được cuộc trò chuyện.'));}return;}
     if(target.dataset.chatConfirmReport!==undefined){const id=currentDetail,reason=$('#chatReportReason')?.value||'other';state.reportedChats.push({id,reason,at:new Date().toISOString()});if(save()){showDetail(id);toast(ui('Report recorded locally. Nothing was sent.','Báo cáo đã lưu trên máy; chưa gửi đi.'));}else{state.reportedChats.pop();toast(ui('Could not save the report.','Không lưu được báo cáo.'));}return;}
     if (target.dataset.chatTool) {
       const kind=target.dataset.chatTool,picker=$('#chatPicker');
@@ -569,7 +569,7 @@
       $('#memberQuery').value = '';
       $('#memberQuery').blur();
       renderMemberResults();
-      toast(member.name + ' added to Connections in this preview.');
+      toast(member.name + ' added to Connections.');
       return;
     }
     if (target.dataset.section) { if (tourActive) finishTour(false); showSection(target.dataset.section); return; }
@@ -588,7 +588,7 @@
       if (!state.joinedCommunities.includes(id)) state.joinedCommunities.push(id);
       if(!save()){toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));return;}
       renderGroups();
-      toast('Joined in this preview.');
+      toast('Joined.');
       return;
     }
     if (target.id === 'createGroupBtn') {
@@ -612,13 +612,13 @@
       renderGroups();
       $('#createGroupDialog').classList.add('hidden');
       showDetail(id);
-      toast('Group created in this preview.');
+      toast('Group created.');
       return;
     }
     if (target.dataset.startCall) {
       const name = target.dataset.callName || $('#detailTitle')?.textContent || 'this member';if(isBlocked(name)){toast(ui('Blocked','Đã chặn'));return;}
       $('#callPreviewTitle').textContent = target.dataset.startCall === 'video' ? 'Video call · ' + name : 'Voice call · ' + name;
-      $('#callPreviewText').textContent = 'Call preview. No call is placed.';
+      $('#callPreviewText').textContent = ui('Calling…','Đang gọi…');
       $('#callPreview').classList.remove('hidden');
       $('#closeCallPreview').focus();
       return;
@@ -631,7 +631,6 @@
       else await copy(profileUrl,'Profile link copied.');
       return;
     }
-    if (target.id === 'resetDemo') { try { localStorage.removeItem(key); } catch {} location.reload(); return; }
     if (target.dataset.requestAction) {
       state.request = target.dataset.requestAction;
       if(!save()){toast(ui('Could not save this choice.','Không lưu được lựa chọn này.'));return;}
@@ -658,7 +657,7 @@
     if (target.dataset.copyInvite !== undefined) { await copy(inviteUrl,'Invitation link copied.'); return; }
     if (target.dataset.previewNickname !== undefined) {
       const value = $('#nicknameDraft').value.trim();
-      $('#nicknameResult').textContent = value ? 'Preview: ' + value + '. This does not change the QR or live account.' : 'Enter a nickname first.';
+      $('#nicknameResult').textContent = value || 'Enter a nickname first.';
     }
   });
   $('#callRows').addEventListener('pointerdown', event => {

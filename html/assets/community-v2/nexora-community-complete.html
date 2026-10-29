@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>NEXORA Community · Bản mẫu tổng hợp</title>
+  <title>NEXORA Community</title>
   <style>
     :root{font-family:Inter,ui-sans-serif,system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;color:#202b43;background:#f6f8fc}
     *{box-sizing:border-box}body{margin:0}button{font:inherit;cursor:pointer}button:focus-visible{outline:3px solid #a99fff;outline-offset:2px}
@@ -89,8 +89,8 @@
     @media(max-width:800px){.mobile-nav:not([hidden]){grid-template-columns:repeat(6,minmax(0,1fr))}.mobile-tab.tab{font-size:9px;padding-inline:1px}.mobile-tab.tab svg{width:19px;height:19px}}
     @media(prefers-reduced-motion:reduce){.tour-target{animation:none}.tour-card.is-playing .tour-fill{animation:none;width:100%}}
   </style>
-  <link rel="stylesheet" href="community-embed.css?v=20261029-community-feed-tags-v8">
-  <link rel="stylesheet" href="community-layout.css?v=20261029-community-feed-tags-v8">
+  <link rel="stylesheet" href="community-embed.css?v=20261029-community-dev-handoff-v9">
+  <link rel="stylesheet" href="community-layout.css?v=20261029-community-dev-handoff-v9">
 </head>
 <body class="embedded">
   <div class="app">
@@ -112,7 +112,7 @@
         <div class="side-item"><span class="side-ico">▤</span><span data-i18n="news">News &amp; Library</span></div>
         <div class="side-item"><span class="side-ico"><svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="8" r="3"/><path d="M5 20v-1a7 7 0 0 1 14 0v1M2 8a10 10 0 0 1 20 0M2 8v5h3V8M22 8v5h-3V8"/></svg></span><span data-i18n="support">Support</span></div>
       </nav>
-      <div class="sidebar-bottom"><div class="plan-card"><span>♛</span><span data-i18n="noPlan">No Plan yet</span><span class="manage-plan" data-i18n="manage">Manage</span></div><button class="signout" type="button"><span>⇥</span><span data-i18n="signout">Sign out</span></button><div class="preview-note"><span data-i18n="previewNote">Interactive preview. Changes are saved in this browser only.</span><button type="button" id="reset" data-i18n="reset">Reset demo</button></div></div>
+      <div class="sidebar-bottom"><div class="plan-card"><span>♛</span><span data-i18n="noPlan">No Plan yet</span><span class="manage-plan" data-i18n="manage">Manage</span></div><button class="signout" type="button"><span>⇥</span><span data-i18n="signout">Sign out</span></button></div>
     </aside>
     <div class="main">
       <header class="top">
@@ -132,8 +132,8 @@
         </nav>
       </header>
       <main class="workspace" aria-label="Nội dung Community">
-        <iframe id="communityPane" class="pane" title="Bảng tin, Nhóm, Chợ, Fanpage, Deal, Việc làm và Blog" data-src="nexora-community-prototype.html?embedded=1&amp;view=feed&amp;rev=20261029-community-feed-tags-v8"></iframe>
-        <iframe id="connectPane" class="pane" title="Tin nhắn, cuộc gọi, nhóm chat và cài đặt" data-src="nexora-privacy-qr-layout.html?embedded=1&amp;section=messages&amp;rev=20261029-community-feed-tags-v8" hidden></iframe>
+        <iframe id="communityPane" class="pane" title="Bảng tin, Nhóm, Chợ, Fanpage, Deal, Việc làm và Blog" data-src="nexora-community-prototype.html?embedded=1&amp;view=feed&amp;rev=20261029-community-dev-handoff-v9"></iframe>
+        <iframe id="connectPane" class="pane" title="Tin nhắn, cuộc gọi, nhóm chat và cài đặt" data-src="nexora-privacy-qr-layout.html?embedded=1&amp;section=messages&amp;rev=20261029-community-dev-handoff-v9" hidden></iframe>
       </main>
       <footer class="app-footer"><span>© 2026 NEXORA Touch.</span><div class="store-badges"><span><small>GET IT ON</small><strong>Google Play</strong></span><span><small>DOWNLOAD ON THE</small><strong>App Store</strong></span></div></footer>
       <nav class="mobile-nav" aria-label="Community mobile">
@@ -152,6 +152,6 @@
     <div class="tour-actions"><button type="button" id="tourBack"></button><button type="button" id="tourPause"></button><button type="button" id="tourSkip"></button><button type="button" class="tour-next" id="tourNext"></button></div>
     <div class="tour-track" aria-hidden="true"><div class="tour-fill"></div></div>
   </section>
-  <script src="community-hub.js?v=20261029-community-feed-tags-v8" defer></script>
+  <script src="community-hub.js?v=20261029-community-dev-handoff-v9" defer></script>
 </body>
 </html>

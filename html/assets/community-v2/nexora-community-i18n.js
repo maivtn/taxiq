@@ -17,13 +17,9 @@ Thanh toán & Chi trả	Payments & Payouts
 Cộng đồng	Community
 Phân Tích	Analytics
 Cài Đặt	Settings
-Bản thử giao diện độc lập	Standalone preview
-Không kết nối NEXORA thật	Not connected to live NEXORA
-Đặt lại dữ liệu mẫu	Reset demo data
 Đặt lại	Reset
 Chia sẻ, hỏi đáp và mua bán cùng những người trong nghề	Share, ask questions and trade with people in your industry
 Tìm nhân viên, đánh giá hoặc tip...	Search staff, reviews, or tips...
-◉ BẢN PROTOTYPE	◉ INTERACTIVE PREVIEW
 Bảng tin	Feed
 Tìm bài đăng	Search listings
 Lọc	Filters
@@ -44,7 +40,7 @@ Tạo bài	Create post
 Chỉnh sửa Fanpage	Edit Page
 Fanpage chưa có video.	This Page has no videos yet.
 Fanpage chưa đăng ảnh. Chủ Fanpage có thể thêm ảnh bìa, ảnh đại diện hoặc ảnh bài viết.	This Page has no photos yet. Add a cover, profile photo, or post photo.
-Tạo Fanpage trong bản thử	Create Page in preview
+Tạo Fanpage	Create Page
 Xem trước Fanpage	Preview Page
 Fanpage của bạn có gì mới?	What's new on your Page?
 Đăng bài từ Fanpage	Post from Page
@@ -92,7 +88,7 @@ Quản lý trang	Manage Page
 Quản lý Fanpage	Manage Page
 Chia sẻ	Share
 Đã sao chép	Copied
-Bản thử chưa có liên kết công khai.	This preview has no public Page link yet.
+Chưa có liên kết công khai.	No public Page link is available yet.
 Tên trang:	Page handle:
 Tên Fanpage:	Page handle:
 Chỉ chủ trang thấy	Only Page owners see this
@@ -121,13 +117,13 @@ Cách liên hệ khác	Other contact method
 Ảnh bìa	Cover photo
 Đổi ảnh bìa	Change cover photo
 Thêm ảnh bìa	Add cover photo
-Đã đổi ảnh bìa trong bản thử.	Cover photo changed in the preview.
+Đã đổi ảnh bìa.	Cover photo changed.
 Không thể lưu ảnh trên thiết bị này.	Could not save the photo on this device.
 Không thể đổi ảnh bìa.	Could not change the cover photo.
-Ảnh PNG/JPG/WebP/GIF, tối đa 350 KB mỗi ảnh trong bản thử.	PNG/JPG/WebP/GIF, up to 350 KB per image in this preview.
+Ảnh PNG/JPG/WebP/GIF, tối đa 350 KB mỗi ảnh.	PNG/JPG/WebP/GIF, up to 350 KB per image.
 Lưu thay đổi	Save changes
-Đã cập nhật trang trong bản thử.	Page updated in the preview.
-Đã cập nhật Fanpage trong bản thử.	Page updated in the preview.
+Đã cập nhật trang.	Page updated.
+Đã cập nhật Fanpage.	Page updated.
 Tên @ này chưa hợp lệ hoặc đã được dùng.	This @handle is invalid or already in use.
 Vui lòng nhập số điện thoại cho nút Gọi.	Enter a phone number for the Call button.
 Chọn ảnh PNG, JPG, WebP hoặc GIF không quá 350 KB.	Choose a PNG, JPG, WebP or GIF image under 350 KB.
@@ -168,7 +164,7 @@ Trang của bạn	Your Page
 Fanpage của bạn	Your Page
 Trang được tài trợ	Sponsored Pages
 Fanpage được tài trợ	Sponsored Pages
-✦ Được tài trợ · bản thử	✦ Sponsored · preview
+✦ Được tài trợ	✦ Sponsored
 Quảng bá trang	Promote Page
 Quảng bá Fanpage	Promote Page
 Xem quảng bá	View promotion
@@ -191,11 +187,10 @@ Thời hạn	Duration
 7 ngày	7 days
 Giá đề xuất	Proposed price
 $19 / 7 ngày	$19 / 7 days
-Giá chỉ để xem luồng thiết kế. Bản thử không thu tiền; sản phẩm thật chỉ kích hoạt sau khi thanh toán thành công.	This price illustrates the design. The preview charges nothing; the live product would activate only after successful payment.
-Xem thử vị trí tài trợ	Preview sponsored placement
+Quảng bá nổi bật	Boost post
 Quay lại trang	Back to Page
 Quay lại Fanpage	Back to Page
-Đã bật vị trí tài trợ trong bản thử. Chưa thu tiền.	Sponsored placement enabled in the preview. No payment was taken.
+Đã cập nhật vị trí tài trợ.	Sponsored placement enabled. No payment was taken.
 Xem trang	View Page
 Xem Fanpage	View Page
 ＋ Theo dõi	＋ Follow
@@ -218,11 +213,11 @@ Hỏi về dịch vụ, sản phẩm hoặc thông tin của Fanpage.	Ask about 
 Ví dụ: Hỏi về dịch vụ	Example: Ask about services
 Hỏi về dịch vụ	Ask about services
 Chào anh/chị, tôi muốn hỏi thêm về dịch vụ và thời gian mở cửa.	Hello, I'd like to ask about your services and opening hours.
-Đã theo dõi trang trong bản thử.	Following this Page in the preview.
-Đã theo dõi Fanpage trong bản thử.	Following this Page in the preview.
+Đã theo dõi trang.	Following this Page.
+Đã theo dõi Fanpage.	Following this Page.
 Đã bỏ theo dõi trang.	Unfollowed this Page.
 Đã bỏ theo dõi Fanpage.	Unfollowed this Page.
-Đã đăng cập nhật trong bản thử.	Update posted in the preview.
+Đã đăng cập nhật.	Update posted.
 Tiệm nail tại Houston. Theo dõi mẫu mới và các cập nhật từ tiệm.	A nail salon in Houston. Follow for new designs and salon updates.
 Món Việt và tin mới từ nhà hàng dành cho cộng đồng Houston.	Vietnamese food and restaurant updates for the Houston community.
 Chào mừng đến với trang BITCOIN NAIL BAR! Theo dõi để xem mẫu nail mới và tin từ tiệm.	Welcome to the BITCOIN NAIL BAR Page! Follow for new nail designs and salon news.
@@ -248,7 +243,6 @@ Phù hợp với tôi	Matches for me
 Đăng cần mua	Post a wanted item
 Phù hợp với bài cần mua của bạn	Matches your wanted post
 Mẫu bài mua bán	Marketplace post examples
-Xem mẫu:	Examples:
 Cần bán · 12 ghế trắng · $100/cái →	For sale · 12 white chairs · $100 each →
 Cần mua · đèn hơ gel · tối đa $60 →	Wanted · gel lamp · up to $60 →
 Đây là mẫu minh họa. Hãy sửa thông tin trước khi đăng.	This is an example. Edit the details before posting.
@@ -275,13 +269,10 @@ Tạo sự kiện	Create an event
 Mỗi mẫu chỉ hỏi thông tin cần thiết cho loại bài đó. Bài Hỏi đáp có trạng thái	Each template asks only for relevant details. Q&A posts can be marked
 Đã giải đáp	Answered
 ; sự kiện có ngày và hình thức tham gia.	; events include a date and format.
-Bài trong prototype chỉ dùng để xem luồng giao diện. Không đăng lên NEXORA thật.	Posts in this preview stay in your browser. They are not published on NEXORA.
 Nhóm theo ngành nghề	Industry groups
 Tạo nhóm với chủ đề, khu vực và nội quy rõ ràng.	Create a group with a clear topic, area and rules.
 Tạo nhóm	Create group
-Mẫu tạo nhóm	Group template
-Tên nhóm · ngành nghề · khu vực · mô tả · nội quy. Người tạo có thể xem trước trước khi lưu trong bản thử.	Group name, industry, area, description and rules. Preview before saving.
-Mở mẫu tạo nhóm	Open group template
+Tên nhóm · ngành nghề · khu vực · mô tả · nội quy. Người tạo có thể xem trước trước khi lưu.	Group name, industry, area, description and rules. Preview before saving.
 Tuyển người hoặc tìm việc trong ngành làm đẹp và nhà hàng.	Hire or find work in beauty and restaurants.
 2 MẪU BÀI	2 POST TEMPLATES
 Tất cả	All
@@ -296,21 +287,19 @@ Bài viết dài về nghề, kinh doanh và công nghệ. Đăng một lần, x
 Viết Blog	Write a blog post
 Bài Blog	Blog posts
 Viết bài Blog	Write a blog post
-Một bài xuất hiện trên cả NEXORA và NailHub.AI trong bản thử.	One post appears in both the NEXORA and NailHub.AI previews.
+Một bài xuất hiện trên cả NEXORA và NailHub.AI.	One post appears on both NEXORA and NailHub.AI.
 Tiêu đề *	Title *
 Chủ đề *	Topic *
 Khu vực (không bắt buộc)	Area (optional)
 Mô tả ngắn *	Short summary *
 Nội dung bài *	Article body *
 Ảnh bìa (tùy chọn)	Cover image (optional)
-Đăng Blog trong bản thử	Publish blog in preview
+Đăng Blog	Publish blog
 Ví dụ: Cách chọn đèn hơ cho tiệm	Example: choosing a salon nail lamp
 Người đọc sẽ học được gì?	What will readers learn?
 Viết nội dung đầy đủ của bài...	Write the full article...
 Nội dung chung	Shared content
-Bài Blog trong bản mẫu dùng cùng một dữ liệu cho hai giao diện. Tác giả sửa một lần, cả hai nơi cùng cập nhật.	Blog posts use the same content in both previews. Edit once to update both views.
-Xem bản mô phỏng NailHub.AI	View NailHub.AI preview
-Đây là prototype trong trình duyệt. Chưa đăng lên hai website thật.	This is a browser preview. Nothing is published to either website.
+Bài Blog dùng cùng một dữ liệu cho hai giao diện. Tác giả sửa một lần, cả hai nơi cùng cập nhật.	Blog posts use the same content in both previews. Edit once to update both views.
 Tìm bài Blog...	Search blog posts...
 Lọc chủ đề Blog	Filter blog topics
 Tìm thành viên để nhắn tin, gọi thoại hoặc video. Tin từ người lạ vào Yêu cầu tin nhắn để bạn xem trước.	Find members to message or call. Messages from new people go to Requests for your review.
@@ -324,7 +313,7 @@ Có thể tìm bằng @nickname, số điện thoại hoặc email nếu ngườ
 Mẫu liên hệ	Message templates
 Dùng mẫu để hỏi mua, hẹn xem hàng, liên hệ việc làm hoặc yêu cầu gọi lại.	Use a template to ask about an item, arrange a visit, discuss a job or request a call back.
 4 MẪU	4 TEMPLATES
-Nháp tin nhắn trong bản thử	Message drafts in preview
+Nháp tin nhắn	Message drafts in preview
 Kiểm tra trước khi gửi	Review before sending
 Mẫu chỉ chuẩn bị nội dung. Người dùng xem lại người nhận, món hàng hoặc công việc rồi mới gửi trong sản phẩm thật.	Templates prepare a draft. Review the recipient and subject before sending in the live product.
 Deal & Coupon	Deals & Coupons
@@ -398,7 +387,6 @@ Tiệm đông khách, cần người hỗ trợ một ngày.	Busy salon needs he
 Rảnh hôm nay, có thể hỗ trợ tiệm đông khách.	Available today to help a busy salon.
 Cần người hỗ trợ ca tối hôm nay.	Help needed for tonight's shift.
 Mẫu tham khảo	Sample post
-Điền mẫu này	Use this example
 Đăng tin và giao dịch miễn phí. Người mua, người bán tự nhắn tin, thỏa thuận giá và giao nhận; NEXORA không thu phí giao dịch.	Posting and person-to-person transactions are free. Buyers and sellers message each other and arrange price and pickup; NEXORA charges no transaction fee.
 Toàn thời gian	Full time
 Nhân viên	Staff member
@@ -514,9 +502,8 @@ Giá bán (USD) *	Asking price (USD) *
 Tình trạng *	Condition *
 Cho phép mua lẻ	Allow individual sales
 Tắt nếu chỉ bán toàn bộ số lượng.	Turn off to sell only the entire lot.
-Đăng trong bản thử	Post in preview
+Đăng	Post
 Đã điền từ khu vực bạn chọn. Bạn có thể sửa hoặc dùng vị trí hiện tại.	Filled from your selected area. You can edit it or use your current location.
-Bản thử: bài đăng lưu trong trình duyệt này và không xuất hiện trên NEXORA thật.	Preview listings are saved in this browser and are not published on NEXORA.
 Ví dụ: Ghế ngồi chờ khách màu trắng	Example: white waiting chairs
 Ví dụ: Máy giặt khăn	Example: towel washing machine
 Nhập tên thành phố	Enter a city name
@@ -564,11 +551,9 @@ Chăm sóc khách	Customer care
 Các bước hoặc mẹo cụ thể	Steps or practical tips
 Viết 2–3 bước dễ làm theo...	Write 2–3 easy steps...
 Khu vực bài đăng (không bắt buộc)	Post area (optional)
-Bản thử: nội dung lưu trong trình duyệt này, không được gửi hoặc đăng lên NEXORA thật.	Preview: content is saved in this browser and is not posted to NEXORA.
 Chỉ lấy vị trí khi bạn cho phép. Có thể sửa gợi ý.	Location is used only with your permission. You can edit the suggestion.
-PNG, JPG, WebP hoặc GIF · tối đa 700 KB trong bản thử	PNG, JPG, WebP or GIF · up to 700 KB in this preview
+PNG, JPG, WebP hoặc GIF · tối đa 700 KB	PNG, JPG, WebP or GIF · up to 700 KB
 Chưa chọn ảnh. Bài vẫn đăng bình thường.	No image selected. You can still publish the post.
-↔ Bản mẫu dùng một bài chung cho hai giao diện. Chưa đăng lên website thật.	↔ This preview uses one post for both views. It is not published to either website.
 Lưu	Save
 Đăng	Post
 Điền ví dụ	Fill example
@@ -631,7 +616,7 @@ Xem tin nhắn	View message
 Xem hội thoại	Open conversation
 Hội thoại đã chấp nhận	Accepted conversations
 Soạn nháp tin nhắn	Draft a message
-Không thấy người phù hợp trong dữ liệu bản thử. Hãy kiểm tra tên hoặc NEXORA ID.	No member found in the preview. Check the name or NEXORA ID.
+Không thấy người phù hợp. Hãy kiểm tra tên hoặc NEXORA ID.	No member found. Check the name or NEXORA ID.
 Tìm thành viên	Find members
 Viết lời nhắn...	Write a message...
 Viết câu trả lời...	Write a reply...
@@ -773,11 +758,11 @@ Quản lý nhà hàng	Restaurant manager
 Rửa chén	Dishwasher
 Quản lý	Manager
 Sửa bài Blog	Edit blog post
-Lưu bài trong bản thử	Save post in preview
+Lưu bài	Save post
 Chuẩn bị nguyên liệu	Prepare ingredients
 Nhận order	Take orders
 Kỹ năng phù hợp công việc	Relevant job skills
-Lưu nháp trong bản thử	Save draft in preview
+Lưu nháp	Save draft
 Đã điền từ khu vực hồ sơ mẫu.	Filled from the sample profile area.
 Đã điền từ khu vực bạn chọn.	Filled from your selected area.
 Không hỗ trợ định vị. Vui lòng chọn khu vực.	Location is unavailable. Choose an area.
@@ -824,7 +809,6 @@ Tôi muốn hỏi thêm về tình trạng ghế và hẹn xem hàng.	I would li
 
   const connectPairs = `
 Connect quick guide	Hướng dẫn nhanh mục Kết nối
-INTERACTIVE PROTOTYPE	BẢN MẪU TƯƠNG TÁC
 Connect	Kết nối
 ← Back to Community	← Quay lại Cộng đồng
 Add people	Thêm người
@@ -832,7 +816,6 @@ Find & add people	Tìm và thêm người
 Join NEXORA	Tham gia NEXORA
 BITCOIN NAIL BAR on NEXORA	BITCOIN NAIL BAR trên NEXORA
 Guide	Hướng dẫn
-Reset demo	Đặt lại mẫu
 Messages	Tin nhắn
 Calls	Cuộc gọi
 Group chats	Nhóm chat
@@ -900,7 +883,7 @@ Choose a GIF	Chọn ảnh GIF
 Choose a sticker	Chọn nhãn dán
 Choose an emoji	Chọn biểu cảm
 Message tools	Công cụ tin nhắn
-Active now · preview	Đang hoạt động · bản mẫu
+Active now	Đang hoạt động
 Close conversation	Đóng hội thoại
 Shared photo	Ảnh được chia sẻ
 GIF animation	Ảnh GIF động
@@ -922,8 +905,8 @@ No messages yet. Say hello.	Chưa có tin nhắn. Hãy chào một câu.
 ← Back to Calls	← Quay lại Cuộc gọi
 ← Back to Group chats	← Quay lại Nhóm chat
 ← Back to Messages	← Quay lại Tin nhắn
-This request was ignored in the preview. Reset the demo to view it again.	Yêu cầu này đã bị bỏ qua trong bản mẫu. Đặt lại bản mẫu để xem lại.
-Mai Nguyễn is blocked in this preview. You can review the blocked list under Settings.	Mai Nguyễn đã bị chặn trong bản mẫu. Bạn có thể xem danh sách chặn trong Cài đặt.
+This request was ignored.	Đã bỏ qua yêu cầu.
+Mai Nguyễn is blocked. You can review the blocked list under Settings.	Mai Nguyễn đã bị chặn. Bạn có thể xem danh sách chặn trong Cài đặt.
 Mai Nguyễn is blocked.	Đã chặn Mai Nguyễn.
 Enter a nickname first.	Hãy nhập tên hiển thị trước.
 Delete	Xóa
@@ -949,9 +932,8 @@ Share your profile and choose who can contact you.	Chia sẻ hồ sơ và chọn
 People on NEXORA	Người dùng NEXORA
 Phone search uses the complete number.	Hãy nhập đầy đủ số điện thoại để tìm.
 Choose Add to save someone to your connections.	Bấm Thêm để lưu người này vào danh bạ.
-Call preview. No call is placed.	Bản xem trước. Chưa thực hiện cuộc gọi.
 Write a message first.	Hãy nhập tin nhắn trước.
-Sent in this preview only.	Đã gửi trong bản xem trước.
+Message sent.	Đã gửi.
 Profile link copied.	Đã sao chép liên kết hồ sơ.
 Invitation link copied.	Đã sao chép liên kết mời.
 No blocked accounts.	Chưa chặn ai.
@@ -986,11 +968,11 @@ Voice call ·	Gọi thoại ·
 Just now	Vừa xong
 0 accounts	0 tài khoản
 1 account	1 tài khoản
-Copy is unavailable in this browser preview.	Không thể sao chép trong trình duyệt này.
+Copy is unavailable in this browser.	Không thể sao chép trong trình duyệt này.
 Call restored.	Đã khôi phục cuộc gọi.
 Call removed from Recent.	Đã xóa khỏi Gần đây.
-Group created in this preview.	Đã tạo nhóm trong bản xem trước.
-Joined in this preview.	Đã tham gia trong bản xem trước.
+Group created.	Đã tạo nhóm.
+Joined.	Đã tham gia.
 `.trim();
 
   const pairs = (isConnect ? connectPairs : communityPairs).split('\n').map(line => line.split('\t'));
@@ -1012,8 +994,6 @@ Joined in this preview.	Đã tham gia trong bản xem trước.
     const prefix = core.match(/^([＋⌖✦♧▣▤◈✧✉🔔]\s*)(.*)$/u);
     if (prefix && dictionary.has(prefix[2])) return match[1] + prefix[1] + dictionary.get(prefix[2]) + match[3];
     if (!isConnect) {
-      const promotionUntil = core.match(/^Bản thử đang hiển thị đến (.+)\. Chưa có khoản tiền nào được thu\.$/);
-      if (promotionUntil) return match[1] + 'Preview placement active until ' + promotionUntil[1] + '. No payment was taken.' + match[3];
       const count = core.match(/^([\d,]+)\s+(bài đăng|bài cập nhật|người theo dõi|trang|Fanpage|bài|tin|nháp|thành viên)$/);
       if (count) return match[1] + count[1] + ' ' + ({'bài đăng':'listings','bài cập nhật':'updates','người theo dõi':'followers','trang':'Pages','Fanpage':'Pages','bài':'posts','tin':'posts','nháp':'drafts','thành viên':'members'}[count[2]]) + match[3];
       const request = core.match(/^(🔔\s*)?(\d+) yêu cầu tin nhắn đang chờ$/);
@@ -1105,7 +1085,7 @@ Joined in this preview.	Đã tham gia trong bản xem trước.
   function applyLanguage(next) {
     language = next === 'en' ? 'en' : 'vi';
     document.documentElement.lang = language;
-    document.title = isConnect ? (language === 'vi' ? 'NEXORA · Tin nhắn, Gọi và Cài đặt' : 'NEXORA · Messages, Calls & Settings') : (language === 'vi' ? 'NEXORA Community · Bản mẫu' : 'NEXORA Community · Preview');
+    document.title = isConnect ? (language === 'vi' ? 'NEXORA · Tin nhắn, Gọi và Cài đặt' : 'NEXORA · Messages, Calls & Settings') : 'NEXORA Community';
     updateElement(document.body);
   }
 
