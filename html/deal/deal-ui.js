@@ -126,6 +126,8 @@
   ];
 
   function decorateAction(element, name, color) {
+    const foreground = getComputedStyle(element).color.match(/[\d.]+/g)?.map(Number) || [];
+    element.classList.toggle('deal-action-on-fill', foreground.slice(0, 3).length === 3 && foreground.slice(0, 3).every(value => value >= 220));
     if (element.querySelector('.deal-action-icon') || element.querySelector('.deal-industry-icon')) return;
     const nodes = window.NEXORA_DEAL_LUCIDE?.icons[name];
     if (!nodes) return;
@@ -139,7 +141,8 @@
       const caption = element.querySelector('span');
       caption.textContent = caption.textContent.replace(/^[^\p{L}\p{N}]+/u, '');
       caption.prepend(icon);
-    } else if (existing) existing.replaceWith(icon);
+    } else if (element.matches('[data-dw-remove-area]') && element.querySelector('b')) element.querySelector('b').replaceChildren(icon);
+    else if (existing) existing.replaceWith(icon);
     else if (leading?.tagName === 'SPAN' && /^[^\p{L}\p{N}]+$/u.test(leading.textContent.trim())) leading.replaceChildren(icon);
     else {
       const text = Array.from(element.childNodes).find(node => node.nodeType === Node.TEXT_NODE && node.nodeValue.trim());
@@ -181,7 +184,7 @@
     '🔥':['Flame','rose'],'🏷':['Tags','violet'],'🎟':['Ticket','violet'],'🎫':['Ticket','violet'],
     '⚡':['Zap','amber'],'✨':['Sparkles','violet'],'✦':['Sparkles','violet'],
     '♡':['Heart','rose'],'♥':['Heart','rose'],'💛':['Heart','amber'],'🤲':['HandHeart','teal'],
-    '📍':['MapPin','blue'],'⌖':['LocateFixed','blue'],'⌕':['Search','violet'],
+    '📍':['MapPin','blue'],'🏙':['MapPin','blue'],'🏛':['MapPin','blue'],'⌖':['LocateFixed','blue'],'⌕':['Search','violet'],
     '📡':['Radar','blue'],'🗺':['Map','blue'],'🌐':['Globe','blue'],'🌍':['Globe','blue'],
     '⌂':['House','violet'],'▤':['Ticket','violet'],'☷':['ListFilter','blue'],
     '🎊':['PartyPopper','violet'],'🎉':['PartyPopper','violet'],'⏳':['Hourglass','amber'],
@@ -268,6 +271,15 @@
         if (key) replaceIndustry(element, key);
       });
     }
+    root.querySelectorAll('[data-deal-nav-icon]').forEach(element => {
+      if (element.querySelector('svg')) return;
+      const nodes = window.NEXORA_DEAL_LUCIDE?.icons[element.dataset.dealNavIcon];
+      if (!nodes) return;
+      element.replaceChildren(window.NEXORA_DEAL_LUCIDE.createElement(nodes, {
+        width: 24, height: 24, 'stroke-width': 1.8,
+        'aria-hidden': 'true', focusable: 'false', class: 'deal-mobile-nav-svg',
+      }));
+    });
     const businessIcons = { overview:'LayoutDashboard', campaigns:'Megaphone', oneqr:'QrCode', ads:'Wallet', earnings:'Banknote', crm:'ContactRound', verification:'BadgeCheck' };
     root.querySelectorAll('.business-tabs [data-business-view]').forEach(element => {
       decorateAction(element, businessIcons[element.dataset.businessView], 'violet');

@@ -2968,12 +2968,22 @@ function initializeAIGuideNudge() {
 function setActiveNavigation(hash) {
   const dealSubroutes = new Set(["#nail-salons", "#nearby", "#coupons", "#requests", "#openings", "#last-minute", "#my-open-slots"]);
   const primaryHash = dealSubroutes.has(hash) ? "#coupons" : hash;
-  document.querySelectorAll(".desktop-nav a, .mobile-nav a").forEach((link) => {
+  document.querySelectorAll(".desktop-nav a").forEach((link) => {
     const active = link.getAttribute("href") === primaryHash;
     link.classList.toggle("active", active);
     if (active) link.setAttribute("aria-current", "page");
     else link.removeAttribute("aria-current");
   });
+  const mobileHash = hash === "#last-minute" ? hash : primaryHash;
+  const mobileNav = document.querySelector(".mobile-nav");
+  mobileNav?.querySelectorAll("a").forEach((link) => {
+    const active = link.getAttribute("href") === mobileHash;
+    link.classList.toggle("active", active);
+    link.hidden = active;
+    if (active) link.setAttribute("aria-current", "page");
+    else link.removeAttribute("aria-current");
+  });
+  mobileNav?.style.setProperty("--deal-nav-count", mobileNav.querySelectorAll(":scope > :not([hidden])").length);
 }
 
 function setActiveDealSubnav(hash) {
@@ -4578,7 +4588,7 @@ function renderDealWorkspace(route) {
   if (route === "#requests") initializeDealMatchSelects();
   if (route === "#nearby") applyNearbyFilters();
   if (route === "#nail-salons") initializeNailDirectory();
-  setActiveNavigation(route === "#legal" ? "#legal" : "#coupons");
+  setActiveNavigation(route);
   window.scrollTo({ top: 0, behavior: "smooth" });
 }
 

@@ -1,0 +1,55 @@
+{
+  "collection": "https://www.flaticon.com/authors/special/flat?author_id=1&type=standard",
+  "assets": [
+    {
+      "key": "nearby",
+      "file": "nearby.png",
+      "source": "https://www.flaticon.com/free-icon/map_854878",
+      "download": "https://cdn-icons-png.flaticon.com/128/854/854878.png",
+      "author": "Magnific / Freepik",
+      "style": "Special Flat"
+    },
+    {
+      "key": "coupons",
+      "file": "coupons.png",
+      "source": "https://www.flaticon.com/free-icon/voucher_869445",
+      "download": "https://cdn-icons-png.flaticon.com/128/869/869445.png",
+      "author": "Magnific / Freepik",
+      "style": "Special Flat"
+    },
+    {
+      "key": "beauty",
+      "file": "beauty.png",
+      "source": "https://www.flaticon.com/free-icon/nail-polish_1658222",
+      "download": "https://cdn-icons-png.flaticon.com/128/1658/1658222.png",
+      "author": "Magnific / Freepik",
+      "style": "Special Flat"
+    },
+    {
+      "key": "match",
+      "file": "match-hot-sale-15737254.png",
+      "source": "https://www.flaticon.com/free-icon/hot-sale_15737254",
+      "download": "https://cdn-icons-png.flaticon.com/128/15737/15737254.png",
+      "selection": "User-selected Hot sale icon for Deal Match",
+      "author": "redempticon",
+      "author_url": "https://www.flaticon.com/authors/redempticon",
+      "style": "Redempticon Color Fill"
+    },
+    {
+      "key": "openings",
+      "file": "openings.png",
+      "source": "https://www.flaticon.com/free-icon/confetti_181500",
+      "download": "https://cdn-icons-png.flaticon.com/128/181/181500.png",
+      "author": "Magnific / Freepik",
+      "style": "Special Flat"
+    },
+    {
+      "key": "last-minute",
+      "file": "last-minute.png",
+      "source": "https://www.flaticon.com/free-icon/clock_2784459",
+      "download": "https://cdn-icons-png.flaticon.com/128/2784/2784459.png",
+      "author": "Magnific / Freepik",
+      "style": "Special Flat"
+    }
+  ]
+}
