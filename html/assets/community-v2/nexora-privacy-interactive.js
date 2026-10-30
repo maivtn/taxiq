@@ -740,9 +740,7 @@
     media.addEventListener('change',sync);sync();
     const profile=$('#privacyPanel .profile-grid'),qr=$('#profileQr'),share=$('#privacyPanel .profile-grid > .actions');
     if(profile&&qr&&share){
-      const tools=document.createElement('div');tools.id='compactProfileTools';tools.className='compact-profile-tools';profile.append(tools);tools.append(qr,share);
-      const toggle=document.createElement('button');toggle.id='compactProfileToggle';toggle.type='button';toggle.className='secondary compact-profile-toggle';toggle.setAttribute('aria-controls',tools.id);toggle.setAttribute('aria-expanded','false');toggle.textContent='Share profile';tools.before(toggle);
-      toggle.addEventListener('click',()=>{const open=toggle.getAttribute('aria-expanded')!=='true';toggle.setAttribute('aria-expanded',String(open));tools.classList.toggle('is-expanded',open);});
+      const tools=document.createElement('div');tools.id='compactProfileTools';tools.className='compact-profile-tools is-expanded';profile.append(tools);tools.append(qr,share);
     }
   }
   setupCompactConnectTools();
