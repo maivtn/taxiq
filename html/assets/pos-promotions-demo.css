@@ -963,9 +963,50 @@
   border-color: #6862db;
   color: #4648d8;
 }
-.promo-row-actions button img {
-  width: 15px;
-  height: 15px;
+.pos-promotions-page .promo-row-actions {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  width: 300px;
+  min-width: 260px;
+  max-width: 100%;
+  gap: 6px;
+}
+.pos-promotions-page .promo-row-actions button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: flex-start;
+  gap: 6px;
+  width: auto;
+  height: auto;
+  min-height: 34px;
+  padding: 7px 8px;
+  text-align: left;
+  font: inherit;
+  font-size: 11px;
+  font-weight: 600;
+  line-height: 1.35;
+}
+.promo-row-actions .promo-action-icon {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+}
+.pos-promotions-page .promo-row-actions button:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+.pos-promotions-page .promo-row-actions button:focus-visible {
+  outline: 2px solid var(--promo-brand);
+  outline-offset: 2px;
+}
+@media (max-width: 760px) {
+  .pos-promotions-page .promo-row-actions {
+    width: 100%;
+    min-width: 0;
+  }
+  .pos-promotions-page .promo-row-actions button {
+    min-height: 40px;
+  }
 }
 .demo-table-schedule {
   border: 0;

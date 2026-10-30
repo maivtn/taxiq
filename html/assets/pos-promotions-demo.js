@@ -1686,8 +1686,17 @@
           [p.name, p.badge].join(" ").toLowerCase().includes(q),
       );
     }
-    function action(name, id, iconName, disabled = false) {
-      return `<button type="button" data-action="${name}" data-id="${escape(id)}" aria-label="${escape(t(name === "toggle" ? "activate" : name))}" title="${escape(t(name === "toggle" ? "activate" : name))}" ${disabled ? "disabled" : ""}>${icon(iconName)}</button>`;
+    function action(name, id, iconName, disabled = false, labelKey = name) {
+      const label = escape(t(labelKey));
+      const artwork = window.lucide.createElement(window.lucide.icons[iconName], {
+        width: 16,
+        height: 16,
+        "stroke-width": 1.8,
+        "aria-hidden": "true",
+        focusable: "false",
+        class: "promo-action-icon",
+      }).outerHTML;
+      return `<button type="button" data-action="${name}" data-id="${escape(id)}" aria-label="${label}" title="${label}" ${disabled ? "disabled" : ""}>${artwork}<span>${label}</span></button>`;
     }
     function renderList() {
       const rows = filtered(),
@@ -1742,7 +1751,7 @@
             .slice((page - 1) * size, page * size)
             .map(
               (p) =>
-                `<tr><td data-label="${t("colProgram")}"><b>${escape(p.name)}</b><small>${escape(channelNames(p))}</small>${p.publicStatus === "pending" ? '<span class="demo-public-tag">Public: automatic review</span>' : p.publicStatus === "approved" ? '<span class="demo-public-tag">Public: automatically approved</span>' : ""}</td><td data-label="${t("colType")}"><span class="promo-kind is-${p.kind}">${t(p.kind === "coupon" ? "couponLabel" : "dealLabel")} · ${escape(rate(p))}</span></td><td data-label="${t("colSchedule")}"><button type="button" class="demo-table-schedule" data-action="calTitle" data-id="${escape(p.id)}"><span>${escape(schedule(p))}</span><small class="${!p.startDate && !p.endDate ? "promo-schedule-open" : ""}">${escape(dateRange(p))}</small></button></td><td data-label="${t("colProgress")}">${p.kind === "coupon" ? `<div class="promo-progress-track"><i style="width:${Math.min(100, (Number(p.claimed || 0) / Math.max(1, Number(p.slots))) * 100)}%"></i></div><small>${t("progressCoupon", { claimed: p.claimed || 0, total: p.slots, used: p.used || 0 })}</small>` : `<small>${t("progressUses", { used: p.used || 0 })}</small>`}</td><td data-label="${t("colDiscount")}">${money(p.discountTotal)}</td><td data-label="${t("colRevenue")}"><b>${money(p.revenue)}</b></td><td data-label="${t("colStatus")}"><span class="promo-run-status is-${status(p)}">${statusLabel(p)}</span></td><td><div class="promo-row-actions">${action("editAction", p.id, "paintbrush")}${`<button type="button" data-action="toggle" data-id="${escape(p.id)}" aria-label="${t(p.active ? "deactivate" : "activate")}" title="${t(p.active ? "deactivate" : "activate")}">${p.active ? "Ⅱ" : "▷"}</button>`}${action("calTitle", p.id, "calendar-days")}${action("smsAction", p.id, "message-circle")}${action("duplicate", p.id, "package")}${action("historyAction", p.id, "clock")}${p.kind === "coupon" ? action("codesAction", p.id, "ticket") : action("delete", p.id, "square", Number(p.used) > 0 || Number(p.claimed) > 0)}</div></td></tr>`,
+                `<tr><td data-label="${t("colProgram")}"><b>${escape(p.name)}</b><small>${escape(channelNames(p))}</small>${p.publicStatus === "pending" ? '<span class="demo-public-tag">Public: automatic review</span>' : p.publicStatus === "approved" ? '<span class="demo-public-tag">Public: automatically approved</span>' : ""}</td><td data-label="${t("colType")}"><span class="promo-kind is-${p.kind}">${t(p.kind === "coupon" ? "couponLabel" : "dealLabel")} · ${escape(rate(p))}</span></td><td data-label="${t("colSchedule")}"><button type="button" class="demo-table-schedule" data-action="calTitle" data-id="${escape(p.id)}"><span>${escape(schedule(p))}</span><small class="${!p.startDate && !p.endDate ? "promo-schedule-open" : ""}">${escape(dateRange(p))}</small></button></td><td data-label="${t("colProgress")}">${p.kind === "coupon" ? `<div class="promo-progress-track"><i style="width:${Math.min(100, (Number(p.claimed || 0) / Math.max(1, Number(p.slots))) * 100)}%"></i></div><small>${t("progressCoupon", { claimed: p.claimed || 0, total: p.slots, used: p.used || 0 })}</small>` : `<small>${t("progressUses", { used: p.used || 0 })}</small>`}</td><td data-label="${t("colDiscount")}">${money(p.discountTotal)}</td><td data-label="${t("colRevenue")}"><b>${money(p.revenue)}</b></td><td data-label="${t("colStatus")}"><span class="promo-run-status is-${status(p)}">${statusLabel(p)}</span></td><td><div class="promo-row-actions">${action("editAction", p.id, "Pencil")}${action("toggle", p.id, p.active ? "Pause" : "Play", false, p.active ? "deactivate" : "activate")}${action("calTitle", p.id, "CalendarDays")}${action("smsAction", p.id, "MessageCircle")}${action("duplicate", p.id, "Copy")}${action("historyAction", p.id, "History")}${p.kind === "coupon" ? action("codesAction", p.id, "Ticket") : action("delete", p.id, "Trash2", Number(p.used) > 0 || Number(p.claimed) > 0)}</div></td></tr>`,
             )
             .join("")
         : `<tr><td colspan="8" class="promo-manage-empty">${t(promotions.length ? "noMatches" : "emptyTitle")}</td></tr>`;
