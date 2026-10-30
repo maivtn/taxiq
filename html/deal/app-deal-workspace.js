@@ -454,6 +454,13 @@ function escapeHTML(value = "") {
 const customDeals = safeRead("nexora-custom-deals", []);
 let deals = [...customDeals, ...baseDeals];
 let savedDeals = new Set(safeRead("nexora-saved-deals", []));
+if (localStorage.getItem("nexora-saved-demo-version") !== "1") {
+  if (savedDeals.size === 0) {
+    savedDeals = new Set(["nx-gel-combo", "glow-pedi", "harbor-dinner"]);
+    localStorage.setItem("nexora-saved-deals", JSON.stringify([...savedDeals]));
+  }
+  localStorage.setItem("nexora-saved-demo-version", "1");
+}
 let serviceRequests = safeRead("nexora-service-requests", []);
 let claimedDeals = safeRead("nexora-claimed-deals", {});
 let dealMatchWishes = safeRead("nexora-deal-match-wishes", []);
