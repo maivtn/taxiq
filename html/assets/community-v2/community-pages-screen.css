@@ -25,3 +25,21 @@ body.community-page-screen #pagesView > :not(#communityPageScreen) { display:non
 @media(max-width:800px){
   #communityPageScreen .page-profile-title h3 { font-size:20px; }
 }
+
+/* Page updates follow the Blog card layout without changing publishing or media. */
+.page-post-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); align-items:stretch; gap:16px; margin-top:16px; }
+.page-post-grid > .page-detail-post { display:flex; flex-direction:column; min-width:0; padding:19px; border:1px solid var(--line); }
+.page-post-grid > .page-detail-post:last-child:nth-child(odd) { grid-column:1/-1; }
+.page-post-grid .page-detail-post h3 { margin:0 0 6px; overflow-wrap:anywhere; }
+.page-post-grid .page-detail-post .meta { display:block; margin:0 0 10px; }
+.page-post-grid .page-detail-post p { margin:0; font-size:13px; line-height:1.6; overflow-wrap:anywhere; }
+.page-post-grid .page-post-media { flex:none; margin:0 0 12px; }
+.page-post-grid .page-post-media :is(img,video) { display:block; min-width:0; margin:0; aspect-ratio:16/10; max-height:230px; }
+.page-post-grid .page-post-media img { object-fit:cover; background:#f5f7fb; }
+.page-post-grid .page-post-media video { object-fit:contain; }
+@media(max-width:800px){
+  .page-post-grid { grid-template-columns:minmax(0,1fr); gap:14px; margin-top:14px; }
+  .page-post-grid > .page-detail-post { padding:17px; }
+  .page-post-grid .page-post-media :is(img,video) { max-height:320px; }
+  .page-post-grid .page-post-media img { object-fit:contain; }
+}
