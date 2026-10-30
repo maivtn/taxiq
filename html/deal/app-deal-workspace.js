@@ -4378,7 +4378,7 @@ function workspaceCouponGroupChips(active = "beauty") {
   const language = workspaceEnglish() ? "en" : "vi";
   return couponTaxonomy.groups.map((group) => {
     const total = couponTaxonomy.inds.filter((item) => item.g === group.id).length;
-    return `<button class="dw-chip ${group.id === active ? "active" : ""}" type="button" data-dw-group="directory-industry" data-dw-value="${group.id}">${workspaceIndustryIcon("group:" + group.id)} ${escapeHTML(group[language])} <small>${total}</small></button>`;
+    return `<button class="dw-chip ${group.id === active ? "active" : ""}" type="button" data-dw-group="directory-industry" data-dw-value="${group.id}">${workspaceIndustryIcon("group:" + group.id)}<span class="dw-directory-group-label">${escapeHTML(group[language])}</span><small>${total}</small></button>`;
   }).join("");
 }
 
