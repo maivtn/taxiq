@@ -1335,6 +1335,22 @@
       "author": "icon_small",
       "author_url": "https://www.flaticon.com/authors/icon-small",
       "style": "icon_small Flat Gradient"
+    },
+    {
+      "key": "industry-immigration",
+      "word": "passport control",
+      "href": "https://www.flaticon.com/free-icon/passport-control_5902208",
+      "image": "https://cdn-icons-png.flaticon.com/128/5902/5902208.png",
+      "file": "industry-immigration-5902208.png",
+      "label": "Passport Control"
+    },
+    {
+      "key": "industry-injury",
+      "word": "patient",
+      "href": "https://www.flaticon.com/free-icon/patient_469382",
+      "image": "https://cdn-icons-png.flaticon.com/128/469/469382.png",
+      "file": "industry-injury-469382.png",
+      "label": "Patient"
     }
   ]
 }
