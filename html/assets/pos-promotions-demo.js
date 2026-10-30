@@ -56,9 +56,20 @@
   };
   const localized = (value) => value?.[language] || value?.en || "";
   const icon = (name) => window.ONEQR_ACTION_APPEARANCE.image(name, 24);
+  const controlIcon = (name) => window.lucide.createElement(window.lucide.icons[name], {
+    width: 16,
+    height: 16,
+    "stroke-width": 1.8,
+    "aria-hidden": "true",
+    focusable: "false",
+    class: "promo-control-icon",
+  }).outerHTML;
   function hydrate(root = document) {
     root.querySelectorAll("[data-oneqr-icon]").forEach((node) => {
       node.innerHTML = icon(node.dataset.oneqrIcon);
+    });
+    root.querySelectorAll("[data-promo-control-icon]").forEach((node) => {
+      node.innerHTML = controlIcon(node.dataset.promoControlIcon);
     });
   }
   let toastTimer;
@@ -1686,17 +1697,21 @@
           [p.name, p.badge].join(" ").toLowerCase().includes(q),
       );
     }
-    function action(name, id, iconName, disabled = false, labelKey = name) {
+    const actionAppearance = {
+      editAction: { icon: "SquarePen", tone: "edit" },
+      calTitle: { icon: "CalendarClock", tone: "schedule" },
+      smsAction: { icon: "MessageSquareText", tone: "message" },
+      duplicate: { icon: "CopyPlus", tone: "duplicate" },
+      historyAction: { icon: "History", tone: "history" },
+      codesAction: { icon: "Tickets", tone: "codes" },
+      delete: { icon: "Trash2", tone: "danger" },
+    };
+    function action(name, id, disabled = false, labelKey = name) {
       const label = escape(t(labelKey));
-      const artwork = window.lucide.createElement(window.lucide.icons[iconName], {
-        width: 16,
-        height: 16,
-        "stroke-width": 1.8,
-        "aria-hidden": "true",
-        focusable: "false",
-        class: "promo-action-icon",
-      }).outerHTML;
-      return `<button type="button" data-action="${name}" data-id="${escape(id)}" aria-label="${label}" title="${label}" ${disabled ? "disabled" : ""}>${artwork}<span>${label}</span></button>`;
+      const appearance = name === "toggle"
+        ? { icon: labelKey === "activate" ? "Power" : "Pause", tone: labelKey === "activate" ? "enable" : "disable" }
+        : actionAppearance[name];
+      return `<button type="button" data-action="${name}" data-action-tone="${appearance.tone}" data-id="${escape(id)}" aria-label="${label}" title="${label}" ${disabled ? "disabled" : ""}>${controlIcon(appearance.icon)}<span>${label}</span></button>`;
     }
     function renderList() {
       const rows = filtered(),
@@ -1751,12 +1766,12 @@
             .slice((page - 1) * size, page * size)
             .map(
               (p) =>
-                `<tr><td data-label="${t("colProgram")}"><b>${escape(p.name)}</b><small>${escape(channelNames(p))}</small>${p.publicStatus === "pending" ? '<span class="demo-public-tag">Public: automatic review</span>' : p.publicStatus === "approved" ? '<span class="demo-public-tag">Public: automatically approved</span>' : ""}</td><td data-label="${t("colType")}"><span class="promo-kind is-${p.kind}">${t(p.kind === "coupon" ? "couponLabel" : "dealLabel")} · ${escape(rate(p))}</span></td><td data-label="${t("colSchedule")}"><button type="button" class="demo-table-schedule" data-action="calTitle" data-id="${escape(p.id)}"><span>${escape(schedule(p))}</span><small class="${!p.startDate && !p.endDate ? "promo-schedule-open" : ""}">${escape(dateRange(p))}</small></button></td><td data-label="${t("colProgress")}">${p.kind === "coupon" ? `<div class="promo-progress-track"><i style="width:${Math.min(100, (Number(p.claimed || 0) / Math.max(1, Number(p.slots))) * 100)}%"></i></div><small>${t("progressCoupon", { claimed: p.claimed || 0, total: p.slots, used: p.used || 0 })}</small>` : `<small>${t("progressUses", { used: p.used || 0 })}</small>`}</td><td data-label="${t("colDiscount")}">${money(p.discountTotal)}</td><td data-label="${t("colRevenue")}"><b>${money(p.revenue)}</b></td><td data-label="${t("colStatus")}"><span class="promo-run-status is-${status(p)}">${statusLabel(p)}</span></td><td><div class="promo-row-actions">${action("editAction", p.id, "Pencil")}${action("toggle", p.id, p.active ? "Pause" : "Play", false, p.active ? "deactivate" : "activate")}${action("calTitle", p.id, "CalendarDays")}${action("smsAction", p.id, "MessageCircle")}${action("duplicate", p.id, "Copy")}${action("historyAction", p.id, "History")}${p.kind === "coupon" ? action("codesAction", p.id, "Ticket") : action("delete", p.id, "Trash2", Number(p.used) > 0 || Number(p.claimed) > 0)}</div></td></tr>`,
+                `<tr><td data-label="${t("colProgram")}"><b>${escape(p.name)}</b><small>${escape(channelNames(p))}</small>${p.publicStatus === "pending" ? '<span class="demo-public-tag">Public: automatic review</span>' : p.publicStatus === "approved" ? '<span class="demo-public-tag">Public: automatically approved</span>' : ""}</td><td data-label="${t("colType")}"><span class="promo-kind is-${p.kind}">${t(p.kind === "coupon" ? "couponLabel" : "dealLabel")} · ${escape(rate(p))}</span></td><td data-label="${t("colSchedule")}"><button type="button" class="demo-table-schedule" data-action="calTitle" data-id="${escape(p.id)}"><span>${escape(schedule(p))}</span><small class="${!p.startDate && !p.endDate ? "promo-schedule-open" : ""}">${escape(dateRange(p))}</small></button></td><td data-label="${t("colProgress")}">${p.kind === "coupon" ? `<div class="promo-progress-track"><i style="width:${Math.min(100, (Number(p.claimed || 0) / Math.max(1, Number(p.slots))) * 100)}%"></i></div><small>${t("progressCoupon", { claimed: p.claimed || 0, total: p.slots, used: p.used || 0 })}</small>` : `<small>${t("progressUses", { used: p.used || 0 })}</small>`}</td><td data-label="${t("colDiscount")}">${money(p.discountTotal)}</td><td data-label="${t("colRevenue")}"><b>${money(p.revenue)}</b></td><td data-label="${t("colStatus")}"><span class="promo-run-status is-${status(p)}">${statusLabel(p)}</span></td><td><div class="promo-row-actions">${action("editAction", p.id)}${action("toggle", p.id, false, p.active ? "deactivate" : "activate")}${action("calTitle", p.id)}${action("smsAction", p.id)}${action("duplicate", p.id)}${action("historyAction", p.id)}${p.kind === "coupon" ? action("codesAction", p.id) : action("delete", p.id, Number(p.used) > 0 || Number(p.claimed) > 0)}</div></td></tr>`,
             )
             .join("")
         : `<tr><td colspan="8" class="promo-manage-empty">${t(promotions.length ? "noMatches" : "emptyTitle")}</td></tr>`;
       $("program-pagination").innerHTML =
-        `<span>${rows.length ? `Showing ${(page - 1) * size + 1} to ${Math.min(page * size, rows.length)} of ${rows.length} results` : "0 results"}</span><div class="demo-pages"><button type="button" data-page="${page - 1}" ${page === 1 ? "disabled" : ""} aria-label="${t("historyPrev")}">‹</button>${Array.from({ length: pages }, (_, i) => `<button type="button" data-page="${i + 1}" ${page === i + 1 ? 'aria-current="page"' : ""}>${i + 1}</button>`).join("")}<button type="button" data-page="${page + 1}" ${page === pages ? "disabled" : ""} aria-label="${t("historyNext")}">›</button></div>`;
+        `<span>${rows.length ? `Showing ${(page - 1) * size + 1} to ${Math.min(page * size, rows.length)} of ${rows.length} results` : "0 results"}</span><div class="demo-pages"><button type="button" data-page="${page - 1}" ${page === 1 ? "disabled" : ""} aria-label="${t("historyPrev")}">${controlIcon("ChevronLeft")}</button>${Array.from({ length: pages }, (_, i) => `<button type="button" data-page="${i + 1}" ${page === i + 1 ? 'aria-current="page"' : ""}>${i + 1}</button>`).join("")}<button type="button" data-page="${page + 1}" ${page === pages ? "disabled" : ""} aria-label="${t("historyNext")}">${controlIcon("ChevronRight")}</button></div>`;
       document
         .querySelectorAll("[data-offer-filter]")
         .forEach((button) =>
@@ -1955,7 +1970,7 @@
       openDialog(
         t("calTitle"),
         `<p class="promo-eyebrow">${escape(p.name)}</p><div class="promo-field-row"><label class="promo-field"><span>${t("startDateLabel")}</span><input id="schedule-start-date" type="date" value="${escape(p.startDate)}"></label><label class="promo-field"><span>${t("endDateLabel")}</span><input id="schedule-end-date" type="date" value="${escape(p.endDate)}"></label></div><fieldset class="promo-days"><legend>${t("schDays")}</legend><div>${weekdays.map((name, index) => `<label class="promo-day"><input name="schedule-day" type="checkbox" value="${index}" ${p.days.includes(index) ? "checked" : ""}><span>${name}</span></label>`).join("")}</div></fieldset><div class="promo-field-row"><label class="promo-field"><span>${t("startLabel")}</span><input type="time" id="schedule-start-time" value="${escape(p.startTime)}"></label><label class="promo-field"><span>${t("endLabel")}</span><input type="time" id="schedule-end-time" value="${escape(p.endTime)}"></label></div><p class="promo-note">${t("schAutoOffHint")}</p><p class="promo-error" id="schedule-error" role="alert"></p>`,
-        `<button type="button" class="promo-button primary" id="save-schedule">${t("schSave")}</button>`,
+        `<button type="button" class="promo-button primary" id="save-schedule">${controlIcon("Save")}${t("schSave")}</button>`,
       );
     }
     function renderAll() {
@@ -2087,7 +2102,7 @@
             openDialog(
               t("deleteConfirmTitle"),
               `<p class="demo-confirm">${escape(t("deleteConfirmMessage", { name: p.name }))}</p>`,
-              `<button type="button" class="promo-button" data-close-confirm>${t("cancel")}</button><button type="button" class="promo-button primary" data-confirm-delete="${escape(p.id)}">${t("delete")}</button>`,
+              `<button type="button" class="promo-button" data-close-confirm>${controlIcon("X")}${t("cancel")}</button><button type="button" class="promo-button danger" data-confirm-delete="${escape(p.id)}">${controlIcon("Trash2")}${t("delete")}</button>`,
             );
             return;
         }

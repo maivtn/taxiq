@@ -937,6 +937,52 @@
   color: #4338ca;
   box-shadow: 0 1px 3px #0f172a18;
 }
+.promo-control-icon {
+  flex: 0 0 16px;
+  width: 16px;
+  height: 16px;
+}
+[data-promo-control-icon] {
+  display: inline-flex;
+  align-items: center;
+}
+.pos-promotions-page .promo-type-filter button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+.pos-promotions-page [data-offer-filter="deal"] {
+  color: #1d4ed8;
+}
+.pos-promotions-page [data-offer-filter="deal"].is-on {
+  background: #eff6ff;
+}
+.pos-promotions-page [data-offer-filter="coupon"] {
+  color: #6d28d9;
+}
+.pos-promotions-page [data-offer-filter="coupon"].is-on {
+  background: #f5f3ff;
+}
+.pos-promotions-page .promo-export-button {
+  color: #0e7490;
+  background: #ecfeff;
+  border-color: #a5f3fc;
+}
+.pos-promotions-page .promo-export-button:hover {
+  color: #155e75;
+  background: #cffafe;
+  border-color: #67e8f9;
+}
+.pos-promo-dialog .promo-button.danger {
+  color: #fff;
+  background: #dc2626;
+  border-color: #dc2626;
+}
+.pos-promo-dialog .promo-button.danger:hover {
+  background: #b91c1c;
+  border-color: #b91c1c;
+}
 .demo-pagination {
   display: flex;
   align-items: center;
@@ -953,6 +999,9 @@
   gap: 6px;
 }
 .demo-pages button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   background: #fff;
   border: 1px solid #dbe2ee;
   padding: 7px 11px;
@@ -985,18 +1034,79 @@
   font-size: 11px;
   font-weight: 600;
   line-height: 1.35;
+  color: var(--action-color, #334155);
+  background: var(--action-bg, #fff);
+  border-color: var(--action-border, #dbe2ee);
+  transition: background 0.15s, border-color 0.15s, color 0.15s;
 }
-.promo-row-actions .promo-action-icon {
-  flex: 0 0 16px;
-  width: 16px;
-  height: 16px;
+.promo-row-actions [data-action-tone="edit"] {
+  --action-color: #1d4ed8;
+  --action-bg: #eff6ff;
+  --action-border: #bfdbfe;
+  --action-hover: #dbeafe;
+}
+.promo-row-actions [data-action-tone="enable"] {
+  --action-color: #047857;
+  --action-bg: #ecfdf5;
+  --action-border: #a7f3d0;
+  --action-hover: #d1fae5;
+}
+.promo-row-actions [data-action-tone="disable"] {
+  --action-color: #92400e;
+  --action-bg: #fffbeb;
+  --action-border: #fde68a;
+  --action-hover: #fef3c7;
+}
+.promo-row-actions [data-action-tone="schedule"] {
+  --action-color: #6d28d9;
+  --action-bg: #f5f3ff;
+  --action-border: #ddd6fe;
+  --action-hover: #ede9fe;
+}
+.promo-row-actions [data-action-tone="message"] {
+  --action-color: #0e7490;
+  --action-bg: #ecfeff;
+  --action-border: #a5f3fc;
+  --action-hover: #cffafe;
+}
+.promo-row-actions [data-action-tone="duplicate"] {
+  --action-color: #4338ca;
+  --action-bg: #eef2ff;
+  --action-border: #c7d2fe;
+  --action-hover: #e0e7ff;
+}
+.promo-row-actions [data-action-tone="history"] {
+  --action-color: #475569;
+  --action-bg: #f8fafc;
+  --action-border: #e2e8f0;
+  --action-hover: #f1f5f9;
+}
+.promo-row-actions [data-action-tone="codes"] {
+  --action-color: #a21caf;
+  --action-bg: #fdf4ff;
+  --action-border: #f5d0fe;
+  --action-hover: #fae8ff;
+}
+.promo-row-actions [data-action-tone="danger"] {
+  --action-color: #b91c1c;
+  --action-bg: #fef2f2;
+  --action-border: #fecaca;
+  --action-hover: #fee2e2;
+}
+.pos-promotions-page .promo-row-actions button:hover:not(:disabled) {
+  color: var(--action-color, #334155);
+  background: var(--action-hover, #f1f5f9);
+  border-color: var(--action-color, #64748b);
 }
 .pos-promotions-page .promo-row-actions button:disabled {
+  color: #94a3b8;
+  background: #f8fafc;
+  border-color: #e2e8f0;
   opacity: 0.45;
   cursor: not-allowed;
 }
 .pos-promotions-page .promo-row-actions button:focus-visible {
-  outline: 2px solid var(--promo-brand);
+  outline: 2px solid var(--action-color, var(--promo-brand));
   outline-offset: 2px;
 }
 @media (max-width: 760px) {

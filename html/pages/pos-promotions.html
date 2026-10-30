@@ -16,7 +16,7 @@
       href="../assets/nexora-shell.css?v=20261030-shared-header-v47"
     />
     <link rel="stylesheet" href="../assets/promotion-industry-icons.css" />
-    <link rel="stylesheet" href="../assets/pos-promotions-demo.css?v=20261030-lucide-actions" />
+    <link rel="stylesheet" href="../assets/pos-promotions-demo.css?v=20261030-action-colors" />
 
   <script src="../assets/industry-icons.js?v=20261030-distinct-industries" data-industry-icons></script>
   <link rel="icon" type="image/png" sizes="128x128" href="../assets/flaticon-flat/favicon-letter-n-9203636.png">
@@ -46,7 +46,7 @@
                     <option value="vi">Tiếng Việt</option>
                   </select></label
                 ><a class="promo-button primary" href="pos-promotions-new.html"
-                  >＋ <span data-copy="addPromotion">Add promotion</span></a
+                  ><span data-promo-control-icon="CirclePlus" aria-hidden="true"></span><span data-copy="addPromotion">Add promotion</span></a
                 >
               </div>
             </header>
@@ -83,13 +83,12 @@
                       type="button"
                       data-offer-filter="all"
                       class="is-on"
-                      data-copy="typeAll"
                     >
-                      All</button
+                      <span data-promo-control-icon="LayoutList" aria-hidden="true"></span><span data-copy="typeAll">All</span></button
                     ><button type="button" data-offer-filter="deal">
-                      🏷️ <span data-copy="dealLabel">Deal</span></button
+                      <span data-promo-control-icon="Tag" aria-hidden="true"></span><span data-copy="dealLabel">Deal</span></button
                     ><button type="button" data-offer-filter="coupon">
-                      🎟️ <span data-copy="couponLabel">Coupon</span>
+                      <span data-promo-control-icon="TicketPercent" aria-hidden="true"></span><span data-copy="couponLabel">Coupon</span>
                     </button>
                   </div>
                   <select id="program-status" aria-label="Filter promotions">
@@ -179,8 +178,8 @@
                     it was confirmed, who applied it, and the discount.
                   </p>
                 </div>
-                <button class="promo-button" type="button" id="export-history">
-                  CSV
+                <button class="promo-button promo-export-button" type="button" id="export-history">
+                  <span data-promo-control-icon="FileDown" aria-hidden="true"></span>CSV
                 </button>
               </header>
               <div class="promo-program-body">
@@ -194,23 +193,20 @@
                       type="button"
                       data-history-days="1"
                       class=""
-                      data-copy="historyToday"
                     >
-                      Today</button
+                      <span data-promo-control-icon="CalendarCheck" aria-hidden="true"></span><span data-copy="historyToday">Today</span></button
                     ><button
                       type="button"
                       data-history-days="7"
                       class=""
-                      data-copy="history7"
                     >
-                      7 days</button
+                      <span data-promo-control-icon="CalendarDays" aria-hidden="true"></span><span data-copy="history7">7 days</span></button
                     ><button
                       type="button"
                       data-history-days="30"
                       class="is-on"
-                      data-copy="history30"
                     >
-                      30 days
+                      <span data-promo-control-icon="CalendarRange" aria-hidden="true"></span><span data-copy="history30">30 days</span>
                     </button>
                   </div>
                   <select id="history-promotion" aria-label="Program">
@@ -355,7 +351,7 @@
           data-close-dialog
           aria-label="Close"
         >
-          ×
+          <span data-promo-control-icon="X" aria-hidden="true"></span>
         </button>
       </header>
       <div id="dialog-body" class="demo-dialog-body"></div>
@@ -388,6 +384,6 @@
     <script src="../assets/oneqr-action-appearance.js"></script>
     <script src="../assets/promotion-industry-icons.js?v=20261030-industry-flat"></script>
     <script src="../assets/pos-promotions-demo-data.js?v=20261030-industry-flat"></script>
-    <script src="../assets/pos-promotions-demo.js?v=20261030-lucide-actions"></script>
+    <script src="../assets/pos-promotions-demo.js?v=20261030-action-colors"></script>
   </body>
 </html>
