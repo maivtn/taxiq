@@ -7,3 +7,41 @@
 @media(max-width:400px){.nxw-cards{gap:12px}.nxw-card{flex-basis:100%;max-width:none;min-width:0}.nxw-card>img{height:175px}.nxw-industry{min-width:80px}.nxw-hero-copy{padding:21px 20px 24px}.nxw-hero-top{gap:8px}.nxw-hero-top .nxw-kicker{font-size:8px}.nxw-hero-top .nxw-badge{font-size:8px}.nxw-setup-intro{align-items:flex-start}.nxw-setup-intro img{width:78px;height:90px}.nxw-field{min-width:100%;flex-basis:100%}.nxw-panel{padding:17px}.nxw-head>.nxw-btn{font-size:9px!important;padding:8px}.nxw-count{display:none}}
 @media(prefers-reduced-motion:reduce){.nxw *{scroll-behavior:auto!important;transition:none!important}}
 @media(min-width:1101px){.nxw-public .nxw-card{flex-basis:calc(25% - 16px);max-width:calc(25% - 12px);min-width:0}.nxw-public .nxw-card-top{align-items:flex-start;gap:9px}.nxw-public .nxw-card-top strong{font-size:14px}.nxw-public .nxw-card-top .nxw-icon{width:39px;height:39px}}
+
+/* Getting started: address, international phones and weekly business hours. */
+.nxw-business-form{min-width:0}
+.nxw-business-form .nxw-field{min-width:0}
+.nxw-business-group{min-width:0;margin:24px 0 0;padding:18px;border:1px solid var(--nxw-line);border-radius:12px}
+.nxw-business-group legend{padding:0 7px;color:var(--nxw-ink);font-size:12px;font-weight:750}
+.nxw-address-fields{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.nxw-field-wide{grid-column:1/-1}
+.nxw-business-group>.nxw-note{margin:0 0 14px!important;overflow-wrap:anywhere}
+.nxw-business-form select{width:100%;min-width:0;min-height:42px;appearance:none;padding:10px 44px 10px 12px;border:1px solid #dce3ed;border-radius:8px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23687891' stroke-width='1.7'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E") no-repeat right 16px center;background-size:16px;color:#273a56;font-size:12px}
+.nxw-phone{display:flex;align-items:stretch;min-width:0;border:1px solid #dce3ed;border-radius:8px;background:#fff}
+.nxw-phone:focus-within{border-color:#a18bd3;outline:2px solid #a18bd326}
+.nxw-phone select{flex:0 0 112px;width:112px;border:0;border-right:1px solid #e7ebf2;border-radius:8px 0 0 8px;background-color:#f8f9fc;padding-left:10px;font-size:11px}
+.nxw-phone input{flex:1;min-width:0;border:0;border-radius:0 8px 8px 0;padding:10px;font-size:12px}
+.nxw-phone input:focus{outline:0}
+.nxw-business-hours{margin-top:14px}
+.nxw-business-day{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;min-height:58px;padding:9px 0;border-top:1px solid #edf0f5}
+.nxw-business-day:first-child{border-top:0}
+.nxw-day-toggle{position:relative;display:flex;flex:0 0 132px;align-items:center;gap:9px;min-width:0;cursor:pointer}
+.nxw-day-toggle input{position:absolute;left:0;width:34px;height:20px;margin:0;opacity:0}
+.nxw-day-toggle>span{position:relative;width:34px;height:20px;flex:none;border-radius:20px;background:#c3cbd7;transition:background .15s}
+.nxw-day-toggle>span:after{position:absolute;top:3px;left:3px;width:14px;height:14px;border-radius:50%;background:#fff;content:'';transition:transform .15s}
+.nxw-day-toggle input:checked+span{background:#15a777}
+.nxw-day-toggle input:checked+span:after{transform:translateX(14px)}
+.nxw-day-toggle input:focus-visible+span{outline:3px solid #a8a0f4;outline-offset:3px}
+.nxw-day-toggle b{color:#4f6079;font-size:11px;font-weight:650}
+.nxw-day-times{display:grid;flex:1 1 220px;min-width:0;grid-template-columns:minmax(0,1fr) auto minmax(0,1fr);align-items:center;gap:8px}
+.nxw-day-times input{width:100%;min-width:0;min-height:38px;padding:8px;border:1px solid #dce3ed;border-radius:8px;background:#f8f9fc;color:#273a56;font-size:12px;color-scheme:light}
+.nxw-day-times>span,.nxw-day-closed{color:var(--nxw-muted);font-size:11px}
+.nxw-day-closed{margin-left:auto}
+.nxw-hours-preview{margin-top:16px;padding-top:14px;border-top:1px solid var(--nxw-line)}
+.nxw-hours-preview>strong{font-size:11px}
+.nxw-hours-preview dl{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px 14px}
+.nxw-hours-preview dl>div{display:flex;justify-content:space-between;gap:8px;min-width:0}
+.nxw-hours-preview dd{margin:0;font-size:11px}
+@media(max-width:1100px){.nxw-business-form>.nxw-fields>.nxw-field{flex-basis:100%}.nxw-business-group{padding:14px}.nxw-business-day{gap:9px}.nxw-day-toggle{flex-basis:115px}.nxw-day-times{gap:5px}.nxw-day-times input{padding:8px 5px;font-size:11px}}
+@media(max-width:700px){.nxw-business-form>.nxw-fields>.nxw-field{flex-basis:calc(50% - 14px)}.nxw-business-group{margin-top:20px}.nxw-hours-preview dl{grid-template-columns:1fr}}
+@media(max-width:480px){.nxw-business-form>.nxw-fields>.nxw-field{flex-basis:100%}.nxw-business-group{padding:12px}.nxw-address-fields{gap:12px 10px}.nxw-address-fields .nxw-field{flex-basis:auto;min-width:0}.nxw-business-day{gap:8px;padding:12px 0}.nxw-day-times{flex-basis:100%}.nxw-day-times input{min-height:38px;font-size:12px;padding:8px}.nxw-day-toggle input{width:38px;height:24px}.nxw-day-toggle>span{width:38px;height:24px}.nxw-day-toggle>span:after{width:18px;height:18px}.nxw-phone select{flex-basis:116px;width:116px}}

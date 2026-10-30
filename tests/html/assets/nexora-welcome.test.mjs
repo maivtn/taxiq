@@ -108,11 +108,30 @@ test('Onboarding requires real entries, preserves browser drafts, and keeps indu
     submit(window);
     assert.match(window.document.getElementById('nxw-progress-label').textContent, /^0\/4/);
     enter(window, 'name', 'Demo Studio');
-    enter(window, 'address', '123 Example Avenue');
+    enter(window, 'street', '123 Example Avenue, Suite 100');
     enter(window, 'phone', '(312) 555-0100');
+    submit(window);
+    assert.match(window.document.getElementById('nxw-progress-label').textContent, /^0\/4/);
+    enter(window, 'city', 'Chicago');
+    enter(window, 'region', 'Illinois');
+    enter(window, 'zip', '60601');
+    enter(window, 'country', 'US');
+    enter(window, 'bookingPhone', '(346) 680-2333');
+    enter(window, 'timeZone', 'America/Chicago');
+    click(window, '[name="hoursOpen0"]');
+    assert.equal(window.document.querySelector('[name="hoursFrom0"]').disabled, true);
+    for (let day = 1; day < 7; day++) {
+      enter(window, `hoursFrom${day}`, '09:00');
+      enter(window, `hoursTo${day}`, '18:00');
+    }
     submit(window);
     assert.match(window.document.getElementById('nxw-progress-label').textContent, /^1\/4/);
     assert.equal(window.document.querySelector('[data-setup-step="0"]').dataset.completed, 'true');
+    const preview = window.document.getElementById('nxw-entered-preview').textContent;
+    assert.match(preview, /123 Example Avenue, Suite 100, Chicago, Illinois, 60601, US/);
+    assert.match(preview, /\+1 \(312\) 555-0100/);
+    assert.match(preview, /America\/Chicago/);
+    assert.match(preview, /SundayClosed/);
     click(window, '[data-industry="retail"]');
     assert.match(window.document.getElementById('nxw-progress-label').textContent, /^0\/4/);
     assert.equal(window.document.querySelector('[name="name"]').value, '');
@@ -126,6 +145,12 @@ test('Onboarding requires real entries, preserves browser drafts, and keeps indu
   try {
     assert.match(reopened.window.document.getElementById('nxw-progress-label').textContent, /^1\/4/);
     assert.equal(reopened.window.document.querySelector('[data-setup-step="1"]').getAttribute('aria-current'), 'step');
+    click(reopened.window, '[data-setup-step="0"]');
+    assert.equal(reopened.window.document.querySelector('[name="city"]').value, 'Chicago');
+    assert.equal(reopened.window.document.querySelector('[name="phoneCountry"]').value, 'US');
+    assert.equal(reopened.window.document.querySelector('[name="bookingPhone"]').value, '(346) 680-2333');
+    assert.equal(reopened.window.document.querySelector('[name="hoursOpen0"]').checked, false);
+    assert.equal(reopened.window.document.querySelector('[name="hoursFrom1"]').value, '09:00');
   } finally { reopened.window.close(); }
 });
 
