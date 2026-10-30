@@ -33,7 +33,17 @@ body.community-hub-active .app-area { height:var(--community-viewport-height,100
   body.community-hub-active .app-area > .header { min-height:64px; padding:10px 12px; gap:8px; flex-wrap:wrap; }
   body.community-hub-active .header .community-shell-search { display:none; order:3; flex:1 0 100%; width:100%; max-width:none; }
   body.community-hub-active.community-search-open .header .community-shell-search { display:block; }
-  body.community-hub-active .header .community-search-toggle { display:inline-flex; flex:none; width:44px; height:44px; box-shadow:none; }
+  body.community-hub-active .header .community-search-toggle { position:relative; display:inline-flex; flex:none; width:44px; height:44px; padding:0; border:0; background:transparent; color:#db2777; box-shadow:none; }
+  body.community-hub-active .header .community-search-toggle::before { content:""; position:absolute; inset:5px; border:1px solid #fbcfe8; border-radius:9px; background:#fdf2f8; }
+  body.community-hub-active .header .community-search-toggle svg { position:relative; width:17px; height:17px; }
+  body.community-hub-active .header .community-search-toggle:is(:hover,[aria-expanded="true"])::before { background:#fce7f3; border-color:#f9a8d4; }
+  body.community-hub-active .header .community-shell-search .search { display:flex; align-items:center; min-height:44px; }
+  body.community-hub-active .header .community-shell-search input { height:36px; padding-left:38px; font-size:13px; }
+  body.community-hub-active .header .community-shell-search .search svg { left:13px; color:#db2777; }
+  body.community-hub-active .header .shell-workspace-actions a[href="owner-setting.html"] { color:#2563eb; background:#eff6ff; border-color:#dbeafe; }
+  body.community-hub-active .header .shell-workspace-actions a[href="news-library.html?tab=news"] { color:#b45309; background:#fffbeb; border-color:#fde68a; }
+  body.community-hub-active .header .shell-workspace-actions a[href="community.html?tab=connect"] { color:#0f766e; background:#f0fdfa; border-color:#99f6e4; }
+  body.community-hub-active .header .shell-workspace-actions a[href="dashboard.html"] { color:#7c3aed; background:#f5f3ff; border-color:#ddd6fe; }
   body.community-hub-active .header > .community-search-toggle { order:2; margin-left:auto; }
 }
 
