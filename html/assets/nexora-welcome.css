@@ -89,6 +89,10 @@
 @media(max-width:900px){.nxw [data-onboarding-services] .salon-service-browser{flex-wrap:wrap}.nxw [data-onboarding-services] .salon-service-search{flex-basis:100%;max-width:none}.nxw [data-onboarding-services] .salon-service-view{margin-left:auto}}
 @media(max-width:480px){.nxw [data-onboarding-services] .salon-service-filters{flex-wrap:nowrap;overflow-x:auto;padding-bottom:5px}.nxw [data-onboarding-services] .salon-service-filters button{flex:none;white-space:nowrap}.nxw [data-onboarding-services] .salon-dialog-body,.nxw [data-onboarding-services] .salon-service-dialog>header{padding:14px}.nxw [data-onboarding-services] .salon-service-dialog footer{padding:12px 14px;gap:8px}}
 
+/* Menu mode shares the service editor without technician-specific columns. */
+.nxw [data-menu-catalog] .settings-service-header,.nxw [data-menu-catalog] .settings-service-row{grid-template-columns:18px 30px minmax(150px,1fr) 90px 64px 32px 32px;min-width:540px}
+.nxw [data-menu-catalog] .salon-service-fields{grid-template-columns:1fr}
+
 /* AI Voice salon numbers and booking SMS settings, from the supplied reference. */
 .nxw-voice-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:12px;margin-top:18px}
 .nxw-voice-card{min-width:0;padding:15px;border:1px solid #dce5f3;border-radius:12px;background:#fff;box-shadow:0 2px 6px #253a6508}

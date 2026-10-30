@@ -144,7 +144,7 @@
   function readStep(kind) {
     var value = state.drafts[guide().key] && state.drafts[guide().key][kind];
     var fields = value && value.fields && typeof value.fields === 'object' ? value.fields : {};
-    return {fields:fields, completed:!!(value && value.completed) && (kind !== 'business' || businessComplete(fields)) && (kind !== 'services' || servicesComplete(fields)) && (kind !== 'staff' || (fields.staffMode==='invite' ? fields.inviteConfirmed==='true' : staffComplete(fields))) && (kind !== 'qr' || window.NEXORA_QR_SETUP.complete(fields))};
+    return {fields:fields, completed:!!(value && value.completed) && (kind !== 'business' || businessComplete(fields)) && (!['services','menu'].includes(kind) || servicesComplete(fields,kind)) && (kind !== 'staff' || (fields.staffMode==='invite' ? fields.inviteConfirmed==='true' : staffComplete(fields))) && (kind !== 'qr' || window.NEXORA_QR_SETUP.complete(fields))};
   }
   function destroyQrWorkspace(){if(qrWorkspace){qrWorkspace.destroy();qrWorkspace=null;}}
   function mountQrWorkspace(fields){
@@ -178,25 +178,32 @@
       onChange:function(snapshot){return savePreparationDraft(industry,'staff',snapshot);}
     });
   }
-  function servicesComplete(fields) {
-    var categories=fields.serviceCatalog;
+  function servicesComplete(fields,kind) {
+    var menu=kind==='menu',categories=menu?fields.menuCatalog:fields.serviceCatalog;
     if(!Array.isArray(categories)||!categories.length)return false;
     var services=categories.reduce(function(all,category){return all.concat(category.services||[]);},[]).filter(function(service){return service.id!=='__custom__';});
-    return services.length>0&&categories.every(function(category){return String(category.name||'').trim();})&&services.every(function(service){return String(service.name||'').trim()&&service.price!==''&&service.price!=null&&Number.isFinite(Number(service.price))&&Number(service.price)>=0&&Number.isInteger(Number(service.durationMin))&&Number(service.durationMin)>0;});
+    return services.length>0&&categories.every(function(category){return String(category.name||'').trim();})&&services.every(function(service){return String(service.name||'').trim()&&service.price!==''&&service.price!=null&&Number.isFinite(Number(service.price))&&Number(service.price)>=0&&(menu||Number.isInteger(Number(service.durationMin))&&Number(service.durationMin)>0);});
   }
   function destroyServiceWorkspace() {if(serviceWorkspace){serviceWorkspace.destroy();serviceWorkspace=null;}}
-  function mountServiceWorkspace(fields) {
+  function mountServiceWorkspace(fields,kind) {
+    kind=kind||'services';
+    var menu=kind==='menu';
     var industry=guide().key, panel=main.querySelector('[data-onboarding-services]');
-    var categories=Array.isArray(fields.serviceCatalog)?fields.serviceCatalog:undefined;
-    if(!categories&&[1,2].some(function(index){return fields['item'+index+'Name'];})){
+    var savedCatalog=menu?fields.menuCatalog:fields.serviceCatalog;
+    var categories=Array.isArray(savedCatalog)?savedCatalog:undefined;
+    if(menu&&!categories){
+      categories=(industry==='restaurant'?['Dishes','Drinks','Extras']:['Food','Drinks']).map(function(name){return {id:'menu-'+name.toLowerCase(),name:name,services:[]};});
+      categories[0].services=[1,2].filter(function(index){return fields['item'+index+'Name'];}).map(function(index){return {id:'onboarding-menu-item-'+index,name:fields['item'+index+'Name'],price:fields['item'+index+'Price']??'',description:fields['item'+index+'Detail']||'',active:true};});
+    }
+    if(!menu&&!categories&&[1,2].some(function(index){return fields['item'+index+'Name'];})){
       categories=[{id:'onboarding-services',name:'Services',services:[1,2].filter(function(index){return fields['item'+index+'Name'];}).map(function(index){return {id:'onboarding-service-'+index,name:fields['item'+index+'Name'],price:fields['item'+index+'Price']||'',durationMin:parseFloat(fields['item'+index+'Duration'])||'',description:fields['item'+index+'Detail']||'',active:true};})}];
     }
     var approvals=Array.isArray(fields.serviceApprovals)?fields.serviceApprovals.slice():[];
     function saveDraft(snapshot) {
-      return savePreparationDraft(industry,'services',{serviceCatalog:snapshot.categories,serviceApprovals:snapshot.approvals});
+      return savePreparationDraft(industry,kind,menu?{menuCatalog:snapshot.categories}:{serviceCatalog:snapshot.categories,serviceApprovals:snapshot.approvals});
     }
     serviceWorkspace=window.NEXORA_SALON_SERVICES.mount(panel,{
-      onboarding:true, salon:{id:'onboarding-'+industry}, categories:categories,
+      onboarding:true, catalogType:menu?'menu':'services',salon:{id:'onboarding-'+industry}, categories:categories,
       api:{
         load:function(){return approvals.slice();},
         requiresApproval:function(_,id){return approvals.indexOf(id)!==-1;},
@@ -336,11 +343,11 @@
     var mode=fields.staffMode==='invite'?'invite':'manual';
     var html='<div class="nxw-setup-intro"><img src="' + data.setup.images[kind] + '" alt="' + escape(setupCopy.illustration) + '"><div><span class="nxw-kicker">' + (selectedStep+1) + ' / ' + path().length + '</span><h3 id="nxw-step-title">' + escape(stepTitle(selectedStep)) + '</h3><ul>' + tasks.split('|').filter(Boolean).map(function (task) { return '<li>' + escape(task) + '</li>'; }).join('') + '</ul></div></div>';
     var formHeading='<strong>' + escape(setupCopy.formTitle) + '</strong><p class="nxw-note">' + escape(setupCopy.autoSaveNote) + '</p>';
-    if(kind==='services')html+='<div class="nxw-services-preparation">'+formHeading+'<div data-settings-panel="services" data-onboarding-services></div></div>';
+    if(kind==='services'||kind==='menu')html+='<div class="nxw-services-preparation">'+formHeading+'<div data-settings-panel="services" data-onboarding-services></div></div>';
     if(kind==='qr')html+='<div class="nxw-qr-preparation">'+formHeading+'<div data-onboarding-qr></div></div>';
     if(kind==='staff')html+='<div class="nxw-staff-preparation">'+formHeading+'<div class="nxw-subsection" data-staff-mode><strong>'+escape(setupCopy.staffMethodTitle)+'</strong>'+choicesHTML([{key:'manual',label:'staffManual',defaultValue:'manual'},{key:'invite',label:'staffInvite',defaultValue:'manual'}],fields,'staffMode')+'</div>'+(mode==='manual'?'<div data-onboarding-staff></div>':'')+'</div>';
-    html+='<form id="nxw-setup-form" aria-labelledby="nxw-step-title">'+(kind==='services'||kind==='staff'||kind==='qr'?'':formHeading);
-    if(kind!=='services'&&kind!=='staff'&&kind!=='qr')html+=kind==='business'?businessFieldsHTML(fields):'<div class="nxw-fields">' + (data.setup.fields[kind]||[]).map(function (field) { return fieldHTML(field,fields); }).join('') + '</div>';
+    html+='<form id="nxw-setup-form" aria-labelledby="nxw-step-title">'+(['services','menu','staff','qr'].includes(kind)?'':formHeading);
+    if(!['services','menu','staff','qr'].includes(kind))html+=kind==='business'?businessFieldsHTML(fields):'<div class="nxw-fields">' + (data.setup.fields[kind]||[]).map(function (field) { return fieldHTML(field,fields); }).join('') + '</div>';
     if(kind==='staff'&&mode==='invite')html+='<div class="nxw-inline-preview"><p>' + escape(setupCopy.staffInviteIntro) + '</p><ol>' + ['staffInvite1','staffInvite2','staffInvite3'].map(function (key) { return '<li>' + escape(setupCopy[key]) + '</li>'; }).join('') + '</ol><div class="nxw-actions">' + link(setupCopy.staffInviteOpen,'qr-stations.html?tab=staff-invite-qr',true) + '</div><div class="nxw-choices">' + choicesHTML([{key:'inviteConfirmed',label:'staffInviteConfirm'}],fields) + '</div><p class="nxw-note">' + escape(setupCopy.staffInviteNotice) + '</p></div>';
     if(kind==='voice')html+='<div class="nxw-subsection"><strong>' + escape(setupCopy.voiceModeTitle) + '</strong>' + choicesHTML([{key:'off',label:'voiceSkip',defaultValue:'off'},{key:'on',label:'voiceUse',defaultValue:'off'}],fields,'voiceMode') + '</div>' + (fields.voiceMode==='on'?voiceSettingsHTML(fields)+choicesHTML(data.flow.voiceFeatures,fields):'<p class="nxw-note">'+escape(setupCopy.voicePreviewOff)+'</p>') + '<p class="nxw-note">' + escape(setupCopy.voicePreviewNotice) + '</p>';
     html+='<div id="nxw-entered-preview" class="nxw-inline-preview"></div><div class="nxw-saved" id="nxw-save-status" role="status"></div><div class="nxw-actions"><button type="submit" class="nxw-btn">' + escape(setupCopy.saveStep) + '</button>' + (selectedStep<path().length-1?button(salonCopy.next,'next-step',true):button(copy.viewIndustryDocs,'open-docs',true)) + link(setupCopy.relatedScreen,stepRoute(kind),true) + '</div></form>';
@@ -370,7 +377,7 @@
     });
     main.querySelectorAll('[data-setup-step]').forEach(function(el){el.setAttribute('aria-current',Number(el.dataset.setupStep)===selectedStep?'step':'false');});
     renderEnteredPreview();
-    if(kind==='services')mountServiceWorkspace(fields);
+    if(kind==='services'||kind==='menu')mountServiceWorkspace(fields,kind);
     if(kind==='qr')mountQrWorkspace(fields);
     if(kind==='staff'){
       main.querySelector('[data-staff-mode]').addEventListener('change',function(event){saveInput(event.target);renderSetupStep();});
@@ -384,8 +391,8 @@
   }
   function renderEnteredPreview(){
     var kind=path()[selectedStep],fields=readStep(kind).fields;
-    document.getElementById('nxw-entered-preview').hidden=kind==='services'||kind==='staff'&&fields.staffMode!=='invite';
-    if(kind==='services'||kind==='staff'&&fields.staffMode!=='invite')return;
+    document.getElementById('nxw-entered-preview').hidden=kind==='services'||kind==='menu'||kind==='staff'&&fields.staffMode!=='invite';
+    if(kind==='services'||kind==='menu'||kind==='staff'&&fields.staffMode!=='invite')return;
     var html='<span class="nxw-kicker">' + escape(setupCopy.yourPreview) + '</span>';
     if(kind==='qr'){
       document.getElementById('nxw-entered-preview').innerHTML=html+(qrWorkspace?qrWorkspace.preview():'')+'<p class="nxw-note">'+escape(setupCopy.qrPreviewNotice)+'</p>';return;
@@ -399,7 +406,7 @@
   }
   function completeStep(event){
     event.preventDefault();var form=event.currentTarget,kind=path()[selectedStep];
-    if(kind==='services'){
+    if(kind==='services'||kind==='menu'){
       try{serviceWorkspace.save();}catch(failure){document.getElementById('nxw-save-status').textContent=failure.message;return;}
     }
     if(kind==='qr'){
@@ -410,7 +417,7 @@
     }
     if(kind==='business')writeStep(kind,businessPatch(form));
     if(kind==='voice')writeStep(kind,voiceFormPatch(form));
-    var value=readStep(kind),valid=form.reportValidity()&&(kind!=='business'||businessComplete(value.fields))&&(kind!=='services'||servicesComplete(value.fields));
+    var value=readStep(kind),valid=form.reportValidity()&&(kind!=='business'||businessComplete(value.fields))&&(!['services','menu'].includes(kind)||servicesComplete(value.fields,kind));
     var special='';
     if(kind==='staff'&&value.fields.staffMode==='invite'&&value.fields.inviteConfirmed!=='true')special=setupCopy.staffInviteNeeded;
     if(kind==='voice'&&value.fields.voiceMode==='on'&&!data.flow.voiceFeatures.some(function(item){return value.fields[item.key]==='true';}))special=setupCopy.chooseAtLeastOne;

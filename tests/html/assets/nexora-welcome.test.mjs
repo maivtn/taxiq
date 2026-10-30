@@ -214,6 +214,55 @@ test('Services preparation reuses categories and the service editor while saving
   } finally { dom.window.close(); }
 });
 
+test('Menu preparation reuses the catalog editor without service duration and keeps industries independent', async () => {
+  const storageKey = 'nexora.local-onboarding.v1';
+  const dom = loadPage('nexora-getting-started.html', {
+    [storageKey]: JSON.stringify({ industry: 'restaurant', drafts: { restaurant: { menu: { fields: { item1Name: 'Beef phở', item1Price: '16', item2Name: 'Spring rolls', item2Price: '9' } } } } })
+  });
+  try {
+    const { window } = dom;
+    const doc = window.document;
+    click(window, '[data-setup-step="1"]');
+    await Promise.resolve();
+    assert.equal(doc.getElementById('nxw-step-title').textContent, 'Prepare the menu');
+    assert.ok(doc.querySelector('[data-menu-catalog]'));
+    assert.equal(doc.querySelector('[data-service-search]').placeholder, 'Search menu items...');
+    assert.equal(doc.querySelector('[data-inline-field="durationMin"]'), null);
+    assert.doesNotMatch(doc.querySelector('[data-approval-services]').textContent, /Approval|Duration|Add Service/);
+    click(window, '[data-salon-service-edit="onboarding-menu-item-1"]');
+    assert.equal(doc.getElementById('service-editor-title').textContent, 'Edit item');
+    assert.equal(doc.querySelector('[data-service-edit-duration]').disabled, true);
+    assert.equal(doc.querySelector('[data-service-edit-duration]').closest('label').hidden, true);
+    assert.equal(doc.querySelector('[data-service-edit-fee]').closest('label').hidden, true);
+    assert.equal(doc.querySelector('.salon-service-approval').hidden, true);
+    doc.querySelector('[data-service-edit-price]').value = '0';
+    doc.querySelector('[data-service-edit-description]').value = 'Rice noodles and beef';
+    doc.querySelector('[data-service-editor-form]').dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
+    assert.equal(doc.querySelector('[data-service-editor]').hidden, true);
+    submit(window);
+    assert.equal(doc.querySelector('[data-setup-step="1"]').dataset.completed, 'true');
+    const saved = JSON.parse(window.localStorage.getItem(storageKey)).drafts.restaurant.menu.fields;
+    assert.equal(saved.item1Name, 'Beef phở');
+    assert.equal(saved.menuCatalog[0].services[0].price, 0);
+    assert.equal(saved.menuCatalog[0].services[0].description, 'Rice noodles and beef');
+    assert.equal(Object.hasOwn(saved.menuCatalog[0].services[0], 'durationMin'), false);
+    click(window, '[data-service-view="card"]');
+    assert.match(doc.querySelector('.salon-service-card').textContent, /\$0\.00/);
+    assert.doesNotMatch(doc.querySelector('.salon-service-card').textContent, /min/);
+    click(window, '[data-industry="food"]');
+    click(window, '[data-setup-step="1"]');
+    await Promise.resolve();
+    assert.ok(doc.querySelector('[data-service-filter="menu-food"]'));
+    assert.doesNotMatch(doc.querySelector('[data-approval-services]').textContent, /Beef phở|Gel manicure/);
+    submit(window);
+    assert.match(doc.getElementById('nxw-save-status').textContent, /Enter an item name and a valid price/);
+    click(window, '[data-industry="restaurant"]');
+    click(window, '[data-setup-step="1"]');
+    await Promise.resolve();
+    assert.equal(doc.querySelector('[data-inline-field="price"]').value, '0');
+  } finally { dom.window.close(); }
+});
+
 test('Staff preparation saves complete profiles, assignments, schedules, and unfinished editor drafts', async () => {
   const storageKey = 'nexora.local-onboarding.v1';
   const hours = { timeZone: 'America/Chicago' };
