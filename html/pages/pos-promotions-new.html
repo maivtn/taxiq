@@ -17,7 +17,7 @@
     />
     <link rel="stylesheet" href="../assets/promotion-industry-icons.css" />
     <link rel="stylesheet" href="../assets/vendor/tom-select/tom-select.css" />
-    <link rel="stylesheet" href="../assets/pos-promotions-demo.css" />
+    <link rel="stylesheet" href="../assets/pos-promotions-demo.css?v=20261030-ai-controls" />
 
   <script src="../assets/industry-icons.js?v=20261030-distinct-industries" data-industry-icons></script>
   <link rel="icon" type="image/png" sizes="128x128" href="../assets/flaticon-flat/favicon-letter-n-9203636.png">
@@ -919,7 +919,7 @@
                           class="promo-button demo-ai-banner-button"
                           id="ai-banner-open"
                         >
-                          <span data-oneqr-icon="sparkles"></span>AI Banner
+                          <span data-promo-control-icon="WandSparkles" aria-hidden="true"></span>AI Banner
                           Generator</button
                         ><button
                           type="button"
@@ -989,7 +989,7 @@
           >
             <div class="phase-ai-card-heading">
               <h3 class="phase-ai-title">
-                <span data-icon="sparkles"></span>AI Banner Generator
+                <span data-promo-control-icon="Sparkles" aria-hidden="true"></span>AI Banner Generator
               </h3>
               <div class="phase-ai-quality">
                 <button
@@ -997,24 +997,24 @@
                   class="phase-ai-quality-trigger"
                   id="ai-quality-trigger"
                 >
-                  <span data-icon="settings-2"></span><span>Quality:</span
-                  ><b id="ai-quality-label">Medium</b>
+                  <span data-promo-control-icon="SlidersHorizontal" aria-hidden="true"></span><span>Quality:</span
+                  ><b id="ai-quality-label">Medium</b><span class="phase-ai-quality-arrow" data-promo-control-icon="ChevronDown" aria-hidden="true"></span>
                 </button>
                 <div class="phase-ai-quality-menu" id="ai-quality-menu" hidden>
                   <span class="phase-ai-quality-menu-title">Image quality</span>
-                  <button type="button" data-ai-quality="low">
-                    <span data-icon="gauge"></span><span>Low · 1 credit</span>
+                  <button type="button" data-ai-quality="low" data-ai-accent="teal">
+                    <span data-promo-control-icon="Gauge" aria-hidden="true"></span><span>Low · 1 credit</span>
                   </button>
                   <button
                     type="button"
                     class="selected"
-                    data-ai-quality="medium"
+                    data-ai-quality="medium" data-ai-accent="blue"
                   >
-                    <span data-icon="gauge"></span
+                    <span data-promo-control-icon="SlidersHorizontal" aria-hidden="true"></span
                     ><span>Medium · 2 credits</span>
                   </button>
-                  <button type="button" data-ai-quality="high">
-                    <span data-icon="sparkles"></span
+                  <button type="button" data-ai-quality="high" data-ai-accent="violet">
+                    <span data-promo-control-icon="Sparkles" aria-hidden="true"></span
                     ><span>High · 4 credits</span>
                   </button>
                 </div>
@@ -1029,7 +1029,7 @@
                   class="phase-ai-history-button"
                   id="ai-reference-history"
                 >
-                  <span data-icon="history"></span> Choose from generated images
+                  <span data-promo-control-icon="Images" aria-hidden="true"></span> Choose from generated images
                 </button>
               </div>
               <div
@@ -1063,7 +1063,7 @@
                 ></button>
               </div>
               <label class="phase-ai-reference-upload" id="ai-reference-upload"
-                ><span data-icon="image"></span
+                ><span data-promo-control-icon="ImagePlus" aria-hidden="true"></span
                 ><span id="ai-reference-text"
                   >Choose or upload a reference image</span
                 ><span class="phase-ai-file-meta"
@@ -1082,7 +1082,7 @@
                   id="ai-reference-preview-image"
                   alt="Selected reference"
                 /><strong id="ai-reference-name"></strong
-                ><button type="button" id="remove-ai-reference">Remove</button>
+                ><button type="button" id="remove-ai-reference"><span data-promo-control-icon="Trash2" aria-hidden="true"></span>Remove</button>
               </div>
             </div>
 
@@ -1098,7 +1098,7 @@
 
             <section class="phase-ai-brand" aria-labelledby="ai-brand-title">
               <h3 class="phase-ai-brand-title" id="ai-brand-title">
-                🎨 Brand &amp; industry
+                <span data-promo-control-icon="Palette" aria-hidden="true"></span>Brand &amp; industry
               </h3>
               <div class="phase-ai-brand-field">
                 <span id="ai-industry-label"
@@ -1424,106 +1424,98 @@
                   <button
                     type="button"
                     class="phase-ai-content-option"
-                    data-ai-content="promotion"
+                    data-ai-content="promotion" data-ai-accent="blue"
                     aria-pressed="false"
                   >
-                    <strong>🏷️ Promotion</strong><small>From POS</small>
+                    <strong><span class="phase-ai-option-icon" data-promo-control-icon="Tag" aria-hidden="true"></span><span>Promotion</span></strong><small>From POS</small>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-content-option"
-                    data-ai-content="holiday"
+                    data-ai-content="holiday" data-ai-accent="amber"
                     aria-pressed="false"
                   >
-                    <strong>🎉 Holiday</strong><small>Seasonal greetings</small>
+                    <strong><span class="phase-ai-option-icon" data-promo-control-icon="PartyPopper" aria-hidden="true"></span><span>Holiday</span></strong><small>Seasonal greetings</small>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-content-option"
-                    data-ai-content="notice"
+                    data-ai-content="notice" data-ai-accent="orange"
                     aria-pressed="false"
                   >
-                    <strong>📢 Announcement</strong
-                    ><small>Hours &amp; closures</small>
+                    <strong><span class="phase-ai-option-icon" data-promo-control-icon="Megaphone" aria-hidden="true"></span><span>Announcement</span></strong><small>Hours &amp; closures</small>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-content-option"
-                    data-ai-content="new-service"
+                    data-ai-content="new-service" data-ai-accent="violet"
                     aria-pressed="false"
                   >
-                    <strong>✨ New service</strong
-                    ><small>New styles &amp; services</small>
+                    <strong><span class="phase-ai-option-icon" data-promo-control-icon="Sparkles" aria-hidden="true"></span><span>New service</span></strong><small>New styles &amp; services</small>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-content-option"
-                    data-ai-content="hiring"
+                    data-ai-content="hiring" data-ai-accent="teal"
                     aria-pressed="false"
                   >
-                    <strong>👨‍🎓 Hiring</strong><small>Job openings</small>
+                    <strong><span class="phase-ai-option-icon" data-promo-control-icon="BriefcaseBusiness" aria-hidden="true"></span><span>Hiring</span></strong><small>Job openings</small>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-content-option"
-                    data-ai-content="gift-card"
+                    data-ai-content="gift-card" data-ai-accent="rose"
                     aria-pressed="true"
                   >
-                    <strong>🎁 Gift card</strong><small>Give a gift</small>
+                    <strong><span class="phase-ai-option-icon" data-promo-control-icon="Gift" aria-hidden="true"></span><span>Gift card</span></strong><small>Give a gift</small>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-content-option"
-                    data-ai-content="staff"
+                    data-ai-content="staff" data-ai-accent="blue"
                     aria-pressed="false"
                   >
-                    <strong>💅 Staff spotlight</strong
-                    ><small>Showcase your team</small>
+                    <strong><span class="phase-ai-option-icon" data-promo-control-icon="UsersRound" aria-hidden="true"></span><span>Staff spotlight</span></strong><small>Showcase your team</small>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-content-option"
-                    data-ai-content="grand-opening"
+                    data-ai-content="grand-opening" data-ai-accent="amber"
                     aria-pressed="false"
                   >
-                    <strong>🎊 Grand opening</strong
-                    ><small>Welcome customers</small>
+                    <strong><span class="phase-ai-option-icon" data-promo-control-icon="Store" aria-hidden="true"></span><span>Grand opening</span></strong><small>Welcome customers</small>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-content-option"
-                    data-ai-content="product"
+                    data-ai-content="product" data-ai-accent="teal"
                     aria-pressed="false"
                   >
-                    <strong>🛍️ Product spotlight</strong
-                    ><small>Feature your products</small>
+                    <strong><span class="phase-ai-option-icon" data-promo-control-icon="ShoppingBag" aria-hidden="true"></span><span>Product spotlight</span></strong><small>Feature your products</small>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-content-option"
-                    data-ai-content="event"
+                    data-ai-content="event" data-ai-accent="violet"
                     aria-pressed="false"
                   >
-                    <strong>📅 Event</strong
-                    ><small>Invite your community</small>
+                    <strong><span class="phase-ai-option-icon" data-promo-control-icon="CalendarDays" aria-hidden="true"></span><span>Event</span></strong><small>Invite your community</small>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-content-option"
-                    data-ai-content="loyalty"
+                    data-ai-content="loyalty" data-ai-accent="amber"
                     aria-pressed="false"
                   >
-                    <strong>⭐ Loyalty rewards</strong
-                    ><small>Member perks &amp; points</small>
+                    <strong><span class="phase-ai-option-icon" data-promo-control-icon="Award" aria-hidden="true"></span><span>Loyalty rewards</span></strong><small>Member perks &amp; points</small>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-content-option"
-                    data-ai-content="tips"
+                    data-ai-content="tips" data-ai-accent="teal"
                     aria-pressed="false"
                   >
-                    <strong>💡 Tips &amp; guides</strong
-                    ><small>Share helpful advice</small>
+                    <strong><span class="phase-ai-option-icon" data-promo-control-icon="Lightbulb" aria-hidden="true"></span><span>Tips &amp; guides</span></strong><small>Share helpful advice</small>
                   </button>
                 </div>
               </div>
@@ -1533,98 +1525,98 @@
                   <button
                     type="button"
                     class="phase-ai-tone-option"
-                    data-ai-tone="luxury"
+                    data-ai-tone="luxury" data-ai-accent="amber"
                     aria-pressed="true"
                   >
-                    Luxury
+                    <span data-promo-control-icon="Crown" aria-hidden="true"></span><span>Luxury</span>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-tone-option"
-                    data-ai-tone="playful"
+                    data-ai-tone="playful" data-ai-accent="rose"
                     aria-pressed="false"
                   >
-                    Playful
+                    <span data-promo-control-icon="SmilePlus" aria-hidden="true"></span><span>Playful</span>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-tone-option"
-                    data-ai-tone="minimal"
+                    data-ai-tone="minimal" data-ai-accent="slate"
                     aria-pressed="false"
                   >
-                    Minimal
+                    <span data-promo-control-icon="Minus" aria-hidden="true"></span><span>Minimal</span>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-tone-option"
-                    data-ai-tone="warm"
+                    data-ai-tone="warm" data-ai-accent="amber"
                     aria-pressed="false"
                   >
-                    Warm
+                    <span data-promo-control-icon="Sun" aria-hidden="true"></span><span>Warm</span>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-tone-option"
-                    data-ai-tone="friendly"
+                    data-ai-tone="friendly" data-ai-accent="teal"
                     aria-pressed="false"
                   >
-                    Friendly
+                    <span data-promo-control-icon="Smile" aria-hidden="true"></span><span>Friendly</span>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-tone-option"
-                    data-ai-tone="professional"
+                    data-ai-tone="professional" data-ai-accent="blue"
                     aria-pressed="false"
                   >
-                    Professional
+                    <span data-promo-control-icon="Briefcase" aria-hidden="true"></span><span>Professional</span>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-tone-option"
-                    data-ai-tone="bold"
+                    data-ai-tone="bold" data-ai-accent="indigo"
                     aria-pressed="false"
                   >
-                    Bold
+                    <span data-promo-control-icon="Type" aria-hidden="true"></span><span>Bold</span>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-tone-option"
-                    data-ai-tone="energetic"
+                    data-ai-tone="energetic" data-ai-accent="orange"
                     aria-pressed="false"
                   >
-                    Energetic
+                    <span data-promo-control-icon="Zap" aria-hidden="true"></span><span>Energetic</span>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-tone-option"
-                    data-ai-tone="witty"
+                    data-ai-tone="witty" data-ai-accent="rose"
                     aria-pressed="false"
                   >
-                    Witty
+                    <span data-promo-control-icon="Laugh" aria-hidden="true"></span><span>Witty</span>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-tone-option"
-                    data-ai-tone="inspirational"
+                    data-ai-tone="inspirational" data-ai-accent="amber"
                     aria-pressed="false"
                   >
-                    Inspirational
+                    <span data-promo-control-icon="Sunrise" aria-hidden="true"></span><span>Inspirational</span>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-tone-option"
-                    data-ai-tone="informative"
+                    data-ai-tone="informative" data-ai-accent="blue"
                     aria-pressed="false"
                   >
-                    Informative
+                    <span data-promo-control-icon="Info" aria-hidden="true"></span><span>Informative</span>
                   </button>
                   <button
                     type="button"
                     class="phase-ai-tone-option"
-                    data-ai-tone="reassuring"
+                    data-ai-tone="reassuring" data-ai-accent="teal"
                     aria-pressed="false"
                   >
-                    Reassuring
+                    <span data-promo-control-icon="ShieldCheck" aria-hidden="true"></span><span>Reassuring</span>
                   </button>
                 </div>
               </div>
@@ -1632,7 +1624,7 @@
 
             <div class="phase-ai-loading" id="ai-generation-loading" hidden>
               <span class="phase-ai-loader-icon"
-                ><span data-icon="loader-2"></span></span
+                ><span data-promo-control-icon="LoaderCircle" aria-hidden="true"></span></span
               ><strong>AI is analyzing and designing your banner</strong
               ><span class="promo-note" id="ai-loading-cost"
                 >Using 2 credits for this design.</span
@@ -1650,7 +1642,7 @@
                   class="promo-button primary"
                   id="use-generated-banner"
                 >
-                  <span data-icon="check"></span>Use this banner
+                  <span data-promo-control-icon="CircleCheck" aria-hidden="true"></span>Use this banner
                 </button>
               </div>
             </div>
@@ -1661,7 +1653,7 @@
                 class="phase-ai-generate"
                 id="generate-banner"
               >
-                <span data-icon="play"></span> Generate design now
+                <span data-promo-control-icon="WandSparkles" aria-hidden="true"></span> Generate design now
               </button>
             </div>
             <p class="promo-error" id="ai-generator-error" role="alert"></p>
@@ -1672,7 +1664,7 @@
               class="phase-ai-card phase-ai-side-card"
               id="ai-plan-credits"
             >
-              <h3>Plan &amp; credits</h3>
+              <h3><span data-promo-control-icon="WalletCards" aria-hidden="true"></span>Plan &amp; credits</h3>
               <div class="phase-ai-credit-row">
                 <span>Current ad plan:</span><strong>Basic</strong>
               </div>
@@ -1691,7 +1683,7 @@
               class="phase-ai-card phase-ai-side-card phase-ai-tips"
               id="ai-prompt-tips"
             >
-              <h3>Prompt tips</h3>
+              <h3><span data-promo-control-icon="Lightbulb" aria-hidden="true"></span>Prompt tips</h3>
               <p>
                 For best results, include: main subject (Nail Spa, Bitcoin),
                 color palette (Gold, Pink), art style (Luxury, Modern), and a
@@ -1702,10 +1694,10 @@
               class="phase-ai-card phase-ai-side-card phase-ai-safety"
               aria-labelledby="ai-safety-title"
             >
-              <h3 id="ai-safety-title">🛡️ Safety guidelines</h3>
+              <h3 id="ai-safety-title"><span data-promo-control-icon="ShieldCheck" aria-hidden="true"></span>Safety guidelines</h3>
               <ul>
                 <li>
-                  🔒 Prices, discounts, dates, and terms come from the promotion
+                  <span data-promo-control-icon="LockKeyhole" aria-hidden="true"></span> Prices, discounts, dates, and terms come from the promotion
                   and cannot be edited here.
                 </li>
                 <li>
@@ -1737,9 +1729,7 @@
           class="promo-close"
           data-close-dialog
           aria-label="Close"
-        >
-          ×
-        </button>
+        ><span data-promo-control-icon="X" aria-hidden="true"></span></button>
       </header>
       <div id="dialog-body" class="demo-dialog-body"></div>
       <footer class="editor-footer" id="dialog-footer"></footer>
@@ -1772,6 +1762,6 @@
     <script src="../assets/promotion-industry-icons.js?v=20261030-industry-flat"></script>
     <script src="../assets/pos-promotions-demo-data.js?v=20261030-industry-flat"></script>
     <script src="../assets/vendor/tom-select/tom-select.complete.min.js"></script>
-    <script src="../assets/pos-promotions-demo.js?v=20261030-industry-flat"></script>
+    <script src="../assets/pos-promotions-demo.js?v=20261030-ai-controls"></script>
   </body>
 </html>

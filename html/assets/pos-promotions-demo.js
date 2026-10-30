@@ -1404,16 +1404,6 @@
       referenceImage = null;
       openDialog("AI Banner Generator", $("ai-banner-template").innerHTML);
       dialog.classList.add("phase-ai-dialog");
-      dialog.querySelectorAll("[data-icon]").forEach((node) => {
-        const name =
-          {
-            gauge: "settings-2",
-            history: "clock",
-            play: "video",
-            "loader-2": "clock",
-          }[node.dataset.icon] || node.dataset.icon;
-        node.innerHTML = icon(name);
-      });
       $("ai-banner-prompt").value = [
         draft.name,
         draft.description,
@@ -1553,7 +1543,7 @@
       $("ai-available-credits").textContent = aiCredits + " credits";
       $("generated-result").hidden = false;
       $("generated-result").innerHTML =
-        `${art(draft, generatedBanner)}<div class="phase-ai-result-actions"><button type="button" class="promo-button primary" id="use-generated-banner">Use this banner</button></div>`;
+        `${art(draft, generatedBanner)}<div class="phase-ai-result-actions"><button type="button" class="promo-button primary" id="use-generated-banner">${controlIcon("CircleCheck")}Use this banner</button></div>`;
     }
     renderPage = () => {
       options();
