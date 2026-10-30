@@ -82,7 +82,9 @@ body.embedded .community-heading > div { flex:1; }
   .community-back:hover .community-back-face { background:#eee9ff; border-color:#bdb1f5; }
   .community-back:focus-visible { outline:0; }
   .community-back:focus-visible .community-back-face { outline:3px solid #aaa0ff; outline-offset:2px; }
-  body.embedded .tour-launch { min-height:44px; padding:8px 10px; font-size:11px; flex:none; }
+  body.embedded .tour-launch { display:inline-flex; align-items:center; justify-content:center; min-height:44px; height:44px; padding:0; border:0; background:transparent; font-size:10px; flex:none; }
+  body.embedded .tour-launch-face { display:inline-flex; align-items:center; min-height:30px; padding:5px 9px; border:1px solid #d9d2fa; border-radius:999px; background:#f3f0ff; line-height:1.2; }
+  body.embedded .tour-launch:hover .tour-launch-face { background:#eae5ff; }
   body.embedded .header-menu { top:calc(100% + 4px); right:12px; max-height:calc(100dvh - 88px); overflow-y:auto; }
   body.embedded .header-menu button { min-height:44px; }
   body.embedded .mobile-nav:not([hidden]) { grid-template-columns:repeat(var(--community-nav-count,6),minmax(0,1fr)); gap:2px; padding:7px 5px max(12px,env(safe-area-inset-bottom)); border-top:1px solid #e2e8f0; box-shadow:0 -4px 18px #0f172a06; }
