@@ -1317,7 +1317,7 @@ window.NEXORA_DEAL_HUGEICONS_DATA = {
     "nearby": "maps-location-01",
     "coupons": "coupon-01",
     "nail-salons": "wellness",
-    "requests": "search-list-01",
+    "requests": "discount-tag-01",
     "openings": "store-add-01",
     "last-minute": "timer-02",
     "my-open-slots": "calendar-03"

@@ -197,6 +197,7 @@
   function refreshSemantics() {
     document.querySelectorAll('[data-deal-subroute]').forEach(element => semantic(element, data.routes[element.dataset.dealSubroute]));
     document.querySelectorAll('.discover-entry').forEach(element => semantic(element.querySelector('.discover-entry-icon'), data.routes[element.getAttribute('href')?.slice(1)]));
+    document.querySelectorAll('.discover-rails .request-button>span:first-child').forEach(element => semantic(element, data.routes.requests));
     document.querySelectorAll('.dw-nearby-controls h1').forEach(element => semantic(element, data.routes.nearby));
     document.querySelectorAll('.dw-match-hero h1,.dw-match-top h1').forEach(element => semantic(element, data.routes.requests));
     document.querySelectorAll('h1').forEach(element => {
