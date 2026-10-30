@@ -25,8 +25,18 @@ main > :is(.hero-shell,.content-shell),#salonProfile{padding-inline:0}
   .site-header .header-actions{gap:6px;flex:none}
   .site-header .nexora-auth-link{padding-inline:8px;min-height:44px}
   .site-header .nexora-auth-link.login:not([hidden]){display:inline-flex}
-  .site-header .language-control{width:60px;min-height:44px;padding-inline:6px;gap:4px}
+  .site-header .language-control{width:44px;min-height:44px;padding:4px;gap:2px}
 }
+.language-control{position:relative;display:inline-flex;flex:none;flex-direction:column;align-items:center;justify-content:center;width:44px;height:44px;min-height:44px;gap:2px;padding:4px;border:1px solid transparent;border-radius:8px;background:transparent;color:#34415b;line-height:1;cursor:pointer}
+.language-control .language-icon{display:flex;align-items:center;justify-content:center;width:16px;height:16px;color:#64748b;font-size:0}
+.language-control .language-icon .deal-inline-icon{width:16px;height:16px;vertical-align:middle;stroke-width:1.8;color:inherit}
+.language-control .language-code{color:#34415b;font-size:9px;font-weight:700;line-height:1;letter-spacing:.05em}
+.language-control .language-chevron{display:none}
+.language-control select{position:absolute;inset:-1px;width:calc(100% + 2px);height:calc(100% + 2px);margin:0;padding:0;border:0;opacity:0;cursor:pointer}
+.language-control:hover{border-color:transparent;background:#f5f6fb}
+.language-control:focus-within{border-color:#7764eb;box-shadow:0 0 0 3px #684fe724}
+.language-control select:focus{outline:none}
+.sp-header{align-items:center}
 body{min-width:0}
 .discover-entry-grid .discover-entry{grid-template-columns:36px minmax(0,1fr) 16px;column-gap:12px}
 .discover-entry .discover-entry-icon{width:36px!important;height:36px!important;border-radius:11px;font-size:0!important;box-shadow:none}
