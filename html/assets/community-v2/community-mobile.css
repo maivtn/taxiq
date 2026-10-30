@@ -451,13 +451,11 @@ body .toast { z-index: 100; max-width: min(420px, calc(100% - 24px)); overflow-w
   body.embedded #jobsView:is([data-jobs-tab="browse"], [data-jobs-tab="myPosts"]) .section-heading { justify-content: flex-end; min-height: 16px; padding: 0; }
   body.embedded #jobsView:is([data-jobs-tab="browse"], [data-jobs-tab="myPosts"]) #jobListTitle,
   body.embedded #feedView.deal-mode #feedListTitle { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip-path: inset(50%); white-space: nowrap; }
-  body.embedded #jobsView #jobCount { font-size: 11px; }
   body.embedded #jobsView #jobPosts { margin-top: 0; }
 
   body.embedded #feedView.deal-mode #dealSearchTools { margin-bottom: 8px; }
   body.embedded #feedView.deal-mode .feature-layout > .stack { gap: 8px; }
   body.embedded #feedView.deal-mode .section-heading { justify-content: flex-end; min-height: 16px; padding: 0; }
-  body.embedded #feedView.deal-mode #feedCount { font-size: 11px; }
 }
 @media (max-width: 360px) {
   body.embedded #localDiscovery.has-context-action .community-context-location { flex-direction: column; align-items: flex-start; gap: 0; }
@@ -487,7 +485,6 @@ body .community-toolbar-filter-toggle,body .community-group-filter-toggle,body .
   body.embedded #feedView:not(.deal-mode) .feature-layout > .stack { gap:8px; }
   body.embedded #feedView:not(.deal-mode) #feedListTitle { position:absolute; width:1px; height:1px; overflow:hidden; clip-path:inset(50%); white-space:nowrap; }
   body.embedded #feedView:not(.deal-mode) .section-heading { justify-content:flex-end; min-height:16px; padding:0; }
-  body.embedded #feedView:not(.deal-mode) #feedCount { font-size:11px; }
 
   body.embedded #localDiscovery .community-market-create { display:block; position:relative; min-height:44px; padding:0; }
   body.embedded .community-market-create > summary { min-height:44px; padding:8px 9px; font-size:11.5px; gap:5px; list-style:none; cursor:pointer; }
@@ -601,4 +598,21 @@ body #feedView .feed-action[data-blog-create] .feed-icon .community-action-icon 
   body.embedded #feedView .feed-filter-control .ts-control .feed-icon { width:20px; height:20px; }
   body.embedded #feedView .feed-filter-control .ts-control .feed-filter-choice > span:last-child { white-space:normal; }
   body.embedded #feedView .feed-filter-prefix { display:block; white-space:nowrap; }
+}
+
+/* Remove the mobile rows left behind after list totals were removed. */
+@media (max-width:800px) {
+  body.embedded #feedView .feature-layout > .stack > .section-heading,
+  body.embedded #jobsView:is([data-jobs-tab="browse"],[data-jobs-tab="myPosts"]) .feature-layout > .stack > .section-heading,
+  body.embedded #marketView .section-heading,
+  body.embedded #pagesView > .section-heading,
+  body.embedded #blogView > .feature-layout > .stack > .section-heading {
+    position:absolute; width:1px; height:1px; min-height:0; margin:-1px; padding:0;
+    overflow:hidden; clip-path:inset(50%); white-space:nowrap;
+  }
+  body.embedded #feedView #sponsoredFeed:empty { display:none; }
+  body.embedded :is(#marketView,#dayworkView) > .feature-layout > .stack { gap:8px; }
+  body.embedded #dayworkView .section-heading { margin:0; padding:0; }
+  body.embedded #pagesView .page-searchbar { margin-bottom:8px; }
+  body.embedded #blogView > .feature-layout { margin-top:8px!important; }
 }
