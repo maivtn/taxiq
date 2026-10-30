@@ -21,6 +21,12 @@
 - Nếu cả PO và staging đều thiếu, staging lỗi/không truy cập được, hoặc có điểm chưa rõ cần đề xuất thay đổi, hỏi lại người dùng trước khi triển khai phần đó; không tự suy diễn nội dung hay hành vi.
 - Yêu cầu điều chỉnh rõ ràng của người dùng được ưu tiên khi khác với mẫu PO hoặc staging.
 
+## IMPORTANT — Vị trí Get started with Nexora theo trạng thái tiệm
+
+- Tiệm mới, chưa setup thông tin: hiển thị **Get started with Nexora** trực tiếp trên sidebar.
+- Tiệm đã hoạt động: chuyển **Get started with Nexora** vào **Business tools**, không giữ thành mục riêng ở cấp chính của sidebar.
+- Phải giữ đúng quy tắc này khi tạo mới hoặc chỉnh sửa sidebar, Business tools và luồng setup tiệm.
+
 ## Quy tắc giao diện
 
 - Ưu tiên dùng bộ icon có sẵn trong `html/assets/icon-oneqr/` khi tạo mới hoặc chỉnh sửa giao diện.
