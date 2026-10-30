@@ -4140,15 +4140,59 @@ function renderDealMatchParsed(query, areas) {
   return `<span class="dw-ai-label">✦ ${copy.aiReads}</span><span>${parsed.service ? `${workspaceIndustryIcon(parsed.service.id)} ${escapeHTML(parsed.service[language] || parsed.service.vi)}` : `? ${copy.unknownService}`}</span><span>${parsed.maxPrice ? `≤ $${parsed.maxPrice}` : copy.anyPrice}</span><span>🗺️ ${escapeHTML(location || copy.nearMe)}</span>${parsed.weekend ? `<span>📅 ${copy.weekend}</span>` : ""}`;
 }
 
-function dealMatchIndustryChips(active = "all") {
+function renderDealMatchIndustryOptions() {
   const language = getDealMatchLanguage();
-  return `<button class="dw-chip ${active === "all" ? "active" : ""}" type="button" data-dw-group="match-industry" data-dw-value="all">${getDealMatchCopy().allIndustries}</button>${couponTaxonomy.groups.map((group) => `<button class="dw-chip ${active === group.id ? "active" : ""}" type="button" data-dw-group="match-industry" data-dw-value="${group.id}">${workspaceIndustryIcon("group:" + group.id)} ${escapeHTML(group[language] || group.vi)}</button>`).join("")}`;
+  return `<option value="all" data-industry-icon="other">${getDealMatchCopy().allIndustries}</option>${couponTaxonomy.groups.map((group) => `<option value="${group.id}" data-industry-icon="group:${group.id}">${escapeHTML(group[language] || group.vi)}</option>`).join("")}`;
 }
 
-function renderDealMatchServiceChips(groupId = "") {
-  if (!groupId || groupId === "all") return "";
+function renderDealMatchServiceOptions(groupId = "") {
   const language = getDealMatchLanguage();
-  return `<button class="dw-chip active" type="button" data-dw-group="match-service" data-dw-value="all">${getDealMatchCopy().allServices}</button>${couponTaxonomy.inds.filter((item) => item.g === groupId).map((item) => `<button class="dw-chip" type="button" data-dw-group="match-service" data-dw-value="${item.id}">${workspaceIndustryIcon(item.id)} ${escapeHTML(item[language] || item.vi)}</button>`).join("")}`;
+  return `<option value="all" data-industry-icon="${groupId && groupId !== "all" ? "group:" + groupId : "other"}">${getDealMatchCopy().allServices}</option>${couponTaxonomy.inds.filter((item) => item.g === groupId).map((item) => `<option value="${item.id}" data-industry-icon="${item.id}">${escapeHTML(item[language] || item.vi)}</option>`).join("")}`;
+}
+
+function initializeDealMatchSelects() {
+  if (!window.TomSelect || !dealWorkspace) return;
+  dealWorkspace.querySelectorAll("select[data-dw-match-select]").forEach((select) => {
+    if (select.tomselect || select.disabled) return;
+    const choice = (data) => {
+      const option = Array.from(select.options).find((item) => item.value === String(data.value));
+      const artwork = window.NEXORA_INDUSTRY_ICONS.image(option?.dataset.industryIcon || "other", {
+        size: 20, className: "deal-industry-icon industry-choice-icon",
+      });
+      return `<div class="dw-match-select-choice"><span class="dw-match-select-icon">${artwork}</span><span>${escapeHTML(option?.textContent || data.text)}</span></div>`;
+    };
+    const control = new window.TomSelect(select, {
+      create: false, maxItems: 1, maxOptions: null, controlInput: null,
+      hideSelected: false, closeAfterSelect: true, searchField: [],
+      render: { option: choice, item: choice },
+    });
+    control.control.setAttribute("aria-labelledby", `${select.id}Label`);
+    control.on("dropdown_open", () => {
+      const bounds = control.control.getBoundingClientRect();
+      const nav = document.querySelector(".mobile-nav");
+      const bottom = nav?.getClientRects().length ? nav.getBoundingClientRect().top : window.innerHeight;
+      const header = document.querySelector(".deal-subnav");
+      const top = Math.max(16, header?.getBoundingClientRect().bottom || 0);
+      const below = Math.max(0, bottom - bounds.bottom - 16);
+      const above = Math.max(0, bounds.top - top - 16);
+      const opensUp = below < 264 && above > below;
+      control.wrapper.classList.toggle("dw-select-opens-up", opensUp);
+      control.wrapper.style.setProperty("--dw-select-available", `${Math.max(44, opensUp ? above : below)}px`);
+    });
+  });
+}
+
+function destroyDealMatchSelects() {
+  dealWorkspace?.querySelectorAll("select[data-dw-match-select]").forEach((select) => select.tomselect?.destroy());
+}
+
+function syncDealMatchSuggestion(value) {
+  const select = dealWorkspace?.querySelector('[data-dw-match-select="suggestion"]');
+  if (!select) return;
+  const selected = Array.from(select.options).some((option) => option.value === value) ? value : "all";
+  if (select.value === selected) return;
+  if (select.tomselect) select.tomselect.setValue(selected, true);
+  else select.value = selected;
 }
 
 function getDealMatchGeo() {
@@ -4234,9 +4278,9 @@ function renderDealMatchWorkspace(query = "", areas = ["Garden Grove, California
       <div class="dw-heading"><div><span class="dw-kicker">${copy.kicker}</span><h1>✦ Deal Match</h1><p>${copy.intro}</p></div><span class="dw-area-count" data-dw-area-count>${dealMatchAreaCount(selectedAreas.length)}</span></div>
       <form data-dw-match-form>
         <div class="dw-match-input"><input name="need" value="${escapeHTML(query)}" placeholder="${copy.placeholder}" autocomplete="off" /><button type="submit" aria-label="${copy.searchLabel}"><svg class="dw-mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10v2a7 7 0 0 0 14 0v-2M12 19v3m-4 0h8"/></svg></button></div>
-        <div class="dw-chip-row">${suggestions.map(([label, value]) => `<button class="dw-chip" type="button" data-dw-match-suggestion="${escapeHTML(value)}">${label}</button>`).join("")}</div>
+        <div class="dw-match-suggestion-select dw-match-select"><label class="sr-only" id="dwMatchSuggestionLabel" for="dwMatchSuggestion">${copy.searchLabel}</label><select id="dwMatchSuggestion" data-dw-match-select="suggestion"><option value="all" data-industry-icon="other" ${suggestions.some(([, value]) => value === query) ? "" : "selected"}>${copy.unknownService}</option>${suggestions.map(([label, value], index) => `<option value="${escapeHTML(value)}" data-industry-icon="${["pedi","nail","spa","lash","hair","food","supply","carwash","dental","ride"][index]}" ${value === query ? "selected" : ""}>${escapeHTML(label.replace(/^[^\p{L}\p{N}]+/u, ""))}</option>`).join("")}</select></div>
         <div class="dw-parsed" data-dw-match-parsed>${renderDealMatchParsed(query, selectedAreas)}</div>
-        <div class="dw-match-section"><strong>${copy.industries}</strong><div class="dw-chip-row dw-scroll-chips" data-dw-match-industries>${dealMatchIndustryChips()}</div><div class="dw-chip-row dw-service-chips" data-dw-match-services></div></div>
+        <div class="dw-match-section"><strong>${copy.industries}</strong><div class="dw-match-filter-selects"><div class="dw-match-select" data-dw-match-industries><label class="sr-only" id="dwMatchIndustryLabel" for="dwMatchIndustry">${copy.allIndustries}</label><select id="dwMatchIndustry" name="industry" data-dw-match-select="industry">${renderDealMatchIndustryOptions()}</select></div><div class="dw-match-select" data-dw-match-services hidden><label class="sr-only" id="dwMatchServiceLabel" for="dwMatchService">${copy.allServices}</label><select id="dwMatchService" name="service" data-dw-match-select="service" disabled>${renderDealMatchServiceOptions()}</select></div></div></div>
         <div class="dw-match-section"><strong>${copy.areaHeading}</strong><div class="dw-chip-row"><button class="dw-chip" type="button" data-dw-group="match-location" data-dw-value="near">📍 ${copy.nearMe}</button><button class="dw-chip active" type="button" data-dw-group="match-location" data-dw-value="multi">🗺️ ${copy.multiArea}</button><button class="dw-chip" type="button" data-dw-group="match-location" data-dw-value="online">🌐 ${copy.online}</button></div>
           <div class="dw-radius-row hidden" data-dw-radius-row><span>${copy.radius}</span>${[1,5,10,25].map((radius) => `<button class="dw-chip ${radius === 5 ? "active" : ""}" type="button" data-dw-group="match-radius" data-dw-value="${radius}">${radius} mi</button>`).join("")}</div>
           <div class="dw-geo-picker" data-dw-geo-picker><select data-dw-geo-country aria-label="${copy.country}">${renderDealMatchCountryOptions()}</select><select data-dw-geo-state aria-label="${copy.state}" disabled><option value="">${copy.state}</option></select><select data-dw-geo-city aria-label="${copy.city}" disabled><option value="">${copy.city}</option></select><select data-dw-geo-area aria-label="${copy.area}" disabled><option value="">${copy.area}</option></select><button class="dw-secondary" type="button" data-dw-add-area>${copy.addArea}</button></div>
@@ -4269,8 +4313,8 @@ function updateDealMatchPreview() {
   if (!dealWorkspace?.querySelector("[data-dw-match-form]")) return;
   const query = dealWorkspace.querySelector('[data-dw-match-form] input[name="need"]')?.value.trim() || "";
   const areas = syncDealMatchAreas();
-  const industry = dealWorkspace.querySelector('[data-dw-group="match-industry"].active')?.dataset.dwValue || "all";
-  const service = dealWorkspace.querySelector('[data-dw-group="match-service"].active')?.dataset.dwValue || "all";
+  const industry = dealWorkspace.querySelector('[data-dw-match-select="industry"]')?.value || "all";
+  const service = dealWorkspace.querySelector('[data-dw-match-select="service"]')?.value || "all";
   const mode = dealWorkspace.querySelector('[data-dw-group="match-location"].active')?.dataset.dwValue || "multi";
   const radius = Number(dealWorkspace.querySelector('[data-dw-group="match-radius"].active')?.dataset.dwValue || 5);
   const matches = getDealMatchResults(query, areas, industry, service, mode, radius);
@@ -4529,7 +4573,9 @@ function renderDealWorkspace(route) {
   document.body.classList.add("deal-workspace-mode");
   document.body.classList.toggle("legal-workspace-mode", route === "#legal");
   dealWorkspace.hidden = false;
+  destroyDealMatchSelects();
   dealWorkspace.innerHTML = render();
+  if (route === "#requests") initializeDealMatchSelects();
   if (route === "#nearby") applyNearbyFilters();
   if (route === "#nail-salons") initializeNailDirectory();
   setActiveNavigation(route === "#legal" ? "#legal" : "#coupons");
@@ -4540,6 +4586,7 @@ function closeDealWorkspace() {
   document.body.classList.remove("deal-workspace-mode");
   document.body.classList.remove("legal-workspace-mode");
   if (dealWorkspace) {
+    destroyDealMatchSelects();
     dealWorkspace.hidden = true;
     dealWorkspace.innerHTML = "";
   }
@@ -4592,12 +4639,6 @@ dealWorkspace?.addEventListener("click", (event) => {
       filterCouponDirectory(chip.dataset.dwValue, "");
       return;
     }
-    if (chip.dataset.dwGroup === "match-industry") {
-      const services = dealWorkspace.querySelector("[data-dw-match-services]");
-      if (services) services.innerHTML = renderDealMatchServiceChips(chip.dataset.dwValue);
-      updateDealMatchPreview();
-      return;
-    }
     if (chip.dataset.dwGroup === "match-location") {
       const mode = chip.dataset.dwValue;
       dealWorkspace.querySelector("[data-dw-geo-picker]")?.classList.toggle("hidden", mode !== "multi");
@@ -4605,7 +4646,7 @@ dealWorkspace?.addEventListener("click", (event) => {
       updateDealMatchPreview();
       return;
     }
-    if (["match-service", "match-radius"].includes(chip.dataset.dwGroup)) {
+    if (chip.dataset.dwGroup === "match-radius") {
       updateDealMatchPreview();
       return;
     }
@@ -4624,13 +4665,6 @@ dealWorkspace?.addEventListener("click", (event) => {
     history.replaceState(null, "", `${next.pathname}${next.search}${next.hash}`);
     if (searchInput) searchInput.value = category.dataset.dwCategory;
     handleRoute("#nearby");
-    return;
-  }
-  const suggestion = event.target.closest("[data-dw-match-suggestion]");
-  if (suggestion) {
-    const input = dealWorkspace.querySelector('[data-dw-match-form] input[name="need"]');
-    if (input) { input.value = suggestion.dataset.dwMatchSuggestion; input.focus(); }
-    updateDealMatchPreview();
     return;
   }
   const addArea = event.target.closest("[data-dw-add-area]");
@@ -4857,11 +4891,38 @@ dealWorkspace?.addEventListener("input", (event) => {
     filterCouponDirectory(null, event.target.value);
   }
   if (event.target.matches('[data-dw-match-form] input[name="need"]')) {
+    syncDealMatchSuggestion(event.target.value);
     updateDealMatchPreview();
   }
 });
 
 dealWorkspace?.addEventListener("change", (event) => {
+  const select = event.target;
+  if (select.matches('[data-dw-match-select="suggestion"]')) {
+    if (select.value === "all") return;
+    const input = dealWorkspace.querySelector('[data-dw-match-form] input[name="need"]');
+    if (input) { input.value = select.value; input.focus(); }
+    updateDealMatchPreview();
+    return;
+  }
+  if (select.matches('[data-dw-match-select="industry"]')) {
+    const services = dealWorkspace.querySelector("[data-dw-match-services]");
+    const service = services?.querySelector("select");
+    if (service) {
+      service.tomselect?.destroy();
+      service.innerHTML = renderDealMatchServiceOptions(select.value);
+      service.value = "all";
+      service.disabled = select.value === "all";
+      services.hidden = service.disabled;
+      initializeDealMatchSelects();
+    }
+    updateDealMatchPreview();
+    return;
+  }
+  if (select.matches('[data-dw-match-select="service"]')) {
+    updateDealMatchPreview();
+    return;
+  }
   if (event.target.matches("[data-dw-geo-country]")) syncDealMatchGeoSelectors("country");
   if (event.target.matches("[data-dw-geo-state]")) syncDealMatchGeoSelectors("state");
   if (event.target.matches("[data-dw-geo-city]")) syncDealMatchGeoSelectors("city");
