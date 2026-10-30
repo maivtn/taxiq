@@ -18,9 +18,24 @@
   // Prices captured in community-staging/templates.js → compose-featured.
   const demoPlans=[{planDays:3,priceUsd:5},{planDays:7,priceUsd:10},{planDays:14,priceUsd:18}];
   const demoComments={
+    f5:[['Mai Nguyễn','This pink base looks so delicate. Next time I would like to try slightly shorter nails.'],['Linh Nguyễn','The shimmer on two nails adds just enough sparkle. Thanks for sharing the design, Hà.']],
+    f1:[['Linh Nguyễn','We tried one lamp first and checked the power cord and whether the base could be removed for cleaning.'],['Mai Nguyễn','Ask the store to let you test it with the gel your salon uses. That makes choosing easier.']],
+    f2:[['Hà Nguyễn','I also keep a separate tool tray for each shift so the next technician can find everything more easily.'],['Thảo Lê','Noting supplies that are running low at the end of the shift is helpful. I will try this.']]
+  };
+  const legacyDemoComments={
     f5:[['Mai Nguyễn','Nền hồng này nhìn rất nhẹ tay. Lần tới mình muốn thử móng ngắn hơn một chút.'],['Linh Nguyễn','Phần nhũ ở hai ngón vừa đủ nổi bật, cảm ơn Hà đã chia sẻ mẫu.']],
     f1:[['Linh Nguyễn','Tiệm mình thử một máy trước, kiểm tra dây nguồn và lòng đèn có tháo ra vệ sinh được không.'],['Mai Nguyễn','Anh chị hỏi cửa hàng cho cắm thử cùng loại gel tiệm đang dùng sẽ dễ chọn hơn.']],
     f2:[['Hà Nguyễn','Mình cũng để khay dụng cụ riêng từng ca, người nhận bàn đỡ phải đi tìm hơn.'],['Thảo Lê','Ghi thêm món sắp hết vào cuối ca rất hữu ích, mình sẽ thử cách này.']]
+  };
+  const legacySampleComments={
+    'feed-group-rich-group-new-16':[['Linh Nguyễn','Em hỏi trước dịch vụ sẽ nhận trong ngày, rồi soạn túi theo danh sách đó sẽ gọn hơn.'],['Jessica Nguyen','Cảm ơn chị, em đã nhắn tiệm để xác nhận phần dụng cụ có sẵn.']],
+    'feed-group-rich-group-houston-4':[['BITCOIN NAIL BAR','Tiệm có lịch cần hỗ trợ, em xem ca và nhắn kỹ năng để mình trao đổi nhé.'],['Kim Tuyen','Dạ em gửi mẫu qua tin nhắn, chị xem giúp em nhé.']],
+    'feed-group-rich-group-dallas-6':[['Mai Nguyễn','Nền trong nhìn rất nhẹ, phần đá vừa đủ nổi bật.'],['Thảo Lê','Cảm ơn chị, khách cũng thích phần nền không quá dày.']],
+    'feed-group-rich-group-lash-studio-14':[['Mây Beauty Studio','Studio mình cũng xác nhận phần tháo bộ cũ ngay khi giữ lịch.'],['Linh Lash Studio','Đúng rồi chị, chừa đủ giờ giúp cả khách và thợ đỡ vội.']],
+    'feed-group-rich-group-coffee-24':[['An Phạm','Quầy có danh sách đầu ca thì người hỗ trợ vào cũng dễ theo hơn.'],['Garden Cafe','Tụi mình dán danh sách ngay chỗ bàn giao để ai vào ca cũng xem được.']],
+    'feed-group-rich-group-ai-20':[['Sally Thanh Hoang','Mình thường kiểm lại ngày và giờ trước tiên vì bản nháp dễ ghi nhầm.'],['Bright Nail Supply','Cửa hàng cũng để người phụ trách kiểm từng thông tin trước khi dùng.']],
+    'feed-group-rich-group-supply-28':[['Lotus Nails','Gửi ảnh mã cũ giúp tiệm mình tránh lấy nhầm kích cỡ.'],['Studio Supply Dallas','Anh chị gửi kèm số lượng cần, tụi mình xác nhận trước khi chuẩn bị nhé.']],
+    'feed-group-rich-g2-2':[['Kim Tuyen','Mẫu này hợp khách muốn móng gọn khi gõ máy quá chị.'],['Hà Nguyễn','Cảm ơn em, khách chọn độ dài vừa nên dùng hằng ngày khá tiện.']]
   };
   let mounted=null;
 
@@ -55,6 +70,8 @@
       entry.baseLikes=Math.max(0,Number(entry.baseLikes)||0);
       entry.likedBy=Array.isArray(entry.likedBy)?entry.likedBy.filter(value=>typeof value==='string'):[];
       entry.comments=Array.isArray(entry.comments)?entry.comments.filter(row=>row&&typeof row.id==='string'&&typeof row.owner==='string'&&typeof row.body==='string'):[];
+      for(const [index,seed] of (demoComments[key]||[]).entries()){const previous=legacyDemoComments[key]?.[index],comment=entry.comments.find(row=>row.id==='social-demo-'+key+'-'+index);if(previous&&comment?.owner===previous[0]&&comment.body===previous[1])comment.body=seed[1];}
+      for(const [index,seed] of (post.sampleComments||[]).entries()){const previous=legacySampleComments[key]?.[index],comment=entry.comments.find(row=>row.id==='social-demo-'+key+'-'+index);if(previous&&comment?.owner===previous[0]&&comment.body===previous[1])comment.body=seed[1];}
       return entry;
     }
     function persist(next) {

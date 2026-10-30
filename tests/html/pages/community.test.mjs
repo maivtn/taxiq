@@ -206,11 +206,11 @@ test('rapid section changes made while native content loads open the latest choi
   assert.equal(calls.mounts[0].host, host);
 });
 
-test('a language change made during loading is applied when the content becomes ready', async t => {
+test('Community replaces a saved Vietnamese preference with English before content is ready', async t => {
   const {w, calls, finish} = await boot(t, {pending: true, language: 'vi'});
   const select = w.document.querySelector('.sidebar-account-language select');
-  assert.equal(select.value, 'vi');
-  assert.equal(select.querySelectorAll('option[value="vi"]').length, 1);
+  assert.equal(select.value, 'en');
+  assert.equal(select.querySelectorAll('option[value="vi"]').length, 0);
   changeLanguage(w, 'en');
   assert.equal(w.localStorage.getItem('nexora-community-language'), 'en');
   assert.deepEqual(calls.languages, []);
@@ -218,12 +218,13 @@ test('a language change made during loading is applied when the content becomes 
   assert.deepEqual(calls.languages, ['en']);
 });
 
-test('changing the account language updates current content without changing its route or history', async t => {
+test('Community keeps English when receiving a language change without changing route or history', async t => {
   const {w, calls} = await boot(t, {query: '?tab=blog', language: 'vi'});
   const length = w.history.length;
-  assert.deepEqual(calls.languages, ['vi']);
-  changeLanguage(w, 'en');
-  assert.deepEqual(calls.languages, ['vi', 'en']);
+  assert.deepEqual(calls.languages, ['en']);
+  w.document.querySelector('.sidebar-account-language select').add(new w.Option('Tiếng Việt','vi'));
+  changeLanguage(w, 'vi');
+  assert.deepEqual(calls.languages, ['en', 'en']);
   assert.equal(w.localStorage.getItem('nexora-community-language'), 'en');
   assert.equal(tab(w), 'blog');
   assert.equal(w.history.length, length);

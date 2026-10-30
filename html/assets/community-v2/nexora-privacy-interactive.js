@@ -25,9 +25,9 @@
     ...(window.NEXORA_COMMUNITY_DEMO?.connect?.calls||[]).map(call=>({...call,summary:(call.type.startsWith('missed-')?'Missed':'Outgoing')+' · '+(call.type.endsWith('video')?'Video':'Voice')+' · '+callTime(call.days,call.hour,call.minute)}))
   ];
   const communities = [
-    {id:'dallas', name:'Thợ Nail Dallas – Fort Worth', type:'city', detail:'Dallas – Fort Worth · 962 members'},
-    {id:'tax', name:'Thuế & 1099 cho thợ', type:'topic', detail:'624 members'},
-    {id:'ai', name:'Học Hỏi AI', type:'topic', detail:'387 members'}
+    {id:'dallas', name:'Dallas – Fort Worth Nail Technicians', type:'city', detail:'Dallas – Fort Worth · 962 members'},
+    {id:'tax', name:'Taxes & 1099 for Technicians', type:'topic', detail:'624 members'},
+    {id:'ai', name:'Learning AI', type:'topic', detail:'387 members'}
   ];
   const $ = selector => document.querySelector(selector);
   const parentMessageOrigin = location.protocol === 'file:' ? '*' : location.origin;
@@ -47,6 +47,7 @@
   function withDemoChats(value) {
     const sources=value.sourceChats&&typeof value.sourceChats==='object'&&!Array.isArray(value.sourceChats)?value.sourceChats:{};
     value.sourceChats={...Object.fromEntries((window.NEXORA_COMMUNITY_DEMO?.connect?.chats||[]).filter(chat=>chat.recipient!==currentMember).map(chat=>[chat.id,{recipient:chat.recipient,reference:chat.reference,sourceId:'demo:'+chat.id}])),...sources};
+    for(const chat of window.NEXORA_COMMUNITY_DEMO?.connect?.chats||[]){const source=value.sourceChats[chat.id];if(source?.sourceId==='demo:'+chat.id)source.reference=chat.reference;}
     return value;
   }
   let state = load();
@@ -335,9 +336,9 @@
     } else if (kind === 'chat-mai') {
       html = thread('Mai Nguyễn','About your 12 white waiting chairs',[{text:'Hi, are the white chairs still available? Could I see their condition and the price for six?'}],'chat-mai',true);
     } else if (kind === 'chat-kim') {
-      html = thread('Kim Tuyen','Ca hỗ trợ tại BITCOIN NAIL BAR',[{text:'Chị ơi, cuối tuần tiệm còn cần người làm gel manicure không?'},{text:'Còn em nhé. Tiệm cần hỗ trợ một ca 9 giờ đến 6 giờ, có nghỉ trưa. Em làm được Gel-X không?',mine:true},{text:'Dạ được chị, em gửi mẫu em mới làm để chị xem nhé.'},{text:'Em gửi giúp chị vài mẫu và ngày em trống, chị xác nhận lịch lại trong chiều nay.',mine:true}],'chat-kim',true);
+      html = thread('Kim Tuyen','Support shift at BITCOIN NAIL BAR',[{text:'Hi, does the salon still need someone for gel manicures this weekend?'},{text:'Yes, we need help from 9 AM to 6 PM, with a lunch break. Do you do Gel-X?',mine:true},{text:'Yes, I do. I will send you some of my recent work.'},{text:'Please send a few examples and your available dates. I will confirm the schedule this afternoon.',mine:true}],'chat-kim',true);
     } else if (kind === 'chat-sally') {
-      html = thread('Sally Thanh Hoang','Mẫu Gel-X và lịch hẹn',[{text:'Chị gửi giúp em hình mẫu Gel-X hồng sữa tiệm mới đăng nhé.'},{text:'Được em, mẫu đó có nhũ nhẹ và đá ở hai ngón. Em thích độ dài vừa hay dài?',mine:true},{text:'Em muốn dài vừa thôi chị, để làm việc gõ máy vẫn tiện. Chiều thứ Sáu tiệm còn giờ không?'}],'chat-sally',true);
+      html = thread('Sally Thanh Hoang','Gel-X design and appointment',[{text:'Could you send me a photo of the milky pink Gel-X design the salon just posted?'},{text:'Sure, that design has a little shimmer and gems on two nails. Would you like medium or long nails?',mine:true},{text:'I would like medium nails so typing stays comfortable. Do you have any openings on Friday afternoon?'}],'chat-sally',true);
     } else if (state.sourceChats[kind]) {
       const source = state.sourceChats[kind];
       const messages=window.NEXORA_COMMUNITY_DEMO?.connect?.chats?.find(chat=>chat.id===kind)?.messages||[];
@@ -347,11 +348,11 @@
       if(!room){currentMessages=[];pendingChatAttachment=null;mediaGeneration++;closeChatRecording();const panel=$('#detailPanel');panel.replaceChildren();panel.classList.add('hidden');currentDetail='';showSection('groups');return false;}
       html=thread(room.name,room.context||'Group chat',room.messages||[],kind,Boolean(room.allowCalls));
     } else if (kind.startsWith('group-')) {
-      const names = {'group-houston':'Thợ Nail Houston','group-art':'Học Gel-X & Nail Art','group-new':'Thợ Mới Vào Nghề'};
+      const names = {'group-houston':'Houston Nail Technicians','group-art':'Learn Gel-X & Nail Art','group-new':'New Nail Technicians'};
       const custom = state.createdGroups.find(group => group.id === kind);
       const joined = communities.find(group => 'group-community-' + group.id === kind && state.joinedCommunities.includes(group.id));
       if (!names[kind] && !custom && !joined) return;
-      const messages = kind === 'group-new' || custom || joined ? [] : [{text:kind === 'group-houston' ? 'Tiệm mình đang đổi nội thất, có 12 ghế chờ trắng. Anh chị cần mình gửi kích thước nhé.' : 'Mình đang tập vẽ hoa nét mảnh trên tip. Có ai ở Houston muốn cùng thực hành buổi tới không?'},{text:kind === 'group-houston' ? 'Mình cần 6 ghế cho khu chờ. Bạn gửi giúp giá theo chiếc và khu vực nhận nhé.' : 'Cho mình tham gia với. Mình mang cọ liner và tip mẫu, cần chuẩn bị thêm màu gì không?'}];
+      const messages = kind === 'group-new' || custom || joined ? [] : [{text:kind === 'group-houston' ? 'We are replacing our salon furniture and have 12 white waiting chairs. Let me know if you need the dimensions.' : 'I am practicing fine-line floral designs on nail tips. Would anyone in Houston like to join the next practice session?'},{text:kind === 'group-houston' ? 'I need six chairs for the waiting area. Could you send the price per chair and the pickup location?' : 'I would like to join. I will bring a liner brush and sample tips. What other colors should I prepare?'}];
       html = thread(names[kind] || custom?.name || joined.name, 'Group chat', messages, kind);
     } else if (kind.startsWith('call-')) {
       const call = calls.find(item => item.id === kind && !state.deletedCalls.includes(item.id));
@@ -414,7 +415,7 @@
       return '<button class="row-button" data-detail="' + detail + '" data-initials="' + esc(initials) + '"><span><strong>' + esc(member.name) + '</strong><small>' + esc(member.handle) + ' · ' + esc(member.id) + '</small></span><span class="arrow">›</span></button>';
     }).join('');
   }
-  const conversationSamples={'chat-kim':'Em gửi giúp chị vài mẫu và ngày em trống, chị xác nhận lịch lại trong chiều nay.','chat-sally':'Em muốn dài vừa thôi chị, để làm việc gõ máy vẫn tiện. Chiều thứ Sáu tiệm còn giờ không?','group-houston':'Bạn gửi giúp giá theo chiếc và khu vực nhận nhé.','group-art':'Mình mang cọ liner và tip mẫu, cần chuẩn bị thêm màu gì không?',...Object.fromEntries((window.NEXORA_COMMUNITY_DEMO?.connect?.chats||[]).map(chat=>[chat.id,chat.messages.at(-1)?.text||'']))};
+  const conversationSamples={'chat-kim':'Please send a few examples and your available dates. I will confirm the schedule this afternoon.','chat-sally':'I would like medium nails so typing stays comfortable. Do you have any openings on Friday afternoon?','group-houston':'Could you send the price per chair and the pickup location?','group-art':'I will bring a liner brush and sample tips. What other colors should I prepare?',...Object.fromEntries((window.NEXORA_COMMUNITY_DEMO?.connect?.chats||[]).map(chat=>[chat.id,chat.messages.at(-1)?.text||'']))};
   function renderConversationPreviews() {
     for (const id of ['chat-kim','chat-sally','group-houston','group-art','group-new','chat-mai',...Object.keys(state.sourceChats)]) {
       const messages = state.sentMessages[id];

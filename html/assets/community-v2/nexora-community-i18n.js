@@ -3,6 +3,122 @@
 (() => {
   const isConnect = location.pathname.includes('privacy-qr-layout');
   const communityPairs = `
+Gọi	Call
+Ảnh	Photos
+Người theo dõi	Followers
+người theo dõi ·	followers ·
+bài viết	posts
+Đổi ảnh đại diện	Change profile photo
+Danh sách người theo dõi chỉ hiển thị khi có dữ liệu tài khoản thật.	The follower list appears when real account data is available.
+Ảnh hoặc video (tùy chọn) · tối đa 4 ảnh hoặc 1 video	Photos or video (optional) · up to 4 photos or 1 video
+Thời điểm đăng	Publish time
+Đăng ngay	Publish now
+Lên lịch	Schedule
+Ngày và giờ đăng	Publish date and time
+ĐÃ LÊN LỊCH	SCHEDULED
+Bài có ảnh/video	Photo/video post
+Lưu lịch	Save schedule
+Chưa có bài nào được lên lịch.	No scheduled posts yet.
+Viết nội dung hoặc chọn ảnh/video trước khi đăng.	Write something or select photos/video before posting.
+Chọn ngày và giờ sau thời điểm hiện tại ít nhất 1 phút.	Choose a date and time at least 1 minute from now.
+Đang lưu...	Saving...
+Không thể lưu bài trên thiết bị này.	Could not save the post on this device.
+Không thể lưu bài. Vui lòng thử lại.	Could not save the post. Please try again.
+Không thể lưu thay đổi trên thiết bị này.	Could not save changes on this device.
+Đã lên lịch bài đăng.	Post scheduled.
+Đã đăng bài.	Post published.
+Đã cập nhật lịch đăng.	Schedule updated.
+Trình duyệt này chưa hỗ trợ lưu ảnh/video.	This browser does not support saving photos/video.
+Không mở được bộ nhớ ảnh/video.	Could not open photo/video storage.
+Không lưu được ảnh/video.	Could not save photos/video.
+Không đọc được ảnh/video.	Could not read photos/video.
+Chọn tối đa 4 ảnh hoặc 1 video.	Choose up to 4 photos or 1 video.
+Một bài chỉ chọn 1 video hoặc tối đa 4 ảnh.	Choose 1 video or up to 4 photos per post.
+Video tối đa 30 MB.	Videos must be 30 MB or smaller.
+Ảnh cần là PNG, JPG, WebP hoặc GIF.	Photos must be PNG, JPG, WebP or GIF.
+Mỗi ảnh tối đa 5 MB.	Each photo must be 5 MB or smaller.
+Xem trước video	Video preview
+Xem trước ảnh đã chọn	Selected photo preview
+Video bài đăng	Post video
+Video của Fanpage	Page video
+Không mở được tệp.	Could not open the file.
+Ảnh PNG/JPG/WebP/GIF, tối đa 900 KB mỗi ảnh.	PNG/JPG/WebP/GIF, up to 900 KB per image.
+Chọn ảnh PNG, JPG, WebP hoặc GIF không quá 900 KB.	Choose a PNG, JPG, WebP or GIF image up to 900 KB.
+Tên Fanpage của bạn	Your Page name
+Chọn ảnh đại diện và ảnh bìa bên dưới; có thể thay đổi sau khi tạo.	Choose a profile and cover photo below. You can change them after creating your Page.
+Xem trước ảnh đại diện	Profile photo preview
+Xem trước ảnh bìa	Cover photo preview
+Xóa ảnh	Remove photo
+Chưa có bài Blog phù hợp	No matching blog posts
+Thử chủ đề khác hoặc viết bài đầu tiên.	Try another topic or write the first post.
+Đã cập nhật Blog.	Blog updated.
+Viết điều bạn muốn chia sẻ với cộng đồng.	Write what you would like to share with the community.
+Dịch vụ, kỹ thuật, mô tả và ảnh mẫu.	Service, technique, description and work photos.
+Đặt câu hỏi và đánh dấu đã giải đáp.	Ask a question and mark it answered.
+Lấy ý kiến nhanh từ cộng đồng.	Get quick feedback from the community.
+Ngày, hình thức và cách tham gia.	Date, format and how to join.
+Chủ đề, khu vực và nội quy nhóm.	Group topic, area and rules.
+Loại nhóm	Group type
+Thêm nội dung, ảnh đại diện và ảnh bìa ngay khi tạo Fanpage.	Add details, a profile photo and a cover photo when creating your Page.
+Tên Fanpage @ (tùy chọn)	Page @handle (optional)
+Nút liên hệ trên Fanpage	Page contact button
+Số điện thoại công khai (nếu chọn Gọi)	Public phone number (for the Call button)
+Giờ hoạt động (tùy chọn)	Business hours (optional)
+Cách liên hệ khác (tùy chọn)	Other contact method (optional)
+Ảnh đại diện (tùy chọn)	Profile photo (optional)
+Ví dụ: 713-555-0144	Example: 713-555-0144
+Ví dụ: @bitcoin.nail.bar	Example: @bitcoin.nail.bar
+Ví dụ: BITCOIN NAIL BAR	Example: BITCOIN NAIL BAR
+Ví dụ: website hoặc email công khai	Example: public website or email
+Hỏi tình trạng, giá và cách xem hàng.	Ask about condition, price and viewing the item.
+Thống nhất thời gian và khu vực gặp.	Arrange a meeting time and area.
+Hỏi thêm về vị trí hoặc giới thiệu bản thân.	Ask about the role or introduce yourself.
+Nêu chủ đề và thời gian bạn tiện nghe máy.	Add a topic and a convenient time for a call.
+Chọn vị trí	Choose a role
+Nội quy:	Rules:
+Chỉ bán cả lô	Entire lot only
+Đã bán	Sold
+Tối đa	Up to
+Ngân sách tối đa (USD)	Maximum budget (USD)
+Khu vực bạn muốn xem	Area you want to explore
+Bài gần khu vực này sẽ lên trước. Các bài khác vẫn hiển thị.	Posts near this area appear first. Other posts are still shown.
+Tiểu bang	State
+Thành phố	City
+Chỉ truy cập vị trí khi bạn cho phép.	Location is accessed only with your permission.
+Lưu khu vực	Save area
+Bạn chưa cho phép vị trí. Vui lòng chọn khu vực.	Location permission was not granted. Choose an area.
+Bạn chưa cho phép vị trí. Vui lòng nhập thủ công.	Location permission was not granted. Enter an area manually.
+Đã điền từ khu vực hồ sơ mẫu. Bạn có thể sửa hoặc dùng vị trí hiện tại.	Filled from the sample profile area. You can edit it or use your current location.
+Có bài đăng	With listings
+Ưu tiên bài gần bạn	Showing nearby posts first
+Mở trực tiếp nội dung để quyết định trả lời	Open the message to decide whether to reply
+Không có yêu cầu tin nhắn.	No message requests.
+Bài phù hợp với bạn	Matching posts for you
+Đã chấp nhận. Bạn có thể soạn câu trả lời.	Request accepted. You can write a reply.
+Đã bỏ qua yêu cầu.	Request ignored.
+Đã chặn và đánh dấu báo cáo.	Blocked and marked for reporting.
+Đã lưu nháp trả lời.	Reply draft saved.
+Vui lòng viết nội dung trả lời.	Write a reply.
+Đã có lỗi xảy ra. Vui lòng thử lại.	Something went wrong. Please try again.
+Đã cập nhật trạng thái.	Status updated.
+Ảnh quá lớn. Hãy chọn ảnh nhỏ hơn.	The image is too large. Choose a smaller image.
+Đã cập nhật bài.	Post updated.
+Đã tạo bài.	Post created.
+Đã tạo Fanpage.	Page created.
+Đã lưu nháp.	Draft saved.
+✓ Đã quan tâm	✓ Interested
+Tên Fanpage @ cần ít nhất 3 ký tự.	A Page @handle must have at least 3 characters.
+Tên Fanpage @ đã được dùng. Vui lòng chọn tên khác.	This Page @handle is already in use. Choose another.
+Không thể đọc ảnh.	Could not read the image.
+Người chưa kết nối đã nhắn cho bạn. Xem tin trước khi chấp nhận.	Someone you are not connected with sent a message. Review it before accepting.
+Không có yêu cầu tin nhắn đang chờ.	No pending message requests.
+Tin trả lời	Reply
+Chưa có nháp tin nhắn	No message drafts yet
+Chọn một mẫu ở trên để xem cách soạn nhanh.	Choose a template above to draft a message quickly.
+NHÁP TIN NHẮN	MESSAGE DRAFT
+NHÓM NGÀNH	INDUSTRY GROUP
+người theo dõi	followers
+· Đã giải đáp	· Answered
 Đăng ưu đãi	Post an offer
 Đăng tin và giao dịch miễn phí.	Posting and person-to-person transactions are free.
 ✎ Chỉnh sửa	✎ Edit
@@ -981,8 +1097,8 @@ Group created.	Đã tạo nhóm.
 Joined.	Đã tham gia.
 `.trim();
 
-  const pairs = (isConnect ? connectPairs : communityPairs).split('\n').map(line => line.split('\t'));
-  const dictionary = new Map(pairs);
+  const communityDictionary = new Map(communityPairs.split('\n').map(line => line.split('\t')));
+  const dictionary = isConnect ? new Map(connectPairs.split('\n').map(line => line.split('\t'))) : communityDictionary;
   const originals = new WeakMap();
   const originalAttrs = new WeakMap();
   const attrNames = ['placeholder', 'aria-label', 'title', 'alt'];
@@ -993,21 +1109,47 @@ Joined.	Đã tham gia.
     const match = value.match(/^(\s*)(.*?)(\s*)$/s);
     const core = match[2];
     if (dictionary.has(core)) return match[1] + dictionary.get(core) + match[3];
-    const decorated = core.match(/^([＋✦✧◈♧▣▤⌕]\s*)(.+)$/u);
+    const decorated = core.match(/^([＋✦✧◈♧▣▤⌕✎☎]\s*)(.+)$/u);
     if (decorated && dictionary.has(decorated[2])) return match[1] + decorated[1] + dictionary.get(decorated[2]) + match[3];
     const required = core.match(/^(.*?)\s*\*$/);
     if (required && dictionary.has(required[1])) return match[1] + dictionary.get(required[1]) + ' *' + match[3];
     const prefix = core.match(/^([＋⌖✦♧▣▤◈✧✉🔔]\s*)(.*)$/u);
     if (prefix && dictionary.has(prefix[2])) return match[1] + prefix[1] + dictionary.get(prefix[2]) + match[3];
     if (!isConnect) {
-      const count = core.match(/^([\d,]+)\s+(bài đăng|bài cập nhật|người theo dõi|trang|Fanpage|bài|tin|nháp|thành viên)$/);
-      if (count) return match[1] + count[1] + ' ' + ({'bài đăng':'listings','bài cập nhật':'updates','người theo dõi':'followers','trang':'Pages','Fanpage':'Pages','bài':'posts','tin':'posts','nháp':'drafts','thành viên':'members'}[count[2]]) + match[3];
+      const ownerSummary = core.match(/^([\d,]+) bài đã đăng · ([\d,]+) bài đã lên lịch · ([\d,]+) người theo dõi\. Đăng bài và ưu đãi miễn phí; quảng bá nổi bật là lựa chọn riêng\.$/);
+      if (ownerSummary) return match[1] + ownerSummary[1] + ' published posts · ' + ownerSummary[2] + ' scheduled posts · ' + ownerSummary[3] + ' followers. Posts and offers are free; promotion is optional.' + match[3];
+      const count = core.match(/^([\d,]+)\s+(bài đăng|bài cập nhật|người theo dõi|trang|Fanpage|bài|tin|nháp|thành viên|ca|kết quả mới)$/);
+      if (count) return match[1] + count[1] + ' ' + ({'bài đăng':'listings','bài cập nhật':'updates','người theo dõi':'followers','trang':'Pages','Fanpage':'Pages','bài':'posts','tin':'posts','nháp':'drafts','thành viên':'members','ca':'shifts','kết quả mới':'new results'}[count[2]]) + match[3];
+      const scheduledCount = core.match(/^Đã lên lịch \(([\d,]+)\)$/);
+      if (scheduledCount) return match[1] + 'Scheduled (' + scheduledCount[1] + ')' + match[3];
+      const pagePhoto = core.match(/^Ảnh (\d+) của Fanpage (.+)$/);
+      if (pagePhoto) return match[1] + 'Photo ' + pagePhoto[1] + ' from Page ' + pagePhoto[2] + match[3];
+      const coverTitle = core.match(/^Ảnh bìa: (.+)$/);
+      if (coverTitle) return match[1] + 'Cover photo: ' + coverTitle[1] + match[3];
+      const copiedHandle = core.match(/^Đã sao chép (@[^\s]+)\.$/);
+      if (copiedHandle) return match[1] + 'Copied ' + copiedHandle[1] + '.' + match[3];
+      const pageHandle = core.match(/^Tên (?:Fanpage|trang): (@[^\s]+)$/);
+      if (pageHandle) return match[1] + 'Page handle: ' + pageHandle[1] + match[3];
+      const nearbyToast = core.match(/^Đã ưu tiên bài gần (.+)\.$/);
+      if (nearbyToast) return match[1] + 'Showing posts near ' + nearbyToast[1] + ' first.' + match[3];
+      const suggestedPlace = core.match(/^Đã gợi ý (.+)\. Bạn có thể sửa trước khi đăng\.$/);
+      if (suggestedPlace) return match[1] + 'Suggested ' + suggestedPlace[1] + '. You can edit it before posting.' + match[3];
+      const messageHeading = core.match(/^(Hội thoại với|Liên quan:) (.+)$/);
+      if (messageHeading) return match[1] + (messageHeading[1] === 'Hội thoại với' ? 'Conversation with ' : 'Related to: ') + messageHeading[2] + match[3];
+      const memberAction = core.match(/^(@[^\s]+ · NX-[\d]+ · )(Xem tin nhắn|Soạn nháp tin nhắn)$/);
+      if (memberAction) return match[1] + memberAction[1] + dictionary.get(memberAction[2]) + match[3];
+      const pageIndustry = core.match(/^(@[^\s]+ · )(Nail & làm đẹp|Nhà hàng & ăn uống|Dịch vụ khác)( · .+)$/);
+      if (pageIndustry) return match[1] + pageIndustry[1] + dictionary.get(pageIndustry[2]) + pageIndustry[3] + match[3];
+      const matchNote = core.match(/^(✦ )?(Phù hợp với bài cần mua của bạn|Có người đang tìm món bạn bán)( · .+)$/);
+      if (matchNote) return match[1] + (matchNote[1] || '') + (matchNote[2] === 'Phù hợp với bài cần mua của bạn' ? 'Matches your wanted post' : 'Someone is looking for your item') + matchNote[3].replace(/\/(cái|cả lô)$/, (_, unit) => unit === 'cái' ? '/item' : '/lot') + match[3];
+      const blogTopic = core.match(/^BLOG · (Kỹ thuật Nail|Kỹ thuật nail|Quản lý tiệm|Kinh doanh|Công nghệ|Khác)$/);
+      if (blogTopic) return match[1] + 'BLOG · ' + dictionary.get(blogTopic[1]) + match[3];
       const request = core.match(/^(🔔\s*)?(\d+) yêu cầu tin nhắn đang chờ$/);
       if (request) return match[1] + (request[1] || '') + request[2] + ' pending message request' + (request[2] === '1' ? '' : 's') + match[3];
       const nearby = core.match(/^(⌖\s*.+?) · bài gần bạn lên trước$/);
       if (nearby) return match[1] + nearby[1] + ' · nearby posts first' + match[3];
-      const unitPrice = core.match(/^(Tối đa )?(\$[\d,.]+)\/cái$/);
-      if (unitPrice) return match[1] + (unitPrice[1] ? 'Up to ' : '') + unitPrice[2] + '/item' + match[3];
+      const unitPrice = core.match(/^(Tối đa )?(\$[\d,.]+)\/(cái|cả lô)$/);
+      if (unitPrice) return match[1] + (unitPrice[1] ? 'Up to ' : '') + unitPrice[2] + (unitPrice[3] === 'cái' ? '/item' : '/lot') + match[3];
       const quantity = core.match(/^(Có|Cần) (\d+) cái$/);
       if (quantity) return match[1] + (quantity[1] === 'Có' ? quantity[2] + ' available' : 'Need ' + quantity[2]) + match[3];
       const matchingPosts = core.match(/^(\d+) bài phù hợp$/);
@@ -1034,12 +1176,16 @@ Joined.	Đã tham gia.
       if (offerCode) return match[1] + 'Offer code: ' + offerCode[1] + match[3];
       const availableFrom = core.match(/^Có thể làm từ (.+)$/);
       if (availableFrom) return match[1] + 'Available from ' + availableFrom[1] + match[3];
-      const openStatus = core.match(/^(.*) · Đang mở$/);
-      if (openStatus) return match[1] + openStatus[1] + ' · Open' + match[3];
+      const openStatus = core.match(/^(.*) · (Đang mở|Đã bán|Đã mua|Đã giải đáp)$/);
+      if (openStatus) return match[1] + openStatus[1] + ' · ' + dictionary.get(openStatus[2]) + match[3];
       const payPeriod = core.match(/^(.*) · (Mỗi giờ|Mỗi ngày|Mỗi tuần|Mỗi tháng)$/);
       if (payPeriod) return match[1] + payPeriod[1] + ' · ' + dictionary.get(payPeriod[2]) + match[3];
+      const shiftPay = core.match(/^(\$[\d,.]+) (Mỗi giờ|Mỗi ngày|Mỗi tuần|Mỗi tháng)$/);
+      if (shiftPay) return match[1] + shiftPay[1] + ' ' + dictionary.get(shiftPay[2]) + match[3];
       const writtenFrom = core.match(/^(.*) · viết từ (.*)$/);
       if (writtenFrom) return match[1] + writtenFrom[1] + ' · posted on ' + writtenFrom[2] + match[3];
+      const sourceOrigin = core.match(/^(.*) · từ (NEXORA|NailHub\.AI)(.*)$/);
+      if (sourceOrigin) return match[1] + sourceOrigin[1] + ' · from ' + sourceOrigin[2] + sourceOrigin[3] + match[3];
       const pollChoice = core.match(/^(9|10) giờ sáng · (\d+)$/);
       if (pollChoice) return match[1] + pollChoice[1] + ' AM · ' + pollChoice[2] + match[3];
     } else {
@@ -1059,20 +1205,53 @@ Joined.	Đã tham gia.
     return value;
   }
 
+  // Only known system values are translated in metadata that also contains
+  // member-entered locations. Titles, descriptions and names stay untouched.
+  const domainValues = new Set([
+    'Nail & làm đẹp','Nhà hàng & ăn uống','Bán lẻ & dịch vụ','Dịch vụ khác','Khác',
+    'Mi & Chân Mày','Mi & chân mày','Chủ tiệm','Làm đẹp khác','Kỹ thuật Nail','Kỹ thuật nail',
+    'Quản lý tiệm','Kinh doanh','Công nghệ','Chăm sóc khách','Mua sắm đồ nghề',
+    'Nội thất tiệm','Máy móc & thiết bị','Bột, gel, sơn','Dụng cụ & đồ nghề','Vật tư tiêu hao',
+    'Thiết bị spa','Mỹ phẩm & chăm sóc da','Khăn, đồng phục & bảo hộ','Trang trí & bảng hiệu',
+    'Phần mềm & POS','Mặt bằng & sang nhượng','Bàn ghế nhà hàng','Thiết bị bếp','Dụng cụ phục vụ',
+    'Máy pha chế','Bao bì & vật tư','POS & phần mềm','Kệ trưng bày','Quầy thu ngân','Nội thất','Dụng cụ',
+    'Thợ nail','Lễ tân','Thợ mi / chân mày','Chăm sóc da','Thợ tóc / barber','Quản lý',
+    'Đầu bếp','Phụ bếp','Phục vụ','Thu ngân','Pha chế','Quản lý nhà hàng','Rửa chén','Nhân viên',
+    'Mỗi giờ','Mỗi ngày','Mỗi tuần','Mỗi tháng','Mới','Còn tốt','Đã qua sử dụng',
+    'Toàn quốc','Toàn nước Mỹ','Trực tiếp','Trực tuyến','Bột / Acrylic','Chân tay nước'
+  ]);
+  function translateDomain(value) {
+    return String(value).split(/(\s*·\s*)/).map(part => {
+      const match = part.match(/^(\s*)(.*?)(\s*)$/s);
+      const price = match[2].match(/^(Tối đa )?(\$[\d,.]+)\/(cái|cả lô)$/);
+      if (price) return match[1] + (price[1] ? 'Up to ' : '') + price[2] + (price[3] === 'cái' ? '/item' : '/lot') + match[3];
+      return domainValues.has(match[2]) ? match[1] + communityDictionary.get(match[2]) + match[3] : part;
+    }).join('');
+  }
+  window.NEXORA_COMMUNITY_I18N = { translate, translateDomain };
+
   const ownedUI='[data-feed-composer],[data-feed-drafts],[data-community-authored],[data-social-ui],[data-social-dialog]';
+  const domainMetadata='[data-community-group-card] .meta[data-community-authored],.community-group-facts dd[data-community-authored],.discovery-row small,.composer-destination small,[data-social-post-detail] .chips > .chip,[data-community-domain]';
+  function isProtected(element) {
+    return Boolean(element?.closest(ownedUI)) && !element.matches(domainMetadata);
+  }
   function updateNode(node) {
-    if(node.parentElement?.closest(ownedUI))return;
+    if(isProtected(node.parentElement))return;
     if (!originals.has(node)) originals.set(node, node.nodeValue);
     const original = originals.get(node);
-    const next = language === targetLanguage ? translate(original) : original;
+    const next = language === 'en' && node.parentElement?.matches(domainMetadata) ? translateDomain(original) : language === targetLanguage ? translate(original) : original;
     if (node.nodeValue !== next) node.nodeValue = next;
   }
 
   function updateElement(element) {
-    if (['SCRIPT', 'STYLE', 'SVG'].includes(element.tagName)||element.closest(ownedUI)) return;
+    if (['SCRIPT', 'STYLE', 'SVG'].includes(element.tagName)) return;
+    if (isProtected(element)) {
+      element.querySelectorAll(domainMetadata).forEach(updateElement);
+      return;
+    }
     let attrs = originalAttrs.get(element);
     if (!attrs) { attrs = {}; originalAttrs.set(element, attrs); }
-    for (const name of attrNames) {
+    for (const name of element.tagName === 'OPTGROUP' ? [...attrNames, 'label'] : attrNames) {
       if (!(name in attrs) && element.hasAttribute(name)) attrs[name] = element.getAttribute(name);
       if (name in attrs) {
         const next = language === targetLanguage ? translate(attrs[name]) : attrs[name];

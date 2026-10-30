@@ -4,7 +4,7 @@
   var frame = document.querySelector('#community-staging, #community-hub, [data-community-v2]');
   if (!frame) return;
   var origin = location.protocol === 'file:' ? '*' : location.origin;
-  var componentURL=new URL('community-v2/community-hub.js?v=20261029-community-tour-actions-v21',document.currentScript.src);
+  var componentURL=new URL('community-v2/community-hub.js?v=20261030-community-english-v32',document.currentScript.src);
   var hub=null,fallbackFrame=null,clearPostOnBack=false,detailBackPending=false,clearContextOnBack=false;
   function clearContextLink(){var url=new URL(location.href);for(var key of ['groupId','jobId','shiftId','assignmentId','settlementId','invitationId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearContextOnBack=false;}
   function clearPostLink(){var url=new URL(location.href);for(var key of ['post','postId','comment','commentId','thread','threadId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearPostOnBack=false;}
@@ -57,16 +57,17 @@
     window.NEXORA_SHELL.isCommunity = true;
     window.NEXORA_SHELL.onNavigate = window.navigateCommunityHub;
   }
-  function communityLanguage(){return localStorage.getItem('nexora-community-language')==='vi'?'vi':'en';}
+  function communityLanguage(){return 'en';}
+  localStorage.setItem('nexora-community-language','en');
   function syncLanguageControl(){
     var select=document.querySelector('.sidebar-account-language select');
     if(!select)return;
-    if(!select.querySelector('option[value="vi"]'))select.add(new Option('Tiếng Việt','vi'));
+    select.querySelector('option[value="vi"]')?.remove();
     select.value=communityLanguage();
   }
   document.addEventListener('change',function(event){
     if(!event.target.matches('.sidebar-account-language select'))return;
-    var language=event.target.value==='vi'?'vi':'en';
+    var language='en';event.target.value='en';
     localStorage.setItem('nexora-community-language',language);
     if(ready)send('nexora-community-language',{language:language});
   });

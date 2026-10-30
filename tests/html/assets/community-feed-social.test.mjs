@@ -26,6 +26,20 @@ function boot(t, records, stored='', options={}) {
   return {w,d,social,records,click,submit,notices,render,failSave:()=>{failSave=true;}};
 }
 
+test('English demo comment migration preserves edited seeds and member-authored comments',t=>{
+  const groupId='feed-group-rich-g2-2';
+  const records=[{id:'f5',kind:'showcase',owner:'Other',title:'Pink nails'}, {id:groupId,kind:'showcase',owner:'Other',title:'Short nails',sampleComments:[['Kim Tuyen','This length is great for clients who type all day.'],['Hà Nguyễn','Thanks! The client picked a practical everyday length.']]}];
+  const stored=JSON.stringify({version:1,posts:{
+    f5:{comments:[{id:'social-demo-f5-0',owner:'Mai Nguyễn',body:'Nền hồng này nhìn rất nhẹ tay. Lần tới mình muốn thử móng ngắn hơn một chút.'},{id:'comment-member',owner:'Me',body:'Bình luận do tôi tự viết.'}]},
+    [groupId]:{comments:[{id:'social-demo-'+groupId+'-0',owner:'Kim Tuyen',body:'Mẫu này hợp khách muốn móng gọn khi gõ máy quá chị.'},{id:'social-demo-'+groupId+'-1',owner:'Hà Nguyễn',body:'Nội dung mẫu đã được người dùng sửa.'}]}
+  }});
+  const app=boot(t,records,stored),saved=JSON.parse(app.w.localStorage.getItem(storageKey));
+  assert.match(saved.posts.f5.comments[0].body,/pink base/);
+  assert.equal(saved.posts.f5.comments[1].body,'Bình luận do tôi tự viết.');
+  assert.equal(saved.posts[groupId].comments[0].body,records[1].sampleComments[0][1]);
+  assert.equal(saved.posts[groupId].comments[1].body,'Nội dung mẫu đã được người dùng sửa.');
+});
+
 test('likes toggle, survive a remount and never duplicate the original post actions',t=>{
   const app=boot(t,[{id:'a',kind:'question',owner:'Other',title:'Question',details:'Body',likeCount:4}]);
   app.social.enhance();app.social.enhance();
