@@ -30,7 +30,12 @@
     var allowIndustry=!!options.allowIndustry,catalog=window.ONEQR_INDUSTRIES;
     var industryId=allowIndustry?(catalog.industries.some(item=>item.id===fields.qrIndustryId)?fields.qrIndustryId:options.industry):'';
     function recommended(){return defaults(industryId);}
-    var modules=Array.isArray(fields.qrModules)?clone(fields.qrModules):recommended();
+    var modules=Array.isArray(fields.qrModules)?clone(fields.qrModules):[];
+    var legacy={booking:'qrBooking',review:'qrReviews',checkin:'qrCheckin',tip:'qrTips',payment:'qrPayment'};
+    if(!allowIndustry&&!Array.isArray(fields.qrModules)&&options.legacyTiles.some(tile=>Object.hasOwn(fields,tile.key))){
+      modules=defaults().filter(item=>fields[legacy[item.id]]==='true');
+      if(fields.qrServices==='true')modules.push({id:'services',title:'Services & prices',icon:'list',url:new URL('../menu/menu.html',location.href).href,enabled:true});
+    }
     // Replace earlier demo icons while retaining uploaded and other custom icons.
     var oldIcons={checkin:['check'],tip:['phone'],payment:['camera','scan-line']};
     var salonDefaults=defaults();
@@ -40,11 +45,6 @@
     });
     var state={qrName:fields.qrName==null?(fields.qrLabel||business.name||''):fields.qrName,welcomeMessage:fields.welcomeMessage||'',qrModules:modules};
     if(allowIndustry)state.qrIndustryId=industryId;
-    var legacy={booking:'qrBooking',review:'qrReviews',checkin:'qrCheckin',tip:'qrTips',payment:'qrPayment'};
-    if(!allowIndustry&&!Array.isArray(fields.qrModules)&&options.legacyTiles.some(tile=>Object.hasOwn(fields,tile.key))){
-      modules.forEach(item=>{var key=legacy[item.id],tile=options.legacyTiles.find(tile=>tile.key===key);item.enabled=Object.hasOwn(fields,key)?fields[key]==='true':!!tile?.defaultOn;});
-      if(fields.qrServices!=='false')modules.push({id:'services',title:'Services & prices',icon:'list',url:new URL('../menu/menu.html',location.href).href,enabled:true});
-    }
     var controller=new AbortController(), reads=new Map(), destroyed=false, targetId='', dragged='', returnFocus=null, priorOverflow='', industryPicker=null;
     var $=selector=>panel.querySelector(selector);
     function button(label,attributes,cls){return '<button type="button" '+attributes+' class="nxqr-button '+(cls||'')+'">'+label+'</button>';}
@@ -65,7 +65,6 @@
       if(allowIndustry)$('[data-qr-industry-label]').textContent='Template: '+catalog.industries.find(item=>item.id===industryId).en;
     }
     function selectIndustry(industry){
-      if(industry.id===industryId){closeDialog();return;}
       var previousIds=recommended().map(item=>item.id),retained=modules.filter(item=>!previousIds.includes(item.id));
       reads.forEach(reader=>reader.abort());reads.clear();busy();
       industryId=industry.id;state.qrIndustryId=industryId;

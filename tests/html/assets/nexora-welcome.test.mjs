@@ -351,7 +351,7 @@ test('Staff preparation saves complete profiles, assignments, schedules, and unf
   } finally { dom.window.close(); }
 });
 
-test('QR preparation rejects an empty guest menu and saves once a tile is enabled', () => {
+test('QR preparation starts empty and saves after a destination is added', () => {
   const dom = loadPage('nexora-getting-started.html');
   try {
     const { window } = dom;
@@ -359,13 +359,14 @@ test('QR preparation rejects an empty guest menu and saves once a tile is enable
     const name = window.document.querySelector('[data-qr-name]');
     name.value = 'Demo Studio';
     name.dispatchEvent(new window.Event('input', { bubbles: true }));
-    const ids = [...window.document.querySelectorAll('[data-qr-row]')].map(row => row.dataset.qrRow);
-    assert.deepEqual(ids, ['booking', 'review', 'checkin', 'tip', 'payment']);
-    for (const id of ids) click(window, `[data-qr-row="${id}"] [data-qr-action="toggle"]`);
+    assert.equal(window.document.querySelectorAll('[data-qr-row]').length, 0);
     submit(window);
     assert.equal(window.document.getElementById('nxw-save-status').textContent, 'Choose at least one item to use.');
     assert.equal(window.document.querySelector('[data-setup-step="3"]').dataset.completed, 'false');
-    click(window, '[data-qr-row="booking"] [data-qr-action="toggle"]');
+    const destination = window.document.querySelector('[data-qr-link-input]');
+    destination.value = 'https://example.com';
+    destination.dispatchEvent(new window.Event('input', { bubbles: true }));
+    window.document.querySelector('[data-qr-link-form]').dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
     submit(window);
     assert.equal(window.document.querySelector('[data-setup-step="3"]').dataset.completed, 'true');
     assert.equal(window.document.getElementById('nxw-entered-preview'), null);
@@ -388,17 +389,17 @@ test('QR preparation preserves custom modules, icons, order, greeting, and the p
     const enterQr = (selector, value) => { const input = doc.querySelector(selector); input.value = value; input.dispatchEvent(new window.Event('input', { bubbles: true })); };
     click(window, '[data-setup-step="3"]');
     assert.equal(doc.querySelector('[data-qr-name]').value, 'Old internal name');
-    assert.equal(doc.querySelector('[data-qr-row="review"] [data-qr-action="toggle"]').getAttribute('aria-checked'), 'false');
+    assert.deepEqual([...doc.querySelectorAll('[data-qr-row]')].map(row => row.dataset.qrRow), ['booking', 'checkin']);
     enterQr('[data-qr-welcome]', 'Welcome guest');
     enterQr('[data-qr-link-input]', 'javascript:alert(1)');
     doc.querySelector('[data-qr-link-form]').dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
-    assert.equal(doc.querySelectorAll('[data-qr-row]').length, 5);
+    assert.equal(doc.querySelectorAll('[data-qr-row]').length, 2);
     enterQr('[data-qr-link-input]', 'https://example.com');
     doc.querySelector('[data-qr-link-form]').dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
     const custom = [...doc.querySelectorAll('[data-qr-row]')].find(row => row.dataset.qrRow.startsWith('custom-')).dataset.qrRow;
     enterQr(`[data-qr-row="${custom}"] [data-qr-module-title]`, 'Website');
     click(window, `[data-qr-row="${custom}"] [data-qr-action="up"]`);
-    assert.equal(doc.querySelectorAll('[data-qr-row]')[4].dataset.qrRow, custom);
+    assert.equal(doc.querySelectorAll('[data-qr-row]')[1].dataset.qrRow, custom);
     click(window, `[data-qr-row="${custom}"] [data-qr-action="icon"]`);
     click(window, '[data-qr-icon="camera"]');
     assert.match(doc.querySelector(`[data-qr-row="${custom}"] .nxqr-module-icon img`).src, /oneqr-camera-3d\.png$/);
@@ -410,7 +411,7 @@ test('QR preparation preserves custom modules, icons, order, greeting, and the p
     assert.equal(doc.getElementById('nxw-entered-preview'), null);
     click(window, `[data-qr-row="${custom}"] [data-qr-action="remove"]`);
     assert.equal(doc.querySelector(`[data-qr-row="${custom}"]`), null);
-    assert.equal(doc.querySelectorAll('[data-qr-row]').length, 5);
+    assert.equal(doc.querySelectorAll('[data-qr-row]').length, 2);
     assert.equal(doc.querySelector('[data-qr-welcome]').value, 'Welcome guest');
     assert.equal(doc.querySelector('[data-setup-step="3"]').dataset.completed, 'false');
   } finally { dom.window.close(); }
@@ -428,6 +429,9 @@ test('Table QR reuses the industry picker while keeping the onboarding industry 
     const change = (selector, value) => { const input = doc.querySelector(selector); input.value = value; input.dispatchEvent(new window.Event('input', { bubbles: true })); };
     const moduleIds = () => [...doc.querySelectorAll('[data-qr-row]')].map(row => row.dataset.qrRow);
     click(window, '[data-setup-step="2"]');
+    assert.deepEqual(moduleIds(), []);
+    click(window, '[data-qr-change-industry]');
+    click(window, '.industry-card[data-industry="restaurant"]');
     assert.deepEqual(moduleIds(), ['menu', 'order', 'reservation', 'directions', 'review']);
     change('[data-qr-name]', 'Table 01');
     change('[data-qr-welcome]', 'Welcome guest');
