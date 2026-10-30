@@ -182,7 +182,7 @@ const baseDeals = [
     inventory: 4,
     inventoryLabel: "4 túi còn lại",
     instant: true,
-    image: "./assets/last-minute-food-rescue.jpg",
+    image: "./assets/last-minute/morning-pastry.jpg",
     description: "Túi bánh bất ngờ gồm croissant và pastry còn tươi trong ngày. Thành phần cụ thể tùy lượng bánh còn lại khi đóng gói.",
     schedule: "Hôm nay · nhận 6:30–7 PM",
     location: "Garden Grove, CA",
@@ -207,6 +207,7 @@ const baseDeals = [
     inventory: 5,
     inventoryLabel: "5 hộp còn lại",
     instant: true,
+    image: "./assets/last-minute/fresh-produce.jpg",
     description: "Hộp rau củ và trái cây còn tốt được cửa hàng tuyển chọn vào cuối ngày để bán nhanh thay vì bỏ đi.",
     schedule: "Hôm nay · nhận trước 8 PM",
     location: "Garden Grove, CA",
@@ -231,6 +232,7 @@ const baseDeals = [
     inventory: 3,
     inventoryLabel: "3 bó còn lại",
     instant: true,
+    image: "./assets/last-minute/bloom-bouquet.jpg",
     description: "Bó hoa do florist chọn từ hoa tươi trong ngày, phối sẵn và có thể nhận nhanh trước giờ đóng cửa.",
     schedule: "Hôm nay · nhận trước 7:30 PM",
     location: "Garden Grove, CA",
@@ -255,7 +257,7 @@ const baseDeals = [
     inventory: 8,
     inventoryLabel: "8 phần còn lại",
     instant: true,
-    image: "./assets/last-minute-food-rescue.jpg",
+    image: "./assets/last-minute/cho-viet-market-box.jpg",
     description: "Combo rau củ và trái cây còn tươi trong ngày do tiểu thương chọn, đóng sẵn để khách nhận nhanh trước khi chợ tan buổi.",
     schedule: "Hôm nay · nhận tại sạp trước 6:30 PM",
     location: "Garden Grove, CA",
@@ -435,7 +437,7 @@ const baseDeals = [
     location: "Garden Grove, CA",
     terms: "Đến trước 10 phút. Không phù hợp lớp đầu tiên nếu chưa được hướng dẫn máy reformer.",
     bookingSlug: "reform-pilates-studio",
-    image: "./assets/hero-beauty-wellness-v1.jpg",
+    image: "./assets/last-minute/reform-pilates-class.jpg",
   },
   {
     "id": "demo-soft-french",
@@ -4937,6 +4939,14 @@ function renderLastMinuteCustomer() {
   const times = ["1:00 PM", "1:30 PM", "2:15 PM", "5:30 PM", "6:15 PM", "7:00 PM", "3:30 PM", "4:15 PM", "5:00 PM", workspaceCopy("Tối nay", "Tonight"), "6:00 PM", "6:30 PM"];
   const windows = ["soon", "soon", "afternoon", "evening", "evening", "evening", "afternoon", "afternoon", "evening", "evening", "evening", "evening"];
   const categories = [...new Set(lastDeals.map(categoryFor))];
+  const visualTones = {
+    "harbor-dinner": ["#c45918", "#7d2d19"], "morning-pastry": ["#ca8a3c", "#875627"],
+    "fresh-produce": ["#2f956d", "#155a52"], "bloom-bouquet": ["#d36b9d", "#7c3e86"],
+    "cho-viet-market-box": ["#8f9830", "#3f773d"], "autoshine-express": ["#3f84bc", "#234b83"],
+    "luna-nails-pedicure": ["#b565b1", "#613d98"], "velvet-hair-blowout": ["#bf755d", "#7d415c"],
+    "serenity-massage": ["#4a9b98", "#2a5e77"], "pacific-hotel-tonight": ["#567ac1", "#38396e"],
+    "harbor-sunset-cruise": ["#278fa8", "#234886"], "reform-pilates-class": ["#8c70bd", "#4c578d"],
+  };
   return `<section class="dw-lm-customer" aria-label="${workspaceCopy("Last Minute dành cho khách hàng", "Last Minute offers for customers")}">
     <div class="dw-lm-customer-hero"><div><span class="dw-kicker">${workspaceCopy("GIÁ TỐT CHỈ CÒN HÔM NAY · KHÔNG CẦN CÀI APP", "TODAY'S BEST PRICES · NO APP REQUIRED")}</span><h2>${workspaceCopy("Chọn nhanh trước khi hết giờ", "Choose before time runs out")}</h2><p>${workspaceCopy("Đặt giờ trống vừa mở hoặc giữ phần hàng tươi cuối ngày ở gần bạn. Giá và số lượng được cập nhật trực tiếp.", "Book a newly open appointment or reserve fresh goods nearby. Prices and availability update live.")}</p></div><div class="dw-lm-location"><span>📍</span><div><small>${workspaceCopy("Khu vực của bạn", "Your area")}</small><b>Garden Grove, CA</b></div><button type="button" data-dw-route="#requests">${workspaceCopy("Đổi nơi", "Change area")}</button></div></div>
     <div class="dw-lm-filterbar"><div class="dw-match-select dw-lm-select"><label id="dwLastMinuteWindowLabel" for="dwLastMinuteWindow">${workspaceCopy("Khi nào?", "When?")}</label><select id="dwLastMinuteWindow" data-dw-match-select="lm-window" data-dw-lm-select="window">${(workspaceEnglish() ? [["all","All"],["soon","Within 2 hours"],["afternoon","This afternoon"],["evening","Tonight"]] : [["all","Tất cả"],["soon","Trong 2 giờ"],["afternoon","Chiều nay"],["evening","Tối nay"]]).map(([value,label]) => `<option value="${value}">${escapeHTML(label)}</option>`).join("")}</select></div><div class="dw-match-select dw-lm-select"><label id="dwLastMinuteCategoryLabel" for="dwLastMinuteCategory">${workspaceCopy("Loại ưu đãi", "Offer type")}</label><select id="dwLastMinuteCategory" data-dw-match-select="lm-category" data-dw-lm-select="category"><option value="all" data-industry-icon="other">${workspaceCopy("Mọi ngành", "All industries")}</option>${categories.map((category) => `<option value="${category}" data-industry-icon="${{beauty:"nail",experience:"tour",service:"other"}[category] || category}">${escapeHTML(categoryMeta[category][1])}</option>`).join("")}</select></div></div>
@@ -4948,11 +4958,12 @@ function renderLastMinuteCustomer() {
         ? [deal.id === "cho-viet-market-box" ? "End-of-day produce & fruit box" : deal.title, deal.badge === "CHỢ TAN BUỔI" ? "END-OF-DAY MARKET" : (deal.badge || "LAST MINUTE")]
         : (vietnameseCopy[deal.id] || [deal.title, deal.badge || "LAST MINUTE"]);
       const windowName = windows[i % windows.length];
+      const [colorStart, colorEnd] = visualTones[deal.id] || ["#6342c6", "#236aa5"];
       const actionLabel = workspaceEnglish()
         ? ({ food: "Reserve this", bakery: "Reserve this", market: "Reserve this", flower: "Reserve this", beauty: "Book this time", auto: "Book this time", fitness: "Reserve a spot", experience: "Reserve a spot", hotel: "Book tonight" }[category] || "View & book")
         : ({ food: "Giữ phần này", bakery: "Giữ phần này", market: "Giữ phần này", flower: "Giữ phần này", beauty: "Đặt giờ này", auto: "Đặt giờ này", fitness: "Giữ chỗ ngay", experience: "Giữ chỗ ngay", hotel: "Đặt đêm nay" }[category] || "Xem & đặt ngay");
       return `<article class="dw-lm-market-card" data-dw-lm-card data-dw-lm-window="${windowName}" data-dw-lm-category="${category}">
-        <div class="dw-lm-card-visual ${deal.image ? "has-image" : ""}" ${deal.image ? `style="--lm-image:url('${escapeHTML(deal.image)}')"` : ""}><span>${meta[0]}</span><div><small>${escapeHTML(localized[1])}</small><b>${escapeHTML(workspaceEnglish() ? (englishInventory[deal.id] || `${deal.inventory || 1} left`) : (deal.inventoryLabel || `${deal.inventory || 1} suất còn lại`))}</b></div></div>
+        <div class="dw-lm-card-visual ${deal.image ? "has-image" : ""}" style="--lm-start:${colorStart};--lm-end:${colorEnd};${deal.image ? `--lm-image:url('${escapeHTML(deal.image)}')` : ""}"><span>${meta[0]}</span><div><small>${escapeHTML(localized[1])}</small><b>${escapeHTML(workspaceEnglish() ? (englishInventory[deal.id] || `${deal.inventory || 1} left`) : (deal.inventoryLabel || `${deal.inventory || 1} suất còn lại`))}</b></div></div>
         <div class="dw-lm-card-body"><div class="dw-lm-card-time"><span>⚡ ${times[i % times.length]}</span><b>${workspaceCopy(`còn ${20 + i * 8} phút`, `${20 + i * 8} min left`)}</b></div><h3>${escapeHTML(localized[0])}</h3><a href="#" data-open="${escapeHTML(deal.id)}">${escapeHTML(deal.salon)}</a><p>📍 ${deal.distance} mi · ${escapeHTML(deal.location)}<br>★ ${deal.rating} (${deal.reviews}) · ${workspaceCopy("Đã xác minh", "Verified")}</p><div class="dw-lm-card-price"><span><del>$${deal.original}</del><strong>$${deal.price}</strong></span><button class="dw-primary coral" type="button" data-open="${escapeHTML(deal.id)}">${actionLabel}</button></div></div>
       </article>`;
     }).join("")}</div>

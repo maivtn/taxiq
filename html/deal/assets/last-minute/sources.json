@@ -1,0 +1,39 @@
+{
+  "assets": [
+    {
+      "file": "fresh-produce.jpg",
+      "author": "Brooke Cagle",
+      "source": "https://unsplash.com/photos/selective-focus-photography-of-vegetables-in-basket-TiTU0k1E0UE",
+      "image": "https://images.unsplash.com/photo-1441123285228-1448e608f3d5?auto=format&fit=crop&fm=jpg&w=960&h=540&q=80",
+      "license": "https://unsplash.com/license"
+    },
+    {
+      "file": "morning-pastry.jpg",
+      "author": "Sergio Arze",
+      "source": "https://unsplash.com/photos/croissants-and-danish-bread-wp3yOyh0xB4",
+      "image": "https://images.unsplash.com/photo-1560643123-9157226100d2?auto=format&fit=crop&fm=jpg&w=960&h=540&q=80",
+      "license": "https://unsplash.com/license"
+    },
+    {
+      "file": "reform-pilates-class.jpg",
+      "author": "Ahmet Kurt",
+      "source": "https://unsplash.com/photos/woman-is-doing-pilates-on-a-reformer-machine--XuG2BfYIVE",
+      "image": "https://images.unsplash.com/photo-1754258167521-233d03caa23a?auto=format&fit=crop&fm=jpg&w=960&h=540&q=80",
+      "license": "https://unsplash.com/license"
+    },
+    {
+      "file": "bloom-bouquet.jpg",
+      "author": "Matthew Nevins Bell",
+      "source": "https://unsplash.com/photos/bouquet-of-flowers-hg0EDH34Nm0",
+      "image": "https://images.unsplash.com/photo-1579198314865-955573957799?auto=format&fit=crop&fm=jpg&w=960&h=540&q=80",
+      "license": "https://unsplash.com/license"
+    },
+    {
+      "file": "cho-viet-market-box.jpg",
+      "author": "Tom Paolini",
+      "source": "https://unsplash.com/photos/a-basket-filled-with-lots-of-different-types-of-vegetables-nXKDqpmdx_8",
+      "image": "https://images.unsplash.com/photo-1635774855717-0aec182f92cc?auto=format&fit=crop&fm=jpg&w=960&h=540&q=80",
+      "license": "https://unsplash.com/license"
+    }
+  ]
+}
