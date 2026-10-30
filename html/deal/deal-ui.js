@@ -4,6 +4,7 @@
 
   const copy = window.NEXORA_DEAL_EN_US;
   const patterns = [
+    [/^(Check-in|Đặt lịch|Rewards|Gọi hỗ trợ) mở ngay trong OneQR · không cần app\.$/, (_, label) => `${({ 'Đặt lịch':'Booking', 'Gọi hỗ trợ':'Support' }[label] || label)} opens in OneQR · No app required.`],
     [/^1 kết quả$/, '1 result'],
     [/^(\d+) kết quả$/, '$1 results'],
     [/^(.+) đã nằm trong lộ trình mở rộng sau nail\.$/, '$1 is planned after the nail launch.'],
@@ -166,7 +167,7 @@
       && !element.matches('.dialog-close,.bc-close,[data-oneqr-utility],[data-oneqr-view],.drawer-header [data-dialog-close]');
     element.classList.toggle('deal-modal-action', modalAction);
     element.classList.toggle('deal-modal-action-flex', modalAction && ['flex','inline-flex'].includes(style.display));
-    if (element.querySelector('.deal-action-icon') || element.querySelector('.deal-industry-icon')) return;
+    if (element.querySelector('.deal-action-icon,.deal-industry-icon,.deal-utility-art')) return;
     const nodes = window.NEXORA_DEAL_LUCIDE?.icons[name];
     if (!nodes) return;
     const icon = window.NEXORA_DEAL_LUCIDE.createElement(nodes, {
@@ -464,9 +465,27 @@
     root.querySelectorAll('nav[aria-label="OneQR navigation"] [data-oneqr-view]').forEach(element => {
       decorateAction(element, oneqrViews[element.dataset.oneqrView], 'violet');
     });
-    const utilityIcons = { 'Check-in':'ListOrdered', 'Đặt lịch':'CalendarDays', Rewards:'Gift', 'Gọi hỗ trợ':'Headset' };
+    const utilityIcons = {
+      'Check-in':['../assets/icon-oneqr/issue-2040-oneqr-scan-line-3d.png','checkin'],
+      'Đặt lịch':['../assets/icon-oneqr/issue-2040-oneqr-calendar-check-3d.png','booking'],
+      Rewards:['../assets/icon-oneqr/issue-2040-oneqr-gift-3d.png','rewards'],
+      'Gọi hỗ trợ':['../assets/icon-oneqr/issue-2040-oneqr-phone-3d.png','support'],
+    };
     root.querySelectorAll('[data-oneqr-utility]').forEach(element => {
-      decorateAction(element, utilityIcons[element.dataset.oneqrUtility], 'violet');
+      const item = utilityIcons[element.dataset.oneqrUtility];
+      if (!item) return;
+      element.dataset.utilityTone = item[1];
+      const slot = element.querySelector(':scope > span');
+      if (!slot || slot.querySelector('.deal-utility-art')) return;
+      const icon = document.createElement('img');
+      icon.className = 'deal-utility-art';
+      icon.src = item[0];
+      icon.alt = '';
+      icon.setAttribute('aria-hidden','true');
+      icon.width = 32;
+      icon.height = 32;
+      icon.draggable = false;
+      slot.replaceChildren(icon);
     });
     const channelIcons = { pos:'MonitorSmartphone', booking:'CalendarDays', crmSms:'MessagesSquare', marketplace:'Store', oneqrRevenue:'HandCoins' };
     root.querySelectorAll('.channel-icon').forEach(element => {
