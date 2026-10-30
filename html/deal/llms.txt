@@ -1,0 +1,41 @@
+# Nexora Deals
+
+> Nexora Deals is the public discovery layer for verified local offers from Nexora Touch LLC. Visitors can browse without installing an app.
+
+Canonical URL: https://nexora-deals-nail.bitcoinnailbarhousto.chatgpt.site/
+Publisher: Nexora Touch LLC
+Primary languages: Vietnamese, English, Spanish, Traditional Chinese, Korean
+
+## What visitors can find
+
+- Nearby offers organized by location, industry, category, service, price, timing, and availability.
+- Coupons with a code or QR, clear terms, expiration, and quantity or redemption limits.
+- Last Minute offers tied to a specific open appointment or same-day inventory.
+- Deal Match, where a visitor describes a need, budget, time, and one or more areas.
+- Upcoming business openings and verified local programs.
+
+## Product relationships
+
+- Nexora Touch is the business operating system where merchants create and manage promotions.
+- OneQR is the guest entry point for menus, check-in, booking, services, reviews, tips, rewards, gift cards, and contextual discovery.
+- Nexora Deals distributes eligible offers to public discovery surfaces.
+- Nexora ID provides account sign-in and optional cross-device synchronization.
+
+## Offer definitions
+
+- Deal: a promotion or banner with no limited coupon inventory.
+- Coupon: an offer with a code or QR and a quantity or redemption limit.
+- Last Minute: perishable inventory or a specific open time sold close to the time of use.
+
+## Trust and attribution
+
+- Sponsored placements must be labeled.
+- Business-created offer terms, availability, pricing, location, and eligibility should be verified before use.
+- Nexora Deals is operated by Nexora Touch LLC.
+
+## Important pages and resources
+
+- Home and discovery: https://nexora-deals-nail.bitcoinnailbarhousto.chatgpt.site/
+- Sitemap: https://nexora-deals-nail.bitcoinnailbarhousto.chatgpt.site/sitemap.xml
+- Crawler rules: https://nexora-deals-nail.bitcoinnailbarhousto.chatgpt.site/robots.txt
+- Business platform: https://nexoratouch.com/
