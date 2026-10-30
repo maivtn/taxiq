@@ -506,6 +506,12 @@ body:has(.dw-match-select .dropdown-active) .ai-guide-fab{visibility:hidden}
 .discover-rails small{font-size:10.5px!important;line-height:1.3}
 .discover-rails>:is(a,button)>b{display:grid;place-items:center;justify-self:end;width:24px;min-width:24px;margin:0;line-height:1.3}
 
+/* Business callout icons use the local surface colors instead of default link blue. */
+.coupon-business-icon{color:#6442b4;border:1px solid #d8ccf4;border-radius:10px;background:#eee9ff;box-shadow:none}
+.coupon-business-icon .deal-inline-icon{width:20px;height:20px;color:inherit;vertical-align:middle;stroke-width:1.8}
+.coupon-business-callout>a>span{display:inline-flex;align-items:center;color:inherit}
+.coupon-business-callout>a .deal-inline-icon{width:14px;height:14px;color:inherit;vertical-align:middle;stroke-width:1.8}
+
 /* Coupon reservation label and action share balanced columns and touch height. */
 .coupon-code{grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:8px}
 .coupon-code>span{display:flex;align-items:center;justify-content:center;min-width:0;min-height:44px;padding:8px;color:#6044b4;font-size:10.5px;line-height:1.35;letter-spacing:.035em;text-align:center;white-space:normal;overflow-wrap:anywhere}
