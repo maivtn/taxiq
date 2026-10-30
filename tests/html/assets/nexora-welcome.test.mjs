@@ -347,8 +347,9 @@ test('QR preparation rejects an empty guest menu and saves once a tile is enable
     click(window, '[data-qr-row="booking"] [data-qr-action="toggle"]');
     submit(window);
     assert.equal(window.document.querySelector('[data-setup-step="3"]').dataset.completed, 'true');
-    assert.match(window.document.getElementById('nxw-entered-preview').textContent, /Book Appointment/);
-    assert.doesNotMatch(window.document.getElementById('nxw-entered-preview').textContent, /Demo Studio/);
+    assert.equal(window.document.getElementById('nxw-entered-preview'), null);
+    assert.equal(window.document.querySelector('[data-qr-add-module]'), null);
+    assert.equal(window.document.querySelector('[data-qr-reset]'), null);
     const saved = JSON.parse(window.localStorage.getItem(window.NEXORA_WELCOME.storageKey)).drafts.nail.qr.fields;
     assert.equal(saved.qrName, 'Demo Studio');
     assert.equal(saved.qrModules.filter(item => item.enabled).length, 1);
@@ -380,20 +381,15 @@ test('QR preparation preserves custom modules, icons, order, greeting, and the p
     click(window, `[data-qr-row="${custom}"] [data-qr-action="icon"]`);
     click(window, '[data-qr-icon="camera"]');
     assert.match(doc.querySelector(`[data-qr-row="${custom}"] .nxqr-module-icon img`).src, /oneqr-camera-3d\.png$/);
-    click(window, '[data-qr-add-module]');
-    click(window, '[data-qr-library-add="services"]');
-    click(window, '[data-qr-dialog-close]');
     submit(window);
     const saved = JSON.parse(window.localStorage.getItem(storageKey)).drafts.nail.qr.fields;
     assert.equal(saved.qrLocation, 'Front counter');
     assert.equal(saved.welcomeMessage, 'Welcome guest');
     assert.equal(saved.qrModules.find(item => item.id === custom).icon, 'camera');
-    assert.match(doc.getElementById('nxw-entered-preview').textContent, /Welcome guest/);
+    assert.equal(doc.getElementById('nxw-entered-preview'), null);
     click(window, `[data-qr-row="${custom}"] [data-qr-action="remove"]`);
     assert.equal(doc.querySelector(`[data-qr-row="${custom}"]`), null);
-    click(window, '[data-qr-reset]');
     assert.equal(doc.querySelectorAll('[data-qr-row]').length, 5);
-    assert.equal(doc.querySelector('[data-qr-reset]').disabled, true);
     assert.equal(doc.querySelector('[data-qr-welcome]').value, 'Welcome guest');
     assert.equal(doc.querySelector('[data-setup-step="3"]').dataset.completed, 'false');
   } finally { dom.window.close(); }
@@ -444,9 +440,8 @@ test('Table QR reuses the industry picker while keeping the onboarding industry 
     click(window, '[data-setup-step="2"]');
     assert.match(doc.querySelector('[data-qr-industry-label]').textContent, /Law firm/);
     assert.ok(moduleIds().includes(customId));
-    click(window, '[data-qr-reset]');
-    assert.deepEqual(moduleIds(), ['consult', 'services', 'contact', 'directions', 'review']);
-    assert.equal(doc.querySelector('[data-qr-reset]').disabled, true);
+    assert.equal(doc.querySelector('[data-qr-reset]'), null);
+    assert.equal(doc.getElementById('nxw-entered-preview'), null);
   } finally { dom.window.close(); }
 });
 

@@ -153,10 +153,9 @@
       fields:fields,business:readStep('business').fields,legacyTiles:data.flow.qrTiles,
       allowIndustry:industry==='restaurant',industry:industry,
       chooseAtLeastOne:setupCopy.chooseAtLeastOne,requiredMessage:setupCopy.requiredMessage,saveFailed:setupCopy.saveFailed,
-      onChange:function(snapshot){var saved=savePreparationDraft(industry,'qr',snapshot);renderEnteredPreview();return saved;},
+      onChange:function(snapshot){return savePreparationDraft(industry,'qr',snapshot);},
       onBusy:function(busy){var submit=main.querySelector('#nxw-setup-form [type="submit"]');if(submit)submit.disabled=busy;}
     });
-    renderEnteredPreview();
   }
   function staffComplete(fields) {return window.NEXORA_STAFF_SETUP&&window.NEXORA_STAFF_SETUP.complete(fields);}
   function savePreparationDraft(industry,kind,patch) {
@@ -351,7 +350,7 @@
     if(!['services','menu','staff','qr'].includes(kind))html+=kind==='business'?businessFieldsHTML(fields):'<div class="nxw-fields">' + (data.setup.fields[kind]||[]).map(function (field) { return fieldHTML(field,fields); }).join('') + '</div>';
     if(kind==='staff'&&mode==='invite')html+='<div class="nxw-inline-preview"><p>' + escape(setupCopy.staffInviteIntro) + '</p><ol>' + ['staffInvite1','staffInvite2','staffInvite3'].map(function (key) { return '<li>' + escape(setupCopy[key]) + '</li>'; }).join('') + '</ol><div class="nxw-actions">' + link(setupCopy.staffInviteOpen,'qr-stations.html?tab=staff-invite-qr',true) + '</div><div class="nxw-choices">' + choicesHTML([{key:'inviteConfirmed',label:'staffInviteConfirm'}],fields) + '</div><p class="nxw-note">' + escape(setupCopy.staffInviteNotice) + '</p></div>';
     if(kind==='voice')html+='<div class="nxw-subsection"><strong>' + escape(setupCopy.voiceModeTitle) + '</strong>' + choicesHTML([{key:'off',label:'voiceSkip',defaultValue:'off'},{key:'on',label:'voiceUse',defaultValue:'off'}],fields,'voiceMode') + '</div>' + (fields.voiceMode==='on'?voiceSettingsHTML(fields)+choicesHTML(data.flow.voiceFeatures,fields):'<p class="nxw-note">'+escape(setupCopy.voicePreviewOff)+'</p>') + '<p class="nxw-note">' + escape(setupCopy.voicePreviewNotice) + '</p>';
-    html+='<div id="nxw-entered-preview" class="nxw-inline-preview"></div><div class="nxw-saved" id="nxw-save-status" role="status"></div><div class="nxw-actions"><button type="submit" class="nxw-btn">' + escape(setupCopy.saveStep) + '</button>' + (selectedStep<path().length-1?button(salonCopy.next,'next-step',true):button(copy.viewIndustryDocs,'open-docs',true)) + link(setupCopy.relatedScreen,stepRoute(kind),true) + '</div></form>';
+    html+=(kind==='qr'?'':'<div id="nxw-entered-preview" class="nxw-inline-preview"></div>')+'<div class="nxw-saved" id="nxw-save-status" role="status"></div><div class="nxw-actions"><button type="submit" class="nxw-btn">' + escape(setupCopy.saveStep) + '</button>' + (selectedStep<path().length-1?button(salonCopy.next,'next-step',true):button(copy.viewIndustryDocs,'open-docs',true)) + link(setupCopy.relatedScreen,stepRoute(kind),true) + '</div></form>';
     document.getElementById('nxw-setup-detail').innerHTML=html;
     var form=document.getElementById('nxw-setup-form');
     if(kind==='staff'&&mode==='invite')form.querySelectorAll('.nxw-fields input').forEach(function (input) { input.disabled=true; });
@@ -391,18 +390,16 @@
     renderEnteredPreview();updateProgress();
   }
   function renderEnteredPreview(){
-    var kind=path()[selectedStep],fields=readStep(kind).fields;
+    var kind=path()[selectedStep];if(kind==='qr')return;
+    var fields=readStep(kind).fields;
     document.getElementById('nxw-entered-preview').hidden=kind==='services'||kind==='menu'||kind==='staff'&&fields.staffMode!=='invite';
     if(kind==='services'||kind==='menu'||kind==='staff'&&fields.staffMode!=='invite')return;
     var html='<span class="nxw-kicker">' + escape(setupCopy.yourPreview) + '</span>';
-    if(kind==='qr'){
-      document.getElementById('nxw-entered-preview').innerHTML=html+(qrWorkspace?qrWorkspace.preview():'')+'<p class="nxw-note">'+escape(setupCopy.qrPreviewNotice)+'</p>';return;
-    }
     if(kind==='voice')html+='<p>' + escape(fields.voiceMode==='on'?setupCopy.voicePreviewOn:setupCopy.voicePreviewOff) + '</p>'+(fields.voiceMode==='on'?voicePreview(fields):'');
     else if(kind==='business')html+=businessPreview(fields);
     else html+='<dl>' + (data.setup.fields[kind]||[]).filter(function(f){return String(fields[f[0]]||'').trim();}).map(function(f){return '<div><dt>' + escape(setupCopy[f[1]]||copy[f[1]]) + '</dt><dd>' + escape(fields[f[0]]) + '</dd></div>';}).join('') + '</dl>';
     if(kind==='staff'&&fields.staffMode==='invite')html+='<p>' + escape(setupCopy.staffInvitePreview) + '</p>';
-    if(kind!=='qr')html+='<p class="nxw-note">' + escape(setupCopy.exampleNotice) + '</p>';
+    html+='<p class="nxw-note">' + escape(setupCopy.exampleNotice) + '</p>';
     document.getElementById('nxw-entered-preview').innerHTML=html;
   }
   function completeStep(event){

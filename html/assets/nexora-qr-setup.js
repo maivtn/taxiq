@@ -47,22 +47,13 @@
     function busy(){options.onBusy?.(reads.size>0);}
     function status(message){$('[data-qr-status]').textContent=message;}
     panel.classList.add('nxqr');
-    panel.innerHTML=(allowIndustry?'<div class="nxqr-industry-bar"><div><span>Industry templates</span><strong data-qr-industry-label></strong></div>'+button(icon('arrow-repeat')+'Change industry','data-qr-change-industry')+'</div>':'')+'<div class="nxqr-details"><label class="nxqr-field"><span>OneQR name</span><input name="qrName" data-qr-name value="'+esc(state.qrName)+'" maxlength="120" required autocomplete="off"><small>Internal name only. Customers never see it.</small></label><label class="nxqr-field"><span>Welcome message</span><input name="welcomeMessage" data-qr-welcome value="'+esc(state.welcomeMessage)+'" maxlength="180" placeholder="'+esc('e.g. Welcome to '+(business.name||'Bitcoin Nail Bar'))+'"><small>This message and the identity rule apply to the Customer view only.</small></label></div><form class="nxqr-link-form" data-qr-link-form>'+icon('link-45deg')+'<input name="destination" data-qr-link-input type="text" inputmode="url" placeholder="Paste any link — website, Google review, YouTube, Instagram..." aria-label="Paste a link to add a module" autocomplete="off" required><button type="submit" disabled>Add</button></form><p class="nxqr-hint">Add a destination first, then choose what customers will see this action as.</p><div class="nxqr-modules" data-qr-modules></div><div class="nxqr-actions">'+button(icon('plus-lg')+'Add module','data-qr-add-module','nxqr-add')+button(icon('arrow-counterclockwise')+'Reset to recommended','data-qr-reset')+'</div><p class="nxqr-status" data-qr-status role="status"></p><input type="file" data-qr-icon-upload accept="image/png,image/jpeg,image/webp,image/gif" hidden><div class="nxqr-overlay" data-qr-overlay hidden><section class="nxqr-dialog" role="dialog" aria-modal="true" aria-labelledby="nxqr-dialog-title"><header><h3 id="nxqr-dialog-title"></h3>'+button(icon('x-lg'),'data-qr-dialog-close aria-label="Close"')+'</header><div data-qr-dialog-body></div><footer>'+button('Done','data-qr-dialog-close')+'</footer></section></div>';
+    panel.innerHTML=(allowIndustry?'<div class="nxqr-industry-bar"><div><span>Industry templates</span><strong data-qr-industry-label></strong></div>'+button(icon('arrow-repeat')+'Change industry','data-qr-change-industry')+'</div>':'')+'<div class="nxqr-details"><label class="nxqr-field"><span>OneQR name</span><input name="qrName" data-qr-name value="'+esc(state.qrName)+'" maxlength="120" required autocomplete="off"><small>Internal name only. Customers never see it.</small></label><label class="nxqr-field"><span>Welcome message</span><input name="welcomeMessage" data-qr-welcome value="'+esc(state.welcomeMessage)+'" maxlength="180" placeholder="'+esc('e.g. Welcome to '+(business.name||'Bitcoin Nail Bar'))+'"><small>This message and the identity rule apply to the Customer view only.</small></label></div><form class="nxqr-link-form" data-qr-link-form>'+icon('link-45deg')+'<input name="destination" data-qr-link-input type="text" inputmode="url" placeholder="Paste any link — website, Google review, YouTube, Instagram..." aria-label="Paste a link to add a module" autocomplete="off" required><button type="submit" disabled>Add</button></form><p class="nxqr-hint">Add a destination first, then choose what customers will see this action as.</p><div class="nxqr-modules" data-qr-modules></div><p class="nxqr-status" data-qr-status role="status"></p><input type="file" data-qr-icon-upload accept="image/png,image/jpeg,image/webp,image/gif" hidden><div class="nxqr-overlay" data-qr-overlay hidden><section class="nxqr-dialog" role="dialog" aria-modal="true" aria-labelledby="nxqr-dialog-title"><header><h3 id="nxqr-dialog-title"></h3>'+button(icon('x-lg'),'data-qr-dialog-close aria-label="Close"')+'</header><div data-qr-dialog-body></div><footer>'+button('Done','data-qr-dialog-close')+'</footer></section></div>';
     function renderRows(focusId,focusAction) {
       $('[data-qr-modules]').innerHTML=modules.map((item,index)=>'<div class="nxqr-module" data-qr-row="'+esc(item.id)+'">'+button(icon('grip-vertical'),'data-qr-drag draggable="true" aria-label="Drag to reorder '+esc(item.title)+'" title="Drag to reorder"','nxqr-drag')+'<div class="nxqr-icon-tools"><span class="nxqr-module-icon">'+picture(item.icon)+'</span>'+button('Change icon','data-qr-action="icon"')+button('Upload','data-qr-action="upload"')+'</div><div class="nxqr-module-fields"><input data-qr-module-title value="'+esc(item.title)+'" aria-label="Module title: '+esc(item.title)+'" maxlength="120"'+(item.enabled?' required':'')+'><div class="nxqr-module-url">'+icon('link-45deg')+'<input data-qr-module-url value="'+esc(item.url)+'" aria-label="Link for '+esc(item.title)+'" inputmode="url" maxlength="2000" spellcheck="false">'+button(icon('copy'),'data-qr-action="copy" aria-label="Copy link for '+esc(item.title)+'" title="Copy link"')+'<a data-qr-open'+(url(item.url)?' href="'+esc(url(item.url))+'"':' aria-disabled="true" tabindex="-1"')+' target="_blank" rel="noopener noreferrer" aria-label="Open link for '+esc(item.title)+' in a new tab" title="Open link">'+icon('box-arrow-up-right')+'</a></div></div><div class="nxqr-module-side">'+button('','data-qr-action="toggle" role="switch" aria-checked="'+!!item.enabled+'" aria-label="Toggle '+esc(item.title)+' module"','nxqr-switch'+(item.enabled?' is-on':''))+'<div class="nxqr-order">'+button(icon('arrow-up'),'data-qr-action="up" aria-label="Move '+esc(item.title)+' up"'+(!index?' disabled':''))+button(icon('arrow-down'),'data-qr-action="down" aria-label="Move '+esc(item.title)+' down"'+(index===modules.length-1?' disabled':''))+'</div>'+button('Remove','data-qr-action="remove" aria-label="Remove '+esc(item.title)+'"','nxqr-remove')+'</div></div>').join('');
-      $('[data-qr-reset]').disabled=JSON.stringify(modules)===JSON.stringify(recommended());
       if(focusId){var row=Array.from(panel.querySelectorAll('[data-qr-row]')).find(row=>row.dataset.qrRow===focusId);row?.querySelector(focusAction||'[data-qr-module-title]')?.focus();}
     }
     function update(){state.qrModules=modules;notify();}
     function move(id,to){var from=modules.findIndex(item=>item.id===id);if(from<0||to<0||to>=modules.length)return;modules.splice(to,0,modules.splice(from,1)[0]);renderRows(id,'[data-qr-drag]');update();}
-    function library(){
-      var all=recommended();
-      Object.entries(window.ONEQR_INDUSTRIES.modules).forEach(([id,item])=>{if(!all.some(action=>action.id===id))all.push({id:id,title:item.en,icon:item.icon,url:id==='services'?new URL('../menu/menu.html',location.href).href:window.ONEQR_INDUSTRIES.actionUrl(id),enabled:true,description:item.descEn});});
-      return all;
-    }
-    function renderLibrary(query){
-      $('[data-qr-library-list]').innerHTML=library().filter(item=>!modules.some(active=>active.id===item.id)&&(!query||[item.title,item.description].join(' ').toLowerCase().includes(query))).map(item=>button('<span class="nxqr-library-icon">'+picture(item.icon)+'</span><span><strong>'+esc(item.title)+'</strong>'+(item.description?'<small>'+esc(item.description)+'</small>':'')+'</span>'+icon('plus-lg'),'data-qr-library-add="'+esc(item.id)+'"','nxqr-library-item')).join('')||'<p class="nxqr-hint">No available actions found. Try another search or close the library.</p>';
-    }
     function renderIndustry(){
       if(allowIndustry)$('[data-qr-industry-label]').textContent='Template: '+catalog.industries.find(item=>item.id===industryId).en;
     }
@@ -78,14 +69,12 @@
     function openDialog(kind,id,trigger){
       targetId=id||'';returnFocus=trigger;priorOverflow=document.body.style.overflow;
       $('.nxqr-dialog').classList.toggle('is-industry',kind==='industry');
-      $('#nxqr-dialog-title').textContent=kind==='industry'?'Choose your business industry':kind==='icon'?'Choose an icon':'Add module';
+      $('#nxqr-dialog-title').textContent=kind==='industry'?'Choose your business industry':'Choose an icon';
       if(kind==='industry'){
         industryPicker=window.ONEQR_INDUSTRY_PICKER.mount($('[data-qr-dialog-body]'),{selected:industryId,embedded:true,onSelect:selectIndustry});
-      }else if(kind==='icon'){
+      }else{
         var item=modules.find(item=>item.id===id);
         $('[data-qr-dialog-body]').innerHTML='<div class="nxqr-icon-grid">'+appearance.icons.map(value=>button(picture(value),'data-qr-icon="'+value+'" aria-label="Use '+value+' icon" aria-pressed="'+(!imagePattern.test(item.icon)&&value===appearance.resolveIcon(item.icon))+'"')).join('')+'</div>';
-      }else{
-        $('[data-qr-dialog-body]').innerHTML='<p class="nxqr-hint">Choose an action to add to this template. You can reorder or turn it off before saving.</p><input type="search" data-qr-library-search placeholder="Search actions" aria-label="Search actions"><div data-qr-library-list></div>';renderLibrary('');
       }
       $('[data-qr-overlay]').hidden=false;document.body.style.overflow='hidden';(kind==='industry'?$('[data-qr-dialog-body] input'):$('[data-qr-dialog-body]').querySelector('input,button'))?.focus();
     }
@@ -94,13 +83,12 @@
       var input=event.target;
       if(input.matches('[data-qr-name],[data-qr-welcome]')){state[input.name]=input.value;input.setCustomValidity('');notify();return;}
       if(input.matches('[data-qr-link-input]')){input.setCustomValidity('');$('[data-qr-link-form] [type=submit]').disabled=!input.value.trim();return;}
-      if(input.matches('[data-qr-library-search]')){renderLibrary(input.value.trim().toLowerCase());return;}
       var row=input.closest('[data-qr-row]');if(!row)return;
       var item=modules.find(item=>item.id===row.dataset.qrRow);
       if(input.hasAttribute('data-qr-module-title'))item.title=input.value;
       else if(input.hasAttribute('data-qr-module-url')){item.url=input.value;input.setCustomValidity('');var link=row.querySelector('[data-qr-open]');var href=url(input.value);if(href){link.href=href;link.removeAttribute('aria-disabled');link.removeAttribute('tabindex');}else{link.removeAttribute('href');link.setAttribute('aria-disabled','true');link.tabIndex=-1;}}
       else return;
-      $('[data-qr-reset]').disabled=false;update();
+      update();
     },{signal:controller.signal});
     $('[data-qr-link-form]').addEventListener('submit',event=>{
       event.preventDefault();var input=$('[data-qr-link-input]'),destination=url(input.value);
@@ -113,10 +101,7 @@
       var control=event.target.closest('button');if(!control)return;
       if(control.hasAttribute('data-qr-dialog-close')){closeDialog();return;}
       if(control.hasAttribute('data-qr-change-industry')){openDialog('industry','',control);return;}
-      if(control.hasAttribute('data-qr-add-module')){openDialog('library','',control);return;}
-      if(control.hasAttribute('data-qr-library-add')){var action=library().find(item=>item.id===control.dataset.qrLibraryAdd);if(action&&!modules.some(item=>item.id===action.id)){modules.push(clone(action));renderRows();renderLibrary($('[data-qr-library-search]').value.trim().toLowerCase());$('[data-qr-library-search]').focus();update();}return;}
       if(control.hasAttribute('data-qr-icon')){var item=modules.find(item=>item.id===targetId);if(item){if(reads.has(item.id)){reads.get(item.id).abort();reads.delete(item.id);busy();}item.icon=control.dataset.qrIcon;closeDialog();renderRows(item.id,'[data-qr-action="icon"]');update();}return;}
-      if(control.hasAttribute('data-qr-reset')){reads.forEach(reader=>reader.abort());reads.clear();busy();modules=recommended();renderRows();update();return;}
       var row=control.closest('[data-qr-row]');if(!row)return;
       var item=modules.find(item=>item.id===row.dataset.qrRow),index=modules.indexOf(item),action=control.dataset.qrAction;
       if(action==='up'||action==='down'){move(item.id,index+(action==='up'?-1:1));return;}
@@ -160,7 +145,7 @@
         link.setCustomValidity(url(item.url)?'':'Enter a valid website, email, or phone link.');if(!link.reportValidity())throw new Error('Enter a valid website, email, or phone link.');
       }
       if(reads.size)throw new Error(options.requiredMessage);if(!notify())throw new Error(options.saveFailed);
-    },preview(){return (business.name?'<strong>'+esc(business.name)+'</strong>':'')+(state.welcomeMessage?'<p>'+esc(state.welcomeMessage)+'</p>':'')+'<div class="nxqr-preview">'+modules.filter(item=>item.enabled).map(item=>'<a'+(url(item.url)?' href="'+esc(url(item.url))+'" target="_blank" rel="noopener noreferrer"':' aria-disabled="true"')+'>'+picture(item.icon)+'<span>'+esc(item.title)+'</span></a>').join('')+'</div>';},destroy(){destroyed=true;controller.abort();if(industryPicker)industryPicker.destroy();reads.forEach(reader=>reader.abort());reads.clear();busy();if(!$('[data-qr-overlay]').hidden)document.body.style.overflow=priorOverflow;}};
+    },destroy(){destroyed=true;controller.abort();if(industryPicker)industryPicker.destroy();reads.forEach(reader=>reader.abort());reads.clear();busy();if(!$('[data-qr-overlay]').hidden)document.body.style.overflow=priorOverflow;}};
   }
   window.NEXORA_QR_SETUP={mount,complete};
 })();
