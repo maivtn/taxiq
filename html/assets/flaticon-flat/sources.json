@@ -1324,6 +1324,17 @@
       "author_url": "https://www.flaticon.com/authors/sbts2018",
       "style": "SBTS2018 Flat",
       "collection": "https://www.flaticon.com/packs/makeup-and-beauty1"
+    },
+    {
+      "key": "favicon",
+      "word": "letter n",
+      "href": "https://www.flaticon.com/free-icon/letter-n_9203636",
+      "image": "https://cdn-icons-png.flaticon.com/128/9203/9203636.png",
+      "file": "favicon-letter-n-9203636.png",
+      "label": "Letter N",
+      "author": "icon_small",
+      "author_url": "https://www.flaticon.com/authors/icon-small",
+      "style": "icon_small Flat Gradient"
     }
   ]
 }
