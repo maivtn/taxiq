@@ -75,6 +75,9 @@
   ];
 
   const actionRules = [
+    ['.discover-connection-strip .function-bridge-launch', 'ArrowLeftRight', 'blue'],
+    ['.discover-connection-strip .oneqr-launch', 'QrCode', 'teal'],
+    ['.discover-connection-strip .utility-business', 'Store', 'violet'],
     ['.dialog-close,.bc-close,.drawer-header [data-dialog-close],[data-ai-close],[data-nudge-dismiss]', 'X', 'neutral'],
     ['#openingHoldSuccess [data-dialog-close]', 'Check', 'teal'],
     ['dialog [data-dialog-close]:not(.dialog-close)', 'X', 'neutral'],
