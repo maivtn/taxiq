@@ -47,6 +47,29 @@ body{min-width:0}
 .discover-entry .deal-entry-arrow{display:block;width:16px;height:16px}
 .deal-industry-icon{display:inline-block;width:24px;height:24px;object-fit:contain;flex-shrink:0;vertical-align:middle}
 .dw-category-icon .deal-industry-icon{width:32px;height:32px}
+/* Pastel surfaces keep each industry recognizable without changing the PO card layout. */
+[data-dw-group-id="beauty"],[data-dw-group-id="family"]{--category-surface:#fff0f5;--category-border:#f3cadb}
+[data-dw-group-id="food"]{--category-surface:#fff0e5;--category-border:#f4d1b7}
+[data-dw-group-id="shop"],[data-dw-group-id="community"]{--category-surface:#f2ebff;--category-border:#dac8f4}
+[data-dw-group-id="health"]{--category-surface:#e9f8ef;--category-border:#bce8cd}
+[data-dw-group-id="auto"],[data-dw-group-id="finance"],[data-dw-group-id="biz"]{--category-surface:#eaf5ff;--category-border:#bdddf2}
+[data-dw-group-id="home"],[data-dw-group-id="edu"]{--category-surface:#fff6df;--category-border:#efdba9}
+[data-dw-group-id="travel"]{--category-surface:#e6f8f7;--category-border:#b9e5df}
+[data-dw-group-id="event"]{--category-surface:#ffeef7;--category-border:#efc5df}
+.dw-category-card[data-dw-industry-id="spa"],.dw-category-card[data-dw-industry-id="yoga"]{--category-surface:#e9f8ef;--category-border:#bce8cd}
+.dw-category-card[data-dw-industry-id="lash"]{--category-surface:#f2ebff;--category-border:#dac8f4}
+.dw-category-card[data-dw-industry-id="barber"]{--category-surface:#eaf5ff;--category-border:#bdddf2}
+.dw-category-card[data-dw-industry-id="skin"]{--category-surface:#fff0e5;--category-border:#f4d1b7}
+.dw-category-card[data-dw-industry-id="pmu"]{--category-surface:#ffeef7;--category-border:#efc5df}
+.dw-category-card[data-dw-industry-id="medspa"]{--category-surface:#e6f8f7;--category-border:#b9e5df}
+.dw-category-card[data-dw-industry-id="wax"]{--category-surface:#fff6df;--category-border:#efdba9}
+.dw-category-card[data-dw-industry-id="fitness"]{--category-surface:#f1edff;--category-border:#d9cdf3}
+.dw-category-card[data-dw-industry-id="diet"]{--category-surface:#f2f8df;--category-border:#d6e6ad}
+.dw-category-card[data-dw-industry-id="headspa"]{--category-surface:#edf1ff;--category-border:#ccd6f2}
+.dw-category-card:not(.dw-category-featured){background:var(--category-surface,#f2ebff)!important;border-color:var(--category-border,#dac8f4);color:#252036}
+.dw-category-card:not(.dw-category-featured)>.dw-category-icon{background:#ffffffc9}
+.dw-category-card:not(.dw-category-featured)>small{color:#5e526f!important}
+.dw-category-card:not(.dw-category-featured):hover,.dw-category-card:not(.dw-category-featured):focus-visible{border-color:#8664dc}
 .dw-chip .deal-industry-icon{width:20px;height:20px}
 .dw-category-group h2 .deal-industry-icon{width:24px;height:24px}
 [data-dw-selected-group] .deal-industry-icon{width:20px;height:20px}
