@@ -8,6 +8,7 @@
   const clone = value => JSON.parse(JSON.stringify(value));
   const currentSalon = options.salon || window.NEXORA_SALON_DATA.loadCatalog().salon;
   const menu = options.catalogType === 'menu';
+  const showBrowser = options.onboarding && menu;
   const text = menu ? {
     search:'Search menu items...', loading:'Loading menu items…', noun:'item', count:'items', add:'Add item', newTitle:'New item', editTitle:'Edit item', addSave:'Add item', name:'Item name', image:'Item image', placeholder:'Item name', description:'Optional item description',
     newIntro:'Enter the item details, then choose one or more categories.', editIntro:'Update the item details and categories.', empty:'No items in this category yet.', noMatch:'No menu items match your search.', invalid:'Enter an item name and a valid price.', loadFailed:'Unable to load menu items. Reload to try again.'
@@ -24,7 +25,7 @@
   const button = (attr, label, glyph, cls = '') => '<button type="button" '+attr+' class="'+cls+'">'+(glyph?icon(glyph):'')+label+'</button>';
   const richToolbar = label => '<div class="salon-rich-toolbar" role="group" aria-label="'+esc(label)+' formatting">'+[['bold','Bold','type-bold'],['italic','Italic','type-italic'],['underline','Underline','type-underline'],['insertOrderedList','Numbered list','list-ol'],['insertUnorderedList','Bulleted list','list-ul'],['removeFormat','Clear formatting','eraser']].map(([command,name,glyph])=>button('data-rich-command="'+command+'" aria-label="'+name+'" title="'+name+'"','',glyph)).join('')+'</div>';
   panel.innerHTML = `
-    ${options.onboarding ? '<div class="salon-service-browser"><label class="salon-service-search">'+icon('search')+'<input type="search" data-service-search placeholder="'+text.search+'" aria-label="'+text.search+'"></label><div class="salon-service-view" role="group" aria-label="'+(menu?'Menu view':'Service view')+'">'+button('data-service-view="card" aria-pressed="false"','Card view','grid')+button('data-service-view="list" aria-pressed="true"','List view','list-ul')+'</div></div><div class="salon-service-filters" role="group" aria-label="Categories" data-service-filters></div>' : ''}
+    ${showBrowser ? '<div class="salon-service-browser"><label class="salon-service-search">'+icon('search')+'<input type="search" data-service-search placeholder="'+text.search+'" aria-label="'+text.search+'"></label><div class="salon-service-view" role="group" aria-label="'+(menu?'Menu view':'Service view')+'">'+button('data-service-view="card" aria-pressed="false"','Card view','grid')+button('data-service-view="list" aria-pressed="true"','List view','list-ul')+'</div></div><div class="salon-service-filters" role="group" aria-label="Categories" data-service-filters></div>' : ''}
     <div class="salon-service-toolbar"><div>${button('data-categories-open disabled','Manage Categories','diagram-3')}</div>${button('data-services-save disabled','Save','check-circle-fill','is-primary')}</div>
     <p class="salon-service-status" role="status" data-approval-status></p>
     <div class="salon-services" data-approval-services><p class="salon-empty">${text.loading}</p></div>
@@ -231,15 +232,15 @@
   function serviceById(id) {for(const category of categories){const service=category.services.find(s=>s.id===id);if(service)return service;}}
   function eachService(id, change) {categories.forEach(c=>c.services.filter(s=>s.id===id).forEach(change));}
   function render() {
-    if (options.onboarding) {
+    if (options.onboarding) panel.dataset.serviceView=serviceView;
+    if (showBrowser) {
       if (!categories.some(c=>c.id===categoryFilter)) categoryFilter='';
       $('[data-service-filters]').innerHTML=button('data-service-filter="" aria-pressed="'+(!categoryFilter)+'"','All')+categories.map(c=>button('data-service-filter="'+esc(c.id)+'" aria-pressed="'+(categoryFilter===c.id)+'"',esc(c.name))).join('');
-      panel.dataset.serviceView=serviceView;
       panel.querySelectorAll('[data-service-view]').forEach(control=>control.setAttribute('aria-pressed',String(control.dataset.serviceView===serviceView)));
     }
     const open = new Set(Array.from(panel.querySelectorAll('[data-service-category][open]')).map(c=>c.dataset.serviceCategory));
     const visible=categories.filter(c=>!categoryFilter||c.id===categoryFilter).map(c=>Object.assign({},c,{services:c.services.filter(s=>!query||[s.name,s.description,...(s.tags||[])].join(' ').toLowerCase().includes(query))})).filter(c=>!query||c.services.length);
-    if (options.onboarding && serviceView==='card') {
+    if (showBrowser && serviceView==='card') {
       $('[data-approval-services]').innerHTML=visible.map(c=>`<section class="salon-card-category"><header><h3>${esc(c.name)} <small>${c.services.length} ${text.count}</small></h3>${button('data-service-add="'+esc(c.id)+'"',text.add,'plus')}</header><div class="salon-service-cards">${c.services.map(s=>`<article class="salon-service-card" data-salon-service-row="${esc(s.id)}" data-row-category="${esc(c.id)}"><header><h3>${esc(s.name)}</h3>${button('data-service-drag="'+esc(s.id)+'" draggable="true" aria-label="Reorder '+esc(s.name)+'"','','grip-vertical','salon-drag')}</header>${safeImage(s.image)?'<img src="'+esc(s.image)+'" alt="">':''}<div class="salon-card-price"><strong>$${Number(s.price||0).toFixed(2)}</strong>${menu?'':'<span>'+icon('clock')+' '+esc(s.durationMin)+' min</span>'}</div><footer><span class="salon-status-pill${s.active===false?' is-inactive':''}">${s.active===false?'Inactive':'Active'}</span>${button('data-salon-service-edit="'+esc(s.id)+'" aria-label="Edit '+text.noun+': '+esc(s.name)+'"','Edit')}${button('data-service-remove="'+esc(s.id)+'" aria-label="Delete '+text.noun+': '+esc(s.name)+'"','Delete')}</footer></article>`).join('')||'<p class="salon-empty">'+text.empty+'</p>'}</div></section>`).join('') || emptyServices();
       return;
     }
@@ -330,7 +331,7 @@
       const c=categories.find(c=>c.id===target.dataset.serviceAdd),service=Object.assign({id:uid(),name:'',price:'',active:true,isDraft:true},menu?{}:{durationMin:options.onboarding?'':45});
       c.services.push(service);
       if(options.onboarding&&menu){openService(service.id,target);return;}
-      if(options.onboarding){serviceView='list';query='';$('[data-service-search]').value='';}
+      if(options.onboarding){serviceView='list';query='';const search=$('[data-service-search]');if(search)search.value='';}
       markDirty();render();
       const category=Array.from(panel.querySelectorAll('[data-service-category]')).find(el=>el.dataset.serviceCategory===c.id);
       category.open=true;category.querySelector('.settings-service-row:last-child [data-inline-field="name"]').focus();return;
