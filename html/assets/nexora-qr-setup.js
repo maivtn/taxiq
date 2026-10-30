@@ -16,9 +16,9 @@
     return [
       ['booking','Book Appointment','calendar-check','../customer/booking.html'],
       ['review','Leave a Review','star','../tip-flow/review.html'],
-      ['checkin','Smart Check-in','check','../customer/check-in-mobile.html'],
-      ['tip','Tip & Pay','phone','../tip-flow/select-staff.html'],
-      ['payment','Pay Now','camera','qr-stations.html?tab=accept-payment']
+      ['checkin','Smart Check-in','scan-line','../customer/check-in-mobile.html'],
+      ['tip','Tip & Pay','hand-coins','../tip-flow/select-staff.html'],
+      ['payment','Pay Now','credit-card','qr-stations.html?tab=accept-payment']
     ].map(item=>({id:item[0],title:item[1],icon:item[2],url:new URL(item[3],window.location.href).href,enabled:true}));
   }
   function complete(fields) {
@@ -31,6 +31,13 @@
     var industryId=allowIndustry?(catalog.industries.some(item=>item.id===fields.qrIndustryId)?fields.qrIndustryId:options.industry):'';
     function recommended(){return defaults(industryId);}
     var modules=Array.isArray(fields.qrModules)?clone(fields.qrModules):recommended();
+    // Replace earlier demo icons while retaining uploaded and other custom icons.
+    var oldIcons={checkin:['check'],tip:['phone'],payment:['camera','scan-line']};
+    var salonDefaults=defaults();
+    modules.forEach(item=>{
+      var matching=salonDefaults.find(base=>base.id===item.id&&base.title===item.title);
+      if(matching&&!item.iconCustomized&&oldIcons[item.id]?.includes(item.icon))item.icon=matching.icon;
+    });
     var state={qrName:fields.qrName==null?(fields.qrLabel||business.name||''):fields.qrName,welcomeMessage:fields.welcomeMessage||'',qrModules:modules};
     if(allowIndustry)state.qrIndustryId=industryId;
     var legacy={booking:'qrBooking',review:'qrReviews',checkin:'qrCheckin',tip:'qrTips',payment:'qrPayment'};
@@ -101,7 +108,7 @@
       var control=event.target.closest('button');if(!control)return;
       if(control.hasAttribute('data-qr-dialog-close')){closeDialog();return;}
       if(control.hasAttribute('data-qr-change-industry')){openDialog('industry','',control);return;}
-      if(control.hasAttribute('data-qr-icon')){var item=modules.find(item=>item.id===targetId);if(item){if(reads.has(item.id)){reads.get(item.id).abort();reads.delete(item.id);busy();}item.icon=control.dataset.qrIcon;closeDialog();renderRows(item.id,'[data-qr-action="icon"]');update();}return;}
+      if(control.hasAttribute('data-qr-icon')){var item=modules.find(item=>item.id===targetId);if(item){if(reads.has(item.id)){reads.get(item.id).abort();reads.delete(item.id);busy();}item.icon=control.dataset.qrIcon;item.iconCustomized=true;closeDialog();renderRows(item.id,'[data-qr-action="icon"]');update();}return;}
       var row=control.closest('[data-qr-row]');if(!row)return;
       var item=modules.find(item=>item.id===row.dataset.qrRow),index=modules.indexOf(item),action=control.dataset.qrAction;
       if(action==='up'||action==='down'){move(item.id,index+(action==='up'?-1:1));return;}
@@ -121,7 +128,7 @@
       if(reads.has(id))reads.get(id).abort();
       var reader=new FileReader();reads.set(id,reader);busy();
       function finish(){if(reads.get(id)===reader){reads.delete(id);busy();}}
-      reader.onload=()=>{var item=modules.find(item=>item.id===id);if(!destroyed&&reads.get(id)===reader&&item&&imagePattern.test(reader.result)){item.icon=reader.result;renderRows(id,'[data-qr-action="upload"]');update();}finish();};
+      reader.onload=()=>{var item=modules.find(item=>item.id===id);if(!destroyed&&reads.get(id)===reader&&item&&imagePattern.test(reader.result)){item.icon=reader.result;item.iconCustomized=true;renderRows(id,'[data-qr-action="upload"]');update();}finish();};
       reader.onerror=()=>{if(!destroyed)status('Could not read this image. Please try another file.');finish();};reader.onabort=finish;reader.readAsDataURL(file);
     },{signal:controller.signal});
     $('[data-qr-modules]').addEventListener('keydown',event=>{var handle=event.target.closest('[data-qr-drag]');if(handle&&['ArrowUp','ArrowDown'].includes(event.key)){event.preventDefault();move(handle.closest('[data-qr-row]').dataset.qrRow,modules.findIndex(item=>item.id===handle.closest('[data-qr-row]').dataset.qrRow)+(event.key==='ArrowUp'?-1:1));}},{signal:controller.signal});
