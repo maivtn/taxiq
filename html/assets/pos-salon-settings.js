@@ -2,6 +2,17 @@
   'use strict';
   const $=selector=>document.querySelector(selector);
   const esc=value=>String(value??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+  function staffTable(staff,options={}) {
+    const roles={tech:'Technician',frontdesk:'Front Desk',manager:'Manager'};
+    if(options.onboarding)roles.owner='Owner';
+    const levels={'1':'Level 1 · Basic services','2':'Level 2 · Advanced services','3':'Level 3 · Senior / all approved services'};
+    return staff.length?table(['Staff','Position','Level','Contact','Actions'],staff.map(t=>{
+      const profile=options.onboarding?t:(t.posProfile||{});
+      return '<tr><td><div class="salon-person"><span class="salon-avatar">'+esc(t.name.charAt(0).toUpperCase())+'</span>'+esc(t.name)+'</div></td><td>'+esc(roles[profile.posRole]||'Nail Technician')+'</td><td>'+esc(options.onboarding?(levels[profile.level]||'—'):('Level '+(profile.level||1)))+'</td><td>'+esc(t.phone||t.email||'—')+'</td><td><button type="button" data-tech-detail-open="'+esc(t.id)+'">View &amp; Edit</button>'+(options.onboarding?'':' <button type="button" data-staff-schedule-open="'+esc(t.id)+'">Edit schedule</button>')+'</td></tr>';
+    })):'<p class="salon-empty">No staff match your search.</p>';
+  }
+  window.NEXORA_STAFF_ROSTER={table:staffTable};
+  if(!$('#salon-staff-search')||!$('[data-staff-grid]'))return;
   let page=1;const pageSize=10;
   const baseRender=window.renderStaffRoster;
   function table(headers,rows){return '<table><thead><tr>'+headers.map(h=>'<th scope="col">'+h+'</th>').join('')+'</tr></thead><tbody>'+rows.join('')+'</tbody></table>';}
@@ -9,7 +20,7 @@
     const staff=salonData.loadCatalog().technicians.filter(t=>t.active&&t.name.toLowerCase().includes($('#salon-staff-search').value.trim().toLowerCase()));
     const pages=Math.max(1,Math.ceil(staff.length/pageSize));page=Math.min(page,pages);
     const visible=staff.slice((page-1)*pageSize,page*pageSize);
-    $('[data-staff-grid]').innerHTML=visible.length?table(['Staff','Position','Level','Contact','Actions'],visible.map(t=>'<tr><td><div class="salon-person"><span class="salon-avatar">'+esc(t.name.charAt(0).toUpperCase())+'</span>'+esc(t.name)+'</div></td><td>'+esc(ROLE_LABELS[t.posProfile?.posRole]||'Nail Technician')+'</td><td>Level '+esc(t.posProfile?.level||1)+'</td><td>'+esc(t.phone||t.email||'—')+'</td><td><button type="button" data-tech-detail-open="'+esc(t.id)+'">View &amp; Edit</button> <button type="button" data-staff-schedule-open="'+esc(t.id)+'">Edit schedule</button></td></tr>')):'<p class="salon-empty">No staff match your search.</p>';
+    $('[data-staff-grid]').innerHTML=staffTable(visible);
     let buttons='<button type="button" data-staff-page="'+(page-1)+'" aria-label="Previous page"'+(page===1?' disabled':'')+'>‹</button>';
     const wanted=[...new Set([1,page-1,page,page+1,pages])].filter(n=>n>0&&n<=pages).sort((a,b)=>a-b);let previous=0;
     wanted.forEach(n=>{if(previous&&n>previous+1)buttons+='<span>…</span>';buttons+='<button type="button" data-staff-page="'+n+'"'+(n===page?' aria-current="page"':'')+'>'+n+'</button>';previous=n;});

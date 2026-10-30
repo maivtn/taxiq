@@ -22,6 +22,8 @@ function loadPage(name, saved = {}) {
       window.eval(asset('vendor/tom-select/tom-select.complete.min.js'));
       window.NEXORA_APPOINTMENT_SERVICE_CATALOG = { load: () => Promise.resolve({ categories: [] }) };
       window.eval(asset('pos-salon-services.js'));
+      window.eval(asset('pos-salon-settings.js'));
+      window.eval(asset('nexora-staff-setup.js'));
     }
     window.eval(asset('nexora-welcome-data.js'));
     window.eval(asset('nexora-welcome.js'));
@@ -206,6 +208,72 @@ test('Services preparation reuses categories and the service editor while saving
     click(window, '[data-setup-step="1"]');
     await Promise.resolve();
     assert.equal(doc.querySelector('[data-inline-field="price"]').value, '35');
+  } finally { dom.window.close(); }
+});
+
+test('Staff preparation saves complete profiles, assignments, schedules, and unfinished editor drafts', async () => {
+  const storageKey = 'nexora.local-onboarding.v1';
+  const hours = { timeZone: 'America/Chicago' };
+  for (let day = 0; day < 7; day++) Object.assign(hours, { [`hoursOpen${day}`]: 'true', [`hoursFrom${day}`]: '09:00', [`hoursTo${day}`]: '18:00' });
+  const catalog = [{ id: 'manicure', name: 'Manicure', services: [{ id: 'milk-honey', name: 'Milk & Honey', price: 10, durationMin: 30 }] }];
+  const dom = loadPage('nexora-getting-started.html', {
+    [storageKey]: JSON.stringify({ industry: 'nail', drafts: { nail: { business: { fields: hours }, services: { fields: { serviceCatalog: catalog } } } } }),
+    'existing-pos-store': 'keep-pos-data'
+  });
+  try {
+    const { window } = dom;
+    const doc = window.document;
+    const change = (selector, value) => {
+      const input = doc.querySelector(selector);
+      input.value = value;
+      input.dispatchEvent(new window.Event(input.tagName === 'SELECT' ? 'change' : 'input', { bubbles: true }));
+    };
+    click(window, '[data-setup-step="2"]');
+    await Promise.resolve();
+    assert.equal(doc.querySelector('[name="staff1Name"]'), null);
+    submit(window);
+    assert.equal(doc.querySelector('[data-setup-step="2"]').dataset.completed, 'false');
+    click(window, '[data-staff-add]');
+    change('[data-staff-form] [name="name"]', 'Demo Tech');
+    change('[data-staff-form] [name="phone"]', '909123456');
+    change('[data-staff-form] [name="phoneCountry"]', 'VN');
+    change('[data-staff-form] [name="email"]', 'demo@example.com');
+    change('[data-staff-form] [name="posRole"]', 'manager');
+    change('[data-staff-form] [name="payStructure"]', 'weekly');
+    change('[data-staff-form] [name="weeklySalary"]', '1000');
+    click(window, '[data-staff-form] [name="tipsEnabled"]');
+    click(window, '[data-staff-service="milk-honey"]');
+    click(window, '[data-staff-day-off="6"]');
+    assert.equal(doc.querySelector('[data-staff-start="6"]').disabled, true);
+    doc.querySelector('[data-staff-form]').dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
+    assert.equal(doc.querySelector('[data-staff-overlay]').hidden, true);
+    assert.match(doc.querySelector('[data-staff-grid]').textContent, /Demo Tech/);
+    assert.match(doc.querySelector('[data-staff-grid]').textContent, /\+84 909123456/);
+    submit(window);
+    assert.equal(doc.querySelector('[data-setup-step="2"]').dataset.completed, 'true');
+    const staff = JSON.parse(window.localStorage.getItem(storageKey)).drafts.nail.staff.fields.staffMembers[0];
+    assert.equal(staff.payStructure, 'weekly');
+    assert.equal(staff.weeklySalary, '1000');
+    assert.equal(staff.tipsEnabled, false);
+    assert.deepEqual(staff.serviceIds, ['milk-honey']);
+    assert.equal(staff.weekly[6].off, true);
+    click(window, `[data-tech-detail-open="${staff.id}"]`);
+    change('[data-staff-form] [name="phone"]', '909999999');
+    click(window, '[data-staff-close]');
+    assert.equal(doc.querySelector('[data-setup-step="2"]').dataset.completed, 'false');
+    click(window, '[data-setup-step="1"]');
+    click(window, '[data-setup-step="2"]');
+    await Promise.resolve();
+    click(window, `[data-tech-detail-open="${staff.id}"]`);
+    assert.equal(doc.querySelector('[data-staff-form] [name="phone"]').value, '909999999');
+    click(window, '[data-staff-discard]');
+    assert.equal(doc.querySelector('[data-staff-form] [name="phone"]').value, '909123456');
+    click(window, '[data-staff-close]');
+    assert.equal(window.localStorage.getItem('existing-pos-store'), 'keep-pos-data');
+    click(window, '[name="staffMode"][value="invite"]');
+    click(window, '[name="inviteConfirmed"]');
+    submit(window);
+    assert.equal(doc.querySelector('[data-setup-step="2"]').dataset.completed, 'true');
   } finally { dom.window.close(); }
 });
 
