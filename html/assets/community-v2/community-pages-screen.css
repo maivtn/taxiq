@@ -131,3 +131,15 @@ body.community-page-screen #pagesView > :not(#communityPageScreen) { display:non
 .page-ads-note { margin:14px 0 0; font-size:12px; line-height:1.6; color:#64718b; }
 #pageAdsError:empty { display:none; }
 .page-ads-dialog .dialog-footer .btn { min-height:44px; }
+.page-ads-toggle { position:relative; display:flex; align-items:center; gap:14px; min-height:56px; margin-bottom:14px; padding:12px 14px; border:1px solid var(--line); border-radius:12px; cursor:pointer; }
+.page-ads-toggle > span:first-child { flex:1; font-size:14px; font-weight:800; }
+.page-ads-toggle small { display:block; margin-top:4px; font-size:12px; font-weight:600; color:#64718b; }
+.page-ads-toggle input { position:absolute; width:1px; height:1px; min-width:0; min-height:0; opacity:0; }
+.page-ads-toggle-track { position:relative; flex:none; width:46px; height:26px; border-radius:20px; background:#a4adbd; transition:background .15s; }
+.page-ads-toggle-track::after { content:''; position:absolute; inset:3px auto auto 3px; width:20px; height:20px; border-radius:50%; background:#fff; box-shadow:0 1px 4px #17213835; transition:transform .15s; }
+.page-ads-toggle input:checked + .page-ads-toggle-track { background:#6351ec; }
+.page-ads-toggle input:checked + .page-ads-toggle-track::after { transform:translateX(20px); }
+.page-ads-toggle input:focus-visible + .page-ads-toggle-track { outline:3px solid #aaa0ff; outline-offset:3px; }
+.page-ads-toggle:has(input:checked) { border-color:#c5bcff; background:#f6f4ff; }
+#pageAdsSettings { min-width:0; margin:0; padding:0; border:0; }
+#pageAdsSettings[hidden],.page-ads-dialog .dialog-footer .btn[hidden] { display:none; }

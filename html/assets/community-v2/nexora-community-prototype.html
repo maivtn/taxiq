@@ -196,7 +196,7 @@
 #dealRefinements .select{width:100%;min-height:44px;padding-right:44px;background-position:right 16px center;background-size:16px}
 @media(max-width:650px){#dealRefinements{gap:9px;padding:10px}#dealFilterToggle{font-size:12px;padding:9px 11px}}
 </style>
-  <link rel="stylesheet" href="community-pages-screen.css?v=20261030-page-ads-v7">
+  <link rel="stylesheet" href="community-pages-screen.css?v=20261030-page-ads-v8">
 </head>
 <body>
 <script>
@@ -296,7 +296,7 @@
 <div id="modalRoot"></div><div id="toast" class="toast hide" role="status"></div>
 <script src="../vendor/tom-select/tom-select.complete.min.js"></script>
 <script src="community-demo-data.js?v=20261030-page-followers-v3"></script>
-<script src="community-page-ads.js?v=20261030-page-ads-v1"></script>
+<script src="community-page-ads.js?v=20261030-page-ads-v2"></script>
 <script src="nexora-us-geo-2025.js"></script>
 <script src="nexora-us-place-centers-2025.js"></script>
 <script src="community-record-store.js?v=20261029-community-tour-actions-v21"></script>
@@ -526,7 +526,7 @@
   function pageAvatar(x){const image=coverUrl(x.avatar);if(image)return `<img src="${image}" alt="">`;if(x.id==='p1')return '<img src="nexora-bitcoin-nailbar.png" alt="">';return esc(x.title.trim().split(/\s+/).slice(0,2).map(word=>word[0]||'').join('').toUpperCase()||'P');}
   function pageCoverStyle(x){const image=coverUrl(x.cover);return image?` style="background-image:url('${image}')"`:'';}
   function pageActionLabel(x){return x.primaryAction==='call'&&x.phone?'Gọi':x.primaryAction==='booking'?(x.industry==='Nhà hàng & ăn uống'?'Đặt bàn':'Đặt lịch'):'Nhắn tin';}
-  function activePagePromotion(x){const promotion=extra.promotions?.[x.id];return promotion?.status==='running'&&promotion.fundingSource==='ads-credit'&&promotion.budget>0&&promotion.startsOn<=localDateISO()&&promotion.endsOn>=localDateISO()?promotion:null;}
+  function activePagePromotion(x){const promotion=extra.promotions?.[x.id];return promotion?.status==='running'&&promotion.paidEnabled===true&&promotion.fundingSource==='ads-credit'&&promotion.budget>0&&promotion.startsOn<=localDateISO()&&promotion.endsOn>=localDateISO()?promotion:null;}
   function visiblePagePromotion(x){return norm(x.city)===norm(viewerLocation.city+', '+viewerLocation.state)?activePagePromotion(x):null;}
   function pageFollowerCount(page){return (Array.isArray(page.followerProfiles)?page.followerProfiles.length:Number(page.followers||0))+(extra.followingPages[page.id]?1:0);}
   function pageCard(x){const industry=x.industry==='Nhà hàng & ăn uống'?'restaurant':x.industry==='Nail & làm đẹp'?'beauty':'other',count=pageFollowerCount(x),posts=extra.pagePosts.filter(post=>post.pageId===x.id).length,promoted=visiblePagePromotion(x);return `<article class="panel page-card" data-industry="${industry}" data-promoted="${Boolean(promoted)}"><div class="page-cover"${pageCoverStyle(x)}></div><div class="page-content">${promoted?'<span class="sponsor-label">✦ Được tài trợ</span>':''}<div class="page-identity"><span class="page-avatar">${pageAvatar(x)}</span><div><h3>${esc(x.title)}</h3><span class="meta">${esc(x.handle||pageHandle(x.title))} · ${esc(x.city)}</span></div></div><p class="page-summary">${esc(x.description)}</p><div class="page-stats"><span>${count} người theo dõi</span><span>·</span><span>${posts} bài cập nhật</span></div><div class="page-actions"><button type="button" class="btn small soft" data-open-page="${esc(x.id)}">Xem Fanpage</button>${x.owner===ME?`<button type="button" class="btn small" data-edit-page="${esc(x.id)}">Sửa Fanpage</button>`:`<button type="button" class="btn small" data-follow-page="${esc(x.id)}" aria-pressed="${Boolean(extra.followingPages[x.id])}">${extra.followingPages[x.id]?'✓ Đang theo dõi':'＋ Theo dõi'}</button>`}</div></div></article>`;}
