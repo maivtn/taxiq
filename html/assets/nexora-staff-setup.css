@@ -1,4 +1,21 @@
 /* Onboarding reuses the Salon Settings roster with the staging staff editor. */
+.nxstaff-invite{margin-top:20px;color:#172033}
+.nxw .nxstaff-invite>.staff-invite-intro{margin:0 0 16px;font-size:12px;line-height:1.6;color:#667085}
+.nxstaff-invite .staff-invite-card{display:grid;justify-items:center;gap:12px;width:min(100%,672px);margin:0 auto;padding:24px;border:1px solid #dce3ee;border-radius:16px;background:#fff;box-shadow:0 1px 3px #0f172a0d;text-align:center}
+.nxstaff-invite .staff-invite-icon{display:grid;place-items:center;width:44px;height:44px;border-radius:12px;background:#fffbeb}
+.nxstaff-invite .staff-invite-icon img{width:24px;height:24px;object-fit:contain}
+.nxw .nxstaff-invite h3{margin:0;color:#172033;font-size:16px;font-weight:800}
+.nxw .nxstaff-invite .staff-invite-card>p{margin:-8px 0 0;font-size:12px;line-height:1.6;color:#667085}
+.nxstaff-invite .staff-invite-qr-frame{display:grid;place-items:center;width:176px;height:176px;margin:8px 0;padding:11px;overflow:hidden;border:1px solid #dce3ee;border-radius:16px;background:#fff;box-shadow:0 1px 3px #0f172a0d}
+.nxstaff-invite [data-staff-invite-qr],.nxstaff-invite [data-staff-invite-qr] canvas,.nxstaff-invite [data-staff-invite-qr] img{width:152px;height:152px;max-width:100%}
+.nxstaff-invite .staff-invite-link{width:100%;min-width:0;min-height:44px;padding:10px 12px;border:1px solid #dce3ee;border-radius:7px;outline:0;background:#f8f9fc;color:#667085;font:11px "SFMono-Regular",Consolas,monospace;text-align:center;text-overflow:ellipsis}
+.nxstaff-invite .staff-invite-link:focus{border-color:#a18bd3;outline:2px solid #a18bd326}
+.nxstaff-invite .staff-invite-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;width:100%}
+.nxstaff-invite .staff-invite-actions button{display:inline-flex;align-items:center;justify-content:center;gap:8px;min-height:44px;padding:0 16px;border:1px solid #dce3ee;border-radius:8px;background:#fff;color:#172033;font:700 12px Inter,sans-serif;cursor:pointer}
+.nxstaff-invite .staff-invite-actions button.is-primary{border-color:#4840df;background:#4840df;color:#fff}
+.nxstaff-invite .staff-invite-actions button:disabled{opacity:.5;cursor:default}
+.nxstaff-invite .staff-invite-status:empty{display:none}
+@media(max-width:600px){.nxstaff-invite .staff-invite-card{padding:16px}}
 .nxstaff{--staff-line:#dce3ee;--staff-brand:#4840df;margin-top:20px;color:#24344d;font-size:12px;min-width:0}
 .nxstaff [hidden]{display:none!important}
 .nxstaff .nxstaff-toolbar{margin-bottom:16px}

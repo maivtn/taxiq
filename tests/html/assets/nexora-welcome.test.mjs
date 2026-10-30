@@ -28,6 +28,13 @@ function loadPage(name, saved = {}) {
       window.eval(asset('oneqr-action-appearance.js'));
       window.eval(asset('oneqr-industry-picker.js'));
       window.eval(asset('nexora-qr-setup.js'));
+      window.QRCode = Object.assign(function (container, options) {
+        const image = window.document.createElement('img');
+        image.alt = 'Scan to Join';
+        container.appendChild(image);
+        container.dataset.qrValue = options.text;
+      }, { CorrectLevel: { M: 0 } });
+      window.eval(asset('qr-stations-workflows.js'));
     }
     window.eval(asset('nexora-welcome-data.js'));
     window.eval(asset('nexora-welcome.js'));
@@ -324,9 +331,23 @@ test('Staff preparation saves complete profiles, assignments, schedules, and unf
     click(window, '[data-staff-close]');
     assert.equal(window.localStorage.getItem('existing-pos-store'), 'keep-pos-data');
     click(window, '[name="staffMode"][value="invite"]');
-    click(window, '[name="inviteConfirmed"]');
+    const invitationUrl = window.NEXORA_QR_WORKFLOWS.STAFF_INVITE_URL;
+    assert.equal(doc.querySelector('[name="inviteConfirmed"]'), null);
+    assert.equal(doc.querySelector('[data-staff-invite-qr]').dataset.qrValue, invitationUrl);
+    assert.equal(doc.querySelector('.staff-invite-link').value, invitationUrl);
+    assert.equal(doc.getElementById('nxw-entered-preview').hidden, true);
+    const copied = [];
+    Object.defineProperty(window.navigator, 'clipboard', { configurable: true, value: { writeText: async value => copied.push(value) } });
+    click(window, '[data-staff-invite-action="copy"]');
+    await new Promise(resolve => window.setTimeout(resolve, 0));
+    assert.deepEqual(copied, [invitationUrl]);
+    click(window, '[data-staff-invite-action="share"]');
+    await new Promise(resolve => window.setTimeout(resolve, 0));
+    assert.deepEqual(copied, [invitationUrl, invitationUrl]);
+    assert.match(doc.querySelector('[data-staff-invite-status]').textContent, /Sharing is unavailable/);
     submit(window);
     assert.equal(doc.querySelector('[data-setup-step="2"]').dataset.completed, 'true');
+    assert.equal(JSON.parse(window.localStorage.getItem(storageKey)).drafts.nail.staff.fields.staffInviteUrl, invitationUrl);
   } finally { dom.window.close(); }
 });
 

@@ -8,7 +8,7 @@
   if (typeof module === 'object' && module.exports) module.exports = api;
   if (!root) return;
   root.NEXORA_QR_WORKFLOWS = api;
-  if (root.document) api.init(root.document, root);
+  if (root.document && root.document.querySelector('[data-qr-panel]')) api.init(root.document, root);
 })(typeof window !== 'undefined' ? window : null, function () {
   'use strict';
 
@@ -118,6 +118,62 @@
     if (!documentObject.querySelector('.workflow-dialog-shell:not([hidden])')) documentObject.body.style.overflow = '';
     if (modal._workflowOpener && typeof modal._workflowOpener.focus === 'function') modal._workflowOpener.focus();
     modal._workflowOpener = null;
+  }
+
+  function completeStaffInvite(fields) {
+    return fields.staffInviteUrl === STAFF_INVITE_URL;
+  }
+
+  function mountStaffInvite(panel, options) {
+    var documentObject = panel.ownerDocument, rootObject = documentObject.defaultView;
+    var navigatorObject = rootObject.navigator, controller = new rootObject.AbortController();
+    var destroyed = false, qrReady = false, escapedUrl = STAFF_INVITE_URL.replace(/&/g, '&amp;');
+    panel.classList.add('nxstaff-invite');
+    panel.innerHTML = '<p class="staff-invite-intro">Share this QR or join link to invite staff to your business.</p><section class="staff-invite-card"><span class="staff-invite-icon" aria-hidden="true">' + rootObject.ONEQR_ACTION_APPEARANCE.image('users-round', 24) + '</span><h3>STAFF INVITE LINK</h3><p>Share this link or QR code so technicians can create their account and join your salon.</p><div class="staff-invite-qr-frame"><div data-staff-invite-qr data-qr-size="152" role="img" aria-label="Scan to Join"></div></div><input class="staff-invite-link" type="text" readonly aria-label="STAFF INVITE LINK" value="' + escapedUrl + '"><div class="staff-invite-actions"><button type="button" data-staff-invite-action="copy" aria-label="Copy"><i class="bi bi-copy" aria-hidden="true"></i>Copy</button><button type="button" class="is-primary" data-staff-invite-action="share" aria-label="Share"><i class="bi bi-share" aria-hidden="true"></i>Share</button></div><p class="staff-invite-status" data-staff-invite-status role="status"></p></section>';
+    try {
+      renderQr(panel.querySelector('[data-staff-invite-qr]'), STAFF_INVITE_URL, rootObject);
+      qrReady = typeof rootObject.QRCode === 'function';
+    } catch (error) { /* Keep the link available if QR rendering is unavailable. */ }
+    function status(message) {
+      if (!destroyed) panel.querySelector('[data-staff-invite-status]').textContent = message;
+    }
+    async function copyInvite() {
+      if (navigatorObject.clipboard && navigatorObject.clipboard.writeText) {
+        await navigatorObject.clipboard.writeText(STAFF_INVITE_URL);
+      } else {
+        var input = panel.querySelector('.staff-invite-link');
+        input.focus(); input.select();
+        if (!documentObject.execCommand || !documentObject.execCommand('copy')) throw new Error('Copy is unavailable in this browser.');
+      }
+    }
+    panel.addEventListener('click', async function (event) {
+      var button = event.target.closest('[data-staff-invite-action]');
+      if (!button || button.disabled) return;
+      button.disabled = true;
+      try {
+        if (button.dataset.staffInviteAction === 'share' && navigatorObject.share) {
+          await navigatorObject.share({ title: 'Join our salon on Nexora', text: 'Use this link to create your staff account.', url: STAFF_INVITE_URL });
+          status('Staff invite shared.');
+        } else {
+          await copyInvite();
+          status(button.dataset.staffInviteAction === 'share' ? 'Sharing is unavailable, so the invite link was copied.' : 'Staff invite link copied.');
+        }
+      } catch (error) {
+        if (error.name !== 'AbortError') {
+          if (button.dataset.staffInviteAction === 'share' && navigatorObject.share) {
+            try { await copyInvite(); status('Sharing is unavailable, so the invite link was copied.'); }
+            catch (copyError) { status('Copy is unavailable in this browser.'); }
+          } else status('Copy is unavailable in this browser.');
+        }
+      } finally { if (!destroyed) button.disabled = false; }
+    }, { signal: controller.signal });
+    return {
+      validate: function () {
+        if (!qrReady) throw new Error(options.requiredMessage);
+        if (options.onChange({ staffInviteUrl: STAFF_INVITE_URL }) === false) throw new Error(options.saveFailed);
+      },
+      destroy: function () { destroyed = true; controller.abort(); }
+    };
   }
 
   function init(documentObject, rootObject) {
@@ -249,6 +305,8 @@
     STAFF_INVITE_URL: STAFF_INVITE_URL,
     normalizeReferralLeg: normalizeReferralLeg,
     buildReferralUrl: buildReferralUrl,
+    completeStaffInvite: completeStaffInvite,
+    mountStaffInvite: mountStaffInvite,
     init: init
   };
 });

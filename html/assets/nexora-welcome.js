@@ -144,7 +144,7 @@
   function readStep(kind) {
     var value = state.drafts[guide().key] && state.drafts[guide().key][kind];
     var fields = value && value.fields && typeof value.fields === 'object' ? value.fields : {};
-    return {fields:fields, completed:!!(value && value.completed) && (kind !== 'business' || businessComplete(fields)) && (!['services','menu'].includes(kind) || servicesComplete(fields,kind)) && (kind !== 'staff' || (fields.staffMode==='invite' ? fields.inviteConfirmed==='true' : staffComplete(fields))) && (kind !== 'qr' || window.NEXORA_QR_SETUP.complete(fields))};
+    return {fields:fields, completed:!!(value && value.completed) && (kind !== 'business' || businessComplete(fields)) && (!['services','menu'].includes(kind) || servicesComplete(fields,kind)) && (kind !== 'staff' || (fields.staffMode==='invite' ? window.NEXORA_QR_WORKFLOWS.completeStaffInvite(fields) : staffComplete(fields))) && (kind !== 'qr' || window.NEXORA_QR_SETUP.complete(fields))};
   }
   function destroyQrWorkspace(){if(qrWorkspace){qrWorkspace.destroy();qrWorkspace=null;}}
   function mountQrWorkspace(fields){
@@ -172,6 +172,12 @@
   function destroyStaffWorkspace() {if(staffWorkspace){staffWorkspace.destroy();staffWorkspace=null;}}
   function mountStaffWorkspace(fields) {
     var industry=guide().key;
+    if(fields.staffMode==='invite'){
+      staffWorkspace=window.NEXORA_QR_WORKFLOWS.mountStaffInvite(main.querySelector('[data-onboarding-staff-invite]'),{
+        requiredMessage:setupCopy.requiredMessage,saveFailed:setupCopy.saveFailed,
+        onChange:function(snapshot){return savePreparationDraft(industry,'staff',snapshot);}
+      });return;
+    }
     staffWorkspace=window.NEXORA_STAFF_SETUP.mount(main.querySelector('[data-onboarding-staff]'),{
       fields:fields,business:readStep('business').fields,categories:readStep('services').fields.serviceCatalog,
       requiredMessage:setupCopy.requiredMessage,saveFailed:setupCopy.saveFailed,legacyServicesLabel:setupCopy.fieldStaffServices,
@@ -345,10 +351,9 @@
     var formHeading='<strong>' + escape(setupCopy.formTitle) + '</strong><p class="nxw-note">' + escape(setupCopy.autoSaveNote) + '</p>';
     if(kind==='services'||kind==='menu')html+='<div class="nxw-services-preparation">'+formHeading+'<div data-settings-panel="services" data-onboarding-services></div></div>';
     if(kind==='qr')html+='<div class="nxw-qr-preparation">'+formHeading+'<div data-onboarding-qr></div></div>';
-    if(kind==='staff')html+='<div class="nxw-staff-preparation">'+formHeading+'<div class="nxw-subsection" data-staff-mode><strong>'+escape(setupCopy.staffMethodTitle)+'</strong>'+choicesHTML([{key:'manual',label:'staffManual',defaultValue:'manual'},{key:'invite',label:'staffInvite',defaultValue:'manual'}],fields,'staffMode')+'</div>'+(mode==='manual'?'<div data-onboarding-staff></div>':'')+'</div>';
+    if(kind==='staff')html+='<div class="nxw-staff-preparation">'+formHeading+'<div class="nxw-subsection" data-staff-mode><strong>'+escape(setupCopy.staffMethodTitle)+'</strong>'+choicesHTML([{key:'manual',label:'staffManual',defaultValue:'manual'},{key:'invite',label:'staffInvite',defaultValue:'manual'}],fields,'staffMode')+'</div>'+(mode==='manual'?'<div data-onboarding-staff></div>':'<div data-onboarding-staff-invite></div>')+'</div>';
     html+='<form id="nxw-setup-form" aria-labelledby="nxw-step-title">'+(['services','menu','staff','qr'].includes(kind)?'':formHeading);
     if(!['services','menu','staff','qr'].includes(kind))html+=kind==='business'?businessFieldsHTML(fields):'<div class="nxw-fields">' + (data.setup.fields[kind]||[]).map(function (field) { return fieldHTML(field,fields); }).join('') + '</div>';
-    if(kind==='staff'&&mode==='invite')html+='<div class="nxw-inline-preview"><p>' + escape(setupCopy.staffInviteIntro) + '</p><ol>' + ['staffInvite1','staffInvite2','staffInvite3'].map(function (key) { return '<li>' + escape(setupCopy[key]) + '</li>'; }).join('') + '</ol><div class="nxw-actions">' + link(setupCopy.staffInviteOpen,'qr-stations.html?tab=staff-invite-qr',true) + '</div><div class="nxw-choices">' + choicesHTML([{key:'inviteConfirmed',label:'staffInviteConfirm'}],fields) + '</div><p class="nxw-note">' + escape(setupCopy.staffInviteNotice) + '</p></div>';
     if(kind==='voice')html+='<div class="nxw-subsection"><strong>' + escape(setupCopy.voiceModeTitle) + '</strong>' + choicesHTML([{key:'off',label:'voiceSkip',defaultValue:'off'},{key:'on',label:'voiceUse',defaultValue:'off'}],fields,'voiceMode') + '</div>' + (fields.voiceMode==='on'?voiceSettingsHTML(fields)+choicesHTML(data.flow.voiceFeatures,fields):'<p class="nxw-note">'+escape(setupCopy.voicePreviewOff)+'</p>') + '<p class="nxw-note">' + escape(setupCopy.voicePreviewNotice) + '</p>';
     html+=(kind==='qr'?'':'<div id="nxw-entered-preview" class="nxw-inline-preview"></div>')+'<div class="nxw-saved" id="nxw-save-status" role="status"></div><div class="nxw-actions"><button type="submit" class="nxw-btn">' + escape(setupCopy.saveStep) + '</button>' + (selectedStep<path().length-1?button(salonCopy.next,'next-step',true):button(copy.viewIndustryDocs,'open-docs',true)) + link(setupCopy.relatedScreen,stepRoute(kind),true) + '</div></form>';
     document.getElementById('nxw-setup-detail').innerHTML=html;
@@ -381,7 +386,7 @@
     if(kind==='qr')mountQrWorkspace(fields);
     if(kind==='staff'){
       main.querySelector('[data-staff-mode]').addEventListener('change',function(event){saveInput(event.target);renderSetupStep();});
-      if(mode==='manual')mountStaffWorkspace(fields);
+      mountStaffWorkspace(fields);
     }
   }
   function saveInput(input){
@@ -392,13 +397,12 @@
   function renderEnteredPreview(){
     var kind=path()[selectedStep];if(kind==='qr')return;
     var fields=readStep(kind).fields;
-    document.getElementById('nxw-entered-preview').hidden=kind==='services'||kind==='menu'||kind==='staff'&&fields.staffMode!=='invite';
-    if(kind==='services'||kind==='menu'||kind==='staff'&&fields.staffMode!=='invite')return;
+    document.getElementById('nxw-entered-preview').hidden=kind==='services'||kind==='menu'||kind==='staff';
+    if(kind==='services'||kind==='menu'||kind==='staff')return;
     var html='<span class="nxw-kicker">' + escape(setupCopy.yourPreview) + '</span>';
     if(kind==='voice')html+='<p>' + escape(fields.voiceMode==='on'?setupCopy.voicePreviewOn:setupCopy.voicePreviewOff) + '</p>'+(fields.voiceMode==='on'?voicePreview(fields):'');
     else if(kind==='business')html+=businessPreview(fields);
     else html+='<dl>' + (data.setup.fields[kind]||[]).filter(function(f){return String(fields[f[0]]||'').trim();}).map(function(f){return '<div><dt>' + escape(setupCopy[f[1]]||copy[f[1]]) + '</dt><dd>' + escape(fields[f[0]]) + '</dd></div>';}).join('') + '</dl>';
-    if(kind==='staff'&&fields.staffMode==='invite')html+='<p>' + escape(setupCopy.staffInvitePreview) + '</p>';
     html+='<p class="nxw-note">' + escape(setupCopy.exampleNotice) + '</p>';
     document.getElementById('nxw-entered-preview').innerHTML=html;
   }
@@ -410,14 +414,13 @@
     if(kind==='qr'){
       try{qrWorkspace.validate();}catch(failure){document.getElementById('nxw-save-status').textContent=failure.message;return;}
     }
-    if(kind==='staff'&&readStep(kind).fields.staffMode!=='invite'){
+    if(kind==='staff'){
       try{staffWorkspace.validate();}catch(failure){document.getElementById('nxw-save-status').textContent=failure.message;return;}
     }
     if(kind==='business')writeStep(kind,businessPatch(form));
     if(kind==='voice')writeStep(kind,voiceFormPatch(form));
     var value=readStep(kind),valid=form.reportValidity()&&(kind!=='business'||businessComplete(value.fields))&&(!['services','menu'].includes(kind)||servicesComplete(value.fields,kind));
     var special='';
-    if(kind==='staff'&&value.fields.staffMode==='invite'&&value.fields.inviteConfirmed!=='true')special=setupCopy.staffInviteNeeded;
     if(kind==='voice'&&value.fields.voiceMode==='on'&&!data.flow.voiceFeatures.some(function(item){return value.fields[item.key]==='true';}))special=setupCopy.chooseAtLeastOne;
     if(!valid||special){document.getElementById('nxw-save-status').textContent=special||setupCopy.requiredMessage;return;}
     if(!state.drafts[guide().key])state.drafts[guide().key]={};state.drafts[guide().key][kind]={fields:value.fields,completed:true};
