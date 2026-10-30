@@ -165,14 +165,15 @@
   }
   function mount() {
     if (typeof document === 'undefined') return;
-    const containers = ['.oneqr-scan-icon', '.oneqr-scan-welcome-icon', '.qr-tab-icon', '.oneqr-phone-quick-actions', '.oneqr-public-actions', '.oneqr-about', '.oneqr-phone-featured'];
+    // Navigation tabs keep their Lucide icons; replace artwork only in content.
+    const containers = ['.oneqr-scan-icon', '.oneqr-scan-welcome-icon', '.oneqr-phone-quick-actions', '.oneqr-public-actions', '.oneqr-about', '.oneqr-phone-featured'];
     const selectors = containers.map(selector => selector + ' [data-lucide], ' + selector + ' svg[class*="lucide-"]').join(', ');
     document.querySelectorAll(selectors).forEach(node => {
       const legacyName = Array.from(node.classList).filter(value => value.startsWith('lucide-')).map(value => value.slice(7).replace(/-icon$/, '')).find(value => ICON_KEYS.has(value) || Object.hasOwn(ICON_ALIASES, value));
       const name = node.getAttribute('data-lucide') || legacyName;
       if (!name) return;
       const compact = node.closest('.oneqr-phone-quick-actions, .oneqr-public-actions, .oneqr-about, .oneqr-phone-featured');
-      const size = node.closest('.qr-tab-icon') ? 20 : compact ? 14 : 28;
+      const size = compact ? 14 : 28;
       const icon = document.createElement('img');
       icon.className = 'oneqr-flat-icon';icon.src = iconPath(name);
       icon.alt = '';icon.width = size;icon.height = size;icon.decoding = 'async';
