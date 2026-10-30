@@ -101,3 +101,19 @@ body.community-page-screen #pagesView > :not(#communityPageScreen) { display:non
 @media(max-width:800px){
   .page-post-media.page-video-grid { grid-template-columns:minmax(0,1fr); gap:14px; }
 }
+
+.page-followers { margin-top:16px; }
+.page-followers-count { margin:0 0 12px; font-size:13px; color:var(--ink); }
+.page-followers-grid { display:grid; grid-template-columns:repeat(2,minmax(0,1fr)); gap:12px; list-style:none; padding:0; margin:0; }
+.page-follower-card { display:flex; align-items:center; gap:12px; min-width:0; padding:14px; border:1px solid var(--line); border-radius:12px; background:#fff; }
+.page-follower-avatar { display:grid; place-items:center; flex:none; width:44px; height:44px; border-radius:50%; background:#ece8ff; color:#6250ad; font-size:13px; font-weight:800; }
+.page-follower-card:nth-child(4n+2) .page-follower-avatar { background:#ddf5ee; color:#16745a; }
+.page-follower-card:nth-child(4n+3) .page-follower-avatar { background:#e4f0ff; color:#3066ad; }
+.page-follower-card:nth-child(4n+4) .page-follower-avatar { background:#fff0df; color:#996128; }
+.page-follower-info { min-width:0; overflow-wrap:anywhere; }
+.page-follower-info strong { display:block; font-size:13px; line-height:1.5; }
+.page-follower-info .meta { display:block; margin-top:3px; font-size:12px; line-height:1.5; }
+@media(max-width:800px){
+  .page-followers-grid { grid-template-columns:minmax(0,1fr); gap:10px; }
+  .page-follower-card { padding:12px; }
+}

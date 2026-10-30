@@ -83,8 +83,18 @@
     {id:'feed-bistro-breakfast-poll',kind:'poll',owner:'Saigon Bistro',title:'Bữa sáng cuối tuần, anh chị thích hẹn lúc mấy giờ?',location:'Dallas, TX',optionA:'8 giờ sáng',optionB:'9 giờ sáng',duration:'7 ngày',votesA:27,votesB:46,createdAt:at(0,8,20)},
     {id:'feed-owners-austin-meet',kind:'event',owner:'Chủ tiệm Việt tại Mỹ',title:'Cà phê cùng chủ tiệm ở Austin: chia sẻ cách sắp ca',format:'Trực tiếp',date:date(5),city:'Austin, TX',details:'Hẹn 9:00–10:30 tại North Austin, nhóm nhỏ tối đa 12 người. Mỗi anh chị mang một ví dụ về lịch ca đang dùng để cùng trao đổi. Tự thanh toán đồ uống; nhắn ban quản trị để nhận địa điểm và xác nhận chỗ.',photo:images.cafe,createdAt:at(2,10,40)}
   ];
+  const bitcoinFollowers = [
+    ['Jessica Nguyen','Houston, TX'],['Thảo Lê','Houston, TX'],
+    ['Minh Trần','Katy, TX'],['Hà Nguyễn','Sugar Land, TX'],
+    ['Emily Pham','Houston, TX'],['Daniel Le','Pearland, TX'],
+    ['Linda Võ','Richmond, TX'],['Kevin Nguyen','Cypress, TX'],
+    ['Mai Hoàng','Houston, TX'],['Anna Trần','Katy, TX'],
+    ['Tú Phạm','Sugar Land, TX'],['Sophia Le','Houston, TX'],
+    ['Quỳnh Đặng','Pearland, TX'],['Brian Pham','Cypress, TX'],
+    ['Hương Nguyễn','Richmond, TX'],['Michelle Do','Houston, TX']
+  ].map(([name,city],index)=>({id:'bitcoin-follower-'+(index+1),name,city}));
   const pages = [
-    {id:'p1',kind:'page',owner:'BITCOIN NAIL BAR',title:'BITCOIN NAIL BAR',industry:'Nail & làm đẹp',city:'Houston, TX',description:'Một góc làm đẹp ở Houston dành cho những bộ móng gọn gàng và thời gian thư giãn sau giờ làm. Tiệm nhận Gel-X, manicure và pedicure; nhắn trước để chọn thợ và giờ phù hợp.',contact:'Nhắn tin qua NEXORA',followers:128,handle:'@bitcoin.nail.bar',hours:'Thứ Hai–Thứ Bảy · 9:00–19:00; Chủ Nhật · 11:00–17:00',primaryAction:'message',cover:images.salon,avatar:'nexora-bitcoin-nailbar.png'},
+    {id:'p1',kind:'page',owner:'BITCOIN NAIL BAR',title:'BITCOIN NAIL BAR',industry:'Nail & làm đẹp',city:'Houston, TX',description:'Một góc làm đẹp ở Houston dành cho những bộ móng gọn gàng và thời gian thư giãn sau giờ làm. Tiệm nhận Gel-X, manicure và pedicure; nhắn trước để chọn thợ và giờ phù hợp.',contact:'Nhắn tin qua NEXORA',followers:bitcoinFollowers.length,followerProfiles:bitcoinFollowers,handle:'@bitcoin.nail.bar',hours:'Thứ Hai–Thứ Bảy · 9:00–19:00; Chủ Nhật · 11:00–17:00',primaryAction:'message',cover:images.salon,avatar:'nexora-bitcoin-nailbar.png'},
     {id:'p2',kind:'page',owner:'Saigon Kitchen',title:'Saigon Kitchen',industry:'Nhà hàng & ăn uống',city:'Houston, TX',description:'Bữa trưa món Việt, bàn ăn gia đình và những buổi gặp bạn cuối tuần tại Midtown. Nhà hàng có chỗ cho nhóm nhỏ; nhắn trước nếu anh chị cần sắp bàn từ 6 người.',contact:'Nhắn tin để hỏi món trong ngày hoặc giữ bàn.',followers:246,handle:'@saigonkitchen',hours:'Thứ Ba–Chủ Nhật · 11:00–21:00; nghỉ Thứ Hai',primaryAction:'booking',cover:images.restaurant},
     {id:'p3',kind:'page',owner:'Lotus Nails',title:'Lotus Nails',industry:'Nail & làm đẹp',city:'Houston, TX',description:'Gel-X, nail art và những tông màu nhẹ cho khách ở Katy. Ảnh trên trang là các mẫu tham khảo của tiệm; khi đặt lịch, gửi trước kiểu móng để tụi mình chuẩn bị đủ thời gian.',contact:'Nhắn tin qua NEXORA để xem giờ còn trống.',followers:384,handle:'@lotus.nails.katy',hours:'Thứ Hai–Thứ Bảy · 9:30–19:00; Chủ Nhật · 11:00–17:00',primaryAction:'message',cover:images.floral},
     {id:'p4',kind:'page',owner:'Mây Beauty Studio',title:'Mây Beauty Studio',industry:'Nail & làm đẹp',city:'Dallas, TX',description:'Studio chăm sóc da và mi tại Richardson, làm theo lịch hẹn để mỗi khách có đủ thời gian tư vấn. Nhắn trước tình trạng da và dịch vụ quan tâm để tụi mình sắp lịch phù hợp.',contact:'Nhắn tin qua NEXORA để tư vấn lịch hẹn.',followers:172,handle:'@may.beauty.dallas',hours:'Thứ Ba–Thứ Bảy · 10:00–18:00',primaryAction:'booking',cover:images.spa},
