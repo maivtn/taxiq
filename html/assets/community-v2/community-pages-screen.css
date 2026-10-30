@@ -69,3 +69,30 @@ body.community-page-screen #pagesView > :not(#communityPageScreen) { display:non
   .page-post-footer #pagePostWhenLabel { flex-basis:220px; }
   .page-post-footer:has(#pagePostWhenLabel:not([hidden])) #pagePostSubmit { margin-left:auto; }
 }
+
+.page-photo-grid .page-photo-trigger { display:block; width:100%; min-width:0; overflow:hidden; border:0; border-radius:11px; padding:0; background:#f2f4f9; cursor:zoom-in; }
+.page-photo-grid .page-photo-trigger img { display:block; }
+.page-photo-grid .page-photo-trigger:focus-visible { outline:3px solid #6655ed; outline-offset:3px; }
+.swal2-container.page-photo-viewer-container { z-index:10000; padding:12px; }
+.swal2-popup.page-photo-viewer { overflow:hidden; border-radius:16px; }
+.swal2-title.page-photo-viewer-title { padding:18px 58px 14px; font-size:16px; line-height:1.4; overflow-wrap:anywhere; }
+.swal2-html-container.page-photo-viewer-content { margin:0; padding:0 12px 14px; overflow:visible; }
+.swal2-close.page-photo-viewer-close { top:6px; right:6px; width:44px; height:44px; color:#fff; border-radius:10px; }
+.page-photo-viewer-layout { display:grid; gap:12px; }
+.page-photo-viewer-stage { position:relative; display:grid; place-items:center; min-height:min(52dvh,420px); touch-action:pan-y pinch-zoom; }
+.page-photo-viewer-image { display:block; width:100%; max-height:calc(100dvh - 170px); object-fit:contain; border-radius:8px; }
+.page-photo-viewer-nav { position:absolute; top:50%; display:grid; place-items:center; width:44px; height:44px; transform:translateY(-50%); border:1px solid #ffffff40; border-radius:50%; background:#111827cc; color:#fff; cursor:pointer; }
+.page-photo-viewer-nav[hidden] { display:none; }
+.page-photo-viewer-nav:hover { background:#6655ed; }
+.page-photo-viewer-nav:focus-visible,.swal2-close.page-photo-viewer-close:focus-visible { outline:3px solid #b5acff; outline-offset:2px; }
+.page-photo-viewer-nav.is-previous { left:8px; }
+.page-photo-viewer-nav.is-next { right:8px; }
+.page-photo-viewer-nav svg { width:24px; height:24px; fill:none; stroke:currentColor; stroke-width:2; stroke-linecap:round; stroke-linejoin:round; }
+.page-photo-viewer-count { color:#e2e8f0; font-size:13px; line-height:1.5; font-variant-numeric:tabular-nums; }
+@media(max-width:800px){
+  .swal2-container.page-photo-viewer-container { padding:8px; }
+  .swal2-html-container.page-photo-viewer-content { padding-inline:8px; }
+  .page-photo-viewer-stage { min-height:42dvh; }
+  .page-photo-viewer-nav.is-previous { left:4px; }
+  .page-photo-viewer-nav.is-next { right:4px; }
+}

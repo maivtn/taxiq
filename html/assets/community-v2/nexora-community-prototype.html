@@ -196,7 +196,7 @@
 #dealRefinements .select{width:100%;min-height:44px;padding-right:44px;background-position:right 16px center;background-size:16px}
 @media(max-width:650px){#dealRefinements{gap:9px;padding:10px}#dealFilterToggle{font-size:12px;padding:9px 11px}}
 </style>
-  <link rel="stylesheet" href="community-pages-screen.css?v=20261030-page-composer-v3">
+  <link rel="stylesheet" href="community-pages-screen.css?v=20261030-page-photo-viewer-v4">
 </head>
 <body>
 <script>
@@ -561,7 +561,7 @@
     const about=`<div class="page-about-list"><p><strong>Lĩnh vực:</strong> ${esc(x.industry)}</p><p><strong>Khu vực:</strong> ${esc(x.city)}</p>${x.hours?`<p><strong>Giờ hoạt động:</strong> ${esc(x.hours)}</p>`:''}${x.phone?`<p><strong>Điện thoại:</strong> ${esc(x.phone)}</p>`:''}${x.contact?`<p><strong>Liên hệ:</strong> ${esc(x.contact)}</p>`:''}<p>${esc(x.description)}</p></div>`;
     const photoItems=[coverUrl(x.cover),coverUrl(x.avatar),...posts.map(post=>coverUrl(post.image))].filter(Boolean).map((url,index)=>`<img src="${url}" alt="Ảnh ${index+1} của Fanpage ${esc(x.title)}">`);
     for(const post of posts)for(const item of post.media||[])if(item.type==='image')photoItems.push(`<img data-page-media-id="${esc(item.id)}" alt="Ảnh bài đăng của Fanpage">`);
-    const photoContent=photoItems.length?`<div class="page-photo-grid">${photoItems.join('')}</div>`:'<p class="quiet">Fanpage chưa đăng ảnh. Chủ Fanpage có thể thêm ảnh bìa, ảnh đại diện hoặc ảnh bài viết.</p>';
+    const photoContent=photoItems.length?`<div class="page-photo-grid">${photoItems.map(photo=>`<button type="button" class="page-photo-trigger" aria-haspopup="dialog">${photo}</button>`).join('')}</div>`:'<p class="quiet">Fanpage chưa đăng ảnh. Chủ Fanpage có thể thêm ảnh bìa, ảnh đại diện hoặc ảnh bài viết.</p>';
     const videoItems=posts.flatMap(post=>(post.media||[]).filter(item=>item.type==='video').map(item=>`<video data-page-media-id="${esc(item.id)}" controls playsinline preload="metadata" aria-label="Video của Fanpage"></video>`));
     const videoContent=videoItems.length?`<div class="page-post-media">${videoItems.join('')}</div>`:'<p class="quiet">Fanpage chưa có video.</p>';
     const followersContent=`<div class="quiet" style="margin-top:15px"><strong>${followers} người theo dõi</strong><br>Danh sách người theo dõi chỉ hiển thị khi có dữ liệu tài khoản thật.</div>`;
@@ -883,7 +883,9 @@
 </script>
 <script src="nexora-community-i18n.js?rev=20261029-community-tour-actions-v21"></script>
   <script src="../vendor/lucide.min.js" defer></script>
+  <script src="../vendor/sweetalert2.all.min.js?v=11.26.25" defer></script>
   <script src="community-ui.js?v=20261030-community-job-icon-v30" defer></script>
   <script src="community-pages-screen.js?v=20261029-pages-screen-v1" defer></script>
+  <script src="community-page-photos.js?v=20261030-page-photo-viewer-v1" defer></script>
 </body>
 </html>
