@@ -74,7 +74,7 @@
     if (path === '/dashboard/pos/sms-campaigns') return 'nexora-sms-dashboard.html';
     if (path === '/dashboard/pos/printer') return 'pos-printer-setup.html';
     if (path === '/dashboard/pos/report/card') return 'pos-technician-report.html?tab=card';
-    var localRoutes = {'/dashboard/pos/report/technician':'pos-technician-report.html','/dashboard/pos/public-checkin':'qr-stations.html?tab=check-in&setup=qr','/dashboard/pos/devices':'qr-stations.html?tab=check-in&setup=device','/dashboard/analytics':'nexora-analytics.html','/dashboard/category-management':'payment-categories.html','/dashboard/support':'nexora-support.html','/dashboard/ai-hub/setup-guide':'salon-guide-ai-voice.html'};
+    var localRoutes = {'/dashboard/pos/report/technician':'pos-technician-report.html','/dashboard/pos/report/store-income':'pos-technician-report.html?tab=store','/dashboard/pos/report/service-income':'pos-technician-report.html?tab=service','/dashboard/pos/report/payroll':'pos-technician-report.html?tab=payroll','/dashboard/taxiq/weekly-payroll':'../taxiq/weekly-payroll.html','/dashboard/pos/public-checkin':'qr-stations.html?tab=check-in&setup=qr','/dashboard/pos/devices':'qr-stations.html?tab=check-in&setup=device','/dashboard/analytics':'nexora-analytics.html','/dashboard/category-management':'payment-categories.html','/dashboard/support':'nexora-support.html','/dashboard/ai-hub/setup-guide':'salon-guide-ai-voice.html'};
     if (localRoutes[path]) return localRoutes[path];
     if (path === '/dashboard/reports') return {'receive_payments':'payment-income.html',tips:'tip-list.html',direct_payments:'payment-activity.html'}[tab] || 'payment-income.html?tab=overview';
     if (path === '/dashboard/tips') return {overview:'tip-overview.html',payouts:'staff-payouts.html',savings:'direct-savings.html'}[tab] || 'tip-overview.html';
@@ -275,7 +275,7 @@
         "showIcon": true,
         "externalIndicator": true,
         "shortcutTo": "tong-quan-thanh-toan",
-        "href": "#module-payments"
+        "href": "https://nexoratouch.com/dashboard/pos/report/store-income"
       }
     ]
   },
@@ -524,13 +524,18 @@
             "children": [
               {
                 "key": "tong-quan-thanh-toan",
-                "label": "Payment overview",
-                "href": "#module-payments"
+                "label": "Store income report",
+                "href": "https://nexoratouch.com/dashboard/pos/report/store-income"
               },
               {
                 "key": "nhan-thanh-toan-2",
                 "label": "Receive payments",
                 "href": "https://nexoratouch.com/dashboard/reports?tab=receive_payments"
+              },
+              {
+                "key": "hoat-dong-thanh-toan",
+                "label": "Payment activity",
+                "href": "https://nexoratouch.com/dashboard/reports?tab=direct_payments"
               }
             ]
           },
@@ -550,8 +555,18 @@
                 "href": "https://nexoratouch.com/dashboard/reports?tab=tips"
               },
               {
+                "key": "payroll-report",
+                "label": "Payroll",
+                "href": "https://nexoratouch.com/dashboard/pos/report/payroll"
+              },
+              {
+                "key": "weekly-payroll",
+                "label": "Weekly Payroll",
+                "href": "https://nexoratouch.com/dashboard/taxiq/weekly-payroll"
+              },
+              {
                 "key": "payroll-chi-tra",
-                "label": "Payroll / payouts",
+                "label": "Staff payouts",
                 "href": "https://nexoratouch.com/dashboard/tips?tab=payouts"
               },
               {
@@ -567,9 +582,9 @@
             "sectionLabel": true,
             "children": [
               {
-                "key": "hoat-dong-thanh-toan",
-                "label": "Payment activity",
-                "href": "https://nexoratouch.com/dashboard/reports?tab=direct_payments"
+                "key": "card-payments",
+                "label": "Card payments",
+                "href": "https://nexoratouch.com/dashboard/pos/report/card"
               }
             ]
           },
