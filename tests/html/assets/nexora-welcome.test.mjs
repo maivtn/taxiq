@@ -12,6 +12,7 @@ function loadPage(name, saved = {}) {
   window.matchMedia = () => ({ matches: true });
   window.HTMLElement.prototype.scrollIntoView = () => {};
   for (const [key, value] of Object.entries(saved)) window.localStorage.setItem(key, value);
+  window.eval(asset('industry-icons.js'));
   window.eval(asset('nexora-icons.js'));
   if (name === 'salon-home.html') {
     window.eval(asset('nexora-shell-nav.js'));

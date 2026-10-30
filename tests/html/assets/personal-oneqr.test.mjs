@@ -18,6 +18,7 @@ function app(t, {path='oneqr-personal.html?account=personal', saved, publicPage=
   w.HTMLDialogElement.prototype.close=function(){this.open=false;};
   w.URL.createObjectURL=()=> 'blob:demo';w.URL.revokeObjectURL=()=>{};
   if(saved)w.localStorage.setItem('nexora.personal-oneqr.v1',JSON.stringify(saved));
+  w.eval(readFileSync(new URL('industry-icons.js',assets),'utf8'));
   w.eval(readFileSync(new URL('oneqr-action-appearance.js',assets),'utf8'));
   w.eval(readFileSync(new URL('oneqr-phone.js',assets),'utf8'));
   w.eval(storeSource);
@@ -157,7 +158,7 @@ test('ads require explicit consent and never credit earnings for a preview or cl
  assert.deepEqual(Array.from(w.NEXORA_PERSONAL_QR.read().adIndustries),['nail']);
  d.querySelector('#oneqr-advertising #ads-toggle').click();
  assert.equal(w.NEXORA_PERSONAL_QR.read().ads,false);
- for(const id of ['chosen','adIndustry'])assert.equal(d.querySelector('#oneqr-advertising #'+id).textContent,d.querySelector('#oneqr-advertising #industry').selectedOptions[0].textContent);
+ for(const id of ['chosen','adIndustry'])assert.equal(d.querySelector('#oneqr-advertising #'+id).textContent.trim(),d.querySelector('#oneqr-advertising #industry').selectedOptions[0].textContent);
  d.querySelector('#oneqr-advertising #ads-toggle').click();
  w.NEXORA_PERSONAL_QR.navigate('one-qr');assert.ok(d.querySelector('.pqr-sponsored'));d.querySelector('[data-pqr-link=instagram]').click();
  assert.equal(Object.hasOwn(w.NEXORA_PERSONAL_QR.read(),'balance'),false);

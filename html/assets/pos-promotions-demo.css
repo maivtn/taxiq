@@ -2222,6 +2222,10 @@
 }
 .phase-ai-dialog .phase-ai-quality-menu button::after {
   color: var(--ai-accent);
+  visibility: hidden;
+}
+.phase-ai-dialog .phase-ai-quality-menu button.selected::after {
+  visibility: visible;
 }
 .phase-ai-dialog .phase-ai-history-button {
   gap: 6px;
@@ -2304,10 +2308,10 @@
   right: 7px;
   color: var(--ai-accent);
   font-weight: 800;
-  opacity: 0;
+  visibility: hidden;
 }
 .phase-ai-dialog .phase-ai-content-option[aria-pressed="true"]::after {
-  opacity: 1;
+  visibility: visible;
 }
 .phase-ai-dialog .phase-ai-tone-option {
   display: inline-flex;
@@ -2326,10 +2330,10 @@
 .phase-ai-dialog .phase-ai-tone-option::after {
   content: "✓";
   width: 10px;
-  opacity: 0;
+  visibility: hidden;
 }
 .phase-ai-dialog .phase-ai-tone-option[aria-pressed="true"]::after {
-  opacity: 1;
+  visibility: visible;
 }
 .phase-ai-dialog .phase-ai-generate {
   background: var(--primary-gradient, linear-gradient(135deg, #2f63ff, #7a3df5));

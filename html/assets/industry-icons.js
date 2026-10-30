@@ -2,7 +2,10 @@
  * Source and author details: html/assets/flaticon-flat/sources.json. */
 (function () {
   'use strict';
-  const base = new URL('flaticon-flat/', document.currentScript.src);
+  const source = document.currentScript?.src
+    || document.querySelector('script[data-industry-icons]')?.src
+    || new URL('../assets/industry-icons.js',document.baseURI).href;
+  const base = new URL('flaticon-flat/', source);
   const files = Object.freeze({
     "cosmetics": "industry-cosmetics-3194619.png",
     "medspa": "industry-medspa-7305304.png",
@@ -279,7 +282,7 @@
   // Native selects keep their values and events; custom pickers render the same registry.
   const stylesheet = document.createElement('link');
   stylesheet.rel = 'stylesheet';
-  stylesheet.href = new URL('industry-icons.css?v=20261030-flat',document.currentScript.src).href;
+  stylesheet.href = new URL('industry-icons.css?v=20261030-flat',source).href;
   document.head.append(stylesheet);
   function decorateOption(element, key, catalog) {
     if (!key) return;
@@ -325,7 +328,8 @@
   }
   function start() {
     let scheduled = false;
-    const schedule = () => { if (!scheduled) { scheduled = true; requestAnimationFrame(() => {scheduled=false;refresh();}); } };
+    const frame = window.requestAnimationFrame?.bind(window) || (callback => window.setTimeout(callback,0));
+    const schedule = () => { if (!scheduled) { scheduled = true; frame(() => {scheduled=false;refresh();}); } };
     new MutationObserver(schedule).observe(document.body,{childList:true,subtree:true,characterData:true});
     document.addEventListener('change',schedule);
     refresh();
