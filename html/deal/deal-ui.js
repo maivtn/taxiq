@@ -9,6 +9,7 @@
     [/^([2-9]\d*|1\d+) coupon$/, '$1 coupons'],
     [/^(.+ min) · từ (\$[\d.]+)$/, '$1 · From $2'],
     [/^LÀM ĐẸP › NAIL › TẤT CẢ DỊCH VỤ · TRONG (\d+) MILES$/, 'BEAUTY › NAIL › ALL SERVICES · WITHIN $1 MILES'],
+    [/^LÀM ĐẸP › NAIL › (MANICURE|PEDICURE|GEL-X|NAIL ART) · TRONG (\d+) MILES$/, 'BEAUTY › NAIL › $1 · WITHIN $2 MILES'],
     [/^Còn (\d+) ngày$/, '$1 days left'],
     [/^Còn (\d+) (?:suất|lượt|mã)$/, '$1 left'],
     [/^còn (\d+) (?:suất|lượt|mã)$/, '$1 left'],
@@ -75,6 +76,8 @@
   ];
 
   const actionRules = [
+    ['.deal-card.deal-offer .deal-open', 'ArrowRight', 'blue'],
+    ['.deal-card.coupon-offer .deal-open', 'Ticket', 'violet'],
     ['.discover-trust-row > span:nth-child(1)', 'ShieldCheck', 'teal'],
     ['.discover-trust-row > span:nth-child(2)', 'Globe', 'blue'],
     ['.discover-trust-row > span:nth-child(3)', 'Sparkles', 'violet'],
