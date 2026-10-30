@@ -5,7 +5,7 @@
   const base = new URL('flaticon-flat/', document.currentScript.src);
   const files = Object.freeze({
     "cosmetics": "industry-cosmetics-3194619.png",
-    "medspa": "industry-medspa-709080.png",
+    "medspa": "industry-skin-5732655.png",
     "market": "industry-market-2203239.png",
     "convenience": "industry-convenience-3733204.png",
     "import": "industry-import-5827730.png",
@@ -96,7 +96,7 @@
     "pedi": "industry-pedi-9097368.png",
     "lash": "industry-lash-10203181.png",
     "skin": "industry-skin-5732655.png",
-    "pmu": "industry-pmu-4357981.png",
+    "pmu": "../promotions/industry-icons/tattoo.png",
     "wax": "industry-wax-4614237.png",
     "fitness": "industry-fitness-2446353.png",
     "yoga": "industry-yoga-625434.png",
