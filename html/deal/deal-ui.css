@@ -234,6 +234,7 @@ body:has(.dw-match-select .dropdown-active) .ai-guide-fab{visibility:hidden}
   .mobile-nav > .oneqr-launch{--nav-accent:#146a82;--nav-tint:#eaf7fb}
   .mobile-nav .deal-mobile-nav-icon{display:grid;place-items:center;width:32px;height:32px;border-radius:9px;color:var(--nav-accent);background:transparent;font-size:24px;line-height:1}
   .mobile-nav .deal-mobile-nav-art{display:block;width:32px;height:32px;object-fit:contain;filter:drop-shadow(0 2px 3px #27314a18)}
+  .mobile-nav > [href="#last-minute"] .deal-mobile-nav-art{width:44px;height:44px;max-width:none}
   .mobile-nav .deal-mobile-nav-svg{display:block;width:24px;height:24px}
   .mobile-nav .mobile-create .deal-mobile-nav-icon{width:56px;height:56px;transform:translateY(-28px);border:3px solid #fff;border-radius:50%;color:#fff;background:linear-gradient(135deg,#7144dc,#3b55d4);box-shadow:0 6px 18px #5e43c947}
   .mobile-nav .mobile-create .deal-mobile-nav-svg{width:28px;height:28px;stroke-width:2.4}
