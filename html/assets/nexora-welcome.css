@@ -23,6 +23,14 @@
 .nxw-phone input{flex:1;min-width:0;border:0;border-radius:0 8px 8px 0;padding:10px;font-size:12px}
 .nxw-phone input:focus{outline:0}
 .nxw-business-hours{margin-top:14px}
+.nxw-hours-toolbar{display:flex;justify-content:flex-end;margin-top:14px}
+.nxw .nxw-hours-button{min-height:44px;padding:0 12px;border:1px solid #dce3ed;border-radius:8px;background:#fff;color:var(--nxw-brand);font-size:12px;font-weight:600;white-space:nowrap}
+.nxw .nxw-hours-button.is-primary{background:var(--nxw-brand);border-color:var(--nxw-brand);color:#fff;font-weight:700}
+.nxw-hours-bulk{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr) auto;align-items:end;gap:10px;margin-top:10px;padding:12px;border:1px solid #dce3ed;border-radius:12px;background:#f8f9fc}
+.nxw-hours-bulk>label{display:flex;flex-direction:column;gap:5px;min-width:0;color:#4f6079;font-size:11px}
+.nxw-hours-bulk input{width:100%;min-width:0;min-height:44px;padding:8px 10px;border:1px solid #dce3ed;border-radius:8px;background:#fff;color:#273a56;font-size:12px;color-scheme:light}
+.nxw .nxw-hours-bulk>p{grid-column:1/-1;color:#ba4545;font-size:11px}
+@media(max-width:600px){.nxw-hours-bulk{grid-template-columns:repeat(2,minmax(0,1fr))}.nxw-hours-bulk>.nxw-hours-button{grid-column:1/-1}}
 .nxw-business-day{display:flex;flex-wrap:wrap;align-items:center;gap:10px 14px;min-height:58px;padding:9px 0;border-top:1px solid #edf0f5}
 .nxw-business-day:first-child{border-top:0}
 .nxw-day-toggle{position:relative;display:flex;flex:0 0 132px;align-items:center;gap:9px;min-width:0;cursor:pointer}

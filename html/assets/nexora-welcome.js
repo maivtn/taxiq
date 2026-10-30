@@ -303,7 +303,8 @@
     return '<dl>'+rows.filter(function(entry){return entry[1];}).map(function(entry){return '<div><dt>'+entry[0]+'</dt><dd>'+escape(entry[1])+'</dd></div>';}).join('')+'</dl>';
   }
   function businessHoursHTML(fields) {
-    return '<fieldset class="nxw-business-group"><legend>Business Hours</legend>' + (fields.hours ? '<p class="nxw-note">' + escape(setupCopy.fieldHours) + ': ' + escape(fields.hours) + '</p>' : '') + '<label class="nxw-field nxw-time-zone"><span>Time zone *</span><select name="timeZone" required><option value="">Select a time zone</option>' + businessTimeZones.map(function (zone) { return '<option' + (fields.timeZone === zone ? ' selected' : '') + '>' + zone + '</option>'; }).join('') + '</select></label><div class="nxw-business-hours">' + businessDays.map(function (day, index) {
+    var bulk='<div class="nxw-hours-toolbar"><button type="button" class="nxw-hours-button" data-business-hours-toggle aria-expanded="false" aria-controls="nxw-business-hours-bulk">Apply to multiple days</button></div><div class="nxw-hours-bulk" id="nxw-business-hours-bulk" data-business-hours-bulk hidden><label><span>Start time</span><input type="time" name="businessBulkStart" aria-label="Start time"></label><label><span>End time</span><input type="time" name="businessBulkEnd" aria-label="End time"></label><button type="button" class="nxw-hours-button is-primary" data-business-hours-apply>Apply to all day</button><p data-business-hours-error role="status" hidden></p></div>';
+    return '<fieldset class="nxw-business-group"><legend>Business Hours</legend>' + (fields.hours ? '<p class="nxw-note">' + escape(setupCopy.fieldHours) + ': ' + escape(fields.hours) + '</p>' : '') + '<label class="nxw-field nxw-time-zone"><span>Time zone *</span><select name="timeZone" required><option value="">Select a time zone</option>' + businessTimeZones.map(function (zone) { return '<option' + (fields.timeZone === zone ? ' selected' : '') + '>' + zone + '</option>'; }).join('') + '</select></label>'+bulk+'<div class="nxw-business-hours">' + businessDays.map(function (day, index) {
       var open = fields['hoursOpen' + index] !== 'false';
       return '<div class="nxw-business-day" data-business-day="' + index + '"><label class="nxw-day-toggle"><input type="checkbox" role="switch" name="hoursOpen' + index + '" aria-label="Toggle ' + day + ' open"' + (open ? ' checked' : '') + '><span aria-hidden="true"></span><b>' + day + '</b></label><div class="nxw-day-times"' + (!open ? ' hidden' : '') + '><input type="time" name="hoursFrom' + index + '" aria-label="' + day + ' open time" value="' + escape(fields['hoursFrom' + index] || '') + '" required' + (!open ? ' disabled' : '') + '><span aria-hidden="true">–</span><input type="time" name="hoursTo' + index + '" aria-label="' + day + ' close time" value="' + escape(fields['hoursTo' + index] || '') + '" required' + (!open ? ' disabled' : '') + '></div><span class="nxw-day-closed"' + (open ? ' hidden' : '') + '>Closed</span></div>';
     }).join('') + '</div></fieldset>';
@@ -316,7 +317,7 @@
   function businessPatch(form) {
     var patch = {};
     Array.from(form.elements).forEach(function (input) {
-      if (input.name && !input.disabled) patch[input.name] = input.type === 'checkbox' ? String(input.checked) : input.value;
+      if (input.name && !input.disabled && !input.closest('[data-business-hours-bulk]')) patch[input.name] = input.type === 'checkbox' ? String(input.checked) : input.value;
     });
     return patch;
   }
@@ -359,9 +360,13 @@
     document.getElementById('nxw-setup-detail').innerHTML=html;
     var form=document.getElementById('nxw-setup-form');
     if(kind==='staff'&&mode==='invite')form.querySelectorAll('.nxw-fields input').forEach(function (input) { input.disabled=true; });
-    form.addEventListener('input',function(event){if(event.target.type==='radio'||event.target.type==='checkbox')return;saveInput(event.target);});
+    form.addEventListener('input',function(event){
+      if(event.target.closest('[data-business-hours-bulk]')){form.querySelector('[data-business-hours-error]').hidden=true;return;}
+      if(event.target.type==='radio'||event.target.type==='checkbox')return;saveInput(event.target);
+    });
     form.addEventListener('change',function(event){
       if(kind==='business'){
+        if(event.target.closest('[data-business-hours-bulk]'))return;
         var row=event.target.closest('[data-business-day]');
         if(row&&event.target.type==='checkbox'){
           row.querySelector('.nxw-day-times').hidden=!event.target.checked;
@@ -375,6 +380,20 @@
     });
     form.addEventListener('submit',completeStep);
     form.addEventListener('click',function(event){
+      var hoursToggle=event.target.closest('[data-business-hours-toggle]');
+      if(hoursToggle){
+        var bulk=form.querySelector('[data-business-hours-bulk]');bulk.hidden=!bulk.hidden;hoursToggle.setAttribute('aria-expanded',String(!bulk.hidden));
+        if(!bulk.hidden)bulk.querySelector('input').focus();return;
+      }
+      if(event.target.closest('[data-business-hours-apply]')){
+        var start=form.elements.businessBulkStart,end=form.elements.businessBulkEnd,error=form.querySelector('[data-business-hours-error]');
+        if(!start.value||!end.value||end.value<=start.value){error.textContent='Check the working hours: end time must follow start time.';error.hidden=false;(!start.value?start:end).focus();return;}
+        form.querySelectorAll('[data-business-day]').forEach(function(row){
+          if(!row.querySelector('[type="checkbox"]').checked)return;
+          row.querySelector('[name^="hoursFrom"]').value=start.value;row.querySelector('[name^="hoursTo"]').value=end.value;
+        });
+        error.hidden=true;saveInput(start);return;
+      }
       var toggle=event.target.closest('[data-voice-sms]');if(!toggle)return;
       var enabled=toggle.getAttribute('aria-checked')!=='true';toggle.setAttribute('aria-checked',String(enabled));toggle.classList.toggle('is-on',enabled);
       var status=toggle.parentElement.querySelector('[data-voice-sms-status]');status.textContent=enabled?'On':'Off';status.classList.toggle('is-on',enabled);

@@ -138,10 +138,21 @@ test('Onboarding requires real entries, preserves browser drafts, and keeps indu
     enter(window, 'timeZone', 'America/Chicago');
     click(window, '[name="hoursOpen0"]');
     assert.equal(window.document.querySelector('[name="hoursFrom0"]').disabled, true);
+    click(window, '[data-business-hours-toggle]');
+    assert.equal(window.document.querySelector('[data-business-hours-toggle]').getAttribute('aria-expanded'), 'true');
+    enter(window, 'businessBulkStart', '09:00');
+    enter(window, 'businessBulkEnd', '08:00');
+    click(window, '[data-business-hours-apply]');
+    assert.equal(window.document.querySelector('[data-business-hours-error]').hidden, false);
+    assert.equal(window.document.querySelector('[name="hoursFrom1"]').value, '');
+    enter(window, 'businessBulkEnd', '18:00');
+    click(window, '[data-business-hours-apply]');
     for (let day = 1; day < 7; day++) {
-      enter(window, `hoursFrom${day}`, '09:00');
-      enter(window, `hoursTo${day}`, '18:00');
+      assert.equal(window.document.querySelector(`[name="hoursFrom${day}"]`).value, '09:00');
+      assert.equal(window.document.querySelector(`[name="hoursTo${day}"]`).value, '18:00');
     }
+    assert.equal(window.document.querySelector('[name="hoursFrom0"]').value, '');
+    assert.equal(Object.hasOwn(JSON.parse(window.localStorage.getItem(window.NEXORA_WELCOME.storageKey)).drafts.nail.business.fields, 'businessBulkStart'), false);
     submit(window);
     assert.match(window.document.getElementById('nxw-progress-label').textContent, /^1\/4/);
     assert.equal(window.document.querySelector('[data-setup-step="0"]').dataset.completed, 'true');
