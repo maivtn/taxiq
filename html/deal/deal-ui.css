@@ -1,4 +1,23 @@
 /* Keep PO geometry: artwork occupies the existing icon slots. */
+:root{
+  --deal-content-max:1180px;
+  --deal-content-gutter:24px;
+  --deal-content-width:min(var(--deal-content-max),calc(100% - var(--deal-content-gutter) - var(--deal-content-gutter)));
+  --deal-page-inset:max(var(--deal-content-gutter),calc((100% - var(--deal-content-max)) / 2));
+}
+/* Align page-level containers; card and dialog padding remains local. */
+:is(.site-header,.deal-subnav,.deal-subnav[data-mobile-directory-nav],.mobile-search-category,.sp-header){padding-inline:var(--deal-page-inset)}
+main > :is(.hero-shell,.content-shell,.last-minute-shell,.coupon-shell,.opening-shell,.match-launchpad,.deal-workspace,.community-handoff),
+#salonProfile{width:var(--deal-content-width);max-width:none;margin-inline:auto}
+main > :is(.hero-shell,.content-shell),#salonProfile{padding-inline:0}
+.deal-workspace.nd-shell{max-width:var(--deal-content-max)!important}
+.site-footer{padding-inline:var(--deal-page-inset)}
+.site-footer > .footer-shell{width:100%;max-width:none;margin-inline:auto}
+.site-footer .footer-identity > .footer-brand{width:min(190px,100%);min-width:0;max-width:100%}
+.skip-link{max-width:calc(100% - 24px)}
+.result-controls .select-control select{min-width:0;flex:1}
+.sp-nav{padding-inline:0}
+@media(max-width:760px){:root{--deal-content-gutter:12px}}
 body{min-width:0}
 .deal-industry-icon{display:inline-block;width:24px;height:24px;object-fit:contain;flex-shrink:0;vertical-align:middle}
 .dw-category-icon .deal-industry-icon{width:32px;height:32px}
@@ -216,7 +235,7 @@ body:has(.dw-match-select .dropdown-active) .ai-guide-fab{visibility:hidden}
 @media(max-width:640px){body > .toast{bottom:max(calc(98px + env(safe-area-inset-bottom)),calc(var(--deal-keyboard-inset,0px) + 12px))}}
 @media(max-width:360px){
   .result-controls{min-width:0;flex-wrap:wrap}
-  .result-controls .select-control{flex:1 1 190px;min-width:0;max-width:100%}
+  .result-controls .select-control{flex:1 1 230px;min-width:0;max-width:100%}
 }
 @media(max-width:640px){
   .dw-lm-head{padding:16px;gap:12px}
@@ -245,7 +264,7 @@ body:has(.dw-match-select .dropdown-active) .ai-guide-fab{visibility:hidden}
   .ai-guide-fab::after{display:none}
   .ai-guide-nudge{bottom:calc(154px + env(safe-area-inset-bottom))}
   body.landing-discover-mode .landing-mobile-cta{bottom:calc(112px + env(safe-area-inset-bottom));animation:none;transform:none}
-  body.landing-discover-mode .landing-mobile-cta{left:max(10px,env(safe-area-inset-left));right:max(10px,env(safe-area-inset-right));padding:10px 12px!important}
+  body.landing-discover-mode .landing-mobile-cta{left:max(var(--deal-content-gutter),env(safe-area-inset-left));right:max(var(--deal-content-gutter),env(safe-area-inset-right));padding:10px 12px!important}
   body.landing-discover-mode .ai-guide-fab{bottom:calc(190px + env(safe-area-inset-bottom))!important}
   body.landing-discover-mode .ai-guide-nudge{bottom:calc(248px + env(safe-area-inset-bottom))}
 }
