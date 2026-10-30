@@ -5,6 +5,7 @@
   var clone=value=>JSON.parse(JSON.stringify(value));
   var icon=name=>'<i class="bi bi-'+name+'" aria-hidden="true"></i>';
   var imagePattern=/^data:image\/(png|jpeg|webp|gif);base64,[A-Za-z0-9+/]+={0,2}$/i;
+  var oldIcons={checkin:['check'],tip:['phone'],payment:['camera','scan-line']};
   function url(value) {
     var raw=String(value||'').trim();if(!raw)return '';
     if(!/^[a-z][a-z\d+.-]*:/i.test(raw))raw='https://'+raw;
@@ -22,22 +23,30 @@
     ].map(item=>({id:item[0],title:item[1],icon:item[2],url:new URL(item[3],window.location.href).href,enabled:true}));
   }
   function complete(fields) {
-    var modules=fields.qrModules;
-    return !!String(fields.qrName||'').trim()&&Array.isArray(modules)&&modules.some(item=>item.enabled)&&modules.filter(item=>item.enabled).every(item=>String(item.title||'').trim()&&url(item.url));
+    var modules=enteredModules(fields);
+    return !!String(fields.qrName||'').trim()&&modules.some(item=>item.enabled)&&modules.filter(item=>item.enabled).every(item=>String(item.title||'').trim()&&url(item.url));
+  }
+  function enteredModules(fields) {
+    var saved=Array.isArray(fields.qrModules)?fields.qrModules:[];
+    if(fields.qrIndustryId)return saved;
+    var samples=defaults().concat({id:'services',title:'Services & prices',icon:'list',url:new URL('../menu/menu.html',location.href).href});
+    return saved.filter(item=>{
+      var sample=samples.find(base=>base.id===item.id&&base.title===item.title);
+      if(!sample||item.iconCustomized||![sample.icon].concat(oldIcons[item.id]||[]).includes(item.icon))return true;
+      try{
+        var link=new URL(item.url,location.href),original=new URL(sample.url);
+        var prototype=link.origin===original.origin||['localhost','127.0.0.1','taxiq-nexora-touch.vercel.app'].includes(link.hostname);
+        return !(prototype&&link.pathname===original.pathname&&link.search===original.search&&link.hash===original.hash);
+      }catch(_){return true;}
+    });
   }
   function mount(panel,options) {
     var fields=options.fields||{}, business=options.business||{}, appearance=window.ONEQR_ACTION_APPEARANCE;
     var allowIndustry=!!options.allowIndustry,catalog=window.ONEQR_INDUSTRIES;
     var industryId=allowIndustry?(catalog.industries.some(item=>item.id===fields.qrIndustryId)?fields.qrIndustryId:options.industry):'';
     function recommended(){return defaults(industryId);}
-    var modules=Array.isArray(fields.qrModules)?clone(fields.qrModules):[];
-    var legacy={booking:'qrBooking',review:'qrReviews',checkin:'qrCheckin',tip:'qrTips',payment:'qrPayment'};
-    if(!allowIndustry&&!Array.isArray(fields.qrModules)&&options.legacyTiles.some(tile=>Object.hasOwn(fields,tile.key))){
-      modules=defaults().filter(item=>fields[legacy[item.id]]==='true');
-      if(fields.qrServices==='true')modules.push({id:'services',title:'Services & prices',icon:'list',url:new URL('../menu/menu.html',location.href).href,enabled:true});
-    }
+    var modules=clone(enteredModules(fields));
     // Replace earlier demo icons while retaining uploaded and other custom icons.
-    var oldIcons={checkin:['check'],tip:['phone'],payment:['camera','scan-line']};
     var salonDefaults=defaults();
     modules.forEach(item=>{
       var matching=salonDefaults.find(base=>base.id===item.id&&base.title===item.title);

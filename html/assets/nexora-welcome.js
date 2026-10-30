@@ -150,7 +150,7 @@
   function mountQrWorkspace(fields){
     var industry=guide().key;
     qrWorkspace=window.NEXORA_QR_SETUP.mount(main.querySelector('[data-onboarding-qr]'),{
-      fields:fields,business:readStep('business').fields,legacyTiles:data.flow.qrTiles,
+      fields:fields,business:readStep('business').fields,
       allowIndustry:industry==='restaurant',industry:industry,
       chooseAtLeastOne:setupCopy.chooseAtLeastOne,requiredMessage:setupCopy.requiredMessage,saveFailed:setupCopy.saveFailed,
       onChange:function(snapshot){return savePreparationDraft(industry,'qr',snapshot);},

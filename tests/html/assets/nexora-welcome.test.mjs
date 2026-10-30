@@ -401,10 +401,42 @@ test('QR preparation starts empty and saves after a destination is added', () =>
   } finally { dom.window.close(); }
 });
 
+test('Unconfigured One QR stays empty with old flags and saved sample modules', () => {
+  const storageKey = 'nexora.local-onboarding.v1';
+  const legacy = { qrName: 'Old draft', qrBooking: 'true', qrCheckin: 'true', qrServices: 'true' };
+  const samples = [
+    { id: 'booking', title: 'Book Appointment', icon: 'calendar-check', url: 'http://127.0.0.1:5503/html/customer/booking.html', enabled: true },
+    { id: 'tip', title: 'Tip & Pay', icon: 'phone', url: 'http://127.0.0.1:5503/html/tip-flow/select-staff.html', enabled: true },
+    { id: 'payment', title: 'Pay Now', icon: 'credit-card', url: 'http://127.0.0.1:5503/html/pages/qr-stations.html?tab=accept-payment', enabled: true }
+  ];
+  for (const fields of [legacy, { ...legacy, qrModules: samples }]) {
+    const dom = loadPage('nexora-getting-started.html', {
+      [storageKey]: JSON.stringify({ industry: 'nail', drafts: { nail: { qr: { fields, completed: true } } } })
+    });
+    try {
+      const { window } = dom;
+      const doc = window.document;
+      click(window, '[data-setup-step="3"]');
+      assert.equal(doc.querySelectorAll('[data-qr-row]').length, 0);
+      assert.equal(doc.querySelector('[data-setup-step="3"]').dataset.completed, 'false');
+      submit(window);
+      assert.equal(doc.getElementById('nxw-save-status').textContent, 'Choose at least one item to use.');
+      const greeting = doc.querySelector('[data-qr-welcome]');
+      greeting.value = 'Welcome';
+      greeting.dispatchEvent(new window.Event('input', { bubbles: true }));
+      click(window, '[data-setup-step="0"]');
+      click(window, '[data-setup-step="3"]');
+      assert.equal(doc.querySelectorAll('[data-qr-row]').length, 0);
+      assert.deepEqual(JSON.parse(window.localStorage.getItem(storageKey)).drafts.nail.qr.fields.qrModules, []);
+    } finally { dom.window.close(); }
+  }
+});
+
 test('QR preparation preserves custom modules, icons, order, greeting, and the previous draft fields', () => {
   const storageKey = 'nexora.local-onboarding.v1';
+  const previousModules = [{ id: 'custom-salon-website', title: 'Salon website', icon: 'link', url: 'https://example.org', enabled: true }];
   const dom = loadPage('nexora-getting-started.html', {
-    [storageKey]: JSON.stringify({ industry: 'nail', drafts: { nail: { qr: { fields: { qrLabel: 'Old internal name', qrLocation: 'Front counter', qrCheckin: 'true', qrServices: 'false', qrBooking: 'true', qrReviews: 'false', qrTips: 'false', qrPayment: 'false' } } } } })
+    [storageKey]: JSON.stringify({ industry: 'nail', drafts: { nail: { qr: { fields: { qrLabel: 'Old internal name', qrLocation: 'Front counter', qrCheckin: 'true', qrServices: 'false', qrBooking: 'true', qrReviews: 'false', qrTips: 'false', qrPayment: 'false', qrModules: previousModules } } } } })
   });
   try {
     const { window } = dom;
@@ -412,17 +444,17 @@ test('QR preparation preserves custom modules, icons, order, greeting, and the p
     const enterQr = (selector, value) => { const input = doc.querySelector(selector); input.value = value; input.dispatchEvent(new window.Event('input', { bubbles: true })); };
     click(window, '[data-setup-step="3"]');
     assert.equal(doc.querySelector('[data-qr-name]').value, 'Old internal name');
-    assert.deepEqual([...doc.querySelectorAll('[data-qr-row]')].map(row => row.dataset.qrRow), ['booking', 'checkin']);
+    assert.deepEqual([...doc.querySelectorAll('[data-qr-row]')].map(row => row.dataset.qrRow), ['custom-salon-website']);
     enterQr('[data-qr-welcome]', 'Welcome guest');
     enterQr('[data-qr-link-input]', 'javascript:alert(1)');
     doc.querySelector('[data-qr-link-form]').dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
-    assert.equal(doc.querySelectorAll('[data-qr-row]').length, 2);
+    assert.equal(doc.querySelectorAll('[data-qr-row]').length, 1);
     enterQr('[data-qr-link-input]', 'https://example.com');
     doc.querySelector('[data-qr-link-form]').dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
-    const custom = [...doc.querySelectorAll('[data-qr-row]')].find(row => row.dataset.qrRow.startsWith('custom-')).dataset.qrRow;
+    const custom = [...doc.querySelectorAll('[data-qr-row]')].at(-1).dataset.qrRow;
     enterQr(`[data-qr-row="${custom}"] [data-qr-module-title]`, 'Website');
     click(window, `[data-qr-row="${custom}"] [data-qr-action="up"]`);
-    assert.equal(doc.querySelectorAll('[data-qr-row]')[1].dataset.qrRow, custom);
+    assert.equal(doc.querySelectorAll('[data-qr-row]')[0].dataset.qrRow, custom);
     click(window, `[data-qr-row="${custom}"] [data-qr-action="icon"]`);
     click(window, '[data-qr-icon="camera"]');
     assert.match(doc.querySelector(`[data-qr-row="${custom}"] .nxqr-module-icon img`).src, /oneqr-camera-3d\.png$/);
@@ -434,7 +466,7 @@ test('QR preparation preserves custom modules, icons, order, greeting, and the p
     assert.equal(doc.getElementById('nxw-entered-preview'), null);
     click(window, `[data-qr-row="${custom}"] [data-qr-action="remove"]`);
     assert.equal(doc.querySelector(`[data-qr-row="${custom}"]`), null);
-    assert.equal(doc.querySelectorAll('[data-qr-row]').length, 2);
+    assert.equal(doc.querySelectorAll('[data-qr-row]').length, 1);
     assert.equal(doc.querySelector('[data-qr-welcome]').value, 'Welcome guest');
     assert.equal(doc.querySelector('[data-setup-step="3"]').dataset.completed, 'false');
   } finally { dom.window.close(); }
