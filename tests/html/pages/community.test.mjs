@@ -381,6 +381,19 @@ test('browser Back restores the previous section using the existing mounted cont
   assert.equal(calls.mounts.length, 1);
 });
 
+test('mobile heading Back follows the previous section instead of always returning to Feed', {timeout:3000},async t=>{
+  const {w,calls,notify}=await boot(t);
+  w.navigateCommunityHub('jobs');w.navigateCommunityHub('pages');
+  await new Promise(resolve=>{w.addEventListener('popstate',resolve,{once:true});notify({type:'nexora-community-history-back'});});
+  assert.equal(tab(w),'jobs');assert.equal(calls.routes.at(-1),'jobs');assert.equal(calls.mounts.length,1);
+});
+
+test('mobile heading Back from a fresh direct link falls back safely without leaving a blank page',async t=>{
+  const {w,notify}=await boot(t,{query:'?tab=jobs'});
+  notify({type:'nexora-community-history-back'});
+  assert.equal(tab(w),'feed');assert.equal(w.history.length,1);
+});
+
 test('the content Back action from a direct link returns to Feed without leaving Community', async t => {
   const {w, calls, notify} = await boot(t, {query: '?tab=jobs'});
   notify({type: 'nexora-community-back'});

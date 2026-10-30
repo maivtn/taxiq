@@ -4,7 +4,7 @@
   var frame = document.querySelector('#community-staging, #community-hub, [data-community-v2]');
   if (!frame) return;
   var origin = location.protocol === 'file:' ? '*' : location.origin;
-  var componentURL=new URL('community-v2/community-hub.js?v=20261030-mobile-nav-fill-v37',document.currentScript.src);
+  var componentURL=new URL('community-v2/community-hub.js?v=20261030-mobile-back-button-v40',document.currentScript.src);
   var hub=null,fallbackFrame=null,clearPostOnBack=false,detailBackPending=false,clearContextOnBack=false;
   function clearContextLink(){var url=new URL(location.href);for(var key of ['groupId','jobId','shiftId','assignmentId','settlementId','invitationId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearContextOnBack=false;}
   function clearPostLink(){var url=new URL(location.href);for(var key of ['post','postId','comment','commentId','thread','threadId'])url.searchParams.delete(key);history.replaceState(history.state,'',url);clearPostOnBack=false;}
@@ -134,6 +134,7 @@
       if (!open && !detailBackPending && history.state && history.state.communityDetail) {detailBackPending=true;history.back();}
       else if(!open&&clearPostOnBack&&!detailBackPending)clearPostLink();
     }
+    if(data.type==='nexora-community-history-back'){if(history.state?.communityPrevious||history.length>1&&document.referrer)history.back();else receiveHubEvent({type:'nexora-community-back'});return;}
     if (data.type === 'nexora-community-back') {
       var pageParams=new URLSearchParams(location.search);if(pageParams.get('pageId')){navigatePage({pageId:pageParams.get('pageMode')==='edit'?pageParams.get('pageId'):'',pageMode:'view',pageScope:pageParams.get('pageScope')||'discover'});return;}
       if (history.state && history.state.communityPrevious) history.back();
