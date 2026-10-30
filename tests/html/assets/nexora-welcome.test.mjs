@@ -218,18 +218,36 @@ test('Services preparation reuses categories and the service editor while saving
     inlinePrice.value = '35';
     inlinePrice.dispatchEvent(new window.Event('input', { bubbles: true }));
     assert.equal(doc.querySelector('[data-setup-step="1"]').dataset.completed, 'false');
+    click(window, '[data-service-view="card"]');
     click(window, '[data-service-add="manicure"]');
-    assert.equal(doc.querySelector('#service-editor-title').textContent, 'New Service');
+    assert.equal(doc.querySelector('[data-service-editor]').hidden, true);
+    assert.equal(doc.querySelector('[data-onboarding-services]').dataset.serviceView, 'list');
+    assert.equal(doc.querySelectorAll('[data-salon-service-row]').length, 2);
+    const addedRow = [...doc.querySelectorAll('[data-salon-service-row]')].at(-1);
+    const addedId = addedRow.dataset.salonServiceRow;
+    assert.equal(doc.activeElement, addedRow.querySelector('[data-inline-field="name"]'));
+    for (const [field, value] of [['name', 'Express manicure'], ['price', '20'], ['durationMin', '25']]) {
+      const input = addedRow.querySelector(`[data-inline-field="${field}"]`);
+      input.value = value;
+      input.dispatchEvent(new window.Event('input', { bubbles: true }));
+    }
+    click(window, `[data-salon-service-edit="${addedId}"]`);
     click(window, '[data-service-editor-close]');
-    assert.equal(doc.querySelectorAll('[data-salon-service-row]').length, 1);
+    assert.equal(doc.querySelectorAll('[data-salon-service-row]').length, 2);
+    submit(window);
+    assert.equal(doc.querySelector('[data-setup-step="1"]').dataset.completed, 'true');
     const saved = JSON.parse(window.localStorage.getItem(storageKey)).drafts.nail.services.fields;
     assert.equal(Number(saved.serviceCatalog[0].services[0].price), 35);
+    assert.equal(saved.serviceCatalog[0].services[1].name, 'Express manicure');
+    assert.equal(saved.serviceCatalog[0].services[1].price, 20);
+    assert.equal(saved.serviceCatalog[0].services[1].durationMin, 25);
     assert.deepEqual(saved.serviceApprovals, ['milk-honey']);
     assert.equal(window.localStorage.getItem(posKey), 'keep-pos-settings');
     click(window, '[data-setup-step="2"]');
     click(window, '[data-setup-step="1"]');
     await Promise.resolve();
     assert.equal(doc.querySelector('[data-inline-field="price"]').value, '35');
+    assert.equal(doc.querySelector(`[data-salon-service-row="${addedId}"] [data-inline-field="name"]`).value, 'Express manicure');
   } finally { dom.window.close(); }
 });
 
