@@ -76,8 +76,18 @@
 
   const actionRules = [
     ['.dialog-close,.bc-close,.drawer-header [data-dialog-close],[data-ai-close],[data-nudge-dismiss]', 'X', 'neutral'],
+    ['#openingHoldSuccess [data-dialog-close]', 'Check', 'teal'],
+    ['dialog [data-dialog-close]:not(.dialog-close)', 'X', 'neutral'],
+    ['#bookDealLink', 'CalendarCheck', 'teal'],
+    ['#useLocationButton', 'LocateFixed', 'blue'],
+    ['#simulatePurchaseButton', 'Banknote', 'teal'],
+    ['#demoTopupButton', 'Wallet', 'amber'],
+    ['#businessDialog .oneqr-launch', 'QrCode', 'blue'],
+    ['#aiGuideResultAction', 'ArrowRight', 'blue'],
+    ['#aiGuideForm button[type="submit"]', 'Sparkles', 'violet'],
+    ['[data-voice-end]', 'X', 'rose'],
     ['[data-save],[data-coupon-save],#saveDetailButton,[data-nail-save],[data-nail-saved-toggle]', 'Heart', 'rose'],
-    ['[data-open],[data-coupon-claim],[data-dw-nail-menu],#claimDealButton', 'Ticket', 'violet'],
+    ['[data-open],[data-coupon-claim],[data-dw-nail-menu],[data-oneqr-banner],#claimDealButton', 'Ticket', 'violet'],
     ['[data-opening-hold],[data-last-claim],[data-dw-save-wish]', 'CalendarCheck', 'teal'],
     ['[data-dw-remove-wish],[data-dw-remove-area],[data-nail-remove-filter]', 'X', 'neutral'],
     ['[data-dw-add-area]', 'MapPinPlus', 'blue'],
@@ -87,7 +97,7 @@
     ['[data-beauty-list]', 'Store', 'violet'],
     ['[data-beauty-clip]', 'Play', 'violet'],
     ['[data-ai-generate],.copilot-button', 'Sparkles', 'violet'],
-    ['[data-copy-link],#copyOneqrLink', 'Copy', 'blue'],
+    ['[data-copy-link],#copyOneqrLink,#copyOneQRLink', 'Copy', 'blue'],
     ['[data-nail-prev]', 'ChevronLeft', 'neutral'],
     ['[data-nail-next]', 'ChevronRight', 'neutral'],
     ['[data-hero-prev]', 'ChevronLeft', 'neutral'],
@@ -97,7 +107,7 @@
     ['.footer-store-buttons a[href*="apps.apple.com"]', 'Smartphone', 'blue'],
     ['.footer-store-buttons a[href*="play.google.com"]', 'Play', 'blue'],
     ['button[type="reset"],[data-nail-reset],[data-nail-clear-recent]', 'RotateCcw', 'neutral'],
-    ['#searchForm button[type="submit"],#quickMatchForm button[type="submit"],#aiGuideForm button[type="submit"],[data-dw-match-form] button[type="submit"],[data-dw-nearby-search] button[type="submit"],[data-nail-search] button[type="submit"],[data-mobile-global-search] button[type="submit"]', 'Search', 'violet'],
+    ['#searchForm button[type="submit"],#quickMatchForm button[type="submit"],[data-dw-match-form] button[type="submit"],[data-dw-nearby-search] button[type="submit"],[data-nail-search] button[type="submit"],[data-mobile-global-search] button[type="submit"]', 'Search', 'violet'],
     ['#couponClaimForm button[type="submit"],#openingHoldForm button[type="submit"]', 'Check', 'teal'],
     ['#requestForm button[type="submit"]', 'Send', 'violet'],
     ['#merchantDealForm button[type="submit"]', 'Megaphone', 'violet'],
@@ -126,8 +136,14 @@
   ];
 
   function decorateAction(element, name, color) {
-    const foreground = getComputedStyle(element).color.match(/[\d.]+/g)?.map(Number) || [];
+    const style = getComputedStyle(element);
+    const foreground = style.color.match(/[\d.]+/g)?.map(Number) || [];
     element.classList.toggle('deal-action-on-fill', foreground.slice(0, 3).length === 3 && foreground.slice(0, 3).every(value => value >= 220));
+    const modalAction = !!element.closest('dialog')
+      && !element.closest('.business-tabs,.oneqr-stage-nav,.ai-guide-options')
+      && !element.matches('.dialog-close,.bc-close,[data-oneqr-utility],[data-oneqr-view],.drawer-header [data-dialog-close]');
+    element.classList.toggle('deal-modal-action', modalAction);
+    element.classList.toggle('deal-modal-action-flex', modalAction && ['flex','inline-flex'].includes(style.display));
     if (element.querySelector('.deal-action-icon') || element.querySelector('.deal-industry-icon')) return;
     const nodes = window.NEXORA_DEAL_LUCIDE?.icons[name];
     if (!nodes) return;
@@ -141,6 +157,8 @@
       const caption = element.querySelector('span');
       caption.textContent = caption.textContent.replace(/^[^\p{L}\p{N}]+/u, '');
       caption.prepend(icon);
+    } else if (element.matches('.publish-button') && leading?.tagName === 'SPAN') {
+      leading.prepend(icon);
     } else if (element.matches('[data-dw-remove-area]') && element.querySelector('b')) element.querySelector('b').replaceChildren(icon);
     else if (existing) existing.replaceWith(icon);
     else if (leading?.tagName === 'SPAN' && /^[^\p{L}\p{N}]+$/u.test(leading.textContent.trim())) leading.replaceChildren(icon);
@@ -378,6 +396,34 @@
     root.querySelectorAll('.business-tabs [data-business-view]').forEach(element => {
       decorateAction(element, businessIcons[element.dataset.businessView], 'violet');
     });
+    const modalRoutes = { deals:['MapPin','blue'], dcats:['Ticket','amber'], dmatch:['MessagesSquare','violet'], dopen:['Store','teal'], dlast:['Zap','amber'] };
+    root.querySelectorAll('dialog [data-function-route]').forEach(element => {
+      const icon = modalRoutes[element.dataset.functionRoute];
+      if (icon) decorateAction(element, ...icon);
+    });
+    const touchRoutes = { promotion:['Megaphone','violet'], oneqr:['QrCode','blue'], redeem:['Check','teal'] };
+    root.querySelectorAll('dialog [data-touch-route]').forEach(element => {
+      const icon = touchRoutes[element.dataset.touchRoute];
+      if (icon) decorateAction(element, ...icon);
+    });
+    const aiIntents = { nearby:'MapPin', today:'Zap', request:'MessageCircle', coupon:'Ticket', business:'Store' };
+    root.querySelectorAll('#aiGuideDialog [data-ai-intent] > span').forEach(element => {
+      if (element.querySelector('.deal-modal-choice-icon')) return;
+      const icon = aiIntents[element.parentElement.dataset.aiIntent];
+      if (!icon) return;
+      element.replaceChildren(window.NEXORA_DEAL_LUCIDE.createElement(window.NEXORA_DEAL_LUCIDE.icons[icon], {
+        width:22, height:22, 'stroke-width':1.75, 'aria-hidden':'true', focusable:'false', class:'deal-modal-choice-icon',
+      }));
+    });
+    root.querySelectorAll('#oneqrDialog [data-oneqr-stage]').forEach(element => {
+      if (element.closest('.oneqr-stage-nav')) return;
+      const icon = element.dataset.oneqrStage === 'performance' ? 'TrendingUp' : 'BadgeCheck';
+      decorateAction(element, icon, 'blue');
+    });
+    root.querySelectorAll('[data-voice-mute]').forEach(element => {
+      const muted = element.getAttribute('aria-pressed') === 'true';
+      decorateAction(element, muted ? 'Mic' : 'MicOff', muted ? 'teal' : 'blue');
+    });
     const oneqrViews = { menu:'PanelsTopLeft', deals:'MapPin', search:'Search' };
     root.querySelectorAll('nav[aria-label="OneQR navigation"] [data-oneqr-view]').forEach(element => {
       decorateAction(element, oneqrViews[element.dataset.oneqrView], 'violet');
@@ -398,7 +444,7 @@
     });
     for (const [selector, name, color] of actionRules) root.querySelectorAll(selector).forEach(element => decorateAction(element, name, color));
     root.querySelectorAll('button').forEach(element => {
-      if (element.closest('.hero-carousel-controls') || element.matches('[data-dw-group],.service-chip,.taxonomy-chip,.br-stars button')) return;
+      if (element.closest('.hero-carousel-controls') || element.matches('[data-ai-intent],[data-dw-group],.service-chip,.taxonomy-chip,.br-stars button')) return;
       const label = element.textContent.trim().replace(/^[^\p{L}\p{N}]+/u, '');
       const rule = labelRules.find(([pattern]) => pattern.test(label));
       if (rule) decorateAction(element, rule[1], rule[2]);

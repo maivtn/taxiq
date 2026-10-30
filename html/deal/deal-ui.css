@@ -58,6 +58,24 @@ button:is(.save-button,.dialog-close,.bc-close,[data-nail-save]) .deal-action-ic
 .ai-guide-fab .deal-action-icon{width:24px;height:24px;margin:0;color:inherit}
 .business-button .deal-action-icon{color:inherit}
 .deal-action-on-fill :is(.deal-action-icon,.deal-inline-icon){color:inherit}
+dialog .deal-action-icon{stroke-width:1.75}
+dialog .deal-modal-choice-icon{display:block;width:22px;height:22px}
+dialog .deal-modal-action{min-height:44px}
+dialog .deal-modal-action-flex{column-gap:8px}
+dialog .deal-modal-action-flex .deal-action-icon{margin-inline-end:0}
+dialog :is(button:disabled,[aria-disabled="true"]) .deal-action-icon{color:inherit;opacity:.7}
+dialog [data-oneqr-utility] > span .deal-action-icon,dialog [data-oneqr-view] > .deal-action-icon{margin:0}
+dialog:is(.app-dialog,.ai-guide-dialog,.bc-dialog) > :is(.dialog-close,.bc-close){display:grid;place-items:center;width:44px;height:44px;padding:0;border:1px solid #d8e0eb;color:#34415b;background:#fff;box-shadow:0 2px 8px #18244312}
+dialog :is(.dialog-close,.bc-close) .deal-action-icon{width:18px;height:18px;margin:0;color:inherit}
+#businessDialog .drawer-header [data-dialog-close]{display:grid;place-items:center;min-width:44px;min-height:44px;padding:0;border:1px solid #ffffff40;border-radius:12px;color:#fff;background:#ffffff14}
+#businessDialog .drawer-header [data-dialog-close] .deal-action-icon{width:18px;height:18px;margin:0;color:inherit}
+dialog .publish-button{min-height:56px;background:linear-gradient(100deg,#6342c6,#196ac1)}
+dialog .publish-button small{color:#f1f4ff}
+dialog .publish-button > span{display:inline-flex;align-items:center;justify-content:center;column-gap:8px}
+dialog .publish-button > span > .deal-action-icon{margin:0}
+dialog .review-actions button{min-height:44px;padding-inline:10px;font-size:12px}
+dialog.bc-montage{overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
+dialog :is(#couponClaimForm,#openingHoldForm) button[type="submit"]{padding-block:10px;font-size:13px;line-height:1.4}
 .search-panel .search-button{background:linear-gradient(100deg,#6342c6,#6742c7 55%,#196ac1)}
 .primary-cta{background:linear-gradient(135deg,#6242ca,#196ac1)}
 .dw-primary.coral,.dw-role-tabs button.active{background:linear-gradient(135deg,#bd4614,#c52e2a)}

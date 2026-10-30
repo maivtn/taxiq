@@ -2500,7 +2500,8 @@ async function createCouponClaim(id, type, phone) {
 
 async function submitCouponClaim(event) {
   event.preventDefault();
-  const formData = new FormData(event.currentTarget);
+  const form = event.currentTarget;
+  const formData = new FormData(form);
   const phone = normalizePhone(formData.get("phone"));
   if (!phone) {
     showToast("Vui lòng nhập số điện thoại hợp lệ.");
@@ -2517,7 +2518,7 @@ async function submitCouponClaim(event) {
     document.querySelector("#claimDealButton").textContent = "Đã giữ coupon";
   }
   emitNexoraFunctionEvent("coupon_held", { coupon_id: id, coupon_type: type, claim_id: claim.claimId });
-  event.currentTarget.reset();
+  form.reset();
   showCouponClaimSuccess(claim, summary);
   showToast("Đã giữ coupon. SMS xác nhận đã được tạo; không cần cài app.");
 }
@@ -2570,7 +2571,8 @@ function openOpeningHold(id) {
 
 async function submitOpeningHold(event) {
   event.preventDefault();
-  const data = new FormData(event.currentTarget);
+  const form = event.currentTarget;
+  const data = new FormData(form);
   const id = String(data.get("openingId") || "");
   const phone = normalizePhone(data.get("phone"));
   const opening = openingCatalog[id];
@@ -2589,7 +2591,7 @@ async function submitOpeningHold(event) {
   };
   openingHolds[id] = hold;
   localStorage.setItem("nexora-opening-holds", JSON.stringify(openingHolds));
-  event.currentTarget.reset();
+  form.reset();
   showOpeningHoldSuccess(id, hold);
   renderOpeningHolds();
   emitNexoraFunctionEvent("opening_hold_created", { opening_id: id, hold_id: hold.holdId });
