@@ -57,7 +57,7 @@
   // The hub's PO screens also run in srcdoc iframes with their own globals.
   if (!window.NEXORA_INDUSTRY_ICONS && !document.querySelector('script[data-industry-icons]')) {
     const loader = document.createElement('script');
-    loader.src = new URL('industry-icons.js?v=20261030-distinct-industries',runtime).href;
+    loader.src = new URL('industry-icons.js?v=2f6387c34b',runtime).href;
     loader.dataset.industryIcons = '';
     loader.addEventListener('load',() => { registerIndustryEmoji(); observer?.disconnect(); restoreCopies(); schedule(); });
     document.head.append(loader);

@@ -979,11 +979,12 @@
     },
     {
       "key": "industry-lash",
-      "word": "eyelashes",
-      "href": "https://www.flaticon.com/free-icon/eyelashes_10203181",
-      "image": "https://cdn-icons-png.flaticon.com/128/10203/10203181.png",
-      "file": "industry-lash-10203181.png",
-      "label": "Eyelashes"
+      "word": "eyelash",
+      "href": "https://www.flaticon.com/free-icon/eyelash_12756080",
+      "image": "https://cdn-icons-png.flaticon.com/512/12756/12756080.png",
+      "file": "industry-lash-12756080.png",
+      "label": "Eyelash",
+      "collection": "User-selected Flaticon artwork"
     },
     {
       "key": "industry-skin",

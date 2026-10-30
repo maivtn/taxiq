@@ -99,7 +99,7 @@
     "home": "industry-home-619032.png",
     "lifestyle": "industry-lifestyle-6749680.png",
     "pedi": "industry-pedi-9097368.png",
-    "lash": "industry-lash-10203181.png",
+    "lash": "industry-lash-12756080.png",
     "skin": "industry-skin-5732655.png",
     "pmu": "../promotions/industry-icons/tattoo.png",
     "wax": "industry-wax-4614237.png",
@@ -193,6 +193,7 @@
   // Aliases are alternate IDs of the same trade; distinct trades have their own artwork.
   const aliases = Object.freeze({
     pedicure:'pedi', nutrition:'diet', restaurant:'food',
+    lashes:'lash', eyelash:'lash', eyelashes:'lash', 'lash-brow':'lash',
     'fast-food':'fastfood', coffee:'drink', 'hot-pot':'hotpot', 'food-truck':'foodtruck',
     apparel:'fashion', flowers:'flower', repair:'mechanic', cosmetics:'cosmetics',
     takeaway:'homefood', cosmetic:'cosmetics',
@@ -265,7 +266,10 @@
     'nail & beauty community':'nail', 'cộng đồng nail':'nail', 'nail community':'nail',
     'cộng đồng spa & massage':'spa', 'spa & massage community':'spa',
     'cộng đồng tóc & salon':'hair', 'hair & salon community':'hair',
-    'cộng đồng mi & chân mày':'lash', 'lash & brow community':'lash'
+    'cộng đồng mi & chân mày':'lash', 'lash & brow community':'lash',
+    'lash':'lash', 'lashes':'lash', 'eyelash':'lash', 'eyelashes':'lash',
+    'lash & brow':'lash', 'lashes & brows':'lash', 'lash / brow':'lash',
+    'lash & brow studio':'lash', 'mi & chân mày':'lash'
   };
   function keyForLabel(value) {
     const name = normalize(value);

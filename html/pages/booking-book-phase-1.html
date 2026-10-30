@@ -16152,9 +16152,12 @@ function getBookingCardCallStart(item) {
       var price = service.price == null ? '' : service.price;
       var duration = service.durationMin == null ? (isDraft ? '' : 60) : service.durationMin;
       var tone = ['tone-violet', 'tone-cyan', 'tone-rose', 'tone-sky', 'tone-amber', 'tone-emerald'][index % 6];
+      var serviceIcon = service.id === 'eyelash' || /\b(?:eyelash(?:es)?|lash(?:es)?)\b/i.test(name)
+        ? '<img src="../assets/flaticon-flat/industry-lash-12756080.png" alt="" width="24" height="24" style="object-fit:contain">'
+        : escapeHtml(service.icon || '✨');
       return '<div class="settings-service-row' + (isDraft ? ' is-draft' : '') + '" data-service-row data-service-id="' + escapeHtml(service.id || '') + '"' + (isDraft ? ' data-service-draft="true"' : '') + '>' +
         '<div class="settings-service-edit-grid">' +
-          '<span class="settings-service-visual ' + tone + '" aria-hidden="true">' + escapeHtml(service.icon || '✨') + '</span>' +
+          '<span class="settings-service-visual ' + tone + '" aria-hidden="true">' + serviceIcon + '</span>' +
           '<input class="settings-service-input" type="text" value="' + escapeHtml(name || (isDraft ? '' : 'Unnamed service')) + '"' + (isDraft ? ' placeholder="Service name"' : '') + ' aria-label="Service name">' +
           '<div class="settings-service-input-wrap"><span class="settings-service-prefix">$</span><input class="settings-service-input price" type="number" value="' + escapeHtml(price) + '"' + (isDraft ? ' placeholder="0.00"' : '') + ' aria-label="Service price"></div>' +
           '<div class="settings-service-input-wrap"><input class="settings-service-input duration" type="number" value="' + escapeHtml(duration) + '"' + (isDraft ? ' placeholder="60"' : '') + ' aria-label="Service duration"><span class="settings-service-suffix">min</span></div>' +

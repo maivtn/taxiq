@@ -275,8 +275,8 @@
         const key = match[0].replace(/\uFE0F/g,'');
         const industry = industryGlyphs[key];
         const navigation = node.parentElement.closest('nav,.header-actions,button:not([data-dw-industry-id])');
-        if (industry && !navigation) {
-          const icon = artwork(industryGlyphs[key]);
+        if (industry && (!navigation || industry === 'lash')) {
+          const icon = artwork(industryGlyphs[key], navigation ? 18 : 24);
           icon.classList.add('deal-inline-industry');
           fragment.append(icon);
         } else {
@@ -389,8 +389,12 @@
         if (key) replaceIndustry(element, key);
       });
     }
-    const expansionIcons = { 'Hair & Barber':'Scissors', 'Lash & Brow':'Eye', 'Spa & Massage':'Flower2', 'Home & Auto':'Wrench' };
+    const expansionIcons = { 'Hair & Barber':'Scissors', 'Spa & Massage':'Flower2', 'Home & Auto':'Wrench' };
     root.querySelectorAll('.industry-expansion [data-industry] > span').forEach(element => {
+      if (element.parentElement.dataset.industry === 'Lash & Brow') {
+        if (!element.querySelector('.deal-industry-icon')) element.replaceChildren(artwork('lash', 24));
+        return;
+      }
       if (element.querySelector('.deal-expansion-svg')) return;
       const library = window.NEXORA_DEAL_LUCIDE;
       const name = expansionIcons[element.parentElement.dataset.industry];
