@@ -6,6 +6,7 @@
   const patterns = [
     [/^1 kết quả$/, '1 result'],
     [/^(\d+) kết quả$/, '$1 results'],
+    [/^(.+) đã nằm trong lộ trình mở rộng sau nail\.$/, '$1 is planned after the nail launch.'],
     [/^(Tất cả đã lưu|Deal đã lưu|Coupon đã lưu|Last Minute đã lưu|Khai trương đang theo dõi) · (\d+)$/, (_, label, count) => `${copy[label]} · ${count}`],
     [/^1 active coupons$/, '1 active coupon'],
     [/^1 stars$/, '1 star'],
@@ -75,7 +76,6 @@
     ['[data-industry-root]', element => 'group:' + element.dataset.industryRoot],
     ['.service-chip:not([data-service="all"])', element => element.dataset.service === 'pedicure' ? 'pedi' : 'nail'],
     ['[data-nail-kind]', element => ({all:'other',massage:'spa',lashes:'lash'}[element.dataset.nailKind] || element.dataset.nailKind)],
-    ['.industry-grid [data-industry]', element => ({ 'Hair & Barber': 'hair', 'Lash & Brow': 'lash', 'Spa & Massage': 'spa', 'Home & Auto': 'group:houseauto' }[element.dataset.industry])],
     ['[data-dw-match-suggestion]', element => {
       const value = element.dataset.dwMatchSuggestion.toLowerCase();
       return Object.entries({ pedicure: 'pedi', 'gel-x': 'nail', massage: 'spa', eyelash: 'lash', haircut: 'hair', lunch: 'food', powder: 'supply', 'car wash': 'carwash', dental: 'dental', airport: 'ride' }).find(([word]) => value.includes(word))?.[1];
@@ -389,6 +389,16 @@
         if (key) replaceIndustry(element, key);
       });
     }
+    const expansionIcons = { 'Hair & Barber':'Scissors', 'Lash & Brow':'Eye', 'Spa & Massage':'Flower2', 'Home & Auto':'Wrench' };
+    root.querySelectorAll('.industry-expansion [data-industry] > span').forEach(element => {
+      if (element.querySelector('.deal-expansion-svg')) return;
+      const library = window.NEXORA_DEAL_LUCIDE;
+      const name = expansionIcons[element.parentElement.dataset.industry];
+      if (!library?.icons[name]) return;
+      element.replaceChildren(library.createElement(library.icons[name], {
+        width:22, height:22, 'stroke-width':2, 'aria-hidden':'true', focusable:'false', class:'deal-expansion-svg',
+      }));
+    });
     root.querySelectorAll('[data-deal-nav-icon]').forEach(element => {
       if (element.querySelector('svg')) return;
       const nodes = window.NEXORA_DEAL_LUCIDE?.icons[element.dataset.dealNavIcon];
