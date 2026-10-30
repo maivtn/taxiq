@@ -1351,6 +1351,230 @@
       "image": "https://cdn-icons-png.flaticon.com/128/469/469382.png",
       "file": "industry-injury-469382.png",
       "label": "Patient"
+    },
+    {
+      "key": "industry-supply-distinct",
+      "word": "beauty",
+      "href": "https://www.flaticon.com/free-icon/beauty_1739046",
+      "image": "https://cdn-icons-png.flaticon.com/128/1739/1739046.png",
+      "file": "industry-supply-1739046.png",
+      "label": "Beauty"
+    },
+    {
+      "key": "industry-medspa-distinct",
+      "word": "beauty treatment",
+      "href": "https://www.flaticon.com/free-icon/beauty-treatment_7305304",
+      "image": "https://cdn-icons-png.flaticon.com/128/7305/7305304.png",
+      "file": "industry-medspa-7305304.png",
+      "label": "Beauty Treatment"
+    },
+    {
+      "key": "industry-tattoo-distinct",
+      "word": "tattoo",
+      "href": "https://www.flaticon.com/free-icon/tattoo_2606619",
+      "image": "https://cdn-icons-png.flaticon.com/128/2606/2606619.png",
+      "file": "industry-tattoo-2606619.png",
+      "label": "Tattoo"
+    },
+    {
+      "key": "industry-freelance-distinct",
+      "word": "freelancer",
+      "href": "https://www.flaticon.com/free-icon/freelancer_5024235",
+      "image": "https://cdn-icons-png.flaticon.com/128/5024/5024235.png",
+      "file": "industry-freelance-5024235.png",
+      "label": "Freelancer"
+    },
+    {
+      "key": "industry-trainer-distinct",
+      "word": "trainer",
+      "href": "https://www.flaticon.com/free-icon/trainer_3978960",
+      "image": "https://cdn-icons-png.flaticon.com/128/3978/3978960.png",
+      "file": "industry-trainer-3978960.png",
+      "label": "Trainer"
+    },
+    {
+      "key": "industry-mua-distinct",
+      "word": "make up",
+      "href": "https://www.flaticon.com/free-icon/make-up_545159",
+      "image": "https://cdn-icons-png.flaticon.com/128/545/545159.png",
+      "file": "industry-mua-545159.png",
+      "label": "Make Up"
+    },
+    {
+      "key": "industry-kol-distinct",
+      "word": "influencer",
+      "href": "https://www.flaticon.com/free-icon/influencer_9861845",
+      "image": "https://cdn-icons-png.flaticon.com/128/9861/9861845.png",
+      "file": "industry-kol-9861845.png",
+      "label": "Influencer"
+    },
+    {
+      "key": "industry-model-distinct",
+      "word": "catwalk",
+      "href": "https://www.flaticon.com/free-icon/catwalk_8497183",
+      "image": "https://cdn-icons-png.flaticon.com/128/8497/8497183.png",
+      "file": "industry-model-8497183.png",
+      "label": "Catwalk"
+    },
+    {
+      "key": "industry-photobooth-distinct",
+      "word": "photo booth",
+      "href": "https://www.flaticon.com/free-icon/photo-booth_12054886",
+      "image": "https://cdn-icons-png.flaticon.com/128/12054/12054886.png",
+      "file": "industry-photobooth-12054886.png",
+      "label": "Photo Booth"
+    },
+    {
+      "key": "industry-artist-distinct",
+      "word": "singer",
+      "href": "https://www.flaticon.com/free-icon/singer_1598751",
+      "image": "https://cdn-icons-png.flaticon.com/128/1598/1598751.png",
+      "file": "industry-artist-1598751.png",
+      "label": "Singer"
+    },
+    {
+      "key": "industry-band-distinct",
+      "word": "band",
+      "href": "https://www.flaticon.com/free-icon/band_1311918",
+      "image": "https://cdn-icons-png.flaticon.com/128/1311/1311918.png",
+      "file": "industry-band-1311918.png",
+      "label": "Band"
+    },
+    {
+      "key": "industry-actor-distinct",
+      "word": "theatre",
+      "href": "https://www.flaticon.com/free-icon/theatre_1661086",
+      "image": "https://cdn-icons-png.flaticon.com/128/1661/1661086.png",
+      "file": "industry-actor-1661086.png",
+      "label": "Theatre"
+    },
+    {
+      "key": "industry-mc-distinct",
+      "word": "journalist",
+      "href": "https://www.flaticon.com/free-icon/journalist_1364851",
+      "image": "https://cdn-icons-png.flaticon.com/128/1364/1364851.png",
+      "file": "industry-mc-1364851.png",
+      "label": "Journalist"
+    },
+    {
+      "key": "industry-karaoke-distinct",
+      "word": "karaoke",
+      "href": "https://www.flaticon.com/free-icon/karaoke_1069474",
+      "image": "https://cdn-icons-png.flaticon.com/128/1069/1069474.png",
+      "file": "industry-karaoke-1069474.png",
+      "label": "Karaoke"
+    },
+    {
+      "key": "industry-foodsupply-distinct",
+      "word": "vegetables",
+      "href": "https://www.flaticon.com/free-icon/vegetables_5346481",
+      "image": "https://cdn-icons-png.flaticon.com/128/5346/5346481.png",
+      "file": "industry-foodsupply-5346481.png",
+      "label": "Vegetables"
+    },
+    {
+      "key": "industry-supplement-distinct",
+      "word": "supplement",
+      "href": "https://www.flaticon.com/free-icon/supplement_10504792",
+      "image": "https://cdn-icons-png.flaticon.com/128/10504/10504792.png",
+      "file": "industry-supplement-10504792.png",
+      "label": "Supplement"
+    },
+    {
+      "key": "industry-goldshop-distinct",
+      "word": "gold ingots",
+      "href": "https://www.flaticon.com/free-icon/gold-ingots_5903363",
+      "image": "https://cdn-icons-png.flaticon.com/128/5903/5903363.png",
+      "file": "industry-goldshop-5903363.png",
+      "label": "Gold Ingots"
+    },
+    {
+      "key": "industry-thrift-distinct",
+      "word": "second hand",
+      "href": "https://www.flaticon.com/free-icon/second-hand_10203850",
+      "image": "https://cdn-icons-png.flaticon.com/128/10203/10203850.png",
+      "file": "industry-thrift-10203850.png",
+      "label": "Second Hand"
+    },
+    {
+      "key": "industry-petstore-distinct",
+      "word": "pet food",
+      "href": "https://www.flaticon.com/free-icon/pet-food_8334162",
+      "image": "https://cdn-icons-png.flaticon.com/128/8334/8334162.png",
+      "file": "industry-petstore-8334162.png",
+      "label": "Pet Food"
+    },
+    {
+      "key": "industry-petgroom-distinct",
+      "word": "pet grooming",
+      "href": "https://www.flaticon.com/free-icon/pet-grooming_3737635",
+      "image": "https://cdn-icons-png.flaticon.com/128/3737/3737635.png",
+      "file": "industry-petgroom-3737635.png",
+      "label": "Pet Grooming"
+    },
+    {
+      "key": "industry-petboard-distinct",
+      "word": "pet boarding",
+      "href": "https://www.flaticon.com/free-icon/pet-boarding_5100277",
+      "image": "https://cdn-icons-png.flaticon.com/128/5100/5100277.png",
+      "file": "industry-petboard-5100277.png",
+      "label": "Pet Boarding"
+    },
+    {
+      "key": "industry-autoparts-distinct",
+      "word": "car engine",
+      "href": "https://www.flaticon.com/free-icon/car-engine_2061910",
+      "image": "https://cdn-icons-png.flaticon.com/128/2061/2061910.png",
+      "file": "industry-autoparts-2061910.png",
+      "label": "Car Engine"
+    },
+    {
+      "key": "industry-lawn-distinct",
+      "word": "lawn mower",
+      "href": "https://www.flaticon.com/free-icon/lawn-mower_7658350",
+      "image": "https://cdn-icons-png.flaticon.com/128/7658/7658350.png",
+      "file": "industry-lawn-7658350.png",
+      "label": "Lawn Mower"
+    },
+    {
+      "key": "industry-wellness-distinct",
+      "word": "meditation",
+      "href": "https://www.flaticon.com/free-icon/meditation_4897170",
+      "image": "https://cdn-icons-png.flaticon.com/128/4897/4897170.png",
+      "file": "industry-wellness-4897170.png",
+      "label": "Meditation"
+    },
+    {
+      "key": "industry-chiro-distinct",
+      "word": "spine",
+      "href": "https://www.flaticon.com/free-icon/spine_8986290",
+      "image": "https://cdn-icons-png.flaticon.com/128/8986/8986290.png",
+      "file": "industry-chiro-8986290.png",
+      "label": "Spine"
+    },
+    {
+      "key": "industry-handyman-distinct",
+      "word": "technician",
+      "href": "https://www.flaticon.com/free-icon/technician_4230762",
+      "image": "https://cdn-icons-png.flaticon.com/128/4230/4230762.png",
+      "file": "industry-handyman-4230762.png",
+      "label": "Technician"
+    },
+    {
+      "key": "industry-finance-distinct",
+      "word": "financial",
+      "href": "https://www.flaticon.com/free-icon/financial_9423095",
+      "image": "https://cdn-icons-png.flaticon.com/128/9423/9423095.png",
+      "file": "industry-finance-9423095.png",
+      "label": "Financial"
+    },
+    {
+      "key": "industry-petcare-distinct",
+      "word": "pet care",
+      "href": "https://www.flaticon.com/free-icon/pet-care_14257508",
+      "image": "https://cdn-icons-png.flaticon.com/128/14257/14257508.png",
+      "file": "industry-petcare-14257508.png",
+      "label": "Pet Care"
     }
   ]
 }
