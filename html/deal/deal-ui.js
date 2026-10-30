@@ -310,6 +310,73 @@
     return Math.min(bottom, nav.getBoundingClientRect().top, create?.getBoundingClientRect().top ?? bottom);
   }
 
+  function refreshSavedFilterSelect() {
+    const nav = document.querySelector('.wishlist-subnav');
+    if (!nav) return;
+    let select = nav.querySelector('[data-saved-filter]');
+    if (nav.hidden || !matchMedia('(max-width:720px)').matches) {
+      select?.tomselect?.close();
+      return;
+    }
+    const buttons = [...nav.querySelectorAll(':scope > [data-wishlist-view]')];
+    const readChoice = button => ({
+      value: button.dataset.wishlistView,
+      label: [...button.childNodes].filter(node => node.nodeType === Node.TEXT_NODE).map(node => node.nodeValue).join(' ').trim(),
+      count: button.querySelector('[data-wishlist-count]')?.textContent.trim() || '0',
+      art: button.querySelector('img')?.getAttribute('src') || '',
+    });
+    const choices = buttons.map(readChoice);
+    const active = buttons.find(button => button.classList.contains('active')) || buttons[0];
+    if (!active) return;
+    if (!select) {
+      const wrapper = document.createElement('div');
+      wrapper.className = 'dw-match-select wishlist-mobile-select';
+      const label = document.createElement('label');
+      label.className = 'sr-only';
+      label.id = 'dwSavedFilterLabel';
+      label.htmlFor = 'dwSavedFilter';
+      label.textContent = 'Saved';
+      select = document.createElement('select');
+      select.id = 'dwSavedFilter';
+      select.dataset.savedFilter = '';
+      select.addEventListener('change', () => buttons.find(button => button.dataset.wishlistView === select.value)?.click());
+      wrapper.append(label, select);
+      nav.append(wrapper);
+    }
+    const signature = JSON.stringify(choices.map(item => [item.value,item.label,item.count]));
+    if (!select.tomselect && select.dataset.savedSignature !== signature) {
+      select.replaceChildren(...choices.map(item => new Option(`${item.label} · ${item.count}`, item.value, false, item.value === active.dataset.wishlistView)));
+    }
+    if (!select.tomselect && window.TomSelect) {
+      const escape = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+      const render = data => {
+        const button = buttons.find(item => item.dataset.wishlistView === String(data.value));
+        if (!button) return '<div></div>';
+        const item = readChoice(button);
+        return `<div class="dw-match-select-choice saved-filter-choice" data-saved-kind="${escape(item.value)}"><span class="dw-match-select-icon"><img class="saved-filter-art" src="${escape(item.art)}" alt="" aria-hidden="true" width="24" height="24"></span><span class="saved-filter-label">${escape(item.label)}</span><small>${escape(item.count)}</small></div>`;
+      };
+      const control = new window.TomSelect(select, {
+        create:false, maxItems:1, maxOptions:null, controlInput:null,
+        hideSelected:false, closeAfterSelect:true, searchField:[],
+        render:{option:render,item:render},
+      });
+      control.control.setAttribute('aria-labelledby','dwSavedFilterLabel');
+      control.on('dropdown_open', () => positionMatchSelect(control.wrapper));
+    }
+    const control = select.tomselect;
+    if (control && select.dataset.savedSignature !== signature) {
+      choices.forEach(item => control.updateOption(item.value, {value:item.value,text:`${item.label} · ${item.count}`}));
+    }
+    select.dataset.savedSignature = signature;
+    if (control) {
+      if (control.getValue() !== active.dataset.wishlistView) control.setValue(active.dataset.wishlistView, true);
+    } else select.value = active.dataset.wishlistView;
+    for (const name of ['accent','tint','edge']) {
+      const value = getComputedStyle(active).getPropertyValue('--section-' + name).trim();
+      if (value) select.parentElement.style.setProperty('--saved-' + name,value);
+    }
+  }
+
   function positionMatchSelect(wrapper) {
     const bounds = wrapper.querySelector('.ts-control').getBoundingClientRect();
     const viewport = getVisibleViewport();
@@ -509,6 +576,7 @@
       const rule = labelRules.find(([pattern]) => pattern.test(label));
       if (rule) decorateAction(element, rule[1], rule[2]);
     });
+    refreshSavedFilterSelect();
     replaceGlyphs(root);
     syncPhoneOverlays();
   }
@@ -522,6 +590,7 @@
     };
     new MutationObserver(schedule).observe(document.body, { childList: true, characterData: true, subtree: true });
     document.addEventListener('change', schedule);
+    matchMedia('(max-width:720px)').addEventListener('change', schedule);
     let overlayScheduled = false;
     const scheduleOverlays = () => {
       if (overlayScheduled) return;

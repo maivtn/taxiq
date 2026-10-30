@@ -464,3 +464,19 @@ body:has(.dw-match-select .dropdown-active) .ai-guide-fab{visibility:hidden}
 #oneqrDialog .oneqr-utilities small{min-height:22px;color:#58667c;white-space:normal;text-overflow:clip;line-height:1.25}
 #oneqrDialog .oneqr-utilities :is(strong,small){width:100%;min-width:0;max-width:100%;overflow-wrap:anywhere}
 #oneqrDialog .oneqr-utilities button:hover,#oneqrDialog .oneqr-utilities button:focus-visible{border-color:var(--utility-accent,#6342c6)}
+
+/* Saved uses one full-width selector on phones; desktop keeps its existing tabs. */
+.wishlist-mobile-select{display:none}
+.saved-filter-choice .dw-match-select-icon{background:transparent}
+.saved-filter-choice .saved-filter-art{width:24px;height:24px;object-fit:contain}
+.saved-filter-choice .saved-filter-label{flex:1;min-width:0}
+.saved-filter-choice small{flex:none;min-width:24px;padding:3px 6px;border-radius:8px;background:#f0edff;color:#5548a1;font-size:11px;line-height:1.3;text-align:center}
+@media(max-width:720px){
+  .wishlist-subnav:not([hidden]){display:block;overflow:visible;padding:8px 12px}
+  .wishlist-subnav>[data-wishlist-view]{display:none}
+  .wishlist-subnav>.wishlist-mobile-select{display:block;max-width:none;width:100%}
+  .wishlist-mobile-select .ts-control{border-color:var(--saved-edge,#ecc3d6);background:var(--saved-tint,#fff0f7)}
+  .wishlist-mobile-select .ts-control .saved-filter-label{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--saved-accent,#a6326b)}
+  .wishlist-mobile-select .ts-control small{color:var(--saved-accent,#a6326b);background:#fff}
+  .wishlist-mobile-select .ts-dropdown .option{border:0}
+}
