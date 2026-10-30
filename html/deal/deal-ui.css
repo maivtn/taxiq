@@ -495,3 +495,13 @@ body:has(.dw-match-select .dropdown-active) .ai-guide-fab{visibility:hidden}
 .discover-connection-strip .utility-action:focus-visible{outline:2px solid var(--utility-icon-color);outline-offset:2px}
 .discover-connection-strip .verified-dot{color:#0f766e;border:1px solid #b8dfd3;background:#daf5eb}
 .discover-connection-strip .verified-dot :is(svg,.deal-inline-icon){width:16px;height:16px;color:inherit}
+
+/* Collection cards reserve real space for artwork, copy, and the trailing count. */
+.discover-rails{gap:10px;margin-top:12px}
+.discover-rails>:is(a,button){grid-template-columns:40px minmax(0,1fr) 24px;gap:0 12px!important;min-height:96px;padding:12px 14px!important}
+.discover-rails>:is(a,button)>span:first-child{width:40px!important;height:40px!important;margin:0}
+.discover-rails>:is(a,button)>div{gap:3px;min-width:0}
+.discover-rails strong{font-size:16px!important;line-height:1.3!important;white-space:normal}
+.discover-rails em{font-size:13px!important;line-height:1.4!important;white-space:normal}
+.discover-rails small{font-size:10.5px!important;line-height:1.3}
+.discover-rails>:is(a,button)>b{display:grid;place-items:center;justify-self:end;width:24px;min-width:24px;margin:0;line-height:1.3}
