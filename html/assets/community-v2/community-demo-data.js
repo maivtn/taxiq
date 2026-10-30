@@ -36,6 +36,8 @@
     if (typeof value !== 'string') return '';
     return allowedImages.has(value) || /^data:image\/(?:png|jpeg|webp|gif);base64,[A-Za-z0-9+/=]+$/.test(value) ? value : '';
   }
+  const videos = {weekend:'page-videos/nail-weekend.mp4',colors:'page-videos/nail-colors.mp4'};
+  const videoURL = value => Object.values(videos).includes(value) ? value : '';
 
   const market = [
     {id:'s1',photo:images.marketChair,type:'sale',owner:'BITCOIN NAIL BAR',industry:'Nail & làm đẹp',title:'12 ghế chờ màu trắng — đổi nội thất tiệm',category:'Nội thất tiệm',qty:12,price:100,basis:'item',split:true,condition:'Đã qua sử dụng',city:'Houston',state:'TX',description:'Tiệm đổi sang ghế băng nên để lại 12 ghế trắng, dùng khoảng 8 tháng. Khung chắc, có vài vết xước nhỏ ở chân ghế. Bán lẻ từ 2 ghế; anh chị đến xem và tự chở ở khu Bellaire sau 6 giờ chiều.',status:'open',icon:'chair',createdAt:at(1,10,20)},
@@ -92,6 +94,8 @@
     {id:'p8',kind:'page',owner:'Saigon Bistro',title:'Saigon Bistro',industry:'Nhà hàng & ăn uống',city:'Dallas, TX',description:'Bữa sáng, cà phê và bữa trưa món Việt tại Garland. Quán có bàn hai người bên cửa sổ và khu ngồi cho nhóm nhỏ; anh chị đi từ 6 người nhắn trước để tụi mình sắp bàn cạnh nhau.',contact:'Nhắn tin để hỏi món trong ngày hoặc đặt bàn.',followers:327,handle:'@saigon.bistro.dallas',hours:'Thứ Ba–Chủ Nhật · 8:00–20:00; nghỉ Thứ Hai',primaryAction:'booking',cover:images.cafe}
   ];
   const pagePosts = [
+    {id:'page-video-bitcoin-weekend',pageId:'p1',body:'Bộ sưu tập mẫu nail hồng sữa và nhũ nhẹ cho cuối tuần. Anh chị thích mẫu nào có thể nhắn tiệm để trao đổi màu và độ dài trước khi đặt lịch.',media:[{id:'page-video-weekend',type:'video',src:videos.weekend,poster:images.blush,name:'nail-weekend.mp4'}],createdAt:at(0,10,15),status:'published'},
+    {id:'page-video-bitcoin-colors',pageId:'p1',body:'Bộ sưu tập nail xanh nhũ và hoa mảnh trên nền nude. Xem các mẫu trong video, rồi gửi tiệm kiểu mình thích để được tư vấn trước buổi hẹn nhé.',media:[{id:'page-video-colors',type:'video',src:videos.colors,poster:images.blue,name:'nail-colors.mp4'}],createdAt:at(1,14,30),status:'published'},
     {id:'pp1',pageId:'p1',body:'Tiệm vừa sắp lại khu chờ và bổ sung một số màu gel cho mùa này. Anh chị có lịch cuối tuần nhớ gửi kiểu móng trước để tụi mình dành đủ thời gian nhé.',image:images.salon,createdAt:at(1,9,20),status:'published'},
     {id:'pp2',pageId:'p2',body:'Giờ trưa quán mở từ 11 giờ. Nhóm từ 6 người có thể nhắn trước để tụi mình ghép bàn. Tuần này quán có ưu đãi bữa trưa, anh chị xem điều kiện ở tab Ưu đãi nhé.',image:images.restaurant,createdAt:at(0,8),status:'published'},
     {id:'page-post-lotus-floral',pageId:'p3',body:'Mẫu hoa mảnh trên nền nude cho khách thích nhẹ nhàng. Khi đặt lịch nail art, gửi giúp tiệm ảnh tham khảo và độ dài mong muốn để sắp đủ giờ cho bộ móng.',image:images.floral,createdAt:at(0,9,10),status:'published'},
@@ -424,5 +428,5 @@
     try { localStorage.setItem(baselineKey, JSON.stringify(baselines)); } catch {}
     return rows;
   }
-  window.NEXORA_COMMUNITY_DEMO = {date, at, images, mediaURL, merge, market, extra:{feed,groups,pages,pagePosts,jobs,shifts,messages:[],promotions:{}}, blogs, connect, jobCandidates, shiftWorkflow};
+  window.NEXORA_COMMUNITY_DEMO = {date, at, images, mediaURL, videos, videoURL, merge, market, extra:{feed,groups,pages,pagePosts,jobs,shifts,messages:[],promotions:{}}, blogs, connect, jobCandidates, shiftWorkflow};
 })();

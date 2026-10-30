@@ -96,3 +96,8 @@ body.community-page-screen #pagesView > :not(#communityPageScreen) { display:non
   .page-photo-viewer-nav.is-previous { left:4px; }
   .page-photo-viewer-nav.is-next { right:4px; }
 }
+
+.page-video-grid video { aspect-ratio:4/5; max-height:480px; }
+@media(max-width:800px){
+  .page-post-media.page-video-grid { grid-template-columns:minmax(0,1fr); gap:14px; }
+}

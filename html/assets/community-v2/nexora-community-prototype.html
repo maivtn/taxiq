@@ -196,7 +196,7 @@
 #dealRefinements .select{width:100%;min-height:44px;padding-right:44px;background-position:right 16px center;background-size:16px}
 @media(max-width:650px){#dealRefinements{gap:9px;padding:10px}#dealFilterToggle{font-size:12px;padding:9px 11px}}
 </style>
-  <link rel="stylesheet" href="community-pages-screen.css?v=20261030-page-photo-viewer-v4">
+  <link rel="stylesheet" href="community-pages-screen.css?v=20261030-page-videos-v5">
 </head>
 <body>
 <script>
@@ -295,7 +295,7 @@
 <div id="notifyPanel" class="notify-panel panel hide" role="dialog" aria-label="Thông báo phù hợp"></div>
 <div id="modalRoot"></div><div id="toast" class="toast hide" role="status"></div>
 <script src="../vendor/tom-select/tom-select.complete.min.js"></script>
-<script src="community-demo-data.js?v=20261029-community-tour-actions-v21"></script>
+<script src="community-demo-data.js?v=20261030-page-videos-v2"></script>
 <script src="nexora-us-geo-2025.js"></script>
 <script src="nexora-us-place-centers-2025.js"></script>
 <script src="community-record-store.js?v=20261029-community-tour-actions-v21"></script>
@@ -542,7 +542,8 @@
   function previewPagePostFiles(input){const area=$('#pagePostMediaPreview'),error=$('#pagePostError');if(!area)return;clearPostPreview();area.innerHTML='';error.textContent='';const files=[...input.files];try{validatePagePostFiles(files);}catch(ex){input.value='';error.textContent=ex.message;return;}area.innerHTML=files.map(file=>{const url=URL.createObjectURL(file);postPreviewUrls.push(url);return file.type.startsWith('video/')?`<video src="${url}" controls playsinline preload="metadata" aria-label="Xem trước video"></video>`:`<img src="${url}" alt="Xem trước ảnh đã chọn">`;}).join('');}
   function localDateTimeInput(iso){const date=new Date(iso);return new Date(date.getTime()-date.getTimezoneOffset()*60000).toISOString().slice(0,16);}
   function releaseDuePagePosts(){let changed=false;for(const post of extra.pagePosts){if(post.status==='scheduled'&&post.publishAt&&new Date(post.publishAt).getTime()<=Date.now()){post.status='published';changed=true;}}if(changed)saveExtra();}
-  function pagePostMediaMarkup(post,onlyType=''){const legacy=coverUrl(post.image)&&(!onlyType||onlyType==='image')?`<img loading="lazy" decoding="async" class="page-post-image" src="${coverUrl(post.image)}" alt="Ảnh bài đăng của Fanpage">`:'';const items=(post.media||[]).filter(item=>!onlyType||item.type===onlyType).map(item=>item.type==='video'?`<video data-page-media-id="${esc(item.id)}" controls playsinline preload="metadata" aria-label="Video bài đăng"></video>`:`<img data-page-media-id="${esc(item.id)}" alt="Ảnh bài đăng của Fanpage">`).join('');return items||legacy?`<div class="page-post-media">${legacy}${items}</div>`:'';}
+  function pageVideoMarkup(item,label='Video bài đăng'){const src=demoData.videoURL(item.src),poster=coverUrl(item.poster);return `<video ${src?`src="${esc(src)}"`:`data-page-media-id="${esc(item.id)}"`}${poster?` poster="${esc(poster)}"`:''} controls playsinline preload="metadata" aria-label="${esc(label)}"></video>`;}
+  function pagePostMediaMarkup(post,onlyType=''){const legacy=coverUrl(post.image)&&(!onlyType||onlyType==='image')?`<img loading="lazy" decoding="async" class="page-post-image" src="${coverUrl(post.image)}" alt="Ảnh bài đăng của Fanpage">`:'';const items=(post.media||[]).filter(item=>!onlyType||item.type===onlyType).map(item=>item.type==='video'?pageVideoMarkup(item):`<img data-page-media-id="${esc(item.id)}" alt="Ảnh bài đăng của Fanpage">`).join('');return items||legacy?`<div class="page-post-media">${legacy}${items}</div>`:'';}
   async function hydratePageMedia(root=document){for(const el of root.querySelectorAll('[data-page-media-id]')){const id=el.dataset.pageMediaId;try{let url=pageMediaUrls.get(id);if(!url){const blob=await getPageMedia(id);if(!blob)continue;url=URL.createObjectURL(blob);pageMediaUrls.set(id,url);}if(el.isConnected)el.src=url;}catch{if(el.isConnected)el.replaceWith(document.createTextNode('Không mở được tệp.'));}}}
   window.addEventListener('pagehide',()=>{clearPostPreview();for(const url of pageMediaUrls.values())URL.revokeObjectURL(url);pageMediaUrls.clear();});
   function pageDetail(x,tab='posts'){
@@ -562,8 +563,8 @@
     const photoItems=[coverUrl(x.cover),coverUrl(x.avatar),...posts.map(post=>coverUrl(post.image))].filter(Boolean).map((url,index)=>`<img src="${url}" alt="Ảnh ${index+1} của Fanpage ${esc(x.title)}">`);
     for(const post of posts)for(const item of post.media||[])if(item.type==='image')photoItems.push(`<img data-page-media-id="${esc(item.id)}" alt="Ảnh bài đăng của Fanpage">`);
     const photoContent=photoItems.length?`<div class="page-photo-grid">${photoItems.map(photo=>`<button type="button" class="page-photo-trigger" aria-haspopup="dialog">${photo}</button>`).join('')}</div>`:'<p class="quiet">Fanpage chưa đăng ảnh. Chủ Fanpage có thể thêm ảnh bìa, ảnh đại diện hoặc ảnh bài viết.</p>';
-    const videoItems=posts.flatMap(post=>(post.media||[]).filter(item=>item.type==='video').map(item=>`<video data-page-media-id="${esc(item.id)}" controls playsinline preload="metadata" aria-label="Video của Fanpage"></video>`));
-    const videoContent=videoItems.length?`<div class="page-post-media">${videoItems.join('')}</div>`:'<p class="quiet">Fanpage chưa có video.</p>';
+    const videoItems=posts.flatMap(post=>(post.media||[]).filter(item=>item.type==='video').map(item=>pageVideoMarkup(item,'Video của Fanpage')));
+    const videoContent=videoItems.length?`<div class="page-post-media page-video-grid">${videoItems.join('')}</div>`:'<p class="quiet">Fanpage chưa có video.</p>';
     const followersContent=`<div class="quiet" style="margin-top:15px"><strong>${followers} người theo dõi</strong><br>Danh sách người theo dõi chỉ hiển thị khi có dữ liệu tài khoản thật.</div>`;
     const primary=x.primaryAction==='call'&&x.phone?`<a class="btn primary" href="tel:${esc(x.phone.replace(/[^+0-9]/g,''))}">☎ ${pageActionLabel(x)}</a>`:`<button type="button" class="btn primary" data-page-primary="${esc(x.id)}" data-community-primary="${esc(x.primaryAction||'message')}">${pageActionLabel(x)}</button>`;
     const coverEdit=isOwner?`<button type="button" class="page-cover-edit" data-change-page-cover="${esc(x.id)}" aria-label="${coverUrl(x.cover)?'Đổi ảnh bìa':'Thêm ảnh bìa'}"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h3l1.5-2h7L17 7h3a2 2 0 0 1 2 2v9a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V9a2 2 0 0 1 2-2Z"/><circle cx="12" cy="13" r="3.5"/></svg><span>${coverUrl(x.cover)?'Đổi ảnh bìa':'Thêm ảnh bìa'}</span></button><input type="file" id="pageCoverQuickInput" data-page-cover-file="${esc(x.id)}" accept="image/png,image/jpeg,image/webp,image/gif" hidden>`:'';
