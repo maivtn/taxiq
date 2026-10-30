@@ -11,6 +11,7 @@
   <link rel="stylesheet" href="../assets/nexora-shell.css?v=20261029-sidebar-group-labels">
   <link rel="stylesheet" href="../assets/qr-stations.css?v=no-page-background-20261028">
   <link rel="stylesheet" href="../assets/oneqr-industry-templates.css">
+  <link rel="stylesheet" href="../assets/oneqr-industry-picker.css?v=20261030-onboarding-industry">
 </head>
 <body data-oneqr-screen="industry-picker">
   <div class="shell">
@@ -38,34 +39,7 @@
           <div class="industry-page is-picker-page">
             <section class="template-workspace is-picker-mode">
               <div class="template-library">
-                <section class="industry-picker-view" id="industry-picker-view">
-                  <div class="library-heading">
-                    <div>
-                      <span class="section-step">Industry templates</span>
-                      <div class="picker-title-row"><a class="picker-back-link" href="qr-stations.html?tab=one-qr"><i data-lucide="arrow-left" aria-hidden="true"></i>Back</a><h2>Choose your business industry</h2></div>
-                      <p>Select the closest match. Your current custom modules stay in place when you switch templates.</p>
-                    </div>
-                    <div class="picker-heading-actions">
-                      <div class="language-switch" role="group" aria-label="Template language">
-                        <button type="button" class="is-active" data-language="en" aria-pressed="true">EN</button>
-                        <button type="button" data-language="vi" aria-pressed="false">VI</button>
-                      </div>
-                    </div>
-                  </div>
-
-                  <label class="industry-search" for="industry-search-input">
-                    <i data-lucide="search" aria-hidden="true"></i>
-                    <input id="industry-search-input" type="search" placeholder="Search by industry, service, or keyword" autocomplete="off">
-                    <kbd>/</kbd>
-                  </label>
-
-                  <div class="group-tabs-wrap"><div class="group-tabs" role="tablist" aria-label="Industry groups" id="industry-group-tabs"></div></div>
-                  <div class="library-result-row">
-                    <p id="industry-result-count" aria-live="polite"></p>
-                    <button type="button" class="clear-filter" id="clear-industry-filter" hidden>Clear filters</button>
-                  </div>
-                  <div class="industry-grid" id="industry-grid" aria-live="polite"></div>
-                </section>
+                <section class="industry-picker-view" id="industry-picker-view"></section>
               </div>
             </section>
           </div>
@@ -81,6 +55,6 @@
   <script src="../assets/nexora-shell.js?v=20261029-sidebar-group-labels"></script>
   <script src="../assets/oneqr-action-appearance.js"></script>
   <script src="../assets/oneqr-industries.js"></script>
-  <script src="../assets/oneqr-industry-picker.js"></script>
+  <script src="../assets/oneqr-industry-picker.js?v=20261030-onboarding-industry"></script>
 </body>
 </html>

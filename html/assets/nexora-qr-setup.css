@@ -1,6 +1,11 @@
 /* OneQR onboarding fields and module rows follow the supplied screenshots. */
 .nxqr{--qr-line:#d8e2f2;--qr-brand:#4c43e6;min-width:0;margin-top:18px;color:#13213c;font-size:12px}
 .nxqr [hidden]{display:none!important}
+.nxqr-industry-bar{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:20px;padding:14px 16px;border:1px solid #ddd9ff;border-radius:12px;background:#f8f7ff}
+.nxqr-industry-bar>div{display:grid;gap:5px;min-width:0}
+.nxqr-industry-bar span{color:#7a8496;font-size:10px;font-weight:650}
+.nxqr-industry-bar strong{font-size:13px;overflow-wrap:anywhere}
+.nxqr .nxqr-industry-bar>.nxqr-button{flex:none;min-height:36px;color:var(--qr-brand);font-size:11px}
 .nxqr-details{display:grid;gap:18px;margin-bottom:22px}
 .nxqr-field{display:flex;flex-direction:column;gap:6px;min-width:0;font-size:12px;font-weight:650}
 .nxqr input{min-width:0;width:100%;min-height:44px;padding:10px 12px;border:1px solid var(--qr-line);border-radius:8px;background:#fff;color:#172136;font:inherit;font-size:13px;font-weight:400}
@@ -43,6 +48,7 @@
 .nxqr-status:empty{display:none}
 .nxqr .nxqr-overlay{position:fixed;inset:0;z-index:2200;display:flex;align-items:center;justify-content:center;padding:20px;background:#17284380;backdrop-filter:blur(4px)}
 .nxqr-dialog{display:flex;flex-direction:column;width:min(600px,100%);max-height:calc(100dvh - 40px);overflow:hidden;border:1px solid var(--qr-line);border-radius:14px;background:#fff;box-shadow:0 20px 70px #14264830}
+.nxqr-dialog.is-industry{width:min(960px,100%)}
 .nxqr-dialog>header{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:16px 18px;border-bottom:1px solid var(--qr-line)}
 .nxw .nxqr-dialog h3{font-size:16px}
 .nxqr-dialog>[data-qr-dialog-body]{min-height:0;padding:16px 18px;overflow:auto;overscroll-behavior:contain}

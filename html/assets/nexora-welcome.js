@@ -151,6 +151,7 @@
     var industry=guide().key;
     qrWorkspace=window.NEXORA_QR_SETUP.mount(main.querySelector('[data-onboarding-qr]'),{
       fields:fields,business:readStep('business').fields,legacyTiles:data.flow.qrTiles,
+      allowIndustry:industry==='restaurant',industry:industry,
       chooseAtLeastOne:setupCopy.chooseAtLeastOne,requiredMessage:setupCopy.requiredMessage,saveFailed:setupCopy.saveFailed,
       onChange:function(snapshot){var saved=savePreparationDraft(industry,'qr',snapshot);renderEnteredPreview();return saved;},
       onBusy:function(busy){var submit=main.querySelector('#nxw-setup-form [type="submit"]');if(submit)submit.disabled=busy;}
@@ -473,7 +474,7 @@
     if(target.dataset.slide!==undefined){playing=false;renderSlide(Number(target.dataset.slide));syncSlideshow();}
     if(target.dataset.explorerProduct){explorerProduct=target.dataset.explorerProduct;explorerFeature=0;renderExplorer();main.querySelector('[data-explorer-product="'+explorerProduct+'"]').focus();}
     if(target.dataset.explorerFeature!==undefined){explorerFeature=Number(target.dataset.explorerFeature);renderExplorer();main.querySelector('[data-explorer-feature="'+explorerFeature+'"]').focus();}
-    if(target.dataset.industry){state.industry=target.dataset.industry;persist();selectedStep=firstUnfinished();renderOnboarding();main.querySelector('[data-industry="'+state.industry+'"]').focus();}
+    if(target.matches('.nxw-industry[data-industry]')){state.industry=target.dataset.industry;persist();selectedStep=firstUnfinished();renderOnboarding();main.querySelector('.nxw-industry[data-industry="'+state.industry+'"]').focus();}
     if(target.dataset.onboardTab)openTab(target.dataset.onboardTab);
     if(target.dataset.setupStep!==undefined){selectedStep=Number(target.dataset.setupStep);renderSetupStep();}
     if(target.dataset.helpEntry){selectedHelp=target.dataset.helpEntry;renderHelpResults();main.querySelector('[data-help-entry="'+selectedHelp+'"]').focus();}

@@ -26,6 +26,7 @@ function loadPage(name, saved = {}) {
       window.eval(asset('nexora-staff-setup.js'));
       window.eval(asset('oneqr-industries.js'));
       window.eval(asset('oneqr-action-appearance.js'));
+      window.eval(asset('oneqr-industry-picker.js'));
       window.eval(asset('nexora-qr-setup.js'));
     }
     window.eval(asset('nexora-welcome-data.js'));
@@ -395,6 +396,57 @@ test('QR preparation preserves custom modules, icons, order, greeting, and the p
     assert.equal(doc.querySelector('[data-qr-reset]').disabled, true);
     assert.equal(doc.querySelector('[data-qr-welcome]').value, 'Welcome guest');
     assert.equal(doc.querySelector('[data-setup-step="3"]').dataset.completed, 'false');
+  } finally { dom.window.close(); }
+});
+
+test('Table QR reuses the industry picker while keeping the onboarding industry and custom modules', () => {
+  const storageKey = 'nexora.local-onboarding.v1';
+  const dom = loadPage('nexora-getting-started.html', {
+    [storageKey]: JSON.stringify({ industry: 'restaurant', drafts: {} }),
+    'taxiq:oneqr-config': 'existing-qr-settings'
+  });
+  try {
+    const { window } = dom;
+    const doc = window.document;
+    const change = (selector, value) => { const input = doc.querySelector(selector); input.value = value; input.dispatchEvent(new window.Event('input', { bubbles: true })); };
+    const moduleIds = () => [...doc.querySelectorAll('[data-qr-row]')].map(row => row.dataset.qrRow);
+    click(window, '[data-setup-step="2"]');
+    assert.deepEqual(moduleIds(), ['menu', 'order', 'reservation', 'directions', 'review']);
+    change('[data-qr-name]', 'Table 01');
+    change('[data-qr-welcome]', 'Welcome guest');
+    change('[data-qr-link-input]', 'https://example.com');
+    doc.querySelector('[data-qr-link-form]').dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
+    const customId = moduleIds().find(id => id.startsWith('custom-'));
+    change(`[data-qr-row="${customId}"] [data-qr-module-title]`, 'Website');
+    submit(window);
+    assert.equal(doc.querySelector('[data-setup-step="2"]').dataset.completed, 'true');
+    click(window, '[data-qr-change-industry]');
+    assert.equal(doc.querySelector('.industry-card[data-industry="restaurant"]').getAttribute('aria-pressed'), 'true');
+    click(window, '[data-group="pro"]');
+    change('#industry-search-input', 'Law firm');
+    assert.equal(doc.querySelectorAll('.industry-card').length, 1);
+    click(window, '.industry-card[data-industry="legal"]');
+    assert.equal(doc.querySelector('[data-qr-overlay]').hidden, true);
+    assert.equal(doc.querySelector('.nxw-industry[aria-pressed="true"]').dataset.industry, 'restaurant');
+    assert.equal(doc.querySelector('[data-setup-step="2"]').dataset.completed, 'false');
+    assert.deepEqual(moduleIds(), ['consult', 'services', 'contact', 'directions', 'review', customId]);
+    assert.equal(doc.querySelector('[data-qr-name]').value, 'Table 01');
+    assert.equal(doc.querySelector('[data-qr-welcome]').value, 'Welcome guest');
+    submit(window);
+    assert.equal(doc.querySelector('[data-setup-step="2"]').dataset.completed, 'true');
+    const saved = JSON.parse(window.localStorage.getItem(storageKey));
+    assert.equal(saved.industry, 'restaurant');
+    assert.equal(saved.drafts.restaurant.qr.fields.qrIndustryId, 'legal');
+    assert.equal(saved.drafts.restaurant.qr.fields.qrModules.find(item => item.id === customId).title, 'Website');
+    assert.equal(window.localStorage.getItem('taxiq:oneqr-config'), 'existing-qr-settings');
+    assert.equal(window.sessionStorage.getItem('taxiq:oneqr-pending-industry'), null);
+    click(window, '[data-setup-step="1"]');
+    click(window, '[data-setup-step="2"]');
+    assert.match(doc.querySelector('[data-qr-industry-label]').textContent, /Law firm/);
+    assert.ok(moduleIds().includes(customId));
+    click(window, '[data-qr-reset]');
+    assert.deepEqual(moduleIds(), ['consult', 'services', 'contact', 'directions', 'review']);
+    assert.equal(doc.querySelector('[data-qr-reset]').disabled, true);
   } finally { dom.window.close(); }
 });
 
