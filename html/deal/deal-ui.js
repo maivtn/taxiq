@@ -4,6 +4,7 @@
 
   const copy = window.NEXORA_DEAL_EN_US;
   const patterns = [
+    [/^(Tất cả đã lưu|Deal đã lưu|Coupon đã lưu|Last Minute đã lưu|Khai trương đang theo dõi) · (\d+)$/, (_, label, count) => `${copy[label]} · ${count}`],
     [/^1 active coupons$/, '1 active coupon'],
     [/^1 stars$/, '1 star'],
     [/^([2-9]\d*|1\d+) coupon$/, '$1 coupons'],
