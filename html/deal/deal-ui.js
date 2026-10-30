@@ -94,6 +94,8 @@
     ['.discover-trust-row > span:nth-child(1)', 'ShieldCheck', 'teal'],
     ['.discover-trust-row > span:nth-child(2)', 'Globe', 'blue'],
     ['.discover-trust-row > span:nth-child(3)', 'Sparkles', 'violet'],
+    ['.last-minute-note > span', 'ShieldCheck', 'teal'],
+    ['.last-minute-note em', 'Clock', 'amber'],
     ['.discover-connection-strip .function-bridge-launch', 'ArrowLeftRight', 'blue'],
     ['.discover-connection-strip .oneqr-launch', 'QrCode', 'teal'],
     ['.discover-connection-strip .utility-business', 'Store', 'violet'],
