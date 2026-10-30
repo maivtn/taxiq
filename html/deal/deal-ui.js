@@ -4,6 +4,8 @@
 
   const copy = window.NEXORA_DEAL_EN_US;
   const patterns = [
+    [/^1 kết quả$/, '1 result'],
+    [/^(\d+) kết quả$/, '$1 results'],
     [/^(Tất cả đã lưu|Deal đã lưu|Coupon đã lưu|Last Minute đã lưu|Khai trương đang theo dõi) · (\d+)$/, (_, label, count) => `${copy[label]} · ${count}`],
     [/^1 active coupons$/, '1 active coupon'],
     [/^1 stars$/, '1 star'],
@@ -97,6 +99,7 @@
     ['.dialog-close,.bc-close,.drawer-header [data-dialog-close],[data-ai-close],[data-nudge-dismiss]', 'X', 'neutral'],
     ['#openingHoldSuccess [data-dialog-close]', 'Check', 'teal'],
     ['dialog [data-dialog-close]:not(.dialog-close)', 'X', 'neutral'],
+    ['#bookDealLink[data-demo-profile]', 'Store', 'blue'],
     ['#bookDealLink', 'CalendarCheck', 'teal'],
     ['#useLocationButton', 'LocateFixed', 'blue'],
     ['#simulatePurchaseButton', 'Banknote', 'teal'],

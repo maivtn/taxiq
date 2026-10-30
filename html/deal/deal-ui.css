@@ -146,6 +146,7 @@ dialog .publish-button > span > .deal-action-icon{margin:0}
 dialog .review-actions button{min-height:44px;padding-inline:10px;font-size:12px}
 dialog.bc-montage{overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
 dialog :is(#couponClaimForm,#openingHoldForm) button[type="submit"]{padding-block:10px;font-size:13px;line-height:1.4}
+#claimDealButton[hidden]{display:none!important}
 .search-panel .search-button{background:linear-gradient(100deg,#6342c6,#6742c7 55%,#196ac1)}
 #searchForm{grid-template-columns:minmax(220px,1fr) 1px minmax(320px,1fr) auto;min-height:78px;gap:0;padding:10px;border-radius:16px;box-shadow:0 6px 22px #18244308}
 #searchForm .search-field{display:grid;grid-template-columns:18px minmax(0,1fr);align-items:center;gap:10px;min-height:56px;padding:4px 12px;border:0;border-radius:10px}

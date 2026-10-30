@@ -1,1 +1,555 @@
-[{"id": "demo-nail-studio", "name": "Nail Studio — Demo", "kind": "nail", "kinds": ["nail"], "services": ["Manicure", "Pedicure", "Gel-X", "Nail art"], "image": "./assets/hero-nail-spa-luxury-v1.jpg", "is_demo": true, "city": "Houston", "state": "Texas", "zip": "77042", "address": "", "phone": "", "website": "", "hours": ""}, {"id": "demo-hair-studio", "name": "Hair Studio — Demo", "kind": "hair", "kinds": ["hair"], "services": ["Haircut", "Hair color", "Blowout", "Hair treatment"], "image": "./assets/hero-hair-salon-v1.jpg", "is_demo": true, "city": "Houston", "state": "Texas", "zip": "77042", "address": "", "phone": "", "website": "", "hours": ""}, {"id": "demo-barber", "name": "Barber Lounge — Demo", "kind": "barber", "kinds": ["barber"], "services": ["Haircut", "Fade", "Beard trim"], "image": "./assets/hero-hair-salon-v1.jpg", "is_demo": true, "city": "Houston", "state": "Texas", "zip": "77042", "address": "", "phone": "", "website": "", "hours": ""}, {"id": "demo-facial", "name": "Skin & Facial — Demo", "kind": "skin", "kinds": ["skin"], "services": ["Facial", "Skincare", "Hydration", "Deep cleansing"], "image": "./assets/hero-beauty-wellness-v1.jpg", "is_demo": true, "city": "Houston", "state": "Texas", "zip": "77042", "address": "", "phone": "", "website": "", "hours": ""}, {"id": "demo-lashes", "name": "Lash Atelier — Demo", "kind": "lashes", "kinds": ["lashes"], "services": ["Eyelash extensions", "Lash lift", "Brow styling"], "image": "./assets/hero-beauty-wellness-v1.jpg", "is_demo": true, "city": "Houston", "state": "Texas", "zip": "77042", "address": "", "phone": "", "website": "", "hours": ""}, {"id": "demo-head-spa", "name": "Head Spa & Wellness — Demo", "kind": "headspa", "kinds": ["headspa", "massage"], "services": ["Head Spa", "Scalp care", "Relaxation", "Massage"], "image": "./assets/hero-nail-spa-luxury-v1.jpg", "is_demo": true, "city": "Houston", "state": "Texas", "zip": "77042", "address": "", "phone": "", "website": "", "hours": ""}]
+[
+  {
+    "id": "demo-nail-studio",
+    "name": "Nail Studio — Demo",
+    "kind": "nail",
+    "kinds": [
+      "nail"
+    ],
+    "services": [
+      "Manicure",
+      "Pedicure",
+      "Gel-X",
+      "Nail art"
+    ],
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-hair-studio",
+    "name": "Hair Studio — Demo",
+    "kind": "hair",
+    "kinds": [
+      "hair"
+    ],
+    "services": [
+      "Haircut",
+      "Hair color",
+      "Blowout",
+      "Hair treatment"
+    ],
+    "image": "./assets/hero-hair-salon-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-barber",
+    "name": "Barber Lounge — Demo",
+    "kind": "barber",
+    "kinds": [
+      "barber"
+    ],
+    "services": [
+      "Haircut",
+      "Fade",
+      "Beard trim"
+    ],
+    "image": "./assets/hero-hair-salon-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-facial",
+    "name": "Skin & Facial — Demo",
+    "kind": "skin",
+    "kinds": [
+      "skin"
+    ],
+    "services": [
+      "Facial",
+      "Skincare",
+      "Hydration",
+      "Deep cleansing"
+    ],
+    "image": "./assets/hero-beauty-wellness-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-lashes",
+    "name": "Lash Atelier — Demo",
+    "kind": "lashes",
+    "kinds": [
+      "lashes"
+    ],
+    "services": [
+      "Eyelash extensions",
+      "Lash lift",
+      "Brow styling"
+    ],
+    "image": "./assets/hero-beauty-wellness-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-head-spa",
+    "name": "Head Spa & Wellness — Demo",
+    "kind": "headspa",
+    "kinds": [
+      "headspa",
+      "massage"
+    ],
+    "services": [
+      "Head Spa",
+      "Scalp care",
+      "Relaxation",
+      "Massage"
+    ],
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-petal-polish",
+    "name": "Petal & Polish Nail House — Demo",
+    "kind": "nail",
+    "kinds": [
+      "nail"
+    ],
+    "services": [
+      "Manicure",
+      "Pedicure",
+      "Gel polish",
+      "Floral nail art"
+    ],
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-chrome-canvas",
+    "name": "Chrome Canvas Nail Lab — Demo",
+    "kind": "nail",
+    "kinds": [
+      "nail"
+    ],
+    "services": [
+      "Gel-X",
+      "Chrome nails",
+      "Nail art",
+      "Gel manicure"
+    ],
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-pearl-cuticle",
+    "name": "Pearl & Cuticle Studio — Demo",
+    "kind": "nail",
+    "kinds": [
+      "nail"
+    ],
+    "services": [
+      "French manicure",
+      "Builder gel",
+      "Nail shaping",
+      "Pedicure"
+    ],
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-sunset-lacquer",
+    "name": "Sunset Lacquer Lounge — Demo",
+    "kind": "nail",
+    "kinds": [
+      "nail"
+    ],
+    "services": [
+      "Dip powder",
+      "Gel manicure",
+      "Spa pedicure",
+      "Nail art"
+    ],
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-muse-mane",
+    "name": "Muse & Mane Hair Atelier — Demo",
+    "kind": "hair",
+    "kinds": [
+      "hair"
+    ],
+    "services": [
+      "Haircut",
+      "Balayage",
+      "Hair color",
+      "Blowout"
+    ],
+    "image": "./assets/hero-hair-salon-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-velvet-curl",
+    "name": "Velvet Curl Studio — Demo",
+    "kind": "hair",
+    "kinds": [
+      "hair"
+    ],
+    "services": [
+      "Curly haircut",
+      "Curl styling",
+      "Deep conditioning",
+      "Hair treatment"
+    ],
+    "image": "./assets/hero-hair-salon-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-silk-strand",
+    "name": "Silk & Strand Salon — Demo",
+    "kind": "hair",
+    "kinds": [
+      "hair"
+    ],
+    "services": [
+      "Haircut",
+      "Highlights",
+      "Blowout",
+      "Updo styling"
+    ],
+    "image": "./assets/hero-hair-salon-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-copper-clipper",
+    "name": "Copper Clipper Barber Club — Demo",
+    "kind": "barber",
+    "kinds": [
+      "barber"
+    ],
+    "services": [
+      "Haircut",
+      "Skin fade",
+      "Beard trim",
+      "Hot towel shave"
+    ],
+    "image": "./assets/hero-hair-salon-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-oak-razor",
+    "name": "Oak & Razor Grooming — Demo",
+    "kind": "barber",
+    "kinds": [
+      "barber"
+    ],
+    "services": [
+      "Classic haircut",
+      "Taper fade",
+      "Beard shaping",
+      "Scissor cut"
+    ],
+    "image": "./assets/hero-hair-salon-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-dew-drop",
+    "name": "Dew Drop Skin Studio — Demo",
+    "kind": "skin",
+    "kinds": [
+      "skin"
+    ],
+    "services": [
+      "Hydrating facial",
+      "Deep cleansing",
+      "Skincare",
+      "Facial massage"
+    ],
+    "image": "./assets/hero-beauty-wellness-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-moonlit-skin",
+    "name": "Moonlit Skin Atelier — Demo",
+    "kind": "skin",
+    "kinds": [
+      "skin"
+    ],
+    "services": [
+      "Facial",
+      "Gentle exfoliation",
+      "Skincare",
+      "Facial massage"
+    ],
+    "image": "./assets/hero-beauty-wellness-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-feather-arch",
+    "name": "Feather & Arch Lash Bar — Demo",
+    "kind": "lashes",
+    "kinds": [
+      "lashes"
+    ],
+    "services": [
+      "Classic lash extensions",
+      "Lash lift",
+      "Brow shaping",
+      "Brow tint"
+    ],
+    "image": "./assets/hero-beauty-wellness-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-iris-lash",
+    "name": "Iris Lash & Brow Studio — Demo",
+    "kind": "lashes",
+    "kinds": [
+      "lashes"
+    ],
+    "services": [
+      "Volume lash extensions",
+      "Lash refill",
+      "Brow styling",
+      "Lash tint"
+    ],
+    "image": "./assets/hero-beauty-wellness-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-cloudwater-headspa",
+    "name": "Cloudwater Head Spa — Demo",
+    "kind": "headspa",
+    "kinds": [
+      "headspa",
+      "massage"
+    ],
+    "services": [
+      "Head Spa",
+      "Scalp massage",
+      "Scalp care",
+      "Hair treatment"
+    ],
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-willow-spring-headspa",
+    "name": "Willow Spring Head Spa — Demo",
+    "kind": "headspa",
+    "kinds": [
+      "headspa",
+      "massage"
+    ],
+    "services": [
+      "Head Spa",
+      "Scalp cleansing",
+      "Relaxation",
+      "Neck and shoulder massage"
+    ],
+    "image": "./assets/hero-beauty-wellness-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-stillwater-massage",
+    "name": "Stillwater Massage House — Demo",
+    "kind": "massage",
+    "kinds": [
+      "massage"
+    ],
+    "services": [
+      "Swedish massage",
+      "Aromatherapy massage",
+      "Foot massage",
+      "Relaxation"
+    ],
+    "image": "./assets/hero-beauty-wellness-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-softstone-spa",
+    "name": "Softstone Spa & Bodywork — Demo",
+    "kind": "massage",
+    "kinds": [
+      "massage"
+    ],
+    "services": [
+      "Hot stone massage",
+      "Deep tissue massage",
+      "Neck and shoulder massage",
+      "Relaxation"
+    ],
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  },
+  {
+    "id": "demo-amber-ritual",
+    "name": "Amber Ritual Massage Studio — Demo",
+    "kind": "massage",
+    "kinds": [
+      "massage"
+    ],
+    "services": [
+      "Aromatherapy massage",
+      "Swedish massage",
+      "Hand and foot massage",
+      "Relaxation"
+    ],
+    "image": "./assets/hero-beauty-wellness-v1.jpg",
+    "is_demo": true,
+    "city": "Houston",
+    "state": "Texas",
+    "zip": "77042",
+    "address": "",
+    "phone": "",
+    "website": "",
+    "hours": ""
+  }
+]

@@ -43,6 +43,7 @@ const baseDeals = [
     location: "West Garden Grove, CA",
     terms: "Khách mới. Giảm tối đa $12; charm, soak-off và extra length không bao gồm.",
     bookingSlug: "bitcoin-nail-bar",
+    image: "./assets/hero-nail-spa-luxury-v1.jpg",
   },
   {
     id: "glow-pedi",
@@ -67,6 +68,7 @@ const baseDeals = [
     location: "Garden Grove, CA",
     terms: "Không áp dụng gel polish hoặc French tips. Cần đặt lịch trước tối thiểu 2 giờ.",
     bookingSlug: "bitcoin-nail-bar",
+    image: "./assets/hero-beauty-wellness-v1.jpg",
   },
   {
     id: "luna-art",
@@ -89,6 +91,7 @@ const baseDeals = [
     location: "Westminster, CA",
     terms: "Phải mua kèm dịch vụ manicure hoặc full set. Không gồm 3D art, portrait hoặc charm.",
     bookingSlug: "bitcoin-nail-bar",
+    image: "./assets/hero-nail-spa-luxury-v1.jpg",
   },
   {
     id: "serene-dip",
@@ -111,6 +114,7 @@ const baseDeals = [
     location: "Anaheim, CA",
     terms: "Áp dụng một màu; ombré, French và extension tính thêm. Giới hạn 1 coupon/khách.",
     bookingSlug: "bitcoin-nail-bar",
+    image: "./assets/hero-nail-spa-luxury-v1.jpg",
   },
   {
     id: "opal-classic",
@@ -133,6 +137,7 @@ const baseDeals = [
     location: "Fountain Valley, CA",
     terms: "Không áp dụng gel polish. Cần đặt lịch; không cộng dồn membership reward.",
     bookingSlug: "bitcoin-nail-bar",
+    image: "./assets/hero-beauty-wellness-v1.jpg",
   },
   {
     id: "harbor-dinner",
@@ -280,6 +285,7 @@ const baseDeals = [
     location: "Garden Grove, CA",
     terms: "Áp dụng xe sedan hoặc compact SUV. Vết bẩn sâu, lông thú và detailing toàn bộ tính riêng.",
     bookingSlug: "autoshine-express",
+    image: "./assets/hero-local-services-v1.jpg",
   },
   {
     id: "luna-nails-pedicure",
@@ -429,7 +435,458 @@ const baseDeals = [
     location: "Garden Grove, CA",
     terms: "Đến trước 10 phút. Không phù hợp lớp đầu tiên nếu chưa được hướng dẫn máy reformer.",
     bookingSlug: "reform-pilates-studio",
+    image: "./assets/hero-beauty-wellness-v1.jpg",
   },
+  {
+    "id": "demo-soft-french",
+    "category": "manicure",
+    "salon": "Nail Studio — Demo",
+    "title": "Soft French gel manicure",
+    "price": 32,
+    "original": 45,
+    "discount": "SAVE $13",
+    "distance": 0.7,
+    "rating": 4.6,
+    "reviews": 24,
+    "deadline": "This weekend only",
+    "badge": "DESIGN PREVIEW",
+    "verified": false,
+    "inventory": 12,
+    "unlimitedInventory": false,
+    "instant": false,
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "description": "Soft French gel manicure at Nail Studio — Demo. A fictional service offer for exploring the salon experience.",
+    "schedule": "Sat–Sun · 10 AM–5 PM",
+    "location": "Houston, TX",
+    "terms": "Design example only. Confirm services, pricing and availability with the salon.",
+    "isDemo": true,
+    "demoProfileId": "demo-nail-studio"
+  },
+  {
+    "id": "demo-deluxe-pedi",
+    "category": "pedicure",
+    "salon": "Petal & Polish Nail House — Demo",
+    "title": "Deluxe pedicure + hot towel",
+    "price": 44,
+    "original": 65,
+    "discount": "SAVE $21",
+    "distance": 1.0,
+    "rating": 4.7,
+    "reviews": 31,
+    "deadline": "7 days left",
+    "badge": "DESIGN PREVIEW",
+    "verified": false,
+    "inventory": null,
+    "unlimitedInventory": true,
+    "instant": false,
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "description": "Deluxe pedicure + hot towel at Petal & Polish Nail House — Demo. A fictional service offer for exploring the salon experience.",
+    "schedule": "Mon–Fri · 10 AM–6 PM",
+    "location": "Houston, TX",
+    "terms": "Design example only. Confirm services, pricing and availability with the salon.",
+    "isDemo": true,
+    "demoProfileId": "demo-petal-polish"
+  },
+  {
+    "id": "demo-short-gelx",
+    "category": "gel-x",
+    "salon": "Chrome Canvas Nail Lab — Demo",
+    "title": "Short Gel-X full set + shaping",
+    "price": 49,
+    "original": 70,
+    "discount": "SAVE $21",
+    "distance": 1.3,
+    "rating": 4.8,
+    "reviews": 38,
+    "deadline": "7 days left",
+    "badge": "DESIGN PREVIEW",
+    "verified": false,
+    "inventory": 8,
+    "unlimitedInventory": false,
+    "instant": false,
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "description": "Short Gel-X full set + shaping at Chrome Canvas Nail Lab — Demo. A fictional service offer for exploring the salon experience.",
+    "schedule": "Mon–Fri · 10 AM–6 PM",
+    "location": "Houston, TX",
+    "terms": "Design example only. Confirm services, pricing and availability with the salon.",
+    "isDemo": true,
+    "demoProfileId": "demo-chrome-canvas"
+  },
+  {
+    "id": "demo-floral-art",
+    "category": "nail-art",
+    "salon": "Pearl & Cuticle Studio — Demo",
+    "title": "Two floral accent nails",
+    "price": 16,
+    "original": 25,
+    "discount": "SAVE $9",
+    "distance": 1.6,
+    "rating": 4.9,
+    "reviews": 45,
+    "deadline": "This weekend only",
+    "badge": "DESIGN PREVIEW",
+    "verified": false,
+    "inventory": 10,
+    "unlimitedInventory": false,
+    "instant": false,
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "description": "Two floral accent nails at Pearl & Cuticle Studio — Demo. A fictional service offer for exploring the salon experience.",
+    "schedule": "Sat–Sun · 10 AM–5 PM",
+    "location": "Houston, TX",
+    "terms": "Design example only. Confirm services, pricing and availability with the salon.",
+    "isDemo": true,
+    "demoProfileId": "demo-pearl-cuticle"
+  },
+  {
+    "id": "demo-sunset-dip",
+    "category": "manicure",
+    "salon": "Sunset Lacquer Lounge — Demo",
+    "title": "Dip powder refresh + one color",
+    "price": 39,
+    "original": 55,
+    "discount": "SAVE $16",
+    "distance": 1.9,
+    "rating": 4.6,
+    "reviews": 52,
+    "deadline": "7 days left",
+    "badge": "DESIGN PREVIEW",
+    "verified": false,
+    "inventory": 9,
+    "unlimitedInventory": false,
+    "instant": false,
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "description": "Dip powder refresh + one color at Sunset Lacquer Lounge — Demo. A fictional service offer for exploring the salon experience.",
+    "schedule": "Mon–Fri · 10 AM–6 PM",
+    "location": "Houston, TX",
+    "terms": "Design example only. Confirm services, pricing and availability with the salon.",
+    "isDemo": true,
+    "demoProfileId": "demo-sunset-lacquer"
+  },
+  {
+    "id": "demo-citrus-pedi",
+    "category": "pedicure",
+    "salon": "Nail Studio — Demo",
+    "title": "Citrus spa pedicure + sugar scrub",
+    "price": 42,
+    "original": 60,
+    "discount": "SAVE $18",
+    "distance": 2.2,
+    "rating": 4.7,
+    "reviews": 59,
+    "deadline": "7 days left",
+    "badge": "DESIGN PREVIEW",
+    "verified": false,
+    "inventory": 6,
+    "unlimitedInventory": false,
+    "instant": false,
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "description": "Citrus spa pedicure + sugar scrub at Nail Studio — Demo. A fictional service offer for exploring the salon experience.",
+    "schedule": "Mon–Fri · 10 AM–6 PM",
+    "location": "Houston, TX",
+    "terms": "Design example only. Confirm services, pricing and availability with the salon.",
+    "isDemo": true,
+    "demoProfileId": "demo-nail-studio"
+  },
+  {
+    "id": "demo-chrome-gelx",
+    "category": "gel-x",
+    "salon": "Petal & Polish Nail House — Demo",
+    "title": "Chrome Gel-X full set",
+    "price": 59,
+    "original": 80,
+    "discount": "SAVE $21",
+    "distance": 2.5,
+    "rating": 4.8,
+    "reviews": 66,
+    "deadline": "This weekend only",
+    "badge": "DESIGN PREVIEW",
+    "verified": false,
+    "inventory": null,
+    "unlimitedInventory": true,
+    "instant": false,
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "description": "Chrome Gel-X full set at Petal & Polish Nail House — Demo. A fictional service offer for exploring the salon experience.",
+    "schedule": "Sat–Sun · 10 AM–5 PM",
+    "location": "Houston, TX",
+    "terms": "Design example only. Confirm services, pricing and availability with the salon.",
+    "isDemo": true,
+    "demoProfileId": "demo-petal-polish"
+  },
+  {
+    "id": "demo-minimal-art",
+    "category": "nail-art",
+    "salon": "Chrome Canvas Nail Lab — Demo",
+    "title": "Minimalist nail art on four nails",
+    "price": 18,
+    "original": 30,
+    "discount": "SAVE $12",
+    "distance": 2.8,
+    "rating": 4.9,
+    "reviews": 73,
+    "deadline": "7 days left",
+    "badge": "DESIGN PREVIEW",
+    "verified": false,
+    "inventory": 14,
+    "unlimitedInventory": false,
+    "instant": false,
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "description": "Minimalist nail art on four nails at Chrome Canvas Nail Lab — Demo. A fictional service offer for exploring the salon experience.",
+    "schedule": "Mon–Fri · 10 AM–6 PM",
+    "location": "Houston, TX",
+    "terms": "Design example only. Confirm services, pricing and availability with the salon.",
+    "isDemo": true,
+    "demoProfileId": "demo-chrome-canvas"
+  },
+  {
+    "id": "demo-builder-gel",
+    "category": "manicure",
+    "salon": "Pearl & Cuticle Studio — Demo",
+    "title": "Builder gel overlay + cuticle care",
+    "price": 45,
+    "original": 65,
+    "discount": "SAVE $20",
+    "distance": 3.1,
+    "rating": 4.6,
+    "reviews": 80,
+    "deadline": "7 days left",
+    "badge": "DESIGN PREVIEW",
+    "verified": false,
+    "inventory": null,
+    "unlimitedInventory": true,
+    "instant": false,
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "description": "Builder gel overlay + cuticle care at Pearl & Cuticle Studio — Demo. A fictional service offer for exploring the salon experience.",
+    "schedule": "Mon–Fri · 10 AM–6 PM",
+    "location": "Houston, TX",
+    "terms": "Design example only. Confirm services, pricing and availability with the salon.",
+    "isDemo": true,
+    "demoProfileId": "demo-pearl-cuticle"
+  },
+  {
+    "id": "demo-express-pedi",
+    "category": "pedicure",
+    "salon": "Sunset Lacquer Lounge — Demo",
+    "title": "Express pedicure for a lunch break",
+    "price": 28,
+    "original": 40,
+    "discount": "SAVE $12",
+    "distance": 3.4,
+    "rating": 4.7,
+    "reviews": 87,
+    "deadline": "This weekend only",
+    "badge": "DESIGN PREVIEW",
+    "verified": false,
+    "inventory": 16,
+    "unlimitedInventory": false,
+    "instant": false,
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "description": "Express pedicure for a lunch break at Sunset Lacquer Lounge — Demo. A fictional service offer for exploring the salon experience.",
+    "schedule": "Sat–Sun · 10 AM–5 PM",
+    "location": "Houston, TX",
+    "terms": "Design example only. Confirm services, pricing and availability with the salon.",
+    "isDemo": true,
+    "demoProfileId": "demo-sunset-lacquer"
+  },
+  {
+    "id": "demo-almond-gelx",
+    "category": "gel-x",
+    "salon": "Nail Studio — Demo",
+    "title": "Almond Gel-X set + glossy finish",
+    "price": 55,
+    "original": 75,
+    "discount": "SAVE $20",
+    "distance": 3.7,
+    "rating": 4.8,
+    "reviews": 94,
+    "deadline": "7 days left",
+    "badge": "DESIGN PREVIEW",
+    "verified": false,
+    "inventory": 7,
+    "unlimitedInventory": false,
+    "instant": false,
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "description": "Almond Gel-X set + glossy finish at Nail Studio — Demo. A fictional service offer for exploring the salon experience.",
+    "schedule": "Mon–Fri · 10 AM–6 PM",
+    "location": "Houston, TX",
+    "terms": "Design example only. Confirm services, pricing and availability with the salon.",
+    "isDemo": true,
+    "demoProfileId": "demo-nail-studio"
+  },
+  {
+    "id": "demo-glitter-art",
+    "category": "nail-art",
+    "salon": "Petal & Polish Nail House — Demo",
+    "title": "Glitter fade + two accent nails",
+    "price": 14,
+    "original": 24,
+    "discount": "SAVE $10",
+    "distance": 4.0,
+    "rating": 4.9,
+    "reviews": 101,
+    "deadline": "7 days left",
+    "badge": "DESIGN PREVIEW",
+    "verified": false,
+    "inventory": 12,
+    "unlimitedInventory": false,
+    "instant": false,
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "description": "Glitter fade + two accent nails at Petal & Polish Nail House — Demo. A fictional service offer for exploring the salon experience.",
+    "schedule": "Mon–Fri · 10 AM–6 PM",
+    "location": "Houston, TX",
+    "terms": "Design example only. Confirm services, pricing and availability with the salon.",
+    "isDemo": true,
+    "demoProfileId": "demo-petal-polish"
+  },
+  {
+    "id": "demo-gel-refresh",
+    "category": "manicure",
+    "salon": "Chrome Canvas Nail Lab — Demo",
+    "title": "Gel manicure + old gel removal",
+    "price": 36,
+    "original": 50,
+    "discount": "SAVE $14",
+    "distance": 4.3,
+    "rating": 4.6,
+    "reviews": 108,
+    "deadline": "This weekend only",
+    "badge": "DESIGN PREVIEW",
+    "verified": false,
+    "inventory": 18,
+    "unlimitedInventory": false,
+    "instant": false,
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "description": "Gel manicure + old gel removal at Chrome Canvas Nail Lab — Demo. A fictional service offer for exploring the salon experience.",
+    "schedule": "Sat–Sun · 10 AM–5 PM",
+    "location": "Houston, TX",
+    "terms": "Design example only. Confirm services, pricing and availability with the salon.",
+    "isDemo": true,
+    "demoProfileId": "demo-chrome-canvas"
+  },
+  {
+    "id": "demo-milk-pedi",
+    "category": "pedicure",
+    "salon": "Pearl & Cuticle Studio — Demo",
+    "title": "Milk bath pedicure + foot mask",
+    "price": 48,
+    "original": 68,
+    "discount": "SAVE $20",
+    "distance": 4.6,
+    "rating": 4.7,
+    "reviews": 115,
+    "deadline": "7 days left",
+    "badge": "DESIGN PREVIEW",
+    "verified": false,
+    "inventory": null,
+    "unlimitedInventory": true,
+    "instant": false,
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "description": "Milk bath pedicure + foot mask at Pearl & Cuticle Studio — Demo. A fictional service offer for exploring the salon experience.",
+    "schedule": "Mon–Fri · 10 AM–6 PM",
+    "location": "Houston, TX",
+    "terms": "Design example only. Confirm services, pricing and availability with the salon.",
+    "isDemo": true,
+    "demoProfileId": "demo-pearl-cuticle"
+  },
+  {
+    "id": "demo-classic-gelx",
+    "category": "gel-x",
+    "salon": "Sunset Lacquer Lounge — Demo",
+    "title": "Classic square Gel-X full set",
+    "price": 52,
+    "original": 72,
+    "discount": "SAVE $20",
+    "distance": 0.7,
+    "rating": 4.8,
+    "reviews": 122,
+    "deadline": "7 days left",
+    "badge": "DESIGN PREVIEW",
+    "verified": false,
+    "inventory": null,
+    "unlimitedInventory": true,
+    "instant": false,
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "description": "Classic square Gel-X full set at Sunset Lacquer Lounge — Demo. A fictional service offer for exploring the salon experience.",
+    "schedule": "Mon–Fri · 10 AM–6 PM",
+    "location": "Houston, TX",
+    "terms": "Design example only. Confirm services, pricing and availability with the salon.",
+    "isDemo": true,
+    "demoProfileId": "demo-sunset-lacquer"
+  },
+  {
+    "id": "demo-pearl-art",
+    "category": "nail-art",
+    "salon": "Nail Studio — Demo",
+    "title": "Pearl-inspired nail art accents",
+    "price": 20,
+    "original": 32,
+    "discount": "SAVE $12",
+    "distance": 1.0,
+    "rating": 4.9,
+    "reviews": 129,
+    "deadline": "This weekend only",
+    "badge": "DESIGN PREVIEW",
+    "verified": false,
+    "inventory": 8,
+    "unlimitedInventory": false,
+    "instant": false,
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "description": "Pearl-inspired nail art accents at Nail Studio — Demo. A fictional service offer for exploring the salon experience.",
+    "schedule": "Sat–Sun · 10 AM–5 PM",
+    "location": "Houston, TX",
+    "terms": "Design example only. Confirm services, pricing and availability with the salon.",
+    "isDemo": true,
+    "demoProfileId": "demo-nail-studio"
+  },
+  {
+    "id": "demo-natural-mani",
+    "category": "manicure",
+    "salon": "Petal & Polish Nail House — Demo",
+    "title": "Natural manicure + strengthening care",
+    "price": 25,
+    "original": 38,
+    "discount": "SAVE $13",
+    "distance": 1.3,
+    "rating": 4.6,
+    "reviews": 136,
+    "deadline": "7 days left",
+    "badge": "DESIGN PREVIEW",
+    "verified": false,
+    "inventory": 15,
+    "unlimitedInventory": false,
+    "instant": false,
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "description": "Natural manicure + strengthening care at Petal & Polish Nail House — Demo. A fictional service offer for exploring the salon experience.",
+    "schedule": "Mon–Fri · 10 AM–6 PM",
+    "location": "Houston, TX",
+    "terms": "Design example only. Confirm services, pricing and availability with the salon.",
+    "isDemo": true,
+    "demoProfileId": "demo-petal-polish"
+  },
+  {
+    "id": "demo-weekend-pedi",
+    "category": "pedicure",
+    "salon": "Chrome Canvas Nail Lab — Demo",
+    "title": "Weekend spa pedicure for two",
+    "price": 78,
+    "original": 110,
+    "discount": "SAVE $32",
+    "distance": 1.6,
+    "rating": 4.7,
+    "reviews": 143,
+    "deadline": "This weekend only",
+    "badge": "DESIGN PREVIEW",
+    "verified": false,
+    "inventory": null,
+    "unlimitedInventory": true,
+    "instant": false,
+    "image": "./assets/hero-nail-spa-luxury-v1.jpg",
+    "description": "Weekend spa pedicure for two at Chrome Canvas Nail Lab — Demo. A fictional service offer for exploring the salon experience.",
+    "schedule": "Sat–Sun · 10 AM–5 PM",
+    "location": "Houston, TX",
+    "terms": "Design example only. Confirm services, pricing and availability with the salon.",
+    "isDemo": true,
+    "demoProfileId": "demo-chrome-canvas"
+  }
 ];
 
 function safeRead(key, fallback) {
@@ -454,16 +911,44 @@ function escapeHTML(value = "") {
 const customDeals = safeRead("nexora-custom-deals", []);
 let deals = [...customDeals, ...baseDeals];
 let savedDeals = new Set(safeRead("nexora-saved-deals", []));
-if (localStorage.getItem("nexora-saved-demo-version") !== "1") {
-  if (savedDeals.size === 0) {
-    savedDeals = new Set(["nx-gel-combo", "glow-pedi", "harbor-dinner"]);
+const savedDemoIds = ["nx-gel-combo", "glow-pedi", "harbor-dinner", "btc-new-set", "opal-classic", "morning-pastry", "fresh-produce", "bloom-bouquet", "demo-soft-french", "demo-deluxe-pedi", "demo-short-gelx", "demo-sunset-dip"];
+const previousSavedDemo = ["nx-gel-combo", "glow-pedi", "harbor-dinner"];
+const savedDemoVersion = localStorage.getItem("nexora-saved-demo-version");
+if (savedDemoVersion !== "2") {
+  const untouchedDemo = savedDemoVersion === "1" && savedDeals.size === previousSavedDemo.length && previousSavedDemo.every((id) => savedDeals.has(id));
+  if ((!savedDemoVersion && localStorage.getItem("nexora-saved-deals") === null && savedDeals.size === 0) || untouchedDemo) {
+    savedDeals = new Set(savedDemoIds);
     localStorage.setItem("nexora-saved-deals", JSON.stringify([...savedDeals]));
   }
-  localStorage.setItem("nexora-saved-demo-version", "1");
+  localStorage.setItem("nexora-saved-demo-version", "2");
 }
 let serviceRequests = safeRead("nexora-service-requests", []);
 let claimedDeals = safeRead("nexora-claimed-deals", {});
 let dealMatchWishes = safeRead("nexora-deal-match-wishes", []);
+function seedMissingDemoCollection(key, samples) {
+  if (localStorage.getItem(key) !== null) return null;
+  localStorage.setItem(key, JSON.stringify(samples));
+  return samples;
+}
+function demoRequestDate(days) {
+  const today = new Date();
+  return new Date(Date.UTC(today.getFullYear(), today.getMonth(), today.getDate() + days)).toISOString().slice(0, 10);
+}
+serviceRequests = seedMissingDemoCollection("nexora-service-requests", [
+  { id: "demo-request-gelx", service: "Short Gel-X full set", budget: 55, radius: 5, date: demoRequestDate(2), time: "Afternoon", notes: "A short almond shape with one neutral color." },
+  { id: "demo-request-pedi", service: "Spa pedicure for two", budget: 80, radius: 10, date: demoRequestDate(3), time: "Morning", notes: "Two appointments at the same salon." },
+  { id: "demo-request-mani", service: "Gel manicure + minimalist nail art", budget: 45, radius: 5, date: demoRequestDate(4), time: "Evening", notes: "Two accent nails and a glossy finish." },
+  { id: "demo-request-dip", service: "Dip powder refresh + soak-off", budget: 50, radius: 10, date: demoRequestDate(6), time: "Afternoon", notes: "Removal of the old set and one standard color." },
+]) || serviceRequests;
+dealMatchWishes = seedMissingDemoCollection("nexora-deal-match-wishes", [
+  { id: "demo-wish-pedi", text: "Pedicure under $45 this weekend", service: "pedi", maxPrice: 45, weekend: true, areas: ["Houston, Texas"], mode: "multi", radius: 5, seen: 32, days: 14 },
+  { id: "demo-wish-gelx", text: "Gel-X under $55 in Houston", service: "nail", maxPrice: 55, areas: ["Houston, Texas"], mode: "multi", radius: 5, seen: 24, days: 14 },
+  { id: "demo-wish-art", text: "Nail art under $20", service: "nail", maxPrice: 20, areas: ["Houston, Texas"], mode: "multi", radius: 5, seen: 18, days: 14 },
+  { id: "demo-wish-mani", text: "Manicure under $40", service: "nail", maxPrice: 40, areas: ["Garden Grove, California"], mode: "multi", radius: 5, seen: 41, days: 14 },
+  { id: "demo-wish-massage", text: "60-minute massage under $60", service: "spa", maxPrice: 60, areas: ["Houston, Texas"], mode: "multi", radius: 10, seen: 16, days: 14 },
+  { id: "demo-wish-lashes", text: "Eyelash extensions this weekend", service: "lash", weekend: true, areas: ["Houston, Texas"], mode: "multi", radius: 10, seen: 12, days: 14 },
+]) || dealMatchWishes;
+
 let oneqrEarnings = Object.assign({
   scans: 0,
   menuViews: 0,
@@ -480,6 +965,24 @@ if (localStorage.getItem("nexora-earnings-policy-version") !== "2") {
   localStorage.setItem("nexora-oneqr-earnings", JSON.stringify(oneqrEarnings));
 }
 let attributionEvents = safeRead("nexora-attribution-events", []);
+if (!localStorage.getItem("nexora-activity-demo-version")) {
+  if (!attributionEvents.length && !Object.values(oneqrEarnings).some((value) => Number(value) > 0)) {
+    Object.assign(oneqrEarnings, { scans: 168, menuViews: 122, dealOpens: 64, searches: 37, purchases: 8, adRevenue: 3.2, conversionBonus: 16 });
+    const samples = [
+      ["purchase", "Completed service · Demo", 2, "$", "Demo service completion · pending review"],
+      ["open", "Qualified sponsored click · Demo", .05, "↗", "Demo sponsored offer opened"],
+      ["search", "Deal search · Demo", 0, "⌕", "Demo customer search · no charge"],
+      ["menu", "Menu opened · Demo", 0, "▣", "Demo business menu · no charge"],
+      ["open", "Qualified sponsored click · Demo", .05, "↗", "Demo sponsored offer opened"],
+      ["scan", "OneQR scan · Demo", 0, "⌗", "Demo QR session · no charge"],
+    ];
+    attributionEvents = samples.map(([type, label, amount, icon, detail], index) => ({ id: `demo-activity-${index}`, type, key: "demo", label, amount, icon, detail, createdAt: new Date(Date.now() - (index + 1) * 12 * 60 * 1000).toISOString() }));
+    localStorage.setItem("nexora-oneqr-earnings", JSON.stringify(oneqrEarnings));
+    localStorage.setItem("nexora-attribution-events", JSON.stringify(attributionEvents));
+  }
+  localStorage.setItem("nexora-activity-demo-version", "1");
+}
+
 let adsCredit = Number(localStorage.getItem("nexora-ads-credit") || 250);
 let activeDealId = null;
 let activeAttributionSource = null;
@@ -3052,10 +3555,13 @@ function openDeal(id, source = null) {
   const detailImage = document.querySelector("#detailImage");
   detailImage.hidden = !deal.image;
   if (deal.image) detailImage.src = deal.image;
-  document.querySelector("#bookDealLink").href = buildTouchUrl(`/b/${encodeURIComponent(deal.bookingSlug || "bitcoin-nail-bar")}`, {
+  const bookingLink = document.querySelector("#bookDealLink");
+  bookingLink.href = deal.demoProfileId ? `./salon.html?id=${encodeURIComponent(deal.demoProfileId)}&lang=en` : buildTouchUrl(`/b/${encodeURIComponent(deal.bookingSlug || "bitcoin-nail-bar")}`, {
     deal: deal.id,
     promotion_id: deal.promotionId || null,
   });
+  bookingLink.textContent = deal.demoProfileId ? "View full salon profile" : "Book now ↗";
+  bookingLink.toggleAttribute("data-demo-profile", !!deal.demoProfileId);
 
   const existingClaim = offerClass.isCoupon ? couponClaims[couponClaimKey("deal", deal.id)] : null;
   const couponResult = document.querySelector("#couponResult");
@@ -3063,6 +3569,7 @@ function openDeal(id, source = null) {
   document.querySelector("#couponCode").textContent = existingClaim?.phoneMasked || "";
   const claimButton = document.querySelector("#claimDealButton");
   claimButton.dataset.offerClass = offerClass.type;
+  claimButton.hidden = !!deal.demoProfileId && !offerClass.isCoupon;
   claimButton.textContent = offerClass.isCoupon ? (existingClaim ? workspaceCopy("Đã giữ coupon", "Coupon reserved") : workspaceCopy("Lấy coupon bằng SĐT", "Get coupon by phone")) : workspaceCopy("Đặt deal ngay", "Book this deal");
   const attribution = document.querySelector("#oneqrAttribution");
   const purchaseButton = document.querySelector("#simulatePurchaseButton");
@@ -3839,7 +4346,7 @@ const workspaceIndustries = [
 const couponTaxonomy = {"groups":[{"id":"beauty","ic":"💅","vi":"Làm đẹp & chăm sóc cá nhân","en":"Beauty & personal care"},{"id":"food","ic":"🍜","vi":"Ăn uống","en":"Food & drink"},{"id":"shop","ic":"🛍️","vi":"Mua sắm & chợ","en":"Shopping & markets"},{"id":"health","ic":"🩺","vi":"Sức khỏe & Wellness","en":"Health & wellness"},{"id":"auto","ic":"🚗","vi":"Xe & di chuyển","en":"Auto & transport"},{"id":"home","ic":"🏠","vi":"Nhà cửa & sửa chữa","en":"Home & repair"},{"id":"finance","ic":"💼","vi":"Tài chính · pháp lý · địa ốc","en":"Finance · legal · real estate"},{"id":"travel","ic":"✈️","vi":"Du lịch · khách sạn · homestay","en":"Travel · hotels · homestays"},{"id":"edu","ic":"🎓","vi":"Giáo dục & đào tạo","en":"Education & training"},{"id":"event","ic":"🎉","vi":"Sự kiện & giải trí","en":"Events & entertainment"},{"id":"family","ic":"👶","vi":"Gia đình & thú cưng","en":"Family & pets"},{"id":"biz","ic":"🏢","vi":"Dịch vụ doanh nghiệp & công nghệ","en":"Business services & tech"},{"id":"community","ic":"⛪","vi":"Cộng đồng & phi lợi nhuận","en":"Community & non-profit"}],"inds":[{"id":"nail","g":"beauty","vi":"Nail","en":"Nail salon","ic":"💅","kw":"gel-?x|bột|bot nail|acrylic|dip|sơn gel|son gel|nail|móng|mong tay|pedicure|manicure|builder gel|hard gel|soak off|chân|chan"},{"id":"spa","g":"beauty","vi":"Spa & Massage","en":"Spa & massage","ic":"💆","kw":"massage|spa|xoa bóp|xoa bop|gội đầu dưỡng sinh|goi dau"},{"id":"lash","g":"beauty","vi":"Mi & chân mày","en":"Lashes & brows","ic":"👁️","kw":"mi\\b|lash|chân mày|chan may|brow"},{"id":"hair","g":"beauty","vi":"Tóc & salon","en":"Hair salon","ic":"💇","kw":"tóc|toc|hair|cắt|nhuộm|nhuom|uốn|uon"},{"id":"barber","g":"beauty","vi":"Barber / tóc nam","en":"Barbershop","ic":"💈","kw":"barber|tóc nam|toc nam|cạo râu|fade"},{"id":"skin","g":"beauty","vi":"Da & facial","en":"Skin & facial","ic":"🧖","kw":"facial|da mặt|da mat|skincare|trị mụn|tri mun|peel"},{"id":"pmu","g":"beauty","vi":"Phun xăm / PMU / xăm","en":"PMU & tattoo","ic":"🖋️","kw":"phun xăm|phun xam|phun xăm chân mày|phun xam chan may|phun môi|phun moi|pmu|xăm|xam\\b|tattoo|microblading|điêu khắc|dieu khac"},{"id":"medspa","g":"beauty","vi":"Thẩm mỹ y khoa","en":"Medspa & aesthetics","ic":"💉","kw":"botox|filler|laser|triệt lông|triet long|thẩm mỹ|tham my|medspa|nâng cơ|giảm mỡ"},{"id":"wax","g":"beauty","vi":"Wax / tẩy lông","en":"Waxing","ic":"🪒","kw":"wax|tẩy lông|tay long|sugaring"},{"id":"fitness","g":"beauty","vi":"Gym & thể hình","en":"Gym & fitness","ic":"🏋️","kw":"gym|thể hình|the hinh|fitness|tập|pt\\b|crossfit"},{"id":"yoga","g":"beauty","vi":"Yoga & pilates","en":"Yoga & pilates","ic":"🧘","kw":"yoga|pilates|thiền|thien|meditation"},{"id":"diet","g":"beauty","vi":"Giảm cân & dinh dưỡng","en":"Weight loss & nutrition","ic":"🥗","kw":"giảm cân|giam can|dinh dưỡng|dinh duong|detox|keto"},{"id":"food","g":"food","vi":"Nhà hàng / quán ăn","en":"Restaurant","ic":"🍜","kw":"nhà hàng|nha hang|quán ăn|quan an|phở|pho\\b|bún|bun bo|cơm|com tam|restaurant|lunch|dinner|ăn trưa|an trua|ăn tối"},{"id":"fastfood","g":"food","vi":"Bánh mì / ăn nhanh","en":"Fast food & sandwiches","ic":"🥖","kw":"bánh mì|banh mi|ăn nhanh|fast food|xôi|xoi|bánh cuốn"},{"id":"drink","g":"food","vi":"Cà phê / trà sữa","en":"Coffee & bubble tea","ic":"🧋","kw":"trà sữa|tra sua|cà phê|ca phe|cafe|coffee|boba|sinh tố|nước ép|nuoc ep"},{"id":"bakery","g":"food","vi":"Bánh / tiệc ngọt","en":"Bakery & desserts","ic":"🎂","kw":"bánh kem|banh kem|bánh sinh nhật|bakery|chè\\b|che\\b|dessert|kem\\b"},{"id":"hotpot","g":"food","vi":"Lẩu · nướng · buffet","en":"Hotpot · BBQ · buffet","ic":"🍲","kw":"lẩu|lau\\b|nướng|nuong|buffet|bbq|kbbq"},{"id":"seafood","g":"food","vi":"Hải sản","en":"Seafood","ic":"🦞","kw":"hải sản|hai san|cua|tôm|tom hùm|crawfish|seafood"},{"id":"vegan","g":"food","vi":"Chay","en":"Vegetarian & vegan","ic":"🥬","kw":"chay|vegan|vegetarian|thuần chay"},{"id":"foodtruck","g":"food","vi":"Food truck","en":"Food truck","ic":"🚚","kw":"food truck|xe đồ ăn|xe do an"},{"id":"bar","g":"food","vi":"Bar · pub · karaoke","en":"Bar · pub · karaoke","ic":"🍻","kw":"bar\\b|pub\\b|karaoke|nhậu|nhau\\b|bia\\b|beer|lounge"},{"id":"banquet","g":"food","vi":"Nhà hàng tiệc cưới","en":"Wedding banquet hall","ic":"🏛️","kw":"tiệc cưới|tiec cuoi|banquet|nhà hàng tiệc|hội trường"},{"id":"catering","g":"food","vi":"Catering / đặt tiệc","en":"Catering","ic":"🍽️","kw":"catering|đặt tiệc|dat tiec|nấu tiệc|party tray"},{"id":"homefood","g":"food","vi":"Đồ ăn nhà làm / online","en":"Home-cooked & online food","ic":"🥡","kw":"nhà làm|nha lam|đặt online|ship đồ ăn|homemade|đặc sản|dac san"},{"id":"market","g":"shop","vi":"Chợ / siêu thị","en":"Grocery & market","ic":"🛒","kw":"chợ|cho\\b|siêu thị|sieu thi|grocery|market|rau|thịt|thit\\b|gạo|gao\\b|nước mắm"},{"id":"convenience","g":"shop","vi":"Tiện lợi / tạp hoá","en":"Convenience store","ic":"🏪","kw":"tiện lợi|tien loi|tạp hoá|tap hoa|convenience|smoke shop|vape"},{"id":"supply","g":"shop","vi":"Supply nail & spa / đồ nghề","en":"Nail & spa supply","ic":"📦","kw":"supply|đồ nghề|do nghe|vật tư|vat tu|bột nail|máy mài|may mai|máy hút|ghế spa|ghe spa|đèn gel|sỉ\\b|wholesale"},{"id":"cosmetic","g":"shop","vi":"Mỹ phẩm / nước hoa","en":"Cosmetics & perfume","ic":"💄","kw":"mỹ phẩm|my pham|nước hoa|nuoc hoa|son môi|skincare shop|sephora"},{"id":"import","g":"shop","vi":"Hàng xách tay","en":"Imported goods","ic":"🧳","kw":"xách tay|xach tay|hàng mỹ|hang my|hàng nhật|order hàng"},{"id":"fashion","g":"shop","vi":"Thời trang / áo dài","en":"Fashion & áo dài","ic":"👗","kw":"quần áo|quan ao|áo dài|ao dai|thời trang|thoi trang|boutique"},{"id":"shoes","g":"shop","vi":"Giày / túi xách","en":"Shoes & bags","ic":"👜","kw":"giày|giay\\b|túi xách|tui xach|dép|sneaker"},{"id":"jewelry","g":"shop","vi":"Vàng bạc / trang sức","en":"Jewelry & gold","ic":"💍","kw":"vàng|vang bac|nữ trang|nu trang|trang sức|jewelry|kim cương|nhẫn"},{"id":"electronics","g":"shop","vi":"Điện thoại / điện tử","en":"Phones & electronics","ic":"📱","kw":"điện thoại|dien thoai|iphone|laptop|điện tử|dien tu|tivi|máy tính"},{"id":"furniture","g":"shop","vi":"Nội thất / gia dụng","en":"Furniture & appliances","ic":"🛋️","kw":"nội thất|noi that|furniture|sofa|giường|nệm|nem\\b|gia dụng|gia dung|máy giặt|tủ lạnh"},{"id":"flower","g":"shop","vi":"Hoa tươi / quà tặng","en":"Flowers & gifts","ic":"💐","kw":"hoa tươi|hoa tuoi|florist|quà|qua tang|gift shop|giỏ quà"},{"id":"eyewear","g":"shop","vi":"Kính thời trang","en":"Eyewear store","ic":"🕶️","kw":"kính mát|kinh mat|sunglass|gọng kính|gong kinh"},{"id":"dental","g":"health","vi":"Nha sĩ","en":"Dentist","ic":"🦷","kw":"nha sĩ|nha si|nha khoa|răng|rang\\b|dental|dentist|niềng|nieng|tẩy trắng|implant"},{"id":"eye","g":"health","vi":"Mắt kính / nhãn khoa","en":"Optometry","ic":"👓","kw":"mắt kính|mat kinh|đo mắt|do mat|optometr|eye exam|contact lens|nhãn khoa"},{"id":"clinic","g":"health","vi":"Bác sĩ gia đình / phòng khám","en":"Family doctor & clinic","ic":"🩺","kw":"bác sĩ|bac si|phòng khám|phong kham|clinic|khám|kham benh|chích ngừa|physical|urgent care"},{"id":"specialist","g":"health","vi":"Bác sĩ chuyên khoa","en":"Medical specialist","ic":"🫀","kw":"chuyên khoa|chuyen khoa|tim mạch|da liễu|da lieu|sản phụ|san phu|nội tiết|tiêu hoá|ung thư|cardio|dermatolog"},{"id":"chiro","g":"health","vi":"Chiropractor / vật lý trị liệu","en":"Chiropractic & physical therapy","ic":"🦴","kw":"chiro|nắn xương|nan xuong|vật lý trị liệu|vat ly tri lieu|physical therapy|đau lưng|dau lung|tai nạn xe"},{"id":"acupuncture","g":"health","vi":"Châm cứu / đông y","en":"Acupuncture & herbal","ic":"🌿","kw":"châm cứu|cham cuu|đông y|dong y|thuốc bắc|thuoc bac|acupuncture|bấm huyệt"},{"id":"pharm","g":"health","vi":"Nhà thuốc / thuốc bổ","en":"Pharmacy & supplements","ic":"💊","kw":"nhà thuốc|nha thuoc|pharmacy|thuốc bổ|thuoc bo|vitamin|thực phẩm chức năng"},{"id":"lab","g":"health","vi":"Xét nghiệm / chẩn đoán","en":"Lab & imaging","ic":"🔬","kw":"xét nghiệm|xet nghiem|lab test|siêu âm|sieu am|x-?quang|mri|ct scan"},{"id":"mental","g":"health","vi":"Tâm lý / tư vấn","en":"Mental health & counseling","ic":"🧠","kw":"tâm lý|tam ly|counsel|therapy|therapist|trầm cảm|tram cam|stress"},{"id":"homehealth","g":"health","vi":"Chăm sóc người già / tại nhà","en":"Home health & senior care","ic":"👴","kw":"người già|nguoi gia|home health|chăm sóc tại nhà|cham soc tai nha|dưỡng lão|duong lao|caregiver"},{"id":"carwash","g":"auto","vi":"Rửa xe / detailing","en":"Car wash & detailing","ic":"🧽","kw":"rửa xe|rua xe|car ?wash|detailing|đánh bóng xe|danh bong"},{"id":"mechanic","g":"auto","vi":"Sửa xe / thay nhớt","en":"Auto repair & oil change","ic":"🔧","kw":"sửa xe|sua xe|thay nhớt|thay nhot|oil change|mechanic|bảo dưỡng|bao duong|check engine"},{"id":"tire","g":"auto","vi":"Lốp / thắng","en":"Tires & brakes","ic":"🛞","kw":"lốp|lop xe|tire|thắng|thang xe|brake|bánh xe|banh xe"},{"id":"bodyshop","g":"auto","vi":"Body shop / sơn xe","en":"Body shop & paint","ic":"🚘","kw":"body shop|sơn xe|son xe|đụng xe|dung xe|collision|móp|mop\\b|dent"},{"id":"tint","g":"auto","vi":"Tint / phụ kiện / audio","en":"Tint · accessories · audio","ic":"🎛️","kw":"tint|dán kính|dan kinh|phụ kiện xe|phu kien xe|audio|loa xe|camera hành trình|ppf|wrap"},{"id":"dealer","g":"auto","vi":"Mua bán xe","en":"Car sales & dealer","ic":"🚙","kw":"mua xe|ban xe|bán xe|dealer|xe cũ|xe cu|used car|xe mới"},{"id":"carrental","g":"auto","vi":"Cho thuê xe","en":"Car rental","ic":"🔑","kw":"thuê xe|thue xe|rent a car|car rental|turo"},{"id":"ride","g":"auto","vi":"Đưa đón / taxi / sân bay","en":"Rides · taxi · airport","ic":"🚕","kw":"đưa đón|dua don|đưa rước|ride|taxi|sân bay|san bay|airport|shuttle|uber"},{"id":"bus","g":"auto","vi":"Xe đò / xe khách","en":"Intercity bus","ic":"🚌","kw":"xe đò|xe do|xe khách|xe khach|charter|đi dallas|đi cali"},{"id":"moving","g":"auto","vi":"Vận chuyển / dọn nhà","en":"Moving & hauling","ic":"🚚","kw":"vận chuyển|van chuyen|dọn nhà|don nha|moving|chở hàng|cho hang|hauling"},{"id":"cargo","g":"auto","vi":"Gửi hàng về VN / cargo","en":"Cargo to Vietnam","ic":"📦","kw":"gửi hàng|gui hang|gửi về việt nam|gui ve viet nam|cargo|ship về|ship ve|freight|thùng hàng|thung hang"},{"id":"inspection","g":"auto","vi":"Đăng kiểm / giấy tờ xe","en":"Inspection & registration","ic":"📋","kw":"đăng kiểm|dang kiem|inspection|registration|title xe|giấy tờ xe|giay to xe"},{"id":"clean","g":"home","vi":"Dọn dẹp nhà cửa","en":"House cleaning","ic":"🧹","kw":"dọn dẹp|don dep|cleaning|dọn nhà|lau nhà|maid"},{"id":"remodel","g":"home","vi":"Sửa nhà / remodel","en":"Remodeling & contractor","ic":"🔨","kw":"sửa nhà|sua nha|remodel|handyman|contractor|xây|xay dung|cải tạo"},{"id":"plumbing","g":"home","vi":"Điện / nước","en":"Electrical & plumbing","ic":"🔌","kw":"điện|dien nuoc|thợ điện|tho dien|nước|plumb|ống nước|ong nuoc|rò rỉ"},{"id":"hvac","g":"home","vi":"Điện lạnh / HVAC","en":"HVAC","ic":"❄️","kw":"máy lạnh|may lanh|hvac|ac repair|điện lạnh|dien lanh|sưởi|heater|furnace"},{"id":"roof","g":"home","vi":"Mái nhà / roofing","en":"Roofing","ic":"🏚️","kw":"mái|mai nha|roof|dột|dot\\b|gutter"},{"id":"floor","g":"home","vi":"Sàn / gạch / đá","en":"Flooring & tile","ic":"🧱","kw":"sàn|san go|gạch|gach\\b|tile|đá granite|countertop|laminate"},{"id":"paint","g":"home","vi":"Sơn nhà","en":"Painting","ic":"🎨","kw":"sơn nhà|son nha|painting|sơn tường"},{"id":"landscape","g":"home","vi":"Sân vườn / cây cảnh","en":"Landscaping","ic":"🌳","kw":"sân vườn|san vuon|landscap|cắt cỏ|cat co|cây cảnh|cay canh|tưới"},{"id":"pool","g":"home","vi":"Hồ bơi","en":"Pool service","ic":"🏊","kw":"hồ bơi|ho boi|pool|bể bơi"},{"id":"pest","g":"home","vi":"Diệt côn trùng","en":"Pest control","ic":"🐜","kw":"côn trùng|con trung|pest|mối|moi\\b|gián|chuột|termite"},{"id":"garage","g":"home","vi":"Cửa / garage / cửa sổ","en":"Doors · garage · windows","ic":"🚪","kw":"garage|cửa|cua so|window|cửa sổ|khoá cửa"},{"id":"security","g":"home","vi":"Camera / an ninh / smart home","en":"Security & smart home","ic":"📹","kw":"camera|an ninh|báo động|bao dong|alarm|smart home|ring"},{"id":"laundry","g":"home","vi":"Giặt ủi / dry clean","en":"Laundry & dry cleaning","ic":"👕","kw":"giặt|giat ui|ủi|dry clean|laundry|sửa quần áo|alteration"},{"id":"locksmith","g":"home","vi":"Thợ khoá","en":"Locksmith","ic":"🗝️","kw":"thợ khoá|tho khoa|locksmith|làm chìa|mất chìa"},{"id":"tax","g":"finance","vi":"Thuế / kế toán","en":"Tax & accounting","ic":"🧾","kw":"thuế|thue\\b|1099|khai thuế|tax|kế toán|ke toan|bookkeep|payroll|cpa"},{"id":"insurance","g":"finance","vi":"Bảo hiểm","en":"Insurance","ic":"🛡️","kw":"bảo hiểm|bao hiem|insurance|nhân thọ|nhan tho|obamacare|medicare"},{"id":"remit","g":"finance","vi":"Gửi tiền / đổi tiền","en":"Money transfer & exchange","ic":"💸","kw":"gửi tiền|gui tien|chuyển tiền|chuyen tien|đổi tiền|doi tien|remit|western union|nexora touch pay"},{"id":"loan","g":"finance","vi":"Vay / mortgage","en":"Loans & mortgage","ic":"🏦","kw":"vay|mortgage|loan|tín dụng|tin dung|refinance|credit"},{"id":"immigration","g":"finance","vi":"Luật sư di trú","en":"Immigration lawyer","ic":"🛂","kw":"luật sư di trú|luat su di tru|di trú|di tru|immigration|bảo lãnh|bao lanh|thẻ xanh|the xanh|quốc tịch|quoc tich|h1b|eb5|đoàn tụ"},{"id":"injury","g":"finance","vi":"Luật sư tai nạn / thương tích","en":"Injury lawyer","ic":"⚖️","kw":"tai nạn|tai nan|thương tích|thuong tich|injury|kiện|kien tung|bồi thường|boi thuong"},{"id":"lawyer","g":"finance","vi":"Luật sư gia đình / kinh doanh","en":"Family & business lawyer","ic":"📜","kw":"luật sư|luat su|lawyer|attorney|ly hôn|ly hon|di chúc|hợp đồng|hop dong|llc"},{"id":"notary","g":"finance","vi":"Công chứng / dịch thuật","en":"Notary & translation","ic":"✒️","kw":"công chứng|cong chung|notary|dịch thuật|dich thuat|translation|giấy tờ"},{"id":"realtor","g":"finance","vi":"Địa ốc mua bán","en":"Real estate agent","ic":"🏡","kw":"địa ốc|dia oc|realtor|mua nhà|mua nha|bán nhà|ban nha|real estate|nhà đất"},{"id":"rental","g":"finance","vi":"Cho thuê / quản lý nhà","en":"Rental & property management","ic":"🏘️","kw":"cho thuê|cho thue|thuê nhà|thue nha|apartment|phòng trọ|phong tro|property management"},{"id":"invest","g":"finance","vi":"Đầu tư / crypto","en":"Investing & crypto","ic":"📈","kw":"đầu tư|dau tu|crypto|bitcoin|chứng khoán|chung khoan|stock|cryptomap"},{"id":"flight","g":"travel","vi":"Vé máy bay","en":"Flights","ic":"🛫","kw":"vé máy bay|ve may bay|flight|vé về việt nam|air ticket"},{"id":"tour","g":"travel","vi":"Tour / du lịch","en":"Tours","ic":"🗺️","kw":"tour|du lịch|du lich|hành hương|hanh huong|cruise|vmmtravel"},{"id":"hotel","g":"travel","vi":"Khách sạn / homestay","en":"Hotels & stays","ic":"🏨","kw":"khách sạn|khach san|hotel|homestay|resort|airbnb"},{"id":"visa","g":"travel","vi":"Visa / hộ chiếu / giấy tờ","en":"Visa & passport services","ic":"🪪","kw":"hộ chiếu|ho chieu|passport|visa việt nam|miễn thị thực|giấy tờ du lịch"},{"id":"vietschool","g":"edu","vi":"Trường Việt ngữ","en":"Vietnamese language school","ic":"🇻🇳","kw":"việt ngữ|viet ngu|tiếng việt|tieng viet|học tiếng"},{"id":"tutor","g":"edu","vi":"Dạy kèm / luyện thi","en":"Tutoring & test prep","ic":"📚","kw":"dạy kèm|day kem|luyện thi|luyen thi|tutor|sat\\b|toán|toan\\b|gia sư"},{"id":"beautyschool","g":"edu","vi":"Trường nail / thẩm mỹ (license)","en":"Beauty school & license","ic":"🎓","kw":"trường nail|truong nail|license|lớp nail|lop nail|khoá học|khoa hoc|đào tạo|dao tao|class|beauty school|cosmetology"},{"id":"driving","g":"edu","vi":"Dạy lái xe","en":"Driving school","ic":"🚦","kw":"lái xe|lai xe|driving|bằng lái|bang lai|thi bằng"},{"id":"esl","g":"edu","vi":"Tiếng Anh / ESL / quốc tịch","en":"English & citizenship classes","ic":"🗣️","kw":"esl|tiếng anh|tieng anh|english|thi quốc tịch|thi quoc tich"},{"id":"arts","g":"edu","vi":"Nhạc · hoạ · võ · năng khiếu","en":"Music · art · martial arts","ic":"🎹","kw":"piano|guitar|nhạc|nhac\\b|vẽ|ve tranh|võ|vo thuat|taekwondo|múa|ballet"},{"id":"vocational","g":"edu","vi":"Đào tạo nghề / kỹ năng","en":"Vocational & skills","ic":"🛠️","kw":"học nghề|hoc nghe|dạy nghề|kỹ năng|ky nang|coding|ai business|bootcamp"},{"id":"photo","g":"event","vi":"Chụp ảnh / quay phim","en":"Photo & video","ic":"📷","kw":"chụp ảnh|chup anh|quay phim|photograph|videograph|studio|ảnh cưới|anh cuoi"},{"id":"bridal","g":"event","vi":"Áo cưới / makeup cô dâu","en":"Bridal & makeup","ic":"👰","kw":"áo cưới|ao cuoi|makeup|trang điểm|trang diem|cô dâu|co dau|bridal"},{"id":"planner","g":"event","vi":"Tổ chức tiệc / sự kiện","en":"Event planning","ic":"🎪","kw":"tổ chức|to chuc|event|planner|sinh nhật|sinh nhat|tiệc|tiec\\b|thôi nôi"},{"id":"music","g":"event","vi":"Nhạc sống / MC / DJ","en":"Live music · MC · DJ","ic":"🎤","kw":"ban nhạc|ban nhac|mc\\b|dj|ca sĩ|ca si|nhạc sống|karaoke thuê"},{"id":"rentalevent","g":"event","vi":"Thuê rạp / bàn ghế / trang trí","en":"Party rentals & decor","ic":"🎈","kw":"thuê rạp|thue rap|bàn ghế|ban ghe|trang trí|trang tri|bong bóng|backdrop"},{"id":"entertain","g":"event","vi":"Giải trí / vui chơi","en":"Entertainment & recreation","ic":"🎳","kw":"bida|billiard|bowling|game|khu vui chơi|trampoline|arcade|golf"},{"id":"daycare","g":"family","vi":"Giữ trẻ / daycare","en":"Daycare","ic":"🧸","kw":"giữ trẻ|giu tre|daycare|nhà trẻ|nha tre|mầm non|mam non|preschool"},{"id":"kids","g":"family","vi":"Đồ trẻ em / mẹ & bé","en":"Kids & baby","ic":"🍼","kw":"trẻ em|tre em|em bé|em be|mẹ và bé|me va be|baby|đồ chơi|do choi"},{"id":"pet","g":"family","vi":"Thú cưng / grooming","en":"Pets & grooming","ic":"🐶","kw":"thú cưng|thu cung|chó|cho\\b|mèo|meo\\b|pet|grooming|cắt lông"},{"id":"vet","g":"family","vi":"Thú y","en":"Veterinary","ic":"🐾","kw":"thú y|thu y|vet\\b|bác sĩ thú|chích ngừa chó"},{"id":"senior","g":"family","vi":"Nhà dưỡng lão / sinh hoạt người già","en":"Senior living & adult daycare","ic":"🏡","kw":"dưỡng lão|duong lao|adult daycare|sinh hoạt người già|nursing home"},{"id":"print","g":"biz","vi":"In ấn / bảng hiệu","en":"Printing & signage","ic":"🖨️","kw":"in ấn|in an|bảng hiệu|bang hieu|sign|banner|name card|menu in|tờ rơi"},{"id":"marketing","g":"biz","vi":"Marketing / web / thiết kế","en":"Marketing · web · design","ic":"💻","kw":"marketing|website|web|thiết kế|thiet ke|logo|quảng cáo|quang cao|seo|ads"},{"id":"software","g":"biz","vi":"POS / phần mềm","en":"POS & software","ic":"🧾","kw":"pos|phần mềm|phan mem|software|app|nexora|đặt lịch|booking"},{"id":"staffing","g":"biz","vi":"Tuyển dụng / nhân sự","en":"Staffing & HR","ic":"👥","kw":"tuyển|tuyen dung|nhân sự|nhan su|staffing|thợ|tho nail|việc làm|viec lam"},{"id":"lease","g":"biz","vi":"Sang tiệm / mặt bằng / thuê ghế","en":"Business for sale · lease · booth","ic":"🏬","kw":"sang tiệm|sang tiem|mặt bằng|mat bang|thuê ghế|thue ghe|booth rent|for lease|sang nhượng"},{"id":"commercialclean","g":"biz","vi":"Vệ sinh công nghiệp","en":"Commercial cleaning","ic":"🧼","kw":"vệ sinh công nghiệp|ve sinh cong nghiep|janitor|commercial clean|lau kính"},{"id":"telecom","g":"biz","vi":"Viễn thông / internet","en":"Telecom & internet","ic":"📡","kw":"internet|wifi|viễn thông|vien thong|sim|điện thoại gói|phone plan"},{"id":"techrepair","g":"biz","vi":"Sửa điện thoại / máy tính","en":"Phone & computer repair","ic":"🛠️","kw":"sửa điện thoại|sua dien thoai|sửa máy tính|sua may tinh|repair|thay màn hình|unlock"},{"id":"equipment","g":"biz","vi":"Thiết bị ngành (nhà hàng, tiệm)","en":"Commercial equipment","ic":"⚙️","kw":"thiết bị|thiet bi|equipment|máy pha|bếp công nghiệp|bep cong nghiep|tủ đông|ghế cắt tóc"},{"id":"temple","g":"community","vi":"Chùa / nhà thờ","en":"Temple & church","ic":"🛕","kw":"chùa|chua\\b|nhà thờ|nha tho|church|temple|lễ|le hoi"},{"id":"association","g":"community","vi":"Hội đoàn / cộng đồng","en":"Associations","ic":"🤝","kw":"hội|hoi doan|cộng đồng|cong dong|association|hội chợ|hoi cho"},{"id":"charity","g":"community","vi":"Từ thiện / gây quỹ","en":"Charity & fundraising","ic":"❤️","kw":"từ thiện|tu thien|gây quỹ|gay quy|charity|donate|quyên góp"},{"id":"media","g":"community","vi":"Báo chí / radio / truyền hình","en":"Media & press","ic":"📰","kw":"báo|bao chi|radio|truyền hình|truyen hinh|tv|podcast|youtube channel"},{"id":"wellness","g":"health","ic":"🌿","vi":"Trung tâm Wellness","en":"Wellness center","kw":"wellness|chăm sóc sức khỏe|cham soc suc khoe|wellbeing"},{"id":"meditation","g":"health","ic":"🧘","vi":"Thiền & thư giãn","en":"Meditation & relaxation","kw":"thiền|thien|meditation|mindfulness|relaxation"},{"id":"sauna","g":"health","ic":"♨️","vi":"Sauna & phục hồi","en":"Sauna & recovery","kw":"sauna|xông hơi|xong hoi|recovery"},{"id":"homestay","g":"travel","ic":"🏡","vi":"Homestay & nhà nghỉ B&B","en":"Homestays & bed and breakfast","kw":"homestay|bed and breakfast|b&b|nhà nghỉ|nha nghi"},{"id":"resort","g":"travel","ic":"🏝️","vi":"Resort & khu nghỉ dưỡng","en":"Resorts & retreats","kw":"resort|retreat|nghỉ dưỡng|nghi duong"},{"id":"vacationrental","g":"travel","ic":"🏘️","vi":"Nhà & căn hộ nghỉ dưỡng","en":"Vacation homes & apartments","kw":"vacation rental|holiday home|căn hộ|can ho|airbnb"},{"id":"camping","g":"travel","ic":"🏕️","vi":"Camping · glamping · RV","en":"Camping · glamping · RV parks","kw":"camping|glamping|rv park|cắm trại|cam trai"},{"id":"farmersmarket","g":"shop","ic":"🥬","vi":"Chợ nông sản","en":"Farmers markets","kw":"farmers market|nông sản|nong san|produce market"},{"id":"nightmarket","g":"shop","ic":"🏮","vi":"Chợ đêm & chợ trời","en":"Night & flea markets","kw":"night market|flea market|chợ đêm|cho dem|chợ trời|cho troi"},{"id":"wholesale","g":"shop","ic":"📦","vi":"Chợ sỉ & bán buôn","en":"Wholesale markets","kw":"wholesale|chợ sỉ|cho si|bán buôn|ban buon"},{"id":"headspa","g":"beauty","ic":"✿","vi":"Head Spa / gội đầu dưỡng sinh","en":"Head spa & scalp care","kw":"head spa|scalp|gội đầu|goi dau|dưỡng sinh|duong sinh"}]};
 
 const workspaceCouponCounts = {
-  nail: 3, spa: 1, lash: 1, hair: 1, skin: 1,
+  nail: deals.filter((deal) => !deal.lastMinuteOnly && getOfferClassification(deal).isCoupon).length, spa: 1, lash: 1, hair: 1, skin: 1,
   food: 2, drink: 1, bakery: 1,
   market: 1, supply: 4, fashion: 1,
   dental: 1, eye: 1, clinic: 1, pharm: 1,
