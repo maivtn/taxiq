@@ -10,6 +10,10 @@
     [/^(.+ min) · từ (\$[\d.]+)$/, '$1 · From $2'],
     [/^LÀM ĐẸP › NAIL › TẤT CẢ DỊCH VỤ · TRONG (\d+) MILES$/, 'BEAUTY › NAIL › ALL SERVICES · WITHIN $1 MILES'],
     [/^LÀM ĐẸP › NAIL › (MANICURE|PEDICURE|GEL-X|NAIL ART) · TRONG (\d+) MILES$/, 'BEAUTY › NAIL › $1 · WITHIN $2 MILES'],
+    [/^Deal nổi bật quanh (.+)$/, 'Featured deals around $1'],
+    [/^Deal gần Gần bạn$/, 'Deals Nearby'],
+    [/^Deal gần (.+)$/, 'Deals near $1'],
+    [/^Kết quả đang khớp với (.+)\.$/, 'Results match $1.'],
     [/^Còn (\d+) ngày$/, '$1 days left'],
     [/^Còn (\d+) (?:suất|lượt|mã)$/, '$1 left'],
     [/^còn (\d+) (?:suất|lượt|mã)$/, '$1 left'],
@@ -76,6 +80,7 @@
   ];
 
   const actionRules = [
+    ['#searchForm .landing-location-button', 'LocateFixed', 'blue'],
     ['.platform-network-stats article:nth-child(1) > span', 'Store', 'blue'],
     ['.platform-network-stats article:nth-child(2) > span', 'Tags', 'violet'],
     ['.platform-network-stats article:nth-child(3) > span', 'Eye', 'blue'],
@@ -456,6 +461,11 @@
       }));
     });
     for (const [selector, name, color] of actionRules) root.querySelectorAll(selector).forEach(element => decorateAction(element, name, color));
+    root.querySelectorAll('#searchForm .landing-location-button').forEach(element => {
+      const label = element.textContent.trim();
+      element.setAttribute('aria-label', label);
+      element.setAttribute('title', label);
+    });
     root.querySelectorAll('button').forEach(element => {
       if (element.closest('.hero-carousel-controls') || element.matches('[data-ai-intent],[data-dw-group],.service-chip,.taxonomy-chip,.br-stars button')) return;
       const label = element.textContent.trim().replace(/^[^\p{L}\p{N}]+/u, '');

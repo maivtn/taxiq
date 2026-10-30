@@ -147,6 +147,34 @@ dialog .review-actions button{min-height:44px;padding-inline:10px;font-size:12px
 dialog.bc-montage{overflow-x:hidden;overflow-y:auto;overscroll-behavior:contain}
 dialog :is(#couponClaimForm,#openingHoldForm) button[type="submit"]{padding-block:10px;font-size:13px;line-height:1.4}
 .search-panel .search-button{background:linear-gradient(100deg,#6342c6,#6742c7 55%,#196ac1)}
+#searchForm{grid-template-columns:minmax(220px,1fr) 1px minmax(320px,1fr) auto;min-height:78px;gap:0;padding:10px;border-radius:16px;box-shadow:0 6px 22px #18244308}
+#searchForm .search-field{display:grid;grid-template-columns:18px minmax(0,1fr);align-items:center;gap:10px;min-height:56px;padding:4px 12px;border:0;border-radius:10px}
+#searchForm .search-field:not(.primary-field){grid-template-columns:18px minmax(0,1fr) auto}
+#searchForm .search-field > span:nth-child(2){display:grid;min-width:0;gap:2px}
+#searchForm .search-field small{color:#637087;font-size:10px!important;font-weight:700;line-height:1.3!important;letter-spacing:.08em}
+#searchForm input{min-height:32px;font-size:14px;font-weight:500;line-height:1.4}
+#searchForm input::placeholder{color:#637087;font-weight:400}
+#searchForm .search-field:focus-within{background:#f8f6ff;box-shadow:inset 0 0 0 1px #c8b7f7}
+#searchForm .field-icon{display:grid;place-items:center;color:#6342c6}
+#searchForm .search-field:not(.primary-field) .field-icon{color:#236aa5}
+#searchForm .field-icon svg{width:18px;height:18px;stroke-width:1.75}
+#searchForm .search-divider{height:36px}
+#searchForm .landing-location-button{display:inline-flex;align-items:center;justify-content:center;gap:6px;min-width:44px;min-height:44px;margin:0;padding:0 10px;border:1px solid #d2e4f3;border-radius:10px;color:#236aa5;background:#eef6fc;font-size:12px;font-weight:650}
+#searchForm .landing-location-button .deal-action-icon{width:16px;height:16px;margin:0;color:inherit;stroke-width:1.75}
+#searchForm .search-button{align-self:center;width:auto;height:44px;min-height:44px;padding:0 18px;gap:8px;border-radius:10px;font-size:13px;box-shadow:0 5px 14px #6342c61a}
+#searchForm .search-button .deal-action-icon{width:16px;height:16px;margin:0;color:inherit;stroke-width:1.75}
+@media(max-width:900px){
+  #searchForm{grid-template-columns:minmax(0,1fr) auto;gap:6px;padding:8px}
+  #searchForm .primary-field{grid-column:1/-1;border-bottom:1px solid #e6eaf2}
+  #searchForm .search-divider{display:none}
+  #searchForm .search-field:not(.primary-field){grid-column:1;grid-row:2;padding-right:8px}
+  #searchForm .search-button{grid-column:2;grid-row:2;min-width:112px}
+}
+@media(max-width:720px){#searchForm .landing-location-button{width:44px;padding:0;font-size:0}}
+@media(max-width:359px){
+  #searchForm{grid-template-columns:minmax(0,1fr)}
+  #searchForm .search-button{grid-column:1;grid-row:3;width:100%}
+}
 .primary-cta{background:linear-gradient(135deg,#6242ca,#196ac1)}
 .dw-primary.coral,.dw-role-tabs button.active{background:linear-gradient(135deg,#bd4614,#c52e2a)}
 .dw-primary.red{background:linear-gradient(135deg,#c82b58,#b9184d)}
