@@ -964,6 +964,40 @@
     } else script.addEventListener('load', connect, {once: true});
   }
 
+  function initHeaderSearch(header) {
+    if (!header) return;
+    header.classList.add('shell-header');
+    var input = header.querySelector('input[type="search"]');
+    var area = input && (input.closest('form') || input.closest('.search'));
+    if (!area) return;
+    area.classList.add('shell-header-search');
+    if (!area.id) area.id = 'shell-header-search';
+    var actions = header.querySelector('.shell-workspace-actions,.header-actions');
+    if (!actions) {
+      actions = document.createElement('div');
+      actions.className = 'header-actions shell-header-actions';
+      header.appendChild(actions);
+    }
+    var toggle = document.createElement('button');
+    toggle.type = 'button';
+    toggle.className = 'icon-button shell-search-toggle';
+    toggle.setAttribute('aria-label', input.getAttribute('aria-label') || input.placeholder);
+    toggle.setAttribute('aria-controls', area.id);
+    toggle.setAttribute('aria-expanded', 'false');
+    toggle.innerHTML = '<svg width="17" height="17" viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="m21 21-4.35-4.35M11 19a8 8 0 1 1 0-16 8 8 0 0 1 0 16Z" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>';
+    actions.prepend(toggle);
+    function setOpen(open) {
+      document.body.classList.toggle('shell-search-open', open);
+      toggle.setAttribute('aria-expanded', String(open));
+      if (open) input.focus();
+      else toggle.focus();
+    }
+    toggle.addEventListener('click', function() { setOpen(toggle.getAttribute('aria-expanded') !== 'true'); });
+    area.addEventListener('keydown', function(event) {
+      if (event.key === 'Escape') { event.preventDefault(); setOpen(false); }
+    });
+  }
+
   function init() {
     var sidebar = document.querySelector('aside.sidebar');
     var header = document.querySelector('header.header');
@@ -971,6 +1005,7 @@
     if (sidebar) sidebar.innerHTML = activePage === 'staff' ? STAFF_SIDEBAR_HTML : renderMerchantSidebarHtml();
     if (document.body.setAttribute) document.body.setAttribute('data-nexora-workspace', workspace);
     if (header) header.innerHTML = treeNav && activePage !== 'staff' ? merchantHeader() : HEADER_HTML;
+    initHeaderSearch(header);
     saveExpandedGroups();
 
     // drawer backdrop (once)

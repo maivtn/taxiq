@@ -884,3 +884,26 @@ body[data-nexora-workspace="pos"] .sidebar-section-label + .sidebar-nav { margin
 .sidebar-account-language option{background:#fff;color:#182841}
 .sidebar-account-language-control svg{position:absolute;right:16px;top:50%;width:16px;height:16px;transform:translateY(-50%);pointer-events:none;color:#b7c9ec}
 .sidebar-account-language select:focus-visible{outline:2px solid #32d7ff;outline-offset:2px}
+
+/* All workspace headers share the same icon treatment and mobile search. */
+.header.shell-header .shell-search-toggle { display:none; }
+.header.shell-header :is(.shell-workspace-actions a,.mobile-brand .icon-button) { border:0; background:transparent; box-shadow:none; }
+.header.shell-header .mobile-brand .icon-button { color:#64748b; }
+.header.shell-header .shell-workspace-actions a[href="owner-setting.html"] { color:#2563eb; }
+.header.shell-header .shell-workspace-actions a[href="news-library.html?tab=news"] { color:#b45309; }
+.header.shell-header .shell-workspace-actions a[href="community.html?tab=connect"] { color:#0f766e; }
+.header.shell-header .shell-workspace-actions a[href="dashboard.html"] { color:#7c3aed; }
+.header.shell-header .shell-header-search svg { color:#64748b; }
+.header.shell-header :is(.shell-workspace-actions a,.icon-button):focus-visible { outline:2px solid #64748b; outline-offset:2px; }
+@media (max-width:767px) {
+  body[data-nexora-workspace] .header.shell-header { min-height:64px; padding:10px 12px; gap:8px; flex-wrap:wrap; }
+  .header.shell-header .shell-header-search { display:none; order:3; flex:1 0 100%; width:100%; max-width:none; }
+  body.shell-search-open .header.shell-header .shell-header-search { display:block; }
+  .header.shell-header .shell-search-toggle { display:inline-flex; flex:none; width:44px; height:44px; padding:0; border:0; background:transparent; color:#64748b; box-shadow:none; }
+  .header.shell-header .shell-search-toggle svg { width:17px; height:17px; }
+  .header.shell-header .shell-header-search .search { display:flex; align-items:center; min-height:44px; }
+  .header.shell-header .shell-header-search.search { min-height:44px; padding-block:4px; }
+  .header.shell-header .shell-header-search input { height:36px; padding-left:38px; font-size:13px; }
+  .header.shell-header .shell-header-search svg { left:13px; }
+  .header.shell-header .shell-header-actions { margin-left:auto; }
+}
