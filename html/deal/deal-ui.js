@@ -76,6 +76,10 @@
   ];
 
   const actionRules = [
+    ['.platform-network-stats article:nth-child(1) > span', 'Store', 'blue'],
+    ['.platform-network-stats article:nth-child(2) > span', 'Tags', 'violet'],
+    ['.platform-network-stats article:nth-child(3) > span', 'Eye', 'blue'],
+    ['.platform-network-stats article:nth-child(4) > span', 'Ticket', 'teal'],
     ['.deal-card.deal-offer .deal-open', 'ArrowRight', 'blue'],
     ['.deal-card.coupon-offer .deal-open', 'Ticket', 'violet'],
     ['.discover-trust-row > span:nth-child(1)', 'ShieldCheck', 'teal'],

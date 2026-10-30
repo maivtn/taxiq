@@ -60,6 +60,11 @@ body{min-width:0}
 .discover-connection-strip .utility-action :is(.deal-action-icon,.deal-inline-icon){width:16px;height:16px;margin:0;color:var(--utility-icon-color);stroke-width:1.75;vertical-align:middle}
 .discover-connection-strip .utility-action > span[aria-hidden]{display:inline-flex;align-items:center}
 .discover-connection-strip .utility-business > i{display:none}
+.platform-network-stats article > span{color:#236aa5;background:#eef6fc}
+.platform-network-stats article:nth-child(2) > span{color:#6342c6;background:#f3effc}
+.platform-network-stats article:nth-child(3) > span{color:#146a82;background:#eaf7fb}
+.platform-network-stats article:nth-child(4) > span{color:#0b7668;background:#edf8f3}
+.platform-network-stats .deal-action-icon{display:block;width:20px;height:20px;margin:0;color:inherit;stroke-width:1.75}
 @media(max-width:720px){
   .site-footer .footer-store-buttons{gap:6px}
   .site-footer .footer-store-buttons a{min-height:44px;padding:8px 12px;gap:8px;border-radius:10px;color:#34415b;box-shadow:none}
