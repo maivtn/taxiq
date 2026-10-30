@@ -97,6 +97,8 @@
     ['.discover-connection-strip .function-bridge-launch', 'ArrowLeftRight', 'blue'],
     ['.discover-connection-strip .oneqr-launch', 'QrCode', 'teal'],
     ['.discover-connection-strip .utility-business', 'Store', 'violet'],
+    ['.discover-connection-strip button .connection-action-hint', 'ArrowRight', 'blue'],
+    ['.discover-connection-strip a .connection-action-hint', 'ExternalLink', 'violet'],
     ['.dialog-close,.bc-close,.drawer-header [data-dialog-close],[data-ai-close],[data-nudge-dismiss]', 'X', 'neutral'],
     ['#openingHoldSuccess [data-dialog-close]', 'Check', 'teal'],
     ['dialog [data-dialog-close]:not(.dialog-close)', 'X', 'neutral'],

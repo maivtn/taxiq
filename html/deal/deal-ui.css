@@ -480,3 +480,18 @@ body:has(.dw-match-select .dropdown-active) .ai-guide-fab{visibility:hidden}
   .wishlist-mobile-select .ts-control small{color:var(--saved-accent,#a6326b);background:#fff}
   .wishlist-mobile-select .ts-dropdown .option{border:0}
 }
+
+/* Connection actions keep one Lucide style with distinct, readable color cues. */
+.discover-connection-strip .function-bridge-launch{--utility-icon-color:#236aa5;--connection-fill:#edf5ff;--connection-edge:#c5dff3;--connection-icon-fill:#dcecff}
+.discover-connection-strip .oneqr-launch{--utility-icon-color:#126d62;--connection-fill:#e9f8f3;--connection-edge:#b8dfd3;--connection-icon-fill:#d4f1e7}
+.discover-connection-strip .utility-business{--utility-icon-color:#6342a7;--connection-fill:#f4efff;--connection-edge:#d9c9ef;--connection-icon-fill:#e8ddfa}
+.discover-connection-strip .utility-actions{min-width:0}
+.discover-connection-strip .utility-action{justify-content:flex-start;gap:10px;padding:7px 11px;border-color:var(--connection-edge);border-radius:12px;background:var(--connection-fill);color:var(--utility-icon-color);box-shadow:none}
+.discover-connection-strip .utility-action>span.connection-action-icon{display:grid;place-items:center;flex:none;width:32px;height:32px;border-radius:9px;background:var(--connection-icon-fill)}
+.discover-connection-strip .connection-action-icon .deal-action-icon{width:20px;height:20px;stroke-width:1.8}
+.discover-connection-strip .connection-action-label{flex:1;min-width:0;white-space:normal;text-align:left;font-size:13px;font-weight:700;line-height:1.35}
+.discover-connection-strip .connection-action-hint{flex:none;margin-left:auto}
+.discover-connection-strip .utility-action:hover,.discover-connection-strip .utility-action:focus-visible{border-color:var(--utility-icon-color);background:var(--connection-fill)}
+.discover-connection-strip .utility-action:focus-visible{outline:2px solid var(--utility-icon-color);outline-offset:2px}
+.discover-connection-strip .verified-dot{color:#0f766e;border:1px solid #b8dfd3;background:#daf5eb}
+.discover-connection-strip .verified-dot :is(svg,.deal-inline-icon){width:16px;height:16px;color:inherit}
