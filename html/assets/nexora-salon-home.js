@@ -336,8 +336,8 @@ const catalog={
     };
     return order(a) - order(b);
   });
-  const explorerTotalCount = Object.values(salonExplorer).reduce((count, product) => count + product.features.length, 0);
-  const explorerProductKeys = ['pos','aihub','aimarketing','gift','community','oneqr','taxiq','payments','reviews','analytics'];
+  const explorerTotalCount = Object.entries(salonExplorer).reduce((count, [key,product]) => count + (key==='taxiq'?0:product.features.length), 0);
+  const explorerProductKeys = ['pos','aihub','aimarketing','gift','community','oneqr','payments','reviews','analytics'];
   const explorerProducts = document.getElementById('explorer-products');
   const explorerFeatures = document.getElementById('explorer-feature-list');
   const explorerScreen = document.getElementById('explorer-screen');
@@ -887,9 +887,10 @@ const catalog={
   languageToggle.addEventListener('change',renderSalonExplorer);
 
   const salonShowcaseGrid = document.querySelector('#salon-products .salon-product-grid');
+  salonShowcaseGrid.querySelector('[data-showcase-key="taxiq"]')?.remove();
   const salonShowcaseOrder = ['pos','aihub','aihub-marketing','aihub-marketing-campaign','spin-wheel','gift','community','oneqr','taxiq','payments','reviews','analytics'];
   salonShowcaseGrid.append(...salonShowcaseOrder.map(key => salonShowcaseGrid.querySelector(`[data-showcase-key="${key}"], [href="#module-${key}"]`)).filter(Boolean));
-  document.querySelector('#salon-products .salon-section-head > small').textContent = salonShowcaseGrid.children.length + ' khu giới thiệu';
+  setLocalizedText(document.querySelector('#salon-products .salon-section-head > small'),salonShowcaseGrid.children.length+' khu giới thiệu',salonShowcaseGrid.children.length+' product showcases');
   salonShowcaseGrid.querySelectorAll('.salon-feature-list').forEach(list => { list.dataset.count = String(list.children.length); });
   applyLanguage();
   const salonCarousel = document.getElementById('salon-product-carousel');

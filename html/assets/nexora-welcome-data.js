@@ -2477,3 +2477,14 @@ window.NEXORA_WELCOME_DATA = {
     }
   ]
 };
+
+// Temporarily hide Tax IQ while preserving its source copy for later.
+(function (data) {
+  var visible = function (product) { return product.key !== 'taxiq'; };
+  data.slides = data.slides.filter(visible);
+  data.products = data.products.filter(visible);
+  data.publicGroups.forEach(function (group) { group.products = group.products.filter(visible); });
+  data.explorer = Object.fromEntries(Object.entries(data.explorer).filter(function (entry) { return entry[0] !== 'taxiq'; }));
+  data.help.faq = data.help.faq.filter(function (entry) { return !/Tax IQ/i.test(entry.q); });
+  data.library.copy.counts = data.library.copy.counts.replace(/\d+(?= products)/, String(data.products.length));
+})(window.NEXORA_WELCOME_DATA);

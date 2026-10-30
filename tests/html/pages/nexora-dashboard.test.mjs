@@ -3,10 +3,10 @@ const page=readFileSync(new URL('../pages/dashboard.html',assets),'utf8');
 function dashboard(t,query=''){const w=boot(t,{html:page,page:'dashboard.html'+query});for(const f of ['nexora-product-catalog.js','nexora-dashboard.js'])w.eval(readFileSync(new URL(f,assets),'utf8'));return w;}
 function shown(w){return Array.from(w.document.querySelectorAll('#cards [data-module]')).filter(x=>!x.hidden);}
 
-test('Dashboard contains exactly the nine PO cards, with Tax IQ accessible only by detail URL',t=>{
+test('Dashboard contains the nine available cards and keeps Tax IQ hidden',t=>{
  const w=dashboard(t);assert.deepEqual(shown(w).map(x=>x.dataset.module),['pos','oneqr','payments','aihub','reviews','gift','analytics','community','spinwheel']);
  assert.equal(w.document.querySelector('#result-count').textContent,'9 products');assert.ok(w.document.querySelector('main a[href="https://icons8.com"]'));
- const tax=dashboard(t,'?module=taxiq');assert.equal(tax.document.getElementById('detail-title').textContent,'Tax IQ');assert.equal(tax.document.getElementById('detail-tax-preview').hidden,false);assert.equal(tax.document.querySelectorAll('#detail-links a').length,0);
+ const tax=dashboard(t,'?module=taxiq');assert.equal(tax.document.getElementById('module-browser').hidden,false);assert.equal(tax.document.getElementById('module-detail').hidden,true);assert.equal(tax.document.querySelector('.sidebar a[href="dashboard.html?module=taxiq"]'),null);
 });
 test('accent-insensitive search, group filter, empty state and reset keep URL in sync',t=>{
  const w=dashboard(t),search=w.document.getElementById('search'),category=w.document.getElementById('category');search.value='vong quay';search.dispatchEvent(new w.Event('input'));

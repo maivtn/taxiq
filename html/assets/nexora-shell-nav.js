@@ -631,6 +631,10 @@
   }
 ];
   function prepare(items) {
+    // Tax IQ is temporarily unavailable; keep its source entry for later.
+    for (var index=items.length-1;index>=0;index--) {
+      if(items[index].key==='tax-iq')items.splice(index,1);
+    }
     items.forEach(function (node) {
       if (node.href) node.href = resolve(node.href, node.opsView);
       if (node.href && node.navContext) node.href += (node.href.indexOf('?') === -1 ? '?' : '&') + 'nav=' + encodeURIComponent(node.navContext);

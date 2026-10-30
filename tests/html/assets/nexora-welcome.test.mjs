@@ -65,8 +65,9 @@ test('Salon Home uses the PO showcases and slideshow with local module destinati
   const dom = loadPage('salon-home.html');
   try {
     const { window } = dom;
-    assert.equal(window.document.querySelectorAll('#salon-slide-dots button').length, 12);
-    assert.equal(window.document.querySelectorAll('#salon-products .salon-product').length, 12);
+    assert.equal(window.document.querySelectorAll('#salon-slide-dots button').length, 11);
+    assert.equal(window.document.querySelectorAll('#salon-products .salon-product').length, 11);
+    assert.equal(window.document.querySelector('[data-showcase-key="taxiq"]'), null);
     assert.equal(window.document.querySelectorAll('#salon-intro-video video').length, 2);
     click(window, '#salon-slide-prev');
     assert.equal(window.document.getElementById('salon-home-title').textContent, 'Analytics');
@@ -572,8 +573,9 @@ test('Public Home keeps the PO three-group catalog distinct from the Salon showc
   const dom = loadPage('nexora-home.html');
   try {
     const { document } = dom.window;
-    assert.equal(document.querySelectorAll('.nxw-card').length, 12);
+    assert.equal(document.querySelectorAll('.nxw-card').length, 11);
     const titles = [...document.querySelectorAll('.nxw-card-top strong')].map((node) => node.textContent);
+    assert.equal(titles.includes('TAX IQ'), false);
     assert.ok(titles.includes('AI Voice SMS'));
     assert.ok(titles.includes('AI Marketing Tool'));
     assert.equal(titles.includes('SMS Campaign'), false);

@@ -818,6 +818,7 @@ window.NEXORA_PRODUCT_CATALOG = {
     "landingHref": "salon-home.html#salon-feature-explorer"
   },
   "taxiq": {
+    "hidden": true,
     "title": "Tax IQ",
     "description": "A concept for organizing income, expenses, and receipts; no live data is connected.",
     "status": "Concept preview",

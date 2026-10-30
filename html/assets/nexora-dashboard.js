@@ -65,7 +65,7 @@
     if (marketing) marketing.hidden = product.key !== 'aihub' || group.name !== 'Marketing Assistant';
   }
   function renderRoute(focus) {
-    var state = params(), key = state.get('module'), product = Object.prototype.hasOwnProperty.call(catalog, key) ? catalog[key] : null;
+    var state = params(), key = state.get('module'), product = Object.prototype.hasOwnProperty.call(catalog, key) && !catalog[key].hidden ? catalog[key] : null;
     search.value = state.get('q') || '';
     category.value = Array.from(category.options).some(function (o) { return o.value === state.get('category'); }) ? state.get('category') : 'all';
     filterCards();
