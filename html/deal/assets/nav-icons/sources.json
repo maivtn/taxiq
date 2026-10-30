@@ -50,6 +50,45 @@
       "download": "https://cdn-icons-png.flaticon.com/128/2784/2784459.png",
       "author": "Magnific / Freepik",
       "style": "Special Flat"
+    },
+    {
+      "key": "saved",
+      "file": "saved-heart.png",
+      "source": "https://www.flaticon.com/free-icon/heart_833472",
+      "download": "https://cdn-icons-png.flaticon.com/128/833/833472.png",
+      "author": "Kiranshastry",
+      "style": "Kiranshastry Flat",
+      "author_url": "https://www.flaticon.com/authors/kiranshastry"
+    },
+    {
+      "key": "phone-home",
+      "file": "phone-home.png",
+      "source": "html/assets/icon-oneqr/issue-2040-oneqr-home-3d.png",
+      "style": "Existing OneQR 3D icon set"
+    },
+    {
+      "key": "phone-last-minute",
+      "file": "phone-last-minute.png",
+      "source": "https://cdn3d.iconscout.com/3d/premium/thumb/last-offer-3d-icon-png-download-9131058.png",
+      "style": "IconScout 3D \u00b7 user-selected asset"
+    },
+    {
+      "key": "phone-deal",
+      "file": "phone-deal.png",
+      "source": "https://cdn3d.iconscout.com/3d/premium/thumb/hot-deal-3d-icon-png-download-11904464.png",
+      "style": "IconScout 3D \u00b7 user-selected asset"
+    },
+    {
+      "key": "phone-saved",
+      "file": "phone-saved.png",
+      "source": "https://cdn3d.iconscout.com/3d/premium/thumb/valentine-list-3d-icon-png-download-11178158.png",
+      "style": "IconScout 3D \u00b7 user-selected asset"
+    },
+    {
+      "key": "phone-oneqr",
+      "file": "phone-oneqr.png",
+      "source": "https://cdn3d.iconscout.com/3d/premium/thumb/qr-code-3d-icon-png-download-12692239.png",
+      "style": "IconScout 3D \u00b7 user-selected asset"
     }
   ]
 }

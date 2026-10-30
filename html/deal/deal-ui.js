@@ -40,7 +40,7 @@
     return null;
   }
 
-  window.NEXORA_DEAL_PRESENTATION = Object.freeze({ translate });
+  window.NEXORA_DEAL_PRESENTATION = Object.freeze({ translate, positionMatchSelect });
 
   function artwork(key, size = 24) {
     const holder = document.createElement('span');
@@ -75,7 +75,7 @@
   ];
 
   const actionRules = [
-    ['.dialog-close,.bc-close,[data-ai-close],[data-nudge-dismiss]', 'X', 'neutral'],
+    ['.dialog-close,.bc-close,.drawer-header [data-dialog-close],[data-ai-close],[data-nudge-dismiss]', 'X', 'neutral'],
     ['[data-save],[data-coupon-save],#saveDetailButton,[data-nail-save],[data-nail-saved-toggle]', 'Heart', 'rose'],
     ['[data-open],[data-coupon-claim],[data-dw-nail-menu],#claimDealButton', 'Ticket', 'violet'],
     ['[data-opening-hold],[data-last-claim],[data-dw-save-wish]', 'CalendarCheck', 'teal'],
@@ -254,6 +254,84 @@
     }
   }
 
+  function getVisibleViewport() {
+    const viewport = window.visualViewport;
+    const top = viewport?.offsetTop || 0;
+    const keyboard = navigator.virtualKeyboard?.boundingRect;
+    const bottom = Math.min(top + (viewport?.height || innerHeight), keyboard?.height ? keyboard.top : Infinity);
+    return { top, bottom, height: Math.max(120, bottom - top) };
+  }
+
+  function getVisibleDockTop(bottom) {
+    const nav = document.querySelector('.mobile-nav');
+    if (!nav?.getClientRects().length || getComputedStyle(nav).visibility !== 'visible') return bottom;
+    const create = nav.querySelector('.mobile-create .deal-mobile-nav-icon');
+    return Math.min(bottom, nav.getBoundingClientRect().top, create?.getBoundingClientRect().top ?? bottom);
+  }
+
+  function positionMatchSelect(wrapper) {
+    const bounds = wrapper.querySelector('.ts-control').getBoundingClientRect();
+    const viewport = getVisibleViewport();
+    const bottom = getVisibleDockTop(viewport.bottom);
+    const header = document.querySelector('[data-mobile-directory-nav]');
+    const top = Math.max(viewport.top + 16, header?.getBoundingClientRect().bottom || 0);
+    const below = Math.max(0, bottom - bounds.bottom - 26);
+    const above = Math.max(0, bounds.top - top - 26);
+    const up = below < 264 && above > below;
+    wrapper.classList.toggle('dw-select-opens-up', up);
+    wrapper.style.setProperty('--dw-select-available', `${Math.max(44, up ? above : below)}px`);
+  }
+
+  function syncPhoneFilterPopover(top, bottom, touch) {
+    const picker = document.querySelector('[data-nearby-picker]');
+    if (!picker) return;
+    picker.classList.remove('deal-popover-up', 'deal-popover-fixed');
+    if (!touch || !picker.open) return;
+    const anchor = picker.querySelector('summary').getBoundingClientRect();
+    const limit = getVisibleDockTop(bottom);
+    const header = document.querySelector('[data-mobile-directory-nav]');
+    const start = Math.min(limit - 112, Math.max(top + 8, (header?.getBoundingClientRect().bottom || top) + 8));
+    const below = Math.max(0, limit - anchor.bottom - 16);
+    const above = Math.max(0, anchor.top - start - 8);
+    const fixed = Math.max(below, above) < 220;
+    const up = !fixed && below < 260 && above > below;
+    picker.classList.toggle('deal-popover-fixed', fixed);
+    picker.classList.toggle('deal-popover-up', up);
+    picker.style.setProperty('--deal-popover-top', `${start}px`);
+    picker.style.setProperty('--deal-popover-height', `${Math.max(96, fixed ? limit - start - 8 : up ? above : below)}px`);
+  }
+
+  function syncPhoneOverlays() {
+    const { top, bottom, height } = getVisibleViewport();
+    document.documentElement.style.setProperty('--deal-visual-top', `${top}px`);
+    document.documentElement.style.setProperty('--deal-visual-height', `${height}px`);
+    document.documentElement.style.setProperty('--deal-keyboard-inset', `${Math.max(0, innerHeight - bottom)}px`);
+    const touch = matchMedia('(pointer: coarse)').matches;
+    document.body.classList.toggle('deal-phone-keyboard-open', touch && height < innerHeight - 80);
+    syncPhoneFilterPopover(top, top + height, touch);
+    document.querySelectorAll('.dw-match-select .ts-wrapper.dropdown-active').forEach(positionMatchSelect);
+    const assistant = document.querySelector('.ai-guide-fab');
+    if (!assistant) return;
+    if (!touch || document.querySelector('dialog[open]')) {
+      assistant.classList.remove('deal-ai-obstructs-control');
+      return;
+    }
+    const bounds = assistant.getBoundingClientRect();
+    const blocked = Array.from(document.querySelectorAll('a,button,input,select,textarea,summary,[role="combobox"]')).some(control => {
+      if (control === assistant || assistant.contains(control) || control.disabled) return false;
+      if (control.checkVisibility && !control.checkVisibility({ checkOpacity: true, checkVisibilityCSS: true })) return false;
+      const closedDetails = control.closest('details:not([open])');
+      if (closedDetails && !closedDetails.querySelector('summary')?.contains(control)) return false;
+      const rect = control.getBoundingClientRect();
+      if (rect.width < 20 || rect.height < 20) return false;
+      const left = Math.max(bounds.left, rect.left), right = Math.min(bounds.right, rect.right);
+      const top = Math.max(bounds.top, rect.top), bottom = Math.min(bounds.bottom, rect.bottom);
+      if (left >= right || top >= bottom) return false;
+      return document.elementsFromPoint((left + right) / 2, (top + bottom) / 2).some(element => control === element || control.contains(element));
+    });
+    assistant.classList.toggle('deal-ai-obstructs-control', blocked);
+  }
+
   function refresh() {
     const root = document.body;
     if (!root) return;
@@ -310,6 +388,7 @@
       if (rule) decorateAction(element, rule[1], rule[2]);
     });
     replaceGlyphs(root);
+    syncPhoneOverlays();
   }
 
   function start() {
@@ -321,6 +400,19 @@
     };
     new MutationObserver(schedule).observe(document.body, { childList: true, characterData: true, subtree: true });
     document.addEventListener('change', schedule);
+    let overlayScheduled = false;
+    const scheduleOverlays = () => {
+      if (overlayScheduled) return;
+      overlayScheduled = true;
+      requestAnimationFrame(() => { overlayScheduled = false; syncPhoneOverlays(); });
+    };
+    document.addEventListener('scroll', scheduleOverlays, { capture: true, passive: true });
+    document.addEventListener('toggle', scheduleOverlays, true);
+    window.addEventListener('resize', scheduleOverlays);
+    window.visualViewport?.addEventListener('resize', scheduleOverlays);
+    window.visualViewport?.addEventListener('scroll', scheduleOverlays, { passive: true });
+    navigator.virtualKeyboard?.addEventListener('geometrychange', scheduleOverlays);
+    new ResizeObserver(scheduleOverlays).observe(document.body);
     refresh();
   }
   if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', start, { once: true });

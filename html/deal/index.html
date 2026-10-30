@@ -2,7 +2,7 @@
 <html lang="en-US">
   <head>
     <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
     <meta
       name="description"
       content="Nexora Deals giúp bạn khám phá ưu đãi dịch vụ địa phương, bắt đầu với nail salon gần bạn."
@@ -59,12 +59,12 @@
     <link rel="stylesheet" href="./styles-deal-subnav.css?v=guest-header-v1" />
     <link rel="stylesheet" href="../assets/vendor/tom-select/tom-select.css" />
     <link rel="stylesheet" href="./styles-deal-workspace.css?v=47395bf369" />
-      <link rel="stylesheet" href="./deal-ui.css?v=28a5ea33e8" />
+      <link rel="stylesheet" href="./deal-ui.css?v=e3543c152f" />
     <script src="../assets/vendor/tom-select/tom-select.complete.min.js"></script>
     <script src="../assets/industry-icons.js?v=20261030-deal" data-industry-icons></script>
     <script src="./deal-lucide.js?v=1d0bbabc45"></script>
     <script src="./deal-en-us.js?v=a5299d82c1"></script>
-    <script src="./deal-ui.js?v=1ebeb16248"></script>
+    <script src="./deal-ui.js?v=2a567a9b47"></script>
   </head>
   <body class="landing-discover-mode">
     <a class="skip-link" href="#mainContent">Skip to main content</a>
@@ -118,11 +118,11 @@
     </nav>
 
     <nav class="deal-subnav wishlist-subnav" aria-label="Menu Wishlist" hidden>
-      <button class="active" type="button" data-wishlist-view="all"><span aria-hidden="true">♡</span> All saved items <small data-wishlist-count="all">0</small></button>
-      <button type="button" data-wishlist-view="deal"><span aria-hidden="true">🏷️</span> Deal <small data-wishlist-count="deal">0</small></button>
-      <button type="button" data-wishlist-view="coupon"><span aria-hidden="true">🎟️</span> Coupon <small data-wishlist-count="coupon">0</small></button>
-      <button type="button" data-wishlist-view="last-minute"><span aria-hidden="true">⚡</span> Last Minute <small data-wishlist-count="last-minute">0</small></button>
-      <button type="button" data-wishlist-view="openings"><span aria-hidden="true">🎊</span> Saved grand openings <small data-wishlist-count="openings">0</small></button>
+      <button class="active" type="button" data-wishlist-view="all"><span class="deal-nav-art" aria-hidden="true"><img src="./assets/nav-icons/saved-heart.png" alt="" width="24" height="24" /></span> All saved items <small data-wishlist-count="all">0</small></button>
+      <button type="button" data-wishlist-view="deal"><span class="deal-nav-art" aria-hidden="true"><img src="./assets/nav-icons/match-hot-sale-15737254.png" alt="" width="24" height="24" /></span> Deal <small data-wishlist-count="deal">0</small></button>
+      <button type="button" data-wishlist-view="coupon"><span class="deal-nav-art" aria-hidden="true"><img src="./assets/nav-icons/coupons.png" alt="" width="24" height="24" /></span> Coupon <small data-wishlist-count="coupon">0</small></button>
+      <button type="button" data-wishlist-view="last-minute"><span class="deal-nav-art" aria-hidden="true"><img src="./assets/nav-icons/last-minute.png" alt="" width="24" height="24" /></span> Last Minute <small data-wishlist-count="last-minute">0</small></button>
+      <button type="button" data-wishlist-view="openings"><span class="deal-nav-art" aria-hidden="true"><img src="./assets/nav-icons/openings.png" alt="" width="24" height="24" /></span> Saved grand openings <small data-wishlist-count="openings">0</small></button>
     </nav>
 
     <main id="mainContent" tabindex="-1">
@@ -680,7 +680,7 @@
             </a>
             <p>Part of the Nexora ecosystem — from discovery to booking and redemption.</p>
             <small>Operated by Nexora Touch LLC · Houston, Texas</small>
-            <small class="deal-icon-credit"><a href="https://www.flaticon.com/free-icon/3d-discount_10473619" target="_blank" rel="noopener noreferrer">Magnific · Flaticon</a> · <a href="https://www.flaticon.com/free-icon/hot-sale_15737254" target="_blank" rel="noopener noreferrer">redempticon · Flaticon</a></small>
+            <small class="deal-icon-credit"><a href="https://www.flaticon.com/free-icon/3d-discount_10473619" target="_blank" rel="noopener noreferrer">Magnific · Flaticon</a> · <a href="https://www.flaticon.com/free-icon/hot-sale_15737254" target="_blank" rel="noopener noreferrer">redempticon · Flaticon</a> · <a href="https://www.flaticon.com/free-icon/heart_833472" target="_blank" rel="noopener noreferrer">Kiranshastry · Flaticon</a></small>
           </div>
 
           <div class="footer-download" id="download-app" aria-label="Download Nexora Touch">
@@ -727,12 +727,12 @@
     </footer>
 
     <nav class="mobile-nav" aria-label="Mobile navigation">
-      <a class="active" href="#discover"><span class="deal-mobile-nav-icon" data-deal-nav-icon="House" aria-hidden="true"></span><span class="deal-mobile-nav-label">Home</span></a>
-      <a href="#last-minute"><span class="deal-mobile-nav-icon" data-deal-nav-icon="Zap" aria-hidden="true"></span><span class="deal-mobile-nav-label">Last Minute</span></a>
-      <a href="#coupons"><span class="deal-mobile-nav-icon" data-deal-nav-icon="Ticket" aria-hidden="true"></span><span class="deal-mobile-nav-label">Deal</span></a>
+      <a class="active" href="#discover" hidden aria-current="page"><span class="deal-mobile-nav-icon" aria-hidden="true"><img class="deal-mobile-nav-art" src="./assets/nav-icons/phone-home.png" alt="" width="32" height="32" /></span><span class="deal-mobile-nav-label">Home</span></a>
+      <a href="#last-minute"><span class="deal-mobile-nav-icon" aria-hidden="true"><img class="deal-mobile-nav-art" src="./assets/nav-icons/phone-last-minute.png" alt="" width="32" height="32" /></span><span class="deal-mobile-nav-label">Last Minute</span></a>
+      <a href="#coupons"><span class="deal-mobile-nav-icon" aria-hidden="true"><img class="deal-mobile-nav-art" src="./assets/nav-icons/phone-deal.png" alt="" width="32" height="32" /></span><span class="deal-mobile-nav-label">Deal</span></a>
       <button class="mobile-create request-button" type="button" aria-label="Post a request"><span class="deal-mobile-nav-icon" data-deal-nav-icon="Plus" aria-hidden="true"></span><span class="deal-mobile-nav-label">Post a request</span></button>
-      <a href="#wishlist"><span class="deal-mobile-nav-icon" data-deal-nav-icon="Heart" aria-hidden="true"></span><span class="deal-mobile-nav-label">Saved</span></a>
-      <button class="oneqr-launch" type="button"><span class="deal-mobile-nav-icon" data-deal-nav-icon="QrCode" aria-hidden="true"></span><span class="deal-mobile-nav-label">OneQR</span></button>
+      <a href="#wishlist"><span class="deal-mobile-nav-icon" aria-hidden="true"><img class="deal-mobile-nav-art" src="./assets/nav-icons/phone-saved.png" alt="" width="32" height="32" /></span><span class="deal-mobile-nav-label">Saved</span></a>
+      <button class="oneqr-launch" type="button"><span class="deal-mobile-nav-icon" aria-hidden="true"><img class="deal-mobile-nav-art" src="./assets/nav-icons/phone-oneqr.png" alt="" width="32" height="32" /></span><span class="deal-mobile-nav-label">OneQR</span></button>
     </nav>
 
     <aside class="ai-guide-nudge" id="aiGuideNudge" aria-live="polite" hidden>
@@ -1344,6 +1344,6 @@
   <script src="./mobile-directory-nav.js"></script>
   <script src="./mobile-home-polish.js"></script>
   <script src="./mobile-industry-picker.js?v=73c7d5d2d6"></script>
-  <script src="./app-deal-workspace.js?v=58cf85bd2c"></script>
+  <script src="./app-deal-workspace.js?v=7b60aa9354"></script>
   </body>
 </html>

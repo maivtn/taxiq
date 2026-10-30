@@ -2608,6 +2608,10 @@ function tickLastMinuteCountdowns() {
 
 function showToast(message) {
   const toast = document.querySelector("#toast");
+  const activeDialog = document.activeElement?.closest("dialog[open]")
+    || Array.from(document.querySelectorAll("dialog[open]")).at(-1);
+  const toastLayer = activeDialog || document.body;
+  if (toast.parentElement !== toastLayer) toastLayer.append(toast);
   toast.textContent = message;
   toast.classList.add("show");
   window.clearTimeout(toastTimer);
@@ -2983,7 +2987,14 @@ function setActiveNavigation(hash) {
     if (active) link.setAttribute("aria-current", "page");
     else link.removeAttribute("aria-current");
   });
-  mobileNav?.style.setProperty("--deal-nav-count", mobileNav.querySelectorAll(":scope > :not([hidden])").length);
+  if (mobileNav) {
+    const create = mobileNav.querySelector(".mobile-create");
+    const destinations = Array.from(mobileNav.children).filter((item) => !item.hidden && item !== create);
+    const middle = Math.ceil(destinations.length / 2);
+    destinations.forEach((item, index) => { item.style.order = index < middle ? index : index + 1; });
+    if (create) create.style.order = middle;
+    mobileNav.style.setProperty("--deal-nav-count", destinations.length + (create ? 1 : 0));
+  }
 }
 
 function setActiveDealSubnav(hash) {
@@ -4178,16 +4189,7 @@ function initializeDealMatchSelects() {
     });
     control.control.setAttribute("aria-labelledby", `${select.id}Label`);
     control.on("dropdown_open", () => {
-      const bounds = control.control.getBoundingClientRect();
-      const nav = document.querySelector(".mobile-nav");
-      const bottom = nav?.getClientRects().length ? nav.getBoundingClientRect().top : window.innerHeight;
-      const header = document.querySelector(".deal-subnav");
-      const top = Math.max(16, header?.getBoundingClientRect().bottom || 0);
-      const below = Math.max(0, bottom - bounds.bottom - 16);
-      const above = Math.max(0, bounds.top - top - 16);
-      const opensUp = below < 264 && above > below;
-      control.wrapper.classList.toggle("dw-select-opens-up", opensUp);
-      control.wrapper.style.setProperty("--dw-select-available", `${Math.max(44, opensUp ? above : below)}px`);
+      window.NEXORA_DEAL_PRESENTATION?.positionMatchSelect?.(control.wrapper);
     });
   });
 }
@@ -4589,7 +4591,7 @@ function renderDealWorkspace(route) {
   if (route === "#nearby") applyNearbyFilters();
   if (route === "#nail-salons") initializeNailDirectory();
   setActiveNavigation(route);
-  window.scrollTo({ top: 0, behavior: "smooth" });
+  window.scrollTo({ top: 0, behavior: getDealScrollBehavior() });
 }
 
 function closeDealWorkspace() {
@@ -4984,6 +4986,10 @@ dealWorkspace?.addEventListener("submit", (event) => {
   }
 });
 
+function getDealScrollBehavior() {
+  return matchMedia("(pointer: coarse), (prefers-reduced-motion: reduce)").matches ? "auto" : "smooth";
+}
+
 function handleRoute(hash) {
   const route = hash || "#discover";
   announceRoute(route);
@@ -5003,7 +5009,7 @@ function handleRoute(hash) {
   if (route === "#openings") {
     state.savedOnly = false;
     setActiveNavigation("#coupons");
-    document.querySelector("#openings").scrollIntoView({ behavior: "smooth", block: "start" });
+    document.querySelector("#openings").scrollIntoView({ behavior: getDealScrollBehavior(), block: "start" });
     emitNexoraFunctionEvent("open_function", { function: "openings" });
     return;
   }
@@ -5020,7 +5026,7 @@ function handleRoute(hash) {
     lastMinuteWindow = "all";
     lastMinuteIndustry = "beauty";
     applyLastMinuteFilters();
-    document.querySelector("#last-minute").scrollIntoView({ behavior: "smooth", block: "start" });
+    document.querySelector("#last-minute").scrollIntoView({ behavior: getDealScrollBehavior(), block: "start" });
     showToast("Giờ trống của tôi là mục cá nhân; đăng nhập NEXORA ID để đăng và quản lý slot trống.");
     emitNexoraFunctionEvent("open_function", { function: "my-open-slots", auth_required: true });
     return;
@@ -5036,7 +5042,7 @@ function handleRoute(hash) {
     lastMinuteWindow = "all";
     lastMinuteIndustry = "all";
     applyLastMinuteFilters();
-    document.querySelector("#last-minute").scrollIntoView({ behavior: "smooth", block: "start" });
+    document.querySelector("#last-minute").scrollIntoView({ behavior: getDealScrollBehavior(), block: "start" });
     emitNexoraFunctionEvent("open_function", { function: "last-minute" });
     return;
   }
@@ -5044,7 +5050,7 @@ function handleRoute(hash) {
     state.savedOnly = false;
     setActiveNavigation(route);
     renderCoupons();
-    document.querySelector("#coupons").scrollIntoView({ behavior: "smooth", block: "start" });
+    document.querySelector("#coupons").scrollIntoView({ behavior: getDealScrollBehavior(), block: "start" });
     emitNexoraFunctionEvent("open_function", { function: "coupons" });
     return;
   }
@@ -5068,20 +5074,24 @@ function handleRoute(hash) {
     setActiveNavigation(route);
     document.querySelectorAll("[data-wishlist-view]").forEach((button) => button.classList.toggle("active", button.dataset.wishlistView === wishlistView));
     renderDeals();
-    document.querySelector(".results-heading").scrollIntoView({ behavior: "smooth", block: "start" });
+    requestAnimationFrame(() => requestAnimationFrame(() => {
+      if (location.hash === route) {
+        document.querySelector(".results-heading").scrollIntoView({ behavior: getDealScrollBehavior(), block: "start" });
+      }
+    }));
     return;
   }
   if (route === "#categories") {
     state.savedOnly = false;
     setActiveNavigation(route);
     renderDeals();
-    document.querySelector("#categories").scrollIntoView({ behavior: "smooth", block: "start" });
+    document.querySelector("#categories").scrollIntoView({ behavior: getDealScrollBehavior(), block: "start" });
     emitNexoraFunctionEvent("open_function", { function: "categories" });
     return;
   }
   if (route === "#download-app") {
     setActiveNavigation("#discover");
-    document.querySelector("#download-app")?.scrollIntoView({ behavior: "smooth", block: "center" });
+    document.querySelector("#download-app")?.scrollIntoView({ behavior: getDealScrollBehavior(), block: "center" });
     emitNexoraFunctionEvent("open_function", { function: "download-app" });
     return;
   }
@@ -5651,4 +5661,6 @@ if (incomingFunctionRoute) {
   handleRoute(incomingFunctionRoute);
 } else if (location.hash && location.hash !== "#discover") {
   handleRoute(location.hash);
+} else {
+  setActiveNavigation("#discover");
 }
