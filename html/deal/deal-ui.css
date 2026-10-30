@@ -505,3 +505,13 @@ body:has(.dw-match-select .dropdown-active) .ai-guide-fab{visibility:hidden}
 .discover-rails em{font-size:13px!important;line-height:1.4!important;white-space:normal}
 .discover-rails small{font-size:10.5px!important;line-height:1.3}
 .discover-rails>:is(a,button)>b{display:grid;place-items:center;justify-self:end;width:24px;min-width:24px;margin:0;line-height:1.3}
+
+/* Phone metrics use two compact cards per row with room for complete labels. */
+@media(max-width:720px){
+  .platform-network-stats{grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:16px}
+  .platform-network-stats article{grid-template-columns:30px minmax(0,1fr);gap:6px 8px;align-content:start;min-height:78px;padding:12px 10px;border-radius:14px}
+  .platform-network-stats article>span{grid-row:auto;width:30px;height:30px;border-radius:9px}
+  .platform-network-stats .deal-action-icon{width:18px;height:18px}
+  .platform-network-stats strong{min-width:0;font-size:20px;line-height:1.1;letter-spacing:-.03em}
+  .platform-network-stats small{grid-column:1/-1;min-width:0;font-size:11px;line-height:1.35;color:#5d6880}
+}
