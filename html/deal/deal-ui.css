@@ -265,6 +265,9 @@ body:has(.dw-match-select .dropdown-active) .ai-guide-fab{visibility:hidden}
   .deal-popover-up .dw-nearby-popover{top:auto;bottom:calc(100% + 8px)}
   .deal-popover-fixed .dw-nearby-popover{position:fixed;top:var(--deal-popover-top,140px);right:calc(12px + env(safe-area-inset-right));left:calc(12px + env(safe-area-inset-left));bottom:auto;width:min(420px,calc(100vw - env(safe-area-inset-left) - env(safe-area-inset-right) - 24px));max-width:none;margin-inline:auto}
 }
+@media(max-width:860px) and (hover:none) and (pointer:coarse){
+  .deal-dialog-content{grid-column:1;grid-row:2}
+}
 @media(prefers-reduced-motion:reduce){html{scroll-behavior:auto!important}}
 @media(max-width:640px){body > .toast{bottom:max(calc(98px + env(safe-area-inset-bottom)),calc(var(--deal-keyboard-inset,0px) + 12px))}}
 @media(max-width:360px){
