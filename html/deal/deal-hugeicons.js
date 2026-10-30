@@ -13,6 +13,7 @@
   const sourceKeys = new Map(Object.keys(previous?.files || {}).map(key => [previous.path(key), key]));
   const paths = new Map();
   let sequence = 0;
+  const useFlaticonIndustries = () => location.hash === '#coupons';
 
   function resolve(key, catalog = 'default') {
     key = String(key || 'other');
@@ -42,6 +43,7 @@
   }
 
   function image(key, options = {}) {
+    if (previous && useFlaticonIndustries()) return previous.image(key, options);
     const canonical = resolve(key, options.catalog);
     const name = data.industries[canonical];
     // Keep dedicated artwork when the free collection has no suitable trade icon.
@@ -55,6 +57,7 @@
   }
 
   function path(key, catalog) {
+    if (previous && useFlaticonIndustries()) return previous.path(key, catalog);
     const canonical = resolve(key, catalog);
     if (!data.industries[canonical] && previous) return previous.path(key, catalog);
     if (!paths.has(canonical)) {
@@ -103,6 +106,7 @@
   document.head.append(style);
 
   function replaceArtwork() {
+    if (useFlaticonIndustries()) return;
     document.querySelectorAll('img.industry-flat-icon').forEach(element => {
       const key = element.dataset.industryArtwork || sourceKeys.get(element.src);
       if (!key || !data.industries[resolve(key, element.dataset.industryCatalog)]) return;
