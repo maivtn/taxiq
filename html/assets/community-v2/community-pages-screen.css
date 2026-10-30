@@ -143,3 +143,13 @@ body.community-page-screen #pagesView > :not(#communityPageScreen) { display:non
 .page-ads-toggle:has(input:checked) { border-color:#c5bcff; background:#f6f4ff; }
 #pageAdsSettings { min-width:0; margin:0; padding:0; border:0; }
 #pageAdsSettings[hidden],.page-ads-dialog .dialog-footer .btn[hidden] { display:none; }
+
+/* Keep Page actions recognizable by using the same tone in both action rows. */
+#communityPageScreen [data-edit-page] { --page-action-bg:#eff6ff; --page-action-hover:#dbeafe; --page-action-ink:#1d4ed8; --page-action-border:#bfdbfe; }
+#communityPageScreen [data-page-compose] { --page-action-bg:#ecfdf5; --page-action-hover:#d1fae5; --page-action-ink:#047857; --page-action-border:#a7f3d0; }
+#communityPageScreen [data-share-page] { --page-action-bg:#ecfeff; --page-action-hover:#cffafe; --page-action-ink:#0e7490; --page-action-border:#a5f3fc; }
+#communityPageScreen [data-page-deal] { --page-action-bg:#fff7ed; --page-action-hover:#ffedd5; --page-action-ink:#9a3412; --page-action-border:#fed7aa; }
+#communityPageScreen [data-promote-page] { --page-action-bg:#fdf2f8; --page-action-hover:#fce7f3; --page-action-ink:#be185d; --page-action-border:#fbcfe8; }
+#communityPageScreen :is(.page-hero-actions,.page-owner-tools) .btn:is([data-edit-page],[data-page-compose],[data-share-page],[data-page-deal],[data-promote-page]) { background:var(--page-action-bg); color:var(--page-action-ink); border-color:var(--page-action-border); }
+#communityPageScreen :is(.page-hero-actions,.page-owner-tools) .btn:is([data-edit-page],[data-page-compose],[data-share-page],[data-page-deal],[data-promote-page]):hover { background:var(--page-action-hover); }
+#communityPageScreen :is(.page-hero-actions,.page-owner-tools) .btn:is([data-edit-page],[data-page-compose],[data-share-page],[data-page-deal],[data-promote-page]):focus-visible { outline:3px solid var(--page-action-ink); outline-offset:2px; }
