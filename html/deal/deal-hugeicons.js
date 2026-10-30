@@ -1,4 +1,4 @@
-/* Deal industry icons: free Hugeicons rendered locally with Iconify. */
+/* Deal industry and interface icons: free Hugeicons rendered locally with Iconify. */
 (() => {
   'use strict';
 
@@ -12,14 +12,33 @@
   const groups = { ...data.groups, ...previous?.groups };
   const sourceKeys = new Map(Object.keys(previous?.files || {}).map(key => [previous.path(key), key]));
   const paths = new Map();
-  const escape = value => String(value).replace(/[&<>"']/g, character => ({ '&':'&amp;', '<':'&lt;', '>':'&gt;', '"':'&quot;', "'":'&#39;' }[character]));
+  let sequence = 0;
 
   function resolve(key, catalog = 'default') {
     key = String(key || 'other');
+    if (Object.hasOwn(data.industries, key)) return key;
     if (key.startsWith('group:')) key = groups[key.slice(6)] || 'other';
-    else if (key.endsWith('_other')) key = groups[key.slice(0, -6)] || 'other';
-    key = previous?.catalogs[catalog]?.[key] || aliases[key] || key;
+    else if (key.endsWith('_other')) return resolve('group:' + key.slice(0, -6), catalog);
+    key = previous?.catalogs?.[catalog]?.[key] || aliases[key] || key;
     return Object.hasOwn(data.industries, key) ? key : previous?.resolve(key, catalog) || 'other';
+  }
+
+  function graphic(value, attributes = {}) {
+    const [name, badge] = Array.isArray(value) ? value : [value];
+    const built = IconifyIcon.buildIcon({ width:24, height:24, ...data.collection.icons[name] });
+    let body = built.body;
+    if (badge) {
+      // Combine original Hugeicons for trades without a dedicated free pictogram.
+      const mask = 'deal-hugeicon-' + (++sequence);
+      const detail = IconifyIcon.buildIcon({ width:24, height:24, ...data.collection.icons[badge] });
+      body = `<defs><mask id="${mask}" maskUnits="userSpaceOnUse" x="0" y="0" width="24" height="24"><rect width="24" height="24" fill="white"/><circle cx="19" cy="19" r="8" fill="black"/></mask></defs><g mask="url(#${mask})">${body}</g><g transform="translate(12 12) scale(.5)">${detail.body.replace(/stroke-width="1.5"/g, 'stroke-width="2"')}</g>`;
+    }
+    const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
+    const values = { xmlns:'http://www.w3.org/2000/svg', ...built.attributes, width:24, height:24, 'aria-hidden':'true', focusable:'false', ...attributes, 'data-icon':'hugeicons:' + name };
+    if (badge) values['data-badge-icon'] = 'hugeicons:' + badge;
+    for (const [attribute, value] of Object.entries(values)) svg.setAttribute(attribute, value);
+    svg.innerHTML = body;
+    return svg;
   }
 
   function image(key, options = {}) {
@@ -28,10 +47,11 @@
     // Keep dedicated artwork when the free collection has no suitable trade icon.
     if (!name && previous) return previous.image(key, options);
     const size = Math.max(16, Math.min(96, Number(options.size) || 24));
-    const iconName = name || data.industries.other;
-    const icon = IconifyIcon.buildIcon({ width:24, height:24, ...data.collection.icons[iconName] }, { width:size, height:size });
-    const attributes = Object.entries(icon.attributes).map(([name, value]) => `${name}="${escape(value)}"`).join(' ');
-    return `<svg xmlns="http://www.w3.org/2000/svg" ${attributes} class="industry-flat-icon deal-hugeicon ${escape(options.className || '')}" data-hugeicon-key="${escape(canonical)}" data-icon="hugeicons:${escape(iconName)}" aria-hidden="true" focusable="false">${icon.body}</svg>`;
+    return graphic(name || data.industries.other, {
+      width:size, height:size,
+      class:['industry-flat-icon', 'deal-hugeicon', ...String(options.className || '').split(/\s+/)].filter((value, index, values) => value && values.indexOf(value) === index).join(' '),
+      'data-hugeicon-key':canonical,
+    }).outerHTML;
   }
 
   function path(key, catalog) {
@@ -47,10 +67,31 @@
   window.NEXORA_DEAL_HUGEICONS = Object.freeze({ image, path, resolve });
   if (previous) window.NEXORA_INDUSTRY_ICONS = Object.freeze({ ...previous, image, path, resolve });
 
+  // Existing presentation rules keep their selectors, labels, and state handling.
+  const presentation = window.NEXORA_DEAL_LUCIDE;
+  if (presentation) {
+    const names = new Map(Object.entries(presentation.icons).map(([name, nodes]) => [nodes, name]));
+    window.NEXORA_DEAL_LUCIDE = Object.freeze({
+      ...presentation,
+      createElement(nodes, attributes = {}) {
+        const name = names.get(nodes);
+        if (!data.actions[name]) return presentation.createElement(nodes, attributes);
+        return graphic(data.actions[name], { ...attributes, class:(attributes.class || '') + ' deal-ui-icon' });
+      },
+    });
+  }
+
   const style = document.createElement('style');
   style.id = 'deal-hugeicons-style';
   style.textContent = `
     .deal-hugeicon{display:inline-block;flex-shrink:0;vertical-align:middle;pointer-events:none}
+    .deal-ui-icon{display:inline-block;flex-shrink:0;vertical-align:-.15em;pointer-events:none}
+    .deal-ui-icon.is-filled path{fill:currentColor}
+    :is(.dw-primary,.primary-cta,.dw-chip.active,.dw-area-mode.active,.discover-entry,.discover-hero-actions button,.dw-lm-customer-hero,.deal-subnav a,.deal-subnav a.active) .deal-ui-icon{color:inherit}
+    .dw-lm-bolt .deal-ui-icon{width:28px;height:28px;color:white}
+    .dw-ticket-art .deal-ui-icon{width:26px;height:26px;color:white}
+    .dw-nearby-controls h1 .deal-ui-icon{color:#7153db}
+    .dw-area-tag b .deal-ui-icon{width:14px;height:14px;margin:0;vertical-align:middle;color:inherit}
     .dw-category-icon .deal-hugeicon{width:32px;height:32px}
     .dw-chip .deal-hugeicon,[data-dw-selected-group] .deal-hugeicon{width:20px;height:20px}
     .dw-category-group h2 .deal-hugeicon{width:24px;height:24px}
@@ -137,10 +178,64 @@
     });
   }
 
+  function semantic(element, name, add = true) {
+    if (!element || !name) return;
+    const existing = element.querySelector('svg');
+    if (existing?.getAttribute('data-icon') === 'hugeicons:' + name) return;
+    if (!existing && !add) return;
+    const attributes = existing ? Object.fromEntries(Array.from(existing.attributes, attribute => [attribute.name, attribute.value])) : { width:18, height:18, class:'deal-inline-icon' };
+    attributes.class = (attributes.class || '') + ' deal-ui-icon';
+    const icon = graphic(name, attributes);
+    if (existing) existing.replaceWith(icon);
+    else {
+      const text = Array.from(element.childNodes).find(node => node.nodeType === Node.TEXT_NODE && node.nodeValue.trim());
+      if (text) text.nodeValue = text.nodeValue.replace(/^\s*[🔥✦✨⚡🏷🎟🎫💅🎊🎉🏙🗺📍⌖▤\uFE0F]+\s*/u, '');
+      element.prepend(icon, document.createTextNode(' '));
+    }
+  }
+
+  function refreshSemantics() {
+    document.querySelectorAll('[data-deal-subroute]').forEach(element => semantic(element, data.routes[element.dataset.dealSubroute]));
+    document.querySelectorAll('.discover-entry').forEach(element => semantic(element.querySelector('.discover-entry-icon'), data.routes[element.getAttribute('href')?.slice(1)]));
+    document.querySelectorAll('.dw-nearby-controls h1').forEach(element => semantic(element, data.routes.nearby));
+    document.querySelectorAll('.dw-match-hero h1,.dw-match-top h1').forEach(element => semantic(element, data.routes.requests));
+    document.querySelectorAll('h1').forEach(element => {
+      if (element.textContent.replace(/^[^\p{L}\p{N}]+/u, '').trim() === 'Deal Match') semantic(element, data.routes.requests);
+    });
+    document.querySelectorAll('.dw-directory-head h1').forEach(element => semantic(element, data.routes.coupons));
+    document.querySelectorAll('.dw-opening-page h1').forEach(element => semantic(element, data.routes.openings));
+    document.querySelectorAll('.dw-lm-bolt').forEach(element => semantic(element, data.routes['last-minute']));
+    document.querySelectorAll('.dw-lm-card-time>span').forEach(element => semantic(element, 'clock-01'));
+    document.querySelectorAll('.dw-ticket-art span').forEach(element => semantic(element, 'discount-tag-01'));
+    document.querySelectorAll('.dw-ticket-meta>span:nth-child(2)').forEach(element => {
+      const countdown = /\bdays? left\b|\bends?\b|\bleft\b|còn|hết hạn/i.test(element.textContent);
+      semantic(element, countdown ? 'hourglass' : 'calendar-03');
+    });
+    document.querySelectorAll('a[data-open]').forEach(element => semantic(element, 'store-01'));
+    document.querySelectorAll('button[data-open]').forEach(element => {
+      const label = element.textContent.trim();
+      const name = /^(Get coupon|Claim|Lấy coupon|Nhận coupon)/i.test(label) ? 'coupon-01'
+        : /^(Reserve this|Giữ phần|Giữ món)/i.test(label) ? 'shopping-basket-check-in-01'
+        : /^(Book|Reserve a spot|Đặt|Giữ chỗ)/i.test(label) ? 'calendar-check-01' : 'view';
+      semantic(element, name);
+    });
+    document.querySelectorAll('[data-coupon-claim],#claimDealButton').forEach(element => semantic(element, 'coupon-01'));
+    document.querySelectorAll('[data-dw-nail-menu]:not([data-dw-industry-id])').forEach(element => semantic(element, 'menu-restaurant'));
+    document.querySelectorAll('[data-ai-generate],.ai-guide-fab,.ai-guide-launch,.copilot-button,#aiOptimizeButton').forEach(element => semantic(element, 'ai-sparkles', false));
+    document.querySelectorAll('[data-dw-remove-area]').forEach(element => {
+      element.querySelector(':scope>svg.deal-action-icon')?.remove();
+      semantic(element.querySelector(':scope>span'), 'location-01');
+      const close = element.querySelector(':scope>b');
+      semantic(close, 'cancel-01');
+      close?.querySelector('svg')?.classList.add('deal-action-icon');
+    });
+  }
+
   function refresh() {
     replaceArtwork();
     replaceIndustryGlyphs();
     refreshSelects();
+    refreshSemantics();
   }
 
   function start() {
