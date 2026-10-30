@@ -8,7 +8,7 @@
     'feed-sale':'flash-sale-15106141.png', 'feed-job':'posting-8522069.png',
     'feed-poll':'vote-8121705.png', 'feed-tip':'mode-8484254.png',
     'feed-ask':'speech-bubble-5726734.png',
-    'feed-event':'event-18669653.png', 'feed-blog':'blog-6114045.png'
+    'feed-event':'event-18669653.png', 'feed-blog':'blog-1352524.png'
   };
   const artwork = {
     feed:'layout-list', market:'users-round', groups:'users-round', pages:'building-2',
