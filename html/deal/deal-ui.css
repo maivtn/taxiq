@@ -432,3 +432,12 @@ body:has(.dw-match-select .dropdown-active) .ai-guide-fab{visibility:hidden}
   body.landing-discover-mode .ai-guide-fab{bottom:calc(190px + env(safe-area-inset-bottom))!important}
   body.landing-discover-mode .ai-guide-nudge{bottom:calc(248px + env(safe-area-inset-bottom))}
 }
+
+/* Last Minute filters use the same compact, borderless option list as industry selects. */
+.dw-lm-filterbar:has(.dw-lm-select){grid-template-columns:minmax(0,.9fr) minmax(0,1.1fr);gap:12px;padding:16px}
+.dw-lm-filterbar .dw-lm-select{max-width:none}
+.dw-lm-select>label{display:block;margin-bottom:7px;color:#33405a;font-size:13px;font-weight:700}
+.dw-lm-select .ts-control,.dw-lm-select .ts-dropdown{font-size:13px}
+.dw-lm-select .dw-match-select-icon{width:22px;height:22px;background:transparent}
+.dw-lm-select .dw-match-select-choice{gap:7px}
+@media(max-width:360px){.dw-lm-filterbar:has(.dw-lm-select){grid-template-columns:minmax(0,1fr)}}

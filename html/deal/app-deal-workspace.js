@@ -4693,10 +4693,10 @@ function initializeDealMatchSelects() {
     if (select.tomselect || select.disabled) return;
     const choice = (data) => {
       const option = Array.from(select.options).find((item) => item.value === String(data.value));
-      const artwork = window.NEXORA_INDUSTRY_ICONS.image(option?.dataset.industryIcon || "other", {
+      const artwork = select.dataset.dwLmSelect === "window" ? "" : window.NEXORA_INDUSTRY_ICONS.image(option?.dataset.industryIcon || "other", {
         size: 20, className: "deal-industry-icon industry-choice-icon",
       });
-      return `<div class="dw-match-select-choice"><span class="dw-match-select-icon">${artwork}</span><span>${escapeHTML(option?.textContent || data.text)}</span></div>`;
+      return `<div class="dw-match-select-choice">${artwork ? `<span class="dw-match-select-icon">${artwork}</span>` : ""}<span>${escapeHTML(option?.textContent || data.text)}</span></div>`;
     };
     const control = new window.TomSelect(select, {
       create: false, maxItems: 1, maxOptions: null, controlInput: null,
@@ -4939,7 +4939,7 @@ function renderLastMinuteCustomer() {
   const categories = [...new Set(lastDeals.map(categoryFor))];
   return `<section class="dw-lm-customer" aria-label="${workspaceCopy("Last Minute dành cho khách hàng", "Last Minute offers for customers")}">
     <div class="dw-lm-customer-hero"><div><span class="dw-kicker">${workspaceCopy("GIÁ TỐT CHỈ CÒN HÔM NAY · KHÔNG CẦN CÀI APP", "TODAY'S BEST PRICES · NO APP REQUIRED")}</span><h2>${workspaceCopy("Chọn nhanh trước khi hết giờ", "Choose before time runs out")}</h2><p>${workspaceCopy("Đặt giờ trống vừa mở hoặc giữ phần hàng tươi cuối ngày ở gần bạn. Giá và số lượng được cập nhật trực tiếp.", "Book a newly open appointment or reserve fresh goods nearby. Prices and availability update live.")}</p></div><div class="dw-lm-location"><span>📍</span><div><small>${workspaceCopy("Khu vực của bạn", "Your area")}</small><b>Garden Grove, CA</b></div><button type="button" data-dw-route="#requests">${workspaceCopy("Đổi nơi", "Change area")}</button></div></div>
-    <div class="dw-lm-filterbar"><div><b>${workspaceCopy("Khi nào?", "When?")}</b><div class="dw-chip-row">${(workspaceEnglish() ? [["all","All"],["soon","Within 2 hours"],["afternoon","This afternoon"],["evening","Tonight"]] : [["all","Tất cả"],["soon","Trong 2 giờ"],["afternoon","Chiều nay"],["evening","Tối nay"]]).map(([value,label], i) => `<button class="dw-chip ${i === 0 ? "active" : ""}" type="button" data-dw-group="lm-window" data-dw-value="${value}">${label}</button>`).join("")}</div></div><div><b>${workspaceCopy("Loại ưu đãi", "Offer type")}</b><div class="dw-chip-row"><button class="dw-chip active" type="button" data-dw-group="lm-category" data-dw-value="all">${workspaceCopy("Mọi ngành", "All industries")}</button>${categories.map((category) => `<button class="dw-chip" type="button" data-dw-group="lm-category" data-dw-value="${category}">${workspaceIndustryIcon({beauty:"nail",experience:"tour",service:"other"}[category] || category)} ${categoryMeta[category][1]}</button>`).join("")}</div></div></div>
+    <div class="dw-lm-filterbar"><div class="dw-match-select dw-lm-select"><label id="dwLastMinuteWindowLabel" for="dwLastMinuteWindow">${workspaceCopy("Khi nào?", "When?")}</label><select id="dwLastMinuteWindow" data-dw-match-select="lm-window" data-dw-lm-select="window">${(workspaceEnglish() ? [["all","All"],["soon","Within 2 hours"],["afternoon","This afternoon"],["evening","Tonight"]] : [["all","Tất cả"],["soon","Trong 2 giờ"],["afternoon","Chiều nay"],["evening","Tối nay"]]).map(([value,label]) => `<option value="${value}">${escapeHTML(label)}</option>`).join("")}</select></div><div class="dw-match-select dw-lm-select"><label id="dwLastMinuteCategoryLabel" for="dwLastMinuteCategory">${workspaceCopy("Loại ưu đãi", "Offer type")}</label><select id="dwLastMinuteCategory" data-dw-match-select="lm-category" data-dw-lm-select="category"><option value="all" data-industry-icon="other">${workspaceCopy("Mọi ngành", "All industries")}</option>${categories.map((category) => `<option value="${category}" data-industry-icon="${{beauty:"nail",experience:"tour",service:"other"}[category] || category}">${escapeHTML(categoryMeta[category][1])}</option>`).join("")}</select></div></div>
     <div class="dw-lm-results-head"><div><h2>${workspaceCopy("Đang có gần bạn", "Available near you")}</h2><p>${workspaceCopy("Chọn và giữ ngay — ưu đãi tự biến mất khi hết giờ hoặc hết số lượng.", "Book or reserve now. Offers close when time or inventory runs out.")}</p></div><strong data-dw-lm-count>${workspaceCopy(`${lastDeals.length} lựa chọn`, `${lastDeals.length} options`)}</strong></div>
     <div class="dw-lm-market-grid">${lastDeals.map((deal, i) => {
       const category = categoryFor(deal);
@@ -4962,8 +4962,8 @@ function renderLastMinuteCustomer() {
 
 function filterLastMinuteCustomer() {
   if (!dealWorkspace) return;
-  const windowName = dealWorkspace.querySelector('[data-dw-group="lm-window"].active')?.dataset.dwValue || "all";
-  const category = dealWorkspace.querySelector('[data-dw-group="lm-category"].active')?.dataset.dwValue || "all";
+  const windowName = dealWorkspace.querySelector('[data-dw-lm-select="window"]')?.value || "all";
+  const category = dealWorkspace.querySelector('[data-dw-lm-select="category"]')?.value || "all";
   let visible = 0;
   dealWorkspace.querySelectorAll("[data-dw-lm-card]").forEach((card) => {
     const show = (windowName === "all" || card.dataset.dwLmWindow === windowName) && (category === "all" || card.dataset.dwLmCategory === category);
@@ -4971,7 +4971,7 @@ function filterLastMinuteCustomer() {
     if (show) visible += 1;
   });
   const count = dealWorkspace.querySelector("[data-dw-lm-count]");
-  if (count) count.textContent = workspaceCopy(`${visible} lựa chọn`, `${visible} options`);
+  if (count) count.textContent = workspaceCopy(`${visible} lựa chọn`, `${visible} ${visible === 1 ? "option" : "options"}`);
   const empty = dealWorkspace.querySelector("[data-dw-lm-empty]");
   if (empty) empty.hidden = visible > 0;
 }
@@ -5103,7 +5103,7 @@ function renderDealWorkspace(route) {
   dealWorkspace.hidden = false;
   destroyDealMatchSelects();
   dealWorkspace.innerHTML = render();
-  if (route === "#requests") initializeDealMatchSelects();
+  if (["#requests", "#last-minute"].includes(route)) initializeDealMatchSelects();
   if (route === "#nearby") applyNearbyFilters();
   if (route === "#nail-salons") initializeNailDirectory();
   setActiveNavigation(route);
@@ -5176,10 +5176,6 @@ dealWorkspace?.addEventListener("click", (event) => {
     }
     if (chip.dataset.dwGroup === "match-radius") {
       updateDealMatchPreview();
-      return;
-    }
-    if (["lm-window", "lm-category"].includes(chip.dataset.dwGroup)) {
-      filterLastMinuteCustomer();
       return;
     }
   }
@@ -5354,7 +5350,11 @@ dealWorkspace?.addEventListener("click", (event) => {
     const selected = role.dataset.dwLmRole;
     role.parentElement?.querySelectorAll("button").forEach((button) => button.classList.toggle("active", button === role));
     const panel = dealWorkspace.querySelector("[data-dw-lm-role-panel]");
-    if (panel) panel.innerHTML = renderLastMinuteRole(selected);
+    if (panel) {
+      destroyDealMatchSelects();
+      panel.innerHTML = renderLastMinuteRole(selected);
+      initializeDealMatchSelects();
+    }
     const messages = {
       customer: "Đang xem trải nghiệm đặt giờ của khách.",
       owner: "Đây là bản xem trước; cấu hình thật nằm trong Nexora Touch Booking/POS.",
@@ -5426,6 +5426,10 @@ dealWorkspace?.addEventListener("input", (event) => {
 
 dealWorkspace?.addEventListener("change", (event) => {
   const select = event.target;
+  if (select.matches('[data-dw-lm-select]')) {
+    filterLastMinuteCustomer();
+    return;
+  }
   if (select.matches('[data-dw-match-select="suggestion"]')) {
     if (select.value === "all") return;
     const input = dealWorkspace.querySelector('[data-dw-match-form] input[name="need"]');
