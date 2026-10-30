@@ -468,7 +468,7 @@ body .toast { z-index: 100; max-width: min(420px, calc(100% - 24px)); overflow-w
 body .community-toolbar-filter-toggle,body .community-group-filter-toggle,body .market-info-toggle,body .compact-profile-toggle { display:none; }
 .connect-search-tools,.compact-profile-tools { display:contents; }
 @media(max-width:800px){
-  body.embedded #localDiscovery { min-height:44px; padding:0; margin-bottom:10px; border:0; background:transparent; }
+  body.embedded #localDiscovery { min-height:44px; padding:0; margin-bottom:4px; border:0; background:transparent; }
   body.embedded #localDiscovery.has-context-action .community-context-location { min-width:0; }
   body.embedded :is(#pagesView,#blogView,#dayworkView) > .feature-intro { display:none; }
   body.embedded #groupsView > .feature-intro { justify-content:space-between; gap:8px; margin-bottom:10px; }
