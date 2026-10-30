@@ -97,16 +97,21 @@ body .toolbar.market-toolbar { display: block; padding: 12px; }
 :is(#pageCards, #sponsoredFeed) .page-identity h3 { margin: 0 0 5px; line-height: 1.4; overflow-wrap: anywhere; }
 :is(#pageCards, #sponsoredFeed) .page-identity .meta { display: block; line-height: 1.5; overflow-wrap: anywhere; }
 #pageCards .page-actions { margin-top: auto; padding-top: 12px; }
-body #feedView.deal-mode #feedPosts {
+body #feedView.deal-mode #feedPosts,
+.page-offer-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
   align-items: stretch;
   gap: 16px;
 }
 body #feedView.deal-mode #feedPosts > :last-child:nth-child(odd),
-body #feedView.deal-mode #feedPosts > .empty { grid-column: 1 / -1; }
-body #feedView.deal-mode #feedPosts .content-card { display: flex; flex-direction: column; min-width: 0; }
-body #feedView.deal-mode #feedPosts .listing-actions { margin-top: auto; padding-top: 12px; }
+body #feedView.deal-mode #feedPosts > .empty,
+.page-offer-grid > :last-child:nth-child(odd) { grid-column: 1 / -1; }
+body #feedView.deal-mode #feedPosts .content-card,
+.page-offer-grid .content-card { display: flex; flex-direction: column; min-width: 0; }
+.page-offer-grid .content-card h3 { font-size:16px; margin:9px 0 6px; }
+body #feedView.deal-mode #feedPosts .listing-actions,
+.page-offer-grid .listing-actions { margin-top: auto; padding-top: 12px; }
 body #feedView.deal-mode .feature-layout { grid-template-columns: minmax(0, 1fr); }
 body .page-cover { background-size: cover; background-position: center; }
 .page-post-media:has(> :only-child) { grid-template-columns: minmax(0, 1fr); }
@@ -308,14 +313,22 @@ body .toast { z-index: 100; max-width: min(420px, calc(100% - 24px)); overflow-w
   body.embedded .toast { right: 12px; bottom: max(12px, env(safe-area-inset-bottom)); left: 12px; max-width: none; font-size: 13px; }
 
   /* Deal cards follow the single-column phone list. */
-  body.embedded #feedView.deal-mode #feedPosts { grid-template-columns: minmax(0, 1fr); gap: 14px; }
-  body.embedded #feedView.deal-mode #feedPosts .content-card { padding: 12px; }
-  body.embedded #feedView.deal-mode #feedPosts .content-card h3 { font-size: 16px; line-height: 1.4; }
-  body.embedded #feedView.deal-mode #feedPosts .content-card p { font-size: 14px; line-height: 1.65; }
-  body.embedded #feedView.deal-mode #feedPosts .blog-cover { aspect-ratio: 4 / 3; object-fit: cover; margin-top: 0; }
-  body.embedded #feedView.deal-mode #feedPosts .chips { gap: 5px; }
-  body.embedded #feedView.deal-mode #feedPosts .chip { font-size: 11px; }
-  body.embedded #feedView.deal-mode #feedPosts .listing-actions > button { width: 100%; padding: 8px; white-space: normal; }
+  body.embedded #feedView.deal-mode #feedPosts,
+  .page-offer-grid { grid-template-columns: minmax(0, 1fr); gap: 14px; }
+  body.embedded #feedView.deal-mode #feedPosts .content-card,
+  .page-offer-grid .content-card { padding: 12px; }
+  body.embedded #feedView.deal-mode #feedPosts .content-card h3,
+  .page-offer-grid .content-card h3 { font-size: 16px; line-height: 1.4; }
+  body.embedded #feedView.deal-mode #feedPosts .content-card p,
+  .page-offer-grid .content-card p { font-size: 14px; line-height: 1.65; }
+  body.embedded #feedView.deal-mode #feedPosts .blog-cover,
+  .page-offer-grid .blog-cover { aspect-ratio: 4 / 3; object-fit: cover; margin-top: 0; }
+  body.embedded #feedView.deal-mode #feedPosts .chips,
+  .page-offer-grid .chips { gap: 5px; }
+  body.embedded #feedView.deal-mode #feedPosts .chip,
+  .page-offer-grid .chip { font-size: 11px; }
+  body.embedded #feedView.deal-mode #feedPosts .listing-actions > button,
+  .page-offer-grid .listing-actions > button { width: 100%; padding: 8px; white-space: normal; }
 
   /* Connect keeps the composer visible while the message list scrolls. */
   body.embedded .shell { min-width: 0; padding: 12px 14px 24px; }
