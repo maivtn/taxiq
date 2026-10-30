@@ -95,6 +95,8 @@
     #tourSkip{border-color:#e0d8f6;background:#f4efff;color:#7358a6}#tourSkip:hover{background:#eae0ff}
     .tour-actions .tour-next{box-shadow:0 2px 0 #4f3ac1}
     @media(max-width:380px){.tour-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))}.tour-actions .tour-next{margin-left:0}}
+    .tabs .tab[hidden],.tabs .tab-group[hidden],.mobile-nav .tab[hidden]{display:none!important}
+    @media(max-width:800px){.mobile-nav:not([hidden]){grid-template-columns:none;grid-auto-flow:column;grid-auto-columns:minmax(0,1fr)}}
   </style>
   <link rel="stylesheet" href="community-embed.css?v=20261029-community-tour-actions-v21">
   <link rel="stylesheet" href="community-layout.css?v=20261029-community-tour-actions-v21">
@@ -159,6 +161,6 @@
     <div class="tour-actions"><button type="button" id="tourBack"></button><button type="button" id="tourPause"></button><button type="button" id="tourSkip"></button><button type="button" class="tour-next" id="tourNext"></button></div>
     <div class="tour-track" aria-hidden="true"><div class="tour-fill"></div></div>
   </section>
-  <script src="community-hub.js?v=20261030-tour-header-v33" defer></script>
+  <script src="community-hub.js?v=20261030-community-nav-v34" defer></script>
 </body>
 </html>
