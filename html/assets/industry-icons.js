@@ -1,5 +1,5 @@
 /* Shared industry artwork. Change files here to update every industry surface.
- * Special Flat by Magnific / Freepik: html/assets/flaticon-flat/sources.json. */
+ * Source and author details: html/assets/flaticon-flat/sources.json. */
 (function () {
   'use strict';
   const base = new URL('flaticon-flat/', document.currentScript.src);
@@ -134,7 +134,9 @@
     "family": "industry-family-547612.png",
     "security-guard": "industry-security-guard-4009139.png",
     "nail": "nail-1658222.png",
-    "hair": "hair-2042888.png",
+    "hair": "industry-hair-11376639.png",
+    "hair-comb": "industry-hair-comb-11376653.png",
+    "barber": "industry-barber-11376660.png",
     "spa": "spa-1057315.png",
     "tax": "taxiq-1651909.png",
     "remit": "payouts-9405882.png",
@@ -151,7 +153,7 @@
     pedicure:'pedi', tattoo:'pmu', nutrition:'diet', restaurant:'food',
     'fast-food':'fastfood', coffee:'drink', 'hot-pot':'hotpot', 'food-truck':'foodtruck',
     apparel:'fashion', flowers:'flower', repair:'mechanic', cosmetics:'cosmetics',
-    takeaway:'homefood', barber:'hair', supply:'nail', cosmetic:'cosmetics',
+    takeaway:'homefood', supply:'nail', cosmetic:'cosmetics',
     immigration:'lawyer', injury:'lawyer', entertainment:'entertain',
     nails:'nail', massage:'spa', cafe:'drink', truck:'foodtruck',
     solo:'professional', trainer:'fitness', mua:'cosmetics', makeup:'cosmetics',
@@ -186,7 +188,7 @@
     oneqr:Object.freeze({supply:'package', music:'music-school', security:'security-guard'})
   });
   const emoji = Object.freeze({
-    '💅':'nail','🦶':'pedi','💆':'spa','🧖':'skin','💇':'hair','💈':'hair','👁':'eye',
+    '💅':'nail','🦶':'pedi','💆':'spa','🧖':'skin','💇':'hair','💈':'barber','👁':'eye',
     '🦷':'dental','🩺':'clinic','🧠':'mental','💊':'pharm','🔬':'lab','🦴':'chiro',
     '💉':'medspa','🪒':'wax','🏋':'fitness','🧘':'yoga','🥗':'vegan','🧋':'boba',
     '🍽':'food','🍜':'food','🍲':'hotpot','🦞':'seafood','🥬':'vegan','🥡':'homefood',
@@ -262,6 +264,10 @@
     element.insertAdjacentHTML('afterbegin',image(key,{size:20,catalog,className:'industry-choice-icon'}));
   }
   function refresh() {
+    document.querySelectorAll('img[data-industry-artwork]').forEach(element => {
+      const source = path(element.dataset.industryArtwork,element.dataset.industryCatalog);
+      if (element.src !== source) element.src = source;
+    });
     document.querySelectorAll('select').forEach(select => {
       const isIndustry = select.hasAttribute('data-industry-select') || /industry|ngành/i.test(
         [select.id,select.name,select.getAttribute('aria-label')].join(' '));

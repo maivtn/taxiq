@@ -1288,6 +1288,42 @@
       "image": "https://cdn-icons-png.flaticon.com/128/4009/4009139.png",
       "file": "industry-security-guard-4009139.png",
       "label": "Guard"
+    },
+    {
+      "key": "industry-hair",
+      "word": "hair cut",
+      "href": "https://www.flaticon.com/free-icon/hair-cut_11376639",
+      "image": "https://cdn-icons-png.flaticon.com/128/11376/11376639.png",
+      "file": "industry-hair-11376639.png",
+      "label": "Hair Cut",
+      "author": "SBTS2018",
+      "author_url": "https://www.flaticon.com/authors/sbts2018",
+      "style": "SBTS2018 Flat",
+      "collection": "https://www.flaticon.com/packs/makeup-and-beauty1"
+    },
+    {
+      "key": "industry-hair-comb",
+      "word": "hair comb",
+      "href": "https://www.flaticon.com/free-icon/hair-comb_11376653",
+      "image": "https://cdn-icons-png.flaticon.com/128/11376/11376653.png",
+      "file": "industry-hair-comb-11376653.png",
+      "label": "Hair Comb",
+      "author": "SBTS2018",
+      "author_url": "https://www.flaticon.com/authors/sbts2018",
+      "style": "SBTS2018 Flat",
+      "collection": "https://www.flaticon.com/packs/makeup-and-beauty1"
+    },
+    {
+      "key": "industry-barber",
+      "word": "hair cutting",
+      "href": "https://www.flaticon.com/free-icon/hair-cutting_11376660",
+      "image": "https://cdn-icons-png.flaticon.com/128/11376/11376660.png",
+      "file": "industry-barber-11376660.png",
+      "label": "Hair Cutting",
+      "author": "SBTS2018",
+      "author_url": "https://www.flaticon.com/authors/sbts2018",
+      "style": "SBTS2018 Flat",
+      "collection": "https://www.flaticon.com/packs/makeup-and-beauty1"
     }
   ]
 }
