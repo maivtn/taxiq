@@ -21,6 +21,16 @@
   var businessCountries = [['US','United States','1'],['CA','Canada','1'],['VN','Vietnam','84'],['GB','United Kingdom','44'],['AU','Australia','61'],['SG','Singapore','65'],['JP','Japan','81'],['KR','South Korea','82'],['DE','Germany','49'],['FR','France','33'],['IN','India','91'],['CN','China','86'],['BR','Brazil','55'],['MX','Mexico','52'],['HK','Hong Kong','852'],['TW','Taiwan','886'],['MY','Malaysia','60'],['TH','Thailand','66'],['PH','Philippines','63'],['ID','Indonesia','62']];
   var businessTimeZones = ['America/Los_Angeles','America/Denver','America/Chicago','America/New_York','America/Anchorage','Pacific/Honolulu','America/Toronto','America/Vancouver','America/Edmonton','America/Winnipeg','America/Mexico_City','America/Tijuana','Asia/Ho_Chi_Minh'];
   var businessDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
+  var voicePhones = [
+    ['voiceSalonPhone','Salon phone number','The number customers currently call; it will be forwarded to the AI number.'],
+    ['voiceAnsweringPhone','AI answering number','Provided by NEXORA; AI answers 24/7 on this number.'],
+    ['voiceBookingPhone','Booking notification number','Gets booking SMS notifications and AI forwards calls to this phone number when a customer asks to speak with a real person.']
+  ];
+  var voiceSms = [
+    ['voiceSmsCustomer','Send to customer','Confirm that the booking request was received.'],
+    ['voiceSmsBusiness','Send to business',"Notify the business's booking notification number."],
+    ['voiceSmsStaff','Send to assigned staff','Alert the staff member(s) assigned to the appointment.']
+  ];
   var storageKey = 'nexora.local-onboarding.v1';
   var state = { industry: 'nail', drafts: {} };
   try {
@@ -252,9 +262,32 @@
     if (value.indexOf('+' + country[2]) === 0) value = value.slice(country[2].length + 1).trim();
     return {country:country, value:value};
   }
-  function businessPhoneHTML(fields, name, label, required) {
+  function businessPhoneHTML(fields, name, label, required, options) {
+    options=options||{};
     var phone = businessPhone(fields, name);
-    return '<div class="nxw-field"><label for="nxw-' + name + '">' + label + (required ? ' *' : '') + '</label><div class="nxw-phone"><select name="' + name + 'Country" aria-label="' + label + ' · Country">' + businessCountries.map(function (country) { return '<option value="' + country[0] + '" title="' + country[1] + '"' + (country[0] === phone.country[0] ? ' selected' : '') + '>' + country[0] + ' +' + country[2] + '</option>'; }).join('') + '</select><input id="nxw-' + name + '" name="' + name + '" type="tel" inputmode="tel" autocomplete="tel-national" value="' + escape(phone.value) + '" placeholder="(555) 555-5555" maxlength="25"' + (required ? ' required' : '') + '></div></div>';
+    var labelHTML='<label for="nxw-'+name+'">'+label+(required?' *':'')+'</label>';
+    if(options.help)labelHTML='<div class="nxw-voice-label">'+labelHTML+'<span class="nxw-voice-help"><button type="button" aria-label="'+label+' info" aria-describedby="nxw-'+name+'-help"><i class="bi bi-info-circle" aria-hidden="true"></i></button><span role="tooltip" id="nxw-'+name+'-help">'+escape(options.help)+'</span></span></div>';
+    return '<div class="nxw-field">'+labelHTML+'<div class="nxw-phone"><select name="' + name + 'Country" aria-label="' + label + ' · Country"'+(options.readOnly?' disabled':'')+'>' + businessCountries.map(function (country) { return '<option value="' + country[0] + '" title="' + country[1] + '"' + (country[0] === phone.country[0] ? ' selected' : '') + '>' + country[0] + ' +' + country[2] + '</option>'; }).join('') + '</select><input id="nxw-' + name + '" name="' + name + '" type="tel" inputmode="tel" autocomplete="tel-national" value="' + escape(phone.value) + '" placeholder="(555) 555-5555" maxlength="25"' + (required ? ' required' : '') +(options.readOnly?' readonly':'')+ '></div></div>';
+  }
+  function voiceValues(fields) {
+    var business=readStep('business').fields,salon=businessPhone(business,'phone'),booking=businessPhone(business,'bookingPhone');
+    // The answering number is the supplied screenshot's NEXORA demo number.
+    return Object.assign({voiceSalonPhone:salon.value,voiceSalonPhoneCountry:salon.country[0],voiceAnsweringPhone:'(346) 680-2333',voiceAnsweringPhoneCountry:'US',voiceBookingPhone:booking.value,voiceBookingPhoneCountry:booking.country[0],voiceSmsCustomer:'true',voiceSmsBusiness:'true',voiceSmsStaff:'true'},fields);
+  }
+  function voiceSettingsHTML(fields) {
+    var values=voiceValues(fields);
+    return '<div class="nxw-voice-settings nxw-business-form" data-voice-settings><details class="nxw-voice-card" data-voice-card="salon" open><summary><div><h3><i class="bi bi-shop" aria-hidden="true"></i>Salon information</h3><p>Core data for AI Voice, SMS, landing page, and review requests.</p></div><span class="nxw-voice-chevron" aria-hidden="true"><i class="bi bi-chevron-up"></i></span></summary><div class="nxw-voice-phones">'+voicePhones.map(function(entry){return businessPhoneHTML(values,entry[0],entry[1],false,{help:entry[2],readOnly:entry[0]==='voiceAnsweringPhone'});}).join('')+'</div></details><details class="nxw-voice-card" data-voice-card="sms" open><summary><div><h3><i class="bi bi-chat-square" aria-hidden="true"></i>Booking SMS Notifications</h3><p>Choose who receives an SMS when a booking is created.</p></div><span class="nxw-voice-chevron" aria-hidden="true"><i class="bi bi-chevron-up"></i></span></summary><div class="nxw-voice-sms">'+voiceSms.map(function(entry){var enabled=values[entry[0]]!=='false';return '<div class="nxw-voice-sms-row"><div><strong>'+entry[1]+'</strong><p>'+entry[2]+'</p></div><div class="nxw-voice-sms-control"><span data-voice-sms-status class="'+(enabled?'is-on':'')+'" aria-live="polite">'+(enabled?'On':'Off')+'</span><button type="button" class="nxw-voice-switch'+(enabled?' is-on':'')+'" data-voice-sms="'+entry[0]+'" role="switch" aria-checked="'+enabled+'" aria-label="'+entry[1]+'"></button></div></div>';}).join('')+'</div></details></div>';
+  }
+  function voiceFormPatch(form) {
+    var patch={};
+    Array.from(form.elements).forEach(function(input){if(!input.name||input.type==='radio'&&!input.checked)return;patch[input.name]=input.type==='checkbox'?String(input.checked):input.value;});
+    form.querySelectorAll('[data-voice-sms]').forEach(function(toggle){patch[toggle.dataset.voiceSms]=toggle.getAttribute('aria-checked');});
+    return patch;
+  }
+  function voicePreview(fields) {
+    var values=voiceValues(fields);
+    var rows=voicePhones.map(function(entry){var phone=businessPhone(values,entry[0]);return [entry[1],phone.value?'+'+phone.country[2]+' '+phone.value:''];}).concat(voiceSms.map(function(entry){return [entry[1],values[entry[0]]==='false'?'Off':'On'];}));
+    return '<dl>'+rows.filter(function(entry){return entry[1];}).map(function(entry){return '<div><dt>'+entry[0]+'</dt><dd>'+escape(entry[1])+'</dd></div>';}).join('')+'</dl>';
   }
   function businessHoursHTML(fields) {
     return '<fieldset class="nxw-business-group"><legend>Business Hours</legend>' + (fields.hours ? '<p class="nxw-note">' + escape(setupCopy.fieldHours) + ': ' + escape(fields.hours) + '</p>' : '') + '<label class="nxw-field nxw-time-zone"><span>Time zone *</span><select name="timeZone" required><option value="">Select a time zone</option>' + businessTimeZones.map(function (zone) { return '<option' + (fields.timeZone === zone ? ' selected' : '') + '>' + zone + '</option>'; }).join('') + '</select></label><div class="nxw-business-hours">' + businessDays.map(function (day, index) {
@@ -309,7 +342,7 @@
     html+='<form id="nxw-setup-form" aria-labelledby="nxw-step-title">'+(kind==='services'||kind==='staff'||kind==='qr'?'':formHeading);
     if(kind!=='services'&&kind!=='staff'&&kind!=='qr')html+=kind==='business'?businessFieldsHTML(fields):'<div class="nxw-fields">' + (data.setup.fields[kind]||[]).map(function (field) { return fieldHTML(field,fields); }).join('') + '</div>';
     if(kind==='staff'&&mode==='invite')html+='<div class="nxw-inline-preview"><p>' + escape(setupCopy.staffInviteIntro) + '</p><ol>' + ['staffInvite1','staffInvite2','staffInvite3'].map(function (key) { return '<li>' + escape(setupCopy[key]) + '</li>'; }).join('') + '</ol><div class="nxw-actions">' + link(setupCopy.staffInviteOpen,'qr-stations.html?tab=staff-invite-qr',true) + '</div><div class="nxw-choices">' + choicesHTML([{key:'inviteConfirmed',label:'staffInviteConfirm'}],fields) + '</div><p class="nxw-note">' + escape(setupCopy.staffInviteNotice) + '</p></div>';
-    if(kind==='voice')html+='<div class="nxw-subsection"><strong>' + escape(setupCopy.voiceModeTitle) + '</strong>' + choicesHTML([{key:'off',label:'voiceSkip',defaultValue:'off'},{key:'on',label:'voiceUse',defaultValue:'off'}],fields,'voiceMode') + '</div>' + (fields.voiceMode==='on'?choicesHTML(data.flow.voiceFeatures,fields):'<p class="nxw-note">'+escape(setupCopy.voicePreviewOff)+'</p>') + '<p class="nxw-note">' + escape(setupCopy.voicePreviewNotice) + '</p>';
+    if(kind==='voice')html+='<div class="nxw-subsection"><strong>' + escape(setupCopy.voiceModeTitle) + '</strong>' + choicesHTML([{key:'off',label:'voiceSkip',defaultValue:'off'},{key:'on',label:'voiceUse',defaultValue:'off'}],fields,'voiceMode') + '</div>' + (fields.voiceMode==='on'?voiceSettingsHTML(fields)+choicesHTML(data.flow.voiceFeatures,fields):'<p class="nxw-note">'+escape(setupCopy.voicePreviewOff)+'</p>') + '<p class="nxw-note">' + escape(setupCopy.voicePreviewNotice) + '</p>';
     html+='<div id="nxw-entered-preview" class="nxw-inline-preview"></div><div class="nxw-saved" id="nxw-save-status" role="status"></div><div class="nxw-actions"><button type="submit" class="nxw-btn">' + escape(setupCopy.saveStep) + '</button>' + (selectedStep<path().length-1?button(salonCopy.next,'next-step',true):button(copy.viewIndustryDocs,'open-docs',true)) + link(setupCopy.relatedScreen,stepRoute(kind),true) + '</div></form>';
     document.getElementById('nxw-setup-detail').innerHTML=html;
     var form=document.getElementById('nxw-setup-form');
@@ -325,9 +358,16 @@
         }
         saveInput(event.target);return;
       }
+      if(kind==='voice'&&event.target.tagName==='SELECT'){saveInput(event.target);return;}
       if(event.target.type!=='radio'&&event.target.type!=='checkbox')return;saveInput(event.target);if(event.target.name==='staffMode'||event.target.name==='voiceMode')renderSetupStep();
     });
     form.addEventListener('submit',completeStep);
+    form.addEventListener('click',function(event){
+      var toggle=event.target.closest('[data-voice-sms]');if(!toggle)return;
+      var enabled=toggle.getAttribute('aria-checked')!=='true';toggle.setAttribute('aria-checked',String(enabled));toggle.classList.toggle('is-on',enabled);
+      var status=toggle.parentElement.querySelector('[data-voice-sms-status]');status.textContent=enabled?'On':'Off';status.classList.toggle('is-on',enabled);
+      saveInput(toggle);
+    });
     main.querySelectorAll('[data-setup-step]').forEach(function(el){el.setAttribute('aria-current',Number(el.dataset.setupStep)===selectedStep?'step':'false');});
     renderEnteredPreview();
     if(kind==='services')mountServiceWorkspace(fields);
@@ -338,7 +378,7 @@
     }
   }
   function saveInput(input){
-    var patch={};if(path()[selectedStep]==='business')patch=businessPatch(input.form);else patch[input.name]=input.type==='checkbox'?String(input.checked):input.value;
+    var patch={};if(path()[selectedStep]==='business')patch=businessPatch(input.form);else if(path()[selectedStep]==='voice')patch=voiceFormPatch(input.form);else patch[input.name]=input.type==='checkbox'?String(input.checked):input.value;
     var saved=writeStep(path()[selectedStep],patch);document.getElementById('nxw-save-status').textContent=saved?setupCopy.draftSaved:setupCopy.saveFailed;
     renderEnteredPreview();updateProgress();
   }
@@ -350,7 +390,7 @@
     if(kind==='qr'){
       document.getElementById('nxw-entered-preview').innerHTML=html+(qrWorkspace?qrWorkspace.preview():'')+'<p class="nxw-note">'+escape(setupCopy.qrPreviewNotice)+'</p>';return;
     }
-    if(kind==='voice')html+='<p>' + escape(fields.voiceMode==='on'?setupCopy.voicePreviewOn:setupCopy.voicePreviewOff) + '</p>';
+    if(kind==='voice')html+='<p>' + escape(fields.voiceMode==='on'?setupCopy.voicePreviewOn:setupCopy.voicePreviewOff) + '</p>'+(fields.voiceMode==='on'?voicePreview(fields):'');
     else if(kind==='business')html+=businessPreview(fields);
     else html+='<dl>' + (data.setup.fields[kind]||[]).filter(function(f){return String(fields[f[0]]||'').trim();}).map(function(f){return '<div><dt>' + escape(setupCopy[f[1]]||copy[f[1]]) + '</dt><dd>' + escape(fields[f[0]]) + '</dd></div>';}).join('') + '</dl>';
     if(kind==='staff'&&fields.staffMode==='invite')html+='<p>' + escape(setupCopy.staffInvitePreview) + '</p>';
@@ -369,6 +409,7 @@
       try{staffWorkspace.validate();}catch(failure){document.getElementById('nxw-save-status').textContent=failure.message;return;}
     }
     if(kind==='business')writeStep(kind,businessPatch(form));
+    if(kind==='voice')writeStep(kind,voiceFormPatch(form));
     var value=readStep(kind),valid=form.reportValidity()&&(kind!=='business'||businessComplete(value.fields))&&(kind!=='services'||servicesComplete(value.fields));
     var special='';
     if(kind==='staff'&&value.fields.staffMode==='invite'&&value.fields.inviteConfirmed!=='true')special=setupCopy.staffInviteNeeded;

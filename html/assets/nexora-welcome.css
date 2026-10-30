@@ -88,3 +88,37 @@
 .nxw [data-onboarding-services] .salon-service-dialog select:not([multiple]){appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23687891' stroke-width='1.7'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E") no-repeat right 16px center;background-size:16px}
 @media(max-width:900px){.nxw [data-onboarding-services] .salon-service-browser{flex-wrap:wrap}.nxw [data-onboarding-services] .salon-service-search{flex-basis:100%;max-width:none}.nxw [data-onboarding-services] .salon-service-view{margin-left:auto}}
 @media(max-width:480px){.nxw [data-onboarding-services] .salon-service-filters{flex-wrap:nowrap;overflow-x:auto;padding-bottom:5px}.nxw [data-onboarding-services] .salon-service-filters button{flex:none;white-space:nowrap}.nxw [data-onboarding-services] .salon-dialog-body,.nxw [data-onboarding-services] .salon-service-dialog>header{padding:14px}.nxw [data-onboarding-services] .salon-service-dialog footer{padding:12px 14px;gap:8px}}
+
+/* AI Voice salon numbers and booking SMS settings, from the supplied reference. */
+.nxw-voice-settings{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));align-items:stretch;gap:12px;margin-top:18px}
+.nxw-voice-card{min-width:0;padding:15px;border:1px solid #dce5f3;border-radius:12px;background:#fff;box-shadow:0 2px 6px #253a6508}
+.nxw-voice-card>summary{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;list-style:none;cursor:pointer}
+.nxw-voice-card>summary::-webkit-details-marker{display:none}
+.nxw .nxw-voice-card h3{display:flex;align-items:center;gap:8px;color:#18263e;font-size:13px;font-weight:750}
+.nxw-voice-card h3>.bi{color:#7665ed;font-size:14px}
+.nxw .nxw-voice-card summary p{margin-top:7px;font-size:11px;line-height:1.6;color:#69768f}
+.nxw-voice-chevron{display:flex;align-items:center;justify-content:center;width:27px;height:27px;flex:none;border:1px solid #e2e8f5;border-radius:8px;color:#7866ed;font-size:11px}
+.nxw-voice-card:not([open]) .nxw-voice-chevron>.bi{transform:rotate(180deg)}
+.nxw-voice-phones{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(220px,100%),1fr));gap:14px;margin-top:15px}
+.nxw-voice-label{display:flex;align-items:center;gap:5px;min-height:15px;min-width:0}
+.nxw-voice-label>label{color:#8590a7;font-size:9px;line-height:1.5;text-transform:uppercase}
+.nxw-voice-help{position:relative;display:inline-flex;flex:none}
+.nxw .nxw-voice-help>button{display:inline-flex;align-items:center;justify-content:center;width:16px;height:16px;padding:0;border:0;background:transparent;color:#8b7df3;font-size:10px;cursor:help}
+.nxw-voice-help>[role=tooltip]{position:absolute;bottom:calc(100% + 8px);left:50%;z-index:8;width:230px;max-width:calc(100vw - 50px);padding:10px 12px;transform:translateX(-50%);border:1px solid #ddd9f2;border-radius:8px;background:#fff;box-shadow:0 8px 24px #27345220;color:#52617c;font-size:11px;font-weight:400;line-height:1.6;visibility:hidden;opacity:0;pointer-events:none}
+.nxw-voice-help:hover>[role=tooltip],.nxw-voice-help:focus-within>[role=tooltip]{visibility:visible;opacity:1}
+.nxw-voice-settings .nxw-phone select{flex-basis:104px;width:104px}
+.nxw-voice-settings .nxw-phone input{font-size:11px}
+.nxw-voice-settings .nxw-phone select:disabled{opacity:1;color:#44516b;cursor:default}
+.nxw-voice-sms{display:grid;gap:8px;margin-top:13px}
+.nxw-voice-sms-row{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 12px;border:1px solid #dce5f3;border-radius:9px;background:#f7f8fc}
+.nxw-voice-sms-row>div:first-child{min-width:0}
+.nxw-voice-sms-row strong{display:block;color:#28354b;font-size:11px;font-weight:650}
+.nxw .nxw-voice-sms-row p{margin-top:3px;color:#738099;font-size:10px;line-height:1.5}
+.nxw-voice-sms-control{display:flex;align-items:center;gap:7px;flex:none}
+.nxw-voice-sms-control>[data-voice-sms-status]{color:#8290a6;font-size:9px;font-weight:700}
+.nxw-voice-sms-control>[data-voice-sms-status].is-on{color:#00b781}
+.nxw .nxw-voice-switch{position:relative;width:36px;height:21px;flex:none;padding:0;border:0;border-radius:20px;background:#c6cedb}
+.nxw-voice-switch:after{position:absolute;top:3px;left:3px;width:15px;height:15px;border-radius:50%;background:#fff;content:'';transition:transform .15s}
+.nxw .nxw-voice-switch.is-on{background:#4d43df}
+.nxw-voice-switch.is-on:after{transform:translateX(15px)}
+@media(max-width:700px){.nxw-voice-settings{grid-template-columns:1fr}.nxw-voice-card{padding:14px}.nxw-voice-sms-row{padding:10px}}
