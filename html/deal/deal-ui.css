@@ -28,6 +28,13 @@ main > :is(.hero-shell,.content-shell),#salonProfile{padding-inline:0}
   .site-header .language-control{width:60px;min-height:44px;padding-inline:6px;gap:4px}
 }
 body{min-width:0}
+.discover-entry-grid .discover-entry{grid-template-columns:36px minmax(0,1fr) 16px;column-gap:12px}
+.discover-entry .discover-entry-icon{width:36px!important;height:36px!important;border-radius:11px;font-size:0!important;box-shadow:none}
+.discover-entry .discover-entry-icon.warm{color:#b85c26;background:#fff3eb}
+.discover-entry .discover-entry-icon.mint{color:#19735f;background:#edf8f3}
+.discover-entry .deal-entry-svg{display:block;width:22px;height:22px}
+.discover-entry > b{display:grid;place-items:center;width:16px}
+.discover-entry .deal-entry-arrow{display:block;width:16px;height:16px}
 .deal-industry-icon{display:inline-block;width:24px;height:24px;object-fit:contain;flex-shrink:0;vertical-align:middle}
 .dw-category-icon .deal-industry-icon{width:32px;height:32px}
 .dw-chip .deal-industry-icon{width:20px;height:20px}

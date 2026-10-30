@@ -358,6 +358,22 @@
         'aria-hidden': 'true', focusable: 'false', class: 'deal-mobile-nav-svg',
       }));
     });
+    const entryIcons = { '#nearby':'MapPin', '#last-minute':'Zap', '#coupons':'Ticket' };
+    root.querySelectorAll('.discover-entry').forEach(entry => {
+      const name = entryIcons[entry.getAttribute('href')];
+      const library = window.NEXORA_DEAL_LUCIDE;
+      if (!name || !library) return;
+      for (const [target, icon, className, size] of [
+        [entry.querySelector('.discover-entry-icon'), name, 'deal-entry-svg', 22],
+        [entry.querySelector(':scope > b'), 'ArrowRight', 'deal-entry-arrow', 16],
+      ]) {
+        if (!target || target.querySelector(`.${className}`)) continue;
+        target.replaceChildren(library.createElement(library.icons[icon], {
+          width:size, height:size, 'stroke-width':1.75, 'aria-hidden':'true',
+          focusable:'false', class:className,
+        }));
+      }
+    });
     const businessIcons = { overview:'LayoutDashboard', campaigns:'Megaphone', oneqr:'QrCode', ads:'Wallet', earnings:'Banknote', crm:'ContactRound', verification:'BadgeCheck' };
     root.querySelectorAll('.business-tabs [data-business-view]').forEach(element => {
       decorateAction(element, businessIcons[element.dataset.businessView], 'violet');
