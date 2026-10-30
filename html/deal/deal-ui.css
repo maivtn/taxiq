@@ -513,5 +513,5 @@ body:has(.dw-match-select .dropdown-active) .ai-guide-fab{visibility:hidden}
   .platform-network-stats article>span{grid-row:auto;width:30px;height:30px;border-radius:9px}
   .platform-network-stats .deal-action-icon{width:18px;height:18px}
   .platform-network-stats strong{min-width:0;font-size:20px;line-height:1.1;letter-spacing:-.03em}
-  .platform-network-stats small{grid-column:1/-1;min-width:0;font-size:11px;line-height:1.35;color:#5d6880}
+  #discover .platform-network-stats article small{grid-column:1/-1;min-width:0;font-size:11px!important;line-height:1.35!important;color:#5d6880}
 }
