@@ -209,7 +209,7 @@
       return savePreparationDraft(industry,kind,menu?{menuCatalog:snapshot.categories}:{serviceCatalog:snapshot.categories,serviceApprovals:snapshot.approvals});
     }
     serviceWorkspace=window.NEXORA_SALON_SERVICES.mount(panel,{
-      onboarding:true, catalogType:menu?'menu':'services',salon:{id:'onboarding-'+industry}, categories:categories,
+      onboarding:true, catalogType:menu?'menu':'services',salon:{id:'onboarding-'+industry}, categories:categories||[],
       api:{
         load:function(){return approvals.slice();},
         requiresApproval:function(_,id){return approvals.indexOf(id)!==-1;},
