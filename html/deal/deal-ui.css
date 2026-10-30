@@ -1,0 +1,24 @@
+/* Keep PO geometry: artwork occupies the existing icon slots. */
+.deal-industry-icon{display:inline-block;width:24px;height:24px;object-fit:contain;flex-shrink:0;vertical-align:middle}
+.dw-category-icon .deal-industry-icon{width:32px;height:32px}
+.dw-chip .deal-industry-icon{width:20px;height:20px}
+.dw-category-group h2 .deal-industry-icon{width:24px;height:24px}
+[data-dw-selected-group] .deal-industry-icon{width:20px;height:20px}
+.industry-grid button>span .deal-industry-icon{width:28px;height:28px}
+.industry-mobile-list .deal-industry-icon{margin-right:6px}
+.deal-action-icon{display:inline-block;width:16px;height:16px;flex-shrink:0;vertical-align:-3px;margin-inline-end:6px;pointer-events:none}
+.deal-action-violet{color:#7153db}.deal-action-blue{color:#2475bb}.deal-action-teal{color:#138577}.deal-action-rose{color:#d64572}.deal-action-amber{color:#b17c17}.deal-action-neutral{color:#718096}
+button:is(.dw-primary,.primary-cta,.nexora-search-button) .deal-action-icon{color:inherit}
+button:is(.save-button,.dialog-close,.bc-close,[data-nail-save]) .deal-action-icon{margin:0;vertical-align:middle}
+.deal-action-icon.is-filled{fill:currentColor}
+.deal-inline-icon,.deal-inline-industry{display:inline-block;width:1.1em;height:1.1em;vertical-align:-.18em;flex-shrink:0;pointer-events:none}
+:is(.dw-primary,.primary-cta,.discover-entry-icon,.landing-mobile-cta) .deal-inline-icon{color:inherit}
+.dw-pin .deal-inline-industry{width:22px;height:22px}
+.dw-worker-gate-icon .deal-inline-icon{width:32px;height:32px;color:inherit}
+.mobile-nav .request-button .deal-inline-icon{color:inherit}
+.discover-carousel-arrow .deal-action-icon{margin:0;color:inherit;vertical-align:middle}
+.business-tabs button.active .deal-action-icon,#aiOptimizeButton .deal-action-icon,.workspace-heading>button .deal-action-icon{color:inherit}
+.channel-icon .deal-channel-icon{width:22px;height:22px}
+.ai-guide-fab .deal-action-icon{width:24px;height:24px;margin:0;color:inherit}
+.business-button .deal-action-icon{color:inherit}
+@media(max-width:720px){.dw-chip .deal-industry-icon{width:18px;height:18px}.industry-mobile-list .deal-industry-icon{width:22px;height:22px}.deal-action-icon{width:16px;height:16px}}

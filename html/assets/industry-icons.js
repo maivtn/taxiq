@@ -178,7 +178,17 @@
     "handyman": "industry-handyman-4230762.png",
     "finance": "industry-finance-9423095.png",
     "petcare": "industry-petcare-14257508.png",
-    "therapy": "industry-chiro-8123360.png"
+    "therapy": "industry-chiro-8123360.png",
+    "meditation": "industry-meditation-8086179.png",
+    "sauna": "industry-sauna-1768242.png",
+    "homestay": "industry-homestay-1515178.png",
+    "resort": "industry-resort-4490820.png",
+    "vacationrental": "industry-vacationrental-1018579.png",
+    "camping": "industry-camping-1020586.png",
+    "farmersmarket": "industry-farmersmarket-589246.png",
+    "nightmarket": "industry-nightmarket-9985902.png",
+    "wholesale": "industry-wholesale-383977.png",
+    "headspa": "industry-headspa-843920.png"
 });
   // Aliases are alternate IDs of the same trade; distinct trades have their own artwork.
   const aliases = Object.freeze({

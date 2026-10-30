@@ -572,7 +572,7 @@ function emitNexoraFunctionEvent(action, detail = {}) {
 function buildTouchUrl(path, extra = {}) {
   const url = new URL(path, "https://nexoratouch.com");
   const incoming = new URLSearchParams(location.search);
-  const language = document.querySelector("#languageSelect")?.value || localStorage.getItem("nexora-language") || "vi";
+  const language = document.querySelector("#languageSelect")?.value || localStorage.getItem("nexora-language") || "en";
   url.searchParams.set("source", trafficSource || incoming.get("source") || "nexora-deals");
   url.searchParams.set("lang", language);
   ["campaign_id", "promotion_id", "oneqr_host", "ref"].forEach((key) => {
@@ -589,7 +589,7 @@ function buildNexoraAuthUrl(mode = "register") {
   const path = mode === "login" ? "/login" : "/register";
   const url = new URL(path, "https://nexoratouch.com");
   const returnUrl = `${location.origin}${location.pathname}${location.search}${location.hash}`;
-  const language = document.querySelector("#languageSelect")?.value || localStorage.getItem("nexora-language") || "vi";
+  const language = document.querySelector("#languageSelect")?.value || localStorage.getItem("nexora-language") || "en";
   url.searchParams.set("source", "nexora-deals");
   url.searchParams.set("lang", language);
   url.searchParams.set("returnUrl", returnUrl);
@@ -617,7 +617,7 @@ function syncAuthenticatedHeader() {
   });
 }
 
-const NEXORA_LANGUAGES = ["vi", "en", "es", "zh-TW", "ko"];
+const NEXORA_LANGUAGES = ["en"];
 const NEXORA_HTML_LANG = { vi: "vi", en: "en", es: "es", "zh-TW": "zh-Hant", ko: "ko" };
 const NEXORA_LOCALE = { vi: "vi-VN", en: "en-US", es: "es-US", "zh-TW": "zh-TW", ko: "ko-KR" };
 const NEXORA_LANGUAGE_CODES = { vi: "VI", en: "EN", es: "ES", "zh-TW": "繁中", ko: "KO" };
@@ -1604,7 +1604,7 @@ const AI_GUIDE_COPY = {
   }
 };
 
-function getAIGuideCopy(language = document.querySelector("#languageSelect")?.value || "vi") {
+function getAIGuideCopy(language = document.querySelector("#languageSelect")?.value || "en") {
   return AI_GUIDE_COPY[language] || AI_GUIDE_COPY.vi;
 }
 
@@ -1658,7 +1658,8 @@ function translateTextNode(node, language) {
   const source = languageOriginalText.get(node);
   const key = source.trim();
   if (!key) return;
-  const translated = language === "vi" ? key : (LANGUAGE_COPY[language]?.[key] || translateDynamicLabel(key, language));
+  const translated = language === "vi" ? key : (LANGUAGE_COPY[language]?.[key] || window.NEXORA_DEAL_PRESENTATION?.translate(key) || translateDynamicLabel(key, language));
+  if (node.parentElement?.tagName === "OPTION" && !node.parentElement.hasAttribute("value")) node.parentElement.setAttribute("value", key);
   const output = translated || key;
   const next = `${source.match(/^\s*/)?.[0] || ""}${output}${source.match(/\s*$/)?.[0] || ""}`;
   if (node.nodeValue !== next) node.nodeValue = next;
@@ -1687,8 +1688,8 @@ function translateDocument(language, root = document.body) {
 }
 
 function applyLanguage(language, { announce = false } = {}) {
-  const activeLanguage = NEXORA_LANGUAGES.includes(language) ? language : "vi";
-  document.documentElement.lang = NEXORA_HTML_LANG[activeLanguage];
+  const activeLanguage = "en";
+  document.documentElement.lang = "en-US";
   document.documentElement.dataset.locale = NEXORA_LOCALE[activeLanguage];
   localStorage.setItem("nexora-language", activeLanguage);
   const compactLanguageCode = document.querySelector("#languageCode");
@@ -1745,7 +1746,7 @@ function initializeLanguageControl() {
   const requested = params.get("lang");
   const saved = localStorage.getItem("nexora-language");
   const browserLanguage = navigator.language?.toLowerCase().startsWith("zh") ? "zh-TW" : navigator.language?.split("-")[0];
-  const language = NEXORA_LANGUAGES.includes(requested) ? requested : (NEXORA_LANGUAGES.includes(saved) ? saved : (NEXORA_LANGUAGES.includes(browserLanguage) ? browserLanguage : "vi"));
+  const language = NEXORA_LANGUAGES.includes(requested) ? requested : (NEXORA_LANGUAGES.includes(saved) ? saved : (NEXORA_LANGUAGES.includes(browserLanguage) ? browserLanguage : "en"));
   select.value = language;
   applyLanguage(language);
   const observer = new MutationObserver((mutations) => {
@@ -1919,7 +1920,7 @@ function initializeHeroCarousel() {
   let pointerInside = false;
   let focusInside = false;
 
-  const activeLanguage = () => document.querySelector("#languageSelect")?.value || "vi";
+  const activeLanguage = () => document.querySelector("#languageSelect")?.value || "en";
 
   function render(index, { userInitiated = false } = {}) {
     activeIndex = (index + HERO_CAROUSEL_ITEMS.length) % HERO_CAROUSEL_ITEMS.length;
@@ -2391,7 +2392,7 @@ async function hashPhone(phone) {
 }
 
 function formatHoldDate(value) {
-  return new Intl.DateTimeFormat(workspaceEnglish() ? "en-US" : "vi-VN", { month: "2-digit", day: "2-digit", year: "numeric" }).format(new Date(value));
+  return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(new Date(value));
 }
 
 function renderCoupons() {
@@ -2522,7 +2523,7 @@ async function submitCouponClaim(event) {
 }
 
 function formatOpeningDate(value) {
-  return new Intl.DateTimeFormat(workspaceEnglish() ? "en-US" : "vi-VN", { weekday: "long", day: "2-digit", month: "2-digit", year: "numeric" }).format(new Date(`${value}T12:00:00`));
+  return new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(new Date(`${value}T12:00:00`));
 }
 
 function renderOpeningHolds() {
@@ -2624,7 +2625,7 @@ const ROUTE_LABELS = {
 function announceRoute(route = "#discover") {
   const status = document.querySelector("#routeStatus");
   if (!status) return;
-  const language = document.querySelector("#languageSelect")?.value || "vi";
+  const language = document.querySelector("#languageSelect")?.value || "en";
   const routeKey = String(route).replace(/^#/, "") || "discover";
   const label = ROUTE_LABELS[language]?.[routeKey] || ROUTE_LABELS.vi[routeKey] || routeKey;
   status.textContent = language === "vi" ? `Đã mở ${label}` : language === "es" ? `Se abrió ${label}` : language === "zh-TW" ? `已開啟${label}` : language === "ko" ? `${label} 열림` : `${label} opened`;
@@ -2633,7 +2634,7 @@ function announceRoute(route = "#discover") {
 function updateConnectionStatus() {
   const banner = document.querySelector("#connectionStatus");
   if (!banner) return;
-  const language = document.querySelector("#languageSelect")?.value || "vi";
+  const language = document.querySelector("#languageSelect")?.value || "en";
   const copy = {
     vi: ["Bạn đang offline", "Các nội dung đã mở vẫn xem được; lấy coupon, đăng nhập và đặt lịch cần kết nối mạng."],
     en: ["You are offline", "Previously opened content remains available; claiming, signing in and booking require a connection."],
@@ -2718,8 +2719,8 @@ function renderAttributionEvents() {
     return;
   }
   container.innerHTML = attributionEvents.slice(0, 10).map((item) => {
-    const when = new Date(item.createdAt).toLocaleTimeString("vi-VN", { hour: "2-digit", minute: "2-digit" });
-    return `<div class="event-row ${Number(item.amount) > 0 ? "billable" : ""}"><span class="event-icon">${escapeHTML(item.icon)}</span><div><strong>${escapeHTML(item.label)}</strong><small>${escapeHTML(item.detail)} · ${escapeHTML(when)}</small></div><b>${Number(item.amount) > 0 ? `+${currency(item.amount)}` : "$0.00"}</b></div>`;
+    const when = new Date(item.createdAt).toLocaleTimeString("en-US", { hour: "numeric", minute: "2-digit", hour12: true });
+    return `<div class="event-row ${Number(item.amount) > 0 ? "billable" : ""}"><span class="event-icon">${escapeHTML(item.icon)}</span><div><strong>${escapeHTML(item.label)}</strong><small>${escapeHTML(window.NEXORA_DEAL_PRESENTATION?.translate(item.detail) || item.detail)} · ${escapeHTML(when)}</small></div><b>${Number(item.amount) > 0 ? `+${currency(item.amount)}` : "$0.00"}</b></div>`;
   }).join("");
 }
 
@@ -2926,7 +2927,7 @@ function openAIGuide() {
   localStorage.setItem("nexora-ai-guide-seen", "1");
   const nudge = document.querySelector("#aiGuideNudge");
   if (nudge) nudge.hidden = true;
-  updateAIGuideLanguage(document.querySelector("#languageSelect")?.value || "vi");
+  updateAIGuideLanguage(document.querySelector("#languageSelect")?.value || "en");
   openModal(aiGuideDialog);
   const result = document.querySelector("#aiGuideResult");
   setAIGuideStep(result && !result.hidden ? 3 : aiGuideSelectedIntent ? 2 : 1);
@@ -3078,9 +3079,9 @@ function renderRequests() {
   }
   requestList.innerHTML = serviceRequests.map((request) => `
     <article class="request-item">
-      <span>ĐANG NHẬN OFFER · ${escapeHTML(request.radius)} MI</span>
+      <span>ACCEPTING OFFERS · ${escapeHTML(request.radius)} MI</span>
       <strong>${escapeHTML(request.service)}</strong>
-      <small>Ngân sách $${escapeHTML(request.budget)} · ${escapeHTML(request.date)} · ${escapeHTML(request.time)}</small>
+      <small>Budget $${escapeHTML(request.budget)} · ${escapeHTML(formatHoldDate(`${request.date}T12:00:00`))} · ${escapeHTML(window.NEXORA_DEAL_PRESENTATION?.translate(request.time) || request.time)}</small>
     </article>
   `).join("");
 }
@@ -3290,15 +3291,15 @@ function applyAICampaign() {
   const form = document.querySelector("#merchantDealForm");
   const goal = new FormData(form).get("campaignGoal") || "new";
   const preset = campaignPresets[goal];
-  form.elements.title.value = preset.title;
+  form.elements.title.value = window.NEXORA_DEAL_PRESENTATION?.translate(preset.title) || preset.title;
   form.elements.original.value = preset.original;
   form.elements.price.value = preset.price;
   form.elements.inventory.value = preset.inventory;
   form.elements.dailyCap.value = preset.dailyCap;
   form.elements.serviceCost.value = preset.cost;
   form.elements.expectedUpsell.value = preset.upsell;
-  form.elements.terms.value = preset.terms;
-  form.elements.smsMessage.value = preset.sms;
+  form.elements.terms.value = window.NEXORA_DEAL_PRESENTATION?.translate(preset.terms) || preset.terms;
+  form.elements.smsMessage.value = window.NEXORA_DEAL_PRESENTATION?.translate(preset.sms) || preset.sms;
   document.querySelector("#entryTierName").textContent = goal === "loyalty" ? "1-Visit Starter" : "Essential";
   document.querySelector("#upgradeTierName").textContent = goal === "loyalty" ? "3-Visit Care Pass" : "Service + Add-on";
   document.querySelector("#premiumTierName").textContent = goal === "loyalty" ? "VIP Quarterly Pass" : "Signature Experience";
@@ -3713,7 +3714,7 @@ const LEGAL_COPY = {
 };
 
 function getLegalCopy() {
-  const language = document.querySelector("#languageSelect")?.value || "vi";
+  const language = document.querySelector("#languageSelect")?.value || "en";
   return LEGAL_COPY[language] || LEGAL_COPY.en;
 }
 
@@ -3721,7 +3722,7 @@ function renderLegalCenter() {
   const copy = getLegalCopy();
   const active = copy.docs[legalView] ? legalView : "overview";
   const doc = copy.docs[active];
-  const language = document.querySelector("#languageSelect")?.value || "vi";
+  const language = document.querySelector("#languageSelect")?.value || "en";
   const translationPending = !LEGAL_COPY[language];
   const isVietnamese = language === "vi";
   const businessChecklist = active === "business" ? `<section class="legal-business-checklist">
@@ -3832,11 +3833,15 @@ function workspaceCopy(vi, en) {
   return workspaceEnglish() ? en : vi;
 }
 
+function workspaceIndustryIcon(key, size = 24) {
+  return window.NEXORA_INDUSTRY_ICONS.image(key, { size, className: "deal-industry-icon" });
+}
+
 function workspaceCouponGroupChips(active = "beauty") {
   const language = workspaceEnglish() ? "en" : "vi";
   return couponTaxonomy.groups.map((group) => {
     const total = couponTaxonomy.inds.filter((item) => item.g === group.id).length;
-    return `<button class="dw-chip ${group.id === active ? "active" : ""}" type="button" data-dw-group="directory-industry" data-dw-value="${group.id}">${group.ic} ${escapeHTML(group[language])} <small>${total}</small></button>`;
+    return `<button class="dw-chip ${group.id === active ? "active" : ""}" type="button" data-dw-group="directory-industry" data-dw-value="${group.id}">${workspaceIndustryIcon("group:" + group.id)} ${escapeHTML(group[language])} <small>${total}</small></button>`;
   }).join("");
 }
 
@@ -3861,7 +3866,7 @@ function communityOfferGuide() {
 
 function workspaceIndustryChips(active = "all", group = "industry") {
   const englishLabels = { all: "All industries", beauty: "💅 Beauty & personal care", food: "🍜 Food & drink", shopping: "🛍️ Shopping", health: "🩺 Health", auto: "🚗 Auto & transport", home: "🏠 Home & repair", finance: "💼 Finance · legal · real estate", education: "🎓 Education & training", family: "👶 Family & pets" };
-  return workspaceIndustries.map(([id, label, count]) => `<button class="dw-chip ${id === active ? "active" : ""}" type="button" data-dw-group="${group}" data-dw-value="${id}">${escapeHTML(workspaceEnglish() ? englishLabels[id] : label)}${count ? ` <small>${count}</small>` : ""}</button>`).join("");
+  return workspaceIndustries.map(([id, label, count]) => `<button class="dw-chip ${id === active ? "active" : ""}" type="button" data-dw-group="${group}" data-dw-value="${id}">${id === "all" ? "" : workspaceIndustryIcon("group:" + ({shopping:"shop",education:"edu"}[id] || id)) + " "}${escapeHTML((workspaceEnglish() ? englishLabels[id] : label).replace(/^[^\p{L}\p{N}]+/u, ""))}${count ? ` <small>${count}</small>` : ""}</button>`).join("");
 }
 
 function workspaceDealText(deal, field) {
@@ -3909,7 +3914,7 @@ function renderNearbyWorkspace() {
     <section class="dw-card dw-panel dw-nearby-controls">
       <div class="dw-heading"><div><span class="dw-kicker">NEXORA DEALS · BELLAIRE, HOUSTON</span><h1>🔥 ${workspaceCopy("Deal gần bạn", "Deals Nearby")}</h1></div><span class="dw-live">● ${workspaceCopy("Dữ liệu đang cập nhật", "Data updating")}</span></div>
       <form class="dw-search dw-nearby-toolbar" data-dw-nearby-search><label><span>⌕</span><input name="query" value="${escapeHTML(searchInput?.value || "")}" aria-label="${workspaceCopy("Tìm deal", "Search deals")}" placeholder="${workspaceCopy("Tìm dịch vụ, tên tiệm hoặc ưu đãi…", "Search services, businesses or offers…")}" /></label>
-      <details class="dw-nearby-picker" data-nearby-picker><summary>☷ <span data-nearby-summary>${workspaceCopy("Mọi ngành · 10 mi", "All industries · 10 mi")}</span>⌄</summary><div class="dw-nearby-popover"><h3>${workspaceCopy("Tùy chỉnh tìm kiếm", "Refine your search")}</h3><label>${workspaceCopy("Ngành nghề", "Industry")}<select name="industry"><option value="all">${workspaceCopy("Mọi ngành", "All industries")}</option>${couponTaxonomy.groups.map(g=>`<option value="${g.id}">${g.ic} ${escapeHTML(workspaceEnglish()?g.en:g.vi)}</option>`).join('')}</select></label><label>${workspaceCopy("Khoảng cách", "Distance")}<select name="radius">${[1,5,10,25].map(n=>`<option value="${n}" ${n===10?'selected':''}>${n} mi</option>`).join('')}</select></label><label>${workspaceCopy("Sắp xếp", "Sort")}<select name="sort"><option value="near">${workspaceCopy("Gần nhất", "Nearest")}</option><option value="price">${workspaceCopy("Giá thấp nhất", "Lowest price")}</option><option value="inventory">${workspaceCopy("Sắp hết lượt", "Almost sold out")}</option></select></label><div class="dw-nearby-popover-actions"><button class="dw-secondary" type="reset">${workspaceCopy("Đặt lại", "Reset")}</button><button class="dw-primary" type="submit">${workspaceCopy("Áp dụng", "Apply")}</button></div></div></details><button class="dw-primary" type="submit">${workspaceCopy("Tìm", "Search")}</button><button class="dw-secondary" type="reset">${workspaceCopy("Đặt lại", "Reset")}</button></form>
+      <details class="dw-nearby-picker" data-nearby-picker><summary>☷ <span data-nearby-summary>${workspaceCopy("Mọi ngành · 10 mi", "All industries · 10 mi")}</span>⌄</summary><div class="dw-nearby-popover"><h3>${workspaceCopy("Tùy chỉnh tìm kiếm", "Refine your search")}</h3><label>${workspaceCopy("Ngành nghề", "Industry")}<select name="industry"><option value="all">${workspaceCopy("Mọi ngành", "All industries")}</option>${couponTaxonomy.groups.map(g=>`<option value="${g.id}" data-industry-icon="group:${g.id}">${escapeHTML(workspaceEnglish()?g.en:g.vi)}</option>`).join('')}</select></label><label>${workspaceCopy("Khoảng cách", "Distance")}<select name="radius">${[1,5,10,25].map(n=>`<option value="${n}" ${n===10?'selected':''}>${n} mi</option>`).join('')}</select></label><label>${workspaceCopy("Sắp xếp", "Sort")}<select name="sort"><option value="near">${workspaceCopy("Gần nhất", "Nearest")}</option><option value="price">${workspaceCopy("Giá thấp nhất", "Lowest price")}</option><option value="inventory">${workspaceCopy("Sắp hết lượt", "Almost sold out")}</option></select></label><div class="dw-nearby-popover-actions"><button class="dw-secondary" type="reset">${workspaceCopy("Đặt lại", "Reset")}</button><button class="dw-primary" type="submit">${workspaceCopy("Áp dụng", "Apply")}</button></div></div></details><button class="dw-primary" type="submit">${workspaceCopy("Tìm", "Search")}</button><button class="dw-secondary" type="reset">${workspaceCopy("Đặt lại", "Reset")}</button></form>
     </section>
     <div class="dw-nearby-layout">
       <aside class="dw-card dw-panel"><div class="dw-radar"><div class="dw-radar-grid"></div><div class="dw-radar-sweep"></div><span class="dw-radar-center">${workspaceCopy("Bạn", "You")}</span>${[[23,42,"🍜"],[43,30,"💅"],[67,39,"🦷"],[75,66,"🧋"],[34,72,"🛍️"],[56,58,"✨"],[18,67,"🚗"],[66,24,"💆"]].map(([x,y,icon], i) => `<span class="dw-pin" style="left:${x}%;top:${y}%;background:${i % 2 ? "#6648ec" : "#0fa6b5"}">${icon}</span>`).join("")}<small>${workspaceCopy("29 deal trong 10 mi · 30 ghim", "29 deals within 10 mi · 30 pins")}</small></div><div class="dw-radar-tabs"><button type="button">📡 Radar</button><button type="button">🗺️ ${workspaceCopy("Bản đồ thật", "Map")}</button></div><p style="margin:12px 0 0;color:#6b7890;font-size:13px">${workspaceCopy("Bấm vào deal để xem điều kiện, lịch và cách sử dụng.", "Select a deal to see its terms, schedule and how to use it.")}</p></aside>
@@ -3958,11 +3963,11 @@ function couponGroupImage(groupId) {
 }
 function renderNailCouponServices() {
  const services=[['💅','Manicure','Manicure'],['🦶','Pedicure','Pedicure'],['✨','Gel-X / nối móng','Gel-X / extensions'],['◈','Acrylic / móng bột','Acrylic nails'],['◌','Dip powder','Dip powder'],['✦','Builder gel / hard gel','Builder gel / hard gel'],['🎨','Nail art / thiết kế móng','Nail art / designs'],['♡','Chăm sóc móng trẻ em','Kids nail care'],['↻','Tháo móng / sửa móng','Removal / nail repair'],['✧','Waxing tại nail salon','Salon waxing']];
- return `<section id="nailCouponServices" class="dw-nail-services" hidden><div><span class="dw-kicker">${workspaceCopy('DỊCH VỤ TRONG NAIL SALON','SERVICES AT A NAIL SALON')}</span><h3>${workspaceCopy('Bạn muốn làm dịch vụ nào?','What would you like to book?')}</h3><p>${workspaceCopy('Chọn dịch vụ để khám phá các ưu đãi phù hợp.','Choose a service to explore matching offers.')}</p></div><div class="dw-nail-service-grid">${services.map(([icon,vi,en],index)=>`<button type="button" data-dw-category="${["manicure","pedicure","gel-x","acrylic","dip","builder gel","nail art","kids","removal","waxing"][index]}"><span>${icon}</span>${escapeHTML(workspaceCopy(vi,en))}<b>→</b></button>`).join('')}</div></section>`;
+ return `<section id="nailCouponServices" class="dw-nail-services" hidden><div><span class="dw-kicker">${workspaceCopy('DỊCH VỤ TRONG NAIL SALON','SERVICES AT A NAIL SALON')}</span><h3>${workspaceCopy('Bạn muốn làm dịch vụ nào?','What would you like to book?')}</h3><p>${workspaceCopy('Chọn dịch vụ để khám phá các ưu đãi phù hợp.','Choose a service to explore matching offers.')}</p></div><div class="dw-nail-service-grid">${services.map(([icon,vi,en],index)=>`<button type="button" data-dw-category="${["manicure","pedicure","gel-x","acrylic","dip","builder gel","nail art","kids","removal","waxing"][index]}"><span>${workspaceIndustryIcon(["nail","pedi","nail","nail","nail","nail","nail","kids","nail","wax"][index])}</span>${escapeHTML(workspaceCopy(vi,en))}<b>→</b></button>`).join('')}</div></section>`;
 }
 function renderCouponDirectoryWorkspace() {
   const language = workspaceEnglish() ? "en" : "vi";
-  return `<div class="dw-shell"><section class="dw-card"><div class="dw-directory-head"><div class="dw-heading"><div><span class="dw-kicker">${workspaceCopy("129 NGÀNH NGHỀ · 13 NHÓM NGÀNH", "129 INDUSTRIES · 13 GROUPS")}</span><h1>🏷️ ${workspaceCopy("Coupon theo ngành", "Coupons by Category")}</h1><p>${workspaceCopy("Chọn một nhóm ngành hoặc tìm xuyên toàn bộ danh mục Nexora.", "Choose an industry group or search the entire Nexora directory.")}</p></div><span class="dw-directory-total">${workspaceCopy("129 ngành", "129 industries")}</span></div><form class="dw-search" style="grid-template-columns:1fr" data-dw-directory-search><label><span>⌕</span><input type="search" placeholder="${workspaceCopy("Tìm ngành, dịch vụ hoặc từ khoá — ví dụ: nha sĩ, sửa xe, khai thuế", "Search industries, services or keywords — for example: dentist, car repair, tax filing")}" /></label></form><details class="dw-category-picker" data-dw-category-picker><summary><span><small>${workspaceCopy("NHÓM NGÀNH", "INDUSTRY GROUP")}</small><strong data-dw-selected-group>💅 ${workspaceCopy("Làm đẹp & chăm sóc cá nhân", "Beauty & personal care")}</strong></span><span class="dw-picker-chevron" aria-hidden="true">⌄</span></summary><div class="dw-chip-row dw-directory-groups">${workspaceCouponGroupChips("beauty")}</div></details><p class="dw-directory-status" data-dw-directory-status>${workspaceCopy("13 ngành trong nhóm Làm đẹp & chăm sóc cá nhân", "13 industries in Beauty & personal care")}</p></div><div class="dw-directory-grid">${workspaceCategories.map((group) => `<section class="dw-category-group" data-dw-category-group data-dw-group-id="${group.id}" ${group.id === "beauty" ? "" : "hidden"}><h2>${group.industry.ic} ${escapeHTML(group.industry[language])} <small>${group.items.length} ${workspaceCopy("ngành", "industries")}</small></h2>${group.id === "community" ? communityOfferGuide() : ""}${group.id === "beauty" ? renderNailCouponServices() : ""}<div class="dw-category-cards">${group.items.map((item) => `<button class="dw-category-card ${group.items[0]===item?'dw-category-featured':''}" type="button" ${item.id === "nail" ? `data-dw-nail-menu aria-expanded="false" aria-controls="nailCouponServices"` : `data-dw-category="${escapeHTML(item[language])}"`} data-dw-industry-id="${item.id}" data-has-coupon="${item.count > 0}" data-search="${escapeHTML(item.search.toLocaleLowerCase("vi"))}">${group.items[0]===item?`<img class="dw-category-photo" src="${couponGroupImage(group.id)}" alt="" loading="lazy"/><em class="dw-category-image-note">${workspaceCopy("Ảnh minh họa", "Illustration")}</em>`:""}<span class="dw-category-icon">${item.ic}</span><strong>${escapeHTML(item[language])}</strong><small>${item.count > 0 ? workspaceCopy(`${item.count} coupon đang chạy`, `${item.count} active coupons`) : workspaceCopy("0 coupon · Khám phá →", "0 coupons · Explore →")}</small></button>`).join("")}</div></section>`).join("")}<div class="dw-category-empty" data-dw-category-empty hidden>${workspaceCopy("Chưa tìm thấy ngành hoặc dịch vụ phù hợp trong 129 ngành.", "No matching industry or service among the 129 categories.")}</div></div></section></div>`;
+  return `<div class="dw-shell"><section class="dw-card"><div class="dw-directory-head"><div class="dw-heading"><div><span class="dw-kicker">${workspaceCopy("129 NGÀNH NGHỀ · 13 NHÓM NGÀNH", "129 INDUSTRIES · 13 GROUPS")}</span><h1>🏷️ ${workspaceCopy("Coupon theo ngành", "Coupons by Category")}</h1><p>${workspaceCopy("Chọn một nhóm ngành hoặc tìm xuyên toàn bộ danh mục Nexora.", "Choose an industry group or search the entire Nexora directory.")}</p></div><span class="dw-directory-total">${workspaceCopy("129 ngành", "129 industries")}</span></div><form class="dw-search" style="grid-template-columns:1fr" data-dw-directory-search><label><span>⌕</span><input type="search" placeholder="${workspaceCopy("Tìm ngành, dịch vụ hoặc từ khoá — ví dụ: nha sĩ, sửa xe, khai thuế", "Search industries, services or keywords — for example: dentist, car repair, tax filing")}" /></label></form><details class="dw-category-picker" data-dw-category-picker><summary><span><small>${workspaceCopy("NHÓM NGÀNH", "INDUSTRY GROUP")}</small><strong data-dw-selected-group>${workspaceIndustryIcon("group:beauty")} ${workspaceCopy("Làm đẹp & chăm sóc cá nhân", "Beauty & personal care")}</strong></span><span class="dw-picker-chevron" aria-hidden="true">⌄</span></summary><div class="dw-chip-row dw-directory-groups">${workspaceCouponGroupChips("beauty")}</div></details><p class="dw-directory-status" data-dw-directory-status>${workspaceCopy("13 ngành trong nhóm Làm đẹp & chăm sóc cá nhân", "13 industries in Beauty & personal care")}</p></div><div class="dw-directory-grid">${workspaceCategories.map((group) => `<section class="dw-category-group" data-dw-category-group data-dw-group-id="${group.id}" ${group.id === "beauty" ? "" : "hidden"}><h2>${workspaceIndustryIcon("group:" + group.id)} ${escapeHTML(group.industry[language])} <small>${group.items.length} ${workspaceCopy("ngành", "industries")}</small></h2>${group.id === "community" ? communityOfferGuide() : ""}${group.id === "beauty" ? renderNailCouponServices() : ""}<div class="dw-category-cards">${group.items.map((item) => `<button class="dw-category-card ${group.items[0]===item?'dw-category-featured':''}" type="button" ${item.id === "nail" ? `data-dw-nail-menu aria-expanded="false" aria-controls="nailCouponServices"` : `data-dw-category="${escapeHTML(item[language])}"`} data-dw-industry-id="${item.id}" data-has-coupon="${item.count > 0}" data-search="${escapeHTML(item.search.toLocaleLowerCase("vi"))}">${group.items[0]===item?`<img class="dw-category-photo" src="${couponGroupImage(group.id)}" alt="" loading="lazy"/><em class="dw-category-image-note">${workspaceCopy("Ảnh minh họa", "Illustration")}</em>`:""}<span class="dw-category-icon">${workspaceIndustryIcon(item.id)}</span><strong>${escapeHTML(item[language])}</strong><small>${item.count > 0 ? workspaceCopy(`${item.count} coupon đang chạy`, `${item.count} active coupons`) : workspaceCopy("0 coupon · Khám phá →", "0 coupons · Explore →")}</small></button>`).join("")}</div></section>`).join("")}<div class="dw-category-empty" data-dw-category-empty hidden>${workspaceCopy("Chưa tìm thấy ngành hoặc dịch vụ phù hợp trong 129 ngành.", "No matching industry or service among the 129 categories.")}</div></div></section></div>`;
 }
 
 function filterCouponDirectory(selectedGroup, rawQuery = "") {
@@ -4132,18 +4137,18 @@ function renderDealMatchParsed(query, areas) {
   const language = getDealMatchLanguage();
   const parsed = parseDealMatchQuery(query);
   const location = areas.some((area) => inferDealMatchAreaLevel(area) === "world") ? copy.worldwide : areas.slice(0, 2).join(" · ");
-  return `<span class="dw-ai-label">✦ ${copy.aiReads}</span><span>${parsed.service ? `${parsed.service.ic} ${escapeHTML(parsed.service[language] || parsed.service.vi)}` : `? ${copy.unknownService}`}</span><span>${parsed.maxPrice ? `≤ $${parsed.maxPrice}` : copy.anyPrice}</span><span>🗺️ ${escapeHTML(location || copy.nearMe)}</span>${parsed.weekend ? `<span>📅 ${copy.weekend}</span>` : ""}`;
+  return `<span class="dw-ai-label">✦ ${copy.aiReads}</span><span>${parsed.service ? `${workspaceIndustryIcon(parsed.service.id)} ${escapeHTML(parsed.service[language] || parsed.service.vi)}` : `? ${copy.unknownService}`}</span><span>${parsed.maxPrice ? `≤ $${parsed.maxPrice}` : copy.anyPrice}</span><span>🗺️ ${escapeHTML(location || copy.nearMe)}</span>${parsed.weekend ? `<span>📅 ${copy.weekend}</span>` : ""}`;
 }
 
 function dealMatchIndustryChips(active = "all") {
   const language = getDealMatchLanguage();
-  return `<button class="dw-chip ${active === "all" ? "active" : ""}" type="button" data-dw-group="match-industry" data-dw-value="all">${getDealMatchCopy().allIndustries}</button>${couponTaxonomy.groups.map((group) => `<button class="dw-chip ${active === group.id ? "active" : ""}" type="button" data-dw-group="match-industry" data-dw-value="${group.id}">${group.ic} ${escapeHTML(group[language] || group.vi)}</button>`).join("")}`;
+  return `<button class="dw-chip ${active === "all" ? "active" : ""}" type="button" data-dw-group="match-industry" data-dw-value="all">${getDealMatchCopy().allIndustries}</button>${couponTaxonomy.groups.map((group) => `<button class="dw-chip ${active === group.id ? "active" : ""}" type="button" data-dw-group="match-industry" data-dw-value="${group.id}">${workspaceIndustryIcon("group:" + group.id)} ${escapeHTML(group[language] || group.vi)}</button>`).join("")}`;
 }
 
 function renderDealMatchServiceChips(groupId = "") {
   if (!groupId || groupId === "all") return "";
   const language = getDealMatchLanguage();
-  return `<button class="dw-chip active" type="button" data-dw-group="match-service" data-dw-value="all">${getDealMatchCopy().allServices}</button>${couponTaxonomy.inds.filter((item) => item.g === groupId).map((item) => `<button class="dw-chip" type="button" data-dw-group="match-service" data-dw-value="${item.id}">${item.ic} ${escapeHTML(item[language] || item.vi)}</button>`).join("")}`;
+  return `<button class="dw-chip active" type="button" data-dw-group="match-service" data-dw-value="all">${getDealMatchCopy().allServices}</button>${couponTaxonomy.inds.filter((item) => item.g === groupId).map((item) => `<button class="dw-chip" type="button" data-dw-group="match-service" data-dw-value="${item.id}">${workspaceIndustryIcon(item.id)} ${escapeHTML(item[language] || item.vi)}</button>`).join("")}`;
 }
 
 function getDealMatchGeo() {
@@ -4362,7 +4367,7 @@ function renderLastMinuteCustomer() {
   const categories = [...new Set(lastDeals.map(categoryFor))];
   return `<section class="dw-lm-customer" aria-label="${workspaceCopy("Last Minute dành cho khách hàng", "Last Minute offers for customers")}">
     <div class="dw-lm-customer-hero"><div><span class="dw-kicker">${workspaceCopy("GIÁ TỐT CHỈ CÒN HÔM NAY · KHÔNG CẦN CÀI APP", "TODAY'S BEST PRICES · NO APP REQUIRED")}</span><h2>${workspaceCopy("Chọn nhanh trước khi hết giờ", "Choose before time runs out")}</h2><p>${workspaceCopy("Đặt giờ trống vừa mở hoặc giữ phần hàng tươi cuối ngày ở gần bạn. Giá và số lượng được cập nhật trực tiếp.", "Book a newly open appointment or reserve fresh goods nearby. Prices and availability update live.")}</p></div><div class="dw-lm-location"><span>📍</span><div><small>${workspaceCopy("Khu vực của bạn", "Your area")}</small><b>Garden Grove, CA</b></div><button type="button" data-dw-route="#requests">${workspaceCopy("Đổi nơi", "Change area")}</button></div></div>
-    <div class="dw-lm-filterbar"><div><b>${workspaceCopy("Khi nào?", "When?")}</b><div class="dw-chip-row">${(workspaceEnglish() ? [["all","All"],["soon","Within 2 hours"],["afternoon","This afternoon"],["evening","Tonight"]] : [["all","Tất cả"],["soon","Trong 2 giờ"],["afternoon","Chiều nay"],["evening","Tối nay"]]).map(([value,label], i) => `<button class="dw-chip ${i === 0 ? "active" : ""}" type="button" data-dw-group="lm-window" data-dw-value="${value}">${label}</button>`).join("")}</div></div><div><b>${workspaceCopy("Loại ưu đãi", "Offer type")}</b><div class="dw-chip-row"><button class="dw-chip active" type="button" data-dw-group="lm-category" data-dw-value="all">${workspaceCopy("Mọi ngành", "All industries")}</button>${categories.map((category) => `<button class="dw-chip" type="button" data-dw-group="lm-category" data-dw-value="${category}">${categoryMeta[category][0]} ${categoryMeta[category][1]}</button>`).join("")}</div></div></div>
+    <div class="dw-lm-filterbar"><div><b>${workspaceCopy("Khi nào?", "When?")}</b><div class="dw-chip-row">${(workspaceEnglish() ? [["all","All"],["soon","Within 2 hours"],["afternoon","This afternoon"],["evening","Tonight"]] : [["all","Tất cả"],["soon","Trong 2 giờ"],["afternoon","Chiều nay"],["evening","Tối nay"]]).map(([value,label], i) => `<button class="dw-chip ${i === 0 ? "active" : ""}" type="button" data-dw-group="lm-window" data-dw-value="${value}">${label}</button>`).join("")}</div></div><div><b>${workspaceCopy("Loại ưu đãi", "Offer type")}</b><div class="dw-chip-row"><button class="dw-chip active" type="button" data-dw-group="lm-category" data-dw-value="all">${workspaceCopy("Mọi ngành", "All industries")}</button>${categories.map((category) => `<button class="dw-chip" type="button" data-dw-group="lm-category" data-dw-value="${category}">${workspaceIndustryIcon({beauty:"nail",experience:"tour",service:"other"}[category] || category)} ${categoryMeta[category][1]}</button>`).join("")}</div></div></div>
     <div class="dw-lm-results-head"><div><h2>${workspaceCopy("Đang có gần bạn", "Available near you")}</h2><p>${workspaceCopy("Chọn và giữ ngay — ưu đãi tự biến mất khi hết giờ hoặc hết số lượng.", "Book or reserve now. Offers close when time or inventory runs out.")}</p></div><strong data-dw-lm-count>${workspaceCopy(`${lastDeals.length} lựa chọn`, `${lastDeals.length} options`)}</strong></div>
     <div class="dw-lm-market-grid">${lastDeals.map((deal, i) => {
       const category = categoryFor(deal);
@@ -4582,7 +4587,7 @@ dealWorkspace?.addEventListener("click", (event) => {
       const picker = chip.closest("[data-dw-category-picker]");
       const selectedLabel = picker?.querySelector("[data-dw-selected-group]");
       const selectedGroup = couponTaxonomy.groups.find((group) => group.id === chip.dataset.dwValue);
-      if (selectedLabel && selectedGroup) selectedLabel.textContent = `${selectedGroup.ic} ${workspaceEnglish() ? selectedGroup.en : selectedGroup.vi}`;
+      if (selectedLabel && selectedGroup) selectedLabel.innerHTML = `${workspaceIndustryIcon("group:" + selectedGroup.id)} ${escapeHTML(workspaceEnglish() ? selectedGroup.en : selectedGroup.vi)}`;
       if (picker) picker.open = false;
       filterCouponDirectory(chip.dataset.dwValue, "");
       return;
@@ -5160,7 +5165,7 @@ function updateLandingGrowthEstimate() {
   if (!range) return;
   const daily = Number(range.value || 0);
   const monthly = daily * 30;
-  const format = (value) => Math.round(value).toLocaleString(document.documentElement.lang || "vi");
+  const format = (value) => Math.round(value).toLocaleString(document.documentElement.lang || "en");
   document.querySelector("#landingTrafficValue").textContent = format(daily);
   document.querySelector("#landingMonthlyScans").textContent = format(monthly);
   document.querySelector("#landingDiscoveryOpens").textContent = format(monthly * 0.21);

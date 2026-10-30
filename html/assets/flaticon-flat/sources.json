@@ -1575,6 +1575,86 @@
       "image": "https://cdn-icons-png.flaticon.com/128/14257/14257508.png",
       "file": "industry-petcare-14257508.png",
       "label": "Pet Care"
+    },
+    {
+      "key": "meditation",
+      "word": "meditation",
+      "href": "https://www.flaticon.com/free-icon/meditation_8086179",
+      "image": "https://cdn-icons-png.flaticon.com/128/8086/8086179.png",
+      "file": "industry-meditation-8086179.png",
+      "label": "Meditation"
+    },
+    {
+      "key": "sauna",
+      "word": "sauna",
+      "href": "https://www.flaticon.com/free-icon/sauna_1768242",
+      "image": "https://cdn-icons-png.flaticon.com/128/1768/1768242.png",
+      "file": "industry-sauna-1768242.png",
+      "label": "Sauna"
+    },
+    {
+      "key": "homestay",
+      "word": "guest house",
+      "href": "https://www.flaticon.com/free-icon/guest-house_1515178",
+      "image": "https://cdn-icons-png.flaticon.com/128/1515/1515178.png",
+      "file": "industry-homestay-1515178.png",
+      "label": "Guest house"
+    },
+    {
+      "key": "resort",
+      "word": "resort",
+      "href": "https://www.flaticon.com/free-icon/resort_4490820",
+      "image": "https://cdn-icons-png.flaticon.com/128/4490/4490820.png",
+      "file": "industry-resort-4490820.png",
+      "label": "Resort"
+    },
+    {
+      "key": "vacationrental",
+      "word": "villa",
+      "href": "https://www.flaticon.com/free-icon/villa_1018579",
+      "image": "https://cdn-icons-png.flaticon.com/128/1018/1018579.png",
+      "file": "industry-vacationrental-1018579.png",
+      "label": "Villa"
+    },
+    {
+      "key": "camping",
+      "word": "tent",
+      "href": "https://www.flaticon.com/free-icon/tent_1020586",
+      "image": "https://cdn-icons-png.flaticon.com/128/1020/1020586.png",
+      "file": "industry-camping-1020586.png",
+      "label": "Tent"
+    },
+    {
+      "key": "farmersmarket",
+      "word": "vegetables",
+      "href": "https://www.flaticon.com/free-icon/vegetables_589246",
+      "image": "https://cdn-icons-png.flaticon.com/128/589/589246.png",
+      "file": "industry-farmersmarket-589246.png",
+      "label": "Vegetables"
+    },
+    {
+      "key": "nightmarket",
+      "word": "food stall",
+      "href": "https://www.flaticon.com/free-icon/food-stall_9985902",
+      "image": "https://cdn-icons-png.flaticon.com/128/9985/9985902.png",
+      "file": "industry-nightmarket-9985902.png",
+      "label": "Food stall"
+    },
+    {
+      "key": "wholesale",
+      "word": "wholesale",
+      "href": "https://www.flaticon.com/free-icon/wholesale_383977",
+      "image": "https://cdn-icons-png.flaticon.com/128/383/383977.png",
+      "file": "industry-wholesale-383977.png",
+      "label": "Wholesale"
+    },
+    {
+      "key": "headspa",
+      "word": "hair washing",
+      "href": "https://www.flaticon.com/free-icon/hair-washing_843920",
+      "image": "https://cdn-icons-png.flaticon.com/128/843/843920.png",
+      "file": "industry-headspa-843920.png",
+      "label": "Hair washing"
     }
   ]
 }
