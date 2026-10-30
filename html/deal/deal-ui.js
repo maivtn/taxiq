@@ -312,6 +312,101 @@
     return Math.min(bottom, nav.getBoundingClientRect().top, create?.getBoundingClientRect().top ?? bottom);
   }
 
+  const mobileIndustryControls = new Map();
+  let mobileIndustryId = 0;
+  const mobileIndustryGroups = [
+    ['.last-minute-industries', '[data-last-industry]', 'data-last-industry'],
+    ['.taxonomy-options:has([data-industry-root])', '[data-industry-root]', 'data-industry-root'],
+    ['.taxonomy-options:has([data-business-category])', '[data-business-category]', 'data-business-category'],
+    ['.taxonomy-filter .category-row', '[data-service]', 'data-service'],
+    ['.nd-services', '[data-nail-kind]', 'data-nail-kind'],
+    ['[data-dw-category-picker]', '[data-dw-group="directory-industry"]', 'data-dw-value'],
+  ];
+
+  function refreshMobileIndustrySelects() {
+    for (const [group, adapter] of mobileIndustryControls) {
+      if (!group.isConnected) {
+        adapter.select.tomselect?.destroy();
+        adapter.wrapper.remove();
+        mobileIndustryControls.delete(group);
+      }
+    }
+    if (!matchMedia('(max-width:720px)').matches) {
+      for (const adapter of mobileIndustryControls.values()) adapter.select.tomselect?.close();
+      return;
+    }
+    const escape = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
+    for (const [selector, buttonSelector, valueAttribute] of mobileIndustryGroups) {
+      document.querySelectorAll(selector).forEach(group => {
+        const buttons = () => [...group.querySelectorAll(buttonSelector)];
+        const readChoice = button => {
+          const clone = button.cloneNode(true);
+          clone.querySelectorAll('img,svg,small,[aria-hidden="true"]').forEach(element => element.remove());
+          const baseLabel = button.dataset.baseLabel;
+          const label = (baseLabel || clone.textContent).trim().replace(/^[^\p{L}\p{N}]+/u, '').replace(/\s+/g, ' ');
+          const badge = baseLabel ? (button.textContent.match(/\s(\d+)\s*$/)?.[1] || '') : (button.querySelector('small')?.textContent.trim() || '');
+          return {value:button.getAttribute(valueAttribute),label,badge,art:button.querySelector('img')?.getAttribute('src') || '',disabled:button.disabled};
+        };
+        const choices = buttons().map(readChoice);
+        const active = buttons().find(button => button.classList.contains('active') || button.getAttribute('aria-pressed') === 'true') || buttons()[0];
+        if (!active) return;
+        let adapter = mobileIndustryControls.get(group);
+        if (!adapter) {
+          const wrapper = document.createElement('div');
+          wrapper.className = 'dw-match-select mobile-industry-select';
+          const label = document.createElement('label');
+          const directory = group.matches('[data-dw-category-picker]');
+          label.className = directory ? 'mobile-industry-label' : 'sr-only';
+          label.textContent = group.getAttribute('aria-label') || group.querySelector('summary small')?.textContent || '';
+          const select = document.createElement('select');
+          select.id = `deal-mobile-filter-${++mobileIndustryId}`;
+          label.htmlFor = select.id;
+          label.id = `${select.id}-label`;
+          select.addEventListener('change', () => buttons().find(button => button.getAttribute(valueAttribute) === select.value)?.click());
+          wrapper.append(label, select);
+          group.after(wrapper);
+          group.setAttribute('data-mobile-industry-original', '');
+          adapter = {wrapper,select};
+          mobileIndustryControls.set(group, adapter);
+        }
+        const {select} = adapter;
+        const signature = JSON.stringify(choices);
+        const activeValue = active.getAttribute(valueAttribute);
+        if (!select.tomselect && select.dataset.choiceSignature !== signature) {
+          select.replaceChildren(...choices.map(item => {
+            const option = new Option(item.label + (item.badge ? ` · ${item.badge}` : ''), item.value, false, item.value === activeValue);
+            option.disabled = item.disabled;
+            return option;
+          }));
+        }
+        if (!select.tomselect && window.TomSelect) {
+          const render = data => {
+            const button = buttons().find(button => button.getAttribute(valueAttribute) === String(data.value));
+            if (!button) return '<div></div>';
+            const item = readChoice(button);
+            return `<div class="dw-match-select-choice industry-select-choice">${item.art ? `<span class="dw-match-select-icon"><img src="${escape(item.art)}" width="20" height="20" alt="" aria-hidden="true"></span>` : ''}<span class="industry-select-text">${escape(item.label)}</span>${item.badge ? `<span class="industry-select-badge">${escape(item.badge)}</span>` : ''}</div>`;
+          };
+          const control = new window.TomSelect(select, {
+            create:false, maxItems:1, maxOptions:null, controlInput:null,
+            hideSelected:false, closeAfterSelect:true, searchField:[],
+            render:{option:render,item:render},
+          });
+          control.control.setAttribute('aria-labelledby', `${select.id}-label`);
+          select.setAttribute('aria-hidden', 'true');
+          control.on('dropdown_open', () => positionMatchSelect(control.wrapper));
+        }
+        const control = select.tomselect;
+        if (control && select.dataset.choiceSignature !== signature) {
+          choices.forEach(item => control.updateOption(item.value, {value:item.value,text:item.label,disabled:item.disabled}));
+        }
+        select.dataset.choiceSignature = signature;
+        if (control) {
+          if (control.getValue() !== activeValue) control.setValue(activeValue, true);
+        } else select.value = activeValue;
+      });
+    }
+  }
+
   function refreshSavedFilterSelect() {
     const nav = document.querySelector('.wishlist-subnav');
     if (!nav) return;
@@ -578,6 +673,7 @@
       const rule = labelRules.find(([pattern]) => pattern.test(label));
       if (rule) decorateAction(element, rule[1], rule[2]);
     });
+    refreshMobileIndustrySelects();
     refreshSavedFilterSelect();
     replaceGlyphs(root);
     syncPhoneOverlays();
@@ -592,6 +688,7 @@
     };
     new MutationObserver(schedule).observe(document.body, { childList: true, characterData: true, subtree: true });
     document.addEventListener('change', schedule);
+    document.addEventListener('click', schedule);
     matchMedia('(max-width:720px)').addEventListener('change', schedule);
     let overlayScheduled = false;
     const scheduleOverlays = () => {
