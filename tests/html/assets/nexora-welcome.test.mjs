@@ -18,6 +18,11 @@ function loadPage(name, saved = {}) {
     window.eval(asset('nexora-salon-audio.js'));
     window.eval(asset('nexora-salon-home.js'));
   } else {
+    if (name === 'nexora-getting-started.html') {
+      window.eval(asset('vendor/tom-select/tom-select.complete.min.js'));
+      window.NEXORA_APPOINTMENT_SERVICE_CATALOG = { load: () => Promise.resolve({ categories: [] }) };
+      window.eval(asset('pos-salon-services.js'));
+    }
     window.eval(asset('nexora-welcome-data.js'));
     window.eval(asset('nexora-welcome.js'));
     if (name === 'nexora-home.html') window.eval(asset('nexora-business-directory.js'));
@@ -152,6 +157,56 @@ test('Onboarding requires real entries, preserves browser drafts, and keeps indu
     assert.equal(reopened.window.document.querySelector('[name="hoursOpen0"]').checked, false);
     assert.equal(reopened.window.document.querySelector('[name="hoursFrom1"]').value, '09:00');
   } finally { reopened.window.close(); }
+});
+
+test('Services preparation reuses categories and the service editor while saving only onboarding drafts', async () => {
+  const storageKey = 'nexora.local-onboarding.v1';
+  const posKey = 'nexora:service-approval:v1:bitcoin-nail-bar-houston';
+  const catalog = [{ id: 'manicure', name: 'Manicure', services: [{ id: 'milk-honey', name: 'Milk & Honey', price: 10, durationMin: 30, active: true }] }];
+  const dom = loadPage('nexora-getting-started.html', {
+    [storageKey]: JSON.stringify({ industry: 'nail', drafts: { nail: { services: { fields: { serviceCatalog: catalog, serviceApprovals: [] }, completed: false } } } }),
+    [posKey]: 'keep-pos-settings'
+  });
+  try {
+    const { window } = dom;
+    const doc = window.document;
+    click(window, '[data-setup-step="1"]');
+    await Promise.resolve();
+    assert.equal(doc.querySelector('[name="item1Name"]'), null);
+    assert.ok(doc.querySelector('[data-service-filter="manicure"]'));
+    const search = doc.querySelector('[data-service-search]');
+    search.value = 'no-match';
+    search.dispatchEvent(new window.Event('input', { bubbles: true }));
+    assert.match(doc.querySelector('[data-approval-services]').textContent, /No services match your search/);
+    click(window, '[data-service-clear]');
+    click(window, '[data-service-view="card"]');
+    assert.match(doc.querySelector('.salon-service-card').textContent, /Milk & Honey/);
+    click(window, '[data-salon-service-edit="milk-honey"]');
+    const price = doc.querySelector('[data-service-edit-price]');
+    price.value = '25';
+    doc.querySelector('[data-service-approval]').checked = true;
+    doc.querySelector('[data-service-editor-form]').dispatchEvent(new window.Event('submit', { bubbles: true, cancelable: true }));
+    assert.equal(doc.querySelector('[data-service-editor]').hidden, true);
+    submit(window);
+    assert.equal(doc.querySelector('[data-setup-step="1"]').dataset.completed, 'true');
+    click(window, '[data-service-view="list"]');
+    const inlinePrice = doc.querySelector('[data-inline-field="price"]');
+    inlinePrice.value = '35';
+    inlinePrice.dispatchEvent(new window.Event('input', { bubbles: true }));
+    assert.equal(doc.querySelector('[data-setup-step="1"]').dataset.completed, 'false');
+    click(window, '[data-service-add="manicure"]');
+    assert.equal(doc.querySelector('#service-editor-title').textContent, 'New Service');
+    click(window, '[data-service-editor-close]');
+    assert.equal(doc.querySelectorAll('[data-salon-service-row]').length, 1);
+    const saved = JSON.parse(window.localStorage.getItem(storageKey)).drafts.nail.services.fields;
+    assert.equal(Number(saved.serviceCatalog[0].services[0].price), 35);
+    assert.deepEqual(saved.serviceApprovals, ['milk-honey']);
+    assert.equal(window.localStorage.getItem(posKey), 'keep-pos-settings');
+    click(window, '[data-setup-step="2"]');
+    click(window, '[data-setup-step="1"]');
+    await Promise.resolve();
+    assert.equal(doc.querySelector('[data-inline-field="price"]').value, '35');
+  } finally { dom.window.close(); }
 });
 
 test('QR preparation rejects an empty guest menu and saves once a tile is enabled', () => {

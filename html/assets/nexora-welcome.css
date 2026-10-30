@@ -45,3 +45,46 @@
 @media(max-width:1100px){.nxw-business-form>.nxw-fields>.nxw-field{flex-basis:100%}.nxw-business-group{padding:14px}.nxw-business-day{gap:9px}.nxw-day-toggle{flex-basis:115px}.nxw-day-times{gap:5px}.nxw-day-times input{padding:8px 5px;font-size:11px}}
 @media(max-width:700px){.nxw-business-form>.nxw-fields>.nxw-field{flex-basis:calc(50% - 14px)}.nxw-business-group{margin-top:20px}.nxw-hours-preview dl{grid-template-columns:1fr}}
 @media(max-width:480px){.nxw-business-form>.nxw-fields>.nxw-field{flex-basis:100%}.nxw-business-group{padding:12px}.nxw-address-fields{gap:12px 10px}.nxw-address-fields .nxw-field{flex-basis:auto;min-width:0}.nxw-business-day{gap:8px;padding:12px 0}.nxw-day-times{flex-basis:100%}.nxw-day-times input{min-height:38px;font-size:12px;padding:8px}.nxw-day-toggle input{width:38px;height:24px}.nxw-day-toggle>span{width:38px;height:24px}.nxw-day-toggle>span:after{width:18px;height:18px}.nxw-phone select{flex-basis:116px;width:116px}}
+
+/* The shared Salon Settings service workspace is also used by onboarding. */
+.nxw [data-onboarding-services]{margin-top:18px;min-width:0}
+.nxw [data-onboarding-services] button{border:1px solid var(--svc-border);font-size:11px}
+.nxw [data-onboarding-services] .salon-drag{border:0;background:transparent}
+.nxw [data-onboarding-services] .salon-service-browser{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.nxw [data-onboarding-services] .salon-service-search{position:relative;flex:1;max-width:360px;min-width:0}
+.nxw [data-onboarding-services] .salon-service-search>.bi{position:absolute;left:13px;top:50%;transform:translateY(-50%);color:#8994a9}
+.nxw [data-onboarding-services] .salon-service-search input{min-height:42px;padding-left:36px;font-size:12px}
+.nxw [data-onboarding-services] .salon-service-view{display:flex;flex:none;padding:3px;border:1px solid var(--svc-border);border-radius:9px;background:#fff;gap:3px}
+.nxw [data-onboarding-services] .salon-service-view button{min-height:34px;padding:7px 10px;border-color:transparent;color:#62728a;white-space:nowrap}
+.nxw [data-onboarding-services] .salon-service-view button[aria-pressed=true]{background:var(--svc-brand);color:#fff}
+.nxw [data-onboarding-services] .salon-service-filters{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0}
+.nxw [data-onboarding-services] .salon-service-filters button{min-height:32px;padding:6px 9px;color:#53617c;font-size:10px}
+.nxw [data-onboarding-services] .salon-service-filters button[aria-pressed=true]{background:#eeecff;border-color:#8e85dd;color:#5145cd}
+.nxw [data-onboarding-services] .salon-service-toolbar{margin-top:0}
+.nxw [data-onboarding-services] .settings-service-category-body{overflow-x:auto}
+.nxw [data-onboarding-services] .settings-service-header,.nxw [data-onboarding-services] .settings-service-row{grid-template-columns:18px 30px minmax(130px,1fr) 76px 84px 62px 62px 32px 32px;min-width:650px}
+.nxw [data-onboarding-services] .salon-approval-state{color:#5145cd;text-align:center}
+.nxw [data-onboarding-services] .salon-card-category{margin-bottom:20px}
+.nxw [data-onboarding-services] .salon-card-category>header{display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:10px;padding:10px 12px;border-radius:8px;background:#f3f5fa}
+.nxw [data-onboarding-services] .salon-card-category>header h3{font-size:12px}
+.nxw [data-onboarding-services] .salon-card-category>header small{margin-left:7px;color:#78859b;font-size:10px;font-weight:500}
+.nxw [data-onboarding-services] .salon-service-cards{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(210px,100%),1fr));gap:10px}
+.nxw [data-onboarding-services] .salon-service-card{min-width:0;padding:13px;border:1px solid var(--svc-border);border-radius:11px;background:#fff}
+.nxw [data-onboarding-services] .salon-service-card>header{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;min-height:46px}
+.nxw [data-onboarding-services] .salon-service-card h3{font-size:12px;overflow-wrap:anywhere}
+.nxw [data-onboarding-services] .salon-service-card>img{width:100%;height:115px;margin:8px 0;object-fit:cover;border-radius:7px}
+.nxw [data-onboarding-services] .salon-card-price{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:13px 0}
+.nxw [data-onboarding-services] .salon-card-price strong{font-size:16px}
+.nxw [data-onboarding-services] .salon-card-price>span{color:#78859b;font-size:10px}
+.nxw [data-onboarding-services] .salon-service-card footer{display:flex;align-items:center;gap:5px;padding-top:10px;border-top:1px solid #edf0f5}
+.nxw [data-onboarding-services] .salon-service-card footer .salon-status-pill{margin-right:auto}
+.nxw [data-onboarding-services] .salon-service-card footer button{padding:7px 9px;color:#394b66}
+.nxw [data-onboarding-services] .salon-service-dialog h2{font-size:18px}
+.nxw [data-onboarding-services] .salon-service-dialog textarea{resize:vertical}
+.nxw [data-onboarding-services] .salon-service-dialog .salon-help{font-size:10px;line-height:1.6}
+.nxw [data-onboarding-services] .salon-service-overview-fields>label[for="service-edit-categories"]{margin-top:14px}
+.nxw [data-onboarding-services] .salon-category-select .ts-control{padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23687891' stroke-width='1.7'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E") no-repeat right 16px center;background-size:16px}
+.nxw [data-onboarding-services] .salon-service-overlay [hidden]{display:none!important}
+.nxw [data-onboarding-services] .salon-service-dialog select:not([multiple]){appearance:none;padding-right:44px;background:#fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' fill='none' stroke='%23687891' stroke-width='1.7'%3E%3Cpath d='m4 6 4 4 4-4'/%3E%3C/svg%3E") no-repeat right 16px center;background-size:16px}
+@media(max-width:900px){.nxw [data-onboarding-services] .salon-service-browser{flex-wrap:wrap}.nxw [data-onboarding-services] .salon-service-search{flex-basis:100%;max-width:none}.nxw [data-onboarding-services] .salon-service-view{margin-left:auto}}
+@media(max-width:480px){.nxw [data-onboarding-services] .salon-service-filters{flex-wrap:nowrap;overflow-x:auto;padding-bottom:5px}.nxw [data-onboarding-services] .salon-service-filters button{flex:none;white-space:nowrap}.nxw [data-onboarding-services] .salon-dialog-body,.nxw [data-onboarding-services] .salon-service-dialog>header{padding:14px}.nxw [data-onboarding-services] .salon-service-dialog footer{padding:12px 14px;gap:8px}}
