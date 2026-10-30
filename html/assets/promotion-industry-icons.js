@@ -1,20 +1,11 @@
 (function () {
   'use strict';
-  const appearance = window.ONEQR_ACTION_APPEARANCE;
-  const icons = Object.freeze({
-    nail:'paintbrush', pedicure:'paintbrush', spa:'flower-2', hair:'wand-2', tattoo:'paintbrush',
-    fitness:'trophy', yoga:'heart', nutrition:'heart', restaurant:'utensils',
-    'fast-food':'chef-hat', coffee:'coffee', bakery:'cake', 'hot-pot':'utensils',
-    seafood:'utensils', 'food-truck':'truck', bar:'music', retail:'shopping-bag',
-    apparel:'shopping-bag', gift:'gift', jewelry:'crown', electronics:'phone',
-    home:'home', furniture:'home', flowers:'flower-2', travel:'globe-2',
-    entertainment:'gamepad-2', lifestyle:'heart', repair:'wrench', calendar:'calendar-check',
-    cosmetics:'sparkles', takeaway:'shopping-bag'
-  });
+  const registry = window.NEXORA_INDUSTRY_ICONS;
+  const icons = registry.icons;
   const escape = value => String(value).replace(/[&<>"']/g, char => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[char]));
-  const path = key => appearance.iconPath(icons[Object.hasOwn(icons,key) ? key : 'retail']);
+  const path = key => registry.path(key);
   function image(key) {
-    return '<img class="promotion-industry-icon" src="' + path(key) + '" alt="" width="32" height="32" decoding="async">';
+    return registry.image(key,{size:32,className:'promotion-industry-icon'});
   }
 
   function mountPicker(select) {

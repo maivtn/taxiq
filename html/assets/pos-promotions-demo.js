@@ -1428,8 +1428,10 @@
           : $("template-industry").value;
       window.NEXORA_PROMOTION_ICONS.mountPicker($("ai-brand-industry"));
       const syncIndustry = () => {
-        $("ai-brand-industry-summary").textContent =
-          $("ai-brand-industry").selectedOptions[0].textContent;
+        const selected = $("ai-brand-industry").selectedOptions[0];
+        $("ai-brand-industry-summary").innerHTML =
+          window.NEXORA_PROMOTION_ICONS.image(selected.dataset.industryIcon) +
+          '<span>' + escape(selected.textContent) + '</span>';
       };
       $("ai-brand-industry").addEventListener("change", syncIndustry);
       syncIndustry();

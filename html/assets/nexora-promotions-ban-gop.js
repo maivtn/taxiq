@@ -27,7 +27,9 @@
   const pattern = [...emojiIcons.keys()].sort((a,b) => b.length-a.length).map(value => value.replace(/[.*+?^${}()|[\]\\]/g,'\\$&') + '\uFE0F?').join('|');
   const emojiPattern = new RegExp(pattern, 'gu');
   const iconName = value => emojiIcons.get(normalize(value || '')) || 'sparkles';
-  const icon = (name, size = 24) => appearance.image(name, size);
+  const icon = (name, size = 24) => name.startsWith('industry:')
+    ? window.NEXORA_INDUSTRY_ICONS.image(name.slice(9),{size,className:'oneqr-flat-icon'})
+    : appearance.image(name, size);
   let monthlyCap = '', menuGroups = null, serviceGroups = [];
   const openCategories = new Map();
   const pickerStates = new WeakMap();
@@ -37,8 +39,8 @@
     return `<option value="${escape(value)}" data-po-icon="${escape(name)}" ${selected?'selected':''}>${escape(label)}</option>`;
   }
   function industryOptions(taxonomy, value, L) {
-    return option('all', L('Mọi ngành','All industries'), 'globe-2', value === 'all') + taxonomy.g.map(group =>
-      `<optgroup label="${escape(L(group[2],group[3]))}">${taxonomy.i.filter(item => item[1] === group[0]).map(item => option(item[0],L(item[3],item[4]),iconName(item[2]),value === item[0])).join('')}</optgroup>`).join('');
+    return option('all', L('Mọi ngành','All industries'), 'industry:other', value === 'all') + taxonomy.g.map(group =>
+      `<optgroup label="${escape(L(group[2],group[3]))}">${taxonomy.i.filter(item => item[1] === group[0]).map(item => option(item[0],L(item[3],item[4]),'industry:'+item[0],value === item[0])).join('')}</optgroup>`).join('');
   }
   function industrySelect(taxonomy, value, overview, L) {
     const id = overview ? 'overview-industry' : 'template-industry';

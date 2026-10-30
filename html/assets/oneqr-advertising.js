@@ -165,9 +165,14 @@
   }
 
   function renderGroups() {
+    $('group').dataset.industrySelect = 'group';
     $('custom').value = state.custom;
     $('group').replaceChildren(new Option(t('chooseGroup'), ''));
-    PO.categories.forEach(category => $('group').add(new Option(category[state.language === 'vi' ? 1 : 2], category[0])));
+    PO.categories.forEach(category => {
+      const option = new Option(category[state.language === 'vi' ? 1 : 2], category[0]);
+      option.dataset.industryIcon = 'group:'+category[0];
+      $('group').add(option);
+    });
     $('group').value = state.group;
     renderIndustries();
     renderSecondaryIndustries();
@@ -184,6 +189,7 @@
 
   function renderSecondaryIndustries() {
     const secondary = $('secondary');
+    secondary.dataset.industrySelect = 'industry';
     secondary.tomselect?.destroy();
     $('secondary-label').htmlFor = 'secondary';
     secondary.replaceChildren();
@@ -302,15 +308,19 @@
     root.querySelectorAll('[data-i="filterNote"], [data-i="failClosed"]').forEach(note => {
       note.hidden = classified;
     });
-    const names = [state.industry, ...state.secondary.filter(key => key !== state.industry)].map(key => {
+    const selectedIndustries = [state.industry, ...state.secondary.filter(key => key !== state.industry)].map(key => {
       const industry = PO.categories.flatMap(category => category[3]).find(item => item[0] === key);
-      return industry?.[state.language === 'vi' ? 1 : 2];
+      return industry && {key,label:industry[state.language === 'vi' ? 1 : 2]};
     }).filter(Boolean);
+    const names = selectedIndustries.map(industry => industry.label);
     const label = state.industry ? names.join(' · ') : t('notChosen');
     $('customBlock').classList.toggle('hide', state.industry !== 'other');
     $('custom').required = state.industry === 'other';
-    $('chosen').textContent = label;
-    $('adIndustry').textContent = label;
+    const summary = state.industry ? selectedIndustries.map(industry =>
+      window.NEXORA_INDUSTRY_ICONS.image(industry.key,{size:18})+' '+escape(industry.label)
+    ).join(' · ') : escape(label);
+    $('chosen').innerHTML = summary;
+    $('adIndustry').innerHTML = summary;
     if (personal) $('activate').disabled = !canActivate();
   }
 

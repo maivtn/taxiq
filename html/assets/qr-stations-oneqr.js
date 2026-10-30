@@ -770,7 +770,7 @@
   function openAddModuleModal() {
     if (!addModuleModal) return;
     document.getElementById('oneqrModuleSearch').value = '';
-    document.getElementById('oneqrModuleIndustry').textContent = currentRole + ' menu' + (currentIndustry ? ' · ' + currentIndustry.industryLabel : '');
+    document.getElementById('oneqrModuleIndustry').innerHTML = (currentIndustry ? window.NEXORA_INDUSTRY_ICONS.image(currentIndustry.industryId,{size:20,catalog:'oneqr'})+' ' : '') + escapeModuleText(currentRole + ' menu' + (currentIndustry ? ' · ' + currentIndustry.industryLabel : ''));
     renderAddModuleList();
     addModuleModal.hidden = false;
     addModuleModal.setAttribute('aria-hidden', 'false');
@@ -1281,7 +1281,7 @@
       status.setAttribute('data-industry-template-status', '');
       heading.appendChild(status);
     }
-    status.textContent = 'Template: ' + (currentIndustry.industryLabel || 'Industry');
+    status.innerHTML = window.NEXORA_INDUSTRY_ICONS.image(currentIndustry.industryId,{size:20,catalog:'oneqr'})+' '+escapeModuleText('Template: ' + (currentIndustry.industryLabel || 'Industry'));
   }
 
   function currentOneQRConfig() {

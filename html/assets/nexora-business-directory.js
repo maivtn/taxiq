@@ -30,7 +30,8 @@ const industrySalonStory={en:"Read the salon story ↗"};
       tabs.setAttribute('aria-label',dict[current].industrySector);
       tabs.replaceChildren(...industrySectors.map((sector,sectorIndex)=>{
         const button=document.createElement('button'); button.type='button';
-        button.textContent=`${sector.icon}  ${sector.name[index]}`;
+        button.innerHTML=window.NEXORA_INDUSTRY_ICONS.image(sector.key,{size:24});
+        button.append(document.createTextNode(sector.name[index]));
         button.setAttribute('aria-pressed',String(sectorIndex===selectedIndustry));
         button.addEventListener('click',()=>{ selectedIndustry=sectorIndex; selectedBusinessId=null; renderIndustry(); });
         return button;
@@ -53,7 +54,7 @@ const industrySalonStory={en:"Read the salon story ↗"};
       document.getElementById('industry-profile-label').textContent=business?.demo?dict[current].industryProfileDemo:business?labels.verified:dict[current].industryProfileEmpty;
       document.getElementById('industry-profile-location').textContent=business?.location||'';
       const avatar=document.getElementById('industry-avatar');
-      if(business?.logo){const logo=document.createElement('img');logo.src=business.logo;logo.alt='';logo.decoding='async';avatar.replaceChildren(logo);}else{avatar.textContent=business?.monogram||sector.monogram;}
+      if(business?.logo){const logo=document.createElement('img');logo.src=business.logo;logo.alt='';logo.decoding='async';avatar.replaceChildren(logo);}else if(business?.monogram){avatar.textContent=business.monogram;}else{avatar.innerHTML=window.NEXORA_INDUSTRY_ICONS.image(sector.key,{size:32});}
       document.getElementById('industry-business-name').textContent=business?.name||sector.name[index];
       document.getElementById('industry-business-type').textContent=business?sector.name[index]:'';
       document.getElementById('industry-business-description').textContent=business?.id==='bitcoin-nail-bar'?industrySalonIntro[current]:business?.summary?(business.summary[current]||((current==='vi'||current==='en')?business.summary.en:sector.description[index])):dict[current].industryEmptyBody;

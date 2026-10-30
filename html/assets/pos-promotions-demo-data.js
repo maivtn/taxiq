@@ -1195,79 +1195,79 @@ window.POS_PROMOTIONS_DEMO_DATA = {
       "id": "beauty",
       "vi": "Làm đẹp & chăm sóc cá nhân",
       "en": "Beauty & personal care",
-      "icon": "cosmetics"
+      "icon": "group:beauty"
     },
     {
       "id": "food",
       "vi": "Ăn uống",
       "en": "Food & drink",
-      "icon": "restaurant"
+      "icon": "group:food"
     },
     {
       "id": "shop",
       "vi": "Mua sắm",
       "en": "Shopping",
-      "icon": "retail"
+      "icon": "group:shop"
     },
     {
       "id": "health",
       "vi": "Sức khoẻ",
       "en": "Health",
-      "icon": "spa"
+      "icon": "group:health"
     },
     {
       "id": "auto",
       "vi": "Xe & di chuyển",
       "en": "Auto & transport",
-      "icon": "repair"
+      "icon": "group:auto"
     },
     {
       "id": "home",
       "vi": "Nhà cửa & sửa chữa",
       "en": "Home & repair",
-      "icon": "home"
+      "icon": "group:home"
     },
     {
       "id": "finance",
       "vi": "Tài chính · pháp lý · địa ốc",
       "en": "Finance · legal · real estate",
-      "icon": "lifestyle"
+      "icon": "group:finance"
     },
     {
       "id": "travel",
       "vi": "Du lịch & lưu trú",
       "en": "Travel & stay",
-      "icon": "travel"
+      "icon": "group:travel"
     },
     {
       "id": "edu",
       "vi": "Giáo dục & đào tạo",
       "en": "Education & training",
-      "icon": "lifestyle"
+      "icon": "group:edu"
     },
     {
       "id": "event",
       "vi": "Sự kiện & giải trí",
       "en": "Events & entertainment",
-      "icon": "retail"
+      "icon": "group:event"
     },
     {
       "id": "family",
       "vi": "Gia đình & thú cưng",
       "en": "Family & pets",
-      "icon": "retail"
+      "icon": "group:family"
     },
     {
       "id": "biz",
       "vi": "Dịch vụ doanh nghiệp & công nghệ",
       "en": "Business services & tech",
-      "icon": "lifestyle"
+      "icon": "group:biz"
     },
     {
       "id": "community",
       "vi": "Cộng đồng & phi lợi nhuận",
       "en": "Community & non-profit",
-      "icon": "retail"
+      "icon": "group:community"
     }
   ],
   "industries": [
@@ -1283,7 +1283,7 @@ window.POS_PROMOTIONS_DEMO_DATA = {
       "group": "beauty",
       "vi": "Pedicure / chân",
       "en": "Pedicure",
-      "icon": "pedicure"
+      "icon": "pedi"
     },
     {
       "id": "spa",
@@ -1297,7 +1297,7 @@ window.POS_PROMOTIONS_DEMO_DATA = {
       "group": "beauty",
       "vi": "Mi & chân mày",
       "en": "Lashes & brows",
-      "icon": "spa"
+      "icon": "lash"
     },
     {
       "id": "hair",
@@ -1311,35 +1311,35 @@ window.POS_PROMOTIONS_DEMO_DATA = {
       "group": "beauty",
       "vi": "Barber / tóc nam",
       "en": "Barbershop",
-      "icon": "hair"
+      "icon": "barber"
     },
     {
       "id": "skin",
       "group": "beauty",
       "vi": "Da & facial",
       "en": "Skin & facial",
-      "icon": "spa"
+      "icon": "skin"
     },
     {
       "id": "pmu",
       "group": "beauty",
       "vi": "Phun xăm / PMU / xăm",
       "en": "PMU & tattoo",
-      "icon": "tattoo"
+      "icon": "pmu"
     },
     {
       "id": "medspa",
       "group": "beauty",
       "vi": "Thẩm mỹ y khoa",
       "en": "Medspa & aesthetics",
-      "icon": "cosmetics"
+      "icon": "medspa"
     },
     {
       "id": "wax",
       "group": "beauty",
       "vi": "Wax / tẩy lông",
       "en": "Waxing",
-      "icon": "cosmetics"
+      "icon": "wax"
     },
     {
       "id": "fitness",
@@ -1360,28 +1360,28 @@ window.POS_PROMOTIONS_DEMO_DATA = {
       "group": "beauty",
       "vi": "Giảm cân & dinh dưỡng",
       "en": "Weight loss & nutrition",
-      "icon": "nutrition"
+      "icon": "diet"
     },
     {
       "id": "food",
       "group": "food",
       "vi": "Nhà hàng / quán ăn",
       "en": "Restaurant",
-      "icon": "restaurant"
+      "icon": "food"
     },
     {
       "id": "fastfood",
       "group": "food",
       "vi": "Bánh mì / ăn nhanh",
       "en": "Fast food & sandwiches",
-      "icon": "fast-food"
+      "icon": "fastfood"
     },
     {
       "id": "drink",
       "group": "food",
       "vi": "Cà phê / trà sữa",
       "en": "Coffee & bubble tea",
-      "icon": "coffee"
+      "icon": "drink"
     },
     {
       "id": "bakery",
@@ -1395,7 +1395,7 @@ window.POS_PROMOTIONS_DEMO_DATA = {
       "group": "food",
       "vi": "Lẩu · nướng · buffet",
       "en": "Hotpot · BBQ · buffet",
-      "icon": "hot-pot"
+      "icon": "hotpot"
     },
     {
       "id": "seafood",
@@ -1409,14 +1409,14 @@ window.POS_PROMOTIONS_DEMO_DATA = {
       "group": "food",
       "vi": "Chay",
       "en": "Vegetarian & vegan",
-      "icon": "nutrition"
+      "icon": "vegan"
     },
     {
       "id": "foodtruck",
       "group": "food",
       "vi": "Food truck",
       "en": "Food truck",
-      "icon": "food-truck"
+      "icon": "foodtruck"
     },
     {
       "id": "bar",
@@ -1430,70 +1430,70 @@ window.POS_PROMOTIONS_DEMO_DATA = {
       "group": "food",
       "vi": "Nhà hàng tiệc cưới",
       "en": "Wedding banquet hall",
-      "icon": "home"
+      "icon": "banquet"
     },
     {
       "id": "catering",
       "group": "food",
       "vi": "Catering / đặt tiệc",
       "en": "Catering",
-      "icon": "restaurant"
+      "icon": "catering"
     },
     {
       "id": "homefood",
       "group": "food",
       "vi": "Đồ ăn nhà làm / online",
       "en": "Home-cooked & online food",
-      "icon": "takeaway"
+      "icon": "homefood"
     },
     {
       "id": "market",
       "group": "shop",
       "vi": "Chợ / siêu thị",
       "en": "Grocery & market",
-      "icon": "retail"
+      "icon": "market"
     },
     {
       "id": "convenience",
       "group": "shop",
       "vi": "Tiện lợi / tạp hoá",
       "en": "Convenience store",
-      "icon": "retail"
+      "icon": "convenience"
     },
     {
       "id": "supply",
       "group": "shop",
       "vi": "Supply nail & spa / đồ nghề",
       "en": "Nail & spa supply",
-      "icon": "nail"
+      "icon": "supply"
     },
     {
       "id": "cosmetic",
       "group": "shop",
       "vi": "Mỹ phẩm / nước hoa",
       "en": "Cosmetics & perfume",
-      "icon": "cosmetics"
+      "icon": "cosmetic"
     },
     {
       "id": "import",
       "group": "shop",
       "vi": "Hàng xách tay",
       "en": "Imported goods",
-      "icon": "retail"
+      "icon": "import"
     },
     {
       "id": "fashion",
       "group": "shop",
       "vi": "Thời trang / áo dài",
       "en": "Fashion & áo dài",
-      "icon": "apparel"
+      "icon": "fashion"
     },
     {
       "id": "shoes",
       "group": "shop",
       "vi": "Giày / túi xách",
       "en": "Shoes & bags",
-      "icon": "apparel"
+      "icon": "shoes"
     },
     {
       "id": "jewelry",
@@ -1521,679 +1521,679 @@ window.POS_PROMOTIONS_DEMO_DATA = {
       "group": "shop",
       "vi": "Hoa tươi / quà tặng",
       "en": "Flowers & gifts",
-      "icon": "flowers"
+      "icon": "flower"
     },
     {
       "id": "eyewear",
       "group": "shop",
       "vi": "Kính thời trang",
       "en": "Eyewear store",
-      "icon": "retail"
+      "icon": "eyewear"
     },
     {
       "id": "dental",
       "group": "health",
       "vi": "Nha sĩ",
       "en": "Dentist",
-      "icon": "spa"
+      "icon": "dental"
     },
     {
       "id": "eye",
       "group": "health",
       "vi": "Mắt kính / nhãn khoa",
       "en": "Optometry",
-      "icon": "spa"
+      "icon": "eye"
     },
     {
       "id": "clinic",
       "group": "health",
       "vi": "Bác sĩ gia đình / phòng khám",
       "en": "Family doctor & clinic",
-      "icon": "spa"
+      "icon": "clinic"
     },
     {
       "id": "specialist",
       "group": "health",
       "vi": "Bác sĩ chuyên khoa",
       "en": "Medical specialist",
-      "icon": "spa"
+      "icon": "specialist"
     },
     {
       "id": "chiro",
       "group": "health",
       "vi": "Chiropractor / vật lý trị liệu",
       "en": "Chiropractic & physical therapy",
-      "icon": "spa"
+      "icon": "chiro"
     },
     {
       "id": "acupuncture",
       "group": "health",
       "vi": "Châm cứu / đông y",
       "en": "Acupuncture & herbal",
-      "icon": "spa"
+      "icon": "acupuncture"
     },
     {
       "id": "pharm",
       "group": "health",
       "vi": "Nhà thuốc / thuốc bổ",
       "en": "Pharmacy & supplements",
-      "icon": "spa"
+      "icon": "pharm"
     },
     {
       "id": "lab",
       "group": "health",
       "vi": "Xét nghiệm / chẩn đoán",
       "en": "Lab & imaging",
-      "icon": "spa"
+      "icon": "lab"
     },
     {
       "id": "mental",
       "group": "health",
       "vi": "Tâm lý / tư vấn",
       "en": "Mental health & counseling",
-      "icon": "spa"
+      "icon": "mental"
     },
     {
       "id": "homehealth",
       "group": "health",
       "vi": "Chăm sóc người già / tại nhà",
       "en": "Home health & senior care",
-      "icon": "spa"
+      "icon": "homehealth"
     },
     {
       "id": "carwash",
       "group": "auto",
       "vi": "Rửa xe / detailing",
       "en": "Car wash & detailing",
-      "icon": "repair"
+      "icon": "carwash"
     },
     {
       "id": "mechanic",
       "group": "auto",
       "vi": "Sửa xe / thay nhớt",
       "en": "Auto repair & oil change",
-      "icon": "repair"
+      "icon": "mechanic"
     },
     {
       "id": "tire",
       "group": "auto",
       "vi": "Lốp / thắng",
       "en": "Tires & brakes",
-      "icon": "repair"
+      "icon": "tire"
     },
     {
       "id": "bodyshop",
       "group": "auto",
       "vi": "Body shop / sơn xe",
       "en": "Body shop & paint",
-      "icon": "repair"
+      "icon": "bodyshop"
     },
     {
       "id": "tint",
       "group": "auto",
       "vi": "Tint / phụ kiện / audio",
       "en": "Tint · accessories · audio",
-      "icon": "repair"
+      "icon": "tint"
     },
     {
       "id": "dealer",
       "group": "auto",
       "vi": "Mua bán xe",
       "en": "Car sales & dealer",
-      "icon": "repair"
+      "icon": "dealer"
     },
     {
       "id": "carrental",
       "group": "auto",
       "vi": "Cho thuê xe",
       "en": "Car rental",
-      "icon": "repair"
+      "icon": "carrental"
     },
     {
       "id": "ride",
       "group": "auto",
       "vi": "Đưa đón / taxi / sân bay",
       "en": "Rides · taxi · airport",
-      "icon": "repair"
+      "icon": "ride"
     },
     {
       "id": "bus",
       "group": "auto",
       "vi": "Xe đò / xe khách",
       "en": "Intercity bus",
-      "icon": "repair"
+      "icon": "bus"
     },
     {
       "id": "moving",
       "group": "auto",
       "vi": "Vận chuyển / dọn nhà",
       "en": "Moving & hauling",
-      "icon": "repair"
+      "icon": "moving"
     },
     {
       "id": "cargo",
       "group": "auto",
       "vi": "Gửi hàng về VN / cargo",
       "en": "Cargo to Vietnam",
-      "icon": "repair"
+      "icon": "cargo"
     },
     {
       "id": "inspection",
       "group": "auto",
       "vi": "Đăng kiểm / giấy tờ xe",
       "en": "Inspection & registration",
-      "icon": "repair"
+      "icon": "inspection"
     },
     {
       "id": "clean",
       "group": "home",
       "vi": "Dọn dẹp nhà cửa",
       "en": "House cleaning",
-      "icon": "home"
+      "icon": "clean"
     },
     {
       "id": "remodel",
       "group": "home",
       "vi": "Sửa nhà / remodel",
       "en": "Remodeling & contractor",
-      "icon": "home"
+      "icon": "remodel"
     },
     {
       "id": "plumbing",
       "group": "home",
       "vi": "Điện / nước",
       "en": "Electrical & plumbing",
-      "icon": "home"
+      "icon": "plumbing"
     },
     {
       "id": "hvac",
       "group": "home",
       "vi": "Điện lạnh / HVAC",
       "en": "HVAC",
-      "icon": "home"
+      "icon": "hvac"
     },
     {
       "id": "roof",
       "group": "home",
       "vi": "Mái nhà / roofing",
       "en": "Roofing",
-      "icon": "home"
+      "icon": "roof"
     },
     {
       "id": "floor",
       "group": "home",
       "vi": "Sàn / gạch / đá",
       "en": "Flooring & tile",
-      "icon": "home"
+      "icon": "floor"
     },
     {
       "id": "paint",
       "group": "home",
       "vi": "Sơn nhà",
       "en": "Painting",
-      "icon": "home"
+      "icon": "paint"
     },
     {
       "id": "landscape",
       "group": "home",
       "vi": "Sân vườn / cây cảnh",
       "en": "Landscaping",
-      "icon": "home"
+      "icon": "landscape"
     },
     {
       "id": "pool",
       "group": "home",
       "vi": "Hồ bơi",
       "en": "Pool service",
-      "icon": "home"
+      "icon": "pool"
     },
     {
       "id": "pest",
       "group": "home",
       "vi": "Diệt côn trùng",
       "en": "Pest control",
-      "icon": "home"
+      "icon": "pest"
     },
     {
       "id": "garage",
       "group": "home",
       "vi": "Cửa / garage / cửa sổ",
       "en": "Doors · garage · windows",
-      "icon": "home"
+      "icon": "garage"
     },
     {
       "id": "security",
       "group": "home",
       "vi": "Camera / an ninh / smart home",
       "en": "Security & smart home",
-      "icon": "home"
+      "icon": "security"
     },
     {
       "id": "laundry",
       "group": "home",
       "vi": "Giặt ủi / dry clean",
       "en": "Laundry & dry cleaning",
-      "icon": "home"
+      "icon": "laundry"
     },
     {
       "id": "locksmith",
       "group": "home",
       "vi": "Thợ khoá",
       "en": "Locksmith",
-      "icon": "home"
+      "icon": "locksmith"
     },
     {
       "id": "tax",
       "group": "finance",
       "vi": "Thuế / kế toán",
       "en": "Tax & accounting",
-      "icon": "lifestyle"
+      "icon": "tax"
     },
     {
       "id": "insurance",
       "group": "finance",
       "vi": "Bảo hiểm",
       "en": "Insurance",
-      "icon": "lifestyle"
+      "icon": "insurance"
     },
     {
       "id": "remit",
       "group": "finance",
       "vi": "Gửi tiền / đổi tiền",
       "en": "Money transfer & exchange",
-      "icon": "lifestyle"
+      "icon": "remit"
     },
     {
       "id": "loan",
       "group": "finance",
       "vi": "Vay / mortgage",
       "en": "Loans & mortgage",
-      "icon": "lifestyle"
+      "icon": "loan"
     },
     {
       "id": "immigration",
       "group": "finance",
       "vi": "Luật sư di trú",
       "en": "Immigration lawyer",
-      "icon": "lifestyle"
+      "icon": "immigration"
     },
     {
       "id": "injury",
       "group": "finance",
       "vi": "Luật sư tai nạn / thương tích",
       "en": "Injury lawyer",
-      "icon": "lifestyle"
+      "icon": "injury"
     },
     {
       "id": "lawyer",
       "group": "finance",
       "vi": "Luật sư gia đình / kinh doanh",
       "en": "Family & business lawyer",
-      "icon": "lifestyle"
+      "icon": "lawyer"
     },
     {
       "id": "notary",
       "group": "finance",
       "vi": "Công chứng / dịch thuật",
       "en": "Notary & translation",
-      "icon": "lifestyle"
+      "icon": "notary"
     },
     {
       "id": "realtor",
       "group": "finance",
       "vi": "Địa ốc mua bán",
       "en": "Real estate agent",
-      "icon": "lifestyle"
+      "icon": "realtor"
     },
     {
       "id": "rental",
       "group": "finance",
       "vi": "Cho thuê / quản lý nhà",
       "en": "Rental & property management",
-      "icon": "lifestyle"
+      "icon": "rental"
     },
     {
       "id": "invest",
       "group": "finance",
       "vi": "Đầu tư / crypto",
       "en": "Investing & crypto",
-      "icon": "lifestyle"
+      "icon": "invest"
     },
     {
       "id": "flight",
       "group": "travel",
       "vi": "Vé máy bay",
       "en": "Flights",
-      "icon": "travel"
+      "icon": "flight"
     },
     {
       "id": "tour",
       "group": "travel",
       "vi": "Tour / du lịch",
       "en": "Tours",
-      "icon": "travel"
+      "icon": "tour"
     },
     {
       "id": "hotel",
       "group": "travel",
       "vi": "Khách sạn / homestay",
       "en": "Hotels & stays",
-      "icon": "travel"
+      "icon": "hotel"
     },
     {
       "id": "visa",
       "group": "travel",
       "vi": "Visa / hộ chiếu / giấy tờ",
       "en": "Visa & passport services",
-      "icon": "travel"
+      "icon": "visa"
     },
     {
       "id": "vietschool",
       "group": "edu",
       "vi": "Trường Việt ngữ",
       "en": "Vietnamese language school",
-      "icon": "lifestyle"
+      "icon": "vietschool"
     },
     {
       "id": "tutor",
       "group": "edu",
       "vi": "Dạy kèm / luyện thi",
       "en": "Tutoring & test prep",
-      "icon": "lifestyle"
+      "icon": "tutor"
     },
     {
       "id": "beautyschool",
       "group": "edu",
       "vi": "Trường nail / thẩm mỹ (license)",
       "en": "Beauty school & license",
-      "icon": "lifestyle"
+      "icon": "beautyschool"
     },
     {
       "id": "driving",
       "group": "edu",
       "vi": "Dạy lái xe",
       "en": "Driving school",
-      "icon": "lifestyle"
+      "icon": "driving"
     },
     {
       "id": "esl",
       "group": "edu",
       "vi": "Tiếng Anh / ESL / quốc tịch",
       "en": "English & citizenship classes",
-      "icon": "lifestyle"
+      "icon": "esl"
     },
     {
       "id": "arts",
       "group": "edu",
       "vi": "Nhạc · hoạ · võ · năng khiếu",
       "en": "Music · art · martial arts",
-      "icon": "lifestyle"
+      "icon": "arts"
     },
     {
       "id": "vocational",
       "group": "edu",
       "vi": "Đào tạo nghề / kỹ năng",
       "en": "Vocational & skills",
-      "icon": "lifestyle"
+      "icon": "vocational"
     },
     {
       "id": "photo",
       "group": "event",
       "vi": "Chụp ảnh / quay phim",
       "en": "Photo & video",
-      "icon": "retail"
+      "icon": "photo"
     },
     {
       "id": "bridal",
       "group": "event",
       "vi": "Áo cưới / makeup cô dâu",
       "en": "Bridal & makeup",
-      "icon": "retail"
+      "icon": "bridal"
     },
     {
       "id": "planner",
       "group": "event",
       "vi": "Tổ chức tiệc / sự kiện",
       "en": "Event planning",
-      "icon": "retail"
+      "icon": "planner"
     },
     {
       "id": "music",
       "group": "event",
       "vi": "Nhạc sống / MC / DJ",
       "en": "Live music · MC · DJ",
-      "icon": "retail"
+      "icon": "music"
     },
     {
       "id": "rentalevent",
       "group": "event",
       "vi": "Thuê rạp / bàn ghế / trang trí",
       "en": "Party rentals & decor",
-      "icon": "retail"
+      "icon": "rentalevent"
     },
     {
       "id": "entertain",
       "group": "event",
       "vi": "Giải trí / vui chơi",
       "en": "Entertainment & recreation",
-      "icon": "retail"
+      "icon": "entertain"
     },
     {
       "id": "daycare",
       "group": "family",
       "vi": "Giữ trẻ / daycare",
       "en": "Daycare",
-      "icon": "retail"
+      "icon": "daycare"
     },
     {
       "id": "kids",
       "group": "family",
       "vi": "Đồ trẻ em / mẹ & bé",
       "en": "Kids & baby",
-      "icon": "retail"
+      "icon": "kids"
     },
     {
       "id": "pet",
       "group": "family",
       "vi": "Thú cưng / grooming",
       "en": "Pets & grooming",
-      "icon": "retail"
+      "icon": "pet"
     },
     {
       "id": "vet",
       "group": "family",
       "vi": "Thú y",
       "en": "Veterinary",
-      "icon": "retail"
+      "icon": "vet"
     },
     {
       "id": "senior",
       "group": "family",
       "vi": "Nhà dưỡng lão / sinh hoạt người già",
       "en": "Senior living & adult daycare",
-      "icon": "retail"
+      "icon": "senior"
     },
     {
       "id": "print",
       "group": "biz",
       "vi": "In ấn / bảng hiệu",
       "en": "Printing & signage",
-      "icon": "lifestyle"
+      "icon": "print"
     },
     {
       "id": "marketing",
       "group": "biz",
       "vi": "Marketing / web / thiết kế",
       "en": "Marketing · web · design",
-      "icon": "lifestyle"
+      "icon": "marketing"
     },
     {
       "id": "software",
       "group": "biz",
       "vi": "POS / phần mềm",
       "en": "POS & software",
-      "icon": "lifestyle"
+      "icon": "software"
     },
     {
       "id": "staffing",
       "group": "biz",
       "vi": "Tuyển dụng / nhân sự",
       "en": "Staffing & HR",
-      "icon": "lifestyle"
+      "icon": "staffing"
     },
     {
       "id": "lease",
       "group": "biz",
       "vi": "Sang tiệm / mặt bằng / thuê ghế",
       "en": "Business for sale · lease · booth",
-      "icon": "lifestyle"
+      "icon": "lease"
     },
     {
       "id": "commercialclean",
       "group": "biz",
       "vi": "Vệ sinh công nghiệp",
       "en": "Commercial cleaning",
-      "icon": "lifestyle"
+      "icon": "commercialclean"
     },
     {
       "id": "telecom",
       "group": "biz",
       "vi": "Viễn thông / internet",
       "en": "Telecom & internet",
-      "icon": "lifestyle"
+      "icon": "telecom"
     },
     {
       "id": "techrepair",
       "group": "biz",
       "vi": "Sửa điện thoại / máy tính",
       "en": "Phone & computer repair",
-      "icon": "lifestyle"
+      "icon": "techrepair"
     },
     {
       "id": "equipment",
       "group": "biz",
       "vi": "Thiết bị ngành (nhà hàng, tiệm)",
       "en": "Commercial equipment",
-      "icon": "lifestyle"
+      "icon": "equipment"
     },
     {
       "id": "temple",
       "group": "community",
       "vi": "Chùa / nhà thờ",
       "en": "Temple & church",
-      "icon": "retail"
+      "icon": "temple"
     },
     {
       "id": "association",
       "group": "community",
       "vi": "Hội đoàn / cộng đồng",
       "en": "Associations",
-      "icon": "retail"
+      "icon": "association"
     },
     {
       "id": "charity",
       "group": "community",
       "vi": "Từ thiện / gây quỹ",
       "en": "Charity & fundraising",
-      "icon": "retail"
+      "icon": "charity"
     },
     {
       "id": "media",
       "group": "community",
       "vi": "Báo chí / radio / truyền hình",
       "en": "Media & press",
-      "icon": "retail"
+      "icon": "media"
     },
     {
       "id": "beauty_other",
       "group": "beauty",
       "vi": "Khác (Làm đẹp)",
       "en": "Other",
-      "icon": "cosmetics"
+      "icon": "group:beauty"
     },
     {
       "id": "food_other",
       "group": "food",
       "vi": "Khác (Ăn uống)",
       "en": "Other",
-      "icon": "restaurant"
+      "icon": "group:food"
     },
     {
       "id": "shop_other",
       "group": "shop",
       "vi": "Khác (Mua sắm)",
       "en": "Other",
-      "icon": "retail"
+      "icon": "group:shop"
     },
     {
       "id": "health_other",
       "group": "health",
       "vi": "Khác (Sức khoẻ)",
       "en": "Other",
-      "icon": "spa"
+      "icon": "group:health"
     },
     {
       "id": "auto_other",
       "group": "auto",
       "vi": "Khác (Xe)",
       "en": "Other",
-      "icon": "repair"
+      "icon": "group:auto"
     },
     {
       "id": "home_other",
       "group": "home",
       "vi": "Khác (Nhà cửa)",
       "en": "Other",
-      "icon": "home"
+      "icon": "group:home"
     },
     {
       "id": "finance_other",
       "group": "finance",
       "vi": "Khác (Tài chính)",
       "en": "Other",
-      "icon": "lifestyle"
+      "icon": "group:finance"
     },
     {
       "id": "travel_other",
       "group": "travel",
       "vi": "Khác (Du lịch)",
       "en": "Other",
-      "icon": "travel"
+      "icon": "group:travel"
     },
     {
       "id": "edu_other",
       "group": "edu",
       "vi": "Khác (Giáo dục)",
       "en": "Other",
-      "icon": "lifestyle"
+      "icon": "group:edu"
     },
     {
       "id": "event_other",
       "group": "event",
       "vi": "Khác (Sự kiện)",
       "en": "Other",
-      "icon": "retail"
+      "icon": "group:event"
     },
     {
       "id": "family_other",
       "group": "family",
       "vi": "Khác (Gia đình)",
       "en": "Other",
-      "icon": "retail"
+      "icon": "group:family"
     },
     {
       "id": "biz_other",
       "group": "biz",
       "vi": "Khác (Dịch vụ doanh nghiệp)",
       "en": "Other",
-      "icon": "lifestyle"
+      "icon": "group:biz"
     },
     {
       "id": "community_other",
       "group": "community",
       "vi": "Khác (Cộng đồng)",
       "en": "Other",
-      "icon": "retail"
+      "icon": "group:community"
     }
   ],
   "channels": [

@@ -71,7 +71,7 @@
     function update(){state.qrModules=modules;notify();}
     function move(id,to){var from=modules.findIndex(item=>item.id===id);if(from<0||to<0||to>=modules.length)return;modules.splice(to,0,modules.splice(from,1)[0]);renderRows(id,'[data-qr-drag]');update();}
     function renderIndustry(){
-      if(allowIndustry)$('[data-qr-industry-label]').textContent='Template: '+catalog.industries.find(item=>item.id===industryId).en;
+      if(allowIndustry)$('[data-qr-industry-label]').innerHTML=window.NEXORA_INDUSTRY_ICONS.image(industryId,{size:20,catalog:'oneqr'})+' '+esc('Template: '+catalog.industries.find(item=>item.id===industryId).en);
     }
     function selectIndustry(industry){
       var previousIds=recommended().map(item=>item.id),retained=modules.filter(item=>!previousIds.includes(item.id));

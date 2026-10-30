@@ -4,144 +4,11 @@
   const GROUPS = catalog.groups;
   const industries = catalog.industries;
   const TILE_BACKGROUNDS = window.ONEQR_ACTION_APPEARANCE.backgrounds;
-  const appearance = window.ONEQR_ACTION_APPEARANCE;
-  const GROUP_ICONS = {
-    "beauty": "sparkles",
-    "food": "utensils",
-    "personal": "user-round",
-    "showbiz": "music",
-    "service": "bell",
-    "store": "store",
-    "houseauto": "wrench",
-    "health": "heart",
-    "family": "award",
-    "events": "cake",
-    "finance": "wallet",
-    "pro": "briefcase",
-    "community": "users-round",
-    "other": "square"
-  };
-  const INDUSTRY_ICONS = {
-    "nails": "paintbrush",
-    "hair": "wand-2",
-    "massage": "flower-2",
-    "lash": "sparkles",
-    "tattoo": "paintbrush",
-    "restaurant": "utensils",
-    "cafe": "coffee",
-    "truck": "truck",
-    "solo": "user-round",
-    "trainer": "trophy",
-    "mua": "paintbrush",
-    "coach": "message-circle",
-    "kol": "instagram",
-    "freelance": "briefcase",
-    "photo": "camera",
-    "artist": "music",
-    "songwriter": "music",
-    "band": "music",
-    "model": "camera",
-    "actor": "tv",
-    "mc": "message-circle",
-    "gym": "trophy",
-    "tutor": "award",
-    "ride": "car",
-    "home": "home",
-    "shopvn": "store",
-    "retail": "shopping-bag",
-    "grocery": "store",
-    "butcher": "chef-hat",
-    "seafood": "utensils",
-    "boba": "coffee",
-    "icecream": "cake",
-    "foodsupply": "package",
-    "beautyproducts": "sparkles",
-    "supplement": "heart",
-    "supply": "package",
-    "goldshop": "crown",
-    "jewelry": "crown",
-    "gems": "sparkles",
-    "florist": "flower-2",
-    "printing": "image",
-    "furniture": "home",
-    "boutique": "shopping-bag",
-    "thrift": "shopping-bag",
-    "petstore": "heart",
-    "wig": "wand-2",
-    "auto": "wrench",
-    "bodyshop": "car",
-    "tires": "car",
-    "towing": "truck",
-    "autoglass": "car",
-    "dealer": "car",
-    "autoparts": "wrench",
-    "lawn": "flower-2",
-    "landscape": "flower-2",
-    "construction": "building-2",
-    "plumber": "wrench",
-    "electric": "zap",
-    "hvac": "settings",
-    "roofing": "home",
-    "pest": "home",
-    "pool": "home",
-    "appliance": "settings",
-    "flooring": "home",
-    "painting": "paintbrush",
-    "solar": "zap",
-    "locksmith": "settings-2",
-    "gas": "car",
-    "carwash": "car",
-    "carrental": "car",
-    "moving": "truck",
-    "laundry": "settings",
-    "alteration": "shopping-bag",
-    "phonerepair": "phone",
-    "clinic": "heart",
-    "dental": "heart",
-    "acupuncture": "flower-2",
-    "chiro": "heart",
-    "optical": "user-round",
-    "pharmacy": "heart",
-    "vet": "heart",
-    "medspa": "sparkles",
-    "pmu": "paintbrush",
-    "childcare": "users-round",
-    "school": "award",
-    "driving": "car",
-    "music": "music",
-    "martial": "trophy",
-    "dance": "music",
-    "wedding": "heart",
-    "venue": "building-2",
-    "partyrental": "cake",
-    "photobooth": "camera",
-    "catering": "chef-hat",
-    "moneytransfer": "wallet",
-    "notary": "receipt",
-    "translation": "globe-2",
-    "mortgage": "home",
-    "staffing": "users-round",
-    "legal": "briefcase",
-    "realestate": "home",
-    "bizbroker": "briefcase",
-    "insurance": "circle-check",
-    "security": "circle-check",
-    "taxservice": "receipt",
-    "travel": "map",
-    "itservice": "settings-2",
-    "agency": "megaphone",
-    "worship": "building-2",
-    "nonprofit": "heart",
-    "karaoke": "music",
-    "petgroom": "heart",
-    "petboard": "home",
-    "funeral": "flower-2",
-    "other": "square"
-  };
-  function industryImage(key, size = 36) { return appearance.image(key, size); }
-  function industryIcon(industry) {
-    return industryImage(INDUSTRY_ICONS[industry.id] || GROUP_ICONS[industry.groupId] || 'square');
+  const industryIcons = window.NEXORA_INDUSTRY_ICONS;
+  function industryImage(key, size = 36) {
+    return industryIcons.image(key,{size,catalog:'oneqr',className:'oneqr-flat-icon'});
   }
+  function industryIcon(industry) { return industryImage(industry.id); }
   function mount(root, options = {}) {
     const $ = selector => root.querySelector(selector);
     const controller = new AbortController();
@@ -155,8 +22,8 @@
     function renderGroups() {
       const tabs = $('#industry-group-tabs');
       const allLabel = state.language === 'vi' ? 'Tất cả' : 'All industries';
-      tabs.innerHTML = [`<button class="group-tab ${state.group === 'all' ? 'is-active' : ''}" type="button" role="tab" aria-selected="${state.group === 'all'}" data-group="all">${industryImage('store', 20)}${allLabel}<span>${industries.length}</span></button>`]
-        .concat(GROUPS.map((group) => `<button class="group-tab ${state.group === group.id ? 'is-active' : ''}" type="button" role="tab" aria-selected="${state.group === group.id}" data-group="${group.id}">${industryImage(GROUP_ICONS[group.id] || 'square', 20)}${label(group)}<span>${group.items.split('|').length}</span></button>`)).join('');
+      tabs.innerHTML = [`<button class="group-tab ${state.group === 'all' ? 'is-active' : ''}" type="button" role="tab" aria-selected="${state.group === 'all'}" data-group="all">${industryImage('retail', 20)}${allLabel}<span>${industries.length}</span></button>`]
+        .concat(GROUPS.map((group) => `<button class="group-tab ${state.group === group.id ? 'is-active' : ''}" type="button" role="tab" aria-selected="${state.group === group.id}" data-group="${group.id}">${industryImage('group:'+group.id, 20)}${label(group)}<span>${group.items.split('|').length}</span></button>`)).join('');
       tabs.querySelectorAll('[data-group]').forEach((button) => button.addEventListener('click', () => {
         state.group = button.dataset.group;
         renderGroups();

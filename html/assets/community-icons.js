@@ -4,7 +4,7 @@
   if (window.NEXORA_COMMUNITY_ICONS) return;
 
   const script = document.currentScript;
-  const runtime = new URL(script && script.src || '../assets/community-icons.js?v=20261028-community-ui-v2', document.baseURI);
+  const runtime = new URL(script && script.src || '../assets/community-icons.js?v=20261030-industry-flat', document.baseURI);
   const icons = {
     '📷':'camera', '📸':'camera', '🖼':'image', '💡':'sparkles', '✨':'sparkles', '✦':'sparkles',
     '❓':'message-circle', '💬':'message-circle', '🗨':'message-circle', '🗯':'message-circle',
@@ -43,6 +43,26 @@
   let languageWrapper;
   let observer;
 
+  function registerIndustryEmoji() {
+    Object.keys(window.NEXORA_INDUSTRY_ICONS?.emoji || {}).forEach(symbol => {
+      if (!icons[symbol]) icons[symbol] = 'package';
+    });
+  }
+  registerIndustryEmoji();
+  function artworkPath(symbol, fallback, label) {
+    const registry = window.NEXORA_INDUSTRY_ICONS;
+    const key = registry?.keyForLabel(label) || registry?.emoji[normalize(symbol)];
+    return registry && key ? registry.path(key) : new URL('icon-oneqr/issue-2040-oneqr-'+fallback+'-3d.png',runtime).href;
+  }
+  // The hub's PO screens also run in srcdoc iframes with their own globals.
+  if (!window.NEXORA_INDUSTRY_ICONS && !document.querySelector('script[data-industry-icons]')) {
+    const loader = document.createElement('script');
+    loader.src = new URL('industry-icons.js?v=20261030-flat',runtime).href;
+    loader.dataset.industryIcons = '';
+    loader.addEventListener('load',() => { registerIndustryEmoji(); observer?.disconnect(); restoreCopies(); schedule(); });
+    document.head.append(loader);
+  }
+
   const stylesheet = document.createElement('link');
   stylesheet.rel = 'stylesheet';
   stylesheet.href = new URL('community-icons.css?v=20261028-community-ui-v2', runtime).href;
@@ -78,7 +98,7 @@
     const size = parseFloat(getComputedStyle(element, '::after').fontSize) || 14;
     element.classList.add('community-icon-translated');
     element.dataset.communityIconLabel = label.slice(first.index + first.segment.length);
-    element.style.setProperty('--community-translated-icon', 'url("' + new URL('icon-oneqr/issue-2040-oneqr-' + asset + '-3d.png', runtime).href + '")');
+    element.style.setProperty('--community-translated-icon', 'url("' + artworkPath(first.segment,asset,label) + '")');
     element.style.setProperty('--community-translated-size', Math.max(18, Math.min(64, Math.round(size * 1.35))) + 'px');
   }
 
@@ -137,7 +157,7 @@
       glyph.setAttribute('role', 'img');
       glyph.setAttribute('aria-label', segment);
       const image = document.createElement('img');
-      image.src = new URL('icon-oneqr/issue-2040-oneqr-' + asset + '-3d.png', runtime).href;
+      image.src = artworkPath(segment,asset,node.data);
       image.alt = '';
       image.width = image.height = 20;
       image.draggable = false;
