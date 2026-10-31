@@ -1412,9 +1412,19 @@
 .oneqr-library-search svg { width: 17px; height: 17px; color: #8a94a6; flex-shrink: 0; }
 .oneqr-library-search input { width: 100%; min-width: 0; border: 0; background: transparent; outline: none; font: inherit; font-size: 13px; }
 .oneqr-library-search:focus-within { border-color: #8d85f2; }
-#oneqrAddModuleList { display: grid; grid-template-columns: repeat(2,minmax(0,1fr)); gap: 9px; max-height: min(430px,55vh); margin-top: 15px; padding: 2px; }
+#oneqrAddModuleList { display: flex; flex-direction: column; gap: 18px; max-height: min(430px,55vh); margin-top: 15px; padding: 2px; }
+.oneqr-module-group { flex-shrink: 0; min-width: 0; }
+.oneqr-module-group + .oneqr-module-group { border-top: 1px solid #e4e7ec; padding-top: 16px; }
+.oneqr-module-group-heading { display: flex; align-items: center; flex-wrap: wrap; gap: 7px; margin-bottom: 9px; }
+.oneqr-module-group-heading h4 { min-width: 0; margin: 0; color: #344054; font-size: 13px; font-weight: 750; overflow-wrap: anywhere; }
+.oneqr-module-group-badge { border-radius: 6px; padding: 3px 7px; background: #eeecff; color: #4f46e5; font-size: 10px; font-weight: 700; }
+.oneqr-module-group-count { margin-left: auto; border-radius: 6px; padding: 2px 7px; background: #f2f4f7; color: #667085; font-size: 11px; font-variant-numeric: tabular-nums; }
+.oneqr-module-group-list { display: flex; flex-wrap: wrap; gap: 9px; }
+#oneqrAddModuleList .oneqr-module-group-list .oneqr-modal-item { flex: 0 0 calc((100% - 9px) / 2); width: calc((100% - 9px) / 2); }
 #oneqrAddModuleList .oneqr-modal-item { gap: 10px; min-width: 0; padding: 12px; border: 1px solid #e4e7ec; border-radius: 11px; background: #fff; }
-#oneqrAddModuleList .oneqr-modal-item:hover { border-color: #b9b4fa; background: #faf9ff; }
+#oneqrAddModuleList .oneqr-modal-item:not(:disabled):hover { border-color: #b9b4fa; background: #faf9ff; }
+#oneqrAddModuleList .oneqr-modal-item.is-added { background: #f8fafc; cursor: default; }
+#oneqrAddModuleList .oneqr-modal-item.is-added > svg { color: #168453; }
 #oneqrAddModuleList .oneqr-modal-item-icon { width: 34px; height: 34px; border-radius: 9px; background: #f0eeff; color: #4f46e5; }
 #oneqrAddModuleList .oneqr-modal-item-icon svg { width: 16px; height: 16px; }
 #oneqrAddModuleList .oneqr-modal-item div { min-width: 0; flex: 1; }
@@ -1428,7 +1438,7 @@
 @media (max-width: 650px) {
   #oneqrAddModuleModal { padding: 12px; }
   #oneqrAddModuleModal .oneqr-modal-dialog { max-height: calc(100dvh - 24px); padding: 21px; }
-  #oneqrAddModuleList { grid-template-columns: 1fr; }
+  #oneqrAddModuleList .oneqr-module-group-list .oneqr-modal-item { flex-basis: 100%; width: 100%; }
   .oneqr-library-search input { font-size: 16px; }
   .oneqr-library-footer button { width: 100%; min-height: 44px; }
 }

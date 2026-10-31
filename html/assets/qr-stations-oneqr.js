@@ -749,20 +749,33 @@
     var order = moduleOrderByRole[currentRole] || [];
     var query = document.getElementById('oneqrModuleSearch').value.trim().toLocaleLowerCase();
     var industry = currentIndustry && industryCatalog.industries.find(function (item) { return item.id === currentIndustry.industryId; });
-    var recommended = industry ? industryCatalog.recommended(industry) : [];
+    var recommended = industry && currentRole === 'customer' ? industryCatalog.recommended(industry) : [];
     var catalog = Object.entries(industryCatalog.modules).filter(function (entry) {
       var action = entry[1];
-      var alreadyAdded = order.some(function (name) {
-        return name === action.en || moduleDetails(name).url === industryCatalog.actionUrl(entry[0]);
-      });
-      return !alreadyAdded && (!query || [action.en, action.vi, action.descEn, action.descVi].join(' ').toLocaleLowerCase().includes(query));
-    }).sort(function (a, b) { return Number(recommended.includes(b[0])) - Number(recommended.includes(a[0])); });
-    addModuleListEl.innerHTML = catalog.map(function (entry) {
-      var action = entry[1];
-      return '<button type="button" class="oneqr-modal-item" data-add-module="' + escapeModuleText(action.en) + '">' +
-        '<span class="oneqr-modal-item-icon">' + appearanceChoices.image(action.icon) + '</span>' +
-        '<div><strong>' + escapeModuleText(action.en) + '</strong><small>' + escapeModuleText(action.descEn) + '</small></div>' +
-        '<i data-lucide="plus" aria-hidden="true"></i></button>';
+      return !query || [action.en, action.vi, action.descEn, action.descVi].join(' ').toLocaleLowerCase().includes(query);
+    });
+    // Group the existing industry recommendations under the labels requested for Add Module.
+    var groups = recommended.length ? [
+      { id: 'recommended', label: industry.en, recommended: true, entries: catalog.filter(function (entry) { return recommended.includes(entry[0]); })
+        .sort(function (a, b) { return recommended.indexOf(a[0]) - recommended.indexOf(b[0]); }) },
+      { id: 'other', label: 'Other modules', entries: catalog.filter(function (entry) { return !recommended.includes(entry[0]); }) }
+    ] : [{ id: 'all', label: 'Modules', entries: catalog }];
+    addModuleListEl.innerHTML = groups.filter(function (group) { return group.entries.length; }).map(function (group) {
+      var headingId = 'oneqr-module-group-' + group.id;
+      return '<section class="oneqr-module-group" aria-labelledby="' + headingId + '">' +
+        '<div class="oneqr-module-group-heading"><h4 id="' + headingId + '">' + escapeModuleText(group.label) + '</h4>' +
+        (group.recommended ? '<span class="oneqr-module-group-badge">Recommended</span>' : '') +
+        '<span class="oneqr-module-group-count">' + group.entries.length + '</span></div>' +
+        '<div class="oneqr-module-group-list">' + group.entries.map(function (entry) {
+          var action = entry[1];
+          var alreadyAdded = order.some(function (name) {
+            return name === action.en || moduleDetails(name).url === industryCatalog.actionUrl(entry[0]);
+          });
+          return '<button type="button" class="oneqr-modal-item' + (alreadyAdded ? ' is-added' : '') + '" data-add-module="' + escapeModuleText(action.en) + '"' + (alreadyAdded ? ' disabled' : '') + '>' +
+            '<span class="oneqr-modal-item-icon">' + appearanceChoices.image(action.icon) + '</span>' +
+            '<div><strong>' + escapeModuleText(action.en) + '</strong><small>' + escapeModuleText(action.descEn) + '</small></div>' +
+            '<i data-lucide="' + (alreadyAdded ? 'check' : 'plus') + '" aria-hidden="true"></i></button>';
+        }).join('') + '</div></section>';
     }).join('') || '<p class="oneqr-library-empty">No available actions found. Try another search or close the library.</p>';
     refreshIcons();
   }
@@ -810,7 +823,7 @@
 
     addModuleListEl.addEventListener('click', function (event) {
       var btn = event.target.closest('[data-add-module]');
-      if (!btn) return;
+      if (!btn || btn.disabled) return;
       var name = btn.getAttribute('data-add-module');
       var order = moduleOrderByRole[currentRole];
       var enabledSet = enabledByRole[currentRole];
