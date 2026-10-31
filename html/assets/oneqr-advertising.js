@@ -19,6 +19,7 @@
   // UI changes explicitly requested after the PO handoff; keep the original PO copy intact.
   const UI_COPY = {
     vi: {
+      navConfig: 'Cấu hình',
       adsOn: 'Quảng cáo đang bật', adsOff: 'Quảng cáo đã tắt',
       disableAds: 'Hủy kích hoạt quảng cáo OneQR', enableAds: 'Kích hoạt quảng cáo OneQR', removeIndustry: 'Bỏ ngành',
       clearSecondary: 'Bỏ chọn tất cả', closeSecondary: 'Đóng',
@@ -47,6 +48,7 @@
       p4: '4. Quy đổi: 100 ONEQR Points = 1 credit = $1 giá trị quy đổi.'
     },
     en: {
+      navConfig: 'Configuration',
       adsOn: 'Advertising is on', adsOff: 'Advertising is off',
       disableAds: 'Deactivate OneQR advertising', enableAds: 'Activate OneQR advertising', removeIndustry: 'Remove industry',
       clearSecondary: 'Clear all', closeSecondary: 'Close',
@@ -498,8 +500,8 @@
     save();
   }
 
-  // Keep the six independent tabs and screen order from the PO prototype.
-  const views = new Set(['setup', 'overview', 'earn', 'transfer', 'ads', 'policy']);
+  // Only route to screens available in the current business or personal workspace.
+  const views = new Set([...root.querySelectorAll('[data-screen]')].map(section => section.dataset.screen));
   const oldRoutes = { advertising: 'ads', activity: 'earn', reserves: 'earn', payouts: 'earn', settings: 'setup' };
   function navigate(requested, write = true, focus = false) {
     if ($('convert').open) $('convert').close();
@@ -508,6 +510,8 @@
     root.querySelectorAll('[data-screen]').forEach(section => {
       section.classList.toggle('hide', section.dataset.screen !== view);
     });
+    const configFrame = view === 'config' ? root.querySelector('[data-config-frame]') : null;
+    if (configFrame && !configFrame.hasAttribute('src')) configFrame.src = configFrame.dataset.src;
     root.querySelectorAll('#nav [data-view]').forEach(button => {
       button.classList.toggle('active', button.dataset.view === view);
       if (button.dataset.view === view) button.setAttribute('aria-current', 'page');

@@ -10,7 +10,7 @@
     <link rel="stylesheet" href="../assets/nexora-icons.css">
   <link rel="stylesheet" href="../assets/nexora-shell.css?v=20261030-shared-header-v47">
     <link rel="stylesheet" href="../assets/vendor/tom-select/tom-select.css">
-    <link rel="stylesheet" href="../assets/oneqr-advertising.css?v=20261028-toggle-spacing">
+    <link rel="stylesheet" href="../assets/oneqr-advertising.css?v=20261031-config-tab">
 
   <script src="../assets/industry-icons.js?v=2f6387c34b" data-industry-icons></script>
   <link rel="icon" type="image/png" sizes="128x128" href="../assets/flaticon-flat/favicon-letter-n-9203636.png">
@@ -71,6 +71,7 @@
                 <button data-view="earn" data-i="navEarn"></button>
                 <button data-view="transfer" data-i="navTransfer"></button>
                 <button data-view="ads" data-i="navAds"></button>
+                <button data-view="config" data-i="navConfig">Cấu hình</button>
                 <button data-view="policy" data-i="navPolicy"></button>
               </nav>
               <section data-screen="setup" id="setup">
@@ -275,6 +276,10 @@
                   <p data-i="blockingText"></p>
                 </div>
               </section>
+              <section data-screen="config" id="config" class="qa-config-panel hide" aria-labelledby="config-title" data-po-source="from-po/NEXORA-Community/nexora-oneqr-tai-tiem.html">
+                <h2 id="config-title" data-i="navConfig">Cấu hình</h2>
+                <iframe class="qa-config-frame" data-config-frame data-src="oneqr-advertising-config.html?v=20261031" title="Cấu hình OneQR tại tiệm — Deals Nearby &amp; Search Deals" loading="lazy"></iframe>
+              </section>
               <section data-screen="policy" id="policy" class="hide">
                 <div class="card">
                   <h2 data-i="policyTitle"></h2>
@@ -334,6 +339,6 @@
     <script src="../assets/oneqr-action-appearance.js?v=20261030-lucide-tabs"></script>
     <script src="../assets/oneqr-advertising-po.js?v=po-20261027"></script>
     <script src="../assets/vendor/tom-select/tom-select.complete.min.js"></script>
-    <script src="../assets/oneqr-advertising.js?v=20261030-industry-flat"></script>
+    <script src="../assets/oneqr-advertising.js?v=20261031-config-tab"></script>
   </body>
 </html>
