@@ -245,6 +245,34 @@
   var currentPreset = null;
   var currentIndustry = null;
   var industryCatalog = window.ONEQR_INDUSTRIES;
+  var moduleCatalog = window.ONEQR_MODULE_CATALOG;
+
+  // Map PO catalog types to existing module keys so saved menus keep their identities.
+  var catalogActionIds = {
+    book: ['booking', 'reservation'], menu: ['services', 'menu'], tip: ['tip'], review: ['review'],
+    giftcard: ['giftcard'], location: ['directions'], contact: ['call'], promo: ['promotion'],
+    vcard: ['contactcard'], portfolio: ['portfolio'], shop: ['shop'], order: ['order'],
+    quote: ['quote'], smsbtn: ['contact']
+  };
+  var catalogLegacyNames = {
+    book: ['Booking', 'Book Appointment', 'Appointment', 'Book AI'],
+    menu: ['Services', 'Services & Prices', 'Catalog & Pricing', 'Menu Services'],
+    tip: ['Tip', 'Tip & Pay'], review: ['Review', 'Leave a Google Review', 'Leave a Review'],
+    pay: ['Payment', 'Pay Now', 'Fee Payment'], giftcard: ['Gift Card', 'Gift card'],
+    loyalty: ['Rewards', 'Loyalty'], membership: ['Membership'], vcard: ['Contact card'],
+    checkin: ['Check-in', 'Smart Check-in'], event: ['Events'], donate: ['Donation']
+  };
+  var catalogEditorIcons = {
+    pricelist: 'list', pay: 'credit-card', deposit: 'credit-card', loyalty: 'gift',
+    membership: 'crown', packages: 'package', rates: 'dollar-sign', gallery: 'image',
+    youtube: 'youtube', spotify: 'music', apple: 'music', rss: 'radio', link: 'globe-2',
+    tiktok: 'music', instagram: 'instagram', facebook: 'facebook', courses: 'list', schedule: 'calendar-days',
+    hours: 'clock', about: 'home', team: 'users-round', faq: 'message-circle', wifi: 'wifi',
+    parking: 'map-pin', languages: 'globe-2', license: 'award', pdf: 'receipt', checkin: 'circle-check',
+    waitlist: 'users-round', feedback: 'message-circle', survey: 'list', refer: 'share-2', event: 'calendar-clock',
+    emailbtn: 'mail', whatsapp: 'phone', zalo: 'message-circle', messenger: 'message-circle', yelp: 'star',
+    careers: 'briefcase', crypto: 'wallet'
+  };
 
   if (!moduleListEl || !welcomeEl || !tilesEl) return;
 
@@ -366,6 +394,7 @@
   }
 
   function defaultModuleUrl(name) {
+    if (name.indexOf('oneqr-catalog:') === 0) return '';
     var entry = Object.entries(industryCatalog.modules).find(function (entry) { return entry[1].en === name; });
     return entry ? industryCatalog.actionUrl(entry[0]) : 'https://nexoratouch.com/o/bitcoin-nail-bar/' + encodeURIComponent(name.toLowerCase().replace(/\s+/g, '-'));
   }
@@ -744,46 +773,61 @@
     });
   }
 
-  function renderAddModuleList() {
-    if (!addModuleListEl || !currentPreset) return;
-    var order = moduleOrderByRole[currentRole] || [];
-    var query = document.getElementById('oneqrModuleSearch').value.trim().toLocaleLowerCase();
+  function catalogModuleKey(type) {
+    var ids = catalogActionIds[type] || [];
     var industry = currentIndustry && industryCatalog.industries.find(function (item) { return item.id === currentIndustry.industryId; });
-    var recommended = industry && currentRole === 'customer' ? industryCatalog.recommended(industry) : [];
-    var catalog = Object.entries(industryCatalog.modules).filter(function (entry) {
-      var action = entry[1];
-      return !query || [action.en, action.vi, action.descEn, action.descVi].join(' ').toLocaleLowerCase().includes(query);
+    var id = type === 'menu' && industry && industry.groupId === 'food' ? 'menu' : ids[0];
+    return id ? industryCatalog.modules[id].en : 'oneqr-catalog:' + type;
+  }
+
+  function catalogModuleAdded(type) {
+    var ids = catalogActionIds[type] || [];
+    var names = ['oneqr-catalog:' + type].concat(catalogLegacyNames[type] || [], ids.map(function (id) { return industryCatalog.modules[id].en; }));
+    var urls = ids.map(function (id) { return industryCatalog.actionUrl(id); });
+    return (moduleOrderByRole[currentRole] || []).some(function (name) {
+      return names.includes(name) || urls.includes(moduleDetails(name).url);
     });
-    // Group the existing industry recommendations under the labels requested for Add Module.
-    var groups = recommended.length ? [
-      { id: 'recommended', label: industry.en, recommended: true, entries: catalog.filter(function (entry) { return recommended.includes(entry[0]); })
-        .sort(function (a, b) { return recommended.indexOf(a[0]) - recommended.indexOf(b[0]); }) },
-      { id: 'other', label: 'Other modules', entries: catalog.filter(function (entry) { return !recommended.includes(entry[0]); }) }
-    ] : [{ id: 'all', label: 'Modules', entries: catalog }];
-    addModuleListEl.innerHTML = groups.filter(function (group) { return group.entries.length; }).map(function (group) {
+  }
+
+  function renderAddModuleList() {
+    if (!addModuleListEl || !currentPreset || !moduleCatalog) return;
+    var language = document.documentElement.lang === 'vi' ? 0 : 1;
+    var query = document.getElementById('oneqrModuleSearch').value.trim().toLocaleLowerCase();
+    var matches = function (type) {
+      return moduleCatalog.names[type] && (!query || moduleCatalog.names[type].concat(moduleCatalog.descriptions[type]).join(' ').toLocaleLowerCase().includes(query));
+    };
+    var groups = [];
+    if (!query && currentRole === 'customer' && currentIndustry) {
+      groups.push({ id: 'suggested', label: moduleCatalog.copy.suggested[language],
+        items: (moduleCatalog.suggested[currentIndustry.industryId] || moduleCatalog.suggested.other).filter(matches) });
+    }
+    moduleCatalog.groups.forEach(function (group) {
+      groups.push({ id: group.id, label: language === 0 ? group.vi : group.en, items: group.items.filter(matches) });
+    });
+    addModuleListEl.innerHTML = groups.filter(function (group) { return group.items.length; }).map(function (group) {
       var headingId = 'oneqr-module-group-' + group.id;
       return '<section class="oneqr-module-group" aria-labelledby="' + headingId + '">' +
-        '<div class="oneqr-module-group-heading"><h4 id="' + headingId + '">' + escapeModuleText(group.label) + '</h4>' +
-        (group.recommended ? '<span class="oneqr-module-group-badge">Recommended</span>' : '') +
-        '<span class="oneqr-module-group-count">' + group.entries.length + '</span></div>' +
-        '<div class="oneqr-module-group-list">' + group.entries.map(function (entry) {
-          var action = entry[1];
-          var alreadyAdded = order.some(function (name) {
-            return name === action.en || moduleDetails(name).url === industryCatalog.actionUrl(entry[0]);
-          });
-          return '<button type="button" class="oneqr-modal-item' + (alreadyAdded ? ' is-added' : '') + '" data-add-module="' + escapeModuleText(action.en) + '"' + (alreadyAdded ? ' disabled' : '') + '>' +
-            '<span class="oneqr-modal-item-icon">' + appearanceChoices.image(action.icon) + '</span>' +
-            '<div><strong>' + escapeModuleText(action.en) + '</strong><small>' + escapeModuleText(action.descEn) + '</small></div>' +
-            '<i data-lucide="' + (alreadyAdded ? 'check' : 'plus') + '" aria-hidden="true"></i></button>';
+        '<h4 class="oneqr-module-group-heading" id="' + headingId + '">' + escapeModuleText(group.label) + '</h4>' +
+        '<div class="oneqr-module-group-list">' + group.items.map(function (type) {
+          var artwork = moduleCatalog.artwork[type];
+          var alreadyAdded = catalogModuleAdded(type);
+          return '<button type="button" class="oneqr-modal-item' + (alreadyAdded ? ' is-added' : '') + '" data-add-module-type="' + type + '"' + (alreadyAdded ? ' disabled' : '') + '>' +
+            '<span class="oneqr-catalog-tile-heading"><span class="oneqr-modal-item-icon" style="background:' + artwork.c + '" aria-hidden="true">' + escapeModuleText(artwork.ic) + '</span>' +
+            '<strong>' + escapeModuleText(moduleCatalog.names[type][language]) + '</strong></span>' +
+            '<span class="oneqr-catalog-description">' + escapeModuleText(moduleCatalog.descriptions[type][language]) + '</span>' +
+            '<span class="oneqr-catalog-add-state">' + escapeModuleText(moduleCatalog.copy[alreadyAdded ? 'added' : 'add'][language]) + '</span></button>';
         }).join('') + '</div></section>';
-    }).join('') || '<p class="oneqr-library-empty">No available actions found. Try another search or close the library.</p>';
-    refreshIcons();
+    }).join('') || '<p class="oneqr-library-empty">' + escapeModuleText(moduleCatalog.copy.empty[language]) + '</p>';
   }
 
   function openAddModuleModal() {
-    if (!addModuleModal) return;
-    document.getElementById('oneqrModuleSearch').value = '';
-    document.getElementById('oneqrModuleIndustry').innerHTML = (currentIndustry ? window.NEXORA_INDUSTRY_ICONS.image(currentIndustry.industryId,{size:20,catalog:'oneqr'})+' ' : '') + escapeModuleText(currentRole + ' menu' + (currentIndustry ? ' · ' + currentIndustry.industryLabel : ''));
+    if (!addModuleModal || !moduleCatalog) return;
+    var language = document.documentElement.lang === 'vi' ? 0 : 1;
+    var search = document.getElementById('oneqrModuleSearch');
+    search.value = '';
+    search.placeholder = moduleCatalog.copy.search[language];
+    search.setAttribute('aria-label', moduleCatalog.copy.search[language]);
+    document.getElementById('oneqrCatalogTitle').textContent = moduleCatalog.copy.title[language];
     renderAddModuleList();
     addModuleModal.hidden = false;
     addModuleModal.setAttribute('aria-hidden', 'false');
@@ -822,16 +866,21 @@
     });
 
     addModuleListEl.addEventListener('click', function (event) {
-      var btn = event.target.closest('[data-add-module]');
+      var btn = event.target.closest('[data-add-module-type]');
       if (!btn || btn.disabled) return;
-      var name = btn.getAttribute('data-add-module');
+      var type = btn.getAttribute('data-add-module-type');
+      if (!moduleCatalog.names[type] || catalogModuleAdded(type)) return;
+      var name = catalogModuleKey(type);
       var order = moduleOrderByRole[currentRole];
       var enabledSet = enabledByRole[currentRole];
-      var index = order.indexOf(name);
-      if (index === -1) {
-        order.push(name);
-        enabledSet.add(name);
-      }
+      order.push(name);
+      enabledSet.add(name);
+      var details = moduleDetails(name);
+      details.title = moduleCatalog.names[type][document.documentElement.lang === 'vi' ? 0 : 1];
+      details.catalogType = type;
+      details.url = '';
+      var actionId = (catalogActionIds[type] || [])[0];
+      details.icon = actionId ? industryCatalog.modules[actionId].icon : catalogEditorIcons[type] || 'link';
       renderAddModuleList();
       renderModules();
       renderPreview();
@@ -1347,6 +1396,8 @@
       ROLES.some(function (role) {
         return moduleOrderByRole[role].some(function (name) {
           var details = moduleDetails(name, role);
+          // The PO lets a new catalog button be saved before its destination is configured.
+          if (!details.url.trim() && moduleCatalog && Object.hasOwn(moduleCatalog.names, details.catalogType)) return false;
           var url = normalizedModuleUrl(details.url);
           if (!url) { invalidModule = { role: role, name: name }; return true; }
           details.url = url;
@@ -1389,6 +1440,7 @@
         if (!savedDetails || !Object.prototype.hasOwnProperty.call(savedDetails, name) || !savedDetails[name]) return;
         var details = moduleDetails(name, role);
         if (typeof savedDetails[name].title === 'string') details.title = savedDetails[name].title;
+        if (moduleCatalog && Object.hasOwn(moduleCatalog.names, savedDetails[name].catalogType)) details.catalogType = savedDetails[name].catalogType;
         if (typeof savedDetails[name].url === 'string') details.url = savedDetails[name].url;
         if (typeof savedDetails[name].icon === 'string' && (/^[a-z0-9-]+$/.test(savedDetails[name].icon) || isModuleImage(savedDetails[name].icon))) details.icon = savedDetails[name].icon;
         if (appearanceChoices.backgrounds.includes(savedDetails[name].background)) details.background = savedDetails[name].background;
