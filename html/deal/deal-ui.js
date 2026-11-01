@@ -562,6 +562,16 @@
         if (key) replaceIndustry(element, key);
       });
     }
+    root.querySelectorAll('.discover-mini-icon[data-for-you-icon]').forEach(element => {
+      if (element.querySelector('.deal-discovery-icon')) return;
+      const library = window.NEXORA_DEAL_LUCIDE;
+      const nodes = library?.icons[element.dataset.forYouIcon];
+      if (!nodes) return;
+      element.replaceChildren(library.createElement(nodes, {
+        width:22, height:22, 'stroke-width':1.8, 'aria-hidden':'true',
+        focusable:'false', class:'deal-discovery-icon',
+      }));
+    });
     const expansionIcons = { 'Hair & Barber':'Scissors', 'Spa & Massage':'Flower2', 'Home & Auto':'Wrench' };
     root.querySelectorAll('.industry-expansion [data-industry] > span').forEach(element => {
       if (element.parentElement.dataset.industry === 'Lash & Brow') {
