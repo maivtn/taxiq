@@ -518,6 +518,18 @@ body:has(.dw-match-select .dropdown-active) .ai-guide-fab{visibility:hidden}
 .discover-rails small{font-size:10.5px!important;line-height:1.3}
 .discover-rails>:is(a,button)>b{display:grid;place-items:center;justify-self:end;width:24px;min-width:24px;margin:0;line-height:1.3}
 
+/* Compact hero labels leave room for icons without splitting secondary actions. */
+#discover .discover-hero-actions{gap:8px}
+#discover .discover-hero-actions>:is(a,button){gap:6px;min-height:44px!important;padding:6px 10px;font-size:12.5px!important;font-weight:700;line-height:1.3!important}
+#discover .discover-hero-actions>a{flex:1 1 auto;min-width:0}
+#discover .discover-hero-actions>button{flex:0 0 auto;white-space:nowrap}
+#discover .discover-hero-actions [aria-hidden="true"]{display:inline-flex;flex:none;align-items:center;justify-content:center;width:16px;height:16px;line-height:1}
+#discover .discover-hero-actions :is(.deal-action-icon,.deal-inline-icon){flex:none;width:16px;height:16px;margin:0;color:inherit;vertical-align:middle;stroke-width:1.8}
+#discover #heroPrimaryActionLabel{min-width:0;white-space:normal;overflow-wrap:normal;word-break:normal}
+@media(min-width:721px) and (max-width:860px){
+  #discover .discover-hero-actions>:is(a,button){flex:1 1 0;min-width:0;padding-inline:8px;gap:4px;white-space:normal}
+}
+
 /* Salon profile, disclosure, and contact actions have distinct visual priority. */
 .nd-salon-body .nd-card-services{gap:6px;margin:12px 0 4px}
 .nd-salon-body .nd-card-services>span{display:inline-flex;align-items:center;min-height:24px;padding:4px 8px;color:#685686;background:#f3effb;font-size:10.5px;font-weight:500;line-height:1.3}
