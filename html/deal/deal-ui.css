@@ -506,6 +506,26 @@ body:has(.dw-match-select .dropdown-active) .ai-guide-fab{visibility:hidden}
 .discover-rails small{font-size:10.5px!important;line-height:1.3}
 .discover-rails>:is(a,button)>b{display:grid;place-items:center;justify-self:end;width:24px;min-width:24px;margin:0;line-height:1.3}
 
+/* Salon profile, disclosure, and contact actions have distinct visual priority. */
+.nd-salon-body .nd-card-services{gap:6px;margin:12px 0 4px}
+.nd-salon-body .nd-card-services>span{display:inline-flex;align-items:center;min-height:24px;padding:4px 8px;color:#685686;background:#f3effb;font-size:10.5px;font-weight:500;line-height:1.3}
+.nd-salon-body>a.sp-directory-link{display:inline-flex;align-items:center;gap:6px;min-height:40px;margin:0;padding:6px 0;color:#6340bb;font-size:13px;font-weight:700;line-height:1.35}
+.nd-salon-body>a.sp-directory-link .deal-action-icon{order:1;flex:none;width:16px;height:16px;margin:0;color:inherit;vertical-align:middle}
+.nd-salon-body>a.sp-directory-link:hover{text-decoration:underline;text-underline-offset:3px}
+.nd-salon-body>details{margin:2px 0 0}
+.nd-salon-body>details>summary{display:flex;align-items:center;justify-content:space-between;gap:10px;min-height:40px;padding:8px 16px 8px 12px;border:1px solid #e5e9f2;border-radius:9px;background:#f8f9fc;color:#53627a!important;list-style:none;font-size:12.5px;font-weight:600!important;line-height:1.35}
+.nd-salon-body>details>summary::-webkit-details-marker{display:none}
+.nd-salon-body>details>summary::after{content:'';flex:none;width:16px;height:16px;background:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%2353627a' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") center/16px no-repeat}
+.nd-salon-body>details[open]>summary::after{transform:rotate(180deg)}
+.nd-salon-body>details p{margin:8px 0 0;color:#617087;font-size:12px;line-height:1.5}
+.nd-salon-body>div:has(>a.dw-secondary){margin-top:8px!important;align-items:stretch}
+.nd-salon-body>div>a.dw-secondary{display:inline-flex;flex:1 1 auto;align-items:center;justify-content:center;gap:4px;min-width:0;min-height:44px;padding:7px 4px;border-radius:9px;font-size:12px;font-weight:650;line-height:1.25;text-align:center}
+.nd-salon-body>div>a.dw-secondary[href*="google.com/maps"]{color:#216ba4;border-color:#cadef0;background:#edf5ff}
+.nd-salon-body>div>a.dw-secondary[href^="http"]:not([href*="google.com/maps"]){color:#6643b5;border-color:#dcd2f0;background:#f3efff}
+.nd-salon-body>div>a.dw-secondary[href^="tel:"]{color:#116d5d;border-color:#cae6dc;background:#eaf8f2}
+.nd-salon-body>div>a.dw-secondary .deal-action-icon{flex:none;width:14px;height:14px;margin:0;color:inherit;vertical-align:middle;stroke-width:1.8}
+.nd-salon-body :is(a.sp-directory-link,details>summary,div>a.dw-secondary):focus-visible{outline:2px solid #8462cf;outline-offset:3px}
+
 /* Keep the preview search icon and label together as one centered action. */
 .nd-assistant form button.nd-chat-link{align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 14px;font-size:13px;line-height:1.35}
 .nd-assistant form button.nd-chat-link .deal-action-icon{flex:none;width:16px;height:16px;margin:0;color:inherit;vertical-align:middle;stroke-width:1.8}
