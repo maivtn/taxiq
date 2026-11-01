@@ -587,7 +587,7 @@
       const name = expansionIcons[element.parentElement.dataset.industry];
       if (!library?.icons[name]) return;
       element.replaceChildren(library.createElement(library.icons[name], {
-        width:22, height:22, 'stroke-width':2, 'aria-hidden':'true', focusable:'false', class:'deal-expansion-svg',
+        width:22, height:22, 'stroke-width':1.8, 'aria-hidden':'true', focusable:'false', class:'deal-expansion-svg',
       }));
     });
     root.querySelectorAll('[data-deal-nav-icon]').forEach(element => {
