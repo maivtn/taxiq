@@ -506,15 +506,20 @@ body:has(.dw-match-select .dropdown-active) .ai-guide-fab{visibility:hidden}
 .discover-rails small{font-size:10.5px!important;line-height:1.3}
 .discover-rails>:is(a,button)>b{display:grid;place-items:center;justify-self:end;width:24px;min-width:24px;margin:0;line-height:1.3}
 
-/* Keep the five attribution stages readable without tall, empty phone rows. */
+/* Values lead, stage labels support them, and billing states stay secondary. */
+.attribution-funnel .attribution-value,.attribution-funnel .attribution-label{color:inherit;font:inherit;letter-spacing:inherit}
 @media(max-width:760px){
-  #oneqrDialog .attribution-funnel{grid-template-columns:minmax(0,1fr);gap:2px;padding:12px;border-radius:14px}
-  #oneqrDialog .attribution-funnel article{grid-template-columns:24px minmax(0,1fr) auto;align-items:center;gap:8px;min-height:40px;padding:7px 8px;border:1px solid #ffffff14;border-radius:9px;background:#ffffff08}
-  #oneqrDialog .attribution-funnel article>span{display:grid;place-items:center;width:24px;height:24px;border-radius:7px;background:#8ff3e818;color:#9bf5e9;font-size:10px;line-height:1}
-  #oneqrDialog .attribution-funnel strong{min-width:0;font-size:13px;line-height:1.35;overflow-wrap:anywhere}
-  #oneqrDialog .attribution-funnel small{max-width:76px;color:#d2daee;font-size:10px;line-height:1.35;text-align:right;overflow-wrap:anywhere}
-  #oneqrDialog .attribution-funnel i{display:grid;place-items:center;justify-self:start;width:12px;height:10px;margin-left:15px;color:#9bf5e9;font-size:13px;line-height:1;transform:rotate(90deg)}
-  #oneqrDialog .attribution-funnel article:last-child{border-color:#8ff3e838;background:#8ff3e812}
+  #oneqrDialog .attribution-funnel{grid-template-columns:minmax(0,1fr);gap:0;padding:8px 14px;border-radius:14px;background:linear-gradient(120deg,#151d3f,#292456)}
+  #oneqrDialog .attribution-funnel article{position:relative;grid-template-columns:20px minmax(0,1fr) auto;align-items:center;gap:10px;min-height:44px;padding:9px 0;border:0;border-radius:0;background:none}
+  #oneqrDialog .attribution-funnel article:not(:last-of-type)::after{content:'';position:absolute;left:9.5px;top:calc(50% + 10px);width:1px;height:calc(100% - 20px);background:#aebcd142}
+  #oneqrDialog .attribution-funnel article>span{position:relative;z-index:1;display:grid;place-items:center;width:20px;height:20px;border-radius:50%;background:#30395a;color:#c2cde0;font-size:9px;font-weight:600;line-height:1}
+  #oneqrDialog .attribution-funnel strong{display:flex;align-items:baseline;flex-wrap:wrap;gap:2px 6px;min-width:0;line-height:1.2}
+  #oneqrDialog .attribution-funnel .attribution-value{color:#fff;font-size:18px;font-weight:750;line-height:1.2;font-variant-numeric:tabular-nums;letter-spacing:-.025em}
+  #oneqrDialog .attribution-funnel .attribution-label{color:#c2cde0;font-size:11.5px;font-weight:500;line-height:1.3;letter-spacing:0}
+  #oneqrDialog .attribution-funnel small{max-width:88px;padding:4px 6px;border-radius:6px;background:#ffffff0b;color:#c2cde0;font-size:10px;font-weight:500;line-height:1.35;text-align:center;overflow-wrap:anywhere}
+  #oneqrDialog .attribution-funnel article:nth-of-type(-n+2) small{color:#a5e5d6;background:#7ce0c512}
+  #oneqrDialog .attribution-funnel article:nth-of-type(3) small{color:#f0cf9d;background:#efba6412}
+  #oneqrDialog .attribution-funnel>i{display:none}
 }
 
 /* Business callout icons use the local surface colors instead of default link blue. */
