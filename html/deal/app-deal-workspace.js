@@ -4788,9 +4788,9 @@ function renderDealMatchWishes() {
     const matches = getDealMatchResults(wish.text, wish.areas || [], "all", wish.service || "all", wish.mode || "multi", wish.radius || 5);
     const english = getDealMatchLanguage() === "en";
     const place = wish.mode === "near" ? `${copy.nearMe} · ${wish.radius || 5} mi` : wish.mode === "online" ? "Online" : dealMatchAreaSummary(wish.areas || []) || copy.multiArea;
-    const matchLabel = matches.length ? `✓ ${matches.length} ${english ? (matches.length === 1 ? "matching deal" : "matching deals") : "deal khớp"}` : `⏳ ${copy.waiting}`;
+    const matchLabel = matches.length ? `${matches.length} ${english ? (matches.length === 1 ? "matching deal" : "matching deals") : "deal khớp"}` : copy.waiting;
     const dayLabel = english ? `${wish.days || 14} days` : `${wish.days || 14} ngày`;
-    return `<article class="dw-wish-card ${matches.length ? "matched" : ""}"><div><h3>${escapeHTML(wish.text)}</h3><p>${matchLabel} · 👀 ${wish.seen || 0} ${copy.viewed} · ⏳ ${dayLabel}</p><small>🗺️ ${escapeHTML(place)}</small></div><button class="dw-secondary" type="button" data-dw-remove-wish="${escapeHTML(wish.id)}">${copy.remove}</button></article>`;
+    return `<article class="dw-wish-card ${matches.length ? "matched" : ""}"><div class="dw-wish-heading"><h3>${escapeHTML(wish.text)}</h3><button class="dw-secondary" type="button" data-dw-remove-wish="${escapeHTML(wish.id)}" aria-label="${escapeHTML(copy.remove + " " + wish.text)}" title="${escapeHTML(copy.remove)}"><span class="dw-wish-remove-label">${copy.remove}</span></button></div><div class="dw-wish-meta"><span class="dw-wish-status">${matchLabel}</span><span class="dw-wish-duration">${dayLabel}</span></div><div class="dw-wish-details"><small class="dw-wish-location">${escapeHTML(place)}</small><span class="dw-wish-viewed">${wish.seen || 0} ${copy.viewed}</span></div></article>`;
   }).join("");
 }
 
@@ -4819,7 +4819,7 @@ function renderDealMatchWorkspace(query = "", areas = ["Garden Grove, California
       </form>
     </section>
     <section class="dw-card dw-match-results" data-dw-match-results><div class="dw-heading"><div><h2 data-dw-match-results-title>${query ? `${initialResults.length} ${english ? (initialResults.length === 1 ? "matching deal" : "matching deals") : "deal khớp"}` : copy.resultsDefault}</h2><p data-dw-area-summary>${copy.matchingAt} ${escapeHTML(areaSummary)}.</p></div></div><div data-dw-match-results-list>${renderDealMatchResultList(query, selectedAreas)}</div></section>
-    <section class="dw-card dw-panel"><div class="dw-heading"><div><h2>${copy.wishesTitle}</h2><p>${copy.wishesCopy}</p></div></div><div data-dw-wish-list>${renderDealMatchWishes()}</div></section>
+    <section class="dw-card dw-panel dw-wishes"><div class="dw-heading"><div><h2>${copy.wishesTitle}</h2><p>${copy.wishesCopy}</p></div></div><div data-dw-wish-list>${renderDealMatchWishes()}</div></section>
   </div>`;
 }
 
