@@ -77,6 +77,28 @@
     .quick-link-icon { display: flex; width: 32px; height: 32px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 10px; background: #e9e9ff80; }
     .quick-link-icon img { width: 24px; height: 24px; object-fit: contain; }
     .quick-link-label { display: flex; width: 100%; min-height: 29px; align-items: center; justify-content: center; overflow-wrap: anywhere; font-size: 11px; font-weight: 700; line-height: 1.3; }
+    .sponsored { margin: 0 var(--page-inset); }
+    .sponsored-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 2px 8px; }
+    .sponsored-title { margin: 0; color: #6b7280; font-size: 11px; font-weight: 900; line-height: 1.5; letter-spacing: 1.2px; }
+    .sponsored-more { flex-shrink: 0; padding: 4px 0; color: #7c3aed; font-size: 11px; font-weight: 800; }
+    .sponsored-more:hover { text-decoration: underline; }
+    .sponsored-list { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+    .sponsored-card { display: flex; gap: 10px; padding: 10px; border: 1px solid #e1e4ec; border-radius: 14px; background: #fff; }
+    .sponsored-value { display: flex; width: 62px; min-height: 62px; flex: 0 0 62px; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; color: #fff; font-size: 15px; font-weight: 900; line-height: 1.2; }
+    .sponsored-value small { font-size: 9.5px; font-weight: 800; opacity: .9; }
+    .sponsored-value-boba { background: #8b5cf6; }
+    .sponsored-value-carwash { background: #0284c7; }
+    .sponsored-value-pet { background: #65a30d; }
+    .sponsored-content { min-width: 0; flex: 1; }
+    .sponsored-badge { display: inline-flex; align-items: center; gap: 2px; margin-top: 4px; padding: 1px 6px; border-radius: 6px; font-size: 10px; font-weight: 800; line-height: 1.6; }
+    .sponsored-badge-ad, .sponsored-badge-time { background: #fef3c7; color: #92400e; }
+    .sponsored-card h3 { margin: 0; color: var(--text); font-size: 13.5px; font-weight: 800; line-height: 1.3; overflow-wrap: anywhere; }
+    .sponsored-meta { margin-top: 2px; color: #64748b; font-size: 11.5px; line-height: 1.4; }
+    .sponsored-badge-coupon { background: #ede9fe; color: #7c3aed; }
+    .sponsored-badge-deal { background: #ccfbf1; color: #0f766e; }
+    .sponsored-badge-active { background: #dcfce7; color: #166534; }
+    .sponsored-badge-booking { background: #dbeafe; color: #1e40af; }
+    .sponsored-rule { display: flex; }
     .gift { margin: 12px var(--page-inset) 0; border: 1px solid var(--border); border-radius: 16px; background: #fff; box-shadow: 0 1px 2px #0000000d; }
     .gift-header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 15px 15px 0 0; background: linear-gradient(135deg, #4f46e5, #1e1b4b); color: #fff; }
     .gift-icon { display: flex; width: 40px; height: 40px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 12px; background: #ffffff33; }
@@ -209,6 +231,55 @@
           <span class="quick-link-label" data-copy="review">Leave a Review</span>
         </a>
       </nav>
+
+      <!-- Sponsored examples from the PO's nexora-oneqr-tai-tiem.html and the supplied screenshot. -->
+      <section class="sponsored" aria-labelledby="sponsoredTitle" lang="vi">
+        <div class="sponsored-header">
+          <h2 class="sponsored-title" id="sponsoredTitle"><span aria-hidden="true">⭐</span> ĐƯỢC TÀI TRỢ · GẦN ĐÂY</h2>
+          <a class="sponsored-more" href="nearby.html" data-dev-page="nearby.html">Xem thêm ›</a>
+        </div>
+        <ul class="sponsored-list">
+          <li>
+            <article class="sponsored-card">
+              <div class="sponsored-value sponsored-value-boba"><span>1+1</span><small>TẶNG</small></div>
+              <div class="sponsored-content">
+                <span class="sponsored-badge sponsored-badge-ad"><span aria-hidden="true">⭐</span>Được tài trợ</span>
+                <h3>Trà sữa mua 1 tặng 1</h3>
+                <p class="sponsored-meta">Saigon Boba Westheimer · 0.4 mi</p>
+                <p class="sponsored-meta">Sau 3pm</p>
+                <span class="sponsored-badge sponsored-badge-coupon"><span aria-hidden="true">🎟️</span>COUPON · còn 62/100</span>
+                <div class="sponsored-rule"><span class="sponsored-badge sponsored-badge-time"><span aria-hidden="true">⏰</span>3PM–10PM</span></div>
+              </div>
+            </article>
+          </li>
+          <li>
+            <article class="sponsored-card">
+              <div class="sponsored-value sponsored-value-carwash"><span>$12</span><small>GIÁ</small></div>
+              <div class="sponsored-content">
+                <span class="sponsored-badge sponsored-badge-ad"><span aria-hidden="true">⭐</span>Được tài trợ</span>
+                <h3>Rửa xe + hút bụi $12</h3>
+                <p class="sponsored-meta">Sparkle Car Wash · 1.5 mi</p>
+                <p class="sponsored-meta">Thứ 2–5</p>
+                <span class="sponsored-badge sponsored-badge-deal"><span aria-hidden="true">🏷️</span>DEAL</span>
+                <div class="sponsored-rule"><span class="sponsored-badge sponsored-badge-active"><span aria-hidden="true">✅</span>Đang áp dụng · T2–T5</span></div>
+              </div>
+            </article>
+          </li>
+          <li>
+            <article class="sponsored-card">
+              <div class="sponsored-value sponsored-value-pet"><span>$10</span><small>GIẢM</small></div>
+              <div class="sponsored-content">
+                <span class="sponsored-badge sponsored-badge-ad"><span aria-hidden="true">⭐</span>Được tài trợ</span>
+                <h3>Tắm &amp; cắt lông chó giảm $10</h3>
+                <p class="sponsored-meta">Paws Grooming · 2.9 mi</p>
+                <p class="sponsored-meta">Chó dưới 25 lb</p>
+                <span class="sponsored-badge sponsored-badge-coupon"><span aria-hidden="true">🎟️</span>COUPON · còn 18/40</span>
+                <div class="sponsored-rule"><span class="sponsored-badge sponsored-badge-booking"><span aria-hidden="true">📅</span>Cần đặt lịch</span></div>
+              </div>
+            </article>
+          </li>
+        </ul>
+      </section>
 
       <section class="gift" aria-labelledby="giftTitle">
         <div class="gift-header">
