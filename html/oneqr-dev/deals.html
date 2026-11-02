@@ -46,6 +46,7 @@
           <input id="dealSearch" name="q" type="search" maxlength="100" autocomplete="off" enterkeyhint="search" placeholder="What would you like? e.g. milk tea nearby" data-search-placeholder="searchPlaceholder">
           <button class="search-submit" type="submit" data-search-copy="find">Find</button>
         </form>
+        <div class="search-suggestions" id="searchSuggestions" aria-label="Search suggestions" data-search-aria="suggestions"></div>
         <div class="location-filters">
           <div class="discovery-selects">
             <div class="discovery-select-radius">
@@ -80,7 +81,6 @@
           </div>
           <p class="location-warning" id="locationWarning" role="status" hidden></p>
         </div>
-        <div class="search-suggestions" id="searchSuggestions" aria-label="Search suggestions" data-search-aria="suggestions"></div>
         <p class="nearby-competitors search-guide" id="searchGuide"></p>
         <div class="search-parsed" id="searchParsed" hidden></div>
         <p class="nearby-competitors" id="searchCompetitors" role="status" hidden></p>
