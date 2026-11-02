@@ -4,6 +4,7 @@
   const GROUPS = catalog.groups;
   const industries = catalog.industries;
   const TILE_BACKGROUNDS = window.ONEQR_ACTION_APPEARANCE.backgrounds;
+  const PICKER_BACKGROUNDS = TILE_BACKGROUNDS.slice(0, 8);
   const industryIcons = window.NEXORA_INDUSTRY_ICONS;
   function industryImage(key, size = 36) {
     return industryIcons.image(key,{size,catalog:'oneqr',className:'oneqr-flat-icon'});
@@ -13,6 +14,7 @@
     const $ = selector => root.querySelector(selector);
     const controller = new AbortController();
     root.classList.add('oneqr-industry-picker');
+    root.classList.toggle('is-po-layout', !options.embedded);
     root.innerHTML = `<div class="library-heading"><div>${options.embedded ? '' : '<span class="section-step">Industry templates</span><div class="picker-title-row"><a class="picker-back-link" href="qr-stations.html?tab=one-qr"><span aria-hidden="true">←</span>Back</a><h2>Choose your business industry</h2></div>'}<p>Select the closest match. Your current custom modules stay in place when you switch templates.</p></div><div class="picker-heading-actions"><div class="language-switch" role="group" aria-label="Template language"><button type="button" class="is-active" data-language="en" aria-pressed="true">EN</button><button type="button" data-language="vi" aria-pressed="false">VI</button></div></div></div><label class="industry-search" for="industry-search-input"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg><input id="industry-search-input" type="search" placeholder="Search by industry, service, or keyword" aria-label="Search by industry, service, or keyword" autocomplete="off"><kbd>/</kbd></label><div class="group-tabs-wrap"><div class="group-tabs" role="tablist" aria-label="Industry groups" id="industry-group-tabs"></div></div><div class="library-result-row"><p id="industry-result-count" aria-live="polite"></p><button type="button" class="clear-filter" id="clear-industry-filter" hidden>Clear filters</button></div><div class="industry-grid" id="industry-grid" aria-live="polite"></div>`;
     const state = { group: 'all', query: '', language: 'en', selected: options.selected || 'nails' };
     const groupById = id => GROUPS.find(group => group.id === id);
@@ -52,13 +54,21 @@
         refreshIcons();
         return;
       }
-      grid.innerHTML = matches.map((industry) => {
+      const renderCards = records => records.map((industry, index) => {
         const group = groupById(industry.groupId);
         const selected = state.selected === industry.id;
         const actionCount = actionIds(industry).length;
-        const actionCopy = state.language === 'vi' ? `${actionCount} hành động sẵn có` : `${actionCount} actions ready`;
-        const tileBackground = TILE_BACKGROUNDS[industries.indexOf(industry) % TILE_BACKGROUNDS.length];
-        return `<button class="industry-card ${selected ? 'is-selected' : ''}" type="button" data-industry="${industry.id}" aria-pressed="${selected}" style="--card-gradient:${tileBackground}"><span class="industry-card-icon" aria-hidden="true">${industryIcon(industry)}</span><div><strong>${label(industry)}</strong><small>${label(group)} · ${actionCopy}</small></div><span class="selected-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span></button>`;
+        const actionCopy = state.language === 'vi' ? `${actionCount} ${options.embedded ? 'hành động sẵn có' : 'nút dựng sẵn'}` : `${actionCount} ${options.embedded ? 'actions ready' : 'buttons ready'}`;
+        const backgrounds = options.embedded ? TILE_BACKGROUNDS : PICKER_BACKGROUNDS;
+        const colorIndex = industries.indexOf(industry) + (options.embedded ? 0 : index);
+        const tileBackground = backgrounds[colorIndex % backgrounds.length];
+        return `<button class="industry-card ${selected ? 'is-selected' : ''}" type="button" data-industry="${industry.id}" aria-pressed="${selected}" style="--card-gradient:${tileBackground}"><span class="industry-card-icon" aria-hidden="true">${industryIcon(industry)}</span><div><strong>${label(industry)}</strong><small>${options.embedded ? `${label(group)} · ` : ''}${actionCopy}</small></div><span class="selected-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" aria-hidden="true"><path d="m5 12 4 4L19 6"/></svg></span></button>`;
+      }).join('');
+      grid.innerHTML = options.embedded ? renderCards(matches) : GROUPS.map(group => {
+        const records = matches.filter(industry => industry.groupId === group.id);
+        if (!records.length) return '';
+        const headingId = `industry-picker-group-${group.id}`;
+        return `<section class="industry-group" aria-labelledby="${headingId}"><h3 class="industry-group-title" id="${headingId}">${label(group)}</h3><div class="industry-grid">${renderCards(records)}</div></section>`;
       }).join('');
       grid.querySelectorAll('[data-industry]').forEach((button) => button.addEventListener('click', () => selectIndustry(button.dataset.industry), { signal: controller.signal }));
       refreshIcons();
