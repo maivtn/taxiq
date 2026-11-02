@@ -98,13 +98,15 @@
 
   function render(next) {
     const previousQuery = state?.query;
+    const previousLanguage = state?.language;
     state = next;
     const query = state.query.trim();
     document.querySelectorAll('[data-search-copy]').forEach(element => { element.textContent = translate(element.dataset.searchCopy); });
     document.querySelectorAll('[data-search-aria]').forEach(element => { element.setAttribute('aria-label', translate(element.dataset.searchAria)); });
     document.querySelectorAll('[data-search-placeholder]').forEach(element => { element.placeholder = translate(element.dataset.searchPlaceholder); });
-    get('searchSuggestions').hidden = Boolean(query);
-    get('searchSuggestions').innerHTML = copy[state.language].quick.map(value => `<button class="chip" type="button" data-query="${escape(value)}">${escape(value)}</button>`).join('');
+    if (previousLanguage !== state.language) {
+      get('searchSuggestions').innerHTML = copy[state.language].quick.map(value => `<button class="chip" type="button" data-query="${escape(value)}">${escape(value)}</button>`).join('');
+    }
     const zip = zips[state.zip];
     const anchor = state.origin === 'mine' ? translate('myLocation') : zip ? `ZIP ${state.zip} · ${zip[2]}` : translate('aroundShop');
     get('searchGuide').hidden = Boolean(query);
