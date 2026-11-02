@@ -1,5 +1,5 @@
 (() => {
-  // Keep the original Test business profile alongside the PO demo offers.
+  // Shared language, location and filter state for Nearby and Search Deals.
   const copy = {
     en: {
       language: 'Language', fromQr: 'From the QR of', back: 'Back', nav: 'Explore',
@@ -98,15 +98,6 @@
   }
 
   function updateResults() {
-    const visible = (state.industry === 'all' || state.industry === business.industry || state.industry === 'food')
-      && (state.radius === null || state.distance <= state.radius)
-      && (!get('openNow')?.checked || business.open);
-    if (page === 'nearby') {
-      get('businessList').hidden = !visible;
-      get('emptyNearby').hidden = visible;
-      get('businessCount').textContent = copy[language].businessCount.replace('{count}', visible ? '1' : '0');
-      get('businessDistance').textContent = `${new Intl.NumberFormat(language, { maximumFractionDigits: 1 }).format(state.distance)} mi`;
-    }
     syncFilters();
     document.querySelectorAll('[data-origin]').forEach(button => {
       button.setAttribute('aria-pressed', String(button.dataset.origin === state.origin));
@@ -245,15 +236,5 @@
     updateResults();
   });
 
-  const dialog = get('businessDialog');
-  if (dialog) {
-    get('viewBusiness').addEventListener('click', () => dialog.showModal());
-    get('closeBusiness').addEventListener('click', () => dialog.close());
-    dialog.addEventListener('click', event => {
-      if (event.target !== dialog) return;
-      const bounds = dialog.getBoundingClientRect();
-      if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.close();
-    });
-  }
   setLanguage(language);
 })();

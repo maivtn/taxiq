@@ -22,7 +22,7 @@
   <script src="assets/bottom-nav.js" defer></script>
 </head>
 <body class="nearby-page" data-discovery-page="nearby">
-  <!-- PO layout: nexora-oneqr-tai-tiem.html. Existing Dev business actions are retained below the offers. -->
+  <!-- PO layout: nexora-oneqr-tai-tiem.html. -->
 
   <main class="page">
     <div class="shop">
@@ -92,38 +92,10 @@
         <p class="nearby-offer-count" id="nearbyOfferCount" role="status"></p>
         <ul class="nearby-offers" id="nearbyOffers"></ul>
         <p class="empty-state" id="nearbyOffersEmpty" hidden></p>
-        <div class="results-heading"><h2 data-copy="listTitle">Places to explore</h2><span class="business-count" id="businessCount" role="status">Businesses: 1</span></div>
-        <ul class="business-list" id="businessList">
-          <li>
-            <article class="business-card">
-              <div class="business-cover" aria-hidden="true"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-utensils-3d.png" alt="" draggable="false"></div>
-              <div class="business-body">
-                <div class="business-title"><h3>Bitcoin Nail Bar</h3><span class="shop-tag" data-copy="thisShop">This shop</span></div>
-                <p class="business-meta"><span data-copy="industry">Fast food &amp; sandwiches</span> · <span id="businessDistance">0 mi</span></p>
-                <div class="business-badges"><span class="no-deals" data-copy="noDeals">No deals yet</span></div>
-                <button class="business-action" id="viewBusiness" type="button" aria-haspopup="dialog" aria-controls="businessDialog" data-copy="viewBusiness">View business →</button>
-              </div>
-            </article>
-          </li>
-        </ul>
-        <div class="empty-state" id="emptyNearby" hidden><p class="empty-state-title" data-copy="emptyNearbyTitle">No businesses match</p><p class="empty-state-hint" data-copy="emptyNearbyHint">Try another industry, a wider radius, or turn off Open now.</p></div>
       </div>
     </div>
   </main>
 
-  <dialog class="business-dialog" id="businessDialog" aria-labelledby="businessDialogTitle">
-    <header class="dialog-header"><h2 id="businessDialogTitle" data-copy="business">Business</h2><button class="dialog-close" id="closeBusiness" type="button" aria-label="Close" data-copy-aria="close"><span class="icon icon-close" aria-hidden="true"></span></button></header>
-    <div class="dialog-content">
-      <p class="profile-eyebrow" data-copy="profile">Business profile</p>
-      <h3 class="profile-name">Bitcoin Nail Bar</h3>
-      <p class="profile-industry" data-copy="industry">Fast food &amp; sandwiches</p>
-      <p class="profile-address"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-pin-3d.png" alt="" draggable="false"><span>123 Crypto Ave, Austin, TX 78701</span></p>
-      <a class="outline-link directions" href="https://www.google.com/maps/dir/?api=1&amp;destination=30.2729209,-97.74438630000002" target="_blank" rel="noopener noreferrer"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-3d.png" alt="" draggable="false"><span data-copy="directions">Directions</span></a>
-      <section class="profile-deals"><h4 data-copy="profileDeals">Deals</h4><p data-copy="profileNoDeals">No deals right now. This business is still listed in Explore.</p></section>
-      <p class="profile-note" data-copy="sourceNote">You're exploring from Bitcoin Nail Bar's QR.</p>
-    </div>
-    <footer class="dialog-footer"><a class="outline-link" href="index.html" data-local-page="index.html"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-home-3d.png" alt="" draggable="false"><span data-copy="back">Back</span></a><span data-copy="menu">One QR menu</span></footer>
-  </dialog>
   <dialog class="business-dialog nearby-offer-dialog" id="nearbyOfferDialog" aria-labelledby="nearbyOfferTitle">
     <header class="dialog-header"><h2 id="nearbyOfferTitle"></h2><button class="dialog-close" id="nearbyOfferClose" type="button" aria-label="Close" data-nearby-aria="close"><span class="icon icon-close" aria-hidden="true"></span></button></header>
     <div class="dialog-content" id="nearbyOfferDetail"></div>
