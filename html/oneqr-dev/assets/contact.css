@@ -1,5 +1,5 @@
-.contact-section { margin: 12px var(--page-inset) 14px; border: 1px solid #ddd6fe; border-radius: 12px; background: #fff; }
-.contact-section summary { display: flex; min-height: 40px; align-items: center; gap: 7px; padding: 9px 12px; border-radius: 12px; color: #6d28d9; font-size: 12px; font-weight: 700; list-style: none; cursor: pointer; }
+.contact-section { margin: 8px var(--page-inset) 0; border: 1px solid #ddd6fe; border-radius: 12px; background: #fff; }
+.contact-section summary { display: flex; min-height: 40px; align-items: center; gap: 7px; padding: 9px 12px; border-radius: 12px; color: #000; font-size: 12px; font-weight: 700; list-style: none; cursor: pointer; }
 .contact-section summary::-webkit-details-marker { display: none; }
 .contact-section summary:hover { background: #faf9ff; }
 .contact-chevron { margin-left: auto; transition: transform .2s; }
