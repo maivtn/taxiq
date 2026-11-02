@@ -93,6 +93,7 @@
     document.querySelectorAll('[data-local-page]').forEach(link => {
       link.href = `${link.dataset.localPage}?lang=${next}`;
     });
+    document.dispatchEvent(new CustomEvent('oneqr-dev:language-change', { detail: next }));
     updateResults();
   }
 

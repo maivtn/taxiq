@@ -151,6 +151,8 @@
       *, *::before, *::after { transition: none !important; }
     }
   </style>
+  <link rel="stylesheet" href="assets/bottom-nav.css">
+  <script src="assets/bottom-nav.js" defer></script>
 </head>
 <body>
   <!-- Reference: https://test-web.nexoratouch.com/o/bitcoin-nail-bar-3?as=customer -->
@@ -438,6 +440,7 @@
         document.querySelectorAll('[data-dev-page]').forEach(link => {
           link.href = `${link.dataset.devPage}?lang=${next}`;
         });
+        document.dispatchEvent(new CustomEvent('oneqr-dev:language-change', { detail: next }));
         renderCountries();
       }
 
