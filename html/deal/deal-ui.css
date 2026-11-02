@@ -527,6 +527,7 @@ body:has(.dw-match-select .dropdown-active) .ai-guide-fab{visibility:hidden}
 #discover .discover-hero-actions>button{flex:0 0 auto;white-space:nowrap}
 #discover .discover-hero-actions [aria-hidden="true"]{display:inline-flex;flex:none;align-items:center;justify-content:center;width:16px;height:16px;line-height:1}
 #discover .discover-hero-actions :is(.deal-action-icon,.deal-inline-icon){flex:none;width:16px;height:16px;margin:0;color:inherit;vertical-align:middle;stroke-width:1.8}
+#discover .discover-hero-actions .discover-ai-entry>span[aria-hidden="true"]{color:inherit}
 #discover #heroPrimaryActionLabel{min-width:0;white-space:normal;overflow-wrap:normal;word-break:normal}
 @media(min-width:721px) and (max-width:860px){
   #discover .discover-hero-actions>:is(a,button){flex:1 1 0;min-width:0;padding-inline:8px;gap:4px;white-space:normal}
