@@ -299,7 +299,7 @@
         <nav class="contact-actions" aria-label="Business contact actions" data-contact-aria="actions">
           <a href="tel:+13465550100"><i class="icon" data-lucide="phone" aria-hidden="true"></i><span data-contact-copy="call">Call</span></a>
           <a href="sms:+13465550100"><i class="icon" data-lucide="message-square" aria-hidden="true"></i><span data-contact-copy="text">Text</span></a>
-          <button type="button" data-contact-action="save"><i class="icon" data-lucide="contact-round" aria-hidden="true"></i><span data-contact-copy="save">Save contact</span></button>
+          <button type="button" data-contact-action="save" aria-haspopup="dialog" aria-controls="contactPicker"><i class="icon" data-lucide="contact-round" aria-hidden="true"></i><span data-contact-copy="save">Save contact</span></button>
           <button type="button" data-contact-action="wallet" hidden><i class="icon" data-lucide="wallet-cards" aria-hidden="true"></i><span data-contact-copy="wallet">Add to Wallet</span></button>
           <a href="https://www.google.com/maps/dir/?api=1&amp;destination=5444%20Westheimer%20Rd%2C%20Suite%201000%2C%20Houston%2C%20Texas" target="_blank" rel="noopener noreferrer"><i class="icon" data-lucide="navigation" aria-hidden="true"></i><span data-contact-copy="directions">Directions</span></a>
           <button type="button" data-contact-action="exchange" aria-haspopup="dialog" aria-controls="contactExchange"><i class="icon" data-lucide="user-plus" aria-hidden="true"></i><span data-contact-copy="exchange">Send yours</span></button>
@@ -470,6 +470,19 @@
     <div class="promotion-detail-conditions"><p><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-calendar-days-3d.png" alt="" draggable="false"> <strong>Phải đặt lịch trước</strong> để dùng ưu đãi này</p><p><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-receipt-3d.png" alt="" draggable="false"> Đặt trước 1 ngày</p></div>
     <a class="promotion-detail-action" href="https://www.google.com/maps/dir/?api=1&amp;destination=29.7420,-95.4480" target="_blank" rel="noopener noreferrer"><i class="icon" data-lucide="navigation" aria-hidden="true"></i> Chỉ đường · 1.0 mi</a>
     <button class="promotion-close" type="button" data-close-promotion>Đóng</button>
+  </dialog>
+
+  <dialog class="contact-dialog contact-picker" id="contactPicker" aria-labelledby="contactPickerTitle">
+    <form id="contactPickerForm">
+      <div class="contact-dialog-heading"><h2 id="contactPickerTitle" data-contact-copy="save">Save contact</h2><button class="contact-dialog-close" type="button" data-close-contact-picker aria-label="Close" data-contact-aria="close"><i class="icon" data-lucide="x" aria-hidden="true"></i></button></div>
+      <div class="contact-picker-groups" id="contactPickerGroups"></div>
+      <div class="contact-picker-details">
+        <p><i class="icon" data-lucide="phone" aria-hidden="true"></i><a id="contactPickerPhone"></a></p>
+        <p><i class="icon" data-lucide="globe" aria-hidden="true"></i><a id="contactPickerWebsite" target="_blank" rel="noopener noreferrer"></a></p>
+        <p><i class="icon" data-lucide="map-pin" aria-hidden="true"></i><span id="contactPickerAddress"></span></p>
+      </div>
+      <div class="contact-dialog-actions contact-picker-actions"><button type="button" data-close-contact-picker data-contact-copy="cancel">Cancel</button><button class="contact-primary" type="submit"><i class="icon" data-lucide="contact-round" aria-hidden="true"></i><span data-contact-copy="save">Save contact</span></button></div>
+    </form>
   </dialog>
 
   <dialog class="contact-dialog" id="contactExchange" aria-labelledby="contactExchangeTitle">
