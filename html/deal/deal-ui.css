@@ -173,6 +173,12 @@ dialog .deal-modal-choice-icon{display:block;width:22px;height:22px}
 dialog .deal-modal-action{min-height:44px}
 dialog .deal-modal-action-flex{column-gap:8px}
 dialog .deal-modal-action-flex .deal-action-icon{margin-inline-end:0}
+/* Give the booking action a clear, distinct treatment beside coupon claiming. */
+#dealDialog #bookDealLink:not([data-demo-profile]){gap:8px;min-height:44px;padding:8px 14px;border:1px solid #087c70;color:#fff;background:linear-gradient(110deg,#087f69,#087f92);box-shadow:0 4px 12px #087f6929;font-weight:800}
+#dealDialog #bookDealLink:not([data-demo-profile]) .deal-action-icon{flex:none;width:28px;height:28px;margin:0;padding:5px;border-radius:8px;background:#ffffff24;color:inherit;stroke-width:2;box-sizing:border-box}
+#dealDialog #bookDealLink:not([data-demo-profile]):hover{border-color:#066658;background:linear-gradient(110deg,#066b58,#076b7e);box-shadow:0 5px 14px #087f6938}
+#dealDialog #bookDealLink:not([data-demo-profile]):active{box-shadow:0 1px 4px #087f6929}
+#dealDialog #bookDealLink:not([data-demo-profile]):focus-visible{outline:3px solid #65d9bf;outline-offset:3px}
 dialog :is(button:disabled,[aria-disabled="true"]) .deal-action-icon{color:inherit;opacity:.7}
 dialog [data-oneqr-utility] > span .deal-action-icon,dialog [data-oneqr-view] > .deal-action-icon{margin:0}
 dialog:is(.app-dialog,.ai-guide-dialog,.bc-dialog) > :is(.dialog-close,.bc-close){display:grid;place-items:center;width:44px;height:44px;padding:0;border:1px solid #d8e0eb;color:#34415b;background:#fff;box-shadow:0 2px 8px #18244312}
