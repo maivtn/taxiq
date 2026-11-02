@@ -106,11 +106,11 @@ body{min-width:0}
 .platform-network-stats article:nth-child(3) > span{color:#146a82;background:#eaf7fb}
 .platform-network-stats article:nth-child(4) > span{color:#0b7668;background:#edf8f3}
 .platform-network-stats .deal-action-icon{display:block;width:20px;height:20px;margin:0;color:inherit;stroke-width:1.75}
+.footer-store-buttons .store-brand-icon{display:block;flex:none;width:18px;height:18px;margin:0;object-fit:contain}
 @media(max-width:720px){
   .site-footer .footer-store-buttons{gap:6px}
   .site-footer .footer-store-buttons a{min-height:44px;padding:8px 12px;gap:8px;border-radius:10px;color:#34415b;box-shadow:none}
   .site-footer .footer-store-buttons strong{font-size:13px!important;font-weight:650;line-height:1.35}
-  .site-footer .footer-store-buttons .deal-action-icon{width:16px;height:16px;margin:0;stroke-width:1.75}
 }
 .discover-trust-row{gap:6px!important}
 .discover-trust-row > span{--trust-accent:#0b7668;--trust-tint:#edf8f3;--trust-border:#cfe8dd;min-height:32px;gap:6px;padding:6px 10px!important;border-color:var(--trust-border)!important;background:var(--trust-tint)!important;color:#34415b!important;font-size:11px!important;font-weight:700;line-height:1.35!important;letter-spacing:0;backdrop-filter:none}

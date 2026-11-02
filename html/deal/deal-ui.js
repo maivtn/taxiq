@@ -141,8 +141,6 @@
     ['[data-hero-next]', 'ChevronRight', 'neutral'],
     ['#aiOptimizeButton,.ai-guide-fab', 'Sparkles', 'violet'],
     ['.business-button', 'Megaphone', 'violet'],
-    ['.footer-store-buttons a[href*="apps.apple.com"]', 'Smartphone', 'blue'],
-    ['.footer-store-buttons a[href*="play.google.com"]', 'Play', 'blue'],
     ['button[type="reset"],[data-nail-reset],[data-nail-clear-recent]', 'RotateCcw', 'neutral'],
     ['#searchForm button[type="submit"],#quickMatchForm button[type="submit"],[data-dw-match-form] button[type="submit"],[data-dw-nearby-search] button[type="submit"],[data-nail-search] button[type="submit"],[data-mobile-global-search] button[type="submit"]', 'Search', 'violet'],
     ['#couponClaimForm button[type="submit"],#openingHoldForm button[type="submit"]', 'Check', 'teal'],
