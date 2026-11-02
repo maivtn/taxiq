@@ -40,6 +40,7 @@
     }
   };
   const get = id => document.getElementById(id);
+  const contactMenu = get('contactSection');
   const dialog = get('contactExchange');
   const form = get('contactExchangeForm');
   const picker = get('contactPicker');
@@ -118,7 +119,11 @@
     feedback('saved');
   }
 
-  get('contactSection').addEventListener('click', async event => {
+  get('contactMenuTrigger').addEventListener('click', () => {
+    feedback(null);
+    contactMenu.showModal();
+  });
+  contactMenu.addEventListener('click', async event => {
     const button = event.target.closest('[data-contact-action]');
     if (!button) return;
     const action = button.dataset.contactAction;
@@ -161,7 +166,8 @@
   });
   document.querySelectorAll('[data-close-contact-picker]').forEach(button => button.addEventListener('click', () => picker.close()));
   document.querySelectorAll('[data-close-contact]').forEach(button => button.addEventListener('click', () => dialog.close()));
-  [dialog, picker].forEach(modal => modal.addEventListener('click', event => {
+  document.querySelectorAll('[data-close-contact-menu]').forEach(button => button.addEventListener('click', () => contactMenu.close()));
+  [contactMenu, dialog, picker].forEach(modal => modal.addEventListener('click', event => {
     if (event.target !== modal) return;
     const bounds = modal.getBoundingClientRect();
     if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) modal.close();

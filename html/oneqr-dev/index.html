@@ -297,20 +297,6 @@
 
       <h2 class="shop-menu-title" id="shopMenuTitle" lang="vi">MENU CỦA BITCOIN NAIL BAR</h2>
 
-      <details class="contact-section" id="contactSection">
-        <summary><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-users-round-3d.png" alt="" draggable="false"><span data-contact-copy="contact">Contact</span><i class="icon contact-chevron" data-lucide="chevron-down" aria-hidden="true"></i></summary>
-        <nav class="contact-actions" aria-label="Business contact actions" data-contact-aria="actions">
-          <a href="tel:+13465550100"><i class="icon" data-lucide="phone" aria-hidden="true"></i><span data-contact-copy="call">Call</span></a>
-          <a href="sms:+13465550100"><i class="icon" data-lucide="message-square" aria-hidden="true"></i><span data-contact-copy="text">Text</span></a>
-          <button type="button" data-contact-action="save" aria-haspopup="dialog" aria-controls="contactPicker"><i class="icon" data-lucide="contact-round" aria-hidden="true"></i><span data-contact-copy="save">Save contact</span></button>
-          <button type="button" data-contact-action="wallet" hidden><i class="icon" data-lucide="wallet-cards" aria-hidden="true"></i><span data-contact-copy="wallet">Add to Wallet</span></button>
-          <a href="https://www.google.com/maps/dir/?api=1&amp;destination=5444%20Westheimer%20Rd%2C%20Suite%201000%2C%20Houston%2C%20Texas" target="_blank" rel="noopener noreferrer"><i class="icon" data-lucide="navigation" aria-hidden="true"></i><span data-contact-copy="directions">Directions</span></a>
-          <button type="button" data-contact-action="exchange" aria-haspopup="dialog" aria-controls="contactExchange"><i class="icon" data-lucide="user-plus" aria-hidden="true"></i><span data-contact-copy="exchange">Send yours</span></button>
-          <button type="button" data-contact-action="share"><i class="icon" data-lucide="share-2" aria-hidden="true"></i><span data-contact-copy="share">Share card</span></button>
-        </nav>
-        <p class="contact-feedback" id="contactFeedback" role="status" hidden></p>
-      </details>
-
       <nav class="quick-links" id="quickLinks" aria-labelledby="shopMenuTitle">
         <a class="quick-link" href="https://test-web.nexoratouch.com/checkin/bitcoin-nail-bar-3?oneQrAs=customer&amp;oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer">
           <span class="quick-link-icon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-scan-line-3d.png" alt="" draggable="false"></span>
@@ -344,6 +330,10 @@
           <span class="quick-link-icon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-3d.png" alt="" draggable="false"></span>
           <span class="quick-link-label" data-copy="directions">Get directions</span>
         </a>
+        <button class="quick-link" id="contactMenuTrigger" type="button" data-extra-quick-link aria-haspopup="dialog" aria-controls="contactSection" hidden>
+          <span class="quick-link-icon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-users-round-3d.png" alt="" draggable="false"></span>
+          <span class="quick-link-label" data-contact-copy="contact">Contact</span>
+        </button>
       </nav>
       <button class="quick-links-toggle" id="quickLinksToggle" type="button" aria-expanded="false" aria-controls="quickLinks"><span id="quickLinksToggleLabel">Show more</span><i class="icon" data-lucide="chevron-down" aria-hidden="true"></i></button>
 
@@ -471,6 +461,20 @@
     <div class="promotion-detail-conditions"><p><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-calendar-days-3d.png" alt="" draggable="false"> <strong>Phải đặt lịch trước</strong> để dùng ưu đãi này</p><p><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-receipt-3d.png" alt="" draggable="false"> Đặt trước 1 ngày</p></div>
     <a class="promotion-detail-action" href="https://www.google.com/maps/dir/?api=1&amp;destination=29.7420,-95.4480" target="_blank" rel="noopener noreferrer"><i class="icon" data-lucide="navigation" aria-hidden="true"></i> Chỉ đường · 1.0 mi</a>
     <button class="promotion-close" type="button" data-close-promotion>Đóng</button>
+  </dialog>
+
+  <dialog class="contact-dialog contact-menu" id="contactSection" aria-labelledby="contactMenuTitle">
+    <div class="contact-dialog-heading"><h2 id="contactMenuTitle" data-contact-copy="contact">Contact</h2><button class="contact-dialog-close" type="button" data-close-contact-menu aria-label="Close" data-contact-aria="close"><i class="icon" data-lucide="x" aria-hidden="true"></i></button></div>
+    <nav class="contact-actions" aria-label="Business contact actions" data-contact-aria="actions">
+      <a href="tel:+13465550100"><i class="icon" data-lucide="phone" aria-hidden="true"></i><span data-contact-copy="call">Call</span></a>
+      <a href="sms:+13465550100"><i class="icon" data-lucide="message-square" aria-hidden="true"></i><span data-contact-copy="text">Text</span></a>
+      <button type="button" data-contact-action="save" aria-haspopup="dialog" aria-controls="contactPicker"><i class="icon" data-lucide="contact-round" aria-hidden="true"></i><span data-contact-copy="save">Save contact</span></button>
+      <button type="button" data-contact-action="wallet" hidden><i class="icon" data-lucide="wallet-cards" aria-hidden="true"></i><span data-contact-copy="wallet">Add to Wallet</span></button>
+      <a href="https://www.google.com/maps/dir/?api=1&amp;destination=5444%20Westheimer%20Rd%2C%20Suite%201000%2C%20Houston%2C%20Texas" target="_blank" rel="noopener noreferrer"><i class="icon" data-lucide="navigation" aria-hidden="true"></i><span data-contact-copy="directions">Directions</span></a>
+      <button type="button" data-contact-action="exchange" aria-haspopup="dialog" aria-controls="contactExchange"><i class="icon" data-lucide="user-plus" aria-hidden="true"></i><span data-contact-copy="exchange">Send yours</span></button>
+      <button type="button" data-contact-action="share"><i class="icon" data-lucide="share-2" aria-hidden="true"></i><span data-contact-copy="share">Share card</span></button>
+    </nav>
+    <p class="contact-feedback" id="contactFeedback" role="status" hidden></p>
   </dialog>
 
   <dialog class="contact-dialog contact-picker" id="contactPicker" aria-labelledby="contactPickerTitle">
