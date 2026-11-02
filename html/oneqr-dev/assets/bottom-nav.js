@@ -3,8 +3,8 @@
     en: { label: 'One QR navigation', home: 'Main Menu', nearby: 'Nearby', booking: 'Booking' },
     vi: { label: 'Điều hướng One QR', home: 'Menu chính', nearby: 'Khám phá quanh đây', booking: 'Đặt lịch' }
   };
-  const icon = window.OneQrIcons.line;
-  const icons = { home: 'house', nearby: 'map-pin', booking: 'calendar-check' };
+  const icon = window.OneQrIcons.image;
+  const icons = { home: 'home', nearby: 'map-pin', booking: 'booking' };
   const nav = document.createElement('nav');
   nav.className = 'oneqr-bottom-nav';
   const discoveryPage = document.body.dataset.discoveryPage;
