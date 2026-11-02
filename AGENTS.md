@@ -30,6 +30,7 @@
 ## Quy tắc giao diện
 
 - Ưu tiên dùng bộ icon có sẵn trong `html/assets/icon-oneqr/` khi tạo mới hoặc chỉnh sửa giao diện.
+- Khi cần tìm và lấy icon mới, dùng [Flaticon](https://www.flaticon.com/search?color=color&shape=fill&order_by=4), chọn icon phù hợp với chức năng và đồng bộ phong cách với các icon đang dùng.
 - Nguồn tham khảo để tìm và lấy icon khi cần: [IconScout — Giveaway 3D Icon Pack](https://iconscout.com/3d-icon-pack/giveaway-3d-icon-pack_309252). Chọn icon phù hợp với chức năng và đồng bộ phong cách với các icon đang dùng.
 - Mọi câu chữ trên giao diện phải lấy từ tài liệu HTML mẫu PO; phần PO chưa có thì lấy từ staging web theo thứ tự ưu tiên ở trên, đối chiếu đúng màn hình và ngữ cảnh. Không tự chế, diễn giải lại hoặc bổ sung câu chữ mới, bao gồm tiêu đề, nhãn, nút, hướng dẫn, tooltip, placeholder, thông báo và trạng thái trống.
 - Nếu cả HTML mẫu PO và staging không có câu chữ tương ứng, không tự suy diễn để thêm vào UI. Chỉ dùng câu chữ ngoài hai nguồn này khi người dùng yêu cầu hoặc cung cấp rõ ràng.
@@ -60,19 +61,25 @@
 - Không đưa thay đổi không liên quan của người dùng vào commit. Không tự động push nếu người dùng chưa yêu cầu.
 - Trong phản hồi hoàn tất, thông báo mã commit và trạng thái kiểm thử ngắn gọn (kết quả thực tế hoặc chưa chạy theo quy tắc trên).
 
+## Tài khoản demo
 
+### Staging
 
-Tài khoản demo Staging 
-personal: nexora_02@mailinator.com / 123456
-business: nexora_b1@mailinator.com / 123456
+- personal: `nexora_02@mailinator.com` / `123456`
+- business: `nexora_b1@mailinator.com` / `123456`
 
+### Test
 
-Tài khoản demo Test:
+- Tài khoản 1: `jade_01@mailinator.com` / `123456`
+- Tài khoản 2: `quanpm` / `123456`
+- Tài khoản merchant: `bitcoinnailbar@nexoratouch.com` / `bitcoinnailbar@123`
+- Tài khoản staff: `david.le918747@nexoratouch.com` / `Nexora@2026!`
 
-Tài khoản 1: jade_01@mailinator.com / 123456
+## Link online của HTML prototype
 
-Tài khoản 2: quanpm / 123456
-
-Tài khoản merchant: bitcoinnailbar@nexoratouch.com / bitcoinnailbar@123
- 
-Tài khoản staff: david.le918747@nexoratouch.com / Nexora@2026!
+- Link online mẫu: [One QR](https://taxiq-nexora-touch.vercel.app/html/oneqr-dev/index.html).
+- Khi gửi link xem HTML cho người dùng, dùng link online tương ứng trên `https://taxiq-nexora-touch.vercel.app/`, thay đường dẫn `html/oneqr-dev/index.html` bằng đường dẫn file HTML tương ứng tính từ gốc dự án.
+- Ví dụ:
+  - Trang chính: https://taxiq-nexora-touch.vercel.app/html/oneqr-dev/index.html
+  - Deals Nearby: https://taxiq-nexora-touch.vercel.app/html/oneqr-dev/nearby.html
+  - Search Deals: https://taxiq-nexora-touch.vercel.app/html/oneqr-dev/deals.html
