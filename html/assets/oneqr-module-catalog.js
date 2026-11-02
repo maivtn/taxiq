@@ -1,5 +1,5 @@
-/* Exact Add Module catalog copy, groups, artwork and industry suggestions from
-   from-po/OneQR-prototype-v25.html:1486 (original supplied HTML in Downloads). */
+/* Add Module catalog groups, descriptions, artwork and industry suggestions from
+   from-po/OneQR-prototype-v25.html:1486. Missing display names are completed from its module and industry definitions. */
 (function () {
   'use strict';
   window.ONEQR_MODULE_CATALOG = {
@@ -79,6 +79,40 @@
       "careers": ["Tuyển thợ","We're hiring"],
       "event": ["Sự kiện / show","Event"],
       "crypto": ["Thanh toán crypto","Crypto pay"],
+      "listings": ["Nhà đang bán","Listings"],
+      "bizsale": ["Tiệm đang sang","Business for sale"],
+      "enroll": ["Ghi danh","Enrollment"],
+      "tour": ["Đặt lịch tham quan","Tour"],
+      "catalogpdf": ["Catalog giá sỉ","Catalog"],
+      "carstatus": ["Tình trạng xe","Service status"],
+      "emergency": ["Đường dây 24/7","24/7 line"],
+      "claim": ["Nộp hồ sơ bồi thường","Claim"],
+      "fuel": ["Giá xăng hôm nay","Fuel prices"],
+      "safety": ["Giấy phép & bảo hiểm","Safety & license"],
+      "pickup": ["Nhận & giao tận nơi","Pickup & delivery"],
+      "track": ["Theo dõi đơn","Track order"],
+      "rent": ["Đặt thuê","Rent / reserve"],
+      "donate": ["Ủng hộ","Donate"],
+      "schedule2": ["Lịch hoạt động","Weekly schedule"],
+      "financing": ["Trả góp","Financing"],
+      "insurances": ["Bảo hiểm nhận","Insurance accepted"],
+      "forms": ["Mẫu đơn","Forms"],
+      "emergency24": ["Khẩn cấp 24/7","Emergency"],
+      "goldprice": ["Giá vàng hôm nay","Gold price"],
+      "buyback": ["Thu mua & ký gửi","We buy"],
+      "appraisal": ["Định giá","Appraisal"],
+      "certificate": ["Giấy giám định","Certificate"],
+      "custommade": ["Đặt làm theo yêu cầu","Custom order"],
+      "jrepair": ["Sửa & đánh bóng","Jewelry repair"],
+      "layaway": ["Giữ hàng trả góp","Layaway"],
+      "reel": ["Showreel","Showreel"],
+      "epk": ["Hồ sơ báo chí","Press kit"],
+      "tourdates": ["Lịch diễn","Tour dates"],
+      "bookshow": ["Mời diễn","Book me"],
+      "tickets": ["Mua vé","Tickets"],
+      "agency": ["Quản lý của tôi","Agency"],
+      "compcard": ["Comp card","Comp card"],
+      "imdb": ["IMDb","IMDb"],
     },
     descriptions: {
       "book": ["Khách đặt lịch online","Online booking"],

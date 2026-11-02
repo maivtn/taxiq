@@ -252,7 +252,7 @@
     book: ['booking', 'reservation'], menu: ['services', 'menu'], tip: ['tip'], review: ['review'],
     giftcard: ['giftcard'], location: ['directions'], contact: ['call'], promo: ['promotion'],
     vcard: ['contactcard'], portfolio: ['portfolio'], shop: ['shop'], order: ['order'],
-    quote: ['quote'], smsbtn: ['contact']
+    quote: ['quote'], smsbtn: ['contact'], donate: ['donate'], tickets: ['tickets']
   };
   var catalogLegacyNames = {
     book: ['Booking', 'Book Appointment', 'Appointment', 'Book AI'],
@@ -260,7 +260,7 @@
     tip: ['Tip', 'Tip & Pay'], review: ['Review', 'Leave a Google Review', 'Leave a Review'],
     pay: ['Payment', 'Pay Now', 'Fee Payment'], giftcard: ['Gift Card', 'Gift card'],
     loyalty: ['Rewards', 'Loyalty'], membership: ['Membership'], vcard: ['Contact card'],
-    checkin: ['Check-in', 'Smart Check-in'], event: ['Events'], donate: ['Donation']
+    checkin: ['Check-in', 'Smart Check-in'], event: ['Events'], donate: ['Donation'], tickets: ['Tickets', 'Get Tickets']
   };
   var catalogEditorIcons = {
     pricelist: 'list', pay: 'credit-card', deposit: 'credit-card', loyalty: 'gift',
@@ -271,7 +271,14 @@
     parking: 'map-pin', languages: 'globe-2', license: 'award', pdf: 'receipt', checkin: 'circle-check',
     waitlist: 'users-round', feedback: 'message-circle', survey: 'list', refer: 'share-2', event: 'calendar-clock',
     emailbtn: 'mail', whatsapp: 'phone', zalo: 'message-circle', messenger: 'message-circle', yelp: 'star',
-    careers: 'briefcase', crypto: 'wallet'
+    careers: 'briefcase', crypto: 'wallet',
+    listings: 'home', bizsale: 'store', enroll: 'list', tour: 'map', catalogpdf: 'receipt',
+    carstatus: 'wrench', emergency: 'phone', claim: 'receipt', fuel: 'car', safety: 'award',
+    pickup: 'truck', track: 'package', rent: 'calendar-check', schedule2: 'calendar-days',
+    financing: 'credit-card', insurances: 'circle-check', forms: 'receipt', emergency24: 'phone',
+    goldprice: 'dollar-sign', buyback: 'hand-coins', appraisal: 'sparkles', certificate: 'award',
+    custommade: 'paintbrush', jrepair: 'wrench', layaway: 'clock', reel: 'video', epk: 'briefcase',
+    tourdates: 'calendar-clock', bookshow: 'calendar-check', agency: 'briefcase', compcard: 'image', imdb: 'video'
   };
 
   if (!moduleListEl || !welcomeEl || !tilesEl) return;
