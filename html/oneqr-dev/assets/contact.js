@@ -7,7 +7,7 @@
   // Demo portraits reuse Unsplash images from the customer prototype; these are not actual staff photos.
   // Mary: photo-1494790108377-be9c29b29330; Kim: photo-1487412947147-5cebf100ffc2.
   const contactGroups = [
-    { key: 'shop', people: [{ id: 'shop', name: card.name, title: 'shopTitle', avatar: '' }] },
+    { key: 'shop', people: [{ id: 'shop', name: card.name, title: 'shopTitle', avatar: 'assets/avatars/bitcoin-nail-bar-logo.png' }] },
     { key: 'manager', people: [{ id: 'mary-nguyen', name: 'Mary Nguyen', title: 'manager', avatar: 'assets/avatars/mary-demo.jpg' }] },
     { key: 'tech', people: [
       { id: 'kim-nguyen', name: 'Kim Nguyen', title: 'tech', avatar: 'assets/avatars/kim-demo.jpg' },
