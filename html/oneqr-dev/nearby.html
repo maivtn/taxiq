@@ -15,6 +15,7 @@
   <link rel="stylesheet" href="assets/icons.css">
   <link rel="stylesheet" href="assets/discovery-filters.css">
   <script src="assets/vendor/tom-select/tom-select.complete.min.js" defer></script>
+  <script src="assets/vendor/lucide.min.js" defer></script>
   <script src="assets/icons.js" defer></script>
   <script src="assets/deal-catalog.js" defer></script>
   <script src="assets/nearby-offers.js" defer></script>
@@ -27,67 +28,68 @@
   <main class="page">
     <div class="shop">
       <header class="nearby-toolbar">
-        <a class="nearby-back" href="index.html" data-local-page="index.html"><span class="icon icon-back" aria-hidden="true"></span><span data-nearby-copy="mainMenu">Main Menu</span></a>
+        <a class="nearby-back" href="index.html" data-local-page="index.html"><i class="icon" data-lucide="arrow-left" aria-hidden="true"></i><span data-nearby-copy="mainMenu">Main Menu</span></a>
         <h1>Deals Nearby</h1>
         <div class="language" hidden>
-          <button class="language-toggle" id="languageToggle" type="button" aria-label="Language" data-copy-aria="language" aria-haspopup="listbox" aria-controls="languageMenu" aria-expanded="false"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-globe-2-3d.png" alt="" draggable="false"><span class="language-code" id="languageCode">EN</span></button>
+          <button class="language-toggle" id="languageToggle" type="button" aria-label="Language" data-copy-aria="language" aria-haspopup="listbox" aria-controls="languageMenu" aria-expanded="false"><i class="icon" data-lucide="globe" aria-hidden="true"></i><span class="language-code" id="languageCode">EN</span></button>
           <div class="language-menu" id="languageMenu" role="listbox" aria-label="Language" data-copy-aria="language" hidden>
-            <button class="language-option" type="button" role="option" data-language="en" aria-selected="true"><span>English</span><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-check-3d.png" alt="" draggable="false"></button>
-            <button class="language-option" type="button" role="option" data-language="vi" aria-selected="false"><span>Tiếng Việt</span><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-check-3d.png" alt="" draggable="false"></button>
+            <button class="language-option" type="button" role="option" data-language="en" aria-selected="true"><span>English</span><i class="icon" data-lucide="check" aria-hidden="true"></i></button>
+            <button class="language-option" type="button" role="option" data-language="vi" aria-selected="false"><span>Tiếng Việt</span><i class="icon" data-lucide="check" aria-hidden="true"></i></button>
           </div>
         </div>
       </header>
 
       <div class="navigation">
         <nav class="discovery-tabs" aria-label="Explore" data-copy-aria="nav">
-          <a class="discovery-tab nearby-tab" href="nearby.html" data-local-page="nearby.html" aria-current="page"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-pin-3d.png" alt="" draggable="false"><span data-copy="nearbyNav">Nearby</span></a>
-          <a class="discovery-tab" href="deals.html" data-local-page="deals.html"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-ticket-3d.png" alt="" draggable="false"><span data-copy="dealsNav">Search Deals</span></a>
+          <a class="discovery-tab nearby-tab" href="nearby.html" data-local-page="nearby.html" aria-current="page"><i class="icon" data-lucide="map-pin" aria-hidden="true"></i><span data-copy="nearbyNav">Nearby</span></a>
+          <a class="discovery-tab" href="deals.html" data-local-page="deals.html"><i class="icon" data-lucide="search" aria-hidden="true"></i><span data-copy="dealsNav">Search Deals</span></a>
         </nav>
       </div>
 
       <div class="discovery-content">
-        <div class="location-filters">
-          <button class="nearby-anchor" type="button" data-origin="shop" aria-pressed="true">
-            <span class="nearby-anchor-icon" id="nearbyAnchorIcon" aria-hidden="true"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-store-3d.png" alt="" draggable="false"></span>
-            <span><strong id="nearbyAnchorTitle">Around Bitcoin Nail Bar</strong><small id="nearbyAnchorHint">Distances are measured from the QR shop. No location access needed.</small></span>
-          </button>
-          <button class="nearby-gps" type="button" role="switch" data-origin="mine" aria-checked="false" aria-pressed="false">
-            <img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-pin-3d.png" alt="" draggable="false"><span data-nearby-copy="useLocation">Use my location</span><small data-nearby-copy="optional">(optional)</small><span class="nearby-switch" aria-hidden="true"></span>
-          </button>
+        <div class="location-filters discovery-selects nearby-filter-panel">
+          <div class="nearby-location-heading">
+            <button class="nearby-anchor" type="button" data-origin="shop" aria-pressed="true" aria-describedby="nearbyAnchorHint">
+              <span class="nearby-anchor-icon" id="nearbyAnchorIcon" aria-hidden="true"><i class="icon" data-lucide="store" aria-hidden="true"></i></span>
+              <span><strong id="nearbyAnchorTitle">Around Bitcoin Nail Bar</strong></span>
+            </button>
+            <button class="nearby-gps" type="button" role="switch" data-origin="mine" aria-checked="false" aria-pressed="false">
+              <i class="icon" data-lucide="locate-fixed" aria-hidden="true"></i><span class="nearby-gps-label"><span data-nearby-copy="useLocation">Use my location</span><small data-nearby-copy="optional">(optional)</small></span><span class="nearby-switch" aria-hidden="true"></span>
+            </button>
+          </div>
+          <p class="nearby-location-hint" id="nearbyAnchorHint">Distances are measured from the QR shop. No location access needed.</p>
           <form class="nearby-zip" id="nearbyZipForm">
             <input id="nearbyZip" type="text" inputmode="numeric" autocomplete="postal-code" maxlength="5" placeholder="Or enter ZIP (e.g. 77036)" aria-label="ZIP" aria-describedby="nearbyZipError" data-nearby-placeholder="zipPlaceholder">
             <button type="submit" data-nearby-copy="view">View</button>
-            <button class="nearby-zip-reset" id="nearbyZipReset" type="button" aria-label="Close" data-nearby-aria="close" hidden><span class="icon icon-close" aria-hidden="true"></span></button>
+            <button class="nearby-zip-reset" id="nearbyZipReset" type="button" aria-label="Close" data-nearby-aria="close" hidden><i class="icon" data-lucide="x" aria-hidden="true"></i></button>
           </form>
-          <p class="nearby-zip-error" id="nearbyZipError" role="alert" hidden></p>
-          <div class="discovery-selects">
-            <div class="discovery-select-radius">
-              <label class="sr-only" id="radiusFilterLabel" for="radiusFilter" data-copy="radius">Radius</label>
-              <select id="radiusFilter">
-                <option value="1">1 mi</option>
-                <option value="3" selected>3 mi</option>
-                <option value="5">5 mi</option>
-                <option value="10">10 mi</option>
-                <option value="25">25 mi</option>
-                <option value="50">50 mi</option>
-              </select>
-            </div>
-            <div class="discovery-select-industry">
-              <label class="sr-only" id="industryFilterLabel" for="industryFilter" data-copy="industryFilter">Industry</label>
-              <select id="industryFilter">
-                <option value="all" data-copy="allIndustries" data-icon="store">All industries</option>
-                <option value="food" data-copy="industryFood" data-icon="food">Food &amp; drinks</option>
-                <option value="auto" data-copy="industryAuto" data-icon="auto">Auto</option>
-                <option value="family" data-copy="industryFamily" data-icon="partner">Family &amp; pets</option>
-                <option value="health" data-copy="industryHealth" data-icon="health">Health</option>
-                <option value="shop" data-copy="industryShop" data-icon="shopping">Shopping</option>
-                <option value="fastfood" data-copy="industry" data-icon="food">Fast food &amp; sandwiches</option>
-              </select>
-            </div>
+          <div class="discovery-select-radius">
+            <label class="sr-only" id="radiusFilterLabel" for="radiusFilter" data-copy="radius">Radius</label>
+            <select id="radiusFilter">
+              <option value="1">1 mi</option>
+              <option value="3" selected>3 mi</option>
+              <option value="5">5 mi</option>
+              <option value="10">10 mi</option>
+              <option value="25">25 mi</option>
+              <option value="50">50 mi</option>
+            </select>
           </div>
+          <p class="nearby-zip-error" id="nearbyZipError" role="alert" hidden></p>
+          <div class="discovery-select-industry">
+            <label class="sr-only" id="industryFilterLabel" for="industryFilter" data-copy="industryFilter">Industry</label>
+            <select id="industryFilter">
+              <option value="all" data-copy="allIndustries" data-icon="store">All industries</option>
+              <option value="food" data-copy="industryFood" data-icon="food">Food &amp; drinks</option>
+              <option value="auto" data-copy="industryAuto" data-icon="auto">Auto</option>
+              <option value="family" data-copy="industryFamily" data-icon="partner">Family &amp; pets</option>
+              <option value="health" data-copy="industryHealth" data-icon="health">Health</option>
+              <option value="shop" data-copy="industryShop" data-icon="shopping">Shopping</option>
+              <option value="fastfood" data-copy="industry" data-icon="food">Fast food &amp; sandwiches</option>
+            </select>
+          </div>
+          <label class="open-only"><input id="openNow" type="checkbox"><span data-copy="openNow">Open now</span></label>
           <p class="location-warning" id="locationWarning" role="status" hidden></p>
         </div>
-        <label class="open-only"><input id="openNow" type="checkbox"><span data-copy="openNow">Open now</span></label>
         <p class="nearby-competitors" id="nearbyCompetitors" hidden></p>
         <p class="nearby-offer-count" id="nearbyOfferCount" role="status"></p>
         <ul class="nearby-offers" id="nearbyOffers"></ul>
@@ -97,9 +99,9 @@
   </main>
 
   <dialog class="business-dialog nearby-offer-dialog" id="nearbyOfferDialog" aria-labelledby="nearbyOfferTitle">
-    <header class="dialog-header"><h2 id="nearbyOfferTitle"></h2><button class="dialog-close" id="nearbyOfferClose" type="button" aria-label="Close" data-nearby-aria="close"><span class="icon icon-close" aria-hidden="true"></span></button></header>
+    <header class="dialog-header"><h2 id="nearbyOfferTitle"></h2><button class="dialog-close" id="nearbyOfferClose" type="button" aria-label="Close" data-nearby-aria="close"><i class="icon" data-lucide="x" aria-hidden="true"></i></button></header>
     <div class="dialog-content" id="nearbyOfferDetail"></div>
-    <footer class="dialog-footer"><a class="outline-link" href="index.html" data-local-page="index.html"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-home-3d.png" alt="" draggable="false"><span data-nearby-copy="mainMenu">Main Menu</span></a><span data-copy="menu">One QR menu</span></footer>
+    <footer class="dialog-footer"><a class="outline-link" href="index.html" data-local-page="index.html"><i class="icon" data-lucide="house" aria-hidden="true"></i><span data-nearby-copy="mainMenu">Main Menu</span></a><span data-copy="menu">One QR menu</span></footer>
   </dialog>
 </body>
 </html>

@@ -49,5 +49,11 @@
     const file = files[name];
     return file ? `<img class="icon" src="assets/icons/oneqr/${file}" alt="" draggable="false">` : '';
   }
-  window.OneQrIcons = Object.freeze({ image });
+  function line(name) {
+    const key = name.replace(/(^|-)([a-z0-9])/g, (_, dash, letter) => letter.toUpperCase());
+    const node = window.lucide.icons[key];
+    return node ? window.lucide.createElement(node, { class: 'icon lucide-icon', width: 16, height: 16, 'aria-hidden': 'true' }).outerHTML : '';
+  }
+  window.OneQrIcons = Object.freeze({ image, line });
+  window.lucide.createIcons({ attrs: { class: 'icon lucide-icon', width: 16, height: 16 } });
 })();

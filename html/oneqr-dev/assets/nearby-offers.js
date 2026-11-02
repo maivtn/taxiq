@@ -1,5 +1,6 @@
 (() => {
   const icon = window.OneQrIcons.image;
+  const line = window.OneQrIcons.line;
   const { shop, zips, offers, competitors } = window.OneQrDealCatalog;
   const copy = {
     en: {
@@ -61,7 +62,7 @@
       <p class="nearby-offer-detail-meta">${escape(text(offer.condition))} · ${distance} mi</p>
       ${badges(offer)}
       <section class="nearby-offer-conditions"><strong>${translate('conditions')}</strong><p>${escape(text(offer.condition))}</p>${offer.rule === 'booking' ? `<p>${icon('calendar')} ${translate('booking')}</p>` : ''}</section>
-      <a class="outline-link" href="https://www.google.com/maps/dir/?api=1&amp;destination=${offer.latitude},${offer.longitude}" target="_blank" rel="noopener noreferrer">${icon('directions')} ${translate('directions')} · ${distance} mi</a>
+      <a class="outline-link" href="https://www.google.com/maps/dir/?api=1&amp;destination=${offer.latitude},${offer.longitude}" target="_blank" rel="noopener noreferrer">${line('navigation')} ${translate('directions')} · ${distance} mi</a>
       <p class="profile-note">${translate('source')}</p>`;
   }
 
@@ -81,7 +82,7 @@
     if (state.zip) get('nearbyZip').value = state.zip;
     else if (previous && previous.origin !== state.origin) get('nearbyZip').value = '';
     const zip = zips[state.zip];
-    get('nearbyAnchorIcon').innerHTML = icon(state.origin === 'mine' ? 'map-pin' : state.origin === 'zip' ? 'directions' : 'store');
+    get('nearbyAnchorIcon').innerHTML = line(state.origin === 'mine' ? 'locate-fixed' : state.origin === 'zip' ? 'map-pin' : 'store');
     get('nearbyAnchorTitle').textContent = state.origin === 'mine' ? translate('mineTitle') : zip ? `ZIP ${state.zip} · ${zip[2]}` : translate('shopTitle');
     get('nearbyAnchorHint').textContent = translate(state.origin === 'mine' ? 'mineHint' : zip ? 'zipHint' : 'shopHint');
 

@@ -1,7 +1,7 @@
 (() => {
   // Contact actions from OneQR-prototype-v25.html and the existing customer contact component.
   // The phone is the PO demo number, not a verified live business contact.
-  const card = { name: 'Bitcoin Nail Bar', phone: '+1 (346) 555-0100', website: 'https://bitcoinnailbar.com/' };
+  const card = { name: 'Bitcoin Nail Bar', phone: '+1 (346) 555-0100', website: 'https://bitcoinnailbar.com/', street: '5444 Westheimer Rd, Suite 1000', city: 'Houston', region: 'Texas' };
   const publicUrl = 'https://test-web.nexoratouch.com/o/bitcoin-nail-bar-3?as=customer';
   const copy = {
     en: {
@@ -49,7 +49,7 @@
 
   function saveContact() {
     const value = text => text.replace(/\\/g, '\\\\').replace(/\r?\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;');
-    const content = ['BEGIN:VCARD', 'VERSION:3.0', `FN:${value(card.name)}`, `ORG:${value(card.name)}`, `TEL;TYPE=WORK:${value(card.phone)}`, `URL:${value(card.website)}`, 'END:VCARD', ''].join('\r\n');
+    const content = ['BEGIN:VCARD', 'VERSION:3.0', `FN:${value(card.name)}`, `ORG:${value(card.name)}`, `TEL;TYPE=WORK:${value(card.phone)}`, `URL:${value(card.website)}`, `ADR;TYPE=WORK:;;${value(card.street)};${value(card.city)};${value(card.region)};;`, 'END:VCARD', ''].join('\r\n');
     const url = URL.createObjectURL(new Blob([content], { type: 'text/vcard;charset=utf-8' }));
     const link = document.createElement('a');
     link.href = url;

@@ -178,7 +178,9 @@
     .install-description, .install-help { margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 16px; }
     .install .primary-button { height: 40px; margin-top: 12px; }
     .install-help { margin-top: 12px; }
-    .shop-footer { display: flex; align-items: flex-start; gap: 8px; margin: 0 var(--page-inset) 12px; padding: 12px; border-radius: 12px; background: var(--canvas); color: var(--muted); font-size: 12px; font-weight: 500; line-height: 1.625; }
+    .shop-footer { display: flex; flex-direction: column; align-items: stretch; gap: 8px; margin: 0 var(--page-inset) 12px; padding: 12px; border-radius: 12px; background: var(--canvas); color: var(--muted); font-size: 12px; font-weight: 500; line-height: 1.625; }
+    .shop-footer-row { display: flex; align-items: flex-start; gap: 8px; }
+    .shop-hours { margin: 0; padding: 0; list-style: none; }
     .shop-footer .icon { margin-top: 2px; color: var(--brand); }
     .shop-footer p { min-width: 0; overflow-wrap: anywhere; }
     .powered-by { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 12px auto 0; padding-bottom: 16px; color: var(--muted); font-size: 11px; }
@@ -210,6 +212,7 @@
   <link rel="stylesheet" href="assets/bottom-nav.css">
   <link rel="stylesheet" href="assets/contact.css">
   <link rel="stylesheet" href="assets/icons.css">
+  <script src="assets/vendor/lucide.min.js" defer></script>
   <script src="assets/icons.js" defer></script>
   <script src="assets/bottom-nav.js" defer></script>
   <script src="assets/discovery-preview.js" defer></script>
@@ -229,12 +232,12 @@
         <div class="account-bar">
           <div class="language">
             <button class="language-toggle" id="languageToggle" type="button" aria-label="Language" aria-haspopup="listbox" aria-controls="languageMenu" aria-expanded="false">
-              <img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-globe-2-3d.png" alt="" draggable="false">
+              <i class="icon" data-lucide="globe" aria-hidden="true"></i>
               <span class="language-code" id="languageCode">EN</span>
             </button>
             <div class="language-menu" id="languageMenu" role="listbox" aria-label="Language" hidden>
-              <button class="language-option" type="button" role="option" data-language="en" aria-selected="true"><span>English</span><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-check-3d.png" alt="" draggable="false"></button>
-              <button class="language-option" type="button" role="option" data-language="vi" aria-selected="false"><span>Tiếng Việt</span><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-check-3d.png" alt="" draggable="false"></button>
+              <button class="language-option" type="button" role="option" data-language="en" aria-selected="true"><span>English</span><i class="icon" data-lucide="check" aria-hidden="true"></i></button>
+              <button class="language-option" type="button" role="option" data-language="vi" aria-selected="false"><span>Tiếng Việt</span><i class="icon" data-lucide="check" aria-hidden="true"></i></button>
             </div>
           </div>
           <div class="account-actions">
@@ -292,15 +295,15 @@
       </div>
 
       <details class="contact-section" id="contactSection">
-        <summary><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-user-round-3d.png" alt="" draggable="false"><span data-contact-copy="contact">Contact</span><span class="icon contact-chevron icon-chevron" aria-hidden="true"></span></summary>
+        <summary><i class="icon" data-lucide="contact-round" aria-hidden="true"></i><span data-contact-copy="contact">Contact</span><i class="icon contact-chevron" data-lucide="chevron-down" aria-hidden="true"></i></summary>
         <nav class="contact-actions" aria-label="Business contact actions" data-contact-aria="actions">
-          <a href="tel:+13465550100"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-phone-3d.png" alt="" draggable="false"><span data-contact-copy="call">Call</span></a>
-          <a href="sms:+13465550100"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-message-circle-3d.png" alt="" draggable="false"><span data-contact-copy="text">Text</span></a>
-          <button type="button" data-contact-action="save"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-user-round-3d.png" alt="" draggable="false"><span data-contact-copy="save">Save contact</span></button>
-          <button type="button" data-contact-action="wallet"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-wallet-3d.png" alt="" draggable="false"><span data-contact-copy="wallet">Add to Wallet</span></button>
-          <a href="https://www.google.com/maps/dir/?api=1&amp;destination=30.2729209,-97.74438630000002" target="_blank" rel="noopener noreferrer"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-3d.png" alt="" draggable="false"><span data-contact-copy="directions">Directions</span></a>
-          <button type="button" data-contact-action="exchange" aria-haspopup="dialog" aria-controls="contactExchange"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-users-round-3d.png" alt="" draggable="false"><span data-contact-copy="exchange">Send yours</span></button>
-          <button type="button" data-contact-action="share"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-share-2-3d.png" alt="" draggable="false"><span data-contact-copy="share">Share card</span></button>
+          <a href="tel:+13465550100"><i class="icon" data-lucide="phone" aria-hidden="true"></i><span data-contact-copy="call">Call</span></a>
+          <a href="sms:+13465550100"><i class="icon" data-lucide="message-square" aria-hidden="true"></i><span data-contact-copy="text">Text</span></a>
+          <button type="button" data-contact-action="save"><i class="icon" data-lucide="contact-round" aria-hidden="true"></i><span data-contact-copy="save">Save contact</span></button>
+          <button type="button" data-contact-action="wallet"><i class="icon" data-lucide="wallet-cards" aria-hidden="true"></i><span data-contact-copy="wallet">Add to Wallet</span></button>
+          <a href="https://www.google.com/maps/dir/?api=1&amp;destination=5444%20Westheimer%20Rd%2C%20Suite%201000%2C%20Houston%2C%20Texas" target="_blank" rel="noopener noreferrer"><i class="icon" data-lucide="navigation" aria-hidden="true"></i><span data-contact-copy="directions">Directions</span></a>
+          <button type="button" data-contact-action="exchange" aria-haspopup="dialog" aria-controls="contactExchange"><i class="icon" data-lucide="user-plus" aria-hidden="true"></i><span data-contact-copy="exchange">Send yours</span></button>
+          <button type="button" data-contact-action="share"><i class="icon" data-lucide="share-2" aria-hidden="true"></i><span data-contact-copy="share">Share card</span></button>
         </nav>
         <p class="contact-feedback" id="contactFeedback" role="status" hidden></p>
       </details>
@@ -336,12 +339,12 @@
           <span class="quick-link-icon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-globe-2-3d.png" alt="" draggable="false"></span>
           <span class="quick-link-label" data-copy="website">Visit website</span>
         </a>
-        <a class="quick-link" data-extra-quick-link href="https://www.google.com/maps/dir/?api=1&amp;destination=30.2729209,-97.74438630000002" target="_blank" rel="noopener noreferrer" hidden>
+        <a class="quick-link" data-extra-quick-link href="https://www.google.com/maps/dir/?api=1&amp;destination=5444%20Westheimer%20Rd%2C%20Suite%201000%2C%20Houston%2C%20Texas" target="_blank" rel="noopener noreferrer" hidden>
           <span class="quick-link-icon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-3d.png" alt="" draggable="false"></span>
           <span class="quick-link-label" data-copy="directions">Get directions</span>
         </a>
       </nav>
-      <button class="quick-links-toggle" id="quickLinksToggle" type="button" aria-expanded="false" aria-controls="quickLinks"><span id="quickLinksToggleLabel">Show more</span><span class="icon icon-chevron" aria-hidden="true"></span></button>
+      <button class="quick-links-toggle" id="quickLinksToggle" type="button" aria-expanded="false" aria-controls="quickLinks"><span id="quickLinksToggleLabel">Show more</span><i class="icon" data-lucide="chevron-down" aria-hidden="true"></i></button>
 
 
       <!-- Sponsored examples from the PO's nexora-oneqr-tai-tiem.html and the supplied screenshot. -->
@@ -407,7 +410,7 @@
           <div class="phone-row">
             <div class="country" id="countryPicker">
               <button class="country-toggle" id="countryToggle" type="button" aria-haspopup="listbox" aria-controls="countryMenu" aria-expanded="false">
-                <span id="countryCode">US</span><span class="country-dial" id="countryDial">+1</span><span class="icon icon-chevron" aria-hidden="true"></span>
+                <span id="countryCode">US</span><span class="country-dial" id="countryDial">+1</span><i class="icon" data-lucide="chevron-down" aria-hidden="true"></i>
               </button>
               <div class="country-menu" id="countryMenu" hidden>
                 <input class="country-search" id="countrySearch" type="search" placeholder="Search country or code..." aria-label="Search country or code..." autocomplete="off">
@@ -423,19 +426,24 @@
       </section>
 
       <section class="install" id="installCard" aria-labelledby="installTitle">
-        <button class="dismiss" id="dismissInstall" type="button" aria-label="Dismiss"><span class="icon icon-close" aria-hidden="true"></span></button>
+        <button class="dismiss" id="dismissInstall" type="button" aria-label="Dismiss"><i class="icon" data-lucide="x" aria-hidden="true"></i></button>
         <p class="install-title" id="installTitle" data-copy="installTitle">Add Bitcoin Nail Bar to your Home Screen</p>
         <p class="install-description" data-copy="installDescription">Open it like an app, with no browser bar, and get offers from the shop.</p>
-        <button class="primary-button" id="installButton" type="button" aria-controls="installHelp" aria-expanded="false"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-package-3d.png" alt="" draggable="false"><span data-copy="install">Install</span></button>
+        <button class="primary-button" id="installButton" type="button" aria-controls="installHelp" aria-expanded="false"><i class="icon" data-lucide="download" aria-hidden="true"></i><span data-copy="install">Install</span></button>
         <p class="install-help" id="installHelp" data-copy="installHelp" hidden>Use your browser menu and choose "Install app" or "Add to Home screen".</p>
       </section>
 
       <footer class="shop-footer">
-        <img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-pin-3d.png" alt="" draggable="false">
-        <p><span class="sr-only" data-copy="address">Address </span>123 Crypto Ave, Austin, TX 78701</p>
+        <div class="shop-footer-row"><i class="icon" data-lucide="map-pin" aria-hidden="true"></i><p><span class="sr-only" data-copy="address">Address </span>5444 Westheimer Rd, Suite 1000, Houston, Texas</p></div>
+        <div class="shop-footer-row"><i class="icon" data-lucide="clock" aria-hidden="true"></i><div><span class="sr-only" data-copy="hours">Opening hours</span><ul class="shop-hours">
+          <li><span data-copy="hoursMon">Mon:</span> 7:00 AM – 11:55 PM</li>
+          <li><span data-copy="hoursTueThu">Tue – Thu:</span> 1:00 AM – 11:55 PM</li>
+          <li><span data-copy="hoursFri">Fri:</span> 1:00 AM – 8:10 AM</li>
+          <li><span data-copy="hoursSatSun">Sat – Sun:</span> 1:00 AM – 11:55 PM</li>
+        </ul></div></div>
       </footer>
     </div>
-    <p class="powered-by"><span data-copy="poweredBy">Powered by</span><a href="https://nexoratouch.com/">Nexora Touch<img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-square-arrow-out-up-right-3d.png" alt="" draggable="false"></a></p>
+    <p class="powered-by"><span data-copy="poweredBy">Powered by</span><a href="https://nexoratouch.com/">Nexora Touch<i class="icon" data-lucide="external-link" aria-hidden="true"></i></a></p>
   </main>
 
   <dialog class="promotion-dialog" id="ownPromotionDialog" aria-labelledby="ownPromotionDetailTitle" lang="vi">
@@ -450,7 +458,7 @@
       <p><img class="icon" src="assets/icons/oneqr/salon-nail-polish-iconscout-10843584.png" alt="" draggable="false"> Dịch vụ: <strong>Gel-X</strong></p>
       <p><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-receipt-3d.png" alt="" draggable="false"> Khách mới · 1 lần/khách</p>
     </div>
-    <a class="promotion-detail-action" href="https://test-web.nexoratouch.com/booking/bitcoin-nail-bar-3?oneQrAs=customer&amp;oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-calendar-days-3d.png" alt="" draggable="false"> Đặt lịch để dùng ưu đãi này</a>
+    <a class="promotion-detail-action" href="https://test-web.nexoratouch.com/booking/bitcoin-nail-bar-3?oneQrAs=customer&amp;oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer"><i class="icon" data-lucide="calendar-check" aria-hidden="true"></i> Đặt lịch để dùng ưu đãi này</a>
     <button class="promotion-close" type="button" data-close-promotion>Đóng</button>
   </dialog>
 
@@ -460,13 +468,13 @@
       <div><h2 id="partnerPromotionDetailTitle">Giảm 15% bánh sinh nhật</h2><p class="promotion-detail-meta">Le Petit Bakery · 1.0 mi · Đặt trước 1 ngày</p></div>
     </div>
     <div class="promotion-detail-conditions"><p><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-calendar-days-3d.png" alt="" draggable="false"> <strong>Phải đặt lịch trước</strong> để dùng ưu đãi này</p><p><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-receipt-3d.png" alt="" draggable="false"> Đặt trước 1 ngày</p></div>
-    <a class="promotion-detail-action" href="https://www.google.com/maps/dir/?api=1&amp;destination=29.7420,-95.4480" target="_blank" rel="noopener noreferrer"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-pin-3d.png" alt="" draggable="false"> Chỉ đường · 1.0 mi</a>
+    <a class="promotion-detail-action" href="https://www.google.com/maps/dir/?api=1&amp;destination=29.7420,-95.4480" target="_blank" rel="noopener noreferrer"><i class="icon" data-lucide="navigation" aria-hidden="true"></i> Chỉ đường · 1.0 mi</a>
     <button class="promotion-close" type="button" data-close-promotion>Đóng</button>
   </dialog>
 
   <dialog class="contact-dialog" id="contactExchange" aria-labelledby="contactExchangeTitle">
     <form id="contactExchangeForm" novalidate>
-      <div class="contact-dialog-heading"><h2 id="contactExchangeTitle" data-contact-copy="exchangeTitle">Send your contact</h2><button class="contact-dialog-close" type="button" data-close-contact aria-label="Close" data-contact-aria="close"><span class="icon icon-close" aria-hidden="true"></span></button></div>
+      <div class="contact-dialog-heading"><h2 id="contactExchangeTitle" data-contact-copy="exchangeTitle">Send your contact</h2><button class="contact-dialog-close" type="button" data-close-contact aria-label="Close" data-contact-aria="close"><i class="icon" data-lucide="x" aria-hidden="true"></i></button></div>
       <label for="contactName" data-contact-copy="name">Your name</label><input id="contactName" name="name" autocomplete="name" maxlength="100" required>
       <label for="contactPhone" data-contact-copy="phone">Phone</label><input id="contactPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="(713) 555-0123" required>
       <label for="contactEmail" data-contact-copy="email">Email (optional)</label><input id="contactEmail" name="email" type="email" autocomplete="email" maxlength="200">
@@ -499,7 +507,7 @@
           installTitle: 'Add Bitcoin Nail Bar to your Home Screen',
           installDescription: 'Open it like an app, with no browser bar, and get offers from the shop.',
           install: 'Install', installHelp: 'Use your browser menu and choose "Install app" or "Add to Home screen".',
-          address: 'Address ', poweredBy: 'Powered by'
+          address: 'Address ', hours: 'Opening hours', hoursMon: 'Mon:', hoursTueThu: 'Tue – Thu:', hoursFri: 'Fri:', hoursSatSun: 'Sat – Sun:', poweredBy: 'Powered by'
         },
         vi: {
           login: 'Đăng nhập', signup: 'Đăng ký',
@@ -521,7 +529,7 @@
           installTitle: 'Thêm Bitcoin Nail Bar vào Màn hình chính',
           installDescription: 'Mở như một app, không có thanh trình duyệt, và nhận ưu đãi từ tiệm.',
           install: 'Cài đặt', installHelp: 'Mở menu trình duyệt và chọn "Cài đặt ứng dụng" hoặc "Thêm vào Màn hình chính".',
-          address: 'Địa chỉ ', poweredBy: 'Được cung cấp bởi'
+          address: 'Địa chỉ ', hours: 'Giờ mở cửa', hoursMon: 'Thứ 2:', hoursTueThu: 'Thứ 3 – Thứ 5:', hoursFri: 'Thứ 6:', hoursSatSun: 'Thứ 7 – CN:', poweredBy: 'Được cung cấp bởi'
         }
       };
       const countries = [

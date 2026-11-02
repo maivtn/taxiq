@@ -1,5 +1,6 @@
 (() => {
   const icon = window.OneQrIcons.image;
+  const line = window.OneQrIcons.line;
   const { shop, zips, offers, ownOffers, hiddenOffers } = window.OneQrDealCatalog;
   const catalog = [...ownOffers, ...offers, ...hiddenOffers];
   // Query parsing, competitor filtering and requests mirror the PO's local demo.
@@ -91,7 +92,7 @@
     get('searchOfferDetail').innerHTML = `<p class="profile-name">${escape(offer.business)}</p>
       <p class="nearby-offer-detail-meta">${escape(text(offer.condition))} · ${distance} mi</p>${badges(offer)}
       <section class="nearby-offer-conditions"><strong>${translate('conditions')}</strong><p>${escape(text(offer.condition))}</p></section>
-      <a class="outline-link" href="https://www.google.com/maps/dir/?api=1&amp;destination=${offer.latitude},${offer.longitude}" target="_blank" rel="noopener noreferrer">${icon('directions')} ${translate('directions')} · ${distance} mi</a>
+      <a class="outline-link" href="https://www.google.com/maps/dir/?api=1&amp;destination=${offer.latitude},${offer.longitude}" target="_blank" rel="noopener noreferrer">${line('navigation')} ${translate('directions')} · ${distance} mi</a>
       <p class="profile-note">${translate('source')}</p>`;
   }
 

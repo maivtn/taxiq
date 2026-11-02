@@ -61,3 +61,35 @@
 @media (max-width: 639px) {
   .nearby-toolbar { border-radius: 0; }
 }
+
+/* Compact location panel: ZIP + radius, then industry + availability. */
+.nearby-filter-panel.discovery-selects { display: grid; grid-template-columns: minmax(0, 1fr) 96px; align-items: center; gap: 7px 8px; padding: 10px; border: 1px solid #e1e4ec; border-radius: 14px; background: #fff; }
+.nearby-location-heading { display: flex; grid-column: 1 / -1; align-items: stretch; gap: 8px; }
+.nearby-filter-panel .nearby-anchor { width: auto; min-width: 0; flex: 1; gap: 6px; padding: 0; border: 0; border-radius: 8px; background: transparent; }
+.nearby-filter-panel .nearby-anchor:hover { background: #faf9ff; }
+.nearby-filter-panel .nearby-anchor strong { font-size: 12px; line-height: 1.35; }
+.nearby-filter-panel .nearby-anchor-icon { flex-basis: 24px; }
+.nearby-filter-panel .nearby-anchor-icon img.icon { width: 24px; height: 24px; }
+.nearby-filter-panel .nearby-gps { width: 148px; min-height: 42px; flex: 0 0 148px; gap: 5px; padding: 6px 7px; border-radius: 10px; font-size: 10.5px; line-height: 1.3; }
+.nearby-gps-label { min-width: 0; flex: 1; }
+.nearby-gps-label > span, .nearby-gps-label small { display: block; }
+.nearby-filter-panel .nearby-gps small { margin-top: 1px; font-size: 9.5px; }
+.nearby-filter-panel .nearby-switch { width: 32px; height: 20px; flex-basis: 32px; }
+.nearby-filter-panel .nearby-switch::after { top: 3px; left: 3px; width: 14px; height: 14px; }
+.nearby-filter-panel .nearby-gps[aria-checked="true"] .nearby-switch::after { transform: translateX(12px); }
+.nearby-location-hint { grid-column: 1 / -1; color: #64748b; font-size: 10.5px; line-height: 1.4; }
+.nearby-filter-panel .nearby-zip { min-width: 0; grid-column: 1; gap: 4px; }
+.nearby-filter-panel .nearby-zip input { min-height: 38px; padding: 7px 8px; font-size: 12px; }
+.nearby-filter-panel .nearby-zip button { min-height: 38px; padding: 6px 9px; border-radius: 10px; font-size: 11px; }
+.nearby-filter-panel .nearby-zip .nearby-zip-reset { display: flex; align-items: center; justify-content: center; padding: 0 6px; }
+.nearby-filter-panel .discovery-select-radius { width: 96px; grid-column: 2; }
+.nearby-filter-panel .discovery-select-industry { min-width: 0; grid-column: 1; }
+.nearby-filter-panel .ts-wrapper.single .ts-control { min-height: 38px; padding-top: 7px; padding-bottom: 7px; }
+.nearby-page .nearby-filter-panel select { min-height: 38px; }
+.nearby-filter-panel .open-only { min-height: 38px; grid-column: 2; gap: 5px; margin: 0; font-size: 11px; white-space: nowrap; }
+.nearby-filter-panel .open-only input { width: 14px; height: 14px; flex: 0 0 14px; }
+.nearby-filter-panel .nearby-zip-error, .nearby-filter-panel .location-warning { grid-column: 1 / -1; font-size: 10.5px; }
+.nearby-filter-panel:has(#nearbyZipForm[hidden]) { grid-template-columns: 96px minmax(0, 1fr); }
+.nearby-filter-panel:has(#nearbyZipForm[hidden]) .discovery-select-radius { grid-column: 1; }
+.nearby-filter-panel:has(#nearbyZipForm[hidden]) .discovery-select-industry { grid-column: 2; }
+.nearby-filter-panel:has(#nearbyZipForm[hidden]) .open-only { min-height: 26px; grid-column: 1 / -1; }

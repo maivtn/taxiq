@@ -24,9 +24,8 @@ img.icon { display: inline-block; width: 20px; height: 20px; flex-shrink: 0; obj
 .search-wish .search-submit img.icon, .search-wish-status img.icon { width: 18px; height: 18px; }
 .oneqr-bottom-nav img.icon { width: 25px; height: 25px; opacity: .75; }
 .oneqr-bottom-nav a[aria-current] img.icon { opacity: 1; }
-.icon-chevron, .icon-close, .icon-back { position: relative; display: inline-block; width: 16px; height: 16px; flex-shrink: 0; vertical-align: middle; }
-.icon-chevron::before { position: absolute; top: 3px; left: 4px; width: 6px; height: 6px; border-right: 1.7px solid currentColor; border-bottom: 1.7px solid currentColor; content: ''; transform: rotate(45deg); }
-.icon-close::before, .icon-close::after { position: absolute; top: 7px; left: 1px; width: 14px; height: 1.7px; border-radius: 1px; background: currentColor; content: ''; transform: rotate(45deg); }
-.icon-close::after { transform: rotate(-45deg); }
-.icon-back::before { position: absolute; top: 4px; left: 2px; width: 7px; height: 7px; border-bottom: 1.7px solid currentColor; border-left: 1.7px solid currentColor; content: ''; transform: rotate(45deg); }
-.icon-back::after { position: absolute; top: 7px; left: 2px; width: 12px; height: 1.7px; background: currentColor; content: ''; }
+svg.lucide-icon { display: inline-block; width: 16px; height: 16px; flex-shrink: 0; vertical-align: middle; }
+.oneqr-bottom-nav svg.lucide-icon { width: 20px; height: 20px; color: #94a3b8; }
+.oneqr-bottom-nav a[aria-current] svg.lucide-icon { color: #7c3aed; }
+.nearby-filter-panel .nearby-gps svg.lucide-icon { width: 16px; height: 16px; }
+.nearby-filter-panel .nearby-anchor-icon svg.lucide-icon { width: 20px; height: 20px; }
