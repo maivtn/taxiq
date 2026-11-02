@@ -118,6 +118,10 @@
     .quick-link-icon { display: flex; width: 32px; height: 32px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 10px; background: #e9e9ff80; }
     .quick-link-icon img { width: 24px; height: 24px; object-fit: contain; }
     .quick-link-label { display: flex; width: 100%; min-height: 29px; align-items: center; justify-content: center; overflow-wrap: anywhere; font-size: 11px; font-weight: 700; line-height: 1.3; }
+    .quick-links-toggle { display: flex; min-height: 36px; align-items: center; justify-content: center; gap: 5px; margin: 0 auto 12px; padding: 6px 12px; border: 0; border-radius: 10px; background: #f5f3ff; color: #6d28d9; font-size: 12px; font-weight: 700; }
+    .quick-links-toggle:hover { background: #ede9fe; }
+    .quick-links-toggle .icon { width: 14px; height: 14px; transition: transform .2s; }
+    .quick-links-toggle[aria-expanded="true"] .icon { transform: rotate(180deg); }
     .sponsored { margin: 0 var(--page-inset); }
     .sponsored-header { display: flex; align-items: center; justify-content: space-between; gap: 8px; margin: 0 2px 8px; }
     .sponsored-title { margin: 0; color: #6b7280; font-size: 11px; font-weight: 900; line-height: 1.5; letter-spacing: 1.2px; }
@@ -320,7 +324,24 @@
           <span class="quick-link-icon"><img src="assets/icons/heart-4763016.png" alt="" draggable="false"></span>
           <span class="quick-link-label" data-copy="tip">Tip &amp; Pay</span>
         </a>
+        <a class="quick-link" data-extra-quick-link aria-disabled="true" hidden>
+          <span class="quick-link-icon"><img src="assets/icons/menu-facebook-3d.png" alt="" draggable="false"></span>
+          <span class="quick-link-label" data-copy="facebook">Facebook</span>
+        </a>
+        <a class="quick-link" data-extra-quick-link aria-disabled="true" hidden>
+          <span class="quick-link-icon"><img src="assets/icons/menu-instagram-3d.png" alt="" draggable="false"></span>
+          <span class="quick-link-label" data-copy="instagram">Instagram</span>
+        </a>
+        <a class="quick-link" data-extra-quick-link href="https://bitcoinnailbar.com/" target="_blank" rel="noopener noreferrer" hidden>
+          <span class="quick-link-icon"><img src="assets/icons/menu-website-3d.png" alt="" draggable="false"></span>
+          <span class="quick-link-label" data-copy="website">Visit website</span>
+        </a>
+        <a class="quick-link" data-extra-quick-link href="https://www.google.com/maps/dir/?api=1&amp;destination=30.2729209,-97.74438630000002" target="_blank" rel="noopener noreferrer" hidden>
+          <span class="quick-link-icon"><img src="assets/icons/menu-directions-3d.png" alt="" draggable="false"></span>
+          <span class="quick-link-label" data-copy="directions">Get directions</span>
+        </a>
       </nav>
+      <button class="quick-links-toggle" id="quickLinksToggle" type="button" aria-expanded="false" aria-controls="quickLinks"><span id="quickLinksToggleLabel">Show more</span><svg class="icon" aria-hidden="true"><use href="#chevron-down"/></svg></button>
 
       <!-- Sponsored examples from the PO's nexora-oneqr-tai-tiem.html and the supplied screenshot. -->
       <section class="sponsored" aria-labelledby="sponsoredTitle" lang="vi">
@@ -454,6 +475,8 @@
           dealsDescription: 'Search by industry, service or product', dealsAction: 'Find deals for me',
           links: 'Bitcoin Nail Bar quick links', checkin: 'Smart Check-in', booking: 'Book Appointment',
           services: 'Services & Prices', tip: 'Tip & Pay', review: 'Leave a Review',
+          facebook: 'Facebook', instagram: 'Instagram', website: 'Visit website', directions: 'Get directions',
+          showMore: 'Show more', showLess: 'Show less',
           giftTitle: 'A welcome gift from Bitcoin Nail Bar',
           giftDescription: 'Enter your phone number to claim it. No password, no app download.',
           phone: 'Phone number', phoneError: 'Enter a valid phone number.',
@@ -474,6 +497,8 @@
           dealsDescription: 'Tìm theo ngành, dịch vụ hoặc sản phẩm', dealsAction: 'Tìm ưu đãi cho tôi',
           links: 'Các chức năng của Bitcoin Nail Bar', checkin: 'Tự check-in', booking: 'Đặt lịch',
           services: 'Bảng giá dịch vụ', tip: 'Tip & Thanh toán', review: 'Đánh giá',
+          facebook: 'Facebook', instagram: 'Instagram', website: 'Xem website', directions: 'Chỉ đường',
+          showMore: 'Xem thêm', showLess: 'Thu gọn',
           giftTitle: 'Quà chào mừng từ Bitcoin Nail Bar',
           giftDescription: 'Nhập số điện thoại để nhận quà. Không cần mật khẩu, không cần tải app.',
           phone: 'Số điện thoại', phoneError: 'Vui lòng nhập số điện thoại hợp lệ.',
@@ -498,6 +523,18 @@
       const get = id => document.getElementById(id);
       let language = 'en';
       let country = countries[0];
+      let menuExpanded = false;
+
+      function renderQuickLinks() {
+        document.querySelectorAll('[data-extra-quick-link]').forEach(link => { link.hidden = !menuExpanded; });
+        get('quickLinksToggle').setAttribute('aria-expanded', String(menuExpanded));
+        get('quickLinksToggleLabel').textContent = copy[language][menuExpanded ? 'showLess' : 'showMore'];
+      }
+
+      get('quickLinksToggle').addEventListener('click', () => {
+        menuExpanded = !menuExpanded;
+        renderQuickLinks();
+      });
 
       document.querySelectorAll('[data-promotion-dialog]').forEach(button => {
         button.addEventListener('click', () => get(button.dataset.promotionDialog).showModal());
@@ -571,6 +608,7 @@
           link.href = `${link.dataset.devPage}?lang=${next}${link.dataset.devQuery ? `&q=${encodeURIComponent(link.dataset.devQuery)}` : ''}`;
         });
         document.dispatchEvent(new CustomEvent('oneqr-dev:language-change', { detail: next }));
+        renderQuickLinks();
         renderCountries();
       }
 
