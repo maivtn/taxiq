@@ -15,7 +15,7 @@
   const items = [
     { key: 'home', href: 'index.html' },
     { key: 'nearby', href: 'nearby.html' },
-    { key: 'booking', href: 'https://test-web.nexoratouch.com/booking/bitcoin-nail-bar-3?oneQrAs=customer&oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer' }
+    { key: 'booking' }
   ];
   const links = items.map(item => {
     const link = document.createElement('a');
@@ -30,7 +30,7 @@
     nav.setAttribute('aria-label', copy[next].label);
     links.forEach(({ item, link }) => {
       link.querySelector('span').textContent = copy[next][item.key];
-      link.href = item.key === 'booking' ? item.href : `${item.href}?lang=${next}`;
+      if (item.href) link.href = `${item.href}?lang=${next}`;
     });
   }
 
