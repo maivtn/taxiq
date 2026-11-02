@@ -164,6 +164,9 @@
     saveContact(person);
     picker.close();
   });
+  picker.addEventListener('close', () => {
+    if (contactMenu.open) contactMenu.close();
+  });
   document.querySelectorAll('[data-close-contact-picker]').forEach(button => button.addEventListener('click', () => picker.close()));
   document.querySelectorAll('[data-close-contact]').forEach(button => button.addEventListener('click', () => dialog.close()));
   document.querySelectorAll('[data-close-contact-menu]').forEach(button => button.addEventListener('click', () => contactMenu.close()));
