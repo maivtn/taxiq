@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#4f46e5">
+  <title>HTML One QR Dev — Search Deals</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/oneqr-dev-discovery.css">
+  <script src="../assets/oneqr-dev-discovery.js" defer></script>
+</head>
+<body data-discovery-page="deals">
+  <!-- Reference: https://test-web.nexoratouch.com/o/bitcoin-nail-bar-3/deals -->
+  <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/></symbol>
+    <symbol id="map-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="home" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2ZM9 22V12h6v10"/></symbol>
+    <symbol id="locate" viewBox="0 0 24 24"><path d="M2 12h3m14 0h3M12 2v3m0 14v3"/><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="check" viewBox="0 0 24 24"><path d="m20 6-11 11-5-5"/></symbol>
+  </svg>
+
+  <main class="page">
+    <p class="dev-label">HTML One QR Dev</p>
+    <div class="shop">
+      <header class="shop-header">
+        <div class="shop-logo" aria-hidden="true">B</div>
+        <div class="shop-heading"><p class="eyebrow" data-copy="fromQr">From the QR of</p><p class="shop-name">Bitcoin Nail Bar</p></div>
+        <div class="language">
+          <button class="language-toggle" id="languageToggle" type="button" aria-label="Language" data-copy-aria="language" aria-haspopup="listbox" aria-controls="languageMenu" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#globe"/></svg><span class="language-code" id="languageCode">EN</span></button>
+          <div class="language-menu" id="languageMenu" role="listbox" aria-label="Language" data-copy-aria="language" hidden>
+            <button class="language-option" type="button" role="option" data-language="en" aria-selected="true"><span>English</span><svg class="icon" aria-hidden="true"><use href="#check"/></svg></button>
+            <button class="language-option" type="button" role="option" data-language="vi" aria-selected="false"><span>Tiếng Việt</span><svg class="icon" aria-hidden="true"><use href="#check"/></svg></button>
+          </div>
+        </div>
+      </header>
+
+      <div class="navigation">
+        <a class="back-link" href="oneqr-dev.html" data-local-page="oneqr-dev.html"><svg class="icon" aria-hidden="true"><use href="#home"/></svg><span data-copy="back">Back</span></a>
+        <nav class="discovery-tabs" aria-label="Explore" data-copy-aria="nav">
+          <a class="discovery-tab nearby-tab" href="oneqr-dev-nearby.html" data-local-page="oneqr-dev-nearby.html"><svg class="icon" aria-hidden="true"><use href="#map-pin"/></svg><span data-copy="nearbyNav">Nearby</span></a>
+          <a class="discovery-tab" href="oneqr-dev-deals.html" data-local-page="oneqr-dev-deals.html" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#search"/></svg><span data-copy="dealsNav">Search Deals</span></a>
+        </nav>
+      </div>
+
+      <div class="discovery-content">
+        <div><h1 data-copy="dealsTitle">Search Deals</h1><p class="subtitle" data-copy="dealsSubtitle">Pick a program to see its price and conditions.</p></div>
+        <label class="search-field"><svg class="icon" aria-hidden="true"><use href="#search"/></svg><input id="dealSearch" type="search" maxlength="100" placeholder="Search deals: pedicure, facial, coffee…" data-copy-placeholder="searchPlaceholder" aria-label="Search deals: pedicure, facial, coffee…" data-copy-aria="searchPlaceholder"></label>
+        <div class="industries"><button class="chip" type="button" data-industry="all" aria-pressed="true" data-copy="allIndustries">All industries</button></div>
+        <details class="area-filters">
+          <summary data-copy="areaRadius">Area &amp; radius</summary>
+          <div class="location-filters">
+            <div class="filter-row">
+              <span class="filter-label" data-copy="distancesFrom">Distances from</span>
+              <button class="chip origin-shop" type="button" data-origin="shop" aria-pressed="true"><svg class="icon" aria-hidden="true"><use href="#map-pin"/></svg><span>Bitcoin Nail Bar</span></button>
+              <button class="chip" type="button" data-origin="mine" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#locate"/></svg><span data-copy="myLocation">My location</span></button>
+            </div>
+            <div class="filter-row">
+              <span class="filter-label" data-copy="radius">Radius</span>
+              <button class="chip" type="button" data-radius="5" aria-pressed="false">5 mi</button>
+              <button class="chip" type="button" data-radius="10" aria-pressed="false">10 mi</button>
+              <button class="chip" type="button" data-radius="25" aria-pressed="false">25 mi</button>
+              <button class="chip" type="button" data-radius="50" aria-pressed="false">50 mi</button>
+            </div>
+            <p class="location-warning" id="locationWarning" role="status" hidden></p>
+          </div>
+        </details>
+        <p class="deal-count" data-copy="dealCount" role="status">Deals found: 0</p>
+        <div class="empty-state"><p class="empty-state-title" data-copy="emptyDealsTitle">No matching deals</p><p class="empty-state-hint" data-copy="emptyDealsHint">Try another keyword, industry or area.</p></div>
+      </div>
+    </div>
+  </main>
+</body>
+</html>

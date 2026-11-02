@@ -1,0 +1,105 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#4f46e5">
+  <title>HTML One QR Dev — Explore nearby</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/oneqr-dev-discovery.css">
+  <script src="../assets/oneqr-dev-discovery.js" defer></script>
+</head>
+<body data-discovery-page="nearby">
+  <!-- Reference: https://test-web.nexoratouch.com/o/bitcoin-nail-bar-3/nearby -->
+  <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/></symbol>
+    <symbol id="map-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="home" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2ZM9 22V12h6v10"/></symbol>
+    <symbol id="locate" viewBox="0 0 24 24"><path d="M2 12h3m14 0h3M12 2v3m0 14v3"/><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="check" viewBox="0 0 24 24"><path d="m20 6-11 11-5-5"/></symbol>
+    <symbol id="close" viewBox="0 0 24 24"><path d="m18 6-12 12M6 6l12 12"/></symbol>
+    <symbol id="navigation" viewBox="0 0 24 24"><path d="m3 11 19-9-9 19-2-8Z"/></symbol>
+  </svg>
+
+  <main class="page">
+    <p class="dev-label">HTML One QR Dev</p>
+    <div class="shop">
+      <header class="shop-header">
+        <div class="shop-logo" aria-hidden="true">B</div>
+        <div class="shop-heading"><p class="eyebrow" data-copy="fromQr">From the QR of</p><p class="shop-name">Bitcoin Nail Bar</p></div>
+        <div class="language">
+          <button class="language-toggle" id="languageToggle" type="button" aria-label="Language" data-copy-aria="language" aria-haspopup="listbox" aria-controls="languageMenu" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#globe"/></svg><span class="language-code" id="languageCode">EN</span></button>
+          <div class="language-menu" id="languageMenu" role="listbox" aria-label="Language" data-copy-aria="language" hidden>
+            <button class="language-option" type="button" role="option" data-language="en" aria-selected="true"><span>English</span><svg class="icon" aria-hidden="true"><use href="#check"/></svg></button>
+            <button class="language-option" type="button" role="option" data-language="vi" aria-selected="false"><span>Tiếng Việt</span><svg class="icon" aria-hidden="true"><use href="#check"/></svg></button>
+          </div>
+        </div>
+      </header>
+
+      <div class="navigation">
+        <a class="back-link" href="oneqr-dev.html" data-local-page="oneqr-dev.html"><svg class="icon" aria-hidden="true"><use href="#home"/></svg><span data-copy="back">Back</span></a>
+        <nav class="discovery-tabs" aria-label="Explore" data-copy-aria="nav">
+          <a class="discovery-tab nearby-tab" href="oneqr-dev-nearby.html" data-local-page="oneqr-dev-nearby.html" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#map-pin"/></svg><span data-copy="nearbyNav">Nearby</span></a>
+          <a class="discovery-tab" href="oneqr-dev-deals.html" data-local-page="oneqr-dev-deals.html"><svg class="icon" aria-hidden="true"><use href="#search"/></svg><span data-copy="dealsNav">Search Deals</span></a>
+        </nav>
+      </div>
+
+      <div class="discovery-content">
+        <div><h1 data-copy="nearbyTitle">Explore nearby</h1><p class="subtitle" data-copy="nearbySubtitle">See places, services and programs available.</p></div>
+        <div class="location-filters">
+          <div class="filter-row">
+            <span class="filter-label" data-copy="distancesFrom">Distances from</span>
+            <button class="chip origin-shop" type="button" data-origin="shop" aria-pressed="true"><svg class="icon" aria-hidden="true"><use href="#map-pin"/></svg><span>Bitcoin Nail Bar</span></button>
+            <button class="chip" type="button" data-origin="mine" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#locate"/></svg><span data-copy="myLocation">My location</span></button>
+          </div>
+          <div class="filter-row">
+            <span class="filter-label" data-copy="radius">Radius</span>
+            <button class="chip" type="button" data-radius="5" aria-pressed="false">5 mi</button>
+            <button class="chip" type="button" data-radius="10" aria-pressed="false">10 mi</button>
+            <button class="chip" type="button" data-radius="25" aria-pressed="false">25 mi</button>
+            <button class="chip" type="button" data-radius="50" aria-pressed="false">50 mi</button>
+          </div>
+          <p class="location-warning" id="locationWarning" role="status" hidden></p>
+        </div>
+        <div class="industries">
+          <button class="chip" type="button" data-industry="all" aria-pressed="true" data-copy="allIndustries">All industries</button>
+          <button class="chip" type="button" data-industry="fastfood" aria-pressed="false"><span aria-hidden="true">🥖</span><span data-copy="industry">Fast food &amp; sandwiches</span><span class="industry-count">1</span></button>
+        </div>
+        <label class="open-only"><input id="openNow" type="checkbox"><span data-copy="openNow">Open now</span></label>
+        <div class="results-heading"><h2 data-copy="listTitle">Places to explore</h2><span class="business-count" id="businessCount" role="status">Businesses: 1</span></div>
+        <ul class="business-list" id="businessList">
+          <li>
+            <article class="business-card">
+              <div class="business-cover" aria-hidden="true">🥖</div>
+              <div class="business-body">
+                <div class="business-title"><h3>Bitcoin Nail Bar</h3><span class="shop-tag" data-copy="thisShop">This shop</span></div>
+                <p class="business-meta"><span data-copy="industry">Fast food &amp; sandwiches</span> · <span id="businessDistance">0 mi</span></p>
+                <div class="business-badges"><span class="no-deals" data-copy="noDeals">No deals yet</span></div>
+                <button class="business-action" id="viewBusiness" type="button" aria-haspopup="dialog" aria-controls="businessDialog" data-copy="viewBusiness">View business →</button>
+              </div>
+            </article>
+          </li>
+        </ul>
+        <div class="empty-state" id="emptyNearby" hidden><p class="empty-state-title" data-copy="emptyNearbyTitle">No businesses match</p><p class="empty-state-hint" data-copy="emptyNearbyHint">Try another industry, a wider radius, or turn off Open now.</p></div>
+      </div>
+    </div>
+  </main>
+
+  <dialog class="business-dialog" id="businessDialog" aria-labelledby="businessDialogTitle">
+    <header class="dialog-header"><h2 id="businessDialogTitle" data-copy="business">Business</h2><button class="dialog-close" id="closeBusiness" type="button" aria-label="Close" data-copy-aria="close"><svg class="icon" aria-hidden="true"><use href="#close"/></svg></button></header>
+    <div class="dialog-content">
+      <p class="profile-eyebrow" data-copy="profile">Business profile</p>
+      <h3 class="profile-name">Bitcoin Nail Bar</h3>
+      <p class="profile-industry" data-copy="industry">Fast food &amp; sandwiches</p>
+      <p class="profile-address"><svg class="icon" aria-hidden="true"><use href="#map-pin"/></svg><span>123 Crypto Ave, Austin, TX 78701</span></p>
+      <a class="outline-link directions" href="https://www.google.com/maps/dir/?api=1&amp;destination=30.2729209,-97.74438630000002" target="_blank" rel="noopener noreferrer"><svg class="icon" aria-hidden="true"><use href="#navigation"/></svg><span data-copy="directions">Directions</span></a>
+      <section class="profile-deals"><h4 data-copy="profileDeals">Deals</h4><p data-copy="profileNoDeals">No deals right now. This business is still listed in Explore.</p></section>
+      <p class="profile-note" data-copy="sourceNote">You're exploring from Bitcoin Nail Bar's QR.</p>
+    </div>
+    <footer class="dialog-footer"><a class="outline-link" href="oneqr-dev.html" data-local-page="oneqr-dev.html"><svg class="icon" aria-hidden="true"><use href="#home"/></svg><span data-copy="back">Back</span></a><span data-copy="menu">One QR menu</span></footer>
+  </dialog>
+</body>
+</html>
