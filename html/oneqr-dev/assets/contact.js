@@ -119,10 +119,10 @@
     feedback('saved');
   }
 
-  get('contactMenuTrigger').addEventListener('click', () => {
+  document.querySelectorAll('[data-open-contact-menu]').forEach(button => button.addEventListener('click', () => {
     feedback(null);
     contactMenu.showModal();
-  });
+  }));
   contactMenu.addEventListener('click', async event => {
     const button = event.target.closest('[data-contact-action]');
     if (!button) return;
