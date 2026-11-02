@@ -1070,13 +1070,15 @@
 .oneqr-modules { flex: 3 1 540px; min-width: 0; }
 .oneqr-module-heading { flex-wrap: wrap; gap: 10px; }
 .oneqr-module-toolbar { display: flex; flex-wrap: wrap; gap: 8px; }
-.oneqr-module-toolbar a, .oneqr-module-toolbar > button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; padding: 9px 14px; border: 1px solid #b4b4f0; border-radius: 12px; background: #e9e9ff; color: #2d2eaa; font-size: 13px; font-weight: 800; text-decoration: none; cursor: pointer; box-shadow: 0 2px 6px rgba(70,72,212,.1); transition: background-color .15s, border-color .15s, box-shadow .15s; }
+.oneqr-module-toolbar a, .oneqr-module-toolbar > button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; padding: 9px 14px; border: 1px solid #ddd6fe; border-radius: 12px; background: #f5f3ff; color: #6d28d9; font-size: 13px; font-weight: 800; text-decoration: none; cursor: pointer; box-shadow: 0 1px 3px rgba(16,24,40,.04); transition: background-color .15s, border-color .15s, box-shadow .15s; }
 .oneqr-module-toolbar svg { width: 16px; height: 16px; flex-shrink: 0; stroke-width: 2.25; }
-.oneqr-module-toolbar a:hover, .oneqr-module-toolbar > button:hover { border-color: #4648d4; background: #dedeff; color: #2d2eaa; }
+.oneqr-module-toolbar a:hover, .oneqr-module-toolbar > button:hover { border-color: #c4b5fd; background: #ede9fe; color: #6d28d9; }
+.oneqr-module-toolbar a:active, .oneqr-module-toolbar > button:active { border-color: #a78bfa; background: #ddd6fe; }
 .oneqr-module-toolbar a:focus-visible, .oneqr-module-toolbar > button:focus-visible { outline: 2px solid #4648d4; outline-offset: 3px; }
-.oneqr-module-toolbar #oneqrContactCard { border-color: #4648d4; background: #4648d4; color: #fff; box-shadow: 0 4px 10px rgba(70,72,212,.18); }
-.oneqr-module-toolbar #oneqrContactCard:hover { border-color: #3a3bbf; background: #3a3bbf; }
-.oneqr-module-toolbar #oneqrContactCard:active { border-color: #2d2eaa; background: #2d2eaa; }
+.oneqr-module-toolbar #oneqrContactCard { border-color: #bfdbfe; background: #eff6ff; color: #1d4ed8; }
+.oneqr-module-toolbar #oneqrContactCard:hover { border-color: #93c5fd; background: #dbeafe; }
+.oneqr-module-toolbar #oneqrContactCard:active { border-color: #60a5fa; background: #bfdbfe; }
+.oneqr-module-toolbar #oneqrContactCard:focus-visible { outline-color: #2563eb; }
 .oneqr-config { flex: .6 1 220px; min-width: 0; }
 .oneqr-preview { flex: .8 1 250px; min-width: 0; }
 .oneqr-config .oneqr-panel-head, .oneqr-preview .oneqr-panel-head { flex-wrap: wrap; gap: 8px; }
