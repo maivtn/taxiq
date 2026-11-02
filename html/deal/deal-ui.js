@@ -52,7 +52,27 @@
 
   window.NEXORA_DEAL_PRESENTATION = Object.freeze({ translate, positionMatchSelect });
 
+  // Magnific / Flaticon Special Flat, matching the shared industry artwork:
+  // https://www.flaticon.com/free-icon/manicure_3461972
+  // https://www.flaticon.com/free-icon/nails_1718332
+  // https://www.flaticon.com/free-icon/nail-art_9993150
+  const nailServiceArtwork = Object.freeze({
+    manicure:'./assets/service-manicure-3461972.png',
+    'gel-x':'./assets/service-gel-x-1718332.png',
+    'nail-art':'./assets/service-nail-art-9993150.png',
+  });
+
   function artwork(key, size = 24) {
+    if (nailServiceArtwork[key]) {
+      const icon = document.createElement('img');
+      icon.className = 'industry-flat-icon deal-industry-icon';
+      icon.src = nailServiceArtwork[key];
+      icon.alt = '';
+      icon.setAttribute('aria-hidden', 'true');
+      icon.width = icon.height = size;
+      icon.draggable = false;
+      return icon;
+    }
     const holder = document.createElement('span');
     holder.innerHTML = window.NEXORA_INDUSTRY_ICONS.image(key, { size, className: 'deal-industry-icon' });
     return holder.firstElementChild;
@@ -75,7 +95,7 @@
     ['[data-last-industry]:not([data-last-industry="all"])', element => ({ beauty: 'nail', services: 'other' }[element.dataset.lastIndustry] || element.dataset.lastIndustry)],
     ['[data-business-category]', element => element.dataset.businessCategory],
     ['[data-industry-root]', element => 'group:' + element.dataset.industryRoot],
-    ['.service-chip:not([data-service="all"])', element => element.dataset.service === 'pedicure' ? 'pedi' : 'nail'],
+    ['.service-chip:not([data-service="all"])', element => element.dataset.service === 'pedicure' ? 'pedi' : element.dataset.service],
     ['[data-nail-kind]', element => ({all:'other',massage:'spa',lashes:'lash'}[element.dataset.nailKind] || element.dataset.nailKind)],
     ['[data-dw-match-suggestion]', element => {
       const value = element.dataset.dwMatchSuggestion.toLowerCase();
