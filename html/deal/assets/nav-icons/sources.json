@@ -19,11 +19,12 @@
     },
     {
       "key": "beauty",
-      "file": "beauty.png",
-      "source": "https://www.flaticon.com/free-icon/nail-polish_1658222",
-      "download": "https://cdn-icons-png.flaticon.com/128/1658/1658222.png",
+      "file": "beauty-effect-7889005.png",
+      "source": "https://www.flaticon.com/free-icon/effect_7889005",
+      "download": "https://cdn-icons-png.flaticon.com/128/7889/7889005.png",
       "author": "Magnific / Freepik",
-      "style": "Special Flat"
+      "style": "Basic Rounded Flat",
+      "selection": "User-selected Effect icon for Beauty"
     },
     {
       "key": "match",
