@@ -20,7 +20,6 @@ button, a, input, summary { -webkit-tap-highlight-color: transparent; }
 button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
 [hidden] { display: none !important; }
 .icon { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.icon-definitions { position: absolute; width: 0; height: 0; overflow: hidden; }
 .page { min-height: 100vh; min-height: 100dvh; }
 .shop { width: 100%; max-width: 448px; margin: 0 auto; background: #fff; }
 .shop-header { position: relative; z-index: 2; display: flex; align-items: center; gap: 12px; padding: 12px var(--inset); border-bottom: 1px solid #dde5ef80; background: linear-gradient(135deg, #e9e9ffcc, var(--canvas), #fff); }

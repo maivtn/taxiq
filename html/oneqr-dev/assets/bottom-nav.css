@@ -36,19 +36,13 @@ body.has-oneqr-bottom-nav .page {
   -webkit-tap-highlight-color: transparent;
 }
 
-.oneqr-bottom-nav svg {
+.oneqr-bottom-nav img {
   width: 20px;
   height: 20px;
   flex-shrink: 0;
-  color: #94a3b8;
-  fill: none;
-  stroke: currentColor;
-  stroke-width: 1.8;
-  stroke-linecap: round;
-  stroke-linejoin: round;
+  object-fit: contain;
 }
 
 .oneqr-bottom-nav a:hover { background: #faf9ff; }
 .oneqr-bottom-nav a[aria-current] { color: #7c3aed; font-weight: 800; }
-.oneqr-bottom-nav a[aria-current] svg { color: #7c3aed; }
 .oneqr-bottom-nav a:focus-visible { outline: 2px solid #7c3aed; outline-offset: -4px; border-radius: 8px; }

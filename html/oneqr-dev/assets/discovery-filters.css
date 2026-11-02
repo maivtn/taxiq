@@ -1,0 +1,18 @@
+.discovery-selects { display: flex; min-width: 0; align-items: flex-start; gap: 8px; }
+.discovery-select-radius { width: 110px; min-width: 0; flex: 0 0 110px; }
+.discovery-select-industry { min-width: 0; flex: 1; }
+.discovery-selects select { width: 100%; min-height: 42px; padding: 9px 44px 9px 11px; border: 1px solid #ddd6fe; border-radius: 11px; background: #fff; color: var(--text); font: inherit; font-size: 12px; }
+.discovery-selects .ts-wrapper { width: 100%; min-width: 0; font-size: 12px; }
+.discovery-selects .ts-wrapper.single .ts-control { min-height: 42px; flex-wrap: nowrap; align-items: center; padding: 8px 44px 8px 10px; border: 1px solid #ddd6fe; border-radius: 11px; background: #fff; color: var(--text); box-shadow: none; cursor: pointer; }
+.discovery-selects .ts-wrapper.single .ts-control::after { position: absolute; top: 50%; right: 16px; width: 16px; height: 16px; margin: 0; border: 0; background: #64748b; content: ''; pointer-events: none; clip-path: polygon(18% 37%, 25% 30%, 50% 55%, 75% 30%, 82% 37%, 50% 69%); transform: translateY(-50%); }
+.discovery-selects .ts-wrapper.dropdown-active.single .ts-control::after { transform: translateY(-50%) rotate(180deg); }
+.discovery-selects .ts-wrapper.focus .ts-control { border-color: #8b5cf6; outline: 2px solid #8b5cf629; outline-offset: 1px; }
+.discovery-selects .ts-control > .item, .discovery-selects .ts-dropdown .option { display: flex; min-width: 0; align-items: center; gap: 6px; }
+.discovery-selects .ts-control > .item { width: 100%; margin: 0; font-weight: 700; }
+.discovery-selects .ts-control .item > span { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.discovery-selects .ts-control img.icon, .discovery-selects .ts-dropdown img.icon { width: 20px; height: 20px; }
+.discovery-selects .ts-dropdown { z-index: 15; margin-top: 5px; overflow: hidden; border: 1px solid #ddd6fe; border-radius: 11px; background: #fff; color: var(--text); font: inherit; box-shadow: 0 8px 24px #0f172a14; }
+.discovery-selects .ts-dropdown-content { max-height: 260px; overscroll-behavior: contain; }
+.discovery-selects .ts-dropdown .option { min-height: 40px; padding: 9px 11px; font-size: 12px; }
+.discovery-selects .ts-dropdown .active { background: #f5f3ff; color: #6d28d9; }
+.discovery-selects .ts-dropdown .selected { font-weight: 800; }

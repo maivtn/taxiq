@@ -8,10 +8,15 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="assets/vendor/tom-select/tom-select.css">
   <link rel="stylesheet" href="assets/discovery.css">
   <link rel="stylesheet" href="assets/nearby.css">
   <link rel="stylesheet" href="assets/search-deals.css">
   <link rel="stylesheet" href="assets/bottom-nav.css">
+  <link rel="stylesheet" href="assets/icons.css">
+  <link rel="stylesheet" href="assets/discovery-filters.css">
+  <script src="assets/vendor/tom-select/tom-select.complete.min.js" defer></script>
+  <script src="assets/icons.js" defer></script>
   <script src="assets/deal-catalog.js" defer></script>
   <script src="assets/search-deals.js" defer></script>
   <script src="assets/discovery.js" defer></script>
@@ -19,26 +24,17 @@
 </head>
 <body class="nearby-page search-page" data-discovery-page="deals">
   <!-- Reference: https://test-web.nexoratouch.com/o/bitcoin-nail-bar-3/deals -->
-  <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <symbol id="globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/></symbol>
-    <symbol id="map-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
-    <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
-    <symbol id="home" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2ZM9 22V12h6v10"/></symbol>
-    <symbol id="locate" viewBox="0 0 24 24"><path d="M2 12h3m14 0h3M12 2v3m0 14v3"/><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/></symbol>
-    <symbol id="close" viewBox="0 0 24 24"><path d="m18 6-12 12M6 6l12 12"/></symbol>
-    <symbol id="check" viewBox="0 0 24 24"><path d="m20 6-11 11-5-5"/></symbol>
-  </svg>
 
   <main class="page">
     <div class="shop">
       <header class="nearby-toolbar">
-        <a class="nearby-back" href="index.html" data-local-page="index.html"><span aria-hidden="true">←</span><span data-search-copy="mainMenu">Main Menu</span></a>
+        <a class="nearby-back" href="index.html" data-local-page="index.html"><span class="icon icon-back" aria-hidden="true"></span><span data-search-copy="mainMenu">Main Menu</span></a>
         <h1>Search Deals</h1>
         <div class="language" hidden>
-          <button class="language-toggle" id="languageToggle" type="button" aria-label="Language" data-copy-aria="language" aria-haspopup="listbox" aria-controls="languageMenu" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#globe"/></svg><span class="language-code" id="languageCode">EN</span></button>
+          <button class="language-toggle" id="languageToggle" type="button" aria-label="Language" data-copy-aria="language" aria-haspopup="listbox" aria-controls="languageMenu" aria-expanded="false"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-globe-2-3d.png" alt="" draggable="false"><span class="language-code" id="languageCode">EN</span></button>
           <div class="language-menu" id="languageMenu" role="listbox" aria-label="Language" data-copy-aria="language" hidden>
-            <button class="language-option" type="button" role="option" data-language="en" aria-selected="true"><span>English</span><svg class="icon" aria-hidden="true"><use href="#check"/></svg></button>
-            <button class="language-option" type="button" role="option" data-language="vi" aria-selected="false"><span>Tiếng Việt</span><svg class="icon" aria-hidden="true"><use href="#check"/></svg></button>
+            <button class="language-option" type="button" role="option" data-language="en" aria-selected="true"><span>English</span><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-check-3d.png" alt="" draggable="false"></button>
+            <button class="language-option" type="button" role="option" data-language="vi" aria-selected="false"><span>Tiếng Việt</span><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-check-3d.png" alt="" draggable="false"></button>
           </div>
         </div>
       </header>
@@ -61,30 +57,46 @@
           <label class="sr-only" for="wishPhone" data-search-copy="phone">Phone number</label>
           <input id="wishPhone" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="(713) 555-0142" aria-describedby="wishPhoneError">
           <p class="search-phone-error" id="wishPhoneError" role="alert" data-search-copy="phoneError" hidden>Enter a valid phone number.</p>
-          <button class="search-submit" type="submit" id="wishSubmit" data-search-copy="wish">✦ Post a request</button>
+          <button class="search-submit" type="submit" id="wishSubmit"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-wand-2-3d.png" alt="" draggable="false"><span id="wishSubmitLabel" data-search-copy="wish">Post a request</span></button>
           <p class="search-wish-status" id="wishStatus" role="status" hidden></p>
         </form>
         <details class="area-filters">
           <summary data-copy="areaRadius">Area &amp; radius</summary>
           <div class="location-filters">
             <nav class="discovery-tabs" aria-label="Explore" data-copy-aria="nav">
-              <a class="discovery-tab nearby-tab" href="nearby.html" data-local-page="nearby.html"><svg class="icon" aria-hidden="true"><use href="#map-pin"/></svg><span data-copy="nearbyNav">Nearby</span></a>
-              <a class="discovery-tab" href="deals.html" data-local-page="deals.html" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#search"/></svg><span data-copy="dealsNav">Search Deals</span></a>
+              <a class="discovery-tab nearby-tab" href="nearby.html" data-local-page="nearby.html"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-pin-3d.png" alt="" draggable="false"><span data-copy="nearbyNav">Nearby</span></a>
+              <a class="discovery-tab" href="deals.html" data-local-page="deals.html" aria-current="page"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-ticket-3d.png" alt="" draggable="false"><span data-copy="dealsNav">Search Deals</span></a>
             </nav>
-            <div class="industries"><button class="chip" type="button" data-industry="all" aria-pressed="true" data-copy="allIndustries">All industries</button></div>
             <div class="filter-row">
               <span class="filter-label" data-copy="distancesFrom">Distances from</span>
-              <button class="chip origin-shop" type="button" data-origin="shop" aria-pressed="true"><svg class="icon" aria-hidden="true"><use href="#map-pin"/></svg><span>Bitcoin Nail Bar</span></button>
-              <button class="chip" type="button" data-origin="mine" aria-pressed="false"><svg class="icon" aria-hidden="true"><use href="#locate"/></svg><span data-copy="myLocation">My location</span></button>
+              <button class="chip origin-shop" type="button" data-origin="shop" aria-pressed="true"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-pin-3d.png" alt="" draggable="false"><span>Bitcoin Nail Bar</span></button>
+              <button class="chip" type="button" data-origin="mine" aria-pressed="false"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-pin-3d.png" alt="" draggable="false"><span data-copy="myLocation">My location</span></button>
             </div>
-            <div class="filter-row">
-              <span class="filter-label" data-copy="radius">Radius</span>
-              <button class="chip" type="button" data-radius="1" aria-pressed="false">1 mi</button>
-              <button class="chip" type="button" data-radius="3" aria-pressed="false">3 mi</button>
-              <button class="chip" type="button" data-radius="5" aria-pressed="false">5 mi</button>
-              <button class="chip" type="button" data-radius="10" aria-pressed="false">10 mi</button>
-              <button class="chip" type="button" data-radius="25" aria-pressed="false">25 mi</button>
-              <button class="chip" type="button" data-radius="50" aria-pressed="false">50 mi</button>
+            <div class="discovery-selects">
+              <div class="discovery-select-radius">
+                <label class="sr-only" id="radiusFilterLabel" for="radiusFilter" data-copy="radius">Radius</label>
+                <select id="radiusFilter">
+                  <option value="" data-copy="radius">Radius</option>
+                  <option value="1">1 mi</option>
+                  <option value="3">3 mi</option>
+                  <option value="5">5 mi</option>
+                  <option value="10">10 mi</option>
+                  <option value="25">25 mi</option>
+                  <option value="50">50 mi</option>
+                </select>
+              </div>
+              <div class="discovery-select-industry">
+                <label class="sr-only" id="industryFilterLabel" for="industryFilter" data-copy="industryFilter">Industry</label>
+                <select id="industryFilter">
+                  <option value="all" data-copy="allIndustries" data-icon="store">All industries</option>
+                  <option value="food" data-copy="industryFood" data-icon="food">Food &amp; drinks</option>
+                  <option value="auto" data-copy="industryAuto" data-icon="auto">Auto</option>
+                  <option value="family" data-copy="industryFamily" data-icon="partner">Family &amp; pets</option>
+                  <option value="health" data-copy="industryHealth" data-icon="health">Health</option>
+                  <option value="shop" data-copy="industryShop" data-icon="shopping">Shopping</option>
+                  <option value="fastfood" data-copy="industry" data-icon="food">Fast food &amp; sandwiches</option>
+                </select>
+              </div>
             </div>
             <p class="location-warning" id="locationWarning" role="status" hidden></p>
           </div>
@@ -93,7 +105,7 @@
     </div>
   </main>
   <dialog class="business-dialog" id="searchOfferDialog" aria-labelledby="searchOfferTitle">
-    <div class="dialog-header"><h2 id="searchOfferTitle"></h2><button class="dialog-close" id="searchOfferClose" type="button" aria-label="Close" data-search-aria="close"><svg class="icon" aria-hidden="true"><use href="#close"/></svg></button></div>
+    <div class="dialog-header"><h2 id="searchOfferTitle"></h2><button class="dialog-close" id="searchOfferClose" type="button" aria-label="Close" data-search-aria="close"><span class="icon icon-close" aria-hidden="true"></span></button></div>
     <div class="dialog-content" id="searchOfferDetail"></div>
     <div class="dialog-footer"><a class="outline-link" href="index.html" data-local-page="index.html" data-search-copy="mainMenu">Main Menu</a></div>
   </dialog>

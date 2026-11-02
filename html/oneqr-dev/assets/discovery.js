@@ -9,6 +9,8 @@
       searchPlaceholder: 'Search deals: pedicure, facial, coffee…', areaRadius: 'Area & radius',
       distancesFrom: 'Distances from', myLocation: 'My location', radius: 'Radius',
       allIndustries: 'All industries', industry: 'Fast food & sandwiches', openNow: 'Open now',
+      industryFilter: 'Industry', industryFood: 'Food & drinks', industryAuto: 'Auto',
+      industryFamily: 'Family & pets', industryHealth: 'Health', industryShop: 'Shopping',
       listTitle: 'Places to explore', businessCount: 'Businesses: {count}', thisShop: 'This shop',
       noDeals: 'No deals yet', viewBusiness: 'View business →', dealCount: 'Deals found: 0',
       emptyDealsTitle: 'No matching deals', emptyDealsHint: 'Try another keyword, industry or area.',
@@ -28,6 +30,8 @@
       searchPlaceholder: 'Tìm ưu đãi: pedicure, facial, coffee…', areaRadius: 'Khu vực & bán kính',
       distancesFrom: 'Tính khoảng cách từ', myLocation: 'Vị trí của tôi', radius: 'Bán kính',
       allIndustries: 'Tất cả ngành', industry: 'Bánh mì / ăn nhanh', openNow: 'Đang mở cửa',
+      industryFilter: 'Ngành', industryFood: 'Ăn uống', industryAuto: 'Xe',
+      industryFamily: 'Gia đình & thú cưng', industryHealth: 'Sức khoẻ', industryShop: 'Mua sắm',
       listTitle: 'Địa điểm để khám phá', businessCount: '{count} doanh nghiệp', thisShop: 'Tiệm này',
       noDeals: 'Chưa có ưu đãi', viewBusiness: 'Xem doanh nghiệp →', dealCount: 'Tìm thấy 0 chương trình',
       emptyDealsTitle: 'Chưa có ưu đãi phù hợp', emptyDealsHint: 'Thử từ khóa, ngành hoặc khu vực khác.',
@@ -64,6 +68,34 @@
     }
   } catch { /* Storage may be unavailable in local HTML previews. */ }
   let locationRequest = 0;
+  let filtersLanguage;
+  // Use the same library as the advertising setup, with the One QR 3D icon set.
+  const filterControls = ['radiusFilter', 'industryFilter'].map(id => {
+    const element = get(id);
+    const optionIcons = Object.fromEntries([...element.options].map(option => [option.value, option.dataset.icon]));
+    const renderChoice = (data, escape) => `<div>${window.OneQrIcons.image(optionIcons[data.value])}<span>${escape(data.text)}</span></div>`;
+    const control = typeof window.TomSelect === 'function' ? new window.TomSelect(element, {
+      create: false, maxItems: 1, allowEmptyOption: id === 'radiusFilter' && page === 'deals',
+      plugins: { no_backspace_delete: {} },
+      controlInput: null, searchField: [], hideSelected: false, closeAfterSelect: true,
+      render: { item: renderChoice, option: renderChoice, no_results: null }
+    }) : null;
+    return { element, control };
+  });
+
+  function syncFilters() {
+    filterControls.forEach(({ element, control }) => {
+      const value = element.id === 'radiusFilter' ? String(state.radius ?? '') : state.industry;
+      if (control) {
+        if (filtersLanguage !== language) {
+          [...element.options].forEach(option => control.updateOption(option.value, { ...control.options[option.value], value: option.value, text: option.textContent }));
+          control.control.setAttribute('aria-labelledby', `${element.id}Label`);
+        }
+        if (control.getValue() !== value) control.setValue(value, true);
+      } else element.value = value;
+    });
+    filtersLanguage = language;
+  }
 
   function updateResults() {
     const visible = (state.industry === 'all' || state.industry === business.industry || state.industry === 'food')
@@ -75,12 +107,7 @@
       get('businessCount').textContent = copy[language].businessCount.replace('{count}', visible ? '1' : '0');
       get('businessDistance').textContent = `${new Intl.NumberFormat(language, { maximumFractionDigits: 1 }).format(state.distance)} mi`;
     }
-    document.querySelectorAll('[data-radius]').forEach(button => {
-      button.setAttribute('aria-pressed', String(Number(button.dataset.radius) === state.radius));
-    });
-    document.querySelectorAll('[data-industry]').forEach(button => {
-      button.setAttribute('aria-pressed', String(button.dataset.industry === state.industry));
-    });
+    syncFilters();
     document.querySelectorAll('[data-origin]').forEach(button => {
       button.setAttribute('aria-pressed', String(button.dataset.origin === state.origin));
       if (button.getAttribute('role') === 'switch') button.setAttribute('aria-checked', String(button.dataset.origin === state.origin));
@@ -152,17 +179,14 @@
       options[next]?.focus();
     }
   });
-  document.querySelectorAll('[data-radius]').forEach(button => {
-    button.addEventListener('click', () => {
-      state.radius = Number(button.dataset.radius);
-      updateResults();
-    });
+  get('radiusFilter').addEventListener('change', event => {
+    const value = event.target.value;
+    if ((value === '' && page === 'deals') || [1, 3, 5, 10, 25, 50].includes(Number(value))) state.radius = value === '' ? null : Number(value);
+    updateResults();
   });
-  document.querySelectorAll('[data-industry]').forEach(button => {
-    button.addEventListener('click', () => {
-      state.industry = button.dataset.industry;
-      updateResults();
-    });
+  get('industryFilter').addEventListener('change', event => {
+    state.industry = event.target.value || 'all';
+    updateResults();
   });
   get('openNow')?.addEventListener('change', updateResults);
   if (get('dealSearch')) get('dealSearch').value = (params.get('q') || '').slice(0, 100);

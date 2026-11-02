@@ -1,4 +1,5 @@
 (() => {
+  const icon = window.OneQrIcons.image;
   const { shop, zips, offers, ownOffers, hiddenOffers } = window.OneQrDealCatalog;
   const catalog = [...ownOffers, ...offers, ...hiddenOffers];
   // Query parsing, competitor filtering and requests mirror the PO's local demo.
@@ -19,8 +20,8 @@
       competitors: '{count} results from other Beauty businesses are hidden based on Bitcoin Nail Bar settings.',
       count: 'Deals found: {count}', noMatch: 'No deal matches “{query}” yet',
       wishHint: 'Leave your phone number — when a nearby business has a matching deal, you receive one message. Nearby businesses also see this request.',
-      phone: 'Phone number', phoneError: 'Enter a valid phone number.', wish: '✦ Post a request',
-      wishDone: '✦ Request posted — nearby businesses will see it', wishPosted: '✦ Request posted',
+      phone: 'Phone number', phoneError: 'Enter a valid phone number.', wish: 'Post a request',
+      wishDone: 'Request posted — nearby businesses will see it', wishPosted: 'Request posted',
       close: 'Close', coupon: 'COUPON · {left}/{quantity} left', deal: 'DEAL', booking: 'Booking required',
       active: 'Available now', activeDays: 'Available · {days}', directions: 'Directions', conditions: 'Conditions',
       source: "You're exploring from Bitcoin Nail Bar's QR."
@@ -34,8 +35,8 @@
       competitors: '{count} kết quả của tiệm cùng nhóm Làm đẹp được ẩn theo cài đặt của Bitcoin Nail Bar.',
       count: 'Tìm thấy {count} chương trình', noMatch: 'Chưa có deal khớp “{query}”',
       wishHint: 'Để lại SĐT — khi tiệm gần đây có deal đúng ý, bạn nhận 1 tin nhắn. Tiệm gần đó cũng thấy nhu cầu này.',
-      phone: 'Số điện thoại', phoneError: 'Vui lòng nhập số điện thoại hợp lệ.', wish: '✦ Đăng mong muốn',
-      wishDone: '✦ Đã đăng mong muốn — tiệm gần đây sẽ thấy', wishPosted: '✦ Đã đăng mong muốn',
+      phone: 'Số điện thoại', phoneError: 'Vui lòng nhập số điện thoại hợp lệ.', wish: 'Đăng mong muốn',
+      wishDone: 'Đã đăng mong muốn — tiệm gần đây sẽ thấy', wishPosted: 'Đã đăng mong muốn',
       close: 'Đóng', coupon: 'COUPON · còn {left}/{quantity}', deal: 'DEAL', booking: 'Cần đặt lịch',
       active: 'Áp dụng bây giờ', activeDays: 'Đang áp dụng · {days}', directions: 'Chỉ đường', conditions: 'Điều kiện',
       source: 'Bạn đang khám phá từ QR của Bitcoin Nail Bar.'
@@ -76,10 +77,10 @@
   }
 
   function badges(offer) {
-    const type = offer.quantity ? `<span class="nearby-offer-badge nearby-offer-coupon">🎟️ ${translate('coupon', { left: offer.left, quantity: offer.quantity })}</span>` : `<span class="nearby-offer-badge nearby-offer-deal">🏷️ ${translate('deal')}</span>`;
+    const type = offer.quantity ? `<span class="nearby-offer-badge nearby-offer-coupon">${icon('coupon')} ${translate('coupon', { left: offer.left, quantity: offer.quantity })}</span>` : `<span class="nearby-offer-badge nearby-offer-deal">${icon('deal')} ${translate('deal')}</span>`;
     if (!offer.rule) return type;
-    const rule = offer.rule === 'booking' ? `📅 ${translate('booking')}` : offer.rule === 'time' ? `⏰ ${text(offer.ruleText)}` : `✅ ${offer.ruleText ? translate('activeDays', { days: text(offer.ruleText) }) : translate('active')}`;
-    return `${type}<span class="nearby-offer-rule"><span class="nearby-offer-badge nearby-offer-${offer.rule}">${escape(rule)}</span></span>`;
+    const rule = offer.rule === 'booking' ? `${translate('booking')}` : offer.rule === 'time' ? `${text(offer.ruleText)}` : `${offer.ruleText ? translate('activeDays', { days: text(offer.ruleText) }) : translate('active')}`;
+    return `${type}<span class="nearby-offer-rule"><span class="nearby-offer-badge nearby-offer-${offer.rule}">${icon(offer.rule === 'booking' ? 'calendar' : offer.rule === 'time' ? 'clock' : 'active')} ${escape(rule)}</span></span>`;
   }
 
   function renderDetail() {
@@ -90,7 +91,7 @@
     get('searchOfferDetail').innerHTML = `<p class="profile-name">${escape(offer.business)}</p>
       <p class="nearby-offer-detail-meta">${escape(text(offer.condition))} · ${distance} mi</p>${badges(offer)}
       <section class="nearby-offer-conditions"><strong>${translate('conditions')}</strong><p>${escape(text(offer.condition))}</p></section>
-      <a class="outline-link" href="https://www.google.com/maps/dir/?api=1&amp;destination=${offer.latitude},${offer.longitude}" target="_blank" rel="noopener noreferrer">📍 ${translate('directions')} · ${distance} mi</a>
+      <a class="outline-link" href="https://www.google.com/maps/dir/?api=1&amp;destination=${offer.latitude},${offer.longitude}" target="_blank" rel="noopener noreferrer">${icon('directions')} ${translate('directions')} · ${distance} mi</a>
       <p class="profile-note">${translate('source')}</p>`;
   }
 
@@ -127,7 +128,7 @@
     const hidden = matches.filter(offer => !offer.own && offer.group === 'beauty').length;
     const visible = matches.filter(offer => offer.own || offer.group !== 'beauty').sort((a, b) => Number(Boolean(b.own)) - Number(Boolean(a.own)) || a.distance - b.distance);
     get('searchCompetitors').hidden = hidden === 0;
-    get('searchCompetitors').textContent = `🛡️ ${translate('competitors', { count: hidden })}`;
+    get('searchCompetitors').innerHTML = `${icon('filter')} ${escape(translate('competitors', { count: hidden }))}`;
     get('searchCount').textContent = query ? translate('count', { count: visible.length }) : '';
     get('searchOffers').hidden = visible.length === 0;
     get('searchOffers').innerHTML = visible.map(offer => `<li><button class="nearby-offer" type="button" data-offer="${offer.id}" aria-haspopup="dialog" aria-controls="searchOfferDialog" style="--offer-color:${offer.color}">
@@ -143,9 +144,9 @@
     }
     const posted = requests.has(normalize(query));
     get('wishSubmit').disabled = posted;
-    get('wishSubmit').textContent = translate(posted ? 'wishPosted' : 'wish');
+    get('wishSubmitLabel').textContent = translate(posted ? 'wishPosted' : 'wish');
     get('wishStatus').hidden = !posted;
-    get('wishStatus').textContent = posted ? translate('wishDone') : '';
+    get('wishStatus').innerHTML = posted ? `${icon('active')} ${escape(translate('wishDone'))}` : '';
     if (get('searchOfferDialog').open) renderDetail();
   }
 

@@ -30,7 +30,6 @@
     button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
     [hidden] { display: none !important; }
     .icon { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-    .icon-definitions { position: absolute; width: 0; height: 0; overflow: hidden; }
     .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
     .page { min-height: 100vh; min-height: 100dvh; }
     .shop { width: 100%; max-width: 448px; margin: 0 auto; background: #fff; }
@@ -70,7 +69,6 @@
     .discovery-card-header { display: flex; min-height: 28px; align-items: center; gap: 6px; }
     .discovery-icon { position: relative; display: flex; width: 28px; height: 28px; flex: 0 0 28px; align-items: center; justify-content: center; }
     .discovery-icon img { width: 28px; height: 28px; object-fit: contain; }
-    .discovery-search-icon { position: absolute; right: -2px; bottom: -1px; width: 15px; height: 15px; padding: 2px; border-radius: 50%; background: #fff; color: #6d28d9; stroke-width: 2.5; box-shadow: 0 1px 3px #4c1d9526; }
     .discovery-card-title { min-width: 0; font-size: 13px; font-weight: 800; line-height: 1.2; }
     .discovery-count { position: relative; display: flex; min-width: 22px; height: 22px; flex-shrink: 0; align-items: center; justify-content: center; margin-left: auto; padding: 0 5px; border: 2px solid #ede9fe; border-radius: 999px; background: #7c3aed; color: #fff; font-size: 11px; font-weight: 800; }
     .discovery-count::after { position: absolute; inset: -3px; border: 2px solid #a78bfa; border-radius: 12px; content: ''; pointer-events: none; animation: discovery-count-pulse 2s ease-out infinite; }
@@ -108,10 +106,7 @@
     .promotion-detail-conditions { margin: 10px 0; padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; background: #f8fafc; font-size: 11.5px; line-height: 1.6; }
     .promotion-detail-action { display: flex; min-height: 44px; align-items: center; justify-content: center; margin-top: 8px; padding: 9px 13px; border-radius: 12px; background: var(--brand); color: #fff; font-size: 13px; font-weight: 700; text-align: center; }
     .promotion-close { width: 100%; min-height: 40px; margin-top: 8px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 12px; background: #fff; color: var(--text); font-size: 13px; font-weight: 700; }
-    .shop-note { display: flex; align-items: center; gap: 8px; margin: 12px var(--page-inset) 4px; padding: 8px 12px; border-radius: 8px; background: #e9e9ff66; color: var(--brand); font-size: 12px; font-weight: 500; line-height: 1.625; }
-    .note-icon { display: flex; width: 20px; height: 20px; flex-shrink: 0; align-items: center; justify-content: center; }
-    .note-icon .icon { width: 14px; height: 14px; }
-    .shop-menu-title { margin: 0; font-size: 13px; font-weight: 800; line-height: 1.4; }
+    .shop-menu-title { margin: 0 var(--page-inset); color: #6b7280; font-size: 10.5px; font-weight: 800; line-height: 1.4; letter-spacing: 1.1px; text-transform: uppercase; }
     .quick-links { display: flex; flex-wrap: wrap; gap: 8px; padding: 12px var(--page-inset); }
     .quick-link { display: flex; min-width: 0; min-height: 90px; flex: 0 0 calc((100% - 24px) / 4); flex-direction: column; align-items: center; justify-content: center; gap: 6px; padding: 10px 6px; border: 1px solid #a8a9f3; border-radius: 12px; background: #fff; text-align: center; transition: background-color .2s; }
     .quick-link:hover { background: #e9e9ff4d; }
@@ -214,32 +209,14 @@
   </style>
   <link rel="stylesheet" href="assets/bottom-nav.css">
   <link rel="stylesheet" href="assets/contact.css">
+  <link rel="stylesheet" href="assets/icons.css">
+  <script src="assets/icons.js" defer></script>
   <script src="assets/bottom-nav.js" defer></script>
   <script src="assets/discovery-preview.js" defer></script>
   <script src="assets/contact.js" defer></script>
 </head>
 <body>
   <!-- Reference: https://test-web.nexoratouch.com/o/bitcoin-nail-bar-3?as=customer -->
-  <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-    <symbol id="globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/></symbol>
-    <symbol id="map-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
-    <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
-    <symbol id="arrow-right" viewBox="0 0 24 24"><path d="M5 12h14m-7-7 7 7-7 7"/></symbol>
-    <symbol id="sparkles" viewBox="0 0 24 24"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3ZM5 3v4m14 10v4M3 5h4m10 14h4"/></symbol>
-    <symbol id="gift" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13m7-9v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7m2.5-4a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></symbol>
-    <symbol id="chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
-    <symbol id="close" viewBox="0 0 24 24"><path d="m18 6-12 12M6 6l12 12"/></symbol>
-    <symbol id="download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/></symbol>
-    <symbol id="arrow-up-right" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></symbol>
-    <symbol id="check" viewBox="0 0 24 24"><path d="m20 6-11 11-5-5"/></symbol>
-    <symbol id="contact-phone" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 3.1 5.2 2 2 0 0 1 5.1 3h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L9 10.9a16 16 0 0 0 4.1 4.1l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 2.7 3Z"/></symbol>
-    <symbol id="contact-message" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-5 5V5a2 2 0 0 1 2-2h15a2 2 0 0 1 2 2Z"/></symbol>
-    <symbol id="contact-card" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="17" rx="2"/><path d="M9 5V2h6v3M8 18a4 4 0 0 1 8 0"/><circle cx="12" cy="11" r="2"/></symbol>
-    <symbol id="contact-wallet" viewBox="0 0 24 24"><path d="M20 8V5a2 2 0 0 0-2-2H5a3 3 0 0 0 0 6h15v12H5a3 3 0 0 1-3-3V6"/><path d="M20 12h-5v5h5M17 14.5h.01"/></symbol>
-    <symbol id="contact-navigation" viewBox="0 0 24 24"><path d="m3 11 19-9-9 19-2-8Z"/></symbol>
-    <symbol id="contact-user-plus" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m18-13v6m-3-3h6"/><circle cx="9" cy="7" r="4"/></symbol>
-    <symbol id="contact-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4m-6.8 7 6.8 4"/></symbol>
-  </svg>
 
   <main class="page">
     <div class="shop">
@@ -252,12 +229,12 @@
         <div class="account-bar">
           <div class="language">
             <button class="language-toggle" id="languageToggle" type="button" aria-label="Language" aria-haspopup="listbox" aria-controls="languageMenu" aria-expanded="false">
-              <svg class="icon" aria-hidden="true"><use href="#globe"/></svg>
+              <img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-globe-2-3d.png" alt="" draggable="false">
               <span class="language-code" id="languageCode">EN</span>
             </button>
             <div class="language-menu" id="languageMenu" role="listbox" aria-label="Language" hidden>
-              <button class="language-option" type="button" role="option" data-language="en" aria-selected="true"><span>English</span><svg class="icon" aria-hidden="true"><use href="#check"/></svg></button>
-              <button class="language-option" type="button" role="option" data-language="vi" aria-selected="false"><span>Tiếng Việt</span><svg class="icon" aria-hidden="true"><use href="#check"/></svg></button>
+              <button class="language-option" type="button" role="option" data-language="en" aria-selected="true"><span>English</span><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-check-3d.png" alt="" draggable="false"></button>
+              <button class="language-option" type="button" role="option" data-language="vi" aria-selected="false"><span>Tiếng Việt</span><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-check-3d.png" alt="" draggable="false"></button>
             </div>
           </div>
           <div class="account-actions">
@@ -270,14 +247,14 @@
       <section class="explore" id="exploreSection" aria-label="Explore for everyone">
         <div class="explore-cards" lang="vi">
           <a class="explore-card explore-nearby" href="nearby.html" data-dev-page="nearby.html">
-            <span class="discovery-card-header"><span class="discovery-icon"><img src="assets/icons/nearby-map-pin-3d.png" alt="" draggable="false"></span><span class="discovery-card-title">Deals Nearby</span><span class="discovery-count">7</span></span>
+            <span class="discovery-card-header"><span class="discovery-icon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-pin-3d.png" alt="" draggable="false"></span><span class="discovery-card-title">Deals Nearby</span><span class="discovery-count">7</span></span>
             <span class="discovery-context">Gần Bitcoin Nail Bar</span>
             <span class="discovery-preview">Khám + cạo vôi $79 · 2.1 mi</span>
-            <span class="discovery-urgency"><span aria-hidden="true">⏳</span>2 deal sắp hết suất</span>
+            <span class="discovery-urgency"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-clock-3d.png" alt="" draggable="false">2 deal sắp hết suất</span>
           </a>
           <div class="explore-card explore-deals">
             <a class="explore-main-link" href="deals.html" data-dev-page="deals.html">
-              <span class="discovery-card-header"><span class="discovery-icon"><img src="assets/icons/search-deals-ticket-3d.png" alt="" draggable="false"><svg class="icon discovery-search-icon" aria-hidden="true"><use href="#search"/></svg></span><span class="discovery-card-title">Search Deals</span></span>
+              <span class="discovery-card-header"><span class="discovery-icon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-ticket-3d.png" alt="" draggable="false"></span><span class="discovery-card-title">Search Deals</span></span>
               <span class="discovery-context">Gõ điều bạn muốn</span>
               <span class="discovery-preview">“ăn trưa dưới $10”</span>
             </a>
@@ -295,7 +272,7 @@
         <section class="promotion-half promotion-own" aria-labelledby="ownPromotionTitle">
           <p class="promotion-kicker">CỦA BITCOIN NAIL BAR</p>
           <h2 id="ownPromotionTitle">Khách mới giảm 20% Gel-X</h2>
-          <span class="promotion-condition"><span aria-hidden="true">📅</span> Cần đặt lịch</span>
+          <span class="promotion-condition"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-calendar-days-3d.png" alt="" draggable="false"> Cần đặt lịch</span>
           <div class="promotion-actions">
             <button class="promotion-view" type="button" data-promotion-dialog="ownPromotionDialog" aria-haspopup="dialog" aria-controls="ownPromotionDialog" aria-describedby="ownPromotionTitle">Xem →</button>
             <span class="promotion-discount">−20%</span>
@@ -303,7 +280,7 @@
           <div class="promotion-progress" aria-hidden="true"><span></span><span></span></div>
         </section>
         <section class="promotion-half promotion-partner" aria-labelledby="partnerPromotionTitle">
-          <span class="promotion-kind"><span aria-hidden="true">🤝</span> GẦN TIỆM</span>
+          <span class="promotion-kind"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-users-round-3d.png" alt="" draggable="false"> GẦN TIỆM</span>
           <p class="promotion-kicker">LE PETIT BAKERY · 1.0 MI</p>
           <h2 id="partnerPromotionTitle">Giảm 15% bánh sinh nhật</h2>
           <div class="promotion-actions">
@@ -314,62 +291,63 @@
         </section>
       </div>
 
-      <div class="shop-note"><span class="note-icon"><svg class="icon" aria-hidden="true"><use href="#sparkles"/></svg></span><h2 class="shop-menu-title" id="shopMenuTitle" lang="vi">MENU CỦA BITCOIN NAIL BAR</h2></div>
-
-      <nav class="quick-links" id="quickLinks" aria-labelledby="shopMenuTitle">
-        <a class="quick-link" href="https://test-web.nexoratouch.com/checkin/bitcoin-nail-bar-3?oneQrAs=customer&amp;oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer">
-          <span class="quick-link-icon"><img src="assets/icons/check-circle-6889473.png" alt="" draggable="false"></span>
-          <span class="quick-link-label" data-copy="checkin">Smart Check-in</span>
-        </a>
-        <a class="quick-link" href="https://test-web.nexoratouch.com/booking/bitcoin-nail-bar-3?oneQrAs=customer&amp;oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer">
-          <span class="quick-link-icon"><img src="assets/icons/calendar.png" alt="" draggable="false"></span>
-          <span class="quick-link-label" data-copy="booking">Book Appointment</span>
-        </a>
-        <a class="quick-link" href="https://test-web.nexoratouch.com/menu/bitcoin-nail-bar-3?oneQrAs=customer&amp;oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer">
-          <span class="quick-link-icon"><img src="assets/icons/list-2041794.png" alt="" draggable="false"></span>
-          <span class="quick-link-label" data-copy="services">Services &amp; Prices</span>
-        </a>
-        <a class="quick-link" href="https://test-web.nexoratouch.com/touch/bitcoin-nail-bar-3?oneQrAs=customer&amp;oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer">
-          <span class="quick-link-icon"><img src="assets/icons/heart-4763016.png" alt="" draggable="false"></span>
-          <span class="quick-link-label" data-copy="tip">Tip &amp; Pay</span>
-        </a>
-        <a class="quick-link" data-extra-quick-link aria-disabled="true" hidden>
-          <span class="quick-link-icon"><img src="assets/icons/menu-facebook-3d.png" alt="" draggable="false"></span>
-          <span class="quick-link-label" data-copy="facebook">Facebook</span>
-        </a>
-        <a class="quick-link" data-extra-quick-link aria-disabled="true" hidden>
-          <span class="quick-link-icon"><img src="assets/icons/menu-instagram-3d.png" alt="" draggable="false"></span>
-          <span class="quick-link-label" data-copy="instagram">Instagram</span>
-        </a>
-        <a class="quick-link" data-extra-quick-link href="https://bitcoinnailbar.com/" target="_blank" rel="noopener noreferrer" hidden>
-          <span class="quick-link-icon"><img src="assets/icons/menu-website-3d.png" alt="" draggable="false"></span>
-          <span class="quick-link-label" data-copy="website">Visit website</span>
-        </a>
-        <a class="quick-link" data-extra-quick-link href="https://www.google.com/maps/dir/?api=1&amp;destination=30.2729209,-97.74438630000002" target="_blank" rel="noopener noreferrer" hidden>
-          <span class="quick-link-icon"><img src="assets/icons/menu-directions-3d.png" alt="" draggable="false"></span>
-          <span class="quick-link-label" data-copy="directions">Get directions</span>
-        </a>
-      </nav>
-      <button class="quick-links-toggle" id="quickLinksToggle" type="button" aria-expanded="false" aria-controls="quickLinks"><span id="quickLinksToggleLabel">Show more</span><svg class="icon" aria-hidden="true"><use href="#chevron-down"/></svg></button>
-
       <details class="contact-section" id="contactSection">
-        <summary><svg class="icon" aria-hidden="true"><use href="#contact-card"/></svg><span data-contact-copy="contact">Contact</span><svg class="icon contact-chevron" aria-hidden="true"><use href="#chevron-down"/></svg></summary>
+        <summary><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-user-round-3d.png" alt="" draggable="false"><span data-contact-copy="contact">Contact</span><span class="icon contact-chevron icon-chevron" aria-hidden="true"></span></summary>
         <nav class="contact-actions" aria-label="Business contact actions" data-contact-aria="actions">
-          <a href="tel:+13465550100"><svg class="icon" aria-hidden="true"><use href="#contact-phone"/></svg><span data-contact-copy="call">Call</span></a>
-          <a href="sms:+13465550100"><svg class="icon" aria-hidden="true"><use href="#contact-message"/></svg><span data-contact-copy="text">Text</span></a>
-          <button type="button" data-contact-action="save"><svg class="icon" aria-hidden="true"><use href="#contact-card"/></svg><span data-contact-copy="save">Save contact</span></button>
-          <button type="button" data-contact-action="wallet"><svg class="icon" aria-hidden="true"><use href="#contact-wallet"/></svg><span data-contact-copy="wallet">Add to Wallet</span></button>
-          <a href="https://www.google.com/maps/dir/?api=1&amp;destination=30.2729209,-97.74438630000002" target="_blank" rel="noopener noreferrer"><svg class="icon" aria-hidden="true"><use href="#contact-navigation"/></svg><span data-contact-copy="directions">Directions</span></a>
-          <button type="button" data-contact-action="exchange" aria-haspopup="dialog" aria-controls="contactExchange"><svg class="icon" aria-hidden="true"><use href="#contact-user-plus"/></svg><span data-contact-copy="exchange">Send yours</span></button>
-          <button type="button" data-contact-action="share"><svg class="icon" aria-hidden="true"><use href="#contact-share"/></svg><span data-contact-copy="share">Share card</span></button>
+          <a href="tel:+13465550100"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-phone-3d.png" alt="" draggable="false"><span data-contact-copy="call">Call</span></a>
+          <a href="sms:+13465550100"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-message-circle-3d.png" alt="" draggable="false"><span data-contact-copy="text">Text</span></a>
+          <button type="button" data-contact-action="save"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-user-round-3d.png" alt="" draggable="false"><span data-contact-copy="save">Save contact</span></button>
+          <button type="button" data-contact-action="wallet"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-wallet-3d.png" alt="" draggable="false"><span data-contact-copy="wallet">Add to Wallet</span></button>
+          <a href="https://www.google.com/maps/dir/?api=1&amp;destination=30.2729209,-97.74438630000002" target="_blank" rel="noopener noreferrer"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-3d.png" alt="" draggable="false"><span data-contact-copy="directions">Directions</span></a>
+          <button type="button" data-contact-action="exchange" aria-haspopup="dialog" aria-controls="contactExchange"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-users-round-3d.png" alt="" draggable="false"><span data-contact-copy="exchange">Send yours</span></button>
+          <button type="button" data-contact-action="share"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-share-2-3d.png" alt="" draggable="false"><span data-contact-copy="share">Share card</span></button>
         </nav>
         <p class="contact-feedback" id="contactFeedback" role="status" hidden></p>
       </details>
 
+      <h2 class="shop-menu-title" id="shopMenuTitle" lang="vi">MENU CỦA BITCOIN NAIL BAR</h2>
+
+      <nav class="quick-links" id="quickLinks" aria-labelledby="shopMenuTitle">
+        <a class="quick-link" href="https://test-web.nexoratouch.com/checkin/bitcoin-nail-bar-3?oneQrAs=customer&amp;oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer">
+          <span class="quick-link-icon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-scan-line-3d.png" alt="" draggable="false"></span>
+          <span class="quick-link-label" data-copy="checkin">Smart Check-in</span>
+        </a>
+        <a class="quick-link" href="https://test-web.nexoratouch.com/booking/bitcoin-nail-bar-3?oneQrAs=customer&amp;oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer">
+          <span class="quick-link-icon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-calendar-check-3d.png" alt="" draggable="false"></span>
+          <span class="quick-link-label" data-copy="booking">Book Appointment</span>
+        </a>
+        <a class="quick-link" href="https://test-web.nexoratouch.com/menu/bitcoin-nail-bar-3?oneQrAs=customer&amp;oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer">
+          <span class="quick-link-icon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-list-3d.png" alt="" draggable="false"></span>
+          <span class="quick-link-label" data-copy="services">Services &amp; Prices</span>
+        </a>
+        <a class="quick-link" href="https://test-web.nexoratouch.com/touch/bitcoin-nail-bar-3?oneQrAs=customer&amp;oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer">
+          <span class="quick-link-icon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-hand-coins-3d.png" alt="" draggable="false"></span>
+          <span class="quick-link-label" data-copy="tip">Tip &amp; Pay</span>
+        </a>
+        <a class="quick-link" data-extra-quick-link aria-disabled="true" hidden>
+          <span class="quick-link-icon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-facebook-3d.png" alt="" draggable="false"></span>
+          <span class="quick-link-label" data-copy="facebook">Facebook</span>
+        </a>
+        <a class="quick-link" data-extra-quick-link aria-disabled="true" hidden>
+          <span class="quick-link-icon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-instagram-3d.png" alt="" draggable="false"></span>
+          <span class="quick-link-label" data-copy="instagram">Instagram</span>
+        </a>
+        <a class="quick-link" data-extra-quick-link href="https://bitcoinnailbar.com/" target="_blank" rel="noopener noreferrer" hidden>
+          <span class="quick-link-icon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-globe-2-3d.png" alt="" draggable="false"></span>
+          <span class="quick-link-label" data-copy="website">Visit website</span>
+        </a>
+        <a class="quick-link" data-extra-quick-link href="https://www.google.com/maps/dir/?api=1&amp;destination=30.2729209,-97.74438630000002" target="_blank" rel="noopener noreferrer" hidden>
+          <span class="quick-link-icon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-3d.png" alt="" draggable="false"></span>
+          <span class="quick-link-label" data-copy="directions">Get directions</span>
+        </a>
+      </nav>
+      <button class="quick-links-toggle" id="quickLinksToggle" type="button" aria-expanded="false" aria-controls="quickLinks"><span id="quickLinksToggleLabel">Show more</span><span class="icon icon-chevron" aria-hidden="true"></span></button>
+
+
       <!-- Sponsored examples from the PO's nexora-oneqr-tai-tiem.html and the supplied screenshot. -->
       <section class="sponsored" aria-labelledby="sponsoredTitle" lang="vi">
         <div class="sponsored-header">
-          <h2 class="sponsored-title" id="sponsoredTitle"><span aria-hidden="true">⭐</span> ĐƯỢC TÀI TRỢ · GẦN ĐÂY</h2>
+          <h2 class="sponsored-title" id="sponsoredTitle"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-star-3d.png" alt="" draggable="false"> ĐƯỢC TÀI TRỢ · GẦN ĐÂY</h2>
           <a class="sponsored-more" href="nearby.html" data-dev-page="nearby.html">Xem thêm ›</a>
         </div>
         <ul class="sponsored-list">
@@ -377,12 +355,12 @@
             <article class="sponsored-card">
               <div class="sponsored-value sponsored-value-boba"><span>1+1</span><small>TẶNG</small></div>
               <div class="sponsored-content">
-                <span class="sponsored-badge sponsored-badge-ad"><span aria-hidden="true">⭐</span>Được tài trợ</span>
+                <span class="sponsored-badge sponsored-badge-ad"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-star-3d.png" alt="" draggable="false">Được tài trợ</span>
                 <h3>Trà sữa mua 1 tặng 1</h3>
                 <p class="sponsored-meta">Saigon Boba Westheimer · 0.4 mi</p>
                 <p class="sponsored-meta">Sau 3pm</p>
-                <span class="sponsored-badge sponsored-badge-coupon"><span aria-hidden="true">🎟️</span>COUPON · còn 62/100</span>
-                <div class="sponsored-rule"><span class="sponsored-badge sponsored-badge-time"><span aria-hidden="true">⏰</span>3PM–10PM</span></div>
+                <span class="sponsored-badge sponsored-badge-coupon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-ticket-3d.png" alt="" draggable="false">COUPON · còn 62/100</span>
+                <div class="sponsored-rule"><span class="sponsored-badge sponsored-badge-time"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-clock-3d.png" alt="" draggable="false">3PM–10PM</span></div>
               </div>
             </article>
           </li>
@@ -390,12 +368,12 @@
             <article class="sponsored-card">
               <div class="sponsored-value sponsored-value-carwash"><span>$12</span><small>GIÁ</small></div>
               <div class="sponsored-content">
-                <span class="sponsored-badge sponsored-badge-ad"><span aria-hidden="true">⭐</span>Được tài trợ</span>
+                <span class="sponsored-badge sponsored-badge-ad"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-star-3d.png" alt="" draggable="false">Được tài trợ</span>
                 <h3>Rửa xe + hút bụi $12</h3>
                 <p class="sponsored-meta">Sparkle Car Wash · 1.5 mi</p>
                 <p class="sponsored-meta">Thứ 2–5</p>
-                <span class="sponsored-badge sponsored-badge-deal"><span aria-hidden="true">🏷️</span>DEAL</span>
-                <div class="sponsored-rule"><span class="sponsored-badge sponsored-badge-active"><span aria-hidden="true">✅</span>Đang áp dụng · T2–T5</span></div>
+                <span class="sponsored-badge sponsored-badge-deal"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-tag-3d.png" alt="" draggable="false">DEAL</span>
+                <div class="sponsored-rule"><span class="sponsored-badge sponsored-badge-active"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-circle-check-3d.png" alt="" draggable="false">Đang áp dụng · T2–T5</span></div>
               </div>
             </article>
           </li>
@@ -403,12 +381,12 @@
             <article class="sponsored-card">
               <div class="sponsored-value sponsored-value-pet"><span>$10</span><small>GIẢM</small></div>
               <div class="sponsored-content">
-                <span class="sponsored-badge sponsored-badge-ad"><span aria-hidden="true">⭐</span>Được tài trợ</span>
+                <span class="sponsored-badge sponsored-badge-ad"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-star-3d.png" alt="" draggable="false">Được tài trợ</span>
                 <h3>Tắm &amp; cắt lông chó giảm $10</h3>
                 <p class="sponsored-meta">Paws Grooming · 2.9 mi</p>
                 <p class="sponsored-meta">Chó dưới 25 lb</p>
-                <span class="sponsored-badge sponsored-badge-coupon"><span aria-hidden="true">🎟️</span>COUPON · còn 18/40</span>
-                <div class="sponsored-rule"><span class="sponsored-badge sponsored-badge-booking"><span aria-hidden="true">📅</span>Cần đặt lịch</span></div>
+                <span class="sponsored-badge sponsored-badge-coupon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-ticket-3d.png" alt="" draggable="false">COUPON · còn 18/40</span>
+                <div class="sponsored-rule"><span class="sponsored-badge sponsored-badge-booking"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-calendar-days-3d.png" alt="" draggable="false">Cần đặt lịch</span></div>
               </div>
             </article>
           </li>
@@ -417,7 +395,7 @@
 
       <section class="gift" aria-labelledby="giftTitle">
         <div class="gift-header">
-          <span class="gift-icon"><svg class="icon" aria-hidden="true"><use href="#gift"/></svg></span>
+          <span class="gift-icon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-gift-3d.png" alt="" draggable="false"></span>
           <div>
             <p class="gift-title" id="giftTitle" data-copy="giftTitle">A welcome gift from Bitcoin Nail Bar</p>
             <p class="gift-description" data-copy="giftDescription">Enter your phone number to claim it. No password, no app download.</p>
@@ -429,7 +407,7 @@
           <div class="phone-row">
             <div class="country" id="countryPicker">
               <button class="country-toggle" id="countryToggle" type="button" aria-haspopup="listbox" aria-controls="countryMenu" aria-expanded="false">
-                <span id="countryCode">US</span><span class="country-dial" id="countryDial">+1</span><svg class="icon" aria-hidden="true"><use href="#chevron-down"/></svg>
+                <span id="countryCode">US</span><span class="country-dial" id="countryDial">+1</span><span class="icon icon-chevron" aria-hidden="true"></span>
               </button>
               <div class="country-menu" id="countryMenu" hidden>
                 <input class="country-search" id="countrySearch" type="search" placeholder="Search country or code..." aria-label="Search country or code..." autocomplete="off">
@@ -445,19 +423,19 @@
       </section>
 
       <section class="install" id="installCard" aria-labelledby="installTitle">
-        <button class="dismiss" id="dismissInstall" type="button" aria-label="Dismiss"><svg class="icon" aria-hidden="true"><use href="#close"/></svg></button>
+        <button class="dismiss" id="dismissInstall" type="button" aria-label="Dismiss"><span class="icon icon-close" aria-hidden="true"></span></button>
         <p class="install-title" id="installTitle" data-copy="installTitle">Add Bitcoin Nail Bar to your Home Screen</p>
         <p class="install-description" data-copy="installDescription">Open it like an app, with no browser bar, and get offers from the shop.</p>
-        <button class="primary-button" id="installButton" type="button" aria-controls="installHelp" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#download"/></svg><span data-copy="install">Install</span></button>
+        <button class="primary-button" id="installButton" type="button" aria-controls="installHelp" aria-expanded="false"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-package-3d.png" alt="" draggable="false"><span data-copy="install">Install</span></button>
         <p class="install-help" id="installHelp" data-copy="installHelp" hidden>Use your browser menu and choose "Install app" or "Add to Home screen".</p>
       </section>
 
       <footer class="shop-footer">
-        <svg class="icon" aria-hidden="true"><use href="#map-pin"/></svg>
+        <img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-pin-3d.png" alt="" draggable="false">
         <p><span class="sr-only" data-copy="address">Address </span>123 Crypto Ave, Austin, TX 78701</p>
       </footer>
     </div>
-    <p class="powered-by"><span data-copy="poweredBy">Powered by</span><a href="https://nexoratouch.com/">Nexora Touch<svg class="icon" aria-hidden="true"><use href="#arrow-up-right"/></svg></a></p>
+    <p class="powered-by"><span data-copy="poweredBy">Powered by</span><a href="https://nexoratouch.com/">Nexora Touch<img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-square-arrow-out-up-right-3d.png" alt="" draggable="false"></a></p>
   </main>
 
   <dialog class="promotion-dialog" id="ownPromotionDialog" aria-labelledby="ownPromotionDetailTitle" lang="vi">
@@ -466,13 +444,13 @@
       <div><h2 id="ownPromotionDetailTitle">Khách mới giảm 20% Gel-X</h2><p class="promotion-detail-meta">Bitcoin Nail Bar · Khách mới · 1 lần/khách</p></div>
     </div>
     <div class="promotion-detail-conditions">
-      <p>🗓️ Áp dụng: <strong>T3–T5 · 10AM–3PM</strong></p>
-      <p>📅 <strong>Phải đặt lịch trước</strong> để dùng ưu đãi này</p>
-      <p>👋 Chỉ <strong>khách mới</strong> — hệ thống kiểm tra bằng SĐT</p>
-      <p>💅 Dịch vụ: <strong>Gel-X</strong></p>
-      <p>📝 Khách mới · 1 lần/khách</p>
+      <p><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-calendar-days-3d.png" alt="" draggable="false"> Áp dụng: <strong>T3–T5 · 10AM–3PM</strong></p>
+      <p><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-calendar-days-3d.png" alt="" draggable="false"> <strong>Phải đặt lịch trước</strong> để dùng ưu đãi này</p>
+      <p><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-user-round-3d.png" alt="" draggable="false"> Chỉ <strong>khách mới</strong> — hệ thống kiểm tra bằng SĐT</p>
+      <p><img class="icon" src="assets/icons/oneqr/salon-nail-polish-iconscout-10843584.png" alt="" draggable="false"> Dịch vụ: <strong>Gel-X</strong></p>
+      <p><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-receipt-3d.png" alt="" draggable="false"> Khách mới · 1 lần/khách</p>
     </div>
-    <a class="promotion-detail-action" href="https://test-web.nexoratouch.com/booking/bitcoin-nail-bar-3?oneQrAs=customer&amp;oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer">📅 Đặt lịch để dùng ưu đãi này</a>
+    <a class="promotion-detail-action" href="https://test-web.nexoratouch.com/booking/bitcoin-nail-bar-3?oneQrAs=customer&amp;oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-calendar-days-3d.png" alt="" draggable="false"> Đặt lịch để dùng ưu đãi này</a>
     <button class="promotion-close" type="button" data-close-promotion>Đóng</button>
   </dialog>
 
@@ -481,14 +459,14 @@
       <div class="promotion-detail-value promotion-detail-value-partner"><span>15%</span><small>GIẢM</small></div>
       <div><h2 id="partnerPromotionDetailTitle">Giảm 15% bánh sinh nhật</h2><p class="promotion-detail-meta">Le Petit Bakery · 1.0 mi · Đặt trước 1 ngày</p></div>
     </div>
-    <div class="promotion-detail-conditions"><p>📅 <strong>Phải đặt lịch trước</strong> để dùng ưu đãi này</p><p>📝 Đặt trước 1 ngày</p></div>
-    <a class="promotion-detail-action" href="https://www.google.com/maps/dir/?api=1&amp;destination=29.7420,-95.4480" target="_blank" rel="noopener noreferrer">📍 Chỉ đường · 1.0 mi</a>
+    <div class="promotion-detail-conditions"><p><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-calendar-days-3d.png" alt="" draggable="false"> <strong>Phải đặt lịch trước</strong> để dùng ưu đãi này</p><p><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-receipt-3d.png" alt="" draggable="false"> Đặt trước 1 ngày</p></div>
+    <a class="promotion-detail-action" href="https://www.google.com/maps/dir/?api=1&amp;destination=29.7420,-95.4480" target="_blank" rel="noopener noreferrer"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-pin-3d.png" alt="" draggable="false"> Chỉ đường · 1.0 mi</a>
     <button class="promotion-close" type="button" data-close-promotion>Đóng</button>
   </dialog>
 
   <dialog class="contact-dialog" id="contactExchange" aria-labelledby="contactExchangeTitle">
     <form id="contactExchangeForm" novalidate>
-      <div class="contact-dialog-heading"><h2 id="contactExchangeTitle" data-contact-copy="exchangeTitle">Send your contact</h2><button class="contact-dialog-close" type="button" data-close-contact aria-label="Close" data-contact-aria="close">×</button></div>
+      <div class="contact-dialog-heading"><h2 id="contactExchangeTitle" data-contact-copy="exchangeTitle">Send your contact</h2><button class="contact-dialog-close" type="button" data-close-contact aria-label="Close" data-contact-aria="close"><span class="icon icon-close" aria-hidden="true"></span></button></div>
       <label for="contactName" data-contact-copy="name">Your name</label><input id="contactName" name="name" autocomplete="name" maxlength="100" required>
       <label for="contactPhone" data-contact-copy="phone">Phone</label><input id="contactPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="(713) 555-0123" required>
       <label for="contactEmail" data-contact-copy="email">Email (optional)</label><input id="contactEmail" name="email" type="email" autocomplete="email" maxlength="200">

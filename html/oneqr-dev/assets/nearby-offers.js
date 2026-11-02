@@ -1,4 +1,5 @@
 (() => {
+  const icon = window.OneQrIcons.image;
   const { shop, zips, offers, competitors } = window.OneQrDealCatalog;
   const copy = {
     en: {
@@ -45,9 +46,9 @@
   }
 
   function badges(offer) {
-    const type = offer.quantity ? `<span class="nearby-offer-badge nearby-offer-coupon">🎟️ ${translate('coupon', { left: offer.left, quantity: offer.quantity })}</span>` : `<span class="nearby-offer-badge nearby-offer-deal">🏷️ ${translate('deal')}</span>`;
-    const rule = offer.rule === 'booking' ? `📅 ${translate('booking')}` : offer.rule === 'time' ? `⏰ ${text(offer.ruleText)}` : `✅ ${offer.ruleText ? translate('activeDays', { days: text(offer.ruleText) }) : translate('active')}`;
-    return `${type}<span class="nearby-offer-rule"><span class="nearby-offer-badge nearby-offer-${offer.rule}">${escape(rule)}</span></span>`;
+    const type = offer.quantity ? `<span class="nearby-offer-badge nearby-offer-coupon">${icon('coupon')} ${translate('coupon', { left: offer.left, quantity: offer.quantity })}</span>` : `<span class="nearby-offer-badge nearby-offer-deal">${icon('deal')} ${translate('deal')}</span>`;
+    const rule = offer.rule === 'booking' ? `${translate('booking')}` : offer.rule === 'time' ? `${text(offer.ruleText)}` : `${offer.ruleText ? translate('activeDays', { days: text(offer.ruleText) }) : translate('active')}`;
+    return `${type}<span class="nearby-offer-rule"><span class="nearby-offer-badge nearby-offer-${offer.rule}">${icon(offer.rule === 'booking' ? 'calendar' : offer.rule === 'time' ? 'clock' : 'active')} ${escape(rule)}</span></span>`;
   }
 
   function renderDetail() {
@@ -59,8 +60,8 @@
       <p class="profile-name">${escape(offer.business)}</p>
       <p class="nearby-offer-detail-meta">${escape(text(offer.condition))} · ${distance} mi</p>
       ${badges(offer)}
-      <section class="nearby-offer-conditions"><strong>${translate('conditions')}</strong><p>${escape(text(offer.condition))}</p>${offer.rule === 'booking' ? `<p>📅 ${translate('booking')}</p>` : ''}</section>
-      <a class="outline-link" href="https://www.google.com/maps/dir/?api=1&amp;destination=${offer.latitude},${offer.longitude}" target="_blank" rel="noopener noreferrer">📍 ${translate('directions')} · ${distance} mi</a>
+      <section class="nearby-offer-conditions"><strong>${translate('conditions')}</strong><p>${escape(text(offer.condition))}</p>${offer.rule === 'booking' ? `<p>${icon('calendar')} ${translate('booking')}</p>` : ''}</section>
+      <a class="outline-link" href="https://www.google.com/maps/dir/?api=1&amp;destination=${offer.latitude},${offer.longitude}" target="_blank" rel="noopener noreferrer">${icon('directions')} ${translate('directions')} · ${distance} mi</a>
       <p class="profile-note">${translate('source')}</p>`;
   }
 
@@ -80,7 +81,7 @@
     if (state.zip) get('nearbyZip').value = state.zip;
     else if (previous && previous.origin !== state.origin) get('nearbyZip').value = '';
     const zip = zips[state.zip];
-    get('nearbyAnchorIcon').textContent = state.origin === 'mine' ? '📡' : state.origin === 'zip' ? '✍️' : '🏪';
+    get('nearbyAnchorIcon').innerHTML = icon(state.origin === 'mine' ? 'map-pin' : state.origin === 'zip' ? 'directions' : 'store');
     get('nearbyAnchorTitle').textContent = state.origin === 'mine' ? translate('mineTitle') : zip ? `ZIP ${state.zip} · ${zip[2]}` : translate('shopTitle');
     get('nearbyAnchorHint').textContent = translate(state.origin === 'mine' ? 'mineHint' : zip ? 'zipHint' : 'shopHint');
 
@@ -88,7 +89,7 @@
     const radius = state.radius ?? Infinity;
     const hidden = competitors.filter(item => miles(origin, item) <= radius).length;
     get('nearbyCompetitors').hidden = hidden === 0;
-    get('nearbyCompetitors').textContent = `🛡️ ${translate('competitors', { count: hidden })}`;
+    get('nearbyCompetitors').innerHTML = `${icon('filter')} ${escape(translate('competitors', { count: hidden }))}`;
     const measured = offers.map(offer => ({ ...offer, distance: miles(origin, offer) }));
     currentDistances = new Map(measured.map(offer => [offer.id, offer.distance]));
     // PO offer fixtures have no business opening hours. Open now includes only verified-open businesses.
