@@ -45,6 +45,40 @@
           <input id="dealSearch" name="q" type="search" maxlength="100" autocomplete="off" enterkeyhint="search" placeholder="What would you like? e.g. milk tea nearby" data-search-placeholder="searchPlaceholder">
           <button class="search-submit" type="submit" data-search-copy="find">Find</button>
         </form>
+        <div class="location-filters">
+          <div class="discovery-selects">
+            <div class="discovery-select-radius">
+              <label class="sr-only" id="radiusFilterLabel" for="radiusFilter" data-copy="radius">Radius</label>
+              <select id="radiusFilter">
+                <option value="" data-copy="radius">Radius</option>
+                <option value="1">1 mi</option>
+                <option value="3">3 mi</option>
+                <option value="5">5 mi</option>
+                <option value="10">10 mi</option>
+                <option value="25">25 mi</option>
+                <option value="50">50 mi</option>
+              </select>
+            </div>
+            <div class="discovery-select-industry">
+              <label class="sr-only" id="industryFilterLabel" for="industryFilter" data-copy="industryFilter">Industry</label>
+              <select id="industryFilter">
+                <option value="all" data-copy="allIndustries" data-icon="store">All industries</option>
+                <option value="food" data-copy="industryFood" data-icon="food">Food &amp; drinks</option>
+                <option value="auto" data-copy="industryAuto" data-icon="auto">Auto</option>
+                <option value="family" data-copy="industryFamily" data-icon="partner">Family &amp; pets</option>
+                <option value="health" data-copy="industryHealth" data-icon="health">Health</option>
+                <option value="shop" data-copy="industryShop" data-icon="shopping">Shopping</option>
+                <option value="fastfood" data-copy="industry" data-icon="food">Fast food &amp; sandwiches</option>
+              </select>
+            </div>
+          </div>
+          <div class="filter-row">
+            <span class="filter-label" data-copy="distancesFrom">Distances from</span>
+            <button class="chip origin-shop" type="button" data-origin="shop" aria-pressed="true"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-pin-3d.png" alt="" draggable="false"><span>Bitcoin Nail Bar</span></button>
+            <button class="chip" type="button" data-origin="mine" aria-pressed="false"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-pin-3d.png" alt="" draggable="false"><span data-copy="myLocation">My location</span></button>
+          </div>
+          <p class="location-warning" id="locationWarning" role="status" hidden></p>
+        </div>
         <div class="search-suggestions" id="searchSuggestions" aria-label="Search suggestions" data-search-aria="suggestions"></div>
         <p class="nearby-competitors search-guide" id="searchGuide"></p>
         <div class="search-parsed" id="searchParsed" hidden></div>
@@ -60,47 +94,6 @@
           <button class="search-submit" type="submit" id="wishSubmit"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-wand-2-3d.png" alt="" draggable="false"><span id="wishSubmitLabel" data-search-copy="wish">Post a request</span></button>
           <p class="search-wish-status" id="wishStatus" role="status" hidden></p>
         </form>
-        <details class="area-filters">
-          <summary data-copy="areaRadius">Area &amp; radius</summary>
-          <div class="location-filters">
-            <nav class="discovery-tabs" aria-label="Explore" data-copy-aria="nav">
-              <a class="discovery-tab nearby-tab" href="nearby.html" data-local-page="nearby.html"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-pin-3d.png" alt="" draggable="false"><span data-copy="nearbyNav">Nearby</span></a>
-              <a class="discovery-tab" href="deals.html" data-local-page="deals.html" aria-current="page"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-ticket-3d.png" alt="" draggable="false"><span data-copy="dealsNav">Search Deals</span></a>
-            </nav>
-            <div class="filter-row">
-              <span class="filter-label" data-copy="distancesFrom">Distances from</span>
-              <button class="chip origin-shop" type="button" data-origin="shop" aria-pressed="true"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-pin-3d.png" alt="" draggable="false"><span>Bitcoin Nail Bar</span></button>
-              <button class="chip" type="button" data-origin="mine" aria-pressed="false"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-pin-3d.png" alt="" draggable="false"><span data-copy="myLocation">My location</span></button>
-            </div>
-            <div class="discovery-selects">
-              <div class="discovery-select-radius">
-                <label class="sr-only" id="radiusFilterLabel" for="radiusFilter" data-copy="radius">Radius</label>
-                <select id="radiusFilter">
-                  <option value="" data-copy="radius">Radius</option>
-                  <option value="1">1 mi</option>
-                  <option value="3">3 mi</option>
-                  <option value="5">5 mi</option>
-                  <option value="10">10 mi</option>
-                  <option value="25">25 mi</option>
-                  <option value="50">50 mi</option>
-                </select>
-              </div>
-              <div class="discovery-select-industry">
-                <label class="sr-only" id="industryFilterLabel" for="industryFilter" data-copy="industryFilter">Industry</label>
-                <select id="industryFilter">
-                  <option value="all" data-copy="allIndustries" data-icon="store">All industries</option>
-                  <option value="food" data-copy="industryFood" data-icon="food">Food &amp; drinks</option>
-                  <option value="auto" data-copy="industryAuto" data-icon="auto">Auto</option>
-                  <option value="family" data-copy="industryFamily" data-icon="partner">Family &amp; pets</option>
-                  <option value="health" data-copy="industryHealth" data-icon="health">Health</option>
-                  <option value="shop" data-copy="industryShop" data-icon="shopping">Shopping</option>
-                  <option value="fastfood" data-copy="industry" data-icon="food">Fast food &amp; sandwiches</option>
-                </select>
-              </div>
-            </div>
-            <p class="location-warning" id="locationWarning" role="status" hidden></p>
-          </div>
-        </details>
       </div>
     </div>
   </main>
