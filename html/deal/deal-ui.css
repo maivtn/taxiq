@@ -650,6 +650,13 @@ body:has(.dw-match-select .dropdown-active) .ai-guide-fab{visibility:hidden}
   .last-minute-note small{font-size:11px;line-height:1.45}
 }
 
+/* The business industry picker uses the same icon select as the deal filters. */
+#businessStartForm .business-industry-select{max-width:none}
+#businessStartForm .business-industry-select .ts-control{min-height:46px;padding:7px 44px 7px 12px;border-radius:12px;color:#161b39;font:inherit;font-size:14px}
+#businessStartForm .business-industry-select .dw-match-select-icon{width:24px;height:24px;background:transparent}
+#businessStartForm .business-industry-select .ts-dropdown{color:#3d4961;font-weight:600}
+#businessStartForm .business-industry-select .focus .ts-control{border-color:#78c9bc;box-shadow:0 0 0 3px rgba(145,239,219,.24)}
+
 /* Industry filters share the existing icon select on phones; source buttons keep their logic. */
 .mobile-industry-select{display:none}
 .mobile-industry-label{display:block;margin:0 0 7px;color:#64748b;font-size:10px;font-weight:750;letter-spacing:.08em}

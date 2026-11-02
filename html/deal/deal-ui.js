@@ -324,6 +324,34 @@
     return Math.min(bottom, nav.getBoundingClientRect().top, create?.getBoundingClientRect().top ?? bottom);
   }
 
+  function initializeBusinessIndustrySelect() {
+    const select = document.querySelector('#businessStartForm select[name="industry"]');
+    if (!select || select.tomselect || !window.TomSelect) return;
+    const label = select.closest('label');
+    const caption = label.querySelector(':scope > span');
+    select.id = 'businessStartIndustry';
+    label.htmlFor = select.id;
+    caption.id = `${select.id}Label`;
+    label.classList.add('dw-match-select', 'business-industry-select');
+    const icons = { nail:'nail', restaurant:'food', hair:'hair', spa:'spa', retail:'market', other:'other' };
+    for (const option of select.options) option.dataset.industryIcon = icons[option.value] || 'other';
+    const render = (data, escape) => {
+      const option = [...select.options].find(option => option.value === String(data.value));
+      const icon = window.NEXORA_INDUSTRY_ICONS.image(option?.dataset.industryIcon || 'other', {
+        size:20, className:'deal-industry-icon industry-choice-icon',
+      });
+      return `<div class="dw-match-select-choice"><span class="dw-match-select-icon">${icon}</span><span>${escape(option?.textContent || data.text)}</span></div>`;
+    };
+    const control = new window.TomSelect(select, {
+      create:false, maxItems:1, maxOptions:null, controlInput:null,
+      hideSelected:false, closeAfterSelect:true, searchField:[],
+      render:{option:render,item:render},
+    });
+    control.control.setAttribute('aria-labelledby', caption.id);
+    select.setAttribute('aria-hidden', 'true');
+    control.on('dropdown_open', () => positionMatchSelect(control.wrapper));
+  }
+
   const mobileIndustryControls = new Map();
   let mobileIndustryId = 0;
   const mobileIndustryGroups = [
@@ -695,6 +723,7 @@
       const rule = labelRules.find(([pattern]) => pattern.test(label));
       if (rule) decorateAction(element, rule[1], rule[2]);
     });
+    initializeBusinessIndustrySelect();
     refreshMobileIndustrySelects();
     refreshSavedFilterSelect();
     replaceGlyphs(root);
