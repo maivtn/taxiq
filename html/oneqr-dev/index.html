@@ -333,6 +333,14 @@
           <span class="quick-link-icon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-map-3d.png" alt="" draggable="false"></span>
           <span class="quick-link-label" data-copy="directions">Get directions</span>
         </a>
+        <a class="quick-link" href="#giftCard" data-extra-quick-link data-quick-section="giftCard" hidden>
+          <span class="quick-link-icon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-gift-3d.png" alt="" draggable="false"></span>
+          <span class="quick-link-label" data-copy="welcomeGift">Get welcome gift</span>
+        </a>
+        <a class="quick-link" href="#installCard" data-extra-quick-link data-quick-section="installCard" hidden>
+          <span class="quick-link-icon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-home-3d.png" alt="" draggable="false"></span>
+          <span class="quick-link-label" data-copy="homeScreen">Add to Home Screen</span>
+        </a>
         <button class="quick-link" id="contactMenuTrigger" type="button" data-extra-quick-link data-open-contact-menu aria-haspopup="dialog" aria-controls="contactSection" hidden>
           <span class="quick-link-icon"><img class="icon" src="assets/icons/oneqr/business-card-iconscout-10675394.png" alt="" draggable="false"></span>
           <span class="quick-link-label" data-contact-copy="contact">Contact</span>
@@ -390,7 +398,7 @@
         </ul>
       </section>
 
-      <section class="gift" aria-labelledby="giftTitle">
+      <section class="gift" id="giftCard" aria-labelledby="giftTitle">
         <div class="gift-header">
           <span class="gift-icon"><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-gift-3d.png" alt="" draggable="false"></span>
           <div>
@@ -518,6 +526,7 @@
           links: 'Bitcoin Nail Bar quick links', checkin: 'Smart Check-in', booking: 'Book Appointment',
           services: 'Services & Prices', tip: 'Tip & Pay', review: 'Leave a Review',
           facebook: 'Facebook', instagram: 'Instagram', directions: 'Get directions',
+          welcomeGift: 'Get welcome gift', homeScreen: 'Add to Home Screen',
           showMore: 'Show more', showLess: 'Show less',
           giftTitle: 'A welcome gift from Bitcoin Nail Bar',
           giftDescription: 'Enter your phone number to claim it. No password, no app download.',
@@ -540,6 +549,7 @@
           links: 'Các chức năng của Bitcoin Nail Bar', checkin: 'Tự check-in', booking: 'Đặt lịch',
           services: 'Bảng giá dịch vụ', tip: 'Tip & Thanh toán', review: 'Đánh giá',
           facebook: 'Facebook', instagram: 'Instagram', directions: 'Chỉ đường',
+          welcomeGift: 'Nhận quà chào mừng', homeScreen: 'Thêm vào màn hình chính',
           showMore: 'Xem thêm', showLess: 'Thu gọn',
           giftTitle: 'Quà chào mừng từ Bitcoin Nail Bar',
           giftDescription: 'Nhập số điện thoại để nhận quà. Không cần mật khẩu, không cần tải app.',
@@ -576,6 +586,20 @@
       get('quickLinksToggle').addEventListener('click', () => {
         menuExpanded = !menuExpanded;
         renderQuickLinks();
+      });
+
+      document.querySelectorAll('[data-quick-section]').forEach(link => {
+        link.addEventListener('click', event => {
+          event.preventDefault();
+          const section = get(link.dataset.quickSection);
+          section.hidden = false;
+          if (section.id === 'installCard') {
+            get('installHelp').hidden = false;
+            get('installButton').setAttribute('aria-expanded', 'true');
+          }
+          section.scrollIntoView({ behavior: window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'center' });
+          get(section.id === 'giftCard' ? 'phoneNumber' : 'installButton').focus({ preventScroll: true });
+        });
       });
 
       document.querySelectorAll('[data-promotion-dialog]').forEach(button => {
