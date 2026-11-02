@@ -2,7 +2,7 @@
 .promotion-trigger { display: flex; width: 100%; min-height: 0; flex: 1; flex-direction: column; align-items: stretch; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; touch-action: pan-y; }
 .promotion-title { display: -webkit-box; overflow: hidden; margin: 5px 0 4px; font-size: 15.5px; font-weight: 800; line-height: 1.25; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
 .promotion-trigger .promotion-kicker { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
-.promotion-trigger .promotion-kind { flex-shrink: 0; align-self: stretch; }
+.promotion-trigger .promotion-kind { width: auto; max-width: 100%; flex-shrink: 0; align-self: flex-start; }
 .promotion-trigger .promotion-condition { max-width: 100%; flex-shrink: 0; font-size: 10px; }
 .promotion-trigger .promotion-actions { flex-shrink: 0; }
 .promotion-trigger .promotion-view { display: inline-flex; align-items: center; gap: 4px; }
