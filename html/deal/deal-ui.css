@@ -386,6 +386,16 @@ body:has(.dw-match-select .dropdown-active) .ai-guide-fab{visibility:hidden}
 
 @media(max-width:860px){.offer-classifier{grid-template-columns:1fr}}
 
+/* Phone AI fields use lighter hints while entered text stays at the native 16px scale. */
+@media(max-width:720px){
+  #aiGuideForm{gap:10px;padding:12px;border-radius:14px}
+  #aiGuideForm>label{min-width:0}
+  #aiGuideForm>label>span{margin:0 0 4px 2px;font-size:11px;font-weight:600;line-height:1.35}
+  #aiGuideForm input{box-sizing:border-box;min-height:44px;height:44px;padding:0 10px;border-radius:10px;font-size:16px;font-weight:400;line-height:1.4;color:#26334b}
+  #aiGuideForm input::placeholder{color:#65748b;font-size:14px;font-weight:400;opacity:1}
+  #aiGuideForm>button{min-height:44px;font-size:13px;font-weight:700;line-height:1.35}
+}
+
 @media(hover:none) and (pointer:coarse){
   html{scroll-behavior:auto!important}
   body{padding-left:env(safe-area-inset-left);padding-right:env(safe-area-inset-right)}
