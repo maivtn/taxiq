@@ -1,0 +1,24 @@
+.promotion-banner .promotion-half { height: 198px; padding-bottom: 8px; overflow: hidden; }
+.promotion-trigger { display: flex; width: 100%; min-height: 0; flex: 1; flex-direction: column; align-items: stretch; padding: 0; border: 0; background: transparent; color: inherit; font: inherit; text-align: left; touch-action: pan-y; }
+.promotion-title { display: -webkit-box; overflow: hidden; margin: 5px 0 4px; font-size: 15.5px; font-weight: 800; line-height: 1.25; -webkit-box-orient: vertical; -webkit-line-clamp: 3; }
+.promotion-trigger .promotion-kicker { display: -webkit-box; overflow: hidden; -webkit-box-orient: vertical; -webkit-line-clamp: 2; }
+.promotion-trigger .promotion-kind { flex-shrink: 0; align-self: stretch; }
+.promotion-trigger .promotion-condition { max-width: 100%; flex-shrink: 0; font-size: 10px; }
+.promotion-trigger .promotion-actions { flex-shrink: 0; }
+.promotion-trigger .promotion-view { display: inline-flex; align-items: center; gap: 4px; }
+.promotion-trigger .promotion-view svg { width: 13px; height: 13px; }
+.promotion-progress { display: flex; flex-shrink: 0; gap: 4px; margin-top: 4px; }
+.promotion-progress-button { min-width: 0; height: 16px; flex: 1; padding: 6px 0; border: 0; background: transparent; cursor: pointer; }
+.promotion-progress-track { display: block; height: 3px; overflow: hidden; border-radius: 999px; background: #ffffff59; }
+.promotion-progress-fill { display: block; width: 100%; height: 100%; border-radius: inherit; background: #fff; transform: scaleX(0); transform-origin: left; }
+.promotion-progress-button:hover .promotion-progress-track { background: #ffffff80; }
+.promotion-progress-button:focus-visible { outline: 2px solid #fff; outline-offset: 1px; border-radius: 4px; }
+.promotion-half .promotion-trigger:focus-visible { outline-color: #fff; outline-offset: 3px; border-radius: 5px; }
+.promotion-carousel-meta { margin-top: 2px; color: var(--muted); font-size: 12px; }
+.promotion-carousel-badges { display: flex; flex-wrap: wrap; align-items: center; gap: 5px; margin-top: 9px; }
+.promotion-carousel-badges > span { display: inline-flex; align-items: center; gap: 3px; padding: 3px 6px; border-radius: 6px; background: #f5f3ff; color: #6d28d9; font-size: 10.5px; font-weight: 700; }
+.promotion-carousel-badges img.icon { width: 14px; height: 14px; }
+.promotion-detail-conditions > p + p { margin-top: 3px; }
+@media (prefers-reduced-motion: reduce) {
+  .promotion-trigger { transition: none; }
+}
