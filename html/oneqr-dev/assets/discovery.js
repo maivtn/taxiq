@@ -144,6 +144,7 @@
     });
   });
   get('openNow')?.addEventListener('change', updateResults);
+  if (get('dealSearch')) get('dealSearch').value = (params.get('q') || '').slice(0, 100);
   get('dealSearch')?.addEventListener('input', updateResults);
 
   function distanceFromShop(latitude, longitude) {

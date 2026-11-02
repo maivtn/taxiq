@@ -60,22 +60,25 @@
     .language-option[aria-selected="true"] .icon { visibility: visible; }
     .explore { padding: 12px var(--page-inset) 0; }
     .section-label { margin-bottom: 8px; color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: .025em; text-transform: uppercase; }
-    .explore-cards { display: flex; gap: 12px; }
-    .explore-card { display: flex; min-width: 0; min-height: 188px; flex: 1; flex-direction: column; padding: 14px; border-radius: 16px; transition: background-color .15s, opacity .15s; }
-    .explore-nearby { background: #d1fae5b3; color: #022c22; }
-    .explore-nearby:hover { background: #d1fae5; }
-    .explore-deals { background: linear-gradient(135deg, var(--brand), #7e22ce); color: #fff; }
-    .explore-deals:hover { opacity: .95; }
-    .card-kicker { display: flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
-    .card-kicker .icon { width: 12px; height: 12px; }
-    .explore-nearby .card-kicker { color: #065f46; }
-    .explore-deals .card-kicker { color: #ffffffcc; }
-    .card-title { margin-top: 8px; font-size: 18px; font-weight: 800; line-height: 1.25; }
-    .card-description { margin-top: 8px; font-size: 12px; line-height: 1.375; }
-    .explore-nearby .card-description { color: #064e3bcc; }
-    .explore-deals .card-description { color: #ffffffd9; }
-    .card-action { display: flex; align-items: center; gap: 4px; margin-top: auto; padding-top: 12px; font-size: 12px; font-weight: 800; }
-    .card-action .icon { width: 14px; height: 14px; }
+    .explore-cards { display: flex; gap: 8px; }
+    .explore-card { position: relative; display: flex; min-width: 0; min-height: 126px; flex: 1 1 0; flex-direction: column; padding: 10px; border: 1px solid #ddd6fe; border-radius: 16px; background: linear-gradient(180deg, #fff, #faf5ff); color: var(--text); transition: border-color .15s, box-shadow .15s; }
+    .explore-card:hover { border-color: #bda5fa; box-shadow: 0 4px 14px #7c3aed0d; }
+    .explore-main-link { min-width: 0; }
+    .explore-main-link::after { position: absolute; inset: 0; border-radius: 16px; content: ''; }
+    .explore-card:has(.explore-main-link:focus-visible) { outline: 2px solid var(--brand); outline-offset: 3px; }
+    .explore-card .explore-main-link:focus-visible { outline: none; }
+    .discovery-card-header { display: flex; min-height: 28px; align-items: center; gap: 6px; }
+    .discovery-icon { position: relative; display: flex; width: 28px; height: 28px; flex: 0 0 28px; align-items: center; justify-content: center; }
+    .discovery-icon img { width: 28px; height: 28px; object-fit: contain; }
+    .discovery-search-icon { position: absolute; right: -2px; bottom: -1px; width: 15px; height: 15px; padding: 2px; border-radius: 50%; background: #fff; color: #6d28d9; stroke-width: 2.5; box-shadow: 0 1px 3px #4c1d9526; }
+    .discovery-card-title { min-width: 0; font-size: 13px; font-weight: 800; line-height: 1.2; }
+    .discovery-count { display: flex; min-width: 22px; height: 22px; flex-shrink: 0; align-items: center; justify-content: center; margin-left: auto; padding: 0 5px; border: 2px solid #ede9fe; border-radius: 999px; background: #7c3aed; color: #fff; font-size: 11px; font-weight: 800; }
+    .discovery-context { display: block; margin-top: 5px; color: #4c1d95; font-size: 11.5px; font-weight: 800; line-height: 1.35; }
+    .discovery-preview { display: block; overflow: hidden; margin-top: 2px; color: #64748b; font-size: 11.5px; line-height: 1.4; text-overflow: ellipsis; white-space: nowrap; }
+    .discovery-urgency { display: inline-flex; align-self: flex-start; align-items: center; gap: 3px; margin-top: 6px; padding: 2px 6px; border-radius: 7px; background: #fef3c7; color: #92400e; font-size: 10.5px; font-weight: 800; line-height: 1.35; }
+    .discovery-queries { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
+    .discovery-query { position: relative; z-index: 1; display: inline-flex; align-items: center; padding: 1px 7px; border: 1px solid #ddd6fe; border-radius: 999px; background: #fff; color: #6d28d9; font-size: 10.5px; font-weight: 700; line-height: 1.4; }
+    .discovery-query:hover { border-color: #a78bfa; background: #f3e8ff; }
     .promotion-banner { display: flex; gap: 6px; margin: 12px var(--page-inset) 0; }
     .promotion-half { display: flex; min-width: 0; min-height: 176px; flex: 1 1 0; flex-direction: column; padding: 12px 11px; border-radius: 16px; color: #fff; }
     .promotion-own { background: linear-gradient(135deg, #9d174d, #db2777 60%, #f9a8d4); }
@@ -240,20 +243,25 @@
       </header>
 
       <section class="explore" id="exploreSection" aria-label="Explore for everyone">
-        <p class="section-label" data-copy="explore">Explore for everyone</p>
-        <div class="explore-cards">
+        <div class="explore-cards" lang="vi">
           <a class="explore-card explore-nearby" href="nearby.html" data-dev-page="nearby.html">
-            <span class="card-kicker"><svg class="icon" aria-hidden="true"><use href="#map-pin"/></svg><span data-copy="nearbyLabel">Nearby / Explore</span></span>
-            <span class="card-title" data-copy="nearbyTitle">Great spots right around you</span>
-            <span class="card-description" data-copy="nearbyDescription">Places · Services · Deals if any</span>
-            <span class="card-action"><span data-copy="nearbyAction">Explore nearby</span><svg class="icon" aria-hidden="true"><use href="#arrow-right"/></svg></span>
+            <span class="discovery-card-header"><span class="discovery-icon"><img src="assets/icons/nearby-map-pin-3d.png" alt="" draggable="false"></span><span class="discovery-card-title">Deals Nearby</span><span class="discovery-count">7</span></span>
+            <span class="discovery-context">Gần Bitcoin Nail Bar</span>
+            <span class="discovery-preview">Khám + cạo vôi $79 · 2.1 mi</span>
+            <span class="discovery-urgency"><span aria-hidden="true">⏳</span>2 deal sắp hết suất</span>
           </a>
-          <a class="explore-card explore-deals" href="deals.html" data-dev-page="deals.html">
-            <span class="card-kicker"><svg class="icon" aria-hidden="true"><use href="#search"/></svg><span data-copy="dealsLabel">Search Deals</span></span>
-            <span class="card-title" data-copy="dealsTitle">Just what you need. Deals worth seeing.</span>
-            <span class="card-description" data-copy="dealsDescription">Search by industry, service or product</span>
-            <span class="card-action"><span data-copy="dealsAction">Find deals for me</span><svg class="icon" aria-hidden="true"><use href="#arrow-right"/></svg></span>
-          </a>
+          <div class="explore-card explore-deals">
+            <a class="explore-main-link" href="deals.html" data-dev-page="deals.html">
+              <span class="discovery-card-header"><span class="discovery-icon"><img src="assets/icons/search-deals-ticket-3d.png" alt="" draggable="false"><svg class="icon discovery-search-icon" aria-hidden="true"><use href="#search"/></svg></span><span class="discovery-card-title">Search Deals</span></span>
+              <span class="discovery-context">Gõ điều bạn muốn</span>
+              <span class="discovery-preview">“rửa xe”</span>
+            </a>
+            <div class="discovery-queries">
+              <a class="discovery-query" href="deals.html?q=%C4%83n%20tr%C6%B0a%20d%C6%B0%E1%BB%9Bi%20%2410" data-dev-page="deals.html" data-dev-query="ăn trưa dưới $10">ăn trưa dưới $10</a>
+              <a class="discovery-query" href="deals.html?q=tr%C3%A0%20s%E1%BB%AFa" data-dev-page="deals.html" data-dev-query="trà sữa">trà sữa</a>
+              <a class="discovery-query" href="deals.html?q=r%E1%BB%ADa%20xe" data-dev-page="deals.html" data-dev-query="rửa xe">rửa xe</a>
+            </div>
+          </div>
         </div>
       </section>
 
@@ -548,7 +556,7 @@
           option.setAttribute('aria-selected', String(option.dataset.language === next));
         });
         document.querySelectorAll('[data-dev-page]').forEach(link => {
-          link.href = `${link.dataset.devPage}?lang=${next}`;
+          link.href = `${link.dataset.devPage}?lang=${next}${link.dataset.devQuery ? `&q=${encodeURIComponent(link.dataset.devQuery)}` : ''}`;
         });
         document.dispatchEvent(new CustomEvent('oneqr-dev:language-change', { detail: next }));
         renderCountries();
