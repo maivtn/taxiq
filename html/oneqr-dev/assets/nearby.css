@@ -1,0 +1,63 @@
+.nearby-page .shop { overflow: visible; background: #fafafc; }
+.nearby-page .sr-only { position: absolute; width: 1px; height: 1px; margin: -1px; padding: 0; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+.nearby-toolbar { position: sticky; top: 0; z-index: 10; display: flex; align-items: center; gap: 8px; padding: 8px var(--inset); border-bottom: 1px solid #e5e7eb; border-radius: 16px 16px 0 0; background: #fafafcf5; backdrop-filter: blur(12px); }
+.nearby-back { display: inline-flex; min-height: 40px; flex-shrink: 0; align-items: center; gap: 5px; padding: 0 12px; border: 1px solid #c4b5fd; border-radius: 12px; background: #ede9fe; color: #4c1d95; font-size: 12px; font-weight: 800; }
+.nearby-toolbar h1 { min-width: 0; flex: 1; color: #7c3aed; font-size: 12px; font-weight: 800; line-height: 1.3; text-align: right; }
+.nearby-toolbar .language-toggle { min-width: 32px; height: 36px; padding: 2px 4px; border-color: transparent; background: transparent; }
+.nearby-page .navigation { padding-top: 6px; }
+.nearby-page .discovery-tabs { gap: 6px; margin-top: 0; }
+.nearby-page .discovery-tab { min-height: 30px; padding: 4px 10px; border-color: #e5e7eb; border-radius: 999px; font-size: 11px; }
+.nearby-page .nearby-tab[aria-current="page"] { border-color: #a78bfa; background: #ede9fe; color: #6d28d9; }
+.nearby-page .discovery-content { gap: 8px; padding-top: 8px; }
+.nearby-anchor { display: flex; width: 100%; align-items: center; gap: 8px; padding: 10px 12px; border: 1px solid #e1e4ec; border-radius: 14px; background: #fff; color: var(--text); text-align: left; }
+.nearby-anchor-icon { flex: 0 0 20px; font-size: 20px; text-align: center; }
+.nearby-anchor > span:last-child { min-width: 0; }
+.nearby-anchor strong { display: block; font-size: 13px; font-weight: 800; line-height: 1.35; }
+.nearby-anchor small { display: block; margin-top: 2px; color: #64748b; font-size: 11.5px; line-height: 1.45; }
+.nearby-gps { display: flex; width: 100%; min-height: 42px; align-items: center; gap: 6px; padding: 8px 11px; border: 1px solid #ddd6fe; border-radius: 12px; background: #f5f3ff; color: #6d28d9; font-size: 12px; font-weight: 800; text-align: left; }
+.nearby-gps small { color: #64748b; font-size: 10.5px; font-weight: 600; }
+.nearby-gps:disabled { cursor: wait; opacity: .6; }
+.nearby-switch { position: relative; width: 38px; height: 22px; flex: 0 0 38px; margin-left: auto; border-radius: 999px; background: #cbd5e1; transition: background-color .2s; }
+.nearby-switch::after { position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; content: ''; transition: transform .2s; }
+.nearby-gps[aria-checked="true"] .nearby-switch { background: #7c3aed; }
+.nearby-gps[aria-checked="true"] .nearby-switch::after { transform: translateX(16px); }
+.nearby-zip { display: flex; align-items: stretch; gap: 6px; }
+.nearby-zip input { width: 0; min-width: 0; min-height: 36px; flex: 1; padding: 8px 10px; border: 1px solid #e1e4ec; border-radius: 10px; background: #fff; color: var(--text); font-size: 14px; }
+.nearby-zip button { min-height: 36px; padding: 6px 12px; border: 0; border-radius: 12px; background: #7c3aed; color: #fff; font-size: 12px; font-weight: 800; }
+.nearby-zip .nearby-zip-reset { padding: 0 10px; border: 1px solid #ddd6fe; background: #fff; color: #6d28d9; font-size: 20px; }
+.nearby-zip-error { color: #b45309; font-size: 11.5px; }
+.nearby-page .chip { min-height: 30px; padding: 4px 10px; border-color: #e5e7eb; background: #fff; color: var(--text); font-size: 12px; }
+.nearby-page .chip[aria-pressed="true"] { border-color: #8b5cf6; background: #ede9fe; color: #6d28d9; }
+.nearby-page .industries { margin-bottom: -4px; padding-bottom: 8px; scrollbar-width: thin; scrollbar-color: #cbd5e1 transparent; }
+.nearby-page .industries::-webkit-scrollbar { display: block; height: 5px; }
+.nearby-page .industries::-webkit-scrollbar-thumb { border-radius: 999px; background: #cbd5e1; }
+.nearby-page .open-only { min-height: 30px; }
+.nearby-competitors { padding: 8px 10px; border: 1px solid #e1e4ec; border-radius: 10px; background: #f8fafc; color: #64748b; font-size: 11.5px; line-height: 1.5; }
+.nearby-offer-count { color: #64748b; font-size: 11px; }
+.nearby-offers { display: flex; flex-direction: column; gap: 8px; margin: 0; padding: 0; list-style: none; }
+.nearby-offer { display: flex; width: 100%; gap: 10px; padding: 10px; border: 1px solid #e1e4ec; border-radius: 14px; background: #fff; color: var(--text); text-align: left; }
+.nearby-offer:hover { border-color: #c4b5fd; box-shadow: 0 3px 12px #7c3aed0a; }
+.nearby-offer-value { display: flex; width: 62px; min-height: 90px; flex: 0 0 62px; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; background: var(--offer-color, #7c3aed); color: #fff; font-size: 15px; font-weight: 900; line-height: 1.2; }
+.nearby-offer-value small { font-size: 9.5px; font-weight: 800; opacity: .9; }
+.nearby-offer-content { display: block; min-width: 0; flex: 1; }
+.nearby-offer-content strong { display: block; font-size: 13.5px; font-weight: 800; line-height: 1.3; overflow-wrap: anywhere; }
+.nearby-offer-meta { display: block; margin-top: 2px; color: #64748b; font-size: 11.5px; line-height: 1.4; }
+.nearby-offer-badge { display: inline-flex; align-items: center; gap: 3px; margin-top: 4px; padding: 1px 6px; border-radius: 6px; font-size: 10px; font-weight: 800; line-height: 1.6; }
+.nearby-offer-coupon { background: #ede9fe; color: #6d28d9; }
+.nearby-offer-deal { background: #ccfbf1; color: #0f766e; }
+.nearby-offer-time { background: #fef3c7; color: #92400e; }
+.nearby-offer-active { background: #dcfce7; color: #166534; }
+.nearby-offer-booking { background: #dbeafe; color: #1e40af; }
+.nearby-offer-rule { display: block; }
+.nearby-page .results-heading { margin-top: 8px; }
+.nearby-page .business-card { display: flex; gap: 10px; padding: 10px; border-color: #e1e4ec; border-radius: 14px; }
+.nearby-page .business-cover { width: 62px; height: auto; min-height: 90px; flex: 0 0 62px; border-radius: 12px; }
+.nearby-page .business-body { min-width: 0; flex: 1; padding: 0; }
+.nearby-page .business-title h3 { font-size: 13.5px; }
+.nearby-page .business-action { min-height: 36px; margin-top: 6px; border-color: #c4b5fd; background: #f5f3ff; color: #6d28d9; }
+.nearby-offer-detail-meta { margin: 8px 0; color: #64748b; font-size: 12px; }
+.nearby-offer-conditions { margin: 12px 0; padding: 10px; border: 1px solid #e1e4ec; border-radius: 10px; background: #f8fafc; color: #64748b; font-size: 12px; line-height: 1.6; }
+
+@media (max-width: 639px) {
+  .nearby-toolbar { border-radius: 0; }
+}

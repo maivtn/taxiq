@@ -47,11 +47,11 @@
   const params = new URLSearchParams(window.location.search);
   let language = params.get('lang') === 'vi' ? 'vi' : 'en';
   const business = { latitude: 30.2729209, longitude: -97.74438630000002, industry: 'fastfood', open: true };
-  const state = { radius: null, industry: 'all', origin: 'shop', distance: 0, locationWarning: null };
+  const state = { radius: page === 'nearby' ? 3 : null, industry: 'all', origin: 'shop', distance: 0, locationWarning: null, coordinates: null, zip: '' };
   let locationRequest = 0;
 
   function updateResults() {
-    const visible = (state.industry === 'all' || state.industry === business.industry)
+    const visible = (state.industry === 'all' || state.industry === business.industry || state.industry === 'food')
       && (state.radius === null || state.distance <= state.radius)
       && (!get('openNow')?.checked || business.open);
     if (page === 'nearby') {
@@ -68,9 +68,11 @@
     });
     document.querySelectorAll('[data-origin]').forEach(button => {
       button.setAttribute('aria-pressed', String(button.dataset.origin === state.origin));
+      if (button.getAttribute('role') === 'switch') button.setAttribute('aria-checked', String(button.dataset.origin === state.origin));
     });
     get('locationWarning').hidden = !state.locationWarning;
     get('locationWarning').textContent = state.locationWarning ? copy[language][state.locationWarning] : '';
+    if (page === 'nearby') document.dispatchEvent(new CustomEvent('oneqr-dev:nearby-state', { detail: { ...state, language, openOnly: Boolean(get('openNow')?.checked) } }));
   }
 
   function setLanguage(next) {
@@ -158,10 +160,14 @@
   document.querySelector('[data-origin="shop"]').addEventListener('click', () => {
     locationRequest += 1;
     document.querySelector('[data-origin="mine"]').disabled = false;
-    Object.assign(state, { origin: 'shop', distance: 0, locationWarning: null });
+    Object.assign(state, { origin: 'shop', distance: 0, locationWarning: null, coordinates: null, zip: '' });
     updateResults();
   });
   document.querySelector('[data-origin="mine"]').addEventListener('click', event => {
+    if (page === 'nearby' && state.origin === 'mine') {
+      document.querySelector('[data-origin="shop"]').click();
+      return;
+    }
     const request = ++locationRequest;
     const button = event.currentTarget;
     if (!navigator.geolocation) {
@@ -174,15 +180,26 @@
       if (request !== locationRequest) return;
       button.disabled = false;
       state.origin = 'mine';
+      state.coordinates = { latitude: position.coords.latitude, longitude: position.coords.longitude };
+      state.zip = '';
       state.distance = distanceFromShop(position.coords.latitude, position.coords.longitude);
       state.locationWarning = null;
       updateResults();
     }, () => {
       if (request !== locationRequest) return;
       button.disabled = false;
-      Object.assign(state, { origin: 'shop', distance: 0, locationWarning: 'locationDenied' });
+      Object.assign(state, { origin: 'shop', distance: 0, locationWarning: 'locationDenied', coordinates: null, zip: '' });
       updateResults();
     }, { timeout: 10000, maximumAge: 60000 });
+  });
+
+  document.addEventListener('oneqr-dev:nearby-origin', event => {
+    const next = event.detail;
+    if (page !== 'nearby' || !Number.isFinite(next?.latitude) || !Number.isFinite(next?.longitude)) return;
+    locationRequest += 1;
+    document.querySelector('[data-origin="mine"]').disabled = false;
+    Object.assign(state, { origin: 'zip', coordinates: { latitude: next.latitude, longitude: next.longitude }, zip: next.zip, locationWarning: null, distance: distanceFromShop(next.latitude, next.longitude) });
+    updateResults();
   });
 
   const dialog = get('businessDialog');
