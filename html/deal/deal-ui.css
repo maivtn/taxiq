@@ -222,6 +222,8 @@ dialog :is(#couponClaimForm,#openingHoldForm) button[type="submit"]{padding-bloc
 .dw-primary.red{background:linear-gradient(135deg,#c82b58,#b9184d)}
 .dw-primary.green{background:linear-gradient(135deg,#0a7c60,#08654e)}
 .last-minute-card .last-minute-action button[data-open]{background:linear-gradient(90deg,#b4364f,#bd4b2d)}
+.last-minute-time.nail,.salon-monogram.nail{background:linear-gradient(155deg,#704267,#925079)}
+.last-minute-time.hair,.salon-monogram.hair{background:linear-gradient(155deg,#694433,#8d5139)}
 [data-beauty-clip] > span .deal-action-icon{color:inherit;filter:drop-shadow(0 1px 2px #0008)}
 .desktop-nav .coupon-nav{gap:10px;padding-inline:10px;font-weight:700}
 .desktop-nav .coupon-nav>.coupon-nav-art{display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border-radius:11px;background:linear-gradient(135deg,#fff0f6,#f1edff)}
