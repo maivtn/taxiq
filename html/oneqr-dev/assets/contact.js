@@ -4,11 +4,13 @@
   const card = { name: 'Bitcoin Nail Bar', phone: '+1 (346) 555-0100', website: 'https://bitcoinnailbar.com/', street: '5444 Westheimer Rd, Suite 1000', city: 'Houston', region: 'Texas' };
   // Mary is the requested manager example; Kim and Chloe come from the PO team demo.
   // Every contact inherits the same shop details; only the name and title vary.
+  // Demo portraits reuse Unsplash images from the customer prototype; these are not actual staff photos.
+  // Mary: photo-1494790108377-be9c29b29330; Kim: photo-1487412947147-5cebf100ffc2.
   const contactGroups = [
     { key: 'shop', people: [{ id: 'shop', name: card.name, title: 'shopTitle', avatar: '' }] },
-    { key: 'manager', people: [{ id: 'mary-nguyen', name: 'Mary Nguyen', title: 'manager', avatar: '' }] },
+    { key: 'manager', people: [{ id: 'mary-nguyen', name: 'Mary Nguyen', title: 'manager', avatar: 'assets/avatars/mary-demo.jpg' }] },
     { key: 'tech', people: [
-      { id: 'kim-nguyen', name: 'Kim Nguyen', title: 'tech', avatar: '' },
+      { id: 'kim-nguyen', name: 'Kim Nguyen', title: 'tech', avatar: 'assets/avatars/kim-demo.jpg' },
       { id: 'chloe', name: 'Chloe', title: 'tech', avatar: '' }
     ] }
   ];
