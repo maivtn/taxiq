@@ -218,6 +218,14 @@ dialog :is(#couponClaimForm,#openingHoldForm) button[type="submit"]{padding-bloc
   #searchForm .search-button{grid-column:1;grid-row:3;width:100%}
 }
 .primary-cta{background:linear-gradient(135deg,#6242ca,#196ac1)}
+/* Nearby search and filter controls share one height across responsive rows. */
+.dw-nearby-toolbar{align-items:stretch}
+.dw-nearby-toolbar>label,.dw-nearby-toolbar>.dw-primary,.dw-nearby-toolbar>.dw-secondary,.dw-nearby-toolbar>.dw-nearby-picker>summary{box-sizing:border-box;min-height:48px;height:48px;padding-block:0}
+.dw-nearby-toolbar>label>input{box-sizing:border-box;min-width:0;min-height:0;height:100%;padding:0}
+.dw-nearby-toolbar>.dw-nearby-picker>summary{position:relative;padding-right:44px}
+.dw-nearby-toolbar>.dw-nearby-picker>summary>[data-nearby-summary]{flex:1;min-width:0;max-width:none;text-align:center}
+.dw-nearby-toolbar>.dw-nearby-picker>summary>.deal-inline-icon{flex:none;width:16px;height:16px;margin:0}
+.dw-nearby-toolbar>.dw-nearby-picker>summary>.deal-inline-icon:last-child{position:absolute;right:16px;top:50%;transform:translateY(-50%)}
 .dw-primary.coral,.dw-role-tabs button.active{background:linear-gradient(135deg,#bd4614,#c52e2a)}
 .dw-primary.red{background:linear-gradient(135deg,#c82b58,#b9184d)}
 .dw-primary.green{background:linear-gradient(135deg,#0a7c60,#08654e)}
