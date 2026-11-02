@@ -213,8 +213,10 @@
     }
   </style>
   <link rel="stylesheet" href="assets/bottom-nav.css">
+  <link rel="stylesheet" href="assets/contact.css">
   <script src="assets/bottom-nav.js" defer></script>
   <script src="assets/discovery-preview.js" defer></script>
+  <script src="assets/contact.js" defer></script>
 </head>
 <body>
   <!-- Reference: https://test-web.nexoratouch.com/o/bitcoin-nail-bar-3?as=customer -->
@@ -230,6 +232,13 @@
     <symbol id="download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/></symbol>
     <symbol id="arrow-up-right" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></symbol>
     <symbol id="check" viewBox="0 0 24 24"><path d="m20 6-11 11-5-5"/></symbol>
+    <symbol id="contact-phone" viewBox="0 0 24 24"><path d="M22 16.9v3a2 2 0 0 1-2.2 2A19.8 19.8 0 0 1 3.1 5.2 2 2 0 0 1 5.1 3h3a2 2 0 0 1 2 1.7c.1 1 .4 1.9.7 2.8a2 2 0 0 1-.5 2.1L9 10.9a16 16 0 0 0 4.1 4.1l1.3-1.3a2 2 0 0 1 2.1-.5c.9.3 1.8.6 2.8.7a2 2 0 0 1 2.7 3Z"/></symbol>
+    <symbol id="contact-message" viewBox="0 0 24 24"><path d="M21 15a2 2 0 0 1-2 2H7l-5 5V5a2 2 0 0 1 2-2h15a2 2 0 0 1 2 2Z"/></symbol>
+    <symbol id="contact-card" viewBox="0 0 24 24"><rect x="4" y="5" width="16" height="17" rx="2"/><path d="M9 5V2h6v3M8 18a4 4 0 0 1 8 0"/><circle cx="12" cy="11" r="2"/></symbol>
+    <symbol id="contact-wallet" viewBox="0 0 24 24"><path d="M20 8V5a2 2 0 0 0-2-2H5a3 3 0 0 0 0 6h15v12H5a3 3 0 0 1-3-3V6"/><path d="M20 12h-5v5h5M17 14.5h.01"/></symbol>
+    <symbol id="contact-navigation" viewBox="0 0 24 24"><path d="m3 11 19-9-9 19-2-8Z"/></symbol>
+    <symbol id="contact-user-plus" viewBox="0 0 24 24"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2m18-13v6m-3-3h6"/><circle cx="9" cy="7" r="4"/></symbol>
+    <symbol id="contact-share" viewBox="0 0 24 24"><circle cx="18" cy="5" r="3"/><circle cx="6" cy="12" r="3"/><circle cx="18" cy="19" r="3"/><path d="m8.6 10.5 6.8-4m-6.8 7 6.8 4"/></symbol>
   </svg>
 
   <main class="page">
@@ -342,6 +351,20 @@
         </a>
       </nav>
       <button class="quick-links-toggle" id="quickLinksToggle" type="button" aria-expanded="false" aria-controls="quickLinks"><span id="quickLinksToggleLabel">Show more</span><svg class="icon" aria-hidden="true"><use href="#chevron-down"/></svg></button>
+
+      <details class="contact-section" id="contactSection">
+        <summary><svg class="icon" aria-hidden="true"><use href="#contact-card"/></svg><span data-contact-copy="contact">Contact</span><svg class="icon contact-chevron" aria-hidden="true"><use href="#chevron-down"/></svg></summary>
+        <nav class="contact-actions" aria-label="Business contact actions" data-contact-aria="actions">
+          <a href="tel:+13465550100"><svg class="icon" aria-hidden="true"><use href="#contact-phone"/></svg><span data-contact-copy="call">Call</span></a>
+          <a href="sms:+13465550100"><svg class="icon" aria-hidden="true"><use href="#contact-message"/></svg><span data-contact-copy="text">Text</span></a>
+          <button type="button" data-contact-action="save"><svg class="icon" aria-hidden="true"><use href="#contact-card"/></svg><span data-contact-copy="save">Save contact</span></button>
+          <button type="button" data-contact-action="wallet"><svg class="icon" aria-hidden="true"><use href="#contact-wallet"/></svg><span data-contact-copy="wallet">Add to Wallet</span></button>
+          <a href="https://www.google.com/maps/dir/?api=1&amp;destination=30.2729209,-97.74438630000002" target="_blank" rel="noopener noreferrer"><svg class="icon" aria-hidden="true"><use href="#contact-navigation"/></svg><span data-contact-copy="directions">Directions</span></a>
+          <button type="button" data-contact-action="exchange" aria-haspopup="dialog" aria-controls="contactExchange"><svg class="icon" aria-hidden="true"><use href="#contact-user-plus"/></svg><span data-contact-copy="exchange">Send yours</span></button>
+          <button type="button" data-contact-action="share"><svg class="icon" aria-hidden="true"><use href="#contact-share"/></svg><span data-contact-copy="share">Share card</span></button>
+        </nav>
+        <p class="contact-feedback" id="contactFeedback" role="status" hidden></p>
+      </details>
 
       <!-- Sponsored examples from the PO's nexora-oneqr-tai-tiem.html and the supplied screenshot. -->
       <section class="sponsored" aria-labelledby="sponsoredTitle" lang="vi">
@@ -461,6 +484,18 @@
     <div class="promotion-detail-conditions"><p>📅 <strong>Phải đặt lịch trước</strong> để dùng ưu đãi này</p><p>📝 Đặt trước 1 ngày</p></div>
     <a class="promotion-detail-action" href="https://www.google.com/maps/dir/?api=1&amp;destination=29.7420,-95.4480" target="_blank" rel="noopener noreferrer">📍 Chỉ đường · 1.0 mi</a>
     <button class="promotion-close" type="button" data-close-promotion>Đóng</button>
+  </dialog>
+
+  <dialog class="contact-dialog" id="contactExchange" aria-labelledby="contactExchangeTitle">
+    <form id="contactExchangeForm" novalidate>
+      <div class="contact-dialog-heading"><h2 id="contactExchangeTitle" data-contact-copy="exchangeTitle">Send your contact</h2><button class="contact-dialog-close" type="button" data-close-contact aria-label="Close" data-contact-aria="close">×</button></div>
+      <label for="contactName" data-contact-copy="name">Your name</label><input id="contactName" name="name" autocomplete="name" maxlength="100" required>
+      <label for="contactPhone" data-contact-copy="phone">Phone</label><input id="contactPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="(713) 555-0123" required>
+      <label for="contactEmail" data-contact-copy="email">Email (optional)</label><input id="contactEmail" name="email" type="email" autocomplete="email" maxlength="200">
+      <label class="contact-consent"><input name="consent" type="checkbox"><span data-contact-copy="consent">I agree to receive SMS from this business. Reply STOP to opt out. You can send your contact without agreeing.</span></label>
+      <p class="contact-error" id="contactExchangeError" role="alert" hidden></p>
+      <div class="contact-dialog-actions"><button type="button" data-close-contact data-contact-copy="cancel">Cancel</button><button class="contact-primary" type="submit" data-contact-copy="send">Send my contact</button></div>
+    </form>
   </dialog>
 
   <script>
