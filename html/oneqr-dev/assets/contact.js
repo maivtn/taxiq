@@ -18,7 +18,7 @@
   const copy = {
     en: {
       contact: 'Contact', actions: 'Business contact actions', call: 'Call', text: 'Text', save: 'Save contact',
-      shop: 'Shop', shopTitle: 'Nail salon · Houston', manager: 'Manager', tech: 'Tech',
+      shop: 'Shop', shopTitle: 'Nail salon · Houston', manager: 'Manager', tech: 'Technician',
       wallet: 'Add to Wallet', directions: 'Directions', exchange: 'Send yours', share: 'Share card',
       exchangeTitle: 'Send your contact', name: 'Your name', phone: 'Phone', email: 'Email (optional)',
       consent: 'I agree to receive SMS from this business. Reply STOP to opt out. You can send your contact without agreeing.',
