@@ -27,5 +27,5 @@ img.icon { display: inline-block; width: 20px; height: 20px; flex-shrink: 0; obj
 svg.lucide-icon { display: inline-block; width: 16px; height: 16px; flex-shrink: 0; vertical-align: middle; }
 .oneqr-bottom-nav svg.lucide-icon { width: 20px; height: 20px; color: #94a3b8; }
 .oneqr-bottom-nav a[aria-current] svg.lucide-icon { color: #7c3aed; }
-.nearby-filter-panel .nearby-gps svg.lucide-icon { width: 16px; height: 16px; }
-.nearby-filter-panel .nearby-anchor-icon svg.lucide-icon { width: 20px; height: 20px; }
+.nearby-location-filters .nearby-gps svg.lucide-icon { width: 16px; height: 16px; }
+.nearby-location-filters .nearby-anchor-icon svg.lucide-icon { width: 18px; height: 18px; }

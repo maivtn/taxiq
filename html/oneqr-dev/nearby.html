@@ -47,14 +47,14 @@
       </div>
 
       <div class="discovery-content">
-        <div class="location-filters discovery-selects nearby-filter-panel">
+        <div class="location-filters nearby-location-filters">
           <div class="nearby-location-heading">
-            <button class="nearby-anchor" type="button" data-origin="shop" aria-pressed="true" aria-describedby="nearbyAnchorHint">
+            <button class="chip nearby-anchor" type="button" data-origin="shop" aria-pressed="true" aria-describedby="nearbyAnchorHint">
               <span class="nearby-anchor-icon" id="nearbyAnchorIcon" aria-hidden="true"><i class="icon" data-lucide="store" aria-hidden="true"></i></span>
               <span><strong id="nearbyAnchorTitle">Around Bitcoin Nail Bar</strong></span>
             </button>
-            <button class="nearby-gps" type="button" role="switch" data-origin="mine" aria-checked="false" aria-pressed="false">
-              <i class="icon" data-lucide="locate-fixed" aria-hidden="true"></i><span class="nearby-gps-label"><span data-nearby-copy="useLocation">Use my location</span><small data-nearby-copy="optional">(optional)</small></span><span class="nearby-switch" aria-hidden="true"></span>
+            <button class="chip nearby-gps" type="button" role="switch" data-origin="mine" aria-checked="false" aria-pressed="false">
+              <i class="icon" data-lucide="locate-fixed" aria-hidden="true"></i><span data-nearby-copy="useLocation">Use my location</span><small class="sr-only" data-nearby-copy="optional">(optional)</small><span class="nearby-switch" aria-hidden="true"></span>
             </button>
           </div>
           <p class="nearby-location-hint" id="nearbyAnchorHint">Distances are measured from the QR shop. No location access needed.</p>
@@ -63,35 +63,39 @@
             <button type="submit" data-nearby-copy="view">View</button>
             <button class="nearby-zip-reset" id="nearbyZipReset" type="button" aria-label="Close" data-nearby-aria="close" hidden><i class="icon" data-lucide="x" aria-hidden="true"></i></button>
           </form>
-          <div class="discovery-select-radius">
-            <label class="sr-only" id="radiusFilterLabel" for="radiusFilter" data-copy="radius">Radius</label>
-            <select id="radiusFilter">
-              <option value="1">1 mi</option>
-              <option value="3" selected>3 mi</option>
-              <option value="5">5 mi</option>
-              <option value="10">10 mi</option>
-              <option value="25">25 mi</option>
-              <option value="50">50 mi</option>
-            </select>
-          </div>
           <p class="nearby-zip-error" id="nearbyZipError" role="alert" hidden></p>
-          <div class="discovery-select-industry">
-            <label class="sr-only" id="industryFilterLabel" for="industryFilter" data-copy="industryFilter">Industry</label>
-            <select id="industryFilter">
-              <option value="all" data-copy="allIndustries" data-icon="store">All industries</option>
-              <option value="food" data-copy="industryFood" data-icon="food">Food &amp; drinks</option>
-              <option value="auto" data-copy="industryAuto" data-icon="auto">Auto</option>
-              <option value="family" data-copy="industryFamily" data-icon="partner">Family &amp; pets</option>
-              <option value="health" data-copy="industryHealth" data-icon="health">Health</option>
-              <option value="shop" data-copy="industryShop" data-icon="shopping">Shopping</option>
-              <option value="fastfood" data-copy="industry" data-icon="food">Fast food &amp; sandwiches</option>
-            </select>
+          <div class="discovery-selects">
+            <div class="discovery-select-radius">
+              <label class="sr-only" id="radiusFilterLabel" for="radiusFilter" data-copy="radius">Radius</label>
+              <select id="radiusFilter">
+                <option value="1">1 mi</option>
+                <option value="3" selected>3 mi</option>
+                <option value="5">5 mi</option>
+                <option value="10">10 mi</option>
+                <option value="25">25 mi</option>
+                <option value="50">50 mi</option>
+              </select>
+            </div>
+            <div class="discovery-select-industry">
+              <label class="sr-only" id="industryFilterLabel" for="industryFilter" data-copy="industryFilter">Industry</label>
+              <select id="industryFilter">
+                <option value="all" data-copy="allIndustries" data-icon="store">All industries</option>
+                <option value="food" data-copy="industryFood" data-icon="food">Food &amp; drinks</option>
+                <option value="auto" data-copy="industryAuto" data-icon="auto">Auto</option>
+                <option value="family" data-copy="industryFamily" data-icon="partner">Family &amp; pets</option>
+                <option value="health" data-copy="industryHealth" data-icon="health">Health</option>
+                <option value="shop" data-copy="industryShop" data-icon="shopping">Shopping</option>
+                <option value="fastfood" data-copy="industry" data-icon="food">Fast food &amp; sandwiches</option>
+              </select>
+            </div>
           </div>
-          <label class="open-only"><input id="openNow" type="checkbox"><span data-copy="openNow">Open now</span></label>
           <p class="location-warning" id="locationWarning" role="status" hidden></p>
         </div>
+        <div class="nearby-results-bar">
+          <label class="open-only"><input id="openNow" type="checkbox"><span data-copy="openNow">Open now</span></label>
+          <p class="nearby-offer-count" id="nearbyOfferCount" role="status"></p>
+        </div>
         <p class="nearby-competitors" id="nearbyCompetitors" hidden></p>
-        <p class="nearby-offer-count" id="nearbyOfferCount" role="status"></p>
         <ul class="nearby-offers" id="nearbyOffers"></ul>
         <p class="empty-state" id="nearbyOffersEmpty" hidden></p>
       </div>
