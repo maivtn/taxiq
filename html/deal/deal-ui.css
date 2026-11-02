@@ -574,15 +574,19 @@ body:has(.dw-match-select .dropdown-active) .ai-guide-fab{visibility:hidden}
 .nd-assistant form button.nd-chat-link{align-items:center;justify-content:center;gap:8px;min-height:44px;padding:10px 14px;font-size:13px;line-height:1.35}
 .nd-assistant form button.nd-chat-link .deal-action-icon{flex:none;width:16px;height:16px;margin:0;color:inherit;vertical-align:middle;stroke-width:1.8}
 
-/* One Lucide style with a distinct symbol and readable tone for each For you item. */
+/* Flaticon artwork identifies the offer itself in each For you item. */
 .discover-mini-icon[data-for-you-tone="teal"]{--mini-accent:#126f61;--mini-fill:#e8f7f1}
 .discover-mini-icon[data-for-you-tone="amber"]{--mini-accent:#9a5c13;--mini-fill:#fff3e5}
 .discover-mini-icon[data-for-you-tone="violet"]{--mini-accent:#6942b8;--mini-fill:#f2ecff}
 .discover-mini-icon[data-for-you-tone="blue"]{--mini-accent:#236aa5;--mini-fill:#edf5ff}
 .discover-mini-icon[data-for-you-tone="rose"]{--mini-accent:#b03d69;--mini-fill:#fff0f6}
 .discover-mini-icon[data-for-you-tone="indigo"]{--mini-accent:#4c54a8;--mini-fill:#eef0ff}
-.discover-mini-icon[data-for-you-icon]{display:grid;place-items:center;border-radius:12px;background:var(--mini-fill);color:var(--mini-accent)}
-.discover-mini-icon .deal-discovery-icon{display:block;width:22px;height:22px;margin:0;color:inherit;stroke-width:1.8}
+.discover-mini-icon[data-for-you-tone]{display:grid;place-items:center;border-radius:12px;background:var(--mini-fill);color:var(--mini-accent)}
+.discover-mini-icon .deal-discovery-art{display:block;width:28px;height:28px;margin:0;object-fit:contain;pointer-events:none}
+.discover-mini-icon.is-combo{position:relative}
+.discover-mini-icon.is-combo .deal-discovery-art{position:absolute;width:24px;height:24px}
+.discover-mini-icon.is-combo .deal-discovery-art:first-child{top:3px;left:3px}
+.discover-mini-icon.is-combo .deal-discovery-art:last-child{right:3px;bottom:3px}
 
 /* White price artwork stays legible across both ticket color families. */
 .dw-ticket-art{color:#fff;background:linear-gradient(145deg,#08755f,#087b84)}

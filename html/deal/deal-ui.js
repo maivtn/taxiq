@@ -634,16 +634,6 @@
         }
       });
     }
-    root.querySelectorAll('.discover-mini-icon[data-for-you-icon]').forEach(element => {
-      if (element.querySelector('.deal-discovery-icon')) return;
-      const library = window.NEXORA_DEAL_LUCIDE;
-      const nodes = library?.icons[element.dataset.forYouIcon];
-      if (!nodes) return;
-      element.replaceChildren(library.createElement(nodes, {
-        width:22, height:22, 'stroke-width':1.8, 'aria-hidden':'true',
-        focusable:'false', class:'deal-discovery-icon',
-      }));
-    });
     root.querySelectorAll('[data-deal-nav-icon]').forEach(element => {
       if (element.querySelector('svg')) return;
       const nodes = window.NEXORA_DEAL_LUCIDE?.icons[element.dataset.dealNavIcon];
