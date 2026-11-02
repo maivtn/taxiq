@@ -789,6 +789,11 @@
     });
   }
 
+  function catalogModuleIcon(type) {
+    var actionId = (catalogActionIds[type] || [])[0];
+    return actionId ? industryCatalog.modules[actionId].icon : catalogEditorIcons[type] || 'link';
+  }
+
   function renderAddModuleList() {
     if (!addModuleListEl || !currentPreset || !moduleCatalog) return;
     var language = document.documentElement.lang === 'vi' ? 0 : 1;
@@ -809,10 +814,9 @@
       return '<section class="oneqr-module-group" aria-labelledby="' + headingId + '">' +
         '<h4 class="oneqr-module-group-heading" id="' + headingId + '">' + escapeModuleText(group.label) + '</h4>' +
         '<div class="oneqr-module-group-list">' + group.items.map(function (type) {
-          var artwork = moduleCatalog.artwork[type];
           var alreadyAdded = catalogModuleAdded(type);
           return '<button type="button" class="oneqr-modal-item' + (alreadyAdded ? ' is-added' : '') + '" data-add-module-type="' + type + '"' + (alreadyAdded ? ' disabled' : '') + '>' +
-            '<span class="oneqr-catalog-tile-heading"><span class="oneqr-modal-item-icon" style="background:' + artwork.c + '" aria-hidden="true">' + escapeModuleText(artwork.ic) + '</span>' +
+            '<span class="oneqr-catalog-tile-heading"><span class="oneqr-modal-item-icon" aria-hidden="true">' + appearanceChoices.image(catalogModuleIcon(type), 28) + '</span>' +
             '<strong>' + escapeModuleText(moduleCatalog.names[type][language]) + '</strong></span>' +
             '<span class="oneqr-catalog-description">' + escapeModuleText(moduleCatalog.descriptions[type][language]) + '</span>' +
             '<span class="oneqr-catalog-add-state">' + escapeModuleText(moduleCatalog.copy[alreadyAdded ? 'added' : 'add'][language]) + '</span></button>';
@@ -879,8 +883,7 @@
       details.title = moduleCatalog.names[type][document.documentElement.lang === 'vi' ? 0 : 1];
       details.catalogType = type;
       details.url = '';
-      var actionId = (catalogActionIds[type] || [])[0];
-      details.icon = actionId ? industryCatalog.modules[actionId].icon : catalogEditorIcons[type] || 'link';
+      details.icon = catalogModuleIcon(type);
       renderAddModuleList();
       renderModules();
       renderPreview();

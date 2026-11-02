@@ -1420,7 +1420,8 @@
 #oneqrAddModuleList .oneqr-modal-item:focus-visible { outline: 2px solid #4f46e5; outline-offset: 2px; }
 #oneqrAddModuleList .oneqr-modal-item.is-added { opacity: .55; cursor: default; }
 .oneqr-catalog-tile-heading { display: flex; align-items: center; gap: 8px; min-width: 0; }
-#oneqrAddModuleList .oneqr-modal-item-icon { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; color: #fff; font-size: 13px; font-weight: 800; }
+#oneqrAddModuleList .oneqr-modal-item-icon { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 9px; background: #f5f3ff; }
+#oneqrAddModuleList .oneqr-modal-item-icon img { display: block; width: 28px; height: 28px; object-fit: contain; }
 #oneqrAddModuleList strong { min-width: 0; color: #16152f; font-size: 13px; line-height: 1.2; overflow-wrap: anywhere; }
 .oneqr-catalog-description { color: #8a89a8; font-size: 11px; line-height: 1.3; font-weight: 400; }
 .oneqr-catalog-add-state { align-self: flex-start; border-radius: 999px; padding: 2px 9px; background: #efeef9; color: #53527a; font-size: 11px; line-height: 1.5; font-weight: 700; white-space: nowrap; }
