@@ -67,6 +67,32 @@
     .explore-deals .card-description { color: #ffffffd9; }
     .card-action { display: flex; align-items: center; gap: 4px; margin-top: auto; padding-top: 12px; font-size: 12px; font-weight: 800; }
     .card-action .icon { width: 14px; height: 14px; }
+    .promotion-banner { display: flex; gap: 6px; margin: 12px var(--page-inset) 0; }
+    .promotion-half { display: flex; min-width: 0; min-height: 176px; flex: 1 1 0; flex-direction: column; padding: 12px 11px; border-radius: 16px; color: #fff; }
+    .promotion-own { background: linear-gradient(135deg, #9d174d, #db2777 60%, #f9a8d4); }
+    .promotion-partner { background: linear-gradient(135deg, #f472b6, #f472b6cc 60%, #ffffff55); }
+    .promotion-kicker { font-size: 9.5px; font-weight: 900; line-height: 1.3; letter-spacing: .8px; text-transform: uppercase; opacity: .9; overflow-wrap: anywhere; }
+    .promotion-half h2 { margin: 5px 0 4px; font-size: 15.5px; font-weight: 800; line-height: 1.25; overflow-wrap: anywhere; }
+    .promotion-kind { display: inline-flex; align-items: center; gap: 3px; margin-bottom: 4px; padding: 2px 6px; border-radius: 6px; background: #ffffff40; font-size: 9px; font-weight: 900; line-height: 1.4; }
+    .promotion-condition { align-self: flex-start; margin-top: 2px; padding: 2px 6px; border-radius: 6px; background: #ffffff38; font-size: 10.5px; font-weight: 800; line-height: 1.4; }
+    .promotion-actions { display: flex; align-items: center; justify-content: space-between; gap: 4px; margin-top: auto; padding-top: 8px; }
+    .promotion-view { min-height: 28px; padding: 6px 9px; border: 0; border-radius: 10px; background: #fff; color: #111; font-size: 12px; font-weight: 800; line-height: 1.3; white-space: nowrap; }
+    .promotion-discount { padding: 5px 8px; border-radius: 10px; background: #fcd34d; color: #111; font-size: 13px; font-weight: 900; line-height: 1.3; white-space: nowrap; }
+    .promotion-progress { display: flex; gap: 3px; margin-top: 8px; }
+    .promotion-progress span { height: 3px; flex: 1; overflow: hidden; border-radius: 2px; background: #ffffff59; }
+    .promotion-progress span:first-child::before { display: block; width: 50%; height: 100%; background: #fff; content: ''; }
+    .promotion-dialog { width: calc(100% - 24px); max-width: 424px; max-height: 90vh; max-height: 90dvh; padding: 16px; border: 1px solid var(--border); border-radius: 20px; background: #fff; color: var(--text); }
+    .promotion-dialog::backdrop { background: #0f172a73; }
+    body:has(.promotion-dialog[open]) { overflow: hidden; }
+    .promotion-detail-header { display: flex; gap: 10px; }
+    .promotion-detail-value { display: flex; width: 62px; min-height: 62px; flex: 0 0 62px; flex-direction: column; align-items: center; justify-content: center; border-radius: 12px; background: #db2777; color: #fff; font-size: 15px; font-weight: 900; }
+    .promotion-detail-value small { font-size: 9.5px; }
+    .promotion-detail-value-partner { background: #f472b6; }
+    .promotion-dialog h2 { margin: 0; font-size: 16px; font-weight: 800; line-height: 1.4; }
+    .promotion-detail-meta { margin-top: 2px; color: var(--muted); font-size: 12.5px; line-height: 1.4; }
+    .promotion-detail-conditions { margin: 10px 0; padding: 8px 10px; border: 1px solid var(--border); border-radius: 10px; background: #f8fafc; font-size: 11.5px; line-height: 1.6; }
+    .promotion-detail-action { display: flex; min-height: 44px; align-items: center; justify-content: center; margin-top: 8px; padding: 9px 13px; border-radius: 12px; background: var(--brand); color: #fff; font-size: 13px; font-weight: 700; text-align: center; }
+    .promotion-close { width: 100%; min-height: 40px; margin-top: 8px; padding: 8px 12px; border: 1px solid var(--border); border-radius: 12px; background: #fff; color: var(--text); font-size: 13px; font-weight: 700; }
     .shop-note { display: flex; align-items: center; gap: 8px; margin: 12px var(--page-inset) 4px; padding: 8px 12px; border-radius: 8px; background: #e9e9ff66; color: var(--brand); font-size: 12px; font-weight: 500; line-height: 1.625; }
     .note-icon { display: flex; width: 20px; height: 20px; flex-shrink: 0; align-items: center; justify-content: center; }
     .note-icon .icon { width: 14px; height: 14px; }
@@ -209,6 +235,30 @@
         </div>
       </section>
 
+      <!-- The PO's split banner keeps the shop and a nearby partner visible together. -->
+      <div class="promotion-banner" lang="vi">
+        <section class="promotion-half promotion-own" aria-labelledby="ownPromotionTitle">
+          <p class="promotion-kicker">CỦA BITCOIN NAIL BAR</p>
+          <h2 id="ownPromotionTitle">Khách mới giảm 20% Gel-X</h2>
+          <span class="promotion-condition"><span aria-hidden="true">📅</span> Cần đặt lịch</span>
+          <div class="promotion-actions">
+            <button class="promotion-view" type="button" data-promotion-dialog="ownPromotionDialog" aria-haspopup="dialog" aria-controls="ownPromotionDialog" aria-describedby="ownPromotionTitle">Xem →</button>
+            <span class="promotion-discount">−20%</span>
+          </div>
+          <div class="promotion-progress" aria-hidden="true"><span></span><span></span></div>
+        </section>
+        <section class="promotion-half promotion-partner" aria-labelledby="partnerPromotionTitle">
+          <span class="promotion-kind"><span aria-hidden="true">🤝</span> GẦN TIỆM</span>
+          <p class="promotion-kicker">LE PETIT BAKERY · 1.0 MI</p>
+          <h2 id="partnerPromotionTitle">Giảm 15% bánh sinh nhật</h2>
+          <div class="promotion-actions">
+            <button class="promotion-view" type="button" data-promotion-dialog="partnerPromotionDialog" aria-haspopup="dialog" aria-controls="partnerPromotionDialog" aria-describedby="partnerPromotionTitle">Xem →</button>
+            <span class="promotion-discount">15%</span>
+          </div>
+          <div class="promotion-progress" aria-hidden="true"><span></span><span></span><span></span></div>
+        </section>
+      </div>
+
       <div class="shop-note"><span class="note-icon"><svg class="icon" aria-hidden="true"><use href="#sparkles"/></svg></span><h2 class="shop-menu-title" id="shopMenuTitle" lang="vi">MENU CỦA BITCOIN NAIL BAR</h2></div>
 
       <nav class="quick-links" id="quickLinks" aria-labelledby="shopMenuTitle">
@@ -328,6 +378,32 @@
     <p class="powered-by"><span data-copy="poweredBy">Powered by</span><a href="https://nexoratouch.com/">Nexora Touch<svg class="icon" aria-hidden="true"><use href="#arrow-up-right"/></svg></a></p>
   </main>
 
+  <dialog class="promotion-dialog" id="ownPromotionDialog" aria-labelledby="ownPromotionDetailTitle" lang="vi">
+    <div class="promotion-detail-header">
+      <div class="promotion-detail-value"><span>20%</span><small>GIẢM</small></div>
+      <div><h2 id="ownPromotionDetailTitle">Khách mới giảm 20% Gel-X</h2><p class="promotion-detail-meta">Bitcoin Nail Bar · Khách mới · 1 lần/khách</p></div>
+    </div>
+    <div class="promotion-detail-conditions">
+      <p>🗓️ Áp dụng: <strong>T3–T5 · 10AM–3PM</strong></p>
+      <p>📅 <strong>Phải đặt lịch trước</strong> để dùng ưu đãi này</p>
+      <p>👋 Chỉ <strong>khách mới</strong> — hệ thống kiểm tra bằng SĐT</p>
+      <p>💅 Dịch vụ: <strong>Gel-X</strong></p>
+      <p>📝 Khách mới · 1 lần/khách</p>
+    </div>
+    <a class="promotion-detail-action" href="https://test-web.nexoratouch.com/booking/bitcoin-nail-bar-3?oneQrAs=customer&amp;oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer">📅 Đặt lịch để dùng ưu đãi này</a>
+    <button class="promotion-close" type="button" data-close-promotion>Đóng</button>
+  </dialog>
+
+  <dialog class="promotion-dialog" id="partnerPromotionDialog" aria-labelledby="partnerPromotionDetailTitle" lang="vi">
+    <div class="promotion-detail-header">
+      <div class="promotion-detail-value promotion-detail-value-partner"><span>15%</span><small>GIẢM</small></div>
+      <div><h2 id="partnerPromotionDetailTitle">Giảm 15% bánh sinh nhật</h2><p class="promotion-detail-meta">Le Petit Bakery · 1.0 mi · Đặt trước 1 ngày</p></div>
+    </div>
+    <div class="promotion-detail-conditions"><p>📅 <strong>Phải đặt lịch trước</strong> để dùng ưu đãi này</p><p>📝 Đặt trước 1 ngày</p></div>
+    <a class="promotion-detail-action" href="https://www.google.com/maps/dir/?api=1&amp;destination=29.7420,-95.4480" target="_blank" rel="noopener noreferrer">📍 Chỉ đường · 1.0 mi</a>
+    <button class="promotion-close" type="button" data-close-promotion>Đóng</button>
+  </dialog>
+
   <script>
     (() => {
       const copy = {
@@ -382,6 +458,20 @@
       const get = id => document.getElementById(id);
       let language = 'en';
       let country = countries[0];
+
+      document.querySelectorAll('[data-promotion-dialog]').forEach(button => {
+        button.addEventListener('click', () => get(button.dataset.promotionDialog).showModal());
+      });
+      document.querySelectorAll('[data-close-promotion]').forEach(button => {
+        button.addEventListener('click', () => button.closest('dialog').close());
+      });
+      document.querySelectorAll('.promotion-dialog').forEach(dialog => {
+        dialog.addEventListener('click', event => {
+          if (event.target !== dialog) return;
+          const bounds = dialog.getBoundingClientRect();
+          if (event.clientX < bounds.left || event.clientX > bounds.right || event.clientY < bounds.top || event.clientY > bounds.bottom) dialog.close();
+        });
+      });
 
       function toggleMenu(button, menu, open) {
         button.setAttribute('aria-expanded', String(open));
