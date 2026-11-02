@@ -612,6 +612,28 @@
         if (key) replaceIndustry(element, key);
       });
     }
+    const engineIcons = [
+      ['.engine-map > i', 'ArrowRight', 'deal-engine-arrow'],
+      ['.engine-map .engine-origin.ledger > span', 'HandCoins', 'deal-engine-ledger'],
+      ['.engine-destinations > span:nth-child(1)', 'MessagesSquare', 'deal-engine-channel'],
+      ['.engine-destinations > span:nth-child(2)', 'QrCode', 'deal-engine-channel'],
+      ['.engine-destinations > span:nth-child(3)', 'MapPin', 'deal-engine-channel'],
+      ['.engine-destinations > span:nth-child(4)', 'Search', 'deal-engine-channel'],
+    ];
+    for (const [selector, name, className] of engineIcons) {
+      root.querySelectorAll('#businessDialog ' + selector).forEach(element => {
+        if (element.querySelector('.' + className)) return;
+        const library = window.NEXORA_DEAL_LUCIDE;
+        const icon = library.createElement(library.icons[name], {
+          width:16, height:16, 'stroke-width':1.8, 'aria-hidden':'true', focusable:'false', class:className,
+        });
+        if (className === 'deal-engine-channel') element.prepend(icon);
+        else {
+          element.replaceChildren(icon);
+          element.setAttribute('aria-hidden', 'true');
+        }
+      });
+    }
     root.querySelectorAll('.discover-mini-icon[data-for-you-icon]').forEach(element => {
       if (element.querySelector('.deal-discovery-icon')) return;
       const library = window.NEXORA_DEAL_LUCIDE;
