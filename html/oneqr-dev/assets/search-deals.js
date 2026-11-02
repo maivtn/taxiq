@@ -125,12 +125,12 @@
       const industry = parsed.industries.length ? parsed.industries.includes(offer.industry) || (parsed.industries.includes('food') && offer.group === 'food') : normalize(query).split(/\s+/).some(word => word.length > 3 && words.includes(word));
       return industry && (parsed.max === null || offer.price !== null && offer.price <= parsed.max)
         && (!parsed.time || offer[parsed.time]);
-    }) : [];
+    }) : measured;
     const hidden = matches.filter(offer => !offer.own && offer.group === 'beauty').length;
     const visible = matches.filter(offer => offer.own || offer.group !== 'beauty').sort((a, b) => Number(Boolean(b.own)) - Number(Boolean(a.own)) || a.distance - b.distance);
     get('searchCompetitors').hidden = hidden === 0;
     get('searchCompetitors').innerHTML = `${icon('filter')} ${escape(translate('competitors', { count: hidden }))}`;
-    get('searchCount').textContent = query ? translate('count', { count: visible.length }) : '';
+    get('searchCount').textContent = translate('count', { count: visible.length });
     get('searchOffers').hidden = visible.length === 0;
     get('searchOffers').innerHTML = visible.map(offer => `<li><button class="nearby-offer" type="button" data-offer="${offer.id}" aria-haspopup="dialog" aria-controls="searchOfferDialog" style="--offer-color:${offer.color}">
       <span class="nearby-offer-value"><span>${offer.value}</span><small>${escape(text(offer.valueLabel))}</small></span>
@@ -153,7 +153,7 @@
 
   get('searchForm').addEventListener('submit', event => {
     event.preventDefault();
-    get('dealSearch').dispatchEvent(new Event('input', { bubbles: true }));
+    document.dispatchEvent(new CustomEvent('oneqr-dev:search-submit'));
     // Keep query deep links without exposing phone numbers or location coordinates.
     const url = new URL(window.location.href);
     const query = get('dealSearch').value.trim();

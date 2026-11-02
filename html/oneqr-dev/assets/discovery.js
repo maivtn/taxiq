@@ -49,6 +49,7 @@
   const page = document.body.dataset.discoveryPage;
   const params = new URLSearchParams(window.location.search);
   let language = params.get('lang') === 'vi' ? 'vi' : 'en';
+  let searchQuery = (params.get('q') || '').slice(0, 100).trim();
   const business = { latitude: 30.2729209, longitude: -97.74438630000002, industry: 'fastfood', open: true };
   const state = { radius: page === 'nearby' ? 3 : null, industry: 'all', origin: 'shop', distance: 0, locationWarning: null, coordinates: null, zip: '' };
   // Share the selected area between Nearby and Search only within this browser tab.
@@ -117,7 +118,7 @@
       } catch { /* Filters still work when session storage is unavailable. */ }
     }
     if (page === 'nearby') document.dispatchEvent(new CustomEvent('oneqr-dev:nearby-state', { detail: { ...state, language, openOnly: Boolean(get('openNow')?.checked) } }));
-    if (page === 'deals') document.dispatchEvent(new CustomEvent('oneqr-dev:search-state', { detail: { ...state, language, query: get('dealSearch').value } }));
+    if (page === 'deals') document.dispatchEvent(new CustomEvent('oneqr-dev:search-state', { detail: { ...state, language, query: searchQuery } }));
   }
 
   function setLanguage(next) {
@@ -188,8 +189,12 @@
     updateResults();
   });
   get('openNow')?.addEventListener('change', updateResults);
-  if (get('dealSearch')) get('dealSearch').value = (params.get('q') || '').slice(0, 100);
-  get('dealSearch')?.addEventListener('input', updateResults);
+  if (get('dealSearch')) get('dealSearch').value = searchQuery;
+  document.addEventListener('oneqr-dev:search-submit', () => {
+    if (page !== 'deals') return;
+    searchQuery = get('dealSearch').value.trim();
+    updateResults();
+  });
 
   function distanceFromShop(latitude, longitude) {
     const radians = degrees => degrees * Math.PI / 180;
