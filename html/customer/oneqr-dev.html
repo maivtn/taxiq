@@ -1,0 +1,438 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#4f46e5">
+  <title>HTML One QR Dev — Bitcoin Nail Bar</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      color-scheme: light;
+      --brand: #4f46e5;
+      --brand-soft: #e9e9ff;
+      --canvas: #f7f9fc;
+      --border: #dde5ef;
+      --text: #0b1220;
+      --muted: #5b6474;
+      --page-inset: 12px;
+    }
+
+    * { box-sizing: border-box; }
+    body { margin: 0; background: #fff; color: var(--text); font: 16px/1.5 Inter, sans-serif; -webkit-font-smoothing: antialiased; }
+    h1, p { margin: 0; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    button, a, input { -webkit-tap-highlight-color: transparent; }
+    a { color: inherit; text-decoration: none; }
+    button:focus-visible, a:focus-visible, input:focus-visible { outline: 2px solid var(--brand); outline-offset: 3px; }
+    [hidden] { display: none !important; }
+    .icon { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
+    .icon-definitions { position: absolute; width: 0; height: 0; overflow: hidden; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+    .page { min-height: 100vh; min-height: 100dvh; }
+    .dev-label { width: fit-content; margin: 12px auto; padding: 4px 12px; border: 1px solid #d7d5fb; border-radius: 999px; background: #eeedff; color: var(--brand); font-size: 11px; font-weight: 800; letter-spacing: .03em; }
+    .shop { width: 100%; max-width: 448px; margin: 0 auto; background: #fff; }
+    .shop-header { position: relative; z-index: 2; display: flex; align-items: center; gap: 12px; padding: 16px var(--page-inset); border-bottom: 1px solid #dde5ef80; background: linear-gradient(135deg, #e9e9ffcc, var(--canvas), #fff); }
+    .shop-logo { display: flex; width: 48px; height: 48px; flex-shrink: 0; align-items: center; justify-content: center; border: 2px solid #ffffffcc; border-radius: 12px; background: #fff; color: var(--brand); font-size: 20px; font-weight: 700; box-shadow: 0 1px 2px #0000000d; }
+    .shop-heading { min-width: 0; flex: 1; }
+    .eyebrow { margin-bottom: 4px; color: var(--brand); font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
+    h1 { overflow-wrap: anywhere; font-size: 18px; font-weight: 700; line-height: 1.375; letter-spacing: -.025em; }
+    .language { position: relative; flex-shrink: 0; }
+    .language-toggle { display: flex; min-width: 44px; height: 44px; flex-direction: column; align-items: center; justify-content: center; padding: 4px 8px; border: 1px solid var(--border); border-radius: 8px; background: #f8fafc; color: var(--text); line-height: 1; }
+    .language-toggle .icon { color: var(--muted); }
+    .language-code { margin-top: 2px; font-size: 9px; font-weight: 700; letter-spacing: .025em; text-transform: uppercase; }
+    .language-menu { position: absolute; z-index: 4; top: calc(100% + 6px); right: 0; width: 152px; padding: 4px; border: 1px solid var(--border); border-radius: 12px; background: #fff; box-shadow: 0 8px 24px #0f172a1a; }
+    .language-option { display: flex; width: 100%; min-height: 40px; align-items: center; justify-content: space-between; padding: 8px 12px; border: 0; border-radius: 8px; background: #fff; color: var(--text); font-size: 13px; text-align: left; }
+    .language-option:hover, .language-option[aria-selected="true"] { background: #f4f3ff; color: var(--brand); }
+    .language-option .icon { visibility: hidden; }
+    .language-option[aria-selected="true"] .icon { visibility: visible; }
+    .explore { padding: 12px var(--page-inset) 0; }
+    .section-label { margin-bottom: 8px; color: var(--muted); font-size: 11px; font-weight: 600; letter-spacing: .025em; text-transform: uppercase; }
+    .explore-cards { display: flex; gap: 12px; }
+    .explore-card { display: flex; min-width: 0; min-height: 188px; flex: 1; flex-direction: column; padding: 14px; border-radius: 16px; transition: background-color .15s, opacity .15s; }
+    .explore-nearby { background: #d1fae5b3; color: #022c22; }
+    .explore-nearby:hover { background: #d1fae5; }
+    .explore-deals { background: linear-gradient(135deg, var(--brand), #7e22ce); color: #fff; }
+    .explore-deals:hover { opacity: .95; }
+    .card-kicker { display: flex; align-items: center; gap: 4px; font-size: 10px; font-weight: 700; letter-spacing: .1em; text-transform: uppercase; }
+    .card-kicker .icon { width: 12px; height: 12px; }
+    .explore-nearby .card-kicker { color: #065f46; }
+    .explore-deals .card-kicker { color: #ffffffcc; }
+    .card-title { margin-top: 8px; font-size: 18px; font-weight: 800; line-height: 1.25; }
+    .card-description { margin-top: 8px; font-size: 12px; line-height: 1.375; }
+    .explore-nearby .card-description { color: #064e3bcc; }
+    .explore-deals .card-description { color: #ffffffd9; }
+    .card-action { display: flex; align-items: center; gap: 4px; margin-top: auto; padding-top: 12px; font-size: 12px; font-weight: 800; }
+    .card-action .icon { width: 14px; height: 14px; }
+    .shop-note { display: flex; align-items: center; gap: 8px; margin: 12px var(--page-inset) 4px; padding: 8px 12px; border-radius: 8px; background: #e9e9ff66; color: var(--brand); font-size: 12px; font-weight: 500; line-height: 1.625; }
+    .note-icon { display: flex; width: 20px; height: 20px; flex-shrink: 0; align-items: center; justify-content: center; }
+    .note-icon .icon { width: 14px; height: 14px; }
+    .quick-links { display: flex; flex-wrap: wrap; gap: 12px; padding: 16px var(--page-inset) 12px; }
+    .quick-link { display: flex; min-width: 0; min-height: 118px; flex: 0 0 calc(50% - 6px); flex-direction: column; align-items: center; justify-content: center; gap: 10px; padding: 16px 12px; border: 1px solid #a8a9f3; border-radius: 16px; background: #fff; text-align: center; transition: background-color .2s; }
+    .quick-link:hover { background: #e9e9ff4d; }
+    .quick-link-icon { display: flex; width: 44px; height: 44px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 12px; background: #e9e9ff80; }
+    .quick-link-icon img { width: 32px; height: 32px; object-fit: contain; }
+    .quick-link-label { width: 100%; overflow-wrap: anywhere; font-size: 13px; font-weight: 700; line-height: 1.375; }
+    .gift { margin: 12px var(--page-inset) 0; border: 1px solid var(--border); border-radius: 16px; background: #fff; box-shadow: 0 1px 2px #0000000d; }
+    .gift-header { display: flex; align-items: center; gap: 12px; padding: 12px 16px; border-radius: 15px 15px 0 0; background: linear-gradient(135deg, #4f46e5, #1e1b4b); color: #fff; }
+    .gift-icon { display: flex; width: 40px; height: 40px; flex-shrink: 0; align-items: center; justify-content: center; border-radius: 12px; background: #ffffff33; }
+    .gift-icon .icon { width: 20px; height: 20px; }
+    .gift-title, .install-title { font-size: 14px; font-weight: 900; line-height: 20px; }
+    .gift-description { font-size: 12px; line-height: 16px; opacity: .9; }
+    .gift-form { display: flex; flex-direction: column; gap: 12px; padding: 16px; }
+    .phone-row { display: flex; align-items: flex-start; gap: 8px; }
+    .country { position: relative; flex-shrink: 0; }
+    .country-toggle { position: relative; display: flex; height: 40px; align-items: center; gap: 8px; padding: 0 44px 0 12px; border: 1px solid var(--border); border-right: 0; border-radius: 8px 0 0 8px; background: #f8fafc; color: var(--text); font-size: 12px; font-weight: 700; }
+    .country-toggle > .icon { position: absolute; top: 50%; right: 16px; transform: translateY(-50%); color: var(--muted); }
+    .country-dial { font-family: ui-monospace, monospace; }
+    .country-menu { position: absolute; z-index: 3; top: calc(100% + 4px); left: 0; width: min(280px, calc(100vw - 56px)); padding: 8px; border: 1px solid var(--border); border-radius: 10px; background: #fff; box-shadow: 0 8px 24px #0f172a1a; }
+    .country-search { width: 100%; min-width: 0; height: 36px; padding: 0 8px; border: 1px solid var(--border); border-radius: 6px; font-size: 12px; }
+    .country-options { max-height: 224px; margin-top: 6px; overflow-y: auto; }
+    .country-option { display: flex; width: 100%; min-height: 36px; align-items: center; justify-content: space-between; gap: 12px; padding: 8px; border: 0; border-radius: 6px; background: #fff; color: var(--text); font-size: 12px; text-align: left; }
+    .country-option:hover, .country-option[aria-selected="true"] { background: #f4f3ff; }
+    .phone-input { width: 0; min-width: 0; height: 44px; flex: 1; padding: 0 12px; border: 1px solid var(--border); border-radius: 8px; background: #fff; color: var(--text); font-size: 16px; font-weight: 500; outline: none; }
+    .phone-input:focus { border-color: var(--brand); }
+    .phone-input::placeholder { color: #9ca3af; opacity: 1; }
+    .sms-consent { display: flex; align-items: flex-start; gap: 8px; color: var(--muted); font-size: 11px; line-height: 1.625; cursor: pointer; }
+    .sms-consent input { width: 16px; height: 16px; flex-shrink: 0; margin: 2px 0 0; accent-color: var(--brand); }
+    .phone-error { color: #dc2626; font-size: 12px; }
+    .primary-button { display: flex; width: 100%; height: 44px; align-items: center; justify-content: center; gap: 8px; border: 0; border-radius: 8px; background: var(--brand); color: #fff; font-size: 14px; font-weight: 700; }
+    .primary-button:hover { background: #4338ca; }
+    .install { position: relative; margin: 12px var(--page-inset) 0; padding: 16px; border: 1px solid var(--border); border-radius: 16px; background: #fff; box-shadow: 0 1px 2px #0000000d; }
+    .install-title { padding-right: 32px; }
+    .dismiss { position: absolute; top: 8px; right: 8px; display: flex; width: 32px; height: 32px; align-items: center; justify-content: center; padding: 0; border: 0; border-radius: 50%; background: transparent; color: var(--muted); }
+    .dismiss:hover { background: var(--canvas); }
+    .install-description, .install-help { margin-top: 4px; color: var(--muted); font-size: 12px; line-height: 16px; }
+    .install .primary-button { height: 40px; margin-top: 12px; }
+    .install-help { margin-top: 12px; }
+    .shop-footer { display: flex; align-items: flex-start; gap: 8px; margin: 0 var(--page-inset) 12px; padding: 12px; border-radius: 12px; background: var(--canvas); color: var(--muted); font-size: 12px; font-weight: 500; line-height: 1.625; }
+    .shop-footer .icon { margin-top: 2px; color: var(--brand); }
+    .shop-footer p { min-width: 0; overflow-wrap: anywhere; }
+    .powered-by { display: flex; align-items: center; justify-content: center; gap: 6px; margin: 12px auto 0; padding-bottom: 16px; color: var(--muted); font-size: 11px; }
+    .powered-by a { display: inline-flex; align-items: center; gap: 4px; color: var(--brand); font-weight: 500; }
+    .powered-by .icon { width: 12px; height: 12px; }
+
+    @media (min-width: 640px) {
+      :root { --page-inset: 20px; }
+      body { background: var(--canvas); }
+      .page { padding: 20px 24px 16px; }
+      .dev-label { margin-top: 0; }
+      .shop { overflow: hidden; border: 1px solid #dde5efb3; border-radius: 16px; box-shadow: 0 2px 8px #0f172a14; }
+      h1 { font-size: 20px; line-height: 28px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { transition: none !important; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Reference: https://test-web.nexoratouch.com/o/bitcoin-nail-bar-3?as=customer -->
+  <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+    <symbol id="globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/></symbol>
+    <symbol id="map-pin" viewBox="0 0 24 24"><path d="M20 10c0 6-8 12-8 12s-8-6-8-12a8 8 0 0 1 16 0Z"/><circle cx="12" cy="10" r="3"/></symbol>
+    <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
+    <symbol id="arrow-right" viewBox="0 0 24 24"><path d="M5 12h14m-7-7 7 7-7 7"/></symbol>
+    <symbol id="sparkles" viewBox="0 0 24 24"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3ZM5 3v4m14 10v4M3 5h4m10 14h4"/></symbol>
+    <symbol id="gift" viewBox="0 0 24 24"><rect x="3" y="8" width="18" height="4" rx="1"/><path d="M12 8v13m7-9v7a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2v-7m2.5-4a2.5 2.5 0 0 1 0-5A4.8 8 0 0 1 12 8a4.8 8 0 0 1 4.5-5 2.5 2.5 0 0 1 0 5"/></symbol>
+    <symbol id="chevron-down" viewBox="0 0 24 24"><path d="m6 9 6 6 6-6"/></symbol>
+    <symbol id="close" viewBox="0 0 24 24"><path d="m18 6-12 12M6 6l12 12"/></symbol>
+    <symbol id="download" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4m4-5 5 5 5-5m-5 5V3"/></symbol>
+    <symbol id="arrow-up-right" viewBox="0 0 24 24"><path d="M7 17 17 7M7 7h10v10"/></symbol>
+    <symbol id="check" viewBox="0 0 24 24"><path d="m20 6-11 11-5-5"/></symbol>
+  </svg>
+
+  <main class="page">
+    <p class="dev-label">HTML One QR Dev</p>
+    <div class="shop">
+      <header class="shop-header">
+        <div class="shop-logo" aria-hidden="true">B</div>
+        <div class="shop-heading">
+          <p class="eyebrow" data-copy="welcome">Welcome to</p>
+          <h1>Bitcoin Nail Bar</h1>
+        </div>
+        <div class="language">
+          <button class="language-toggle" id="languageToggle" type="button" aria-label="Language" aria-haspopup="listbox" aria-controls="languageMenu" aria-expanded="false">
+            <svg class="icon" aria-hidden="true"><use href="#globe"/></svg>
+            <span class="language-code" id="languageCode">EN</span>
+          </button>
+          <div class="language-menu" id="languageMenu" role="listbox" aria-label="Language" hidden>
+            <button class="language-option" type="button" role="option" data-language="en" aria-selected="true"><span>English</span><svg class="icon" aria-hidden="true"><use href="#check"/></svg></button>
+            <button class="language-option" type="button" role="option" data-language="vi" aria-selected="false"><span>Tiếng Việt</span><svg class="icon" aria-hidden="true"><use href="#check"/></svg></button>
+          </div>
+        </div>
+      </header>
+
+      <section class="explore" id="exploreSection" aria-label="Explore for everyone">
+        <p class="section-label" data-copy="explore">Explore for everyone</p>
+        <div class="explore-cards">
+          <a class="explore-card explore-nearby" href="https://test-web.nexoratouch.com/o/bitcoin-nail-bar-3/nearby?oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer">
+            <span class="card-kicker"><svg class="icon" aria-hidden="true"><use href="#map-pin"/></svg><span data-copy="nearbyLabel">Nearby / Explore</span></span>
+            <span class="card-title" data-copy="nearbyTitle">Great spots right around you</span>
+            <span class="card-description" data-copy="nearbyDescription">Places · Services · Deals if any</span>
+            <span class="card-action"><span data-copy="nearbyAction">Explore nearby</span><svg class="icon" aria-hidden="true"><use href="#arrow-right"/></svg></span>
+          </a>
+          <a class="explore-card explore-deals" href="https://test-web.nexoratouch.com/o/bitcoin-nail-bar-3/deals?oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer">
+            <span class="card-kicker"><svg class="icon" aria-hidden="true"><use href="#search"/></svg><span data-copy="dealsLabel">Search Deals</span></span>
+            <span class="card-title" data-copy="dealsTitle">Just what you need. Deals worth seeing.</span>
+            <span class="card-description" data-copy="dealsDescription">Search by industry, service or product</span>
+            <span class="card-action"><span data-copy="dealsAction">Find deals for me</span><svg class="icon" aria-hidden="true"><use href="#arrow-right"/></svg></span>
+          </a>
+        </div>
+      </section>
+
+      <div class="shop-note"><span class="note-icon"><svg class="icon" aria-hidden="true"><use href="#sparkles"/></svg></span><p>Bitcoin Nail Bar</p></div>
+
+      <nav class="quick-links" id="quickLinks" aria-label="Bitcoin Nail Bar quick links">
+        <a class="quick-link" href="https://test-web.nexoratouch.com/checkin/bitcoin-nail-bar-3?oneQrAs=customer&amp;oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer">
+          <span class="quick-link-icon"><img src="../assets/oneqr/action-icons/check-circle-6889473.png" alt="" draggable="false"></span>
+          <span class="quick-link-label" data-copy="checkin">Smart Check-in</span>
+        </a>
+        <a class="quick-link" href="https://test-web.nexoratouch.com/booking/bitcoin-nail-bar-3?oneQrAs=customer&amp;oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer">
+          <span class="quick-link-icon"><img src="../assets/icon-oneqr/oneqr-dev-calendar.png" alt="" draggable="false"></span>
+          <span class="quick-link-label" data-copy="booking">Book Appointment</span>
+        </a>
+        <a class="quick-link" href="https://test-web.nexoratouch.com/menu/bitcoin-nail-bar-3?oneQrAs=customer&amp;oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer">
+          <span class="quick-link-icon"><img src="../assets/oneqr/action-icons/list-2041794.png" alt="" draggable="false"></span>
+          <span class="quick-link-label" data-copy="services">Services &amp; Prices</span>
+        </a>
+        <a class="quick-link" href="https://test-web.nexoratouch.com/touch/bitcoin-nail-bar-3?oneQrAs=customer&amp;oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer">
+          <span class="quick-link-icon"><img src="../assets/oneqr/action-icons/heart-4763016.png" alt="" draggable="false"></span>
+          <span class="quick-link-label" data-copy="tip">Tip &amp; Pay</span>
+        </a>
+        <a class="quick-link" href="https://test-web.nexoratouch.com/touch/bitcoin-nail-bar-3?mode=review&amp;oneQrAs=customer&amp;oneQrReturnTo=%2Fo%2Fbitcoin-nail-bar-3%3Fas%3Dcustomer">
+          <span class="quick-link-icon"><img src="../assets/oneqr/action-icons/star-276049.png" alt="" draggable="false"></span>
+          <span class="quick-link-label" data-copy="review">Leave a Review</span>
+        </a>
+      </nav>
+
+      <section class="gift" aria-labelledby="giftTitle">
+        <div class="gift-header">
+          <span class="gift-icon"><svg class="icon" aria-hidden="true"><use href="#gift"/></svg></span>
+          <div>
+            <p class="gift-title" id="giftTitle" data-copy="giftTitle">A welcome gift from Bitcoin Nail Bar</p>
+            <p class="gift-description" data-copy="giftDescription">Enter your phone number to claim it. No password, no app download.</p>
+          </div>
+        </div>
+        <!-- This HTML captures the landing screen. Gift redemption continues on the reference app. -->
+        <form class="gift-form" id="giftForm" action="https://test-web.nexoratouch.com/o/bitcoin-nail-bar-3" method="get" novalidate>
+          <input type="hidden" name="as" value="customer">
+          <div class="phone-row">
+            <div class="country" id="countryPicker">
+              <button class="country-toggle" id="countryToggle" type="button" aria-haspopup="listbox" aria-controls="countryMenu" aria-expanded="false">
+                <span id="countryCode">US</span><span class="country-dial" id="countryDial">+1</span><svg class="icon" aria-hidden="true"><use href="#chevron-down"/></svg>
+              </button>
+              <div class="country-menu" id="countryMenu" hidden>
+                <input class="country-search" id="countrySearch" type="search" placeholder="Search country or code..." aria-label="Search country or code..." autocomplete="off">
+                <div class="country-options" id="countryOptions" role="listbox" aria-label="US +1"></div>
+              </div>
+            </div>
+            <input class="phone-input" id="phoneNumber" type="tel" inputmode="tel" autocomplete="tel-national" placeholder="(555) 555-5555" aria-label="Phone number" aria-describedby="phoneError">
+          </div>
+          <label class="sms-consent"><input type="checkbox" id="smsConsent"><span data-copy="smsConsent">Text me offers from Bitcoin Nail Bar. Msg &amp; data rates may apply. Reply STOP to opt out. Not required to get your gift.</span></label>
+          <p class="phone-error" id="phoneError" role="alert" data-copy="phoneError" hidden>Enter a valid phone number.</p>
+          <button class="primary-button" type="submit" data-copy="getGift">Get my gift</button>
+        </form>
+      </section>
+
+      <section class="install" id="installCard" aria-labelledby="installTitle">
+        <button class="dismiss" id="dismissInstall" type="button" aria-label="Dismiss"><svg class="icon" aria-hidden="true"><use href="#close"/></svg></button>
+        <p class="install-title" id="installTitle" data-copy="installTitle">Add Bitcoin Nail Bar to your Home Screen</p>
+        <p class="install-description" data-copy="installDescription">Open it like an app, with no browser bar, and get offers from the shop.</p>
+        <button class="primary-button" id="installButton" type="button" aria-controls="installHelp" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#download"/></svg><span data-copy="install">Install</span></button>
+        <p class="install-help" id="installHelp" data-copy="installHelp" hidden>Use your browser menu and choose "Install app" or "Add to Home screen".</p>
+      </section>
+
+      <footer class="shop-footer">
+        <svg class="icon" aria-hidden="true"><use href="#map-pin"/></svg>
+        <p><span class="sr-only" data-copy="address">Address </span>123 Crypto Ave, Austin, TX 78701</p>
+      </footer>
+    </div>
+    <p class="powered-by"><span data-copy="poweredBy">Powered by</span><a href="https://nexoratouch.com/">Nexora Touch<svg class="icon" aria-hidden="true"><use href="#arrow-up-right"/></svg></a></p>
+  </main>
+
+  <script>
+    (() => {
+      const copy = {
+        en: {
+          welcome: 'Welcome to', language: 'Language', explore: 'Explore for everyone',
+          nearbyLabel: 'Nearby / Explore', nearbyTitle: 'Great spots right around you',
+          nearbyDescription: 'Places · Services · Deals if any', nearbyAction: 'Explore nearby',
+          dealsLabel: 'Search Deals', dealsTitle: 'Just what you need. Deals worth seeing.',
+          dealsDescription: 'Search by industry, service or product', dealsAction: 'Find deals for me',
+          links: 'Bitcoin Nail Bar quick links', checkin: 'Smart Check-in', booking: 'Book Appointment',
+          services: 'Services & Prices', tip: 'Tip & Pay', review: 'Leave a Review',
+          giftTitle: 'A welcome gift from Bitcoin Nail Bar',
+          giftDescription: 'Enter your phone number to claim it. No password, no app download.',
+          phone: 'Phone number', phoneError: 'Enter a valid phone number.',
+          countrySearch: 'Search country or code...',
+          smsConsent: 'Text me offers from Bitcoin Nail Bar. Msg & data rates may apply. Reply STOP to opt out. Not required to get your gift.',
+          getGift: 'Get my gift', dismiss: 'Dismiss',
+          installTitle: 'Add Bitcoin Nail Bar to your Home Screen',
+          installDescription: 'Open it like an app, with no browser bar, and get offers from the shop.',
+          install: 'Install', installHelp: 'Use your browser menu and choose "Install app" or "Add to Home screen".',
+          address: 'Address ', poweredBy: 'Powered by'
+        },
+        vi: {
+          welcome: 'Chào mừng đến với', language: 'Ngôn ngữ', explore: 'Khám phá dành cho mọi người',
+          nearbyLabel: 'Khám phá quanh đây', nearbyTitle: 'Chỗ hay ngay quanh bạn',
+          nearbyDescription: 'Địa điểm · Dịch vụ · Ưu đãi nếu có', nearbyAction: 'Khám phá quanh đây',
+          dealsLabel: 'Tìm ưu đãi cho tôi', dealsTitle: 'Đúng nhu cầu. Ưu đãi đáng xem.',
+          dealsDescription: 'Tìm theo ngành, dịch vụ hoặc sản phẩm', dealsAction: 'Tìm ưu đãi cho tôi',
+          links: 'Các chức năng của Bitcoin Nail Bar', checkin: 'Tự check-in', booking: 'Đặt lịch',
+          services: 'Bảng giá dịch vụ', tip: 'Tip & Thanh toán', review: 'Đánh giá',
+          giftTitle: 'Quà chào mừng từ Bitcoin Nail Bar',
+          giftDescription: 'Nhập số điện thoại để nhận quà. Không cần mật khẩu, không cần tải app.',
+          phone: 'Số điện thoại', phoneError: 'Vui lòng nhập số điện thoại hợp lệ.',
+          countrySearch: 'Tìm quốc gia hoặc mã...',
+          smsConsent: 'Nhắn tin ưu đãi từ Bitcoin Nail Bar cho tôi. Có thể phát sinh phí tin nhắn & dữ liệu. Trả lời STOP để huỷ. Không bắt buộc để nhận quà.',
+          getGift: 'Nhận quà', dismiss: 'Đóng',
+          installTitle: 'Thêm Bitcoin Nail Bar vào Màn hình chính',
+          installDescription: 'Mở như một app, không có thanh trình duyệt, và nhận ưu đãi từ tiệm.',
+          install: 'Cài đặt', installHelp: 'Mở menu trình duyệt và chọn "Cài đặt ứng dụng" hoặc "Thêm vào Màn hình chính".',
+          address: 'Địa chỉ ', poweredBy: 'Được cung cấp bởi'
+        }
+      };
+      const countries = [
+        ['US', 'United States', '+1'], ['CA', 'Canada', '+1'], ['VN', 'Vietnam', '+84'],
+        ['GB', 'United Kingdom', '+44'], ['AU', 'Australia', '+61'], ['SG', 'Singapore', '+65'],
+        ['JP', 'Japan', '+81'], ['KR', 'South Korea', '+82'], ['DE', 'Germany', '+49'],
+        ['FR', 'France', '+33'], ['IN', 'India', '+91'], ['CN', 'China', '+86'],
+        ['BR', 'Brazil', '+55'], ['MX', 'Mexico', '+52'], ['HK', 'Hong Kong', '+852'],
+        ['TW', 'Taiwan', '+886'], ['MY', 'Malaysia', '+60'], ['TH', 'Thailand', '+66'],
+        ['PH', 'Philippines', '+63'], ['ID', 'Indonesia', '+62']
+      ];
+      const get = id => document.getElementById(id);
+      let language = 'en';
+      let country = countries[0];
+
+      function toggleMenu(button, menu, open) {
+        button.setAttribute('aria-expanded', String(open));
+        menu.hidden = !open;
+      }
+
+      function countryName(item) {
+        return language === 'en' ? item[1] : new Intl.DisplayNames([language], { type: 'region' }).of(item[0]);
+      }
+
+      function renderCountries() {
+        const query = get('countrySearch').value.toLowerCase().trim();
+        get('countryOptions').replaceChildren();
+        countries.filter(item => [item[0], item[1], item[2], countryName(item)].some(value => value.toLowerCase().includes(query))).forEach(item => {
+          const option = document.createElement('button');
+          option.type = 'button';
+          option.className = 'country-option';
+          option.setAttribute('role', 'option');
+          option.setAttribute('aria-selected', String(item[0] === country[0]));
+          const name = document.createElement('span');
+          name.textContent = countryName(item);
+          const dial = document.createElement('span');
+          dial.textContent = item[2];
+          option.append(name, dial);
+          option.addEventListener('click', () => {
+            country = item;
+            get('countryCode').textContent = country[0];
+            get('countryDial').textContent = country[2];
+            get('countryOptions').setAttribute('aria-label', `${country[0]} ${country[2]}`);
+            toggleMenu(get('countryToggle'), get('countryMenu'), false);
+            get('phoneNumber').focus();
+            renderCountries();
+          });
+          get('countryOptions').append(option);
+        });
+      }
+
+      function setLanguage(next) {
+        language = next;
+        document.documentElement.lang = next;
+        document.querySelectorAll('[data-copy]').forEach(element => {
+          element.textContent = copy[next][element.dataset.copy];
+        });
+        get('languageCode').textContent = next.toUpperCase();
+        get('languageToggle').setAttribute('aria-label', copy[next].language);
+        get('languageMenu').setAttribute('aria-label', copy[next].language);
+        get('exploreSection').setAttribute('aria-label', copy[next].explore);
+        get('quickLinks').setAttribute('aria-label', copy[next].links);
+        get('phoneNumber').setAttribute('aria-label', copy[next].phone);
+        get('countrySearch').placeholder = copy[next].countrySearch;
+        get('countrySearch').setAttribute('aria-label', copy[next].countrySearch);
+        get('dismissInstall').setAttribute('aria-label', copy[next].dismiss);
+        document.querySelectorAll('[data-language]').forEach(option => {
+          option.setAttribute('aria-selected', String(option.dataset.language === next));
+        });
+        renderCountries();
+      }
+
+      get('languageToggle').addEventListener('click', () => {
+        const open = get('languageMenu').hidden;
+        toggleMenu(get('countryToggle'), get('countryMenu'), false);
+        toggleMenu(get('languageToggle'), get('languageMenu'), open);
+        if (open) get('languageMenu').querySelector('[aria-selected="true"]').focus();
+      });
+      document.querySelectorAll('[data-language]').forEach(option => {
+        option.addEventListener('click', () => {
+          setLanguage(option.dataset.language);
+          toggleMenu(get('languageToggle'), get('languageMenu'), false);
+          get('languageToggle').focus();
+        });
+      });
+      get('countryToggle').addEventListener('click', () => {
+        const open = get('countryMenu').hidden;
+        toggleMenu(get('languageToggle'), get('languageMenu'), false);
+        toggleMenu(get('countryToggle'), get('countryMenu'), open);
+        if (open) {
+          get('countrySearch').value = '';
+          renderCountries();
+          get('countrySearch').focus();
+        }
+      });
+      get('countrySearch').addEventListener('input', renderCountries);
+      document.addEventListener('click', event => {
+        if (!event.target.closest('.language')) toggleMenu(get('languageToggle'), get('languageMenu'), false);
+        if (!event.target.closest('.country')) toggleMenu(get('countryToggle'), get('countryMenu'), false);
+      });
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape') {
+          if (!get('languageMenu').hidden) get('languageToggle').focus();
+          if (!get('countryMenu').hidden) get('countryToggle').focus();
+          toggleMenu(get('languageToggle'), get('languageMenu'), false);
+          toggleMenu(get('countryToggle'), get('countryMenu'), false);
+        }
+        const menu = event.target.closest('[role="listbox"]');
+        if (menu && ['ArrowDown', 'ArrowUp', 'Home', 'End'].includes(event.key)) {
+          event.preventDefault();
+          const options = [...menu.querySelectorAll('[role="option"]')];
+          const index = options.indexOf(document.activeElement);
+          const next = event.key === 'Home' ? 0 : event.key === 'End' ? options.length - 1 : (index + (event.key === 'ArrowDown' ? 1 : -1) + options.length) % options.length;
+          options[next]?.focus();
+        }
+      });
+      get('phoneNumber').addEventListener('input', () => {
+        get('phoneError').hidden = true;
+        get('phoneNumber').removeAttribute('aria-invalid');
+      });
+      get('giftForm').addEventListener('submit', event => {
+        const digits = get('phoneNumber').value.replace(/\D/g, '');
+        const valid = ['US', 'CA'].includes(country[0]) ? /^\d{10}$/.test(digits) || /^1\d{10}$/.test(digits) : digits.length >= 7 && digits.length <= 15;
+        if (!valid) {
+          event.preventDefault();
+          get('phoneError').hidden = false;
+          get('phoneNumber').setAttribute('aria-invalid', 'true');
+          get('phoneNumber').focus();
+        }
+        // No phone number or consent is sent by this static prototype.
+        // Valid submissions open the reference app to complete the real gift flow.
+      });
+      get('dismissInstall').addEventListener('click', () => { get('installCard').hidden = true; });
+      get('installButton').addEventListener('click', () => {
+        get('installHelp').hidden = !get('installHelp').hidden;
+        get('installButton').setAttribute('aria-expanded', String(!get('installHelp').hidden));
+      });
+      setLanguage('en');
+    })();
+  </script>
+</body>
+</html>
