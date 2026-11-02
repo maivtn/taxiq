@@ -644,20 +644,6 @@
         focusable:'false', class:'deal-discovery-icon',
       }));
     });
-    const expansionIcons = { 'Hair & Barber':'Scissors', 'Spa & Massage':'Flower2', 'Home & Auto':'Wrench' };
-    root.querySelectorAll('.industry-expansion [data-industry] > span').forEach(element => {
-      if (element.parentElement.dataset.industry === 'Lash & Brow') {
-        if (!element.querySelector('.deal-industry-icon')) element.replaceChildren(artwork('lash', 24));
-        return;
-      }
-      if (element.querySelector('.deal-expansion-svg')) return;
-      const library = window.NEXORA_DEAL_LUCIDE;
-      const name = expansionIcons[element.parentElement.dataset.industry];
-      if (!library?.icons[name]) return;
-      element.replaceChildren(library.createElement(library.icons[name], {
-        width:22, height:22, 'stroke-width':1.8, 'aria-hidden':'true', focusable:'false', class:'deal-expansion-svg',
-      }));
-    });
     root.querySelectorAll('[data-deal-nav-icon]').forEach(element => {
       if (element.querySelector('svg')) return;
       const nodes = window.NEXORA_DEAL_LUCIDE?.icons[element.dataset.dealNavIcon];
