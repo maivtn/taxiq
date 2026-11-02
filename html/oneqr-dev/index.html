@@ -302,7 +302,6 @@
           <button type="button" data-contact-action="save"><i class="icon" data-lucide="contact-round" aria-hidden="true"></i><span data-contact-copy="save">Save contact</span></button>
           <button type="button" data-contact-action="wallet"><i class="icon" data-lucide="wallet-cards" aria-hidden="true"></i><span data-contact-copy="wallet">Add to Wallet</span></button>
           <a href="https://www.google.com/maps/dir/?api=1&amp;destination=5444%20Westheimer%20Rd%2C%20Suite%201000%2C%20Houston%2C%20Texas" target="_blank" rel="noopener noreferrer"><i class="icon" data-lucide="navigation" aria-hidden="true"></i><span data-contact-copy="directions">Directions</span></a>
-          <button type="button" data-contact-action="exchange" aria-haspopup="dialog" aria-controls="contactExchange"><i class="icon" data-lucide="user-plus" aria-hidden="true"></i><span data-contact-copy="exchange">Send yours</span></button>
           <button type="button" data-contact-action="share"><i class="icon" data-lucide="share-2" aria-hidden="true"></i><span data-contact-copy="share">Share card</span></button>
         </nav>
         <p class="contact-feedback" id="contactFeedback" role="status" hidden></p>
@@ -470,18 +469,6 @@
     <div class="promotion-detail-conditions"><p><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-calendar-days-3d.png" alt="" draggable="false"> <strong>Phải đặt lịch trước</strong> để dùng ưu đãi này</p><p><img class="icon" src="assets/icons/oneqr/issue-2040-oneqr-receipt-3d.png" alt="" draggable="false"> Đặt trước 1 ngày</p></div>
     <a class="promotion-detail-action" href="https://www.google.com/maps/dir/?api=1&amp;destination=29.7420,-95.4480" target="_blank" rel="noopener noreferrer"><i class="icon" data-lucide="navigation" aria-hidden="true"></i> Chỉ đường · 1.0 mi</a>
     <button class="promotion-close" type="button" data-close-promotion>Đóng</button>
-  </dialog>
-
-  <dialog class="contact-dialog" id="contactExchange" aria-labelledby="contactExchangeTitle">
-    <form id="contactExchangeForm" novalidate>
-      <div class="contact-dialog-heading"><h2 id="contactExchangeTitle" data-contact-copy="exchangeTitle">Send your contact</h2><button class="contact-dialog-close" type="button" data-close-contact aria-label="Close" data-contact-aria="close"><i class="icon" data-lucide="x" aria-hidden="true"></i></button></div>
-      <label for="contactName" data-contact-copy="name">Your name</label><input id="contactName" name="name" autocomplete="name" maxlength="100" required>
-      <label for="contactPhone" data-contact-copy="phone">Phone</label><input id="contactPhone" name="phone" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="(713) 555-0123" required>
-      <label for="contactEmail" data-contact-copy="email">Email (optional)</label><input id="contactEmail" name="email" type="email" autocomplete="email" maxlength="200">
-      <label class="contact-consent"><input name="consent" type="checkbox"><span data-contact-copy="consent">I agree to receive SMS from this business. Reply STOP to opt out. You can send your contact without agreeing.</span></label>
-      <p class="contact-error" id="contactExchangeError" role="alert" hidden></p>
-      <div class="contact-dialog-actions"><button type="button" data-close-contact data-contact-copy="cancel">Cancel</button><button class="contact-primary" type="submit" data-contact-copy="send">Send my contact</button></div>
-    </form>
   </dialog>
 
   <script>
