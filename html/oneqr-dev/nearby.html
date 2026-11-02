@@ -39,7 +39,7 @@
         </div>
       </header>
 
-      <div class="navigation">
+      <div class="navigation" hidden>
         <nav class="discovery-tabs" aria-label="Explore" data-copy-aria="nav">
           <a class="discovery-tab nearby-tab" href="nearby.html" data-local-page="nearby.html" aria-current="page"><i class="icon" data-lucide="map-pin" aria-hidden="true"></i><span data-copy="nearbyNav">Nearby</span></a>
           <a class="discovery-tab" href="deals.html" data-local-page="deals.html"><i class="icon" data-lucide="search" aria-hidden="true"></i><span data-copy="dealsNav">Search Deals</span></a>
@@ -48,14 +48,10 @@
 
       <div class="discovery-content">
         <div class="location-filters nearby-location-filters">
-          <div class="nearby-location-heading">
-            <button class="chip nearby-anchor" type="button" data-origin="shop" aria-pressed="true" aria-describedby="nearbyAnchorHint">
-              <span class="nearby-anchor-icon" id="nearbyAnchorIcon" aria-hidden="true"><i class="icon" data-lucide="store" aria-hidden="true"></i></span>
-              <span><strong id="nearbyAnchorTitle">Around Bitcoin Nail Bar</strong></span>
-            </button>
-            <button class="chip nearby-gps" type="button" role="switch" data-origin="mine" aria-checked="false" aria-pressed="false">
-              <i class="icon" data-lucide="locate-fixed" aria-hidden="true"></i><span data-nearby-copy="useLocation">Use my location</span><small class="sr-only" data-nearby-copy="optional">(optional)</small><span class="nearby-switch" aria-hidden="true"></span>
-            </button>
+          <div class="filter-row">
+            <span class="filter-label" data-copy="distancesFrom">Distances from</span>
+            <button class="chip origin-shop" type="button" data-origin="shop" aria-pressed="true"><i class="icon" data-lucide="map-pin" aria-hidden="true"></i><span>Bitcoin Nail Bar</span></button>
+            <button class="chip" type="button" data-origin="mine" aria-pressed="false"><i class="icon" data-lucide="locate-fixed" aria-hidden="true"></i><span data-copy="myLocation">My location</span></button>
           </div>
           <p class="nearby-location-hint" id="nearbyAnchorHint">Distances are measured from the QR shop. No location access needed.</p>
           <form class="nearby-zip" id="nearbyZipForm">

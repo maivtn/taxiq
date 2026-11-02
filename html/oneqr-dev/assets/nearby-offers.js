@@ -82,9 +82,7 @@
     if (state.zip) get('nearbyZip').value = state.zip;
     else if (previous && previous.origin !== state.origin) get('nearbyZip').value = '';
     const zip = zips[state.zip];
-    get('nearbyAnchorIcon').innerHTML = line(state.origin === 'mine' ? 'locate-fixed' : state.origin === 'zip' ? 'map-pin' : 'store');
-    get('nearbyAnchorTitle').textContent = state.origin === 'mine' ? translate('mineTitle') : zip ? `ZIP ${state.zip} · ${zip[2]}` : translate('shopTitle');
-    get('nearbyAnchorHint').textContent = translate(state.origin === 'mine' ? 'mineHint' : zip ? 'zipHint' : 'shopHint');
+    get('nearbyAnchorHint').textContent = zip ? `ZIP ${state.zip} · ${zip[2]} · ${translate('zipHint')}` : translate(state.origin === 'mine' ? 'mineHint' : 'shopHint');
 
     const origin = state.coordinates || shop;
     const radius = state.radius ?? Infinity;
