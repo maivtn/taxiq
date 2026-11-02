@@ -9,11 +9,15 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="assets/discovery.css">
+  <link rel="stylesheet" href="assets/nearby.css">
+  <link rel="stylesheet" href="assets/search-deals.css">
   <link rel="stylesheet" href="assets/bottom-nav.css">
+  <script src="assets/deal-catalog.js" defer></script>
+  <script src="assets/search-deals.js" defer></script>
   <script src="assets/discovery.js" defer></script>
   <script src="assets/bottom-nav.js" defer></script>
 </head>
-<body data-discovery-page="deals">
+<body class="nearby-page search-page" data-discovery-page="deals">
   <!-- Reference: https://test-web.nexoratouch.com/o/bitcoin-nail-bar-3/deals -->
   <svg class="icon-definitions" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
     <symbol id="globe" viewBox="0 0 24 24"><circle cx="12" cy="12" r="10"/><path d="M12 2a14.5 14.5 0 0 0 0 20 14.5 14.5 0 0 0 0-20M2 12h20"/></symbol>
@@ -21,15 +25,16 @@
     <symbol id="search" viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></symbol>
     <symbol id="home" viewBox="0 0 24 24"><path d="m3 9 9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2ZM9 22V12h6v10"/></symbol>
     <symbol id="locate" viewBox="0 0 24 24"><path d="M2 12h3m14 0h3M12 2v3m0 14v3"/><circle cx="12" cy="12" r="7"/><circle cx="12" cy="12" r="3"/></symbol>
+    <symbol id="close" viewBox="0 0 24 24"><path d="m18 6-12 12M6 6l12 12"/></symbol>
     <symbol id="check" viewBox="0 0 24 24"><path d="m20 6-11 11-5-5"/></symbol>
   </svg>
 
   <main class="page">
     <p class="dev-label">HTML One QR Dev</p>
     <div class="shop">
-      <header class="shop-header">
-        <div class="shop-logo" aria-hidden="true">B</div>
-        <div class="shop-heading"><p class="eyebrow" data-copy="fromQr">From the QR of</p><p class="shop-name">Bitcoin Nail Bar</p></div>
+      <header class="nearby-toolbar">
+        <a class="nearby-back" href="index.html" data-local-page="index.html"><span aria-hidden="true">←</span><span data-search-copy="mainMenu">Main Menu</span></a>
+        <h1>Search Deals</h1>
         <div class="language" hidden>
           <button class="language-toggle" id="languageToggle" type="button" aria-label="Language" data-copy-aria="language" aria-haspopup="listbox" aria-controls="languageMenu" aria-expanded="false"><svg class="icon" aria-hidden="true"><use href="#globe"/></svg><span class="language-code" id="languageCode">EN</span></button>
           <div class="language-menu" id="languageMenu" role="listbox" aria-label="Language" data-copy-aria="language" hidden>
@@ -39,21 +44,35 @@
         </div>
       </header>
 
-      <div class="navigation">
-        <a class="back-link" href="index.html" data-local-page="index.html"><svg class="icon" aria-hidden="true"><use href="#home"/></svg><span data-copy="back">Back</span></a>
-        <nav class="discovery-tabs" aria-label="Explore" data-copy-aria="nav">
-          <a class="discovery-tab nearby-tab" href="nearby.html" data-local-page="nearby.html"><svg class="icon" aria-hidden="true"><use href="#map-pin"/></svg><span data-copy="nearbyNav">Nearby</span></a>
-          <a class="discovery-tab" href="deals.html" data-local-page="deals.html" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#search"/></svg><span data-copy="dealsNav">Search Deals</span></a>
-        </nav>
-      </div>
-
       <div class="discovery-content">
-        <div><h1 data-copy="dealsTitle">Search Deals</h1><p class="subtitle" data-copy="dealsSubtitle">Pick a program to see its price and conditions.</p></div>
-        <label class="search-field"><svg class="icon" aria-hidden="true"><use href="#search"/></svg><input id="dealSearch" type="search" maxlength="100" placeholder="Search deals: pedicure, facial, coffee…" data-copy-placeholder="searchPlaceholder" aria-label="Search deals: pedicure, facial, coffee…" data-copy-aria="searchPlaceholder"></label>
-        <div class="industries"><button class="chip" type="button" data-industry="all" aria-pressed="true" data-copy="allIndustries">All industries</button></div>
+        <form class="search-form" id="searchForm" role="search">
+          <label class="sr-only" for="dealSearch" data-search-copy="searchPlaceholder">What would you like? e.g. milk tea nearby</label>
+          <input id="dealSearch" name="q" type="search" maxlength="100" autocomplete="off" enterkeyhint="search" placeholder="What would you like? e.g. milk tea nearby" data-search-placeholder="searchPlaceholder">
+          <button class="search-submit" type="submit" data-search-copy="find">Find</button>
+        </form>
+        <div class="search-suggestions" id="searchSuggestions" aria-label="Search suggestions" data-search-aria="suggestions"></div>
+        <p class="nearby-competitors search-guide" id="searchGuide"></p>
+        <div class="search-parsed" id="searchParsed" hidden></div>
+        <p class="nearby-competitors" id="searchCompetitors" role="status" hidden></p>
+        <p class="sr-only" id="searchCount" role="status" aria-live="polite"></p>
+        <ul class="nearby-offers" id="searchOffers"></ul>
+        <form class="search-wish" id="searchWish" novalidate hidden>
+          <h2 id="searchWishTitle"></h2>
+          <p data-search-copy="wishHint">Leave your phone number — when a nearby business has a matching deal, you receive one message. Nearby businesses also see this request.</p>
+          <label class="sr-only" for="wishPhone" data-search-copy="phone">Phone number</label>
+          <input id="wishPhone" type="tel" inputmode="tel" autocomplete="tel" maxlength="24" placeholder="(713) 555-0142" aria-describedby="wishPhoneError">
+          <p class="search-phone-error" id="wishPhoneError" role="alert" data-search-copy="phoneError" hidden>Enter a valid phone number.</p>
+          <button class="search-submit" type="submit" id="wishSubmit" data-search-copy="wish">✦ Post a request</button>
+          <p class="search-wish-status" id="wishStatus" role="status" hidden></p>
+        </form>
         <details class="area-filters">
           <summary data-copy="areaRadius">Area &amp; radius</summary>
           <div class="location-filters">
+            <nav class="discovery-tabs" aria-label="Explore" data-copy-aria="nav">
+              <a class="discovery-tab nearby-tab" href="nearby.html" data-local-page="nearby.html"><svg class="icon" aria-hidden="true"><use href="#map-pin"/></svg><span data-copy="nearbyNav">Nearby</span></a>
+              <a class="discovery-tab" href="deals.html" data-local-page="deals.html" aria-current="page"><svg class="icon" aria-hidden="true"><use href="#search"/></svg><span data-copy="dealsNav">Search Deals</span></a>
+            </nav>
+            <div class="industries"><button class="chip" type="button" data-industry="all" aria-pressed="true" data-copy="allIndustries">All industries</button></div>
             <div class="filter-row">
               <span class="filter-label" data-copy="distancesFrom">Distances from</span>
               <button class="chip origin-shop" type="button" data-origin="shop" aria-pressed="true"><svg class="icon" aria-hidden="true"><use href="#map-pin"/></svg><span>Bitcoin Nail Bar</span></button>
@@ -61,6 +80,8 @@
             </div>
             <div class="filter-row">
               <span class="filter-label" data-copy="radius">Radius</span>
+              <button class="chip" type="button" data-radius="1" aria-pressed="false">1 mi</button>
+              <button class="chip" type="button" data-radius="3" aria-pressed="false">3 mi</button>
               <button class="chip" type="button" data-radius="5" aria-pressed="false">5 mi</button>
               <button class="chip" type="button" data-radius="10" aria-pressed="false">10 mi</button>
               <button class="chip" type="button" data-radius="25" aria-pressed="false">25 mi</button>
@@ -69,10 +90,13 @@
             <p class="location-warning" id="locationWarning" role="status" hidden></p>
           </div>
         </details>
-        <p class="deal-count" data-copy="dealCount" role="status">Deals found: 0</p>
-        <div class="empty-state"><p class="empty-state-title" data-copy="emptyDealsTitle">No matching deals</p><p class="empty-state-hint" data-copy="emptyDealsHint">Try another keyword, industry or area.</p></div>
       </div>
     </div>
   </main>
+  <dialog class="business-dialog" id="searchOfferDialog" aria-labelledby="searchOfferTitle">
+    <div class="dialog-header"><h2 id="searchOfferTitle"></h2><button class="dialog-close" id="searchOfferClose" type="button" aria-label="Close" data-search-aria="close"><svg class="icon" aria-hidden="true"><use href="#close"/></svg></button></div>
+    <div class="dialog-content" id="searchOfferDetail"></div>
+    <div class="dialog-footer"><a class="outline-link" href="index.html" data-local-page="index.html" data-search-copy="mainMenu">Main Menu</a></div>
+  </dialog>
 </body>
 </html>

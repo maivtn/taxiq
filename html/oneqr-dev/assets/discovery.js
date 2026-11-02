@@ -1,6 +1,5 @@
 (() => {
-  // Copy and the single business come from the supplied Bitcoin Nail Bar Test pages.
-  // The reference Search Deals page has no published deals; keep that empty state.
+  // Keep the original Test business profile alongside the PO demo offers.
   const copy = {
     en: {
       language: 'Language', fromQr: 'From the QR of', back: 'Back', nav: 'Explore',
@@ -48,6 +47,22 @@
   let language = params.get('lang') === 'vi' ? 'vi' : 'en';
   const business = { latitude: 30.2729209, longitude: -97.74438630000002, industry: 'fastfood', open: true };
   const state = { radius: page === 'nearby' ? 3 : null, industry: 'all', origin: 'shop', distance: 0, locationWarning: null, coordinates: null, zip: '' };
+  // Share the selected area between Nearby and Search only within this browser tab.
+  const contextKey = 'oneqr-dev:discovery-context';
+  try {
+    const context = JSON.parse(sessionStorage.getItem(contextKey) || 'null');
+    if (context && typeof context === 'object') {
+      if ((context.radius === null && page === 'deals') || [1, 3, 5, 10, 25, 50].includes(context.radius)) state.radius = context.radius;
+      const zip = window.OneQrDealCatalog?.zips[context.zip];
+      const coordinates = context.coordinates;
+      if (context.origin === 'zip' && zip) {
+        Object.assign(state, { origin: 'zip', zip: context.zip, coordinates: { latitude: zip[0], longitude: zip[1] } });
+      } else if (context.origin === 'mine' && Number.isFinite(coordinates?.latitude) && Math.abs(coordinates.latitude) <= 90 && Number.isFinite(coordinates?.longitude) && Math.abs(coordinates.longitude) <= 180) {
+        Object.assign(state, { origin: 'mine', coordinates: { latitude: coordinates.latitude, longitude: coordinates.longitude } });
+      }
+      if (state.coordinates) state.distance = distanceFromShop(state.coordinates.latitude, state.coordinates.longitude);
+    }
+  } catch { /* Storage may be unavailable in local HTML previews. */ }
   let locationRequest = 0;
 
   function updateResults() {
@@ -72,7 +87,11 @@
     });
     get('locationWarning').hidden = !state.locationWarning;
     get('locationWarning').textContent = state.locationWarning ? copy[language][state.locationWarning] : '';
+    try {
+      sessionStorage.setItem(contextKey, JSON.stringify({ radius: state.radius, origin: state.origin, coordinates: state.coordinates, zip: state.zip }));
+    } catch { /* Filters still work when session storage is unavailable. */ }
     if (page === 'nearby') document.dispatchEvent(new CustomEvent('oneqr-dev:nearby-state', { detail: { ...state, language, openOnly: Boolean(get('openNow')?.checked) } }));
+    if (page === 'deals') document.dispatchEvent(new CustomEvent('oneqr-dev:search-state', { detail: { ...state, language, query: get('dealSearch').value } }));
   }
 
   function setLanguage(next) {
