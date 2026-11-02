@@ -35,18 +35,19 @@
     .page { min-height: 100vh; min-height: 100dvh; }
     .dev-label { width: fit-content; margin: 12px auto; padding: 4px 12px; border: 1px solid #d7d5fb; border-radius: 999px; background: #eeedff; color: var(--brand); font-size: 11px; font-weight: 800; letter-spacing: .03em; }
     .shop { width: 100%; max-width: 448px; margin: 0 auto; background: #fff; }
-    .account-bar { position: relative; z-index: 3; display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 12px var(--page-inset) 8px; background: #fff; }
-    .account-actions { display: flex; align-items: center; gap: 10px; }
-    .account-link { display: inline-flex; min-height: 44px; align-items: center; justify-content: center; padding: 0 14px; border: 1px solid #e7eaf3; border-radius: 16px; background: #fff; color: #0f172a; font-size: 13px; font-weight: 800; line-height: 1.3; white-space: nowrap; transition: background-color .15s, box-shadow .15s; }
+    .account-bar { position: relative; z-index: 3; display: flex; flex-shrink: 0; align-items: center; justify-content: flex-end; gap: 6px; }
+    .account-actions { display: flex; align-items: center; gap: 6px; }
+    .account-link { display: inline-flex; min-height: 36px; align-items: center; justify-content: center; padding: 0 10px; border: 1px solid #e7eaf3; border-radius: 12px; background: #fff; color: #0f172a; font-size: 12px; font-weight: 800; line-height: 1.3; white-space: nowrap; transition: background-color .15s, box-shadow .15s; }
     .account-link:hover { background: #f7f5ff; }
     .account-signup { border-color: transparent; background: linear-gradient(135deg, #6d4aff, #9747ff); color: #fff; box-shadow: 0 6px 18px #7c3aed26; }
     .account-signup:hover { background: #7543ed; box-shadow: 0 8px 20px #7c3aed33; }
-    .account-bar .language-toggle { border-color: transparent; background: transparent; }
+    .account-bar .language-toggle { width: 32px; min-width: 32px; height: 36px; padding: 2px 0; border-color: transparent; background: transparent; }
     .account-bar .language-toggle:hover { background: #f7f5ff; }
     .account-bar .language-menu { right: auto; left: 0; }
-    .shop-header { position: relative; z-index: 2; display: flex; align-items: center; gap: 12px; padding: 16px var(--page-inset); border-bottom: 1px solid #dde5ef80; background: linear-gradient(135deg, #e9e9ffcc, var(--canvas), #fff); }
-    .shop-logo { display: flex; width: 48px; height: 48px; flex-shrink: 0; align-items: center; justify-content: center; border: 2px solid #ffffffcc; border-radius: 12px; background: #fff; color: var(--brand); font-size: 20px; font-weight: 700; box-shadow: 0 1px 2px #0000000d; }
+    .shop-header { position: relative; z-index: 2; display: flex; align-items: center; gap: 8px; padding: 12px var(--page-inset); border-bottom: 1px solid #dde5ef80; background: linear-gradient(135deg, #e9e9ffcc, var(--canvas), #fff); }
+    .shop-logo { display: flex; width: 36px; height: 36px; flex-shrink: 0; align-items: center; justify-content: center; border: 2px solid #ffffffcc; border-radius: 10px; background: #fff; color: var(--brand); font-size: 18px; font-weight: 700; box-shadow: 0 1px 2px #0000000d; }
     .shop-heading { min-width: 0; flex: 1; }
+    .shop-heading h1 { font-size: 16px; line-height: 1.3; }
     .eyebrow { margin-bottom: 4px; color: var(--brand); font-size: 10px; font-weight: 600; letter-spacing: .1em; text-transform: uppercase; }
     h1 { overflow-wrap: anywhere; font-size: 18px; font-weight: 700; line-height: 1.375; letter-spacing: -.025em; }
     .language { position: relative; flex-shrink: 0; }
@@ -192,6 +193,15 @@
       h1 { font-size: 20px; line-height: 28px; }
     }
 
+    @media (max-width: 360px) {
+      .shop-logo { width: 28px; height: 28px; font-size: 15px; }
+      .shop-heading h1 { font-size: 14px; }
+      .shop-heading .eyebrow { font-size: 8px; letter-spacing: .04em; }
+      .account-link { min-height: 34px; padding: 0 8px; font-size: 11px; }
+      .account-bar, .account-actions { gap: 4px; }
+      .account-bar .language-toggle { width: 28px; min-width: 28px; height: 34px; }
+    }
+
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { transition: none !important; }
     }
@@ -218,27 +228,27 @@
   <main class="page">
     <p class="dev-label">HTML One QR Dev</p>
     <div class="shop">
-      <div class="account-bar">
-        <div class="language">
-          <button class="language-toggle" id="languageToggle" type="button" aria-label="Language" aria-haspopup="listbox" aria-controls="languageMenu" aria-expanded="false">
-            <svg class="icon" aria-hidden="true"><use href="#globe"/></svg>
-            <span class="language-code" id="languageCode">EN</span>
-          </button>
-          <div class="language-menu" id="languageMenu" role="listbox" aria-label="Language" hidden>
-            <button class="language-option" type="button" role="option" data-language="en" aria-selected="true"><span>English</span><svg class="icon" aria-hidden="true"><use href="#check"/></svg></button>
-            <button class="language-option" type="button" role="option" data-language="vi" aria-selected="false"><span>Tiếng Việt</span><svg class="icon" aria-hidden="true"><use href="#check"/></svg></button>
-          </div>
-        </div>
-        <div class="account-actions">
-          <a class="account-link" href="https://test-web.nexoratouch.com/login" data-copy="login">Log in</a>
-          <a class="account-link account-signup" href="https://test-web.nexoratouch.com/register" data-copy="signup">Sign up</a>
-        </div>
-      </div>
       <header class="shop-header">
         <div class="shop-logo" aria-hidden="true">B</div>
         <div class="shop-heading">
           <p class="eyebrow" data-copy="welcome">Welcome to</p>
           <h1>Bitcoin Nail Bar</h1>
+        </div>
+        <div class="account-bar">
+          <div class="language">
+            <button class="language-toggle" id="languageToggle" type="button" aria-label="Language" aria-haspopup="listbox" aria-controls="languageMenu" aria-expanded="false">
+              <svg class="icon" aria-hidden="true"><use href="#globe"/></svg>
+              <span class="language-code" id="languageCode">EN</span>
+            </button>
+            <div class="language-menu" id="languageMenu" role="listbox" aria-label="Language" hidden>
+              <button class="language-option" type="button" role="option" data-language="en" aria-selected="true"><span>English</span><svg class="icon" aria-hidden="true"><use href="#check"/></svg></button>
+              <button class="language-option" type="button" role="option" data-language="vi" aria-selected="false"><span>Tiếng Việt</span><svg class="icon" aria-hidden="true"><use href="#check"/></svg></button>
+            </div>
+          </div>
+          <div class="account-actions">
+            <a class="account-link" href="https://test-web.nexoratouch.com/login" data-copy="login">Log in</a>
+            <a class="account-link account-signup" href="https://test-web.nexoratouch.com/register" data-copy="signup">Sign up</a>
+          </div>
         </div>
       </header>
 
