@@ -8,14 +8,11 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="assets/vendor/tom-select/tom-select.css">
   <link rel="stylesheet" href="assets/discovery.css">
   <link rel="stylesheet" href="assets/nearby.css">
   <link rel="stylesheet" href="assets/search-deals.css">
   <link rel="stylesheet" href="assets/bottom-nav.css">
   <link rel="stylesheet" href="assets/icons.css">
-  <link rel="stylesheet" href="assets/discovery-filters.css">
-  <script src="assets/vendor/tom-select/tom-select.complete.min.js" defer></script>
   <script src="assets/vendor/lucide.min.js" defer></script>
   <script src="assets/icons.js" defer></script>
   <script src="assets/deal-catalog.js" defer></script>
@@ -47,40 +44,6 @@
           <button class="search-submit" type="submit" data-search-copy="find">Find</button>
         </form>
         <div class="search-suggestions" id="searchSuggestions" aria-label="Search suggestions" data-search-aria="suggestions"></div>
-        <div class="location-filters">
-          <div class="filter-row">
-            <span class="filter-label" data-copy="distancesFrom">Distances from</span>
-            <button class="chip origin-shop" type="button" data-origin="shop" aria-pressed="true"><i class="icon" data-lucide="map-pin" aria-hidden="true"></i><span>Bitcoin Nail Bar</span></button>
-            <button class="chip" type="button" data-origin="mine" aria-pressed="false"><i class="icon" data-lucide="locate-fixed" aria-hidden="true"></i><span data-copy="myLocation">My location</span></button>
-          </div>
-          <div class="discovery-selects">
-            <div class="discovery-select-radius">
-              <label class="sr-only" id="radiusFilterLabel" for="radiusFilter" data-copy="radius">Radius</label>
-              <select id="radiusFilter">
-                <option value="" data-copy="radius">Radius</option>
-                <option value="1">1 mi</option>
-                <option value="3">3 mi</option>
-                <option value="5">5 mi</option>
-                <option value="10">10 mi</option>
-                <option value="25">25 mi</option>
-                <option value="50">50 mi</option>
-              </select>
-            </div>
-            <div class="discovery-select-industry">
-              <label class="sr-only" id="industryFilterLabel" for="industryFilter" data-copy="industryFilter">Industry</label>
-              <select id="industryFilter">
-                <option value="all" data-copy="allIndustries" data-icon="store">All industries</option>
-                <option value="food" data-copy="industryFood" data-icon="food">Food &amp; drinks</option>
-                <option value="auto" data-copy="industryAuto" data-icon="auto">Auto</option>
-                <option value="family" data-copy="industryFamily" data-icon="partner">Family &amp; pets</option>
-                <option value="health" data-copy="industryHealth" data-icon="health">Health</option>
-                <option value="shop" data-copy="industryShop" data-icon="shopping">Shopping</option>
-                <option value="fastfood" data-copy="industry" data-icon="food">Fast food &amp; sandwiches</option>
-              </select>
-            </div>
-          </div>
-          <p class="location-warning" id="locationWarning" role="status" hidden></p>
-        </div>
         <p class="nearby-competitors search-guide" id="searchGuide"></p>
         <div class="search-parsed" id="searchParsed" hidden></div>
         <p class="nearby-competitors" id="searchCompetitors" role="status" hidden></p>

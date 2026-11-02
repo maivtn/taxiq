@@ -53,25 +53,29 @@
   const state = { radius: page === 'nearby' ? 3 : null, industry: 'all', origin: 'shop', distance: 0, locationWarning: null, coordinates: null, zip: '' };
   // Share the selected area between Nearby and Search only within this browser tab.
   const contextKey = 'oneqr-dev:discovery-context';
-  try {
-    const context = JSON.parse(sessionStorage.getItem(contextKey) || 'null');
-    if (context && typeof context === 'object') {
-      if ((context.radius === null && page === 'deals') || [1, 3, 5, 10, 25, 50].includes(context.radius)) state.radius = context.radius;
-      const zip = window.OneQrDealCatalog?.zips[context.zip];
-      const coordinates = context.coordinates;
-      if (context.origin === 'zip' && zip) {
-        Object.assign(state, { origin: 'zip', zip: context.zip, coordinates: { latitude: zip[0], longitude: zip[1] } });
-      } else if (context.origin === 'mine' && Number.isFinite(coordinates?.latitude) && Math.abs(coordinates.latitude) <= 90 && Number.isFinite(coordinates?.longitude) && Math.abs(coordinates.longitude) <= 180) {
-        Object.assign(state, { origin: 'mine', coordinates: { latitude: coordinates.latitude, longitude: coordinates.longitude } });
+  function restoreContext() {
+    Object.assign(state, { radius: page === 'nearby' ? 3 : null, industry: 'all', origin: 'shop', distance: 0, locationWarning: null, coordinates: null, zip: '' });
+    try {
+      const context = JSON.parse(sessionStorage.getItem(contextKey) || 'null');
+      if (context && typeof context === 'object') {
+        if ((context.radius === null && page === 'deals') || [1, 3, 5, 10, 25, 50].includes(context.radius)) state.radius = context.radius;
+        const zip = window.OneQrDealCatalog?.zips[context.zip];
+        const coordinates = context.coordinates;
+        if (context.origin === 'zip' && zip) {
+          Object.assign(state, { origin: 'zip', zip: context.zip, coordinates: { latitude: zip[0], longitude: zip[1] } });
+        } else if (context.origin === 'mine' && Number.isFinite(coordinates?.latitude) && Math.abs(coordinates.latitude) <= 90 && Number.isFinite(coordinates?.longitude) && Math.abs(coordinates.longitude) <= 180) {
+          Object.assign(state, { origin: 'mine', coordinates: { latitude: coordinates.latitude, longitude: coordinates.longitude } });
+        }
+        if (state.coordinates) state.distance = distanceFromShop(state.coordinates.latitude, state.coordinates.longitude);
       }
-      if (state.coordinates) state.distance = distanceFromShop(state.coordinates.latitude, state.coordinates.longitude);
-    }
-  } catch { /* Storage may be unavailable in local HTML previews. */ }
+    } catch { /* Storage may be unavailable in local HTML previews. */ }
+  }
+  restoreContext();
   let locationRequest = 0;
   let filtersLanguage;
   // Use the same library as the advertising setup, with the One QR 3D icon set.
-  const filterControls = ['radiusFilter', 'industryFilter'].map(id => {
-    const element = get(id);
+  const filterControls = ['radiusFilter', 'industryFilter'].map(get).filter(Boolean).map(element => {
+    const id = element.id;
     const optionIcons = Object.fromEntries([...element.options].map(option => [option.value, option.dataset.icon]));
     const renderChoice = (data, escape) => `<div>${window.OneQrIcons.image(optionIcons[data.value])}<span>${escape(data.text)}</span></div>`;
     const control = typeof window.TomSelect === 'function' ? new window.TomSelect(element, {
@@ -103,11 +107,15 @@
       button.setAttribute('aria-pressed', String(button.dataset.origin === state.origin));
       if (button.getAttribute('role') === 'switch') button.setAttribute('aria-checked', String(button.dataset.origin === state.origin));
     });
-    get('locationWarning').hidden = !state.locationWarning;
-    get('locationWarning').textContent = state.locationWarning ? copy[language][state.locationWarning] : '';
-    try {
-      sessionStorage.setItem(contextKey, JSON.stringify({ radius: state.radius, origin: state.origin, coordinates: state.coordinates, zip: state.zip }));
-    } catch { /* Filters still work when session storage is unavailable. */ }
+    if (get('locationWarning')) {
+      get('locationWarning').hidden = !state.locationWarning;
+      get('locationWarning').textContent = state.locationWarning ? copy[language][state.locationWarning] : '';
+    }
+    if (page === 'nearby') {
+      try {
+        sessionStorage.setItem(contextKey, JSON.stringify({ radius: state.radius, origin: state.origin, coordinates: state.coordinates, zip: state.zip }));
+      } catch { /* Filters still work when session storage is unavailable. */ }
+    }
     if (page === 'nearby') document.dispatchEvent(new CustomEvent('oneqr-dev:nearby-state', { detail: { ...state, language, openOnly: Boolean(get('openNow')?.checked) } }));
     if (page === 'deals') document.dispatchEvent(new CustomEvent('oneqr-dev:search-state', { detail: { ...state, language, query: get('dealSearch').value } }));
   }
@@ -170,12 +178,12 @@
       options[next]?.focus();
     }
   });
-  get('radiusFilter').addEventListener('change', event => {
+  get('radiusFilter')?.addEventListener('change', event => {
     const value = event.target.value;
     if ((value === '' && page === 'deals') || [1, 3, 5, 10, 25, 50].includes(Number(value))) state.radius = value === '' ? null : Number(value);
     updateResults();
   });
-  get('industryFilter').addEventListener('change', event => {
+  get('industryFilter')?.addEventListener('change', event => {
     state.industry = event.target.value || 'all';
     updateResults();
   });
@@ -191,13 +199,13 @@
     return 3958.8 * 2 * Math.atan2(Math.sqrt(a), Math.sqrt(Math.max(0, 1 - a)));
   }
 
-  document.querySelector('[data-origin="shop"]').addEventListener('click', () => {
+  document.querySelector('[data-origin="shop"]')?.addEventListener('click', () => {
     locationRequest += 1;
     document.querySelector('[data-origin="mine"]').disabled = false;
     Object.assign(state, { origin: 'shop', distance: 0, locationWarning: null, coordinates: null, zip: '' });
     updateResults();
   });
-  document.querySelector('[data-origin="mine"]').addEventListener('click', event => {
+  document.querySelector('[data-origin="mine"]')?.addEventListener('click', event => {
     if (page === 'nearby' && state.origin === 'mine') {
       document.querySelector('[data-origin="shop"]').click();
       return;
@@ -236,5 +244,10 @@
     updateResults();
   });
 
+  window.addEventListener('pageshow', event => {
+    if (page !== 'deals' || !event.persisted) return;
+    restoreContext();
+    updateResults();
+  });
   setLanguage(language);
 })();

@@ -109,7 +109,6 @@
     }
     const zip = zips[state.zip];
     const anchor = state.origin === 'mine' ? translate('myLocation') : zip ? `ZIP ${state.zip} · ${zip[2]}` : translate('aroundShop');
-    get('searchGuide').hidden = Boolean(query);
     get('searchGuide').innerHTML = `${translate('searchAround')} <b>${escape(anchor)}</b>. <a href="nearby.html?lang=${state.language}">${translate('changeArea')}</a>`;
     const parsed = parse(query);
     const tags = parsed.industries.map(industry => `${translate('industry')} ${industry}`);
@@ -125,8 +124,7 @@
       const words = normalize([...offer.title, offer.keywords, offer.business].join(' '));
       const industry = parsed.industries.length ? parsed.industries.includes(offer.industry) || (parsed.industries.includes('food') && offer.group === 'food') : normalize(query).split(/\s+/).some(word => word.length > 3 && words.includes(word));
       return industry && (parsed.max === null || offer.price !== null && offer.price <= parsed.max)
-        && (!parsed.time || offer[parsed.time]) && (state.radius === null || offer.distance <= state.radius)
-        && (state.industry === 'all' || state.industry === offer.group || state.industry === offer.industry);
+        && (!parsed.time || offer[parsed.time]);
     }) : [];
     const hidden = matches.filter(offer => !offer.own && offer.group === 'beauty').length;
     const visible = matches.filter(offer => offer.own || offer.group !== 'beauty').sort((a, b) => Number(Boolean(b.own)) - Number(Boolean(a.own)) || a.distance - b.distance);
