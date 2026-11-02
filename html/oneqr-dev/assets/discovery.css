@@ -22,7 +22,6 @@ button:focus-visible, a:focus-visible, input:focus-visible, summary:focus-visibl
 .icon { width: 16px; height: 16px; flex-shrink: 0; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
 .icon-definitions { position: absolute; width: 0; height: 0; overflow: hidden; }
 .page { min-height: 100vh; min-height: 100dvh; }
-.dev-label { width: fit-content; margin: 12px auto; padding: 4px 12px; border: 1px solid #d7d5fb; border-radius: 999px; background: #eeedff; color: var(--brand); font-size: 11px; font-weight: 800; letter-spacing: .03em; }
 .shop { width: 100%; max-width: 448px; margin: 0 auto; background: #fff; }
 .shop-header { position: relative; z-index: 2; display: flex; align-items: center; gap: 12px; padding: 12px var(--inset); border-bottom: 1px solid #dde5ef80; background: linear-gradient(135deg, #e9e9ffcc, var(--canvas), #fff); }
 .shop-logo { display: flex; width: 40px; height: 40px; flex-shrink: 0; align-items: center; justify-content: center; border: 2px solid #ffffffcc; border-radius: 12px; background: #fff; color: var(--brand); font-size: 18px; font-weight: 700; box-shadow: 0 1px 2px #0000000d; }
@@ -117,7 +116,6 @@ body:has(.business-dialog[open]) { overflow: hidden; }
   :root { --inset: 20px; }
   body { background: var(--canvas); }
   .page { padding: 20px 24px 32px; }
-  .dev-label { margin-top: 0; }
   .shop { overflow: hidden; border: 1px solid #dde5efb3; border-radius: 16px; box-shadow: 0 2px 8px #0f172a14; }
 }
 
