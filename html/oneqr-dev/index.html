@@ -73,9 +73,12 @@
     .discovery-icon img { width: 28px; height: 28px; object-fit: contain; }
     .discovery-search-icon { position: absolute; right: -2px; bottom: -1px; width: 15px; height: 15px; padding: 2px; border-radius: 50%; background: #fff; color: #6d28d9; stroke-width: 2.5; box-shadow: 0 1px 3px #4c1d9526; }
     .discovery-card-title { min-width: 0; font-size: 13px; font-weight: 800; line-height: 1.2; }
-    .discovery-count { display: flex; min-width: 22px; height: 22px; flex-shrink: 0; align-items: center; justify-content: center; margin-left: auto; padding: 0 5px; border: 2px solid #ede9fe; border-radius: 999px; background: #7c3aed; color: #fff; font-size: 11px; font-weight: 800; }
+    .discovery-count { position: relative; display: flex; min-width: 22px; height: 22px; flex-shrink: 0; align-items: center; justify-content: center; margin-left: auto; padding: 0 5px; border: 2px solid #ede9fe; border-radius: 999px; background: #7c3aed; color: #fff; font-size: 11px; font-weight: 800; }
+    .discovery-count::after { position: absolute; inset: -3px; border: 2px solid #a78bfa; border-radius: 12px; content: ''; pointer-events: none; animation: discovery-count-pulse 2s ease-out infinite; }
+    @keyframes discovery-count-pulse { from { opacity: .9; transform: scale(.9); } to { opacity: 0; transform: scale(1.25); } }
     .discovery-context { display: block; margin-top: 5px; color: #4c1d95; font-size: 11.5px; font-weight: 800; line-height: 1.35; }
-    .discovery-preview { display: block; overflow: hidden; margin-top: 2px; color: #64748b; font-size: 11.5px; line-height: 1.4; text-overflow: ellipsis; white-space: nowrap; }
+    .discovery-preview { display: block; height: 16px; overflow: hidden; margin-top: 2px; color: #64748b; font-size: 11.5px; line-height: 16px; text-overflow: ellipsis; white-space: nowrap; transition: opacity .35s; }
+    .discovery-preview.is-fading { opacity: 0; }
     .discovery-urgency { display: inline-flex; align-self: flex-start; align-items: center; gap: 3px; margin-top: 6px; padding: 2px 6px; border-radius: 7px; background: #fef3c7; color: #92400e; font-size: 10.5px; font-weight: 800; line-height: 1.35; }
     .discovery-queries { display: flex; flex-wrap: wrap; gap: 4px; margin-top: 6px; }
     .discovery-query { position: relative; z-index: 1; display: inline-flex; align-items: center; padding: 1px 7px; border: 1px solid #ddd6fe; border-radius: 999px; background: #fff; color: #6d28d9; font-size: 10.5px; font-weight: 700; line-height: 1.4; }
@@ -204,10 +207,12 @@
 
     @media (prefers-reduced-motion: reduce) {
       *, *::before, *::after { transition: none !important; }
+      .discovery-count::after { animation: none; }
     }
   </style>
   <link rel="stylesheet" href="assets/bottom-nav.css">
   <script src="assets/bottom-nav.js" defer></script>
+  <script src="assets/discovery-preview.js" defer></script>
 </head>
 <body>
   <!-- Reference: https://test-web.nexoratouch.com/o/bitcoin-nail-bar-3?as=customer -->
@@ -264,7 +269,7 @@
             <a class="explore-main-link" href="deals.html" data-dev-page="deals.html">
               <span class="discovery-card-header"><span class="discovery-icon"><img src="assets/icons/search-deals-ticket-3d.png" alt="" draggable="false"><svg class="icon discovery-search-icon" aria-hidden="true"><use href="#search"/></svg></span><span class="discovery-card-title">Search Deals</span></span>
               <span class="discovery-context">Gõ điều bạn muốn</span>
-              <span class="discovery-preview">“rửa xe”</span>
+              <span class="discovery-preview">“ăn trưa dưới $10”</span>
             </a>
             <div class="discovery-queries">
               <a class="discovery-query" href="deals.html?q=%C4%83n%20tr%C6%B0a%20d%C6%B0%E1%BB%9Bi%20%2410" data-dev-page="deals.html" data-dev-query="ăn trưa dưới $10">ăn trưa dưới $10</a>
