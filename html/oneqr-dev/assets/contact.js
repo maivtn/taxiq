@@ -5,11 +5,11 @@
   // Mary is the requested manager example; Kim and Chloe come from the PO team demo.
   // Every contact inherits the same shop details; only the name and title vary.
   const contactGroups = [
-    { key: 'shop', icon: 'store', people: [{ id: 'shop', name: card.name, title: 'shopTitle' }] },
-    { key: 'manager', icon: 'contact-user-plus', people: [{ id: 'mary-nguyen', name: 'Mary Nguyen', title: 'manager' }] },
-    { key: 'tech', icon: 'contact-card', people: [
-      { id: 'kim-nguyen', name: 'Kim Nguyen', title: 'tech' },
-      { id: 'chloe', name: 'Chloe', title: 'tech' }
+    { key: 'shop', people: [{ id: 'shop', name: card.name, title: 'shopTitle', avatar: '' }] },
+    { key: 'manager', people: [{ id: 'mary-nguyen', name: 'Mary Nguyen', title: 'manager', avatar: '' }] },
+    { key: 'tech', people: [
+      { id: 'kim-nguyen', name: 'Kim Nguyen', title: 'tech', avatar: '' },
+      { id: 'chloe', name: 'Chloe', title: 'tech', avatar: '' }
     ] }
   ];
   const publicUrl = 'https://test-web.nexoratouch.com/o/bitcoin-nail-bar-3?as=customer';
@@ -74,7 +74,15 @@
         option.className = 'contact-picker-option';
         const avatar = document.createElement('span');
         avatar.className = 'contact-picker-avatar';
-        avatar.innerHTML = window.OneQrIcons.image(group.icon);
+        avatar.setAttribute('aria-hidden', 'true');
+        avatar.textContent = Array.from(person.name.trim())[0]?.toUpperCase() || '';
+        if (person.avatar) {
+          const photo = document.createElement('img');
+          photo.alt = '';
+          photo.addEventListener('error', () => photo.remove(), { once: true });
+          photo.src = person.avatar;
+          avatar.append(photo);
+        }
         const identity = document.createElement('span');
         identity.className = 'contact-picker-identity';
         const name = document.createElement('strong');

@@ -32,8 +32,8 @@ body:has(.contact-dialog[open]) { overflow: hidden; }
 .contact-dialog .contact-picker-option + .contact-picker-option { margin-top: 7px; }
 .contact-picker-option:hover { border-color: #c4b5fd; background: #faf9ff; }
 .contact-picker-option:has(input:checked) { border-color: #a78bfa; background: #f5f3ff; }
-.contact-picker-avatar { display: grid; width: 36px; height: 36px; flex: 0 0 36px; place-items: center; border-radius: 10px; background: #f5f3ff; }
-.contact-picker-avatar .icon { width: 27px; height: 27px; object-fit: contain; }
+.contact-picker-avatar { position: relative; display: grid; width: 36px; height: 36px; flex: 0 0 36px; overflow: hidden; place-items: center; border-radius: 50%; background: #ede9fe; color: #6d28d9; font-size: 14px; font-weight: 800; line-height: 1; }
+.contact-picker-avatar img { position: absolute; inset: 0; display: block; width: 100%; height: 100%; background: #ede9fe; object-fit: cover; }
 .contact-picker-identity { display: grid; min-width: 0; flex: 1; gap: 2px; }
 .contact-picker-identity strong { overflow-wrap: anywhere; font-size: 13px; font-weight: 800; }
 .contact-picker-identity small { color: var(--muted); font-size: 11px; font-weight: 500; }
