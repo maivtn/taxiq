@@ -192,7 +192,7 @@
   var enabledByRole = {};
   var moduleDetailsByRole = { customer: {}, staff: {}, owner: {} };
 
-  // Configuration (Welcome Message, Landing View, Identity) is also
+  // Configuration (Welcome Message, Landing View, page visibility) is also
   // role-specific — switching the active role swaps these field values too.
   // OneQR Name stays global: it names the single Master QR, not a role view.
   var ROLE_CONFIG_DEFAULTS = {
@@ -233,6 +233,15 @@
   var welcomeInput = document.getElementById('oneqr-welcome');
   var templateSelect = document.getElementById('oneqr-template');
   var identitySelect = document.getElementById('oneqr-identity');
+  // Keep the stored option values unchanged so saved role settings still apply.
+  function syncPageVisibilityCopy() {
+    var language = document.documentElement.lang === 'vi' ? 'vi' : 'en';
+    document.querySelectorAll('[data-oneqr-visibility-copy]').forEach(function (element) {
+      element.textContent = element.getAttribute('data-' + language);
+    });
+  }
+  syncPageVisibilityCopy();
+  new MutationObserver(syncPageVisibilityCopy).observe(document.documentElement, { attributes: true, attributeFilter: ['lang'] });
   var cardTitleEl = document.getElementById('oneqrCardTitle');
   var heroNameEl = document.getElementById('oneqrHeroName');
   var heroTaglineEl = document.getElementById('oneqrHeroTagline');
