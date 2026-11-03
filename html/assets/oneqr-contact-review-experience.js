@@ -27,11 +27,14 @@
     address: '9793 Westheimer Rd, Suite A', city: 'Houston', region: 'TX', zip: '77042',
     bio: 'Beauty, care, and a better booking experience.', blurb: '', addressMode: 'full',
     showPhone: true, showHours: true, exchangeEnabled: false, openTime: '09:30', closeTime: '19:00', closedDays: [],
-    theme: 'indigo', configured: false, shopId: 'bitcoin-nail-bar', teamContacts: [], teamContactsDemoVersion: 1
+    theme: 'indigo', configured: false, shopId: 'bitcoin-nail-bar', teamContacts: [], teamContactsDemoVersion: 2
   };
-  defaults.teamContacts = teamMembers.map(function (person) {
+  var demoTeamContacts = teamMembers.map(function (person) {
     return { id: person.id, memberId: person.id, shopId: defaults.shopId, name: person.name,
       role: person.role, group: person.role, title: teamRoles.find(function (role) { return role.role === person.role; }).title, public: true };
+  });
+  defaults.teamContacts = demoTeamContacts.filter(function (contact) {
+    return contact.memberId === 'mary-nguyen' || contact.memberId === 'kim-nguyen';
   });
 
   function readProfile() {
@@ -40,6 +43,13 @@
       var card = Object.assign({}, defaults, saved);
       card.phone = phoneControl.format(card.phone);
       card.teamContacts = (Array.isArray(card.teamContacts) ? card.teamContacts : []).map(function (contact) { return Object.assign({}, contact); });
+      if (saved && saved.teamContactsDemoVersion === 1) {
+        card.teamContacts = card.teamContacts.filter(function (contact) {
+          if (defaults.teamContacts.some(function (person) { return person.memberId === contact.memberId; })) return true;
+          var sample = demoTeamContacts.find(function (person) { return person.memberId === contact.memberId; });
+          return !sample || Object.keys(contact).length !== Object.keys(sample).length || Object.keys(sample).some(function (key) { return contact[key] !== sample[key]; });
+        });
+      }
       if (!saved || saved.teamContactsDemoVersion !== defaults.teamContactsDemoVersion) {
         defaults.teamContacts.forEach(function (contact) {
           if (!card.teamContacts.some(function (person) { return person.memberId === contact.memberId; })) card.teamContacts.push(Object.assign({}, contact));
