@@ -6,13 +6,13 @@
   if (!nearby || !search) return;
 
   const deals = [
-    'Khám + cạo vôi $79 · 2.1 mi',
-    'Trà sữa mua 1 tặng 1 · 0.4 mi',
-    'Giảm 15% bánh sinh nhật · 1.0 mi',
-    'Tối nay: 2 lb tôm hùm đất giá $25 · 0.7 mi',
-    'Rửa xe + hút bụi $12 · 1.5 mi',
-    'Tắm & cắt lông chó giảm $10 · 2.9 mi',
-    'Combo phở + nước $9 · 3.0 mi'
+    'Dental exam + cleaning $79 · 2.1 mi',
+    'Buy one milk tea, get one free · 0.4 mi',
+    '15% off birthday cakes · 1.0 mi',
+    'Tonight: 2 lb crawfish for $25 · 0.7 mi',
+    'Car wash + vacuum $12 · 1.5 mi',
+    '$10 off dog bath & grooming · 2.9 mi',
+    'Pho + drink combo $9 · 3.0 mi'
   ];
   const queries = [...document.querySelectorAll('.discovery-query')].map(link => link.dataset.devQuery);
   const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
