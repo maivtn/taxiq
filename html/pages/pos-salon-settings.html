@@ -1236,7 +1236,7 @@
             ' data-tips-enabled="' + (profile.tipsEnabled === false ? 'false' : 'true') + '" data-contract-type="' + escapeHtml(profile.contractType || 'w2') + '"' +
             ' data-ssn="' + escapeHtml(profile.ssn || '') + '" data-ein="' + escapeHtml(profile.ein || '') + '">' +
             '<span class="tech-avatar">' + escapeHtml((technician.name || 'T').charAt(0).toUpperCase()) + '</span>' +
-            '<span><span class="tech-choice-name">' + escapeHtml(technician.name) + '</span><span class="tech-choice-meta">' + escapeHtml([technician.email, technician.phone].filter(Boolean).join(' · ') || services.join(' · ')) + '</span></span>' +
+            '<span class="tech-choice-name">' + escapeHtml(technician.name) + '</span>' +
           '</button>';
         }).join('');
       }
