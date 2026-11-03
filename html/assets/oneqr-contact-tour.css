@@ -16,7 +16,7 @@
 .oneqr-tour-progress i { display: block; width: 0; height: 100%; background: #fcd34d; }
 .oneqr-tour-body { min-height: 57px; padding: 12px 14px 14px; overflow-wrap: anywhere; color: #c3c0f5; font-size: 13px; line-height: 1.65; }
 @media (max-width: 650px) {
-  .oneqr-tour-trigger { align-self: flex-end; }
+  .oneqr-tour-trigger { align-self: center; }
   .oneqr-ai-tour { padding-right: 8px; padding-left: 8px; }
   .oneqr-tour-head { gap: 6px; padding: 8px 10px; }
   .oneqr-tour-head b { font-size: 10px; letter-spacing: .08em; }
@@ -26,3 +26,5 @@
 @media (prefers-reduced-motion: reduce) {
   .oneqr-tour-spot { scroll-behavior: auto; }
 }
+.qr-stations-title-row { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
+.qr-stations-title-row .oneqr-tour-trigger { min-height: 40px; padding: 8px 12px; }
