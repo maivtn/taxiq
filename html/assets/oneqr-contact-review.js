@@ -65,6 +65,7 @@
   let tab = 'shop';
   let editingId = null;
   let adding = false;
+  const pendingMembers = new Set();
   let selectedPreview = 'shop';
   let opener;
   const say = message => { $('#contact-feedback').textContent = message; };
@@ -182,11 +183,33 @@
   function results() {
     const search = $('#contact-member-search').value.trim().toLowerCase();
     const choices = roster.filter(person => person.name.toLowerCase().includes(search));
-    $('#contact-member-results').innerHTML = choices.length ? choices.map(person => {
-      const duplicate = team(draft).some(contact => contact.memberId === person.id && contact.id !== editingId);
-      return '<button type="button" class="contact-member-option" data-pick-member="' + esc(person.id) + '"' + (duplicate ? ' disabled' : '') + '>' + avatar(person) + '<span><strong>' + esc(person.name.toUpperCase()) + '</strong><small>' + groupTitle(person.role) + '</small></span><i data-lucide="' + (duplicate ? 'check' : 'plus') + '" aria-hidden="true"></i></button>';
+    const groups = [{ role: 'manager', label: 'Managers' }, { role: 'technician', label: 'Technicians' }];
+    $('#contact-member-results').innerHTML = choices.length ? groups.map(group => {
+      const people = choices.filter(person => person.role === group.role);
+      if (!people.length) return '';
+      return '<fieldset class="contact-member-group"><legend>' + group.label + '</legend>' + people.map(person => {
+        const duplicate = team(draft).some(contact => contact.memberId === person.id);
+        return '<label class="contact-member-option">' + avatar(person) + '<span><strong>' + esc(person.name.toUpperCase()) + '</strong><small>' + groupTitle(person.role) + '</small></span><input type="checkbox" data-pick-member="' + esc(person.id) + '"' + (duplicate ? ' disabled checked' : pendingMembers.has(person.id) ? ' checked' : '') + '></label>';
+      }).join('') + '</fieldset>';
     }).join('') : '<p class="contact-share-note">' + (roster.length ? 'No matching team members' : 'No team contacts yet') + '</p>';
+    syncBatchAdd();
     icons();
+  }
+  function syncBatchAdd() {
+    const count = roster.filter(person => pendingMembers.has(person.id) && !team(draft).some(contact => contact.memberId === person.id)).length;
+    $('#contact-add-selected').disabled = count === 0;
+    $('#contact-selected-count').textContent = count;
+  }
+  function addSelected() {
+    const contacts = roster.filter(person => pendingMembers.has(person.id) && !team(draft).some(contact => contact.memberId === person.id)).map(person => ({
+      id: person.id, memberId: person.id, shopId: draft.shopId, name: person.name,
+      role: person.role, group: person.role, title: groupTitle(person.role), public: true
+    }));
+    if (!contacts.length) return;
+    draft.teamContacts.push(...contacts);
+    selectedPreview = contacts[0].id;
+    closeEditor();
+    $('#contact-team-list').querySelector('[data-contact-row="' + CSS.escape(contacts[0].id) + '"] [data-team-name]')?.focus();
   }
   function clearErrors() {
     ['member', 'title'].forEach(key => { $('#contact-' + key + '-error').hidden = true; });
@@ -196,6 +219,7 @@
     clearErrors();
     editingId = id;
     adding = !id;
+    pendingMembers.clear();
     const contact = team(draft).find(person => person.id === id);
     $('#contact-team-editor').hidden = false;
     $('#contact-editor-title').textContent = contact ? 'Edit' : 'Add contact';
@@ -204,6 +228,8 @@
     $('#contact-member-public').checked = contact?.public ?? true;
     $('#contact-member-search').readOnly = Boolean(contact);
     $('#contact-member-results').hidden = Boolean(contact);
+    $('#contact-batch-actions').hidden = Boolean(contact);
+    $('#contact-edit-fields').hidden = !contact;
     $('#contact-editor-share-note').textContent = contact ? shareState(contact) : 'Save this contact to get a link.';
     if (contact) selectedPreview = contact.id;
     results(); renderTeam(); changed();
@@ -213,6 +239,7 @@
   function closeEditor() {
     adding = false;
     editingId = null;
+    pendingMembers.clear();
     $('#contact-team-editor').hidden = true;
     clearErrors(); renderTeam(); changed();
   }
@@ -229,6 +256,7 @@
     draft = clone(profile.read());
     baseline = JSON.stringify(draft);
     editingId = null; adding = false; selectedPreview = 'shop';
+    pendingMembers.clear();
     fillShop();
     addActionBaseline = true;
     $('#contact-add-action').checked = addActionBaseline;
@@ -237,6 +265,7 @@
     dialog.showModal();
   }
   function validate() {
+    if (adding && pendingMembers.size) addSelected();
     if (adding) {
       setTab('team');
       $('#contact-member-error').hidden = false;
@@ -301,18 +330,14 @@
   $('#contact-editor-close').addEventListener('click', closeEditor);
   $('[data-contact-go-shop]').addEventListener('click', () => setTab('shop', true));
   $('#contact-member-search').addEventListener('input', results);
-  $('#contact-member-results').addEventListener('click', event => {
-    const button = event.target.closest('[data-pick-member]');
-    if (!button || button.disabled) return;
-    const person = member(button.dataset.pickMember);
-    const duplicate = team(draft).find(contact => contact.memberId === person.id);
-    if (duplicate) { edit(duplicate.id); return; }
-    const contact = { id: person.id, memberId: person.id, shopId: draft.shopId, name: person.name, role: person.role, group: person.role, title: groupTitle(person.role), public: $('#contact-member-public').checked };
-    draft.teamContacts.push(contact);
-    selectedPreview = contact.id;
-    closeEditor();
-    $('#contact-team-list').querySelector('[data-contact-row="' + CSS.escape(contact.id) + '"] [data-team-name]')?.focus();
+  $('#contact-member-results').addEventListener('change', event => {
+    const checkbox = event.target.closest('[data-pick-member]');
+    if (!checkbox || checkbox.disabled) return;
+    if (checkbox.checked) pendingMembers.add(checkbox.dataset.pickMember);
+    else pendingMembers.delete(checkbox.dataset.pickMember);
+    clearErrors(); syncBatchAdd();
   });
+  $('#contact-add-selected').addEventListener('click', addSelected);
   $('#contact-member-title').addEventListener('input', updateEditor);
   $('#contact-member-public').addEventListener('change', updateEditor);
   $('#contact-preview-person').addEventListener('change', event => selectContact(event.target.value));
