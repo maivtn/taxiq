@@ -434,6 +434,73 @@
     pageSize = 10,
     visibleColumns = null,
     paymentMode = "";
+  // PO feedback 09/10: read-only lookup above the embedded merchant screens.
+  // Reuse issued cards and the existing POS demo balances; never write on lookup.
+  const balanceForm = document.getElementById("gc-balance-form"),
+    balanceCode = document.getElementById("gc-balance-code"),
+    balanceResult = document.getElementById("gc-balance-result");
+  const normalizeCardCode = (value) =>
+    String(value ?? "").replace(/[\s-]/g, "").toUpperCase();
+  function clearBalanceResult() {
+    balanceResult.hidden = true;
+    balanceResult.className = "";
+    balanceResult.replaceChildren();
+  }
+  function checkBalance(event) {
+    event.preventDefault();
+    clearBalanceResult();
+    if (!balanceCode.value.trim()) {
+      balanceCode.value = "";
+      balanceCode.reportValidity();
+      return;
+    }
+    try {
+      const code = normalizeCardCode(balanceCode.value),
+        saved = JSON.parse(localStorage.getItem(storageKey) || "null"),
+        cards = saved?.cards ?? store.cards;
+      if (!Array.isArray(cards)) throw new TypeError("Invalid demo cards");
+      const card = cards.find((entry) =>
+        [entry.number, entry.code, entry.id].some(
+          (value) => value && normalizeCardCode(value) === code,
+        ),
+      );
+      let result = card;
+      if (!result) {
+        const session = JSON.parse(
+            sessionStorage.getItem("nexora:products-other-sales:session:v1") || "null",
+          ),
+          balances = session?.version === 1 && session.giftCardBalances
+            ? session.giftCardBalances
+            : { "DEMO-GIFT-100": 100, "DEMO-GIFT-25": 25 },
+          demoCode = Object.keys(balances).find(
+            (value) => normalizeCardCode(value) === code,
+          );
+        if (demoCode) result = { number: demoCode, balance: balances[demoCode] };
+      }
+      if (!result) {
+        balanceResult.className = "gc-balance-error";
+        balanceResult.textContent = "Demo card not found. Try DEMO-GIFT-100.";
+      } else {
+        if (result.balance == null || String(result.balance).trim() === "" ||
+            !Number.isFinite(Number(result.balance)) || Number(result.balance) < 0)
+          throw new TypeError("Invalid demo balance");
+        const currency = result.currency || "USD",
+          amount = new Intl.NumberFormat("en-US", {
+            style: "currency", currency,
+          }).format(Number(result.balance));
+        balanceResult.className = "gc-balance-result";
+        balanceResult.innerHTML = `<p><span>Card code</span><strong>${esc(result.number || result.code || result.id)}</strong></p><p><span>Available:</span><strong class="gc-balance-amount">${esc(amount)} ${esc(currency)}</strong></p>`;
+      }
+    } catch (_) {
+      balanceResult.className = "gc-balance-error";
+      balanceResult.textContent = "Please check and try again";
+    }
+    balanceResult.hidden = false;
+  }
+  if (balanceForm && balanceCode && balanceResult) {
+    balanceCode.addEventListener("input", clearBalanceResult);
+    balanceForm.addEventListener("submit", checkBalance);
+  }
   function save() {
     try {
       localStorage.setItem(storageKey, JSON.stringify(store));
