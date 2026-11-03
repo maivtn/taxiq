@@ -446,6 +446,89 @@
     balanceResult.className = "";
     balanceResult.replaceChildren();
   }
+  let balanceScan = null;
+  function stopBalanceScan() {
+    const scan = balanceScan;
+    balanceScan = null;
+    if (!scan) return;
+    cancelAnimationFrame(scan.frame);
+    scan.stream?.getTracks().forEach((track) => track.stop());
+    scan.video.pause();
+    scan.video.srcObject = null;
+  }
+  async function scanBalanceCode() {
+    stopBalanceScan();
+    clearBalanceResult();
+    openDialog("Check balance", `<div class="gc-scan-camera" data-gc-scan-camera><video autoplay playsinline muted aria-label="Card code"></video></div><p class="gc-balance-error" data-gc-scan-error role="status" hidden>Please check and try again</p><div class="gc-actions"><button class="gc-button" type="button" data-cancel>Cancel</button></div>`);
+    const video = dialog.querySelector("video"),
+      camera = dialog.querySelector("[data-gc-scan-camera]"),
+      error = dialog.querySelector("[data-gc-scan-error]"),
+      scan = { video, stream: null, frame: 0 };
+    balanceScan = scan;
+    const showError = () => {
+      if (balanceScan !== scan) return;
+      stopBalanceScan();
+      camera.hidden = true;
+      error.hidden = false;
+    };
+    try {
+      if (!navigator.mediaDevices?.getUserMedia || typeof window.jsQR !== "function")
+        throw new Error("QR scanner unavailable");
+      const stream = await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: { ideal: "environment" } }, audio: false,
+      });
+      if (balanceScan !== scan || !dialog.open) {
+        stream.getTracks().forEach((track) => track.stop());
+        return;
+      }
+      scan.stream = stream;
+      video.srcObject = stream;
+      await video.play();
+      if (balanceScan !== scan) return;
+      const canvas = document.createElement("canvas"),
+        context = canvas.getContext("2d", { willReadFrequently: true });
+      let lastFrame = 0;
+      const readFrame = (time) => {
+        if (balanceScan !== scan || !dialog.open) return;
+        try {
+          if (video.readyState >= 2 && video.videoWidth && time - lastFrame >= 150) {
+            lastFrame = time;
+            const scale = Math.min(1, 640 / video.videoWidth);
+            canvas.width = Math.round(video.videoWidth * scale);
+            canvas.height = Math.round(video.videoHeight * scale);
+            context.drawImage(video, 0, 0, canvas.width, canvas.height);
+            const frame = context.getImageData(0, 0, canvas.width, canvas.height),
+              code = window.jsQR(frame.data, frame.width, frame.height);
+            if (code?.data?.trim()) {
+              balanceCode.value = code.data.trim();
+              stopBalanceScan();
+              dialog.close();
+              balanceCode.focus();
+              return;
+            }
+          }
+        } catch (_) {
+          showError();
+          return;
+        }
+        scan.frame = requestAnimationFrame(readFrame);
+      };
+      scan.frame = requestAnimationFrame(readFrame);
+    } catch (_) {
+      showError();
+    }
+  }
+  document.getElementById("gc-balance-scan")?.addEventListener("click", scanBalanceCode);
+  dialog.addEventListener("close", () => {
+    if (!dialog.open) stopBalanceScan();
+  });
+  window.addEventListener("pagehide", stopBalanceScan);
+  document.addEventListener("visibilitychange", () => {
+    if (document.hidden && balanceScan) {
+      stopBalanceScan();
+      dialog.close();
+    }
+  });
   const centerTabs = [...document.querySelectorAll("[data-gc-center-tab]")];
   function selectCenterTab(next, focus = false) {
     for (const tab of centerTabs) {

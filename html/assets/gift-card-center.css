@@ -1032,6 +1032,14 @@
 .gc-balance-controls .gc-field{flex:1}
 .gc-balance-controls input,.gc-balance-controls .gc-button{min-height:44px}
 .gc-balance-controls .gc-button{flex:none}
+.gc-balance-input{position:relative;min-width:0}
+.gc-balance-input input{padding-right:52px}
+.gc-balance-scan{position:absolute;right:2px;top:0;bottom:0;width:44px;display:grid;place-items:center;border:0;border-radius:6px;background:transparent;color:var(--gc-green)}
+.gc-balance-scan:hover{background:#e7f6ee}
+.gc-balance-scan svg{width:20px;height:20px}
+.gc-scan-camera{position:relative;aspect-ratio:1;max-width:420px;margin:0 auto 18px;overflow:hidden;border-radius:12px;background:#15221e}
+.gc-scan-camera video{display:block;width:100%;height:100%;object-fit:cover}
+.gc-scan-camera::after{content:"";position:absolute;inset:16%;border:2px solid #70dbb4;border-radius:14px;pointer-events:none}
 .gc-balance #gc-balance-help{margin:10px 0 0}
 .gc-balance-result{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:16px;padding:16px;border:1px solid #bce5d6;border-radius:10px;background:#f0faf6}
 .gc-balance-result p{display:grid;gap:4px;margin:0;min-width:0}

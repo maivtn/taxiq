@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="../assets/nexora-icons.css" />
     <link rel="stylesheet" href="../assets/nexora-shell.css?v=20261030-shared-header-v47" />
     <link rel="stylesheet" href="../assets/front-desk-tabs.css" />
-    <link rel="stylesheet" href="../assets/gift-card-center.css?v=20261103-center-tabs" />
+    <link rel="stylesheet" href="../assets/gift-card-center.css?v=20261103-balance-scan" />
   <link rel="icon" type="image/png" sizes="128x128" href="../assets/flaticon-flat/favicon-letter-n-9203636.png">
   </head>
   <body>
@@ -36,10 +36,13 @@
             </div>
             <form id="gc-balance-form">
               <div class="gc-balance-controls">
-                <label class="gc-field" for="gc-balance-code">
-                  <span>Card code</span>
-                  <input id="gc-balance-code" name="cardCode" placeholder="DEMO-GIFT-100" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="gc-balance-help" required />
-                </label>
+                <div class="gc-field">
+                  <label for="gc-balance-code">Card code</label>
+                  <div class="gc-balance-input">
+                    <input id="gc-balance-code" name="cardCode" placeholder="DEMO-GIFT-100" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="gc-balance-help" required />
+                    <button class="gc-balance-scan" id="gc-balance-scan" type="button" aria-label="Scan QR" aria-haspopup="dialog"><i data-lucide="qr-code" aria-hidden="true"></i></button>
+                  </div>
+                </div>
                 <button class="gc-button primary" type="submit">Check demo balance</button>
               </div>
               <p class="gc-note" id="gc-balance-help">Demo codes: DEMO-GIFT-100 ($100), DEMO-GIFT-25 ($25). No live card is charged.</p>
@@ -73,6 +76,7 @@
     <script src="../assets/front-desk-tabs.js"></script>
     <script src="../assets/gift-card-brand-prompts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="../assets/gift-card-center.js?v=20261103-center-tabs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
+    <script src="../assets/gift-card-center.js?v=20261103-balance-scan"></script>
   </body>
 </html>
