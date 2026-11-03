@@ -1508,5 +1508,8 @@
     window.sessionStorage.removeItem('taxiq:oneqr-contact-review:pending-industry');
   } catch (error) { /* Keep the current modules if selection storage is unavailable. */ }
   setActiveRole(savedConfig && ROLES.includes(savedConfig.currentRole) ? savedConfig.currentRole : currentRole);
-  if (window.location.hash === '#contact-card') window.NEXORA_CONTACT_CARD.open();
+  if (window.location.hash === '#contact-card') {
+    var contactTab = new URLSearchParams(window.location.search).get('contact-tab');
+    window.NEXORA_CONTACT_CARD.open(contactTab === 'team' ? 'team' : 'shop');
+  }
 })();

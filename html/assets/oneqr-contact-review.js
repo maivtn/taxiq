@@ -241,7 +241,7 @@
     $('#contact-member-search').setAttribute('aria-expanded', 'false');
     $('[data-contact-member-combobox]').classList.remove('is-open');
   }
-  function open() {
+  function open(initialTab = 'shop') {
     opener = document.activeElement;
     draft = clone(profile.read());
     baseline = JSON.stringify(draft);
@@ -250,7 +250,7 @@
     addActionBaseline = true;
     $('#contact-add-action').checked = addActionBaseline;
     $('#contact-member-search').value = '';
-    closeMemberPicker(); setTab('shop'); renderTeam(); changed(); sync(); say('');
+    closeMemberPicker(); setTab(initialTab === 'team' ? 'team' : 'shop'); renderTeam(); changed(); sync(); say('');
     dialog.showModal();
   }
   function validate() {
