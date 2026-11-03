@@ -1078,6 +1078,7 @@
 .oneqr-module-toolbar { display: flex; flex-wrap: wrap; gap: 8px; }
 .oneqr-module-toolbar a, .oneqr-module-toolbar > button { display: inline-flex; align-items: center; justify-content: center; gap: 7px; min-height: 40px; padding: 9px 14px; border: 1px solid #ddd6fe; border-radius: 12px; background: #f5f3ff; color: #6d28d9; font-size: 13px; font-weight: 800; text-decoration: none; cursor: pointer; box-shadow: 0 1px 3px rgba(16,24,40,.04); transition: background-color .15s, border-color .15s, box-shadow .15s; }
 .oneqr-module-toolbar svg { width: 16px; height: 16px; flex-shrink: 0; stroke-width: 2.25; }
+.oneqr-module-toolbar img { width: 20px; height: 20px; flex-shrink: 0; object-fit: contain; }
 .oneqr-module-toolbar a:hover, .oneqr-module-toolbar > button:hover { border-color: #c4b5fd; background: #ede9fe; color: #6d28d9; }
 .oneqr-module-toolbar a:active, .oneqr-module-toolbar > button:active { border-color: #a78bfa; background: #ddd6fe; }
 .oneqr-module-toolbar a:focus-visible, .oneqr-module-toolbar > button:focus-visible { outline: 2px solid #4648d4; outline-offset: 3px; }
