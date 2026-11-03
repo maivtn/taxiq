@@ -45,16 +45,22 @@
 .contact-team-list { display: grid; gap: 10px; }
 .contact-team-empty { display: flex; min-height: 245px; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 20px; border: 1px dashed #d0d5dd; border-radius: 12px; background: #fafbfe; color: #475467; font-size: 12px; }
 .contact-team-empty > img { width: 60px; height: 60px; margin-bottom: 3px; object-fit: contain; }
-.contact-team-row { min-width: 0; padding: 13px; border: 1px solid #e4e7ec; border-radius: 11px; background: #fff; }
-.contact-team-row.is-editing { border-color: #a5a0ee; box-shadow: 0 0 0 2px #4f46e509; }
+.contact-team-row { min-width: 0; padding: 13px; border: 1px solid #e4e7ec; border-radius: 11px; background: #fff; cursor: pointer; transition: border-color .15s, background-color .15s, box-shadow .15s; }
+.contact-team-row:hover { border-color: #c4b5fd; }
+.contact-team-row.is-active { border-color: #9189ef; background: #faf9ff; box-shadow: 0 0 0 2px #4f46e510; }
+.contact-team-row:focus-visible { outline: 2px solid #4f46e5; outline-offset: 3px; }
 .contact-team-identity { display: flex; align-items: center; gap: 10px; }
 .contact-team-avatar { position: relative; display: inline-grid; width: 39px; height: 39px; flex: 0 0 39px; overflow: hidden; place-items: center; border-radius: 50%; background: #ede9fe; color: #6d28d9; font-size: 14px; font-weight: 800; }
 .contact-team-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
 .contact-team-identity > div { min-width: 0; flex: 1; }
 .contact-team-identity strong { display: block; overflow-wrap: anywhere; color: #172033; font-size: 12px; font-weight: 750; line-height: 1.4; }
 .contact-team-identity small { display: block; margin-top: 3px; overflow-wrap: anywhere; color: #667085; font-size: 11px; line-height: 1.5; }
-.contact-public-badge { max-width: 85px; flex-shrink: 0; padding: 4px 6px; border-radius: 5px; background: #f2f4f7; color: #667085; font-size: 9px; font-weight: 700; text-align: center; }
-.contact-public-badge.is-public { background: #ecfdf3; color: #047857; }
+.contact-team-identity > .contact-inline-fields { display: grid; grid-template-columns: minmax(0, 1fr) minmax(140px, .7fr); align-items: start; gap: 10px; }
+.contact-inline-fields [data-team-name] { text-transform: uppercase; }
+.contact-team-row-controls { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin-top: 12px; }
+.contact-team-row-controls .contact-row-public { justify-content: flex-start; gap: 10px; margin: 0; font-size: 11px; }
+.contact-remove-button { min-height: 34px; padding: 6px 10px; border: 1px solid #fecdca; border-radius: 7px; background: #fff; color: #d92d20; font: inherit; font-size: 10px; font-weight: 650; cursor: pointer; }
+.contact-remove-button:hover { background: #fff1f0; }
 .contact-team-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 11px; }
 .contact-team-actions button { display: inline-flex; min-height: 32px; align-items: center; justify-content: center; padding: 6px 9px; border: 1px solid #e4e7ec; border-radius: 7px; background: #fff; color: #475467; font: inherit; font-size: 10px; font-weight: 650; cursor: pointer; }
 .contact-team-actions button:first-child { border-color: #d6d3f6; background: #f8f7ff; color: #4f46e5; }
@@ -159,7 +165,7 @@ body:has(.oneqr-contact-dialog[open]), body:has(.contact-review-popup[open]) { o
   .contact-team-row { padding: 11px; }
   .contact-team-identity { gap: 8px; flex-wrap: wrap; }
   .contact-team-identity > div { flex-basis: calc(100% - 47px); }
-  .contact-public-badge { margin-left: 47px; }
+  .contact-team-identity > .contact-inline-fields { grid-template-columns: minmax(0, 1fr); }
   .contact-team-actions { display: grid; grid-template-columns: 1fr 1fr; }
   .contact-team-actions button { min-height: 38px; }
   .contact-team-editor { padding: 12px; }

@@ -17,7 +17,8 @@
   ];
   const groupTitle = group => group === 'manager' ? 'Manager' : 'Technician';
   const member = id => roster.find(person => person.id === id);
-  const contactGroup = contact => member(contact.memberId)?.role || '';
+  const contactGroup = contact => contact.role || member(contact.memberId)?.role || '';
+  const contactName = contact => contact.name ?? member(contact.memberId)?.name ?? '';
   const team = card => (card.teamContacts || []).filter(person => person && person.id && person.memberId);
   function isContactModule(name, details = {}) {
     return ['Contact', 'Save contact', 'Contact card', 'Contact Card'].includes(name) || ['contact', 'vcard'].includes(details.catalogType);
@@ -38,7 +39,7 @@
     const contact = team(shop).find(person => person.id === id && person.shopId === shop.shopId);
     const person = contact && member(contact.memberId);
     if (!person) return null;
-    return { ...shop, name: person.name, title: contact.title, company: shop.name, contactId: contact.id, avatar: person.avatar };
+    return { ...shop, name: contactName(contact), title: contact.title, company: shop.name, contactId: contact.id, avatar: person.avatar };
   }
   function contactUrl(id) {
     const url = new URL(profile.pageUrl());
@@ -122,8 +123,10 @@
     $('#contact-team-list').innerHTML = contacts.length ? contacts.map(contact => {
       const person = member(contact.memberId);
       const note = shareState(contact);
-      return '<article class="contact-team-row' + (editingId === contact.id ? ' is-editing' : '') + '" data-contact-row="' + esc(contact.id) + '">' +
-        '<div class="contact-team-identity">' + avatar(person || { name: contact.memberId }) + '<div><strong>' + esc((person?.name || contact.memberId).toUpperCase()) + '</strong><small>' + esc(contact.title) + '</small></div><span class="contact-public-badge' + (contact.public && person ? ' is-public' : '') + '">' + (contact.public && person ? 'Public contact' : 'Hidden') + '</span></div>' +
+      const role = contactGroup(contact);
+      return '<article class="contact-team-row' + (selectedPreview === contact.id ? ' is-active' : '') + '" data-contact-row="' + esc(contact.id) + '" tabindex="0" aria-label="' + esc(contactName(contact) || 'Contact') + '"' + (selectedPreview === contact.id ? ' aria-current="true"' : '') + '>' +
+        '<div class="contact-team-identity">' + avatar({ name: contactName(contact), avatar: person?.avatar }) + '<div class="contact-inline-fields"><label class="contact-field"><span>Name</span><input type="text" data-team-name value="' + esc(contactName(contact)) + '" maxlength="100" autocomplete="off" required></label><label class="contact-field"><span>Role</span><select data-team-role aria-label="Role"><option value="manager"' + (role === 'manager' ? ' selected' : '') + '>Manager</option><option value="technician"' + (role === 'technician' ? ' selected' : '') + '>Technician</option></select></label></div></div>' +
+        '<div class="contact-team-row-controls"><label class="contact-public-switch contact-row-public"><span>Public contact</span><input type="checkbox" role="switch" data-team-public' + (contact.public ? ' checked' : '') + '></label><button type="button" class="contact-remove-button" data-team-action="remove">Remove</button></div>' +
         '<div class="contact-team-actions"><button type="button" data-team-action="edit">Edit</button><button type="button" data-team-action="copy"' + (note ? ' disabled' : '') + '>Copy link</button><button type="button" data-team-action="qr"' + (note ? ' disabled' : '') + '>View QR</button><button type="button" data-team-action="download"' + (note ? ' disabled' : '') + '>Download QR</button></div>' +
         (note ? '<p class="contact-share-note">' + esc(note) + '</p>' : '') + '</article>';
     }).join('') : '<div class="contact-team-empty"><img src="../assets/icon-oneqr/issue-2040-oneqr-users-round-3d.png" alt=""><strong>No team contacts yet</strong><button type="button" class="contact-review-button" data-team-action="add">Add contact</button></div>';
@@ -133,7 +136,7 @@
     }
   }
   function renderPreview() {
-    const options = [{ id: 'shop', name: draft.name || 'Your business' }].concat(team(draft).map(contact => ({ id: contact.id, name: (member(contact.memberId)?.name || contact.memberId).toUpperCase() })));
+    const options = [{ id: 'shop', name: draft.name || 'Your business' }].concat(team(draft).map(contact => ({ id: contact.id, name: contactName(contact).toUpperCase() })));
     if (!options.some(option => option.id === selectedPreview)) selectedPreview = 'shop';
     const select = $('#contact-preview-person');
     select.innerHTML = options.map(option => '<option value="' + esc(option.id) + '">' + esc(option.name) + '</option>').join('');
@@ -158,7 +161,20 @@
     $('[data-review-draft-action="call"]').hidden = !details.phone;
     $('[data-review-draft-action="directions"]').hidden = draft.addressMode !== 'full' || !details.address;
     $('#contact-inherited-details').textContent = [draft.name, formatPhone(details.phone), draft.email, draft.website, details.address].filter(Boolean).join(' · ');
+    syncActiveContact();
     icons();
+  }
+  function syncActiveContact() {
+    $$('#contact-team-list [data-contact-row]').forEach(row => {
+      const active = row.dataset.contactRow === selectedPreview;
+      row.classList.toggle('is-active', active);
+      if (active) row.setAttribute('aria-current', 'true');
+      else row.removeAttribute('aria-current');
+    });
+  }
+  function selectContact(id) {
+    selectedPreview = id;
+    renderPreview();
   }
   function formatPhone(value) {
     return String(value || '').replace(/^\+1\s*/, '');
@@ -228,6 +244,15 @@
       $('#contact-member-search').focus();
       return false;
     }
+    const missingName = team(draft).find(contact => !contactName(contact).trim());
+    if (missingName) {
+      setTab('team');
+      const field = $('#contact-team-list').querySelector('[data-contact-row="' + CSS.escape(missingName.id) + '"] [data-team-name]');
+      field.setAttribute('aria-invalid', 'true');
+      field.value = '';
+      field.reportValidity();
+      return false;
+    }
     const invalid = team(draft).find(contact => !['manager', 'technician'].includes(contactGroup(contact)) || !contact.title.trim());
     if (invalid) {
       setTab('team'); edit(invalid.id);
@@ -250,7 +275,7 @@
   $('#contact-card-form').addEventListener('submit', event => {
     event.preventDefault(); readShop();
     if (!validate()) return;
-    const card = { ...draft, configured: true, teamContacts: team(draft).map(contact => ({ ...contact, group: contactGroup(contact) })) };
+    const card = { ...draft, configured: true, teamContacts: team(draft).map(contact => ({ ...contact, name: contactName(contact).trim(), role: contactGroup(contact), group: contactGroup(contact) })) };
     try { localStorage.setItem(cardKey, JSON.stringify(card)); }
     catch { say('Could not save the contact card. Please try again.'); return; }
     document.dispatchEvent(new CustomEvent('oneqr:contact-saved', { detail: { card, addAction: $('#contact-add-action').checked } }));
@@ -282,12 +307,15 @@
     const person = member(button.dataset.pickMember);
     const duplicate = team(draft).find(contact => contact.memberId === person.id);
     if (duplicate) { edit(duplicate.id); return; }
-    const contact = { id: person.id, memberId: person.id, shopId: draft.shopId, group: person.role, title: groupTitle(person.role), public: $('#contact-member-public').checked };
-    draft.teamContacts.push(contact); edit(contact.id);
+    const contact = { id: person.id, memberId: person.id, shopId: draft.shopId, name: person.name, role: person.role, group: person.role, title: groupTitle(person.role), public: $('#contact-member-public').checked };
+    draft.teamContacts.push(contact);
+    selectedPreview = contact.id;
+    closeEditor();
+    $('#contact-team-list').querySelector('[data-contact-row="' + CSS.escape(contact.id) + '"] [data-team-name]')?.focus();
   });
   $('#contact-member-title').addEventListener('input', updateEditor);
   $('#contact-member-public').addEventListener('change', updateEditor);
-  $('#contact-preview-person').addEventListener('change', event => { selectedPreview = event.target.value; renderPreview(); });
+  $('#contact-preview-person').addEventListener('change', event => selectContact(event.target.value));
   $('#contact-import-button').addEventListener('click', () => {
     if (!$('#contact-google-url').value.trim()) { say('Paste a Google Business Profile URL first.'); return; }
     draft = { ...draft, ...clone(profile.defaults), teamContacts: draft.teamContacts, configured: draft.configured, theme: draft.theme };
@@ -361,7 +389,51 @@
   qr.addEventListener('close', () => qrOpener?.isConnected && qrOpener.focus());
   qr.querySelector('[data-qr-copy]').addEventListener('click', () => copyLink(qrId, qr.querySelector('#contact-qr-feedback')));
   qr.querySelector('[data-qr-download]').addEventListener('click', () => downloadQR(qrId));
+  $('#contact-team-list').addEventListener('focusin', event => {
+    const row = event.target.closest('[data-contact-row]');
+    if (row && row.dataset.contactRow !== selectedPreview) selectContact(row.dataset.contactRow);
+  });
+  $('#contact-team-list').addEventListener('keydown', event => {
+    if (!event.target.matches('[data-contact-row]') || !['Enter', ' '].includes(event.key)) return;
+    event.preventDefault();
+    selectContact(event.target.dataset.contactRow);
+  });
+  $('#contact-team-list').addEventListener('input', event => {
+    const field = event.target.closest('[data-team-name]');
+    if (!field) return;
+    const row = field.closest('[data-contact-row]');
+    const contact = team(draft).find(person => person.id === row.dataset.contactRow);
+    if (!contact) return;
+    contact.name = field.value;
+    field.removeAttribute('aria-invalid');
+    row.setAttribute('aria-label', field.value.trim() || 'Contact');
+    const badge = row.querySelector('.contact-team-avatar');
+    if (!badge.querySelector('img')) badge.textContent = field.value.trim().charAt(0).toUpperCase();
+    changed();
+  });
+  $('#contact-team-list').addEventListener('change', event => {
+    const field = event.target.closest('[data-team-public], [data-team-role]');
+    if (!field) return;
+    const id = field.closest('[data-contact-row]').dataset.contactRow;
+    const contact = team(draft).find(person => person.id === id);
+    if (!contact) return;
+    if (field.hasAttribute('data-team-role')) {
+      const oldTitle = groupTitle(contactGroup(contact));
+      contact.role = field.value;
+      contact.group = contactGroup(contact);
+      if (!contact.title.trim() || contact.title === oldTitle) contact.title = groupTitle(contact.role);
+      if (editingId === id) $('#contact-member-title').value = contact.title;
+    } else {
+      contact.public = field.checked;
+      if (editingId === id) $('#contact-member-public').checked = contact.public;
+      renderTeam();
+      $('#contact-team-list').querySelector('[data-contact-row="' + CSS.escape(id) + '"] [data-team-public]')?.focus();
+    }
+    changed();
+  });
   $('#contact-team-list').addEventListener('click', event => {
+    const row = event.target.closest('[data-contact-row]');
+    if (row && !event.target.closest('[data-team-action="remove"]')) selectContact(row.dataset.contactRow);
     const button = event.target.closest('[data-team-action]');
     if (!button || button.disabled) return;
     const action = button.dataset.teamAction;
@@ -371,6 +443,17 @@
     if (action === 'copy') copyLink(id);
     if (action === 'qr') showQR(id);
     if (action === 'download') downloadQR(id);
+    if (action === 'remove') {
+      const contacts = team(draft);
+      const index = contacts.findIndex(contact => contact.id === id);
+      const nextId = contacts[index + 1]?.id || contacts[index - 1]?.id;
+      draft.teamContacts = contacts.filter(contact => contact.id !== id);
+      if (editingId === id) closeEditor();
+      else { renderTeam(); changed(); }
+      results();
+      const nextField = nextId && $('#contact-team-list').querySelector('[data-contact-row="' + CSS.escape(nextId) + '"] [data-team-name]');
+      (nextField || $('#contact-add-member')).focus();
+    }
   });
 
   const menu = document.createElement('dialog');
