@@ -63,7 +63,6 @@
   let baseline = '';
   let addActionBaseline = true;
   let tab = 'shop';
-  let editingId = null;
   let adding = false;
   const pendingMembers = new Set();
   let selectedPreview = 'shop';
@@ -128,13 +127,9 @@
       return '<article class="contact-team-row' + (selectedPreview === contact.id ? ' is-active' : '') + '" data-contact-row="' + esc(contact.id) + '" tabindex="0" aria-label="' + esc(contactName(contact) || 'Contact') + '"' + (selectedPreview === contact.id ? ' aria-current="true"' : '') + '>' +
         '<div class="contact-team-identity">' + avatar({ name: contactName(contact), avatar: person?.avatar }) + '<div class="contact-inline-fields"><label class="contact-field"><span>Name</span><input type="text" data-team-name value="' + esc(contactName(contact)) + '" maxlength="100" autocomplete="off" required></label><label class="contact-field"><span>Role</span><select data-team-role aria-label="Role"><option value="manager"' + (role === 'manager' ? ' selected' : '') + '>Manager</option><option value="technician"' + (role === 'technician' ? ' selected' : '') + '>Technician</option></select></label></div></div>' +
         '<div class="contact-team-row-controls"><label class="contact-public-switch contact-row-public"><span>Public contact</span><input type="checkbox" role="switch" data-team-public' + (contact.public ? ' checked' : '') + '></label><button type="button" class="contact-remove-button" data-team-action="remove">Remove</button></div>' +
-        '<div class="contact-team-actions"><button type="button" data-team-action="edit">Edit</button><button type="button" data-team-action="copy"' + (note ? ' disabled' : '') + '>Copy link</button><button type="button" data-team-action="qr"' + (note ? ' disabled' : '') + '>View QR</button><button type="button" data-team-action="download"' + (note ? ' disabled' : '') + '>Download QR</button></div>' +
+        '<div class="contact-team-actions"><button type="button" data-team-action="copy"' + (note ? ' disabled' : '') + '>Copy link</button><button type="button" data-team-action="qr"' + (note ? ' disabled' : '') + '>View QR</button><button type="button" data-team-action="download"' + (note ? ' disabled' : '') + '>Download QR</button></div>' +
         (note ? '<p class="contact-share-note">' + esc(note) + '</p>' : '') + '</article>';
     }).join('') : '<div class="contact-team-empty"><img src="../assets/icon-oneqr/issue-2040-oneqr-users-round-3d.png" alt=""><strong>No team contacts yet</strong><button type="button" class="contact-review-button" data-team-action="add">Add contact</button></div>';
-    if (editingId) {
-      const contact = contacts.find(person => person.id === editingId);
-      $('#contact-editor-share-note').textContent = contact ? shareState(contact) : '';
-    }
   }
   function renderPreview() {
     const options = [{ id: 'shop', name: draft.name || 'Your business' }].concat(team(draft).map(contact => ({ id: contact.id, name: contactName(contact).toUpperCase() })));
@@ -161,7 +156,6 @@
     $('#contact-closed-days').hidden = !draft.showHours;
     $('[data-review-draft-action="call"]').hidden = !details.phone;
     $('[data-review-draft-action="directions"]').hidden = draft.addressMode !== 'full' || !details.address;
-    $('#contact-inherited-details').textContent = [draft.name, formatPhone(details.phone), draft.email, draft.website, details.address].filter(Boolean).join(' · ');
     syncActiveContact();
     icons();
   }
@@ -212,50 +206,30 @@
     $('#contact-team-list').querySelector('[data-contact-row="' + CSS.escape(contacts[0].id) + '"] [data-team-name]')?.focus();
   }
   function clearErrors() {
-    ['member', 'title'].forEach(key => { $('#contact-' + key + '-error').hidden = true; });
-    ['#contact-member-search', '#contact-member-title'].forEach(selector => $(selector).removeAttribute('aria-invalid'));
+    $('#contact-member-error').hidden = true;
+    $('#contact-member-search').removeAttribute('aria-invalid');
   }
-  function edit(id = null) {
+  function openMemberPicker() {
     clearErrors();
-    editingId = id;
-    adding = !id;
+    adding = true;
     pendingMembers.clear();
-    const contact = team(draft).find(person => person.id === id);
     $('#contact-team-editor').hidden = false;
-    $('#contact-editor-title').textContent = contact ? 'Edit' : 'Add contact';
-    $('#contact-member-search').value = contact ? member(contact.memberId)?.name || '' : '';
-    $('#contact-member-title').value = contact?.title || '';
-    $('#contact-member-public').checked = contact?.public ?? true;
-    $('#contact-member-search').readOnly = Boolean(contact);
-    $('#contact-member-results').hidden = Boolean(contact);
-    $('#contact-batch-actions').hidden = Boolean(contact);
-    $('#contact-edit-fields').hidden = !contact;
-    $('#contact-editor-share-note').textContent = contact ? shareState(contact) : 'Save this contact to get a link.';
-    if (contact) selectedPreview = contact.id;
+    $('#contact-member-search').value = '';
     results(); renderTeam(); changed();
     $('#contact-team-editor').scrollIntoView({ block: 'nearest' });
-    (contact ? $('#contact-member-title') : $('#contact-member-search')).focus();
+    $('#contact-member-search').focus();
   }
   function closeEditor() {
     adding = false;
-    editingId = null;
     pendingMembers.clear();
     $('#contact-team-editor').hidden = true;
-    clearErrors(); renderTeam(); changed();
-  }
-  function updateEditor() {
-    const contact = team(draft).find(person => person.id === editingId);
-    if (!contact) return;
-    contact.group = contactGroup(contact);
-    contact.title = $('#contact-member-title').value.trim();
-    contact.public = $('#contact-member-public').checked;
     clearErrors(); renderTeam(); changed();
   }
   function open() {
     opener = document.activeElement;
     draft = clone(profile.read());
     baseline = JSON.stringify(draft);
-    editingId = null; adding = false; selectedPreview = 'shop';
+    adding = false; selectedPreview = 'shop';
     pendingMembers.clear();
     fillShop();
     addActionBaseline = true;
@@ -282,18 +256,17 @@
       field.reportValidity();
       return false;
     }
-    const invalid = team(draft).find(contact => !['manager', 'technician'].includes(contactGroup(contact)) || !contact.title.trim());
+    const invalid = team(draft).find(contact => !['manager', 'technician'].includes(contactGroup(contact)));
     if (invalid) {
-      setTab('team'); edit(invalid.id);
-      const key = !['manager', 'technician'].includes(contactGroup(invalid)) ? 'member' : 'title';
-      $('#contact-' + key + '-error').hidden = false;
-      const field = $('#contact-member-' + (key === 'member' ? 'search' : key));
+      setTab('team'); selectContact(invalid.id);
+      say('This contact is unavailable');
+      const field = $('#contact-team-list').querySelector('[data-contact-row="' + CSS.escape(invalid.id) + '"] [data-team-role]');
       field.setAttribute('aria-invalid', 'true'); field.focus();
       return false;
     }
     const duplicates = new Set();
     for (const contact of team(draft)) {
-      if (duplicates.has(contact.memberId)) { setTab('team'); edit(contact.id); return false; }
+      if (duplicates.has(contact.memberId)) { setTab('team'); selectContact(contact.id); return false; }
       duplicates.add(contact.memberId);
     }
     const fields = $$('#contact-shop-panel input, #contact-shop-panel textarea');
@@ -304,7 +277,7 @@
   $('#contact-card-form').addEventListener('submit', event => {
     event.preventDefault(); readShop();
     if (!validate()) return;
-    const card = { ...draft, configured: true, teamContacts: team(draft).map(contact => ({ ...contact, name: contactName(contact).trim(), role: contactGroup(contact), group: contactGroup(contact) })) };
+    const card = { ...draft, configured: true, teamContacts: team(draft).map(contact => ({ ...contact, name: contactName(contact).trim(), role: contactGroup(contact), group: contactGroup(contact), title: contact.title?.trim() || groupTitle(contactGroup(contact)) })) };
     try { localStorage.setItem(cardKey, JSON.stringify(card)); }
     catch { say('Could not save the contact card. Please try again.'); return; }
     document.dispatchEvent(new CustomEvent('oneqr:contact-saved', { detail: { card, addAction: $('#contact-add-action').checked } }));
@@ -326,9 +299,8 @@
       event.preventDefault(); setTab(event.key === 'Home' ? 'shop' : event.key === 'End' ? 'team' : tab === 'shop' ? 'team' : 'shop', true);
     });
   });
-  $('#contact-add-member').addEventListener('click', () => edit());
+  $('#contact-add-member').addEventListener('click', openMemberPicker);
   $('#contact-editor-close').addEventListener('click', closeEditor);
-  $('[data-contact-go-shop]').addEventListener('click', () => setTab('shop', true));
   $('#contact-member-search').addEventListener('input', results);
   $('#contact-member-results').addEventListener('change', event => {
     const checkbox = event.target.closest('[data-pick-member]');
@@ -338,8 +310,6 @@
     clearErrors(); syncBatchAdd();
   });
   $('#contact-add-selected').addEventListener('click', addSelected);
-  $('#contact-member-title').addEventListener('input', updateEditor);
-  $('#contact-member-public').addEventListener('change', updateEditor);
   $('#contact-preview-person').addEventListener('change', event => selectContact(event.target.value));
   $('#contact-import-button').addEventListener('click', () => {
     if (!$('#contact-google-url').value.trim()) { say('Paste a Google Business Profile URL first.'); return; }
@@ -443,14 +413,12 @@
     const contact = team(draft).find(person => person.id === id);
     if (!contact) return;
     if (field.hasAttribute('data-team-role')) {
-      const oldTitle = groupTitle(contactGroup(contact));
       contact.role = field.value;
       contact.group = contactGroup(contact);
-      if (!contact.title.trim() || contact.title === oldTitle) contact.title = groupTitle(contact.role);
-      if (editingId === id) $('#contact-member-title').value = contact.title;
+      contact.title = groupTitle(contact.role);
+      field.removeAttribute('aria-invalid');
     } else {
       contact.public = field.checked;
-      if (editingId === id) $('#contact-member-public').checked = contact.public;
       renderTeam();
       $('#contact-team-list').querySelector('[data-contact-row="' + CSS.escape(id) + '"] [data-team-public]')?.focus();
     }
@@ -463,8 +431,7 @@
     if (!button || button.disabled) return;
     const action = button.dataset.teamAction;
     const id = button.closest('[data-contact-row]')?.dataset.contactRow;
-    if (action === 'add') edit();
-    if (action === 'edit') edit(id);
+    if (action === 'add') openMemberPicker();
     if (action === 'copy') copyLink(id);
     if (action === 'qr') showQR(id);
     if (action === 'download') downloadQR(id);
@@ -473,8 +440,7 @@
       const index = contacts.findIndex(contact => contact.id === id);
       const nextId = contacts[index + 1]?.id || contacts[index - 1]?.id;
       draft.teamContacts = contacts.filter(contact => contact.id !== id);
-      if (editingId === id) closeEditor();
-      else { renderTeam(); changed(); }
+      renderTeam(); changed();
       results();
       const nextField = nextId && $('#contact-team-list').querySelector('[data-contact-row="' + CSS.escape(nextId) + '"] [data-team-name]');
       (nextField || $('#contact-add-member')).focus();
