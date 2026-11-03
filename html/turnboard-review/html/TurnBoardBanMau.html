@@ -1,0 +1,3023 @@
+<meta charset="utf-8">
+<title>Turn Board</title>
+<link rel="stylesheet" href="../assets/fonts/fonts.css">
+<style>
+  :root{
+    --bg:#f6f5fb; --surface:#ffffff; --surface2:#f2f0f9; --line:#e7e4f2;
+    --text:#151022; --muted:#6b6483; --brand:#5b3df5; --brand-ink:#ffffff;
+    --brand-soft:#f0edff; --brand-line:#cfc6fb; --ok:#0ea672; --warn:#d92d3f; --amber:#a9640a;
+    --chip-tint:#000; --chip-amt:14%;
+    --r:16px; --r-lg:22px;
+    --shadow:0 1px 2px rgba(30,20,70,.05), 0 8px 24px -12px rgba(30,20,70,.14);
+    --shadow-lg:0 2px 4px rgba(30,20,70,.05), 0 18px 44px -18px rgba(30,20,70,.28);
+  }
+  @media (prefers-color-scheme: dark){
+    :root:not([data-theme="light"]){
+      --bg:#0c0918; --surface:#171227; --surface2:#201936; --line:#2e2549;
+      --text:#ece8f8; --muted:#9990b5; --brand:#8b74ff; --brand-ink:#100826;
+      --brand-soft:#221a44; --brand-line:#453a80; --ok:#2fd39a; --warn:#ff7a86; --amber:#e0a441;
+      --chip-tint:#fff; --chip-amt:42%;
+      --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7);
+      --shadow-lg:0 2px 6px rgba(0,0,0,.4),0 24px 60px -20px rgba(0,0,0,.85);
+    }
+  }
+  :root[data-theme="dark"]{
+    --bg:#0c0918; --surface:#171227; --surface2:#201936; --line:#2e2549;
+    --text:#ece8f8; --muted:#9990b5; --brand:#8b74ff; --brand-ink:#100826;
+    --brand-soft:#221a44; --brand-line:#453a80; --ok:#2fd39a; --warn:#ff7a86; --amber:#e0a441;
+    --chip-tint:#fff; --chip-amt:42%;
+    --shadow:0 1px 2px rgba(0,0,0,.4),0 10px 30px -14px rgba(0,0,0,.7);
+    --shadow-lg:0 2px 6px rgba(0,0,0,.4),0 24px 60px -20px rgba(0,0,0,.85);
+  }
+  *{box-sizing:border-box}
+  html,body{margin:0}
+  body{background:var(--bg);color:var(--text);line-height:1.5;-webkit-text-size-adjust:100%;
+    font-family:"Plus Jakarta Sans",-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;
+    letter-spacing:-.006em}
+  .mono{font-family:"JetBrains Mono",ui-monospace,monospace;font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+  .wrap{max-width:1200px;margin:0 auto;padding:0 20px 72px}
+
+  .top{position:sticky;top:0;z-index:25;display:flex;align-items:center;justify-content:space-between;
+    gap:16px;flex-wrap:wrap;padding:16px 0 14px;margin-bottom:20px;
+    background:color-mix(in srgb,var(--bg) 82%,transparent);backdrop-filter:blur(14px) saturate(1.4);
+    -webkit-backdrop-filter:blur(14px) saturate(1.4);border-bottom:1px solid transparent}
+  .top.stuck{border-bottom-color:var(--line)}
+  .top h1{margin:0;font-size:23px;font-weight:800;letter-spacing:-.035em}
+  .top p{margin:2px 0 0;font-size:13px;color:var(--muted);letter-spacing:-.005em}
+  .tools{display:flex;gap:9px;flex-wrap:wrap;align-items:center}
+
+  /* nut nguy hiem phai khac han nut thuong */
+  .btn.dang,.ib.dang{border-color:color-mix(in srgb,var(--warn) 45%,var(--line));color:var(--warn);
+    background:color-mix(in srgb,var(--warn) 7%,transparent)}
+  .btn.dang:hover,.ib.dang:hover{background:color-mix(in srgb,var(--warn) 14%,transparent);border-color:var(--warn)}
+  .cact button.leave{border-color:color-mix(in srgb,var(--amber) 40%,var(--line));color:var(--amber)}
+  .trow .lac button.leave{border-color:color-mix(in srgb,var(--amber) 40%,var(--line));color:var(--amber)}
+  #ovDanger{z-index:95}
+  #ovDanger .modal{border-color:color-mix(in srgb,var(--warn) 45%,var(--line))}
+  .dgi{font-size:30px;line-height:1}
+  .dgt{font-size:19px;font-weight:800;letter-spacing:-.015em;margin:8px 0 4px}
+  .dgd{font-size:13.5px;color:var(--muted);line-height:1.6}
+  .dglist{margin-top:13px;background:color-mix(in srgb,var(--warn) 8%,transparent);
+    border:1px solid color-mix(in srgb,var(--warn) 30%,transparent);border-radius:12px;padding:12px 14px}
+  .dglist .dgh{font-size:10.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--warn);margin-bottom:6px}
+  .dgrow{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;padding:3px 0}
+  .dgrow b{font-weight:800}
+  .mb .kill{background:var(--warn);color:#fff}
+  .nav{display:flex;gap:3px;background:color-mix(in srgb,var(--surface2) 70%,transparent);
+    border:1px solid var(--line);border-radius:13px;padding:4px;backdrop-filter:blur(6px)}
+  .navb{padding:8px 16px;border:0;border-radius:10px;background:transparent;color:var(--muted);
+    font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap;letter-spacing:-.012em;
+    transition:background .16s,color .16s,box-shadow .16s}
+  .navb:hover{color:var(--text)}
+  .navb.on{background:var(--surface);color:var(--text);box-shadow:0 2px 8px -2px rgba(30,20,70,.16)}
+  .menuwrap{position:relative}
+  .menu{position:absolute;right:0;top:calc(100% + 6px);min-width:238px;background:var(--surface);
+    border:1px solid var(--line);border-radius:13px;box-shadow:0 12px 34px rgba(16,24,40,.16);
+    padding:6px;display:none;z-index:30}
+  .menu.on{display:block}
+  .menu .mhd{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);padding:8px 10px 4px}
+  .menu button{display:block;width:100%;text-align:left;padding:9px 10px;border:0;border-radius:9px;
+    background:transparent;color:var(--text);font-size:13.5px;font-weight:600;cursor:pointer;font-family:inherit}
+  .menu button b{font-weight:800;color:var(--brand)}
+  .menu button:hover{background:var(--surface2)}
+  .menu button.dg{color:var(--warn)}
+  .menu.lang{min-width:180px}
+  .menu.lang button.sel{background:var(--brand-soft);color:var(--brand);font-weight:800}
+  .menu .msep{height:1px;background:var(--line);margin:5px 8px}
+  .btn{font-family:inherit;font-size:13.5px;font-weight:700;padding:9px 15px;border-radius:12px;
+    border:1px solid var(--line);background:var(--surface);color:var(--text);cursor:pointer;
+    letter-spacing:-.01em;box-shadow:0 1px 2px rgba(30,20,70,.04)}
+  .btn:hover{border-color:color-mix(in srgb,var(--brand) 38%,var(--line));color:var(--brand)}
+  .btn.pri{background:var(--brand);border-color:var(--brand);color:var(--brand-ink);
+    box-shadow:0 4px 14px -5px color-mix(in srgb,var(--brand) 70%,transparent)}
+  .btn.pri:hover{color:var(--brand-ink);filter:brightness(1.06)}
+  .btn.warn{color:var(--warn);border-color:color-mix(in srgb,var(--warn) 36%,var(--line))}
+
+  /* NEXT UP */
+  .hero{position:relative;overflow:hidden;display:flex;align-items:center;gap:24px;flex-wrap:wrap;
+    background:
+      radial-gradient(120% 160% at 0% 0%, color-mix(in srgb,var(--brand) 16%,transparent) 0%, transparent 58%),
+      linear-gradient(135deg, var(--brand-soft) 0%, color-mix(in srgb,var(--surface) 88%,var(--brand-soft)) 100%);
+    border:1px solid var(--brand-line);border-radius:var(--r-lg);
+    padding:22px 26px;margin-bottom:18px;box-shadow:var(--shadow-lg)}
+  .hero:after{content:'';position:absolute;right:-70px;top:-70px;width:220px;height:220px;border-radius:50%;
+    background:radial-gradient(circle, color-mix(in srgb,var(--brand) 22%,transparent) 0%, transparent 70%);
+    pointer-events:none}
+  .hero>*{position:relative;z-index:1}
+  .hero .lead{flex:1;min-width:210px}
+  .hero .eyebrow{font-size:11px;font-weight:800;letter-spacing:.16em;text-transform:uppercase;color:var(--brand);
+    display:inline-flex;align-items:center;gap:7px}
+  .hero .eyebrow:before{content:'';width:6px;height:6px;border-radius:50%;background:var(--brand);
+    box-shadow:0 0 0 4px color-mix(in srgb,var(--brand) 20%,transparent);animation:pl 2.4s ease-in-out infinite}
+  @keyframes pl{0%,100%{opacity:1}50%{opacity:.35}}
+  .hero .nm{font-size:40px;font-weight:800;letter-spacing:-.045em;line-height:1.05;margin-top:6px}
+  .hero .none{font-size:20px;font-weight:700;color:var(--muted)}
+  .hero .rule{font-size:12px;color:var(--muted);margin-top:6px}
+  .queue{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+  .qi{display:flex;align-items:center;gap:8px;background:color-mix(in srgb,var(--surface) 78%,transparent);
+    border:1px solid var(--line);border-radius:13px;padding:8px 12px;font-size:13px;font-weight:600;
+    backdrop-filter:blur(6px)}
+  .qi .qn{width:20px;height:20px;border-radius:6px;background:var(--surface2);color:var(--muted);
+    font-size:11px;font-weight:800;display:grid;place-items:center}
+  .qi.first{border-color:var(--brand);background:var(--surface)}
+  .qi.first .qn{background:var(--brand);color:var(--brand-ink)}
+  .qi .qt{color:var(--muted);font-weight:600;font-size:12px}
+
+  .stats{display:grid;grid-template-columns:repeat(auto-fit,minmax(148px,1fr));gap:12px;margin-bottom:20px}
+  .stat{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;
+    box-shadow:var(--shadow);transition:border-color .16s,transform .16s}
+  .stat:hover{border-color:color-mix(in srgb,var(--brand) 32%,var(--line));transform:translateY(-1px)}
+  .stat b{display:block;font-size:26px;font-weight:800;letter-spacing:-.04em;line-height:1.15}
+  .stat span{display:block;margin-top:3px;font-size:10.5px;color:var(--muted);text-transform:uppercase;
+    letter-spacing:.09em;font-weight:700}
+
+  h2.sec{font-size:11px;font-weight:800;color:var(--muted);text-transform:uppercase;letter-spacing:.14em;margin:26px 0 11px}
+
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(232px,1fr));gap:12px}
+  .card{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:15px;
+    box-shadow:var(--shadow);display:flex;flex-direction:column;
+    transition:transform .16s cubic-bezier(.2,.8,.3,1),box-shadow .16s,border-color .16s}
+  .card:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+  .card.next{border-color:transparent;box-shadow:0 0 0 2px var(--brand),var(--shadow-lg);
+    background:linear-gradient(180deg, color-mix(in srgb,var(--brand-soft) 60%,var(--surface)) 0%, var(--surface) 46%)}
+  .card.off{opacity:.6}
+  .chead{display:flex;align-items:center;gap:10px}
+  .av{width:36px;height:36px;border-radius:12px;flex:none;display:grid;place-items:center;
+    font-size:12.5px;font-weight:800;letter-spacing:-.02em;color:var(--brand-ink);
+    background:linear-gradient(140deg, var(--brand) 0%, color-mix(in srgb,var(--brand) 62%,#ff6fae) 100%);
+    box-shadow:0 3px 10px -3px color-mix(in srgb,var(--brand) 60%,transparent)}
+  .cname{font-weight:700;font-size:15.5px;letter-spacing:-.01em;word-break:break-word;flex:1;min-width:0}
+  .cstate{font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  .cstate.on{color:var(--ok)}
+  .ordn{font-size:11px;font-weight:800;color:var(--muted);background:var(--surface2);border:1px solid var(--line);
+    border-radius:7px;padding:2px 7px;flex:none}
+  .ordn.up{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+  .cmeta{display:flex;align-items:baseline;gap:8px;margin-top:10px}
+  .cturn{font-size:25px;font-weight:800;letter-spacing:-.045em}
+  .cturnl{font-size:11.5px;color:var(--muted);font-weight:600}
+  .crev{margin-left:auto;font-size:13px;color:var(--muted);font-weight:600}
+  .chips{display:flex;gap:5px;flex-wrap:wrap;margin-top:9px;min-height:24px}
+  .chip{--c:var(--muted);font-size:11.5px;font-weight:700;letter-spacing:.02em;padding:3px 8px;border-radius:7px;
+    background:color-mix(in srgb,var(--c) 14%,transparent);
+    color:color-mix(in srgb,var(--c),var(--chip-tint) var(--chip-amt));
+    border:1px solid color-mix(in srgb,var(--c) 30%,transparent);white-space:nowrap}
+  .chip.ghost{--c:var(--muted);background:transparent;border-style:dashed;font-weight:600}
+  .cact{display:flex;gap:7px;margin-top:12px}
+  .cact button{flex:1;padding:10px;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;border:1px solid var(--line);background:var(--surface2);color:var(--text)}
+  .cact .go{background:var(--brand);border-color:var(--brand);color:var(--brand-ink);flex:2;
+    box-shadow:0 4px 14px -6px color-mix(in srgb,var(--brand) 75%,transparent)}
+  .cact .go:hover{filter:brightness(1.06)}
+  .cact .go[disabled]{background:var(--surface2);border-color:var(--line);color:var(--muted);cursor:not-allowed}
+
+  .cact2{display:flex;gap:7px;margin-top:7px}
+  .cact2 button{flex:1;padding:8px 6px;border-radius:9px;font-size:12.5px;font-weight:700;cursor:pointer;
+    font-family:inherit;border:1px solid var(--line);background:var(--surface);color:var(--text);
+    display:flex;align-items:center;justify-content:center;gap:5px}
+  .cact2 .bell{border-color:color-mix(in srgb,var(--brand) 40%,var(--line));color:var(--brand)}
+  .cact2 .vib{border-color:color-mix(in srgb,#7360f2 40%,var(--line));color:#7360f2}
+  .cact2 button[disabled]{opacity:.45;cursor:not-allowed}
+  .beeped{font-size:11px;color:var(--ok);font-weight:700;margin-top:7px;display:flex;align-items:center;gap:5px}
+  .heroact{display:flex;gap:8px;margin-top:10px;flex-wrap:wrap}
+  .heroact button{padding:9px 15px;border-radius:10px;font-size:13.5px;font-weight:700;cursor:pointer;font-family:inherit;border:0}
+  .heroact .bell{background:var(--brand);color:var(--brand-ink)}
+  .heroact .vib{background:#7360f2;color:#fff}
+  .heroact button[disabled]{opacity:.5;cursor:not-allowed}
+  .calls{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:2px 15px;box-shadow:var(--shadow)}
+  .cl{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid var(--line)}
+  .cl:last-child{border-bottom:0}
+  .via{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:6px;
+    background:var(--brand-soft);color:var(--brand);border:1px solid var(--brand-line)}
+  .via.v{background:color-mix(in srgb,#7360f2 14%,transparent);color:#7360f2;border-color:color-mix(in srgb,#7360f2 34%,transparent)}
+  .chk{display:flex;align-items:center;gap:10px;padding:12px;border:1.5px solid var(--line);border-radius:11px;
+    margin-top:10px;cursor:pointer;background:var(--surface2)}
+  .chk input{width:19px;height:19px;accent-color:var(--brand)}
+  .chk b{font-size:14px;font-weight:700}
+  .chk .cd{font-size:12px;color:var(--muted);margin-top:2px}
+  input.vbn{width:132px;font-family:"JetBrains Mono",monospace;font-size:12.5px}
+
+  .sechd{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin:24px 0 10px}
+  .src{font-size:12px;color:var(--muted)}
+  .src b{color:var(--text)}
+  .btn.demo{margin-left:auto;font-size:12px;padding:6px 11px;color:var(--muted);border-style:dashed}
+
+  /* khach cho */
+  .cusgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(216px,1fr));gap:11px}
+  .cus{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:14px;
+    box-shadow:var(--shadow);transition:transform .16s,box-shadow .16s,border-color .16s}
+  .cus:hover{transform:translateY(-2px);box-shadow:var(--shadow-lg)}
+  .cus.serving{border-color:color-mix(in srgb,var(--ok) 45%,transparent);
+    background:linear-gradient(180deg, color-mix(in srgb,var(--ok) 8%,var(--surface)) 0%, var(--surface) 55%)}
+  .cushead{display:flex;align-items:center;justify-content:space-between;gap:8px}
+  .cusnm{font-weight:800;font-size:16px;letter-spacing:-.025em}
+  .cust{font-size:11.5px;color:var(--muted);font-weight:600}
+  .eta{font-size:11.5px;font-weight:700;padding:4px 10px;border-radius:20px;white-space:nowrap;
+    letter-spacing:-.01em;background:var(--surface2);border:1px solid var(--line);color:var(--muted);
+    display:inline-flex;align-items:center;gap:5px}
+  .eta.ok{background:color-mix(in srgb,var(--ok) 13%,transparent);color:var(--ok);border-color:color-mix(in srgb,var(--ok) 32%,transparent)}
+  .eta.wait{background:color-mix(in srgb,#0ea5e9 13%,transparent);color:#0273a8;border-color:color-mix(in srgb,#0ea5e9 32%,transparent)}
+  .eta.late{background:color-mix(in srgb,var(--warn) 13%,transparent);color:var(--warn);border-color:color-mix(in srgb,var(--warn) 34%,transparent)}
+  .eta.soon{background:color-mix(in srgb,var(--amber) 15%,transparent);color:var(--amber);border-color:color-mix(in srgb,var(--amber) 36%,transparent)}
+  .cusass{font-size:12px;color:var(--muted);margin-top:8px;line-height:1.6}
+  .cusass b{color:var(--text)}
+  .cusbtn{width:100%;margin-top:11px;padding:10px;border:0;border-radius:11px;background:var(--brand);
+    color:var(--brand-ink);font-weight:800;font-size:13.5px;cursor:pointer;font-family:inherit;
+    letter-spacing:-.012em;white-space:nowrap;
+    box-shadow:0 4px 14px -6px color-mix(in srgb,var(--brand) 75%,transparent);transition:filter .15s,transform .06s}
+  .cusbtn:hover{filter:brightness(1.06)}
+  .cusbtn:active{transform:scale(.985)}
+  .cusbtn.done{background:transparent;color:var(--muted);border:1px solid var(--line);box-shadow:none;
+    font-weight:700;font-size:12.5px;padding:8px}
+  .cusbtn.done:hover{color:var(--text);border-color:var(--muted);filter:none}
+  .emptybox{background:var(--surface);border:1px dashed var(--line);border-radius:14px;padding:18px;
+    text-align:center;color:var(--muted);font-size:13.5px}
+
+  /* assign rows */
+  .arow{display:flex;align-items:center;gap:9px;padding:9px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .arow:last-child{border-bottom:0}
+  .arow .an{flex:1;min-width:92px;font-size:13.5px;font-weight:600}
+  .arow select{background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:9px;
+    padding:8px 9px;font-size:13.5px;font-family:inherit;min-width:120px;font-weight:600}
+  .arow select.none{border-color:color-mix(in srgb,var(--amber) 50%,var(--line));color:var(--amber)}
+  .arow input.pz{width:74px;font-family:"JetBrains Mono",monospace;font-size:13px;padding:8px}
+  .abox{border:1px solid var(--line);border-radius:12px;padding:2px 12px;background:var(--surface2)}
+  .sumline{display:flex;justify-content:space-between;gap:10px;font-size:13.5px;padding:5px 0}
+  .sumline b{font-weight:800}
+  .sumhd{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted);margin-bottom:4px}
+
+  /* view toggle */
+  .vtog{display:flex;gap:3px;background:var(--surface2);border:1px solid var(--line);border-radius:10px;padding:3px}
+  .vtog button{padding:5px 11px;border:0;border-radius:7px;background:transparent;color:var(--muted);
+    font-size:12px;font-weight:700;cursor:pointer;font-family:inherit}
+  .vtog button.on{background:var(--surface);color:var(--text);box-shadow:0 1px 2px rgba(16,24,40,.08)}
+
+  /* nhom */
+  .grp{margin-top:14px}
+  .grph{display:flex;align-items:center;gap:8px;padding:0 2px 8px;cursor:default}
+  .grph .gt{font-size:11.5px;font-weight:700;letter-spacing:.07em;text-transform:uppercase;color:var(--muted)}
+  .grph .gc{font-size:11px;font-weight:800;color:var(--muted);background:var(--surface2);
+    border:1px solid var(--line);border-radius:20px;padding:1px 8px}
+  .grph .dotg{width:7px;height:7px;border-radius:50%;background:var(--muted)}
+  .grph.up .dotg{background:var(--brand)} .grph.up .gt{color:var(--brand)}
+  .grph.sv .dotg{background:var(--ok)}
+  .grph.of{cursor:pointer}
+  .grph.of:hover .gt{color:var(--text)}
+
+  /* LIST VIEW */
+  .lst{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow:hidden}
+  .trow{display:flex;align-items:center;gap:11px;padding:9px 13px;border-bottom:1px solid var(--line)}
+  .trow:last-child{border-bottom:0}
+  .trow:hover{background:color-mix(in srgb,var(--brand) 3%,transparent)}
+  .trow.up{background:var(--brand-soft)}
+  .trow.up:hover{background:var(--brand-soft)}
+  .trow.dim{opacity:.62}
+  .trow .lo{width:26px;height:24px;flex:none;border-radius:7px;background:var(--surface2);border:1px solid var(--line);
+    color:var(--muted);font-size:11px;font-weight:800;display:grid;place-items:center}
+  .trow.up .lo{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+  .trow .lav{width:28px;height:28px;flex:none;border-radius:9px;display:grid;place-items:center;
+    font-size:10.5px;font-weight:800;color:var(--brand-ink);
+    background:linear-gradient(140deg, var(--brand) 0%, color-mix(in srgb,var(--brand) 62%,#ff6fae) 100%)}
+  .trow .lnm{width:118px;flex:none;font-size:14px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .trow .lch{flex:1;min-width:0;display:flex;gap:4px;overflow-x:auto;scrollbar-width:none}
+  .trow .lch::-webkit-scrollbar{display:none}
+  .trow .lcus{font-size:12px;color:var(--muted);font-weight:600;white-space:nowrap}
+  .trow .ltn{width:58px;flex:none;text-align:right;font-size:15px;font-weight:800}
+  .trow .lrv{width:64px;flex:none;text-align:right;font-size:13px;color:var(--muted);font-weight:600}
+  .trow .lac{display:flex;gap:5px;flex:none}
+  .trow .lac button{padding:7px 11px;border-radius:8px;border:1px solid var(--line);background:var(--surface2);
+    color:var(--text);font-size:12.5px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .trow .lac .go{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+  .trow .lac .ic{padding:7px 9px}
+  .trow .lac button[disabled]{opacity:.4;cursor:not-allowed}
+  @media (max-width:840px){ .trow .lrv{display:none} .trow .lnm{width:92px} }
+  @media (max-width:640px){ .trow .lch{display:none} }
+
+  .pick .plv{font-size:12px;font-weight:800;width:16px;text-align:center}
+  .pick.lv2{--c:var(--brand)}
+  .pick.lv0{opacity:.5}
+  .pick.lv0 span{text-decoration:line-through}
+  .doclist{display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:11px;margin-top:14px}
+  .doc{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:15px;box-shadow:var(--shadow);
+    cursor:pointer;text-align:left;font-family:inherit;color:var(--text);display:flex;flex-direction:column;gap:5px}
+  .doc:hover{border-color:var(--brand)}
+  .docic{font-size:22px}
+  .doc b{font-size:15px;font-weight:800;letter-spacing:-.01em}
+  .doc .dd{font-size:12.5px;color:var(--muted);line-height:1.5;flex:1}
+  .doc .dm{font-size:11px;color:var(--muted);font-weight:700;display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+  .tag{font-size:9.5px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;border-radius:20px;
+    background:var(--surface2);border:1px solid var(--line);color:var(--muted)}
+  .tag.ck{background:color-mix(in srgb,var(--ok) 13%,transparent);color:var(--ok);border-color:color-mix(in srgb,var(--ok) 32%,transparent)}
+  .tag.ag{background:color-mix(in srgb,var(--amber) 14%,transparent);color:var(--amber);border-color:color-mix(in srgb,var(--amber) 34%,transparent)}
+  .tag.au{background:var(--brand-soft);color:var(--brand);border-color:var(--brand-line)}
+  .crumb{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin-bottom:4px}
+  .crumb button{background:none;border:0;color:var(--brand);font-weight:700;cursor:pointer;font-family:inherit;font-size:13px;padding:0}
+  .ckli{display:flex;gap:11px;padding:9px 0;font-size:14.5px;line-height:1.55;border-bottom:1px solid var(--line);align-items:flex-start}
+  .ckli:last-child{border-bottom:0}
+  .ckbox{width:19px;height:19px;flex:none;border:1.5px solid var(--line);border-radius:5px;background:var(--surface2);margin-top:1px}
+  #ovHBNew{z-index:80}
+  .hbpick{display:flex;flex-direction:column;gap:9px;margin-top:4px}
+  .hbcard{text-align:left;border:1.5px solid var(--line);border-radius:13px;padding:14px 16px;background:var(--surface2);
+    cursor:pointer;font-family:inherit;color:var(--text);display:flex;flex-direction:column;gap:4px}
+  .hbcard:hover{border-color:var(--brand);background:var(--brand-soft)}
+  .hbcard b{font-size:15.5px;font-weight:800}
+  .hbcard span{font-size:12.5px;color:var(--muted);line-height:1.5}
+
+  /* noi quy */
+  .hbov{position:fixed;inset:0;background:var(--bg);display:none;z-index:60;overflow-y:auto}
+  .hbov.on{display:block}
+  .hbwrap{max-width:820px;margin:0 auto;padding:26px 20px 70px}
+  .hbtop{display:flex;align-items:flex-start;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:6px}
+  .hbtop h2{margin:0;font-size:26px;font-weight:800;letter-spacing:-.02em}
+  .hbmeta{font-size:12.5px;color:var(--muted);margin-top:3px}
+  .hbsec{background:var(--surface);border:1px solid var(--line);border-radius:15px;padding:16px 18px;
+    margin-top:14px;box-shadow:var(--shadow)}
+  .hbh{display:flex;align-items:center;gap:10px;margin-bottom:10px}
+  .hbn{width:26px;height:26px;flex:none;border-radius:8px;background:var(--brand-soft);color:var(--brand);
+    border:1px solid var(--brand-line);display:grid;place-items:center;font-size:12px;font-weight:800}
+  .hbh h3{margin:0;font-size:16.5px;font-weight:800;letter-spacing:-.01em;flex:1}
+  .hbauto{font-size:10px;font-weight:800;letter-spacing:.05em;text-transform:uppercase;padding:3px 9px;border-radius:20px;
+    background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok);
+    border:1px solid color-mix(in srgb,var(--ok) 34%,transparent)}
+  .hbul{margin:0;padding:0;list-style:none}
+  .hbli{display:flex;gap:10px;padding:7px 0;font-size:14.5px;line-height:1.6;border-bottom:1px solid var(--line)}
+  .hbli:last-child{border-bottom:0}
+  .hbli:before{content:"•";color:var(--brand);font-weight:800;flex:none}
+  .hbli .tx{flex:1}
+  .hbli .rm{opacity:0;padding:2px 8px;border:1px solid var(--line);border-radius:7px;background:var(--surface2);
+    color:var(--warn);font-size:11px;font-weight:700;cursor:pointer;font-family:inherit}
+  .hbli:hover .rm{opacity:1}
+  .hbadd{display:flex;gap:7px;margin-top:10px}
+  .hbadd input{flex:1}
+  .ackgrid{display:grid;grid-template-columns:repeat(auto-fill,minmax(190px,1fr));gap:9px;margin-top:10px}
+  .ackr{display:flex;align-items:center;gap:9px;border:1px solid var(--line);border-radius:11px;padding:9px 11px;background:var(--surface)}
+  .ackr .an2{flex:1;font-size:13.5px;font-weight:700;min-width:0;overflow:hidden;text-overflow:ellipsis}
+  .ackb{padding:6px 10px;border:1px solid var(--line);border-radius:8px;background:var(--surface2);color:var(--text);
+    font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .ackok{font-size:11.5px;font-weight:700;color:var(--ok);white-space:nowrap}
+  .ackold{font-size:11.5px;font-weight:700;color:var(--amber);white-space:nowrap}
+
+  .pkg{margin-top:9px}
+  .pkg:first-child{margin-top:2px}
+  .pkgh{font-size:10px;font-weight:800;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:5px}
+  .pkgn{color:var(--amber);font-weight:700;letter-spacing:0;text-transform:none;font-size:10.5px}
+  .gsec{margin-bottom:12px}
+  .gsh{display:flex;align-items:center;gap:8px;padding:6px 2px 4px}
+  .gsn{font-size:11.5px;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--brand)}
+  .gsc{font-size:10.5px;font-weight:800;color:var(--muted);background:var(--surface2);border:1px solid var(--line);
+    border-radius:20px;padding:1px 8px}
+  .gsel{background:var(--bg);border:1px solid var(--line);color:var(--text);border-radius:8px;padding:6px;
+    font-size:12px;font-family:inherit;font-weight:600;max-width:96px}
+  .ib.onx{background:color-mix(in srgb,var(--amber) 14%,transparent);border-color:color-mix(in srgb,var(--amber) 36%,transparent);color:var(--amber)}
+  .svchd{display:flex;align-items:center;gap:7px;padding:0 12px 6px;font-size:10px;font-weight:800;
+    letter-spacing:.06em;text-transform:uppercase;color:var(--muted)}
+  @media (max-width:620px){ .svchd{display:none} }
+  .addbar input[type=color]{flex:0 0 38px;width:38px}
+  .autobar{display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:14px;padding:10px 12px;
+    background:var(--brand-soft);border:1px solid var(--brand-line);border-radius:12px}
+  .btn.autob{background:var(--brand);border-color:var(--brand);color:var(--brand-ink);font-weight:700}
+  .engchk{display:flex;align-items:center;gap:7px;font-size:13px;font-weight:600;cursor:pointer;margin:0 !important;
+    text-transform:none !important;letter-spacing:0 !important;color:var(--text) !important}
+  .engchk input{width:17px;height:17px;accent-color:var(--brand)}
+  .why{font-size:11.5px;color:var(--muted);font-weight:600;margin-left:44px;flex-basis:100%}
+  .why b{color:var(--brand)}
+
+  /* ma tran tay nghe */
+  .mtxwrap{overflow-x:auto;border:1px solid var(--line);border-radius:12px;background:var(--surface)}
+  table.mtx{border-collapse:separate;border-spacing:0;min-width:100%}
+  table.mtx th,table.mtx td{padding:0;border:0}
+  table.mtx thead th{position:sticky;top:0;background:var(--surface2);z-index:2;
+    font-size:10px;font-weight:800;letter-spacing:.04em;color:var(--muted);padding:9px 6px;text-align:center;
+    border-bottom:1px solid var(--line);white-space:nowrap}
+  table.mtx thead th:first-child{text-align:left;padding-left:12px;left:0;z-index:3}
+  table.mtx tbody td{border-bottom:1px solid var(--line);text-align:center;padding:5px 4px}
+  table.mtx tbody tr:last-child td{border-bottom:0}
+  table.mtx td.nmc{position:sticky;left:0;background:var(--surface);text-align:left;padding:8px 12px;
+    font-size:13.5px;font-weight:700;white-space:nowrap;z-index:1;border-right:1px solid var(--line)}
+  .lvl{width:34px;height:30px;border-radius:8px;border:1px solid var(--line);background:var(--surface2);
+    color:var(--muted);font-size:13px;font-weight:800;cursor:pointer;font-family:inherit}
+  .lvl.can{background:color-mix(in srgb,var(--ok) 14%,transparent);border-color:color-mix(in srgb,var(--ok) 34%,transparent);color:var(--ok)}
+  .lvl.pro{background:color-mix(in srgb,var(--brand) 16%,transparent);border-color:var(--brand);color:var(--brand)}
+  table.mtx td.stc{padding:8px 10px;text-align:left;white-space:nowrap}
+  .sbadge{font-size:10px;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:3px 8px;border-radius:20px;
+    background:var(--surface2);color:var(--muted);border:1px solid var(--line)}
+  .sbadge.up{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+  .sbadge.wait{background:color-mix(in srgb,var(--brand) 12%,transparent);color:var(--brand);border-color:var(--brand-line)}
+  .sbadge.sv{background:color-mix(in srgb,var(--ok) 14%,transparent);color:var(--ok);border-color:color-mix(in srgb,var(--ok) 34%,transparent)}
+  table.mtx td.numc{text-align:right;padding:8px 10px;font-family:"JetBrains Mono",monospace;font-variant-numeric:tabular-nums;font-size:13px;white-space:nowrap}
+  table.mtx td.numc b{font-size:14.5px}
+  .subvb{display:block;font-size:11px;color:var(--muted);font-weight:600;font-family:"JetBrains Mono",monospace;margin-top:2px}
+  table.mtx thead th.grpsv{border-left:2px solid var(--line)}
+  table.mtx tbody td.grpsv{border-left:2px solid var(--line)}
+  .rt{min-width:76px;padding:5px 9px;border-radius:8px;border:1px solid var(--line);background:var(--surface2);
+    color:var(--muted);font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;white-space:nowrap}
+  .rt.r1{background:color-mix(in srgb,var(--amber) 14%,transparent);border-color:color-mix(in srgb,var(--amber) 34%,transparent);color:var(--amber)}
+  .rt.r2{background:color-mix(in srgb,#0ea5e9 14%,transparent);border-color:color-mix(in srgb,#0ea5e9 36%,transparent);color:#0273a8}
+  .rt.r3{background:color-mix(in srgb,var(--ok) 15%,transparent);border-color:color-mix(in srgb,var(--ok) 36%,transparent);color:var(--ok)}
+  .tier{font-size:11px;font-weight:800;letter-spacing:.03em;padding:4px 10px;border-radius:20px;white-space:nowrap;
+    background:var(--surface2);border:1px solid var(--line);color:var(--muted)}
+  .tier.t1{background:color-mix(in srgb,#0ea5e9 13%,transparent);border-color:color-mix(in srgb,#0ea5e9 34%,transparent);color:#0273a8}
+  .tier.t2{background:color-mix(in srgb,var(--brand) 14%,transparent);border-color:var(--brand-line);color:var(--brand)}
+  .tier.t3{background:color-mix(in srgb,var(--ok) 16%,transparent);border-color:color-mix(in srgb,var(--ok) 38%,transparent);color:var(--ok)}
+  .evwhen{display:block;font-size:10px;color:var(--muted);font-weight:600;margin-top:3px}
+  .formula{margin-top:12px;background:var(--surface2);border:1px solid var(--line);border-radius:11px;padding:11px 13px;
+    font-size:12px;color:var(--muted);line-height:1.65}
+  .formula b{color:var(--text)}
+  .tabs{display:flex;gap:6px;margin:2px 0 14px}
+  .tabs button{padding:8px 14px;border:1px solid var(--line);border-radius:10px;background:var(--surface2);
+    color:var(--muted);font-size:13px;font-weight:700;cursor:pointer;font-family:inherit}
+  .tabs button.on{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+  .mtxlg{display:flex;gap:14px;flex-wrap:wrap;font-size:12px;color:var(--muted);margin-top:10px}
+  .mtxlg span{display:flex;align-items:center;gap:5px}
+
+  .warnbox{margin-top:10px;background:color-mix(in srgb,var(--amber) 12%,transparent);
+    border:1px solid color-mix(in srgb,var(--amber) 40%,transparent);border-radius:11px;padding:10px 12px;
+    font-size:12.5px;color:var(--amber);font-weight:600;line-height:1.5}
+  .skillchips{display:flex;gap:4px;flex-wrap:wrap;margin-top:6px}
+  .jump{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.04em;padding:2px 7px;border-radius:6px;
+    background:color-mix(in srgb,var(--amber) 16%,transparent);color:var(--amber);
+    border:1px solid color-mix(in srgb,var(--amber) 36%,transparent)}
+
+  /* TABLE */
+  .tblwrap{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);box-shadow:var(--shadow);overflow-x:auto}
+  table{width:100%;border-collapse:collapse;min-width:560px}
+  th{text-align:left;font-size:10.5px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);
+    padding:11px 14px;border-bottom:1px solid var(--line);background:var(--surface2);white-space:nowrap}
+  td{padding:12px 14px;border-bottom:1px solid var(--line);font-size:14px;vertical-align:middle}
+  tr:last-child td{border-bottom:0}
+  td.tn{font-weight:700}
+  td.num{font-weight:800;font-size:16px;width:1%;white-space:nowrap}
+  .seqn{display:inline-grid;place-items:center;width:22px;height:22px;border-radius:7px;background:var(--surface2);
+    border:1px solid var(--line);font-size:11px;font-weight:800;color:var(--muted);margin-right:9px}
+  .seqn.up{background:var(--brand);border-color:var(--brand);color:var(--brand-ink)}
+  .dash{color:var(--muted)}
+
+  /* doanh thu thợ */
+  .revbox{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:6px 16px;box-shadow:var(--shadow)}
+  .rrow{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--line)}
+  .rrow:last-child{border-bottom:0}
+  .rrow:hover{background:color-mix(in srgb,var(--brand) 4%,transparent)}
+  .rk{width:20px;height:20px;flex:none;border-radius:6px;background:var(--surface2);border:1px solid var(--line);
+    color:var(--muted);font-size:11px;font-weight:800;display:grid;place-items:center}
+  .rn{width:120px;flex:none;font-size:14px;font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+  .rbar{flex:1;min-width:60px;height:9px;background:var(--surface2);border-radius:4px;overflow:hidden}
+  .rfill{height:100%;background:var(--brand);border-radius:2px 4px 4px 2px;min-width:3px}
+  .rv{width:78px;flex:none;text-align:right;font-size:15px;font-weight:800}
+  .rpt{width:112px;flex:none;text-align:right;font-size:12px;color:var(--muted);font-weight:600}
+  .rrow.zero .rv,.rrow.zero .rn{color:var(--muted);font-weight:600}
+  .rrow.zero .rfill{min-width:0}
+  @media (max-width:600px){ .rn{width:84px} .rpt{width:auto} .rbar{display:none} }
+  .log{background:var(--surface);border:1px solid var(--line);border-radius:var(--r);padding:2px 15px;box-shadow:var(--shadow)}
+  .li{display:flex;justify-content:space-between;gap:12px;padding:11px 0;border-bottom:1px solid var(--line);align-items:center}
+  .li:last-child{border-bottom:0}
+  .lil{display:flex;align-items:center;gap:9px;flex-wrap:wrap;min-width:0}
+  .lwho{font-weight:700;font-size:14px}
+  .lr{text-align:right;white-space:nowrap;font-size:13.5px}
+  .lt{color:var(--muted);font-size:11.5px}
+  .kind{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;padding:2px 7px;border-radius:6px;
+    background:var(--surface2);color:var(--muted);border:1px solid var(--line)}
+  .none{color:var(--muted);font-size:13.5px;padding:14px 0}
+
+  details.acc{margin-top:12px}
+  details.acc>summary{cursor:pointer;list-style:none;font-size:11.5px;font-weight:700;color:var(--muted);
+    text-transform:uppercase;letter-spacing:.1em;padding:8px 0}
+  details.acc>summary::-webkit-details-marker{display:none}
+  details.acc>summary::before{content:"▸ ";color:var(--brand)}
+  details.acc[open]>summary::before{content:"▾ "}
+  .box{background:var(--surface);border:1px solid var(--line);border-radius:14px;padding:8px 14px;box-shadow:var(--shadow)}
+  .row{display:flex;align-items:center;gap:7px;padding:9px 0;border-bottom:1px solid var(--line);flex-wrap:wrap}
+  .row:last-child{border-bottom:0}
+  .row .rn{flex:1;min-width:100px;font-size:14px;font-weight:600}
+  .ib{padding:6px 9px;border:1px solid var(--line);border-radius:8px;background:var(--surface2);color:var(--text);cursor:pointer;font-size:12.5px;font-family:inherit;font-weight:600}
+  .ib:hover{border-color:var(--muted)}
+  .ib.del{color:var(--warn)}
+  input[type=text],input[type=number],input[type=tel]{background:var(--bg);border:1px solid var(--line);color:var(--text);
+    border-radius:9px;padding:9px 10px;font-size:14.5px;font-family:inherit;width:100%}
+  input.code{width:96px;font-family:"JetBrains Mono",monospace;font-weight:700;text-transform:uppercase}
+  input.tv{width:70px}
+  input[type=color]{width:38px;height:34px;padding:2px;border-radius:8px;border:1px solid var(--line);background:var(--bg);cursor:pointer}
+  .addbar{display:flex;gap:7px;margin-top:9px;flex-wrap:wrap}
+  .addbar input{flex:1;min-width:120px}
+
+  /* MODAL */
+  .ov{position:fixed;inset:0;background:rgba(14,8,32,.52);backdrop-filter:blur(3px);display:none;align-items:center;justify-content:center;padding:16px;z-index:40}
+  .ov.on{display:flex}
+  .modal{background:var(--surface);border:1px solid var(--line);border-radius:var(--r-lg);padding:22px;width:100%;
+    max-width:460px;box-shadow:0 32px 80px -24px rgba(20,10,50,.55);max-height:92vh;overflow-y:auto;
+    animation:pop .18s cubic-bezier(.2,.9,.3,1)}
+  @keyframes pop{from{opacity:0;transform:translateY(10px) scale(.985)}to{opacity:1;transform:none}}
+  .modal.wide{max-width:620px}
+  .modal h3{margin:0 0 3px;font-size:19px;font-weight:800;letter-spacing:-.015em}
+  .modal .mh{font-size:12.5px;color:var(--muted);margin-bottom:14px}
+  .modal label{display:block;font-size:11px;font-weight:700;color:var(--muted);margin:14px 0 6px;
+    text-transform:uppercase;letter-spacing:.06em}
+  .picks{display:flex;gap:7px;flex-wrap:wrap}
+  .pick{--c:var(--muted);cursor:pointer;font-size:13px;font-weight:700;padding:9px 12px;border-radius:10px;
+    background:var(--surface2);border:1.5px solid var(--line);color:var(--text);font-family:inherit;display:flex;gap:7px;align-items:center}
+  .pick .pc{font-family:"JetBrains Mono",monospace;font-weight:700;color:var(--muted);font-size:11.5px}
+  .pick.on{background:color-mix(in srgb,var(--c) 15%,transparent);border-color:color-mix(in srgb,var(--c) 60%,transparent)}
+  .pick.on .pc{color:color-mix(in srgb,var(--c),var(--chip-tint) var(--chip-amt))}
+  .seg{display:flex;gap:6px}
+  .seg button{flex:1;padding:10px 6px;border:1.5px solid var(--line);border-radius:10px;background:var(--surface2);
+    color:var(--muted);cursor:pointer;font-size:13px;font-weight:700;font-family:inherit}
+  .seg button.on{border-color:var(--brand);background:var(--brand-soft);color:var(--text)}
+  .qk{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+  .qk button{flex:1;min-width:54px;padding:8px;border:1px solid var(--line);border-radius:9px;background:var(--surface2);
+    color:var(--text);cursor:pointer;font-size:13.5px;font-weight:600;font-family:inherit}
+  .sum{margin-top:14px;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:12px 14px;
+    display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap}
+  .sum .sl{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--muted)}
+  .sum .sc{font-family:"JetBrains Mono",monospace;font-size:19px;font-weight:700;letter-spacing:.02em}
+  .sum .sv{font-size:19px;font-weight:800;color:var(--brand)}
+  .mb{display:flex;gap:9px;margin-top:16px}
+  .mb button{flex:1;padding:13px;border-radius:11px;border:0;font-size:15px;font-weight:800;cursor:pointer;font-family:inherit}
+  .mb .ok{background:var(--brand);color:var(--brand-ink)}
+  .mb .no{background:var(--surface2);color:var(--text);border:1px solid var(--line)}
+
+  .opt{display:block;border:1.5px solid var(--line);border-radius:11px;padding:11px 12px;margin-top:8px;cursor:pointer}
+  .opt.sel{border-color:var(--brand);background:var(--brand-soft)}
+  .opt .ot{display:flex;align-items:center;gap:9px}
+  .opt .ot b{font-size:14px;font-weight:700}
+  .opt .od{font-size:12px;color:var(--muted);margin:3px 0 0 27px}
+  .opt input[type=radio]{width:17px;height:17px;accent-color:var(--brand)}
+  .rec{font-size:9.5px;font-weight:800;color:var(--brand);background:var(--brand-soft);border:1px solid var(--brand-line);
+    padding:1px 7px;border-radius:20px;margin-left:6px;letter-spacing:.04em}
+  .inl{display:flex;align-items:center;gap:8px;margin:8px 0 0 27px;flex-wrap:wrap;font-size:13px;color:var(--muted)}
+  .inl input{width:78px}
+  .prev{margin-top:16px;background:var(--surface2);border:1px solid var(--line);border-radius:12px;padding:12px 14px}
+  .prev .pt{font-size:10.5px;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:var(--muted);margin-bottom:8px}
+  .pr{display:flex;justify-content:space-between;font-size:13.5px;padding:3px 0;gap:10px}
+  hr.sep{border:0;border-top:1px solid var(--line);margin:18px 0 2px}
+  .hint{font-size:12px;color:var(--muted);margin-top:8px}
+  .foot{color:var(--muted);font-size:11.5px;text-align:center;margin-top:28px;line-height:1.7}
+
+  .btn,.ib,.pick,.seg button,.qk button,.mb button,.cact button{transition:background-color .14s,border-color .14s,color .14s,box-shadow .14s,transform .06s}
+  .btn:active,.ib:active,.pick:active,.seg button:active,.qk button:active,.mb button:active,.cact button:active{transform:scale(.977)}
+  @media (hover:none){ .btn:hover,.ib:hover{border-color:var(--line)} }
+  button:focus:not(:focus-visible){outline:none}
+  :focus-visible{outline:2px solid var(--brand);outline-offset:2px}
+  @media (prefers-reduced-motion:reduce){*{transition:none !important}}
+  @media (max-width:520px){ .hero .nm{font-size:28px} .stat b{font-size:20px} }
+</style>
+
+<div class="wrap">
+  <div class="top">
+    <div>
+      <h1 data-i18n="app_title">Turn Board</h1>
+      <p data-i18n="app_sub">Thợ check-in, giao khách theo ký hiệu dịch vụ, turn tự tính theo luật tiệm.</p>
+    </div>
+    <div class="tools">
+      <nav class="nav">
+        <button class="navb on" data-i18n="nav_board">Turn Board</button>
+        <button class="navb" onclick="openSkill()" data-i18n="nav_staff">Thợ</button>
+        <button class="navb" onclick="openHB()" data-i18n="nav_book">Sổ tay tiệm</button>
+      </nav>
+      <div class="menuwrap">
+        <button class="btn" id="langBtn" onclick="toggleLang(event)" aria-label="Language">🌐 VI</button>
+        <div class="menu lang" id="langMenu"></div>
+      </div>
+      <div class="menuwrap">
+        <button class="btn" onclick="toggleGear(event)" aria-label="Settings">⚙️ <span data-i18n="nav_settings">Cài đặt</span></button>
+        <div class="menu" id="gearMenu">
+          <div class="mhd" data-i18n="m_shop">Cài đặt tiệm</div>
+          <button onclick="closeGear();openSvc()">🏷️ <span data-i18n="m_services">Dịch vụ — ký hiệu, số turn &amp; giá</span></button>
+          <button onclick="closeGear();openCfg()">📐 <span data-i18n="m_rules">Luật tính turn của tiệm</span></button>
+          <div class="msep"></div>
+          <div class="mhd" data-i18n="m_demo">Demo — bỏ khi nối backend</div>
+          <button onclick="closeGear();openCheckin()">➕ <span data-i18n="m_addcus">Thêm khách tạm</span></button>
+          <button onclick="closeGear();loadSeed()">🌱 <span data-i18n="m_seed">Nạp dữ liệu mẫu</span></button>
+          <button class="dg" onclick="closeGear();wipeAll()">🧹 <span data-i18n="m_wipe">Xóa sạch — tiệm trống</span></button>
+          <div class="msep"></div>
+          <div class="mhd" data-i18n="m_today">Hôm nay</div>
+          <button onclick="closeGear();doUndo()">↩︎ <span data-i18n="m_undo">Hoàn tác lần gần nhất</span></button>
+          <button class="dg" onclick="closeGear();doReset()"><span data-i18n="m_reset">Reset ngày về 0</span></button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="hero">
+    <div class="lead">
+      <div class="eyebrow" data-i18n="next_up">Tới lượt kế</div>
+      <div class="nm" id="nextName">—</div>
+      <div class="rule" id="ruleLine"></div>
+      <div class="heroact" id="heroAct"></div>
+    </div>
+    <div class="queue" id="queue"></div>
+  </div>
+
+  <div class="stats">
+    <div class="stat"><b id="sWait">0</b><span data-i18n="st_wait_cus">Khách đang chờ</span></div>
+    <div class="stat"><b id="sOn">0</b><span data-i18n="st_on">Thợ có mặt</span></div>
+    <div class="stat"><b id="sGuest">0</b><span data-i18n="st_guests">Khách hôm nay</span></div>
+    <div class="stat"><b class="mono" id="sTurn">0</b><span data-i18n="st_turns">Tổng turn</span></div>
+    <div class="stat"><b class="mono" id="sRev">$0</b><span data-i18n="st_rev">Doanh thu</span></div>
+    <div class="stat"><b class="mono" id="sPer">$0</b><span data-i18n="st_per">TB mỗi turn</span></div>
+  </div>
+
+  <div class="sechd">
+    <h2 class="sec" style="margin:0" data-i18n="sec_cus">Khách đang chờ</h2>
+    <span class="src">↩ <span data-i18n="cus_src">lấy từ tab</span> <b>Check-in</b> <span data-i18n="cus_src2">— không nhập khách ở đây</span></span>
+
+  </div>
+  <div id="cusWrap"></div>
+
+  <div class="sechd">
+    <h2 class="sec" style="margin:0" data-i18n="sec_tech">Thợ</h2>
+    <span class="src" id="techCount"></span>
+    <div class="vtog" style="margin-left:auto">
+      <button id="vList" onclick="setView('list')">☰ <span data-i18n="v_list">Danh sách</span></button>
+      <button id="vGrid" onclick="setView('grid')">▦ <span data-i18n="v_grid">Thẻ</span></button>
+    </div>
+  </div>
+  <div id="techWrap"></div>
+
+  <details class="acc">
+    <summary data-i18n="sec_tbl">Bảng chi tiết — turn · dịch vụ · doanh thu · TB mỗi turn</summary>
+  <div class="tblwrap">
+    <table>
+      <thead><tr><th data-i18n="th_tech">Thợ</th><th data-i18n="th_turn">Turn</th><th data-i18n="th_did">Dịch vụ đã làm</th><th data-i18n="th_rev">Doanh thu</th><th data-i18n="th_per">TB / turn</th></tr></thead>
+      <tbody id="tbody"></tbody>
+    </table>
+  </div>
+  </details>
+
+  <h2 class="sec" data-i18n="sec_rev">Doanh thu thợ hôm nay</h2>
+  <div class="revbox" id="revbox"></div>
+
+  <details class="acc">
+    <summary data-i18n="sec_calls">Đã gọi thợ</summary>
+    <div class="calls" id="callbox"></div>
+  </details>
+
+  <details class="acc" open>
+    <summary data-i18n="sec_log">Lịch sử giao khách</summary>
+    <div class="log" id="logbox"></div>
+  </details>
+
+  <details class="acc">
+    <summary data-i18n="sec_mng">Quản lý thợ</summary>
+    <div class="box" id="techBox"></div>
+    <div class="addbar">
+      <button class="btn pri" onclick="openProf(0)" data-i18n="b_newtech">+ Nhận thợ mới</button>
+      <span class="src" style="align-self:center" data-i18n="mng_hint">Khai tên · Viber · tay nghề · tiếng Anh · phục vụ trong một lần</span>
+    </div>
+  </details>
+
+  <div class="foot" data-i18n="foot">Thợ phải check-in mới vào hàng · ai check-in trước đứng trước · đầu ngày tự về 0.</div>
+</div>
+
+<!-- KHACH CHECK-IN -->
+<div class="ov" id="ovCheckin"><div class="modal">
+  <h3>Giả lập khách check-in</h3>
+  <div class="mh"><b>Chỉ có trong bản demo.</b> Sản phẩm thật: khách check-in ở tab <b>Check-in</b>, Turn Board chỉ đọc — màn này sẽ không tồn tại.</div>
+  <label>Tên khách</label>
+  <input type="text" id="ciName" placeholder="VD: jenny" onkeydown="if(event.key==='Enter')submitCheckin()">
+  <label>Giờ hẹn (bỏ trống nếu khách vãng lai)</label>
+  <input type="time" id="ciAppt" step="300">
+  <label>Dịch vụ muốn làm</label>
+  <div class="picks" id="ciPicks"></div>
+  <div class="sum">
+    <div><div class="sl">Ký hiệu</div><div class="sc" id="ciCode">—</div></div>
+    <div style="text-align:right"><div class="sl">Tạm tính</div><div class="sv" id="ciTotal">$0</div></div>
+  </div>
+  <div class="mb"><button class="no" onclick="closeCheckin()">Hủy</button><button class="ok" onclick="submitCheckin()">Check-in</button></div>
+</div></div>
+
+<!-- GIAO THO (nhieu tho / 1 khach) -->
+<div class="ov" id="ovGive"><div class="modal wide">
+  <h3 id="gTitle">Giao thợ</h3>
+  <div class="mh" id="gRule"></div>
+  <label>Dịch vụ — bấm để thêm/bớt</label>
+  <div class="picks" id="gPicks"></div>
+  <div class="autobar">
+    <button type="button" class="btn autob" onclick="autoAssignAll()">⚡ Máy tự xếp thợ</button>
+    <label class="engchk"><input type="checkbox" id="gEN" onchange="gToggleEN()"> Khách cần tiếng Anh</label>
+    <span class="src" id="autoMode"></span>
+  </div>
+  <label>Thợ làm từng dịch vụ — chia được cho nhiều thợ</label>
+  <div class="abox" id="gRows"></div>
+  <label>Loại khách</label>
+  <div class="seg" id="gKind">
+    <button type="button" data-k="walk" class="on" onclick="gSetKind('walk')">Khách thường</button>
+    <button type="button" data-k="request" onclick="gSetKind('request')">Chỉ định</button>
+    <button type="button" data-k="appt" onclick="gSetKind('appt')">Hẹn trước</button>
+  </div>
+  <div class="sum" style="display:block">
+    <div class="sumhd">Tổng kết</div>
+    <div id="gSummary"></div>
+  </div>
+  <div class="mb"><button class="no" onclick="closeGive()">Hủy</button><button class="ok" onclick="submitGive()">Giao thợ</button></div>
+</div></div>
+
+<!-- DICH VU / KY HIEU -->
+<div class="ov" id="ovSvc"><div class="modal wide">
+  <h3>Dịch vụ — ký hiệu, số turn &amp; giá</h3>
+  <div class="mh">Mỗi dòng: tên · <b>ký hiệu</b> · <b>turn</b> · <b>giá $</b> · <b>phút</b> · nhóm · loại · màu · thứ tự.
+  <b>Phụ thêm</b> (gel, nail art, French) cộng tiền nhưng <b>không cộng turn riêng</b> — Full Set + Gel vẫn là 1 turn.</div>
+  <div class="box" id="svcBox" style="padding:4px 10px"></div>
+  <div class="addbar">
+    <input type="text" id="nsName" placeholder="Tên dịch vụ (VD: Dip Powder)">
+    <input type="text" id="nsCode" class="code" placeholder="D" maxlength="6">
+    <input type="number" id="nsTurn" class="tv" placeholder="turn" step="0.5" min="0" title="Số turn">
+    <input type="number" id="nsPrice" class="tv" placeholder="giá $" step="1" min="0" title="Giá">
+    <input type="number" id="nsMin" class="tv" placeholder="phút" step="5" min="0" title="Số phút">
+    <select class="gsel" id="nsGroup" title="Nhóm"></select>
+    <input type="color" id="nsColor" value="#4f46e5">
+    <button class="btn pri" onclick="addSvc()">+ Thêm</button>
+    <button class="btn" onclick="addGroup()">+ Nhóm</button>
+  </div>
+  <div class="hint">Ký hiệu ghép tự động khi chọn nhiều dịch vụ: chọn Pedicure + Full Set → <b class="mono">P+FS</b>. Số turn cộng lại.</div>
+  <div class="mb"><button class="ok" onclick="closeSvc()">Xong</button></div>
+</div></div>
+
+<!-- CANH BAO HANH DONG PHA -->
+<div class="ov" id="ovDanger"><div class="modal">
+  <div class="dgi" id="dgIcon">⚠️</div>
+  <div class="dgt" id="dgTitle">Xác nhận</div>
+  <div class="dgd" id="dgDesc"></div>
+  <div id="dgBody"></div>
+  <div class="mb">
+    <button class="no" onclick="closeDanger()" id="dgNo">Không, giữ nguyên</button>
+    <button class="kill" id="dgYes">Xác nhận</button>
+  </div>
+</div></div>
+
+<!-- TAO NOI QUY -->
+<div class="ov" id="ovHBNew"><div class="modal wide">
+  <h3>Tạo nội quy tiệm</h3>
+  <div class="mh">Chọn một trong ba cách. Sau đó vẫn sửa/bổ sung thoải mái.</div>
+  <div id="hbnStep"></div>
+</div></div>
+
+<!-- NOI QUY TIEM -->
+<div class="hbov" id="ovHB"><div class="hbwrap">
+  <div class="hbtop">
+    <div>
+      <h2 id="hbName">Nội quy tiệm</h2>
+      <div class="hbmeta" id="hbMeta">—</div>
+    </div>
+    <div class="tools">
+      <button class="btn" onclick="openHBNew()">✨ Tạo lại / đổi mẫu</button>
+      <button class="btn" id="hbEditBtn" onclick="hbToggleEdit()">✎ Sửa nội quy</button>
+      <button class="btn" onclick="window.print()">🖨 In</button>
+      <button class="btn pri" onclick="closeHB()">Đóng</button>
+    </div>
+  </div>
+  <div id="hbBody"></div>
+</div></div>
+
+<!-- HO SO THO -->
+<div class="ov" id="ovProf"><div class="modal">
+  <h3 id="pfTitle">Nhận thợ mới</h3>
+  <div class="mh">Khai một lần lúc nhận. Sau này chỉ bổ sung khi thợ lên tay nghề.</div>
+  <label>Tên thợ</label>
+  <input type="text" id="pfName" placeholder="VD: Kayla Bui">
+  <label>Số Viber</label>
+  <input type="tel" id="pfViber" placeholder="+1832...">
+  <label>Dịch vụ làm được — bấm để đổi mức</label>
+  <div class="picks" id="pfSvc"></div>
+  <div class="mtxlg" style="margin-top:8px">
+    <span><button class="lvl pro" style="pointer-events:none">★</button> chuyên</span>
+    <span><button class="lvl can" style="pointer-events:none">✓</button> làm được</span>
+    <span><button class="lvl" style="pointer-events:none">–</button> không nhận</span>
+  </div>
+  <label>Tiếng Anh</label>
+  <div class="seg" id="pfEng"></div>
+  <label>Phục vụ &amp; giao tiếp</label>
+  <div class="seg" id="pfSvcR"></div>
+  <div class="sum" style="display:block">
+    <div class="sumhd">Hạng dự kiến</div>
+    <div id="pfTier"></div>
+  </div>
+  <div class="mb">
+    <button class="no" onclick="closeProf()">Hủy</button>
+    <button class="ok" id="pfSave" onclick="saveProf()">Lưu hồ sơ</button>
+  </div>
+</div></div>
+
+<!-- TAY NGHE THO -->
+<div class="ov" id="ovSkill"><div class="modal wide" style="max-width:980px">
+  <h3>Tổng quan thợ</h3>
+  <div class="mh" id="ovSum">—</div>
+  <div class="tabs">
+    <button id="tbOv" onclick="setOvTab('ov')">Tổng quan &amp; đánh giá</button>
+    <button id="tbSk" onclick="setOvTab('sk')">Tay nghề từng dịch vụ</button>
+  </div>
+  <div class="mtxwrap" id="mtxBox"></div>
+  <div id="ovLegend"></div>
+  <div class="mb"><button class="ok" onclick="closeSkill()">Xong</button></div>
+</div></div>
+
+<!-- CAU HINH -->
+<div class="ov" id="ovCfg"><div class="modal">
+  <h3>Luật tính turn</h3>
+  <div class="mh">Chọn công thức của tiệm. Xem thử ở dưới trước khi lưu.</div>
+  <label>Cách tính turn</label>
+  <div id="cfgM"></div>
+  <hr class="sep">
+  <label>Khách chỉ định (request)</label>
+  <div id="cfgR"></div>
+  <hr class="sep">
+  <label>Khách hẹn trước (booking)</label>
+  <div id="cfgA"></div>
+  <hr class="sep">
+  <label>Khách hẹn đợi thợ tối đa bao lâu</label>
+  <div class="inl" style="margin-left:0">Quá <input type="number" min="0" step="5" id="cfgGrace"
+    onchange="cfgDraft.apptGrace=parseInt(this.value,10)||0"> phút thì Turn Board báo đỏ để lễ tân đổi thợ khác.</div>
+
+  <hr class="sep">
+  <label>Máy tự xếp thợ ưu tiên gì</label>
+  <div id="cfgAuto2"></div>
+
+  <hr class="sep">
+  <label>Gọi thợ</label>
+  <label class="chk"><input type="checkbox" id="cfgAuto" onchange="cfgDraft.autoBeep=this.checked">
+    <span><b>Tự gọi khi tới lượt</b><div class="cd">Thợ vừa lên #1 là hệ thống tự đẩy thông báo qua app — quầy khỏi nhớ bấm.</div></span></label>
+  <div class="prev" id="cfgP"></div>
+  <div class="mb"><button class="no" onclick="closeCfg()">Hủy</button><button class="ok" onclick="saveCfg()">Lưu</button></div>
+</div></div>
+
+<script>
+
+/* ================= i18n =================
+   CHI dich chu cua GIAO DIEN.
+   KHONG dich du lieu tiem: ten tho, ten dich vu, ky hieu, noi quy.
+   Them ngon ngu = them mot khoa vao I18N + mot dong vao LANGS.
+   ======================================== */
+var LANGS=[{k:'vi',n:'Tiếng Việt',s:'VI'},{k:'en',n:'English',s:'EN'},
+           {k:'es',n:'Español',s:'ES'},{k:'zh',n:'中文',s:'中'},{k:'ko',n:'한국어',s:'한'}];
+var I18N={
+ "vi": {
+  "r_time": "Turn theo thời gian —",
+  "r_time2": "phút = 1 turn",
+  "r_svc": "Turn theo bảng dịch vụ (cộng lại)",
+  "r_count": "Mỗi khách = 1 turn",
+  "r_low": "Dưới",
+  "r_up": "trở lên = 1 turn · dưới = 0.5",
+  "r_to": "–",
+  "r_over": "trên",
+  "r_turn": "turn",
+  "sp_req": "chỉ định",
+  "sp_appt": "hẹn",
+  "sp_1": "= 1 turn",
+  "sp_half": "= 0.5",
+  "sp_0": "= 0 turn",
+  "sp_norm": "tính như thường",
+  "app_title": "Turn Board",
+  "app_sub": "Thợ check-in, giao khách theo ký hiệu dịch vụ, turn tự tính theo luật tiệm.",
+  "nav_board": "Turn Board",
+  "nav_staff": "Thợ",
+  "nav_book": "Sổ tay tiệm",
+  "nav_settings": "Cài đặt",
+  "m_shop": "Cài đặt tiệm",
+  "m_services": "Dịch vụ — ký hiệu, số turn & giá",
+  "m_rules": "Luật tính turn của tiệm",
+  "m_demo": "Demo — bỏ khi nối backend",
+  "m_addcus": "Thêm khách tạm",
+  "m_seed": "Nạp dữ liệu mẫu",
+  "m_wipe": "Xóa sạch — tiệm trống",
+  "m_today": "Hôm nay",
+  "m_undo": "Hoàn tác lần gần nhất",
+  "m_reset": "Reset ngày về 0",
+  "next_up": "Tới lượt kế",
+  "no_checkin": "Chưa có thợ check-in",
+  "ch_rule": "đổi luật",
+  "ch_turn": "đổi turn từng dịch vụ",
+  "call": "Gọi",
+  "called": "đã gọi",
+  "st_wait_cus": "Khách đang chờ",
+  "st_on": "Thợ có mặt",
+  "st_guests": "Khách hôm nay",
+  "st_turns": "Tổng turn",
+  "st_rev": "Doanh thu",
+  "st_per": "TB mỗi turn",
+  "sec_cus": "Khách đang chờ",
+  "cus_src": "lấy từ tab",
+  "cus_src2": "— không nhập khách ở đây",
+  "cus_empty": "Chưa có khách nào check-in. Khách sẽ tự hiện ở đây khi lễ tân check-in bên tab",
+  "sec_tech": "Thợ",
+  "tech_on": "thợ có mặt",
+  "tech_waiting": "đang chờ turn",
+  "tech_serving": "đang làm khách",
+  "tech_empty": "Chưa có thợ nào. Mở <b>Quản lý thợ</b> ở cuối trang → <b>+ Nhận thợ mới</b>, hoặc ⚙️ Cài đặt → <b>Nạp dữ liệu mẫu</b>.",
+  "g_wait": "Đang chờ turn",
+  "g_serving": "Đang làm khách",
+  "g_off": "Chưa check-in",
+  "g_show": "hiện",
+  "g_hide": "ẩn",
+  "v_list": "Danh sách",
+  "v_grid": "Thẻ",
+  "s_turn": "TỚI LƯỢT",
+  "s_serving": "ĐANG LÀM",
+  "s_waiting": "CHỜ TURN",
+  "s_off": "CHƯA CHECK-IN",
+  "b_give": "Giao khách",
+  "b_giveto": "Giao thợ",
+  "b_leave": "Cho về",
+  "b_checkin": "Check-in",
+  "no_cus_yet": "chưa có khách",
+  "turn_l": "turn",
+  "sec_tbl": "Bảng chi tiết — turn · dịch vụ · doanh thu · TB mỗi turn",
+  "th_tech": "Thợ",
+  "th_turn": "Turn",
+  "th_did": "Dịch vụ đã làm",
+  "th_rev": "Doanh thu",
+  "th_per": "TB / turn",
+  "sec_rev": "Doanh thu thợ hôm nay",
+  "rev_empty": "Chưa có doanh thu hôm nay.",
+  "rev_more": "thợ chưa có khách",
+  "sec_calls": "Đã gọi thợ",
+  "calls_empty": "Chưa gọi thợ nào hôm nay.",
+  "via_app": "Staff app",
+  "via_auto": "tự động",
+  "sec_log": "Lịch sử giao khách",
+  "log_empty": "Chưa giao khách nào hôm nay.",
+  "k_request": "chỉ định",
+  "k_appt": "hẹn",
+  "k_skip": "vượt lượt",
+  "sec_mng": "Quản lý thợ",
+  "b_newtech": "+ Nhận thợ mới",
+  "mng_hint": "Khai tên · Viber · tay nghề · tiếng Anh · phục vụ trong một lần",
+  "b_editprof": "Sửa hồ sơ",
+  "b_del": "Xóa",
+  "ph_viber": "số Viber",
+  "foot": "Thợ phải check-in mới vào hàng · ai check-in trước đứng trước · đầu ngày tự về 0.",
+  "eta_serving": "đang làm",
+  "eta_now": "có thợ làm ngay",
+  "eta_wait": "chờ ~",
+  "eta_min": "phút",
+  "eta_noteach": "chưa có thợ check-in",
+  "eta_appt": "hẹn",
+  "eta_left": "còn",
+  "eta_due": "tới giờ hẹn",
+  "eta_late": "trễ",
+  "eta_over": "⚠ quá hẹn",
+  "eta_change": "phút — nên đổi thợ",
+  "eta_rem": "còn",
+  "eta_end": "xong ~",
+  "c_wait_from": "chờ từ",
+  "c_from": "từ",
+  "c_nosvc": "chưa chọn dịch vụ",
+  "c_assign": "Giao thợ",
+  "c_edit": "Sửa dịch vụ",
+  "c_drop": "Bỏ",
+  "c_done": "Xong — bỏ khỏi danh sách"
+ },
+ "en": {
+  "r_time": "Turns by time —",
+  "r_time2": "min = 1 turn",
+  "r_svc": "Turns from the service table (summed)",
+  "r_count": "Each guest = 1 turn",
+  "r_low": "Under",
+  "r_up": "and up = 1 turn · below = 0.5",
+  "r_to": "–",
+  "r_over": "over",
+  "r_turn": "turns",
+  "sp_req": "requests",
+  "sp_appt": "appointments",
+  "sp_1": "= 1 turn",
+  "sp_half": "= 0.5",
+  "sp_0": "= 0 turn",
+  "sp_norm": "counted normally",
+  "app_title": "Turn Board",
+  "app_sub": "Techs check in, guests are assigned by service code, turns calculated by shop rules.",
+  "nav_board": "Turn Board",
+  "nav_staff": "Staff",
+  "nav_book": "Shop Handbook",
+  "nav_settings": "Settings",
+  "m_shop": "Shop settings",
+  "m_services": "Services — codes, turns & prices",
+  "m_rules": "Turn rules",
+  "m_demo": "Demo — remove when backend is wired",
+  "m_addcus": "Add temp guest",
+  "m_seed": "Load sample data",
+  "m_wipe": "Wipe all — empty shop",
+  "m_today": "Today",
+  "m_undo": "Undo last assignment",
+  "m_reset": "Reset day to 0",
+  "next_up": "Next up",
+  "no_checkin": "No tech checked in",
+  "ch_rule": "change rules",
+  "ch_turn": "change turns per service",
+  "call": "Call",
+  "called": "called",
+  "st_wait_cus": "Guests waiting",
+  "st_on": "Techs on shift",
+  "st_guests": "Guests today",
+  "st_turns": "Total turns",
+  "st_rev": "Revenue",
+  "st_per": "Avg per turn",
+  "sec_cus": "Guests waiting",
+  "cus_src": "pulled from",
+  "cus_src2": "— guests are not added here",
+  "cus_empty": "No guest checked in yet. Guests appear here once the front desk checks them in under",
+  "sec_tech": "Technicians",
+  "tech_on": "on shift",
+  "tech_waiting": "waiting for a turn",
+  "tech_serving": "serving a guest",
+  "tech_empty": "No technicians yet. Open <b>Manage staff</b> at the bottom → <b>+ Add technician</b>, or ⚙️ Settings → <b>Load sample data</b>.",
+  "g_wait": "Waiting for a turn",
+  "g_serving": "Serving a guest",
+  "g_off": "Not checked in",
+  "g_show": "show",
+  "g_hide": "hide",
+  "v_list": "List",
+  "v_grid": "Cards",
+  "s_turn": "NEXT UP",
+  "s_serving": "SERVING",
+  "s_waiting": "WAITING",
+  "s_off": "NOT CHECKED IN",
+  "b_give": "Assign guest",
+  "b_giveto": "Assign techs",
+  "b_leave": "Check out",
+  "b_checkin": "Check in",
+  "no_cus_yet": "no guest yet",
+  "turn_l": "turns",
+  "sec_tbl": "Detail table — turns · services · revenue · avg per turn",
+  "th_tech": "Technician",
+  "th_turn": "Turns",
+  "th_did": "Services done",
+  "th_rev": "Revenue",
+  "th_per": "Avg / turn",
+  "sec_rev": "Revenue by tech today",
+  "rev_empty": "No revenue yet today.",
+  "rev_more": "techs with no guest",
+  "sec_calls": "Techs called",
+  "calls_empty": "No tech called yet today.",
+  "via_app": "Staff app",
+  "via_auto": "auto",
+  "sec_log": "Assignment history",
+  "log_empty": "No guest assigned yet today.",
+  "k_request": "request",
+  "k_appt": "appt",
+  "k_skip": "skipped turn",
+  "sec_mng": "Manage staff",
+  "b_newtech": "+ Add technician",
+  "mng_hint": "Name · Viber · skills · English · service — all in one form",
+  "b_editprof": "Edit profile",
+  "b_del": "Delete",
+  "ph_viber": "Viber number",
+  "foot": "A tech must check in to join the queue · earlier check-in goes first · resets to 0 each new day.",
+  "eta_serving": "serving",
+  "eta_now": "a tech is free now",
+  "eta_wait": "wait ~",
+  "eta_min": "min",
+  "eta_noteach": "no tech checked in",
+  "eta_appt": "appt",
+  "eta_left": "in",
+  "eta_due": "appointment due",
+  "eta_late": "late",
+  "eta_over": "⚠ overdue by",
+  "eta_change": "min — consider another tech",
+  "eta_rem": "",
+  "eta_end": "free ~",
+  "c_wait_from": "waiting since",
+  "c_from": "since",
+  "c_nosvc": "no service chosen",
+  "c_assign": "Assign techs",
+  "c_edit": "Edit services",
+  "c_drop": "Drop",
+  "c_done": "Done — remove from list"
+ },
+ "es": {
+  "r_time": "Turnos por tiempo —",
+  "r_time2": "min = 1 turno",
+  "r_svc": "Turnos según la tabla de servicios (sumados)",
+  "r_count": "Cada cliente = 1 turno",
+  "r_low": "Menos de",
+  "r_up": "o más = 1 turno · menos = 0.5",
+  "r_to": "–",
+  "r_over": "más de",
+  "r_turn": "turnos",
+  "sp_req": "solicitados",
+  "sp_appt": "citas",
+  "sp_1": "= 1 turno",
+  "sp_half": "= 0.5",
+  "sp_0": "= 0 turnos",
+  "sp_norm": "se cuentan normal",
+  "app_title": "Turn Board",
+  "app_sub": "Los técnicos registran entrada, los clientes se asignan por código de servicio, los turnos se calculan según las reglas del salón.",
+  "nav_board": "Turn Board",
+  "nav_staff": "Personal",
+  "nav_book": "Manual del salón",
+  "nav_settings": "Ajustes",
+  "m_shop": "Ajustes del salón",
+  "m_services": "Servicios — códigos, turnos y precios",
+  "m_rules": "Reglas de turnos",
+  "m_demo": "Demo — quitar al conectar el backend",
+  "m_addcus": "Agregar cliente temporal",
+  "m_seed": "Cargar datos de ejemplo",
+  "m_wipe": "Borrar todo — salón vacío",
+  "m_today": "Hoy",
+  "m_undo": "Deshacer última asignación",
+  "m_reset": "Reiniciar el día a 0",
+  "next_up": "Siguiente turno",
+  "no_checkin": "Ningún técnico registrado",
+  "ch_rule": "cambiar reglas",
+  "ch_turn": "cambiar turnos por servicio",
+  "call": "Llamar",
+  "called": "llamado",
+  "st_wait_cus": "Clientes esperando",
+  "st_on": "Técnicos presentes",
+  "st_guests": "Clientes hoy",
+  "st_turns": "Turnos totales",
+  "st_rev": "Ingresos",
+  "st_per": "Promedio por turno",
+  "sec_cus": "Clientes esperando",
+  "cus_src": "tomado de",
+  "cus_src2": "— aquí no se registran clientes",
+  "cus_empty": "Aún no hay clientes registrados. Aparecerán aquí cuando recepción los registre en",
+  "sec_tech": "Técnicos",
+  "tech_on": "presentes",
+  "tech_waiting": "esperando turno",
+  "tech_serving": "atendiendo",
+  "tech_empty": "Aún no hay técnicos. Abre <b>Gestionar personal</b> abajo → <b>+ Agregar técnico</b>, o ⚙️ Ajustes → <b>Cargar datos de ejemplo</b>.",
+  "g_wait": "Esperando turno",
+  "g_serving": "Atendiendo",
+  "g_off": "Sin registrar",
+  "g_show": "mostrar",
+  "g_hide": "ocultar",
+  "v_list": "Lista",
+  "v_grid": "Tarjetas",
+  "s_turn": "SIGUIENTE",
+  "s_serving": "ATENDIENDO",
+  "s_waiting": "ESPERANDO",
+  "s_off": "SIN REGISTRAR",
+  "b_give": "Asignar cliente",
+  "b_giveto": "Asignar técnicos",
+  "b_leave": "Salida",
+  "b_checkin": "Entrada",
+  "no_cus_yet": "sin cliente aún",
+  "turn_l": "turnos",
+  "sec_tbl": "Tabla detallada — turnos · servicios · ingresos · promedio",
+  "th_tech": "Técnico",
+  "th_turn": "Turnos",
+  "th_did": "Servicios hechos",
+  "th_rev": "Ingresos",
+  "th_per": "Prom. / turno",
+  "sec_rev": "Ingresos por técnico hoy",
+  "rev_empty": "Aún no hay ingresos hoy.",
+  "rev_more": "técnicos sin cliente",
+  "sec_calls": "Técnicos llamados",
+  "calls_empty": "Ningún técnico llamado hoy.",
+  "via_app": "Staff app",
+  "via_auto": "automático",
+  "sec_log": "Historial de asignaciones",
+  "log_empty": "Ningún cliente asignado hoy.",
+  "k_request": "solicitado",
+  "k_appt": "cita",
+  "k_skip": "turno saltado",
+  "sec_mng": "Gestionar personal",
+  "b_newtech": "+ Agregar técnico",
+  "mng_hint": "Nombre · Viber · habilidades · inglés · servicio — todo en un formulario",
+  "b_editprof": "Editar perfil",
+  "b_del": "Eliminar",
+  "ph_viber": "Número de Viber",
+  "foot": "El técnico debe registrarse para entrar en la fila · quien llega primero va primero · se reinicia a 0 cada día.",
+  "eta_serving": "atendiendo",
+  "eta_now": "hay un técnico libre",
+  "eta_wait": "espera ~",
+  "eta_min": "min",
+  "eta_noteach": "ningún técnico registrado",
+  "eta_appt": "cita",
+  "eta_left": "en",
+  "eta_due": "hora de la cita",
+  "eta_late": "tarde",
+  "eta_over": "⚠ retrasado",
+  "eta_change": "min — considera otro técnico",
+  "eta_rem": "",
+  "eta_end": "libre ~",
+  "c_wait_from": "esperando desde",
+  "c_from": "desde",
+  "c_nosvc": "sin servicio elegido",
+  "c_assign": "Asignar técnicos",
+  "c_edit": "Editar servicios",
+  "c_drop": "Quitar",
+  "c_done": "Listo — quitar de la lista"
+ },
+ "zh": {
+  "r_time": "按时长计轮 —",
+  "r_time2": "分钟 = 1 轮",
+  "r_svc": "按服务表计轮（相加）",
+  "r_count": "每位客人 = 1 轮",
+  "r_low": "低于",
+  "r_up": "及以上 = 1 轮 · 以下 = 0.5",
+  "r_to": "–",
+  "r_over": "高于",
+  "r_turn": "轮",
+  "sp_req": "指定",
+  "sp_appt": "预约",
+  "sp_1": "= 1 轮",
+  "sp_half": "= 0.5",
+  "sp_0": "= 0 轮",
+  "sp_norm": "按常规计算",
+  "app_title": "轮班板",
+  "app_sub": "技师签到后，按服务代码分配客人，轮次依店内规则自动计算。",
+  "nav_board": "轮班板",
+  "nav_staff": "技师",
+  "nav_book": "门店手册",
+  "nav_settings": "设置",
+  "m_shop": "门店设置",
+  "m_services": "服务 — 代码、轮次与价格",
+  "m_rules": "轮次规则",
+  "m_demo": "演示 — 接入后端后请移除",
+  "m_addcus": "添加临时客人",
+  "m_seed": "载入示例数据",
+  "m_wipe": "清空 — 空门店",
+  "m_today": "今天",
+  "m_undo": "撤销上一次分配",
+  "m_reset": "当日归零",
+  "next_up": "下一位",
+  "no_checkin": "暂无技师签到",
+  "ch_rule": "修改规则",
+  "ch_turn": "修改各服务轮次",
+  "call": "呼叫",
+  "called": "已呼叫",
+  "st_wait_cus": "等候客人",
+  "st_on": "在岗技师",
+  "st_guests": "今日客人",
+  "st_turns": "总轮次",
+  "st_rev": "营业额",
+  "st_per": "每轮平均",
+  "sec_cus": "等候客人",
+  "cus_src": "来自",
+  "cus_src2": "— 此处不录入客人",
+  "cus_empty": "暂无客人签到。前台在签到页登记后会自动显示在这里",
+  "sec_tech": "技师",
+  "tech_on": "在岗",
+  "tech_waiting": "等待轮次",
+  "tech_serving": "服务中",
+  "tech_empty": "暂无技师。请打开页面底部的<b>员工管理</b> → <b>+ 添加技师</b>，或 ⚙️ 设置 → <b>载入示例数据</b>。",
+  "g_wait": "等待轮次",
+  "g_serving": "服务中",
+  "g_off": "未签到",
+  "g_show": "显示",
+  "g_hide": "隐藏",
+  "v_list": "列表",
+  "v_grid": "卡片",
+  "s_turn": "下一位",
+  "s_serving": "服务中",
+  "s_waiting": "等待中",
+  "s_off": "未签到",
+  "b_give": "分配客人",
+  "b_giveto": "分配技师",
+  "b_leave": "签退",
+  "b_checkin": "签到",
+  "no_cus_yet": "暂无客人",
+  "turn_l": "轮",
+  "sec_tbl": "明细表 — 轮次 · 服务 · 营业额 · 每轮平均",
+  "th_tech": "技师",
+  "th_turn": "轮次",
+  "th_did": "已做服务",
+  "th_rev": "营业额",
+  "th_per": "每轮均值",
+  "sec_rev": "今日技师营业额",
+  "rev_empty": "今日暂无营业额。",
+  "rev_more": "位技师尚无客人",
+  "sec_calls": "已呼叫技师",
+  "calls_empty": "今日尚未呼叫技师。",
+  "via_app": "员工端 App",
+  "via_auto": "自动",
+  "sec_log": "分配记录",
+  "log_empty": "今日尚未分配客人。",
+  "k_request": "指定",
+  "k_appt": "预约",
+  "k_skip": "插队",
+  "sec_mng": "员工管理",
+  "b_newtech": "+ 添加技师",
+  "mng_hint": "姓名 · Viber · 技能 · 英语 · 服务 — 一次填完",
+  "b_editprof": "编辑档案",
+  "b_del": "删除",
+  "ph_viber": "Viber 号码",
+  "foot": "技师须签到才进入排队 · 先签到者排前 · 每日自动归零。",
+  "eta_serving": "服务中",
+  "eta_now": "有技师现在有空",
+  "eta_wait": "约等 ~",
+  "eta_min": "分钟",
+  "eta_noteach": "暂无技师签到",
+  "eta_appt": "预约",
+  "eta_left": "还有",
+  "eta_due": "已到预约时间",
+  "eta_late": "迟到",
+  "eta_over": "⚠ 超时",
+  "eta_change": "分钟 — 建议换技师",
+  "eta_rem": "剩",
+  "eta_end": "约 ~ 结束",
+  "c_wait_from": "等候自",
+  "c_from": "自",
+  "c_nosvc": "未选服务",
+  "c_assign": "分配技师",
+  "c_edit": "修改服务",
+  "c_drop": "移除",
+  "c_done": "完成 — 移出列表"
+ },
+ "ko": {
+  "r_time": "시간 기준 턴 —",
+  "r_time2": "분 = 1턴",
+  "r_svc": "서비스 표 기준 턴 (합산)",
+  "r_count": "손님 1명 = 1턴",
+  "r_low": "미만",
+  "r_up": "이상 = 1턴 · 미만 = 0.5",
+  "r_to": "–",
+  "r_over": "초과",
+  "r_turn": "턴",
+  "sp_req": "지명",
+  "sp_appt": "예약",
+  "sp_1": "= 1턴",
+  "sp_half": "= 0.5",
+  "sp_0": "= 0턴",
+  "sp_norm": "일반 계산",
+  "app_title": "턴 보드",
+  "app_sub": "기사가 체크인하면 서비스 코드로 손님을 배정하고, 턴은 매장 규칙에 따라 자동 계산됩니다.",
+  "nav_board": "턴 보드",
+  "nav_staff": "기사",
+  "nav_book": "매장 안내서",
+  "nav_settings": "설정",
+  "m_shop": "매장 설정",
+  "m_services": "서비스 — 코드·턴·가격",
+  "m_rules": "턴 계산 규칙",
+  "m_demo": "데모 — 백엔드 연결 시 제거",
+  "m_addcus": "임시 손님 추가",
+  "m_seed": "샘플 데이터 불러오기",
+  "m_wipe": "전체 삭제 — 빈 매장",
+  "m_today": "오늘",
+  "m_undo": "마지막 배정 취소",
+  "m_reset": "하루 0으로 초기화",
+  "next_up": "다음 차례",
+  "no_checkin": "체크인한 기사 없음",
+  "ch_rule": "규칙 변경",
+  "ch_turn": "서비스별 턴 변경",
+  "call": "호출",
+  "called": "호출됨",
+  "st_wait_cus": "대기 손님",
+  "st_on": "출근 기사",
+  "st_guests": "오늘 손님",
+  "st_turns": "총 턴",
+  "st_rev": "매출",
+  "st_per": "턴당 평균",
+  "sec_cus": "대기 손님",
+  "cus_src": "가져온 곳:",
+  "cus_src2": "— 여기서 손님을 등록하지 않습니다",
+  "cus_empty": "아직 체크인한 손님이 없습니다. 프런트에서 체크인하면 여기에 표시됩니다:",
+  "sec_tech": "기사",
+  "tech_on": "출근",
+  "tech_waiting": "턴 대기 중",
+  "tech_serving": "손님 응대 중",
+  "tech_empty": "기사가 없습니다. 하단의 <b>기사 관리</b> → <b>+ 기사 등록</b>, 또는 ⚙️ 설정 → <b>샘플 데이터 불러오기</b>.",
+  "g_wait": "턴 대기 중",
+  "g_serving": "손님 응대 중",
+  "g_off": "미체크인",
+  "g_show": "보기",
+  "g_hide": "숨기기",
+  "v_list": "목록",
+  "v_grid": "카드",
+  "s_turn": "다음 차례",
+  "s_serving": "응대 중",
+  "s_waiting": "대기 중",
+  "s_off": "미체크인",
+  "b_give": "손님 배정",
+  "b_giveto": "기사 배정",
+  "b_leave": "퇴근",
+  "b_checkin": "체크인",
+  "no_cus_yet": "아직 손님 없음",
+  "turn_l": "턴",
+  "sec_tbl": "상세표 — 턴 · 서비스 · 매출 · 턴당 평균",
+  "th_tech": "기사",
+  "th_turn": "턴",
+  "th_did": "완료한 서비스",
+  "th_rev": "매출",
+  "th_per": "턴당 평균",
+  "sec_rev": "오늘 기사별 매출",
+  "rev_empty": "오늘 매출이 아직 없습니다.",
+  "rev_more": "명은 손님이 없습니다",
+  "sec_calls": "호출한 기사",
+  "calls_empty": "오늘 호출한 기사가 없습니다.",
+  "via_app": "스태프 앱",
+  "via_auto": "자동",
+  "sec_log": "배정 기록",
+  "log_empty": "오늘 배정한 손님이 없습니다.",
+  "k_request": "지명",
+  "k_appt": "예약",
+  "k_skip": "순번 건너뜀",
+  "sec_mng": "기사 관리",
+  "b_newtech": "+ 기사 등록",
+  "mng_hint": "이름 · 바이버 · 기술 · 영어 · 서비스 — 한 번에 입력",
+  "b_editprof": "프로필 수정",
+  "b_del": "삭제",
+  "ph_viber": "바이버 번호",
+  "foot": "기사는 체크인해야 대기열에 들어갑니다 · 먼저 체크인한 순서 · 매일 0으로 초기화.",
+  "eta_serving": "응대 중",
+  "eta_now": "지금 가능한 기사 있음",
+  "eta_wait": "약 ~",
+  "eta_min": "분",
+  "eta_noteach": "체크인한 기사 없음",
+  "eta_appt": "예약",
+  "eta_left": "후",
+  "eta_due": "예약 시간",
+  "eta_late": "지연",
+  "eta_over": "⚠ 초과",
+  "eta_change": "분 — 다른 기사 권장",
+  "eta_rem": "남음",
+  "eta_end": "~ 종료",
+  "c_wait_from": "대기 시작",
+  "c_from": "시작",
+  "c_nosvc": "서비스 미선택",
+  "c_assign": "기사 배정",
+  "c_edit": "서비스 수정",
+  "c_drop": "제외",
+  "c_done": "완료 — 목록에서 제거"
+ }
+};
+var LANG = localStorage.getItem('tb_lang') || 'vi';
+if(!I18N[LANG]) LANG='vi';
+function tx(k){ var d=I18N[LANG]||I18N.vi; return (d[k]!==undefined?d[k]:(I18N.vi[k]!==undefined?I18N.vi[k]:k)); }
+function setLang(l){ if(!I18N[l])return; LANG=l; localStorage.setItem('tb_lang',l); applyStatic(); render(); closeLang(); }
+function toggleLang(e){ e.stopPropagation(); document.getElementById('langMenu').classList.toggle('on'); }
+function closeLang(){ var m=document.getElementById('langMenu'); if(m) m.classList.remove('on'); }
+function applyStatic(){
+  document.documentElement.lang = LANG;
+  document.querySelectorAll('[data-i18n]').forEach(function(el){
+    var k=el.getAttribute('data-i18n');
+    if(el.hasAttribute('data-i18n-html')) el.innerHTML=tx(k); else el.textContent=tx(k);
+  });
+  document.querySelectorAll('[data-i18n-ph]').forEach(function(el){ el.placeholder=tx(el.getAttribute('data-i18n-ph')); });
+  var cur=LANGS.filter(function(x){return x.k===LANG;})[0]||LANGS[0];
+  var lb=document.getElementById('langBtn'); if(lb) lb.textContent='🌐 '+cur.s;
+  var lm=document.getElementById('langMenu');
+  if(lm) lm.innerHTML='<div class="mhd">Ngôn ngữ / Language</div>'+LANGS.map(function(x){
+    return '<button class="'+(x.k===LANG?'sel':'')+'" onclick="setLang(\''+x.k+'\')">'+x.s+' · '+x.n+'</button>';}).join('');
+}
+
+var KEY='turnboard_v3';
+var state=null, cfgDraft=null, gTech=null, gKind='walk', gSel=[];
+var lastNextId=null, firstRender=true;
+var view = localStorage.getItem('tb_view') || '';
+var offHidden = localStorage.getItem('tb_off')!=='0';
+function setView(v){ view=v; localStorage.setItem('tb_view',v); render(); }
+function toggleOff(){ offHidden=!offHidden; localStorage.setItem('tb_off',offHidden?'1':'0'); render(); }
+
+function today(){var d=new Date();return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function hhmm(){var d=new Date();return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0');}
+function esc(s){return (s+'').replace(/[&<>"]/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c];});}
+function jq(s){return esc(s).replace(/'/g,"\\'");}
+function nowMs(){ return new Date().getTime(); }
+function clockOf(ms){ var d=new Date(ms); return String(d.getHours()).padStart(2,'0')+':'+String(d.getMinutes()).padStart(2,'0'); }
+function minsLeft(ms){ return Math.max(0, Math.round((ms-nowMs())/60000)); }
+function parseHHMM(t){
+  if(!t) return 0;
+  var m=String(t).match(/^(\d{1,2}):(\d{2})$/); if(!m) return 0;
+  var d=new Date(); d.setHours(+m[1], +m[2], 0, 0); return d.getTime();
+}
+function busyNow(w){ return !!(w && w.busyUntil && w.busyUntil>nowMs()); }
+function freeAt(w){ return busyNow(w) ? w.busyUntil : nowMs(); }
+function waitFor(cus){
+  var svcs=(cus.svc||[]);
+  var q=queue(); if(!q.length) return null;
+  var best=null;
+  q.forEach(function(w){
+    var ok=!svcs.length || svcs.every(function(id){ return skillOf(w,id)>0; });
+    if(!ok) return;
+    var f=freeAt(w);
+    if(best===null||f<best) best=f;
+  });
+  return best;
+}
+function fT(n){n=Math.round(n*100)/100;return (n%1===0)?String(n):n.toFixed(1);}
+function fM(n){return '$'+((n%1===0)?String(n):n.toFixed(2));}
+function initials(n){var p=(n||'').trim().split(/\s+/);return ((p[0]||'')[0]||'?').toUpperCase()+((p[1]||'')[0]||'').toUpperCase();}
+
+function defCfg(){return{method:'services',threshold:25,tierB1:25,tierB2:50,tierV0:.5,tierV1:1,tierV2:1.5,minPerTurn:60,requestRule:'formula',apptRule:'formula',autoBeep:true,autoMode:'fair'};}
+var DEF_GROUPS=['Tay','Chân','Waxing','Phụ thêm','Khác'];
+function defSvcs(){return[
+  {id:1,name:'Full Set',code:'FS',turns:1,price:45,min:60,color:'#4f46e5',group:'Tay',addon:false,ord:1},
+  {id:2,name:'Fill',code:'F',turns:1,price:35,min:45,color:'#0ea5e9',group:'Tay',addon:false,ord:2},
+  {id:6,name:'Dip Powder',code:'D',turns:1,price:50,min:60,color:'#8b5cf6',group:'Tay',addon:false,ord:3},
+  {id:4,name:'Manicure',code:'M',turns:.5,price:20,min:30,color:'#f59e0b',group:'Tay',addon:false,ord:4},
+  {id:3,name:'Pedicure',code:'P',turns:1,price:40,min:45,color:'#10b981',group:'Chân',addon:false,ord:1},
+  {id:9,name:'Deluxe Pedicure',code:'DP',turns:1,price:55,min:60,color:'#059669',group:'Chân',addon:false,ord:2},
+  {id:7,name:'Waxing',code:'W',turns:.5,price:15,min:15,color:'#14b8a6',group:'Waxing',addon:false,ord:1},
+  {id:5,name:'Gel Polish',code:'G',turns:.5,price:15,min:20,color:'#ec4899',group:'Phụ thêm',addon:true,ord:1},
+  {id:10,name:'Nail Art',code:'NA',turns:.5,price:12,min:15,color:'#f43f5e',group:'Phụ thêm',addon:true,ord:2},
+  {id:11,name:'French',code:'FR',turns:.5,price:8,min:10,color:'#e11d48',group:'Phụ thêm',addon:true,ord:3},
+  {id:8,name:'Kid Mani/Pedi',code:'K',turns:.5,price:20,min:30,color:'#f97316',group:'Khác',addon:false,ord:1}
+];}
+function emptyShop(){
+  return {techs:[],services:defSvcs(),groups:DEF_GROUPS.slice(),log:[],calls:[],customers:[],
+          date:today(),cseq:0,config:defCfg()};
+}
+function seed(){ return emptyShop(); }
+
+/* ===== DEMO ONLY — bỏ cả khối này khi nối backend ===== */
+function seedTechs(){
+  var names=['Chloe','HUU','Kayla Bui','Lana VMM','Michael','Tina'];
+  var vb=['+18325550101','+18325550102','+18325550103','','',''];
+  return names.map(function(n,i){
+    return {id:i+1,name:n,order:i+1,checkin:null,count:0,rev:0,viber:vb[i]||'',beep:null,
+            busyUntil:0,skills:{},rating:{eng:0,svc:0,at:'',by:''}};
+  });
+}
+function loadSeed(){
+  askDanger({icon:'🌱', title:'Nạp dữ liệu mẫu?', soft:true,
+    desc:'Thêm 6 thợ mẫu để xem giao diện. Dữ liệu thợ hiện có sẽ bị thay.',
+    loseTitle:'Sẽ nạp', lose:[['Thợ mẫu','6 người'],['Dịch vụ','giữ nguyên bảng hiện tại']],
+    note:'Chỉ dùng khi trình bày. Khi nối backend thì bỏ toàn bộ nhóm Demo này.',
+    yes:'Nạp dữ liệu mẫu', no:'Hủy',
+    ok:function(){ state.techs=seedTechs(); state.log=[];state.calls=[];state.customers=[];state.cseq=0; save(); render(); }});
+}
+function wipeAll(){
+  askDanger({icon:'🧹', title:'Xóa sạch toàn bộ dữ liệu?',
+    desc:'Về đúng trạng thái một tiệm mới cài đặt: không thợ, không khách, không lịch sử.',
+    loseTitle:'Sẽ mất',
+    lose:[['Thợ',state.techs.length+' người'],['Lượt giao hôm nay',state.log.length+' lượt'],
+          ['Dịch vụ','giữ lại '+state.services.length+' món'],['Nội quy','giữ nguyên']],
+    yes:'Xóa sạch', no:'Không',
+    ok:function(){ var hb=state.handbook, sv=state.services, gr=state.groups, cf=state.config;
+      state=emptyShop(); state.handbook=hb; state.services=sv; state.groups=gr; state.config=cf;
+      save(); render(); }});
+}
+/* ===== hết phần DEMO ===== */
+function load(){
+  var s=null; try{var r=localStorage.getItem(KEY); if(r) s=JSON.parse(r);}catch(e){}
+  if(!s||!s.techs) s=seed();
+  if(!s.calls) s.calls=[];
+  s.techs.forEach(function(w){ if(w.viber===undefined) w.viber=''; if(w.beep===undefined) w.beep=null;
+    if(!w.skills) w.skills={}; if(!w.rating) w.rating={eng:0,svc:0,at:'',by:''};
+    if(w.busyUntil===undefined) w.busyUntil=0; });
+  if(!s.services||!s.services.length) s.services=defSvcs();
+  s.services.forEach(function(x,i){ if(x.price===undefined) x.price=0;
+    if(!x.group) x.group='Khác'; if(x.addon===undefined) x.addon=false; if(x.ord===undefined) x.ord=i+1;
+    if(x.min===undefined) x.min=Math.round((Number(x.turns)||1)*45); });
+  if(!s.groups) s.groups=DEF_GROUPS.slice();
+  if(!s.customers) s.customers=[];
+  if(!s.handbook) s.handbook=null;
+  if(!s.config) s.config=defCfg();
+  var d=defCfg(); for(var k in d) if(s.config[k]===undefined) s.config[k]=d[k];
+  if(s.date!==today()){ s.techs.forEach(function(w){w.count=0;w.rev=0;w.checkin=null;w.beep=null;}); s.log=[]; s.calls=[]; s.customers=[]; s.cseq=0; s.date=today(); }
+  return s;
+}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(state));}catch(e){}}
+
+/* ---------- luat tinh turn ---------- */
+function svcById(id){return state.services.find(function(s){return s.id===id;});}
+function groupList(){ return (state.groups&&state.groups.length)?state.groups:DEF_GROUPS; }
+function svcSorted(){
+  var gi={}; groupList().forEach(function(g,i){gi[g]=i;});
+  return state.services.slice().sort(function(a,b){
+    var ga=gi[a.group]===undefined?99:gi[a.group], gb=gi[b.group]===undefined?99:gi[b.group];
+    return ga-gb || (a.ord||0)-(b.ord||0);
+  });
+}
+function pickMenu(sel, onclickFn, lvMap){
+  var h='';
+  svcByGroup().forEach(function(blk){
+    var isAdd = blk.items.length && blk.items.every(function(x){return x.addon;});
+    h+='<div class="pkg"><div class="pkgh">'+esc(blk.g)
+      +(isAdd?' <span class="pkgn">không cộng turn</span>':'')+'</div><div class="picks">';
+    blk.items.forEach(function(sv){
+      if(lvMap){
+        var lv=lvMap[sv.id]||0, tx=lv===2?'★':(lv===1?'✓':'–');
+        h+='<button type="button" class="pick lv'+lv+(lv?' on':'')+'" style="--c:'+(lv===2?'var(--brand)':esc(sv.color))+'" onclick="'+onclickFn+'('+sv.id+')">'
+          +'<span class="plv">'+tx+'</span><span>'+esc(sv.name)+'</span></button>';
+      } else {
+        var on=(sel||[]).indexOf(sv.id)>=0;
+        h+='<button type="button" class="pick'+(on?' on':'')+'" style="--c:'+esc(sv.color)+'" onclick="'+onclickFn+'('+sv.id+')">'
+          +'<span class="pc">'+esc(sv.code)+'</span><span>'+esc(sv.name)+'</span></button>';
+      }
+    });
+    h+='</div></div>';
+  });
+  return h;
+}
+function svcByGroup(){
+  var out=[], map={};
+  svcSorted().forEach(function(x){
+    var g=x.group||'Khác';
+    if(!map[g]){ map[g]=[]; out.push(g); }
+    map[g].push(x);
+  });
+  return out.map(function(g){return {g:g, items:map[g]};});
+}
+function svcTurns(ids){
+  var list=(ids||[]).map(svcById).filter(Boolean);
+  var main=list.filter(function(x){return !x.addon;});
+  if(main.length) return main.reduce(function(m,x){return m+(Number(x.turns)||0);},0);  // add-on khong cong turn
+  // ca ticket chi toan phu them -> tinh cai cao nhat
+  return list.reduce(function(m,x){return Math.max(m,Number(x.turns)||0);},0);
+}
+function svcCode(ids){
+  var list=(ids||[]).map(svcById).filter(Boolean);
+  var main=list.filter(function(x){return !x.addon;}), add=list.filter(function(x){return x.addon;});
+  return main.concat(add).map(function(x){return x.code;}).join('+');
+}
+function svcMinutes(ids){
+  return (ids||[]).map(svcById).filter(Boolean).reduce(function(m,x){return m+(Number(x.min)||0);},0);
+}
+function baseTurns(cfg,amt,ids){
+  if(cfg.method==='time'){
+    var per=Number(cfg.minPerTurn)||60;
+    var mn=svcMinutes(ids);
+    if(!mn) return 0;
+    return Math.round(mn/per*4)/4;      // lam tron 0.25 turn
+  }
+  if(cfg.method==='services') return svcTurns(ids);
+  if(cfg.method==='count') return 1;
+  if(cfg.method==='tiers'){ if(amt<cfg.tierB1) return cfg.tierV0; if(amt<cfg.tierB2) return cfg.tierV1; return cfg.tierV2; }
+  return amt>=cfg.threshold?1:.5;
+}
+function turnValue(cfg,amt,kind,ids){
+  var a=parseFloat(amt); if(isNaN(a)||a<0) a=0;
+  var rule = kind==='request'?cfg.requestRule : (kind==='appt'?cfg.apptRule:'formula');
+  if(rule==='always1') return 1;
+  if(rule==='half') return .5;
+  if(rule==='none') return 0;
+  return baseTurns(cfg,a,ids);
+}
+function ruleMain(cfg){
+  if(cfg.method==='time') return tx('r_time')+' '+(cfg.minPerTurn||60)+' '+tx('r_time2');
+  if(cfg.method==='services') return tx('r_svc');
+  if(cfg.method==='count') return tx('r_count');
+  if(cfg.method==='tiers') return tx('r_low')+' $'+cfg.tierB1+' = '+fT(cfg.tierV0)+' · $'+cfg.tierB1+tx('r_to')+cfg.tierB2+' = '+fT(cfg.tierV1)+' · '+tx('r_over')+' $'+cfg.tierB2+' = '+fT(cfg.tierV2)+' '+tx('r_turn');
+  return '$'+cfg.threshold+' '+tx('r_up');
+}
+function ruleSpec(r,l){return r==='always1'?l+' '+tx('sp_1'):(r==='half'?l+' '+tx('sp_half'):(r==='none'?l+' '+tx('sp_0'):l+' '+tx('sp_norm')));}
+
+/* ---------- hang cho ---------- */
+function queue(){return state.techs.filter(function(w){return w.checkin;}).sort(function(a,b){return a.count-b.count||a.checkin-b.checkin;});}
+function nextId(){var q=queue();return q.length?q[0].id:null;}
+function tech(id){return state.techs.find(function(w){return w.id===id;});}
+
+/* ---------- actions ---------- */
+function checkin(id){var w=tech(id); if(w&&!w.checkin){state.cseq++;w.checkin=state.cseq;} save();render();}
+function checkout(id){
+  var w=tech(id); if(!w||!w.checkin) return;
+  var q=queue(), pos=0; q.forEach(function(x,i){ if(x.id===id) pos=i+1; });
+  var doIt=function(){ w.checkin=null; save(); render(); };
+  if(pos && pos<=3 && q.length>1){
+    askDanger({
+      icon:'🚪', title:'Cho '+w.name+' về?',
+      desc:'Thợ này đang đứng thứ '+pos+' trong hàng chờ turn. Cho về là ra khỏi hàng.',
+      loseTitle:'Hậu quả',
+      lose:[['Chỗ hiện tại','#'+pos+' trong hàng'],
+            ['Khi check-in lại','xuống cuối hàng'],
+            ['Turn đã làm hôm nay','giữ nguyên '+fT(w.count)+' turn']],
+      note:'Chỉ dùng khi thợ thật sự về hoặc nghỉ dài. Đi ăn ngắn cũng mất chỗ như vậy.',
+      yes:'Đúng, cho về', no:'Không, giữ chỗ', ok:doIt});
+  } else doIt();
+}
+/* ---------- tay nghe ---------- */
+function skillOf(w,svcId){
+  if(!w||!w.skills) return 1;
+  var v=w.skills[svcId];
+  return v===undefined?1:v;   // mac dinh: lam duoc
+}
+function setSkill(tid,sid){
+  var w=tech(tid); if(!w) return;
+  if(!w.skills) w.skills={};
+  var cur=skillOf(w,sid);
+  w.skills[sid]=(cur+1)%3;    // 1 -> 2 -> 0 -> 1
+  save(); renderSkill(); render();
+}
+function openSkill(){ renderSkill(); document.getElementById('ovSkill').classList.add('on'); }
+function closeSkill(){ document.getElementById('ovSkill').classList.remove('on'); }
+var ovTab='ov';
+function setOvTab(t){ ovTab=t; renderSkill(); }
+
+var RT_ENG=['Chưa đánh giá','Cơ bản','Khá','Tốt'];
+var RT_SVC=['Chưa đánh giá','Cần kèm','Ổn','Rất tốt'];
+function ratingOf(w,k){ return (w.rating&&w.rating[k])||0; }
+function bumpRating(tid,k){
+  var w=tech(tid); if(!w) return;
+  if(!w.rating) w.rating={eng:0,svc:0,at:'',by:''};
+  w.rating[k]=(ratingOf(w,k)+1)%4;
+  var d=new Date();
+  w.rating.at=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0');
+  save(); renderSkill(); render();
+}
+/* diem tay nghe suy ra tu ma tran dich vu */
+function techScore(w){
+  var stars=0,can=0;
+  state.services.forEach(function(v){ var lv=skillOf(w,v.id); if(lv===2){stars++;can++;} else if(lv===1) can++; });
+  if(stars>=4) return 3;
+  if(stars>=2) return 2;
+  if(can>=1) return 1;
+  return 0;
+}
+function tierOf(w){
+  var e=ratingOf(w,'eng'), sv=ratingOf(w,'svc'), t=techScore(w);
+  if(!e||!sv) return {lv:-1,name:'Chưa xếp hạng',cls:''};
+  var avg=Math.round((t+e+sv)/3);
+  if(avg>=3) return {lv:3,name:'Xuất sắc',cls:'t3'};
+  if(avg===2) return {lv:2,name:'Giỏi',cls:'t2'};
+  if(avg===1) return {lv:1,name:'Vững',cls:'t1'};
+  return {lv:0,name:'Mới',cls:''};
+}
+
+function renderSkill(){
+  var ws=state.techs.slice().sort(function(a,b){return a.order-b.order;});
+  var q=queue(), pos={}; q.forEach(function(w,i){pos[w.id]=i+1;});
+  var nid=nextId();
+  var serving={};
+  state.customers.forEach(function(c){ if(c.status==='serving') (c.assigns||[]).forEach(function(a){
+    serving[a.tech]=serving[a.tech]||[]; serving[a.tech].push(c.name); }); });
+  var nOn=q.length, nSv=Object.keys(serving).length;
+  var unrated=ws.filter(function(w){return tierOf(w).lv<0;}).length;
+  document.getElementById('ovSum').innerHTML =
+    '<b>'+nOn+'</b> thợ có mặt · <b>'+(nOn-nSv)+'</b> đang rảnh · '+nSv+' đang làm khách · '
+    +(ws.length-nOn)+' chưa check-in'+(unrated?(' · <b style="color:var(--amber)">'+unrated+' thợ chưa đánh giá</b>'):'');
+  document.getElementById('tbOv').classList.toggle('on',ovTab==='ov');
+  document.getElementById('tbSk').classList.toggle('on',ovTab==='sk');
+
+  function statusCell(w){
+    var on=!!w.checkin, isN=(w.id===nid), cus=serving[w.id];
+    return !on ? '<span class="sbadge">chưa check-in</span>'
+      : (cus ? '<span class="sbadge sv">đang làm · '+esc(cus.join(', '))+'</span>'
+             : (isN ? '<span class="sbadge up">#1 tới lượt</span>'
+                    : '<span class="sbadge wait">#'+pos[w.id]+' chờ turn</span>'));
+  }
+
+  var h='';
+  if(ovTab==='sk'){
+    h='<table class="mtx"><thead><tr><th>Thợ</th><th>Trạng thái</th>';
+    state.services.forEach(function(v){ h+='<th title="'+esc(v.name)+'">'+esc(v.code)+'</th>'; });
+    h+='</tr></thead><tbody>';
+    ws.forEach(function(w){
+      h+='<tr><td class="nmc">'+esc(w.name)+'</td><td class="stc">'+statusCell(w)+'</td>';
+      state.services.forEach(function(v){
+        var lv=skillOf(w,v.id), cls=lv===2?'pro':(lv===1?'can':''), tx=lv===2?'★':(lv===1?'✓':'–');
+        h+='<td><button class="lvl '+cls+'" onclick="setSkill('+w.id+','+v.id+')" title="'+esc(w.name)+' — '+esc(v.name)+'">'+tx+'</button></td>';
+      });
+      h+='</tr>';
+    });
+    h+='</tbody></table>';
+    document.getElementById('ovLegend').innerHTML=
+      '<div class="mtxlg"><span><button class="lvl pro" style="pointer-events:none">★</button> Chuyên — ưu tiên khách khó</span>'
+      +'<span><button class="lvl can" style="pointer-events:none">✓</button> Làm được</span>'
+      +'<span><button class="lvl" style="pointer-events:none">–</button> Không nhận</span></div>';
+  } else {
+    h='<table class="mtx"><thead><tr>'
+      +'<th>Thợ</th><th>Trạng thái</th>'
+      +'<th style="text-align:right">Turn</th><th style="text-align:right">Doanh thu</th><th style="text-align:right">TB/turn</th>'
+      +'<th class="grpsv">Tay nghề</th><th>Tiếng Anh</th><th>Phục vụ</th><th>Hạng</th>'
+      +'</tr></thead><tbody>';
+    ws.forEach(function(w){
+      var t=techScore(w), e=ratingOf(w,'eng'), sv=ratingOf(w,'svc'), ti=tierOf(w);
+      var tname=['Chưa có','Cơ bản','Vững tay','Đa năng'][t];
+      h+='<tr><td class="nmc"><a href="#" onclick="closeSkill();openProf('+w.id+');return false;" style="color:inherit">'+esc(w.name)+'</a>'
+        +(w.viber?'<span class="subvb">'+esc(w.viber)+'</span>':'')+'</td>'
+        +'<td class="stc">'+statusCell(w)+'</td>'
+        +'<td class="numc"><b>'+fT(w.count)+'</b></td>'
+        +'<td class="numc">'+fM(w.rev)+'</td>'
+        +'<td class="numc dash">'+(w.count>0?fM(Math.round(w.rev/w.count*100)/100):'—')+'</td>'
+        +'<td class="stc grpsv"><span class="rt r'+t+'" style="cursor:default" title="Tự tính từ tab Tay nghề">'+tname+'</span></td>'
+        +'<td class="stc"><button class="rt r'+e+'" onclick="bumpRating('+w.id+',\'eng\')">'+RT_ENG[e]+'</button></td>'
+        +'<td class="stc"><button class="rt r'+sv+'" onclick="bumpRating('+w.id+',\'svc\')">'+RT_SVC[sv]+'</button></td>'
+        +'<td class="stc"><span class="tier '+ti.cls+'">'+ti.name+'</span>'
+        +(w.rating&&w.rating.at?'<span class="evwhen">đánh giá '+esc(w.rating.at)+'</span>':'')+'</td>'
+        +'</tr>';
+    });
+    h+='</tbody></table>';
+    document.getElementById('ovLegend').innerHTML=
+      '<div class="formula"><b>Hạng tính thế nào:</b> trung bình của <b>Tay nghề</b> (tự suy ra từ số dịch vụ ★ ở tab bên cạnh), '
+      +'<b>Tiếng Anh</b> và <b>Phục vụ</b> (quản lý bấm để chấm). Thiếu một trong hai mục chấm tay thì để <b>Chưa xếp hạng</b> — '
+      +'không đoán bừa.<br>Mức: Mới → Vững → Giỏi → Xuất sắc. Bấm vào ô Tiếng Anh / Phục vụ để đổi mức, hệ thống ghi lại ngày chấm.</div>';
+  }
+  document.getElementById('mtxBox').innerHTML=h;
+}
+/* thu tu uu tien khi giao 1 dich vu */
+function candidates(svcId){
+  var busy={};
+  state.customers.forEach(function(c){ if(c.status==='serving') (c.assigns||[]).forEach(function(a){busy[a.tech]=1;}); });
+  var q=queue(), pos={}; q.forEach(function(w,i){pos[w.id]=i+1;});
+  return q.map(function(w){
+    return {w:w, pos:pos[w.id], lv:skillOf(w,svcId), free:!busy[w.id]};
+  }).filter(function(c){return c.lv>0;})
+    .sort(function(a,b){
+      if(a.free!==b.free) return a.free?-1:1;
+      return a.pos-b.pos;
+    });
+}
+function setViber(id,v){var w=tech(id); if(w){w.viber=(v||'').trim();save();render();}}
+function beep(id,auto){
+  var w=tech(id); if(!w||!w.checkin) return;
+  w.beep=hhmm();
+  state.calls.unshift({time:hhmm(),wid:id,name:w.name,via:'app',auto:!!auto});
+  state.calls=state.calls.slice(0,60);
+  if(!auto){ save(); render(); }
+}
+function callViber(id){
+  var w=tech(id); if(!w) return;
+  if(!w.viber){ alert('Thợ "'+w.name+'" chưa có số Viber. Thêm ở mục Quản lý thợ.'); return; }
+  state.calls.unshift({time:hhmm(),wid:id,name:w.name,via:'viber'});
+  state.calls=state.calls.slice(0,60);
+  save(); render();
+  try{ window.location.href='viber://chat?number='+encodeURIComponent(w.viber); }catch(e){}
+}
+function doUndo(){
+  if(!state.log.length){ askDanger({icon:'ℹ️',title:'Chưa có gì để hoàn tác',desc:'Hôm nay chưa giao khách nào.',
+    soft:true,yes:'Đóng',no:'Đóng',ok:function(){}}); return; }
+  var e=state.log[0];
+  askDanger({icon:'↩️', title:'Hoàn tác lần giao gần nhất?', soft:true,
+    desc:'Bỏ lượt giao khách mới nhất và trả lại turn cho thợ.',
+    loseTitle:'Sẽ bỏ',
+    lose:[['Thợ',e.name],['Dịch vụ',e.code||'—'],['Turn trả lại','−'+fT(e.turn)],['Tiền trừ lại','−'+fM(e.amount)],['Lúc',e.time]],
+    yes:'Hoàn tác', no:'Không, giữ lại',
+    ok:function(){ var x=state.log.shift(); var w=tech(x.wid);
+      if(w){w.count=Math.max(0,Math.round((w.count-x.turn)*100)/100); w.rev=Math.max(0,Math.round((w.rev-x.amount)*100)/100);
+        w.busyUntil=Math.max(0,(w.busyUntil||0)-(x.mins||0)*60000); if(w.busyUntil<nowMs()) w.busyUntil=0;} save();render(); }});
+}
+function doReset(){
+  var tt=0,tr=0,on=0;
+  state.techs.forEach(function(w){tt+=w.count;tr+=w.rev;if(w.checkin)on++;});
+  askDanger({
+    icon:'🗑️', title:'Reset toàn bộ ngày hôm nay?',
+    desc:'Không hoàn tác được. Mọi số liệu hôm nay bị xóa và cả tiệm bắt đầu lại từ đầu.',
+    loseTitle:'Sẽ mất vĩnh viễn',
+    lose:[['Khách đã giao',state.log.length+' khách'],
+          ['Tổng turn của cả tiệm',fT(Math.round(tt*100)/100)+' turn'],
+          ['Doanh thu ghi nhận',fM(Math.round(tr*100)/100)],
+          ['Thợ đang check-in',on+' thợ (phải check-in lại)'],
+          ['Khách đang chờ',state.customers.length+' khách']],
+    note:'Sang ngày mới hệ thống tự reset — thường không cần bấm nút này.',
+    yes:'Xóa hết, làm lại từ đầu', no:'Không, giữ số liệu',
+    ok:function(){
+      state.techs.forEach(function(w){w.count=0;w.rev=0;w.checkin=null;w.beep=null;w.busyUntil=0;});
+      state.log=[];state.calls=[];state.customers=[];state.cseq=0;state.date=today(); save();render();
+    }});
+}
+/* ---------- noi quy tiem ---------- */
+var SOP_DOCS = [{"k": "noiquy", "t": "Nội quy lao động", "i": "📋", "ty": "rules", "d": "Điều thợ phải tuân thủ. Có mục luật turn tự đồng bộ với hệ thống.", "auto": true, "sec": []}, {"k": "thoathuan", "t": "Bản thỏa thuận làm việc", "i": "✍️", "ty": "agreement", "d": "Thợ đọc và ký khi nhận việc. In ra hoặc ký điện tử.", "sec": [{"h": "Thông tin chung", "r": ["Tiệm: ____________________  ·  Địa chỉ: ____________________", "Họ tên thợ: ____________________  ·  Số điện thoại: ____________", "Ngày bắt đầu làm việc: ______/______/________", "Vị trí: ☐ Thợ chính  ☐ Thợ phụ  ☐ Thợ học việc  ☐ Lễ tân"]}, {"h": "Thỏa thuận về thu nhập", "r": ["Hình thức: ☐ Ăn chia theo % ______%  ☐ Lương ngày $______  ☐ Lương + hoa hồng", "Kỳ trả: ☐ Hằng tuần  ☐ Hai tuần một lần  ☐ Hằng tháng — vào ngày ______", "Tiền tip thuộc về thợ trực tiếp phục vụ khách, tiệm không giữ.", "Khoản trừ (nếu có) phải được nêu rõ trước, không trừ tùy tiện: ____________________"]}, {"h": "Thỏa thuận về giờ giấc", "r": ["Ngày làm việc: ☐ T2 ☐ T3 ☐ T4 ☐ T5 ☐ T6 ☐ T7 ☐ CN — từ ______ đến ______", "Xin nghỉ báo trước ít nhất ______ giờ; ngày lễ và cuối tuần báo trước ______ ngày.", "Đi trễ hoặc nghỉ không báo nhiều lần sẽ được xem xét lại vị trí làm việc."]}, {"h": "Cam kết của thợ", "r": ["Tôi đã đọc và hiểu Nội quy lao động cùng các quy trình vận hành của tiệm.", "Tôi cam kết tuân thủ quy trình vệ sinh và khử trùng — hiểu rằng đây là điều kiện giữ giấy phép của tiệm.", "Tôi giữ giấy phép hành nghề còn hiệu lực và xuất trình khi được yêu cầu.", "Tôi không nhận khách riêng của tiệm ra ngoài, không mang khách của tiệm đi nơi khác.", "Tôi hiểu tiệm có quyền cập nhật nội quy và sẽ đọc lại bản mới trong vòng 3 ngày."]}, {"h": "Cam kết của tiệm", "r": ["Trả thu nhập đúng kỳ và đúng thỏa thuận đã ghi ở trên.", "Chia turn công khai theo luật đã ghi trong nội quy; thợ được xem số turn của mình bất cứ lúc nào.", "Cung cấp đủ dụng cụ, vật tư và điều kiện làm việc an toàn.", "Thông báo trước khi thay đổi luật chia turn hoặc cách tính thu nhập."]}, {"h": "Chữ ký", "r": ["Thợ ký: ____________________   Ngày: ______/______/________", "Đại diện tiệm ký: ____________________   Ngày: ______/______/________", "Bản này lập thành 2 bản, mỗi bên giữ 1 bản."]}]}, {"k": "khan", "t": "Quy ước khăn & vật dụng theo màu", "i": "🎨", "ty": "rules", "d": "Mỗi màu một mục đích — tránh lây nhiễm chéo và tránh dùng lộn.", "sec": [{"h": "Quy ước màu khăn", "r": ["Khăn TRẮNG — lau tay và lau móng cho khách. Dùng một lần cho một khách rồi bỏ giỏ giặt.", "Khăn XANH — lau chân sau khi ngâm pedicure. Không dùng cho tay.", "Khăn XÁM / ĐEN — lau bàn, lau ghế, lau dụng cụ. Tuyệt đối không chạm vào da khách.", "Khăn VÀNG — lau khu vực nhà vệ sinh. Không mang ra khu làm việc.", "Khăn ĐỎ — lau chỗ dính máu hoặc dịch. Bỏ ngay sau khi dùng, không giặt lại chung.", "Không có khăn đúng màu thì dùng khăn giấy, không dùng tạm khăn màu khác."]}, {"h": "Nơi để khăn", "r": ["Khăn sạch: tủ khăn sạch có nắp, xếp theo màu, không để chung ngăn.", "Khăn bẩn: bỏ ngay vào giỏ giặt có nắp, không vắt lên ghế hay để trên bàn.", "Không mang khăn bẩn qua khu vực khách ngồi.", "Giặt khăn nước nóng, sấy khô hoàn toàn trước khi xếp lại."]}, {"h": "Quy ước dụng cụ", "r": ["Hộp XANH LÁ — dụng cụ đã khử trùng, sẵn sàng dùng cho khách.", "Hộp ĐỎ — dụng cụ đã dùng, chờ khử trùng. Không được lấy ra dùng lại.", "Dụng cụ dùng một lần (nùi chà chân, file giấy, buffer) — bỏ ngay trước mặt khách để khách thấy.", "Kềm, đẩy da, dụng cụ kim loại: ngâm khử trùng đủ thời gian rồi mới cất vào hộp xanh.", "Mỗi thợ có bộ dụng cụ riêng có ghi tên, không mượn chéo của nhau."]}]}, {"k": "vesinh", "t": "Vệ sinh & khử trùng dụng cụ", "i": "🧴", "ty": "checklist", "d": "Quy trình bắt buộc sau mỗi khách. Đây là thứ thanh tra kiểm tra đầu tiên.", "sec": [{"h": "Ngay sau khi khách đứng dậy", "r": ["Bỏ toàn bộ dụng cụ dùng một lần vào thùng rác", "Cho dụng cụ kim loại đã dùng vào HỘP ĐỎ", "Bỏ khăn đã dùng vào giỏ giặt có nắp", "Lau bàn, đèn, tay vịn ghế bằng dung dịch khử trùng", "Xả và cọ bồn ngâm chân, khử trùng bồn theo hướng dẫn", "Rửa tay bằng xà phòng trước khi nhận khách kế"]}, {"h": "Khử trùng dụng cụ kim loại", "r": ["Rửa sạch vụn bột và bụi bám trên dụng cụ", "Ngâm ngập hoàn toàn trong dung dịch khử trùng", "Ngâm đủ thời gian ghi trên chai — không rút ngắn", "Vớt ra, xả nước sạch, lau khô hoàn toàn", "Cất vào HỘP XANH LÁ đã đóng nắp", "Ghi ngày pha dung dịch lên chai; thay dung dịch theo đúng hạn"]}, {"h": "Cuối ngày", "r": ["Khử trùng toàn bộ dụng cụ còn trong hộp đỏ", "Cọ và khử trùng tất cả bồn ngâm chân", "Đổ rác, thay túi rác mới", "Lau sàn khu làm việc", "Kiểm tra và bổ sung vật tư cho ngày mai"]}]}, {"k": "donban", "t": "Dọn bàn sau mỗi khách", "i": "🧽", "ty": "checklist", "d": "Bảng ngắn dán tại bàn. Chưa xong bảng này thì chưa nhận khách kế.", "sec": [{"h": "6 bước bắt buộc", "r": ["Bỏ đồ dùng một lần vào rác", "Dụng cụ kim loại → hộp đỏ", "Khăn bẩn → giỏ giặt", "Lau bàn và tay vịn bằng khử trùng", "Trả chai sơn, cọ, đèn về đúng vị trí ban đầu", "Rửa tay trước khi nhận khách kế"]}, {"h": "Trả vật dụng về đúng khu vực", "r": ["Chai sơn về đúng kệ, đúng hàng màu — không để lộn hàng", "Cọ vẽ, dụng cụ nghệ thuật về hộp riêng của thợ", "Bột, gel, dung dịch đậy kín nắp trước khi cất", "Đèn UV/LED lau sạch bột, không để bột đóng trong lòng đèn", "Ghế đẩy về vị trí, dây điện gọn không vướng lối đi"]}]}, {"k": "mocua", "t": "Mở cửa & đóng cửa", "i": "🔑", "ty": "checklist", "d": "Ai trực ca đầu và ca cuối làm theo bảng này rồi ký tên.", "sec": [{"h": "Mở cửa", "r": ["Bật đèn, máy lạnh/sưởi, nhạc nền vừa nghe", "Bật máy hút mùi và quạt thông gió", "Kiểm tra bồn ngâm chân đã khử trùng từ tối qua", "Kiểm tra hộp xanh có đủ dụng cụ sạch cho ngày mới", "Bổ sung khăn sạch theo màu vào từng bàn", "Kiểm tra máy tính tiền, máy quẹt thẻ, hệ thống turn", "Kiểm tra và lau khu vực khách ngồi chờ, xếp lại tạp chí/nước", "Kiểm tra nhà vệ sinh: giấy, xà phòng, khăn lau tay"]}, {"h": "Đóng cửa", "r": ["Hoàn tất khử trùng toàn bộ dụng cụ trong hộp đỏ", "Cọ và khử trùng tất cả bồn ngâm chân", "Gom khăn bẩn đi giặt, sấy khô, xếp lại theo màu", "Đổ toàn bộ rác, thay túi mới", "Lau sàn, xếp ghế gọn", "Đối chiếu doanh thu ngày với hệ thống, khóa két", "Tắt đèn, máy lạnh, máy hút mùi, rút phích đèn UV", "Kiểm tra cửa sau, cửa trước, bật báo động, khóa cửa"]}]}, {"k": "sinhhoat", "t": "Khu sinh hoạt chung", "i": "🍱", "ty": "rules", "d": "Phòng ăn, lò vi sóng, tủ lạnh, nhà vệ sinh — nơi hay sinh mâu thuẫn nhất.", "sec": [{"h": "Phòng ăn & lò vi sóng", "r": ["Chỉ ăn trong phòng ăn. Không ăn tại bàn làm việc hoặc trước mặt khách.", "Hâm đồ ăn phải đậy nắp hoặc phủ khăn giấy để không văng bẩn lò.", "Hâm xong lau ngay bên trong lò nếu bị văng — người sau không phải dọn giùm.", "Không hâm món nặng mùi trong giờ đông khách (mắm, sầu riêng, cá khô).", "Ăn xong rửa chén ngay, không ngâm chén để đó.", "Bàn ăn lau sạch trước khi rời đi.", "Đồ ăn để tủ lạnh phải có tên và ngày; quá 3 ngày sẽ bị bỏ vào tối thứ Sáu."]}, {"h": "Nhà vệ sinh chung", "r": ["Giữ khô sàn, thấy ướt thì lau ngay.", "Hết giấy, hết xà phòng: báo lễ tân hoặc tự lấy bổ sung từ kho.", "Không để đồ cá nhân trong nhà vệ sinh.", "Không dùng khăn màu vàng (khăn nhà vệ sinh) cho bất kỳ việc gì khác.", "Nhà vệ sinh khách: kiểm tra mỗi 2 giờ, ký vào bảng kiểm tra treo sau cửa."]}, {"h": "Đồ cá nhân & tủ đồ", "r": ["Túi xách, áo khoác, giày để trong tủ đồ cá nhân, không để ở khu làm việc.", "Tiệm không chịu trách nhiệm về tiền mặt và tư trang để hớ hênh.", "Không để đồ cá nhân chiếm chỗ chung.", "Cuối ca mang đồ về, không để qua đêm trừ khi được cho phép."]}]}, {"k": "phannan", "t": "Xử lý khách phàn nàn", "i": "🙋", "ty": "rules", "d": "Có sẵn cách xử lý thì thợ không hoảng, khách không lớn tiếng.", "sec": [{"h": "5 bước xử lý tại chỗ", "r": ["Bước 1 — Nghe hết, không cắt lời, không thanh minh ngay.", "Bước 2 — Nhắc lại điều khách nói để khách biết mình đã hiểu đúng.", "Bước 3 — Xin lỗi về trải nghiệm của khách, không đổ lỗi cho thợ hay khách.", "Bước 4 — Gọi quản lý nếu khách đòi hoàn tiền, làm lại, hoặc lớn tiếng.", "Bước 5 — Ghi lại vào sổ: khách nào, chuyện gì, xử lý ra sao."]}, {"h": "Thẩm quyền", "r": ["Thợ: xin lỗi và sửa lại chi tiết nhỏ ngay tại chỗ (sơn lại 1 móng, chỉnh form).", "Lễ tân: xếp lịch làm lại miễn phí trong vòng 7 ngày.", "Chỉ quản lý mới được quyết định hoàn tiền hoặc giảm giá.", "Không thợ nào được tự hứa hoàn tiền với khách."]}, {"h": "Tuyệt đối tránh", "r": ["Cãi tay đôi với khách trước mặt khách khác.", "Nói xấu thợ đã làm cho khách đó.", "Nói tiếng Việt bàn về khách khi khách đang ngồi.", "Bỏ đi chỗ khác để khách đứng một mình."]}]}, {"k": "thomoi", "t": "Thợ mới — 7 ngày đầu", "i": "🌱", "ty": "checklist", "d": "Bảng cho quản lý dẫn thợ mới. Ký đủ mới coi là xong tập sự.", "sec": [{"h": "Ngày 1 — Giấy tờ & giới thiệu", "r": ["Ký Bản thỏa thuận làm việc, giao 1 bản cho thợ giữ", "Chụp lưu giấy phép hành nghề còn hiệu lực", "Đọc Nội quy lao động và xác nhận đã đọc trong hệ thống", "Dẫn đi một vòng: khu làm việc, kho, phòng ăn, nhà vệ sinh, tủ đồ", "Giới thiệu với cả tiệm; chỉ định thợ kèm"]}, {"h": "Ngày 1–2 — Hệ thống & quy trình", "r": ["Tạo hồ sơ thợ: tay nghề từng dịch vụ, tiếng Anh, số Viber", "Hướng dẫn quét QR check-in và cách hàng turn hoạt động", "Học Quy ước khăn & vật dụng theo màu", "Học quy trình Dọn bàn sau mỗi khách — làm thử 1 lần có người xem", "Học quy trình khử trùng dụng cụ — làm thử 1 lần có người xem"]}, {"h": "Ngày 3–7 — Vào việc", "r": ["Làm khách có thợ kèm ngồi cạnh 2 khách đầu", "Quản lý xem lại 3 bộ móng đầu tiên và góp ý", "Kiểm tra thợ mới có dọn bàn đúng quy trình không (kiểm bất chợt)", "Ngày 7: quản lý chấm tay nghề, tiếng Anh, phục vụ vào hệ thống", "Ngày 7: nói rõ điều làm tốt và điều cần sửa"]}]}];
+var RULE_BANK = [{"s": "Trước khi đến tiệm", "t": "Xem lịch làm việc và lịch hẹn của mình trước 8 giờ tối hôm trước.", "w": {}}, {"s": "Trước khi đến tiệm", "t": "Xin nghỉ báo trước ít nhất 24 giờ. Nghỉ đột xuất phải gọi trực tiếp quản lý, không nhắn tin rồi thôi.", "w": {}}, {"s": "Trước khi đến tiệm", "t": "Xin nghỉ báo trước ít nhất 48 giờ; cuối tuần và ngày lễ báo trước 1 tuần.", "w": {"strict": ["hard"]}}, {"s": "Trước khi đến tiệm", "t": "Đi trễ báo trước ít nhất 30 phút để lễ tân xếp lại turn cho tiệm.", "w": {}}, {"s": "Trước khi đến tiệm", "t": "Có mặt trước giờ mở cửa 10 phút để dọn bàn và chuẩn bị dụng cụ.", "w": {}}, {"s": "Trước khi đến tiệm", "t": "Có mặt trước giờ mở cửa 20 phút; tiệm đông nên cần đủ người ngay khi mở.", "w": {"size": ["lg"]}}, {"s": "Trước khi đến tiệm", "t": "Trang phục theo quy định của tiệm, gọn gàng, giày kín mũi.", "w": {"strict": ["mid", "hard"]}}, {"s": "Trước khi đến tiệm", "t": "Đồng phục và bảng tên bắt buộc trong suốt ca làm.", "w": {"svc": ["spa"]}}, {"s": "Check-in và thứ tự turn", "t": "Quét mã QR check-in ngay khi tới tiệm. Chưa check-in là chưa vào hàng chia turn.", "w": {}}, {"s": "Check-in và thứ tự turn", "t": "Thứ tự turn tính theo giờ check-in — ai tới trước đứng trước.", "w": {}}, {"s": "Check-in và thứ tự turn", "t": "Đi ăn hoặc có việc riêng phải bấm tạm nghỉ; quay lại bấm có mặt để vào lại hàng.", "w": {}}, {"s": "Check-in và thứ tự turn", "t": "Không tự đổi turn với nhau khi chưa hỏi lễ tân.", "w": {}}, {"s": "Check-in và thứ tự turn", "t": "Check-in hộ người khác là vi phạm nặng, xử lý ngay lần đầu.", "w": {"strict": ["mid", "hard"]}}, {"s": "Check-in và thứ tự turn", "t": "Khách walk-in đông: giữ máy bên mình để nghe thông báo tới lượt.", "w": {"flow": ["walk", "both"]}}, {"s": "Check-in và thứ tự turn", "t": "Khách có hẹn được ưu tiên đúng giờ hẹn, thợ đang rảnh phải sẵn sàng nhận.", "w": {"flow": ["appt", "both"]}}, {"s": "Trong giờ làm việc", "t": "Dọn sạch bàn sau mỗi khách, trước khi nhận khách kế.", "w": {}}, {"s": "Trong giờ làm việc", "t": "Khử trùng dụng cụ đúng quy định — đây là điều kiện giữ giấy phép của tiệm.", "w": {}}, {"s": "Trong giờ làm việc", "t": "Không rời tiệm trong giờ làm mà không báo quản lý.", "w": {}}, {"s": "Trong giờ làm việc", "t": "Đang có khách chờ thì không ngồi không — hỏi lễ tân xem cần phụ gì.", "w": {"flow": ["walk", "both"]}}, {"s": "Trong giờ làm việc", "t": "Ghi đúng dịch vụ đã làm vào ticket ngay khi xong, không để dồn cuối ngày.", "w": {}}, {"s": "Trong giờ làm việc", "t": "Đeo khẩu trang và bật hút bụi khi làm bột, dũa, hoặc dùng hóa chất mạnh.", "w": {}}, {"s": "Trong giờ làm việc", "t": "Kiểm tra dị ứng và tình trạng móng của khách trước khi làm waxing hoặc hóa chất.", "w": {"svc": ["wax"]}}, {"s": "Trong giờ làm việc", "t": "Trẻ em phải có người lớn đi kèm ngồi cạnh trong suốt buổi làm.", "w": {"svc": ["kid"]}}, {"s": "Trong giờ làm việc", "t": "Giữ không gian yên tĩnh: nói nhỏ, không mở nhạc riêng, không gọi nhau qua phòng.", "w": {"svc": ["spa"]}}, {"s": "Ăn uống và nghỉ ngơi", "t": "Ăn ở khu vực dành riêng. Không ăn tại bàn làm việc hoặc trước mặt khách.", "w": {}}, {"s": "Ăn uống và nghỉ ngơi", "t": "Giờ ăn xoay ca để tiệm luôn có thợ. Báo lễ tân trước khi đi ăn.", "w": {}}, {"s": "Ăn uống và nghỉ ngơi", "t": "Nước uống phải có nắp đậy mới được để ở bàn làm việc.", "w": {}}, {"s": "Ăn uống và nghỉ ngơi", "t": "Nghỉ giữa ca tối đa 30 phút; quá giờ phải báo quản lý.", "w": {"strict": ["mid", "hard"]}}, {"s": "Ăn uống và nghỉ ngơi", "t": "Tiệm đông: tối đa 2 thợ đi ăn cùng lúc, lễ tân duyệt trước.", "w": {"size": ["lg"]}}, {"s": "Ăn uống và nghỉ ngơi", "t": "Không mang đồ ăn nặng mùi vào khu vực khách ngồi.", "w": {}}, {"s": "Giao tiếp với khách", "t": "Chào khách khi khách bước vào, kể cả không phải khách của mình.", "w": {}}, {"s": "Giao tiếp với khách", "t": "Không bàn chuyện giá cả, tiền tip, hay chuyện nội bộ tiệm với khách.", "w": {}}, {"s": "Giao tiếp với khách", "t": "Khách không hài lòng: báo quản lý ngay, tuyệt đối không tranh cãi với khách.", "w": {}}, {"s": "Giao tiếp với khách", "t": "Không hứa với khách những gì ngoài thẩm quyền (giảm giá, làm thêm miễn phí).", "w": {}}, {"s": "Giao tiếp với khách", "t": "Nói tiếng Anh khi phục vụ khách nước ngoài. Hạn chế nói chuyện riêng bằng tiếng Việt trước mặt khách.", "w": {"en": ["high"]}}, {"s": "Giao tiếp với khách", "t": "Không nói tiếng Việt về khách khi khách đang ngồi — dù khách không hiểu.", "w": {"en": ["high"]}}, {"s": "Giao tiếp với khách", "t": "Hỏi lại khách về mẫu, độ dài, màu trước khi bắt đầu để tránh làm lại.", "w": {}}, {"s": "Giao tiếp với khách", "t": "Tư vấn thêm dịch vụ là được, nhưng khách từ chối một lần thì dừng.", "w": {"svc": ["retail"]}}, {"s": "Giao tiếp với khách", "t": "Giới thiệu sản phẩm bán lẻ đúng nhu cầu khách, không ép mua.", "w": {"svc": ["retail"]}}, {"s": "Giao tiếp với đồng nghiệp, lễ tân, quản lý", "t": "Thắc mắc về turn: hỏi lễ tân trước. Không cãi nhau trước mặt khách.", "w": {}}, {"s": "Giao tiếp với đồng nghiệp, lễ tân, quản lý", "t": "Vẫn còn bất đồng: gặp riêng quản lý lúc vắng khách hoặc sau giờ làm.", "w": {}}, {"s": "Giao tiếp với đồng nghiệp, lễ tân, quản lý", "t": "Không nói xấu tay nghề đồng nghiệp với khách hoặc với thợ khác.", "w": {}}, {"s": "Giao tiếp với đồng nghiệp, lễ tân, quản lý", "t": "Nhận khách từ lễ tân. Không tự nhận khách khi chưa được giao.", "w": {}}, {"s": "Giao tiếp với đồng nghiệp, lễ tân, quản lý", "t": "Phụ nhau lúc đông khách — tiệm chạy được thì turn ai cũng nhiều hơn.", "w": {"size": ["md", "lg"]}}, {"s": "Giao tiếp với đồng nghiệp, lễ tân, quản lý", "t": "Thợ mới có thợ kèm trong tháng đầu; thợ kèm chịu trách nhiệm chất lượng.", "w": {"size": ["md", "lg"]}}, {"s": "Điện thoại và mạng xã hội", "t": "Không dùng điện thoại khi đang làm khách.", "w": {}}, {"s": "Điện thoại và mạng xã hội", "t": "Chụp hình tác phẩm phải xin phép khách trước.", "w": {}}, {"s": "Điện thoại và mạng xã hội", "t": "Không quay/chụp khách hoặc chuyện nội bộ tiệm để đăng lên mạng.", "w": {}}, {"s": "Điện thoại và mạng xã hội", "t": "Điện thoại để chế độ rung trong suốt ca làm.", "w": {"strict": ["mid", "hard"]}}, {"s": "Điện thoại và mạng xã hội", "t": "Không nhận khách riêng hoặc đưa số cá nhân cho khách của tiệm.", "w": {"strict": ["hard"]}}, {"s": "Tiền tip và thanh toán", "t": "Mọi thanh toán đi qua quầy. Không nhận tiền trực tiếp từ khách.", "w": {}}, {"s": "Tiền tip và thanh toán", "t": "Tip là của thợ làm khách đó, tiệm không giữ.", "w": {}}, {"s": "Tiền tip và thanh toán", "t": "Không gợi ý hay xin tip từ khách.", "w": {}}, {"s": "Tiền tip và thanh toán", "t": "Tip chia theo tỷ lệ đã thỏa thuận khi nhiều thợ cùng làm một khách.", "w": {"size": ["md", "lg"]}}, {"s": "Vi phạm và xử lý", "t": "Lần 1 nhắc miệng, lần 2 ghi nhận, lần 3 xét lại vị trí làm việc.", "w": {"strict": ["soft", "mid"]}}, {"s": "Vi phạm và xử lý", "t": "Lần 1 ghi nhận bằng văn bản, lần 2 xét lại vị trí làm việc.", "w": {"strict": ["hard"]}}, {"s": "Vi phạm và xử lý", "t": "Vi phạm nặng xử lý ngay: bỏ khách giữa chừng, cãi nhau trước mặt khách, gian lận turn, vi phạm vệ sinh.", "w": {}}, {"s": "Vi phạm và xử lý", "t": "Nội quy có thể được cập nhật; thợ phải đọc và xác nhận bản mới trong vòng 3 ngày.", "w": {}}];
+var HB_PRESETS = [
+  {k:'std', n:'Tiệm nail tiêu chuẩn', d:'Bản cân bằng, hợp hầu hết tiệm 6–15 thợ.',
+   a:{size:'md',flow:'both',en:'high',svc:[],strict:'mid'}},
+  {k:'sm', n:'Tiệm nhỏ 3–6 thợ', d:'Gọn, ít điều, thoải mái hơn.',
+   a:{size:'sm',flow:'both',en:'low',svc:[],strict:'soft'}},
+  {k:'lg', n:'Tiệm lớn, đông walk-in', d:'Chặt chẽ hơn: ca kíp, hàng chờ, kèm thợ mới.',
+   a:{size:'lg',flow:'walk',en:'high',svc:[],strict:'hard'}},
+  {k:'spa', n:'Nail & Spa cao cấp', d:'Thêm chuẩn phục vụ, đồng phục, giữ yên tĩnh.',
+   a:{size:'md',flow:'appt',en:'high',svc:['spa','wax','retail'],strict:'hard'}}
+];
+function hbMatch(w,a){
+  if(w.size && w.size.indexOf(a.size)<0) return false;
+  if(w.flow && w.flow.indexOf(a.flow)<0) return false;
+  if(w.en   && w.en.indexOf(a.en)<0) return false;
+  if(w.strict && w.strict.indexOf(a.strict)<0) return false;
+  if(w.svc){ var ok=false; w.svc.forEach(function(x){ if((a.svc||[]).indexOf(x)>=0) ok=true; }); if(!ok) return false; }
+  return true;
+}
+function hbBuild(a){
+  var order=[], map={};
+  RULE_BANK.forEach(function(r){
+    if(!hbMatch(r.w,a)) return;
+    if(!map[r.s]){ map[r.s]=[]; order.push(r.s); }
+    map[r.s].push(r.t);
+  });
+  return order.map(function(t,i){ return {id:i+1,title:t,rules:map[t]}; });
+}
+
+var HB_TPL = [{"t": "Trước khi đến tiệm", "r": ["Xem lịch làm việc và lịch hẹn của mình trước 8 giờ tối hôm trước.", "Xin nghỉ báo trước ít nhất 24 giờ. Nghỉ đột xuất phải gọi trực tiếp quản lý, không nhắn tin rồi thôi.", "Đi trễ báo trước ít nhất 30 phút để lễ tân xếp lại turn cho tiệm.", "Có mặt trước giờ mở cửa 10 phút để dọn bàn và chuẩn bị dụng cụ."]}, {"t": "Check-in và thứ tự turn", "r": ["Quét mã QR check-in ngay khi tới tiệm. Chưa check-in là chưa vào hàng chia turn.", "Thứ tự turn tính theo giờ check-in — ai tới trước đứng trước.", "Đi ăn hoặc có việc riêng phải bấm tạm nghỉ; quay lại bấm có mặt để vào lại hàng.", "Không tự đổi turn với nhau khi chưa hỏi lễ tân."]}, {"t": "Trong giờ làm việc", "r": ["Dọn sạch bàn sau mỗi khách, trước khi nhận khách kế.", "Khử trùng dụng cụ đúng quy định — đây là điều kiện giữ giấy phép của tiệm.", "Không rời tiệm trong giờ làm mà không báo quản lý.", "Đang có khách chờ thì không ngồi không — hỏi lễ tân xem cần phụ gì."]}, {"t": "Ăn uống và nghỉ ngơi", "r": ["Ăn ở khu vực dành riêng. Không ăn tại bàn làm việc hoặc trước mặt khách.", "Giờ ăn xoay ca để tiệm luôn có thợ. Báo lễ tân trước khi đi ăn.", "Nước uống phải có nắp đậy mới được để ở bàn làm việc.", "Nghỉ giữa ca tối đa theo quy định của tiệm; quá giờ phải báo."]}, {"t": "Giao tiếp với khách", "r": ["Chào khách khi khách bước vào, kể cả không phải khách của mình.", "Nói tiếng Anh khi phục vụ khách nước ngoài. Hạn chế nói chuyện riêng bằng tiếng Việt trước mặt khách.", "Không bàn chuyện giá cả, tiền tip, hay chuyện nội bộ tiệm với khách.", "Khách không hài lòng: báo quản lý ngay, tuyệt đối không tranh cãi với khách.", "Không hứa với khách những gì ngoài thẩm quyền (giảm giá, làm thêm miễn phí)."]}, {"t": "Giao tiếp với đồng nghiệp, lễ tân, quản lý", "r": ["Thắc mắc về turn: hỏi lễ tân trước. Không cãi nhau trước mặt khách.", "Vẫn còn bất đồng: gặp riêng quản lý lúc vắng khách hoặc sau giờ làm.", "Không nói xấu tay nghề đồng nghiệp với khách hoặc với thợ khác.", "Nhận khách từ lễ tân. Không tự nhận khách khi chưa được giao.", "Phụ nhau lúc đông khách — tiệm chạy được thì turn ai cũng nhiều hơn."]}, {"t": "Điện thoại và mạng xã hội", "r": ["Không dùng điện thoại khi đang làm khách.", "Chụp hình tác phẩm phải xin phép khách trước.", "Không quay/chụp khách hoặc chuyện nội bộ tiệm để đăng lên mạng."]}, {"t": "Tiền tip và thanh toán", "r": ["Mọi thanh toán đi qua quầy. Không nhận tiền trực tiếp từ khách.", "Tip là của thợ làm khách đó, tiệm không giữ.", "Không gợi ý hay xin tip từ khách."]}, {"t": "Vi phạm và xử lý", "r": ["Lần 1 nhắc miệng, lần 2 ghi nhận, lần 3 xét lại vị trí làm việc.", "Vi phạm nặng xử lý ngay: bỏ khách giữa chừng, cãi nhau trước mặt khách, gian lận turn, vi phạm vệ sinh."]}];
+var hbEdit=false, hbDoc=null;
+function defHB(a){
+  a = a || {size:'md',flow:'both',en:'high',svc:[],strict:'mid'};
+  var docs = SOP_DOCS.map(function(d){
+    return {key:d.k, title:d.t, icon:d.i, type:d.ty, desc:d.d, auto:!!d.auto, ver:1, at:hbDate(),
+      sections: d.k==='noiquy' ? hbBuild(a)
+        : d.sec.map(function(x,i){return {id:i+1,title:x.h,rules:x.r.slice()};})};
+  });
+  return {shop:'Bộ tiêu chuẩn vận hành', ver:1, at:hbDate(), answers:a, docs:docs, sections:[]};
+}
+function curDoc(){ return state.handbook.docs.filter(function(d){return d.key===hbDoc;})[0]||null; }
+function hbDate(){var d=new Date();return String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0')+'/'+d.getFullYear();}
+function hbTouch(){ state.handbook.ver++; state.handbook.at=hbDate(); }
+function openHB(){
+  if(!state.handbook){ document.getElementById('ovHB').classList.add('on'); openHBNew(); return; }
+  if(!state.handbook.docs){ state.handbook=defHB(state.handbook.answers); save(); }
+  hbDoc=null; hbEdit=false; renderHB(); document.getElementById('ovHB').classList.add('on');
+}
+var hbnA={size:'md',flow:'both',en:'high',svc:[],strict:'mid'};
+function openHBNew(){ hbnStep='pick'; renderHBNew(); document.getElementById('ovHBNew').classList.add('on'); }
+function closeHBNew(){ document.getElementById('ovHBNew').classList.remove('on');
+  if(!state.handbook) document.getElementById('ovHB').classList.remove('on'); }
+var hbnStep='pick';
+function hbnGo(st){ hbnStep=st; renderHBNew(); }
+function hbnSet(k,v){
+  if(k==='svc'){ var i=hbnA.svc.indexOf(v); if(i<0) hbnA.svc.push(v); else hbnA.svc.splice(i,1); }
+  else hbnA[k]=v;
+  renderHBNew();
+}
+function hbnApply(sections,a){
+  var keepShop = state.handbook?state.handbook.shop:'Bộ tiêu chuẩn vận hành';
+  var hb=defHB(a);
+  hb.shop=keepShop;
+  hb.ver=(state.handbook?state.handbook.ver+1:1);
+  if(sections) hb.docs[0].sections=sections;
+  state.handbook=hb;
+  closeHBNew(); hbDoc=null; hbEdit=false; renderHB();
+  document.getElementById('ovHB').classList.add('on'); save();
+}
+function hbnUsePreset(k){
+  var p=HB_PRESETS.filter(function(x){return x.k===k;})[0]; if(!p) return;
+  if(!state.handbook){ hbnApply(hbBuild(p.a), p.a); return; }
+  var n=state.handbook.docs?state.handbook.docs.length:0;
+  var tot=state.handbook.docs?state.handbook.docs.reduce(function(m,d){return m+d.sections.reduce(function(x,y){return x+y.rules.length;},0);},0):0;
+  askDanger({icon:'📋', title:'Thay toàn bộ bằng mẫu "'+p.n+'"?',
+    desc:'Mọi chỉnh sửa riêng của tiệm sẽ bị ghi đè.',
+    loseTitle:'Sẽ ghi đè',
+    lose:[['Tài liệu hiện có',n+' tài liệu'],['Tổng số điều',tot+' điều'],['Dấu đã đọc của thợ','hết hiệu lực']],
+    yes:'Thay bằng mẫu mới', no:'Không, giữ bản hiện tại',
+    ok:function(){ hbnApply(hbBuild(p.a), p.a); }});
+}
+function hbnGenerate(){
+  var go=function(){ hbnApply(hbBuild(hbnA), JSON.parse(JSON.stringify(hbnA))); };
+  if(!state.handbook){ go(); return; }
+  var n=state.handbook.docs?state.handbook.docs.length:0;
+  var tot=state.handbook.docs?state.handbook.docs.reduce(function(m,d){return m+d.sections.reduce(function(x,y){return x+y.rules.length;},0);},0):0;
+  askDanger({icon:'✨', title:'Tạo lại toàn bộ bộ tiêu chuẩn?',
+    desc:'Bản mới thay hết bản hiện tại. Mọi điều tiệm tự thêm sẽ mất.',
+    loseTitle:'Sẽ ghi đè',
+    lose:[['Tài liệu hiện có',n+' tài liệu'],['Tổng số điều',tot+' điều'],['Dấu đã đọc của thợ','hết hiệu lực']],
+    yes:'Tạo lại từ đầu', no:'Không, giữ bản hiện tại', ok:go});
+}
+function hbnBlank(){
+  var go=function(){ hbnApply([{id:1,title:'Mục 1',rules:[]}], hbnA); };
+  if(!state.handbook){ go(); return; }
+  var tot=state.handbook.docs?state.handbook.docs.reduce(function(m,d){return m+d.sections.reduce(function(x,y){return x+y.rules.length;},0);},0):0;
+  askDanger({icon:'📄', title:'Bắt đầu từ trang trắng?',
+    desc:'Xóa sạch bộ tiêu chuẩn hiện tại, chỉ còn một trang trống để tự viết.',
+    loseTitle:'Sẽ mất', lose:[['Tổng số điều đang có',tot+' điều'],['Mẫu viết sẵn','mất hết, phải tự gõ lại']],
+    note:'Muốn giữ mẫu rồi sửa thì chọn "Dùng mẫu có sẵn" thay vì trang trắng.',
+    yes:'Xóa hết, tự viết', no:'Không, giữ lại', ok:go});
+}
+function optRow(k,v,label,cur){
+  return '<button type="button" class="pick'+(cur===v?' on':'')+'" style="--c:var(--brand)" onclick="hbnSet(\''+k+'\',\''+v+'\')">'+label+'</button>';
+}
+function renderHBNew(){
+  var h='';
+  if(hbnStep==='pick'){
+    h='<div class="hbpick">'
+      +'<button class="hbcard" onclick="hbnGo(\'tpl\')"><b>📋 Dùng mẫu có sẵn</b>'
+        +'<span>4 mẫu viết sẵn cho tiệm nail: nhỏ, tiêu chuẩn, đông walk-in, spa cao cấp.</span></button>'
+      +'<button class="hbcard" onclick="hbnGo(\'gen\')"><b>✨ Tạo riêng cho tiệm của bạn</b>'
+        +'<span>Trả lời 5 câu, hệ thống lắp bản nội quy hợp quy mô và cách vận hành của tiệm.</span></button>'
+      +'<button class="hbcard" onclick="hbnBlank()"><b>✎ Tự viết từ đầu</b>'
+        +'<span>Trang trắng, tự thêm mục và từng điều.</span></button>'
+      +'</div>'
+      +'<div class="mb"><button class="no" onclick="closeHBNew()">Đóng</button></div>';
+  } else if(hbnStep==='tpl'){
+    h='<div class="hbpick">';
+    HB_PRESETS.forEach(function(p){
+      var n=hbBuild(p.a).reduce(function(m,x){return m+x.rules.length;},0);
+      h+='<button class="hbcard" onclick="hbnUsePreset(\''+p.k+'\')"><b>'+esc(p.n)+'</b><span>'+esc(p.d)
+        +'</span><span class="src">'+hbBuild(p.a).length+' mục · '+n+' điều</span></button>';
+    });
+    h+='</div><div class="mb"><button class="no" onclick="hbnGo(\'pick\')">← Quay lại</button></div>';
+  } else {
+    var a=hbnA;
+    var n=hbBuild(a), tot=n.reduce(function(m,x){return m+x.rules.length;},0);
+    h='<label>Tiệm bao nhiêu thợ</label><div class="picks">'
+      +optRow('size','sm','Dưới 6',a.size)+optRow('size','md','6 – 15',a.size)+optRow('size','lg','Trên 15',a.size)+'</div>'
+      +'<label>Khách chủ yếu</label><div class="picks">'
+      +optRow('flow','walk','Walk-in',a.flow)+optRow('flow','appt','Hẹn trước',a.flow)+optRow('flow','both','Cả hai',a.flow)+'</div>'
+      +'<label>Khách nước ngoài / cần tiếng Anh</label><div class="picks">'
+      +optRow('en','low','Ít',a.en)+optRow('en','high','Nhiều',a.en)+'</div>'
+      +'<label>Tiệm có thêm dịch vụ nào</label><div class="picks">'
+      +'<button type="button" class="pick'+(a.svc.indexOf('kid')>=0?' on':'')+'" style="--c:var(--brand)" onclick="hbnSet(\'svc\',\'kid\')">Trẻ em</button>'
+      +'<button type="button" class="pick'+(a.svc.indexOf('wax')>=0?' on':'')+'" style="--c:var(--brand)" onclick="hbnSet(\'svc\',\'wax\')">Waxing</button>'
+      +'<button type="button" class="pick'+(a.svc.indexOf('spa')>=0?' on':'')+'" style="--c:var(--brand)" onclick="hbnSet(\'svc\',\'spa\')">Spa / massage</button>'
+      +'<button type="button" class="pick'+(a.svc.indexOf('retail')>=0?' on':'')+'" style="--c:var(--brand)" onclick="hbnSet(\'svc\',\'retail\')">Bán lẻ sản phẩm</button>'
+      +'</div>'
+      +'<label>Mức độ chặt chẽ</label><div class="picks">'
+      +optRow('strict','soft','Nhẹ nhàng',a.strict)+optRow('strict','mid','Cân bằng',a.strict)+optRow('strict','hard','Nghiêm',a.strict)+'</div>'
+      +'<div class="sum" style="display:block"><div class="sumhd">Bản sẽ tạo</div>'
+      +'<div class="sumline"><span>'+n.length+' mục · <b>'+tot+' điều</b></span>'
+      +'<span class="src">'+n.map(function(x){return esc(x.title);}).slice(0,3).join(' · ')+'…</span></div></div>'
+      +'<div class="mb"><button class="no" onclick="hbnGo(\'pick\')">← Quay lại</button>'
+      +'<button class="ok" onclick="hbnGenerate()">Tạo nội quy</button></div>';
+  }
+  document.getElementById('hbnStep').innerHTML=h;
+}
+function closeHB(){ document.getElementById('ovHB').classList.remove('on'); }
+function hbToggleEdit(){ hbEdit=!hbEdit; renderHB(); }
+function hbAddRule(sid){
+  var d=curDoc(); if(!d) return;
+  var el=document.getElementById('hbin'+sid); var v=el.value.trim(); if(!v) return;
+  var sec=d.sections.filter(function(x){return x.id===sid;})[0]; if(!sec) return;
+  sec.rules.push(v); el.value=''; hbTouch(); save(); renderHB();
+  setTimeout(function(){var e2=document.getElementById('hbin'+sid); if(e2) e2.focus();},30);
+}
+var hbTrash=null;
+function hbDelRule(sid,i){
+  var d=curDoc(); if(!d) return;
+  var sec=d.sections.filter(function(x){return x.id===sid;})[0]; if(!sec) return;
+  hbTrash={doc:d.key, sid:sid, i:i, text:sec.rules[i]};
+  sec.rules.splice(i,1); hbTouch(); save(); renderHB();
+}
+function hbUndoDel(){
+  if(!hbTrash) return;
+  var d=state.handbook.docs.filter(function(x){return x.key===hbTrash.doc;})[0]; if(!d) return;
+  var sec=d.sections.filter(function(x){return x.id===hbTrash.sid;})[0]; if(!sec) return;
+  sec.rules.splice(hbTrash.i,0,hbTrash.text); hbTrash=null; save(); renderHB();
+}
+function hbAddSec(){
+  var d=curDoc(); if(!d) return;
+  var t=prompt('Tên mục mới:',''); if(!t) return;
+  var id=d.sections.reduce(function(m,x){return Math.max(m,x.id);},0)+1;
+  d.sections.push({id:id,title:t.trim(),rules:[]}); hbTouch(); save(); renderHB();
+}
+function hbDelSec(sid){
+  var d=curDoc(); if(!d) return;
+  var sec=d.sections.filter(function(x){return x.id===sid;})[0]; if(!sec) return;
+  askDanger({icon:'📑', title:'Xóa mục "'+sec.title+'"?',
+    desc:'Xóa cả mục và toàn bộ điều bên trong.',
+    loseTitle:'Sẽ mất', lose:[['Số điều trong mục',sec.rules.length+' điều']],
+    note:sec.rules.length>3?'Mục này khá dài — chắc chắn muốn xóa hết?':'',
+    yes:'Xóa mục này', no:'Không xóa',
+    ok:function(){ d.sections=d.sections.filter(function(x){return x.id!==sid;}); hbTouch(); save(); renderHB(); }});
+}
+function hbRenameSec(sid){
+  var d=curDoc(); if(!d) return;
+  var sec=d.sections.filter(function(x){return x.id===sid;})[0]; if(!sec) return;
+  var t=prompt('Đổi tên mục:',sec.title); if(t===null) return;
+  sec.title=t.trim()||sec.title; hbTouch(); save(); renderHB();
+}
+function hbSetShop(){
+  var t=prompt('Tên tiệm:',state.handbook.shop); if(t===null) return;
+  state.handbook.shop=t.trim()||state.handbook.shop; save(); renderHB();
+}
+function hbAck(tid){
+  var w=tech(tid); if(!w) return;
+  w.ack={at:hbDate(), ver:state.handbook.ver}; save(); renderHB();
+}
+function hbTouch(){
+  var d=curDoc(); if(d){ d.ver++; d.at=hbDate(); }
+  state.handbook.ver++; state.handbook.at=hbDate();
+}
+function hbOpenDoc(k){ hbDoc=k; hbEdit=false; renderHB(); window.scrollTo(0,0);
+  document.getElementById('ovHB').scrollTop=0; }
+function hbBackLib(){ hbDoc=null; hbEdit=false; renderHB(); }
+function hbAddDoc(){
+  var t=prompt('Tên tài liệu mới:',''); if(!t) return;
+  var k='c'+Date.now();
+  state.handbook.docs.push({key:k,title:t.trim(),icon:'📄',type:'rules',desc:'Tài liệu tự thêm',
+    auto:false,ver:1,at:hbDate(),sections:[{id:1,title:'Mục 1',rules:[]}]});
+  save(); hbOpenDoc(k); hbEdit=true; renderHB();
+}
+function hbDelDoc(k){
+  var d=state.handbook.docs.filter(function(x){return x.key===k;})[0]; if(!d) return;
+  var tot=d.sections.reduce(function(m,x){return m+x.rules.length;},0);
+  askDanger({icon:'📕', title:'Xóa tài liệu "'+d.title+'"?',
+    desc:'Cả tài liệu biến mất khỏi bộ tiêu chuẩn của tiệm.',
+    loseTitle:'Sẽ mất', lose:[['Số mục',d.sections.length+' mục'],['Tổng số điều',tot+' điều']],
+    note:'Không lấy lại được. Nếu chỉ tạm không dùng, cứ để đó — không ai bắt buộc phải đọc hết.',
+    yes:'Xóa tài liệu', no:'Không xóa',
+    ok:function(){ state.handbook.docs=state.handbook.docs.filter(function(x){return x.key!==k;});
+      hbDoc=null; save(); renderHB(); }});
+}
+/* luat turn sinh tu cau hinh */
+function hbTurnRules(){
+  var c=state.config, out=[];
+  out.push('Cách tính turn: '+ruleMain(c)+'.');
+  out.push('Khách chỉ định thợ: '+ruleSpec(c.requestRule,tx('sp_req'))+'.');
+  out.push('Khách hẹn trước: '+ruleSpec(c.apptRule,tx('sp_appt'))+'.');
+  out.push('Thợ phải check-in mới vào hàng chia turn. Ai check-in trước đứng trước; bằng số turn thì xét giờ check-in.');
+  var am=(AUTO_MODES.filter(function(m){return m.v===(c.autoMode||'fair');})[0]||AUTO_MODES[0]);
+  out.push('Khi máy tự xếp thợ: '+am.b.toLowerCase()+'.');
+  out.push('Lễ tân giao vượt lượt được khi khách cần thợ chuyên, nhưng hệ thống ghi lại để đối chiếu.');
+  out.push('Đầu ngày mới mọi turn tự về 0.');
+  return out;
+}
+function typeTag(t){
+  if(t==='checklist') return '<span class="tag ck">danh sách kiểm tra</span>';
+  if(t==='agreement') return '<span class="tag ag">giấy ký</span>';
+  return '<span class="tag">quy định</span>';
+}
+function cusBadge(c){
+  var g=Number(state.config.apptGrace||10);
+  if(c.status==='serving') return '<span class="eta ok">'+tx('eta_serving')+'</span>';
+  if(c.appt){
+    var t=parseHHMM(c.appt), d=Math.round((t-nowMs())/60000);
+    if(d>0) return '<span class="eta wait">'+tx('eta_appt')+' '+esc(c.appt)+' · '+tx('eta_left')+' '+d+' '+tx('eta_min')+'</span>';
+    var late=-d;
+    if(late<=g) return '<span class="eta soon">'+tx('eta_due')+' '+esc(c.appt)+(late?' · '+tx('eta_late')+' '+late+' '+tx('eta_min'):'')+'</span>';
+    return '<span class="eta late">'+tx('eta_over')+' '+late+' '+tx('eta_change')+'</span>';
+  }
+  var f=waitFor(c);
+  if(f===null) return '<span class="eta">'+tx('eta_noteach')+'</span>';
+  var m=minsLeft(f);
+  if(m<=0) return '<span class="eta ok">'+tx('eta_now')+'</span>';
+  return '<span class="eta wait">'+tx('eta_wait')+m+' '+tx('eta_min')+'</span>';
+}
+function techEta(w){
+  if(!busyNow(w)) return '';
+  var m=minsLeft(w.busyUntil);
+  return '<span class="eta">'+tx('eta_rem')+' '+m+' '+tx('eta_min')+' · '+tx('eta_end')+clockOf(w.busyUntil)+'</span>';
+}
+function renderHB(){
+  var hb=state.handbook;
+  var d=curDoc();
+  var eb=document.getElementById('hbEditBtn');
+
+  if(!d){
+    document.getElementById('hbName').innerHTML = esc(hb.shop)
+      +' <button class="ackb" onclick="hbSetShop()">đổi tên</button>';
+    document.getElementById('hbMeta').textContent =
+      hb.docs.length+' tài liệu · cập nhật '+hb.at+' · bấm vào một tài liệu để đọc hoặc sửa';
+    eb.style.display='none';
+    var h='<div class="doclist">';
+    hb.docs.forEach(function(x){
+      var n=x.sections.reduce(function(m,y){return m+y.rules.length;},0);
+      h+='<button class="doc" onclick="hbOpenDoc(\''+x.key+'\')">'
+        +'<span class="docic">'+x.icon+'</span><b>'+esc(x.title)+'</b>'
+        +'<span class="dd">'+esc(x.desc||'')+'</span>'
+        +'<span class="dm">'+typeTag(x.type)+(x.auto?'<span class="tag au">tự đồng bộ</span>':'')
+        +'<span>'+x.sections.length+' mục · '+n+' điều</span></span></button>';
+    });
+    h+='</div><div style="margin-top:14px"><button class="btn" onclick="hbAddDoc()">+ Thêm tài liệu</button></div>';
+
+    // xac nhan da doc
+    h+='<div class="hbsec" style="margin-top:22px"><div class="hbh"><span class="hbn">✓</span><h3>Thợ đã đọc bộ tiêu chuẩn</h3></div>'
+      +'<div class="why" style="margin-left:0">Sửa bất kỳ tài liệu nào thì dấu xác nhận cũ hết hiệu lực — thợ phải đọc lại.</div>'
+      +'<div class="ackgrid">';
+    state.techs.slice().sort(function(a,b){return a.order-b.order;}).forEach(function(w){
+      var a=w.ack;
+      var st = !a ? '<button class="ackb" onclick="hbAck('+w.id+')">đánh dấu đã đọc</button>'
+        : (a.ver===hb.ver ? '<span class="ackok">✓ '+esc(a.at)+'</span>'
+                          : '<button class="ackb" onclick="hbAck('+w.id+')">đọc lại bản mới</button>');
+      var old2 = (a && a.ver!==hb.ver) ? '<span class="ackold">bản cũ</span>' : '';
+      h+='<div class="ackr"><span class="an2">'+esc(w.name)+'</span>'+old2+st+'</div>';
+    });
+    h+='</div></div>';
+    document.getElementById('hbBody').innerHTML=h;
+    return;
+  }
+
+  // ----- doc view -----
+  eb.style.display='';
+  eb.textContent = hbEdit?'✓ Xong':'✎ Sửa tài liệu';
+  document.getElementById('hbName').innerHTML=
+    '<div class="crumb"><button onclick="hbBackLib()">← '+esc(hb.shop)+'</button></div>'+d.icon+' '+esc(d.title);
+  document.getElementById('hbMeta').innerHTML =
+    typeTag(d.type)+' · bản '+d.ver+' · cập nhật '+d.at
+    + (hbEdit?' · <b>đang sửa</b>':'')
+    + (hbEdit?' <button class="ackb" onclick="hbDelDoc(\''+d.key+'\')">xóa tài liệu</button>':'');
+
+  var h='', n=0, isCk=(d.type==='checklist');
+  if(d.desc) h+='<div class="why" style="margin-left:0;margin-top:6px">'+esc(d.desc)+'</div>';
+  d.sections.forEach(function(sec){
+    n++;
+    h+='<div class="hbsec"><div class="hbh"><span class="hbn">'+n+'</span><h3>'+esc(sec.title)+'</h3>'
+      +(hbEdit?'<button class="ackb" onclick="hbRenameSec('+sec.id+')">đổi tên</button>'
+              +'<button class="ackb" onclick="hbDelSec('+sec.id+')">xóa mục</button>':'')+'</div><ul class="hbul">';
+    if(!sec.rules.length) h+='<li class="hbli"><span class="tx" style="color:var(--muted)">Chưa có điều nào.</span></li>';
+    sec.rules.forEach(function(r,i){
+      h+= isCk
+        ? '<li class="ckli"><span class="ckbox"></span><span class="tx">'+esc(r)+'</span>'
+          +(hbEdit?'<button class="rm" onclick="hbDelRule('+sec.id+','+i+')">xóa</button>':'')+'</li>'
+        : '<li class="hbli"><span class="tx">'+esc(r)+'</span>'
+          +(hbEdit?'<button class="rm" onclick="hbDelRule('+sec.id+','+i+')">xóa</button>':'')+'</li>';
+    });
+    h+='</ul>';
+    if(hbEdit) h+='<div class="hbadd"><input type="text" id="hbin'+sec.id+'" placeholder="Thêm một điều…" '
+      +'onkeydown="if(event.key===\'Enter\')hbAddRule('+sec.id+')"><button class="btn" onclick="hbAddRule('+sec.id+')">+ Thêm</button></div>';
+    h+='</div>';
+
+    if(d.auto && n===2){
+      n++;
+      h+='<div class="hbsec"><div class="hbh"><span class="hbn">'+n+'</span><h3>Luật chia turn của tiệm</h3>'
+        +'<span class="hbauto">tự động theo cấu hình</span></div><ul class="hbul">';
+      hbTurnRules().forEach(function(r){ h+='<li class="hbli"><span class="tx">'+esc(r)+'</span></li>'; });
+      h+='</ul><div class="why" style="margin-left:0">Mục này không gõ tay — lấy thẳng từ ⚙️ Luật tính turn, '
+        +'nên tài liệu không bao giờ nói khác hệ thống.</div></div>';
+    }
+  });
+  if(hbEdit){
+    h+='<div style="margin-top:14px;display:flex;gap:8px;flex-wrap:wrap">'
+      +'<button class="btn" onclick="hbAddSec()">+ Thêm mục mới</button>';
+    if(hbTrash) h+='<button class="btn" onclick="hbUndoDel()">↩︎ Hoàn tác xóa: “'
+      +esc(hbTrash.text.slice(0,40))+(hbTrash.text.length>40?'…':'')+'”</button>';
+    h+='</div>';
+  }
+  document.getElementById('hbBody').innerHTML=h;
+}
+
+/* ---------- ho so tho ---------- */
+var pfId=0, pfSkills={}, pfEng=0, pfSvcR=0;
+function openProf(id){
+  pfId=id||0;
+  var w=pfId?tech(pfId):null;
+  pfSkills={}; state.services.forEach(function(v){ pfSkills[v.id]= w?skillOf(w,v.id):1; });
+  pfEng = w?ratingOf(w,'eng'):0;
+  pfSvcR= w?ratingOf(w,'svc'):0;
+  document.getElementById('pfTitle').textContent = w?('Hồ sơ — '+w.name):'Nhận thợ mới';
+  document.getElementById('pfSave').textContent  = w?'Lưu thay đổi':'Thêm vào tiệm';
+  document.getElementById('pfName').value  = w?w.name:'';
+  document.getElementById('pfViber').value = w?(w.viber||''):'';
+  renderProf();
+  document.getElementById('ovProf').classList.add('on');
+  setTimeout(function(){ if(!w) document.getElementById('pfName').focus(); },60);
+}
+function closeProf(){ document.getElementById('ovProf').classList.remove('on'); pfId=0; }
+function pfCycle(sid){ pfSkills[sid]=((pfSkills[sid]||0)+1)%3; renderProf(); }
+function pfSetEng(v){ pfEng=v; renderProf(); }
+function pfSetSvc(v){ pfSvcR=v; renderProf(); }
+function renderProf(){
+  document.getElementById('pfSvc').innerHTML=pickMenu(null,'pfCycle',pfSkills);
+
+  var e='';
+  RT_ENG.forEach(function(lbl,i){ e+='<button type="button" class="'+(pfEng===i?'on':'')+'" onclick="pfSetEng('+i+')">'+lbl+'</button>'; });
+  document.getElementById('pfEng').innerHTML=e;
+  var v2='';
+  RT_SVC.forEach(function(lbl,i){ v2+='<button type="button" class="'+(pfSvcR===i?'on':'')+'" onclick="pfSetSvc('+i+')">'+lbl+'</button>'; });
+  document.getElementById('pfSvcR').innerHTML=v2;
+
+  // hang du kien
+  var fake={skills:pfSkills, rating:{eng:pfEng,svc:pfSvcR}};
+  var stars=0,can=0;
+  state.services.forEach(function(x){ var lv=pfSkills[x.id]||0; if(lv===2){stars++;can++;} else if(lv===1) can++; });
+  var t = stars>=4?3:(stars>=2?2:(can>=1?1:0));
+  var tname=['Chưa có','Cơ bản','Vững tay','Đa năng'][t];
+  var ti = (!pfEng||!pfSvcR) ? {name:'Chưa xếp hạng',cls:''}
+    : (function(){var a=Math.round((t+pfEng+pfSvcR)/3);
+        return a>=3?{name:'Xuất sắc',cls:'t3'}:(a===2?{name:'Giỏi',cls:'t2'}:(a===1?{name:'Vững',cls:'t1'}:{name:'Mới',cls:''}));})();
+  document.getElementById('pfTier').innerHTML=
+    '<div class="sumline"><span>Tay nghề: <b>'+tname+'</b> · '+can+' dịch vụ, '+stars+' chuyên</span>'
+    +'<span class="tier '+ti.cls+'">'+ti.name+'</span></div>'
+    +(!pfEng||!pfSvcR?'<div class="why" style="margin-left:0">Chấm đủ Tiếng Anh và Phục vụ thì mới xếp được hạng.</div>':'');
+}
+function saveProf(){
+  var n=document.getElementById('pfName').value.trim();
+  if(!n){ alert('Nhập tên thợ.'); document.getElementById('pfName').focus(); return; }
+  var vb=document.getElementById('pfViber').value.trim();
+  var d=new Date(), at=String(d.getDate()).padStart(2,'0')+'/'+String(d.getMonth()+1).padStart(2,'0');
+  var w;
+  if(pfId){ w=tech(pfId); if(!w) return; }
+  else {
+    var o=state.techs.reduce(function(m,x){return Math.max(m,x.order);},0)+1;
+    var id=state.techs.reduce(function(m,x){return Math.max(m,x.id);},0)+1;
+    w={id:id,name:n,order:o,checkin:null,count:0,rev:0,viber:'',beep:null,skills:{},rating:{eng:0,svc:0,at:'',by:''}};
+    state.techs.push(w);
+  }
+  w.name=n; w.viber=vb;
+  w.skills={}; state.services.forEach(function(v){ w.skills[v.id]=pfSkills[v.id]||0; });
+  w.rating=w.rating||{}; w.rating.eng=pfEng; w.rating.svc=pfSvcR;
+  if(pfEng||pfSvcR) w.rating.at=at;
+  closeProf(); save(); render(); if(document.getElementById('ovSkill').classList.contains('on')) renderSkill();
+}
+
+function addTech(){var el=document.getElementById('newTech'); if(!el) return; var n=el.value.trim(); if(!n)return;
+  var o=state.techs.reduce(function(m,w){return Math.max(m,w.order);},0)+1;
+  var id=state.techs.reduce(function(m,w){return Math.max(m,w.id);},0)+1;
+  state.techs.push({id:id,name:n,order:o,checkin:null,count:0,rev:0,viber:'',beep:null,skills:{},rating:{eng:0,svc:0,at:'',by:''}}); el.value=''; save();render();}
+function renameTech(id){var w=tech(id); if(!w)return; var n=prompt('Đổi tên thợ:',w.name); if(n===null)return; w.name=n.trim()||w.name; save();render();}
+function delTech(id){
+  var w=tech(id); if(!w)return;
+  askDanger({icon:'👤', title:'Xóa thợ '+w.name+'?',
+    desc:'Xóa khỏi tiệm vĩnh viễn, kể cả hồ sơ tay nghề và đánh giá.',
+    loseTitle:'Sẽ mất',
+    lose:[['Hồ sơ tay nghề & đánh giá','xóa hẳn'],
+          ['Turn hôm nay',fT(w.count)+' turn'],
+          ['Doanh thu hôm nay',fM(w.rev)],
+          ['Lịch sử đã giao','vẫn giữ tên trong lịch sử']],
+    note:'Thợ nghỉ tạm thì chỉ cần "Cho về", không cần xóa.',
+    yes:'Xóa thợ này', no:'Không xóa',
+    ok:function(){ state.techs=state.techs.filter(function(x){return x.id!==id;}); save();render(); }});
+}
+function moveTech(id,d){var ws=state.techs.slice().sort(function(a,b){return a.order-b.order;});
+  var i=ws.findIndex(function(w){return w.id===id;}),j=d==='up'?i-1:i+1; if(j<0||j>=ws.length)return;
+  var t=ws[i].order; ws[i].order=ws[j].order; ws[j].order=t; save();render();}
+
+/* ---------- dich vu ---------- */
+function addSvc(){
+  var n=document.getElementById('nsName').value.trim();
+  var c=document.getElementById('nsCode').value.trim().toUpperCase();
+  var t=parseFloat(document.getElementById('nsTurn').value);
+  var col=document.getElementById('nsColor').value;
+  if(!n){alert('Nhập tên dịch vụ.');return;}
+  if(!c){alert('Nhập ký hiệu (VD: P, FS, G).');return;}
+  if(isNaN(t)||t<0) t=1;
+  var id=state.services.reduce(function(m,s){return Math.max(m,s.id);},0)+1;
+  var pr=parseFloat(document.getElementById('nsPrice').value); if(isNaN(pr)||pr<0) pr=0;
+  var gsel=document.getElementById('nsGroup'), g=gsel?gsel.value:'Khác';
+  var ord=state.services.filter(function(x){return x.group===g;}).reduce(function(m,x){return Math.max(m,x.ord||0);},0)+1;
+  var mnv=parseFloat(document.getElementById('nsMin').value); if(isNaN(mnv)||mnv<0) mnv=Math.round(t*45);
+  state.services.push({id:id,name:n,code:c,turns:t,price:pr,min:mnv,color:col,group:g,addon:(g==='Phụ thêm'),ord:ord});
+  document.getElementById('nsMin').value='';
+  document.getElementById('nsPrice').value='';
+  document.getElementById('nsName').value=''; document.getElementById('nsCode').value=''; document.getElementById('nsTurn').value='';
+  save(); renderSvc(); render();
+}
+function svcSet(id,f,v){var s=svcById(id); if(!s)return;
+  if(f==='code'){ s.code=(v||'').trim().toUpperCase()||s.code; }
+  else if(f==='turns'){ var n=parseFloat(v); s.turns=isNaN(n)||n<0?s.turns:n; }
+  else if(f==='price'){ var q=parseFloat(v); s.price=isNaN(q)||q<0?s.price:q; }
+  else if(f==='min'){ var mq=parseFloat(v); s.min=isNaN(mq)||mq<0?s.min:mq; }
+  else if(f==='name'){ s.name=(v||'').trim()||s.name; }
+  else if(f==='color'){ s.color=v; }
+  save(); renderSvc(); render();
+}
+function delSvc(id){
+  var sv=svcById(id); if(!sv)return;
+  var used=0; state.log.forEach(function(e){ (e.codes||[]).forEach(function(c){ if(c.code===sv.code) used++; }); });
+  askDanger({icon:'🏷️', title:'Xóa dịch vụ '+sv.name+' ('+sv.code+')?',
+    desc:'Dịch vụ này sẽ biến mất khỏi menu giao khách và bảng tay nghề.',
+    loseTitle:'Ảnh hưởng',
+    lose:[['Đã dùng hôm nay',used+' lần'],
+          ['Tay nghề của thợ với dịch vụ này','xóa hẳn'],
+          ['Ký hiệu & giá',sv.code+' · '+fM(sv.price||0)]],
+    note:used?'Ký hiệu trong lịch sử hôm nay vẫn giữ, nhưng không giao mới được nữa.':'',
+    yes:'Xóa dịch vụ', no:'Không xóa',
+    ok:function(){ state.services=state.services.filter(function(x){return x.id!==id;}); save(); renderSvc(); render(); }});
+}
+function openSvc(){
+  var gsel=document.getElementById('nsGroup');
+  if(gsel) gsel.innerHTML=groupList().map(function(g){return '<option>'+esc(g)+'</option>';}).join('');
+  renderSvc();document.getElementById('ovSvc').classList.add('on');}
+function closeSvc(){document.getElementById('ovSvc').classList.remove('on');}
+function svcMove(id,dir){
+  var sv=svcById(id); if(!sv) return;
+  var sib=svcSorted().filter(function(x){return (x.group||'Khác')===(sv.group||'Khác');});
+  var i=sib.findIndex(function(x){return x.id===id;}), j=dir==='up'?i-1:i+1;
+  if(j<0||j>=sib.length) return;
+  var t=sib[i].ord; sib[i].ord=sib[j].ord; sib[j].ord=t;
+  save(); renderSvc(); render();
+}
+function svcSetGroup(id,g){
+  var sv=svcById(id); if(!sv) return;
+  sv.group=g;
+  sv.ord=state.services.filter(function(x){return x.group===g;}).reduce(function(m,x){return Math.max(m,x.ord||0);},0)+1;
+  save(); renderSvc(); render();
+}
+function svcToggleAddon(id){
+  var sv=svcById(id); if(!sv) return;
+  sv.addon=!sv.addon;
+  save(); renderSvc(); render();
+}
+function addGroup(){
+  var g=prompt('Tên nhóm mới (VD: Massage, Trẻ em):',''); if(!g) return;
+  g=g.trim(); if(!g) return;
+  if(!state.groups) state.groups=DEF_GROUPS.slice();
+  if(state.groups.indexOf(g)<0) state.groups.push(g);
+  save(); renderSvc();
+}
+function renderSvc(){
+  var gs=groupList();
+  var h='';
+  svcByGroup().forEach(function(blk){
+    var isAdd = blk.items.length && blk.items.every(function(x){return x.addon;});
+    h+='<div class="gsec"><div class="gsh"><span class="gsn">'+esc(blk.g)+'</span>'
+      +'<span class="gsc">'+blk.items.length+'</span>'
+      +(isAdd?'<span class="tag ag">không cộng turn</span>':'')+'</div>';
+    blk.items.forEach(function(sv){
+      var opts=gs.map(function(g){return '<option value="'+esc(g)+'"'+(sv.group===g?' selected':'')+'>'+esc(g)+'</option>';}).join('');
+      h+='<div class="row">'
+        +'<span class="chip" style="--c:'+esc(sv.color)+'">'+esc(sv.code)+'</span>'
+        +'<input type="text" style="flex:1;min-width:110px" value="'+esc(sv.name)+'" onchange="svcSet('+sv.id+',\'name\',this.value)">'
+        +'<input type="text" class="code" maxlength="6" value="'+esc(sv.code)+'" onchange="svcSet('+sv.id+',\'code\',this.value)" title="Ký hiệu">'
+        +'<input type="number" class="tv" step="0.5" min="0" value="'+sv.turns+'" onchange="svcSet('+sv.id+',\'turns\',this.value)" title="Số turn"'+(sv.addon?' style="opacity:.5"':'')+'>'
+        +'<input type="number" class="tv" step="1" min="0" value="'+(sv.price||0)+'" onchange="svcSet('+sv.id+',\'price\',this.value)" title="Giá $">'
+        +'<input type="number" class="tv" step="5" min="0" value="'+(sv.min||0)+'" onchange="svcSet('+sv.id+',\'min\',this.value)" title="Số phút">'
+        +'<select class="gsel" onchange="svcSetGroup('+sv.id+',this.value)" title="Nhóm">'+opts+'</select>'
+        +'<button class="ib '+(sv.addon?'onx':'')+'" onclick="svcToggleAddon('+sv.id+')" title="Phụ thêm thì không cộng turn riêng">'+(sv.addon?'phụ thêm':'dịch vụ chính')+'</button>'
+        +'<input type="color" value="'+esc(sv.color)+'" onchange="svcSet('+sv.id+',\'color\',this.value)" title="Màu">'
+        +'<button class="ib" onclick="svcMove('+sv.id+',\'up\')">▲</button>'
+        +'<button class="ib" onclick="svcMove('+sv.id+',\'down\')">▼</button>'
+        +'<button class="ib dang" onclick="delSvc('+sv.id+')">Xóa</button>'
+        +'</div>';
+    });
+    h+='</div>';
+  });
+  if(!state.services.length) h='<div class="none">Chưa có dịch vụ nào.</div>';
+  document.getElementById('svcBox').innerHTML=h;
+}
+
+/* ---------- khach check-in ---------- */
+var ciSel=[], ciEditId=0;
+function openCheckin(editId){
+  ciEditId=editId||0;
+  var c = ciEditId ? state.customers.find(function(x){return x.id===ciEditId;}) : null;
+  ciSel = c ? (c.svc||[]).slice() : [];
+  document.getElementById('ciName').value = c ? c.name : '';
+  document.getElementById('ciAppt').value = c ? (c.appt||'') : '';
+  document.querySelector('#ovCheckin h3').textContent = c ? ('Sửa khách — '+c.name) : 'Thêm khách tạm (demo)';
+  document.getElementById('ciPicks').innerHTML=pickMenu(ciSel,'ciToggle',null);
+  ciCalc();
+  document.getElementById('ovCheckin').classList.add('on');
+  setTimeout(function(){document.getElementById('ciName').focus();},60);
+}
+function closeCheckin(){document.getElementById('ovCheckin').classList.remove('on');}
+function ciToggle(id){
+  var i=ciSel.indexOf(id); if(i<0) ciSel.push(id); else ciSel.splice(i,1);
+  document.getElementById('ciPicks').innerHTML=pickMenu(ciSel,'ciToggle',null);
+  ciCalc();
+}
+function ciCalc(){
+  document.getElementById('ciCode').textContent=svcCode(ciSel)||'—';
+  var tot=0; ciSel.forEach(function(id){var v=svcById(id); if(v) tot+=Number(v.price)||0;});
+  document.getElementById('ciTotal').textContent=fM(tot);
+}
+function submitCheckin(){
+  var n=document.getElementById('ciName').value.trim();
+  if(!n){alert('Nhập tên khách.');return;}
+  var ap=document.getElementById('ciAppt').value||'';
+  if(ciEditId){
+    var c=state.customers.find(function(x){return x.id===ciEditId;});
+    if(c){ c.name=n; c.svc=ciSel.slice(); c.appt=ap; }
+  } else {
+    var id=state.customers.reduce(function(m,c){return Math.max(m,c.id);},0)+1;
+    state.customers.unshift({id:id,name:n,svc:ciSel.slice(),time:hhmm(),appt:ap,status:'waiting',assigns:[]});
+  }
+  ciEditId=0; closeCheckin(); save(); render();
+}
+function delCus(id){
+  var c=state.customers.find(function(x){return x.id===id;}); if(!c)return;
+  askDanger({icon:'🙅', title:'Bỏ khách '+c.name+' khỏi hàng chờ?',
+    desc:'Khách biến mất khỏi Turn Board. Nếu khách vẫn ở tiệm, lễ tân phải check-in lại.',
+    loseTitle:'Chi tiết',
+    lose:[['Chờ từ',c.time],['Dịch vụ đã chọn',svcCode(c.svc||[])||'chưa chọn']],
+    yes:'Bỏ khách', no:'Không, giữ lại',
+    ok:function(){
+      (c.assigns||[]).forEach(function(a){ var w=tech(a.tech); if(w) w.busyUntil=0; });
+      state.customers=state.customers.filter(function(x){return x.id!==id;}); save(); render(); }});
+}
+
+/* ---------- giao tho (nhieu tho / 1 khach) ---------- */
+var gCus=null, gRows=[], gNeedEN=false, gForce=false;   // gRows: [{svc:id, tech:id|0, price:number}]
+function gToggleEN(){ gNeedEN=document.getElementById('gEN').checked; gRenderRows(); }
+function openGive(techId, cusId){
+  var cus = cusId ? state.customers.find(function(c){return c.id===cusId;}) : null;
+  gCus = cus||null; gKind='walk';
+  var svcs = cus ? cus.svc.slice() : [];
+  gRows = svcs.map(function(id){
+    var v=svcById(id);
+    return {svc:id, tech:defaultTechFor(id,techId), price:v?Number(v.price)||0:0};
+  });
+  gSel = svcs.slice();
+  document.getElementById('gTitle').textContent = cus ? ('Giao thợ — khách '+cus.name) : (techId?('Giao khách cho '+(tech(techId)||{}).name):'Giao khách');
+  document.getElementById('gRule').textContent = ruleMain(state.config);
+  document.querySelectorAll('#gKind button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-k')==='walk');});
+  document.getElementById('gPicks').innerHTML=pickMenu(gSel,'gToggle',null);
+  gNeedEN=false; document.getElementById('gEN').checked=false;
+  var am=(AUTO_MODES.filter(function(m){return m.v===(state.config.autoMode||'fair');})[0]||AUTO_MODES[0]);
+  document.getElementById('autoMode').textContent='Chế độ: '+am.b;
+  gRenderRows();
+  document.getElementById('ovGive').classList.add('on');
+}
+/* ---------- may tu xep tho ---------- */
+var AUTO_MODES=[
+  {v:'fair', b:'Công bằng trước — theo thứ tự turn', d:'Trong số thợ làm được, ai tới lượt sớm nhất thì nhận. Giữ turn công bằng.', rec:1},
+  {v:'balance', b:'Cân bằng — ★ chỉ khi cần', d:'Vẫn theo turn, nhưng thợ ★ được ưu tiên nhẹ ở dịch vụ họ chuyên.'},
+  {v:'skill', b:'Tay nghề trước — ★ ưu tiên', d:'Thợ chuyên được chọn trước dù chưa tới lượt. Nhanh cho khách, nhưng turn sẽ lệch.'}
+];
+function scoreTech(c, needEN, mode){
+  var s=0;
+  if(!c.free) s-=1000;
+  s-=c.pos*10;
+  if(mode==='skill'  && c.lv===2) s+=300;
+  if(mode==='balance'&& c.lv===2) s+=35;
+  if(needEN) s+=ratingOf(c.w,'eng')*30;
+  return s;
+}
+function pickReason(c, needEN, mode){
+  var r=[];
+  if(c.lv===2 && mode!=='fair') r.push('★ chuyên');
+  else if(c.lv===2) r.push('★ chuyên');
+  if(c.free) r.push('đang rảnh'); else r.push('đang bận');
+  r.push('#'+c.pos+' trong hàng');
+  if(needEN && ratingOf(c.w,'eng')>=3) r.push('EN tốt');
+  return r.join(' · ');
+}
+function autoPick(svcId, needEN){
+  var mode=state.config.autoMode||'fair';
+  var cand=candidates(svcId);
+  if(!cand.length) return null;
+  var best=null,bs=-1e9;
+  cand.forEach(function(c){ var sc=scoreTech(c,needEN,mode); if(sc>bs){bs=sc;best=c;} });
+  return best;
+}
+function autoAssignAll(){
+  var used={};
+  gRows.forEach(function(r){
+    var mode=state.config.autoMode||'fair';
+    var cand=candidates(r.svc).filter(function(c){return !used[c.w.id];});
+    if(!cand.length) cand=candidates(r.svc);
+    if(!cand.length){ r.tech=0; return; }
+    var best=null,bs=-1e9;
+    cand.forEach(function(c){ var sc=scoreTech(c,gNeedEN,mode); if(sc>bs){bs=sc;best=c;} });
+    if(best){ r.tech=best.w.id; used[best.w.id]=1; }
+  });
+  gRenderRows();
+}
+function canDo(tid,svcId){ var w=tech(tid); return !!w && skillOf(w,svcId)>0; }
+function defaultTechFor(svcId, wantTech){
+  if(wantTech && canDo(wantTech,svcId)) return wantTech;   // giu tho duoc bam neu ho lam duoc
+  var c=candidates(svcId);
+  return c.length ? c[0].w.id : 0;                          // nguoc lai: tho phu hop nhat
+}
+function closeGive(){document.getElementById('ovGive').classList.remove('on');gCus=null;gRows=[];}
+function gToggle(id){
+  var i=gSel.indexOf(id);
+  if(i<0){
+    gSel.push(id);
+    var v=svcById(id);
+    var prev=gRows.length?gRows[gRows.length-1].tech:0;
+    gRows.push({svc:id,tech:defaultTechFor(id,prev),price:v?Number(v.price)||0:0});
+  } else {
+    gSel.splice(i,1);
+    gRows=gRows.filter(function(r){return r.svc!==id;});
+  }
+  document.getElementById('gPicks').innerHTML=pickMenu(gSel,'gToggle',null);
+  gRenderRows();
+}
+function gSetTech(i,v){ gRows[i].tech=parseInt(v,10)||0; gSummary(); gRenderRows(); }
+function gSetPrice(i,v){ var n=parseFloat(v); gRows[i].price=isNaN(n)||n<0?0:n; gSummary(); }
+function gSetKind(k){gKind=k;document.querySelectorAll('#gKind button').forEach(function(b){b.classList.toggle('on',b.getAttribute('data-k')===k);});gSummary();}
+function gRenderRows(){
+  if(!gRows.length){ document.getElementById('gRows').innerHTML='<div class="none">Chưa chọn dịch vụ nào — bấm chọn ở trên.</div>'; gSummary(); return; }
+  var h='';
+  gRows.forEach(function(r,i){
+    var v=svcById(r.svc); if(!v) return;
+    var cand=candidates(r.svc);
+    var free=cand.filter(function(c){return c.free;}), busy=cand.filter(function(c){return !c.free;});
+    function opt(c){
+      var star=c.lv===2?' ★':'';
+      var eng=ratingOf(c.w,'eng')>=3?' · EN tốt':(ratingOf(c.w,'eng')===2?' · EN khá':'');
+      return '<option value="'+c.w.id+'"'+(r.tech===c.w.id?' selected':'')+'>#'+c.pos+' '+esc(c.w.name)+star+eng+' · '+fT(c.w.count)+'t</option>';
+    }
+    var cannot=queue().filter(function(w){return skillOf(w,r.svc)===0;});
+    var opts='<option value="0"'+(r.tech?'':' selected')+'>— chọn thợ —</option>';
+    if(free.length) opts+='<optgroup label="Làm được — đang rảnh, theo thứ tự turn">'+free.map(opt).join('')+'</optgroup>';
+    if(busy.length) opts+='<optgroup label="Làm được — đang làm khách">'+busy.map(opt).join('')+'</optgroup>';
+    if(cannot.length) opts+='<optgroup label="Không nhận dịch vụ này">'
+      +cannot.map(function(w){return '<option value="0" disabled>'+esc(w.name)+' — không nhận</option>';}).join('')+'</optgroup>';
+    if(!cand.length) opts+='<option value="0" disabled>Không thợ nào có mặt nhận được dịch vụ này</option>';
+    var best=cand.length?cand[0]:null;
+    var hint='';
+    if(!cand.length) hint='<span class="chip" style="--c:#b54708">⚠ không thợ nào đang có mặt nhận '+esc(v.code)+'</span>';
+    else if(r.tech && !canDo(r.tech,r.svc)) hint='<span class="chip" style="--c:#b54708">⚠ thợ này không nhận '+esc(v.code)+'</span>';
+    else if(r.tech){
+      var mode=state.config.autoMode||'fair';
+      var me=cand.filter(function(c){return c.w.id===r.tech;})[0];
+      if(me){
+        if(me.lv===2) hint+='<span class="chip" style="--c:var(--brand)">★ chuyên</span>';
+        var ti=tierOf(me.w); if(ti.lv>=2) hint+='<span class="chip" style="--c:var(--ok)">'+ti.name+'</span>';
+        if(ratingOf(me.w,'eng')>=3) hint+='<span class="chip" style="--c:#0ea5e9">EN tốt</span>';
+        if(!me.free) hint+='<span class="chip" style="--c:#b54708">đang bận</span>';
+        hint+='<span class="why">→ '+esc(pickReason(me,gNeedEN,mode))+'</span>';
+      }
+    } else {
+      var sug=autoPick(r.svc,gNeedEN);
+      if(sug) hint='<span class="why">gợi ý: <b>#'+sug.pos+' '+esc(sug.w.name)+'</b> — '
+        +esc(pickReason(sug,gNeedEN,state.config.autoMode||'fair'))+'</span>';
+    }
+    h+='<div class="arow">'
+      +'<span class="chip" style="--c:'+esc(v.color)+'">'+esc(v.code)+'</span>'
+      +'<span class="an">'+esc(v.name)+'</span>'
+      +'<select class="'+(r.tech?'':'none')+'" onchange="gSetTech('+i+',this.value)">'+opts+'</select>'
+      +'<input class="pz" type="number" min="0" step="1" value="'+r.price+'" onchange="gSetPrice('+i+',this.value)" title="Giá $">'
+      +(hint?'<span style="flex-basis:100%;margin-left:44px">'+hint+'</span>':'')
+      +'</div>';
+  });
+  document.getElementById('gRows').innerHTML=h;
+  gSummary();
+}
+function groupRows(){
+  var by={};
+  gRows.forEach(function(r){ if(!r.tech) return; (by[r.tech]=by[r.tech]||[]).push(r); });
+  return by;
+}
+function skipInfo(){
+  // ai bi vuot luot — bo qua nhung tho da duoc giao trong chinh ticket nay
+  var assigned={}; gRows.forEach(function(r){ if(r.tech) assigned[r.tech]=1; });
+  var skipped={};
+  gRows.forEach(function(r){
+    if(!r.tech) return;
+    var cand=candidates(r.svc); if(!cand.length) return;
+    var me=cand.filter(function(c){return c.w.id===r.tech;})[0]; if(!me) return;
+    cand.forEach(function(c){
+      if(c.free && c.pos < me.pos && !assigned[c.w.id]) skipped[c.w.id]={name:c.w.name,pos:c.pos};
+    });
+  });
+  return Object.keys(skipped).map(function(k){return skipped[k];})
+    .sort(function(a,b){return a.pos-b.pos;});
+}
+function gSummary(){
+  var by=groupRows(), keys=Object.keys(by), h='';
+  if(!keys.length){ h='<div class="sumline"><span style="color:var(--amber)">Chưa chọn thợ cho dịch vụ nào.</span></div>'; }
+  keys.forEach(function(tid){
+    var w=tech(parseInt(tid,10)); if(!w) return;
+    var ids=by[tid].map(function(r){return r.svc;});
+    var amt=by[tid].reduce(function(m,r){return m+r.price;},0);
+    var tv=turnValue(state.config,amt,gKind,ids);
+    var pro=ids.some(function(id){return skillOf(w,id)===2;});
+    h+='<div class="sumline"><span><b>'+esc(w.name)+'</b> · '+esc(svcCode(ids))+(pro?' ★':'')+'</span>'
+      +'<span><b>'+fT(tv)+' turn</b> · '+fM(amt)+'</span></div>';
+  });
+  var sk=skipInfo();
+  if(sk.length && gKind==='walk'){
+    var top=sk.slice(0,2).map(function(x){return '<b>#'+x.pos+' '+esc(x.name)+'</b>';}).join(', ');
+    var more=sk.length>2?(' và '+(sk.length-2)+' người nữa'):'';
+    h+='<div class="warnbox">⚠ Vượt lượt của '+top+more
+      +'. Vẫn giao được — hệ thống ghi lại để đối chiếu khi có tranh cãi.</div>';
+  }
+  document.getElementById('gSummary').innerHTML=h;
+}
+function submitGive(){
+  var by=groupRows(), keys=Object.keys(by);
+  if(!keys.length){ alert('Chọn thợ cho ít nhất 1 dịch vụ.'); return; }
+  if(gForce){ /* da xac nhan o buoc truoc */ }
+  var bad=gRows.filter(function(r){ return r.tech && !canDo(r.tech,r.svc); });
+  if(bad.length){
+    var m=bad.map(function(r){var w=tech(r.tech),v=svcById(r.svc);
+      return (w?w.name:'?')+' không nhận '+(v?v.name:'?');}).join('\n');
+    alert('Không giao được:\n\n'+m+'\n\nChọn thợ khác, hoặc mở “Tổng quan thợ” để sửa tay nghề.');
+    return;
+  }
+  var unass=gForce?[]:gRows.filter(function(r){return !r.tech;});
+  if(unass.length){
+    var names=unass.map(function(r){var v=svcById(r.svc);return v?v.name:'?';}).join(', ');
+    askDanger({icon:'⚠️', title:'Còn '+unass.length+' dịch vụ chưa có thợ', soft:true,
+      desc:'Vẫn giao được phần đã chọn, nhưng phần còn lại sẽ không ai làm.',
+      loseTitle:'Chưa giao', lose:[['Dịch vụ',names]],
+      note:'Bấm ⚡ Máy tự xếp thợ để hệ thống chọn giùm phần còn thiếu.',
+      yes:'Vẫn giao phần đã chọn', no:'Quay lại chọn thợ',
+      ok:function(){ gForce=true; submitGive(); gForce=false; }});
+    return;
+  }
+  var sk=skipInfo();
+  var skipNames = (sk.length && gKind==='walk') ? sk.slice(0,3).map(function(x){return x.name;}).join(', ')+(sk.length>3?' +'+(sk.length-3):'') : '';
+  var assigns=[];
+  keys.forEach(function(tid){
+    var w=tech(parseInt(tid,10)); if(!w) return;
+    var ids=by[tid].map(function(r){return r.svc;});
+    var amt=by[tid].reduce(function(m,r){return m+r.price;},0);
+    var tv=turnValue(state.config,amt,gKind,ids);
+    var codes=ids.map(function(id){var v=svcById(id);return v?{code:v.code,color:v.color}:null;}).filter(Boolean);
+    var mins=svcMinutes(ids);
+    w.busyUntil=Math.max(nowMs(), w.busyUntil||0) + mins*60000;
+    w.count=Math.round((w.count+tv)*100)/100; w.rev=Math.round((w.rev+amt)*100)/100;
+    var pro=ids.some(function(id){return skillOf(w,id)===2;});
+    state.log.unshift({time:hhmm(),wid:w.id,name:w.name,codes:codes,code:svcCode(ids),mins:mins,
+      amount:amt,turn:tv,kind:gKind,cus:gCus?gCus.name:'',skip:skipNames,pro:pro});
+    assigns.push({tech:w.id,name:w.name,code:svcCode(ids),turn:tv,amount:amt});
+  });
+  state.log=state.log.slice(0,200);
+  if(gCus){
+    var c=state.customers.find(function(x){return x.id===gCus.id;});
+    if(c){ c.status='serving'; c.assigns=assigns; c.svc=gSel.slice(); }
+  }
+  closeGive(); save(); render();
+}
+function finishCus(id){
+  var c=state.customers.find(function(x){return x.id===id;}); if(!c)return;
+  askDanger({icon:'✅', title:'Khách '+c.name+' đã xong?', soft:true,
+    desc:'Bỏ khỏi Turn Board. Turn và doanh thu đã ghi cho thợ vẫn giữ nguyên.',
+    loseTitle:'Đã ghi nhận',
+    lose:(c.assigns||[]).map(function(a){return [a.name+' · '+a.code, fT(a.turn)+' turn · '+fM(a.amount)];}),
+    note:'Bấm nhầm thì lễ tân phải check-in lại khách bên tab Check-in.',
+    yes:'Xong, bỏ khỏi danh sách', no:'Chưa xong',
+    ok:function(){ state.customers=state.customers.filter(function(x){return x.id!==id;}); save(); render(); }});
+}
+
+/* ---------- cau hinh ---------- *//* ---------- cau hinh ---------- */
+var METHODS=[
+  {v:'time',b:'Theo thời gian ghế',d:'Cộng số phút của các dịch vụ rồi chia. Thợ ôm trọn khách 2.5 giờ không bị tính ngang thợ làm 45 phút.',rec:1},
+  {v:'services',b:'Theo bảng dịch vụ',d:'Mỗi dịch vụ có số turn riêng, chọn nhiều thì cộng lại.'},
+  {v:'threshold',b:'Theo ngưỡng giá',d:'Từ mốc $ trở lên = 1 turn, dưới = 0.5.'},
+  {v:'tiers',b:'Theo bậc giá',d:'Ba bậc theo khoảng giá.'},
+  {v:'count',b:'Đếm đầu khách',d:'Mỗi khách = 1 turn, không quan tâm giá hay dịch vụ.'}
+];
+var RULES=[
+  {v:'formula',b:'Tính như khách thường',d:'Áp đúng công thức ở trên.'},
+  {v:'always1',b:'Luôn tính 1 turn',d:'Vẫn mất 1 lượt — công bằng với thợ khác.'},
+  {v:'half',b:'Tính 0.5 turn',d:'Trừ nửa lượt.'},
+  {v:'none',b:'Không tính turn',d:'Không trừ lượt (dễ gây tranh cãi).'}
+];
+function openCfg(){cfgDraft=JSON.parse(JSON.stringify(state.config));renderCfg();document.getElementById('ovCfg').classList.add('on');}
+function closeCfg(){document.getElementById('ovCfg').classList.remove('on');}
+function pickM(v){cfgDraft.method=v;renderCfg();}
+function pickR(v){cfgDraft.requestRule=v;renderCfg();}
+function pickA(v){cfgDraft.apptRule=v;renderCfg();}
+function cfgF(k,v){var n=parseFloat(v); if(!isNaN(n)&&n>=0) cfgDraft[k]=n; cfgPrev();}
+function optHTML(list,cur,fn,name){
+  var h='';
+  list.forEach(function(o){var sel=cur===o.v;
+    h+='<label class="opt'+(sel?' sel':'')+'"><span class="ot"><input type="radio" name="'+name+'" '+(sel?'checked':'')+' onchange="'+fn+'(\''+o.v+'\')"><b>'+o.b+'</b>'+(o.rec?'<span class="rec">KHUYÊN</span>':'')+'</span><div class="od">'+o.d+'</div>';
+    if(sel&&o.v==='threshold') h+='<div class="inl">Mốc: $<input type="number" min="0" value="'+cfgDraft.threshold+'" onchange="cfgF(\'threshold\',this.value)"> trở lên = 1 turn</div>';
+    if(sel&&o.v==='tiers') h+='<div class="inl">Dưới $<input type="number" min="0" value="'+cfgDraft.tierB1+'" onchange="cfgF(\'tierB1\',this.value)"> = <input type="number" step="0.5" min="0" value="'+cfgDraft.tierV0+'" onchange="cfgF(\'tierV0\',this.value)">t</div>'
+      +'<div class="inl">Tới $<input type="number" min="0" value="'+cfgDraft.tierB2+'" onchange="cfgF(\'tierB2\',this.value)"> = <input type="number" step="0.5" min="0" value="'+cfgDraft.tierV1+'" onchange="cfgF(\'tierV1\',this.value)">t</div>'
+      +'<div class="inl">Trên = <input type="number" step="0.5" min="0" value="'+cfgDraft.tierV2+'" onchange="cfgF(\'tierV2\',this.value)">t</div>';
+    if(sel&&o.v==='services') h+='<div class="inl">Chỉnh số turn từng dịch vụ ở mục “Dịch vụ &amp; ký hiệu”.</div>';
+    if(sel&&o.v==='time') h+='<div class="inl"><input type="number" min="5" step="5" value="'+(cfgDraft.minPerTurn||60)+'" onchange="cfgF(\'minPerTurn\',this.value)"> phút = 1 turn · chỉnh số phút từng dịch vụ ở mục “Dịch vụ”</div>';
+    if(sel&&o.v==='count') h+='<div class="inl" style="color:var(--amber)">⚠ Thợ làm trọn khách 3 dịch vụ cũng chỉ 1 turn — bằng thợ làm 1 dịch vụ.</div>';
+    h+='</label>';
+  });
+  return h;
+}
+function pickAuto(v){ cfgDraft.autoMode=v; renderCfg(); }
+function renderCfg(){
+  var ab=document.getElementById('cfgAuto'); if(ab) ab.checked=!!cfgDraft.autoBeep;
+  var gg=document.getElementById('cfgGrace'); if(gg) gg.value=(cfgDraft.apptGrace===undefined?10:cfgDraft.apptGrace);
+  document.getElementById('cfgAuto2').innerHTML=optHTML(AUTO_MODES,cfgDraft.autoMode||'fair','pickAuto','cau');
+  document.getElementById('cfgM').innerHTML=optHTML(METHODS,cfgDraft.method,'pickM','cm');
+  document.getElementById('cfgR').innerHTML=optHTML(RULES,cfgDraft.requestRule,'pickR','cr');
+  document.getElementById('cfgA').innerHTML=optHTML(RULES,cfgDraft.apptRule,'pickA','ca');
+  cfgPrev();
+}
+function cfgPrev(){
+  function ids(codes){ return codes.map(function(c){var x=state.services.filter(function(y){return y.code===c;})[0];return x?x.id:0;}).filter(Boolean); }
+  var P=ids(['P']), PF=ids(['P','FS']), PFG=ids(['P','FS','G']), G=ids(['G']);
+  function row(l,i2,amt,kind){
+    var mn=svcMinutes(i2);
+    return '<div class="pr"><span>'+l+' <span style="color:var(--muted)">· '+mn+' phút</span></span>'
+      +'<b>'+fT(turnValue(cfgDraft,amt,kind||'walk',i2))+' turn</b></div>';
+  }
+  var h='<div class="pt">Xem thử luật này</div>';
+  h+=row('Chỉ '+(svcCode(P)||'P')+' · $40',P,40);
+  h+=row(( svcCode(PF)||'P+FS')+' · $85',PF,85);
+  h+=row((svcCode(PFG)||'P+FS+G')+' · $100',PFG,100);
+  h+=row('Chỉ '+(svcCode(G)||'G')+' · $15',G,15);
+  h+=row((svcCode(P)||'P')+' <b style="color:var(--brand)">chỉ định</b>',P,40,'request');
+  h+=row((svcCode(P)||'P')+' <b style="color:var(--brand)">hẹn</b>',P,40,'appt');
+  document.getElementById('cfgP').innerHTML=h;
+}
+function saveCfg(){state.config=JSON.parse(JSON.stringify(cfgDraft));save();closeCfg();render();}
+
+/* ---------- render ---------- */
+function chipsOf(wid){
+  var out=[];
+  state.log.slice().reverse().forEach(function(e){ if(e.wid===wid&&e.codes&&e.codes.length) out.push(e); });
+  return out;
+}
+function render(){
+  var cfg=state.config;
+  if(!view) view = state.techs.length>8 ? 'list' : 'grid';
+  var ws=state.techs.slice().sort(function(a,b){return a.order-b.order;});
+  var q=queue(), pos={}; q.forEach(function(w,i){pos[w.id]=i+1;});
+  var nid=nextId();
+  var tt=0,tr=0; ws.forEach(function(w){tt+=w.count;tr+=w.rev;});
+
+  document.getElementById('sOn').textContent=q.length;
+  document.getElementById('sWait').textContent=state.customers.filter(function(c){return c.status!=='serving';}).length;
+  document.getElementById('sGuest').textContent=state.log.length;
+  document.getElementById('sTurn').textContent=fT(Math.round(tt*100)/100);
+  document.getElementById('sRev').textContent=fM(Math.round(tr*100)/100);
+  document.getElementById('sPer').textContent = tt>0 ? fM(Math.round(tr/tt*100)/100) : '$0';
+  document.getElementById('ruleLine').innerHTML=esc(ruleMain(cfg))+' · '+esc(ruleSpec(cfg.requestRule,tx('sp_req')))
+    +' · '+esc(ruleSpec(cfg.apptRule,tx('sp_appt')))
+    +' <button class="ackb" style="margin-left:6px" onclick="openCfg()">'+tx('ch_rule')+'</button>'
+    +(cfg.method==='services'?' <button class="ackb" onclick="openSvc()">'+tx('ch_turn')+'</button>':'');
+
+  // tu goi khi doi luot
+  if(!firstRender && cfg.autoBeep && nid && nid!==lastNextId) beep(nid,true);
+  lastNextId=nid; firstRender=false;
+
+  var nw=nid?tech(nid):null;
+  document.getElementById('nextName').innerHTML=nw?esc(nw.name):'<span class="none">'+tx('no_checkin')+'</span>';
+  var ha='';
+  if(nw){
+    ha='<button class="bell" onclick="beep('+nw.id+')">🔔 '+tx('call')+' '+esc(nw.name)+'</button>'
+      +'<button class="vib" onclick="callViber('+nw.id+')"'+(nw.viber?'':' disabled title="Chưa có số Viber"')+'>Viber</button>'
+      +(nw.beep?'<span class="beeped" style="align-self:center">✓ '+tx('called')+' '+esc(nw.beep)+'</span>':'');
+  }
+  document.getElementById('heroAct').innerHTML=ha;
+  var qh='';
+  q.slice(0,6).forEach(function(w,i){
+    qh+='<div class="qi'+(i===0?' first':'')+'"><span class="qn">'+(i+1)+'</span><span>'+esc(w.name)+'</span><span class="qt">'+fT(w.count)+'t</span></div>';
+  });
+  document.getElementById('queue').innerHTML=qh;
+
+  // ----- khach dang cho -----
+  var cw='';
+  if(!state.customers.length){
+    cw='<div class="emptybox">'+tx('cus_empty')+' <b>Check-in</b>.</div>';
+  } else {
+    cw='<div class="cusgrid">';
+    state.customers.forEach(function(c){
+      var chips=''; (c.svc||[]).forEach(function(id){var v=svcById(id);
+        if(v) chips+='<span class="chip" style="--c:'+esc(v.color)+'">'+esc(v.code)+'</span>';});
+      var as='';
+      if(c.status==='serving'&&c.assigns.length){
+        c.assigns.forEach(function(a){ as+='<div><b>'+esc(a.name)+'</b> · '+esc(a.code)+' · '+fT(a.turn)+'t</div>'; });
+      }
+      cw+='<div class="cus'+(c.status==='serving'?' serving':'')+'">'
+        +'<div class="cushead"><span class="cusnm">'+esc(c.name)+'</span>'
+        +'<span class="cust">'+(c.status==='serving'?tx('c_from'):tx('c_wait_from'))+' '+c.time+'</span></div>'
+        +'<div style="margin-top:7px">'+cusBadge(c)+'</div>'
+        +'<div class="chips">'+(chips||'<span class="chip ghost">'+tx('c_nosvc')+'</span>')+'</div>'
+        +(as?'<div class="cusass">'+as+'</div>':'')
+        +(c.status==='serving'
+           ? '<button class="cusbtn done" onclick="finishCus('+c.id+')">'+tx('c_done')+'</button>'
+           : '<button class="cusbtn" onclick="openGive(0,'+c.id+')">'+tx('c_assign')+'</button>'
+             +'<div style="display:flex;gap:6px;margin-top:6px">'
+             +'<button class="cusbtn done" style="margin-top:0" onclick="openCheckin('+c.id+')">'+tx('c_edit')+'</button>'
+             +'<button class="cusbtn done" style="margin-top:0" onclick="delCus('+c.id+')">'+tx('c_drop')+'</button></div>')
+        +'</div>';
+    });
+    cw+='</div>';
+  }
+  document.getElementById('cusWrap').innerHTML=cw;
+
+  // ----- tho: nhom theo trang thai, 2 kieu hien thi -----
+  var serving={};
+  state.customers.forEach(function(c){ if(c.status==='serving') (c.assigns||[]).forEach(function(a){
+    serving[a.tech]=serving[a.tech]||[]; serving[a.tech].push(c.name); }); });
+
+  var gWait=[], gServe=[], gOff=[];
+  ws.forEach(function(w){
+    if(!w.checkin) gOff.push(w);
+    else if(serving[w.id]) gServe.push(w);
+    else gWait.push(w);
+  });
+  gWait.sort(function(a,b){return (pos[a.id]||99)-(pos[b.id]||99);});
+  gServe.sort(function(a,b){return (pos[a.id]||99)-(pos[b.id]||99);});
+
+  document.getElementById('techCount').innerHTML =
+    q.length+' '+tx('tech_on')+' · <b>'+gWait.length+'</b> '+tx('tech_waiting')+' · '+gServe.length+' '+tx('tech_serving');
+
+  function chipsHTML(w){
+    var h=''; chipsOf(w.id).forEach(function(e){ (e.codes||[]).forEach(function(c){
+      h+='<span class="chip" style="--c:'+esc(c.color)+'">'+esc(c.code)+'</span>'; }); });
+    return h;
+  }
+  function actBtns(w,on,small){
+    var cls=small?'':'';
+    return '<button class="go" '+(on?'':'disabled')+' onclick="openGive('+w.id+',0)">'+tx('b_give')+'</button>'
+      +(on?'<button class="ic" title="Gọi thợ" onclick="beep('+w.id+')">🔔</button>'
+          +'<button class="ic" title="Nhắn Viber" onclick="callViber('+w.id+')"'+(w.viber?'':' disabled')+'>💬</button>':'')
+      +'<button class="'+(on?'leave':'')+'" onclick="'+(on?'checkout':'checkin')+'('+w.id+')">'+(on?tx('b_leave'):tx('b_checkin'))+'</button>';
+  }
+
+  function rowHTML(w){
+    var isN=(w.id===nid), on=!!w.checkin;
+    var cus=serving[w.id]?serving[w.id].join(', '):'';
+    return '<div class="trow'+(isN?' up':'')+(on?'':' dim')+'">'
+      +'<span class="lo">'+(on?(isN?'#1':'#'+pos[w.id]):'–')+'</span>'
+      +'<span class="lav">'+esc(initials(w.name))+'</span>'
+      +'<span class="lnm">'+esc(w.name)+'</span>'
+      +(cus?'<span class="lcus">👤 '+esc(cus)+'</span>'+(busyNow(w)?'<span class="eta">'+minsLeft(w.busyUntil)+'p</span>':''):'')
+      +'<span class="lch">'+chipsHTML(w)+'</span>'
+      +'<span class="ltn mono">'+fT(w.count)+'</span>'
+      +'<span class="lrv mono">'+fM(w.rev)+'</span>'
+      +'<span class="lac">'+actBtns(w,on,1)+'</span>'
+      +'</div>';
+  }
+  function cardHTML(w){
+    var isN=(w.id===nid), on=!!w.checkin;
+    var ch=chipsHTML(w)||'<span class="chip ghost">'+tx('no_cus_yet')+'</span>';
+    var cus=serving[w.id]?serving[w.id].join(', '):'';
+    return '<div class="card'+(isN?' next':'')+(on?'':' off')+'">'
+      +'<div class="chead"><div class="av">'+esc(initials(w.name))+'</div>'
+      +'<div style="flex:1;min-width:0"><div class="cname">'+esc(w.name)+'</div>'
+      +'<div class="cstate'+(on?' on':'')+'">'+(on?(isN?tx('s_turn'):(cus?tx('s_serving'):tx('s_waiting'))):tx('s_off'))+'</div></div>'
+      +(on?'<span class="ordn'+(isN?' up':'')+'">#'+pos[w.id]+'</span>':'')+'</div>'
+      +(cus?'<div class="cust" style="margin-top:7px">👤 '+esc(cus)+' '+techEta(w)+'</div>':'')
+      +'<div class="cmeta"><span class="cturn mono">'+fT(w.count)+'</span><span class="cturnl">'+tx('turn_l')+'</span>'
+      +'<span class="crev mono">'+fM(w.rev)+'</span></div>'
+      +'<div class="chips">'+ch+'</div>'
+      +'<div class="cact"><button class="go" '+(on?'':'disabled')+' onclick="openGive('+w.id+',0)">Giao khách</button>'
+      +'<button class="'+(on?'leave':'')+'" onclick="'+(on?'checkout':'checkin')+'('+w.id+')">'+(on?tx('b_leave'):tx('b_checkin'))+'</button></div>'
+      +(on?('<div class="cact2">'
+        +'<button class="bell" onclick="beep('+w.id+')">🔔 '+tx('call')+'</button>'
+        +'<button class="vib" onclick="callViber('+w.id+')"'+(w.viber?'':' disabled')+'>Viber</button>'
+        +'</div>'+(w.beep?'<div class="beeped">✓ '+tx('called')+' '+esc(w.beep)+'</div>':'')):'')
+      +'</div>';
+  }
+  function grpHTML(list,title,cls,collapsible){
+    if(!list.length) return '';
+    var body;
+    if(collapsible && offHidden){ body=''; }
+    else if(view==='grid'){ body='<div class="grid">'+list.map(cardHTML).join('')+'</div>'; }
+    else { body='<div class="lst">'+list.map(rowHTML).join('')+'</div>'; }
+    return '<div class="grp"><div class="grph '+cls+(collapsible?' of':'')+'"'
+      +(collapsible?' onclick="toggleOff()"':'')+'>'
+      +'<span class="dotg"></span><span class="gt">'+title+'</span><span class="gc">'+list.length+'</span>'
+      +(collapsible?'<span class="gc">'+(offHidden?tx('g_show'):tx('g_hide'))+'</span>':'')
+      +'</div>'+body+'</div>';
+  }
+  document.getElementById('techWrap').innerHTML =
+    ws.length
+      ? ( grpHTML(gWait,tx('g_wait'),'up',false)
+        + grpHTML(gServe,tx('g_serving'),'sv',false)
+        + grpHTML(gOff,tx('g_off'),'of',true) )
+      : '<div class="emptybox">'+tx('tech_empty')+'</div>';
+  document.getElementById('vList').classList.toggle('on',view==='list');
+  document.getElementById('vGrid').classList.toggle('on',view==='grid');
+
+  var tb='';
+  ws.forEach(function(w){
+    var on=!!w.checkin, evs=chipsOf(w.id);
+    var sv=''; evs.forEach(function(e,i){
+      sv+='<span class="chip" style="--c:'+esc(e.codes[0]?e.codes[0].color:'#888')+'">'+esc(e.code)+'</span> ';
+    });
+    if(!sv) sv='<span class="dash">—</span>';
+    tb+='<tr><td class="tn">'+(on?'<span class="seqn'+(w.id===nid?' up':'')+'">'+pos[w.id]+'</span>':'<span class="seqn">–</span>')+esc(w.name)+'</td>'
+      +'<td class="num mono">'+fT(w.count)+'</td>'
+      +'<td><div class="chips" style="margin:0">'+sv+'</div></td>'
+      +'<td class="mono">'+fM(w.rev)+'</td>'
+      +'<td class="mono dash">'+(w.count>0?fM(Math.round(w.rev/w.count*100)/100):'—')+'</td></tr>';
+  });
+  document.getElementById('tbody').innerHTML=tb;
+
+  // ----- doanh thu tho, xep hang theo tien -----
+  var rank=ws.slice().sort(function(a,b){return b.rev-a.rev || b.count-a.count;});
+  var maxRev=rank.reduce(function(m,w){return Math.max(m,w.rev);},0);
+  var rh='';
+  if(!tr){
+    rh='<div class="none">'+tx('rev_empty')+'</div>';
+  } else {
+    var shown=rank.filter(function(w){return w.rev>0;});
+    var hidden=rank.length-shown.length;
+    shown.forEach(function(w,i){
+      var pct = maxRev>0 ? Math.max(w.rev/maxRev*100,0) : 0;
+      var per = w.count>0 ? fM(Math.round(w.rev/w.count*100)/100) : '—';
+      var tip = w.name+': '+fM(w.rev)+' · '+fT(w.count)+' turn'+(w.count>0?' · '+per+'/turn':'');
+      rh+='<div class="rrow'+(w.rev>0?'':' zero')+'" title="'+esc(tip)+'">'
+        +'<span class="rk">'+(i+1)+'</span>'
+        +'<span class="rn">'+esc(w.name)+'</span>'
+        +'<div class="rbar"><div class="rfill" style="width:'+pct.toFixed(1)+'%"></div></div>'
+        +'<span class="rv mono">'+fM(w.rev)+'</span>'
+        +'<span class="rpt mono">'+fT(w.count)+'t · '+per+'/t</span>'
+        +'</div>';
+    });
+    if(hidden) rh+='<div class="rrow zero"><span class="rk">–</span><span class="rn" style="width:auto;flex:1">'+hidden+' '+tx('rev_more')+'</span>'
+      +'<div class="rbar"></div><span class="rv mono">$0</span><span class="rpt mono">0t</span></div>';
+  }
+  document.getElementById('revbox').innerHTML=rh;
+
+  var cb='';
+  if(!state.calls.length) cb='<div class="none">'+tx('calls_empty')+'</div>';
+  state.calls.slice(0,12).forEach(function(c){
+    cb+='<div class="cl"><div class="lil"><span class="lwho">'+esc(c.name)+'</span>'
+      +(c.via==='viber'?'<span class="via v">Viber</span>':'<span class="via">'+tx('via_app')+'</span>')
+      +(c.auto?'<span class="kind">'+tx('via_auto')+'</span>':'')+'</div>'
+      +'<span class="lt mono">'+c.time+'</span></div>';
+  });
+  document.getElementById('callbox').innerHTML=cb;
+
+  var lg='';
+  if(!state.log.length) lg='<div class="none">'+tx('log_empty')+'</div>';
+  state.log.forEach(function(e){
+    var cs=''; (e.codes||[]).forEach(function(c){cs+='<span class="chip" style="--c:'+esc(c.color)+'">'+esc(c.code)+'</span>';});
+    var kd=e.kind==='request'?'<span class="kind">'+tx('k_request')+'</span>':(e.kind==='appt'?'<span class="kind">'+tx('k_appt')+'</span>':'');
+    var cn=e.cus?'<span class="cust">· '+esc(e.cus)+'</span>':'';
+    if(e.pro) cn+='<span class="chip" style="--c:var(--brand)">★</span>';
+    if(e.skip) cn+='<span class="jump" title="'+esc(e.skip)+'">'+tx('k_skip')+'</span>';
+    lg+='<div class="li"><div class="lil"><span class="lwho">'+esc(e.name)+'</span>'+cs+cn+kd+'</div>'
+      +'<div class="lr"><span class="mono">'+fM(e.amount)+'</span> · <b>'+fT(e.turn)+'t</b><br><span class="lt mono">'+e.time+'</span></div></div>';
+  });
+  document.getElementById('logbox').innerHTML=lg;
+
+  var th='';
+  ws.forEach(function(w){
+    th+='<div class="row"><span class="rn">'+esc(w.name)+'</span>'
+      +'<button class="ib" onclick="moveTech('+w.id+',\'up\')">▲</button>'
+      +'<button class="ib" onclick="moveTech('+w.id+',\'down\')">▼</button>'
+      +'<button class="ib" onclick="openProf('+w.id+')">'+tx('b_editprof')+'</button>'
+      +'<input class="vbn" type="tel" value="'+esc(w.viber||'')+'" placeholder="'+tx('ph_viber')+'" onchange="setViber('+w.id+',this.value)">'
+      +'<button class="ib dang" onclick="delTech('+w.id+')">'+tx('b_del')+'</button></div>';
+  });
+  document.getElementById('techBox').innerHTML=th;
+}
+
+['ovGive','ovSvc','ovCfg','ovCheckin','ovSkill','ovProf','ovHBNew','ovDanger'].forEach(function(id){
+  document.getElementById(id).addEventListener('click',function(e){ if(e.target===this) this.classList.remove('on'); });});
+
+/* canh bao cho hanh dong khong hoan tac duoc */
+function askDanger(o){
+  document.getElementById('dgIcon').textContent = o.icon||'⚠️';
+  document.getElementById('dgTitle').textContent = o.title||'Xác nhận';
+  document.getElementById('dgDesc').textContent  = o.desc||'';
+  var h='';
+  if(o.lose&&o.lose.length){
+    h='<div class="dglist"><div class="dgh">'+(o.loseTitle||'Sẽ mất')+'</div>';
+    o.lose.forEach(function(x){ h+='<div class="dgrow"><span>'+esc(x[0])+'</span><b>'+esc(x[1])+'</b></div>'; });
+    h+='</div>';
+  }
+  if(o.note) h+='<div class="why" style="margin-left:0;margin-top:10px">'+esc(o.note)+'</div>';
+  document.getElementById('dgBody').innerHTML=h;
+  document.getElementById('dgNo').textContent  = o.no||'Không, giữ nguyên';
+  var yes=document.getElementById('dgYes');
+  yes.textContent = o.yes||'Xác nhận';
+  yes.className = o.soft?'ok':'kill';
+  yes.onclick=function(){ closeDanger(); o.ok&&o.ok(); };
+  document.getElementById('ovDanger').classList.add('on');
+}
+function closeDanger(){ document.getElementById('ovDanger').classList.remove('on'); }
+
+function toggleGear(e){ e.stopPropagation(); document.getElementById('gearMenu').classList.toggle('on'); }
+function closeGear(){ document.getElementById('gearMenu').classList.remove('on'); }
+document.addEventListener('click',function(){ closeGear(); closeLang(); });
+document.getElementById('langMenu').addEventListener('click',function(e){ e.stopPropagation(); });
+document.getElementById('gearMenu').addEventListener('click',function(e){ e.stopPropagation(); });
+
+(function(){
+  var t=document.querySelector('.top');
+  var onScroll=function(){ if(t) t.classList.toggle('stuck', window.scrollY>6); };
+  window.addEventListener('scroll',onScroll,{passive:true}); onScroll();
+})();
+state=load(); save(); applyStatic(); render();
+setInterval(function(){
+  if(document.querySelector('.ov.on')) return;      // dung khi dang mo hop thoai
+  if(document.getElementById('ovHB').classList.contains('on')) return;
+  render();
+}, 30000);
+</script>
