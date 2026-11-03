@@ -434,7 +434,7 @@
     pageSize = 10,
     visibleColumns = null,
     paymentMode = "";
-  // PO feedback 09/10: read-only lookup above the embedded merchant screens.
+  // PO feedback 09/10: read-only lookup in the dedicated Check balance tab.
   // Reuse issued cards and the existing POS demo balances; never write on lookup.
   const balanceForm = document.getElementById("gc-balance-form"),
     balanceCode = document.getElementById("gc-balance-code"),
@@ -446,6 +446,31 @@
     balanceResult.className = "";
     balanceResult.replaceChildren();
   }
+  const centerTabs = [...document.querySelectorAll("[data-gc-center-tab]")];
+  function selectCenterTab(next, focus = false) {
+    for (const tab of centerTabs) {
+      const selected = tab.dataset.gcCenterTab === next,
+        panel = document.getElementById(tab.getAttribute("aria-controls"));
+      tab.setAttribute("aria-selected", String(selected));
+      tab.tabIndex = selected ? 0 : -1;
+      if (panel) panel.hidden = !selected;
+      if (selected && focus) tab.focus();
+    }
+    if (next === "balance") clearBalanceResult();
+  }
+  centerTabs.forEach((tab, index) => {
+    tab.addEventListener("click", () => selectCenterTab(tab.dataset.gcCenterTab));
+    tab.addEventListener("keydown", (event) => {
+      let nextIndex;
+      if (event.key === "ArrowRight") nextIndex = (index + 1) % centerTabs.length;
+      else if (event.key === "ArrowLeft") nextIndex = (index + centerTabs.length - 1) % centerTabs.length;
+      else if (event.key === "Home") nextIndex = 0;
+      else if (event.key === "End") nextIndex = centerTabs.length - 1;
+      else return;
+      event.preventDefault();
+      selectCenterTab(centerTabs[nextIndex].dataset.gcCenterTab, true);
+    });
+  });
   function checkBalance(event) {
     event.preventDefault();
     clearBalanceResult();

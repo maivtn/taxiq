@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="../assets/nexora-icons.css" />
     <link rel="stylesheet" href="../assets/nexora-shell.css?v=20261030-shared-header-v47" />
     <link rel="stylesheet" href="../assets/front-desk-tabs.css" />
-    <link rel="stylesheet" href="../assets/gift-card-center.css?v=20261103-check-balance" />
+    <link rel="stylesheet" href="../assets/gift-card-center.css?v=20261103-center-tabs" />
   <link rel="icon" type="image/png" sizes="128x128" href="../assets/flaticon-flat/favicon-letter-n-9203636.png">
   </head>
   <body>
@@ -25,7 +25,11 @@
           <h1 class="gc-front-title">Front Desk</h1>
           <p class="subtitle gc-front-subtitle">Check in guests, manage open tickets, and run the turn board.</p>
           <nav class="workflow" data-front-desk-tabs aria-label="Front Desk sections"></nav>
-          <section class="gift-center gc-card gc-balance" aria-labelledby="gc-balance-title">
+          <div class="gift-center gc-top-tabs gc-center-tabs" role="tablist" aria-label="Gift Card Center">
+            <button type="button" role="tab" id="gc-issue-tab" data-gc-center-tab="issue" aria-controls="gc-issue-panel" aria-selected="true">Issue Gift Card</button>
+            <button type="button" role="tab" id="gc-balance-tab" data-gc-center-tab="balance" aria-controls="gc-balance-panel" aria-selected="false" tabindex="-1">Check balance</button>
+          </div>
+          <section class="gift-center gc-card gc-balance" id="gc-balance-panel" role="tabpanel" aria-labelledby="gc-balance-tab" tabindex="0" hidden>
             <div class="gc-balance-heading">
               <h2 id="gc-balance-title">Check balance</h2>
               <p>Look up an existing card.</p>
@@ -42,7 +46,7 @@
               <div id="gc-balance-result" role="status" aria-live="polite" aria-atomic="true" hidden></div>
             </form>
           </section>
-          <section class="gc-portal" aria-label="Secure Gift Card">
+          <section class="gc-portal" id="gc-issue-panel" role="tabpanel" aria-labelledby="gc-issue-tab" tabindex="0">
             <header class="gc-portal-head">
               <strong><i data-lucide="gift" aria-hidden="true"></i>Secure Gift Card</strong>
               <a href="gift-card-center.html?view=cards" target="_blank" rel="noopener noreferrer"><i data-lucide="external-link" aria-hidden="true"></i>Open Merchant Portal</a>
@@ -69,6 +73,6 @@
     <script src="../assets/front-desk-tabs.js"></script>
     <script src="../assets/gift-card-brand-prompts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="../assets/gift-card-center.js?v=20261103-check-balance"></script>
+    <script src="../assets/gift-card-center.js?v=20261103-center-tabs"></script>
   </body>
 </html>
