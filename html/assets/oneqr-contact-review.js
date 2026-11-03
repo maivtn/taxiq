@@ -10,12 +10,9 @@
   const esc = profile.escapeText;
   const icons = () => window.lucide?.createIcons();
   const clone = value => JSON.parse(JSON.stringify(value));
-  const roster = [
-    { id: 'mary-nguyen', name: 'Mary Nguyen', role: 'manager', avatar: '../oneqr-dev/assets/avatars/mary-demo.jpg' },
-    { id: 'kim-nguyen', name: 'Kim Nguyen', role: 'technician', avatar: '../oneqr-dev/assets/avatars/kim-demo.jpg' },
-    { id: 'chloe', name: 'Chloe', role: 'technician', avatar: '' }
-  ];
-  const groupTitle = group => group === 'manager' ? 'Manager' : 'Technician';
+  const roster = profile.teamMembers;
+  const roleGroups = profile.teamRoles;
+  const groupTitle = group => roleGroups.find(role => role.role === group)?.title || '';
   const member = id => roster.find(person => person.id === id);
   const contactGroup = contact => contact.role || member(contact.memberId)?.role || '';
   const contactName = contact => contact.name ?? member(contact.memberId)?.name ?? '';
@@ -160,7 +157,7 @@
       const note = shareState(contact);
       const role = contactGroup(contact);
       return '<article class="contact-team-row' + (selectedPreview === contact.id ? ' is-active' : '') + '" data-contact-row="' + esc(contact.id) + '" tabindex="0" aria-label="' + esc(contactName(contact) || 'Contact') + '"' + (selectedPreview === contact.id ? ' aria-current="true"' : '') + '>' +
-        '<div class="contact-team-identity">' + avatar({ name: contactName(contact), avatar: person?.avatar }) + '<div class="contact-inline-fields"><label class="contact-field"><span>Name</span><input type="text" data-team-name value="' + esc(contactName(contact)) + '" maxlength="100" autocomplete="off" required></label><label class="contact-field"><span>Role</span><select data-team-role aria-label="Role"><option value="manager"' + (role === 'manager' ? ' selected' : '') + '>Manager</option><option value="technician"' + (role === 'technician' ? ' selected' : '') + '>Technician</option></select></label></div></div>' +
+        '<div class="contact-team-identity">' + avatar({ name: contactName(contact), avatar: person?.avatar }) + '<div class="contact-inline-fields"><label class="contact-field"><span>Name</span><input type="text" data-team-name value="' + esc(contactName(contact)) + '" maxlength="100" autocomplete="off" required></label><label class="contact-field"><span>Role</span><select data-team-role aria-label="Role">' + roleGroups.map(option => '<option value="' + esc(option.role) + '"' + (role === option.role ? ' selected' : '') + '>' + esc(option.title) + '</option>').join('') + '</select></label></div></div>' +
         '<div class="contact-team-row-controls"><label class="contact-public-switch contact-row-public"><span>Public contact</span><input type="checkbox" role="switch" data-team-public' + (contact.public ? ' checked' : '') + '></label>' +
         '<div class="contact-team-actions"><button type="button" data-team-action="copy"' + (note ? ' disabled' : '') + '>Copy link</button><button type="button" data-team-action="qr"' + (note ? ' disabled' : '') + '>View QR</button><button type="button" data-team-action="download"' + (note ? ' disabled' : '') + '>Download QR</button></div><button type="button" class="contact-remove-button" data-team-action="remove">Remove</button></div>' +
         (note ? '<p class="contact-share-note">' + esc(note) + '</p>' : '') + '</article>';
@@ -212,8 +209,7 @@
   function results() {
     const search = $('#contact-member-search').value.trim().toLowerCase();
     const choices = roster.filter(person => (person.name + ' ' + groupTitle(person.role)).toLowerCase().includes(search));
-    const groups = [{ role: 'manager', label: 'Managers' }, { role: 'technician', label: 'Technicians' }];
-    $('#contact-member-groups').innerHTML = choices.length ? groups.map(group => {
+    $('#contact-member-groups').innerHTML = choices.length ? roleGroups.map(group => {
       const people = choices.filter(person => person.role === group.role);
       if (!people.length) return '';
       return '<fieldset class="contact-member-group"><legend>' + group.label + '</legend>' + people.map(person => {
@@ -268,7 +264,7 @@
       field.reportValidity();
       return false;
     }
-    const invalid = team(draft).find(contact => !['manager', 'technician'].includes(contactGroup(contact)));
+    const invalid = team(draft).find(contact => !roleGroups.some(role => role.role === contactGroup(contact)));
     if (invalid) {
       setTab('team'); selectContact(invalid.id);
       say('This contact is unavailable');
@@ -502,11 +498,9 @@
   function renderPicker() {
     const shop = profile.read();
     const contacts = publicContacts();
-    const groups = [
-      { title: 'Shop', cards: [cardFor(shop)] },
-      { title: 'Managers', cards: contacts.filter(person => contactGroup(person) === 'manager').map(person => cardFor(shop, person.id)) },
-      { title: 'Technicians', cards: contacts.filter(person => contactGroup(person) === 'technician').map(person => cardFor(shop, person.id)) }
-    ];
+    const groups = [{ title: 'Shop', cards: [cardFor(shop)] }].concat(roleGroups.map(group => ({
+      title: group.label, cards: contacts.filter(person => contactGroup(person) === group.role).map(person => cardFor(shop, person.id))
+    })));
     const active = isEnabled();
     const available = groups.flatMap(group => group.cards);
     const card = active && available.find(person => person.contactId === selected);

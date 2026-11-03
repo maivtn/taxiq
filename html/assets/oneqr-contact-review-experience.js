@@ -4,24 +4,52 @@
   var PROFILE_KEY = 'taxiq:oneqr-contact-review:card';
   var LEADS_KEY = 'taxiq:oneqr-contact-review:leads';
   var phoneControl = window.NEXORA_ONEQR_PHONE;
+  var teamRoles = [
+    { role: 'manager', title: 'Manager', label: 'Managers' },
+    { role: 'frontdesk', title: 'Front Desk', label: 'Front Desk' },
+    { role: 'technician', title: 'Technician', label: 'Technicians' }
+  ];
+  var teamMembers = [
+    { id: 'mary-nguyen', name: 'Mary Nguyen', role: 'manager', avatar: '../oneqr-dev/assets/avatars/mary-demo.jpg' },
+    { id: 'linda', name: 'Linda', role: 'manager', avatar: '' },
+    { id: 'lan-t', name: 'Lan T.', role: 'frontdesk', avatar: '' },
+    { id: 'mai-p', name: 'Mai P.', role: 'frontdesk', avatar: '' },
+    { id: 'kim-nguyen', name: 'Kim Nguyen', role: 'technician', avatar: '../oneqr-dev/assets/avatars/kim-demo.jpg' },
+    { id: 'chloe', name: 'Chloe', role: 'technician', avatar: '' },
+    { id: 'tina', name: 'Tina', role: 'technician', avatar: '' },
+    { id: 'helen', name: 'Helen', role: 'technician', avatar: '' },
+    { id: 'andy', name: 'Andy', role: 'technician', avatar: '' },
+    { id: 'vy', name: 'Vy', role: 'technician', avatar: '' }
+  ];
   var defaults = {
     name: 'Bitcoin Nail Bar', title: 'Nail salon · Houston', phone: '+1 (346) 802-4906',
     email: 'hello@bitcoinnailbar.com', website: 'https://bitcoinnailbar.com',
     address: '9793 Westheimer Rd, Suite A', city: 'Houston', region: 'TX', zip: '77042',
     bio: 'Beauty, care, and a better booking experience.', blurb: '', addressMode: 'full',
     showPhone: true, showHours: true, openTime: '09:30', closeTime: '19:00', closedDays: [],
-    theme: 'indigo', configured: false, shopId: 'bitcoin-nail-bar', teamContacts: []
+    theme: 'indigo', configured: false, shopId: 'bitcoin-nail-bar', teamContacts: [], teamContactsDemoVersion: 1
   };
+  defaults.teamContacts = teamMembers.map(function (person) {
+    return { id: person.id, memberId: person.id, shopId: defaults.shopId, name: person.name,
+      role: person.role, group: person.role, title: teamRoles.find(function (role) { return role.role === person.role; }).title, public: true };
+  });
 
   function readProfile() {
     try {
-      var card = Object.assign({}, defaults, JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null'));
+      var saved = JSON.parse(localStorage.getItem(PROFILE_KEY) || 'null');
+      var card = Object.assign({}, defaults, saved);
       card.phone = phoneControl.format(card.phone);
-      card.teamContacts = Array.isArray(card.teamContacts) ? card.teamContacts : [];
+      card.teamContacts = (Array.isArray(card.teamContacts) ? card.teamContacts : []).map(function (contact) { return Object.assign({}, contact); });
+      if (!saved || saved.teamContactsDemoVersion !== defaults.teamContactsDemoVersion) {
+        defaults.teamContacts.forEach(function (contact) {
+          if (!card.teamContacts.some(function (person) { return person.memberId === contact.memberId; })) card.teamContacts.push(Object.assign({}, contact));
+        });
+      }
+      card.teamContactsDemoVersion = defaults.teamContactsDemoVersion;
       card.shopId = defaults.shopId;
       return card;
     }
-    catch (error) { return Object.assign({}, defaults); }
+    catch (error) { return JSON.parse(JSON.stringify(defaults)); }
   }
 
   function escapeText(value) {
@@ -187,7 +215,7 @@
     if (event.key === PROFILE_KEY || event.key === null) render();
     if (event.key === LEADS_KEY || event.key === null) document.dispatchEvent(new CustomEvent('oneqr:leads-changed'));
   });
-  window.NEXORA_ONEQR_PROFILE = { defaults: defaults, read: readProfile, address: address, hours: hours,
+  window.NEXORA_ONEQR_PROFILE = { defaults: defaults, teamMembers: teamMembers, teamRoles: teamRoles, read: readProfile, address: address, hours: hours,
     displayTime: displayTime, escapeText: escapeText, pageUrl: pageUrl, download: download,
     downloadVCard: downloadVCard, readLeads: readLeads, saveLeads: saveLeads, render: render };
   render();
