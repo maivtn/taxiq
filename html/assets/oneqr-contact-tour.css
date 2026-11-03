@@ -1,0 +1,28 @@
+.oneqr-tour-trigger { flex-shrink: 0; gap: 7px; }
+.oneqr-tour-trigger img { width: 20px; height: 20px; object-fit: contain; }
+.oneqr-tour-spot { outline: 3px solid #6366f1 !important; outline-offset: 5px; box-shadow: 0 0 0 8px #6366f12e !important; scroll-margin-block: 100px 180px; }
+.oneqr-ai-tour { position: fixed; inset: auto 0 0; z-index: 10000; width: 100%; max-width: none; margin: 0; padding: 0 12px calc(env(safe-area-inset-bottom, 0px) + 12px); border: 0; overflow: visible; background: transparent; color: #fff; font-family: Inter, sans-serif; pointer-events: none; }
+.oneqr-ai-tour[hidden] { display: none !important; }
+.oneqr-ai-tour::backdrop { background: transparent; pointer-events: none; }
+.oneqr-ai-tour * { box-sizing: border-box; }
+.oneqr-tour-card { max-width: 720px; margin: 0 auto; overflow: hidden; border: 1px solid #3b3780; border-radius: 16px; background: #15133a; color: #fff; box-shadow: 0 20px 50px -10px #0008; pointer-events: auto; }
+.oneqr-tour-head { display: flex; align-items: center; gap: 8px; padding: 8px 12px; background: linear-gradient(90deg, #4f46e5, #7c3aed); }
+.oneqr-tour-head b { min-width: 0; flex: 1; font-size: 12px; font-weight: 750; letter-spacing: .12em; line-height: 1.4; }
+.oneqr-tour-step { color: #fff; font-family: ui-monospace, monospace; font-size: 11px; opacity: .85; }
+.oneqr-tour-head button { display: grid; width: 32px; height: 32px; flex: 0 0 32px; padding: 0; place-items: center; border: 0; border-radius: 8px; background: #ffffff29; color: #fff; font: inherit; font-size: 14px; line-height: 1; cursor: pointer; }
+.oneqr-tour-head button:hover { background: #ffffff45; }
+.oneqr-tour-head button:focus-visible { outline: 2px solid #fde68a; outline-offset: 2px; }
+.oneqr-tour-progress { height: 3px; overflow: hidden; background: #ffffff26; }
+.oneqr-tour-progress i { display: block; width: 0; height: 100%; background: #fcd34d; }
+.oneqr-tour-body { min-height: 57px; padding: 12px 14px 14px; overflow-wrap: anywhere; color: #c3c0f5; font-size: 13px; line-height: 1.65; }
+@media (max-width: 650px) {
+  .oneqr-tour-trigger { align-self: flex-end; }
+  .oneqr-ai-tour { padding-right: 8px; padding-left: 8px; }
+  .oneqr-tour-head { gap: 6px; padding: 8px 10px; }
+  .oneqr-tour-head b { font-size: 10px; letter-spacing: .08em; }
+  .oneqr-tour-head button { width: 36px; height: 36px; flex-basis: 36px; }
+  .oneqr-tour-body { font-size: 12px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .oneqr-tour-spot { scroll-behavior: auto; }
+}
