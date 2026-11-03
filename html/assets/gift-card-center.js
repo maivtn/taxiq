@@ -627,7 +627,7 @@
           expiration = result.expires ? date(result.expires) : "No Expiration";
         balanceCode.value = result.number || result.code || result.id;
         balanceResult.className = "gc-balance-result";
-        balanceResult.innerHTML = `${balanceCardThumbnail(result, currency)}<dl class="gc-balance-details"><div><dt>Current Balance:</dt><dd>${esc(amount)} ${esc(currency)}</dd></div><div><dt>Times Used:</dt><dd>${timesUsed}</dd></div><div><dt>Expiration:</dt><dd>${esc(expiration)}</dd></div></dl>`;
+        balanceResult.innerHTML = `${balanceCardThumbnail(result, currency)}<dl class="gc-balance-details"><div><dt>Available:</dt><dd>${esc(amount)} ${esc(currency)}</dd></div><div><dt>Times Used:</dt><dd>${timesUsed}</dd></div><div><dt>Expiration:</dt><dd>${esc(expiration)}</dd></div></dl>`;
       }
     } catch (_) {
       balanceResult.className = "gc-balance-error";
