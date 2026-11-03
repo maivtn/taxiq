@@ -208,7 +208,7 @@
     const search = $('#contact-member-search').value.trim().toLowerCase();
     const choices = roster.filter(person => (person.name + ' ' + groupTitle(person.role)).toLowerCase().includes(search));
     const groups = [{ role: 'manager', label: 'Managers' }, { role: 'technician', label: 'Technicians' }];
-    $('#contact-member-results').innerHTML = choices.length ? groups.map(group => {
+    $('#contact-member-groups').innerHTML = choices.length ? groups.map(group => {
       const people = choices.filter(person => person.role === group.role);
       if (!people.length) return '';
       return '<fieldset class="contact-member-group"><legend>' + group.label + '</legend>' + people.map(person => {
@@ -310,6 +310,10 @@
   $('#contact-member-search').addEventListener('input', () => { openMemberPicker(); results(); });
   $('.contact-member-search').addEventListener('click', () => { $('#contact-member-search').focus(); openMemberPicker(); });
   $('#contact-member-results').addEventListener('click', event => {
+    if (event.target.closest('[data-close-member-picker]')) {
+      $('#contact-member-search').focus(); closeMemberPicker();
+      return;
+    }
     const button = event.target.closest('[data-add-member]');
     if (button) addMember(button.dataset.addMember);
   });

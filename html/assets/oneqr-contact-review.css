@@ -83,6 +83,10 @@
 .contact-member-search input::-webkit-search-cancel-button { display: none; }
 .contact-member-results { position: absolute; top: calc(100% + 5px); right: 0; left: 0; z-index: 3; display: grid; gap: 10px; max-height: 280px; padding: 8px; overflow-y: auto; border: 1px solid #d0d5dd; border-radius: 10px; background: #fff; box-shadow: 0 12px 28px #17203320; }
 .contact-member-results[hidden] { display: none; }
+.contact-member-picker-header { position: sticky; top: -8px; z-index: 1; display: flex; justify-content: flex-end; padding: 4px 0 6px; background: #fff; }
+.contact-member-picker-header .contact-review-button { min-height: 30px; padding: 5px 8px; }
+.contact-member-picker-header svg { width: 14px; height: 14px; }
+.contact-member-groups { display: grid; min-width: 0; gap: 10px; }
 .contact-member-group { display: grid; min-width: 0; gap: 5px; margin: 0; padding: 0; border: 0; }
 .contact-member-group legend { margin-bottom: 5px; color: #667085; font-size: 10px; font-weight: 750; }
 .contact-member-option { display: flex; align-items: center; gap: 8px; min-height: 44px; padding: 6px 8px; border: 1px solid #e4e7ec; border-radius: 8px; background: #fff; text-align: left; }
