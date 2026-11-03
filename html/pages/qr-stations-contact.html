@@ -1,0 +1,855 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nexora Touch - One QR Contact Review</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            nexoraCanvas: '#F8FAFC',
+            nexoraSurface: '#FFFFFF',
+            nexoraSurfaceMuted: '#F1F5F9',
+            nexoraBorder: '#E2E8F0',
+            nexoraRule: '#CBD5E1',
+            nexoraText: '#0B1C30',
+            nexoraMuted: '#565E74',
+            nexoraSubtle: '#64748B',
+            nexoraBrand: '#4648D4',
+            nexoraBrandDark: '#3A3BBF',
+            nexoraViolet: '#2D2EAA',
+            nexoraElectric: '#4648D4',
+            nexoraCyan: '#3A3BBF',
+            nexoraInfo: '#0284C7',
+            nexoraSuccess: '#10B981',
+            nexoraWarning: '#F59E0B',
+            nexoraWarningHover: '#D97706',
+            nexoraWarningActive: '#B45309',
+            nexoraDanger: '#EF4444',
+            nexoraInk: '#050505',
+            nexoraSidebar: '#0D1117',
+            nexoraPrimarySubtleDark: '#1E1E5F',
+            nexoraDarkSecondaryText: '#94A3B8',
+            nexoraDarkDisabled: '#4B5563',
+            nailPearl: '#F8FAFC',
+            nailBlush: '#E9E9FF',
+            nailRose: '#4648D4',
+            nailPlum: '#1E1E5F',
+            nailGold: '#F59E0B',
+            nailMint: '#EAFBF3'
+          },
+          boxShadow: {
+            phone: '0 24px 68px rgba(5, 5, 5, 0.36)',
+            card: '0 8px 24px rgba(70, 72, 212, 0.08)',
+            lift: '0 14px 32px rgba(70, 72, 212, 0.14)'
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/nexora-icons.css">
+  <link rel="stylesheet" href="../assets/nexora-shell.css?v=20261030-shared-header-v47">
+  <link rel="stylesheet" href="../assets/qr-stations.css?v=20261102-module-toolbar-pastels">
+  <link rel="stylesheet" href="../assets/oneqr-tip.css?v=tip-link-20261029">
+  <link rel="stylesheet" href="../assets/oneqr-contact-card.css?v=phone-mask-20261029">
+  <link rel="stylesheet" href="../assets/oneqr-contact-review.css?v=20261103">
+  <link rel="stylesheet" href="../assets/oneqr-experience.css?v=1">
+  <link rel="stylesheet" href="../assets/nexora-local-admin.css?v=merged-checkin-20261028">
+  <link rel="stylesheet" href="../assets/oneqr-checkin.css?v=merged-checkin-20261028">
+  <link rel="stylesheet" href="../assets/oneqr-phone.css?v=20261029">
+
+  <script src="../assets/industry-icons.js?v=2f6387c34b" data-industry-icons></script>
+  <link rel="icon" type="image/png" sizes="128x128" href="../assets/flaticon-flat/favicon-letter-n-9203636.png">
+</head>
+<body>
+  <div class="shell">
+    <aside class="sidebar" aria-label="Dashboard sidebar"></aside>
+
+    <div class="app-area">
+      <header class="header"></header>
+
+      <main class="content qr-stations-page" aria-label="QR Stations content">
+        <section class="qr-stations-shell" aria-labelledby="qr-stations-title">
+          <div class="qr-stations-heading">
+            <h1 id="qr-stations-title">One QR</h1>
+            <p>Set up your QR code and the ways your business receives payments.</p>
+
+            <div class="qr-tabs" role="tablist" aria-label="Stations and QR tabs">
+              <button id="qr-tab-one-qr" class="qr-tab is-active" type="button" role="tab" aria-selected="true" aria-controls="qr-panel-one-qr" data-qr-tab="one-qr">
+                <span class="qr-tab-icon"><i data-lucide="scan-line" aria-hidden="true"></i></span>
+                <span>OneQR</span>
+              </button>
+              <a id="qr-tab-advertising" class="qr-tab" href="qr-advertising.html" role="tab" aria-selected="false">
+                <span class="qr-tab-icon"><i data-lucide="megaphone" aria-hidden="true"></i></span>
+                <span>Advertising</span>
+              </a>
+              <button id="qr-tab-qr-stations" class="qr-tab" type="button" role="tab" aria-selected="false" aria-controls="qr-panel-qr-stations" data-qr-tab="qr-stations" tabindex="-1">
+                <span class="qr-tab-icon"><i data-lucide="hand-coins" aria-hidden="true"></i></span>
+                <span>Tip QR</span>
+              </button>
+              <button id="qr-tab-accept-payment" class="qr-tab" type="button" role="tab" aria-selected="false" aria-controls="qr-panel-accept-payment" data-qr-tab="accept-payment" tabindex="-1">
+                <span class="qr-tab-icon"><i data-lucide="credit-card" aria-hidden="true"></i></span>
+                <span>Payment Method</span>
+              </button>
+              <button id="qr-tab-check-in" class="qr-tab" type="button" role="tab" aria-selected="false" aria-controls="qr-panel-check-in" data-qr-tab="check-in" tabindex="-1"><span class="qr-tab-icon"><i data-lucide="scan-qr-code" aria-hidden="true"></i></span><span>Check-in</span></button>
+              <button id="qr-tab-referral-link" class="qr-tab" type="button" role="tab" aria-selected="false" aria-controls="qr-panel-referral-link" data-qr-tab="referral-link" tabindex="-1">
+                <span class="qr-tab-icon"><i data-lucide="share-2" aria-hidden="true"></i></span>
+                <span>Referral Link</span>
+              </button>
+              <button id="qr-tab-staff-invite-qr" class="qr-tab" type="button" role="tab" aria-selected="false" aria-controls="qr-panel-staff-invite-qr" data-qr-tab="staff-invite-qr" tabindex="-1">
+                <span class="qr-tab-icon"><i data-lucide="user-plus" aria-hidden="true"></i></span>
+                <span>Staff Invite QR</span>
+              </button>
+            </div>
+          </div>
+
+          <section id="qr-panel-qr-stations" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-qr-stations" data-qr-panel="qr-stations" hidden>
+            <div class="tip-qr" data-tip-qr lang="en" data-po-source="NEXORA_ONEQR_Tip_Payment_Methods (2).html">
+              <div class="tip-qr-heading">
+                <div>
+                  <h2 data-tip-copy="tipTitle">Create a tip QR code</h2>
+                  <p data-tip-copy="tipDescription">Create one tip QR code for your business. Customers scan it to select a technician and send a tip.</p>
+                </div>
+                <div class="tip-qr-language">
+                  <button type="button" data-tip-language="vi" aria-pressed="false" lang="vi">VI</button>
+                  <button type="button" data-tip-language="en" aria-pressed="true" lang="en">EN</button>
+                </div>
+              </div>
+              <div class="tip-qr-grid">
+                <article class="tip-qr-card">
+                  <div class="tip-qr-business">
+                    <button class="tip-qr-code" type="button" data-tip-code data-oneqr-view aria-label="View QR code" hidden><span class="qr-code-art" data-qr-value="../customer/oneqr-landing.html" data-qr-size="160" role="img" aria-label="Tip QR"></span></button>
+                    <div class="tip-qr-business-copy">
+                      <div class="tip-qr-business-title">
+                        <h3>Bitcoin Nail Bar</h3>
+                        <a class="tip-qr-open-link" href="../customer/oneqr-landing.html" target="_blank" rel="noopener" aria-label="Open OneQR landing page" data-tip-created hidden><i data-lucide="external-link" aria-hidden="true"></i></a>
+                      </div>
+                      <p><span data-tip-copy="qrCreateText" data-tip-before-create>Create one business tip QR; </span><span data-tip-copy="qrPrintText">Print copies for customers to use.</span></p>
+                      <p class="tip-qr-link nxa-link-wrap" data-tip-created hidden><a href="../customer/oneqr-landing.html" target="_blank" rel="noopener" data-tip-link>../customer/oneqr-landing.html</a></p>
+                      <div class="tip-qr-actions">
+                        <button class="tip-qr-button" type="button" data-tip-action="generate"><i data-lucide="qr-code" aria-hidden="true"></i><span data-tip-copy="generateTip">Generate tip QR</span></button>
+                        <button class="tip-qr-button is-info" type="button" data-tip-action="view" data-tip-created data-oneqr-view hidden><i data-lucide="qr-code" aria-hidden="true"></i><span data-tip-copy="viewQR">View QR to Download</span></button>
+                        <button class="tip-qr-button is-secondary" type="button" data-tip-action="copy" data-tip-created hidden><i data-lucide="copy" aria-hidden="true"></i><span data-tip-copy="copyLink" aria-live="polite">Copy link</span></button>
+                      </div>
+                    </div>
+                  </div>
+                </article>
+                <article class="tip-qr-card tip-qr-activity">
+                  <h3 data-tip-copy="activity">QR activity</h3>
+                  <p data-tip-copy="activityDesc">See total scans of your main QR code.</p>
+                  <dl class="tip-qr-stats">
+                    <div class="tip-qr-stat"><dt data-tip-copy="scans">Total QR scans</dt><dd>272</dd></div>
+                    <div class="tip-qr-stat"><dt data-tip-copy="tips">Tips received</dt><dd>$11,217.36</dd></div>
+                  </dl>
+                </article>
+              </div>
+              <section class="tip-qr-card tip-qr-how" aria-labelledby="tip-qr-how-title">
+                <h3 id="tip-qr-how-title" data-tip-copy="howTitle">How it works</h3>
+                <ol class="tip-qr-steps">
+                  <li class="tip-qr-step"><div class="tip-qr-step-heading"><b>01</b><i data-lucide="qr-code" aria-hidden="true"></i></div><p data-tip-copy="step1">View or print your business QR code.</p></li>
+                  <li class="tip-qr-step"><div class="tip-qr-step-heading"><b>02</b><i data-lucide="map-pin" aria-hidden="true"></i></div><p data-tip-copy="step2">Place copies in convenient locations.</p></li>
+                  <li class="tip-qr-step"><div class="tip-qr-step-heading"><b>03</b><i data-lucide="hand-coins" aria-hidden="true"></i></div><p data-tip-copy="step3">Customers scan, choose a technician and send a tip.</p></li>
+                </ol>
+                <p data-tip-copy="sameQR">Copies of the same QR show total scans only; they cannot identify which location was scanned.</p>
+              </section>
+            </div>
+          </section>
+
+          <section id="qr-panel-one-qr" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-one-qr" data-qr-panel="one-qr">
+          <section class="oneqr-section" aria-labelledby="oneqr-title">
+            <div class="oneqr-heading">
+              <div class="oneqr-heading-copy">
+                <h2 id="oneqr-title">OneQR Configuration <span class="contact-review-label">Demo preview</span></h2>
+                <p>One QR code that connects the entire customer journey and back-of-house operations.</p>
+              </div>
+            </div>
+
+            <section class="oneqr-stats-bar" aria-label="OneQR summary">
+              <div class="oneqr-stat">
+                <span class="oneqr-stat-label">Scans Today</span>
+                <strong>284</strong>
+              </div>
+              <div class="oneqr-stat">
+                <span class="oneqr-stat-label">Active QR</span>
+                <strong>12</strong>
+              </div>
+              <div class="oneqr-stat">
+                <span class="oneqr-stat-label">Pending Approvals</span>
+                <strong>3</strong>
+              </div>
+              <div class="oneqr-stat">
+                <span class="oneqr-stat-label">Self-service</span>
+                <strong>91%</strong>
+              </div>
+            </section>
+
+            <div class="oneqr-qrcard">
+              <div class="qr-code-frame oneqr-qrcard-frame" aria-label="OneQR code preview">
+                <div class="qr-code-art" data-qr-value="../oneqr-dev/index.html" data-qr-size="216" role="img" aria-label="OneQR code preview"></div>
+              </div>
+              <div class="oneqr-qrcard-detail">
+                <div class="oneqr-qrcard-title-row">
+                  <h3 id="oneqrCardTitle">Bitcoin Nail Bar — Main</h3>
+                  <a class="qr-open-link" href="../oneqr-dev/index.html" target="_blank" rel="noopener" aria-label="Open OneQR landing page">
+                    <i data-lucide="external-link" aria-hidden="true"></i>
+                  </a>
+                </div>
+                <div class="oneqr-qrcard-url" id="oneqrShareUrl">../oneqr-dev/index.html</div>
+                <p>This QR code stays the same. Content and permissions behind it can be updated anytime.</p>
+                <div class="oneqr-qrcard-actions">
+                  <button class="oneqr-qrcard-btn is-primary" type="button" id="oneqrViewQr">
+                    <i data-lucide="eye" aria-hidden="true"></i>
+                    <span>View QR</span>
+                  </button>
+                  <button class="oneqr-qrcard-btn" type="button" id="oneqrCopyUrl">
+                    <i data-lucide="copy" aria-hidden="true"></i>
+                    <span>Copy URL</span>
+                  </button>
+                  <button class="oneqr-qrcard-btn" type="button" id="oneqrPrintQr">
+                    <i data-lucide="printer" aria-hidden="true"></i>
+                    <span>Print</span>
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <div class="oneqr-builder">
+              <div class="oneqr-panel oneqr-modules">
+                <div class="oneqr-panel-head oneqr-module-heading">
+                  <h3>Modules</h3>
+                  <div class="oneqr-module-toolbar">
+                    <button type="button" id="oneqrContactCard"><img src="../assets/icon-oneqr/issue-2040-oneqr-user-round-3d.png" alt="">Contact card</button>
+                    <a href="oneqr-industry-picker.html" data-oneqr-editor-link><i data-lucide="refresh-cw" aria-hidden="true"></i>Change industry</a>
+                  </div>
+                </div>
+                <div class="oneqr-role-tabs" role="tablist" aria-label="Configure role">
+                  <button class="oneqr-role-tab is-active" type="button" data-role="customer">Customer</button>
+                  <button class="oneqr-role-tab" type="button" data-role="staff">Staff</button>
+                  <button class="oneqr-role-tab" type="button" data-role="owner">Owner</button>
+                </div>
+                <form class="oneqr-module-link-form" id="oneqrModuleLinkForm">
+                  <i data-lucide="link-2" aria-hidden="true"></i>
+                  <input id="oneqrModuleLinkInput" type="text" inputmode="url" placeholder="Paste any link — website, Google review, YouTube, Instagram..." aria-label="Paste a link to add a module" autocomplete="off" required>
+                  <button type="submit">Add</button>
+                </form>
+                <p class="oneqr-module-hint">Add a link, then edit the title and destination below.</p>
+                <p class="contact-customer-state" data-contact-customer-state>Hidden from customer page</p>
+                <div class="oneqr-module-list" id="oneqrModuleList"></div>
+                <div class="oneqr-module-actions">
+                  <button class="oneqr-add-module" type="button" id="oneqrAddModule">
+                    <i data-lucide="plus" aria-hidden="true"></i>
+                    <span>Add Module</span>
+                  </button>
+                  <button class="oneqr-reset-modules" type="button" id="oneqrResetModules">
+                    <i data-lucide="rotate-ccw" aria-hidden="true"></i>
+                    <span>Reset to recommended</span>
+                  </button>
+                </div>
+                <p class="oneqr-module-hint" role="status" id="oneqrModuleStatus">Save Settings to keep your module changes.</p>
+              </div>
+
+              <div class="oneqr-panel oneqr-config">
+                <div class="oneqr-panel-head">
+                  <h3>Configuration</h3>
+                  <span class="oneqr-badge">Master QR</span>
+                </div>
+                <div class="oneqr-field">
+                  <label for="oneqr-name">OneQR Name</label>
+                  <input id="oneqr-name" type="text" value="Bitcoin Nail Bar — Main">
+                </div>
+                <div class="oneqr-field">
+                  <label for="oneqr-welcome">Welcome Message</label>
+                  <input id="oneqr-welcome" type="text" value="Welcome to Bitcoin Nail Bar">
+                </div>
+                <div class="oneqr-field">
+                  <label for="oneqr-identity" data-oneqr-visibility-copy data-en="Who can view this page?" data-vi="Ai có thể xem trang này?">Who can view this page?</label>
+                  <select id="oneqr-identity">
+                    <option value="Public first, verify when needed" data-oneqr-visibility-copy data-en="Anyone" data-vi="Ai cũng có thể xem">Anyone</option>
+                    <option value="Always sign in" data-oneqr-visibility-copy data-en="Signed-in users only" data-vi="Chỉ người đã đăng nhập mới xem được">Signed-in users only</option>
+                  </select>
+                </div>
+                <button class="oneqr-save-btn" type="button" id="oneqrSaveSettings">
+                  <i data-lucide="save" aria-hidden="true"></i>
+                  <span>Save Settings</span>
+                </button>
+              </div>
+
+              <div class="oneqr-panel oneqr-preview">
+                <div class="oneqr-panel-head">
+                  <h3>Live Preview</h3>
+                  <span class="oneqr-pill">Mobile</span>
+                </div>
+                <div class="oneqr-role-tabs" role="tablist" aria-label="Preview role">
+                  <button class="oneqr-role-tab is-active" type="button" data-role="customer">Customer</button>
+                  <button class="oneqr-role-tab" type="button" data-role="staff">Staff</button>
+                  <button class="oneqr-role-tab" type="button" data-role="owner">Owner</button>
+                </div>
+                <div class="oneqr-phone">
+                  <div class="oneqr-phone-screen">
+                    <header class="oneqr-phone-hero">
+                      <img class="oneqr-phone-avatar" src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/46/Bitcoin.svg/1280px-Bitcoin.svg.png" alt="Bitcoin Nail Bar logo">
+                      <div class="oneqr-phone-brand">
+                        <span>One QR</span>
+                        <strong id="oneqrHeroName">Bitcoin Nail Bar</strong>
+                      </div>
+                      <button class="oneqr-phone-language" type="button" tabindex="-1" aria-label="Preview language: English"><i data-lucide="globe-2" aria-hidden="true"></i><small>EN</small></button>
+                    </header>
+                    <div class="oneqr-phone-body">
+                      <div class="oneqr-phone-featured"><i data-lucide="sparkles" aria-hidden="true"></i><span id="oneqrHeroTagline">Bitcoin Nail Bar</span></div>
+                      <div id="oneqrCustomerActions">
+                        <div class="oneqr-phone-quick-actions" aria-label="Customer contact actions">
+                          <button class="is-primary" type="button" data-review-open-contact hidden><img src="../assets/icon-oneqr/issue-2040-oneqr-user-round-3d.png" alt="">Contact</button>
+                        </div>
+                        <h3 class="oneqr-phone-help">How can we help you today?</h3>
+                      </div>
+                      <div class="oneqr-phone-welcome" id="oneqrWelcomeText"></div>
+                      <div class="oneqr-phone-tiles" id="oneqrPreviewTiles"></div>
+                      <button class="oneqr-phone-viewall" type="button" id="oneqrPreviewViewAll" aria-controls="oneqrPreviewTiles" aria-expanded="false">View All</button>
+                      <section class="oneqr-about" data-oneqr-about aria-label="About this page"></section>
+                      <button class="oneqr-home-button" type="button" data-oneqr-action="home"><i data-lucide="circle-plus" aria-hidden="true"></i>Add to Home Screen</button>
+                      <p class="oneqr-page-feedback" data-oneqr-feedback role="status" aria-live="polite"></p>
+                    </div>
+                    <footer class="oneqr-phone-footer"><span data-oneqr-page-url></span> · QR &amp; NFC</footer>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <section class="oneqr-info-panel" aria-labelledby="oneqr-profile-title">
+              <div class="oneqr-info-heading">
+                <div><h3 id="oneqr-profile-title">Fill once — used in 8 places <span class="oneqr-badge" id="oneqrProfileState">Business profile</span></h3><p>All details come from your Business Profile. Edit your Contact card to update these previews.</p></div>
+                <button class="oneqr-qrcard-btn" type="button" data-edit-oneqr-profile>Edit profile</button>
+              </div>
+              <div class="oneqr-profile-outputs" id="oneqrProfileOutputs"></div>
+            </section>
+
+            <section class="oneqr-performance" aria-labelledby="oneqr-performance-title">
+              <div class="oneqr-performance-heading">
+                <div>
+                  <span class="oneqr-performance-eyebrow">Performance</span>
+                  <h3 id="oneqr-performance-title">Last 30 days</h3>
+                  <p>See the signals that help you improve this OneQR page.</p>
+                </div>
+                <span class="oneqr-performance-demo-tag">Sample data</span>
+              </div>
+              <div class="oneqr-performance-metrics">
+                <article><span>QR scans</span><strong>315</strong></article>
+                <article><span>Action clicks</span><strong>163</strong></article>
+                <article><span>Contacts saved</span><strong>56</strong></article>
+                <article><span>Link errors</span><strong id="oneqrLinkErrorCount">0</strong></article>
+              </div>
+              <div class="oneqr-performance-action-list" id="oneqrPerformanceActionList" aria-label="Action click distribution"></div>
+              <p class="oneqr-info-note">Link errors count invalid destinations in this draft. Live link availability is not checked in this demo.</p>
+            </section>
+
+            <section class="oneqr-info-panel" aria-labelledby="oneqr-inbox-title">
+              <div class="oneqr-info-heading">
+                <div><h3 id="oneqr-inbox-title">Contacts sent back <span class="oneqr-pill" id="oneqrLeadCount">0</span></h3><p>Customers who choose “Send yours” on your QR page appear here.</p></div>
+                <div class="oneqr-info-actions"><button class="oneqr-qrcard-btn" type="button" id="oneqrExportLeads">Export CSV</button><button class="oneqr-qrcard-btn" type="button" id="oneqrSendToCrm">Send to CRM · Demo</button></div>
+              </div>
+              <div id="oneqrLeadList"></div>
+              <p class="oneqr-info-note" id="oneqrLeadFeedback" role="status" aria-live="polite"></p>
+            </section>
+
+            <div class="oneqr-info-actions">
+              <button class="oneqr-qrcard-btn" type="button" id="oneqrPostService"><i data-lucide="play" aria-hidden="true"></i>Post-service journey</button>
+              <button class="oneqr-qrcard-btn" type="button" id="oneqrResetTemplate">Reset to recommended</button>
+            </div>
+            <section class="oneqr-setup-metric" aria-label="Setup time">
+              <div><span>Setup time</span><strong id="oneqrSetupTime">0:00</strong></div>
+              <p>Goal: set up and save your first OneQR in under 2 minutes, without instructions.</p>
+              <span class="oneqr-pill" id="oneqrSetupState">Not saved yet</span>
+            </section>
+          </section>
+          </section>
+
+          <section id="qr-panel-accept-payment" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-accept-payment" data-qr-panel="accept-payment" hidden>
+            <p class="qr-workflow-intro">Use your direct payment QR and manage the payout methods available to customers.</p>
+
+            <article class="direct-payment-card" data-payment-qr-card>
+              <div class="direct-payment-code qr-code-frame" aria-label="Direct payment QR code">
+                <div class="qr-code-art" data-payment-qr data-qr-value="https://staging-web.nexoratouch.com/pay/3d1d5426-4a7d-476b-9a0d-b651b3020327" data-qr-size="168" role="img" aria-label="Direct payment QR code preview"></div>
+              </div>
+              <div class="direct-payment-detail">
+                <h2>aaa</h2>
+                <a class="direct-payment-link" href="https://staging-web.nexoratouch.com/pay/3d1d5426-4a7d-476b-9a0d-b651b3020327" target="_blank" rel="noopener" data-payment-link>
+                  <span>staging-web.nexoratouch.com/pay/3d1d5426-4a7d-476b-9a0d-b651b3020327</span>
+                  <i data-lucide="external-link" aria-hidden="true"></i>
+                </a>
+                <p>Customers scan to pay</p>
+                <div class="direct-payment-actions">
+                  <button class="workflow-btn is-info" type="button" data-workflow-action="view-payment-qr"><i data-lucide="qr-code" aria-hidden="true"></i><span>View QR</span></button>
+                  <button class="workflow-btn" type="button" data-workflow-action="copy-payment-link"><i data-lucide="copy" aria-hidden="true"></i><span>Copy link</span></button>
+                  <button class="workflow-btn is-amber" type="button" data-workflow-action="download-payment-qr"><i data-lucide="download" aria-hidden="true"></i><span>Download QR</span></button>
+                  <button class="workflow-btn is-soft-brand" type="button" data-workflow-action="payment-history"><i data-lucide="clipboard-list" aria-hidden="true"></i><span>Payment history</span></button>
+                </div>
+              </div>
+            </article>
+
+            <section class="payout-methods-card" aria-labelledby="payout-methods-title">
+              <div class="payout-methods-head">
+                <h2 id="payout-methods-title"><i data-lucide="wallet-cards" aria-hidden="true"></i><span>Payout Methods</span></h2>
+              </div>
+              <div class="payout-methods-list">
+                <article class="payout-method-row" data-payout-method="Zelle" data-payout-name="David Nguyen" data-payout-account="jadepham290798@gmail.com" data-payout-icon="Z">
+                  <button class="payout-toggle is-on" type="button" role="switch" aria-checked="true" aria-label="Enable Zelle" data-payout-toggle><span></span></button>
+                  <span class="payout-method-icon is-zelle" aria-hidden="true">Z</span>
+                  <div class="payout-method-copy"><strong>Zelle</strong><span>David Nguyen · jadepham290798@gmail.com</span></div>
+                  <div class="payout-method-actions">
+                    <button class="payout-action is-view" type="button" data-payout-view><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button>
+                    <button class="payout-action is-edit" type="button" data-payout-edit><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button>
+                  </div>
+                </article>
+                <article class="payout-method-row" data-payout-method="Cash App" data-payout-name="Nexora_b1" data-payout-account="12312321" data-payout-icon="$">
+                  <button class="payout-toggle is-on" type="button" role="switch" aria-checked="true" aria-label="Enable Cash App" data-payout-toggle><span></span></button>
+                  <span class="payout-method-icon is-cashapp" aria-hidden="true">$</span>
+                  <div class="payout-method-copy"><strong>Cash App</strong><span>Nexora_b1 · 12312321</span></div>
+                  <div class="payout-method-actions">
+                    <button class="payout-action is-view" type="button" data-payout-view><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button>
+                    <button class="payout-action is-edit" type="button" data-payout-edit><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button>
+                  </div>
+                </article>
+                <article class="payout-method-row" data-payout-method="Venmo" data-payout-name="Nexora_b1" data-payout-account="@nguyen_la" data-payout-icon="V">
+                  <button class="payout-toggle is-on" type="button" role="switch" aria-checked="true" aria-label="Enable Venmo" data-payout-toggle><span></span></button>
+                  <span class="payout-method-icon is-venmo" aria-hidden="true">V</span>
+                  <div class="payout-method-copy"><strong>Venmo</strong><span>Nexora_b1 · @nguyen_la</span></div>
+                  <div class="payout-method-actions">
+                    <button class="payout-action is-view" type="button" data-payout-view><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button>
+                    <button class="payout-action is-edit" type="button" data-payout-edit><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button>
+                  </div>
+                </article>
+                <article class="payout-method-row" data-payout-method="VLINKPAY Wallet" data-payout-name="jade" data-payout-account="jade" data-payout-icon="✣">
+                  <button class="payout-toggle is-on" type="button" role="switch" aria-checked="true" aria-label="Enable VLINKPAY Wallet" data-payout-toggle><span></span></button>
+                  <span class="payout-method-icon is-vlinkpay" aria-hidden="true">✣</span>
+                  <div class="payout-method-copy"><strong>VLINKPAY Wallet</strong><span>jade</span></div>
+                  <div class="payout-method-actions">
+                    <button class="payout-action is-view" type="button" data-payout-view><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button>
+                    <button class="payout-action is-edit" type="button" data-payout-edit><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button>
+                  </div>
+                </article>
+                <article class="payout-method-row" data-payout-method="Apple Cash" data-payout-name="Nexora_b1" data-payout-account="Nexora_b1" data-payout-icon="●">
+                  <button class="payout-toggle is-on" type="button" role="switch" aria-checked="true" aria-label="Enable Apple Cash" data-payout-toggle><span></span></button>
+                  <span class="payout-method-icon is-apple" aria-hidden="true"><i data-lucide="apple"></i></span>
+                  <div class="payout-method-copy"><strong>Apple Cash</strong><span>Nexora_b1 · Nexora_b1</span></div>
+                  <div class="payout-method-actions">
+                    <button class="payout-action is-view" type="button" data-payout-view><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button>
+                    <button class="payout-action is-edit" type="button" data-payout-edit><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button>
+                  </div>
+                </article>
+                <article class="payout-method-row" data-payout-method="PayPal" data-payout-name="Nexora_b1" data-payout-account="232323@gmail.com" data-payout-icon="P">
+                  <button class="payout-toggle is-on" type="button" role="switch" aria-checked="true" aria-label="Enable PayPal" data-payout-toggle><span></span></button>
+                  <span class="payout-method-icon is-paypal" aria-hidden="true">P</span>
+                  <div class="payout-method-copy"><strong>PayPal</strong><span>Nexora_b1 · 232323@gmail.com</span></div>
+                  <div class="payout-method-actions">
+                    <button class="payout-action is-view" type="button" data-payout-view><i data-lucide="eye" aria-hidden="true"></i><span>View</span></button>
+                    <button class="payout-action is-edit" type="button" data-payout-edit><i data-lucide="pencil" aria-hidden="true"></i><span>Edit</span></button>
+                  </div>
+                </article>
+              </div>
+            </section>
+          </section>
+
+
+          <section id="qr-panel-check-in" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-check-in" data-qr-panel="check-in" hidden>
+            <div class="oneqr-checkin" data-oneqr-checkin>
+              <header class="oneqr-checkin-heading"><h2>Customer self check-in</h2><p>Choose how customers check in when they arrive.</p></header>
+              <div class="oneqr-checkin-options">
+                <article class="oneqr-checkin-option" data-checkin-option="qr"><div class="oneqr-checkin-summary"><div class="oneqr-checkin-thumbnail" id="checkin-summary-qr" role="img" aria-label="QR Check-in"></div><div><h3>QR Check-in</h3><p>Customers scan with their own phone.</p></div></div><div class="oneqr-checkin-actions"><button type="button" class="nxa-button primary" data-checkin-expand="qr" aria-expanded="false" aria-controls="oneqr-checkin-details"> <i data-lucide="printer" aria-hidden="true"></i>View &amp; Print QR</button><button type="button" class="nxa-button" data-checkin-copy><i data-lucide="copy" aria-hidden="true"></i>Copy Link</button></div></article>
+                <article class="oneqr-checkin-option" data-checkin-option="device"><div class="oneqr-checkin-summary"><div class="oneqr-checkin-tablet" aria-hidden="true"><div><strong>BITCOIN NAIL BAR</strong><b>Welcome in.</b><span>Tap to check in</span></div></div><div><h3>Check-in Device</h3><p>Customers use a tablet at the front desk.</p><strong class="oneqr-checkin-device-count" data-checkin-device-count aria-live="polite"></strong></div></div><div class="oneqr-checkin-actions"><button type="button" class="nxa-button primary" data-checkin-expand="device" aria-expanded="false" aria-controls="oneqr-checkin-details"><i data-lucide="tablet" aria-hidden="true"></i>Set up device</button><a class="nxa-button" data-checkin-screen href="../customer/check-in-mobile.html?mode=kiosk" target="_blank" rel="noopener"><i data-lucide="external-link" aria-hidden="true"></i>Open check-in screen</a></div></article>
+              </div>
+              <section class="oneqr-checkin-details nx-admin" id="oneqr-checkin-details" aria-label="QR Self Check-in" tabindex="-1" hidden><button class="oneqr-checkin-close nxa-button" type="button" data-checkin-close aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button><div data-oneqr-qr-detail hidden><section class="nxa-card"><h3><i data-lucide="qr-code" aria-hidden="true"></i> Check-in QR — print and stick it at the door</h3><p>Customers scan this to check in from their own phone. The link never changes, so you print it once.</p><div class="nxa-columns"><div class="nxa-form" id="qr-controls"><label>Layout source<select id="qr-layout"><option value="artwork">Artwork templates</option><option value="custom">Custom layout</option></select></label><div role="radiogroup" aria-label="Choose artwork" class="nxa-artworks" id="qr-artworks"><button type="button" role="radio" aria-checked="true" aria-label="Modern Minimal Light" data-artwork="modern-minimal-light"><img src="../assets/checkin-artwork/modern-minimal-light-thumb.webp" alt="" loading="lazy"><span>Modern Minimal Light</span></button><button type="button" role="radio" aria-checked="false" aria-label="Dark Luxury" data-artwork="dark-luxury"><img src="../assets/checkin-artwork/dark-luxury-thumb.webp" alt="" loading="lazy"><span>Dark Luxury</span></button><button type="button" role="radio" aria-checked="false" aria-label="Elegant Floral" data-artwork="elegant-floral"><img src="../assets/checkin-artwork/elegant-floral-thumb.webp" alt="" loading="lazy"><span>Elegant Floral</span></button><button type="button" role="radio" aria-checked="false" aria-label="Modern Dark Glow" data-artwork="modern-dark-glow"><img src="../assets/checkin-artwork/modern-dark-glow-thumb.webp" alt="" loading="lazy"><span>Modern Dark Glow</span></button><button type="button" role="radio" aria-checked="false" aria-label="Clean Friendly" data-artwork="clean-friendly"><img src="../assets/checkin-artwork/clean-friendly-thumb.webp" alt="" loading="lazy"><span>Clean Friendly</span></button><button type="button" role="radio" aria-checked="false" aria-label="Premium Portrait" data-artwork="premium-portrait"><img src="../assets/checkin-artwork/premium-portrait-thumb.webp" alt="" loading="lazy"><span>Premium Portrait</span></button><button type="button" role="radio" aria-checked="false" aria-label="Minimal Line Art" data-artwork="minimal-line-art"><img src="../assets/checkin-artwork/minimal-line-art-thumb.webp" alt="" loading="lazy"><span>Minimal Line Art</span></button><button type="button" role="radio" aria-checked="false" aria-label="Bold Vivid" data-artwork="bold-vivid"><img src="../assets/checkin-artwork/bold-vivid-thumb.webp" alt="" loading="lazy"><span>Bold Vivid</span></button></div><div class="nxa-actions" id="qr-artwork-toggles"><label><input type="checkbox" id="qr-logo"> Show salon logo</label><label><input type="checkbox" id="qr-salon-name"> Show salon name</label></div><p id="qr-artwork-note">Artwork text and colors are fixed; your salon check-in QR is added automatically.</p><div class="nxa-form" id="qr-custom" hidden><div class="nxa-chips" role="radiogroup" aria-label="Custom layout"><button type="button" role="radio" aria-checked="true" data-custom="Simple">Simple</button><button type="button" role="radio" aria-checked="false" data-custom="Classic Gold">Classic Gold</button><button type="button" role="radio" aria-checked="false" data-custom="Modern Navy">Modern Navy</button><button type="button" role="radio" aria-checked="false" data-custom="Minimal Clean">Minimal Clean</button><button type="button" role="radio" aria-checked="false" data-custom="Wide Counter">Wide Counter</button><button type="button" role="radio" aria-checked="false" data-custom="Soft Sage">Soft Sage</button></div><label>Design size<select><option>Card 4 × 6 in</option></select></label><label>Print language<select><option>English</option></select></label><label>Headline<input id="qr-headline" maxlength="60" value="CHECK IN HERE"></label><label>Closing message<textarea id="qr-closing" maxlength="100">Thank you for visiting!</textarea></label><label>Color palette<select id="qr-palette"><option value="ink">Ink</option><option value="gold">Gold</option></select></label><div class="nxa-actions"><label><input type="checkbox" id="qr-hours" checked> Business hours</label><label><input type="checkbox" id="qr-link-visible" checked> Check-in link</label><label><input type="checkbox" id="qr-instructions" checked> Instructions</label></div></div><label>Customer check-in link<span class="nxa-copy"><a id="qr-checkin-link" href="../customer/check-in-mobile.html"></a><button type="button" class="nxa-button" id="qr-copy">Copy</button></span></label></div><section class="nxa-preview-column"><h4>Live preview</h4><div class="nxa-canvas-wrap"><canvas id="qr-preview" width="1224" height="1584" aria-label="Check-in QR live preview"></canvas></div><div class="nxa-actions"><button class="nxa-button" type="button" data-qr-export="print"><i data-lucide="printer" aria-hidden="true"></i>Print</button><button class="nxa-button" type="button" data-qr-export="pdf">Download PDF</button><button class="nxa-button" type="button" data-qr-export="png">Download PNG</button><button class="nxa-button" type="button" data-qr-export="qr">Download QR PNG</button></div><p class="nxa-muted">Choose paper and scale in the print dialog. Use 100% for actual size and turn off headers and footers. Printer margins may leave a white border.</p></section></div></section><div id="qr-renderer" hidden></div></div><div data-oneqr-device-detail hidden><div class="nxa-heading"><h3>Self Check-in Device</h3><p>Open a kiosk link for customer check-in, or pair and manage your check-in tablets.</p></div><div class="nxa-device-columns"><section class="nxa-card"><h4><i data-lucide="tablet" aria-hidden="true"></i> Kiosk Check-In Link</h4><p>Open this link on any phone, tablet, or computer for customer check-in. No device pairing is needed.</p><p class="nxa-link-wrap" id="device-kiosk-text"></p><div class="nxa-actions"><button type="button" class="nxa-button" id="device-copy">Copy Link</button><a class="nxa-button primary" href="../customer/check-in-mobile.html?mode=kiosk" id="device-kiosk">Open Kiosk</a></div></section><section class="nxa-card"><h4>Pairing code</h4><div class="nxa-pair-row"><div id="device-qr" role="img" aria-label="Tablet pairing QR code"></div><div><p id="device-code"></p><progress class="oneqr-pair-progress" id="device-progress" max="900" value="900"></progress><p>This code expires in <strong id="device-expires">15:00</strong></p><button type="button" class="nxa-button" id="device-new-code">New code</button></div></div><p>Open the tablet's camera and scan this code. It works once and lasts 15 minutes — as soon as a tablet uses it, a new code appears here.</p></section></div><section class="nxa-card"><div class="nxa-section-head"><h4 data-device-heading>Paired tablets (0 active)</h4><div class="nxa-chips" aria-label="Paired tablets"><button type="button" data-device-filter="All" aria-pressed="true">All</button><button type="button" data-device-filter="Active" aria-pressed="false">Active</button><button type="button" data-device-filter="Revoked" aria-pressed="false">Revoked</button><button type="button" data-device-filter="Expired" aria-pressed="false">Expired</button></div></div><div class="nxa-table-scroll"><table><thead><tr><th>Name</th><th>Status</th><th>Paired by</th><th>Paired</th><th>Last activity</th><th>Device</th><th>Actions</th></tr></thead><tbody id="device-rows"></tbody></table></div></section></div></section>
+            </div>
+          </section>
+          <section id="qr-panel-referral-link" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-referral-link" data-qr-panel="referral-link" hidden>
+            <p class="qr-workflow-intro">Share your affiliate link and choose where new members are placed in your network.</p>
+            <article class="referral-card">
+              <fieldset class="referral-placement">
+                <legend>Select Placement Leg</legend>
+                <div class="referral-placement-options">
+                  <label><input type="radio" name="referral-placement" value="left" checked><span>Left Leg</span></label>
+                  <label><input type="radio" name="referral-placement" value="right"><span>Right Leg</span></label>
+                </div>
+              </fieldset>
+              <div class="referral-qr-frame">
+                <div class="qr-code-art" data-referral-qr data-qr-value="https://staging-web.nexoratouch.com/?ref=71C25492&amp;leg=left" data-qr-size="232" role="img" aria-label="Referral QR code for the left leg"></div>
+              </div>
+              <a class="referral-link" href="https://staging-web.nexoratouch.com/?ref=71C25492&amp;leg=left" target="_blank" rel="noopener" data-referral-link>https://staging-web.nexoratouch.com/?ref=71C25492&amp;leg=left</a>
+              <div class="referral-actions">
+                <button class="workflow-btn" type="button" data-workflow-action="download-referral-qr"><i data-lucide="download" aria-hidden="true"></i><span>Download QR</span></button>
+                <button class="workflow-btn is-primary" type="button" data-workflow-action="copy-referral-link"><i data-lucide="copy" aria-hidden="true"></i><span>Copy Link</span></button>
+              </div>
+            </article>
+          </section>
+
+          <section id="qr-panel-staff-invite-qr" class="qr-panel" role="tabpanel" aria-labelledby="qr-tab-staff-invite-qr" data-qr-panel="staff-invite-qr" hidden>
+            <p class="qr-workflow-intro">Share this QR or join link to invite staff to your business.</p>
+            <article class="staff-invite-card">
+              <span class="staff-invite-icon"><i data-lucide="user-plus" aria-hidden="true"></i></span>
+              <h2>Staff Invite Link</h2>
+              <p>Share this link or QR code so technicians can create their account and join your salon.</p>
+              <div class="staff-invite-qr-frame">
+                <div class="qr-code-art" data-staff-invite-qr data-qr-value="https://staging-web.nexoratouch.com/invite/public/blnexora?ref=71C25492&amp;source=public_link" data-qr-size="176" role="img" aria-label="Staff invite QR code"></div>
+              </div>
+              <div class="staff-invite-link" data-staff-invite-link>https://staging-web.nexoratouch.com/invite/public/blnexora?ref=71C25492&amp;source=public_link</div>
+              <div class="staff-invite-actions">
+                <button class="workflow-btn" type="button" data-workflow-action="copy-staff-invite"><i data-lucide="copy" aria-hidden="true"></i><span>Copy</span></button>
+                <button class="workflow-btn is-primary" type="button" data-workflow-action="share-staff-invite"><i data-lucide="share-2" aria-hidden="true"></i><span>Share</span></button>
+              </div>
+            </article>
+          </section>
+        </section>
+      </main>
+      <dialog class="oneqr-device-dialog" id="checkin-device-edit" aria-labelledby="checkin-device-edit-title"><form id="checkin-device-edit-form"><header><h2 id="checkin-device-edit-title">Edit tablet</h2><button type="button" data-device-edit-close aria-label="Cancel"><i data-lucide="x" aria-hidden="true"></i></button></header><label>DEVICE NAME<input name="name" required maxlength="80"></label><label>NEW ACCESS PIN<input name="pin" type="password" inputmode="numeric" pattern="[0-9]{4,6}" minlength="4" maxlength="6" placeholder="e.g. 4821" autocomplete="new-password"></label><input name="confirmPin" type="password" inputmode="numeric" minlength="4" maxlength="6" placeholder="Confirm PIN" aria-label="Confirm PIN" autocomplete="new-password"><p>Leave blank to keep the current PIN. 4 to 6 digits.</p><footer><button class="nxa-button" type="button" data-device-edit-close>Cancel</button><button class="nxa-button primary" type="submit" data-device-edit-save disabled>Save</button></footer></form></dialog>
+    </div>
+  </div>
+
+  <div class="absolute inset-0 z-50 hidden items-center justify-center bg-nexoraInk/45 px-3 backdrop-blur-sm" data-oneqr-view-modal data-salon-qr-modal aria-hidden="true">
+    <div class="max-h-[calc(100%-18px)] w-full max-w-[390px] overflow-y-auto rounded-[28px] bg-white/95 p-1.5 shadow-phone">
+      <div class="overflow-hidden rounded-[24px] border border-white/15 bg-[#050505] text-white shadow-[0_18px_44px_rgba(0,0,0,0.42)]">
+        <div class="relative min-h-[720px] w-full overflow-hidden bg-[radial-gradient(circle_at_50%_-4%,rgba(255,255,255,0.16)_0,transparent_19%),radial-gradient(circle_at_14%_22%,rgba(236,72,153,0.34)_0,transparent_25%),radial-gradient(circle_at_91%_58%,rgba(34,211,238,0.32)_0,transparent_26%),linear-gradient(160deg,#050505_0%,#0B0F1A_46%,#111056_100%)] px-4 py-4" data-oneqr-print-card data-salon-print-card>
+          <div class="absolute inset-0 opacity-[0.16] [background-image:radial-gradient(circle,rgba(255,255,255,0.52)_0.55px,transparent_0.8px)] [background-size:3px_3px]" data-print-dot-overlay></div>
+          <button class="absolute right-3 top-3 z-10 grid h-8 w-8 place-items-center rounded-lg border border-white/20 bg-white/10 text-white backdrop-blur" aria-label="Close salon QR preview" data-oneqr-view-close data-salon-modal-close>
+            <i data-lucide="x" class="h-4 w-4"></i>
+          </button>
+          <div class="relative mx-auto grid justify-items-center text-center">
+            <img src="https://i.ibb.co/mCt5J2dK/Xexora-TOUCH-USPTO-03.png" alt="Nexora Touch" class="h-auto w-[118px] object-contain drop-shadow-[0_0_20px_rgba(34,211,238,0.48)]" data-print-logo />
+            <div class="hidden">
+              <span>
+                <img alt="Bitcoin Nail Bar logo" class="hidden h-full w-full rounded-full object-contain" data-salon-modal-logo />
+                <span data-salon-modal-initials>BI</span>
+              </span>
+              <span data-salon-modal-name>Bitcoin Nail Bar</span>
+              <span data-salon-modal-status>Active</span>
+            </div>
+          </div>
+          <div class="relative mt-5 text-center" data-print-headline>
+            <p class="text-[20px] font-extrabold uppercase leading-tight tracking-[0.16em] text-white" data-print-body>Scan To</p>
+            <p class="mt-1 bg-[linear-gradient(90deg,#F472B6_0%,#C084FC_50%,#67E8F9_100%)] bg-clip-text text-[32px] font-extrabold uppercase leading-[0.92] tracking-[0.02em] text-transparent drop-shadow-[0_0_16px_rgba(34,211,238,0.28)]" data-print-rewarded>Pay, Tip, Review<br />&amp; Earn Rewards</p>
+          </div>
+          <div class="relative mt-3 grid justify-items-center" data-print-qr-focus>
+            <div class="rounded-[24px] border border-[#67E8F9]/70 bg-[#0B1024]/76 p-2 shadow-[0_0_26px_rgba(34,211,238,0.34),0_0_18px_rgba(244,114,182,0.16)]">
+              <div
+                class="qr-code aspect-square w-[255px] rounded-[18px] border-[9px] border-white bg-white shadow-[0_0_24px_rgba(255,255,255,0.18)]"
+                aria-label="Large salon QR preview"
+                data-qr-size="260"
+                data-qr-value="../oneqr-dev/index.html"
+                data-salon-modal-qr
+              ></div>
+            </div>
+            <p class="hidden" data-salon-modal-link>../oneqr-dev/index.html</p>
+          </div>
+          <div class="relative mt-3 grid grid-cols-[1fr_auto_1fr_auto_1fr_auto_1fr] items-end gap-1 text-center" data-print-steps>
+            <div class="px-0.5">
+              <span class="mx-auto grid h-6 w-6 place-items-center rounded-full border border-[#F472B6] text-[12px] font-bold text-[#F472B6]">1</span>
+              <i data-lucide="qr-code" class="mx-auto mt-1 h-7 w-7 text-white drop-shadow-[0_0_10px_rgba(244,114,182,0.5)]"></i>
+              <p class="mt-0.5 text-[10px] font-semibold text-white" data-print-benefit-label>Scan QR</p>
+            </div>
+            <i data-lucide="arrow-right" class="mb-5 h-4 w-4 text-white/70 drop-shadow-[0_0_8px_rgba(255,255,255,0.28)]"></i>
+            <div class="px-0.5">
+              <span class="mx-auto grid h-6 w-6 place-items-center rounded-full border border-[#C084FC] text-[12px] font-bold text-[#C084FC]">2</span>
+              <i data-lucide="credit-card" class="mx-auto mt-1 h-7 w-7 text-white drop-shadow-[0_0_10px_rgba(192,132,252,0.5)]"></i>
+              <p class="mt-0.5 text-[10px] font-semibold text-white" data-print-benefit-label>Pay</p>
+            </div>
+            <i data-lucide="arrow-right" class="mb-5 h-4 w-4 text-white/70 drop-shadow-[0_0_8px_rgba(255,255,255,0.28)]"></i>
+            <div class="px-0.5">
+              <span class="mx-auto grid h-6 w-6 place-items-center rounded-full border border-[#F0ABFC] text-[12px] font-bold text-[#F0ABFC]">3</span>
+              <i data-lucide="heart" class="mx-auto mt-1 h-7 w-7 text-white drop-shadow-[0_0_10px_rgba(244,114,182,0.5)]"></i>
+              <p class="mt-0.5 text-[10px] font-semibold text-white" data-print-benefit-label>Tip</p>
+            </div>
+            <i data-lucide="arrow-right" class="mb-5 h-4 w-4 text-white/70 drop-shadow-[0_0_8px_rgba(255,255,255,0.28)]"></i>
+            <div class="px-0.5">
+              <span class="mx-auto grid h-6 w-6 place-items-center rounded-full border border-[#67E8F9] text-[12px] font-bold text-[#67E8F9]">4</span>
+              <i data-lucide="star" class="mx-auto mt-1 h-7 w-7 text-white drop-shadow-[0_0_10px_rgba(103,232,249,0.5)]"></i>
+              <p class="mt-0.5 text-[10px] font-semibold text-white" data-print-benefit-label>Review</p>
+            </div>
+          </div>
+          <div class="relative mt-3 grid grid-cols-[70px_minmax(0,1fr)] items-center gap-3 rounded-[18px] border border-[#67E8F9]/65 bg-[#0B1024]/76 p-3 shadow-[0_0_24px_rgba(34,211,238,0.28),inset_0_0_20px_rgba(244,114,182,0.12)]" data-print-panel data-print-rewards-panel>
+            <div class="grid h-[58px] w-[58px] place-items-center rounded-xl border border-white/14 bg-white/[0.05] text-[#F472B6]">
+              <i data-lucide="gift" class="h-10 w-10 drop-shadow-[0_0_14px_rgba(244,114,182,0.62)]"></i>
+            </div>
+            <div class="min-w-0 text-left">
+              <p class="bg-[linear-gradient(90deg,#F472B6,#22D3EE)] bg-clip-text text-[19px] font-bold uppercase leading-tight tracking-[0.04em] text-transparent" data-print-accent>Customer Rewards</p>
+              <p class="mt-1 text-[11px] font-semibold leading-tight text-white" data-print-body>Earn rewards on eligible visits</p>
+              <p class="mt-0.5 text-[9px] font-medium leading-tight text-white/78" data-print-body>Ask our team about points, offers, or member rewards</p>
+            </div>
+          </div>
+          <div class="relative mt-3 grid grid-cols-[1fr_28px_1fr_28px_1fr_28px_1fr] items-start gap-0 text-center" data-print-benefits>
+            <div class="px-1 py-1">
+              <i data-lucide="wallet" class="mx-auto h-6 w-6 text-[#F0ABFC] drop-shadow-[0_0_10px_rgba(240,171,252,0.5)]"></i>
+              <p class="mt-1 text-[8px] font-semibold leading-tight text-white" data-print-benefit-label>Easy<br />Payment</p>
+            </div>
+            <div class="relative mt-[15px] h-2" aria-hidden="true">
+              <span class="absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-[#F0ABFC]/45 via-[#F472B6]/85 to-[#C084FC]/45"></span>
+              <span class="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#F472B6] shadow-[0_0_8px_rgba(244,114,182,0.7)]"></span>
+            </div>
+            <div class="px-1 py-1">
+              <i data-lucide="heart" class="mx-auto h-6 w-6 text-[#F472B6] drop-shadow-[0_0_10px_rgba(244,114,182,0.5)]"></i>
+              <p class="mt-1 text-[8px] font-semibold leading-tight text-white" data-print-benefit-label>Easy<br />Tipping</p>
+            </div>
+            <div class="relative mt-[15px] h-2" aria-hidden="true">
+              <span class="absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-[#F472B6]/45 via-[#C084FC]/85 to-[#67E8F9]/45"></span>
+              <span class="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#C084FC] shadow-[0_0_8px_rgba(192,132,252,0.7)]"></span>
+            </div>
+            <div class="px-1 py-1">
+              <i data-lucide="bell" class="mx-auto h-6 w-6 text-[#67E8F9] drop-shadow-[0_0_10px_rgba(103,232,249,0.5)]"></i>
+              <p class="mt-1 text-[8px] font-semibold leading-tight text-white" data-print-benefit-label>Review<br />Reminder</p>
+            </div>
+            <div class="relative mt-[15px] h-2" aria-hidden="true">
+              <span class="absolute left-0 right-0 top-1/2 h-px -translate-y-1/2 bg-gradient-to-r from-[#67E8F9]/45 via-[#F0ABFC]/85 to-[#F472B6]/45"></span>
+              <span class="absolute left-1/2 top-1/2 h-1.5 w-1.5 -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#67E8F9] shadow-[0_0_8px_rgba(103,232,249,0.7)]"></span>
+            </div>
+            <div class="px-1 py-1">
+              <i data-lucide="gift" class="mx-auto h-6 w-6 text-[#F0ABFC] drop-shadow-[0_0_10px_rgba(240,171,252,0.5)]"></i>
+              <p class="mt-1 text-[8px] font-semibold leading-tight text-white" data-print-benefit-label>Earn<br />Rewards</p>
+            </div>
+          </div>
+          <div class="hidden">
+            <p data-salon-modal-address>9738 Hammerly Blvd Ste A, Houston, TX 77080</p>
+            <p data-salon-modal-hours>Mon-Sat 9:00 AM-7:00 PM</p>
+            <p data-salon-modal-phone>(832) 418-9406</p>
+            <p class="hidden" data-salon-modal-station>Front desk and table QR</p>
+          </div>
+          <div class="relative mt-3 text-center">
+            <div class="mx-auto mb-1 h-px w-[78%] bg-[linear-gradient(90deg,transparent,#F472B6,#22D3EE,transparent)]"></div>
+            <p class="text-[18px] font-semibold bg-[linear-gradient(90deg,#F472B6,#22D3EE)] bg-clip-text text-transparent" data-print-accent>Thank you for visiting</p>
+            <p class="mt-1 text-[7px] font-semibold uppercase tracking-[0.2em] text-white/46" data-print-powered>Powered by VLINKPAY</p>
+            <p class="hidden" data-salon-modal-methods>Zelle, Apple Cash, Venmo, PayPal, Cash App</p>
+          </div>
+        </div>
+        <div class="grid grid-cols-3 gap-2 border-t border-nexoraBrand/15 bg-[#EEF2FF]/95 p-3 backdrop-blur" data-oneqr-modal-actions data-salon-modal-actions>
+          <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-nexoraBrand/20 bg-white text-[10px] font-semibold text-nexoraBrandDark" aria-label="Copy salon QR link" data-salon-modal-copy data-copy-link="../oneqr-dev/index.html" id="oneqrViewCopy"><i data-lucide="link" class="h-3.5 w-3.5"></i>Copy Link</button>
+          <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg border border-nexoraBrand/20 bg-white text-[10px] font-semibold text-nexoraBrandDark" aria-label="Print salon QR" data-salon-modal-print id="oneqrViewPrint"><i data-lucide="printer" class="h-3.5 w-3.5"></i>Print</button>
+          <button class="inline-flex h-8 items-center justify-center gap-1 rounded-lg bg-nexoraBrand text-[10px] font-semibold text-white" id="oneqrViewDownload"><i data-lucide="download" class="h-3.5 w-3.5"></i>Save QR</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="workflow-dialog-shell" data-payment-qr-modal aria-hidden="true" hidden>
+    <button class="workflow-dialog-backdrop" type="button" data-workflow-modal-close aria-label="Close payment QR preview"></button>
+    <section class="workflow-dialog payment-qr-dialog" role="dialog" aria-modal="true" aria-labelledby="payment-qr-dialog-title">
+      <button class="workflow-dialog-close" type="button" data-workflow-modal-close aria-label="Close payment QR preview"><i data-lucide="x" aria-hidden="true"></i></button>
+      <div class="payment-share-card">
+        <div class="payment-share-brand" id="payment-qr-dialog-title"><img src="../assets/nexora-logo.svg" alt=""><strong>NEXORA</strong></div>
+        <div class="payment-share-code">
+          <div class="qr-code-art" data-payment-modal-qr data-qr-value="https://staging-web.nexoratouch.com/pay/3d1d5426-4a7d-476b-9a0d-b651b3020327" data-qr-size="232" role="img" aria-label="Payment QR code"></div>
+        </div>
+        <p>Customers scan to pay</p>
+        <span><i data-lucide="shield-check" aria-hidden="true"></i>Secure redirect by VLINKPAY</span>
+      </div>
+      <div class="payment-share-link"><code>staging-web.nexoratouch.com/pay/3d1d5426-4a...</code><button type="button" data-workflow-action="copy-payment-link"><i data-lucide="copy" aria-hidden="true"></i><span>Copy</span></button></div>
+      <button class="workflow-btn is-primary is-wide" type="button" data-workflow-action="download-payment-qr"><i data-lucide="download" aria-hidden="true"></i><span>Download</span></button>
+      <button class="workflow-btn is-wide" type="button" data-workflow-action="print-payment-qr"><i data-lucide="printer" aria-hidden="true"></i><span>Print QR</span></button>
+    </section>
+  </div>
+
+  <div class="workflow-dialog-shell" data-payout-modal aria-hidden="true" hidden>
+    <button class="workflow-dialog-backdrop" type="button" data-workflow-modal-close aria-label="Close payout method"></button>
+    <section class="workflow-dialog payout-dialog" role="dialog" aria-modal="true" aria-labelledby="payout-dialog-title">
+      <button class="workflow-dialog-close" type="button" data-workflow-modal-close aria-label="Close payout method"><i data-lucide="x" aria-hidden="true"></i></button>
+      <span class="payout-dialog-icon is-zelle" data-payout-modal-icon>Z</span>
+      <h2 id="payout-dialog-title" data-payout-modal-method>Zelle</h2>
+      <p class="payout-dialog-kicker">Scan to Pay</p>
+      <div class="payout-dialog-qr">
+        <div class="qr-code-art" data-payout-modal-qr data-qr-value="https://staging-web.nexoratouch.com/pay/3d1d5426-4a7d-476b-9a0d-b651b3020327?method=zelle" data-qr-size="176" role="img" aria-label="Zelle payment QR code"></div>
+      </div>
+      <dl>
+        <div><dt>Registered Name</dt><dd data-payout-modal-name>David Nguyen</dd></div>
+        <div><dt>Email or Phone</dt><dd data-payout-modal-account>jadepham290798@gmail.com</dd></div>
+      </dl>
+      <button class="workflow-btn is-primary is-wide" type="button" data-workflow-modal-close><span data-payout-modal-close-label>Close</span></button>
+    </section>
+  </div>
+
+  <div class="workflow-toast" role="status" aria-live="polite" data-workflow-toast hidden></div>
+
+  <div class="oneqr-modal" id="oneqrAddModuleModal" hidden aria-hidden="true" role="dialog" aria-modal="true" aria-labelledby="oneqrCatalogTitle" data-po-source="from-po/OneQR-prototype-v25.html:1486">
+    <div class="oneqr-modal-backdrop" data-oneqr-add-module-close></div>
+    <div class="oneqr-modal-dialog">
+      <div class="oneqr-modal-head">
+        <h3 id="oneqrCatalogTitle">Feature catalog</h3>
+        <button type="button" class="oneqr-modal-close" data-oneqr-add-module-close aria-label="Close">
+          <i data-lucide="x" aria-hidden="true"></i>
+        </button>
+      </div>
+      <label class="oneqr-library-search"><i data-lucide="search" aria-hidden="true"></i><input id="oneqrModuleSearch" type="search" placeholder="Search features…" aria-label="Search features…" autocomplete="off"></label>
+      <div class="oneqr-modal-list" id="oneqrAddModuleList"></div>
+    </div>
+  </div>
+
+  <dialog class="oneqr-contact-dialog" id="contact-card-modal" aria-labelledby="contact-card-title">
+      <div class="modal-head">
+        <div><span class="section-step">Business profile · Demo preview</span><h2 id="contact-card-title">Contact card</h2></div>
+        <button class="icon-button" type="button" data-close-contact-card aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button>
+      </div>
+      <p class="modal-lead">Enter it once. OneQR uses this information wherever customers save or contact your business.</p>
+
+      <div class="contact-review-toolbar">
+        <div class="contact-review-tabs" role="tablist" aria-label="Contact card">
+          <button type="button" id="contact-shop-tab" role="tab" aria-selected="true" aria-controls="contact-shop-panel" data-contact-tab="shop">Shop information</button>
+          <button type="button" id="contact-team-tab" role="tab" aria-selected="false" aria-controls="contact-team-panel" data-contact-tab="team" tabindex="-1">Team contacts <span id="contact-team-count">0</span></button>
+        </div>
+        <span class="contact-unsaved" id="contact-unsaved" hidden>Unsaved changes</span>
+      </div>
+      <div class="contact-card-layout">
+        <form class="contact-card-form" id="contact-card-form" novalidate>
+          <section id="contact-shop-panel" role="tabpanel" aria-labelledby="contact-shop-tab">
+          <div class="contact-import">
+            <i data-lucide="map-pinned" aria-hidden="true"></i>
+            <input id="contact-google-url" type="text" inputmode="url" placeholder="Paste Google Business Profile URL" aria-label="Google Business Profile URL">
+            <button type="button" id="contact-import-button">Import</button>
+          </div>
+
+          <div class="contact-field-grid">
+            <label class="contact-field"><span>Display name</span><input id="contact-name" type="text" maxlength="100" required></label>
+            <label class="contact-field"><span>Title or short introduction</span><input id="contact-title" type="text" maxlength="100"></label>
+            <div class="contact-field"><label for="contact-phone">Phone</label><span data-contact-phone></span></div>
+            <label class="contact-field"><span>Email</span><input id="contact-email" type="email" inputmode="email"></label>
+            <label class="contact-field is-wide"><span>Website or social profile</span><input id="contact-website" type="url" inputmode="url"></label>
+            <label class="contact-field is-wide"><span>Street address</span><input id="contact-address" type="text"></label>
+            <label class="contact-field"><span>City</span><input id="contact-city" type="text"></label>
+            <label class="contact-field"><span>State</span><input id="contact-state" type="text" maxlength="30"></label>
+            <label class="contact-field"><span>ZIP code</span><input id="contact-zip" type="text" maxlength="10" autocomplete="postal-code"></label>
+            <label class="contact-field is-wide"><span>Short bio</span><textarea id="contact-bio" rows="2" maxlength="220"></textarea></label>
+            <label class="contact-field is-wide"><span>About this page</span><textarea id="contact-blurb" rows="3" maxlength="500" placeholder="Leave blank to use the introduction with your business name."></textarea></label>
+          </div>
+
+          <fieldset class="contact-choice-group">
+            <legend>Address visibility</legend>
+            <label><input type="radio" name="contact-address-mode" value="full" checked><span>Full address</span></label>
+            <label><input type="radio" name="contact-address-mode" value="area"><span>Service area only</span></label>
+            <label><input type="radio" name="contact-address-mode" value="hidden"><span>Hidden</span></label>
+          </fieldset>
+
+          <div class="contact-switches">
+            <label><input id="contact-show-phone" type="checkbox" checked><span><strong>Show phone actions</strong><small>Customers can call or text.</small></span></label>
+            <label><input id="contact-show-hours" type="checkbox" checked><span><strong>Show business hours</strong><small>Display open and close times.</small></span></label>
+            <label><input id="contact-add-action" type="checkbox" checked><span><strong>Add “Contact”</strong><small>Add it to the current customer menu.</small></span></label>
+          </div>
+
+          <div class="contact-hours" id="contact-hours-row">
+            <label class="contact-field"><span>Opens</span><input id="contact-open-time" type="time"></label>
+            <label class="contact-field"><span>Closes</span><input id="contact-close-time" type="time"></label>
+          </div>
+          <fieldset class="contact-choice-group" id="contact-closed-days">
+            <legend>Closed days</legend>
+            <label><input type="checkbox" value="1"><span>Mon</span></label>
+            <label><input type="checkbox" value="2"><span>Tue</span></label>
+            <label><input type="checkbox" value="3"><span>Wed</span></label>
+            <label><input type="checkbox" value="4"><span>Thu</span></label>
+            <label><input type="checkbox" value="5"><span>Fri</span></label>
+            <label><input type="checkbox" value="6"><span>Sat</span></label>
+            <label><input type="checkbox" value="0"><span>Sun</span></label>
+          </fieldset>
+
+          <fieldset class="contact-theme-picker">
+            <legend>Card style</legend>
+            <button type="button" data-contact-theme="indigo" aria-label="Indigo theme"><span></span>Indigo</button>
+            <button type="button" data-contact-theme="emerald" aria-label="Emerald theme"><span></span>Emerald</button>
+            <button type="button" data-contact-theme="charcoal" aria-label="Charcoal theme"><span></span>Charcoal</button>
+            <button type="button" data-contact-theme="ocean" aria-label="Ocean theme"><span></span>Ocean</button>
+            <button type="button" data-contact-theme="sunset" aria-label="Sunset theme"><span></span>Sunset</button>
+            <button type="button" data-contact-theme="rose" aria-label="Rose theme"><span></span>Rose</button>
+            <button type="button" data-contact-theme="midnight" aria-label="Midnight Gold theme"><span></span>Midnight Gold</button>
+            <button type="button" data-contact-theme="minimal" aria-label="Minimal theme"><span></span>Minimal</button>
+            <button type="button" data-contact-theme="ivory" aria-label="Ivory theme"><span></span>Ivory</button>
+          </fieldset>
+          </section>
+          <section id="contact-team-panel" role="tabpanel" aria-labelledby="contact-team-tab" hidden>
+            <div class="contact-team-heading"><h3>Team contacts</h3><button type="button" class="contact-review-button is-primary" id="contact-add-member"><img src="../assets/icon-oneqr/issue-2040-oneqr-users-round-3d.png" alt="">Add contact</button></div>
+            <div id="contact-team-list" class="contact-team-list"></div>
+            <section id="contact-team-editor" class="contact-team-editor" hidden aria-label="Edit">
+              <div class="contact-team-heading"><h3 id="contact-editor-title">Add contact</h3><button type="button" class="icon-button" id="contact-editor-close" aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button></div>
+              <label class="contact-field" for="contact-member-search"><span>Team member <b aria-hidden="true">*</b></span><input id="contact-member-search" type="search" aria-required="true" placeholder="Team member" autocomplete="off" aria-controls="contact-member-results" aria-describedby="contact-member-error"></label>
+              <p class="contact-field-error" id="contact-member-error" role="alert" hidden>Team member</p>
+              <div id="contact-member-results" class="contact-member-results" aria-label="Team member"></div>
+              <div class="contact-field-grid">
+                <label class="contact-field"><span>Contact group <b aria-hidden="true">*</b></span><select id="contact-member-group" aria-required="true" aria-describedby="contact-group-error"><option value="">Contact group</option><option value="manager">Manager</option><option value="technician">Technician</option></select><small class="contact-field-error" id="contact-group-error" hidden>Contact group</small></label>
+                <label class="contact-field"><span>Job title <b aria-hidden="true">*</b></span><input id="contact-member-title" aria-required="true" maxlength="160" placeholder="Job title" aria-describedby="contact-title-error"><small class="contact-field-error" id="contact-title-error" hidden>Job title</small></label>
+              </div>
+              <label class="contact-public-switch"><span>Public contact</span><input id="contact-member-public" type="checkbox" role="switch"></label>
+              <div class="contact-inherited"><img src="../assets/icon-oneqr/issue-2040-oneqr-store-3d.png" alt=""><div><strong>Uses your shop’s contact information</strong><p id="contact-inherited-details"></p><button type="button" data-contact-go-shop>Shop information<i data-lucide="arrow-up-right" aria-hidden="true"></i></button></div></div>
+              <p class="contact-share-note" id="contact-editor-share-note"></p>
+            </section>
+          </section>
+        </form>
+
+        <aside class="contact-card-preview-wrap" aria-label="Contact card preview">
+          <span class="contact-preview-label">Customer preview</span>
+          <label class="contact-field contact-preview-selector"><span>Contact</span><select id="contact-preview-person" aria-label="Contact"></select></label>
+          <div class="contact-card-preview" id="contact-card-preview" data-theme="indigo">
+            <div class="contact-card-brand"><span id="contact-preview-avatar">B</span><small>ONEQR CONTACT</small></div>
+            <h3 id="contact-preview-name">Bitcoin Nail Bar</h3>
+            <p id="contact-preview-title">Nail salon · Houston</p>
+            <p id="contact-preview-company" class="contact-preview-company" hidden></p>
+            <p class="contact-preview-bio" id="contact-preview-bio">Beauty, care, and a better booking experience.</p>
+            <div class="contact-preview-details">
+              <span id="contact-preview-phone-row"><i data-lucide="phone"></i><b id="contact-preview-phone">(346) 802-4906</b></span>
+              <span id="contact-preview-email-row"><i data-lucide="mail"></i><b id="contact-preview-email">hello@example.com</b></span>
+              <span id="contact-preview-website-row"><i data-lucide="globe" aria-hidden="true"></i><b id="contact-preview-website"></b></span>
+              <span id="contact-preview-address-row"><i data-lucide="map-pin"></i><b id="contact-preview-address">Houston, TX</b></span>
+              <span id="contact-preview-hours-row"><i data-lucide="clock-3"></i><b id="contact-preview-hours">9:30 AM–7:00 PM</b></span>
+            </div>
+            <div class="contact-preview-actions"><button type="button" data-review-draft-action="call"><i data-lucide="phone" aria-hidden="true"></i>Call</button><button type="button" data-review-draft-action="directions"><i data-lucide="navigation" aria-hidden="true"></i>Directions</button></div>
+          </div>
+          <button class="download-vcard-button" type="button" id="download-vcard-button"><i data-lucide="download" aria-hidden="true"></i>Download vCard preview</button>
+          <p>The downloaded `.vcf` can be saved directly to a customer’s contacts.</p>
+        </aside>
+      </div>
+
+      <div class="contact-review-footer"><span class="contact-customer-state" data-contact-customer-state>Hidden from customer page</span><div class="modal-actions">
+        <button class="secondary-action" type="button" data-close-contact-card>Cancel</button>
+        <button class="primary-action" type="submit" form="contact-card-form" id="save-contact-card-button">Save contact card<i data-lucide="save" aria-hidden="true"></i></button>
+      </div>
+      </div>
+    <p id="contact-feedback" role="status" aria-live="polite"></p>
+  </dialog>
+
+  <dialog class="oneqr-appearance-dialog" id="oneqrAppearanceDialog" aria-labelledby="oneqrAppearanceTitle">
+    <div class="oneqr-appearance-heading">
+      <div><span>Module appearance</span><h2 id="oneqrAppearanceTitle">Choose an icon</h2></div>
+      <form method="dialog"><button class="oneqr-modal-close" aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button></form>
+    </div>
+    <p id="oneqrAppearanceDescription"></p>
+    <div class="oneqr-appearance-grid" id="oneqrAppearanceGrid"></div>
+    <button class="oneqr-appearance-reset" type="button" id="oneqrAppearanceReset"><i data-lucide="rotate-ccw" aria-hidden="true"></i><span>Use default</span></button>
+  </dialog>
+  <input type="file" id="oneqrModuleIconUpload" accept=".png,.jpg,.jpeg,.webp,.gif,image/png,image/jpeg,image/webp,image/gif" hidden>
+
+  <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
+  <script>
+    window.NEXORA_SHELL = {
+      activePage: 'stations',
+      activeTab: 'one-qr',
+      onNavigate: function (tabId) {
+        if (window.NEXORA_QR_SELECT_TAB) window.NEXORA_QR_SELECT_TAB(tabId, { updateURL: true });
+      }
+    };
+  </script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+  <script src="../assets/qr-stations-qrcode.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <script src="../assets/nexora-icons.js"></script>
+  <script src="../assets/nexora-shell-nav.js?v=20261029-sidebar-group-labels"></script>
+  <script src="../assets/nexora-shell.js?v=20261030-header-nine-dots-v48"></script>
+  <script src="../assets/oneqr-action-appearance.js?v=20261030-lucide-tabs"></script>
+  <script src="../assets/oneqr-industries.js"></script>
+  <script src="../assets/oneqr-module-catalog.js?v=20261102-complete-po-catalog"></script>
+  <script src="../assets/oneqr-phone.js?v=20261029"></script>
+  <script src="../assets/oneqr-contact-review-experience.js?v=20261103"></script>
+  <script src="../assets/oneqr-contact-review.js?v=20261103"></script>
+  <script src="../assets/qr-stations-contact-review.js?v=20261103"></script>
+  <script src="../assets/oneqr-builder-insights.js?v=1"></script>
+  <script src="../assets/qr-stations-workflows.js"></script>
+  <script src="../assets/oneqr-tip.js?v=print-copy-20261029"></script>
+  <script src="../assets/pos-qr-checkin.js?v=merged-checkin-20261028"></script>
+  <script src="../assets/pos-checkin-devices.js?v=merged-checkin-20261028"></script>
+  <script src="../assets/oneqr-checkin.js?v=merged-checkin-20261028"></script>
+</body>
+</html>

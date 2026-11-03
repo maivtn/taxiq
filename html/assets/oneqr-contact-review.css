@@ -1,0 +1,167 @@
+.contact-review-label { display: inline-flex; vertical-align: middle; margin-left: 8px; padding: 5px 9px; border: 1px solid #ddd6fe; border-radius: 6px; background: #f5f3ff; color: #6d28d9; font-size: 10px; font-weight: 700; line-height: 1.3; }
+#oneqrContactCard img { width: 20px; height: 20px; object-fit: contain; }
+.contact-customer-state { display: inline-flex; align-items: center; gap: 6px; margin: 9px 0; color: #667085; font-size: 11px; font-weight: 600; }
+.contact-customer-state::before { width: 6px; height: 6px; flex: 0 0 6px; border-radius: 50%; background: #98a2b3; content: ""; }
+.contact-customer-state.is-shown { color: #047857; }
+.contact-customer-state.is-shown::before { background: #10b981; }
+.oneqr-phone-quick-actions button img { width: 18px; height: 18px; object-fit: contain; }
+.oneqr-phone-tile[data-review-open-contact] { width: 100%; font: inherit; cursor: pointer; }
+.oneqr-phone-tile[data-review-open-contact] b { font-size: 11px; }
+.oneqr-contact-dialog { width: min(1060px, calc(100vw - 32px)); padding: 0; overflow: hidden; }
+.oneqr-contact-dialog[open] { display: flex; flex-direction: column; }
+.oneqr-contact-dialog .modal-head { flex-shrink: 0; align-items: center; padding: 20px 24px 0; }
+.oneqr-contact-dialog .modal-lead { flex-shrink: 0; margin: 8px 0 0; padding: 0 24px 16px; font-size: 12px; }
+.contact-review-toolbar { display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; gap: 12px; padding: 0 24px; border-bottom: 1px solid #e4e7ec; }
+.contact-review-tabs { display: flex; min-width: 0; gap: 22px; }
+.contact-review-tabs button { display: inline-flex; align-items: center; gap: 7px; min-height: 46px; padding: 8px 0; border: 0; border-bottom: 2px solid transparent; background: transparent; color: #667085; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.contact-review-tabs button[aria-selected="true"] { border-bottom-color: #4f46e5; color: #4f46e5; }
+.contact-review-tabs button span { display: inline-grid; min-width: 19px; height: 19px; padding: 0 4px; place-items: center; border-radius: 5px; background: #f0edff; font-size: 10px; }
+.contact-unsaved { flex-shrink: 0; color: #b45309; font-size: 10px; font-weight: 700; }
+.oneqr-contact-dialog .contact-card-layout { min-height: 0; flex: 1 1 auto; grid-template-columns: minmax(0, 1fr) 300px; gap: 24px; padding: 22px 24px 24px; overflow: auto; overscroll-behavior: contain; scrollbar-gutter: stable; }
+.oneqr-contact-dialog .contact-card-preview-wrap { position: sticky; top: 0; }
+.oneqr-contact-dialog .contact-preview-label { text-align: left; color: #667085; font-size: 10px; letter-spacing: .05em; }
+.oneqr-contact-dialog .contact-preview-selector { margin-bottom: 12px; }
+.oneqr-contact-dialog .contact-field > span { font-size: 11px; }
+.oneqr-contact-dialog .contact-field select { width: 100%; min-width: 0; min-height: 40px; padding: 10px 44px 10px 11px; border: 1px solid #d0d5dd; border-radius: 9px; appearance: none; background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%23667085' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='m6 9 6 6 6-6'/%3E%3C/svg%3E") no-repeat right 16px center / 16px 16px; color: #172033; font: inherit; font-size: 12px; cursor: pointer; }
+.oneqr-contact-dialog .contact-field select:focus-visible { outline: 2px solid #a5b4fc; outline-offset: 2px; }
+.oneqr-contact-dialog .contact-card-preview h3 { overflow-wrap: anywhere; font-size: 20px; line-height: 1.3; }
+.oneqr-contact-dialog .contact-card-preview > p { overflow-wrap: anywhere; }
+.oneqr-contact-dialog .contact-preview-company { margin-top: 6px; font-size: 10px; letter-spacing: .03em; }
+.oneqr-contact-dialog .contact-card-brand > span { position: relative; flex-shrink: 0; overflow: hidden; }
+.oneqr-contact-dialog .contact-card-brand > span img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.oneqr-contact-dialog .contact-preview-details b { overflow-wrap: anywhere; white-space: normal; font-weight: 500; }
+.oneqr-contact-dialog .contact-preview-details > span { align-items: flex-start; }
+.oneqr-contact-dialog .contact-preview-details svg { height: 15px; }
+.oneqr-contact-dialog .contact-review-footer { display: flex; flex-shrink: 0; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 24px; border-top: 1px solid #e4e7ec; background: #fff; }
+.oneqr-contact-dialog .modal-actions { flex-shrink: 0; margin: 0; padding: 0; border: 0; }
+.oneqr-contact-dialog .modal-actions button { min-height: 42px; font-size: 12px; }
+.oneqr-contact-dialog #contact-feedback { flex-shrink: 0; margin: 0; padding: 0 24px 12px; overflow-wrap: anywhere; }
+.oneqr-contact-dialog #contact-feedback:empty { display: none; }
+.contact-team-heading { display: flex; align-items: center; justify-content: space-between; gap: 10px; margin-bottom: 14px; }
+.contact-team-heading h3 { margin: 0; font-size: 14px; font-weight: 750; }
+.contact-review-button { display: inline-flex; min-height: 38px; align-items: center; justify-content: center; gap: 6px; padding: 8px 12px; border: 1px solid #d0d5dd; border-radius: 8px; background: #fff; color: #475467; font: inherit; font-size: 11px; font-weight: 700; cursor: pointer; }
+.contact-review-button.is-primary { border-color: #4f46e5; background: #4f46e5; color: #fff; }
+.contact-review-button img { width: 19px; height: 19px; }
+.contact-team-list { display: grid; gap: 10px; }
+.contact-team-empty { display: flex; min-height: 245px; flex-direction: column; align-items: center; justify-content: center; gap: 12px; padding: 20px; border: 1px dashed #d0d5dd; border-radius: 12px; background: #fafbfe; color: #475467; font-size: 12px; }
+.contact-team-empty > img { width: 60px; height: 60px; margin-bottom: 3px; object-fit: contain; }
+.contact-team-row { min-width: 0; padding: 13px; border: 1px solid #e4e7ec; border-radius: 11px; background: #fff; }
+.contact-team-row.is-editing { border-color: #a5a0ee; box-shadow: 0 0 0 2px #4f46e509; }
+.contact-team-identity { display: flex; align-items: center; gap: 10px; }
+.contact-team-avatar { position: relative; display: inline-grid; width: 39px; height: 39px; flex: 0 0 39px; overflow: hidden; place-items: center; border-radius: 50%; background: #ede9fe; color: #6d28d9; font-size: 14px; font-weight: 800; }
+.contact-team-avatar img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.contact-team-identity > div { min-width: 0; flex: 1; }
+.contact-team-identity strong { display: block; overflow-wrap: anywhere; color: #172033; font-size: 12px; font-weight: 750; line-height: 1.4; }
+.contact-team-identity small { display: block; margin-top: 3px; overflow-wrap: anywhere; color: #667085; font-size: 11px; line-height: 1.5; }
+.contact-public-badge { max-width: 85px; flex-shrink: 0; padding: 4px 6px; border-radius: 5px; background: #f2f4f7; color: #667085; font-size: 9px; font-weight: 700; text-align: center; }
+.contact-public-badge.is-public { background: #ecfdf3; color: #047857; }
+.contact-team-actions { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 11px; }
+.contact-team-actions button { display: inline-flex; min-height: 32px; align-items: center; justify-content: center; padding: 6px 9px; border: 1px solid #e4e7ec; border-radius: 7px; background: #fff; color: #475467; font: inherit; font-size: 10px; font-weight: 650; cursor: pointer; }
+.contact-team-actions button:first-child { border-color: #d6d3f6; background: #f8f7ff; color: #4f46e5; }
+.contact-team-actions button:disabled { opacity: .4; cursor: default; }
+.contact-share-note { margin: 9px 0 0; color: #8a6470; font-size: 10px; line-height: 1.5; }
+.contact-team-editor { margin-top: 18px; padding: 16px; border: 1px solid #d6d3f6; border-radius: 12px; background: #fafaff; }
+.contact-team-editor .contact-field-grid { margin-top: 14px; }
+.contact-team-editor .contact-field > span b { color: #d92d20; font-weight: 500; }
+.contact-member-results { display: grid; gap: 4px; max-height: 200px; margin-top: 7px; overflow-y: auto; }
+.contact-member-option { display: flex; align-items: center; gap: 9px; min-height: 52px; padding: 7px 9px; border: 1px solid #e4e7ec; border-radius: 8px; background: #fff; text-align: left; cursor: pointer; }
+.contact-member-option > span:nth-child(2) { min-width: 0; flex: 1; }
+.contact-member-option strong, .contact-member-option small { display: block; overflow-wrap: anywhere; }
+.contact-member-option strong { font-size: 11px; }
+.contact-member-option small { margin-top: 2px; color: #667085; font-size: 10px; }
+.contact-member-option svg { width: 16px; height: 16px; flex: 0 0 16px; color: #4f46e5; }
+.contact-member-option:disabled { background: #f9fafb; opacity: .45; cursor: default; }
+.contact-member-option:not(:disabled):hover { border-color: #a5a0ee; }
+.oneqr-contact-dialog .contact-field input[readonly] { background: #f2f4f7; color: #667085; }
+.contact-public-switch { display: flex; align-items: center; justify-content: space-between; gap: 12px; margin: 16px 0; color: #344054; font-size: 12px; font-weight: 700; cursor: pointer; }
+.contact-public-switch input { width: 34px; height: 19px; margin: 0; border: 0; border-radius: 99px; appearance: none; background: #cbd5e1; cursor: pointer; transition: background .15s; }
+.contact-public-switch input::before { display: block; width: 15px; height: 15px; margin: 2px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px #17203326; content: ""; transition: transform .15s; }
+.contact-public-switch input:checked { background: #4f46e5; }
+.contact-public-switch input:checked::before { transform: translateX(15px); }
+.contact-public-switch input:focus-visible { outline: 2px solid #a5b4fc; outline-offset: 3px; }
+.contact-inherited { display: flex; gap: 10px; padding: 12px; border: 1px solid #e4e7ec; border-radius: 9px; background: #fff; }
+.contact-inherited > img { width: 30px; height: 30px; flex-shrink: 0; object-fit: contain; }
+.contact-inherited > div { min-width: 0; }
+.contact-inherited strong { color: #475467; font-size: 11px; font-weight: 700; }
+.contact-inherited p { margin: 5px 0; overflow-wrap: anywhere; color: #667085; font-size: 10px; line-height: 1.6; }
+.contact-inherited button { display: inline-flex; align-items: center; gap: 3px; padding: 2px 0; border: 0; background: none; color: #4f46e5; font: inherit; font-size: 10px; font-weight: 700; cursor: pointer; }
+.contact-inherited button svg { width: 12px; height: 12px; }
+.oneqr-contact-dialog [aria-invalid="true"] { border-color: #d92d20 !important; }
+.contact-field-error { margin: 4px 0 0; color: #d92d20; font-size: 11px; }
+body:has(.oneqr-contact-dialog[open]), body:has(.contact-review-popup[open]) { overflow: hidden; }
+.contact-review-popup { width: min(430px, calc(100vw - 24px)); max-height: calc(100dvh - 32px); margin: auto; padding: 20px; overflow: auto; border: 0; border-radius: 17px; background: #fff; color: #172033; box-shadow: 0 24px 60px #0f172a40; font-family: Inter, sans-serif; }
+.contact-review-popup::backdrop { background: #0f172a73; backdrop-filter: blur(2px); }
+.contact-review-popup * { box-sizing: border-box; }
+.contact-review-popup [hidden] { display: none !important; }
+.contact-review-popup header { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+.contact-review-popup h2 { margin: 0; overflow-wrap: anywhere; font-size: 18px; font-weight: 800; line-height: 1.4; }
+.contact-review-popup header small { display: block; margin-bottom: 4px; color: #667085; font-size: 10px; }
+.contact-review-popup header p { margin: 5px 0 0; overflow-wrap: anywhere; color: #667085; font-size: 12px; line-height: 1.5; }
+.contact-review-popup header > button { display: grid; width: 32px; height: 32px; flex: 0 0 32px; place-items: center; border: 1px solid #e4e7ec; border-radius: 8px; background: #fff; color: #667085; font: inherit; font-size: 24px; cursor: pointer; }
+.contact-review-popup footer { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+.contact-review-popup footer > button, .contact-review-popup footer > a { display: inline-flex; min-height: 40px; align-items: center; justify-content: center; padding: 8px 11px; border: 1px solid #d0d5dd; border-radius: 8px; background: #fff; color: #475467; font: inherit; font-size: 11px; font-weight: 700; text-decoration: none; cursor: pointer; }
+.contact-review-popup footer > .is-primary, .contact-review-popup footer > a { border-color: #4f46e5; background: #4f46e5; color: #fff; }
+.contact-review-popup button:disabled { opacity: .45; cursor: default; }
+.contact-review-popup > label { display: block; margin-bottom: 5px; color: #667085; font-size: 11px; font-weight: 700; }
+.contact-review-popup > input { width: 100%; min-height: 42px; padding: 9px 10px; border: 1px solid #d0d5dd; border-radius: 8px; background: #f9fafb; color: #475467; font: inherit; font-size: 11px; }
+.contact-qr-art { display: grid; width: 264px; height: 264px; max-width: 100%; place-items: center; margin: 20px auto; padding: 12px; border: 1px solid #e4e7ec; border-radius: 12px; background: #fff; }
+.contact-qr-art img, .contact-qr-art canvas { max-width: 100%; height: auto; }
+#contact-qr-feedback, .contact-popup-feedback { margin: 9px 0 0; overflow-wrap: anywhere; color: #667085; font-size: 11px; line-height: 1.5; }
+.contact-review-menu { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 18px; }
+.contact-review-menu button { display: inline-flex; min-height: 43px; align-items: center; justify-content: center; gap: 7px; padding: 9px; border: 1px solid #d6d3f6; border-radius: 9px; background: #fafaff; color: #4f46e5; font: inherit; font-size: 12px; font-weight: 700; cursor: pointer; }
+.contact-review-menu svg { width: 16px; height: 16px; }
+.contact-review-picker { padding: 0; overflow: hidden; }
+.contact-review-picker[open], .contact-review-picker form { display: flex; min-height: 0; flex-direction: column; }
+.contact-review-picker form { max-height: calc(100dvh - 32px); }
+.contact-review-picker header { flex-shrink: 0; align-items: center; padding: 17px 20px; border-bottom: 1px solid #e4e7ec; }
+.contact-review-picker-body { min-height: 0; padding: 16px 20px; overflow-y: auto; }
+.contact-review-picker fieldset { margin: 0 0 16px; padding: 0; border: 0; }
+.contact-review-picker legend { margin-bottom: 7px; color: #667085; font-size: 10px; font-weight: 800; letter-spacing: .05em; text-transform: uppercase; }
+.contact-picker-person { display: flex; align-items: center; gap: 10px; min-height: 63px; margin-top: 6px; padding: 10px; border: 1px solid #e4e7ec; border-radius: 10px; cursor: pointer; }
+.contact-picker-person:has(input:checked) { border-color: #a5a0ee; background: #f5f3ff; }
+.contact-picker-person > span:nth-child(2) { min-width: 0; flex: 1; }
+.contact-picker-person strong, .contact-picker-person small { display: block; overflow-wrap: anywhere; }
+.contact-picker-person strong { font-size: 12px; }
+.contact-picker-person small { margin-top: 3px; color: #667085; font-size: 11px; }
+.contact-picker-person input { width: 18px; height: 18px; flex-shrink: 0; margin: 0; accent-color: #4f46e5; }
+.contact-selected-card { padding: 13px; border: 1px solid #e4e7ec; border-radius: 10px; background: #f9fafb; }
+.contact-selected-card strong { overflow-wrap: anywhere; font-size: 13px; }
+.contact-selected-card p { margin: 5px 0 0; overflow-wrap: anywhere; color: #667085; font-size: 11px; line-height: 1.6; }
+.contact-review-picker footer { flex-shrink: 0; margin-top: 0; padding: 14px 20px; border-top: 1px solid #e4e7ec; }
+.contact-review-picker footer .is-primary { flex: 1; }
+@media (max-width: 900px) {
+  .oneqr-contact-dialog .contact-card-layout { grid-template-columns: minmax(0, 1fr) 260px; gap: 18px; padding-right: 18px; padding-left: 18px; }
+  .oneqr-contact-dialog .contact-card-preview { padding: 17px; }
+  .oneqr-contact-dialog .contact-switches { grid-template-columns: 1fr; }
+  .contact-team-editor .contact-field-grid { grid-template-columns: 1fr; }
+}
+@media (max-width: 650px) {
+  .oneqr-contact-dialog { width: calc(100vw - 16px); max-height: calc(100dvh - 16px); border-radius: 14px; }
+  .oneqr-contact-dialog .modal-head { padding: 15px 16px 0; }
+  .oneqr-contact-dialog h2 { font-size: 20px; }
+  .oneqr-contact-dialog .modal-lead { padding: 0 16px 12px; font-size: 11px; line-height: 1.6; }
+  .contact-review-toolbar { flex-wrap: wrap; gap: 0; padding: 0 16px; }
+  .contact-review-tabs { gap: 18px; }
+  .contact-review-tabs button { min-height: 45px; font-size: 12px; }
+  .contact-unsaved { margin-bottom: 8px; }
+  .oneqr-contact-dialog .contact-card-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; padding: 16px; }
+  .oneqr-contact-dialog .contact-card-preview-wrap { position: static; }
+  .oneqr-contact-dialog .contact-field-grid { grid-template-columns: minmax(0, 1fr); }
+  .oneqr-contact-dialog .contact-import { flex-wrap: wrap; }
+  .oneqr-contact-dialog .contact-import input { font-size: 12px; }
+  .oneqr-contact-dialog .contact-field input, .oneqr-contact-dialog .contact-field textarea, .oneqr-contact-dialog .contact-field select { font-size: 16px; }
+  .oneqr-contact-dialog .contact-review-footer { flex-direction: column; align-items: stretch; gap: 8px; padding: 10px 16px max(12px, env(safe-area-inset-bottom)); }
+  .oneqr-contact-dialog .contact-review-footer > .contact-customer-state { margin: 0; font-size: 10px; }
+  .oneqr-contact-dialog .modal-actions { justify-content: stretch; }
+  .oneqr-contact-dialog .modal-actions button { justify-content: center; min-height: 44px; }
+  .oneqr-contact-dialog .modal-actions .primary-action { flex: 1; }
+  .oneqr-contact-dialog #contact-feedback { padding: 0 16px 10px; }
+  .contact-team-row { padding: 11px; }
+  .contact-team-identity { gap: 8px; flex-wrap: wrap; }
+  .contact-team-identity > div { flex-basis: calc(100% - 47px); }
+  .contact-public-badge { margin-left: 47px; }
+  .contact-team-actions { display: grid; grid-template-columns: 1fr 1fr; }
+  .contact-team-actions button { min-height: 38px; }
+  .contact-team-editor { padding: 12px; }
+  .contact-review-picker header, .contact-review-picker-body, .contact-review-picker footer { padding-right: 16px; padding-left: 16px; }
+}
