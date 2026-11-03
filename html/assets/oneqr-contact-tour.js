@@ -126,7 +126,7 @@
   };
   function stepsFor(panel) {
     const tab = panel.dataset.qrPanel;
-    if (tab === 'one-qr') return oneqrSteps;
+    if (tab === 'one-qr') return oneqrSteps.filter(step => document.querySelector(step.selector));
     return (stationSteps[tab] || []).map(step => {
       const target = panel.querySelector(step.selector);
       return {

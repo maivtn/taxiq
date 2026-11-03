@@ -58,6 +58,7 @@
   <link rel="stylesheet" href="../assets/qr-stations.css?v=20261103-toolbar-3d-icons">
   <link rel="stylesheet" href="../assets/oneqr-tip.css?v=tip-link-20261029">
   <link rel="stylesheet" href="../assets/oneqr-contact-card.css?v=20261103-po-contact-form">
+  <link rel="stylesheet" href="../assets/oneqr-contact-tour.css?v=20261103-qr-stations">
   <link rel="stylesheet" href="../assets/oneqr-experience.css?v=1">
   <link rel="stylesheet" href="../assets/nexora-local-admin.css?v=merged-checkin-20261028">
   <link rel="stylesheet" href="../assets/oneqr-checkin.css?v=merged-checkin-20261028">
@@ -76,7 +77,10 @@
       <main class="content qr-stations-page" aria-label="QR Stations content">
         <section class="qr-stations-shell" aria-labelledby="qr-stations-title">
           <div class="qr-stations-heading">
-            <h1 id="qr-stations-title">One QR</h1>
+            <div class="qr-stations-title-row">
+              <h1 id="qr-stations-title">One QR</h1>
+              <button class="oneqr-qrcard-btn oneqr-tour-trigger" type="button" id="oneqrAiTour" aria-controls="oneqrAiTourPanel" aria-expanded="false"><img src="../assets/icon-oneqr/issue-2040-oneqr-sparkles-3d.png" alt="">AI Tour</button>
+            </div>
             <p>Set up your QR code and the ways your business receives payments.</p>
 
             <div class="qr-tabs" role="tablist" aria-label="Stations and QR tabs">
@@ -838,5 +842,6 @@
   <script src="../assets/pos-qr-checkin.js?v=merged-checkin-20261028"></script>
   <script src="../assets/pos-checkin-devices.js?v=merged-checkin-20261028"></script>
   <script src="../assets/oneqr-checkin.js?v=merged-checkin-20261028"></script>
+  <script src="../assets/oneqr-contact-tour.js?v=20261103-main-page"></script>
 </body>
 </html>
