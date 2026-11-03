@@ -63,8 +63,6 @@
   let baseline = '';
   let addActionBaseline = true;
   let tab = 'shop';
-  let adding = false;
-  const pendingMembers = new Set();
   let selectedPreview = 'shop';
   let opener;
   const say = message => { $('#contact-feedback').textContent = message; };
@@ -97,7 +95,7 @@
     if (menu.open && !enabled) { menu.close(); pageFeedback('This contact is unavailable'); }
   }
   function changed() {
-    $('#contact-unsaved').hidden = JSON.stringify(draft) === baseline && $('#contact-add-action').checked === addActionBaseline && !adding;
+    $('#contact-unsaved').hidden = JSON.stringify(draft) === baseline && $('#contact-add-action').checked === addActionBaseline;
     renderPreview();
   }
   function setTab(next, focus = false) {
@@ -110,6 +108,7 @@
     });
     $('#contact-shop-panel').hidden = next !== 'shop';
     $('#contact-team-panel').hidden = next !== 'team';
+    if (next !== 'team') closeMemberPicker();
   }
   function shareState(contact) {
     const saved = team(profile.read()).find(person => person.id === contact.id && person.shopId === draft.shopId);
@@ -126,10 +125,10 @@
       const role = contactGroup(contact);
       return '<article class="contact-team-row' + (selectedPreview === contact.id ? ' is-active' : '') + '" data-contact-row="' + esc(contact.id) + '" tabindex="0" aria-label="' + esc(contactName(contact) || 'Contact') + '"' + (selectedPreview === contact.id ? ' aria-current="true"' : '') + '>' +
         '<div class="contact-team-identity">' + avatar({ name: contactName(contact), avatar: person?.avatar }) + '<div class="contact-inline-fields"><label class="contact-field"><span>Name</span><input type="text" data-team-name value="' + esc(contactName(contact)) + '" maxlength="100" autocomplete="off" required></label><label class="contact-field"><span>Role</span><select data-team-role aria-label="Role"><option value="manager"' + (role === 'manager' ? ' selected' : '') + '>Manager</option><option value="technician"' + (role === 'technician' ? ' selected' : '') + '>Technician</option></select></label></div></div>' +
-        '<div class="contact-team-row-controls"><label class="contact-public-switch contact-row-public"><span>Public contact</span><input type="checkbox" role="switch" data-team-public' + (contact.public ? ' checked' : '') + '></label><button type="button" class="contact-remove-button" data-team-action="remove">Remove</button></div>' +
-        '<div class="contact-team-actions"><button type="button" data-team-action="copy"' + (note ? ' disabled' : '') + '>Copy link</button><button type="button" data-team-action="qr"' + (note ? ' disabled' : '') + '>View QR</button><button type="button" data-team-action="download"' + (note ? ' disabled' : '') + '>Download QR</button></div>' +
+        '<div class="contact-team-row-controls"><label class="contact-public-switch contact-row-public"><span>Public contact</span><input type="checkbox" role="switch" data-team-public' + (contact.public ? ' checked' : '') + '></label>' +
+        '<div class="contact-team-actions"><button type="button" data-team-action="copy"' + (note ? ' disabled' : '') + '>Copy link</button><button type="button" data-team-action="qr"' + (note ? ' disabled' : '') + '>View QR</button><button type="button" data-team-action="download"' + (note ? ' disabled' : '') + '>Download QR</button></div><button type="button" class="contact-remove-button" data-team-action="remove">Remove</button></div>' +
         (note ? '<p class="contact-share-note">' + esc(note) + '</p>' : '') + '</article>';
-    }).join('') : '<div class="contact-team-empty"><img src="../assets/icon-oneqr/issue-2040-oneqr-users-round-3d.png" alt=""><strong>No team contacts yet</strong><button type="button" class="contact-review-button" data-team-action="add">Add contact</button></div>';
+    }).join('') : '<div class="contact-team-empty"><img src="../assets/icon-oneqr/issue-2040-oneqr-users-round-3d.png" alt=""><strong>No team contacts yet</strong></div>';
   }
   function renderPreview() {
     const options = [{ id: 'shop', name: draft.name || 'Your business' }].concat(team(draft).map(contact => ({ id: contact.id, name: contactName(contact).toUpperCase() })));
@@ -176,77 +175,54 @@
   }
   function results() {
     const search = $('#contact-member-search').value.trim().toLowerCase();
-    const choices = roster.filter(person => person.name.toLowerCase().includes(search));
+    const choices = roster.filter(person => (person.name + ' ' + groupTitle(person.role)).toLowerCase().includes(search));
     const groups = [{ role: 'manager', label: 'Managers' }, { role: 'technician', label: 'Technicians' }];
     $('#contact-member-results').innerHTML = choices.length ? groups.map(group => {
       const people = choices.filter(person => person.role === group.role);
       if (!people.length) return '';
       return '<fieldset class="contact-member-group"><legend>' + group.label + '</legend>' + people.map(person => {
         const duplicate = team(draft).some(contact => contact.memberId === person.id);
-        return '<label class="contact-member-option">' + avatar(person) + '<span><strong>' + esc(person.name.toUpperCase()) + '</strong><small>' + groupTitle(person.role) + '</small></span><input type="checkbox" data-pick-member="' + esc(person.id) + '"' + (duplicate ? ' disabled checked' : pendingMembers.has(person.id) ? ' checked' : '') + '></label>';
+        return '<div class="contact-member-option">' + avatar(person) + '<span><strong>' + esc(person.name.toUpperCase()) + '</strong><small>' + groupTitle(person.role) + '</small></span>' + (duplicate ? '<span class="contact-member-added">Added</span>' : '<button type="button" class="contact-review-button is-primary" data-add-member="' + esc(person.id) + '" aria-label="Add ' + esc(person.name) + '">Add</button>') + '</div>';
       }).join('') + '</fieldset>';
     }).join('') : '<p class="contact-share-note">' + (roster.length ? 'No matching team members' : 'No team contacts yet') + '</p>';
-    syncBatchAdd();
     icons();
   }
-  function syncBatchAdd() {
-    const count = roster.filter(person => pendingMembers.has(person.id) && !team(draft).some(contact => contact.memberId === person.id)).length;
-    $('#contact-add-selected').disabled = count === 0;
-    $('#contact-selected-count').textContent = count;
-  }
-  function addSelected() {
-    const contacts = roster.filter(person => pendingMembers.has(person.id) && !team(draft).some(contact => contact.memberId === person.id)).map(person => ({
+  function addMember(id) {
+    const person = member(id);
+    if (!person || team(draft).some(contact => contact.memberId === id)) return;
+    draft.teamContacts.push({
       id: person.id, memberId: person.id, shopId: draft.shopId, name: person.name,
       role: person.role, group: person.role, title: groupTitle(person.role), public: true
-    }));
-    if (!contacts.length) return;
-    draft.teamContacts.push(...contacts);
-    selectedPreview = contacts[0].id;
-    closeEditor();
-    $('#contact-team-list').querySelector('[data-contact-row="' + CSS.escape(contacts[0].id) + '"] [data-team-name]')?.focus();
-  }
-  function clearErrors() {
-    $('#contact-member-error').hidden = true;
-    $('#contact-member-search').removeAttribute('aria-invalid');
+    });
+    selectedPreview = person.id;
+    renderTeam(); changed(); results(); openMemberPicker();
+    ($('#contact-member-results [data-add-member]') || $('#contact-member-search')).focus();
   }
   function openMemberPicker() {
-    clearErrors();
-    adding = true;
-    pendingMembers.clear();
-    $('#contact-team-editor').hidden = false;
-    $('#contact-member-search').value = '';
-    results(); renderTeam(); changed();
-    $('#contact-team-editor').scrollIntoView({ block: 'nearest' });
-    $('#contact-member-search').focus();
+    if (!$('#contact-member-results').hidden) return;
+    results();
+    $('#contact-member-results').hidden = false;
+    $('#contact-member-search').setAttribute('aria-expanded', 'true');
+    $('[data-contact-member-combobox]').classList.add('is-open');
   }
-  function closeEditor() {
-    adding = false;
-    pendingMembers.clear();
-    $('#contact-team-editor').hidden = true;
-    clearErrors(); renderTeam(); changed();
+  function closeMemberPicker() {
+    $('#contact-member-results').hidden = true;
+    $('#contact-member-search').setAttribute('aria-expanded', 'false');
+    $('[data-contact-member-combobox]').classList.remove('is-open');
   }
   function open() {
     opener = document.activeElement;
     draft = clone(profile.read());
     baseline = JSON.stringify(draft);
-    adding = false; selectedPreview = 'shop';
-    pendingMembers.clear();
+    selectedPreview = 'shop';
     fillShop();
     addActionBaseline = true;
     $('#contact-add-action').checked = addActionBaseline;
-    $('#contact-team-editor').hidden = true;
-    clearErrors(); setTab('shop'); renderTeam(); changed(); sync(); say('');
+    $('#contact-member-search').value = '';
+    closeMemberPicker(); setTab('shop'); renderTeam(); changed(); sync(); say('');
     dialog.showModal();
   }
   function validate() {
-    if (adding && pendingMembers.size) addSelected();
-    if (adding) {
-      setTab('team');
-      $('#contact-member-error').hidden = false;
-      $('#contact-member-search').setAttribute('aria-invalid', 'true');
-      $('#contact-member-search').focus();
-      return false;
-    }
     const missingName = team(draft).find(contact => !contactName(contact).trim());
     if (missingName) {
       setTab('team');
@@ -299,17 +275,28 @@
       event.preventDefault(); setTab(event.key === 'Home' ? 'shop' : event.key === 'End' ? 'team' : tab === 'shop' ? 'team' : 'shop', true);
     });
   });
-  $('#contact-add-member').addEventListener('click', openMemberPicker);
-  $('#contact-editor-close').addEventListener('click', closeEditor);
-  $('#contact-member-search').addEventListener('input', results);
-  $('#contact-member-results').addEventListener('change', event => {
-    const checkbox = event.target.closest('[data-pick-member]');
-    if (!checkbox || checkbox.disabled) return;
-    if (checkbox.checked) pendingMembers.add(checkbox.dataset.pickMember);
-    else pendingMembers.delete(checkbox.dataset.pickMember);
-    clearErrors(); syncBatchAdd();
+  $('#contact-member-search').addEventListener('focus', openMemberPicker);
+  $('#contact-member-search').addEventListener('input', () => { openMemberPicker(); results(); });
+  $('.contact-member-search').addEventListener('click', () => { $('#contact-member-search').focus(); openMemberPicker(); });
+  $('#contact-member-results').addEventListener('click', event => {
+    const button = event.target.closest('[data-add-member]');
+    if (button) addMember(button.dataset.addMember);
   });
-  $('#contact-add-selected').addEventListener('click', addSelected);
+  $('[data-contact-member-combobox]').addEventListener('keydown', event => {
+    if (event.key === 'Escape' && !$('#contact-member-results').hidden) {
+      event.preventDefault(); event.stopPropagation();
+      $('#contact-member-search').focus(); closeMemberPicker();
+    } else if (event.key === 'ArrowDown' && event.target === $('#contact-member-search')) {
+      event.preventDefault(); openMemberPicker();
+      $('#contact-member-results [data-add-member]')?.focus();
+    }
+  });
+  $('[data-contact-member-combobox]').addEventListener('focusout', event => {
+    if (!event.currentTarget.contains(event.relatedTarget)) closeMemberPicker();
+  });
+  document.addEventListener('click', event => {
+    if (!event.composedPath().includes($('[data-contact-member-combobox]'))) closeMemberPicker();
+  });
   $('#contact-preview-person').addEventListener('change', event => selectContact(event.target.value));
   $('#contact-import-button').addEventListener('click', () => {
     if (!$('#contact-google-url').value.trim()) { say('Paste a Google Business Profile URL first.'); return; }
@@ -431,7 +418,6 @@
     if (!button || button.disabled) return;
     const action = button.dataset.teamAction;
     const id = button.closest('[data-contact-row]')?.dataset.contactRow;
-    if (action === 'add') openMemberPicker();
     if (action === 'copy') copyLink(id);
     if (action === 'qr') showQR(id);
     if (action === 'download') downloadQR(id);
@@ -443,7 +429,7 @@
       renderTeam(); changed();
       results();
       const nextField = nextId && $('#contact-team-list').querySelector('[data-contact-row="' + CSS.escape(nextId) + '"] [data-team-name]');
-      (nextField || $('#contact-add-member')).focus();
+      (nextField || $('#contact-member-search')).focus();
     }
   });
 

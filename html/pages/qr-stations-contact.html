@@ -58,7 +58,7 @@
   <link rel="stylesheet" href="../assets/qr-stations.css?v=20261102-module-toolbar-pastels">
   <link rel="stylesheet" href="../assets/oneqr-tip.css?v=tip-link-20261029">
   <link rel="stylesheet" href="../assets/oneqr-contact-card.css?v=phone-mask-20261029">
-  <link rel="stylesheet" href="../assets/oneqr-contact-review.css?v=20261103-contact-picker-only">
+  <link rel="stylesheet" href="../assets/oneqr-contact-review.css?v=20261103-contact-picker-compact">
   <link rel="stylesheet" href="../assets/oneqr-experience.css?v=1">
   <link rel="stylesheet" href="../assets/nexora-local-admin.css?v=merged-checkin-20261028">
   <link rel="stylesheet" href="../assets/oneqr-checkin.css?v=merged-checkin-20261028">
@@ -762,15 +762,15 @@
           </fieldset>
           </section>
           <section id="contact-team-panel" role="tabpanel" aria-labelledby="contact-team-tab" hidden>
-            <div class="contact-team-heading"><h3>Team contacts</h3><button type="button" class="contact-review-button is-primary" id="contact-add-member"><img src="../assets/icon-oneqr/issue-2040-oneqr-users-round-3d.png" alt="">Add contact</button></div>
+            <div class="contact-team-heading"><h3>Team contacts</h3></div>
+            <div class="contact-member-picker">
+              <label class="contact-field" for="contact-member-search"><span>Select a team member to add a contact</span></label>
+              <div class="contact-member-combobox" data-contact-member-combobox>
+                <div class="contact-member-search"><i data-lucide="search" aria-hidden="true"></i><input id="contact-member-search" type="search" role="combobox" aria-haspopup="dialog" aria-expanded="false" placeholder="Team member" autocomplete="off" aria-controls="contact-member-results" aria-label="Team member"><i class="contact-member-chevron" data-lucide="chevron-down" aria-hidden="true"></i></div>
+                <div id="contact-member-results" class="contact-member-results" role="dialog" aria-label="Team member" hidden></div>
+              </div>
+            </div>
             <div id="contact-team-list" class="contact-team-list"></div>
-            <section id="contact-team-editor" class="contact-team-editor" hidden aria-label="Add contact">
-              <div class="contact-team-heading"><h3 id="contact-editor-title">Add contact</h3><button type="button" class="icon-button" id="contact-editor-close" aria-label="Close"><i data-lucide="x" aria-hidden="true"></i></button></div>
-              <label class="contact-field" for="contact-member-search"><span>Team member <b aria-hidden="true">*</b></span><input id="contact-member-search" type="search" aria-required="true" placeholder="Team member" autocomplete="off" aria-controls="contact-member-results" aria-describedby="contact-member-error"></label>
-              <p class="contact-field-error" id="contact-member-error" role="alert" hidden>Team member</p>
-              <div id="contact-member-results" class="contact-member-results" aria-label="Team member"></div>
-              <div id="contact-batch-actions" class="contact-batch-actions"><button type="button" class="contact-review-button is-primary" id="contact-add-selected" disabled>Add contact <span id="contact-selected-count" aria-live="polite">0</span></button></div>
-            </section>
           </section>
         </form>
 
@@ -837,7 +837,7 @@
   <script src="../assets/oneqr-module-catalog.js?v=20261102-complete-po-catalog"></script>
   <script src="../assets/oneqr-phone.js?v=20261029"></script>
   <script src="../assets/oneqr-contact-review-experience.js?v=20261103"></script>
-  <script src="../assets/oneqr-contact-review.js?v=20261103-contact-picker-only"></script>
+  <script src="../assets/oneqr-contact-review.js?v=20261103-contact-picker-compact"></script>
   <script src="../assets/qr-stations-contact-review.js?v=20261103"></script>
   <script src="../assets/oneqr-builder-insights.js?v=1"></script>
   <script src="../assets/qr-stations-workflows.js"></script>
