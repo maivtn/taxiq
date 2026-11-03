@@ -69,6 +69,7 @@
     draft.addressMode = $('[name="contact-address-mode"]:checked')?.value || 'full';
     draft.showPhone = $('#contact-show-phone').checked;
     draft.showHours = $('#contact-show-hours').checked;
+    draft.exchangeEnabled = $('#contact-exchange-mode').value === '1';
     draft.closedDays = $$('#contact-closed-days input:checked').map(input => Number(input.value));
   }
   function fillShop() {
@@ -77,6 +78,7 @@
     $$('[name="contact-address-mode"]').forEach(input => { input.checked = input.value === draft.addressMode; });
     $('#contact-show-phone').checked = Boolean(draft.showPhone);
     $('#contact-show-hours').checked = Boolean(draft.showHours);
+    $('#contact-exchange-mode').value = draft.exchangeEnabled ? '1' : '0';
     $$('#contact-closed-days input').forEach(input => { input.checked = (draft.closedDays || []).includes(Number(input.value)); });
     $$('[data-contact-theme]').forEach(button => button.setAttribute('aria-pressed', String(button.dataset.contactTheme === draft.theme)));
   }
@@ -97,6 +99,11 @@
   }
   function setTab(next, focus = false) {
     tab = next;
+    dialog.dataset.contactTab = next;
+    const preview = $('.contact-card-preview-wrap');
+    const previewSlot = $(next === 'team' ? '[data-contact-team-preview]' : '[data-contact-shop-preview]');
+    if (preview.parentElement !== previewSlot) previewSlot.append(preview);
+    $('[data-contact-team-preview]').hidden = next !== 'team';
     $$('[data-contact-tab]').forEach(button => {
       const active = button.dataset.contactTab === next;
       button.setAttribute('aria-selected', String(active));
@@ -187,7 +194,8 @@
     $('#contact-hours-row').hidden = !draft.showHours;
     $('#contact-closed-days').hidden = !draft.showHours;
     $('[data-review-draft-action="call"]').hidden = !details.phone;
-    $('[data-review-draft-action="directions"]').hidden = draft.addressMode !== 'full' || !details.address;
+    $('[data-review-draft-action="exchange"]').hidden = !card.exchangeEnabled;
+    $('#contact-vcard-output').textContent = profile.vCardText(card);
     syncActiveContact();
     icons();
   }
@@ -295,6 +303,7 @@
     input.addEventListener('input', () => { readShop(); changed(); });
     input.addEventListener('change', () => { readShop(); changed(); });
   });
+  $('#contact-exchange-mode').addEventListener('change', () => { readShop(); changed(); });
   $$('[data-contact-theme]').forEach(button => button.addEventListener('click', () => {
     draft.theme = button.dataset.contactTheme;
     $$('[data-contact-theme]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
@@ -343,7 +352,12 @@
     readShop(); profile.downloadVCard(cardFor(draft, selectedPreview) || cardFor(draft));
     say('vCard downloaded. Open the file to save this contact.');
   });
-  $$('[data-review-draft-action]').forEach(button => button.addEventListener('click', () => say(button.dataset.reviewDraftAction === 'call' ? 'Call preview: ' + formatPhone(draft.phone) : 'Directions preview: ' + profile.address(draft))));
+  $$('[data-review-draft-action]').forEach(button => button.addEventListener('click', () => {
+    readShop();
+    const card = cardFor(draft, selectedPreview) || cardFor(draft);
+    if (button.dataset.reviewDraftAction === 'exchange') profile.openExchange(card);
+    else if (card.showPhone && card.phone) say('Call preview: ' + formatPhone(card.phone));
+  }));
   $$('[data-close-contact-card]').forEach(button => button.addEventListener('click', () => dialog.close()));
   dialog.addEventListener('close', () => { if (opener?.isConnected) opener.focus(); });
   function backdrop(modal) {
@@ -535,6 +549,7 @@
     const shop = profile.read();
     menu.querySelectorAll('[data-oneqr-action="call"], [data-oneqr-action="text"]').forEach(node => { node.hidden = !shop.showPhone || !shop.phone; });
     menu.querySelector('[data-oneqr-action="directions"]').hidden = shop.addressMode !== 'full' || !profile.address(shop);
+    menu.querySelector('[data-oneqr-action="exchange"]').hidden = !shop.exchangeEnabled;
     pageFeedback(''); icons(); menu.showModal();
   });
   document.addEventListener('oneqr:settings-saved', sync);

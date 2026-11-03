@@ -9,7 +9,7 @@
     email: 'hello@bitcoinnailbar.com', website: 'https://bitcoinnailbar.com',
     address: '9793 Westheimer Rd, Suite A', city: 'Houston', region: 'TX', zip: '77042',
     bio: 'Beauty, care, and a better booking experience.', blurb: '', addressMode: 'full',
-    showPhone: true, showHours: true, openTime: '09:30', closeTime: '19:00', closedDays: [],
+    showPhone: true, showHours: true, exchangeEnabled: false, openTime: '09:30', closeTime: '19:00', closedDays: [],
     theme: 'indigo', configured: false
   };
 
@@ -64,7 +64,7 @@
     setTimeout(function () { URL.revokeObjectURL(url); }, 1000);
   }
 
-  function downloadVCard(card) {
+  function vCardText(card) {
     function value(text) { return String(text || '').replace(/\\/g, '\\\\').replace(/\r?\n/g, '\\n').replace(/,/g, '\\,').replace(/;/g, '\\;'); }
     var fullAddress = card.addressMode === 'full' && address(card);
     var lines = ['BEGIN:VCARD', 'VERSION:3.0', 'FN:' + value(card.name),
@@ -73,8 +73,12 @@
       card.email ? 'EMAIL:' + value(card.email) : '', card.website ? 'URL:' + value(card.website) : '',
       fullAddress ? 'ADR;TYPE=WORK:;;' + value(card.address) + ';' + value(card.city) + ';' + value(card.region) + ';' + value(card.zip) + ';' : '',
       card.bio ? 'NOTE:' + value(card.bio) : '', 'END:VCARD'];
+    return lines.filter(Boolean).join('\r\n') + '\r\n';
+  }
+
+  function downloadVCard(card) {
     var filename = String(card.name || 'oneqr-contact').toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/^-|-$/g, '') || 'oneqr-contact';
-    download(lines.filter(Boolean).join('\r\n') + '\r\n', 'text/vcard;charset=utf-8', filename + '.vcf');
+    download(vCardText(card), 'text/vcard;charset=utf-8', filename + '.vcf');
   }
 
   function readLeads() {
@@ -102,6 +106,7 @@
     });
     document.querySelectorAll('[data-oneqr-action="call"], [data-oneqr-action="text"]').forEach(function (button) { button.hidden = !card.showPhone || !card.phone; });
     document.querySelectorAll('[data-oneqr-action="directions"]').forEach(function (button) { button.hidden = card.addressMode !== 'full' || !address(card); });
+    document.querySelectorAll('[data-oneqr-action="exchange"]').forEach(function (button) { button.hidden = !card.exchangeEnabled; });
     document.querySelectorAll('[data-oneqr-page-url]').forEach(function (node) {
       var url = new URL(pageUrl());
       node.textContent = url.host + url.pathname;
@@ -127,6 +132,16 @@
     '<div class="oneqr-dialog-actions"><button type="button" data-close-exchange>Cancel</button><button class="is-primary" type="submit">Send my contact</button></div></form>';
   document.body.appendChild(exchangeDialog);
   var exchangePhone = phoneControl.mount(exchangeDialog);
+  var exchangeRecipientName = '';
+  function openExchange(card) {
+    if (!card.exchangeEnabled) return;
+    exchangeRecipientName = card.name;
+    exchangeDialog.querySelector('form').reset();
+    exchangePhone.set('');
+    exchangeDialog.querySelector('#oneqrExchangeRecipient').textContent = card.name + ' will receive your contact.';
+    exchangeDialog.querySelector('#oneqrExchangeError').textContent = '';
+    exchangeDialog.showModal();
+  }
   exchangeDialog.querySelectorAll('[data-close-exchange]').forEach(function (button) { button.addEventListener('click', function () { exchangeDialog.close(); }); });
   exchangeDialog.addEventListener('click', function (event) { if (event.target === exchangeDialog) exchangeDialog.close(); });
   exchangeDialog.querySelector('form').addEventListener('submit', function (event) {
@@ -144,7 +159,7 @@
     try { saveLeads(leads); }
     catch (error) { exchangeDialog.querySelector('#oneqrExchangeError').textContent = 'Could not save your contact. Browser storage is unavailable.'; return; }
     exchangeDialog.close();
-    feedback('Contact sent to ' + readProfile().name + (form.elements.consent.checked ? ' · SMS consent given.' : ' · No SMS consent.'));
+    feedback('Contact sent to ' + exchangeRecipientName + (form.elements.consent.checked ? ' · SMS consent given.' : ' · No SMS consent.'));
   });
 
   document.addEventListener('click', async function (event) {
@@ -154,11 +169,7 @@
     var action = button.dataset.oneqrAction;
     var preview = Boolean(button.closest('.oneqr-phone'));
     if (action === 'exchange') {
-      exchangeDialog.querySelector('form').reset();
-      exchangePhone.set('');
-      exchangeDialog.querySelector('#oneqrExchangeRecipient').textContent = card.name + ' will receive your contact.';
-      exchangeDialog.querySelector('#oneqrExchangeError').textContent = '';
-      exchangeDialog.showModal();
+      openExchange(card);
     } else if (action === 'save') {
       downloadVCard(card);
       feedback('vCard downloaded. Open the file to save this contact.');
@@ -187,6 +198,6 @@
   });
   window.NEXORA_ONEQR_PROFILE = { defaults: defaults, read: readProfile, address: address, hours: hours,
     displayTime: displayTime, escapeText: escapeText, pageUrl: pageUrl, download: download,
-    downloadVCard: downloadVCard, readLeads: readLeads, saveLeads: saveLeads, render: render };
+    vCardText: vCardText, downloadVCard: downloadVCard, openExchange: openExchange, readLeads: readLeads, saveLeads: saveLeads, render: render };
   render();
 })();

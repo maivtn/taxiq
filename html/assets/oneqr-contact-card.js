@@ -37,6 +37,7 @@
     $$('#contact-card-form [name="contact-address-mode"]').forEach((input) => { input.checked = input.value === contactDraft.addressMode; });
     $('#contact-show-phone').checked = Boolean(contactDraft.showPhone);
     $('#contact-show-hours').checked = Boolean(contactDraft.showHours);
+    $('#contact-exchange-mode').value = contactDraft.exchangeEnabled ? '1' : '0';
     $$('#contact-closed-days input').forEach(input => { input.checked = (contactDraft.closedDays || []).includes(Number(input.value)); });
     $('#contact-add-action').checked = true;
     $$('[data-contact-theme]').forEach((button) => button.setAttribute('aria-pressed', String(button.dataset.contactTheme === contactDraft.theme)));
@@ -59,6 +60,7 @@
       addressMode: $('#contact-card-form [name="contact-address-mode"]:checked')?.value || 'full',
       showPhone: $('#contact-show-phone').checked,
       showHours: $('#contact-show-hours').checked,
+      exchangeEnabled: $('#contact-exchange-mode').value === '1',
       openTime: $('#contact-open-time').value,
       closeTime: $('#contact-close-time').value,
       closedDays: $$('#contact-closed-days input:checked').map(input => Number(input.value))
@@ -90,6 +92,9 @@
     $('#contact-preview-hours-row').hidden = !contactDraft.showHours || !contactDraft.openTime || !contactDraft.closeTime;
     $('#contact-hours-row').hidden = !contactDraft.showHours;
     $('#contact-closed-days').hidden = !contactDraft.showHours;
+    $('[data-contact-draft-action="call"]').hidden = !contactDraft.showPhone || !contactDraft.phone;
+    $('[data-contact-draft-action="exchange"]').hidden = !contactDraft.exchangeEnabled;
+    $('#contact-vcard-output').textContent = profile.vCardText(contactDraft);
     refreshIcons();
   }
 
@@ -132,6 +137,12 @@
     input.addEventListener('input', () => { readContactForm(); renderContactPreview(); });
     input.addEventListener('change', () => { readContactForm(); renderContactPreview(); });
   });
+  $('#contact-exchange-mode').addEventListener('change', () => { readContactForm(); renderContactPreview(); });
+  $$('[data-contact-draft-action]').forEach(button => button.addEventListener('click', () => {
+    readContactForm();
+    if (button.dataset.contactDraftAction === 'exchange') profile.openExchange(contactDraft);
+    else if (contactDraft.showPhone && contactDraft.phone) showToast('Call preview: ' + contactDraft.phone);
+  }));
   $$('[data-contact-theme]').forEach(button => button.addEventListener('click', () => {
     contactDraft.theme = button.dataset.contactTheme;
     $$('[data-contact-theme]').forEach(item => item.setAttribute('aria-pressed', String(item === button)));
