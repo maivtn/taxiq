@@ -1041,16 +1041,27 @@
 .gc-scan-camera video{display:block;width:100%;height:100%;object-fit:cover}
 .gc-scan-camera::after{content:"";position:absolute;inset:16%;border:2px solid #70dbb4;border-radius:14px;pointer-events:none}
 .gc-balance #gc-balance-help{margin:10px 0 0}
-.gc-balance-result{display:flex;align-items:center;justify-content:space-between;gap:16px;flex-wrap:wrap;margin-top:16px;padding:16px;border:1px solid #bce5d6;border-radius:10px;background:#f0faf6}
-.gc-balance-result p{display:grid;gap:4px;margin:0;min-width:0}
-.gc-balance-result strong{font-size:17px;overflow-wrap:anywhere}
-.gc-balance-result .gc-balance-amount{font-size:24px;color:#007c53;font-variant-numeric:tabular-nums}
+.gc-balance-result{display:flex;align-items:center;gap:20px;max-width:680px;flex-wrap:wrap;margin-top:20px;padding:24px;border:1px solid #f0f2f5;border-radius:20px;background:#f8fafb}
+.gc-balance-thumbnail{position:relative;flex:0 0 164px;width:164px;height:104px;overflow:hidden;border:2px solid #202520;border-radius:12px;box-shadow:0 2px 4px #18223025;color:#fff}
+.gc-balance-card-art{position:absolute;inset:0;width:100%;height:100%;object-fit:cover}
+.gc-balance-card-top{position:absolute;top:10px;left:9px;right:9px;display:flex;align-items:center;gap:4px}
+.gc-balance-card-logo{width:16px;height:16px;object-fit:contain;border-radius:3px}
+.gc-balance-card-top strong{min-width:0;font-size:7px;line-height:10px;overflow-wrap:anywhere}
+.gc-balance-card-top>span{margin-left:auto;padding:3px 5px;border-radius:4px;background:#ffffff15;color:#e6c575;white-space:nowrap;font-size:6px}
+.gc-balance-card-number{position:absolute;top:48px;left:9px;right:9px;font-size:8px;letter-spacing:.4px;white-space:nowrap}
+.gc-balance-card-holder{position:absolute;top:65px;left:9px;right:9px;font-size:6px;line-height:9px}
+.gc-balance-card-provider{position:absolute;bottom:7px;right:7px;display:flex;align-items:center;gap:2px;border-radius:4px;padding:2px 3px;background:#fff;color:#3aaac6;font-size:5px;font-weight:700}
+.gc-balance-card-provider img{width:9px;height:9px;object-fit:contain}
+.gc-balance-details{display:grid;gap:3px;min-width:0;margin:0;font-size:14px;line-height:20px}
+.gc-balance-details>div{display:flex;flex-wrap:wrap;gap:0 7px}
+.gc-balance-details dt{color:#52677e}
+.gc-balance-details dd{margin:0;color:#20262e;font-weight:700;font-variant-numeric:tabular-nums;overflow-wrap:anywhere}
 .gc-balance-error{margin-top:16px;padding:12px 16px;border:1px solid #f4c9c9;border-radius:10px;background:#fff6f6;color:#b42318;font-size:12px;line-height:20px}
 @media(max-width:600px){
   .gc-balance{padding:16px}
   .gc-balance-controls{align-items:stretch;flex-direction:column}
   .gc-balance-controls .gc-button{width:100%}
-  .gc-balance-result{align-items:stretch;flex-direction:column}
+  .gc-balance-result{gap:14px;padding:18px}
 }
 .gc-portal{min-width:0;border:1px solid #dfe4ec;border-radius:16px;background:#fff;overflow:hidden}
 .gc-portal-head{display:flex;align-items:center;justify-content:space-between;gap:16px;padding:20px 18px;border-bottom:1px solid #dfe4ec;font-size:12px;line-height:20px}

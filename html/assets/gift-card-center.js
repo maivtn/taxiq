@@ -504,6 +504,7 @@
               stopBalanceScan();
               dialog.close();
               balanceCode.focus();
+              balanceForm.requestSubmit();
               return;
             }
           }
@@ -554,6 +555,19 @@
       selectCenterTab(centerTabs[nextIndex].dataset.gcCenterTab, true);
     });
   });
+  function balanceCardThumbnail(card, currency) {
+    const cardNumber = String(card.number || card.code || card.id),
+      masked = /^\d{16}$/.test(normalizeCardCode(cardNumber))
+        ? `${cardNumber.slice(0, 4)} •••• •••• ${cardNumber.slice(-4)}`
+        : cardNumber,
+      image = card.source === "online" && card.templateImage
+        ? card.templateImage
+        : `${asset}background-${Number(card.background) || 1}.png`,
+      faceValue = card.amount != null && Number.isFinite(Number(card.amount))
+        ? new Intl.NumberFormat("en-US", { style: "currency", currency }).format(Number(card.amount))
+        : "";
+    return `<div class="gc-balance-thumbnail" aria-hidden="true" style="background-color:${esc(card.color || '#101412')}">${card.color ? '' : `<img class="gc-balance-card-art" src="${esc(image)}" alt="" referrerpolicy="no-referrer">`}<div class="gc-balance-card-top">${card.logo ? `<img class="gc-balance-card-logo" src="${esc(card.logo)}" alt="">` : ''}<strong style="color:${esc(card.textColor || '#e6c575')}">${esc(card.brand || 'Bitcoin Nail Bar')}</strong>${faceValue ? `<span>${esc(faceValue)}</span>` : ''}</div><div class="gc-balance-card-number">${esc(masked)}</div><div class="gc-balance-card-holder">${esc(card.name || '')}</div><span class="gc-balance-card-provider"><img src="../assets/pos-payment/vlinkpay-logo.png" alt="">VLINKPAY</span></div>`;
+  }
   function checkBalance(event) {
     event.preventDefault();
     clearBalanceResult();
@@ -572,7 +586,13 @@
           (value) => value && normalizeCardCode(value) === code,
         ),
       );
-      let result = card;
+      let result = card,
+        timesUsed = 0;
+      if (card) {
+        const transactions = saved?.transactions ?? store.transactions;
+        if (!Array.isArray(transactions)) throw new TypeError("Invalid demo transactions");
+        timesUsed = transactions.filter((entry) => entry.card === card.id && entry.type === "Redeem").length;
+      }
       if (!result) {
         const session = JSON.parse(
             sessionStorage.getItem("nexora:products-other-sales:session:v1") || "null",
@@ -583,7 +603,15 @@
           demoCode = Object.keys(balances).find(
             (value) => normalizeCardCode(value) === code,
           );
-        if (demoCode) result = { number: demoCode, balance: balances[demoCode] };
+        if (demoCode) {
+          result = {
+            number: demoCode, balance: balances[demoCode],
+            amount: { "DEMO-GIFT-100": 100, "DEMO-GIFT-25": 25 }[demoCode],
+          };
+          timesUsed = (session?.completedSales || []).filter((entry) =>
+            normalizeCardCode(entry.payment?.giftCardCode) === code,
+          ).length;
+        }
       }
       if (!result) {
         balanceResult.className = "gc-balance-error";
@@ -595,9 +623,11 @@
         const currency = result.currency || "USD",
           amount = new Intl.NumberFormat("en-US", {
             style: "currency", currency,
-          }).format(Number(result.balance));
+          }).format(Number(result.balance)),
+          expiration = result.expires ? date(result.expires) : "No Expiration";
+        balanceCode.value = result.number || result.code || result.id;
         balanceResult.className = "gc-balance-result";
-        balanceResult.innerHTML = `<p><span>Card code</span><strong>${esc(result.number || result.code || result.id)}</strong></p><p><span>Available:</span><strong class="gc-balance-amount">${esc(amount)} ${esc(currency)}</strong></p>`;
+        balanceResult.innerHTML = `${balanceCardThumbnail(result, currency)}<dl class="gc-balance-details"><div><dt>Current Balance:</dt><dd>${esc(amount)} ${esc(currency)}</dd></div><div><dt>Times Used:</dt><dd>${timesUsed}</dd></div><div><dt>Expiration:</dt><dd>${esc(expiration)}</dd></div></dl>`;
       }
     } catch (_) {
       balanceResult.className = "gc-balance-error";
