@@ -13,7 +13,7 @@
     <link rel="stylesheet" href="../assets/nexora-icons.css" />
     <link rel="stylesheet" href="../assets/nexora-shell.css?v=20261030-shared-header-v47" />
     <link rel="stylesheet" href="../assets/front-desk-tabs.css" />
-    <link rel="stylesheet" href="../assets/gift-card-center.css?v=20261103-balance-details" />
+    <link rel="stylesheet" href="../assets/gift-card-center.css?v=20261103-scanner-clarity" />
   <link rel="icon" type="image/png" sizes="128x128" href="../assets/flaticon-flat/favicon-letter-n-9203636.png">
   </head>
   <body>
@@ -39,8 +39,8 @@
                 <div class="gc-field">
                   <label for="gc-balance-code">Card code</label>
                   <div class="gc-balance-input">
-                    <input id="gc-balance-code" name="cardCode" placeholder="DEMO-GIFT-100" autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="gc-balance-help" required />
-                    <button class="gc-balance-scan" id="gc-balance-scan" type="button" aria-label="Scan QR" aria-haspopup="dialog"><i data-lucide="qr-code" aria-hidden="true"></i></button>
+                    <input id="gc-balance-code" name="cardCode" placeholder="Enter card number or scan..." autocomplete="off" autocapitalize="characters" spellcheck="false" aria-describedby="gc-balance-help" required />
+                    <button class="gc-balance-scan" id="gc-balance-scan" type="button" aria-label="Scan QR" aria-haspopup="dialog"><i data-lucide="qr-code" aria-hidden="true"></i><span>Scan QR</span></button>
                   </div>
                 </div>
                 <button class="gc-button primary" type="submit">Check demo balance</button>
@@ -76,7 +76,7 @@
     <script src="../assets/front-desk-tabs.js"></script>
     <script src="../assets/gift-card-brand-prompts.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/jsqr@1.4.0/dist/jsQR.js"></script>
-    <script src="../assets/gift-card-center.js?v=20261103-balance-available"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@zxing/browser@0.1.5/umd/zxing-browser.min.js"></script>
+    <script src="../assets/gift-card-center.js?v=20261103-scanner-clarity"></script>
   </body>
 </html>
