@@ -108,7 +108,12 @@
     });
     $('#contact-shop-panel').hidden = next !== 'shop';
     $('#contact-team-panel').hidden = next !== 'team';
-    if (next !== 'team') closeMemberPicker();
+    $('.contact-preview-selector').hidden = next !== 'team';
+    if (next !== 'team') {
+      closeMemberPicker();
+      selectedPreview = 'shop';
+    }
+    renderPreview();
   }
   function shareState(contact) {
     const saved = team(profile.read()).find(person => person.id === contact.id && person.shopId === draft.shopId);
