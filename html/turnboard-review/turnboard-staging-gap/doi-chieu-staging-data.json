@@ -1,0 +1,1594 @@
+{
+  "scope_source_numbers": [
+    2,
+    3,
+    4,
+    5,
+    6
+  ],
+  "cutoff": "2026-08-25",
+  "repositories": {
+    "FE": {
+      "remote": "https://github.com/vlink-group/vlink-nexora-fe.git",
+      "commit": "455ddfd15b4e91d5c2f6340c19f7f03f1fc610e4",
+      "ref": "origin/staging"
+    },
+    "BE": {
+      "remote": "https://github.com/vlink-group/vlink-nexora.git",
+      "commit": "08f4c3fe2b97d656bcb7bde63979b0b651843ce6",
+      "ref": "origin/staging"
+    }
+  },
+  "counts": {
+    "Đã có": 11,
+    "Có một phần": 10,
+    "Chưa có": 10,
+    "Cần PO chốt": 2
+  },
+  "features": [
+    {
+      "id": "F01",
+      "feature": "Ba cách xem Compact / thẻ / Turn Grid",
+      "sources": "#3, #4",
+      "status": "Đã có",
+      "current": "Đã có Compact, Stations dạng thẻ và Grid; lưu lựa chọn cách xem.",
+      "gap": "Giữ lại; không tạo lại ba màn hình.",
+      "group": "—",
+      "references": "C01",
+      "po_source_details": [
+        {
+          "number": 3,
+          "file": "pos-prototype/front-desk-prototype.html",
+          "filename": "front-desk-prototype.html",
+          "date": "4 tháng 9 năm 2026",
+          "location": "Màn hình Turn Board: Ba cách xem Compact / thẻ / Turn Grid.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+        },
+        {
+          "number": 4,
+          "file": "pos-prototype/front-desk-prototype (1).html",
+          "filename": "front-desk-prototype (1).html",
+          "date": "7 tháng 9 năm 2026",
+          "location": "Màn hình Turn Board: Ba cách xem Compact / thẻ / Turn Grid.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+        }
+      ]
+    },
+    {
+      "id": "F02",
+      "feature": "Tìm thợ, lọc trạng thái và 4 chỉ số tổng quan",
+      "sources": "#3, #4",
+      "status": "Đã có",
+      "current": "Tìm theo tên hoặc dịch vụ; lọc thợ và đếm thợ rảnh, bận, khách chờ.",
+      "gap": "Chỉ bổ sung Paused nếu chọn E04.",
+      "group": "—",
+      "references": "C01",
+      "po_source_details": [
+        {
+          "number": 3,
+          "file": "pos-prototype/front-desk-prototype.html",
+          "filename": "front-desk-prototype.html",
+          "date": "4 tháng 9 năm 2026",
+          "location": "Màn hình Turn Board: Tìm thợ, lọc trạng thái và 4 chỉ số tổng quan.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+        },
+        {
+          "number": 4,
+          "file": "pos-prototype/front-desk-prototype (1).html",
+          "filename": "front-desk-prototype (1).html",
+          "date": "7 tháng 9 năm 2026",
+          "location": "Màn hình Turn Board: Tìm thợ, lọc trạng thái và 4 chỉ số tổng quan.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+        }
+      ]
+    },
+    {
+      "id": "F03",
+      "feature": "Vào ca, ra ca và chỉ đề xuất thợ đang vào ca",
+      "sources": "#2, #5, #6",
+      "status": "Đã có",
+      "current": "Có Time Clock và lọc thợ đang vào ca khi xác định Next Turn.",
+      "gap": "Giữ cơ chế hiện tại; quy tắc khi nghỉ ngắn thuộc E04.",
+      "group": "—",
+      "references": "C02,C03",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Màn hình Turn Board: Vào ca, ra ca và chỉ đề xuất thợ đang vào ca.",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        },
+        {
+          "number": 5,
+          "file": "nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html",
+          "filename": "nexora-pos-products-other-sales.html",
+          "date": "9 tháng 10 năm 2026",
+          "location": "Màn hình Turn Board: Vào ca, ra ca và chỉ đề xuất thợ đang vào ca.",
+          "href": "../turnboard-leader-review/html/nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html"
+        },
+        {
+          "number": 6,
+          "file": "nexora-pos-12-10/nexora-pos-prototype-v34.html",
+          "filename": "nexora-pos-prototype-v34.html",
+          "date": "12 tháng 10 năm 2026",
+          "location": "Màn hình Turn Board: Vào ca, ra ca và chỉ đề xuất thợ đang vào ca.",
+          "href": "../turnboard-leader-review/html/nexora-pos-12-10/nexora-pos-prototype-v34.html"
+        }
+      ]
+    },
+    {
+      "id": "F04",
+      "feature": "Lượt, số dịch vụ, tiền dịch vụ, giờ làm và dịch vụ hôm nay",
+      "sources": "#2, #3, #4",
+      "status": "Đã có",
+      "current": "Thẻ thợ và bảng lượt hôm nay đã có các số liệu này.",
+      "gap": "Doanh thu trung bình/lượt chưa có riêng; có thể tính từ dữ liệu hiện hữu.",
+      "group": "E06",
+      "references": "C03,C07",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Tổng quan thợ: doanh thu và TB/turn.",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        },
+        {
+          "number": 3,
+          "file": "pos-prototype/front-desk-prototype.html",
+          "filename": "front-desk-prototype.html",
+          "date": "4 tháng 9 năm 2026",
+          "location": "Turn Board → Cards/Compact: Turns, Services, Service Total, Working Time.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+        },
+        {
+          "number": 4,
+          "file": "pos-prototype/front-desk-prototype (1).html",
+          "filename": "front-desk-prototype (1).html",
+          "date": "7 tháng 9 năm 2026",
+          "location": "Turn Board → Cards/Compact: các số liệu của thợ.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+        }
+      ]
+    },
+    {
+      "id": "F05",
+      "feature": "Next Turn nổi bật, danh sách Upcoming và mở hồ sơ thợ",
+      "sources": "#2, #3, #4",
+      "status": "Có một phần",
+      "current": "Đã đánh dấu thợ Next Turn và có bảng lượt hôm nay.",
+      "gap": "Thêm khối Next Turn chi tiết, danh sách những người kế tiếp và mở nhanh hồ sơ từ khối này.",
+      "group": "E08",
+      "references": "C02,C03",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Khối thợ tới lượt trên màn hình Turnboard.",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        },
+        {
+          "number": 3,
+          "file": "pos-prototype/front-desk-prototype.html",
+          "filename": "front-desk-prototype.html",
+          "date": "4 tháng 9 năm 2026",
+          "location": "Turn Board: thanh Next Turn.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+        },
+        {
+          "number": 4,
+          "file": "pos-prototype/front-desk-prototype (1).html",
+          "filename": "front-desk-prototype (1).html",
+          "date": "7 tháng 9 năm 2026",
+          "location": "Turn Board: thẻ Next Turn, Upcoming Turn Order và View Technician.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+        }
+      ]
+    },
+    {
+      "id": "F06",
+      "feature": "Mục tiêu ngày và tiến độ của từng thợ",
+      "sources": "#3, #4",
+      "status": "Chưa có",
+      "current": "Turnboard chưa có mục tiêu ngày hoặc thanh tiến độ. Chỉ tiêu thưởng trong hồ sơ trả công phục vụ mục đích khác.",
+      "gap": "Thêm mục tiêu ngày, số đã đạt, số còn thiếu và trạng thái tiến độ.",
+      "group": "E06",
+      "references": "C03,C22",
+      "po_source_details": [
+        {
+          "number": 3,
+          "file": "pos-prototype/front-desk-prototype.html",
+          "filename": "front-desk-prototype.html",
+          "date": "4 tháng 9 năm 2026",
+          "location": "Turn Board → Cards: Goal Progress và Daily Goal.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+        },
+        {
+          "number": 4,
+          "file": "pos-prototype/front-desk-prototype (1).html",
+          "filename": "front-desk-prototype (1).html",
+          "date": "7 tháng 9 năm 2026",
+          "location": "Turn Board → Cards và thẻ Next Turn: Goal Progress.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+        }
+      ]
+    },
+    {
+      "id": "F07",
+      "feature": "Gợi ý bù cơ hội phục vụ cho thợ ít việc",
+      "sources": "#3, #4",
+      "status": "Chưa có",
+      "current": "Có số liệu lượt, tiền dịch vụ và giờ làm; chưa có MAKE-UP RECOMMENDED.",
+      "gap": "Thêm gợi ý cân bằng với công thức được PO chốt; không tự sửa lượt đã ghi.",
+      "group": "E06",
+      "references": "C03,C07",
+      "po_source_details": [
+        {
+          "number": 3,
+          "file": "pos-prototype/front-desk-prototype.html",
+          "filename": "front-desk-prototype.html",
+          "date": "4 tháng 9 năm 2026",
+          "location": "Turn Board → Cards: MAKE-UP RECOMMENDED.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+        },
+        {
+          "number": 4,
+          "file": "pos-prototype/front-desk-prototype (1).html",
+          "filename": "front-desk-prototype (1).html",
+          "date": "7 tháng 9 năm 2026",
+          "location": "Turn Board → Cards: MAKE-UP RECOMMENDED.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+        }
+      ]
+    },
+    {
+      "id": "F08",
+      "feature": "Boost This Technician từ Turnboard",
+      "sources": "#3, #4",
+      "status": "Cần PO chốt",
+      "current": "Chưa có hành động này trên thẻ thợ. HTML chỉ mở form và báo đã tạo chương trình.",
+      "gap": "Chốt liên kết với Promotions, dịch vụ được áp dụng và quyền duyệt; không coi thông báo demo là luồng đã hoàn chỉnh.",
+      "group": "E06",
+      "references": "C03",
+      "po_source_details": [
+        {
+          "number": 3,
+          "file": "pos-prototype/front-desk-prototype.html",
+          "filename": "front-desk-prototype.html",
+          "date": "4 tháng 9 năm 2026",
+          "location": "Turn Board → Cards → Boost This Technician.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+        },
+        {
+          "number": 4,
+          "file": "pos-prototype/front-desk-prototype (1).html",
+          "filename": "front-desk-prototype (1).html",
+          "date": "7 tháng 9 năm 2026",
+          "location": "Turn Board → Cards → Boost This Technician; thao tác mới mô phỏng.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+        }
+      ]
+    },
+    {
+      "id": "F09",
+      "feature": "Lượt theo bậc giá, có thể sửa các khoảng và số lượt",
+      "sources": "#2, #3, #4, #5, #6",
+      "status": "Đã có",
+      "current": "Đã lưu bậc giá thật qua API, có kiểm tra xung đột phiên bản cấu hình.",
+      "gap": "Giữ nền hiện tại; cách gộp giá cần quyết định D01.",
+      "group": "—",
+      "references": "C04,C05,C06",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Luật tính turn → Theo bậc giá.",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        },
+        {
+          "number": 3,
+          "file": "pos-prototype/front-desk-prototype.html",
+          "filename": "front-desk-prototype.html",
+          "date": "4 tháng 9 năm 2026",
+          "location": "Turn Board → Weighted Turn Settings; nút lưu chỉ mô phỏng.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+        },
+        {
+          "number": 4,
+          "file": "pos-prototype/front-desk-prototype (1).html",
+          "filename": "front-desk-prototype (1).html",
+          "date": "7 tháng 9 năm 2026",
+          "location": "Turn Board → Weighted Turn Settings; nút lưu chỉ mô phỏng.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+        },
+        {
+          "number": 5,
+          "file": "nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html",
+          "filename": "nexora-pos-products-other-sales.html",
+          "date": "9 tháng 10 năm 2026",
+          "location": "Turn Board → Turn rule → Price tiers (0.25–1).",
+          "href": "../turnboard-leader-review/html/nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html"
+        },
+        {
+          "number": 6,
+          "file": "nexora-pos-12-10/nexora-pos-prototype-v34.html",
+          "filename": "nexora-pos-prototype-v34.html",
+          "date": "12 tháng 10 năm 2026",
+          "location": "Turn Board → Turn rule → Price tiers (0.25–1).",
+          "href": "../turnboard-leader-review/html/nexora-pos-12-10/nexora-pos-prototype-v34.html"
+        }
+      ]
+    },
+    {
+      "id": "F10",
+      "feature": "Lượt theo một ngưỡng giá",
+      "sources": "#2",
+      "status": "Có một phần",
+      "current": "Có thể cấu hình hai bậc giá để cho kết quả tương đương trên một dịch vụ.",
+      "gap": "Nếu cần đúng như mẫu: thêm cách chọn nhanh và chốt tính trên từng dịch vụ hay tổng phần việc của một thợ.",
+      "group": "E01",
+      "references": "C04,C06",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Luật tính turn → Theo ngưỡng giá.",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        }
+      ]
+    },
+    {
+      "id": "F11",
+      "feature": "Lượt theo thời lượng dịch vụ",
+      "sources": "#2, #5, #6",
+      "status": "Chưa có",
+      "current": "Công thức đang dùng bậc giá; chưa có số phút tương ứng một lượt.",
+      "gap": "Thêm cách tính theo thời lượng và quy tắc làm tròn.",
+      "group": "E01",
+      "references": "C05,C06",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Luật tính turn → Theo thời gian ghế; chỉnh phút tương ứng một lượt.",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        },
+        {
+          "number": 5,
+          "file": "nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html",
+          "filename": "nexora-pos-products-other-sales.html",
+          "date": "9 tháng 10 năm 2026",
+          "location": "Turn Board → Turn rule → Per 15 minutes (0.25).",
+          "href": "../turnboard-leader-review/html/nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html"
+        },
+        {
+          "number": 6,
+          "file": "nexora-pos-12-10/nexora-pos-prototype-v34.html",
+          "filename": "nexora-pos-prototype-v34.html",
+          "date": "12 tháng 10 năm 2026",
+          "location": "Turn Board → Turn rule → Per 15 minutes (0.25).",
+          "href": "../turnboard-leader-review/html/nexora-pos-12-10/nexora-pos-prototype-v34.html"
+        }
+      ]
+    },
+    {
+      "id": "F12",
+      "feature": "Số lượt cố định theo từng dịch vụ",
+      "sources": "#2; cách đếm dịch vụ ở #5, #6",
+      "status": "Chưa có",
+      "current": "Chưa có bảng số lượt riêng cho từng dịch vụ trong công thức tự động.",
+      "gap": "Cho cấu hình số lượt từng dịch vụ; giữ quy tắc dịch vụ chính và phần thêm.",
+      "group": "E01",
+      "references": "C05,C06",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Luật tính turn → Theo bảng dịch vụ; chỉnh số turn từng dịch vụ ở Dịch vụ & ký hiệu.",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        },
+        {
+          "number": 5,
+          "file": "nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html",
+          "filename": "nexora-pos-products-other-sales.html",
+          "date": "9 tháng 10 năm 2026",
+          "location": "Turn Board → Turn rule → Per main service; không phải bảng lượt riêng từng dịch vụ.",
+          "href": "../turnboard-leader-review/html/nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html"
+        },
+        {
+          "number": 6,
+          "file": "nexora-pos-12-10/nexora-pos-prototype-v34.html",
+          "filename": "nexora-pos-prototype-v34.html",
+          "date": "12 tháng 10 năm 2026",
+          "location": "Turn Board → Turn rule → Per main service; không phải bảng lượt riêng từng dịch vụ.",
+          "href": "../turnboard-leader-review/html/nexora-pos-12-10/nexora-pos-prototype-v34.html"
+        }
+      ]
+    },
+    {
+      "id": "F13",
+      "feature": "Một khách là một lượt",
+      "sources": "#2, #5, #6",
+      "status": "Chưa có",
+      "current": "Công thức hiện lấy từng dịch vụ chính làm đơn vị tính, không phải đầu khách.",
+      "gap": "Thêm cách tính theo khách; chốt trường hợp một khách do nhiều thợ làm.",
+      "group": "E01",
+      "references": "C06",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Luật tính turn → Đếm đầu khách.",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        },
+        {
+          "number": 5,
+          "file": "nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html",
+          "filename": "nexora-pos-products-other-sales.html",
+          "date": "9 tháng 10 năm 2026",
+          "location": "Turn Board → Turn rule → 1 guest = 1 turn.",
+          "href": "../turnboard-leader-review/html/nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html"
+        },
+        {
+          "number": 6,
+          "file": "nexora-pos-12-10/nexora-pos-prototype-v34.html",
+          "filename": "nexora-pos-prototype-v34.html",
+          "date": "12 tháng 10 năm 2026",
+          "location": "Turn Board → Turn rule → 1 guest = 1 turn.",
+          "href": "../turnboard-leader-review/html/nexora-pos-12-10/nexora-pos-prototype-v34.html"
+        }
+      ]
+    },
+    {
+      "id": "F14",
+      "feature": "Luật riêng cho khách chỉ định và khách có hẹn",
+      "sources": "#2",
+      "status": "Có một phần",
+      "current": "Đã có lượt cho đúng thợ khách chỉ định, gồm mức chung và mức riêng từng thợ.",
+      "gap": "Chưa tách hai nhóm như #2: theo công thức / 1 / 0,5 / 0 lượt. Phải giữ tương thích chính sách hiện tại.",
+      "group": "E01",
+      "references": "C05,C06,C26",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Luật tính turn → Khách chỉ định (request) và Khách hẹn trước (booking).",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        }
+      ]
+    },
+    {
+      "id": "F15",
+      "feature": "Xem thử số lượt trước khi lưu luật",
+      "sources": "#2",
+      "status": "Chưa có",
+      "current": "Cửa sổ cấu hình có sửa bậc giá và lưu; chưa có bảng thử theo khách thường, chỉ định và hẹn.",
+      "gap": "Thêm phần xem thử dùng cùng công thức với backend.",
+      "group": "E01",
+      "references": "C04",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Luật tính turn → Xem thử luật này.",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        }
+      ]
+    },
+    {
+      "id": "F16",
+      "feature": "Dịch vụ được phép làm và cấp thợ",
+      "sources": "#3, #4, #5, #6",
+      "status": "Đã có",
+      "current": "Có danh sách dịch vụ được phép làm và cấp thợ do tiệm cấu hình.",
+      "gap": "Giữ lại; xem D03 về thợ chưa thiết lập tay nghề.",
+      "group": "—",
+      "references": "C08,C09,C22",
+      "po_source_details": [
+        {
+          "number": 3,
+          "file": "pos-prototype/front-desk-prototype.html",
+          "filename": "front-desk-prototype.html",
+          "date": "4 tháng 9 năm 2026",
+          "location": "Staff Profiles → Technician level và Approved services.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+        },
+        {
+          "number": 4,
+          "file": "pos-prototype/front-desk-prototype (1).html",
+          "filename": "front-desk-prototype (1).html",
+          "date": "7 tháng 9 năm 2026",
+          "location": "Staff Profiles → Technician level và Approved services.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+        },
+        {
+          "number": 5,
+          "file": "nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html",
+          "filename": "nexora-pos-products-other-sales.html",
+          "date": "9 tháng 10 năm 2026",
+          "location": "Turn Board: cấp tay nghề theo nhóm dịch vụ.",
+          "href": "../turnboard-leader-review/html/nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html"
+        },
+        {
+          "number": 6,
+          "file": "nexora-pos-12-10/nexora-pos-prototype-v34.html",
+          "filename": "nexora-pos-prototype-v34.html",
+          "date": "12 tháng 10 năm 2026",
+          "location": "Turn Board: cấp tay nghề theo nhóm dịch vụ.",
+          "href": "../turnboard-leader-review/html/nexora-pos-12-10/nexora-pos-prototype-v34.html"
+        }
+      ]
+    },
+    {
+      "id": "F17",
+      "feature": "Tay nghề theo 3 mức, tiếng Anh và đánh giá phục vụ",
+      "sources": "#2; 3 mức nhóm dịch vụ ở #5, #6",
+      "status": "Có một phần",
+      "current": "Đã có cấp thợ chung và quyền làm dịch vụ; chưa có mức chuyên theo từng dịch vụ, điểm tiếng Anh và phục vụ như #2.",
+      "gap": "Bổ sung các dữ liệu này nếu dùng để tự chọn thợ; không thay cấp thợ hiện hữu bằng điểm tự tính khi chưa chốt.",
+      "group": "E02",
+      "references": "C08,C09,C22",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Tổng quan thợ → Tay nghề từng dịch vụ; Tổng quan & đánh giá → Tiếng Anh, Phục vụ, Hạng.",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        },
+        {
+          "number": 5,
+          "file": "nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html",
+          "filename": "nexora-pos-products-other-sales.html",
+          "date": "9 tháng 10 năm 2026",
+          "location": "Turn Board: ba mức tay nghề theo nhóm; không có đánh giá tiếng Anh/phục vụ.",
+          "href": "../turnboard-leader-review/html/nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html"
+        },
+        {
+          "number": 6,
+          "file": "nexora-pos-12-10/nexora-pos-prototype-v34.html",
+          "filename": "nexora-pos-prototype-v34.html",
+          "date": "12 tháng 10 năm 2026",
+          "location": "Turn Board: ba mức tay nghề theo nhóm; không có đánh giá tiếng Anh/phục vụ.",
+          "href": "../turnboard-leader-review/html/nexora-pos-12-10/nexora-pos-prototype-v34.html"
+        }
+      ]
+    },
+    {
+      "id": "F18",
+      "feature": "Ba chế độ tự đề xuất: công bằng / cân bằng / tay nghề",
+      "sources": "#2",
+      "status": "Có một phần",
+      "current": "Đã gợi ý Next Turn dựa trên lượt, tiền dịch vụ tạm tính và thời gian chờ; có lọc dịch vụ phù hợp.",
+      "gap": "Thêm chế độ cấu hình, ưu tiên rảnh/chuyên/tiếng Anh và giải thích vì sao đề xuất; xem D02.",
+      "group": "E02",
+      "references": "C02,C08,C10,C24",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Luật tính turn → Máy tự xếp thợ ưu tiên gì: Công bằng, Cân bằng, Tay nghề.",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        }
+      ]
+    },
+    {
+      "id": "F19",
+      "feature": "Giao nhiều dịch vụ cho một hoặc nhiều thợ bằng tay",
+      "sources": "#2, #4",
+      "status": "Đã có",
+      "current": "Workspace đã cho giao theo từng dòng hoặc nhóm dịch vụ và lưu nhiều phân công cùng lúc.",
+      "gap": "Giữ khả năng hiện có; không tạo lại API lưu nhiều phân công.",
+      "group": "—",
+      "references": "C10,C11,C12",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Giao khách: chọn thợ cho từng dòng dịch vụ.",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        },
+        {
+          "number": 4,
+          "file": "pos-prototype/front-desk-prototype (1).html",
+          "filename": "front-desk-prototype (1).html",
+          "date": "7 tháng 9 năm 2026",
+          "location": "Assign technician: chọn một thợ hoặc Split Services.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+        }
+      ]
+    },
+    {
+      "id": "F20",
+      "feature": "Tự đề xuất một thợ làm hết hoặc chia nhiều thợ",
+      "sources": "#2, #4",
+      "status": "Có một phần",
+      "current": "Có lựa chọn thợ theo dịch vụ, chưa có hai phương án gộp và chia để lễ tân so sánh.",
+      "gap": "Thêm kế hoạch đề xuất trên toàn bộ dịch vụ, báo phần chưa có thợ và xác nhận phương án cuối.",
+      "group": "E03",
+      "references": "C10,C11,C12",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Giao khách → Máy tự xếp thợ: tự chọn theo từng dịch vụ.",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        },
+        {
+          "number": 4,
+          "file": "pos-prototype/front-desk-prototype (1).html",
+          "filename": "front-desk-prototype (1).html",
+          "date": "7 tháng 9 năm 2026",
+          "location": "Assign technician → One technician for all services / Faster split option / Split Services.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+        }
+      ]
+    },
+    {
+      "id": "F21",
+      "feature": "Lý do giao vượt lượt và giải thích giữ lượt vì tay nghề",
+      "sources": "#2, #3, #4, #5, #6",
+      "status": "Có một phần",
+      "current": "Có kiểm tra dịch vụ phù hợp, ghi chú và nhật ký đổi thợ; Booking có lý do không đủ điều kiện.",
+      "gap": "Thêm lý do có cấu trúc khi vượt lượt, danh sách thợ bị bỏ qua và cách xử lý lượt; chưa có nhật ký này ngay trên Turnboard.",
+      "group": "E03",
+      "references": "C08,C12,C23",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Giao khách: cảnh báo vượt lượt và danh sách thợ bị bỏ qua.",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        },
+        {
+          "number": 3,
+          "file": "pos-prototype/front-desk-prototype.html",
+          "filename": "front-desk-prototype.html",
+          "date": "4 tháng 9 năm 2026",
+          "location": "Assign technician → Why are you skipping the next turn? → Reason.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+        },
+        {
+          "number": 4,
+          "file": "pos-prototype/front-desk-prototype (1).html",
+          "filename": "front-desk-prototype (1).html",
+          "date": "7 tháng 9 năm 2026",
+          "location": "Assign technician: System recommendation, Final assignment, Manager Override và Turn protected.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+        },
+        {
+          "number": 5,
+          "file": "nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html",
+          "filename": "nexora-pos-products-other-sales.html",
+          "date": "9 tháng 10 năm 2026",
+          "location": "Turn Board → Turn history: ghi người bị bỏ qua; chưa có form lý do vượt lượt.",
+          "href": "../turnboard-leader-review/html/nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html"
+        },
+        {
+          "number": 6,
+          "file": "nexora-pos-12-10/nexora-pos-prototype-v34.html",
+          "filename": "nexora-pos-prototype-v34.html",
+          "date": "12 tháng 10 năm 2026",
+          "location": "Turn Board → Turn history: ghi người bị bỏ qua; chưa có form lý do vượt lượt.",
+          "href": "../turnboard-leader-review/html/nexora-pos-12-10/nexora-pos-prototype-v34.html"
+        }
+      ]
+    },
+    {
+      "id": "F22",
+      "feature": "Skip Turn và Pause / Resume",
+      "sources": "#3, #4",
+      "status": "Chưa có",
+      "current": "Thẻ thợ chưa có các thao tác này; trạng thái backend chưa có Paused.",
+      "gap": "Thêm bỏ lượt, tạm ngưng/tiếp tục nhận khách; chốt vị trí trở lại hàng và ảnh hưởng chấm công.",
+      "group": "E04",
+      "references": "C03,C17,C18",
+      "po_source_details": [
+        {
+          "number": 3,
+          "file": "pos-prototype/front-desk-prototype.html",
+          "filename": "front-desk-prototype.html",
+          "date": "4 tháng 9 năm 2026",
+          "location": "Turn Board → Cards → Skip Turn / Pause.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+        },
+        {
+          "number": 4,
+          "file": "pos-prototype/front-desk-prototype (1).html",
+          "filename": "front-desk-prototype (1).html",
+          "date": "7 tháng 9 năm 2026",
+          "location": "Turn Board → Cards → Skip Turn / Pause; bấm Pause lần nữa để trở lại.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+        }
+      ]
+    },
+    {
+      "id": "F23",
+      "feature": "Thêm / sửa lượt ở Turn Grid",
+      "sources": "#3, #4",
+      "status": "Đã có",
+      "current": "Có form và API thêm/sửa lượt thủ công hoặc lượt từ dịch vụ.",
+      "gap": "Giữ cơ chế; bổ sung lý do và lịch sử ở dòng tiếp theo.",
+      "group": "—",
+      "references": "C14,C15,C16,C17",
+      "po_source_details": [
+        {
+          "number": 3,
+          "file": "pos-prototype/front-desk-prototype.html",
+          "filename": "front-desk-prototype.html",
+          "date": "4 tháng 9 năm 2026",
+          "location": "Turn Board → Turn Grid → Add Turn / Edit Turn.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+        },
+        {
+          "number": 4,
+          "file": "pos-prototype/front-desk-prototype (1).html",
+          "filename": "front-desk-prototype (1).html",
+          "date": "7 tháng 9 năm 2026",
+          "location": "Turn Board → Turn Grid → Add Turn / Edit Turn.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+        }
+      ]
+    },
+    {
+      "id": "F24",
+      "feature": "Lý do bắt buộc và lịch sử nghiệp vụ khi chỉnh lượt",
+      "sources": "#3, #4",
+      "status": "Có một phần",
+      "current": "Đã lưu số lượt, số tiền và đánh dấu chỉnh tay; form và API chưa có trường lý do.",
+      "gap": "Thêm lý do, giá trị trước/sau và người thực hiện để thợ/quản lý tra cứu.",
+      "group": "E04",
+      "references": "C14,C15,C16",
+      "po_source_details": [
+        {
+          "number": 3,
+          "file": "pos-prototype/front-desk-prototype.html",
+          "filename": "front-desk-prototype.html",
+          "date": "4 tháng 9 năm 2026",
+          "location": "Turn Board → Add Turn / Edit Turn → Audit reason.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+        },
+        {
+          "number": 4,
+          "file": "pos-prototype/front-desk-prototype (1).html",
+          "filename": "front-desk-prototype (1).html",
+          "date": "7 tháng 9 năm 2026",
+          "location": "Turn Board → Add Turn / Edit Turn → Audit reason; lưu lý do trong dữ liệu demo.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+        }
+      ]
+    },
+    {
+      "id": "F25",
+      "feature": "Undo lần giao khách gần nhất",
+      "sources": "#2, #5, #6",
+      "status": "Có một phần",
+      "current": "Có thể gỡ/đổi thợ trong phiếu đang mở; chưa có Undo lần giao gần nhất và dòng đảo lượt như mẫu.",
+      "gap": "Thêm Undo có điều kiện và thông tin trước/sau; chặn khi phần việc đã đi quá trạng thái cho phép.",
+      "group": "E04",
+      "references": "C12,C13,C17",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Hoàn tác lần giao gần nhất trên Turnboard.",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        },
+        {
+          "number": 5,
+          "file": "nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html",
+          "filename": "nexora-pos-products-other-sales.html",
+          "date": "9 tháng 10 năm 2026",
+          "location": "Turn Board → Turn history → Undo; thêm dòng đảo lượt.",
+          "href": "../turnboard-leader-review/html/nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html"
+        },
+        {
+          "number": 6,
+          "file": "nexora-pos-12-10/nexora-pos-prototype-v34.html",
+          "filename": "nexora-pos-prototype-v34.html",
+          "date": "12 tháng 10 năm 2026",
+          "location": "Turn Board → Turn history → Undo; thêm dòng đảo lượt.",
+          "href": "../turnboard-leader-review/html/nexora-pos-12-10/nexora-pos-prototype-v34.html"
+        }
+      ]
+    },
+    {
+      "id": "F26",
+      "feature": "Chọn hoặc tự chọn ghế, bàn, phòng khi giao khách",
+      "sources": "#3, #4, #6",
+      "status": "Chưa có",
+      "current": "Turnboard và phân công hiện không có vị trí vật lý. Stations trên UI hiện là thẻ thợ.",
+      "gap": "Thêm danh mục vị trí, bật/tắt/chọn tay/tự chọn, chọn đúng loại và gắn với phiếu.",
+      "group": "E05",
+      "references": "C07,C12,C21",
+      "po_source_details": [
+        {
+          "number": 3,
+          "file": "pos-prototype/front-desk-prototype.html",
+          "filename": "front-desk-prototype.html",
+          "date": "4 tháng 9 năm 2026",
+          "location": "Assign technician → Service location và Chair / table number; cảnh báo trùng vị trí.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+        },
+        {
+          "number": 4,
+          "file": "pos-prototype/front-desk-prototype (1).html",
+          "filename": "front-desk-prototype (1).html",
+          "date": "7 tháng 9 năm 2026",
+          "location": "Assign technician → Service location và Chair / table number; cảnh báo trùng vị trí.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+        },
+        {
+          "number": 6,
+          "file": "nexora-pos-12-10/nexora-pos-prototype-v34.html",
+          "filename": "nexora-pos-prototype-v34.html",
+          "date": "12 tháng 10 năm 2026",
+          "location": "Turn Board → Assign a checked-in guest → Station; Settings → Stations → Off / Manual / Auto.",
+          "href": "../turnboard-leader-review/html/nexora-pos-12-10/nexora-pos-prototype-v34.html"
+        }
+      ]
+    },
+    {
+      "id": "F27",
+      "feature": "Giữ chỗ, đang dùng, dọn chỗ, khóa chỗ và xác nhận sạch",
+      "sources": "#6",
+      "status": "Chưa có",
+      "current": "Chưa có vòng đời vị trí vật lý trong các phần Turnboard/phiếu đã kiểm tra.",
+      "gap": "Thêm trạng thái và liên kết với phục vụ; bản triển khai cần xử lý đồng thời vì HTML chỉ dùng dữ liệu demo.",
+      "group": "E05",
+      "references": "C07,C12,C21",
+      "po_source_details": [
+        {
+          "number": 6,
+          "file": "nexora-pos-12-10/nexora-pos-prototype-v34.html",
+          "filename": "nexora-pos-prototype-v34.html",
+          "date": "12 tháng 10 năm 2026",
+          "location": "Settings → Stations; dải vị trí trên Front Desk: free, held, occupied, cleaning, blocked và Mark clean.",
+          "href": "../turnboard-leader-review/html/nexora-pos-12-10/nexora-pos-prototype-v34.html"
+        }
+      ]
+    },
+    {
+      "id": "F28",
+      "feature": "Gọi thợ thủ công qua app và xem phản hồi",
+      "sources": "#2",
+      "status": "Đã có",
+      "current": "Có Beep, tin nhắn, trạng thái gửi và phản hồi của thợ; có giới hạn thợ không có tài khoản.",
+      "gap": "Tái sử dụng luồng đang có.",
+      "group": "—",
+      "references": "C03,C19",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Turnboard: Gọi thợ qua app và lịch sử gọi.",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        }
+      ]
+    },
+    {
+      "id": "F29",
+      "feature": "Tự gọi khi lên Next Turn và mở Viber",
+      "sources": "#2",
+      "status": "Chưa có",
+      "current": "Turnboard hiện gọi qua thao tác của lễ tân; chưa có cấu hình tự gọi theo Next Turn hoặc nút Viber.",
+      "gap": "Bổ sung tùy chọn tự gọi; Viber là mở ứng dụng nhắn tin, không tự coi là xác nhận đã nhận tin.",
+      "group": "E07",
+      "references": "C03,C05,C19",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Luật tính turn → Tự gọi khi tới lượt; nút Viber trên thẻ thợ và số Viber trong hồ sơ.",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        }
+      ]
+    },
+    {
+      "id": "F30",
+      "feature": "Dự kiến thời gian chờ, giờ xong và ngưỡng chờ khách hẹn",
+      "sources": "#2",
+      "status": "Có một phần",
+      "current": "Đã có số phút chờ từ check-in và giờ nhận dịch vụ; chưa có dự kiến theo thời lượng hay ngưỡng cảnh báo như #2.",
+      "gap": "Thêm giờ dự kiến xong, thời gian chờ theo thợ phù hợp và cảnh báo quá ngưỡng khách hẹn.",
+      "group": "E07",
+      "references": "C20,C21",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Luật tính turn → Khách hẹn đợi thợ tối đa bao lâu; nhãn dự kiến chờ và dự kiến xong trên Turnboard.",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        }
+      ]
+    },
+    {
+      "id": "F31",
+      "feature": "Ghi chú khách/thợ và in phiếu dịch vụ",
+      "sources": "#3, #4",
+      "status": "Đã có",
+      "current": "Workspace đã có ghi chú và in phiếu.",
+      "gap": "Nếu cần nút Assign & Print ngay trên Turnboard thì nối vào luồng in hiện hữu.",
+      "group": "E08",
+      "references": "C12,C25",
+      "po_source_details": [
+        {
+          "number": 3,
+          "file": "pos-prototype/front-desk-prototype.html",
+          "filename": "front-desk-prototype.html",
+          "date": "4 tháng 9 năm 2026",
+          "location": "Assign technician → Guest note, Technician note; Assign Only / Assign & Print.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+        },
+        {
+          "number": 4,
+          "file": "pos-prototype/front-desk-prototype (1).html",
+          "filename": "front-desk-prototype (1).html",
+          "date": "7 tháng 9 năm 2026",
+          "location": "Assign technician → Guest note, Technician note; Assign Only / Assign & Print.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+        }
+      ]
+    },
+    {
+      "id": "F32",
+      "feature": "Lưu luật thật, dùng chung khi tính lượt và chốt phiếu",
+      "sources": "#2, #5, #6",
+      "status": "Đã có",
+      "current": "Đã có API lưu, công thức dùng chung và lưu lượt khi checkout; tốt hơn nút Save Rules mô phỏng ở #3/#4.",
+      "gap": "Giữ nguyên nền này khi thêm các cách tính; không sao chép công thức cố định từ HTML.",
+      "group": "—",
+      "references": "C04,C06",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Luật tính turn → Lưu; bản này lưu trong trình duyệt.",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        },
+        {
+          "number": 5,
+          "file": "nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html",
+          "filename": "nexora-pos-products-other-sales.html",
+          "date": "9 tháng 10 năm 2026",
+          "location": "Turn Board → Turn rule và Turn history; dữ liệu demo.",
+          "href": "../turnboard-leader-review/html/nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html"
+        },
+        {
+          "number": 6,
+          "file": "nexora-pos-12-10/nexora-pos-prototype-v34.html",
+          "filename": "nexora-pos-prototype-v34.html",
+          "date": "12 tháng 10 năm 2026",
+          "location": "Turn Board → Turn rule và Turn history; dữ liệu demo.",
+          "href": "../turnboard-leader-review/html/nexora-pos-12-10/nexora-pos-prototype-v34.html"
+        }
+      ]
+    },
+    {
+      "id": "F33",
+      "feature": "Reset ngày thủ công và dữ liệu 50 thợ / 36 khách chờ",
+      "sources": "#2, #3, #4",
+      "status": "Cần PO chốt",
+      "current": "Đây là tiện ích xóa/khởi tạo dữ liệu trong bản mẫu, không phải yêu cầu vận hành đã được chốt.",
+      "gap": "Không đưa thao tác xóa lịch sử thật hoặc nút nạp dữ liệu demo vào backlog mặc định; dùng bộ dữ liệu lớn để kiểm tra khi triển khai.",
+      "group": "—",
+      "references": "C07,C14",
+      "po_source_details": [
+        {
+          "number": 2,
+          "file": "TurnBoardBanMau.html",
+          "filename": "TurnBoardBanMau.html",
+          "date": "25 tháng 8 năm 2026",
+          "location": "Menu cài đặt → Reset toàn bộ ngày hôm nay; thao tác xóa dữ liệu mẫu.",
+          "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+        },
+        {
+          "number": 3,
+          "file": "pos-prototype/front-desk-prototype.html",
+          "filename": "front-desk-prototype.html",
+          "date": "4 tháng 9 năm 2026",
+          "location": "Turn Board → Large Salon Demo · 50 techs / 36 waiting.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+        },
+        {
+          "number": 4,
+          "file": "pos-prototype/front-desk-prototype (1).html",
+          "filename": "front-desk-prototype (1).html",
+          "date": "7 tháng 9 năm 2026",
+          "location": "Turn Board → Large Salon Demo · 50 techs / 36 waiting.",
+          "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+        }
+      ]
+    }
+  ],
+  "groups": [
+    [
+      "E01",
+      "P1",
+      "Hoàn thiện bộ luật tính lượt",
+      "Thêm thời lượng, bảng lượt theo dịch vụ và đầu khách; tận dụng bậc giá hiện có. Bổ sung xem thử và xử lý riêng khách chỉ định/hẹn sau khi chốt D01.",
+      "Frontend + backend",
+      "D01"
+    ],
+    [
+      "E02",
+      "P1",
+      "Thống nhất cách đề xuất thợ",
+      "Giữ Next Turn hiện có; bổ sung các chế độ của #2, điều kiện rảnh, tay nghề và giải thích đề xuất.",
+      "Frontend + backend",
+      "D02, D03"
+    ],
+    [
+      "E03",
+      "P1",
+      "Gợi ý giao nhiều dịch vụ và ghi nhận vượt lượt",
+      "Tận dụng lưu phân công theo dòng/nhóm. Bổ sung phương án một thợ/chia thợ, lý do vượt lượt và giải thích người giữ lượt.",
+      "Frontend + backend; tái sử dụng API phân công",
+      "E02, D02"
+    ],
+    [
+      "E04",
+      "P1",
+      "Bổ sung thao tác vận hành và lịch sử lượt",
+      "Skip, Pause/Resume, Undo; thêm lý do và lịch sử khi chỉnh lượt. Đưa lối mở chỉnh lượt từ thẻ nếu cần.",
+      "Frontend + backend",
+      "D04"
+    ],
+    [
+      "E05",
+      "P2",
+      "Quản lý ghế, bàn, phòng theo V34",
+      "Đây là nhóm chức năng mới: danh mục, chọn tay/tự chọn, giữ chỗ, đang dùng, dọn và xác nhận sạch.",
+      "Frontend + backend",
+      "D05"
+    ],
+    [
+      "E06",
+      "P2",
+      "Mục tiêu ngày và cân bằng cơ hội cho thợ",
+      "Mục tiêu/tiến độ, doanh thu trung bình mỗi lượt và gợi ý bù cơ hội. Boost cần PO xác định luồng thật.",
+      "Frontend + backend; kết nối Promotions nếu chọn",
+      "D06"
+    ],
+    [
+      "E07",
+      "P2",
+      "Cảnh báo chờ và gọi thợ chủ động",
+      "Tận dụng Beep. Bổ sung tự gọi khi lên Next Turn, cảnh báo khách hẹn chờ quá ngưỡng, dự kiến thời gian và mở Viber nếu cần.",
+      "Frontend + backend cho tự động/cấu hình; Viber chủ yếu frontend",
+      "D07"
+    ],
+    [
+      "E08",
+      "P2",
+      "Hoàn thiện khối Next Turn và thao tác nhanh",
+      "Khối chi tiết, Upcoming, mở hồ sơ và Assign & Print; dùng lại số liệu, hồ sơ và luồng in đã có.",
+      "Chủ yếu frontend; phụ thuộc dữ liệu từ các nhóm trên",
+      "E02, E06"
+    ]
+  ],
+  "decisions": [
+    [
+      "D01",
+      "Một lượt được tính trên đơn vị nào?",
+      "Chốt từng dịch vụ, phần việc của một thợ trên một khách hay toàn khách; xác định giá trước/sau giảm giá, phần thêm, cách làm tròn và thời điểm ghi/chốt. HTML #2 gộp phần việc theo thợ; staging mặc định theo dịch vụ chính. Không áp hai công thức đồng thời."
+    ],
+    [
+      "D02",
+      "Khi nào đề xuất thợ bận và thứ tự ưu tiên là gì?",
+      "Staging có thể đánh dấu Next Turn dù thợ bận; #2 ưu tiên rảnh, #4 lọc thợ rảnh. Chốt lượt trước hay tay nghề trước, cách xử lý bằng lượt và khi nào được giao vượt lượt."
+    ],
+    [
+      "D03",
+      "Thợ chưa thiết lập tay nghề và cấp thợ được hiểu thế nào?",
+      "Staging hiện cho thợ chưa có danh sách dịch vụ nhận mọi dịch vụ kèm cảnh báo. Mẫu #2 dùng mức chuyên theo dịch vụ; #4 còn yêu cầu cấp thợ. Chốt cơ chế thiếu dữ liệu và có dùng tiếng Anh/đánh giá phục vụ để xếp hạng hay không."
+    ],
+    [
+      "D04",
+      "Skip, Pause và Undo ảnh hưởng hàng chờ ra sao?",
+      "Chốt có mất lượt hay chỉ đổi thứ tự, vị trí khi Resume, có tính giờ nghỉ vào chấm công và trạng thái dịch vụ cho phép Undo. Không dùng thao tác reset dữ liệu demo để thay lịch sử thật."
+    ],
+    [
+      "D05",
+      "Vị trí gắn với cả phiếu hay từng dịch vụ?",
+      "V34 gắn một vị trí với phiếu; một khách có nhiều dịch vụ có thể cần nhiều loại vị trí. Chốt thời điểm giữ/giải phóng, cách đổi vị trí và người xác nhận dọn sạch."
+    ],
+    [
+      "D06",
+      "Mục tiêu đo tiền dịch vụ hay thu nhập của thợ?",
+      "Nhãn trong mẫu có chỗ gọi income nhưng thanh tiến độ lấy service sales. Chốt chỉ tiêu, công thức MAKE-UP và Boost là tạo nháp hay chạy chương trình có duyệt."
+    ],
+    [
+      "D07",
+      "Tự gọi và cảnh báo dùng điều kiện nào?",
+      "Chốt đổi Next Turn do giao khách, đổi luật hay lọc màn hình có được gửi hay không; ngưỡng chờ khách hẹn và cách xử lý khi thợ không có app/Viber."
+    ]
+  ],
+  "references": [
+    {
+      "id": "C01",
+      "repository": "FE",
+      "path": "src/components/dashboard/views/pos/PosFrontDeskView.tsx",
+      "line": 2270,
+      "commit": "455ddfd15b4e91d5c2f6340c19f7f03f1fc610e4",
+      "sha256": "afae054dc6e84e55259e3dc011e19b0531e4b330460ed1d2d06ca05e35a866ff",
+      "url": "https://github.com/vlink-group/vlink-nexora-fe/blob/455ddfd15b4e91d5c2f6340c19f7f03f1fc610e4/src/components/dashboard/views/pos/PosFrontDeskView.tsx#L2270",
+      "meaning": "Ba cách xem, tìm/lọc và số liệu tổng quan"
+    },
+    {
+      "id": "C02",
+      "repository": "FE",
+      "path": "src/components/dashboard/views/pos/posNextTurn.ts",
+      "line": 23,
+      "commit": "455ddfd15b4e91d5c2f6340c19f7f03f1fc610e4",
+      "sha256": "ae004a915101055af557ea89becdd0a1e3a6ddfae6ff96f1709ebe47e3013b19",
+      "url": "https://github.com/vlink-group/vlink-nexora-fe/blob/455ddfd15b4e91d5c2f6340c19f7f03f1fc610e4/src/components/dashboard/views/pos/posNextTurn.ts#L23",
+      "meaning": "Thứ tự Next Turn: lượt, giá trị dịch vụ chưa chốt, thời điểm chờ"
+    },
+    {
+      "id": "C03",
+      "repository": "FE",
+      "path": "src/components/dashboard/views/pos/PosFrontDeskView.tsx",
+      "line": 1318,
+      "commit": "455ddfd15b4e91d5c2f6340c19f7f03f1fc610e4",
+      "sha256": "afae054dc6e84e55259e3dc011e19b0531e4b330460ed1d2d06ca05e35a866ff",
+      "url": "https://github.com/vlink-group/vlink-nexora-fe/blob/455ddfd15b4e91d5c2f6340c19f7f03f1fc610e4/src/components/dashboard/views/pos/PosFrontDeskView.tsx#L1318",
+      "meaning": "Thẻ thợ, số liệu, giao khách; chưa có nút Skip/Pause"
+    },
+    {
+      "id": "C04",
+      "repository": "FE",
+      "path": "src/components/dashboard/views/pos/modals/WeightedTurnSettingsModal.tsx",
+      "line": 175,
+      "commit": "455ddfd15b4e91d5c2f6340c19f7f03f1fc610e4",
+      "sha256": "2e7814de102a92823902ffe9bfc8d42537d3d49b3719a28684f16b545c32515a",
+      "url": "https://github.com/vlink-group/vlink-nexora-fe/blob/455ddfd15b4e91d5c2f6340c19f7f03f1fc610e4/src/components/dashboard/views/pos/modals/WeightedTurnSettingsModal.tsx#L175",
+      "meaning": "Lưu bậc giá và lượt khách chỉ định qua API, kiểm tra phiên bản"
+    },
+    {
+      "id": "C05",
+      "repository": "BE",
+      "path": "backend/src/Domain/Entities/Pos/PosTurnSettings.cs",
+      "line": 9,
+      "commit": "08f4c3fe2b97d656bcb7bde63979b0b651843ce6",
+      "sha256": "cfdffd765e0faf8334fb4147f2398d5f3ea2f09f51dd70e47b55bf7a8bce76cf",
+      "url": "https://github.com/vlink-group/vlink-nexora/blob/08f4c3fe2b97d656bcb7bde63979b0b651843ce6/backend/src/Domain/Entities/Pos/PosTurnSettings.cs#L9",
+      "meaning": "Cấu hình chỉ có bậc giá và BookingTurnCredit"
+    },
+    {
+      "id": "C06",
+      "repository": "BE",
+      "path": "backend/src/Application/Features/Pos/Orders/Common/PosTurnCreditResolver.cs",
+      "line": 68,
+      "commit": "08f4c3fe2b97d656bcb7bde63979b0b651843ce6",
+      "sha256": "bb8f8c49e8fee9cab89f3b438ec01bf1754dba740fc4a2c2d46684cb9798fd59",
+      "url": "https://github.com/vlink-group/vlink-nexora/blob/08f4c3fe2b97d656bcb7bde63979b0b651843ce6/backend/src/Application/Features/Pos/Orders/Common/PosTurnCreditResolver.cs#L68",
+      "meaning": "Lượt theo dịch vụ chính và luật cho đúng thợ khách chỉ định"
+    },
+    {
+      "id": "C07",
+      "repository": "BE",
+      "path": "backend/src/Application/Features/Pos/Orders/Queries/GetTurnBoard/GetTurnBoardQuery.cs",
+      "line": 19,
+      "commit": "08f4c3fe2b97d656bcb7bde63979b0b651843ce6",
+      "sha256": "21052eb5d97c84d6954ca1e8d680b871e1a7637ec85910e99de1f6f6df0ea305",
+      "url": "https://github.com/vlink-group/vlink-nexora/blob/08f4c3fe2b97d656bcb7bde63979b0b651843ce6/backend/src/Application/Features/Pos/Orders/Queries/GetTurnBoard/GetTurnBoardQuery.cs#L19",
+      "meaning": "Dữ liệu Turnboard: thợ, lượt, tiền dịch vụ, lịch sử từng lượt"
+    },
+    {
+      "id": "C08",
+      "repository": "BE",
+      "path": "backend/src/Application/Features/Pos/StaffProfiles/PosStaffSkillEligibility.cs",
+      "line": 8,
+      "commit": "08f4c3fe2b97d656bcb7bde63979b0b651843ce6",
+      "sha256": "71c9e23b6a9c5123d930cddb964fcb7fcc7d699d0e3f35ee3248dea9f1fa125c",
+      "url": "https://github.com/vlink-group/vlink-nexora/blob/08f4c3fe2b97d656bcb7bde63979b0b651843ce6/backend/src/Application/Features/Pos/StaffProfiles/PosStaffSkillEligibility.cs#L8",
+      "meaning": "Điều kiện được làm dịch vụ; thợ chưa thiết lập tay nghề có ngoại lệ"
+    },
+    {
+      "id": "C09",
+      "repository": "BE",
+      "path": "backend/src/Domain/Entities/Pos/PosStaffServiceAssignment.cs",
+      "line": 10,
+      "commit": "08f4c3fe2b97d656bcb7bde63979b0b651843ce6",
+      "sha256": "785fe03d8a54ff7ef2a606bb28f4474427a30ec978d245379a8c36d5c9d186b2",
+      "url": "https://github.com/vlink-group/vlink-nexora/blob/08f4c3fe2b97d656bcb7bde63979b0b651843ce6/backend/src/Domain/Entities/Pos/PosStaffServiceAssignment.cs#L10",
+      "meaning": "Dịch vụ được phép làm, chưa có mức chuyên cho từng dịch vụ"
+    },
+    {
+      "id": "C10",
+      "repository": "FE",
+      "path": "src/components/dashboard/views/pos/PosOrderWorkspace.tsx",
+      "line": 1144,
+      "commit": "455ddfd15b4e91d5c2f6340c19f7f03f1fc610e4",
+      "sha256": "4a01c785bf2dd3613b4071e4d4e6c38319bdb301d9e40d0344c533cbd6fddbe5",
+      "url": "https://github.com/vlink-group/vlink-nexora-fe/blob/455ddfd15b4e91d5c2f6340c19f7f03f1fc610e4/src/components/dashboard/views/pos/PosOrderWorkspace.tsx#L1144",
+      "meaning": "Gợi ý thợ theo từng dịch vụ và nhận biết thợ bận"
+    },
+    {
+      "id": "C11",
+      "repository": "FE",
+      "path": "src/components/dashboard/views/pos/PosOrderWorkspace.tsx",
+      "line": 2006,
+      "commit": "455ddfd15b4e91d5c2f6340c19f7f03f1fc610e4",
+      "sha256": "4a01c785bf2dd3613b4071e4d4e6c38319bdb301d9e40d0344c533cbd6fddbe5",
+      "url": "https://github.com/vlink-group/vlink-nexora-fe/blob/455ddfd15b4e91d5c2f6340c19f7f03f1fc610e4/src/components/dashboard/views/pos/PosOrderWorkspace.tsx#L2006",
+      "meaning": "Đổi thợ cho nhóm dịch vụ trong phiếu"
+    },
+    {
+      "id": "C12",
+      "repository": "BE",
+      "path": "backend/src/Application/Features/Pos/Orders/Commands/SaveOrderServiceLineAssignments/SaveOrderServiceLineAssignmentsCommand.cs",
+      "line": 16,
+      "commit": "08f4c3fe2b97d656bcb7bde63979b0b651843ce6",
+      "sha256": "58e6f5906d9dd10573b0f24877a5d167f14c7f4ec998b5e9f661783f2e9df251",
+      "url": "https://github.com/vlink-group/vlink-nexora/blob/08f4c3fe2b97d656bcb7bde63979b0b651843ce6/backend/src/Application/Features/Pos/Orders/Commands/SaveOrderServiceLineAssignments/SaveOrderServiceLineAssignmentsCommand.cs#L16",
+      "meaning": "Lưu nhiều phân công cùng lúc; cho phép bỏ thợ, có ghi chú và nhật ký thay đổi"
+    },
+    {
+      "id": "C13",
+      "repository": "BE",
+      "path": "backend/src/Application/Features/Pos/Orders/Common/PosServiceLineAssignmentApplier.cs",
+      "line": 32,
+      "commit": "08f4c3fe2b97d656bcb7bde63979b0b651843ce6",
+      "sha256": "1b19bb1333d7c6674c20e7a1394e8c187a650af761f6e76b611116e6a98f9d2d",
+      "url": "https://github.com/vlink-group/vlink-nexora/blob/08f4c3fe2b97d656bcb7bde63979b0b651843ce6/backend/src/Application/Features/Pos/Orders/Common/PosServiceLineAssignmentApplier.cs#L32",
+      "meaning": "Gỡ thợ và cập nhật lại trạng thái dịch vụ"
+    },
+    {
+      "id": "C14",
+      "repository": "FE",
+      "path": "src/components/dashboard/views/pos/TurnGridTurnModal.tsx",
+      "line": 175,
+      "commit": "455ddfd15b4e91d5c2f6340c19f7f03f1fc610e4",
+      "sha256": "8f33d7b38b5ff34d99ba988c7345fc53d3a5bba096d60e52da1da7b4b9995f29",
+      "url": "https://github.com/vlink-group/vlink-nexora-fe/blob/455ddfd15b4e91d5c2f6340c19f7f03f1fc610e4/src/components/dashboard/views/pos/TurnGridTurnModal.tsx#L175",
+      "meaning": "Thêm/sửa lượt; chưa thu thập lý do nghiệp vụ"
+    },
+    {
+      "id": "C15",
+      "repository": "BE",
+      "path": "backend/src/Application/Features/Pos/Orders/Commands/AddManualTurn/AddManualTurnCommand.cs",
+      "line": 12,
+      "commit": "08f4c3fe2b97d656bcb7bde63979b0b651843ce6",
+      "sha256": "0b4428789cd6a258f6f5bb55ec9e7e5d418df212bb7b37ffc6791c4ab22ff192",
+      "url": "https://github.com/vlink-group/vlink-nexora/blob/08f4c3fe2b97d656bcb7bde63979b0b651843ce6/backend/src/Application/Features/Pos/Orders/Commands/AddManualTurn/AddManualTurnCommand.cs#L12",
+      "meaning": "API thêm lượt chưa có trường lý do"
+    },
+    {
+      "id": "C16",
+      "repository": "BE",
+      "path": "backend/src/Application/Features/Pos/Orders/Commands/UpdateTurnBoardTurn/UpdateTurnBoardTurnCommand.cs",
+      "line": 12,
+      "commit": "08f4c3fe2b97d656bcb7bde63979b0b651843ce6",
+      "sha256": "eddca2310ea9cb542116a621e23493a8eeec91f9384049e5970cfbbf62fb84ec",
+      "url": "https://github.com/vlink-group/vlink-nexora/blob/08f4c3fe2b97d656bcb7bde63979b0b651843ce6/backend/src/Application/Features/Pos/Orders/Commands/UpdateTurnBoardTurn/UpdateTurnBoardTurnCommand.cs#L12",
+      "meaning": "API sửa lượt chưa có trường lý do"
+    },
+    {
+      "id": "C17",
+      "repository": "BE",
+      "path": "backend/src/Web/Controllers/Merchant/PosTurnBoardController.cs",
+      "line": 15,
+      "commit": "08f4c3fe2b97d656bcb7bde63979b0b651843ce6",
+      "sha256": "d68083bfe1b4ac044dac53db443386ee3c614075fbcee5c8c9494641b4e47478",
+      "url": "https://github.com/vlink-group/vlink-nexora/blob/08f4c3fe2b97d656bcb7bde63979b0b651843ce6/backend/src/Web/Controllers/Merchant/PosTurnBoardController.cs#L15",
+      "meaning": "Các API Turnboard hiện có; không có thao tác Undo/Skip/Pause"
+    },
+    {
+      "id": "C18",
+      "repository": "BE",
+      "path": "backend/src/Domain/Enums/Pos/PosStaffStatus.cs",
+      "line": 5,
+      "commit": "08f4c3fe2b97d656bcb7bde63979b0b651843ce6",
+      "sha256": "6481fef868a8ff710d93200d2f0e6c87a4e2218ad17e1d2b34f2a7c532527468",
+      "url": "https://github.com/vlink-group/vlink-nexora/blob/08f4c3fe2b97d656bcb7bde63979b0b651843ce6/backend/src/Domain/Enums/Pos/PosStaffStatus.cs#L5",
+      "meaning": "Trạng thái thợ: Active, Off, Locked; chưa có Paused"
+    },
+    {
+      "id": "C19",
+      "repository": "BE",
+      "path": "backend/src/Application/Features/Pos/TimeClock/Commands/BeepStaff/BeepStaffCommand.cs",
+      "line": 14,
+      "commit": "08f4c3fe2b97d656bcb7bde63979b0b651843ce6",
+      "sha256": "aad8d42ebaa5e83c54e0b49e54d317a661e25ec70c822490c732d3df66395dfa",
+      "url": "https://github.com/vlink-group/vlink-nexora/blob/08f4c3fe2b97d656bcb7bde63979b0b651843ce6/backend/src/Application/Features/Pos/TimeClock/Commands/BeepStaff/BeepStaffCommand.cs#L14",
+      "meaning": "Gọi thợ qua app, trạng thái gửi và phản hồi"
+    },
+    {
+      "id": "C20",
+      "repository": "BE",
+      "path": "backend/src/Application/Features/Pos/Orders/Queries/GetOrderList/GetOrderListQuery.cs",
+      "line": 18,
+      "commit": "08f4c3fe2b97d656bcb7bde63979b0b651843ce6",
+      "sha256": "4ac0891ece0c1b2c398ffbd841bfc6622ab14a369ccc42cd104b8273a850b867",
+      "url": "https://github.com/vlink-group/vlink-nexora/blob/08f4c3fe2b97d656bcb7bde63979b0b651843ce6/backend/src/Application/Features/Pos/Orders/Queries/GetOrderList/GetOrderListQuery.cs#L18",
+      "meaning": "Đã có thời gian chờ kể từ check-in"
+    },
+    {
+      "id": "C21",
+      "repository": "FE",
+      "path": "src/components/dashboard/views/pos/TurnStationDetails.tsx",
+      "line": 24,
+      "commit": "455ddfd15b4e91d5c2f6340c19f7f03f1fc610e4",
+      "sha256": "47ded583bf159c88c87f3f68582939f6467be3792765851f87c5c6a803a4ada3",
+      "url": "https://github.com/vlink-group/vlink-nexora-fe/blob/455ddfd15b4e91d5c2f6340c19f7f03f1fc610e4/src/components/dashboard/views/pos/TurnStationDetails.tsx#L24",
+      "meaning": "Hiển thị khách và giờ nhận; chưa có giờ dự kiến xong hay vị trí vật lý"
+    },
+    {
+      "id": "C22",
+      "repository": "BE",
+      "path": "backend/src/Domain/Entities/Pos/PosStaffProfile.cs",
+      "line": 13,
+      "commit": "08f4c3fe2b97d656bcb7bde63979b0b651843ce6",
+      "sha256": "d90bf1c458d200bcedad0b12565356a900dfb6cf9c566510205dc55a848bbf3e",
+      "url": "https://github.com/vlink-group/vlink-nexora/blob/08f4c3fe2b97d656bcb7bde63979b0b651843ce6/backend/src/Domain/Entities/Pos/PosStaffProfile.cs#L13",
+      "meaning": "Cấp thợ đã có; chỉ tiêu thưởng thuộc hồ sơ trả công, không phải mục tiêu ngày trên Turnboard"
+    },
+    {
+      "id": "C23",
+      "repository": "BE",
+      "path": "backend/src/Application/Features/Pos/Bookings/Queries/GetBookingAssignmentCandidates/GetBookingAssignmentCandidatesQuery.cs",
+      "line": 20,
+      "commit": "08f4c3fe2b97d656bcb7bde63979b0b651843ce6",
+      "sha256": "6aa604f9fb475aeabb7acadd9020bad2c0778258d5fbee8fc730ae9ace04eafa",
+      "url": "https://github.com/vlink-group/vlink-nexora/blob/08f4c3fe2b97d656bcb7bde63979b0b651843ce6/backend/src/Application/Features/Pos/Bookings/Queries/GetBookingAssignmentCandidates/GetBookingAssignmentCandidatesQuery.cs#L20",
+      "meaning": "Booking đã có thứ hạng và lý do không đủ điều kiện theo từng dịch vụ"
+    },
+    {
+      "id": "C24",
+      "repository": "BE",
+      "path": "backend/src/Application/Features/Pos/Orders/Common/PosStaffAssignmentResolver.cs",
+      "line": 11,
+      "commit": "08f4c3fe2b97d656bcb7bde63979b0b651843ce6",
+      "sha256": "cdbbe2c96c0e8c43888b922fa68b1f4a09a65a0ab1dd3a7b430515d08a6c450c",
+      "url": "https://github.com/vlink-group/vlink-nexora/blob/08f4c3fe2b97d656bcb7bde63979b0b651843ce6/backend/src/Application/Features/Pos/Orders/Common/PosStaffAssignmentResolver.cs#L11",
+      "meaning": "First available hiện để chưa giao; không tự chọn thợ ở backend"
+    },
+    {
+      "id": "C25",
+      "repository": "FE",
+      "path": "src/components/dashboard/views/pos/PosOrderWorkspace.tsx",
+      "line": 125,
+      "commit": "455ddfd15b4e91d5c2f6340c19f7f03f1fc610e4",
+      "sha256": "4a01c785bf2dd3613b4071e4d4e6c38319bdb301d9e40d0344c533cbd6fddbe5",
+      "url": "https://github.com/vlink-group/vlink-nexora-fe/blob/455ddfd15b4e91d5c2f6340c19f7f03f1fc610e4/src/components/dashboard/views/pos/PosOrderWorkspace.tsx#L125",
+      "meaning": "Đã có in phiếu và ghi chú trong workspace"
+    },
+    {
+      "id": "C26",
+      "repository": "BE",
+      "path": "backend/src/Application/Features/Pos/Orders/Common/PosBookingTurnCredits.cs",
+      "line": 7,
+      "commit": "08f4c3fe2b97d656bcb7bde63979b0b651843ce6",
+      "sha256": "722987f90b8b01f6735e638f4e4916527fafb76d2b665e0d842bf4f89fd432df",
+      "url": "https://github.com/vlink-group/vlink-nexora/blob/08f4c3fe2b97d656bcb7bde63979b0b651843ce6/backend/src/Application/Features/Pos/Orders/Common/PosBookingTurnCredits.cs#L7",
+      "meaning": "Lượt khách chỉ định có cấu hình chung và riêng từng thợ"
+    }
+  ],
+  "basis": "Fetched staging code; deployed UI and tenant configuration not tested.",
+  "group_po_sources": {
+    "E01": [
+      {
+        "number": 2,
+        "file": "TurnBoardBanMau.html",
+        "filename": "TurnBoardBanMau.html",
+        "date": "25 tháng 8 năm 2026",
+        "location": "Nguồn chính cho phần thiếu: Luật tính turn → năm cách tính, luật riêng request/booking và Xem thử luật này.",
+        "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+      },
+      {
+        "number": 5,
+        "file": "nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html",
+        "filename": "nexora-pos-products-other-sales.html",
+        "date": "9 tháng 10 năm 2026",
+        "location": "Turn Board → Turn rule: 1 guest = 1 turn / Per main service / Per 15 minutes (0.25) / Price tiers (0.25–1).",
+        "href": "../turnboard-leader-review/html/nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html"
+      },
+      {
+        "number": 6,
+        "file": "nexora-pos-12-10/nexora-pos-prototype-v34.html",
+        "filename": "nexora-pos-prototype-v34.html",
+        "date": "12 tháng 10 năm 2026",
+        "location": "Turn Board → Turn rule: cùng bốn cách tính như #5.",
+        "href": "../turnboard-leader-review/html/nexora-pos-12-10/nexora-pos-prototype-v34.html"
+      }
+    ],
+    "E02": [
+      {
+        "number": 2,
+        "file": "TurnBoardBanMau.html",
+        "filename": "TurnBoardBanMau.html",
+        "date": "25 tháng 8 năm 2026",
+        "location": "Luật tính turn → Máy tự xếp thợ ưu tiên gì; Tổng quan thợ → tay nghề, tiếng Anh và phục vụ.",
+        "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+      }
+    ],
+    "E03": [
+      {
+        "number": 4,
+        "file": "pos-prototype/front-desk-prototype (1).html",
+        "filename": "front-desk-prototype (1).html",
+        "date": "7 tháng 9 năm 2026",
+        "location": "Assign technician → One technician for all services / Faster split option, Manager Override và Turn protected.",
+        "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+      },
+      {
+        "number": 2,
+        "file": "TurnBoardBanMau.html",
+        "filename": "TurnBoardBanMau.html",
+        "date": "25 tháng 8 năm 2026",
+        "location": "Giao khách → Máy tự xếp thợ theo từng dịch vụ và cảnh báo vượt lượt.",
+        "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+      },
+      {
+        "number": 3,
+        "file": "pos-prototype/front-desk-prototype.html",
+        "filename": "front-desk-prototype.html",
+        "date": "4 tháng 9 năm 2026",
+        "location": "Assign technician → lý do Why are you skipping the next turn?",
+        "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+      }
+    ],
+    "E04": [
+      {
+        "number": 3,
+        "file": "pos-prototype/front-desk-prototype.html",
+        "filename": "front-desk-prototype.html",
+        "date": "4 tháng 9 năm 2026",
+        "location": "Turn Board → Cards: Skip Turn / Pause; Add Turn / Edit Turn: Audit reason.",
+        "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+      },
+      {
+        "number": 4,
+        "file": "pos-prototype/front-desk-prototype (1).html",
+        "filename": "front-desk-prototype (1).html",
+        "date": "7 tháng 9 năm 2026",
+        "location": "Turn Board → Cards và Turn Grid: cùng thao tác Skip/Pause và lý do chỉnh lượt.",
+        "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+      },
+      {
+        "number": 2,
+        "file": "TurnBoardBanMau.html",
+        "filename": "TurnBoardBanMau.html",
+        "date": "25 tháng 8 năm 2026",
+        "location": "Hoàn tác lần giao gần nhất.",
+        "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+      },
+      {
+        "number": 5,
+        "file": "nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html",
+        "filename": "nexora-pos-products-other-sales.html",
+        "date": "9 tháng 10 năm 2026",
+        "location": "Turn Board → Turn history → Undo và dòng đảo lượt.",
+        "href": "../turnboard-leader-review/html/nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html"
+      },
+      {
+        "number": 6,
+        "file": "nexora-pos-12-10/nexora-pos-prototype-v34.html",
+        "filename": "nexora-pos-prototype-v34.html",
+        "date": "12 tháng 10 năm 2026",
+        "location": "Turn Board → Turn history → Undo và dòng đảo lượt.",
+        "href": "../turnboard-leader-review/html/nexora-pos-12-10/nexora-pos-prototype-v34.html"
+      }
+    ],
+    "E05": [
+      {
+        "number": 6,
+        "file": "nexora-pos-12-10/nexora-pos-prototype-v34.html",
+        "filename": "nexora-pos-prototype-v34.html",
+        "date": "12 tháng 10 năm 2026",
+        "location": "Nguồn chính: Assign a checked-in guest → Station; Settings → Stations; trạng thái vị trí và Mark clean.",
+        "href": "../turnboard-leader-review/html/nexora-pos-12-10/nexora-pos-prototype-v34.html"
+      },
+      {
+        "number": 3,
+        "file": "pos-prototype/front-desk-prototype.html",
+        "filename": "front-desk-prototype.html",
+        "date": "4 tháng 9 năm 2026",
+        "location": "Assign technician → Service location / Chair / table number và cảnh báo trùng.",
+        "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+      },
+      {
+        "number": 4,
+        "file": "pos-prototype/front-desk-prototype (1).html",
+        "filename": "front-desk-prototype (1).html",
+        "date": "7 tháng 9 năm 2026",
+        "location": "Assign technician → Service location / Chair / table number và cảnh báo trùng.",
+        "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+      }
+    ],
+    "E06": [
+      {
+        "number": 3,
+        "file": "pos-prototype/front-desk-prototype.html",
+        "filename": "front-desk-prototype.html",
+        "date": "4 tháng 9 năm 2026",
+        "location": "Turn Board → Cards: Goal Progress, MAKE-UP RECOMMENDED và Boost This Technician.",
+        "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+      },
+      {
+        "number": 4,
+        "file": "pos-prototype/front-desk-prototype (1).html",
+        "filename": "front-desk-prototype (1).html",
+        "date": "7 tháng 9 năm 2026",
+        "location": "Turn Board → Cards và Next Turn: mục tiêu; Boost This Technician mới mô phỏng.",
+        "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+      },
+      {
+        "number": 2,
+        "file": "TurnBoardBanMau.html",
+        "filename": "TurnBoardBanMau.html",
+        "date": "25 tháng 8 năm 2026",
+        "location": "Tổng quan thợ → Doanh thu và TB/turn.",
+        "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+      }
+    ],
+    "E07": [
+      {
+        "number": 2,
+        "file": "TurnBoardBanMau.html",
+        "filename": "TurnBoardBanMau.html",
+        "date": "25 tháng 8 năm 2026",
+        "location": "Luật tính turn → Tự gọi khi tới lượt, ngưỡng chờ khách hẹn; Turnboard → Viber, dự kiến chờ/xong.",
+        "href": "../turnboard-leader-review/html/TurnBoardBanMau.html"
+      }
+    ],
+    "E08": [
+      {
+        "number": 4,
+        "file": "pos-prototype/front-desk-prototype (1).html",
+        "filename": "front-desk-prototype (1).html",
+        "date": "7 tháng 9 năm 2026",
+        "location": "Turn Board → Next Turn, Upcoming Turn Order, View Technician; Assign technician → Assign & Print.",
+        "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype%20%281%29.html"
+      },
+      {
+        "number": 3,
+        "file": "pos-prototype/front-desk-prototype.html",
+        "filename": "front-desk-prototype.html",
+        "date": "4 tháng 9 năm 2026",
+        "location": "Turn Board → thanh Next Turn; Assign technician → Assign & Print.",
+        "href": "../turnboard-leader-review/html/pos-prototype/front-desk-prototype.html"
+      }
+    ]
+  }
+}
