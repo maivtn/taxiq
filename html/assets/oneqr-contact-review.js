@@ -113,8 +113,39 @@
   function shareState(contact) {
     const saved = team(profile.read()).find(person => person.id === contact.id && person.shopId === draft.shopId);
     if (!saved) return 'Save this contact to get a link.';
-    if (!contact.public || !saved.public || !member(contact.memberId)) return 'Turn on Public contact and save to share this contact.';
+    if (!contact.public || !saved.public || !member(contact.memberId)) return 'Turn on Public contact to share this contact.';
     return '';
+  }
+  function savePublicContact(contact, publicState) {
+    const card = clone(profile.read());
+    let savedContact = team(card).find(person => person.id === contact.id && person.shopId === draft.shopId);
+    if (!savedContact) {
+      const name = contactName(contact).trim();
+      if (!name) {
+        const field = $('#contact-team-list').querySelector('[data-contact-row="' + CSS.escape(contact.id) + '"] [data-team-name]');
+        field.value = '';
+        field.setAttribute('aria-invalid', 'true');
+        field.reportValidity();
+        return false;
+      }
+      savedContact = { ...contact, name, role: contactGroup(contact), group: contactGroup(contact), title: contact.title?.trim() || groupTitle(contactGroup(contact)) };
+      card.teamContacts.push(savedContact);
+    }
+    savedContact.public = publicState;
+    card.configured = true;
+    try { localStorage.setItem(cardKey, JSON.stringify(card)); }
+    catch { say('Could not save the contact card. Please try again.'); return false; }
+    contact.public = publicState;
+    draft.configured = true;
+    const baselineCard = JSON.parse(baseline);
+    baselineCard.configured = true;
+    const baselineContact = team(baselineCard).find(person => person.id === contact.id && person.shopId === draft.shopId);
+    if (baselineContact) baselineContact.public = publicState;
+    else baselineCard.teamContacts.push(clone(savedContact));
+    baseline = JSON.stringify(baselineCard);
+    document.dispatchEvent(new CustomEvent('oneqr:contact-saved', { detail: { card, addAction: false } }));
+    say('Contact card saved.');
+    return true;
   }
   function renderTeam() {
     const contacts = team(draft);
@@ -405,7 +436,10 @@
       contact.title = groupTitle(contact.role);
       field.removeAttribute('aria-invalid');
     } else {
-      contact.public = field.checked;
+      if (!savePublicContact(contact, field.checked)) {
+        field.checked = Boolean(contact.public);
+        return;
+      }
       renderTeam();
       $('#contact-team-list').querySelector('[data-contact-row="' + CSS.escape(id) + '"] [data-team-public]')?.focus();
     }
