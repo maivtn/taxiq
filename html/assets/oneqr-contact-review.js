@@ -11,12 +11,13 @@
   const icons = () => window.lucide?.createIcons();
   const clone = value => JSON.parse(JSON.stringify(value));
   const roster = [
-    { id: 'mary-nguyen', name: 'Mary Nguyen', group: 'manager', avatar: '../oneqr-dev/assets/avatars/mary-demo.jpg' },
-    { id: 'kim-nguyen', name: 'Kim Nguyen', group: 'technician', avatar: '../oneqr-dev/assets/avatars/kim-demo.jpg' },
-    { id: 'chloe', name: 'Chloe', group: 'technician', avatar: '' }
+    { id: 'mary-nguyen', name: 'Mary Nguyen', role: 'manager', avatar: '../oneqr-dev/assets/avatars/mary-demo.jpg' },
+    { id: 'kim-nguyen', name: 'Kim Nguyen', role: 'technician', avatar: '../oneqr-dev/assets/avatars/kim-demo.jpg' },
+    { id: 'chloe', name: 'Chloe', role: 'technician', avatar: '' }
   ];
   const groupTitle = group => group === 'manager' ? 'Manager' : 'Technician';
   const member = id => roster.find(person => person.id === id);
+  const contactGroup = contact => member(contact.memberId)?.role || '';
   const team = card => (card.teamContacts || []).filter(person => person && person.id && person.memberId);
   function isContactModule(name, details = {}) {
     return ['Contact', 'Save contact', 'Contact card', 'Contact Card'].includes(name) || ['contact', 'vcard'].includes(details.catalogType);
@@ -122,7 +123,7 @@
       const person = member(contact.memberId);
       const note = shareState(contact);
       return '<article class="contact-team-row' + (editingId === contact.id ? ' is-editing' : '') + '" data-contact-row="' + esc(contact.id) + '">' +
-        '<div class="contact-team-identity">' + avatar(person || { name: contact.memberId }) + '<div><strong>' + esc((person?.name || contact.memberId).toUpperCase()) + '</strong><small>' + esc(groupTitle(contact.group) + ' · ' + contact.title) + '</small></div><span class="contact-public-badge' + (contact.public && person ? ' is-public' : '') + '">' + (contact.public && person ? 'Public contact' : 'Hidden') + '</span></div>' +
+        '<div class="contact-team-identity">' + avatar(person || { name: contact.memberId }) + '<div><strong>' + esc((person?.name || contact.memberId).toUpperCase()) + '</strong><small>' + esc(contact.title) + '</small></div><span class="contact-public-badge' + (contact.public && person ? ' is-public' : '') + '">' + (contact.public && person ? 'Public contact' : 'Hidden') + '</span></div>' +
         '<div class="contact-team-actions"><button type="button" data-team-action="edit">Edit</button><button type="button" data-team-action="copy"' + (note ? ' disabled' : '') + '>Copy link</button><button type="button" data-team-action="qr"' + (note ? ' disabled' : '') + '>View QR</button><button type="button" data-team-action="download"' + (note ? ' disabled' : '') + '>Download QR</button></div>' +
         (note ? '<p class="contact-share-note">' + esc(note) + '</p>' : '') + '</article>';
     }).join('') : '<div class="contact-team-empty"><img src="../assets/icon-oneqr/issue-2040-oneqr-users-round-3d.png" alt=""><strong>No team contacts yet</strong><button type="button" class="contact-review-button" data-team-action="add">Add contact</button></div>';
@@ -167,13 +168,13 @@
     const choices = roster.filter(person => person.name.toLowerCase().includes(search));
     $('#contact-member-results').innerHTML = choices.length ? choices.map(person => {
       const duplicate = team(draft).some(contact => contact.memberId === person.id && contact.id !== editingId);
-      return '<button type="button" class="contact-member-option" data-pick-member="' + esc(person.id) + '"' + (duplicate ? ' disabled' : '') + '>' + avatar(person) + '<span><strong>' + esc(person.name.toUpperCase()) + '</strong><small>' + groupTitle(person.group) + '</small></span><i data-lucide="' + (duplicate ? 'check' : 'plus') + '" aria-hidden="true"></i></button>';
+      return '<button type="button" class="contact-member-option" data-pick-member="' + esc(person.id) + '"' + (duplicate ? ' disabled' : '') + '>' + avatar(person) + '<span><strong>' + esc(person.name.toUpperCase()) + '</strong><small>' + groupTitle(person.role) + '</small></span><i data-lucide="' + (duplicate ? 'check' : 'plus') + '" aria-hidden="true"></i></button>';
     }).join('') : '<p class="contact-share-note">' + (roster.length ? 'No matching team members' : 'No team contacts yet') + '</p>';
     icons();
   }
   function clearErrors() {
-    ['member', 'group', 'title'].forEach(key => { $('#contact-' + key + '-error').hidden = true; });
-    ['#contact-member-search', '#contact-member-group', '#contact-member-title'].forEach(selector => $(selector).removeAttribute('aria-invalid'));
+    ['member', 'title'].forEach(key => { $('#contact-' + key + '-error').hidden = true; });
+    ['#contact-member-search', '#contact-member-title'].forEach(selector => $(selector).removeAttribute('aria-invalid'));
   }
   function edit(id = null) {
     clearErrors();
@@ -183,7 +184,6 @@
     $('#contact-team-editor').hidden = false;
     $('#contact-editor-title').textContent = contact ? 'Edit' : 'Add contact';
     $('#contact-member-search').value = contact ? member(contact.memberId)?.name || '' : '';
-    $('#contact-member-group').value = contact?.group || '';
     $('#contact-member-title').value = contact?.title || '';
     $('#contact-member-public').checked = contact?.public ?? true;
     $('#contact-member-search').readOnly = Boolean(contact);
@@ -203,7 +203,7 @@
   function updateEditor() {
     const contact = team(draft).find(person => person.id === editingId);
     if (!contact) return;
-    contact.group = $('#contact-member-group').value;
+    contact.group = contactGroup(contact);
     contact.title = $('#contact-member-title').value.trim();
     contact.public = $('#contact-member-public').checked;
     clearErrors(); renderTeam(); changed();
@@ -228,10 +228,10 @@
       $('#contact-member-search').focus();
       return false;
     }
-    const invalid = team(draft).find(contact => !member(contact.memberId) || !['manager', 'technician'].includes(contact.group) || !contact.title.trim());
+    const invalid = team(draft).find(contact => !['manager', 'technician'].includes(contactGroup(contact)) || !contact.title.trim());
     if (invalid) {
       setTab('team'); edit(invalid.id);
-      const key = !member(invalid.memberId) ? 'member' : !['manager', 'technician'].includes(invalid.group) ? 'group' : 'title';
+      const key = !['manager', 'technician'].includes(contactGroup(invalid)) ? 'member' : 'title';
       $('#contact-' + key + '-error').hidden = false;
       const field = $('#contact-member-' + (key === 'member' ? 'search' : key));
       field.setAttribute('aria-invalid', 'true'); field.focus();
@@ -250,7 +250,7 @@
   $('#contact-card-form').addEventListener('submit', event => {
     event.preventDefault(); readShop();
     if (!validate()) return;
-    const card = { ...draft, configured: true };
+    const card = { ...draft, configured: true, teamContacts: team(draft).map(contact => ({ ...contact, group: contactGroup(contact) })) };
     try { localStorage.setItem(cardKey, JSON.stringify(card)); }
     catch { say('Could not save the contact card. Please try again.'); return; }
     document.dispatchEvent(new CustomEvent('oneqr:contact-saved', { detail: { card, addAction: $('#contact-add-action').checked } }));
@@ -282,13 +282,8 @@
     const person = member(button.dataset.pickMember);
     const duplicate = team(draft).find(contact => contact.memberId === person.id);
     if (duplicate) { edit(duplicate.id); return; }
-    const contact = { id: person.id, memberId: person.id, shopId: draft.shopId, group: person.group, title: groupTitle(person.group), public: $('#contact-member-public').checked };
+    const contact = { id: person.id, memberId: person.id, shopId: draft.shopId, group: person.role, title: groupTitle(person.role), public: $('#contact-member-public').checked };
     draft.teamContacts.push(contact); edit(contact.id);
-  });
-  $('#contact-member-group').addEventListener('change', () => {
-    const title = $('#contact-member-title');
-    if (!title.value.trim() || ['Manager', 'Technician'].includes(title.value.trim())) title.value = groupTitle($('#contact-member-group').value);
-    updateEditor();
   });
   $('#contact-member-title').addEventListener('input', updateEditor);
   $('#contact-member-public').addEventListener('change', updateEditor);
@@ -406,8 +401,8 @@
     const contacts = publicContacts();
     const groups = [
       { title: 'Shop', cards: [cardFor(shop)] },
-      { title: 'Managers', cards: contacts.filter(person => person.group === 'manager').map(person => cardFor(shop, person.id)) },
-      { title: 'Technicians', cards: contacts.filter(person => person.group === 'technician').map(person => cardFor(shop, person.id)) }
+      { title: 'Managers', cards: contacts.filter(person => contactGroup(person) === 'manager').map(person => cardFor(shop, person.id)) },
+      { title: 'Technicians', cards: contacts.filter(person => contactGroup(person) === 'technician').map(person => cardFor(shop, person.id)) }
     ];
     const active = isEnabled();
     const available = groups.flatMap(group => group.cards);
