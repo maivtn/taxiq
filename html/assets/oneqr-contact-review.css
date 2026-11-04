@@ -177,6 +177,12 @@ body:has(.oneqr-contact-dialog[open]), body:has(.contact-review-popup[open]) { o
   .oneqr-contact-dialog .contact-card-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; padding: 16px; }
   .oneqr-contact-dialog .contact-team-preview-slot { order: -1; }
   .oneqr-contact-dialog .contact-card-preview-wrap { position: static; }
+  .oneqr-contact-dialog[data-contact-tab="team"] .contact-card-preview { min-height: 0; padding: 12px 14px; border-radius: 14px; }
+  .oneqr-contact-dialog[data-contact-tab="team"] .contact-card-brand > span { width: 30px; height: 30px; border-radius: 9px; font-size: 14px; }
+  .oneqr-contact-dialog[data-contact-tab="team"] .contact-card-preview h3 { margin: 8px 0 2px; font-size: 18px; }
+  .oneqr-contact-dialog[data-contact-tab="team"] .contact-preview-bio { min-height: 0; margin-top: 6px; }
+  .oneqr-contact-dialog[data-contact-tab="team"] .contact-preview-details { gap: 4px; margin-top: 10px; }
+  .oneqr-contact-dialog[data-contact-tab="team"] .contact-preview-actions { margin-top: 10px; }
   .oneqr-contact-dialog .contact-field-grid { grid-template-columns: minmax(0, 1fr); }
   .oneqr-contact-dialog .contact-import { flex-wrap: wrap; }
   .oneqr-contact-dialog .contact-import input { font-size: 12px; }
