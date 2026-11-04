@@ -175,6 +175,7 @@ body:has(.oneqr-contact-dialog[open]), body:has(.contact-review-popup[open]) { o
   .contact-review-tabs button { min-height: 44px; font-size: 12px; }
   .contact-unsaved { margin-bottom: 8px; }
   .oneqr-contact-dialog .contact-card-layout { display: grid; grid-template-columns: minmax(0, 1fr); gap: 22px; padding: 16px; }
+  .oneqr-contact-dialog .contact-team-preview-slot { order: -1; }
   .oneqr-contact-dialog .contact-card-preview-wrap { position: static; }
   .oneqr-contact-dialog .contact-field-grid { grid-template-columns: minmax(0, 1fr); }
   .oneqr-contact-dialog .contact-import { flex-wrap: wrap; }
