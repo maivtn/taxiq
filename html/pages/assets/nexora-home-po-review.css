@@ -1,0 +1,350 @@
+/* PO review only. Original content, destinations and scripts stay unchanged. */
+body.po-review {
+  --navy: #122144;
+  --ink: #0b1c30;
+  --muted: #64748b;
+  --purple: #4648d4;
+  --purple-soft: #e9e9ff;
+  --line: #e2e8f0;
+  --bg: #f8fafc;
+  --review-width: 1320px;
+  --review-gutter: clamp(18px, 3.4vw, 48px);
+  --review-shadow: 0 10px 24px rgb(11 28 48 / 6%);
+  background: var(--bg);
+  color: var(--ink);
+  -webkit-font-smoothing: antialiased;
+}
+.po-review :is(button, input, select, textarea) { font-family: inherit; }
+.po-review :is(button, a, input, select, textarea):focus-visible {
+  outline: 3px solid #898bf0;
+  outline-offset: 4px;
+}
+.po-review :is(button, a) { -webkit-tap-highlight-color: transparent; }
+.po-review :is(button, select, input[type="checkbox"]) { cursor: pointer; }
+.po-review :is(section[id], .product-group[id]) { scroll-margin-top: 100px; }
+.po-review :is(.header-inner, .ecosystem-inner, .section, .video-tour-inner,
+  .bridge-inner, .download-inner, .contact-inner, .footer-inner) {
+  width: min(100%, var(--review-width));
+  max-width: var(--review-width);
+  margin-inline: auto;
+  padding-inline: var(--review-gutter);
+}
+.po-review :is(.section-kicker, .about-kicker) { color: var(--purple); letter-spacing: .1em; }
+.po-review :is(.section-head h2, .ecosystem-copy h2, .bridge-head h2,
+  .video-tour h2, .download-copy h2, .about-section h2) {
+  font-size: clamp(28px, 3vw, 40px);
+  line-height: 1.17;
+  letter-spacing: -.035em;
+}
+
+/* A quieter header, shared control shapes and legible open menus. */
+.po-review .site-header {
+  border-bottom: 1px solid var(--line);
+  background: rgb(255 255 255 / 96%);
+  box-shadow: 0 4px 20px rgb(11 28 48 / 4%);
+}
+.po-review .header-inner { min-height: 76px; gap: 18px; }
+.po-review .brand { border-radius: 12px; padding: 8px 10px; }
+.po-review .brand-logo { width: 158px; }
+.po-review :is(.header-login, .header-signup, .header-dashboard, .top-cta) {
+  min-height: 42px;
+  border-radius: 12px;
+  padding: 10px 15px;
+  font-size: 12px;
+}
+.po-review :is(.header-signup, .header-dashboard) {
+  border-color: var(--purple);
+  background: var(--purple);
+  box-shadow: 0 4px 12px rgb(70 72 212 / 12%);
+}
+.po-review :is(.apps-trigger, .menu-toggle) {
+  width: 42px;
+  height: 42px;
+  border-radius: 12px;
+}
+.po-review .lang-switch {
+  min-height: 42px;
+  gap: 6px;
+  padding: 10px 44px 10px 10px;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%2364748b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center / 16px;
+}
+.po-review .lang-switch > svg { width: 16px; height: 16px; }
+.po-review .lang-switch .language { padding-inline-end: 44px; }
+.po-review :is(.apps-popover, .nav-panel) {
+  border-color: var(--line);
+  border-radius: 18px;
+  box-shadow: 0 18px 48px rgb(11 28 48 / 12%);
+}
+.po-review .apps-popover {
+  max-width: calc(100vw - 32px);
+  max-height: calc(100dvh - 100px);
+  overflow: auto;
+}
+.po-review .apps-grid a { min-height: 44px; border-radius: 12px; }
+.po-review .ad-banner { padding-block: 10px; background: #172b4c; }
+.po-review .ad-sticker { border-color: #e2e8f0; border-radius: 14px; box-shadow: none; }
+
+/* Keep the photographic hero and all twelve original slide previews. */
+.po-review #hero-showcase.hero-inner {
+  min-height: clamp(530px, calc(100svh - 168px), 680px);
+  padding: 60px max(var(--review-gutter), calc((100vw - 1224px) / 2)) 66px;
+}
+.po-review #hero-showcase .hero-copy { width: min(570px, 47vw); }
+.po-review #hero-showcase .hero-copy h1 {
+  margin: 20px 0 18px;
+  font-size: clamp(42px, 4.2vw, 62px);
+  line-height: 1.1;
+  letter-spacing: -.045em;
+}
+.po-review #hero-showcase .hero-copy p { max-width: 520px; font-size: 16px; line-height: 1.65; }
+.po-review .hero-buttons { gap: 12px; }
+.po-review :is(.button, .start-bottom a, .closing-actions a) {
+  min-height: 46px;
+  border-radius: 12px;
+  font-size: 13px;
+  line-height: 1.4;
+}
+.po-review .hero-buttons .button { min-height: 46px; box-shadow: none; }
+.po-review .hero-buttons .primary { color: #3537ac; }
+.po-review #hero-showcase .hero-slide-controls { gap: 10px; padding: 8px; border-radius: 14px; }
+.po-review .hero-slide-controls > button { width: 40px; height: 40px; border-radius: 10px; }
+.po-review .hero-slide-dots { gap: 7px; }
+.po-review #hero-showcase .hero-device { width: clamp(270px, 27vw, 350px); }
+
+/* Consistent section rhythm and compact product collections. */
+.po-review #ecosystem .ecosystem-inner,
+.po-review #journey.section,
+.po-review .video-tour-inner,
+.po-review #vlinkpay-ecosystem .bridge-inner { padding-block: 56px; }
+.po-review #ecosystem .ecosystem-copy { column-gap: 40px; margin-bottom: 28px; }
+.po-review #ecosystem .ecosystem-copy h2 { font-size: clamp(28px, 3vw, 40px); line-height: 1.17; }
+.po-review #ecosystem .product-group { margin-top: 28px; }
+.po-review #ecosystem .product-group-head { gap: 14px; padding-bottom: 16px; }
+.po-review .product-group-number { width: 46px; height: 46px; border-radius: 14px; }
+.po-review .product-group-head h3 { font-size: 22px; line-height: 1.25; }
+.po-review #ecosystem .ecosystem-list { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 16px; }
+.po-review #ecosystem .product-group .ecosystem-item {
+  min-height: 300px;
+  padding: 9px 9px 16px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  box-shadow: var(--review-shadow);
+}
+.po-review #ecosystem .product-card-media { height: 130px; border-radius: 12px; }
+.po-review #ecosystem .product-card-media img { height: 100%; object-fit: cover; }
+.po-review #ecosystem .product-line strong { font-size: 16px; }
+.po-review #ecosystem .ecosystem-item > span[data-i18n^="suite"] { font-size: 13px; line-height: 1.55; }
+.po-review #ecosystem .ecosystem-item em { margin-top: auto; padding-top: 12px; font-size: 12px; }
+.po-review #ecosystem .ecosystem-item:hover { transform: translateY(-3px); box-shadow: 0 16px 32px rgb(11 28 48 / 10%); }
+.po-review .journey { gap: 16px; }
+.po-review .journey-card {
+  min-height: 0;
+  padding: 22px;
+  border-color: var(--line);
+  border-radius: 18px;
+  box-shadow: var(--review-shadow);
+}
+.po-review .journey-card h3 { font-size: 19px; }
+.po-review .journey-card p { font-size: 13px; line-height: 1.6; }
+.po-review .video-player { max-width: 960px; border-radius: 20px; box-shadow: 0 18px 40px rgb(11 28 48 / 12%); }
+.po-review .video-play { border-radius: 50%; }
+.po-review .eco-stage { border-radius: 22px; box-shadow: var(--review-shadow); }
+.po-review :is(.eco-node, .eco-nexora-item) { border-radius: 12px; }
+.po-review .eco-nexora-item { min-height: 48px; }
+.po-review :is(#connected-businesses, #about, #start, #founder) {
+  width: min(calc(100% - var(--review-gutter) * 2), 1224px);
+  max-width: 1224px;
+  margin: 32px auto;
+  border-radius: 22px;
+}
+.po-review :is(#connected-businesses, #about, #start) { padding: 32px; box-shadow: var(--review-shadow); }
+.po-review #connected-businesses .industry-heading h2,
+.po-review #start .start-head h2 { font-size: clamp(28px, 3vw, 40px); line-height: 1.17; }
+.po-review #connected-businesses .industry-tabs { gap: 8px; }
+.po-review #connected-businesses .industry-tabs button { min-height: 44px; padding: 10px 14px; border-radius: 12px; font-size: 13px; }
+.po-review #connected-businesses .industry-display { gap: 20px; }
+.po-review #connected-businesses .industry-directory-card { min-height: 88px; padding: 14px; border-radius: 14px; }
+.po-review .about-pillar { border-radius: 14px; box-shadow: var(--review-shadow); }
+.po-review .about-story-links { gap: 16px; }
+.po-review .about-full-story { border-radius: 16px; }
+.po-review #start .start-paths { gap: 16px; margin-top: 24px; }
+.po-review .start-path { padding: 24px; border-radius: 18px; box-shadow: var(--review-shadow); }
+.po-review .start-guide { padding: 20px; border-radius: 16px; }
+.po-review .download-inner { gap: 32px; padding-block: 40px; }
+.po-review .download-option { border-radius: 18px; }
+.po-review #founder { padding: 30px; grid-template-columns: 170px minmax(0, 1fr); gap: 32px; }
+.po-review .closing-card { padding-block: 36px; }
+body.po-review .closing-card h2 { white-space: normal; text-wrap: balance; }
+
+/* Preserve native validation and the original email/copy form actions. */
+.po-review .contact-section { padding-block: 40px; }
+.po-review .contact-inner { gap: 24px; }
+.po-review :is(.contact-info, .contact-form) { border-radius: 20px; padding: 28px; }
+.po-review .contact-form { gap: 18px; border-color: var(--line); background: #fff; box-shadow: var(--review-shadow); }
+.po-review .contact-fields { gap: 16px; }
+.po-review .contact-form label:not(.contact-consent) { gap: 8px; font-size: 13px; }
+.po-review .contact-form :is(input:not([type="checkbox"]), select, textarea) {
+  min-height: 46px;
+  padding: 11px 13px;
+  border: 1px solid #cbd5e1;
+  border-radius: 12px;
+  background-color: #fff;
+  color: var(--ink);
+  font-size: 14px;
+  line-height: 1.5;
+  box-shadow: 0 1px 2px rgb(11 28 48 / 3%);
+}
+.po-review .contact-form select {
+  appearance: none;
+  padding-right: 44px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 16 16' fill='none'%3E%3Cpath d='m4 6 4 4 4-4' stroke='%2364748b' stroke-width='1.5' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E") no-repeat right 16px center / 16px;
+}
+.po-review .contact-form textarea { min-height: 120px; }
+.po-review .contact-form :is(input, select, textarea):focus-visible { border-color: var(--purple); outline: 3px solid rgb(70 72 212 / 18%); outline-offset: 1px; }
+.po-review .contact-consent { gap: 10px; font-size: 12px; line-height: 1.6; }
+.po-review .contact-consent input { width: 20px; height: 20px; margin-top: 1px; accent-color: var(--purple); }
+.po-review .contact-form-bottom button { min-height: 46px; border-radius: 12px; font-size: 13px; }
+.po-review .contact-form-bottom .contact-submit { border-color: var(--purple); background: var(--purple); box-shadow: none; }
+.po-review .contact-form-bottom .contact-submit:hover { background: #3a3bbf; }
+.po-review :is(.contact-help, .contact-status) { font-size: 12px; line-height: 1.6; }
+.po-review .footer-inner { padding-block: 30px; }
+
+@media (min-width: 701px) and (max-width: 1100px) {
+  .po-review #hero-showcase.hero-inner {
+    display: grid;
+    grid-template-columns: minmax(0, 1.2fr) minmax(0, .8fr);
+    gap: 28px;
+    min-height: 540px;
+    padding: 44px 28px;
+  }
+  .po-review #hero-showcase .hero-copy { width: 100%; min-width: 0; }
+  .po-review #hero-showcase .hero-copy h1 { font-size: clamp(36px, 4.7vw, 48px); }
+  .po-review #hero-showcase .hero-copy p { font-size: 15px; }
+  .po-review #hero-showcase .hero-device,
+  .po-review #hero-showcase.is-one-qr .hero-device {
+    position: relative;
+    inset: auto;
+    align-self: end;
+    justify-self: end;
+    width: min(100%, 300px);
+    margin: 0;
+  }
+}
+@media (max-width: 1180px) {
+  .po-review #ecosystem .ecosystem-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .po-review #ecosystem .ecosystem-item { min-height: 280px; }
+  .po-review #ecosystem .product-card-media { height: 155px; }
+  .po-review #founder { gap: 24px; }
+}
+@media (max-width: 1100px) {
+  .po-review .header-inner { min-height: 70px; gap: 12px; }
+  .po-review .main-nav { padding: 14px; border-radius: 18px; }
+  .po-review .main-nav .nav-trigger { min-height: 48px; padding: 12px 14px; font-size: 14px; }
+  .po-review .main-nav .nav-panel { border-radius: 0; box-shadow: none; }
+  .po-review .main-nav .nav-panel > a { min-height: 44px; }
+  .po-review :is(#connected-businesses, #about, #start) { padding: 26px; }
+  .po-review .contact-inner { grid-template-columns: 1fr; }
+  .po-review .contact-details { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
+  .po-review .contact-detail { min-width: 0; margin: 0; }
+}
+@media (max-width: 700px) {
+  .po-review { --review-gutter: 20px; }
+  .po-review .header-inner { padding-inline: 16px; gap: 8px; min-height: 68px; }
+  .po-review .brand { padding: 6px; border-radius: 10px; }
+  .po-review .brand-logo { width: 132px; }
+  .po-review .header-actions { gap: 4px; }
+  .po-review :is(.apps-trigger, .menu-toggle) { width: 40px; height: 40px; border-radius: 10px; }
+  .po-review .lang-switch { min-height: 40px; padding-block: 8px; }
+  .po-review #hero-showcase.hero-inner { display: flex; min-height: 0; gap: 0; padding: 210px 20px 28px; background: #071633; }
+  .po-review #hero-showcase .hero-stage { height: 245px; }
+  .po-review #hero-showcase .hero-copy { width: 100%; margin: 0 auto; }
+  .po-review #hero-showcase .hero-copy h1 { margin: 14px 0 12px; font-size: clamp(30px, 7.6vw, 38px); line-height: 1.15; }
+  .po-review #hero-showcase .hero-copy p { font-size: 14px; line-height: 1.6; }
+  .po-review .hero-context { gap: 6px; }
+  .po-review .hero-buttons { gap: 8px; margin-top: 20px; }
+  .po-review .hero-buttons .button { flex: 1 1 145px; padding: 10px 12px; font-size: 12px; }
+  .po-review #hero-showcase .hero-slide-controls { width: 100%; gap: 8px; margin-top: 16px; }
+  .po-review .hero-slide-dots { flex: 1; width: auto; order: 0; gap: 6px; margin: 0; }
+  .po-review .hero-slide-controls > button { width: 36px; height: 36px; flex-shrink: 0; }
+  .po-review #hero-showcase .hero-device,
+  .po-review #hero-showcase.is-one-qr .hero-device { position: relative; inset: auto; width: min(100%, 255px); margin: 20px auto 0; transform: none; }
+  .po-review #hero-showcase .hero-device-main { padding: 9px 11px; }
+  .po-review #hero-showcase.is-one-qr .hero-device-main { padding: 12px; }
+  .po-review #hero-showcase.is-one-qr .hero-device-features > div { min-height: 26px; }
+  .po-review #ecosystem .ecosystem-inner,
+  .po-review #journey.section,
+  .po-review .video-tour-inner,
+  .po-review #vlinkpay-ecosystem .bridge-inner { padding-block: 36px; }
+  .po-review #ecosystem .ecosystem-copy { margin-bottom: 22px; }
+  .po-review #ecosystem .product-group { margin-top: 24px; }
+  .po-review #ecosystem .product-group-head { gap: 10px; margin-bottom: 12px; padding-bottom: 12px; }
+  .po-review .product-group-head h3 { font-size: 20px; }
+  .po-review .product-group-number { width: 40px; height: 40px; border-radius: 12px; }
+  .po-review #ecosystem .ecosystem-list { grid-template-columns: 1fr; gap: 12px; }
+  .po-review #ecosystem .product-group .ecosystem-item { display: grid; grid-template-columns: 96px minmax(0, 1fr); align-content: start; gap: 7px 14px; min-height: 0; padding: 14px; border-radius: 16px; }
+  .po-review #ecosystem .product-card-media { grid-column: 1; grid-row: 1 / span 4; align-self: stretch; height: 100%; min-height: 120px; }
+  .po-review #ecosystem .product-line { grid-column: 2; grid-row: 1; gap: 7px; margin: 0; }
+  .po-review #ecosystem .product-line strong { font-size: 15px; }
+  .po-review #ecosystem .product-icon { width: 28px; height: 28px; border-radius: 8px; }
+  .po-review #ecosystem .product-icon svg { width: 17px; height: 17px; }
+  .po-review #ecosystem .ecosystem-item .product-status { grid-column: 2; grid-row: 2; justify-self: start; margin: 0; }
+  .po-review #ecosystem .ecosystem-item > span[data-i18n^="suite"] { grid-column: 2; grid-row: 3; margin: 0; font-size: 12px; line-height: 1.5; }
+  .po-review #ecosystem .ecosystem-item em { grid-column: 2; grid-row: 4; margin: 0; padding-top: 8px; font-size: 11px; }
+  .po-review .product-card-number { right: 5px; bottom: 7px; left: 5px; font-size: 6px; letter-spacing: .06em; text-align: center; }
+  .po-review #journey .journey { width: 100%; max-width: none; gap: 12px; }
+  .po-review .journey-card { padding: 18px; }
+  .po-review .journey-card p { font-size: 12px; }
+  .po-review .video-player { border-radius: 16px; }
+  .po-review .eco-stage { padding: 14px; border-radius: 18px; }
+  .po-review :is(#connected-businesses, #about, #start, #founder) { margin-block: 24px; border-radius: 18px; }
+  .po-review :is(#connected-businesses, #about, #start) { padding: 20px; }
+  .po-review #connected-businesses .industry-display { gap: 14px; }
+  .po-review #connected-businesses .industry-overview { min-height: 210px; }
+  .po-review #connected-businesses .industry-tabs { margin-top: 18px; }
+  .po-review #start .start-paths { gap: 12px; margin-top: 20px; }
+  .po-review .start-path { padding: 20px; }
+  .po-review .start-path-content strong { font-size: 22px; }
+  .po-review .start-guide { gap: 14px; padding: 18px; }
+  .po-review .download-inner { padding-block: 32px; }
+  .po-review #founder { grid-template-columns: 100px minmax(0, 1fr); gap: 18px; padding: 22px; }
+  .po-review #founder .founder-home-copy { display: contents; }
+  .po-review #founder .founder-portrait { grid-column: 1; grid-row: 1 / span 2; align-self: center; }
+  .po-review #founder .founder-eyebrow { grid-column: 2; align-self: end; font-size: 10px; }
+  .po-review #founder h2 { grid-column: 2; margin: 0; font-size: 25px; }
+  .po-review #founder :is(p, blockquote, .founder-home-actions) { grid-column: 1 / -1; }
+  .po-review #founder p { font-size: 13px; }
+  .po-review .closing-card { padding-block: 28px; }
+  body.po-review .closing-card h2 { white-space: normal; }
+  body.po-review .closing-actions a { white-space: normal; }
+  .po-review .contact-section { padding-block: 28px; }
+  .po-review :is(.contact-info, .contact-form) { padding: 22px; border-radius: 18px; }
+  .po-review .contact-info h2 { font-size: 26px; line-height: 1.2; }
+  .po-review .contact-details { grid-template-columns: 1fr; }
+  .po-review .contact-fields { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 14px 12px; }
+  .po-review .contact-form :is(input:not([type="checkbox"]), select, textarea) { font-size: 16px; }
+  .po-review .contact-form-bottom { grid-template-columns: 1fr; }
+  .po-review .footer-inner { padding-block: 24px; }
+}
+@media (max-width: 380px) {
+  .po-review { --review-gutter: 16px; }
+  .po-review .header-inner { padding-inline: 12px; gap: 6px; }
+  .po-review .brand { padding: 4px; }
+  .po-review .brand-logo { width: 100px; }
+  .po-review .header-actions { gap: 3px; }
+  .po-review :is(.apps-trigger, .menu-toggle) { width: 36px; height: 40px; }
+  .po-review .lang-switch { padding-left: 8px; gap: 4px; font-size: 11px; }
+  .po-review .lang-switch > svg { width: 14px; height: 14px; }
+  .po-review #hero-showcase.hero-inner { padding-inline: 16px; padding-top: 190px; }
+  .po-review #hero-showcase .hero-stage { height: 225px; }
+  .po-review .hero-slide-controls { flex-wrap: wrap; }
+  .po-review #hero-showcase .hero-slide-dots { order: 2; flex-basis: 100%; margin-block: 3px; }
+  .po-review #ecosystem .product-group .ecosystem-item { grid-template-columns: 76px minmax(0, 1fr); gap: 6px 12px; padding: 12px; }
+  .po-review #ecosystem .product-line { flex-wrap: wrap; }
+  .po-review .contact-fields { grid-template-columns: 1fr; }
+  .po-review :is(.contact-info, .contact-form) { padding: 18px; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .po-review :is(.ecosystem-item, .button, .contact-form button) { transition: none; }
+}
