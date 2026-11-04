@@ -286,8 +286,8 @@
 .nxw .nxw-industry-picker>.nxw-section-head{margin-bottom:10px}
 .nxw .nxw-industry-picker h3{font-size:16px}
 .nxw .nxw-industry-picker p{margin-top:3px;font-size:11px}
-.nxw .nxw-industries{gap:8px}
-.nxw .nxw-industry{min-height:44px;flex-direction:row;justify-content:flex-start;gap:8px;padding:8px 10px;border-radius:8px;text-align:left}
+.nxw .nxw-industries{display:flex;flex-wrap:wrap;gap:8px}
+.nxw .nxw-industry{flex:0 1 auto;width:auto;max-width:100%;min-height:44px;flex-direction:row;justify-content:flex-start;gap:8px;padding:8px 10px;border-radius:8px;text-align:left}
 .nxw .nxw-industry>.industry-flat-icon{width:24px;height:24px}
 .nxw .nxw-industry>span{font-size:11px;line-height:1.3}
 .nxw .nxw-panel{padding:20px;border-radius:14px;background:#fff;box-shadow:0 8px 24px #1a2c4e0b}
