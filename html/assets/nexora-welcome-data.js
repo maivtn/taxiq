@@ -2505,7 +2505,94 @@ window.NEXORA_WELCOME_DATA = {
         }
       ]
     }
-  ]
+  ],
+  "businessGuide": {
+    "copy": {
+      "eyebrow": "BUSINESS SETUP GUIDE",
+      "badge": "6 parts · 3 example documents",
+      "viewGuide": "View the business setup guide",
+      "heading": "From your business profile to your first operating day",
+      "intro": "Follow the order: business details, services, staff and One QR. If you enable tips or payments, set up payout methods before printing the code. AI Voice and SMS can come later.",
+      "openIllustration": "View the illustrated step →",
+      "relatedScreen": "View the related screen →",
+      "sourceNote": "Summarized from the nail business guide. Images and details are illustrative; confirm them in your Nexora account before use.",
+      "profileExtra": "Check the logo, review links and legal details before submitting business verification.",
+      "servicesExtra": "Add opening hours, closures and booking rules. Check prices and durations because these details may be shared with guests.",
+      "staffExtra": "For individual tips, confirm each team member is linked to the business, has a payout method and is enabled for tips.",
+      "paymentTitle": "Set up payment methods",
+      "paymentCondition": "Needed only when tips or payment are enabled in One QR.",
+      "paymentLink": "Open Payments & Payouts →",
+      "paymentTasks": "Choose at least one payment method the business uses and enter the correct recipient details|Preview what guests will see, then test a payment in the live account",
+      "qrExtra": "Choose only the guest menu items you need, preview them and scan with a phone. If QR codes are placed in several areas, check how each location is tracked.",
+      "voiceExtra": "If using AI Voice, prepare FAQs, policies and service descriptions; configure call forwarding and run test calls. Check messaging registration and credits before promotional SMS.",
+      "dailyTitle": "Test a day of operations",
+      "dailyTasks": "Have staff clock in, check in a guest, create a service ticket and complete a test checkout|At the end of the day, review feedback, tips and items to reconcile"
+    },
+    "steps": [
+      {
+        "id": "business",
+        "title": "step1",
+        "tasks": "task1",
+        "extra": "profileExtra",
+        "image": "../assets/nexora-welcome/business.svg",
+        "wizard": "business"
+      },
+      {
+        "id": "services",
+        "title": "step2",
+        "tasks": "task2",
+        "extra": "servicesExtra",
+        "image": "../assets/nexora-welcome/services.svg",
+        "wizard": "services"
+      },
+      {
+        "id": "staff",
+        "title": "step3",
+        "tasks": "task3",
+        "extra": "staffExtra",
+        "image": "../assets/nexora-welcome/staff.svg",
+        "wizard": "staff"
+      },
+      {
+        "id": "qr",
+        "title": "step4",
+        "tasks": "task4",
+        "extra": "qrExtra",
+        "image": "../assets/nexora-welcome/qr.svg",
+        "wizard": "qr"
+      },
+      {
+        "id": "voice",
+        "title": "voiceStep",
+        "tasks": "voiceTask",
+        "extra": "voiceExtra",
+        "image": "../assets/nexora-welcome/ai-voice-call-reception.jpg",
+        "wizard": "voice",
+        "optional": true
+      },
+      {
+        "id": "daily",
+        "title": "dailyTitle",
+        "tasks": "dailyTasks",
+        "image": "../assets/nexora-welcome/pos.jpg",
+        "target": "#pos-front-desk"
+      }
+    ],
+    "faq": [
+      {
+        "q": "Why are team members missing after a One QR scan?",
+        "a": "Check that the invitation was accepted, the person is linked to the business and tips are enabled. For individual tips, each person also needs a payout method in the live account."
+      },
+      {
+        "q": "Where should I check if a tip reached the business but not the team member?",
+        "a": "Open Payments & Payouts and compare the tip list with items awaiting confirmation. Confirm or pay only after checking the recipient and amount in the live account."
+      },
+      {
+        "q": "Why can’t I send a promotional SMS?",
+        "a": "Check messaging registration, sending access, SMS balance and eligible contacts. Send an internal test before scheduling the campaign."
+      }
+    ]
+  }
 };
 
 // Temporarily hide Tax IQ while preserving its source copy for later.

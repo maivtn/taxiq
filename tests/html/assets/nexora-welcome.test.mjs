@@ -38,6 +38,7 @@ function loadPage(name, saved = {}) {
       window.eval(asset('qr-stations-workflows.js'));
     }
     window.eval(asset('nexora-welcome-data.js'));
+    if (name === 'nexora-getting-started.html') window.eval(asset('nexora-onboarding-preview.js'));
     window.eval(asset('nexora-welcome.js'));
     if (name === 'nexora-home.html') window.eval(asset('nexora-business-directory.js'));
   }
@@ -132,22 +133,16 @@ test('Onboarding keeps the PO hours optional, preserves browser drafts, and keep
     submit(window);
     assert.match(window.document.getElementById('nxw-progress-label').textContent, /^0\/4/);
     enter(window, 'name', 'Demo Studio');
-    enter(window, 'street', '123 Example Avenue, Suite 100');
     enter(window, 'phone', '(312) 555-0100');
     submit(window);
     assert.match(window.document.getElementById('nxw-progress-label').textContent, /^0\/4/);
-    enter(window, 'city', 'Chicago');
-    enter(window, 'region', 'Illinois');
-    enter(window, 'zip', '60601');
-    enter(window, 'country', 'US');
-    enter(window, 'bookingPhone', '(346) 680-2333');
+    enter(window, 'address', '123 Example Avenue, Suite 100, Chicago, Illinois, 60601, US');
     const hours = window.document.querySelector('[name="hours"]');
     assert.equal(hours.type, 'text');
     assert.equal(hours.placeholder, '09:00–18:00');
     assert.equal(hours.required, false);
     assert.equal(hours.value, '');
     assert.equal(window.document.querySelector('input[type="time"]'), null);
-    assert.match(window.document.getElementById('nxw-entered-preview').textContent, /SundayClosed/);
     submit(window);
     assert.match(window.document.getElementById('nxw-progress-label').textContent, /^1\/4/);
     assert.equal(window.document.querySelector('[data-setup-step="0"]').dataset.completed, 'true');
@@ -157,10 +152,8 @@ test('Onboarding keeps the PO hours optional, preserves browser drafts, and keep
     assert.equal(window.document.querySelector('[data-setup-step="0"]').dataset.completed, 'true');
     const preview = window.document.getElementById('nxw-entered-preview').textContent;
     assert.match(preview, /123 Example Avenue, Suite 100, Chicago, Illinois, 60601, US/);
-    assert.match(preview, /\+1 \(312\) 555-0100/);
-    assert.match(preview, /America\/Chicago/);
-    assert.match(preview, /Operating hours: 09:00–18:00/);
-    assert.doesNotMatch(preview, /SundayClosed/);
+    assert.match(preview, /\(312\) 555-0100/);
+    assert.match(preview, /09:00–18:00/);
     click(window, '[data-industry="retail"]');
     assert.match(window.document.getElementById('nxw-progress-label').textContent, /^0\/4/);
     assert.equal(window.document.querySelector('[name="name"]').value, '');
@@ -175,9 +168,7 @@ test('Onboarding keeps the PO hours optional, preserves browser drafts, and keep
     assert.match(reopened.window.document.getElementById('nxw-progress-label').textContent, /^1\/4/);
     assert.equal(reopened.window.document.querySelector('[data-setup-step="1"]').getAttribute('aria-current'), 'step');
     click(reopened.window, '[data-setup-step="0"]');
-    assert.equal(reopened.window.document.querySelector('[name="city"]').value, 'Chicago');
-    assert.equal(reopened.window.document.querySelector('[name="phoneCountry"]').value, 'US');
-    assert.equal(reopened.window.document.querySelector('[name="bookingPhone"]').value, '(346) 680-2333');
+    assert.equal(reopened.window.document.querySelector('[name="address"]').value, '123 Example Avenue, Suite 100, Chicago, Illinois, 60601, US');
     assert.equal(reopened.window.document.querySelector('[name="hours"]').value, '09:00–18:00');
     const restored = JSON.parse(reopened.window.localStorage.getItem('nexora.local-onboarding.v1')).drafts.nail.business.fields;
     for (const [name, value] of Object.entries(legacyHours)) assert.equal(restored[name], value);
@@ -543,7 +534,9 @@ test('Help search, product filter and keyboard tabs update the same local onboar
     const filter = window.document.getElementById('nxw-help-filter');
     filter.value = 'aimarketing';
     filter.dispatchEvent(new window.Event('change', { bubbles: true }));
-    assert.equal(window.document.querySelectorAll('[data-help-entry]').length, 2);
+    assert.ok(window.document.querySelectorAll('[data-help-entry]').length > 2);
+    assert.match(window.document.getElementById('nxw-help-list').textContent, /SMS Campaigns/);
+    click(window, '[data-help-entry="sms"]');
     assert.match(window.document.querySelector('#nxw-help-detail a').href, /\/html\/pages\/nexora-sms-dashboard\.html$/);
     const tab = window.document.querySelector('[data-onboard-tab="help"]');
     tab.focus();

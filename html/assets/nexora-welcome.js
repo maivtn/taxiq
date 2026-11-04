@@ -10,16 +10,9 @@
   var setupCopy = Object.assign({}, data.setup.copy, data.flow.copy);
   var salonCopy = data.salonSetup.copy;
   var homeCopy = data.homeCopy;
-  // Structured business fields and labels follow the referenced Salon Information screen.
-  var businessAddressFields = [
-    ['street', 'Street Address', 'e.g. 123 Main St, Suite 100', 'street-address'],
-    ['city', 'City', 'e.g. Austin', 'address-level2'],
-    ['region', 'State or Province', 'e.g. Texas', 'address-level1'],
-    ['zip', 'ZIP Code', 'e.g. 78701', 'postal-code'],
-    ['country', 'Country', 'e.g. United States', 'country-name']
-  ];
+  // Restore structured address drafts in the PO's single Address field.
+  var businessAddressFields = ['street','city','region','zip','country'];
   var businessCountries = [['US','United States','1'],['CA','Canada','1'],['VN','Vietnam','84'],['GB','United Kingdom','44'],['AU','Australia','61'],['SG','Singapore','65'],['JP','Japan','81'],['KR','South Korea','82'],['DE','Germany','49'],['FR','France','33'],['IN','India','91'],['CN','China','86'],['BR','Brazil','55'],['MX','Mexico','52'],['HK','Hong Kong','852'],['TW','Taiwan','886'],['MY','Malaysia','60'],['TH','Thailand','66'],['PH','Philippines','63'],['ID','Indonesia','62']];
-  var businessDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   var voicePhones = [
     ['voiceSalonPhone','Salon phone number','The number customers currently call; it will be forwarded to the AI number.'],
     ['voiceAnsweringPhone','AI answering number','Provided by NEXORA; AI answers 24/7 on this number.'],
@@ -48,6 +41,9 @@
   var helpSearch = '';
   var selectedHelp = 'voice';
   var selectedProduct = 'pos';
+  var assistantIntent = 'overview';
+  var assistantSpeaking = false;
+  var assistantSpeechToken = 0;
   var slideIndex = 0;
   var slideTimer = null;
   var playing = !(window.matchMedia && window.matchMedia('(prefers-reduced-motion: reduce)').matches);
@@ -165,7 +161,7 @@
     state.drafts[industry][kind]={fields:next,completed:!!value.completed&&JSON.stringify(next)===JSON.stringify(value.fields)};
     var saved=persist();
     if(industry===guide().key&&path()[selectedStep]===kind){
-      document.getElementById('nxw-save-status').textContent=saved?setupCopy.draftSaved:setupCopy.saveFailed;updateProgress();
+      document.getElementById('nxw-save-status').textContent=saved?setupCopy.draftSaved:setupCopy.saveFailed;updateProgress();renderEnteredPreview();
     }
     return saved;
   }
@@ -219,8 +215,13 @@
       onChange:function(snapshot){categories=snapshot.categories;saveDraft(snapshot);}
     });
   }
+  function businessValues(fields) {
+    var address = fields.address == null ? businessAddressFields.map(function(name){return fields[name];}).filter(Boolean).join(', ') : fields.address;
+    return Object.assign({}, fields, {address:address || ''});
+  }
   function businessComplete(fields) {
-    return ['name','phone'].concat(businessAddressFields.map(function (field) { return field[0]; })).every(function (name) { return String(fields[name] || '').trim(); });
+    var values = businessValues(fields);
+    return ['name','address','phone'].every(function(name){return String(values[name] || '').trim();});
   }
   function writeStep(kind, patch) {
     var value = readStep(kind);
@@ -238,6 +239,7 @@
     main.querySelectorAll('[data-setup-step]').forEach(function (el) { var i = Number(el.dataset.setupStep), completed = readStep(path()[i]).completed; el.dataset.completed = String(completed); el.querySelector('b').textContent = completed ? '✓' : String(i + 1); });
   }
   function renderOnboarding() {
+    stopSetupSpeech();
     destroyServiceWorkspace();
     destroyStaffWorkspace();
     destroyQrWorkspace();
@@ -251,16 +253,53 @@
     });
   }
   function openTab(tab) {
+    if(tab !== 'journey')stopSetupSpeech();
     activeOnboardTab = tab;
     main.querySelectorAll('[data-onboard-tab]').forEach(function (el) { var active = el.dataset.onboardTab === tab; el.setAttribute('aria-selected', String(active)); el.tabIndex = active ? 0 : -1; });
     main.querySelectorAll('[role=tabpanel]').forEach(function (el) { el.hidden = el.id !== 'nxw-panel-' + tab; });
     var url = new URL(window.location.href); url.searchParams.set('view', tab); window.history.replaceState(null, '', url);
   }
   function renderJourney() {
-    var g = guide(), feature = data.onboardingFeature;
-    var story = feature.stories[g.key];
-    document.getElementById('nxw-panel-journey').innerHTML = '<div class="nxw-journey-head"><div class="nxw-journey-lead"><span class="nxw-kicker">' + escape(copy.libraryEyebrow) + '</span><h2>' + escape(useSalonLabels() ? salonCopy.heading : setupCopy.pathHeading) + '</h2><p>' + escape(useSalonLabels() ? salonCopy.intro : setupCopy.pathIntro) + '</p><div class="nxw-actions">' + button(copy.startFirstStep,'start-first') + button(copy.viewIndustryDocs,'open-docs',true) + '</div></div><aside class="nxw-spotlight" aria-labelledby="nxw-spotlight-title"><div class="nxw-spotlight-photo"><img src="' + escape(g.sampleImage) + '" alt="" loading="lazy" decoding="async"><span>' + escape(copy[g.name]) + '</span></div><div class="nxw-spotlight-copy"><small>' + escape(feature.label) + '</small><h3 id="nxw-spotlight-title">' + escape(story.title) + '</h3><p>' + escape(story.summary) + '</p>' + button(feature.action,'open-docs',true) + '</div></aside></div><div class="nxw-progress"><strong id="nxw-progress-label" role="status"></strong><progress id="nxw-progress" aria-label="' + escape(setupCopy.progressLabel.replace('{done}','').replace('{total}','')) + '"></progress></div><div class="nxw-setup-layout"><div class="nxw-step-list" role="group" aria-label="' + escape(setupCopy.pathHeading) + '">' + path().map(function (kind,i) { return '<button type="button" data-setup-step="' + i + '" aria-current="' + (i === selectedStep ? 'step' : 'false') + '"><img src="' + escape(data.setup.images[kind]) + '" alt="" loading="lazy"><b>' + (i + 1) + '</b><span>' + escape(stepTitle(i)) + (kind === 'voice' ? ' · ' + escape(setupCopy.optionalStep) : '') + '</span></button>'; }).join('') + '</div><article class="nxw-setup-detail" id="nxw-setup-detail"></article></div><p class="nxw-note">' + escape(setupCopy.saveScope) + '</p>';
-    renderSetupStep(); updateProgress();
+    var g=guide(), feature=data.onboardingFeature, story=feature.stories[g.key];
+    var steps=path().map(function(kind,i){
+      return '<button type="button" data-setup-step="'+i+'" aria-current="'+(i===selectedStep?'step':'false')+'"><img src="'+escape(data.setup.images[kind])+'" alt="" loading="lazy"><b>'+(i+1)+'</b><span>'+escape(stepTitle(i))+'</span></button>';
+    }).join('');
+    document.getElementById('nxw-panel-journey').innerHTML=
+      '<div class="nxw-journey-head"><div class="nxw-journey-lead"><span class="nxw-kicker">'+escape(copy.libraryEyebrow)+'</span><h2>'+escape(useSalonLabels()?salonCopy.heading:setupCopy.pathHeading)+'</h2><p>'+escape(useSalonLabels()?salonCopy.intro:setupCopy.pathIntro)+'</p><div class="nxw-actions">'+button(copy.startFirstStep,'start-first')+button(g.key==='nail'?data.businessGuide.copy.viewGuide:copy.viewIndustryDocs,'open-docs',true)+'</div></div>'+
+      '<aside class="nxw-spotlight" aria-labelledby="nxw-spotlight-title"><div class="nxw-spotlight-photo"><img src="'+escape(g.sampleImage)+'" alt="" loading="lazy" decoding="async"><span>'+escape(copy[g.name])+'</span></div><div class="nxw-spotlight-copy"><small>'+escape(feature.label)+'</small><h3 id="nxw-spotlight-title">'+escape(story.title)+'</h3><p>'+escape(story.summary)+'</p>'+button(feature.action,'open-docs',true)+'</div></aside></div>'+
+      '<div class="nxw-journey-columns"><section class="nxw-setup-workspace"><div class="nxw-progress"><strong id="nxw-progress-label" role="status"></strong><progress id="nxw-progress" aria-label="'+escape(setupCopy.progressLabel.replace('{done}','').replace('{total}',''))+'"></progress></div><div class="nxw-step-list" role="group" aria-label="'+escape(setupCopy.pathHeading)+'">'+steps+'</div><article class="nxw-setup-detail" id="nxw-setup-detail"></article></section>'+
+      '<aside class="nxw-guide-panel"><div id="nxw-preview-slot" aria-live="polite"></div><div id="nxw-setup-assistant"></div></aside></div>';
+    renderSetupStep(); updateProgress(); renderSetupAssistant();
+  }
+  function stopSetupSpeech() {
+    assistantSpeechToken++;
+    if(assistantSpeaking && window.speechSynthesis)window.speechSynthesis.cancel();
+    assistantSpeaking=false;
+    var control=document.getElementById('nxw-assistant-speak');
+    if(control)control.textContent=copy.speakButton;
+  }
+  function renderSetupAssistant() {
+    stopSetupSpeech();
+    var panel=document.getElementById('nxw-setup-assistant');
+    if(!panel)return;
+    var titles={overview:copy.agentOverviewTitle,setup:copy.agentSetupTitle,tools:copy.agentToolsTitle,help:copy.agentHelpTitle};
+    var tools=guide().tools.map(function(key){var product=data.products.find(function(item){return item.key===key;});return product?product.name:key;}).join(' · ');
+    var response=assistantIntent==='setup'?setupCopy.pathIntro+' '+path().map(function(kind,index){return (index+1)+'. '+stepTitle(index);}).join('; ')+'.':assistantIntent==='tools'?copy.toolsHint+': '+tools+'.':assistantIntent==='help'?copy.helpHint:copy[guide().summary];
+    panel.innerHTML='<div class="nxw-assistant-label"><span aria-hidden="true">✦</span>'+escape(copy.agentLabel)+'</div><h3 id="nxw-assistant-title">'+escape(titles[assistantIntent])+'</h3><p id="nxw-assistant-response" aria-live="polite">'+escape(response)+'</p><div class="nxw-assistant-prompts" role="group" aria-label="'+escape(copy.promptGroup)+'">'+[['overview','overviewPrompt'],['setup','setupPrompt'],['tools','toolsPrompt']].map(function(item){return '<button type="button" data-assistant-intent="'+item[0]+'" aria-pressed="'+(assistantIntent===item[0])+'">'+escape(copy[item[1]])+'</button>';}).join('')+'</div><form id="nxw-assistant-form"><input aria-label="'+escape(copy.askAria)+'" placeholder="'+escape(copy.askPlaceholder)+'" maxlength="160" autocomplete="off"><button type="submit">'+escape(copy.askButton)+'</button></form><div class="nxw-assistant-footer"><small>'+escape(copy.agentNote)+'</small><button type="button" id="nxw-assistant-speak"'+(!window.speechSynthesis||!window.SpeechSynthesisUtterance?' disabled':'')+'>'+escape(copy.speakButton)+'</button></div>';
+    panel.querySelector('form').addEventListener('submit',function(event){
+      event.preventDefault();var input=event.currentTarget.querySelector('input'),query=input.value.trim().toLowerCase();
+      if(!query){input.focus();return;}
+      assistantIntent=/setup|set up|start|book|config/.test(query)?'setup':/tool|product|feature/.test(query)?'tools':'help';
+      renderSetupAssistant();document.querySelector('#nxw-assistant-form input').focus();
+    });
+    panel.querySelector('#nxw-assistant-speak').addEventListener('click',function(){
+      if(!window.speechSynthesis||!window.SpeechSynthesisUtterance)return;
+      if(assistantSpeaking){stopSetupSpeech();return;}
+      var utterance=new window.SpeechSynthesisUtterance(titles[assistantIntent]+'. '+response),token=++assistantSpeechToken;
+      utterance.lang='en-US';utterance.rate=.92;
+      utterance.onend=utterance.onerror=function(){if(token===assistantSpeechToken){assistantSpeaking=false;document.getElementById('nxw-assistant-speak').textContent=copy.speakButton;}};
+      assistantSpeaking=true;this.textContent=copy.stopButton;window.speechSynthesis.speak(utterance);
+    });
   }
   function fieldHTML(field, fields) {
     var name=field[0], label=setupCopy[field[1]] || copy[field[1]], required=field[2], repeat=field[3];
@@ -297,15 +336,9 @@
     form.querySelectorAll('[data-voice-sms]').forEach(function(toggle){patch[toggle.dataset.voiceSms]=toggle.getAttribute('aria-checked');});
     return patch;
   }
-  function voicePreview(fields) {
-    var values=voiceValues(fields);
-    var rows=voicePhones.map(function(entry){var phone=businessPhone(values,entry[0]);return [entry[1],phone.value?'+'+phone.country[2]+' '+phone.value:''];}).concat(voiceSms.map(function(entry){return [entry[1],values[entry[0]]==='false'?'Off':'On'];}));
-    return '<dl>'+rows.filter(function(entry){return entry[1];}).map(function(entry){return '<div><dt>'+entry[0]+'</dt><dd>'+escape(entry[1])+'</dd></div>';}).join('')+'</dl>';
-  }
   function businessFieldsHTML(fields) {
-    return '<div class="nxw-business-form"><div class="nxw-fields">' + fieldHTML(data.setup.fields.business[0], fields) + '</div><div class="nxw-fields">' + businessPhoneHTML(fields, 'phone', 'Business Phone', true) + businessPhoneHTML(fields, 'bookingPhone', 'Booking Notification Phone', false) + '</div><fieldset class="nxw-business-group"><legend>Business Address</legend>' + (fields.address ? '<p class="nxw-note">' + escape(setupCopy.fieldAddress) + ': ' + escape(fields.address) + '</p>' : '') + '<div class="nxw-address-fields">' + businessAddressFields.map(function (field) {
-      return '<label class="nxw-field' + (field[0] === 'street' ? ' nxw-field-wide' : '') + '"><span>' + field[1] + ' *</span><input name="' + field[0] + '" value="' + escape(fields[field[0]] || '') + '" placeholder="' + field[2] + '" autocomplete="' + field[3] + '" maxlength="' + (field[0] === 'street' ? 180 : 90) + '" required></label>';
-    }).join('') + '</div></fieldset><div class="nxw-fields nxw-operating-hours">' + fieldHTML(data.setup.fields.business.find(function(field){return field[0]==='hours';}), fields) + '</div></div>';
+    var values=businessValues(fields);
+    return '<div class="nxw-fields">'+data.setup.fields.business.map(function(field){return fieldHTML(field,values);}).join('')+'</div>';
   }
   function businessPatch(form) {
     var patch = {};
@@ -313,25 +346,6 @@
       if (input.name && !input.disabled) patch[input.name] = input.type === 'checkbox' ? String(input.checked) : input.value;
     });
     return patch;
-  }
-  function businessPreview(fields) {
-    var rows = [[setupCopy.fieldBusiness, fields.name]], address = businessAddressFields.map(function (field) { return fields[field[0]]; }).filter(Boolean).join(', ');
-    rows.push(['Business Address', address || fields.address]);
-    [['phone','Business Phone'],['bookingPhone','Booking Notification Phone']].forEach(function (entry) {
-      var phone = businessPhone(fields, entry[0]);
-      if (phone.value.trim()) rows.push([entry[1], '+' + phone.country[2] + ' ' + phone.value]);
-    });
-    rows.push(['Time zone', fields.timeZone]);
-    var html = '<dl>' + rows.filter(function (row) { return String(row[1] || '').trim(); }).map(function (row) { return '<div><dt>' + escape(row[0]) + '</dt><dd>' + escape(row[1]) + '</dd></div>'; }).join('') + '</dl>';
-    if (fields.hours) {
-      html += '<p class="nxw-note">' + escape(setupCopy.fieldHours) + ': ' + escape(fields.hours) + '</p>';
-    } else if (businessDays.some(function (_, index) { return fields['hoursOpen' + index] !== undefined; })) {
-      html += '<div class="nxw-hours-preview"><strong>Business Hours</strong><dl>' + businessDays.map(function (day, index) {
-        var value = fields['hoursOpen' + index] === 'false' ? 'Closed' : [fields['hoursFrom' + index], fields['hoursTo' + index]].filter(Boolean).join(' – ');
-        return value ? '<div><dt>' + day + '</dt><dd>' + escape(value) + '</dd></div>' : '';
-      }).join('') + '</dl></div>';
-    }
-    return html;
   }
   function choicesHTML(items, fields, radioName) {
     return '<div class="nxw-choices">' + items.map(function (item) { var checked = radioName ? (fields[radioName] || item.defaultValue) === item.key : fields[item.key] === undefined ? !!item.defaultOn : fields[item.key] === 'true'; return '<label class="nxw-choice"><input type="' + (radioName ? 'radio' : 'checkbox') + '" name="' + escape(radioName || item.key) + '" value="' + escape(item.key) + '"' + (checked ? ' checked' : '') + '><span>' + escape(setupCopy[item.label]) + '</span></label>'; }).join('') + '</div>';
@@ -343,15 +357,20 @@
     var kind=path()[selectedStep], fields=readStep(kind).fields;
     var tasks=(kind==='voice'?setupCopy.voiceTask:isSalon()?salonCopy['task'+(selectedStep+1)]:selectedStep===0?setupCopy.businessTask:setupCopy[guide().key+'Task'+selectedStep]) || '';
     var mode=fields.staffMode==='invite'?'invite':'manual';
-    var html='<div class="nxw-setup-intro"><img src="' + data.setup.images[kind] + '" alt="' + escape(setupCopy.illustration) + '"><div><span class="nxw-kicker">' + (selectedStep+1) + ' / ' + path().length + '</span><h3 id="nxw-step-title">' + escape(stepTitle(selectedStep)) + '</h3><strong class="nxw-task-label">' + escape(salonCopy.doThis) + '</strong><ul>' + tasks.split('|').filter(Boolean).map(function (task) { return '<li>' + escape(task) + '</li>'; }).join('') + '</ul></div></div>';
-    var formHeading='<strong>' + escape(setupCopy.formTitle) + '</strong><p class="nxw-note">' + escape(setupCopy.autoSaveNote) + '</p>';
+    var html='<div class="nxw-setup-intro"><h3 id="nxw-step-title">'+(selectedStep+1)+' · '+escape(stepTitle(selectedStep))+'</h3><strong class="nxw-task-label">'+escape(salonCopy.doThis)+'</strong><ul>'+tasks.split('|').filter(Boolean).map(function(task){return '<li>'+escape(task)+'</li>';}).join('')+'</ul></div>';
+    var formHeading='<strong class="nxw-form-title">'+escape(setupCopy.formTitle)+'</strong>';
     if(kind==='services'||kind==='menu')html+='<div class="nxw-services-preparation">'+formHeading+'<div data-settings-panel="services" data-onboarding-services></div></div>';
     if(kind==='qr')html+='<div class="nxw-qr-preparation">'+formHeading+'<div data-onboarding-qr></div></div>';
     if(kind==='staff')html+='<div class="nxw-staff-preparation">'+formHeading+'<div class="nxw-subsection" data-staff-mode><strong>'+escape(setupCopy.staffMethodTitle)+'</strong>'+choicesHTML([{key:'manual',label:'staffManual',defaultValue:'manual'},{key:'invite',label:'staffInvite',defaultValue:'manual'}],fields,'staffMode')+'</div>'+(mode==='manual'?'<div data-onboarding-staff></div>':'<div data-onboarding-staff-invite></div>')+'</div>';
     html+='<form id="nxw-setup-form" aria-labelledby="nxw-step-title" novalidate>'+(['services','menu','staff','qr'].includes(kind)?'':formHeading);
-    if(!['services','menu','staff','qr'].includes(kind))html+=kind==='business'?businessFieldsHTML(fields):'<div class="nxw-fields">' + (data.setup.fields[kind]||[]).filter(function(field){return field[0]!=='tipAmount'||guide().key==='restaurant';}).map(function (field) { return fieldHTML(field,fields); }).join('') + '</div>';
-    if(kind==='voice')html+='<div class="nxw-subsection"><strong>' + escape(setupCopy.voiceModeTitle) + '</strong>' + choicesHTML([{key:'off',label:'voiceSkip',defaultValue:'off'},{key:'on',label:'voiceUse',defaultValue:'off'}],fields,'voiceMode') + '</div>' + (fields.voiceMode==='on'?voiceSettingsHTML(fields)+choicesHTML(data.flow.voiceFeatures,fields):'<p class="nxw-note">'+escape(setupCopy.voicePreviewOff)+'</p>') + '<p class="nxw-note">' + escape(setupCopy.voicePreviewNotice) + '</p>';
-    html+=(kind==='qr'?'':'<div id="nxw-entered-preview" class="nxw-inline-preview"></div>')+'<div class="nxw-saved" id="nxw-save-status" role="status">' + escape(readStep(kind).completed?setupCopy.savedDone:Object.values(fields).some(function(value){return String(value).trim();})?setupCopy.draftSaved:setupCopy.autoSaveNote) + '</div><div class="nxw-actions"><button type="submit" class="nxw-btn">' + escape(setupCopy.saveStep) + '</button>' + (selectedStep<path().length-1?button(salonCopy.next,'next-step',true):button(salonCopy.viewGuides,'open-docs',true)) + link(setupCopy.relatedScreen,stepRoute(kind),true) + '</div></form>';
+    if(!['services','menu','staff','qr'].includes(kind))html+=kind==='business'?businessFieldsHTML(fields):'<div class="nxw-fields">'+(data.setup.fields[kind]||[]).filter(function(field){return field[0]!=='tipAmount'||guide().key==='restaurant';}).map(function(field){return fieldHTML(field,fields);}).join('')+'</div>';
+    if(kind==='voice')html+='<div class="nxw-subsection"><strong>'+escape(setupCopy.voiceModeTitle)+'</strong>'+choicesHTML([{key:'off',label:'voiceSkip',defaultValue:'off'},{key:'on',label:'voiceUse',defaultValue:'off'}],fields,'voiceMode')+'</div>'+(fields.voiceMode==='on'?voiceSettingsHTML(fields)+choicesHTML(data.flow.voiceFeatures,fields):'<p class="nxw-note">'+escape(setupCopy.voicePreviewOff)+'</p>')+'<p class="nxw-note">'+escape(setupCopy.voicePreviewNotice)+'</p>';
+    html+='<button type="submit" class="nxw-btn">'+escape(setupCopy.saveStep)+'</button><div class="nxw-saved" id="nxw-save-status" role="status">'+escape(readStep(kind).completed?setupCopy.savedDone:Object.values(fields).some(function(value){return String(value).trim();})?setupCopy.draftSaved:setupCopy.autoSaveNote)+'</div><p class="nxw-note nxw-save-scope">'+escape(setupCopy.saveScope)+'</p></form>';
+    if(!['staff','qr','voice'].includes(kind)){
+      var sample=kind==='business'?guide().exampleName:kind==='services'||kind==='catalog'||kind==='menu'?copy[guide().exampleOffering]:setupCopy[guide().key+(kind==='payment'?'PaymentSample':kind==='deal'?'DealSample':'ReviewSample')];
+      html+='<div class="nxw-step-example"><strong>'+escape(salonCopy.example)+'</strong><p>'+escape(sample)+'</p></div>';
+    }
+    if(kind!=='qr')html+='<div class="nxw-actions nxw-step-actions">'+link(kind==='voice'?'View AI Voice in SI POS':kind==='business'||isSalon()?salonCopy.openScreen:setupCopy.relatedScreen,stepRoute(kind))+(kind==='voice'?button(setupCopy.voiceLibrary,'open-reception',true):'')+(selectedStep<path().length-1?button(salonCopy.next,'next-step',true):button(salonCopy.viewGuides,'open-docs',true))+'</div>';
     document.getElementById('nxw-setup-detail').innerHTML=html;
     var form=document.getElementById('nxw-setup-form');
     if(kind==='voice')form.querySelector('.nxw-fields').hidden=true;
@@ -388,16 +407,20 @@
     renderEnteredPreview();updateProgress();
   }
   function renderEnteredPreview(){
-    var kind=path()[selectedStep];if(kind==='qr')return;
-    var fields=readStep(kind).fields;
-    document.getElementById('nxw-entered-preview').hidden=kind==='services'||kind==='menu'||kind==='staff';
-    if(kind==='services'||kind==='menu'||kind==='staff')return;
-    var html='<span class="nxw-kicker">' + escape(setupCopy.yourPreview) + '</span>';
-    if(kind==='voice')html+='<p>' + escape(fields.voiceMode==='on'?setupCopy.voicePreviewOn:setupCopy.voicePreviewOff) + '</p>'+(fields.voiceMode==='on'?voicePreview(fields):'');
-    else if(kind==='business')html+=businessPreview(fields);
-    else html+='<dl>' + (data.setup.fields[kind]||[]).filter(function(f){return String(fields[f[0]]||'').trim();}).map(function(f){return '<div><dt>' + escape(setupCopy[f[1]]||copy[f[1]]) + '</dt><dd>' + escape(fields[f[0]]) + '</dd></div>';}).join('') + '</dl>';
-    html+='<p class="nxw-note">' + escape(setupCopy.exampleNotice) + '</p>';
-    document.getElementById('nxw-entered-preview').innerHTML=html;
+    var slot=document.getElementById('nxw-preview-slot');
+    if(!slot)return;
+    var kind=path()[selectedStep],fields=Object.assign({},readStep(kind).fields),business=businessValues(readStep('business').fields);
+    slot.replaceChildren();
+    slot.hidden=kind==='qr'||kind==='staff'&&fields.staffMode==='invite';
+    if(slot.hidden)return;
+    if(kind==='business')fields=businessValues(fields);
+    if(kind==='services'||kind==='menu'){
+      var categories=kind==='menu'?fields.menuCatalog:fields.serviceCatalog;
+      if(Array.isArray(categories))categories.reduce(function(all,category){return all.concat(category.services||[]);},[]).filter(function(item){return item.id!=='__custom__';}).slice(0,2).forEach(function(item,index){fields['item'+(index+1)+'Name']=item.name;fields['item'+(index+1)+'Price']=item.price==null?'':'$'+Number(item.price).toFixed(2);fields['item'+(index+1)+'Duration']=item.durationMin?item.durationMin+' min':'';fields['item'+(index+1)+'Detail']=item.description||'';});
+    }
+    if(kind==='staff'&&Array.isArray(fields.staffMembers))fields.staffMembers.slice(0,2).forEach(function(member,index){fields['staff'+(index+1)+'Name']=member.name;fields['staff'+(index+1)+'Hours']=(member.weekly||[]).filter(function(day){return !day.off&&day.start&&day.end;}).map(function(day){return day.start+'–'+day.end;}).filter(function(value,index,all){return all.indexOf(value)===index;}).join(' · ');});
+    var preview=window.NEXORA_RENDER_ONBOARDING_PREVIEW(guide(),kind,stepTitle(selectedStep),function(key){return copy[key]||salonCopy[key];},function(key){return setupCopy[key];},{fields:fields,businessName:business.name});
+    preview.id='nxw-entered-preview';slot.append(preview);
   }
   function completeStep(event){
     event.preventDefault();var form=event.currentTarget,kind=path()[selectedStep];
@@ -421,44 +444,86 @@
     document.getElementById('nxw-save-status').textContent=stored?setupCopy.savedDone:setupCopy.saveFailed;updateProgress();
   }
   function guideAssistant(){return copy.docAgentTemplate.replace('{business}',guide().exampleName).replace('{step}',stepTitle(0)).replace('{tool}',data.products.find(function(p){return p.key===guide().tools[0];}).name);}
+  function businessGuideTitle(step){return step.id==='voice'?setupCopy[step.title]:step.id==='daily'?data.businessGuide.copy[step.title]:salonCopy[step.title];}
+  function businessGuideTasks(step){return (step.id==='voice'?setupCopy[step.tasks]:step.id==='daily'?data.businessGuide.copy[step.tasks]:salonCopy[step.tasks]).split('|');}
+  function businessGuideHTML(){
+    if(guide().key!=='nail')return '';
+    var c=data.businessGuide.copy;
+    return '<section class="business-guide"><div class="business-guide-head"><div><span>'+escape(c.eyebrow)+'</span><h4>'+escape(c.heading)+'</h4><p>'+escape(c.intro)+'</p></div><div class="business-guide-head-actions"><span class="business-guide-count">6</span>'+button(copy.docDownload,'download-business',true)+'</div></div><div class="business-guide-list">'+data.businessGuide.steps.map(function(step,index){
+      var payment=step.id==='qr'?'<aside class="business-guide-payment"><strong>'+escape(c.paymentTitle)+'</strong><p>'+escape(c.paymentCondition)+'</p><ul>'+c.paymentTasks.split('|').map(function(task){return '<li>'+escape(task)+'</li>';}).join('')+'</ul>'+link(c.paymentLink,moduleRoute('payments'),true)+'</aside>':'';
+      var action=step.wizard?'<button type="button" data-guide-step="'+step.wizard+'">'+escape(c.openIllustration)+'</button>':link(c.relatedScreen,'pos-front-desk.html',true);
+      return '<details class="business-guide-step"'+(index===0?' open':'')+'><summary><span class="business-guide-number">'+(index+1)+'</span><strong>'+escape(businessGuideTitle(step))+'</strong><span class="business-guide-arrow" aria-hidden="true">⌄</span></summary><div class="business-guide-step-body"><figure class="business-guide-figure"><img src="'+escape(step.image)+'" alt="'+escape(businessGuideTitle(step))+'" loading="lazy"></figure><div class="business-guide-step-content"><ol>'+businessGuideTasks(step).map(function(task){return '<li>'+escape(task)+'</li>';}).join('')+'</ol>'+(step.extra?'<p>'+escape(c[step.extra])+'</p>':'')+payment+action+'</div></div></details>';
+    }).join('')+'</div><p class="business-guide-note">'+escape(c.sourceNote)+'</p></section>';
+  }
   function renderDocs(){
     var values=[[copy.docFieldBusiness,guide().exampleName],[copy.docFieldOffering,copy[guide().exampleOffering]],[copy.docFieldTouchpoint,copy[guide().exampleTouchpoint]]];
-    document.getElementById('nxw-panel-docs').innerHTML='<span class="nxw-kicker">' + escape(copy.docsEyebrow) + '</span><h2>' + escape(copy.docsTitle) + '</h2><p>' + escape(copy.docsIntro) + '</p><div class="nxw-docs"><article class="nxw-doc">' + iconFrame('setup-checklist') + '<h3>' + escape(copy.docChecklistTitle) + '</h3><ol>' + path().map(function(kind,i){return '<li>'+escape(stepTitle(i))+'</li>';}).join('') + '</ol>' + button(copy.docDownload,'download-checklist',true) + '</article><article class="nxw-doc">' + iconFrame('configuration') + '<h3>' + escape(copy.docExampleTitle) + '</h3><dl>' + values.map(function(pair){return '<dt>'+escape(pair[0])+'</dt><dd>'+escape(pair[1])+'</dd>';}).join('') + '</dl>' + button(copy.docDownload,'download-example',true) + '</article><article class="nxw-doc">' + iconFrame('aihub') + '<h3>' + escape(copy.docAgentTitle) + '</h3><p>' + escape(guideAssistant()) + '</p><p class="nxw-note">' + escape(copy.agentNote) + '</p>' + button(copy.docDownload,'download-assistant',true) + '</article></div><p class="nxw-note">' + escape(copy.docSampleNote) + '</p>';
+    var checklist=path().filter(function(kind){return kind!=='voice';}).map(function(kind,index){return '<li><b>✓</b><span>'+(index+1)+'. '+escape(stepTitle(index))+'</span></li>';}).join('');
+    var cards=[{title:copy.docChecklistTitle,paper:'<ul>'+checklist+'</ul>',action:'checklist'},{title:copy.docExampleTitle,paper:'<dl>'+values.map(function(pair){return '<div><dt>'+escape(pair[0])+'</dt><dd>'+escape(pair[1])+'</dd></div>';}).join('')+'</dl><em>'+escape(copy.docSampleNote)+'</em>',action:'example'},{title:copy.docAgentTitle,paper:'<blockquote>'+escape(guideAssistant())+'</blockquote><em>'+escape(copy.docSampleNote)+'</em>',action:'assistant'}];
+    document.getElementById('nxw-panel-docs').innerHTML='<div class="industry-docs-head"><div><span>'+escape(copy.docsEyebrow)+'</span><h3>'+escape(copy.docsTitle)+'</h3><p>'+escape(copy.docsIntro)+'</p></div><small>'+escape(guide().key==='nail'?data.businessGuide.copy.badge:copy[guide().name]+' · '+copy.docsCount)+'</small></div>'+businessGuideHTML()+'<div class="industry-doc-grid">'+cards.map(function(card,index){return '<article class="industry-doc-card"><small>'+(index+1)+'</small><h4>'+escape(card.title)+'</h4>'+(index===1?'<figure class="industry-doc-figure"><img src="'+escape(guide().sampleImage)+'" alt="" loading="lazy"><figcaption>'+escape(copy.docImageLabel)+' · '+escape(copy[guide().name])+'</figcaption></figure>':'')+'<div class="industry-doc-paper">'+card.paper+'</div>'+button(copy.docDownload,'download-'+card.action,true)+'</article>';}).join('')+'</div>';
   }
   function receptionText(key){
     return String(data.reception.copy[key]||'').replace(/\{business\}/g,guide().exampleName).replace(/\{offering\}/g,copy[guide().exampleOffering].split(' · ')[0]).replace(/\{touchpoint\}/g,copy[guide().exampleTouchpoint]);
   }
   function renderReception(){
     var c=data.reception.copy;
-    var questionHTML=data.reception.questions.map(function(q){var question=q.question,answer=q.answer;if(question==='booking')question=isSalon()?'bookSalonQ':guide().key==='restaurant'?'bookRestaurantQ':'bookOrderQ';if(question==='policy'){question=isSalon()?'policySalonQ':guide().key==='retail'?'policyRetailQ':'policyFoodQ';answer=(guide().key==='food'||guide().key==='restaurant')?'allergyA':'policyA';}var doc=data.reception.documents.find(function(doc){return doc.id===q.source;});return '<details class="nxw-details"><summary>'+escape(receptionText(question))+'</summary><p>'+escape(receptionText(answer))+'</p><small>'+escape(c.source)+'</small><p>'+escape(receptionText(doc.title))+'</p></details>';}).join('');
-    document.getElementById('nxw-panel-reception').innerHTML='<span class="nxw-kicker">'+escape(c.eyebrow)+'</span><h2>'+escape(c.title)+'</h2><p>'+escape(c.intro)+'</p><div class="nxw-reception-columns"><section><h3>'+escape(c.questionsTitle)+'</h3><p>'+escape(c.questionsIntro)+'</p>'+questionHTML+'</section><section><h3>'+escape(c.docsTitle)+'</h3><p>'+escape(c.docsIntro)+'</p>'+data.reception.documents.map(function(doc){return '<details class="nxw-details"><summary>'+escape(receptionText(doc.title))+'</summary><p>'+escape(receptionText(doc.example))+'</p><small>'+escape(c.needs)+'</small><p>'+escape(receptionText(doc.needs))+'</p></details>';}).join('')+'</section></div><p class="nxw-note">'+escape(c.note)+'</p><div class="nxw-actions">'+button(c.download,'download-reception',true)+link(c.setup,'salon-guide-ai-voice.html')+'</div>';
+    var questions=data.reception.questions.map(function(q,index){var question=q.question,answer=q.answer;if(question==='booking')question=isSalon()?'bookSalonQ':guide().key==='restaurant'?'bookRestaurantQ':'bookOrderQ';if(question==='policy'){question=isSalon()?'policySalonQ':guide().key==='retail'?'policyRetailQ':'policyFoodQ';answer=(guide().key==='food'||guide().key==='restaurant')?'allergyA':'policyA';}var doc=data.reception.documents.find(function(doc){return doc.id===q.source;});return '<details'+(index===0?' open':'')+'><summary>'+escape(receptionText(question))+'</summary><div class="reception-answer"><small>'+escape(c.exampleAnswer)+'</small><p>'+escape(receptionText(answer))+'</p><small>'+escape(c.source)+': '+escape(receptionText(doc.title))+'</small></div></details>';}).join('');
+    var documents=data.reception.documents.map(function(doc){return '<details'+(doc.id==='catalog'?' open':'')+'><summary>'+escape(receptionText(doc.title))+'</summary><div class="reception-doc-preview"><p>'+escape(receptionText(doc.example))+'</p><small>'+escape(c.needs)+'</small><p>'+escape(receptionText(doc.needs))+'</p></div></details>';}).join('');
+    document.getElementById('nxw-panel-reception').innerHTML='<div class="reception-head"><div><span>'+escape(c.eyebrow)+'</span><h3>'+escape(c.title)+'</h3><p>'+escape(c.intro)+'</p></div><small>'+escape(copy[guide().name])+'</small></div><div class="reception-layout"><section class="reception-column"><h4>'+escape(c.questionsTitle)+'</h4><p>'+escape(c.questionsIntro)+'</p><div class="reception-list">'+questions+'</div></section><section class="reception-column"><h4>'+escape(c.docsTitle)+'</h4><p>'+escape(c.docsIntro)+'</p><div class="reception-list">'+documents+'</div></section></div><div class="reception-footer"><p>'+escape(c.note)+'</p><div class="reception-actions">'+button(c.download,'download-reception',true)+button(c.setup,'help-voice',true)+'</div></div>';
   }
-  function helpEntries(){return data.help.workflows.map(function(w){return {id:w.id,product:w.product,title:w.title,steps:w.steps,sample:w.sample,route:{voice:'salon-guide-ai-voice.html',sms:'nexora-sms-dashboard.html',promotion:'reward-promotions.html',deal:'pos-deal-coupon.html'}[w.id]||moduleRoute(w.product)};}).concat(data.products.map(function(p){return {id:'product-'+p.key,product:p.key,title:p.name,steps:data.presentation[p.key].steps,sample:data.presentation[p.key].summary,route:moduleRoute(p.key)};}));}
+  function helpPriorityScore(entry){
+    var related={nail:['aihub','aimarketing'],hair:['aimarketing'],spa:['aihub','deals'],retail:['aimarketing'],food:['deals','aimarketing'],restaurant:['deals','aimarketing']};
+    var products=Array.from(new Set(guide().tools.concat(related[guide().key]||[]))),index=products.indexOf(entry.product);
+    return index<0?entry.kind==='product'?30:entry.kind==='feature'?0:20:(entry.kind==='product'?100:entry.kind==='feature'?50:75)-index*4;
+  }
+  function helpSample(entry){return String(data.help.samples[entry.id]||entry.sample||'').replace(/\{business\}/g,guide().exampleName).replace(/\{offering\}/g,copy[guide().exampleOffering].split(' · ')[0]);}
+  function helpEntries(){
+    var entries=data.help.workflows.map(function(w){return {id:w.id,kind:'workflow',product:w.product,title:w.title,steps:w.steps,sample:w.sample,route:{voice:'salon-guide-ai-voice.html',sms:'nexora-sms-dashboard.html',promotion:'reward-promotions.html',deal:'pos-deal-coupon.html'}[w.id]||moduleRoute(w.product)};});
+    data.products.forEach(function(product){
+      entries.push({id:'product-'+product.key,kind:'product',product:product.key,title:product.name,steps:data.presentation[product.key].steps,sample:data.presentation[product.key].summary,route:moduleRoute(product.key)});
+      var explorer=data.explorer[product.key];
+      if(explorer)explorer.features.forEach(function(feature,index){entries.push({id:'feature-'+product.key+'-'+index,kind:'feature',product:product.key,title:feature.title,steps:[data.help.ui.featurePrep,data.help.ui.featureOpen,data.help.ui.featureVerify],sample:feature.description,route:featureRoute(product.key,feature.key,index)});});
+    });
+    return entries.sort(function(a,b){return helpPriorityScore(b)-helpPriorityScore(a);});
+  }
   function renderHelp(){
     var c=data.help.ui;
-    document.getElementById('nxw-panel-help').innerHTML='<span class="nxw-kicker">'+escape(c.eyebrow)+'</span><h2>'+escape(c.title)+'</h2><p>'+escape(c.intro)+'</p><div class="nxw-toolbar"><input id="nxw-help-search" type="search" placeholder="'+escape(c.search)+'" aria-label="'+escape(c.search)+'" value="'+escape(helpSearch)+'"><select id="nxw-help-filter" aria-label="'+escape(c.allProducts)+'"><option value="">'+escape(c.allProducts)+'</option>'+data.products.map(function(p){return '<option value="'+p.key+'"'+(helpProduct===p.key?' selected':'')+'>'+escape(p.name)+'</option>';}).join('')+'</select></div><div class="nxw-help-layout"><div class="nxw-help-list" id="nxw-help-list" role="group" aria-label="'+escape(c.directory)+'"></div><article class="nxw-help-detail" id="nxw-help-detail" aria-live="polite"></article></div><div class="nxw-subsection"><h3>'+escape(c.faq)+'</h3><p>'+escape(c.faqIntro)+'</p>'+data.help.faq.map(function(f){return '<details class="nxw-details"><summary>'+escape(f.q||f.question)+'</summary><p>'+escape(f.a||f.answer)+'</p></details>';}).join('')+'</div>';
+    var workflows=data.help.workflows.slice().sort(function(a,b){return helpPriorityScore(b)-helpPriorityScore(a);});
+    var faq=data.help.faq.concat(guide().key==='nail'?data.businessGuide.faq.map(function(item){return Object.assign({},item,{businessGuide:true});}):[]);
+    document.getElementById('nxw-panel-help').innerHTML='<div class="help-head"><span>'+escape(c.eyebrow)+'</span><h3>'+escape(c.title)+'</h3><p>'+escape(c.intro)+'</p><div class="help-industry-priority">'+escape(c.industryPriority)+' '+escape(copy[guide().name])+'</div><button type="button" class="help-download-all" data-action="download-help">'+escape(c.downloadAll)+'</button></div><strong class="help-subtitle">'+escape(c.featured)+'</strong><div class="help-featured">'+workflows.map(function(entry){return '<button type="button" data-help-task="'+entry.id+'">'+escape(entry.title)+'</button>';}).join('')+'</div><div class="nxw-toolbar"><input id="nxw-help-search" type="search" placeholder="'+escape(c.search)+'" aria-label="'+escape(c.search)+'" value="'+escape(helpSearch)+'"><select id="nxw-help-filter" aria-label="'+escape(c.allProducts)+'"><option value="">'+escape(c.allProducts)+'</option>'+data.products.map(function(p){return '<option value="'+p.key+'"'+(helpProduct===p.key?' selected':'')+'>'+escape(p.name)+'</option>';}).join('')+'</select></div><div class="nxw-help-layout"><section class="nxw-help-directory"><h3>'+escape(c.directory)+'</h3><p>'+escape(c.directoryHint)+'</p><div class="nxw-help-list" id="nxw-help-list" role="group" aria-label="'+escape(c.directory)+'"></div></section><article class="nxw-help-detail" id="nxw-help-detail" aria-live="polite"></article></div><section class="help-faq"><h4>'+escape(c.faq)+'</h4><p>'+escape(c.faqIntro)+'</p><div class="help-faq-list">'+faq.map(function(f){return '<details><summary>'+escape(f.q||f.question)+'</summary><p>'+escape(f.a||f.answer)+'</p>'+(f.guide?'<button type="button" data-help-task="'+f.guide+'">'+escape(c.steps)+'</button>':f.businessGuide?'<button type="button" data-action="open-docs">'+escape(c.steps)+'</button>':'')+'</details>';}).join('')+'</div></section>';
     document.getElementById('nxw-help-search').addEventListener('input',function(event){helpSearch=event.target.value;renderHelpResults();});
     document.getElementById('nxw-help-filter').addEventListener('change',function(event){helpProduct=event.target.value;renderHelpResults();});
     renderHelpResults();
   }
   function renderHelpResults(){
     var c=data.help.ui,entries=helpEntries().filter(function(entry){return (!helpProduct||entry.product===helpProduct)&&(!helpSearch||(entry.title+' '+entry.sample+' '+entry.steps.join(' ')).toLowerCase().indexOf(helpSearch.trim().toLowerCase())!==-1);});
+    main.querySelector('.nxw-help-directory>h3').textContent=c.directory+' ('+entries.length+')';
     if(!entries.some(function(entry){return entry.id===selectedHelp;}))selectedHelp=entries[0]?entries[0].id:'';
     document.getElementById('nxw-help-list').innerHTML=entries.length?entries.map(function(entry){return '<button type="button" data-help-entry="'+entry.id+'" aria-pressed="'+(entry.id===selectedHelp)+'">'+escape(entry.title)+'<small>'+escape(data.products.find(function(p){return p.key===entry.product;}).name)+'</small></button>';}).join(''):'<p class="nxw-empty" role="status">'+escape(c.noResults)+'</p>';
     var entry=entries.find(function(item){return item.id===selectedHelp;});
-    document.getElementById('nxw-help-detail').innerHTML=entry?'<span class="nxw-kicker">'+escape(c.steps)+'</span><h3>'+escape(entry.title)+'</h3><ol>'+entry.steps.map(function(step){return '<li>'+escape(step)+'</li>';}).join('')+'</ol><span class="nxw-kicker">'+escape(c.sample)+'</span><blockquote>'+escape(entry.sample)+'</blockquote><p class="nxw-note">'+escape(c.sampleNote)+'</p><div class="nxw-actions">'+link(setupCopy.relatedScreen,entry.route)+'</div>':'<p>'+escape(c.noResults)+'</p>';
+    document.getElementById('nxw-help-detail').innerHTML=entry?'<span class="nxw-kicker">'+escape(c.steps)+'</span><h3>'+escape(entry.title)+'</h3><ol>'+entry.steps.map(function(step){return '<li>'+escape(step)+'</li>';}).join('')+'</ol><span class="nxw-kicker">'+escape(c.sample)+'</span><blockquote>'+escape(helpSample(entry))+'</blockquote><p class="nxw-note">'+escape(c.sampleNote)+'</p><div class="nxw-actions">'+link(setupCopy.relatedScreen,entry.route)+'</div>':'<p>'+escape(c.noResults)+'</p>';
   }
   function productSteps(key){var routes={pos:['pos-salon-settings.html?section=services','pos-front-desk.html?section=checkin','pos-technician-report.html?tab=store'],oneqr:['qr-stations.html?tab=one-qr','qr-stations.html?tab=qr-stations','qr-stations.html?tab=accept-payment'],payments:['payment-income.html','tip-list.html','staff-payouts.html'],aihub:['booking-book-phase-1.html?tab=booking&view=today','booking-book-phase-1.html?tab=customers','booking-book-phase-1.html?tab=calllog'],aimarketing:['booking-book-phase-1.html?tab=customers','nexora-sms-dashboard.html','vlinkpay-campaigns.html'],analytics:['nexora-analytics.html','nexora-analytics.html'],reviews:['nexora-review.html','nexora-review.html'],community:['community.html?tab=feed','community.html?tab=groups','community.html?tab=connect']};return routes[key]||[];}
+  function setupPathHintHTML(){
+    return '<section class="nxw-path-hint"><p>'+escape(useSalonLabels()?salonCopy.productHint:setupCopy.pathHint)+'</p>'+button(useSalonLabels()?salonCopy.seeSetup:setupCopy.pathButton,'open-journey',true)+'<div>'+path().map(function(kind,index){return '<button type="button" data-guide-step="'+kind+'">'+(index+1)+' · '+escape(stepTitle(index))+(kind==='voice'?' ('+escape(setupCopy.optionalStep)+')':'')+'</button>';}).join('')+'</div></section>';
+  }
+  function guideIcon(key){return '<i class="bi bi-'+({pos:'credit-card-2-front',oneqr:'qr-code',reviews:'star',payments:'wallet2',aihub:'stars',aimarketing:'megaphone',spin:'disc',gift:'gift',analytics:'graph-up-arrow',community:'people',deals:'gift'}[key]||'grid')+'" aria-hidden="true"></i>';}
   function renderProductGuides(){
     var product=data.products.find(function(p){return p.key===selectedProduct;})||data.products[0],presentation=data.presentation[product.key];
-    document.getElementById('nxw-panel-products').innerHTML='<span class="nxw-kicker">'+escape(copy.productEyebrow)+'</span><h2>'+escape(copy.productHeading)+'</h2><p>'+escape(copy.productIntro)+'</p><div class="nxw-product-tabs" aria-label="'+escape(copy.tabProducts)+'">'+data.products.map(function(p){return '<button type="button" data-guide-product="'+p.key+'" aria-pressed="'+(p.key===product.key)+'">'+icon(productIcon(p.key),24)+escape(p.name)+'</button>';}).join('')+'</div><article class="nxw-inline-preview"><h3>'+escape(product.name)+'</h3><p>'+escape(presentation.summary)+'</p><div class="nxw-docs">'+product.steps.map(function(step,i){return '<a class="nxw-doc" href="'+escape(productSteps(product.key)[i]||moduleRoute(product.key))+'"><span class="nxw-kicker">STEP '+(i+1)+'</span><h3>'+escape(step.title)+'</h3><p>'+escape(presentation.steps[i])+'</p><span class="nxw-card-link">'+escape(setupCopy.relatedScreen)+'</span></a>';}).join('')+'</div></article>';
+    var products=data.products.slice().sort(function(a,b){var rank=function(p){var i=guide().tools.indexOf(p.key);return i<0?data.products.indexOf(p)+data.products.length:i;};return rank(a)-rank(b);});
+    var steps=product.steps.map(function(step,index){return '<li'+(product.preview?' class="is-preview"':'')+'><div class="onboard-step-top"><span class="onboard-step-stage">STEP '+(index+1)+'</span><span class="onboard-step-icon"><i class="bi bi-'+(['gear','credit-card-2-front','graph-up-arrow'][index]||'grid')+'" aria-hidden="true"></i></span></div><strong>'+escape(step.title)+'</strong><p class="onboard-step-copy">'+escape(presentation.steps[index])+'</p><a href="'+escape(productSteps(product.key)[index]||moduleRoute(product.key))+'">'+(product.preview?'View preview':'Open screen')+'<i class="bi bi-box-arrow-up-right" aria-hidden="true"></i></a></li>';}).join('');
+    document.getElementById('nxw-panel-products').innerHTML=setupPathHintHTML()+'<div class="industry-product-heading"><span>'+escape(copy.productEyebrow)+'</span><h3>'+escape(copy.productHeading)+'</h3><p>'+escape(copy.productIntro)+'</p></div><div class="onboard-products" role="group" aria-label="'+escape(copy.tabProducts)+'">'+products.map(function(p){return '<button type="button" data-guide-product="'+p.key+'" aria-pressed="'+(p.key===product.key)+'">'+guideIcon(p.key)+'<span>'+escape(p.name)+'</span></button>';}).join('')+'</div><div class="onboard-panel"><article class="onboard-intro"><div class="onboard-intro-top"><span class="onboard-intro-icon">'+guideIcon(product.key)+'</span><span class="onboard-status">'+(product.preview?'Preview':product.steps.length+' starting steps')+'</span></div><span class="onboard-intro-label">SELECTED PRODUCT</span><h3>'+escape(product.name)+'</h3><p>'+escape(presentation.summary)+'</p><a href="'+escape(moduleRoute(product.key))+'">'+(product.key==='spin'?'View prize-wheel demo':'View all features')+' <span aria-hidden="true">→</span></a></article><ol class="onboard-steps" style="--step-count:'+product.steps.length+'">'+steps+'</ol></div>';
+  }
+  function selectHelpTask(id){
+    selectedHelp=id;helpSearch='';helpProduct='';renderHelp();openTab('help');document.getElementById('nxw-help-detail').scrollIntoView({block:'nearest',behavior:'smooth'});
   }
   function download(kind){
     var c=copy,text='',title='';
-    if(kind==='checklist'){title=c.docChecklistTitle;text=path().map(function(key,i){return (i+1)+'. '+stepTitle(i);}).join('\n');}
+    if(kind==='business'){var business=data.businessGuide;title=business.copy.heading;text=business.copy.intro+'\n\n'+business.steps.map(function(step,index){return (index+1)+'. '+businessGuideTitle(step)+'\n'+businessGuideTasks(step).join('\n')+(step.extra?'\n'+business.copy[step.extra]:'')+(step.id==='qr'?'\n'+business.copy.paymentTitle+'\n'+business.copy.paymentCondition+'\n'+business.copy.paymentTasks.split('|').join('\n'):'');}).join('\n\n')+'\n\n'+business.copy.sourceNote;}
+    if(kind==='help'){title=data.help.ui.title;text=data.help.ui.intro+'\n\n'+copy.docChecklistTitle+'\n'+path().filter(function(key){return key!=='voice';}).map(function(key,index){return (index+1)+'. '+stepTitle(index);}).join('\n')+'\n\n'+copy.docExampleTitle+'\n'+guide().exampleName+'\n'+copy[guide().exampleOffering]+'\n'+copy[guide().exampleTouchpoint]+'\n\n'+copy.docAgentTitle+'\n'+guideAssistant()+'\n\n'+data.help.workflows.map(function(entry){return entry.title+'\n'+entry.steps.map(function(step,index){return (index+1)+'. '+step;}).join('\n')+'\n'+helpSample(entry);}).join('\n\n')+'\n\n'+data.products.map(function(product){return product.name+'\n'+product.steps.map(function(step,index){return (index+1)+'. '+step.title+' — '+data.presentation[product.key].steps[index];}).join('\n');}).join('\n\n')+'\n\n'+data.help.faq.concat(guide().key==='nail'?data.businessGuide.faq:[]).map(function(item){return item.q+'\n'+item.a;}).join('\n\n');}
+    if(kind==='checklist'){title=c.docChecklistTitle;text=path().filter(function(key){return key!=='voice';}).map(function(key,i){return (i+1)+'. '+stepTitle(i);}).join('\n');}
     if(kind==='example'){title=c.docExampleTitle;text=c.docFieldBusiness+': '+guide().exampleName+'\n'+c.docFieldOffering+': '+c[guide().exampleOffering]+'\n'+c.docFieldTouchpoint+': '+c[guide().exampleTouchpoint];}
     if(kind==='assistant'){title=c.docAgentTitle;text=guideAssistant();}
-    if(kind==='reception'){title=data.reception.copy.title;text=data.reception.documents.map(function(doc){return receptionText(doc.title)+'\n'+receptionText(doc.example)+'\n'+receptionText(doc.needs);}).join('\n\n');}
+    if(kind==='reception'){title=data.reception.copy.title;text=data.reception.copy.note+'\n\n'+data.reception.documents.map(function(doc){return receptionText(doc.title)+'\n'+receptionText(doc.example)+'\n'+receptionText(doc.needs);}).join('\n\n')+'\n\n'+Array.from(document.querySelectorAll('#nxw-panel-reception .reception-column:first-child details')).map(function(item){return item.textContent;}).join('\n\n');}
     var blob=new Blob([title+'\n'+c[guide().name]+'\n\n'+text+'\n\n'+c.docSampleNote],{type:'text/plain;charset=utf-8'});var url=URL.createObjectURL(blob),anchor=document.createElement('a');anchor.href=url;anchor.download='nexora-'+guide().key+'-'+kind+'.txt';document.body.append(anchor);anchor.click();anchor.remove();window.setTimeout(function(){URL.revokeObjectURL(url);},1000);
   }
   main.addEventListener('click',function(event){
@@ -467,15 +532,21 @@
     if(target.dataset.slide!==undefined){playing=false;renderSlide(Number(target.dataset.slide));syncSlideshow();}
     if(target.dataset.explorerProduct){explorerProduct=target.dataset.explorerProduct;explorerFeature=0;renderExplorer();main.querySelector('[data-explorer-product="'+explorerProduct+'"]').focus();}
     if(target.dataset.explorerFeature!==undefined){explorerFeature=Number(target.dataset.explorerFeature);renderExplorer();main.querySelector('[data-explorer-feature="'+explorerFeature+'"]').focus();}
-    if(target.matches('.nxw-industry[data-industry]')){state.industry=target.dataset.industry;persist();selectedStep=firstUnfinished();selectedProduct=guide().tools[0];selectedHelp='product-'+selectedProduct;helpSearch='';helpProduct='';activeOnboardTab='journey';renderOnboarding();openTab('journey');main.querySelector('.nxw-industry[data-industry="'+state.industry+'"]').focus();}
+    if(target.matches('.nxw-industry[data-industry]')){assistantIntent='overview';state.industry=target.dataset.industry;persist();selectedStep=firstUnfinished();selectedProduct=guide().tools[0];selectedHelp='product-'+selectedProduct;helpSearch='';helpProduct='';activeOnboardTab='journey';renderOnboarding();openTab('journey');main.querySelector('.nxw-industry[data-industry="'+state.industry+'"]').focus();}
+    if(target.dataset.guideStep){var stepIndex=path().indexOf(target.dataset.guideStep);if(stepIndex>=0){selectedStep=stepIndex;renderSetupStep();openTab('journey');document.getElementById('nxw-setup-detail').scrollIntoView({block:'nearest',behavior:'smooth'});}}
+    if(target.dataset.helpTask)selectHelpTask(target.dataset.helpTask);
     if(target.dataset.onboardTab)openTab(target.dataset.onboardTab);
     if(target.dataset.setupStep!==undefined){selectedStep=Number(target.dataset.setupStep);renderSetupStep();}
     if(target.dataset.helpEntry){selectedHelp=target.dataset.helpEntry;renderHelpResults();main.querySelector('[data-help-entry="'+selectedHelp+'"]').focus();}
+    if(target.dataset.assistantIntent){assistantIntent=target.dataset.assistantIntent;renderSetupAssistant();main.querySelector('[data-assistant-intent="'+assistantIntent+'"]').focus();}
     if(target.dataset.guideProduct){selectedProduct=target.dataset.guideProduct;renderProductGuides();main.querySelector('[data-guide-product="'+selectedProduct+'"]').focus();}
     var action=target.dataset.action;if(!action)return;
     if(action==='slide-prev'||action==='slide-next'){playing=false;renderSlide(slideIndex+(action==='slide-prev'?-1:1));syncSlideshow();}
     if(action==='slide-play'){playing=!playing;syncSlideshow();}
     if(action==='open-docs')openTab('docs');
+    if(action==='open-reception')openTab('reception');
+    if(action==='open-journey')openTab('journey');
+    if(action==='help-voice')selectHelpTask('voice');
     if(action==='start-first'){selectedStep=0;renderSetupStep();document.getElementById('nxw-step-title').tabIndex=-1;document.getElementById('nxw-step-title').focus();}
     if(action==='next-step'){selectedStep=Math.min(path().length-1,selectedStep+1);renderSetupStep();}
     if(action.indexOf('download-')===0)download(action.slice(9));
@@ -483,7 +554,9 @@
   if(view==='onboarding'){
     var params=new URLSearchParams(window.location.search);if(data.library.guides.some(function(g){return g.key===params.get('industry');}))state.industry=params.get('industry');
     if(['journey','docs','reception','help','products'].indexOf(params.get('view'))!==-1)activeOnboardTab=params.get('view');
+    selectedProduct=guide().tools[0];selectedHelp='product-'+selectedProduct;
     selectedStep=firstUnfinished();renderOnboarding();
   }else renderHome();
+  window.addEventListener('pagehide',stopSetupSpeech);
   window.NEXORA_WELCOME={moduleRoute:moduleRoute,featureRoute:featureRoute,storageKey:storageKey};
 })();
