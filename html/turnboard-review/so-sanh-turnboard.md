@@ -6,13 +6,13 @@
 
 ### Tóm tắt nhanh
 
-Bảng chỉ gồm 6 HTML có màn hình Turnboard. Các trang menu và giới thiệu đã được bỏ khỏi phạm vi so sánh. Bảng HTML kèm theo có ảnh nhúng, bộ lọc và chức năng phóng to ảnh. Các ghi nhận mô tả bản mẫu PO, không xác nhận hành vi production.
+Bảng chỉ gồm 6 HTML có màn hình Turnboard. Các trang menu và giới thiệu đã được bỏ khỏi phạm vi so sánh. Bảng HTML kèm theo có ảnh nhúng, bộ lọc và chức năng phóng to ảnh. Sáu cột mẫu mô tả HTML của PO; cột Đang chạy trên web đối chiếu code master. Bảng chưa xác nhận phiên bản đang triển khai trên web.
 
 [Mở bảng so sánh có ảnh và liên kết đến các HTML gốc](so-sanh-turnboard.html)
 
 ### Tổng quan
 
-Bảng đối chiếu giúp chọn bố cục và xác định khác biệt về luật xếp lượt, giao khách, tay nghề và vị trí thực hiện. Lễ tân dùng Turnboard để giao khách; quản lý và chủ tiệm thiết lập luật, tay nghề và điều chỉnh lượt. Nội dung dựa trực tiếp vào 6 HTML có màn hình Turnboard.
+Bảng đối chiếu giúp chọn bố cục và xác định khác biệt về luật xếp lượt, giao khách, tay nghề và vị trí thực hiện. Lễ tân dùng Turnboard để giao khách; quản lý và chủ tiệm thiết lập luật, tay nghề và điều chỉnh lượt. Sáu bản mẫu được đối chiếu với code master của frontend và backend trong ma trận.
 
 ### Khái niệm chính
 
@@ -107,8 +107,10 @@ stateDiagram-v2
 ### Quy tắc đọc bảng
 
 1. Ảnh UI là ảnh chụp HTML đã mở, không phải ảnh được vẽ lại.
-2. Nhận định về tính năng chỉ thuộc bản mẫu hoặc đặc tả; không tự suy thành tính năng production.
+2. Các cột mẫu mô tả HTML của PO; cột Đang chạy trên web đọc code master. Chưa dùng kết quả này để xác nhận bản đang triển khai.
 3. Cột cuối ghi khác biệt và giới hạn ở đúng file liên quan.
+
+
 
 
 
@@ -144,17 +146,19 @@ Ngày đính kèm lấy từ nội dung HTML hoặc thông tin đã xác nhận.
 
 ### Ma trận tính năng Turnboard
 
-| Tiêu chí | #6 · POS V34 · Stations<br>12 tháng 10 năm 2026 | #5 · POS feedback · Products & Other Sales<br>9 tháng 10 năm 2026 | #4 · POS feedback · prototype (1)<br>8 tháng 9 năm 2026 | #3 · Front Desk · bản (1)<br>7 tháng 9 năm 2026 | #2 · Front Desk · bản gốc<br>4 tháng 9 năm 2026 | #1 · TurnBoardBanMau<br>25 tháng 8 năm 2026 |
-| --- | --- | --- | --- | --- | --- | --- |
-| Cách hiển thị | Thẻ thợ + biểu mẫu | Thẻ thợ + biểu mẫu | Thẻ thợ + biểu mẫu | Compact / Cards / Grid | Compact / Cards / Grid | Danh sách / Thẻ |
-| Thợ tới lượt kế tiếp | Giống #4 | Giống #4 | Thẻ #1 nổi bật | Thẻ chi tiết + Upcoming | Thanh Next Turn | Khối nổi bật + hàng chờ |
-| Cách tính lượt | Giống #4 | Giống #4 | 4 cách; Owner chọn | Như #2 | Theo giá trị; cấu hình mô phỏng | 5 cách + luật khách chỉ định / hẹn |
-| Tay nghề | Giống #4 | Giống #4 | Theo nhóm dịch vụ; 3 mức | Như #2 + gợi ý nhiều dịch vụ | Cấp thợ + dịch vụ được phép | Theo từng dịch vụ; 3 mức |
-| Giao khách nhiều dịch vụ | Giống #4 | Giống #4 | Một dịch vụ mỗi thao tác | Gợi ý một thợ / chia dịch vụ | Chọn thợ trong cửa sổ giao khách | Chọn thợ cho từng dịch vụ |
-| Ghế / bàn / phòng | Có Station; tự chọn / chọn tay | Không có ở biểu mẫu Turnboard | Không có ở biểu mẫu Turnboard | Có trường vị trí + ghi chú khách | Có trường vị trí | Không có trường riêng trong giao khách |
-| Sửa lượt / hoàn tác | Giống #4 | Giống #4 | Undo ghi dòng hoàn tác | Như #2 | Add Turn / Edit Turn có lý do | Hoàn tác lần giao gần nhất |
-| Doanh thu / mục tiêu | Giống #4 | Giống #4 | Hiển thị số lượt trên hàng thợ | Đưa số liệu lên thẻ Next Turn | Tổng dịch vụ + mục tiêu thợ | Doanh thu + trung bình mỗi lượt |
-| Thử tiệm lớn | Không có bộ tương ứng | Không có bộ tương ứng | Không có bộ tương ứng | Có bộ 50 thợ / 36 khách chờ | Có bộ 50 thợ / 36 khách chờ | Không có bộ 50 thợ riêng |
+**Cột Đang chạy trên web:** Đối chiếu code master của frontend và backend đã lấy lại ngày 4 tháng 11 năm 2026. Chưa xác minh phiên bản đang triển khai hoặc cấu hình tiệm trên web.
+
+| Tiêu chí | Đang chạy trên web<br>Đối chiếu code master<br>4 tháng 11 năm 2026 | #6 · POS V34 · Stations<br>12 tháng 10 năm 2026 | #5 · POS feedback · Products & Other Sales<br>9 tháng 10 năm 2026 | #4 · POS feedback · prototype (1)<br>8 tháng 9 năm 2026 | #3 · Front Desk · bản (1)<br>7 tháng 9 năm 2026 | #2 · Front Desk · bản gốc<br>4 tháng 9 năm 2026 | #1 · TurnBoardBanMau<br>25 tháng 8 năm 2026 |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| Cách hiển thị | Đã có — Compact / Thẻ thợ / Turn Grid; có tìm theo tên hoặc dịch vụ và lọc trạng thái. | Thẻ thợ + biểu mẫu | Thẻ thợ + biểu mẫu | Thẻ thợ + biểu mẫu | Compact / Cards / Grid | Compact / Cards / Grid | Danh sách / Thẻ |
+| Thợ tới lượt kế tiếp | Có một phần — Đã đánh dấu Next Turn theo lượt, giá trị dịch vụ chưa chốt và thời gian chờ. Chưa có danh sách Upcoming riêng và mở nhanh hồ sơ như bản mẫu. | Giống #4 | Giống #4 | Thẻ #1 nổi bật | Thẻ chi tiết + Upcoming | Thanh Next Turn | Khối nổi bật + hàng chờ |
+| Cách tính lượt | Có một phần — Bậc giá dịch vụ và lượt cho thợ khách chỉ định; lưu luật qua API. Chưa có cách tính theo thời lượng, bảng lượt riêng từng dịch vụ hoặc đầu khách. | Giống #4 | Giống #4 | 4 cách; Owner chọn | Như #2 | Theo giá trị; cấu hình mô phỏng | 5 cách + luật khách chỉ định / hẹn |
+| Tay nghề | Có một phần — Đã có dịch vụ được phép làm và cấp thợ chung. Chưa có mức chuyên theo từng dịch vụ, đánh giá tiếng Anh và phục vụ như bản mẫu. | Giống #4 | Giống #4 | Theo nhóm dịch vụ; 3 mức | Như #2 + gợi ý nhiều dịch vụ | Cấp thợ + dịch vụ được phép | Theo từng dịch vụ; 3 mức |
+| Giao khách nhiều dịch vụ | Có một phần — Giao theo từng dòng hoặc nhóm, lưu nhiều phân công một lần. Chưa có hai phương án tự đề xuất một thợ làm hết hoặc chia nhiều thợ. | Giống #4 | Giống #4 | Một dịch vụ mỗi thao tác | Gợi ý một thợ / chia dịch vụ | Chọn thợ trong cửa sổ giao khách | Chọn thợ cho từng dịch vụ |
+| Ghế / bàn / phòng | Chưa có — Stations hiện là thẻ thợ. Chưa có vị trí vật lý, tự chọn vị trí, giữ chỗ và dọn chỗ trong luồng này. | Có Station; tự chọn / chọn tay | Không có ở biểu mẫu Turnboard | Không có ở biểu mẫu Turnboard | Có trường vị trí + ghi chú khách | Có trường vị trí | Không có trường riêng trong giao khách |
+| Sửa lượt / hoàn tác | Có một phần — Đã thêm/sửa lượt tại Grid và gỡ/đổi thợ trong phiếu. Chưa có lý do khi chỉnh lượt hoặc Undo lần giao gần nhất như bản mẫu. | Giống #4 | Giống #4 | Undo ghi dòng hoàn tác | Như #2 | Add Turn / Edit Turn có lý do | Hoàn tác lần giao gần nhất |
+| Doanh thu / mục tiêu | Có một phần — Có lượt, số dịch vụ, tiền dịch vụ và giờ làm. Chưa có mục tiêu ngày, tiến độ, trung bình mỗi lượt hoặc gợi ý bù cơ hội. | Giống #4 | Giống #4 | Hiển thị số lượt trên hàng thợ | Đưa số liệu lên thẻ Next Turn | Tổng dịch vụ + mục tiêu thợ | Doanh thu + trung bình mỗi lượt |
+| Thử tiệm lớn | Không có bộ demo — Không có nút nạp bộ 50 thợ / 36 khách chờ trong phần Turnboard của master. Chưa đánh giá khả năng vận hành với dữ liệu lớn thực tế. | Không có bộ tương ứng | Không có bộ tương ứng | Không có bộ tương ứng | Có bộ 50 thợ / 36 khách chờ | Có bộ 50 thợ / 36 khách chờ | Không có bộ 50 thợ riêng |
 
 ### Vì sao POS feedback và V34 gần giống nhau?
 
@@ -218,3 +222,22 @@ Không. Chúng thuộc 3 nhóm giao diện; #4 và #5 có cùng phần dựng Tu
 - #3: [pos-prototype/front-desk-prototype (1).html](html/pos-prototype/front-desk-prototype%20(1).html) — nội dung `047a8514f254c41d`.
 - #2: [pos-prototype/front-desk-prototype.html](html/pos-prototype/front-desk-prototype.html) — nội dung `b12b1bd80e721a5b`.
 - #1: [TurnBoardBanMau.html](html/TurnBoardBanMau.html) — nội dung `1b60a11d1b666829`.
+
+#### Căn cứ cột Đang chạy trên web — nhánh master
+
+Đối chiếu code master của frontend và backend đã lấy lại ngày 4 tháng 11 năm 2026. Chưa xác minh phiên bản đang triển khai hoặc cấu hình tiệm trên web.
+
+- FE: [`56ad71bbf7ff2ecb8ea9816fd232664aba8af621`](https://github.com/vlink-group/vlink-nexora-fe/commit/56ad71bbf7ff2ecb8ea9816fd232664aba8af621).
+- BE: [`2d7a0762a613b6ba629fa62ad3bea61539e71b14`](https://github.com/vlink-group/vlink-nexora/commit/2d7a0762a613b6ba629fa62ad3bea61539e71b14).
+
+| Mã / tiêu chí | Code đã đối chiếu |
+| --- | --- |
+| M01 · Cách hiển thị | [FE · PosFrontDeskView.tsx:2270](https://github.com/vlink-group/vlink-nexora-fe/blob/56ad71bbf7ff2ecb8ea9816fd232664aba8af621/src/components/dashboard/views/pos/PosFrontDeskView.tsx#L2270) |
+| M02 · Thợ tới lượt kế tiếp | [FE · posNextTurn.ts:23](https://github.com/vlink-group/vlink-nexora-fe/blob/56ad71bbf7ff2ecb8ea9816fd232664aba8af621/src/components/dashboard/views/pos/posNextTurn.ts#L23)<br>[FE · PosFrontDeskView.tsx:1318](https://github.com/vlink-group/vlink-nexora-fe/blob/56ad71bbf7ff2ecb8ea9816fd232664aba8af621/src/components/dashboard/views/pos/PosFrontDeskView.tsx#L1318) |
+| M03 · Cách tính lượt | [FE · WeightedTurnSettingsModal.tsx:175](https://github.com/vlink-group/vlink-nexora-fe/blob/56ad71bbf7ff2ecb8ea9816fd232664aba8af621/src/components/dashboard/views/pos/modals/WeightedTurnSettingsModal.tsx#L175)<br>[BE · PosTurnSettings.cs:9](https://github.com/vlink-group/vlink-nexora/blob/2d7a0762a613b6ba629fa62ad3bea61539e71b14/backend/src/Domain/Entities/Pos/PosTurnSettings.cs#L9)<br>[BE · PosTurnCreditResolver.cs:68](https://github.com/vlink-group/vlink-nexora/blob/2d7a0762a613b6ba629fa62ad3bea61539e71b14/backend/src/Application/Features/Pos/Orders/Common/PosTurnCreditResolver.cs#L68)<br>[BE · PosBookingTurnCredits.cs:7](https://github.com/vlink-group/vlink-nexora/blob/2d7a0762a613b6ba629fa62ad3bea61539e71b14/backend/src/Application/Features/Pos/Orders/Common/PosBookingTurnCredits.cs#L7) |
+| M04 · Tay nghề | [BE · PosStaffSkillEligibility.cs:8](https://github.com/vlink-group/vlink-nexora/blob/2d7a0762a613b6ba629fa62ad3bea61539e71b14/backend/src/Application/Features/Pos/StaffProfiles/PosStaffSkillEligibility.cs#L8)<br>[BE · PosStaffServiceAssignment.cs:10](https://github.com/vlink-group/vlink-nexora/blob/2d7a0762a613b6ba629fa62ad3bea61539e71b14/backend/src/Domain/Entities/Pos/PosStaffServiceAssignment.cs#L10)<br>[BE · PosStaffProfile.cs:13](https://github.com/vlink-group/vlink-nexora/blob/2d7a0762a613b6ba629fa62ad3bea61539e71b14/backend/src/Domain/Entities/Pos/PosStaffProfile.cs#L13) |
+| M05 · Giao khách nhiều dịch vụ | [FE · PosOrderWorkspace.tsx:1144](https://github.com/vlink-group/vlink-nexora-fe/blob/56ad71bbf7ff2ecb8ea9816fd232664aba8af621/src/components/dashboard/views/pos/PosOrderWorkspace.tsx#L1144)<br>[FE · PosOrderWorkspace.tsx:2006](https://github.com/vlink-group/vlink-nexora-fe/blob/56ad71bbf7ff2ecb8ea9816fd232664aba8af621/src/components/dashboard/views/pos/PosOrderWorkspace.tsx#L2006)<br>[BE · SaveOrderServiceLineAssignmentsCommand.cs:16](https://github.com/vlink-group/vlink-nexora/blob/2d7a0762a613b6ba629fa62ad3bea61539e71b14/backend/src/Application/Features/Pos/Orders/Commands/SaveOrderServiceLineAssignments/SaveOrderServiceLineAssignmentsCommand.cs#L16) |
+| M06 · Ghế / bàn / phòng | [BE · GetTurnBoardQuery.cs:19](https://github.com/vlink-group/vlink-nexora/blob/2d7a0762a613b6ba629fa62ad3bea61539e71b14/backend/src/Application/Features/Pos/Orders/Queries/GetTurnBoard/GetTurnBoardQuery.cs#L19)<br>[BE · SaveOrderServiceLineAssignmentsCommand.cs:16](https://github.com/vlink-group/vlink-nexora/blob/2d7a0762a613b6ba629fa62ad3bea61539e71b14/backend/src/Application/Features/Pos/Orders/Commands/SaveOrderServiceLineAssignments/SaveOrderServiceLineAssignmentsCommand.cs#L16)<br>[FE · TurnStationDetails.tsx:24](https://github.com/vlink-group/vlink-nexora-fe/blob/56ad71bbf7ff2ecb8ea9816fd232664aba8af621/src/components/dashboard/views/pos/TurnStationDetails.tsx#L24) |
+| M07 · Sửa lượt / hoàn tác | [FE · TurnGridTurnModal.tsx:175](https://github.com/vlink-group/vlink-nexora-fe/blob/56ad71bbf7ff2ecb8ea9816fd232664aba8af621/src/components/dashboard/views/pos/TurnGridTurnModal.tsx#L175)<br>[BE · AddManualTurnCommand.cs:12](https://github.com/vlink-group/vlink-nexora/blob/2d7a0762a613b6ba629fa62ad3bea61539e71b14/backend/src/Application/Features/Pos/Orders/Commands/AddManualTurn/AddManualTurnCommand.cs#L12)<br>[BE · UpdateTurnBoardTurnCommand.cs:12](https://github.com/vlink-group/vlink-nexora/blob/2d7a0762a613b6ba629fa62ad3bea61539e71b14/backend/src/Application/Features/Pos/Orders/Commands/UpdateTurnBoardTurn/UpdateTurnBoardTurnCommand.cs#L12)<br>[BE · PosTurnBoardController.cs:15](https://github.com/vlink-group/vlink-nexora/blob/2d7a0762a613b6ba629fa62ad3bea61539e71b14/backend/src/Web/Controllers/Merchant/PosTurnBoardController.cs#L15)<br>[BE · PosServiceLineAssignmentApplier.cs:32](https://github.com/vlink-group/vlink-nexora/blob/2d7a0762a613b6ba629fa62ad3bea61539e71b14/backend/src/Application/Features/Pos/Orders/Common/PosServiceLineAssignmentApplier.cs#L32) |
+| M08 · Doanh thu / mục tiêu | [FE · PosFrontDeskView.tsx:1318](https://github.com/vlink-group/vlink-nexora-fe/blob/56ad71bbf7ff2ecb8ea9816fd232664aba8af621/src/components/dashboard/views/pos/PosFrontDeskView.tsx#L1318)<br>[BE · GetTurnBoardQuery.cs:19](https://github.com/vlink-group/vlink-nexora/blob/2d7a0762a613b6ba629fa62ad3bea61539e71b14/backend/src/Application/Features/Pos/Orders/Queries/GetTurnBoard/GetTurnBoardQuery.cs#L19)<br>[BE · PosStaffProfile.cs:13](https://github.com/vlink-group/vlink-nexora/blob/2d7a0762a613b6ba629fa62ad3bea61539e71b14/backend/src/Domain/Entities/Pos/PosStaffProfile.cs#L13) |
+| M09 · Thử tiệm lớn | [FE · PosFrontDeskView.tsx:2270](https://github.com/vlink-group/vlink-nexora-fe/blob/56ad71bbf7ff2ecb8ea9816fd232664aba8af621/src/components/dashboard/views/pos/PosFrontDeskView.tsx#L2270) |
