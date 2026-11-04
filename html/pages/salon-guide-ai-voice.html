@@ -2,1459 +2,732 @@
 <html lang="vi">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI Voice Guide | Nexora Touch</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <title>NEXORA TOUCH — AI Voice Setup Guide</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&amp;display=swap" rel="stylesheet">
   <link rel="stylesheet" href="../assets/nexora-icons.css">
   <link rel="stylesheet" href="../assets/nexora-shell.css?v=20261030-shared-header-v47">
-  <style>
-    :root {
-      --guide-display: 'Inter', system-ui, sans-serif;
-      --guide-body: 'Inter', system-ui, sans-serif;
-      --guide-mono: 'Inter', system-ui, sans-serif;
-      --guide-danger: #b42318;
-      --guide-danger-soft: #fff1f0;
-      --guide-warning: #a15c00;
-      --guide-warning-soft: #fff8e7;
-      --guide-success: #087443;
-      --guide-success-soft: #ecfdf3;
-      --guide-info: #175cd3;
-      --guide-info-soft: #eff8ff;
-    }
-
-    .content {
-      background:
-        radial-gradient(circle at 95% 0%, rgba(70, 72, 216, .08), transparent 22rem),
-        linear-gradient(180deg, #fff 0, var(--nexora-canvas) 320px);
-      padding-bottom: 72px;
-    }
-
-    .ai-guide-page {
-      width: 100%;
-      max-width: 780px;
-      margin: 0 auto;
-      font-family: var(--guide-body);
-    }
-
-    .guide-heading h1,
-    .guide-panel-heading h2,
-    .guide-section-heading h2,
-    .guide-callout h3,
-    .guide-danger-header {
-      font-family: var(--guide-display);
-      font-variation-settings: 'wdth' 115;
-    }
-
-    .guide-eyebrow,
-    .guide-panel-kicker,
-    .guide-metric-label,
-    .guide-support-label,
-    .guide-field label,
-    .guide-script-label,
-    .guide-mode-tag {
-      font-family: var(--guide-mono);
-    }
-
-    .guide-big-code,
-    .guide-code,
-    .guide-ring-item strong,
-    .guide-secondary-action strong,
-    .guide-metric-value {
-      font-family: var(--guide-mono);
-    }
-
-    .guide-heading {
-      display: flex;
-      align-items: flex-end;
-      justify-content: space-between;
-      gap: 20px;
-      margin-bottom: 22px;
-      padding: 2px 2px 0;
-    }
-
-    .guide-eyebrow,
-    .guide-panel-kicker,
-    .guide-metric-label,
-    .guide-support-label {
-      margin: 0;
-      color: var(--nexora-brand);
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: .09em;
-      text-transform: uppercase;
-    }
-
-    .guide-heading h1 {
-      margin: 5px 0 4px;
-      color: var(--nexora-text);
-      font-size: clamp(24px, 2.4vw, 32px);
-      font-weight: 800;
-      letter-spacing: -.045em;
-      line-height: 1.15;
-    }
-
-    .guide-description {
-      max-width: 690px;
-      margin: 0;
-      color: var(--nexora-muted);
-      font-size: 14px;
-      line-height: 1.55;
-    }
-
-    .guide-heading-actions {
-      display: flex;
-      align-items: center;
-      flex-shrink: 0;
-      gap: 10px;
-    }
-
-    .guide-language-switcher {
-      display: inline-flex;
-      align-items: center;
-      gap: 3px;
-      border: 1px solid var(--nexora-border);
-      border-radius: 999px;
-      background: var(--nexora-surface);
-      padding: 4px;
-      box-shadow: var(--nexora-card-shadow);
-    }
-
-    .guide-language-switcher button,
-    .guide-print-button {
-      min-height: 38px;
-      border: 1px solid transparent;
-      border-radius: 8px;
-      background: transparent;
-      color: var(--nexora-muted);
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .guide-language-switcher button {
-      min-height: 28px;
-      padding: 0 9px;
-      border-radius: 999px;
-    }
-
-    .guide-language-switcher button.is-active {
-      background: var(--nexora-surface-muted);
-      color: var(--nexora-brand);
-    }
-
-    .guide-print-button {
-      display: inline-flex;
-      align-items: center;
-      gap: 7px;
-      border-color: var(--nexora-border);
-      background: var(--nexora-surface);
-      padding: 0 13px;
-      box-shadow: var(--nexora-card-shadow);
-    }
-
-    .guide-print-button:hover,
-    .guide-language-switcher button:hover {
-      border-color: var(--nexora-brand);
-      color: var(--nexora-brand);
-    }
-
-    .guide-print-button svg {
-      width: 16px;
-      height: 16px;
-    }
-
-    .guide-panel,
-    .guide-number-card,
-    .guide-situations,
-    .guide-script,
-    .guide-support {
-      border: 1px solid var(--nexora-border);
-      border-radius: 14px;
-      background: var(--nexora-surface);
-      box-shadow: 0 8px 24px rgba(15, 23, 42, .055);
-    }
-
-    .guide-panel {
-      background: linear-gradient(180deg, #fff 0%, #fbfcff 100%);
-      padding: 20px;
-    }
-
-    .guide-controls {
-      margin-bottom: 18px;
-      border-top: 3px solid var(--nexora-brand);
-    }
-
-    .guide-panel-heading {
-      display: flex;
-      align-items: flex-start;
-      gap: 11px;
-      margin-bottom: 16px;
-    }
-
-    .guide-panel-heading-icon {
-      display: inline-flex;
-      width: 34px;
-      height: 34px;
-      flex: 0 0 auto;
-      align-items: center;
-      justify-content: center;
-      border-radius: 9px;
-      background: #eef0ff;
-      color: var(--nexora-brand);
-    }
-
-    .guide-panel-heading-icon svg {
-      width: 18px;
-      height: 18px;
-    }
-
-    .guide-panel-heading h2,
-    .guide-section-heading h2 {
-      margin: 2px 0 0;
-      color: var(--nexora-text);
-      font-size: 18px;
-      font-weight: 800;
-      letter-spacing: -.025em;
-    }
-
-    .guide-mode-tag {
-      display: inline-block;
-      margin-left: 5px;
-      border-radius: 999px;
-      background: #eef0ff;
-      padding: 4px 8px;
-      color: var(--nexora-brand);
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: 0;
-      vertical-align: middle;
-      white-space: nowrap;
-    }
-
-    .guide-panel-heading p,
-    .guide-section-heading p {
-      margin: 3px 0 0;
-      color: var(--nexora-muted);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .guide-control-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 14px;
-    }
-
-    .guide-field label {
-      display: block;
-      margin-bottom: 7px;
-      color: var(--nexora-muted);
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: .05em;
-      text-transform: uppercase;
-    }
-
-    .guide-select-wrap {
-      position: relative;
-    }
-
-    .guide-select-wrap::after {
-      position: absolute;
-      top: 50%;
-      right: 13px;
-      width: 7px;
-      height: 7px;
-      border-right: 1.75px solid var(--nexora-subtle);
-      border-bottom: 1.75px solid var(--nexora-subtle);
-      content: '';
-      pointer-events: none;
-      transform: translateY(-65%) rotate(45deg);
-      transition: border-color .2s ease;
-    }
-
-    .guide-select-wrap:focus-within::after {
-      border-color: var(--nexora-brand);
-    }
-
-    .guide-field select {
-      width: 100%;
-      min-height: 44px;
-      border: 1px solid var(--nexora-border);
-      border-radius: 9px;
-      outline: 0;
-      -webkit-appearance: none;
-      appearance: none;
-      background: var(--nexora-surface);
-      padding: 0 38px 0 12px;
-      color: var(--nexora-text);
-      font-size: 14px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .guide-field select::-ms-expand {
-      display: none;
-    }
-
-    .guide-field select:focus {
-      border-color: var(--nexora-brand);
-      box-shadow: 0 0 0 3px rgba(70, 72, 216, .14);
-    }
-
-    .guide-danger-card {
-      overflow: hidden;
-      margin-bottom: 18px;
-      border: 1px solid #f3c6c1;
-      border-radius: 14px;
-      background: var(--guide-danger-soft);
-      box-shadow: var(--nexora-card-shadow);
-    }
-
-    .guide-danger-header {
-      display: flex;
-      align-items: center;
-      gap: 9px;
-      background: var(--guide-danger);
-      padding: 12px 18px;
-      color: #fff;
-      font-size: 14px;
-      font-weight: 800;
-      letter-spacing: .04em;
-      text-transform: uppercase;
-    }
-
-    .guide-danger-header svg {
-      width: 17px;
-      height: 17px;
-    }
-
-    .guide-danger-body {
-      display: grid;
-      grid-template-columns: minmax(190px, .5fr) 1fr;
-      align-items: center;
-      gap: 20px;
-      padding: 18px;
-    }
-
-    .guide-big-code,
-    .guide-code {
-      border-radius: 10px;
-      font-weight: 700;
-      letter-spacing: -.04em;
-      text-align: center;
-      overflow-wrap: anywhere;
-      word-break: break-word;
-    }
-
-    .guide-big-code {
-      border: 2px solid var(--guide-danger);
-      background: #fff;
-      padding: 17px 12px;
-      color: var(--guide-danger);
-      font-size: clamp(26px, 3.8vw, 34px);
-      line-height: 1.08;
-    }
-
-    .guide-danger-body p,
-    .guide-panel-copy,
-    .guide-warning p,
-    .guide-info p,
-    .guide-callout p,
-    .guide-situation-answer,
-    .guide-script p {
-      margin: 0;
-      color: var(--nexora-muted);
-      font-size: 14px;
-      line-height: 1.65;
-    }
-
-    .guide-danger-body p strong,
-    .guide-panel-copy strong,
-    .guide-warning strong,
-    .guide-info strong,
-    .guide-situation-answer strong {
-      color: var(--nexora-text);
-    }
-
-    .guide-main-grid {
-      display: grid;
-      grid-template-columns: minmax(0, 1fr);
-      align-items: start;
-      gap: 16px;
-      margin-bottom: 18px;
-    }
-
-    .guide-code {
-      border: 1px solid #b7ead1;
-      background: var(--guide-success-soft);
-      padding: 14px 12px;
-      color: var(--guide-success);
-      font-size: clamp(16px, 1.8vw, 20px);
-      line-height: 1.25;
-    }
-
-    .guide-code-note {
-      margin-top: 10px;
-    }
-
-    .guide-secondary-action {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
-      margin-top: 13px;
-      border-top: 1px dashed var(--nexora-border);
-      padding-top: 13px;
-      color: var(--nexora-muted);
-      font-size: 13px;
-      line-height: 1.5;
-    }
-
-    .guide-secondary-action strong {
-      margin-left: 2px;
-      color: var(--nexora-text);
-      font-size: 13px;
-      font-weight: 700;
-    }
-
-    .guide-secondary-action svg {
-      width: 15px;
-      height: 15px;
-      flex: 0 0 auto;
-      color: var(--nexora-subtle);
-    }
-
-    .guide-ring-track {
-      display: grid;
-      grid-template-columns: repeat(4, minmax(0, 1fr));
-      overflow: hidden;
-      margin: 14px 0 10px;
-      border: 1px solid var(--nexora-border);
-      border-radius: 10px;
-    }
-
-    .guide-ring-item {
-      padding: 9px 5px;
-      text-align: center;
-    }
-
-    .guide-ring-item + .guide-ring-item {
-      border-left: 1px solid var(--nexora-border);
-    }
-
-    .guide-ring-item.is-selected {
-      background: var(--guide-warning-soft);
-    }
-
-    .guide-ring-item strong {
-      display: block;
-      color: var(--nexora-text);
-      font-size: 15px;
-      font-weight: 700;
-      white-space: nowrap;
-    }
-
-    .guide-ring-item > span {
-      display: block;
-      margin-top: 2px;
-      color: var(--nexora-subtle);
-      font-size: 12px;
-    }
-
-    .guide-callout {
-      display: flex;
-      align-items: flex-start;
-      gap: 11px;
-      border-radius: 14px;
-      padding: 16px 18px;
-      box-shadow: 0 8px 24px rgba(15, 23, 42, .045);
-    }
-
-    .guide-callout.is-danger {
-      border: 1px solid #f3c6c1;
-      background: var(--guide-danger-soft);
-    }
-
-    .guide-callout.is-warning {
-      border: 1px solid #f7dba7;
-      background: var(--guide-warning-soft);
-    }
-
-    .guide-callout.is-info {
-      border: 1px solid #b9ddff;
-      background: var(--guide-info-soft);
-    }
-
-    .guide-callout-icon {
-      display: inline-flex;
-      width: 28px;
-      height: 28px;
-      flex: 0 0 auto;
-      align-items: center;
-      justify-content: center;
-      border-radius: 8px;
-    }
-
-    .guide-callout-icon svg {
-      width: 16px;
-      height: 16px;
-    }
-
-    .is-danger .guide-callout-icon {
-      background: var(--guide-danger);
-      color: #fff;
-    }
-
-    .is-warning .guide-callout-icon {
-      background: #f5b544;
-      color: #fff;
-    }
-
-    .is-info .guide-callout-icon {
-      background: var(--guide-info);
-      color: #fff;
-    }
-
-    .guide-callout h3 {
-      margin: 1px 0 4px;
-      color: var(--nexora-text);
-      font-size: 15px;
-      font-weight: 800;
-    }
-
-    .guide-callout p {
-      color: var(--nexora-muted);
-    }
-
-    .guide-warning,
-    .guide-info {
-      padding: 17px 18px;
-    }
-
-    .guide-number-card {
-      margin-bottom: 18px;
-      border-top: 3px solid var(--brand-cyan);
-      padding: 18px;
-    }
-
-    .guide-number-grid {
-      display: grid;
-      grid-template-columns: repeat(2, minmax(0, 1fr));
-      gap: 12px;
-      margin-top: 15px;
-    }
-
-    .guide-number {
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-      gap: 10px;
-      min-width: 0;
-      border: 1px solid var(--nexora-border);
-      border-radius: 10px;
-      background: var(--nexora-surface-muted);
-      padding: 12px;
-      transition: border-color .2s, box-shadow .2s, transform .2s;
-    }
-
-    .guide-number:hover {
-      border-color: rgba(70, 72, 216, .35);
-      box-shadow: 0 6px 14px rgba(15, 23, 42, .06);
-      transform: translateY(-1px);
-    }
-
-    .guide-number-copy {
-      min-width: 0;
-    }
-
-    .guide-metric-label {
-      color: var(--nexora-subtle);
-      font-size: 12px;
-    }
-
-    .guide-metric-value {
-      overflow: hidden;
-      margin-top: 5px;
-      color: var(--nexora-text);
-      font-size: 14px;
-      font-weight: 700;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-    }
-
-    .guide-token.empty {
-      border-radius: 5px;
-      background: #fff2cc;
-      padding: 2px 5px;
-      color: #8a5b06;
-    }
-
-    .guide-copy-button {
-      flex: 0 0 auto;
-      min-height: 34px;
-      border: 1px solid var(--nexora-border);
-      border-radius: 8px;
-      background: var(--nexora-surface);
-      padding: 0 10px;
-      color: var(--nexora-brand);
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .guide-copy-button:hover,
-    .guide-copy-button.is-done {
-      border-color: #b7ead1;
-      background: var(--guide-success-soft);
-      color: var(--guide-success);
-    }
-
-    .guide-section-heading {
-      margin-bottom: 13px;
-    }
-
-    .guide-situations {
-      overflow: hidden;
-      margin-bottom: 18px;
-    }
-
-    .guide-situations-heading {
-      background: linear-gradient(180deg, #fff 0%, #fbfcff 100%);
-      padding: 18px 18px 4px;
-    }
-
-    .guide-situation {
-      display: grid;
-      grid-template-columns: minmax(200px, .72fr) minmax(0, 1.28fr);
-      border-top: 1px solid var(--nexora-border);
-    }
-
-    .guide-situation-question,
-    .guide-situation-answer {
-      padding: 14px 18px;
-    }
-
-    .guide-situation-question {
-      background: var(--nexora-surface-muted);
-      color: var(--nexora-text);
-      font-size: 14px;
-      font-weight: 800;
-      line-height: 1.5;
-    }
-
-    .guide-situation-answer {
-      border-left: 1px solid var(--nexora-border);
-    }
-
-    .guide-script {
-      margin-bottom: 18px;
-      border-color: #f3d48f;
-      border-left: 4px solid #f5b544;
-      background: var(--guide-warning-soft);
-      padding: 18px;
-    }
-
-    .guide-script-label {
-      margin-bottom: 8px;
-      color: var(--guide-warning);
-      font-size: 12px;
-      font-weight: 700;
-      letter-spacing: .1em;
-      line-height: 1.4;
-      text-transform: uppercase;
-    }
-
-    .guide-script p {
-      color: #5c430f;
-      font-size: 14px;
-      font-weight: 600;
-      line-height: 1.65;
-    }
-
-    .guide-support {
-      display: grid;
-      grid-template-columns: repeat(3, minmax(0, 1fr));
-      gap: 18px;
-      margin-bottom: 18px;
-      border: 0;
-      border-radius: 14px;
-      background: linear-gradient(135deg, #081f49 0%, #12356d 100%);
-      padding: 20px;
-      color: #fff;
-      box-shadow: 0 12px 28px rgba(8, 31, 73, .16);
-    }
-
-    .guide-support-label {
-      color: rgba(255, 255, 255, .52);
-    }
-
-    .guide-support-value {
-      overflow-wrap: anywhere;
-      margin-top: 5px;
-      color: #fff;
-      font-size: 14px;
-      font-weight: 800;
-    }
-
-    .guide-footer-note {
-      margin: 0;
-      color: var(--nexora-subtle);
-      font-size: 12px;
-      text-align: center;
-    }
-
-    .guide-footer-note button {
-      border: 0;
-      background: transparent;
-      padding: 5px 0;
-      color: var(--nexora-brand);
-      font-size: 12px;
-      font-weight: 700;
-      cursor: pointer;
-    }
-
-    .guide-is-hidden {
-      display: none !important;
-    }
-
-    .guide-en {
-      display: none;
-    }
-
-    .ai-guide-page[data-guide-lang="en"] .guide-vi {
-      display: none !important;
-    }
-
-    .ai-guide-page[data-guide-lang="en"] .guide-en {
-      display: revert;
-    }
-
-    :focus-visible {
-      outline: 3px solid rgba(70, 72, 216, .35);
-      outline-offset: 2px;
-    }
-
-    @media (max-width: 1024px) {
-      .content {
-        padding: 18px 18px 56px;
-      }
-
-      .guide-main-grid {
-        gap: 14px;
-      }
-
-      .guide-panel,
-      .guide-number-card {
-        padding: 17px;
-      }
-
-      .guide-situations-heading {
-        padding: 16px 17px 4px;
-      }
-
-      .guide-situation-question,
-      .guide-situation-answer {
-        padding: 12px 15px;
-      }
-    }
-
-    @media (max-width: 767px) {
-      .guide-main-grid,
-      .guide-danger-body {
-        grid-template-columns: 1fr;
-      }
-
-      .guide-danger-body {
-        gap: 14px;
-      }
-
-      .content {
-        padding: 12px 12px 48px;
-      }
-
-      .guide-heading {
-        align-items: flex-start;
-        flex-direction: column;
-      }
-
-      .guide-heading {
-        gap: 12px;
-        margin-bottom: 14px;
-      }
-
-      .guide-heading h1 {
-        font-size: 24px;
-      }
-
-      .guide-description {
-        font-size: 13px;
-        line-height: 1.5;
-      }
-
-      .guide-heading-actions {
-        width: 100%;
-        gap: 8px;
-        justify-content: space-between;
-      }
-
-      .guide-controls {
-        margin-bottom: 14px;
-      }
-
-      .guide-panel {
-        padding: 15px;
-      }
-
-      .guide-panel-heading {
-        gap: 9px;
-        margin-bottom: 12px;
-      }
-
-      .guide-panel-heading-icon {
-        width: 30px;
-        height: 30px;
-      }
-
-      .guide-panel-heading h2,
-      .guide-section-heading h2 {
-        font-size: 17px;
-      }
-
-      .guide-mode-tag {
-        display: block;
-        width: max-content;
-        max-width: 100%;
-        margin: 6px 0 0;
-        white-space: normal;
-      }
-
-      .guide-danger-card,
-      .guide-situations,
-      .guide-script,
-      .guide-support {
-        margin-bottom: 14px;
-      }
-
-      .guide-danger-header {
-        padding: 10px 14px;
-      }
-
-      .guide-danger-body {
-        gap: 12px;
-        padding: 14px;
-      }
-
-      .guide-big-code {
-        padding: 14px 10px;
-        font-size: 28px;
-      }
-
-      .guide-ring-track {
-        margin: 11px 0 8px;
-      }
-
-      .guide-callout,
-      .guide-warning,
-      .guide-info {
-        gap: 9px;
-        padding: 13px 14px;
-      }
-
-      .guide-number-card {
-        margin-bottom: 14px;
-        padding: 15px;
-      }
-
-      .guide-control-grid,
-      .guide-number-grid,
-      .guide-support {
-        grid-template-columns: 1fr;
-      }
-
-      .guide-number-grid {
-        gap: 10px;
-        margin-top: 12px;
-      }
-
-      .guide-number {
-        padding: 10px;
-      }
-
-      .guide-situation {
-        grid-template-columns: 1fr;
-      }
-
-      .guide-situations-heading {
-        padding: 15px 15px 3px;
-      }
-
-      .guide-situation-question,
-      .guide-situation-answer {
-        padding: 11px 15px;
-      }
-
-      .guide-situation-answer {
-        border-left: 0;
-      }
-
-      .guide-script {
-        padding: 15px;
-      }
-
-      .guide-support {
-        gap: 12px;
-        padding: 15px;
-      }
-
-      .guide-footer-note {
-        font-size: 12px;
-      }
-    }
-
-    @media print {
-      @page {
-        size: A4;
-        margin: 12mm;
-      }
-
-      html,
-      body,
-      .shell,
-      .app-area,
-      .content {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-      }
-
-      .sidebar,
-      .header,
-      .guide-heading-actions {
-        display: none !important;
-      }
-
-      .app-area {
-        padding-left: 0 !important;
-      }
-
-      .content {
-        min-height: 0;
-        padding: 0 !important;
-      }
-
-      .ai-guide-page {
-        width: 100%;
-        max-width: 780px;
-        margin: 0 auto;
-      }
-
-      .guide-heading {
-        align-items: flex-end;
-        flex-direction: row;
-        gap: 20px;
-        margin-bottom: 22px;
-      }
-
-      .guide-heading h1 {
-        font-size: 32px;
-      }
-
-      .guide-description {
-        font-size: 14px;
-      }
-
-      .guide-controls,
-      .guide-danger-card,
-      .guide-situations,
-      .guide-script,
-      .guide-support,
-      .guide-number-card {
-        margin-bottom: 18px;
-      }
-
-      .guide-panel {
-        padding: 20px;
-      }
-
-      .guide-panel-heading {
-        gap: 11px;
-        margin-bottom: 16px;
-      }
-
-      .guide-panel-heading-icon {
-        width: 34px;
-        height: 34px;
-      }
-
-      .guide-panel-heading h2,
-      .guide-section-heading h2 {
-        font-size: 18px;
-      }
-
-      .guide-danger-header {
-        padding: 12px 18px;
-      }
-
-      .guide-danger-body {
-        padding: 18px;
-      }
-
-      .guide-big-code {
-        padding: 17px 12px;
-        font-size: 34px;
-      }
-
-      .guide-ring-track {
-        margin: 14px 0 10px;
-      }
-
-      .guide-callout {
-        gap: 11px;
-        padding: 16px 18px;
-      }
-
-      .guide-warning,
-      .guide-info {
-        padding: 17px 18px;
-      }
-
-      .guide-number-card,
-      .guide-script {
-        padding: 18px;
-      }
-
-      .guide-support {
-        padding: 20px;
-      }
-
-      .guide-number {
-        padding: 12px;
-      }
-
-      .guide-situations-heading {
-        padding: 18px 18px 4px;
-      }
-
-      .guide-control-grid,
-      .guide-number-grid,
-      .guide-support {
-        grid-template-columns: repeat(2, minmax(0, 1fr));
-      }
-
-      .guide-danger-body {
-        grid-template-columns: minmax(190px, .5fr) 1fr;
-        gap: 20px;
-      }
-
-      .guide-number-grid {
-        gap: 12px;
-        margin-top: 15px;
-      }
-
-      .guide-support {
-        grid-template-columns: repeat(3, minmax(0, 1fr));
-        gap: 18px;
-      }
-
-      .guide-situation {
-        grid-template-columns: minmax(200px, .72fr) minmax(0, 1.28fr);
-      }
-
-      .guide-situation-question,
-      .guide-situation-answer {
-        padding: 14px 18px;
-      }
-
-      .guide-situation-answer {
-        border-left: 1px solid var(--nexora-border);
-      }
-
-      .guide-danger-card,
-      .guide-panel,
-      .guide-number-card,
-      .guide-situations,
-      .guide-script,
-      .guide-support,
-      .guide-callout {
-        -webkit-print-color-adjust: exact;
-        print-color-adjust: exact;
-        break-inside: avoid;
-      }
-
-      .guide-situation {
-        break-inside: avoid;
-      }
-
-      .guide-footer-note {
-        display: none;
-      }
-    }
-  </style>
   <link rel="icon" type="image/png" sizes="128x128" href="../assets/flaticon-flat/favicon-letter-n-9203636.png">
+  <style>
+.ai-guide-page{--bg:#f4f6fb;--card:#fff;--ink:#111a3c;--mut:#5b6486;--line:#e3e7f3;--blue:#3b5bfd;--blue2:#eef1ff;--ok:#16a34a;--okbg:#ecfdf3;--bad:#dc2626;--badbg:#fdf1f0;--warnbg:#fff9e6;--warnln:#f3df8a;--warntx:#b4531a;--or:#f59e6b;--navy:#111a3c}
+.ai-guide-page *{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html{scroll-behavior:smooth}
+.ai-guide-page{margin:0;background:var(--bg);color:var(--ink);font:16px/1.5 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif}
+body.tour .ai-guide-page{padding-bottom:300px}
+.ai-guide-page .wrap{max-width:640px;margin:0 auto;padding:12px 12px 90px}
+.ai-guide-page .topbar{display:flex;gap:8px;align-items:center;position:sticky;top:0;z-index:40;background:var(--bg);padding:6px 0 8px}
+.ai-guide-page .tabs{flex:1;display:grid;grid-template-columns:1fr 1fr;background:#e3e8f6;border-radius:16px;padding:5px}
+.ai-guide-page .tabs button{border:0;background:none;padding:12px 6px;border-radius:12px;font-weight:700;font-size:14px;color:var(--mut);cursor:pointer;font-family:inherit}
+.ai-guide-page .tabs button.on{background:#fff;color:#2b3fb8;box-shadow:0 2px 8px rgba(30,50,120,.15)}
+.ai-guide-page .lang{display:flex;background:#e3e8f6;border-radius:999px;padding:3px;flex:none}
+.ai-guide-page .lang button{border:0;background:none;padding:7px 10px;border-radius:999px;font-weight:800;font-size:12px;color:var(--mut);cursor:pointer}
+.ai-guide-page .lang button.on{background:#fff;color:#2b3fb8}
+.ai-guide-page .eyebrow{color:var(--blue);font-weight:800;letter-spacing:1.2px;font-size:13px;margin:14px 0 6px;text-transform:uppercase}
+.ai-guide-page h1{font-size:28px;line-height:1.15;margin:0 0 8px;letter-spacing:-.5px}
+.ai-guide-page .sub{color:var(--mut);margin:0 0 14px;font-size:16px}
+.ai-guide-page .prog{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:0 0 16px}
+.ai-guide-page .prog i{height:8px;border-radius:6px;background:#dfe4f2}
+.ai-guide-page .prog i.on{background:var(--blue)}
+.ai-guide-page .card{background:var(--card);border:1px solid var(--line);border-radius:20px;padding:16px;margin-bottom:14px;scroll-margin-top:70px;transition:box-shadow .3s}
+.ai-guide-page .card h2{font-size:20px;margin:0 0 4px;display:flex;align-items:center;gap:10px;line-height:1.2}
+.ai-guide-page .card h2 .n{width:34px;height:34px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:15px;flex:none}
+.ai-guide-page .hint{color:var(--mut);font-size:15px;margin:0 0 12px}
+.ai-guide-page .lbl{font-size:12.5px;font-weight:800;letter-spacing:1px;color:var(--mut);text-transform:uppercase;margin:16px 0 8px}
+.ai-guide-page .grid4{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.ai-guide-page .opt{background:#fff;border:2px solid var(--line);border-radius:16px;padding:14px 8px;text-align:center;cursor:pointer;font-weight:800;font-size:15px;color:var(--ink);font-family:inherit;min-height:62px}
+.ai-guide-page .opt small{display:block;font-weight:500;color:var(--mut);font-size:12.5px}
+.ai-guide-page .opt.on{background:var(--blue2);border-color:var(--blue);color:#2437b5}
+.ai-guide-page .optw{display:block;width:100%;text-align:left;padding:14px 16px;margin-bottom:10px}
+.ai-guide-page .optw small{font-size:14.5px;margin-top:2px;color:var(--mut)}
+.ai-guide-page .optw .rec{font-size:11px;background:var(--blue);color:#fff;border-radius:999px;padding:2px 8px;margin-left:8px;font-weight:700;vertical-align:middle}
+.ai-guide-page .link{background:none;border:0;color:var(--blue);font-weight:800;font-size:16px;padding:14px 0 6px;cursor:pointer;font-family:inherit;text-align:left}
+.ai-guide-page .help{border:2px dashed var(--blue);border-radius:18px;padding:14px;margin:6px 0 4px;background:#f8f9ff}
+.ai-guide-page .hgrid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.ai-guide-page .hgrid h4{margin:8px 0 2px;font-size:16px}
+.ai-guide-page .hgrid p{margin:0;color:var(--mut);font-size:14.5px}
+.ai-guide-page .mini{border:1px solid var(--line);background:#fff;border-radius:12px;padding:8px;min-height:60px}
+.ai-guide-page .status{background:#111;color:#fff;border-radius:12px;padding:8px 10px;display:flex;justify-content:space-between;align-items:center;font-weight:700;font-size:13px;gap:6px}
+.ai-guide-page .carrierbadge{background:#fde68a;color:#7c3a00;border:2px solid var(--or);border-radius:8px;padding:0 8px;font-weight:800;font-size:13px}
+.ai-guide-page .codepanel{background:var(--navy);color:#fff;border-radius:18px;padding:16px;text-align:center;margin:12px 0}
+.ai-guide-page .codepanel .t{font-size:16px}
+.ai-guide-page .badge{display:inline-block;background:#f6e9c8;color:#8b3a0b;border:1px solid #e7cf93;border-radius:8px;padding:1px 10px;font:700 13px ui-monospace,monospace;margin-left:8px}
+.ai-guide-page .codebox{background:#2a3358;border-radius:14px;padding:18px 8px;margin:10px 0;font:800 clamp(26px,8vw,38px)/1.1 ui-monospace,Menlo,monospace;word-break:break-all}
+.ai-guide-page .codebox b{color:#fbd56a;font-weight:800}
+.ai-guide-page .codepanel .copy{background:#fff;color:var(--ink);border:0;border-radius:12px;padding:14px 24px;font-size:20px;font-weight:800;margin:8px 0;cursor:pointer;font-family:inherit}
+.ai-guide-page .codepanel .small{color:#c7cff0;font-size:15px}
+.ai-guide-page .numrow{margin-top:12px;font-size:13px;color:#aab4e6;text-align:left}
+.ai-guide-page .numrow input{width:100%;margin-top:4px;background:#2a3358;border:1px solid #435089;border-radius:10px;color:#fff;padding:10px;font-size:16px;font-weight:700;outline:none}
+.ai-guide-page .offline{background:var(--badbg);border:1px solid #f5cdc9;color:var(--bad);border-radius:14px;padding:14px 16px;font-size:18px;margin:10px 0}
+.ai-guide-page .offline b{font-size:20px}
+.ai-guide-page .noteblue{background:var(--blue2);border-radius:12px;padding:10px 12px;font-size:14.5px;margin:10px 0}
+.ai-guide-page .warn{background:var(--warnbg);border:1px solid var(--warnln);color:var(--warntx);border-radius:14px;padding:12px 14px;font-size:15.5px;margin-top:12px}
+.ai-guide-page .pics{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.ai-guide-page .pic{background:#f8f9fe;border:1px solid var(--line);border-radius:18px;padding:10px 8px 12px;text-align:center}
+.ai-guide-page .pic .no{width:30px;height:30px;border-radius:50%;background:var(--blue);color:#fff;display:grid;place-items:center;font-weight:800;margin:0 0 6px 4px}
+.ai-guide-page .pic p{margin:8px 4px 0;font-size:14.5px;line-height:1.35}
+.ai-guide-page .ph{width:100%;max-width:140px;margin:0 auto;aspect-ratio:9/17.5;background:#111;border-radius:22px;padding:6px;position:relative}
+.ai-guide-page .ph .scr{height:100%;background:#fff;border-radius:16px;display:flex;flex-direction:column;overflow:hidden;position:relative}
+.ai-guide-page .ph .disp{margin:7px 7px 4px;background:#eef0f6;border-radius:9px;min-height:34px;display:grid;place-items:center;font:700 9.5px ui-monospace,monospace;color:#111;word-break:break-all;padding:2px}
+.ai-guide-page .ph .keys{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;padding:2px 9px}
+.ai-guide-page .ph .keys span{aspect-ratio:1.45;border-radius:50%;background:#eceef4;display:grid;place-items:center;font-weight:700;font-size:11px;color:#111}
+.ai-guide-page .ph .keys.dim span{opacity:.45}
+.ai-guide-page .ph .callp{width:62%;height:26px;background:#4caf50;border-radius:14px;margin:7px auto 0;display:grid;place-items:center;font-size:12px}
+.ai-guide-page .ph .tab{margin:5px 8px;border-radius:9px;text-align:center;font-size:10px;font-weight:800;color:var(--blue);padding:4px}
+.ai-guide-page .hl{outline:3px solid var(--or);outline-offset:1px;border-radius:12px}
+.ai-guide-page .ph .calling{margin:auto;text-align:center;font-weight:800;font-size:10.5px}
+.ai-guide-page .ph .ic{width:34px;height:34px;border-radius:50%;background:#e7ebff;display:grid;place-items:center;margin:8px auto 4px;font-size:15px}
+.ai-guide-page .ph .bn{background:#1c2540;color:#fff;border-radius:10px;margin:6px;padding:7px 5px;font-size:9px;line-height:1.3;text-align:center;font-weight:700}
+.ai-guide-page .chk{display:flex;gap:14px;align-items:flex-start;border:1.5px solid var(--line);border-radius:16px;padding:14px;margin-bottom:10px;cursor:pointer;background:#fff}
+.ai-guide-page .chk input{width:26px;height:26px;accent-color:var(--blue);flex:none;margin-top:2px}
+.ai-guide-page .chk b{display:block;font-size:17px;line-height:1.25}
+.ai-guide-page .chk span{color:var(--mut);font-size:14.5px}
+.ai-guide-page .connected{background:var(--okbg);border:1px solid #a8e7c0;color:#166534;border-radius:14px;padding:12px 14px;font-weight:700;margin-top:6px}
+.ai-guide-page details{background:#fff;border:1px solid var(--line);border-radius:18px;margin-bottom:12px}
+.ai-guide-page details summary{list-style:none;padding:18px 16px;font-weight:800;font-size:17px;display:flex;justify-content:space-between;gap:10px;cursor:pointer}
+.ai-guide-page details summary::-webkit-details-marker{display:none}
+.ai-guide-page details summary:after{content:"+";color:var(--blue);font-size:26px;line-height:1}
+.ai-guide-page details[open] summary:after{content:"–"}
+.ai-guide-page details .body{padding:0 16px 16px;color:var(--mut);font-size:15px}
+.ai-guide-page details .body li{margin:6px 0}
+.ai-guide-page .rings{display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin:10px 0}
+.ai-guide-page .rings div{background:var(--blue2);border-radius:10px;padding:8px 4px;text-align:center;font-size:13px;color:var(--ink)}
+.ai-guide-page .stuck{background:var(--navy);color:#fff;border-radius:22px;padding:18px;margin:16px 0}
+.ai-guide-page .stuck .k{color:#a9b4ff;font-weight:800;letter-spacing:1.5px;font-size:13px}
+.ai-guide-page .stuck .nm{font-size:26px;font-weight:800;margin:2px 0 12px}
+.ai-guide-page .stuck a{color:#fff;font-size:22px}
+.ai-guide-page .share{display:block;width:100%;border:2px dashed #cfd5ea;background:none;border-radius:20px;padding:18px;font-weight:800;font-size:17px;color:var(--ink);cursor:pointer;font-family:inherit}
+.ai-guide-page .dark{background:var(--navy);color:#fff;border-radius:18px;padding:16px;font-size:17px;margin:14px 0}
+.ai-guide-page .tabsmini{display:flex;gap:6px;overflow:auto;padding:2px 2px 8px;margin:10px 0 4px}
+.ai-guide-page .tabsmini span{white-space:nowrap;border:1px solid var(--line);border-radius:999px;padding:6px 12px;font-weight:700;font-size:13px;color:var(--mut);background:#fff}
+.ai-guide-page .tabsmini span.on{border:2px solid var(--blue);color:#2437b5;background:var(--blue2);outline:3px solid var(--or);outline-offset:1px}
+.ai-guide-page .crumb{color:#2b3fb8;font-weight:800;font-size:16px;margin:2px 0}
+.ai-guide-page .ui{background:#f8f9fe;border:1px solid var(--line);border-radius:16px;padding:10px;font-size:14px}
+.ai-guide-page .ui .r{background:#fff;border-radius:10px;padding:11px 12px;margin-bottom:6px;font-weight:700;display:flex;justify-content:space-between;align-items:center;gap:8px}
+.ai-guide-page .ui .r i{display:block;height:9px;width:70px;border-radius:6px;background:#e1e5f1}
+.ai-guide-page .ui .pill{background:#dcfce7;color:#166534;border-radius:999px;padding:2px 10px;font-size:12px}
+.ai-guide-page .ui table{width:100%;border-collapse:collapse;font-size:12.5px}
+.ai-guide-page .ui th{color:var(--mut);text-align:left;padding:6px 4px;font-size:11.5px;letter-spacing:.8px}
+.ai-guide-page .ui td{padding:6px 4px;border-top:1px solid var(--line)}
+.ai-guide-page .ui .btn{background:var(--blue);color:#fff;border-radius:10px;padding:8px 12px;font-weight:800;display:inline-block}
+.ai-guide-page .ui .cell{background:#e8ebf6;border-radius:12px;padding:4px 10px;display:inline-block;min-width:44px;font-weight:700}
+.ai-guide-page .ui .cell i{display:inline-block;height:8px;width:24px;background:#d5dbee;border-radius:5px;vertical-align:middle}
+.ai-guide-page .box{border-radius:16px;padding:12px 14px;margin:10px 0;font-size:15.5px}
+.ai-guide-page .box .k{font-weight:800;letter-spacing:1px;font-size:12.5px;margin-bottom:2px;text-transform:uppercase}
+.ai-guide-page .b1{background:#eef0ff}
+.ai-guide-page .b2{background:var(--okbg)}
+.ai-guide-page .b3{background:var(--badbg)}
+.ai-guide-page .how{margin:14px 0 0}
+.ai-guide-page .how .k{font-weight:800;letter-spacing:1px;color:var(--mut);font-size:13px;text-transform:uppercase}
+.ai-guide-page .how ol{margin:6px 0 0 20px;padding:0}
+.ai-guide-page .how li{margin:5px 0}
+.ai-guide-page .simchips{display:flex;flex-wrap:wrap;gap:10px;margin:12px 0}
+.ai-guide-page .simchips button{display:flex;align-items:center;gap:10px;border:2.5px solid #2f7a4d;background:var(--okbg);border-radius:999px;padding:10px 16px;font-weight:800;font-size:16px;cursor:pointer;color:var(--ink);font-family:inherit}
+.ai-guide-page .simchips button.off{border-color:#e3b0ab;background:#fff;color:#8a8fa8;text-decoration:line-through}
+.ai-guide-page .simchips .bx{width:24px;height:24px;border-radius:6px;background:var(--blue);color:#fff;display:grid;place-items:center;font-size:15px;text-decoration:none}
+.ai-guide-page .simchips .off .bx{background:#fff;border:2px solid #ccd2e6;color:transparent}
+.ai-guide-page .caller{background:#eceef4;border-radius:14px;padding:14px;margin:6px 0}
+.ai-guide-page .ai{background:#eef0ff;border:1px solid #cdd3ff;border-radius:14px;padding:14px;margin:6px 0}
+.ai-guide-page .ai.bad{background:#fff1f0;border-color:#f3c6c1}
+.ai-guide-page .ai small{display:block;color:var(--bad);font-weight:700;margin-top:6px}
+.ai-guide-page .complete{font-weight:800;color:var(--mut);margin-top:8px}
+.ai-guide-page .qrback{position:fixed;inset:0;background:rgba(10,15,40,.6);z-index:200;display:none;place-items:center;padding:20px}
+.ai-guide-page .qrback.on{display:grid}
+.ai-guide-page .qrbox{background:#fff;border-radius:22px;padding:20px;text-align:center;max-width:340px;width:100%}
+.ai-guide-page #qrcv{display:grid;place-items:center;margin:12px 0;min-height:200px}
+.ai-guide-page .btnp{background:var(--blue);border:0;color:#fff;font-weight:800;padding:12px 18px;border-radius:12px;font-size:15px;cursor:pointer;font-family:inherit}
+.ai-guide-page .btnp.g{background:#e3e8f6;color:var(--ink)}
+.ai-guide-page .row{display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+/* Smart tour */
+body.tour .ai-guide-page .spot{position:relative;z-index:60;box-shadow:0 0 0 3px #22d3ee,0 0 0 9999px rgba(8,12,34,.72)!important;background-clip:padding-box}
+.ai-guide-page #tourbar{position:fixed;left:0;right:0;bottom:0;z-index:100;padding:10px 12px calc(10px + env(safe-area-inset-bottom));display:none}
+body.tour .ai-guide-page #tourbar{display:block}
+.ai-guide-page #tourbar .in{max-width:640px;margin:0 auto;background:#0d1230;color:#fff;border:1px solid #3b4690;border-radius:16px;padding:10px 12px;box-shadow:0 10px 30px rgba(0,0,0,.5)}
+.ai-guide-page #tourbar .hd{display:flex;align-items:center;gap:8px;margin-bottom:6px}
+.ai-guide-page #tourbar .tag{font-size:11px;font-weight:800;letter-spacing:.6px;background:linear-gradient(135deg,#8b5cf6,#3b82f6 55%,#22d3ee);padding:3px 9px;border-radius:999px;white-space:nowrap}
+.ai-guide-page #tourbar .ctl{margin-left:auto;display:flex;gap:6px}
+.ai-guide-page #tourbar .ctl button{background:#1b2250;border:1px solid #2c3566;color:#fff;width:34px;height:30px;border-radius:9px;cursor:pointer;font-size:14px}
+.ai-guide-page #tourbar .cap{max-height:26vh;overflow:auto}
+.ai-guide-page #tourbar .c1{font-weight:600;font-size:14px}
+.ai-guide-page #tourbar .c2{color:#a9b4e0;font-size:12.5px;margin-top:5px}
+.ai-guide-page #tourbar .bar{height:3px;background:#232b55;border-radius:3px;margin-top:8px;overflow:hidden}
+.ai-guide-page #tourbar .bar i{display:block;height:100%;width:0;background:linear-gradient(135deg,#8b5cf6,#3b82f6,#22d3ee)}
+.ai-guide-page #fab{position:fixed;right:12px;bottom:12px;z-index:90;display:flex;gap:8px}
+.ai-guide-page #fab button{background:linear-gradient(135deg,#8b5cf6,#3b82f6 55%,#22d3ee);border:0;color:#fff;font-weight:800;padding:12px 16px;border-radius:999px;box-shadow:0 8px 24px rgba(59,130,246,.45);cursor:pointer;font-family:inherit;font-size:14px}
+.ai-guide-page #fab button.sec{background:#111a3c}
+body.tour .ai-guide-page #fab{display:none}
+.ai-guide-page .nopl{background:#fff4f2;border:2px solid #f3b4ac;border-radius:16px;padding:14px;margin:6px 0 12px}
+.ai-guide-page .nopl .nt{font-weight:800;font-size:18px;color:#b42318}
+.ai-guide-page .nopl p{margin:4px 0 10px;font-size:15px}
+.ai-guide-page .wr{display:grid;gap:8px}
+.ai-guide-page .wr>div{border-radius:12px;padding:10px 12px}
+.ai-guide-page .wr .w{background:#fff;border:1px solid #f3b4ac}
+.ai-guide-page .wr .r{background:#ecfdf3;border:1px solid #a8e7c0}
+.ai-guide-page .wr span{display:block;font-weight:800;font-size:12.5px;letter-spacing:1px;margin-bottom:4px}
+.ai-guide-page .wr .w span{color:#b42318}
+.ai-guide-page .wr .r span{color:#166534}
+.ai-guide-page .wr code{display:block;font:700 15px ui-monospace,Menlo,monospace;word-break:break-all;margin:2px 0}
+.ai-guide-page .wr .w code{text-decoration:line-through;text-decoration-color:#dc2626}
+.ai-guide-page .wr .w u{text-decoration:none;color:#dc2626}
+.ai-guide-page .srcrow{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:4px 0}
+.ai-guide-page .srcok,.ai-guide-page .srcwarn{font-size:13px;font-weight:700;border-radius:10px;padding:5px 10px}
+.ai-guide-page .srcok{background:#ecfdf3;color:#166534}
+.ai-guide-page .srcwarn{background:#fff9e6;color:#b4531a}
+.ai-guide-page .stl{padding-left:22px;margin:6px 0}
+.ai-guide-page .stl li{margin:6px 0;font-size:15.5px}
+.ai-guide-page .nts{padding-left:20px;margin:8px 0;font-size:14.5px;color:#374063}
+.ai-guide-page .nts li{margin:6px 0}
+.ai-guide-page .secrow{display:flex;flex-wrap:wrap;gap:8px;margin:8px 0}
+.ai-guide-page .secb{padding:10px 14px;border-radius:12px;border:2px solid #cfd6f0;background:#fff;font-weight:800;font-size:16px;color:#1d2a6b}
+.ai-guide-page .secb.on{background:#2b3fb8;color:#fff;border-color:#2b3fb8}
+.ai-guide-page .tbl{background:#f1f4ff;border-radius:14px;padding:12px;margin:10px 0}
+.ai-guide-page .tbl p{margin:6px 0;font-size:14px}
+.ai-guide-page .tbl .tr{display:grid;grid-template-columns:repeat(4,1fr);gap:6px}
+.ai-guide-page .tbl .tr div{background:#fff;border-radius:10px;padding:8px;text-align:center;font-size:13px}
+.ai-guide-page .tbl .tr b{display:block;font-size:15px;color:#2b3fb8}
+.ai-guide-page .warnbox{background:#fff4e0;border:1px solid #f0c27a;border-radius:14px;padding:12px;margin:10px 0}
+.ai-guide-page .warnbox p{margin:4px 0 0;font-size:14px}
+.ai-guide-page .hw li{margin:8px 0;font-size:17px}
+.ai-guide-page .two{display:grid;gap:10px;margin:8px 0}
+.ai-guide-page .two .m{background:#f1f4ff;border-radius:14px;padding:12px}
+.ai-guide-page .two .m p{margin:4px 0 0;font-size:15px}
+.ai-guide-page .samplebox{background:#fff4e0;border:2px dashed #e0a030;border-radius:14px;padding:12px;margin:10px 0;font-size:16px}
+.ai-guide-page .samplebox p{margin:4px 0 0;font-size:14px}
+.ai-guide-page .formula{display:flex;flex-wrap:wrap;align-items:center;gap:6px;margin:10px 0}
+.ai-guide-page .formula div{background:#f1f4ff;border-radius:12px;padding:8px 10px;text-align:center}
+.ai-guide-page .formula small{display:block;font-size:11px;color:#5b6486;text-transform:uppercase}
+.ai-guide-page .formula b{font-family:ui-monospace,Menlo,monospace;font-size:17px;color:#1d2a6b}
+.ai-guide-page .formula i{font-style:normal;font-weight:800;font-size:20px;color:#5b6486}
+.ai-guide-page .formula .res{background:#e5f8ee}
+.ai-guide-page .offline .ot{font-weight:800;font-size:18px;margin-bottom:4px}
+.ai-guide-page .offline p{margin:6px 0;font-size:15px}
+.ai-guide-page .offbig{font-family:ui-monospace,Menlo,monospace;font-size:34px;font-weight:800;background:#fff;border-radius:14px;padding:10px;text-align:center;margin:8px 0;color:#c62828}
+
+/* Keep the PO guide inside the shared merchant shell. */
+.content{background:#f4f6fb;padding:0 12px}
+.ai-guide-page{min-width:0}
+.ai-guide-page .topbar{top:var(--guide-header-height,64px);z-index:19}
+.ai-guide-page .card{scroll-margin-top:calc(var(--guide-header-height,64px) + 100px)}
+.ai-guide-page .spot{scroll-margin-top:calc(var(--guide-header-height,64px) + 100px)}
+.ai-guide-page .ui{overflow-x:auto}
+.ai-guide-page .ui table{min-width:330px}
+.ai-guide-page .codebox{font-size:clamp(24px,6vw,38px)}
+.ai-guide-page .secrow button{cursor:pointer;font-family:inherit}
+.ai-guide-page :focus-visible{outline:3px solid #3b5bfd;outline-offset:3px}
+.ai-guide-page .numrow input:focus-visible{outline:3px solid #22d3ee;outline-offset:2px}
+@media(min-width:769px){.ai-guide-page #tourbar{left:288px}
+}
+@media(max-width:420px){
+ .content{padding:0}
+ .ai-guide-page .topbar{flex-wrap:wrap}
+ .ai-guide-page .tabs{flex-basis:100%;order:2}
+ .ai-guide-page .lang{margin-left:auto}
+ .ai-guide-page .hgrid{grid-template-columns:1fr}
+ .ai-guide-page #fab{left:12px;justify-content:flex-end;flex-wrap:wrap}
+ .ai-guide-page #fab button{font-size:12px;padding:12px}
+}
+  </style>
 </head>
 <body>
   <div class="shell">
     <aside class="sidebar" aria-label="Dashboard sidebar"></aside>
-
     <div class="app-area">
       <header class="header"></header>
+      <main class="content">
+        <div class="ai-guide-page">
+<div class="wrap">
+  <div class="topbar">
+    <div class="tabs" role="tablist"><button id="tab1" role="tab" aria-controls="pane1"></button><button id="tab2" role="tab" aria-controls="pane2"></button></div>
+    <div class="lang"><button id="bvi">VI</button><button id="ben">EN</button><button id="bes">ES</button></div>
+  </div>
 
-      <main class="content" aria-label="AI Voice setup guide">
-        <section class="ai-guide-page" data-guide-lang="vi" aria-labelledby="guide-page-title">
-          <div class="guide-heading">
-            <div>
-              <p class="guide-eyebrow">AI Voice setup</p>
-              <h1 id="guide-page-title">
-                <span class="guide-vi">Hướng dẫn AI Voice cho tiệm</span>
-                <span class="guide-en">Salon AI Voice guide</span>
-              </h1>
-              <p class="guide-description">
-                <span class="guide-vi">Cài một lần, xử lý cuộc gọi hàng ngày dễ dàng hơn — kèm mã tắt khẩn cấp và cách xử lý các tình huống thường gặp.</span>
-                <span class="guide-en">Set it up once, handle calls with confidence every day — with an emergency off code and answers for common situations.</span>
-              </p>
-            </div>
-            <div class="guide-heading-actions">
-              <div class="guide-language-switcher" aria-label="Guide language">
-                <button type="button" class="is-active" data-guide-language="vi" aria-pressed="true">VI</button>
-                <button type="button" data-guide-language="en" aria-pressed="false">EN</button>
-              </div>
-              <button class="guide-print-button" type="button" data-guide-print>
-                <i data-lucide="printer" aria-hidden="true"></i>
-                <span class="guide-vi">In hướng dẫn</span>
-                <span class="guide-en">Print guide</span>
-              </button>
-            </div>
-          </div>
+  <div id="pane1" role="tabpanel" aria-labelledby="tab1">
+    <div id="hero">
+      <div class="eyebrow" id="e1"></div><h1 id="t1"></h1><p class="sub" id="s1t"></p>
+      <div class="prog"><i id="g1"></i><i id="g2"></i><i id="g3"></i></div>
+    </div>
+    <section class="card" id="vidCard"><h2 id="vidT"></h2><p class="hint" id="vidP"></p><video id="vid" controls playsinline preload="metadata" style="width:100%;max-width:360px;display:block;margin:0 auto;border-radius:16px;background:#0d1230;aspect-ratio:9/16"></video></section>
+    <section class="card" id="how"></section>
+    <section class="card" id="s1"></section>
+    <section class="card" id="s2"></section>
+    <section class="card" id="s4"></section>
+    <section class="card" id="s3"></section>
+    <section class="card" id="nowork"></section>
+    <div id="more"></div>
+  </div>
 
-          <section class="guide-panel guide-controls" aria-labelledby="guide-controls-title">
-            <div class="guide-panel-heading">
-              <span class="guide-panel-heading-icon"><i data-lucide="sliders-horizontal" aria-hidden="true"></i></span>
-              <div>
-                <h2 id="guide-controls-title"><span class="guide-vi">Chọn cấu hình điện thoại</span><span class="guide-en">Choose your phone setup</span></h2>
-                <p><span class="guide-vi">Mã bấm thay đổi theo nhà mạng và cách bạn muốn AI bắt máy.</span><span class="guide-en">Codes change by carrier and by when you want AI to answer.</span></p>
-              </div>
-            </div>
-            <div class="guide-control-grid">
-              <div class="guide-field">
-                <label for="carrier"><span class="guide-vi">Nhà mạng của tiệm</span><span class="guide-en">Your carrier</span></label>
-                <div class="guide-select-wrap">
-                  <select id="carrier">
-                    <option value="verizon">Verizon</option>
-                    <option value="att">AT&amp;T</option>
-                    <option value="tmobile">T-Mobile</option>
-                    <option value="cricket">Cricket (mạng AT&amp;T)</option>
-                    <option value="metro">Metro / Mint (mạng T-Mobile)</option>
-                    <option value="visible">Visible / Total (mạng Verizon)</option>
-                    <option value="landline">Điện thoại bàn · Landline</option>
-                    <option value="voip">Internet · VoIP</option>
-                  </select>
-                </div>
-              </div>
-              <div class="guide-field">
-                <label for="mode"><span class="guide-vi">Kiểu trả lời</span><span class="guide-en">Answering mode</span></label>
-                <div class="guide-select-wrap">
-                  <select id="mode">
-                    <option value="ring">Chuông reo 3 hồi rồi mới qua AI</option>
-                    <option value="now">AI bắt máy ngay từ đầu</option>
-                  </select>
-                </div>
-              </div>
-            </div>
-          </section>
+  <div id="pane2" role="tabpanel" aria-labelledby="tab2" style="display:none">
+    <div id="hero2">
+      <div class="eyebrow" id="e2"></div><h1 id="t2"></h1><p class="sub" id="s2t"></p>
+      <div class="dark" id="darkb"></div>
+    </div>
+    <div id="cards"></div>
+    <section class="card" id="sim"></section>
+  </div>
 
-          <section class="guide-danger-card" aria-labelledby="guide-panic-title">
-            <div class="guide-danger-header">
-              <i data-lucide="phone-off" aria-hidden="true"></i>
-              <span id="guide-panic-title"><span class="guide-vi">Tắt ngay khi có sự cố</span><span class="guide-en">Turn it off now</span></span>
-            </div>
-            <div class="guide-danger-body">
-              <div class="guide-big-code" id="codePanic">*73</div>
-              <p>
-                <span class="guide-vi">Bấm mã này <strong>từ điện thoại của tiệm</strong>. Nó xoá <strong>hết mọi kiểu chuyển tiếp</strong> — không cần biết đang cài kiểu nào. Cuộc gọi về tiệm ngay lập tức.</span>
-                <span class="guide-en">Dial this <strong>from the shop phone</strong>. It clears <strong>every kind of forwarding</strong> — no need to know which mode is set. Calls come straight back to you.</span>
-              </p>
-            </div>
-          </section>
+  <div class="stuck" id="stuck"></div>
+  <button class="share" id="shareBtn"></button>
+</div>
 
-          <div class="guide-main-grid">
-            <section class="guide-panel" aria-labelledby="guide-on-title">
-              <div class="guide-panel-heading">
-                <span class="guide-panel-heading-icon"><i data-lucide="phone-forwarded" aria-hidden="true"></i></span>
-                <div>
-                  <h2 id="guide-on-title"><span class="guide-vi">Bật lại</span><span class="guide-en">Turn it back on</span> <span class="guide-mode-tag" id="modeTag">3 rings · ~20 seconds</span></h2>
-                </div>
-              </div>
-              <div class="guide-code" id="codeOn">*71 → [AI NUMBER]</div>
-              <p class="guide-panel-copy guide-code-note" id="onNote"></p>
-              <div class="guide-secondary-action">
-                <i data-lucide="rotate-ccw" aria-hidden="true"></i>
-                <span><span class="guide-vi">Tắt riêng kiểu này:</span><span class="guide-en">Turn off just this mode:</span> <strong id="codeOffOne">*73</strong></span>
-              </div>
-            </section>
+<div class="qrback" id="qr"><div class="qrbox" role="dialog" aria-modal="true" aria-labelledby="qrT" tabindex="-1"><b id="qrT" style="font-size:18px"></b><div id="qrcv"></div>
+  <div style="font-size:12px;color:#5b6486;word-break:break-all" id="qrU"></div>
+  <div class="row" style="margin-top:12px"><button class="btnp" id="qrCopy"></button><button class="btnp g" id="qrClose"></button></div></div></div>
 
-            <section class="guide-panel" id="ringBox" aria-labelledby="ring-title">
-              <div class="guide-panel-heading">
-                <span class="guide-panel-heading-icon"><i data-lucide="clock-3" aria-hidden="true"></i></span>
-                <div>
-                  <h2 id="ring-title"><span class="guide-vi">“3 hồi chuông” là bao nhiêu giây?</span><span class="guide-en">What does “3 rings” mean?</span></h2>
-                </div>
-              </div>
-              <p class="guide-panel-copy"><span class="guide-vi">Nhà mạng không có ô “số hồi chuông” — chỉ có <strong>số giây</strong>. Ở Mỹ một hồi chuông khoảng 6 giây.</span><span class="guide-en">Carriers have no “ring count” setting — only <strong>seconds</strong>. In the US one ring is about 6 seconds.</span></p>
-              <div class="guide-ring-track">
-                <div class="guide-ring-item"><strong>2 <span class="guide-vi">hồi</span><span class="guide-en">rings</span></strong><span>≈ 12s</span></div>
-                <div class="guide-ring-item is-selected"><strong>3 <span class="guide-vi">hồi</span><span class="guide-en">rings</span></strong><span>≈ 20s ✓</span></div>
-                <div class="guide-ring-item"><strong>4 <span class="guide-vi">hồi</span><span class="guide-en">rings</span></strong><span>≈ 25s</span></div>
-                <div class="guide-ring-item"><strong>5 <span class="guide-vi">hồi</span><span class="guide-en">rings</span></strong><span>≈ 30s</span></div>
-              </div>
-              <p class="guide-panel-copy"><span class="guide-vi">Chỉ đặt được bội số của 5, tối đa 30 giây.</span><span class="guide-en">Only multiples of 5, up to 30 seconds.</span></p>
-            </section>
-
-            <section class="guide-callout is-danger" id="vmWarn" aria-labelledby="vm-warn-title">
-              <span class="guide-callout-icon"><i data-lucide="voicemail" aria-hidden="true"></i></span>
-              <div>
-                <h3 id="vm-warn-title"><span class="guide-vi">Voicemail là thứ làm hỏng kiểu này</span><span class="guide-en">Voicemail is what breaks this mode</span></h3>
-                <p><span class="guide-vi">Voicemail của tiệm cũng bắt máy khoảng 20–25 giây. Nếu nó bắt trước AI thì khách vào hộp thư thoại và tưởng tiệm không ai nghe. <strong>Tắt voicemail</strong>, hoặc đặt AI ở 15–20 giây còn voicemail ở 30 giây.</span><span class="guide-en">Your voicemail also picks up around 20–25 seconds. If it wins, callers land in voicemail and think nobody answered. <strong>Turn voicemail off</strong>, or set the AI to 15–20 seconds and voicemail to 30.</span></p>
-              </div>
-            </section>
-
-            <section class="guide-callout is-warning guide-warning guide-is-hidden" id="mvnoWarn" aria-labelledby="mvno-warn-title">
-              <span class="guide-callout-icon"><i data-lucide="info" aria-hidden="true"></i></span>
-              <div>
-                <h3 id="mvno-warn-title"><span class="guide-vi">Gói này có thể không cho “chuông reo trước”</span><span class="guide-en">This plan may not support “ring first”</span></h3>
-                <p><span class="guide-vi">Nhiều gói mạng phụ chỉ cho chuyển toàn bộ cuộc gọi. Bấm mã mà báo lỗi hoặc không thấy gì xảy ra → đổi qua “AI bắt máy ngay”, hoặc gọi nhà mạng hỏi có mở được không.</span><span class="guide-en">Many prepaid plans only allow forwarding every call. If the code errors or nothing happens → switch to “AI answers immediately”, or ask the carrier to enable it.</span></p>
-              </div>
-            </section>
-
-            <section class="guide-callout is-info guide-info guide-is-hidden" id="voipWarn" aria-labelledby="voip-warn-title">
-              <span class="guide-callout-icon"><i data-lucide="globe-2" aria-hidden="true"></i></span>
-              <div>
-                <h3 id="voip-warn-title"><span class="guide-vi">Mạng internet không dùng mã bấm</span><span class="guide-en">Internet lines have no star codes</span></h3>
-                <p><span class="guide-vi">Vào trang quản lý của nhà cung cấp → Voice → Call Forwarding. Chọn <strong>No Answer</strong> và đặt 20 giây, hoặc <strong>Always</strong> nếu muốn AI bắt ngay. Không rành thì gọi người hỗ trợ bên dưới.</span><span class="guide-en">Go to your provider portal → Voice → Call Forwarding. Choose <strong>No Answer</strong> and set 20 seconds, or <strong>Always</strong> for immediate. Not sure? Call your support contact below.</span></p>
-              </div>
-            </section>
-          </div>
-
-          <section class="guide-number-card" aria-labelledby="guide-numbers-title">
-            <div class="guide-section-heading">
-              <h2 id="guide-numbers-title"><span class="guide-vi">Số cần dùng khi cài đặt</span><span class="guide-en">Numbers for setup</span></h2>
-              <p><span class="guide-vi">Các số này có thể được truyền qua query params khi mở guide cho từng tiệm.</span><span class="guide-en">These numbers can be passed through query params when opening the guide for a salon.</span></p>
-            </div>
-            <div class="guide-number-grid">
-              <div class="guide-number"><div class="guide-number-copy"><div class="guide-metric-label"><span class="guide-vi">Số AI</span><span class="guide-en">AI number</span></div><div class="guide-metric-value guide-token" data-guide-token="ai">[AI]</div></div><button class="guide-copy-button" type="button" data-guide-copy="ai"><span class="guide-vi">Chép</span><span class="guide-en">Copy</span></button></div>
-              <div class="guide-number"><div class="guide-number-copy"><div class="guide-metric-label"><span class="guide-vi">Số tiệm</span><span class="guide-en">Shop number</span></div><div class="guide-metric-value guide-token" data-guide-token="phone">[PHONE]</div></div><button class="guide-copy-button" type="button" data-guide-copy="phone"><span class="guide-vi">Chép</span><span class="guide-en">Copy</span></button></div>
-            </div>
-          </section>
-
-          <section class="guide-situations" aria-labelledby="guide-situations-title">
-            <div class="guide-situations-heading guide-section-heading">
-              <h2 id="guide-situations-title"><span class="guide-vi">Gặp tình huống này thì làm vầy</span><span class="guide-en">When this happens, do this</span></h2>
-              <p><span class="guide-vi">Năm việc hay gặp nhất. Ngoài năm việc này thì gọi hỗ trợ.</span><span class="guide-en">The five most common ones. Anything else, call support.</span></p>
-            </div>
-            <div class="guide-situation">
-              <div class="guide-situation-question"><span class="guide-vi">Điện thoại báo “cuộc gọi nhỡ”</span><span class="guide-en">You get a “missed call” alert</span></div>
-              <div class="guide-situation-answer"><span class="guide-vi">Mở app, đọc <strong>tóm tắt</strong> — không cần nghe lại. Khách hỏi giá hoặc muốn đặt hẹn thì gọi lại trong <strong>15 phút</strong>.</span><span class="guide-en">Open the app, read the <strong>summary</strong>. If they asked about price or wanted to book, call back within <strong>15 minutes</strong>.</span></div>
-            </div>
-            <div class="guide-situation">
-              <div class="guide-situation-question"><span class="guide-vi">Có tin nhắn mới trong app</span><span class="guide-en">A new text in the app</span></div>
-              <div class="guide-situation-answer"><span class="guide-vi">Trả lời ngay trong app, đừng nhắn từ điện thoại riêng. Khách nhắn <strong>STOP</strong> thì <strong>đừng nhắn lại</strong>.</span><span class="guide-en">Reply inside the app, not your personal phone. If they text <strong>STOP</strong>, <strong>do not text back</strong>.</span></div>
-            </div>
-            <div class="guide-situation">
-              <div class="guide-situation-question"><span class="guide-vi">Khách gọi mà không ai bắt, cũng không qua AI</span><span class="guide-en">Nobody answers and it never reaches the AI</span></div>
-              <div class="guide-situation-answer"><span class="guide-vi">Chín phần mười là <strong>voicemail bắt trước</strong>. Tắt voicemail rồi thử lại. Vẫn vậy thì bấm mã đỏ ở trên và gọi hỗ trợ.</span><span class="guide-en">Nine times out of ten it is <strong>voicemail winning</strong>. Turn voicemail off and retest. Still broken → dial the red code above and call support.</span></div>
-            </div>
-            <div class="guide-situation">
-              <div class="guide-situation-question"><span class="guide-vi">AI nói sai giá hoặc sai giờ</span><span class="guide-en">The AI gave a wrong price or time</span></div>
-              <div class="guide-situation-answer"><span class="guide-vi">Chụp màn hình, ghi <strong>giờ gọi</strong>, gửi người hỗ trợ. Đang có khách bị ảnh hưởng thì <strong>gọi</strong>, đừng email.</span><span class="guide-en">Screenshot, note the <strong>call time</strong>, send to support. Customer affected right now → <strong>call</strong>, do not email.</span></div>
-            </div>
-            <div class="guide-situation">
-              <div class="guide-situation-question"><span class="guide-vi">Cuối ngày</span><span class="guide-en">End of day</span></div>
-              <div class="guide-situation-answer"><span class="guide-vi">Mở app 2 phút: còn tin nào chưa trả lời, còn cuộc gọi nhỡ nào chưa gọi lại. Xong là đóng.</span><span class="guide-en">Two minutes in the app: unanswered texts, missed calls not returned. Then close it.</span></div>
-            </div>
-          </section>
-
-          <section class="guide-script" aria-labelledby="guide-script-title">
-            <div class="guide-script-label" id="guide-script-title"><span class="guide-vi">Khách quen hỏi “sao gọi lại gặp máy?” — nói câu này</span><span class="guide-en">Regular asks “why did a machine answer?” — say this</span></div>
-            <p class="guide-vi">“Dạ tiệm mới có thêm trợ lý trả lời điện thoại, để lúc tụi em đang làm khách thì không ai bị bỏ lỡ nữa. Chị cứ nói bình thường, hoặc chị nhắn tin cũng được, em thấy liền.”</p>
-            <p class="guide-en">“We added an assistant that answers the phone so nobody gets missed while we are with a client. You can talk to it normally, or just text us — we see it right away.”</p>
-          </section>
-
-          <section class="guide-support" aria-label="AI Voice support">
-            <div><div class="guide-support-label"><span class="guide-vi">Kẹt thì gọi</span><span class="guide-en">Stuck? Call</span></div><div class="guide-support-value guide-token" data-guide-token="sname">[SNAME]</div></div>
-            <div><div class="guide-support-label"><span class="guide-vi">Điện thoại</span><span class="guide-en">Phone</span></div><div class="guide-support-value guide-token" data-guide-token="sphone">[SPHONE]</div></div>
-            <div><div class="guide-support-label">Email</div><div class="guide-support-value guide-token" data-guide-token="semail">[SEMAIL]</div></div>
-          </section>
-
-          <p class="guide-footer-note"><span class="guide-vi">In ra, ép nhựa, dán ở quầy.</span><span class="guide-en">Print it, laminate it, tape it to the counter.</span> <button type="button" data-guide-print><span class="guide-vi">In tờ này</span><span class="guide-en">Print this</span></button></p>
-        </section>
+<audio id="aud" src="../assets/ai-voice-setup/ai-voice-setup-guide-vi.mp3" preload="none"></audio>
+<div id="fab"><button id="narr"></button><button class="sec" id="tourStart"></button></div>
+<div id="tourbar"><div class="in">
+  <div class="hd"><span class="tag">✦ AI SMART TOUR</span><div class="ctl"><button id="tPause">⏸</button><button id="tNext">⏭</button><button id="tStop">✕</button></div></div>
+  <div class="cap"><div class="c1" id="tc1" aria-live="polite"></div></div>
+  <div class="bar"><i id="tbar"></i></div></div></div>
+        </div>
       </main>
     </div>
   </div>
-
   <script src="https://unpkg.com/lucide@1.23.0/dist/umd/lucide.min.js"></script>
-  <script>
-    window.NEXORA_SHELL = { activePage: 'packages', activeTab: 'voice' };
-  </script>
+  <script>window.NEXORA_SHELL = { activePage: 'packages', activeTab: 'voice' };</script>
   <script src="../assets/nexora-icons.js"></script>
   <script src="../assets/nexora-shell-nav.js?v=20261029-sidebar-group-labels"></script>
   <script src="../assets/nexora-shell.js?v=20261030-header-nine-dots-v48"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js" onerror="window.__noqr=1"></script>
   <script>
-    (function () {
-      'use strict';
+  (function () {
+  'use strict';
+/* NEXORA TOUCH — AI Voice Setup Guide, integrated from the PO setup pack.
+   Dev notes:
+   - Query params prefill: ?ai=<AI number>  (10 digits; a leading +1 / 1 is stripped).
+   - Carrier codes retain the PO guide’s "untested" badge.
+   - State is in-memory; persist the 3 test-call checks per salon if you want a "connected" status in Salon Settings.
+   - Media: ../assets/ai-voice-setup/; NTS[S.lang] contains the PO narration paragraph times.
+   - Support phone and ring/seconds table come from the live setup-guide page. */
+const MEDIA_PATH="../assets/ai-voice-setup/";
+const SUPPORT="8327993583";
+const SEC=[["hero",1],["how",1],["how",1],["s1",1],["sMode",1],["s2",1],["s2",1],["s3",1],["nowork",1],["sOff",1],["hero",1]];
 
-      var page = document.querySelector('.ai-guide-page');
-      var keys = ['phone', 'ai', 'sname', 'sphone', 'semail'];
-      var config = {};
+const CARRIERS=[
+ {id:"vz",n:"Verizon",f:"vz"},{id:"att",n:"AT&T",f:"att"},{id:"tm",n:"T-Mobile",f:"tm"},
+ {id:"xm",n:"Xfinity Mobile",s:{en:"(Xfinity cell phone)",vi:"(di động Xfinity)"},f:"xm"},
+ {id:"xv",n:"Xfinity / Comcast",s:{en:"(home phone)",vi:"(điện thoại nhà)"},f:"xv"},
+ {id:"cb",n:"Comcast Business",s:{en:"(business phone)",vi:"(điện thoại doanh nghiệp)"},f:"cb"},
+ {id:"cr",n:"Cricket",s:{en:"(AT&T network)",vi:"(mạng AT&T)"},f:"att"},
+ {id:"mm",n:"Metro / Mint",s:{en:"(T-Mobile network)",vi:"(mạng T-Mobile)"},f:"tm"},
+ {id:"vt",n:"Visible / Total",s:{en:"(Verizon network)",vi:"(mạng Verizon)"},f:"vz"},
+ {id:"sp",n:"Spectrum · Cox · Optimum",s:{en:"(cable phone)",vi:"(điện thoại cáp)"},f:"script"},
+ {id:"ll",n:{en:"Landline",vi:"Điện thoại bàn"},f:"ln"},{id:"vp",n:{en:"Internet · VoIP",vi:"Internet · VoIP"},f:"script"}];
+/* Code families. official:true = read on the carrier's own support page; the rest come from third-party guides and MUST be tested on a real line.
+   Sources: Verizon espanol.verizon.com/support/pound-star-codes (official); Xfinity Mobile xfinity.com/support/articles/how-to-use-call-forwarding (official);
+   AT&T / T-Mobile: support.800.com, skipcalls.com, docs.revmo.ai (third party); Xfinity Voice: ambscallcenter.com (2021) and getnextphone.com (conflict);
+   Comcast Business: answeringservicecare.com (third party). */
+const FAM={
+ vz:{official:true,now:"*72",ring:"*71",offNow:"*73",offRing:"*73",end:""},
+ xm:{official:true,own:true,now:"*72",ring:"*71",offNow:"*73",offRing:"*73",end:""},
+ att:{now:"**21*",ring:"**61*",offNow:"##21#",offRing:"##61#",offAll:"##002#",end:"#",sec:true,ringFmt:(N,s)=>["**61*",N,"*11*"+s+"#"]},
+ tm:{now:"**21*",ring:"**61*",offNow:"##21#",offRing:"##61#",offAll:"##002#",end:"#",sec:true,ringFmt:(N,s)=>["**61*",N,"**"+s+"#"]},
+ ln:{two:true,hand:true,now:"*72",ring:"*92",offNow:"*73",offRing:"*93",offAll:"*73",end:"#"},
+ xv:{two:true,hand:true,now:"*72",ring:"*92",busy:"*90",offNow:"*73",offRing:"*93",offBusy:"*91",end:""},
+ cb:{hand:true,now:"*72",ring:"*71",busy:"*90",offNow:"*73",offRing:"*93",offBusy:"*91",end:""}};
+function plan(car,mode,N){
+ const F=FAM[car.f];if(!F||!mode)return null;
+ const c=mode==="now"?F.now:F.ring, mk=code=>F.two?[[code,"",""],["",N,F.end]]:[[code,N,F.end]];
+ const lines=(mode==="ring"&&F.ringFmt)?[F.ringFmt(N,S.sec)]:mk(c), extra=(mode==="ring"&&F.busy)?mk(F.busy):null;
+ const L=lines[lines.length-1];
+ const w1=F.two?["","+1"+N,F.end]:[L[0],"+1"+N,L[2]], w2=F.two?["",fmt(N),F.end]:[L[0],fmt(N),L[2]];
+ return {F,lines,extra,wrong:[w1,w2],right:lines[lines.length-1],off:mode==="now"?F.offNow:F.offRing,offExtra:(mode==="ring"&&F.offBusy)||null};
+}
+const GT={
+en:{howT:"How it works. Read this first.",howS:["A customer calls your shop number.","Your shop phone forwards the call. You turn this on from YOUR shop phone, using your carrier's code.","Our AI number answers the call for you."],howAI:"Our AI number:",howM:"Two ways to set it:",howM1:"AI answers immediately",howM1p:"The shop phone does not ring. Every call goes straight to the AI.",howM2:"Ring 3 times, then AI answers",howM2p:"The shop phone rings about 20 seconds first. If nobody picks up, the AI answers.",howN:"Each carrier has its own code, so pick your carrier and your way below. You can turn it off any time with the red code.",
+ nwT:"Code did not work? Ask your carrier.",nwP:"Call your carrier's customer service (the number on your bill) and say:",nwS:"“Can my phone forward calls to another number? Please turn on call forwarding to {n}.”",nwQ:"Tell them: all calls, or only when I do not answer.",nwN:"Some prepaid plans do not allow forwarding. Then use another plan, or ask the carrier to enable it.",
+ realAI:"Your AI number (given to your shop by NEXORA TOUCH):",sampleAI:"SAMPLE AI number:",sampleAIp:"This number is only an example so you can see the shape of the code. Do NOT dial it. Use the AI number your shop was given by NEXORA TOUCH.",fCode:"carrier code",fNum:"AI number",fEnd:"ending",fAll:"what you dial",
+ exT:"Example: how a code is built",exP:"Say the shop is on Verizon and wants the AI to answer immediately. You type the code, then the AI number. The number below is a SAMPLE only. Your shop has its own AI number from NEXORA TOUCH.",
+ offTitle:"Something wrong with the AI? Get your phone back.",offWhen:"Dial this from the shop phone. It turns off forwarding, and calls ring your own phone again.",offDo:"Then call the shop number from another phone to check that it rings.",offMode:"Turn off only the mode you set:",offTest:"If the phone still forwards, call your carrier and ask them to turn off call forwarding.",offPortal:"Provider portal, Voice, Call Forwarding, set it to Off.",offCall:"Call your provider and say: “Please turn off call forwarding on my number.”",
+ smp:"sample",autoN:"Your AI number (filled in by NEXORA TOUCH):",sampleT:"This is a sample code.",sampleP:"You do not type it in NEXORA TOUCH. Type it on the keypad of YOUR shop phone, the phone whose number customers call. ",secT:"How long should the shop phone ring first?",secP:"Pick the seconds. The code below changes with your choice. 3 rings is about 20 seconds.",secU:"sec",
+ tblT:"What does “3 rings” mean?",tblP:"Carriers have no “ring count” setting, only seconds. In the US one ring is about 6 seconds.",tblR:[["2 rings","≈ 12s"],["3 rings","≈ 20s ✓"],["4 rings","≈ 25s"],["5 rings","≈ 30s"]],tblN:"Only multiples of 5, up to 30 seconds.",
+ vmT:"Voicemail is what breaks this mode",vmP:"Your voicemail also picks up around 20–25 seconds. If it wins, callers land in voicemail and think nobody answered. Turn voicemail off, or set the AI to 15–20 seconds and voicemail to 30.",
+ ppT:"This plan may not support “ring first”",ppP:"Many prepaid plans only allow forwarding every call. If the code errors or nothing happens, switch to “AI answers immediately”, or ask the carrier to enable it.",
+ portalT:"Internet lines have no star codes",portalP:"Go to your provider portal, Voice, Call Forwarding. Choose No Answer and set 20 seconds, or Always for immediate. Not sure? Call your support contact below.",
+ ringNotes:{vz:"Verizon does not let you set the delay. The network picks it, usually 4–5 rings.",xm:"Xfinity Mobile (Verizon network) does not let you set the delay. The network picks it.",att:"The delay is set in seconds inside the code.",tm:"The delay is set in seconds inside the code. Only 5, 10, 15, 20, 25, 30 are accepted.",ln:"This code does not set the delay. The provider does. Call them to change it.",xv:"This code does not set the delay. The provider does.",cb:"This code does not set the delay. The provider does."},
+ noPlusT:"Dial it exactly like this. Do NOT add +1.",noPlusP:"Many people add +1 or a 1 in front, and then forwarding does not work. Type only the code and the 10 digits.",wrong:"WRONG",right:"RIGHT",
+ srcOk:"Source: the carrier's own support page",srcWarn:"Source: third-party guides, not the carrier. Test it with another phone.",
+ stepA:"Step A. Dial this first",stepB:"Step B. After the second dial tone, dial the AI number (10 digits)",wait:"Wait for the short stutter tone and then the normal dial tone before Step B.",
+ stM:["Open the Phone app on the shop phone.","Tap Keypad.","Type the exact code from the box above. No +1, no spaces.","Press the green Call button and wait for a confirmation tone or message.","End the call."],
+ stH:["Pick up the handset of the shop phone and wait for the dial tone.","Dial Step A. You hear a short stutter tone, then a normal dial tone.","Dial Step B, the 10 digits (no 1 in front).","Wait for the confirmation tone, then hang up."],
+ stC:["Pick up the handset, or press Talk on the shop phone.","Dial the exact code from the box above, ending with the 10 digits. No 1 in front.","Wait for the confirmation tone or message, then hang up."],
+ extraT:"Also forward when the shop line is busy? Dial this second code as well:",offAll:"If it still forwards, turn everything off with",
+ ringNote:"The carrier decides how many rings before forwarding. You cannot set it.",
+ notes:{
+  vz:["Verizon: the shop phone rings first. If nobody answers, the call goes to the AI.","Do not type # at the end.","To stop forwarding, dial *73. It stops all forwarding."],
+  xm:["Xfinity Mobile only: forwarding can be turned on ONLY from the Xfinity Mobile phone itself, not from another phone or a computer.","Include the area code. Do not type # at the end.","While forwarding is on, unanswered calls do not go to the phone's voicemail.","Forwarding works to US numbers only."],
+  att:["End with # (the pound key). Forgetting # is the most common mistake.","Type the 10 digits only. No +1, no 1 in front."],
+  tm:["End with # (the pound key). Forgetting # is the most common mistake.","Type the 10 digits only. No +1, no 1 in front."],
+  ln:["Lift the handset, dial Step A, wait for the tone, then dial the 10 digits and press # (pound).","No +1, no 1 in front."],
+  xv:["Use the shop phone's handset (home phone, Xfinity Voice).","The no-answer and busy codes come from one third-party guide dated 2021, and another guide says only *72 exists. If they do not work, use “AI answers immediately” or call Xfinity support.","Busy forwarding does not work with a Hunt Group."],
+  cb:["Comcast Business can also be set online: My Account, Phone, Features, Call Forwarding.","VoiceEdge lines are set in the VoiceEdge portal by your account administrator, not with star codes."]},
+ scriptT:"This line type has no one-size code. Call your phone company and say:",script:"“Please turn on call forwarding for my number to {n}.”",
+ scriptN:"Give them the 10-digit number only. No +1. Ask for forwarding of all calls, or only when there is no answer.",
+ callSupport:"Or call NEXORA TOUCH support:"},
+vi:{howT:"Cách hoạt động. Đọc phần này trước.",howS:["Khách gọi vô số điện thoại của tiệm.","Điện thoại của tiệm chuyển cuộc gọi đi. Mình bật việc này từ CHÍNH điện thoại của tiệm, bằng mã của nhà mạng mình đang xài.","Số điện thoại AI của NEXORA TOUCH sẽ nghe máy thay cho mình."],howAI:"Số điện thoại AI:",howM:"Có hai cách cài:",howM1:"AI nghe máy liền",howM1p:"Điện thoại tiệm không đổ chuông. Cuộc gọi nào cũng qua AI ngay.",howM2:"Đổ chuông 3 hồi rồi AI mới nghe",howM2p:"Điện thoại tiệm đổ chuông khoảng 20 giây trước. Không ai bắt máy thì AI nghe.",howN:"Mỗi nhà mạng có mã riêng, nên bên dưới mình chọn nhà mạng và chọn cách cài. Muốn tắt lúc nào cũng được bằng mã màu đỏ.",
+ nwT:"Bấm mã mà không được? Hỏi nhà mạng.",nwP:"Gọi chăm sóc khách hàng của nhà mạng (số in trên hóa đơn) và nói:",nwS:"“Điện thoại của tôi có chuyển cuộc gọi (forward) sang số khác được không? Xin bật call forwarding sang số {n}.”",nwQ:"Nói rõ: chuyển tất cả cuộc gọi, hoặc chỉ khi tôi không bắt máy.",nwN:"Một số gói trả trước không cho chuyển cuộc gọi. Lúc đó đổi gói, hoặc nhờ nhà mạng bật cho mình.",
+ realAI:"Số AI của tiệm (do NEXORA TOUCH cấp cho tiệm):",sampleAI:"Số AI MẪU:",sampleAIp:"Số này chỉ là ví dụ để mình thấy hình dạng của mã. KHÔNG bấm số này. Hãy dùng số AI mà NEXORA TOUCH đã cấp cho tiệm của mình.",fCode:"mã nhà mạng",fNum:"số AI",fEnd:"đuôi",fAll:"dãy mình bấm",
+ exT:"Ví dụ: mã được ghép như thế nào",exP:"Giả sử tiệm xài Verizon và muốn AI nghe máy liền. Mình gõ mã trước, rồi gõ số AI. Số bên dưới chỉ là SỐ MẪU. Tiệm của mình có số AI riêng do NEXORA TOUCH cấp.",
+ offTitle:"AI có trục trặc? Lấy lại điện thoại của mình.",offWhen:"Bấm mã này từ điện thoại của tiệm. Nó tắt chuyển cuộc gọi, khách gọi vô là điện thoại của mình đổ chuông lại.",offDo:"Sau đó dùng điện thoại khác gọi vô số tiệm để kiểm tra có đổ chuông không.",offMode:"Chỉ tắt kiểu mình đã cài:",offTest:"Nếu điện thoại vẫn còn chuyển, gọi nhà mạng và nhờ họ tắt call forwarding.",offPortal:"Vào trang quản lý nhà cung cấp, Voice, Call Forwarding, đặt về Off.",offCall:"Gọi nhà cung cấp và nói: “Xin tắt giúp call forwarding trên số của tôi.”",
+ smp:"số mẫu",autoN:"Số AI của tiệm (NEXORA TOUCH đã điền sẵn):",sampleT:"Đây là mã mẫu.",sampleP:"Mình không gõ mã này vào NEXORA TOUCH. Mình gõ trên bàn phím của chính điện thoại của tiệm, là số điện thoại khách vẫn gọi. ",secT:"Máy tiệm đổ chuông bao lâu rồi mới chuyển qua AI?",secP:"Chọn số giây. Mã bên dưới tự đổi theo. 3 hồi chuông khoảng 20 giây.",secU:"giây",
+ tblT:"“3 hồi chuông” là bao nhiêu giây?",tblP:"Nhà mạng không có cài đặt “số hồi chuông”, chỉ có số giây. Ở Mỹ một hồi chuông khoảng 6 giây.",tblR:[["2 hồi","≈ 12 giây"],["3 hồi","≈ 20 giây ✓"],["4 hồi","≈ 25 giây"],["5 hồi","≈ 30 giây"]],tblN:"Chỉ nhận bội số của 5, tối đa 30 giây.",
+ vmT:"Hộp thư thoại (voicemail) hay làm hỏng kiểu này",vmP:"Voicemail cũng bắt máy khoảng giây thứ 20–25. Nếu nó bắt trước, khách nghe voicemail và tưởng không ai trả lời. Tắt voicemail, hoặc đặt AI 15–20 giây và voicemail 30 giây.",
+ ppT:"Gói này có thể không có kiểu “đổ chuông trước”",ppP:"Nhiều gói trả trước chỉ cho chuyển tất cả cuộc gọi. Nếu bấm mã báo lỗi hoặc không có gì xảy ra, đổi qua “AI nghe ngay”, hoặc nhờ nhà mạng bật.",
+ portalT:"Điện thoại internet không có mã bấm sao",portalP:"Vào trang quản lý của nhà cung cấp, mục Voice, Call Forwarding. Chọn No Answer và đặt 20 giây, hoặc Always để chuyển ngay. Không chắc thì gọi hỗ trợ bên dưới.",
+ ringNotes:{vz:"Verizon không cho chỉnh thời gian chờ. Mạng tự chọn, thường khoảng 4–5 hồi chuông.",xm:"Xfinity Mobile (mạng Verizon) không cho chỉnh thời gian chờ. Mạng tự chọn.",att:"Thời gian chờ tính bằng giây, nằm ngay trong mã.",tm:"Thời gian chờ tính bằng giây, nằm trong mã. Chỉ nhận 5, 10, 15, 20, 25, 30.",ln:"Mã này không chỉnh được thời gian chờ. Nhà cung cấp quyết định. Gọi họ nếu muốn đổi.",xv:"Mã này không chỉnh được thời gian chờ. Nhà cung cấp quyết định.",cb:"Mã này không chỉnh được thời gian chờ. Nhà cung cấp quyết định."},
+ noPlusT:"Bấm đúng như vầy. KHÔNG thêm +1.",noPlusP:"Nhiều người thêm +1 hoặc số 1 phía trước, rồi chuyển cuộc gọi không chạy. Chỉ gõ mã và đúng 10 số.",wrong:"SAI",right:"ĐÚNG",
+ srcOk:"Nguồn: trang hỗ trợ chính thức của nhà mạng",srcWarn:"Nguồn: các trang hướng dẫn bên thứ ba, không phải nhà mạng. Phải gọi thử bằng điện thoại khác.",
+ stepA:"Bước A. Bấm mã này trước",stepB:"Bước B. Sau tiếng tút thứ hai, bấm số AI (10 số)",wait:"Chờ nghe tiếng tút ngắn rồi tới tiếng tút bình thường, mới bấm Bước B.",
+ stM:["Mở app Điện thoại trên máy của số tiệm.","Bấm Bàn phím.","Gõ đúng dãy mã trong khung trên. Không +1, không dấu cách.","Bấm nút gọi màu xanh, chờ tiếng báo hoặc thông báo xác nhận.","Tắt máy."],
+ stH:["Nhấc ống nghe của máy tiệm và chờ nghe tiếng tút.","Bấm Bước A. Nghe một tiếng tút ngắn, rồi tiếng tút bình thường.","Bấm Bước B, đúng 10 số (không số 1 phía trước).","Chờ tiếng báo xác nhận, rồi gác máy."],
+ stC:["Nhấc ống nghe, hoặc bấm Talk trên máy của tiệm.","Bấm đúng dãy mã trong khung trên, kết thúc bằng 10 số. Không số 1 phía trước.","Chờ tiếng báo hoặc thông báo xác nhận, rồi gác máy."],
+ extraT:"Muốn AI nghe cả khi máy tiệm đang bận? Bấm thêm mã thứ hai này:",offAll:"Nếu vẫn còn chuyển cuộc gọi, tắt hết bằng",
+ ringNote:"Nhà mạng quyết định mấy hồi chuông rồi mới chuyển. Mình không chỉnh được.",
+ notes:{
+  vz:["Verizon: máy tiệm đổ chuông trước. Không ai nghe thì cuộc gọi qua AI.","Không bấm # ở cuối.","Muốn ngưng chuyển, bấm *73. Mã này tắt hết mọi kiểu chuyển."],
+  xm:["Chỉ Xfinity Mobile: chỉ bật chuyển cuộc gọi được từ chính điện thoại Xfinity Mobile, không bật được từ máy khác hay máy tính.","Phải có mã vùng. Không bấm # ở cuối.","Khi đang chuyển, cuộc gọi không nghe sẽ không vô hộp thư thoại của máy.","Chỉ chuyển được tới số trong nước Mỹ."],
+  att:["Nhớ bấm # ở cuối (phím thăng). Quên # là lỗi hay gặp nhất.","Chỉ gõ 10 số. Không +1, không số 1 phía trước."],
+  tm:["Nhớ bấm # ở cuối (phím thăng). Quên # là lỗi hay gặp nhất.","Chỉ gõ 10 số. Không +1, không số 1 phía trước."],
+  ln:["Nhấc ống nghe, bấm Bước A, chờ nghe tiếng tút, rồi bấm 10 số và nhấn # (phím thăng).","Không +1, không số 1 phía trước."],
+  xv:["Dùng ống nghe của máy tiệm (điện thoại nhà, Xfinity Voice).","Mã khi không nghe và khi bận lấy từ một trang bên thứ ba năm 2021, còn trang khác nói chỉ có *72. Nếu không chạy thì chọn “AI nghe ngay” hoặc gọi hỗ trợ Xfinity.","Chuyển khi bận không chạy với Hunt Group."],
+  cb:["Comcast Business còn cài được trên mạng: My Account, Phone, Features, Call Forwarding.","Đường VoiceEdge thì người quản trị tài khoản cài trong cổng VoiceEdge, không dùng mã sao."]},
+ scriptT:"Loại đường dây này không có mã chung. Gọi công ty điện thoại và nói:",script:"“Xin hãy bật chuyển cuộc gọi (call forwarding) cho số của tôi sang số {n}.”",
+ scriptN:"Chỉ đưa số 10 chữ số. Không +1. Xin chuyển mọi cuộc gọi, hoặc chỉ khi không ai nghe.",
+ callSupport:"Hoặc gọi hỗ trợ NEXORA TOUCH:"}};
+const ds=l=>`<b>${l[0]}</b>${l[1]}<b>${l[2]}</b>`;
+function carrierGuide(car,cd){
+ const g=GT[S.lang],F=cd.F,two=F.two,N=S.num.length===10?S.num:SAMPLE;
+ const badge=F.official?`<span class="srcok">${g.srcOk}</span>`:`<span class="srcwarn">${g.srcWarn}</span>`;
+ let h=`<div class="noteblue">${S.num.length===10?"":`<b>${g.sampleT}</b> `}${g.sampleP}</div><div class="nopl"><div class="nt">${g.noPlusT}</div><p>${g.noPlusP}</p>
+  <div class="wr"><div class="w"><span>✕ ${g.wrong}</span><code>${ds(cd.wrong[0]).replace(/<b>/g,'<u>').replace(/<\/b>/g,'</u>')}</code><code>${cd.wrong[1].join("")}</code></div>
+  <div class="r"><span>✓ ${g.right}</span><code>${cd.lines.map(l=>l.join("")).join(two?"  →  ":"")}</code></div></div></div>
+  <div class="srcrow">${badge}<span class="badge">${t("untested")}</span></div>
+  ${S.num.length===10?`<div class="noteblue"><b>${g.realAI}</b> ${fmt(S.num)}</div>`:`<div class="samplebox"><b>${g.sampleAI}</b> ${fmt(SAMPLE)}<p>${g.sampleAIp}</p></div>`}
+  ${two?"":`<div class="formula"><div><small>${g.fCode}</small><b>${cd.lines[0][0]}</b></div><i>+</i><div><small>${g.fNum}</small><b>${N}</b></div>${cd.lines[0][2]?`<i>+</i><div><small>${g.fEnd}</small><b>${cd.lines[0][2]}</b></div>`:""}<i>=</i><div class="res"><small>${g.fAll}</small><b>${cd.lines[0].join("")}</b></div></div>`}
+  <div class="codepanel"><div class="t">${two?g.stepA:t("typeLine")}</div>`;
+ cd.lines.forEach((l,i)=>{
+  if(two&&i===1)h+=`<div class="small" style="margin:6px 0">${g.wait}</div><div class="t">${g.stepB}</div>`;
+  h+=`<div class="codebox"><b>${l[0]}</b>${l[1]}<b>${l[2]}</b></div><div class="small">${t("legend")}</div><button class="copy" data-copy="${l.join("")}">${t("copy")}</button>`;
+ });
+ h+=`<div class="small">${t("ten")}</div>
+  ${assignedNumber?`<div class="small"><b>${g.autoN}</b> ${fmt(S.num)}</div>`:`<div class="numrow"><label for="numIn">${t("inputLb")}</label><input id="numIn" inputmode="numeric" maxlength="14" placeholder="(___) ___-____" value="${fmt(S.num)}"></div>`}</div>`;
+ if(cd.extra){h+=`<div class="lbl">${g.extraT}</div><div class="codepanel" style="padding:10px">`+cd.extra.map(l=>`<div class="codebox" style="font-size:22px"><b>${l[0]}</b>${l[1]}<b>${l[2]}</b></div><button class="copy" style="font-size:16px;padding:10px 18px" data-copy="${l.join("")}">${t("copy")}</button>`).join("")+`</div>`;}
+ const steps=F.two||(F.hand&&car.f==="xv")?g.stH:(F.hand?g.stC:g.stM);
+ h+=`<div class="lbl">${t("h4")}</div><ol class="stl">${steps.map(x=>`<li>${x}</li>`).join("")}</ol>`;
+ if(cd.F.sec&&S.mode==="ring"){h+=`<div class="lbl">${g.secT}</div><p class="small">${g.secP}</p><div class="secrow">${[5,10,15,20,25,30].map(s=>`<button class="secb ${S.sec===s?"on":""}" data-sec="${s}">${s} ${g.secU}</button>`).join("")}</div>
+  <div class="tbl"><b>${g.tblT}</b><p>${g.tblP}</p><div class="tr">${g.tblR.map(r=>`<div><span>${r[0]}</span><b>${r[1]}</b></div>`).join("")}</div><p>${g.tblN}</p></div>`}
+ if(S.mode==="ring"){h+=`<div class="warnbox"><b>${g.vmT}</b><p>${g.vmP}</p></div>`;if(["att","tm"].includes(car.f)||["cr","mm"].includes(car.id))h+=`<div class="warnbox"><b>${g.ppT}</b><p>${g.ppP}</p></div>`}
+ h+=`<div class="noteblue">${S.mode==="ring"?(g.ringNotes[car.f]||""):""}</div><ul class="nts">${g.notes[car.f].map(x=>`<li>${x}</li>`).join("")}</ul>`;
+ return h;
+}
 
-      try {
-        var params = new URLSearchParams(window.location.search);
-        keys.forEach(function (key) {
-          if (params.get(key)) config[key] = params.get(key);
-        });
-      } catch (error) {
-        config = {};
-      }
+const T={
+en:{
+tab1:"1. Connect the phone",vidT:"Watch the video guide",vidP:"2 min 40 sec. Narrated in Vietnamese with Vietnamese captions.",tab2:"2. Teach AI your salon",e1:"AI VOICE SETUP",t1:"Set up AI to answer your shop phone",s1t:"3 steps, about 2 minutes. Pictures for every step.",
+h1:"Pick the carrier of your shop phone number",p1:"Each carrier uses different codes. Pick the name printed on your bill.",
+dk:"I do not know my carrier →",
+k1:"Look at your phone",k1p:"The carrier name is at the top of the screen, next to the signal bars.",
+k2:"Check your bill",k2p:"The carrier name is printed at the top of the bill or in the carrier app.",
+k3:"Still not sure?",k3p:"Call support at the bottom of the page. Read them the shop phone number.",
+kn:"If the name on the phone differs from your bill, go by the bill. Landline is a wired desk phone. VoIP is a phone that works over the internet.",
+when:"When should AI answer?",ring:"After a few rings",ringp:"You answer if you can. If you miss it, AI picks up.",now:"AI answers immediately",nowp:"Every call goes to AI first. The shop phone does not ring.",
+h2:"Dial this code",p2:"Use the shop phone. Type the exact code, press call, wait for the confirmation.",
+typeLine:"Type this whole line on the phone keypad:",untested:"untested",legend:"Yellow: carrier code · White: the AI number",copy:"Copy",copied:"Copied ✓",
+ten:"Dial the 10 digits. No +1 needed.",pick:"Pick your carrier and when AI answers above to see your code.",
+numLb:"Your AI number (auto-filled by the system)",
+offT:"To turn off, dial",vzDelay:"Verizon does not let you set the delay. The network picks it, usually 4–5 rings.",
+scriptT:"This line type has no one-size code. Call your phone company and say:",script:"“Please turn on call forwarding for my number to {n}.”",callSupport:"Or call NEXORA TOUCH support:",
+h4:"Follow the pictures",
+pc:["Open the Phone app and choose the Keypad.","Type the exact code. Tap “Copy”, then paste to be quick.","Press the green call button.","Wait for the tone or message, then hang up."],
+kp:"Keypad",calling:"Calling…",bn:"✓ Call forwarding activated (message may differ by phone)",
+h3:"Test call to be sure",p3:"Use a DIFFERENT phone (yours or a staff member's) to call the shop number.",
+c:[["Wait the full time, AI picks up","If you chose after a few rings, let it ring until the AI answers. The carrier decides how long that takes."],["Say one sentence, AI replies","For example: “I'd like to book a manicure tomorrow.”"],["The call shows in the app with a summary","Open the app and check Call Log."]],
+connected:"✓ Connected. AI is answering your shop phone.",
+warnV:"Test call did not reach AI? The most common fix: turn voicemail off and call again. Open the “Voicemail” section below.",
+more:"MORE INFO",
+a1:"Voicemail is what stops AI from answering",a1b:"Your voicemail can pick up before the AI does. If it wins, callers land in voicemail and think nobody answered. Turn voicemail off on the shop line, or ask your carrier how to make forwarding happen first.",
+a2:"How many rings before the AI answers?",a2b:"The carrier decides, not you. Verizon and T-Mobile do not let you set the number of rings. If you want the AI to answer sooner, choose “AI answers immediately”.",a2r:[],a2c:"",
+a3:"When this happens, do this",a3p:"The five most common ones. Anything else, call support.",
+a3l:[["You get a “missed call” alert","Open the app, read the summary. If they asked about price or wanted to book, call back within 15 minutes."],["A new text in the app","Reply inside the app, not your personal phone. If they text STOP, do not text back."],["Nobody answers and it never reaches the AI","Nine times out of ten it is voicemail winning. Turn voicemail off and retest. Still broken: dial the red code above and call support."],["The AI gave a wrong price or time","Screenshot, note the call time, send to support. Customer affected right now: call, do not email."],["End of day","Two minutes in the app: unanswered texts, missed calls not returned. Then close it."]],
+a4:"A regular asks “why did a machine answer?”",a4b:"Say this: “We added an assistant that answers the phone so nobody gets missed while we are with a client. You can talk to it normally, or just text us. We see it right away.”",
+stuckK:"STUCK? CALL",hours:"Monday to Friday, 9:00 AM to 5:00 PM",share:"📱 Share this guide with a QR code",qrT:"Scan to open this guide",qrCopy:"Copy link",qrClose:"Close",
+e2:"AI VOICE · SMART SETUP",t2:"Teach AI about your salon",s2t:"AI is only as smart as the information you give it. Complete all 5 parts below so AI books correctly.",
+dark:"AI does not magically know your hours, your staff, or who can do which service. It needs the full set. Miss one part and AI answers worse, or has to hand the call to a person.",
+tabsApp:["Salon Information","SMS Settings","Staff","Services","Roles & Permissions","Staff Levels","AI RECEPTIONIST"],
+why:"Why it matters",uses:"AI uses it to",miss:"If missing",how:"How to do it",pos:"POS → Salon Settings → ",
+cards:[
+{h:"Salon information",b:"Salon Information",why:"AI is your receptionist. It can only speak correctly if it knows your name, address, phone and opening hours.",uses:"Answer “what time do you open?” and “where are you?”, and only book inside working hours. On closed holidays AI tells callers they cannot book.",miss:"No business hours: AI may book a customer when the salon is closed.",how:["Open POS and choose Salon Settings.","Choose the Salon Information tab.","Check the name, address and phone.","Press Edit hours and enter opening and closing times for each day.","Add closed holidays under Holiday & Closures."]},
+{h:"Staff",b:"Staff",why:"Customers often book by technician name. AI needs to know who works at the salon.",uses:"Fill the schedule with the right person, and book the technician the customer asks for.",miss:"No staff: AI has nobody to book. A technician who left but is still listed can still get booked.",how:["Choose the Staff tab.","Press Add Staff and enter the name and phone.","Choose the Position and the Level.","When someone leaves, update the list right away so AI stops booking them."]},
+{h:"Services",b:"Services",why:"Customers ask for prices and how long a service takes. AI needs the service list to answer and to know how much time to block.",uses:"Quote prices, quote durations, and hold enough room in the schedule for that service.",miss:"Missing services, prices or durations: AI cannot quote, or books slots that are too short.",how:["Choose the Services tab.","Pick a category (Manicure, Pedicure, Gel...).","Fill in Price and Duration for each service.","If you stop offering a service, take it off Active."]},
+{h:"Levels: who can do which service",b:"Staff Levels, and the Approval column in Services",why:"Not every technician can do every service. Levels tell AI who is qualified for what.",uses:"When a customer asks for gel or acrylic, AI only books technicians who can do it.",miss:"No levels: AI does not know who can do what, so it may book the wrong person or cannot book a specific technician.",how:["Choose the Staff Levels tab and create levels (for example Basic, Advanced, Senior).","Open each staff profile and set their level.","In Services, read the Approval column to see which service needs which level."]},
+{h:"AI Receptionist: greeting, salon intro, FAQ",b:"AI RECEPTIONIST",why:"This is where you teach AI to sound like your salon: language, voice, greeting, promotions and answers to common questions.",uses:"Greet in your style, answer about parking, cancellation policy and promotions, and text a welcome to first-time callers.",miss:"Left empty: AI can only book, and has no answer for side questions.",how:["Choose the AI RECEPTIONIST tab.","Pick the language and voice, then preview it.","Write the greeting and the About your salon text.","Fill in the FAQ: parking, cancellation, payment.","Upload policy documents if you have them."]}],
+ui:{name:"Name, address, phone",hours:"Business hours",hol:"Holiday closures",addStaff:"+ Add Staff",st:"STAFF",po:"POSITION",lv:"LEVEL",sv:"SERVICE",pr:"PRICE",du:"DURATION",ss:"STATUS",ap:"APPROVAL",act:"Active",addLv:"+ Add Level",l1:"Level 1 · Basic services",l2:"Level 2 · Advanced services",l3:"Level 3 · Senior / all approved services",edit:"Edit",cats:["Manicure","Pedicure","Gel Shellac","…"],lang:"AI language",voice:"Voice",greet:"Greeting",about:"About your salon",faq:"FAQ",kf:"Knowledge files",fc:"First-call SMS"},
+simT:"See what AI thinks",simParts:["Salon info","Staff","Services","Levels","AI Receptionist"],
+caller:"Caller: “I'd like a gel set tomorrow afternoon, with Tech A.”",
+sa:{ok:"Yes. We are open tomorrow afternoon, Tech A works here and does gel. I will book the gel set, block enough time in the schedule and text a confirmation.",
+ info:"I am not sure when the salon is open. Let me take your number and the shop will call you back.",
+ staff:"I do not have a technician by that name. Let me take your number and the shop will call you back.",
+ serv:"I can note that down, but I cannot quote the price or hold the right amount of time. Let me take your number and the shop will call you back.",
+ lev:"Sure, I will book Tech A for the gel set.",levw:"Warning: without levels AI cannot check that Tech A does gel, so it may book the wrong person.",
+ ai:"I can book the gel set with Tech A.",aiw:"Without the AI Receptionist text, AI has no greeting in your style and no answers for side questions like parking."},
+complete:"Complete set",parts:"parts",simNote:"Switch each part on or off to see how AI answers change. This is an illustration only, real AI answers may differ.",
+inputLb:"Your AI number"},
+vi:{
+tab1:"1. Nối điện thoại",vidT:"Xem video hướng dẫn",vidP:"2 phút 40 giây. Có giọng đọc và phụ đề tiếng Việt, làm theo từng màn hình.",tab2:"2. Dạy AI hiểu tiệm",e1:"CÀI AI NGHE ĐIỆN THOẠI",t1:"Cài AI nghe điện thoại cho tiệm",s1t:"3 bước, khoảng 2 phút. Có hình cho mỗi bước.",
+h1:"Chọn nhà mạng của số điện thoại tiệm",p1:"Mỗi nhà mạng dùng mã khác nhau. Chọn tên in trên hóa đơn của mình.",
+dk:"Tôi không biết nhà mạng của mình →",
+k1:"Nhìn điện thoại",k1p:"Tên nhà mạng nằm trên góc màn hình, cạnh mấy vạch sóng.",
+k2:"Xem hóa đơn",k2p:"Tên nhà mạng in ở đầu hóa đơn, hoặc trong app của nhà mạng.",
+k3:"Vẫn chưa chắc?",k3p:"Gọi hỗ trợ ở cuối trang. Đọc số điện thoại tiệm cho bên em.",
+kn:"Nếu tên trên điện thoại khác hóa đơn thì theo hóa đơn. Điện thoại bàn là máy bàn có dây. VoIP là điện thoại dùng internet.",
+when:"AI nghe khi nào?",ring:"Sau vài hồi chuông",ringp:"Tiệm có người thì tự nghe. Nghe không kịp thì AI nghe giùm.",now:"AI nghe ngay",nowp:"Mọi cuộc gọi vô AI trước. Điện thoại tiệm không đổ chuông.",
+h2:"Gõ dãy mã này",p2:"Dùng điện thoại của tiệm. Gõ đúng dãy mã, bấm gọi, chờ xác nhận.",
+typeLine:"Gõ cả dòng này trên bàn phím điện thoại:",untested:"chưa thử",legend:"Màu vàng: mã nhà mạng · Màu trắng: số AI",copy:"Sao chép",copied:"Đã chép ✓",
+ten:"Bấm đủ 10 số. Không cần bấm +1.",pick:"Chọn nhà mạng và chọn AI nghe khi nào ở trên để hiện mã.",
+numLb:"Số AI của tiệm (hệ thống tự điền)",
+offT:"Muốn tắt, bấm",vzDelay:"Verizon không cho chỉnh thời gian chờ. Mạng tự chọn, thường 4–5 hồi chuông.",
+scriptT:"Loại đường dây này không có mã chung. Gọi công ty điện thoại và nói:",script:"“Xin hãy bật chuyển cuộc gọi (call forwarding) cho số của tôi sang số {n}.”",callSupport:"Hoặc gọi hỗ trợ NEXORA TOUCH:",
+h4:"Làm theo hình",
+pc:["Mở app Điện thoại và chọn Bàn phím.","Gõ đúng dãy mã. Bấm “Sao chép” rồi dán cho nhanh.","Bấm nút gọi màu xanh.","Chờ tiếng báo hoặc thông báo, rồi tắt máy."],
+kp:"Bàn phím",calling:"Đang gọi…",bn:"✓ Đã bật chuyển cuộc gọi (thông báo có thể khác tùy máy)",
+h3:"Gọi thử cho chắc",p3:"Dùng điện thoại KHÁC (của mình hoặc của thợ) gọi vô số của tiệm.",
+c:[["Chờ đủ thời gian, AI nghe máy","Nếu chọn sau vài hồi chuông, cứ để chuông reo tới khi AI nghe. Nhà mạng quyết định mất bao lâu."],["Nói thử một câu, AI trả lời","Ví dụ: “Tôi muốn đặt làm móng ngày mai.”"],["Cuộc gọi hiện trong app kèm tóm tắt","Mở app và xem Call Log."]],
+connected:"✓ Đã kết nối. AI đang nghe điện thoại của tiệm.",
+warnV:"Gọi thử mà không tới AI? Cách sửa hay gặp nhất: tắt hộp thư thoại rồi gọi lại. Xem mục “Hộp thư thoại” bên dưới.",
+more:"THÔNG TIN THÊM",
+a1:"Hộp thư thoại là thứ làm AI không nghe được",a1b:"Hộp thư thoại có thể nghe trước AI. Nếu nó nghe trước, khách rơi vô hộp thư và tưởng không ai nghe. Tắt hộp thư thoại của số tiệm, hoặc hỏi nhà mạng cách cho chuyển cuộc gọi chạy trước.",
+a2:"Mấy hồi chuông thì AI nghe?",a2b:"Nhà mạng quyết định, mình không chỉnh được. Verizon và T-Mobile không cho chỉnh số hồi chuông. Muốn AI nghe sớm hơn thì chọn “AI nghe ngay”.",a2r:[],a2c:"",
+a3:"Gặp tình huống này, làm vầy",a3p:"Năm tình huống hay gặp nhất. Chuyện khác thì gọi hỗ trợ.",
+a3l:[["Có thông báo “cuộc gọi nhỡ”","Mở app, đọc phần tóm tắt. Nếu khách hỏi giá hoặc muốn đặt lịch, gọi lại trong 15 phút."],["Có tin nhắn mới trong app","Trả lời ngay trong app, đừng dùng điện thoại cá nhân. Khách nhắn STOP thì đừng nhắn lại."],["Không ai nghe và cuộc gọi không tới AI","Chín trên mười lần là do hộp thư thoại nghe trước. Tắt hộp thư rồi thử lại. Vẫn hư thì bấm mã đỏ ở trên và gọi hỗ trợ."],["AI báo sai giá hoặc sai giờ","Chụp màn hình, ghi giờ cuộc gọi, gửi cho hỗ trợ. Khách đang bị ảnh hưởng thì gọi điện, đừng gửi email."],["Cuối ngày","Hai phút trong app: tin nhắn chưa trả lời, cuộc gọi nhỡ chưa gọi lại. Rồi đóng app."]],
+a4:"Khách quen hỏi “sao máy nghe điện thoại vậy?”",a4b:"Nói vầy: “Tiệm có thêm trợ lý nghe điện thoại để không bỏ sót ai khi tụi em đang làm cho khách. Chị cứ nói chuyện bình thường, hoặc nhắn tin cho tiệm, tụi em thấy liền.”",
+stuckK:"CẦN GIÚP? GỌI",hours:"Thứ Hai đến Thứ Sáu, 9:00 AM đến 5:00 PM",share:"📱 Chia sẻ hướng dẫn này bằng mã QR",qrT:"Quét để mở hướng dẫn này",qrCopy:"Chép đường link",qrClose:"Đóng",
+e2:"AI VOICE · CÀI ĐẶT THÔNG MINH",t2:"Dạy AI hiểu tiệm của mình",s2t:"AI chỉ giỏi bằng thông tin mình đưa. Làm đủ 5 phần dưới đây để AI đặt lịch đúng.",
+dark:"AI không tự biết giờ mở cửa, nhân viên, hay ai làm được dịch vụ nào. Phải có đủ bộ. Thiếu một phần là AI trả lời tệ đi, hoặc phải chuyển cuộc gọi cho người.",
+tabsApp:["Thông tin tiệm","Cài đặt SMS","Nhân viên","Dịch vụ","Vai trò & Quyền","Cấp bậc nhân viên","AI LỄ TÂN"],
+why:"Vì sao cần",uses:"AI dùng để",miss:"Nếu thiếu",how:"Cách làm",pos:"POS → Cài đặt tiệm → ",
+cards:[
+{h:"Thông tin tiệm",b:"Thông tin tiệm",why:"AI là lễ tân của mình. Phải biết tên, địa chỉ, số điện thoại và giờ mở cửa thì mới nói đúng.",uses:"Trả lời “mấy giờ mở cửa?” và “tiệm ở đâu?”, và chỉ đặt lịch trong giờ làm việc. Ngày lễ nghỉ thì AI báo khách không đặt được.",miss:"Không có giờ làm việc: AI có thể đặt lịch cho khách lúc tiệm đóng cửa.",how:["Mở POS và chọn Cài đặt tiệm.","Chọn tab Thông tin tiệm.","Kiểm tra tên, địa chỉ và số điện thoại.","Bấm Sửa giờ và nhập giờ mở, giờ đóng cho từng ngày.","Thêm những ngày lễ nghỉ ở mục Ngày lễ & Nghỉ."]},
+{h:"Nhân viên",b:"Nhân viên",why:"Khách hay đặt theo tên thợ. AI cần biết ai đang làm ở tiệm.",uses:"Xếp lịch đúng người, và đặt đúng thợ mà khách yêu cầu.",miss:"Không có nhân viên: AI không có ai để đặt. Thợ đã nghỉ mà còn trong danh sách thì vẫn bị đặt.",how:["Chọn tab Nhân viên.","Bấm Thêm nhân viên rồi nhập tên và số điện thoại.","Chọn Vị trí và Cấp bậc.","Khi có người nghỉ, cập nhật danh sách liền để AI ngưng đặt cho họ."]},
+{h:"Dịch vụ",b:"Dịch vụ",why:"Khách hỏi giá và hỏi làm mất bao lâu. AI cần danh sách dịch vụ để trả lời và biết giữ bao nhiêu thời gian.",uses:"Báo giá, báo thời gian, và giữ đủ chỗ trong lịch cho dịch vụ đó.",miss:"Thiếu dịch vụ, giá hoặc thời gian: AI không báo giá được, hoặc đặt khung giờ quá ngắn.",how:["Chọn tab Dịch vụ.","Chọn nhóm (Manicure, Pedicure, Gel...).","Điền Giá và Thời gian cho từng dịch vụ.","Tiệm ngưng làm dịch vụ nào thì tắt Active dịch vụ đó."]},
+{h:"Cấp bậc: ai làm được dịch vụ nào",b:"Cấp bậc nhân viên, và cột Duyệt trong Dịch vụ",why:"Không phải thợ nào cũng làm được mọi dịch vụ. Cấp bậc cho AI biết ai đủ trình độ làm gì.",uses:"Khi khách hỏi gel hoặc bột, AI chỉ đặt cho thợ làm được.",miss:"Không có cấp bậc: AI không biết ai làm được gì, nên có thể đặt nhầm người hoặc không đặt được đúng thợ.",how:["Chọn tab Cấp bậc nhân viên và tạo cấp bậc (ví dụ Cơ bản, Nâng cao, Senior).","Mở hồ sơ từng nhân viên và chọn cấp bậc.","Trong Dịch vụ, xem cột Duyệt để biết dịch vụ nào cần cấp bậc nào."]},
+{h:"AI Lễ Tân: lời chào, giới thiệu tiệm, câu hỏi thường gặp",b:"AI LỄ TÂN",why:"Đây là chỗ dạy AI nói chuyện đúng giọng tiệm: ngôn ngữ, giọng đọc, lời chào, khuyến mãi và câu trả lời cho câu hỏi hay gặp.",uses:"Chào theo phong cách tiệm, trả lời về chỗ đậu xe, chính sách hủy lịch và khuyến mãi, và nhắn tin chào khách gọi lần đầu.",miss:"Để trống: AI chỉ đặt lịch được, không có câu trả lời cho mấy câu hỏi ngoài lề.",how:["Chọn tab AI LỄ TÂN.","Chọn ngôn ngữ và giọng đọc, rồi nghe thử.","Viết lời chào và phần Giới thiệu tiệm.","Điền câu hỏi thường gặp: chỗ đậu xe, hủy lịch, thanh toán.","Tải lên tài liệu chính sách nếu có."]}],
+ui:{name:"Tên, địa chỉ, số điện thoại",hours:"Giờ làm việc",hol:"Ngày lễ nghỉ",addStaff:"+ Thêm nhân viên",st:"NHÂN VIÊN",po:"VỊ TRÍ",lv:"CẤP BẬC",sv:"DỊCH VỤ",pr:"GIÁ",du:"THỜI GIAN",ss:"TRẠNG THÁI",ap:"DUYỆT",act:"Active",addLv:"+ Thêm cấp bậc",l1:"Cấp 1 · Dịch vụ cơ bản",l2:"Cấp 2 · Dịch vụ nâng cao",l3:"Cấp 3 · Senior / mọi dịch vụ được duyệt",edit:"Sửa",cats:["Manicure","Pedicure","Gel Shellac","…"],lang:"Ngôn ngữ AI",voice:"Giọng đọc",greet:"Lời chào",about:"Giới thiệu tiệm",faq:"Câu hỏi thường gặp",kf:"Tệp kiến thức",fc:"SMS cuộc gọi đầu"},
+simT:"Xem AI nghĩ gì",simParts:["Thông tin tiệm","Nhân viên","Dịch vụ","Cấp bậc","AI Lễ Tân"],
+caller:"Khách gọi: “Tôi muốn làm bộ gel chiều mai, với thợ A.”",
+sa:{ok:"Dạ có. Chiều mai tiệm mở cửa, thợ A làm ở tiệm và làm được gel. Em đặt bộ gel, giữ đủ thời gian trong lịch và nhắn tin xác nhận cho mình.",
+ info:"Dạ em chưa chắc tiệm mở cửa lúc nào. Anh chị để lại số, tiệm sẽ gọi lại nghen.",
+ staff:"Dạ em không có thợ nào tên đó. Anh chị để lại số, tiệm sẽ gọi lại nghen.",
+ serv:"Dạ em ghi lại được, nhưng em không báo giá hay giữ đủ thời gian được. Anh chị để lại số, tiệm sẽ gọi lại nghen.",
+ lev:"Dạ em đặt thợ A làm bộ gel cho mình.",levw:"Cảnh báo: không có cấp bậc thì AI không kiểm tra được thợ A có làm gel không, nên có thể đặt nhầm người.",
+ ai:"Dạ em đặt bộ gel với thợ A được.",aiw:"Không có phần AI Lễ Tân thì AI không có lời chào theo phong cách tiệm và không trả lời được câu ngoài lề như chỗ đậu xe."},
+complete:"Đủ bộ",parts:"phần",simNote:"Bật hoặc tắt từng phần để xem câu trả lời của AI thay đổi. Đây chỉ là minh họa, AI thật có thể trả lời khác.",
+inputLb:"Số AI của tiệm"}};
 
-      function currentLanguage() {
-        return page.getAttribute('data-guide-lang') || 'vi';
-      }
+T.es={"tab1": "1. Conectar el teléfono", "vidT": "Vea la guía en video", "vidP": "Narrado en español con subtítulos en español.", "tab2": "2. Enseñar a la IA su salón", "e1": "CONFIGURACIÓN DE AI VOICE", "t1": "Configure la IA para contestar el teléfono de su negocio", "s1t": "3 pasos, unos 2 minutos. Con imágenes en cada paso.", "h1": "Elija la compañía de teléfono de su número", "p1": "Cada compañía usa códigos distintos. Elija el nombre que aparece en su factura.", "dk": "No sé cuál es mi compañía →", "k1": "Mire su teléfono", "k1p": "El nombre de la compañía aparece arriba en la pantalla, junto a las barras de señal.", "k2": "Revise su factura", "k2p": "El nombre de la compañía está impreso arriba en la factura o en la app de la compañía.", "k3": "¿Todavía no está seguro?", "k3p": "Llame a soporte, al final de la página. Dígales el número de teléfono del negocio.", "kn": "Si el nombre en el teléfono es distinto al de la factura, guíese por la factura. Línea fija es un teléfono de escritorio con cable. VoIP es un teléfono que funciona por internet.", "when": "¿Cuándo debe contestar la IA?", "ring": "Después de unos timbres", "ringp": "Usted contesta si puede. Si no alcanza, la IA contesta.", "now": "La IA contesta de inmediato", "nowp": "Cada llamada va primero a la IA. El teléfono del negocio no suena.", "h2": "Marque este código", "p2": "Use el teléfono del negocio. Escriba el código exacto, presione llamar y espere la confirmación.", "typeLine": "Escriba esta línea completa en el teclado del teléfono:", "untested": "sin probar", "legend": "Amarillo: código de la compañía · Blanco: el número de la IA", "copy": "Copiar", "copied": "Copiado ✓", "ten": "Marque los 10 dígitos. No hace falta +1.", "pick": "Elija su compañía y cuándo contesta la IA, arriba, para ver su código.", "numLb": "Su número de IA (lo llena el sistema)", "offT": "Para apagar, marque", "vzDelay": "Verizon no permite elegir la espera. La red la elige, normalmente de 4 a 5 timbres.", "scriptT": "Este tipo de línea no tiene un código único. Llame a su compañía y diga:", "script": "“Por favor active el desvío de llamadas de mi número al {n}.”", "callSupport": "O llame a soporte de NEXORA TOUCH:", "h4": "Siga las imágenes", "pc": ["Abra la app Teléfono y elija el Teclado.", "Escriba el código exacto. Toque “Copiar” y péguelo para ir más rápido.", "Presione el botón verde de llamar.", "Espere el tono o el mensaje y cuelgue."], "kp": "Teclado", "calling": "Llamando…", "bn": "✓ Desvío de llamadas activado (el mensaje puede variar según el teléfono)", "h3": "Llamada de prueba para estar seguro", "p3": "Use OTRO teléfono (el suyo o el de un empleado) para llamar al número del negocio.", "c": [["Espere el tiempo completo, la IA contesta", "Si eligió después de unos timbres, deje sonar hasta que conteste la IA. La compañía decide cuánto tarda."], ["Diga una frase, la IA responde", "Por ejemplo: “Quiero reservar una manicura para mañana.”"], ["La llamada aparece en la app con un resumen", "Abra la app y revise el Registro de llamadas."]], "connected": "✓ Conectado. La IA está contestando el teléfono de su negocio.", "warnV": "¿La llamada de prueba no llegó a la IA? La solución más común: apague el buzón de voz y llame otra vez. Abra la sección “Buzón de voz” abajo.", "more": "MÁS INFORMACIÓN", "a1": "El buzón de voz impide que la IA conteste", "a1b": "Su buzón de voz puede contestar antes que la IA. Si gana, quien llama cae en el buzón y piensa que nadie contestó. Apague el buzón de voz en la línea del negocio, o pregunte a su compañía cómo hacer que primero ocurra el desvío.", "a2": "¿Cuántos timbres antes de que conteste la IA?", "a2b": "Lo decide la compañía, no usted. Verizon y T-Mobile no permiten elegir el número de timbres. Si quiere que la IA conteste más pronto, elija “La IA contesta de inmediato”.", "a2r": [], "a2c": "", "a3": "Cuando pase esto, haga esto", "a3p": "Los cinco casos más comunes. Para cualquier otro, llame a soporte.", "a3l": [["Le llega una alerta de “llamada perdida”", "Abra la app y lea el resumen. Si preguntaron el precio o quisieron reservar, devuelva la llamada en 15 minutos."], ["Un mensaje de texto nuevo en la app", "Responda dentro de la app, no desde su teléfono personal. Si escriben STOP, no les escriba de vuelta."], ["Nadie contesta y nunca llega a la IA", "Nueve de cada diez veces gana el buzón de voz. Apáguelo y pruebe otra vez. Si sigue mal: marque el código rojo de arriba y llame a soporte."], ["La IA dio un precio u hora equivocados", "Tome una captura, anote la hora de la llamada y envíela a soporte. Si afecta a un cliente ahora mismo: llame, no mande correo."], ["Al final del día", "Dos minutos en la app: mensajes sin responder y llamadas perdidas sin devolver. Luego ciérrela."]], "a4": "Un cliente habitual pregunta “¿por qué contestó una máquina?”", "a4b": "Diga esto: “Agregamos un asistente que contesta el teléfono para no perder a nadie mientras atendemos a un cliente. Puede hablarle con normalidad, o escribirnos. Lo vemos de inmediato.”", "stuckK": "¿NECESITA AYUDA? LLAME", "hours": "De lunes a viernes, de 9:00 AM a 5:00 PM", "share": "📱 Comparta esta guía con un código QR", "qrT": "Escanee para abrir esta guía", "qrCopy": "Copiar enlace", "qrClose": "Cerrar", "e2": "AI VOICE · CONFIGURACIÓN INTELIGENTE", "t2": "Enseñe a la IA sobre su salón", "s2t": "La IA es tan inteligente como la información que usted le da. Complete las 5 partes de abajo para que la IA reserve correctamente.", "dark": "La IA no sabe por arte de magia su horario, su personal ni quién puede hacer cada servicio. Necesita el conjunto completo. Si falta una parte, la IA contesta peor o tiene que pasar la llamada a una persona.", "tabsApp": ["Salon Information", "SMS Settings", "Staff", "Services", "Roles & Permissions", "Staff Levels", "AI RECEPTIONIST"], "why": "Por qué importa", "uses": "La IA lo usa para", "miss": "Si falta", "how": "Cómo hacerlo", "pos": "POS → Salon Settings → ", "cards": [{"h": "Información del salón", "b": "Salon Information", "why": "La IA es su recepcionista. Solo puede hablar correctamente si conoce su nombre, dirección, teléfono y horario.", "uses": "Responder “¿a qué hora abren?” y “¿dónde están?”, y reservar solo dentro del horario. En días festivos cerrados la IA avisa que no se puede reservar.", "miss": "Sin horario: la IA puede reservar cuando el salón está cerrado.", "how": ["Abra el POS y elija Salon Settings.", "Elija la pestaña Salon Information.", "Revise el nombre, la dirección y el teléfono.", "Presione Edit hours e ingrese la hora de apertura y cierre de cada día.", "Agregue los días festivos cerrados en Holiday & Closures."]}, {"h": "Personal", "b": "Staff", "why": "Los clientes suelen reservar por el nombre del técnico. La IA necesita saber quién trabaja en el salón.", "uses": "Llenar la agenda con la persona correcta y reservar al técnico que pide el cliente.", "miss": "Sin personal: la IA no tiene a quién reservar. Un técnico que ya se fue pero sigue en la lista todavía puede recibir reservas.", "how": ["Elija la pestaña Staff.", "Presione Add Staff e ingrese el nombre y el teléfono.", "Elija la Position y el Level.", "Cuando alguien se vaya, actualice la lista de inmediato para que la IA deje de reservarlo."]}, {"h": "Servicios", "b": "Services", "why": "Los clientes preguntan precios y cuánto dura un servicio. La IA necesita la lista de servicios para responder y para saber cuánto tiempo reservar.", "uses": "Dar precios, dar duraciones y reservar suficiente espacio en la agenda para ese servicio.", "miss": "Si faltan servicios, precios o duraciones: la IA no puede dar cotizaciones o reserva espacios demasiado cortos.", "how": ["Elija la pestaña Services.", "Elija una categoría (Manicure, Pedicure, Gel...).", "Complete Price y Duration de cada servicio.", "Si deja de ofrecer un servicio, quítelo de Active."]}, {"h": "Niveles: quién puede hacer cada servicio", "b": "Staff Levels, y la columna Approval en Services", "why": "No todos los técnicos pueden hacer todos los servicios. Los niveles le dicen a la IA quién está calificado para qué.", "uses": "Cuando un cliente pide gel o acrílico, la IA solo reserva técnicos que pueden hacerlo.", "miss": "Sin niveles: la IA no sabe quién puede hacer qué, así que puede reservar a la persona equivocada o no puede reservar a un técnico específico.", "how": ["Elija la pestaña Staff Levels y cree niveles (por ejemplo Basic, Advanced, Senior).", "Abra el perfil de cada empleado y asigne su nivel.", "En Services, lea la columna Approval para ver qué servicio requiere qué nivel."]}, {"h": "AI Receptionist: saludo, presentación del salón, preguntas frecuentes", "b": "AI RECEPTIONIST", "why": "Aquí le enseña a la IA a sonar como su salón: idioma, voz, saludo, promociones y respuestas a preguntas comunes.", "uses": "Saludar a su estilo, responder sobre estacionamiento, política de cancelación y promociones, y enviar un mensaje de bienvenida a quien llama por primera vez.", "miss": "Si lo deja vacío: la IA solo puede reservar y no tiene respuesta para otras preguntas.", "how": ["Elija la pestaña AI RECEPTIONIST.", "Elija el idioma y la voz, y escuche una vista previa.", "Escriba el saludo y el texto About your salon.", "Complete las preguntas frecuentes: estacionamiento, cancelación, pagos.", "Suba documentos de políticas si los tiene."]}], "ui": {"name": "Nombre, dirección, teléfono", "hours": "Horario", "hol": "Cierres por festivos", "addStaff": "+ Add Staff", "st": "PERSONAL", "po": "PUESTO", "lv": "NIVEL", "sv": "SERVICIO", "pr": "PRECIO", "du": "DURACIÓN", "ss": "ESTADO", "ap": "APROBACIÓN", "act": "Activo", "addLv": "+ Add Level", "l1": "Nivel 1 · Servicios básicos", "l2": "Nivel 2 · Servicios avanzados", "l3": "Nivel 3 · Senior / todos los servicios aprobados", "edit": "Editar", "cats": ["Manicure", "Pedicure", "Gel Shellac", "…"], "lang": "Idioma de la IA", "voice": "Voz", "greet": "Saludo", "about": "Sobre su salón", "faq": "Preguntas frecuentes", "kf": "Archivos de conocimiento", "fc": "SMS de primera llamada"}, "simT": "Vea lo que piensa la IA", "simParts": ["Info del salón", "Personal", "Servicios", "Niveles", "AI Receptionist"], "caller": "Cliente: “Quiero un juego de gel mañana en la tarde, con la Técnica A.”", "sa": {"ok": "Sí. Mañana en la tarde estamos abiertos, la Técnica A trabaja aquí y hace gel. Reservo el juego de gel, bloqueo el tiempo suficiente en la agenda y le envío una confirmación por mensaje.", "info": "No estoy segura de cuándo abre el salón. Permítame tomar su número y el salón le devolverá la llamada.", "staff": "No tengo a ninguna técnica con ese nombre. Permítame tomar su número y el salón le devolverá la llamada.", "serv": "Puedo anotarlo, pero no puedo dar el precio ni reservar el tiempo correcto. Permítame tomar su número y el salón le devolverá la llamada.", "lev": "Claro, reservo a la Técnica A para el juego de gel.", "levw": "Aviso: sin niveles la IA no puede verificar que la Técnica A hace gel, así que puede reservar a la persona equivocada.", "ai": "Puedo reservar el juego de gel con la Técnica A.", "aiw": "Sin el texto de AI Receptionist, la IA no tiene un saludo a su estilo ni respuestas para otras preguntas como el estacionamiento."}, "complete": "Conjunto completo", "parts": "partes", "simNote": "Active o apague cada parte para ver cómo cambian las respuestas de la IA. Es solo una ilustración, las respuestas reales pueden variar.", "inputLb": "Su número de IA"};GT.es={"howT": "Cómo funciona. Lea esto primero.", "howS": ["Un cliente llama al número de su negocio.", "El teléfono de su negocio desvía la llamada. Usted lo activa desde SU teléfono del negocio, con el código de su compañía.", "Nuestro número de IA contesta la llamada por usted."], "howAI": "Nuestro número de IA:", "howM": "Dos formas de configurarlo:", "howM1": "La IA contesta de inmediato", "howM1p": "El teléfono del negocio no suena. Cada llamada va directo a la IA.", "howM2": "Suena 3 veces y luego contesta la IA", "howM2p": "El teléfono del negocio suena unos 20 segundos primero. Si nadie contesta, la IA contesta.", "howN": "Cada compañía tiene su propio código, así que abajo elija su compañía y su forma de configurarlo. Puede apagarlo cuando quiera con el código rojo.", "nwT": "¿No funcionó el código? Pregunte a su compañía.", "nwP": "Llame al servicio al cliente de su compañía (el número está en su factura) y diga:", "nwS": "“¿Mi teléfono puede desviar llamadas a otro número? Por favor active el desvío de llamadas al {n}.”", "nwQ": "Dígales: todas las llamadas, o solo cuando yo no conteste.", "nwN": "Algunos planes prepagados no permiten el desvío. En ese caso use otro plan, o pida a la compañía que lo active.", "realAI": "Su número de IA (asignado a su negocio por NEXORA TOUCH):", "sampleAI": "Número de IA DE EJEMPLO:", "sampleAIp": "Este número es solo un ejemplo para que vea la forma del código. NO lo marque. Use el número de IA que NEXORA TOUCH asignó a su negocio.", "fCode": "código de la compañía", "fNum": "número de IA", "fEnd": "final", "fAll": "lo que usted marca", "exT": "Ejemplo: cómo se arma un código", "exP": "Digamos que el negocio tiene Verizon y quiere que la IA conteste de inmediato. Usted escribe el código y luego el número de IA. El número de abajo es solo un EJEMPLO. Su negocio tiene su propio número de IA de NEXORA TOUCH.", "offTitle": "¿Algo anda mal con la IA? Recupere su teléfono.", "offWhen": "Marque esto desde el teléfono del negocio. Apaga el desvío y las llamadas vuelven a sonar en su propio teléfono.", "offDo": "Después llame al número del negocio desde otro teléfono para comprobar que suena.", "offMode": "Apagar solo el modo que configuró:", "offTest": "Si el teléfono sigue desviando, llame a su compañía y pídales que apaguen el desvío de llamadas.", "offPortal": "Portal del proveedor, Voice, Call Forwarding, póngalo en Off.", "offCall": "Llame a su proveedor y diga: “Por favor apague el desvío de llamadas de mi número.”", "smp": "ejemplo", "autoN": "Su número de IA (lo llenó NEXORA TOUCH):", "sampleT": "Este es un código de ejemplo.", "sampleP": "No lo escribe en NEXORA TOUCH. Escríbalo en el teclado de SU teléfono del negocio, el teléfono al que llaman los clientes. ", "secT": "¿Cuánto debe sonar primero el teléfono del negocio?", "secP": "Elija los segundos. El código de abajo cambia con su elección. 3 timbres son unos 20 segundos.", "secU": "seg", "tblT": "¿Qué significan “3 timbres”?", "tblP": "Las compañías no tienen un ajuste de “número de timbres”, solo segundos. En EE. UU. un timbre dura unos 6 segundos.", "tblR": [["2 timbres", "≈ 12 s"], ["3 timbres", "≈ 20 s ✓"], ["4 timbres", "≈ 25 s"], ["5 timbres", "≈ 30 s"]], "tblN": "Solo múltiplos de 5, hasta 30 segundos.", "vmT": "El buzón de voz es lo que daña este modo", "vmP": "Su buzón de voz también contesta alrededor de los 20 a 25 segundos. Si gana, quien llama cae en el buzón y piensa que nadie contestó. Apague el buzón de voz, o ponga la IA en 15 a 20 segundos y el buzón en 30.", "ppT": "Este plan puede no permitir “sonar primero”", "ppP": "Muchos planes prepagados solo permiten desviar todas las llamadas. Si el código da error o no pasa nada, cambie a “La IA contesta de inmediato”, o pida a la compañía que lo active.", "portalT": "Las líneas de internet no tienen códigos con asterisco", "portalP": "Vaya al portal de su proveedor, Voice, Call Forwarding. Elija No Answer y ponga 20 segundos, o Always para desviar de inmediato. ¿No está seguro? Llame al contacto de soporte de abajo.", "ringNotes": {"vz": "Verizon no permite elegir la espera. La red la elige, normalmente de 4 a 5 timbres.", "xm": "Xfinity Mobile (red de Verizon) no permite elegir la espera. La red la elige.", "att": "La espera se indica en segundos dentro del código.", "tm": "La espera se indica en segundos dentro del código. Solo se aceptan 5, 10, 15, 20, 25, 30.", "ln": "Este código no define la espera. La define el proveedor. Llámelos para cambiarla.", "xv": "Este código no define la espera. La define el proveedor.", "cb": "Este código no define la espera. La define el proveedor."}, "noPlusT": "Márquelo exactamente así. NO agregue +1.", "noPlusP": "Muchas personas agregan +1 o un 1 al frente y entonces el desvío no funciona. Escriba solo el código y los 10 dígitos.", "wrong": "MAL", "right": "BIEN", "srcOk": "Fuente: la página de soporte de la propia compañía", "srcWarn": "Fuente: guías de terceros, no de la compañía. Pruébelo con otro teléfono.", "stepA": "Paso A. Marque esto primero", "stepB": "Paso B. Después del segundo tono de marcado, marque el número de IA (10 dígitos)", "wait": "Espere el tono corto entrecortado y luego el tono de marcado normal antes del Paso B.", "stM": ["Abra la app Teléfono en el teléfono del negocio.", "Toque Teclado.", "Escriba el código exacto del recuadro de arriba. Sin +1, sin espacios.", "Presione el botón verde de Llamar y espere un tono o mensaje de confirmación.", "Termine la llamada."], "stH": ["Levante el auricular del teléfono del negocio y espere el tono de marcado.", "Marque el Paso A. Oirá un tono corto entrecortado y luego un tono de marcado normal.", "Marque el Paso B, los 10 dígitos (sin 1 al frente).", "Espere el tono de confirmación y cuelgue."], "stC": ["Levante el auricular, o presione Talk en el teléfono del negocio.", "Marque el código exacto del recuadro de arriba, terminando con los 10 dígitos. Sin 1 al frente.", "Espere el tono o mensaje de confirmación y cuelgue."], "extraT": "¿También desviar cuando la línea del negocio está ocupada? Marque también este segundo código:", "offAll": "Si todavía desvía, apague todo con", "ringNote": "La compañía decide cuántos timbres antes de desviar. Usted no puede elegirlo.", "notes": {"vz": ["Verizon: el teléfono del negocio suena primero. Si nadie contesta, la llamada pasa a la IA.", "No escriba # al final.", "Para detener el desvío, marque *73. Detiene todo desvío."], "xm": ["Solo Xfinity Mobile: el desvío se activa ÚNICAMENTE desde el propio teléfono Xfinity Mobile, no desde otro teléfono ni desde una computadora.", "Incluya el código de área. No escriba # al final.", "Mientras el desvío está activo, las llamadas sin contestar no van al buzón de voz del teléfono.", "El desvío funciona solo a números de EE. UU."], "att": ["Termine con # (la tecla de numeral). Olvidar el # es el error más común.", "Escriba solo los 10 dígitos. Sin +1, sin 1 al frente."], "tm": ["Termine con # (la tecla de numeral). Olvidar el # es el error más común.", "Escriba solo los 10 dígitos. Sin +1, sin 1 al frente."], "ln": ["Levante el auricular, marque el Paso A, espere el tono, luego marque los 10 dígitos y presione # (numeral).", "Sin +1, sin 1 al frente."], "xv": ["Use el auricular del teléfono del negocio (teléfono de casa, Xfinity Voice).", "Los códigos de no contesta y de ocupado vienen de una guía de terceros de 2021, y otra guía dice que solo existe *72. Si no funcionan, use “La IA contesta de inmediato” o llame a soporte de Xfinity.", "El desvío por ocupado no funciona con un Hunt Group."], "cb": ["Comcast Business también se puede configurar en línea: My Account, Phone, Features, Call Forwarding.", "Las líneas VoiceEdge las configura el administrador de su cuenta en el portal de VoiceEdge, no con códigos de asterisco."]}, "scriptT": "Este tipo de línea no tiene un código único. Llame a su compañía y diga:", "script": "“Por favor active el desvío de llamadas de mi número al {n}.”", "scriptN": "Deles solo el número de 10 dígitos. Sin +1. Pida el desvío de todas las llamadas, o solo cuando no contestan.", "callSupport": "O llame a soporte de NEXORA TOUCH:"};
+const ES_CAR={"xm": "(celular Xfinity)", "xv": "(teléfono de casa)", "cb": "(teléfono de negocio)", "cr": "(red de AT&T)", "mm": "(red de T-Mobile)", "vt": "(red de Verizon)", "sp": "(teléfono por cable)"};CARRIERS.forEach(c=>{if(c.s&&typeof c.s==="object"&&ES_CAR[c.id])c.s.es=ES_CAR[c.id];if(c.id==="ll")c.n.es="Línea fija";if(c.id==="vp")c.n.es="Internet · VoIP"});
+const VP={"vi": "2 phút 44 giây. Có giọng đọc và phụ đề tiếng Việt, làm theo từng màn hình.", "en": "2 min 21 sec. Narrated in English with English captions.", "es": "2 min 45 s. Narrado en español con subtítulos en español."};const NTS={"vi": [0, 11.86, 34.63, 48.72, 63.04, 69.11, 95.77, 111.41, 121.33, 141.5, 156.95], "en": [0, 11.15, 28.18, 42.12, 54.28, 61.18, 84.97, 97.11, 108.02, 124.13, 135.31], "es": [0, 14.73, 33.75, 49.49, 63.17, 70.37, 96.47, 109.9, 123.15, 142.65, 156.64]};const PARAS={vi:["Chào anh chị em chủ tiệm, Brian đây. Hôm nay Brian hướng dẫn mình cài AI nghe điện thoại cho tiệm. Làm một lần là xong, sau đó AI nghe điện thoại giúp mình mỗi ngày.", "Trước hết, mình hiểu cách nó chạy. Khách gọi vô số điện thoại của tiệm. Điện thoại của tiệm sẽ chuyển cuộc gọi đó đi, qua số điện thoại AI mà NEXORA TOUCH cấp cho tiệm, rồi AI nghe máy thay cho mình. Nghĩa là mình dùng chính điện thoại của tiệm để bấm một dãy mã, chứ mình không gõ vào hệ thống.", "Có hai cách cài. Cách thứ nhất, AI nghe máy liền, điện thoại tiệm không đổ chuông. Cách thứ hai, điện thoại tiệm đổ chuông khoảng ba hồi, tức là khoảng hai chục giây, nếu mình không bắt máy thì AI mới nghe.", "Bước một, chọn nhà mạng của số điện thoại tiệm, là tên in trên hóa đơn. Mỗi nhà mạng có mã khác nhau, nên mình chọn cho đúng. Nếu mình không biết, bấm vô dòng, tôi không biết nhà mạng của mình.", "Bước hai, chọn cách cài. AI nghe máy liền, hay đổ chuông vài hồi rồi AI mới nghe.", "Bước ba, hệ thống hiện ra dãy mã cho mình. Dãy mã ghép từ hai phần: mã của nhà mạng, cộng với số điện thoại AI. Số ở đây là số mẫu thôi nha, mình không bấm số mẫu. Mình dùng số AI mà NEXORA TOUCH cấp cho tiệm của mình. Và nhớ, chỉ bấm đúng mười số, không thêm dấu cộng một, không thêm số một phía trước. Đây là lỗi nhiều người hay gặp, thêm vô là chuyển cuộc gọi không chạy.", "Rồi mình cầm điện thoại của tiệm, mở bàn phím, gõ đúng dãy mã đó, bấm nút gọi, chờ nghe tiếng báo hoặc tin nhắn xác nhận, rồi tắt máy. Nếu mình xài AT&T hay T-Mobile, nhớ bấm dấu thăng ở cuối.", "Xong rồi mình gọi thử. Dùng một điện thoại khác, gọi vô số của tiệm. Nếu chọn AI nghe liền thì AI trả lời ngay. Nếu chọn đổ chuông thì chờ khoảng hai chục giây.", "Nếu bấm mã mà không được, mình gọi chăm sóc khách hàng của nhà mạng, số in trên hóa đơn, và hỏi: điện thoại của tôi có chuyển cuộc gọi sang số khác được không? Xin bật giúp tôi call forwarding sang số AI. Lưu ý, một số gói trả trước không cho chuyển cuộc gọi.", "Còn khi AI có trục trặc, hoặc mình muốn lấy lại điện thoại, mình bấm mã tắt trong khung màu đỏ, từ điện thoại của tiệm. Sau đó dùng điện thoại khác gọi vô số tiệm, để chắc là điện thoại của mình đổ chuông lại.", "Vậy là xong. Cần giúp thì mình gọi hỗ trợ NEXORA TOUCH. Chúc anh chị em đông khách. NEXORA TOUCH."],en:["Hi shop owners, it's Brian. Today I'll show you how to set up the AI to answer your shop's phone. You do it once, and after that the AI answers the phone for you every day.", "First, how it works. A customer calls your shop number. Your shop phone forwards that call to the AI phone number that NEXORA TOUCH gave your shop, and the AI answers for you. So you use your own shop phone to dial a short code. You do not type it into the system.", "There are two ways to set it up. In the first, the AI answers right away, and your shop phone does not ring. In the second, your shop phone rings about three times, around twenty seconds, and if you do not pick up, the AI answers.", "Step one, pick the carrier of your shop phone number. It is the name printed on your bill. Each carrier has a different code, so pick the right one. If you do not know it, tap I do not know my carrier.", "Step two, choose how you want it to work. The AI answers right away, or the phone rings a few times first.", "Step three, the guide shows you your code. It has two parts put together: your carrier's code, plus the AI phone number. The number you see here is only a sample, so do not dial it. Use the AI number NEXORA TOUCH gave your shop. And remember, dial exactly ten digits. No plus one, and no one in front. This is the most common mistake, and it stops the forwarding from working.", "Then take your shop phone, open the keypad, type the exact code, press call, wait for the confirmation tone or message, and hang up. If you are on AT&T or T-Mobile, remember the pound key at the end.", "Now test it. Use a different phone and call your shop number. If you chose answer right away, the AI picks up immediately. If you chose ring first, wait about twenty seconds.", "If the code does not work, call your carrier's customer service, the number on your bill, and ask: can my phone forward calls to another number? Please turn on call forwarding to the AI number. Note that some prepaid plans do not allow forwarding.", "And if the AI has a problem, or you want your phone back, dial the turn-off code in the red box from your shop phone. Then call the shop from another phone to make sure it rings again.", "That's it. If you need help, call NEXORA TOUCH support. Wishing you a busy shop. NEXORA TOUCH."],es:["Hola, dueños de negocio, soy Brian. Hoy les voy a enseñar cómo configurar la inteligencia artificial para que conteste el teléfono de su negocio. Se hace una sola vez, y después la IA contesta el teléfono por ustedes todos los días.", "Primero, cómo funciona. Un cliente llama al número de su negocio. El teléfono de su negocio desvía esa llamada al número de IA que NEXORA TOUCH le asignó, y la IA contesta por usted. Es decir, usted usa el teléfono de su propio negocio para marcar un código corto. No lo escribe en el sistema.", "Hay dos formas de configurarlo. En la primera, la IA contesta de inmediato y el teléfono del negocio no suena. En la segunda, el teléfono suena unas tres veces, unos veinte segundos, y si usted no contesta, entonces contesta la IA.", "Paso uno, elija la compañía de teléfono de su número. Es el nombre que aparece en su factura. Cada compañía tiene un código distinto, así que elija la correcta. Si no la sabe, toque, no sé cuál es mi compañía.", "Paso dos, elija cómo quiere que funcione. La IA contesta de inmediato, o primero suena unas veces.", "Paso tres, la guía le muestra su código. Se arma con dos partes: el código de su compañía, más el número de teléfono de la IA. El número que ve aquí es solo un ejemplo, no lo marque. Use el número de IA que NEXORA TOUCH le asignó a su negocio. Y recuerde, marque exactamente diez dígitos. Sin más uno, y sin un uno al frente. Este es el error más común, y hace que el desvío no funcione.", "Luego tome el teléfono de su negocio, abra el teclado, escriba el código exacto, presione llamar, espere el tono o el mensaje de confirmación y cuelgue. Si tiene AT&T o T-Mobile, recuerde la tecla de numeral al final.", "Ahora haga la prueba. Use otro teléfono y llame al número de su negocio. Si eligió que la IA conteste de inmediato, la IA contesta al instante. Si eligió que suene primero, espere unos veinte segundos.", "Si el código no funciona, llame al servicio al cliente de su compañía, el número que está en su factura, y pregunte: ¿mi teléfono puede desviar llamadas a otro número? Por favor active el desvío de llamadas al número de la IA. Tenga en cuenta que algunos planes prepagados no permiten el desvío.", "Y si la IA tiene un problema, o quiere recuperar su teléfono, marque el código para apagar, el del recuadro rojo, desde el teléfono de su negocio. Después llame al negocio desde otro teléfono para comprobar que vuelve a sonar.", "Eso es todo. Si necesita ayuda, llame a soporte de NEXORA TOUCH. Les deseo un negocio lleno de clientes. NEXORA TOUCH."]};
+const SAMPLE="5551234567";const S={sec:20,lang:(["vi","en","es"].includes(new URLSearchParams(location.search).get("lang"))?new URLSearchParams(location.search).get("lang"):"vi"),tab:1,carrier:"",mode:"",unk:false,num:"",checks:[false,false,false],sim:[true,true,true,true,true]};
+const t=k=>T[S.lang][k], $=id=>document.getElementById(id);
+const nm=o=>typeof o==="string"?o:(o[S.lang]||o.en);
+const fmt=d=>d.length<4?d:d.length<7?`(${d.slice(0,3)}) ${d.slice(3)}`:`(${d.slice(0,3)}) ${d.slice(3,6)}-${d.slice(6)}`;
+const norm=s=>{let d=(s||"").replace(/\D/g,"");if(d.length===11&&d[0]==="1")d=d.slice(1);return d.slice(0,10)};
+S.num=norm(new URLSearchParams(location.search).get("ai")||"");
+const assignedNumber=S.num.length===10;
+let tourOn=false,tourPaused=false,tourIdx=0,tourT0=0,tourDwell=6000,tourTimer=null,narrOn=false,autoTourTimer=null,tourNeedsRender=false;
 
-      function fillTokens() {
-        document.querySelectorAll('[data-guide-token]').forEach(function (element) {
-          var key = element.getAttribute('data-guide-token');
-          var value = config[key];
-          if (value) {
-            element.textContent = value;
-            element.classList.remove('empty');
-          } else {
-            element.textContent = '[' + key.toUpperCase() + ']';
-            element.classList.add('empty');
-          }
-        });
-      }
+function eff(){return tourOn&&!(S.carrier&&S.mode)?{c:S.carrier||"vz",m:S.mode||"now"}:{c:S.carrier,m:S.mode}}
+function curCode(){const e=eff();const car=CARRIERS.find(x=>x.id===e.c);if(!car||!e.m||!FAM[car.f])return null;return plan(car,e.m,S.num.length===10?S.num:SAMPLE)}
 
-      function aiNumber() {
-        return config.ai || '[AI NUMBER]';
-      }
+function phone(k,cd){
+ const keys="123456789*0#".split("").map(x=>`<span>${x}</span>`).join("");
+ const full=cd?cd.lines[0].join(""):"…";
+ if(k===0)return `<div class="ph"><div class="scr"><div class="disp"></div><div class="keys">${keys}</div><div class="callp">📞</div><div class="tab hl" style="margin-top:auto">▪ ${t("kp")}</div></div></div>`;
+ if(k===1)return `<div class="ph"><div class="scr"><div class="disp hl">${full}</div><div class="keys dim">${keys}</div><div class="callp" style="margin-top:auto;margin-bottom:10px">📞</div></div></div>`;
+ if(k===2)return `<div class="ph"><div class="scr"><div class="disp">${full}</div><div class="keys dim">${keys}</div><div class="callp hl" style="margin-top:auto;margin-bottom:10px">📞</div></div></div>`;
+ return `<div class="ph"><div class="scr"><div class="calling"><div class="ic">📞</div>${t("calling")}</div><div class="bn hl">${t("bn")}</div></div></div>`;
+}
+function ui(i){const U=t("ui");
+ if(i===0)return `<div class="ui"><div class="r">${U.name}<i></i></div><div class="r hl">${U.hours}<i></i></div><div class="r hl">${U.hol}<i></i></div></div>`;
+ if(i===1)return `<div class="ui"><div style="text-align:right;margin-bottom:6px"><span class="btn hl">${U.addStaff}</span></div><table><tr><th>${U.st}</th><th>${U.po}</th><th>${U.lv}</th></tr><tr><td>Tech A</td><td><span class="cell"><i></i></span></td><td><span class="cell hl"><i></i></span></td></tr><tr><td>Tech B</td><td><span class="cell"><i></i></span></td><td><span class="cell hl"><i></i></span></td></tr></table></div>`;
+ if(i===2)return `<div class="ui"><div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:6px">${U.cats.map((c,j)=>`<span class="cell ${j===0?"hl":""}">${c}</span>`).join("")}</div><table><tr><th>${U.sv}</th><th>${U.pr}</th><th>${U.du}</th><th>${U.ss}</th><th>${U.ap}</th></tr>${[1,2,3].map(()=>`<tr><td><span class="cell"><i></i></span></td><td><span class="cell hl">$<i></i></span></td><td><span class="cell hl"><i></i> min</span></td><td><span class="pill">${U.act}</span></td><td><span class="cell hl">✓</span></td></tr>`).join("")}</table></div>`;
+ if(i===3)return `<div class="ui"><div style="text-align:right;margin-bottom:6px"><span class="btn">${U.addLv}</span></div>${[U.l1,U.l2,U.l3].map(l=>`<div class="r hl">${l}<span class="cell" style="font-size:12px">${U.edit}</span></div>`).join("")}</div>`;
+ return `<div class="ui"><div class="r">${U.lang}<span><span class="pill">EN</span> <span class="pill">VI</span></span></div><div class="r">${U.voice}<i></i></div><div class="r">${U.greet}<i></i></div><div class="r hl">${U.about}<i></i></div><div class="r hl">${U.faq}<i></i></div><div class="r">${U.kf}<i></i></div><div class="r">${U.fc}<i></i></div></div>`;
+}
 
-      var panicCodes = {
-        verizon: '*73',
-        att: '##002#',
-        tmobile: '##002#',
-        cricket: '##002#',
-        metro: '##002#',
-        visible: '*73',
-        landline: '*73',
-        voip: '—'
-      };
+function render(){
+ tourNeedsRender=false;
+ document.documentElement.lang=S.lang;
+ document.title=t(S.tab===1?"t1":"t2")+" | NEXORA TOUCH";
+ document.querySelector("main.content").setAttribute("aria-label",t("t1"));
+ ["vi","en","es"].forEach(l=>$("b"+l).setAttribute("aria-pressed",String(S.lang===l)));
+ $("bvi").classList.toggle("on",S.lang==="vi");$("ben").classList.toggle("on",S.lang==="en");$("bes").classList.toggle("on",S.lang==="es");{const v=$("vid"),a=$("aud");if(v.dataset.l!==S.lang){v.dataset.l=S.lang;v.pause();v.poster=MEDIA_PATH+"ai-voice-setup-poster-"+S.lang+".jpg";v.src=MEDIA_PATH+"ai-voice-setup-video-"+S.lang+".mp4";a.src=MEDIA_PATH+"ai-voice-setup-guide-"+S.lang+".mp3";$("narr").style.display=""}}
+ $("tab1").textContent=t("tab1");$("tab2").textContent=t("tab2");
+ $("tab1").classList.toggle("on",S.tab===1);$("tab2").classList.toggle("on",S.tab===2);
+ $("tab1").setAttribute("aria-selected",String(S.tab===1));$("tab2").setAttribute("aria-selected",String(S.tab===2));
+ $("pane1").style.display=S.tab===1?"":"none";$("pane2").style.display=S.tab===2?"":"none";
+ $("vidT").textContent=t("vidT");$("vidP").textContent=VP[S.lang];$("e1").textContent=t("e1");$("t1").textContent=t("t1");$("s1t").textContent=t("s1t");
+ $("e2").textContent=t("e2");$("t2").textContent=t("t2");$("s2t").textContent=t("s2t");$("darkb").textContent=t("dark");
+ $("g1").className=S.carrier||S.unk?"on":"";$("g2").className=S.mode?"on":"";$("g3").className=S.checks.every(Boolean)?"on":"";
+ const e=eff(), car=CARRIERS.find(x=>x.id===e.c), cd=curCode();
 
-      var networkAliases = { cricket: 'att', metro: 'tmobile', visible: 'verizon' };
-      var mvno = { cricket: true, metro: true, visible: true };
-      var codes = {
-        verizon: {
-          ring: { on: '*71 → {AI}', off: '*73', vi: 'Nhấc máy, bấm *71, rồi bấm số AI. Verizon <strong>không cho chỉnh số giây</strong> — mạng tự đặt, thường khoảng 4–5 hồi chuông.', en: 'Dial *71 then the AI number. Verizon <strong>does not let you set the delay</strong> — the network picks it, usually 4–5 rings.' },
-          now: { on: '*72 → {AI}', off: '*73', vi: 'Nhấc máy, bấm *72, rồi bấm số AI. Nghe hai tiếng bíp là xong.', en: 'Dial *72 then the AI number. Two beeps means it worked.' }
-        },
-        att: {
-          ring: { on: '**61*1{AI}*11*20#', off: '##61#', vi: 'Bấm nguyên chuỗi, có dấu <strong>#</strong> ở cuối. Số <strong>20</strong> gần cuối là số giây chờ — đổi thành 15 nếu voicemail hay bắt trước.', en: 'Dial the whole string including the final <strong>#</strong>. The <strong>20</strong> near the end is the delay in seconds — use 15 if voicemail keeps winning.' },
-          now: { on: '**21*1{AI}#', off: '##21#', vi: 'Bấm nguyên chuỗi, có dấu <strong>#</strong> ở cuối.', en: 'Dial the whole string including the final <strong>#</strong>.' }
-        },
-        tmobile: {
-          ring: { on: '**61*1{AI}**20#', off: '##61#', vi: 'Bấm nguyên chuỗi, có dấu <strong>#</strong> ở cuối. Số <strong>20</strong> là số giây chờ — chỉ nhận 5, 10, 15, 20, 25, 30.', en: 'Dial the whole string including the final <strong>#</strong>. The <strong>20</strong> is the delay in seconds — only 5, 10, 15, 20, 25, 30 are accepted.' },
-          now: { on: '**21*1{AI}#', off: '##21#', vi: 'Bấm nguyên chuỗi, có dấu <strong>#</strong> ở cuối.', en: 'Dial the whole string including the final <strong>#</strong>.' }
-        },
-        landline: {
-          ring: { on: '*92 → {AI} → #', off: '*93', vi: 'Nhấc máy, bấm *92, chờ tiếng bíp, bấm số AI rồi dấu #. Mã này <strong>không tự đặt số giây</strong> — nhà cung cấp quyết, muốn đổi phải gọi họ.', en: 'Lift the handset, dial *92, wait for the tone, enter the AI number then #. This code <strong>does not set the delay</strong> — the provider does; call them to change it.' },
-          now: { on: '*72 → {AI} → #', off: '*73', vi: 'Nhấc máy, bấm *72, chờ tiếng bíp, bấm số AI rồi dấu #.', en: 'Lift the handset, dial *72, wait for the tone, enter the AI number then #.' }
-        },
-        voip: {
-          ring: { on: '—', off: '—', vi: 'Không dùng mã bấm. Xem hướng dẫn màu xanh bên dưới.', en: 'No star codes. See the note below.' },
-          now: { on: '—', off: '—', vi: 'Không dùng mã bấm. Xem hướng dẫn màu xanh bên dưới.', en: 'No star codes. See the note below.' }
-        }
-      };
+ // step 1
+ $("s1").innerHTML=`<h2><span class="n">1</span>${t("h1")}</h2><p class="hint">${t("p1")}</p>
+  <div class="grid4">${CARRIERS.map(c=>`<button class="opt ${S.carrier===c.id?"on":""}" aria-pressed="${S.carrier===c.id}" data-c="${c.id}">${nm(c.n)}${c.s?`<small>${nm(c.s)}</small>`:""}</button>`).join("")}</div>
+  <button class="link" id="dkBtn">${t("dk")}</button>
+  ${S.unk?`<div class="help"><div class="hgrid"><div><div class="status"><span>9:41</span><span class="carrierbadge">VERIZON</span><span>▂▄▆ 5G</span></div><h4>${t("k1")}</h4><p>${t("k1p")}</p></div>
+   <div><div class="mini"><span class="carrierbadge">VERIZON</span><div style="height:8px;background:#e1e5f1;border-radius:5px;margin:8px 0 5px"></div><div style="height:8px;width:60%;background:#e1e5f1;border-radius:5px"></div></div><h4>${t("k2")}</h4><p>${t("k2p")}</p></div>
+   <div><div class="mini" style="text-align:center;font-size:22px">📞</div><h4>${t("k3")}</h4><p>${t("k3p")}</p></div></div>
+   <p style="margin:12px 0 0;color:#5b6486;font-size:14.5px">${t("kn")}</p></div>`:""}
+  <div id="sMode" style="border-radius:16px"><div class="lbl">${t("when")}</div>
+  <button class="opt optw ${S.mode==="ring"?"on":""}" data-m="ring">${t("ring")}<small>${t("ringp")}</small></button>
+  <button class="opt optw ${S.mode==="now"?"on":""}" data-m="now" style="margin-bottom:0">${t("now")}<small>${t("nowp")}</small></button></div>`;
+ document.querySelectorAll("[data-c]").forEach(b=>b.onclick=()=>{updateSetup("carrier",b.dataset.c)});
+ $("dkBtn").onclick=()=>{S.unk=!S.unk;render()};
+ document.querySelectorAll("[data-m]").forEach(b=>b.onclick=()=>{updateSetup("mode",b.dataset.m)});
 
-      function applyGuide() {
-        var carrier = document.getElementById('carrier').value;
-        var mode = document.getElementById('mode').value;
-        var network = networkAliases[carrier] || carrier;
-        var currentCode = codes[network][mode];
-        var language = currentLanguage();
+ {const G=GT[S.lang],n=S.num.length===10?fmt(S.num):fmt(SAMPLE)+" ("+G.smp+")";
+ $("how").innerHTML=`<h2>${G.howT}</h2><ol class="stl hw">${G.howS.map(x=>`<li>${x}</li>`).join("")}</ol><div class="noteblue"><b>${G.howAI}</b> <span style="font-size:20px;font-weight:800">${n}</span></div><div class="lbl">${G.howM}</div><div class="two"><div class="m"><b>A. ${G.howM1}</b><p>${G.howM1p}</p></div><div class="m"><b>B. ${G.howM2}</b><p>${G.howM2p}</p></div></div><div class="lbl">${G.exT}</div><p class="small">${G.exP}</p><div class="formula"><div><small>${G.fCode}</small><b>*72</b></div><i>+</i><div><small>${G.fNum}</small><b>${SAMPLE}</b></div><i>=</i><div class="res"><small>${G.fAll}</small><b>*72${SAMPLE}</b></div></div><p class="small">${G.howN}</p>`;
+ $("nowork").innerHTML=`<h2>${G.nwT}</h2><p class="hint">${G.nwP}</p><div class="codepanel"><div class="t" style="font-size:17px;line-height:1.5">${G.nwS.replace("{n}",n)}</div></div><p>${G.nwQ}</p><div class="noteblue">${G.nwN}</div>`;}
+ // step 2
+ let h2=`<h2><span class="n">2</span>${t("h2")}</h2><p class="hint">${t("p2")}</p>`;
+ const GG=GT[S.lang];
+ if(car&&car.f==="script"&&e.m){
+  h2+=`<div class="nopl"><div class="nt">${GG.noPlusT}</div><p>${GG.noPlusP}</p></div><div class="noteblue">${car.id==="vp"?GG.portalT:GG.scriptT}</div><div class="codepanel"><div class="t" style="font-size:18px">${car.id==="vp"?GG.portalP:GG.script.replace("{n}",S.num.length===10?fmt(S.num):"__________")}</div></div><div class="noteblue">${GG.scriptN}</div><div>${GG.callSupport} <a href="tel:${SUPPORT}" style="color:#2b3fb8;font-weight:800">(832) 799-3583</a></div>`;
+ } else if(!cd){h2+=`<div class="noteblue">${t("pick")}</div>`;
+ } else {h2+=carrierGuide(car,cd);}
+ $("s2").innerHTML=h2;
+ const ni=$("numIn");if(ni)ni.oninput=ev=>{updateSetup("num",norm(ev.target.value));const x=$("numIn");if(x){x.focus();x.setSelectionRange(x.value.length,x.value.length)}};
+ document.querySelectorAll("[data-sec]").forEach(x=>x.onclick=()=>{updateSetup("sec",+x.dataset.sec)});
+ document.querySelectorAll("[data-copy]").forEach(b=>b.onclick=async()=>{if(!await copyText(b.dataset.copy))return;b.textContent=t("copied");setTimeout(()=>b.textContent=t("copy"),1400)});
 
-        document.getElementById('codePanic').textContent = panicCodes[carrier];
-        document.getElementById('codeOn').textContent = currentCode.on.replace('{AI}', aiNumber());
-        document.getElementById('codeOffOne').textContent = currentCode.off;
-        document.getElementById('onNote').innerHTML = '<span class="guide-vi">' + currentCode.vi + '</span><span class="guide-en">' + currentCode.en + '</span>';
-        document.getElementById('modeTag').textContent = mode === 'ring' ? (language === 'vi' ? '3 hồi · khoảng 20 giây' : '3 rings · ~20 seconds') : (language === 'vi' ? 'AI bắt ngay' : 'AI answers immediately');
+ // off + pictures card (s4 holds off line + pictures)
+ const OG=GT[S.lang];
+ const offBox=()=>{ if(cd){const all=cd.F.offAll||cd.F.offNow;return `<div class="offline" id="sOff"><div class="ot">${OG.offTitle}</div><p>${OG.offWhen}</p><div class="offbig">${all}</div><p>${OG.offDo}</p><div class="small">${OG.offMode} <b>${cd.off}</b>${cd.offExtra?` · <b>${cd.offExtra}</b>`:""}</div><p class="small">${OG.offTest}</p></div>`}
+  if(car&&car.id==="vp")return `<div class="offline" id="sOff"><div class="ot">${OG.offTitle}</div><p>${OG.offWhen}</p><div class="offbig" style="font-size:18px">${OG.offPortal}</div></div>`;
+  if(car&&e.m)return `<div class="offline" id="sOff"><div class="ot">${OG.offTitle}</div><p>${OG.offWhen}</p><div class="offbig" style="font-size:17px">${OG.offCall}</div></div>`;
+  return `<div id="sOff" style="height:1px"></div>`};
+ $("s4").innerHTML=`${offBox()}
+  <div id="sPics" style="border-radius:16px"><div class="lbl" style="margin-top:4px">${t("h4")}</div>
+  <div class="pics">${[0,1,2,3].map(i=>`<div class="pic"><div class="no">${i+1}</div>${phone(i,cd)}<p>${t("pc")[i]}</p></div>`).join("")}</div></div>`;
 
-        document.getElementById('ringBox').classList.toggle('guide-is-hidden', mode !== 'ring' || carrier === 'voip');
-        document.getElementById('vmWarn').classList.toggle('guide-is-hidden', mode !== 'ring' || carrier === 'voip');
-        document.getElementById('mvnoWarn').classList.toggle('guide-is-hidden', !(mode === 'ring' && mvno[carrier]));
-        document.getElementById('voipWarn').classList.toggle('guide-is-hidden', carrier !== 'voip');
-      }
+ // step 3
+ const all=S.checks.every(Boolean);
+ $("s3").innerHTML=`<h2><span class="n">3</span>${t("h3")}</h2><p class="hint">${t("p3")}</p>
+  ${t("c").map((c,i)=>`<label class="chk"><input type="checkbox" data-k="${i}" ${S.checks[i]?"checked":""}><div><b>${c[0]}</b><span>${c[1]}</span></div></label>`).join("")}
+  ${all?`<div class="connected">${t("connected")}</div>`:""}<div class="warn">${t("warnV")}</div>`;
+ document.querySelectorAll("[data-k]").forEach(c=>c.onchange=()=>{S.checks[+c.dataset.k]=c.checked;render()});
 
-      function setLanguage(language) {
-        page.setAttribute('data-guide-lang', language);
-        document.documentElement.lang = language === 'en' ? 'en' : 'vi';
-        document.querySelectorAll('[data-guide-language]').forEach(function (button) {
-          var active = button.getAttribute('data-guide-language') === language;
-          button.classList.toggle('is-active', active);
-          button.setAttribute('aria-pressed', active ? 'true' : 'false');
-        });
-        applyGuide();
-      }
+ // more info
+ const a2=t("a2r").map(r=>`<div>${r[0]}<br><b>${r[1]}</b></div>`).join("");
+ $("more").innerHTML=`<div class="lbl">${t("more")}</div>
+  <details><summary>${t("a1")}</summary><div class="body">${t("a1b")}</div></details>
+  <details><summary>${t("a2")}</summary><div class="body">${t("a2b")}<div class="rings">${a2}</div>${t("a2c")}</div></details>
+  <details><summary>${t("a3")}</summary><div class="body"><p style="margin-top:0">${t("a3p")}</p><ul style="padding-left:18px">${t("a3l").map(x=>`<li><b style="color:#111a3c">${x[0]}</b><br>${x[1]}</li>`).join("")}</ul></div></details>
+  <details><summary>${t("a4")}</summary><div class="body">${t("a4b")}</div></details>`;
 
-      document.getElementById('carrier').addEventListener('change', applyGuide);
-      document.getElementById('mode').addEventListener('change', applyGuide);
+ // part 2
+ $("cards").innerHTML=t("cards").map((c,i)=>`<section class="card" id="c${i+1}"><h2><span class="n">${i+1}</span>${c.h}</h2>
+  <div class="crumb">${t("pos")}${c.b}</div>
+  <div class="tabsmini">${t("tabsApp").map((x,j)=>`<span class="${[0,2,3,5,6][i]===j?"on":""}">${x}</span>`).join("")}</div>
+  ${ui(i)}
+  <div class="box b1"><div class="k">${t("why")}</div>${c.why}</div>
+  <div class="box b2"><div class="k">${t("uses")}</div>${c.uses}</div>
+  <div class="box b3"><div class="k">${t("miss")}</div>${c.miss}</div>
+  <div class="how"><div class="k">${t("how")}</div><ol>${c.how.map(x=>`<li>${x}</li>`).join("")}</ol></div></section>`).join("");
 
-      document.querySelectorAll('[data-guide-language]').forEach(function (button) {
-        button.addEventListener('click', function () {
-          setLanguage(button.getAttribute('data-guide-language'));
-        });
-      });
+ // simulator
+ const P=t("simParts"), A=t("sa"), on=S.sim, cnt=on.filter(Boolean).length;
+ let a=A.ok,warn="";
+ if(!on[0])a=A.info;else if(!on[1])a=A.staff;else if(!on[2])a=A.serv;else if(!on[3]){a=A.lev;warn=A.levw}else if(!on[4]){a=A.ai;warn=A.aiw}
+ $("sim").innerHTML=`<h2 style="gap:12px"><span class="n" style="background:#7c4dff">✦</span>${t("simT")}</h2>
+  <div class="simchips">${P.map((p,i)=>`<button class="${on[i]?"":"off"}" data-s="${i}"><span class="bx">✓</span>${p}</button>`).join("")}</div>
+  <div class="caller">${t("caller")}</div><div class="ai ${on[0]&&on[1]&&on[2]&&on[3]&&on[4]?"":"bad"}">${a}${warn?`<small>${warn}</small>`:""}</div>
+  <div class="complete">${t("complete")}: ${cnt}/5 ${t("parts")}</div><p class="hint" style="margin-top:4px">${t("simNote")}</p>`;
+ document.querySelectorAll("[data-s]").forEach(b=>b.onclick=()=>{S.sim[+b.dataset.s]=!S.sim[+b.dataset.s];render()});
 
-      document.querySelectorAll('[data-guide-print]').forEach(function (button) {
-        button.addEventListener('click', function () {
-          window.print();
-        });
-      });
+ $("stuck").innerHTML=`<div class="k">${t("stuckK")}</div><div class="nm">NEXORA TOUCH</div><a href="tel:${SUPPORT}">(832) 799-3583</a><div style="color:#a9b4ff;font-size:14px;margin-top:6px">${t("hours")}</div>`;
+ $("shareBtn").textContent=t("share");$("qrT").textContent=t("qrT");$("qrCopy").textContent=t("qrCopy");$("qrClose").textContent=t("qrClose");
+ $("tStop").setAttribute("aria-label",t("qrClose"));
+ $("tourStart").textContent="✦ AI Smart Tour";$("narr").textContent=narrOn?(S.lang==="vi"?"■ Dừng thuyết minh":S.lang==="es"?"■ Detener narración":"■ Stop narration"):(S.lang==="vi"?"🔊 Nghe thuyết minh":S.lang==="es"?"🔊 Escuchar narración":"🔊 Play narration");
+ if(tourOn){const target=$(SEC[tourIdx][0]);if(target)target.classList.add("spot")}
+}
 
-      document.querySelectorAll('[data-guide-copy]').forEach(function (button) {
-        button.addEventListener('click', function () {
-          var value = config[button.getAttribute('data-guide-copy')];
-          if (!value) return;
+// Keep setup changes, media and sharing in sync with the selected language.
+function updateSetup(key,value){S[key]=value;S.checks=[false,false,false];render()}
+async function copyText(value){
+ try{await navigator.clipboard.writeText(value);return true}catch(_){}
+ const field=document.createElement("textarea");field.value=value;field.style.position="fixed";field.style.opacity="0";document.body.appendChild(field);field.select();
+ let copied=false;try{copied=document.execCommand("copy")}catch(_){}field.remove();return copied;
+}
+function guideUrl(){const u=new URL(location.href);u.searchParams.set("lang",S.lang);if(S.num.length===10)u.searchParams.set("ai",S.num);else u.searchParams.delete("ai");return u.href}
+function setLanguage(language){stopTour();S.lang=language;render();history.replaceState(null,"",guideUrl())}
+$("tab1").onclick=()=>{S.tab=1;render();scrollTo({top:0})};$("tab2").onclick=()=>{$("vid").pause();S.tab=2;render();scrollTo({top:0})};
+["vi","en","es"].forEach(language=>$("b"+language).onclick=()=>setLanguage(language));
+$("shareBtn").onclick=()=>{$("qr").classList.add("on");const u=guideUrl();$("qrU").textContent=u;const cv=$("qrcv");cv.innerHTML="";
+ if(window.QRCode&&!window.__noqr){try{new QRCode(cv,{text:u,width:200,height:200})}catch(_){cv.textContent=u}}else cv.textContent=u;
+ $("qrClose").focus();};
+function closeQr(){$("qr").classList.remove("on");$("shareBtn").focus()}
+$("qrClose").onclick=closeQr;
+$("qr").onclick=event=>{if(event.target===$("qr"))closeQr()};
+$("qr").addEventListener("keydown",event=>{if(event.key==="Escape"){closeQr();return}if(event.key!=="Tab")return;event.preventDefault();($("qrCopy")===document.activeElement?$("qrClose"):$("qrCopy")).focus()});
+$("qrCopy").onclick=async()=>{if(!await copyText(guideUrl()))return;$("qrCopy").textContent=t("copied");setTimeout(()=>$("qrCopy").textContent=t("qrCopy"),1400)};
 
-          var original = button.innerHTML;
-          var doneText = currentLanguage() === 'vi' ? 'Đã chép' : 'Copied';
-          var finish = function () {
-            button.classList.add('is-done');
-            button.textContent = doneText;
-            window.setTimeout(function () {
-              button.classList.remove('is-done');
-              button.innerHTML = original;
-            }, 1300);
-          };
+/* ===== AI Smart Tour (also drives the narration) ===== */
+function showCap(){if(!tourOn)return;$("tc1").textContent=PARAS[S.lang][tourIdx];}
+function spot(i){
+ document.querySelectorAll(".spot").forEach(x=>x.classList.remove("spot"));
+ const [id,tab]=SEC[i]; if(tab&&S.tab!==tab){S.tab=tab;render()}
+ const el=$(id);el.classList.add("spot");setTimeout(()=>{if(tourOn)el.scrollIntoView({behavior:"smooth",block:"start"})},60);
+ showCap();tourT0=Date.now();tourDwell=Math.min(12000,Math.max(5500,PARAS[S.lang][i].length*48));
+}
+function goto(i){tourIdx=((i%SEC.length)+SEC.length)%SEC.length;render();spot(tourIdx)}
+function loop(){clearInterval(tourTimer);tourTimer=setInterval(()=>{if(!tourOn)return;
+ if(narrOn){const a=$("aud");$("tbar").style.width=(a.duration?a.currentTime/a.duration*100:0)+"%";return}
+ if(tourPaused){tourT0+=80;return}
+ const p=Math.min(1,(Date.now()-tourT0)/tourDwell);$("tbar").style.width=(p*100)+"%";if(p>=1)goto(tourIdx+1)},80)}
+function startTour(au){try{$("vid").pause()}catch(_){}tourOn=true;tourPaused=false;narrOn=!!au;document.body.classList.add("tour");tourIdx=0;render();spot(0);loop();$("tPause").textContent="⏸";
+ if(au){const a=$("aud");a.currentTime=0;a.play().catch(()=>{narrOn=false;render()})}}
+function stopTour(renderGuide=true){
+ clearTimeout(autoTourTimer);tourOn=false;narrOn=false;clearInterval(tourTimer);try{$("aud").pause()}catch(_){}
+ document.body.classList.remove("tour");document.querySelectorAll(".spot").forEach(x=>x.classList.remove("spot"));
+ tourNeedsRender=!renderGuide;if(renderGuide)render();
+}
+$("aud").addEventListener("timeupdate",()=>{if(!narrOn||!tourOn)return;const tm=$("aud").currentTime;let i=0;while(i+1<NTS[S.lang].length&&tm>=NTS[S.lang][i+1]-0.15)i++;if(i!==tourIdx){tourIdx=i;render();spot(i)}});
+$("aud").addEventListener("ended",()=>{if(narrOn)stopTour()});
+$("aud").addEventListener("error",()=>{$("narr").style.display="none"});
+$("vid").addEventListener("play",()=>{if(tourOn)stopTour()});$("tStop").onclick=stopTour;
+$("tNext").onclick=()=>{if(narrOn)$("aud").currentTime=NTS[S.lang][(tourIdx+1)%NTS[S.lang].length];else goto(tourIdx+1)};
+$("tPause").onclick=()=>{if(narrOn){const a=$("aud");if(a.paused){a.play();$("tPause").textContent="⏸"}else{a.pause();$("tPause").textContent="▶"}}else{tourPaused=!tourPaused;$("tPause").textContent=tourPaused?"▶":"⏸"}};
+$("tourStart").onclick=()=>startTour(false);
+$("narr").onclick=()=>{narrOn&&tourOn?stopTour():startTour(true)};
+// Cancel the tour immediately, but retain pressed controls until their activation finishes.
+["touchstart","pointerdown","keydown"].forEach(ev=>document.addEventListener(ev,e=>{
+ clearTimeout(autoTourTimer);if(!tourOn)return;
+ if(e.target.closest("#tourbar")||e.target.closest("#fab"))return;
+ stopTour(false);
+},{capture:true,passive:true}));
+["click","change","input","keyup"].forEach(ev=>document.addEventListener(ev,()=>{
+ if(!tourNeedsRender)return;tourNeedsRender=false;
+ setTimeout(()=>{
+  if(tourOn)return;
+  const focused=document.activeElement,id=focused.id;
+  const selection=focused.setSelectionRange?[focused.selectionStart,focused.selectionEnd]:null;
+  render();
+  const restored=id&&$(id);
+  if(restored&&restored!==focused){restored.focus({preventScroll:true});if(selection)restored.setSelectionRange(...selection)}
+ },0);
+}));
 
-          if (navigator.clipboard && navigator.clipboard.writeText) {
-            navigator.clipboard.writeText(value).then(finish).catch(function () {});
-          } else {
-            var textarea = document.createElement('textarea');
-            textarea.value = value;
-            textarea.style.position = 'fixed';
-            textarea.style.opacity = '0';
-            document.body.appendChild(textarea);
-            textarea.select();
-            try {
-              document.execCommand('copy');
-              finish();
-            } catch (error) {}
-            textarea.remove();
-          }
-        });
-      });
+render();
+autoTourTimer=setTimeout(()=>{if(!tourOn&&$("vid").paused)startTour(false)},900); // auto-start on page open (silent; narration needs a tap)
+// The sticky guide tabs follow the shared header, including its mobile search row.
+const shellHeader=document.querySelector("header.header");
+if(shellHeader&&window.ResizeObserver)new ResizeObserver(entries=>{
+ document.querySelector(".ai-guide-page").style.setProperty("--guide-header-height",entries[0].target.offsetHeight+"px");
+}).observe(shellHeader);
 
-      fillTokens();
-      applyGuide();
-    }());
+  }());
   </script>
 </body>
 </html>
