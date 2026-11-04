@@ -14,6 +14,13 @@
 - Không tự tạo hoặc cập nhật tài liệu/spec/mô tả như một bước bắt buộc khi chỉnh prototype. Nội dung UI và cập nhật trạng thái ngắn gọn không cần quy trình tài liệu.
 - Chỉ khi người dùng yêu cầu viết hoặc sửa tài liệu, đọc và áp dụng [.claude/SKIL_Doc.md](.claude/SKIL_Doc.md) trong phạm vi tài liệu đó. Yêu cầu trực tiếp của người dùng được ưu tiên khi có mâu thuẫn.
 
+## Bộ chuẩn đối chiếu yêu cầu PO
+
+- Khi người dùng yêu cầu hợp nhất nhiều phiên bản HTML/spec, xây baseline hoặc phân tích phạm vi thay đổi của một tính năng, đọc và dùng [PO Requirement Reconciler](skills/po-requirement-reconciler/SKILL.md).
+- Hướng dẫn và hồ sơ tính năng nằm tại [Bộ chuẩn yêu cầu](docs/requirements/README.md). Dùng lại biểu mẫu chung, giữ riêng nguồn, yêu cầu và quyết định của từng tính năng.
+- Khi nhận PO mới, mốc đối chiếu chính là bản thực tế đang deploy trên môi trường web được chỉ định, gồm cả thay đổi phát sinh sau PO cũ. V1, Master Spec và code main/master không thay thế mốc deployed nếu chưa xác minh tương ứng.
+- Không tự áp dụng quy trình hồ sơ này làm điều kiện chặn các chỉnh sửa prototype thông thường; giữ nguyên quy tắc làm trực tiếp và chỉ kiểm thử khi được yêu cầu.
+
 ## IMPORTANT — Bám sát PO; thiếu trong PO thì lấy từ staging web
 
 - Tài liệu và HTML mẫu do PO cung cấp trong `from-po/` là nguồn chuẩn để triển khai giao diện. Phải bám sát đúng màn hình và ngữ cảnh: bố cục, thành phần, nội dung, trạng thái và luồng tương tác; không tự rút gọn, thiết kế lại hoặc bổ sung chức năng làm sai lệch yêu cầu PO.
