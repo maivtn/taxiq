@@ -8,6 +8,9 @@
     if (['customers', 'calllog'].includes(new URLSearchParams(window.location.search).get('tab'))) {
       document.documentElement.dataset.posWorkspace = 'customers';
     }
+    if (new URLSearchParams(window.location.search).get('tab') === 'settings' && new URLSearchParams(window.location.search).get('section') === 'ai-receptionist') {
+      document.documentElement.dataset.salonSettingsContext = 'ai-receptionist';
+    }
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -16,6 +19,8 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr@4.6.13/dist/flatpickr.min.css">
   <link rel="stylesheet" href="../assets/booking-knowledge.css">
   <link rel="stylesheet" href="../assets/booking-settings-tabs.css">
+  <link rel="stylesheet" href="../assets/salon-settings-tabs.css">
+  <link rel="stylesheet" href="../assets/pos-ai-receptionist-settings.css">
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
   <style>
     :root {
@@ -9603,7 +9608,9 @@
     <div class="app-area">
       <header class="header"></header>
       <script>
-        window.NEXORA_SHELL = { activePage: 'booking', activeTab: 'booking' };
+        window.NEXORA_SHELL = document.documentElement.dataset.salonSettingsContext === 'ai-receptionist'
+          ? { activePage: 'pos', activeTab: 'salon-settings', activeNavKey: 'pos-settings' }
+          : { activePage: 'booking', activeTab: 'booking' };
       </script>
       <script src="../assets/nexora-icons.js"></script>
   <script src="../assets/nexora-shell-nav.js?v=20261029-sidebar-group-labels"></script>
@@ -9698,6 +9705,8 @@
               </button>
             </div>
           </div>
+
+          <nav class="salon-tabs" data-salon-settings-tabs aria-label="Salon settings sections" hidden></nav>
 
           <div class="tab-content">
             <section class="tab-panel" id="panel-overview" aria-label="Overview dashboard" hidden>
@@ -12915,6 +12924,10 @@
         document.title = 'Nexora Touch - ' + (activeTarget === 'customers' ? 'Customers' : 'Call Log');
         document.querySelector('main.content').setAttribute('aria-label', 'Customers and calls');
         document.querySelector('.page-tabs').setAttribute('aria-label', 'Customers and calls');
+      } else if (activeTarget === 'settings' && document.documentElement.dataset.salonSettingsContext === 'ai-receptionist') {
+        delete document.documentElement.dataset.posWorkspace;
+        document.title = 'Nexora Touch - Salon Settings';
+        document.querySelector('main.content').setAttribute('aria-label', 'Salon Settings');
       } else {
         delete document.documentElement.dataset.posWorkspace;
         document.title = 'Nexora Touch - Booking Book Shell';
@@ -12933,7 +12946,9 @@
         panel.classList.toggle('is-active', panel.dataset.tabPanel === activeTarget);
       });
 
-      if (window.NEXORA_SHELL && window.NEXORA_SHELL.setActiveTab) window.NEXORA_SHELL.setActiveTab(activeTarget);
+      if (window.NEXORA_SHELL && window.NEXORA_SHELL.setActiveTab) {
+        window.NEXORA_SHELL.setActiveTab(activeTarget === 'settings' && document.documentElement.dataset.salonSettingsContext === 'ai-receptionist' ? 'salon-settings' : activeTarget);
+      }
 
       if (!options || options.syncUrl !== false) {
         syncMainTabUrl(activeTarget, options && options.replaceUrl ? 'replace' : 'push');
@@ -20288,5 +20303,7 @@ function getBookingCardCallStart(item) {
   <script src="../assets/booking-ai-voice-selector.js"></script>
   <script src="../assets/booking-knowledge.js"></script>
   <script src="../assets/booking-settings-tabs.js"></script>
+  <script src="../assets/salon-settings-tabs.js"></script>
+  <script src="../assets/pos-ai-receptionist-settings.js"></script>
 </body>
 </html>

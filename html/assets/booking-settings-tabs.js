@@ -73,6 +73,7 @@
 
   function selectFromUrl() {
     var name = window.location.hash ? window.location.hash.replace(/^#settings-/, '') : 'information';
+    if (document.documentElement.dataset.salonSettingsContext === 'ai-receptionist') name = 'voice';
     if (name === 'hours') name = 'information';
     if (name === 'knowledge') name = 'voice';
     if (!tabs.some(function (button) { return button.dataset.settingsTab === name; })) return;
@@ -98,7 +99,7 @@
   });
 
   tablist.dataset.initialized = 'true';
-  tablist.hidden = false;
+  tablist.hidden = document.documentElement.dataset.salonSettingsContext === 'ai-receptionist';
   select('information', false);
   selectFromUrl();
   window.addEventListener('hashchange', selectFromUrl);

@@ -12,6 +12,7 @@
     {id: 'staff-schedule', label: 'Staff Schedule', icon: 'calendar-range'},
     {id: 'services', label: 'Services', icon: 'list'},
     {id: 'roles', label: 'Roles & Permissions', icon: 'shield-check'},
+    {id: 'ai-receptionist', label: 'AI RECEPTIONIST', icon: 'phone-call', href: 'booking-book-phase-1.html?tab=settings&section=ai-receptionist#settings-voice'},
     {id: 'access-pin', label: 'Access & PIN', icon: 'key-round'},
     {id: 'payment-fees', label: 'Payment Methods & Fees', icon: 'credit-card'},
     {id: 'stations', label: 'Stations', icon: 'armchair'},

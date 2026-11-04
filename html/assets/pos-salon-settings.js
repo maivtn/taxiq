@@ -29,6 +29,10 @@
   }
   window.renderStaffRoster=function(){baseRender();drawStaff();};
   function selectTab(tab){
+    if(tab==='ai-receptionist'){
+      location.replace('booking-book-phase-1.html?tab=settings&section=ai-receptionist#settings-voice');
+      return;
+    }
     const showRequests=tab==='staff-requests';
     if(showRequests)tab='staff-schedule';
     if(!['information','staff','staff-schedule','services','roles','sms','access-pin','payment-fees','stations'].includes(tab))tab='staff';

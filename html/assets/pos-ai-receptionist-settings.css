@@ -1,0 +1,16 @@
+/* Reuse the existing AI configuration inside the Salon Settings navigation. */
+[data-salon-settings-tabs][hidden]{display:none}
+html[data-salon-settings-context="ai-receptionist"] .page-heading-links,
+html[data-salon-settings-context="ai-receptionist"] .page-heading .page-tabs,
+html[data-salon-settings-context="ai-receptionist"] [data-settings-tabs]{display:none}
+.salon-ai-phone-card .settings-business-grid > [hidden]{display:none}
+.salon-ai-receptionist-intro{margin-bottom:16px;padding:20px;border-radius:12px;background:#eef0ff}
+.salon-ai-receptionist-intro h2{margin:0;color:var(--nexora-text);font-size:18px;font-weight:800}
+.salon-ai-receptionist-intro p{margin:6px 0 12px;color:var(--nexora-muted);font-size:14px;line-height:1.5}
+.salon-ai-receptionist-intro .page-guide-link{min-height:44px;background:#fff}
+.salon-ai-booking-rules{margin-top:16px}
+.salon-ai-booking-rules h3{margin:0 0 12px;color:var(--nexora-text);font-size:16px;font-weight:700}
+.salon-ai-booking-rules a{display:flex;align-items:center;justify-content:space-between;gap:12px;min-height:48px;padding:12px 0;border-top:1px solid var(--nexora-border);color:var(--nexora-text);font-size:14px;text-decoration:none}
+.salon-ai-booking-rules a>span:last-child{display:inline-flex;align-items:center;gap:4px;color:var(--nexora-brand);font-size:12px;white-space:nowrap}
+.salon-ai-booking-rules svg{width:14px;height:14px}
+.salon-ai-booking-rules a:focus-visible{outline:2px solid var(--nexora-brand);outline-offset:2px}

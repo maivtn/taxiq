@@ -86,6 +86,8 @@
     if (path === '/dashboard/pos/loyalty') return 'salon-setup-reward.html';
     if (path === '/dashboard/pos/settings/services') return 'pos-salon-settings.html?section=services';
     if (path === '/dashboard/pos/settings/salon-information') return 'pos-salon-settings.html?section=information';
+    if (path === '/dashboard/pos/settings/ai-receptionist') return 'booking-book-phase-1.html?tab=settings&section=ai-receptionist#settings-voice';
+    if (path === '/dashboard/pos/settings/ai-receptionist/setup-guide') return 'salon-guide-ai-voice.html' + u.search;
     if (path === '/dashboard/ai-hub') {
       if (tab === 'sms-campaigns') return 'nexora-sms-dashboard.html';
       if (tab === 'booking' && u.searchParams.get('view') === 'today') return front.booking;
