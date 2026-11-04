@@ -1,0 +1,222 @@
+/* Shared visual polish for the twelve product landing pages. */
+.direction-icon{display:inline-block;width:16px;height:16px;flex:none;vertical-align:middle;transition:transform .2s ease}
+a:hover .direction-icon,a:focus-visible .direction-icon,button:hover .direction-icon{transform:translateX(3px)}
+.home-link-arrow .direction-icon,.footer-home-arrow .direction-icon{width:15px;height:15px}
+.home-return-arrow .direction-icon{width:21px;height:21px}
+.hero-arrow .direction-icon{width:19px;height:19px}
+.hero-scroll .direction-icon{width:15px;height:15px}
+.hero-play svg,.ecosystem-spotlight-toggle svg{width:16px;height:16px;vertical-align:middle}
+.video-placeholder-mark svg{width:22px;height:22px}
+.button .direction-icon,.text-link .direction-icon,.ecosystem-spotlight-link .direction-icon{margin-inline-start:6px}
+.button,.text-link,.home-return,.final-products-link{align-items:center}
+
+.intro{padding-top:clamp(54px,6vw,78px);padding-bottom:clamp(46px,5vw,68px)}
+.product-story{padding-bottom:clamp(58px,6vw,84px)}
+.section-pad{padding-top:clamp(64px,7vw,90px);padding-bottom:clamp(64px,7vw,90px)}
+.section-head{margin-bottom:clamp(25px,3vw,36px)}
+.section-head h2{max-width:760px;line-height:1.14}
+.section-head p{max-width:690px;font-size:15px;line-height:1.65}
+
+.features.section-pad{background:linear-gradient(180deg,#f5f7fc 0%,#f8faff 100%);border-top:1px solid #e8edf6;border-bottom:1px solid #e8edf6}
+.features .section-head{align-items:flex-end;gap:28px}
+.features .section-head h2{font-size:clamp(30px,3.2vw,45px);letter-spacing:-.05em}
+.features .section-head .section-kicker{color:#6252d6}
+.features .section-head .text-link{min-height:40px;display:inline-flex;gap:6px;align-items:center;color:#5745ce}
+.features .feature-toc{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 24px}
+.features .feature-toc a{min-height:36px;display:inline-flex;align-items:center;border:1px solid #dce3f1;border-radius:999px;padding:7px 14px;background:#fff;color:#42516e;font-size:12px;font-weight:750;transition:border-color .18s,color .18s,background .18s}
+.features .feature-toc a:hover,.features .feature-toc a:focus-visible{border-color:#7564e9;background:#f0edff;color:#5141c5}
+.features .feature-grid{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.features .feature-card{position:relative;display:flex;flex-direction:column;min-height:192px;padding:25px 27px 28px;overflow:hidden;border:1px solid #dde5f1;border-radius:18px;background:#fff;box-shadow:0 12px 27px rgba(29,48,91,.045);transition:transform .2s ease,border-color .2s ease,box-shadow .2s ease}
+.features .feature-card:hover{transform:translateY(-3px);border-color:#c6c6ef;box-shadow:0 20px 34px rgba(29,48,91,.085)}
+.features .feature-card:target{border-color:#6656e9;box-shadow:0 0 0 3px rgba(102,86,233,.14),0 18px 36px rgba(29,48,91,.08)}
+.features .feature-card-head{display:flex;align-items:flex-start;justify-content:space-between;gap:15px;margin-bottom:18px}
+.features .feature-icon{width:48px;height:48px;flex:none;display:grid;place-items:center;margin:0;border:1px solid #dedbff;border-radius:14px;background:#f0eeff;color:#5f4cda}
+.features .feature-icon svg{display:block;width:25px;height:25px}
+.features .feature-card:nth-child(4n+2) .feature-icon{background:#eaf7f4;border-color:#d2ebe4;color:#197a68}
+.features .feature-card:nth-child(4n+3) .feature-icon{background:#edf3ff;border-color:#dbe7fb;color:#3472c0}
+.features .feature-card:nth-child(4n+4) .feature-icon{background:#fff3e9;border-color:#f9e5d0;color:#a96928}
+.features .feature-num{margin-top:2px;color:#76839d;font-size:11px;font-weight:800;letter-spacing:.13em;white-space:nowrap}
+.features .feature-card h3{margin:0 0 9px;color:#17264a;font-size:clamp(18px,1.55vw,21px);line-height:1.28;letter-spacing:-.035em}
+.features .feature-card p{max-width:52ch;margin:0;color:#52627e;font-size:14px;line-height:1.7}
+.features .feature-permalink{display:none}
+
+.scenario-button>span:last-child{display:grid;place-items:center;width:27px;height:27px;flex:none;border:1px solid #e0e6f1;border-radius:8px;color:#5f4cda}
+.scenario-button[aria-selected=true]>span:last-child{border-color:#ffffff55;color:#fff}
+.scenario-button>span:last-child .direction-icon{width:15px;height:15px}
+.display-icon svg{width:24px;height:24px}
+.mock-row .mock-icon{display:grid;place-items:center;width:20px;height:20px;flex:none}
+.mock-row .mock-icon svg{width:17px;height:17px}
+.mock-flow-arrow svg{width:22px;height:22px}
+.mock-marketing-steps b svg{width:15px;height:15px}
+.mock-two b svg{width:22px;height:22px}
+.mock-gift-card span svg{width:28px;height:28px}
+.mock-community-detail span{display:inline-flex;align-items:center;gap:5px}
+.mock-community-detail svg{width:14px;height:14px}
+.hub-card-body b::after{content:"";display:inline-block;width:15px;height:15px;margin-inline-start:7px;vertical-align:-2px;background:center/contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%235f4cda' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M4 12h15m-6-6 6 6-6 6'/%3E%3C/svg%3E")}
+.product-hub~.product-footer .footer-home-arrow{font-size:0}
+.product-hub~.product-footer .footer-home-arrow::after{content:"";display:block;width:15px;height:15px;background:center/contain no-repeat url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%236252d6' stroke-width='1.8' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M20 12H5m6-6-6 6 6 6'/%3E%3C/svg%3E")}
+
+@media(min-width:1080px){
+  .features .shell{display:grid;grid-template-columns:minmax(245px,.32fr) minmax(0,.68fr);column-gap:38px;align-items:start}
+  .features .section-head{grid-column:1;grid-row:1;display:block;margin:0 0 22px}
+  .features .section-head .text-link{margin-top:16px}
+  .features .feature-toc{grid-column:1;grid-row:2;display:grid;grid-template-columns:1fr;gap:4px;margin:0}
+  .features .feature-toc a{justify-content:flex-start;min-height:36px;padding:7px 12px;border-color:transparent;border-inline-start:2px solid #dfe4f4;border-radius:0 8px 8px 0;background:transparent}
+  .features .feature-toc a:hover,.features .feature-toc a:focus-visible{border-inline-start-color:#6656e9;border-top-color:transparent;border-bottom-color:transparent;border-inline-end-color:transparent}
+  .features .feature-grid{grid-column:2;grid-row:1/span 2}
+}
+@media(max-width:760px){
+  .features .section-head{align-items:flex-start;flex-direction:column;gap:14px}
+  .features .feature-grid{grid-template-columns:1fr}
+  .features .feature-toc{flex-wrap:nowrap;overflow-x:auto;padding-bottom:6px;scrollbar-width:thin}
+  .features .feature-toc a{flex:none}
+  .features .feature-card{min-height:0;padding:22px 23px 25px}
+}
+@media(max-width:480px){
+  .features .feature-card-head{margin-bottom:15px}
+  .features .feature-card p{font-size:13.5px}
+  .features .feature-toc{margin-bottom:20px}
+}
+@media(prefers-reduced-motion:reduce){
+  .direction-icon,.features .feature-card,.features .feature-toc a{transition:none}
+  .features .feature-card:hover{transform:none}
+}
+/* Give every product a readable problem → purpose → operation → value sequence. */
+.story-grid{grid-template-columns:repeat(2,minmax(0,1fr));gap:16px}
+.story-card{min-height:165px}
+.story-card:nth-child(4){background:#edf4fc;border-color:#dce8f6}
+@media(max-width:620px){.story-grid{grid-template-columns:1fr}}
+
+/* Shared 3D navigation across the product directory and all twelve landings. */
+.top nav,.feature-toc,.scenario-list,.hero-controls,.hub-grid,.ecosystem-products{perspective:800px}
+.top nav a,.features .feature-toc a,.scenario-button,.breadcrumb a,.home-link,.footer-home,.product-footer-bottom nav a,.hero-controls button,.hub-card,.ecosystem-product,.ecosystem-spotlight-toggle,.ecosystem-spotlight-link,.home-return,.final-products-link{transform-style:preserve-3d;transition:transform .25s cubic-bezier(.2,.8,.2,1),box-shadow .25s,background .25s,border-color .25s,color .25s}
+.top nav a,.features .feature-toc a,.scenario-button,.ecosystem-product{box-shadow:inset 0 1px #fff,0 3px 0 #dce1f0,0 8px 13px #25366a0c}
+.features .feature-toc a:hover,.features .feature-toc a:focus-visible,.top nav a:hover,.top nav a:focus-visible,.scenario-button:not([aria-selected=true]):hover,.scenario-button:not([aria-selected=true]):focus-visible,.ecosystem-product:hover,.ecosystem-product:focus-visible{transform:perspective(700px) rotateX(5deg) rotateY(-3deg) translate3d(0,-3px,5px);box-shadow:inset 0 1px #fff,0 6px 0 #aaa6df,0 12px 18px #4b489c25}
+.scenario-button[aria-selected=true]{box-shadow:inset 0 1px #ffffff88,0 5px 0 #182447,0 12px 21px #14204436;animation:productMenuChoice .42s cubic-bezier(.2,.8,.2,1)}
+.scenario-button[aria-selected=true]:hover,.scenario-button[aria-selected=true]:focus-visible{transform:perspective(700px) rotateX(4deg) translate3d(0,-3px,5px);box-shadow:inset 0 1px #ffffff88,0 7px 0 #182447,0 15px 22px #1420443d}
+.hero-controls>button:hover,.hero-controls>button:focus-visible{transform:perspective(650px) rotateX(7deg) translateY(-3px);box-shadow:0 4px 0 #14234d,0 10px 17px #0613295a}
+.hub-card:hover,.hub-card:focus-visible{transform:perspective(950px) rotateX(3deg) translateY(-5px);box-shadow:0 23px 37px #1a31502a}
+.ecosystem-spotlight-toggle:hover,.ecosystem-spotlight-toggle:focus-visible,.home-return:hover,.home-return:focus-visible{transform:perspective(700px) rotateX(5deg) translateY(-3px);box-shadow:0 5px 0 #aaa6df,0 12px 17px #4b489c25}
+.breadcrumb a:hover,.breadcrumb a:focus-visible,.home-link:hover,.home-link:focus-visible,.footer-home:hover,.footer-home:focus-visible,.product-footer-bottom nav a:hover,.product-footer-bottom nav a:focus-visible,.ecosystem-spotlight-link:hover,.ecosystem-spotlight-link:focus-visible,.final-products-link:hover,.final-products-link:focus-visible{transform:perspective(700px) rotateX(5deg) translateY(-2px)}
+.top nav a:active,.features .feature-toc a:active,.scenario-button:active,.hero-controls button:active,.hub-card:active,.ecosystem-product:active,.ecosystem-spotlight-toggle:active,.home-return:active{transform:perspective(650px) rotateX(-3deg) translateY(2px);box-shadow:inset 0 2px 5px #18244822,0 1px 0 #aba8d8}
+.top nav a:focus-visible,.features .feature-toc a:focus-visible,.scenario-button:focus-visible,.breadcrumb a:focus-visible,.home-link:focus-visible,.footer-home:focus-visible,.product-footer-bottom nav a:focus-visible,.hero-controls button:focus-visible,.hub-card:focus-visible,.ecosystem-product:focus-visible,.ecosystem-spotlight-toggle:focus-visible,.ecosystem-spotlight-link:focus-visible,.home-return:focus-visible,.final-products-link:focus-visible{outline:3px solid #25bfe0;outline-offset:3px}
+@keyframes productMenuChoice{from{transform:perspective(700px) rotateX(-8deg) translateY(4px) scale(.97)}65%{transform:perspective(700px) rotateX(4deg) translateY(-3px) scale(1.02)}to{transform:perspective(700px) rotateX(0) translateY(0) scale(1)}}
+@media(hover:none){.top nav a:hover,.features .feature-toc a:hover,.scenario-button:hover,.hero-controls button:hover,.hub-card:hover,.ecosystem-product:hover,.ecosystem-spotlight-toggle:hover,.home-return:hover,.breadcrumb a:hover,.home-link:hover,.footer-home:hover,.product-footer-bottom nav a:hover,.ecosystem-spotlight-link:hover,.final-products-link:hover{transform:none}}
+@media(prefers-reduced-motion:reduce){.top nav a,.features .feature-toc a,.scenario-button,.breadcrumb a,.home-link,.footer-home,.product-footer-bottom nav a,.hero-controls button,.hub-card,.ecosystem-product,.ecosystem-spotlight-toggle,.ecosystem-spotlight-link,.home-return,.final-products-link{animation:none!important;transition:none!important;transform:none!important}}
+
+/* Keep every product page's navigation and feature links visible on phones. */
+@media(max-width:480px){
+  .top nav{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:6px;overflow:visible;white-space:normal;padding-bottom:8px}
+  .top nav a{width:100%;min-width:0;justify-content:center;text-align:center;line-height:1.25}
+  .features .feature-toc{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;overflow:visible;white-space:normal;padding-bottom:0}
+  .features .feature-toc a{min-width:0;min-height:39px;justify-content:center;text-align:center;line-height:1.3;white-space:normal;overflow-wrap:anywhere}
+}
+@media(max-width:360px){
+  .mock-qr-layout{flex-direction:column;gap:7px}
+  .mock-flow-arrow{transform:rotate(90deg)}
+  .mock-qr-phone{width:min(180px,100%);min-width:0}
+}
+
+/* Use the same lighter surfaces and compact vertical rhythm as the dashboard. */
+:root{--ink:#1b2c4a;--muted:#40536f;--navy:#20375e;--line:#d9e2ee;--paper:#f7f9fc}
+.hero{min-height:580px;background:#27456f}
+.hero-shade{background:linear-gradient(90deg,rgba(27,48,83,.94) 0%,rgba(29,50,84,.87) 34%,rgba(31,51,84,.55) 64%,rgba(31,51,84,.13) 100%),linear-gradient(0deg,rgba(24,43,75,.58),transparent 38%)}
+.hero-content{padding-top:52px;padding-bottom:34px}
+.hero-deck,.hero-bottom{color:#f2f6ff}
+.intro{gap:clamp(28px,4vw,55px)}
+.section-pad{padding-top:clamp(52px,5.4vw,72px);padding-bottom:clamp(52px,5.4vw,72px)}
+.story-card,.features .feature-card,.journey-step{min-height:0}
+.features .feature-card{padding:23px 25px 25px}
+.features .feature-card p,.display-body p,.faq details p,.intro-rule,.story-card p,.hub-card-body p{color:#40536f}
+.features .feature-num{color:#4e607d}
+.journey{background:#2b4771}
+.journey-layout,.connection-layout,.faq-layout{gap:clamp(28px,4.5vw,56px)}
+.journey-copy>p,.journey-note{color:#f1f6ff}
+.product-hub{background:#f7f9fc}
+@media(max-width:900px){.hero{min-height:570px}.hero-content{padding-top:46px;padding-bottom:32px}}
+@media(max-width:600px){.hero{min-height:610px}.hero-shade{background:linear-gradient(90deg,rgba(27,48,83,.94),rgba(29,50,84,.74) 62%,rgba(31,51,84,.48)),linear-gradient(0deg,rgba(24,43,75,.68),transparent 42%)}.hero-content{padding-top:42px;padding-bottom:26px}.features .feature-card{padding:21px 22px 23px}}
+
+/* Show the existing N mark in the compact product header on phones. */
+@media(max-width:600px){
+  .top .brand{display:grid;place-items:center;flex:none;width:46px;height:46px;padding:6px;overflow:hidden;border-radius:11px;background:#111936}
+  .top .brand-logo{width:34px;height:34px;max-width:none;object-fit:cover;object-position:left center}
+}
+/* Quiet product navigation on compact screens. */
+.hero-copy > .status { margin-top: 0; }
+@media (max-width: 600px) {
+  .hero-copy > .eyebrow { display: none; }
+  .hero-copy > .status { margin-top: 0; }
+}
+@media (max-width: 600px) {
+  .top .top-inner > nav {
+    display: flex;
+    align-items: stretch;
+    gap: 15px;
+    width: 100%;
+    overflow-x: auto;
+    padding: 0;
+    border-top: 1px solid #edf0f6;
+    scrollbar-width: none;
+    white-space: nowrap;
+  }
+  .top .top-inner > nav::-webkit-scrollbar { display: none; }
+  .top .top-inner > nav a {
+    display: inline-flex;
+    flex: none;
+    align-items: center;
+    justify-content: center;
+    min-height: 39px;
+    width: auto;
+    padding: 0 1px;
+    border: 0;
+    border-bottom: 2px solid transparent;
+    border-radius: 0;
+    background: transparent;
+    box-shadow: none;
+    color: #485979;
+    font-size: 10px;
+    line-height: 1.2;
+    text-align: center;
+    transform: none;
+  }
+  .top .top-inner > nav a:hover,
+  .top .top-inner > nav a:focus-visible {
+    border-bottom-color: #6553d9;
+    background: transparent;
+    box-shadow: none;
+    color: #4935bd;
+    transform: none;
+  }
+  nav.breadcrumb {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 10px;
+    min-height: 38px;
+    color: #60718e;
+    font-size: 10px;
+  }
+  nav.breadcrumb > a:first-child,
+  nav.breadcrumb > span[aria-hidden="true"] { display: none; }
+  nav.breadcrumb > a:nth-of-type(2) {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    flex: none;
+    color: #4857ae;
+    font-weight: 800;
+    text-decoration: none;
+    transform: none;
+  }
+  nav.breadcrumb > a:nth-of-type(2)::before { content: '←'; font-size: 13px; line-height: 1; }
+  nav.breadcrumb > a:nth-of-type(2):hover,
+  nav.breadcrumb > a:nth-of-type(2):focus-visible { color: #4935bd; transform: none; }
+  nav.breadcrumb > [aria-current="page"] {
+    min-width: 0;
+    overflow: hidden;
+    color: #30415f;
+    font-weight: 800;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+}

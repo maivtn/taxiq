@@ -1,0 +1,5 @@
+.marketing-hero-steps{display:flex;flex-wrap:wrap;gap:7px;margin:22px 0 4px}
+.marketing-hero-steps span{display:inline-flex;align-items:center;min-height:29px;padding:5px 9px;border:1px solid rgba(203,224,255,.38);border-radius:6px;background:rgba(12,28,63,.48);color:#e4edff;font-size:10px;font-weight:800;letter-spacing:.01em;backdrop-filter:blur(8px)}
+.marketing-hero-steps span+span:before{content:'';width:5px;height:5px;margin-right:8px;border-radius:50%;background:#a8eadc}
+.hero .hero-media{object-position:center center}
+@media(max-width:600px){.hero .hero-media{object-position:68% center}.marketing-hero-steps{gap:6px;margin-top:16px}.marketing-hero-steps span{font-size:9px;padding:4px 7px}.marketing-hero-steps span+span:before{margin-right:5px}}

@@ -1,0 +1,54 @@
+/* Align Nexora Home with the dashboard's lighter surfaces and spacing. */
+:root {
+  --navy: #20375e;
+  --ink: #1b2c4a;
+  --muted: #40536f;
+  --line: #d9e2ee;
+  --bg: #f7f9fc;
+}
+.main-nav a, .nav-trigger { color: #40536f; }
+.ad-banner { background: #27446d; }
+.ad-banner-description { color: #ecf3ff; }
+
+.hero { background: #27456f; }
+.hero-visual::after,
+html[dir="rtl"] .hero-visual::after {
+  background:
+    linear-gradient(90deg, #172d50ee 0%, #172d50dc 22%, #172d50a8 43%, #172d5045 68%, #172d5008 87%),
+    linear-gradient(0deg, #142a4bb8, transparent 35%, transparent 76%, #142a4b40);
+}
+html[dir="rtl"] .hero-visual::after {
+  background:
+    linear-gradient(270deg, #172d50ee 0%, #172d50dc 22%, #172d50a8 43%, #172d5045 68%, #172d5008 87%),
+    linear-gradient(0deg, #142a4bb8, transparent 35%, transparent 76%, #142a4b40);
+}
+.hero-copy p { color: #f7f9ff; }
+.hero-slide-controls { background: #20365bc7; }
+.hero-image-caption { background: #20375ed9; }
+
+.live-home { padding-top: 64px; padding-bottom: 64px; }
+.live-home-card { min-height: 190px; padding: 19px; }
+.live-home-card i { margin-bottom: 17px; }
+.live-home-card span, .live-home-head p, .bridge-head p { color: #40536f; }
+.bridge-inner { padding-top: 64px; padding-bottom: 64px; }
+.bridge-panel.partner { background: #2d4772; border-color: #55719c; }
+.bridge-panel.partner p { color: #f1f5ff; }
+.industry-section { margin-top: 54px; padding: 27px; }
+.industry-heading p { color: #40536f; }
+.industry-overview { background: #2d4b75; }
+.industry-overview p { color: #f1f6ff; }
+.industry-overview, .industry-profile { min-height: 225px; }
+
+@media (max-width: 700px) {
+  .hero-visual::after,
+  html[dir="rtl"] .hero-visual::after {
+    background: linear-gradient(0deg, #172d50f5 0%, #172d50e8 32%, #172d5080 67%, #172d5028 100%);
+  }
+  .live-home { padding-top: 50px; padding-bottom: 54px; }
+  .bridge-inner { padding-top: 54px; padding-bottom: 54px; }
+}
+@media (max-width: 560px) {
+  .live-home-card { min-height: 165px; }
+  .industry-section { margin-top: 42px; padding: 18px; }
+  .industry-overview, .industry-profile { min-height: 0; }
+}
