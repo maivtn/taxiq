@@ -17,9 +17,12 @@ function parse(file) {
 }
 
 // JSDOM exercises the original event handlers, not viewport rendering or touch.
-function boot(t, width = 1440) {
-  const dom = parse(reviewFile);
-  t.after(() => dom.window.close());
+function boot(t, width = 1440, file = reviewFile) {
+  const dom = parse(file);
+  t.after(async () => {
+    await new Promise(resolve => setImmediate(resolve));
+    dom.window.close();
+  });
   const w = dom.window;
   Object.defineProperty(w, 'innerWidth', { value: width });
   w.matchMedia = media => ({
@@ -54,7 +57,9 @@ test('PO review preserves the original content, controls, media, destinations an
     media: [...doc.querySelectorAll('img, iframe, video')].map(el => el.outerHTML),
     forms: [...doc.querySelectorAll('form')].map(el => el.outerHTML),
     buttons: [...doc.querySelectorAll('button')].map(el => el.outerHTML),
-    scripts: [...doc.querySelectorAll('script')].map(el => el.outerHTML)
+    scripts: [...doc.querySelectorAll('script')]
+      .filter(el => !el.getAttribute('src')?.startsWith('assets/nexora-home-po-review.js'))
+      .map(el => el.outerHTML)
   });
   assert.deepEqual(signatures(review.window.document), signatures(original.window.document));
   assert.equal(review.window.document.querySelectorAll('dialog, [role="dialog"]').length, 0);
@@ -196,4 +201,51 @@ test('PO review video button retains the original embed and cover transition', t
   assert.equal(d.getElementById('video-cover').hidden, true);
   assert.equal(d.getElementById('video-frame').hidden, false);
   assert.equal(d.getElementById('video-frame').src, 'https://www.youtube-nocookie.com/embed/ghegM-w3NAM?autoplay=1&rel=0');
+});
+
+test('PO review local icons follow the selected hero slide and every referenced image exists', async t => {
+  const w = boot(t), d = w.document;
+  const poster = d.getElementById('hero-poster-icon');
+  assert.equal(poster.dataset.reviewIcon, 'pos');
+  assert.equal(d.querySelectorAll('.ecosystem-item .review-icon').length, 12);
+  assert.equal(d.querySelectorAll('.eco-nexora-item .review-icon').length, 12);
+  d.getElementById('hero-slide-next').click();
+  await new Promise(resolve => setImmediate(resolve));
+  assert.equal(poster.dataset.reviewIcon, 'qr-code');
+  assert.equal(d.querySelector('.hero-buttons a').getAttribute('href'), 'products/one-qr/index.html');
+  for (const icon of d.querySelectorAll('[data-review-icon]')) {
+    assert.equal(icon.getAttribute('aria-hidden'), 'true');
+    const image = new URL(icon.style.getPropertyValue('--review-icon-image').slice(5, -2));
+    assert.match(image.pathname, /^\/html\/assets\/(?:icon-oneqr|icons\/(?:3d-fluency|iconscout))\//);
+    assert.ok(existsSync(new URL(image.pathname.slice(1), new URL('../../../', import.meta.url))), image.pathname);
+  }
+});
+
+test('PO review uses specific visual meanings for POS, reporting, the prize wheel and customer retention', t => {
+  const w = boot(t), d = w.document;
+  const icon = product => d.querySelector(`.ecosystem-item[href="products/${product}/index.html"] .product-icon`);
+  assert.ok(icon('si-pos').style.getPropertyValue('--review-icon-image').endsWith('/pos.png")'));
+  assert.ok(icon('analytics').style.getPropertyValue('--review-icon-image').endsWith('/analytics.png")'));
+  assert.ok(icon('spin-wheel').style.getPropertyValue('--review-icon-image').endsWith('/prize-wheel-10862879.webp")'));
+  assert.equal(d.querySelectorAll('.journey-icon')[2].dataset.reviewIcon, 'hand-coins');
+  assert.equal(d.querySelectorAll('.journey-icon')[3].dataset.reviewIcon, 'heart');
+});
+
+test('PO review category icons survive language and selection changes without changing the original labels', async t => {
+  const original = boot(t, 768, originalFile), review = boot(t, 768);
+  for (const language of ['en', 'vi', 'ar']) {
+    for (const w of [original, review]) {
+      w.document.getElementById('language').value = language;
+      w.document.getElementById('language').dispatchEvent(new w.Event('change', { bubbles: true }));
+      w.document.querySelectorAll('#industry-tabs button')[1].click();
+    }
+    await new Promise(resolve => setImmediate(resolve));
+    const labels = w => [...w.document.querySelectorAll('#industry-tabs button')].map(button => button.textContent);
+    assert.deepEqual(labels(review), labels(original));
+    assert.equal(review.document.querySelectorAll('#industry-tabs .review-industry-icon').length, 5);
+    assert.equal(review.document.querySelectorAll('#industry-tabs .review-industry-icon')[1].dataset.reviewIcon, 'hair');
+    assert.equal(review.document.querySelectorAll('#industry-tabs .review-industry-icon .review-industry-icon').length, 0);
+    assert.equal(review.document.getElementById('industry-profile').dataset.sector, 'hair');
+    assert.equal(review.document.getElementById('industry-business-name').textContent, original.document.getElementById('industry-business-name').textContent);
+  }
 });
