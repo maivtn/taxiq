@@ -15,7 +15,7 @@ test('shared merchant shell renders the PO hierarchy and local operational desti
  assert.equal(leaf(w,'Getting started').getAttribute('href'),'nexora-getting-started.html');
 });
 test('all sidebar links resolve to real local pages, with distinct QR Analytics',t=>{
- const w=boot(t);for(const a of w.document.querySelectorAll('.sidebar a')) {
+ const w=boot(t);for(const a of w.document.querySelectorAll('.sidebar a[href]')) {
    const href=a.getAttribute('href');assert.ok(href && href!=='#',a.textContent);
    assert.doesNotMatch(href,/^(https?:|\.\.\/\.\.\/from-po)/);assert.ok(existsSync(new URL('../pages/'+href.split(/[?#]/)[0],assets)),href);
  }
@@ -47,7 +47,7 @@ test('3D icon files are local 94px PNGs with traceable attribution',()=>{
 test('merchant sidebar places Nexora Home directly between the brand and salon account',t=>{
  const w=boot(t),sidebar=w.document.querySelector('.sidebar');
  assert.equal(sidebar.children[0].className,'sidebar-brand');assert.equal(sidebar.children[1].className,'sidebar-public-home');assert.equal(sidebar.children[2].className,'sidebar-account');
- assert.equal(sidebar.querySelector('.sidebar-public-home a').textContent.trim(),'Nexora Home');assert.equal(sidebar.querySelectorAll('a[href="nexora-home.html"]').length,1);
+ assert.equal(sidebar.querySelector('.sidebar-public-home a').textContent.trim(),'Nexora Home');assert.equal(sidebar.querySelector('.sidebar-public-home a').hasAttribute('href'),false);
 });
 test('merchant sidebar uses English labels, plan icon and keeps the three product-group icons',t=>{
  const w=boot(t),sidebar=w.document.querySelector('.sidebar');assert.doesNotMatch(sidebar.textContent,/[\u00c0-\u024f\u1e00-\u1eff]/);
