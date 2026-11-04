@@ -126,48 +126,49 @@ stateDiagram-v2
 
 
 
+
+
 Thứ tự hiển thị: từ mới đến cũ theo ngày tài liệu đã xác nhận. Số # tăng từ cũ đến mới: #1 là bản cũ nhất, #6 là bản mới nhất.
-Hai bản ngày 7 tháng 9 có cùng ngày tài liệu; chưa có giờ để phân biệt thứ tự trong ngày.
 Ngày đính kèm lấy từ nội dung HTML hoặc thông tin đã xác nhận. Ngày dữ liệu demo được ghi riêng và không dùng để xác định phiên bản mới hay cũ.
 
 ### Bảng so sánh UI và tính năng
 
 | Mã / file | Ảnh Turnboard | Tính năng | Khác biệt và giới hạn |
 | --- | --- | --- | --- |
-| **#6 · POS V34 · Stations**<br>Ngày tài liệu: 12 tháng 10 năm 2026 (đã xác nhận) | [![Turnboard](images/06-focus.png)](images/06-focus.png) | Giữ 4 luật tính lượt, Clock in/out, tay nghề, giao dịch vụ, lịch sử và hoàn tác.<br>Bổ sung chọn ghế, bàn hoặc phòng khi giao dịch vụ từ Turnboard.<br>Có chế độ tự chọn vị trí trống đúng loại; vị trí gắn với phiếu dịch vụ. | So với #3, phần dựng UI Turnboard chỉ thêm lựa chọn Station. Luồng giao dịch vụ còn bổ sung giữ vị trí cho phiếu.<br><br>Trường Station phụ thuộc cấu hình vị trí. Đây vẫn là dữ liệu mẫu; khóa vị trí và chống xung đột giữa nhiều máy chưa được xác minh trên server. |
-| **#5 · POS feedback · Products & Other Sales**<br>Ngày tài liệu: 9 tháng 10 năm 2026 (đã xác nhận) | [![Turnboard](images/05-focus.png)](images/05-focus.png) | Cùng thẻ thợ, Clock in/out và biểu mẫu giao khách như #3.<br>Cùng 4 cách tính lượt, kiểm tra tay nghề, lịch sử lượt và Undo. | Phần dựng giao diện Turnboard giống hệt #3. Hai file vẫn khác nhau ở các phần khác của ứng dụng.<br><br>Cùng giới hạn lưu dữ liệu demo và xác thực vai trò của #3. Không dùng tên file để suy ra Turnboard đã được nâng cấp. |
-| **#4 · Front Desk · bản (1)**<br>Ngày tài liệu: 7 tháng 9 năm 2026 (đã xác nhận) | [![Turnboard](images/03-focus.png)](images/03-focus.png) | Giữ 3 cách xem, lọc thợ, thêm/chỉnh lượt và mục tiêu như bản gốc.<br>Thẻ Next Turn có số liệu chi tiết và nút View Technician.<br>Cửa sổ giao khách tách System recommendation và Final assignment; giữ thông tin thợ khách đã đặt.<br>Với nhiều dịch vụ, gợi ý một thợ làm toàn bộ hoặc chia dịch vụ cho nhiều thợ; giải thích thợ bị bỏ qua vì tay nghề vẫn giữ lượt. | Bản rõ nhất trong nhóm Front Desk về thợ tiếp theo và gợi ý giao nhiều dịch vụ. Các số liệu của thợ xuất hiện ngay trên thẻ chính.<br><br>Luật tính lượt có cùng giới hạn như bản gốc: Save Rules chưa cập nhật công thức. Chia dịch vụ và bảo vệ lượt là mô phỏng; chưa chứng minh luồng thanh toán và lượt khớp hoàn toàn. |
-| **#3 · POS feedback · prototype (1)**<br>Ngày tài liệu: 7 tháng 9 năm 2026 (đã xác nhận) | [![Turnboard](images/04-focus.png)](images/04-focus.png) | Chỉ đưa thợ đã Clock in vào hàng; xếp theo ít lượt nhất rồi theo thứ tự vào ca.<br>Chọn khách đã check-in, nhóm dịch vụ, dịch vụ và thợ đủ tay nghề.<br>Có 4 cách tính lượt: đầu khách, dịch vụ, thời gian và bậc giá; Owner đổi luật và cấp tay nghề.<br>Giao dịch vụ ghi lịch sử lượt; Undo tạo một dòng hoàn tác và trả lại lượt. | Dùng làm bản đối chiếu nền của nhóm POS. #5 có cùng Turnboard; #6 bổ sung vị trí thực hiện.<br><br>Không có bộ Compact / Cards / Turn Grid như #2 và #4. Dữ liệu demo ở trong phiên trình duyệt; PIN vai trò là mô phỏng, chưa phải xác thực server. |
+| **#6 · POS V34 · Stations**<br>Ngày tài liệu: 12 tháng 10 năm 2026 (đã xác nhận) | [![Turnboard](images/06-focus.png)](images/06-focus.png) | Giữ 4 luật tính lượt, Clock in/out, tay nghề, giao dịch vụ, lịch sử và hoàn tác.<br>Bổ sung chọn ghế, bàn hoặc phòng khi giao dịch vụ từ Turnboard.<br>Có chế độ tự chọn vị trí trống đúng loại; vị trí gắn với phiếu dịch vụ. | So với #4, phần dựng UI Turnboard chỉ thêm lựa chọn Station. Luồng giao dịch vụ còn bổ sung giữ vị trí cho phiếu.<br><br>Trường Station phụ thuộc cấu hình vị trí. Đây vẫn là dữ liệu mẫu; khóa vị trí và chống xung đột giữa nhiều máy chưa được xác minh trên server. |
+| **#5 · POS feedback · Products & Other Sales**<br>Ngày tài liệu: 9 tháng 10 năm 2026 (đã xác nhận) | [![Turnboard](images/05-focus.png)](images/05-focus.png) | Cùng thẻ thợ, Clock in/out và biểu mẫu giao khách như #4.<br>Cùng 4 cách tính lượt, kiểm tra tay nghề, lịch sử lượt và Undo. | Phần dựng giao diện Turnboard giống hệt #4. Hai file vẫn khác nhau ở các phần khác của ứng dụng.<br><br>Cùng giới hạn lưu dữ liệu demo và xác thực vai trò của #4. Không dùng tên file để suy ra Turnboard đã được nâng cấp. |
+| **#4 · POS feedback · prototype (1)**<br>Ngày tài liệu: 8 tháng 9 năm 2026 (đã xác nhận) | [![Turnboard](images/04-focus.png)](images/04-focus.png) | Chỉ đưa thợ đã Clock in vào hàng; xếp theo ít lượt nhất rồi theo thứ tự vào ca.<br>Chọn khách đã check-in, nhóm dịch vụ, dịch vụ và thợ đủ tay nghề.<br>Có 4 cách tính lượt: đầu khách, dịch vụ, thời gian và bậc giá; Owner đổi luật và cấp tay nghề.<br>Giao dịch vụ ghi lịch sử lượt; Undo tạo một dòng hoàn tác và trả lại lượt. | Dùng làm bản đối chiếu nền của nhóm POS. #5 có cùng Turnboard; #6 bổ sung vị trí thực hiện.<br><br>Không có bộ Compact / Cards / Turn Grid như #2–3. Dữ liệu demo ở trong phiên trình duyệt; PIN vai trò là mô phỏng, chưa phải xác thực server. |
+| **#3 · Front Desk · bản (1)**<br>Ngày tài liệu: 7 tháng 9 năm 2026 (đã xác nhận) | [![Turnboard](images/03-focus.png)](images/03-focus.png) | Giữ 3 cách xem, lọc thợ, thêm/chỉnh lượt và mục tiêu như bản gốc.<br>Thẻ Next Turn có số liệu chi tiết và nút View Technician.<br>Cửa sổ giao khách tách System recommendation và Final assignment; giữ thông tin thợ khách đã đặt.<br>Với nhiều dịch vụ, gợi ý một thợ làm toàn bộ hoặc chia dịch vụ cho nhiều thợ; giải thích thợ bị bỏ qua vì tay nghề vẫn giữ lượt. | Bản rõ nhất trong nhóm Front Desk về thợ tiếp theo và gợi ý giao nhiều dịch vụ. Các số liệu của thợ xuất hiện ngay trên thẻ chính.<br><br>Luật tính lượt có cùng giới hạn như bản gốc: Save Rules chưa cập nhật công thức. Chia dịch vụ và bảo vệ lượt là mô phỏng; chưa chứng minh luồng thanh toán và lượt khớp hoàn toàn. |
 | **#2 · Front Desk · bản gốc**<br>Ngày tài liệu: 4 tháng 9 năm 2026 (đã xác nhận) | [![Turnboard](images/02-focus.png)](images/02-focus.png) | Hiển thị lượt, số dịch vụ, tổng tiền dịch vụ và tiến độ mục tiêu của từng thợ.<br>Tìm thợ, lọc trạng thái và đổi giữa 3 cách xem; có dữ liệu mẫu cho tiệm lớn.<br>Có giao khách tiếp theo, chỉnh lượt, thêm lượt có lý do và màn hình tính lượt theo giá trị dịch vụ.<br>Cửa sổ giao khách có thợ, lý do bỏ lượt, ghế/bàn/phòng, ghi chú và lựa chọn in phiếu. | Cho thấy Turnboard nằm trong toàn bộ luồng Front Desk. Khối Next Turn gọn hơn bản (1).<br><br>Nút Save Rules chỉ đóng cửa sổ và báo đã lưu; công thức vẫn cố định trong bản mẫu. Luồng Assign Next Guest cộng 1 lượt, chưa áp dụng đồng nhất công thức theo giá trị. |
 | **#1 · TurnBoardBanMau**<br>Ngày tài liệu: 25 tháng 8 năm 2026 (đã xác nhận) | [![Turnboard](images/01-focus.png)](images/01-focus.png) | Xếp thợ theo số lượt tăng dần, sau đó theo thứ tự check-in.<br>Giao từng dịch vụ cho thợ; tự đề xuất theo tay nghề, trạng thái rảnh và lựa chọn ưu tiên của tiệm.<br>Có 5 cách tính lượt: thời gian, bảng dịch vụ, ngưỡng giá, bậc giá và đầu khách.<br>Có luật riêng cho khách chỉ định và khách hẹn; hồ sơ tay nghề, gọi thợ và hoàn tác lần giao gần nhất. | Tập trung sâu vào luật xếp lượt. Linh hoạt hơn các bản POS về cách tính lượt và ưu tiên tự chọn thợ.<br><br>Dữ liệu lưu trong trình duyệt. Gọi qua app chỉ ghi nhận mô phỏng; thông báo thật và Viber chưa được xác minh. Ảnh dùng dữ liệu mẫu: 6 thợ, 3 người đã check-in. |
 
 ### Ma trận tính năng Turnboard
 
-| Tiêu chí | #6 · POS V34 · Stations<br>12 tháng 10 năm 2026 | #5 · POS feedback · Products & Other Sales<br>9 tháng 10 năm 2026 | #4 · Front Desk · bản (1)<br>7 tháng 9 năm 2026 | #3 · POS feedback · prototype (1)<br>7 tháng 9 năm 2026 | #2 · Front Desk · bản gốc<br>4 tháng 9 năm 2026 | #1 · TurnBoardBanMau<br>25 tháng 8 năm 2026 |
+| Tiêu chí | #6 · POS V34 · Stations<br>12 tháng 10 năm 2026 | #5 · POS feedback · Products & Other Sales<br>9 tháng 10 năm 2026 | #4 · POS feedback · prototype (1)<br>8 tháng 9 năm 2026 | #3 · Front Desk · bản (1)<br>7 tháng 9 năm 2026 | #2 · Front Desk · bản gốc<br>4 tháng 9 năm 2026 | #1 · TurnBoardBanMau<br>25 tháng 8 năm 2026 |
 | --- | --- | --- | --- | --- | --- | --- |
-| Cách hiển thị | Thẻ thợ + biểu mẫu | Thẻ thợ + biểu mẫu | Compact / Cards / Grid | Thẻ thợ + biểu mẫu | Compact / Cards / Grid | Danh sách / Thẻ |
-| Thợ tới lượt kế tiếp | Giống #3 | Giống #3 | Thẻ chi tiết + Upcoming | Thẻ #1 nổi bật | Thanh Next Turn | Khối nổi bật + hàng chờ |
-| Cách tính lượt | Giống #3 | Giống #3 | Như #2 | 4 cách; Owner chọn | Theo giá trị; cấu hình mô phỏng | 5 cách + luật khách chỉ định / hẹn |
-| Tay nghề | Giống #3 | Giống #3 | Như #2 + gợi ý nhiều dịch vụ | Theo nhóm dịch vụ; 3 mức | Cấp thợ + dịch vụ được phép | Theo từng dịch vụ; 3 mức |
-| Giao khách nhiều dịch vụ | Giống #3 | Giống #3 | Gợi ý một thợ / chia dịch vụ | Một dịch vụ mỗi thao tác | Chọn thợ trong cửa sổ giao khách | Chọn thợ cho từng dịch vụ |
-| Ghế / bàn / phòng | Có Station; tự chọn / chọn tay | Không có ở biểu mẫu Turnboard | Có trường vị trí + ghi chú khách | Không có ở biểu mẫu Turnboard | Có trường vị trí | Không có trường riêng trong giao khách |
-| Sửa lượt / hoàn tác | Giống #3 | Giống #3 | Như #2 | Undo ghi dòng hoàn tác | Add Turn / Edit Turn có lý do | Hoàn tác lần giao gần nhất |
-| Doanh thu / mục tiêu | Giống #3 | Giống #3 | Đưa số liệu lên thẻ Next Turn | Hiển thị số lượt trên hàng thợ | Tổng dịch vụ + mục tiêu thợ | Doanh thu + trung bình mỗi lượt |
-| Thử tiệm lớn | Không có bộ tương ứng | Không có bộ tương ứng | Có bộ 50 thợ / 36 khách chờ | Không có bộ tương ứng | Có bộ 50 thợ / 36 khách chờ | Không có bộ 50 thợ riêng |
+| Cách hiển thị | Thẻ thợ + biểu mẫu | Thẻ thợ + biểu mẫu | Thẻ thợ + biểu mẫu | Compact / Cards / Grid | Compact / Cards / Grid | Danh sách / Thẻ |
+| Thợ tới lượt kế tiếp | Giống #4 | Giống #4 | Thẻ #1 nổi bật | Thẻ chi tiết + Upcoming | Thanh Next Turn | Khối nổi bật + hàng chờ |
+| Cách tính lượt | Giống #4 | Giống #4 | 4 cách; Owner chọn | Như #2 | Theo giá trị; cấu hình mô phỏng | 5 cách + luật khách chỉ định / hẹn |
+| Tay nghề | Giống #4 | Giống #4 | Theo nhóm dịch vụ; 3 mức | Như #2 + gợi ý nhiều dịch vụ | Cấp thợ + dịch vụ được phép | Theo từng dịch vụ; 3 mức |
+| Giao khách nhiều dịch vụ | Giống #4 | Giống #4 | Một dịch vụ mỗi thao tác | Gợi ý một thợ / chia dịch vụ | Chọn thợ trong cửa sổ giao khách | Chọn thợ cho từng dịch vụ |
+| Ghế / bàn / phòng | Có Station; tự chọn / chọn tay | Không có ở biểu mẫu Turnboard | Không có ở biểu mẫu Turnboard | Có trường vị trí + ghi chú khách | Có trường vị trí | Không có trường riêng trong giao khách |
+| Sửa lượt / hoàn tác | Giống #4 | Giống #4 | Undo ghi dòng hoàn tác | Như #2 | Add Turn / Edit Turn có lý do | Hoàn tác lần giao gần nhất |
+| Doanh thu / mục tiêu | Giống #4 | Giống #4 | Hiển thị số lượt trên hàng thợ | Đưa số liệu lên thẻ Next Turn | Tổng dịch vụ + mục tiêu thợ | Doanh thu + trung bình mỗi lượt |
+| Thử tiệm lớn | Không có bộ tương ứng | Không có bộ tương ứng | Không có bộ tương ứng | Có bộ 50 thợ / 36 khách chờ | Có bộ 50 thợ / 36 khách chờ | Không có bộ 50 thợ riêng |
 
 ### Vì sao POS feedback và V34 gần giống nhau?
 
-| Phần Turnboard | POS feedback #3 | V34 #6 |
+| Phần Turnboard | POS feedback #4 | V34 #6 |
 | --- | --- | --- |
 | Thẻ thợ, hàng chờ, luật tính lượt | Bố cục nền | Cùng bố cục và logic |
 | Biểu mẫu giao khách | Khách, nhóm dịch vụ, dịch vụ, thợ | Thêm Station |
 | Vị trí thực hiện | Không có trong biểu mẫu này | Chọn hoặc tự chọn ghế, bàn, phòng; gắn vào phiếu |
 
-Khi tắt quản lý vị trí, trường Station bị ẩn nên V34 gần như giống bản feedback. Phần dựng Turnboard của #3 và #5 giống hệt nhau.
+Khi tắt quản lý vị trí, trường Station bị ẩn nên V34 gần như giống bản feedback. Phần dựng Turnboard của #4 và #5 giống hệt nhau.
 
 ### Ví dụ — chỉ minh họa, không phải cấu hình đã chốt
 
-| Tình huống | #2 và #4 theo công thức có sẵn | #3, #5 và #6 khi chọn luật theo giá |
+| Tình huống | #2–3 theo công thức có sẵn | #4–6 khi chọn luật theo giá |
 | --- | --- | --- |
 | Dịch vụ trị giá $50 | 1 lượt | 0,5 lượt |
 
@@ -182,14 +183,14 @@ Khi tắt quản lý vị trí, trường Station bị ẩn nên V34 gần như 
 
 | Trường hợp | Cách đọc | Phụ trách |
 | --- | --- | --- |
-| #3 và #5 có cùng Turnboard | Giữ hai nguồn, không tính là hai thiết kế khác nhau | PO / thiết kế |
-| V34 tắt quản lý vị trí | Station bị ẩn; UI gần giống #3 | PO / thiết kế |
+| #4 và #5 có cùng Turnboard | Giữ hai nguồn, không tính là hai thiết kế khác nhau | PO / thiết kế |
+| V34 tắt quản lý vị trí | Station bị ẩn; UI gần giống #4 | PO / thiết kế |
 | Nút có trên UI nhưng chưa đổi công thức | Đọc giới hạn ở đúng dòng | PO / phát triển |
 
 ### Câu hỏi thường gặp
 
 **6 file có phải 6 thiết kế hoàn toàn khác nhau không?**  
-Không. Chúng thuộc 3 nhóm giao diện; #3 và #5 có cùng phần dựng Turnboard. V34 chỉ bổ sung vị trí trên nền nhóm POS.
+Không. Chúng thuộc 3 nhóm giao diện; #4 và #5 có cùng phần dựng Turnboard. V34 chỉ bổ sung vị trí trên nền nhóm POS.
 
 ### Tính năng liên quan
 
@@ -213,7 +214,7 @@ Không. Chúng thuộc 3 nhóm giao diện; #3 và #5 có cùng phần dựng Tu
 
 - #6: [nexora-pos-12-10/nexora-pos-prototype-v34.html](html/nexora-pos-12-10/nexora-pos-prototype-v34.html) — nội dung `610810d0c821b0a0`.
 - #5: [nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html](html/nexora-pos-feedback-9-10/nexora-pos-products-other-sales.html) — nội dung `01d9d272d367df45`.
-- #4: [pos-prototype/front-desk-prototype (1).html](html/pos-prototype/front-desk-prototype%20(1).html) — nội dung `047a8514f254c41d`.
-- #3: [nexora-pos-feedback-9-10/nexora-pos-prototype (1).html](html/nexora-pos-feedback-9-10/nexora-pos-prototype%20(1).html) — nội dung `5a8a0ff7fe131575`.
+- #4: [nexora-pos-feedback-9-10/nexora-pos-prototype (1).html](html/nexora-pos-feedback-9-10/nexora-pos-prototype%20(1).html) — nội dung `5a8a0ff7fe131575`.
+- #3: [pos-prototype/front-desk-prototype (1).html](html/pos-prototype/front-desk-prototype%20(1).html) — nội dung `047a8514f254c41d`.
 - #2: [pos-prototype/front-desk-prototype.html](html/pos-prototype/front-desk-prototype.html) — nội dung `b12b1bd80e721a5b`.
 - #1: [TurnBoardBanMau.html](html/TurnBoardBanMau.html) — nội dung `1b60a11d1b666829`.
