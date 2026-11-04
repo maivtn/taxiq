@@ -19,7 +19,6 @@
     ['country', 'Country', 'e.g. United States', 'country-name']
   ];
   var businessCountries = [['US','United States','1'],['CA','Canada','1'],['VN','Vietnam','84'],['GB','United Kingdom','44'],['AU','Australia','61'],['SG','Singapore','65'],['JP','Japan','81'],['KR','South Korea','82'],['DE','Germany','49'],['FR','France','33'],['IN','India','91'],['CN','China','86'],['BR','Brazil','55'],['MX','Mexico','52'],['HK','Hong Kong','852'],['TW','Taiwan','886'],['MY','Malaysia','60'],['TH','Thailand','66'],['PH','Philippines','63'],['ID','Indonesia','62']];
-  var businessTimeZones = ['America/Los_Angeles','America/Denver','America/Chicago','America/New_York','America/Anchorage','Pacific/Honolulu','America/Toronto','America/Vancouver','America/Edmonton','America/Winnipeg','America/Mexico_City','America/Tijuana','Asia/Ho_Chi_Minh'];
   var businessDays = ['Sunday','Monday','Tuesday','Wednesday','Thursday','Friday','Saturday'];
   var voicePhones = [
     ['voiceSalonPhone','Salon phone number','The number customers currently call; it will be forwarded to the AI number.'],
@@ -140,6 +139,7 @@
   function guide() { return data.library.guides.find(function (item) { return item.key === state.industry; }) || data.library.guides[0]; }
   function path() { return data.setup.paths[guide().key]; }
   function isSalon() { return ['nail','hair','spa'].indexOf(guide().key) !== -1; }
+  function useSalonLabels() { return ['nail','hair'].indexOf(guide().key) !== -1; }
   function stepTitle(index) { return path()[index] === 'voice' ? setupCopy.voiceStep : isSalon() ? salonCopy['step' + (index + 1)] : index === 0 ? setupCopy.businessStep : copy[guide().steps[index][0]]; }
   function readStep(kind) {
     var value = state.drafts[guide().key] && state.drafts[guide().key][kind];
@@ -220,9 +220,7 @@
     });
   }
   function businessComplete(fields) {
-    return ['name','phone','phoneCountry','timeZone'].concat(businessAddressFields.map(function (field) { return field[0]; })).every(function (name) { return String(fields[name] || '').trim(); }) && businessTimeZones.indexOf(fields.timeZone) !== -1 && businessDays.every(function (_, index) {
-      return fields['hoursOpen' + index] === 'false' || (fields['hoursOpen' + index] === 'true' && /^([01]\d|2[0-3]):[0-5]\d$/.test(fields['hoursFrom' + index] || '') && /^([01]\d|2[0-3]):[0-5]\d$/.test(fields['hoursTo' + index] || ''));
-    });
+    return ['name','phone'].concat(businessAddressFields.map(function (field) { return field[0]; })).every(function (name) { return String(fields[name] || '').trim(); });
   }
   function writeStep(kind, patch) {
     var value = readStep(kind);
@@ -259,14 +257,16 @@
     var url = new URL(window.location.href); url.searchParams.set('view', tab); window.history.replaceState(null, '', url);
   }
   function renderJourney() {
-    var g = guide();
-    document.getElementById('nxw-panel-journey').innerHTML = '<span class="nxw-kicker">' + escape(copy[g.name]) + '</span><h2>' + escape(isSalon() ? salonCopy.heading : setupCopy.pathHeading) + '</h2><p>' + escape(isSalon() ? salonCopy.intro : setupCopy.pathIntro) + '</p><div class="nxw-actions">' + button(copy.startFirstStep,'start-first') + button(copy.viewIndustryDocs,'open-docs',true) + '</div><div class="nxw-progress"><strong id="nxw-progress-label" role="status"></strong><progress id="nxw-progress" aria-label="' + escape(setupCopy.progressLabel.replace('{done}','').replace('{total}','')) + '"></progress></div><div class="nxw-setup-layout"><div class="nxw-step-list" aria-label="' + escape(setupCopy.pathHeading) + '">' + path().map(function (kind,i) { return '<button type="button" data-setup-step="' + i + '" aria-current="' + (i === selectedStep ? 'step' : 'false') + '"><b>' + (i + 1) + '</b><span>' + escape(stepTitle(i)) + (kind === 'voice' ? ' · ' + escape(setupCopy.optionalStep) : '') + '</span></button>'; }).join('') + '</div><article class="nxw-setup-detail" id="nxw-setup-detail"></article></div><p class="nxw-note">' + escape(setupCopy.saveScope) + '</p>';
+    var g = guide(), feature = data.onboardingFeature;
+    var story = feature.stories[g.key];
+    document.getElementById('nxw-panel-journey').innerHTML = '<div class="nxw-journey-head"><div class="nxw-journey-lead"><span class="nxw-kicker">' + escape(copy.libraryEyebrow) + '</span><h2>' + escape(useSalonLabels() ? salonCopy.heading : setupCopy.pathHeading) + '</h2><p>' + escape(useSalonLabels() ? salonCopy.intro : setupCopy.pathIntro) + '</p><div class="nxw-actions">' + button(copy.startFirstStep,'start-first') + button(copy.viewIndustryDocs,'open-docs',true) + '</div></div><aside class="nxw-spotlight" aria-labelledby="nxw-spotlight-title"><div class="nxw-spotlight-photo"><img src="' + escape(g.sampleImage) + '" alt="" loading="lazy" decoding="async"><span>' + escape(copy[g.name]) + '</span></div><div class="nxw-spotlight-copy"><small>' + escape(feature.label) + '</small><h3 id="nxw-spotlight-title">' + escape(story.title) + '</h3><p>' + escape(story.summary) + '</p>' + button(feature.action,'open-docs',true) + '</div></aside></div><div class="nxw-progress"><strong id="nxw-progress-label" role="status"></strong><progress id="nxw-progress" aria-label="' + escape(setupCopy.progressLabel.replace('{done}','').replace('{total}','')) + '"></progress></div><div class="nxw-setup-layout"><div class="nxw-step-list" role="group" aria-label="' + escape(setupCopy.pathHeading) + '">' + path().map(function (kind,i) { return '<button type="button" data-setup-step="' + i + '" aria-current="' + (i === selectedStep ? 'step' : 'false') + '"><img src="' + escape(data.setup.images[kind]) + '" alt="" loading="lazy"><b>' + (i + 1) + '</b><span>' + escape(stepTitle(i)) + (kind === 'voice' ? ' · ' + escape(setupCopy.optionalStep) : '') + '</span></button>'; }).join('') + '</div><article class="nxw-setup-detail" id="nxw-setup-detail"></article></div><p class="nxw-note">' + escape(setupCopy.saveScope) + '</p>';
     renderSetupStep(); updateProgress();
   }
   function fieldHTML(field, fields) {
     var name=field[0], label=setupCopy[field[1]] || copy[field[1]], required=field[2], repeat=field[3];
-    var examples = {name:guide().exampleName,phone:'(312) 555-0148',address:'123 Main St · Chicago, IL',hours:'09:00–18:00',item1Name:copy[guide().exampleOffering].split(' · ')[0],qrLabel:guide().exampleName,qrLocation:copy[guide().exampleTouchpoint],paymentMethod:setupCopy.methodExample,inviteText:setupCopy.defaultInvite,replyText:setupCopy.replyText};
-    return '<label class="nxw-field"><span>' + escape(label) + (repeat ? ' ' + repeat : '') + (required ? ' *' : '') + '</span><input name="' + name + '" value="' + escape(fields[name] || '') + '" placeholder="' + escape(examples[name] || '') + '" maxlength="' + (name === 'address' ? 120 : name === 'replyText' || name === 'inviteText' ? 180 : 90) + '"' + (required ? ' required' : '') + (name === 'phone' ? ' inputmode="tel"' : /Price|amount|Percent|Amount/.test(name) ? ' inputmode="decimal"' : '') + ' autocomplete="off"></label>';
+    var first=copy[guide().exampleOffering].split(' · '), second=setupCopy[guide().key+'Second'].split(' · ');
+    var examples = {name:guide().exampleName,phone:'(312) 555-0148',address:'123 Main St · Chicago, IL',hours:'09:00–18:00',item1Name:first[0],item1Duration:first[1],item1Price:first[first.length-1],item2Name:second[0],item2Duration:second[1],item2Price:second[second.length-1],qrLabel:readStep('business').fields.name||guide().exampleName,qrLocation:copy[guide().exampleTouchpoint],paymentMethod:setupCopy.methodExample,amount:first[first.length-1],tipAmount:'$3.00',offerTitle:setupCopy.retailDealSample,discountCode:'SAVE10',discountPercent:'10',inviteText:setupCopy.defaultInvite,replyText:setupCopy.replyText};
+    return '<label class="nxw-field"><span>' + escape(label) + (repeat ? ' ' + repeat : '') + (required ? ' *' : '') + '</span><input name="' + name + '" type="' + (name==='phone'?'tel':name==='discountPercent'?'number':'text') + '"' + (name==='discountPercent'?' min="1" max="100"':'') + ' value="' + escape(fields[name] || '') + '" placeholder="' + escape(examples[name] || '') + '" maxlength="' + (name === 'address' ? 120 : name === 'replyText' || name === 'inviteText' ? 180 : 90) + '"' + (required ? ' required' : '') + (name === 'phone' ? ' inputmode="tel"' : /Price|amount|tipAmount/.test(name) ? ' inputmode="decimal"' : '') + ' autocomplete="off"></label>';
   }
   function businessPhone(fields, name) {
     var value = String(fields[name] || ''), country = businessCountries.find(function (item) { return item[0] === fields[name + 'Country']; });
@@ -302,22 +302,15 @@
     var rows=voicePhones.map(function(entry){var phone=businessPhone(values,entry[0]);return [entry[1],phone.value?'+'+phone.country[2]+' '+phone.value:''];}).concat(voiceSms.map(function(entry){return [entry[1],values[entry[0]]==='false'?'Off':'On'];}));
     return '<dl>'+rows.filter(function(entry){return entry[1];}).map(function(entry){return '<div><dt>'+entry[0]+'</dt><dd>'+escape(entry[1])+'</dd></div>';}).join('')+'</dl>';
   }
-  function businessHoursHTML(fields) {
-    var bulk='<div class="nxw-hours-toolbar"><button type="button" class="nxw-hours-button" data-business-hours-toggle aria-expanded="false" aria-controls="nxw-business-hours-bulk">Apply to multiple days</button></div><div class="nxw-hours-bulk" id="nxw-business-hours-bulk" data-business-hours-bulk hidden><label><span>Start time</span><input type="time" name="businessBulkStart" aria-label="Start time"></label><label><span>End time</span><input type="time" name="businessBulkEnd" aria-label="End time"></label><button type="button" class="nxw-hours-button is-primary" data-business-hours-apply>Apply to all day</button><p data-business-hours-error role="status" hidden></p></div>';
-    return '<fieldset class="nxw-business-group"><legend>Business Hours</legend>' + (fields.hours ? '<p class="nxw-note">' + escape(setupCopy.fieldHours) + ': ' + escape(fields.hours) + '</p>' : '') + '<label class="nxw-field nxw-time-zone"><span>Time zone *</span><select name="timeZone" required><option value="">Select a time zone</option>' + businessTimeZones.map(function (zone) { return '<option' + (fields.timeZone === zone ? ' selected' : '') + '>' + zone + '</option>'; }).join('') + '</select></label>'+bulk+'<div class="nxw-business-hours">' + businessDays.map(function (day, index) {
-      var open = fields['hoursOpen' + index] !== 'false';
-      return '<div class="nxw-business-day" data-business-day="' + index + '"><label class="nxw-day-toggle"><input type="checkbox" role="switch" name="hoursOpen' + index + '" aria-label="Toggle ' + day + ' open"' + (open ? ' checked' : '') + '><span aria-hidden="true"></span><b>' + day + '</b></label><div class="nxw-day-times"' + (!open ? ' hidden' : '') + '><input type="time" name="hoursFrom' + index + '" aria-label="' + day + ' open time" value="' + escape(fields['hoursFrom' + index] || '') + '" required' + (!open ? ' disabled' : '') + '><span aria-hidden="true">–</span><input type="time" name="hoursTo' + index + '" aria-label="' + day + ' close time" value="' + escape(fields['hoursTo' + index] || '') + '" required' + (!open ? ' disabled' : '') + '></div><span class="nxw-day-closed"' + (open ? ' hidden' : '') + '>Closed</span></div>';
-    }).join('') + '</div></fieldset>';
-  }
   function businessFieldsHTML(fields) {
     return '<div class="nxw-business-form"><div class="nxw-fields">' + fieldHTML(data.setup.fields.business[0], fields) + '</div><div class="nxw-fields">' + businessPhoneHTML(fields, 'phone', 'Business Phone', true) + businessPhoneHTML(fields, 'bookingPhone', 'Booking Notification Phone', false) + '</div><fieldset class="nxw-business-group"><legend>Business Address</legend>' + (fields.address ? '<p class="nxw-note">' + escape(setupCopy.fieldAddress) + ': ' + escape(fields.address) + '</p>' : '') + '<div class="nxw-address-fields">' + businessAddressFields.map(function (field) {
       return '<label class="nxw-field' + (field[0] === 'street' ? ' nxw-field-wide' : '') + '"><span>' + field[1] + ' *</span><input name="' + field[0] + '" value="' + escape(fields[field[0]] || '') + '" placeholder="' + field[2] + '" autocomplete="' + field[3] + '" maxlength="' + (field[0] === 'street' ? 180 : 90) + '" required></label>';
-    }).join('') + '</div></fieldset>' + businessHoursHTML(fields) + '</div>';
+    }).join('') + '</div></fieldset><div class="nxw-fields nxw-operating-hours">' + fieldHTML(data.setup.fields.business.find(function(field){return field[0]==='hours';}), fields) + '</div></div>';
   }
   function businessPatch(form) {
     var patch = {};
     Array.from(form.elements).forEach(function (input) {
-      if (input.name && !input.disabled && !input.closest('[data-business-hours-bulk]')) patch[input.name] = input.type === 'checkbox' ? String(input.checked) : input.value;
+      if (input.name && !input.disabled) patch[input.name] = input.type === 'checkbox' ? String(input.checked) : input.value;
     });
     return patch;
   }
@@ -330,12 +323,14 @@
     });
     rows.push(['Time zone', fields.timeZone]);
     var html = '<dl>' + rows.filter(function (row) { return String(row[1] || '').trim(); }).map(function (row) { return '<div><dt>' + escape(row[0]) + '</dt><dd>' + escape(row[1]) + '</dd></div>'; }).join('') + '</dl>';
-    if (businessDays.some(function (_, index) { return fields['hoursOpen' + index] !== undefined; })) {
+    if (fields.hours) {
+      html += '<p class="nxw-note">' + escape(setupCopy.fieldHours) + ': ' + escape(fields.hours) + '</p>';
+    } else if (businessDays.some(function (_, index) { return fields['hoursOpen' + index] !== undefined; })) {
       html += '<div class="nxw-hours-preview"><strong>Business Hours</strong><dl>' + businessDays.map(function (day, index) {
         var value = fields['hoursOpen' + index] === 'false' ? 'Closed' : [fields['hoursFrom' + index], fields['hoursTo' + index]].filter(Boolean).join(' – ');
         return value ? '<div><dt>' + day + '</dt><dd>' + escape(value) + '</dd></div>' : '';
       }).join('') + '</dl></div>';
-    } else if (fields.hours) html += '<p class="nxw-note">' + escape(setupCopy.fieldHours) + ': ' + escape(fields.hours) + '</p>';
+    }
     return html;
   }
   function choicesHTML(items, fields, radioName) {
@@ -348,31 +343,24 @@
     var kind=path()[selectedStep], fields=readStep(kind).fields;
     var tasks=(kind==='voice'?setupCopy.voiceTask:isSalon()?salonCopy['task'+(selectedStep+1)]:selectedStep===0?setupCopy.businessTask:setupCopy[guide().key+'Task'+selectedStep]) || '';
     var mode=fields.staffMode==='invite'?'invite':'manual';
-    var html='<div class="nxw-setup-intro"><img src="' + data.setup.images[kind] + '" alt="' + escape(setupCopy.illustration) + '"><div><span class="nxw-kicker">' + (selectedStep+1) + ' / ' + path().length + '</span><h3 id="nxw-step-title">' + escape(stepTitle(selectedStep)) + '</h3><ul>' + tasks.split('|').filter(Boolean).map(function (task) { return '<li>' + escape(task) + '</li>'; }).join('') + '</ul></div></div>';
+    var html='<div class="nxw-setup-intro"><img src="' + data.setup.images[kind] + '" alt="' + escape(setupCopy.illustration) + '"><div><span class="nxw-kicker">' + (selectedStep+1) + ' / ' + path().length + '</span><h3 id="nxw-step-title">' + escape(stepTitle(selectedStep)) + '</h3><strong class="nxw-task-label">' + escape(salonCopy.doThis) + '</strong><ul>' + tasks.split('|').filter(Boolean).map(function (task) { return '<li>' + escape(task) + '</li>'; }).join('') + '</ul></div></div>';
     var formHeading='<strong>' + escape(setupCopy.formTitle) + '</strong><p class="nxw-note">' + escape(setupCopy.autoSaveNote) + '</p>';
     if(kind==='services'||kind==='menu')html+='<div class="nxw-services-preparation">'+formHeading+'<div data-settings-panel="services" data-onboarding-services></div></div>';
     if(kind==='qr')html+='<div class="nxw-qr-preparation">'+formHeading+'<div data-onboarding-qr></div></div>';
     if(kind==='staff')html+='<div class="nxw-staff-preparation">'+formHeading+'<div class="nxw-subsection" data-staff-mode><strong>'+escape(setupCopy.staffMethodTitle)+'</strong>'+choicesHTML([{key:'manual',label:'staffManual',defaultValue:'manual'},{key:'invite',label:'staffInvite',defaultValue:'manual'}],fields,'staffMode')+'</div>'+(mode==='manual'?'<div data-onboarding-staff></div>':'<div data-onboarding-staff-invite></div>')+'</div>';
-    html+='<form id="nxw-setup-form" aria-labelledby="nxw-step-title">'+(['services','menu','staff','qr'].includes(kind)?'':formHeading);
-    if(!['services','menu','staff','qr'].includes(kind))html+=kind==='business'?businessFieldsHTML(fields):'<div class="nxw-fields">' + (data.setup.fields[kind]||[]).map(function (field) { return fieldHTML(field,fields); }).join('') + '</div>';
+    html+='<form id="nxw-setup-form" aria-labelledby="nxw-step-title" novalidate>'+(['services','menu','staff','qr'].includes(kind)?'':formHeading);
+    if(!['services','menu','staff','qr'].includes(kind))html+=kind==='business'?businessFieldsHTML(fields):'<div class="nxw-fields">' + (data.setup.fields[kind]||[]).filter(function(field){return field[0]!=='tipAmount'||guide().key==='restaurant';}).map(function (field) { return fieldHTML(field,fields); }).join('') + '</div>';
     if(kind==='voice')html+='<div class="nxw-subsection"><strong>' + escape(setupCopy.voiceModeTitle) + '</strong>' + choicesHTML([{key:'off',label:'voiceSkip',defaultValue:'off'},{key:'on',label:'voiceUse',defaultValue:'off'}],fields,'voiceMode') + '</div>' + (fields.voiceMode==='on'?voiceSettingsHTML(fields)+choicesHTML(data.flow.voiceFeatures,fields):'<p class="nxw-note">'+escape(setupCopy.voicePreviewOff)+'</p>') + '<p class="nxw-note">' + escape(setupCopy.voicePreviewNotice) + '</p>';
-    html+=(kind==='qr'?'':'<div id="nxw-entered-preview" class="nxw-inline-preview"></div>')+'<div class="nxw-saved" id="nxw-save-status" role="status"></div><div class="nxw-actions"><button type="submit" class="nxw-btn">' + escape(setupCopy.saveStep) + '</button>' + (selectedStep<path().length-1?button(salonCopy.next,'next-step',true):button(copy.viewIndustryDocs,'open-docs',true)) + link(setupCopy.relatedScreen,stepRoute(kind),true) + '</div></form>';
+    html+=(kind==='qr'?'':'<div id="nxw-entered-preview" class="nxw-inline-preview"></div>')+'<div class="nxw-saved" id="nxw-save-status" role="status">' + escape(readStep(kind).completed?setupCopy.savedDone:Object.values(fields).some(function(value){return String(value).trim();})?setupCopy.draftSaved:setupCopy.autoSaveNote) + '</div><div class="nxw-actions"><button type="submit" class="nxw-btn">' + escape(setupCopy.saveStep) + '</button>' + (selectedStep<path().length-1?button(salonCopy.next,'next-step',true):button(salonCopy.viewGuides,'open-docs',true)) + link(setupCopy.relatedScreen,stepRoute(kind),true) + '</div></form>';
     document.getElementById('nxw-setup-detail').innerHTML=html;
     var form=document.getElementById('nxw-setup-form');
+    if(kind==='voice')form.querySelector('.nxw-fields').hidden=true;
     if(kind==='staff'&&mode==='invite')form.querySelectorAll('.nxw-fields input').forEach(function (input) { input.disabled=true; });
     form.addEventListener('input',function(event){
-      if(event.target.closest('[data-business-hours-bulk]')){form.querySelector('[data-business-hours-error]').hidden=true;return;}
       if(event.target.type==='radio'||event.target.type==='checkbox')return;saveInput(event.target);
     });
     form.addEventListener('change',function(event){
       if(kind==='business'){
-        if(event.target.closest('[data-business-hours-bulk]'))return;
-        var row=event.target.closest('[data-business-day]');
-        if(row&&event.target.type==='checkbox'){
-          row.querySelector('.nxw-day-times').hidden=!event.target.checked;
-          row.querySelector('.nxw-day-closed').hidden=event.target.checked;
-          row.querySelectorAll('input[type="time"]').forEach(function(input){input.disabled=!event.target.checked;});
-        }
         saveInput(event.target);return;
       }
       if(kind==='voice'&&event.target.tagName==='SELECT'){saveInput(event.target);return;}
@@ -380,20 +368,6 @@
     });
     form.addEventListener('submit',completeStep);
     form.addEventListener('click',function(event){
-      var hoursToggle=event.target.closest('[data-business-hours-toggle]');
-      if(hoursToggle){
-        var bulk=form.querySelector('[data-business-hours-bulk]');bulk.hidden=!bulk.hidden;hoursToggle.setAttribute('aria-expanded',String(!bulk.hidden));
-        if(!bulk.hidden)bulk.querySelector('input').focus();return;
-      }
-      if(event.target.closest('[data-business-hours-apply]')){
-        var start=form.elements.businessBulkStart,end=form.elements.businessBulkEnd,error=form.querySelector('[data-business-hours-error]');
-        if(!start.value||!end.value||end.value<=start.value){error.textContent='Check the working hours: end time must follow start time.';error.hidden=false;(!start.value?start:end).focus();return;}
-        form.querySelectorAll('[data-business-day]').forEach(function(row){
-          if(!row.querySelector('[type="checkbox"]').checked)return;
-          row.querySelector('[name^="hoursFrom"]').value=start.value;row.querySelector('[name^="hoursTo"]').value=end.value;
-        });
-        error.hidden=true;saveInput(start);return;
-      }
       var toggle=event.target.closest('[data-voice-sms]');if(!toggle)return;
       var enabled=toggle.getAttribute('aria-checked')!=='true';toggle.setAttribute('aria-checked',String(enabled));toggle.classList.toggle('is-on',enabled);
       var status=toggle.parentElement.querySelector('[data-voice-sms-status]');status.textContent=enabled?'On':'Off';status.classList.toggle('is-on',enabled);
@@ -493,7 +467,7 @@
     if(target.dataset.slide!==undefined){playing=false;renderSlide(Number(target.dataset.slide));syncSlideshow();}
     if(target.dataset.explorerProduct){explorerProduct=target.dataset.explorerProduct;explorerFeature=0;renderExplorer();main.querySelector('[data-explorer-product="'+explorerProduct+'"]').focus();}
     if(target.dataset.explorerFeature!==undefined){explorerFeature=Number(target.dataset.explorerFeature);renderExplorer();main.querySelector('[data-explorer-feature="'+explorerFeature+'"]').focus();}
-    if(target.matches('.nxw-industry[data-industry]')){state.industry=target.dataset.industry;persist();selectedStep=firstUnfinished();renderOnboarding();main.querySelector('.nxw-industry[data-industry="'+state.industry+'"]').focus();}
+    if(target.matches('.nxw-industry[data-industry]')){state.industry=target.dataset.industry;persist();selectedStep=firstUnfinished();selectedProduct=guide().tools[0];selectedHelp='product-'+selectedProduct;helpSearch='';helpProduct='';activeOnboardTab='journey';renderOnboarding();openTab('journey');main.querySelector('.nxw-industry[data-industry="'+state.industry+'"]').focus();}
     if(target.dataset.onboardTab)openTab(target.dataset.onboardTab);
     if(target.dataset.setupStep!==undefined){selectedStep=Number(target.dataset.setupStep);renderSetupStep();}
     if(target.dataset.helpEntry){selectedHelp=target.dataset.helpEntry;renderHelpResults();main.querySelector('[data-help-entry="'+selectedHelp+'"]').focus();}
@@ -502,7 +476,7 @@
     if(action==='slide-prev'||action==='slide-next'){playing=false;renderSlide(slideIndex+(action==='slide-prev'?-1:1));syncSlideshow();}
     if(action==='slide-play'){playing=!playing;syncSlideshow();}
     if(action==='open-docs')openTab('docs');
-    if(action==='start-first'){selectedStep=firstUnfinished();renderSetupStep();document.getElementById('nxw-step-title').tabIndex=-1;document.getElementById('nxw-step-title').focus();}
+    if(action==='start-first'){selectedStep=0;renderSetupStep();document.getElementById('nxw-step-title').tabIndex=-1;document.getElementById('nxw-step-title').focus();}
     if(action==='next-step'){selectedStep=Math.min(path().length-1,selectedStep+1);renderSetupStep();}
     if(action.indexOf('download-')===0)download(action.slice(9));
   });

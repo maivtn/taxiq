@@ -804,6 +804,36 @@ window.NEXORA_WELCOME_DATA = {
       "restaurantTask3": "Choose a payment method your restaurant currently supports|Test a transaction and check total, tip and receipt"
     }
   },
+  "onboardingFeature": {
+    "label": "INDUSTRY SPOTLIGHT",
+    "action": "Explore guides →",
+    "stories": {
+      "nail": {
+        "title": "Welcome your first guest with a ready salon",
+        "summary": "Prepare your profile, service list, team and One QR."
+      },
+      "hair": {
+        "title": "From appointments to the service chair",
+        "summary": "Organize services, durations, stylist schedules and guest QR points."
+      },
+      "spa": {
+        "title": "A calm guest experience starts with setup",
+        "summary": "Present treatments, durations, staff and booking options."
+      },
+      "retail": {
+        "title": "Make your store and products easy to explore",
+        "summary": "Prepare the catalog, prices, QR touchpoints and relevant offers."
+      },
+      "food": {
+        "title": "Get your café ready for the busy hour",
+        "summary": "Organize menu items, prices and QR access at the counter."
+      },
+      "restaurant": {
+        "title": "From your menu to a table QR",
+        "summary": "Prepare dishes, prices and table locations; test payments before service."
+      }
+    }
+  },
   "salonSetup": {
     "copy": {
       "heading": "Set up your salon in the right order",
